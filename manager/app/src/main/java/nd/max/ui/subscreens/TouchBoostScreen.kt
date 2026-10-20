@@ -17,6 +17,8 @@
 package nd.max.ui.subscreens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -46,6 +48,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -116,6 +119,10 @@ fun TouchBoostScreen(
     // حالة المفتاح لحظة أخذ آخر عيّنة — بدونها يقرأ المستخدم رقمًا لا يعرف ظرفه، ولا يستطيع
     // مقارنة «قبل/بعد» بنفسه. وهذه حالة جلسة لا تُخزَّن، مثل العيّنة نفسها.
     var measuredWhileBoost by remember { mutableStateOf<Boolean?>(null) }
+
+    // قفل تمرير الصفحة ما دام الإصبع على وسادة القياس. اللمس هنا اختبارٌ لا تنقّل: بدونه يسرق
+    // مُمرِّر الصفحة الإيماءة بعد أول انزلاق فتُقطع العيّنة وتتحرّك البطاقة تحت اليد.
+    var padHeld by remember { mutableStateOf(false) }
 
     // هوية المحكّم من الواجهة العامّة لـAndroid: قراءة أجهزة الإدخال مرّة عند الفتح، ثم تصنيف
     // الاسم وحده. ولا يدخل طراز الهاتف في أيّ منهما (§٧-أ).
@@ -195,6 +202,9 @@ fun TouchBoostScreen(
     MaxScreen(
         title = stringResource(R.string.touch_boost_title),
         onBack = { navController.popBackStack() },
+        // التمرير يتوقّف طوال وضع الإصبع/الكف على وسادة القياس، لا الإيماءة وحدها — نفس
+        // عقد `AudioStudioScreen`: البطاقة لا تنزلق تحت يدٍ تقيس.
+        scrollEnabled = !padHeld,
         subtitle = gameNode?.path
             ?: sampleNode?.path
             ?: inputBoostNode?.path
@@ -353,10 +363,13 @@ fun TouchBoostScreen(
                 }
             }
 
-            TouchRatePad(onSample = {
-                measured = it
-                measuredWhileBoost = viewModel.boostEnabled
-            })
+            TouchRatePad(
+                onPressChange = { padHeld = it },
+                onSample = {
+                    measured = it
+                    measuredWhileBoost = viewModel.boostEnabled
+                }
+            )
 
             // ظرف العيّنة جزء من معناها: رقمٌ بلا «التبديل كان مفعّلًا؟» لا يُقارن بشيء، ولا
             // يقول للمستخدم إن كان تبديله غيّر ما يسلّمه Android أم لا.
@@ -594,11 +607,17 @@ private fun touchChannelMetric(reading: TouchChannelReading): MaxMetric {
  * **ولماذا في الواجهة لا في محرّك خلفي:** القياس على `PointerEvent` الواصل إلى هذه الشاشة، لا
  * على العتاد؛ فمحلّه من يستقبله. والعدّاد حالة جلسة لا تُخزَّن — ومن أراد عيّنة أخرى يلمسها من
  * جديد. ولا يكتب شيئًا: قياس لا إعداد.
+ *
+ * **ولا يسمح للصفحة بأن تسحب الإيماءة منه:** الحدث يُقرأ ويُستهلك في [PointerEventPass.Initial]
+ * كي لا يرى مُمرِّر الصفحة حركةً غير مستهلكة فيبدأ السحب. و[onPressChange] يقفل تمرير الصفحة
+ * كلها طوال اللمس — وهذا هو الفرق بين «بطاقة تقيس» و«بطاقة تنزلق تحت الإصبع».
  */
 @Composable
-private fun TouchRatePad(onSample: (TouchRateSample) -> Unit) {
+private fun TouchRatePad(
+    onPressChange: (Boolean) -> Unit,
+    onSample: (TouchRateSample) -> Unit
+) {
     val scheme = MaterialTheme.colorScheme
-    var pressed by remember { mutableStateOf(false) }
     var events by remember { mutableIntStateOf(0) }
     var startMs by remember { mutableLongStateOf(0L) }
     var endMs by remember { mutableLongStateOf(0L) }
@@ -610,25 +629,36 @@ private fun TouchRatePad(onSample: (TouchRateSample) -> Unit) {
             .clip(RoundedCornerShape(maxRadius(MaxRadius.group)))
             .background(scheme.surfaceVariant)
             .pointerInput(Unit) {
-                awaitPointerEventScope {
-                    while (true) {
-                        val event = awaitPointerEvent()
-                        val first = event.changes.firstOrNull() ?: continue
-                        val now = first.uptimeMillis
-                        if (event.changes.any { it.pressed }) {
-                            if (!pressed) {
-                                pressed = true
-                                events = 0
-                                startMs = now
-                            }
-                            events += 1
-                            endMs = now
-                        } else if (pressed) {
-                            pressed = false
-                            if (endMs > startMs) {
-                                onSample(TouchRateSample(events, endMs - startMs))
+                awaitEachGesture {
+                    // المرور الأول: نقرأ ونستهلك قبل أن يصل الحدث إلى مُمرِّر الصفحة في المرور
+                    // الرئيسي. و`requireUnconsumed = false` لأن هذه الوسادة ملك الإيماءة وحدها.
+                    val down = awaitFirstDown(
+                        requireUnconsumed = false,
+                        pass = PointerEventPass.Initial
+                    )
+                    down.consume()
+                    onPressChange(true)
+                    events = 1
+                    startMs = down.uptimeMillis
+                    endMs = down.uptimeMillis
+                    try {
+                        var anyPressed = true
+                        while (anyPressed) {
+                            val event = awaitPointerEvent(PointerEventPass.Initial)
+                            event.changes.forEach { it.consume() }
+                            anyPressed = event.changes.any { it.pressed }
+                            if (anyPressed) {
+                                events += 1
+                                endMs = event.changes.maxOfOrNull { it.uptimeMillis } ?: endMs
                             }
                         }
+                    } finally {
+                        // حتى لو أُلغي اللمس (خروج من الشاشة، استيلاء نظام)، لا يبقى التمرير
+                        // مقفولًا بعد رفع اليد.
+                        onPressChange(false)
+                    }
+                    if (endMs > startMs) {
+                        onSample(TouchRateSample(events, endMs - startMs))
                     }
                 }
             },
