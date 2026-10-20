@@ -38,6 +38,14 @@ object RemoteFlags {
         val enabledByDefault: Boolean,
         val minVersionCode: Int = 0,
         val surface: String,
+        /**
+         * هل يُعرض هذا المفتاح في جدول «المتاح الآن» داخل شاشة Max AI؟
+         *
+         * الافتراض `true` لكل مفتاح يحكم سطح ميزة. و[LICENSE] استثناءٌ مقصود: مفتاحُ
+         * **ظهور صفّ الترخيص في الإعدادات**، لا سطحَ قدرة؛ فإدراجه في جدول القدرات يوهم
+         * بأنه ميزةٌ تُشترى، والصفّ نفسه يبقى في الإعدادات وحدها.
+         */
+        val showInMaxAiIntro: Boolean = true,
     )
 
     /**
@@ -71,7 +79,12 @@ object RemoteFlags {
         Flag(SPOOF, enabledByDefault = true, surface = "ui/subscreens/AppSpoofSection.kt"),
         Flag(EMUHUB, enabledByDefault = true, surface = "ui/subscreens/EmulatorHubScreen.kt"),
         Flag(BYPASS_CHARGE, enabledByDefault = true, surface = "ui/subscreens/BypassChargeScreen.kt"),
-        Flag(LICENSE, enabledByDefault = false, surface = "ui/mainscreens/SettingsScreen.kt"),
+        Flag(
+            LICENSE,
+            enabledByDefault = false,
+            surface = "ui/mainscreens/SettingsScreen.kt",
+            showInMaxAiIntro = false,
+        ),
     )
 
     private val byId: Map<String, Flag> = ALL.associateBy(Flag::id)

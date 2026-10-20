@@ -22,8 +22,8 @@ import org.junit.Test
  * والقياس على أربعة مستويات:
  *
  * 1. **الحلقة**: أربع مراحل، عناوينها وأسطرها مختلفة (لا نسخةٌ من سطر)، وبنبراتها المرسومة.
- * 2. **الجدول**: معرّفات الأسطح = [RemoteFlags.ALL] **في الاتجاهين** — فلا سطح يسقط ولا صفٌّ
- *    يُخترع، وكلها بلا تكرار.
+ * 2. **الجدول**: معرّفات الأسطح = [RemoteFlags.ALL].filter { it.showInMaxAiIntro } **في
+ *    الاتجاهين** — فلا سطح يسقط ولا صفٌّ يُخترع، وكلها بلا تكرار.
  * 3. **المفردات**: [PromoState] تغطّي [FeatureAccess] تغطيةً متبادلة (٤ مقابل ٤، ولا حكمان
  *    يشتركان في حالة عرض) — فالشارة لا تقول «متاح» على حكمٍ لم يُتَّخذ.
  * 4. **الوصول والحياكة**: الشاشة **غير مقفلة** في الرسم الملاحيّ (وظيفتها أن تُشرح)، ولها بابان
@@ -64,12 +64,17 @@ class MaxAiIntroTest {
     // ── ② الجدول: تطابقٌ في الاتجاهين ────────────────────────────────────────
 
     @Test
-    fun `the access table is exactly the flag registry — no missing row, no invented one`() {
+    fun `the access table is exactly the intro-facing flag registry — no missing row, no invented one`() {
         val rowIds = introSurfaces.map { it.flagId }
         assertEquals(
             "لا سطحٌ مسجَّل سقط من الجدول",
-            RemoteFlags.ALL.map { it.id }.toSet(),
+            RemoteFlags.ALL.filter { it.showInMaxAiIntro }.map { it.id }.toSet(),
             rowIds.toSet(),
+        )
+        assertEquals(
+            "ولا يُستبعد من الجدول إلا ما أُعلن أنه ليس سطح قدرة",
+            setOf(RemoteFlags.LICENSE),
+            RemoteFlags.ALL.filterNot { it.showInMaxAiIntro }.map { it.id }.toSet(),
         )
         assertEquals(
             "ولا صفّان للمعرّف نفسه",
