@@ -613,6 +613,15 @@ private fun NowHeader(state: MaxAiState, nowMs: Long) {
 }
 
 @Composable
+private fun profileLabel(profile: String?): String = when (profile) {
+    ProfileApplier.PROFILE_PERFORMANCE -> stringResource(R.string.max_ai_profile_performance)
+    ProfileApplier.PROFILE_BALANCED -> stringResource(R.string.max_ai_profile_balanced)
+    ProfileApplier.PROFILE_ECO -> stringResource(R.string.max_ai_profile_eco)
+    "0" -> stringResource(R.string.status_no_profile)
+    else -> stringResource(R.string.max_ai_profile_unknown)
+}
+
+@Composable
 private fun contextLine(state: MaxAiState): String {
     val app = if (state.appContext == "system") {
         stringResource(R.string.max_ai_context_system)
@@ -624,13 +633,15 @@ private fun contextLine(state: MaxAiState): String {
     } else {
         stringResource(R.string.max_ai_screen_off)
     }
-    val profile = when (state.currentProfile) {
-        ProfileApplier.PROFILE_PERFORMANCE -> stringResource(R.string.max_ai_profile_performance)
-        ProfileApplier.PROFILE_BALANCED -> stringResource(R.string.max_ai_profile_balanced)
-        ProfileApplier.PROFILE_ECO -> stringResource(R.string.max_ai_profile_eco)
-        else -> stringResource(R.string.max_ai_profile_unknown)
+    // الأساس نيّة المستخدم، والفاعل قد يكون تبديلًا مؤقّتًا (لعبة/بطارية).
+    val base = profileLabel(state.baseProfile ?: state.currentProfile)
+    val line = stringResource(R.string.max_ai_context_line, app, screen, base)
+    val active = state.currentProfile
+    if (state.baseProfile != null && active != null && active != state.baseProfile) {
+        val activeLabel = profileLabel(active)
+        return line + " · " + stringResource(R.string.max_ai_mode_active_preset, activeLabel)
     }
-    return stringResource(R.string.max_ai_context_line, app, screen, profile)
+    return line
 }
 
 // ── الهدف ───────────────────────────────────────────
@@ -640,8 +651,9 @@ private fun contextLine(state: MaxAiState): String {
  *
  * كان اختيار الأولوية مدفونًا في قسم "التحكم" في آخر الشاشة، وكان المستخدم
  * يمرّ على الأوزان بلا أن يجد ما يغيّرها. الآن الرسم والزر في نطاق واحد: ما
- * يُقرأ هو ما يُعدّل. والقيم الثلاث هي مفاتيح يفهمها المحرك ("performance"،
- * "balanced"، "battery")، ولا يطبّق الزر ملفًا — يغيّر اتجاه القرار فقط.
+ * يُقرأ هو ما يُعدّل. والقيم الثلاث **وضع واحد** لا هدف منفصل: "performance"
+ * يطبّق ملفّ الأداء ويضبط وزن الأداء، و"battery" يطبّق ملفّ التوفير ويضبط وزن
+ * البطارية. لا يوجد مبدّل ملفّ عام ثانٍ بجانب هذا.
  */
 @Composable
 private fun ObjectiveSection(state: MaxAiState, viewModel: MaxAiViewModel) {
@@ -665,13 +677,13 @@ private fun ObjectiveSection(state: MaxAiState, viewModel: MaxAiViewModel) {
         )
     }
 
+    val modeDescription = stringResource(R.string.max_ai_mode_desc)
+    val activeText = activeLabel?.let { stringResource(R.string.max_ai_objective_active, it) }
+    val sectionDescription = listOfNotNull(modeDescription, activeText, source).joinToString(" · ")
+
     MaxSection(
         title = stringResource(R.string.max_ai_section_objective),
-        description = if (activeLabel != null) {
-            stringResource(R.string.max_ai_objective_active, activeLabel) + " · " + source
-        } else {
-            source
-        },
+        description = sectionDescription,
     ) {
         if (preference == null) {
             MaxGroup { MaxRow(title = stringResource(R.string.max_ai_settings_loading)) }
@@ -695,6 +707,20 @@ private fun ObjectiveSection(state: MaxAiState, viewModel: MaxAiViewModel) {
                 viewModel.setObjectivePreference(ObjectivePreferenceKeys[index])
             },
         )
+
+        // الملفّ الفاعل قد يكون تبديلًا مؤقّتًا (لعبة/بطارية منخفضة) بينما الأساس
+        // هو اختيار المستخدم. إظهار الفرق يمنع قراءة «الوضع الفاعل» على أنه اختياره.
+        val activeProfile = state.currentProfile
+        if (state.baseProfile != null && activeProfile != null && activeProfile != state.baseProfile) {
+            val activeProfileLabel = profileLabel(activeProfile)
+            MaxGroup {
+                MaxRow(
+                    title = stringResource(R.string.max_ai_mode_active_preset, activeProfileLabel),
+                    icon = Icons.Rounded.Tune,
+                    iconTone = MaxTone.Caution,
+                )
+            }
+        }
 
         // حين لا يكون التفضيل هو الفاعل، يُقال ذلك صراحةً: قائمة الاختيار تعرض تفضيلًا
         // محفوظًا والمحرك على غيره — وإخفاء الفرق يجعل المستخدم يقرأ اختياره على أنه الواقع.

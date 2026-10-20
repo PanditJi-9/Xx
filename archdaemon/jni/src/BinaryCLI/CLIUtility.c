@@ -57,6 +57,16 @@ int handle_profile(int argc, char** argv) {
 
     const char* profile = argv[2];
 
+    // الاختيار اليدوي صار الوضع الواحد أيضًا: يُحفظ كنيّة مستخدم يقرؤها الخادم
+    // عند الإقلاع التالي. أما `--from-ai` فلا يغيّر النيّة — المحرك ينفّذ نيّة
+    // كتبها التطبيق مسبقًا، وكتابتها هنا كانت ستجعل كل خطوة AI اختيارًا جديدًا.
+    if (!from_ai && (!strcmp(profile, "1") || !strcmp(profile, "2") || !strcmp(profile, "3"))) {
+        write2file(MAX_AI_MODE, false, false, "%d\n", atoi(profile));
+        __system_property_set("persist.sys.maxmanagerconf.AIobjective",
+                              max_ai_objective_for_mode((ProfileMode)atoi(profile)));
+        log_zenith(LOG_INFO, "EVENT=MAX_AI_MODE_SET mode=%s source=manual", profile);
+    }
+
     if (!strcmp(profile, "0")) {
         log_zenith(LOG_WARN, "EVENT=CLI_PROFILE_APPLY_REJECTED reason=profile_zero_is_initialize_only");
         printf("WARN: Cannot Apply Profile 0 (Initialize)\n");

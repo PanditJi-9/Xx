@@ -93,7 +93,10 @@ void run_profiler(const int profile) {
     if (profile == 1) {
         // Assuming game_pids and gamestart are still managed globally or passed correctly
         pid_t main_pid = (game_pid_count > 0) ? game_pids[0] : 0;
-        write2file(GAME_INFO, false, false, "%s %d %d\nTime: %s\n", gamestart, main_pid, uidof(main_pid), time_str);
+        // وضع الأداء صار يُطبَّق بلا لعبة أيضًا (اختيار أساس/إقلاع)، و`gamestart`
+        // يكون NULL حينها؛ لا يُمرَّر NULL إلى `%s` بل يُكتب نفس شكل فرع «بلا هدف».
+        write2file(GAME_INFO, false, false, "%s %d %d\nTime: %s\n",
+                   gamestart ? gamestart : "NULL", main_pid, uidof(main_pid), time_str);
     } else {
         write2file(GAME_INFO, false, false, "NULL 0 0\nTime: %s\n", time_str);
     }

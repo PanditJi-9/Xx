@@ -2241,7 +2241,10 @@ object AppMonitor {
                     val runtimeMax = listOfNotNull(provenMax, liveMax).minOrNull()
                     val normalizedMin = control.minKHz.let { requested ->
                         val bounded = runtimeMax?.let { requested.coerceAtMost(it) } ?: requested
-                        supported.lastOrNull { it <= bounded } ?: supported.firstOrNull() ?: bounded
+                        // الأرضية تُقرَّب إلى **أسفل** لا إلى أول تردد معلن: كتابة
+                        // 1GHz بدل 450MHz ترفع النوى الصغيرة دائمًا (عطب الاستنزاف
+                        // المقيس). السقف وحده يُقرَّب إلى أكبر OPP لا يتجاوز الطلب.
+                        CpuHardwareBackend.snapFloorAtOrBelow(policy, bounded)
                     }
                     val normalizedMax = control.maxKHz.let { requested ->
                         val bounded = runtimeMax?.let { requested.coerceAtMost(it) } ?: requested
@@ -2338,7 +2341,7 @@ object AppMonitor {
                     // الترددات المُعلنة هي مرجع الطلب، لا ما بين الحدّين: قيمةٌ غير
                     // مُعلنة لا يُرفض كتابتها بل تُبدَّل، فيُحكم على النجاح بالفشل
                     // (`CpuHardwareBackend.snapToAvailableAtOrBelow` يحمل القياس).
-                    val minSnapped = cpuMin?.let { CpuHardwareBackend.snapToAvailableAtOrBelow(policy, it) }
+                    val minSnapped = cpuMin?.let { CpuHardwareBackend.snapFloorAtOrBelow(policy, it) }
                     val maxSnapped = cpuMax?.let { CpuHardwareBackend.snapToAvailableAtOrBelow(policy, it) }
                     val desired = "${minSnapped ?: ""}:${maxSnapped ?: ""}"
                     val key = HardwareControlKey.cpuLimits(policy.name)

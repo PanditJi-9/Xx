@@ -332,6 +332,7 @@
     <string name="status_alive">قيد التشغيل</string>
     <string name="status_inactive">غير نشط</string>
     <string name="status_initializing">جاري التهيئة</string>
+    <string name="status_no_profile">افتراضي (بلا ملف)</string>
     <string name="status_not_supported">غير مدعوم</string>
     <string name="status_not_applied">لم يُطبَّق — لا صلاحية</string>
     <string name="status_suspended">معلق</string>

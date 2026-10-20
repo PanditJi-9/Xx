@@ -210,6 +210,23 @@ void suite_cli_profile(void) {
             }
             CHECK(matched == 2, label);
         }
+
+        /*
+         * الاختيار اليدوي صار نيّة المستخدم الواحدة: يُكتب `MAX_AI_MODE` مرة واحدة
+         * بنفس الرقم. ومسار `--from-ai` لا يكتبها — المحرك ينفّذ نيّة كتبها
+         * التطبيق مسبقًا، وكل خطوة AI ليست اختيارًا جديدًا من المستخدم.
+         */
+        snprintf(label, sizeof(label), "[%s] max-ai mode write", field[0]);
+        int mode_writes = 0;
+        int wanted_mode = is_dash(field[7]) ? -1 : atoi(field[7]);
+        for (int i = 0; i < host_write_count(); i++) {
+            if (strcmp(host_write_path(i), MAX_AI_MODE) == 0 && host_write_has_int(i) &&
+                host_write_int(i) == wanted_mode)
+                mode_writes++;
+        }
+        bool from_ai = strstr(extra, "--from-ai") != NULL;
+        bool should_write_mode = wanted_mode > 0 && !from_ai;
+        CHECK(mode_writes == (should_write_mode ? 1 : 0), label);
     }
 
     fclose(fp);

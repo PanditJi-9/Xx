@@ -116,6 +116,26 @@ class ControlRegistryTest {
         assertTrue(ladder.first().startsWith("1000000:"))
     }
 
+    /**
+     * **العطب المقيس (Moto G86 · MT6878 · ٢٠٢٦-١٠-١٦):** `cpuinfo_min_freq = 450000` لكن أصغر تردد مُعلَن
+     * `1000000`، فكانت الأرضية تُقرَّب إلى الأعلى وتصير 1 جيجاهرتز دائمة للنوى الصغيرة.
+     */
+    @Test
+    fun `the ladder floor is the hardware floor and is never rounded up to the first declared OPP`() {
+        val ladder = ControlRegistry.ceilingLadder(
+            policy(
+                name = "policy0",
+                min = 1000000L,
+                max = 1900000L,
+                hwMin = 450000L,
+                hwMax = 2000000L,
+                declared = listOf(1000000L, 1500000L, 1900000L, 2000000L),
+            ),
+        )!!
+
+        assertTrue("الأرضية يجب أن تبقى 450000: $ladder", ladder.all { it.startsWith("450000:") })
+    }
+
     /** وسياسة بلا جدول OPP معلَن لا سلّم لها — تُسقط بالغياب لا بكتابة تخمين. */
     @Test
     fun `a policy without declared frequencies has no ladder`() {

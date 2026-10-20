@@ -212,6 +212,42 @@ void suite_profile_logic(void) {
 }
 
 /* ────────────────────────────────────────────────────────────────────────────
+ * ٢أ) الوضع الواحد — نيّة المستخدم مقابل الوضع الفاعل.
+ *
+ * العطب الذي يحرسه: كان الإقلاع يفرض Balanced و`InotifyWatcher` يفرضه عند تشغيل
+ * AI، بينما ملفّ `current_profile` قد يكون وضع لعبة مؤقّتًا. فتُقاس هنا ثلاث
+ * دعاوى: الملفّ الصالح يفوز، والهدف القديم يُرحَّل عند غيابه، وAI المطفأ لا
+ * يُطبّق شيئًا عند الإقلاع.
+ * ──────────────────────────────────────────────────────────────────────────── */
+void suite_max_ai_mode(void) {
+    printf("\n\033[1m[max_ai_mode] saved intent / legacy objective / boot gate\033[0m\n");
+
+    CHECK(max_ai_mode_from_saved(1) == PERFORMANCE_PROFILE, "saved 1 = performance");
+    CHECK(max_ai_mode_from_saved(2) == BALANCED_PROFILE, "saved 2 = balanced");
+    CHECK(max_ai_mode_from_saved(3) == ECO_MODE, "saved 3 = battery");
+    CHECK(max_ai_mode_from_saved(0) == BALANCED_PROFILE, "saved 0 (initialize) is not a mode");
+    CHECK(max_ai_mode_from_saved(9) == BALANCED_PROFILE, "out-of-range saved mode falls back to balanced");
+
+    CHECK(max_ai_mode_from_objective("performance") == PERFORMANCE_PROFILE, "legacy performance objective");
+    CHECK(max_ai_mode_from_objective("battery") == ECO_MODE, "legacy battery objective");
+    CHECK(max_ai_mode_from_objective("balanced") == BALANCED_PROFILE, "legacy balanced objective");
+    CHECK(max_ai_mode_from_objective(NULL) == BALANCED_PROFILE, "missing legacy objective = balanced");
+
+    CHECK(max_ai_mode_resolve(true, 3, "performance") == ECO_MODE,
+          "valid saved mode wins over the legacy objective");
+    CHECK(max_ai_mode_resolve(true, -1, "battery") == ECO_MODE,
+          "missing saved mode migrates from the legacy objective");
+    CHECK(max_ai_mode_resolve(false, 3, "battery") == PERFCOMMON,
+          "AI off applies no boot profile");
+    CHECK(strcmp(max_ai_objective_for_mode(PERFORMANCE_PROFILE), "performance") == 0,
+          "performance mode mirrors the legacy objective");
+    CHECK(strcmp(max_ai_objective_for_mode(ECO_MODE), "battery") == 0,
+          "battery mode mirrors the legacy objective");
+    CHECK(strcmp(max_ai_objective_for_mode(BALANCED_PROFILE), "balanced") == 0,
+          "balanced mode mirrors the legacy objective");
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
  * ٢ب) freq-balance gate — «بالحدث لا بالإيقاع» (جولة الحرارة واللاغ).
  *
  * العطب الذي يحرسه هذا الجدول: كان الخادم ينادي `applyfreqbalance` في **كل** دورة ما دامت
@@ -671,6 +707,7 @@ int main(void) {
     suite_prop_validator();
     suite_string_utils();
     suite_profile_logic();
+    suite_max_ai_mode();
     suite_freq_balance_gate();
     suite_bypass_registry();
     suite_resolution();

@@ -78,6 +78,22 @@ int __system_property_set(const char* name, const char* value) {
 void __system_property_read_callback(const prop_info* pi, prop_read_callback callback, void* cookie) {
     if (!pi || !callback)
         return;
+    /*
+     * ليس كل `prop_info` يمرّ هنا من مخزننا: bionic نفسه ينادي هذا الرمز حين يحلّ
+     * `localtime()` منطقته الزمنية (`__bionic_get_system_tz` يقرأ `persist.sys.timezone`)،
+     * وكائنُه هناك ليس `struct prop_info` المضيف — فقراءة `pi->name` كانت تُسقط المجموعة
+     * على أندرويد (Termux) بينما تمرّ على glibc في CI لأن `localtime` هناك لا يسأل الخاصية.
+     * فنحصر الفكّ في عناصر مخزننا، ونعطي الغريب اسماً فارغاً: لا يطابق أي مفتاح، فيسقط
+     * bionic إلى منطقه الافتراضية بدل قراءة ذاكرة غريبة.
+     */
+    uintptr_t addr = (uintptr_t)pi;
+    uintptr_t base = (uintptr_t)store;
+    bool ours = addr >= base && addr < base + sizeof(store) &&
+                (addr - base) % sizeof(store[0]) == 0;
+    if (!ours) {
+        callback(cookie, "", "", 0);
+        return;
+    }
     callback(cookie, pi->name, pi->value, pi->serial);
 }
 

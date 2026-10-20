@@ -39,7 +39,7 @@ class PerAppFrequencyController @Inject constructor(
         // القيمة المطلوبة تُصاغ من جدول OPP المُعلَن: قيمة بين الحدّين وليست في الجدول
         // لا يرفضها السائق بل يُبدّلها، فيصير التحقق فشلًا لتغيير ناجح ثم يُسترجع خط
         // الأساس (`CpuHardwareBackend.snapToAvailableAtOrBelow` يحمل القياس).
-        val minSnapped = minKHz?.let { CpuHardwareBackend.snapToAvailableAtOrBelow(baselinePolicy, it) }
+        val minSnapped = minKHz?.let { CpuHardwareBackend.snapFloorAtOrBelow(baselinePolicy, it) }
         val maxSnapped = maxKHz?.let { CpuHardwareBackend.snapToAvailableAtOrBelow(baselinePolicy, it) }
         val desired = "${minSnapped ?: ""}:${maxSnapped ?: ""}"
 

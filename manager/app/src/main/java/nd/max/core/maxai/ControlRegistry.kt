@@ -136,10 +136,23 @@ object ControlRegistry {
     internal fun ceilingLadder(policy: CpuHardwareBackend.Policy): List<String>? {
         val declared = policy.availableFrequenciesKHz.filter { it > 0L }.distinct().sorted()
         if (declared.isEmpty()) return null
-        // الأرضيّة: الحدّ الأدنى الحيّ مُقرَّبًا إلى تردد معلَن، وإلا فأصغر تردد معلَن
-        // (وهو ما كان يفعله `provenMinKHz` حين لا تُقرأ العقدة).
-        val floor = policy.minKHz?.let { CpuHardwareBackend.snapToAvailableAtOrBelow(policy, it) }
-            ?: declared.first()
+        // الأرضيّة. قاعدتان لا تُخلطان (شكوى استنزاف البطارية، Moto G86 · MT6878 · ٢٠٢٦-١٠-١٦):
+        //
+        // 1. سياسةٌ **مثبّتة** من المنصّة (`min >= max`) تُبقي أرضيتها الحيّة، فلا تُولَّد درجة
+        //    `min == max` (انظر عطب rodin أعلاه): السلّم رفعٌ وحده.
+        // 2. وما سوى ذلك فالأرضية **أرضية العتاد** (`cpuinfo_min_freq`) لا الحدّ الحيّ. فالحدّ الحيّ
+        //    قد يكون **رفعناه نحن** سابقًا (تقريب الأرضية إلى أول OPP مُعلَن = 1 جيجاهرتز بدل
+        //    450 ميجاهرتز) — فبناء السلّم عليه كان يُخلّد الأرضية المرفوعة ويكتبها مع كل درجة،
+        //    فلا تنزل النوى الصغيرة إلى تردد الخمول أبدًا. والأرضية لا تُقرَّب إلى الأعلى
+        //    ([CpuHardwareBackend.snapFloorAtOrBelow]).
+        val liveMin = policy.minKHz
+        val liveMax = policy.maxKHz
+        val pinnedByPlatform = liveMin != null && liveMax != null && liveMin >= liveMax
+        val floor = when {
+            pinnedByPlatform -> CpuHardwareBackend.snapFloorAtOrBelow(policy, liveMin!!)
+            else -> policy.provenMinKHz?.let { CpuHardwareBackend.snapFloorAtOrBelow(policy, it) }
+                ?: declared.first()
+        }
         return declared.asSequence()
             .filter { it > floor }
             .map { ceiling -> "$floor:$ceiling" }

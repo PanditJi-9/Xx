@@ -19,7 +19,7 @@
     <string name="max_ai_metric_memory">الذاكرة المستخدمة</string>
     <string name="max_ai_context_title">السياق</string>
     <string name="max_ai_context_system">النطام (لا تطبيق في المقدمة)</string>
-    <string name="max_ai_context_line">%1$s · %2$s · ملف الأساس %3$s</string>
+    <string name="max_ai_context_line">%1$s · %2$s · وضع الأساس %3$s</string>
     <string name="max_ai_screen_on">الشاشة مفتوحة</string>
     <string name="max_ai_screen_off">الشاشة مطفأة</string>
     <string name="max_ai_profile_performance">أداء</string>
@@ -27,8 +27,10 @@
     <string name="max_ai_profile_eco">توفير الطاقة</string>
     <string name="max_ai_profile_unknown">غير معروف</string>
 
-    <string name="max_ai_section_objective">ما يوازنه الآن</string>
-    <string name="max_ai_objective_source_user">تفضيلك الصريح هو من يحدد الأوزان.</string>
+    <string name="max_ai_section_objective">وضع Max AI</string>
+    <string name="max_ai_mode_desc">وضع واحد يحدد ملف النظام وما يوازنه الذكاء الاصطناعي. لا يوجد ملف عام منفصل.</string>
+    <string name="max_ai_mode_active_preset">ملف النظام الآن: %1$s</string>
+    <string name="max_ai_objective_source_user">وضعك يحدد ملف النظام والأوزان.</string>
     <string name="max_ai_objective_source_learned">أوزان مستنتجة من استخدامك المقيس.</string>
     <string name="max_ai_objective_source_screen_off">الشاشة مطفأة: طاقة وحرارة فقط.</string>
     <string name="max_ai_objective_active">الفاعل الآن: %1$s</string>

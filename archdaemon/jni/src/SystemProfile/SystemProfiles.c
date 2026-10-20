@@ -33,14 +33,27 @@ void* async_preload_worker(void* arg) {
  * @param ctx Pointer to DaemonContext structure.
  */
 void apply_performance_profile(DaemonContext* ctx) {
+    // إعادة تطبيق الوضع نفسه ليست حدثًا. هذا الحرس يمنع `apply_base_profile()`
+    // من إعادة ملفّ الأداء كل دورة حين يكون هو اختيار المستخدم الأساس.
+    if (ctx->is_initialize_complete && ctx->cur_mode == PERFORMANCE_PROFILE &&
+        !ctx->need_profile_checkup)
+        return;
+
     toast("Applying Performance Profile");
 
     ctx->cur_mode = PERFORMANCE_PROFILE;
     ctx->need_profile_checkup = false;
 
-    notify("Performance Profile", "Running at %s", false, 0, active_app_name ? active_app_name : gamestart);
+    // وضع الأداء صار يمكن أن يكون **اختيار المستخدم الأساس** لا وضع لعبة فقط،
+    // فيُطبَّق بلا `gamestart`. ولا يُمرَّر NULL إلى `%s`/`strncpy` حينها.
+    const char* profile_target = active_app_name ? active_app_name : gamestart;
+    if (profile_target != NULL)
+        notify("Performance Profile", "Running at %s", false, 0, profile_target);
+    else
+        notify("Performance Profile", "System is now at Powerful state", false, 0);
     log_zenith(LOG_INFO, "EVENT=PROFILE_APPLY profile=PERFORMANCE target=%s sw=%s",
-               active_app_name ? active_app_name : gamestart, ctx->cur_switch_id[0] ? ctx->cur_switch_id : "unknown");
+               profile_target ? profile_target : "system",
+               ctx->cur_switch_id[0] ? ctx->cur_switch_id : "unknown");
 
     if (IS_TRUE(opts.perf_lite_mode)) {
         __system_property_set("persist.sys.maxmanagerconf.litemode", "1");
@@ -52,23 +65,26 @@ void apply_performance_profile(DaemonContext* ctx) {
         __system_property_set("persist.sys.maxmanagerconf.litemode", (strcmp(lite_prop, "1") == 0) ? "1" : "0");
     }
 
-    if (ctx->saved_zen_mode < 0) {
-        ctx->saved_zen_mode = current_system_cache.zen_mode;
-    }
-
-    if (IS_TRUE(opts.dnd_on_gaming)) {
-        if (ctx->saved_zen_mode == 0) {
-            systemv("sys.maxmanager-utilityconf enableDND");
+    // DND خاصية لعبة/تطبيق في المقدمة؛ لا تُمسّ حين يكون وضع الأداء أساسًا بلا لعبة.
+    if (gamestart != NULL) {
+        if (ctx->saved_zen_mode < 0) {
+            ctx->saved_zen_mode = current_system_cache.zen_mode;
         }
-        ctx->dnd_enabled = true;
-    } else if (!IS_FALSE(opts.dnd_on_gaming)) {
-        char dnd_state[PROP_VALUE_MAX] = {0};
-        __system_property_get("persist.sys.maxmanagerconf.dnd", dnd_state);
-        if (strcmp(dnd_state, "1") == 0) {
+
+        if (IS_TRUE(opts.dnd_on_gaming)) {
             if (ctx->saved_zen_mode == 0) {
                 systemv("sys.maxmanager-utilityconf enableDND");
             }
             ctx->dnd_enabled = true;
+        } else if (!IS_FALSE(opts.dnd_on_gaming)) {
+            char dnd_state[PROP_VALUE_MAX] = {0};
+            __system_property_get("persist.sys.maxmanagerconf.dnd", dnd_state);
+            if (strcmp(dnd_state, "1") == 0) {
+                if (ctx->saved_zen_mode == 0) {
+                    systemv("sys.maxmanager-utilityconf enableDND");
+                }
+                ctx->dnd_enabled = true;
+            }
         }
     }
 
@@ -91,17 +107,22 @@ void apply_performance_profile(DaemonContext* ctx) {
     // Gaming, an explicit governor, or a fixed frequency all looked like "nothing happens"
     // from the per-app screen, because this global forcing ran again on every poll and won).
     // Apps that don't use the newer per-app GPU/CPU controls keep the previous behavior.
+    // `opts` تبقى من آخر لعبة بعد خروجها، وتكون فارغة عند الإقلاع؛ فلا تُقرأ
+    // كتجاوز صريح. الشرط `gamestart != NULL` يطابق حرس الملكية أعلاه، ويمنع
+    // أن يُتخطّى `run_profiler(PERFORMANCE)` في وضع أساس بلا لعبة.
     bool has_per_app_gpu_override =
-        !IS_DEFAULT(opts.gpu_profile) || !IS_DEFAULT(opts.thermal_profile) ||
-        !IS_DEFAULT(opts.cpu_governor) ||
-        !IS_DEFAULT(opts.gpu_governor) || !IS_DEFAULT(opts.gpu_max_freq) ||
-        opts.cpu_policy_controls[0] != '\0';
+        gamestart != NULL &&
+        (!IS_DEFAULT(opts.gpu_profile) || !IS_DEFAULT(opts.thermal_profile) ||
+         !IS_DEFAULT(opts.cpu_governor) ||
+         !IS_DEFAULT(opts.gpu_governor) || !IS_DEFAULT(opts.gpu_max_freq) ||
+         opts.cpu_policy_controls[0] != '\0');
 
     if (!has_per_app_gpu_override) {
         EXECUTE("Performance Profile", run_profiler(PERFORMANCE_PROFILE));
     } else {
         log_zenith(LOG_INFO, "EVENT=PROFILE_SKIP_GPU_FORCE reason=per_app_override_active target=%s sw=%s",
-                   active_app_name ? active_app_name : gamestart, ctx->cur_switch_id[0] ? ctx->cur_switch_id : "unknown");
+                   profile_target ? profile_target : "system",
+                   ctx->cur_switch_id[0] ? ctx->cur_switch_id : "unknown");
     }
 
     bool is_preload_active = false;
@@ -112,8 +133,9 @@ void apply_performance_profile(DaemonContext* ctx) {
         }
     }
 
-    if (IS_TRUE(opts.game_preload) || is_preload_active) {
-        notify("MaxManager Preload", "Preloading initiated for: %s", true, 10000, active_app_name ? active_app_name : gamestart);
+    // التحميل المسبق يحتاج حزمة؛ لا معنى له في وضع أساس بلا لعبة، و`strncpy` من NULL ينهار.
+    if (gamestart != NULL && (IS_TRUE(opts.game_preload) || is_preload_active)) {
+        notify("MaxManager Preload", "Preloading initiated for: %s", true, 10000, profile_target);
 
         PreloadArgs* p_args = malloc(sizeof(PreloadArgs));
         if (p_args) {
@@ -153,8 +175,11 @@ void apply_eco_profile(DaemonContext* ctx) {
          !IS_DEFAULT(opts.gpu_max_freq) || opts.cpu_policy_controls[0] != '\0');
     __system_property_set("sys.maxmanager.perapp.governor_isolation",
                           per_app_governor_override ? "1" : "0");
-    if (ctx->cur_mode == ECO_MODE)
+    if (ctx->cur_mode == ECO_MODE) {
+        // الوضع صحيح بالفعل؛ لكن طلب إعادة الفحص لا يبقى معلّقًا إلى الأبد.
+        ctx->need_profile_checkup = false;
         return;
+    }
 
     toast("Applying Eco Mode");
 
@@ -236,11 +261,14 @@ void apply_balanced_profile(DaemonContext* ctx) {
          !IS_DEFAULT(opts.gpu_max_freq) || opts.cpu_policy_controls[0] != '\0');
     __system_property_set("sys.maxmanager.perapp.governor_isolation",
                           per_app_governor_override ? "1" : "0");
-    if (ctx->is_initialize_complete && ctx->cur_mode == BALANCED_PROFILE)
+    if (ctx->is_initialize_complete && ctx->cur_mode == BALANCED_PROFILE) {
+        // الوضع صحيح بالفعل؛ لكن طلب إعادة الفحص لا يبقى معلّقًا إلى الأبد.
+        ctx->need_profile_checkup = false;
         return;
+    }
 
-    // Max AI off: the balanced baseline is the daemon's default, not a profile the user chose,
-    // so nothing is announced. Manual picks go through the CLI, which still announces them.
+    // Balanced may be the user's chosen base or a temporary return. Announce it only
+    // while Max AI is on; manual CLI picks announce themselves.
     const bool announce = max_ai_enabled();
     if (announce)
         toast("Applying Balanced Profile");
@@ -293,4 +321,27 @@ void apply_balanced_profile(DaemonContext* ctx) {
     
     systemv("rm -rf /data/adb/.config/MaxManager/daemon_state");
     
+}
+
+/**
+ * @brief يُطبّق نيّة المستخدم الواحدة (الوضع الأساس) لا وضعًا افتراضيًا من عند الخادم.
+ *
+ * هذا هو الفرق بين «الخادم يملك ملفًا عامًا» و«الخادم ينفّذ وضع Max AI»: عند
+ * غياب لعبة أو بطارية منخفضة يعود الخادم إلى `base_mode` المقروء من
+ * `API/max_ai_mode`، لا إلى Balanced. والملفّات الثلاثة نفسها تحتفظ بحرسها،
+ * فلا يُعاد تطبيق الوضع نفسه كل دورة.
+ */
+void apply_base_profile(DaemonContext* ctx) {
+    switch (ctx->base_mode) {
+        case PERFORMANCE_PROFILE:
+            apply_performance_profile(ctx);
+            break;
+        case ECO_MODE:
+            apply_eco_profile(ctx);
+            break;
+        case BALANCED_PROFILE:
+        default:
+            apply_balanced_profile(ctx);
+            break;
+    }
 }

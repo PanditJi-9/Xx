@@ -81,4 +81,44 @@ class CpuAvailableFrequencySnapTest {
             )
         }
     }
+
+    // ── الأرضية (الحدّ الأدنى): لا تُرفع أبدًا ─────────────────────────────────────────────
+    //
+    // المقيس (Moto G86 · MT6878 · 2026-10-16): `cpuinfo_min_freq = 450000` وأصغر تردد مُعلَن
+    // `1000000`. تقريب الأرضية بدالة السقف كان يكتب `scaling_min_freq = 1000000` فتبقى النوى الصغيرة
+    // فوق 1 جيجاهرتز دائمًا (استنزاف بطارية بلا أي سقف يقابله).
+
+    private val littleCluster = listOf(1_000_000L, 1_500_000L, 1_900_000L, 2_000_000L)
+
+    private fun little() = policy(littleCluster).copy(
+        path = "/sys/devices/system/cpu/cpufreq/policy0",
+        name = "policy0",
+        minKHz = 450_000L,
+        maxKHz = 2_000_000L,
+        hwMinKHz = 450_000L,
+        hwMaxKHz = 2_000_000L,
+    )
+
+    @Test fun aFloorBelowTheWholeTableIsNeverRaisedToTheFirstAdvertisedStep() {
+        assertEquals(450_000L, CpuHardwareBackend.snapFloorAtOrBelow(little(), 450_000L))
+        // وللسقف السلوك القديم كما هو (لا يتغيّر): أصغر خطوة مُعلنة.
+        assertEquals(1_000_000L, CpuHardwareBackend.snapToAvailableAtOrBelow(little(), 450_000L))
+    }
+
+    @Test fun aFloorInsideTheTableStillLandsOnAnAdvertisedStep() {
+        assertEquals(1_500_000L, CpuHardwareBackend.snapFloorAtOrBelow(little(), 1_700_000L))
+    }
+
+    @Test fun aFloorWithoutATableIsReturnedAsIs() {
+        assertEquals(450_000L, CpuHardwareBackend.snapFloorAtOrBelow(little().copy(availableFrequenciesKHz = emptyList()), 450_000L))
+    }
+
+    @Test fun theFloorNeverExceedsTheRequest() {
+        listOf(0L, 450_000L, 999_999L, 1_000_000L, 1_700_000L, 2_000_000L, 5_000_000L).forEach { requested ->
+            assertTrue(
+                "الأرضية $requested رُفعت",
+                CpuHardwareBackend.snapFloorAtOrBelow(little(), requested) <= requested,
+            )
+        }
+    }
 }

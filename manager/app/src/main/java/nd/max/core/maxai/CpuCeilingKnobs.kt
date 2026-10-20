@@ -80,7 +80,7 @@ class CpuCeilingKnobs @Inject constructor(
             // المُحكِّم قيمةً ≠ المطلوب ويحكم على تغييرٍ ناجح بالفشل ثم يسترجع
             // (التفصيل والقياس في `CpuHardwareBackend.snapToAvailableAtOrBelow`).
             val cappedMax = hwMin + ((hwMax - hwMin) * perPolicyFraction).toLong()
-            val min = CpuHardwareBackend.snapToAvailableAtOrBelow(policy, hwMin)
+            val min = CpuHardwareBackend.snapFloorAtOrBelow(policy, hwMin)
             val max = CpuHardwareBackend.snapToAvailableAtOrBelow(policy, cappedMax)
             "$min:$max"
         }
@@ -102,7 +102,9 @@ class CpuCeilingKnobs @Inject constructor(
             // التحرير أيضًا يُكتب بترددات حقيقية: `cpuinfo_max_freq` قد يكون أكبر من
             // أكبر OPP مُعلَن، وكتابة قيمة غير مُعلَنة تُبدَّل في النواة فيبدو التحرير
             // فاشلًا ويُسترجع السقف — أي أن المقبض يبقى مقيّدًا بلا سبب مكتوب.
-            val min = CpuHardwareBackend.snapToAvailableAtOrBelow(policy, hwMin)
+            // الأرضية لا تُقرَّب إلى الأعلى أبدًا (انظر `snapFloorAtOrBelow`): التحرير يعيد المدى
+            // الكامل، لا يرفع الحدّ الأدنى إلى أول OPP مُعلَن.
+            val min = CpuHardwareBackend.snapFloorAtOrBelow(policy, hwMin)
             val max = CpuHardwareBackend.snapToAvailableAtOrBelow(policy, hwMax)
             "$min:$max"
         }

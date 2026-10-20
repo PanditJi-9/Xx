@@ -318,8 +318,19 @@ class MaxAiEngine @Inject constructor(
         // والتوأم الرقمي (updateDigitalTwin).
 
         scope.launch {
+            // ترحيل لمرّة واحدة من `AIobjective` القديم إلى ملفّ الوضع الواحد. لا يكتب
+            // شيئًا إن كان الملفّ موجودًا؛ والقراءة وحدها لا تكفي لأن الخادم يقرأ الملفّ
+            // قبل أن يفتح التطبيق أصلًا.
+            runCatching { MaxAiMode.migrateIfMissing() }
             val preference = runCatching { objectivePreference() }.getOrNull()
-            _state.update { it.copy(aiEnabled = readAiEnabled(), objectivePreference = preference) }
+            val base = runCatching { MaxAiMode.currentProfileId() }.getOrNull()
+            _state.update {
+                it.copy(
+                    aiEnabled = readAiEnabled(),
+                    objectivePreference = preference,
+                    baseProfile = base,
+                )
+            }
             // بدء التطبيق و Max AI مطفأ مع بقاء أثر جلسة سابقة ⇒ تُكنس الآن، لا بإعادة تشغيل الهاتف.
             // ولذلك الشرط مُقاس لا مُفترض: لا يُكتب على العتاد إن لم يكن هناك ما يحجبه أصلًا.
             val aiOffAtStart = !readAiEnabled()
@@ -425,8 +436,10 @@ class MaxAiEngine @Inject constructor(
         // المقيسة لا ناتج تدخل، فعرضها والمحرك مطفأ صادق ومفيد: يرى
         // المستخدم ماذا كان سيوازن لو فعّله.
         val appContextKey = currentAppContextKey()
-        val preference = PropertyUtils.get(MaxManagerProps.Conf.AI_OBJECTIVE)
-            .takeIf { it.isNotBlank() }
+        // الوضع الواحد أولًا: `AIobjective` مرآة قد تتأخّر عن ملفّ `max_ai_mode`
+        // إن كتبه مسار خارجي، فلا يُبنى قرار الدورة على مرآة قديمة.
+        val preference = MaxAiMode.currentProfileId()?.let(MaxAiMode::preferenceForProfile)
+            ?: PropertyUtils.get(MaxManagerProps.Conf.AI_OBJECTIVE).takeIf { it.isNotBlank() }
         val screenOn = (snapshot?.screenOn ?: 1f) >= 0.5f
 
         val objective: Objective
@@ -1722,7 +1735,12 @@ class MaxAiEngine @Inject constructor(
             safetyEngine.disarm(why)
             // يحرّر **كل** مفاتيح هذا المالك (لا السقوف وحدها) مع استرجاع خط أساسها المحفوظ.
             ceilingKnobs.leaveAll(TOKEN)
-            val profile = runCatching { ProfileApplier.currentProfile() }.getOrNull()
+            // نيّة المستخدم لا الوضع الفاعل: الفاعل قد يكون أداءً مؤقّتًا للعبة،
+            // وإعادة تطبيقه عند الإطفاء تُثبّت وضع اللعب بدل اختيار المستخدم.
+            val profile = runCatching {
+                MaxAiMode.currentProfileId()
+                    ?: ProfileApplier.currentProfile()?.takeIf { MaxAiMode.isValid(it) }
+            }.getOrNull()
             // القرار على ما تراه البوابة فعلًا لا على ما كتبناه: إطفاءٌ لم ينتشر إلى الخاصية
             // بعد يُمرَّر بالمسار المُعفى (المحرك نفسه يُخلي) بدل أن يُرفَض (`CLI_PROFILE_MANUAL_BLOCKED`)
             // ثم يُسجَّل `not-reapplied` — وهي السلسلة المقيسة في حزمة ٢٠٢٦-١٠-١٥.
@@ -1781,7 +1799,16 @@ class MaxAiEngine @Inject constructor(
             )
             // (٣) فإن فشلت الكتابة حقًّا عاد الزر إلى ما هو كائن — تصحيح لا ادّعاء.
             if (!confirmed) _state.update { it.copy(aiEnabled = readAiEnabled()) }
-            if (!enabled) standDownToControlPlane("ai switched off") else safetyEngine.arm()
+            if (!enabled) {
+                standDownToControlPlane("ai switched off")
+            } else {
+                safetyEngine.arm()
+                // نعيد الملفّ الأساس **قبل** أول دورة: العتاد قد يكون عالقًا عند
+                // `min = max` من نسخة سابقة، وتطبيق الملفّ (متوازن خاصة) يكتب
+                // `scaling_min_freq = cpuinfo_min` فلا يبني المحرك سلّمه من أرضية مرفوعة.
+                val mode = runCatching { MaxAiMode.migrateIfMissing() }.getOrNull()
+                if (mode != null) runCatching { MaxAiMode.applyProfile(mode, fromAi = true) }
+            }
             runCycleSingleFlight()
         }
     }
@@ -1793,11 +1820,23 @@ class MaxAiEngine @Inject constructor(
      */
     fun setObjectivePreference(preference: String) {
         val normalized = Objective.labelFor(Objective.fromPreference(preference))
-        PropertyUtils.set(
-            MaxManagerProps.Conf.AI_OBJECTIVE,
-            normalized,
-        )
-        _state.update { it.copy(objectivePreference = objectivePreference()) }
+        val profileId = MaxAiMode.profileIdForPreference(normalized)
+        val aiOn = readAiEnabled()
+        // نيّة واحدة: الملفّ والهدف معًا. تُكتب النيّة أولًا كي يراها الخادم عند
+        // حدث `max_ai_mode` حتى لو تأخّر تطبيق الملفّ أو فشل.
+        val modeWritten = MaxAiMode.write(profileId)
+        PropertyUtils.set(MaxManagerProps.Conf.AI_OBJECTIVE, normalized)
+        _state.update { it.copy(objectivePreference = normalized, baseProfile = profileId) }
+        val applied = runCatching {
+            if (aiOn) ProfileApplier.applyFromAi(profileId) else ProfileApplier.apply(profileId)
+        }.getOrDefault(false)
+        if (!modeWritten || !applied) {
+            DiagnosticCenter.record(
+                "maxai",
+                "mode not persisted mode=$profileId written=$modeWritten applied=$applied ai=${if (aiOn) "on" else "off"}",
+                level = DiagnosticCenter.Level.WARN,
+            )
+        }
         announceUserObjectiveNow(normalized)
         scope.launch(Dispatchers.IO) { runCycleSingleFlight() }
     }
@@ -1825,9 +1864,15 @@ class MaxAiEngine @Inject constructor(
         }
     }
 
-    /** التفضيل الحالي للعرض في الواجهة — التوازن إن لم يُسأل المستخدم بعد. */
+    /**
+     * التفضيل الحالي للعرض في الواجهة — من الوضع الواحد لا من خصيصة ثانية.
+     *
+     * `AIobjective` يبقى مرآة للتوافق، لكنه قد يكون قديمًا إن تغيّر الملفّ من
+     * خارج التطبيق (زر سريع/لجنة). فحكم الواجهة يُقرأ من `max_ai_mode` أولًا.
+     */
     fun objectivePreference(): String =
-        PropertyUtils.get(MaxManagerProps.Conf.AI_OBJECTIVE).takeIf { it.isNotBlank() }
+        MaxAiMode.currentProfileId()?.let(MaxAiMode::preferenceForProfile)
+            ?: PropertyUtils.get(MaxManagerProps.Conf.AI_OBJECTIVE).takeIf { it.isNotBlank() }
             ?: Objective.labelFor(Objective.BALANCED)
 
     /**
@@ -1839,7 +1884,9 @@ class MaxAiEngine @Inject constructor(
             if (!profileMutex.tryLock()) return@withContext false
             _profileRequest.value = ProfileRequestState(profileId = profileId, inFlight = true)
             try {
-                val ok = ProfileApplier.apply(profileId)
+                // الاختيار اليدوي صار **الوضع الواحد** أيضًا: يكتب النيّة ويحدّث
+                // مرآة الهدف، فلا يبقى ملفّ عام خارج Max AI ثم يختلفان عند الإقلاع.
+                val ok = MaxAiMode.applyProfile(profileId, fromAi = false)
                 EventLog.userAction(
                     "MaxAiEngine", "base_profile", label,
                     "$profileId:${if (ok) "ok" else "failed"}"
@@ -1850,6 +1897,12 @@ class MaxAiEngine @Inject constructor(
                     if (ok) DecisionResult.EXECUTED else DecisionResult.FAILED
                 )
                 if (ok) {
+                    _state.update {
+                        it.copy(
+                            objectivePreference = MaxAiMode.preferenceForProfile(profileId),
+                            baseProfile = profileId,
+                        )
+                    }
                     // بروفايل أساس يدوي بعد تدخل مقيس = رفض مقيس أيضًا.
                     noteUserOverride(MaxAiOverride.PROFILE, null)
                     scope.launch { runCycleSingleFlight() }
@@ -1973,6 +2026,7 @@ class MaxAiEngine @Inject constructor(
         val prev = _state.value
         val safetyNow = safetyEngine.status.value
         val profile = runCatching { ProfileApplier.currentProfile() }.getOrNull()
+        val baseProfile = runCatching { MaxAiMode.currentProfileId() }.getOrNull()
         val ownership = runCatching {
             SharedHardwareOwnershipStore.winnerSnapshot()
                 .sortedBy { it.key }
@@ -2030,6 +2084,7 @@ class MaxAiEngine @Inject constructor(
             ownership = ownership,
             lockedKnobs = lockedKnobs,
             currentProfile = profile,
+            baseProfile = baseProfile ?: profile,
             trend = trend,
             objectiveWeights = context?.objective,
             objectiveSource = context?.objectiveSource ?: prev.objectiveSource,

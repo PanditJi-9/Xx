@@ -159,7 +159,9 @@ object RootUtils {
         val content = readRootFile(PROFILE_PATH)
 
         return when (content) {
-            "0" -> R.string.status_initializing
+            // 0 = تهيئة الخادم بلا ملفّ (AI مطفأ عند الإقلاع). «جاري التهيئة»
+            // كانت تبقى أبدية بعد أن صار الإقلاع لا يفرض Balanced عند الإطفاء.
+            "0" -> R.string.status_no_profile
             "1" -> {
                 val isLite = PropertyUtils.get(MaxManagerProps.Conf.LITE_MODE, "0") == "1"
                 if (isLite) R.string.profile_perflite else R.string.Profile_Performance

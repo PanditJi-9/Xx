@@ -50,6 +50,8 @@ void init_daemon_context(DaemonContext* ctx) {
     ctx->pid_retries = 0;
     ctx->screen_off_timer = 0;
     ctx->cur_mode = PERFCOMMON;
+    // الوضع الأساس الافتراضي متوازن؛ يُستبدل من `API/max_ai_mode` قبل أول تطبيق.
+    ctx->base_mode = BALANCED_PROFILE;
     strcpy(ctx->last_freqoffset, "Initial");
     strcpy(ctx->prev_ai_state, "0");
     ctx->java_lock_path = "/data/adb/.config/MaxManager/java.lock";

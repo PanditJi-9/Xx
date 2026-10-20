@@ -128,6 +128,7 @@ class HomeViewModel @Inject constructor(
         R.string.Profile_Performance, R.string.profile_perflite -> "performance"
         R.string.Profile_Balanced -> "balanced"
         R.string.Profile_ECO_mode -> "eco"
+        R.string.status_no_profile -> "stock"
         else -> "unknown"
     }
 

@@ -22368,3 +22368,55 @@ BUILD FAILED in 6m 12s
 **NEXT:** UAT لمس (قبل/بعد) على rodin ← حسم حالة المفتاح الحيّة ← ما تبقّى في `NEXT_TASK`.
 
 **FILES:** `manager/app/src/main/java/nd/max/core/hardware/TouchControlBackend.kt` · `ui/viewmodel/TouchBoostViewModel.kt` · `ui/subscreens/TouchBoostScreen.kt` · `ui/license/FeatureGate.kt` · `manager/app/src/main/res/values/max_screen_strings.xml` · `values-ar/max_screen_strings.xml` · `manager/app/src/test/java/nd/max/core/hardware/TouchControlBackendTest.kt`
+
+---
+
+## Executor log — MAXAI-MERGE-01 + BATTERY-FLOOR-01: وضع واحد يملك الملفّ العام، والخادم منفّذ — 2026-10-20 · DONE_WITH_CONCERNS (القياس المحلي ✓ · الجهاز والمراجعة المستقلة لم يُغلقا)
+
+**TASK (المالك):** «لا أقصد حذف demon يا غبي بل حذف ارتباط البروفايل العام به ودمج البروفايل العام معا max ai» ثم «نفّذ»، مع قاعدة الإقلاع: «فقط إذا تم تفعيل max ai يُطبَّق عند الإقلاع اختيار المستخدم فيه وخلاص». وقبلها حزمة تعديلات يدوية (`max_modified_files.zip`) لإصلاح أرضية تردّدات CPU.
+
+**① تدقيق حزمة المالك:** استُخرجت `max_modified_files.zip` وقُورنت بالشجرة: **٨ ملفات متطابقة بايتًا** مع التعديلات غير الملتزمة. وإصلاح الأرضية **صحيح الاتجاه**:
+- `CpuHardwareBackend.snapFloorAtOrBelow` لا يرفع الأرضية إلى أول OPP معلن؛ النواة تقبل `450000` تحت `1000000` المعلن (مقيس في السجل).
+- `ControlRegistry.ceilingLadder` صار يبني السلّم من `provenMinKHz` لا من الحدّ الحيّ المرفوع.
+- `AtlasDiscoveredControl.desiredRange` لم يعد يرث حدًّا أدنى حيًّا مرفوعًا.
+- وأُكملت الثغرة الباقية: مسار per-app الأدنى في `AppMonitor` و`PerAppFrequencyController` كان لا يزال يستعمل `snapToAvailableAtOrBelow` (يرفع الأرضية)، فحُوّل إلى `snapFloorAtOrBelow`.
+
+**② دليل العطب الذي وُلد منه الدمج (من سجل المالك):** `current_profile=2` مع `AIobjective=battery` و`AIenabled=1`، و`policy0: 2000000..2000000` و`policy4: 2500000..2500000`، و**٥٨** `regression rollback cpu_limits`، وفرض `Balanced` في `07:39:34` و`07:53:52`. أي أن مبدّلين يكتبان العتاد نفسه، وأحدهمـا يفرض المتوازن عند الإقلاع/التشغيل.
+
+**③ الدمج المنفَّذ:**
+- **`API/max_ai_mode`** نيّة المستخدم الواحدة (`1` أداء · `2` متوازن · `3` بطارية). يكتبها التطبيق ويقرؤها الخادم عند الإقلاع وعند تغييرها. و`API/current_profile` بقي **الوضع الفاعل** فقط (لعب/بطارية/أساس).
+- **`MaxAiMode.kt`** (جديد): خريطة واحدة، كتابة النيّة، ترحيل من `AIobjective` عند غياب الملفّ، وتطبيق الملفّ (`--from-ai` حين AI مفعّل).
+- **الإقلاع:** `System.c` يقرأ `max_ai_mode` قبل أول تطبيق، ويعلن اكتمال التهيئة قبل الحلقة؛ فلا `Balanced` مفروض عند AI مطفأ. وعند AI مفعّل يُطبَّق `apply_base_profile`.
+- **`apply_base_profile`** في `SystemProfiles.c`: مرجع العودة الوحيد؛ اللعب والبطارية المنخفضة تبديلات مؤقتة تعود إلى `base_mode` لا إلى Balanced.
+- **تبديل AI:** `InotifyWatcher` لم يعد يفرض Balanced؛ يقرأ النيّة ويطلب إعادة فحص. وعند الإطفاء `standDownToControlPlane` يعيد نيّة المستخدم (لا الوضع المؤقّت).
+- **الواجهة:** مبدّل واحد ثلاثي في شاشة Max AI (`ObjectiveSection`)، يعرض «وضع الأساس» و«الملفّ الفاعل الآن» إن اختلفا. ولا مبدّل ملفّ عام ثانٍ بجانبه. النصوص en/ar فقط (§0.2).
+- **CLI اليدوي:** يكتب `max_ai_mode` أيضًا (مرة واحدة، `%d`)، و`--from-ai` لا يكتبها لأن خطوة AI ليست اختيارًا جديدًا.
+
+**④ عطب كشفه التشغيل أثناء التحقق (وأُصلح):**
+- **`apply_performance_profile` صارت تُطبَّق بلا لعبة** (اختيار أساس/إقلاع)، وكانت تمرّر `gamestart` الفارغ إلى `%s` و`strncpy` في الإشعار والتحميل المسبق. حُصّنت مسارات اللعبة بـ`gamestart != NULL` (DND، preload، اسم الإشعار)، و`run_profiler(1)` يكتب `NULL` بدل مؤشّر فارغ.
+- **`opts` الباقية من آخر لعبة** كانت تُقرأ كتجاوز صريح فتُخطّي `run_profiler(PERFORMANCE)` في وضع الأساس؛ أُضيف `gamestart != NULL` إلى شرط `has_per_app_gpu_override`.
+- **انهيار harness المضيف على أندرويد:** `localTime()` في bionic ينادي `__system_property_read_callback` بكائن ليس من مخزن المضيف، فتقرأ `props.c` ذاكرة غريبة. حُصر الفكّ في عناصر المخزن، والغريب يُعطى اسمًا فارغًا (scaffolding اختبار فقط).
+- **كتابة `max_ai_mode`** كانت `%s` فلا يراها مسجّل المضيف كعدد؛ صارت `%d` (نفس محتوى الملفّ).
+
+**⑤ القياس (كله هنا، لا يُدَّعى):**
+- **Host harness:** `make -C archdaemon/tests run BUILD_DIR=/tmp/opencode/archdaemon-tests` ⇒ **٣١٨/٣١٨ · all checks passed** · مجموعة واحدة **SKIPPED** لأن المضيف يُعلن `policyN` حيّة (دعاوى مسار الكتابة غير متحققة هنا) — وهذا مُعلن لا ناجح.
+- **Kotlin:** `:app:compileReleaseKotlin` + `:app:testReleaseUnitTest` للفئات `MaxAiModeTest` · `ControlRegistryTest` · `CpuAvailableFrequencySnapTest` ⇒ **BUILD SUCCESSFUL in 6m 18s** · **٢٩/٢٩ · ٠ فشل · ٠ خطأ** (٤ + ١٥ + ١٠).
+- **ترجمة نحوية** لملفات الخادم التي لا يصرّفها الharness (`System.c` · `SystemProfiles.c` · `ProfileUtility.c` · `InotifyWatcher.c` · `DaemonContext.c` · `MaxAiMode.c` · `CLIUtility.c`) بـ`clang -fsyntax-only` ضد shim: **صفر خطأ** (ليست ترجمة NDK ولا ربطًا).
+- **البوابات:** `kt_balance --assert` ٣٠٤٩ ملفًا/٠ · `code_health --assert` exit 0 · `i18n_coverage --assert` ٨٤+en/٠ · `prune all --assert` ٠ يتيم · `design_tokens --assert` ٢٥٢/٣٠٠ · `resource_compile --assert` كل مجلدات res ✓ · `jni_symbols --assert` ٢٣ تصريحًا/٠ ناقص/٠ يتيم (الطبقة الثانية غير متحققة: لا ثنائيات في هذه البيئة).
+- **لم يُشغَّل:** `assembleDebug` ولا `assembleRelease` ولا APK (§0.1: لا حاجة حقيقية)، ولا NDK على هذا المضيف.
+
+**RESIDUAL RISK (يُعلن ولا يُدَّعى):**
+- **يحتاج جهازًا:** الإقلاع الحقيقي (AI on/off)، ترتيب أحداث inotify عند كتابة `max_ai_mode`، كتابة sysfs و`min == max` بعد الترقية، سلوك RTL/الخط الكبير.
+- **المراجعة المستقلة إلزامية** لتغييرات `core/**`/الخادم (§2/§6 من AGENTS) — لم تُعقد في هذه الجلسة (لا أداة استدعاء نموذج آخر).
+- **الترحيل:** `max_ai_mode` يُكتب عند أول فتح للتطبيق أو عبر fallback الخادم إلى `AIobjective`؛ لم يُختبر على جهاز لم يُفتح فيه التطبيق بعد التحديث.
+- **البناء الكامل/R8/التوقيع** لم تُشغَّل هذه الجولة؛ الحكم على النوع جاء من `compileReleaseKotlin` المستهدف.
+- **لم يُلتزم شيء** (لا commit/push/reset).
+
+**NEXT:** UAT على الجهاز: (١) AI on + كل وضع من الثلاثة ثم إعادة إقلاع ⇒ يُطبَّق المحفوظ. (٢) AI off + إعادة إقلاع ⇒ لا ملفّ مفروض والحالة «افتراضي». (٣) تبديل AI on/off ⇒ لا Balanced مفروض. (٤) لعبة تبدأ/تنتهي ⇒ أداء مؤقت ثم عودة إلى الأساس. (٥) بطارية منخفضة ثم شحن ⇒ عودة إلى الأساس. (٦) شاشة Max AI: مبدّل واحد وRTL. ثم مراجعة السلامة المستقلة، ثم الالتزام.
+
+**FILES:**
+- جديد: `manager/app/src/main/java/nd/max/core/maxai/MaxAiMode.kt` · `manager/app/src/test/java/nd/max/core/maxai/MaxAiModeTest.kt` · `archdaemon/jni/src/SystemProfile/MaxAiMode.c`
+- Kotlin: `MaxAiEngine.kt` · `MaxAiModels.kt` · `MaxAiScreen.kt` · `MaxManagerPaths.kt` · `AppMonitor.kt` · `AtlasDiscoveredControl.kt` · `CpuHardwareBackend.kt` · `PerAppFrequencyController.kt` · `ControlRegistry.kt` · `CpuCeilingKnobs.kt` · `RootUtil.kt` · `HomeViewmodel.kt` · `CpuAvailableFrequencySnapTest.kt` · `ControlRegistryTest.kt`
+- C: `System.c` · `SystemProfiles.c` · `ProfileUtility.c` · `InotifyWatcher.c` · `CLIUtility.c` · `DaemonContext.c` · `MaxManager.h` · `archdaemon/tests/{Makefile,parity_test.c,cli_profile.c,host/props.c}`
+- نصوص: `values/max_ai_strings.xml` · `values-ar/max_ai_strings.xml` · `values/strings.xml` · `values-ar/strings.xml`
+- وثائق: `docs/max-ai.md` · `docs/ai/DECISIONS.md` (ADR-78)

@@ -58,6 +58,7 @@ UNITS := \
     $(ROOT)/jni/src/MaxManagerUtility/DaemonUtility.c \
     $(ROOT)/jni/src/MaxManagerUtility/ModuleIntegrity.c \
     $(ROOT)/jni/src/SystemProfile/ProfileUtility.c \
+    $(ROOT)/jni/src/SystemProfile/MaxAiMode.c \
     $(ROOT)/jni/src/SystemProfile/PerAppKernel.c \
     $(ROOT)/jni/src/StartupInit/PropValidator.c \
     $(ROOT)/jni/src/BypassCharge/ChargingNodes.c \

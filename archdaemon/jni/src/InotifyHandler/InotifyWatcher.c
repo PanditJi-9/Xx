@@ -173,6 +173,13 @@ bool process_inotify_events(int inotify_fd, DaemonContext* ctx, int timeout_ms) 
                                 }
                                 fclose(fp_prof);
                             }
+                        } else if (strcmp(event->name, "max_ai_mode") == 0) {
+                            // نيّة المستخدم تغيّرت. لا نطبّق هنا مباشرة: الحلقة
+                            // الرئيسية تحكم على اللعبة/البطارية ثم تعود إلى هذا الوضع.
+                            ctx->base_mode = max_ai_mode_read();
+                            ctx->need_profile_checkup = true;
+                            log_zenith(LOG_INFO, "EVENT=MAX_AI_MODE_CHANGED mode=%d",
+                                       (int)ctx->base_mode);
                         } else if (strcmp(event->name, "current_modes") == 0) {
                             FILE* fp_ai = fopen(DAEMON_MODES, "r");
                             if (fp_ai) {
@@ -180,9 +187,14 @@ bool process_inotify_events(int inotify_fd, DaemonContext* ctx, int timeout_ms) 
                                 if (fgets(ai_state, sizeof(ai_state), fp_ai)) {
                                     trim_newline(ai_state);
                                     if (ctx->is_initialize_complete && strcmp(ctx->prev_ai_state, ai_state) != 0) {
-                                        log_zenith(LOG_INFO, "EVENT=DYNAMIC_PROFILE_TOGGLE action=reapply_balanced");
-                                        ctx->cur_mode = PERFCOMMON;
-                                        apply_balanced_profile(ctx);
+                                        // لا Balanced مفروض على تشغيل AI: يُطبَّق
+                                        // اختيار المستخدم. وعند الإطفاء يبقى الوضع
+                                        // الفاعل، ثم يعيد التطبيقُ نيّةَه بنفسه.
+                                        ctx->base_mode = max_ai_mode_read();
+                                        ctx->need_profile_checkup = true;
+                                        log_zenith(LOG_INFO,
+                                                   "EVENT=DYNAMIC_PROFILE_TOGGLE ai=%s action=apply_base mode=%d",
+                                                   ai_state, (int)ctx->base_mode);
                                         strcpy(ctx->prev_ai_state, ai_state);
                                         if (strcmp(ai_state, "1") == 0) {
                                             if (gamestart) {

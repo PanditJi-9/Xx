@@ -24,7 +24,7 @@
     <string name="max_ai_metric_memory">Memory in use</string>
     <string name="max_ai_context_title">Context</string>
     <string name="max_ai_context_system">System (no focused app)</string>
-    <string name="max_ai_context_line">%1$s · %2$s · base profile %3$s</string>
+    <string name="max_ai_context_line">%1$s · %2$s · base mode %3$s</string>
     <string name="max_ai_screen_on">Screen on</string>
     <string name="max_ai_screen_off">Screen off</string>
     <string name="max_ai_profile_performance">Performance</string>
@@ -33,8 +33,10 @@
     <string name="max_ai_profile_unknown">unknown</string>
 
     <!-- Objective weights -->
-    <string name="max_ai_section_objective">What it is optimising for</string>
-    <string name="max_ai_objective_source_user">Your explicit preference decides the weights.</string>
+    <string name="max_ai_section_objective">Max AI mode</string>
+    <string name="max_ai_mode_desc">One mode sets the system preset and what the AI optimises for. There is no separate global profile.</string>
+    <string name="max_ai_mode_active_preset">System preset now: %1$s</string>
+    <string name="max_ai_objective_source_user">Your mode sets the system preset and the weights.</string>
     <string name="max_ai_objective_source_learned">Weights inferred from your measured usage.</string>
     <string name="max_ai_objective_source_screen_off">Screen off: energy and heat only.</string>
     <string name="max_ai_objective_active">Active now: %1$s</string>

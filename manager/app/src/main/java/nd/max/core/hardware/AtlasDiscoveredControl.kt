@@ -288,12 +288,21 @@ class AtlasDiscoveredControl(
      * وإن لم يوجد سلّم أصلًا فلا مسار.
      */
     private fun desiredRange(fact: AtlasCpuPolicyFact, baseline: String?, requestedKHz: Long): String? {
-        val liveMin = pairOf(baseline)?.first
+        val live = pairOf(baseline)
+        val liveMin = live?.first
+        val liveMax = live?.second
         val provenMax = fact.provenMaxKHz ?: fact.maxKHz
         if (provenMax == null || provenMax <= 0L) return null
         val ceiling = minOf(requestedKHz, provenMax)
         val snapped = snapDown(fact, ceiling) ?: return null
-        return "${liveMin?.toString() ?: ""}:$snapped"
+        // الأرضية: هذا المقبض **سقفٌ** لا أرضية، فلا يرث الحدّ الأدنى الحيّ — فقد يكون مرفوعًا
+        // (شكوى استنزاف البطارية، Moto G86 · MT6878 · ٢٠٢٦-١٠-١٦: أرضية 1 جيجاهرتز للنوى الصغيرة
+        // بدل 450 ميجاهرتز) ووراثته تُخلّده في كل كتابة. فنكتب أرضية العتاد المُثبتة. والاستثناء
+        // الوحيد سياسةٌ **مثبّتة** من المنصّة (`min >= max`): تُبقى أرضيتها الحيّة كي لا تُنتج
+        // الكتابة `min == max` (تثبيتًا لا تسقيفًا).
+        val pinnedByPlatform = liveMin != null && liveMax != null && liveMin >= liveMax
+        val floor = if (pinnedByPlatform) liveMin else fact.provenMinKHz?.takeIf { it > 0L } ?: liveMin
+        return "${floor?.toString() ?: ""}:$snapped"
     }
 
     /** القصّ إلى السلّم المُعلن، وإلى القيمة نفسها إن لم يُعلَن سلّم (الحالة تمنعها أصلًا). */

@@ -90,6 +90,9 @@
 #define LOG_MIN_LEVEL_PROP "persist.sys.maxmanagerconf.logminlevel"
 #define PROFILE_MODE "/data/adb/.config/MaxManager/API/current_profile"
 #define PROFILE_MODE_APP "/data/data/nd.max/API/current_profile"
+// نيّة المستخدم الواحدة (1 أداء · 2 متوازن · 3 بطارية). يكتبها التطبيق ويقرؤها
+// الخادم عند الإقلاع وعند تغييرها؛ و`PROFILE_MODE` يبقى الوضع الفاعل المؤقّت.
+#define MAX_AI_MODE "/data/adb/.config/MaxManager/API/max_ai_mode"
 #define GAME_INFO "/data/adb/.config/MaxManager/API/gameinfo"
 #define GAME_INFO_APP "/data/data/nd.max/API/gameinfo"
 #define GAMELIST "/data/adb/.config/MaxManager/gamelist/maxmanagerApplist.json"
@@ -217,6 +220,9 @@ typedef struct {
     int pid_retries;
     time_t screen_off_timer;
     ProfileMode cur_mode;
+    // نيّة المستخدم من `API/max_ai_mode`: الوضع الذي يعود إليه الخادم بعد
+    // تبديل لعبة/بطارية منخفضة، ويُطبَّق عند الإقلاع فقط إن كان Max AI مفعّلًا.
+    ProfileMode base_mode;
     char saved_renderer[PROP_VALUE_MAX];
     char saved_sys_renderer[PROP_VALUE_MAX];
     char last_freqoffset[PROP_VALUE_MAX];
@@ -365,12 +371,22 @@ void run_profiler(const int profile);
 // دورة (ولادة عملية + كتابة عقد كل نواة) ولو لم يتغيّر شيء — انظر تعليق الدالة نفسه.
 bool should_apply_freq_balance(bool screen_on, bool balanced_or_eco, bool screen_turned_on,
                                bool request_changed);
+
+// الوضع الواحد (Max AI mode): قرارات خالصة تُقاس في `archdaemon/tests/parity_test.c`،
+// وقراءة الملفّ/الخاصية تُستعمل عند الإقلاع وعند تغيير الملفّ. التفصيل في `MaxAiMode.c`.
+ProfileMode max_ai_mode_from_saved(int saved);
+ProfileMode max_ai_mode_from_objective(const char* objective);
+ProfileMode max_ai_mode_resolve(bool ai_enabled, int saved, const char* objective);
+ProfileMode max_ai_mode_read(void);
+const char* max_ai_objective_for_mode(ProfileMode mode);
+
 void read_app_status(SystemStateCache* cache);
 void extract_string_value(char* dest, const char* start, size_t max_len);
 void handle_dynamic_bypass(DaemonContext* ctx);
 void apply_performance_profile(DaemonContext* ctx);
 void apply_eco_profile(DaemonContext* ctx);
 void apply_balanced_profile(DaemonContext* ctx);
+void apply_base_profile(DaemonContext* ctx);
 
 // Per-App thermal ownership (Xiaomi/HyperOS thermal_message). The daemon is
 // the single owner while an app has a CPU/GPU override; the Java companion

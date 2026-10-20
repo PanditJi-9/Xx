@@ -36,6 +36,14 @@ package nd.max
  */
 object MaxManagerPaths {
     const val MODULE_CONFIG = "/data/adb/.config/MaxManager"
+
+    /**
+     * نيّة المستخدم الواحدة: 1 أداء · 2 متوازن · 3 بطارية.
+     * يقرؤها الخادم عند الإقلاع وعند تغييرها (`System.c` / `InotifyWatcher.c`)،
+     * ويكتبها التطبيق من مبدّل Max AI. و`API/current_profile` يبقى الوضع الفاعل
+     * المؤقّت الذي يكتبه الخادم (لعب/بطارية منخفضة) ويعود منه إلى هذا الملفّ.
+     */
+    const val MAX_AI_MODE = "$MODULE_CONFIG/API/max_ai_mode"
     const val MODULE_DIR = "/data/adb/modules/MaxManager"
     const val APPLIST_JSON = "$MODULE_CONFIG/gamelist/maxmanagerApplist.json"
     /** قائمة اللوحة الجانبية المُفعَّلة، نسخة يقرؤها الرفيق الجذري (انظر `SidePanelArmed`). */

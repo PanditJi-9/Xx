@@ -117,6 +117,10 @@ int main_daemon(void) {
     }
     int inotify_fd = setup_inotify_watchers();
     load_initial_config_files(&ctx);
+    // نيّة المستخدم الواحدة: تُقرأ قبل أول تطبيق، ويحكم `prev_ai_state` هل تُطبَّق.
+    ctx.base_mode = max_ai_mode_read();
+    log_zenith(LOG_INFO, "EVENT=MAX_AI_MODE_LOADED mode=%d ai=%s",
+               (int)ctx.base_mode, ctx.prev_ai_state[0] ? ctx.prev_ai_state : "0");
 
     checkstate();
     is_kanged();
@@ -129,6 +133,14 @@ int main_daemon(void) {
     bool need_loop = true;
     runthermalcore();
     run_profiler(PERFCOMMON);
+
+    // `run_profiler(0)` يهيّئ النظام ولا يطبّق وضعًا. نعلن التهيئة مكتملة هنا
+    // كي لا يفرض الخادم Balanced عند AI مطفأ، وكي يبدأ منطق الحالة من الوضع
+    // الأساس (المقروء من `max_ai_mode`) بدل افتراض متوازن.
+    ctx.is_initialize_complete = true;
+    notify("Daemon Info", "MaxManager is running successfully", false, 60000);
+    log_zenith(LOG_INFO, "EVENT=DAEMON_INITIALIZED base_mode=%d ai=%s",
+               (int)ctx.base_mode, ctx.prev_ai_state[0] ? ctx.prev_ai_state : "0");
 
     /* Main Daemon Loop */
     while (1) {
@@ -341,7 +353,7 @@ int main_daemon(void) {
             }
             
             if (!is_low_power && ctx.cur_mode == ECO_MODE) {
-                goto apply_mode_balanced;
+                goto apply_mode_base;
             }
 
             continue;
@@ -414,8 +426,10 @@ int main_daemon(void) {
             apply_mode_eco:
                 apply_eco_profile(&ctx);
         } else {
-            apply_mode_balanced:
-                apply_balanced_profile(&ctx);
+            apply_mode_base:
+                // لا Balanced كافتراضي من عند الخادم: الوضع الأساس هو نيّة
+                // المستخدم من `max_ai_mode`، واللعب/البطارية تبديلات مؤقّتة تعود إليه.
+                apply_base_profile(&ctx);
         }
     }
 

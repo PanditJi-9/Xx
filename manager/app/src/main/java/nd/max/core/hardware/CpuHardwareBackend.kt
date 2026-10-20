@@ -146,6 +146,26 @@ object CpuHardwareBackend {
         return available.lastOrNull { it <= kHz } ?: available.first()
     }
 
+    /**
+     * تقريب **الحدّ الأدنى** (الأرضية) — وهو **لا يرفعه أبدًا**.
+     *
+     * والعطب المقيس (Moto G86 · MT6878 · ٢٠٢٦-١٠-١٦، شكوى استنزاف البطارية): [snapToAvailableAtOrBelow]
+     * يُعيد «أصغر تردد مُعلَن» حين يكون المطلوب **تحت الجدول كلّه**. وهذا صحيح للسقف (سقفٌ أعلى
+     * قليلًا من المطلوب أقلّ ضررًا من قيمة تُبدَّل)، لكنه **خطأ للأرضية**: `cpuinfo_min_freq` للمجموعة
+     * الصغرى `450000` بينما أصغر تردد في الجدول المُعلَن `1000000`، فكل «تحرير» أو «تسقيف» كان يكتب
+     * `scaling_min_freq = 1000000` — أي **أرضية دائمة 1 جيجاهرتز** للنوى الصغيرة على مدى الجلسة، وهو
+     * ما يمنعها من النزول إلى تردد الخمول. أرضيةٌ مرفوعة = استهلاك أعلى بلا أي سقف يُقابله.
+     *
+     * والنواة تقبل أي قيمة بين `cpuinfo_min_freq` و`cpuinfo_max_freq` للحدّ الأدنى (تُقرَّب نحو
+     * الأعلى داخليًّا عند الاختيار، ولا تُبدَّل القيمة المخزّنة)، فلا حاجة لرفعها إلى جدول OPP.
+     * فهنا: أكبر تردد مُعلَن لا يتجاوز المطلوب، وإن كان المطلوب تحت الجدول كلّه يبقى **كما هو**.
+     */
+    fun snapFloorAtOrBelow(policy: Policy, kHz: Long): Long {
+        val available = policy.availableFrequenciesKHz
+        if (available.isEmpty()) return kHz
+        return available.lastOrNull { it <= kHz } ?: kHz
+    }
+
     /** Reads a policy's live clock, which may differ from its configured limits. */
     fun readCurrentFrequencyKHz(policyPath: String, io: DiscoveryIo = SystemDiscoveryIo): Long? =
         io.read("$policyPath/scaling_cur_freq")?.toLongOrNull()
