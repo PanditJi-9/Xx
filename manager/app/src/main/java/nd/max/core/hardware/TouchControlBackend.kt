@@ -348,6 +348,23 @@ object TouchControlBackend {
     }
 
     /**
+     * هل يملك المزوّد المكتشَف **طريق كتابة** الآن؟ — سؤال يُقاس ولا يُستنتج من الوجود.
+     *
+     * **ولماذا وُجد:** الشاشة كانت تُفعّل المفتاح بمجرّد أن تُقرأ العقدة (`node != null`)،
+     * فتُقرأ `/proc/touch_boost/enable` على جهاز بلا جذر — العقدة موجودة ومقروءة، والكتابة
+     * تُرفض. فيُلمس المفتاح، ثم يرتدّ في صمت: «دقة اللمس لا تعمل». والعقدة المقروءة ليست دعوة
+     * للكتابة؛ [Reads.writable] هو الفرق، وهو نفس ما يحكم به [capability] منذ البداية.
+     *
+     * ويُؤخذ [Discovery] جاهزًا لا يُعاد اكتشافه: الشاشة تفتحه مرّة، ودورة المراقبة (٥٠٠ م.ث)
+     * لا تدفع ثمن فحص كتابة لا تقرأه.
+     */
+    fun writableProvider(
+        discovery: Discovery,
+        reads: Reads = SystemAccess,
+    ): Boolean = discovery.boostProvider?.let { reads.writable(it.path) } == true ||
+        discovery.vendorHasWritePath
+
+    /**
      * إسقاط الاكتشاف على قدرة العتاد (`HardwareFeature.TOUCH_CONTROL`) — **قياسٌ واحد** لا ثانٍ.
      *
      * وكانت `TOUCH_CONTROL` لا تُملأ أبدًا فتظهر `not-detected` على كل جهاز، ولو كانت عقدة اللمس

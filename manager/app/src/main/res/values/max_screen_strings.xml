@@ -30,7 +30,11 @@
     <string name="max_touch_section_providers_desc">Where MaxManager reads and writes these settings.</string>
     <string name="max_touch_section_about">How this works</string>
     <string name="max_touch_rate_title">Touch rates</string>
-    <string name="max_touch_rate_desc">Four different questions, kept apart: hardware sampling, the documented limit, Android event delivery, and the experimental vendor mode. Each keeps its own evidence; none is inferred from another.</string>
+    <string name="max_touch_rate_desc">Measure the rate this screen actually receives. The sources and node paths sit under Technical details, so the number comes first.</string>
+    <string name="max_touch_rate_fixed">This device exposes no adjustable touch sampling rate. The number below measures what Android delivers; it is not a setting.</string>
+    <string name="max_touch_rate_adjustable">This device exposes an adjustable sampling rate.</string>
+    <string name="max_touch_details_title">Technical details</string>
+    <string name="max_touch_details_summary">Channels, node paths and controller identity</string>
     <string name="max_touch_rate_native_label">Panel refresh rate</string>
     <string name="max_touch_rate_native_source">Display mode (system reading)</string>
     <string name="max_touch_rate_measured_label">Measured touch events</string>

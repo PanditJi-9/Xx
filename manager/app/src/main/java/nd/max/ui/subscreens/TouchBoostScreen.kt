@@ -31,7 +31,6 @@ import androidx.compose.material.icons.rounded.Bolt
 import androidx.compose.material.icons.rounded.Nightlight
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.Shield
-import androidx.compose.material.icons.rounded.Smartphone
 import androidx.compose.material.icons.rounded.TouchApp
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -65,6 +64,7 @@ import nd.max.core.hardware.TouchInputProbe
 import nd.max.core.hardware.TouchRateChannels
 import nd.max.core.hardware.TouchRateProbe
 import nd.max.core.hardware.TouchRateSample
+import nd.max.ui.design.MaxCollapsibleGroup
 import nd.max.ui.design.MaxCondition
 import nd.max.ui.design.MaxConditionKind
 import nd.max.ui.design.MaxDataTrust
@@ -128,7 +128,6 @@ fun TouchBoostScreen(
     // الاسم وحده. ولا يدخل طراز الهاتف في أيّ منهما (§٧-أ).
     val inputDevices = remember(context) { TouchInputProbe.touchDevices(context) }
     val controller = remember(inputDevices) { TouchControllerClassifier.identify(inputDevices) }
-    val deviceContext = remember { TouchInputProbe.deviceContext() }
     val deviceName = controller.device?.name?.takeIf { it.isNotBlank() }
 
     val gameNode = viewModel.gameModeNode
@@ -152,11 +151,20 @@ fun TouchBoostScreen(
         vendorWritePathProven = halWritable
     )
 
-    // A write provider is a verified sysfs node, or a vendor bridge that has proved its
-    // write path. A merely-declared transport is NOT a provider: nothing is written into it.
+    // A write provider is a verified **writable** sysfs node, or a vendor bridge that has proved
+    // its write path. A merely-declared transport is NOT a provider: nothing is written into it.
     // وتعزيز إدخال CPU عقدة تحكّم مقيسة أيضًا: استبعادها هنا كان سيُطفئ المفتاح على الجهاز
     // المقيس (Redmi rodin) بعد فصلها عن «نمط اللعب» — أي «لا يعمل» جديدة باسم إصلاح.
-    val canWriteBoost = gameNode != null || sampleNode != null || inputBoostNode != null || halWritable
+    //
+    // والشرط صار **قابلية الكتابة** لا الوجود: العقدة المقروءة تُثبت أنها تُقرأ فقط، وكتابتها
+    // تُرفض على جهاز بلا جذر — فيُلمس المفتاح ويرتدّ بلا سبب. القياس في
+    // `TouchControlBackend.writableProvider`، ويُقرأ مرّة عند فتح الشاشة.
+    val canWriteBoost = viewModel.boostWritable
+
+    // معدّل اللمس لا يُضبط إلا بعقدة معدّل **مقروءة وقابلة للكتابة**. ولا عقدة معدّل مثبتة اليوم
+    // (`SAMPLE_RATE_NODES` فارغة عن قصد لأن وحدة القيمة غير مُثبتة)، فالسطر يبقى «غير قابل
+    // للضبط» بصدق — ولا تُرسم أزرار معدّلات لا تكتب شيئًا.
+    val canWriteRate = sampleNode != null && viewModel.boostWritable
 
     val sysfsSource = stringResource(R.string.max_touch_source_sysfs)
     val halSource = stringResource(R.string.max_touch_source_hal)
@@ -278,90 +286,45 @@ fun TouchBoostScreen(
             )
         }
 
-        // ── محكّم اللمس: ما يعلنه النظام — لا ما يُستنتج من اسم الهاتف ───────────────────
-        MaxSection(
-            title = stringResource(R.string.max_touch_controller_title),
-            description = stringResource(R.string.max_touch_controller_desc)
-        ) {
-            MaxGroup {
-                MaxRow(
-                    title = deviceContext.label,
-                    subtitle = stringResource(R.string.max_touch_controller_device_note),
-                    icon = Icons.Rounded.Smartphone,
-                    iconTone = MaxTone.Neutral
-                )
-            }
-
-            MaxGroup {
-                MaxMetricLine(
-                    metric = MaxMetric(
-                        label = stringResource(R.string.max_touch_controller_input),
-                        value = deviceName,
-                        trust = if (deviceName != null) MaxDataTrust.Snapshot
-                        else MaxDataTrust.Unsupported,
-                        source = stringResource(R.string.max_touch_controller_source),
-                        note = if (deviceName == null) {
-                            stringResource(R.string.max_touch_controller_none)
-                        } else {
-                            null
-                        }
-                    )
-                )
-
-                MaxGroupDivider()
-
-                MaxMetricLine(
-                    metric = MaxMetric(
-                        label = stringResource(R.string.max_touch_controller_family),
-                        value = controller.family.brand
-                            ?: stringResource(R.string.max_touch_controller_unknown),
-                        trust = when {
-                            deviceName == null -> MaxDataTrust.Unsupported
-                            controller.identified -> MaxDataTrust.Snapshot
-                            else -> MaxDataTrust.Unreadable
-                        },
-                        source = stringResource(R.string.max_touch_controller_source),
-                        note = when {
-                            deviceName == null ->
-                                stringResource(R.string.max_touch_controller_none_note)
-                            controller.identified ->
-                                stringResource(R.string.max_touch_controller_family_note)
-                            else ->
-                                stringResource(R.string.max_touch_controller_unknown_note)
-                        }
-                    )
-                )
-
-                MaxGroupDivider()
-
-                MaxMetricLine(
-                    metric = MaxMetric(
-                        label = stringResource(R.string.max_touch_controller_ids),
-                        value = controller.idsLabel,
-                        trust = if (controller.idsLabel != null) MaxDataTrust.Snapshot
-                        else MaxDataTrust.Unsupported,
-                        source = stringResource(R.string.max_touch_controller_source),
-                        note = if (controller.idsLabel == null) {
-                            stringResource(R.string.max_touch_controller_none_note)
-                        } else {
-                            null
-                        }
-                    )
-                )
-            }
-        }
-
-        // ── معدّلات اللمس: أربع قنوات منفصلة، لا تُجمع ولا يُستنتج بعضها من بعض ─────────
+        // ── معدّل اللمس: قياس واحد يُعرض، ومصادره تُطوى في التفاصيل ───────────────────────
+        //
+        // **لماذا هذا الشكل (بلاغ المالك ٢٠٢٦-١٠-٢٠):** كانت الشاشة تعرض «Touch rates» بأربع
+        // قنوات ثم «Providers» بمسارات العُقَد — قسمين يقولان الشيء نفسه ثلاث مرّات: «Not
+        // supported · Source: sysfs probe». فيقرأ المستخدم جدول تشخيص لا شاشة إعداد، ولا يجد
+        // ما جاء من أجله: معدّل اللمس. فالقياس صار في الصدر، والمصادر خلف طويّة واحدة.
+        //
+        // **وحدّ لا يُخترق:** لا أزرار لمعدّلات «مدعومة» إلا حيث توجد عقدة تُقرأ وتُكتب فعلًا
+        // (`canWriteRate`). فزرٌّ لا يكتب رقمًا هو وعدٌ كاذب — وهو نفس ما مُنع في `TouchRateChannels`.
         MaxSection(
             title = stringResource(R.string.max_touch_rate_title),
             description = stringResource(R.string.max_touch_rate_desc)
         ) {
             MaxGroup {
-                channels.forEachIndexed { index, reading ->
-                    if (index > 0) MaxGroupDivider()
-                    MaxMetricLine(metric = touchChannelMetric(reading))
-                }
+                MaxMetricLine(
+                    metric = MaxMetric(
+                        label = stringResource(R.string.max_touch_rate_measured_label),
+                        value = measured?.eventsPerSecond?.let { "%.0f".format(it) },
+                        unit = stringResource(R.string.max_touch_rate_unit_events),
+                        trust = if (measured != null) MaxDataTrust.Snapshot else MaxDataTrust.Loading,
+                        source = stringResource(R.string.max_touch_rate_measured_source),
+                        note = if (measured != null) {
+                            stringResource(R.string.max_touch_rate_single_sample)
+                        } else {
+                            stringResource(R.string.max_touch_rate_not_measured)
+                        }
+                    )
+                )
             }
+
+            // سببٌ واحد واضح بدل أربعة صفوف «Not supported»: لا معدّل قابل للضبط هنا.
+            Text(
+                text = stringResource(
+                    if (canWriteRate) R.string.max_touch_rate_adjustable else R.string.max_touch_rate_fixed
+                ),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(horizontal = MaxSpace.groupPadding)
+            )
 
             TouchRatePad(
                 onPressChange = { padHeld = it },
@@ -371,8 +334,6 @@ fun TouchBoostScreen(
                 }
             )
 
-            // ظرف العيّنة جزء من معناها: رقمٌ بلا «التبديل كان مفعّلًا؟» لا يُقارن بشيء، ولا
-            // يقول للمستخدم إن كان تبديله غيّر ما يسلّمه Android أم لا.
             if (measured != null) {
                 MaxGroup {
                     MaxMetricLine(
@@ -390,100 +351,148 @@ fun TouchBoostScreen(
                 }
             }
 
-            Text(
-                text = stringResource(R.string.max_touch_rate_limits),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(horizontal = MaxSpace.groupPadding)
-            )
+            MaxCollapsibleGroup(
+                title = stringResource(R.string.max_touch_details_title),
+                summary = stringResource(R.string.max_touch_details_summary)
+            ) {
+                // القنوات الأربع تبقى كاملة — لكن لمن فتح التفاصيل، لا لكل من دخل الشاشة.
+                MaxGroup {
+                    channels.forEachIndexed { index, reading ->
+                        if (index > 0) MaxGroupDivider()
+                        MaxMetricLine(metric = touchChannelMetric(reading))
+                    }
+                }
 
-            // قراءة العرض تبقى متاحة كسياق، لكن في مجموعة مستقلة ونصّها يقول إنها ليست لمسًا.
-            MaxGroup {
-                MaxMetricLine(
-                    metric = MaxMetric(
-                        label = stringResource(R.string.max_touch_rate_native_label),
-                        value = refreshRate?.let { "%.0f".format(it) },
-                        unit = "Hz",
-                        trust = if (refreshRate != null) MaxDataTrust.Snapshot
-                        else MaxDataTrust.Unsupported,
-                        source = stringResource(R.string.max_touch_rate_native_source),
-                        note = if (refreshRate == null) missing
-                        else stringResource(R.string.max_touch_rate_panel_note)
-                    )
-                )
-            }
-        }
-
-        MaxSection(
-            title = stringResource(R.string.max_touch_section_providers),
-            description = stringResource(R.string.max_touch_section_providers_desc)
-        ) {
-            MaxGroup {
-                MaxMetricLine(
-                    metric = MaxMetric(
-                        label = stringResource(R.string.max_touch_node_game),
-                        value = gameNode?.path,
-                        trust = if (gameNode != null) MaxDataTrust.Snapshot else MaxDataTrust.Unsupported,
-                        source = sysfsSource,
-                        note = if (gameNode == null) missing else null
-                    )
-                )
-
-                MaxGroupDivider()
-
-                MaxMetricLine(
-                    metric = MaxMetric(
-                        label = stringResource(R.string.max_touch_node_sample),
-                        value = sampleNode?.path,
-                        trust = if (sampleNode != null) MaxDataTrust.Snapshot else MaxDataTrust.Unsupported,
-                        source = sysfsSource,
-                        note = if (sampleNode == null) missing else null
-                    )
-                )
-
-                MaxGroupDivider()
-
-                // الصفّ يُعرض دائمًا: غيابه يعني «لا مسار»، ووجوده يعني «هذا ما يفعله فعلًا» —
-                // ولا يُقفز فوقه لأنه ليس معدّل استطلاع. المستخدم يرى ما تملكه عتاده كلّه.
-                MaxMetricLine(
-                    metric = MaxMetric(
-                        label = stringResource(R.string.max_touch_node_input_boost),
-                        value = inputBoostNode?.path,
-                        trust = if (inputBoostNode != null) MaxDataTrust.Snapshot else MaxDataTrust.Unsupported,
-                        source = sysfsSource,
-                        note = if (inputBoostNode == null) missing else stringResource(R.string.max_touch_node_input_boost_note)
-                    )
-                )
-
-                MaxGroupDivider()
-
-                MaxMetricLine(
-                    metric = MaxMetric(
-                        label = stringResource(R.string.max_touch_node_dt2w),
-                        value = dt2wNode?.path,
-                        trust = if (dt2wNode != null) MaxDataTrust.Snapshot else MaxDataTrust.Unsupported,
-                        source = sysfsSource,
-                        note = if (dt2wNode == null) missing else null
-                    )
-                )
-
-                if (halWritable || halDeclared) {
-                    MaxGroupDivider()
+                MaxGroup {
                     MaxMetricLine(
                         metric = MaxMetric(
-                            label = stringResource(R.string.max_touch_provider_hal),
-                            value = halSource,
-                            // النقل المعلن وحده لا يُعلَّم «متاحًا»: الوسم Snapshot لِما نقرؤه
-                            // فعلًا، وUnsupported لما أُعلن ولم يُثبَت طريق الكتابة إليه.
-                            trust = if (halWritable) MaxDataTrust.Snapshot else MaxDataTrust.Unsupported,
-                            source = halSource,
-                            note = stringResource(
-                                if (halWritable) R.string.max_touch_provider_hal_detail
-                                else R.string.max_touch_provider_hal_declared_detail
-                            )
+                            label = stringResource(R.string.max_touch_rate_native_label),
+                            value = refreshRate?.let { "%.0f".format(it) },
+                            unit = "Hz",
+                            trust = if (refreshRate != null) MaxDataTrust.Snapshot
+                            else MaxDataTrust.Unsupported,
+                            source = stringResource(R.string.max_touch_rate_native_source),
+                            note = if (refreshRate == null) missing
+                            else stringResource(R.string.max_touch_rate_panel_note)
                         )
                     )
                 }
+
+                // المسارات: صفّ لكل عقدة مقروءة — والغائب يُذكر بسبب، لا يُحذف.
+                MaxGroup {
+                    MaxMetricLine(
+                        metric = MaxMetric(
+                            label = stringResource(R.string.max_touch_node_game),
+                            value = gameNode?.path,
+                            trust = if (gameNode != null) MaxDataTrust.Snapshot else MaxDataTrust.Unsupported,
+                            source = sysfsSource,
+                            note = if (gameNode == null) missing else null
+                        )
+                    )
+                    MaxGroupDivider()
+                    MaxMetricLine(
+                        metric = MaxMetric(
+                            label = stringResource(R.string.max_touch_node_sample),
+                            value = sampleNode?.path,
+                            trust = if (sampleNode != null) MaxDataTrust.Snapshot else MaxDataTrust.Unsupported,
+                            source = sysfsSource,
+                            note = if (sampleNode == null) missing else null
+                        )
+                    )
+                    MaxGroupDivider()
+                    MaxMetricLine(
+                        metric = MaxMetric(
+                            label = stringResource(R.string.max_touch_node_input_boost),
+                            value = inputBoostNode?.path,
+                            trust = if (inputBoostNode != null) MaxDataTrust.Snapshot else MaxDataTrust.Unsupported,
+                            source = sysfsSource,
+                            note = if (inputBoostNode == null) missing
+                            else stringResource(R.string.max_touch_node_input_boost_note)
+                        )
+                    )
+                    MaxGroupDivider()
+                    MaxMetricLine(
+                        metric = MaxMetric(
+                            label = stringResource(R.string.max_touch_node_dt2w),
+                            value = dt2wNode?.path,
+                            trust = if (dt2wNode != null) MaxDataTrust.Snapshot else MaxDataTrust.Unsupported,
+                            source = sysfsSource,
+                            note = if (dt2wNode == null) missing else null
+                        )
+                    )
+                    if (halWritable || halDeclared) {
+                        MaxGroupDivider()
+                        MaxMetricLine(
+                            metric = MaxMetric(
+                                label = stringResource(R.string.max_touch_provider_hal),
+                                value = halSource,
+                                trust = if (halWritable) MaxDataTrust.Snapshot else MaxDataTrust.Unsupported,
+                                source = halSource,
+                                note = stringResource(
+                                    if (halWritable) R.string.max_touch_provider_hal_detail
+                                    else R.string.max_touch_provider_hal_declared_detail
+                                )
+                            )
+                        )
+                    }
+                }
+
+                // هوية المحكّم أيضاً تفصيل: تُقرأ عند الحاجة، ولا تزاحم معدّل اللمس.
+                MaxGroup {
+                    MaxMetricLine(
+                        metric = MaxMetric(
+                            label = stringResource(R.string.max_touch_controller_input),
+                            value = deviceName,
+                            trust = if (deviceName != null) MaxDataTrust.Snapshot
+                            else MaxDataTrust.Unsupported,
+                            source = stringResource(R.string.max_touch_controller_source),
+                            note = if (deviceName == null) {
+                                stringResource(R.string.max_touch_controller_none)
+                            } else {
+                                null
+                            }
+                        )
+                    )
+                    MaxGroupDivider()
+                    MaxMetricLine(
+                        metric = MaxMetric(
+                            label = stringResource(R.string.max_touch_controller_family),
+                            value = controller.family.brand
+                                ?: stringResource(R.string.max_touch_controller_unknown),
+                            trust = when {
+                                deviceName == null -> MaxDataTrust.Unsupported
+                                controller.identified -> MaxDataTrust.Snapshot
+                                else -> MaxDataTrust.Unreadable
+                            },
+                            source = stringResource(R.string.max_touch_controller_source),
+                            note = when {
+                                deviceName == null ->
+                                    stringResource(R.string.max_touch_controller_none_note)
+                                controller.identified ->
+                                    stringResource(R.string.max_touch_controller_family_note)
+                                else -> stringResource(R.string.max_touch_controller_unknown_note)
+                            }
+                        )
+                    )
+                    if (controller.idsLabel != null) {
+                        MaxGroupDivider()
+                        MaxMetricLine(
+                            metric = MaxMetric(
+                                label = stringResource(R.string.max_touch_controller_ids),
+                                value = controller.idsLabel,
+                                trust = MaxDataTrust.Snapshot,
+                                source = stringResource(R.string.max_touch_controller_source)
+                            )
+                        )
+                    }
+                }
+
+                Text(
+                    text = stringResource(R.string.max_touch_rate_limits),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(horizontal = MaxSpace.groupPadding)
+                )
             }
         }
 

@@ -182,6 +182,16 @@ class TouchControlBackendTest {
         assertEquals(AccessLevel.READ_ONLY, readOnly.access)
     }
 
+    @Test fun aReadableNodeThatRefusesWritesIsNotASwitchTheUserCanKeepOn() {
+        // العطب المُبلَّغ عنه: الشاشة تُفعّل المفتاح بمجرّد قراءة العقدة، فيُلمس ويرتدّ صامتًا
+        // على جهاز بلا جذر. الحكم هنا هو نفس ما تُبنى عليه الواجهة: قابلية الكتابة لا الوجود.
+        val readableOnly = FakeAccess(mutableMapOf(gameNode to "0"))
+        assertFalse(TouchControlBackend.writableProvider(TouchControlBackend.discover(readableOnly), readableOnly))
+
+        val writable = FakeAccess(mutableMapOf(gameNode to "0"), writable = setOf(gameNode))
+        assertTrue(TouchControlBackend.writableProvider(TouchControlBackend.discover(writable), writable))
+    }
+
     @Test fun doubleTapAloneStillMakesTheDeviceReadable() {
         // جهاز لا نمط فيه ولا معدّل، لكنه يُوقَظ بلمسة مزدوجة: القدرة `READ_ONLY` لا `NONE` —
         // والحكم `NONE` كان يقول «لا تحكّم» عن جهاز فيه تحكّم.

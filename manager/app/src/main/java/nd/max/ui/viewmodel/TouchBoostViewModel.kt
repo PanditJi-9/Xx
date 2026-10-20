@@ -78,6 +78,16 @@ class TouchBoostViewModel : ViewModel() {
      */
     var inputBoostNode by mutableStateOf<TouchControlBackend.Node?>(null)
         private set
+    /**
+     * هل يمكن **كتابة** طلب التعزيز فعلًا؟ — لا «هل توجد عقدة».
+     *
+     * ووجود العقدة يُثبت أنها تُقرأ، لا أنها تُكتب: على جهاز بلا جذر تُقرأ
+     * `/proc/touch_boost/enable` وتُرفض كتابتها، فيرتدّ المفتاح بعد لمسه بلا سبب ظاهر.
+     * فالمفتاح يُعطَّل بسبب مكتوب (`max_touch_boost_locked`) بدل أن يُوعد بما لا يُنفَّذ.
+     */
+    var boostWritable by mutableStateOf(false)
+        private set
+
     var boostEnabled by mutableStateOf(false)
         private set
     var doubleTapNode by mutableStateOf<TouchControlBackend.Node?>(null)
@@ -100,6 +110,7 @@ class TouchBoostViewModel : ViewModel() {
 
             vendorTransportPresent = found.vendorTransportPresent
             vendorHalDetected = found.vendorHasWritePath
+            boostWritable = TouchControlBackend.writableProvider(found)
             val hasBoostProvider = found.hasBoostNode || vendorHalDetected
             isAvailable = hasBoostProvider || found.doubleTap != null
 

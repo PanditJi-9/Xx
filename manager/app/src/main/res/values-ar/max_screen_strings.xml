@@ -33,7 +33,11 @@
     <string name="max_touch_section_providers_desc">من أين يقرأ MaxManager هذه الإعدادات ويكتبها.</string>
     <string name="max_touch_section_about">كيف يعمل هذا</string>
     <string name="max_touch_rate_title">معدلات اللمس</string>
-    <string name="max_touch_rate_desc">أربعة أسئلة مختلفة، تُفصل عمدًا: أخذ العيّنات في العتاد، والحدّ الموثّق، وتسليم أحداث Android، والوضع التجريبي لمحوّل الشركة. لكلٍّ دليله، ولا يُستنتج أحدها من الآخر.</string>
+    <string name="max_touch_rate_desc">قِس المعدّل الذي تصل به أحداث اللمس إلى هذه الشاشة فعلاً. المصادر ومسارات العُقَد صارت تحت «تفاصيل تقنية»، فالرقم أولاً.</string>
+    <string name="max_touch_rate_fixed">هذا الجهاز لا يعرض معدّل لمس قابلًا للضبط. الرقم أدناه يقيس ما يسلّمه Android، وليس إعدادًا.</string>
+    <string name="max_touch_rate_adjustable">هذا الجهاز يعرض معدّل أخذ عيّنات قابلًا للضبط.</string>
+    <string name="max_touch_details_title">تفاصيل تقنية</string>
+    <string name="max_touch_details_summary">القنوات ومسارات العُقَد وهوية المحكّم</string>
     <string name="max_touch_rate_native_label">معدّل تحديث اللوحة</string>
     <string name="max_touch_rate_native_source">نمط العرض (قراءة نظام)</string>
     <string name="max_touch_rate_measured_label">أحداث اللمس المقيسة</string>
