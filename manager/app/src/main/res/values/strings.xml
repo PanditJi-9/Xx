@@ -708,6 +708,8 @@
     <string name="processmgr_sort_name">Name</string>
     <string name="processmgr_reading_live">Live reading</string>
     <string name="processmgr_reading_failed">Reading failed</string>
+    <string name="processmgr_loading_title">Reading processes</string>
+    <string name="processmgr_loading_hint">The first sample is on its way. This usually takes a second.</string>
     <string name="processmgr_no_answer">No answer from the device</string>
     <string name="processmgr_no_answer_hint">The process table did not come back — root may have refused, or this build has no usable top command. Your processes are still running; only the reading is missing, and Retry asks the device again.</string>
     <string name="processmgr_empty_title">Nothing matches</string>

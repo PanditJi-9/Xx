@@ -61,6 +61,17 @@ class ProcessManagerViewModel : ViewModel() {
     var sample by mutableStateOf(ProcessSample.noAnswer)
         private set
 
+    /**
+     * هل وصلت عيّنة واحدة على الأقل؟
+     *
+     * **ولماذا يلزم حقلٌ ثالث:** `failed = true` في البداية كانت تعني شيئين مختلفين — «لم تُقرأ
+     * بعد» و«قُرئت وفشلت» — فكانت الشاشة تُفتح على «لا جواب من الجهاز» قبل أن تُمنح القراءة
+     * فرصتها، فيظنّ المستخدم أنّ عطلاً وقع. الحقل يفصل الانتظار عن العطب، ولا يغيّر حكم الفشل
+     * بعد أوّل عيّنة حقيقية.
+     */
+    var loaded by mutableStateOf(false)
+        private set
+
     var scope by mutableStateOf(ProcessScope.All)
         private set
 
@@ -116,7 +127,7 @@ class ProcessManagerViewModel : ViewModel() {
         )
         // مستمع واحد فقط: `start` صار يُنادى عند كل ON_START، فلا يتراكم مستمع جديد في كل عودة.
         if (collectJob?.isActive != true) {
-            collectJob = viewModelScope.launch { ProcessWatch.snapshot.collect { sample = it } }
+            collectJob = viewModelScope.launch { ProcessWatch.snapshot.collect { sample = it; loaded = true } }
         }
     }
 

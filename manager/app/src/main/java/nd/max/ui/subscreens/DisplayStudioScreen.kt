@@ -120,54 +120,6 @@ fun DisplayStudioScreen(
                         )
                     }
 
-                    item { TweaksSectionTitle(stringResource(R.string.display_features_title)) }
-                    item {
-                        val featureItems = buildList<@Composable () -> Unit> {
-                            if (viewModel.sunlightNode != null) add {
-                                ExpressiveSwitchItem(
-                                    icon = Icons.Outlined.WbSunny,
-                                    title = stringResource(R.string.sunlight_mode),
-                                    summary = stringResource(R.string.sunlight_mode_desc),
-                                    checked = viewModel.sunlightEnabled,
-                                    onCheckedChange = viewModel::setSunlight
-                                )
-                            }
-                            if (viewModel.silkyNode != null) add {
-                                ExpressiveSwitchItem(
-                                    icon = Icons.Outlined.Brightness6,
-                                    title = stringResource(R.string.silky_brightness),
-                                    summary = stringResource(R.string.silky_brightness_desc),
-                                    checked = viewModel.silkyEnabled,
-                                    onCheckedChange = viewModel::setSilky
-                                )
-                            }
-                            if (viewModel.videoEnhanceNode != null) add {
-                                ExpressiveSwitchItem(
-                                    icon = Icons.Outlined.Movie,
-                                    title = stringResource(R.string.video_enhancement),
-                                    summary = stringResource(R.string.video_enhancement_desc),
-                                    checked = viewModel.videoEnhanceEnabled,
-                                    onCheckedChange = viewModel::setVideoEnhance
-                                )
-                            }
-                            if (viewModel.hdrNode != null) add {
-                                ExpressiveSwitchItem(
-                                    icon = Icons.Outlined.HdrOn,
-                                    title = stringResource(R.string.dolby_vision_hdr),
-                                    summary = stringResource(R.string.dolby_vision_hdr_desc),
-                                    checked = viewModel.hdrEnabled,
-                                    onCheckedChange = viewModel::setHdr
-                                )
-                            }
-                        }
-                        if (featureItems.isNotEmpty()) ExpressiveList(content = featureItems)
-                        else {
-                            DisplayUnavailableCard(
-                                vendorHal = viewModel.vendorHalDetected
-                            )
-                        }
-                    }
-
                     item { TweaksSectionTitle(stringResource(R.string.display_system_settings_title)) }
                     item {
                         val animIndex = DisplayStudioViewModel.ANIMATION_SCALE_PRESETS.indexOfFirst { it == viewModel.animationScale }.coerceAtLeast(0)
@@ -345,18 +297,3 @@ private fun DisplayMetric(label: String, value: String, modifier: Modifier, onCl
     }
 }
 
-@Composable
-private fun DisplayUnavailableCard(vendorHal: Boolean) {
-    val cs = MaterialTheme.colorScheme
-    ExpressiveInfoCard(
-        leadingContent = { LeadingIcon(Icons.Outlined.Info) },
-        supportingContent = {
-            Text(
-                if (vendorHal) stringResource(R.string.display_features_unavailable_vendor_hal)
-                else stringResource(R.string.display_features_unavailable)
-            )
-        },
-        containerColor = cs.surfaceContainerLow,
-        onClick = {}
-    )
-}

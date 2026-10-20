@@ -77,6 +77,7 @@ import nd.max.ui.component.CustomBottomSheet
 import nd.max.ui.component.ExpressiveListItem
 import nd.max.ui.component.MaxEmptyState
 import nd.max.ui.component.MaxErrorState
+import nd.max.ui.component.MaxLoadingState
 import nd.max.ui.component.MaxStatusPill
 import nd.max.ui.component.ScreenAccentProvider
 import nd.max.ui.component.baselineOf
@@ -251,6 +252,15 @@ fun ProcessManagerScreen(
             }
 
             when {
+                // قبل أوّل عيّنة: انتظار يُعلن نفسه، لا خطأ. كان `failed` الابتدائي يُعرض هنا
+                // فيقرأ المستخدم «لا جواب من الجهاز» في أوّل ثانية ويظنّها عطبًا.
+                !viewModel.loaded -> item {
+                    MaxLoadingState(
+                        title = stringResource(R.string.processmgr_loading_title),
+                        message = stringResource(R.string.processmgr_loading_hint)
+                    )
+                }
+
                 viewModel.sample.failed -> item {
                     MaxErrorState(
                         title = stringResource(R.string.processmgr_no_answer),

@@ -56,6 +56,8 @@
     <!-- بوّابة السطح المقفل -->
     <string name="max_license_gate_title">This surface needs a licence</string>
     <string name="max_license_gate_detail">It is included with a key. One key covers this device, and entering it takes a minute.</string>
+    <string name="max_feature_off_title">Turned off</string>
+    <string name="max_feature_off_detail">The control panel has turned this surface off. It comes back as soon as it is enabled again.</string>
     <string name="max_license_gate_action">Open licence settings</string>
     <!-- زرّ الاشتراك في بوّابة السطح المقفل: يظهر فقط إن نشر المالك رابط اشتراك في اللوحة -->
     <string name="max_license_gate_subscribe">Subscribe now</string>

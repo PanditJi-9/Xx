@@ -103,7 +103,60 @@ fun FeatureGate(
     when (access) {
         FeatureAccess.OPEN, FeatureAccess.PROMO -> content()
         FeatureAccess.LOCKED -> LockedSurfacePanel(navController, featureId)
-        FeatureAccess.OFF -> Unit
+        // **OFF يعرض سببًا لا فراغًا:** كان `Unit`، فيُفتح السطح على لا شيء — وهو أسوأ من
+        // الرفض لأن المستخدم لا يعرف أهو عطل أم إطفاء. الآن يُقال صراحةً إنّ لوحة التحكم
+        // أطفأت هذا السطح، وأنه يعود عند إعادة تفعيله (بلاغ المالك ٢٠٢٦-١٠-٢٠).
+        FeatureAccess.OFF -> OffSurfacePanel(featureId)
+    }
+}
+
+/**
+ * السطح الذي أطفأته لوحة التحكم: بطاقة واحدة تسمّي الحال وسببها، بلا زرّ اشتراك ولا تنقّل.
+ *
+ * **ولماذا ليست [LockedSurfacePanel]:** الرفض بالترخيص له طريقه (مفتاح/تجديد)، أمّا الإطفاء
+ * فقرار لوحة لا يملك المستخدم ردًّا عليه — وخلطهما يوهم بشراء لا معنى له.
+ */
+@Composable
+private fun OffSurfacePanel(featureId: String) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.surfaceContainerLowest),
+        contentAlignment = Alignment.Center,
+    ) {
+        MaxCardShell(
+            modifier = Modifier
+                .fillMaxWidth()
+                .widthIn(max = MaxSize.readingMaxWidth)
+                .padding(horizontal = MaxSpace.gutter),
+            container = MaterialTheme.colorScheme.surfaceContainerHigh,
+            accent = MaterialTheme.colorScheme.outline,
+            verticalArrangement = Arrangement.spacedBy(MaxSpace.md),
+        ) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(MaxSpace.sm),
+            ) {
+                Icon(
+                    imageVector = featureIcon(featureId),
+                    contentDescription = null,
+                    modifier = Modifier.size(MaxSize.iconGlyph),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Text(
+                    text = stringResource(R.string.max_feature_off_title),
+                    style = MaterialTheme.typography.titleLarge,
+                    textAlign = TextAlign.Center,
+                )
+                Text(
+                    text = stringResource(R.string.max_feature_off_detail),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center,
+                )
+            }
+        }
     }
 }
 

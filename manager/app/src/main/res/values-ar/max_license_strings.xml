@@ -56,6 +56,8 @@
     <!-- بوّابة السطح المقفل -->
     <string name="max_license_gate_title">هذا السطح يحتاج ترخيصًا</string>
     <string name="max_license_gate_detail">هو داخل المفتاح. مفتاحٌ واحد يكفي لهذا الجهاز، وكتابته تستغرق دقيقة.</string>
+    <string name="max_feature_off_title">مُعطَّل</string>
+    <string name="max_feature_off_detail">لوحة التحكم أطفأت هذه الشاشة. تعود بمجرد إعادة تفعيلها.</string>
     <string name="max_license_gate_action">افتح إعدادات الترخيص</string>
     <!-- زرّ الاشتراك في بوّابة السطح المقفل: يظهر فقط إن نشر المالك رابط اشتراك في اللوحة -->
     <string name="max_license_gate_subscribe">اشترك الآن</string>
