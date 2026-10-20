@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_spoof_ui_strings.xml -->
+<resources>
+    <string name="spoof_ui_real_device">Pajisja e vërtetë</string>
+    <string name="spoof_ui_pill_verified">Konfigurimi i verifikuar</string>
+    <string name="spoof_ui_pill_unverified">I pa verifikuar</string>
+    <string name="spoof_ui_pill_off">Joaktiv</string>
+    <string name="spoof_device_for_app">Pajisja për këtë aplikacion</string>
+    <string name="spoof_device_real_hint">Ky aplikacion sheh pajisjen tuaj të vërtetë. Prekni kartën për të zgjedhur një.</string>
+    <string name="spoof_device_pick">Prekni për të zgjedhur një pajisje nga katalogu ose futni informacionin e personalizuar të pajisjes.</string>
+    <string name="spoof_device_in_use">Në përdorim</string>
+    <string name="spoof_device_restart">Rinisni aplikacionin e synuar më pas, jo sistemin.</string>
+    <string name="spoof_ui_apply_title">Aplikoni për këtë aplikacion</string>
+    <string name="spoof_ui_apply_action">Rishikoni dhe aplikoni</string>
+    <string name="spoof_ui_apply_confirm_title">Të aplikohet vetëm ky aplikacion?</string>
+    <string name="spoof_ui_apply_confirm_text">Vetëm ky aplikacion është përgatitur; aplikacionet e tjera janë të paprekura. Rinisni aplikacionin e synuar më pas, jo sistemin. Një modifikim i mëvonshëm e anulon këtë konfirmim. Nëse COPG e liston tashmë këtë aplikacion, pajisja juaj ka përparësi dhe linja COPG qëndron ashtu siç është.</string>
+    <string name="spoof_ui_apply_confirm">Aplikoni</string>
+    <string name="spoof_ui_apply_reason">Refuzimi i motorit: %1$s</string>
+    <string name="spoof_engine_absent">Moduli i motorit nuk është i lexueshëm. Konfirmoni një modul module.prop i të cilit thotë id=COPG, instaloni ose riinstaloni atë dhe më pas rihapni këtë ekran.</string>
+    <string name="spoof_engine_disabled">Moduli COPG është i çaktivizuar në menaxherin tuaj rrënjë. Aktivizojeni atë atje, rindizni dhe aplikoni përsëri.</string>
+    <string name="spoof_engine_removal_pending">COPG është shënuar për heqje dhe do të hiqet pas rindezjes tjetër. Riinstaloni atë përpara se të aplikoni.</string>
+    <string name="spoof_engine_update_pending">Një përditësim COPG është duke pritur për një rindezje. Rinisni fillimisht, pastaj aplikoni përsëri.</string>
+    <string name="spoof_ui_apply_pending">Ndryshuar që nga aplikimi i fundit - aplikoni përsëri për ta bërë atë reale.</string>
+    <string name="spoof_ui_restore_title">Përdorni pajisjen tuaj të vërtetë</string>
+    <string name="spoof_ui_restore_action">Hiq mashtrimin për këtë aplikacion</string>
+    <string name="spoof_ui_restore_notice">Pajisja e ruajtur e këtij aplikacioni dhe ndryshimet e tij COPG hiqen dhe motori rishkruhet pa këtë aplikacion. Aplikacionet e tjera janë të paprekura. Rinisni aplikacionin e synuar më pas.</string>
+    <string name="app_tab_spoof">Mashtrim</string>
+    <string name="spoof_picker_title">Zgjidhni një pajisje</string>
+    <string name="spoof_picker_custom">Informacion i personalizuar i pajisjes</string>
+    <string name="spoof_picker_custom_hint">Futni markën, modelin dhe gjurmën e gishtit që dëshironi për këtë aplikacion</string>
+    <string name="spoof_custom_title">Informacion i personalizuar i pajisjes</string>
+    <string name="spoof_custom_rules">Kërkohet emri, marka, modeli, pajisja dhe produkti, deri në 120 karaktere secila, pa karaktere kontrolli. Prodhuesi, gjurmët e gishtave dhe SDK janë opsionale. Një gjurmë gishti duhet të fillojë me të njëjtën markë, produkt dhe pajisje.</string>
+    <string name="spoof_manufacturer">Prodhuesi (MANUFACTURER)</string>
+    <string name="spoof_sdk">Niveli SDK, opsional, 1 deri në 100</string>
+    <string name="spoof_custom_invalid">Disa fusha janë të pavlefshme. Kontrolloni rregullat e mësipërme, më pas ruajeni përsëri.</string>
+    <string name="spoof_custom_save">Ruani dhe zgjidhni për këtë aplikacion</string>
+    <string name="spoof_impersonation_title">Mashtrimi</string>
+    <string name="spoof_impersonation_desc">Vetëm opsionet falas të COPG. Shkruar në motor nga Rishikoni dhe aplikoni.</string>
+    <string name="spoof_impersonation_summary_cpu">CPU mashtrim: %1$s</string>
+    <string name="spoof_impersonation_needs_device">Fillimisht zgjidhni një pajisje për këtë aplikacion. Këto opsione shkruhen vetëm me një pajisje.</string>
+    <string name="spoof_cpu_spoof">CPU mashtrim</string>
+    <string name="spoof_cpu_real">Real CPU</string>
+    <string name="spoof_cpu_block">Blloku CPU</string>
+    <string name="spoof_cpu_block_desc">E përjashton këtë aplikacion nga CPU mashtrimet.</string>
+    <string name="spoof_cpu_picker_title">Zgjidhni një CPU</string>
+    <string name="copg_tweaks_section">Ndryshimet COPG</string>
+    <string name="copg_tweak_nolog_title">Çaktivizo regjistrimin</string>
+    <string name="copg_tweak_nolog_desc">Zbaton shkuljen e regjistrimit të COPG në këtë aplikacion. Ruajtur këtu, shkruar në motor nga Rishikimi dhe aplikoni në skedën "Mashtrim".</string>
+    <string name="copg_tweak_dab_title">Çaktivizo ndriçimin automatik</string>
+    <string name="copg_tweak_dab_desc">Zbaton rregullimin e ndriçimit automatik të COPG në këtë aplikacion. Ruajtur këtu, shkruar në motor nga Rishikimi dhe aplikoni në skedën "Mashtrim".</string>
+    <string name="copg_tweak_kso_title">Mbaje ekranin të ndezur</string>
+    <string name="copg_tweak_kso_desc">Zbaton rregullimin COPG të mbajtjes së ekranit në këtë aplikacion. Ruajtur këtu, shkruar në motor nga Rishikimi dhe aplikoni në skedën "Mashtrim".</string>
+    <string name="copg_tweak_needs_device">Së pari ka nevojë për një pajisje për këtë aplikacion, në skedën Spoof.</string>
+</resources>

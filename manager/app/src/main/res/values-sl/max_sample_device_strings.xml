@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_sample_device_strings.xml -->
+<resources>
+    <string name="sample_pick_title">Izberite vzorčno napravo</string>
+    <string name="sample_pick_button">Izberite vzorčno napravo</string>
+    <string name="sample_auto_hint">Izbira naprave izpolni blagovno znamko, proizvajalca, model, napravo, izdelek in prstni odtis. Uporabite Manual, da jih vnesete sami.</string>
+    <string name="sample_manual">Priročnik</string>
+    <string name="sample_close">Zapri</string>
+    <string name="sample_search">Iskanje naprav</string>
+    <string name="sample_empty">Ni ustrezne naprave.</string>
+    <string name="sample_unavailable">Kataloga naprav ni bilo mogoče prebrati.</string>
+    <string name="sample_row_sub">Android %1$s · %2$s</string>
+    <string name="sample_row_sub_plain">%1$s</string>
+    <string name="sample_fp_shared">Isti prstni odtis kot druga kataloška naprava</string>
+    <string name="sample_credit">Kataloški podatki: COPG (Apache-2.0), %1$s</string>
+    <string name="sample_limit">Omejitev profila (100) je dosežena.</string>
+</resources>

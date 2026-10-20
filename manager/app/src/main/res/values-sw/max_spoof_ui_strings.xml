@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_spoof_ui_strings.xml -->
+<resources>
+    <string name="spoof_ui_real_device">Kifaa halisi</string>
+    <string name="spoof_ui_pill_verified">Usanidi umethibitishwa</string>
+    <string name="spoof_ui_pill_unverified">Haijathibitishwa</string>
+    <string name="spoof_ui_pill_off">Imezimwa</string>
+    <string name="spoof_device_for_app">Kifaa cha programu hii</string>
+    <string name="spoof_device_real_hint">Programu hii inaona kifaa chako halisi. Gonga kadi ili uchague moja.</string>
+    <string name="spoof_device_pick">Gusa ili uchague kifaa kutoka kwenye orodha, au uweke maelezo ya kifaa maalum.</string>
+    <string name="spoof_device_in_use">Inatumika</string>
+    <string name="spoof_device_restart">Anzisha upya programu lengwa baadaye, si mfumo.</string>
+    <string name="spoof_ui_apply_title">Omba programu hii</string>
+    <string name="spoof_ui_apply_action">Kagua na utume maombi</string>
+    <string name="spoof_ui_apply_confirm_title">Je, ungependa kutumia programu hii pekee?</string>
+    <string name="spoof_ui_apply_confirm_text">Programu hii pekee imetayarishwa; programu zingine hazijaguswa. Anzisha upya programu lengwa baadaye, si mfumo. Uhariri wa baadaye hughairi uthibitishaji huu. Ikiwa COPG tayari imeorodhesha programu hii, kifaa chako kinapewa kipaumbele na laini ya COPG hudumu kama ilivyo.</string>
+    <string name="spoof_ui_apply_confirm">Omba</string>
+    <string name="spoof_ui_apply_reason">Injini imekataliwa: %1$s</string>
+    <string name="spoof_engine_absent">Moduli ya injini haisomeki. Thibitisha sehemu ambayo module.prop inasema id=COPG, isakinishe au usakinishe upya, kisha ufungue skrini hii tena.</string>
+    <string name="spoof_engine_disabled">Moduli ya COPG imezimwa kwenye kidhibiti chako cha mizizi. Iwashe hapo, washa upya, kisha uitumie tena.</string>
+    <string name="spoof_engine_removal_pending">COPG imewekwa alama kwa ajili ya kuondolewa na itaondoka baada ya kuwasha upya. Isakinishe upya kabla ya kuitumia.</string>
+    <string name="spoof_engine_update_pending">Sasisho la COPG linasubiri kuwashwa upya. Washa upya kwanza, kisha utume tena.</string>
+    <string name="spoof_ui_apply_pending">Imebadilishwa tangu ya mwisho kutumika - tuma tena ili kuifanya iwe halisi.</string>
+    <string name="spoof_ui_restore_title">Tumia kifaa chako halisi</string>
+    <string name="spoof_ui_restore_action">Ondoa spoof kwa programu hii</string>
+    <string name="spoof_ui_restore_notice">Kifaa kilichohifadhiwa cha programu hii na marekebisho yake ya COPG huondolewa, na injini itaandikwa upya bila programu hii. Programu zingine hazijaguswa. Anzisha upya programu lengwa baadaye.</string>
+    <string name="app_tab_spoof">Spoof</string>
+    <string name="spoof_picker_title">Chagua kifaa</string>
+    <string name="spoof_picker_custom">Maelezo ya kifaa maalum</string>
+    <string name="spoof_picker_custom_hint">Ingiza chapa, muundo na alama ya vidole unayotaka kwa programu hii</string>
+    <string name="spoof_custom_title">Maelezo ya kifaa maalum</string>
+    <string name="spoof_custom_rules">Jina, chapa, muundo, kifaa na bidhaa zinahitajika, hadi herufi 120 kila moja, bila vibambo vya kudhibiti. Mtengenezaji, alama za vidole na SDK ni za hiari. Alama ya vidole lazima ianze na chapa, bidhaa na kifaa sawa.</string>
+    <string name="spoof_manufacturer">Mtengenezaji (MANUFACTURER)</string>
+    <string name="spoof_sdk">Kiwango cha SDK, hiari, 1 hadi 100</string>
+    <string name="spoof_custom_invalid">Baadhi ya sehemu ni batili. Angalia sheria zilizo hapo juu, kisha uhifadhi tena.</string>
+    <string name="spoof_custom_save">Hifadhi na uchague kwa programu hii</string>
+    <string name="spoof_impersonation_title">Spoofing</string>
+    <string name="spoof_impersonation_desc">Chaguo za bure za COPG pekee. Imeandikwa kwa injini na Mapitio na kuomba.</string>
+    <string name="spoof_impersonation_summary_cpu">CPU kudanganya: %1$s</string>
+    <string name="spoof_impersonation_needs_device">Chagua kifaa cha programu hii kwanza. Chaguzi hizi zimeandikwa tu na kifaa.</string>
+    <string name="spoof_cpu_spoof">CPU kudanganya</string>
+    <string name="spoof_cpu_real">Halisi CPU</string>
+    <string name="spoof_cpu_block">Zuia CPU</string>
+    <string name="spoof_cpu_block_desc">Haijumuishi programu hii kutoka kwa CPU ulaghai.</string>
+    <string name="spoof_cpu_picker_title">Chagua CPU</string>
+    <string name="copg_tweaks_section">Marekebisho ya COPG</string>
+    <string name="copg_tweak_nolog_title">Lemaza ukataji miti</string>
+    <string name="copg_tweak_nolog_desc">Inatumika uwekaji miti wa COPG kwa programu hii. Imehifadhiwa hapa, iliyoandikwa kwa injini na Kagua na kutumia katika kichupo cha Spoof.</string>
+    <string name="copg_tweak_dab_title">Zima mwangaza otomatiki</string>
+    <string name="copg_tweak_dab_desc">Inatumia muundo wa COPG wa mwangaza kiotomatiki kwa programu hii. Imehifadhiwa hapa, iliyoandikwa kwa injini na Kagua na kutumia katika kichupo cha Spoof.</string>
+    <string name="copg_tweak_kso_title">Washa skrini</string>
+    <string name="copg_tweak_kso_desc">Hutumia uboreshaji wa skrini ya COPG kwenye programu hii. Imehifadhiwa hapa, iliyoandikwa kwa injini na Kagua na kutumia katika kichupo cha Spoof.</string>
+    <string name="copg_tweak_needs_device">Inahitaji kifaa cha programu hii kwanza, katika kichupo cha Spoof.</string>
+</resources>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_sample_device_strings.xml -->
+<resources>
+    <string name="sample_pick_title">Beispielgerät auswählen</string>
+    <string name="sample_pick_button">Beispielgerät auswählen</string>
+    <string name="sample_auto_hint">Bei der Auswahl eines Geräts werden Marke, Hersteller, Modell, Gerät, Produkt und Fingerabdruck für Sie ausgefüllt. Verwenden Sie „Manuell“, um sie selbst einzugeben.</string>
+    <string name="sample_manual">Handbuch</string>
+    <string name="sample_close">Schließen</string>
+    <string name="sample_search">Geräte suchen</string>
+    <string name="sample_empty">Kein passendes Gerät.</string>
+    <string name="sample_unavailable">Der Gerätekatalog konnte nicht gelesen werden.</string>
+    <string name="sample_row_sub">Android %1$s · %2$s</string>
+    <string name="sample_row_sub_plain">%1$s</string>
+    <string name="sample_fp_shared">Gleicher Fingerabdruck wie ein anderes Kataloggerät</string>
+    <string name="sample_credit">Katalogdaten: COPG (Apache-2.0), %1$s</string>
+    <string name="sample_limit">Das Profillimit (100) ist erreicht.</string>
+</resources>

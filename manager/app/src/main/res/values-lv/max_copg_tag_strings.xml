@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_copg_tag_strings.xml -->
+<resources>
+    <string name="copg_tags_title">COPG iespējas</string>
+    <string name="copg_tags_desc">Saglabāts kā nolūks un rakstīts kopā ar ierīces profilu. Katrā COPG versijā darbojas tikai četras komforta iespējas; pārējām ir nepieciešama COPG 6.8.0 vai jaunāka versija. PRO opcijām ir nepieciešama COPG PRO licence, un dzinējs tās var ignorēt.</string>
+    <string name="copg_tier_pro">PRO</string>
+    <string name="copg_footprint_resident">paliek lietotnes atmiņā, nekad neizmantojiet ar pretkrāpšanas spēlēm</string>
+    <string name="copg_need_ack">vispirms atzīstiet tālāk norādīto risku</string>
+    <string name="copg_tag_refused">Atlasītā COPG opcija nav atļauta instalētajai COPG versijai. Nekas nebija rakstīts.</string>
+    <string name="copg_tag_needs_device">Opcijas ir rakstītas ar ierīces profilu, un šai lietotnei vēl nav nevienas.</string>
+    <string name="copg_tag_value_hint">Vērtība</string>
+    <string name="copg_tag_bad_value">Burti, cipari, atstarpe un . Tikai _ - / + (līdz 60)</string>
+    <string name="copg_tag_save">Saglabāt</string>
+    <string name="copg_tag_remove">Noņemt</string>
+    <string name="copg_tag_dnd">Netraucēt atskaņošanas laikā</string>
+    <string name="copg_tag_dab">Atspējot automātisko spilgtumu</string>
+    <string name="copg_tag_kso">Turiet ekrānu ieslēgtu</string>
+    <string name="copg_tag_nolog">Pārtraukt reģistrēšanu</string>
+    <string name="copg_tag_dpi">Ekrāna DPI</string>
+    <string name="copg_tag_serial">Sērijas numurs katrai lietotnei</string>
+    <string name="copg_tag_cpu">CPU modelis</string>
+    <string name="copg_tag_blocked">Piespiediet reālo CPU</string>
+    <string name="copg_tag_vpn">Slēpt VPN</string>
+    <string name="copg_tag_vpns">Slēpt VPN (stingrs)</string>
+    <string name="copg_tag_hidedev">Slēpt izstrādātāja opcijas un USB atkļūdošanu</string>
+    <string name="copg_tag_tz">Laika josla</string>
+    <string name="copg_tag_lang">Valoda un reģions</string>
+    <string name="copg_tag_gpu">GPU modelis</string>
+    <string name="copg_tag_cow">Būvēšanas rekvizīti (kopēšana un rakstīšana)</string>
+    <string name="copg_tag_aid">Android ID</string>
+    <string name="copg_tag_gaid">Reklāma ID</string>
+    <string name="copg_tag_appset">Lietotņu komplekts ID</string>
+    <string name="copg_tag_drm">Widevine / DRM</string>
+    <string name="copg_tag_imei">IMEI</string>
+    <string name="copg_tag_sim">SIM kartes operators (drošs)</string>
+    <string name="copg_tag_simx">SIM operators (agresīvs)</string>
+    <string name="copg_tag_ua">WebView lietotāja aģents</string>
+    <string name="copg_tag_mock">Slēpt imitācijas atrašanās vietu</string>
+</resources>

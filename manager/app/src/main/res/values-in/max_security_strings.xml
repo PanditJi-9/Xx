@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_security_strings.xml -->
+<resources>
+    <string name="security_tamper_title">Tidak dapat memulai</string>
+    <string name="security_tamper_message">Bangunan MaxManager ini tidak utuh. File yang diinstal tidak lagi sesuai dengan rilis yang ditandatangani, sehingga tidak akan berjalan. Instal ulang versi resmi dari sumber aslinya.</string>
+    <string name="security_tamper_close">Menutup</string>
+</resources>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_copg_tag_strings.xml -->
+<resources>
+    <string name="copg_tags_title">COPG ਵਿਕਲਪ</string>
+    <string name="copg_tags_desc">ਇਰਾਦੇ ਵਜੋਂ ਸੁਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਅਤੇ ਡਿਵਾਈਸ ਪ੍ਰੋਫਾਈਲ ਦੇ ਨਾਲ ਲਿਖਿਆ ਗਿਆ। ਹਰ COPG ਸੰਸਕਰਣ \'ਤੇ ਸਿਰਫ਼ ਚਾਰ ਆਰਾਮ ਵਿਕਲਪ ਕੰਮ ਕਰਦੇ ਹਨ; ਬਾਕੀ ਨੂੰ COPG 6.8.0 ਜਾਂ ਨਵੇਂ ਦੀ ਲੋੜ ਹੈ। PRO ਵਿਕਲਪਾਂ ਲਈ ਇੱਕ COPG PRO ਲਾਇਸੈਂਸ ਦੀ ਲੋੜ ਹੁੰਦੀ ਹੈ, ਅਤੇ ਇੰਜਣ ਉਹਨਾਂ ਨੂੰ ਨਜ਼ਰਅੰਦਾਜ਼ ਕਰ ਸਕਦਾ ਹੈ।</string>
+    <string name="copg_tier_pro">ਪ੍ਰੋ</string>
+    <string name="copg_footprint_resident">ਐਪ ਦੀ ਮੈਮੋਰੀ ਵਿੱਚ ਰਹਿੰਦਾ ਹੈ, ਕਦੇ ਵੀ ਐਂਟੀ-ਚੀਟ ਗੇਮਾਂ ਨਾਲ ਨਾ ਵਰਤੋ</string>
+    <string name="copg_need_ack">ਪਹਿਲਾਂ ਹੇਠਾਂ ਦਿੱਤੇ ਜੋਖਮ ਨੂੰ ਸਵੀਕਾਰ ਕਰੋ</string>
+    <string name="copg_tag_refused">ਇੰਸਟਾਲ ਕੀਤੇ COPG ਸੰਸਕਰਣ ਲਈ ਇੱਕ ਚੁਣੇ ਹੋਏ COPG ਵਿਕਲਪ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ। ਕੁਝ ਨਹੀਂ ਲਿਖਿਆ ਸੀ।</string>
+    <string name="copg_tag_needs_device">ਵਿਕਲਪ ਇੱਕ ਡਿਵਾਈਸ ਪ੍ਰੋਫਾਈਲ ਦੇ ਨਾਲ ਲਿਖੇ ਗਏ ਹਨ, ਅਤੇ ਇਸ ਐਪ ਵਿੱਚ ਅਜੇ ਤੱਕ ਕੋਈ ਨਹੀਂ ਹੈ।</string>
+    <string name="copg_tag_value_hint">ਮੁੱਲ</string>
+    <string name="copg_tag_bad_value">ਅੱਖਰ, ਅੰਕ, ਸਪੇਸ ਅਤੇ . _ - / + ਸਿਰਫ਼ (60 ਤੱਕ)</string>
+    <string name="copg_tag_save">ਸੇਵ ਕਰੋ</string>
+    <string name="copg_tag_remove">ਹਟਾਓ</string>
+    <string name="copg_tag_dnd">ਖੇਡਣ ਵੇਲੇ ਪਰੇਸ਼ਾਨ ਨਾ ਕਰੋ</string>
+    <string name="copg_tag_dab">ਸਵੈ-ਚਮਕ ਨੂੰ ਅਸਮਰੱਥ ਬਣਾਓ</string>
+    <string name="copg_tag_kso">ਸਕ੍ਰੀਨ ਚਾਲੂ ਰੱਖੋ</string>
+    <string name="copg_tag_nolog">ਲਾਗਿੰਗ ਬੰਦ ਕਰੋ</string>
+    <string name="copg_tag_dpi">ਸਕ੍ਰੀਨ DPI</string>
+    <string name="copg_tag_serial">ਪ੍ਰਤੀ-ਐਪ ਸੀਰੀਅਲ ਨੰਬਰ</string>
+    <string name="copg_tag_cpu">CPU ਮਾਡਲ</string>
+    <string name="copg_tag_blocked">ਅਸਲੀ CPU ਨੂੰ ਮਜਬੂਰ ਕਰੋ</string>
+    <string name="copg_tag_vpn">VPN ਲੁਕਾਓ</string>
+    <string name="copg_tag_vpns">VPN ਲੁਕਾਓ (ਸਖਤ)</string>
+    <string name="copg_tag_hidedev">ਡਿਵੈਲਪਰ ਵਿਕਲਪ ਅਤੇ USB ਡੀਬਗਿੰਗ ਨੂੰ ਲੁਕਾਓ</string>
+    <string name="copg_tag_tz">ਸਮਾਂ ਖੇਤਰ</string>
+    <string name="copg_tag_lang">ਭਾਸ਼ਾ ਅਤੇ ਖੇਤਰ</string>
+    <string name="copg_tag_gpu">GPU ਮਾਡਲ</string>
+    <string name="copg_tag_cow">ਸੰਪਤੀਆਂ ਬਣਾਓ (ਨਕਲ-ਤੇ-ਲਿਖਣ)</string>
+    <string name="copg_tag_aid">Android ID</string>
+    <string name="copg_tag_gaid">ਇਸ਼ਤਿਹਾਰਬਾਜ਼ੀ ID</string>
+    <string name="copg_tag_appset">ਐਪ ਸੈੱਟ ID</string>
+    <string name="copg_tag_drm">ਵਾਈਡਵਾਈਨ / ਡੀਆਰਐਮ</string>
+    <string name="copg_tag_imei">IMEI</string>
+    <string name="copg_tag_sim">ਸਿਮ ਕੈਰੀਅਰ (ਸੁਰੱਖਿਅਤ)</string>
+    <string name="copg_tag_simx">ਸਿਮ ਕੈਰੀਅਰ (ਹਮਲਾਵਰ)</string>
+    <string name="copg_tag_ua">WebView ਉਪਭੋਗਤਾ-ਏਜੰਟ</string>
+    <string name="copg_tag_mock">ਨਕਲੀ ਟਿਕਾਣਾ ਲੁਕਾਓ</string>
+</resources>

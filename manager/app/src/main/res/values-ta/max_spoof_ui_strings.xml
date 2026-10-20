@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_spoof_ui_strings.xml -->
+<resources>
+    <string name="spoof_ui_real_device">உண்மையான சாதனம்</string>
+    <string name="spoof_ui_pill_verified">கட்டமைப்பு சரிபார்க்கப்பட்டது</string>
+    <string name="spoof_ui_pill_unverified">சரிபார்க்கப்படவில்லை</string>
+    <string name="spoof_ui_pill_off">ஆஃப்</string>
+    <string name="spoof_device_for_app">இந்த பயன்பாட்டிற்கான சாதனம்</string>
+    <string name="spoof_device_real_hint">இந்த ஆப்ஸ் உங்கள் உண்மையான சாதனத்தைப் பார்க்கிறது. ஒன்றைத் தேர்வுசெய்ய கார்டைத் தட்டவும்.</string>
+    <string name="spoof_device_pick">பட்டியலிலிருந்து சாதனத்தைத் தேர்வுசெய்ய தட்டவும் அல்லது தனிப்பயன் சாதனத் தகவலை உள்ளிடவும்.</string>
+    <string name="spoof_device_in_use">பயன்பாட்டில் உள்ளது</string>
+    <string name="spoof_device_restart">பின்னர் இலக்கு பயன்பாட்டை மறுதொடக்கம் செய்யுங்கள், கணினி அல்ல.</string>
+    <string name="spoof_ui_apply_title">இந்த பயன்பாட்டிற்கு விண்ணப்பிக்கவும்</string>
+    <string name="spoof_ui_apply_action">மதிப்பாய்வு செய்து விண்ணப்பிக்கவும்</string>
+    <string name="spoof_ui_apply_confirm_title">இந்த பயன்பாட்டை மட்டும் பயன்படுத்தவா?</string>
+    <string name="spoof_ui_apply_confirm_text">இந்த பயன்பாடு மட்டுமே தயாராக உள்ளது; மற்ற பயன்பாடுகள் தொடப்படவில்லை. பின்னர் இலக்கு பயன்பாட்டை மறுதொடக்கம் செய்யுங்கள், கணினி அல்ல. பிந்தைய திருத்தம் இந்த உறுதிப்படுத்தலை ரத்து செய்கிறது. COPG ஏற்கனவே இந்தப் பயன்பாட்டைப் பட்டியலிட்டிருந்தால், உங்கள் சாதனம் முன்னுரிமை பெறுகிறது மற்றும் COPG லைன் அப்படியே இருக்கும்.</string>
+    <string name="spoof_ui_apply_confirm">விண்ணப்பிக்கவும்</string>
+    <string name="spoof_ui_apply_reason">என்ஜின் மறுப்பு: %1$s</string>
+    <string name="spoof_engine_absent">என்ஜின் தொகுதி படிக்க முடியாது. module.prop id=COPG என்று கூறும் ஒரு தொகுதியை உறுதிப்படுத்தவும், அதை நிறுவவும் அல்லது மீண்டும் நிறுவவும், பின்னர் இந்தத் திரையை மீண்டும் திறக்கவும்.</string>
+    <string name="spoof_engine_disabled">உங்கள் ரூட் மேலாளரில் COPG தொகுதி முடக்கப்பட்டுள்ளது. அதை அங்கு இயக்கி, மறுதொடக்கம் செய்து, மீண்டும் விண்ணப்பிக்கவும்.</string>
+    <string name="spoof_engine_removal_pending">COPG அகற்றுவதற்காகக் குறிக்கப்பட்டது, அடுத்த மறுதொடக்கத்திற்குப் பிறகு அது போய்விடும். விண்ணப்பிக்கும் முன் அதை மீண்டும் நிறுவவும்.</string>
+    <string name="spoof_engine_update_pending">COPG புதுப்பிப்பு மறுதொடக்கத்திற்காக காத்திருக்கிறது. முதலில் மறுதொடக்கம் செய்து, மீண்டும் விண்ணப்பிக்கவும்.</string>
+    <string name="spoof_ui_apply_pending">கடைசியாக விண்ணப்பித்ததிலிருந்து மாற்றப்பட்டது - அதை உண்மையாக்க மீண்டும் விண்ணப்பிக்கவும்.</string>
+    <string name="spoof_ui_restore_title">உங்கள் உண்மையான சாதனத்தைப் பயன்படுத்தவும்</string>
+    <string name="spoof_ui_restore_action">இந்த பயன்பாட்டிற்கான ஸ்பூப்பை அகற்றவும்</string>
+    <string name="spoof_ui_restore_notice">இந்த ஆப்ஸ் சேமித்த சாதனம் மற்றும் அதன் COPG மாற்றங்கள் அகற்றப்பட்டு, இந்த ஆப்ஸ் இல்லாமல் என்ஜின் மீண்டும் எழுதப்படும். மற்ற பயன்பாடுகள் தொடாதவை. இலக்கு பயன்பாட்டை பின்னர் மீண்டும் தொடங்கவும்.</string>
+    <string name="app_tab_spoof">ஏமாற்று</string>
+    <string name="spoof_picker_title">ஒரு சாதனத்தைத் தேர்ந்தெடுக்கவும்</string>
+    <string name="spoof_picker_custom">தனிப்பயன் சாதனத் தகவல்</string>
+    <string name="spoof_picker_custom_hint">இந்த பயன்பாட்டிற்கு நீங்கள் விரும்பும் பிராண்ட், மாடல் மற்றும் கைரேகையை உள்ளிடவும்</string>
+    <string name="spoof_custom_title">தனிப்பயன் சாதனத் தகவல்</string>
+    <string name="spoof_custom_rules">பெயர், பிராண்ட், மாடல், சாதனம் மற்றும் தயாரிப்பு ஆகியவை தேவை, ஒவ்வொன்றும் 120 எழுத்துகள் வரை, எந்த கட்டுப்பாட்டு எழுத்துகளும் இல்லை. உற்பத்தியாளர், கைரேகை மற்றும் SDK ஆகியவை விருப்பமானவை. கைரேகை அதே பிராண்ட், தயாரிப்பு மற்றும் சாதனத்துடன் தொடங்க வேண்டும்.</string>
+    <string name="spoof_manufacturer">உற்பத்தியாளர் (MANUFACTURER)</string>
+    <string name="spoof_sdk">SDK நிலை, விருப்பமானது, 1 முதல் 100 வரை</string>
+    <string name="spoof_custom_invalid">சில புலங்கள் தவறானவை. மேலே உள்ள விதிகளைச் சரிபார்த்து, மீண்டும் சேமிக்கவும்.</string>
+    <string name="spoof_custom_save">இந்த பயன்பாட்டைச் சேமித்து தேர்வு செய்யவும்</string>
+    <string name="spoof_impersonation_title">ஏமாற்றுதல்</string>
+    <string name="spoof_impersonation_desc">இலவச COPG விருப்பங்கள் மட்டுமே. மறுஆய்வு மற்றும் விண்ணப்பம் மூலம் இயந்திரத்திற்கு எழுதப்பட்டது.</string>
+    <string name="spoof_impersonation_summary_cpu">CPU ஏமாற்றுதல்: %1$s</string>
+    <string name="spoof_impersonation_needs_device">இந்த பயன்பாட்டிற்கான சாதனத்தை முதலில் தேர்வு செய்யவும். இந்த விருப்பங்கள் ஒரு சாதனத்தில் மட்டுமே எழுதப்பட்டுள்ளன.</string>
+    <string name="spoof_cpu_spoof">CPU ஏமாற்றுதல்</string>
+    <string name="spoof_cpu_real">உண்மையான CPU</string>
+    <string name="spoof_cpu_block">பிளாக் CPU</string>
+    <string name="spoof_cpu_block_desc">இந்த பயன்பாட்டை CPU ஏமாற்றுவதில் இருந்து விலக்குகிறது.</string>
+    <string name="spoof_cpu_picker_title">CPU ஐ தேர்வு செய்யவும்</string>
+    <string name="copg_tweaks_section">COPG மாற்றங்கள்</string>
+    <string name="copg_tweak_nolog_title">பதிவு செய்வதை முடக்கு</string>
+    <string name="copg_tweak_nolog_desc">இந்த பயன்பாட்டிற்கு COPG பதிவு மாற்றங்களைப் பயன்படுத்துகிறது. இங்கே சேமிக்கப்பட்டது, மதிப்பாய்வு மூலம் இயந்திரத்தில் எழுதப்பட்டு ஸ்பூஃப் தாவலில் விண்ணப்பிக்கவும்.</string>
+    <string name="copg_tweak_dab_title">தானியங்கு பிரகாசத்தை முடக்கு</string>
+    <string name="copg_tweak_dab_desc">இந்த பயன்பாட்டிற்கு COPG ஆட்டோ-பிரைட்னெஸ் ட்வீக்கைப் பயன்படுத்துகிறது. இங்கே சேமிக்கப்பட்டது, மதிப்பாய்வு மூலம் இயந்திரத்தில் எழுதப்பட்டு ஸ்பூஃப் தாவலில் விண்ணப்பிக்கவும்.</string>
+    <string name="copg_tweak_kso_title">திரையை இயக்கவும்</string>
+    <string name="copg_tweak_kso_desc">இந்த பயன்பாட்டிற்கு COPG கீப்-ஸ்கிரீன்-ஆன் மாற்றங்களைப் பயன்படுத்துகிறது. இங்கே சேமிக்கப்பட்டது, மதிப்பாய்வு மூலம் இயந்திரத்தில் எழுதப்பட்டு ஸ்பூஃப் தாவலில் விண்ணப்பிக்கவும்.</string>
+    <string name="copg_tweak_needs_device">ஸ்பூஃப் தாவலில் இந்த பயன்பாட்டிற்கு முதலில் ஒரு சாதனம் தேவை.</string>
+</resources>

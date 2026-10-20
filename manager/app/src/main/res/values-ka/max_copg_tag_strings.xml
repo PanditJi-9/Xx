@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_copg_tag_strings.xml -->
+<resources>
+    <string name="copg_tags_title">COPG პარამეტრები</string>
+    <string name="copg_tags_desc">შენახულია როგორც განზრახვა და დაწერილია მოწყობილობის პროფილთან ერთად. მხოლოდ ოთხი კომფორტის ვარიანტი მუშაობს COPG-ის ყველა ვერსიაზე; დანარჩენს სჭირდება COPG 6.8.0 ან უფრო ახალი. PRO ოფციებს სჭირდება COPG PRO ლიცენზია და ძრავმა შეიძლება იგნორირება გაუკეთოს მათ.</string>
+    <string name="copg_tier_pro">პროფ</string>
+    <string name="copg_footprint_resident">რჩება აპლიკაციის მეხსიერებაში, არასოდეს გამოიყენო მოტყუების საწინააღმდეგო თამაშებით</string>
+    <string name="copg_need_ack">ჯერ აღიარეთ ქვემოთ მოცემული რისკი</string>
+    <string name="copg_tag_refused">არჩეული COPG ვარიანტი დაუშვებელია დაინსტალირებული COPG ვერსიისთვის. არაფერი ეწერა.</string>
+    <string name="copg_tag_needs_device">ოფციები დაწერილია მოწყობილობის პროფილით და ამ აპს ჯერ არ აქვს.</string>
+    <string name="copg_tag_value_hint">ღირებულება</string>
+    <string name="copg_tag_bad_value">ასოები, ციფრები, სივრცე და . მხოლოდ _ - / + (60-მდე)</string>
+    <string name="copg_tag_save">შენახვა</string>
+    <string name="copg_tag_remove">ამოღება</string>
+    <string name="copg_tag_dnd">არ შემაწუხოთ თამაშისას</string>
+    <string name="copg_tag_dab">გამორთეთ ავტომატური სიკაშკაშე</string>
+    <string name="copg_tag_kso">ეკრანი ჩართული</string>
+    <string name="copg_tag_nolog">შეაჩერე ხე-ტყე</string>
+    <string name="copg_tag_dpi">ეკრანის DPI</string>
+    <string name="copg_tag_serial">თითო აპის სერიული ნომერი</string>
+    <string name="copg_tag_cpu">CPU მოდელი</string>
+    <string name="copg_tag_blocked">აიძულეთ რეალური CPU</string>
+    <string name="copg_tag_vpn">VPN-ის დამალვა</string>
+    <string name="copg_tag_vpns">VPN-ის დამალვა (მკაცრი)</string>
+    <string name="copg_tag_hidedev">დამალე დეველოპერის პარამეტრები და USB გამართვა</string>
+    <string name="copg_tag_tz">დროის სარტყელი</string>
+    <string name="copg_tag_lang">ენა და რეგიონი</string>
+    <string name="copg_tag_gpu">GPU მოდელი</string>
+    <string name="copg_tag_cow">თვისებების აშენება (ასლი ჩაწერაზე)</string>
+    <string name="copg_tag_aid">Android ID</string>
+    <string name="copg_tag_gaid">რეკლამა ID</string>
+    <string name="copg_tag_appset">აპების ნაკრები ID</string>
+    <string name="copg_tag_drm">Widevine / DRM</string>
+    <string name="copg_tag_imei">IMEI</string>
+    <string name="copg_tag_sim">SIM ოპერატორი (უსაფრთხო)</string>
+    <string name="copg_tag_simx">SIM ოპერატორი (აგრესიული)</string>
+    <string name="copg_tag_ua">WebView მომხმარებლის აგენტი</string>
+    <string name="copg_tag_mock">იმიტირებული მდებარეობის დამალვა</string>
+</resources>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_security_strings.xml -->
+<resources>
+    <string name="security_tamper_title">Δεν είναι δυνατή η εκκίνηση</string>
+    <string name="security_tamper_message">Αυτή η κατασκευή του MaxManager δεν είναι άθικτη. Τα εγκατεστημένα αρχεία δεν ταιριάζουν πλέον με την υπογεγραμμένη έκδοση, επομένως δεν θα εκτελεστεί. Επανεγκαταστήστε την επίσημη έκδοση από την αρχική της πηγή.</string>
+    <string name="security_tamper_close">Κοντά</string>
+</resources>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_spoof_ui_strings.xml -->
+<resources>
+    <string name="spoof_ui_real_device">دستگاه واقعی</string>
+    <string name="spoof_ui_pill_verified">پیکربندی تأیید شد</string>
+    <string name="spoof_ui_pill_unverified">تایید نشده است</string>
+    <string name="spoof_ui_pill_off">خاموش</string>
+    <string name="spoof_device_for_app">دستگاه برای این برنامه</string>
+    <string name="spoof_device_real_hint">این برنامه دستگاه واقعی شما را می بیند. روی کارت ضربه بزنید تا یکی را انتخاب کنید.</string>
+    <string name="spoof_device_pick">برای انتخاب دستگاه از کاتالوگ ضربه بزنید یا اطلاعات دستگاه سفارشی را وارد کنید.</string>
+    <string name="spoof_device_in_use">در حال استفاده</string>
+    <string name="spoof_device_restart">پس از آن برنامه مورد نظر را مجدداً راه اندازی کنید، نه سیستم را.</string>
+    <string name="spoof_ui_apply_title">برای این برنامه اقدام کنید</string>
+    <string name="spoof_ui_apply_action">بررسی و اعمال کنید</string>
+    <string name="spoof_ui_apply_confirm_title">فقط این برنامه را اعمال کنید؟</string>
+    <string name="spoof_ui_apply_confirm_text">فقط این برنامه آماده شده است. سایر برنامه ها دست نخورده هستند. پس از آن برنامه مورد نظر را مجدداً راه اندازی کنید، نه سیستم را. ویرایش بعدی این تایید را لغو می کند. اگر COPG قبلاً این برنامه را فهرست کرده است، دستگاه شما در اولویت قرار می گیرد و خط COPG همانطور که هست باقی می ماند.</string>
+    <string name="spoof_ui_apply_confirm">درخواست کنید</string>
+    <string name="spoof_ui_apply_reason">امتناع موتور: %1$s</string>
+    <string name="spoof_engine_absent">ماژول موتور قابل خواندن نیست. ماژولی را که module.prop آن id=COPG می گوید تأیید کنید، آن را نصب یا دوباره نصب کنید، سپس این صفحه را دوباره باز کنید.</string>
+    <string name="spoof_engine_disabled">ماژول COPG در مدیر ریشه شما غیرفعال است. آن را در آنجا فعال کنید، راه اندازی مجدد کنید، سپس دوباره اعمال کنید.</string>
+    <string name="spoof_engine_removal_pending">COPG برای حذف علامت گذاری شده است و پس از راه اندازی مجدد بعدی از بین خواهد رفت. قبل از اعمال آن را دوباره نصب کنید.</string>
+    <string name="spoof_engine_update_pending">به‌روزرسانی COPG منتظر راه‌اندازی مجدد است. ابتدا راه اندازی مجدد، سپس دوباره اعمال کنید.</string>
+    <string name="spoof_ui_apply_pending">از آخرین درخواست تغییر کرده است - دوباره درخواست کنید تا واقعی شود.</string>
+    <string name="spoof_ui_restore_title">از دستگاه واقعی خود استفاده کنید</string>
+    <string name="spoof_ui_restore_action">جعلی را برای این برنامه حذف کنید</string>
+    <string name="spoof_ui_restore_notice">دستگاه ذخیره شده این برنامه و ترفندهای COPG آن حذف می شوند و موتور بدون این برنامه بازنویسی می شود. سایر برنامه ها دست نخورده هستند. پس از آن برنامه مورد نظر را مجدداً راه اندازی کنید.</string>
+    <string name="app_tab_spoof">کلاهبرداری</string>
+    <string name="spoof_picker_title">دستگاهی را انتخاب کنید</string>
+    <string name="spoof_picker_custom">اطلاعات دستگاه سفارشی</string>
+    <string name="spoof_picker_custom_hint">نام تجاری، مدل و اثر انگشت مورد نظر خود را برای این برنامه وارد کنید</string>
+    <string name="spoof_custom_title">اطلاعات دستگاه سفارشی</string>
+    <string name="spoof_custom_rules">نام، نام تجاری، مدل، دستگاه و محصول مورد نیاز است، هر کدام حداکثر 120 کاراکتر، بدون نویسه کنترلی. سازنده، اثر انگشت و SDK اختیاری هستند. اثر انگشت باید با همان برند، محصول و دستگاه شروع شود.</string>
+    <string name="spoof_manufacturer">سازنده (MANUFACTURER)</string>
+    <string name="spoof_sdk">سطح SDK، اختیاری، 1 تا 100</string>
+    <string name="spoof_custom_invalid">برخی از فیلدها نامعتبر هستند. قوانین بالا را بررسی کنید، سپس دوباره ذخیره کنید.</string>
+    <string name="spoof_custom_save">ذخیره کنید و برای این برنامه انتخاب کنید</string>
+    <string name="spoof_impersonation_title">جعل</string>
+    <string name="spoof_impersonation_desc">فقط گزینه های COPG رایگان. نوشته شده به موتور توسط بررسی و اعمال.</string>
+    <string name="spoof_impersonation_summary_cpu">CPU جعل: %1$s</string>
+    <string name="spoof_impersonation_needs_device">ابتدا دستگاهی را برای این برنامه انتخاب کنید. این گزینه ها فقط با دستگاه نوشته می شوند.</string>
+    <string name="spoof_cpu_spoof">CPU جعل</string>
+    <string name="spoof_cpu_real">واقعی CPU</string>
+    <string name="spoof_cpu_block">بلوک CPU</string>
+    <string name="spoof_cpu_block_desc">این برنامه را از جعل CPU مستثنی می کند.</string>
+    <string name="spoof_cpu_picker_title">یک CPU را انتخاب کنید</string>
+    <string name="copg_tweaks_section">ترفندهای COPG</string>
+    <string name="copg_tweak_nolog_title">غیرفعال کردن ورود به سیستم</string>
+    <string name="copg_tweak_nolog_desc">نیشگون گرفتن و کشیدن ورود به سیستم COPG را در این برنامه اعمال می کند. ذخیره شده در اینجا، نوشته شده در موتور توسط مرور و اعمال در تب Spoof.</string>
+    <string name="copg_tweak_dab_title">روشنایی خودکار را غیرفعال کنید</string>
+    <string name="copg_tweak_dab_desc">تنظیم خودکار روشنایی COPG را در این برنامه اعمال می کند. ذخیره شده در اینجا، نوشته شده در موتور توسط مرور و اعمال در تب Spoof.</string>
+    <string name="copg_tweak_kso_title">روشن نگه داشتن صفحه نمایش</string>
+    <string name="copg_tweak_kso_desc">نیشگون گرفتن و کشیدن نگه داشتن صفحه نمایش COPG را در این برنامه اعمال می کند. ذخیره شده در اینجا، نوشته شده در موتور توسط مرور و اعمال در تب Spoof.</string>
+    <string name="copg_tweak_needs_device">ابتدا در برگه Spoof به دستگاهی برای این برنامه نیاز دارد.</string>
+</resources>

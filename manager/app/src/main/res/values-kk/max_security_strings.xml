@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_security_strings.xml -->
+<resources>
+    <string name="security_tamper_title">Бастау мүмкін емес</string>
+    <string name="security_tamper_message">Бұл MaxManager құрылымы бұзылмаған. Орнатылған файлдар енді қол қойылған шығарылымға сәйкес келмейді, сондықтан ол іске қосылмайды. Ресми құрылымды бастапқы көзінен қайта орнатыңыз.</string>
+    <string name="security_tamper_close">Жабу</string>
+</resources>

@@ -1,0 +1,100 @@
+package nd.max.core.gamespace
+
+import com.topjohnwu.superuser.Shell
+import kotlin.math.roundToInt
+
+/** إعداد مسبق لدقّة الشاشة: العرض والارتفاع بالبكسل والكثافة، و`id` ثابت يعرفه باقي التطبيق. */
+data class ScalePreset(val id: String, val widthPx: Int, val heightPx: Int, val dpi: Int)
+
+/** قراءة الشاشة الآن: الأصل من العتاد، والفعّال بعد أيّ تجاوز (`wm size` و`wm density`). */
+data class DisplayReading(
+    val nativeW: Int,
+    val nativeH: Int,
+    val nativeDpi: Int,
+    val activeW: Int,
+    val activeH: Int,
+    val activeDpi: Int,
+) {
+    /** هل يوجد تجاوز فعلي يختلف عن الأصل؟ */
+    val overridden: Boolean
+        get() = activeW != nativeW || activeH != nativeH || activeDpi != nativeDpi
+}
+
+/**
+ * مقياس اللوحة للعبة: ثلاثة إعدادات مسبقة مشتقّة من الدقّة الأصلية بالنِّسَب نفسها في شاشة
+ * «مقياس اللوحة» في الإعدادات (٨٠٪ متوازن · ٦٠٪ أداء · ٤٥٪ توفير).
+ *
+ * **جلسة لا دائم:** لا يكتب شيئًا في الخصائص المحفوظة، فلا يبقى التغيير بعد اللعبة. وتُعاد الشاشة
+ * إلى ما كانت عليه قبل أوّل تغيير ([restore]) حين تغادر اللعبة إلى تطبيق آخر أو تُوقف الخدمة.
+ */
+object PanelResolution {
+    private val PHYSICAL_SIZE = Regex("Physical size:\\s*(\\d+)x(\\d+)")
+    private val OVERRIDE_SIZE = Regex("Override size:\\s*(\\d+)x(\\d+)")
+    private val PHYSICAL_DENSITY = Regex("Physical density:\\s*(\\d+)")
+    private val OVERRIDE_DENSITY = Regex("Override density:\\s*(\\d+)")
+
+    /** الدقّة الحالية من الصدفة، أو `null` إن لم يُقرأ الأصل. */
+    fun read(): DisplayReading? {
+        val out = runCatching {
+            Shell.cmd("wm size", "wm density").exec().out.joinToString("\n")
+        }.getOrNull() ?: return null
+        val physical = PHYSICAL_SIZE.find(out) ?: return null
+        val density = PHYSICAL_DENSITY.find(out) ?: return null
+        val nw = physical.groupValues[1].toIntOrNull() ?: return null
+        val nh = physical.groupValues[2].toIntOrNull() ?: return null
+        val nd = density.groupValues[1].toIntOrNull() ?: return null
+        if (nw <= 0 || nh <= 0 || nd <= 0) return null
+        val override = OVERRIDE_SIZE.find(out)
+        val overrideDensity = OVERRIDE_DENSITY.find(out)
+        return DisplayReading(
+            nativeW = nw,
+            nativeH = nh,
+            nativeDpi = nd,
+            activeW = override?.groupValues?.get(1)?.toIntOrNull() ?: nw,
+            activeH = override?.groupValues?.get(2)?.toIntOrNull() ?: nh,
+            activeDpi = overrideDensity?.groupValues?.get(1)?.toIntOrNull() ?: nd,
+        )
+    }
+
+    /** الإعدادات المسبقة الأربعة من الدقّة الأصلية؛ العرض زوجيّ دائمًا ليكون صديقًا للمعالج الرسومي. */
+    fun presets(r: DisplayReading): List<ScalePreset> {
+        fun scaled(id: String, fraction: Float): ScalePreset {
+            val w = (r.nativeW * fraction).roundToInt().let { it - (it % 2) }
+            val h = (w.toFloat() / r.nativeW * r.nativeH).roundToInt()
+            val d = (r.nativeDpi * fraction).roundToInt()
+            return ScalePreset(id, w, h, d)
+        }
+        return listOf(
+            ScalePreset("native", r.nativeW, r.nativeH, r.nativeDpi),
+            scaled("balanced", 0.8f),
+            scaled("performance", 0.6f),
+            scaled("battery_saver", 0.45f),
+        )
+    }
+
+    /** معرّف الإعداد الحالي: `native` إن لم يوجد تجاوز، ومعرّف المسبق المطابق، وإلا `custom`. */
+    fun activeId(r: DisplayReading): String {
+        if (!r.overridden) return "native"
+        return presets(r).firstOrNull { p ->
+            p.widthPx == r.activeW && p.heightPx == r.activeH && p.dpi == r.activeDpi
+        }?.id ?: "custom"
+    }
+
+    /** يطبّق إعدادًا مسبقًا في الجلسة الحالية؛ `native` يُعيد الأصل. */
+    fun apply(p: ScalePreset) {
+        if (p.id == "native") {
+            Shell.cmd("wm size reset", "wm density reset").exec()
+        } else {
+            Shell.cmd("wm size ${p.widthPx}x${p.heightPx}", "wm density ${p.dpi}").exec()
+        }
+    }
+
+    /** يعيد الشاشة إلى ما كانت عليه قبل الجلسة: تجاوزها الأصلي إن وُجد، وإلا الأصل. */
+    fun restore(before: DisplayReading) {
+        if (!before.overridden) {
+            Shell.cmd("wm size reset", "wm density reset").exec()
+        } else {
+            Shell.cmd("wm size ${before.activeW}x${before.activeH}", "wm density ${before.activeDpi}").exec()
+        }
+    }
+}

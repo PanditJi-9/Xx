@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_sample_device_strings.xml -->
+<resources>
+    <string name="sample_pick_title">নমুনা ডিভাইস চয়ন করুন</string>
+    <string name="sample_pick_button">নমুনা ডিভাইস চয়ন করুন</string>
+    <string name="sample_auto_hint">একটি ডিভাইস বাছাই আপনার জন্য ব্র্যান্ড, প্রস্তুতকারক, মডেল, ডিভাইস, পণ্য এবং আঙ্গুলের ছাপ পূরণ করে। সেগুলি নিজে টাইপ করতে ম্যানুয়াল ব্যবহার করুন।</string>
+    <string name="sample_manual">ম্যানুয়াল</string>
+    <string name="sample_close">বন্ধ</string>
+    <string name="sample_search">ডিভাইস অনুসন্ধান করুন</string>
+    <string name="sample_empty">কোনো ম্যাচিং ডিভাইস।</string>
+    <string name="sample_unavailable">ডিভাইস ক্যাটালগ পড়া যাবে না.</string>
+    <string name="sample_row_sub">অ্যান্ড্রয়েড %1$s · %2$s</string>
+    <string name="sample_row_sub_plain">%1$s</string>
+    <string name="sample_fp_shared">অন্য ক্যাটালগ ডিভাইসের মতো একই ফিঙ্গারপ্রিন্ট</string>
+    <string name="sample_credit">ক্যাটালগ ডেটা: COPG (Apache-2.0), %1$s</string>
+    <string name="sample_limit">প্রোফাইল সীমা (100) পৌঁছে গেছে।</string>
+</resources>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_copg_tag_strings.xml -->
+<resources>
+    <string name="copg_tags_title">COPG-vaihtoehdot</string>
+    <string name="copg_tags_desc">Tallennettu tarkoituksena ja kirjoitettu yhdessä laiteprofiilin kanssa. Vain neljä mukavuusvaihtoehtoa toimivat kaikissa COPG-versioissa; loput tarvitsevat COPG 6.8.0:n tai uudemman. PRO-vaihtoehdot tarvitsevat COPG PRO -lisenssin, ja moottori voi jättää ne huomiotta.</string>
+    <string name="copg_tier_pro">PRO</string>
+    <string name="copg_footprint_resident">pysyy sovelluksen muistissa, älä koskaan käytä huijausten vastaisten pelien kanssa</string>
+    <string name="copg_need_ack">tunnusta ensin alla oleva riski</string>
+    <string name="copg_tag_refused">Valittu COPG-vaihtoehto ei ole sallittu asennetussa COPG-versiossa. Mitään ei kirjoitettu.</string>
+    <string name="copg_tag_needs_device">Vaihtoehdot on kirjoitettu laiteprofiililla, eikä tällä sovelluksella ole vielä sellaista.</string>
+    <string name="copg_tag_value_hint">Arvo</string>
+    <string name="copg_tag_bad_value">Kirjaimet, numerot, välilyönti ja . Vain _ - / + (60 asti)</string>
+    <string name="copg_tag_save">Tallentaa</string>
+    <string name="copg_tag_remove">Poistaa</string>
+    <string name="copg_tag_dnd">Älä häiritse pelaamisen aikana</string>
+    <string name="copg_tag_dab">Poista automaattinen kirkkaus käytöstä</string>
+    <string name="copg_tag_kso">Pidä näyttö päällä</string>
+    <string name="copg_tag_nolog">Lopeta kirjaaminen</string>
+    <string name="copg_tag_dpi">Näytön DPI</string>
+    <string name="copg_tag_serial">Sovelluskohtainen sarjanumero</string>
+    <string name="copg_tag_cpu">CPU malli</string>
+    <string name="copg_tag_blocked">Pakota todellinen CPU</string>
+    <string name="copg_tag_vpn">Piilota VPN</string>
+    <string name="copg_tag_vpns">Piilota VPN (tiukka)</string>
+    <string name="copg_tag_hidedev">Piilota kehittäjäasetukset ja USB-virheenkorjaus</string>
+    <string name="copg_tag_tz">Aikavyöhyke</string>
+    <string name="copg_tag_lang">Kieli ja alue</string>
+    <string name="copg_tag_gpu">GPU malli</string>
+    <string name="copg_tag_cow">Rakennusominaisuudet (kopiointi-kirjoitus)</string>
+    <string name="copg_tag_aid">Android ID</string>
+    <string name="copg_tag_gaid">Mainonta ID</string>
+    <string name="copg_tag_appset">Sovellussarja ID</string>
+    <string name="copg_tag_drm">Widevine / DRM</string>
+    <string name="copg_tag_imei">IMEI</string>
+    <string name="copg_tag_sim">SIM-operaattori (turvallinen)</string>
+    <string name="copg_tag_simx">SIM-operaattori (aggressiivinen)</string>
+    <string name="copg_tag_ua">WebView User-Agent</string>
+    <string name="copg_tag_mock">Piilota valesijainti</string>
+</resources>

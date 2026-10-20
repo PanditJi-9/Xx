@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_security_strings.xml -->
+<resources>
+    <string name="security_tamper_title">ආරම්භ කිරීමට නොහැකි විය</string>
+    <string name="security_tamper_message">MaxManager හි මෙම ගොඩනැගීම නොවෙනස්ව පවතී. ස්ථාපිත ගොනු තවදුරටත් අත්සන් කළ නිකුතුවට නොගැලපේ, එබැවින් එය ධාවනය නොවේ. නිල ගොඩනැගීම එහි මුල් මූලාශ්‍රයෙන් නැවත ස්ථාපනය කරන්න.</string>
+    <string name="security_tamper_close">වසන්න</string>
+</resources>

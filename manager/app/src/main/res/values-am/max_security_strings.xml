@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_security_strings.xml -->
+<resources>
+    <string name="security_tamper_title">መጀመር አልተቻለም</string>
+    <string name="security_tamper_message">ይህ የMaxManager ግንባታ አልተበላሸም። የተጫኑት ፋይሎች ከተፈረመበት ልቀት በኋላ አይዛመዱም፣ ስለዚህ አይሰራም። ኦፊሴላዊውን ግንባታ ከመጀመሪያው ምንጭ እንደገና ጫን።</string>
+    <string name="security_tamper_close">ገጠመ</string>
+</resources>

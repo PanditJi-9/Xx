@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_copg_tag_strings.xml -->
+<resources>
+    <string name="copg_tags_title">Opcje COPG</string>
+    <string name="copg_tags_desc">Zapisane jako intencja i zapisane razem z profilem urządzenia. W każdej wersji COPG działają tylko cztery opcje komfortu; reszta potrzebuje COPG 6.8.0 lub nowszego. Opcje PRO wymagają licencji COPG PRO i silnik może je zignorować.</string>
+    <string name="copg_tier_pro">ZAWODOWIEC</string>
+    <string name="copg_footprint_resident">pozostaje w pamięci aplikacji, nigdy nie używaj jej w grach zapobiegających oszustwom</string>
+    <string name="copg_need_ack">najpierw zaakceptuj poniższe ryzyko</string>
+    <string name="copg_tag_refused">Wybrana opcja COPG nie jest dozwolona dla zainstalowanej wersji COPG. Nic nie zostało napisane.</string>
+    <string name="copg_tag_needs_device">Opcje są zapisywane w profilu urządzenia, a ta aplikacja jeszcze ich nie ma.</string>
+    <string name="copg_tag_value_hint">Wartość</string>
+    <string name="copg_tag_bad_value">Litery, cyfry, spacja i . tylko _ - / + (do 60)</string>
+    <string name="copg_tag_save">Ratować</string>
+    <string name="copg_tag_remove">Usunąć</string>
+    <string name="copg_tag_dnd">Nie przeszkadzać podczas gry</string>
+    <string name="copg_tag_dab">Wyłącz automatyczną jasność</string>
+    <string name="copg_tag_kso">Pozostaw ekran włączony</string>
+    <string name="copg_tag_nolog">Zatrzymaj rejestrowanie</string>
+    <string name="copg_tag_dpi">DPI ekranu</string>
+    <string name="copg_tag_serial">Numer seryjny dla aplikacji</string>
+    <string name="copg_tag_cpu">CPU model</string>
+    <string name="copg_tag_blocked">Wymuś prawdziwe CPU</string>
+    <string name="copg_tag_vpn">Ukryj VPN</string>
+    <string name="copg_tag_vpns">Ukryj VPN (ściśle)</string>
+    <string name="copg_tag_hidedev">Ukryj opcje programistyczne i debugowanie USB</string>
+    <string name="copg_tag_tz">Strefa czasowa</string>
+    <string name="copg_tag_lang">Język i region</string>
+    <string name="copg_tag_gpu">GPU model</string>
+    <string name="copg_tag_cow">Właściwości kompilacji (kopiowanie przy zapisie)</string>
+    <string name="copg_tag_aid">Androida ID</string>
+    <string name="copg_tag_gaid">Reklama ID</string>
+    <string name="copg_tag_appset">Zestaw aplikacji ID</string>
+    <string name="copg_tag_drm">Widevine/DRM</string>
+    <string name="copg_tag_imei">IMEI</string>
+    <string name="copg_tag_sim">Operator karty SIM (bezpieczny)</string>
+    <string name="copg_tag_simx">Operator karty SIM (agresywny)</string>
+    <string name="copg_tag_ua">Klient użytkownika WebView</string>
+    <string name="copg_tag_mock">Ukryj fikcyjną lokalizację</string>
+</resources>

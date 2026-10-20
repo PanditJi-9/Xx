@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_spoof_ui_strings.xml -->
+<resources>
+    <string name="spoof_ui_real_device">ကိရိယာအစစ်</string>
+    <string name="spoof_ui_pill_verified">Config အတည်ပြုပြီးပါပြီ။</string>
+    <string name="spoof_ui_pill_unverified">မစစ်ဆေးရသေးပါ။</string>
+    <string name="spoof_ui_pill_off">ပိတ်သည်။</string>
+    <string name="spoof_device_for_app">ဤအက်ပ်အတွက် စက်ပစ္စည်း</string>
+    <string name="spoof_device_real_hint">ဤအက်ပ်က သင့်စက်ပစ္စည်းအစစ်ကို မြင်နိုင်သည်။ တစ်ခုရွေးရန် ကတ်ကိုနှိပ်ပါ။</string>
+    <string name="spoof_device_pick">ကတ်တလောက်မှ စက်ပစ္စည်းတစ်ခုကို ရွေးချယ်ရန် တို့ပါ သို့မဟုတ် စိတ်ကြိုက်စက်ပစ္စည်းအချက်အလက်ကို ထည့်သွင်းပါ။</string>
+    <string name="spoof_device_in_use">အသုံးပြုနေပါသည်။</string>
+    <string name="spoof_device_restart">ပစ်မှတ်အက်ပ်ကို ပြန်လည်စတင်ပြီးနောက်၊ စနစ်မဟုတ်ဘဲ၊</string>
+    <string name="spoof_ui_apply_title">ဤအက်ပ်အတွက် လျှောက်ထားပါ။</string>
+    <string name="spoof_ui_apply_action">သုံးသပ်ပြီး လျှောက်ထားပါ။</string>
+    <string name="spoof_ui_apply_confirm_title">ဤအက်ပ်ကိုသာ သုံးလိုပါသလား။</string>
+    <string name="spoof_ui_apply_confirm_text">ဤအက်ပ်ကိုသာ ပြင်ဆင်ထားသည်။ အခြားအက်ပ်များကို မထိပါ။ ပစ်မှတ်အက်ပ်ကို ပြန်လည်စတင်ပြီးနောက်၊ စနစ်မဟုတ်ဘဲ၊ နောက်ပိုင်းတည်းဖြတ်မှုတစ်ခုသည် ဤအတည်ပြုချက်ကို ပယ်ဖျက်သည်။ COPG သည် ဤအက်ပ်ကို စာရင်းပြုစုထားပြီးဖြစ်ပါက၊ သင့်စက်ပစ္စည်းသည် ဦးစားပေးဖြစ်ပြီး COPG လိုင်းသည် ၎င်းအတိုင်းရှိနေမည်ဖြစ်သည်။</string>
+    <string name="spoof_ui_apply_confirm">လျှောက်ထားပါ။</string>
+    <string name="spoof_ui_apply_reason">အင်ဂျင်ငြင်းချက်- %1$s</string>
+    <string name="spoof_engine_absent">အင်ဂျင်မော်ဂျူးကို ဖတ်လို့ မရပါဘူး။ module.prop က id=COPG ဟုပြောသည့် မော်ဂျူးတစ်ခုကို အတည်ပြုပါ၊ ထည့်သွင်းပါ သို့မဟုတ် ပြန်လည်ထည့်သွင်းပါ၊ ထို့နောက် ဤမျက်နှာပြင်ကို ပြန်ဖွင့်ပါ။</string>
+    <string name="spoof_engine_disabled">COPG module ကို သင်၏ root manager တွင် ပိတ်ထားသည်။ ၎င်းကို ထိုနေရာတွင်ဖွင့်ပါ၊ ပြန်ဖွင့်ပါ၊ ထို့နောက် ထပ်မံအသုံးပြုပါ။</string>
+    <string name="spoof_engine_removal_pending">COPG ကို ဖယ်ရှားရန်အတွက် အမှတ်အသားပြုထားပြီး နောက်တစ်ကြိမ် ပြန်လည်စတင်ပြီးနောက် ပျောက်သွားပါမည်။ မလျှောက်ထားမီ ၎င်းကို ပြန်လည်ထည့်သွင်းပါ။</string>
+    <string name="spoof_engine_update_pending">COPG အပ်ဒိတ်သည် ပြန်လည်စတင်ရန် စောင့်ဆိုင်းနေသည်။ ပထမဦးစွာ ပြန်ဖွင့်ပါ၊ ထို့နောက် ထပ်မံအသုံးပြုပါ။</string>
+    <string name="spoof_ui_apply_pending">နောက်ဆုံးလျှောက်ထားကတည်းက ပြောင်းလဲထားသည် — ၎င်းကို အမှန်တကယ်ဖြစ်လာစေရန် ထပ်မံလျှောက်ထားပါ။</string>
+    <string name="spoof_ui_restore_title">သင်၏အစစ်အမှန်စက်ပစ္စည်းကိုသုံးပါ။</string>
+    <string name="spoof_ui_restore_action">ဤအက်ပ်အတွက် အတုအယောင်ကို ဖယ်ရှားပါ။</string>
+    <string name="spoof_ui_restore_notice">ဤအက်ပ်၏ သိမ်းဆည်းထားသော စက်နှင့် ၎င်း၏ COPG အပြောင်းအလဲများကို ဖယ်ရှားလိုက်ပြီး အင်ဂျင်ကို ဤအက်ပ်မပါဘဲ ပြန်လည်ရေးသားပါသည်။ အခြားအက်ပ်များကို မထိပါ။ ထို့နောက် ပစ်မှတ်အက်ပ်ကို ပြန်လည်စတင်ပါ။</string>
+    <string name="app_tab_spoof">အပြောင်အပျက်</string>
+    <string name="spoof_picker_title">စက်ကို ရွေးပါ။</string>
+    <string name="spoof_picker_custom">စိတ်ကြိုက်စက်ပစ္စည်းအချက်အလက်</string>
+    <string name="spoof_picker_custom_hint">ဤအက်ပ်အတွက် သင်အလိုရှိသော အမှတ်တံဆိပ်၊ မော်ဒယ်နှင့် လက်ဗွေကို ထည့်သွင်းပါ။</string>
+    <string name="spoof_custom_title">စိတ်ကြိုက်စက်ပစ္စည်းအချက်အလက်</string>
+    <string name="spoof_custom_rules">အမည်၊ အမှတ်တံဆိပ်၊ မော်ဒယ်၊ စက်ပစ္စည်းနှင့် ထုတ်ကုန်များသည် ထိန်းချုပ်အက္ခရာများမပါဘဲ တစ်ခုစီတွင် စာလုံးရေ 120 အထိ လိုအပ်သည်။ ထုတ်လုပ်သူ၊ လက်ဗွေနှင့် SDK တို့ကို ရွေးချယ်နိုင်သည်။ လက်ဗွေရာသည် တူညီသောအမှတ်တံဆိပ်၊ ထုတ်ကုန်နှင့် စက်ဖြင့် စတင်ရပါမည်။</string>
+    <string name="spoof_manufacturer">ထုတ်လုပ်သူ (ထုတ်လုပ်သူ)</string>
+    <string name="spoof_sdk">SDK အဆင့်၊ ရွေးချယ်နိုင်သည်၊ 1 မှ 100</string>
+    <string name="spoof_custom_invalid">အချို့အကွက်များသည် မမှန်ကန်ပါ။ အထက်ဖော်ပြပါ စည်းကမ်းချက်များကို စစ်ဆေးပြီးနောက် ထပ်မံသိမ်းဆည်းပါ။</string>
+    <string name="spoof_custom_save">သိမ်းဆည်းပြီး ဤအက်ပ်အတွက် ရွေးချယ်ပါ။</string>
+    <string name="spoof_impersonation_title">ချီးကြူးခြင်း။</string>
+    <string name="spoof_impersonation_desc">အခမဲ့ COPG ရွေးချယ်စရာများသာ။ အင်ဂျင်ကို Review လုပ်ပြီး ရေးထားတာ။</string>
+    <string name="spoof_impersonation_summary_cpu">CPU အတုအယောင်- %1$s</string>
+    <string name="spoof_impersonation_needs_device">ဤအက်ပ်အတွက် စက်ပစ္စည်းတစ်ခုကို ဦးစွာရွေးချယ်ပါ။ ဤရွေးချယ်မှုများကို စက်ပစ္စည်းတစ်ခုဖြင့်သာ ရေးသားထားသည်။</string>
+    <string name="spoof_cpu_spoof">CPU အတုအယောင်</string>
+    <string name="spoof_cpu_real">တကယ့် CPU</string>
+    <string name="spoof_cpu_block">CPU ပိတ်ဆို့ပါ။</string>
+    <string name="spoof_cpu_block_desc">ဤအက်ပ်ကို CPU လိမ်လည်လှည့်ဖြားခြင်းမှ ဖယ်ထုတ်သည်။</string>
+    <string name="spoof_cpu_picker_title">CPU တစ်ခုကို ရွေးပါ။</string>
+    <string name="copg_tweaks_section">COPG အပြောင်းအလဲများ</string>
+    <string name="copg_tweak_nolog_title">မှတ်တမ်းကို ပိတ်ပါ။</string>
+    <string name="copg_tweak_nolog_desc">COPG မှတ်တမ်းတင်ခြင်းကို ဤအက်ပ်တွင် အသုံးပြုပါ။ Review ဖြင့် အင်ဂျင်သို့ စာရေးပြီး Spoof တက်ဘ်တွင် အသုံးချရန် ဤနေရာတွင် သိမ်းဆည်းထားသည်။</string>
+    <string name="copg_tweak_dab_title">အလိုအလျောက် တောက်ပမှုကို ပိတ်ပါ။</string>
+    <string name="copg_tweak_dab_desc">COPG အလိုအလျောက်တောက်ပမှုကို ဤအက်ပ်တွင် အသုံးပြုပါ။ Review ဖြင့် အင်ဂျင်သို့ စာရေးပြီး Spoof တက်ဘ်တွင် အသုံးချရန် ဤနေရာတွင် သိမ်းဆည်းထားသည်။</string>
+    <string name="copg_tweak_kso_title">မျက်နှာပြင်ကိုဖွင့်ထားပါ။</string>
+    <string name="copg_tweak_kso_desc">COPG Keep-screen-on tweak ကို ဤအက်ပ်တွင် အသုံးပြုပါ။ Review ဖြင့် အင်ဂျင်သို့ စာရေးပြီး Spoof တက်ဘ်တွင် အသုံးချရန် ဤနေရာတွင် သိမ်းဆည်းထားသည်။</string>
+    <string name="copg_tweak_needs_device">Spoof တက်ဘ်တွင် ဤအက်ပ်အတွက် စက်ပစ္စည်းတစ်ခု လိုအပ်ပါသည်။</string>
+</resources>

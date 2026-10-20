@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_security_strings.xml -->
+<resources>
+    <string name="security_tamper_title">ప్రారంభించడం సాధ్యం కాలేదు</string>
+    <string name="security_tamper_message">MaxManager యొక్క ఈ బిల్డ్ చెక్కుచెదరలేదు. ఇన్‌స్టాల్ చేయబడిన ఫైల్‌లు ఇకపై సంతకం చేసిన విడుదలతో సరిపోలడం లేదు, కనుక ఇది అమలు చేయబడదు. అధికారిక నిర్మాణాన్ని దాని అసలు మూలం నుండి మళ్లీ ఇన్‌స్టాల్ చేయండి.</string>
+    <string name="security_tamper_close">మూసివేయి</string>
+</resources>

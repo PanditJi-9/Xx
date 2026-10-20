@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_sample_device_strings.xml -->
+<resources>
+    <string name="sample_pick_title">Trieu el dispositiu de mostra</string>
+    <string name="sample_pick_button">Trieu el dispositiu de mostra</string>
+    <string name="sample_auto_hint">Escollir un dispositiu us omple la marca, el fabricant, el model, el dispositiu, el producte i l\'empremta digital. Utilitzeu el Manual per escriure\'ls vosaltres mateixos.</string>
+    <string name="sample_manual">Manual</string>
+    <string name="sample_close">Tancar</string>
+    <string name="sample_search">Cerca dispositius</string>
+    <string name="sample_empty">No hi ha cap dispositiu coincident.</string>
+    <string name="sample_unavailable">No s\'ha pogut llegir el catàleg de dispositius.</string>
+    <string name="sample_row_sub">Android %1$s · %2$s</string>
+    <string name="sample_row_sub_plain">%1$s</string>
+    <string name="sample_fp_shared">La mateixa empremta digital que un altre dispositiu de catàleg</string>
+    <string name="sample_credit">Dades del catàleg: COPG (Apache-2.0), %1$s</string>
+    <string name="sample_limit">S\'ha arribat al límit del perfil (100).</string>
+</resources>

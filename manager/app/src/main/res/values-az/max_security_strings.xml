@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_security_strings.xml -->
+<resources>
+    <string name="security_tamper_title">Başlamaq mümkün deyil</string>
+    <string name="security_tamper_message">Bu MaxManager quruluşu toxunulmaz deyil. Quraşdırılmış fayllar artıq imzalanmış buraxılışa uyğun gəlmir, ona görə də işləməyəcək. Rəsmi quruluşu orijinal mənbəyindən yenidən quraşdırın.</string>
+    <string name="security_tamper_close">Bağlayın</string>
+</resources>

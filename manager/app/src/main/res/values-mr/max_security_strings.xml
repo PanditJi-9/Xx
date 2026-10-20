@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_security_strings.xml -->
+<resources>
+    <string name="security_tamper_title">सुरू करण्यात अक्षम</string>
+    <string name="security_tamper_message">MaxManager ची ही बांधणी अबाधित नाही. स्थापित केलेल्या फायली यापुढे स्वाक्षरी केलेल्या प्रकाशनाशी जुळत नाहीत, त्यामुळे त्या चालणार नाहीत. अधिकृत बिल्ड त्याच्या मूळ स्त्रोतावरून पुन्हा स्थापित करा.</string>
+    <string name="security_tamper_close">बंद करा</string>
+</resources>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_copg_tag_strings.xml -->
+<resources>
+    <string name="copg_tags_title">Опции COPG</string>
+    <string name="copg_tags_desc">Сохраняется как намерение и записывается вместе с профилем устройства. В каждой версии COPG работают только четыре варианта комфорта; остальным нужна COPG 6.8.0 или новее. Для опций PRO требуется лицензия COPG PRO, и движок может их игнорировать.</string>
+    <string name="copg_tier_pro">ПРО</string>
+    <string name="copg_footprint_resident">остается в памяти приложения, никогда не используйте его с античит-играми.</string>
+    <string name="copg_need_ack">сначала признайте риск, указанный ниже</string>
+    <string name="copg_tag_refused">Выбранный вариант COPG не разрешен для установленной версии COPG. Ничего не было написано.</string>
+    <string name="copg_tag_needs_device">Опции прописаны с профилем устройства, а в этом приложении их пока нет.</string>
+    <string name="copg_tag_value_hint">Ценить</string>
+    <string name="copg_tag_bad_value">Буквы, цифры, пробел и . только _ - / + (до 60)</string>
+    <string name="copg_tag_save">Сохранять</string>
+    <string name="copg_tag_remove">Удалять</string>
+    <string name="copg_tag_dnd">Не беспокоить во время игры</string>
+    <string name="copg_tag_dab">Отключить автояркость</string>
+    <string name="copg_tag_kso">Не отключать экран</string>
+    <string name="copg_tag_nolog">Прекратить регистрацию</string>
+    <string name="copg_tag_dpi">Разрешение экрана</string>
+    <string name="copg_tag_serial">Серийный номер для каждого приложения</string>
+    <string name="copg_tag_cpu">CPU модель</string>
+    <string name="copg_tag_blocked">Сила настоящего CPU</string>
+    <string name="copg_tag_vpn">Скрыть VPN</string>
+    <string name="copg_tag_vpns">Скрыть VPN (строгий)</string>
+    <string name="copg_tag_hidedev">Скрыть параметры разработчика и отладку по USB</string>
+    <string name="copg_tag_tz">Часовой пояс</string>
+    <string name="copg_tag_lang">Язык и регион</string>
+    <string name="copg_tag_gpu">GPU модель</string>
+    <string name="copg_tag_cow">Свойства сборки (копирование при записи)</string>
+    <string name="copg_tag_aid">Андроид ID</string>
+    <string name="copg_tag_gaid">Реклама ID</string>
+    <string name="copg_tag_appset">Набор приложений ID</string>
+    <string name="copg_tag_drm">Широкая лоза / DRM</string>
+    <string name="copg_tag_imei">IMEI</string>
+    <string name="copg_tag_sim">SIM-носитель (безопасно)</string>
+    <string name="copg_tag_simx">SIM-оператор (агрессивный)</string>
+    <string name="copg_tag_ua">Пользовательский агент WebView</string>
+    <string name="copg_tag_mock">Скрыть макет местоположения</string>
+</resources>

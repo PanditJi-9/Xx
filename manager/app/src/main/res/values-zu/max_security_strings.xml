@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_security_strings.xml -->
+<resources>
+    <string name="security_tamper_title">Ayikwazi ukuqala</string>
+    <string name="security_tamper_message">Lokhu kwakhiwa kwe-MaxManager akuphelele. Amafayela afakiwe awasafani nokukhishwa okusayiniwe, ngakho ngeke asebenze. Faka kabusha isakhiwo esisemthethweni esivela emthonjeni waso wangempela.</string>
+    <string name="security_tamper_close">Vala</string>
+</resources>

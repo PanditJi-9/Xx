@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_copg_tag_strings.xml -->
+<resources>
+    <string name="copg_tags_title">Chaguzi za COPG</string>
+    <string name="copg_tags_desc">Imehifadhiwa kama nia na kuandikwa pamoja na wasifu wa kifaa. Chaguo nne tu za faraja hufanya kazi kwenye kila toleo la COPG; wengine wanahitaji COPG 6.8.0 au mpya zaidi. Chaguo za PRO zinahitaji leseni ya COPG PRO, na injini inaweza kuzipuuza.</string>
+    <string name="copg_tier_pro">PRO</string>
+    <string name="copg_footprint_resident">hukaa kwenye kumbukumbu ya programu, usiwahi kutumia michezo ya kuzuia udanganyifu</string>
+    <string name="copg_need_ack">kubali hatari iliyo hapa chini kwanza</string>
+    <string name="copg_tag_refused">Chaguo la COPG lililochaguliwa haliruhusiwi kwa toleo lililosakinishwa la COPG. Hakuna kilichoandikwa.</string>
+    <string name="copg_tag_needs_device">Chaguo zimeandikwa kwa wasifu wa kifaa, na programu hii bado haina.</string>
+    <string name="copg_tag_value_hint">Thamani</string>
+    <string name="copg_tag_bad_value">Herufi, tarakimu, nafasi na . _ - / + pekee (hadi 60)</string>
+    <string name="copg_tag_save">Hifadhi</string>
+    <string name="copg_tag_remove">Ondoa</string>
+    <string name="copg_tag_dnd">Usinisumbue unapocheza</string>
+    <string name="copg_tag_dab">Zima mwangaza otomatiki</string>
+    <string name="copg_tag_kso">Washa skrini</string>
+    <string name="copg_tag_nolog">Acha ukataji miti</string>
+    <string name="copg_tag_dpi">DPI ya skrini</string>
+    <string name="copg_tag_serial">Nambari ya serial kwa kila programu</string>
+    <string name="copg_tag_cpu">CPU mfano</string>
+    <string name="copg_tag_blocked">Lazimisha CPU halisi</string>
+    <string name="copg_tag_vpn">Ficha VPN</string>
+    <string name="copg_tag_vpns">Ficha VPN (madhubuti)</string>
+    <string name="copg_tag_hidedev">Ficha Chaguzi za Wasanidi Programu na utatuzi wa USB</string>
+    <string name="copg_tag_tz">Saa za eneo</string>
+    <string name="copg_tag_lang">Lugha na eneo</string>
+    <string name="copg_tag_gpu">GPU mfano</string>
+    <string name="copg_tag_cow">Jenga sifa (nakala-kwa-kuandika)</string>
+    <string name="copg_tag_aid">Android ID</string>
+    <string name="copg_tag_gaid">Utangazaji ID</string>
+    <string name="copg_tag_appset">Seti ya Programu ID</string>
+    <string name="copg_tag_drm">Widevine / DRM</string>
+    <string name="copg_tag_imei">IMEI</string>
+    <string name="copg_tag_sim">Mtoa huduma wa SIM (salama)</string>
+    <string name="copg_tag_simx">Mtoa huduma wa SIM (uchokozi)</string>
+    <string name="copg_tag_ua">Wakala wa Mtumiaji wa Mwonekano wa Wavuti</string>
+    <string name="copg_tag_mock">Ficha eneo la dhihaka</string>
+</resources>

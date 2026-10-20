@@ -1,0 +1,1687 @@
+name: MaxManager
+
+on:
+  pull_request:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/build.yml"
+      - ".github/scripts/**"
+      # بوابات المستودع التي تُشغّلها خطوة «Contract gates»: تعديل أداة منها كان **لا يُشغّل CI**
+      # إطلاقًا، فيمرّ تعديل البوابة بلا اختبارها.
+      - "tools/**"
+      - "manager/**"
+      - "archdaemon/**"
+      - "maxfx/**"
+      - "mainfiles/**"
+      - "preloadbin/**"
+      - "thermalcore/**"
+      - "binprofiles/**"
+      - "binutils/**"
+      - "maxmanagerApplist.json"
+      - "version"
+      - "version_type"
+
+# ⚠️ المجموعة كانت `build` بلا مرجع — أي أن **كل** تشغيلات الملف تتشارك مجموعة واحدة،
+# والجديد منها يُلغي القديم. ومن يدفع إلى `main` ثم يُفتح طلب سحب (أو العكس) كان يلغي
+# بناء نفسه في منتصفه، فيضيع الاستنساخ والمخرجات و«لا ينتهي البناء» أبدًا — وهذا يُحسّ
+# **كبطء** لا كإلغاء. فالمجموعة الآن _لكل مرجع على حدة، ولا يُلغي مرجعٌ مرجعًا آخر.
+# (تاريخًا: كان `cancel-in-progress` باقيًا داخل المرجع نفسه — الدفعة الجديدة تُلغي دفعة مطابقة
+# لها (وهو المقصود من الأصل: لا تُشغل بناءين لنفس الفرع في وقت واحد).
+# ── ولماذا صار `cancel-in-progress` لطلبات السحب وحدها (تكملة ٩٦) ──
+#
+# السبب مُقاس في سجل المالك لا مُفترَض: التشغيل على `main` (الالتزام `103f799`) بلغ
+# **16 دقيقة و6 ثوان** ثم مات بـ`The runner has received a shutdown signal` و`exit code 143`
+# وهو **داخل** `:app:optimizeReleaseResources` — بعد أن مرّت البوابات وأُنجز التصريف
+# ونجحت `:app:testReleaseUnitTest` و`:app:minifyReleaseWithR8`. أي أن ست عشرة دقيقة من
+# الدقائق المدفوعة ذهبت **بصفر مخرَج**: القتل في منتصف التشغيل يُفقد كل شيء،
+#
+# و«مدفوعة» صارت قياسًا لا ظنًّا (تكملة ١٠٠): `GET /repos/nahheh428-star/Test` بطلب مجهول
+# يُجيب **404** ⇒ المستودع غير عام (والمستودع العام لا تُحسب دقائقه). والنتيجة العملية واحدة:
+# كل دقيقة هنا لها ثمن، والقتل الوسَطي هو أسوأ إنفاق — لا أسوأ مخرَج فحسب.
+# لأن `actions/cache` و`ccache` و`setup-gradle` تُحفظ في خطوات *لاحقة* (post) لا تعمل
+# أصلًا حين يُقتل الـrunner — فلا مخزن يُوفّر الجولة التالية ولا حزمة تُنزَّل.
+#
+# ⚠️ وما لا يقوله السجل: **من** أوقفه. رسالة `shutdown signal` هي بصمة إيقاف **من الخارج**
+# (إلغاء من الخدمة أو سحب runner)، وهي لا تُفرّق بين إلغاءٍ بدفعة أحدث وبين قتل من جهة GitHub.
+# **وثلاث فرضيات لا اثنتان (صُحّحت في تكملة ١٠٠):**
+#   (١) دفعة أحدث ألغت تشغيلًا جاريًا في المجموعة نفسها — وهذا ما يُزيله التغيير أدناه:
+#       الدفع المتكرّر (رفع عدة ملفات = عدّة التزامات = عدّة تشغيلات) كان كافيًا وحده؛
+#       فإن تجاوز زمن الرفع زمن البناء (١٦ دقيقة) **لا ينتهي بناء أبدًا**، وهو العطب المُبلَّغ عنه.
+#   (٢) إيقاف من جهة GitHub (سحب runner/صيانة) — لا يُصلحه هذا السطر ولا يُساء إليه.
+#   (٣) **بلوغ حدّ حسابي**. ووثيقة GitHub للحدود تقول بالنصّ: «Unless otherwise stated, the expected
+#       behavior when a limit is reached is that the workflow/job will get cancelled» (docs/actions/
+#       reference/limits). أي أن بلوغ الدقائق/سقف الصرف يُنتج **البصمة نفسها** — ولم يكن هذا في
+#       تفسيرنا، وهو غير قابل للإصلاح من هذا الملف أصلًا.
+#
+# والقاعدة الآن: **لا يُقتل تشغيل على `main`** — وهو نفس المقصود الأصلي بحرفه («لا تُشغّل
+# بناءين لنفس الفرع في وقت واحد»)، لأن `false` لا تُشغّل اثنين: واحد يعمل وواحد **منتظر**،
+# ووثيقة المجموعة تقول إن افتراض الطابور `single`: «At most one job or workflow run can be pending
+# in the concurrency group. When a new job or workflow run is queued, any existing pending job or
+# workflow run in the same group is canceled and replaced» ⇒ الدفعة الأحدث تُلغي **المنتظر**
+# الأقدم وحدها، ولا تمسّ الجاري. أي: نفس الربح بلا قتل، ولا انتظار صفٍّ طويل.
+# وتلميح موثَّق لمن يريد طابورًا كاملًا: `queue: max` يُتيح حتى ١٠٠ منتظرٍ في المجموعة — **ولم
+# يُفعَّل عن قصد**: ثمنه بناء كل التزام (دقائق مدفوعة) في مستودع غير عام، والمنفعة صفر لالتزام
+# لم يعد أحدٌ ينتظر نتيجته. والبديل الذي لا يُكلّف شيئًا هو ما يفعل الملف: `/build` يدويًّا عند الحاجة.
+# وطلب السحب يبقى `true`: ناتجه مؤقّت، ودفعاته متلاحقة، فلا معنى لإكمال تشغيل قديم.
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  # ── «مهمّتان بدل واحدة»: سؤال طرحه المالك بعد قتل تشغيل في الدقيقة ١٦ — وجوابُه مقيس ومُسجَّل ──
+  #
+  # الفكرة كانت: إن صار التغليف مهمّة ثانية تأخذ مخرَجات الأولى، فالقتل في الثانية لا يُفقد الأولى.
+  # **والفكرة لا تُنجي شيئًا في العطب الذي وقع**، والسبب بنيوي لا تفضيلي:
+  #   • الـAPK لا يوجد إلا **بعد** نجاح خطوة Gradle، وهي الخطوة التي قُتل فيها الـrunner
+  #     (`:app:optimizeReleaseResources` في الدقيقة 16:06). فأي تفصيل للمهام لاحق لا يملك
+  #     مخرَجًا يُحفظ بعد؛ الشيء الوحيد المُنتَج قبلها هو الثنائيّات الأصلية.
+  #   • وكل ما يُنقذ العمل (مخزن Gradle · ccache · rust-cache · الرفع) يعمل في خطوات **post**
+  #     لا تُنفَّذ حين يُقتل الـrunner — فحتى لو انقسمت المهامّ، لا مخزن ولا حزمة تُنجو من قتل
+  #     داخل الخطوة الطويلة نفسها.
+  # فالقِسم الحقيقي الوحيد هو **تقصير المسار الحرج** (فتقليل ما قبل Gradle وبنائه بإعادة الاستعمال
+  # في الخلفية، منجَز)، أو **أنوية أكبر** عبر متغيّر `BUILD_RUNNER` أدناه، أو أن لا يُسحب الـrunner
+  # أصلًا — وهذا خارج يد المشروع. وانقسام المهامّ يُبقى **فكرة مؤجَّلة لا مُنفَّذة**: له ربح في موضع
+  # آخر (إعادة تشغيل مهمة تغليف فاشلة وحدها)، وثمنه على مسار الإصدار (نقل الخمس ثنائيّات بين
+  # مهامّ + إعادة بناء أو رفع مخرجات) غير مقيَّم هنا.
+
+  # ── مهمة `Lint (fatal gate)` أُزيلت من CI — قرار مالك صريح، مُسجَّل هنا لئلا يُعاد النقاش ──
+  #
+  # سببه، ومعه ثمنه (مقيسًا لا مقدَّرًا):
+  #   • المهمة كانت **موازية** لمهمة البناء، وزمن التشغيل هو زمن الأطول لا مجموعهما ⇒
+  #     إزالتها **لا تُقصّر التشغيل**؛ ما تُوفّره دقائق runner ودقائق حساب مدفوعة (المستودع
+  #     خاصّ). وكانت تدفع من الصفر على runner ثانٍ: تنزيل اعتماديات + تهيئة Gradle + ما
+  #     يحتاجه التحليل من تصريف، لتحليل `lintVitalRelease` (٣:٢٩ مقيسة · ٤:١٣ باردة، تكملة ٤٠/٦٠).
+  #   • والصنف الوحيد الذي أمسكته في تاريخ المستودع هو `ExtraTranslation` (تكملة ٦٠)، وصار
+  #     مُغطّى ببوابة أسرع بثلاث مراتب في خطوة «Contract gates» داخل مهمة البناء.
+  #   • ⚠️ **الثمن مُعلَن:** ما تكشفه بوابة lint وحدها بقِيَ بلا حاجز آلي في CI. وموضعه:
+  #     `./gradlew :app:lintVitalRelease` يدويًّا قبل الإصدار — وهي تُنادى تلقائيًّا داخل
+  #     `assembleRelease` إن لم تُستثنَ بـ`-x`.
+  #   • وللإرجاع: أربع خطوات معلومة (checkout + JDK 17 + `gradle/actions/setup-gradle` +
+  #     Android SDK) ثم `./gradlew :app:lintVitalRelease --build-cache --parallel` من مجلد
+  #     `manager` — وهي منقولة حرفيًّا في `HANDOFF` تكملة ٧٩ ومسجَّلة في git history.
+
+  build:
+    name: Build MaxManager
+    # ── الأنوية: أكبر مكسب متبقٍّ في هذا الملف (تكملة ٨٦) ──
+    #
+    # الخطوة الطويلة (Gradle: تصريف + R8 + موارد ٨٥ لغة) **CPU-bound**، وسقفها اليوم أربع أنوية.
+    # فصار الوسم **متغيّرًا** لا نصًّا: عيّن في `Settings → Secrets and variables → Actions →
+    # Variables` المتغيّر `BUILD_RUNNER` إلى وسم أكبر (`ubuntu-latest-8-cores`) أو إلى وسوم
+    # runner خاص بك (`self-hosted`, `linux`, `x64`) — **بلا تعديل هذا الملف**.
+    #
+    # **قيمة واحدة فقط** (وسم واحد): `ubuntu-latest-8-cores` مثلًا، أو `self-hosted`. وإن احتجت
+    # عدّة وسوم (`self-hosted` + `linux` + `x64`) فهي مصفوفة YAML لا سلسلة: اجعل قيمة المتغيّر
+    # مصفوفة JSON واستبدل التعبير بـ`fromJSON(vars.BUILD_RUNNER)`.
+    #
+    # والافتراضي `ubuntu-latest` يبقى (فلا تشغيل ينتظر runner غير موجود لو لم تُعيَّن قيمة).
+    # وإن كان الـrunner الخاص بلا NDK/SDK مُسبقين، فالحرسان في خطوتي الإعداد يسقطان إلى التنزيل
+    # والتركيب تلقائيًّا بدل أن يفشلا — ويُقال ذلك في السجل.
+    runs-on: ${{ vars.BUILD_RUNNER || 'ubuntu-latest' }}
+    # A hung or wedged step must not sit on a runner for the 6-hour default.
+    # 45 minutes is ~2x the observed end-to-end time, so a genuine slowdown
+    # reports as a red job instead of silently consuming the afternoon.
+    timeout-minutes: 45
+
+    steps:
+      # ── الاستنساخ: التاريخ كامل، ولقطات المصدر الكبيرة لا تُنزَّل ──
+      #
+      # `fetch-depth: 0` **لازم**: `versionCode = git rev-list HEAD --count` (رقم نسخة
+      # تصاعدي مشتقّ من التاريخ، لا من عداد تشغيلات).
+      #
+      # و«التاريخ كامل» هنا يعني — حتى بعد حذف اللقطة في تكملة ٨٥ — كل `MaxManager-source.zip`
+      # رُفع سابقًا: ~13 ميجابايت للحظةٍ، ونوعها لا يُضغط ولا يقبل الدلتا، فـ137 التزامًا
+      # (رقم النسخة المرصود على الجهاز: `5.2 (137)`) ≈ **~1.8 جيجابايت تُنزَّل في كل تشغيل** —
+      # لا لشيء إلا لحساب رقم. **والحذف لا يُنقّي التاريخ**، فالفلتر باقٍ لأن الماضي باقٍ.
+      #
+      # و`blob:limit=5m` يُبقي كل ما يحتاجه البناء (أكبر ملف في الشجرة: `devices.db`
+      # 4.0 ميجابايت) ويُسقط تلك اللقطات، وتبقى الالتزامات كلها فـ`rev-list` صحيح. وإن
+      # تجاهل الخادمُ الفلتر (لا يدعمه) سقط إلى استنساخ كامل = السلوك السابق بلا كسر.
+      - name: Checkout
+        uses: actions/checkout@v6.0.2
+        with:
+          fetch-depth: 0
+          filter: blob:limit=5m
+
+      # حرس صريح أمام الفلتر: إن صار يومًا ملف يحتاجه البناء أكبر من الحد، يسقط هنا باسمه
+      # برسالة تُسمّي الملف، لا في مكان غامض لاحقًا.
+      - name: Verify the checkout is complete
+        run: |
+          test -f manager/app/build.gradle.kts || { echo "::error::checkout is incomplete"; exit 1; }
+          test -s manager/app/src/main/assets/devices.db \
+            || { echo "::error::checkout dropped a file the build needs (assets/devices.db)"; exit 1; }
+          echo "✅ working tree complete"
+
+      - name: Verify Module
+        run: bash .github/scripts/verify.sh
+
+      # ── بوابات المستودع السريعة (ثوانٍ · بلا مُصرّف · بلا تنزيل) ──
+      #
+      # كانت محليّة فقط (AGENTS.md §0.1) فلا يراها CI إطلاقًا. وكلفتها ثوانٍ، وتغطّي
+      # الأصناف التي أنتجت أول عطلَي بناء حقيقيين هنا:
+      #   • مفتاح نصّ بلا نظير = `ExtraTranslation` ⇒ `i18n_coverage.py --assert`
+      #   • فاصلة عليا غير مُهرَّبة أسقطت `mergeReleaseResources` ⇒ `code_health.py`
+      #     (فحص `unescaped_apostrophe` على كل قيمة نصّية في كل موديول)
+      #   • توازن الأقواس/النصوص/التعليقات وصحّة XML ⇒ `kt_balance.py --assert`
+      #
+      # ومكانها **قبل** الأعمال الثقيلة عمدًا: عطلٌ في النصوص أو الموارد يفشل التشغيل في
+      # ثوانٍ، لا بعد دقائق من بناء الأصلي وRust. ولا تُغني عن مُصرّف: ما لا يراه إلا
+      # المصرّف (استيراد ناقص، نداء في سياق خاطئ) يبقى على أمر Gradle أدناه.
+      - name: Contract gates (fast, no compiler)
+        run: |
+          start=$SECONDS
+          python3 tools/kt_balance.py --assert
+          # ← و`--self-test` يقيس **الماسح** على شجرة مصنوعة معلومة النتيجة (17 حالة): توازن
+          # الأقواس والنصوص والتعليقات، وXML مبتور يجب أن يُمسك. وهذه هي الأداة التي تحرس
+          # تعديلات الواجهة كلها، وكانت — وحدها بين بوابات هذا المستودع — بلا فحص ذاتي.
+          python3 tools/kt_balance.py --self-test
+          python3 tools/code_health.py --assert
+          # ← وفحص ذاتي (٢٤ حالة) لهذه البوابة نفسها: فاصلة عليا تُمسك ومُهرَّبة تمرّ · مفتاح
+          # مكرّر · مورد غير معلَن · عقد محتوى بلا `@Composable` مقابل نظيره السليم وقابل
+          # الاتّساع · كتابة عتاد حقيقية مقابل إخماد `2>/dev/null` مقابل تعليق. وسبب الإضافة
+          # مقيس: **التأكيد كان يطلب اسم الدالة في بلاغ لا يحمله** (كان يسمّي الوسيط `content`
+          # وحده) — فسقط التأكيد ولم يكن في التشغيل ما يكشفه. أي أنّ الفحص الذاتي نفسه أمسك
+          # عطبًا في **محتوى البلاغ** قبل أن يصل إلى قارئ.
+          python3 tools/code_health.py --self-test
+          python3 tools/i18n_coverage.py --assert
+          # المفاتيح اليتيمة: كانت `--prune` تُعيد 0 دائمًا، فالفحص كان أداة ولا يُسقط شيئًا.
+          # صارت بـ`--assert` **بوابة قراءة فقط**: تُسقط التشغيل عند أول مفتاح لم يعد مستعملًا
+          # (ولا تحذفه — الحذف في CI تعديلٌ لا يراجعه أحد). مُقاسة بتكذيب: أُدرج مفتاح يتيم
+          # فسقط التشغيل بـ1، وأُزيل فعاد 0، والملف أُعيد حرفيًّا.
+          python3 tools/i18n_coverage.py --prune all --assert
+          # وقياس الأدوات التي لا تُشغَّل على حزمة هنا (سجلّ جهاز، مصفوفة سياسة): `--self-test` **يقيس
+          # الأداة** على شجرة مصغّرة معلومة النتيجة. سببه أن أداة لا تُشغَّل إلا عند توفّر حزمة تصدأ
+          # بصمت: يبقى اسمها في `tools/` وسطرها في الوثائق، وحكمها لا يُقاس في أي تشغيل.
+          python3 tools/log_gate.py --self-test
+          python3 tools/sepolicy_matrix.py --self-test
+          # ← عقود JNI: طبقة المصدر وحدها (Kotlin/Java ↔ Rust). الثنائيات تُفحص بعد بنائها
+          # في خطوة «Verify JNI symbols in built libraries» أدناه — فالثواني هنا تكشف انصراف
+          # الاسم قبل أن يستهلك البناءُ الأصلِي دقائقَ ثم يمرّ.
+          python3 tools/jni_symbols.py --assert
+          # ← عقد مؤثّر MaxFx (العقد المزدوج): الرموز الثلاثة وتوقيعاتها الحرفية · بقاء `AELI` ·
+          # سلامة اللقطات المجمَّدة (حجم · `package` · `IMMUTABLE`) · إغلاق تضمين `libfmq` ·
+          # اتساق البناء والأعمدة — كلّها بلا مُصرّف، لأنّ غلاف AIDL لا يُترجم إلا في هذه
+          # الخطوة نفسها. وسببه مقيس: لقطةٌ مبتورة (٠ بايت) وقعت فعلًا في الشجرة، ولم يمسكها
+          # `kt_balance` (ملفٌّ فارغ متوازن) ولا `code_health` (ولا نصّ فيه).
+          python3 tools/maxfx_contract.py --assert
+          python3 tools/maxfx_contract.py --self-test
+          python3 tools/fetch_maxfx_aidl.py --self-test
+          python3 tools/jni_symbols.py --self-test
+          # ← الوحدات الميتة: ملفّ Rust **خارج شجرة الوحدات** (لا يُصرَّف إطلاقًا، فيتعفّن بلا
+          # خطأ ولا تحذير — مقيس: `thermalcore/src/prediction.rs` يقرأ سبعة حقول لا وجود لها
+          # في نوعه، ولو وُصل لَما تُرجم) ووحدة C **مبنية بلا مُستخدِم خارجي**. والأساس المُعلَن
+          # في الأداة نفسها، فإضافة أو إزالة وحدة تستلزم تحديثه صراحةً لا أن تمرّ بصمت.
+          # و`--self-test` يقيس الأداة على شجرة مصغّرة — ومنها أن المتغيّر المحلّي لا يُقرأ
+          # تعريفًا ملفًّا (وهو عطب حقيقي أصاب أول نسخة منها).
+          python3 tools/dead_modules.py --assert
+          python3 tools/dead_modules.py --self-test
+          # ← رموز التصميم: سقف مفروض على الأرقام الحرفية في `ui/**`. المراجعة قاست الحالة
+          # قبل الإصلاح: **٤٨٠ حرفيًّا · ٢٢ نصف قطر متمايزًا**، وهو ميل يعود مع كل شاشة تُكتب
+          # على عجل — فالبوابة لا تُصلح بل **تُثبّت السقف** على ما بقي. وأي حرفيّ جديد يُحمرّ
+          # البناء **ويسمّي الملفّ الذي أضافه** (والعدّ لكل ملف ليس ترفًا: بلا تقسيم لكل ملف
+          # سمّى التقرير ملفًّا بريئًا في أول طفرة قِيست). و`--self-test` يقيس الماسح على نصّ
+          # معروف — وفيه حالتان متعاكستان: الرمز لا يُعدّ، والتعليق لا يُعدّ.
+          python3 tools/design_tokens.py --assert
+          python3 tools/design_tokens.py --self-test
+          # ← عقد التحزيم والتكامل: ١٤ فحصًا جمعت ما كان يُقاس بالعين في جولة
+          # `BUNDLE-01` — وأهمّها عقدان كلف أحدهما ثباتًا والآخر عطبًا حقيقيًّا:
+          #   • سلسلة الإصدار متّفقة في ثلاثتها (`version` · `module.prop` · `MaxManager.h`)
+          #     — لأن `check_module_version()` في الخادم يُشغّل `grep -q '^version=%s$' module.prop`
+          #     واختلاف بايت **يُخرج الخادم عند الإقلاع**. وكان الفحص السابق في الـworkflow
+          #     يُشتقّ سلسلة مستحيلة (‏`5.2 (…-Dazzling)` مقابل `V1`) فيُفشل كل تشغيل.
+          #   • مسار الديمون متّفقًا في أربعة ملفّات — وكان قد انزاح فعلًا (الـ`.rc` في
+          #     `vendor/etc/init` والثنائيّ في `/system/bin`، و`vendor_file_type` على مسار
+          #     نظام)، وكل ما يُستخرجه `customize.sh` موجودًا — وهو ما كان يمنع حزمة
+          #     لا تُفلّش لو حُذف ملفّ من الشجرة ونُسي سطر استخراجه.
+          # و`--self-test` يكسر كل عقد من الـ`14` ويطالب باسمه: أداة لا تُكسر لا تقيس.
+          python3 tools/bundle_contract.py --assert
+          python3 tools/bundle_contract.py --self-test
+          # ── موارد أندرويد بـ**aapt2 الحقيقي** (تكملة ١٤٢) ──
+          #
+          # ولماذا لا يُقلَّد حكمه: عطبُ موردٍ لا يُشخَّص بقراءة الكود، ورسالته **لا تسمّي
+          # السبب** («Can not extract resource from ParsedResource»). وقِيس أن حكمه ليس
+          # تمثيلًا قابلًا لإعادة البناء أصلًا: نفس النصّ (`100% and 50%`) **يمرّ** وحده
+          # ويرسب مع نصٍّ آخر في الملفّ نفسه.
+          #
+          # والثمن مقيس: **٥٨٥ فاصلة عليا مُضاعفة في ٨٢ لغة** (من `escape_android` الذي كان
+          # يُهرّب كل `'` بلا فحص) · **٥ وسائط نقلها المترجم** (`%%1$d%` مكان `%1$d%%`) ·
+          # **٨٣ ملفًّا** فيه `%` عارية في نصّ غير مُنسَّق — كلها أسقطت `mergeReleaseResources`
+          # في جولتَي CI كاملتين ولم تكن أيّ بوّابة تراها. ثوانٍ هنا بدل دقائق بعد الأصليّ
+          # وRust. وبلا `aapt2` (جهاز بلا SDK) تُعلن غير مُتحقَّقة ولا تدّعي نجاحًا.
+          python3 tools/resource_compile.py --assert
+          python3 tools/resource_compile.py --self-test
+          # ── منطق «إيقاف العدّاد» في دالّة `maxctl` (LICENSE-KEYS-01) ──
+          #
+          # وعد المالك: «اذا اردت جعله مجانا لكل المستخدمين لفترة معينه … فيجب أن يتوقف العداد
+          # للمستخدمين المدفوعين». والمنطق دالّة TypeScript واحدة في دالّة Deno — ولا Deno هنا
+          # ولا في الـrunner، ولا مُصرّف TS. فالأداة **تستخرج نصّ الدالّة حرفيًّا** من
+          # `supabase/functions/maxctl/index.ts`، وتُزيل ترميزات الأنواع وحدها بإزاحة معلنة
+          # (تطبع كل قطعة أزالتها)، وتشغّلها بـ`node` على ٤٤ حالة في **دالّتين**:
+          # `addDaysSkipping` (بلا نوافذ · نافذة داخلية · تقاطع النهاية · **متلاصقتان** — لا حساب
+          # مزدوج عند الحدّ `[أ,ب)`+`[ب,ج)` · متداخلتان — الاتحاد لا الجمع · سارية قبل التفعيل ·
+          # بعد الانتهاء · الحتمية) و`rateLimitDecision` (بلا محاولات · سبع فشل · ثمانٍ تُقفل الباب
+          # · **العودة عند خروج ما يكفي** لا الأقدم وحده · سقف الساعة · سقف العنف · النجاح لا
+          # يُحتسب فشلًا · الحدّ بالضبط — نافذة نصف مفتوحة · محاولة مستقبلية لا تُلوّث العدّ ·
+          # الأبعد خروجًا يُعلَن عند كسر سقفين · الحتمية).
+          # ومُثبَتٌ فيها أنها تفرّق: `--self-test` يكسر كل نسخة (تُحتسب النافذة كاملةً بدل
+          # تقاطعها · وتُعاد العودة عند الأقدم وحده) ويطلب أن تسقط الحالات — والأولى هي التي
+          # كانت ستضاعف الأيام على المالك بلا بلاغ.
+          # وتاريخها قياسٌ لذاتها: أول نسخة منها **قاست دالّة مبتورة** (٩٥ محرفًا) لأن الاستخراج
+          # بدأ من أول `{` بعد الاسم — وهو قوس نوع النافذة داخل المعاملات لا قوس الجسم؛ فأُصلحت
+          # الموازنة (قوسا المعاملات أولًا) ووُضع حرس علامة من آخر الجسم.
+          python3 tools/test_maxctl_pure.py --assert
+          python3 tools/test_maxctl_pure.py --self-test
+          # ── أداة مفتاح التوقيع (LICENSE-KEYS-01) ──
+          #
+          # المالك يشغّلها **مرّة واحدة** قبل الإطلاق، وخطؤها صامت: مفتاحٌ سليم يُرفض ⇒ يظنّ
+          # المفتاح معطوبًا، أو زوجٌ غير متطابق يمرّ ⇒ التطبيق يرفض كل إعداد موقّع بلا شكوى.
+          # والاختبار الذاتي ستّ حالات، والخامسة **حتميّة لعطب وقع فعلًا**: قراءة SPKI كانت
+          # تبحث عن البايت `0x03` بـ`rfind`، وهو يظهر داخل إحداثيات النقطة نفسها (احتمال
+          # ‏~٢٢٪ لكل مفتاح) فتُرفض مفاتيح سليمة — أمسكه هذا الاختبار في أول تشغيل حقيقي،
+          # وصارت القراءة بالمواضع المحسوبة (SEQUENCE ← AlgorithmIdentifier ← BIT STRING).
+          # ويحتاج `openssl` وهو موجود على الـrunner، وزمنه ثوانٍ.
+          python3 tools/license_tool.py --self-test
+          # بوابة RTL — مضافة بعد أن أبلغ المالك عن انكسار النصّ في العربية؛ تقيس الحشو
+          # الجهتي والأيقونات غير المنعكسة لا سلوك التخطيط الفعليّ (وذاك يحتاج جهازًا).
+          python3 tools/rtl_guard.py --assert
+          python3 tools/rtl_guard.py --self-test
+          # ← أداة قياس استقلال النصّ عن أصول GPL (PHASE 11): `--self-test` يسقط ما لا
+          # يحتاج نسخة من الأصل المرجعي (٨ حالات معلومة النتيجة). و`--assert` نفسه
+          # **يحتاج** مجلّدي الأصل (ZKM · vtools) وهما ليسا في الشجرة — فمكانه جلسة
+          # المالك المحليّة، ونتيجته المنشورة في `docs/AUTHENTICITY.md`.
+          python3 tools/upstream_similarity.py --self-test
+          # ── تدقيق الأصل والترخيص (PHASE 0/6/8) ──
+          #
+          # كان يُشغّل هنا **بلا `--assert`** عن قصد، وسببه كان مُعلَنًا ومُقاسًا: `gpl_code_in_apk
+          # = YES` — ٩٦ ملفًا مشتقًّا من GPL داخل مسار الإصدار، فكان `--assert` يُسقط كل بناء.
+          #
+          # واليوم انقلب القياس: `gpl_code_in_apk = NO` و`gpl_derived_source_remaining = NO`
+          # و`unknown_license_component = NO`، وكل مفاتيح بوابة GPL السبعة `NO` — فالشرط الذي
+          # كُتب بجانب هذا السطر تحقّق، **وصار `--assert` مُفعَّلًا هنا**. وهو الآن يمنع الانحدار:
+          # أول ملف GPL يعود إلى مسار الإصدار يُسقط التشغيل في ثوانٍ، قبل دقائق البناء.
+          #
+          # و`--self-test` (١٤/١٤) يقيس الأداة نفسها على شجرة مصغّرة معلومة النتيجة: أداة تدقيق
+          # تُصنّف كل شيء «سليمًا» لا تُثبت شيئًا — وهو نفس الدرس الذي أضاف `--self-test` لكل          # بوابات هذا المستودع.
+          python3 tools/license_audit.py --self-test
+          python3 tools/license_audit.py --assert
+          python3 tools/license_audit.py --json --provenance
+          # ← مانيفست المصادر: `--assert` يقارن الشجرة بالمعلَن، و`--self-test` (٨ حالات)
+          # يقيس الأداة نفسها. وكانت تُشغَّل في CI بلا قياس ذاتي، وهو الدرس ذاته
+          # المُوثَّق في بوابات هذا المستودع: أداة لا تُقاس تصدأ بصمت.
+          python3 tools/source_manifest.py --assert
+          python3 tools/source_manifest.py --self-test
+          # ← أصول الـREADME المتحرّكة (تكملة ١٤٦): الصور في `docs/assets/` لا تُقرأ في البيئة
+          # (لا مُصيَّر SVG)، فالمراجعة بالعين غير ممكنة — والمراجعة التي لا تُقاس تُنتج ادّعاءً.
+          # والأداة وُلدت من **عطب حقيقي وقع في تلك الجولة**: رمز `--` غير مشروع داخل تعليق XML،
+          # فسقط ملفّان من التحليل ولم يكن في التشغيل ما يكشفه. وتفرض فوقه سبع قواعد من سلوك GitHub
+          # الفعليّ (SMIL وحدها: الوسوم النصّية وحركات CSS تُجرَّد · `xlink:href` يُجرَّد فيُهمل
+          # التحريك بصمت · `tspan` بـ`opacity` غير موثوقة · `keyTimes` يجب أن يبدأ بـ0 وينتهي بـ1
+          # إلا في `calcMode=discrete` · حدود الحجم عند ٢٠٠KB/٥MB · ووجود كل ملفّ مُشار إليه).
+          # واللقطات الموعودة ولم تُضف **تُعلَن معلّقة ولا تُفشل** — يضيفها المالك، وما يُفشل هو أصل
+          # مكسور أو ملفّ SVG معطوب.
+          # ← وثيقة التصميم: `DESIGN.md` تُقاس على مصدر الرموز لا على الذاكرة (`design_doc.py`).
+          # ووُجدت من فكرة `DESIGN.md` كما تعرضها `VoltAgent/awesome-design-md` — بالنصوص نفسها
+          # (ألوان · محارف · مسافات · أنصاف أقطار · حركة) — لكنّ ربطها هنا **بالمصدر** لا بصورة
+          # موقع: كلّ رقم في الوثيقة يُقارَن بـ`MaxTokens.kt`، وكلّ لون في الأصول باللوحة المُعلَنة،
+          # ونِسَب التجاذب تُعاد حسابها، ونغمات التحذير في اللوحة تُطابَق بثوابت الشيفرة حرفًا.
+          # وأوّل تشغيل لها كشف رقمًا بلا اسم في `ICON_TILE` كان تعليقه يدّعي خلافه.
+          python3 tools/design_doc.py --assert
+          python3 tools/design_doc.py --self-test
+          python3 tools/readme_assets.py --assert
+          python3 tools/readme_assets.py --self-test
+          # ← جودة الأصول المرئية (تكملة ١٥٠): `readme_assets` ترى ما يُفسد الملفّ (XML مبتور،
+          # SMIL غير مدعوم، حجم، مرجع مفقود) وهي **لا ترى** ما يُفسد التصميم: نصًّا لا يُقرأ
+          # عند عرض حقيقي (٣٩٠px هاتفًا)، أو خارج حدود الـ`viewBox`، أو مرسومًا في موضع لا يصحّ
+          # إلا بوجود الحركة — فحين يُجرَّد SMIL يقع العنصر في مكان خاطئ. وهذا ليس افتراضًا:
+          # `atlas-cycle.svg` المنشور كان كل نصوصه الـ٢٣ دون ١١px على الهاتف (أصغرها ٣٫٥px)،
+          # و`control-plane.svg` كان فيه نصّ خارج اللوحة ونقطة ساكنة في موضع الحركة — وكلّه
+          # مرّ على البوّابة الأولى بلا بلاغ. و`--self-test` (١١ حالة معلومة النتيجة) يقيس
+          # الأداة نفسها: حالة إيجابية لكل قاعدة وسلبية لما يجب ألّا يُبلَّغ عنه.
+          python3 tools/svg_review.py --assert
+          python3 tools/svg_review.py --self-test
+          # ← معرض اللقطات (تكملة ١٥٢): صفحة المنتج كانت تعِد بأنّ إسقاط لقطة بالاسم الصحيح
+          # «يُظهرها بلا تعديل» — ولا آلية تحقّق ذلك، فالوعد كان عبارة لا سطرًا يعمل.
+          # والأداة تقلب الطرفين: تقرأ `docs/screenshots/gallery.json` ولا تكتب `<img>` إلا لملفّ
+          # موجود، فتكتب الشبكة بين علامتَين في الـREADMEين، و`--assert` يقيس الكتلة بالمولَّد
+          # حرفيًّا — فتعديلها بيد يسقط التشغيل بدل أن يتقادم المعرض بصمت.
+          # وتفرض فوق ذلك ما لا يراه الـREADME: مسار كلّ شاشة مقابلًا على `MaxDestinations.kt`،
+          # والتسمية تحت حدّ الطول (وهو ما يمنع تسمية طويلة من إفساد تراصف الصفّ)، وصحّة ملفّ
+          # PNG حقيقية (توقيع · IHDR · IDAT · IEND · CRC لكل مقطع) ونسبته وسقف حجمه، وتسمية كلّ
+          # ملفّ في المجلّد لا يذكره العقد — وهو العطب الذي يحذّر منه عقد الأسماء نفسه.
+          # و«لا لقطة موجودة» **ليست** فشلًا: المنصّب يعُدّها معلَّقة، فما يُسقط التشغيل هو عطب
+          # حقيقيّ لا نقص تغطية. و`--self-test` (٣٥ حالة معلومة النتيجة) يقيس الأداة: ملفّ مقطوع ·
+          # ملفّ ليس صورة · نسبة مخالفة للشاشة · حجم فوق السقف · جذر مكرّر · مسار مجهول · تسمية
+          # طويلة · انزياح الكتلة بيد — وحالة سليمة تمرّ (أداة تفشل دائمًا لا تفرّق بين عطب وسلامة).
+          python3 tools/screenshot_gallery.py --assert
+          python3 tools/screenshot_gallery.py --self-test
+          # وسم الصانع: `--assert` يحرس تطابق هندسته في ملفّي SVG ورسمة التطبيق و`MaxTokens.kt`،
+          # و`--self-test` يكسر مدخلاتها عمدًا. كانتا بلا تشغيل في CI (وهذا ما أفشل بند
+          # `selftests_wired`)، وتقعان قبل صور المتجر لأن `store_thumbnails.py` يستورد هندسته.
+          python3 tools/makers_mark.py --assert
+          python3 tools/makers_mark.py --self-test
+          # ── الصور المصغّرة للمتجر (REVIEW-NOTES-01 · ADR-73) ──
+          #
+          # ملاحظة التقييم طلبت صورًا مصغّرة «بتصميم خاصّ بالتطبيق بدلًا من أدوات توليد الصور»،
+          # والقرار في ADR-73: **لا يدخل المستودع ملفّ من مولّد صور**. وكل صورة في `docs/store/`
+          # تُبنى من لقطة حقيقية + لوحة التطبيق (`gen_readme_assets.DARK` ≡ `MaxTokens.kt`) +
+          # هندسة الوسم الواحدة + خطوط التطبيق نفسها.
+          #
+          # والبوّابة **stdlib فقط** (بلا Pillow وبلا خطوط) — وهو ما يجعلها تعمل في الـrunner:
+          # بصمات البايتات مقابل `manifest.json` · لوحة المستودع مقابل المعلَنة · بصمة هندسة الوسم ·
+          # أنّ كل ادّعاء في الشرائح **منشور فعلًا** في `README.md`/`README.ar.md` · أنّ الأرقام في
+          # نصّ المتجر مطابقة لما في الشجرة (٦٢ شاشة · ٨٤ لغة) · أنّ `listing.md` حرفيًّا ما يولّده
+          # العقد · وأنّ بصمة `spec.json` لم تتغيّر. فتعديل العقد أو اللوحة أو الوسم يُسقط التشغيل
+          # حتى يُعاد التوليد — فلا تتقادم صورة عن نصوصها بصمت.
+          #
+          # و`--self-test` (١١/١١: عشر حالات مكسورة معلومة النتيجة **وحالة سليمة تمرّ**) يقيس الأداة
+          # نفسها: صورة عُدّلت بايتاتها · حجم مصدر منزاح · ادّعاء غير منشور · صورة يتيمة · هندسة وسم
+          # منزاحة · لوحة منزاحة · نصّ لغة ناقص · رقم معلن يخالف الشجرة · نصّ متجر محرَّر بيد · مدخل
+          # غائب عن البيان.
+          python3 tools/store_thumbnails.py --assert
+          python3 tools/store_thumbnails.py --self-test
+          echo "✅ Contract gates passed in $((SECONDS - start))s"
+
+      # ── تكافؤ منطق الخادم الأصلي — بلا NDK وبلا جهاز ──
+      #
+      # الخادم C لا يُبنى للأندرويد هنا (يحتاج NDK/ARM)، لكن **قسمًا كبيرًا منه منطق قرار محض**:
+      # قائمة الخصائص المسموحة، وتصعيد/تطبيق الـrenderer والـresolution، وحسم البروفايل بلا
+      # المطابقة، وجدول عُقد تجاوز الشحن. وهذه تُبنى **للمضيف** بـ`clang` مع شيم صغير لـ
+      # `<sys/system_properties.h>`، وتُقاس بدعاوى قابلة للتكذيب (`archdaemon/tests/`).
+      #
+      # وهي **ليست** بديلًا عن الجهاز: لا sysfs ولا root ولا ثنائية ARM — فما يُثبته هو
+      # **المنطق وحده**، وسلوك الجهاز يبقى «يحتاج جهازًا» كما هو معلن في التقرير. وثوانٍ هنا
+      # تكشف انحدار المنطق قبل بناء الأصل الذي يستهلك دقائق ثم يمرّ صامتًا.
+      # و«قياس الأداة» معه: `self-check` يُنشئ طفرة مُزيلة لملكية نطاق `maxmanagerconf.`
+      # (وهي الانحدار الموصوف في تعليق المصدر) ويشترط أن **تسقط** الدعوى — فمجموعة لا يمكن
+      # أن تفشل لا تُثبت شيئًا.
+      # ── نواة MaxFx DSP على المضيف (بلا NDK ولا جهاز) ──
+      #
+      # نفس منطق «Native parity harness» أدناه: النواة نقّية (`maxfx_dsp` بلا أندرويد وبلا عقد
+      # مؤثّرات) فتُبنى وتُقاس هنا بـ246 دعوى من العقد نفسه (`maxfx_params.tsv`)، و`self-check`
+      # يحقن طفراتٍ **يجب أن تُسقط المجموعة** — فمجموعةٌ لا تفشل أبدًا لا تُثبت شيئًا. وثوانٍ هنا
+      # تنقذ الدقائق التي يستهلكها بناء الأصل ثم يمرّ وهو معطوب.
+      - name: MaxFx DSP tests + mutation self-check (host, no NDK/device)
+        run: make -C maxfx/tests run self-check
+
+      - name: Native parity harness (host, no NDK/device)
+        run: make -C archdaemon/tests run self-check
+
+      - name: Copy changelog file
+        run: bash .github/scripts/changelog.sh
+
+      - name: Determine Build Type
+        id: build_type
+        run: |
+          # Membaca isi file dan menghapus spasi/newline tersembunyi
+          V_TYPE=$(cat version_type | tr -d '\n\r ')
+          echo "V_TYPE=$V_TYPE" >> "$GITHUB_ENV"
+          echo "Build mode set to: $V_TYPE"
+
+      # **مصدر واحد لسلسلة الإصدار — وثلاثة مواضع يجب أن تتفق بايت ببايت.**
+      #
+      # والسبب مقيس في الخادم: `check_module_version()`
+      # (`archdaemon/jni/src/MaxManagerUtility/ModuleIntegrity.c:44`) يُنفّذ
+      # `grep -q '^version=%s$' module.prop` و`%s` هو `MODULE_VERSION` المطبوعة فيه؛ فاختلاف
+      # بايت ببايت **يُخرج الخادم عند الإقلاع** (`EVENT=MODULE_INTEGRITY_FAILED
+      # reason=version_mismatch`) ويُسقط `persist.sys.maxmanager.service`. فالبوابة هنا ليست
+      # تكميلية: هي تمنع حزمة تُقلع ثم تموت.
+      #
+      # **وكانت هذه الخطوة معطوبة فعليًّا:** كانت تشتقّ سلسلة جديدة
+      # (`$(cat version) ($(count)-$(short)-$(cat version_type))`) وتطالب `MaxManager.h` بها،
+      # بينما `MaxManager.h` يقول `"V1"` و`module.prop` يقول `V1` — أي أنّ الثلاثة كانوا
+      # متفقين على `V1`، والسلسلة المُشتقّة (`5.2 (1823-…-Dazzling)`) **لا وجود لها في الشجرة**
+      # ⇒ الشرط يفشل حتمًا، ولو كان الباقي كله سليمًا. وكان البناء الأخضر يمرّ بمعنى واحد فقط:
+      # ألّا تكون هذه الخطوة قد نُفّذت.
+      #
+      # فالصواب ليس «اشتقاق سلسلة ومطالبة الملفين بها»، بل **مطالبة المصادر الثلاثة**
+      # (ملف `version` ⇒ `module.prop` ⇒ `MaxManager.h`) أن تقول الشيء نفسه. وهذا ما يلي.
+      - name: Confirm the single version string across its three homes
+        run: |
+          set -e
+          file_version="$(cat version | tr -d '\n\r ')"
+          prop_version="$(sed -n 's/^version=//p' mainfiles/module.prop | tr -d '\n\r ')"
+          header_version="$(sed -n 's/^#define MODULE_VERSION "\(.*\)"$/\1/p' archdaemon/jni/include/MaxManager.h | tr -d '\n\r ')"
+          test -n "$file_version" \
+            || { echo "::error::version file is empty"; exit 1; }
+          for pair in "version:$file_version" "mainfiles/module.prop:$prop_version" \
+                      "archdaemon/jni/include/MaxManager.h:$header_version"; do
+            where="${pair%%:*}"; value="${pair#*:}"
+            test "$value" = "$file_version" \
+              || { echo "::error::version mismatch — version='$file_version' but $where='$value'"; exit 1; }
+          done
+          # الرقم التسلسلي للبناء يبقى مُشتقًّا من الالتزامات (لا معنى لكتابته بيد)،
+          # وهو لا يدخل في مقارنة الخادم — الخادم يقرأ `version=` وحده.
+          echo "✅ version string agrees in all three homes: $file_version"
+
+      - name: Use the runner's preinstalled NDK r29 (fall back to downloading it)
+        id: ndk_preinstalled
+        run: |
+          # صورة ubuntu-24.04 على GitHub تشحن NDK **29.0.14206865** = r29، ويشير إليها
+          # `ANDROID_NDK_LATEST_HOME` (وثيقة `actions/runner-images` · Ubuntu2404-Readme).
+          # فتنزيله من Google في كل تشغيل عملٌ بلا مقابل. نتحقّق من إصداره: إن كان ٢٩ نستعمله،
+          # وإلا وقعنا إلى `nttld/setup-ndk` كما كان (فالافتراضي هو التنزيل، والتخطّي للاستثناء).
+          candidate="${ANDROID_NDK_LATEST_HOME:-}"
+          revision=""
+          if [ -n "$candidate" ] && [ -f "$candidate/source.properties" ]; then
+            revision="$(sed -n 's/^Pkg\.Revision[[:space:]]*=[[:space:]]*//p' "$candidate/source.properties" | tr -d '\r' | tr -d ' ')"
+          fi
+          if [ -n "$revision" ] && [ "${revision%%.*}" = "29" ]; then
+            echo "ANDROID_NDK_HOME=$candidate" >> "$GITHUB_ENV"
+            echo "ANDROID_NDK_ROOT=$candidate" >> "$GITHUB_ENV"
+            # المساران معًا: جذر الـNDK فيه `ndk-build`، و`toolchains/…/bin` فيه clang.
+            printf '%s\n' "$candidate" "$candidate/toolchains/llvm/prebuilt/linux-x86_64/bin" >> "$GITHUB_PATH"
+            echo "NDK_PREINSTALLED=1" >> "$GITHUB_ENV"
+            echo "✅ NDK من الصورة: r29 ($revision) — بلا تنزيل"
+          else
+            echo "ℹ️ لا r29 في الصورة (المُحصى: ${revision:-لا شيء}) ⇒ التنزيل كالمعتاد"
+          fi
+
+      - name: NDK Setup
+        if: env.NDK_PREINSTALLED != '1'
+        uses: nttld/setup-ndk@v1.6.0
+        with:
+          ndk-version: r29
+          # local-cache: true is off on purpose. nttld/setup-ndk's own
+          # actions/cache entry for "setup-ndk-r29-linux" is known to restore
+          # a half-populated toolchain on Linux: the aarch64-linux-android*-clang
+          # wrapper scripts come back, but the real clang/clang++ binaries they
+          # exec do not, so ndk-build fails deep inside ccache/make with a bare
+          # "No such file or directory" (see nttld/setup-ndk-consuming projects
+          # hitting the same "setup-ndk-r29-linux" cache-hit failure). Every hit
+          # of that cache entry is broken, not just stale ones, so re-enabling
+          # the cache will reproduce this. Downloading r29 fresh from Google
+          # each run costs well under a minute and avoids the whole class.
+          local-cache: false
+
+      # Fails fast, and says what actually broke, instead of a confusing
+      # "No such file or directory" surfacing later from inside ccache/make
+      # (see the local-cache note above — this is the failure mode it guards).
+      - name: Verify NDK Toolchain
+        run: |
+          # `ndk-build` مضاف هنا عمدًا: مسار الـNDK المُمرَّر يدويًّا (حين يكون من الصورة)
+          # يجب أن يحمل جذر الـNDK وفيه السكربت — وبدونه كان الخطأ يظهر متأخّرًا داخل الخطوة
+          # التي تستدعيه بدل أن يقول اسمه هنا.
+          if ! command -v clang >/dev/null 2>&1 || ! command -v clang++ >/dev/null 2>&1 \
+             || ! command -v ndk-build >/dev/null 2>&1; then
+            echo "❌ NDK toolchain is incomplete: clang/clang++/ndk-build not found on PATH." >&2
+            echo "   ANDROID_NDK_HOME=${ANDROID_NDK_HOME:-<unset>}" >&2
+            exit 1
+          fi
+          echo "✅ NDK toolchain OK: $(command -v clang) · $(command -v ndk-build)"
+
+      - name: Setup ccache for native (NDK) builds
+        uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: ndk-build-${{ runner.os }}
+
+      # ── البناء الأصلي: ما يدخل الـAPK يُبنى الآن، والباقي في الخلفية ──
+      #
+      # قِيس أن خطوة Gradle وحدها ≈ ١٦ دقيقة من ~٢٠ (سجل المالك نفسه: `BUILD FAILED in 16m 23s`)،
+      # وأن الأصلية كلها تقع **قبلها** في مسار متسلسل — فدقائق المُصرّف كله كان لا يفعل فيها شيئًا
+      # سوى الانتظار. فالترتيب هنا مقلوب عن قصد:
+      #   • `libmaxmanager_native.so` وحدها — وهي التي يدخلها الـAPK — تُبنى **قبل** Gradle،
+      #     فلا سباق ولا اعتماد على توقيت (Gradle يتحقّق من تجزئة المخرجات لا من ساعة الحائط).
+      #   • والخمسة الباقية (الخادم · preload · thermalcore · profilesettings · utilityconf) لا
+      #     يدخل منها شيء في الـAPK بل في الحزمة، فتُشغَّل في الخلفية وتُحصَد **قبل** `compile_zip.sh`.
+      #
+      # و**حدّها المُعلن:** الأنوية هنا أربع والمرحلتان CPU-bound ⇒ التوازي على أربع أنوية أقلّ
+      # بكثير من ثمان؛ والمكسب الحقيقي يظهر مع متغيّر `BUILD_RUNNER` أعلاه.
+      # **وللإرجاع:** احذف «Start…» و«Wait…» واستعد الخمسة من `git log` (موضعها القديم في HANDOFF
+      # تكملة ٨٦) — لا يمسّ ذلك صحّة البناء، ترتيبه فقط.
+
+      # هدفان: `aarch64-linux-android` + `armv7-linux-androideabi` (قرار المالك، تكملة ١١٠
+      # — إعادة العمود 32-بت الذي أُخرج في تكملة ٨٢). الهدفان يسريان على الأربعة crates
+      # وعلى ndk-build (`APP_ABI` في `Application.mk`) وعلى الحزمة والمنصّب معًا.
+      - name: Setup Rust Toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android, armv7-linux-androideabi
+
+      - name: Cache Rust registry and target directories
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: |
+            thermalcore -> target
+            binprofiles -> target
+            binutils -> target
+            manager/src/main/rust -> target
+
+      - name: Cache cargo-ndk binary
+        id: cargo-ndk-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cargo/bin/cargo-ndk
+          key: ${{ runner.os }}-cargo-ndk-bin-v1
+
+      - name: Install cargo-ndk
+        run: command -v cargo-ndk >/dev/null 2>&1 || cargo install cargo-ndk
+
+      # ── اختبارات Rust على المضيف (بلا NDK ولا ABIs) ──
+      # لماذا هذا الخط موجود: لم يكن في المستودع خط واحد يشغّل `cargo test` لـcrate التطبيق
+      # (كان يُبنى للـABIs بالـ`cargo ndk` فقط)، فتعفّن اختبار **فاشل فعلًا**:
+      # `power_predictor::tests::nan_never_enters_history` كان يمرّر NaN في محور المعالج
+      # ثم يسأل عن التاريخ الحراري (والمُمرَّر إليه 42.0 سليم) — فيسقط عند أول تشغيل حقيقي.
+      # والخطوة ثوانٍ، وتقيس وحدها العقد المشترك بين Kotlin وRust (صيغة حزمة الدفعات)
+      # الذي لا يقيسه أي خط آخر.
+      - name: Rust unit tests (app crate, host)
+        working-directory: ./manager/src/main/rust
+        run: cargo test
+
+      # ── عقد CLI الثنائية `sys.maxmanager-utilityconf` (بلا NDK ولا جهاز) ──
+      # لماذا هذا الخط موجود: كان جدول هذه الثنائية (١١ أمرًا) غير مقيس إطلاقًا؛
+      # والخادم C يرسل `setrender vulkan` ثم **يفترض** أن ذلك يضبط `debug.hwui.renderer`
+      # (الافتراض مكتوب في `archdaemon/tests/parity_test.c`). والدعاوى الآن تقرأ
+      # `fixtures/contracts/binutils_cli.tsv` **وقت الترجمة** (`include_str!`) — فتعديل الجدول
+      # أو الجدول الخالص في `binutils/src/utils/plan.rs` يُسقط الاختبار، ولا يُخزَّن نجاح كاذب.
+      # وهذا كان يتعذّر قبل اليوم: الحزمة كانت تربط `-llog` دائمًا فيفشل `cargo test` على المضيف
+      # (`unable to find library -llog`) — والربط الآن مشروط بـ`target_os = "android"` وحده،
+      # وسلوك الجهاز لم يتغيّر (مقيس: ثنائيّا ABI يطلبان `liblog.so` ويستعملان الرمز الحقيقي).
+      - name: Rust unit tests (utility binary, host)
+        working-directory: ./binutils
+        run: cargo test
+
+      # ── عقد ثنائية الملف `sys.maxmanager-profilesettings` (بلا NDK ولا جهاز) ──
+      # لماذا هذا الخط موجود: كان قرار الملكية **مكتوبًا ولا يُقاس** — حرس Kotlin كان يتأكّد أن
+      # الشرطين موجودان **كنصّ**، ولم يقِس **ما يقرّرانه**. وهنا يُقيَّمان فعلًا على سطري الأوامر
+      # الحقيقيين (أب = الخادم، وأب = `sh` الذي يلفّه `systemv`)، مع أسماء الأوامر الستّة
+      # ومرادفاتها وقاعدة الاحتياط — كلّها في `fixtures/contracts/profilesettings_cli.tsv`.
+      - name: Rust unit tests (profile binary, host)
+        working-directory: ./binprofiles
+        run: cargo test
+
+      # ── نواة القرار الحرارية `thermalcore` (بلا NDK ولا جهاز) ──
+      # لماذا هذا الخط موجود: كانت هذه الحزمة **بلا اختبار مضيف واحد**، ولم يكن `cargo test`
+      # فيها يعمل أصلًا: `#[link(name = "log")]` غير مشروط كان يفشل في الربط على المضيف
+      # (`unable to find library -llog`) — نفس السبب المقيس الذي أبقى `binutils` بلا اختبار.
+      # والربط الآن مشروط بـ`target_os = "android"` (والرمز الحقيقي لا يزال هو المُستعمل على
+      # الجهاز)، فصار PID — وهو **قلب قرار الخنق الحراري** الذي يناديه `monitor.rs` كل دورة —
+      # يُقاس على المضيف: `fixtures/contracts/thermal_policy.tsv` (١٣ صفًّا · ٦ تشغيلات)
+      # بقيم **مشتقّة حسابيًّا** لا مُسجَّلة من المخرَج.
+      - name: Rust unit tests (thermal core, host)
+        working-directory: ./thermalcore
+        run: cargo test
+
+      # ── ⚠️ ترتيب مكتبتَي jniLibs مقصود ومُقاس — لا تعكسه ──
+      #
+      # كان هنا العطب الذي أسقط بوابة JNI في CI («مكتبة معلنة بلا أي ثنائية:
+      # maxmanager_native») وفي الوقت نفسه كان يُحزَّم الـAPK بلا هذه المكتبة:
+      #
+      #   `ndk-build` يحذف **كل** `lib*.so` في مجلد خروج المكتبات لكل ABI **قبل** أن
+      #   يثبّت وحداته: قاعدة `clean-installed-binaries` في `build/core/` من الـNDK
+      #   (`rm -f <libs>/<abi>/lib*.so`) — وُجدت لتفادي المكتبات البائتة، وهي تحذف
+      #   ما لا تعرفه. فقد كانت `libmaxmanager_native.so` تُبنى أولًا (بـ`cargo ndk`)،
+      #   ثم تمسحها خطوة `ndk-build` التالية، فلا تبقى إلا `libtermux.so` في العمودين
+      #   (وهو تحديدًا ما رآه المُشغّل: «ثنائيات مقروءة 2»).
+      #
+      # وأثرُه ليس البوابة وحدها — وهي أحسنت إذ كشفته — بل أن **الطبقة الأصلية كلها
+      # تُشحن ميتة**: بلا `libmaxmanager_native.so` يفشل `System.loadLibrary` فيسقط
+      # التطبيق إلى `nativeAvailable=false` الدائم (الوكيل · المتنبئ · التوأم · السياق).
+      #
+      # فالترتيب: `ndk-build` أولًا (ماسحٌ فيزيائيًّا)، ثم `cargo ndk` فلا يمسّه أحد،
+      # ثم توكيد صريح على وجود الأربعة قبل البوابة. وكلاهما قبل Gradle على أي حال:
+      # Gradle هو من يحزم `jniLibs`، ولا يهمّه أيّ الخطوتين سبقت.
+      #
+      # **والكاتب الثاني زال (جولة تدقيق الأصل `PROVENANCE-01`):** حُذفت مكتبة الطرفية
+      # ومصدرها لأنها GPL-3.0 في مسار إصدار Apache-2.0، فليس في `jniLibs` اليوم إلا
+      # `cargo ndk`. ويبقى التوكيد وتحته البوابة: عودهما رخيص، وعودة عطب صامت إلى هاتف
+      # مستخدم ليست كذلك.
+
+      # ── المكتبة الأصلية للتطبيق (JNI) ── (والكاتب الثاني زال — الشرح أعلاه)
+      # crate maxmanager_native هو الذي يوفر: وكيل التعلم المعزز،
+      # المتنبئ، التوأم الرقمي، ومحرك السياق. بدونه يعمل التطبيق في
+      # وضع الاحتياط الدائم (nativeAvailable=false) فتُشحن كل ميزات
+      # المكوّن الأصلي ميتة. هذا الخط كانت مفقودة من خط الإنتاج
+      # (ci.yml فقط كان يبنيها دون أن تستهلكها حزمة الإصدار).
+      - name: Build Manager Native Library (JNI)
+        working-directory: ./manager/src/main/rust
+        run: |
+          if [ "$V_TYPE" == "experimental" ]; then
+            cargo ndk -t arm64-v8a -t armeabi-v7a -o ../../../app/src/main/jniLibs build
+          else
+            cargo ndk -t arm64-v8a -t armeabi-v7a -o ../../../app/src/main/jniLibs build --release
+          fi
+          ls -l ../../../app/src/main/jniLibs/arm64-v8a/ ../../../app/src/main/jniLibs/armeabi-v7a/
+
+      # توكيد يكشف **حذفًا صامتًا** لثنائية قبل الحزم أو قبل البوابة، ويسمّي الملف
+      # الغائب بمساره. سببه مُقاس: خطوة `ndk-build` تحذف ما لا تعرفه (أعلاه)، وأي
+      # خطوة أصلية تُضاف لاحقًا إلى هذا الملف قد تفعل الشيء نفسه — والعطب الصامت
+      # هنا لا يُرى إلا في هاتف المستخدم.
+      - name: Assert jniLibs holds the native library in both ABIs
+        run: |
+          set -e
+          missing=""
+          for abi in arm64-v8a armeabi-v7a; do
+            for lib in libmaxmanager_native.so; do
+              path="manager/app/src/main/jniLibs/$abi/$lib"
+              [ -s "$path" ] || missing="$missing $path"
+            done
+          done
+          if [ -n "$missing" ]; then
+            echo "::error::jniLibs ناقصة قبل بوابة JNI وبعدها الحزم:$missing"
+            echo "   سبب متوقّع: خطوة بُنيت بعدها حذفت lib*.so في مجلد خروجها" \
+                 "(قاعدة clean-installed-binaries في ndk-build). رتّبها قبل هذه المكتبة."
+            exit 1
+          fi
+          echo "✅ المكتبة موجودة في العمودين:"
+          find manager/app/src/main/jniLibs -name '*.so' | sort
+
+      # ── بوابة رموز JNI على الثنائيات **المبنية فعلًا** ──
+      # موضعها هنا مقصود: عندها فقط تكون المكتبتان موجودتين في **العمودين**، فيقاس ما لا
+      # يقيسه غيرهما: (أ) كل `external fun` له رمز مُصدَّر ⇒ لا `UnsatisfiedLinkError`،
+      # (ب) الرمز الموجود في arm64-v8a وغائب في armeabi-v7a ⇒ لا انهيار على هاتف 32-بت
+      # (وهو الصنف الذي وقع فعلًا في مكتبة طرفية قبل دعم 32-بت، وقد حُذفت في
+      # `PROVENANCE-01`)، (ج) رمز مُصدَّر بلا
+      # مُعلن ⇒ كود ميت. و`--require-binaries` لازمة: غياب الثنائيات هنا هو **عطب**،
+      # بخلاف تشغيل المالك محليًّا بلا NDK حيث تُعلن الطبقة الثانية «غير مُتحقّقة» صراحةً.
+      # و`--strict` **لم تُوضع** عمدًا: الرمز اليتيم كودٌ ميت لا عطبٌ يُسقط الإصدار (ADR-18).
+      - name: Verify JNI symbols in built libraries
+        run: python3 tools/jni_symbols.py --assert --require-binaries
+
+      # ── مؤثّر MaxFx النظاميّ: يُبنى للعمودين، ورمز مكتبته `AELI` يُقاس على الثنائية ──
+      #
+      # ولماذا فحصُ الرمز هنا: `AELI` هو العقد الذي يبحث عنه حمّال المؤثّرات في `audioserver`
+      # (`AUDIO_EFFECT_LIBRARY_INFO_SYM` في `maxfx_effect_abi.h`) — ومكتبةٌ تُبنى ناجحةً بلا رمزٍ
+      # مُصدَّر **لا تُحمَّل أبدًا** على الجهاز، وسماعُ المستخدم لا يتغيّر بلا سطرِ عطلٍ واحد. والعمودان
+      # معًا (arm64-v8a/armeabi-v7a) لأنّ نسخةً واحدة تعني «الميزة لا تعمل» على الهاتف الآخر — وهو
+      # بالضبط ما سقطت به مكتبةٌ طرفية سابقة (ADR-53). والبناء من `maxfx/jni/` بنمط `archdaemon`:
+      # مجلد خروجه `maxfx/libs/` منفصل، فلا يمسّه `clean-installed-binaries` ولا يمسّ `jniLibs`.
+      - name: Build the MaxFx system effect and verify its five contract symbols (AELI + AIDL)
+        run: |
+          set -e
+          set -e
+          # ── رؤوس AIDL أوّلًا: غلافُ العقد المزدوج يُترجم بها ──
+          #
+          # `aidl` من `build-tools` في SDK هذه البيئة، والتوليد **مُعلَن نتيجته**
+          # (`GEN=ok …` أو `GEN=skipped reason=…`) — ولا يُسكِت الفشل: البوابة أدناه تسقط
+          # إن غابت الرموز الأربعة الجديدة. والمسارات والنسخ المجمَّدة في `maxfx/aidl/README.md`.
+          sh maxfx/aidl/gen.sh
+          # والرأس مطلوبٌ بالاسم، والمصادر **تُبحَث ولا تُفترض**: المولِّد يكتب الرؤوس
+          # ببادئة `aidl/` (‏`gen/aidl/android/…`) والمصادر من `GetOutputFilePath` التي تبني
+          # من اسم الحزمة وحده (‏`gen/android/…`) — قِيس في `37034110669`: الفحص بحث في
+          # `gen/aidl/…/IEffect.cpp` فلم يجده. وتركُ المصادر عطبُ **ربطٍ** لا ترجمة
+          # (‏`37031374179`: `undefined symbol: BnEffect::createBinder()`).
+          if [ ! -s maxfx/gen/aidl/android/hardware/audio/effect/BnEffect.h ]; then
+            echo "::error::رأس الواجهة المُولَّد غائب ⇒ لا يُبنى غلاف createEffect/queryEffect/destroyEffect"
+            exit 1
+          fi
+          echo "--- أين صارت المصادر المُولَّدة؟ ---"
+          find maxfx/gen -name '*.cpp' | head -5 || true
+          aidl_srcs="$(find maxfx/gen -name '*.cpp' | wc -l | tr -d ' ')"
+          echo "عدد مصادر AIDL المُولَّدة: $aidl_srcs"
+          if [ "$aidl_srcs" -eq 0 ]; then
+            echo "::error::لم يُولَّد أيّ مصدر ⇒ رابطٌ بلا تعريف"
+            exit 1
+          fi
+          # ── بيانٌ مقيس لأعيان الـNDK: هل لا تزال رؤوس الـC++ غائبة؟ ──
+          #
+          # الكود المُولَّد يُضمِّن رؤوس `android/binder_*.h` لطبقة الـC++، والـNDK يُشحَن
+          # واجهة C فقط — وذاك سبب وجود `maxfx/third_party/libbinder_ndk_cpp` المنسوخة.
+          # وهذا السطر ليس تشخيصًا للعطب بل **بيانًا يُثبّت الحاجة**: يومَ يُشحَن الرأس في
+          # الـNDK يُطبع اسم مساره، فيصير نسخنا مرشّحًا للإزالة بقرار لا بتخمين.
+          vendored="maxfx/third_party/libbinder_ndk_cpp"
+          for h in binder_interface_utils.h binder_auto_utils.h binder_stability.h \
+                   binder_enums.h binder_internal_logging.h binder_parcel_utils.h \
+                   binder_parcelable_utils.h binder_to_string.h; do
+            if [ ! -s "$vendored/android/$h" ]; then
+              echo "::error::رأسٌ منسوخ غائب أو فارغ: $vendored/android/$h"
+              exit 1
+            fi
+          done
+          echo "✅ رؤوس binder_ndk المنسوخة كاملة في $vendored"
+          found="$(find "$ANDROID_NDK_HOME" -name 'binder_interface_utils.h' -print -quit 2>/dev/null || true)"
+          if [ -n "$found" ]; then
+            echo "⚠️ ملاحظة: الـNDK صار يُشحَن $found — يُراجَع نسخنا الرسوميّ (لا يُحذف تلقائيًّا)."
+          fi
+          # ── تصريف سطحيّ لبدائل `compat/`: ثوانٍ هنا بدل دورة بناء كاملة ──
+          #
+          # بدائلنا تُقلّد سطح `libbase`/`libutils` بقدر ما تستعمله `libfmq`، وسطحٌ ناقص
+          # فيها لا يُكشف إلا **داخل** بناء المكتبة — بعد التوليد ودقائق من الترجمة. ووقع
+          # فعلًا: التشغيل `37030025157` سقط بـ«use of undeclared identifier 'ERROR'» في
+          # `FmqInternal.cpp` — وهو عطبُ سطحٍ يُمسك بتصريف سطرٍ واحد.
+          # والحاضنة تُحاكي موضع الاستعمال حرفيًّا (‏`namespace android::hardware::details`)
+          # وتُصرَّف بمُصرّف الـNDK نفسه (فسياق `android/log.h` حقيقيّ لا مُستبدَل) وبـ`-Werror`
+          # كما في `Android.mk` — فلا يُقاس سطحٌ بغير ما يُبنى به. وهي لا تدخل المكتبة:
+          # ليست في `LOCAL_SRC_FILES`، و`ndk-build` لا يُجمّع الملفّات تلقائيًّا.
+          ndk_cxx="$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/linux-x86_64/bin/aarch64-linux-android31-clang++"
+          if [ -x "$ndk_cxx" ]; then
+            "$ndk_cxx" -std=c++20 -Wall -Wextra -Werror -fsyntax-only \
+              -Imaxfx/third_party/libfmq/compat \
+              maxfx/third_party/libfmq/compat/logging_surface_test.cpp
+            echo "✅ سطح بدائل compat يُصرَّف (logging)"
+          else
+            echo "::warning::مُصرّف الـNDK غير موجود ⇒ سطح بدائل compat **غير مُتحقَّق** — لا يُدَّعى"
+          fi
+          export NDK_CCACHE="$(command -v ccache || true)"
+          (cd maxfx && ndk-build)
+          readelf_bin="$(command -v llvm-readelf || command -v readelf)"
+          # الرموز الخمسة: `AELI` (HIDL ≤11) والثلاثة (AIDL 12+) — و`libmaxfx.so` الواحدة
+          # تُصدِّرها معًا فيعمل الجهاز على الجيلين بلا نسختين ولا تفريع.
+          for abi in arm64-v8a armeabi-v7a; do
+            so="maxfx/libs/$abi/libmaxfx.so"
+            if [ ! -s "$so" ]; then
+              echo "::error::libmaxfx.so غائب في $so — البناء لم يُنتج العمود"
+              exit 1
+            fi
+            symbols="$("$readelf_bin" --dyn-syms -W "$so" | awk '$7 != "UND" { print $8 }')"
+            missing=""
+            for sym in AELI createEffect queryEffect destroyEffect; do
+              if ! printf '%s\n' "$symbols" | grep -qx "$sym"; then
+                missing="$missing $sym"
+              fi
+            done
+            if [ -n "$missing" ]; then
+              echo "::error::رموز ناقصة في $so:$missing — المكتبة ستبني ولا تُحمَّل على الجهاز"
+              echo "   مصنع AIDL يبحث بـdlsym عن createEffect/queryEffect/destroyEffect،"
+              echo "   وAELI هو عقد الجيل الأقدم. غياب أيٍّ منها = «لا تغيّر في الصوت» بلا سطر عطل."
+              printf '%s\n' "$symbols" | grep -E '^(AELI|createEffect|queryEffect|destroyEffect)$' || true
+              "$readelf_bin" --dyn-syms -W "$so" | head -25
+              exit 1
+            fi
+            echo "✅ $so · الخمسة مُصدَّرة"
+            printf '%s\n' "$symbols" | grep -E '^(AELI|createEffect|queryEffect|destroyEffect)$' | sed 's/^/     /'
+          done
+
+      # والخمسة الباقية تُشغَّل في الخلفية وتُحصَد بعد Gradle (الشرح أعلاه).
+      # ولا `wait` بين الخطوتين: كل خطوة صدفة shell مستقلة، فالشهادة هنا **ملفٌ تكتبه الخلفية**
+      # بصدفة خروجها — وهذا ما تقرأه خطوة الحصاد.
+      #
+      # ⚠️ و`set -e` **داخل صدفة داخلية** لا في المجموعة `{ }` مباشرة: `{ }` تُنفَّذ في الصدفة
+      # الحالية، فـ`set -e` يُسرّب إلى ما بعدها ويُقفل الصدفة عند أوّل فشل **قبل** كتابة ملف
+      # الشهادة — فينتظر الحصاد عشر دقائق على ملف لن يُكتب. مُقيس في محاكاة محليّة (تكملة ٨٦) لا مفترض.
+      - name: Start the remaining native builds in the background
+        run: |
+          (
+            (
+              set -e
+              export NDK_CCACHE="$(command -v ccache)"
+              if [ "$V_TYPE" == "experimental" ]; then
+                rust_profile=""
+                ndk_debug="NDK_DEBUG=1"
+              else
+                rust_profile="--release"
+                ndk_debug=""
+              fi
+              echo "── archdaemon (ndk-build $ndk_debug) ──"
+              (cd archdaemon && ndk-build $ndk_debug)
+              echo "── preloadbin (ndk-build $ndk_debug) ──"
+              (cd preloadbin && ndk-build $ndk_debug)
+              echo "── thermalcore ($rust_profile) ──"
+              (cd thermalcore && cargo ndk -t arm64-v8a -t armeabi-v7a build $rust_profile)
+              echo "── binprofiles ($rust_profile) ──"
+              (cd binprofiles && cargo ndk -t arm64-v8a -t armeabi-v7a build $rust_profile)
+              echo "── binutils ($rust_profile) ──"
+              (cd binutils && cargo ndk -t arm64-v8a -t armeabi-v7a build $rust_profile)
+            ) > native-build.log 2>&1
+            echo $? > native-build.exit
+          ) &
+          echo $! > native-build.pid
+          echo "⏳ بدأت البناءات الخمسة في الخلفية (pid $!) ⇒ native-build.log"
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v5
+        with:
+          java-version: "17"
+          distribution: temurin
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+        with:
+          cache-provider: basic
+
+      - name: Use the runner's preinstalled Android SDK (fall back to installing it)
+        id: android_sdk_preinstalled
+        run: |
+          # الصورة قد تشحن `android-36`؛ والمطلوب اليوم **android-37.0** (Android 17).
+          # نستعمل ما في الصورة إن كان هو المطلوب بالضبط، وإلا نُنزّله — والتحقّق بالاسم لا بالتفاؤل.
+          sdk="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-/usr/local/lib/android/sdk}}"
+          # ── ولماذا **إصداري build-tools** لا واحد (عطب مقيس على مضيف نظيف) ──
+          #
+          # `compileSdk = 37` في `app/build.gradle.kts`، لكن AGP يطلب `build-tools` بنسخة
+          # **مشتقّة من إصداره** لا من `compileSdk`: على هذا المضيف فشل التصريف بالنصّ
+          # «Failed to find Build Tools revision 36.0.0» — أي أن المطلوب **36.0.0** لا 37.0.0.
+          # وكان الشرط هنا يكتفي بـ`37.0.0`، فالـrunner الذي يشحن 37.0.0 بلا 36.0.0 كان يمرّ
+          # من الفحص ثم **يفشل في Gradle بعد دقائق** (وبالضبط بعد بناء Rust/الـdaemon).
+          # و`BUILD_RUNNER` يجعل هذا واقعًا لا احتمالًا: وسم أكبر أو runner خاص بلا 36.0.0.
+          if [ -d "$sdk/platforms/android-37.0" ] && [ -d "$sdk/build-tools/37.0.0" ] \
+             && [ -d "$sdk/build-tools/36.0.0" ]; then
+            echo "ANDROID_SDK_ROOT=$sdk" >> "$GITHUB_ENV"
+            echo "ANDROID_HOME=$sdk" >> "$GITHUB_ENV"
+            echo "SDK_PREINSTALLED=1" >> "$GITHUB_ENV"
+            echo "✅ SDK من الصورة: android-37.0 + build-tools 36.0.0/37.0.0"
+          else
+            echo "ℹ️ SDK ناقص في الصورة ⇒ التنزيل كالمعتاد"
+          fi
+
+      - name: Set up Android SDK
+        if: env.SDK_PREINSTALLED != '1'
+        uses: android-actions/setup-android@v3
+        with:
+          # الإصداران معًا: 37.0.0 لما تطلبه أدوات السطر، و36.0.0 لما يطلبه AGP بالاسم.
+          packages: "platform-tools platforms;android-37.0 build-tools;37.0.0 build-tools;36.0.0"
+
+      - name: Add Android Build Tools to PATH
+        run: echo "$ANDROID_SDK_ROOT/build-tools/37.0.0" >> "$GITHUB_PATH"
+
+      # حرس صريح: `aapt2` الذي يُترجم الموارد **موجود** قبل أن يبدأ Gradle. وقد كان غيابه
+      # يُعلن «الموارد غير متحقّقة» في البوّابات ثم يُسقط `processReleaseResources` بعد دقائق.
+      - name: Verify aapt2 is present in the SDK
+        run: |
+          sdk="$ANDROID_SDK_ROOT"
+          for bt in 36.0.0 37.0.0; do
+            if [ -x "$sdk/build-tools/$bt/aapt2" ]; then
+              echo "✅ aapt2 present: $sdk/build-tools/$bt/aapt2"; exit 0
+            fi
+          done
+          echo "::error::aapt2 is missing from build-tools 36.0.0 and 37.0.0 — resource compilation cannot run"
+          exit 1
+
+      # ── حالة مشروع Gradle: تُقبل لالتزام **مطابق** فقط ──
+      #
+      # ⚠️ هذه هي التصحيح — وسببُه مُقاس في السجل لا مُفترَض. كان المفتاح يُسترجَع بأي سابقة
+      # (`restore-keys: gradle-state-${{ runner.os }}-`)، فاسترجع تشغيلُ الالتزام `405d5da`
+      # حالةَ الالتزام `eaeca942` (سطر صريح في السجل: «Cache restored from key:
+      # gradle-state-Linux-eaeca942…»). وعندها دخل تصريف Kotlin **تزايديًّا** على تاريخ شجرة
+      # أخرى: لم يُصرِّف إلا الملفات الثلاثة التي تغيّرت، وحلّ رموزها مقابل مخرَج قديم ناقص،
+      # فأنتج **134 خطأ «Unresolved reference»** في ملفات سليمة تمامًا — وأخواتها التي لم
+      # تتغيّر (وتستعمل الرموز نفسها) بلا خطأ واحد. وهذه بصمة **حالة فاسدة** لا بصمة شيفرة
+      # خاطئة: الملف الذي تظهر فيه الأخطاء ليس الملف الذي فيه العطب، بل الملف الذي أُعيد
+      # تصريفه. والثمن: ثلاث دورات حمراء في مطاردة ملفات لا عيب فيها.
+      #
+      # والدليل المقابل: نفس الشجرة (٧٠٧ ملفًا — البصمة في `docs/ai/source-manifest.txt`، وبها الملفات الثلاثة)
+      # تُصرَّف وتُختبر هنا من الصفر مرارًا: `BUILD SUCCESSFUL` · ١٣٩٣ اختبارًا · R8 · APK —
+      # بلا خطأ واحد. فالمشكلة في **ما استُعيد**، لا في **ما كُتب**.
+      #
+      # والقاعدة الآن: **لا تُقبل حالةٌ إلا لالتزامها نفسه.** فبلا `restore-keys` لا يُسترجَع إلا
+      # مفتاح مطابق حرفيًّا، أي «إعادة تشغيل الالتزام نفسه» — وهي الحالة الوحيدة التي تكون فيها
+      # الحالة سليمة بحكم البناء الناجح الذي كتبها. والالتزام الجديد يبدأ باردًا كما يبدأ بناء
+      # المطوّر. والمخزن الحقيقي للسرعة باقٍ ومفعَّل، وهو الآمن بحكم بنائه: مخزن Gradle ذو
+      # المفاتيح المشتقّة من **محتوى المدخلات** (`--build-cache` + `~/.gradle/caches` في خطوة
+      # `Setup Gradle`) — ولا يمكن أن يُعيد مخرَجًا لمدخلات أخرى، بخلاف حالة المشروع.
+      #
+      # و… السقف: تشارك هذه المخازن سقف GitHub (10 جيجابايت للمستودع) مع `rust-cache`
+      # و`ccache`؛ وهذه الخطوة الآن لا تُكلّف على الالتزام الجديد إلا نداء بحث واحد (تُخطئ
+      # المفتاح فلا تُنزّل شيئًا).
+      - name: Restore Gradle project state (same commit only)
+        id: gradle_state
+        continue-on-error: true
+        uses: actions/cache@v4
+        with:
+          path: |
+            manager/.gradle
+            manager/build
+            manager/app/build
+          key: gradle-state-${{ runner.os }}-${{ github.sha }}
+          # القتل الوسَطي (بصمة exit 143) يقتل خطوات post قبل أن تُحفَظ الحالة، فبقيت الجولة
+          # التالية باردة — والحلقة ما كانت لتُقطع. والصواب (صحّحه سجل المالك نفسه — تشغيل
+          # 2026-09-25 09:37Z، خطوة «Restore Gradle project state»): **`save-always`** من
+          # مدخلات actions/cache المعتمدة — جرّبنا قبلها `CACHE_ON_FAILURE` فرفضته الأداة
+          # تحذيرًا صريحًا («Unexpected input(s) 'CACHE_ON_FAILURE', valid inputs are …
+          # 'save-always'») وظل الحفظ معطلًا. ومعناه: الحفظ في الـpost **حتى عند فشل المهمة** —
+          # وحالة نصف مكتوبة **من الالتزام نفسه** مفتاحُها مطابقٌ حرفيًّا، فلا دخول لعَاوب
+          # التصريف التزايدي الذي سدّده الحرس أدناه (عطب الحالة كان من شجرة أخرى، لا من
+          # إعادة تشغيل التزام واحد)، وإعادة تشغيل التشغيل الفاشل تجد ما أنجزته صالحًا.
+          # ⚠️ وحدّه المعلن: لا شيء ينقذ حين يُقتل الـrunner قبل خطوات post — السجلان المقتولان
+          # بلا سطر Post واحد. فالحفظ عند الفشل أو النجاح، ولا ينقذ من القتل الوسَطي.
+          save-always: true
+
+      # ── الحرس: لا تصريف تزايديًّا على تاريخ شجرة أخرى ──
+      #
+      # هذا الشرط هو ما يجعل العطب أعلاه **مستحيلًا** لا «غير مرجَّح»: إن وُجدت حالة مشروع
+      # ليست من هذا الالتزام (أُعيدت `restore-keys` يومًا، أو استرجعت أداة أخرى حالةً ما)،
+      # أُسقِط تاريخ Kotlin التزايدي وحده (`**/build/kotlin`) فيصير أول تصريف **كاملًا** —
+      # والتصريف الكامل لا يقرأ تاريخًا سالفًا أصلًا، فلا يبقى للعطب موضع. ولا تُحذف مخرجات
+      # مهام أخرى (موارد · مانيفست · KSP · اختبارات)، فيبقى ما لم يتغيّر مدخله صالحًا.
+      - name: Guard — no incremental Kotlin state from another tree
+        run: |
+          if [ "${{ steps.gradle_state.outputs.cache-hit }}" = "true" ]; then
+            echo "✅ حالة المشروع من هذا الالتزام بعينه ⇒ التصريف التزايدي مسموح."
+            exit 0
+          fi
+          dirs=$(find manager -maxdepth 3 -type d -path '*/build/kotlin' || true)
+          if [ -z "$dirs" ]; then
+            echo "ℹ️ لا حالة سالفة أصلًا (بداية باردة) ⇒ لا شيء يُسقَط."
+            exit 0
+          fi
+          printf '%s\n' "$dirs"
+          printf '%s\n' "$dirs" | xargs rm -rf
+          echo "ℹ️ أُسقِط تاريخ Kotlin التزايدي ($(printf '%s\n' "$dirs" | wc -l) مجلدًا) ⇒ أول تصريف كامل."
+          # (مُكمَّل بخطوة أسفله: الإسقاط نفسه صار يُنفَّذ **قبل** أول نداء Gradle —
+          # فهنا لم يكن ثمة ما يُسقَط أصلًا لأن Gradle لم يعمل بعد، وأُبقيت الخطوة حارسًا
+          # يُحمرّ التشغيل لو وُجدت حالة غريبة دخلت بأي سبب.)
+
+      # ── إسقاط التاريخ التزايدي قبل Gradle: علاج حلقة القتل المقيسة ──
+      #
+      # بصمة العطب في سجل المالك (تشغيل 2026-09-25 · الالتزام 2ff6994): كل البوابات نجحت
+      # (Rust 59/0 · بوابة الرموز ✓ · testRelease 1582/0 · minifyReleaseWithR8 ✓)
+      # ثم مات التشغيل بـ`exit code 143` في الدقيقة ١٨٫٥ أثناء `mergeReleaseComposeMapping` —
+      # وهو نفس بصمة القتل السابق (١٦:٠٦ في `optimizeReleaseResources`): إيقافٌ خارجي
+      # (SIGTERM لخدمة الـrunner) لا فشل ترجمة ولا اختبار.
+      #
+      # والسبب الذي يجعل القتل **يتعذر** — مقيس في السجل نفسه لا مُقدَّر:
+      #   • «Basic caching did not find an entry to restore» (setup-gradle) و
+      #     «Cache not found for input keys: gradle-state-Linux-2ff6994…» (خطوة الحالة أعلاه)
+      #     ⇒ الجولة بدأت باردة كاملة.
+      #   • حفظ الكاش كله في خطوات *post* (setup-gradle وactions/cache) لا تُنفَّذ حين يُقتل
+      #     الـrunner ⇒ قتل = لا كاش = الجولة التالية باردة أيضًا. حلقة مفرغة: ~١٨٫٥ دقيقة
+      #     كل جولة، والقتل يقع قبل اكتمالها، فلا يكفّ البناء عن «أن لا ينتهي».
+      #   • وأثقل ما يُدفع في كل جولة باردة مُقاس بالطوابع الزمنية للسجل:
+      #     `mergeReleaseComposeMapping` وحدها **٦:٢٠** (06:50:03 ← 06:56:24) — جرد موارد
+      #     Compose لكل الفئات، وهي تكلفة بداية باردة تذوب UP-TO-DATE/FROM-CACHE بحالة سليمة.
+      #
+      # والعلاج المُختار: إسقاط تاريخ Kotlin التزايدي **قبل** أول نداء Gradle لا بعده.
+      # فيكون أول تصريف كاملًا من مخزن البناء السليم (`~/.gradle/caches`، مفاتيحه من محتوى
+      # المدخلات)، وتُكتب حالة المشروع من أول جولة ناجحة، فيصير التعديل التالي تزايديًّا
+      # حقيقيًّا ينتهي قبل نافذة القتل. (وكانت تكلفة الإسقاط هنا صفرًا في هذا التشغيل:
+      # خطوة الحرس وجدت لا مجلدات — لأن Gradle لم يعمل بعد.)
+      - name: Drop stale incremental Kotlin state before Gradle (kill-loop fix)
+        run: |
+          dirs=$(find manager -maxdepth 3 -type d -path '*/build/kotlin' || true)
+          if [ -z "$dirs" ]; then
+            echo "ℹ️ لا تاريخ تزايدي قبل Gradle (بداية باردة) ⇒ لا شيء يُسقَط."
+          else
+            printf '%s\n' "$dirs"
+            printf '%s\n' "$dirs" | xargs rm -rf
+            echo "ℹ️ أُسقِط تاريخ Kotlin التزايدي ($(printf '%s\n' "$dirs" | wc -l) مجلدًا) قبل Gradle ⇒ أول تصريف كامل."
+          fi
+
+      - name: Verify Gradle Wrapper Jar
+        working-directory: ./manager
+        run: |
+          if ! unzip -tq gradle/wrapper/gradle-wrapper.jar > /dev/null 2>&1; then
+            echo "❌ gradle-wrapper.jar is missing or corrupt in the repo (size: $(wc -c < gradle/wrapper/gradle-wrapper.jar 2>/dev/null || echo 0) bytes)."
+            echo "   Regenerate it locally with: gradle wrapper --gradle-version <version> --distribution-type bin"
+            echo "   Then commit it as a real binary (see .gitattributes) and push again."
+            exit 1
+          fi
+
+          echo "✅ gradle-wrapper.jar is a valid archive."
+
+      # ── بوابة الاختبارات + بناء الـ APK في أمر Gradle واحد ──
+      # اختبار يفشل = لا حزمة إصدار (كما كان).
+      #
+      # هذا كان خطوتين منفصلتين: `testDebugUnitTest` ثم `clean assembleRelease`،
+      # وهما معًا ~20 من 26 دقيقة من عمر المهمة. الأسباب التي جُمعتا من أجلها:
+      #
+      # 1. اختبارات الـ debug وبناء الـ release كانا يترجمان التطبيق كاملًا
+      #    مرتين (Kotlin + KSP/Hilt + Compose) لأن النسختين (variant) مختلفتان.
+      #    الاختبارات الـ 14 هنا اختبارات JUnit خالصة لمنطق Kotlin، ولا يستخدم
+      #    أي منها BuildConfig أو DEBUG، فتشغيلها على نسخة release مطابق في
+      #    السلوك ولوحظ أن يشارك البناء نفسُه في ترجمة واحدة.
+      # 2. `clean` كان يمحو مخرجات خطوة الاختبار قبل أن يعيد بناء الـ APK لها،
+      #    والـ runner يبدأ من checkout نظيف أصلًا فلا شيء قديم ليُمسح.
+      # 3. أمران مستقلان = بدء JVM + إعداد (configuration) + حل اعتماديات
+      #    مرتين. و`org.gradle.daemon=false` (المكتوب في gradle.properties من
+      #    أجل البناء على الجهاز عبر AndroidIDE) كان يجعل البدء باردًا في
+      #    المرة الثانية — لذلك تُتجاوَز قيمته هنا فقط، ويبقى الملف كما هو حتى
+      #    لا يتغيّر أسلوب البناء المحلي منخفض الذاكرة.
+      # 4. 2GB (افتراضي المستودع) ضيّقة أمام R8 + ترجمة Kotlin in-process على
+      #    runner فيه 16GB؛ رفعها إلى 4GB يلغي معظم ضغط الـ GC.
+      #
+      # لا شيء من مخرجات المنتج يتغيّر: نفس الـ APK، نفس الـ minify/R8، نفس
+      # اختبارات العقد — فقط بلا عمل مكرَّر.
+      # ── البناء + الاختبارات (نفس الأمر الواحد، ونفس المخرجات) ──
+      #
+      # `-x :app:lintVitalRelease` باقٍ هنا: مخطط `assembleRelease` يحتوي
+      # `lintVitalAnalyzeRelease` + `lintVitalReportRelease` + `lintVitalRelease`، وقِسناها
+      # **٣:٢٩** من أصل ~١٥ دقيقة. وهي أُخرجت من هذا الأمر أولًا إلى مهمة موازية، ثم أُزيلت
+      # تلك المهمة كلها (تكملة ٨٠). فلم يبقَ في CI من يُشغّل lint الفتّاك، ووجود `-x` هنا
+      # يمنع عودته صامتًا إلى المسار الحرج إن أُعيد النداء يومًا.
+      #
+      # والحاجز في هذا الأمر هو: البوابات السريعة أعلاه + مُصرّف + اختبارات عقد.
+      # ومن أراد الفحص الفتّاك فـ`./gradlew :app:lintVitalRelease` يدويًّا قبل الإصدار.
+      #
+      # ── خط الزمن المقيس (سجل المالك، تشغيل 2ff6994 وb54185f): من أين دقائق الجولة الباردة ──
+      #
+      #   ما قبل Gradle  ‏2:35 (بوابات 0:23 · cargo test 0:38 · بناءا JNI 0:57 · البواقي)
+      #   تحميل التوزيعة ‏0:08   |   إعداد وإسقاط مخطط المهام  ‏2:34  ← «no cached configuration»
+      #   تصريف + موارد  ‏~6:00 |   ‏minifyReleaseWithR8 وحدها **6:29** (09:48:36 ← 09:55:05)
+      #   ثمّ merge/convert/artProfile · optimizeResources · l8 · packageRelease ← قُتل قبلها
+      #   المجموع ≈ ‏20–21 دقيقة، والقتل الخارجي (exit 143) وقع عند **16:06 · 18:30 · 18:22**.
+      #
+      # والنتيجة المُشخَّصة: الميزانية متقاربة جدًّا، والحسّاس منها **R8** (6:29) والإعداد البارد (2:34)
+      # وكلاهما لا يُقصَّر بأمان من هنا. والاختبارات ليست على المسار الحرج: تشغيلها (09:48:59)
+      # وقطع R8 (09:48:36) يتوازيان وينتهيان في وقت واحد تقريبًا. وأي ربح يُطلَب بعد ذلك يمرّ
+      # من جهة الأنوية: `vars.BUILD_RUNNER` (مُوثَّق أعلى هذا الملف) هو الرافعة المُعدّة لذلك.
+      #
+      # ── ولماذا انقسم النداء إلى نداءين: «نقطة حفظ» تُكتب بخطوة، لا في post ──
+      #
+      # كل ما سبق يقود إلى نتيجة واحدة: **لا كاش لأنه لا تشغيل يكتمل**، ولا يكتمل لأن البارد
+      # أطول من النافذة. فالعلاج أن يصير للجولة **نقطة حفظ قبل نافذة القتل**، بأصغر نداء
+      # يمكن أن ينتهي مبكرًا: **تصريف المصادر وحده** (`:app:compile${variant}Kotlin` ومعها ما
+      # يجرّه من KSP/موارد/R — وهي ثقيلة المنجز). زمنها المقيس من هذا السجل نفسه:
+      #   إعداد ومخطط ‏2:51 + موارد/ksp/تصريف ‏~4:00 ⇒ ~٦:٥٠ داخل Gradle
+      #   + ما قبل Gradle ‏2:35 ⇒ نقطة الحفظ تُكتب عند الدقيقة ~ ١٠–١٢ **قبل** كل قتل مقيس
+      #   (16:06 · 18:22 · 18:30).
+      # ثم النداء الثاني = الاختبارات + R8 + التغليف (١٠–١١ دقيقة، وفيها الاختبارات متوازية
+      # مع R8 كما كانت في النداء الواحد — لا تسلسل جديد مفروض). وهو الذي يُقتل عادةً،
+      # فيكون قد سُجّل التصريف، ويصير إعادة تشغيل الالتزام نفسه (Re-run failed jobs) قصيرة:
+      #   استعادة الحالة ← التصريف UP-TO-DATE (والتهيئة من مخزن الإعداد!) ← الاختبارات ∥ R8
+      #   ← التغليف ≈ ‏١٥ دقيقة من بداية المهمة ⇒ داخل النافذة ويُنتَج الـAPK.
+      # ولا يمسّ ذلك مخرجات المنتج: نفس المهامّ، نفس الوسائط، نفس الـAPK — على نداءين.
+      # ⚠️ وحدّان معلنان: (أ) كاش الالتزام الجديد لا يساعد التزامًا آخر (المفتاح بالـsha عمدًا
+      # والحرس أدناه يمنع حالة شجرة أخرى) — فكل التزام جديد يبدأ باردًا؛ (ب) النافذة المقيسة
+      # ‏16:06 هي الحدّ الأعلى للتفاؤل: إن نزل القاتل قبلها فالرافعة المتبقية هي الأنوية
+      # (`vars.BUILD_RUNNER`، موثّقة أعلى هذا الملف).
+      # ── مادة التوقيع تُستعاد من سرّ، لا من الشجرة ──
+      #
+      # `.gitignore` يُسقط `*.jks` بقاعدة المالك («مخزن المفاتيح مادة توقيع لا مصدر»)،
+      # و`build.gradle.kts` يقرأ **كلمة المرور** من البيئة. فبقي في CI نصف المعادلة:
+      # السرّ `KEYSTORE_PASSWORD` موجود، والملفّ غائب ⇒ `:app:validateSigningRelease`
+      # يفشل قبل أن تُشغَّل الاختبارات أصلًا (مقاس في التشغيل الأول: `Keystore file
+      # '/home/runner/work/Gg/Gg/manager/app/maxmanager.jks' not found for signing config
+      # 'release'`). وهذا كان يُحمرّ **كل** دفعة إلى `main` قبل هذه الخطوة.
+      #
+      # فالقاعدة واحدة: الملفّ يُستعاد من `KEYSTORE_BASE64` (base64 للمفتاح، سرّ مخزون
+      # مُشفَّرًا) إن وُجد. وإن غاب فلا يُشترى الأخضر بأسرار — يُبنى APK debug غير موقّع
+      # (نفس مبدأ فرع `experimental`/PR أدناه)، ويُعلَن ذلك في السجل بتحذير صريح.
+      # و`SIGNED_BUILD` هو **المصدر الواحد** لقرار «موقّع أم لا»: يُصدَّر فيُقرأ في اختيار
+      # النسخة، وفي التحقّق من الـAPK، وفي `compile_zip.sh` — فلا تتكرّر القاعدة في موضعين.
+      - name: Materialize the release keystore from CI secrets
+        id: keystore
+        run: |
+          signed=0
+          if [ "$V_TYPE" != "experimental" ] && [ "$GITHUB_EVENT_NAME" != "pull_request" ]; then
+            if [ -n "${KEYSTORE_BASE64:-}" ]; then
+              printf '%s' "$KEYSTORE_BASE64" | base64 -d > manager/app/maxmanager.jks
+              test -s manager/app/maxmanager.jks \
+                || { echo "::error::KEYSTORE_BASE64 decoded to an empty file" >&2; exit 1; }
+              signed=1
+              echo "وتوقيع الإصدار: مادة المفتاح أُعيد بناؤها من سرّ KEYSTORE_BASE64."
+            else
+              echo "::warning::KEYSTORE_BASE64 غير مضبوط — سيُبنى APK debug غير موقّع بدل إصدار موقّع. أضف السرّ لتحصل على إصدار موقّع."
+            fi
+          fi
+          echo "SIGNED_BUILD=$signed" >> "$GITHUB_ENV"
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+
+      - name: Compile main sources (checkpoint 1/2)
+        working-directory: ./manager
+        run: |
+          # git on Windows drops the +x bit on gradlew — self-heal before
+          # the first invocation instead of relying on how it was committed.
+          chmod +x ./gradlew
+
+          # Pull requests (including ones opened from forks) never receive
+          # repo secrets, so KS_PWD is unavailable there regardless of how
+          # KEYSTORE_PASSWORD is configured. Fall back to an unsigned debug
+          # build so PR CI still validates the code without needing a
+          # signed release artifact.
+          # نسخة البناء تُقرأ من `SIGNED_BUILD` (المصدر الواحد)، لا من تكرار شرط
+          # `V_TYPE`/`GITHUB_EVENT_NAME` هنا — فالقاعدة في موضعين تتباعد.
+          if [ "$SIGNED_BUILD" = "1" ]; then
+            variant="Release"
+          else
+            variant="Debug"
+          fi
+
+          # AGP 9.x creates unit-test components only for the tested build type by default.
+          # gradle.properties disables that optimization so testReleaseUnitTest exists.
+          # الاختبارات تُشغَّل على نفس النسخة التي يُبنى منها الـ APK:
+          # testReleaseUnitTest + assembleRelease يتقاسمان ترجمة واحدة.
+          # ── مفتاحا قياس، بلا مسّ بالمخرَج ──
+          #
+          # • `kotlin.compiler.execution.strategy=daemon` + `-Xmx4g`: مُبقًى كما هو، ومع أن قياسه
+          #   أعطى **تعادلًا** (على `:app:compileReleaseKotlin` باردًا: daemon ٩٢٫٣ ث ·
+          #   in-process ٩٣٫٩ ث · ٩٥٫١ ث — أي داخل الضجيج) فهو لا يُباع كأنه مكسب، ولا يُحذف بلا
+          #   قياس يُبرّر الحذف. وقيمته الوحيدة المعلومة: يحجز ذاكرة المصرّف في JVM منفصلة.
+          # • `kotlin.build.report.output=file`: يقيس كل مهمة تصريف على حدة **ويقول لماذا لم تكن
+          #   تزايدية** — وهو سؤال «من أين ١٦ دقيقة؟»؛ ويُطبع في الخطوة التالية.
+          # يُجمع سجل Gradle في ملف واحد، وعليه تُبنى خطوة «التشخيص المكتوب» التالية
+          # (تعمل بـ`always()`)، فلا تضيع أسطر المترجم إذا لصق أحدثهم الذيل وحده.
+          # و`pipefail` ليست تزيّدًا: بلا `pipefail` يصير رمز خروج الأنبوب هو `tee` (نجاح)
+          # فيمرّ فشل المُصرّف بلا أن يُحمرّ التشغيل — وهذا أسوأ من غياب السجل.
+          # ── و`src/debug` يُصرَّف دائمًا، ولو كانت النسخة Release (عطب مقيس · HANDOFF: CI-03) ──
+          # اختيار النسخة من `SIGNED_BUILD` يعني `Release` على **كل** دفع (سرّ المفتاح موجود)،
+          # و`Debug` في طلبات السحب وحدها (CI لا يعطي الأسرار لِـ`pull_request`). ⇒ `src/debug`
+          # لم يُصرَّف ولا مرّة على `main`، وظلّ `StudioPreviews.kt` معطوبًا بلا أن يُرى حتى أول
+          # طلب سحب (٣ رسائل مُصرّف في التشغيل 37070560470). والمهمّة الثانية بلا توقيع ولا أسرار،
+          # وثمنها دقيقة واحدة: عطب مصدر debug يُمسك في الخطوة نفسها لا بعد أسبوعين.
+          tasks=":app:compile${variant}Kotlin"
+          if [ "$variant" != "Debug" ]; then tasks="$tasks :app:compileDebugKotlin"; fi
+          echo "compile tasks: $tasks"
+          set -o pipefail
+
+          # ── عطل الشبكة العابر عند **حلّ** الإضافات لا يُسقط الجولة كلها (تكملة ٢٨١) ──
+          # مُقاس: تشغيل ١٨:٥٦ على `91f6c049` سقط **قبل التصريف** عند حلّ إضافة KSP
+          # («could not resolve plugin artifact … 2.3.10») بعد ~٥٥ ث صامتة، وملفّات البناء
+          # نفسها مطابقة حرفيًّا لتشغيل ١٢:٠٦ الناجح على `4abf9d50`؛ والإحداثيّ نفسه عاد
+          # ويُحلّ الآن بمَنزل Gradle فارغ تمامًا (مسبار تكملة ٢٨١: BUILD SUCCESSFUL،
+          # وسلسلة KSP كاملة نُزّلت من مستودعات الإعداد الثلاثة). ⇒ الشجرة سليمة والعطب
+          # عَرَضيّ من جهة الشبكة. فالعلاج: إعادة **نداء Gradle** مرة واحدة عند توقيع عطل
+          # الحلّ وحده — لا عند رسائل مُصرّف ولا عند فشل اختبار (فلا يُقنَّع فشل حقيقي).
+          # و`$tasks` غير مقتبسة عمدًا (قائمة مهام مفصولة بمسافات) — وهو النمط المقصود.
+          run_compile() {
+            ./gradlew \
+              -Dorg.gradle.jvmargs="-Xmx6g -XX:MaxMetaspaceSize=1g -Dfile.encoding=UTF-8" \
+              -Pkotlin.compiler.execution.strategy=daemon \
+              -Pkotlin.daemon.jvmargs=-Xmx4g \
+              -Pkotlin.build.report.output=file \
+              -Pmaxmanager.supabaseUrl="$SUPABASE_URL" \
+              -Pmaxmanager.supabaseAnonKey="$SUPABASE_ANON_KEY" \
+              -Pmaxmanager.configPublicKey="$CONFIG_PUBLIC_KEY" \
+              $tasks \
+              --build-cache \
+              --parallel 2>&1 | tee /tmp/gradle-build.log
+          }
+          resolution_failure_pattern='was not found in any of the following sources|could not resolve plugin artifact|could not get|could not resolve all files for configuration|could not resolve all dependencies for configuration'
+          if ! run_compile; then
+            if grep -qiE "$resolution_failure_pattern" /tmp/gradle-build.log; then
+              echo "::warning::فشل عابر في حلّ الإضافات/الحزم من الشبكة — إعادة نداء Gradle مرة واحدة (سجل المحاولة الأولى في /tmp/gradle-build-attempt1.log)"
+              cp /tmp/gradle-build.log /tmp/gradle-build-attempt1.log
+              run_compile || exit 1
+            else
+              exit 1
+            fi
+          fi
+          # يُصدَّر للخطوة التالية (كل خطوة صدفة مستقلة): التغليف يحتاج النسخة نفسها.
+          echo "variant=$variant" >> "$GITHUB_ENV"
+
+        env:
+          KS_PWD: ${{ secrets.KEYSTORE_PASSWORD }}
+          # أسرار منظومة الترخيص (LICENSE-KEYS-01) — تمرّ كخصائص بناء لا كملفات:
+          # فراغها يعني «بناء بلا منظومة» ويعمل التطبيق بسلوكه المحلي؛ ولا سرّ يُبنى في الحزمة
+          # إلّا المفتاح العامّ للتحقّق (وهو عامّ بطبيعته) ومفتاح anon (منشور في كل نسخة).
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          CONFIG_PUBLIC_KEY: ${{ secrets.CONFIG_PUBLIC_KEY }}
+
+      # ── نقطة الحفظ (الشرح أعلاه): خطوة حقيقية، فتعمل والجولة ما زالت حيّة ──
+      #
+      # مفتاحها **نفس** مفتاح خطوة الاستعادة أعلاه، فالالتزام التالي (أو إعادة تشغيله)
+      # يستعيدها بحرفيّتها — وهذا ما يجعل الحرس يقبلها («حالة من هذا الالتزام بعينه»).
+      # و`continue-on-error`: إن كانت النقطة مكتوبة من محاولة سابقة فالمفتاح موجود،
+      # و`actions/cache` يرفض الكتابة فوقه — وهذا **نجاحٌ لنا** لا فشل.
+      - name: Checkpoint — save project state (same commit)
+        continue-on-error: true
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            manager/.gradle
+            manager/build
+            manager/app/build
+          key: gradle-state-${{ runner.os }}-${{ github.sha }}
+
+      - name: Tests + assemble + package (contract gate)
+        working-directory: ./manager
+        run: |
+          set -o pipefail
+
+          # ── نفس علاج تكملة ٢٨١ فوق: عطل الحلّ العابر يُعاد فيه نداء Gradle مرة واحدة؛
+          #    وفشل الاختبارات الفعلي لا يطابق التوقيع فلا يُقنَّع بإعادة محاولة.
+          #    و`tee -a` على سجل مشترك: محاولتا هذا الشريك تُقرآن متجاورتين.
+          run_tests() {
+            ./gradlew \
+              -Dorg.gradle.jvmargs="-Xmx6g -XX:MaxMetaspaceSize=1g -Dfile.encoding=UTF-8" \
+              -Pkotlin.compiler.execution.strategy=daemon \
+              -Pkotlin.daemon.jvmargs=-Xmx4g \
+              -Pkotlin.build.report.output=file \
+              -Pmaxmanager.supabaseUrl="$SUPABASE_URL" \
+              -Pmaxmanager.supabaseAnonKey="$SUPABASE_ANON_KEY" \
+              -Pmaxmanager.configPublicKey="$CONFIG_PUBLIC_KEY" \
+              ":app:test${variant}UnitTest" \
+              ":app:assemble${variant}" \
+              -x ":app:lintVitalRelease" \
+              --build-cache \
+              --parallel 2>&1 | tee -a /tmp/gradle-build.log
+          }
+          resolution_failure_pattern='was not found in any of the following sources|could not resolve plugin artifact|could not get|could not resolve all files for configuration|could not resolve all dependencies for configuration'
+          if ! run_tests; then
+            if grep -qiE "$resolution_failure_pattern" /tmp/gradle-build.log; then
+              echo "::warning::فشل عابر في حلّ الحزم من الشبكة — إعادة نداء Gradle مرة واحدة"
+              run_tests || exit 1
+            else
+              exit 1
+            fi
+          fi
+
+        env:
+          KS_PWD: ${{ secrets.KEYSTORE_PASSWORD }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          CONFIG_PUBLIC_KEY: ${{ secrets.CONFIG_PUBLIC_KEY }}
+
+      # ── تشخيص مكتوب: أسطر المترجم مضغوطة + بصمة الشجرة ──
+      #
+      # سبب وجود هذه الخطوة مُقاس في هذه الجلسة: فشلان متتاليان في CI وصل منهما **ذيل السجل**
+      # وحده، وأسطر `e: file://…` (وهي الوحيدة التي تُسمّي الملف والسطر) بقيت فوقه. فبقيت
+      # المطاردة تخمينًا جولةً كاملة. هنا تُطبع هذه الأسطر في **آخر** السجل، بلا مسار طويل وبعدد
+      # لكل ملف — فيكفي أن يُلصق الذيل.
+      #
+      # و`SOURCE-DIGEST` يجيب سؤالًا مكرّرًا: «هل شجرة المستودع هي هذه الشجرة؟» — رقم واحد
+      # يُقارن بين الطرفين، فلم يُحتج إلى قراءة المستودع (وهو غير متاح من هنا).
+      - name: Written diagnosis (compiler lines + source diff vs reference tree)
+        if: always()
+        run: |
+          # ولم تكن البصمة كافية وحدها: رقم يقول «مختلفة» ولا يقول «أي ملف». فصارت الأداة
+          # تسمّي الفروق **بالاسم** مقابل الشجرة المرجعية المرفوعة (`docs/ai/source-manifest.txt`)،
+          # فيُقرأ في هذا السجل — لا في جولة مراسلة أخرى — أي ملف لم يصل أو وصل قديمًا.
+          #
+          # و`|| true` مقصودة: اختلاف الشجرة **تشخيص** لا فشل، فلا تُحمرّ هذه الخطوة البناء بنفسها.
+          # وإن تغيّرت المصادر عن قصد: `python3 tools/source_manifest.py --write`.
+          echo "════════ بصمة الشجرة (مقابل الشجرة المرجعية المرفوعة) ════════"
+          python3 tools/source_manifest.py --check || true
+
+          log=/tmp/gradle-build.log
+          if [ ! -f "$log" ]; then
+            echo "لا سجل بناء محفوظ (لم تصل خطوة البناء إلى نهايتها)."
+            exit 0
+          fi
+          errors=$(grep -E "^e: " "$log" || true)
+          if [ -z "$errors" ]; then
+            echo "لا أسطر مترجم في هذا التشغيل."
+            exit 0
+          fi
+          echo "════════ أسطر المترجم ════════"
+          echo "العدد: $(printf '%s\n' "$errors" | wc -l)"
+          echo "لكل ملف:"
+          printf '%s\n' "$errors" \
+            | sed -E "s|^e: file://${GITHUB_WORKSPACE}/([^:]+):.*|\1|" \
+            | sort | uniq -c | sort -rn | head -15
+          echo "التفصيل (بلا مسارات مكرّرة، حتى 40 سطرًا):"
+          printf '%s\n' "$errors" \
+            | sed "s|^e: file://${GITHUB_WORKSPACE}/||" \
+            | sort -u | head -40
+
+      # ── تقرير تصريف Kotlin: ما لا يُخمَّن يُقاس ──
+      #
+      # `kotlin.build.report.output=file` (في الأمر أعلاه) يكتب لكل مهمة: مدّتها، ومجموع أطوارها،
+      # **وسبب عدم التزايد إن لم تكن تزايدية**. هذا هو جواب سؤال «من أين ١٦ دقيقة؟» — ويُطبع هنا
+      # داخل سجل التشغيل نفسه (لا في ملف لا يُقرأ)، و`always()` ليعمل حتى حين يفشل البناء، وهو
+      # الوقت الذي يكون فيه التقرير أنفع ما يكون.
+      - name: Kotlin build report (per-task compile times + incremental reasons)
+        if: always()
+        run: |
+          shopt -s nullglob
+          reports=(manager/*/build/reports/kotlin-build/*.txt manager/build/reports/kotlin-build/*.txt)
+          if [ ${#reports[@]} -eq 0 ]; then
+            echo "⚠️ لا تقرير تصريف: لم تصل مهمة Kotlin إلى نهايتها (أو عُطِّل التقرير)."
+            exit 0
+          fi
+          for report in "${reports[@]}"; do
+            echo "════════ $report"
+            cat "$report"
+          done
+
+      # ── حصاد الخلفية: لا يُبنى شيء بعدها قبل أن تكون انتهت، ولا يُسكَت فشل ──
+      #
+      # ولا سقف صامت: إن انتهت الصدفة فالملف مكتوب؛ وإن ماتت بلا ملف (قتلٌ من النظام مثلًا)
+      # يُكشف ذلك من `native-build.pid` فورًا بدل انتظار عشر دقائق على شيء لن يُكتب.
+      - name: Wait for the background native builds
+        run: |
+          pid="$(cat native-build.pid 2>/dev/null || true)"
+          for _ in $(seq 1 120); do
+            [ -f native-build.exit ] && break
+            if [ -n "$pid" ] && ! kill -0 "$pid" 2>/dev/null; then
+              echo "::error::background native builds died without recording their exit code"
+              tail -200 native-build.log || true
+              exit 1
+            fi
+            sleep 5
+          done
+          if [ ! -f native-build.exit ]; then
+            echo "::error::background native builds did not finish within 10 minutes"
+            tail -200 native-build.log || true
+            exit 1
+          fi
+          code="$(tr -d '[:space:]' < native-build.exit)"
+          if [ "$code" != "0" ]; then
+            echo "::error::a background native build failed (exit $code)"
+            cat native-build.log
+            exit 1
+          fi
+          echo "✅ انتهت البناءات الأصلية في الخلفية (كانت مخفيّة تحت خطوة Gradle)"
+          tail -25 native-build.log
+
+      - name: Validate Manager APK
+        env:
+          # Public certificate identity, not a credential. Keep validation self-contained.
+          # البصمة تتغيّر مع كل keystore جديد، وهذا الحرس هو ما يمنع توقيعًا بمفتاح
+          # غير المعلَن: البصمة تُحدَّث **في الالتزام نفسه** الذي يُولَّد فيه المفتاح،
+          # فلا تُكتب البصمة يدويًّا بعد اليوم إلا بمفتاح جديد معلَن.
+          # هذه بصمة keystore 2026-09-28 (alias: azenith_key، RSA 2048، صالح 30 سنة،
+          # وكلمتا المخزن والمفتاح في سر واحد: KEYSTORE_PASSWORD).
+          # والأثر على المستخدمين: من ثبّت نسخة قديمة لا يرقّي فوقها (يلزم إلغاء تثبيت).
+          EXPECTED_RELEASE_SIGNER_SHA256: 5fdc5cb8353ef65b453f4cb9bbc5f97758fe4974df5422c0c03e53505aea2a0e
+        run: |
+          set -eu
+          if [ "$SIGNED_BUILD" = "1" ]; then
+            apk_path="manager/app/build/outputs/apk/release/app-release.apk"
+          else
+            apk_path="manager/app/build/outputs/apk/debug/app-debug.apk"
+          fi
+          test -f "$apk_path" || { echo "Expected APK is missing: $apk_path" >&2; exit 1; }
+
+          # حرس العمودين (تكملة ١١٠ — عكس تكملة ٨٢): الـAPK يجب أن يحمل **كلا** الـABIين.
+          # غياب أحدهما = حزمة لا تُركَّب على نصف الأجهزة — وهو العطب الذي كان الحرس
+          # القديم يُنتجه عمدًا في الاتجاه المعاكس.
+          #
+          # ⚠️ وكان هذا الحرس نفسه ثقبًا: كان يقبل مجرّد وجود `lib/<abi>/` بأي مكتبة فيه،
+          # فمرّ يومًا APK يحمل مكتبة JNI واحدة وبلا `libmaxmanager_native.so` —
+          # وخطوة `ndk-build` هي التي حذفتها (تحذف `lib*.so` في مجلد خروجها لكل ABI قبل
+          # أن تثبّت وحداتها: قاعدة `clean-installed-binaries`) فأول ما بنته `cargo ndk`
+          # مَحَتْه الخطوة التالية. فكانت الطبقة الأصلية كلها تُشحن ميتة
+          # (`nativeAvailable=false`) وهذا الحرس صامت. فالآن يقيس المكتبة **بالاسم**.
+          # وحدّه المُعلن: يقيس ما دخل الحزمة فعلًا بعد التوقيع، فلا يغني عن
+          # «Assert jniLibs…» قبل البوابة — كلاهما يُبلّغ عن العطب في موضعه.
+          # و`libmaxfx.so` مُضاف إلى هذا الحرس (تكملة ٢٤١): الطبقة النظاميّة **تُنسخ إلى الجهاز من
+          # مدخل الحزمة نفسه** (`AudioEffectLibraryStaging` تقرأ `lib/<abi>/libmaxfx.so`، لأنّ
+          # `nativeLibraryDir` ليس مجلّدًا حقيقيًّا حين `extractNativeLibs=false`). **فمكتبةٌ خارج
+          # الحزمة = نسخٌ يفشل = زرّ يُرفض بـ`effect-library-not-shipped-in-app`** — وهو عطبٌ صامت
+          # في كل الحالات السابقة، وهذا الحرس هو ما يجعله يُبلَّغ في CI لا في جهاز المُستخدم.
+          # ويُقاس هنا بعد `ndk-build` (خطوة أعلاه في **المهمّة نفسها**) وبعد التوقيع: ما دخل الحزمة فعلًا.
+          for abi in arm64-v8a armeabi-v7a; do
+            for lib in libmaxmanager_native.so libmaxfx.so; do
+              unzip -l "$apk_path" | grep -qF "lib/$abi/$lib" \
+                || { echo "::error::APK is missing lib/$abi/$lib" >&2; unzip -l "$apk_path" | grep -E "lib/" >&2; exit 1; }
+            done
+          done
+
+          apksigner verify --verbose --print-certs "$apk_path"
+
+          badging="$(aapt dump badging "$apk_path" | grep -m1 '^package:')"
+          package_name="$(printf '%s\n' "$badging" | sed -n "s/.* name='\([^']*\)'.*/\1/p")"
+          version_code="$(printf '%s\n' "$badging" | sed -n "s/.* versionCode='\([^']*\)'.*/\1/p")"
+          version_name="$(printf '%s\n' "$badging" | sed -n "s/.* versionName='\([^']*\)'.*/\1/p")"
+          test "$package_name" = "nd.max" || { echo "Unexpected APK package: $package_name" >&2; exit 1; }
+          test "$version_code" = "$EXPECTED_APK_VERSION_CODE" \
+            || { echo "Unexpected APK versionCode: $version_code (expected $EXPECTED_APK_VERSION_CODE)" >&2; exit 1; }
+          test "$version_name" = "$EXPECTED_APK_VERSION_NAME" \
+            || { echo "Unexpected APK versionName: $version_name (expected $EXPECTED_APK_VERSION_NAME)" >&2; exit 1; }
+
+          if [ "$SIGNED_BUILD" = "1" ]; then
+            test -n "$EXPECTED_RELEASE_SIGNER_SHA256" \
+              || { echo "Expected release signer fingerprint is not configured" >&2; exit 1; }
+            actual_signer="$(apksigner verify --print-certs "$apk_path" \
+              | sed -n -E 's/^(Signer #1|V[0-9]+(\.[0-9]+)? Signer): certificate SHA-256 digest: //p' \
+              | head -1 | tr -d ': ' | tr '[:upper:]' '[:lower:]')"
+            expected_signer="$(printf '%s' "$EXPECTED_RELEASE_SIGNER_SHA256" \
+              | tr -d ': ' | tr '[:upper:]' '[:lower:]')"
+            test -n "$actual_signer" && test "$actual_signer" = "$expected_signer" \
+              || { echo "Release signer fingerprint mismatch" >&2; exit 1; }
+          fi
+
+          apk_sha256="$(sha256sum "$apk_path" | cut -d' ' -f1)"
+          echo "APK_PATH=$apk_path" >> "$GITHUB_ENV"
+          echo "APK_SHA256=$apk_sha256" >> "$GITHUB_ENV"
+          echo "Validated $package_name $version_name ($version_code), sha256=$apk_sha256"
+
+      - name: Compile Flashable Zip
+        id: compileZip
+        run: bash .github/scripts/compile_zip.sh
+
+      # Developer bundle: **مجلّد مدمج واحد** (`maxmanager/`) بلا نسخة ثانية من أيّ أثر،
+      # وفيه الـdaemon وخدمة init وسياسة SELinux — الملفّات التي كانت في
+      # `android/aosp/` ولا يقرأها أحد (تكملة ١٣٩). الـscript نفسه قابل للتشغيل محليًّا
+      # فيمكن قياس الشجرة لا وصفها.
+      - name: Package developer integration bundle
+        env:
+          APK_PATH: ${{ env.APK_PATH }}
+        run: bash .github/scripts/build_developer_bundle.sh
+
+      - name: Validate artifacts
+        run: |
+          set -e
+          module_zip="${{ steps.compileZip.outputs.zipName }}"
+          test -n "$module_zip" || { echo "module zip name missing from compileZip step"; exit 1; }
+          test -f "$module_zip" || { echo "module zip file missing: $module_zip"; exit 1; }
+          unzip -t "$module_zip" > /dev/null
+          # The Manager APK is a user app under app/ (outside system/): no priv-app and no
+          # privileged allowlist may ship in the module zip.
+          unzip -Z1 "$module_zip" | grep -qx "app/MaxManager.apk" \
+            || { echo "module zip: user-app APK missing (app/MaxManager.apk)"; exit 1; }
+          if unzip -Z1 "$module_zip" | grep -q "^system/product/priv-app/"; then
+            echo "module zip still ships a priv-app under system/"; exit 1
+          fi
+          if unzip -Z1 "$module_zip" | grep -q "privapp-permissions"; then
+            echo "module zip still ships the privileged allowlist"; exit 1
+          fi
+
+          # **الحرس المعكوس** (تكملة ١٣٩): كان السطران السابقان يُطالبان بملفّات `.sha256`
+          # **داخل** الحزمة — وهي عينها ما طلب المالك إسقاطه. فانقلبت البوابة إلى مانع،
+          # على الحزمتين، ومقيسةً على **المُشحون** لا على نيّة الـscript.
+          for archive in "$module_zip" MaxManager-developer-bundle.zip; do
+            if unzip -l "$archive" | grep -q '\.sha256'; then
+              echo "$archive must not contain .sha256 files:" >&2
+              unzip -l "$archive" | grep '\.sha256' >&2
+              exit 1
+            fi
+          done
+          echo "✅ neither archive carries a .sha256 file"
+
+          # **وتحقّق المحتوى بالقيمة لا بالوجود**: يُفكّ الضغط ويُقاس بـ`sha256sum -c`،
+          # وهو ما كانت تفعله الـ`.sha256` داخل الحزمة — بلا أن تسافر فيها.
+          sums="$(mktemp -d)"
+          trap 'rm -rf "$sums"' EXIT
+          mkdir -p "$sums/module" "$sums/bundle"
+          unzip -q "$module_zip" -d "$sums/module"
+          unzip -q MaxManager-developer-bundle.zip -d "$sums/bundle"
+          workspace="$PWD"
+          for pair in "module:$module_zip:checksums-module.sha256" \
+                      "bundle:MaxManager-developer-bundle.zip:checksums-developer-bundle.sha256"; do
+            name="${pair%%:*}"; rest="${pair#*:}"
+            archive="${rest%%:*}"; manifest="$workspace/${rest#*:}"
+            test -s "$manifest" || { echo "$manifest is missing or empty"; exit 1; }
+            # `--status` هو نطير `-s` في GNU coreutils (‏`-s` علََم busybox/toybox،
+            # ومن استعمله هنا خرج بـ`invalid option`). ونفس الدلالة: صفر صمت ونجاح.
+            (cd "$sums/$name" && sha256sum -c --status "$manifest") \
+              || { echo "$archive payload does not match its checksum manifest"; exit 1; }
+            echo "✅ $archive verifies against $(basename "$manifest") ($(wc -l < "$manifest") entries)"
+          done
+          # الأسماء الخمسة التي يستخرجها المنصّب بعينها (mainfiles/customize.sh:115-119) —
+          # بلا واحد منها يُركّب الموديول ناقصًا على الجهاز. وكان يُتحقَّق من اسم واحد فقط.
+          # الأسماء الخمسة × العمودين (تكملة ١١٠): كان يطالب بـ64-بت ويمنع 32-بت، وصار
+          # يطالب بالعمودين — وحزمة يغيب منها عمود لا تُركَّب على جهازه أصلًا.
+          for abi in arm64-v8a armeabi-v7a; do
+            for binary in sys.maxmanager-service sys.maxmanager-preloadbin \
+                          sys.maxmanager-profilesettings sys.maxmanager-rianixiathermalcore \
+                          sys.maxmanager-utilityconf; do
+              unzip -l "$module_zip" | grep -qF "libs/$abi/$binary" \
+                || { echo "module zip: missing libs/$abi/$binary (installer requires it)" >&2; exit 1; }
+            done
+          done
+
+          # ── الـdaemon ELF داخل `system/bin/` في الحزمة — بوابتان لا واحدة (تكملة ١١١) ──
+          # ١) الوجود: كان الملف غائبًا ومقبولًا (`system/bin/` فارغ) فيُكتشف ذلك في اليد لا في CI.
+          # ٢) الصلاحية: وجودُ الملف لا يكفي — يُقاس كـ`ELF` 64-بت ARM64 وتنفيذيًّا لا مكتبة.
+          #    يُستخرج من الحزمة نفسها (لا من الشجرة) ليكون الدليل على **المُشحون** لا على المصدر.
+          unzip -l "$module_zip" | grep -qF "system/bin/sys.maxmanager-service" \
+            || { echo "module zip: system/bin/sys.maxmanager-service missing (the daemon must be visible in the package)" >&2; exit 1; }
+          daemon_tmp="$(mktemp)"
+          unzip -p "$module_zip" system/bin/sys.maxmanager-service > "$daemon_tmp"
+          daemon_desc="$(file -b "$daemon_tmp")"
+          case "$daemon_desc" in
+            *"ELF 64-bit"*"aarch64"*) echo "✅ daemon in zip: $daemon_desc" ;;
+            *) echo "module zip: system/bin/sys.maxmanager-service is not an ARM64 ELF: $daemon_desc" >&2; exit 1 ;;
+          esac
+          readelf -h "$daemon_tmp" | grep -qE '^[[:space:]]+Type:[[:space:]]+(DYN|EXEC)' \
+            || { echo "module zip: system/bin/sys.maxmanager-service is not an executable ELF:" >&2; readelf -h "$daemon_tmp" >&2; exit 1; }
+          rm -f "$daemon_tmp"
+          # ── حزمة المطوّرين: مجلّد مدمج واحد، **وبلا تكرار** (تكملة ١٣٩) ───────
+          # وكان هذا القسم يطالب بمسارين للتطبيق نفسه (`overlay/…` و`aosp/prebuilt/…`)
+          # — أي أنّ التكرار كان **مطلوبًا** في البوابة، لا مكتشفًا. فالآن يُقاس العكس:
+          # كل أثر **مرّة واحدة**، وموجودًا، وبالديمون.
+          bundle="MaxManager-developer-bundle.zip"
+          unzip -t "$bundle" > /dev/null
+          app_dir="maxmanager"
+          for required in \
+            "$app_dir/product/priv-app/MaxManager/MaxManager.apk" \
+            "$app_dir/product/etc/permissions/privapp-permissions-nd.max.xml" \
+            "$app_dir/system/bin/sys.maxmanager-service" \
+            "$app_dir/system/etc/init/maxmanager.rc" \
+            "$app_dir/sepolicy/maxmanager.te" \
+            "$app_dir/sepolicy/file_contexts" \
+            "$app_dir/Android.bp" \
+            "$app_dir/product-inclusion.mk" \
+            "$app_dir/BoardConfig.mk" \
+            "$app_dir/README.txt"; do
+            unzip -l "$bundle" | grep -qF "$required" \
+              || { echo "developer bundle: $required missing"; exit 1; }
+          done
+          apk_count="$(unzip -l "$bundle" | grep -cE 'MaxManager\.apk$' || true)"
+          test "$apk_count" = "1" \
+            || { echo "developer bundle must carry exactly one APK, found $apk_count"; exit 1; }
+          daemon_count="$(unzip -l "$bundle" | grep -cE 'sys\.maxmanager-service$' || true)"
+          test "$daemon_count" = "1" \
+            || { echo "developer bundle must carry exactly one daemon, found $daemon_count"; exit 1; }
+          # ولا مجلّدين متوازيين يكرّران الأثر: الفرعان القديمان (`overlay/`، `aosp/`) ممنوعان.
+          for stale in '/overlay/' '/aosp/'; do
+            if unzip -l "$bundle" | grep -q "$stale"; then
+              echo "developer bundle still carries the duplicated $stale tree" >&2; exit 1
+            fi
+          done
+
+          tmp_dir="$(mktemp -d)"
+          trap 'rm -rf "$tmp_dir"' EXIT
+          unzip -p "$module_zip" app/MaxManager.apk > "$tmp_dir/module.apk"
+          unzip -p "$bundle" "$app_dir/product/priv-app/MaxManager/MaxManager.apk" > "$tmp_dir/developer.apk"
+          for artifact_apk in "$tmp_dir/module.apk" "$tmp_dir/developer.apk"; do
+            artifact_sha256="$(sha256sum "$artifact_apk" | cut -d' ' -f1)"
+            test "$artifact_sha256" = "$APK_SHA256" \
+              || { echo "Artifact contains an APK different from the validated build: $artifact_apk" >&2; exit 1; }
+            apksigner verify "$artifact_apk"
+          done
+
+          # وديمون الحزمة يُقاس بالقيمة لا بالوجود (كما يُقاس ديمون الموديول).
+          unzip -p "$bundle" "$app_dir/system/bin/sys.maxmanager-service" > "$tmp_dir/developer-daemon"
+          dev_daemon_desc="$(file -b "$tmp_dir/developer-daemon")"
+          case "$dev_daemon_desc" in
+            *"ELF 64-bit"*"aarch64"*) echo "✅ developer daemon: $dev_daemon_desc" ;;
+            *) echo "developer bundle daemon is not an ARM64 ELF: $dev_daemon_desc" >&2; exit 1 ;;
+          esac
+          echo "All artifact validations passed."
+
+      # Upload only after validation passed, so a broken package never
+      # surfaces as a downloadable artifact.
+      #
+      # Every upload is attempted twice. The artifact backend is known to accept
+      # the whole payload and then fail while finalizing it —
+      # "Failed to FinalizeArtifact: ... (403) Forbidden: Error from intermediary"
+      # or ECONNRESET — which killed a green build at the last step before this
+      # (see actions/upload-artifact#560, still open). A retry is the only fix
+      # available to a workflow, and because both packages were already
+      # validated above, a second attempt can only succeed or fail for a real
+      # reason. `continue-on-error` on the first attempt is what allows the retry
+      # to run; the retry itself is not tolerant, so a genuine outage still fails
+      # the job instead of shipping a build that cannot be downloaded.
+      # ── `archive: false`: الملفّ المُنزَّل هو الحزمة نفسها، لا حزمة داخل حزمة ────
+      #
+      # **الأمر وهندسته:** «لا أريد ملفًّا مضغوطًا داخل ملفّ مضغوط عندما ينتهي البناء».
+      # والعطب كان مُقاسًا على ما يحمّله المالك فعلًا من الأثر: `actions/upload-artifact@v4`
+      # يضغط ما يُعطى له دائمًا، وكان يُعطى له **حزمة** — فيخرج التنزيل كملفّ واحد
+      # `MaxManager-module.zip` لا يحوي إلا `MaxManager-v1.0.zip` (16035333 بايت)، وحزمة
+      # المطوّرين كذلك: زيب يحوي زيبًا ومانيفستين.
+      #
+      # والعلاج هو المعامل الذي أضافته GitHub لهذا السبب بعينه: `archive: false` على
+      # `upload-artifact@v7` (إعلان التغيير، 2026-02-26: «You no longer have to unzip when
+      # downloading a single file» و«you no longer have a compressed file within another
+      # compressed file (i.e., the double zip problem)»).
+      #
+      # **وما يحكمه `archive: false`، فلا يُنسى:** ملفّ واحد لكلّ أثر، واسم الأثر يُؤخذ من
+      # **اسم الملفّ** لا من `name`، ولذلك لا يُكتب `name` هنا — الفراغ مقصود ومعلّق عليه.
+      # وبهذا تصل الحزمة كما بُنيت بترتيب بايتاتها **وبأذوناتها**: التغليف الافتراضي يُسقط
+      # أذونات الملفّات (كلّها 644) — وهو نفسه ما كان يُهدّد الخادم في الحزمة
+      # (`libs/*/sys.maxmanager-*` و`system/bin/sys.maxmanager-service` تحمل `0755` داخل
+      # الحزمة، مقيسًا بـ`unzip -Z`).
+      #
+      # والمانيفستان لا يسافران داخل حزمة أثر واحد مع زيب المطوّرين (فلا يُقبل ملفّان في أثر
+      # غير مضغوط)، ولهما أثرهما الثالث — وهو زيب يحوي **نصّين لا زيبات**، فليس عطبًا من
+      # الصنف الذي أُزيل، وشرط المالك «لا `.sha256` داخل الـzip» يخصّ حزمتي التوزيع لا أثرهما.
+      - name: Upload Build Artifact
+        id: upload_module
+        continue-on-error: true
+        uses: actions/upload-artifact@v7
+        with:
+          # بلا `name`: اسم الأثر = اسم الملفّ (`MaxManager-V2.zip`) — فيصله المستخدم
+          # باسمه الصحيح وبلا فكّ ضغط.
+          path: ${{ steps.compileZip.outputs.zipName }}
+          if-no-files-found: error
+          # الحصة: ٧ أيام فقط — بدونها يحتفظ GitHub ٩٠ يومًا (~40MB لكل تشغيل) فتمتلئ الحصة.
+          retention-days: 7
+          archive: false
+
+      - name: Retry Build Artifact upload
+        if: steps.upload_module.outcome == 'failure'
+        uses: actions/upload-artifact@v7
+        with:
+          path: ${{ steps.compileZip.outputs.zipName }}
+          if-no-files-found: error
+          retention-days: 7
+          overwrite: true
+          archive: false
+
+      - name: Upload developer integration artifact
+        id: upload_developer_bundle
+        continue-on-error: true
+        uses: actions/upload-artifact@v7
+        with:
+          # بلا `name` كذلك: اسم الأثر = `MaxManager-developer-bundle.zip`.
+          path: MaxManager-developer-bundle.zip
+          if-no-files-found: error
+          retention-days: 7
+          archive: false
+
+      - name: Retry developer integration upload
+        if: steps.upload_developer_bundle.outcome == 'failure'
+        uses: actions/upload-artifact@v7
+        with:
+          path: MaxManager-developer-bundle.zip
+          if-no-files-found: error
+          retention-days: 7
+          overwrite: true
+          archive: false
+
+      # المانيفستان بأثر مستقلّ — نصّان لا زيبان، ودورهما أن يُقارَنا بالحزمتين لا أن يسافرا
+      # داخلهما (وهو شرط المالك الذي يشهد له حرس `Validate artifacts` أعلاه).
+      - name: Upload checksum manifests
+        id: upload_checksums
+        continue-on-error: true
+        uses: actions/upload-artifact@v7
+        with:
+          name: MaxManager-checksums
+          path: |
+            checksums-module.sha256
+            checksums-developer-bundle.sha256
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Retry checksum manifest upload
+        if: steps.upload_checksums.outcome == 'failure'
+        uses: actions/upload-artifact@v7
+        with:
+          name: MaxManager-checksums
+          path: |
+            checksums-module.sha256
+            checksums-developer-bundle.sha256
+          if-no-files-found: error
+          retention-days: 7
+          overwrite: true
+
+      # Delivery is optional and must never decide whether the build is green:
+      # the artifacts above are the build's output, and this step is only how
+      # they happen to be announced. It already no-ops when CHAT_ID/BOT_TOKEN
+      # are not configured (which is the normal state here — the Telegram
+      # upload is disabled on purpose), and `continue-on-error` additionally
+      # keeps a failing or unreachable bot from turning the job red.
+      - name: Upload To Telegram
+        continue-on-error: true
+        env:
+          CHAT_ID: ${{ secrets.CHAT_ID }}
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+          COMMIT_URL: ${{ github.event.head_commit.url }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          TITLE: MaxManager
+        run: |
+          if [ -n "$CHAT_ID" ] && [ -n "$BOT_TOKEN" ]; then
+            export VERSION=$(git rev-list --count HEAD)
+            bash .github/scripts/telebot.sh "${{ steps.compileZip.outputs.zipName }}"
+          else
+            echo "⚠️ Telegram bot token or chat id is undefined, skipping upload. Build artifacts are unaffected."
+          fi

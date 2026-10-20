@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_spoof_ui_strings.xml -->
+<resources>
+    <string name="spoof_ui_real_device">वास्तविक उपकरण</string>
+    <string name="spoof_ui_pill_verified">कन्फिग प्रमाणित</string>
+    <string name="spoof_ui_pill_unverified">प्रमाणित गरिएको छैन</string>
+    <string name="spoof_ui_pill_off">बन्द</string>
+    <string name="spoof_device_for_app">यो एपको लागि यन्त्र</string>
+    <string name="spoof_device_real_hint">यो एपले तपाईंको वास्तविक यन्त्र देख्छ। एउटा छनौट गर्न कार्डमा ट्याप गर्नुहोस्।</string>
+    <string name="spoof_device_pick">क्याटलगबाट यन्त्र छनोट गर्न ट्याप गर्नुहोस्, वा आफू अनुकूल यन्त्र जानकारी प्रविष्ट गर्नुहोस्।</string>
+    <string name="spoof_device_in_use">प्रयोगमा</string>
+    <string name="spoof_device_restart">लक्ष्य एप पछि पुन: सुरु गर्नुहोस्, प्रणाली होइन।</string>
+    <string name="spoof_ui_apply_title">यो एपको लागि आवेदन दिनुहोस्</string>
+    <string name="spoof_ui_apply_action">समीक्षा र लागू गर्नुहोस्</string>
+    <string name="spoof_ui_apply_confirm_title">यो एप मात्र लागू गर्ने हो?</string>
+    <string name="spoof_ui_apply_confirm_text">केवल यो एप तयार छ; अन्य एपहरू छुटेका छैनन्। लक्ष्य एप पछि पुन: सुरु गर्नुहोस्, प्रणाली होइन। पछिको सम्पादनले यो पुष्टिकरण रद्द गर्छ। यदि COPG ले यो एपलाई पहिले नै सूचीबद्ध गरेको छ भने, तपाइँको यन्त्रले प्राथमिकता लिन्छ र COPG लाइन यथावत रहन्छ।</string>
+    <string name="spoof_ui_apply_confirm">आवेदन दिनुहोस्</string>
+    <string name="spoof_ui_apply_reason">इन्जिन अस्वीकार: %1$s</string>
+    <string name="spoof_engine_absent">इन्जिन मोड्युल पढ्न योग्य छैन। एउटा मोड्युल पुष्टि गर्नुहोस् जसको module.prop ले id=COPG भन्छ, यसलाई स्थापना गर्नुहोस् वा पुन: स्थापना गर्नुहोस्, त्यसपछि यो स्क्रिन पुन: खोल्नुहोस्।</string>
+    <string name="spoof_engine_disabled">COPG मोड्युल तपाईको रूट प्रबन्धकमा असक्षम गरिएको छ। यसलाई त्यहाँ सक्षम गर्नुहोस्, रिबुट गर्नुहोस्, त्यसपछि फेरि लागू गर्नुहोस्।</string>
+    <string name="spoof_engine_removal_pending">COPG हटाउनको लागि चिन्ह लगाइएको छ र अर्को रिबुट पछि हट्नेछ। आवेदन गर्नु अघि यसलाई पुन: स्थापना गर्नुहोस्।</string>
+    <string name="spoof_engine_update_pending">COPG अद्यावधिक रिबुटको लागि पर्खिरहेको छ। पहिले रिबुट गर्नुहोस्, त्यसपछि फेरि लागू गर्नुहोस्।</string>
+    <string name="spoof_ui_apply_pending">पछिल्लो आवेदन पछि परिवर्तन गरियो - यसलाई वास्तविक बनाउन पुन: आवेदन गर्नुहोस्।</string>
+    <string name="spoof_ui_restore_title">आफ्नो वास्तविक उपकरण प्रयोग गर्नुहोस्</string>
+    <string name="spoof_ui_restore_action">यो एपको लागि स्पूफ हटाउनुहोस्</string>
+    <string name="spoof_ui_restore_notice">यो एपको सुरक्षित गरिएको यन्त्र र यसको COPG ट्वीकहरू हटाइएका छन्, र इन्जिनलाई यो एप बिना नै पुन: लेखिएको छ। अन्य एपहरू छुटेका छैनन्। लक्ष्य एप पछि पुन: सुरु गर्नुहोस्।</string>
+    <string name="app_tab_spoof">नक्कली</string>
+    <string name="spoof_picker_title">एउटा यन्त्र छान्नुहोस्</string>
+    <string name="spoof_picker_custom">अनुकूलन उपकरण जानकारी</string>
+    <string name="spoof_picker_custom_hint">तपाईंले यो एपको लागि चाहनुभएको ब्रान्ड, मोडेल र फिंगरप्रिन्ट प्रविष्ट गर्नुहोस्</string>
+    <string name="spoof_custom_title">अनुकूलन उपकरण जानकारी</string>
+    <string name="spoof_custom_rules">नाम, ब्रान्ड, मोडेल, उपकरण र उत्पादन आवश्यक छ, प्रत्येक 120 वर्णहरू सम्म, कुनै नियन्त्रण वर्णहरू बिना। निर्माता, फिंगरप्रिन्ट र SDK वैकल्पिक छन्। फिंगरप्रिन्ट एउटै ब्रान्ड, उत्पादन र उपकरणबाट सुरु हुनुपर्छ।</string>
+    <string name="spoof_manufacturer">निर्माता (MANUFACTURER)</string>
+    <string name="spoof_sdk">SDK स्तर, वैकल्पिक, 1 देखि 100</string>
+    <string name="spoof_custom_invalid">केही क्षेत्रहरू अमान्य छन्। माथिका नियमहरू जाँच गर्नुहोस्, त्यसपछि फेरि बचत गर्नुहोस्।</string>
+    <string name="spoof_custom_save">बचत गर्नुहोस् र यो एपको लागि छनौट गर्नुहोस्</string>
+    <string name="spoof_impersonation_title">स्पूफिङ</string>
+    <string name="spoof_impersonation_desc">नि: शुल्क COPG विकल्पहरू मात्र। समीक्षा र लागू गरेर इन्जिनमा लिखित।</string>
+    <string name="spoof_impersonation_summary_cpu">CPU स्पुफिङ: %1$s</string>
+    <string name="spoof_impersonation_needs_device">यो एपको लागि पहिले एउटा यन्त्र छान्नुहोस्। यी विकल्पहरू केवल उपकरणसँग लेखिएका छन्।</string>
+    <string name="spoof_cpu_spoof">CPU स्पुफिङ</string>
+    <string name="spoof_cpu_real">वास्तविक CPU</string>
+    <string name="spoof_cpu_block">ब्लक CPU</string>
+    <string name="spoof_cpu_block_desc">यो एपलाई CPU स्पूफिङबाट समावेश गर्दैन।</string>
+    <string name="spoof_cpu_picker_title">एउटा CPU छान्नुहोस्</string>
+    <string name="copg_tweaks_section">COPG ट्वीक्स</string>
+    <string name="copg_tweak_nolog_title">लगिङ असक्षम पार्नुहोस्</string>
+    <string name="copg_tweak_nolog_desc">यो एपमा COPG लगिङ ट्वीक लागू गर्छ। यहाँ सुरक्षित गरिएको, समीक्षा द्वारा इन्जिनमा लेखिएको र Spoof ट्याबमा लागू गर्नुहोस्।</string>
+    <string name="copg_tweak_dab_title">स्वत: चमक असक्षम गर्नुहोस्</string>
+    <string name="copg_tweak_dab_desc">यो एपमा COPG स्वत: चमक ट्वीक लागू गर्दछ। यहाँ सुरक्षित गरिएको, समीक्षा द्वारा इन्जिनमा लेखिएको र Spoof ट्याबमा लागू गर्नुहोस्।</string>
+    <string name="copg_tweak_kso_title">स्क्रिन अन राख्नुहोस्</string>
+    <string name="copg_tweak_kso_desc">यो एपमा COPG किप-स्क्रिन-अन ट्वीक लागू गर्छ। यहाँ सुरक्षित गरिएको, समीक्षा द्वारा इन्जिनमा लेखिएको र Spoof ट्याबमा लागू गर्नुहोस्।</string>
+    <string name="copg_tweak_needs_device">यस एपको लागि पहिले Spoof ट्याबमा एउटा यन्त्र चाहिन्छ।</string>
+</resources>

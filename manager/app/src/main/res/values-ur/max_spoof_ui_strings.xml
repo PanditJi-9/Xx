@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_spoof_ui_strings.xml -->
+<resources>
+    <string name="spoof_ui_real_device">اصلی ڈیوائس</string>
+    <string name="spoof_ui_pill_verified">کنفیگریشن تصدیق شدہ</string>
+    <string name="spoof_ui_pill_unverified">تصدیق شدہ نہیں۔</string>
+    <string name="spoof_ui_pill_off">آف</string>
+    <string name="spoof_device_for_app">اس ایپ کے لیے ڈیوائس</string>
+    <string name="spoof_device_real_hint">یہ ایپ آپ کا اصلی آلہ دیکھتی ہے۔ ایک کو منتخب کرنے کے لیے کارڈ کو تھپتھپائیں۔</string>
+    <string name="spoof_device_pick">کیٹلاگ سے آلہ منتخب کرنے کے لیے تھپتھپائیں، یا حسب ضرورت ڈیوائس کی معلومات درج کریں۔</string>
+    <string name="spoof_device_in_use">استعمال میں</string>
+    <string name="spoof_device_restart">ٹارگٹ ایپ کو بعد میں دوبارہ شروع کریں، سسٹم کو نہیں۔</string>
+    <string name="spoof_ui_apply_title">اس ایپ کے لیے درخواست دیں۔</string>
+    <string name="spoof_ui_apply_action">جائزہ لیں اور درخواست دیں۔</string>
+    <string name="spoof_ui_apply_confirm_title">صرف اس ایپ کو لاگو کریں؟</string>
+    <string name="spoof_ui_apply_confirm_text">صرف یہ ایپ تیار ہے۔ دیگر ایپس اچھوت ہیں۔ ٹارگٹ ایپ کو بعد میں دوبارہ شروع کریں، سسٹم کو نہیں۔ بعد میں ایک ترمیم اس تصدیق کو منسوخ کر دیتی ہے۔ اگر COPG پہلے سے ہی اس ایپ کی فہرست بناتا ہے، تو آپ کا آلہ ترجیح لیتا ہے اور COPG لائن جوں کی توں رہتی ہے۔</string>
+    <string name="spoof_ui_apply_confirm">لگائیں</string>
+    <string name="spoof_ui_apply_reason">انجن سے انکار: %1$s</string>
+    <string name="spoof_engine_absent">انجن ماڈیول پڑھنے کے قابل نہیں ہے۔ ایک ماڈیول کی تصدیق کریں جس کا module.prop کہتا ہے id=COPG، اسے انسٹال یا دوبارہ انسٹال کریں، پھر اس اسکرین کو دوبارہ کھولیں۔</string>
+    <string name="spoof_engine_disabled">COPG ماڈیول آپ کے روٹ مینیجر میں غیر فعال ہے۔ اسے وہاں فعال کریں، دوبارہ شروع کریں، پھر دوبارہ درخواست دیں۔</string>
+    <string name="spoof_engine_removal_pending">COPG کو ہٹانے کے لیے نشان زد کیا گیا ہے اور اگلے ریبوٹ کے بعد ختم ہو جائے گا۔ درخواست دینے سے پہلے اسے دوبارہ انسٹال کریں۔</string>
+    <string name="spoof_engine_update_pending">ایک COPG اپ ڈیٹ دوبارہ شروع ہونے کا انتظار کر رہا ہے۔ پہلے ریبوٹ کریں، پھر دوبارہ درخواست دیں۔</string>
+    <string name="spoof_ui_apply_pending">آخری اپلائی کے بعد سے تبدیل کیا گیا ہے — اسے حقیقی بنانے کے لیے دوبارہ درخواست دیں۔</string>
+    <string name="spoof_ui_restore_title">اپنا اصلی آلہ استعمال کریں۔</string>
+    <string name="spoof_ui_restore_action">اس ایپ کے لیے دھوکہ دہی کو ہٹا دیں۔</string>
+    <string name="spoof_ui_restore_notice">اس ایپ کی محفوظ کردہ ڈیوائس اور اس کے COPG ٹویکس کو ہٹا دیا جاتا ہے، اور انجن کو اس ایپ کے بغیر دوبارہ لکھا جاتا ہے۔ دیگر ایپس اچھوتی ہیں۔ ٹارگٹ ایپ کو بعد میں دوبارہ شروع کریں۔</string>
+    <string name="app_tab_spoof">دھوکہ</string>
+    <string name="spoof_picker_title">ایک آلہ منتخب کریں۔</string>
+    <string name="spoof_picker_custom">حسب ضرورت ڈیوائس کی معلومات</string>
+    <string name="spoof_picker_custom_hint">اس ایپ کے لیے مطلوبہ برانڈ، ماڈل اور فنگر پرنٹ درج کریں۔</string>
+    <string name="spoof_custom_title">حسب ضرورت ڈیوائس کی معلومات</string>
+    <string name="spoof_custom_rules">نام، برانڈ، ماڈل، ڈیوائس اور پروڈکٹ کی ضرورت ہے، ہر ایک میں 120 حروف تک، بغیر کسی کنٹرول کے حروف۔ مینوفیکچرر، فنگر پرنٹ اور SDK اختیاری ہیں۔ فنگر پرنٹ کا آغاز ایک ہی برانڈ، پروڈکٹ اور ڈیوائس سے ہونا چاہیے۔</string>
+    <string name="spoof_manufacturer">مینوفیکچرر (MANUFACTURER)</string>
+    <string name="spoof_sdk">SDK لیول، اختیاری، 1 سے 100</string>
+    <string name="spoof_custom_invalid">کچھ فیلڈز غلط ہیں۔ مندرجہ بالا قواعد کو چیک کریں، پھر دوبارہ محفوظ کریں۔</string>
+    <string name="spoof_custom_save">محفوظ کریں اور اس ایپ کے لیے منتخب کریں۔</string>
+    <string name="spoof_impersonation_title">سپوفنگ</string>
+    <string name="spoof_impersonation_desc">صرف مفت COPG اختیارات۔ ریویو اور اپلائی کرکے انجن کو لکھا گیا۔</string>
+    <string name="spoof_impersonation_summary_cpu">CPU جعل سازی: %1$s</string>
+    <string name="spoof_impersonation_needs_device">اس ایپ کے لیے پہلے ایک ڈیوائس کا انتخاب کریں۔ یہ اختیارات صرف ایک ڈیوائس کے ساتھ لکھے گئے ہیں۔</string>
+    <string name="spoof_cpu_spoof">CPU جعل سازی</string>
+    <string name="spoof_cpu_real">اصلی CPU</string>
+    <string name="spoof_cpu_block">بلاک CPU</string>
+    <string name="spoof_cpu_block_desc">اس ایپ کو CPU جعل سازی سے خارج کرتا ہے۔</string>
+    <string name="spoof_cpu_picker_title">ایک CPU منتخب کریں۔</string>
+    <string name="copg_tweaks_section">COPG موافقت</string>
+    <string name="copg_tweak_nolog_title">لاگنگ کو غیر فعال کریں۔</string>
+    <string name="copg_tweak_nolog_desc">اس ایپ پر COPG لاگنگ موافقت کا اطلاق کرتا ہے۔ یہاں محفوظ کیا گیا، انجن کو بذریعہ جائزہ لکھا گیا اور Spoof ٹیب میں اپلائی کریں۔</string>
+    <string name="copg_tweak_dab_title">خودکار چمک کو غیر فعال کریں۔</string>
+    <string name="copg_tweak_dab_desc">اس ایپ پر COPG آٹو برائٹنس موافقت کا اطلاق کرتا ہے۔ یہاں محفوظ کیا گیا، انجن کو بذریعہ جائزہ لکھا گیا اور Spoof ٹیب میں اپلائی کریں۔</string>
+    <string name="copg_tweak_kso_title">اسکرین آن رکھیں</string>
+    <string name="copg_tweak_kso_desc">اس ایپ پر COPG کیپ اسکرین آن موافقت کا اطلاق کرتا ہے۔ یہاں محفوظ کیا گیا، انجن کو بذریعہ جائزہ لکھا گیا اور اسپوف ٹیب میں اپلائی کریں۔</string>
+    <string name="copg_tweak_needs_device">Spoof ٹیب میں اس ایپ کے لیے پہلے ایک ڈیوائس کی ضرورت ہے۔</string>
+</resources>

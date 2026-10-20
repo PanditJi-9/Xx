@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_security_strings.xml -->
+<resources>
+    <string name="security_tamper_title">មិនអាចចាប់ផ្តើមបានទេ។</string>
+    <string name="security_tamper_message">ការស្ថាបនា MaxManager នេះមិននៅដដែល។ ឯកសារដែលបានដំឡើងលែងត្រូវគ្នានឹងការចេញផ្សាយដែលបានចុះហត្ថលេខា ដូច្នេះវានឹងមិនដំណើរការទេ។ ដំឡើងការស្ថាបនាផ្លូវការឡើងវិញពីប្រភពដើមរបស់វា។</string>
+    <string name="security_tamper_close">បិទ</string>
+</resources>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_spoof_ui_strings.xml -->
+<resources>
+    <string name="spoof_ui_real_device">実デバイス</string>
+    <string name="spoof_ui_pill_verified">構成が検証されました</string>
+    <string name="spoof_ui_pill_unverified">未検証</string>
+    <string name="spoof_ui_pill_off">オフ</string>
+    <string name="spoof_device_for_app">このアプリのデバイス</string>
+    <string name="spoof_device_real_hint">このアプリは実際のデバイスを認識します。カードをタップして選択します。</string>
+    <string name="spoof_device_pick">タップしてカタログからデバイスを選択するか、カスタム デバイス情報を入力します。</string>
+    <string name="spoof_device_in_use">使用中</string>
+    <string name="spoof_device_restart">その後、システムではなくターゲット アプリを再起動します。</string>
+    <string name="spoof_ui_apply_title">このアプリに申し込む</string>
+    <string name="spoof_ui_apply_action">確認して申し込む</string>
+    <string name="spoof_ui_apply_confirm_title">このアプリのみを適用しますか?</string>
+    <string name="spoof_ui_apply_confirm_text">このアプリだけが用意されています。他のアプリはそのままです。その後、システムではなくターゲット アプリを再起動します。後で編集すると、この確認はキャンセルされます。 COPG がすでにこのアプリをリストしている場合、デバイスが優先され、COPG ラインはそのまま残ります。</string>
+    <string name="spoof_ui_apply_confirm">適用する</string>
+    <string name="spoof_ui_apply_reason">エンジン拒否: %1$s</string>
+    <string name="spoof_engine_absent">エンジン モジュールを読み取れません。 module.prop に id=COPG と記載されているモジュールを確認し、インストールまたは再インストールしてから、この画面を再度開きます。</string>
+    <string name="spoof_engine_disabled">COPG モジュールはルート マネージャーで無効になっています。そこで有効にして再起動し、再度適用します。</string>
+    <string name="spoof_engine_removal_pending">COPG は削除対象としてマークされており、次回の再起動後に削除されます。適用する前に再インストールしてください。</string>
+    <string name="spoof_engine_update_pending">COPG アップデートは再起動を待機しています。まず再起動してから、再度適用してください。</string>
+    <string name="spoof_ui_apply_pending">前回の適用以降に変更されました。変更を反映するには、再度適用してください。</string>
+    <string name="spoof_ui_restore_title">実際のデバイスを使用する</string>
+    <string name="spoof_ui_restore_action">このアプリのなりすましを削除する</string>
+    <string name="spoof_ui_restore_notice">このアプリの保存されたデバイスとその COPG 調整は削除され、エンジンはこのアプリなしで書き直されます。他のアプリはそのままです。その後、対象のアプリを再起動します。</string>
+    <string name="app_tab_spoof">パロディー</string>
+    <string name="spoof_picker_title">デバイスを選択してください</string>
+    <string name="spoof_picker_custom">カスタムデバイス情報</string>
+    <string name="spoof_picker_custom_hint">このアプリに必要なブランド、モデル、指紋を入力してください</string>
+    <string name="spoof_custom_title">カスタムデバイス情報</string>
+    <string name="spoof_custom_rules">名前、ブランド、モデル、デバイス、製品は必須であり、それぞれ最大 120 文字で、制御文字は含まれません。メーカー、フィンガープリント、SDK はオプションです。フィンガープリントは、同じブランド、製品、デバイスで始まる必要があります。</string>
+    <string name="spoof_manufacturer">メーカー (メーカー)</string>
+    <string name="spoof_sdk">SDK レベル、オプション、1 ～ 100</string>
+    <string name="spoof_custom_invalid">一部のフィールドは無効です。上記のルールを確認してから、再度保存してください。</string>
+    <string name="spoof_custom_save">保存してこのアプリ用に選択</string>
+    <string name="spoof_impersonation_title">スプーフィング</string>
+    <string name="spoof_impersonation_desc">無料の COPG オプションのみ。レビューして適用することによってエンジンに書き込まれます。</string>
+    <string name="spoof_impersonation_summary_cpu">CPU なりすまし: %1$s</string>
+    <string name="spoof_impersonation_needs_device">まずこのアプリ用のデバイスを選択してください。これらのオプションはデバイスでのみ書き込まれます。</string>
+    <string name="spoof_cpu_spoof">CPU なりすまし</string>
+    <string name="spoof_cpu_real">実質 CPU</string>
+    <string name="spoof_cpu_block">ブロックCPU</string>
+    <string name="spoof_cpu_block_desc">このアプリをCPUのなりすましから除外します。</string>
+    <string name="spoof_cpu_picker_title">CPUを選択してください</string>
+    <string name="copg_tweaks_section">COPGの調整</string>
+    <string name="copg_tweak_nolog_title">ロギングを無効にする</string>
+    <string name="copg_tweak_nolog_desc">COPG ログの調整をこのアプリに適用します。ここに保存され、レビューによってエンジンに書き込まれ、[スプーフ] タブで適用されます。</string>
+    <string name="copg_tweak_dab_title">自動明るさ調整を無効にする</string>
+    <string name="copg_tweak_dab_desc">COPG の自動輝度調整をこのアプリに適用します。ここに保存され、レビューによってエンジンに書き込まれ、[スプーフ] タブで適用されます。</string>
+    <string name="copg_tweak_kso_title">画面をオンにしたままにする</string>
+    <string name="copg_tweak_kso_desc">COPG 画面表示維持の調整をこのアプリに適用します。ここに保存され、レビューによってエンジンに書き込まれ、[スプーフ] タブで適用されます。</string>
+    <string name="copg_tweak_needs_device">まず、[Spoof] タブでこのアプリ用のデバイスが必要です。</string>
+</resources>

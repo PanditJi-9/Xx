@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_copg_tag_strings.xml -->
+<resources>
+    <string name="copg_tags_title">COPG オプション</string>
+    <string name="copg_tags_desc">インテントとして保存され、デバイスプロファイルとともに書き込まれます。すべての COPG バージョンでは 4 つの快適オプションのみが機能します。残りは COPG 6.8.0 以降が必要です。 PRO オプションには COPG PRO ライセンスが必要ですが、エンジンはそれらを無視する場合があります。</string>
+    <string name="copg_tier_pro">プロ</string>
+    <string name="copg_footprint_resident">アプリのメモリに残るため、アンチチート ゲームでは決して使用しないでください</string>
+    <string name="copg_need_ack">まずは以下のリスクを認識してください</string>
+    <string name="copg_tag_refused">選択した COPG オプションは、インストールされている COPG バージョンでは使用できません。何も書かれていませんでした。</string>
+    <string name="copg_tag_needs_device">オプションはデバイス プロファイルで記述されますが、このアプリにはまだオプションがありません。</string>
+    <string name="copg_tag_value_hint">価値</string>
+    <string name="copg_tag_bad_value">文字、数字、スペース、および . _ - / + のみ (最大 60)</string>
+    <string name="copg_tag_save">保存</string>
+    <string name="copg_tag_remove">取り除く</string>
+    <string name="copg_tag_dnd">プレイ中は邪魔しないでください</string>
+    <string name="copg_tag_dab">自動明るさ調整を無効にする</string>
+    <string name="copg_tag_kso">画面をオンにしたままにする</string>
+    <string name="copg_tag_nolog">ロギングを停止する</string>
+    <string name="copg_tag_dpi">画面の DPI</string>
+    <string name="copg_tag_serial">アプリごとのシリアル番号</string>
+    <string name="copg_tag_cpu">CPUモデル</string>
+    <string name="copg_tag_blocked">実数 CPU を強制する</string>
+    <string name="copg_tag_vpn">VPNを隠す</string>
+    <string name="copg_tag_vpns">VPN を非表示にする (厳密)</string>
+    <string name="copg_tag_hidedev">開発者向けオプションと USB デバッグを非表示にする</string>
+    <string name="copg_tag_tz">タイムゾーン</string>
+    <string name="copg_tag_lang">言語と地域</string>
+    <string name="copg_tag_gpu">GPUモデル</string>
+    <string name="copg_tag_cow">ビルド プロパティ (コピーオンライト)</string>
+    <string name="copg_tag_aid">アンドロイドID</string>
+    <string name="copg_tag_gaid">広告 ID</string>
+    <string name="copg_tag_appset">アプリセット ID</string>
+    <string name="copg_tag_drm">ワイドバイン / DRM</string>
+    <string name="copg_tag_imei">IMEI</string>
+    <string name="copg_tag_sim">SIMキャリア（安全）</string>
+    <string name="copg_tag_simx">SIM キャリア (積極的)</string>
+    <string name="copg_tag_ua">WebView ユーザーエージェント</string>
+    <string name="copg_tag_mock">疑似ロケーションを非表示にする</string>
+</resources>

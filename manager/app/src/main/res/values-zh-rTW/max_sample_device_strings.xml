@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_sample_device_strings.xml -->
+<resources>
+    <string name="sample_pick_title">选择示例设备</string>
+    <string name="sample_pick_button">选择示例设备</string>
+    <string name="sample_auto_hint">选择设备时会为您填写品牌、制造商、型号、设备、产品和指纹。使用手册自己输入它们。</string>
+    <string name="sample_manual">手动的</string>
+    <string name="sample_close">关闭</string>
+    <string name="sample_search">搜索设备</string>
+    <string name="sample_empty">没有匹配的设备。</string>
+    <string name="sample_unavailable">无法读取设备目录。</string>
+    <string name="sample_row_sub">安卓%1$s·%2$s</string>
+    <string name="sample_row_sub_plain">%1$s</string>
+    <string name="sample_fp_shared">与另一个目录设备相同的指纹</string>
+    <string name="sample_credit">目录数据：COPG (Apache-2.0)，%1$s</string>
+    <string name="sample_limit">已达到配置文件限制 (100)。</string>
+</resources>

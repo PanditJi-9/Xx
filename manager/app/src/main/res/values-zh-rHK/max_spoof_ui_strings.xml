@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_spoof_ui_strings.xml -->
+<resources>
+    <string name="spoof_ui_real_device">真实设备</string>
+    <string name="spoof_ui_pill_verified">配置已验证</string>
+    <string name="spoof_ui_pill_unverified">未验证</string>
+    <string name="spoof_ui_pill_off">离开</string>
+    <string name="spoof_device_for_app">此应用程序的设备</string>
+    <string name="spoof_device_real_hint">该应用程序可以看到您的真实设备。点击卡片以选择一张。</string>
+    <string name="spoof_device_pick">点击以从目录中选择设备，或输入自定义设备信息。</string>
+    <string name="spoof_device_in_use">使用中</string>
+    <string name="spoof_device_restart">之后重新启动目标应用程序，而不是系统。</string>
+    <string name="spoof_ui_apply_title">申请这个应用程序</string>
+    <string name="spoof_ui_apply_action">审查并申请</string>
+    <string name="spoof_ui_apply_confirm_title">只应用这个应用程序吗？</string>
+    <string name="spoof_ui_apply_confirm_text">只准备了这个应用程序；其他应用程序未受影响。之后重新启动目标应用程序，而不是系统。稍后的编辑会取消此确认。如果 COPG 已列出此应用程序，则您的设备优先，并且 COPG 线路保持不变。</string>
+    <string name="spoof_ui_apply_confirm">申请</string>
+    <string name="spoof_ui_apply_reason">发动机拒绝：%1$s</string>
+    <string name="spoof_engine_absent">引擎模块不可读。确认 module.prop 中显示 id=COPG 的模块，安装或重新安装它，然后重新打开此屏幕。</string>
+    <string name="spoof_engine_disabled">COPG 模块在您的根管理器中被禁用。在那里启用它，重新启动，然后再次应用。</string>
+    <string name="spoof_engine_removal_pending">COPG 被标记为删除，并将在下次重新启动后消失。在应用之前重新安装它。</string>
+    <string name="spoof_engine_update_pending">COPG 更新正在等待重新启动。先重启，然后再申请。</string>
+    <string name="spoof_ui_apply_pending">自上次申请以来发生了变化 - 再次申请以使其成为现实。</string>
+    <string name="spoof_ui_restore_title">使用您的真实设备</string>
+    <string name="spoof_ui_restore_action">删除此应用程序的欺骗行为</string>
+    <string name="spoof_ui_restore_notice">此应用程序保存的设备及其 COPG 调整将被删除，并且引擎将在没有此应用程序的情况下重写。其他应用程序未受影响。之后重新启动目标应用程序。</string>
+    <string name="app_tab_spoof">欺骗</string>
+    <string name="spoof_picker_title">选择设备</string>
+    <string name="spoof_picker_custom">自定义设备信息</string>
+    <string name="spoof_picker_custom_hint">输入您想要此应用程序的品牌、型号和指纹</string>
+    <string name="spoof_custom_title">自定义设备信息</string>
+    <string name="spoof_custom_rules">名称、品牌、型号、设备和产品为必填项，每个最多 120 个字符，不含控制字符。制造商、指纹和SDK可选。指纹必须以相同的品牌、产品和设备开头。</string>
+    <string name="spoof_manufacturer">制造商（制造商）</string>
+    <string name="spoof_sdk">SDK级别，可选，1到100</string>
+    <string name="spoof_custom_invalid">某些字段无效。检查上面的规则，然后再次保存。</string>
+    <string name="spoof_custom_save">保存并选择此应用程序</string>
+    <string name="spoof_impersonation_title">欺骗</string>
+    <string name="spoof_impersonation_desc">仅免费 COPG 选项。通过审查写入引擎并应用。</string>
+    <string name="spoof_impersonation_summary_cpu">CPU 欺骗：%1$s</string>
+    <string name="spoof_impersonation_needs_device">首先为此应用程序选择一个设备。这些选项只能通过设备写入。</string>
+    <string name="spoof_cpu_spoof">CPU 欺骗</string>
+    <string name="spoof_cpu_real">真实CPU</string>
+    <string name="spoof_cpu_block">区块CPU</string>
+    <string name="spoof_cpu_block_desc">将此应用程序排除在 CPU 欺骗之外。</string>
+    <string name="spoof_cpu_picker_title">选择CPU</string>
+    <string name="copg_tweaks_section">COPG 调整</string>
+    <string name="copg_tweak_nolog_title">禁用日志记录</string>
+    <string name="copg_tweak_nolog_desc">将 COPG 日志记录调整应用于此应用程序。保存在此处，通过审核写入引擎并在“欺骗”选项卡中应用。</string>
+    <string name="copg_tweak_dab_title">禁用自动亮度</string>
+    <string name="copg_tweak_dab_desc">对此应用程序应用 COPG 自动亮度调整。保存在此处，通过审核写入引擎并在“欺骗”选项卡中应用。</string>
+    <string name="copg_tweak_kso_title">保持屏幕开启</string>
+    <string name="copg_tweak_kso_desc">对此应用程序应用 COPG 保持屏幕打开调整。保存在此处，通过审核写入引擎并在“欺骗”选项卡中应用。</string>
+    <string name="copg_tweak_needs_device">首先需要在“欺骗”选项卡中安装此应用程序的设备。</string>
+</resources>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_copg_tag_strings.xml -->
+<resources>
+    <string name="copg_tags_title">Opções de COPG</string>
+    <string name="copg_tags_desc">Salvo como intenção e escrito junto com o perfil do dispositivo. Apenas as quatro opções de conforto funcionam em todas as versões do COPG; o restante precisa do COPG 6.8.0 ou mais recente. As opções PRO precisam de uma licença COPG PRO e o mecanismo pode ignorá-las.</string>
+    <string name="copg_tier_pro">PRÓ</string>
+    <string name="copg_footprint_resident">permanece na memória do aplicativo, nunca use com jogos anti-cheat</string>
+    <string name="copg_need_ack">reconheça o risco abaixo primeiro</string>
+    <string name="copg_tag_refused">Uma opção COPG selecionada não é permitida para a versão COPG instalada. Nada foi escrito.</string>
+    <string name="copg_tag_needs_device">As opções são escritas com um perfil de dispositivo e este aplicativo ainda não possui nenhum.</string>
+    <string name="copg_tag_value_hint">Valor</string>
+    <string name="copg_tag_bad_value">Letras, dígitos, espaço e . _ - / + apenas (até 60)</string>
+    <string name="copg_tag_save">Salvar</string>
+    <string name="copg_tag_remove">Remover</string>
+    <string name="copg_tag_dnd">Não perturbe enquanto joga</string>
+    <string name="copg_tag_dab">Desativar brilho automático</string>
+    <string name="copg_tag_kso">Manter a tela ligada</string>
+    <string name="copg_tag_nolog">Parar de registrar</string>
+    <string name="copg_tag_dpi">DPI da tela</string>
+    <string name="copg_tag_serial">Número de série por aplicativo</string>
+    <string name="copg_tag_cpu">Modelo CPU</string>
+    <string name="copg_tag_blocked">Forçar o real CPU</string>
+    <string name="copg_tag_vpn">Ocultar VPN</string>
+    <string name="copg_tag_vpns">Ocultar VPN (estrito)</string>
+    <string name="copg_tag_hidedev">Ocultar opções do desenvolvedor e depuração USB</string>
+    <string name="copg_tag_tz">Fuso horário</string>
+    <string name="copg_tag_lang">Idioma e região</string>
+    <string name="copg_tag_gpu">Modelo GPU</string>
+    <string name="copg_tag_cow">Propriedades de compilação (cópia na gravação)</string>
+    <string name="copg_tag_aid">Android ID</string>
+    <string name="copg_tag_gaid">Publicidade ID</string>
+    <string name="copg_tag_appset">Conjunto de aplicativos ID</string>
+    <string name="copg_tag_drm">Widevine/DRM</string>
+    <string name="copg_tag_imei">IMEI</string>
+    <string name="copg_tag_sim">Operadora SIM (segura)</string>
+    <string name="copg_tag_simx">Operadora SIM (agressiva)</string>
+    <string name="copg_tag_ua">Agente de usuário WebView</string>
+    <string name="copg_tag_mock">Ocultar localização simulada</string>
+</resources>

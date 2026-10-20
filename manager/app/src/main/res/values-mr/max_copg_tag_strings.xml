@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_copg_tag_strings.xml -->
+<resources>
+    <string name="copg_tags_title">COPG पर्याय</string>
+    <string name="copg_tags_desc">हेतू म्हणून जतन केले आणि डिव्हाइस प्रोफाइलसह एकत्र लिहिले. प्रत्येक COPG आवृत्तीवर फक्त चार आराम पर्याय कार्य करतात; उर्वरित COPG 6.8.0 किंवा नवीन आवश्यक आहे. PRO पर्यायांना COPG PRO परवाना आवश्यक आहे आणि इंजिन त्यांच्याकडे दुर्लक्ष करू शकते.</string>
+    <string name="copg_tier_pro">प्रो</string>
+    <string name="copg_footprint_resident">ॲपच्या मेमरीमध्ये राहते, अँटी-चीट गेमसह कधीही वापरू नका</string>
+    <string name="copg_need_ack">प्रथम खालील जोखीम ओळखा</string>
+    <string name="copg_tag_refused">स्थापित COPG आवृत्तीसाठी निवडलेल्या COPG पर्यायाला परवानगी नाही. काहीच लिहिले नव्हते.</string>
+    <string name="copg_tag_needs_device">पर्याय डिव्हाइस प्रोफाइलसह लिहिलेले आहेत आणि या ॲपमध्ये अद्याप काहीही नाही.</string>
+    <string name="copg_tag_value_hint">मूल्य</string>
+    <string name="copg_tag_bad_value">अक्षरे, अंक, जागा आणि . _ - / + फक्त (६० पर्यंत)</string>
+    <string name="copg_tag_save">जतन करा</string>
+    <string name="copg_tag_remove">काढा</string>
+    <string name="copg_tag_dnd">खेळताना व्यत्यय आणू नका</string>
+    <string name="copg_tag_dab">स्वयं-ब्राइटनेस अक्षम करा</string>
+    <string name="copg_tag_kso">स्क्रीन चालू ठेवा</string>
+    <string name="copg_tag_nolog">लॉगिंग थांबवा</string>
+    <string name="copg_tag_dpi">स्क्रीन DPI</string>
+    <string name="copg_tag_serial">प्रति-ॲप अनुक्रमांक</string>
+    <string name="copg_tag_cpu">CPU मॉडेल</string>
+    <string name="copg_tag_blocked">वास्तविक CPU सक्ती करा</string>
+    <string name="copg_tag_vpn">VPN लपवा</string>
+    <string name="copg_tag_vpns">VPN लपवा (कडक)</string>
+    <string name="copg_tag_hidedev">विकसक पर्याय आणि USB डीबगिंग लपवा</string>
+    <string name="copg_tag_tz">टाइमझोन</string>
+    <string name="copg_tag_lang">भाषा आणि प्रदेश</string>
+    <string name="copg_tag_gpu">GPU मॉडेल</string>
+    <string name="copg_tag_cow">गुणधर्म तयार करा (कॉपी-ऑन-राइट)</string>
+    <string name="copg_tag_aid">Android ID</string>
+    <string name="copg_tag_gaid">जाहिरात ID</string>
+    <string name="copg_tag_appset">ॲप सेट ID</string>
+    <string name="copg_tag_drm">Widevine / DRM</string>
+    <string name="copg_tag_imei">IMEI</string>
+    <string name="copg_tag_sim">सिम वाहक (सुरक्षित)</string>
+    <string name="copg_tag_simx">सिम वाहक (आक्रमक)</string>
+    <string name="copg_tag_ua">WebView वापरकर्ता-एजंट</string>
+    <string name="copg_tag_mock">नकली स्थान लपवा</string>
+</resources>

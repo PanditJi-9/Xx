@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_copg_tag_strings.xml -->
+<resources>
+    <string name="copg_tags_title">COPG বিকল্পসমূহ</string>
+    <string name="copg_tags_desc">উদ্দেশ্য হিচাপে সংৰক্ষণ কৰা হৈছে আৰু ডিভাইচ আলেখ্যনৰ সৈতে একেলগে লিখা হৈছে। কেৱল চাৰিটা আৰামৰ বিকল্পই প্ৰতিটো চিঅ’পিজি সংস্কৰণত কাম কৰে; বাকীবোৰৰ বাবে COPG 6.8.0 বা নতুনৰ প্ৰয়োজন। PRO বিকল্পসমূহৰ বাবে এটা COPG PRO অনুজ্ঞাপত্ৰৰ প্ৰয়োজন, আৰু ইঞ্জিনে সিহতক আওকাণ কৰিব পাৰে।</string>
+    <string name="copg_tier_pro">PRO</string>
+    <string name="copg_footprint_resident">এপ\'s মেম\'ৰীত থাকে, কেতিয়াও এন্টি-চিট গেমৰ সৈতে ব্যৱহাৰ নকৰিব</string>
+    <string name="copg_need_ack">প্ৰথমে তলৰ বিপদটো স্বীকাৰ কৰক</string>
+    <string name="copg_tag_refused">সংস্থাপিত COPG সংস্কৰণৰ বাবে এটা নিৰ্বাচিত COPG বিকল্পৰ অনুমতি দিয়া হোৱা নাই। একো লিখা হোৱা নাছিল।</string>
+    <string name="copg_tag_needs_device">বিকল্পসমূহ এটা ডিভাইচ প্ৰফাইলৰ সৈতে লিখা হৈছে, আৰু এই এপটোত এতিয়াও নাই।</string>
+    <string name="copg_tag_value_hint">মান</string>
+    <string name="copg_tag_bad_value">আখৰ, সংখ্যা, স্থান আৰু . _ - / + কেৱল (৬০ লৈকে)</string>
+    <string name="copg_tag_save">সঞ্চয় কৰা</string>
+    <string name="copg_tag_remove">আঁতৰোৱা</string>
+    <string name="copg_tag_dnd">খেলি থকাৰ সময়ত ডিষ্টাৰ্ব নকৰিব</string>
+    <string name="copg_tag_dab">স্বয়ংক্ৰিয়-উজ্জ্বলতা নিষ্ক্ৰিয় কৰক</string>
+    <string name="copg_tag_kso">পৰ্দা অন কৰি ৰাখক</string>
+    <string name="copg_tag_nolog">লগিং বন্ধ কৰক</string>
+    <string name="copg_tag_dpi">স্ক্ৰীণ ডিপিআই</string>
+    <string name="copg_tag_serial">প্ৰতি-এপ ক্ৰমিক নম্বৰ</string>
+    <string name="copg_tag_cpu">CPU মডেল</string>
+    <string name="copg_tag_blocked">প্ৰকৃত CPU জোৰকৈ</string>
+    <string name="copg_tag_vpn">ভিপিএন লুকুৱাওক</string>
+    <string name="copg_tag_vpns">ভিপিএন লুকুৱাওক (কঠোৰ)</string>
+    <string name="copg_tag_hidedev">ডেভেলপাৰ বিকল্পসমূহ আৰু USB ডিবাগিং লুকুৱাওক</string>
+    <string name="copg_tag_tz">সময়মণ্ডল</string>
+    <string name="copg_tag_lang">ভাষা আৰু অঞ্চল</string>
+    <string name="copg_tag_gpu">GPU মডেল</string>
+    <string name="copg_tag_cow">বিল্ড বৈশিষ্ট্যসমূহ (কপি-অন-ৰাইট)</string>
+    <string name="copg_tag_aid">এণ্ড্ৰইড ID</string>
+    <string name="copg_tag_gaid">বিজ্ঞাপন ID</string>
+    <string name="copg_tag_appset">এপ ছেট ID</string>
+    <string name="copg_tag_drm">ৱাইডভাইন / ডি আৰ এম</string>
+    <string name="copg_tag_imei">আইএমইআই</string>
+    <string name="copg_tag_sim">চিম কেৰিয়াৰ (নিৰাপদ)</string>
+    <string name="copg_tag_simx">চিম কেৰিয়াৰ (আক্ৰমণাত্মক)</string>
+    <string name="copg_tag_ua">ৱেবভিউ ব্যৱহাৰকাৰী-এজেন্ট</string>
+    <string name="copg_tag_mock">মক স্থান লুকুৱাওক</string>
+</resources>

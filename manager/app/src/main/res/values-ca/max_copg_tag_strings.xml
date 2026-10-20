@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_copg_tag_strings.xml -->
+<resources>
+    <string name="copg_tags_title">Opcions COPG</string>
+    <string name="copg_tags_desc">Desat com a intenció i escrit juntament amb el perfil del dispositiu. Només les quatre opcions de confort funcionen en totes les versions de COPG; la resta necessiten COPG 6.8.0 o posterior. Les opcions PRO necessiten una llicència COPG PRO i el motor pot ignorar-les.</string>
+    <string name="copg_tier_pro">PRO</string>
+    <string name="copg_footprint_resident">roman a la memòria de l\'aplicació, no l\'utilitzeu mai amb jocs anti-trampa</string>
+    <string name="copg_need_ack">Reconeixeu primer el risc a continuació</string>
+    <string name="copg_tag_refused">No es permet una opció COPG seleccionada per a la versió de COPG instal·lada. No es va escriure res.</string>
+    <string name="copg_tag_needs_device">Les opcions s\'escriuen amb un perfil de dispositiu i aquesta aplicació encara no en té cap.</string>
+    <string name="copg_tag_value_hint">Valor</string>
+    <string name="copg_tag_bad_value">Lletres, dígits, espai i . Només _ - / + (fins a 60)</string>
+    <string name="copg_tag_save">Desa</string>
+    <string name="copg_tag_remove">Eliminar</string>
+    <string name="copg_tag_dnd">No molestis mentre jugues</string>
+    <string name="copg_tag_dab">Desactiva la brillantor automàtica</string>
+    <string name="copg_tag_kso">Mantén la pantalla encesa</string>
+    <string name="copg_tag_nolog">Deixa de registrar</string>
+    <string name="copg_tag_dpi">Pantalla DPI</string>
+    <string name="copg_tag_serial">Número de sèrie per aplicació</string>
+    <string name="copg_tag_cpu">Model CPU</string>
+    <string name="copg_tag_blocked">Força el CPU real</string>
+    <string name="copg_tag_vpn">Amaga la VPN</string>
+    <string name="copg_tag_vpns">Amaga VPN (estricta)</string>
+    <string name="copg_tag_hidedev">Amaga les opcions de desenvolupador i la depuració USB</string>
+    <string name="copg_tag_tz">Zona horària</string>
+    <string name="copg_tag_lang">Llengua i regió</string>
+    <string name="copg_tag_gpu">Model GPU</string>
+    <string name="copg_tag_cow">Propietats de construcció (copia sobre escriptura)</string>
+    <string name="copg_tag_aid">Android ID</string>
+    <string name="copg_tag_gaid">Publicitat ID</string>
+    <string name="copg_tag_appset">Conjunt d\'aplicacions ID</string>
+    <string name="copg_tag_drm">Widevine / DRM</string>
+    <string name="copg_tag_imei">IMEI</string>
+    <string name="copg_tag_sim">Operador de SIM (segur)</string>
+    <string name="copg_tag_simx">Operador de SIM (agressiu)</string>
+    <string name="copg_tag_ua">Agent d\'usuari de WebView</string>
+    <string name="copg_tag_mock">Amaga la ubicació simulada</string>
+</resources>

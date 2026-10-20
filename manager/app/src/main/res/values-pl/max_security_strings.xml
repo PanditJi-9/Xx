@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_security_strings.xml -->
+<resources>
+    <string name="security_tamper_title">Nie można rozpocząć</string>
+    <string name="security_tamper_message">Ta wersja MaxManager nie jest nienaruszona. Zainstalowane pliki nie odpowiadają już podpisanej wersji, więc nie zostanie uruchomiona. Zainstaluj ponownie oficjalną kompilację z oryginalnego źródła.</string>
+    <string name="security_tamper_close">Zamknąć</string>
+</resources>

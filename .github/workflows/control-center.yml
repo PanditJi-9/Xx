@@ -1,0 +1,60 @@
+name: Control center APK
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "app/**"
+      - "settings.gradle.kts"
+      - "build.gradle.kts"
+      - "gradle.properties"
+      - ".github/workflows/control-center.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check that the control center project exists
+        run: |
+          if [ ! -f settings.gradle.kts ] || [ ! -f app/build.gradle.kts ]; then
+            echo "::error::مشروع مركز التحكم غير موجود في جذر المستودع"
+            exit 1
+          fi
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          # AGP 9.2.0 يرفض أي Gradle أقدم من 9.4.1؛ نُطابق نسخة `manager/` (9.5.1) لبناء واحد.
+          gradle-version: '9.5.1'
+
+      # القيمتان تُمرَّران من الأسرار (Settings → Secrets and variables → Actions). وإن غابتا
+      # فالبناء ينجح ويُخبر الشاشة الأولى بأن الإعداد ناقص — ولا سرّ في المستودع ولا في الحزمة.
+      - name: Unit tests
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: gradle :app:testDebugUnitTest
+
+      - name: Build debug APK
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: gradle :app:assembleDebug
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MaxControlCenter-debug-apk
+          path: app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          # الحصة: ٧ أيام فقط — بدونها يحتفظ GitHub ٩٠ يومًا فتمتلئ حصة التخزين.
+          retention-days: 7

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_security_strings.xml -->
+<resources>
+    <string name="security_tamper_title">Impossibile avviare</string>
+    <string name="security_tamper_message">Questa build di MaxManager non è intatta. I file installati non corrispondono più alla versione firmata, quindi non verrà eseguita. Reinstallare la build ufficiale dalla sua fonte originale.</string>
+    <string name="security_tamper_close">Vicino</string>
+</resources>

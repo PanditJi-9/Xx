@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_security_strings.xml -->
+<resources>
+    <string name="security_tamper_title">ไม่สามารถเริ่มต้นได้</string>
+    <string name="security_tamper_message">โครงสร้าง MaxManager นี้ยังไม่เสียหาย ไฟล์ที่ติดตั้งไม่ตรงกับรุ่นที่ลงนามอีกต่อไป ดังนั้นจึงจะไม่ทำงาน ติดตั้งบิลด์อย่างเป็นทางการจากแหล่งดั้งเดิมอีกครั้ง</string>
+    <string name="security_tamper_close">ปิด</string>
+</resources>

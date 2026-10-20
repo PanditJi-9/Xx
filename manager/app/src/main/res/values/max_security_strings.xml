@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  نصوص رفض التشغيل عند تأكيد التلاعب.
+
+  وهي **مقصودة الوضوح لا التهديد**: لا تذكر أي فحص رُصد، ولا أي أثر تقني، ولا إصدار
+  المكتبة المشتبه بها. فالنصّ الذي يقول «وُجدت frida-agent في خريطة الذاكرة» يعطي من
+  يحاول التجاوز دليلًا يهديه إلى ما يجب إخفاؤه. أمّا صاحب النسخة الرسميّة فحاجته واحدة:
+  أن يعرف أنّ الحزمة غير سليمة وأن يعيد التثبيت من مصدرها الرسمي.
+-->
+<resources>
+    <string name="security_tamper_title">Unable to start</string>
+    <string name="security_tamper_message">This build of MaxManager is not intact. The installed files no longer match the signed release, so it will not run. Reinstall the official build from its original source.</string>
+    <string name="security_tamper_close">Close</string>
+</resources>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_security_strings.xml -->
+<resources>
+    <string name="security_tamper_title">баштоо мүмкүн эмес</string>
+    <string name="security_tamper_message">Бул MaxManager түзүлүшү бүтүн эмес. Орнотулган файлдар кол коюлган релизге дал келбейт, андыктан ал иштебейт. Расмий түзүүнү баштапкы булагынан кайра орнотуңуз.</string>
+    <string name="security_tamper_close">Жабуу</string>
+</resources>

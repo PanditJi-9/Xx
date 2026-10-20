@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_sample_device_strings.xml -->
+<resources>
+    <string name="sample_pick_title">Επιλέξτε συσκευή δείγματος</string>
+    <string name="sample_pick_button">Επιλέξτε συσκευή δείγματος</string>
+    <string name="sample_auto_hint">Η επιλογή μιας συσκευής γεμίζει επωνυμία, κατασκευαστή, μοντέλο, συσκευή, προϊόν και δακτυλικό αποτύπωμα για εσάς. Χρησιμοποιήστε το Manual για να τα πληκτρολογήσετε μόνοι σας.</string>
+    <string name="sample_manual">Εγχειρίδιο</string>
+    <string name="sample_close">Κοντά</string>
+    <string name="sample_search">Αναζήτηση συσκευών</string>
+    <string name="sample_empty">Δεν υπάρχει αντίστοιχη συσκευή.</string>
+    <string name="sample_unavailable">Δεν ήταν δυνατή η ανάγνωση του καταλόγου συσκευών.</string>
+    <string name="sample_row_sub">Android %1$s · %2$s</string>
+    <string name="sample_row_sub_plain">%1$s</string>
+    <string name="sample_fp_shared">Το ίδιο δακτυλικό αποτύπωμα με μια άλλη συσκευή καταλόγου</string>
+    <string name="sample_credit">Δεδομένα καταλόγου: COPG (Apache-2.0), %1$s</string>
+    <string name="sample_limit">Συμπληρώθηκε το όριο προφίλ (100).</string>
+</resources>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_spoof_ui_strings.xml -->
+<resources>
+    <string name="spoof_ui_real_device">Pravi uređaj</string>
+    <string name="spoof_ui_pill_verified">Konfiguracija potvrđena</string>
+    <string name="spoof_ui_pill_unverified">Nije provjereno</string>
+    <string name="spoof_ui_pill_off">Isključeno</string>
+    <string name="spoof_device_for_app">Uređaj za ovu aplikaciju</string>
+    <string name="spoof_device_real_hint">Ova aplikacija vidi vaš pravi uređaj. Dodirnite karticu da odaberete jednu.</string>
+    <string name="spoof_device_pick">Dodirnite za odabir uređaja iz kataloga ili unesite prilagođene informacije o uređaju.</string>
+    <string name="spoof_device_in_use">U upotrebi</string>
+    <string name="spoof_device_restart">Nakon toga ponovno pokrenite ciljnu aplikaciju, a ne sustav.</string>
+    <string name="spoof_ui_apply_title">Prijavite se za ovu aplikaciju</string>
+    <string name="spoof_ui_apply_action">Pregledajte i primijenite</string>
+    <string name="spoof_ui_apply_confirm_title">Primijeniti samo ovu aplikaciju?</string>
+    <string name="spoof_ui_apply_confirm_text">Samo je ova aplikacija pripremljena; druge aplikacije su netaknute. Nakon toga ponovno pokrenite ciljnu aplikaciju, a ne sustav. Kasnije uređivanje poništava ovu potvrdu. Ako COPG već navodi ovu aplikaciju, vaš uređaj ima prioritet, a linija COPG ostaje ista kakva jest.</string>
+    <string name="spoof_ui_apply_confirm">primijeniti</string>
+    <string name="spoof_ui_apply_reason">Odbijanje motora: %1$s</string>
+    <string name="spoof_engine_absent">Modul motora nije čitljiv. Potvrdite modul čiji module.prop kaže id=COPG, instalirajte ga ili ponovno instalirajte, zatim ponovno otvorite ovaj zaslon.</string>
+    <string name="spoof_engine_disabled">COPG modul je onemogućen u vašem root upravitelju. Omogućite ga tamo, ponovno pokrenite sustav, a zatim ponovno primijenite.</string>
+    <string name="spoof_engine_removal_pending">COPG je označen za uklanjanje i nestat će nakon sljedećeg ponovnog pokretanja. Ponovno ga instalirajte prije primjene.</string>
+    <string name="spoof_engine_update_pending">COPG ažuriranje čeka na ponovno pokretanje. Prvo ponovno pokrenite sustav, a zatim ponovno primijenite.</string>
+    <string name="spoof_ui_apply_pending">Promijenjeno od zadnje prijave — ponovo se prijavite da bi postalo stvarno.</string>
+    <string name="spoof_ui_restore_title">Koristite svoj pravi uređaj</string>
+    <string name="spoof_ui_restore_action">Uklonite prijevaru za ovu aplikaciju</string>
+    <string name="spoof_ui_restore_notice">Spremljeni uređaj ove aplikacije i njegova COPG podešavanja su uklonjeni, a motor je ponovno napisan bez ove aplikacije. Ostale aplikacije su netaknute. Nakon toga ponovno pokrenite ciljnu aplikaciju.</string>
+    <string name="app_tab_spoof">Humoreska</string>
+    <string name="spoof_picker_title">Odaberite uređaj</string>
+    <string name="spoof_picker_custom">Informacije o prilagođenom uređaju</string>
+    <string name="spoof_picker_custom_hint">Unesite marku, model i otisak prsta koji želite za ovu aplikaciju</string>
+    <string name="spoof_custom_title">Informacije o prilagođenom uređaju</string>
+    <string name="spoof_custom_rules">Naziv, marka, model, uređaj i proizvod su obavezni, do 120 znakova svaki, bez kontrolnih znakova. Proizvođač, otisak prsta i SDK nisu obavezni. Otisak prsta mora započeti istom markom, proizvodom i uređajem.</string>
+    <string name="spoof_manufacturer">Proizvođač (MANUFACTURER)</string>
+    <string name="spoof_sdk">SDK razina, izborno, 1 do 100</string>
+    <string name="spoof_custom_invalid">Some fields are invalid. Provjerite gore navedena pravila, a zatim ponovno spremite.</string>
+    <string name="spoof_custom_save">Spremite i odaberite za ovu aplikaciju</string>
+    <string name="spoof_impersonation_title">lažiranje</string>
+    <string name="spoof_impersonation_desc">Samo besplatne COPG opcije. Motoru je napisao pregled i primjena.</string>
+    <string name="spoof_impersonation_summary_cpu">CPU lažiranje: %1$s</string>
+    <string name="spoof_impersonation_needs_device">Prvo odaberite uređaj za ovu aplikaciju. Ove opcije se pišu samo s uređajem.</string>
+    <string name="spoof_cpu_spoof">CPU lažiranje</string>
+    <string name="spoof_cpu_real">Stvarno CPU</string>
+    <string name="spoof_cpu_block">Blokiraj CPU</string>
+    <string name="spoof_cpu_block_desc">Isključuje ovu aplikaciju iz CPU prijevare.</string>
+    <string name="spoof_cpu_picker_title">Odaberite a CPU</string>
+    <string name="copg_tweaks_section">COPG podešavanja</string>
+    <string name="copg_tweak_nolog_title">Onemogući bilježenje</string>
+    <string name="copg_tweak_nolog_desc">Primjenjuje podešavanje COPG zapisnika na ovu aplikaciju. Spremljeno ovdje, upisano u mehanizam pregledom i primjenom na kartici Spoof.</string>
+    <string name="copg_tweak_dab_title">Onemogući automatsku svjetlinu</string>
+    <string name="copg_tweak_dab_desc">Primjenjuje COPG podešavanje automatske svjetline na ovu aplikaciju. Spremljeno ovdje, upisano u mehanizam pregledom i primjenom na kartici Spoof.</string>
+    <string name="copg_tweak_kso_title">Držite zaslon uključenim</string>
+    <string name="copg_tweak_kso_desc">Primjenjuje podešavanje COPG za zadržavanje zaslona na ovoj aplikaciji. Spremljeno ovdje, upisano u mehanizam pregledom i primjenom na kartici Spoof.</string>
+    <string name="copg_tweak_needs_device">Prvo treba uređaj za ovu aplikaciju, na kartici Spoof.</string>
+</resources>

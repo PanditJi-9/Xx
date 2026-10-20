@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_security_strings.xml -->
+<resources>
+    <string name="security_tamper_title">დაწყება შეუძლებელია</string>
+    <string name="security_tamper_message">MaxManager-ის ეს კონსტრუქცია ხელუხლებელი არ არის. დაინსტალირებული ფაილები აღარ ემთხვევა ხელმოწერილ გამოშვებას, ამიტომ ის არ იმუშავებს. დააინსტალირეთ ოფიციალური ვერსია მისი ორიგინალური წყაროდან.</string>
+    <string name="security_tamper_close">დახურვა</string>
+</resources>

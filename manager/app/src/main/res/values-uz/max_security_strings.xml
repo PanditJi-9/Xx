@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_security_strings.xml -->
+<resources>
+    <string name="security_tamper_title">Boshlash imkonsiz</string>
+    <string name="security_tamper_message">Ushbu MaxManager konstruktsiyasi buzilmagan. O\'rnatilgan fayllar endi imzolangan versiyaga mos kelmaydi, shuning uchun u ishlamaydi. Rasmiy tuzilmani asl manbasidan qayta o\'rnating.</string>
+    <string name="security_tamper_close">Yopish</string>
+</resources>

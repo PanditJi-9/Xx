@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_copg_tag_strings.xml -->
+<resources>
+    <string name="copg_tags_title">Mga opsyon sa COPG</string>
+    <string name="copg_tags_desc">Nai-save bilang layunin at nakasulat kasama ng profile ng device. Ang apat na opsyon sa kaginhawaan lamang ang gumagana sa bawat bersyon ng COPG; ang iba ay nangangailangan ng COPG 6.8.0 o mas bago. Ang mga opsyon sa PRO ay nangangailangan ng lisensya ng COPG PRO, at maaaring balewalain ng makina ang mga ito.</string>
+    <string name="copg_tier_pro">PRO</string>
+    <string name="copg_footprint_resident">nananatili sa memorya ng app, hindi kailanman gagamitin sa mga anti-cheat na laro</string>
+    <string name="copg_need_ack">kilalanin muna ang panganib sa ibaba</string>
+    <string name="copg_tag_refused">Ang isang napiling opsyon sa COPG ay hindi pinapayagan para sa naka-install na bersyon ng COPG. Walang naisulat.</string>
+    <string name="copg_tag_needs_device">Ang mga opsyon ay nakasulat gamit ang isang profile ng device, at ang app na ito ay wala pa.</string>
+    <string name="copg_tag_value_hint">Halaga</string>
+    <string name="copg_tag_bad_value">Mga titik, digit, espasyo at . _ - / + lang (hanggang 60)</string>
+    <string name="copg_tag_save">I-save</string>
+    <string name="copg_tag_remove">Alisin</string>
+    <string name="copg_tag_dnd">Huwag Istorbohin habang naglalaro</string>
+    <string name="copg_tag_dab">I-disable ang auto-brightness</string>
+    <string name="copg_tag_kso">Panatilihing naka-on ang screen</string>
+    <string name="copg_tag_nolog">Itigil ang pag-log</string>
+    <string name="copg_tag_dpi">Screen DPI</string>
+    <string name="copg_tag_serial">Per-app na serial number</string>
+    <string name="copg_tag_cpu">CPU modelo</string>
+    <string name="copg_tag_blocked">Pilitin ang totoong CPU</string>
+    <string name="copg_tag_vpn">Itago ang VPN</string>
+    <string name="copg_tag_vpns">Itago ang VPN (mahigpit)</string>
+    <string name="copg_tag_hidedev">Itago ang Developer Options at USB debugging</string>
+    <string name="copg_tag_tz">Timezone</string>
+    <string name="copg_tag_lang">Wika at rehiyon</string>
+    <string name="copg_tag_gpu">GPU modelo</string>
+    <string name="copg_tag_cow">Bumuo ng mga katangian (copy-on-write)</string>
+    <string name="copg_tag_aid">Android ID</string>
+    <string name="copg_tag_gaid">Advertising ID</string>
+    <string name="copg_tag_appset">App Set ID</string>
+    <string name="copg_tag_drm">Widevine / DRM</string>
+    <string name="copg_tag_imei">IMEI</string>
+    <string name="copg_tag_sim">SIM carrier (ligtas)</string>
+    <string name="copg_tag_simx">SIM carrier (agresibo)</string>
+    <string name="copg_tag_ua">Ahente ng Gumagamit ng WebView</string>
+    <string name="copg_tag_mock">Itago ang kunwaring lokasyon</string>
+</resources>

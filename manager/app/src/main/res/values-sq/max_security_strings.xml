@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_security_strings.xml -->
+<resources>
+    <string name="security_tamper_title">Nuk mund të fillojë</string>
+    <string name="security_tamper_message">Ky ndërtim i MaxManager nuk është i paprekur. Skedarët e instaluar nuk përputhen më me versionin e nënshkruar, kështu që nuk do të ekzekutohet. Riinstaloni ndërtimin zyrtar nga burimi i tij origjinal.</string>
+    <string name="security_tamper_close">Mbylle</string>
+</resources>

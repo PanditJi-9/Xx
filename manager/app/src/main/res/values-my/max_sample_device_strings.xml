@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_sample_device_strings.xml -->
+<resources>
+    <string name="sample_pick_title">နမူနာကိရိယာကို ရွေးပါ။</string>
+    <string name="sample_pick_button">နမူနာကိရိယာကို ရွေးပါ။</string>
+    <string name="sample_auto_hint">စက်ပစ္စည်းတစ်ခုကို ရွေးချယ်ခြင်းသည် သင့်အတွက် အမှတ်တံဆိပ်၊ ထုတ်လုပ်သူ၊ မော်ဒယ်၊ စက်ပစ္စည်း၊ ထုတ်ကုန်နှင့် လက်ဗွေတို့ကို ဖြည့်ပေးပါသည်။ ၎င်းတို့ကို ကိုယ်တိုင်ရိုက်ရန် Manual ကိုသုံးပါ။</string>
+    <string name="sample_manual">လူကိုယ်တိုင်</string>
+    <string name="sample_close">ပိတ်လိုက်</string>
+    <string name="sample_search">စက်ပစ္စည်းများကို ရှာဖွေပါ။</string>
+    <string name="sample_empty">ကိုက်ညီသော စက်မရှိပါ။</string>
+    <string name="sample_unavailable">စက်ကက်တလောက်ကို ဖတ်၍မရပါ။</string>
+    <string name="sample_row_sub">Android %1$s · %2$s</string>
+    <string name="sample_row_sub_plain">%1$s</string>
+    <string name="sample_fp_shared">အခြားကတ်တလောက်စက်ပစ္စည်းနှင့် တူညီသော လက်ဗွေရာ</string>
+    <string name="sample_credit">ကတ်တလောက်ဒေတာ- COPG (Apache-2.0), %1$s</string>
+    <string name="sample_limit">ပရိုဖိုင်ကန့်သတ်ချက် (၁၀၀) ပြည့်သွားပါပြီ။</string>
+</resources>

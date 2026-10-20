@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_copg_tag_strings.xml -->
+<resources>
+    <string name="copg_tags_title">COPG ବିକଳ୍ପଗୁଡ଼ିକ |</string>
+    <string name="copg_tags_desc">ଉଦ୍ଦେଶ୍ୟ ଭାବରେ ସଞ୍ଚୟ ହୋଇଛି ଏବଂ ଡିଭାଇସ୍ ପ୍ରୋଫାଇଲ୍ ସହିତ ଏକତ୍ର ଲେଖାଯାଇଛି | ପ୍ରତ୍ୟେକ COPG ସଂସ୍କରଣରେ କେବଳ ଚାରୋଟି ଆରାମ ବିକଳ୍ପ କାର୍ଯ୍ୟ କରେ; ବାକିଗୁଡିକ COPG 6.8.0 କିମ୍ବା ନୂତନ ଆବଶ୍ୟକ କରେ | PRO ବିକଳ୍ପଗୁଡିକ ଏକ COPG PRO ଲାଇସେନ୍ସ ଆବଶ୍ୟକ କରେ, ଏବଂ ଇଞ୍ଜିନ୍ ସେମାନଙ୍କୁ ଅଣଦେଖା କରିପାରେ |</string>
+    <string name="copg_tier_pro">PRO</string>
+    <string name="copg_footprint_resident">ଆପ୍ ମେମୋରୀରେ ରହିଥାଏ, ଆଣ୍ଟି-ଚିଟ୍ ଗେମ୍ ସହିତ କେବେବି ବ୍ୟବହାର କରନ୍ତୁ ନାହିଁ |</string>
+    <string name="copg_need_ack">ପ୍ରଥମେ ବିପଦକୁ ସ୍ୱୀକାର କରନ୍ତୁ |</string>
+    <string name="copg_tag_refused">ସ୍ଥାପିତ COPG ସଂସ୍କରଣ ପାଇଁ ଏକ ମନୋନୀତ COPG ବିକଳ୍ପ ଅନୁମୋଦିତ ନୁହେଁ | କିଛି ଲେଖାଯାଇ ନାହିଁ |</string>
+    <string name="copg_tag_needs_device">ଏକ ଡିଭାଇସ୍ ପ୍ରୋଫାଇଲ୍ ସହିତ ବିକଳ୍ପଗୁଡ଼ିକ ଲେଖାଯାଇଛି, ଏବଂ ଏହି ଆପ୍ ଏପର୍ଯ୍ୟନ୍ତ କିଛି ନାହିଁ |</string>
+    <string name="copg_tag_value_hint">ମୂଲ୍ୟ</string>
+    <string name="copg_tag_bad_value">ଅକ୍ଷର, ସଂଖ୍ୟା, ସ୍ଥାନ ଏବଂ। _ - / + କେବଳ (60 ପର୍ଯ୍ୟନ୍ତ)</string>
+    <string name="copg_tag_save">ସଞ୍ଚୟ କରନ୍ତୁ |</string>
+    <string name="copg_tag_remove">ଅପସାରଣ କରନ୍ତୁ |</string>
+    <string name="copg_tag_dnd">ଖେଳିବା ସମୟରେ ବ୍ୟସ୍ତ ହୁଅନ୍ତୁ ନାହିଁ |</string>
+    <string name="copg_tag_dab">ଅଟୋ-ଉଜ୍ଜ୍ୱଳତା ଅକ୍ଷମ କରନ୍ତୁ |</string>
+    <string name="copg_tag_kso">ସ୍କ୍ରିନ୍ ଅନ୍ ରଖନ୍ତୁ |</string>
+    <string name="copg_tag_nolog">ଲଗିଂ ବନ୍ଦ କରନ୍ତୁ |</string>
+    <string name="copg_tag_dpi">ସ୍କ୍ରିନ୍ DPI |</string>
+    <string name="copg_tag_serial">ପ୍ରତି ଆପ୍ କ୍ରମିକ ସଂଖ୍ୟା |</string>
+    <string name="copg_tag_cpu">CPU ମଡେଲ୍ |</string>
+    <string name="copg_tag_blocked">ପ୍ରକୃତ CPU କୁ ବାଧ୍ୟ କର |</string>
+    <string name="copg_tag_vpn">VPN ଲୁଚାନ୍ତୁ |</string>
+    <string name="copg_tag_vpns">VPN ଲୁଚାନ୍ତୁ (କଠୋର)</string>
+    <string name="copg_tag_hidedev">ବିକାଶକାରୀ ବିକଳ୍ପ ଏବଂ USB ତ୍ରୁଟି ନିବାରଣ କରନ୍ତୁ |</string>
+    <string name="copg_tag_tz">ଟାଇମଜୋନ |</string>
+    <string name="copg_tag_lang">ଭାଷା ଏବଂ ଅଞ୍ଚଳ |</string>
+    <string name="copg_tag_gpu">GPU ମଡେଲ୍ |</string>
+    <string name="copg_tag_cow">ଗୁଣ ଗଠନ କରନ୍ତୁ (କପି-ଅନ-ଲିଖନ)</string>
+    <string name="copg_tag_aid">ଆଣ୍ଡ୍ରଏଡ୍ ID |</string>
+    <string name="copg_tag_gaid">ବିଜ୍ଞାପନ ID |</string>
+    <string name="copg_tag_appset">ଆପ୍ ସେଟ୍ ID |</string>
+    <string name="copg_tag_drm">ପ୍ରଶସ୍ତ / DRM</string>
+    <string name="copg_tag_imei">IMEI</string>
+    <string name="copg_tag_sim">ସିମ୍ ବାହକ (ସୁରକ୍ଷିତ)</string>
+    <string name="copg_tag_simx">ସିମ୍ ବାହକ (ଆକ୍ରମଣାତ୍ମକ)</string>
+    <string name="copg_tag_ua">ୱେବ୍ ଭିଭ୍ ୟୁଜର୍-ଏଜେଣ୍ଟ |</string>
+    <string name="copg_tag_mock">ମକ୍ ଅବସ୍ଥାନ ଲୁଚାନ୍ତୁ |</string>
+</resources>

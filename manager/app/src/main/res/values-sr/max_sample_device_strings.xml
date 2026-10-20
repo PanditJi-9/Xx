@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_sample_device_strings.xml -->
+<resources>
+    <string name="sample_pick_title">Изаберите пример уређаја</string>
+    <string name="sample_pick_button">Изаберите пример уређаја</string>
+    <string name="sample_auto_hint">Одабиром уређаја попуњавате бренд, произвођача, модел, уређај, производ и отисак прста за вас. Користите Мануал да их сами откуцате.</string>
+    <string name="sample_manual">Мануал</string>
+    <string name="sample_close">Затвори</string>
+    <string name="sample_search">Претражите уређаје</string>
+    <string name="sample_empty">Нема одговарајућег уређаја.</string>
+    <string name="sample_unavailable">Није могуће прочитати каталог уређаја.</string>
+    <string name="sample_row_sub">Андроид %1$s · %2$s</string>
+    <string name="sample_row_sub_plain">%1$s</string>
+    <string name="sample_fp_shared">Исти отисак прста као други каталошки уређај</string>
+    <string name="sample_credit">Каталошки подаци: ЦОПГ (Апацхе-2.0), %1$s</string>
+    <string name="sample_limit">Ограничење профила (100) је достигнуто.</string>
+</resources>

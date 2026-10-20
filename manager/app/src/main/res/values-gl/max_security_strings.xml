@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_security_strings.xml -->
+<resources>
+    <string name="security_tamper_title">Non se pode comezar</string>
+    <string name="security_tamper_message">Esta compilación de MaxManager non está intacta. Os ficheiros instalados xa non coinciden coa versión asinada, polo que non se executará. Reinstale a versión oficial desde a súa fonte orixinal.</string>
+    <string name="security_tamper_close">Pechar</string>
+</resources>

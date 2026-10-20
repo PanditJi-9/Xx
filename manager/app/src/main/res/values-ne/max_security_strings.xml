@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_security_strings.xml -->
+<resources>
+    <string name="security_tamper_title">सुरु गर्न सकिएन</string>
+    <string name="security_tamper_message">MaxManager को यो निर्माण अक्षुण्ण छैन। स्थापित फाइलहरू अब हस्ताक्षरित रिलीजसँग मेल खाँदैन, त्यसैले यो चल्ने छैन। आधिकारिक निर्माणलाई यसको मूल स्रोतबाट पुन: स्थापना गर्नुहोस्।</string>
+    <string name="security_tamper_close">बन्द गर्नुहोस्</string>
+</resources>

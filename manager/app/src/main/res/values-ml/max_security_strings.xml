@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_security_strings.xml -->
+<resources>
+    <string name="security_tamper_title">ആരംഭിക്കാനായില്ല</string>
+    <string name="security_tamper_message">MaxManager ൻ്റെ ഈ ബിൽഡ് കേടുകൂടാതെയിരിക്കുന്നു. ഇൻസ്‌റ്റാൾ ചെയ്‌ത ഫയലുകൾ ഒപ്പിട്ട റിലീസുമായി പൊരുത്തപ്പെടുന്നില്ല, അതിനാൽ അത് പ്രവർത്തിക്കില്ല. ഔദ്യോഗിക ബിൽഡ് അതിൻ്റെ യഥാർത്ഥ ഉറവിടത്തിൽ നിന്ന് വീണ്ടും ഇൻസ്റ്റാൾ ചെയ്യുക.</string>
+    <string name="security_tamper_close">അടയ്ക്കുക</string>
+</resources>

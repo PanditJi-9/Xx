@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_sample_device_strings.xml -->
+<resources>
+    <string name="sample_pick_title">Örnek cihazı seçin</string>
+    <string name="sample_pick_button">Örnek cihazı seçin</string>
+    <string name="sample_auto_hint">Bir cihazın seçilmesi sizin için marka, üretici, model, cihaz, ürün ve parmak izini doldurur. Bunları kendiniz yazmak için Manuel\'i kullanın.</string>
+    <string name="sample_manual">Manuel</string>
+    <string name="sample_close">Kapalı</string>
+    <string name="sample_search">Cihazları arayın</string>
+    <string name="sample_empty">Eşleşen cihaz yok.</string>
+    <string name="sample_unavailable">Cihaz kataloğu okunamadı.</string>
+    <string name="sample_row_sub">Android %1$s · %2$s</string>
+    <string name="sample_row_sub_plain">%1$s</string>
+    <string name="sample_fp_shared">Başka bir katalog cihazıyla aynı parmak izi</string>
+    <string name="sample_credit">Katalog verileri: COPG (Apache-2.0), %1$s</string>
+    <string name="sample_limit">Profil sınırına (100) ulaşıldı.</string>
+</resources>

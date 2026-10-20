@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_sample_device_strings.xml -->
+<resources>
+    <string name="sample_pick_title">Ընտրեք նմուշային սարք</string>
+    <string name="sample_pick_button">Ընտրեք նմուշային սարք</string>
+    <string name="sample_auto_hint">Սարքի ընտրությունը լրացնում է ապրանքանիշը, արտադրողը, մոդելը, սարքը, արտադրանքը և մատնահետքը: Օգտագործեք Manual՝ դրանք ինքներդ մուտքագրելու համար:</string>
+    <string name="sample_manual">Ձեռնարկ</string>
+    <string name="sample_close">Փակել</string>
+    <string name="sample_search">Որոնման սարքեր</string>
+    <string name="sample_empty">Համապատասխան սարք չկա:</string>
+    <string name="sample_unavailable">Սարքի կատալոգը հնարավոր չէ կարդալ:</string>
+    <string name="sample_row_sub">Android %1$s · %2$s</string>
+    <string name="sample_row_sub_plain">%1$s</string>
+    <string name="sample_fp_shared">Նույն մատնահետքը, ինչպես մեկ այլ կատալոգային սարք</string>
+    <string name="sample_credit">Կատալոգի տվյալներ՝ COPG (Apache-2.0), %1$s</string>
+    <string name="sample_limit">Պրոֆիլի սահմանաչափը (100) հասել է:</string>
+</resources>

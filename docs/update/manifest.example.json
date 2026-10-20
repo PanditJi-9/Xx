@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "latest": {
+    "code": 200,
+    "name": "V2",
+    "url": "https://example.com/maxmanager/MaxManager-V2.apk",
+    "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "size": 12345678,
+    "notes": {
+      "en": "Performance profiles are faster to apply, and the update screen is new.",
+      "ar": "بروفايلات الأداء أسرع في التطبيق، وشاشة التحديث جديدة."
+    },
+    "force": false,
+    "page": "https://example.com/maxmanager/"
+  },
+  "channels": {
+    "beta": {
+      "code": 210,
+      "name": "V3-beta1",
+      "url": "https://example.com/maxmanager/MaxManager-V3-beta1.apk",
+      "sha256": "",
+      "size": 0,
+      "notes": { "en": "Beta channel build.", "ar": "بناء قناة بيتا." },
+      "force": false,
+      "page": ""
+    }
+  },
+  "minimum": {
+    "code": 150,
+    "notes": {
+      "en": "This build is no longer supported because it cannot apply the new safety checks.",
+      "ar": "هذه النسخة لم تعد مدعومة لأنها لا تطبّق فحوص الأمان الجديدة."
+    }
+  },
+  "maintenance": {
+    "active": false,
+    "blocking": false,
+    "notes": {
+      "en": "MaxManager is briefly unavailable while a service issue is resolved.",
+      "ar": "MaxManager متوقّف قليلًا حتى تُحلّ مشكلة خدمة."
+    }
+  }
+}

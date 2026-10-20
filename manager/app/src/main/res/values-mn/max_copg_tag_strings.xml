@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_copg_tag_strings.xml -->
+<resources>
+    <string name="copg_tags_title">COPG сонголтууд</string>
+    <string name="copg_tags_desc">Зориулалтын дагуу хадгалагдаж, төхөөрөмжийн профайлтай хамт бичигдсэн. Зөвхөн дөрвөн тав тухтай сонголт COPG хувилбар бүр дээр ажилладаг; бусад нь COPG 6.8.0 буюу түүнээс дээш байх шаардлагатай. PRO сонголтуудад COPG PRO лиценз хэрэгтэй бөгөөд хөдөлгүүр нь тэдгээрийг үл тоомсорлож магадгүй юм.</string>
+    <string name="copg_tier_pro">PRO</string>
+    <string name="copg_footprint_resident">програмын санах ойд үлддэг тул хууран мэхлэлтийн эсрэг тоглоомд хэзээ ч бүү ашиглаарай</string>
+    <string name="copg_need_ack">доорх эрсдэлийг эхлээд хүлээн зөвшөөр</string>
+    <string name="copg_tag_refused">Сонгосон COPG сонголтыг суулгасан COPG хувилбарт зөвшөөрөхгүй. Юу ч бичээгүй.</string>
+    <string name="copg_tag_needs_device">Сонголтуудыг төхөөрөмжийн профайлаар бичсэн бөгөөд энэ апп-д хараахан байхгүй байна.</string>
+    <string name="copg_tag_value_hint">Үнэ цэнэ</string>
+    <string name="copg_tag_bad_value">Үсэг, цифр, орон зай ба . _ - / + зөвхөн (60 хүртэл)</string>
+    <string name="copg_tag_save">Хадгалах</string>
+    <string name="copg_tag_remove">Устгах</string>
+    <string name="copg_tag_dnd">Тоглож байхдаа Бүү саад бол</string>
+    <string name="copg_tag_dab">Автомат гэрэлтүүлгийг идэвхгүй болгох</string>
+    <string name="copg_tag_kso">Дэлгэцийг асаалттай байлга</string>
+    <string name="copg_tag_nolog">Бүртгэлээ зогсоо</string>
+    <string name="copg_tag_dpi">Дэлгэцийн DPI</string>
+    <string name="copg_tag_serial">Аппликешн бүрийн серийн дугаар</string>
+    <string name="copg_tag_cpu">CPU загвар</string>
+    <string name="copg_tag_blocked">Жинхэнэ CPU-г хүчээр шахаарай</string>
+    <string name="copg_tag_vpn">VPN нуух</string>
+    <string name="copg_tag_vpns">VPN нуух (хатуу)</string>
+    <string name="copg_tag_hidedev">Хөгжүүлэгчийн сонголтууд болон USB дибаг хийхийг нуу</string>
+    <string name="copg_tag_tz">Цагийн бүс</string>
+    <string name="copg_tag_lang">Хэл ба бүс нутаг</string>
+    <string name="copg_tag_gpu">GPU загвар</string>
+    <string name="copg_tag_cow">Барилгын шинж чанарууд (бичих дээр хуулах)</string>
+    <string name="copg_tag_aid">Android ID</string>
+    <string name="copg_tag_gaid">Зар сурталчилгаа ID</string>
+    <string name="copg_tag_appset">Програмын багц ID</string>
+    <string name="copg_tag_drm">Widevine / DRM</string>
+    <string name="copg_tag_imei">IMEI</string>
+    <string name="copg_tag_sim">SIM оператор (аюулгүй)</string>
+    <string name="copg_tag_simx">SIM оператор (түрэмгий)</string>
+    <string name="copg_tag_ua">WebView хэрэглэгчийн агент</string>
+    <string name="copg_tag_mock">Хуурамч байршлыг нуух</string>
+</resources>

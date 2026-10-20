@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_spoof_ui_strings.xml -->
+<resources>
+    <string name="spoof_ui_real_device">Idivayisi yangempela</string>
+    <string name="spoof_ui_pill_verified">Ukulungiselelwa kuqinisekisiwe</string>
+    <string name="spoof_ui_pill_unverified">Akuqinisekisiwe</string>
+    <string name="spoof_ui_pill_off">Valiwe</string>
+    <string name="spoof_device_for_app">Idivayisi yalolu hlelo lokusebenza</string>
+    <string name="spoof_device_real_hint">Lolu hlelo lokusebenza lubona idivayisi yakho yangempela. Thepha ikhadi ukuze ukhethe elilodwa.</string>
+    <string name="spoof_device_pick">Thepha ukuze ukhethe idivayisi kukhathalogi, noma faka ulwazi lwedivayisi yangokwezifiso.</string>
+    <string name="spoof_device_in_use">Iyasetshenziswa</string>
+    <string name="spoof_device_restart">Qala kabusha uhlelo lokusebenza oluqondiwe ngemva kwalokho, hhayi isistimu.</string>
+    <string name="spoof_ui_apply_title">Faka isicelo salolu hlelo lokusebenza</string>
+    <string name="spoof_ui_apply_action">Buyekeza futhi ufake isicelo</string>
+    <string name="spoof_ui_apply_confirm_title">Sebenzisa lolu hlelo lokusebenza kuphela?</string>
+    <string name="spoof_ui_apply_confirm_text">Lolu hlelo lokusebenza kuphela olulungisiwe; ezinye izinhlelo zokusebenza azithintwa. Qala kabusha uhlelo lokusebenza oluqondiwe ngemva kwalokho, hhayi isistimu. Ukuhlela kamuva kukhansela lesi siqinisekiso. Uma i-COPG isivele ilufake ohlwini lolu hlelo lokusebenza, idivayisi yakho ithatha kuqala futhi ulayini we-COPG uhlala unjengoba unjalo.</string>
+    <string name="spoof_ui_apply_confirm">Faka isicelo</string>
+    <string name="spoof_ui_apply_reason">Ukwenqaba kwenjini: %1$s</string>
+    <string name="spoof_engine_absent">Imojula yenjini ayifundeki. Qinisekisa imojuli lapho module.prop ethi id=COPG, yifake noma uyifake kabusha, bese uphinda uvule lesi sikrini.</string>
+    <string name="spoof_engine_disabled">Imojuli ye-COPG ikhutshaziwe kusiphathi sakho sempande. Inike amandla lapho, qalisa kabusha, bese usebenzisa futhi.</string>
+    <string name="spoof_engine_removal_pending">I-COPG imakwe ukuthi isuswe futhi izobe ingasekho ngemva kokuqalisa kabusha okulandelayo. Yifake kabusha ngaphambi kokufaka isicelo.</string>
+    <string name="spoof_engine_update_pending">Isibuyekezo se-COPG silinde ukuqalisa kabusha. Qalisa kabusha kuqala, bese usebenzisa futhi.</string>
+    <string name="spoof_ui_apply_pending">Kushintshwe kusukela okokugcina kusebenza — sebenzisa futhi ukuze ukwenze kube ngokoqobo.</string>
+    <string name="spoof_ui_restore_title">Sebenzisa idivayisi yakho yangempela</string>
+    <string name="spoof_ui_restore_action">Susa i-spoof yalolu hlelo lokusebenza</string>
+    <string name="spoof_ui_restore_notice">Idivayisi elondoloziwe yalolu hlelo lokusebenza kanye nama-tweaks ayo e-COPG kuyasuswa, futhi injini ibhalwa kabusha ngaphandle kwalolu hlelo lokusebenza. Ezinye izinhlelo zokusebenza azithintwa. Qala kabusha uhlelo lokusebenza oluqondiwe ngemva kwalokho.</string>
+    <string name="app_tab_spoof">Spoof</string>
+    <string name="spoof_picker_title">Khetha idivayisi</string>
+    <string name="spoof_picker_custom">Ulwazi lwedivayisi yangokwezifiso</string>
+    <string name="spoof_picker_custom_hint">Faka umkhiqizo, imodeli nezigxivizo zeminwe ozifunayo kulolu hlelo lokusebenza</string>
+    <string name="spoof_custom_title">Ulwazi lwedivayisi yangokwezifiso</string>
+    <string name="spoof_custom_rules">Igama, uhlobo, imodeli, idivayisi nomkhiqizo kuyadingeka, kufika ezinhlamvini ezingu-120 ngayinye, ngaphandle kwezinhlamvu zokulawula. Umkhiqizi, izigxivizo zeminwe kanye ne-SDK uyazikhethela. Izigxivizo zeminwe kufanele ziqale ngomkhiqizo ofanayo, umkhiqizo kanye nedivayisi.</string>
+    <string name="spoof_manufacturer">Umkhiqizi (MANUFACTURER)</string>
+    <string name="spoof_sdk">Ileveli ye-SDK, ozikhethela yona, 1 kuya ku-100</string>
+    <string name="spoof_custom_invalid">Ezinye izinkambu azivumelekile. Hlola imithetho engenhla, bese ulondoloza futhi.</string>
+    <string name="spoof_custom_save">Londoloza bese ukhetha lolu hlelo lokusebenza</string>
+    <string name="spoof_impersonation_title">Spoofing</string>
+    <string name="spoof_impersonation_desc">Izinketho zamahhala ze-COPG kuphela. Ibhalelwe injini nguBuyekeza futhi usebenzise.</string>
+    <string name="spoof_impersonation_summary_cpu">CPU ukukhwabanisa: %1$s</string>
+    <string name="spoof_impersonation_needs_device">Khetha idivayisi yalolu hlelo lokusebenza kuqala. Lezi zinketho zibhalwa kuphela ngedivayisi.</string>
+    <string name="spoof_cpu_spoof">CPU ukukhwabanisa</string>
+    <string name="spoof_cpu_real">Okwangempela CPU</string>
+    <string name="spoof_cpu_block">Vimba CPU</string>
+    <string name="spoof_cpu_block_desc">Alufaki lolu hlelo lokusebenza kusukela ku-CPU ku-spoofing.</string>
+    <string name="spoof_cpu_picker_title">Khetha i-CPU</string>
+    <string name="copg_tweaks_section">Ukushintsha kwe-COPG</string>
+    <string name="copg_tweak_nolog_title">Khubaza ukungena</string>
+    <string name="copg_tweak_nolog_desc">Isebenzisa i-tweak yokungena ye-COPG kulolu hlelo lokusebenza. Kulondolozwe lapha, kubhalelwe injini ngokubuyekezwa futhi kusetshenziswe kuthebhu ye-Spoof.</string>
+    <string name="copg_tweak_dab_title">Khubaza ukukhanya okuzenzakalelayo</string>
+    <string name="copg_tweak_dab_desc">Isebenzisa i-COPG yokukhanya okuzenzakalelayo kulolu hlelo lokusebenza. Kulondolozwe lapha, kubhalelwe injini ngokubuyekezwa futhi kusetshenziswe kuthebhu ye-Spoof.</string>
+    <string name="copg_tweak_kso_title">Gcina isikrini sivuliwe</string>
+    <string name="copg_tweak_kso_desc">Isebenzisa i-COPG yokugcina-skrini ivuliwe kulolu hlelo lokusebenza. Kulondolozwe lapha, kubhalelwe injini ngokubuyekezwa futhi kusetshenziswe kuthebhu ye-Spoof.</string>
+    <string name="copg_tweak_needs_device">Idinga idivayisi yalolu hlelo lokusebenza kuqala, kuthebhu ye-Spoof.</string>
+</resources>

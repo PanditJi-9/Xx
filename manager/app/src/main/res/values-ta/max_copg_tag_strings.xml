@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_copg_tag_strings.xml -->
+<resources>
+    <string name="copg_tags_title">COPG விருப்பங்கள்</string>
+    <string name="copg_tags_desc">உள்நோக்கமாகச் சேமிக்கப்பட்டு சாதன சுயவிவரத்துடன் எழுதப்பட்டது. ஒவ்வொரு COPG பதிப்பிலும் நான்கு ஆறுதல் விருப்பங்கள் மட்டுமே வேலை செய்கின்றன; மீதமுள்ளவர்களுக்கு COPG 6.8.0 அல்லது புதியது தேவை. PRO விருப்பங்களுக்கு COPG PRO உரிமம் தேவை, மேலும் இயந்திரம் அவற்றைப் புறக்கணிக்கலாம்.</string>
+    <string name="copg_tier_pro">PRO</string>
+    <string name="copg_footprint_resident">ஆப்ஸின் நினைவகத்தில் இருக்கும், ஏமாற்று-எதிர்ப்பு விளையாட்டுகளுடன் பயன்படுத்த வேண்டாம்</string>
+    <string name="copg_need_ack">கீழே உள்ள அபாயத்தை முதலில் அங்கீகரிக்கவும்</string>
+    <string name="copg_tag_refused">நிறுவப்பட்ட COPG பதிப்பிற்கு தேர்ந்தெடுக்கப்பட்ட COPG விருப்பம் அனுமதிக்கப்படாது. எதுவும் எழுதப்படவில்லை.</string>
+    <string name="copg_tag_needs_device">விருப்பங்கள் சாதன சுயவிவரத்துடன் எழுதப்பட்டுள்ளன, மேலும் இந்த பயன்பாட்டில் இதுவரை எதுவும் இல்லை.</string>
+    <string name="copg_tag_value_hint">மதிப்பு</string>
+    <string name="copg_tag_bad_value">எழுத்துக்கள், இலக்கங்கள், இடம் மற்றும் . _ - / + மட்டும் (60 வரை)</string>
+    <string name="copg_tag_save">சேமிக்கவும்</string>
+    <string name="copg_tag_remove">அகற்று</string>
+    <string name="copg_tag_dnd">விளையாடும்போது தொந்தரவு செய்யாதே</string>
+    <string name="copg_tag_dab">தானியங்கு பிரகாசத்தை முடக்கு</string>
+    <string name="copg_tag_kso">திரையை இயக்கவும்</string>
+    <string name="copg_tag_nolog">பதிவு செய்வதை நிறுத்துங்கள்</string>
+    <string name="copg_tag_dpi">திரை DPI</string>
+    <string name="copg_tag_serial">ஒவ்வொரு பயன்பாட்டிற்கும் வரிசை எண்</string>
+    <string name="copg_tag_cpu">CPU மாதிரி</string>
+    <string name="copg_tag_blocked">உண்மையான CPU ஐ கட்டாயப்படுத்தவும்</string>
+    <string name="copg_tag_vpn">VPN ஐ மறை</string>
+    <string name="copg_tag_vpns">VPN ஐ மறை (கண்டிப்பானது)</string>
+    <string name="copg_tag_hidedev">டெவலப்பர் விருப்பங்கள் மற்றும் USB பிழைத்திருத்தத்தை மறை</string>
+    <string name="copg_tag_tz">நேர மண்டலம்</string>
+    <string name="copg_tag_lang">மொழி மற்றும் பிராந்தியம்</string>
+    <string name="copg_tag_gpu">GPU மாதிரி</string>
+    <string name="copg_tag_cow">சொத்துக்களை உருவாக்குதல் (எழுதுவதற்கு நகல்)</string>
+    <string name="copg_tag_aid">ஆண்ட்ராய்டு ID</string>
+    <string name="copg_tag_gaid">விளம்பரம் ID</string>
+    <string name="copg_tag_appset">பயன்பாட்டுத் தொகுப்பு ID</string>
+    <string name="copg_tag_drm">Widevine / DRM</string>
+    <string name="copg_tag_imei">IMEI</string>
+    <string name="copg_tag_sim">சிம் கேரியர் (பாதுகாப்பானது)</string>
+    <string name="copg_tag_simx">சிம் கேரியர் (ஆக்கிரமிப்பு)</string>
+    <string name="copg_tag_ua">WebView பயனர் முகவர்</string>
+    <string name="copg_tag_mock">போலி இருப்பிடத்தை மறை</string>
+</resources>

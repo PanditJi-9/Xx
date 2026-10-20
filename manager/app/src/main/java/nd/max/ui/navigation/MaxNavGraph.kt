@@ -1,0 +1,175 @@
+/*
+ * Copyright (C) 2026 Nader Magdy. All rights reserved.
+ * Proprietary and confidential — not licensed for use, copying, or distribution
+ * without prior written permission from the copyright holder.
+ */
+package nd.max.ui.navigation
+
+import android.content.Context
+import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavHostController
+import androidx.navigation.NavType
+import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
+import nd.max.core.remote.RemoteFlags
+import nd.max.ui.activitylauncher.ActivityLauncherScreen
+import nd.max.ui.license.FeatureGate
+import nd.max.ui.license.LicenseScreen
+import nd.max.ui.license.MaxAiIntroScreen
+import nd.max.ui.mainscreens.*
+import nd.max.ui.subscreens.*
+import nd.max.ui.subscreens.audio.AudioStudioScreen
+import nd.max.ui.subscreens.hubs.*
+
+/**
+ * Registers every destination declared in [MaxDestination.All] (ADR-02).
+ * No route literal may appear here; every entry references the registry.
+ */
+fun NavGraphBuilder.maxNavGraph(navController: NavHostController) {
+    // Onboarding + primary destinations
+    composable(MaxDestination.GetStarted.route) { GetStartedScreen(navController) }
+    composable(MaxDestination.Now.route) { HomeScreen(navController) }
+    composable(MaxDestination.Control.route) { ControlScreen(navController) }
+    composable(MaxDestination.Apps.route) { ApplistScreen(navController) }
+    composable(MaxDestination.MaxAi.route) { FeatureGate(RemoteFlags.MAXAI, navController) { MaxAiScreen(navController) } }
+    composable(MaxDestination.MaxLive.route) { FeatureGate(RemoteFlags.MAXAI, navController) { MaxLiveScreen(navController) } }
+    // §٥ — شاشة التعريف بالمحرّك: **غير مقفلة** بقصد؛ فوظيفتها أن تُشرح لا أن تُمنع.
+    composable(MaxDestination.MaxAiIntro.route) { MaxAiIntroScreen(navController) }
+    composable(
+        route = MaxDestination.DeviceInfo.route,
+        // `section` اختياريّ بقيمة افتراضية فارغة: الدخول المجرّد (من الرئيسية أو من قائمة)
+        // يمرّ بـ`launchRoute` المنزوع الاستعلام فيصل فارغًا ← «نظرة عامة»، وزرّ الشاشة التي
+        // تملك الموضوع يمرّ بمفتاح القسم فيُفتح عليه. **والمعامل يجب أن يُعلَن هنا**: مسار
+        // يحمل معاملًا غير معلَن يُهمله الـNavigator صامتًا، فتُفتح الشاشة على النظرة العامة
+        // ولا يقول أحد إن الزرّ لم يعمل.
+        arguments = listOf(navArgument("section") { type = NavType.StringType; defaultValue = "" })
+    ) { entry ->
+        DeviceInfoScreen(
+            navController = navController,
+            // ولا حارس `isNotBlank` هنا: الفراغ والمجهول يسقطان إلى «نظرة عامة» في
+            // `deviceInfoSectionOf` نفسها — وهي دالّة صافية مقيسة على JVM، فلا تصير
+            // قاعدةُ قسمٍ مكتوبةً في الرسم الملاحيّ حيث لا اختبار لها.
+            sectionKey = entry.arguments?.getString("section"),
+        )
+    }
+    composable(MaxDestination.Settings.route) { SettingsScreen(navController) }
+
+    // Control domain hubs: one parameterized entry per domain (F-07).
+    composable(MaxDestination.CpuHub.route) { MaxDomainHubScreen(navController, MaxDestination.CpuHub) }
+    composable(MaxDestination.GpuHub.route) { MaxDomainHubScreen(navController, MaxDestination.GpuHub) }
+    composable(MaxDestination.MemoryHub.route) { MaxDomainHubScreen(navController, MaxDestination.MemoryHub) }
+    composable(MaxDestination.DisplayHub.route) { MaxDomainHubScreen(navController, MaxDestination.DisplayHub) }
+    composable(MaxDestination.ResponsivenessHub.route) { MaxDomainHubScreen(navController, MaxDestination.ResponsivenessHub) }
+    composable(MaxDestination.ThermalHub.route) { MaxDomainHubScreen(navController, MaxDestination.ThermalHub) }
+    composable(MaxDestination.PowerHub.route) { MaxDomainHubScreen(navController, MaxDestination.PowerHub) }
+    composable(MaxDestination.StorageHub.route) { MaxDomainHubScreen(navController, MaxDestination.StorageHub) }
+    composable(MaxDestination.NetworkHub.route) { MaxDomainHubScreen(navController, MaxDestination.NetworkHub) }
+    composable(MaxDestination.AudioHub.route) { MaxDomainHubScreen(navController, MaxDestination.AudioHub) }
+    // سطح التحكّم: مستويات الدفقات تُكتب هنا (عبر الـViewModel والـarbiter)، والجرد في «معلومات الجهاز».
+    composable(MaxDestination.AudioStudio.route) { FeatureGate(RemoteFlags.AUDIO, navController) { AudioStudioScreen(navController) } }
+
+    composable(MaxDestination.GameLobby.route) { FeatureGate(RemoteFlags.GAMESPACE, navController) { GameLobbyScreen(navController) } }
+    composable(MaxDestination.EmulatorHub.route) { FeatureGate(RemoteFlags.EMUHUB, navController) { EmulatorHubScreen(navController) } }
+    composable(MaxDestination.HmaCompanion.route) { HmaCompanionScreen(navController) }
+
+    // Feature screens
+    composable(MaxDestination.CpuCoreControl.route) { CpuCoreControlScreen(navController) }
+    composable(MaxDestination.GovernorSettings.route) { GovSettings(navController) }
+    composable(MaxDestination.PreferenceTweaks.route) { PreferenceTweakScreen(navController) }
+    composable(MaxDestination.GpuStudio.route) { GpuStudioScreen(navController) }
+    composable(MaxDestination.ZramManager.route) { ZramManagerScreen(navController) }
+    composable(MaxDestination.MemoryUfs.route) { MemoryUfsScreen(navController) }
+    composable(MaxDestination.DisplayStudio.route) { DisplayStudioScreen(navController) }
+    composable(MaxDestination.Resolution.route) { ResolutionScreen(navController) }
+    composable(MaxDestination.TouchBoost.route) { TouchBoostScreen(navController) }
+    composable(MaxDestination.FpsGo.route) { FpsGoSettings(navController) }
+    composable(MaxDestination.Fas.route) { FasScreen(navController) }
+    composable(MaxDestination.FpsOverlay.route) { FpsOverlayScreen(navController) }
+    composable(MaxDestination.DynamicIsland.route) { DynamicIslandScreen(navController) }
+    composable(MaxDestination.ThermalDetail.route) { ThermalDetailScreen(navController) }
+    composable(MaxDestination.Charging.route) { ChargingScreen(navController) }
+    composable(MaxDestination.BypassCharging.route) { FeatureGate(RemoteFlags.BYPASS_CHARGE, navController) { BypassChargeScreen(navController) } }
+    composable(MaxDestination.BypassChargingCheck.route) { FeatureGate(RemoteFlags.BYPASS_CHARGE, navController) { BypassChargeCheckScreen(navController) } }
+    composable(MaxDestination.DozeMode.route) { DozeModeScreen(navController) }
+    composable(MaxDestination.Dex2oat.route) { Dex2oatScreen(navController) }
+    composable(MaxDestination.StorageDetail.route) { StorageDetailScreen(navController) }
+    composable(MaxDestination.StorageCare.route) { StorageCareScreen(navController) }
+    composable(MaxDestination.NetworkScheduler.route) { NetworkSchedulerScreen(navController) }
+    composable(MaxDestination.NetworkDetail.route) { NetworkDetailScreen(navController) }
+    composable(MaxDestination.ProcessManager.route) { ProcessManagerScreen(navController) }
+    composable(MaxDestination.DebloatFreeze.route) { DebloatFreezeScreen(navController) }
+    composable(
+        route = MaxDestination.AppSettings.route,
+        arguments = listOf(navArgument("pkg") { type = NavType.StringType })
+    ) { entry ->
+        AppSettingsScreen(navController, entry.arguments?.getString("pkg"))
+    }
+
+    // Settings children
+    composable(MaxDestination.Diagnostics.route) { DiagnosticsScreen(navController) }
+    // `LICENSE-KEYS-01` — باب المفتاح. ولا بوّابة عليه: من يحتاج الشراء يجب أن يجد بابه دائمًا.
+    composable(MaxDestination.License.route) { LicenseScreen(navController) }
+
+    // Control → Tools: الألوان ومخطّطها ووحدة السجل. مسجّلة هنا مع بقية الوجهات، وأبوها في
+    // السجل `Control` ولذلك تُعرض في حزمة الأدوات لا في الإعدادات (انظر `MaxDestinations`).
+    composable(MaxDestination.ColorPalette.route) { ColorPaletteScreen(navController) }
+    composable(MaxDestination.ColorScheme.route) { ColorSchemeSettings(navController) }
+    composable(MaxDestination.Logs.route) { LogsViewerScreen(navController) }
+    composable(MaxDestination.ConfigBackup.route) { ConfigBackupScreen(navController) }
+    // `MAX-CONTROL-01` §١٠.٣ — إحصاءات المجتمع: باب الموافقة الواحدة، مفتوحٌ دائمًا كالترخيص.
+    composable(MaxDestination.CommunityStats.route) { CommunityStatsScreen(navController) }
+    composable(MaxDestination.Plugins.route) { PluginsScreen(navController) }
+    composable(
+        route = MaxDestination.MaxBackup.route,
+        arguments = listOf(navArgument("pkg") { type = NavType.StringType; defaultValue = "" })
+    ) { entry ->
+        MaxBackupScreen(
+            navController = navController,
+            // نمط مسارنا ليس حزمة: قيمة محفوظة من نسخة سبقت الإصلاح قد تحمل `{pkg}`،
+            // فتُفتح على تفصيل حزمة لا وجود لها — وهي الحالة المُبلَّغ عنها. الرفض هنا
+            // يُسقط إلى قائمة التطبيقات، وهي الشاشة الرئيسية المقصودة لهذا المدخل.
+            packageName = packageArgumentOrNull(LocalContext.current, entry.arguments?.getString("pkg")),
+        )
+    }
+    composable(
+        route = MaxDestination.Permissions.route,
+        // `pkg` اختياري: بلا معرّف تُفتح الشاشة على قائمة التطبيقات (فهي شاشة رئيسية
+        // مستقلة بذاتها)، وبه تُفتح على تطبيق واحد. وهذا نفس عقد `Max Backup` حرفيًّا.
+        arguments = listOf(navArgument("pkg") { type = NavType.StringType; defaultValue = "" })
+    ) { entry ->
+        PermissionsScreen(
+            navController = navController,
+            pkg = packageArgumentOrNull(LocalContext.current, entry.arguments?.getString("pkg")),
+        )
+    }
+    composable(MaxDestination.About.route) { AboutScreen(navController) }
+    composable(MaxDestination.Privilege.route) { PrivilegeScreen(navController) }
+    composable(MaxDestination.ModuleHealth.route) { ModuleHealthScreen(navController) }
+
+    // Control → Tools — advanced tools, gated by risk where they can wedge the device.
+    composable(MaxDestination.SetEdit.route) { SetEditScreen(navController) }
+    composable(MaxDestination.ActivityLauncher.route) { ActivityLauncherScreen(navController) }
+    composable(MaxDestination.FileManager.route) { FileManagerScreen() }
+}
+
+/**
+ * معامل الحزمة كما تعنيه الوجهتان ذواتا المعامل الاختياري: `null` إلا أن تكون القيمة
+ * **شكلها** معرّف حزمة و**مثبّتة فعلًا** على الجهاز.
+ *
+ * ولماذا الفحصان معًا، وهما ليسا تكرارًا:
+ *
+ * - الشكل يرفض `{pkg}` — نمط مسارنا إن وصل قيمةً. واسم حزمة Java لا يقبل قوسًا أصلًا،
+ *   فالرفض ليس ترجيحًا. وهذا هو الفحص الذي يعمل **حتى لو جاءت القيمة من حالة تنقّل
+ *   محفوظة من نسخة سبقت إصلاح مسار الإطلاق** — وهي الحالة المُبلَّغ عنها («تظهر `{pkg}`
+ *   … لا توجد حزمة بهذا الاسم على الجهاز»).
+ * - والوجود يرفض حزمة حقيقية **أُبطل تثبيتها** بعد إنشاء المدخل، فلم يُبقِ حارس الشكل عليها.
+ *
+ * وفائدة الاثنين واحدة: الشاشتان تعتبران `null` «بلا نيّة سابقة» فتُفتحان على **قائمة
+ * التطبيقات**، وهي الشاشة الرئيسية المقصودة لهما بطلب صريح من المالك — لا تفصيل حزمة
+ * لا وجود لها. فالطريق المسدود (رسالة + إعادة محاولة بلا نفع) لا يبقى منه شيء.
+ */
+private fun packageArgumentOrNull(context: Context, raw: String?): String? =
+    raw.takeIf { isPackageArgument(it) }?.takeIf { name ->
+        runCatching { context.packageManager.getApplicationInfo(name, 0) }.isSuccess
+    }

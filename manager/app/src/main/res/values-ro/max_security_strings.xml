@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_security_strings.xml -->
+<resources>
+    <string name="security_tamper_title">Nu se poate începe</string>
+    <string name="security_tamper_message">Această versiune a lui MaxManager nu este intactă. Fișierele instalate nu se mai potrivesc cu versiunea semnată, așa că nu va rula. Reinstalați versiunea oficială din sursa sa originală.</string>
+    <string name="security_tamper_close">Aproape</string>
+</resources>

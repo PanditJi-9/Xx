@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_sample_device_strings.xml -->
+<resources>
+    <string name="sample_pick_title">Wybierz przykładowe urządzenie</string>
+    <string name="sample_pick_button">Wybierz przykładowe urządzenie</string>
+    <string name="sample_auto_hint">Wybór urządzenia wypełnia markę, producenta, model, urządzenie, produkt i odcisk palca. Użyj opcji Ręcznie, aby wpisać je samodzielnie.</string>
+    <string name="sample_manual">Podręcznik</string>
+    <string name="sample_close">Zamknąć</string>
+    <string name="sample_search">Wyszukaj urządzenia</string>
+    <string name="sample_empty">Brak pasującego urządzenia.</string>
+    <string name="sample_unavailable">Nie można odczytać katalogu urządzenia.</string>
+    <string name="sample_row_sub">Android %1$s · %2$s</string>
+    <string name="sample_row_sub_plain">%1$s</string>
+    <string name="sample_fp_shared">Ten sam odcisk palca, co inne urządzenie katalogowe</string>
+    <string name="sample_credit">Dane katalogowe: COPG (Apache-2.0), %1$s</string>
+    <string name="sample_limit">Osiągnięto limit profilu (100).</string>
+</resources>

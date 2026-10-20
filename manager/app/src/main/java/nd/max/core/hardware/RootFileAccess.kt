@@ -1,0 +1,353 @@
+/*
+ * Copyright (C) 2026 Nader Magdy. All rights reserved.
+ * Proprietary and confidential — not licensed for use, copying, or distribution
+ * without prior written permission from the copyright holder.
+ */
+/*
+ * Generic privileged filesystem access used by hardware discovery and control.
+ * It deliberately knows nothing about a specific vendor or SoC.
+ */
+package nd.max.core.hardware
+
+import com.topjohnwu.superuser.Shell
+import nd.max.core.jni.ProbeBridge
+import nd.max.core.platform.EventLog
+import nd.max.core.ipc.RootNodeChannel
+import java.io.File
+
+object RootFileAccess {
+    private fun quote(value: String): String = "'" + value.replace("'", "'\\''") + "'"
+
+    fun exists(path: String): Boolean = runCatching {
+        if (RootNodeChannel.service?.exists(path) == true) return@runCatching true
+        if (File(path).exists()) return@runCatching true
+        shellTest(path)
+    }.getOrDefault(false)
+
+    /**
+     * وجود عدة مسارات في **نداء واحد** — سؤال الوجود لا القيمة.
+     *
+     * وشاشات الاكتشاف تُجرّب مرشّحين بالتتابع، فكل `exists` كان رحلة كاملة (IPC ثم `test`
+     * عبر صدفة). والدفعة الأصليّة تجيب عن القائمة كلها مرة واحدة، والقائمة الفارغة تُحسم
+     * بلا أي نداء. وغياب القارئ الأصلي أو حزمة بعدد مخالف يعود إلى [exists] لكل مسار —
+     * نفس السلوك القديم حرفيًّا.
+     */
+    fun existing(paths: List<String>): List<Boolean> {
+        if (paths.isEmpty()) return emptyList()
+        val native = ProbeBridge.existing(paths)
+        if (native != null && native.size == paths.size) return native
+        return paths.map { exists(it) }
+    }
+
+    /**
+     * أول مرشّح **موجود** من قائمة — نداء واحد للمرشّحين كلهم لا رحلة لكل واحد.
+     *
+     * والعائد `null` يعني «لا أحد منهم موجود» كما كانت `firstOrNull { exists(it) }` تُعيده.
+     */
+    fun <T> firstExisting(candidates: List<T>, pathOf: (T) -> String): T? {
+        if (candidates.isEmpty()) return null
+        val flags = existing(candidates.map(pathOf))
+        return candidates.indices.firstOrNull { flags.getOrElse(it) { false } }?.let { candidates[it] }
+    }
+
+    fun writable(path: String): Boolean = runCatching {
+        if (File(path).canWrite()) return@runCatching true
+        Shell.cmd("test -w ${quote(path)}").exec().isSuccess
+    }.getOrDefault(false)
+
+    fun read(path: String): String? = readViaChannel(path) ?: readDirect(path) ?: shellRead(path)
+
+    /*
+     * **ولماذا ثلاث دوالّ لا سلسلة `?:` واحدة داخل `runCatching` واحدة (عطب مقيس):** كانت الطبقات
+     * الثلاث داخل `runCatching` واحدة، فأي استثناء في **طبقة** (مثلًا `readText()` على عقدة
+     * ترفض القراءة بخطأ لا بـ`canRead=false`) يُسقط الدالة كاملةً ويُرجع `null` — أي أن طبقة
+     * الصدفة، وهي آخر ما يقرأ بالجذر، **لم تكن تُجرَّب أصلًا**. فالوضوح هنا ليس تقسيمًا شكليًّا:
+     * كل طبقة تُخفق وحدها، والعقدة تُسأل عن الطبقة التالية ما لم تُقرأ.
+     */
+    private fun readViaChannel(path: String): String? = runCatching {
+        RootNodeChannel.service?.readText(path)?.trim()?.takeIf { it.isNotEmpty() }
+    }.getOrNull()
+
+    private fun readDirect(path: String): String? = runCatching {
+        File(path).takeIf { it.isFile && it.canRead() }?.readText()?.trim()?.takeIf { it.isNotEmpty() }
+    }.getOrNull()
+
+    /**
+     * قراءة عدة عقد في **نداء واحد** — نفس دلالة [read] لكل عقدة: القيمة المقصوصة غير
+     * الفارغة، أو `null` إن لم تُقرأ. والترتيب محفوظ بمحاذاة الفهرس.
+     *
+     * **لماذا، وبأي ترتيب (تكملة ١١٢):** ثلاث طبقات، الأسرع أولًا:
+     *
+     * 1. **قارئ Rust الأصلي** (`ProbeBridge`): يفتح الملفات داخل العملية في نداء JNI واحد —
+     *    بلا معاملة binder وبلا صدفة. وهذا هو مسار الحالة الشائعة: عقد sysfs الحرارية
+     *    وقيم ترددات الأنوية و`/proc/stat` يقرأها uid التطبيق عادةً.
+     * 2. **ما حجبته النواة عن uid التطبيق يعود `null` من الطبقة الأولى، فيُسأل عنه وحده**
+     *    عبر معاملة IPC واحدة إلى `RootNodeService`. فالسرعة **لا تُشتري بقدرة**: كل عقدة
+     *    كانت تُقرأ بالجذر تبقى تُقرأ بالجذر، ولا تُخفى عقدة ولا تُفترض قيمة.
+     * 3. وسقوط الحالة (بلا IPC متصل، أو خدمة لا تعرف الدفعة) يعود إلى [read] لكل عقدة —
+     *    نفس السلوك القديم حرفيًّا.
+     *
+     * فالعقدة الغائبة من كل الطبقات تبقى `null` كما كانت. والسقوط في أي طبقة **ليس عطبًا**،
+     * بل الطريق الاحتياطي المصرَّح (ونفس مبدأ `PredictorBridge` حين تغيب المكتبة).
+     */
+    fun readMany(paths: List<String>): List<String?> {
+        if (paths.isEmpty()) return emptyList()
+        return mergeNativeAndPrivileged(paths, ProbeBridge.readMany(paths), ::readManyPrivileged)
+    }
+
+    /**
+     * الدمج نفسه — دالة نقية لتُقاس بذاتها (والمحاذاة هي ما يجب أن يُحرَس):
+     *
+     * * أي قائمة أصلية بطول مخالف للمدخل تُرفض كاملةً وتُسلَّم المهمة للطريق المصرَّح —
+     *   فمحاذاة مخمَّنة تَنسب قيمة عقدة إلى عقدة أخرى، وذلك أسوأ من عدم التسريع.
+     * * وما لم يُقرأ وحده يُسأل عنه: **لا يُطلب بالجذر ما قُرئ أصلًا**، ولا يُسقط ما فشل.
+     */
+    internal fun mergeNativeAndPrivileged(
+        paths: List<String>,
+        native: List<String?>?,
+        privileged: (List<String>) -> List<String?>,
+    ): List<String?> {
+        if (paths.isEmpty()) return emptyList()
+        if (native == null || native.size != paths.size) return privileged(paths)
+        val missing = paths.filterIndexed { index, _ -> native[index] == null }
+        if (missing.isEmpty()) return native
+        val fallback = privileged(missing)
+        var cursor = 0
+        return paths.mapIndexed { index, _ -> native[index] ?: fallback.getOrNull(cursor++) }
+    }
+
+    /**
+     * الطريق المصرَّح: معاملة IPC واحدة، ثم [read] لكل عقدة لم تُقرأ (صدفة الجذر آخرًا).
+     * وهو الطريق الوحيد الذي كان قائمًا قبل تكملة ١١٢ — محفوظ كما هو حرفيًّا.
+     */
+    private fun readManyPrivileged(paths: List<String>): List<String?> {
+        if (paths.isEmpty()) return emptyList()
+        val batch = runCatching { RootNodeChannel.service?.readTexts(paths.toMutableList()) }.getOrNull()
+        return completeBatch(paths, batch) { read(it) }
+    }
+
+    /**
+     * إكمال دفعة ناقصة — دالّة نقية لتُقاس بذاتها (`RootFileAccessNativeMergeTest`).
+     *
+     * **والعطب الذي وُلد منها:** الردّ بحجم مطابق كان يُقبل **نهائيًّا** حتى لو كانت قيمه
+     * فارغة (`RootNodeService` تقرأ العقدة المحجوبة `""` لا `null`). فلمّا عادت الدفعة كلها
+     * فارغة، صار المسح الحراري كله أصفارًا: ٦٦ منطقة معلَنة من النواة، ولا قراءة واحدة —
+     * فتظهر «لا توجد مناطق حرارة مكشوفة» بينما النواة أعلنتها. الآن كل عقدة عادت فارغة
+     * تُسأل من جديد بالترتيب الكامل، والقيمة الغائبة تبقى `null` كما كانت.
+     *
+     * وبلا هذا: `readMany` تَقرأ ٢×عدد المناطق، فإن أخفقت الطبقة الأولى (uid التطبيق) وردّت
+     * الثانية فارغة، لا شيء يعود إلى طبقة الجذر — والنتيجة صفر مطمئن كاذب لا «غير مقروء».
+     */
+    internal fun completeBatch(
+        paths: List<String>,
+        batch: List<String?>?,
+        readOne: (String) -> String?,
+    ): List<String?> {
+        if (paths.isEmpty()) return emptyList()
+        if (batch == null || batch.size != paths.size) return paths.map(readOne)
+        return batch.mapIndexed { index, value ->
+            value?.trim()?.takeIf { it.isNotEmpty() } ?: readOne(paths[index])
+        }
+    }
+
+    /**
+     * يكتب ويعيد **نجاح أمر الكتابة** — نفس معنى العائد قبل `PEER-8` تمامًا
+     * (`!= WRITE_FAILED` مكافئة لـ`exec().isSuccess` القديمة).
+     */
+    fun write(path: String, value: String): Boolean =
+        writeOutcome(path, value) != WriteVerification.Outcome.WRITE_FAILED
+
+    /**
+     * كتابة **متحقَّقة**: تُعيد حكمًا على **القيمة** لا على الأمر. الحكم يُحسب **مرّة واحدة**
+     * هنا ويُعاد استخدامه، فلا تُقرأ العقدة مرّتين لمتصل يريد الحكم.
+     */
+    fun writeVerified(path: String, value: String): WriteVerification.Outcome =
+        writeOutcome(path, value)
+
+    /**
+     * كتابة متحقَّقة بمقارِن مخصَّص — لعقدة تُرجع في القراءة أكثر مما كُتب (متجه حالة
+     * الجهاز لا سطر الطلب)، فمساواة النصّ الكامل حكمٌ كاذب دائم. المقارِن الافتراضي هو
+     * [WriteVerification.compare] نفسه، فسلوك [writeVerified] لا يتغيّر.
+     */
+    fun writeVerifiedWith(
+        path: String,
+        value: String,
+        verify: (wrote: String, readBack: String?) -> WriteVerification.Outcome,
+    ): WriteVerification.Outcome = writeOutcome(path, value, verify)
+
+    /**
+     * كتابة لعقدة **تكتب فقط**: أمر الكتابة وحده بلا قراءة بعدها.
+     *
+     * والدافع مقيس: عقدة `thermal_message/cpu_limits` لا تُقرأ أبدًا، فكل كتابة متحقَّقة
+     * عليها كانت تُسجَّل `unreadable` (٩٤٤ مرة في حزمة واحدة) — دليل ناقص يُقرأ عطلًا.
+     * هنا يُسجَّل `write_only_sent` عند نجاح الأمر: أُرسل ولم يُدَّعَ استقرار.
+     *
+     * @return نجاح أمر الكتابة وحده (لا حكم على القيمة — لا قيمة مقروءة أصلًا).
+     */
+    fun writeFireAndForget(path: String, value: String): Boolean {
+        val wrote = runWriteCommand(path, value)
+        try {
+            EventLog.writeCheck(
+                path = path,
+                wrote = value,
+                readBack = null,
+                verdict = WriteVerification.verdictWord(
+                    if (wrote) WriteVerification.Outcome.WRITE_ONLY_SENT
+                    else WriteVerification.Outcome.WRITE_FAILED,
+                ),
+            )
+        } catch (_: Exception) {
+            // التسجيل لا يُسقط كتابةً نجحت.
+        }
+        return wrote
+    }
+
+    /**
+     * النواة الواحدة: أمر الكتابة، ثم **قراءة للتحقّق**، ثم تسجيل الحكم. لا إصلاح ولا إعادة
+     * محاولة — القرار يبقى للمتصل.
+     */
+    private fun writeOutcome(
+        path: String,
+        value: String,
+        verify: (String, String?) -> WriteVerification.Outcome = WriteVerification::compare,
+    ): WriteVerification.Outcome {
+        val wrote = runWriteCommand(path, value)
+
+        // `PEER-8`/`AR-31`: كل كتابة تُقرأ بعدها وتُسجَّل نتيجتها. الكلفة: قراءة واحدة إضافية —
+        // وليست في مسار إطار-بإطار بل في تغيير إعداد/تطبيق ملف.
+        val readBack = if (wrote) read(path) else null
+        val outcome = if (!wrote) {
+            WriteVerification.Outcome.WRITE_FAILED
+        } else {
+            verify(value, readBack)
+        }
+        try {
+            EventLog.writeCheck(
+                path = path,
+                wrote = value,
+                readBack = readBack,
+                verdict = WriteVerification.verdictWord(outcome),
+            )
+        } catch (_: Exception) {
+            // التسجيل لا يُسقط كتابةً نجحت.
+        }
+        return outcome
+    }
+
+    /** أمر الكتابة وحده (IPC ثم صدفة الجذر) — بلا قراءة ولا تسجيل؛ القرار للمتصل. */
+    private fun runWriteCommand(path: String, value: String): Boolean = runCatching {
+            // IPC first: RootNodeService.writeText performs the HyperOS chmod
+            // dance internally, so a false return is a real failure and the shell
+            // path below re-runs the same dance. Plain root writes to 0444 sysfs
+            // nodes are denied with EACCES on HyperOS 3 — real-device log showed
+            // every registry PERAPP_COMMIT ending in live-value-mismatch without it.
+            // A binder exception must not block the shell fallback either.
+            val viaIpc = try { RootNodeChannel.service?.writeText(path, value) } catch (_: Exception) { false }
+            if (viaIpc == true) return@runCatching true
+            val p = quote(path)
+            Shell.cmd(
+                "m=\$(stat -c %a $p 2>/dev/null)",
+                "chmod 644 $p 2>/dev/null",
+                "printf '%s\\n' ${quote(value)} > $p",
+                "chmod \$m $p 2>/dev/null"
+            ).exec().isSuccess
+        }.getOrDefault(false)
+
+    /** Read-only listing of both files and directories for discovery transports. */
+    fun listNames(path: String): List<String> = runCatching {
+        // القارئ الأصلي أولًا (بلا صدفة `ls`) — وغيابه يُعيدنا إلى الصدفة كما كانت.
+        ProbeBridge.listNames(path)?.let { return it }
+        // وقناة الجذر قبل الصدفة: المجلّد المحجوب عن uid التطبيق لا يعود فارغًا من الجذر،
+        // ثم لا يُقرأ بالصدفة إلا إذا غابت القناة فعلًا.
+        RootNodeChannel.service?.let { service ->
+            runCatching { service.listNames(path, false).filter(String::isNotBlank) }
+                .getOrNull()?.takeIf { it.isNotEmpty() }?.let { return it.distinct() }
+        }
+        val result = Shell.cmd("ls -1A ${quote(path)} 2>/dev/null").exec()
+        if (!result.isSuccess) emptyList()
+        else result.out.map(String::trim).filter { it.isNotEmpty() && it != "." && it != ".." }.distinct()
+    }.getOrDefault(emptyList())
+
+    fun listDirectories(path: String): List<String> {
+        // الترتيب: قراءة داخل العملية ← IPC الجذر ← صدفة `ls` ← `File`. وكل طبقة
+        // تسبق التي تليها بلا مساس بالقدرة: ما لا يقرأه uid التطبيق يسأله الجذر.
+        ProbeBridge.listNames(path, dirsOnly = true)?.let { return it }
+        RootNodeChannel.service?.let { service ->
+            runCatching { service.listNames(path, true).filter(String::isNotBlank) }
+                .getOrNull()?.takeIf { it.isNotEmpty() }?.let { return it.distinct() }
+        }
+        runCatching {
+            val result = Shell.cmd("ls -1 ${quote(path)} 2>/dev/null").exec()
+            if (result.isSuccess) {
+                val names = result.out.map(String::trim).filter(String::isNotEmpty)
+                if (names.isNotEmpty()) return names.distinct()
+            }
+        }
+        return runCatching {
+            File(path).listFiles()?.filter(File::isDirectory)?.map(File::getName).orEmpty().distinct()
+        }.getOrDefault(emptyList())
+    }
+
+    fun remove(path: String): Boolean = runCatching {
+        Shell.cmd("rm -f ${quote(path)}").exec().isSuccess
+    }.getOrDefault(false)
+
+    /** Expand a shell glob into directory paths when direct directory listing is hidden. */
+    fun globDirectories(pattern: String): List<String> = runCatching {
+        val result = Shell.cmd(
+            "for d in $pattern; do [ -d \"\$d\" ] && printf '%s\\n' \"\$d\"; done"
+        ).exec()
+        if (!result.isSuccess) emptyList() else result.out.map(String::trim).filter(String::isNotBlank).distinct()
+    }.getOrDefault(emptyList())
+
+    fun atomicWriteText(path: String, content: String): Boolean = runCatching {
+        val tmp = "$path.tmp"
+        val encoded = android.util.Base64.encodeToString(content.toByteArray(Charsets.UTF_8), android.util.Base64.NO_WRAP)
+        val parent = File(path).parent
+        if (!parent.isNullOrBlank()) Shell.cmd("mkdir -p ${quote(parent)}").exec()
+        val result = Shell.cmd(
+            "printf '%s' ${quote(encoded)} | base64 -d > ${quote(tmp)}",
+            "chmod 600 ${quote(tmp)} 2>/dev/null || true",
+            "mv -f ${quote(tmp)} ${quote(path)}"
+        ).exec()
+        result.isSuccess
+    }.getOrDefault(false)
+
+    /**
+     * Overwrites the file itself, the way COPG's own WebUI saves COPG.json (`echo > file`): the inode and
+     * its SELinux label survive, so a watcher on the file or on its directory sees the change. The content
+     * is staged in a temp file first, so the target is truncated only once the full text is ready.
+     */
+    fun writeTextInPlace(path: String, content: String): Boolean = runCatching {
+        val tmp = "$path.tmp"
+        val encoded = android.util.Base64.encodeToString(content.toByteArray(Charsets.UTF_8), android.util.Base64.NO_WRAP)
+        val parent = File(path).parent
+        if (!parent.isNullOrBlank()) Shell.cmd("mkdir -p ${quote(parent)}").exec()
+        Shell.cmd(
+            "printf '%s' ${quote(encoded)} | base64 -d > ${quote(tmp)} && cat ${quote(tmp)} > ${quote(path)} && rm -f ${quote(tmp)}"
+        ).exec().isSuccess
+    }.getOrDefault(false)
+
+    private fun shellTest(path: String): Boolean = Shell.cmd("test -e ${quote(path)}").exec().isSuccess
+
+    private fun shellRead(path: String): String? = runCatching {
+        val result = Shell.cmd("cat ${quote(path)} 2>/dev/null").exec()
+        if (result.isSuccess) result.out.joinToString("\n").trim().takeIf { it.isNotEmpty() } else null
+    }.getOrNull()
+
+    /** Execute a root shell command. Callers must construct only allow-listed commands. */
+    fun exec(command: String): Int = runCatching {
+        if (Shell.cmd(command).exec().isSuccess) 0 else -1
+    }.getOrDefault(-1)
+
+    /**
+     * تشغيل أمر **قراءة** وإعادة نصّه (‏`dumpsys` مثلًا) — ولا يُكتب حرف في هذا المسار.
+     *
+     * **وقاعدته:** تعود بالنصّ إن طبع شيئًا **حتى لو كان خروج الأمر غير صفر** — وهذا مقصود:
+     * `grep` يُخرج `1` عند «لا مطابقة» وقد طبع ما يهمّنا قبله؛ فالحكم على النصّ لا على رمز
+     * الخروج. وبلا نصّ تعود `null`، فيقول المنادي «غير معروف» ولا يخترع قيمة.
+     */
+    fun readCommand(command: String): String? = runCatching {
+        Shell.cmd(command).exec().out.joinToString("\n").trim().takeIf { it.isNotEmpty() }
+    }.getOrNull()
+}

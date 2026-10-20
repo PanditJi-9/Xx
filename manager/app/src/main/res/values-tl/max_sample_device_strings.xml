@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_sample_device_strings.xml -->
+<resources>
+    <string name="sample_pick_title">Pumili ng sample na device</string>
+    <string name="sample_pick_button">Pumili ng sample na device</string>
+    <string name="sample_auto_hint">Ang pagpili ng device ay pumupuno sa brand, manufacturer, modelo, device, produkto at fingerprint para sa iyo. Gumamit ng Manwal upang i-type ang mga ito sa iyong sarili.</string>
+    <string name="sample_manual">Manwal</string>
+    <string name="sample_close">Isara</string>
+    <string name="sample_search">Maghanap ng mga device</string>
+    <string name="sample_empty">Walang katugmang device.</string>
+    <string name="sample_unavailable">Hindi mabasa ang catalog ng device.</string>
+    <string name="sample_row_sub">Android %1$s · %2$s</string>
+    <string name="sample_row_sub_plain">%1$s</string>
+    <string name="sample_fp_shared">Parehong fingerprint sa isa pang catalog device</string>
+    <string name="sample_credit">Data ng katalogo: COPG (Apache-2.0), %1$s</string>
+    <string name="sample_limit">Naabot na ang limitasyon sa profile (100).</string>
+</resources>

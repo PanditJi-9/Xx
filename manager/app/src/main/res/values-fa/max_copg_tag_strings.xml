@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_copg_tag_strings.xml -->
+<resources>
+    <string name="copg_tags_title">گزینه های COPG</string>
+    <string name="copg_tags_desc">به عنوان هدف ذخیره شده و همراه با نمایه دستگاه نوشته شده است. فقط چهار گزینه راحتی در هر نسخه COPG کار می کنند. بقیه به COPG 6.8.0 یا جدیدتر نیاز دارند. گزینه های PRO نیاز به مجوز COPG PRO دارند و موتور ممکن است آنها را نادیده بگیرد.</string>
+    <string name="copg_tier_pro">PRO</string>
+    <string name="copg_footprint_resident">در حافظه برنامه باقی می ماند، هرگز با بازی های ضد تقلب استفاده نکنید</string>
+    <string name="copg_need_ack">ابتدا خطر زیر را بپذیرید</string>
+    <string name="copg_tag_refused">گزینه COPG انتخاب شده برای نسخه COPG نصب شده مجاز نیست. چیزی نوشته نشد.</string>
+    <string name="copg_tag_needs_device">گزینه‌ها با نمایه دستگاه نوشته شده‌اند، و این برنامه هنوز هیچ کدام را ندارد.</string>
+    <string name="copg_tag_value_hint">ارزش</string>
+    <string name="copg_tag_bad_value">حروف، ارقام، فاصله و . فقط _ - / + (تا 60)</string>
+    <string name="copg_tag_save">ذخیره کنید</string>
+    <string name="copg_tag_remove">حذف کنید</string>
+    <string name="copg_tag_dnd">هنگام بازی مزاحم نشوید</string>
+    <string name="copg_tag_dab">روشنایی خودکار را غیرفعال کنید</string>
+    <string name="copg_tag_kso">روشن نگه داشتن صفحه نمایش</string>
+    <string name="copg_tag_nolog">ورود به سیستم را متوقف کنید</string>
+    <string name="copg_tag_dpi">DPI صفحه نمایش</string>
+    <string name="copg_tag_serial">شماره سریال هر برنامه</string>
+    <string name="copg_tag_cpu">CPU مدل</string>
+    <string name="copg_tag_blocked">CPU واقعی را مجبور کنید</string>
+    <string name="copg_tag_vpn">VPN را مخفی کنید</string>
+    <string name="copg_tag_vpns">پنهان کردن VPN (سخت)</string>
+    <string name="copg_tag_hidedev">گزینه های توسعه دهنده و اشکال زدایی USB را مخفی کنید</string>
+    <string name="copg_tag_tz">منطقه زمانی</string>
+    <string name="copg_tag_lang">زبان و منطقه</string>
+    <string name="copg_tag_gpu">GPU مدل</string>
+    <string name="copg_tag_cow">ساخت خواص (کپی روی نوشتن)</string>
+    <string name="copg_tag_aid">اندروید ID</string>
+    <string name="copg_tag_gaid">تبلیغات ID</string>
+    <string name="copg_tag_appset">مجموعه برنامه ID</string>
+    <string name="copg_tag_drm">Widevine / DRM</string>
+    <string name="copg_tag_imei">IMEI</string>
+    <string name="copg_tag_sim">حامل سیم کارت (ایمن)</string>
+    <string name="copg_tag_simx">حامل سیم کارت (تهاجمی)</string>
+    <string name="copg_tag_ua">WebView User-Agent</string>
+    <string name="copg_tag_mock">مخفی کردن مکان ساختگی</string>
+</resources>

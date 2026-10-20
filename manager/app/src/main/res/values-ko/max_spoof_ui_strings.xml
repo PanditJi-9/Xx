@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_spoof_ui_strings.xml -->
+<resources>
+    <string name="spoof_ui_real_device">실제 장치</string>
+    <string name="spoof_ui_pill_verified">구성이 확인되었습니다.</string>
+    <string name="spoof_ui_pill_unverified">확인되지 않음</string>
+    <string name="spoof_ui_pill_off">끄다</string>
+    <string name="spoof_device_for_app">이 앱을 위한 기기</string>
+    <string name="spoof_device_real_hint">이 앱은 실제 장치를 봅니다. 카드를 탭하여 하나를 선택하세요.</string>
+    <string name="spoof_device_pick">탭하여 카탈로그에서 기기를 선택하거나 맞춤 기기 정보를 입력하세요.</string>
+    <string name="spoof_device_in_use">사용 중</string>
+    <string name="spoof_device_restart">나중에 시스템이 아닌 대상 앱을 다시 시작하세요.</string>
+    <string name="spoof_ui_apply_title">이 앱을 신청하세요</string>
+    <string name="spoof_ui_apply_action">검토 및 신청</string>
+    <string name="spoof_ui_apply_confirm_title">이 앱만 적용하시겠습니까?</string>
+    <string name="spoof_ui_apply_confirm_text">이 앱만 준비되어 있습니다. 다른 앱은 그대로 유지됩니다. 나중에 시스템이 아닌 대상 앱을 다시 시작하세요. 나중에 편집하면 이 확인이 취소됩니다. COPG가 이미 이 앱을 나열한 경우 장치가 우선 순위를 가지며 COPG 라인은 그대로 유지됩니다.</string>
+    <string name="spoof_ui_apply_confirm">적용하다</string>
+    <string name="spoof_ui_apply_reason">엔진 거부: %1$s</string>
+    <string name="spoof_engine_absent">엔진 모듈을 읽을 수 없습니다. module.prop에 id=COPG라고 표시된 모듈을 확인하고 설치하거나 다시 설치한 다음 이 화면을 다시 엽니다.</string>
+    <string name="spoof_engine_disabled">COPG 모듈은 루트 관리자에서 비활성화되어 있습니다. 여기에서 활성화하고 재부팅한 후 다시 적용하세요.</string>
+    <string name="spoof_engine_removal_pending">COPG는 제거 대상으로 표시되며 다음 재부팅 후에는 사라집니다. 적용하기 전에 다시 설치하십시오.</string>
+    <string name="spoof_engine_update_pending">COPG 업데이트가 재부팅을 기다리고 있습니다. 먼저 재부팅한 후 다시 적용하세요.</string>
+    <string name="spoof_ui_apply_pending">마지막 적용 이후 변경되었습니다. 실제 적용하려면 다시 적용하세요.</string>
+    <string name="spoof_ui_restore_title">실제 장치를 사용하세요</string>
+    <string name="spoof_ui_restore_action">이 앱의 스푸핑 제거</string>
+    <string name="spoof_ui_restore_notice">이 앱에 저장된 장치와 COPG 조정이 제거되고 이 앱 없이 엔진이 다시 작성됩니다. 다른 앱은 그대로 유지됩니다. 나중에 대상 앱을 다시 시작하십시오.</string>
+    <string name="app_tab_spoof">속이기</string>
+    <string name="spoof_picker_title">기기를 선택하세요</string>
+    <string name="spoof_picker_custom">맞춤 장치 정보</string>
+    <string name="spoof_picker_custom_hint">이 앱에 원하는 브랜드, 모델 및 지문을 입력하세요.</string>
+    <string name="spoof_custom_title">맞춤 장치 정보</string>
+    <string name="spoof_custom_rules">이름, 브랜드, 모델, 장치 및 제품은 각각 최대 120자여야 하며 제어 문자는 없습니다. 제조업체, 지문 및 SDK는 선택 사항입니다. 지문은 동일한 브랜드, 제품, 장치로 시작해야 합니다.</string>
+    <string name="spoof_manufacturer">제조사 (MANUFACTURER)</string>
+    <string name="spoof_sdk">SDK 수준, 선택 사항, 1~100</string>
+    <string name="spoof_custom_invalid">일부 필드가 잘못되었습니다. 위의 규칙을 확인한 후 다시 저장하세요.</string>
+    <string name="spoof_custom_save">이 앱을 저장하고 선택하세요</string>
+    <string name="spoof_impersonation_title">스푸핑</string>
+    <string name="spoof_impersonation_desc">무료 COPG 옵션만 해당됩니다. 검토를 통해 엔진에 기록하고 적용합니다.</string>
+    <string name="spoof_impersonation_summary_cpu">CPU 스푸핑: %1$s</string>
+    <string name="spoof_impersonation_needs_device">먼저 이 앱을 사용할 기기를 선택하세요. 이러한 옵션은 장치로만 작성됩니다.</string>
+    <string name="spoof_cpu_spoof">CPU 스푸핑</string>
+    <string name="spoof_cpu_real">진짜 CPU</string>
+    <string name="spoof_cpu_block">블록 CPU</string>
+    <string name="spoof_cpu_block_desc">CPU 스푸핑에서 이 앱을 제외합니다.</string>
+    <string name="spoof_cpu_picker_title">CPU를 선택하세요</string>
+    <string name="copg_tweaks_section">COPG 조정</string>
+    <string name="copg_tweak_nolog_title">로깅 비활성화</string>
+    <string name="copg_tweak_nolog_desc">이 앱에 COPG 로깅 조정을 적용합니다. 여기에 저장되어 검토를 통해 엔진에 기록되고 Spoof 탭에서 적용됩니다.</string>
+    <string name="copg_tweak_dab_title">자동 밝기 비활성화</string>
+    <string name="copg_tweak_dab_desc">이 앱에 COPG 자동 밝기 조정을 적용합니다. 여기에 저장되어 검토를 통해 엔진에 기록되고 Spoof 탭에서 적용됩니다.</string>
+    <string name="copg_tweak_kso_title">화면을 계속 켜두세요</string>
+    <string name="copg_tweak_kso_desc">이 앱에 COPG 화면 켜기 유지 조정을 적용합니다. 여기에 저장되어 검토를 통해 엔진에 기록되고 Spoof 탭에서 적용됩니다.</string>
+    <string name="copg_tweak_needs_device">스푸핑 탭에서 먼저 이 앱을 사용하려면 기기가 필요합니다.</string>
+</resources>

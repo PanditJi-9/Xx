@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_sample_device_strings.xml -->
+<resources>
+    <string name="sample_pick_title">மாதிரி சாதனத்தைத் தேர்ந்தெடுக்கவும்</string>
+    <string name="sample_pick_button">மாதிரி சாதனத்தைத் தேர்ந்தெடுக்கவும்</string>
+    <string name="sample_auto_hint">சாதனத்தைத் தேர்ந்தெடுப்பது உங்களுக்கான பிராண்ட், உற்பத்தியாளர், மாடல், சாதனம், தயாரிப்பு மற்றும் கைரேகை ஆகியவற்றை நிரப்புகிறது. அவற்றை நீங்களே தட்டச்சு செய்ய கையேட்டைப் பயன்படுத்தவும்.</string>
+    <string name="sample_manual">கையேடு</string>
+    <string name="sample_close">மூடு</string>
+    <string name="sample_search">தேடல் சாதனங்கள்</string>
+    <string name="sample_empty">பொருந்தக்கூடிய சாதனம் இல்லை.</string>
+    <string name="sample_unavailable">சாதனப் பட்டியலைப் படிக்க முடியவில்லை.</string>
+    <string name="sample_row_sub">ஆண்ட்ராய்டு %1$s · %2$s</string>
+    <string name="sample_row_sub_plain">%1$s</string>
+    <string name="sample_fp_shared">மற்றொரு பட்டியல் சாதனத்தின் அதே கைரேகை</string>
+    <string name="sample_credit">பட்டியல் தரவு: COPG (Apache-2.0), %1$s</string>
+    <string name="sample_limit">சுயவிவர வரம்பை (100) அடைந்துவிட்டது.</string>
+</resources>

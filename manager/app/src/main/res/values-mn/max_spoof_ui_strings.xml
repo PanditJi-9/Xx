@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_spoof_ui_strings.xml -->
+<resources>
+    <string name="spoof_ui_real_device">Жинхэнэ төхөөрөмж</string>
+    <string name="spoof_ui_pill_verified">Тохиргоог баталгаажуулсан</string>
+    <string name="spoof_ui_pill_unverified">Баталгаажаагүй</string>
+    <string name="spoof_ui_pill_off">Унтраах</string>
+    <string name="spoof_device_for_app">Энэ апп-д зориулсан төхөөрөмж</string>
+    <string name="spoof_device_real_hint">Энэ програм нь таны жинхэнэ төхөөрөмжийг хардаг. Картыг сонгохын тулд товшино уу.</string>
+    <string name="spoof_device_pick">Каталогоос төхөөрөмж сонгох эсвэл тусгай төхөөрөмжийн мэдээллийг оруулах бол товшино уу.</string>
+    <string name="spoof_device_in_use">Ашиглаж байна</string>
+    <string name="spoof_device_restart">Дараа нь системийг биш зорилтот програмыг дахин эхлүүлнэ үү.</string>
+    <string name="spoof_ui_apply_title">Энэ аппликешнд өргөдөл гаргана уу</string>
+    <string name="spoof_ui_apply_action">Шалгаж, өргөдөл гаргана уу</string>
+    <string name="spoof_ui_apply_confirm_title">Зөвхөн энэ програмыг ашиглах уу?</string>
+    <string name="spoof_ui_apply_confirm_text">Зөвхөн энэ програмыг бэлтгэсэн; бусад програмууд хөндөгдөөгүй. Дараа нь системийг биш зорилтот програмыг дахин эхлүүлнэ үү. Дараа нь засвар хийснээр энэ баталгаажуулалтыг цуцална. Хэрэв COPG энэ програмыг аль хэдийн жагсаасан бол таны төхөөрөмж тэргүүлэх ач холбогдол өгч, COPG шугам нь хэвээр үлдэнэ.</string>
+    <string name="spoof_ui_apply_confirm">Өргөдөл гаргах</string>
+    <string name="spoof_ui_apply_reason">Хөдөлгүүрээс татгалзах: %1$s</string>
+    <string name="spoof_engine_absent">Хөдөлгүүрийн модулийг унших боломжгүй. module.prop-д id=COPG гэж бичсэн модулийг баталгаажуулж, суулгах эсвэл дахин суулгасны дараа энэ дэлгэцийг дахин нээнэ үү.</string>
+    <string name="spoof_engine_disabled">COPG модулийг таны үндсэн менежерт идэвхгүй болгосон. Тэнд үүнийг идэвхжүүлж, дахин ачаалаад дахин хэрэглээрэй.</string>
+    <string name="spoof_engine_removal_pending">COPG нь устгахаар тэмдэглэгдсэн бөгөөд дараагийн дахин ачаалсны дараа алга болно. Өргөдөл гаргахаасаа өмнө дахин суулгана уу.</string>
+    <string name="spoof_engine_update_pending">COPG шинэчлэлтийг дахин ачаалахыг хүлээж байна. Эхлээд дахин ачаалсны дараа дахин хэрэглээрэй.</string>
+    <string name="spoof_ui_apply_pending">Сүүлд хэрэглэснээс хойш өөрчлөгдсөн - үүнийг бодит болгохын тулд дахин хэрэглээрэй.</string>
+    <string name="spoof_ui_restore_title">Жинхэнэ төхөөрөмжөө ашигла</string>
+    <string name="spoof_ui_restore_action">Энэ аппликейшнд зориулсан хуурамч мэдээллийг устгана уу</string>
+    <string name="spoof_ui_restore_notice">Энэ апп-ын хадгалсан төхөөрөмж болон COPG тохиргоог устгаж, хөдөлгүүрийг энэ програмгүйгээр дахин бичсэн болно. Бусад аппликейшнууд хөндөгдөөгүй. Дараа нь зорилтот програмыг дахин эхлүүлнэ үү.</string>
+    <string name="app_tab_spoof">Хуурамч</string>
+    <string name="spoof_picker_title">Төхөөрөмж сонгоно уу</string>
+    <string name="spoof_picker_custom">Тусгай төхөөрөмжийн мэдээлэл</string>
+    <string name="spoof_picker_custom_hint">Энэ аппликешн дээр хүссэн брэнд, загвар, хурууны хээгээ оруулна уу</string>
+    <string name="spoof_custom_title">Тусгай төхөөрөмжийн мэдээлэл</string>
+    <string name="spoof_custom_rules">Нэр, брэнд, загвар, төхөөрөмж, бүтээгдэхүүн тус бүр нь 120 хүртэлх тэмдэгт, хяналтын тэмдэгтгүй байх шаардлагатай. Үйлдвэрлэгч, хурууны хээ болон SDK нь сонголттой. Хурууны хээ нь ижил брэнд, бүтээгдэхүүн, төхөөрөмжөөс эхлэх ёстой.</string>
+    <string name="spoof_manufacturer">Үйлдвэрлэгч (ҮЙЛДВЭРЛЭГЧ)</string>
+    <string name="spoof_sdk">SDK түвшин, нэмэлт, 1-ээс 100 хүртэл</string>
+    <string name="spoof_custom_invalid">Зарим талбар буруу байна. Дээрх дүрмийг шалгаад дахин хадгална уу.</string>
+    <string name="spoof_custom_save">Хадгалаад энэ програмыг сонго</string>
+    <string name="spoof_impersonation_title">Хуурамч</string>
+    <string name="spoof_impersonation_desc">Зөвхөн үнэ төлбөргүй COPG сонголтууд. Хөдөлгүүрт хянуулж, хэрэглэх замаар бичсэн.</string>
+    <string name="spoof_impersonation_summary_cpu">CPU хуурамчаар үйлдэх: %1$s</string>
+    <string name="spoof_impersonation_needs_device">Эхлээд энэ аппликейшнд зориулсан төхөөрөмжийг сонгоно уу. Эдгээр сонголтуудыг зөвхөн төхөөрөмжөөр бичнэ.</string>
+    <string name="spoof_cpu_spoof">CPU хууран мэхлэлт</string>
+    <string name="spoof_cpu_real">Жинхэнэ CPU</string>
+    <string name="spoof_cpu_block">CPU блок</string>
+    <string name="spoof_cpu_block_desc">Энэ програмыг CPU хуурамчаар үйлдэхээс хассан.</string>
+    <string name="spoof_cpu_picker_title">CPU-г сонгоно уу</string>
+    <string name="copg_tweaks_section">COPG засварууд</string>
+    <string name="copg_tweak_nolog_title">Бүртгэлийг идэвхгүй болгох</string>
+    <string name="copg_tweak_nolog_desc">COPG бүртгэлийн тохируулгыг энэ аппликешнд хэрэглэнэ. Энд хадгалсан, Хяналтаар хөдөлгүүрт бичсэн бөгөөд Хуурамч таб дээр хэрэглэнэ.</string>
+    <string name="copg_tweak_dab_title">Автомат гэрэлтүүлгийг идэвхгүй болгох</string>
+    <string name="copg_tweak_dab_desc">Энэ аппликешнд COPG автомат гэрэлтүүлгийг тохируулна. Энд хадгалсан, Хяналтаар хөдөлгүүрт бичсэн бөгөөд Хуурамч таб дээр хэрэглэнэ.</string>
+    <string name="copg_tweak_kso_title">Дэлгэцийг асаалттай байлга</string>
+    <string name="copg_tweak_kso_desc">COPG дэлгэцийг асаах тохиргоог энэ аппликешнд хэрэглэнэ. Энд хадгалсан, Хяналтаар хөдөлгүүрт бичсэн бөгөөд Хуурамч таб дээр хэрэглэнэ.</string>
+    <string name="copg_tweak_needs_device">Хуурамч таб хэсэгт эхлээд энэ апп-д төхөөрөмж хэрэгтэй.</string>
+</resources>

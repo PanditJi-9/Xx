@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_spoof_ui_strings.xml -->
+<resources>
+    <string name="spoof_ui_real_device">Regte toestel</string>
+    <string name="spoof_ui_pill_verified">Config geverifieer</string>
+    <string name="spoof_ui_pill_unverified">Nie geverifieer nie</string>
+    <string name="spoof_ui_pill_off">Af</string>
+    <string name="spoof_device_for_app">Toestel vir hierdie toepassing</string>
+    <string name="spoof_device_real_hint">Hierdie toepassing sien jou regte toestel. Tik die kaart om een ​​te kies.</string>
+    <string name="spoof_device_pick">Tik om \'n toestel uit die katalogus te kies, of voer gepasmaakte toestelinligting in.</string>
+    <string name="spoof_device_in_use">In gebruik</string>
+    <string name="spoof_device_restart">Herbegin die teikentoepassing daarna, nie die stelsel nie.</string>
+    <string name="spoof_ui_apply_title">Doen aansoek vir hierdie toepassing</string>
+    <string name="spoof_ui_apply_action">Hersien en pas toe</string>
+    <string name="spoof_ui_apply_confirm_title">Pas hierdie toepassing slegs toe?</string>
+    <string name="spoof_ui_apply_confirm_text">Slegs hierdie toepassing is voorberei; ander toepassings is onaangeraak. Herbegin die teikentoepassing daarna, nie die stelsel nie. \'n Latere wysiging kanselleer hierdie bevestiging. As COPG reeds hierdie toepassing lys, geniet jou toestel prioriteit en die COPG-lyn bly soos dit is.</string>
+    <string name="spoof_ui_apply_confirm">Doen aansoek</string>
+    <string name="spoof_ui_apply_reason">Enjin weiering: %1$s</string>
+    <string name="spoof_engine_absent">Die enjinmodule is nie leesbaar nie. Bevestig \'n module waarvan module.prop sê id=COPG, installeer of herinstalleer dit, maak dan hierdie skerm weer oop.</string>
+    <string name="spoof_engine_disabled">Die COPG-module is in jou wortelbestuurder gedeaktiveer. Aktiveer dit daar, herlaai en pas dan weer toe.</string>
+    <string name="spoof_engine_removal_pending">COPG is gemerk vir verwydering en sal weg wees na die volgende herlaai. Herinstalleer dit voordat u dit toepas.</string>
+    <string name="spoof_engine_update_pending">\'n COPG-opdatering wag vir \'n herlaai. Herbegin eers en pas dan weer toe.</string>
+    <string name="spoof_ui_apply_pending">Verander sedert die laaste toepassing — pas weer toe om dit werklik te maak.</string>
+    <string name="spoof_ui_restore_title">Gebruik jou regte toestel</string>
+    <string name="spoof_ui_restore_action">Verwyder bedrog vir hierdie toepassing</string>
+    <string name="spoof_ui_restore_notice">Hierdie toepassing se gestoorde toestel en sy COPG-aanpassings word verwyder, en die enjin word sonder hierdie toepassing herskryf. Ander toepassings is onaangeraak. Herbegin die teikentoepassing daarna.</string>
+    <string name="app_tab_spoof">Spoef</string>
+    <string name="spoof_picker_title">Kies \'n toestel</string>
+    <string name="spoof_picker_custom">Gepasmaakte toestelinligting</string>
+    <string name="spoof_picker_custom_hint">Voer die handelsmerk, model en vingerafdruk in wat jy vir hierdie toepassing wil hê</string>
+    <string name="spoof_custom_title">Gepasmaakte toestelinligting</string>
+    <string name="spoof_custom_rules">Naam, handelsmerk, model, toestel en produk word vereis, tot 120 karakters elk, sonder beheerkarakters. Vervaardiger, vingerafdruk en SDK is opsioneel. \'n Vingerafdruk moet met dieselfde handelsmerk, produk en toestel begin.</string>
+    <string name="spoof_manufacturer">Vervaardiger (MANUFACTURER)</string>
+    <string name="spoof_sdk">SDK-vlak, opsioneel, 1 tot 100</string>
+    <string name="spoof_custom_invalid">Sommige velde is ongeldig. Gaan die reëls hierbo na en stoor dan weer.</string>
+    <string name="spoof_custom_save">Stoor en kies vir hierdie toepassing</string>
+    <string name="spoof_impersonation_title">Spoofing</string>
+    <string name="spoof_impersonation_desc">Slegs gratis COPG-opsies. Geskryf aan die enjin deur Hersien en pas toe.</string>
+    <string name="spoof_impersonation_summary_cpu">CPU bedrog: %1$s</string>
+    <string name="spoof_impersonation_needs_device">Kies eers \'n toestel vir hierdie toepassing. Hierdie opsies word slegs met \'n toestel geskryf.</string>
+    <string name="spoof_cpu_spoof">CPU bedrog</string>
+    <string name="spoof_cpu_real">Regte CPU</string>
+    <string name="spoof_cpu_block">Blok CPU</string>
+    <string name="spoof_cpu_block_desc">Sluit hierdie toepassing uit van CPU bedrog.</string>
+    <string name="spoof_cpu_picker_title">Kies \'n CPU</string>
+    <string name="copg_tweaks_section">COPG-aanpassings</string>
+    <string name="copg_tweak_nolog_title">Deaktiveer aanteken</string>
+    <string name="copg_tweak_nolog_desc">Pas die COPG-aantekeningaanpassing op hierdie toepassing toe. Hier gestoor, deur Review na die enjin geskryf en pas toe in die Spoof-oortjie.</string>
+    <string name="copg_tweak_dab_title">Deaktiveer outomatiese helderheid</string>
+    <string name="copg_tweak_dab_desc">Pas die COPG-outo-helderheid-aanpassing op hierdie toepassing toe. Hier gestoor, deur Review na die enjin geskryf en pas toe in die Spoof-oortjie.</string>
+    <string name="copg_tweak_kso_title">Hou skerm aan</string>
+    <string name="copg_tweak_kso_desc">Pas die COPG hou-skerm-aan-aanpassing op hierdie toepassing toe. Hier gestoor, deur Review na die enjin geskryf en pas toe in die Spoof-oortjie.</string>
+    <string name="copg_tweak_needs_device">Benodig eers \'n toestel vir hierdie toepassing, in die Spoof-oortjie.</string>
+</resources>

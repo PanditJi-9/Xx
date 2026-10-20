@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_security_strings.xml -->
+<resources>
+    <string name="security_tamper_title">Hindi makapagsimula</string>
+    <string name="security_tamper_message">Ang build na ito ng MaxManager ay hindi buo. Ang mga naka-install na file ay hindi na tumutugma sa nilagdaang release, kaya hindi ito tatakbo. I-install muli ang opisyal na build mula sa orihinal na pinagmulan nito.</string>
+    <string name="security_tamper_close">Isara</string>
+</resources>

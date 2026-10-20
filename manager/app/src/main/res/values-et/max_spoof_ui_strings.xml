@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_spoof_ui_strings.xml -->
+<resources>
+    <string name="spoof_ui_real_device">Päris seade</string>
+    <string name="spoof_ui_pill_verified">Konfiguratsioon kinnitatud</string>
+    <string name="spoof_ui_pill_unverified">Pole kinnitatud</string>
+    <string name="spoof_ui_pill_off">Väljas</string>
+    <string name="spoof_device_for_app">Seade selle rakenduse jaoks</string>
+    <string name="spoof_device_real_hint">See rakendus näeb teie tegelikku seadet. Kaardi valimiseks puudutage seda.</string>
+    <string name="spoof_device_pick">Toksake kataloogist seadme valimiseks või sisestage kohandatud seadme teave.</string>
+    <string name="spoof_device_in_use">Kasutuses</string>
+    <string name="spoof_device_restart">Pärast seda taaskäivitage sihtrakendus, mitte süsteem.</string>
+    <string name="spoof_ui_apply_title">Taotlege seda rakendust</string>
+    <string name="spoof_ui_apply_action">Vaadake üle ja rakendage</string>
+    <string name="spoof_ui_apply_confirm_title">Kas rakendada ainult seda rakendust?</string>
+    <string name="spoof_ui_apply_confirm_text">Ainult see rakendus on ette valmistatud; muud rakendused on puutumata. Pärast seda taaskäivitage sihtrakendus, mitte süsteem. Hilisem muudatus tühistab selle kinnituse. Kui COPG on selle rakenduse juba loendis, on teie seade prioriteetne ja COPG rida jääb samaks.</string>
+    <string name="spoof_ui_apply_confirm">Rakenda</string>
+    <string name="spoof_ui_apply_reason">Mootori keeldumine: %1$s</string>
+    <string name="spoof_engine_absent">Mootori moodul ei ole loetav. Kinnitage moodul, mille module.prop ütleb id=COPG, installige või installige see uuesti, seejärel avage see ekraan uuesti.</string>
+    <string name="spoof_engine_disabled">COPG-moodul on teie juurhalduris keelatud. Lubage see seal, taaskäivitage ja seejärel rakendage uuesti.</string>
+    <string name="spoof_engine_removal_pending">COPG on märgitud eemaldamiseks ja kaob pärast järgmist taaskäivitamist. Installige see enne rakendamist uuesti.</string>
+    <string name="spoof_engine_update_pending">COPG värskendus ootab taaskäivitamist. Esmalt taaskäivitage ja seejärel rakendage uuesti.</string>
+    <string name="spoof_ui_apply_pending">Muudetud pärast viimast rakendamist – rakendage uuesti, et muuta see tõeliseks.</string>
+    <string name="spoof_ui_restore_title">Kasutage oma päris seadet</string>
+    <string name="spoof_ui_restore_action">Eemaldage selle rakenduse pettus</string>
+    <string name="spoof_ui_restore_notice">Selle rakenduse salvestatud seade ja selle COPG muudatused eemaldatakse ning mootor kirjutatakse ümber ilma selle rakenduseta. Muud rakendused on puutumata. Pärast seda taaskäivitage sihtrakendus.</string>
+    <string name="app_tab_spoof">Pettus</string>
+    <string name="spoof_picker_title">Valige seade</string>
+    <string name="spoof_picker_custom">Kohandatud seadme teave</string>
+    <string name="spoof_picker_custom_hint">Sisestage selle rakenduse jaoks soovitud kaubamärk, mudel ja sõrmejälg</string>
+    <string name="spoof_custom_title">Kohandatud seadme teave</string>
+    <string name="spoof_custom_rules">Nimi, kaubamärk, mudel, seade ja toode on nõutavad, igaüks kuni 120 tähemärki, ilma juhtmärkideta. Tootja, sõrmejälg ja SDK on valikulised. Sõrmejälg peab algama sama kaubamärgi, toote ja seadmega.</string>
+    <string name="spoof_manufacturer">Tootja (MANUFACTURER)</string>
+    <string name="spoof_sdk">SDK tase, valikuline, 1 kuni 100</string>
+    <string name="spoof_custom_invalid">Mõned väljad on kehtetud. Kontrollige ülaltoodud reegleid ja salvestage uuesti.</string>
+    <string name="spoof_custom_save">Salvestage ja valige selle rakenduse jaoks</string>
+    <string name="spoof_impersonation_title">Pettus</string>
+    <string name="spoof_impersonation_desc">Ainult tasuta COPG-valikud. Mootorile kirjutas üle ja rakenda.</string>
+    <string name="spoof_impersonation_summary_cpu">CPU võltsimine: %1$s</string>
+    <string name="spoof_impersonation_needs_device">Valige esmalt selle rakenduse jaoks seade. Need valikud on kirjutatud ainult seadmega.</string>
+    <string name="spoof_cpu_spoof">CPU võltsimine</string>
+    <string name="spoof_cpu_real">Päris CPU</string>
+    <string name="spoof_cpu_block">Blokeeri CPU</string>
+    <string name="spoof_cpu_block_desc">Välistab selle rakenduse CPU võltsimisest.</string>
+    <string name="spoof_cpu_picker_title">Valige CPU</string>
+    <string name="copg_tweaks_section">COPG näpunäited</string>
+    <string name="copg_tweak_nolog_title">Keela logimine</string>
+    <string name="copg_tweak_nolog_desc">Rakendab sellele rakendusele COPG logimise näpunäide. Salvestatud siia, kirjutatud mootorisse vahekaardil Pettus ülevaatamine ja rakendamine.</string>
+    <string name="copg_tweak_dab_title">Keela automaatne heledus</string>
+    <string name="copg_tweak_dab_desc">Rakendab sellele rakendusele COPG automaatse heleduse reguleerimise. Salvestatud siia, kirjutatud mootorisse vahekaardil Pettus ülevaatamine ja rakendamine.</string>
+    <string name="copg_tweak_kso_title">Hoidke ekraan sees</string>
+    <string name="copg_tweak_kso_desc">Rakendab sellele rakendusele COPG-ekraani jälgimise näpunäide. Salvestatud siia, kirjutatud mootorisse vahekaardil Pettus ülevaatamine ja rakendamine.</string>
+    <string name="copg_tweak_needs_device">Vajab esmalt selle rakenduse jaoks seadet vahekaardil Pettus.</string>
+</resources>

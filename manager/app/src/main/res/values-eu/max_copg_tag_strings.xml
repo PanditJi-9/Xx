@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_copg_tag_strings.xml -->
+<resources>
+    <string name="copg_tags_title">COPG aukerak</string>
+    <string name="copg_tags_desc">Asmo gisa gordeta eta gailuaren profilarekin batera idatzita. Lau erosotasun-aukerek bakarrik funtzionatzen dute COPG bertsio guztietan; gainerakoek COPG 6.8.0 edo berriagoa behar dute. PRO aukerek COPG PRO lizentzia behar dute, eta motorrak ez ikusi egin dezake.</string>
+    <string name="copg_tier_pro">PRO</string>
+    <string name="copg_footprint_resident">aplikazioaren memorian geratzen da, inoiz ez erabili iruzurren aurkako jokoekin</string>
+    <string name="copg_need_ack">Aitortu beheko arriskua lehenik</string>
+    <string name="copg_tag_refused">Hautatutako COPG aukera bat ez da onartzen instalatutako COPG bertsiorako. Ez zen ezer idatzi.</string>
+    <string name="copg_tag_needs_device">Aukerak gailu profil batekin idazten dira, eta aplikazio honek ez du oraindik.</string>
+    <string name="copg_tag_value_hint">Balioa</string>
+    <string name="copg_tag_bad_value">Letrak, zifrak, espazioa eta . _ - / + soilik (60 arte)</string>
+    <string name="copg_tag_save">Gorde</string>
+    <string name="copg_tag_remove">Kendu</string>
+    <string name="copg_tag_dnd">Ez molestatu jolasten ari zaren bitartean</string>
+    <string name="copg_tag_dab">Desgaitu distira automatikoa</string>
+    <string name="copg_tag_kso">Mantendu pantaila piztuta</string>
+    <string name="copg_tag_nolog">Utzi erregistroa</string>
+    <string name="copg_tag_dpi">Pantaila DPI</string>
+    <string name="copg_tag_serial">Aplikazio bakoitzeko serie-zenbakia</string>
+    <string name="copg_tag_cpu">CPU eredua</string>
+    <string name="copg_tag_blocked">Behartu CPU erreala</string>
+    <string name="copg_tag_vpn">Ezkutatu VPN</string>
+    <string name="copg_tag_vpns">Ezkutatu VPN (zorrotza)</string>
+    <string name="copg_tag_hidedev">Ezkutatu garatzaileen aukerak eta USB arazketa</string>
+    <string name="copg_tag_tz">Ordu-eremua</string>
+    <string name="copg_tag_lang">Hizkuntza eta eskualdea</string>
+    <string name="copg_tag_gpu">GPU eredua</string>
+    <string name="copg_tag_cow">Eraiki propietateak (kopiatu-idazketan)</string>
+    <string name="copg_tag_aid">Android ID</string>
+    <string name="copg_tag_gaid">Publizitatea ID</string>
+    <string name="copg_tag_appset">Aplikazio multzoa ID</string>
+    <string name="copg_tag_drm">Widevine / DRM</string>
+    <string name="copg_tag_imei">IMEI</string>
+    <string name="copg_tag_sim">SIM eramailea (segurua)</string>
+    <string name="copg_tag_simx">SIM eramailea (erasokorra)</string>
+    <string name="copg_tag_ua">WebView Erabiltzaile-Agentea</string>
+    <string name="copg_tag_mock">Ezkutatu kokapen simulatua</string>
+</resources>

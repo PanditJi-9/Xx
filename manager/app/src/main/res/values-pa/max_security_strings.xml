@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_security_strings.xml -->
+<resources>
+    <string name="security_tamper_title">ਸ਼ੁਰੂ ਕਰਨ ਵਿੱਚ ਅਸਮਰੱਥ</string>
+    <string name="security_tamper_message">MaxManager ਦਾ ਇਹ ਬਿਲਡ ਬਰਕਰਾਰ ਨਹੀਂ ਹੈ। ਇੰਸਟੌਲ ਕੀਤੀਆਂ ਫਾਈਲਾਂ ਹੁਣ ਹਸਤਾਖਰਿਤ ਰੀਲੀਜ਼ ਨਾਲ ਮੇਲ ਨਹੀਂ ਖਾਂਦੀਆਂ, ਇਸਲਈ ਇਹ ਨਹੀਂ ਚੱਲਣਗੀਆਂ। ਅਧਿਕਾਰਤ ਬਿਲਡ ਨੂੰ ਇਸਦੇ ਮੂਲ ਸਰੋਤ ਤੋਂ ਮੁੜ ਸਥਾਪਿਤ ਕਰੋ।</string>
+    <string name="security_tamper_close">ਬੰਦ ਕਰੋ</string>
+</resources>

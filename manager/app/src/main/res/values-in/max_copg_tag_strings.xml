@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_copg_tag_strings.xml -->
+<resources>
+    <string name="copg_tags_title">Opsi COPG</string>
+    <string name="copg_tags_desc">Disimpan sebagai maksud dan ditulis bersama dengan profil perangkat. Hanya empat opsi kenyamanan yang berfungsi pada setiap versi COPG; sisanya memerlukan COPG 6.8.0 atau lebih baru. Opsi PRO memerlukan lisensi COPG PRO, dan mesin mungkin mengabaikannya.</string>
+    <string name="copg_tier_pro">PRO</string>
+    <string name="copg_footprint_resident">tetap berada di memori aplikasi, jangan pernah gunakan dengan game anti-cheat</string>
+    <string name="copg_need_ack">Akui terlebih dahulu risiko di bawah ini</string>
+    <string name="copg_tag_refused">Opsi COPG yang dipilih tidak diperbolehkan untuk versi COPG yang diinstal. Tidak ada yang tertulis.</string>
+    <string name="copg_tag_needs_device">Opsi ditulis dengan profil perangkat, dan aplikasi ini belum memilikinya.</string>
+    <string name="copg_tag_value_hint">Nilai</string>
+    <string name="copg_tag_bad_value">Huruf, angka, spasi dan . _ - /+ saja (hingga 60)</string>
+    <string name="copg_tag_save">Menyimpan</string>
+    <string name="copg_tag_remove">Menghapus</string>
+    <string name="copg_tag_dnd">Jangan Ganggu saat bermain</string>
+    <string name="copg_tag_dab">Nonaktifkan kecerahan otomatis</string>
+    <string name="copg_tag_kso">Tetap nyalakan layar</string>
+    <string name="copg_tag_nolog">Hentikan pencatatan</string>
+    <string name="copg_tag_dpi">DPI Layar</string>
+    <string name="copg_tag_serial">Nomor seri per aplikasi</string>
+    <string name="copg_tag_cpu">CPU model</string>
+    <string name="copg_tag_blocked">Paksa CPU yang asli</string>
+    <string name="copg_tag_vpn">Sembunyikan VPN</string>
+    <string name="copg_tag_vpns">Sembunyikan VPN (ketat)</string>
+    <string name="copg_tag_hidedev">Sembunyikan Opsi Pengembang dan USB debugging</string>
+    <string name="copg_tag_tz">Zona waktu</string>
+    <string name="copg_tag_lang">Bahasa dan wilayah</string>
+    <string name="copg_tag_gpu">GPU model</string>
+    <string name="copg_tag_cow">Membangun properti (salin-saat-tulis)</string>
+    <string name="copg_tag_aid">Android ID</string>
+    <string name="copg_tag_gaid">Periklanan ID</string>
+    <string name="copg_tag_appset">Kumpulan Aplikasi ID</string>
+    <string name="copg_tag_drm">Widevine / DRM</string>
+    <string name="copg_tag_imei">IMEI</string>
+    <string name="copg_tag_sim">Operator SIM (aman)</string>
+    <string name="copg_tag_simx">Operator SIM (agresif)</string>
+    <string name="copg_tag_ua">Agen Pengguna WebView</string>
+    <string name="copg_tag_mock">Sembunyikan lokasi tiruan</string>
+</resources>

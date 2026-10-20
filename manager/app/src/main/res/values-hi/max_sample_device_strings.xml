@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_sample_device_strings.xml -->
+<resources>
+    <string name="sample_pick_title">नमूना उपकरण चुनें</string>
+    <string name="sample_pick_button">नमूना उपकरण चुनें</string>
+    <string name="sample_auto_hint">किसी डिवाइस को चुनने से आपके लिए ब्रांड, निर्माता, मॉडल, डिवाइस, उत्पाद और फ़िंगरप्रिंट भर जाता है। उन्हें स्वयं टाइप करने के लिए मैनुअल का उपयोग करें।</string>
+    <string name="sample_manual">नियमावली</string>
+    <string name="sample_close">बंद करना</string>
+    <string name="sample_search">उपकरण खोजें</string>
+    <string name="sample_empty">कोई मिलान उपकरण नहीं.</string>
+    <string name="sample_unavailable">डिवाइस कैटलॉग को पढ़ा नहीं जा सका.</string>
+    <string name="sample_row_sub">एंड्रॉइड %1$s · %2$s</string>
+    <string name="sample_row_sub_plain">%1$s</string>
+    <string name="sample_fp_shared">अन्य कैटलॉग डिवाइस के समान फिंगरप्रिंट</string>
+    <string name="sample_credit">कैटलॉग डेटा: सीओपीजी (अपाचे-2.0), %1$s</string>
+    <string name="sample_limit">प्रोफ़ाइल सीमा (100) पूरी हो गई है.</string>
+</resources>

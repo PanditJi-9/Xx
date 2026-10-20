@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_sample_device_strings.xml -->
+<resources>
+    <string name="sample_pick_title">नमुना डिव्हाइस निवडा</string>
+    <string name="sample_pick_button">नमुना डिव्हाइस निवडा</string>
+    <string name="sample_auto_hint">डिव्हाइस निवडल्याने तुमच्यासाठी ब्रँड, निर्माता, मॉडेल, डिव्हाइस, उत्पादन आणि फिंगरप्रिंट भरते. ते स्वतः टाइप करण्यासाठी मॅन्युअल वापरा.</string>
+    <string name="sample_manual">मॅन्युअल</string>
+    <string name="sample_close">बंद करा</string>
+    <string name="sample_search">साधने शोधा</string>
+    <string name="sample_empty">कोणतेही जुळणारे उपकरण नाही.</string>
+    <string name="sample_unavailable">डिव्हाइस कॅटलॉग वाचता आले नाही.</string>
+    <string name="sample_row_sub">Android %1$s · %2$s</string>
+    <string name="sample_row_sub_plain">%1$s</string>
+    <string name="sample_fp_shared">दुसर्या कॅटलॉग डिव्हाइस प्रमाणेच फिंगरप्रिंट</string>
+    <string name="sample_credit">कॅटलॉग डेटा: COPG (Apache-2.0), %1$s</string>
+    <string name="sample_limit">प्रोफाइल मर्यादा (100) गाठली आहे.</string>
+</resources>

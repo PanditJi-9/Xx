@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_sample_device_strings.xml -->
+<resources>
+    <string name="sample_pick_title">నమూనా పరికరాన్ని ఎంచుకోండి</string>
+    <string name="sample_pick_button">నమూనా పరికరాన్ని ఎంచుకోండి</string>
+    <string name="sample_auto_hint">పరికరాన్ని ఎంచుకోవడం మీ కోసం బ్రాండ్, తయారీదారు, మోడల్, పరికరం, ఉత్పత్తి మరియు వేలిముద్రను నింపుతుంది. వాటిని మీరే టైప్ చేయడానికి మాన్యువల్ ఉపయోగించండి.</string>
+    <string name="sample_manual">మాన్యువల్</string>
+    <string name="sample_close">మూసివేయి</string>
+    <string name="sample_search">శోధన పరికరాలు</string>
+    <string name="sample_empty">సరిపోలే పరికరం లేదు.</string>
+    <string name="sample_unavailable">పరికర కేటలాగ్ చదవడం సాధ్యం కాలేదు.</string>
+    <string name="sample_row_sub">Android %1$s · %2$s</string>
+    <string name="sample_row_sub_plain">%1$s</string>
+    <string name="sample_fp_shared">మరొక కేటలాగ్ పరికరం వలె అదే వేలిముద్ర</string>
+    <string name="sample_credit">కేటలాగ్ డేటా: COPG (Apache-2.0), %1$s</string>
+    <string name="sample_limit">ప్రొఫైల్ పరిమితి (100) చేరుకుంది.</string>
+</resources>

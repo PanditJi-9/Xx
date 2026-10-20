@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_security_strings.xml -->
+<resources>
+    <string name="security_tamper_title">શરૂ કરવામાં અસમર્થ</string>
+    <string name="security_tamper_message">MaxManager નું આ બિલ્ડ અકબંધ નથી. ઇન્સ્ટોલ કરેલી ફાઇલો હવે હસ્તાક્ષરિત પ્રકાશન સાથે મેળ ખાતી નથી, તેથી તે ચાલશે નહીં. સત્તાવાર બિલ્ડને તેના મૂળ સ્ત્રોતમાંથી પુનઃસ્થાપિત કરો.</string>
+    <string name="security_tamper_close">બંધ કરો</string>
+</resources>

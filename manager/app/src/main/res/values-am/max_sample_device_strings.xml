@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_sample_device_strings.xml -->
+<resources>
+    <string name="sample_pick_title">የናሙና መሣሪያ ይምረጡ</string>
+    <string name="sample_pick_button">የናሙና መሣሪያ ይምረጡ</string>
+    <string name="sample_auto_hint">መሣሪያን መምረጥ የምርት ስም፣ አምራች፣ ሞዴል፣ መሣሪያ፣ ምርት እና የጣት አሻራ ይሞላልዎታል። እነሱን እራስዎ ለመተየብ ማንዋልን ይጠቀሙ።</string>
+    <string name="sample_manual">መመሪያ</string>
+    <string name="sample_close">ገጠመ</string>
+    <string name="sample_search">መሣሪያዎችን ይፈልጉ</string>
+    <string name="sample_empty">ምንም ተዛማጅ መሳሪያ የለም።</string>
+    <string name="sample_unavailable">የመሳሪያው ካታሎግ ሊነበብ አልቻለም።</string>
+    <string name="sample_row_sub">አንድሮይድ %1$s · %2$s</string>
+    <string name="sample_row_sub_plain">%1$s</string>
+    <string name="sample_fp_shared">ከሌላ ካታሎግ መሣሪያ ጋር ተመሳሳይ የጣት አሻራ</string>
+    <string name="sample_credit">ካታሎግ ውሂብ፡ COPG (Apache-2.0)፣ %1$s</string>
+    <string name="sample_limit">የመገለጫ ገደቡ (100) ደርሷል።</string>
+</resources>

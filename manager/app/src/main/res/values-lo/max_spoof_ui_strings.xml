@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_spoof_ui_strings.xml -->
+<resources>
+    <string name="spoof_ui_real_device">ອຸປະກອນທີ່ແທ້ຈິງ</string>
+    <string name="spoof_ui_pill_verified">Config ຢືນຢັນ</string>
+    <string name="spoof_ui_pill_unverified">ບໍ່ໄດ້ກວດສອບ</string>
+    <string name="spoof_ui_pill_off">ປິດ</string>
+    <string name="spoof_device_for_app">ອຸ​ປະ​ກອນ​ສໍາ​ລັບ app ນີ້​</string>
+    <string name="spoof_device_real_hint">ແອັບນີ້ເຫັນອຸປະກອນຕົວຈິງຂອງເຈົ້າ. ແຕະໃສ່ບັດເພື່ອເລືອກອັນໜຶ່ງ.</string>
+    <string name="spoof_device_pick">ແຕະເພື່ອເລືອກອຸປະກອນຈາກລາຍການ, ຫຼືໃສ່ຂໍ້ມູນອຸປະກອນທີ່ກຳນົດເອງ.</string>
+    <string name="spoof_device_in_use">ໃຊ້ຢູ່</string>
+    <string name="spoof_device_restart">restart app ເປົ້າຫມາຍຫຼັງຈາກນັ້ນ, ບໍ່ແມ່ນລະບົບ.</string>
+    <string name="spoof_ui_apply_title">ສະໝັກໃຊ້ແອັບນີ້</string>
+    <string name="spoof_ui_apply_action">ທົບທວນແລະນໍາໃຊ້</string>
+    <string name="spoof_ui_apply_confirm_title">ນຳໃຊ້ແອັບນີ້ເທົ່ານັ້ນບໍ?</string>
+    <string name="spoof_ui_apply_confirm_text">ພຽງ​ແຕ່ app ນີ້​ແມ່ນ​ການ​ກະ​ກຽມ​; ແອັບຯອື່ນໆແມ່ນບໍ່ຖືກແຕະຕ້ອງ. restart app ເປົ້າຫມາຍຫຼັງຈາກນັ້ນ, ບໍ່ແມ່ນລະບົບ. ການແກ້ໄຂໃນພາຍຫຼັງຈະຍົກເລີກການຢືນຢັນນີ້. ຖ້າ COPG ລາຍຊື່ແອັບຯນີ້ແລ້ວ, ອຸປະກອນຂອງທ່ານຈະມີຄວາມສຳຄັນ ແລະສາຍ COPG ຍັງຄົງຢູ່ຄືເກົ່າ.</string>
+    <string name="spoof_ui_apply_confirm">ສະໝັກ</string>
+    <string name="spoof_ui_apply_reason">ການປະຕິເສດເຄື່ອງຈັກ: %1$s</string>
+    <string name="spoof_engine_absent">ໂມດູນເຄື່ອງຈັກບໍ່ສາມາດອ່ານໄດ້. ຢືນຢັນໂມດູນທີ່ module.prop ເວົ້າວ່າ id=COPG, ຕິດຕັ້ງ ຫຼືຕິດຕັ້ງມັນຄືນໃໝ່, ຈາກນັ້ນເປີດໜ້າຈໍນີ້ຄືນໃໝ່.</string>
+    <string name="spoof_engine_disabled">ໂມດູນ COPG ຖືກປິດໃຊ້ງານຢູ່ໃນຕົວຈັດການຮາກຂອງທ່ານ. ເປີດໃຊ້ມັນຢູ່ທີ່ນັ້ນ, ປິດເປີດເຄື່ອງໃໝ່, ຈາກນັ້ນສະໝັກອີກຄັ້ງ.</string>
+    <string name="spoof_engine_removal_pending">COPG ຖືກໝາຍໄວ້ສຳລັບການໂຍກຍ້າຍ ແລະຈະໝົດໄປຫຼັງຈາກການປິດເປີດໃໝ່ຄັ້ງຕໍ່ໄປ. ຕິດຕັ້ງມັນຄືນໃໝ່ກ່ອນທີ່ຈະສະໝັກ.</string>
+    <string name="spoof_engine_update_pending">ການອັບເດດ COPG ແມ່ນລໍຖ້າການປິດເປີດໃໝ່. ຣີບູດກ່ອນ, ຈາກນັ້ນສະໝັກອີກຄັ້ງ.</string>
+    <string name="spoof_ui_apply_pending">ມີການປ່ຽນແປງນັບຕັ້ງແຕ່ການສະຫມັກຄັ້ງສຸດທ້າຍ — ສະຫມັກອີກເທື່ອຫນຶ່ງເພື່ອເຮັດໃຫ້ມັນເປັນຈິງ.</string>
+    <string name="spoof_ui_restore_title">ໃຊ້ອຸປະກອນທີ່ແທ້ຈິງຂອງທ່ານ</string>
+    <string name="spoof_ui_restore_action">ເອົາການປອມແປງສໍາລັບແອັບຯນີ້</string>
+    <string name="spoof_ui_restore_notice">ອຸ​ປະ​ກອນ​ທີ່​ບັນ​ທຶກ​ໄວ້​ຂອງ​ແອັບ​ນີ້ ແລະ​ການ​ປັບ​ປ່ຽນ COPG ຂອງ​ມັນ​ຖືກ​ເອົາ​ອອກ, ແລະ​ເຄື່ອງ​ຈັກ​ຈະ​ຖືກ​ຂຽນ​ໃໝ່​ໂດຍ​ບໍ່​ມີ​ແອັບ​ນີ້. ແອັບຯອື່ນໆແມ່ນບໍ່ຖືກແຕະຕ້ອງ. ປິດເປີດແອັບຯເປົ້າໝາຍຄືນໃໝ່ຫຼັງຈາກນັ້ນ.</string>
+    <string name="app_tab_spoof">ຂີ້ຕົວະ</string>
+    <string name="spoof_picker_title">ເລືອກອຸປະກອນ</string>
+    <string name="spoof_picker_custom">ຂໍ້ມູນອຸປະກອນທີ່ກຳນົດເອງ</string>
+    <string name="spoof_picker_custom_hint">ໃສ່ຍີ່ຫໍ້, ຮູບແບບແລະລາຍນິ້ວມືທີ່ທ່ານຕ້ອງການສໍາລັບແອັບຯນີ້</string>
+    <string name="spoof_custom_title">ຂໍ້ມູນອຸປະກອນທີ່ກຳນົດເອງ</string>
+    <string name="spoof_custom_rules">ຊື່, ຍີ່ຫໍ້, ຮູບແບບ, ອຸປະກອນ ແລະຜະລິດຕະພັນແມ່ນຕ້ອງການ, ສູງສຸດ 120 ຕົວອັກສອນແຕ່ລະຕົວ, ບໍ່ມີຕົວອັກສອນຄວບຄຸມ. ຜູ້ຜະລິດ, ລາຍນິ້ວມື ແລະ SDK ເປັນທາງເລືອກ. ລາຍນິ້ວມືຕ້ອງເລີ່ມຕົ້ນດ້ວຍຍີ່ຫໍ້, ຜະລິດຕະພັນ ແລະອຸປະກອນດຽວກັນ.</string>
+    <string name="spoof_manufacturer">ຜູ້ຜະລິດ (MANUFACTURER)</string>
+    <string name="spoof_sdk">ລະດັບ SDK, ທາງເລືອກ, 1 ຫາ 100</string>
+    <string name="spoof_custom_invalid">ບາງຊ່ອງຂໍ້ມູນບໍ່ຖືກຕ້ອງ. ກວດເບິ່ງກົດລະບຽບຂ້າງເທິງ, ຫຼັງຈາກນັ້ນບັນທຶກອີກເທື່ອຫນຶ່ງ.</string>
+    <string name="spoof_custom_save">ບັນທຶກແລະເລືອກສໍາລັບ app ນີ້</string>
+    <string name="spoof_impersonation_title">ຫຼອກລວງ</string>
+    <string name="spoof_impersonation_desc">ທາງເລືອກ COPG ຟຣີເທົ່ານັ້ນ. ຂຽນໃສ່ເຄື່ອງຈັກໂດຍການທົບທວນແລະນໍາໃຊ້.</string>
+    <string name="spoof_impersonation_summary_cpu">CPU ການຫຼອກລວງ: %1$s</string>
+    <string name="spoof_impersonation_needs_device">ເລືອກອຸປະກອນສຳລັບແອັບນີ້ກ່ອນ. ຕົວເລືອກເຫຼົ່ານີ້ຖືກຂຽນດ້ວຍອຸປະກອນເທົ່ານັ້ນ.</string>
+    <string name="spoof_cpu_spoof">CPU ການຫຼອກລວງ</string>
+    <string name="spoof_cpu_real">ທີ່ແທ້ຈິງ CPU</string>
+    <string name="spoof_cpu_block">ບລັອກ CPU</string>
+    <string name="spoof_cpu_block_desc">ບໍ່ລວມແອັບນີ້ຈາກການຫຼອກລວງ CPU.</string>
+    <string name="spoof_cpu_picker_title">ເລືອກ CPU</string>
+    <string name="copg_tweaks_section">ການປັບປຸງ COPG</string>
+    <string name="copg_tweak_nolog_title">ປິດການນຳໃຊ້ການບັນທຶກ</string>
+    <string name="copg_tweak_nolog_desc">ນຳໃຊ້ການປັບບັນທຶກ COPG ກັບແອັບນີ້. ບັນທຶກຢູ່ທີ່ນີ້, ຂຽນໃສ່ເຄື່ອງຈັກໂດຍການທົບທວນຄືນແລະນໍາໃຊ້ໃນແຖບ Spoof.</string>
+    <string name="copg_tweak_dab_title">ປິດການນຳໃຊ້ຄວາມສະຫວ່າງອັດຕະໂນມັດ</string>
+    <string name="copg_tweak_dab_desc">ນຳໃຊ້ການປັບຄວາມສະຫວ່າງອັດຕະໂນມັດ COPG ກັບແອັບນີ້. ບັນທຶກຢູ່ທີ່ນີ້, ຂຽນໃສ່ເຄື່ອງຈັກໂດຍການທົບທວນຄືນແລະນໍາໃຊ້ໃນແຖບ Spoof.</string>
+    <string name="copg_tweak_kso_title">ສືບຕໍ່ເປີດໜ້າຈໍ</string>
+    <string name="copg_tweak_kso_desc">ນຳໃຊ້ການປັບປ່ຽນໜ້າຈໍຮັກສາ COPG ກັບແອັບນີ້. ບັນທຶກຢູ່ທີ່ນີ້, ຂຽນໃສ່ເຄື່ອງຈັກໂດຍການທົບທວນຄືນແລະນໍາໃຊ້ໃນແຖບ Spoof.</string>
+    <string name="copg_tweak_needs_device">ຕ້ອງການອຸປະກອນສໍາລັບແອັບຯນີ້ກ່ອນ, ໃນແຖບ Spoof.</string>
+</resources>

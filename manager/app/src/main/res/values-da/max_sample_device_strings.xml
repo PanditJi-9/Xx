@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_sample_device_strings.xml -->
+<resources>
+    <string name="sample_pick_title">Vælg prøveenhed</string>
+    <string name="sample_pick_button">Vælg prøveenhed</string>
+    <string name="sample_auto_hint">At vælge en enhed fylder mærke, producent, model, enhed, produkt og fingeraftryk for dig. Brug Manual til at skrive dem selv.</string>
+    <string name="sample_manual">Manuel</string>
+    <string name="sample_close">Tæt</string>
+    <string name="sample_search">Søg efter enheder</string>
+    <string name="sample_empty">Ingen matchende enhed.</string>
+    <string name="sample_unavailable">Enhedskataloget kunne ikke læses.</string>
+    <string name="sample_row_sub">Android %1$s · %2$s</string>
+    <string name="sample_row_sub_plain">%1$s</string>
+    <string name="sample_fp_shared">Samme fingeraftryk som en anden katalogenhed</string>
+    <string name="sample_credit">Katalogdata: COPG (Apache-2.0), %1$s</string>
+    <string name="sample_limit">Profilgrænsen (100) er nået.</string>
+</resources>

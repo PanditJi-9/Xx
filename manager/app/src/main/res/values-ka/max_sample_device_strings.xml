@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_sample_device_strings.xml -->
+<resources>
+    <string name="sample_pick_title">აირჩიეთ მოწყობილობის ნიმუში</string>
+    <string name="sample_pick_button">აირჩიეთ მოწყობილობის ნიმუში</string>
+    <string name="sample_auto_hint">მოწყობილობის არჩევა თქვენთვის ავსებს ბრენდს, მწარმოებელს, მოდელს, მოწყობილობას, პროდუქტს და თითის ანაბეჭდს. გამოიყენეთ სახელმძღვანელო, რომ თავად აკრიფოთ ისინი.</string>
+    <string name="sample_manual">სახელმძღვანელო</string>
+    <string name="sample_close">დახურვა</string>
+    <string name="sample_search">მოძებნეთ მოწყობილობები</string>
+    <string name="sample_empty">შესატყვისი მოწყობილობა არ არის.</string>
+    <string name="sample_unavailable">მოწყობილობის კატალოგის წაკითხვა ვერ მოხერხდა.</string>
+    <string name="sample_row_sub">Android %1$s · %2$s</string>
+    <string name="sample_row_sub_plain">%1$s</string>
+    <string name="sample_fp_shared">იგივე თითის ანაბეჭდი, როგორც სხვა კატალოგის მოწყობილობა</string>
+    <string name="sample_credit">კატალოგის მონაცემები: COPG (Apache-2.0), %1$s</string>
+    <string name="sample_limit">პროფილის ლიმიტი (100) მიღწეულია.</string>
+</resources>

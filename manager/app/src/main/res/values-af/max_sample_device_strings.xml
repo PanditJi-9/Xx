@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_sample_device_strings.xml -->
+<resources>
+    <string name="sample_pick_title">Kies voorbeeld toestel</string>
+    <string name="sample_pick_button">Kies voorbeeld toestel</string>
+    <string name="sample_auto_hint">Die keuse van \'n toestel vul handelsmerk, vervaardiger, model, toestel, produk en vingerafdruk vir jou. Gebruik Handleiding om dit self te tik.</string>
+    <string name="sample_manual">Handleiding</string>
+    <string name="sample_close">Maak toe</string>
+    <string name="sample_search">Soek toestelle</string>
+    <string name="sample_empty">Geen ooreenstemmende toestel nie.</string>
+    <string name="sample_unavailable">Die toestelkatalogus kon nie gelees word nie.</string>
+    <string name="sample_row_sub">Android %1$s · %2$s</string>
+    <string name="sample_row_sub_plain">%1$s</string>
+    <string name="sample_fp_shared">Dieselfde vingerafdruk as \'n ander katalogustoestel</string>
+    <string name="sample_credit">Katalogusdata: COPG (Apache-2.0), %1$s</string>
+    <string name="sample_limit">Die profiellimiet (100) is bereik.</string>
+</resources>

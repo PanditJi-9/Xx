@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_sample_device_strings.xml -->
+<resources>
+    <string name="sample_pick_title">בחר מכשיר לדוגמה</string>
+    <string name="sample_pick_button">בחר מכשיר לדוגמה</string>
+    <string name="sample_auto_hint">בחירת מכשיר ממלאת עבורך מותג, יצרן, דגם, מכשיר, מוצר וטביעת אצבע. השתמש במדריך כדי להקליד אותם בעצמך.</string>
+    <string name="sample_manual">יָדָנִי</string>
+    <string name="sample_close">לִסְגוֹר</string>
+    <string name="sample_search">חפש מכשירים</string>
+    <string name="sample_empty">אין מכשיר תואם.</string>
+    <string name="sample_unavailable">לא ניתן היה לקרוא את קטלוג המכשירים.</string>
+    <string name="sample_row_sub">אנדרואיד %1$s · %2$s</string>
+    <string name="sample_row_sub_plain">%1$s</string>
+    <string name="sample_fp_shared">אותה טביעת אצבע כמו מכשיר קטלוג אחר</string>
+    <string name="sample_credit">נתוני קטלוג: COPG (Apache-2.0), %1$s</string>
+    <string name="sample_limit">הגעת למגבלת הפרופיל (100).</string>
+</resources>

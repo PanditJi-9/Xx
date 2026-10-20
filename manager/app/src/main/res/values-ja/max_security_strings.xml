@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_security_strings.xml -->
+<resources>
+    <string name="security_tamper_title">開始できません</string>
+    <string name="security_tamper_message">この MaxManager のビルドは完全ではありません。インストールされたファイルは署名されたリリースと一致しなくなったため、実行されません。元のソースから公式ビルドを再インストールします。</string>
+    <string name="security_tamper_close">近い</string>
+</resources>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_security_strings.xml -->
+<resources>
+    <string name="security_tamper_title">Tidak dapat memulakan</string>
+    <string name="security_tamper_message">Binaan MaxManager ini tidak utuh. Fail yang dipasang tidak lagi sepadan dengan keluaran yang ditandatangani, jadi ia tidak akan dijalankan. Pasang semula binaan rasmi daripada sumber asalnya.</string>
+    <string name="security_tamper_close">tutup</string>
+</resources>

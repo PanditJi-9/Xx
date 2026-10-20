@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_spoof_ui_strings.xml -->
+<resources>
+    <string name="spoof_ui_real_device">నిజమైన పరికరం</string>
+    <string name="spoof_ui_pill_verified">కాన్ఫిగర్ ధృవీకరించబడింది</string>
+    <string name="spoof_ui_pill_unverified">ధృవీకరించబడలేదు</string>
+    <string name="spoof_ui_pill_off">ఆఫ్</string>
+    <string name="spoof_device_for_app">ఈ యాప్ కోసం పరికరం</string>
+    <string name="spoof_device_real_hint">ఈ యాప్ మీ నిజమైన పరికరాన్ని చూస్తుంది. ఒకదాన్ని ఎంచుకోవడానికి కార్డ్‌ను నొక్కండి.</string>
+    <string name="spoof_device_pick">కేటలాగ్ నుండి పరికరాన్ని ఎంచుకోవడానికి నొక్కండి లేదా అనుకూల పరికర సమాచారాన్ని నమోదు చేయండి.</string>
+    <string name="spoof_device_in_use">వాడుకలో ఉంది</string>
+    <string name="spoof_device_restart">లక్ష్యం యాప్‌ని తర్వాత పునఃప్రారంభించండి, సిస్టమ్ కాదు.</string>
+    <string name="spoof_ui_apply_title">ఈ యాప్ కోసం దరఖాస్తు చేసుకోండి</string>
+    <string name="spoof_ui_apply_action">సమీక్షించి దరఖాస్తు చేసుకోండి</string>
+    <string name="spoof_ui_apply_confirm_title">ఈ యాప్‌ను మాత్రమే వర్తింపజేయాలా?</string>
+    <string name="spoof_ui_apply_confirm_text">ఈ అనువర్తనం మాత్రమే సిద్ధం చేయబడింది; ఇతర యాప్‌లు తాకబడవు. లక్ష్యం యాప్‌ని తర్వాత పునఃప్రారంభించండి, సిస్టమ్ కాదు. తర్వాత సవరణ ఈ నిర్ధారణను రద్దు చేస్తుంది. COPG ఇప్పటికే ఈ యాప్‌ను జాబితా చేసినట్లయితే, మీ పరికరం ప్రాధాన్యతనిస్తుంది మరియు COPG లైన్ అలాగే ఉంటుంది.</string>
+    <string name="spoof_ui_apply_confirm">దరఖాస్తు చేసుకోండి</string>
+    <string name="spoof_ui_apply_reason">ఇంజిన్ తిరస్కరణ: %1$s</string>
+    <string name="spoof_engine_absent">ఇంజిన్ మాడ్యూల్ చదవదగినది కాదు. module.prop id=COPG అని చెప్పే మాడ్యూల్‌ను నిర్ధారించండి, దాన్ని ఇన్‌స్టాల్ చేయండి లేదా మళ్లీ ఇన్‌స్టాల్ చేయండి, ఆపై ఈ స్క్రీన్‌ని మళ్లీ తెరవండి.</string>
+    <string name="spoof_engine_disabled">మీ రూట్ మేనేజర్‌లో COPG మాడ్యూల్ నిలిపివేయబడింది. దాన్ని అక్కడ ప్రారంభించండి, రీబూట్ చేయండి, ఆపై మళ్లీ వర్తించండి.</string>
+    <string name="spoof_engine_removal_pending">COPG తీసివేయడానికి గుర్తు పెట్టబడింది మరియు తదుపరి రీబూట్ తర్వాత పోతుంది. దరఖాస్తు చేయడానికి ముందు దాన్ని మళ్లీ ఇన్‌స్టాల్ చేయండి.</string>
+    <string name="spoof_engine_update_pending">COPG అప్‌డేట్ రీబూట్ కోసం వేచి ఉంది. ముందుగా రీబూట్ చేయండి, ఆపై మళ్లీ వర్తించండి.</string>
+    <string name="spoof_ui_apply_pending">చివరిగా వర్తింపజేసినప్పటి నుండి మార్చబడింది — దానిని నిజం చేయడానికి మళ్లీ దరఖాస్తు చేయండి.</string>
+    <string name="spoof_ui_restore_title">మీ నిజమైన పరికరాన్ని ఉపయోగించండి</string>
+    <string name="spoof_ui_restore_action">ఈ యాప్ కోసం స్పూఫ్‌ను తీసివేయండి</string>
+    <string name="spoof_ui_restore_notice">ఈ యాప్ సేవ్ చేయబడిన పరికరం మరియు దాని COPG ట్వీక్‌లు తీసివేయబడ్డాయి మరియు ఈ యాప్ లేకుండానే ఇంజిన్ మళ్లీ వ్రాయబడుతుంది. ఇతర యాప్‌లు తాకబడవు. లక్ష్య యాప్‌ని తర్వాత పునఃప్రారంభించండి.</string>
+    <string name="app_tab_spoof">స్పూఫ్</string>
+    <string name="spoof_picker_title">పరికరాన్ని ఎంచుకోండి</string>
+    <string name="spoof_picker_custom">అనుకూల పరికర సమాచారం</string>
+    <string name="spoof_picker_custom_hint">ఈ యాప్ కోసం మీకు కావలసిన బ్రాండ్, మోడల్ మరియు వేలిముద్రను నమోదు చేయండి</string>
+    <string name="spoof_custom_title">అనుకూల పరికర సమాచారం</string>
+    <string name="spoof_custom_rules">పేరు, బ్రాండ్, మోడల్, పరికరం మరియు ఉత్పత్తి అవసరం, ఒక్కోదానికి 120 అక్షరాలు, నియంత్రణ అక్షరాలు లేవు. తయారీదారు, వేలిముద్ర మరియు SDK ఐచ్ఛికం. వేలిముద్ర తప్పనిసరిగా అదే బ్రాండ్, ఉత్పత్తి మరియు పరికరంతో ప్రారంభం కావాలి.</string>
+    <string name="spoof_manufacturer">తయారీదారు (MANUFACTURER)</string>
+    <string name="spoof_sdk">SDK స్థాయి, ఐచ్ఛికం, 1 నుండి 100</string>
+    <string name="spoof_custom_invalid">కొన్ని ఫీల్డ్‌లు చెల్లవు. ఎగువ ఉన్న నియమాలను తనిఖీ చేసి, ఆపై మళ్లీ సేవ్ చేయండి.</string>
+    <string name="spoof_custom_save">ఈ యాప్ కోసం సేవ్ చేసి ఎంచుకోండి</string>
+    <string name="spoof_impersonation_title">స్పూఫింగ్</string>
+    <string name="spoof_impersonation_desc">ఉచిత COPG ఎంపికలు మాత్రమే. సమీక్ష మరియు దరఖాస్తు ద్వారా ఇంజిన్‌కు వ్రాయబడింది.</string>
+    <string name="spoof_impersonation_summary_cpu">CPU స్పూఫింగ్: %1$s</string>
+    <string name="spoof_impersonation_needs_device">ముందుగా ఈ యాప్ కోసం పరికరాన్ని ఎంచుకోండి. ఈ ఎంపికలు పరికరంతో మాత్రమే వ్రాయబడతాయి.</string>
+    <string name="spoof_cpu_spoof">CPU స్పూఫింగ్</string>
+    <string name="spoof_cpu_real">నిజమైన CPU</string>
+    <string name="spoof_cpu_block">బ్లాక్ CPU</string>
+    <string name="spoof_cpu_block_desc">CPU స్పూఫింగ్ నుండి ఈ యాప్‌ను మినహాయిస్తుంది.</string>
+    <string name="spoof_cpu_picker_title">CPUని ఎంచుకోండి</string>
+    <string name="copg_tweaks_section">COPG ట్వీక్స్</string>
+    <string name="copg_tweak_nolog_title">లాగింగ్‌ను నిలిపివేయండి</string>
+    <string name="copg_tweak_nolog_desc">ఈ యాప్‌కి COPG లాగింగ్ సర్దుబాటును వర్తింపజేస్తుంది. ఇక్కడ సేవ్ చేయబడింది, రివ్యూ ద్వారా ఇంజిన్‌కు వ్రాసి, స్పూఫ్ ట్యాబ్‌లో వర్తించండి.</string>
+    <string name="copg_tweak_dab_title">స్వీయ-ప్రకాశాన్ని నిలిపివేయండి</string>
+    <string name="copg_tweak_dab_desc">ఈ యాప్‌కి COPG ఆటో-బ్రైట్‌నెస్ ట్వీక్‌ని వర్తింపజేస్తుంది. ఇక్కడ సేవ్ చేయబడింది, రివ్యూ ద్వారా ఇంజిన్‌కు వ్రాసి, స్పూఫ్ ట్యాబ్‌లో వర్తించండి.</string>
+    <string name="copg_tweak_kso_title">స్క్రీన్ ఆన్‌లో ఉంచండి</string>
+    <string name="copg_tweak_kso_desc">ఈ యాప్‌కి COPG కీప్-స్క్రీన్-ఆన్ ట్వీక్‌ని వర్తింపజేస్తుంది. ఇక్కడ సేవ్ చేయబడింది, రివ్యూ ద్వారా ఇంజిన్‌కు వ్రాసి, స్పూఫ్ ట్యాబ్‌లో వర్తించండి.</string>
+    <string name="copg_tweak_needs_device">స్పూఫ్ ట్యాబ్‌లో ముందుగా ఈ యాప్ కోసం పరికరం అవసరం.</string>
+</resources>

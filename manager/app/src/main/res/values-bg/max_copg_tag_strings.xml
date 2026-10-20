@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_copg_tag_strings.xml -->
+<resources>
+    <string name="copg_tags_title">COPG опции</string>
+    <string name="copg_tags_desc">Запазено като намерение и записано заедно с профила на устройството. Само четирите опции за комфорт работят на всяка версия COPG; останалите се нуждаят от COPG 6.8.0 или по-нова. PRO опциите се нуждаят от COPG PRO лиценз и двигателят може да ги игнорира.</string>
+    <string name="copg_tier_pro">PRO</string>
+    <string name="copg_footprint_resident">остава в паметта на приложението, никога не използвайте с игри против измама</string>
+    <string name="copg_need_ack">първо признайте риска по-долу</string>
+    <string name="copg_tag_refused">Избрана опция COPG не е разрешена за инсталираната версия на COPG. Нищо не беше написано.</string>
+    <string name="copg_tag_needs_device">Опциите са написани с профил на устройство, а това приложение все още няма такъв.</string>
+    <string name="copg_tag_value_hint">Стойност</string>
+    <string name="copg_tag_bad_value">Букви, цифри, интервал и . само _ - / + (до 60)</string>
+    <string name="copg_tag_save">Запазване</string>
+    <string name="copg_tag_remove">Премахнете</string>
+    <string name="copg_tag_dnd">Не безпокойте по време на игра</string>
+    <string name="copg_tag_dab">Деактивирайте автоматичната яркост</string>
+    <string name="copg_tag_kso">Дръжте екрана включен</string>
+    <string name="copg_tag_nolog">Спрете записването</string>
+    <string name="copg_tag_dpi">DPI на екрана</string>
+    <string name="copg_tag_serial">Сериен номер за всяко приложение</string>
+    <string name="copg_tag_cpu">CPU модел</string>
+    <string name="copg_tag_blocked">Насилвайте истинското CPU</string>
+    <string name="copg_tag_vpn">Скриване на VPN</string>
+    <string name="copg_tag_vpns">Скриване на VPN (стриктно)</string>
+    <string name="copg_tag_hidedev">Скриване на опциите за разработчици и USB отстраняване на грешки</string>
+    <string name="copg_tag_tz">Часова зона</string>
+    <string name="copg_tag_lang">Език и регион</string>
+    <string name="copg_tag_gpu">GPU модел</string>
+    <string name="copg_tag_cow">Свойства на компилация (копиране при запис)</string>
+    <string name="copg_tag_aid">Android ID</string>
+    <string name="copg_tag_gaid">реклама ID</string>
+    <string name="copg_tag_appset">Набор от приложения ID</string>
+    <string name="copg_tag_drm">Widevine / DRM</string>
+    <string name="copg_tag_imei">IMEI</string>
+    <string name="copg_tag_sim">SIM оператор (безопасен)</string>
+    <string name="copg_tag_simx">SIM оператор (агресивен)</string>
+    <string name="copg_tag_ua">Потребителски агент на WebView</string>
+    <string name="copg_tag_mock">Скриване на фиктивното местоположение</string>
+</resources>

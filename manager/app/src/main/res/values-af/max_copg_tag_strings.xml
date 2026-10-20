@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_copg_tag_strings.xml -->
+<resources>
+    <string name="copg_tags_title">COPG opsies</string>
+    <string name="copg_tags_desc">Gestoor as voorneme en saam met die toestelprofiel geskryf. Slegs die vier geriefsopsies werk op elke COPG-weergawe; die res benodig COPG 6.8.0 of nuwer. PRO-opsies benodig \'n COPG PRO-lisensie, en die enjin kan dit ignoreer.</string>
+    <string name="copg_tier_pro">PRO</string>
+    <string name="copg_footprint_resident">bly in die program se geheue, moet nooit met anti-cheat-speletjies gebruik nie</string>
+    <string name="copg_need_ack">erken eers die risiko hieronder</string>
+    <string name="copg_tag_refused">\'n Geselekteerde COPG-opsie word nie toegelaat vir die geïnstalleerde COPG-weergawe nie. Niks is geskryf nie.</string>
+    <string name="copg_tag_needs_device">Opsies word met \'n toestelprofiel geskryf, en hierdie toepassing het nog geen.</string>
+    <string name="copg_tag_value_hint">Waarde</string>
+    <string name="copg_tag_bad_value">Letters, syfers, spasie en . Slegs _ - / + (tot 60)</string>
+    <string name="copg_tag_save">Stoor</string>
+    <string name="copg_tag_remove">Verwyder</string>
+    <string name="copg_tag_dnd">Moenie steur nie terwyl jy speel</string>
+    <string name="copg_tag_dab">Deaktiveer outomatiese helderheid</string>
+    <string name="copg_tag_kso">Hou skerm aan</string>
+    <string name="copg_tag_nolog">Hou op om aan te meld</string>
+    <string name="copg_tag_dpi">Skerm DPI</string>
+    <string name="copg_tag_serial">Per-toepassing reeksnommer</string>
+    <string name="copg_tag_cpu">CPU model</string>
+    <string name="copg_tag_blocked">Forseer die ware CPU</string>
+    <string name="copg_tag_vpn">Versteek VPN</string>
+    <string name="copg_tag_vpns">Versteek VPN (streng)</string>
+    <string name="copg_tag_hidedev">Versteek ontwikkelaaropsies en USB-ontfouting</string>
+    <string name="copg_tag_tz">Tydsone</string>
+    <string name="copg_tag_lang">Taal en streek</string>
+    <string name="copg_tag_gpu">GPU model</string>
+    <string name="copg_tag_cow">Bou eiendomme (kopieer-op-skryf)</string>
+    <string name="copg_tag_aid">Android ID</string>
+    <string name="copg_tag_gaid">Advertensies ID</string>
+    <string name="copg_tag_appset">Toepassingstel ID</string>
+    <string name="copg_tag_drm">Widevine / DRM</string>
+    <string name="copg_tag_imei">IMEI</string>
+    <string name="copg_tag_sim">SIM-diensverskaffer (veilig)</string>
+    <string name="copg_tag_simx">SIM-diensverskaffer (aggressief)</string>
+    <string name="copg_tag_ua">WebView User-Agent</string>
+    <string name="copg_tag_mock">Versteek spotligging</string>
+</resources>

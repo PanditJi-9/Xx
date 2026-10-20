@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_security_strings.xml -->
+<resources>
+    <string name="security_tamper_title">Kan nie begin nie</string>
+    <string name="security_tamper_message">Hierdie bou van MaxManager is nie ongeskonde nie. Die geïnstalleerde lêers pas nie meer by die getekende vrystelling nie, so dit sal nie loop nie. Herinstalleer die amptelike bou vanaf sy oorspronklike bron.</string>
+    <string name="security_tamper_close">Maak toe</string>
+</resources>

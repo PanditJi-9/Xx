@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_security_strings.xml -->
+<resources>
+    <string name="security_tamper_title">Ei voi käynnistää</string>
+    <string name="security_tamper_message">Tämä versio MaxManager ei ole ehjä. Asennetut tiedostot eivät enää vastaa allekirjoitettua julkaisua, joten se ei toimi. Asenna virallinen versio uudelleen sen alkuperäisestä lähteestä.</string>
+    <string name="security_tamper_close">Lähellä</string>
+</resources>

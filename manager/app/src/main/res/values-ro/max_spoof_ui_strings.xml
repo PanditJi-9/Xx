@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_spoof_ui_strings.xml -->
+<resources>
+    <string name="spoof_ui_real_device">Dispozitiv real</string>
+    <string name="spoof_ui_pill_verified">Configurație verificată</string>
+    <string name="spoof_ui_pill_unverified">Neverificat</string>
+    <string name="spoof_ui_pill_off">Oprit</string>
+    <string name="spoof_device_for_app">Dispozitiv pentru această aplicație</string>
+    <string name="spoof_device_real_hint">Această aplicație vă vede dispozitivul real. Atingeți cardul pentru a alege unul.</string>
+    <string name="spoof_device_pick">Atingeți pentru a alege un dispozitiv din catalog sau introduceți informații despre dispozitiv personalizate.</string>
+    <string name="spoof_device_in_use">În uz</string>
+    <string name="spoof_device_restart">Reporniți apoi aplicația țintă, nu sistemul.</string>
+    <string name="spoof_ui_apply_title">Aplicați pentru această aplicație</string>
+    <string name="spoof_ui_apply_action">Examinați și aplicați</string>
+    <string name="spoof_ui_apply_confirm_title">Aplicați numai această aplicație?</string>
+    <string name="spoof_ui_apply_confirm_text">Doar această aplicație este pregătită; alte aplicații sunt neatinse. Reporniți apoi aplicația țintă, nu sistemul. O modificare ulterioară anulează această confirmare. Dacă COPG listează deja această aplicație, dispozitivul dvs. are prioritate și linia COPG rămâne așa cum este.</string>
+    <string name="spoof_ui_apply_confirm">Aplicați</string>
+    <string name="spoof_ui_apply_reason">Refuz motor: %1$s</string>
+    <string name="spoof_engine_absent">Modulul motorului nu poate fi citit. Confirmați un modul al cărui module.prop spune id=COPG, instalați-l sau reinstalați-l, apoi redeschideți acest ecran.</string>
+    <string name="spoof_engine_disabled">Modulul COPG este dezactivat în managerul dumneavoastră rădăcină. Activați-l acolo, reporniți, apoi aplicați din nou.</string>
+    <string name="spoof_engine_removal_pending">COPG este marcat pentru eliminare și va dispărea după următoarea repornire. Reinstalați-l înainte de aplicare.</string>
+    <string name="spoof_engine_update_pending">O actualizare COPG așteaptă o repornire. Reporniți mai întâi, apoi aplicați din nou.</string>
+    <string name="spoof_ui_apply_pending">Schimbat de la ultima aplicație — aplicați din nou pentru a o face reală.</string>
+    <string name="spoof_ui_restore_title">Folosește-ți dispozitivul real</string>
+    <string name="spoof_ui_restore_action">Eliminați falsificarea pentru această aplicație</string>
+    <string name="spoof_ui_restore_notice">Dispozitivul salvat al acestei aplicații și ajustările sale COPG sunt eliminate, iar motorul este rescris fără această aplicație. Alte aplicații sunt neatinse. Reporniți apoi aplicația țintă.</string>
+    <string name="app_tab_spoof">Spoof</string>
+    <string name="spoof_picker_title">Alegeți un dispozitiv</string>
+    <string name="spoof_picker_custom">Informații personalizate despre dispozitiv</string>
+    <string name="spoof_picker_custom_hint">Introduceți marca, modelul și amprenta dorită pentru această aplicație</string>
+    <string name="spoof_custom_title">Informații personalizate despre dispozitiv</string>
+    <string name="spoof_custom_rules">Numele, marca, modelul, dispozitivul și produsul sunt necesare, până la 120 de caractere fiecare, fără caractere de control. Producătorul, amprenta și SDK sunt opționale. O amprentă trebuie să înceapă cu aceeași marcă, produs și dispozitiv.</string>
+    <string name="spoof_manufacturer">Producator (PRODUCATOR)</string>
+    <string name="spoof_sdk">Nivel SDK, opțional, de la 1 la 100</string>
+    <string name="spoof_custom_invalid">Unele câmpuri sunt nevalide. Verificați regulile de mai sus, apoi salvați din nou.</string>
+    <string name="spoof_custom_save">Salvați și alegeți pentru această aplicație</string>
+    <string name="spoof_impersonation_title">Falsificarea</string>
+    <string name="spoof_impersonation_desc">Numai opțiuni gratuite COPG. Scris la motor de Revizuiți și aplicați.</string>
+    <string name="spoof_impersonation_summary_cpu">CPU falsificare: %1$s</string>
+    <string name="spoof_impersonation_needs_device">Alegeți mai întâi un dispozitiv pentru această aplicație. Aceste opțiuni sunt scrise numai cu un dispozitiv.</string>
+    <string name="spoof_cpu_spoof">CPU falsificare</string>
+    <string name="spoof_cpu_real">Real CPU</string>
+    <string name="spoof_cpu_block">Blocați CPU</string>
+    <string name="spoof_cpu_block_desc">Exclude această aplicație de la CPU falsificare.</string>
+    <string name="spoof_cpu_picker_title">Alegeți un CPU</string>
+    <string name="copg_tweaks_section">ajustări COPG</string>
+    <string name="copg_tweak_nolog_title">Dezactivați înregistrarea în jurnal</string>
+    <string name="copg_tweak_nolog_desc">Aplică modificarea de înregistrare COPG la această aplicație. Salvat aici, scris în motor de Review și aplicat în fila Spoof.</string>
+    <string name="copg_tweak_dab_title">Dezactivați luminozitatea automată</string>
+    <string name="copg_tweak_dab_desc">Aplică ajustarea automată a luminozității COPG acestei aplicații. Salvat aici, scris în motor de Review și aplicat în fila Spoof.</string>
+    <string name="copg_tweak_kso_title">Păstrați ecranul aprins</string>
+    <string name="copg_tweak_kso_desc">Aplică ajustarea COPG pentru menținerea ecranului la această aplicație. Salvat aici, scris în motor de Review și aplicat în fila Spoof.</string>
+    <string name="copg_tweak_needs_device">Mai întâi are nevoie de un dispozitiv pentru această aplicație, în fila Spoof.</string>
+</resources>

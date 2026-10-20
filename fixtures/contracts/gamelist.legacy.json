@@ -1,0 +1,15 @@
+{
+  "com.legacy.seed" : {
+    "perf_lite_mode": "default",
+    "dnd_on_gaming": "true",
+    "renderer": "skiavk",
+    "resolution_target": "0.5"
+  },
+  "com.no.res.key": {
+    "refresh_rate": "144"
+  },
+  "com.both.keys": {
+    "resolution_downscale": "0.75",
+    "resolution_target": "0.5"
+  }
+}

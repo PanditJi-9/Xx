@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_security_strings.xml -->
+<resources>
+    <string name="security_tamper_title">Ei saa käivitada</string>
+    <string name="security_tamper_message">See MaxManager järg pole terve. Installitud failid ei vasta enam allkirjastatud väljaandele, mistõttu seda ei käivitata. Installige ametlik versioon selle algallikast uuesti.</string>
+    <string name="security_tamper_close">Sule</string>
+</resources>

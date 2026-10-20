@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_copg_tag_strings.xml -->
+<resources>
+    <string name="copg_tags_title">COPG опциялары</string>
+    <string name="copg_tags_desc">Мақсат ретінде сақталған және құрылғы профилімен бірге жазылған. Әрбір COPG нұсқасында тек төрт ыңғайлы опция жұмыс істейді; қалғандарына COPG 6.8.0 немесе одан жаңа нұсқасы қажет. PRO опцияларына COPG PRO лицензиясы қажет және қозғалтқыш оларды елемеуі мүмкін.</string>
+    <string name="copg_tier_pro">PRO</string>
+    <string name="copg_footprint_resident">қолданбаның жадында сақталады, ешқашан алдауға қарсы ойындармен пайдаланбаңыз</string>
+    <string name="copg_need_ack">алдымен төмендегі тәуекелді мойындаңыз</string>
+    <string name="copg_tag_refused">Таңдалған COPG опциясы орнатылған COPG нұсқасы үшін рұқсат етілмейді. Ештеңе жазылмады.</string>
+    <string name="copg_tag_needs_device">Параметрлер құрылғы профилімен жазылған және бұл қолданбада әлі жоқ.</string>
+    <string name="copg_tag_value_hint">Мән</string>
+    <string name="copg_tag_bad_value">Әріптер, сандар, бос орындар және . _ - / + ғана (60-қа дейін)</string>
+    <string name="copg_tag_save">Сақтау</string>
+    <string name="copg_tag_remove">Жою</string>
+    <string name="copg_tag_dnd">Ойнап жатқанда Мазаламау режимі</string>
+    <string name="copg_tag_dab">Автоматты жарықтандыруды өшіріңіз</string>
+    <string name="copg_tag_kso">Экранды қосулы ұстаңыз</string>
+    <string name="copg_tag_nolog">Тіркеуді тоқтатыңыз</string>
+    <string name="copg_tag_dpi">Экранның DPI</string>
+    <string name="copg_tag_serial">Әр қолданбаның сериялық нөмірі</string>
+    <string name="copg_tag_cpu">CPU үлгісі</string>
+    <string name="copg_tag_blocked">Нақты CPU мәнін мәжбүрлеңіз</string>
+    <string name="copg_tag_vpn">VPN жасыру</string>
+    <string name="copg_tag_vpns">VPN жасыру (қатаң)</string>
+    <string name="copg_tag_hidedev">Әзірлеуші ​​​​параметрлерін және USB күйін келтіруді жасыру</string>
+    <string name="copg_tag_tz">Уақыт белдеуі</string>
+    <string name="copg_tag_lang">Тіл және аймақ</string>
+    <string name="copg_tag_gpu">GPU үлгісі</string>
+    <string name="copg_tag_cow">Құрастыру сипаттары (жазуға көшіру)</string>
+    <string name="copg_tag_aid">Android ID</string>
+    <string name="copg_tag_gaid">Жарнама ID</string>
+    <string name="copg_tag_appset">Қолданбалар жинағы ID</string>
+    <string name="copg_tag_drm">Widevine / DRM</string>
+    <string name="copg_tag_imei">IMEI</string>
+    <string name="copg_tag_sim">SIM операторы (қауіпсіз)</string>
+    <string name="copg_tag_simx">SIM операторы (агрессивті)</string>
+    <string name="copg_tag_ua">WebView пайдаланушы-агент</string>
+    <string name="copg_tag_mock">Жалған орынды жасыру</string>
+</resources>

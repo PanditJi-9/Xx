@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_sample_device_strings.xml -->
+<resources>
+    <string name="sample_pick_title">Vyberte vzorové zařízení</string>
+    <string name="sample_pick_button">Vyberte vzorové zařízení</string>
+    <string name="sample_auto_hint">Výběr zařízení za vás vyplní značku, výrobce, model, zařízení, produkt a otisk prstu. Pomocí Manual je zadejte sami.</string>
+    <string name="sample_manual">Manuál</string>
+    <string name="sample_close">Blízko</string>
+    <string name="sample_search">Vyhledejte zařízení</string>
+    <string name="sample_empty">Žádné odpovídající zařízení.</string>
+    <string name="sample_unavailable">Katalog zařízení nelze přečíst.</string>
+    <string name="sample_row_sub">Android %1$s · %2$s</string>
+    <string name="sample_row_sub_plain">%1$s</string>
+    <string name="sample_fp_shared">Stejný otisk jako jiné katalogové zařízení</string>
+    <string name="sample_credit">Katalogová data: COPG (Apache-2.0), %1$s</string>
+    <string name="sample_limit">Bylo dosaženo limitu profilu (100).</string>
+</resources>

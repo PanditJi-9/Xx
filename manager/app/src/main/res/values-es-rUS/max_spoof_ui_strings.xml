@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_spoof_ui_strings.xml -->
+<resources>
+    <string name="spoof_ui_real_device">Dispositivo real</string>
+    <string name="spoof_ui_pill_verified">Configuración verificada</string>
+    <string name="spoof_ui_pill_unverified">No verificado</string>
+    <string name="spoof_ui_pill_off">Apagado</string>
+    <string name="spoof_device_for_app">Dispositivo para esta aplicación</string>
+    <string name="spoof_device_real_hint">Esta aplicación ve tu dispositivo real. Toca la tarjeta para elegir una.</string>
+    <string name="spoof_device_pick">Toque para elegir un dispositivo del catálogo o ingrese información personalizada del dispositivo.</string>
+    <string name="spoof_device_in_use">En uso</string>
+    <string name="spoof_device_restart">Luego reinicie la aplicación de destino, no el sistema.</string>
+    <string name="spoof_ui_apply_title">Solicite esta aplicación</string>
+    <string name="spoof_ui_apply_action">Revisar y aplicar</string>
+    <string name="spoof_ui_apply_confirm_title">¿Aplicar solo esta aplicación?</string>
+    <string name="spoof_ui_apply_confirm_text">Sólo esta aplicación está preparada; otras aplicaciones no se modifican. Luego reinicie la aplicación de destino, no el sistema. Una edición posterior cancela esta confirmación. Si COPG ya incluye esta aplicación, su dispositivo tiene prioridad y la línea COPG permanece como está.</string>
+    <string name="spoof_ui_apply_confirm">Aplicar</string>
+    <string name="spoof_ui_apply_reason">Rechazo del motor: %1$s</string>
+    <string name="spoof_engine_absent">El módulo del motor no es legible. Confirme un módulo cuyo module.prop diga id=COPG, instálelo o reinstálelo y luego vuelva a abrir esta pantalla.</string>
+    <string name="spoof_engine_disabled">El módulo COPG está deshabilitado en su administrador raíz. Habilítelo allí, reinicie y luego aplique nuevamente.</string>
+    <string name="spoof_engine_removal_pending">COPG está marcado para ser eliminado y desaparecerá después del próximo reinicio. Vuelva a instalarlo antes de aplicar.</string>
+    <string name="spoof_engine_update_pending">Una actualización de COPG está esperando un reinicio. Reinicie primero y luego aplique nuevamente.</string>
+    <string name="spoof_ui_apply_pending">Modificado desde la última solicitud; aplíquelo nuevamente para que sea real.</string>
+    <string name="spoof_ui_restore_title">Usa tu dispositivo real</string>
+    <string name="spoof_ui_restore_action">Eliminar la falsificación de esta aplicación</string>
+    <string name="spoof_ui_restore_notice">El dispositivo guardado de esta aplicación y sus ajustes COPG se eliminan y el motor se reescribe sin esta aplicación. Otras aplicaciones están intactas. Reinicie la aplicación de destino después.</string>
+    <string name="app_tab_spoof">Parodia</string>
+    <string name="spoof_picker_title">Elige un dispositivo</string>
+    <string name="spoof_picker_custom">Información personalizada del dispositivo</string>
+    <string name="spoof_picker_custom_hint">Ingresa la marca, modelo y huella digital que deseas para esta aplicación</string>
+    <string name="spoof_custom_title">Información personalizada del dispositivo</string>
+    <string name="spoof_custom_rules">Se requieren nombre, marca, modelo, dispositivo y producto, de hasta 120 caracteres cada uno, sin caracteres de control. El fabricante, la huella digital y el SDK son opcionales. Una huella digital debe comenzar con la misma marca, producto y dispositivo.</string>
+    <string name="spoof_manufacturer">Fabricante (FABRICANTE)</string>
+    <string name="spoof_sdk">Nivel SDK, opcional, 1 a 100</string>
+    <string name="spoof_custom_invalid">Algunos campos no son válidos. Verifique las reglas anteriores y luego guárdelas nuevamente.</string>
+    <string name="spoof_custom_save">Guardar y elegir para esta aplicación</string>
+    <string name="spoof_impersonation_title">suplantación de identidad</string>
+    <string name="spoof_impersonation_desc">Solo opciones COPG gratuitas. Escrito al motor por Revisar y aplicar.</string>
+    <string name="spoof_impersonation_summary_cpu">CPU suplantación de identidad: %1$s</string>
+    <string name="spoof_impersonation_needs_device">Primero elija un dispositivo para esta aplicación. Estas opciones se escriben solo con un dispositivo.</string>
+    <string name="spoof_cpu_spoof">CPU suplantación de identidad</string>
+    <string name="spoof_cpu_real">realesCPU</string>
+    <string name="spoof_cpu_block">Bloquear CPU</string>
+    <string name="spoof_cpu_block_desc">Excluye esta aplicación de la suplantación de identidad CPU.</string>
+    <string name="spoof_cpu_picker_title">Elige un CPU</string>
+    <string name="copg_tweaks_section">Ajustes COPG</string>
+    <string name="copg_tweak_nolog_title">Deshabilitar el registro</string>
+    <string name="copg_tweak_nolog_desc">Aplica el ajuste de registro COPG a esta aplicación. Guardado aquí, escrito en el motor mediante Revisión y aplicado en la pestaña Spoof.</string>
+    <string name="copg_tweak_dab_title">Desactivar el brillo automático</string>
+    <string name="copg_tweak_dab_desc">Aplica el ajuste de brillo automático COPG a esta aplicación. Guardado aquí, escrito en el motor mediante Revisión y aplicado en la pestaña Spoof.</string>
+    <string name="copg_tweak_kso_title">Mantener la pantalla encendida</string>
+    <string name="copg_tweak_kso_desc">Aplica el ajuste COPG para mantener la pantalla encendida a esta aplicación. Guardado aquí, escrito en el motor mediante Revisión y aplicado en la pestaña Spoof.</string>
+    <string name="copg_tweak_needs_device">Primero necesita un dispositivo para esta aplicación, en la pestaña Spoof.</string>
+</resources>

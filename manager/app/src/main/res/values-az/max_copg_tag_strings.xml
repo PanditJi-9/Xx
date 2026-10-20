@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_copg_tag_strings.xml -->
+<resources>
+    <string name="copg_tags_title">COPG variantları</string>
+    <string name="copg_tags_desc">Niyyət kimi saxlanılıb və cihaz profili ilə birlikdə yazılıb. Hər COPG versiyasında yalnız dörd rahatlıq variantı işləyir; qalanlara COPG 6.8.0 və ya daha yenisi lazımdır. PRO seçimləri COPG PRO lisenziyasına ehtiyac duyur və mühərrik onlara məhəl qoymur.</string>
+    <string name="copg_tier_pro">PRO</string>
+    <string name="copg_footprint_resident">proqramın yaddaşında qalır, heç vaxt fırıldaqçı oyunlarla istifadə etməyin</string>
+    <string name="copg_need_ack">əvvəlcə aşağıdakı riski qəbul edin</string>
+    <string name="copg_tag_refused">Quraşdırılmış COPG versiyası üçün seçilmiş COPG seçiminə icazə verilmir. Heç nə yazılmayıb.</string>
+    <string name="copg_tag_needs_device">Seçimlər cihaz profili ilə yazılır və bu proqramda hələ heç biri yoxdur.</string>
+    <string name="copg_tag_value_hint">Dəyər</string>
+    <string name="copg_tag_bad_value">Hərflər, rəqəmlər, boşluq və . _ - / + yalnız (60-a qədər)</string>
+    <string name="copg_tag_save">Saxla</string>
+    <string name="copg_tag_remove">Sil</string>
+    <string name="copg_tag_dnd">Oynayarkən Narahat Etməyin</string>
+    <string name="copg_tag_dab">Avtomatik parlaqlığı söndürün</string>
+    <string name="copg_tag_kso">Ekranı açıq saxlayın</string>
+    <string name="copg_tag_nolog">Girişi dayandırın</string>
+    <string name="copg_tag_dpi">Ekran DPI</string>
+    <string name="copg_tag_serial">Proqram başına seriya nömrəsi</string>
+    <string name="copg_tag_cpu">CPU modeli</string>
+    <string name="copg_tag_blocked">Həqiqi CPU-i məcbur edin</string>
+    <string name="copg_tag_vpn">VPN-i gizlədin</string>
+    <string name="copg_tag_vpns">VPN-i gizlədin (ciddi)</string>
+    <string name="copg_tag_hidedev">Tərtibatçı Seçimlərini və USB sazlamanı gizlədin</string>
+    <string name="copg_tag_tz">Saat qurşağı</string>
+    <string name="copg_tag_lang">Dil və bölgə</string>
+    <string name="copg_tag_gpu">GPU modeli</string>
+    <string name="copg_tag_cow">Xüsusiyyətləri qurun (kopyala-yazma)</string>
+    <string name="copg_tag_aid">Android ID</string>
+    <string name="copg_tag_gaid">Reklam ID</string>
+    <string name="copg_tag_appset">Proqram Seti ID</string>
+    <string name="copg_tag_drm">Widevine / DRM</string>
+    <string name="copg_tag_imei">IMEI</string>
+    <string name="copg_tag_sim">SİM daşıyıcısı (təhlükəsiz)</string>
+    <string name="copg_tag_simx">SİM daşıyıcısı (aqressiv)</string>
+    <string name="copg_tag_ua">WebView İstifadəçi-Agent</string>
+    <string name="copg_tag_mock">Saxta məkanı gizlədin</string>
+</resources>

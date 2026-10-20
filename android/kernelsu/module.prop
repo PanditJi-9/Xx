@@ -1,0 +1,9 @@
+# KernelSU Next module for MaxManager
+# ====================================
+
+id=nees_maxmanager
+name=MaxManager
+version=V2
+versionCode=10000
+author=MaxManager Project
+description=MaxManager - Intelligent device performance management with Digital Twin and RL Agent. Provides kernel-level optimization and adaptive performance profiles.

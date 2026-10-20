@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_sample_device_strings.xml -->
+<resources>
+    <string name="sample_pick_title">ନମୁନା ଉପକରଣ ବାଛନ୍ତୁ |</string>
+    <string name="sample_pick_button">ନମୁନା ଉପକରଣ ବାଛନ୍ତୁ |</string>
+    <string name="sample_auto_hint">ଏକ ଡିଭାଇସ୍ ବାଛିବା ଆପଣଙ୍କ ପାଇଁ ବ୍ରାଣ୍ଡ, ନିର୍ମାତା, ମଡେଲ୍, ଡିଭାଇସ୍, ଉତ୍ପାଦ ଏବଂ ଫିଙ୍ଗର ପ୍ରିଣ୍ଟ ପୂରଣ କରେ | ସେଗୁଡିକ ନିଜେ ଟାଇପ୍ କରିବାକୁ ମାନୁଆଲ୍ ବ୍ୟବହାର କରନ୍ତୁ |</string>
+    <string name="sample_manual">ମାନୁଆଲ୍ |</string>
+    <string name="sample_close">ବନ୍ଦ</string>
+    <string name="sample_search">ସନ୍ଧାନ ଉପକରଣଗୁଡ଼ିକ |</string>
+    <string name="sample_empty">କ match ଣସି ମେଳକ ଉପକରଣ ନାହିଁ |</string>
+    <string name="sample_unavailable">ଡିଭାଇସ୍ କାଟାଲଗ୍ ପ read ିହେଲା ନାହିଁ |</string>
+    <string name="sample_row_sub">ଆଣ୍ଡ୍ରଏଡ୍ %1$s · %2$s |</string>
+    <string name="sample_row_sub_plain">%1$s</string>
+    <string name="sample_fp_shared">ଅନ୍ୟ ଏକ କାଟାଲଗ୍ ଉପକରଣ ଭାବରେ ସମାନ ଫିଙ୍ଗର ପ୍ରିଣ୍ଟ |</string>
+    <string name="sample_credit">କାଟାଲଗ୍ ତଥ୍ୟ: COPG (Apache-2.0), %1$s |</string>
+    <string name="sample_limit">ପ୍ରୋଫାଇଲ୍ ସୀମା (100) ପହଞ୍ଚିଛି |</string>
+</resources>

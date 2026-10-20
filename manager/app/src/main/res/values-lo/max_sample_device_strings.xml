@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_sample_device_strings.xml -->
+<resources>
+    <string name="sample_pick_title">ເລືອກອຸປະກອນຕົວຢ່າງ</string>
+    <string name="sample_pick_button">ເລືອກອຸປະກອນຕົວຢ່າງ</string>
+    <string name="sample_auto_hint">ການເລືອກອຸປະກອນຕື່ມໃສ່ຍີ່ຫໍ້, ຜູ້ຜະລິດ, ຮູບແບບ, ອຸປະກອນ, ຜະລິດຕະພັນ ແລະລາຍນິ້ວມືສໍາລັບທ່ານ. ໃຊ້ຄູ່ມືເພື່ອພິມພວກມັນດ້ວຍຕົວເອງ.</string>
+    <string name="sample_manual">ຄູ່ມື</string>
+    <string name="sample_close">ປິດ</string>
+    <string name="sample_search">ຊອກຫາອຸປະກອນ</string>
+    <string name="sample_empty">ບໍ່ມີອຸປະກອນທີ່ກົງກັນ.</string>
+    <string name="sample_unavailable">ບໍ່ສາມາດອ່ານລາຍການອຸປະກອນໄດ້.</string>
+    <string name="sample_row_sub">Android %1$s · %2$s</string>
+    <string name="sample_row_sub_plain">%1$s</string>
+    <string name="sample_fp_shared">ລາຍນິ້ວມືດຽວກັນກັບອຸປະກອນລາຍການອື່ນ</string>
+    <string name="sample_credit">ຂໍ້ມູນລາຍການ: COPG (Apache-2.0), %1$s</string>
+    <string name="sample_limit">ຮອດຂີດຈຳກັດໂປຣໄຟລ໌ (100) ແລ້ວ.</string>
+</resources>

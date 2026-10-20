@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_spoof_ui_strings.xml -->
+<resources>
+    <string name="spoof_ui_real_device">Haqiqiy qurilma</string>
+    <string name="spoof_ui_pill_verified">Konfiguratsiya tasdiqlandi</string>
+    <string name="spoof_ui_pill_unverified">Tasdiqlanmagan</string>
+    <string name="spoof_ui_pill_off">Oʻchirilgan</string>
+    <string name="spoof_device_for_app">Ushbu ilova uchun qurilma</string>
+    <string name="spoof_device_real_hint">Bu ilova haqiqiy qurilmangizni koʻradi. Bittasini tanlash uchun kartani bosing.</string>
+    <string name="spoof_device_pick">Katalogdan qurilma tanlash yoki moslashtirilgan qurilma maʼlumotlarini kiritish uchun ga teging.</string>
+    <string name="spoof_device_in_use">Foydalanishda</string>
+    <string name="spoof_device_restart">Keyin tizimni emas, maqsadli ilovani qayta ishga tushiring.</string>
+    <string name="spoof_ui_apply_title">Ushbu ilovaga murojaat qiling</string>
+    <string name="spoof_ui_apply_action">Ko\'rib chiqing va murojaat qiling</string>
+    <string name="spoof_ui_apply_confirm_title">Faqat shu ilova qoʻllanilsinmi?</string>
+    <string name="spoof_ui_apply_confirm_text">Faqatgina ushbu ilova tayyorlangan; boshqa ilovalarga tegilmagan. Keyin tizimni emas, maqsadli ilovani qayta ishga tushiring. Keyinchalik tahrir bu tasdiqni bekor qiladi. Agar COPG allaqachon ushbu ilovani ro\'yxatga kiritgan bo\'lsa, qurilmangiz ustuvor ahamiyatga ega va COPG liniyasi avvalgidek qoladi.</string>
+    <string name="spoof_ui_apply_confirm">Murojaat qiling</string>
+    <string name="spoof_ui_apply_reason">Dvigatelni rad etish: %1$s</string>
+    <string name="spoof_engine_absent">Dvigatel modulini o\'qib bo\'lmaydi. module.prop id=COPG deb yozilgan modulni tasdiqlang, uni oʻrnating yoki qayta oʻrnating, soʻngra ushbu ekranni qayta oching.</string>
+    <string name="spoof_engine_disabled">Ildiz menejeringizda COPG moduli o\'chirilgan. U yerda uni yoqing, qayta ishga tushiring, so‘ng yana qo‘llang.</string>
+    <string name="spoof_engine_removal_pending">COPG o\'chirish uchun belgilangan va keyingi qayta ishga tushirilgandan so\'ng o\'chib ketadi. Qo\'llashdan oldin uni qayta o\'rnating.</string>
+    <string name="spoof_engine_update_pending">COPG yangilanishi qayta ishga tushirishni kutmoqda. Avval qayta ishga tushiring, keyin yana qo\'llang.</string>
+    <string name="spoof_ui_apply_pending">Oxirgi amaldan beri oʻzgartirildi — uni haqiqiy qilish uchun qaytadan murojaat qiling.</string>
+    <string name="spoof_ui_restore_title">Haqiqiy qurilmangizdan foydalaning</string>
+    <string name="spoof_ui_restore_action">Ushbu ilova uchun soxtalikni olib tashlang</string>
+    <string name="spoof_ui_restore_notice">Bu ilovaning saqlangan qurilmasi va uning COPG sozlamalari olib tashlanadi va vosita ushbu ilovasiz qayta yoziladi. Boshqa ilovalarga tegilmagan. Keyin maqsadli ilovani qayta ishga tushiring.</string>
+    <string name="app_tab_spoof">Soxta</string>
+    <string name="spoof_picker_title">Qurilmani tanlang</string>
+    <string name="spoof_picker_custom">Shaxsiy qurilma ma\'lumotlari</string>
+    <string name="spoof_picker_custom_hint">Ushbu ilova uchun kerakli brend, model va barmoq izini kiriting</string>
+    <string name="spoof_custom_title">Shaxsiy qurilma ma\'lumotlari</string>
+    <string name="spoof_custom_rules">Nomi, brendi, modeli, qurilmasi va mahsuloti talab qilinadi, har biri 120 ta belgidan iborat bo‘lishi kerak, nazorat belgilarisiz. Ishlab chiqaruvchi, barmoq izi va SDK ixtiyoriy. Barmoq izi bir xil brend, mahsulot va qurilmadan boshlanishi kerak.</string>
+    <string name="spoof_manufacturer">Ishlab chiqaruvchi (ishlab chiqaruvchi)</string>
+    <string name="spoof_sdk">SDK darajasi, ixtiyoriy, 1 dan 100 gacha</string>
+    <string name="spoof_custom_invalid">Ayrim maydonlar yaroqsiz. Yuqoridagi qoidalarni tekshiring, keyin yana saqlang.</string>
+    <string name="spoof_custom_save">Saqlang va ushbu ilovani tanlang</string>
+    <string name="spoof_impersonation_title">Spoofing</string>
+    <string name="spoof_impersonation_desc">Faqat bepul COPG imkoniyatlari. Ko\'rib chiqish va qo\'llash orqali dvigatelga yozilgan.</string>
+    <string name="spoof_impersonation_summary_cpu">CPU firibgarlik: %1$s</string>
+    <string name="spoof_impersonation_needs_device">Avval ushbu ilova uchun qurilmani tanlang. Bu variantlar faqat qurilma bilan yoziladi.</string>
+    <string name="spoof_cpu_spoof">CPU firibgarlik</string>
+    <string name="spoof_cpu_real">Haqiqiy CPU</string>
+    <string name="spoof_cpu_block">Blok CPU</string>
+    <string name="spoof_cpu_block_desc">Ushbu ilovani CPU firibgarlikdan istisno qiladi.</string>
+    <string name="spoof_cpu_picker_title">CPU ni tanlang</string>
+    <string name="copg_tweaks_section">COPG sozlamalari</string>
+    <string name="copg_tweak_nolog_title">Jurnalni o\'chirib qo\'yish</string>
+    <string name="copg_tweak_nolog_desc">Ushbu ilovaga COPG logging tweakni qo\'llaydi. Bu yerda saqlangan, "Ko\'rib chiqish" tomonidan dvigatelga yozilgan va "Spoof" yorlig\'ida qo\'llaniladi.</string>
+    <string name="copg_tweak_dab_title">Avtomatik yorqinlikni o\'chiring</string>
+    <string name="copg_tweak_dab_desc">Ushbu ilovaga COPG avtomatik yorqinligini sozlashni qo\'llaydi. Bu yerda saqlangan, "Ko\'rib chiqish" tomonidan dvigatelga yozilgan va "Spoof" yorlig\'ida qo\'llaniladi.</string>
+    <string name="copg_tweak_kso_title">Ekranni yoniq tuting</string>
+    <string name="copg_tweak_kso_desc">Ushbu ilovaga COPG ekranni yoqish sozlamalarini qo\'llaydi. Bu yerda saqlangan, "Ko\'rib chiqish" tomonidan dvigatelga yozilgan va "Spoof" yorlig\'ida qo\'llaniladi.</string>
+    <string name="copg_tweak_needs_device">“Spoof” sahifasida avval ushbu ilova uchun qurilma kerak.</string>
+</resources>

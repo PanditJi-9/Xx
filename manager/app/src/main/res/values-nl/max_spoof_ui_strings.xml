@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_spoof_ui_strings.xml -->
+<resources>
+    <string name="spoof_ui_real_device">Echt apparaat</string>
+    <string name="spoof_ui_pill_verified">Configuratie geverifieerd</string>
+    <string name="spoof_ui_pill_unverified">Niet geverifieerd</string>
+    <string name="spoof_ui_pill_off">Uit</string>
+    <string name="spoof_device_for_app">Apparaat voor deze app</string>
+    <string name="spoof_device_real_hint">Deze app ziet je echte apparaat. Tik op de kaart om er een te kiezen.</string>
+    <string name="spoof_device_pick">Tik om een ​​apparaat uit de catalogus te kiezen of voer aangepaste apparaatinformatie in.</string>
+    <string name="spoof_device_in_use">In gebruik</string>
+    <string name="spoof_device_restart">Start daarna de doel-app opnieuw, niet het systeem.</string>
+    <string name="spoof_ui_apply_title">Vraag deze app aan</string>
+    <string name="spoof_ui_apply_action">Beoordelen en toepassen</string>
+    <string name="spoof_ui_apply_confirm_title">Alleen deze app toepassen?</string>
+    <string name="spoof_ui_apply_confirm_text">Alleen deze app is voorbereid; andere apps zijn onaangeroerd. Start daarna de doel-app opnieuw, niet het systeem. Een latere bewerking annuleert deze bevestiging. Als COPG deze app al vermeldt, krijgt uw apparaat voorrang en blijft de COPG-lijn zoals deze is.</string>
+    <string name="spoof_ui_apply_confirm">Toepassen</string>
+    <string name="spoof_ui_apply_reason">Motorweigering: %1$s</string>
+    <string name="spoof_engine_absent">De motormodule is niet leesbaar. Bevestig een module waarvan module.prop id=COPG zegt, installeer of installeer deze opnieuw en open dit scherm opnieuw.</string>
+    <string name="spoof_engine_disabled">De COPG-module is uitgeschakeld in uw rootmanager. Schakel het daar in, start opnieuw op en pas het opnieuw toe.</string>
+    <string name="spoof_engine_removal_pending">COPG is gemarkeerd voor verwijdering en zal verdwijnen na de volgende herstart. Installeer het opnieuw voordat u het toepast.</string>
+    <string name="spoof_engine_update_pending">Er wacht een COPG-update op een herstart. Start eerst opnieuw op en pas het vervolgens opnieuw toe.</string>
+    <string name="spoof_ui_apply_pending">Gewijzigd sinds de laatste aanvraag. Pas opnieuw toe om het echt te maken.</string>
+    <string name="spoof_ui_restore_title">Gebruik uw echte apparaat</string>
+    <string name="spoof_ui_restore_action">Verwijder spoof voor deze app</string>
+    <string name="spoof_ui_restore_notice">Het opgeslagen apparaat van deze app en de COPG-aanpassingen worden verwijderd en de engine wordt herschreven zonder deze app. Andere apps zijn onaangeroerd. Start de doel-app daarna opnieuw.</string>
+    <string name="app_tab_spoof">Parodie</string>
+    <string name="spoof_picker_title">Kies een apparaat</string>
+    <string name="spoof_picker_custom">Aangepaste apparaatinformatie</string>
+    <string name="spoof_picker_custom_hint">Voer het merk, model en de gewenste vingerafdruk in voor deze app</string>
+    <string name="spoof_custom_title">Aangepaste apparaatinformatie</string>
+    <string name="spoof_custom_rules">Naam, merk, model, apparaat en product zijn vereist, elk maximaal 120 tekens, zonder controletekens. Fabrikant, vingerafdruk en SDK zijn optioneel. Een vingerafdruk moet beginnen met hetzelfde merk, product en apparaat.</string>
+    <string name="spoof_manufacturer">Fabrikant (FABRIKANT)</string>
+    <string name="spoof_sdk">SDK-niveau, optioneel, 1 tot 100</string>
+    <string name="spoof_custom_invalid">Sommige velden zijn ongeldig. Controleer de bovenstaande regels en sla vervolgens opnieuw op.</string>
+    <string name="spoof_custom_save">Bewaar en kies voor deze app</string>
+    <string name="spoof_impersonation_title">Spoofing</string>
+    <string name="spoof_impersonation_desc">Alleen gratis COPG-opties. Geschreven naar de engine door Beoordelen en toepassen.</string>
+    <string name="spoof_impersonation_summary_cpu">CPU spoofing: %1$s</string>
+    <string name="spoof_impersonation_needs_device">Kies eerst een apparaat voor deze app. Deze opties worden alleen met een apparaat geschreven.</string>
+    <string name="spoof_cpu_spoof">CPU spoofing</string>
+    <string name="spoof_cpu_real">Echte CPU</string>
+    <string name="spoof_cpu_block">Blok CPU</string>
+    <string name="spoof_cpu_block_desc">Sluit deze app uit van CPU spoofing.</string>
+    <string name="spoof_cpu_picker_title">Kies een CPU</string>
+    <string name="copg_tweaks_section">COPG-aanpassingen</string>
+    <string name="copg_tweak_nolog_title">Schakel logboekregistratie uit</string>
+    <string name="copg_tweak_nolog_desc">Past de COPG-logboekaanpassing toe op deze app. Hier opgeslagen, naar de engine geschreven door Review en toepassen op het tabblad Spoof.</string>
+    <string name="copg_tweak_dab_title">Schakel automatische helderheid uit</string>
+    <string name="copg_tweak_dab_desc">Past de automatische helderheidsaanpassing van COPG toe op deze app. Hier opgeslagen, naar de engine geschreven door Review en toepassen op het tabblad Spoof.</string>
+    <string name="copg_tweak_kso_title">Houd het scherm ingeschakeld</string>
+    <string name="copg_tweak_kso_desc">Past de COPG-keep-scherm-aan-aanpassing toe op deze app. Hier opgeslagen, naar de engine geschreven door Review en toepassen op het tabblad Spoof.</string>
+    <string name="copg_tweak_needs_device">Er is eerst een apparaat nodig voor deze app, op het tabblad Spoof.</string>
+</resources>

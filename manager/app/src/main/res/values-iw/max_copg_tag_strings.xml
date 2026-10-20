@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_copg_tag_strings.xml -->
+<resources>
+    <string name="copg_tags_title">אפשרויות COPG</string>
+    <string name="copg_tags_desc">נשמר ככוונה ונכתב יחד עם פרופיל המכשיר. רק ארבע אפשרויות הנוחות פועלות על כל גרסת COPG; השאר צריכים COPG 6.8.0 ומעלה. אפשרויות PRO זקוקות לרישיון COPG PRO, והמנוע עשוי להתעלם מהן.</string>
+    <string name="copg_tier_pro">מִקצוֹעָן</string>
+    <string name="copg_footprint_resident">נשאר בזיכרון של האפליקציה, לעולם אל תשתמש עם משחקים נגד רמות</string>
+    <string name="copg_need_ack">הכירו תחילה בסיכון שלהלן</string>
+    <string name="copg_tag_refused">אפשרות COPG שנבחרה אינה מותרת עבור גרסת COPG המותקנת. שום דבר לא נכתב.</string>
+    <string name="copg_tag_needs_device">האפשרויות נכתבות עם פרופיל מכשיר, ולאפליקציה הזו אין עדיין.</string>
+    <string name="copg_tag_value_hint">עֵרֶך</string>
+    <string name="copg_tag_bad_value">אותיות, ספרות, רווח ו. _ - / + בלבד (עד 60)</string>
+    <string name="copg_tag_save">לְהַצִיל</string>
+    <string name="copg_tag_remove">לְהַסִיר</string>
+    <string name="copg_tag_dnd">נא לא להפריע בזמן משחק</string>
+    <string name="copg_tag_dab">השבת את הבהירות האוטומטית</string>
+    <string name="copg_tag_kso">השאר את המסך דולק</string>
+    <string name="copg_tag_nolog">תפסיק לרשום</string>
+    <string name="copg_tag_dpi">מסך DPI</string>
+    <string name="copg_tag_serial">מספר סידורי לכל אפליקציה</string>
+    <string name="copg_tag_cpu">דגם CPU</string>
+    <string name="copg_tag_blocked">הכריח את CPU האמיתי</string>
+    <string name="copg_tag_vpn">הסתר VPN</string>
+    <string name="copg_tag_vpns">הסתר VPN (קפדני)</string>
+    <string name="copg_tag_hidedev">הסתר אפשרויות מפתחים ואיתור באגים ב-USB</string>
+    <string name="copg_tag_tz">אזור זמן</string>
+    <string name="copg_tag_lang">שפה ואזור</string>
+    <string name="copg_tag_gpu">דגם GPU</string>
+    <string name="copg_tag_cow">בניית מאפיינים (העתק על כתיבה)</string>
+    <string name="copg_tag_aid">אנדרואיד ID</string>
+    <string name="copg_tag_gaid">פרסום ID</string>
+    <string name="copg_tag_appset">ערכת אפליקציות ID</string>
+    <string name="copg_tag_drm">Widevine / DRM</string>
+    <string name="copg_tag_imei">IMEI</string>
+    <string name="copg_tag_sim">ספק סים (בטוח)</string>
+    <string name="copg_tag_simx">ספק SIM (אגרסיבי)</string>
+    <string name="copg_tag_ua">WebView User-Agent</string>
+    <string name="copg_tag_mock">הסתר מיקום מדומה</string>
+</resources>

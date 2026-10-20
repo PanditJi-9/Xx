@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_security_strings.xml -->
+<resources>
+    <string name="security_tamper_title">Imeshindwa kuanza</string>
+    <string name="security_tamper_message">Muundo huu wa MaxManager hauko sawa. Faili zilizosakinishwa hazilingani tena na toleo lililotiwa saini, kwa hivyo halitaendeshwa. Sakinisha upya muundo rasmi kutoka kwa chanzo chake asili.</string>
+    <string name="security_tamper_close">Funga</string>
+</resources>

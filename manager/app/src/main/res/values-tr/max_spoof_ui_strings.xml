@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_spoof_ui_strings.xml -->
+<resources>
+    <string name="spoof_ui_real_device">Gerçek cihaz</string>
+    <string name="spoof_ui_pill_verified">Yapılandırma doğrulandı</string>
+    <string name="spoof_ui_pill_unverified">Doğrulanmadı</string>
+    <string name="spoof_ui_pill_off">Kapalı</string>
+    <string name="spoof_device_for_app">Bu uygulamaya yönelik cihaz</string>
+    <string name="spoof_device_real_hint">Bu uygulama gerçek cihazınızı görür. Birini seçmek için karta dokunun.</string>
+    <string name="spoof_device_pick">Katalogdan bir cihaz seçmek veya özel cihaz bilgilerini girmek için dokunun.</string>
+    <string name="spoof_device_in_use">Kullanımda</string>
+    <string name="spoof_device_restart">Daha sonra sistemi değil, hedef uygulamayı yeniden başlatın.</string>
+    <string name="spoof_ui_apply_title">Bu uygulamaya başvur</string>
+    <string name="spoof_ui_apply_action">İnceleyin ve uygulayın</string>
+    <string name="spoof_ui_apply_confirm_title">Yalnızca bu uygulama uygulansın mı?</string>
+    <string name="spoof_ui_apply_confirm_text">Sadece bu uygulama hazırlanmıştır; diğer uygulamalara dokunulmaz. Daha sonra sistemi değil, hedef uygulamayı yeniden başlatın. Daha sonra yapılan bir düzenleme bu onayı iptal eder. COPG zaten bu uygulamayı listeliyorsa cihazınız öncelik alır ve COPG hattı olduğu gibi kalır.</string>
+    <string name="spoof_ui_apply_confirm">Uygula</string>
+    <string name="spoof_ui_apply_reason">Motor reddi: %1$s</string>
+    <string name="spoof_engine_absent">Motor modülü okunamıyor. module.prop dosyasında id=COPG yazan bir modülü onaylayın, kurun veya yeniden yükleyin, ardından bu ekranı yeniden açın.</string>
+    <string name="spoof_engine_disabled">COPG modülü kök yöneticinizde devre dışı bırakıldı. Orada etkinleştirin, yeniden başlatın ve tekrar uygulayın.</string>
+    <string name="spoof_engine_removal_pending">COPG kaldırılmak üzere işaretlendi ve bir sonraki yeniden başlatmanın ardından kaybolacak. Uygulamadan önce yeniden yükleyin.</string>
+    <string name="spoof_engine_update_pending">Bir COPG güncellemesi yeniden başlatılmayı bekliyor. Önce yeniden başlatın, ardından tekrar uygulayın.</string>
+    <string name="spoof_ui_apply_pending">Son başvurudan bu yana değişti; gerçek olması için tekrar başvurun.</string>
+    <string name="spoof_ui_restore_title">Gerçek cihazınızı kullanın</string>
+    <string name="spoof_ui_restore_action">Bu uygulama için adres sahteciliğini kaldır</string>
+    <string name="spoof_ui_restore_notice">Bu uygulamanın kayıtlı cihazı ve COPG ayarları kaldırılır ve motor, bu uygulama olmadan yeniden yazılır. Diğer uygulamalara dokunulmaz. Daha sonra hedef uygulamayı yeniden başlatın.</string>
+    <string name="app_tab_spoof">Parodi</string>
+    <string name="spoof_picker_title">Bir cihaz seçin</string>
+    <string name="spoof_picker_custom">Özel cihaz bilgisi</string>
+    <string name="spoof_picker_custom_hint">Bu uygulama için istediğiniz marka, model ve parmak izini girin</string>
+    <string name="spoof_custom_title">Özel cihaz bilgisi</string>
+    <string name="spoof_custom_rules">Ad, marka, model, cihaz ve ürün gereklidir; her biri en fazla 120 karakterden oluşmalıdır ve kontrol karakterleri olmamalıdır. Üretici, parmak izi ve SDK isteğe bağlıdır. Parmak izi aynı marka, ürün ve cihazla başlamalıdır.</string>
+    <string name="spoof_manufacturer">Üretici (ÜRETİCİ)</string>
+    <string name="spoof_sdk">SDK düzeyi, isteğe bağlı, 1 ila 100</string>
+    <string name="spoof_custom_invalid">Bazı alanlar geçersiz. Yukarıdaki kuralları kontrol edin ve tekrar kaydedin.</string>
+    <string name="spoof_custom_save">Bu uygulama için kaydedin ve seçin</string>
+    <string name="spoof_impersonation_title">Sahtecilik</string>
+    <string name="spoof_impersonation_desc">Yalnızca ücretsiz COPG seçenekleri. İnceleyerek motora yazılır ve uygulanır.</string>
+    <string name="spoof_impersonation_summary_cpu">CPU yanıltma: %1$s</string>
+    <string name="spoof_impersonation_needs_device">Önce bu uygulama için bir cihaz seçin. Bu seçenekler yalnızca bir cihazla yazılır.</string>
+    <string name="spoof_cpu_spoof">CPU sahtecilik</string>
+    <string name="spoof_cpu_real">Gerçek CPU</string>
+    <string name="spoof_cpu_block">Engelle CPU</string>
+    <string name="spoof_cpu_block_desc">Bu uygulamayı CPU kimlik sahtekarlığından hariç tutar.</string>
+    <string name="spoof_cpu_picker_title">Bir CPU seçin</string>
+    <string name="copg_tweaks_section">COPG ayarlamaları</string>
+    <string name="copg_tweak_nolog_title">Günlüğe kaydetmeyi devre dışı bırak</string>
+    <string name="copg_tweak_nolog_desc">COPG günlüğe kaydetme ince ayarını bu uygulamaya uygular. Buraya kaydedilir, İnceleme tarafından motora yazılır ve Parodi sekmesinde uygulanır.</string>
+    <string name="copg_tweak_dab_title">Otomatik parlaklığı devre dışı bırak</string>
+    <string name="copg_tweak_dab_desc">COPG otomatik parlaklık ayarlamasını bu uygulamaya uygular. Buraya kaydedilir, İnceleme tarafından motora yazılır ve Parodi sekmesinde uygulanır.</string>
+    <string name="copg_tweak_kso_title">Ekranı açık tut</string>
+    <string name="copg_tweak_kso_desc">Bu uygulamaya COPG ekranı açık tutma ayarını uygular. Buraya kaydedilir, İnceleme tarafından motora yazılır ve Parodi sekmesinde uygulanır.</string>
+    <string name="copg_tweak_needs_device">Öncelikle bu uygulama için Parodi sekmesinde bir cihaza ihtiyaç var.</string>
+</resources>

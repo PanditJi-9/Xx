@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_sample_device_strings.xml -->
+<resources>
+    <string name="sample_pick_title">ಮಾದರಿ ಸಾಧನವನ್ನು ಆಯ್ಕೆಮಾಡಿ</string>
+    <string name="sample_pick_button">ಮಾದರಿ ಸಾಧನವನ್ನು ಆಯ್ಕೆಮಾಡಿ</string>
+    <string name="sample_auto_hint">ಸಾಧನವನ್ನು ಆರಿಸುವುದರಿಂದ ಬ್ರಾಂಡ್, ತಯಾರಕರು, ಮಾದರಿ, ಸಾಧನ, ಉತ್ಪನ್ನ ಮತ್ತು ಫಿಂಗರ್‌ಪ್ರಿಂಟ್ ಅನ್ನು ತುಂಬುತ್ತದೆ. ಅವುಗಳನ್ನು ನೀವೇ ಟೈಪ್ ಮಾಡಲು ಕೈಪಿಡಿಯನ್ನು ಬಳಸಿ.</string>
+    <string name="sample_manual">ಕೈಪಿಡಿ</string>
+    <string name="sample_close">ಮುಚ್ಚಿ</string>
+    <string name="sample_search">ಸಾಧನಗಳನ್ನು ಹುಡುಕಿ</string>
+    <string name="sample_empty">ಹೊಂದಾಣಿಕೆಯಾಗುವ ಸಾಧನವಿಲ್ಲ.</string>
+    <string name="sample_unavailable">ಸಾಧನದ ಕ್ಯಾಟಲಾಗ್ ಅನ್ನು ಓದಲಾಗಲಿಲ್ಲ.</string>
+    <string name="sample_row_sub">Android %1$s · %2$s</string>
+    <string name="sample_row_sub_plain">%1$s</string>
+    <string name="sample_fp_shared">ಇನ್ನೊಂದು ಕ್ಯಾಟಲಾಗ್ ಸಾಧನದಂತೆಯೇ ಅದೇ ಫಿಂಗರ್‌ಪ್ರಿಂಟ್</string>
+    <string name="sample_credit">ಕ್ಯಾಟಲಾಗ್ ಡೇಟಾ: COPG (ಅಪಾಚೆ-2.0), %1$s</string>
+    <string name="sample_limit">ಪ್ರೊಫೈಲ್ ಮಿತಿ (100) ತಲುಪಿದೆ.</string>
+</resources>

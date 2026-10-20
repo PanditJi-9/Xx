@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_copg_tag_strings.xml -->
+<resources>
+    <string name="copg_tags_title">COPG ഓപ്ഷനുകൾ</string>
+    <string name="copg_tags_desc">ഉദ്ദേശ്യമായി സംരക്ഷിച്ച് ഉപകരണ പ്രൊഫൈലിനൊപ്പം എഴുതിയിരിക്കുന്നു. എല്ലാ COPG പതിപ്പിലും നാല് കംഫർട്ട് ഓപ്ഷനുകൾ മാത്രമേ പ്രവർത്തിക്കൂ; ബാക്കിയുള്ളവർക്ക് COPG 6.8.0 അല്ലെങ്കിൽ പുതിയത് ആവശ്യമാണ്. PRO ഓപ്ഷനുകൾക്ക് COPG PRO ലൈസൻസ് ആവശ്യമാണ്, എഞ്ചിൻ അവ അവഗണിച്ചേക്കാം.</string>
+    <string name="copg_tier_pro">പി.ആർ.ഒ</string>
+    <string name="copg_footprint_resident">ആപ്പിൻ്റെ മെമ്മറിയിൽ തുടരുന്നു, ആൻ്റി-ചീറ്റ് ഗെയിമുകൾക്കൊപ്പം ഒരിക്കലും ഉപയോഗിക്കരുത്</string>
+    <string name="copg_need_ack">താഴെയുള്ള അപകടസാധ്യത ആദ്യം അംഗീകരിക്കുക</string>
+    <string name="copg_tag_refused">ഇൻസ്റ്റാൾ ചെയ്ത COPG പതിപ്പിന് തിരഞ്ഞെടുത്ത COPG ഓപ്ഷൻ അനുവദനീയമല്ല. ഒന്നും എഴുതിയില്ല.</string>
+    <string name="copg_tag_needs_device">ഒരു ഉപകരണ പ്രൊഫൈൽ ഉപയോഗിച്ചാണ് ഓപ്ഷനുകൾ എഴുതിയിരിക്കുന്നത്, ഈ ആപ്പിന് ഇതുവരെ ഒന്നുമില്ല.</string>
+    <string name="copg_tag_value_hint">മൂല്യം</string>
+    <string name="copg_tag_bad_value">അക്ഷരങ്ങൾ, അക്കങ്ങൾ, സ്ഥലം കൂടാതെ . _ - / + മാത്രം (60 വരെ)</string>
+    <string name="copg_tag_save">സംരക്ഷിക്കുക</string>
+    <string name="copg_tag_remove">നീക്കം ചെയ്യുക</string>
+    <string name="copg_tag_dnd">കളിക്കുമ്പോൾ ശല്യപ്പെടുത്തരുത്</string>
+    <string name="copg_tag_dab">യാന്ത്രിക തെളിച്ചം പ്രവർത്തനരഹിതമാക്കുക</string>
+    <string name="copg_tag_kso">സ്ക്രീൻ ഓണാക്കി വയ്ക്കുക</string>
+    <string name="copg_tag_nolog">ലോഗിംഗ് നിർത്തുക</string>
+    <string name="copg_tag_dpi">സ്ക്രീൻ ഡിപിഐ</string>
+    <string name="copg_tag_serial">ഓരോ ആപ്ലിക്കേഷൻ്റെയും സീരിയൽ നമ്പർ</string>
+    <string name="copg_tag_cpu">CPU മോഡൽ</string>
+    <string name="copg_tag_blocked">യഥാർത്ഥ CPU നിർബന്ധിക്കുക</string>
+    <string name="copg_tag_vpn">VPN മറയ്ക്കുക</string>
+    <string name="copg_tag_vpns">VPN മറയ്ക്കുക (കണിശമായത്)</string>
+    <string name="copg_tag_hidedev">ഡവലപ്പർ ഓപ്ഷനുകളും യുഎസ്ബി ഡീബഗ്ഗിംഗും മറയ്ക്കുക</string>
+    <string name="copg_tag_tz">സമയമേഖല</string>
+    <string name="copg_tag_lang">ഭാഷയും പ്രദേശവും</string>
+    <string name="copg_tag_gpu">GPU മോഡൽ</string>
+    <string name="copg_tag_cow">ബിൽഡ് പ്രോപ്പർട്ടികൾ (പകർപ്പ്-ഓൺ-റൈറ്റ്)</string>
+    <string name="copg_tag_aid">ആൻഡ്രോയിഡ് ID</string>
+    <string name="copg_tag_gaid">പരസ്യംചെയ്യൽ ID</string>
+    <string name="copg_tag_appset">ആപ്പ് സെറ്റ് ID</string>
+    <string name="copg_tag_drm">Widevine / DRM</string>
+    <string name="copg_tag_imei">IMEI</string>
+    <string name="copg_tag_sim">സിം കാരിയർ (സുരക്ഷിതം)</string>
+    <string name="copg_tag_simx">സിം കാരിയർ (ആക്രമണാത്മകം)</string>
+    <string name="copg_tag_ua">WebView ഉപയോക്തൃ-ഏജൻ്റ്</string>
+    <string name="copg_tag_mock">മോക്ക് ലൊക്കേഷൻ മറയ്ക്കുക</string>
+</resources>

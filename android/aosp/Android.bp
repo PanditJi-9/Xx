@@ -1,0 +1,91 @@
+// Copyright (C) 2026 Nader Magdy. All rights reserved.
+// Proprietary and confidential — not licensed for use, copying, or distribution
+// without prior written permission from the copyright holder.
+// Android.bp لدمج MaxManager في شجرة AOSP
+// =========================================
+// هذا الملف يسمح ببناء MaxManager كتطبيق نظام (System App)
+// مع خادم (Daemon) يعمل كخدمة نظام، وجميع المكونات مدمجة في ROM
+
+android_app {
+    name: "MaxManager",
+    srcs: [
+        "manager/app/src/main/java/**/*.kt",
+    ],
+    resource_dirs: [
+        "manager/app/src/main/res",
+    ],
+    manifest: "manager/app/src/main/AndroidManifest.xml",
+    platform_apis: true,
+    certificate: "platform",
+    privileged: true,
+    product_specific: true,
+    dex_preopt: {
+        enabled: true,
+    },
+    optimize: {
+        proguard_flags_files: ["manager/app/proguard-rules.pro"],
+    },
+    static_libs: [
+        "androidx-constraintlayout-constraintlayout",
+        "androidx-core-core-ktx",
+        "androidx-lifecycle-lifecycle-runtime-ktx",
+        "androidx-lifecycle-lifecycle-viewmodel-ktx",
+        "com.google.android.material-material",
+    ],
+}
+
+// الـdaemon — الاسم الرسمي الوحيد `sys.maxmanager-service`.
+//
+// ومصدره الحقيقي هو C في `archdaemon/jni` (وهو المبنيّ والمُتحقَّق منه بـ`Android.mk`
+// عبر ndk-build)، لا شجرة Rust: `runtime/daemon-rust/` لم يكن موجودًا في الشجرة أبدًا.
+//
+// والقسم `system` وحده (بلا `vendor`/`product_specific` معًا): سطر init في `maxmanager.rc`
+// يشير إلى `/system/bin/sys.maxmanager-service`، والوسم في `file_contexts` على المسار نفسه.
+// جمع قسمين كان يجعل Soong ينشر الوحدة إلى `/vendor/bin` ويخالف مسار init (عطب `path-conflict`).
+cc_binary {
+    name: "sys.maxmanager-service",
+    srcs: [
+        "archdaemon/jni/Main.c",
+        "archdaemon/jni/src/*/*.c",
+    ],
+    local_include_dirs: [
+        "archdaemon/jni/include",
+    ],
+    cflags: [
+        "-DNDEBUG",
+        "-std=c23",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-pedantic-errors",
+        "-Wpedantic",
+        "-O2",
+    ],
+    ldflags: [
+        "-flto",
+    ],
+    shared_libs: [
+        "liblog",
+        "libdl",
+    ],
+}
+
+// الملاحظة (دَين مُوثَّق — لم يُمَس في توحيد اسم الـdaemon):
+// وحدة مكتبة الـJNI (الطبقة الأصلية لـMax AI) ما زالت تُعلن مصدرًا غير موجود
+// (`runtime/daemon-rust/src/lib.rs`) وتجمع قسمين معًا (`vendor` + `product_specific`).
+// وهذا ليس مسار الـdaemon، فتُرِك كما هو حتى يقرّر المالك: توصيله بمصدره الحقيقي
+// `manager/src/main/rust` (cdylib `maxmanager_native`) أو إعادة تنظيم المسار كله.
+cc_library_shared {
+    name: "libmaxmanager_native",
+    srcs: [
+        "runtime/daemon-rust/src/lib.rs",
+    ],
+    shared_libs: [
+        "liblog",
+    ],
+    product_specific: true,
+    vendor: true,
+}
+
+// وحدة KernelSU (اختيارية، تُبنى كحزمة منفصلة)
+// يمكن إضافتها كـ "prebuilt" إذا كانت موجودة مسبقاً

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_sample_device_strings.xml -->
+<resources>
+    <string name="sample_pick_title">નમૂના ઉપકરણ પસંદ કરો</string>
+    <string name="sample_pick_button">નમૂના ઉપકરણ પસંદ કરો</string>
+    <string name="sample_auto_hint">ઉપકરણ પસંદ કરવાથી તમારા માટે બ્રાન્ડ, ઉત્પાદક, મોડેલ, ઉપકરણ, ઉત્પાદન અને ફિંગરપ્રિન્ટ ભરાય છે. તેમને જાતે લખવા માટે મેન્યુઅલનો ઉપયોગ કરો.</string>
+    <string name="sample_manual">મેન્યુઅલ</string>
+    <string name="sample_close">બંધ કરો</string>
+    <string name="sample_search">ઉપકરણો શોધો</string>
+    <string name="sample_empty">કોઈ મેળ ખાતું ઉપકરણ નથી.</string>
+    <string name="sample_unavailable">ઉપકરણ સૂચિ વાંચી શકાતી નથી.</string>
+    <string name="sample_row_sub">એન્ડ્રોઇડ %1$s · %2$s</string>
+    <string name="sample_row_sub_plain">%1$s</string>
+    <string name="sample_fp_shared">અન્ય કૅટેલોગ ઉપકરણ તરીકે સમાન ફિંગરપ્રિન્ટ</string>
+    <string name="sample_credit">કેટલોગ ડેટા: COPG (Apache-2.0), %1$s</string>
+    <string name="sample_limit">પ્રોફાઇલ મર્યાદા (100) સુધી પહોંચી ગઈ છે.</string>
+</resources>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_sample_device_strings.xml -->
+<resources>
+    <string name="sample_pick_title">Виберіть зразок пристрою</string>
+    <string name="sample_pick_button">Виберіть зразок пристрою</string>
+    <string name="sample_auto_hint">Вибір пристрою заповнює бренд, виробника, модель, пристрій, продукт і відбиток пальця. Використовуйте Manual, щоб ввести їх самостійно.</string>
+    <string name="sample_manual">Інструкція</string>
+    <string name="sample_close">Закрити</string>
+    <string name="sample_search">Пошук пристроїв</string>
+    <string name="sample_empty">Немає відповідного пристрою.</string>
+    <string name="sample_unavailable">Не вдалося прочитати каталог пристрою.</string>
+    <string name="sample_row_sub">Android %1$s · %2$s</string>
+    <string name="sample_row_sub_plain">%1$s</string>
+    <string name="sample_fp_shared">Той самий відбиток пальця, що й на іншому каталозі</string>
+    <string name="sample_credit">Дані каталогу: COPG (Apache-2.0), %1$s</string>
+    <string name="sample_limit">Ліміт профілю (100) досягнуто.</string>
+</resources>

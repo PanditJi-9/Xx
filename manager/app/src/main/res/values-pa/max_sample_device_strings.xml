@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_sample_device_strings.xml -->
+<resources>
+    <string name="sample_pick_title">ਨਮੂਨਾ ਜੰਤਰ ਚੁਣੋ</string>
+    <string name="sample_pick_button">ਨਮੂਨਾ ਜੰਤਰ ਚੁਣੋ</string>
+    <string name="sample_auto_hint">ਕਿਸੇ ਡਿਵਾਈਸ ਨੂੰ ਚੁਣਨਾ ਤੁਹਾਡੇ ਲਈ ਬ੍ਰਾਂਡ, ਨਿਰਮਾਤਾ, ਮਾਡਲ, ਡਿਵਾਈਸ, ਉਤਪਾਦ ਅਤੇ ਫਿੰਗਰਪ੍ਰਿੰਟ ਭਰਦਾ ਹੈ। ਉਹਨਾਂ ਨੂੰ ਖੁਦ ਟਾਈਪ ਕਰਨ ਲਈ ਮੈਨੂਅਲ ਦੀ ਵਰਤੋਂ ਕਰੋ।</string>
+    <string name="sample_manual">ਮੈਨੁਅਲ</string>
+    <string name="sample_close">ਬੰਦ ਕਰੋ</string>
+    <string name="sample_search">ਡਿਵਾਈਸਾਂ ਦੀ ਖੋਜ ਕਰੋ</string>
+    <string name="sample_empty">ਕੋਈ ਮੇਲ ਖਾਂਦਾ ਡੀਵਾਈਸ ਨਹੀਂ।</string>
+    <string name="sample_unavailable">ਡਿਵਾਈਸ ਕੈਟਾਲਾਗ ਨੂੰ ਪੜ੍ਹਿਆ ਨਹੀਂ ਜਾ ਸਕਦਾ ਹੈ।</string>
+    <string name="sample_row_sub">Android %1$s · %2$s</string>
+    <string name="sample_row_sub_plain">%1$s</string>
+    <string name="sample_fp_shared">ਇੱਕ ਹੋਰ ਕੈਟਾਲਾਗ ਡਿਵਾਈਸ ਦੇ ਸਮਾਨ ਫਿੰਗਰਪ੍ਰਿੰਟ</string>
+    <string name="sample_credit">ਕੈਟਾਲਾਗ ਡੇਟਾ: COPG (Apache-2.0), %1$s</string>
+    <string name="sample_limit">ਪ੍ਰੋਫਾਈਲ ਸੀਮਾ (100) ਤੱਕ ਪਹੁੰਚ ਗਈ ਹੈ।</string>
+</resources>

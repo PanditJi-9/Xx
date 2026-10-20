@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_copg_tag_strings.xml -->
+<resources>
+    <string name="copg_tags_title">Opțiuni COPG</string>
+    <string name="copg_tags_desc">Salvat ca intenție și scris împreună cu profilul dispozitivului. Doar cele patru opțiuni de confort funcționează pe fiecare versiune COPG; restul au nevoie de COPG 6.8.0 sau mai nou. Opțiunile PRO au nevoie de o licență COPG PRO, iar motorul le poate ignora.</string>
+    <string name="copg_tier_pro">PRO</string>
+    <string name="copg_footprint_resident">rămâne în memoria aplicației, nu utilizați niciodată cu jocuri anti-cheat</string>
+    <string name="copg_need_ack">recunoașteți mai întâi riscul de mai jos</string>
+    <string name="copg_tag_refused">O opțiune COPG selectată nu este permisă pentru versiunea COPG instalată. Nu s-a scris nimic.</string>
+    <string name="copg_tag_needs_device">Opțiunile sunt scrise cu un profil de dispozitiv, iar această aplicație nu are încă niciunul.</string>
+    <string name="copg_tag_value_hint">Valoare</string>
+    <string name="copg_tag_bad_value">Litere, cifre, spațiu și . Numai _ - / + (până la 60)</string>
+    <string name="copg_tag_save">Salva</string>
+    <string name="copg_tag_remove">Elimina</string>
+    <string name="copg_tag_dnd">Nu deranjați în timpul jocului</string>
+    <string name="copg_tag_dab">Dezactivați luminozitatea automată</string>
+    <string name="copg_tag_kso">Păstrați ecranul aprins</string>
+    <string name="copg_tag_nolog">Opriți înregistrarea</string>
+    <string name="copg_tag_dpi">DPI ecran</string>
+    <string name="copg_tag_serial">Număr de serie per aplicație</string>
+    <string name="copg_tag_cpu">CPU model</string>
+    <string name="copg_tag_blocked">Forțați CPU real</string>
+    <string name="copg_tag_vpn">Ascunde VPN</string>
+    <string name="copg_tag_vpns">Ascunde VPN (strict)</string>
+    <string name="copg_tag_hidedev">Ascundeți opțiunile pentru dezvoltatori și depanarea USB</string>
+    <string name="copg_tag_tz">fus orar</string>
+    <string name="copg_tag_lang">Limba și regiunea</string>
+    <string name="copg_tag_gpu">GPU model</string>
+    <string name="copg_tag_cow">Proprietăți de construcție (copy-on-write)</string>
+    <string name="copg_tag_aid">Android ID</string>
+    <string name="copg_tag_gaid">Publicitate ID</string>
+    <string name="copg_tag_appset">Set de aplicații ID</string>
+    <string name="copg_tag_drm">Widevine / DRM</string>
+    <string name="copg_tag_imei">IMEI</string>
+    <string name="copg_tag_sim">operator SIM (sigur)</string>
+    <string name="copg_tag_simx">operator SIM (agresiv)</string>
+    <string name="copg_tag_ua">WebView User-Agent</string>
+    <string name="copg_tag_mock">Ascunde locația simulată</string>
+</resources>

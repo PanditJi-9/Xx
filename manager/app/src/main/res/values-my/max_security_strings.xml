@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_security_strings.xml -->
+<resources>
+    <string name="security_tamper_title">မစတင်နိုင်ပါ။</string>
+    <string name="security_tamper_message">MaxManager ဤတည်ဆောက်မှုသည် နဂိုအတိုင်းမဟုတ်ပေ။ ထည့်သွင်းထားသည့် ဖိုင်များသည် လက်မှတ်ရေးထိုးထားသော ထုတ်ဝေမှုနှင့် မကိုက်ညီတော့သောကြောင့် ၎င်းသည် လုပ်ဆောင်မည်မဟုတ်ပါ။ တရားဝင်တည်ဆောက်မှုကို ၎င်း၏မူရင်းရင်းမြစ်မှ ပြန်လည်ထည့်သွင်းပါ။</string>
+    <string name="security_tamper_close">ပိတ်လိုက်</string>
+</resources>

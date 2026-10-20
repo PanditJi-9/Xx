@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_sample_device_strings.xml -->
+<resources>
+    <string name="sample_pick_title">नमूना उपकरण छान्नुहोस्</string>
+    <string name="sample_pick_button">नमूना उपकरण छान्नुहोस्</string>
+    <string name="sample_auto_hint">एउटा यन्त्र छनोट गर्दा तपाईंको लागि ब्रान्ड, निर्माता, मोडेल, यन्त्र, उत्पादन र फिंगरप्रिन्ट भरिन्छ। तिनीहरूलाई आफै टाइप गर्न म्यानुअल प्रयोग गर्नुहोस्।</string>
+    <string name="sample_manual">म्यानुअल</string>
+    <string name="sample_close">बन्द गर्नुहोस्</string>
+    <string name="sample_search">यन्त्रहरू खोज्नुहोस्</string>
+    <string name="sample_empty">कुनै मिल्दो यन्त्र छैन।</string>
+    <string name="sample_unavailable">यन्त्र क्याटलग पढ्न सकिएन।</string>
+    <string name="sample_row_sub">एन्ड्रोइड %1$s · %2$s</string>
+    <string name="sample_row_sub_plain">%1$s</string>
+    <string name="sample_fp_shared">अर्को क्याटलग उपकरण जस्तै फिंगरप्रिन्ट</string>
+    <string name="sample_credit">क्याटलग डाटा: COPG (Apache-2.0), %1$s</string>
+    <string name="sample_limit">प्रोफाइल सीमा (100) पुग्यो।</string>
+</resources>

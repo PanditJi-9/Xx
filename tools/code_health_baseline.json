@@ -1,0 +1,9 @@
+{
+  "_note": "سقف دَين الصيانة. انخفاضه مطلوب عند كل إصلاح؛ ارتفاعه قرار يجب مبرّره.",
+  "oversized_files": 8,
+  "own_wildcard_imports": 26,
+  "hardcoded_ui_literals": 4,
+  "inline_ui_copy": 5,
+  "presentation_hw_writes": 20,
+  "_why_oversized_8": "2026-10-15 بقرار المالك (LOG-SD-FIX-01/ربط أطلس): ملف GpuHardwareBackend.kt 999←1038 سطرًا — ميزة الربط تنتمي لهذا الملف (مرشّحة خاصة + SystemIo) وتقسيمه يضر التماسك؛ السقف يُخفَّض عند أول تقسيم حقيقي."
+}

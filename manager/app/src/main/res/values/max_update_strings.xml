@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- نصوص التحديث عن بُعد: النافذة الإعلانية، والحجب، والفحص اليدوي.
+     الإنجليزية والعربية فقط (ADR-14 و§0.2)؛ وبقية اللغات تُملأ في جولة «زامن» وحدها. -->
+<resources>
+    <string name="update_dialog_title">Update available</string>
+    <string name="update_dialog_title_required">Update required</string>
+    <string name="update_dialog_body">Version %1$s is available. You are on %2$s.</string>
+    <string name="update_block_title">Update required to continue</string>
+    <string name="update_block_body">This build (%1$s) is no longer supported. Update to %2$s to keep using MaxManager.</string>
+    <string name="update_block_body_no_release">This build (%1$s) is no longer supported.</string>
+    <string name="update_release_notes_label">What\'s new</string>
+    <string name="update_size">Download size: %1$s</string>
+    <string name="update_button_now">Update now</string>
+    <string name="update_button_later">Later</string>
+    <string name="update_button_close">Close</string>
+    <string name="update_button_open_page">Open download page</string>
+    <string name="update_state_downloading">Downloading… %1$d%%</string>
+    <string name="update_state_downloading_unknown">Downloading…</string>
+    <string name="update_state_installing">Installing…</string>
+    <string name="update_error_network">Could not reach the update server. Check your connection and try again.</string>
+    <string name="update_error_http">The update server answered with an error. Try again later.</string>
+    <string name="update_error_format">The update information could not be read.</string>
+    <string name="update_error_too_large">The update information was larger than expected and was discarded.</string>
+    <string name="update_error_integrity">The downloaded file did not match its checksum and was deleted.</string>
+    <string name="update_error_install">Installation failed. Try again.</string>
+    <string name="update_error_not_configured">No update channel is configured in this build.</string>
+    <string name="update_maintenance_title">Temporarily unavailable</string>
+    <string name="update_maintenance_body">MaxManager is temporarily unavailable. Please try again shortly.</string>
+    <string name="update_check_title">Check for updates</string>
+    <string name="update_check_supporting">Current version: %1$s</string>
+    <string name="update_check_updated">An update is available.</string>
+    <string name="update_check_uptodate">You are on the latest version.</string>
+    <string name="update_check_failed">Could not check for updates.</string>
+    <string name="update_check_not_configured">No update channel is configured in this build.</string>
+    <!-- قناة اللوحة: التاريخ والنتائج الصريحة لفحص «التحديثات» — لا «خطأ» حيث لا خطأ -->
+    <string name="update_released_label">Release date: %1$s</string>
+    <string name="update_check_none_published">No update has been published from the control panel yet.</string>
+    <string name="update_check_link_missing">An update is published, but its download link is missing.</string>
+</resources>

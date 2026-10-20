@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_spoof_ui_strings.xml -->
+<resources>
+    <string name="spoof_ui_real_device">Tikras prietaisas</string>
+    <string name="spoof_ui_pill_verified">Konfigūracija patikrinta</string>
+    <string name="spoof_ui_pill_unverified">Nepatvirtinta</string>
+    <string name="spoof_ui_pill_off">Išjungta</string>
+    <string name="spoof_device_for_app">Prietaisas šiai programai</string>
+    <string name="spoof_device_real_hint">Ši programa mato jūsų tikrąjį įrenginį. Palieskite kortelę, kad pasirinktumėte vieną.</string>
+    <string name="spoof_device_pick">Bakstelėkite, kad pasirinktumėte įrenginį iš katalogo, arba įveskite pasirinktinę įrenginio informaciją.</string>
+    <string name="spoof_device_in_use">Naudojamas</string>
+    <string name="spoof_device_restart">Po to iš naujo paleiskite tikslinę programą, o ne sistemą.</string>
+    <string name="spoof_ui_apply_title">Pateikite paraišką dėl šios programos</string>
+    <string name="spoof_ui_apply_action">Peržiūrėkite ir pritaikykite</string>
+    <string name="spoof_ui_apply_confirm_title">Taikyti tik šią programą?</string>
+    <string name="spoof_ui_apply_confirm_text">Paruošta tik ši programa; kitos programos yra nepaliestos. Po to iš naujo paleiskite tikslinę programą, o ne sistemą. Vėlesnis redagavimas atšaukia šį patvirtinimą. Jei COPG jau yra šios programos sąraše, jūsų įrenginys turi pirmenybę ir COPG eilutė lieka tokia, kokia yra.</string>
+    <string name="spoof_ui_apply_confirm">Taikyti</string>
+    <string name="spoof_ui_apply_reason">Variklio atsisakymas: %1$s</string>
+    <string name="spoof_engine_absent">Variklio modulis neįskaitomas. Patvirtinkite modulį, kurio module.prop sako id=COPG, įdiekite arba įdiekite iš naujo, tada vėl atidarykite šį ekraną.</string>
+    <string name="spoof_engine_disabled">COPG modulis išjungtas jūsų šakninėje tvarkyklėje. Įjunkite jį ten, paleiskite iš naujo, tada vėl pritaikykite.</string>
+    <string name="spoof_engine_removal_pending">COPG pažymėtas kaip pašalintas ir išnyks po kito paleidimo iš naujo. Prieš taikydami jį iš naujo įdiekite.</string>
+    <string name="spoof_engine_update_pending">COPG naujinimas laukia, kol bus paleistas iš naujo. Pirmiausia paleiskite iš naujo, tada vėl pritaikykite.</string>
+    <string name="spoof_ui_apply_pending">Pakeista nuo paskutinės paraiškos pateikimo – pateikite dar kartą, kad būtų realu.</string>
+    <string name="spoof_ui_restore_title">Naudokite savo tikrąjį įrenginį</string>
+    <string name="spoof_ui_restore_action">Pašalinkite šios programos klaidą</string>
+    <string name="spoof_ui_restore_notice">Šios programos išsaugotas įrenginys ir jo COPG pakeitimai pašalinami, o variklis perrašomas be šios programos. Kitos programos yra nepaliestos. Po to iš naujo paleiskite tikslinę programą.</string>
+    <string name="app_tab_spoof">Apgaulė</string>
+    <string name="spoof_picker_title">Pasirinkite įrenginį</string>
+    <string name="spoof_picker_custom">Pasirinktinė įrenginio informacija</string>
+    <string name="spoof_picker_custom_hint">Įveskite šios programos prekės ženklą, modelį ir piršto atspaudą</string>
+    <string name="spoof_custom_title">Pasirinktinė įrenginio informacija</string>
+    <string name="spoof_custom_rules">Būtina nurodyti pavadinimą, prekės ženklą, modelį, įrenginį ir gaminį, iki 120 simbolių, be jokių valdymo simbolių. Gamintojas, kontrolinis kodas ir SDK yra neprivalomi. Pirštų atspaudas turi prasidėti nuo to paties prekės ženklo, gaminio ir įrenginio.</string>
+    <string name="spoof_manufacturer">Gamintojas (MANUFACTURER)</string>
+    <string name="spoof_sdk">SDK lygis, neprivaloma, nuo 1 iki 100</string>
+    <string name="spoof_custom_invalid">Kai kurie laukai neteisingi. Patikrinkite aukščiau pateiktas taisykles, tada išsaugokite dar kartą.</string>
+    <string name="spoof_custom_save">Išsaugokite ir pasirinkite šią programą</string>
+    <string name="spoof_impersonation_title">Apgaulė</string>
+    <string name="spoof_impersonation_desc">Tik nemokamos COPG parinktys. Varikliui parašė „Peržiūrėti ir taikyti“.</string>
+    <string name="spoof_impersonation_summary_cpu">CPU klastojimas: %1$s</string>
+    <string name="spoof_impersonation_needs_device">Pirmiausia pasirinkite įrenginį šiai programai. Šios parinktys parašytos tik su įrenginiu.</string>
+    <string name="spoof_cpu_spoof">CPU klastojimas</string>
+    <string name="spoof_cpu_real">Tikrasis CPU</string>
+    <string name="spoof_cpu_block">Blokuoti CPU</string>
+    <string name="spoof_cpu_block_desc">Ši programa neįtraukiama į CPU klastojimą.</string>
+    <string name="spoof_cpu_picker_title">Pasirinkite CPU</string>
+    <string name="copg_tweaks_section">COPG patobulinimai</string>
+    <string name="copg_tweak_nolog_title">Išjungti registravimą</string>
+    <string name="copg_tweak_nolog_desc">Šiai programai pritaiko COPG registravimo patobulinimą. Išsaugotas čia, įrašytas į variklį peržiūros ir pritaikymo skirtuke Spoof.</string>
+    <string name="copg_tweak_dab_title">Išjungti automatinį ryškumą</string>
+    <string name="copg_tweak_dab_desc">Šiai programai taikomas COPG automatinio ryškumo pakeitimas. Išsaugotas čia, įrašytas į variklį peržiūros ir pritaikymo skirtuke Spoof.</string>
+    <string name="copg_tweak_kso_title">Laikykite ekraną įjungtą</string>
+    <string name="copg_tweak_kso_desc">Šiai programai pritaiko COPG nuolatinio ekrano patobulinimą. Išsaugotas čia, įrašytas į variklį peržiūros ir pritaikymo skirtuke Spoof.</string>
+    <string name="copg_tweak_needs_device">Pirmiausia reikia įrenginio šiai programai skirtuke Apgaulė.</string>
+</resources>

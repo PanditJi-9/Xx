@@ -1,0 +1,1788 @@
+/*
+ * Copyright (C) 2026 Nader Magdy. All rights reserved.
+ * Proprietary and confidential — not licensed for use, copying, or distribution
+ * without prior written permission from the copyright holder.
+ */
+package nd.max.ui.mainscreens
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Bolt
+import androidx.compose.material.icons.rounded.DeleteSweep
+import androidx.compose.material.icons.rounded.FilterList
+import androidx.compose.material.icons.rounded.Insights
+import androidx.compose.material.icons.rounded.Lock
+import androidx.compose.material.icons.rounded.Psychology
+import androidx.compose.material.icons.rounded.Science
+import androidx.compose.material.icons.rounded.Timeline
+import androidx.compose.material.icons.rounded.Tune
+import androidx.compose.material.icons.rounded.Update
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.produceState
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.res.stringResource
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavHostController
+import nd.max.R
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import nd.max.core.hardware.ProfileApplier
+import nd.max.core.maxai.CadenceStatus
+import nd.max.core.maxai.ControlOutcomeModel
+import nd.max.core.maxai.ControlRegistry
+import nd.max.core.maxai.MaxAiCandidate
+import nd.max.core.maxai.MaxAiEpisode
+import nd.max.core.maxai.MaxAiEpisodeKind
+import nd.max.core.maxai.MaxAiInsights
+import nd.max.core.maxai.MaxAiOverride
+import nd.max.core.maxai.Objective
+import nd.max.core.maxai.MaxAiRejection
+import nd.max.core.maxai.MaxAiCadence
+import nd.max.core.maxai.MaxAiState
+import nd.max.core.maxai.MaxAiVerdict
+import nd.max.core.maxai.OwnershipCommitState
+import nd.max.core.maxai.SafetyEnforcement
+import nd.max.core.maxai.SafetyLevel
+import nd.max.core.maxai.SafetyStatus
+import nd.max.core.maxai.TrustModel
+import nd.max.ui.design.MaxCapsule
+import nd.max.ui.design.MaxCausalStage
+import nd.max.ui.design.MaxCondition
+import nd.max.ui.design.MaxConditionKind
+import nd.max.ui.design.MaxConfirmDialog
+import nd.max.ui.design.MaxDataTrust
+import nd.max.ui.design.MaxDeltaRow
+import nd.max.ui.design.MaxEpisodeCard
+import nd.max.ui.design.MaxGroup
+import nd.max.ui.design.MaxGroupDivider
+import nd.max.ui.design.MaxListScreen
+import nd.max.ui.design.MaxMetric
+import nd.max.ui.design.MaxMetricReadout
+import nd.max.ui.design.MaxMetricSize
+import nd.max.ui.design.MaxNavigationRow
+import nd.max.ui.design.MaxRow
+import nd.max.ui.design.MaxSearchField
+import nd.max.ui.design.MaxSection
+import nd.max.ui.design.MaxSegmented
+import nd.max.ui.design.MaxSpace
+import nd.max.ui.design.MaxSparkline
+import nd.max.ui.design.MaxSwitchRow
+import nd.max.ui.design.MaxTone
+import nd.max.ui.design.MaxWeightBar
+import nd.max.ui.navigation.MaxDestination
+import nd.max.ui.navigation.MaxNavActions
+import nd.max.ui.viewmodel.MaxAiViewModel
+
+/*
+ * MAX AI — التجربة السببية.
+ *
+ * الشاشة السابقة كانت تعرض أربعة عدادات وسطر "آخر إجراء"، فكان
+ * المستخدم يرى أن النطام يعمل بلا أن يرى ماذا يفعل ولماذا. الآن
+ * تُسرد كل دورة قرار كحلقة متكاملة:
+ *
+ *   الحالة المقيسة → ما لوحِط → لماذا كان مهمًا → القرار → ما تغير →
+ *   ما حدر بعده → الحكم → الأثر المقيس → ما تعلّمه النطام
+ *
+ * قاعدة ملزمة: كل عنصر بصري هنا يمثل حقلًا واحدًا من دفتر المحرك
+ * (MaxAiJournal) أو من حالته المنشورة. لا رسم زخرفي، ولا قيمة توليدية:
+ * ما لم يُقس (مثلًا تعذر قياس "بعد") يُعرض كغير متوفر وليس بصفر.
+ * الخط الزمني فارغ تمامًا قبل أول دورة حقيقية — وهذا مقصود.
+ */
+@Composable
+fun MaxAiScreen(
+    navController: NavHostController,
+    viewModel: MaxAiViewModel = hiltViewModel(),
+) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    val safety by viewModel.safety.collectAsStateWithLifecycle()
+    val episodes by viewModel.episodes.collectAsStateWithLifecycle()
+    val insights by viewModel.insights.collectAsStateWithLifecycle()
+    val nowMs by viewModel.nowMs.collectAsStateWithLifecycle()
+    val cycleStatus by viewModel.cycleStatus.collectAsStateWithLifecycle()
+
+    var workspace by rememberSaveable { mutableStateOf(MaxAiWorkspace.Overview) }
+    var expandedEpisode by rememberSaveable { mutableStateOf<Long?>(null) }
+    var timelineFilter by rememberSaveable { mutableStateOf(TimelineFilter.All) }
+    var verdictFilter by rememberSaveable { mutableStateOf<MaxAiVerdict?>(null) }
+    var timelineExpanded by rememberSaveable { mutableStateOf(false) }
+    var searchQuery by rememberSaveable { mutableStateOf("") }
+    var journalContext by rememberSaveable { mutableStateOf<String?>(null) }
+    var learningContext by rememberSaveable { mutableStateOf<String?>(null) }
+
+    // A telemetry/clock tick must not repeat journal search or allocate its field lists.
+    val filteredEpisodes = remember(episodes, timelineFilter, verdictFilter, searchQuery, journalContext) {
+        filterTimeline(episodes, timelineFilter, verdictFilter, searchQuery, journalContext)
+    }
+    val visibleEpisodes = if (timelineExpanded) {
+        filteredEpisodes
+    } else {
+        filteredEpisodes.take(MaxAiTimelinePreview)
+    }
+    val timelineEmptyTitle = stringResource(
+        if (episodes.isEmpty()) {
+            R.string.max_ai_timeline_empty_title
+        } else {
+            R.string.max_ai_timeline_no_matches
+        },
+    )
+    val timelineEmptySubtitle = if (episodes.isEmpty()) {
+        if (state.aiEnabled) {
+            stringResource(R.string.max_ai_timeline_empty_on)
+        } else {
+            stringResource(R.string.max_ai_timeline_empty_off)
+        }
+    } else {
+        null
+    }
+
+    val banner = when {
+        safety.level == SafetyLevel.CRITICAL -> MaxCondition(
+            kind = MaxConditionKind.Error,
+            title = stringResource(R.string.max_ai_safety_critical_title),
+            detail = stringResource(
+                R.string.max_ai_safety_detail,
+                formatThermal(safety.thermalC),
+                safety.interventions,
+            ),
+            technicalDetail = safety.lastReason.takeIf { it.isNotBlank() },
+        )
+        safety.engaged -> MaxCondition(
+            kind = MaxConditionKind.Applied,
+            title = stringResource(R.string.max_ai_safety_engaged_title),
+            detail = stringResource(
+                R.string.max_ai_safety_detail,
+                formatThermal(safety.thermalC),
+                safety.interventions,
+            ),
+            technicalDetail = safety.lastReason.takeIf { it.isNotBlank() },
+        )
+        else -> null
+    }
+
+    MaxListScreen(
+        title = stringResource(R.string.max_ai_title),
+        onBack = { navController.popBackStack() },
+        subtitle = state.strategyLabel,
+        accentIcon = Icons.Rounded.Psychology,
+        accent = MaterialTheme.colorScheme.tertiary,
+        banner = banner,
+        header = {
+            MaxAiRuntimeStatus(cycleStatus, viewModel::refresh)
+            MaxGroup {
+                MaxSwitchRow(
+                    title = stringResource(R.string.max_ai_master_title),
+                    checked = state.aiEnabled,
+                    onCheckedChange = viewModel::setAiEnabled,
+                    enabled = state.objectivePreference != null,
+                    lockedReason = stringResource(R.string.max_ai_settings_loading),
+                    subtitle = stringResource(
+                        if (state.aiEnabled) R.string.max_ai_master_on else R.string.max_ai_master_disabled_desc,
+                    ),
+                    icon = Icons.Rounded.Psychology,
+                    iconTone = MaxTone.Accent,
+                )
+            }
+            // §٥: بابٌ إلى شاشة التعريف — ما يفعله المحرّك، وما هو متاح الآن، وما لا نفعله.
+            // ولا يُخفى خلف ترخيص: السطح نفسه هو ما يُشتَرى، وهذه الشاشة تشرحه.
+            MaxGroup {
+                MaxNavigationRow(
+                    title = stringResource(R.string.maxai_intro_title),
+                    subtitle = stringResource(R.string.maxai_intro_teaser),
+                    icon = Icons.Rounded.Insights,
+                    iconTone = MaxTone.Accent,
+                    onClick = { navController.navigate(MaxDestination.MaxAiIntro.launchRoute) },
+                )
+            }
+            MaxSegmented(
+                options = listOf(
+                    stringResource(R.string.max_ai_workspace_overview),
+                    stringResource(R.string.max_ai_workspace_journal),
+                    stringResource(R.string.max_ai_workspace_learning),
+                    stringResource(R.string.max_ai_workspace_controls),
+                ),
+                selectedIndex = workspace.ordinal,
+                onSelect = { workspace = MaxAiWorkspace.entries[it] },
+            )
+        },
+    ) {
+        if (workspace == MaxAiWorkspace.Overview) {
+            item(key = "overview_now") { NowHeader(state, nowMs) }
+            item(key = "overview_objective") { ObjectiveSection(state, viewModel) }
+            item(key = "overview_safety") { SafetySection(safety, state.lastSampleAtMs > 0L) }
+            episodes.firstOrNull()?.let { episode ->
+                item(key = "overview_latest") {
+                    MaxSection(title = stringResource(R.string.max_ai_latest_evidence)) {
+                        EpisodeTimelineCard(
+                            episode = episode,
+                            expanded = expandedEpisode == episode.id,
+                            onToggle = {
+                                expandedEpisode = if (expandedEpisode == episode.id) null else episode.id
+                            },
+                        )
+                    }
+                }
+            }
+            item(key = "overview_live") {
+                MaxGroup {
+                    MaxRow(
+                        title = stringResource(R.string.max_live_open),
+                        subtitle = stringResource(R.string.max_live_open_desc),
+                        icon = Icons.Rounded.Insights,
+                        onClick = { MaxNavActions(navController).navigateTo(MaxDestination.MaxLive) },
+                    )
+                }
+            }
+        }
+
+        if (workspace == MaxAiWorkspace.Journal) {
+            item(key = "max_ai_timeline_header") {
+                TimelineHeader(
+                    filter = timelineFilter,
+                    verdict = verdictFilter,
+                    query = searchQuery,
+                    shown = visibleEpisodes.size,
+                    matched = filteredEpisodes.size,
+                    onQueryChange = {
+                        searchQuery = it
+                        timelineExpanded = false
+                        expandedEpisode = null
+                    },
+                    onFilterChange = {
+                        timelineFilter = it
+                        timelineExpanded = false
+                        expandedEpisode = null
+                    },
+                    onVerdictChange = {
+                        verdictFilter = it
+                        timelineExpanded = false
+                        expandedEpisode = null
+                    },
+                )
+                JournalContextFilter(
+                    episodes = episodes,
+                    selected = journalContext,
+                    onSelect = {
+                        journalContext = it
+                        timelineExpanded = false
+                        expandedEpisode = null
+                    },
+                )
+            }
+
+            if (filteredEpisodes.isEmpty()) {
+                item(key = "max_ai_timeline_empty") {
+                    MaxGroup {
+                        MaxRow(
+                            title = timelineEmptyTitle,
+                            subtitle = timelineEmptySubtitle,
+                            icon = Icons.Rounded.Insights,
+                            iconTone = MaxTone.Inactive,
+                        )
+                    }
+                }
+            } else {
+                items(visibleEpisodes, key = { it.id }) { episode ->
+                    EpisodeTimelineCard(
+                        episode = episode,
+                        expanded = expandedEpisode == episode.id,
+                        onToggle = {
+                            expandedEpisode = if (expandedEpisode == episode.id) null else episode.id
+                        },
+                    )
+                }
+            }
+
+            if (filteredEpisodes.size > MaxAiTimelinePreview) {
+                item(key = "max_ai_timeline_toggle") {
+                    TimelineToggleRow(
+                        expanded = timelineExpanded,
+                        matched = filteredEpisodes.size,
+                        onToggle = { timelineExpanded = !timelineExpanded },
+                    )
+                }
+            }
+        }
+
+        if (workspace == MaxAiWorkspace.Learning) {
+            item(key = "learning_insights") {
+                InsightsSection(insights, learningContext) { learningContext = it }
+            }
+        }
+        if (workspace == MaxAiWorkspace.Controls) {
+            item(key = "controls_deck") { ControlDeck(state, viewModel, navController, episodes.size, nowMs) }
+            item(key = "controls_ownership") { OwnershipSection(state) }
+        }
+    }
+}
+
+/** حدود المعاينة القصيرة للخط الزمني قبل أن يطلب المستخدم البقية. */
+private const val MaxAiTimelinePreview = 5
+
+// ── الحالة الآن ───────────────────────────────────────
+
+/**
+ * سطح التحكم — أول ما يصل إليه المستخدم.
+ *
+ * كان المفتاح الرئيسي آخر عنصر في الشاشة (قسم "التحكم" في نهايتها)، فكان
+ * أهم إجراء في التطبيق أقلّ شيء مرئي. الآن يُفتح الخط الزمني بمفتاح واحد ثم
+ * بحالة المحرك الحقيقية: خطة التحكم، بوابة الاستكشاف، تقدّم التعلّم، وعدّادات
+ * القرارات، ثم إجراءان فوريان. لا حقل جديد هنا: كل سطر يقابل حقلًا منشورًا
+ * واحدًا في [MaxAiState]، وما لم يُقس لا يُعرض كصفر.
+ */
+@Composable
+private fun ControlDeck(
+    state: MaxAiState,
+    viewModel: MaxAiViewModel,
+    navController: NavHostController,
+    episodeCount: Int,
+    nowMs: Long,
+) {
+    val freshness = sampleFreshness(state.lastSampleAtMs, nowMs)
+    val plan = state.automationPlan
+    val planTone = when (plan.mode) {
+        "Safety guard" -> MaxTone.Critical
+        "User-locked" -> MaxTone.Caution
+        "Adaptive", "Hold" -> MaxTone.Positive
+        "Learning" -> MaxTone.Accent
+        else -> MaxTone.Neutral
+    }
+    val exploration = state.exploration
+    val blocked = exploration.blockReason
+    val cadence = state.cadence
+    // لا يُفتح تأكيد المسح إلّا وفي الدفتر شيء يُمسح: حوار يُؤكّد حذف صفر
+    // حلقة يُعلّم المستخدم أن التأكيدات بلا معنى.
+    var confirmClear by remember { mutableStateOf(false) }
+
+    MaxSection(
+        title = stringResource(R.string.max_ai_deck_title),
+        description = stringResource(R.string.max_ai_deck_desc),
+    ) {
+        if (freshness == SampleFreshness.Stale) {
+            Text(
+                text = stringResource(R.string.max_live_plan_snapshot),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        MaxGroup {
+            MaxRow(
+                title = if (state.lastSampleAtMs > 0L) plan.mode else stringResource(R.string.status_unknown),
+                subtitle = if (state.lastSampleAtMs > 0L) plan.reason else stringResource(R.string.max_live_empty),
+                icon = Icons.Rounded.Tune,
+                iconTone = planTone,
+                trailing = if (state.lastSampleAtMs > 0L && plan.mode != "Safety guard") ({
+                    MaxCapsule(
+                        text = stringResource(
+                            R.string.max_ai_learning_coverage,
+                            plan.confidencePercent,
+                        ),
+                        tone = planTone,
+                    )
+                }) else null,
+            )
+            MaxGroupDivider()
+            MaxRow(
+                title = if (!state.aiEnabled || freshness != SampleFreshness.Live) {
+                    stringResource(R.string.max_ai_exploration_inactive)
+                } else if (blocked == null) {
+                    stringResource(R.string.max_live_explore_allowed)
+                } else {
+                    stringResource(R.string.max_live_explore_blocked, blockText(blocked))
+                },
+                subtitle = stringResource(
+                    R.string.max_live_explore_budget,
+                    exploration.probesThisSession,
+                    exploration.budget,
+                ),
+                icon = Icons.Rounded.Science,
+                iconTone = if (blocked == null) MaxTone.Accent else MaxTone.Inactive,
+            )
+            MaxGroupDivider()
+            MaxRow(
+                title = stringResource(R.string.max_ai_cadence_title),
+                subtitle = cadenceLine(cadence),
+                icon = Icons.Rounded.Update,
+                iconTone = if (cadence.pendingReason == null) MaxTone.Inactive else MaxTone.Accent,
+            )
+            MaxGroupDivider()
+            MaxRow(
+                title = stringResource(R.string.max_ai_deck_learning),
+                subtitle = stringResource(
+                    R.string.max_ai_deck_learning_row,
+                    state.learnedKnobs,
+                    state.learningSamples,
+                ),
+                icon = Icons.Rounded.Insights,
+                iconTone = if (state.learningSamples > 0L) MaxTone.Positive else MaxTone.Inactive,
+            )
+            MaxGroupDivider()
+            MaxRow(
+                title = stringResource(R.string.max_ai_deck_decisions),
+                subtitle = stringResource(
+                    R.string.max_ai_counters,
+                    state.totalDecisions,
+                    state.successfulDecisions,
+                    state.adjustedDecisions,
+                    state.blockedForSafety,
+                ),
+                icon = Icons.Rounded.Timeline,
+                iconTone = MaxTone.Neutral,
+            )
+        }
+
+        MaxGroup {
+            MaxRow(
+                title = stringResource(R.string.max_live_open),
+                subtitle = stringResource(
+                    R.string.max_ai_deck_live_summary,
+                    state.trust.size,
+                    state.ownership.size,
+                ),
+                icon = Icons.Rounded.Insights,
+                iconTone = MaxTone.Accent,
+                onClick = { MaxNavActions(navController).navigateTo(MaxDestination.MaxLive) },
+            )
+        }
+
+        MaxGroup {
+            MaxRow(
+                title = stringResource(R.string.max_ai_journal_clear),
+                subtitle = if (episodeCount > 0) {
+                    stringResource(R.string.max_ai_journal_clear_desc)
+                } else {
+                    stringResource(R.string.max_ai_journal_clear_empty)
+                },
+                icon = Icons.Rounded.DeleteSweep,
+                iconTone = if (episodeCount > 0) MaxTone.Caution else MaxTone.Inactive,
+                enabled = episodeCount > 0,
+                onClick = if (episodeCount > 0) ({ confirmClear = true }) else null,
+            )
+        }
+    }
+
+    MaxConfirmDialog(
+        visible = confirmClear,
+        title = stringResource(R.string.max_ai_journal_clear_confirm_title),
+        message = stringResource(
+            R.string.max_ai_journal_clear_confirm_message,
+            episodeCount,
+        ),
+        confirmLabel = stringResource(R.string.max_ai_journal_clear_confirm_action),
+        onConfirm = { viewModel.clearJournal() },
+        onDismiss = { confirmClear = false },
+        icon = Icons.Rounded.DeleteSweep,
+        destructive = true,
+    )
+}
+
+/**
+ * سطر الوتيرة: لماذا سيعيد المحرك التخطيط قبل دورة الثلاثين ثانية، أو أنه
+ * لا شيء يوجب ذلك. الحالات الثلاث كلها معلنة، فلا يقرأ المستخدم الصمت
+ * "قريبًا سيحدث شيء".
+ */
+@Composable
+private fun cadenceLine(cadence: CadenceStatus): String {
+    val reason = cadence.pendingReason ?: return stringResource(R.string.max_ai_cadence_calm)
+    val text = cadenceReasonText(reason)
+    return if (cadence.pendingWaitMs <= 0L) {
+        stringResource(R.string.max_ai_cadence_now, text)
+    } else {
+        stringResource(
+            R.string.max_ai_cadence_pending,
+            text,
+            (cadence.pendingWaitMs / 1000L).coerceAtLeast(1L).toInt(),
+        )
+    }
+}
+
+/** ثوابت [MaxAiCadence.Reason] تُترجم ولا تُعرض كما هي. */
+@Composable
+private fun cadenceReasonText(reason: String): String = when (reason) {
+    MaxAiCadence.Reason.SAFETY -> stringResource(R.string.max_ai_cadence_reason_safety)
+    MaxAiCadence.Reason.SCREEN -> stringResource(R.string.max_ai_cadence_reason_screen)
+    MaxAiCadence.Reason.USAGE -> stringResource(R.string.max_ai_cadence_reason_usage)
+    else -> stringResource(R.string.max_ai_value_unknown)
+}
+
+/**
+ * الحالة المقيسة الآن + شريط تطورها.
+ *
+ * الثقة تُشتق من عمر اللقطة نفسها (دورة المحرك 30ث)، فلا يُعرض رقم
+ * قديم بمطهر الحي. وقبل أول لقطة لا توجد قيمة إطلاقًا.
+ */
+@Composable
+private fun NowHeader(state: MaxAiState, nowMs: Long) {
+    val freshness = sampleFreshness(state.lastSampleAtMs, nowMs)
+    val hasSample = freshness != SampleFreshness.Missing
+    val ageMs = if (hasSample) nowMs - state.lastSampleAtMs else 0L
+    val trust = when (freshness) {
+        SampleFreshness.Missing -> MaxDataTrust.Unreadable
+        SampleFreshness.Live -> MaxDataTrust.Live
+        SampleFreshness.Stale -> MaxDataTrust.Stale
+    }
+    val age = if (hasSample) relativeTime(ageMs) else null
+
+    MaxSection(
+        title = stringResource(R.string.max_ai_section_now),
+        description = stringResource(R.string.max_ai_section_now_desc),
+    ) {
+        MaxMetricReadout(
+            metric = MaxMetric(
+                label = stringResource(R.string.max_ai_score_label),
+                value = state.objectiveScore?.let { formatScore(it) },
+                trust = trust,
+                age = age,
+                note = stringResource(
+                    R.string.max_ai_score_desc,
+                    formatScore(state.satisfactionTarget),
+                ),
+            ),
+            size = MaxMetricSize.Large,
+        )
+
+        if (!hasSample) {
+            MaxGroup {
+                MaxRow(
+                    title = stringResource(R.string.status_unknown),
+                    subtitle = stringResource(R.string.max_live_empty),
+                    icon = Icons.Rounded.Insights,
+                    iconTone = MaxTone.Inactive,
+                )
+            }
+            return@MaxSection
+        }
+
+        val trendValues = state.trend.map { it.objectiveScore }
+        if (trendValues.size >= 2) {
+            MaxSparkline(
+                values = trendValues,
+                baseline = state.satisfactionTarget,
+                label = stringResource(R.string.max_ai_trend_label),
+                tone = MaxTone.Accent,
+            )
+        }
+
+        MaxGroup {
+            MaxRow(
+                title = stringResource(R.string.max_ai_metric_cpu),
+                subtitle = formatPercent(state.cpuLoadPercent),
+                icon = Icons.Rounded.Bolt,
+                iconTone = MaxTone.Accent,
+            )
+            MaxGroupDivider()
+            MaxRow(
+                title = stringResource(R.string.max_ai_metric_thermal),
+                subtitle = formatThermal(state.thermalC),
+            )
+            MaxGroupDivider()
+            MaxRow(
+                title = stringResource(R.string.max_ai_metric_battery),
+                subtitle = formatPercent(state.batteryPercent),
+            )
+            MaxGroupDivider()
+            MaxRow(
+                title = stringResource(R.string.max_ai_metric_memory),
+                subtitle = formatPercent(state.memoryPercent),
+            )
+            MaxGroupDivider()
+            MaxRow(
+                title = stringResource(R.string.max_ai_context_title),
+                subtitle = contextLine(state),
+            )
+        }
+    }
+}
+
+@Composable
+private fun contextLine(state: MaxAiState): String {
+    val app = if (state.appContext == "system") {
+        stringResource(R.string.max_ai_context_system)
+    } else {
+        state.appContext
+    }
+    val screen = if (state.screenOn) {
+        stringResource(R.string.max_ai_screen_on)
+    } else {
+        stringResource(R.string.max_ai_screen_off)
+    }
+    val profile = when (state.currentProfile) {
+        ProfileApplier.PROFILE_PERFORMANCE -> stringResource(R.string.max_ai_profile_performance)
+        ProfileApplier.PROFILE_BALANCED -> stringResource(R.string.max_ai_profile_balanced)
+        ProfileApplier.PROFILE_ECO -> stringResource(R.string.max_ai_profile_eco)
+        else -> stringResource(R.string.max_ai_profile_unknown)
+    }
+    return stringResource(R.string.max_ai_context_line, app, screen, profile)
+}
+
+// ── الهدف ───────────────────────────────────────────
+
+/**
+ * أوزان الهدف النشطة ومن أين جاءت، وفوقها اختيار الأولوية مباشرة.
+ *
+ * كان اختيار الأولوية مدفونًا في قسم "التحكم" في آخر الشاشة، وكان المستخدم
+ * يمرّ على الأوزان بلا أن يجد ما يغيّرها. الآن الرسم والزر في نطاق واحد: ما
+ * يُقرأ هو ما يُعدّل. والقيم الثلاث هي مفاتيح يفهمها المحرك ("performance"،
+ * "balanced"، "battery")، ولا يطبّق الزر ملفًا — يغيّر اتجاه القرار فقط.
+ */
+@Composable
+private fun ObjectiveSection(state: MaxAiState, viewModel: MaxAiViewModel) {
+    val haptic = LocalHapticFeedback.current
+    val preference = state.objectivePreference
+    val source = when (state.objectiveSource) {
+        "user" -> stringResource(R.string.max_ai_objective_source_user)
+        "screen_off" -> stringResource(R.string.max_ai_objective_source_screen_off)
+        else -> stringResource(R.string.max_ai_objective_source_learned)
+    }
+    // الهدف الفاعل يُشتق من **الأوزان المنشورة** (قياس المحرك) لا من التفضيل المحفوظ:
+    // فقد يكون المحرك على هدف آخر لأن الشاشة مطفأة أو لأن التعلّم تقدّم على التفضيل.
+    val activeTone = activeObjective(state.objectiveWeights?.let { Objective.labelFor(it) })
+    val activeLabel = activeTone?.let { tone ->
+        stringResource(
+            when (tone) {
+                ObjectiveTone.Performance -> R.string.max_ai_objective_pick_performance
+                ObjectiveTone.Balanced -> R.string.max_ai_objective_pick_balanced
+                ObjectiveTone.Battery -> R.string.max_ai_objective_pick_battery
+            },
+        )
+    }
+
+    MaxSection(
+        title = stringResource(R.string.max_ai_section_objective),
+        description = if (activeLabel != null) {
+            stringResource(R.string.max_ai_objective_active, activeLabel) + " · " + source
+        } else {
+            source
+        },
+    ) {
+        if (preference == null) {
+            MaxGroup { MaxRow(title = stringResource(R.string.max_ai_settings_loading)) }
+        }
+        MaxSegmented(
+            options = listOf(
+                stringResource(R.string.max_ai_objective_pick_performance),
+                stringResource(R.string.max_ai_objective_pick_balanced),
+                stringResource(R.string.max_ai_objective_pick_battery),
+            ),
+            selectedIndex = when (preference) {
+                "performance" -> 0
+                "battery" -> 2
+                null -> -1
+                else -> 1
+            },
+            enabled = preference != null,
+            onSelect = { index ->
+                // إشارة لمسية فورية عند الضغط، قبل أن يصل الأثر إلى الإشعار.
+                haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                viewModel.setObjectivePreference(ObjectivePreferenceKeys[index])
+            },
+        )
+
+        // حين لا يكون التفضيل هو الفاعل، يُقال ذلك صراحةً: قائمة الاختيار تعرض تفضيلًا
+        // محفوظًا والمحرك على غيره — وإخفاء الفرق يجعل المستخدم يقرأ اختياره على أنه الواقع.
+        if (activeLabel != null && state.objectiveSource != "user") {
+            MaxGroup {
+                MaxRow(
+                    title = stringResource(R.string.max_ai_objective_override, activeLabel),
+                    icon = Icons.Rounded.Tune,
+                    iconTone = MaxTone.Caution,
+                )
+            }
+        }
+
+        val weights = state.objectiveWeights
+        if (weights == null) {
+            // الوزن يُحسب في أول دورة مقيسة؛ قبلها لا أرقام ولا أشرطة صفرية.
+            MaxGroup {
+                MaxRow(
+                    title = stringResource(R.string.max_ai_objective_pending),
+                    icon = Icons.Rounded.Tune,
+                    iconTone = MaxTone.Inactive,
+                )
+            }
+            return@MaxSection
+        }
+
+        MaxWeightBar(
+            label = stringResource(R.string.max_ai_weight_performance),
+            fraction = weights.performance,
+            valueText = formatWeight(weights.performance),
+            tone = MaxTone.Accent,
+        )
+        MaxWeightBar(
+            label = stringResource(R.string.max_ai_weight_battery),
+            fraction = weights.battery,
+            valueText = formatWeight(weights.battery),
+            tone = MaxTone.Positive,
+        )
+        MaxWeightBar(
+            label = stringResource(R.string.max_ai_weight_thermal),
+            fraction = weights.thermalHeadroom,
+            valueText = formatWeight(weights.thermalHeadroom),
+            tone = MaxTone.Caution,
+        )
+    }
+}
+
+// ── الخط الزمني ─────────────────────────────────────
+
+@Composable
+private fun EpisodeTimelineCard(
+    episode: MaxAiEpisode,
+    expanded: Boolean,
+    onToggle: () -> Unit,
+) {
+    val baseHeadline = if (episode.acted) {
+        episode.knobLabel ?: episode.knobKey.orEmpty()
+    } else {
+        stringResource(R.string.max_ai_episode_no_action)
+    }
+    // التجربة المعرفية ليست قرارًا مُطبّقًا: تُسمّى باسمها ويُقال صراحةً أن
+    // القيمة استُرجعت، وإلا قرأها المستخدم كتحسين باقٍ على جهازه.
+    // الخط الزمني واحد، والفرز بالنوع: تدخل سلامة وانحراف مقبض ليسا
+    // قراري تحسين، وتسميتهما كقرار كانت ستنسب للمحرك ما لم يختره.
+    val headline = when (episode.kind) {
+        MaxAiEpisodeKind.PROBE -> stringResource(R.string.max_ai_episode_probe, baseHeadline)
+        MaxAiEpisodeKind.SAFETY -> stringResource(R.string.max_ai_episode_safety)
+        MaxAiEpisodeKind.DRIFT -> stringResource(
+            R.string.max_ai_episode_drift,
+            episode.knobLabel ?: episode.knobKey.orEmpty(),
+        )
+        MaxAiEpisodeKind.DECISION -> baseHeadline
+    }
+    val verdictTone = when {
+        episode.exploration -> MaxTone.Accent
+        episode.kind == MaxAiEpisodeKind.SAFETY -> MaxTone.Critical
+        episode.kind == MaxAiEpisodeKind.DRIFT -> MaxTone.Caution
+        else -> verdictTone(episode.verdict)
+    }
+    val verdictText = when {
+        episode.exploration -> stringResource(
+            if (episode.reverted) {
+                R.string.max_ai_verdict_probe_reverted
+            } else {
+                R.string.max_ai_verdict_probe_stuck
+            }
+        )
+        episode.kind == MaxAiEpisodeKind.SAFETY -> stringResource(R.string.max_ai_verdict_safety)
+        episode.kind == MaxAiEpisodeKind.DRIFT -> stringResource(R.string.max_ai_verdict_drift)
+        else -> verdictLabel(episode.verdict)
+    }
+
+    MaxEpisodeCard(
+        headline = headline,
+        timeLabel = relativeTime(System.currentTimeMillis() - episode.id),
+        verdictLabel = verdictText,
+        verdictTone = verdictTone,
+        summary = if (episode.exploration) probeSummary(episode) else episodeSummary(episode),
+        expanded = expanded,
+        onToggle = onToggle,
+    ) {
+        // 1) ما لوحِط: درجة الرضا المقيسة مقابل العتبة.
+        MaxCausalStage(
+            order = 1,
+            title = stringResource(R.string.max_ai_stage_observed),
+            body = stringResource(
+                R.string.max_ai_observed_body,
+                formatScore(episode.before.objectiveScore),
+                formatScore(episode.satisfactionTarget),
+                formatScore(episode.gap),
+            ),
+            tone = MaxTone.Accent,
+            technical = stringResource(
+                R.string.max_ai_observed_technical,
+                formatPercent(episode.before.cpuLoadPercent),
+                formatThermal(episode.before.thermalC),
+                formatPercent(episode.before.batteryPercent),
+                formatPercent(episode.before.memoryPercent),
+            ),
+        )
+
+        // 2) لماذا كان مهمًا: الهدف النشط والسياق الذي قيس فيه.
+        MaxCausalStage(
+            order = 2,
+            title = stringResource(R.string.max_ai_stage_why),
+            body = stringResource(
+                R.string.max_ai_why_body,
+                objectiveText(episode.objectiveLabel),
+                if (episode.appContext == "system") {
+                    stringResource(R.string.max_ai_context_system)
+                } else {
+                    episode.appContext
+                },
+            ),
+            tone = MaxTone.Neutral,
+            technical = stringResource(
+                R.string.max_ai_why_technical,
+                formatWeight(episode.weightPerformance),
+                formatWeight(episode.weightBattery),
+                formatWeight(episode.weightThermal),
+            ),
+        )
+
+        // 3) القرار: أصغر خطوة ممكنة على مقبض واحد.
+        MaxCausalStage(
+            order = 3,
+            title = stringResource(R.string.max_ai_stage_decided),
+            body = if (episode.acted) {
+                stringResource(
+                    R.string.max_ai_decided_body,
+                    episode.knobLabel ?: episode.knobKey.orEmpty(),
+                    directionText(episode.direction),
+                    episode.fromValue ?: stringResource(R.string.max_ai_value_unknown),
+                    episode.toValue ?: stringResource(R.string.max_ai_value_unknown),
+                )
+            } else {
+                stringResource(R.string.max_ai_decided_none)
+            },
+            tone = MaxTone.Accent,
+            technical = predictionText(episode),
+        )
+
+        // 4) ما تغير فعلًا على العتاد (القيمة المقروءة بعد الكتابة).
+        MaxCausalStage(
+            order = 4,
+            title = stringResource(R.string.max_ai_stage_changed),
+            body = episode.appliedValue?.let {
+                stringResource(R.string.max_ai_changed_body, it)
+            } ?: stringResource(R.string.max_ai_changed_none),
+            tone = if (episode.appliedValue != null) MaxTone.Positive else MaxTone.Inactive,
+            technical = episode.detail.takeIf { it.isNotBlank() },
+        )
+
+        // 5) ما حدر بعد التغيير: قياس ثانٍ بعد نافدة استجابة النطام.
+        MaxCausalStage(
+            order = 5,
+            title = stringResource(R.string.max_ai_stage_after),
+            body = if (episode.after == null) {
+                stringResource(R.string.max_ai_after_unmeasured)
+            } else {
+                stringResource(
+                    R.string.max_ai_after_body,
+                    formatScore(episode.after.objectiveScore),
+                )
+            },
+            tone = if (episode.after == null) MaxTone.Inactive else MaxTone.Accent,
+        )
+
+        if (episode.after != null) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = MaxSpace.xxl),
+                verticalArrangement = Arrangement.spacedBy(MaxSpace.xs),
+            ) {
+                MaxDeltaRow(
+                    label = stringResource(R.string.max_ai_score_label),
+                    beforeText = formatScore(episode.before.objectiveScore),
+                    afterText = formatScore(episode.after.objectiveScore),
+                    deltaText = episode.objectiveDelta?.let { formatSignedScore(it) },
+                    deltaTone = deltaTone(episode.objectiveDelta),
+                )
+                MaxDeltaRow(
+                    label = stringResource(R.string.max_ai_metric_thermal),
+                    beforeText = formatThermal(episode.before.thermalC),
+                    afterText = formatThermal(episode.after.thermalC),
+                    deltaText = episode.thermalDeltaC?.let { formatSignedThermal(it) },
+                    deltaTone = thermalDeltaTone(episode.thermalDeltaC),
+                )
+                MaxDeltaRow(
+                    label = stringResource(R.string.max_ai_metric_cpu),
+                    beforeText = formatPercent(episode.before.cpuLoadPercent),
+                    afterText = formatPercent(episode.after.cpuLoadPercent),
+                    deltaText = episode.cpuDeltaPercent?.let { formatSignedPercent(it) },
+                )
+                MaxDeltaRow(
+                    label = stringResource(R.string.max_ai_metric_battery),
+                    beforeText = formatPercent(episode.before.batteryPercent),
+                    afterText = formatPercent(episode.after.batteryPercent),
+                    deltaText = episode.batteryDeltaPercent?.let { formatSignedPercent(it) },
+                )
+            }
+        }
+
+        // 6) الحكم: نجاح، تراجع مع استرجاع، حجب أمان، أو فشل كتابة.
+        MaxCausalStage(
+            order = 6,
+            title = stringResource(R.string.max_ai_stage_verdict),
+            body = verdictDetail(episode),
+            tone = verdictTone,
+            // الحكم المؤجل يُعرض فقط حين قيس فعلًا بعد ربع ساعة — لا وعد
+            // بقياس قادم ولا خانة فارغة توحي برقم مفقود.
+            technical = listOfNotNull(
+                stringResource(R.string.max_ai_safety_level, episode.safetyLevel),
+                deferredVerdictText(episode),
+            ).joinToString(" · "),
+        )
+
+        // 7) الأثر المقيس مقابل المتوقع — صدق التنبؤ لا ادعاءه.
+        MaxCausalStage(
+            order = 7,
+            title = stringResource(R.string.max_ai_stage_impact),
+            body = episode.objectiveDelta?.let {
+                stringResource(R.string.max_ai_impact_body, formatSignedScore(it))
+            } ?: stringResource(R.string.max_ai_impact_none),
+            tone = deltaTone(episode.objectiveDelta),
+            technical = episode.predictionErrorGain?.let {
+                stringResource(R.string.max_ai_prediction_error, formatScore(it))
+            },
+        )
+
+        // 8) ما تعلّمه: فرق عدد العينات والثقة قبل/بعد الحلقة.
+        MaxCausalStage(
+            order = 8,
+            title = stringResource(R.string.max_ai_stage_learned),
+            body = if (episode.samplesAfter > episode.samplesBefore) {
+                stringResource(
+                    R.string.max_ai_learned_body,
+                    episode.samplesBefore,
+                    episode.samplesAfter,
+                    formatWeight(episode.confidenceAfter),
+                )
+            } else {
+                stringResource(R.string.max_ai_learned_none)
+            },
+            tone = MaxTone.Positive,
+        )
+
+        // 9) ماذا فعل المستخدم بعده — أصدق إشارة رضا متاحة: سلوك فعلي
+        // لا استبيان. الغياب يُقال صراحةً كي لا يُقرأ الفراغ رضًا مؤكّدًا.
+        MaxCausalStage(
+            order = 9,
+            title = stringResource(R.string.max_ai_stage_user),
+            body = episode.userOverrideAtMs?.let { at ->
+                stringResource(
+                    R.string.max_ai_user_override,
+                    relativeTime(at - episode.id),
+                    overrideKindText(episode.userOverrideKind),
+                )
+            } ?: stringResource(R.string.max_ai_user_override_none),
+            tone = if (episode.userRejected) MaxTone.Critical else MaxTone.Inactive,
+            isLast = episode.candidates.isEmpty(),
+        )
+
+        if (episode.candidates.isNotEmpty()) {
+            Text(
+                text = stringResource(
+                    R.string.max_ai_candidates_title,
+                    episode.candidates.size,
+                ),
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            MaxGroup {
+                episode.candidates.forEachIndexed { index, candidate ->
+                    if (index > 0) MaxGroupDivider()
+                    CandidateRow(candidate)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun deferredVerdictText(episode: MaxAiEpisode): String? {
+    if (!episode.hasDeferredVerdict) return null
+    val unknown = stringResource(R.string.max_ai_value_unknown)
+    return stringResource(
+        R.string.max_ai_deferred_verdict,
+        episode.deferredBatteryDeltaPercent?.let { formatSignedPercent(it) } ?: unknown,
+        episode.deferredThermalDeltaC?.let { formatSignedThermal(it) } ?: unknown,
+        episode.deferredObjectiveDelta?.let { formatSignedScore(it) } ?: unknown,
+    )
+}
+
+/** ترجمة نوع التجاوز — قيم ثابتة من المحرك، لا نص حر يُعرض كما هو. */
+@Composable
+private fun overrideKindText(kind: String?): String = when (kind) {
+    MaxAiOverride.LOCK -> stringResource(R.string.max_ai_override_lock)
+    MaxAiOverride.PROFILE -> stringResource(R.string.max_ai_override_profile)
+    else -> stringResource(R.string.max_ai_value_unknown)
+}
+
+@Composable
+private fun CandidateRow(candidate: MaxAiCandidate) {
+    val statusLabel = if (candidate.chosen) {
+        stringResource(R.string.max_ai_candidate_chosen)
+    } else {
+        rejectionLabel(candidate.rejection)
+    }
+    MaxRow(
+        title = candidate.label,
+        subtitle = stringResource(
+            R.string.max_ai_candidate_metrics,
+            formatScore(candidate.utility),
+            formatWeight(candidate.credibility),
+            candidate.samples,
+        ),
+        trailing = {
+            MaxCapsule(
+                text = statusLabel,
+                tone = if (candidate.chosen) MaxTone.Positive else MaxTone.Inactive,
+            )
+        },
+    )
+}
+
+// ── المعرفة ─────────────────────────────────────────
+
+/** حكم تراكمي لكل مقبض من عيناته المقيسة وحدها. */
+@Composable
+private fun InsightsSection(
+    snapshot: MaxAiInsights.Snapshot,
+    scopeKey: String?,
+    onScopeChange: (String) -> Unit,
+) {
+    // النطاق المعروض: العام أولًا، ثم أي تطبيق قُيس فيه شيء. الاختيار يُحفظ
+    // عبر إعادة إنشاء الشاشة كي لا يقفز المستخدم من تطبيق إلى العام بلا سبب.
+    var scopeMenuExpanded by remember { mutableStateOf(false) }
+    val contexts = snapshot.contexts
+    val selectedContext = selectedLearningContext(scopeKey, contexts)
+    val knobs = selectedContext?.let { snapshot.knobsIn(it) }.orEmpty()
+
+    MaxSection(
+        title = stringResource(R.string.max_ai_section_insights),
+        description = stringResource(R.string.max_ai_section_insights_desc),
+    ) {
+        if (contexts.isEmpty()) {
+            MaxGroup {
+                MaxRow(
+                    title = stringResource(R.string.max_ai_insight_empty),
+                    icon = Icons.Rounded.Insights,
+                    iconTone = MaxTone.Inactive,
+                )
+            }
+        } else {
+            // ما يوجد تحت المفتاح هو حكم سياق واحد، لا كل ما تعلّمه المحرك:
+            // نفس المقبض قد يكون نافعًا في لعبة ومكلفًا في سياق النظام.
+            Box {
+                MaxGroup {
+                    MaxRow(
+                        title = stringResource(R.string.max_ai_insight_scope),
+                        subtitle = selectedContext?.let { contextLabel(it) }
+                            ?: stringResource(R.string.max_ai_insight_scope_global),
+                        icon = Icons.Rounded.Insights,
+                        iconTone = MaxTone.Accent,
+                        onClick = { scopeMenuExpanded = true },
+                    )
+                }
+                DropdownMenu(
+                    expanded = scopeMenuExpanded,
+                    onDismissRequest = { scopeMenuExpanded = false },
+                ) {
+                    contexts.forEach { ctx ->
+                        DropdownMenuItem(
+                            text = { Text(contextLabel(ctx)) },
+                            onClick = {
+                                onScopeChange(ctx)
+                                scopeMenuExpanded = false
+                            },
+                        )
+                    }
+                }
+            }
+
+            Text(
+                text = stringResource(R.string.max_ai_insight_scope_count, contexts.size),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+
+            if (knobs.isEmpty()) {
+                MaxGroup {
+                    MaxRow(
+                        title = stringResource(R.string.max_ai_insight_context_empty),
+                        icon = Icons.Rounded.Insights,
+                        iconTone = MaxTone.Inactive,
+                    )
+                }
+            } else {
+                MaxGroup {
+                    knobs.forEachIndexed { index, knob ->
+                        if (index > 0) MaxGroupDivider()
+                        MaxRow(
+                            title = knob.label,
+                            subtitle = stringResource(
+                                R.string.max_ai_insight_row,
+                                formatSignedScore(knob.meanGain),
+                                formatSignedThermal(knob.meanThermalC),
+                                knob.samples,
+                                directionText(knob.direction.name),
+                            ),
+                            trailing = {
+                                MaxCapsule(
+                                    text = insightVerdictLabel(knob.verdict),
+                                    tone = insightVerdictTone(knob.verdict),
+                                )
+                            },
+                        )
+                    }
+                }
+            }
+        }
+
+        AuditGroup(snapshot)
+
+        Text(
+            text = stringResource(
+                R.string.max_ai_insights_summary,
+                snapshot.improved,
+                snapshot.rolledBack,
+                snapshot.blocked,
+                snapshot.unmeasured,
+            ),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Text(
+            text = stringResource(
+                R.string.max_ai_insights_events_summary,
+                snapshot.safetyEvents,
+                snapshot.driftEvents,
+                snapshot.userOverrides,
+                snapshot.deferredMeasured,
+            ),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        snapshot.prediction.meanAbsError?.let { error ->
+            Text(
+                text = stringResource(
+                    R.string.max_ai_insights_prediction,
+                    formatScore(error),
+                    snapshot.prediction.samples,
+                ),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
+}
+
+/**
+ * تدقيق المحرك على نفسه: هل ينفّذ تنبؤاته، وهل تجاربه تُنتج معرفة، وهل
+ * يقرأ المستخدم قراراته أم يتجاوزها.
+ *
+ * لماذا يُعرض هذا بدل أن يُخفى: كل رقم هنا مشتق من حلقات هذا الجهاز، وهو
+ * **الحكم الوحيد القابل للتكذيب** على ذكاء المحرك. نظام يقول «تعلّمت» بلا
+ * أن يستطيع إظهار نسبة الإصابات يطلب ثقة بلا مقابل. والمقام الصفري يُعرض
+ * كشرطة لا كصفر، لأن «لم يُقس بعد» ليست نتيجة. الفشل المعلن يبني الثقة
+ * أكثر من نجاح مُدّعى.
+ */
+@Composable
+private fun AuditGroup(snapshot: MaxAiInsights.Snapshot) {
+    val prediction = snapshot.prediction
+    val unknown = stringResource(R.string.max_ai_value_unknown)
+    val calibrationText = when (prediction.calibration) {
+        MaxAiInsights.Calibration.CALIBRATED -> stringResource(R.string.max_ai_calibration_calibrated)
+        MaxAiInsights.Calibration.DRIFTING -> stringResource(R.string.max_ai_calibration_drifting)
+        MaxAiInsights.Calibration.LEARNING -> stringResource(R.string.max_ai_calibration_learning)
+    }
+    val calibrationTone = when (prediction.calibration) {
+        MaxAiInsights.Calibration.CALIBRATED -> MaxTone.Positive
+        MaxAiInsights.Calibration.DRIFTING -> MaxTone.Caution
+        MaxAiInsights.Calibration.LEARNING -> MaxTone.Neutral
+    }
+    val calibrationDetail = if (prediction.samples <= 0) {
+        stringResource(R.string.max_ai_calibration_pending)
+    } else {
+        listOfNotNull(
+            prediction.hitRate?.let {
+                stringResource(
+                    R.string.max_ai_calibration_hits,
+                    formatWeight(it),
+                    prediction.samples,
+                    formatScore(MaxAiInsights.PREDICTION_TOLERANCE_GAIN),
+                )
+            },
+            prediction.meanConfidence?.let {
+                stringResource(R.string.max_ai_calibration_confidence, formatWeight(it))
+            },
+        ).joinToString(" · ")
+    }
+
+    MaxSection(
+        title = stringResource(R.string.max_ai_audit_section),
+        description = stringResource(R.string.max_ai_audit_desc),
+    ) {
+        MaxGroup {
+            MaxRow(
+                title = stringResource(R.string.max_ai_calibration_title),
+                subtitle = calibrationDetail,
+                icon = Icons.Rounded.Science,
+                iconTone = calibrationTone,
+                trailing = {
+                    MaxCapsule(text = calibrationText, tone = calibrationTone)
+                },
+            )
+            MaxGroupDivider()
+            MaxRow(
+                title = stringResource(R.string.max_ai_audit_probe_yield),
+                subtitle = snapshot.probeYield?.let {
+                    stringResource(
+                        R.string.max_ai_audit_probe_yield_value,
+                        formatWeight(it),
+                        snapshot.explorationsMeasured,
+                        snapshot.explorations,
+                    )
+                } ?: unknown,
+                icon = Icons.Rounded.Science,
+                iconTone = if (snapshot.probeYield == null) MaxTone.Inactive else MaxTone.Neutral,
+            )
+            MaxGroupDivider()
+            MaxRow(
+                title = stringResource(R.string.max_ai_audit_override_rate),
+                subtitle = snapshot.overrideRate?.let {
+                    stringResource(
+                        R.string.max_ai_audit_rate_value,
+                        formatWeight(it),
+                        snapshot.userOverrides,
+                        snapshot.actedEpisodes,
+                    )
+                } ?: unknown,
+                icon = Icons.Rounded.Lock,
+                iconTone = when (val rate = snapshot.overrideRate) {
+                    null -> MaxTone.Inactive
+                    else -> if (rate >= 0.5f) MaxTone.Caution else MaxTone.Neutral
+                },
+            )
+            MaxGroupDivider()
+            MaxRow(
+                title = stringResource(R.string.max_ai_audit_measurement_rate),
+                subtitle = snapshot.measurementRate?.let {
+                    stringResource(
+                        R.string.max_ai_audit_rate_value,
+                        formatWeight(it),
+                        snapshot.actedEpisodes - snapshot.unmeasured,
+                        snapshot.actedEpisodes,
+                    )
+                } ?: unknown,
+                icon = Icons.Rounded.Timeline,
+                iconTone = if (snapshot.measurementRate == null) MaxTone.Inactive else MaxTone.Neutral,
+            )
+        }
+    }
+}
+
+// ── الملكية والأقفال ─────────────────────────────────
+
+/** مفاتيح الأولوية التي يفهمها المحرك (Objective.fromPreference). */
+private val ObjectivePreferenceKeys = listOf("performance", "balanced", "battery")
+
+// ── الأمان ────────────────────────────────────
+
+/**
+ * حالة حاكم الأمان الحراري الحية: المستوى، ما قيس، عدد التدخلات، وهل نجح
+ * فرض السقف فعلًا.
+ *
+ * كان الأمان يظهر كنطاق تحذير عند اشتباكه فقط، فيبدو غائبًا ما دام كل شيء
+ * بخير. عرضه دائًما هو ما يجعل "لا شيء يحدث" حالة مرئية لا صمتًا، ويجعل آخر
+ * سبب تدخل قابلًا للقراءة بعد أن تهدأ الحرارة.
+ */
+@Composable
+private fun SafetySection(safety: SafetyStatus, hasSample: Boolean) {
+    val levelTone = when (safety.level) {
+        SafetyLevel.NORMAL -> MaxTone.Positive
+        SafetyLevel.ENGAGED -> MaxTone.Caution
+        SafetyLevel.CRITICAL -> MaxTone.Critical
+    }
+    val levelLabel = stringResource(
+        when (safety.level) {
+            SafetyLevel.NORMAL -> R.string.max_ai_safety_state_normal
+            SafetyLevel.ENGAGED -> R.string.max_ai_safety_state_engaged
+            SafetyLevel.CRITICAL -> R.string.max_ai_safety_state_critical
+        },
+    )
+
+    MaxSection(
+        title = stringResource(R.string.max_ai_safety_section),
+        description = stringResource(R.string.max_ai_safety_section_desc),
+    ) {
+        if (!hasSample) {
+            MaxGroup { MaxRow(title = stringResource(R.string.status_unknown)) }
+            return@MaxSection
+        }
+        MaxGroup {
+            MaxRow(
+                title = stringResource(R.string.max_ai_safety_state),
+                subtitle = stringResource(
+                    R.string.max_ai_safety_detail,
+                    formatThermal(safety.thermalC),
+                    safety.interventions,
+                ),
+                icon = Icons.Rounded.Bolt,
+                iconTone = levelTone,
+                trailing = { MaxCapsule(text = levelLabel, tone = levelTone) },
+            )
+            MaxGroupDivider()
+            MaxRow(
+                title = stringResource(R.string.max_ai_safety_enforcement),
+                subtitle = listOfNotNull(
+                    enforcementLabel(safety.enforcement),
+                    safety.enforcementDetail.takeIf { it.isNotBlank() },
+                ).joinToString(" · "),
+                icon = Icons.Rounded.Lock,
+                iconTone = if (safety.enforcement == SafetyEnforcement.FAILED) {
+                    MaxTone.Critical
+                } else {
+                    MaxTone.Neutral
+                },
+            )
+        }
+        if (safety.lastReason.isNotBlank()) {
+            MaxGroup {
+                MaxRow(
+                    title = stringResource(R.string.max_ai_safety_reason),
+                    subtitle = safety.lastReason,
+                    icon = Icons.Rounded.Timeline,
+                    iconTone = MaxTone.Caution,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun enforcementLabel(enforcement: SafetyEnforcement): String = stringResource(
+    when (enforcement) {
+        SafetyEnforcement.NOT_REQUIRED -> R.string.max_ai_enforce_not_required
+        SafetyEnforcement.APPLIED -> R.string.max_ai_enforce_applied
+        SafetyEnforcement.PARTIAL -> R.string.max_ai_enforce_partial
+        SafetyEnforcement.FAILED -> R.string.max_ai_enforce_failed
+        SafetyEnforcement.UNAVAILABLE -> R.string.max_ai_enforce_unavailable
+    },
+)
+
+// ── الخط الزمني ──────────────────────────────────
+
+/**
+ * رأس الخط الزمني: نوع الحلقة والحكم المسجّل، مع عدّ صادق للمعروض.
+ * التصفية تغيّر العرض فقط؛ لا تغيّر دفتر المحرك أو ملخص المعرفة.
+ */
+@Composable
+private fun TimelineHeader(
+    filter: TimelineFilter,
+    verdict: MaxAiVerdict?,
+    query: String,
+    shown: Int,
+    matched: Int,
+    onQueryChange: (String) -> Unit,
+    onFilterChange: (TimelineFilter) -> Unit,
+    onVerdictChange: (MaxAiVerdict?) -> Unit,
+) {
+    var verdictMenuExpanded by remember { mutableStateOf(false) }
+    MaxSection(
+        title = stringResource(R.string.max_ai_section_timeline),
+        description = stringResource(R.string.max_ai_section_timeline_desc),
+    ) {
+        MaxSearchField(
+            value = query,
+            onValueChange = onQueryChange,
+            placeholder = stringResource(R.string.max_ai_timeline_search_hint),
+            clearContentDescription = stringResource(R.string.max_ai_timeline_search_clear),
+        )
+        MaxSegmented(
+            options = listOf(
+                stringResource(R.string.max_ai_timeline_filter_all),
+                stringResource(R.string.max_ai_timeline_filter_decisions),
+                stringResource(R.string.max_ai_timeline_filter_probes),
+                stringResource(R.string.max_ai_timeline_filter_alerts),
+            ),
+            selectedIndex = filter.ordinal,
+            onSelect = { index -> onFilterChange(TimelineFilter.values()[index]) },
+        )
+        Box {
+            MaxGroup {
+                MaxRow(
+                    title = stringResource(R.string.max_ai_timeline_verdict_filter),
+                    subtitle = verdict?.let { verdictLabel(it) }
+                        ?: stringResource(R.string.max_ai_timeline_filter_all),
+                    icon = Icons.Rounded.FilterList,
+                    onClick = { verdictMenuExpanded = true },
+                )
+            }
+            DropdownMenu(
+                expanded = verdictMenuExpanded,
+                onDismissRequest = { verdictMenuExpanded = false },
+            ) {
+                DropdownMenuItem(
+                    text = { Text(stringResource(R.string.max_ai_timeline_filter_all)) },
+                    onClick = {
+                        onVerdictChange(null)
+                        verdictMenuExpanded = false
+                    },
+                )
+                MaxAiVerdict.values().forEach { option ->
+                    DropdownMenuItem(
+                        text = { Text(verdictLabel(option)) },
+                        onClick = {
+                            onVerdictChange(option)
+                            verdictMenuExpanded = false
+                        },
+                    )
+                }
+            }
+        }
+        if (matched > 0) {
+            Text(
+                text = stringResource(R.string.max_ai_timeline_shown, shown, matched),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
+}
+
+/** تمديد المعاينة أو تقليصها — إجراء صريح بدل خط زمني لا ينتهي. */
+@Composable
+private fun TimelineToggleRow(expanded: Boolean, matched: Int, onToggle: () -> Unit) {
+    MaxGroup {
+        MaxRow(
+            title = if (expanded) {
+                stringResource(R.string.max_ai_timeline_show_less, MaxAiTimelinePreview)
+            } else {
+                stringResource(R.string.max_ai_timeline_show_all, matched)
+            },
+            icon = Icons.Rounded.Timeline,
+            iconTone = MaxTone.Accent,
+            onClick = onToggle,
+        )
+    }
+}
+
+@Composable
+private fun JournalContextFilter(
+    episodes: List<MaxAiEpisode>,
+    selected: String?,
+    onSelect: (String?) -> Unit,
+) {
+    var expanded by remember { mutableStateOf(false) }
+    val contexts = remember(episodes) { episodes.map { it.appContext }.distinct().sorted() }
+    Box {
+        MaxGroup {
+            MaxRow(
+                title = stringResource(R.string.max_ai_journal_context),
+                subtitle = selected?.let { contextLabel(it) }
+                    ?: stringResource(R.string.max_ai_journal_all_contexts),
+                icon = Icons.Rounded.FilterList,
+                onClick = { expanded = true },
+            )
+        }
+        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+            DropdownMenuItem(
+                text = { Text(stringResource(R.string.max_ai_journal_all_contexts)) },
+                onClick = {
+                    onSelect(null)
+                    expanded = false
+                },
+            )
+            contexts.forEach { context ->
+                DropdownMenuItem(
+                    text = { Text(contextLabel(context)) },
+                    onClick = {
+                        onSelect(context)
+                        expanded = false
+                    },
+                )
+            }
+        }
+    }
+}
+
+// ── التحكم ─────────────────────────────────────────
+
+/**
+ * ملخص الملكية وأقفال المستخدم.
+ *
+ * التفاصيل الكاملة لكل مقبض (الفائز، النية، حالة التحقق) موجودة في مركز
+ * القيادة الحي. وهنا ما يحتاجه المستخدم ليقرر: كم مقبضًا يملكه المحرك، وكم
+ * منها تحقق على العتاد، وكم مقبضًا أغلقه هو بنفسه أمام كل مالك آلي. الأقفال
+ * تُسرد بالاسم لأنها القرار اليدوي الوحيد الذي لا يجوز أن يختفي في شاشة أخرى.
+ */
+@Composable
+private fun OwnershipSection(state: MaxAiState) {
+    val owned = state.ownership
+    val verified = owned.count { it.state == OwnershipCommitState.VERIFIED }
+
+    MaxSection(
+        title = stringResource(R.string.max_ai_section_system),
+        description = stringResource(R.string.max_ai_section_system_desc),
+    ) {
+        MaxGroup {
+            if (owned.isEmpty()) {
+                MaxRow(
+                    title = stringResource(R.string.max_ai_owner_none),
+                    icon = Icons.Rounded.Tune,
+                    iconTone = MaxTone.Inactive,
+                )
+            } else {
+                MaxRow(
+                    title = stringResource(R.string.max_ai_owner_knobs),
+                    subtitle = stringResource(
+                        R.string.max_ai_owner_summary,
+                        owned.size,
+                        verified,
+                    ),
+                    icon = Icons.Rounded.Tune,
+                    iconTone = MaxTone.Accent,
+                    trailing = {
+                        MaxCapsule(
+                            text = stringResource(
+                                if (verified == owned.size) R.string.max_ai_owner_verified
+                                else R.string.max_ai_owner_pending,
+                            ),
+                            tone = if (verified == owned.size) {
+                                MaxTone.Positive
+                            } else {
+                                MaxTone.Caution
+                            },
+                        )
+                    },
+                )
+            }
+        }
+
+        if (state.lockedKnobs.isNotEmpty()) {
+            Text(
+                text = stringResource(R.string.max_ai_locks_summary, state.lockedKnobs.size),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            MaxGroup {
+                state.lockedKnobs.forEachIndexed { index, lock ->
+                    if (index > 0) MaxGroupDivider()
+                    MaxRow(
+                        title = lock.key,
+                        subtitle = stringResource(R.string.max_ai_locked_row, lock.desired),
+                        icon = Icons.Rounded.Lock,
+                        iconTone = MaxTone.Caution,
+                    )
+                }
+            }
+        }
+    }
+}
+
+// ── تنسيق وترجمة الحالات ──────────────────────────────
+
+@Composable
+private fun episodeSummary(episode: MaxAiEpisode): String = when (episode.verdict) {
+    MaxAiVerdict.IMPROVED -> stringResource(
+        R.string.max_ai_summary_improved,
+        episode.objectiveDelta?.let { formatSignedScore(it) }
+            ?: stringResource(R.string.max_ai_value_unknown),
+    )
+    MaxAiVerdict.REGRESSED_ROLLED_BACK -> stringResource(
+        R.string.max_ai_summary_rolled_back,
+        episode.objectiveDelta?.let { formatSignedScore(it) }
+            ?: stringResource(R.string.max_ai_value_unknown),
+    )
+    MaxAiVerdict.REGRESSED_STUCK -> stringResource(R.string.max_ai_summary_stuck)
+    MaxAiVerdict.BLOCKED_SAFETY -> stringResource(R.string.max_ai_summary_blocked)
+    MaxAiVerdict.WRITE_FAILED -> stringResource(R.string.max_ai_summary_write_failed)
+    MaxAiVerdict.UNMEASURED -> stringResource(R.string.max_ai_summary_unmeasured)
+    MaxAiVerdict.NO_ACTION -> stringResource(R.string.max_ai_summary_no_action)
+}
+
+@Composable
+private fun probeSummary(episode: MaxAiEpisode): String = stringResource(
+    if (episode.reverted) {
+        R.string.max_ai_summary_probe_reverted
+    } else {
+        R.string.max_ai_summary_probe_stuck
+    },
+)
+
+@Composable
+private fun verdictDetail(episode: MaxAiEpisode): String =
+    episode.detail.takeIf { it.isNotBlank() } ?: verdictLabel(episode.verdict)
+
+@Composable
+private fun verdictLabel(verdict: MaxAiVerdict): String = stringResource(
+    when (verdict) {
+        MaxAiVerdict.IMPROVED -> R.string.max_ai_verdict_improved
+        MaxAiVerdict.REGRESSED_ROLLED_BACK -> R.string.max_ai_verdict_rolled_back
+        MaxAiVerdict.REGRESSED_STUCK -> R.string.max_ai_verdict_stuck
+        MaxAiVerdict.BLOCKED_SAFETY -> R.string.max_ai_verdict_blocked
+        MaxAiVerdict.WRITE_FAILED -> R.string.max_ai_verdict_write_failed
+        MaxAiVerdict.UNMEASURED -> R.string.max_ai_verdict_unmeasured
+        MaxAiVerdict.NO_ACTION -> R.string.max_ai_verdict_no_action
+    }
+)
+
+private fun verdictTone(verdict: MaxAiVerdict): MaxTone = when (verdict) {
+    MaxAiVerdict.IMPROVED -> MaxTone.Positive
+    MaxAiVerdict.REGRESSED_ROLLED_BACK -> MaxTone.Caution
+    MaxAiVerdict.REGRESSED_STUCK -> MaxTone.Critical
+    MaxAiVerdict.BLOCKED_SAFETY -> MaxTone.Caution
+    MaxAiVerdict.WRITE_FAILED -> MaxTone.Critical
+    MaxAiVerdict.UNMEASURED -> MaxTone.Neutral
+    MaxAiVerdict.NO_ACTION -> MaxTone.Inactive
+}
+
+@Composable
+private fun insightVerdictLabel(verdict: MaxAiInsights.Verdict): String = stringResource(
+    when (verdict) {
+        MaxAiInsights.Verdict.PROVEN_HELPFUL -> R.string.max_ai_insight_helpful
+        MaxAiInsights.Verdict.PROVEN_COSTLY -> R.string.max_ai_insight_costly
+        MaxAiInsights.Verdict.INCONCLUSIVE -> R.string.max_ai_insight_inconclusive
+        MaxAiInsights.Verdict.LEARNING -> R.string.max_ai_insight_learning
+    }
+)
+
+private fun insightVerdictTone(verdict: MaxAiInsights.Verdict): MaxTone = when (verdict) {
+    MaxAiInsights.Verdict.PROVEN_HELPFUL -> MaxTone.Positive
+    MaxAiInsights.Verdict.PROVEN_COSTLY -> MaxTone.Critical
+    MaxAiInsights.Verdict.INCONCLUSIVE -> MaxTone.Caution
+    MaxAiInsights.Verdict.LEARNING -> MaxTone.Neutral
+}
+
+@Composable
+private fun rejectionLabel(rejection: String?): String = when (rejection) {
+    MaxAiRejection.MEASURED_HARM -> stringResource(R.string.max_ai_rejected_measured_harm)
+    MaxAiRejection.PREDICTED_HARM -> stringResource(R.string.max_ai_rejected_predicted_harm)
+    MaxAiRejection.NO_STEP -> stringResource(R.string.max_ai_rejected_no_step)
+    MaxAiRejection.UNREADABLE -> stringResource(R.string.max_ai_rejected_unreadable)
+    else -> stringResource(R.string.max_ai_rejected_other)
+}
+
+/**
+ * اسم مقروء لسياق التعلّم.
+ *
+ * السياق يُخزَّن في المحرك كاسم حزمة (وهو المفتاح الذي يقيس عليه)، لكن عرض
+ * `com.tencent.ig` للمستخدم يجعل النطاق يبدو تفصيلًا داخليًا لا قرارًا يخصه.
+ * فيُترجم إلى اسم التطبيق حين يسمح النظام بذلك، ويعود إلى اسم الحزمة حين
+ * يمنعه (حزم غير مرئية للمتصل على API 30+) — الصدق أولى من التجميل: لا نختلق
+ * اسمًا لا نعرفه.
+ */
+@Composable
+private fun contextLabel(context: String): String = when (context) {
+    ControlOutcomeModel.GLOBAL_CONTEXT -> stringResource(R.string.max_ai_insight_scope_global)
+    "system" -> stringResource(R.string.max_ai_context_system)
+    else -> appLabel(context) ?: context
+}
+
+/** اسم التطبيق من النظام، أو null حين لا يسمح النظام برؤيته. */
+@Composable
+private fun appLabel(packageName: String): String? {
+    val context = LocalContext.current
+    return key(context, packageName) {
+        val label by produceState<String?>(null) {
+            value = withContext(Dispatchers.IO) {
+                runCatching {
+                    val manager = context.packageManager
+                    manager.getApplicationLabel(manager.getApplicationInfo(packageName, 0)).toString()
+                }.getOrNull()?.takeIf { it.isNotBlank() }
+            }
+        }
+        label
+    }
+}
+
+@Composable
+private fun directionText(direction: String?): String = when (direction) {
+    ControlRegistry.Direction.RAISE_PERFORMANCE.name ->
+        stringResource(R.string.max_ai_direction_raise)
+    ControlRegistry.Direction.SAVE_ENERGY.name ->
+        stringResource(R.string.max_ai_direction_save)
+    else -> stringResource(R.string.max_ai_value_unknown)
+}
+
+/**
+ * سبب امتناع بوابة الاستكشاف — ثوابت [TrustModel.Block] لا نص حر، كي لا
+ * تُعرض رسالة إنجليزية من المحرك داخل واجهة عربية.
+ */
+@Composable
+private fun blockText(reason: String): String = when (reason) {
+    TrustModel.Block.SAFETY -> stringResource(R.string.max_live_block_safety)
+    TrustModel.Block.THERMAL_HEADROOM -> stringResource(R.string.max_live_block_thermal)
+    TrustModel.Block.BATTERY -> stringResource(R.string.max_live_block_battery)
+    TrustModel.Block.CONTEXT_BUSY -> stringResource(R.string.max_live_block_busy)
+    TrustModel.Block.COOLDOWN -> stringResource(R.string.max_live_block_cooldown)
+    TrustModel.Block.SESSION_BUDGET -> stringResource(R.string.max_live_block_budget)
+    TrustModel.Block.NOTHING_UNKNOWN -> stringResource(R.string.max_live_block_nothing)
+    TrustModel.Block.IRREVERSIBLE -> stringResource(R.string.max_live_block_irreversible)
+    TrustModel.Block.COST_TOO_HIGH -> stringResource(R.string.max_live_block_cost)
+    else -> stringResource(R.string.max_ai_value_unknown)
+}
+
+@Composable
+private fun objectiveText(label: String): String = when (label) {
+    "screen_off" -> stringResource(R.string.max_ai_objective_source_screen_off)
+    "performance" -> stringResource(R.string.max_ai_objective_pick_performance)
+    "battery" -> stringResource(R.string.max_ai_objective_pick_battery)
+    "balanced" -> stringResource(R.string.max_ai_objective_pick_balanced)
+    else -> label
+}
+
+@Composable
+private fun predictionText(episode: MaxAiEpisode): String? {
+    val gain = episode.predictedGain ?: return null
+    val unknown = stringResource(R.string.max_ai_value_unknown)
+    return stringResource(
+        R.string.max_ai_prediction,
+        formatSignedScore(gain),
+        episode.predictedThermalC?.let { formatSignedThermal(it) } ?: unknown,
+        episode.predictionConfidence?.let { formatWeight(it) } ?: unknown,
+    )
+}
+
+private fun deltaTone(delta: Float?): MaxTone = when {
+    delta == null -> MaxTone.Neutral
+    delta > 0f -> MaxTone.Positive
+    delta < 0f -> MaxTone.Critical
+    else -> MaxTone.Neutral
+}
+
+private fun thermalDeltaTone(delta: Float?): MaxTone = when {
+    delta == null -> MaxTone.Neutral
+    delta >= 1.0f -> MaxTone.Critical
+    delta >= 0.3f -> MaxTone.Caution
+    else -> MaxTone.Positive
+}
+
+private fun formatPercent(value: Int): String = "$value%"
+
+private fun formatSignedPercent(value: Int): String =
+    (if (value > 0) "+" else "") + "$value%"
+
+private fun formatThermal(value: Float): String = "%.1f°".format(value)
+
+private fun formatSignedThermal(value: Float): String =
+    (if (value > 0f) "+" else "") + "%.2f°".format(value)
+
+private fun formatScore(value: Float): String = "%.3f".format(value)
+
+private fun formatSignedScore(value: Float): String =
+    (if (value > 0f) "+" else "") + "%.3f".format(value)
+
+private fun formatWeight(value: Float): String = "%.0f%%".format(value * 100f)
+
+@Composable
+private fun relativeTime(elapsedMs: Long): String {
+    val safe = elapsedMs.coerceAtLeast(0L)
+    val minutes = safe / 60_000L
+    return when {
+        minutes < 1L -> stringResource(R.string.max_ai_time_now)
+        minutes < 60L -> stringResource(R.string.max_ai_time_minutes, minutes)
+        else -> stringResource(R.string.max_ai_time_hours, minutes / 60L)
+    }
+}

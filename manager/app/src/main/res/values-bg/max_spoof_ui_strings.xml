@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_spoof_ui_strings.xml -->
+<resources>
+    <string name="spoof_ui_real_device">Истинско устройство</string>
+    <string name="spoof_ui_pill_verified">Конфигурацията е потвърдена</string>
+    <string name="spoof_ui_pill_unverified">Не е проверено</string>
+    <string name="spoof_ui_pill_off">Изкл</string>
+    <string name="spoof_device_for_app">Устройство за това приложение</string>
+    <string name="spoof_device_real_hint">Това приложение вижда истинското ви устройство. Докоснете картата, за да изберете една.</string>
+    <string name="spoof_device_pick">Докоснете, за да изберете устройство от каталога, или въведете персонализирана информация за устройството.</string>
+    <string name="spoof_device_in_use">В употреба</string>
+    <string name="spoof_device_restart">След това рестартирайте целевото приложение, а не системата.</string>
+    <string name="spoof_ui_apply_title">Кандидатствайте за това приложение</string>
+    <string name="spoof_ui_apply_action">Прегледайте и кандидатствайте</string>
+    <string name="spoof_ui_apply_confirm_title">Да се ​​приложи ли само това приложение?</string>
+    <string name="spoof_ui_apply_confirm_text">Само това приложение е подготвено; други приложения са недокоснати. След това рестартирайте целевото приложение, а не системата. По-късна редакция отменя това потвърждение. Ако COPG вече показва това приложение, вашето устройство има приоритет и линията COPG остава такава, каквато е.</string>
+    <string name="spoof_ui_apply_confirm">Кандидатствайте</string>
+    <string name="spoof_ui_apply_reason">Отказ на двигателя: %1$s</string>
+    <string name="spoof_engine_absent">Модулът на двигателя не се чете. Потвърдете модул, чийто module.prop казва id=COPG, инсталирайте го или го инсталирайте отново, след което отворете отново този екран.</string>
+    <string name="spoof_engine_disabled">COPG модулът е деактивиран във вашия основен мениджър. Активирайте го там, рестартирайте и след това приложете отново.</string>
+    <string name="spoof_engine_removal_pending">COPG е маркиран за премахване и ще изчезне след следващото рестартиране. Преинсталирайте го преди да приложите.</string>
+    <string name="spoof_engine_update_pending">Актуализация на COPG чака рестартиране. Първо рестартирайте, след това приложете отново.</string>
+    <string name="spoof_ui_apply_pending">Променено след последното прилагане - кандидатствайте отново, за да стане реално.</string>
+    <string name="spoof_ui_restore_title">Използвайте истинското си устройство</string>
+    <string name="spoof_ui_restore_action">Премахнете измамата за това приложение</string>
+    <string name="spoof_ui_restore_notice">Запазеното устройство на това приложение и настройките му за COPG се премахват и двигателят се пренаписва без това приложение. Други приложения са недокоснати. След това рестартирайте целевото приложение.</string>
+    <string name="app_tab_spoof">Измислица</string>
+    <string name="spoof_picker_title">Изберете устройство</string>
+    <string name="spoof_picker_custom">Персонализирана информация за устройството</string>
+    <string name="spoof_picker_custom_hint">Въведете марката, модела и пръстовия отпечатък, които искате за това приложение</string>
+    <string name="spoof_custom_title">Персонализирана информация за устройството</string>
+    <string name="spoof_custom_rules">Изискват се име, марка, модел, устройство и продукт, до 120 знака всеки, без контролни знаци. Производителят, пръстовият отпечатък и SDK не са задължителни. Пръстовият отпечатък трябва да започва със същата марка, продукт и устройство.</string>
+    <string name="spoof_manufacturer">Производител (MANUFACTURER)</string>
+    <string name="spoof_sdk">Ниво на SDK, по избор, от 1 до 100</string>
+    <string name="spoof_custom_invalid">Някои полета са невалидни. Проверете правилата по-горе, след което запазете отново.</string>
+    <string name="spoof_custom_save">Запазете и изберете за това приложение</string>
+    <string name="spoof_impersonation_title">Спуфинг</string>
+    <string name="spoof_impersonation_desc">Само безплатни опции за COPG. Написано на двигателя от Преглед и прилагане.</string>
+    <string name="spoof_impersonation_summary_cpu">CPU подправяне: %1$s</string>
+    <string name="spoof_impersonation_needs_device">Първо изберете устройство за това приложение. Тези опции се записват само с устройство.</string>
+    <string name="spoof_cpu_spoof">CPU спуфинг</string>
+    <string name="spoof_cpu_real">Истински CPU</string>
+    <string name="spoof_cpu_block">Блокирайте CPU</string>
+    <string name="spoof_cpu_block_desc">Изключва това приложение от CPU спуфинг.</string>
+    <string name="spoof_cpu_picker_title">Изберете CPU</string>
+    <string name="copg_tweaks_section">COPG ощипвания</string>
+    <string name="copg_tweak_nolog_title">Деактивиране на регистрирането</string>
+    <string name="copg_tweak_nolog_desc">Прилага настройката за регистриране на COPG към това приложение. Запазено тук, записано в двигателя чрез преглед и прилагане в раздела Spoof.</string>
+    <string name="copg_tweak_dab_title">Деактивирайте автоматичната яркост</string>
+    <string name="copg_tweak_dab_desc">Прилага настройката на COPG за автоматична яркост към това приложение. Запазено тук, записано в двигателя чрез преглед и прилагане в раздела Spoof.</string>
+    <string name="copg_tweak_kso_title">Дръжте екрана включен</string>
+    <string name="copg_tweak_kso_desc">Прилага настройката COPG за поддържане на екрана към това приложение. Запазено тук, записано в двигателя чрез преглед и прилагане в раздела Spoof.</string>
+    <string name="copg_tweak_needs_device">Първо се нуждае от устройство за това приложение в раздела Spoof.</string>
+</resources>

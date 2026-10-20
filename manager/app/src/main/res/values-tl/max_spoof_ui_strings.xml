@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_spoof_ui_strings.xml -->
+<resources>
+    <string name="spoof_ui_real_device">Tunay na device</string>
+    <string name="spoof_ui_pill_verified">Na-verify ang config</string>
+    <string name="spoof_ui_pill_unverified">Hindi na-verify</string>
+    <string name="spoof_ui_pill_off">Naka-off</string>
+    <string name="spoof_device_for_app">Device para sa app na ito</string>
+    <string name="spoof_device_real_hint">Nakikita ng app na ito ang iyong tunay na device. I-tap ang card para pumili ng isa.</string>
+    <string name="spoof_device_pick">I-tap para pumili ng device mula sa catalog, o maglagay ng custom na impormasyon ng device.</string>
+    <string name="spoof_device_in_use">Ginagamit</string>
+    <string name="spoof_device_restart">I-restart ang target na app pagkatapos, hindi ang system.</string>
+    <string name="spoof_ui_apply_title">Mag-apply para sa app na ito</string>
+    <string name="spoof_ui_apply_action">Suriin at ilapat</string>
+    <string name="spoof_ui_apply_confirm_title">Ilapat lang ang app na ito?</string>
+    <string name="spoof_ui_apply_confirm_text">Tanging ang app na ito ay inihanda; ibang apps ay hindi nagalaw. I-restart ang target na app pagkatapos, hindi ang system. Kinakansela ng pag-edit sa ibang pagkakataon ang kumpirmasyong ito. Kung inilista na ng COPG ang app na ito, uunahin ang iyong device at mananatili ang linya ng COPG sa dati.</string>
+    <string name="spoof_ui_apply_confirm">Mag-apply</string>
+    <string name="spoof_ui_apply_reason">Pagtanggi ng makina: %1$s</string>
+    <string name="spoof_engine_absent">Hindi nababasa ang module ng engine. Kumpirmahin ang isang module na ang module.prop ay nagsasabing id=COPG, i-install o muling i-install ito, pagkatapos ay muling buksan ang screen na ito.</string>
+    <string name="spoof_engine_disabled">Ang COPG module ay hindi pinagana sa iyong root manager. Paganahin ito doon, i-reboot, pagkatapos ay ilapat muli.</string>
+    <string name="spoof_engine_removal_pending">Ang COPG ay minarkahan para sa pag-alis at mawawala pagkatapos ng susunod na pag-reboot. I-install muli ito bago mag-apply.</string>
+    <string name="spoof_engine_update_pending">Isang update sa COPG ang naghihintay para sa pag-reboot. I-reboot muna, pagkatapos ay ilapat muli.</string>
+    <string name="spoof_ui_apply_pending">Binago mula noong huling pag-apply — mag-apply muli para maging totoo.</string>
+    <string name="spoof_ui_restore_title">Gamitin ang iyong tunay na device</string>
+    <string name="spoof_ui_restore_action">Alisin ang spoof para sa app na ito</string>
+    <string name="spoof_ui_restore_notice">Ang naka-save na device ng app na ito at ang mga COPG tweak nito ay aalisin, at ang engine ay muling isinulat nang wala ang app na ito. Ang iba pang mga app ay hindi nagalaw. I-restart ang target na app pagkatapos.</string>
+    <string name="app_tab_spoof">Spoof</string>
+    <string name="spoof_picker_title">Pumili ng device</string>
+    <string name="spoof_picker_custom">Custom na impormasyon ng device</string>
+    <string name="spoof_picker_custom_hint">Ilagay ang brand, modelo at fingerprint na gusto mo para sa app na ito</string>
+    <string name="spoof_custom_title">Custom na impormasyon ng device</string>
+    <string name="spoof_custom_rules">Pangalan, brand, modelo, device at produkto ay kinakailangan, hanggang 120 character bawat isa, na walang control character. Ang tagagawa, fingerprint at SDK ay opsyonal. Dapat magsimula ang fingerprint sa parehong brand, produkto at device.</string>
+    <string name="spoof_manufacturer">Manufacturer (MANUFACTURER)</string>
+    <string name="spoof_sdk">Antas ng SDK, opsyonal, 1 hanggang 100</string>
+    <string name="spoof_custom_invalid">Ang ilang mga field ay hindi wasto. Suriin ang mga panuntunan sa itaas, pagkatapos ay i-save muli.</string>
+    <string name="spoof_custom_save">I-save at pumili para sa app na ito</string>
+    <string name="spoof_impersonation_title">Panggagaya</string>
+    <string name="spoof_impersonation_desc">Libreng COPG na mga opsyon lamang. Isinulat sa makina sa pamamagitan ng Suriin at ilapat.</string>
+    <string name="spoof_impersonation_summary_cpu">CPU panggagaya: %1$s</string>
+    <string name="spoof_impersonation_needs_device">Pumili muna ng device para sa app na ito. Ang mga opsyong ito ay isinusulat lamang gamit ang isang device.</string>
+    <string name="spoof_cpu_spoof">CPU panggagaya</string>
+    <string name="spoof_cpu_real">Tunay na CPU</string>
+    <string name="spoof_cpu_block">I-block ang CPU</string>
+    <string name="spoof_cpu_block_desc">Hindi kasama ang app na ito mula sa CPU panggagaya.</string>
+    <string name="spoof_cpu_picker_title">Pumili ng CPU</string>
+    <string name="copg_tweaks_section">COPG tweaks</string>
+    <string name="copg_tweak_nolog_title">Huwag paganahin ang pag-log</string>
+    <string name="copg_tweak_nolog_desc">Inilalapat ang tweak sa pag-log ng COPG sa app na ito. Na-save dito, nakasulat sa engine sa pamamagitan ng Review at ilapat sa tab na Spoof.</string>
+    <string name="copg_tweak_dab_title">I-disable ang auto-brightness</string>
+    <string name="copg_tweak_dab_desc">Inilalapat ang COPG auto-brightness tweak sa app na ito. Na-save dito, nakasulat sa engine sa pamamagitan ng Review at ilapat sa tab na Spoof.</string>
+    <string name="copg_tweak_kso_title">Panatilihing naka-on ang screen</string>
+    <string name="copg_tweak_kso_desc">Inilalapat ang COPG keep-screen-on tweak sa app na ito. Na-save dito, nakasulat sa engine sa pamamagitan ng Review at ilapat sa tab na Spoof.</string>
+    <string name="copg_tweak_needs_device">Kailangan muna ng device para sa app na ito, sa tab na Spoof.</string>
+</resources>

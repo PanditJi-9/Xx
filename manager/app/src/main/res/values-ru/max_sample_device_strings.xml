@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_sample_device_strings.xml -->
+<resources>
+    <string name="sample_pick_title">Выберите образец устройства</string>
+    <string name="sample_pick_button">Выберите образец устройства</string>
+    <string name="sample_auto_hint">При выборе устройства вам указываются марка, производитель, модель, устройство, продукт и отпечаток пальца. Используйте «Вручную», чтобы ввести их самостоятельно.</string>
+    <string name="sample_manual">Руководство</string>
+    <string name="sample_close">Закрывать</string>
+    <string name="sample_search">Поиск устройств</string>
+    <string name="sample_empty">Нет подходящего устройства.</string>
+    <string name="sample_unavailable">Не удалось прочитать каталог устройств.</string>
+    <string name="sample_row_sub">Android %1$s · %2$s</string>
+    <string name="sample_row_sub_plain">%1$s</string>
+    <string name="sample_fp_shared">Тот же отпечаток пальца, что и на другом устройстве из каталога.</string>
+    <string name="sample_credit">Данные каталога: COPG (Apache-2.0), %1$s</string>
+    <string name="sample_limit">Достигнут предел профиля (100).</string>
+</resources>

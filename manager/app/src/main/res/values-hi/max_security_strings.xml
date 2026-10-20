@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_security_strings.xml -->
+<resources>
+    <string name="security_tamper_title">प्रारंभ करने में असमर्थ</string>
+    <string name="security_tamper_message">MaxManager का यह निर्माण बरकरार नहीं है। स्थापित फ़ाइलें अब हस्ताक्षरित रिलीज़ से मेल नहीं खातीं, इसलिए यह नहीं चलेंगी। आधिकारिक बिल्ड को उसके मूल स्रोत से पुनः स्थापित करें।</string>
+    <string name="security_tamper_close">बंद करना</string>
+</resources>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_sample_device_strings.xml -->
+<resources>
+    <string name="sample_pick_title">Válasszon mintaeszközt</string>
+    <string name="sample_pick_button">Válasszon mintaeszközt</string>
+    <string name="sample_auto_hint">Az eszköz kiválasztásakor kitölti a márkát, a gyártót, a modellt, az eszközt, a terméket és az ujjlenyomatot. A Manual segítségével írja be őket saját maga.</string>
+    <string name="sample_manual">Kézikönyv</string>
+    <string name="sample_close">Közeli</string>
+    <string name="sample_search">Eszközök keresése</string>
+    <string name="sample_empty">Nincs megfelelő eszköz.</string>
+    <string name="sample_unavailable">Az eszközkatalógus nem olvasható.</string>
+    <string name="sample_row_sub">Android %1$s · %2$s</string>
+    <string name="sample_row_sub_plain">%1$s</string>
+    <string name="sample_fp_shared">Ugyanaz az ujjlenyomat, mint egy másik katalóguseszköz</string>
+    <string name="sample_credit">Katalógusadatok: COPG (Apache-2.0), %1$s</string>
+    <string name="sample_limit">Elérte a profilkorlátot (100).</string>
+</resources>

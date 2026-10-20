@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+# Copyright (C) 2026 Nader Magdy. All rights reserved.
+# Proprietary and confidential — not licensed for use, copying, or distribution
+# without prior written permission from the copyright holder.
+
+set -euo pipefail
+
+if [ -z "${GITHUB_WORKSPACE:-}" ]; then
+	echo "❌ Error: This script should only run on GitHub Actions!" >&2
+	exit 1
+fi
+
+cd "$GITHUB_WORKSPACE" || {
+	echo "❌ Error: Unable to cd to GITHUB_WORKSPACE" >&2
+	exit 1
+}
+
+readonly HEADER_FILE="archdaemon/jni/include/MaxManager.h"
+readonly GRADLE_FILE="manager/app/build.gradle.kts"
+
+[ -f "version" ] || { echo "❌ Error: 'version' file not found!"; exit 1; }
+[ -f "version_type" ] || { echo "❌ Error: 'version_type' file not found!"; exit 1; }
+
+# `version_type` بتطهير `compile_zip.sh` حرفيًّا (`tr -d '\n\r '`) — لا أكثر:
+# فهذه السلسلة صار لها **كاتب واحد** هو هذا السكربت (كان في `build.yml` كاتب ثانٍ يعيد
+# كتابتها في `MaxManager.h` بنسخة مطهَّرة، فيخفي فرقًا محتومًا بين الخادم و`module.prop` لو حمل
+# الملف فاصلة سطر أو مسافة مخفيّة). و`version` يبقى كما هو: `$(cat …)` تُسقط سطر النهاية
+# وحده، وهو ما يفعله `compile_zip.sh` بالضبط — فلا يتغيّر معنّى نسخة تحمل مسافة داخليًّا.
+readonly VERSION=$(cat version)
+readonly VERSION_TYPE=$(cat version_type | tr -d '\n\r ')
+readonly VERSION_CODE=$(git rev-list HEAD --count)
+readonly SHORT_HASH=$(git rev-parse --short HEAD)
+readonly RELEASE_CODE="${VERSION_CODE}-${SHORT_HASH}-${VERSION_TYPE}"
+readonly FULL_VERSION="${VERSION} (${RELEASE_CODE})"
+
+echo "Starting version injection..."
+echo "Target Version: $FULL_VERSION"
+echo "Version Code  : $VERSION_CODE"
+
+{
+	printf 'EXPECTED_APK_VERSION_CODE=%s\n' "$VERSION_CODE"
+	printf 'EXPECTED_APK_VERSION_NAME=%s\n' "$FULL_VERSION"
+} >> "$GITHUB_ENV"
+
+# **والرأس يأخذ `$VERSION` وحده — لا `$FULL_VERSION` — وهذا شرط إقلاع لا تنسيق:**
+# `check_module_version()` في الخادم يُشغّل `grep -q '^version=%s$' module.prop` بحيث `%s`
+# هو `MODULE_VERSION` من هذا الرأس، **ويتفرّع `FULL_VERSION` في exit(EXIT_FAILURE)` مع
+# إشعار «version mismatch, please reinstall»** — أي خادم لا يُقلع. و`compile_zip.sh` لا يكتب
+# `version=` في `module.prop` أبدًا (مصدر واحد) فهي تبقى `V2`. ⇒ لو خُتم الرأس بالنسخة
+# الكاملة لصار الخادم يقارن `V2 (15-…-stable)` بـ`V2` ولا يجدها.
+#
+# **وهذا العطب قِيس فعليًا:** تشغيل `GATE-WIRING-01` أمسكه في CI — كان هذا السطر يكتب
+# `$FULL_VERSION`، فسقطت بوابة `version_triangle` (المصادر الثلاثة لا تقول الشيء نفسه)،
+# وكان الأثر المُشحون خادمًا يرفض الإقلاع. والباقي مُوزّع حيث يُقرأ آليًّا: رقم البناء في
+# `versionCode` داخل `module.prop`، وبناء الأبك في `versionName` داخل `build.gradle.kts`.
+sed -i "s|#define MODULE_VERSION \".*\"|#define MODULE_VERSION \"$VERSION\"|" "$HEADER_FILE"
+
+sed -i "s/versionCode =.*/versionCode = $VERSION_CODE/" "$GRADLE_FILE"
+sed -i "s/versionName =.*/versionName = \"$FULL_VERSION\"/" "$GRADLE_FILE"
+
+echo "✅ Injection complete! Verifying changes:"
+echo "---------------------------------------------------"
+
+grep -H "versionCode" "$GRADLE_FILE"
+grep -H "versionName" "$GRADLE_FILE"
+grep -H "MODULE_VERSION" "$HEADER_FILE"
+echo "---------------------------------------------------"

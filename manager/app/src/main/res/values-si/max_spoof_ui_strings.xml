@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_spoof_ui_strings.xml -->
+<resources>
+    <string name="spoof_ui_real_device">සැබෑ උපාංගය</string>
+    <string name="spoof_ui_pill_verified">වින්‍යාසය සත්‍යාපනය කර ඇත</string>
+    <string name="spoof_ui_pill_unverified">සත්‍යාපනය කර නැත</string>
+    <string name="spoof_ui_pill_off">අක්රියයි</string>
+    <string name="spoof_device_for_app">මෙම යෙදුම සඳහා උපාංගය</string>
+    <string name="spoof_device_real_hint">මෙම යෙදුම ඔබගේ සැබෑ උපාංගය දකියි. එකක් තෝරා ගැනීමට කාඩ්පත තට්ටු කරන්න.</string>
+    <string name="spoof_device_pick">නාමාවලියෙන් උපාංගයක් තෝරා ගැනීමට තට්ටු කරන්න, නැතහොත් අභිරුචි උපාංග තොරතුරු ඇතුළත් කරන්න.</string>
+    <string name="spoof_device_in_use">භාවිතයේ පවතී</string>
+    <string name="spoof_device_restart">පසුව ඉලක්ක යෙදුම නැවත ආරම්භ කරන්න, පද්ධතිය නොවේ.</string>
+    <string name="spoof_ui_apply_title">මෙම යෙදුම සඳහා අයදුම් කරන්න</string>
+    <string name="spoof_ui_apply_action">සමාලෝචනය කර අයදුම් කරන්න</string>
+    <string name="spoof_ui_apply_confirm_title">මෙම යෙදුම පමණක් යොදන්නද?</string>
+    <string name="spoof_ui_apply_confirm_text">මෙම යෙදුම පමණක් සූදානම් කර ඇත; වෙනත් යෙදුම් ස්පර්ශ නොවේ. පසුව ඉලක්ක යෙදුම නැවත ආරම්භ කරන්න, පද්ධතිය නොවේ. පසු සංස්කරණයක් මෙම තහවුරු කිරීම අවලංගු කරයි. COPG දැනටමත් මෙම යෙදුම ලැයිස්තුගත කර ඇත්නම්, ඔබේ උපාංගය ප්‍රමුඛත්වය ගන්නා අතර COPG රේඛාව එලෙසම පවතී.</string>
+    <string name="spoof_ui_apply_confirm">අයදුම් කරන්න</string>
+    <string name="spoof_ui_apply_reason">එන්ජිම ප්රතික්ෂේප කිරීම: %1$s</string>
+    <string name="spoof_engine_absent">එන්ජින් මොඩියුලය කියවිය නොහැක. module.prop id=COPG යැයි පවසන මොඩියුලයක් තහවුරු කරන්න, එය ස්ථාපනය කරන්න හෝ නැවත ස්ථාපනය කරන්න, ඉන්පසු මෙම තිරය නැවත විවෘත කරන්න.</string>
+    <string name="spoof_engine_disabled">COPG මොඩියුලය ඔබගේ මූල කළමනාකරු තුළ අක්‍රිය කර ඇත. එය එහි සබල කරන්න, නැවත ආරම්භ කරන්න, පසුව නැවත අයදුම් කරන්න.</string>
+    <string name="spoof_engine_removal_pending">COPG ඉවත් කිරීම සඳහා සලකුණු කර ඇති අතර මීළඟ නැවත පණගැන්වීමෙන් පසුව නැති වනු ඇත. අයදුම් කිරීමට පෙර එය නැවත ස්ථාපනය කරන්න.</string>
+    <string name="spoof_engine_update_pending">COPG යාවත්කාලීනයක් නැවත පණගැන්වීමක් සඳහා බලා සිටී. පළමුව නැවත ආරම්භ කරන්න, පසුව නැවත අයදුම් කරන්න.</string>
+    <string name="spoof_ui_apply_pending">අවසන් වරට යෙදීමේ සිට වෙනස් කර ඇත - එය සැබෑ කිරීමට නැවත අයදුම් කරන්න.</string>
+    <string name="spoof_ui_restore_title">ඔබගේ සැබෑ උපාංගය භාවිතා කරන්න</string>
+    <string name="spoof_ui_restore_action">මෙම යෙදුම සඳහා වංචා ඉවත් කරන්න</string>
+    <string name="spoof_ui_restore_notice">මෙම යෙදුමේ සුරකින ලද උපාංගය සහ එහි COPG tweaks ඉවත් කර ඇති අතර, මෙම යෙදුම නොමැතිව එන්ජිම නැවත ලියා ඇත. වෙනත් යෙදුම් ස්පර්ශ නොවේ. පසුව ඉලක්ක යෙදුම නැවත ආරම්භ කරන්න.</string>
+    <string name="app_tab_spoof">වංචාව</string>
+    <string name="spoof_picker_title">උපාංගයක් තෝරන්න</string>
+    <string name="spoof_picker_custom">අභිරුචි උපාංග තොරතුරු</string>
+    <string name="spoof_picker_custom_hint">මෙම යෙදුම සඳහා ඔබට අවශ්‍ය වෙළඳ නාමය, ආකෘතිය සහ ඇඟිලි සලකුණු ඇතුළත් කරන්න</string>
+    <string name="spoof_custom_title">අභිරුචි උපාංග තොරතුරු</string>
+    <string name="spoof_custom_rules">නම, වෙළඳ නාමය, ආකෘතිය, උපාංගය සහ නිෂ්පාදනය, එක් එක් අක්ෂර 120 දක්වා, පාලන අක්ෂර නොමැතිව අවශ්‍ය වේ. නිෂ්පාදකයා, ඇඟිලි සලකුණු සහ SDK විකල්ප වේ. ඇඟිලි සලකුණක් එකම වෙළඳ නාමය, නිෂ්පාදනය සහ උපාංගය සමඟ ආරම්භ විය යුතුය.</string>
+    <string name="spoof_manufacturer">නිෂ්පාදකයා (නිෂ්පාදකයා)</string>
+    <string name="spoof_sdk">SDK මට්ටම, විකල්ප, 1 සිට 100 දක්වා</string>
+    <string name="spoof_custom_invalid">සමහර ක්ෂේත්‍ර වලංගු නැත. ඉහත නීති පරීක්ෂා කර, පසුව නැවත සුරකින්න.</string>
+    <string name="spoof_custom_save">මෙම යෙදුම සඳහා සුරකින්න සහ තෝරන්න</string>
+    <string name="spoof_impersonation_title">වංචා කිරීම</string>
+    <string name="spoof_impersonation_desc">නොමිලේ COPG විකල්ප පමණි. සමාලෝචනය සහ අයදුම් කිරීම මගින් එන්ජිමට ලියා ඇත.</string>
+    <string name="spoof_impersonation_summary_cpu">CPU වංචා කිරීම: %1$s</string>
+    <string name="spoof_impersonation_needs_device">පළමුව මෙම යෙදුම සඳහා උපාංගයක් තෝරන්න. මෙම විකල්පයන් ලියා ඇත්තේ උපාංගයක් සමඟ පමණි.</string>
+    <string name="spoof_cpu_spoof">CPU වංචා කිරීම</string>
+    <string name="spoof_cpu_real">සැබෑ CPU</string>
+    <string name="spoof_cpu_block">අවහිර CPU</string>
+    <string name="spoof_cpu_block_desc">මෙම යෙදුම CPU වංචාවෙන් බැහැර කරයි.</string>
+    <string name="spoof_cpu_picker_title">CPU තෝරන්න</string>
+    <string name="copg_tweaks_section">COPG tweaks</string>
+    <string name="copg_tweak_nolog_title">ලොග් වීම අබල කරන්න</string>
+    <string name="copg_tweak_nolog_desc">මෙම යෙදුමට COPG ලොගින් tweak යොදයි. මෙහි සුරැකි, Review මගින් එන්ජිමට ලියා Spoof පටිත්තෙහි යොදන්න.</string>
+    <string name="copg_tweak_dab_title">ස්වයංක්‍රීය දීප්තිය අක්‍රිය කරන්න</string>
+    <string name="copg_tweak_dab_desc">මෙම යෙදුමට COPG ස්වයං-දීප්තිය වෙනස් කිරීම යොදයි. මෙහි සුරැකි, Review මගින් එන්ජිමට ලියා Spoof පටිත්තෙහි යොදන්න.</string>
+    <string name="copg_tweak_kso_title">තිරය ​​මත තබා ගන්න</string>
+    <string name="copg_tweak_kso_desc">මෙම යෙදුමට COPG තබා-තිරය මත වෙනස් කිරීම යොදයි. මෙහි සුරැකි, Review මගින් එන්ජිමට ලියා Spoof පටිත්තෙහි යොදන්න.</string>
+    <string name="copg_tweak_needs_device">මෙම යෙදුම සඳහා පළමුව, Spoof පටිත්තෙහි උපාංගයක් අවශ්‍ය වේ.</string>
+</resources>

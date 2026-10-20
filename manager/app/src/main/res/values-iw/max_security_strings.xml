@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_security_strings.xml -->
+<resources>
+    <string name="security_tamper_title">לא ניתן להתחיל</string>
+    <string name="security_tamper_message">המבנה הזה של MaxManager אינו שלם. הקבצים המותקנים אינם תואמים עוד לגרסה החתומה, ולכן הוא לא יפעל. התקן מחדש את ה-build הרשמי מהמקור המקורי שלו.</string>
+    <string name="security_tamper_close">לִסְגוֹר</string>
+</resources>

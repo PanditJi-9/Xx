@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_sample_device_strings.xml -->
+<resources>
+    <string name="sample_pick_title">Изберете уред за примерок</string>
+    <string name="sample_pick_button">Изберете уред за примерок</string>
+    <string name="sample_auto_hint">Изборот на уред пополнува бренд, производител, модел, уред, производ и отпечаток од прст за вас. Користете Manual за да ги напишете сами.</string>
+    <string name="sample_manual">Прирачник</string>
+    <string name="sample_close">Затвори</string>
+    <string name="sample_search">Уреди за пребарување</string>
+    <string name="sample_empty">Нема уред за совпаѓање.</string>
+    <string name="sample_unavailable">Не можеше да се прочита каталогот на уредите.</string>
+    <string name="sample_row_sub">Андроид %1$s · %2$s</string>
+    <string name="sample_row_sub_plain">%1$s</string>
+    <string name="sample_fp_shared">Истиот отпечаток од прст како друг каталог уред</string>
+    <string name="sample_credit">Каталошки податоци: COPG (Apache-2.0), %1$s</string>
+    <string name="sample_limit">Лимитот на профилот (100) е достигнат.</string>
+</resources>

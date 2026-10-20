@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_copg_tag_strings.xml -->
+<resources>
+    <string name="copg_tags_title">COPG 옵션</string>
+    <string name="copg_tags_desc">의도로 저장되고 장치 프로필과 함께 작성됩니다. 모든 COPG 버전에서는 네 가지 편의 옵션만 작동합니다. 나머지에는 COPG 6.8.0 이상이 필요합니다. PRO 옵션에는 COPG PRO 라이센스가 필요하며 엔진이 이를 무시할 수 있습니다.</string>
+    <string name="copg_tier_pro">찬성</string>
+    <string name="copg_footprint_resident">앱의 메모리에 남아 있으며, 치트 방지 게임에는 절대 사용하지 마세요.</string>
+    <string name="copg_need_ack">아래 위험을 먼저 인지하세요.</string>
+    <string name="copg_tag_refused">선택한 COPG 옵션은 설치된 COPG 버전에 허용되지 않습니다. 아무것도 쓰여지지 않았습니다.</string>
+    <string name="copg_tag_needs_device">옵션은 장치 프로필로 작성되며 이 앱에는 아직 아무것도 없습니다.</string>
+    <string name="copg_tag_value_hint">값</string>
+    <string name="copg_tag_bad_value">문자, 숫자, 공백 및 . _ - / +만(최대 60개)</string>
+    <string name="copg_tag_save">구하다</string>
+    <string name="copg_tag_remove">제거하다</string>
+    <string name="copg_tag_dnd">플레이하는 동안 방해하지 마세요</string>
+    <string name="copg_tag_dab">자동 밝기 비활성화</string>
+    <string name="copg_tag_kso">화면을 계속 켜두세요</string>
+    <string name="copg_tag_nolog">로깅 중지</string>
+    <string name="copg_tag_dpi">화면 DPI</string>
+    <string name="copg_tag_serial">앱별 일련번호</string>
+    <string name="copg_tag_cpu">CPU 모델</string>
+    <string name="copg_tag_blocked">진짜를 강요하라 CPU</string>
+    <string name="copg_tag_vpn">VPN 숨기기</string>
+    <string name="copg_tag_vpns">VPN 숨기기(엄격)</string>
+    <string name="copg_tag_hidedev">개발자 옵션 및 USB 디버깅 숨기기</string>
+    <string name="copg_tag_tz">시간대</string>
+    <string name="copg_tag_lang">언어 및 지역</string>
+    <string name="copg_tag_gpu">GPU 모델</string>
+    <string name="copg_tag_cow">빌드 속성(기록 중 복사)</string>
+    <string name="copg_tag_aid">안드로이드 ID</string>
+    <string name="copg_tag_gaid">광고 ID</string>
+    <string name="copg_tag_appset">앱 세트 ID</string>
+    <string name="copg_tag_drm">와이드바인/DRM</string>
+    <string name="copg_tag_imei">IMEI</string>
+    <string name="copg_tag_sim">SIM 캐리어(안전함)</string>
+    <string name="copg_tag_simx">SIM 이동통신사(공격적)</string>
+    <string name="copg_tag_ua">WebView 사용자 에이전트</string>
+    <string name="copg_tag_mock">모의 위치 숨기기</string>
+</resources>

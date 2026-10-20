@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_copg_tag_strings.xml -->
+<resources>
+    <string name="copg_tags_title">COPG valkostir</string>
+    <string name="copg_tags_desc">Vistað sem ásetning og skrifað ásamt sniði tækisins. Aðeins fjórir þægindavalkostir virka á hverri COPG útgáfu; restin þarf COPG 6.8.0 eða nýrri. PRO valkostir þurfa COPG PRO leyfi og vélin gæti hunsað þá.</string>
+    <string name="copg_tier_pro">PRO</string>
+    <string name="copg_footprint_resident">helst í minni appsins, notaðu aldrei með svindlleikjum</string>
+    <string name="copg_need_ack">viðurkenndu áhættuna hér að neðan fyrst</string>
+    <string name="copg_tag_refused">Valinn COPG valkostur er ekki leyfður fyrir uppsettu COPG útgáfuna. Ekkert var skrifað.</string>
+    <string name="copg_tag_needs_device">Valkostir eru skrifaðir með tækjasniði og þetta forrit hefur enga ennþá.</string>
+    <string name="copg_tag_value_hint">Gildi</string>
+    <string name="copg_tag_bad_value">Bókstafir, tölustafir, bil og . _ - / + aðeins (allt að 60)</string>
+    <string name="copg_tag_save">Vista</string>
+    <string name="copg_tag_remove">Fjarlægja</string>
+    <string name="copg_tag_dnd">Ekki trufla meðan á spilun stendur</string>
+    <string name="copg_tag_dab">Slökktu á sjálfvirkri birtu</string>
+    <string name="copg_tag_kso">Haltu skjánum á</string>
+    <string name="copg_tag_nolog">Hættu að skrá þig</string>
+    <string name="copg_tag_dpi">Skjár DPI</string>
+    <string name="copg_tag_serial">Raðnúmer fyrir hvert forrit</string>
+    <string name="copg_tag_cpu">CPU líkan</string>
+    <string name="copg_tag_blocked">Þvingaðu hið raunverulega CPU</string>
+    <string name="copg_tag_vpn">Fela VPN</string>
+    <string name="copg_tag_vpns">Fela VPN (strangt)</string>
+    <string name="copg_tag_hidedev">Fela þróunarvalkosti og USB kembiforrit</string>
+    <string name="copg_tag_tz">Tímabelti</string>
+    <string name="copg_tag_lang">Tungumál og svæði</string>
+    <string name="copg_tag_gpu">GPU líkan</string>
+    <string name="copg_tag_cow">Byggja eignir (afrita-á-skrifa)</string>
+    <string name="copg_tag_aid">Android ID</string>
+    <string name="copg_tag_gaid">Auglýsingar ID</string>
+    <string name="copg_tag_appset">Forritasett ID</string>
+    <string name="copg_tag_drm">Widevine / DRM</string>
+    <string name="copg_tag_imei">IMEI</string>
+    <string name="copg_tag_sim">SIM símafyrirtæki (öruggt)</string>
+    <string name="copg_tag_simx">SIM símafyrirtæki (árásargjarnt)</string>
+    <string name="copg_tag_ua">WebView User-Agent</string>
+    <string name="copg_tag_mock">Fela spotta staðsetningu</string>
+</resources>

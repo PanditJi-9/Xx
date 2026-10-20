@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_security_strings.xml -->
+<resources>
+    <string name="security_tamper_title">شروع نشد</string>
+    <string name="security_tamper_message">این ساخت MaxManager دست نخورده نیست. فایل های نصب شده دیگر با نسخه امضا شده مطابقت ندارند، بنابراین اجرا نمی شود. بیلد رسمی را از منبع اصلی خود دوباره نصب کنید.</string>
+    <string name="security_tamper_close">بستن</string>
+</resources>

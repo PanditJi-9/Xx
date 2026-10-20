@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_spoof_ui_strings.xml -->
+<resources>
+    <string name="spoof_ui_real_device">Нағыз құрылғы</string>
+    <string name="spoof_ui_pill_verified">Конфигурация расталды</string>
+    <string name="spoof_ui_pill_unverified">Тексерілмеген</string>
+    <string name="spoof_ui_pill_off">Өшірулі</string>
+    <string name="spoof_device_for_app">Осы қолданбаға арналған құрылғы</string>
+    <string name="spoof_device_real_hint">Бұл қолданба сіздің нақты құрылғыңызды көреді. Біреуін таңдау үшін картаны түртіңіз.</string>
+    <string name="spoof_device_pick">Каталогтан құрылғыны таңдау үшін түртіңіз немесе пайдаланушы құрылғы ақпаратын енгізіңіз.</string>
+    <string name="spoof_device_in_use">Қолдануда</string>
+    <string name="spoof_device_restart">Содан кейін жүйені емес, мақсатты қолданбаны қайта іске қосыңыз.</string>
+    <string name="spoof_ui_apply_title">Осы қолданбаға өтініш беріңіз</string>
+    <string name="spoof_ui_apply_action">Қарап шығу және қолдану</string>
+    <string name="spoof_ui_apply_confirm_title">Тек осы қолданбаны қолдану керек пе?</string>
+    <string name="spoof_ui_apply_confirm_text">Тек осы қолданба дайындалған; басқа қолданбаларға қол тигізбейді. Содан кейін жүйені емес, мақсатты қолданбаны қайта іске қосыңыз. Кейінгі өңдеу бұл растаудан бас тартады. Егер COPG осы қолданбаның тізімінде болса, құрылғыңыз басымдыққа ие болады және COPG желісі сол күйінде қалады.</string>
+    <string name="spoof_ui_apply_confirm">Қолдану</string>
+    <string name="spoof_ui_apply_reason">Қозғалтқыштан бас тарту: %1$s</string>
+    <string name="spoof_engine_absent">Қозғалтқыш модулін оқу мүмкін емес. module.prop id=COPG деп жазылған модульді растаңыз, оны орнатыңыз немесе қайта орнатыңыз, содан кейін осы экранды қайта ашыңыз.</string>
+    <string name="spoof_engine_disabled">COPG модулі түбірлік менеджерде өшірілген. Оны сол жерде қосыңыз, қайта жүктеңіз, содан кейін қайта қолданыңыз.</string>
+    <string name="spoof_engine_removal_pending">COPG жою үшін белгіленген және келесі қайта жүктеуден кейін жойылады. Қолданар алдында оны қайта орнатыңыз.</string>
+    <string name="spoof_engine_update_pending">COPG жаңартуы қайта жүктеуді күтуде. Алдымен қайта жүктеңіз, содан кейін қайта қолданыңыз.</string>
+    <string name="spoof_ui_apply_pending">Соңғы қолданылғаннан бері өзгертілді — оны нақты ету үшін қайта қолданыңыз.</string>
+    <string name="spoof_ui_restore_title">Нағыз құрылғыңызды пайдаланыңыз</string>
+    <string name="spoof_ui_restore_action">Бұл қолданба үшін жалғанды ​​алып тастаңыз</string>
+    <string name="spoof_ui_restore_notice">Бұл қолданбаның сақталған құрылғысы және оның COPG түзетулері жойылады және қозғалтқыш бұл қолданбасыз қайта жазылады. Басқа қолданбалар қол жетімді емес. Содан кейін мақсатты қолданбаны қайта іске қосыңыз.</string>
+    <string name="app_tab_spoof">Жалған</string>
+    <string name="spoof_picker_title">Құрылғыны таңдаңыз</string>
+    <string name="spoof_picker_custom">Арнаулы құрылғы ақпараты</string>
+    <string name="spoof_picker_custom_hint">Осы қолданба үшін қажетті брендті, үлгіні және саусақ ізін енгізіңіз</string>
+    <string name="spoof_custom_title">Арнаулы құрылғы ақпараты</string>
+    <string name="spoof_custom_rules">Аты, бренді, үлгісі, құрылғысы және өнімі қажет, әрқайсысы 120 таңбаға дейін, басқару таңбалары жоқ. Өндіруші, саусақ ізі және SDK қосымша болып табылады. Саусақ ізі бір брендтен, өнімнен және құрылғыдан басталуы керек.</string>
+    <string name="spoof_manufacturer">Өндіруші (MANUFACTURER)</string>
+    <string name="spoof_sdk">SDK деңгейі, қосымша, 1-ден 100-ге дейін</string>
+    <string name="spoof_custom_invalid">Кейбір өрістер жарамсыз. Жоғарыдағы ережелерді тексеріңіз, содан кейін қайта сақтаңыз.</string>
+    <string name="spoof_custom_save">Сақтаңыз және осы қолданбаны таңдаңыз</string>
+    <string name="spoof_impersonation_title">Спуфинг</string>
+    <string name="spoof_impersonation_desc">Тек тегін COPG опциялары. Қозғалтқышқа Қарап шығу және қолдану арқылы жазылған.</string>
+    <string name="spoof_impersonation_summary_cpu">CPU жалғандық: %1$s</string>
+    <string name="spoof_impersonation_needs_device">Алдымен осы қолданба үшін құрылғыны таңдаңыз. Бұл опциялар тек құрылғымен жазылған.</string>
+    <string name="spoof_cpu_spoof">CPU жалғандық</string>
+    <string name="spoof_cpu_real">Нағыз CPU</string>
+    <string name="spoof_cpu_block">CPU блоктау</string>
+    <string name="spoof_cpu_block_desc">Бұл қолданбаны CPU спуфингке қоспайды.</string>
+    <string name="spoof_cpu_picker_title">CPU таңдаңыз</string>
+    <string name="copg_tweaks_section">COPG түзетулері</string>
+    <string name="copg_tweak_nolog_title">Тіркеуді өшіру</string>
+    <string name="copg_tweak_nolog_desc">Осы қолданбаға COPG журналын реттеуді қолданады. Мұнда сақталды, «Шолу» арқылы қозғалтқышқа жазылған және «Бұзушылық» қойындысында қолданылады.</string>
+    <string name="copg_tweak_dab_title">Автоматты жарықтандыруды өшіріңіз</string>
+    <string name="copg_tweak_dab_desc">Осы қолданбаға COPG автоматты жарықтығын реттеуді қолданады. Мұнда сақталды, «Шолу» арқылы қозғалтқышқа жазылған және «Бұзушылық» қойындысында қолданылады.</string>
+    <string name="copg_tweak_kso_title">Экранды қосулы ұстаңыз</string>
+    <string name="copg_tweak_kso_desc">Осы қолданбаға COPG экранын қосулы күйде қалдыруды қолданады. Мұнда сақталды, «Шолу» арқылы қозғалтқышқа жазылған және «Бұзушылық» қойындысында қолданылады.</string>
+    <string name="copg_tweak_needs_device">Бұл қолданба үшін алдымен «Бұзушылық» қойындысында құрылғы қажет.</string>
+</resources>

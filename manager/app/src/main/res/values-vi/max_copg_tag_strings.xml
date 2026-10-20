@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_copg_tag_strings.xml -->
+<resources>
+    <string name="copg_tags_title">Tùy chọn COPG</string>
+    <string name="copg_tags_desc">Đã lưu dưới dạng ý định và được viết cùng với hồ sơ thiết bị. Chỉ có bốn tùy chọn tiện nghi hoạt động trên mọi phiên bản COPG; phần còn lại cần COPG 6.8.0 hoặc mới hơn. Các tùy chọn PRO cần có giấy phép COPG PRO và động cơ có thể bỏ qua chúng.</string>
+    <string name="copg_tier_pro">CHUYÊN NGHIỆP</string>
+    <string name="copg_footprint_resident">lưu trong bộ nhớ của ứng dụng, không bao giờ sử dụng với các trò chơi chống gian lận</string>
+    <string name="copg_need_ack">thừa nhận rủi ro dưới đây trước</string>
+    <string name="copg_tag_refused">Tùy chọn COPG đã chọn không được phép đối với phiên bản COPG đã cài đặt. Không có gì được viết.</string>
+    <string name="copg_tag_needs_device">Các tùy chọn được viết bằng hồ sơ thiết bị và ứng dụng này chưa có tùy chọn nào.</string>
+    <string name="copg_tag_value_hint">Giá trị</string>
+    <string name="copg_tag_bad_value">Chữ cái, chữ số, dấu cách và . _ - / + chỉ (tối đa 60)</string>
+    <string name="copg_tag_save">Cứu</string>
+    <string name="copg_tag_remove">Di dời</string>
+    <string name="copg_tag_dnd">Không làm phiền khi chơi</string>
+    <string name="copg_tag_dab">Tắt độ sáng tự động</string>
+    <string name="copg_tag_kso">Giữ màn hình luôn bật</string>
+    <string name="copg_tag_nolog">Dừng đăng nhập</string>
+    <string name="copg_tag_dpi">màn hình dpi</string>
+    <string name="copg_tag_serial">Số sê-ri trên mỗi ứng dụng</string>
+    <string name="copg_tag_cpu">mô hình CPU</string>
+    <string name="copg_tag_blocked">Buộc thực CPU</string>
+    <string name="copg_tag_vpn">Ẩn VPN</string>
+    <string name="copg_tag_vpns">Ẩn VPN (nghiêm ngặt)</string>
+    <string name="copg_tag_hidedev">Ẩn Tùy chọn nhà phát triển và gỡ lỗi USB</string>
+    <string name="copg_tag_tz">Múi giờ</string>
+    <string name="copg_tag_lang">Ngôn ngữ và khu vực</string>
+    <string name="copg_tag_gpu">mô hình GPU</string>
+    <string name="copg_tag_cow">Xây dựng thuộc tính (copy-on-write)</string>
+    <string name="copg_tag_aid">Android ID</string>
+    <string name="copg_tag_gaid">Quảng cáo ID</string>
+    <string name="copg_tag_appset">Bộ ứng dụng ID</string>
+    <string name="copg_tag_drm">Widevine / DRM</string>
+    <string name="copg_tag_imei">IMEI</string>
+    <string name="copg_tag_sim">Nhà cung cấp dịch vụ SIM (an toàn)</string>
+    <string name="copg_tag_simx">Nhà cung cấp dịch vụ SIM (tích cực)</string>
+    <string name="copg_tag_ua">Tác nhân người dùng WebView</string>
+    <string name="copg_tag_mock">Ẩn vị trí mô phỏng</string>
+</resources>

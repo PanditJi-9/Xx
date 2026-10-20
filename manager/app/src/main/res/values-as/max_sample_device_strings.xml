@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_sample_device_strings.xml -->
+<resources>
+    <string name="sample_pick_title">নমুনা ডিভাইচ বাছক</string>
+    <string name="sample_pick_button">নমুনা ডিভাইচ বাছক</string>
+    <string name="sample_auto_hint">এটা ডিভাইচ বাছি লোৱাটোৱে আপোনাৰ বাবে ব্ৰেণ্ড, নিৰ্মাতা, মডেল, ডিভাইচ, প্ৰডাক্ট আৰু ফিংগাৰপ্ৰিণ্ট পূৰণ কৰে। নিজে টাইপ কৰিবলৈ হাতপুথি ব্যৱহাৰ কৰক।</string>
+    <string name="sample_manual">হাতপুথি</string>
+    <string name="sample_close">বন্ধ</string>
+    <string name="sample_search">ডিভাইচসমূহ সন্ধান কৰক</string>
+    <string name="sample_empty">কোনো মিল থকা ডিভাইচ নাই।</string>
+    <string name="sample_unavailable">ডিভাইচ কেটেলগ পঢ়িব পৰা নগ\'ল।</string>
+    <string name="sample_row_sub">এণ্ড্ৰইড %1$s · %2$s</string>
+    <string name="sample_row_sub_plain">%1$s</string>
+    <string name="sample_fp_shared">আন এটা কেটেলগ ডিভাইচৰ দৰে একে আঙুলিৰ ছাপ</string>
+    <string name="sample_credit">কেটেলগ তথ্য: COPG (Apache-2.0), %1$s</string>
+    <string name="sample_limit">প্ৰফাইল সীমা (১০০) পোৱা যায়।</string>
+</resources>

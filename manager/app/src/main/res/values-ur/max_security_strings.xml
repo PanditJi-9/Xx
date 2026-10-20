@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_security_strings.xml -->
+<resources>
+    <string name="security_tamper_title">شروع کرنے سے قاصر</string>
+    <string name="security_tamper_message">MaxManager کی یہ تعمیر برقرار نہیں ہے۔ انسٹال شدہ فائلز اب دستخط شدہ ریلیز سے مماثل نہیں ہیں، لہذا یہ نہیں چلیں گی۔ آفیشل بلڈ کو اس کے اصل ماخذ سے دوبارہ انسٹال کریں۔</string>
+    <string name="security_tamper_close">بند</string>
+</resources>

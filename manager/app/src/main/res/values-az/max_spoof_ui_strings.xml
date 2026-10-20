@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_spoof_ui_strings.xml -->
+<resources>
+    <string name="spoof_ui_real_device">Real cihaz</string>
+    <string name="spoof_ui_pill_verified">Konfiqurasiya təsdiqləndi</string>
+    <string name="spoof_ui_pill_unverified">Təsdiqlənməyib</string>
+    <string name="spoof_ui_pill_off">Söndür</string>
+    <string name="spoof_device_for_app">Bu proqram üçün cihaz</string>
+    <string name="spoof_device_real_hint">Bu proqram real cihazınızı görür. Birini seçmək üçün karta toxunun.</string>
+    <string name="spoof_device_pick">Kataloqdan cihaz seçmək üçün toxunun və ya fərdi cihaz məlumatını daxil edin.</string>
+    <string name="spoof_device_in_use">İstifadədədir</string>
+    <string name="spoof_device_restart">Daha sonra sistemi deyil, hədəf tətbiqi yenidən başladın.</string>
+    <string name="spoof_ui_apply_title">Bu proqram üçün müraciət edin</string>
+    <string name="spoof_ui_apply_action">Nəzərdən keçirin və müraciət edin</string>
+    <string name="spoof_ui_apply_confirm_title">Yalnız bu proqram tətbiq edilsin?</string>
+    <string name="spoof_ui_apply_confirm_text">Yalnız bu proqram hazırlanır; digər proqramlar toxunulmazdır. Daha sonra sistemi deyil, hədəf tətbiqi yenidən başladın. Sonrakı redaktə bu təsdiqi ləğv edir. COPG artıq bu proqramı siyahıya salırsa, cihazınız prioritet alır və COPG xətti olduğu kimi qalır.</string>
+    <string name="spoof_ui_apply_confirm">Müraciət edin</string>
+    <string name="spoof_ui_apply_reason">Mühərrikdən imtina: %1$s</string>
+    <string name="spoof_engine_absent">Mühərrik modulu oxunmur. module.prop-da id=COPG deyən modulu təsdiq edin, quraşdırın və ya yenidən quraşdırın, sonra bu ekranı yenidən açın.</string>
+    <string name="spoof_engine_disabled">Kök menecerinizdə COPG modulu deaktiv edilib. Onu orada aktivləşdirin, yenidən başladın, sonra yenidən tətbiq edin.</string>
+    <string name="spoof_engine_removal_pending">COPG silinmək üçün işarələnib və növbəti yenidən yükləmədən sonra silinəcək. Tətbiq etməzdən əvvəl onu yenidən quraşdırın.</string>
+    <string name="spoof_engine_update_pending">COPG yeniləməsi yenidən başlamanı gözləyir. Əvvəlcə yenidən başladın, sonra yenidən tətbiq edin.</string>
+    <string name="spoof_ui_apply_pending">Son müraciətdən sonra dəyişdirildi — reallaşdırmaq üçün yenidən müraciət edin.</string>
+    <string name="spoof_ui_restore_title">Real cihazınızdan istifadə edin</string>
+    <string name="spoof_ui_restore_action">Bu proqram üçün saxtakarlığı silin</string>
+    <string name="spoof_ui_restore_notice">Bu proqramın saxlanmış cihazı və onun COPG düzəlişləri silinir və mühərrik bu proqram olmadan yenidən yazılır. Digər proqramlar toxunulmazdır. Bundan sonra hədəf tətbiqi yenidən başladın.</string>
+    <string name="app_tab_spoof">Spoof</string>
+    <string name="spoof_picker_title">Cihaz seçin</string>
+    <string name="spoof_picker_custom">Fərdi cihaz məlumatı</string>
+    <string name="spoof_picker_custom_hint">Bu proqram üçün istədiyiniz marka, modeli və barmaq izini daxil edin</string>
+    <string name="spoof_custom_title">Fərdi cihaz məlumatı</string>
+    <string name="spoof_custom_rules">Ad, marka, model, cihaz və məhsul tələb olunur, hər biri 120 simvola qədər, nəzarət simvolları olmadan. İstehsalçı, barmaq izi və SDK isteğe bağlıdır. Barmaq izi eyni marka, məhsul və cihazla başlamalıdır.</string>
+    <string name="spoof_manufacturer">İstehsalçı (MANUFACTURER)</string>
+    <string name="spoof_sdk">SDK səviyyəsi, isteğe bağlı, 1-dən 100-ə qədər</string>
+    <string name="spoof_custom_invalid">Bəzi sahələr etibarsızdır. Yuxarıdakı qaydaları yoxlayın, sonra yenidən yadda saxlayın.</string>
+    <string name="spoof_custom_save">Yadda saxlayın və bu proqram üçün seçin</string>
+    <string name="spoof_impersonation_title">Spoofing</string>
+    <string name="spoof_impersonation_desc">Yalnız pulsuz COPG seçimləri. Mühərrikə Nəzərdən keçirin və tətbiq edin.</string>
+    <string name="spoof_impersonation_summary_cpu">CPU saxtakarlıq: %1$s</string>
+    <string name="spoof_impersonation_needs_device">Əvvəlcə bu proqram üçün cihaz seçin. Bu seçimlər yalnız cihazla yazılır.</string>
+    <string name="spoof_cpu_spoof">CPU saxtakarlıq</string>
+    <string name="spoof_cpu_real">Real CPU</string>
+    <string name="spoof_cpu_block">Blok CPU</string>
+    <string name="spoof_cpu_block_desc">Bu proqramı CPU saxtakarlığından istisna edir.</string>
+    <string name="spoof_cpu_picker_title">CPU seçin</string>
+    <string name="copg_tweaks_section">COPG düzəlişləri</string>
+    <string name="copg_tweak_nolog_title">Girişi deaktiv edin</string>
+    <string name="copg_tweak_nolog_desc">Bu proqrama COPG giriş çimdikini tətbiq edir. Burada saxlandı, Mühərrikə Nəzərdən keçirin və Spoof sekmesinde tətbiq edin.</string>
+    <string name="copg_tweak_dab_title">Avtomatik parlaqlığı söndürün</string>
+    <string name="copg_tweak_dab_desc">Bu proqrama COPG avtomatik parlaqlıq tənzimləməsini tətbiq edir. Burada saxlandı, Mühərrikə Nəzərdən keçirin və Spoof sekmesinde tətbiq edin.</string>
+    <string name="copg_tweak_kso_title">Ekranı açıq saxlayın</string>
+    <string name="copg_tweak_kso_desc">COPG saxlama ekranını bu proqrama tətbiq edir. Burada saxlandı, Mühərrikə Nəzərdən keçirin və Spoof sekmesinde tətbiq edin.</string>
+    <string name="copg_tweak_needs_device">Spoof tabında əvvəlcə bu proqram üçün cihaz lazımdır.</string>
+</resources>

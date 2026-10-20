@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_copg_tag_strings.xml -->
+<resources>
+    <string name="copg_tags_title">COPG parinktys</string>
+    <string name="copg_tags_desc">Išsaugotas kaip tikslas ir parašytas kartu su įrenginio profiliu. Tik keturios komforto parinktys veikia visose COPG versijose; likusiems reikia COPG 6.8.0 ar naujesnės versijos. PRO parinktims reikalinga COPG PRO licencija, o variklis gali jų nepaisyti.</string>
+    <string name="copg_tier_pro">PRO</string>
+    <string name="copg_footprint_resident">lieka programos atmintyje, niekada nenaudokite su žaidimais, apsaugančiais nuo sukčiavimo</string>
+    <string name="copg_need_ack">pirmiausia pripažinkite žemiau esančią riziką</string>
+    <string name="copg_tag_refused">Pasirinkta COPG parinktis neleidžiama įdiegtai COPG versijai. Nieko nebuvo parašyta.</string>
+    <string name="copg_tag_needs_device">Parinktys parašytos įrenginio profilyje, o ši programa dar neturi.</string>
+    <string name="copg_tag_value_hint">Vertė</string>
+    <string name="copg_tag_bad_value">Raidės, skaitmenys, tarpas ir . Tik _ - / + (iki 60)</string>
+    <string name="copg_tag_save">Išsaugoti</string>
+    <string name="copg_tag_remove">Pašalinti</string>
+    <string name="copg_tag_dnd">Netrukdymo režimas žaidžiant</string>
+    <string name="copg_tag_dab">Išjungti automatinį ryškumą</string>
+    <string name="copg_tag_kso">Laikykite ekraną įjungtą</string>
+    <string name="copg_tag_nolog">Sustabdykite registravimą</string>
+    <string name="copg_tag_dpi">Ekrano DPI</string>
+    <string name="copg_tag_serial">Programos serijos numeris</string>
+    <string name="copg_tag_cpu">CPU modelis</string>
+    <string name="copg_tag_blocked">Priverskite tikrąjį CPU</string>
+    <string name="copg_tag_vpn">Slėpti VPN</string>
+    <string name="copg_tag_vpns">Slėpti VPN (griežtas)</string>
+    <string name="copg_tag_hidedev">Slėpti kūrėjo parinktis ir USB derinimą</string>
+    <string name="copg_tag_tz">Laiko juosta</string>
+    <string name="copg_tag_lang">Kalba ir regionas</string>
+    <string name="copg_tag_gpu">GPU modelis</string>
+    <string name="copg_tag_cow">Sukūrimo ypatybės (kopijuoti rašant)</string>
+    <string name="copg_tag_aid">Android ID</string>
+    <string name="copg_tag_gaid">Reklama ID</string>
+    <string name="copg_tag_appset">Programų rinkinys ID</string>
+    <string name="copg_tag_drm">Widevine / DRM</string>
+    <string name="copg_tag_imei">IMEI</string>
+    <string name="copg_tag_sim">SIM operatorius (saugus)</string>
+    <string name="copg_tag_simx">SIM operatorius (agresyvus)</string>
+    <string name="copg_tag_ua">WebView vartotojo agentas</string>
+    <string name="copg_tag_mock">Slėpti netikrą vietą</string>
+</resources>

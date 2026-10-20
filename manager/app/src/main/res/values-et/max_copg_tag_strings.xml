@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_copg_tag_strings.xml -->
+<resources>
+    <string name="copg_tags_title">COPG valikud</string>
+    <string name="copg_tags_desc">Salvestatud eesmärgina ja kirjutatud koos seadme profiiliga. Kõigi COPG versioonide puhul töötavad ainult neli mugavusvalikut; ülejäänud vajavad COPG 6.8.0 või uuemat versiooni. PRO valikud vajavad COPG PRO litsentsi ja mootor võib neid ignoreerida.</string>
+    <string name="copg_tier_pro">PRO</string>
+    <string name="copg_footprint_resident">jääb rakenduse mällu, ärge kunagi kasutage petmisvastaste mängudega</string>
+    <string name="copg_need_ack">teadvustage esmalt allolevat riski</string>
+    <string name="copg_tag_refused">Valitud COPG-suvand pole installitud COPG-versiooni jaoks lubatud. Midagi ei kirjutatud.</string>
+    <string name="copg_tag_needs_device">Valikud on kirjutatud seadme profiiliga ja sellel rakendusel pole veel ühtegi.</string>
+    <string name="copg_tag_value_hint">Väärtus</string>
+    <string name="copg_tag_bad_value">Tähed, numbrid, tühik ja . Ainult _ - / + (kuni 60)</string>
+    <string name="copg_tag_save">Salvesta</string>
+    <string name="copg_tag_remove">Eemalda</string>
+    <string name="copg_tag_dnd">Mitte segada mängimise ajal</string>
+    <string name="copg_tag_dab">Keela automaatne heledus</string>
+    <string name="copg_tag_kso">Hoidke ekraan sees</string>
+    <string name="copg_tag_nolog">Lõpetage logimine</string>
+    <string name="copg_tag_dpi">Ekraani DPI</string>
+    <string name="copg_tag_serial">Rakendusepõhine seerianumber</string>
+    <string name="copg_tag_cpu">CPU mudel</string>
+    <string name="copg_tag_blocked">Sundige tegelikku CPU</string>
+    <string name="copg_tag_vpn">Peida VPN</string>
+    <string name="copg_tag_vpns">Peida VPN (range)</string>
+    <string name="copg_tag_hidedev">Peida arendaja valikud ja USB-silumine</string>
+    <string name="copg_tag_tz">Ajavöönd</string>
+    <string name="copg_tag_lang">Keel ja piirkond</string>
+    <string name="copg_tag_gpu">GPU mudel</string>
+    <string name="copg_tag_cow">Järgu omadused (kopeerimine-kirjutamine)</string>
+    <string name="copg_tag_aid">Android ID</string>
+    <string name="copg_tag_gaid">Reklaam ID</string>
+    <string name="copg_tag_appset">Rakenduste komplekt ID</string>
+    <string name="copg_tag_drm">Widevine / DRM</string>
+    <string name="copg_tag_imei">IMEI</string>
+    <string name="copg_tag_sim">SIM-kaardi operaator (turvaline)</string>
+    <string name="copg_tag_simx">SIM-i operaator (agressiivne)</string>
+    <string name="copg_tag_ua">WebView kasutajaagent</string>
+    <string name="copg_tag_mock">Peida teeseldud asukoht</string>
+</resources>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_security_strings.xml -->
+<resources>
+    <string name="security_tamper_title">আৰম্ভ কৰিব পৰা নাই</string>
+    <string name="security_tamper_message">MaxManager ৰ এই বিল্ডটো অক্ষত নহয়। সংস্থাপিত নথিপত্ৰসমূহ আৰু স্বাক্ষৰিত উন্মোচনৰ সৈতে মিল নাথাকে, গতিকে ই চলিব নোৱাৰিব । ইয়াৰ মূল উৎসৰ পৰা অফিচিয়েল বিল্ড পুনৰ সংস্থাপন কৰক।</string>
+    <string name="security_tamper_close">বন্ধ</string>
+</resources>

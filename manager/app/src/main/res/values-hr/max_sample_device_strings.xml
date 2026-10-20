@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_sample_device_strings.xml -->
+<resources>
+    <string name="sample_pick_title">Odaberite ogledni uređaj</string>
+    <string name="sample_pick_button">Odaberite ogledni uređaj</string>
+    <string name="sample_auto_hint">Odabir uređaja popunjava marku, proizvođača, model, uređaj, proizvod i otisak prsta za vas. Koristite Manual da ih sami upišete.</string>
+    <string name="sample_manual">Priručnik</string>
+    <string name="sample_close">Zatvoriti</string>
+    <string name="sample_search">Pretražite uređaje</string>
+    <string name="sample_empty">Nema odgovarajućeg uređaja.</string>
+    <string name="sample_unavailable">Katalog uređaja nije moguće pročitati.</string>
+    <string name="sample_row_sub">Android %1$s · %2$s</string>
+    <string name="sample_row_sub_plain">%1$s</string>
+    <string name="sample_fp_shared">Isti otisak prsta kao i drugi kataloški uređaj</string>
+    <string name="sample_credit">Kataloški podaci: COPG (Apache-2.0), %1$s</string>
+    <string name="sample_limit">Dosegnuto je ograničenje profila (100).</string>
+</resources>

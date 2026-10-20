@@ -1,0 +1,243 @@
+# Copyright (C) 2026 Nader Magdy. All rights reserved.
+# Proprietary and confidential — not licensed for use, copying, or distribution
+# without prior written permission from the copyright holder.
+#
+# Host parity suite for `sys.maxmanager-service`.
+#
+# This builds the *real* daemon translation units for the host (see host/shim/
+# for the bionic property stand-in) and runs assertions on their pure decision
+# logic. It is deliberately NOT the device build: no NDK, no ARM target, no
+# sysfs. What it proves is that the daemon's decisions still hold; what it
+# cannot prove is that they work against a real phone (that needs a device).
+#
+# Usage:
+#   make -C archdaemon/tests run     # build if needed, then run
+#   make -C archdaemon/tests clean
+
+# `CC ?=` would not win against make's built-in default (`cc`), which lacks -std=c23.
+# `=` is still overridable from the command line (e.g. `make CC=gcc-14`).
+CC = clang
+
+# clang >= 16 spells the standard `c23`; older toolchains only know `c2x`. Probe once
+# so the harness runs on any CI runner instead of dying on a flag spelling.
+CSTD := $(shell $(CC) -std=c23 -fsyntax-only -x c /dev/null >/dev/null 2>&1 && echo c23 || echo c2x)
+
+ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/..)
+SHIM := $(CURDIR)/host/shim
+
+# The production units under audit (unmodified daemon sources).
+#
+# StatusMonitor.c and CLIUtility.c joined in the contract round: they carry the two channels
+# `docs/ai/ARCHITECTURE-AUDIT.md` §12 declares (the app_status state file and the --profile
+# control path), and both were reachable only on a rooted device until now.
+#
+# PerAppKernel.c joined after a field defect: its `enforce_per_app_governors()` — the only
+# writer of the per-app CPU/GPU governor in the daemon — had **no caller at all**, and while an
+# app with an override is in front every profile path publishes
+# `sys.maxmanager.perapp.governor_isolation=1`, which makes the profiles binary stand down too.
+# So both halves stood down and the governor never changed when the user selected one. Compiling
+# this unit for the host is what makes the guard's behaviour (allowlist vs. kernel authority)
+# measurable without a phone; whether System.c *calls* it stays a code-reading claim.
+# ModuleIntegrity.c joined after a field defect that killed the daemon on **every** clean install:
+# `is_kanged()` ran `grep -q '^name=Max Manager$'` while the shipped `module.prop` says
+# `name=MaxManager` (a later, deliberate rename) — so the guard fired on the module's own file,
+# logged `MODULE_INTEGRITY_FAILED reason=modified_by_third_party`, cleared
+# `persist.sys.maxmanager.service` and `exit`ed. Everything the daemon owns went silent with it
+# (the profile file, the per-app governor, `--checkbypasschg`), which is the user-visible
+# "MaxManager daemon is not running". Compiling this unit for the host makes both the pure
+# identity predicate and the read-and-decide gate measurable without a phone.
+# AppLoader.c joined after the second field defect of the same family: `reload_gamelist_cache()` —
+# the single reader of the gamelist and therefore the entry point of *every* per-app feature — looked
+# for the literal `": {"` while the app writes compact JSON (`":{"`), so on a real device it matched
+# nothing, logged `EVENT=GAMELIST_LOADED count=0`, and `get_gamestart()` returned NULL for all twelve
+# configured games: the performance profile, DND, refresh rate and resolution all silently fell back
+# to "nothing". Compiling this unit for the host is what makes the writer/reader contract measurable
+# (`fixtures/contracts/gamelist.*.json`, read by the C side and produced byte-for-byte by the Kotlin
+# side); whether System.c calls it in the right place stays a code-reading claim.
+UNITS := \
+    $(ROOT)/jni/src/MaxManagerUtility/DaemonUtility.c \
+    $(ROOT)/jni/src/MaxManagerUtility/ModuleIntegrity.c \
+    $(ROOT)/jni/src/SystemProfile/ProfileUtility.c \
+    $(ROOT)/jni/src/SystemProfile/PerAppKernel.c \
+    $(ROOT)/jni/src/StartupInit/PropValidator.c \
+    $(ROOT)/jni/src/BypassCharge/ChargingNodes.c \
+    $(ROOT)/jni/src/ConfigHandler/ResolutionChanger.c \
+    $(ROOT)/jni/src/ConfigHandler/RenderingHandler.c \
+    $(ROOT)/jni/src/AppLoader/StatusMonitor.c \
+    $(ROOT)/jni/src/AppLoader/AppLoader.c \
+    $(ROOT)/jni/src/BinaryCLI/CLIUtility.c
+
+# Harness: the tests plus the shim implementation and link-time stubs.
+HARNESS := parity_test.c file_protocols.c app_loader.c cli_profile.c broadcast.c host/props.c host/stubs.c host/fopen_router.c
+
+# العُقَد المشتركة مع Kotlin (`fixtures/contracts/`). تُقرأ ولا تُنسخ؛ فملف واحد يُقاس من الطرفين.
+REPO := $(abspath $(ROOT)/..)
+FIXTURES := $(REPO)/fixtures/contracts
+
+# ── أين تُبنى المخرجات؟ ──
+#
+# الافتراضيّ `$(BUILD_DIR)/` داخل مجلّد الـharness (وهو ما يفعله CI). ويُتجاوَز على نظام ملفّات
+# **بلا تنفيذ** (noexec): يُكتب فيه ولا يُشغَّل منه ثنائيّ — وهو حال `/mnt/sdcard` على أجهزة
+# Android (‏`fuse ... noexec`، ولا يقبل رابطًا رمزيًّا أيضًا). فالعلاج مُعلَن لا مُلتوى:
+#
+#   make -C archdaemon/tests BUILD_DIR=/tmp/mm-build CC=gcc run
+#
+# و`CC` يُتجاوَز للسبب نفسه: `clang` في بيئة الطرفية على الجهاز هو **مترجم NDK** ينتج
+# ثنائيًّا Androidيّ linkerُه `/system/bin/linker64` فلا يعمل في هذه البيئة.
+BUILD_DIR ?= $(CURDIR)/build
+
+TARGET := $(BUILD_DIR)/parity_test
+
+CFLAGS ?= -std=$(CSTD) -D_DEFAULT_SOURCE -Wall -Wextra -Wno-unused-parameter \
+          -I$(ROOT)/jni/include -I$(SHIM) \
+          -include $(SHIM)/host_prelude.h \
+          -DFIXTURE_DIR='"$(FIXTURES)"' \
+          -DREPO_DIR='"$(REPO)"' -DBUILD_DIR='"$(BUILD_DIR)"'
+
+# ── wrapped symbols: the harness observes without editing the daemon ──
+#
+# `--wrap=fopen` lets the UNMODIFIED parser read a fixture instead of /data/adb/...
+# (host/fopen_router.c); with no route registered it is a pass-through.
+# `--wrap=notify` only: notifications would try to write files and broadcast on the host, so
+# they are recorded instead. `run_profiler` is deliberately **not** wrapped — the real function
+# runs (its `write2file`/`is_kanged`/`uidof` are link-time stubs) and its single real side effect
+# is the captured `sys.maxmanager-profilesettings <n>` command, so the CLI assertion measures the
+# real path end to end instead of a recorder standing in for it.
+# `-Wl` keeps them linker options, not compile ones.
+LDFLAGS ?= -lpthread -Wl,--wrap=fopen -Wl,--wrap=notify
+
+# ── هل مضيف البناء يُعلن `policyN` حقيقية؟ ──
+#
+# **نفس شرط** `host_exposes_real_cpu_policies()` في `parity_test.c`، وهو الذي تُسقط به المجموعة
+# دعاوى مسار الكتابة في مجموعة الحاكم لئلا تكتب في معالج المضيف الحيّ. وطفرتا الحاكم أدناه
+# تُقاسان بتلك الدعاوى، فلا معنى لهما على مضيف كذلك: **تُعلَن غير مُتحقَّقة ولا تُسقط البناء**.
+#
+# والسبب مقيس لا مُخمَّن: التشغيل `36501257551` أعطى `261/261` على runner بلا `policyN` ونجح،
+# والتشغيل `36504291660` (‏`23b217d`) أعطى `234/234` على runner يُعلنها **ورسب** بالرسالة
+# «the mutant passed — the suite does not catch a guard that rejects valid governors» — أي أن
+# السبب مضيف CI لا تغييرٌ في الكود.
+#
+# ويُقاس الفرعان: `make self-check` على مضيف عادي، و`make HOST_HAS_CPU_POLICIES=yes self-check`.
+HOST_HAS_CPU_POLICIES ?= $(shell ls -d /sys/devices/system/cpu/cpufreq/policy[0-9]* >/dev/null 2>&1 && echo yes)
+
+.PHONY: all run self-check clean
+
+all: $(TARGET)
+
+$(TARGET): $(UNITS) $(HARNESS) host/host.h host/fopen_router.c $(SHIM)/sys/system_properties.h \
+          $(FIXTURES)/app_status.valid.txt $(FIXTURES)/cli_profile.tsv \
+          $(FIXTURES)/gamelist.compact.json $(FIXTURES)/gamelist.legacy.json $(REPO)/maxmanagerApplist.json
+	@mkdir -p $(BUILD_DIR)
+	$(CC) $(CFLAGS) $(UNITS) $(HARNESS) -o $@ $(LDFLAGS)
+
+run: $(TARGET)
+	@$(TARGET)
+
+# ── قياس الأداة نفسها (نفس درس `--self-test` في بوابات المستودع) ──
+#
+# مجموعة دعاوى لا يمكن أن تفشل لا تُثبت شيئًا. هذه الطفرة تُزيل ملكية النطاق
+# `persist.sys.maxmanagerconf.` — وهي بالضبط الانحدار الموصوف في تعليق المصدر —
+# ويجب أن **تُسقط** الدعوى. فإن مرّت الطفرة فالبوابة عمياء.
+self-check:
+	@mkdir -p $(BUILD_DIR)
+	@echo "── mutation self-check: removing the maxmanagerconf. prefix must fail the suite ──"
+	@sed 's|"persist.sys.maxmanagerconf.",||' \
+	   $(ROOT)/jni/src/StartupInit/PropValidator.c > $(BUILD_DIR)/PropValidator_mutant.c
+	@if $(CC) $(CFLAGS) $(filter-out $(ROOT)/jni/src/StartupInit/PropValidator.c,$(UNITS)) \
+	        $(BUILD_DIR)/PropValidator_mutant.c $(HARNESS) -o $(BUILD_DIR)/mutant $(LDFLAGS) >/dev/null 2>&1; then \
+	   if $(BUILD_DIR)/mutant >/dev/null 2>&1; then \
+	     echo "❌ the mutant passed — the suite does not catch the regression"; exit 1; \
+	   else echo "✅ the mutant failed the suite, as it must"; fi; \
+	 else echo "❌ the mutant did not build"; exit 1; fi
+	@echo "── mutation self-check: renaming an app_status key must fail the protocol suite ──"
+	@sed 's|"battery_level ", 14|"battery_levl ", 14|' \
+	   $(ROOT)/jni/src/AppLoader/StatusMonitor.c > $(BUILD_DIR)/StatusMonitor_mutant.c
+	@if $(CC) $(CFLAGS) $(filter-out $(ROOT)/jni/src/AppLoader/StatusMonitor.c,$(UNITS)) \
+	        $(BUILD_DIR)/StatusMonitor_mutant.c $(HARNESS) -o $(BUILD_DIR)/mutant_file $(LDFLAGS) >/dev/null 2>&1; then \
+	   if $(BUILD_DIR)/mutant_file >/dev/null 2>&1; then \
+	     echo "❌ the mutant passed — the fixtures do not pin the wire format"; exit 1; \
+	   else echo "✅ the mutant failed the suite, as it must"; fi; \
+	 else echo "❌ the mutant did not build"; exit 1; fi
+	@echo "── mutation self-check: dropping the gpu_studio prefix must fail the property-surface checks ──"
+	@sed 's|"persist.sys.maxmanager.gpu_studio.",||' \
+	   $(ROOT)/jni/src/StartupInit/PropValidator.c > $(BUILD_DIR)/PropValidator_prefix_mutant.c
+	@if $(CC) $(CFLAGS) $(filter-out $(ROOT)/jni/src/StartupInit/PropValidator.c,$(UNITS)) \
+	        $(BUILD_DIR)/PropValidator_prefix_mutant.c $(HARNESS) -o $(BUILD_DIR)/mutant_props $(LDFLAGS) >/dev/null 2>&1; then \
+	   if $(BUILD_DIR)/mutant_props >/dev/null 2>&1; then \
+	     echo "❌ the mutant passed — nothing asserts that the app's surface is covered"; exit 1; \
+	   else echo "✅ the mutant failed the suite, as it must"; fi; \
+	 else echo "❌ the mutant did not build"; exit 1; fi
+	@echo "── mutation self-check: renaming a broadcast extra must fail the broadcast contract ──"
+	@sed 's|--es notifytitle|--es notify_title|' \
+	   $(ROOT)/jni/src/MaxManagerUtility/DaemonUtility.c > $(BUILD_DIR)/DaemonUtility_mutant.c
+	@if $(CC) $(CFLAGS) $(filter-out $(ROOT)/jni/src/MaxManagerUtility/DaemonUtility.c,$(UNITS)) \
+	        $(BUILD_DIR)/DaemonUtility_mutant.c $(HARNESS) -o $(BUILD_DIR)/mutant_broadcast $(LDFLAGS) >/dev/null 2>&1; then \
+	   if $(BUILD_DIR)/mutant_broadcast >/dev/null 2>&1; then \
+	     echo "❌ the mutant passed — nothing ties the emitted extra names to the receiver"; exit 1; \
+	   else echo "✅ the mutant failed the suite, as it must"; fi; \
+	 else echo "❌ the mutant did not build"; exit 1; fi
+	@echo "── mutation self-check: the space-requiring scan must fail the gamelist contract ──"
+	@sed 's|(char\*)find_object_member(ptr)|strstr(ptr, "\\": {")|' \
+	   $(ROOT)/jni/src/AppLoader/AppLoader.c > $(BUILD_DIR)/AppLoader_shape_mutant.c
+	@if $(CC) $(CFLAGS) $(filter-out $(ROOT)/jni/src/AppLoader/AppLoader.c,$(UNITS)) \
+	        $(BUILD_DIR)/AppLoader_shape_mutant.c $(HARNESS) -o $(BUILD_DIR)/mutant_gamelist_shape $(LDFLAGS) >/dev/null 2>&1; then \
+	   if $(BUILD_DIR)/mutant_gamelist_shape >/dev/null 2>&1; then \
+	     echo "❌ the mutant passed — the fixture is not the shape the app writes, or nothing asserts it"; exit 1; \
+	   else echo "✅ the mutant failed the suite, as it must"; fi; \
+	 else echo "❌ the mutant did not build"; exit 1; fi
+	@echo "── mutation self-check: dropping the seed's legacy key alias must fail the gamelist contract ──"
+	@sed 's|\\"resolution_target\\":|\\"resolution_target_legacy\\":|' \
+	   $(ROOT)/jni/src/AppLoader/AppLoader.c > $(BUILD_DIR)/AppLoader_alias_mutant.c
+	@if $(CC) $(CFLAGS) $(filter-out $(ROOT)/jni/src/AppLoader/AppLoader.c,$(UNITS)) \
+	        $(BUILD_DIR)/AppLoader_alias_mutant.c $(HARNESS) -o $(BUILD_DIR)/mutant_gamelist_alias $(LDFLAGS) >/dev/null 2>&1; then \
+	   if $(BUILD_DIR)/mutant_gamelist_alias >/dev/null 2>&1; then \
+	     echo "❌ the mutant passed — the seed's spelling is not asserted, and it would drop silently again"; exit 1; \
+	   else echo "✅ the mutant failed the suite, as it must"; fi; \
+	 else echo "❌ the mutant did not build"; exit 1; fi
+ifeq ($(HOST_HAS_CPU_POLICIES),yes)
+	@echo "── mutation self-check: the two governor mutations are NOT VERIFIED on this host ──"
+	@echo "   this host exposes real policyN nodes, so parity_test.c skips that suite's write-path"
+	@echo "   assertions against the live CPU. The mutants are neither passed nor failed here - the"
+	@echo "   suite above says SKIPPED, and so does this line."
+else
+	@echo "── mutation self-check: rejecting every governor must fail the governor suite ──"
+	@sed 's|if (strlen(governor) >= 32)|if (strlen(governor) >= 0)|' \
+	   $(ROOT)/jni/src/SystemProfile/PerAppKernel.c > $(BUILD_DIR)/PerAppKernel_overstrict_mutant.c
+	@if $(CC) $(CFLAGS) $(filter-out $(ROOT)/jni/src/SystemProfile/PerAppKernel.c,$(UNITS)) \
+	        $(BUILD_DIR)/PerAppKernel_overstrict_mutant.c $(HARNESS) -o $(BUILD_DIR)/mutant_gov_strict $(LDFLAGS) >/dev/null 2>&1; then \
+	   if $(BUILD_DIR)/mutant_gov_strict >/dev/null 2>&1; then \
+	     echo "❌ the mutant passed — the suite does not catch a guard that rejects valid governors"; exit 1; \
+	   else echo "✅ the mutant failed the suite, as it must"; fi; \
+	 else echo "❌ the mutant did not build"; exit 1; fi
+	@echo "── mutation self-check: removing the shape guard must fail the governor suite ──"
+	@sed 's|if (!accepted)|if (false)|' \
+	   $(ROOT)/jni/src/SystemProfile/PerAppKernel.c > $(BUILD_DIR)/PerAppKernel_noguard_mutant.c
+	@if $(CC) $(CFLAGS) $(filter-out $(ROOT)/jni/src/SystemProfile/PerAppKernel.c,$(UNITS)) \
+	        $(BUILD_DIR)/PerAppKernel_noguard_mutant.c $(HARNESS) -o $(BUILD_DIR)/mutant_gov_none $(LDFLAGS) >/dev/null 2>&1; then \
+	   if $(BUILD_DIR)/mutant_gov_none >/dev/null 2>&1; then \
+	     echo "❌ the mutant passed — nothing asserts that a malformed token cannot reach a kernel node"; exit 1; \
+	   else echo "✅ the mutant failed the suite, as it must"; fi; \
+	 else echo "❌ the mutant did not build"; exit 1; fi
+endif
+	@echo "── mutation self-check: removing the AI brake must fail the CLI table ──"
+	@sed 's|if (!from_ai && !strcmp(ai_state, "1")) {|if (0) {|' \
+	   $(ROOT)/jni/src/BinaryCLI/CLIUtility.c > $(BUILD_DIR)/CLIUtility_mutant.c
+	@if $(CC) $(CFLAGS) $(filter-out $(ROOT)/jni/src/BinaryCLI/CLIUtility.c,$(UNITS)) \
+	        $(BUILD_DIR)/CLIUtility_mutant.c $(HARNESS) -o $(BUILD_DIR)/mutant_cli $(LDFLAGS) >/dev/null 2>&1; then \
+	   if $(BUILD_DIR)/mutant_cli >/dev/null 2>&1; then \
+	     echo "❌ the mutant passed — the table does not catch a removed brake"; exit 1; \
+	   else echo "✅ the mutant failed the suite, as it must"; fi; \
+	 else echo "❌ the mutant did not build"; exit 1; fi
+
+	@echo "── mutation self-check: a stale identity string must fail the module-integrity suite ──"
+	@sed 's|#define MODULE_IDENTITY_NAME   "MaxManager"|#define MODULE_IDENTITY_NAME   "Max Manager"|' \
+	   $(ROOT)/jni/src/MaxManagerUtility/ModuleIntegrity.c > $(BUILD_DIR)/ModuleIntegrity_mutant.c
+	@if $(CC) $(CFLAGS) $(filter-out $(ROOT)/jni/src/MaxManagerUtility/ModuleIntegrity.c,$(UNITS)) \
+	        $(BUILD_DIR)/ModuleIntegrity_mutant.c $(HARNESS) -o $(BUILD_DIR)/mutant_identity $(LDFLAGS) >/dev/null 2>&1; then \
+	   if $(BUILD_DIR)/mutant_identity >/dev/null 2>&1; then \
+	     echo "❌ the mutant passed — nothing pins the guard to the shipped module.prop"; exit 1; \
+	   else echo "✅ the mutant failed the suite, as it must"; fi; \
+	 else echo "❌ the mutant did not build"; exit 1; fi
+
+clean:
+	rm -rf $(BUILD_DIR)

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_sample_device_strings.xml -->
+<resources>
+    <string name="sample_pick_title">Chọn thiết bị mẫu</string>
+    <string name="sample_pick_button">Chọn thiết bị mẫu</string>
+    <string name="sample_auto_hint">Chọn một thiết bị sẽ điền vào thương hiệu, nhà sản xuất, kiểu máy, thiết bị, sản phẩm và dấu vân tay cho bạn. Hãy sử dụng Manual để tự gõ chúng.</string>
+    <string name="sample_manual">Thủ công</string>
+    <string name="sample_close">Đóng</string>
+    <string name="sample_search">Tìm kiếm thiết bị</string>
+    <string name="sample_empty">Không có thiết bị phù hợp.</string>
+    <string name="sample_unavailable">Không thể đọc được danh mục thiết bị.</string>
+    <string name="sample_row_sub">Android %1$s · %2$s</string>
+    <string name="sample_row_sub_plain">%1$s</string>
+    <string name="sample_fp_shared">Dấu vân tay giống như một thiết bị danh mục khác</string>
+    <string name="sample_credit">Dữ liệu danh mục: COPG (Apache-2.0), %1$s</string>
+    <string name="sample_limit">Đã đạt đến giới hạn hồ sơ (100).</string>
+</resources>

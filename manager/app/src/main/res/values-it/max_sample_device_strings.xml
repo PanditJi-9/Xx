@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_sample_device_strings.xml -->
+<resources>
+    <string name="sample_pick_title">Scegli il dispositivo di esempio</string>
+    <string name="sample_pick_button">Scegli il dispositivo di esempio</string>
+    <string name="sample_auto_hint">La scelta di un dispositivo inserisce per te marca, produttore, modello, dispositivo, prodotto e impronta digitale. Usa Manuale per digitarli tu stesso.</string>
+    <string name="sample_manual">Manuale</string>
+    <string name="sample_close">Vicino</string>
+    <string name="sample_search">Cerca dispositivi</string>
+    <string name="sample_empty">Nessun dispositivo corrispondente.</string>
+    <string name="sample_unavailable">Impossibile leggere il catalogo dei dispositivi.</string>
+    <string name="sample_row_sub">Android %1$s · %2$s</string>
+    <string name="sample_row_sub_plain">%1$s</string>
+    <string name="sample_fp_shared">Stessa impronta digitale di un altro dispositivo in catalogo</string>
+    <string name="sample_credit">Dati del catalogo: COPG (Apache-2.0), %1$s</string>
+    <string name="sample_limit">È stato raggiunto il limite del profilo (100).</string>
+</resources>

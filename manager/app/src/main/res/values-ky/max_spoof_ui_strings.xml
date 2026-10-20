@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_spoof_ui_strings.xml -->
+<resources>
+    <string name="spoof_ui_real_device">Чыныгы аппарат</string>
+    <string name="spoof_ui_pill_verified">Конфигурация текшерилди</string>
+    <string name="spoof_ui_pill_unverified">Текшерилген эмес</string>
+    <string name="spoof_ui_pill_off">Өчүк</string>
+    <string name="spoof_device_for_app">Бул колдонмо үчүн түзмөк</string>
+    <string name="spoof_device_real_hint">Бул колдонмо сиздин чыныгы түзмөгүңүздү көрөт. Бирөөнү тандоо үчүн картаны таптап коюңуз.</string>
+    <string name="spoof_device_pick">Каталогдон аппаратты тандоо үчүн таптап коюңуз же ыңгайлаштырылган түзмөк маалыматын киргизиңиз.</string>
+    <string name="spoof_device_in_use">Колдонууда</string>
+    <string name="spoof_device_restart">Андан кийин системаны эмес, максаттуу колдонмону өчүрүп күйгүзүңүз.</string>
+    <string name="spoof_ui_apply_title">Бул колдонмого кайрылыңыз</string>
+    <string name="spoof_ui_apply_action">Карап чыгуу жана колдонуу</string>
+    <string name="spoof_ui_apply_confirm_title">Бул колдонмо гана колдонулсунбу?</string>
+    <string name="spoof_ui_apply_confirm_text">Бул колдонмо гана даярдалган; башка колдонмолор тийбейт. Андан кийин системаны эмес, максаттуу колдонмону өчүрүп күйгүзүңүз. Кийинчерээк түзөтүү бул ырастоону жокко чыгарат. Эгер COPG мурунтан эле бул колдонмону тизмектесе, сиздин түзмөгүңүз артыкчылыкка ээ жана COPG линиясы ошол бойдон калат.</string>
+    <string name="spoof_ui_apply_confirm">Колдонуу</string>
+    <string name="spoof_ui_apply_reason">Мотордон баш тартуу: %1$s</string>
+    <string name="spoof_engine_absent">Кыймылдаткыч модулу окулбайт. module.prop id=COPG деп жазылган модулду ырастап, аны орнотуп же кайра орнотуп, андан кийин бул экранды кайра ачыңыз.</string>
+    <string name="spoof_engine_disabled">COPG модулу тамыр менеджериңизде өчүрүлгөн. Аны ошол жерден иштетип, өчүрүп күйгүзүп, анан кайра колдонуңуз.</string>
+    <string name="spoof_engine_removal_pending">COPG өчүрүү үчүн белгиленген жана кийинки кайра жүктөөдөн кийин жок болот. Колдонуудан мурун аны кайра орнотуңуз.</string>
+    <string name="spoof_engine_update_pending">COPG жаңыртуусу кайра жүктөөнү күтүп жатат. Адегенде өчүрүп күйгүзүңүз, анан кайра колдонуңуз.</string>
+    <string name="spoof_ui_apply_pending">Акыркы колдонуудан бери өзгөртүлдү — аны реалдуу кылуу үчүн кайра колдонуңуз.</string>
+    <string name="spoof_ui_restore_title">Чыныгы түзмөгүңүздү колдонуңуз</string>
+    <string name="spoof_ui_restore_action">Бул колдонмо үчүн спойлорду алып салыңыз</string>
+    <string name="spoof_ui_restore_notice">Бул колдонмонун сакталган түзмөгү жана анын COPG түзмөгү өчүрүлүп, кыймылдаткыч бул колдонмосуз кайра жазылат. Башка колдонмолорго тийүү жок. Андан кийин максаттуу колдонмону өчүрүп күйгүзүңүз.</string>
+    <string name="app_tab_spoof">Spoof</string>
+    <string name="spoof_picker_title">Аппаратты тандаңыз</string>
+    <string name="spoof_picker_custom">Ыңгайлаштырылган түзмөк маалыматы</string>
+    <string name="spoof_picker_custom_hint">Бул колдонмо үчүн каалаган брендди, моделди жана манжа изин киргизиңиз</string>
+    <string name="spoof_custom_title">Ыңгайлаштырылган түзмөк маалыматы</string>
+    <string name="spoof_custom_rules">Аты, бренди, модели, түзмөк жана продукт талап кылынат, ар бири 120 белгиге чейин, башкаруу белгилери жок. Өндүрүүчү, манжа изи жана SDK милдеттүү эмес. Манжа изи бир эле бренд, продукт жана түзмөктөн башталышы керек.</string>
+    <string name="spoof_manufacturer">Өндүрүүчү (MANUNFACTURER)</string>
+    <string name="spoof_sdk">SDK деңгээли, кошумча, 1ден 100гө чейин</string>
+    <string name="spoof_custom_invalid">Кээ бир талаалар жараксыз. Жогорудагы эрежелерди текшерип, анан кайра сактаңыз.</string>
+    <string name="spoof_custom_save">Сактоо жана бул колдонмо үчүн тандоо</string>
+    <string name="spoof_impersonation_title">Спуфинг</string>
+    <string name="spoof_impersonation_desc">Акысыз COPG параметрлери гана. Карап чыгуу жана колдонуу менен кыймылдаткычка жазылган.</string>
+    <string name="spoof_impersonation_summary_cpu">CPU жасалмалоо: %1$s</string>
+    <string name="spoof_impersonation_needs_device">Адегенде бул колдонмо үчүн түзмөк тандаңыз. Бул параметрлер түзмөк менен гана жазылган.</string>
+    <string name="spoof_cpu_spoof">CPU жасалмалоо</string>
+    <string name="spoof_cpu_real">Чыныгы CPU</string>
+    <string name="spoof_cpu_block">Блок CPU</string>
+    <string name="spoof_cpu_block_desc">Бул колдонмону CPU спуфингден чыгарат.</string>
+    <string name="spoof_cpu_picker_title">CPU тандаңыз</string>
+    <string name="copg_tweaks_section">COPG чыңдоолору</string>
+    <string name="copg_tweak_nolog_title">Киргизүүнү өчүрүү</string>
+    <string name="copg_tweak_nolog_desc">Бул колдонмого COPG журналынын чыңдоосун колдонот. Бул жерде сакталып, кыймылдаткычка Карап чыгуу аркылуу жазылган жана "Алдамчылык" өтмөгүндө колдонулат.</string>
+    <string name="copg_tweak_dab_title">Авто жарыктыгын өчүрүү</string>
+    <string name="copg_tweak_dab_desc">Бул колдонмого COPG авто-жарыктыгын чыңдоосун колдонот. Бул жерде сакталып, кыймылдаткычка Карап чыгуу аркылуу жазылган жана "Алдамчылык" өтмөгүндө колдонулат.</string>
+    <string name="copg_tweak_kso_title">Экранды күйгүзүңүз</string>
+    <string name="copg_tweak_kso_desc">Бул колдонмого COPG экранды күйгүзүү тууралыгын колдонот. Бул жерде сакталып, кыймылдаткычка Карап чыгуу аркылуу жазылган жана "Алдамчылык" өтмөгүндө колдонулат.</string>
+    <string name="copg_tweak_needs_device">Адегенде "Алдамчылык" өтмөгүндө бул колдонмо үчүн түзмөк керек.</string>
+</resources>

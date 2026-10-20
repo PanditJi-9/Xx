@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_spoof_ui_strings.xml -->
+<resources>
+    <string name="spoof_ui_real_device">อุปกรณ์จริง</string>
+    <string name="spoof_ui_pill_verified">ตรวจสอบการกำหนดค่าแล้ว</string>
+    <string name="spoof_ui_pill_unverified">ไม่ได้รับการยืนยัน</string>
+    <string name="spoof_ui_pill_off">ปิด</string>
+    <string name="spoof_device_for_app">อุปกรณ์สำหรับแอพนี้</string>
+    <string name="spoof_device_real_hint">แอปนี้เห็นอุปกรณ์จริงของคุณ แตะการ์ดเพื่อเลือกหนึ่งรายการ</string>
+    <string name="spoof_device_pick">แตะเพื่อเลือกอุปกรณ์จากแค็ตตาล็อก หรือป้อนข้อมูลอุปกรณ์ที่กำหนดเอง</string>
+    <string name="spoof_device_in_use">ในการใช้งาน</string>
+    <string name="spoof_device_restart">รีสตาร์ทแอปเป้าหมายในภายหลัง ไม่ใช่ระบบ</string>
+    <string name="spoof_ui_apply_title">สมัครแอพนี้</string>
+    <string name="spoof_ui_apply_action">ตรวจสอบและนำไปใช้</string>
+    <string name="spoof_ui_apply_confirm_title">ใช้แอพนี้เท่านั้นเหรอ?</string>
+    <string name="spoof_ui_apply_confirm_text">มีเพียงแอพนี้เท่านั้นที่เตรียมไว้ แอพอื่น ๆ ไม่ได้ถูกแตะต้อง รีสตาร์ทแอปเป้าหมายในภายหลัง ไม่ใช่ระบบ การแก้ไขในภายหลังจะยกเลิกการยืนยันนี้ หาก COPG แสดงรายการแอปนี้แล้ว อุปกรณ์ของคุณจะได้รับความสำคัญก่อนและบรรทัด COPG จะยังคงเหมือนเดิม</string>
+    <string name="spoof_ui_apply_confirm">นำมาใช้</string>
+    <string name="spoof_ui_apply_reason">การปฏิเสธเครื่องยนต์: %1$s</string>
+    <string name="spoof_engine_absent">ไม่สามารถอ่านโมดูลเครื่องยนต์ได้ ยืนยันโมดูลที่มี module.prop ระบุว่า id=COPG ติดตั้งหรือติดตั้งใหม่ จากนั้นเปิดหน้าจอนี้อีกครั้ง</string>
+    <string name="spoof_engine_disabled">โมดูล COPG ถูกปิดใช้งานในตัวจัดการรูทของคุณ เปิดใช้งานที่นั่น รีบูต จากนั้นสมัครอีกครั้ง</string>
+    <string name="spoof_engine_removal_pending">COPG ถูกทำเครื่องหมายเพื่อลบออก และจะหายไปหลังจากการรีบูตครั้งถัดไป ติดตั้งใหม่ก่อนที่จะใช้</string>
+    <string name="spoof_engine_update_pending">การอัปเดต COPG กำลังรอการรีบูต รีบูทก่อนแล้วจึงสมัครอีกครั้ง</string>
+    <string name="spoof_ui_apply_pending">เปลี่ยนตั้งแต่สมัครครั้งล่าสุด — ทาซ้ำเพื่อให้เป็นจริง</string>
+    <string name="spoof_ui_restore_title">ใช้อุปกรณ์จริงของคุณ</string>
+    <string name="spoof_ui_restore_action">ลบการปลอมแปลงสำหรับแอปนี้</string>
+    <string name="spoof_ui_restore_notice">อุปกรณ์ที่บันทึกไว้ของแอปนี้และการปรับแต่ง COPG จะถูกลบออก และกลไกจะถูกเขียนใหม่โดยไม่มีแอปนี้ แอพอื่นๆ ยังไม่ถูกแตะต้อง รีสตาร์ทแอปเป้าหมายในภายหลัง</string>
+    <string name="app_tab_spoof">หลอก</string>
+    <string name="spoof_picker_title">เลือกอุปกรณ์</string>
+    <string name="spoof_picker_custom">ข้อมูลอุปกรณ์ที่กำหนดเอง</string>
+    <string name="spoof_picker_custom_hint">ป้อนแบรนด์ รุ่น และลายนิ้วมือที่คุณต้องการสำหรับแอปนี้</string>
+    <string name="spoof_custom_title">ข้อมูลอุปกรณ์ที่กำหนดเอง</string>
+    <string name="spoof_custom_rules">ต้องมีชื่อ แบรนด์ รุ่น อุปกรณ์และผลิตภัณฑ์ โดยมีความยาวไม่เกิน 120 อักขระ โดยไม่มีอักขระควบคุม ผู้ผลิต ลายนิ้วมือ และ SDK เป็นทางเลือก ลายนิ้วมือต้องขึ้นต้นด้วยแบรนด์ ผลิตภัณฑ์ และอุปกรณ์เดียวกัน</string>
+    <string name="spoof_manufacturer">ผู้ผลิต (ผู้ผลิต)</string>
+    <string name="spoof_sdk">ระดับ SDK ไม่บังคับ 1 ถึง 100</string>
+    <string name="spoof_custom_invalid">บางช่องไม่ถูกต้อง ตรวจสอบกฎข้างต้นแล้วบันทึกอีกครั้ง</string>
+    <string name="spoof_custom_save">บันทึกและเลือกสำหรับแอปนี้</string>
+    <string name="spoof_impersonation_title">การปลอมแปลง</string>
+    <string name="spoof_impersonation_desc">ตัวเลือก COPG ฟรีเท่านั้น เขียนถึงเครื่องยนต์โดย Review และ Apply</string>
+    <string name="spoof_impersonation_summary_cpu">CPU การปลอมแปลง: %1$s</string>
+    <string name="spoof_impersonation_needs_device">เลือกอุปกรณ์สำหรับแอปนี้ก่อน ตัวเลือกเหล่านี้เขียนด้วยอุปกรณ์เท่านั้น</string>
+    <string name="spoof_cpu_spoof">CPU การปลอมแปลง</string>
+    <string name="spoof_cpu_real">จริง CPU</string>
+    <string name="spoof_cpu_block">บล็อก CPU</string>
+    <string name="spoof_cpu_block_desc">ไม่รวมแอปนี้จากการปลอมแปลง CPU</string>
+    <string name="spoof_cpu_picker_title">เลือก CPU</string>
+    <string name="copg_tweaks_section">การปรับแต่ง COPG</string>
+    <string name="copg_tweak_nolog_title">ปิดการใช้งานการบันทึก</string>
+    <string name="copg_tweak_nolog_desc">ใช้การปรับแต่งการบันทึก COPG กับแอปนี้ บันทึกไว้ที่นี่ เขียนถึงเครื่องยนต์โดย Review และนำไปใช้ในแท็บ Spoof</string>
+    <string name="copg_tweak_dab_title">ปิดการใช้งานความสว่างอัตโนมัติ</string>
+    <string name="copg_tweak_dab_desc">ใช้การปรับแต่งความสว่างอัตโนมัติ COPG กับแอปนี้ บันทึกไว้ที่นี่ เขียนถึงเครื่องยนต์โดย Review และนำไปใช้ในแท็บ Spoof</string>
+    <string name="copg_tweak_kso_title">เปิดหน้าจอไว้</string>
+    <string name="copg_tweak_kso_desc">ใช้การปรับแต่งหน้าจอเก็บ COPG กับแอปนี้ บันทึกไว้ที่นี่ เขียนถึงเครื่องยนต์โดย Review และนำไปใช้ในแท็บ Spoof</string>
+    <string name="copg_tweak_needs_device">ต้องมีอุปกรณ์สำหรับแอปนี้ก่อนในแท็บการปลอมแปลง</string>
+</resources>

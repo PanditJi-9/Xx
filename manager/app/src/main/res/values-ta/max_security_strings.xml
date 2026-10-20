@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_security_strings.xml -->
+<resources>
+    <string name="security_tamper_title">தொடங்க முடியவில்லை</string>
+    <string name="security_tamper_message">MaxManager இன் இந்த உருவாக்கம் அப்படியே இல்லை. நிறுவப்பட்ட கோப்புகள் கையொப்பமிடப்பட்ட வெளியீட்டுடன் பொருந்தாது, எனவே அது இயங்காது. அதிகாரப்பூர்வ கட்டமைப்பை அதன் அசல் மூலத்திலிருந்து மீண்டும் நிறுவவும்.</string>
+    <string name="security_tamper_close">மூடு</string>
+</resources>

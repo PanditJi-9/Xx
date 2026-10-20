@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_copg_tag_strings.xml -->
+<resources>
+    <string name="copg_tags_title">COPG variantlari</string>
+    <string name="copg_tags_desc">Niyat sifatida saqlangan va qurilma profili bilan birga yozilgan. Har bir COPG versiyasida faqat to\'rtta qulaylik varianti ishlaydi; qolganlari uchun COPG 6.8.0 yoki undan yangiroq versiyasi kerak. PRO opsiyalari COPG PRO litsenziyasini talab qiladi va dvigatel ularni e\'tiborsiz qoldirishi mumkin.</string>
+    <string name="copg_tier_pro">PRO</string>
+    <string name="copg_footprint_resident">ilova xotirasida qoladi, hech qachon firibgarlikka qarshi oʻyinlar bilan foydalanmang</string>
+    <string name="copg_need_ack">birinchi navbatda quyidagi xavfni tan oling</string>
+    <string name="copg_tag_refused">O\'rnatilgan COPG versiyasi uchun tanlangan COPG opsiyasiga ruxsat berilmagan. Hech narsa yozilmagan.</string>
+    <string name="copg_tag_needs_device">Variantlar qurilma profili bilan yozilgan va bu ilovada hali mavjud emas.</string>
+    <string name="copg_tag_value_hint">Qiymat</string>
+    <string name="copg_tag_bad_value">Harflar, raqamlar, bo\'sh joy va . _ - / + faqat (60 tagacha)</string>
+    <string name="copg_tag_save">Saqlash</string>
+    <string name="copg_tag_remove">O\'chirish</string>
+    <string name="copg_tag_dnd">Oʻyin paytida Bezovta qilinmasin</string>
+    <string name="copg_tag_dab">Avtomatik yorqinlikni o\'chiring</string>
+    <string name="copg_tag_kso">Ekranni yoniq tuting</string>
+    <string name="copg_tag_nolog">Ro\'yxatdan o\'tishni to\'xtating</string>
+    <string name="copg_tag_dpi">Ekran DPI</string>
+    <string name="copg_tag_serial">Har bir ilova uchun seriya raqami</string>
+    <string name="copg_tag_cpu">CPU modeli</string>
+    <string name="copg_tag_blocked">Haqiqiy CPUni majburlang</string>
+    <string name="copg_tag_vpn">VPNni yashirish</string>
+    <string name="copg_tag_vpns">VPNni yashirish (qattiq)</string>
+    <string name="copg_tag_hidedev">Tuzuvchi parametrlarini va USB orqali nosozliklarni tuzatishni yashirish</string>
+    <string name="copg_tag_tz">Vaqt mintaqasi</string>
+    <string name="copg_tag_lang">Til va mintaqa</string>
+    <string name="copg_tag_gpu">GPU modeli</string>
+    <string name="copg_tag_cow">Xususiyatlarni yaratish (yozishda nusxa ko\'chirish)</string>
+    <string name="copg_tag_aid">Android ID</string>
+    <string name="copg_tag_gaid">Reklama ID</string>
+    <string name="copg_tag_appset">Ilovalar toʻplami ID</string>
+    <string name="copg_tag_drm">Widevine / DRM</string>
+    <string name="copg_tag_imei">IMEI</string>
+    <string name="copg_tag_sim">SIM-karta tashuvchisi (xavfsiz)</string>
+    <string name="copg_tag_simx">SIM tashuvchisi (agressiv)</string>
+    <string name="copg_tag_ua">WebView foydalanuvchi agenti</string>
+    <string name="copg_tag_mock">Soxta joylashuvni yashirish</string>
+</resources>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_copg_tag_strings.xml -->
+<resources>
+    <string name="copg_tags_title">možnosti COPG</string>
+    <string name="copg_tags_desc">Uloženo jako záměr a zapsáno společně s profilem zařízení. Na každé verzi COPG fungují pouze čtyři možnosti pohodlí; zbytek potřebuje COPG 6.8.0 nebo novější. Možnosti PRO vyžadují licenci COPG PRO a engine je může ignorovat.</string>
+    <string name="copg_tier_pro">PRO</string>
+    <string name="copg_footprint_resident">zůstane v paměti aplikace, nikdy nepoužívejte s anti-cheatovými hrami</string>
+    <string name="copg_need_ack">nejprve si uvědomte níže uvedené riziko</string>
+    <string name="copg_tag_refused">Vybraná možnost COPG není pro nainstalovanou verzi COPG povolena. Nic nebylo napsáno.</string>
+    <string name="copg_tag_needs_device">Možnosti se zapisují pomocí profilu zařízení a tato aplikace zatím žádný nemá.</string>
+    <string name="copg_tag_value_hint">Hodnota</string>
+    <string name="copg_tag_bad_value">Písmena, číslice, mezery a . Pouze _ - / + (až 60)</string>
+    <string name="copg_tag_save">Uložit</string>
+    <string name="copg_tag_remove">Odstranit</string>
+    <string name="copg_tag_dnd">Nerušit při hraní</string>
+    <string name="copg_tag_dab">Zakázat automatický jas</string>
+    <string name="copg_tag_kso">Nechte obrazovku zapnutou</string>
+    <string name="copg_tag_nolog">Zastavit protokolování</string>
+    <string name="copg_tag_dpi">DPI obrazovky</string>
+    <string name="copg_tag_serial">Sériové číslo aplikace</string>
+    <string name="copg_tag_cpu">Model CPU</string>
+    <string name="copg_tag_blocked">Vynutit skutečné CPU</string>
+    <string name="copg_tag_vpn">Skrýt VPN</string>
+    <string name="copg_tag_vpns">Skrýt VPN (přísné)</string>
+    <string name="copg_tag_hidedev">Skrýt možnosti vývojáře a ladění USB</string>
+    <string name="copg_tag_tz">Časové pásmo</string>
+    <string name="copg_tag_lang">Jazyk a region</string>
+    <string name="copg_tag_gpu">Model GPU</string>
+    <string name="copg_tag_cow">Vlastnosti sestavení (copy-on-write)</string>
+    <string name="copg_tag_aid">Android ID</string>
+    <string name="copg_tag_gaid">Reklama ID</string>
+    <string name="copg_tag_appset">Sada aplikací ID</string>
+    <string name="copg_tag_drm">Widevine / DRM</string>
+    <string name="copg_tag_imei">IMEI</string>
+    <string name="copg_tag_sim">SIM operátor (bezpečný)</string>
+    <string name="copg_tag_simx">SIM operátor (agresivní)</string>
+    <string name="copg_tag_ua">WebView User-Agent</string>
+    <string name="copg_tag_mock">Skrýt falešnou polohu</string>
+</resources>

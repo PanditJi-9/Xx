@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_sample_device_strings.xml -->
+<resources>
+    <string name="sample_pick_title">نمونہ ڈیوائس کا انتخاب کریں۔</string>
+    <string name="sample_pick_button">نمونہ ڈیوائس کا انتخاب کریں۔</string>
+    <string name="sample_auto_hint">ڈیوائس کا انتخاب آپ کے لیے برانڈ، مینوفیکچرر، ماڈل، ڈیوائس، پروڈکٹ اور فنگر پرنٹ کو بھر دیتا ہے۔ انہیں خود ٹائپ کرنے کے لیے دستی استعمال کریں۔</string>
+    <string name="sample_manual">دستی</string>
+    <string name="sample_close">بند</string>
+    <string name="sample_search">آلات تلاش کریں۔</string>
+    <string name="sample_empty">کوئی مماثل آلہ نہیں ہے۔</string>
+    <string name="sample_unavailable">ڈیوائس کیٹلاگ پڑھا نہیں جا سکا۔</string>
+    <string name="sample_row_sub">Android %1$s · %2$s</string>
+    <string name="sample_row_sub_plain">%1$s</string>
+    <string name="sample_fp_shared">ایک اور کیٹلاگ ڈیوائس جیسا فنگر پرنٹ</string>
+    <string name="sample_credit">کیٹلاگ ڈیٹا: COPG (Apache-2.0)، %1$s</string>
+    <string name="sample_limit">پروفائل کی حد (100) تک پہنچ گئی ہے۔</string>
+</resources>

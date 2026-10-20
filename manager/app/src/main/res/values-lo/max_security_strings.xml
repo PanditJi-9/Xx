@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_security_strings.xml -->
+<resources>
+    <string name="security_tamper_title">ບໍ່ສາມາດເລີ່ມຕົ້ນໄດ້</string>
+    <string name="security_tamper_message">ການກໍ່ສ້າງຂອງ MaxManager ນີ້ບໍ່ແມ່ນ intact. ໄຟລ໌ທີ່ຕິດຕັ້ງບໍ່ກົງກັບການປ່ອຍທີ່ເຊັນແລ້ວ, ດັ່ງນັ້ນມັນຈະບໍ່ດໍາເນີນການ. ຕິດຕັ້ງການກໍ່ສ້າງຢ່າງເປັນທາງການຈາກແຫຼ່ງຕົ້ນສະບັບຂອງມັນ.</string>
+    <string name="security_tamper_close">ປິດ</string>
+</resources>

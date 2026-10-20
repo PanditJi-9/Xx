@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_copg_tag_strings.xml -->
+<resources>
+    <string name="copg_tags_title">Možnosti COPG</string>
+    <string name="copg_tags_desc">Shranjeno kot namen in zapisano skupaj s profilom naprave. Samo štiri udobne možnosti delujejo na vsaki različici COPG; ostali potrebujejo COPG 6.8.0 ali novejšo. Možnosti PRO potrebujejo licenco COPG PRO in motor jih lahko prezre.</string>
+    <string name="copg_tier_pro">PRO</string>
+    <string name="copg_footprint_resident">ostane v pomnilniku aplikacije, nikoli ne uporabljajte z igrami proti goljufanju</string>
+    <string name="copg_need_ack">najprej priznajte spodnje tveganje</string>
+    <string name="copg_tag_refused">Izbrana možnost COPG ni dovoljena za nameščeno različico COPG. Nič ni bilo napisano.</string>
+    <string name="copg_tag_needs_device">Možnosti so zapisane s profilom naprave, ta aplikacija pa še nima nobenega.</string>
+    <string name="copg_tag_value_hint">Vrednost</string>
+    <string name="copg_tag_bad_value">Črke, številke, presledek in . Samo _ - / + (do 60)</string>
+    <string name="copg_tag_save">Shrani</string>
+    <string name="copg_tag_remove">Odstrani</string>
+    <string name="copg_tag_dnd">Ne moti med igranjem</string>
+    <string name="copg_tag_dab">Onemogoči samodejno osvetlitev</string>
+    <string name="copg_tag_kso">Naj bo zaslon vklopljen</string>
+    <string name="copg_tag_nolog">Nehajte zapisovati</string>
+    <string name="copg_tag_dpi">DPI zaslona</string>
+    <string name="copg_tag_serial">Serijska številka posamezne aplikacije</string>
+    <string name="copg_tag_cpu">CPU model</string>
+    <string name="copg_tag_blocked">Prisilite pravi CPU</string>
+    <string name="copg_tag_vpn">Skrij VPN</string>
+    <string name="copg_tag_vpns">Skrij VPN (strogo)</string>
+    <string name="copg_tag_hidedev">Skrij možnosti razvijalca in odpravljanje napak USB</string>
+    <string name="copg_tag_tz">Časovni pas</string>
+    <string name="copg_tag_lang">Jezik in regija</string>
+    <string name="copg_tag_gpu">GPU model</string>
+    <string name="copg_tag_cow">Lastnosti zgradbe (kopiraj ob pisanju)</string>
+    <string name="copg_tag_aid">Android ID</string>
+    <string name="copg_tag_gaid">Oglaševanje ID</string>
+    <string name="copg_tag_appset">Komplet aplikacij ID</string>
+    <string name="copg_tag_drm">Widevine / DRM</string>
+    <string name="copg_tag_imei">IMEI</string>
+    <string name="copg_tag_sim">Nosilec SIM (varno)</string>
+    <string name="copg_tag_simx">Operater SIM (agresivno)</string>
+    <string name="copg_tag_ua">Uporabniški agent WebView</string>
+    <string name="copg_tag_mock">Skrij lažno lokacijo</string>
+</resources>

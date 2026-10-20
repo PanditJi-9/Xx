@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_security_strings.xml -->
+<resources>
+    <string name="security_tamper_title">Ezin hasi</string>
+    <string name="security_tamper_message">MaxManager-ren eraikuntza hau ez dago osorik. Instalatutako fitxategiak jada ez datoz bat sinatutako bertsioarekin, beraz, ez da exekutatuko. Berriro instalatu eraikuntza ofiziala jatorrizko iturritik.</string>
+    <string name="security_tamper_close">Itxi</string>
+</resources>

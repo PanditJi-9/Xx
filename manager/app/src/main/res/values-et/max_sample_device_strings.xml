@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_sample_device_strings.xml -->
+<resources>
+    <string name="sample_pick_title">Valige näidisseade</string>
+    <string name="sample_pick_button">Valige näidisseade</string>
+    <string name="sample_auto_hint">Seadme valimine täidab teie eest kaubamärgi, tootja, mudeli, seadme, toote ja sõrmejälje. Kasutage nende ise sisestamiseks käsitsi.</string>
+    <string name="sample_manual">Käsiraamat</string>
+    <string name="sample_close">Sule</string>
+    <string name="sample_search">Otsige seadmeid</string>
+    <string name="sample_empty">Ühtegi sobivat seadet pole.</string>
+    <string name="sample_unavailable">Seadme kataloogi ei saanud lugeda.</string>
+    <string name="sample_row_sub">Android %1$s · %2$s</string>
+    <string name="sample_row_sub_plain">%1$s</string>
+    <string name="sample_fp_shared">Sama sõrmejälg mis mõnel muul kataloogiseadmel</string>
+    <string name="sample_credit">Kataloogi andmed: COPG (Apache-2.0), %1$s</string>
+    <string name="sample_limit">Profiili limiit (100) on täis.</string>
+</resources>

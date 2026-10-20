@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_sample_device_strings.xml -->
+<resources>
+    <string name="sample_pick_title">샘플 장치 선택</string>
+    <string name="sample_pick_button">샘플 장치 선택</string>
+    <string name="sample_auto_hint">장치를 선택하면 브랜드, 제조업체, 모델, 장치, 제품 및 지문이 입력됩니다. 수동을 사용하여 직접 입력하세요.</string>
+    <string name="sample_manual">수동</string>
+    <string name="sample_close">닫다</string>
+    <string name="sample_search">기기 검색</string>
+    <string name="sample_empty">일치하는 장치가 없습니다.</string>
+    <string name="sample_unavailable">장치 카탈로그를 읽을 수 없습니다.</string>
+    <string name="sample_row_sub">안드로이드 %1$s · %2$s</string>
+    <string name="sample_row_sub_plain">%1$s</string>
+    <string name="sample_fp_shared">다른 카탈로그 장치와 동일한 지문</string>
+    <string name="sample_credit">카탈로그 데이터: COPG(Apache-2.0), %1$s</string>
+    <string name="sample_limit">프로필 제한(100)에 도달했습니다.</string>
+</resources>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_spoof_ui_strings.xml -->
+<resources>
+    <string name="spoof_ui_real_device">Dispositiu real</string>
+    <string name="spoof_ui_pill_verified">Configuració verificada</string>
+    <string name="spoof_ui_pill_unverified">No verificat</string>
+    <string name="spoof_ui_pill_off">Apagat</string>
+    <string name="spoof_device_for_app">Dispositiu per a aquesta aplicació</string>
+    <string name="spoof_device_real_hint">Aquesta aplicació veu el vostre dispositiu real. Toqueu la targeta per triar-ne una.</string>
+    <string name="spoof_device_pick">Toqueu per triar un dispositiu del catàleg o introduïu la informació personalitzada del dispositiu.</string>
+    <string name="spoof_device_in_use">En ús</string>
+    <string name="spoof_device_restart">Reinicieu l\'aplicació de destinació després, no el sistema.</string>
+    <string name="spoof_ui_apply_title">Sol·liciteu aquesta aplicació</string>
+    <string name="spoof_ui_apply_action">Revisa i aplica</string>
+    <string name="spoof_ui_apply_confirm_title">Voleu aplicar només aquesta aplicació?</string>
+    <string name="spoof_ui_apply_confirm_text">Només està preparada aquesta aplicació; altres aplicacions no es toquen. Reinicieu l\'aplicació de destinació després, no el sistema. Una edició posterior cancel·la aquesta confirmació. Si COPG ja inclou aquesta aplicació, el vostre dispositiu té prioritat i la línia COPG es manté com està.</string>
+    <string name="spoof_ui_apply_confirm">Aplicar</string>
+    <string name="spoof_ui_apply_reason">Rebuig del motor: %1$s</string>
+    <string name="spoof_engine_absent">El mòdul del motor no es pot llegir. Confirmeu un mòdul el module.prop del qual digui id=COPG, instal·leu-lo o torneu-lo a instal·lar i torneu a obrir aquesta pantalla.</string>
+    <string name="spoof_engine_disabled">El mòdul COPG està desactivat al vostre gestor arrel. Activeu-lo allà, reinicieu-lo i, a continuació, torneu a aplicar-lo.</string>
+    <string name="spoof_engine_removal_pending">COPG està marcat per eliminar-lo i desapareixerà després del proper reinici. Torneu-lo a instal·lar abans d\'aplicar-lo.</string>
+    <string name="spoof_engine_update_pending">Una actualització de COPG està esperant un reinici. Reinicieu primer i, a continuació, torneu a aplicar-lo.</string>
+    <string name="spoof_ui_apply_pending">S\'ha canviat des de l\'última aplicació: torna a aplicar-lo per fer-ho real.</string>
+    <string name="spoof_ui_restore_title">Utilitzeu el vostre dispositiu real</string>
+    <string name="spoof_ui_restore_action">Elimina la falsificació d\'aquesta aplicació</string>
+    <string name="spoof_ui_restore_notice">El dispositiu desat d\'aquesta aplicació i els seus ajustaments de COPG s\'eliminen i el motor es reescriu sense aquesta aplicació. Altres aplicacions estan intactes. Reinicieu l\'aplicació de destinació després.</string>
+    <string name="app_tab_spoof">Parodia</string>
+    <string name="spoof_picker_title">Trieu un dispositiu</string>
+    <string name="spoof_picker_custom">Informació personalitzada del dispositiu</string>
+    <string name="spoof_picker_custom_hint">Introduïu la marca, el model i l\'empremta digital que voleu per a aquesta aplicació</string>
+    <string name="spoof_custom_title">Informació personalitzada del dispositiu</string>
+    <string name="spoof_custom_rules">El nom, la marca, el model, el dispositiu i el producte són necessaris, amb un màxim de 120 caràcters cadascun, sense caràcters de control. El fabricant, l\'empremta digital i l\'SDK són opcionals. Una empremta digital ha de començar amb la mateixa marca, producte i dispositiu.</string>
+    <string name="spoof_manufacturer">FABRICANT (FABRICANT)</string>
+    <string name="spoof_sdk">Nivell SDK, opcional, d\'1 a 100</string>
+    <string name="spoof_custom_invalid">Alguns camps no són vàlids. Comproveu les regles anteriors i, a continuació, torneu a desar.</string>
+    <string name="spoof_custom_save">Desa i tria aquesta aplicació</string>
+    <string name="spoof_impersonation_title">Falsificació</string>
+    <string name="spoof_impersonation_desc">Només opcions COPG gratuïtes. Escrit al motor per Revisar i aplicar.</string>
+    <string name="spoof_impersonation_summary_cpu">CPU suplantació: %1$s</string>
+    <string name="spoof_impersonation_needs_device">Trieu primer un dispositiu per a aquesta aplicació. Aquestes opcions s\'escriuen només amb un dispositiu.</string>
+    <string name="spoof_cpu_spoof">CPU falsificació</string>
+    <string name="spoof_cpu_real">Real CPU</string>
+    <string name="spoof_cpu_block">Bloc CPU</string>
+    <string name="spoof_cpu_block_desc">Exclou aquesta aplicació de la falsificació de CPU.</string>
+    <string name="spoof_cpu_picker_title">Trieu un CPU</string>
+    <string name="copg_tweaks_section">Ajustos de COPG</string>
+    <string name="copg_tweak_nolog_title">Desactiva el registre</string>
+    <string name="copg_tweak_nolog_desc">Aplica l\'ajust de registre COPG a aquesta aplicació. Desat aquí, escrit al motor mitjançant una revisió i aplicar-lo a la pestanya Falsificació.</string>
+    <string name="copg_tweak_dab_title">Desactiva la brillantor automàtica</string>
+    <string name="copg_tweak_dab_desc">Aplica l\'ajust automàtic de brillantor COPG a aquesta aplicació. Desat aquí, escrit al motor mitjançant una revisió i aplicar-lo a la pestanya Falsificació.</string>
+    <string name="copg_tweak_kso_title">Mantén la pantalla encesa</string>
+    <string name="copg_tweak_kso_desc">Aplica l\'ajust de manteniment de la pantalla COPG a aquesta aplicació. Desat aquí, escrit al motor mitjançant una revisió i aplicar-lo a la pestanya Falsificació.</string>
+    <string name="copg_tweak_needs_device">Primer necessita un dispositiu per a aquesta aplicació, a la pestanya Falsificació.</string>
+</resources>

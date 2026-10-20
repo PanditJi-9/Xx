@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_security_strings.xml -->
+<resources>
+    <string name="security_tamper_title">Не може да се стартира</string>
+    <string name="security_tamper_message">Тази компилация на MaxManager не е непокътната. Инсталираните файлове вече не отговарят на подписаното издание, така че няма да се стартира. Преинсталирайте официалната компилация от оригиналния й източник.</string>
+    <string name="security_tamper_close">затвори</string>
+</resources>

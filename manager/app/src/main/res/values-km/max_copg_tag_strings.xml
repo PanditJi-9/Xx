@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_copg_tag_strings.xml -->
+<resources>
+    <string name="copg_tags_title">ជម្រើស COPG</string>
+    <string name="copg_tags_desc">រក្សាទុកជាចេតនា និងសរសេររួមគ្នាជាមួយកម្រងព័ត៌មានឧបករណ៍។ មានតែជម្រើសផាសុកភាពទាំងបួនប៉ុណ្ណោះដែលដំណើរការលើគ្រប់កំណែ COPG ។ នៅសល់ត្រូវការ COPG 6.8.0 ឬថ្មីជាងនេះ។ ជម្រើស PRO ត្រូវការអាជ្ញាប័ណ្ណ COPG PRO ហើយម៉ាស៊ីនអាចមិនអើពើពួកគេ។</string>
+    <string name="copg_tier_pro">ប្រូ</string>
+    <string name="copg_footprint_resident">ស្ថិតនៅក្នុងអង្គចងចាំរបស់កម្មវិធី មិនដែលប្រើជាមួយហ្គេមប្រឆាំងការបន្លំឡើយ។</string>
+    <string name="copg_need_ack">ទទួលស្គាល់ហានិភ័យខាងក្រោមជាមុនសិន</string>
+    <string name="copg_tag_refused">ជម្រើស COPG ដែលបានជ្រើសរើសមិនត្រូវបានអនុញ្ញាតសម្រាប់កំណែ COPG ដែលបានដំឡើងនោះទេ។ គ្មានអ្វីត្រូវបានសរសេរទេ។</string>
+    <string name="copg_tag_needs_device">ជម្រើសត្រូវបានសរសេរជាមួយនឹងទម្រង់ឧបករណ៍ ហើយកម្មវិធីនេះមិនទាន់មាននៅឡើយទេ។</string>
+    <string name="copg_tag_value_hint">តម្លៃ</string>
+    <string name="copg_tag_bad_value">អក្សរ លេខ ដកឃ្លា និង . _ - / + តែប៉ុណ្ណោះ (រហូតដល់ 60)</string>
+    <string name="copg_tag_save">រក្សាទុក</string>
+    <string name="copg_tag_remove">ដកចេញ</string>
+    <string name="copg_tag_dnd">កុំរំខានពេលកំពុងលេង</string>
+    <string name="copg_tag_dab">បិទពន្លឺដោយស្វ័យប្រវត្តិ</string>
+    <string name="copg_tag_kso">បើកអេក្រង់</string>
+    <string name="copg_tag_nolog">បញ្ឈប់ការកត់ត្រា</string>
+    <string name="copg_tag_dpi">អេក្រង់ DPI</string>
+    <string name="copg_tag_serial">លេខស៊េរីនៃកម្មវិធីនីមួយៗ</string>
+    <string name="copg_tag_cpu">CPU គំរូ</string>
+    <string name="copg_tag_blocked">បង្ខំ CPU ពិតប្រាកដ</string>
+    <string name="copg_tag_vpn">លាក់ VPN</string>
+    <string name="copg_tag_vpns">លាក់ VPN (តឹងរ៉ឹង)</string>
+    <string name="copg_tag_hidedev">លាក់ជម្រើសអ្នកអភិវឌ្ឍន៍ និងការបំបាត់កំហុស USB</string>
+    <string name="copg_tag_tz">តំបន់ពេលវេលា</string>
+    <string name="copg_tag_lang">ភាសា និងតំបន់</string>
+    <string name="copg_tag_gpu">GPU គំរូ</string>
+    <string name="copg_tag_cow">បង្កើតលក្ខណៈសម្បត្តិ (ចម្លងលើការសរសេរ)</string>
+    <string name="copg_tag_aid">ប្រព័ន្ធប្រតិបត្តិការ Android ID</string>
+    <string name="copg_tag_gaid">ការផ្សាយពាណិជ្ជកម្ម ID</string>
+    <string name="copg_tag_appset">ការកំណត់កម្មវិធី ID</string>
+    <string name="copg_tag_drm">Widevine / DRM</string>
+    <string name="copg_tag_imei">IMEI</string>
+    <string name="copg_tag_sim">ក្រុមហ៊ុនផ្តល់សេវាទូរស័ព្ទស៊ីម (សុវត្ថិភាព)</string>
+    <string name="copg_tag_simx">ក្រុមហ៊ុនផ្តល់សេវាទូរស័ព្ទស៊ីម (ឈ្លានពាន)</string>
+    <string name="copg_tag_ua">ភ្នាក់ងារអ្នកប្រើប្រាស់ WebView</string>
+    <string name="copg_tag_mock">លាក់ទីតាំងក្លែងក្លាយ</string>
+</resources>

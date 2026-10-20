@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_sample_device_strings.xml -->
+<resources>
+    <string name="sample_pick_title">නියැදි උපාංගය තෝරන්න</string>
+    <string name="sample_pick_button">නියැදි උපාංගය තෝරන්න</string>
+    <string name="sample_auto_hint">උපාංගයක් තෝරා ගැනීමෙන් ඔබ වෙනුවෙන් වෙළඳ නාමය, නිෂ්පාදකයා, ආකෘතිය, උපාංගය, නිෂ්පාදනය සහ ඇඟිලි සලකුණු පුරවයි. ඒවා ඔබම ටයිප් කිරීමට අත්පොත භාවිතා කරන්න.</string>
+    <string name="sample_manual">අත්පොත</string>
+    <string name="sample_close">වසන්න</string>
+    <string name="sample_search">සෙවුම් උපාංග</string>
+    <string name="sample_empty">ගැළපෙන උපාංගයක් නැත.</string>
+    <string name="sample_unavailable">උපාංග නාමාවලිය කියවිය නොහැක.</string>
+    <string name="sample_row_sub">Android %1$s · %2$s</string>
+    <string name="sample_row_sub_plain">%1$s</string>
+    <string name="sample_fp_shared">තවත් නාමාවලි උපාංගයකට සමාන ඇඟිලි සලකුණ</string>
+    <string name="sample_credit">නාමාවලි දත්ත: COPG (Apache-2.0), %1$s</string>
+    <string name="sample_limit">පැතිකඩ සීමාව (100) ළඟා වී ඇත.</string>
+</resources>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- النصوص العربية لتحديث التطبيق عن بُعد — تُكتب مع الإنجليزية في التغيير نفسه (ADR-14). -->
+<resources>
+    <string name="update_dialog_title">يتوفّر تحديث</string>
+    <string name="update_dialog_title_required">تحديث مطلوب</string>
+    <string name="update_dialog_body">الإصدار %1$s متاح، وأنت على %2$s.</string>
+    <string name="update_block_title">تحتاج إلى التحديث للمتابعة</string>
+    <string name="update_block_body">هذه النسخة (%1$s) لم تعد مدعومة. حدّث إلى %2$s لتواصل استخدام MaxManager.</string>
+    <string name="update_block_body_no_release">هذه النسخة (%1$s) لم تعد مدعومة.</string>
+    <string name="update_release_notes_label">الجديد</string>
+    <string name="update_size">حجم التنزيل: %1$s</string>
+    <string name="update_button_now">حدّث الآن</string>
+    <string name="update_button_later">لاحقًا</string>
+    <string name="update_button_close">إغلاق</string>
+    <string name="update_button_open_page">افتح صفحة التنزيل</string>
+    <string name="update_state_downloading">جارٍ التنزيل… %1$d%%</string>
+    <string name="update_state_downloading_unknown">جارٍ التنزيل…</string>
+    <string name="update_state_installing">جارٍ التثبيت…</string>
+    <string name="update_error_network">تعذّر الوصول إلى خادم التحديث. تحقّق من اتصالك وأعد المحاولة.</string>
+    <string name="update_error_http">ردّ خادم التحديث بخطأ. أعد المحاولة بعد قليل.</string>
+    <string name="update_error_format">تعذّرت قراءة معلومات التحديث.</string>
+    <string name="update_error_too_large">كانت معلومات التحديث أكبر من المتوقّع فحُذفت.</string>
+    <string name="update_error_integrity">الملفّ المنزَّل لا يطابق بصمته فحُذف.</string>
+    <string name="update_error_install">فشل التثبيت. أعد المحاولة.</string>
+    <string name="update_error_not_configured">لا قناة تحديث مضبوطة في هذا البناء.</string>
+    <string name="update_maintenance_title">متوقّف مؤقّتًا</string>
+    <string name="update_maintenance_body">MaxManager متوقّف مؤقّتًا. أعد المحاولة بعد قليل.</string>
+    <string name="update_check_title">التحقّق من التحديثات</string>
+    <string name="update_check_supporting">النسخة الحالية: %1$s</string>
+    <string name="update_check_updated">يتوفّر تحديث.</string>
+    <string name="update_check_uptodate">أنت على أحدث إصدار.</string>
+    <string name="update_check_failed">تعذّر التحقّق من التحديثات.</string>
+    <string name="update_check_not_configured">لا قناة تحديث مضبوطة في هذا البناء.</string>
+    <!-- قناة اللوحة: التاريخ والنتائج الصريحة لفحص «التحديثات» — لا «خطأ» حيث لا خطأ -->
+    <string name="update_released_label">تاريخ الإصدار: %1$s</string>
+    <string name="update_check_none_published">لم يُنشر أي تحديث من لوحة التحكّم بعد.</string>
+    <string name="update_check_link_missing">التحديث منشور لكن رابط تنزيله ناقص.</string>
+</resources>

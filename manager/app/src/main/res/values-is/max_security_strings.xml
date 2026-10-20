@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_security_strings.xml -->
+<resources>
+    <string name="security_tamper_title">Ekki hægt að byrja</string>
+    <string name="security_tamper_message">Þessi smíði MaxManager er ekki ósnortinn. Uppsettu skrárnar passa ekki lengur við undirritaða útgáfuna, svo hún mun ekki keyra. Settu aftur upp opinberu smíðina frá upprunalegum uppruna.</string>
+    <string name="security_tamper_close">Loka</string>
+</resources>

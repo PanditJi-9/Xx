@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_spoof_ui_strings.xml -->
+<resources>
+    <string name="spoof_ui_real_device">Alvöru tæki</string>
+    <string name="spoof_ui_pill_verified">Stilling staðfest</string>
+    <string name="spoof_ui_pill_unverified">Ekki staðfest</string>
+    <string name="spoof_ui_pill_off">Slökkt</string>
+    <string name="spoof_device_for_app">Tæki fyrir þetta forrit</string>
+    <string name="spoof_device_real_hint">Þetta app sér raunverulegt tæki þitt. Pikkaðu á kortið til að velja eitt.</string>
+    <string name="spoof_device_pick">Pikkaðu á til að velja tæki úr vörulistanum eða sláðu inn sérsniðnar upplýsingar um tæki.</string>
+    <string name="spoof_device_in_use">Í notkun</string>
+    <string name="spoof_device_restart">Endurræstu markforritið eftir það, ekki kerfið.</string>
+    <string name="spoof_ui_apply_title">Sæktu um þetta app</string>
+    <string name="spoof_ui_apply_action">Skoðaðu og sóttu um</string>
+    <string name="spoof_ui_apply_confirm_title">Nota þetta forrit eingöngu?</string>
+    <string name="spoof_ui_apply_confirm_text">Aðeins þetta app er undirbúið; önnur öpp eru ósnortin. Endurræstu markforritið eftir það, ekki kerfið. Síðari breyting afturkallar þessa staðfestingu. Ef COPG skráir þetta forrit nú þegar hefur tækið þitt forgang og COPG línan helst eins og hún er.</string>
+    <string name="spoof_ui_apply_confirm">Sækja um</string>
+    <string name="spoof_ui_apply_reason">Vélarhöfnun: %1$s</string>
+    <string name="spoof_engine_absent">Vélareiningin er ekki læsileg. Staðfestu einingu þar sem module.prop segir id=COPG, settu upp eða settu hana upp aftur, opnaðu síðan þennan skjá aftur.</string>
+    <string name="spoof_engine_disabled">COPG einingin er óvirk í rótarstjóranum þínum. Virkjaðu það þar, endurræstu og notaðu síðan aftur.</string>
+    <string name="spoof_engine_removal_pending">COPG er merkt til að fjarlægja og verður horfið eftir næstu endurræsingu. Settu það aftur upp áður en þú sækir um.</string>
+    <string name="spoof_engine_update_pending">COPG uppfærsla bíður eftir endurræsingu. Endurræstu fyrst, notaðu síðan aftur.</string>
+    <string name="spoof_ui_apply_pending">Breytt síðan síðast sóttu um — sóttu aftur til að gera það raunverulegt.</string>
+    <string name="spoof_ui_restore_title">Notaðu alvöru tækið þitt</string>
+    <string name="spoof_ui_restore_action">Fjarlægðu skopstælinguna fyrir þetta forrit</string>
+    <string name="spoof_ui_restore_notice">Vistað tæki þessa forrits og COPG klippingar þess eru fjarlægðar og vélin er endurskrifuð án þessa forrits. Önnur öpp eru ósnortin. Endurræstu markforritið eftir það.</string>
+    <string name="app_tab_spoof">Skúff</string>
+    <string name="spoof_picker_title">Veldu tæki</string>
+    <string name="spoof_picker_custom">Sérsniðnar upplýsingar um tæki</string>
+    <string name="spoof_picker_custom_hint">Sláðu inn vörumerki, gerð og fingrafar sem þú vilt fyrir þetta forrit</string>
+    <string name="spoof_custom_title">Sérsniðnar upplýsingar um tæki</string>
+    <string name="spoof_custom_rules">Nafn, vörumerki, gerð, tæki og vara eru nauðsynleg, allt að 120 stafir hvor, án stýristöfa. Framleiðandi, fingrafar og SDK eru valfrjáls. Fingrafar verður að byrja á sama vörumerki, vöru og tæki.</string>
+    <string name="spoof_manufacturer">Framleiðandi (MANUFACTURER)</string>
+    <string name="spoof_sdk">SDK stig, valfrjálst, 1 til 100</string>
+    <string name="spoof_custom_invalid">Sumir reitir eru ógildir. Athugaðu reglurnar hér að ofan, vistaðu síðan aftur.</string>
+    <string name="spoof_custom_save">Vistaðu og veldu fyrir þetta forrit</string>
+    <string name="spoof_impersonation_title">Svindl</string>
+    <string name="spoof_impersonation_desc">Ókeypis COPG valkostir eingöngu. Skrifað í vélina af Skoðaðu og sóttu um.</string>
+    <string name="spoof_impersonation_summary_cpu">CPU skopstæling: %1$s</string>
+    <string name="spoof_impersonation_needs_device">Veldu tæki fyrir þetta forrit fyrst. Þessir valkostir eru aðeins skrifaðir með tæki.</string>
+    <string name="spoof_cpu_spoof">CPU skopstæling</string>
+    <string name="spoof_cpu_real">Alvöru CPU</string>
+    <string name="spoof_cpu_block">Lokaðu CPU</string>
+    <string name="spoof_cpu_block_desc">Útilokar þetta forrit frá CPU skopstælingum.</string>
+    <string name="spoof_cpu_picker_title">Veldu CPU</string>
+    <string name="copg_tweaks_section">COPG lagfæringar</string>
+    <string name="copg_tweak_nolog_title">Slökktu á skráningu</string>
+    <string name="copg_tweak_nolog_desc">Beitir COPG skráningu klip á þetta forrit. Vistað hér, skrifað í vélina af Review og notaðu í Spoof flipanum.</string>
+    <string name="copg_tweak_dab_title">Slökktu á sjálfvirkri birtu</string>
+    <string name="copg_tweak_dab_desc">Beitir COPG sjálfvirkri birtustillingu á þetta forrit. Vistað hér, skrifað í vélina af Review og notaðu í Spoof flipanum.</string>
+    <string name="copg_tweak_kso_title">Haltu skjánum á</string>
+    <string name="copg_tweak_kso_desc">Notar COPG keep-screen-on klipið á þetta forrit. Vistað hér, skrifað í vélina af Review og notaðu í Spoof flipanum.</string>
+    <string name="copg_tweak_needs_device">Þarf fyrst tæki fyrir þetta forrit, í Spoof flipanum.</string>
+</resources>

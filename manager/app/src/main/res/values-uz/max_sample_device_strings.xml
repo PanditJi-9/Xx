@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_sample_device_strings.xml -->
+<resources>
+    <string name="sample_pick_title">Qurilma namunasini tanlang</string>
+    <string name="sample_pick_button">Qurilma namunasini tanlang</string>
+    <string name="sample_auto_hint">Qurilmani tanlash siz uchun brend, ishlab chiqaruvchi, model, qurilma, mahsulot va barmoq izini toʻldiradi. Ularni o\'zingiz yozish uchun qo\'llanmadan foydalaning.</string>
+    <string name="sample_manual">Qo\'llanma</string>
+    <string name="sample_close">Yopish</string>
+    <string name="sample_search">Qurilmalarni qidirish</string>
+    <string name="sample_empty">Mos qurilma yo\'q.</string>
+    <string name="sample_unavailable">Qurilma katalogini o‘qib bo‘lmadi.</string>
+    <string name="sample_row_sub">Android %1$s · %2$s</string>
+    <string name="sample_row_sub_plain">%1$s</string>
+    <string name="sample_fp_shared">Boshqa katalog qurilmasi bilan bir xil barmoq izi</string>
+    <string name="sample_credit">Katalog ma\'lumotlari: COPG (Apache-2.0), %1$s</string>
+    <string name="sample_limit">Profil chegarasiga (100) erishildi.</string>
+</resources>

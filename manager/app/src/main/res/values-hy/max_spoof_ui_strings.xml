@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_spoof_ui_strings.xml -->
+<resources>
+    <string name="spoof_ui_real_device">Իրական սարք</string>
+    <string name="spoof_ui_pill_verified">Կազմաձևը հաստատված է</string>
+    <string name="spoof_ui_pill_unverified">Ստուգված չէ</string>
+    <string name="spoof_ui_pill_off">Անջատված</string>
+    <string name="spoof_device_for_app">Սարք այս հավելվածի համար</string>
+    <string name="spoof_device_real_hint">Այս հավելվածը տեսնում է ձեր իրական սարքը: Հպեք քարտին՝ մեկը ընտրելու համար:</string>
+    <string name="spoof_device_pick">Հպեք՝ կատալոգից սարք ընտրելու համար կամ մուտքագրեք հատուկ սարքի տվյալները:</string>
+    <string name="spoof_device_in_use">Օգտագործման մեջ</string>
+    <string name="spoof_device_restart">Դրանից հետո վերագործարկեք թիրախային հավելվածը, ոչ թե համակարգը:</string>
+    <string name="spoof_ui_apply_title">Դիմեք այս հավելվածին</string>
+    <string name="spoof_ui_apply_action">Վերանայեք և կիրառեք</string>
+    <string name="spoof_ui_apply_confirm_title">Կիրառե՞լ միայն այս հավելվածը:</string>
+    <string name="spoof_ui_apply_confirm_text">Միայն այս հավելվածն է պատրաստ. այլ հավելվածներ անձեռնմխելի են: Դրանից հետո վերագործարկեք թիրախային հավելվածը, ոչ թե համակարգը: Հետագայում կատարված խմբագրումը չեղարկում է այս հաստատումը: Եթե ​​COPG-ն արդեն ցուցակագրում է այս հավելվածը, ձեր սարքը առաջնահերթություն է ստանում, և COPG գիծը մնում է այնպես, ինչպես կա:</string>
+    <string name="spoof_ui_apply_confirm">Դիմել</string>
+    <string name="spoof_ui_apply_reason">Շարժիչի մերժում՝ %1$s</string>
+    <string name="spoof_engine_absent">Շարժիչի մոդուլը ընթեռնելի չէ: Հաստատեք մոդուլը, որի module.prop-ն ասում է id=COPG, տեղադրեք կամ նորից տեղադրեք այն, այնուհետև նորից բացեք այս էկրանը:</string>
+    <string name="spoof_engine_disabled">COPG մոդուլն անջատված է ձեր արմատային մենեջերում: Միացրեք այն այնտեղ, վերագործարկեք, ապա նորից կիրառեք:</string>
+    <string name="spoof_engine_removal_pending">COPG-ը նշված է հեռացման համար և կվերանա հաջորդ վերագործարկումից հետո: Կրկին տեղադրեք այն կիրառելուց առաջ:</string>
+    <string name="spoof_engine_update_pending">COPG-ի թարմացումը սպասում է վերաբեռնման: Սկզբում վերագործարկեք, ապա նորից կիրառեք:</string>
+    <string name="spoof_ui_apply_pending">Փոփոխվել է վերջին հայտից հետո. կրկին դիմեք այն իրական դարձնելու համար:</string>
+    <string name="spoof_ui_restore_title">Օգտագործեք ձեր իրական սարքը</string>
+    <string name="spoof_ui_restore_action">Հեռացրեք կեղծիքը այս հավելվածի համար</string>
+    <string name="spoof_ui_restore_notice">Այս հավելվածի պահպանված սարքը և դրա COPG ճշգրտումները հեռացվում են, և շարժիչը վերաշարադրվում է առանց այս հավելվածի: Մյուս հավելվածներն անձեռնմխելի են: Դրանից հետո վերագործարկեք թիրախային հավելվածը:</string>
+    <string name="app_tab_spoof">Կեղծիք</string>
+    <string name="spoof_picker_title">Ընտրեք սարք</string>
+    <string name="spoof_picker_custom">Հատուկ սարքի տվյալներ</string>
+    <string name="spoof_picker_custom_hint">Մուտքագրեք ապրանքանիշը, մոդելը և մատնահետքը, որը ցանկանում եք այս հավելվածի համար</string>
+    <string name="spoof_custom_title">Հատուկ սարքի տվյալներ</string>
+    <string name="spoof_custom_rules">Պահանջվում է անունը, ապրանքանիշը, մոդելը, սարքը և ապրանքը, յուրաքանչյուրը մինչև 120 նիշ, առանց կառավարման նիշերի: Արտադրողը, մատնահետքը և SDK-ն ընտրովի են: Մատնահետքը պետք է սկսվի նույն ապրանքանիշից, ապրանքից և սարքից:</string>
+    <string name="spoof_manufacturer">Արտադրող (MANUFACTURER)</string>
+    <string name="spoof_sdk">SDK մակարդակ, ընտրովի, 1-ից 100</string>
+    <string name="spoof_custom_invalid">Որոշ դաշտեր անվավեր են: Ստուգեք վերը նշված կանոնները, այնուհետև նորից պահպանեք:</string>
+    <string name="spoof_custom_save">Պահպանեք և ընտրեք այս հավելվածի համար</string>
+    <string name="spoof_impersonation_title">Խաբեություն</string>
+    <string name="spoof_impersonation_desc">Միայն COPG-ի անվճար ընտրանքներ: Շարժիչին գրված է Վերանայեք և կիրառեք:</string>
+    <string name="spoof_impersonation_summary_cpu">CPU կեղծում. %1$s</string>
+    <string name="spoof_impersonation_needs_device">Նախ ընտրեք սարք այս հավելվածի համար: Այս տարբերակները գրված են միայն սարքով։</string>
+    <string name="spoof_cpu_spoof">CPU կեղծում</string>
+    <string name="spoof_cpu_real">Իրական CPU</string>
+    <string name="spoof_cpu_block">Արգելափակում CPU</string>
+    <string name="spoof_cpu_block_desc">Այս հավելվածը բացառում է CPU կեղծիքից:</string>
+    <string name="spoof_cpu_picker_title">Ընտրեք CPU</string>
+    <string name="copg_tweaks_section">COPG-ի ճշգրտումներ</string>
+    <string name="copg_tweak_nolog_title">Անջատել գրանցումը</string>
+    <string name="copg_tweak_nolog_desc">Կիրառում է COPG գրանցման կսմթիչը այս հավելվածի վրա: Պահպանված է այստեղ, գրվել է շարժիչին Review-ի կողմից և կիրառել Spoof ներդիրում:</string>
+    <string name="copg_tweak_dab_title">Անջատել ավտոմատ լուսավորությունը</string>
+    <string name="copg_tweak_dab_desc">Կիրառում է COPG-ի ավտոմատ պայծառության կարգավորումն այս հավելվածի վրա: Պահպանված է այստեղ, գրվել է շարժիչին Review-ի կողմից և կիրառել Spoof ներդիրում:</string>
+    <string name="copg_tweak_kso_title">Էկրանը միացված պահել</string>
+    <string name="copg_tweak_kso_desc">Այս հավելվածի վրա կիրառում է COPG-ի էկրանի պահպանման կարգավորումը: Պահպանված է այստեղ, գրվել է շարժիչին Review-ի կողմից և կիրառել Spoof ներդիրում:</string>
+    <string name="copg_tweak_needs_device">Այս հավելվածի համար նախ սարք է պետք՝ Spoof ներդիրում:</string>
+</resources>

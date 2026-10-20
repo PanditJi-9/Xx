@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_sample_device_strings.xml -->
+<resources>
+    <string name="sample_pick_title">Nümunə cihazı seçin</string>
+    <string name="sample_pick_button">Nümunə cihazı seçin</string>
+    <string name="sample_auto_hint">Bir cihaz seçmək sizin üçün marka, istehsalçı, model, cihaz, məhsul və barmaq izini doldurur. Onları özünüz yazmaq üçün Manual istifadə edin.</string>
+    <string name="sample_manual">Manual</string>
+    <string name="sample_close">Bağlayın</string>
+    <string name="sample_search">Cihazları axtarın</string>
+    <string name="sample_empty">Uyğun cihaz yoxdur.</string>
+    <string name="sample_unavailable">Cihaz kataloqunu oxumaq mümkün olmadı.</string>
+    <string name="sample_row_sub">Android %1$s · %2$s</string>
+    <string name="sample_row_sub_plain">%1$s</string>
+    <string name="sample_fp_shared">Başqa bir kataloq cihazı ilə eyni barmaq izi</string>
+    <string name="sample_credit">Kataloq məlumatları: COPG (Apache-2.0), %1$s</string>
+    <string name="sample_limit">Profil limitinə (100) çatıldı.</string>
+</resources>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_sample_device_strings.xml -->
+<resources>
+    <string name="sample_pick_title">Veldu sýnishorn tæki</string>
+    <string name="sample_pick_button">Veldu sýnishorn tæki</string>
+    <string name="sample_auto_hint">Að velja tæki fyllir út vörumerki, framleiðanda, gerð, tæki, vöru og fingrafar fyrir þig. Notaðu handbók til að slá þær sjálfur.</string>
+    <string name="sample_manual">Handbók</string>
+    <string name="sample_close">Loka</string>
+    <string name="sample_search">Leitaðu að tækjum</string>
+    <string name="sample_empty">Ekkert samsvarandi tæki.</string>
+    <string name="sample_unavailable">Ekki var hægt að lesa tækjaskrána.</string>
+    <string name="sample_row_sub">Android %1$s · %2$s</string>
+    <string name="sample_row_sub_plain">%1$s</string>
+    <string name="sample_fp_shared">Sama fingrafar og annað vörulistatæki</string>
+    <string name="sample_credit">Vörulistagögn: COPG (Apache-2.0), %1$s</string>
+    <string name="sample_limit">Takmarkinu á prófílnum (100) er náð.</string>
+</resources>

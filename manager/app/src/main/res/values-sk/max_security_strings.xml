@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_security_strings.xml -->
+<resources>
+    <string name="security_tamper_title">Nedá sa spustiť</string>
+    <string name="security_tamper_message">Táto zostava MaxManager nie je neporušená. Nainštalované súbory sa už nezhodujú s podpísaným vydaním, takže sa nespustí. Preinštalujte oficiálnu zostavu z pôvodného zdroja.</string>
+    <string name="security_tamper_close">Zavrieť</string>
+</resources>

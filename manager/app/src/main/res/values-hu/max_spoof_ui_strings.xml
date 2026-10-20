@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_spoof_ui_strings.xml -->
+<resources>
+    <string name="spoof_ui_real_device">Valódi készülék</string>
+    <string name="spoof_ui_pill_verified">Konfig ellenőrizve</string>
+    <string name="spoof_ui_pill_unverified">Nincs ellenőrizve</string>
+    <string name="spoof_ui_pill_off">Le</string>
+    <string name="spoof_device_for_app">Eszköz ehhez az alkalmazáshoz</string>
+    <string name="spoof_device_real_hint">Ez az alkalmazás látja az Ön valódi eszközét. Érintse meg a kártyát az egyik kiválasztásához.</string>
+    <string name="spoof_device_pick">Érintse meg az eszköz kiválasztásához a katalógusból, vagy adja meg az egyéni eszközadatokat.</string>
+    <string name="spoof_device_in_use">Használatban</string>
+    <string name="spoof_device_restart">Ezután indítsa újra a célalkalmazást, ne a rendszert.</string>
+    <string name="spoof_ui_apply_title">Jelentkezzen erre az alkalmazásra</string>
+    <string name="spoof_ui_apply_action">Tekintse át és alkalmazza</string>
+    <string name="spoof_ui_apply_confirm_title">Csak ezt az alkalmazást szeretné alkalmazni?</string>
+    <string name="spoof_ui_apply_confirm_text">Csak ez az alkalmazás van előkészítve; a többi alkalmazás érintetlen. Ezután indítsa újra a célalkalmazást, ne a rendszert. Egy későbbi szerkesztés törli ezt a megerősítést. Ha a COPG már felsorolja ezt az alkalmazást, akkor az eszköz elsőbbséget élvez, és a COPG sor változatlan marad.</string>
+    <string name="spoof_ui_apply_confirm">Alkalmazni</string>
+    <string name="spoof_ui_apply_reason">Motor elutasítása: %1$s</string>
+    <string name="spoof_engine_absent">A motormodul nem olvasható. Erősítse meg azt a modult, amelynek a module.prop-ban az id=COPG szerepel, telepítse vagy telepítse újra, majd nyissa meg újra ezt a képernyőt.</string>
+    <string name="spoof_engine_disabled">A COPG modul le van tiltva a gyökérkezelőben. Ott engedélyezze, indítsa újra, majd alkalmazza újra.</string>
+    <string name="spoof_engine_removal_pending">A COPG eltávolításra van megjelölve, és a következő újraindítás után eltűnik. Alkalmazás előtt telepítse újra.</string>
+    <string name="spoof_engine_update_pending">Egy COPG-frissítés újraindításra vár. Először indítsa újra, majd alkalmazza újra.</string>
+    <string name="spoof_ui_apply_pending">Változott az utolsó jelentkezés óta – alkalmazza újra, hogy valódi legyen.</string>
+    <string name="spoof_ui_restore_title">Használja valódi eszközét</string>
+    <string name="spoof_ui_restore_action">Távolítsa el az alkalmazás hamisságát</string>
+    <string name="spoof_ui_restore_notice">Ennek az alkalmazásnak az elmentett eszköze és a COPG-javításai el lesznek távolítva, a motor pedig átírásra kerül az alkalmazás nélkül. A többi alkalmazás érintetlen. Ezután indítsa újra a célalkalmazást.</string>
+    <string name="app_tab_spoof">Svindli</string>
+    <string name="spoof_picker_title">Válasszon egy eszközt</string>
+    <string name="spoof_picker_custom">Egyedi eszközadatok</string>
+    <string name="spoof_picker_custom_hint">Adja meg az alkalmazáshoz kívánt márkát, modellt és ujjlenyomatot</string>
+    <string name="spoof_custom_title">Egyedi eszközadatok</string>
+    <string name="spoof_custom_rules">A név, a márka, a modell, az eszköz és a termék megadása kötelező, egyenként legfeljebb 120 karakter hosszúságú, vezérlőkarakterek nélkül. A gyártó, az ujjlenyomat és az SDK nem kötelező. Az ujjlenyomatnak ugyanazzal a márkával, termékkel és eszközzel kell kezdődnie.</string>
+    <string name="spoof_manufacturer">Gyártó (MANUFACTURER)</string>
+    <string name="spoof_sdk">SDK-szint, opcionális, 1–100</string>
+    <string name="spoof_custom_invalid">Egyes mezők érvénytelenek. Ellenőrizze a fenti szabályokat, majd mentse újra.</string>
+    <string name="spoof_custom_save">Mentse el és válassza ki ezt az alkalmazást</string>
+    <string name="spoof_impersonation_title">Hamisítás</string>
+    <string name="spoof_impersonation_desc">Csak ingyenes COPG opciók. Írta a motorra a Tekintse át és alkalmazza.</string>
+    <string name="spoof_impersonation_summary_cpu">CPU hamisítás: %1$s</string>
+    <string name="spoof_impersonation_needs_device">Először válasszon eszközt ehhez az alkalmazáshoz. Ezek az opciók csak egy készülékkel vannak kiírva.</string>
+    <string name="spoof_cpu_spoof">CPU hamisítás</string>
+    <string name="spoof_cpu_real">Igazi CPU</string>
+    <string name="spoof_cpu_block">CPU blokk</string>
+    <string name="spoof_cpu_block_desc">Kizárja ezt az alkalmazást a CPU hamisításból.</string>
+    <string name="spoof_cpu_picker_title">Válasszon egy CPU-t</string>
+    <string name="copg_tweaks_section">COPG finomítások</string>
+    <string name="copg_tweak_nolog_title">Naplózás letiltása</string>
+    <string name="copg_tweak_nolog_desc">Alkalmazza a COPG naplózási módosítását erre az alkalmazásra. Ide mentve, az áttekintés és alkalmazás a Hamis lapon írt a motorba.</string>
+    <string name="copg_tweak_dab_title">Az automatikus fényerő kikapcsolása</string>
+    <string name="copg_tweak_dab_desc">Alkalmazza a COPG automatikus fényerő-beállítását erre az alkalmazásra. Ide mentve, az áttekintés és alkalmazás a Hamis lapon írt a motorba.</string>
+    <string name="copg_tweak_kso_title">Tartsa bekapcsolva a képernyőt</string>
+    <string name="copg_tweak_kso_desc">Alkalmazza a COPG képernyőntartási beállítását erre az alkalmazásra. Ide mentve, az áttekintés és alkalmazás a Hamis lapon írt a motorba.</string>
+    <string name="copg_tweak_needs_device">Ehhez az alkalmazáshoz először eszközre van szüksége a Spoof lapon.</string>
+</resources>

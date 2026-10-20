@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_security_strings.xml -->
+<resources>
+    <string name="security_tamper_title">Nije moguće pokrenuti</string>
+    <string name="security_tamper_message">Ova verzija MaxManager nije netaknuta. Instalirane datoteke više ne odgovaraju potpisanom izdanju, tako da se neće pokrenuti. Ponovo instalirajte službenu verziju iz originalnog izvora.</string>
+    <string name="security_tamper_close">Zatvori</string>
+</resources>

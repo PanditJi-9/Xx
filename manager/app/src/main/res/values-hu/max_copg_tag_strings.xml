@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_copg_tag_strings.xml -->
+<resources>
+    <string name="copg_tags_title">COPG opciók</string>
+    <string name="copg_tags_desc">Szándékként mentve és az eszközprofillal együtt írva. Csak a négy kényelmi opció működik minden COPG-változaton; a többihez COPG 6.8.0 vagy újabb szükséges. A PRO opciókhoz COPG PRO licenc szükséges, és a motor figyelmen kívül hagyhatja őket.</string>
+    <string name="copg_tier_pro">PRO</string>
+    <string name="copg_footprint_resident">az alkalmazás memóriájában marad, soha ne használja csalás elleni játékokkal</string>
+    <string name="copg_need_ack">először ismerje el az alábbi kockázatot</string>
+    <string name="copg_tag_refused">A kiválasztott COPG-opció nem engedélyezett a telepített COPG-verzióhoz. Semmit nem írtak.</string>
+    <string name="copg_tag_needs_device">Az opciók eszközprofillal vannak írva, és ez az alkalmazás még nem rendelkezik ilyennel.</string>
+    <string name="copg_tag_value_hint">Érték</string>
+    <string name="copg_tag_bad_value">Betűk, számjegyek, szóköz és . Csak _ - / + (legfeljebb 60)</string>
+    <string name="copg_tag_save">Megtakarítás</string>
+    <string name="copg_tag_remove">Távolítsa el</string>
+    <string name="copg_tag_dnd">Ne zavarjanak játék közben</string>
+    <string name="copg_tag_dab">Az automatikus fényerő kikapcsolása</string>
+    <string name="copg_tag_kso">Tartsa bekapcsolva a képernyőt</string>
+    <string name="copg_tag_nolog">Állítsa le a naplózást</string>
+    <string name="copg_tag_dpi">Képernyő DPI</string>
+    <string name="copg_tag_serial">Alkalmazásonkénti sorozatszám</string>
+    <string name="copg_tag_cpu">CPU modell</string>
+    <string name="copg_tag_blocked">Kényszerítse az igazi CPU-t</string>
+    <string name="copg_tag_vpn">VPN elrejtése</string>
+    <string name="copg_tag_vpns">VPN elrejtése (szigorú)</string>
+    <string name="copg_tag_hidedev">Fejlesztői beállítások és USB-hibakeresés elrejtése</string>
+    <string name="copg_tag_tz">Időzóna</string>
+    <string name="copg_tag_lang">Nyelv és régió</string>
+    <string name="copg_tag_gpu">GPU modell</string>
+    <string name="copg_tag_cow">Építési tulajdonságok (másolás-írás)</string>
+    <string name="copg_tag_aid">Android ID</string>
+    <string name="copg_tag_gaid">Reklám ID</string>
+    <string name="copg_tag_appset">Alkalmazáskészlet ID</string>
+    <string name="copg_tag_drm">Widevine / DRM</string>
+    <string name="copg_tag_imei">IMEI</string>
+    <string name="copg_tag_sim">SIM-szolgáltató (széf)</string>
+    <string name="copg_tag_simx">SIM-szolgáltató (agresszív)</string>
+    <string name="copg_tag_ua">WebView User-Agent</string>
+    <string name="copg_tag_mock">Hamis hely elrejtése</string>
+</resources>

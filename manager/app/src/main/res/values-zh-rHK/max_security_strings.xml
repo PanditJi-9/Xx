@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_security_strings.xml -->
+<resources>
+    <string name="security_tamper_title">无法启动</string>
+    <string name="security_tamper_message">这个 MaxManager 的构建并不完整。安装的文件不再与签名的版本匹配，因此它将无法运行。从原始来源重新安装官方版本。</string>
+    <string name="security_tamper_close">关闭</string>
+</resources>

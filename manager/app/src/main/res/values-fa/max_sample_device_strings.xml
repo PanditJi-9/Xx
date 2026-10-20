@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_sample_device_strings.xml -->
+<resources>
+    <string name="sample_pick_title">دستگاه نمونه را انتخاب کنید</string>
+    <string name="sample_pick_button">دستگاه نمونه را انتخاب کنید</string>
+    <string name="sample_auto_hint">انتخاب یک دستگاه برند، سازنده، مدل، دستگاه، محصول و اثر انگشت را برای شما پر می کند. از Manual برای تایپ خودتان استفاده کنید.</string>
+    <string name="sample_manual">دستی</string>
+    <string name="sample_close">بستن</string>
+    <string name="sample_search">جستجوی دستگاه ها</string>
+    <string name="sample_empty">دستگاه منطبق وجود ندارد.</string>
+    <string name="sample_unavailable">کاتالوگ دستگاه قابل خواندن نیست.</string>
+    <string name="sample_row_sub">اندروید %1$s · %2$s</string>
+    <string name="sample_row_sub_plain">%1$s</string>
+    <string name="sample_fp_shared">اثر انگشت مشابه دستگاه کاتالوگ دیگر</string>
+    <string name="sample_credit">اطلاعات کاتالوگ: COPG (Apache-2.0)، %1$s</string>
+    <string name="sample_limit">به حد مجاز پروفایل (100) رسیده است.</string>
+</resources>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_security_strings.xml -->
+<resources>
+    <string name="security_tamper_title">Немагчыма запусціць</string>
+    <string name="security_tamper_message">Гэтая зборка MaxManager не захавалася. Усталяваныя файлы больш не адпавядаюць падпісанаму выпуску, таму ён не будзе запушчаны. Пераўсталюйце афіцыйную зборку з першакрыніцы.</string>
+    <string name="security_tamper_close">Блізка</string>
+</resources>

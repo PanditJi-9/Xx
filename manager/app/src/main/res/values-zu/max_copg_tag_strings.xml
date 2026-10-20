@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_copg_tag_strings.xml -->
+<resources>
+    <string name="copg_tags_title">Izinketho ze-COPG</string>
+    <string name="copg_tags_desc">Kulondolozwe njengenhloso futhi kubhalwe kanye nephrofayela yedivayisi. Izinketho ezine zokunethezeka kuphela ezisebenza kuzo zonke izinguqulo ze-COPG; abanye badinga i-COPG 6.8.0 noma entsha. Izinketho ze-PRO zidinga ilayisense ye-COPG PRO, futhi injini ingase ingazinaki.</string>
+    <string name="copg_tier_pro">PRO</string>
+    <string name="copg_footprint_resident">ihlala enkumbulweni yohlelo lokusebenza, ungalokothi usebenzise nemidlalo emelene nokukopela</string>
+    <string name="copg_need_ack">vuma ubungozi obungezansi kuqala</string>
+    <string name="copg_tag_refused">Inketho ye-COPG ekhethiwe ayivunyelwe enguqulweni efakiwe ye-COPG. Akukho okubhaliwe.</string>
+    <string name="copg_tag_needs_device">Izinketho zibhalwa ngephrofayela yedivayisi, futhi lolu hlelo lokusebenza alunayo okwamanje.</string>
+    <string name="copg_tag_value_hint">Inani</string>
+    <string name="copg_tag_bad_value">Izinhlamvu, amadijithi, isikhala kanye . _ - / + kuphela (kufika ku-60)</string>
+    <string name="copg_tag_save">Londoloza</string>
+    <string name="copg_tag_remove">Susa</string>
+    <string name="copg_tag_dnd">Ungaphazamisi ngenkathi udlala</string>
+    <string name="copg_tag_dab">Khubaza ukukhanya okuzenzakalelayo</string>
+    <string name="copg_tag_kso">Gcina isikrini sivuliwe</string>
+    <string name="copg_tag_nolog">Misa ukugawula</string>
+    <string name="copg_tag_dpi">Isikrini se-DPI</string>
+    <string name="copg_tag_serial">Inombolo ye-serial yohlelo lokusebenza ngalunye</string>
+    <string name="copg_tag_cpu">CPU imodeli</string>
+    <string name="copg_tag_blocked">Phoqa okwangempela CPU</string>
+    <string name="copg_tag_vpn">Fihla i-VPN</string>
+    <string name="copg_tag_vpns">Fihla i-VPN (iqinile)</string>
+    <string name="copg_tag_hidedev">Fihla Izinketho Zonjiniyela kanye nokulungisa iphutha le-USB</string>
+    <string name="copg_tag_tz">Indawo yesikhathi</string>
+    <string name="copg_tag_lang">Ulimi nesifunda</string>
+    <string name="copg_tag_gpu">GPU imodeli</string>
+    <string name="copg_tag_cow">Izakhiwo zokwakha (kopisha-ubhale)</string>
+    <string name="copg_tag_aid">I-Android ID</string>
+    <string name="copg_tag_gaid">Ukukhangisa ID</string>
+    <string name="copg_tag_appset">Isethi Yohlelo Lokusebenza ID</string>
+    <string name="copg_tag_drm">I-Widevine / DRM</string>
+    <string name="copg_tag_imei">I-IMEI</string>
+    <string name="copg_tag_sim">Inkampani yenethiwekhi ye-SIM (iphephile)</string>
+    <string name="copg_tag_simx">Inkampani yenethiwekhi ye-SIM (inolaka)</string>
+    <string name="copg_tag_ua">I-WebView User-Agent</string>
+    <string name="copg_tag_mock">Fihla indawo mbumbulu</string>
+</resources>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_spoof_ui_strings.xml -->
+<resources>
+    <string name="spoof_ui_real_device">Verklig enhet</string>
+    <string name="spoof_ui_pill_verified">Config verifierad</string>
+    <string name="spoof_ui_pill_unverified">Ej verifierad</string>
+    <string name="spoof_ui_pill_off">Av</string>
+    <string name="spoof_device_for_app">Enhet för den här appen</string>
+    <string name="spoof_device_real_hint">Den här appen ser din riktiga enhet. Tryck på kortet för att välja ett.</string>
+    <string name="spoof_device_pick">Tryck för att välja en enhet från katalogen eller ange anpassad enhetsinformation.</string>
+    <string name="spoof_device_in_use">I bruk</string>
+    <string name="spoof_device_restart">Starta om målappen efteråt, inte systemet.</string>
+    <string name="spoof_ui_apply_title">Ansök om denna app</string>
+    <string name="spoof_ui_apply_action">Granska och ansök</string>
+    <string name="spoof_ui_apply_confirm_title">Vill du bara använda den här appen?</string>
+    <string name="spoof_ui_apply_confirm_text">Endast denna app är förberedd; andra appar är orörda. Starta om målappen efteråt, inte systemet. En senare redigering avbryter denna bekräftelse. Om COPG redan listar den här appen har din enhet prioritet och COPG-linjen förblir som den är.</string>
+    <string name="spoof_ui_apply_confirm">Tillämpas</string>
+    <string name="spoof_ui_apply_reason">Motorvägran: %1$s</string>
+    <string name="spoof_engine_absent">Motormodulen är inte läsbar. Bekräfta en modul vars module.prop säger id=COPG, installera eller installera om den och öppna sedan den här skärmen igen.</string>
+    <string name="spoof_engine_disabled">COPG-modulen är inaktiverad i din rothanterare. Aktivera det där, starta om och använd sedan igen.</string>
+    <string name="spoof_engine_removal_pending">COPG är markerat för borttagning och kommer att försvinna efter nästa omstart. Installera om det innan du applicerar.</string>
+    <string name="spoof_engine_update_pending">En COPG-uppdatering väntar på en omstart. Starta om först och ansök sedan igen.</string>
+    <string name="spoof_ui_apply_pending">Ändrat sedan den senaste tillämpningen – använd igen för att göra det verkligt.</string>
+    <string name="spoof_ui_restore_title">Använd din riktiga enhet</string>
+    <string name="spoof_ui_restore_action">Ta bort spoof för den här appen</string>
+    <string name="spoof_ui_restore_notice">Den här appens sparade enhet och dess COPG-justeringar tas bort och motorn skrivs om utan denna app. Andra appar är orörda. Starta om målappen efteråt.</string>
+    <string name="app_tab_spoof">Parodi</string>
+    <string name="spoof_picker_title">Välj en enhet</string>
+    <string name="spoof_picker_custom">Anpassad enhetsinformation</string>
+    <string name="spoof_picker_custom_hint">Ange märke, modell och fingeravtryck du vill ha för den här appen</string>
+    <string name="spoof_custom_title">Anpassad enhetsinformation</string>
+    <string name="spoof_custom_rules">Namn, märke, modell, enhet och produkt krävs, upp till 120 tecken vardera, utan kontrolltecken. Tillverkare, fingeravtryck och SDK är valfria. Ett fingeravtryck måste börja med samma varumärke, produkt och enhet.</string>
+    <string name="spoof_manufacturer">Tillverkare (MANUFACTURER)</string>
+    <string name="spoof_sdk">SDK-nivå, valfritt, 1 till 100</string>
+    <string name="spoof_custom_invalid">Vissa fält är ogiltiga. Kontrollera reglerna ovan och spara sedan igen.</string>
+    <string name="spoof_custom_save">Spara och välj för den här appen</string>
+    <string name="spoof_impersonation_title">Spoofing</string>
+    <string name="spoof_impersonation_desc">Endast gratis COPG-alternativ. Skrivet till motorn av Granska och ansök.</string>
+    <string name="spoof_impersonation_summary_cpu">CPU spoofing: %1$s</string>
+    <string name="spoof_impersonation_needs_device">Välj en enhet för den här appen först. Dessa alternativ skrivs endast med en enhet.</string>
+    <string name="spoof_cpu_spoof">CPU spoofing</string>
+    <string name="spoof_cpu_real">Riktigt CPU</string>
+    <string name="spoof_cpu_block">Blockera CPU</string>
+    <string name="spoof_cpu_block_desc">Utesluter denna app från CPU spoofing.</string>
+    <string name="spoof_cpu_picker_title">Välj en CPU</string>
+    <string name="copg_tweaks_section">COPG-justeringar</string>
+    <string name="copg_tweak_nolog_title">Inaktivera loggning</string>
+    <string name="copg_tweak_nolog_desc">Tillämpar COPG-loggningsjusteringen på den här appen. Sparad här, skriven till motorn av Granska och ansök på fliken Spoof.</string>
+    <string name="copg_tweak_dab_title">Inaktivera automatisk ljusstyrka</string>
+    <string name="copg_tweak_dab_desc">Tillämpar COPG-justeringen av automatisk ljusstyrka på den här appen. Sparad här, skriven till motorn av Granska och ansök på fliken Spoof.</string>
+    <string name="copg_tweak_kso_title">Håll skärmen på</string>
+    <string name="copg_tweak_kso_desc">Tillämpar COPG keep-screen-on tweak på den här appen. Sparad här, skriven till motorn av Granska och ansök på fliken Spoof.</string>
+    <string name="copg_tweak_needs_device">Behöver en enhet för den här appen först, på fliken Spoof.</string>
+</resources>

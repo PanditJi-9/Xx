@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_spoof_ui_strings.xml -->
+<resources>
+    <string name="spoof_ui_real_device">ನಿಜವಾದ ಸಾಧನ</string>
+    <string name="spoof_ui_pill_verified">ಸಂರಚನೆಯನ್ನು ಪರಿಶೀಲಿಸಲಾಗಿದೆ</string>
+    <string name="spoof_ui_pill_unverified">ಪರಿಶೀಲಿಸಲಾಗಿಲ್ಲ</string>
+    <string name="spoof_ui_pill_off">ಆಫ್</string>
+    <string name="spoof_device_for_app">ಈ ಅಪ್ಲಿಕೇಶನ್‌ಗಾಗಿ ಸಾಧನ</string>
+    <string name="spoof_device_real_hint">ಈ ಅಪ್ಲಿಕೇಶನ್ ನಿಮ್ಮ ನಿಜವಾದ ಸಾಧನವನ್ನು ನೋಡುತ್ತದೆ. ಒಂದನ್ನು ಆಯ್ಕೆ ಮಾಡಲು ಕಾರ್ಡ್ ಅನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ.</string>
+    <string name="spoof_device_pick">ಕ್ಯಾಟಲಾಗ್‌ನಿಂದ ಸಾಧನವನ್ನು ಆಯ್ಕೆ ಮಾಡಲು ಟ್ಯಾಪ್ ಮಾಡಿ ಅಥವಾ ಕಸ್ಟಮ್ ಸಾಧನದ ಮಾಹಿತಿಯನ್ನು ನಮೂದಿಸಿ.</string>
+    <string name="spoof_device_in_use">ಬಳಕೆಯಲ್ಲಿದೆ</string>
+    <string name="spoof_device_restart">ಗುರಿ ಅಪ್ಲಿಕೇಶನ್ ಅನ್ನು ನಂತರ ಮರುಪ್ರಾರಂಭಿಸಿ, ಸಿಸ್ಟಮ್ ಅಲ್ಲ.</string>
+    <string name="spoof_ui_apply_title">ಈ ಅಪ್ಲಿಕೇಶನ್‌ಗೆ ಅರ್ಜಿ ಸಲ್ಲಿಸಿ</string>
+    <string name="spoof_ui_apply_action">ಪರಿಶೀಲಿಸಿ ಮತ್ತು ಅನ್ವಯಿಸಿ</string>
+    <string name="spoof_ui_apply_confirm_title">ಈ ಅಪ್ಲಿಕೇಶನ್ ಅನ್ನು ಮಾತ್ರ ಅನ್ವಯಿಸುವುದೇ?</string>
+    <string name="spoof_ui_apply_confirm_text">ಈ ಅಪ್ಲಿಕೇಶನ್ ಅನ್ನು ಮಾತ್ರ ಸಿದ್ಧಪಡಿಸಲಾಗಿದೆ; ಇತರ ಅಪ್ಲಿಕೇಶನ್‌ಗಳು ಅಸ್ಪೃಶ್ಯವಾಗಿವೆ. ಗುರಿ ಅಪ್ಲಿಕೇಶನ್ ಅನ್ನು ನಂತರ ಮರುಪ್ರಾರಂಭಿಸಿ, ಸಿಸ್ಟಮ್ ಅಲ್ಲ. ನಂತರದ ಸಂಪಾದನೆಯು ಈ ದೃಢೀಕರಣವನ್ನು ರದ್ದುಗೊಳಿಸುತ್ತದೆ. COPG ಈಗಾಗಲೇ ಈ ಅಪ್ಲಿಕೇಶನ್ ಅನ್ನು ಪಟ್ಟಿ ಮಾಡಿದ್ದರೆ, ನಿಮ್ಮ ಸಾಧನವು ಆದ್ಯತೆಯನ್ನು ತೆಗೆದುಕೊಳ್ಳುತ್ತದೆ ಮತ್ತು COPG ಲೈನ್ ಹಾಗೆಯೇ ಇರುತ್ತದೆ.</string>
+    <string name="spoof_ui_apply_confirm">ಅನ್ವಯಿಸು</string>
+    <string name="spoof_ui_apply_reason">ಎಂಜಿನ್ ನಿರಾಕರಣೆ: %1$s</string>
+    <string name="spoof_engine_absent">ಎಂಜಿನ್ ಮಾಡ್ಯೂಲ್ ಅನ್ನು ಓದಲಾಗುವುದಿಲ್ಲ. module.prop id=COPG ಎಂದು ಹೇಳುವ ಮಾಡ್ಯೂಲ್ ಅನ್ನು ದೃಢೀಕರಿಸಿ, ಅದನ್ನು ಸ್ಥಾಪಿಸಿ ಅಥವಾ ಮರುಸ್ಥಾಪಿಸಿ, ನಂತರ ಈ ಪರದೆಯನ್ನು ಪುನಃ ತೆರೆಯಿರಿ.</string>
+    <string name="spoof_engine_disabled">ನಿಮ್ಮ ರೂಟ್ ಮ್ಯಾನೇಜರ್‌ನಲ್ಲಿ COPG ಮಾಡ್ಯೂಲ್ ಅನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ. ಅಲ್ಲಿ ಅದನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ, ರೀಬೂಟ್ ಮಾಡಿ, ನಂತರ ಮತ್ತೆ ಅನ್ವಯಿಸಿ.</string>
+    <string name="spoof_engine_removal_pending">COPG ಅನ್ನು ತೆಗೆದುಹಾಕಲು ಗುರುತಿಸಲಾಗಿದೆ ಮತ್ತು ಮುಂದಿನ ರೀಬೂಟ್ ನಂತರ ಅದು ಕಣ್ಮರೆಯಾಗುತ್ತದೆ. ಅನ್ವಯಿಸುವ ಮೊದಲು ಅದನ್ನು ಮರುಸ್ಥಾಪಿಸಿ.</string>
+    <string name="spoof_engine_update_pending">COPG ನವೀಕರಣವು ರೀಬೂಟ್‌ಗಾಗಿ ಕಾಯುತ್ತಿದೆ. ಮೊದಲು ರೀಬೂಟ್ ಮಾಡಿ, ನಂತರ ಮತ್ತೆ ಅನ್ವಯಿಸಿ.</string>
+    <string name="spoof_ui_apply_pending">ಕೊನೆಯದಾಗಿ ಅನ್ವಯಿಸಿದಾಗಿನಿಂದ ಬದಲಾಯಿಸಲಾಗಿದೆ - ಅದನ್ನು ನಿಜ ಮಾಡಲು ಮತ್ತೊಮ್ಮೆ ಅನ್ವಯಿಸಿ.</string>
+    <string name="spoof_ui_restore_title">ನಿಮ್ಮ ನಿಜವಾದ ಸಾಧನವನ್ನು ಬಳಸಿ</string>
+    <string name="spoof_ui_restore_action">ಈ ಅಪ್ಲಿಕೇಶನ್‌ಗಾಗಿ ವಂಚನೆಯನ್ನು ತೆಗೆದುಹಾಕಿ</string>
+    <string name="spoof_ui_restore_notice">ಈ ಅಪ್ಲಿಕೇಶನ್‌ನ ಉಳಿಸಿದ ಸಾಧನ ಮತ್ತು ಅದರ COPG ಟ್ವೀಕ್‌ಗಳನ್ನು ತೆಗೆದುಹಾಕಲಾಗಿದೆ ಮತ್ತು ಈ ಅಪ್ಲಿಕೇಶನ್ ಇಲ್ಲದೆ ಎಂಜಿನ್ ಅನ್ನು ಪುನಃ ಬರೆಯಲಾಗುತ್ತದೆ. ಇತರ ಅಪ್ಲಿಕೇಶನ್‌ಗಳು ಅಸ್ಪೃಶ್ಯವಾಗಿವೆ. ಗುರಿ ಅಪ್ಲಿಕೇಶನ್ ಅನ್ನು ನಂತರ ಮರುಪ್ರಾರಂಭಿಸಿ.</string>
+    <string name="app_tab_spoof">ವಂಚನೆ</string>
+    <string name="spoof_picker_title">ಸಾಧನವನ್ನು ಆಯ್ಕೆಮಾಡಿ</string>
+    <string name="spoof_picker_custom">ಕಸ್ಟಮ್ ಸಾಧನ ಮಾಹಿತಿ</string>
+    <string name="spoof_picker_custom_hint">ಈ ಅಪ್ಲಿಕೇಶನ್‌ಗಾಗಿ ನೀವು ಬಯಸುವ ಬ್ರ್ಯಾಂಡ್, ಮಾದರಿ ಮತ್ತು ಫಿಂಗರ್‌ಪ್ರಿಂಟ್ ಅನ್ನು ನಮೂದಿಸಿ</string>
+    <string name="spoof_custom_title">ಕಸ್ಟಮ್ ಸಾಧನ ಮಾಹಿತಿ</string>
+    <string name="spoof_custom_rules">ಹೆಸರು, ಬ್ರ್ಯಾಂಡ್, ಮಾದರಿ, ಸಾಧನ ಮತ್ತು ಉತ್ಪನ್ನದ ಅಗತ್ಯವಿದೆ, ಪ್ರತಿಯೊಂದೂ 120 ಅಕ್ಷರಗಳವರೆಗೆ ಯಾವುದೇ ನಿಯಂತ್ರಣ ಅಕ್ಷರಗಳಿಲ್ಲದೆ. ತಯಾರಕರು, ಫಿಂಗರ್‌ಪ್ರಿಂಟ್ ಮತ್ತು SDK ಐಚ್ಛಿಕವಾಗಿರುತ್ತದೆ. ಫಿಂಗರ್‌ಪ್ರಿಂಟ್ ಒಂದೇ ಬ್ರ್ಯಾಂಡ್, ಉತ್ಪನ್ನ ಮತ್ತು ಸಾಧನದೊಂದಿಗೆ ಪ್ರಾರಂಭವಾಗಬೇಕು.</string>
+    <string name="spoof_manufacturer">ತಯಾರಕ (ತಯಾರಕ)</string>
+    <string name="spoof_sdk">SDK ಮಟ್ಟ, ಐಚ್ಛಿಕ, 1 ರಿಂದ 100</string>
+    <string name="spoof_custom_invalid">ಕೆಲವು ಕ್ಷೇತ್ರಗಳು ಅಮಾನ್ಯವಾಗಿವೆ. ಮೇಲಿನ ನಿಯಮಗಳನ್ನು ಪರಿಶೀಲಿಸಿ, ನಂತರ ಮತ್ತೆ ಉಳಿಸಿ.</string>
+    <string name="spoof_custom_save">ಈ ಅಪ್ಲಿಕೇಶನ್‌ಗಾಗಿ ಉಳಿಸಿ ಮತ್ತು ಆಯ್ಕೆಮಾಡಿ</string>
+    <string name="spoof_impersonation_title">ವಂಚನೆ</string>
+    <string name="spoof_impersonation_desc">ಉಚಿತ COPG ಆಯ್ಕೆಗಳು ಮಾತ್ರ. ವಿಮರ್ಶೆ ಮತ್ತು ಅರ್ಜಿ ಮೂಲಕ ಎಂಜಿನ್‌ಗೆ ಬರೆಯಲಾಗಿದೆ.</string>
+    <string name="spoof_impersonation_summary_cpu">CPU ವಂಚನೆ: %1$s</string>
+    <string name="spoof_impersonation_needs_device">ಮೊದಲು ಈ ಅಪ್ಲಿಕೇಶನ್‌ಗಾಗಿ ಸಾಧನವನ್ನು ಆಯ್ಕೆಮಾಡಿ. ಈ ಆಯ್ಕೆಗಳನ್ನು ಸಾಧನದೊಂದಿಗೆ ಮಾತ್ರ ಬರೆಯಲಾಗುತ್ತದೆ.</string>
+    <string name="spoof_cpu_spoof">CPU ವಂಚನೆ</string>
+    <string name="spoof_cpu_real">ನಿಜವಾದ CPU</string>
+    <string name="spoof_cpu_block">ಬ್ಲಾಕ್ CPU</string>
+    <string name="spoof_cpu_block_desc">CPU ವಂಚನೆಯಿಂದ ಈ ಅಪ್ಲಿಕೇಶನ್ ಅನ್ನು ಹೊರತುಪಡಿಸುತ್ತದೆ.</string>
+    <string name="spoof_cpu_picker_title">CPU ಆಯ್ಕೆಮಾಡಿ</string>
+    <string name="copg_tweaks_section">COPG ಟ್ವೀಕ್‌ಗಳು</string>
+    <string name="copg_tweak_nolog_title">ಲಾಗಿಂಗ್ ಅನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ</string>
+    <string name="copg_tweak_nolog_desc">ಈ ಅಪ್ಲಿಕೇಶನ್‌ಗೆ COPG ಲಾಗಿಂಗ್ ಟ್ವೀಕ್ ಅನ್ನು ಅನ್ವಯಿಸುತ್ತದೆ. ಇಲ್ಲಿ ಉಳಿಸಲಾಗಿದೆ, ವಿಮರ್ಶೆ ಮೂಲಕ ಎಂಜಿನ್‌ಗೆ ಬರೆಯಲಾಗಿದೆ ಮತ್ತು ಸ್ಪೂಫ್ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ಅನ್ವಯಿಸಿ.</string>
+    <string name="copg_tweak_dab_title">ಸ್ವಯಂ-ಪ್ರಕಾಶಮಾನವನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ</string>
+    <string name="copg_tweak_dab_desc">ಈ ಅಪ್ಲಿಕೇಶನ್‌ಗೆ COPG ಸ್ವಯಂ-ಪ್ರಕಾಶಮಾನದ ಟ್ವೀಕ್ ಅನ್ನು ಅನ್ವಯಿಸುತ್ತದೆ. ಇಲ್ಲಿ ಉಳಿಸಲಾಗಿದೆ, ವಿಮರ್ಶೆ ಮೂಲಕ ಎಂಜಿನ್‌ಗೆ ಬರೆಯಲಾಗಿದೆ ಮತ್ತು ಸ್ಪೂಫ್ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ಅನ್ವಯಿಸಿ.</string>
+    <string name="copg_tweak_kso_title">ಪರದೆಯನ್ನು ಆನ್ ಮಾಡಿ</string>
+    <string name="copg_tweak_kso_desc">ಈ ಅಪ್ಲಿಕೇಶನ್‌ಗೆ COPG ಕೀಪ್-ಸ್ಕ್ರೀನ್-ಆನ್ ಟ್ವೀಕ್ ಅನ್ನು ಅನ್ವಯಿಸುತ್ತದೆ. ಇಲ್ಲಿ ಉಳಿಸಲಾಗಿದೆ, ವಿಮರ್ಶೆ ಮೂಲಕ ಎಂಜಿನ್‌ಗೆ ಬರೆಯಲಾಗಿದೆ ಮತ್ತು ಸ್ಪೂಫ್ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ಅನ್ವಯಿಸಿ.</string>
+    <string name="copg_tweak_needs_device">ಸ್ಪೂಫ್ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ಈ ಅಪ್ಲಿಕೇಶನ್‌ಗೆ ಮೊದಲು ಸಾಧನದ ಅಗತ್ಯವಿದೆ.</string>
+</resources>

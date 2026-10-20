@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_copg_tag_strings.xml -->
+<resources>
+    <string name="copg_tags_title">Opsionet COPG</string>
+    <string name="copg_tags_desc">Ruajtur si qëllim dhe shkruhet së bashku me profilin e pajisjes. Vetëm katër opsionet e rehatisë funksionojnë në çdo version COPG; pjesa tjetër ka nevojë për COPG 6.8.0 ose më të ri. Opsionet PRO kanë nevojë për një licencë COPG PRO dhe motori mund t\'i injorojë ato.</string>
+    <string name="copg_tier_pro">PRO</string>
+    <string name="copg_footprint_resident">qëndron në kujtesën e aplikacionit, mos përdorni kurrë me lojëra kundër mashtrimit</string>
+    <string name="copg_need_ack">së pari pranoni rrezikun e mëposhtëm</string>
+    <string name="copg_tag_refused">Një opsion i zgjedhur COPG nuk lejohet për versionin e instaluar COPG. Asgjë nuk ishte shkruar.</string>
+    <string name="copg_tag_needs_device">Opsionet janë shkruar me një profil pajisjeje dhe ky aplikacion nuk ka ende asnjë.</string>
+    <string name="copg_tag_value_hint">Vlera</string>
+    <string name="copg_tag_bad_value">Shkronjat, shifrat, hapësira dhe . Vetëm _ - / + (deri në 60)</string>
+    <string name="copg_tag_save">Ruaj</string>
+    <string name="copg_tag_remove">Hiq</string>
+    <string name="copg_tag_dnd">Mos shqetëso gjatë lojës</string>
+    <string name="copg_tag_dab">Çaktivizo ndriçimin automatik</string>
+    <string name="copg_tag_kso">Mbaje ekranin të ndezur</string>
+    <string name="copg_tag_nolog">Ndalo regjistrimin</string>
+    <string name="copg_tag_dpi">DPI e ekranit</string>
+    <string name="copg_tag_serial">Numri serial për aplikacion</string>
+    <string name="copg_tag_cpu">Modeli CPU</string>
+    <string name="copg_tag_blocked">Forco CPU realen</string>
+    <string name="copg_tag_vpn">Fshih VPN</string>
+    <string name="copg_tag_vpns">Fshih VPN (rreptësisht)</string>
+    <string name="copg_tag_hidedev">Fshih opsionet e zhvilluesit dhe korrigjimin e USB</string>
+    <string name="copg_tag_tz">Zona kohore</string>
+    <string name="copg_tag_lang">Gjuha dhe rajoni</string>
+    <string name="copg_tag_gpu">Modeli GPU</string>
+    <string name="copg_tag_cow">Ndërtoni vetitë (kopjoni në shkrim)</string>
+    <string name="copg_tag_aid">Android ID</string>
+    <string name="copg_tag_gaid">Reklamim ID</string>
+    <string name="copg_tag_appset">Seti i aplikacioneve ID</string>
+    <string name="copg_tag_drm">Widevine / DRM</string>
+    <string name="copg_tag_imei">IMEI</string>
+    <string name="copg_tag_sim">Transportuesi SIM (i sigurt)</string>
+    <string name="copg_tag_simx">Transportuesi SIM (agresiv)</string>
+    <string name="copg_tag_ua">Agjenti i Përdoruesit në WebView</string>
+    <string name="copg_tag_mock">Fshih vendndodhjen mashtruese</string>
+</resources>

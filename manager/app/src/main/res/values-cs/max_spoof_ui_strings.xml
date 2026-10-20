@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_spoof_ui_strings.xml -->
+<resources>
+    <string name="spoof_ui_real_device">Skutečné zařízení</string>
+    <string name="spoof_ui_pill_verified">Konfigurace ověřena</string>
+    <string name="spoof_ui_pill_unverified">Neověřeno</string>
+    <string name="spoof_ui_pill_off">Vypnuto</string>
+    <string name="spoof_device_for_app">Zařízení pro tuto aplikaci</string>
+    <string name="spoof_device_real_hint">Tato aplikace vidí vaše skutečné zařízení. Klepnutím na kartu jednu vyberte.</string>
+    <string name="spoof_device_pick">Klepnutím vyberte zařízení z katalogu nebo zadejte vlastní informace o zařízení.</string>
+    <string name="spoof_device_in_use">Používá se</string>
+    <string name="spoof_device_restart">Poté restartujte cílovou aplikaci, nikoli systém.</string>
+    <string name="spoof_ui_apply_title">Požádejte o tuto aplikaci</string>
+    <string name="spoof_ui_apply_action">Zkontrolujte a požádejte</string>
+    <string name="spoof_ui_apply_confirm_title">Použít pouze tuto aplikaci?</string>
+    <string name="spoof_ui_apply_confirm_text">Připravena je pouze tato aplikace; ostatní aplikace jsou nedotčené. Poté restartujte cílovou aplikaci, nikoli systém. Pozdější úprava toto potvrzení zruší. Pokud COPG již tuto aplikaci uvádí, vaše zařízení bude mít prioritu a řádek COPG zůstane tak, jak je.</string>
+    <string name="spoof_ui_apply_confirm">Použít</string>
+    <string name="spoof_ui_apply_reason">Odmítnutí motoru: %1$s</string>
+    <string name="spoof_engine_absent">Modul motoru není čitelný. Potvrďte modul, jehož module.prop říká id=COPG, nainstalujte jej nebo znovu nainstalujte a poté znovu otevřete tuto obrazovku.</string>
+    <string name="spoof_engine_disabled">Modul COPG je ve vašem root manageru zakázán. Povolte jej tam, restartujte a znovu použijte.</string>
+    <string name="spoof_engine_removal_pending">COPG je označeno k odstranění a po příštím restartu zmizí. Před aplikací jej znovu nainstalujte.</string>
+    <string name="spoof_engine_update_pending">Aktualizace COPG čeká na restart. Nejprve restartujte a poté znovu použijte.</string>
+    <string name="spoof_ui_apply_pending">Změněno od poslední aplikace – aplikujte znovu, aby to bylo skutečné.</string>
+    <string name="spoof_ui_restore_title">Použijte své skutečné zařízení</string>
+    <string name="spoof_ui_restore_action">Odebrat spoof pro tuto aplikaci</string>
+    <string name="spoof_ui_restore_notice">Uložené zařízení této aplikace a její úpravy COPG jsou odstraněny a motor je přepsán bez této aplikace. Ostatní aplikace jsou nedotčené. Poté restartujte cílovou aplikaci.</string>
+    <string name="app_tab_spoof">Spoof</string>
+    <string name="spoof_picker_title">Vyberte zařízení</string>
+    <string name="spoof_picker_custom">Informace o vlastním zařízení</string>
+    <string name="spoof_picker_custom_hint">Zadejte značku, model a otisk prstu, který chcete pro tuto aplikaci</string>
+    <string name="spoof_custom_title">Informace o vlastním zařízení</string>
+    <string name="spoof_custom_rules">Název, značka, model, zařízení a produkt jsou povinné, každý až 120 znaků, bez ovládacích znaků. Výrobce, otisk prstu a SDK jsou volitelné. Otisk prstu musí začínat stejnou značkou, produktem a zařízením.</string>
+    <string name="spoof_manufacturer">Výrobce (MANUFACTURER)</string>
+    <string name="spoof_sdk">Úroveň SDK, volitelná, 1 až 100</string>
+    <string name="spoof_custom_invalid">Některá pole jsou neplatná. Zkontrolujte výše uvedená pravidla a poté znovu uložte.</string>
+    <string name="spoof_custom_save">Uložit a vybrat pro tuto aplikaci</string>
+    <string name="spoof_impersonation_title">Spoofing</string>
+    <string name="spoof_impersonation_desc">Pouze bezplatné možnosti COPG. Zapsáno do motoru pomocí Review and Apply.</string>
+    <string name="spoof_impersonation_summary_cpu">CPU spoofing: %1$s</string>
+    <string name="spoof_impersonation_needs_device">Nejprve vyberte zařízení pro tuto aplikaci. Tyto možnosti jsou zapsány pouze pomocí zařízení.</string>
+    <string name="spoof_cpu_spoof">CPU spoofing</string>
+    <string name="spoof_cpu_real">Skutečné CPU</string>
+    <string name="spoof_cpu_block">Blok CPU</string>
+    <string name="spoof_cpu_block_desc">Vyloučí tuto aplikaci z CPU spoofingu.</string>
+    <string name="spoof_cpu_picker_title">Vyberte CPU</string>
+    <string name="copg_tweaks_section">COPG vylepšení</string>
+    <string name="copg_tweak_nolog_title">Zakázat protokolování</string>
+    <string name="copg_tweak_nolog_desc">Použije na tuto aplikaci vyladění protokolování COPG. Uloženo zde, zapsáno do enginu pomocí Review a použít na kartě Spoof.</string>
+    <string name="copg_tweak_dab_title">Zakázat automatický jas</string>
+    <string name="copg_tweak_dab_desc">Použije na tuto aplikaci vyladění automatického jasu COPG. Uloženo zde, zapsáno do enginu pomocí Review a použít na kartě Spoof.</string>
+    <string name="copg_tweak_kso_title">Nechte obrazovku zapnutou</string>
+    <string name="copg_tweak_kso_desc">Použije na tuto aplikaci vyladění COPG keep-screen-on. Uloženo zde, zapsáno do enginu pomocí Review a použít na kartě Spoof.</string>
+    <string name="copg_tweak_needs_device">Nejprve je pro tuto aplikaci potřeba zařízení na kartě Spoof.</string>
+</resources>

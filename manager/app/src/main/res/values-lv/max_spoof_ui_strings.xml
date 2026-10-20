@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_spoof_ui_strings.xml -->
+<resources>
+    <string name="spoof_ui_real_device">Īsta ierīce</string>
+    <string name="spoof_ui_pill_verified">Konfigurācija pārbaudīta</string>
+    <string name="spoof_ui_pill_unverified">Nav pārbaudīts</string>
+    <string name="spoof_ui_pill_off">Izslēgts</string>
+    <string name="spoof_device_for_app">Ierīce šai lietotnei</string>
+    <string name="spoof_device_real_hint">Šī lietotne redz jūsu īsto ierīci. Pieskarieties kartei, lai to izvēlētos.</string>
+    <string name="spoof_device_pick">Pieskarieties, lai izvēlētos ierīci no kataloga, vai ievadiet pielāgotu ierīces informāciju.</string>
+    <string name="spoof_device_in_use">Lietošanā</string>
+    <string name="spoof_device_restart">Pēc tam restartējiet mērķa lietotni, nevis sistēmu.</string>
+    <string name="spoof_ui_apply_title">Piesakieties šai lietotnei</string>
+    <string name="spoof_ui_apply_action">Pārskatiet un piesakieties</string>
+    <string name="spoof_ui_apply_confirm_title">Vai lietot tikai šo lietotni?</string>
+    <string name="spoof_ui_apply_confirm_text">Tikai šī lietotne ir sagatavota; citas lietotnes ir neskartas. Pēc tam restartējiet mērķa lietotni, nevis sistēmu. Vēlāk veikts labojums atceļ šo apstiprinājumu. Ja COPG jau ir norādīta šī lietotne, jūsu ierīcei ir prioritāte un COPG līnija paliek tāda, kāda tā ir.</string>
+    <string name="spoof_ui_apply_confirm">Pieteikties</string>
+    <string name="spoof_ui_apply_reason">Dzinēja atteikums: %1$s</string>
+    <string name="spoof_engine_absent">Dzinēja modulis nav nolasāms. Apstipriniet moduli, kura module.prop saka id=COPG, instalējiet vai atkārtoti instalējiet to, pēc tam atkārtoti atveriet šo ekrānu.</string>
+    <string name="spoof_engine_disabled">COPG modulis ir atspējots jūsu saknes pārvaldniekā. Iespējojiet to tur, atsāknējiet un pēc tam vēlreiz izmantojiet.</string>
+    <string name="spoof_engine_removal_pending">COPG ir atzīmēts noņemšanai, un tas vairs nebūs pēc nākamās atsāknēšanas. Pirms pieteikšanās atkārtoti instalējiet to.</string>
+    <string name="spoof_engine_update_pending">COPG atjauninājums gaida atsāknēšanu. Vispirms restartējiet, pēc tam vēlreiz piesakieties.</string>
+    <string name="spoof_ui_apply_pending">Mainīts kopš pēdējās pieteikšanās — piesakieties vēlreiz, lai tas būtu īsts.</string>
+    <string name="spoof_ui_restore_title">Izmantojiet savu īsto ierīci</string>
+    <string name="spoof_ui_restore_action">Noņemiet šīs lietotnes viltojumu</string>
+    <string name="spoof_ui_restore_notice">Šīs lietotnes saglabātā ierīce un tās COPG uzlabojumi tiek noņemti, un dzinējs tiek pārrakstīts bez šīs lietotnes. Citas lietotnes ir neskartas. Pēc tam restartējiet mērķa lietotni.</string>
+    <string name="app_tab_spoof">mānīšanās</string>
+    <string name="spoof_picker_title">Izvēlieties ierīci</string>
+    <string name="spoof_picker_custom">Informācija par pielāgotu ierīci</string>
+    <string name="spoof_picker_custom_hint">Ievadiet šai lietotnei vajadzīgo zīmolu, modeli un pirksta nospiedumu</string>
+    <string name="spoof_custom_title">Informācija par pielāgotu ierīci</string>
+    <string name="spoof_custom_rules">Nosaukums, zīmols, modelis, ierīce un produkts ir nepieciešams līdz 120 rakstzīmēm katrā, bez vadības rakstzīmēm. Ražotājs, pirkstu nospiedums un SDK nav obligāti. Pirksta nospiedumam jāsākas ar to pašu zīmolu, produktu un ierīci.</string>
+    <string name="spoof_manufacturer">Ražotājs (MANUFACTURER)</string>
+    <string name="spoof_sdk">SDK līmenis, neobligāti, no 1 līdz 100</string>
+    <string name="spoof_custom_invalid">Daži lauki nav derīgi. Pārbaudiet iepriekš minētos noteikumus un pēc tam saglabājiet vēlreiz.</string>
+    <string name="spoof_custom_save">Saglabājiet un izvēlieties šai lietotnei</string>
+    <string name="spoof_impersonation_title">Maldināšana</string>
+    <string name="spoof_impersonation_desc">Tikai bezmaksas COPG iespējas. Dzinējam raksta Pārskatiet un piesakieties.</string>
+    <string name="spoof_impersonation_summary_cpu">CPU viltošana: %1$s</string>
+    <string name="spoof_impersonation_needs_device">Vispirms izvēlieties ierīci šai lietotnei. Šīs opcijas ir rakstītas tikai ar ierīci.</string>
+    <string name="spoof_cpu_spoof">CPU viltošana</string>
+    <string name="spoof_cpu_real">Īsts CPU</string>
+    <string name="spoof_cpu_block">Bloķēt CPU</string>
+    <string name="spoof_cpu_block_desc">Izslēdz šo lietotni no CPU viltošanas.</string>
+    <string name="spoof_cpu_picker_title">Izvēlieties CPU</string>
+    <string name="copg_tweaks_section">COPG uzlabojumi</string>
+    <string name="copg_tweak_nolog_title">Atspējot reģistrēšanu</string>
+    <string name="copg_tweak_nolog_desc">Šajā lietotnē tiek lietots COPG reģistrēšanas uzlabojums. Saglabāts šeit, ierakstīts dzinējā, izmantojot Pārskatīt un pieteikties cilnē Maldīšanās.</string>
+    <string name="copg_tweak_dab_title">Atspējot automātisko spilgtumu</string>
+    <string name="copg_tweak_dab_desc">Šai lietotnei piemēro COPG automātiskās spilgtuma korekciju. Saglabāts šeit, ierakstīts dzinējā, izmantojot Pārskatīt un pieteikties cilnē Maldīšanās.</string>
+    <string name="copg_tweak_kso_title">Turiet ekrānu ieslēgtu</string>
+    <string name="copg_tweak_kso_desc">Šai lietotnei tiek lietots COPG saglabāšanas ekrāns. Saglabāts šeit, ierakstīts dzinējā, izmantojot Pārskatīt un pieteikties cilnē Maldīšanās.</string>
+    <string name="copg_tweak_needs_device">Vispirms ir nepieciešama ierīce šai lietotnei cilnē Spoof.</string>
+</resources>

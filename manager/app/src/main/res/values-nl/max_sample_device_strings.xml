@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_sample_device_strings.xml -->
+<resources>
+    <string name="sample_pick_title">Kies een voorbeeldapparaat</string>
+    <string name="sample_pick_button">Kies een voorbeeldapparaat</string>
+    <string name="sample_auto_hint">Als u een apparaat kiest, worden merk, fabrikant, model, apparaat, product en vingerafdruk voor u ingevuld. Gebruik Handmatig om ze zelf te typen.</string>
+    <string name="sample_manual">Handmatig</string>
+    <string name="sample_close">Dichtbij</string>
+    <string name="sample_search">Zoek apparaten</string>
+    <string name="sample_empty">Geen bijpassend apparaat.</string>
+    <string name="sample_unavailable">De apparaatcatalogus kon niet worden gelezen.</string>
+    <string name="sample_row_sub">Android-%1$s · %2$s</string>
+    <string name="sample_row_sub_plain">%1$s</string>
+    <string name="sample_fp_shared">Dezelfde vingerafdruk als een ander catalogusapparaat</string>
+    <string name="sample_credit">Catalogusgegevens: COPG (Apache-2.0), %1$s</string>
+    <string name="sample_limit">De profiellimiet (100) is bereikt.</string>
+</resources>

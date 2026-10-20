@@ -1,0 +1,1753 @@
+/*
+ * Copyright (C) 2026-2027 Zexshia
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@file:OptIn(ExperimentalMaterial3Api::class)
+
+package nd.max.ui.subscreens
+
+import android.content.Intent
+import android.content.pm.ApplicationInfo
+import android.net.Uri
+import android.widget.Toast
+import androidx.compose.animation.*
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.HelpOutline
+import androidx.compose.material.icons.automirrored.rounded.Launch
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.*
+import androidx.compose.material.icons.rounded.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalResources
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.style.LineBreak
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import kotlin.math.roundToInt
+import nd.max.ui.design.MaxCardSpec
+import nd.max.ui.design.MaxCommand
+import nd.max.ui.design.MaxCommandMenu
+import nd.max.ui.design.MaxRadius
+import nd.max.R
+import nd.max.ui.component.*
+import nd.max.ui.design.MaxListScreen
+import nd.max.ui.design.MaxAlpha
+import nd.max.ui.design.MaxSectionSpec
+import nd.max.ui.design.MaxSize
+import nd.max.ui.design.MaxSpace
+import nd.max.ui.design.MaxTab
+import nd.max.ui.design.MaxTabStrip
+import nd.max.ui.util.AppConfig
+import nd.max.ui.util.canvasScaleOptions
+import nd.max.ui.util.PerAppCpuControlMode
+import nd.max.ui.util.PerAppCpuPolicyControl
+import nd.max.ui.util.PerAppHardwareRuntimeStatus
+import nd.max.ui.util.decodePerAppCpuPolicyControls
+import nd.max.ui.util.encodePerAppCpuPolicyControls
+import nd.max.ui.util.getSupportedDownscaleFactors
+import nd.max.ui.util.getSupportedRefreshRates
+import nd.max.ui.util.PerAppKernelUtil
+import nd.max.ui.util.ProfilePresetStore
+import nd.max.ui.util.ProfileSharing
+import nd.max.ui.util.customizedFieldCount
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import nd.max.core.spoof.CopgTag
+import nd.max.core.spoof.PerAppDeviceModel
+import nd.max.core.spoof.SpoofWorkspace
+import nd.max.core.remote.RemoteFlags
+import nd.max.ui.license.FeatureGate
+import nd.max.ui.viewmodel.SpoofStudioViewModel
+import nd.max.ui.viewmodel.AppSettingsViewModel
+import nd.max.ui.viewmodel.ApplistViewmodel
+import nd.max.ui.mainscreens.LabelText
+import nd.max.ui.mainscreens.IconBadge
+import nd.max.ui.navigation.MaxDestination
+import nd.max.ui.design.maxRadius
+
+// ────────────────────────────────────────────────────────────────────────────
+// Main Screen
+// ────────────────────────────────────────────────────────────────────────────
+
+@Composable
+fun AppSettingsScreen(
+    navController: NavController,
+    packageName: String?,
+    viewModel: AppSettingsViewModel = viewModel(),
+    appListViewModel: ApplistViewmodel = viewModel()
+) {
+    val context = LocalContext.current
+    // موارد من `LocalResources.current` لا من `LocalContext.current.resources`: الأولى تُبطل التركيب عند
+    // تغيّر التكوين (لغة/كثافة/اتجاه)، والثانية تُبقي النصّ بلغته القديمة حتى يُعاد إنشاء الشاشة.
+    val resources = LocalResources.current
+    val appDetails = remember(packageName) { getAppDetails(context, packageName) }
+    val isGameApp = remember(packageName) { isGameCategory(context, packageName) }
+    val colorScheme = MaterialTheme.colorScheme
+    var showProfileEditor by remember { mutableStateOf(false) }
+    val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
+
+    LaunchedEffect(packageName) { viewModel.loadConfig(); viewModel.loadKernelCapabilities(packageName) }
+
+    val config = viewModel.fullConfig[packageName]
+    // Verified repository state, not an optimistic switch that stays on after a failed save.
+    val localMasterOn = config != null
+    LaunchedEffect(packageName, localMasterOn) {
+        if (localMasterOn) viewModel.refreshCpuRuntimeStatus(packageName)
+    }
+
+    val rawRefreshModes = remember { getSupportedRefreshRates(context) }
+    val rawDownscaleSteps = remember { getSupportedDownscaleFactors() }
+    val defaultLabel = stringResource(R.string.default_label)
+
+    DisposableEffect(Unit) {
+        onDispose { appListViewModel.loadApps(context, forceRefresh = true) }
+    }
+
+    var showGuide by remember { mutableStateOf(false) }
+    var showResetConfirmation by remember { mutableStateOf(false) }
+
+    // ── Per-App Tabs: Performance | Display | Gaming | Power & Connectivity ──
+    // Grouping settings by intent instead of one long scroll keeps this screen
+    // scannable as more per-app controls get added over time. Each tab shows
+    // how many values are already customized (non-Default) for that group, so
+    // the user doesn't have to open every tab to know what's active.
+    val cfgForTabs = config ?: AppConfig()
+    var selectedTab by remember(packageName) { mutableStateOf(0) }
+
+    // تعديلات COPG (تعطيل التسجيل، السطوع التلقائي، إبقاء الشاشة) وسوم لكل تطبيق في حالة التزييف نفسها.
+    // لا تُكتب إلا بجهاز فعّال لهذا التطبيق، كما يفرض المحرّك، وتُكتب للمحرّك بزر «مراجعة وتطبيق».
+    val spoofVm: SpoofStudioViewModel = hiltViewModel()
+    val spoofState by spoofVm.configuration.collectAsStateWithLifecycle()
+    val copgWorkspace = spoofState.workspace
+    val copgTags = packageName?.takeIf(SpoofWorkspace::validPackage)?.let { copgWorkspace?.appPolicy(it)?.tags }.orEmpty()
+    val copgHasDevice = packageName != null && copgWorkspace != null &&
+        PerAppDeviceModel.effective(copgWorkspace, packageName) != null
+
+    // CPU/GPU governors are now regular per-app controls; their lists are detected from the live kernel.
+    val appTabs = listOf(
+        MaxTab(
+            label = stringResource(R.string.app_tab_performance),
+            icon = Icons.Filled.Speed,
+            badgeCount = cfgForTabs.performanceCustomizedCount() + listOf(CopgTag.NoLog).count { it.render() in copgTags }
+        ),
+        MaxTab(
+            label = stringResource(R.string.app_tab_display),
+            icon = Icons.Filled.Monitor,
+            badgeCount = cfgForTabs.displayCustomizedCount(isGameApp) +
+                listOf(CopgTag.DisableAutoBrightness, CopgTag.KeepScreenOn).count { it.render() in copgTags }
+        ),
+        MaxTab(
+            label = stringResource(R.string.app_tab_gaming),
+            icon = Icons.Filled.Gamepad,
+            badgeCount = cfgForTabs.gamingCustomizedCount()
+        ),
+        MaxTab(
+            label = stringResource(R.string.app_tab_power),
+            icon = Icons.Filled.BatteryChargingFull,
+            badgeCount = cfgForTabs.powerCustomizedCount()
+        ),
+        MaxTab(
+            label = stringResource(R.string.app_tab_spoof),
+            icon = Icons.Filled.Fingerprint
+        )
+    )
+
+    ScreenAccentProvider(colorScheme.secondary) {
+        MaxListScreen(
+            title = stringResource(R.string.app_settings_title),
+            onBack = {
+                appListViewModel.loadApps(context, forceRefresh = true)
+                navController.popBackStack()
+            },
+            accent = colorScheme.secondary,
+            actions = {
+                IconButton(onClick = {
+                    packageName?.let { pkg ->
+                        navController.navigate(MaxDestination.MaxBackup.route.replace("{pkg}", pkg))
+                    }
+                }) {
+                    Icon(
+                        imageVector = Icons.Rounded.Backup,
+                        contentDescription = stringResource(R.string.max_backup_title),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                IconButton(onClick = {
+                    packageName?.let { pkg ->
+                        navController.navigate(MaxDestination.Permissions.route.replace("{pkg}", pkg))
+                    }
+                }) {
+                    Icon(
+                        imageVector = Icons.Rounded.Shield,
+                        contentDescription = stringResource(R.string.max_perms_title),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                IconButton(onClick = { showGuide = true }) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Rounded.HelpOutline,
+                        contentDescription = stringResource(R.string.appguide_cd),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                // Launch and App Info open another app's screen, so they sit behind one menu
+                // instead of taking two of the four slots in the top bar.
+                MaxCommandMenu(
+                    commands = listOf(
+                        MaxCommand(
+                            label = stringResource(R.string.str_launch_app),
+                            onSelect = {
+                                packageName?.let { pkg ->
+                                    val intent = context.packageManager.getLaunchIntentForPackage(pkg)
+                                    if (intent != null) {
+                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                        context.startActivity(intent)
+                                    } else {
+                                        Toast.makeText(context, resources.getString(R.string.toast_app_launch_fail), Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                            },
+                            icon = Icons.AutoMirrored.Rounded.Launch
+                        ),
+                        MaxCommand(
+                            label = stringResource(R.string.str_app_info),
+                            onSelect = {
+                                packageName?.let { pkg ->
+                                    val intent = Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                                        data = Uri.parse("package:$pkg")
+                                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    }
+                                    context.startActivity(intent)
+                                }
+                            },
+                            icon = Icons.Rounded.Info
+                        )
+                    ),
+                    contentDescription = stringResource(R.string.app_settings_more_actions)
+                )
+            }
+        ) {
+                // ── App Hero Header ──────────────────────────────────────────
+                item {
+                    val masterLabel = stringResource(R.string.master_switch)
+                    AppHeroHeader(appDetails = appDetails, packageName = packageName) {
+                        MaxSwitch(
+                            checked = localMasterOn,
+                            modifier = Modifier.semantics { contentDescription = masterLabel },
+                            onCheckedChange = { checked ->
+                                packageName?.let { viewModel.toggleMasterSwitch(it, checked) }
+                            },
+                            colors = SwitchDefaults.colors(
+                                checkedThumbColor = colorScheme.primary,
+                                checkedTrackColor = colorScheme.primaryContainer,
+                                uncheckedThumbColor = colorScheme.outline,
+                                uncheckedTrackColor = colorScheme.surfaceContainerHighest
+                            )
+                        )
+                    }
+                }
+                if (viewModel.configFailed) item {
+                    Text(stringResource(R.string.gaming_config_failed), color = MaterialTheme.colorScheme.error)
+                }
+
+                // ── مُزالة: الخلفية والبطارية (AR-14) ────────────────────────────
+                // أُزيلت هاتان البطاقتان من هذه الشاشة **بقرار مالك** لا لخطأ فيهما.
+                // والقارئان (`BackgroundGovernanceUtil` و`InstallSourceUtil`) باقيان
+                // **مُختبَرَين** كمعلومة مقروءة، فإعادة عرضهما في موضع آخر لا تعني إعادة كتابتهما.
+
+                // ── مُزالة: مصدر التطبيق (AR-34) ───────────────────────────────────────
+                // ── مُزالة من المحتوى: Max Backup صار زرًّا في شريط العنوان ────────────────────
+
+                // ── مُزالة من المحتوى: AppOps صار زرًّا في شريط العنوان ──────────────────────────────
+
+                // الهوية/التزييف صارت تبويبًا بجانب «العرض» (انظر `SPOOF_TAB`) بدل قسم طويل فوق الإعدادات.
+
+                // ── All Settings ─────────────────────────────────────────────
+                // شريط التبويبات **خارج** بوابة مفتاح Max: تبويب «تزييف» سياسة هوية مستقلة عن مفتاح الأداء،
+                // فيبقى متاحًا والمفتاح مغلق؛ أمّا باقي المجموعات فتبقى خلف المفتاح كما كانت.
+                item {
+                    val cfg = config ?: AppConfig()
+                    Column {
+                        MaxTabStrip(
+                            tabs = appTabs,
+                            selectedIndex = selectedTab,
+                            onSelect = { selectedTab = it },
+                        )
+                        Spacer(Modifier.height(MaxSpace.md))
+
+                        val spoofPackage = packageName?.takeIf(nd.max.core.spoof.SpoofWorkspace::validPackage)
+                        if (selectedTab == SPOOF_TAB) {
+                            if (spoofPackage != null) {
+                                // مفتاح `spoof` (LICENSE-KEYS-01): التبويب نفسه يبقى ظاهرًا
+                                // (سياسة الهوية)، والحكم على السطح داخل البوّابة الواحدة.
+                                FeatureGate(RemoteFlags.SPOOF, navController) {
+                                    AppSpoofSection(spoofPackage)
+                                }
+                            }
+                        } else {
+                        // Master off: the option content dims as one block. Spoof is outside this box and stays live.
+                        Box(modifier = Modifier.alpha(if (localMasterOn) 1f else MaxAlpha.disabledContent)) {
+                        Column {
+
+                            when (selectedTab) {
+                            0 -> {
+                            // ══ PERFORMANCE ══════════════════════════════════
+                            ExpressiveList(
+                                modifier = Modifier,
+                                content = buildList {
+                                    add {
+                                        ExpressiveDropdownItem(
+                                            enabled = localMasterOn,
+                                            icon = Icons.Rounded.Bolt,
+                                            title = stringResource(R.string.perf_lite_mode),
+                                            summary = stringResource(R.string.perf_lite_mode_desc_short),
+                                            items = listOf(defaultLabel, stringResource(R.string.on_label), stringResource(R.string.off_label)),
+                                            selectedIndex = getBoolIndex(cfg.perf_lite_mode),
+                                            onItemSelected = { i -> packageName?.let { viewModel.updateSetting(it, "perf_lite_mode", listOf("default","true","false")[i]) } }
+                                        )
+                                    }
+                                    add {
+                                        ExpressiveDropdownItem(
+                                            enabled = localMasterOn,
+                                            icon = Icons.Rounded.FlashOn,
+                                            title = stringResource(R.string.appfeature_cpu_boost_title),
+                                            summary = stringResource(R.string.appfeature_cpu_boost_summary),
+                                            items = listOf(defaultLabel, stringResource(R.string.on_label), stringResource(R.string.off_label)),
+                                            selectedIndex = getBoolIndex(cfg.cpu_boost),
+                                            onItemSelected = { i -> packageName?.let { viewModel.updateSetting(it, "cpu_boost", listOf("default","true","false")[i]) } }
+                                        )
+                                    }
+                                    add {
+                                        ExpressiveDropdownItem(
+                                            enabled = localMasterOn,
+                                            // نفس رمز المحور لنفس المفتاح (`Cached`): الوظيفة تُبقي
+                                            // المكتبات جاهزة، ولا تُطلق شيئًا.
+                                            icon = Icons.Rounded.Cached,
+                                            title = stringResource(R.string.game_preload),
+                                            summary = stringResource(R.string.game_preload_desc),
+                                            items = listOf(defaultLabel, stringResource(R.string.on_label), stringResource(R.string.off_label)),
+                                            selectedIndex = getBoolIndex(cfg.game_preload),
+                                            onItemSelected = { i -> packageName?.let { viewModel.updateSetting(it, "game_preload", listOf("default","true","false")[i]) } }
+                                        )
+                                    }
+                                    add {
+                                        ExpressiveDropdownItem(
+                                            enabled = localMasterOn,
+                                            icon = Icons.Rounded.SwapVerticalCircle,
+                                            title = stringResource(R.string.app_priority),
+                                            summary = stringResource(R.string.app_priority_desc),
+                                            items = listOf(defaultLabel, stringResource(R.string.on_label), stringResource(R.string.off_label)),
+                                            selectedIndex = getBoolIndex(cfg.app_priority),
+                                            onItemSelected = { i -> packageName?.let { viewModel.updateSetting(it, "app_priority", listOf("default","true","false")[i]) } }
+                                        )
+                                    }
+                                    add {
+                                        ExpressiveDropdownItem(
+                                            enabled = localMasterOn,
+                                            icon = Icons.Rounded.Block,
+                                            title = stringResource(R.string.appfeature_kill_bg_title),
+                                            summary = stringResource(R.string.appfeature_kill_bg_summary),
+                                            items = listOf(defaultLabel, stringResource(R.string.on_label), stringResource(R.string.off_label)),
+                                            selectedIndex = getBoolIndex(cfg.kill_bg_apps),
+                                            onItemSelected = { i -> packageName?.let { viewModel.updateSetting(it, "kill_bg_apps", listOf("default","true","false")[i]) } }
+                                        )
+                                    }
+                                }
+                            )
+
+                            // ══ تعديلات COPG (وسوم لكل تطبيق، تُكتب من تبويب التزييف) ══
+                            SettingsSectionTitle(Icons.Filled.Speed, stringResource(R.string.copg_tweaks_section), colorScheme.secondary)
+                            ExpressiveList(
+                                modifier = Modifier,
+                                content = buildList {
+                                    add {
+                                        ExpressiveSwitchItem(
+                                            icon = Icons.Filled.Speed,
+                                            title = stringResource(R.string.copg_tweak_nolog_title),
+                                            summary = if (copgHasDevice) stringResource(R.string.copg_tweak_nolog_desc) else stringResource(R.string.copg_tweak_needs_device),
+                                            checked = CopgTag.NoLog.render() in copgTags,
+                                            enabled = localMasterOn && (copgHasDevice),
+                                            onCheckedChange = { value -> packageName?.let { spoofVm.setTag(it, CopgTag.NoLog, value) } }
+                                        )
+                                    }
+                                }
+                            )
+
+                            // ══ GPU / GOVERNOR CONTROL ══════════════════════════
+                            SettingsSectionTitle(Icons.Filled.Thermostat, stringResource(R.string.app_settings_section_thermal_gpu), colorScheme.error)
+                            Text(
+                                text = stringResource(R.string.app_settings_thermal_gpu_note),
+                                style = MaterialTheme.typography.bodySmall,
+                                // الهامش الجانبي ملك الهيكل (`MaxListScreen` ← `MaxSpace.gutter`)، وكان
+                                // 16dp هنا يُضاف فوقه ⇒ 36dp في جهة لا تملكها الشرائح المجاورة (20dp)،
+                                // فيبدو الوصف مُزاحًا عن عنوان القسم فوقه لا تابعًا له. أُزيل الأفقيّ فقط.
+                                modifier = Modifier.padding(vertical = MaxSpace.xs)
+                            )
+                            val gpuProfileValues = listOf("default", "power", "balanced", "gaming", "performance", "custom")
+                            val gpuProfileLabels = listOf(
+                                defaultLabel,
+                                stringResource(R.string.profile_label_power),
+                                stringResource(R.string.Profile_Balanced),
+                                stringResource(R.string.profile_label_gaming),
+                                stringResource(R.string.Profile_Performance),
+                                stringResource(R.string.profile_label_custom)
+                            )
+                            ThermalProfilePicker(
+                                selected = cfg.gpu_profile,
+                                labels = gpuProfileLabels,
+                                values = gpuProfileValues,
+                                enabled = localMasterOn,
+                                onSelectProfile = { profile -> packageName?.let { viewModel.updateSetting(it, "gpu_profile", profile) } }
+                            )
+                            ExpressiveList(
+                                modifier = Modifier,
+                                content = buildList {
+                                    add {
+                                        val cpuGovernorValues = listOf("default") + viewModel.availableCpuGovernors
+                                        val cpuGovernorLabels = listOf(defaultLabel) + viewModel.availableCpuGovernors
+                                        val selected = cpuGovernorValues.indexOfFirst { it.equals(cfg.cpu_governor, true) }.coerceAtLeast(0)
+                                        ExpressiveDropdownItem(
+                                            enabled = localMasterOn,
+                                            icon = Icons.Rounded.Memory,
+                                            title = stringResource(R.string.app_settings_cpu_governor),
+                                            summary = if (viewModel.availableCpuGovernors.isEmpty()) stringResource(R.string.app_settings_cpu_governors_none) else stringResource(R.string.app_settings_cpu_governors_note),
+                                            items = cpuGovernorLabels,
+                                            selectedIndex = selected,
+                                            onItemSelected = { i -> packageName?.let { viewModel.updateSetting(it, "cpu_governor", cpuGovernorValues[i]) } }
+                                        )
+                                    }
+                                    add {
+                                        val gpuGovernorValues = listOf("default") + viewModel.availableGpuGovernors
+                                        val gpuGovernorLabels = listOf(defaultLabel) + viewModel.availableGpuGovernors
+                                        val selected = gpuGovernorValues.indexOfFirst { it.equals(cfg.gpu_governor, true) }.coerceAtLeast(0)
+                                        ExpressiveDropdownItem(
+                                            enabled = localMasterOn,
+                                            icon = Icons.Rounded.DeveloperBoard,
+                                            title = stringResource(R.string.app_settings_gpu_governor),
+                                            summary = if (viewModel.availableGpuGovernors.isEmpty()) stringResource(R.string.app_settings_gpu_governors_none) else stringResource(R.string.app_settings_gpu_governors_note),
+                                            items = gpuGovernorLabels,
+                                            selectedIndex = selected,
+                                            onItemSelected = { i -> packageName?.let { viewModel.updateSetting(it, "gpu_governor", gpuGovernorValues[i]) } }
+                                        )
+                                    }
+                                    add {
+                                        val freqItems = listOf("default") + viewModel.availableGpuFrequencies.map { it.toString() }
+                                        val freqLabels = listOf(defaultLabel) + viewModel.availableGpuFrequencies.map { PerAppKernelUtil.formatFrequency(it) }
+                                        val selected = freqItems.indexOf(cfg.gpu_max_freq).coerceAtLeast(0)
+                                        val topStep = viewModel.availableGpuFrequencies.lastOrNull()
+                                        val liveCeiling = viewModel.gpuLiveCeilingHz
+                                        // ولماذا يُذكر السقف الحيّ في الوصف: كان يُستعمل **للقصّ**، فأعلى
+                                        // درجة معروضة تساوي ما عند الجهاز أصلًا («لا تتجاوز الافتراضي»).
+                                        // فالآن يُعرض كل ما تُعلنه النواة، ويُقال بالمقابل كم يسمح الجهاز
+                                        // به الآن — لأن الطلب عند القدرة تحرير للسقف لا كتابة فوقه.
+                                        val freqSummary = when {
+                                            topStep == null -> stringResource(R.string.appfeature_gpu_freq_none)
+                                            liveCeiling != null && liveCeiling < topStep -> stringResource(
+                                                R.string.appfeature_gpu_freq_capped,
+                                                PerAppKernelUtil.formatFrequency(topStep),
+                                                PerAppKernelUtil.formatFrequency(liveCeiling)
+                                            )
+                                            else -> stringResource(R.string.appfeature_gpu_freq_dynamic)
+                                        }
+                                        ExpressiveDropdownItem(
+                                            enabled = localMasterOn,
+                                            icon = Icons.Rounded.Tune,
+                                            title = stringResource(R.string.appfeature_gpu_freq_title),
+                                            summary = freqSummary,
+                                            items = freqLabels,
+                                            selectedIndex = selected,
+                                            onItemSelected = { i -> packageName?.let { viewModel.updateSetting(it, "gpu_max_freq", freqItems[i]) } }
+                                        )
+                                    }
+                                }
+                            )
+                            // «خيارات متقدّمة» تحمل فراغًا علويًّا صريحًا: كانت تُلتصق ببطاقة
+                            // الترددات فوقها فتُقرأ صفًّا إضافيًّا فيها (عيب بصري بلا سبب بنيوي —
+                            // كل بطاقة أخرى في الشاشة تفصلها مسافة). ←
+                            PerAppCpuControlSection(
+                                encodedControls = cfg.cpu_policy_controls,
+                                policies = viewModel.cpuPolicies,
+                                runtimeStatus = viewModel.cpuRuntimeStatus,
+                                enabled = localMasterOn,
+                                onSave = { encoded -> packageName?.let { viewModel.updateSetting(it, "cpu_policy_controls", encoded) } },
+                                onRefreshStatus = { viewModel.refreshCpuRuntimeStatus(packageName) }
+                            )
+                            // ── محجوب بأمر المالك ───────────────────────────────────────
+                            // أُزيل من هنا **نداءان** لا يزيدان المستخدم معلومة: بطاقة
+                            // «لماذا لم يعمل؟» (`PerAppHardwareDiagnosticsCard`) التي تُطبع
+                            // بطاقة كاملة تقول «لا نتيجة بعد»، والوصف الطويل تحتها
+                            // (`perapp_thermal_guard_note`) وهو اثنا عشر سطرًا تُقرأ مرّة
+                            // وتُدفع في كل فتحة — سطورٌ تحجب الإعدادات التي جاء لأجلها.
+                            //
+                            // وما لم يُحذف: الدالّة نفسها باقية في هذا الملف بلا تعديل
+                            // (‏`PerAppHardwareDiagnosticsCard` أسفل الملف)، ومفتاح النصّ
+                            // باقٍ في `values/` و`values-ar/` — فإعادة أيٍّ منهما سطرُ
+                            // نداء واحد. وهذا شرط ADR-18: لا يُمحى عمل مُنجز لسبب بصريّ،
+                            // وإنّما يُوقف عرضه ويُسجَّل سبب الإيقاف.
+                            Spacer(Modifier.height(8.dp))
+                            nd.max.ui.component.StudioOutlinedButton(
+                                onClick = { showProfileEditor = true },
+                                modifier = Modifier.fillMaxWidth(),
+                                enabled = localMasterOn
+
+                            ) {
+                                Icon(Icons.Rounded.Tune, contentDescription = null)
+                                Spacer(Modifier.width(8.dp))
+                                Text(stringResource(R.string.app_settings_customize_profiles))
+                            }
+                            nd.max.ui.component.StudioTextButton(
+                                onClick = { showResetConfirmation = true },
+                                modifier = Modifier.fillMaxWidth(),
+                                enabled = localMasterOn
+
+                            ) {
+                                Icon(Icons.Rounded.RestartAlt, contentDescription = null)
+                                Spacer(Modifier.width(6.dp))
+                                Text(stringResource(R.string.app_settings_reset_all))
+                            }
+                            } // end tab 0: Performance
+                            1 -> {
+                            // ══ DISPLAY & RENDER ══════════════════════════════
+                            ExpressiveList(
+                                modifier = Modifier,
+                                content = buildList {
+                                    // Refresh Rate – always visible (no longer locked behind full mode)
+                                    add {
+                                        val refreshLabels = rawRefreshModes.map { if (it.equals("default", true)) defaultLabel else "${it}Hz" }
+                                        ExpressiveDropdownItem(
+                                            enabled = localMasterOn,
+                                            icon = Icons.Rounded.Refresh,
+                                            title = stringResource(R.string.refreshrates),
+                                            summary = stringResource(R.string.refreshrates_desc),
+                                            items = refreshLabels,
+                                            selectedIndex = rawRefreshModes.indexOfFirst { it.equals(cfg.refresh_rate, true) }.coerceAtLeast(0),
+                                            onItemSelected = { i -> packageName?.let { viewModel.updateSetting(it, "refresh_rate", rawRefreshModes[i]) } }
+                                        )
+                                    }
+                                    // Render Engine
+                                    add {
+                                        val rendererValues = listOf("default","skiavk","skiavkthreaded","skiagl","skiaglthreaded","opengl","openglthreaded","vulkan")
+                                        val rendererLabels = listOf(defaultLabel,"SkiaVK","SkiaVK (Threaded)","SkiaGL","SkiaGL (Threaded)","OpenGL ES","OpenGL ES (Threaded)","Vulkan")
+                                        ExpressiveDropdownItem(
+                                            enabled = localMasterOn,
+                                            icon = Icons.Rounded.Layers,
+                                            title = stringResource(R.string.renderengine),
+                                            summary = stringResource(R.string.renderengine_desc),
+                                            items = rendererLabels,
+                                            selectedIndex = rendererValues.indexOfFirst { it.equals(cfg.renderer, true) }.coerceAtLeast(0),
+                                            onItemSelected = { i -> packageName?.let { viewModel.updateSetting(it, "renderer", rendererValues[i]) } }
+                                        )
+                                    }
+                                    add {
+                                        ExpressiveDropdownItem(
+                                            enabled = localMasterOn,
+                                            icon = Icons.Rounded.Brush,
+                                            title = stringResource(R.string.appfeature_hw_ui_title),
+                                            summary = stringResource(R.string.appfeature_hw_ui_summary),
+                                            items = listOf(defaultLabel, stringResource(R.string.on_label), stringResource(R.string.off_label)),
+                                            selectedIndex = getBoolIndex(cfg.force_hw_ui),
+                                            onItemSelected = { i -> packageName?.let { viewModel.updateSetting(it, "force_hw_ui", listOf("default","true","false")[i]) } }
+                                        )
+                                    }
+                                }
+                            )
+
+                            // ══ RESOLUTION (game apps only) ════════════════════
+                            if (isGameApp) {
+                                SettingsSectionTitle(Icons.Filled.AspectRatio, stringResource(R.string.section_resolution_settings), colorScheme.secondary)
+                                // §9.5 — دقة مفهومة بدل المعامل الخام:
+                                //
+                                // القيمة المخزونة تبقى معاملًا (`resolution_downscale` عقد قائم مع مُبدّل
+                                // الدقة في الرفيق، وهو يقرؤه لواجهة Game Mode)، لكن ما يراه المستخدم
+                                // أسماء دقة **محسوبة من ضلع شاشته القصير** — «720p» = 720 ÷ ضلع الشاشة،
+                                // لا 0.50 ثابتة — وسطرٌ يقول الآلية الحقيقية (تصيير داخلي للعبة، لا دقة
+                                // الشاشة المادية)، والخيارات المستبعدة تُذكر بسبابها بدل أن تُعرض ميتة
+                                // أو تُخفى صامتة.
+                                val nativeShortSide = remember {
+                                    val m = context.resources.displayMetrics
+                                    minOf(m.widthPixels, m.heightPixels)
+                                }
+                                val scaleOptions = remember(nativeShortSide, cfg.resolution_downscale) {
+                                    canvasScaleOptions(nativeShortSide, cfg.resolution_downscale)
+                                }
+                                val shownScales = scaleOptions.filter { it.supported }
+                                val hiddenScales = scaleOptions.filterNot { it.supported }
+                                ExpressiveList(
+                                    // الهيكل (`MaxListScreen`) يملك هامش الصفحة (`MaxSpace.gutter`)،
+                                    // وكان هذا السطر يضيف 16dp فوقه ⇒ 36dp لكل جهة بدل 20dp في بقية
+                                    // الشاشات، وهو سبب «المحتوى المضغوط» في المراجعة.
+                                    modifier = Modifier,
+                                    content = buildList {
+                                        add {
+                                            ExpressiveDropdownItem(
+                                                enabled = localMasterOn,
+                                                icon = Icons.Rounded.AspectRatio,
+                                                title = stringResource(R.string.resolution_downscale_title),
+                                                summary = stringResource(R.string.resolution_downscale_desc),
+                                                items = shownScales.map { canvasScaleLabel(it) },
+                                                selectedIndex = shownScales
+                                                    .indexOfFirst { it.stored == cfg.resolution_downscale }
+                                                    .coerceAtLeast(0),
+                                                onItemSelected = { index ->
+                                                    packageName?.let {
+                                                        viewModel.updateSetting(it, "resolution_downscale", shownScales[index].stored)
+                                                    }
+                                                }
+                                            )
+                                        }
+                                        add {
+                                            // الخيار المخصّص يبقى كما كان (منزلق المعامل نفسه)، ومعناه الآن
+                                            // مكتوب: نسبته من الدقة الأصلية — فلا رقم خام بلا تفسير.
+                                            var downPos by remember(cfg.resolution_downscale) {
+                                                mutableStateOf(rawDownscaleSteps.indexOf(cfg.resolution_downscale).coerceAtLeast(0).toFloat())
+                                            }
+                                            ExpressiveSliderItem(
+                                                enabled = localMasterOn,
+                                                icon = Icons.Rounded.Tune,
+                                                title = stringResource(R.string.resolution_downscale_custom_title),
+                                                subtitle = stringResource(R.string.resolution_downscale_custom_desc),
+                                                badgeText = rawDownscaleSteps.getOrNull(downPos.toInt())
+                                                    ?.toDoubleOrNull()
+                                                    ?.let { "${(it * 100).roundToInt()}%" }
+                                                    ?: defaultLabel,
+                                                sliderPosition = downPos,
+                                                valueRange = 0f..(rawDownscaleSteps.size - 1).toFloat(),
+                                                steps = (rawDownscaleSteps.size - 2).coerceAtLeast(0),
+                                                onValueChange = { downPos = it },
+                                                onValueChangeFinished = {
+                                                    packageName?.let { viewModel.updateSetting(it, "resolution_downscale", rawDownscaleSteps[downPos.toInt()]) }
+                                                }
+                                            )
+                                        }
+                                        add {
+                                            val mechanism = stringResource(R.string.canvas_scale_mechanism)
+                                            val hiddenLines = hiddenScales.mapNotNull { option ->
+                                                option.skip?.let { skip ->
+                                                    stringResource(
+                                                        R.string.canvas_scale_hidden,
+                                                        canvasScaleLabel(option),
+                                                        canvasScaleSkipReason(skip)
+                                                    )
+                                                }
+                                            }
+                                            ExpressiveListItem(
+                                                headlineContent = {
+                                                    Text(
+                                                        text = (listOf(mechanism) + hiddenLines).joinToString("\n"),
+                                                        style = MaterialTheme.typography.bodySmall,
+                                                        color = colorScheme.onSurfaceVariant
+                                                    )
+                                                }
+                                            )
+                                        }
+                                    }
+                                )
+                            }
+
+                            // ══ تعديلات COPG (وسوم لكل تطبيق، تُكتب من تبويب التزييف) ══
+                            SettingsSectionTitle(Icons.Filled.Monitor, stringResource(R.string.copg_tweaks_section), colorScheme.secondary)
+                            ExpressiveList(
+                                modifier = Modifier,
+                                content = buildList {
+                                    add {
+                                        ExpressiveSwitchItem(
+                                            icon = Icons.Filled.Monitor,
+                                            title = stringResource(R.string.copg_tweak_dab_title),
+                                            summary = if (copgHasDevice) stringResource(R.string.copg_tweak_dab_desc) else stringResource(R.string.copg_tweak_needs_device),
+                                            checked = CopgTag.DisableAutoBrightness.render() in copgTags,
+                                            enabled = localMasterOn && (copgHasDevice),
+                                            onCheckedChange = { value -> packageName?.let { spoofVm.setTag(it, CopgTag.DisableAutoBrightness, value) } }
+                                        )
+                                    }
+                                    add {
+                                        ExpressiveSwitchItem(
+                                            icon = Icons.Filled.Monitor,
+                                            title = stringResource(R.string.copg_tweak_kso_title),
+                                            summary = if (copgHasDevice) stringResource(R.string.copg_tweak_kso_desc) else stringResource(R.string.copg_tweak_needs_device),
+                                            checked = CopgTag.KeepScreenOn.render() in copgTags,
+                                            enabled = localMasterOn && (copgHasDevice),
+                                            onCheckedChange = { value -> packageName?.let { spoofVm.setTag(it, CopgTag.KeepScreenOn, value) } }
+                                        )
+                                    }
+                                }
+                            )
+
+                            } // end tab 1: Display
+                            2 -> {
+                            // ══ GAMING EXPERIENCE ══════════════════════════════
+                            ExpressiveList(
+                                modifier = Modifier,
+                                content = buildList {
+                                    add {
+                                        run {
+                                            val touchProfiles = listOf(
+                                                "default" to stringResource(R.string.appfeature_touch_follow_rom),
+                                                "true" to stringResource(R.string.appfeature_touch_responsive),
+                                                "false" to stringResource(R.string.appfeature_touch_battery_aware)
+                                            )
+                                            ExpressiveDropdownItem(
+                                                enabled = localMasterOn,
+                                                icon = Icons.Rounded.TouchApp,
+                                                title = stringResource(R.string.appfeature_touch_title),
+                                                summary = stringResource(R.string.appfeature_touch_summary),
+                                                items = touchProfiles.map { it.second },
+                                                selectedIndex = touchProfiles.indexOfFirst { it.first == cfg.touch_boost }.coerceAtLeast(0),
+                                                onItemSelected = { i -> packageName?.let { viewModel.updateSetting(it, "touch_boost", touchProfiles[i].first) } }
+                                            )
+                                        }
+                                    }
+                                    add {
+                                        ExpressiveDropdownItem(
+                                            enabled = localMasterOn,
+                                            icon = Icons.Rounded.Vibration,
+                                            title = stringResource(R.string.appfeature_haptic_title),
+                                            summary = stringResource(R.string.appfeature_haptic_summary),
+                                            items = listOf(defaultLabel, stringResource(R.string.on_label), stringResource(R.string.off_label)),
+                                            selectedIndex = getBoolIndex(cfg.haptic_feedback),
+                                            onItemSelected = { i -> packageName?.let { viewModel.updateSetting(it, "haptic_feedback", listOf("default","true","false")[i]) } }
+                                        )
+                                    }
+                                    add {
+                                        ExpressiveDropdownItem(
+                                            enabled = localMasterOn,
+                                            icon = Icons.Rounded.DoNotDisturbOn,
+                                            title = stringResource(R.string.dnd_mode),
+                                            summary = stringResource(R.string.dnd_mode_desc),
+                                            items = listOf(defaultLabel, stringResource(R.string.on_label), stringResource(R.string.off_label)),
+                                            selectedIndex = getBoolIndex(cfg.dnd_on_gaming),
+                                            onItemSelected = { i -> packageName?.let { viewModel.updateSetting(it, "dnd_on_gaming", listOf("default","true","false")[i]) } }
+                                        )
+                                    }
+                                    add {
+                                        ExpressiveDropdownItem(
+                                            enabled = localMasterOn,
+                                            icon = Icons.Filled.NotificationsOff,
+                                            title = stringResource(R.string.appfeature_notif_title),
+                                            summary = stringResource(R.string.appfeature_notif_summary),
+                                            items = listOf(defaultLabel, stringResource(R.string.on_label), stringResource(R.string.off_label)),
+                                            selectedIndex = getBoolIndex(cfg.disable_notifs),
+                                            onItemSelected = { i -> packageName?.let { viewModel.updateSetting(it, "disable_notifs", listOf("default","true","false")[i]) } }
+                                        )
+                                    }
+                                }
+                            )
+
+                            } // end tab 2: Gaming
+                            3 -> {
+                            // ══ CONNECTIVITY & POWER ═══════════════════════════
+                            ExpressiveList(
+                                modifier = Modifier,
+                                content = buildList {
+                                    add {
+                                        ExpressiveDropdownItem(
+                                            enabled = localMasterOn,
+                                            icon = Icons.Rounded.Cable,
+                                            title = stringResource(R.string.bcharging),
+                                            summary = stringResource(R.string.enable_bypass_charge_desc),
+                                            items = listOf(defaultLabel, stringResource(R.string.on_label), stringResource(R.string.off_label)),
+                                            selectedIndex = getBoolIndex(cfg.bypass_charging),
+                                            onItemSelected = { i -> packageName?.let { viewModel.updateSetting(it, "bypass_charging", listOf("default","true","false")[i]) } }
+                                        )
+                                    }
+                                    add {
+                                        ExpressiveDropdownItem(
+                                            enabled = localMasterOn,
+                                            icon = Icons.Rounded.Wifi,
+                                            title = stringResource(R.string.appfeature_wifi_title),
+                                            summary = stringResource(R.string.appfeature_wifi_summary),
+                                            items = listOf(defaultLabel, stringResource(R.string.on_label), stringResource(R.string.off_label)),
+                                            selectedIndex = getBoolIndex(cfg.wifi_no_sleep),
+                                            onItemSelected = { i -> packageName?.let { viewModel.updateSetting(it, "wifi_no_sleep", listOf("default","true","false")[i]) } }
+                                        )
+                                    }
+                                }
+                            )
+                            } // end tab 3: Power & Connectivity
+                            } // end when(selectedTab)
+
+                            Spacer(Modifier.height(16.dp))
+                        }
+                        }
+                        }
+                    }
+                }
+            }
+    }
+
+    // Composed after the page on purpose: this overlay is not a separate window, so it can only
+    // cover content that is composed before it, and the page is composed above.
+    FeatureGuideDialog(
+        visible = showGuide,
+        onDismiss = { showGuide = false }
+    )
+
+    if (showProfileEditor) {
+        ProfilePresetEditor(onDismiss = { showProfileEditor = false })
+    }
+
+    if (showResetConfirmation) {
+        AlertDialog(
+            onDismissRequest = { showResetConfirmation = false },
+            icon = { Icon(Icons.Rounded.RestartAlt, contentDescription = null) },
+            title = { Text(stringResource(R.string.app_reset_confirm_title)) },
+            text = { Text(stringResource(R.string.app_reset_confirm_message)) },
+            confirmButton = {
+                nd.max.ui.component.StudioTextButton(onClick = {
+                    packageName?.let { viewModel.resetAppSettings(it) }
+                    showResetConfirmation = false
+                }) { Text(stringResource(R.string.reset_label)) }
+            },
+            dismissButton = {
+                nd.max.ui.component.StudioTextButton(onClick = { showResetConfirmation = false }) {
+                    Text(stringResource(R.string.cancel_label))
+                }
+            }
+        )
+    }
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// Helpers
+// ────────────────────────────────────────────────────────────────────────────
+
+private fun getBoolIndex(v: String?): Int = when (v) { "true" -> 1; "false" -> 2; else -> 0 }
+
+/**
+ * بطاقة «لماذا لم يعمل؟»: كل مقبض عتاد لهذا التطبيق، ونتيجته، و**رمز سببه** كما كتبه المحرّك.
+ *
+ * ولماذا في هذه الشاشة بالذات: العطل الذي وُجدت من أجله هو «ضبطت شيئًا ولم يحدث شيء». وكان
+ * الجواب يحتاج قراءة `MaxManager.log` بمُرشِّحين و`grep`. ورمز السبب هو ما يفرّق بين «رُفض
+ * بقفل يدوي» و«النواة لا تُعلن هذا الحاكم» — وهما إجراءان مختلفان تمامًا.
+ *
+ * والبطاقة لا تكتب في أي عقدة: تقرأ ملف حالة وتُنسخ نصًّا للتقارير.
+ */
+@Composable
+private fun PerAppHardwareDiagnosticsCard(
+    packageName: String?,
+    config: AppConfig,
+    status: PerAppHardwareRuntimeStatus,
+    onRefresh: () -> Unit,
+) {
+    val context = LocalContext.current
+    val resources = LocalResources.current
+    val colorScheme = MaterialTheme.colorScheme
+    val failures = status.failures
+    val accent = if (failures.isEmpty()) colorScheme.secondary else colorScheme.error
+    var copied by remember { mutableStateOf(false) }
+
+    Column {
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(maxRadius(MaxRadius.tile)),
+            color = colorScheme.surfaceContainerLow,
+            border = androidx.compose.foundation.BorderStroke(1.dp, accent.copy(alpha = .24f))
+        ) {
+            Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = if (failures.isEmpty()) Icons.Rounded.CheckCircle else Icons.Outlined.ErrorOutline,
+                        contentDescription = null,
+                        tint = accent
+                    )
+                    Spacer(Modifier.width(10.dp))
+                    Column(Modifier.weight(1f)) {
+                        Text(
+                            text = stringResource(R.string.perapp_diag_title),
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = if (status.outcomes.isEmpty()) {
+                                stringResource(R.string.perapp_diag_idle)
+                            } else {
+                                stringResource(R.string.perapp_diag_summary, status.outcomes.size, failures.size)
+                            },
+                            style = MaterialTheme.typography.bodySmall,
+                            color = colorScheme.onSurfaceVariant
+                        )
+                    }
+                    IconButton(onClick = onRefresh) {
+                        Icon(Icons.Rounded.Refresh, contentDescription = stringResource(R.string.perapp_diag_copy))
+                    }
+                }
+                // الفشل أولًا: من يفتح هذه البطاقة يسأل عن عطل، لا عن قائمة نجاحات.
+                (failures + status.outcomes.filter { !it.isFailure }).forEach { outcome ->
+                    val rowAccent = if (outcome.isFailure) colorScheme.error else colorScheme.onSurfaceVariant
+                    Column {
+                        Text(
+                            text = outcome.knob,
+                            style = MaterialTheme.typography.labelLarge,
+                            fontWeight = FontWeight.SemiBold,
+                            color = rowAccent
+                        )
+                        Text(
+                            text = stringResource(R.string.perapp_diag_reason, outcome.reason),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = rowAccent
+                        )
+                        Text(
+                            text = stringResource(
+                                R.string.perapp_diag_values,
+                                outcome.expected.ifBlank { "—" },
+                                outcome.live.ifBlank { "—" }
+                            ),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+                Text(
+                    text = stringResource(R.string.perapp_diag_hint),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = colorScheme.onSurfaceVariant
+                )
+                StudioTextButton(
+                    onClick = {
+                        val report = buildPerAppDiagnosticsReport(packageName, config, status)
+                        val clipboard = context.getSystemService(android.content.Context.CLIPBOARD_SERVICE)
+                            as? android.content.ClipboardManager
+                        clipboard?.setPrimaryClip(
+                            android.content.ClipData.newPlainText(
+                                resources.getString(R.string.perapp_diag_title), report
+                            )
+                        )
+                        copied = true
+                    }
+                ) {
+                    Icon(Icons.Rounded.ContentCopy, contentDescription = null)
+                    Spacer(Modifier.width(6.dp))
+                    Text(
+                        if (copied) stringResource(R.string.perapp_diag_copied)
+                        else stringResource(R.string.perapp_diag_copy)
+                    )
+                }
+            }
+        }
+    }
+}
+
+/**
+ * تقرير نصّي واحد يجمع ما طلبه المستخدم وما حدث فعلًا — ليُلصَق في تقرير عطل بلا سياق مفقود.
+ *
+ * والحقول بأسماء المفاتيح نفسها المستعملة في ملف الإعدادات والسجل، فيمكن مقارنة ما هنا بما
+ * هناك بالبحث لا بالتفسير.
+ */
+private fun buildPerAppDiagnosticsReport(
+    packageName: String?,
+    config: AppConfig?,
+    status: PerAppHardwareRuntimeStatus,
+): String = buildString {
+    appendLine("MaxManager per-app control report")
+    appendLine("app=${packageName ?: "unknown"}")
+    appendLine("recorded_at_ms=${status.atMs}")
+    appendLine("gpu_profile=${config?.gpu_profile ?: "unknown"}")
+    appendLine("gpu_max_freq=${config?.gpu_max_freq ?: "unknown"}")
+    appendLine("gpu_governor=${config?.gpu_governor ?: "unknown"}")
+    appendLine("cpu_governor=${config?.cpu_governor ?: "unknown"}")
+    appendLine("cpu_policy_controls=${config?.cpu_policy_controls.orEmpty().ifBlank { "default" }}")
+    appendLine("thermal_profile=${config?.thermal_profile ?: "unknown"}")
+    appendLine("refresh_rate=${config?.refresh_rate ?: "unknown"}")
+    appendLine("outcomes=${status.outcomes.size} failed=${status.failures.size}")
+    status.outcomes.forEach { outcome ->
+        appendLine(
+            "knob=${outcome.knob} outcome=${outcome.outcome} reason=${outcome.reason}" +
+                " expected=${outcome.expected} live=${outcome.live}"
+        )
+    }
+}
+
+@Composable
+private fun PerAppCpuControlSection(
+    encodedControls: String,
+    policies: List<nd.max.core.hardware.CpuHardwareBackend.Policy>,
+    runtimeStatus: nd.max.ui.util.PerAppCpuRuntimeStatus,
+    onSave: (String) -> Unit,
+    onRefreshStatus: () -> Unit,
+    enabled: Boolean = true
+) {
+    var expanded by remember { mutableStateOf(false) }
+    val saved = remember(encodedControls) { decodePerAppCpuPolicyControls(encodedControls).associateBy { it.policyName } }
+    val drafts = remember(encodedControls) { mutableStateMapOf<String, PerAppCpuPolicyControl>().apply { putAll(saved) } }
+    val configured = drafts.values.toList()
+    val summary = when {
+        configured.isEmpty() -> stringResource(R.string.appsettings_cpu_summary_default)
+        configured.any { it.mode == PerAppCpuControlMode.EXACT_LOCK } -> stringResource(R.string.appsettings_cpu_summary_exact, configured.size)
+        else -> stringResource(R.string.appsettings_cpu_summary_dynamic, configured.size)
+    }
+    val controllable = policies.filter { it.cpuFrequencyChoices().isNotEmpty() }
+
+    // الحشو الأفقي المحلّي أُزيل: الهيكل يملك `MaxSpace.gutter`، و16dp فوقه تعني 36dp.
+    Column(
+        modifier = Modifier.padding(top = MaxSpace.xl),
+        verticalArrangement = Arrangement.spacedBy(MaxSpace.sm)
+    ) {
+        Surface(
+            modifier = Modifier.fillMaxWidth().clickable(enabled = enabled) { expanded = !expanded },
+            shape = RoundedCornerShape(maxRadius(MaxRadius.tile)),
+            color = MaterialTheme.colorScheme.surfaceContainerLow,
+            border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = .22f))
+        ) {
+            Row(Modifier.padding(MaxCardSpec.padding), verticalAlignment = Alignment.CenterVertically) {
+                Icon(Icons.Rounded.Memory, null, tint = MaterialTheme.colorScheme.primary)
+                Spacer(Modifier.width(12.dp))
+                Column(Modifier.weight(1f)) {
+                    // كان نصًّا عربيًّا صلبًا في ملف الشاشة: يُقرأ عربيًّا حتى لمن لغته
+                    // الإنجليزية. العنوان يُترجم كأي عنوان آخر.
+                    Text(stringResource(R.string.max_app_advanced_options), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                    Text(summary, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+                // ووصف القارئ الشاشي كان نصًّا صلبًا أيضًا: غير مترجم وغير قابل للتهيئة.
+                IconButton(onClick = onRefreshStatus, enabled = enabled) { Icon(Icons.Rounded.Refresh, stringResource(R.string.cd_refresh), tint = MaterialTheme.colorScheme.onSurfaceVariant) }
+                Icon(if (expanded) Icons.Rounded.ExpandLess else Icons.Rounded.ExpandMore, null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+        }
+        AnimatedVisibility(visible = expanded) {
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                if (controllable.isEmpty()) {
+                    Text(stringResource(R.string.app_settings_cpu_unavailable), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+                controllable.forEach { policy ->
+                    // The OPP table is a catalogue; a vendor/thermal policy may lower the live
+                    // `scaling_max_freq`. Do not present impossible choices that the active kernel
+                    // will immediately clamp back down. The saved intent can still be higher and
+                    // will be reconsidered on a later app switch when the live ceiling changes.
+                    val liveCap = policy.maxKHz?.takeIf { it > 0L }
+                    val choices = policy.cpuFrequencyChoices().filter { liveCap == null || it <= liveCap }
+                    if (choices.isEmpty()) return@forEach
+                    val draft = drafts[policy.name] ?: PerAppCpuPolicyControl(policy.name, PerAppCpuControlMode.DEFAULT, policy.minKHz ?: choices.first(), policy.maxKHz?.let { minOf(it, choices.last()) } ?: choices.last())
+                    val modes = listOf(PerAppCpuControlMode.DEFAULT, PerAppCpuControlMode.DYNAMIC_RANGE, PerAppCpuControlMode.EXACT_LOCK)
+                    val labels = listOf(
+                        stringResource(R.string.default_label),
+                        stringResource(R.string.appsettings_cpu_mode_dynamic),
+                        stringResource(R.string.appsettings_cpu_mode_exact)
+                    )
+                    val minIndex = choices.cpuIndexFor(draft.minKHz)
+                    val maxIndex = choices.cpuIndexFor(draft.maxKHz).coerceAtLeast(minIndex)
+                    Surface(shape = RoundedCornerShape(maxRadius(MaxRadius.inset)), color = MaterialTheme.colorScheme.surfaceContainerLow, border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = .5f))) {
+                        Column(Modifier.padding(MaxCardSpec.padding), verticalArrangement = Arrangement.spacedBy(MaxSpace.sm)) {
+                            Text(policy.name.replaceFirstChar { it.uppercase() }, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
+                            Text("${policy.governor ?: stringResource(R.string.default_label)} · ${formatCpuKHz(policy.minKHz ?: choices.first())} – ${formatCpuKHz(policy.maxKHz ?: choices.last())}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                            ExpressiveDropdownItem(
+                                icon = Icons.Rounded.Tune,
+                                enabled = enabled,
+                                title = stringResource(R.string.appsettings_cpu_mode),
+                                summary = labels[modes.indexOf(draft.mode)],
+                                items = labels,
+                                selectedIndex = modes.indexOf(draft.mode),
+                                onItemSelected = { index ->
+                                    when (val mode = modes[index]) {
+                                        PerAppCpuControlMode.DEFAULT -> drafts.remove(policy.name)
+                                        PerAppCpuControlMode.DYNAMIC_RANGE -> drafts[policy.name] = draft.copy(mode = mode, minKHz = choices[minIndex], maxKHz = choices[maxIndex])
+                                        PerAppCpuControlMode.EXACT_LOCK -> drafts[policy.name] = draft.copy(mode = mode, minKHz = choices[maxIndex], maxKHz = choices[maxIndex])
+                                    }
+                                }
+                            )
+                            if (draft.mode == PerAppCpuControlMode.DYNAMIC_RANGE) {
+                                CpuFrequencySelector(stringResource(R.string.appsettings_cpu_min), choices, minIndex, enabled) { index -> drafts[policy.name] = draft.copy(minKHz = choices[index], maxKHz = choices[maxIndex.coerceAtLeast(index)]) }
+                                CpuFrequencySelector(stringResource(R.string.appsettings_cpu_max), choices, maxIndex, enabled) { index -> drafts[policy.name] = draft.copy(minKHz = choices[minIndex.coerceAtMost(index)], maxKHz = choices[index]) }
+                            } else if (draft.mode == PerAppCpuControlMode.EXACT_LOCK) {
+                                CpuFrequencySelector(stringResource(R.string.appsettings_cpu_locked), choices, maxIndex, enabled) { index -> drafts[policy.name] = draft.copy(minKHz = choices[index], maxKHz = choices[index]) }
+                            }
+                        }
+                    }
+                }
+                if (runtimeStatus.isFailure || runtimeStatus.isApplied) {
+                    val color = if (runtimeStatus.isFailure) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.secondary
+                    Surface(shape = RoundedCornerShape(maxRadius(MaxRadius.row)), color = color.copy(alpha = .10f), border = androidx.compose.foundation.BorderStroke(1.dp, color.copy(alpha = .24f))) {
+                        Row(Modifier.padding(MaxSpace.md), verticalAlignment = Alignment.CenterVertically) {
+                            Icon(if (runtimeStatus.isFailure) Icons.Outlined.ErrorOutline else Icons.Rounded.CheckCircle, null, tint = color)
+                            Spacer(Modifier.width(9.dp))
+                            val statusMessage = runtimeStatus.message.ifBlank {
+                                if (runtimeStatus.isFailure) stringResource(R.string.appsettings_cpu_not_applied)
+                                else stringResource(R.string.appsettings_cpu_verified)
+                            }
+                            Text(statusMessage, modifier = Modifier.weight(1f), style = MaterialTheme.typography.bodySmall)
+                            IconButton(onClick = onRefreshStatus, enabled = enabled) { Icon(Icons.Rounded.Refresh, stringResource(R.string.cd_refresh)) }
+                        }
+                    }
+                }
+                nd.max.ui.component.StudioOutlinedButton(onClick = { onSave(encodePerAppCpuPolicyControls(drafts.values)) }, modifier = Modifier.fillMaxWidth(), enabled = enabled && controllable.isNotEmpty()) {
+                    Icon(Icons.Rounded.Save, null)
+                    Spacer(Modifier.width(8.dp))
+                    Text(stringResource(R.string.app_settings_save_cpu_controls))
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun CpuFrequencySelector(label: String, choices: List<Long>, selectedIndex: Int, enabled: Boolean = true, onSelect: (Int) -> Unit) {
+    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+        Text(label, modifier = Modifier.weight(1f), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        IconButton(onClick = { onSelect((selectedIndex - 1).coerceAtLeast(0)) }, enabled = enabled && selectedIndex > 0) { Icon(Icons.Rounded.Remove, "Lower") }
+        Text(formatCpuKHz(choices[selectedIndex]), style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
+        IconButton(onClick = { onSelect((selectedIndex + 1).coerceAtMost(choices.lastIndex)) }, enabled = enabled && selectedIndex < choices.lastIndex) { Icon(Icons.Rounded.Add, "Higher") }
+    }
+}
+
+private fun nd.max.core.hardware.CpuHardwareBackend.Policy.cpuFrequencyChoices(): List<Long> {
+    if (availableFrequenciesKHz.isNotEmpty()) return availableFrequenciesKHz
+    val minKHz = provenMinKHz
+    val maxKHz = provenMaxKHz
+    return if (minKHz != null && maxKHz != null && minKHz <= maxKHz) {
+        listOfNotNull(minKHz, maxKHz).distinct()
+    } else {
+        emptyList()
+    }
+}
+
+private fun List<Long>.cpuIndexFor(value: Long): Int = indexOf(value).takeIf { it >= 0 } ?: indices.minByOrNull { kotlin.math.abs(this[it] - value) } ?: 0
+
+private fun formatCpuKHz(value: Long): String = when {
+    value <= 0L -> "—"
+    value >= 1_000_000L -> String.format(java.util.Locale.US, "%.2f GHz", value / 1_000_000.0)
+    else -> "${value / 1000} MHz"
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// Thermal Profile Chip Picker
+// ────────────────────────────────────────────────────────────────────────────
+
+@Composable
+private fun ProfilePresetEditor(
+    onDismiss: () -> Unit
+) {
+    val context = LocalContext.current
+    val names = listOf("power", "balanced", "gaming", "performance", "custom")
+    val labels = listOf(
+        stringResource(R.string.profile_label_power),
+        stringResource(R.string.Profile_Balanced),
+        stringResource(R.string.profile_label_gaming),
+        stringResource(R.string.Profile_Performance),
+        stringResource(R.string.profile_label_custom)
+    )
+    var values by remember {
+        mutableStateOf(names.associateWith { ProfilePresetStore.percentFor(context, it) })
+    }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.app_settings_customize_thermal_presets)) },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Text(
+                    stringResource(R.string.app_settings_thermal_presets_note),
+                    style = MaterialTheme.typography.bodySmall
+                )
+                names.forEachIndexed { index, name ->
+                    val value = values[name] ?: ProfilePresetStore.defaultPercent(name)
+                    Column {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(labels[index], fontWeight = FontWeight.SemiBold)
+                            Text("$value%")
+                        }
+                        MaxSlider(
+                            value = value.toFloat(),
+                            onValueChange = { v -> values = values + (name to v.toInt().coerceIn(20, 100)) },
+                            valueRange = 20f..100f,
+                            steps = 79
+                        )
+                    }
+                }
+                ProfileSharingBlock(
+                    onImported = { imported ->
+                        values = values + imported.associate { it.profile to it.percent }
+                    }
+                )
+
+                nd.max.ui.component.StudioTextButton(
+                    onClick = {
+                        ProfilePresetStore.reset(context)
+                        values = names.associateWith { ProfilePresetStore.percentFor(context, it) }
+                    },
+                    modifier = Modifier.align(Alignment.End)
+                ) {
+                    Icon(Icons.Rounded.RestartAlt, contentDescription = null)
+                    Spacer(Modifier.width(6.dp))
+                    Text(stringResource(R.string.app_settings_restore_preset_defaults))
+                }
+            }
+        },
+        confirmButton = {
+            nd.max.ui.component.StudioTextButton(onClick = {
+                values.forEach { (name, value) -> ProfilePresetStore.setPercent(context, name, value) }
+                onDismiss()
+            }) { Text(stringResource(R.string.max_app_save)) }
+        },
+        // `cancel` مفتاح قائم في ٨٥ لغة — لا يُكتب نصًّا صلبًا بجانب نظيره المترجم.
+        dismissButton = { nd.max.ui.component.StudioTextButton(onClick = onDismiss) { Text(stringResource(R.string.cancel)) } }
+    )
+}
+
+/**
+ * `AR-33` — مشاركة/استيراد البروفايلات **بمصدر معلن**.
+ *
+ * لماذا موجود في هذه النافذة: هنا تُضبط القيم، فهنا يجب أن يظهر **ما يعرفه التطبيق عن مصدرها**
+ * ويظهر حكم نقلها إلى جهاز آخر. ولا نصّ صلب هنا: كل نصّ من الموارد (EN + AR).
+ */
+@Composable
+private fun ProfileSharingBlock(onImported: (List<ProfileSharing.Entry>) -> Unit) {
+    val context = LocalContext.current
+    var status by remember { mutableStateOf<ProfileImportStatus?>(null) }
+
+    Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+        Text(
+            stringResource(R.string.max_profile_share_title),
+            fontWeight = FontWeight.SemiBold
+        )
+        Text(
+            stringResource(R.string.max_profile_share_desc),
+            style = MaterialTheme.typography.bodySmall
+        )
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            nd.max.ui.component.StudioTextButton(onClick = {
+                val document = ProfileSharing.read(context)
+                val clipboard = context.getSystemService(android.content.Context.CLIPBOARD_SERVICE)
+                    as? android.content.ClipboardManager
+                clipboard?.setPrimaryClip(
+                    android.content.ClipData.newPlainText("maxmanager-profile", ProfileSharing.encode(document))
+                )
+                status = ProfileImportStatus.Copied
+            }) {
+                Text(stringResource(R.string.max_profile_share_copy))
+            }
+            nd.max.ui.component.StudioTextButton(onClick = {
+                val clipboard = context.getSystemService(android.content.Context.CLIPBOARD_SERVICE)
+                    as? android.content.ClipboardManager
+                val raw = clipboard?.primaryClip?.getItemAt(0)?.coerceToText(context)?.toString()
+                status = evaluateImport(raw, ProfileSharing.currentSoc())
+            }) {
+                Text(stringResource(R.string.max_profile_share_paste))
+            }
+        }
+
+        when (val current = status) {
+            null -> Unit
+            ProfileImportStatus.Copied -> Text(
+                stringResource(R.string.max_profile_share_copied),
+                style = MaterialTheme.typography.bodySmall
+            )
+            ProfileImportStatus.Unreadable -> Text(
+                stringResource(R.string.max_profile_import_unreadable),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.error
+            )
+            is ProfileImportStatus.Parsed -> {
+                Text(
+                    stringResource(R.string.max_profile_import_accepted, current.report.accepted.size.toString()),
+                    style = MaterialTheme.typography.bodySmall
+                )
+                if (current.report.rejected.isNotEmpty()) {
+                    Text(
+                        stringResource(
+                            R.string.max_profile_import_rejected,
+                            current.report.rejected.size.toString(),
+                            current.report.rejected.first().reason.label()
+                        ),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+                if (current.report.missingSource.isNotEmpty()) {
+                    Text(
+                        stringResource(
+                            R.string.max_profile_import_missing_source,
+                            current.report.missingSource.size.toString()
+                        ),
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+                if (current.report.accepted.any { it.source == ProfileSharing.DeclaredSource.MEASURED }) {
+                    Text(
+                        stringResource(R.string.max_profile_import_measured_claim),
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
+                Text(
+                    when (current.report.deviceMatch) {
+                        ProfileSharing.DeviceMatch.SAME -> stringResource(R.string.max_profile_import_device_same)
+                        ProfileSharing.DeviceMatch.DIFFERENT -> stringResource(R.string.max_profile_import_device_different)
+                        ProfileSharing.DeviceMatch.UNKNOWN -> stringResource(R.string.max_profile_import_device_unknown)
+                    },
+                    style = MaterialTheme.typography.bodySmall
+                )
+                nd.max.ui.component.StudioTextButton(onClick = {
+                    onImported(current.report.accepted)
+                    status = ProfileImportStatus.Copied
+                }) {
+                    Text(stringResource(R.string.max_profile_import_apply))
+                }
+            }
+        }
+    }
+}
+
+/** حالات الاستيراد — عددي إلى أن يُترجَم في الواجهة، لا نصوص مبثوثة. */
+private sealed interface ProfileImportStatus {
+    data object Copied : ProfileImportStatus
+    data object Unreadable : ProfileImportStatus
+    data class Parsed(val report: ProfileSharing.ImportReport) : ProfileImportStatus
+}
+
+/** يترجم سبب الرفض إلى نصّ موارد (لا نصّ صلب في المنطق). */
+@Composable
+private fun ProfileSharing.RejectReason.label(): String = when (this) {
+    ProfileSharing.RejectReason.PERCENT_OUT_OF_RANGE -> stringResource(R.string.max_profile_reject_range)
+    ProfileSharing.RejectReason.PERCENT_NOT_A_NUMBER -> stringResource(R.string.max_profile_reject_number)
+    ProfileSharing.RejectReason.EMPTY_PROFILE -> stringResource(R.string.max_profile_reject_name)
+}
+
+/** يقرأ الحافظة ويحكم — وفشل القراءة أو الصيغة **ليس** نجاحًا صامتًا. */
+private fun evaluateImport(raw: String?, currentSoc: String?): ProfileImportStatus {
+    val report = ProfileSharing.decode(raw, currentSoc)
+    return if (!report.schemaSupported || !report.hasAnything) {
+        ProfileImportStatus.Unreadable
+    } else {
+        ProfileImportStatus.Parsed(report)
+    }
+}
+
+@Composable
+private fun ThermalProfilePicker(
+    selected: String,
+    labels: List<String>,
+    values: List<String>,
+    enabled: Boolean = true,
+    onSelectProfile: (String) -> Unit
+) {
+    val colorScheme = MaterialTheme.colorScheme
+    val icons = listOf(
+        Icons.Filled.DeviceUnknown,
+        Icons.Filled.BatteryFull,
+        Icons.Filled.Balance,
+        Icons.Filled.SportsEsports,
+        Icons.Filled.Speed,
+        Icons.Filled.Tune
+    )
+    // Intensity ramp: neutral (auto) -> green (power save) -> blue (balanced)
+    // -> amber (gaming) -> red (performance/max heat). Matches the same
+    // severity language the Home dashboard's temperature card already uses,
+    // so "performance profile" and "hot" read as the same kind of red
+    // everywhere in the app, not two unrelated color choices.
+    val accents = listOf(
+        colorScheme.onSurfaceVariant,
+        Color(0xFF36C77B),
+        Color(0xFF3D8EFF),
+        Color(0xFFFF9800),
+        Color(0xFFFF4444),
+        colorScheme.primary
+    )
+    val profiles = values.indices.map { i ->
+        Triple(values[i], icons.getOrElse(i) { Icons.Filled.Memory }, labels[i]) to accents.getOrElse(i) { colorScheme.primary }
+    }
+    Column(modifier = Modifier.padding(vertical = MaxSpace.xs)) {
+        profiles.chunked(3).forEach { rowProfiles ->
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm)) {
+                rowProfiles.forEach { (profile, accent) ->
+                    val (value, icon, label) = profile
+                    ThermalChip(
+                        modifier = Modifier.weight(1f),
+                        icon = icon, label = label,
+                        accent = accent,
+                        isSelected = selected == value,
+                        enabled = enabled,
+                        onClick = { onSelectProfile(value) }
+                    )
+                }
+                repeat(3 - rowProfiles.size) { Spacer(Modifier.weight(1f)) }
+            }
+            Spacer(Modifier.height(8.dp))
+        }
+        Spacer(Modifier.height(8.dp))
+    }
+}
+
+@Composable
+private fun ThermalChip(modifier: Modifier = Modifier, icon: ImageVector, label: String, accent: Color, isSelected: Boolean, enabled: Boolean = true, onClick: () -> Unit) {
+    val colorScheme = MaterialTheme.colorScheme
+    val bg = if (isSelected) accent.copy(alpha = 0.16f) else colorScheme.surfaceContainer
+    val fg = if (isSelected) accent else colorScheme.onSurfaceVariant
+    val border = if (isSelected) accent.copy(alpha = 0.5f) else Color.Transparent
+    Surface(
+        modifier = modifier.height(76.dp).border(1.5.dp, border, RoundedCornerShape(maxRadius(MaxRadius.inset))).clip(RoundedCornerShape(maxRadius(MaxRadius.inset))).clickable(enabled = enabled, onClick = onClick),
+        shape = RoundedCornerShape(maxRadius(MaxRadius.inset)), color = bg
+    ) {
+        Column(modifier = Modifier.fillMaxSize().padding(6.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+            if (isSelected) {
+                IconBadge(icon = icon, tint = accent, size = 22)
+            } else {
+                Icon(icon, contentDescription = label, tint = fg, modifier = Modifier.size(18.dp))
+            }
+            Spacer(Modifier.height(4.dp))
+            Text(text = label, style = MaterialTheme.typography.labelSmall, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal, color = fg, maxLines = 1, overflow = TextOverflow.Ellipsis, textAlign = TextAlign.Center)
+        }
+    }
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// Section Title
+// ────────────────────────────────────────────────────────────────────────────
+
+/**
+ * رأس قسم في هذه الشاشة.
+ *
+ * **وهو الصنف الثالث الذي وُحّد في `MaxSectionSpec`.** كان يرسم عنوانًا بـ`titleSmall`
+ * (وهو **حجم عنوان البطاقة** نفسه في `MaxCard`) وفراغًا `12dp`، بينما رأس القسم في طبقة
+ * التصميم `titleLarge` وفي اللوحة `15sp` — ثلاثة أحجام لحقيقة واحدة، فسقط الفرق بين «عنوان
+ * قسم» و«عنوان بطاقة» وهو أوّل ما طلبه المالك («The user should immediately understand what is
+ * a page title, section title, card title, and supporting description»).
+ *
+ * والمؤشّر التمييزي هنا **صندوق بأيقونة** لا شرطة ملوّنة — اختلاف في شكل المؤشّر لا في مستواه،
+ * ومقاسه الآن من العقد كذلك (`accentBox`/`accentBoxRadius`).
+ */
+@Composable
+fun SettingsSectionTitle(icon: ImageVector, title: String, color: Color) {
+    // الفراغان من عقد القسم كرأس القسم في طبقة التصميم (`spaceBefore`/`spaceAfter`) لا
+    // `spaceAfter` وحدها على الجهتين: كان الفصل عن القسم السابق 12dp واللحاق بمحتواه 12dp،
+    // فالقارئ لا يرى أين يبتدئ قسم جديد. (المحاذاة الأفقية يملكها الهيكل — لا حشو هنا.)
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(
+                top = MaxSectionSpec.spaceBefore,
+                bottom = MaxSectionSpec.spaceAfter
+            ),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(
+            modifier = Modifier
+                .size(MaxSectionSpec.accentBox)
+                .clip(RoundedCornerShape(MaxSectionSpec.accentBoxRadius))
+                .background(color.copy(alpha = MaxAlpha.toneContainerStrong)),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = color,
+                modifier = Modifier.size(MaxSize.iconGlyphSmall)
+            )
+        }
+        Spacer(Modifier.width(MaxSectionSpec.accentGap))
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleMedium.copy(lineBreak = LineBreak.Heading),
+            fontWeight = FontWeight.Bold,
+            color = color
+        )
+    }
+}
+
+/** Backwards-compat wrapper for existing call sites. */
+@Composable
+fun SectionHeader(title: String) {
+    MaxManagerSectionTitle(text = title, accent = MaterialTheme.colorScheme.secondary)
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// App Hero Header
+// ────────────────────────────────────────────────────────────────────────────
+
+@Composable
+fun AppHeroHeader(
+    appDetails: Triple<String, android.content.pm.ApplicationInfo?, String>,
+    packageName: String?,
+    trailing: @Composable () -> Unit = {},
+) {
+    val context = LocalContext.current
+    val pm = context.packageManager
+    val density = LocalDensity.current
+    val iconSizePx = remember(density) { with(density) { MaxCardSpec.iconContainer.roundToPx() } }
+
+    var appBitmap by remember(packageName) { mutableStateOf(packageName?.let { AppIconCache.get(it) }) }
+    LaunchedEffect(packageName, iconSizePx) {
+        if (appBitmap == null && packageName != null) {
+            appDetails.second?.let { info ->
+                try { appBitmap = AppIconCache.loadIcon(pm, info, iconSizePx) } catch (_: Exception) {}
+            }
+        }
+    }
+
+    val isSystem = remember(appDetails.second) { ((appDetails.second?.flags ?: 0) and ApplicationInfo.FLAG_SYSTEM) != 0 }
+    val isGame = remember(packageName) { isGameCategory(context, packageName) }
+    val colors = MaterialTheme.colorScheme
+
+    // Identity is a single row: icon, name, package, badges. It used to carry a decorative sparkle
+    // and a tile inside a tile, and its package line used the tracked eyebrow style.
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(vertical = MaxSpace.sm),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(MaxSpace.lg)
+    ) {
+        Box(
+            modifier = Modifier
+                .size(56.dp)
+                .clip(RoundedCornerShape(maxRadius(MaxRadius.row)))
+                .background(colors.surfaceContainerHighest),
+            contentAlignment = Alignment.Center
+        ) {
+            Crossfade(targetState = appBitmap, animationSpec = tween(180), label = "AppIcon") { icon ->
+                if (icon != null) {
+                    androidx.compose.foundation.Image(
+                        bitmap = icon,
+                        contentDescription = null,
+                        modifier = Modifier.size(MaxCardSpec.iconContainer).clip(RoundedCornerShape(maxRadius(MaxRadius.chip)))
+                    )
+                } else {
+                    Icon(
+                        imageVector = Icons.Filled.Apps,
+                        contentDescription = null,
+                        tint = colors.onSurfaceVariant,
+                        modifier = Modifier.size(28.dp)
+                    )
+                }
+            }
+        }
+        Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(MaxSpace.xs)) {
+            Text(
+                text = appDetails.first,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            Text(
+                text = packageName ?: stringResource(R.string.unknown_package),
+                style = MaterialTheme.typography.bodySmall,
+                color = colors.onSurfaceVariant,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            Row(horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs)) {
+                AppBadge("v${appDetails.third}", colors.secondaryContainer, colors.onSecondaryContainer)
+                if (isSystem) AppBadge(stringResource(R.string.app_badge_system), colors.tertiaryContainer, colors.onTertiaryContainer)
+                if (isGame) AppBadge(stringResource(R.string.app_badge_game), colors.primaryContainer, colors.onPrimaryContainer)
+            }
+        }
+        trailing()
+    }
+}
+
+@Composable
+private fun AppBadge(text: String, bg: Color, fg: Color) {
+    Surface(color = bg, shape = RoundedCornerShape(maxRadius(MaxRadius.chip))) {
+        Text(
+            text = text,
+            modifier = Modifier.padding(horizontal = MaxSpace.sm, vertical = MaxSpace.xs),
+            style = MaterialTheme.typography.labelMedium,
+            fontWeight = FontWeight.SemiBold,
+            color = fg
+        )
+    }
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// Feature Guide Dialog
+// ────────────────────────────────────────────────────────────────────────────
+
+@Composable
+fun FeatureGuideDialog(visible: Boolean, onDismiss: () -> Unit) {
+    if (!visible) return
+    val colorScheme = MaterialTheme.colorScheme
+    CustomContentDialog(
+        visible = visible,
+        title = stringResource(R.string.appguide_title),
+        onDismiss = onDismiss,
+        onConfirm = onDismiss,
+        confirmText = stringResource(R.string.appguide_got_it),
+        dismissText = "" // Hide cancel button
+    ) {
+        LazyColumn(
+            modifier = Modifier.fillMaxWidth().heightIn(max = 400.dp),
+            contentPadding = PaddingValues(bottom = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            item {
+                GuideItem(Icons.Rounded.FlashOn, stringResource(R.string.appfeature_cpu_boost_title), stringResource(R.string.appguide_cpu_boost_desc), colorScheme.primary)
+            }
+            item {
+                GuideItem(Icons.Filled.Thermostat, stringResource(R.string.appguide_thermal_title), stringResource(R.string.appguide_thermal_desc), colorScheme.error)
+            }
+            item {
+                GuideItem(Icons.Rounded.Memory, stringResource(R.string.appguide_gpu_gov_title), stringResource(R.string.appguide_gpu_gov_desc), colorScheme.tertiary)
+            }
+            item {
+            }
+            item {
+                GuideItem(Icons.Rounded.Brush, stringResource(R.string.appguide_hw_ui_title), stringResource(R.string.appguide_hw_ui_desc), colorScheme.primaryContainer)
+            }
+            item {
+                GuideItem(Icons.Rounded.Block, stringResource(R.string.appfeature_kill_bg_title), stringResource(R.string.appguide_kill_bg_desc), colorScheme.secondary)
+            }
+            item {
+                GuideItem(Icons.Rounded.Cable, stringResource(R.string.appguide_bypass_title), stringResource(R.string.appguide_bypass_desc), colorScheme.primary)
+            }
+        }
+    }
+}
+
+@Composable
+private fun GuideItem(icon: ImageVector, title: String, desc: String, color: Color) {
+    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.Top) {
+        Box(modifier = Modifier.size(36.dp).clip(RoundedCornerShape(maxRadius(MaxRadius.chip))).background(color.copy(alpha = 0.15f)), contentAlignment = Alignment.Center) {
+            Icon(icon, contentDescription = null, tint = color, modifier = Modifier.size(20.dp))
+        }
+        Spacer(Modifier.width(12.dp))
+        Column(modifier = Modifier.weight(1f)) {
+            Text(text = title, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
+            Spacer(Modifier.height(4.dp))
+            Text(text = desc, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurface)
+        }
+    }
+}
+
+// ────────────────────────────────────────────────────────────────────────────
+// Top App Bar
+// ────────────────────────────────────────────────────────────────────────────
+
+@Composable
+fun AppSettingsTopAppBar(
+    scrollBehavior: TopAppBarScrollBehavior,
+    onLaunchApp: () -> Unit,
+    onOpenAppInfo: () -> Unit,
+    onShowGuide: () -> Unit,
+    onOpenMaxBackup: () -> Unit,
+    onOpenAppOps: () -> Unit,
+    onBack: () -> Unit
+) {
+    MaxManagerSubScreenTopBar(
+        scrollBehavior = scrollBehavior,
+        title = stringResource(R.string.app_settings_title),
+        onBack = onBack,
+        accentIcon = Icons.Filled.Apps,
+        accent = MaterialTheme.colorScheme.secondary,
+        actions = {
+            // مدخلا `Max Backup` و`AppOps` بنفس **شكل** زر `Control map` في شاشة التحكم:
+            // زر أيقونة في شريط العنوان، بلا إطار ولا لون مملوء، وباسمه في الوصف الصوتي.
+            // ونفس التلوين حرفيًّا (`onSurfaceVariant`) حتى لا يبدو أحدهما زرًّا آخر.
+            IconButton(onClick = onOpenMaxBackup) {
+                Icon(
+                    imageVector = Icons.Rounded.Backup,
+                    contentDescription = stringResource(R.string.max_backup_title),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            IconButton(onClick = onOpenAppOps) {
+                Icon(
+                    imageVector = Icons.Rounded.Shield,
+                    contentDescription = stringResource(R.string.max_perms_title),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            IconButton(onClick = onShowGuide) { Icon(Icons.AutoMirrored.Rounded.HelpOutline, contentDescription = stringResource(R.string.appguide_cd)) }
+            IconButton(onClick = onLaunchApp) { Icon(Icons.AutoMirrored.Rounded.Launch, contentDescription = stringResource(R.string.str_launch_app)) }
+            IconButton(onClick = onOpenAppInfo) { Icon(Icons.Rounded.Info, contentDescription = stringResource(R.string.str_app_info)) }
+        }
+    )
+}
+
+/*
+ * **`AppSettingsTabInfo` و`AppSettingsTabRow` أُزيلا بأمر المالك** («أعد تصميم مكوّن التبويب
+ * عالميًّا»)، ولم يُترك منهما بديل محلّي: كان تبويباتِ هذه الشاشة وحدها، والعلاج المعماري
+ * مكانه طبقة التصميم. فالشريط الآن `MaxTabStrip` (`ui/design/MaxTabStrip.kt`) ومدخله `MaxTab`.
+ *
+ * **والعطب الذي أزالهما** كان في `TabRow` نفسه لا في الإعدادات: هي تقسم العرض بالسوية على
+ * عدد التبويبات، فخمسة تبويبات على شاشة ٣٦٠dp تعطي كل واحد ≈٦٤dp بعد الأيقونة — أقل من عرض
+ * كلمة `Gaming`. ولا `maxLines`/`overflow` ينجي منها، لأن الحاوية هي التي ضاقت.
+ */
+
+
+private fun AppConfig.performanceCustomizedCount(): Int = listOf(
+    perf_lite_mode, cpu_boost, game_preload, app_priority, kill_bg_apps,
+    gpu_profile, cpu_governor, gpu_governor, gpu_max_freq
+).count { it != "default" } + if (cpu_policy_controls.isNotBlank()) 1 else 0
+
+/** فهرس تبويب «تزييف» في شريط التبويبات: آخر تبويب، بعد «الألعاب» و«الطاقة». */
+private const val SPOOF_TAB = 4
+
+private fun AppConfig.displayCustomizedCount(isGameApp: Boolean): Int {
+    var count = listOf(refresh_rate, renderer, force_hw_ui).count { it != "default" }
+    if (isGameApp && resolution_downscale != "default") count++
+    return count
+}
+
+private fun AppConfig.gamingCustomizedCount(): Int = listOf(
+    touch_boost, haptic_feedback, dnd_on_gaming, disable_notifs
+).count { it != "default" }
+
+private fun AppConfig.powerCustomizedCount(): Int = listOf(
+    bypass_charging, wifi_no_sleep
+).count { it != "default" }
+
+// ────────────────────────────────────────────────────────────────────────────
+// Background governance (AR-14)
+//
+// يشرح آلية المنصّة المطبَّقة على هذا التطبيق (App Standby + Doze).
+// قراءة فقط: لا تغيير حاوية ولا إعفاء ولا قتل — "اقتل الخلفية" ليس حلًّا.
+// ────────────────────────────────────────────────────────────────────────────
+
+// ────────────────────────────────────────────────────────────────────────────
+// App Metadata Helpers
+// ────────────────────────────────────────────────────────────────────────────
+
+@Suppress("DEPRECATION")
+fun isGameCategory(context: android.content.Context, packageName: String?): Boolean {
+    if (packageName.isNullOrEmpty()) return false
+    return try {
+        val info = context.packageManager.getApplicationInfo(packageName, 0)
+        info.category == ApplicationInfo.CATEGORY_GAME || (info.flags and ApplicationInfo.FLAG_IS_GAME) != 0
+    } catch (_: Exception) { false }
+}
+
+fun getAppDetails(context: android.content.Context, packageName: String?): Triple<String, android.content.pm.ApplicationInfo?, String> {
+    return try {
+        val pm = context.packageManager
+        val info = pm.getApplicationInfo(packageName ?: "", 0)
+        val pkgInfo = pm.getPackageInfo(packageName ?: "", 0)
+        Triple(pm.getApplicationLabel(info).toString(), info, pkgInfo.versionName ?: context.getString(R.string.status_unknown))
+    } catch (_: Exception) {
+        Triple(context.getString(R.string.unknown_app), null, "0.0.0")
+    }
+}

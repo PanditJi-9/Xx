@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_spoof_ui_strings.xml -->
+<resources>
+    <string name="spoof_ui_real_device">እውነተኛ መሣሪያ</string>
+    <string name="spoof_ui_pill_verified">ማዋቀር ተረጋግጧል</string>
+    <string name="spoof_ui_pill_unverified">አልተረጋገጠም።</string>
+    <string name="spoof_ui_pill_off">ጠፍቷል</string>
+    <string name="spoof_device_for_app">ለዚህ መተግበሪያ መሣሪያ</string>
+    <string name="spoof_device_real_hint">ይህ መተግበሪያ የእርስዎን እውነተኛ መሣሪያ ይመለከታል። አንዱን ለመምረጥ ካርዱን ይንኩ።</string>
+    <string name="spoof_device_pick">መሳሪያን ከካታሎግ ለመምረጥ መታ ያድርጉ ወይም ብጁ የመሣሪያ መረጃ ያስገቡ።</string>
+    <string name="spoof_device_in_use">ጥቅም ላይ የዋለ</string>
+    <string name="spoof_device_restart">ስርዓቱን ሳይሆን የታለመውን መተግበሪያ ከዚያ በኋላ እንደገና ያስጀምሩት።</string>
+    <string name="spoof_ui_apply_title">ለዚህ መተግበሪያ ያመልክቱ</string>
+    <string name="spoof_ui_apply_action">ይገምግሙ እና ይተግብሩ</string>
+    <string name="spoof_ui_apply_confirm_title">ይህን መተግበሪያ ብቻ ይተግብሩ?</string>
+    <string name="spoof_ui_apply_confirm_text">ይህ መተግበሪያ ብቻ ተዘጋጅቷል; ሌሎች መተግበሪያዎች ያልተነኩ ናቸው. ስርዓቱን ሳይሆን የታለመውን መተግበሪያ ከዚያ በኋላ እንደገና ያስጀምሩት። በኋላ የተደረገ ማስተካከያ ይህንን ማረጋገጫ ይሰርዛል። COPG ይህን መተግበሪያ አስቀድሞ ከዘረዘረው፣ መሳሪያዎ ቅድሚያ ይሰጣል እና የ COPG መስመር እንዳለ ይቆያል።</string>
+    <string name="spoof_ui_apply_confirm">ያመልክቱ</string>
+    <string name="spoof_ui_apply_reason">የሞተር እምቢታ: %1$s</string>
+    <string name="spoof_engine_absent">የሞተር ሞጁል ሊነበብ አይችልም. ሞጁል ሞጁሉን ያረጋግጡ id=COPG፣ ጫን ወይም እንደገና ጫን፣ ከዚያ ይህን ስክሪን እንደገና ክፈት።</string>
+    <string name="spoof_engine_disabled">በእርስዎ ስር አስተዳዳሪ ውስጥ የ COPG ሞጁል ተሰናክሏል። እዚያ ያንቁት፣ ዳግም ያስነሱት፣ ከዚያ እንደገና ይተግብሩ።</string>
+    <string name="spoof_engine_removal_pending">COPG እንዲወገድ ምልክት ተደርጎበታል እና ከሚቀጥለው ዳግም ማስነሳት በኋላ ይጠፋል። ከመተግበሩ በፊት እንደገና ይጫኑት.</string>
+    <string name="spoof_engine_update_pending">የ COPG ዝማኔ ዳግም ማስጀመርን እየጠበቀ ነው። መጀመሪያ እንደገና ያስነሱ፣ ከዚያ እንደገና ያመልክቱ።</string>
+    <string name="spoof_ui_apply_pending">ከመጨረሻው ማመልከቻ ጀምሮ ተለውጧል - እውን ለማድረግ እንደገና ያመልክቱ።</string>
+    <string name="spoof_ui_restore_title">እውነተኛ መሣሪያዎን ይጠቀሙ</string>
+    <string name="spoof_ui_restore_action">ለዚህ መተግበሪያ ስፓን ያስወግዱ</string>
+    <string name="spoof_ui_restore_notice">ይህ መተግበሪያ የተቀመጠ መሳሪያ እና የ COPG ማስተካከያዎቹ ተወግደዋል፣ እና ሞተሩ ያለዚህ መተግበሪያ እንደገና ይፃፋል። ሌሎች መተግበሪያዎች ያልተነኩ ናቸው። ከዚያ በኋላ የተፈለገውን መተግበሪያ እንደገና ያስጀምሩ።</string>
+    <string name="app_tab_spoof">ማንኪያ</string>
+    <string name="spoof_picker_title">መሣሪያ ይምረጡ</string>
+    <string name="spoof_picker_custom">ብጁ የመሣሪያ መረጃ</string>
+    <string name="spoof_picker_custom_hint">ለዚህ መተግበሪያ የሚፈልጉትን የምርት ስም፣ ሞዴል እና የጣት አሻራ ያስገቡ</string>
+    <string name="spoof_custom_title">ብጁ የመሣሪያ መረጃ</string>
+    <string name="spoof_custom_rules">ስም፣ ብራንድ፣ ሞዴል፣ መሳሪያ እና ምርት ያስፈልጋሉ፣ እያንዳንዳቸው እስከ 120 ቁምፊዎች፣ ምንም የቁጥጥር ቁምፊዎች የላቸውም። አምራች፣ የጣት አሻራ እና ኤስዲኬ አማራጭ ናቸው። የጣት አሻራ በተመሳሳዩ የምርት ስም፣ ምርት እና መሳሪያ መጀመር አለበት።</string>
+    <string name="spoof_manufacturer">አምራች (MANUFACTURER)</string>
+    <string name="spoof_sdk">የኤስዲኬ ደረጃ፣ አማራጭ፣ ከ1 እስከ 100</string>
+    <string name="spoof_custom_invalid">አንዳንድ መስኮች ልክ ያልሆኑ ናቸው። ከላይ ያሉትን ደንቦች ይፈትሹ እና ከዚያ እንደገና ያስቀምጡ.</string>
+    <string name="spoof_custom_save">ለዚህ መተግበሪያ ያስቀምጡ እና ይምረጡ</string>
+    <string name="spoof_impersonation_title">ማንቆርቆር</string>
+    <string name="spoof_impersonation_desc">ነፃ የ COPG አማራጮች ብቻ። በግምገማ ወደ ሞተሩ ተፃፈ እና ተግብር።</string>
+    <string name="spoof_impersonation_summary_cpu">CPU ማንቆርቆር፡ %1$s</string>
+    <string name="spoof_impersonation_needs_device">መጀመሪያ ለዚህ መተግበሪያ መሣሪያ ይምረጡ። እነዚህ አማራጮች የተጻፉት በመሳሪያ ብቻ ነው።</string>
+    <string name="spoof_cpu_spoof">CPU መፍጨት</string>
+    <string name="spoof_cpu_real">እውነተኛ CPU</string>
+    <string name="spoof_cpu_block">አግድ CPU</string>
+    <string name="spoof_cpu_block_desc">ይህን መተግበሪያ ከ CPU ማጭበርበር አያካትትም።</string>
+    <string name="spoof_cpu_picker_title">CPU ይምረጡ</string>
+    <string name="copg_tweaks_section">የ COPG ማስተካከያዎች</string>
+    <string name="copg_tweak_nolog_title">ምዝግብ ማስታወሻን አሰናክል</string>
+    <string name="copg_tweak_nolog_desc">የ COPG ምዝግብ ማስታወሻን በዚህ መተግበሪያ ላይ ይተገበራል። እዚህ ተቀምጧል፣ በግምገማ ወደ ሞተሩ ተፃፈ እና በስፖፍ ትር ውስጥ ተግብር።</string>
+    <string name="copg_tweak_dab_title">ራስ-ብሩህነትን አሰናክል</string>
+    <string name="copg_tweak_dab_desc">የ COPG ራስ-ብሩህነት ማስተካከያ በዚህ መተግበሪያ ላይ ይተገበራል። እዚህ ተቀምጧል፣ በግምገማ ወደ ሞተሩ ተፃፈ እና በስፖፍ ትር ውስጥ ተግብር።</string>
+    <string name="copg_tweak_kso_title">ማያ ገጹን እንደበራ አቆይ</string>
+    <string name="copg_tweak_kso_desc">የ COPG ስክሪን ላይ ማቆየት በዚህ መተግበሪያ ላይ ይተገበራል። እዚህ ተቀምጧል፣ በግምገማ ወደ ሞተሩ ተፃፈ እና በስፖፍ ትር ውስጥ ተግብር።</string>
+    <string name="copg_tweak_needs_device">በመጀመሪያ ለዚህ መተግበሪያ መሣሪያ ያስፈልገዋል፣ በ Spoof ትር ውስጥ።</string>
+</resources>

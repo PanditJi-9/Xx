@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_spoof_ui_strings.xml -->
+<resources>
+    <string name="spoof_ui_real_device">Peranti sebenar</string>
+    <string name="spoof_ui_pill_verified">Konfigurasi disahkan</string>
+    <string name="spoof_ui_pill_unverified">Tidak disahkan</string>
+    <string name="spoof_ui_pill_off">Mati</string>
+    <string name="spoof_device_for_app">Peranti untuk apl ini</string>
+    <string name="spoof_device_real_hint">Apl ini melihat peranti sebenar anda. Ketik kad untuk memilih satu.</string>
+    <string name="spoof_device_pick">Ketik untuk memilih peranti daripada katalog atau masukkan maklumat peranti tersuai.</string>
+    <string name="spoof_device_in_use">Sedang digunakan</string>
+    <string name="spoof_device_restart">Mulakan semula apl sasaran selepas itu, bukan sistem.</string>
+    <string name="spoof_ui_apply_title">Mohon untuk aplikasi ini</string>
+    <string name="spoof_ui_apply_action">Semak dan mohon</string>
+    <string name="spoof_ui_apply_confirm_title">Gunakan apl ini sahaja?</string>
+    <string name="spoof_ui_apply_confirm_text">Hanya aplikasi ini disediakan; aplikasi lain tidak disentuh. Mulakan semula apl sasaran selepas itu, bukan sistem. Suntingan kemudian membatalkan pengesahan ini. Jika COPG sudah menyenaraikan apl ini, peranti anda diutamakan dan talian COPG kekal seperti sedia ada.</string>
+    <string name="spoof_ui_apply_confirm">Mohon</string>
+    <string name="spoof_ui_apply_reason">Penolakan enjin: %1$s</string>
+    <string name="spoof_engine_absent">Modul enjin tidak boleh dibaca. Sahkan modul yang module.propnya tertera id=COPG, pasang atau pasang semula, kemudian buka semula skrin ini.</string>
+    <string name="spoof_engine_disabled">Modul COPG dilumpuhkan dalam pengurus akar anda. Dayakannya di sana, but semula, kemudian gunakan semula.</string>
+    <string name="spoof_engine_removal_pending">COPG ditandakan untuk dialih keluar dan akan hilang selepas but semula seterusnya. Pasang semula sebelum memohon.</string>
+    <string name="spoof_engine_update_pending">Kemas kini COPG sedang menunggu but semula. But semula dahulu, kemudian gunakan semula.</string>
+    <string name="spoof_ui_apply_pending">Berubah sejak permohonan terakhir — mohon sekali lagi untuk menjadikannya nyata.</string>
+    <string name="spoof_ui_restore_title">Gunakan peranti sebenar anda</string>
+    <string name="spoof_ui_restore_action">Alih keluar spoof untuk apl ini</string>
+    <string name="spoof_ui_restore_notice">Peranti yang disimpan apl ini dan tweak COPGnya dialih keluar dan enjin ditulis semula tanpa apl ini. Apl lain tidak disentuh. Mulakan semula apl sasaran selepas itu.</string>
+    <string name="app_tab_spoof">Spoof</string>
+    <string name="spoof_picker_title">Pilih peranti</string>
+    <string name="spoof_picker_custom">Maklumat peranti tersuai</string>
+    <string name="spoof_picker_custom_hint">Masukkan jenama, model dan cap jari yang anda inginkan untuk apl ini</string>
+    <string name="spoof_custom_title">Maklumat peranti tersuai</string>
+    <string name="spoof_custom_rules">Nama, jenama, model, peranti dan produk diperlukan, sehingga 120 aksara setiap satu, tanpa aksara kawalan. Pengeluar, cap jari dan SDK adalah pilihan. Cap jari mesti bermula dengan jenama, produk dan peranti yang sama.</string>
+    <string name="spoof_manufacturer">Pengeluar (PENGENALAN)</string>
+    <string name="spoof_sdk">Tahap SDK, pilihan, 1 hingga 100</string>
+    <string name="spoof_custom_invalid">Sesetengah medan tidak sah. Semak peraturan di atas, kemudian simpan semula.</string>
+    <string name="spoof_custom_save">Simpan dan pilih untuk apl ini</string>
+    <string name="spoof_impersonation_title">Menipu</string>
+    <string name="spoof_impersonation_desc">Pilihan COPG percuma sahaja. Ditulis kepada enjin oleh Semak dan gunakan.</string>
+    <string name="spoof_impersonation_summary_cpu">CPU menipu: %1$s</string>
+    <string name="spoof_impersonation_needs_device">Pilih peranti untuk apl ini dahulu. Pilihan ini ditulis hanya dengan peranti.</string>
+    <string name="spoof_cpu_spoof">CPU menipu</string>
+    <string name="spoof_cpu_real">Sebenar CPU</string>
+    <string name="spoof_cpu_block">Sekat CPU</string>
+    <string name="spoof_cpu_block_desc">Mengecualikan apl ini daripada CPU penipuan.</string>
+    <string name="spoof_cpu_picker_title">Pilih CPU</string>
+    <string name="copg_tweaks_section">Tweak COPG</string>
+    <string name="copg_tweak_nolog_title">Lumpuhkan pengelogan</string>
+    <string name="copg_tweak_nolog_desc">Menggunakan tweak pengelogan COPG pada apl ini. Disimpan di sini, ditulis kepada enjin dengan Semak dan gunakan dalam tab Spoof.</string>
+    <string name="copg_tweak_dab_title">Lumpuhkan kecerahan automatik</string>
+    <string name="copg_tweak_dab_desc">Menggunakan tweak auto-kecerahan COPG pada apl ini. Disimpan di sini, ditulis kepada enjin dengan Semak dan gunakan dalam tab Spoof.</string>
+    <string name="copg_tweak_kso_title">Pastikan skrin dihidupkan</string>
+    <string name="copg_tweak_kso_desc">Menggunakan tweak keep-screen-on COPG pada apl ini. Disimpan di sini, ditulis kepada enjin dengan Semak dan gunakan dalam tab Spoof.</string>
+    <string name="copg_tweak_needs_device">Memerlukan peranti untuk apl ini dahulu, dalam tab Spoof.</string>
+</resources>

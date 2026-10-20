@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_security_strings.xml -->
+<resources>
+    <string name="security_tamper_title">ଆରମ୍ଭ କରିବାକୁ ଅସମର୍ଥ |</string>
+    <string name="security_tamper_message">MaxManager ର ଏହି ନିର୍ମାଣ ଅକ୍ଷୁର୍ଣ୍ଣ ନୁହେଁ | ସଂସ୍ଥାପିତ ଫାଇଲଗୁଡ଼ିକ ସ୍ୱାକ୍ଷରିତ ପ୍ରକାଶନ ସହିତ ଆଉ ମେଳ ଖାଉ ନାହିଁ, ତେଣୁ ଏହା ଚାଲିବ ନାହିଁ | ଏହାର ମୂଳ ଉତ୍ସରୁ ଅଫିସିଆଲ୍ ବିଲ୍ଡକୁ ପୁନ in ସଂସ୍ଥାପନ କରନ୍ତୁ |</string>
+    <string name="security_tamper_close">ବନ୍ଦ</string>
+</resources>

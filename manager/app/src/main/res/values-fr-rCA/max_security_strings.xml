@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_security_strings.xml -->
+<resources>
+    <string name="security_tamper_title">Impossible de démarrer</string>
+    <string name="security_tamper_message">Cette version de MaxManager n’est pas intacte. Les fichiers installés ne correspondent plus à la version signée, le programme ne s\'exécutera donc pas. Réinstallez la version officielle à partir de sa source d\'origine.</string>
+    <string name="security_tamper_close">Fermer</string>
+</resources>

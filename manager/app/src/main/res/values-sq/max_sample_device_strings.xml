@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_sample_device_strings.xml -->
+<resources>
+    <string name="sample_pick_title">Zgjidhni pajisjen e mostrës</string>
+    <string name="sample_pick_button">Zgjidhni pajisjen e mostrës</string>
+    <string name="sample_auto_hint">Zgjedhja e një pajisjeje plotëson markën, prodhuesin, modelin, pajisjen, produktin dhe gjurmën e gishtit për ju. Përdorni Manualin për t\'i shtypur vetë.</string>
+    <string name="sample_manual">Manual</string>
+    <string name="sample_close">Mbylle</string>
+    <string name="sample_search">Kërko pajisje</string>
+    <string name="sample_empty">Asnjë pajisje që përputhet.</string>
+    <string name="sample_unavailable">Katalogu i pajisjes nuk mund të lexohej.</string>
+    <string name="sample_row_sub">Android %1$s · %2$s</string>
+    <string name="sample_row_sub_plain">%1$s</string>
+    <string name="sample_fp_shared">E njëjta gjurmë gishti si një pajisje tjetër katalogu</string>
+    <string name="sample_credit">Të dhënat e katalogut: COPG (Apache-2.0), %1$s</string>
+    <string name="sample_limit">Është arritur kufiri i profilit (100).</string>
+</resources>

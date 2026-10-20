@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_copg_tag_strings.xml -->
+<resources>
+    <string name="copg_tags_title">慢性阻塞性肺病选项</string>
+    <string name="copg_tags_desc">保存为意图并与设备配置文件一起写入。只有四种舒适选项适用于每个 COPG 版本；其余的需要 COPG 6.8.0 或更高版本。 PRO 选项需要 COPG PRO 许可证，引擎可能会忽略它们。</string>
+    <string name="copg_tier_pro">专业版</string>
+    <string name="copg_footprint_resident">保留在应用程序的内存中，切勿与反作弊游戏一起使用</string>
+    <string name="copg_need_ack">首先确认以下风险</string>
+    <string name="copg_tag_refused">已安装的 COPG 版本不允许使用选定的 COPG 选项。什么也没写。</string>
+    <string name="copg_tag_needs_device">选项是用设备配置文件编写的，而这个应用程序还没有。</string>
+    <string name="copg_tag_value_hint">价值</string>
+    <string name="copg_tag_bad_value">字母、数字、空格和。仅限 _ - / +（最多 60 个）</string>
+    <string name="copg_tag_save">节省</string>
+    <string name="copg_tag_remove">消除</string>
+    <string name="copg_tag_dnd">玩耍时请勿打扰</string>
+    <string name="copg_tag_dab">禁用自动亮度</string>
+    <string name="copg_tag_kso">保持屏幕开启</string>
+    <string name="copg_tag_nolog">停止记录</string>
+    <string name="copg_tag_dpi">屏幕分辨率</string>
+    <string name="copg_tag_serial">每个应用程序的序列号</string>
+    <string name="copg_tag_cpu">CPU型号</string>
+    <string name="copg_tag_blocked">强行真实CPU</string>
+    <string name="copg_tag_vpn">隐藏VPN</string>
+    <string name="copg_tag_vpns">隐藏 VPN（严格）</string>
+    <string name="copg_tag_hidedev">隐藏开发者选项和USB调试</string>
+    <string name="copg_tag_tz">时区</string>
+    <string name="copg_tag_lang">语言和地区</string>
+    <string name="copg_tag_gpu">GPU型号</string>
+    <string name="copg_tag_cow">构建属性（写入时复制）</string>
+    <string name="copg_tag_aid">安卓ID</string>
+    <string name="copg_tag_gaid">广告ID</string>
+    <string name="copg_tag_appset">应用程序集ID</string>
+    <string name="copg_tag_drm">宽藤/DRM</string>
+    <string name="copg_tag_imei">国际移动设备识别码</string>
+    <string name="copg_tag_sim">SIM 运营商（安全）</string>
+    <string name="copg_tag_simx">SIM 运营商（激进）</string>
+    <string name="copg_tag_ua">WebView 用户代理</string>
+    <string name="copg_tag_mock">隐藏模拟位置</string>
+</resources>

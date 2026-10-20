@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_sample_device_strings.xml -->
+<resources>
+    <string name="sample_pick_title">Alegeți dispozitivul de probă</string>
+    <string name="sample_pick_button">Alegeți dispozitivul de probă</string>
+    <string name="sample_auto_hint">Alegerea unui dispozitiv completează marca, producătorul, modelul, dispozitivul, produsul și amprenta digitală. Utilizați Manual pentru a le introduce singur.</string>
+    <string name="sample_manual">Manual</string>
+    <string name="sample_close">Aproape</string>
+    <string name="sample_search">Căutați dispozitive</string>
+    <string name="sample_empty">Niciun dispozitiv care se potrivește.</string>
+    <string name="sample_unavailable">Catalogul dispozitivelor nu a putut fi citit.</string>
+    <string name="sample_row_sub">Android %1$s · %2$s</string>
+    <string name="sample_row_sub_plain">%1$s</string>
+    <string name="sample_fp_shared">Aceeași amprentă ca un alt dispozitiv de catalog</string>
+    <string name="sample_credit">Date de catalog: COPG (Apache-2.0), %1$s</string>
+    <string name="sample_limit">Limita profilului (100) este atinsă.</string>
+</resources>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_sample_device_strings.xml -->
+<resources>
+    <string name="sample_pick_title">Khetha idivayisi yesampula</string>
+    <string name="sample_pick_button">Khetha idivayisi yesampula</string>
+    <string name="sample_auto_hint">Ukukhetha idivayisi kugcwalisa umkhiqizo, umkhiqizi, imodeli, idivayisi, umkhiqizo nezigxivizo zeminwe zakho. Sebenzisa iManuwali ukuze uzibhale ngokwakho.</string>
+    <string name="sample_manual">Imanuwali</string>
+    <string name="sample_close">Vala</string>
+    <string name="sample_search">Sesha amadivayisi</string>
+    <string name="sample_empty">Ayikho idivayisi efanayo.</string>
+    <string name="sample_unavailable">Ikhathalogi yedivayisi ayikwazanga ukufundwa.</string>
+    <string name="sample_row_sub">I-Android %1$s · %2$s</string>
+    <string name="sample_row_sub_plain">%1$s</string>
+    <string name="sample_fp_shared">Izigxivizo zeminwe ezifanayo njengenye idivayisi yekhathalogi</string>
+    <string name="sample_credit">Idatha yekhathalogi: COPG (Apache-2.0), %1$s</string>
+    <string name="sample_limit">Umkhawulo wephrofayela (100) ufinyelelwe.</string>
+</resources>

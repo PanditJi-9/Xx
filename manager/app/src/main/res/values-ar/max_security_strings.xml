@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  النصّ العربي المقابل — ولا يُترك للإكمال الآلي (ADR-14: الإنجليزية والعربية بيد واحدة).
+  والمرجع الملزم هو التعليق في النسخة الإنجليزية: لا يُذكر فحص ولا أثر تقني.
+-->
+<resources>
+    <string name="security_tamper_title">تعذّر التشغيل</string>
+    <string name="security_tamper_message">نسخة MaxManager المثبَّتة غير سليمة: ملفّاتها لم تعد مطابقة للإصدار الموقّع، فلن تعمل. أعد تثبيت النسخة الرسمية من مصدرها الأصلي.</string>
+    <string name="security_tamper_close">إغلاق</string>
+</resources>

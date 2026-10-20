@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_security_strings.xml -->
+<resources>
+    <string name="security_tamper_title">Kan niet starten</string>
+    <string name="security_tamper_message">Deze build van MaxManager is niet intact. De geïnstalleerde bestanden komen niet meer overeen met de ondertekende release en deze kan dus niet worden uitgevoerd. Installeer de officiële build opnieuw vanaf de oorspronkelijke bron.</string>
+    <string name="security_tamper_close">Dichtbij</string>
+</resources>

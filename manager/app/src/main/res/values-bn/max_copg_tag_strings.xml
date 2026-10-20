@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_copg_tag_strings.xml -->
+<resources>
+    <string name="copg_tags_title">COPG বিকল্প</string>
+    <string name="copg_tags_desc">উদ্দেশ্য হিসাবে সংরক্ষিত এবং ডিভাইস প্রোফাইলের সাথে একসাথে লেখা। প্রতিটি COPG সংস্করণে শুধুমাত্র চারটি আরাম বিকল্প কাজ করে; বাকিদের প্রয়োজন COPG 6.8.0 বা নতুন। PRO বিকল্পগুলির একটি COPG PRO লাইসেন্স প্রয়োজন, এবং ইঞ্জিন তাদের উপেক্ষা করতে পারে।</string>
+    <string name="copg_tier_pro">PRO</string>
+    <string name="copg_footprint_resident">অ্যাপের মেমরিতে থাকে, কখনোই অ্যান্টি-চিট গেম ব্যবহার করবেন না</string>
+    <string name="copg_need_ack">প্রথমে নিচের ঝুঁকি স্বীকার করুন</string>
+    <string name="copg_tag_refused">ইনস্টল করা COPG সংস্করণের জন্য একটি নির্বাচিত COPG বিকল্প অনুমোদিত নয়৷ কিছুই লেখা হয়নি।</string>
+    <string name="copg_tag_needs_device">বিকল্পগুলি একটি ডিভাইস প্রোফাইলের সাথে লেখা আছে এবং এই অ্যাপটিতে এখনও কোনোটি নেই৷</string>
+    <string name="copg_tag_value_hint">মান</string>
+    <string name="copg_tag_bad_value">অক্ষর, অঙ্ক, স্থান এবং . _ - / + শুধুমাত্র (60 পর্যন্ত)</string>
+    <string name="copg_tag_save">সংরক্ষণ করুন</string>
+    <string name="copg_tag_remove">সরান</string>
+    <string name="copg_tag_dnd">খেলার সময় বিরক্ত করবেন না</string>
+    <string name="copg_tag_dab">স্বয়ংক্রিয় উজ্জ্বলতা অক্ষম করুন</string>
+    <string name="copg_tag_kso">পর্দা চালু রাখুন</string>
+    <string name="copg_tag_nolog">লগিং বন্ধ করুন</string>
+    <string name="copg_tag_dpi">স্ক্রিন ডিপিআই</string>
+    <string name="copg_tag_serial">প্রতি-অ্যাপ সিরিয়াল নম্বর</string>
+    <string name="copg_tag_cpu">CPU মডেল</string>
+    <string name="copg_tag_blocked">আসল CPU জোর করুন</string>
+    <string name="copg_tag_vpn">VPN লুকান</string>
+    <string name="copg_tag_vpns">VPN লুকান (কঠোর)</string>
+    <string name="copg_tag_hidedev">বিকাশকারী বিকল্পগুলি এবং USB ডিবাগিং লুকান৷</string>
+    <string name="copg_tag_tz">টাইমজোন</string>
+    <string name="copg_tag_lang">ভাষা এবং অঞ্চল</string>
+    <string name="copg_tag_gpu">GPU মডেল</string>
+    <string name="copg_tag_cow">বৈশিষ্ট্য তৈরি করুন (কপি-অন-রাইট)</string>
+    <string name="copg_tag_aid">অ্যান্ড্রয়েড ID</string>
+    <string name="copg_tag_gaid">বিজ্ঞাপন ID</string>
+    <string name="copg_tag_appset">অ্যাপ সেট ID</string>
+    <string name="copg_tag_drm">ওয়াইডিভাইন / ডিআরএম</string>
+    <string name="copg_tag_imei">আইএমইআই</string>
+    <string name="copg_tag_sim">সিম ক্যারিয়ার (নিরাপদ)</string>
+    <string name="copg_tag_simx">সিম ক্যারিয়ার (আক্রমনাত্মক)</string>
+    <string name="copg_tag_ua">ওয়েবভিউ ব্যবহারকারী-এজেন্ট</string>
+    <string name="copg_tag_mock">উপহাস অবস্থান লুকান</string>
+</resources>

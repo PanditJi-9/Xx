@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_sample_device_strings.xml -->
+<resources>
+    <string name="sample_pick_title">ជ្រើសរើសឧបករណ៍គំរូ</string>
+    <string name="sample_pick_button">ជ្រើសរើសឧបករណ៍គំរូ</string>
+    <string name="sample_auto_hint">ការជ្រើសរើសឧបករណ៍បំពេញម៉ាក ក្រុមហ៊ុនផលិត ម៉ូដែល ឧបករណ៍ ផលិតផល និងស្នាមម្រាមដៃសម្រាប់អ្នក។ ប្រើសៀវភៅដៃដើម្បីវាយពួកវាដោយខ្លួនឯង។</string>
+    <string name="sample_manual">សៀវភៅដៃ</string>
+    <string name="sample_close">បិទ</string>
+    <string name="sample_search">ស្វែងរកឧបករណ៍</string>
+    <string name="sample_empty">មិនមានឧបករណ៍ដែលត្រូវគ្នា។</string>
+    <string name="sample_unavailable">កាតាឡុកឧបករណ៍មិនអាចអានបានទេ។</string>
+    <string name="sample_row_sub">ប្រព័ន្ធប្រតិបត្តិការ Android %1$s · %2$s</string>
+    <string name="sample_row_sub_plain">%1$s</string>
+    <string name="sample_fp_shared">ស្នាមម្រាមដៃដូចគ្នានឹងឧបករណ៍កាតាឡុកផ្សេងទៀត។</string>
+    <string name="sample_credit">ទិន្នន័យកាតាឡុក៖ COPG (Apache-2.0), %1$s</string>
+    <string name="sample_limit">កម្រិតកំណត់ទម្រង់ (100) ត្រូវបានឈានដល់។</string>
+</resources>

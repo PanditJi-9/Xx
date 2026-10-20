@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_copg_tag_strings.xml -->
+<resources>
+    <string name="copg_tags_title">COPG ఎంపికలు</string>
+    <string name="copg_tags_desc">ఉద్దేశ్యంగా సేవ్ చేయబడింది మరియు పరికర ప్రొఫైల్‌తో కలిపి వ్రాయబడింది. ప్రతి COPG సంస్కరణలో నాలుగు సౌకర్యాల ఎంపికలు మాత్రమే పని చేస్తాయి; మిగిలిన వాటికి COPG 6.8.0 లేదా కొత్తది అవసరం. PRO ఎంపికలకు COPG PRO లైసెన్స్ అవసరం మరియు ఇంజిన్ వాటిని విస్మరించవచ్చు.</string>
+    <string name="copg_tier_pro">PRO</string>
+    <string name="copg_footprint_resident">యాప్ మెమరీలో ఉంటుంది, యాంటీ-చీట్ గేమ్‌లతో ఎప్పుడూ ఉపయోగించవద్దు</string>
+    <string name="copg_need_ack">దిగువన ఉన్న ప్రమాదాన్ని ముందుగా గుర్తించండి</string>
+    <string name="copg_tag_refused">ఇన్‌స్టాల్ చేయబడిన COPG వెర్షన్ కోసం ఎంచుకున్న COPG ఎంపిక అనుమతించబడదు. ఏమీ రాయలేదు.</string>
+    <string name="copg_tag_needs_device">ఎంపికలు పరికర ప్రొఫైల్‌తో వ్రాయబడ్డాయి మరియు ఈ యాప్‌లో ఇంకా ఏదీ లేదు.</string>
+    <string name="copg_tag_value_hint">విలువ</string>
+    <string name="copg_tag_bad_value">అక్షరాలు, అంకెలు, ఖాళీ మరియు . _ - / + మాత్రమే (60 వరకు)</string>
+    <string name="copg_tag_save">సేవ్ చేయండి</string>
+    <string name="copg_tag_remove">తొలగించు</string>
+    <string name="copg_tag_dnd">ఆడుతున్నప్పుడు అంతరాయం కలిగించవద్దు</string>
+    <string name="copg_tag_dab">స్వీయ-ప్రకాశాన్ని నిలిపివేయండి</string>
+    <string name="copg_tag_kso">స్క్రీన్ ఆన్‌లో ఉంచండి</string>
+    <string name="copg_tag_nolog">లాగింగ్ ఆపండి</string>
+    <string name="copg_tag_dpi">స్క్రీన్ DPI</string>
+    <string name="copg_tag_serial">ఒక్కో యాప్ క్రమ సంఖ్య</string>
+    <string name="copg_tag_cpu">CPU మోడల్</string>
+    <string name="copg_tag_blocked">నిజమైన CPUని బలవంతం చేయండి</string>
+    <string name="copg_tag_vpn">VPNని దాచండి</string>
+    <string name="copg_tag_vpns">VPNని దాచు (కఠినమైనది)</string>
+    <string name="copg_tag_hidedev">డెవలపర్ ఎంపికలు మరియు USB డీబగ్గింగ్‌లను దాచండి</string>
+    <string name="copg_tag_tz">సమయమండలి</string>
+    <string name="copg_tag_lang">భాష మరియు ప్రాంతం</string>
+    <string name="copg_tag_gpu">GPU మోడల్</string>
+    <string name="copg_tag_cow">బిల్డ్ ప్రాపర్టీస్ (కాపీ-ఆన్-రైట్)</string>
+    <string name="copg_tag_aid">ఆండ్రాయిడ్ ID</string>
+    <string name="copg_tag_gaid">ప్రకటనలు ID</string>
+    <string name="copg_tag_appset">యాప్ సెట్ ID</string>
+    <string name="copg_tag_drm">వైడ్విన్ / DRM</string>
+    <string name="copg_tag_imei">IMEI</string>
+    <string name="copg_tag_sim">SIM క్యారియర్ (సురక్షితమైనది)</string>
+    <string name="copg_tag_simx">SIM క్యారియర్ (దూకుడు)</string>
+    <string name="copg_tag_ua">WebView వినియోగదారు ఏజెంట్</string>
+    <string name="copg_tag_mock">మాక్ స్థానాన్ని దాచండి</string>
+</resources>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_sample_device_strings.xml -->
+<resources>
+    <string name="sample_pick_title">Төхөөрөмжийн дээжийг сонгоно уу</string>
+    <string name="sample_pick_button">Төхөөрөмжийн дээжийг сонгоно уу</string>
+    <string name="sample_auto_hint">Төхөөрөмж сонгох нь танд зориулж брэнд, үйлдвэрлэгч, загвар, төхөөрөмж, бүтээгдэхүүн, хурууны хээг дүүргэдэг. Гарын авлагыг ашиглан өөрөө бичнэ үү.</string>
+    <string name="sample_manual">Гарын авлага</string>
+    <string name="sample_close">Хаах</string>
+    <string name="sample_search">Төхөөрөмж хайх</string>
+    <string name="sample_empty">Тохирох төхөөрөмж алга.</string>
+    <string name="sample_unavailable">Төхөөрөмжийн каталогийг уншиж чадсангүй.</string>
+    <string name="sample_row_sub">Android %1$s · %2$s</string>
+    <string name="sample_row_sub_plain">%1$s</string>
+    <string name="sample_fp_shared">Өөр нэг каталог төхөөрөмжтэй ижил хурууны хээ</string>
+    <string name="sample_credit">Каталогийн өгөгдөл: COPG (Apache-2.0), %1$s</string>
+    <string name="sample_limit">Профайлын хязгаарт (100) хүрсэн байна.</string>
+</resources>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_spoof_ui_strings.xml -->
+<resources>
+    <string name="spoof_ui_real_device">ପ୍ରକୃତ ଉପକରଣ |</string>
+    <string name="spoof_ui_pill_verified">ଯାଞ୍ଚ ହୋଇଥିବା ବିନ୍ୟାସ କରନ୍ତୁ |</string>
+    <string name="spoof_ui_pill_unverified">ଯାଞ୍ଚ ହୋଇନାହିଁ |</string>
+    <string name="spoof_ui_pill_off">ବନ୍ଦ</string>
+    <string name="spoof_device_for_app">ଏହି ଆପ୍ ପାଇଁ ଡିଭାଇସ୍ |</string>
+    <string name="spoof_device_real_hint">ଏହି ଆପ୍ ଆପଣଙ୍କର ପ୍ରକୃତ ଡିଭାଇସ୍ ଦେଖେ | ଗୋଟିଏ ବାଛିବା ପାଇଁ କାର୍ଡ ଟ୍ୟାପ୍ କରନ୍ତୁ |</string>
+    <string name="spoof_device_pick">କାଟାଲଗ୍ ରୁ ଏକ ଡିଭାଇସ୍ ବାଛିବା ପାଇଁ ଟ୍ୟାପ୍ କରନ୍ତୁ, କିମ୍ବା କଷ୍ଟମ୍ ଡିଭାଇସ୍ ସୂଚନା ପ୍ରବେଶ କରନ୍ତୁ |</string>
+    <string name="spoof_device_in_use">ବ୍ୟବହାରରେ |</string>
+    <string name="spoof_device_restart">ସିଷ୍ଟମ୍ ନୁହେଁ ଟାର୍ଗେଟ୍ ଆପ୍ ପରେ ପୁନ Rest ଆରମ୍ଭ କରନ୍ତୁ |</string>
+    <string name="spoof_ui_apply_title">ଏହି ଆପ୍ ପାଇଁ ଆବେଦନ କରନ୍ତୁ |</string>
+    <string name="spoof_ui_apply_action">ସମୀକ୍ଷା ଏବଂ ପ୍ରୟୋଗ କରନ୍ତୁ |</string>
+    <string name="spoof_ui_apply_confirm_title">କେବଳ ଏହି ଆପ୍ ପ୍ରୟୋଗ କରନ୍ତୁ?</string>
+    <string name="spoof_ui_apply_confirm_text">କେବଳ ଏହି ଆପ୍ ପ୍ରସ୍ତୁତ; ଅନ୍ୟ ଆପଗୁଡ଼ିକ ଅସ୍ପୃଶ୍ୟ | ସିଷ୍ଟମ୍ ନୁହେଁ ଟାର୍ଗେଟ୍ ଆପ୍ ପରେ ପୁନ Rest ଆରମ୍ଭ କରନ୍ତୁ | ପରବର୍ତ୍ତୀ ସଂପାଦନ ଏହି ନିଶ୍ଚିତକରଣକୁ ବାତିଲ କରେ | ଯଦି COPG ପୂର୍ବରୁ ଏହି ଆପ୍ ତାଲିକାଭୁକ୍ତ କରେ, ଆପଣଙ୍କର ଡିଭାଇସ୍ ପ୍ରାଥମିକତା ନିଏ ଏବଂ COPG ଲାଇନଟି ପୂର୍ବପରି ରହିଥାଏ |</string>
+    <string name="spoof_ui_apply_confirm">ପ୍ରୟୋଗ କରନ୍ତୁ |</string>
+    <string name="spoof_ui_apply_reason">ଇଞ୍ଜିନ ପ୍ରତ୍ୟାଖ୍ୟାନ: %1$s |</string>
+    <string name="spoof_engine_absent">ଇଞ୍ଜିନ୍ ମଡ୍ୟୁଲ୍ ପଠନୀୟ ନୁହେଁ | ଏକ ମଡ୍ୟୁଲ୍ ନିଶ୍ଚିତ କରନ୍ତୁ ଯାହାର module.prop id = COPG କୁହନ୍ତି, ଏହାକୁ ସଂସ୍ଥାପନ କିମ୍ବା ପୁନ st ସଂସ୍ଥାପନ କରନ୍ତୁ, ତାପରେ ଏହି ପରଦାକୁ ଖୋଲନ୍ତୁ |</string>
+    <string name="spoof_engine_disabled">ଆପଣଙ୍କ ମୂଳ ପରିଚାଳକରେ COPG ମଡ୍ୟୁଲ୍ ଅକ୍ଷମ ହୋଇଛି | ସେଠାରେ ଏହାକୁ ସକ୍ଷମ କର, ପୁନ bo ବୁଟ କର, ତାପରେ ପୁନର୍ବାର ପ୍ରୟୋଗ କର |</string>
+    <string name="spoof_engine_removal_pending">ଅପସାରଣ ପାଇଁ COPG ଚିହ୍ନିତ ହୋଇଛି ଏବଂ ପରବର୍ତ୍ତୀ ପୁନ bo ବୁଟ ପରେ ଚାଲିଯିବ | ଆବେଦନ କରିବା ପୂର୍ବରୁ ଏହାକୁ ପୁନ in ସଂସ୍ଥାପନ କରନ୍ତୁ |</string>
+    <string name="spoof_engine_update_pending">ଏକ COPG ଅଦ୍ୟତନ ପୁନ bo ବୁଟକୁ ଅପେକ୍ଷା କରିଛି | ପ୍ରଥମେ ପୁନ o ଚାଳନ କର, ତାପରେ ପୁନର୍ବାର ପ୍ରୟୋଗ କରନ୍ତୁ |</string>
+    <string name="spoof_ui_apply_pending">ଶେଷ ପ୍ରୟୋଗ ପରଠାରୁ ପରିବର୍ତ୍ତିତ - ଏହାକୁ ବାସ୍ତବ କରିବାକୁ ପୁନର୍ବାର ଆବେଦନ କର |</string>
+    <string name="spoof_ui_restore_title">ଆପଣଙ୍କର ପ୍ରକୃତ ଉପକରଣ ବ୍ୟବହାର କରନ୍ତୁ |</string>
+    <string name="spoof_ui_restore_action">ଏହି ଆପ୍ ପାଇଁ ସ୍ପୁଫ୍ ଅପସାରଣ କରନ୍ତୁ |</string>
+    <string name="spoof_ui_restore_notice">ଏହି ଆପ୍ ର ସେଭ୍ ଡିଭାଇସ୍ ଏବଂ ଏହାର COPG ଟ୍ୱିକ୍ସ ଅପସାରିତ ହୋଇଛି, ଏବଂ ଏହି ଆପ୍ ବିନା ଇଞ୍ଜିନ ପୁନ rew ଲିଖିତ | ଅନ୍ୟ ଆପଗୁଡ଼ିକ ଅସ୍ପୃଶ୍ୟ | ପରେ ଟାର୍ଗେଟ୍ ଆପ୍ ପୁନ Rest ଆରମ୍ଭ କରନ୍ତୁ |</string>
+    <string name="app_tab_spoof">ସ୍ପୁଫ୍ |</string>
+    <string name="spoof_picker_title">ଏକ ଉପକରଣ ବାଛନ୍ତୁ |</string>
+    <string name="spoof_picker_custom">କଷ୍ଟମ୍ ଡିଭାଇସ୍ ସୂଚନା |</string>
+    <string name="spoof_picker_custom_hint">ଏହି ଆପ୍ ପାଇଁ ଆପଣ ଚାହୁଁଥିବା ବ୍ରାଣ୍ଡ, ମଡେଲ୍ ଏବଂ ଫିଙ୍ଗର ପ୍ରିଣ୍ଟ ପ୍ରବେଶ କରନ୍ତୁ |</string>
+    <string name="spoof_custom_title">କଷ୍ଟମ୍ ଡିଭାଇସ୍ ସୂଚନା |</string>
+    <string name="spoof_custom_rules">ନାମ, ବ୍ରାଣ୍ଡ, ମଡେଲ୍, ଡିଭାଇସ୍ ଏବଂ ଉତ୍ପାଦ ଆବଶ୍ୟକ, ପ୍ରତ୍ୟେକ 120 ଅକ୍ଷର ପର୍ଯ୍ୟନ୍ତ, କ control ଣସି ନିୟନ୍ତ୍ରଣ ଅକ୍ଷର ବିନା | ଉତ୍ପାଦକ, ଫିଙ୍ଗର ପ୍ରିଣ୍ଟ ଏବଂ SDK ଇଚ୍ଛାଧୀନ ଅଟେ | ସମାନ ବ୍ରାଣ୍ଡ, ଉତ୍ପାଦ ଏବଂ ଉପକରଣ ସହିତ ଏକ ଫିଙ୍ଗର ପ୍ରିଣ୍ଟ ଆରମ୍ଭ ହେବା ଜରୁରୀ |</string>
+    <string name="spoof_manufacturer">ଉତ୍ପାଦକ (MANUFACTURER)</string>
+    <string name="spoof_sdk">SDK ସ୍ତର, ବ al କଳ୍ପିକ, 1 ରୁ 100</string>
+    <string name="spoof_custom_invalid">କିଛି କ୍ଷେତ୍ର ଅବ alid ଧ ଅଟେ | ଉପରୋକ୍ତ ନିୟମଗୁଡିକ ଯାଞ୍ଚ କରନ୍ତୁ, ତାପରେ ପୁନର୍ବାର ସଞ୍ଚୟ କରନ୍ତୁ |</string>
+    <string name="spoof_custom_save">ଏହି ଆପ୍ ପାଇଁ ସେଭ୍ କରନ୍ତୁ ଏବଂ ବାଛନ୍ତୁ |</string>
+    <string name="spoof_impersonation_title">ସ୍ପୁଫିଙ୍ଗ୍ |</string>
+    <string name="spoof_impersonation_desc">ମାଗଣା COPG ବିକଳ୍ପଗୁଡ଼ିକ | ସମୀକ୍ଷା ଏବଂ ପ୍ରୟୋଗ ଦ୍ୱାରା ଇଞ୍ଜିନରେ ଲେଖାଯାଇଛି |</string>
+    <string name="spoof_impersonation_summary_cpu">CPU ସ୍ପୁଫିଙ୍ଗ୍: %1$s |</string>
+    <string name="spoof_impersonation_needs_device">ପ୍ରଥମେ ଏହି ଆପ୍ ପାଇଁ ଏକ ଡିଭାଇସ୍ ବାଛନ୍ତୁ | ଏହି ବିକଳ୍ପଗୁଡ଼ିକ କେବଳ ଏକ ଉପକରଣ ସହିତ ଲେଖାଯାଇଛି |</string>
+    <string name="spoof_cpu_spoof">CPU ସ୍ପୁଫିଙ୍ଗ୍ |</string>
+    <string name="spoof_cpu_real">ପ୍ରକୃତ CPU |</string>
+    <string name="spoof_cpu_block">Block0␞ କୁ ଅବରୋଧ କରନ୍ତୁ |</string>
+    <string name="spoof_cpu_block_desc">ଏହି ଆପକୁ CPU ସ୍ପୁଫିଙ୍ଗରୁ ବାଦ ଦେଇଥାଏ |</string>
+    <string name="spoof_cpu_picker_title">CPU ବାଛନ୍ତୁ |</string>
+    <string name="copg_tweaks_section">COPG ଟ୍ୱିକ୍ସ |</string>
+    <string name="copg_tweak_nolog_title">ଲଗିଂ ଅକ୍ଷମ କରନ୍ତୁ |</string>
+    <string name="copg_tweak_nolog_desc">ଏହି ଆପରେ COPG ଲଗିଂ ଟ୍ୱିକ୍ ପ୍ରୟୋଗ କରେ | ଏଠାରେ ସଞ୍ଚୟ ହୋଇଛି, ସମୀକ୍ଷା ଦ୍ୱାରା ଇଞ୍ଜିନକୁ ଲେଖାଯାଇଛି ଏବଂ ସ୍ପୁଫ୍ ଟ୍ୟାବରେ ପ୍ରୟୋଗ କରନ୍ତୁ |</string>
+    <string name="copg_tweak_dab_title">ଅଟୋ-ଉଜ୍ଜ୍ୱଳତା ଅକ୍ଷମ କରନ୍ତୁ |</string>
+    <string name="copg_tweak_dab_desc">ଏହି ଆପରେ COPG ଅଟୋ-ଉଜ୍ଜ୍ୱଳତା ଟ୍ୱିକ୍ ପ୍ରୟୋଗ କରେ | ଏଠାରେ ସଞ୍ଚୟ ହୋଇଛି, ସମୀକ୍ଷା ଦ୍ୱାରା ଇଞ୍ଜିନକୁ ଲେଖାଯାଇଛି ଏବଂ ସ୍ପୁଫ୍ ଟ୍ୟାବରେ ପ୍ରୟୋଗ କରନ୍ତୁ |</string>
+    <string name="copg_tweak_kso_title">ସ୍କ୍ରିନ୍ ଅନ୍ ରଖନ୍ତୁ |</string>
+    <string name="copg_tweak_kso_desc">ଏହି ଆପରେ COPG କିପ୍-ସ୍କ୍ରିନ୍-ଅନ୍ ଟ୍ୱିକ୍ ପ୍ରୟୋଗ କରେ | ଏଠାରେ ସଞ୍ଚୟ ହୋଇଛି, ସମୀକ୍ଷା ଦ୍ୱାରା ଇଞ୍ଜିନକୁ ଲେଖାଯାଇଛି ଏବଂ ସ୍ପୁଫ୍ ଟ୍ୟାବରେ ପ୍ରୟୋଗ କରନ୍ତୁ |</string>
+    <string name="copg_tweak_needs_device">ସ୍ପୁଫ୍ ଟ୍ୟାବ୍ ରେ ପ୍ରଥମେ ଏହି ଆପ୍ ପାଇଁ ଏକ ଡିଭାଇସ୍ ଦରକାର |</string>
+</resources>

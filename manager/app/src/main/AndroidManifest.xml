@@ -1,0 +1,478 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    
+    <!--
+      `INTERNET`: قناة التحديث عن بُعد الوحيدة — طلبٌ واحد يقرأ مانيفست الإصدار من رابط
+      المالك (يُتبَع بتنزيل الـAPK عند الضغط على الزرّ وحده). ولا يرسل التطبيق شيئًا من
+      بيانات المستخدم: لا معرّف جهاز ولا إحصاء ولا تيليمتري (ADR-07 والقيم المعلنة).
+    -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <!--
+      `MODIFY_AUDIO_SETTINGS` صلاحية **عادية** (لا نافذة إذن): يمنحها النظام عند التثبيت، وهي شرط
+      إنشاء مؤثّرات `android.media.audiofx.*` والتحكّم بها — وقسم `AQ-01` يقيس بها قبول المزج
+      العامّ، وأقسام `AQ-02`…`AQ-05` تكتب بها فيه. **ولا تُطلب بدلًا من `RECORD_AUDIO`:** ذاك للإذن
+      الحسّاس في المحلّل الطيفيّ وحده، ويُطلب بشرح من داخل قسمه (أمر المالك).
+    -->
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <!--
+      `RECORD_AUDIO` صلاحية **حسّاسة**، ولها موضع واحد في التطبيق: المحلّل الطيفيّ (`AQ-08`).
+      محلّل المنصّة (`Visualizer`) لا يُعطي بيانات الترددات إلا لتطبيقٍ يملكها، ولا بديل عنها.
+      **ولا شيء آخر يعمل بها:** لا التقاط داخليّ، ولا تسجيل، ولا تخزين، ولا إرسال — والالتقاط مرفوض
+      في `AUDIO-ADVANCED-PLAN` §4. وتُطلب **بشرح صريح من داخل قسمها** لحظةَ يطلبها المستخدم (أمر
+      المالك)، فتبقى الشاشة كاملة الوظائف بدونها، والطيف وحده يقول سببه ولا يُخفى.
+    -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <!--
+      `WRITE_SECURE_SETTINGS` صلاحية محمية تُمنح لتطبيقات النظام وحدها — وMaxManager يُبنى ليُركّب
+      **تطبيق مستخدم** يُثبَّت من الوحدة (`app/MaxManager.apk`)، ولهذا يرفض `build.gradle.kts` إنتاج حزمة release بلا توقيع: التثبيت والتحديث يشترطان توقيعًا ثابتًا.
+      وlint يبلّغ عنها `ProtectedPermissions` بحق لقاعدة عامة، فالإسكات هنا **تصريح بموديل التوزيع**
+      لا إخفاء لعطب: `AppMonitor` يستعمل `Settings.Global/System` خلفها ويعلن فشلها إن لم تُمنح
+      (اقرأ `AppMonitor.kt:580` و`:880`) — فلا سلوك يعتمد على منحها. والبديل الاختياري الذي
+      تسلكه بقية المسارات هو التنفيذ بجذر/shell. ولذلك `tools:ignore` صريح هنا لا في `lint.xml`.
+    -->
+    <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS"
+        tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <!--
+      صلاحيات استوديو الجزيرة (نقل Islandify — MIT © 2026 bughunter11):
+      - `QUERY_ALL_PACKAGES`: لسرد كل التطبيقات في تبويب «التطبيقات» حتى تُحجب أو تُسمح.
+      - `REQUEST_IGNORE_BATTERY_OPTIMIZATIONS`: لطلب استثناء البطارية من الإعداد مباشرةً —
+        وبدونه يقتل النظام الجزيرة بعد دقائق في قراءة «تعمل ثم تختفي».
+      - `BLUETOOTH` (حتى 30) و`BLUETOOTH_CONNECT`: لاسم السمّاعة عند الاتصال ومستوى بطاريتها.
+    -->
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"
+        tools:ignore="QueryAllPackagesPermission" />
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+    <uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+
+    <!--
+      Max Backup — النسخ المجدول (`OCR-01`). شرط أن تبقى المهمة مسجّلة بعد إعادة الإقلاع
+      (`setPersisted(true)`)، وإلا نسي الجهاز جدول المستخدم مع أول ريستارت وقالت الشاشة
+      إنه فعّال. والصلاحية **لا تمنحنا إقلاعًا**، بل تسمح للنظام بإعادة التسجيل.
+    -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
+    <!--
+      Max Backup — فئات بيانات النظام التي تعيش خلف مزوّدات محتوى (جهات · سجل مكالمات ·
+      رسائل). تُطلَب وقت الاستعمال لا عند التثبيت، ومن رفضها يرى فئته «تحتاج إذنًا» بدل
+      أن تُعرَض متاحة ثم تفشل. والرسائل **قراءة فقط**: كتابتها تشترط أن يكون التطبيق
+      تطبيق الرسائل الافتراضي، ولا ندّعي غير ذلك.
+    -->
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.WRITE_CONTACTS" />
+    <uses-permission android:name="android.permission.READ_CALL_LOG" />
+    <uses-permission android:name="android.permission.WRITE_CALL_LOG" />
+    <uses-permission android:name="android.permission.READ_SMS" />
+
+    <!--
+      `READ_SMS` وحدها تُشير ضمناً إلى وجود عتاد اتصال (telephony)، فيستثني Google Play — بلا هذا
+      السطر — كل جهاز بلا شريحة (تابلت/Wi-Fi فقط) من التثبيت. و`required="false"` تقول: الصلاحية
+      **تُطلَب عند الاستعمال**، والقدرة ليست شرط تشغيل — وهو نفس ما يقوله تعليق فئات النسخ أعلاه.
+    -->
+    <uses-feature android:name="android.hardware.telephony" android:required="false" />
+    <uses-permission android:name="android.permission.READ_USER_DICTIONARY" />
+    <uses-permission android:name="android.permission.WRITE_USER_DICTIONARY" />
+
+    <!--
+      Max Backup — مكان الأرشيف: `/storage/emulated/0/MaxManger/MaxBackup`.
+
+      المطلوب مجلد عام يراه المستخدم ومدير الملفات بلا جذر، وأندرويد ١١+ لا يسمح لتطبيق
+      بالكتابة في جذر التخزين العام بلا هذه الصلاحية. وهي **اختيارية لا شرط تشغيل**:
+      الطبقة تحاول المسار العام بفحص كتابة فعلي، وإن رُفضت الصلاحية كُتب الأرشيف في مجلد
+      التطبيق الخارجي — و`Max Backup` يقول أي المسارين استُعمل بدل أن يفشل بصمت أو يدّعي
+      مكانًا لم يُكتب فيه. وهي صلاحية «وصول خاص» تُمنح من إعدادات النظام لا من نافذة أذونات.
+    -->
+    <uses-permission
+        android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
+        tools:ignore="ScopedStorage" />
+
+    <!-- Shizuku (AR-20): إذن واجهة الشيزوكو، ولا يُمنح إلا من مدير الشيزوكو نفسه. -->
+    <uses-permission android:name="moe.shizuku.manager.permission.API_V23" />
+
+    <!--
+      Gates MaxManagerReceiver (notifications/toasts) and RefreshRateReceiver
+      (nd.max.SET_FPS, which forces a real SurfaceFlinger refresh-rate
+      change) so only components signed with the same certificate as this
+      app can trigger them via Intent — otherwise ANY installed app, with
+      zero declared permissions, could broadcast either custom action and
+      have MaxManager act on it. protectionLevel="signature" is the correct
+      level here: the daemon reaches both receivers exclusively through a
+      root-shell `am broadcast` (root/shell bypasses this check entirely,
+      same as before), and the app's own in-app sendBroadcast() calls are
+      auto-granted this permission at install time since they're signed
+      with the same key — so this only closes the door on other apps,
+      nothing MaxManager itself does changes.
+    -->
+    <permission
+        android:name="nd.max.permission.MANAGE"
+        android:protectionLevel="signature" />
+    <uses-permission android:name="nd.max.permission.MANAGE" />
+
+    <queries>
+        <package android:name="org.frknkrc44.hma_oss" />
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent>
+    </queries>
+        
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+    <!--
+      صلاحية «الوصول إلى بيانات الاستخدام» — لقسم «أكبر التطبيقات» في شاشة العناية بالتخزين
+      (`STORAGE-CARE-01`): بها تُقرأ أحجام التطبيقات كاملة (حزمة + بيانات + كاش) من
+      `StorageStatsManager`، وبدونها يبقى حجم الحزمة وحده. وهي صلاحية خاصة تُمنح من إعدادات
+      النظام لا بنافذة صلاحية: الشاشة تفحصها وتفتح نافذة المنح، ولا تفترضها ولا تفشل صامتة.
+    -->
+    <uses-permission
+        android:name="android.permission.PACKAGE_USAGE_STATS"
+        tools:ignore="ProtectedPermissions" />
+    <application
+        android:name=".MaxManagerApplication"
+        android:enableOnBackInvokedCallback="true"
+        android:allowBackup="false"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:localeConfig="@xml/locales_config"
+        android:theme="@style/Theme.MaxManager"> 
+        
+        <!-- Shizuku: يوفّر مسار الصلاحية لطبقة الامتياز الثانية (AR-20).
+             لا يُتصدَّر إلا لمدير الشيزوكو بحكم إذنه الخاص. -->
+        <provider
+            android:name="rikka.shizuku.ShizukuProvider"
+            android:authorities="${applicationId}.shizuku"
+            android:enabled="true"
+            android:exported="true"
+            android:multiprocess="false"
+            android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" />
+
+<provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+        <!-- Remove InitializationProvider to fix WorkDatabase crash -->
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            tools:node="remove" />
+        
+        
+        <service
+            android:name=".TileService.BypassChgTileService"
+            android:icon="@drawable/bypasschgicon"
+            android:label="Bypass Charge"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+                
+        <service
+            android:name=".TileService.ProfileTileService"
+            android:icon="@drawable/ic_profile_icon" android:label="@string/current_profile"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+
+        <!--
+          عامل النسخ المجدول: رقيقة عن قصد — كل المنطق في `MaxBackupScheduler`، وهذه
+          تعرف `jobFinished` فقط. ولا تُصدَّر: لا أحد خارجنا يُشغّلها.
+        -->
+        <service
+            android:name=".ui.util.MaxBackupJobService"
+            android:exported="false"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+
+        <service
+            android:name=".service.FpsOverlayService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Displays a live FPS/performance overlay while gaming" />
+        </service>
+
+        <service
+            android:name=".service.ProcessOverlayService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Displays a floating top-processes CPU/RAM monitor" />
+        </service>
+
+        <!--
+          الجزيرة الديناميكية: كبسولة حيّة واحدة فوق التطبيقات (إشعارات/وسائط/شحن/مؤشرات).
+          وهي خدمة تراكب بنفس العقد (إشعار أمامي + `TYPE_APPLICATION_OVERLAY`)، وتفارق أخواتها
+          بأمر واحد: **لا تستقبل اللمس** (`FLAG_NOT_TOUCHABLE`) لأنها لا تفعل شيئًا عند النقر —
+          فتمرّ اللمسة إلى ما تحتها ولا تُسقط سحب شريط الإشعارات من منطقة أعلى الشاشة.
+        -->
+        <service
+            android:name=".service.IslandService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Shows one live status capsule (notifications, media, charging, indicators) over other apps" />
+        </service>
+
+        <!--
+          مستمع الإشعارات — مصدر الجزيرة العابر. ولا يفعل شيئًا بلا منح صريح من المستخدم:
+          بلا `BIND_NOTIFICATION_LISTENER_SERVICE` لا يربطه النظام أصلًا، وبلا منح الوصول من
+          الإعدادات لا يستلم إشعارًا واحدًا.
+        -->
+        <service
+            android:name=".service.MaxNotificationListener"
+            android:exported="false"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
+
+        <!--
+          ===== استوديو الجزيرة — المحرّك الكامل (نقل Islandify، MIT © 2026 bughunter11) =====
+
+          الأربعة يعملون معًا: `IslandListener` يقرأ الإشعارات/الموسيقى/المكالمات/المؤقّتات،
+          و`IslandController` يبني «ما يُعرض الآن»، و`IslandA11yService` يستضيف النافذة
+          **فوق شريط الحالة** — وهذا وحده ما يجعل اللمس عليها يعمل هناك؛ وبلا خدمة الوصولية
+          يسقط العرض إلى نافذة «الرسم فوق التطبيقات» حيث تبتلع SystemUI اللمسة داخل الشريط —
+          و`IslandService` خدمة المقدّمة تُبقيها حيّة وترفع «الجزيرة تعمل». ولا واحدة تعمل
+          بلا منح المستخدم الصريح من الإعدادات.
+        -->
+        <service
+            android:name="nd.max.island.engine.IslandService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Keeps the live status island (notifications, media, calls) running" />
+        </service>
+
+        <service
+            android:name="nd.max.island.engine.IslandListener"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name="nd.max.island.engine.IslandA11yService"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/island_accessibility_config" />
+        </service>
+
+        <!--
+          لوحة مساحة الألعاب الجانبية: مقبض على الحافة للعبة الأمامية المُفعَّلة، يُفتح بلمسة.
+          وهي خدمة تراكب رابعة بنفس العقد (إشعار أمامي + `TYPE_APPLICATION_OVERLAY`)، ولا تقرأ
+          عتادًا ولا تكتب عليه — الأرقام من `HudSampler`، والكتابة في `AppMonitor` وحده.
+        -->
+        <service
+            android:name=".service.GamePanelService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Displays a collapsible side panel for the foreground game" />
+        </service>
+
+        <service
+            android:name=".service.AudioEffectService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Maintains active audio equalizer and sound effects across playback sessions" />
+        </service>
+
+        <!-- عملية الجذر التي تخدم عقد sysfs (core/ipc/RootNodeService) — ليست مُصدَّرة،
+             ولا يُعلن لها intent-filter: الربط من التطبيق نفسه عبر libsu RootService. -->
+        <service
+            android:name=".core.ipc.RootNodeService"
+            android:exported="false"
+            tools:ignore="Instantiatable" />
+
+        
+        <activity
+            android:name="com.yalantis.ucrop.UCropActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+
+        <!--
+            windowSoftInputMode="adjustResize": التطبيق edge-to-edge (`enableEdgeToEdge`)، ومن
+            غير هذا الإعلان لا تُبلَّغ النافذة بحجم لوحة المفاتيح إلا على بعض الأجهزة، فتبقى
+            الأوراق المنبثقة خلفها. ومع الإعلان تُقرأ `WindowInsets.ime` فتعلو الورقة الكيبورد
+            (تكملة ٢٠٦ — طلب المالك: «يجب أن تظهر النافذة المنبثقة في زر البحث فوق الكيبورد»).
+        -->
+        <activity
+            android:name=".MainActivity"
+            android:launchMode="singleTask" 
+            android:windowSoftInputMode="adjustResize"
+            android:exported="true"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE_PREFERENCES" />
+            </intent-filter>
+        </activity>
+
+        <receiver android:name=".receiver.MaxManagerReceiver" android:exported="true" android:permission="nd.max.permission.MANAGE">
+            <intent-filter>
+                <action android:name="nd.max.ACTION_MANAGE" />
+            </intent-filter>
+        </receiver>
+   
+        <!--
+            مُفعَّل افتراضيًّا لا مُعطَّلًا: هذا الـalias هو أيقونة التطبيق على المشغّل، وهو الطريق
+            إلى مدير الروت بعد التفليش. وكان `enabled="false"` يعني أن التطبيق **مخفيّ حتى يظهر
+            شيء يُظهره**، فمن فلّش الوحدة ولا يعرف بوجود مفتاح للإظهار يقرأها «اختفى تطبيقي».
+            والحالة المحفوظة في `PackageManager` (إخفاء سابق) تسبق هذه القيمة، فتُعاد التفعيل
+            عند كل إقلاع في `service.sh` — هنا القيمة الافتراضية لما لا حالة له بعد.
+        -->
+        <activity-alias
+            android:name=".Launcher"
+            android:enabled="true"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher"
+            android:label="@string/app_name"
+            android:targetActivity=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <!--
+            حارس الوحدة: يُوفِّق الرفيق والخادم بعد فتح المستخدم لتخزينه (وبعد تحديث الحزمة).
+
+            ولماذا هذا الـreceiver بعينه: `DaemonSupervisor` — وهو المُصلِح الوحيد في الشجرة —
+            يعيش داخل الرفيق نفسه، فإذا مات الرفيق مات مُصلِحه معه وبقيت الوحدة ميّتة حتى الإقلاع
+            التالي (عطب مقيس: ٢٠٢٦-١٠-٠١). و`RECEIVE_BOOT_COMPLETED` كانت مُعلنة في هذا المانيفست
+            بلا مستقبِل واحد يستعملها.
+
+            ولا `LOCKED_BOOT_COMPLETED`: يُسلَّم قبل فتح تخزين المستخدم، فلا يُقام التطبيق عنده.
+            و`USER_UNLOCKED` هو الوقت الصحيح بعد إصلاح تخزين المستودع المشترك (‏DE لا CE).
+        -->
+        <receiver
+            android:name=".receiver.ModuleWatchReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.USER_UNLOCKED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
+
+        <!--
+            باب «حفظ خياراتك وتطبيقها بعد إعادة التشغيل» (§3 من الطلب): نفس أحداث حارس الوحدة
+            — BOOT_COMPLETED وUSER_UNLOCKED وMY_PACKAGE_REPLACED — وللسبب نفسه: تخزين المستخدم
+            لا يُقرأ قبل فتحه. و`exported="true"` اتّباعًا للمستقبِل الشقيق المُثبَت التسليم،
+            والحرس داخل `onReceive` (فحص الفعل + `SecurityEnforcement` + المستخدم الأول)، فلا
+            يترتّب على النداء الخارجي إلا ما يُنَفَّذ للمستخدم نفسه: جولة استعادة واحدة محدودة.
+        -->
+        <receiver
+            android:name=".receiver.PersistRestoreReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.USER_UNLOCKED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".receiver.AudioSessionReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.media.action.OPEN_AUDIO_EFFECT_CONTROL_SESSION" />
+                <action android:name="android.media.action.CLOSE_AUDIO_EFFECT_CONTROL_SESSION" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".RefreshRateReceiver"
+            android:exported="true"
+            android:permission="nd.max.permission.MANAGE">
+            <intent-filter>
+                <action android:name="nd.max.SET_FPS" />
+            </intent-filter>
+        </receiver>
+
+        <!-- ===== ودجات الشاشة الرئيسية (Glance) ===== -->
+        <!-- النشاط مُصدَّر لأن المشغّل (عملية أخرى) هو من يطلقه؛ والحرس داخله:
+             لا يقرأ ولا يكتب إلّا لودجة يملكها التطبيق (WidgetConfigActivity.widgetKindFor). -->
+        <activity
+            android:name="nd.max.widget.WidgetConfigActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
+
+        <receiver
+            android:name="nd.max.widget.pulse.PulseReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_pulse_info" />
+        </receiver>
+
+        <receiver
+            android:name="nd.max.widget.controls.ControlsReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_controls_info" />
+        </receiver>
+
+        <receiver
+            android:name="nd.max.widget.storage.StorageReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_storage_info" />
+        </receiver>
+
+    </application>
+</manifest>

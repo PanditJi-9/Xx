@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_spoof_ui_strings.xml -->
+<resources>
+    <string name="spoof_ui_real_device">असली डिवाइस</string>
+    <string name="spoof_ui_pill_verified">कॉन्फ़िगरेशन सत्यापित</string>
+    <string name="spoof_ui_pill_unverified">सत्यापित नहीं है</string>
+    <string name="spoof_ui_pill_off">बंद</string>
+    <string name="spoof_device_for_app">इस ऐप के लिए डिवाइस</string>
+    <string name="spoof_device_real_hint">यह ऐप आपके असली डिवाइस को देखता है। किसी एक को चुनने के लिए कार्ड पर टैप करें।</string>
+    <string name="spoof_device_pick">कैटलॉग से कोई डिवाइस चुनने के लिए टैप करें, या कस्टम डिवाइस जानकारी दर्ज करें।</string>
+    <string name="spoof_device_in_use">उपयोग में</string>
+    <string name="spoof_device_restart">बाद में लक्ष्य ऐप को पुनरारंभ करें, सिस्टम को नहीं।</string>
+    <string name="spoof_ui_apply_title">इस ऐप के लिए आवेदन करें</string>
+    <string name="spoof_ui_apply_action">समीक्षा करें और आवेदन करें</string>
+    <string name="spoof_ui_apply_confirm_title">केवल इस ऐप को लागू करें?</string>
+    <string name="spoof_ui_apply_confirm_text">बस यही ऐप तैयार है; अन्य ऐप्स अछूते हैं। बाद में लक्ष्य ऐप को पुनरारंभ करें, सिस्टम को नहीं। बाद का संपादन इस पुष्टि को रद्द कर देता है। यदि सीओपीजी पहले से ही इस ऐप को सूचीबद्ध करता है, तो आपका डिवाइस प्राथमिकता लेता है और सीओपीजी लाइन वैसी ही बनी रहती है।</string>
+    <string name="spoof_ui_apply_confirm">आवेदन करना</string>
+    <string name="spoof_ui_apply_reason">इंजन इनकार: %1$s</string>
+    <string name="spoof_engine_absent">इंजन मॉड्यूल पढ़ने योग्य नहीं है. उस मॉड्यूल की पुष्टि करें जिसका मॉड्यूल.प्रॉप id=COPG कहता है, इसे इंस्टॉल करें या पुनः इंस्टॉल करें, फिर इस स्क्रीन को फिर से खोलें।</string>
+    <string name="spoof_engine_disabled">आपके रूट मैनेजर में COPG मॉड्यूल अक्षम है। इसे वहां सक्षम करें, रीबूट करें, फिर दोबारा लागू करें।</string>
+    <string name="spoof_engine_removal_pending">COPG को हटाने के लिए चिह्नित किया गया है और अगले रीबूट के बाद चला जाएगा। आवेदन करने से पहले इसे दोबारा इंस्टॉल करें.</string>
+    <string name="spoof_engine_update_pending">एक COPG अद्यतन रीबूट की प्रतीक्षा कर रहा है। पहले रीबूट करें, फिर दोबारा लागू करें।</string>
+    <string name="spoof_ui_apply_pending">पिछले आवेदन के बाद से बदल गया है - इसे वास्तविक बनाने के लिए फिर से आवेदन करें।</string>
+    <string name="spoof_ui_restore_title">अपने वास्तविक उपकरण का उपयोग करें</string>
+    <string name="spoof_ui_restore_action">इस ऐप के लिए स्पूफ हटाएं</string>
+    <string name="spoof_ui_restore_notice">इस ऐप की सहेजी गई डिवाइस और इसके सीओपीजी बदलाव हटा दिए गए हैं, और इंजन को इस ऐप के बिना फिर से लिखा गया है। अन्य ऐप्स अछूते हैं. बाद में लक्ष्य ऐप को पुनरारंभ करें।</string>
+    <string name="app_tab_spoof">चकमा देना</string>
+    <string name="spoof_picker_title">किसी डिवाइस का चयन करे</string>
+    <string name="spoof_picker_custom">कस्टम डिवाइस जानकारी</string>
+    <string name="spoof_picker_custom_hint">इस ऐप के लिए अपना इच्छित ब्रांड, मॉडल और फ़िंगरप्रिंट दर्ज करें</string>
+    <string name="spoof_custom_title">कस्टम डिवाइस जानकारी</string>
+    <string name="spoof_custom_rules">नाम, ब्रांड, मॉडल, डिवाइस और उत्पाद की आवश्यकता है, प्रत्येक में अधिकतम 120 वर्ण, बिना किसी नियंत्रण वर्ण के। निर्माता, फिंगरप्रिंट और एसडीके वैकल्पिक हैं। फिंगरप्रिंट की शुरुआत उसी ब्रांड, उत्पाद और डिवाइस से होनी चाहिए।</string>
+    <string name="spoof_manufacturer">निर्माता (निर्माता)</string>
+    <string name="spoof_sdk">एसडीके स्तर, वैकल्पिक, 1 से 100</string>
+    <string name="spoof_custom_invalid">कुछ फ़ील्ड अमान्य हैं. उपरोक्त नियमों की जाँच करें, फिर दोबारा सहेजें।</string>
+    <string name="spoof_custom_save">इस ऐप के लिए सहेजें और चुनें</string>
+    <string name="spoof_impersonation_title">स्पूफिंग</string>
+    <string name="spoof_impersonation_desc">केवल निःशुल्क सीओपीजी विकल्प। समीक्षा करके इंजन को लिखें और आवेदन करें।</string>
+    <string name="spoof_impersonation_summary_cpu">CPU स्पूफ़िंग: %1$s</string>
+    <string name="spoof_impersonation_needs_device">पहले इस ऐप के लिए एक डिवाइस चुनें। ये विकल्प केवल एक डिवाइस के साथ लिखे जाते हैं।</string>
+    <string name="spoof_cpu_spoof">CPU स्पूफिंग</string>
+    <string name="spoof_cpu_real">असली CPU</string>
+    <string name="spoof_cpu_block">ब्लॉक CPU</string>
+    <string name="spoof_cpu_block_desc">इस ऐप को CPU स्पूफिंग से बाहर रखा गया है।</string>
+    <string name="spoof_cpu_picker_title">एक CPU चुनें</string>
+    <string name="copg_tweaks_section">सीओपीजी में बदलाव</string>
+    <string name="copg_tweak_nolog_title">लॉगिंग अक्षम करें</string>
+    <string name="copg_tweak_nolog_desc">इस ऐप पर COPG लॉगिंग ट्विक लागू करता है। यहां सहेजा गया, रिव्यू द्वारा इंजन को लिखा गया और स्पूफ टैब में लागू किया गया।</string>
+    <string name="copg_tweak_dab_title">ऑटो-ब्राइटनेस अक्षम करें</string>
+    <string name="copg_tweak_dab_desc">इस ऐप पर COPG ऑटो-ब्राइटनेस ट्विक लागू करता है। यहां सहेजा गया, रिव्यू द्वारा इंजन को लिखा गया और स्पूफ टैब में लागू किया गया।</string>
+    <string name="copg_tweak_kso_title">स्क्रीन ऑन करो</string>
+    <string name="copg_tweak_kso_desc">इस ऐप पर COPG कीप-स्क्रीन-ऑन ट्विक लागू करता है। यहां सहेजा गया, रिव्यू द्वारा इंजन को लिखा गया और स्पूफ टैब में लागू किया गया।</string>
+    <string name="copg_tweak_needs_device">इस ऐप के लिए सबसे पहले स्पूफ टैब में एक डिवाइस की जरूरत है।</string>
+</resources>

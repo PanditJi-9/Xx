@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_copg_tag_strings.xml -->
+<resources>
+    <string name="copg_tags_title">ตัวเลือก COPG</string>
+    <string name="copg_tags_desc">บันทึกเป็นเจตนาและเขียนร่วมกับโปรไฟล์อุปกรณ์ มีเพียงตัวเลือกความสะดวกสบายสี่ตัวเลือกเท่านั้นที่ใช้ได้กับ COPG ทุกรุ่น ที่เหลือต้องใช้ COPG 6.8.0 หรือใหม่กว่า ตัวเลือก PRO จำเป็นต้องมีใบอนุญาต COPG PRO และเครื่องยนต์อาจเพิกเฉยต่อตัวเลือกเหล่านี้</string>
+    <string name="copg_tier_pro">โปร</string>
+    <string name="copg_footprint_resident">อยู่ในหน่วยความจำของแอป ห้ามใช้กับเกมป้องกันการโกง</string>
+    <string name="copg_need_ack">รับทราบความเสี่ยงด้านล่างก่อน</string>
+    <string name="copg_tag_refused">ไม่อนุญาตให้ใช้ตัวเลือก COPG ที่เลือกสำหรับเวอร์ชัน COPG ที่ติดตั้งไว้ ไม่มีอะไรถูกเขียน</string>
+    <string name="copg_tag_needs_device">ตัวเลือกถูกเขียนด้วยโปรไฟล์อุปกรณ์ และแอปนี้ยังไม่มีเลย</string>
+    <string name="copg_tag_value_hint">ค่า</string>
+    <string name="copg_tag_bad_value">ตัวอักษร ตัวเลข ช่องว่าง และ . _ - / + เท่านั้น (สูงสุด 60)</string>
+    <string name="copg_tag_save">บันทึก</string>
+    <string name="copg_tag_remove">ลบ</string>
+    <string name="copg_tag_dnd">ห้ามรบกวนขณะเล่น</string>
+    <string name="copg_tag_dab">ปิดการใช้งานความสว่างอัตโนมัติ</string>
+    <string name="copg_tag_kso">เปิดหน้าจอไว้</string>
+    <string name="copg_tag_nolog">หยุดการบันทึก</string>
+    <string name="copg_tag_dpi">ค่า DPI ของหน้าจอ</string>
+    <string name="copg_tag_serial">หมายเลขซีเรียลต่อแอป</string>
+    <string name="copg_tag_cpu">CPU รุ่น</string>
+    <string name="copg_tag_blocked">บังคับของจริง CPU</string>
+    <string name="copg_tag_vpn">ซ่อน VPN</string>
+    <string name="copg_tag_vpns">ซ่อน VPN (เข้มงวด)</string>
+    <string name="copg_tag_hidedev">ซ่อนตัวเลือกนักพัฒนาซอฟต์แวร์และการดีบัก USB</string>
+    <string name="copg_tag_tz">เขตเวลา</string>
+    <string name="copg_tag_lang">ภาษาและภูมิภาค</string>
+    <string name="copg_tag_gpu">GPU รุ่น</string>
+    <string name="copg_tag_cow">สร้างคุณสมบัติ (คัดลอกเมื่อเขียน)</string>
+    <string name="copg_tag_aid">แอนดรอยด์ ID</string>
+    <string name="copg_tag_gaid">การโฆษณา ID</string>
+    <string name="copg_tag_appset">ชุดแอป ID</string>
+    <string name="copg_tag_drm">ไวด์ไวน์ / DRM</string>
+    <string name="copg_tag_imei">อีมี่</string>
+    <string name="copg_tag_sim">ผู้ให้บริการซิม (ปลอดภัย)</string>
+    <string name="copg_tag_simx">ผู้ให้บริการ SIM (ก้าวร้าว)</string>
+    <string name="copg_tag_ua">ตัวแทนผู้ใช้ WebView</string>
+    <string name="copg_tag_mock">ซ่อนตำแหน่งจำลอง</string>
+</resources>

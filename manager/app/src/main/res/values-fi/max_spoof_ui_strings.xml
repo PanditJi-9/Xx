@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_spoof_ui_strings.xml -->
+<resources>
+    <string name="spoof_ui_real_device">Todellinen laite</string>
+    <string name="spoof_ui_pill_verified">Konfiguraatio vahvistettu</string>
+    <string name="spoof_ui_pill_unverified">Ei vahvistettu</string>
+    <string name="spoof_ui_pill_off">Pois</string>
+    <string name="spoof_device_for_app">Laite tälle sovellukselle</string>
+    <string name="spoof_device_real_hint">Tämä sovellus näkee oikean laitteesi. Valitse yksi napauttamalla korttia.</string>
+    <string name="spoof_device_pick">Valitse laite luettelosta napauttamalla tai anna mukautetut laitetiedot.</string>
+    <string name="spoof_device_in_use">Käytössä</string>
+    <string name="spoof_device_restart">Käynnistä kohdesovellus uudelleen jälkeenpäin, älä järjestelmä.</string>
+    <string name="spoof_ui_apply_title">Hae tätä sovellusta</string>
+    <string name="spoof_ui_apply_action">Tarkista ja hae</string>
+    <string name="spoof_ui_apply_confirm_title">Käytätkö vain tätä sovellusta?</string>
+    <string name="spoof_ui_apply_confirm_text">Vain tämä sovellus on valmis; muut sovellukset ovat koskemattomia. Käynnistä kohdesovellus uudelleen jälkeenpäin, älä järjestelmä. Myöhempi muokkaus peruuttaa tämän vahvistuksen. Jos COPG jo luettelee tämän sovelluksen, laitteesi on etusijalla ja COPG-viiva pysyy ennallaan.</string>
+    <string name="spoof_ui_apply_confirm">Käytä</string>
+    <string name="spoof_ui_apply_reason">Moottorin hylkäys: %1$s</string>
+    <string name="spoof_engine_absent">Moottorimoduulia ei voi lukea. Vahvista moduuli, jonka module.prop sanoo id=COPG, asenna tai asenna se uudelleen ja avaa sitten tämä näyttö uudelleen.</string>
+    <string name="spoof_engine_disabled">COPG-moduuli on poistettu käytöstä juurihallinnassasi. Ota se käyttöön siellä, käynnistä uudelleen ja käytä sitten uudelleen.</string>
+    <string name="spoof_engine_removal_pending">COPG on merkitty poistettavaksi, ja se poistuu seuraavan uudelleenkäynnistyksen jälkeen. Asenna se uudelleen ennen käyttöä.</string>
+    <string name="spoof_engine_update_pending">COPG-päivitys odottaa uudelleenkäynnistystä. Käynnistä ensin uudelleen ja käytä sitten uudelleen.</string>
+    <string name="spoof_ui_apply_pending">Muutettu edellisen hakemuksen jälkeen – käytä uudelleen, jotta se olisi totta.</string>
+    <string name="spoof_ui_restore_title">Käytä oikeaa laitettasi</string>
+    <string name="spoof_ui_restore_action">Poista tämän sovelluksen huijaus</string>
+    <string name="spoof_ui_restore_notice">Tämän sovelluksen tallennettu laite ja sen COPG-säädöt poistetaan, ja moottori kirjoitetaan uudelleen ilman tätä sovellusta. Muut sovellukset ovat koskemattomia. Käynnistä kohdesovellus sen jälkeen uudelleen.</string>
+    <string name="app_tab_spoof">Huijata</string>
+    <string name="spoof_picker_title">Valitse laite</string>
+    <string name="spoof_picker_custom">Mukautetut laitetiedot</string>
+    <string name="spoof_picker_custom_hint">Anna tälle sovellukselle haluamasi merkki, malli ja sormenjälki</string>
+    <string name="spoof_custom_title">Mukautetut laitetiedot</string>
+    <string name="spoof_custom_rules">Nimi, merkki, malli, laite ja tuote vaaditaan, kukin enintään 120 merkkiä ilman ohjausmerkkejä. Valmistaja, sormenjälki ja SDK ovat valinnaisia. Sormenjäljen on alettava samalla merkillä, tuotteella ja laitteella.</string>
+    <string name="spoof_manufacturer">Valmistaja (MANUFACTURER)</string>
+    <string name="spoof_sdk">SDK-taso, valinnainen, 1–100</string>
+    <string name="spoof_custom_invalid">Jotkut kentät ovat virheellisiä. Tarkista yllä olevat säännöt ja tallenna sitten uudelleen.</string>
+    <string name="spoof_custom_save">Tallenna ja valitse tälle sovellukselle</string>
+    <string name="spoof_impersonation_title">Huijausta</string>
+    <string name="spoof_impersonation_desc">Vain ilmaiset COPG-vaihtoehdot. Kirjoitti moottorille Tarkista ja käytä.</string>
+    <string name="spoof_impersonation_summary_cpu">CPU huijaus: %1$s</string>
+    <string name="spoof_impersonation_needs_device">Valitse ensin laite tälle sovellukselle. Nämä vaihtoehdot on kirjoitettu vain laitteella.</string>
+    <string name="spoof_cpu_spoof">CPU huijaus</string>
+    <string name="spoof_cpu_real">Todellinen CPU</string>
+    <string name="spoof_cpu_block">Lohko CPU</string>
+    <string name="spoof_cpu_block_desc">Sulkee tämän sovelluksen pois CPU huijauksesta.</string>
+    <string name="spoof_cpu_picker_title">Valitse CPU</string>
+    <string name="copg_tweaks_section">COPG-säädöt</string>
+    <string name="copg_tweak_nolog_title">Poista kirjaus käytöstä</string>
+    <string name="copg_tweak_nolog_desc">Käyttää COPG-lokisäätöä tähän sovellukseen. Tallennettu tähän, kirjoitettu moottorille Tarkista ja käytä Huijaus-välilehdellä.</string>
+    <string name="copg_tweak_dab_title">Poista automaattinen kirkkaus käytöstä</string>
+    <string name="copg_tweak_dab_desc">Käyttää COPG:n automaattisen kirkkauden säätöä tähän sovellukseen. Tallennettu tähän, kirjoitettu moottorille Tarkista ja käytä Huijaus-välilehdellä.</string>
+    <string name="copg_tweak_kso_title">Pidä näyttö päällä</string>
+    <string name="copg_tweak_kso_desc">Käyttää COPG-näytön päällä -säätöä tähän sovellukseen. Tallennettu tähän, kirjoitettu moottorille Tarkista ja käytä Huijaus-välilehdellä.</string>
+    <string name="copg_tweak_needs_device">Tarvitsee ensin laitteen tätä sovellusta varten Huijaus-välilehdellä.</string>
+</resources>

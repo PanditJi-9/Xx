@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_sample_device_strings.xml -->
+<resources>
+    <string name="sample_pick_title">เลือกอุปกรณ์ตัวอย่าง</string>
+    <string name="sample_pick_button">เลือกอุปกรณ์ตัวอย่าง</string>
+    <string name="sample_auto_hint">การเลือกอุปกรณ์จะเติมแบรนด์ ผู้ผลิต รุ่น อุปกรณ์ สินค้า และลายนิ้วมือให้กับคุณ ใช้ Manual เพื่อพิมพ์ด้วยตนเอง</string>
+    <string name="sample_manual">คู่มือ</string>
+    <string name="sample_close">ปิด</string>
+    <string name="sample_search">ค้นหาอุปกรณ์</string>
+    <string name="sample_empty">ไม่มีอุปกรณ์ที่ตรงกัน</string>
+    <string name="sample_unavailable">ไม่สามารถอ่านแค็ตตาล็อกอุปกรณ์ได้</string>
+    <string name="sample_row_sub">แอนดรอยด์ %1$s · %2$s</string>
+    <string name="sample_row_sub_plain">%1$s</string>
+    <string name="sample_fp_shared">ลายนิ้วมือเดียวกันกับอุปกรณ์แค็ตตาล็อกอื่น</string>
+    <string name="sample_credit">ข้อมูลแคตตาล็อก: COPG (Apache-2.0), %1$s</string>
+    <string name="sample_limit">ถึงขีดจำกัดโปรไฟล์ (100) แล้ว</string>
+</resources>

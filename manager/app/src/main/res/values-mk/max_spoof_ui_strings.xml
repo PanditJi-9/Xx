@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_spoof_ui_strings.xml -->
+<resources>
+    <string name="spoof_ui_real_device">Вистински уред</string>
+    <string name="spoof_ui_pill_verified">Конфигурацијата е потврдена</string>
+    <string name="spoof_ui_pill_unverified">Не е потврдено</string>
+    <string name="spoof_ui_pill_off">Исклучено</string>
+    <string name="spoof_device_for_app">Уред за оваа апликација</string>
+    <string name="spoof_device_real_hint">Оваа апликација го гледа вашиот вистински уред. Допрете ја картичката за да изберете една.</string>
+    <string name="spoof_device_pick">Допрете за да изберете уред од каталогот или внесете приспособени информации за уредот.</string>
+    <string name="spoof_device_in_use">Во употреба</string>
+    <string name="spoof_device_restart">Рестартирајте ја целната апликација потоа, а не системот.</string>
+    <string name="spoof_ui_apply_title">Аплицирајте за оваа апликација</string>
+    <string name="spoof_ui_apply_action">Прегледајте и аплицирајте</string>
+    <string name="spoof_ui_apply_confirm_title">Да се ​​примени само оваа апликација?</string>
+    <string name="spoof_ui_apply_confirm_text">Подготвена е само оваа апликација; другите апликации се недопрени. Рестартирајте ја целната апликација потоа, а не системот. Подоцнежното уредување ја откажува оваа потврда. Ако COPG веќе ја наведува оваа апликација, вашиот уред има приоритет и линијата COPG останува како што е.</string>
+    <string name="spoof_ui_apply_confirm">Пријавете се</string>
+    <string name="spoof_ui_apply_reason">Одбивање на моторот: %1$s</string>
+    <string name="spoof_engine_absent">Модулот на моторот не се чита. Потврдете го модулот чиј module.prop вели id=COPG, инсталирајте го или повторно инсталирајте го, а потоа повторно отворете го овој екран.</string>
+    <string name="spoof_engine_disabled">Модулот COPG е оневозможен во вашиот root менаџер. Овозможете го таму, рестартирајте, а потоа аплицирајте повторно.</string>
+    <string name="spoof_engine_removal_pending">COPG е означен за отстранување и ќе исчезне по следното рестартирање. Повторно инсталирајте го пред да аплицирате.</string>
+    <string name="spoof_engine_update_pending">Ажурирањето COPG чека рестартирање. Прво рестартирајте, а потоа аплицирајте повторно.</string>
+    <string name="spoof_ui_apply_pending">Променет од последното пријавување - аплицирајте повторно за да го направите реално.</string>
+    <string name="spoof_ui_restore_title">Користете го вашиот вистински уред</string>
+    <string name="spoof_ui_restore_action">Отстранете ја измамата за оваа апликација</string>
+    <string name="spoof_ui_restore_notice">Зачуваниот уред на оваа апликација и неговите измени во COPG се отстранети, а моторот се препишува без оваа апликација. Другите апликации се недопрени. Рестартирајте ја целната апликација потоа.</string>
+    <string name="app_tab_spoof">Измама</string>
+    <string name="spoof_picker_title">Изберете уред</string>
+    <string name="spoof_picker_custom">Прилагодени информации за уредот</string>
+    <string name="spoof_picker_custom_hint">Внесете го брендот, моделот и отпечатокот од прст што ги сакате за оваа апликација</string>
+    <string name="spoof_custom_title">Прилагодени информации за уредот</string>
+    <string name="spoof_custom_rules">Потребни се име, бренд, модел, уред и производ, до 120 знаци, без контролни знаци. Производителот, отпечатокот од прст и SDK се опционални. Отпечатокот од прст мора да започне со истиот бренд, производ и уред.</string>
+    <string name="spoof_manufacturer">Производител (MANUFACTURER)</string>
+    <string name="spoof_sdk">Ниво на SDK, опционално, од 1 до 100</string>
+    <string name="spoof_custom_invalid">Некои полиња се неважечки. Проверете ги правилата погоре, а потоа зачувајте повторно.</string>
+    <string name="spoof_custom_save">Зачувајте и изберете за оваа апликација</string>
+    <string name="spoof_impersonation_title">Измамување</string>
+    <string name="spoof_impersonation_desc">Само бесплатни опции за COPG. Напишано на моторот од Преглед и примени.</string>
+    <string name="spoof_impersonation_summary_cpu">CPU измама: %1$s</string>
+    <string name="spoof_impersonation_needs_device">Прво изберете уред за оваа апликација. Овие опции се напишани само со уред.</string>
+    <string name="spoof_cpu_spoof">CPU измама</string>
+    <string name="spoof_cpu_real">Реално CPU</string>
+    <string name="spoof_cpu_block">Блок CPU</string>
+    <string name="spoof_cpu_block_desc">Ја исклучува оваа апликација од CPU измама.</string>
+    <string name="spoof_cpu_picker_title">Изберете CPU</string>
+    <string name="copg_tweaks_section">COPG измени</string>
+    <string name="copg_tweak_nolog_title">Оневозможи евидентирање</string>
+    <string name="copg_tweak_nolog_desc">Применува дотерување за евиденција на COPG на оваа апликација. Зачувано овде, напишано на моторот со Преглед и примени во картичката Измама.</string>
+    <string name="copg_tweak_dab_title">Оневозможи автоматска осветленост</string>
+    <string name="copg_tweak_dab_desc">Го применува прилагодувањето за автоматска осветленост на COPG на оваа апликација. Зачувано овде, напишано на моторот со Преглед и примени во картичката Измама.</string>
+    <string name="copg_tweak_kso_title">Чувајте го екранот вклучен</string>
+    <string name="copg_tweak_kso_desc">Го применува прилагодувањето на COPG за задржување на екранот на оваа апликација. Зачувано овде, напишано на моторот со Преглед и примени во картичката Измама.</string>
+    <string name="copg_tweak_needs_device">Најпрво му треба уред за оваа апликација, во картичката Spoof.</string>
+</resources>

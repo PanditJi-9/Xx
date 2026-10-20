@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_security_strings.xml -->
+<resources>
+    <string name="security_tamper_title">Kan ikke starte</string>
+    <string name="security_tamper_message">Denne versjonen av MaxManager er ikke intakt. De installerte filene samsvarer ikke lenger med den signerte utgivelsen, så den vil ikke kjøre. Installer den offisielle versjonen på nytt fra den opprinnelige kilden.</string>
+    <string name="security_tamper_close">Lukke</string>
+</resources>

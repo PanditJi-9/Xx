@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_copg_tag_strings.xml -->
+<resources>
+    <string name="copg_tags_title">ທາງເລືອກ COPG</string>
+    <string name="copg_tags_desc">ບັນທຶກເປັນຄວາມຕັ້ງໃຈ ແລະຂຽນຮ່ວມກັນກັບໂປຣໄຟລ໌ອຸປະກອນ. ພຽງແຕ່ສີ່ທາງເລືອກທີ່ສະດວກສະບາຍເຮັດວຽກຢູ່ໃນທຸກລຸ້ນ COPG; ສ່ວນທີ່ເຫຼືອຕ້ອງການ COPG 6.8.0 ຫຼືໃຫມ່ກວ່າ. ຕົວເລືອກ PRO ຕ້ອງການໃບອະນຸຍາດ COPG PRO, ແລະເຄື່ອງຈັກອາດຈະບໍ່ສົນໃຈພວກມັນ.</string>
+    <string name="copg_tier_pro">PRO</string>
+    <string name="copg_footprint_resident">ຢູ່ໃນຄວາມຊົງຈໍາຂອງແອັບຯ, ບໍ່ເຄີຍໃຊ້ກັບເກມຕ້ານການໂກງ</string>
+    <string name="copg_need_ack">ຮັບຮູ້ຄວາມສ່ຽງຂ້າງລຸ່ມນີ້ກ່ອນ</string>
+    <string name="copg_tag_refused">ທາງເລືອກ COPG ທີ່ເລືອກແມ່ນບໍ່ອະນຸຍາດໃຫ້ໃຊ້ສໍາລັບລຸ້ນ COPG ທີ່ຕິດຕັ້ງ. ບໍ່ມີຫຍັງຂຽນ.</string>
+    <string name="copg_tag_needs_device">ຕົວເລືອກຖືກຂຽນດ້ວຍໂປຣໄຟລ໌ອຸປະກອນ, ແລະແອັບນີ້ຍັງບໍ່ທັນມີເທື່ອ.</string>
+    <string name="copg_tag_value_hint">ມູນຄ່າ</string>
+    <string name="copg_tag_bad_value">ຕົວອັກສອນ, ຕົວເລກ, ຊ່ອງຫວ່າງ ແລະ . _ - / + ເທົ່ານັ້ນ (ສູງສຸດ 60)</string>
+    <string name="copg_tag_save">ບັນທຶກ</string>
+    <string name="copg_tag_remove">ເອົາອອກ</string>
+    <string name="copg_tag_dnd">ຫ້າມລົບກວນໃນເວລາຫຼິ້ນ</string>
+    <string name="copg_tag_dab">ປິດການນຳໃຊ້ຄວາມສະຫວ່າງອັດຕະໂນມັດ</string>
+    <string name="copg_tag_kso">ສືບຕໍ່ເປີດໜ້າຈໍ</string>
+    <string name="copg_tag_nolog">ຢຸດການບັນທຶກ</string>
+    <string name="copg_tag_dpi">ໜ້າຈໍ DPI</string>
+    <string name="copg_tag_serial">ໝາຍເລກລຳດັບຕໍ່ແອັບ</string>
+    <string name="copg_tag_cpu">CPU ຮູບແບບ</string>
+    <string name="copg_tag_blocked">ບັງຄັບຕົວຈິງ CPU</string>
+    <string name="copg_tag_vpn">ເຊື່ອງ VPN</string>
+    <string name="copg_tag_vpns">ເຊື່ອງ VPN (ເຂັ້ມງວດ)</string>
+    <string name="copg_tag_hidedev">ເຊື່ອງຕົວເລືອກນັກພັດທະນາ ແລະການດີບັກ USB</string>
+    <string name="copg_tag_tz">ເຂດເວລາ</string>
+    <string name="copg_tag_lang">ພາສາ ແລະພາກພື້ນ</string>
+    <string name="copg_tag_gpu">GPU ຮູບແບບ</string>
+    <string name="copg_tag_cow">ການສ້າງຄຸນສົມບັດ (ສຳເນົາ-on-write)</string>
+    <string name="copg_tag_aid">Android ID</string>
+    <string name="copg_tag_gaid">ການໂຄສະນາ ID</string>
+    <string name="copg_tag_appset">App Set ID</string>
+    <string name="copg_tag_drm">Widevine / DRM</string>
+    <string name="copg_tag_imei">IMEI</string>
+    <string name="copg_tag_sim">ຜູ້ໃຫ້ບໍລິການ SIM (ປອດໄພ)</string>
+    <string name="copg_tag_simx">ຜູ້ໃຫ້ບໍລິການ SIM (ຮຸກຮານ)</string>
+    <string name="copg_tag_ua">WebView User-Agent</string>
+    <string name="copg_tag_mock">ເຊື່ອງສະຖານທີ່ຈຳລອງ</string>
+</resources>

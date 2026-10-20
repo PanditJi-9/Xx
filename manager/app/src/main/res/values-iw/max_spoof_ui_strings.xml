@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_spoof_ui_strings.xml -->
+<resources>
+    <string name="spoof_ui_real_device">מכשיר אמיתי</string>
+    <string name="spoof_ui_pill_verified">התצורה אומתה</string>
+    <string name="spoof_ui_pill_unverified">לא מאומת</string>
+    <string name="spoof_ui_pill_off">כבוי</string>
+    <string name="spoof_device_for_app">מכשיר לאפליקציה זו</string>
+    <string name="spoof_device_real_hint">אפליקציה זו רואה את המכשיר האמיתי שלך. הקש על הכרטיס כדי לבחור אחד.</string>
+    <string name="spoof_device_pick">הקש כדי לבחור מכשיר מהקטלוג, או הזן מידע מכשיר מותאם אישית.</string>
+    <string name="spoof_device_in_use">בשימוש</string>
+    <string name="spoof_device_restart">הפעל מחדש את אפליקציית היעד לאחר מכן, לא את המערכת.</string>
+    <string name="spoof_ui_apply_title">הגש בקשה לאפליקציה זו</string>
+    <string name="spoof_ui_apply_action">בדוק והחל</string>
+    <string name="spoof_ui_apply_confirm_title">ליישם את האפליקציה הזו בלבד?</string>
+    <string name="spoof_ui_apply_confirm_text">רק האפליקציה הזו מוכנה; אפליקציות אחרות לא נפגעו. הפעל מחדש את אפליקציית היעד לאחר מכן, לא את המערכת. עריכה מאוחרת יותר מבטלת את האישור הזה. אם COPG כבר מפרט את האפליקציה הזו, המכשיר שלך מקבל עדיפות וקו COPG נשאר כפי שהוא.</string>
+    <string name="spoof_ui_apply_confirm">לִפְנוֹת</string>
+    <string name="spoof_ui_apply_reason">סירוב מנוע: %1$s</string>
+    <string name="spoof_engine_absent">מודול המנוע אינו קריא. אשר מודול ש-modul.prop שלו אומר id=COPG, התקן או התקן אותו מחדש, ואז פתח מחדש את המסך הזה.</string>
+    <string name="spoof_engine_disabled">מודול COPG מושבת במנהל השורש שלך. הפעל אותו שם, הפעל מחדש ואז החל שוב.</string>
+    <string name="spoof_engine_removal_pending">COPG מסומן להסרה ותיעלם לאחר האתחול הבא. התקן אותו מחדש לפני היישום.</string>
+    <string name="spoof_engine_update_pending">עדכון COPG ממתין לאתחול. הפעל מחדש תחילה, ולאחר מכן החל שוב.</string>
+    <string name="spoof_ui_apply_pending">השתנה מאז היישום האחרון - החל שוב כדי שזה יהיה אמיתי.</string>
+    <string name="spoof_ui_restore_title">השתמש במכשיר האמיתי שלך</string>
+    <string name="spoof_ui_restore_action">הסר זיוף עבור אפליקציה זו</string>
+    <string name="spoof_ui_restore_notice">המכשיר השמור של האפליקציה הזו והכווצות של ה-COPG שלה מוסרים, והמנוע נכתב מחדש ללא האפליקציה הזו. אפליקציות אחרות לא נפגעו. הפעל מחדש את אפליקציית היעד לאחר מכן.</string>
+    <string name="app_tab_spoof">מְתִיחָה</string>
+    <string name="spoof_picker_title">בחר מכשיר</string>
+    <string name="spoof_picker_custom">מידע מכשיר מותאם אישית</string>
+    <string name="spoof_picker_custom_hint">הזן את המותג, הדגם וטביעת האצבע שאתה רוצה עבור האפליקציה הזו</string>
+    <string name="spoof_custom_title">מידע מכשיר מותאם אישית</string>
+    <string name="spoof_custom_rules">נדרשים שם, מותג, דגם, מכשיר ומוצר, עד 120 תווים כל אחד, ללא תווי בקרה. יצרן, טביעת אצבע ו-SDK הם אופציונליים. טביעת אצבע חייבת להתחיל עם אותו מותג, מוצר ומכשיר.</string>
+    <string name="spoof_manufacturer">יצרן (MANUFACTURER)</string>
+    <string name="spoof_sdk">רמת SDK, אופציונלי, 1 עד 100</string>
+    <string name="spoof_custom_invalid">חלק מהשדות אינם חוקיים. בדוק את הכללים שלמעלה ולאחר מכן שמור שוב.</string>
+    <string name="spoof_custom_save">שמור ובחר עבור אפליקציה זו</string>
+    <string name="spoof_impersonation_title">זיוף</string>
+    <string name="spoof_impersonation_desc">אפשרויות COPG בחינם בלבד. נכתב למנוע על ידי סקירה והגשת בקשה.</string>
+    <string name="spoof_impersonation_summary_cpu">CPU זיוף: %1$s</string>
+    <string name="spoof_impersonation_needs_device">תחילה בחר מכשיר עבור האפליקציה הזו. אפשרויות אלה נכתבות רק עם מכשיר.</string>
+    <string name="spoof_cpu_spoof">CPU זיוף</string>
+    <string name="spoof_cpu_real">אמיתי CPU</string>
+    <string name="spoof_cpu_block">חסום CPU</string>
+    <string name="spoof_cpu_block_desc">לא כולל את האפליקציה הזו מזיוף CPU.</string>
+    <string name="spoof_cpu_picker_title">בחר CPU</string>
+    <string name="copg_tweaks_section">תיקוני COPG</string>
+    <string name="copg_tweak_nolog_title">בטל רישום</string>
+    <string name="copg_tweak_nolog_desc">מחיל את כוונון הרישום של COPG על אפליקציה זו. נשמר כאן, נכתב למנוע על ידי סקירה והחל בלשונית זיוף.</string>
+    <string name="copg_tweak_dab_title">השבת את הבהירות האוטומטית</string>
+    <string name="copg_tweak_dab_desc">מחיל את כוונון הבהירות האוטומטית של COPG על אפליקציה זו. נשמר כאן, נכתב למנוע על ידי סקירה והחל בלשונית זיוף.</string>
+    <string name="copg_tweak_kso_title">השאר את המסך דולק</string>
+    <string name="copg_tweak_kso_desc">מחיל את ה-COPG keep-screen on tweak על האפליקציה הזו. נשמר כאן, נכתב למנוע על ידי סקירה והחל בלשונית זיוף.</string>
+    <string name="copg_tweak_needs_device">צריך קודם כל מכשיר עבור האפליקציה הזו, בכרטיסייה זיוף.</string>
+</resources>

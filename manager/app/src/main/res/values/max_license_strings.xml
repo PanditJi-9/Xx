@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+      LICENSE-KEYS-01 — نصوص الترخيص والمفاتيح (الإنجليزية).
+      كل مفتاح هنا له مستهلك في الكود (`R.string.…`) — وبوابة `i18n_coverage.py` في نمط prune
+      تُسقط أي مفتاح بلا قارئ، فالمفاتيح تُضاف مع الشاشة التي تقرؤها لا قبلها.
+    -->
+
+    <!-- شاشة الترخيص -->
+    <string name="max_license_title">License</string>
+    <string name="max_license_subtitle">One key, this device, no account</string>
+    <string name="max_license_help_body">A key is checked online once, when you enter it. From then on the server\'s signed certificate works offline until its time runs out — the app does not call home every time you open a screen. The certificate is bound to this device\'s random install id, so copying the app data to another phone does not carry the licence with it, and the owner can reset that binding from the panel if you change phones.</string>
+
+    <!-- الحالة -->
+    <string name="max_license_status_section">Status</string>
+    <string name="max_license_status_active">Active</string>
+    <string name="max_license_status_expired">Expired</string>
+    <string name="max_license_status_none">Not activated</string>
+    <string name="max_license_active_detail">Remaining: %1$d days</string>
+    <string name="max_license_expired_detail">This key\'s time is over. A new key renews access.</string>
+    <string name="max_license_none_detail">Enter the key you received to unlock the paid surfaces.</string>
+    <string name="max_license_promo_active">Free for everyone until %1$s</string>
+    <string name="max_license_plan_title">Plan</string>
+    <string name="max_license_devices_title">Devices</string>
+    <string name="max_license_devices_detail">%1$d of %2$d used</string>
+    <string name="max_license_device_id_title">This device</string>
+    <string name="max_license_device_id_detail">%1$s</string>
+
+    <!-- التفعيل -->
+    <string name="max_license_key_section">Activation</string>
+    <string name="max_license_key_label">License key</string>
+    <string name="max_license_key_placeholder">MAXM-XXXXX-XXXXX-XXXXX-XXXXX-XX</string>
+    <string name="max_license_key_helper">Dashes and capitalisation do not matter — paste it as you received it.</string>
+    <string name="max_license_activate">Activate</string>
+    <string name="max_license_activating">Checking the key…</string>
+    <string name="max_license_refresh">Check now</string>
+    <string name="max_license_activated">Activated. This device is now linked to your key.</string>
+
+    <!-- أسماء أعطاب التفعيل — كل رمز من الخادم له جملة، والمجهول يُسمّى مجهولًا -->
+    <string name="max_license_error_invalid_key">This key does not look complete. Check it and try again.</string>
+    <string name="max_license_error_not_configured">This build has no licence server configured.</string>
+    <string name="max_license_error_network">No connection. The key is checked once, then works offline.</string>
+    <string name="max_license_error_timeout">The licence server did not answer in time. Try again.</string>
+    <string name="max_license_error_server">The licence server answered with an error. Try again later.</string>
+    <string name="max_license_error_client">The licence function is not deployed on the server.</string>
+    <string name="max_license_error_format">The server answer was not understood.</string>
+    <string name="max_license_error_expired">This key has expired.</string>
+    <string name="max_license_error_not_found">This key is not known.</string>
+    <string name="max_license_error_revoked">This key has been revoked.</string>
+    <string name="max_license_error_device_limit">This key has reached its device limit. Ask for a device reset.</string>
+    <string name="max_license_error_device_unknown">This device is not linked to the key yet. Activate it here first.</string>
+    <string name="max_license_error_device_removed">This device was removed from the key by the owner.</string>
+    <string name="max_license_error_rate_limited">Too many attempts from this connection — wait a few minutes, then try again.</string>
+    <string name="max_license_error_unknown">Something went wrong. The reason was recorded in Diagnostics.</string>
+
+    <!-- بوّابة السطح المقفل -->
+    <string name="max_license_gate_title">This surface needs a licence</string>
+    <string name="max_license_gate_detail">It is included with a key. One key covers this device, and entering it takes a minute.</string>
+    <string name="max_license_gate_action">Open licence settings</string>
+    <!-- زرّ الاشتراك في بوّابة السطح المقفل: يظهر فقط إن نشر المالك رابط اشتراك في اللوحة -->
+    <string name="max_license_gate_subscribe">Subscribe now</string>
+</resources>

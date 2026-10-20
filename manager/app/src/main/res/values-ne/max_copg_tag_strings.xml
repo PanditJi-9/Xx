@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_copg_tag_strings.xml -->
+<resources>
+    <string name="copg_tags_title">COPG विकल्पहरू</string>
+    <string name="copg_tags_desc">उद्देश्यको रूपमा सुरक्षित गरियो र यन्त्र प्रोफाइलसँग सँगै लेखियो। प्रत्येक COPG संस्करणमा केवल चार आराम विकल्पहरू काम गर्दछ; बाँकीलाई COPG 6.8.0 वा नयाँ चाहिन्छ। PRO विकल्पहरूलाई COPG PRO लाइसेन्स चाहिन्छ, र इन्जिनले तिनीहरूलाई बेवास्ता गर्न सक्छ।</string>
+    <string name="copg_tier_pro">प्रो</string>
+    <string name="copg_footprint_resident">एपको मेमोरीमा रहन्छ, एन्टी-चीट गेमहरूसँग कहिल्यै प्रयोग नगर्नुहोस्</string>
+    <string name="copg_need_ack">पहिले तलको जोखिमलाई स्वीकार गर्नुहोस्</string>
+    <string name="copg_tag_refused">स्थापित COPG संस्करणको लागि चयन गरिएको COPG विकल्पलाई अनुमति छैन। केही लेखिएको थिएन ।</string>
+    <string name="copg_tag_needs_device">विकल्पहरू यन्त्र प्रोफाइलसँग लेखिएका छन्, र यो एपमा अहिलेसम्म कुनै पनि छैन।</string>
+    <string name="copg_tag_value_hint">मूल्य</string>
+    <string name="copg_tag_bad_value">अक्षर, अंक, स्पेस र। _ - / + मात्र (६० सम्म)</string>
+    <string name="copg_tag_save">बचत गर्नुहोस्</string>
+    <string name="copg_tag_remove">हटाउनुहोस्</string>
+    <string name="copg_tag_dnd">खेल्दा डिस्टर्ब नगर्नुहोस्</string>
+    <string name="copg_tag_dab">स्वत: चमक असक्षम गर्नुहोस्</string>
+    <string name="copg_tag_kso">स्क्रिन अन राख्नुहोस्</string>
+    <string name="copg_tag_nolog">लगिङ रोक्नुहोस्</string>
+    <string name="copg_tag_dpi">स्क्रिन DPI</string>
+    <string name="copg_tag_serial">प्रति-एप क्रम संख्या</string>
+    <string name="copg_tag_cpu">CPU मोडेल</string>
+    <string name="copg_tag_blocked">वास्तविक CPU बल गर्नुहोस्</string>
+    <string name="copg_tag_vpn">VPN लुकाउनुहोस्</string>
+    <string name="copg_tag_vpns">VPN लुकाउनुहोस् (कडा)</string>
+    <string name="copg_tag_hidedev">विकासकर्ता विकल्पहरू र USB डिबगिङ लुकाउनुहोस्</string>
+    <string name="copg_tag_tz">समय क्षेत्र</string>
+    <string name="copg_tag_lang">भाषा र क्षेत्र</string>
+    <string name="copg_tag_gpu">GPU मोडेल</string>
+    <string name="copg_tag_cow">गुणहरू निर्माण गर्नुहोस् (प्रतिलिपि-अन-राइट)</string>
+    <string name="copg_tag_aid">एन्ड्रोइड ID</string>
+    <string name="copg_tag_gaid">विज्ञापन ID</string>
+    <string name="copg_tag_appset">एप सेट ID</string>
+    <string name="copg_tag_drm">Widevine / DRM</string>
+    <string name="copg_tag_imei">IMEI</string>
+    <string name="copg_tag_sim">सिम वाहक (सुरक्षित)</string>
+    <string name="copg_tag_simx">सिम वाहक (आक्रामक)</string>
+    <string name="copg_tag_ua">WebView प्रयोगकर्ता-एजेन्ट</string>
+    <string name="copg_tag_mock">नक्कली स्थान लुकाउनुहोस्</string>
+</resources>

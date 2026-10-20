@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_security_strings.xml -->
+<resources>
+    <string name="security_tamper_title">শুরু করতে অক্ষম</string>
+    <string name="security_tamper_message">MaxManager এর এই বিল্ডটি অক্ষত নয়। ইনস্টল করা ফাইলগুলি আর স্বাক্ষরিত রিলিজের সাথে মেলে না, তাই এটি চালানো হবে না। অফিসিয়াল বিল্ডটি এর আসল উৎস থেকে পুনরায় ইনস্টল করুন।</string>
+    <string name="security_tamper_close">বন্ধ</string>
+</resources>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_sample_device_strings.xml -->
+<resources>
+    <string name="sample_pick_title">Aukeratu lagin-gailua</string>
+    <string name="sample_pick_button">Aukeratu lagin-gailua</string>
+    <string name="sample_auto_hint">Gailu bat aukeratzeak marka, fabrikatzailea, modeloa, gailua, produktua eta hatz-markak betetzen ditu zuretzat. Erabili Eskuliburua zuk zeuk idazteko.</string>
+    <string name="sample_manual">Eskuliburua</string>
+    <string name="sample_close">Itxi</string>
+    <string name="sample_search">Bilatu gailuak</string>
+    <string name="sample_empty">Ez dago bat datorren gailurik.</string>
+    <string name="sample_unavailable">Ezin izan da gailuen katalogoa irakurri.</string>
+    <string name="sample_row_sub">Android %1$s · %2$s</string>
+    <string name="sample_row_sub_plain">%1$s</string>
+    <string name="sample_fp_shared">Katalogoko beste gailu baten hatz-marka bera</string>
+    <string name="sample_credit">Katalogoko datuak: COPG (Apache-2.0), %1$s</string>
+    <string name="sample_limit">Profilaren mugara (100) iritsi da.</string>
+</resources>

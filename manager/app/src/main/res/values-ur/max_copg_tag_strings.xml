@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_copg_tag_strings.xml -->
+<resources>
+    <string name="copg_tags_title">COPG کے اختیارات</string>
+    <string name="copg_tags_desc">ارادے کے طور پر محفوظ کیا گیا اور ڈیوائس پروفائل کے ساتھ لکھا گیا۔ ہر COPG ورژن پر صرف چار آرام دہ اختیارات کام کرتے ہیں۔ باقی کو COPG 6.8.0 یا جدید تر کی ضرورت ہے۔ PRO کے اختیارات کو COPG PRO لائسنس کی ضرورت ہے، اور انجن انہیں نظر انداز کر سکتا ہے۔</string>
+    <string name="copg_tier_pro">پی آر او</string>
+    <string name="copg_footprint_resident">ایپ کی میموری میں رہتا ہے، کبھی بھی اینٹی چیٹ گیمز کے ساتھ استعمال نہ کریں۔</string>
+    <string name="copg_need_ack">پہلے نیچے کے خطرے کو تسلیم کریں۔</string>
+    <string name="copg_tag_refused">نصب شدہ COPG ورژن کے لیے منتخب COPG اختیار کی اجازت نہیں ہے۔ کچھ نہیں لکھا تھا۔</string>
+    <string name="copg_tag_needs_device">آپشنز ڈیوائس پروفائل کے ساتھ لکھے گئے ہیں، اور اس ایپ میں ابھی تک کوئی نہیں ہے۔</string>
+    <string name="copg_tag_value_hint">قدر</string>
+    <string name="copg_tag_bad_value">حروف، ہندسے، جگہ اور . _ - / + صرف (60 تک)</string>
+    <string name="copg_tag_save">محفوظ کریں۔</string>
+    <string name="copg_tag_remove">ہٹا دیں۔</string>
+    <string name="copg_tag_dnd">کھیلتے وقت ڈسٹرب نہ کریں۔</string>
+    <string name="copg_tag_dab">خودکار چمک کو غیر فعال کریں۔</string>
+    <string name="copg_tag_kso">اسکرین آن رکھیں</string>
+    <string name="copg_tag_nolog">لاگ کرنا بند کرو</string>
+    <string name="copg_tag_dpi">اسکرین ڈی پی آئی</string>
+    <string name="copg_tag_serial">فی ایپ سیریل نمبر</string>
+    <string name="copg_tag_cpu">CPU ماڈل</string>
+    <string name="copg_tag_blocked">اصلی CPU کو مجبور کریں۔</string>
+    <string name="copg_tag_vpn">VPN چھپائیں۔</string>
+    <string name="copg_tag_vpns">VPN چھپائیں (سخت)</string>
+    <string name="copg_tag_hidedev">ڈویلپر کے اختیارات اور USB ڈیبگنگ کو چھپائیں۔</string>
+    <string name="copg_tag_tz">ٹائم زون</string>
+    <string name="copg_tag_lang">زبان اور علاقہ</string>
+    <string name="copg_tag_gpu">GPU ماڈل</string>
+    <string name="copg_tag_cow">پراپرٹیز بنائیں (کاپی آن رائٹ)</string>
+    <string name="copg_tag_aid">Android ID</string>
+    <string name="copg_tag_gaid">ایڈورٹائزنگ ID</string>
+    <string name="copg_tag_appset">ایپ سیٹ ID</string>
+    <string name="copg_tag_drm">وائیڈوائن / ڈی آر ایم</string>
+    <string name="copg_tag_imei">آئی ایم ای آئی</string>
+    <string name="copg_tag_sim">سم کیریئر (محفوظ)</string>
+    <string name="copg_tag_simx">سم کیریئر (جارحانہ)</string>
+    <string name="copg_tag_ua">WebView صارف ایجنٹ</string>
+    <string name="copg_tag_mock">فرضی مقام چھپائیں۔</string>
+</resources>

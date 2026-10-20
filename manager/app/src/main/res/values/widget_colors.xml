@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    ألوان معاينات الودجات (previewLayout) — نسخة الصورة الداكنة من لوحة الودجة،
+    ثابتة بقيم صريحة لأن المعاينة تُرسم خارج أي سياق سمة.
+-->
+<resources>
+    <color name="widget_preview_bg">#0E1116</color>
+    <color name="widget_preview_surface">#181D24</color>
+    <color name="widget_preview_accent">#93B7C9</color>
+    <color name="widget_preview_dim">#98A3AF</color>
+    <color name="widget_preview_track">#2A313B</color>
+    <color name="widget_preview_positive">#5FD9AC</color>
+    <color name="widget_preview_caution">#FFB86B</color>
+    <color name="widget_preview_text">#F2F5F8</color>
+</resources>

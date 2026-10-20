@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_sample_device_strings.xml -->
+<resources>
+    <string name="sample_pick_title">Үлгү аппаратты тандаңыз</string>
+    <string name="sample_pick_button">Үлгү аппаратты тандаңыз</string>
+    <string name="sample_auto_hint">Түзмөктү тандоо сиз үчүн брендди, өндүрүүчүнү, моделди, түзмөктү, продуктуну жана манжа изин толтурат. Аларды өзүңүз терүү үчүн Кол менен колдонуңуз.</string>
+    <string name="sample_manual">Manual</string>
+    <string name="sample_close">Жабуу</string>
+    <string name="sample_search">Түзмөктөрдү издөө</string>
+    <string name="sample_empty">Дал келген түзмөк жок.</string>
+    <string name="sample_unavailable">Түзмөктүн каталогун окуу мүмкүн эмес.</string>
+    <string name="sample_row_sub">Android %1$s · %2$s</string>
+    <string name="sample_row_sub_plain">%1$s</string>
+    <string name="sample_fp_shared">Башка каталог түзмөгү сыяктуу манжа изи</string>
+    <string name="sample_credit">Каталог маалыматтары: COPG (Apache-2.0), %1$s</string>
+    <string name="sample_limit">Профиль чегине (100) жетти.</string>
+</resources>

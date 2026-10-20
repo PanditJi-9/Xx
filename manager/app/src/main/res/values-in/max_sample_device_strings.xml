@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_sample_device_strings.xml -->
+<resources>
+    <string name="sample_pick_title">Pilih perangkat sampel</string>
+    <string name="sample_pick_button">Pilih perangkat sampel</string>
+    <string name="sample_auto_hint">Memilih perangkat akan mengisi merek, pabrikan, model, perangkat, produk, dan sidik jari untuk Anda. Gunakan Manual untuk mengetiknya sendiri.</string>
+    <string name="sample_manual">petunjuk</string>
+    <string name="sample_close">Menutup</string>
+    <string name="sample_search">Perangkat pencarian</string>
+    <string name="sample_empty">Tidak ada perangkat yang cocok.</string>
+    <string name="sample_unavailable">Katalog perangkat tidak dapat dibaca.</string>
+    <string name="sample_row_sub">Android %1$s · %2$s</string>
+    <string name="sample_row_sub_plain">%1$s</string>
+    <string name="sample_fp_shared">Sidik jari yang sama dengan perangkat katalog lainnya</string>
+    <string name="sample_credit">Data katalog: COPG (Apache-2.0), %1$s</string>
+    <string name="sample_limit">Batas profil (100) tercapai.</string>
+</resources>

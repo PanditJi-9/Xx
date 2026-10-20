@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_copg_tag_strings.xml -->
+<resources>
+    <string name="copg_tags_title">COPG ընտրանքներ</string>
+    <string name="copg_tags_desc">Պահված է որպես մտադրություն և գրված է սարքի պրոֆիլի հետ միասին: COPG-ի յուրաքանչյուր տարբերակում աշխատում են միայն հարմարավետության չորս տարբերակները. մնացածին անհրաժեշտ է COPG 6.8.0 կամ ավելի նոր: PRO տարբերակներին անհրաժեշտ է COPG PRO լիցենզիա, և շարժիչը կարող է անտեսել դրանք:</string>
+    <string name="copg_tier_pro">ՊՐՈ</string>
+    <string name="copg_footprint_resident">մնում է հավելվածի հիշողության մեջ, երբեք մի օգտագործեք հակախաբեական խաղերի հետ</string>
+    <string name="copg_need_ack">նախ ճանաչեք ստորև ներկայացված ռիսկը</string>
+    <string name="copg_tag_refused">Ընտրված COPG տարբերակը չի թույլատրվում տեղադրված COPG տարբերակի համար: Ոչինչ գրված չէր։</string>
+    <string name="copg_tag_needs_device">Ընտրանքները գրված են սարքի պրոֆիլով, և այս հավելվածը դեռ չունի:</string>
+    <string name="copg_tag_value_hint">Արժեք</string>
+    <string name="copg_tag_bad_value">Տառեր, թվեր, բացատ և . Միայն _ - / + (մինչև 60)</string>
+    <string name="copg_tag_save">Պահպանել</string>
+    <string name="copg_tag_remove">Հեռացնել</string>
+    <string name="copg_tag_dnd">Մի անհանգստացեք խաղալիս</string>
+    <string name="copg_tag_dab">Անջատել ավտոմատ լուսավորությունը</string>
+    <string name="copg_tag_kso">Էկրանը միացված պահել</string>
+    <string name="copg_tag_nolog">Դադարեցրեք անտառահատումները</string>
+    <string name="copg_tag_dpi">Էկրանի DPI</string>
+    <string name="copg_tag_serial">Մեկ հավելվածի սերիական համարը</string>
+    <string name="copg_tag_cpu">CPU մոդել</string>
+    <string name="copg_tag_blocked">Պարտադրել իրական CPU</string>
+    <string name="copg_tag_vpn">Թաքցնել VPN-ը</string>
+    <string name="copg_tag_vpns">Թաքցնել VPN-ը (խիստ)</string>
+    <string name="copg_tag_hidedev">Թաքցնել մշակողի ընտրանքները և USB կարգաբերումը</string>
+    <string name="copg_tag_tz">Ժամային գոտի</string>
+    <string name="copg_tag_lang">Լեզուն և տարածաշրջանը</string>
+    <string name="copg_tag_gpu">GPU մոդել</string>
+    <string name="copg_tag_cow">Ստեղծել հատկություններ (պատճենել-գրել)</string>
+    <string name="copg_tag_aid">Android ID</string>
+    <string name="copg_tag_gaid">Գովազդ ID</string>
+    <string name="copg_tag_appset">Հավելվածների հավաքածու ID</string>
+    <string name="copg_tag_drm">Widevine / DRM</string>
+    <string name="copg_tag_imei">IMEI</string>
+    <string name="copg_tag_sim">SIM կրիչ (անվտանգ)</string>
+    <string name="copg_tag_simx">SIM կրիչ (ագրեսիվ)</string>
+    <string name="copg_tag_ua">WebView User-Agent</string>
+    <string name="copg_tag_mock">Թաքցնել կեղծ տեղադրությունը</string>
+</resources>

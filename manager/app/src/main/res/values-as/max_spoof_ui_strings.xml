@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_spoof_ui_strings.xml -->
+<resources>
+    <string name="spoof_ui_real_device">বাস্তৱ ডিভাইচ</string>
+    <string name="spoof_ui_pill_verified">কনফিগ পৰীক্ষা কৰা হৈছে</string>
+    <string name="spoof_ui_pill_unverified">পৰীক্ষা কৰা হোৱা নাই</string>
+    <string name="spoof_ui_pill_off">বন্ধ কৰা</string>
+    <string name="spoof_device_for_app">এই এপৰ বাবে ডিভাইচ</string>
+    <string name="spoof_device_real_hint">এই এপটোৱে আপোনাৰ প্ৰকৃত ডিভাইচটো দেখে। এটা বাছি ল\'বলৈ কাৰ্ডখন টেপ কৰক।</string>
+    <string name="spoof_device_pick">কেটেলগৰ পৰা এটা ডিভাইচ নিৰ্ব্বাচন কৰিবলে টেপ কৰক, বা স্বনিৰ্বাচিত ডিভাইচ তথ্য সুমুৱাওক।</string>
+    <string name="spoof_device_in_use">ব্যৱহাৰত</string>
+    <string name="spoof_device_restart">তাৰ পিছত লক্ষ্য এপটো পুনৰাৰম্ভ কৰক, চিষ্টেমটো নহয়।</string>
+    <string name="spoof_ui_apply_title">এই এপটোৰ বাবে আবেদন কৰক</string>
+    <string name="spoof_ui_apply_action">পুনৰীক্ষণ কৰক আৰু আবেদন কৰক</string>
+    <string name="spoof_ui_apply_confirm_title">এই এপটো কেৱল প্ৰয়োগ কৰক?</string>
+    <string name="spoof_ui_apply_confirm_text">কেৱল এই এপটোহে প্ৰস্তুত কৰা হৈছে; অন্যান্য এপসমূহ অস্পৃশ্য। তাৰ পিছত লক্ষ্য এপটো পুনৰাৰম্ভ কৰক, চিষ্টেমটো নহয়। পিছৰ সম্পাদনাই এই নিশ্চিতকৰণ বাতিল কৰে। যদি COPG এ ইতিমধ্যে এই এপটো তালিকাভুক্ত কৰিছে, আপোনাৰ ডিভাইচে অগ্ৰাধিকাৰ লয় আৰু COPG লাইনটো যিদৰে আছে তেনেদৰেই থাকে।</string>
+    <string name="spoof_ui_apply_confirm">প্ৰয়োগ কৰক</string>
+    <string name="spoof_ui_apply_reason">ইঞ্জিন প্ৰত্যাখ্যান: %1$s</string>
+    <string name="spoof_engine_absent">ইঞ্জিন মডিউলটো পঢ়িব পৰা নহয়। এটা মডিউল নিশ্চিত কৰক যাৰ module.prop এ id=COPG বুলি কয়, ইয়াক সংস্থাপন বা পুনৰ সংস্থাপন কৰক, তাৰ পিছত এই পৰ্দা পুনৰায় খোলক ।</string>
+    <string name="spoof_engine_disabled">COPG মডিউল আপোনাৰ ৰূট ব্যৱস্থাপকত নিষ্ক্ৰিয় কৰা হৈছে । তাত ইয়াক সামৰ্থবান কৰক, পুনৰাৰম্ভ কৰক, তাৰ পিছত পুনৰ প্ৰয়োগ কৰক ।</string>
+    <string name="spoof_engine_removal_pending">COPG আঁতৰোৱাৰ বাবে চিহ্নিত কৰা হৈছে আৰু পৰৱৰ্তী পুনৰাৰম্ভৰ পিছত নাইকিয়া হ\'ব। প্ৰয়োগ কৰাৰ আগতে ইয়াক পুনৰ সংস্থাপন কৰক।</string>
+    <string name="spoof_engine_update_pending">এটা COPG আপডেইট এটা পুনৰাৰম্ভৰ বাবে অপেক্ষা কৰি আছে। প্ৰথমে পুনৰাৰম্ভ কৰক, তাৰ পিছত পুনৰ প্ৰয়োগ কৰক।</string>
+    <string name="spoof_ui_apply_pending">শেষৰ আবেদনৰ পৰা সলনি কৰা হৈছে — বাস্তৱ কৰিবলৈ আকৌ আবেদন কৰক।</string>
+    <string name="spoof_ui_restore_title">আপোনাৰ প্ৰকৃত ডিভাইচ ব্যৱহাৰ কৰক</string>
+    <string name="spoof_ui_restore_action">এই এপটোৰ বাবে স্পুফ আঁতৰাই পেলাওক</string>
+    <string name="spoof_ui_restore_notice">এই এপ\'s সংৰক্ষিত ডিভাইচ আৰু ইয়াৰ COPG tweaks আঁতৰোৱা হয়, আৰু ইঞ্জিন এই এপ অবিহনে পুনৰ লিখা হয়. আন এপবোৰ অস্পৃশ্য হৈ আছে। তাৰ পিছত লক্ষ্য এপটো পুনৰ আৰম্ভ কৰক।</string>
+    <string name="app_tab_spoof">স্পুফ</string>
+    <string name="spoof_picker_title">এটা ডিভাইচ বাছক</string>
+    <string name="spoof_picker_custom">স্বনিৰ্বাচিত ডিভাইচ তথ্য</string>
+    <string name="spoof_picker_custom_hint">এই এপটোৰ বাবে আপুনি বিচৰা ব্ৰেণ্ড, মডেল আৰু ফিংগাৰপ্ৰিণ্ট প্ৰৱেশ কৰক</string>
+    <string name="spoof_custom_title">স্বনিৰ্বাচিত ডিভাইচ তথ্য</string>
+    <string name="spoof_custom_rules">নাম, ব্ৰেণ্ড, মডেল, ডিভাইচ আৰু প্ৰডাক্টৰ প্ৰয়োজন, ১২০টা আখৰলৈকে, কোনো নিয়ন্ত্ৰণ আখৰ নোহোৱাকৈ। নিৰ্মাতা, আঙুলিৰ ছাপ আৰু SDK বৈকল্পিক। আঙুলিৰ ছাপ একেটা ব্ৰেণ্ড, প্ৰডাক্ট আৰু ডিভাইচৰ পৰা আৰম্ভ হ’ব লাগিব।</string>
+    <string name="spoof_manufacturer">প্ৰস্তুতকাৰক (MANUFACTURER)</string>
+    <string name="spoof_sdk">SDK স্তৰ, বৈকল্পিক, 1 ৰ পৰা 100 লৈ</string>
+    <string name="spoof_custom_invalid">কিছুমান ক্ষেত্ৰ অবৈধ। ওপৰৰ নিয়মবোৰ পৰীক্ষা কৰক, তাৰ পিছত পুনৰ সংৰক্ষণ কৰক।</string>
+    <string name="spoof_custom_save">এই এপটোৰ বাবে সংৰক্ষণ কৰক আৰু বাছক</string>
+    <string name="spoof_impersonation_title">স্পুফিং</string>
+    <string name="spoof_impersonation_desc">কেৱল বিনামূলীয়া COPG বিকল্প। ইঞ্জিনলৈ লিখা হৈছে Review আৰু apply কৰি।</string>
+    <string name="spoof_impersonation_summary_cpu">CPU স্পুফিং: %1$s</string>
+    <string name="spoof_impersonation_needs_device">এই এপটোৰ বাবে প্ৰথমে এটা ডিভাইচ বাছক। এই বিকল্পসমূহ কেৱল এটা ডিভাইচৰ সৈতে লিখা হয়।</string>
+    <string name="spoof_cpu_spoof">CPU স্পুফিং</string>
+    <string name="spoof_cpu_real">বাস্তৱ CPU</string>
+    <string name="spoof_cpu_block">ব্লক CPU</string>
+    <string name="spoof_cpu_block_desc">এই এপটো CPU স্পুফিঙৰ পৰা বাদ দিয়া হৈছে।</string>
+    <string name="spoof_cpu_picker_title">এটা CPU বাছক</string>
+    <string name="copg_tweaks_section">COPG টুইক</string>
+    <string name="copg_tweak_nolog_title">লগিং নিষ্ক্ৰিয় কৰক</string>
+    <string name="copg_tweak_nolog_desc">এই এপটোত COPG লগিং টুইক প্ৰয়োগ কৰে। ইয়াত সংৰক্ষণ কৰা হৈছে, পুনৰীক্ষণৰ দ্বাৰা ইঞ্জিনত লিখা হৈছে আৰু স্পুফ টেবত প্ৰয়োগ কৰা হৈছে।</string>
+    <string name="copg_tweak_dab_title">স্বয়ংক্ৰিয়-উজ্জ্বলতা নিষ্ক্ৰিয় কৰক</string>
+    <string name="copg_tweak_dab_desc">এই এপটোত COPG অটো-ব্ৰাইটনেছ টুইক প্ৰয়োগ কৰে। ইয়াত সংৰক্ষণ কৰা হৈছে, ইঞ্জিনলৈ লিখা হৈছে পৰ্যালোচনা আৰু স্পুফ টেবত প্ৰয়োগ কৰক।</string>
+    <string name="copg_tweak_kso_title">পৰ্দা অন কৰি ৰাখক</string>
+    <string name="copg_tweak_kso_desc">এই এপটোত COPG keep-screen-on tweak প্ৰয়োগ কৰে। ইয়াত সংৰক্ষণ কৰা হৈছে, ইঞ্জিনলৈ লিখা হৈছে পৰ্যালোচনা আৰু স্পুফ টেবত প্ৰয়োগ কৰক।</string>
+    <string name="copg_tweak_needs_device">এই এপৰ বাবে প্ৰথমে এটা ডিভাইচৰ প্ৰয়োজন, স্পুফ টেবত।</string>
+</resources>

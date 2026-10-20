@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_copg_tag_strings.xml -->
+<resources>
+    <string name="copg_tags_title">COPG-opties</string>
+    <string name="copg_tags_desc">Opgeslagen als bedoeling en samen met het apparaatprofiel geschreven. Op elke COPG-versie werken alleen de vier comfortopties; de rest heeft COPG 6.8.0 of nieuwer nodig. PRO-opties hebben een COPG PRO-licentie nodig en de engine negeert deze mogelijk.</string>
+    <string name="copg_tier_pro">PRO</string>
+    <string name="copg_footprint_resident">blijft in het geheugen van de app, gebruik het nooit bij anti-cheat-spellen</string>
+    <string name="copg_need_ack">onderken eerst het onderstaande risico</string>
+    <string name="copg_tag_refused">Een geselecteerde COPG-optie is niet toegestaan ​​voor de geïnstalleerde COPG-versie. Er werd niets geschreven.</string>
+    <string name="copg_tag_needs_device">Opties zijn geschreven met een apparaatprofiel en deze app heeft er nog geen.</string>
+    <string name="copg_tag_value_hint">Waarde</string>
+    <string name="copg_tag_bad_value">Letters, cijfers, spatie en . alleen _ - / + (tot 60)</string>
+    <string name="copg_tag_save">Redden</string>
+    <string name="copg_tag_remove">Verwijderen</string>
+    <string name="copg_tag_dnd">Niet storen tijdens het spelen</string>
+    <string name="copg_tag_dab">Schakel automatische helderheid uit</string>
+    <string name="copg_tag_kso">Houd het scherm ingeschakeld</string>
+    <string name="copg_tag_nolog">Stop met loggen</string>
+    <string name="copg_tag_dpi">Scherm-DPI</string>
+    <string name="copg_tag_serial">Serienummer per app</string>
+    <string name="copg_tag_cpu">CPU-model</string>
+    <string name="copg_tag_blocked">Forceer de echte CPU</string>
+    <string name="copg_tag_vpn">VPN verbergen</string>
+    <string name="copg_tag_vpns">VPN verbergen (streng)</string>
+    <string name="copg_tag_hidedev">Verberg ontwikkelaarsopties en USB-foutopsporing</string>
+    <string name="copg_tag_tz">Tijdzone</string>
+    <string name="copg_tag_lang">Taal en regio</string>
+    <string name="copg_tag_gpu">GPU-model</string>
+    <string name="copg_tag_cow">Build-eigenschappen (kopiëren bij schrijven)</string>
+    <string name="copg_tag_aid">Android ID</string>
+    <string name="copg_tag_gaid">Reclame ID</string>
+    <string name="copg_tag_appset">App-instelling ID</string>
+    <string name="copg_tag_drm">Widevine / DRM</string>
+    <string name="copg_tag_imei">IMEI</string>
+    <string name="copg_tag_sim">SIM-provider (veilig)</string>
+    <string name="copg_tag_simx">SIM-provider (agressief)</string>
+    <string name="copg_tag_ua">WebView-gebruikersagent</string>
+    <string name="copg_tag_mock">Verberg de neplocatie</string>
+</resources>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_copg_tag_strings.xml -->
+<resources>
+    <string name="copg_tags_title">Επιλογές COPG</string>
+    <string name="copg_tags_desc">Αποθηκεύτηκε ως πρόθεση και εγγράφηκε μαζί με το προφίλ της συσκευής. Μόνο οι τέσσερις επιλογές άνεσης λειτουργούν σε κάθε έκδοση COPG. τα υπόλοιπα χρειάζονται COPG 6.8.0 ή νεότερη έκδοση. Οι επιλογές PRO χρειάζονται άδεια COPG PRO και ο κινητήρας μπορεί να τις αγνοήσει.</string>
+    <string name="copg_tier_pro">PRO</string>
+    <string name="copg_footprint_resident">παραμένει στη μνήμη της εφαρμογής, μην χρησιμοποιείτε ποτέ με παιχνίδια κατά της απάτης</string>
+    <string name="copg_need_ack">αναγνωρίστε πρώτα τον παρακάτω κίνδυνο</string>
+    <string name="copg_tag_refused">Δεν επιτρέπεται μια επιλεγμένη επιλογή COPG για την εγκατεστημένη έκδοση COPG. Δεν γράφτηκε τίποτα.</string>
+    <string name="copg_tag_needs_device">Οι επιλογές έχουν γραφτεί με ένα προφίλ συσκευής και αυτή η εφαρμογή δεν έχει ακόμη κανένα.</string>
+    <string name="copg_tag_value_hint">Αξία</string>
+    <string name="copg_tag_bad_value">Γράμματα, ψηφία, διάστημα και . _ - / + μόνο (έως 60)</string>
+    <string name="copg_tag_save">Εκτός</string>
+    <string name="copg_tag_remove">Αφαιρώ</string>
+    <string name="copg_tag_dnd">Μην ενοχλείτε κατά την αναπαραγωγή</string>
+    <string name="copg_tag_dab">Απενεργοποιήστε την αυτόματη φωτεινότητα</string>
+    <string name="copg_tag_kso">Διατηρήστε την οθόνη ενεργοποιημένη</string>
+    <string name="copg_tag_nolog">Σταματήστε την καταγραφή</string>
+    <string name="copg_tag_dpi">DPI οθόνης</string>
+    <string name="copg_tag_serial">Σειριακός αριθμός ανά εφαρμογή</string>
+    <string name="copg_tag_cpu">CPU μοντέλο</string>
+    <string name="copg_tag_blocked">Επιβάλετε το πραγματικό CPU</string>
+    <string name="copg_tag_vpn">Απόκρυψη VPN</string>
+    <string name="copg_tag_vpns">Απόκρυψη VPN (αυστηρή)</string>
+    <string name="copg_tag_hidedev">Απόκρυψη Επιλογών προγραμματιστή και εντοπισμού σφαλμάτων USB</string>
+    <string name="copg_tag_tz">Ζώνη ώρας</string>
+    <string name="copg_tag_lang">Γλώσσα και περιοχή</string>
+    <string name="copg_tag_gpu">GPU μοντέλο</string>
+    <string name="copg_tag_cow">Δημιουργία ιδιοτήτων (αντιγραφή σε εγγραφή)</string>
+    <string name="copg_tag_aid">Android ID</string>
+    <string name="copg_tag_gaid">Διαφήμιση ID</string>
+    <string name="copg_tag_appset">Σετ εφαρμογών ID</string>
+    <string name="copg_tag_drm">Widevine / DRM</string>
+    <string name="copg_tag_imei">IMEI</string>
+    <string name="copg_tag_sim">Φορέας SIM (ασφαλής)</string>
+    <string name="copg_tag_simx">Φορέας SIM (επιθετικό)</string>
+    <string name="copg_tag_ua">WebView User-Agent</string>
+    <string name="copg_tag_mock">Απόκρυψη εικονικής τοποθεσίας</string>
+</resources>

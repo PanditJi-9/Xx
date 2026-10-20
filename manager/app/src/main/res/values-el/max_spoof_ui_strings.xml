@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_spoof_ui_strings.xml -->
+<resources>
+    <string name="spoof_ui_real_device">Πραγματική συσκευή</string>
+    <string name="spoof_ui_pill_verified">Η διαμόρφωση επαληθεύτηκε</string>
+    <string name="spoof_ui_pill_unverified">Δεν έχει επαληθευτεί</string>
+    <string name="spoof_ui_pill_off">Μακριά από</string>
+    <string name="spoof_device_for_app">Συσκευή για αυτήν την εφαρμογή</string>
+    <string name="spoof_device_real_hint">Αυτή η εφαρμογή βλέπει την πραγματική συσκευή σας. Πατήστε την κάρτα για να επιλέξετε μία.</string>
+    <string name="spoof_device_pick">Πατήστε για να επιλέξετε μια συσκευή από τον κατάλογο ή εισαγάγετε προσαρμοσμένες πληροφορίες συσκευής.</string>
+    <string name="spoof_device_in_use">Σε χρήση</string>
+    <string name="spoof_device_restart">Κάντε επανεκκίνηση της εφαρμογής προορισμού μετά, όχι του συστήματος.</string>
+    <string name="spoof_ui_apply_title">Κάντε αίτηση για αυτήν την εφαρμογή</string>
+    <string name="spoof_ui_apply_action">Ελέγξτε και εφαρμόστε</string>
+    <string name="spoof_ui_apply_confirm_title">Εφαρμογή μόνο αυτής της εφαρμογής;</string>
+    <string name="spoof_ui_apply_confirm_text">Μόνο αυτή η εφαρμογή είναι έτοιμη. άλλες εφαρμογές είναι ανέγγιχτες. Κάντε επανεκκίνηση της εφαρμογής προορισμού μετά, όχι του συστήματος. Μια μεταγενέστερη τροποποίηση ακυρώνει αυτήν την επιβεβαίωση. Εάν το COPG εμφανίζει ήδη αυτήν την εφαρμογή, η συσκευή σας έχει προτεραιότητα και η γραμμή COPG παραμένει ως έχει.</string>
+    <string name="spoof_ui_apply_confirm">Εφαρμόζω</string>
+    <string name="spoof_ui_apply_reason">Άρνηση κινητήρα: %1$s</string>
+    <string name="spoof_engine_absent">Η μονάδα κινητήρα δεν είναι ευανάγνωστη. Επιβεβαιώστε μια λειτουργική μονάδα της οποίας το module.prop λέει id=COPG, εγκαταστήστε την ή επανεγκαταστήστε την και, στη συνέχεια, ανοίξτε ξανά αυτήν την οθόνη.</string>
+    <string name="spoof_engine_disabled">Η λειτουργική μονάδα COPG είναι απενεργοποιημένη στον διαχειριστή ρίζας σας. Ενεργοποιήστε το εκεί, κάντε επανεκκίνηση και μετά εφαρμόστε ξανά.</string>
+    <string name="spoof_engine_removal_pending">Το COPG έχει επισημανθεί για αφαίρεση και θα εξαφανιστεί μετά την επόμενη επανεκκίνηση. Επανεγκαταστήστε το πριν την εφαρμογή.</string>
+    <string name="spoof_engine_update_pending">Μια ενημέρωση COPG περιμένει για επανεκκίνηση. Κάντε επανεκκίνηση πρώτα και μετά εφαρμόστε ξανά.</string>
+    <string name="spoof_ui_apply_pending">Άλλαξε από την τελευταία εφαρμογή — κάντε ξανά αίτηση για να γίνει πραγματικότητα.</string>
+    <string name="spoof_ui_restore_title">Χρησιμοποιήστε την πραγματική σας συσκευή</string>
+    <string name="spoof_ui_restore_action">Καταργήστε την πλαστή για αυτήν την εφαρμογή</string>
+    <string name="spoof_ui_restore_notice">Η αποθηκευμένη συσκευή αυτής της εφαρμογής και οι προσαρμογές COPG της αφαιρούνται και ο κινητήρας ξαναγράφεται χωρίς αυτήν την εφαρμογή. Άλλες εφαρμογές είναι ανέγγιχτες. Κάντε επανεκκίνηση της εφαρμογής προορισμού στη συνέχεια.</string>
+    <string name="app_tab_spoof">Κοροϊδία</string>
+    <string name="spoof_picker_title">Επιλέξτε μια συσκευή</string>
+    <string name="spoof_picker_custom">Προσαρμοσμένες πληροφορίες συσκευής</string>
+    <string name="spoof_picker_custom_hint">Εισαγάγετε τη μάρκα, το μοντέλο και το δακτυλικό αποτύπωμα που θέλετε για αυτήν την εφαρμογή</string>
+    <string name="spoof_custom_title">Προσαρμοσμένες πληροφορίες συσκευής</string>
+    <string name="spoof_custom_rules">Απαιτούνται όνομα, επωνυμία, μοντέλο, συσκευή και προϊόν, έως 120 χαρακτήρες το καθένα, χωρίς χαρακτήρες ελέγχου. Ο κατασκευαστής, το δακτυλικό αποτύπωμα και το SDK είναι προαιρετικά. Ένα δακτυλικό αποτύπωμα πρέπει να ξεκινά με την ίδια επωνυμία, προϊόν και συσκευή.</string>
+    <string name="spoof_manufacturer">Κατασκευαστής (MANUFACTURER)</string>
+    <string name="spoof_sdk">Επίπεδο SDK, προαιρετικό, 1 έως 100</string>
+    <string name="spoof_custom_invalid">Ορισμένα πεδία δεν είναι έγκυρα. Ελέγξτε τους παραπάνω κανόνες και, στη συνέχεια, αποθηκεύστε ξανά.</string>
+    <string name="spoof_custom_save">Αποθηκεύστε και επιλέξτε για αυτήν την εφαρμογή</string>
+    <string name="spoof_impersonation_title">Παραπλάνηση</string>
+    <string name="spoof_impersonation_desc">Μόνο δωρεάν επιλογές COPG. Γράφτηκε στον κινητήρα από Αναθεώρηση και εφαρμογή.</string>
+    <string name="spoof_impersonation_summary_cpu">CPU πλαστογράφηση: %1$s</string>
+    <string name="spoof_impersonation_needs_device">Επιλέξτε πρώτα μια συσκευή για αυτήν την εφαρμογή. Αυτές οι επιλογές γράφονται μόνο με συσκευή.</string>
+    <string name="spoof_cpu_spoof">CPU πλαστογράφηση</string>
+    <string name="spoof_cpu_real">Πραγματικό CPU</string>
+    <string name="spoof_cpu_block">Μπλοκ CPU</string>
+    <string name="spoof_cpu_block_desc">Εξαιρεί αυτήν την εφαρμογή από CPU πλαστογράφηση.</string>
+    <string name="spoof_cpu_picker_title">Επιλέξτε ένα CPU</string>
+    <string name="copg_tweaks_section">Τροποποιήσεις COPG</string>
+    <string name="copg_tweak_nolog_title">Απενεργοποίηση καταγραφής</string>
+    <string name="copg_tweak_nolog_desc">Εφαρμόζει το τσίμπημα καταγραφής COPG σε αυτήν την εφαρμογή. Αποθηκεύτηκε εδώ, εγγράφηκε στον κινητήρα από την Αναθεώρηση και εφαρμόστε στην καρτέλα Spoof.</string>
+    <string name="copg_tweak_dab_title">Απενεργοποιήστε την αυτόματη φωτεινότητα</string>
+    <string name="copg_tweak_dab_desc">Εφαρμόζει την προσαρμογή αυτόματης φωτεινότητας COPG σε αυτήν την εφαρμογή. Αποθηκεύτηκε εδώ, εγγράφηκε στον κινητήρα από την Αναθεώρηση και εφαρμόστε στην καρτέλα Spoof.</string>
+    <string name="copg_tweak_kso_title">Διατηρήστε την οθόνη ενεργοποιημένη</string>
+    <string name="copg_tweak_kso_desc">Εφαρμόζει την προσαρμογή COPG διατήρησης οθόνης σε αυτήν την εφαρμογή. Αποθηκεύτηκε εδώ, εγγράφηκε στον κινητήρα από την Αναθεώρηση και εφαρμόστε στην καρτέλα Spoof.</string>
+    <string name="copg_tweak_needs_device">Χρειάζεται πρώτα μια συσκευή για αυτήν την εφαρμογή, στην καρτέλα Spoof.</string>
+</resources>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_copg_tag_strings.xml -->
+<resources>
+    <string name="copg_tags_title">COPG વિકલ્પો</string>
+    <string name="copg_tags_desc">ઉદ્દેશ્ય તરીકે સાચવેલ અને ઉપકરણ પ્રોફાઇલ સાથે લખેલું. દરેક COPG સંસ્કરણ પર ફક્ત ચાર આરામ વિકલ્પો કામ કરે છે; બાકીનાને COPG 6.8.0 અથવા નવાની જરૂર છે. PRO વિકલ્પોને COPG PRO લાયસન્સની જરૂર છે, અને એન્જિન તેમને અવગણી શકે છે.</string>
+    <string name="copg_tier_pro">પ્રો</string>
+    <string name="copg_footprint_resident">એપ્લિકેશનની મેમરીમાં રહે છે, એન્ટિ-ચીટ ગેમ્સ સાથે ક્યારેય ઉપયોગ કરશો નહીં</string>
+    <string name="copg_need_ack">પહેલા નીચેના જોખમને સ્વીકારો</string>
+    <string name="copg_tag_refused">સ્થાપિત COPG સંસ્કરણ માટે પસંદ કરેલ COPG વિકલ્પને મંજૂરી નથી. કશું લખ્યું ન હતું.</string>
+    <string name="copg_tag_needs_device">વિકલ્પો ઉપકરણ પ્રોફાઇલ સાથે લખેલા છે, અને આ એપ્લિકેશનમાં હજી સુધી કોઈ નથી.</string>
+    <string name="copg_tag_value_hint">મૂલ્ય</string>
+    <string name="copg_tag_bad_value">અક્ષરો, અંકો, જગ્યા અને . _ - / + માત્ર (60 સુધી)</string>
+    <string name="copg_tag_save">સાચવો</string>
+    <string name="copg_tag_remove">દૂર કરો</string>
+    <string name="copg_tag_dnd">રમતી વખતે ખલેલ પાડશો નહીં</string>
+    <string name="copg_tag_dab">સ્વતઃ-તેજને અક્ષમ કરો</string>
+    <string name="copg_tag_kso">સ્ક્રીન ચાલુ રાખો</string>
+    <string name="copg_tag_nolog">લૉગિંગ બંધ કરો</string>
+    <string name="copg_tag_dpi">સ્ક્રીન DPI</string>
+    <string name="copg_tag_serial">પ્રતિ-એપ સીરીયલ નંબર</string>
+    <string name="copg_tag_cpu">CPU મોડલ</string>
+    <string name="copg_tag_blocked">વાસ્તવિક CPU દબાણ કરો</string>
+    <string name="copg_tag_vpn">VPN છુપાવો</string>
+    <string name="copg_tag_vpns">VPN છુપાવો (કડક)</string>
+    <string name="copg_tag_hidedev">વિકાસકર્તા વિકલ્પો અને USB ડિબગીંગ છુપાવો</string>
+    <string name="copg_tag_tz">ટાઈમઝોન</string>
+    <string name="copg_tag_lang">ભાષા અને પ્રદેશ</string>
+    <string name="copg_tag_gpu">GPU મોડલ</string>
+    <string name="copg_tag_cow">પ્રોપર્ટીઝ બનાવો (કૉપિ-ઑન-રાઇટ)</string>
+    <string name="copg_tag_aid">એન્ડ્રોઇડ ID</string>
+    <string name="copg_tag_gaid">જાહેરાત ID</string>
+    <string name="copg_tag_appset">એપ્લિકેશન સેટ ID</string>
+    <string name="copg_tag_drm">વાઇડવાઇન / ડીઆરએમ</string>
+    <string name="copg_tag_imei">IMEI</string>
+    <string name="copg_tag_sim">સિમ કેરિયર (સલામત)</string>
+    <string name="copg_tag_simx">સિમ કેરિયર (આક્રમક)</string>
+    <string name="copg_tag_ua">WebView વપરાશકર્તા-એજન્ટ</string>
+    <string name="copg_tag_mock">મોક લોકેશન છુપાવો</string>
+</resources>

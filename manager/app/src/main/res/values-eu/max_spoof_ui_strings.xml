@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_spoof_ui_strings.xml -->
+<resources>
+    <string name="spoof_ui_real_device">Benetako gailua</string>
+    <string name="spoof_ui_pill_verified">Konfigurazioa egiaztatu da</string>
+    <string name="spoof_ui_pill_unverified">Egiaztatu gabe</string>
+    <string name="spoof_ui_pill_off">Desaktibatuta</string>
+    <string name="spoof_device_for_app">Aplikazio honetarako gailua</string>
+    <string name="spoof_device_real_hint">Aplikazio honek zure benetako gailua ikusten du. Sakatu txartela bat aukeratzeko.</string>
+    <string name="spoof_device_pick">Ukitu katalogoko gailu bat aukeratzeko edo idatzi gailuaren informazio pertsonalizatua.</string>
+    <string name="spoof_device_in_use">Erabiltzen</string>
+    <string name="spoof_device_restart">Berrabiarazi xede aplikazioa ondoren, ez sistema.</string>
+    <string name="spoof_ui_apply_title">Eskatu aplikazio honetara</string>
+    <string name="spoof_ui_apply_action">Berrikusi eta aplikatu</string>
+    <string name="spoof_ui_apply_confirm_title">Aplikazio hau soilik aplikatu nahi duzu?</string>
+    <string name="spoof_ui_apply_confirm_text">Aplikazio hau bakarrik prestatuta dago; beste aplikazio batzuk ukitu gabe daude. Berrabiarazi xede aplikazioa ondoren, ez sistema. Geroago egindako aldaketak berrespen hau bertan behera uzten du. COPG-k aplikazio hau dagoeneko zerrendatzen badu, zure gailuak lehentasuna izango du eta COPG lerroak bere horretan jarraituko du.</string>
+    <string name="spoof_ui_apply_confirm">Aplikatu</string>
+    <string name="spoof_ui_apply_reason">Motorrari uko egitea: %1$s</string>
+    <string name="spoof_engine_absent">Motor-modulua ez da irakurgarria. Berretsi modulu bat zeinaren module.prop-ek id=COPG dioen, instalatu edo berriro instalatu, eta ireki berriro pantaila hau.</string>
+    <string name="spoof_engine_disabled">COPG modulua desgaituta dago zure root kudeatzailean. Gaitu bertan, berrabiarazi eta aplikatu berriro.</string>
+    <string name="spoof_engine_removal_pending">COPG kentzeko markatuta dago eta hurrengo berrabiarazi ondoren desagertuko da. Berriro instalatu aplikatu aurretik.</string>
+    <string name="spoof_engine_update_pending">COPG eguneratze bat berrabiarazteko zain dago. Berrabiarazi lehenik, gero aplikatu berriro.</string>
+    <string name="spoof_ui_apply_pending">Azken aplikaziotik aldatu da — aplikatu berriro benetakoa izan dadin.</string>
+    <string name="spoof_ui_restore_title">Erabili zure benetako gailua</string>
+    <string name="spoof_ui_restore_action">Kendu aplikazio honen faltsutasuna</string>
+    <string name="spoof_ui_restore_notice">Aplikazio honen gordetako gailua eta bere COPG doikuntzak kendu egiten dira, eta motorra aplikazio hau gabe berridazten da. Beste aplikazio batzuk ukitu gabe daude. Berrabiarazi xede aplikazioa ondoren.</string>
+    <string name="app_tab_spoof">Parola</string>
+    <string name="spoof_picker_title">Aukeratu gailu bat</string>
+    <string name="spoof_picker_custom">Gailuaren informazio pertsonalizatua</string>
+    <string name="spoof_picker_custom_hint">Sartu aplikazio honetarako nahi duzun marka, modeloa eta hatz-marka</string>
+    <string name="spoof_custom_title">Gailuaren informazio pertsonalizatua</string>
+    <string name="spoof_custom_rules">Izena, marka, modeloa, gailua eta produktua behar dira, 120 karaktere gehienez, kontrol karaktererik gabe. Fabrikatzailea, hatz-marka eta SDK aukerakoak dira. Hatz-markak marka, produktu eta gailu berdinarekin hasi behar du.</string>
+    <string name="spoof_manufacturer">Fabrikatzailea (FABRICANTEA)</string>
+    <string name="spoof_sdk">SDK maila, aukerakoa, 1etik 100era</string>
+    <string name="spoof_custom_invalid">Eremu batzuk baliogabeak dira. Begiratu goiko arauak, gero gorde berriro.</string>
+    <string name="spoof_custom_save">Gorde eta aukeratu aplikazio honetarako</string>
+    <string name="spoof_impersonation_title">Faltsutzea</string>
+    <string name="spoof_impersonation_desc">Doako COPG aukerak soilik. Motorra idatzita Berrikusi eta aplikatu.</string>
+    <string name="spoof_impersonation_summary_cpu">CPU faltsutzea: %1$s</string>
+    <string name="spoof_impersonation_needs_device">Aukeratu aplikazio honetarako gailu bat lehenik. Aukera hauek gailu batekin soilik idazten dira.</string>
+    <string name="spoof_cpu_spoof">CPU faltsutzea</string>
+    <string name="spoof_cpu_real">Erreala CPU</string>
+    <string name="spoof_cpu_block">Blokea CPU</string>
+    <string name="spoof_cpu_block_desc">Aplikazio hau CPU faltsutzetik kanpo uzten du.</string>
+    <string name="spoof_cpu_picker_title">Aukeratu CPU</string>
+    <string name="copg_tweaks_section">COPG doikuntzak</string>
+    <string name="copg_tweak_nolog_title">Desgaitu erregistroa</string>
+    <string name="copg_tweak_nolog_desc">COPG erregistroaren doikuntza aplikatzen dio aplikazio honi. Hemen gordeta, Berrikuspenaren bidez motorra idatzita eta eskatu Spoof fitxan.</string>
+    <string name="copg_tweak_dab_title">Desgaitu distira automatikoa</string>
+    <string name="copg_tweak_dab_desc">COPG distira automatikoko doikuntza aplikatzen dio aplikazio honi. Hemen gordeta, Berrikuspenaren bidez motorra idatzita eta eskatu Spoof fitxan.</string>
+    <string name="copg_tweak_kso_title">Mantendu pantaila piztuta</string>
+    <string name="copg_tweak_kso_desc">COPG pantaila-aktibatzeko doikuntza aplikatzen dio aplikazio honi. Hemen gordeta, Berrikuspenaren bidez motorra idatzita eta eskatu Spoof fitxan.</string>
+    <string name="copg_tweak_needs_device">Gailu bat behar du aplikazio honetarako lehenik, Spoof fitxan.</string>
+</resources>

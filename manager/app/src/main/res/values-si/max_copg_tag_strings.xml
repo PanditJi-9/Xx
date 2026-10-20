@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_copg_tag_strings.xml -->
+<resources>
+    <string name="copg_tags_title">COPG විකල්ප</string>
+    <string name="copg_tags_desc">අභිප්‍රාය ලෙස සුරකින ලද අතර උපාංග පැතිකඩ සමඟ එකට ලියා ඇත. සෑම COPG අනුවාදයකම ක්‍රියාත්මක වන්නේ සුවපහසු විකල්ප හතර පමණි; ඉතිරිය සඳහා COPG 6.8.0 හෝ නව අවශ්‍ය වේ. PRO විකල්ප සඳහා COPG PRO බලපත්‍රයක් අවශ්‍ය වන අතර එන්ජිම ඒවා නොසලකා හැරිය හැක.</string>
+    <string name="copg_tier_pro">PRO</string>
+    <string name="copg_footprint_resident">යෙදුමේ මතකයේ පවතී, වංචා-විරෝධී ක්‍රීඩා සමඟ කිසි විටෙකත් භාවිතා නොකරන්න</string>
+    <string name="copg_need_ack">පහත අවදානම පළමුව පිළිගන්න</string>
+    <string name="copg_tag_refused">ස්ථාපිත COPG අනුවාදය සඳහා තෝරාගත් COPG විකල්පය ඉඩ නොදේ. කිසිවක් ලියා නැත.</string>
+    <string name="copg_tag_needs_device">විකල්ප ලියා ඇත්තේ උපාංග පැතිකඩක් සමඟින් වන අතර, මෙම යෙදුමට තවම කිසිවක් නොමැත.</string>
+    <string name="copg_tag_value_hint">වටිනාකම</string>
+    <string name="copg_tag_bad_value">අකුරු, ඉලක්කම්, අවකාශය සහ . _ - / + පමණි (60 දක්වා)</string>
+    <string name="copg_tag_save">සුරකින්න</string>
+    <string name="copg_tag_remove">ඉවත් කරන්න</string>
+    <string name="copg_tag_dnd">සෙල්ලම් කරන විට බාධා නොකරන්න</string>
+    <string name="copg_tag_dab">ස්වයංක්‍රීය දීප්තිය අක්‍රිය කරන්න</string>
+    <string name="copg_tag_kso">තිරය ​​මත තබා ගන්න</string>
+    <string name="copg_tag_nolog">ලොග් වීම නවත්වන්න</string>
+    <string name="copg_tag_dpi">තිර DPI</string>
+    <string name="copg_tag_serial">යෙදුමකට අනුක්‍රමික අංකය</string>
+    <string name="copg_tag_cpu">CPU ආකෘතිය</string>
+    <string name="copg_tag_blocked">සැබෑ CPU බල කරන්න</string>
+    <string name="copg_tag_vpn">VPN සඟවන්න</string>
+    <string name="copg_tag_vpns">VPN සඟවන්න (දැඩි)</string>
+    <string name="copg_tag_hidedev">සංවර්ධක විකල්ප සහ USB නිදොස්කරණය සඟවන්න</string>
+    <string name="copg_tag_tz">වේලා කලාපය</string>
+    <string name="copg_tag_lang">භාෂාව සහ කලාපය</string>
+    <string name="copg_tag_gpu">GPU ආකෘතිය</string>
+    <string name="copg_tag_cow">දේපල ගොඩනැගීම (පිටපත් මත ලිවීම)</string>
+    <string name="copg_tag_aid">Android ID</string>
+    <string name="copg_tag_gaid">ප්‍රචාරණය ID</string>
+    <string name="copg_tag_appset">යෙදුම් කට්ටලය ID</string>
+    <string name="copg_tag_drm">Widevine / DRM</string>
+    <string name="copg_tag_imei">IMEI</string>
+    <string name="copg_tag_sim">SIM වාහකය (ආරක්ෂිත)</string>
+    <string name="copg_tag_simx">SIM වාහකය (ආක්‍රමණශීලී)</string>
+    <string name="copg_tag_ua">WebView පරිශීලක නියෝජිතයා</string>
+    <string name="copg_tag_mock">ව්යාජ ස්ථානය සඟවන්න</string>
+</resources>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_copg_tag_strings.xml -->
+<resources>
+    <string name="copg_tags_title">COPG-alternativ</string>
+    <string name="copg_tags_desc">Sparad som avsikt och skriven tillsammans med enhetsprofilen. Endast de fyra komfortalternativen fungerar på varje COPG-version; resten behöver COPG 6.8.0 eller senare. PRO-alternativ behöver en COPG PRO-licens, och motorn kan ignorera dem.</string>
+    <string name="copg_tier_pro">PRO</string>
+    <string name="copg_footprint_resident">finns kvar i appens minne, använd aldrig med anti-fuskspel</string>
+    <string name="copg_need_ack">erkänn först risken nedan</string>
+    <string name="copg_tag_refused">Ett valt COPG-alternativ är inte tillåtet för den installerade COPG-versionen. Inget skrevs.</string>
+    <string name="copg_tag_needs_device">Alternativ skrivs med en enhetsprofil, och den här appen har ingen ännu.</string>
+    <string name="copg_tag_value_hint">Värde</string>
+    <string name="copg_tag_bad_value">Bokstäver, siffror, mellanslag och . Endast _ - / + (upp till 60)</string>
+    <string name="copg_tag_save">Spara</string>
+    <string name="copg_tag_remove">Ta bort</string>
+    <string name="copg_tag_dnd">Stör ej medan du spelar</string>
+    <string name="copg_tag_dab">Inaktivera automatisk ljusstyrka</string>
+    <string name="copg_tag_kso">Håll skärmen på</string>
+    <string name="copg_tag_nolog">Sluta logga</string>
+    <string name="copg_tag_dpi">Skärm DPI</string>
+    <string name="copg_tag_serial">Serienummer per app</string>
+    <string name="copg_tag_cpu">CPU modell</string>
+    <string name="copg_tag_blocked">Forcera den verkliga CPU</string>
+    <string name="copg_tag_vpn">Dölj VPN</string>
+    <string name="copg_tag_vpns">Dölj VPN (strikt)</string>
+    <string name="copg_tag_hidedev">Dölj utvecklaralternativ och USB-felsökning</string>
+    <string name="copg_tag_tz">Tidszon</string>
+    <string name="copg_tag_lang">Språk och region</string>
+    <string name="copg_tag_gpu">GPU modell</string>
+    <string name="copg_tag_cow">Bygg egenskaper (copy-on-write)</string>
+    <string name="copg_tag_aid">Android ID</string>
+    <string name="copg_tag_gaid">Reklam ID</string>
+    <string name="copg_tag_appset">App Set ID</string>
+    <string name="copg_tag_drm">Widevine / DRM</string>
+    <string name="copg_tag_imei">IMEI</string>
+    <string name="copg_tag_sim">SIM-operatör (säker)</string>
+    <string name="copg_tag_simx">SIM-operatör (aggressiv)</string>
+    <string name="copg_tag_ua">WebView User-Agent</string>
+    <string name="copg_tag_mock">Dölj skenplats</string>
+</resources>

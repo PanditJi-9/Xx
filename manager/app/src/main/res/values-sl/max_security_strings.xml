@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_security_strings.xml -->
+<resources>
+    <string name="security_tamper_title">Ni mogoče začeti</string>
+    <string name="security_tamper_message">Ta zgradba MaxManager ni nedotaknjena. Nameščene datoteke se ne ujemajo več s podpisano izdajo, zato se ne bo izvajala. Znova namestite uradno gradnjo iz izvirnega vira.</string>
+    <string name="security_tamper_close">Zapri</string>
+</resources>

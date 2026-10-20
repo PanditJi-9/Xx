@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_security_strings.xml -->
+<resources>
+    <string name="security_tamper_title">Nevar sākt</string>
+    <string name="security_tamper_message">Šis MaxManager būvējums nav neskarts. Instalētie faili vairs neatbilst parakstītajam laidienam, tāpēc tas nedarbosies. Pārinstalējiet oficiālo versiju no tā sākotnējā avota.</string>
+    <string name="security_tamper_close">Aizvērt</string>
+</resources>

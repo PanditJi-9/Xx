@@ -1,0 +1,209 @@
+# ══════════════════════════════════════════════════════════════════════════════
+# Quick Verify — البوابة السريعة للمطوّر (تشغيل يدويّ فقط · `workflow_dispatch`)
+# ══════════════════════════════════════════════════════════════════════════════
+#
+# **لماذا وُجد هذا الملفّ (أمر المالك ٢٠٢٦-١٠-١٨):** «الهاتف لا يحتمل البناء الطويل… اذا كان هناك
+# البناء تحتاجه وستكرره العديد من المرات او سيخد وقت استخدم هذا token… واصلح مشكلة الوقت الطويل
+# حيث ياخذ نصف ساعة وانا اريده علي الاكثر 10 دقائق.»
+#
+# والقياس الذي بُنيت عليه: تشغيل `build.yml` الكامل على هذا المستودع (تشغيل 39117594918، الالتزام
+# 7f0f3874) استغرق **٢٩ دقيقة** — منها ٧٫٥ د حجوزات وبناء أصليّ (NDK · Rust · MaxFx) و٢١ د في
+# Gradle (تصريف ~١٠ د، R8 ~٢٫٨ د، اختبارات). وهذا العتاد (الهاتف) لا يحتمل تكرار ذلك محليًّا أصلًا:
+# بناء محلي واحد استغرق **١ س ٩ د** (BUILD FAILED in 1h 9m 9s). فصار التحقّق الثقيل على الخدمة.
+#
+# **ما يفعله هذا الملفّ:** مسار ضيّق مقصود — البوابات النصّية (ثوانٍ) ثم تصريف نسخة Release
+# واختباراتها **بلا** بناء أصليّ، وبلا R8/تغليف، وبلا مصادر `src/debug`، وبلا رفع حزم. غرضه
+# التغذية الراجعة السريعة أثناء التعديل، لا إنتاج حزمة. **والبوابة الكاملة تبقى `build.yml`**
+# وحده: هو الذي يبني الأصلِيَّ ويُوقّع ويغلّف ويُصدر — ولا يمسّ هذا الملفّ شيئًا من ذلك.
+#
+# **ومفتاح السرعة الحقيقي — مشاركة الحالة مع `build.yml`:** كلاهما يستعمل مفتاح الحالة نفسه
+# `gradle-state-${{ runner.os }}-${{ github.sha }}` («حالة الالتزام نفسه فقط» — القاعدة المقيسة
+# في `build.yml`: لا تصريف تزايديًّا على تاريخ شجرة أخرى؛ العطب المُوثَّق: ١٣٤ خطأ Unresolved
+# reference من حالة ملتزم آخر). فالالتزام الذي بناه `build.yml` كاملًا يُعاد التحقّق منه هنا
+# **بمخرجات جاهزة** (UP-TO-DATE) في دقائق، وبالعكس: نقطة الحفظ هنا تُغني `build.yml` عن
+# إعادة التصريف لو شُغّل على الالتزام نفسه.
+#
+# **وبوابة التطابق:** لا `restore-keys` إطلاقًا — مفتاح مطابق حرفيًّا أو لا شيء. فحالةٌ من شجرة
+# أخرى **لا يمكن أن تدخل**، وحرس إسقاط تاريخ Kotlin يبقى منصوبًا كما في `build.yml` حرفيًّا.
+#
+# **وحدوده المُعلَنة:** لا يُصرّف `src/debug` (يراه `build.yml`)، ولا أصليّ ولا حزمة R8/APK —
+# فحكمه «تصريف Release + اختباراته» وحده، وما عدا ذلك يبقى على البوابة الكاملة.
+#
+# **التكلفة:** المستودع غير عامّ — الدقائق مدفوعة. لهذا لا يعمل هذا الملفّ على `push` أبدًا:
+# تشغيله قرارٌ واعٍ (زرٌّ أو نداء API) لا أثر تلقائيّ لكل دفعة.
+# ══════════════════════════════════════════════════════════════════════════════
+
+name: Quick Verify
+
+on:
+  workflow_dispatch:
+
+# المجموعة للمرجع نفسه، والإلغاء مقصود: أداة قصيرة العمر وناتجها مؤقّت — الدفعة الأحدث تُلغي
+# القديمة. وهذا عكس سياسة `build.yml` (لا قتل على main) لأن كلفة الإلغاء هنا دقائق لا أكثر.
+concurrency:
+  group: verify-quick-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Release Kotlin + release unit tests (fast, no native/package)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      # الاستنساخ بعمق ١ مقصود: لا `verify.sh` هنا (لا نسخ نسخة ولا تغليف) — فالتاريخ الكامل
+      # ثمنه ثوانٍ بلا مقابل في هذا المسار.
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: "17"
+          distribution: temurin
+
+      # مخزن Gradle بحالته الافتراضية: التبعيات + مخزن البناء (`~/.gradle/caches`) — مفاتيحه
+      # من محتوى المدخلات، فهو آمن بحكم بنائه (بخلاف حالة المشروع). وهو نفس المخزن الذي
+      # يستعمله `build.yml`، فالتصريفات المشتركة تصل هنا FROM-CACHE.
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+
+      # ── وSDK مثل `build.yml` حرفيًّا: المطلوب android-37.0 + build-tools 36.0.0/37.0.0 ──
+      # (36.0.0 يطلبه AGP بالاسم لا من compileSdk — عطب مقيس هناك؛ ونتفادى تنزيلًا لا لزوم له
+      #  إن كانت الصورة تشحنها.)
+      - name: Use the runner's preinstalled Android SDK (fall back to installing it)
+        id: android_sdk_preinstalled
+        run: |
+          sdk="${ANDROID_SDK_ROOT:-${ANDROID_HOME:-/usr/local/lib/android/sdk}}"
+          if [ -d "$sdk/platforms/android-37.0" ] && [ -d "$sdk/build-tools/37.0.0" ] \
+             && [ -d "$sdk/build-tools/36.0.0" ]; then
+            echo "ANDROID_SDK_ROOT=$sdk" >> "$GITHUB_ENV"
+            echo "ANDROID_HOME=$sdk" >> "$GITHUB_ENV"
+            echo "SDK_PREINSTALLED=1" >> "$GITHUB_ENV"
+            echo "✅ SDK من الصورة: android-37.0 + build-tools 36.0.0/37.0.0"
+          else
+            echo "ℹ️ SDK ناقص في الصورة ⇒ التنزيل كالمعتاد"
+          fi
+
+      - name: Set up Android SDK
+        if: env.SDK_PREINSTALLED != '1'
+        uses: android-actions/setup-android@v3
+        with:
+          packages: "platform-tools platforms;android-37.0 build-tools;37.0.0 build-tools;36.0.0"
+
+      # ── البوابات النصّية التي تخصّ تعديلات Kotlin والموارد والنصوص (ثوانٍ، بلا مُصرّف) ──
+      # مجموعة جزئية **مقصودة** من خطوة «Contract gates» في `build.yml`: ما يراه هذا المسار
+      # من الملفّات هو `manager/**` غالبًا، وهذه البوابات هي التي تُحمرّه في ثوانٍ. والقائمة
+      # الكاملة (بما فيها self-tests للعتاد وsepolicy) تبقى على البوابة الكاملة. عند تعديل
+      # إحداهما يُحدَّث الآخر معها.
+      - name: Contract gates (fast, no compiler)
+        run: |
+          python3 tools/kt_balance.py --assert
+          python3 tools/code_health.py --assert
+          python3 tools/i18n_coverage.py --assert
+          python3 tools/i18n_coverage.py --prune all --assert
+          python3 tools/design_tokens.py --assert
+          python3 tools/jni_symbols.py --assert
+          # aapt2 الحقيقي: حكم المورد الذي يُسقط البناء الحتميّ — موجود في صورة الـrunner.
+          python3 tools/resource_compile.py --assert
+
+      # ── ذاكرة اختيارية للـconfiguration-cache فوقيًّا: مفتاحها من محتوى ملفّات البناء لا من
+      #    الالتزام — وهي آمنة بحكم بنائها (Gradle يُبطل أي مدخل لم تطابق بصمته فيحسب من جديد،
+      #    فلا مساس بقاعدة «لا حالة من شجرة أخرى» التي تخصّ تاريخ Kotlin التزايدي وحده).
+      #    مكسبها المقيس لأول نداء بارد: ~دقيقتان من طور الإعداد تذوب إلى ثوانٍ.
+      - name: Restore Gradle configuration cache (build-file keyed)
+        uses: actions/cache@v4
+        with:
+          path: manager/.gradle/configuration-cache
+          key: verify-cc-${{ runner.os }}-${{ hashFiles('manager/*.gradle*', 'manager/gradle.properties', 'manager/**/build.gradle.kts', 'manager/settings.gradle.kts', 'manager/gradle/wrapper/gradle-wrapper.properties') }}
+          restore-keys: |
+            verify-cc-${{ runner.os }}-
+
+      # ── حالة المشروع: **نفس مفتاح `build.yml` بالحرف** — فالأثر تراكميّ بين البوّابتين ──
+      # (التعليل الكامل لسياسة «الالتزام نفسه فقط» و`save-always` مشروح في `build.yml` عند
+      #  خطوتَي الاستعادة ونقطة الحفظ — وهي نفسها هنا بلا زيادة ولا نقصان.)
+      - name: Restore Gradle project state (same commit only)
+        id: gradle_state
+        continue-on-error: true
+        uses: actions/cache@v4
+        with:
+          path: |
+            manager/.gradle
+            manager/build
+            manager/app/build
+          key: gradle-state-${{ runner.os }}-${{ github.sha }}
+          save-always: true
+
+      # ── الحرس: لا تصريف تزايديًّا من تاريخ شجرة أخرى — نسخة حرفية من `build.yml` ──
+      # (بلا `restore-keys` فوق، فالحالة إمّا مطابقة لهذا الالتزام أو معدومة؛ ويبقى الحرس
+      #  منصوبًا ليكشف أي حالة غريبة دخلت من طريق آخر — فيُسقط تاريخ Kotlin وحده.)
+      - name: Guard — no incremental Kotlin state from another tree
+        run: |
+          if [ "${{ steps.gradle_state.outputs.cache-hit }}" = "true" ]; then
+            echo "✅ حالة المشروع من هذا الالتزام بعينه ⇒ التصريف التزايدي مسموح."
+            exit 0
+          fi
+          dirs=$(find manager -maxdepth 3 -type d -path '*/build/kotlin' || true)
+          if [ -z "$dirs" ]; then
+            echo "ℹ️ لا حالة سالفة أصلًا (بداية باردة) ⇒ لا شيء يُسقَط."
+            exit 0
+          fi
+          printf '%s\n' "$dirs"
+          printf '%s\n' "$dirs" | xargs rm -rf
+          echo "ℹ️ أُسقِط تاريخ Kotlin التزايدي ⇒ أول تصريف كامل."
+
+      # ── القياس نفسه: تصريف Release + اختبارات نسخة Release في نداء واحد ──
+      # • نفس خصائص `build.yml` بالحرف (`-Pmaxmanager.*` وقيمها من الأسرار): بها تُطابق
+      #   بصمات مدخلات المهام فيصير مخزن البناء مشتركًا بين البوّابتين لا نسختين متباعدتين.
+      # • وعطل الشبكة العابر عند **حلّ** الإضافات يُعاد فيه النداء مرة واحدة — نفس توقيع
+      #   `build.yml` المقيس، ولا يُقنَّع به فشل تصريف أو اختبار (لا يطابق التوقيع).
+      # • `:app:testReleaseUnitTest` يستدعي تصريف release تبعًا، فلا يُذكر صراحة.
+      - name: Release compile + release unit tests
+        working-directory: ./manager
+        run: |
+          chmod +x ./gradlew
+          set -o pipefail
+          run_verify() {
+            ./gradlew \
+              -Dorg.gradle.jvmargs="-Xmx6g -XX:MaxMetaspaceSize=1g -Dfile.encoding=UTF-8" \
+              -Pkotlin.compiler.execution.strategy=daemon \
+              -Pkotlin.daemon.jvmargs=-Xmx4g \
+              -Pmaxmanager.supabaseUrl="$SUPABASE_URL" \
+              -Pmaxmanager.supabaseAnonKey="$SUPABASE_ANON_KEY" \
+              -Pmaxmanager.configPublicKey="$CONFIG_PUBLIC_KEY" \
+              ":app:testReleaseUnitTest" \
+              -x ":app:lintVitalRelease" \
+              --build-cache \
+              --parallel 2>&1 | tee /tmp/gradle-verify.log
+          }
+          resolution_failure_pattern='was not found in any of the following sources|could not resolve plugin artifact|could not get|could not resolve all files for configuration|could not resolve all dependencies for configuration'
+          if ! run_verify; then
+            if grep -qiE "$resolution_failure_pattern" /tmp/gradle-verify.log; then
+              echo "::warning::فشل عابر في حلّ الحزم من الشبكة — إعادة نداء Gradle مرة واحدة"
+              run_verify || exit 1
+            else
+              exit 1
+            fi
+          fi
+        env:
+          KS_PWD: ${{ secrets.KEYSTORE_PASSWORD }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          CONFIG_PUBLIC_KEY: ${{ secrets.CONFIG_PUBLIC_KEY }}
+
+      # ── عند السقوط وحده: سجل Gradle وتقرير الاختبار — فيُرى سبب الفشل من صفحة التشغيل
+      #    دون إعادة إنتاج على الهاتف. (لا أثر عند النجاح: لا وقت ولا تخزين.) ──
+      - name: Upload failure evidence
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: quick-verify-evidence-${{ github.sha }}
+          path: |
+            /tmp/gradle-verify.log
+            manager/app/build/reports/tests/testReleaseUnitTest
+          if-no-files-found: ignore
+          retention-days: 7

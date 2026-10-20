@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_sample_device_strings.xml -->
+<resources>
+    <string name="sample_pick_title">സാമ്പിൾ ഉപകരണം തിരഞ്ഞെടുക്കുക</string>
+    <string name="sample_pick_button">സാമ്പിൾ ഉപകരണം തിരഞ്ഞെടുക്കുക</string>
+    <string name="sample_auto_hint">ഒരു ഉപകരണം തിരഞ്ഞെടുക്കുന്നത് നിങ്ങൾക്കായി ബ്രാൻഡ്, നിർമ്മാതാവ്, മോഡൽ, ഉപകരണം, ഉൽപ്പന്നം, വിരലടയാളം എന്നിവ നിറയ്ക്കുന്നു. അവ സ്വയം ടൈപ്പ് ചെയ്യാൻ മാനുവൽ ഉപയോഗിക്കുക.</string>
+    <string name="sample_manual">മാനുവൽ</string>
+    <string name="sample_close">അടയ്ക്കുക</string>
+    <string name="sample_search">ഉപകരണങ്ങൾ തിരയുക</string>
+    <string name="sample_empty">പൊരുത്തപ്പെടുന്ന ഉപകരണമില്ല.</string>
+    <string name="sample_unavailable">ഉപകരണ കാറ്റലോഗ് വായിക്കാൻ കഴിഞ്ഞില്ല.</string>
+    <string name="sample_row_sub">ആൻഡ്രോയിഡ് %1$s · %2$s</string>
+    <string name="sample_row_sub_plain">%1$s</string>
+    <string name="sample_fp_shared">മറ്റൊരു കാറ്റലോഗ് ഉപകരണത്തിൻ്റെ അതേ വിരലടയാളം</string>
+    <string name="sample_credit">കാറ്റലോഗ് ഡാറ്റ: COPG (Apache-2.0), %1$s</string>
+    <string name="sample_limit">പ്രൊഫൈൽ പരിധി (100) എത്തി.</string>
+</resources>

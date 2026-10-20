@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_sample_device_strings.xml -->
+<resources>
+    <string name="sample_pick_title">Изберете примерно устройство</string>
+    <string name="sample_pick_button">Изберете примерно устройство</string>
+    <string name="sample_auto_hint">Изборът на устройство попълва марка, производител, модел, устройство, продукт и пръстов отпечатък за вас. Използвайте Manual, за да ги въведете сами.</string>
+    <string name="sample_manual">Наръчник</string>
+    <string name="sample_close">затвори</string>
+    <string name="sample_search">Търсене на устройства</string>
+    <string name="sample_empty">Няма съответстващо устройство.</string>
+    <string name="sample_unavailable">Каталогът на устройството не можа да бъде прочетен.</string>
+    <string name="sample_row_sub">Android %1$s · %2$s</string>
+    <string name="sample_row_sub_plain">%1$s</string>
+    <string name="sample_fp_shared">Същият пръстов отпечатък като друго каталожно устройство</string>
+    <string name="sample_credit">Каталожни данни: COPG (Apache-2.0), %1$s</string>
+    <string name="sample_limit">Лимитът на профила (100) е достигнат.</string>
+</resources>

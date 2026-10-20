@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_spoof_ui_strings.xml -->
+<resources>
+    <string name="spoof_ui_real_device">Perangkat nyata</string>
+    <string name="spoof_ui_pill_verified">Konfigurasi terverifikasi</string>
+    <string name="spoof_ui_pill_unverified">Tidak terverifikasi</string>
+    <string name="spoof_ui_pill_off">Mati</string>
+    <string name="spoof_device_for_app">Perangkat untuk aplikasi ini</string>
+    <string name="spoof_device_real_hint">Aplikasi ini melihat perangkat Anda yang sebenarnya. Ketuk kartu untuk memilih salah satu.</string>
+    <string name="spoof_device_pick">Ketuk untuk memilih perangkat dari katalog, atau masukkan info perangkat khusus.</string>
+    <string name="spoof_device_in_use">Sedang digunakan</string>
+    <string name="spoof_device_restart">Mulai ulang aplikasi target setelahnya, bukan sistemnya.</string>
+    <string name="spoof_ui_apply_title">Terapkan untuk aplikasi ini</string>
+    <string name="spoof_ui_apply_action">Tinjau dan terapkan</string>
+    <string name="spoof_ui_apply_confirm_title">Terapkan aplikasi ini saja?</string>
+    <string name="spoof_ui_apply_confirm_text">Hanya aplikasi ini yang disiapkan; aplikasi lain tidak tersentuh. Mulai ulang aplikasi target setelahnya, bukan sistemnya. Pengeditan selanjutnya akan membatalkan konfirmasi ini. Jika COPG sudah mencantumkan aplikasi ini, perangkat Anda akan diprioritaskan dan jalur COPG tetap seperti apa adanya.</string>
+    <string name="spoof_ui_apply_confirm">Menerapkan</string>
+    <string name="spoof_ui_apply_reason">Penolakan mesin: %1$s</string>
+    <string name="spoof_engine_absent">Modul mesin tidak dapat dibaca. Konfirmasikan modul yang module.propnya bertuliskan id=COPG, instal atau instal ulang, lalu buka kembali layar ini.</string>
+    <string name="spoof_engine_disabled">Modul COPG dinonaktifkan di root manager Anda. Aktifkan di sana, reboot, lalu terapkan lagi.</string>
+    <string name="spoof_engine_removal_pending">COPG ditandai untuk dihapus dan akan hilang setelah reboot berikutnya. Instal ulang sebelum mendaftar.</string>
+    <string name="spoof_engine_update_pending">Pembaruan COPG sedang menunggu untuk reboot. Reboot dulu, lalu terapkan lagi.</string>
+    <string name="spoof_ui_apply_pending">Berubah sejak penerapan terakhir — terapkan lagi untuk menjadikannya nyata.</string>
+    <string name="spoof_ui_restore_title">Gunakan perangkat Anda yang sebenarnya</string>
+    <string name="spoof_ui_restore_action">Hapus spoof untuk aplikasi ini</string>
+    <string name="spoof_ui_restore_notice">Perangkat yang disimpan aplikasi ini dan penyesuaian COPG-nya dihapus, dan mesin ditulis ulang tanpa aplikasi ini. Aplikasi lain tidak tersentuh. Mulai ulang aplikasi target setelahnya.</string>
+    <string name="app_tab_spoof">Menipu</string>
+    <string name="spoof_picker_title">Pilih perangkat</string>
+    <string name="spoof_picker_custom">Info perangkat khusus</string>
+    <string name="spoof_picker_custom_hint">Masukkan merek, model, dan sidik jari yang Anda inginkan untuk aplikasi ini</string>
+    <string name="spoof_custom_title">Info perangkat khusus</string>
+    <string name="spoof_custom_rules">Nama, merek, model, perangkat, dan produk wajib diisi, masing-masing maksimal 120 karakter, tanpa karakter kontrol. Pabrikan, sidik jari, dan SDK bersifat opsional. Sidik jari harus dimulai dengan merek, produk, dan perangkat yang sama.</string>
+    <string name="spoof_manufacturer">Pabrikan (PRODUSEN)</string>
+    <string name="spoof_sdk">Tingkat SDK, opsional, 1 hingga 100</string>
+    <string name="spoof_custom_invalid">Beberapa bidang tidak valid. Periksa aturan di atas, lalu simpan kembali.</string>
+    <string name="spoof_custom_save">Simpan dan pilih untuk aplikasi ini</string>
+    <string name="spoof_impersonation_title">Memalsukan</string>
+    <string name="spoof_impersonation_desc">Hanya opsi COPG gratis. Ditulis ke mesin dengan Tinjau dan terapkan.</string>
+    <string name="spoof_impersonation_summary_cpu">CPU pemalsuan: %1$s</string>
+    <string name="spoof_impersonation_needs_device">Pilih perangkat untuk aplikasi ini terlebih dahulu. Opsi ini hanya ditulis dengan perangkat.</string>
+    <string name="spoof_cpu_spoof">CPU pemalsuan</string>
+    <string name="spoof_cpu_real">Nyata CPU</string>
+    <string name="spoof_cpu_block">Blokir CPU</string>
+    <string name="spoof_cpu_block_desc">Tidak termasuk aplikasi ini dari CPU spoofing.</string>
+    <string name="spoof_cpu_picker_title">Pilih CPU</string>
+    <string name="copg_tweaks_section">penyesuaian COPG</string>
+    <string name="copg_tweak_nolog_title">Nonaktifkan pencatatan</string>
+    <string name="copg_tweak_nolog_desc">Menerapkan penyesuaian logging COPG ke aplikasi ini. Disimpan di sini, ditulis ke mesin dengan Review dan diterapkan di tab Spoof.</string>
+    <string name="copg_tweak_dab_title">Nonaktifkan kecerahan otomatis</string>
+    <string name="copg_tweak_dab_desc">Menerapkan penyesuaian kecerahan otomatis COPG ke aplikasi ini. Disimpan di sini, ditulis ke mesin dengan Review dan diterapkan di tab Spoof.</string>
+    <string name="copg_tweak_kso_title">Tetap nyalakan layar</string>
+    <string name="copg_tweak_kso_desc">Menerapkan penyesuaian layar tetap COPG ke aplikasi ini. Disimpan di sini, ditulis ke mesin dengan Review dan diterapkan di tab Spoof.</string>
+    <string name="copg_tweak_needs_device">Membutuhkan perangkat untuk aplikasi ini terlebih dahulu, di tab Spoof.</string>
+</resources>

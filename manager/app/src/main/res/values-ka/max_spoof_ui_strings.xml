@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_spoof_ui_strings.xml -->
+<resources>
+    <string name="spoof_ui_real_device">ნამდვილი მოწყობილობა</string>
+    <string name="spoof_ui_pill_verified">კონფიგურაცია დადასტურებულია</string>
+    <string name="spoof_ui_pill_unverified">არ არის დამოწმებული</string>
+    <string name="spoof_ui_pill_off">გამორთულია</string>
+    <string name="spoof_device_for_app">მოწყობილობა ამ აპისთვის</string>
+    <string name="spoof_device_real_hint">ეს აპლიკაცია ხედავს თქვენს რეალურ მოწყობილობას. შეეხეთ ბარათს ერთის ასარჩევად.</string>
+    <string name="spoof_device_pick">შეეხეთ კატალოგიდან მოწყობილობის ასარჩევად ან შეიყვანეთ მორგებული მოწყობილობის ინფორმაცია.</string>
+    <string name="spoof_device_in_use">გამოყენებაში</string>
+    <string name="spoof_device_restart">შემდეგ გადატვირთეთ სამიზნე აპლიკაცია და არა სისტემა.</string>
+    <string name="spoof_ui_apply_title">მიმართეთ ამ აპლიკაციას</string>
+    <string name="spoof_ui_apply_action">გადახედეთ და მიმართეთ</string>
+    <string name="spoof_ui_apply_confirm_title">გამოიყენო მხოლოდ ეს აპლიკაცია?</string>
+    <string name="spoof_ui_apply_confirm_text">მომზადებულია მხოლოდ ეს აპლიკაცია; სხვა აპლიკაციები ხელუხლებელია. შემდეგ გადატვირთეთ სამიზნე აპლიკაცია და არა სისტემა. მოგვიანებით შესწორება გააუქმებს ამ დადასტურებას. თუ COPG უკვე ჩამოთვლის ამ აპს, თქვენს მოწყობილობას პრიორიტეტი აქვს და COPG ხაზი რჩება ისე, როგორც არის.</string>
+    <string name="spoof_ui_apply_confirm">მიმართეთ</string>
+    <string name="spoof_ui_apply_reason">ძრავის უარი: %1$s</string>
+    <string name="spoof_engine_absent">ძრავის მოდული არ იკითხება. დაადასტურეთ მოდული, რომლის module.prop ამბობს id=COPG, დააინსტალირეთ ან ხელახლა დააინსტალირეთ, შემდეგ ხელახლა გახსენით ეს ეკრანი.</string>
+    <string name="spoof_engine_disabled">COPG მოდული გამორთულია თქვენს root მენეჯერში. ჩართეთ იგი იქ, გადატვირთეთ, შემდეგ კვლავ გამოიყენეთ.</string>
+    <string name="spoof_engine_removal_pending">COPG მონიშნულია ამოსაღებად და გაქრება შემდეგი გადატვირთვის შემდეგ. ხელახლა დააინსტალირეთ გამოყენებამდე.</string>
+    <string name="spoof_engine_update_pending">COPG განახლება ელოდება გადატვირთვას. ჯერ გადატვირთეთ, შემდეგ კვლავ მიმართეთ.</string>
+    <string name="spoof_ui_apply_pending">შეიცვალა ბოლო განაცხადის შემდეგ — კვლავ მიმართეთ, რათა ის რეალური გახდეს.</string>
+    <string name="spoof_ui_restore_title">გამოიყენეთ თქვენი რეალური მოწყობილობა</string>
+    <string name="spoof_ui_restore_action">წაშალეთ სპუფები ამ აპისთვის</string>
+    <string name="spoof_ui_restore_notice">ამ აპის შენახული მოწყობილობა და მისი COPG შესწორებები ამოღებულია და ძრავა გადაწერილია ამ აპლიკაციის გარეშე. სხვა აპლიკაციები ხელუხლებელია. ამის შემდეგ გადატვირთეთ სამიზნე აპლიკაცია.</string>
+    <string name="app_tab_spoof">ფუფუნება</string>
+    <string name="spoof_picker_title">აირჩიეთ მოწყობილობა</string>
+    <string name="spoof_picker_custom">მორგებული მოწყობილობის ინფორმაცია</string>
+    <string name="spoof_picker_custom_hint">შეიყვანეთ ბრენდი, მოდელი და თითის ანაბეჭდი, რომელიც გსურთ ამ აპისთვის</string>
+    <string name="spoof_custom_title">მორგებული მოწყობილობის ინფორმაცია</string>
+    <string name="spoof_custom_rules">საჭიროა სახელი, ბრენდი, მოდელი, მოწყობილობა და პროდუქტი, თითოეული 120 სიმბოლომდე, საკონტროლო სიმბოლოების გარეშე. მწარმოებელი, თითის ანაბეჭდი და SDK არჩევითია. თითის ანაბეჭდი უნდა დაიწყოს იგივე ბრენდით, პროდუქტით და მოწყობილობით.</string>
+    <string name="spoof_manufacturer">მწარმოებელი (MANUFACTURER)</string>
+    <string name="spoof_sdk">SDK დონე, სურვილისამებრ, 1-დან 100-მდე</string>
+    <string name="spoof_custom_invalid">ზოგიერთი ველი არასწორია. შეამოწმეთ ზემოთ მოცემული წესები, შემდეგ ისევ შეინახეთ.</string>
+    <string name="spoof_custom_save">შეინახეთ და აირჩიეთ ამ აპისთვის</string>
+    <string name="spoof_impersonation_title">გაფუჭება</string>
+    <string name="spoof_impersonation_desc">უფასო COPG პარამეტრები მხოლოდ. ძრავს მიწერია გადახედე და მიმართე.</string>
+    <string name="spoof_impersonation_summary_cpu">CPU გაყალბება: %1$s</string>
+    <string name="spoof_impersonation_needs_device">ჯერ აირჩიეთ მოწყობილობა ამ აპისთვის. ეს პარამეტრები იწერება მხოლოდ მოწყობილობით.</string>
+    <string name="spoof_cpu_spoof">CPU გაყალბება</string>
+    <string name="spoof_cpu_real">რეალური CPU</string>
+    <string name="spoof_cpu_block">ბლოკი CPU</string>
+    <string name="spoof_cpu_block_desc">გამორიცხავს ამ აპს CPU გაყალბებისგან.</string>
+    <string name="spoof_cpu_picker_title">აირჩიეთ CPU</string>
+    <string name="copg_tweaks_section">COPG შესწორებები</string>
+    <string name="copg_tweak_nolog_title">ჩაწერის გამორთვა</string>
+    <string name="copg_tweak_nolog_desc">იყენებს COPG ჟურნალის შესწორებას ამ აპლიკაციაში. შენახულია აქ, ჩაწერილია ძრავზე მიმოხილვით და ვრცელდება Spoof ჩანართში.</string>
+    <string name="copg_tweak_dab_title">გამორთეთ ავტომატური სიკაშკაშე</string>
+    <string name="copg_tweak_dab_desc">იყენებს COPG ავტომატური სიკაშკაშის შესწორებას ამ აპლიკაციაში. შენახულია აქ, ჩაწერილია ძრავზე მიმოხილვით და ვრცელდება Spoof ჩანართში.</string>
+    <string name="copg_tweak_kso_title">ეკრანი ჩართული</string>
+    <string name="copg_tweak_kso_desc">იყენებს COPG-ის შენარჩუნების ეკრანის ჩართვას ამ აპზე. შენახულია აქ, ჩაწერილია ძრავზე მიმოხილვით და ვრცელდება Spoof ჩანართში.</string>
+    <string name="copg_tweak_needs_device">ჯერ ესაჭიროება მოწყობილობა ამ აპისთვის, Spoof ჩანართში.</string>
+</resources>

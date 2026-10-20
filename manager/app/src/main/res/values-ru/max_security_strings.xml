@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_security_strings.xml -->
+<resources>
+    <string name="security_tamper_title">Невозможно начать</string>
+    <string name="security_tamper_message">Эта сборка MaxManager не повреждена. Установленные файлы больше не соответствуют подписанному выпуску, поэтому он не запустится. Переустановите официальную сборку из исходного источника.</string>
+    <string name="security_tamper_close">Закрывать</string>
+</resources>

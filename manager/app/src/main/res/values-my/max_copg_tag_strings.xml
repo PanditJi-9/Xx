@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_copg_tag_strings.xml -->
+<resources>
+    <string name="copg_tags_title">COPG ရွေးချယ်မှုများ</string>
+    <string name="copg_tags_desc">ရည်ရွယ်ချက်အဖြစ် သိမ်းဆည်းပြီး စက်ပရိုဖိုင်နှင့်အတူ တွဲရေးထားသည်။ COPG ဗားရှင်းတိုင်းတွင် သက်တောင့်သက်သာ ရွေးချယ်စရာ လေးခုသာ အလုပ်လုပ်ပါသည်။ ကျန်တာကတော့ COPG 6.8.0 နဲ့ ဒီထက် ပိုလိုအပ်ပါတယ်။ PRO ရွေးချယ်မှုများသည် COPG PRO လိုင်စင် လိုအပ်ပြီး အင်ဂျင်သည် ၎င်းတို့ကို လျစ်လျူရှုနိုင်သည်။</string>
+    <string name="copg_tier_pro">ပရို</string>
+    <string name="copg_footprint_resident">အပလီကေးရှင်း၏မှတ်ဉာဏ်တွင်ရှိနေသည်၊ လှည့်စားမှုတိုက်ဖျက်ရေးဂိမ်းများနှင့် ဘယ်တော့မှအသုံးမပြုပါ။</string>
+    <string name="copg_need_ack">အောက်ပါအန္တရာယ်ကို ဦးစွာအသိအမှတ်ပြုပါ။</string>
+    <string name="copg_tag_refused">ထည့်သွင်းထားသော COPG ဗားရှင်းအတွက် ရွေးချယ်ထားသော COPG ရွေးချယ်မှုကို ခွင့်မပြုပါ။ ဘာမှ မရေးထားဘူး။</string>
+    <string name="copg_tag_needs_device">ရွေးချယ်စရာများကို စက်ပရိုဖိုင်ဖြင့် ရေးသားထားပြီး၊ ဤအက်ပ်တွင် တစ်ခုမျှမရှိသေးပါ။</string>
+    <string name="copg_tag_value_hint">တန်ဖိုး</string>
+    <string name="copg_tag_bad_value">စာလုံးများ၊ ဂဏန်းများ၊ space နှင့် . _ - / + (၆၀) အထိသာ၊</string>
+    <string name="copg_tag_save">သိမ်းဆည်းပါ။</string>
+    <string name="copg_tag_remove">ဖယ်ရှားပါ။</string>
+    <string name="copg_tag_dnd">ကစားနေစဉ် မနှောင့်ယှက်ရပါ။</string>
+    <string name="copg_tag_dab">အလိုအလျောက် တောက်ပမှုကို ပိတ်ပါ။</string>
+    <string name="copg_tag_kso">မျက်နှာပြင်ကိုဖွင့်ထားပါ။</string>
+    <string name="copg_tag_nolog">သစ်ခုတ်ခြင်းကို ရပ်ပါ။</string>
+    <string name="copg_tag_dpi">မျက်နှာပြင် DPI</string>
+    <string name="copg_tag_serial">အက်ပ်တစ်ခုစီအလိုက် အမှတ်စဉ်နံပါတ်</string>
+    <string name="copg_tag_cpu">CPU မော်ဒယ်</string>
+    <string name="copg_tag_blocked">CPU အစစ်အမှန်ကို တွန်းအားပေးပါ။</string>
+    <string name="copg_tag_vpn">VPN ကို ဖျောက်ပါ။</string>
+    <string name="copg_tag_vpns">VPN ကိုဝှက်ထား (တင်းကျပ်)</string>
+    <string name="copg_tag_hidedev">Developer Options နှင့် USB အမှားရှာပြင်ခြင်းကို ဖျောက်ပါ။</string>
+    <string name="copg_tag_tz">အချိန်ဇုန်</string>
+    <string name="copg_tag_lang">ဘာသာစကားနှင့် ဒေသ</string>
+    <string name="copg_tag_gpu">GPU မော်ဒယ်</string>
+    <string name="copg_tag_cow">တည်ဆောက်ခြင်း ဂုဏ်သတ္တိများ (မိတ္တူ-ပေါ်-ရေးသည်)</string>
+    <string name="copg_tag_aid">Android ID</string>
+    <string name="copg_tag_gaid">ကြော်ငြာခြင်း ID</string>
+    <string name="copg_tag_appset">အက်ပ်သတ်မှတ်ခြင်း ID</string>
+    <string name="copg_tag_drm">Widevine / DRM</string>
+    <string name="copg_tag_imei">IMEI</string>
+    <string name="copg_tag_sim">ဆင်းမ်ကတ်ဝန်ဆောင်မှုပေးသူ (ဘေးကင်း)</string>
+    <string name="copg_tag_simx">SIM ဝန်ဆောင်မှုပေးသူ (ပြင်းထန်သော)</string>
+    <string name="copg_tag_ua">WebView အသုံးပြုသူ-အေးဂျင့်</string>
+    <string name="copg_tag_mock">ပုံသဏ္ဍန်တည်နေရာကို ဝှက်ထားပါ။</string>
+</resources>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_copg_tag_strings.xml -->
+<resources>
+    <string name="copg_tags_title">የ COPG አማራጮች</string>
+    <string name="copg_tags_desc">እንደ ሐሳብ ተቀምጧል እና ከመሳሪያው መገለጫ ጋር አንድ ላይ ተጽፏል። በእያንዳንዱ የ COPG ስሪት ላይ አራት ምቾት አማራጮች ብቻ ይሰራሉ; የተቀሩት COPG 6.8.0 ወይም ከዚያ በላይ ያስፈልጋቸዋል. PRO አማራጮች የ COPG PRO ፍቃድ ያስፈልጋቸዋል፣ እና ሞተሩ ችላ ሊላቸው ይችላል።</string>
+    <string name="copg_tier_pro">ፕሮ</string>
+    <string name="copg_footprint_resident">በመተግበሪያው ማህደረ ትውስታ ውስጥ ይቆያል ፣ በፀረ-ማጭበርበር ጨዋታዎች በጭራሽ አይጠቀሙ</string>
+    <string name="copg_need_ack">በመጀመሪያ ከዚህ በታች ያለውን አደጋ እውቅና ይስጡ</string>
+    <string name="copg_tag_refused">ለተጫነው የ COPG ስሪት የተመረጠ የ COPG አማራጭ አይፈቀድም። ምንም አልተጻፈም።</string>
+    <string name="copg_tag_needs_device">አማራጮች የተፃፉት በመሳሪያ መገለጫ ነው፣ እና ይህ መተግበሪያ እስካሁን ምንም የለውም።</string>
+    <string name="copg_tag_value_hint">ዋጋ</string>
+    <string name="copg_tag_bad_value">ፊደሎች፣ አሃዞች፣ ቦታ እና . _ - / + ብቻ (እስከ 60)</string>
+    <string name="copg_tag_save">አስቀምጥ</string>
+    <string name="copg_tag_remove">አስወግድ</string>
+    <string name="copg_tag_dnd">በሚጫወቱበት ጊዜ አትረብሽ</string>
+    <string name="copg_tag_dab">ራስ-ብሩህነትን አሰናክል</string>
+    <string name="copg_tag_kso">ማያ ገጹን እንደበራ አቆይ</string>
+    <string name="copg_tag_nolog">መግባት አቁም</string>
+    <string name="copg_tag_dpi">ስክሪን ዲፒአይ</string>
+    <string name="copg_tag_serial">በመተግበሪያ መለያ ቁጥር</string>
+    <string name="copg_tag_cpu">CPU ሞዴል</string>
+    <string name="copg_tag_blocked">እውነተኛውን አስገድዱ CPU</string>
+    <string name="copg_tag_vpn">ቪፒኤን ደብቅ</string>
+    <string name="copg_tag_vpns">ቪፒኤን ደብቅ (ጥብቅ)</string>
+    <string name="copg_tag_hidedev">የገንቢ አማራጮችን እና የዩኤስቢ ማረም ደብቅ</string>
+    <string name="copg_tag_tz">የሰዓት ሰቅ</string>
+    <string name="copg_tag_lang">ቋንቋ እና ክልል</string>
+    <string name="copg_tag_gpu">GPU ሞዴል</string>
+    <string name="copg_tag_cow">ንብረቶችን ይገንቡ (በመፃፍ ቅጅ)</string>
+    <string name="copg_tag_aid">አንድሮይድ ID</string>
+    <string name="copg_tag_gaid">ማስታወቂያ ID</string>
+    <string name="copg_tag_appset">መተግበሪያ አዘጋጅ ID</string>
+    <string name="copg_tag_drm">ሰፊውቪን / DRM</string>
+    <string name="copg_tag_imei">IMEI</string>
+    <string name="copg_tag_sim">ሲም አገልግሎት አቅራቢ (ደህንነቱ የተጠበቀ)</string>
+    <string name="copg_tag_simx">ሲም አገልግሎት አቅራቢ (አጥቂ)</string>
+    <string name="copg_tag_ua">የድር እይታ ተጠቃሚ-ወኪል።</string>
+    <string name="copg_tag_mock">የማስመሰል ቦታን ደብቅ</string>
+</resources>

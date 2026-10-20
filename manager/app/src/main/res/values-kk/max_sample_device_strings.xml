@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_sample_device_strings.xml -->
+<resources>
+    <string name="sample_pick_title">Құрылғы үлгісін таңдаңыз</string>
+    <string name="sample_pick_button">Құрылғы үлгісін таңдаңыз</string>
+    <string name="sample_auto_hint">Құрылғыны таңдау сізге бренд, өндіруші, үлгі, құрылғы, өнім және саусақ ізін толтырады. Оларды өзіңіз теру үшін Manual пайдаланыңыз.</string>
+    <string name="sample_manual">Нұсқаулық</string>
+    <string name="sample_close">Жабу</string>
+    <string name="sample_search">Құрылғыларды іздеу</string>
+    <string name="sample_empty">Сәйкес құрылғы жоқ.</string>
+    <string name="sample_unavailable">Құрылғы каталогын оқу мүмкін емес.</string>
+    <string name="sample_row_sub">Android %1$s · %2$s</string>
+    <string name="sample_row_sub_plain">%1$s</string>
+    <string name="sample_fp_shared">Басқа каталог құрылғысымен бірдей саусақ ізі</string>
+    <string name="sample_credit">Каталог деректері: COPG (Apache-2.0), %1$s</string>
+    <string name="sample_limit">Профиль шегіне (100) жетті.</string>
+</resources>

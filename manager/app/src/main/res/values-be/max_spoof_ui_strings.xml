@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_spoof_ui_strings.xml -->
+<resources>
+    <string name="spoof_ui_real_device">Рэальная прылада</string>
+    <string name="spoof_ui_pill_verified">Канфігурацыя праверана</string>
+    <string name="spoof_ui_pill_unverified">Не праверана</string>
+    <string name="spoof_ui_pill_off">Выкл</string>
+    <string name="spoof_device_for_app">Прылада для гэтай праграмы</string>
+    <string name="spoof_device_real_hint">Гэта дадатак бачыць вашу рэальную прыладу. Дакраніцеся да карты, каб выбраць адну.</string>
+    <string name="spoof_device_pick">Націсніце, каб выбраць прыладу з каталога, або ўвядзіце карыстальніцкую інфармацыю аб прыладзе.</string>
+    <string name="spoof_device_in_use">Ва ўжытку</string>
+    <string name="spoof_device_restart">Пасля гэтага перазапусціце мэтавую праграму, а не сістэму.</string>
+    <string name="spoof_ui_apply_title">Падайце заяўку на гэта дадатак</string>
+    <string name="spoof_ui_apply_action">Праглядзіце і падайце заяўку</string>
+    <string name="spoof_ui_apply_confirm_title">Прымяніць толькі гэту праграму?</string>
+    <string name="spoof_ui_apply_confirm_text">Толькі гэта дадатак падрыхтавана; іншыя прыкладанні не закрануты. Пасля гэтага перазапусціце мэтавую праграму, а не сістэму. Пазнейшае рэдагаванне адмяняе гэтае пацверджанне. Калі ў спісе COPG гэта дадатак ужо ёсць, ваша прылада мае прыярытэт, а радок COPG застанецца ранейшым.</string>
+    <string name="spoof_ui_apply_confirm">Ужыць</string>
+    <string name="spoof_ui_apply_reason">Адмова рухавіка: %1$s</string>
+    <string name="spoof_engine_absent">Модуль рухавіка не чытаецца. Пацвердзіце модуль, у module.prop якога напісана id=COPG, усталюйце або пераўсталюйце яго, а затым зноў адкрыйце гэты экран.</string>
+    <string name="spoof_engine_disabled">Модуль COPG адключаны ў вашым каранёвым менеджэры. Уключыце яго там, перазагрузіце і прымяніце зноў.</string>
+    <string name="spoof_engine_removal_pending">COPG пазначаны для выдалення і знікне пасля наступнай перазагрузкі. Перад ужываннем пераўсталюйце яго.</string>
+    <string name="spoof_engine_update_pending">Абнаўленне COPG чакае перазагрузкі. Спачатку перазагрузіце, потым прымяніце яшчэ раз.</string>
+    <string name="spoof_ui_apply_pending">Зменена з моманту апошняй заяўкі — падайце заяўку яшчэ раз, каб зрабіць гэта рэальным.</string>
+    <string name="spoof_ui_restore_title">Выкарыстоўвайце сваю рэальную прыладу</string>
+    <string name="spoof_ui_restore_action">Выдаліць падробку для гэтай праграмы</string>
+    <string name="spoof_ui_restore_notice">Захаваная прылада гэтай праграмы і яе налады COPG выдаляюцца, а механізм перапісваецца без гэтай праграмы. Іншыя прыкладанні не закрануты. Пасля перазапусціце мэтавае прыкладанне.</string>
+    <string name="app_tab_spoof">Падман</string>
+    <string name="spoof_picker_title">Выберыце прыладу</string>
+    <string name="spoof_picker_custom">Карыстальніцкая інфармацыя аб прыладзе</string>
+    <string name="spoof_picker_custom_hint">Увядзіце марку, мадэль і адбітак пальца, які вы хочаце для гэтай праграмы</string>
+    <string name="spoof_custom_title">Карыстальніцкая інфармацыя аб прыладзе</string>
+    <string name="spoof_custom_rules">Імя, брэнд, мадэль, прылада і прадукт абавязковыя, да 120 сімвалаў кожны, без кантрольных сімвалаў. Вытворца, адбітак пальца і SDK неабавязковыя. Адбітак пальца павінен пачынацца з той жа маркі, прадукту і прылады.</string>
+    <string name="spoof_manufacturer">Вытворца (MANUFACTURER)</string>
+    <string name="spoof_sdk">Узровень SDK, неабавязковы, ад 1 да 100</string>
+    <string name="spoof_custom_invalid">Некаторыя палі несапраўдныя. Праверце правілы вышэй, затым захавайце яшчэ раз.</string>
+    <string name="spoof_custom_save">Захаваць і выбраць для гэтага прыкладання</string>
+    <string name="spoof_impersonation_title">Спуфінг</string>
+    <string name="spoof_impersonation_desc">Толькі бясплатныя варыянты COPG. Напісана ў рухавічок Аглядам і прымяненнем.</string>
+    <string name="spoof_impersonation_summary_cpu">CPU падробка: %1$s</string>
+    <string name="spoof_impersonation_needs_device">Спачатку абярыце прыладу для гэтай праграмы. Гэтыя параметры запісваюцца толькі з прыладай.</string>
+    <string name="spoof_cpu_spoof">CPU спуфінг</string>
+    <string name="spoof_cpu_real">Сапраўдныя CPU</string>
+    <string name="spoof_cpu_block">Блок CPU</string>
+    <string name="spoof_cpu_block_desc">Выключае гэта дадатак з CPU спуфінгу.</string>
+    <string name="spoof_cpu_picker_title">Выберыце CPU</string>
+    <string name="copg_tweaks_section">Налады COPG</string>
+    <string name="copg_tweak_nolog_title">Адключыць запіс</string>
+    <string name="copg_tweak_nolog_desc">Прымяняе да гэтай праграмы настройку вядзення часопіса COPG. Захавана тут, запісана ў механізм з дапамогай Review і прымяняецца ва ўкладцы Spoof.</string>
+    <string name="copg_tweak_dab_title">Адключыць аўтаматычную яркасць</string>
+    <string name="copg_tweak_dab_desc">Прымяняе да гэтай праграмы наладку аўтаматычнай яркасці COPG. Захавана тут, запісана ў механізм з дапамогай Review і прымяняецца ва ўкладцы Spoof.</string>
+    <string name="copg_tweak_kso_title">Трымаць экран уключаным</string>
+    <string name="copg_tweak_kso_desc">Прымяняе да гэтай праграмы настройку COPG, каб экран не адключаўся. Захавана тут, запісана ў механізм з дапамогай Review і прымяняецца ва ўкладцы Spoof.</string>
+    <string name="copg_tweak_needs_device">Спачатку патрабуецца прылада для гэтай праграмы ва ўкладцы Spoof.</string>
+</resources>

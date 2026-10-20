@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_spoof_ui_strings.xml -->
+<resources>
+    <string name="spoof_ui_real_device">Реальное устройство</string>
+    <string name="spoof_ui_pill_verified">Конфигурация проверена</string>
+    <string name="spoof_ui_pill_unverified">Не проверено</string>
+    <string name="spoof_ui_pill_off">Выключенный</string>
+    <string name="spoof_device_for_app">Устройство для этого приложения</string>
+    <string name="spoof_device_real_hint">Это приложение видит ваше настоящее устройство. Нажмите на карту, чтобы выбрать одну.</string>
+    <string name="spoof_device_pick">Нажмите, чтобы выбрать устройство из каталога, или введите пользовательскую информацию об устройстве.</string>
+    <string name="spoof_device_in_use">В использовании</string>
+    <string name="spoof_device_restart">После этого перезапустите целевое приложение, а не систему.</string>
+    <string name="spoof_ui_apply_title">Подать заявку на это приложение</string>
+    <string name="spoof_ui_apply_action">Просмотрите и подайте заявку</string>
+    <string name="spoof_ui_apply_confirm_title">Применить только это приложение?</string>
+    <string name="spoof_ui_apply_confirm_text">Подготовлено только это приложение; другие приложения нетронуты. После этого перезапустите целевое приложение, а не систему. Более позднее редактирование отменяет это подтверждение. Если COPG уже указывает это приложение, ваше устройство имеет приоритет, а строка COPG остается прежней.</string>
+    <string name="spoof_ui_apply_confirm">Применять</string>
+    <string name="spoof_ui_apply_reason">Отказ двигателя: %1$s</string>
+    <string name="spoof_engine_absent">Модуль двигателя не читается. Подтвердите модуль, в файле которого указано id=COPG, установите или переустановите его, затем снова откройте этот экран.</string>
+    <string name="spoof_engine_disabled">Модуль COPG отключен в вашем корневом менеджере. Включите его там, перезагрузитесь, затем примените снова.</string>
+    <string name="spoof_engine_removal_pending">COPG помечен для удаления и исчезнет после следующей перезагрузки. Переустановите его перед применением.</string>
+    <string name="spoof_engine_update_pending">Обновление COPG ожидает перезагрузки. Сначала перезагрузитесь, затем примените снова.</string>
+    <string name="spoof_ui_apply_pending">Изменено с момента последней заявки — подайте заявку еще раз, чтобы это стало реальностью.</string>
+    <string name="spoof_ui_restore_title">Используйте свое настоящее устройство</string>
+    <string name="spoof_ui_restore_action">Удалить подделку для этого приложения</string>
+    <string name="spoof_ui_restore_notice">Сохраненное устройство этого приложения и его настройки COPG удалены, а движок переписан без этого приложения. Другие приложения не тронуты. После этого перезапустите целевое приложение.</string>
+    <string name="app_tab_spoof">пародия</string>
+    <string name="spoof_picker_title">Выберите устройство</string>
+    <string name="spoof_picker_custom">Информация о пользовательском устройстве</string>
+    <string name="spoof_picker_custom_hint">Введите марку, модель и отпечаток пальца, который вы хотите для этого приложения.</string>
+    <string name="spoof_custom_title">Информация о пользовательском устройстве</string>
+    <string name="spoof_custom_rules">Укажите имя, марку, модель, устройство и продукт, длиной до 120 символов каждое, без управляющих символов. Производитель, отпечаток пальца и SDK не являются обязательными. Отпечаток пальца должен начинаться с того же бренда, продукта и устройства.</string>
+    <string name="spoof_manufacturer">Производитель (ПРОИЗВОДИТЕЛЬ)</string>
+    <string name="spoof_sdk">Уровень SDK, необязательно, от 1 до 100</string>
+    <string name="spoof_custom_invalid">Некоторые поля недействительны. Проверьте правила выше, затем сохраните еще раз.</string>
+    <string name="spoof_custom_save">Сохраните и выберите для этого приложения</string>
+    <string name="spoof_impersonation_title">Подмена</string>
+    <string name="spoof_impersonation_desc">Только бесплатные опции COPG. Написал в движок Обзор и применил.</string>
+    <string name="spoof_impersonation_summary_cpu">CPU подмена: %1$s</string>
+    <string name="spoof_impersonation_needs_device">Сначала выберите устройство для этого приложения. Эти опции прописаны только с устройством.</string>
+    <string name="spoof_cpu_spoof">CPU подмена</string>
+    <string name="spoof_cpu_real">Настоящий CPU</string>
+    <string name="spoof_cpu_block">Блок CPU</string>
+    <string name="spoof_cpu_block_desc">Исключает это приложение из спуфинга CPU.</string>
+    <string name="spoof_cpu_picker_title">Выберите CPU</string>
+    <string name="copg_tweaks_section">настройки COPG</string>
+    <string name="copg_tweak_nolog_title">Отключить ведение журнала</string>
+    <string name="copg_tweak_nolog_desc">Применяет настройку ведения журнала COPG к этому приложению. Сохранено здесь, записано в движок посредством обзора и применено на вкладке «Подделка».</string>
+    <string name="copg_tweak_dab_title">Отключить автояркость</string>
+    <string name="copg_tweak_dab_desc">Применяет настройку автоматической яркости COPG к этому приложению. Сохранено здесь, записано в движок посредством обзора и применено на вкладке «Подделка».</string>
+    <string name="copg_tweak_kso_title">Не отключать экран</string>
+    <string name="copg_tweak_kso_desc">Применяет настройку COPG для поддержания включенного экрана к этому приложению. Сохранено здесь, записано в движок посредством обзора и применено на вкладке «Подделка».</string>
+    <string name="copg_tweak_needs_device">Сначала нужно устройство для этого приложения на вкладке «Подмена».</string>
+</resources>

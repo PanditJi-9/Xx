@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_sample_device_strings.xml -->
+<resources>
+    <string name="sample_pick_title">Pasirinkite pavyzdinį įrenginį</string>
+    <string name="sample_pick_button">Pasirinkite pavyzdinį įrenginį</string>
+    <string name="sample_auto_hint">Pasirinkę įrenginį, už jus užpildysite prekės ženklą, gamintoją, modelį, įrenginį, gaminį ir kontrolinį kodą. Norėdami patys juos įvesti, naudokite rankinį.</string>
+    <string name="sample_manual">vadovas</string>
+    <string name="sample_close">Uždaryti</string>
+    <string name="sample_search">Ieškokite įrenginių</string>
+    <string name="sample_empty">Nėra atitinkančio įrenginio.</string>
+    <string name="sample_unavailable">Nepavyko perskaityti įrenginių katalogo.</string>
+    <string name="sample_row_sub">Android %1$s · %2$s</string>
+    <string name="sample_row_sub_plain">%1$s</string>
+    <string name="sample_fp_shared">Tas pats piršto atspaudas kaip ir kito katalogo įrenginio</string>
+    <string name="sample_credit">Katalogo duomenys: COPG (Apache-2.0), %1$s</string>
+    <string name="sample_limit">Pasiekta profilio riba (100).</string>
+</resources>

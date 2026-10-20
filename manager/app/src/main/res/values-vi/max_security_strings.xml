@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_security_strings.xml -->
+<resources>
+    <string name="security_tamper_title">Không thể bắt đầu</string>
+    <string name="security_tamper_message">Bản dựng MaxManager này không còn nguyên vẹn. Các file đã cài đặt không còn khớp với bản phát hành đã ký nên sẽ không chạy. Cài đặt lại bản dựng chính thức từ nguồn ban đầu của nó.</string>
+    <string name="security_tamper_close">Đóng</string>
+</resources>

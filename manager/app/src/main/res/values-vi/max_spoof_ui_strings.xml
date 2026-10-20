@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_spoof_ui_strings.xml -->
+<resources>
+    <string name="spoof_ui_real_device">Thiết bị thật</string>
+    <string name="spoof_ui_pill_verified">Đã xác minh cấu hình</string>
+    <string name="spoof_ui_pill_unverified">Chưa được xác minh</string>
+    <string name="spoof_ui_pill_off">Tắt</string>
+    <string name="spoof_device_for_app">Thiết bị cho ứng dụng này</string>
+    <string name="spoof_device_real_hint">Ứng dụng này nhìn thấy thiết bị thực của bạn. Nhấn vào thẻ để chọn một.</string>
+    <string name="spoof_device_pick">Nhấn để chọn thiết bị từ danh mục hoặc nhập thông tin thiết bị tùy chỉnh.</string>
+    <string name="spoof_device_in_use">Đang sử dụng</string>
+    <string name="spoof_device_restart">Sau đó khởi động lại ứng dụng đích chứ không phải hệ thống.</string>
+    <string name="spoof_ui_apply_title">Đăng ký ứng dụng này</string>
+    <string name="spoof_ui_apply_action">Xem xét và áp dụng</string>
+    <string name="spoof_ui_apply_confirm_title">Chỉ áp dụng ứng dụng này?</string>
+    <string name="spoof_ui_apply_confirm_text">Chỉ có ứng dụng này được chuẩn bị; các ứng dụng khác không bị ảnh hưởng. Sau đó khởi động lại ứng dụng đích chứ không phải hệ thống. Chỉnh sửa sau này sẽ hủy xác nhận này. Nếu COPG đã liệt kê ứng dụng này, thiết bị của bạn sẽ được ưu tiên và dòng COPG vẫn giữ nguyên.</string>
+    <string name="spoof_ui_apply_confirm">Áp dụng</string>
+    <string name="spoof_ui_apply_reason">Động cơ từ chối: %1$s</string>
+    <string name="spoof_engine_absent">Mô-đun động cơ không thể đọc được. Xác nhận mô-đun có module.prop cho biết id=COPG, cài đặt hoặc cài đặt lại mô-đun đó, sau đó mở lại màn hình này.</string>
+    <string name="spoof_engine_disabled">Mô-đun COPG bị tắt trong trình quản lý gốc của bạn. Kích hoạt nó ở đó, khởi động lại, sau đó áp dụng lại.</string>
+    <string name="spoof_engine_removal_pending">COPG được đánh dấu để loại bỏ và sẽ biến mất sau lần khởi động lại tiếp theo. Cài đặt lại nó trước khi áp dụng.</string>
+    <string name="spoof_engine_update_pending">Bản cập nhật COPG đang chờ khởi động lại. Khởi động lại trước, sau đó áp dụng lại.</string>
+    <string name="spoof_ui_apply_pending">Đã thay đổi kể từ lần đăng ký cuối cùng - hãy đăng ký lại để biến nó thành hiện thực.</string>
+    <string name="spoof_ui_restore_title">Sử dụng thiết bị thực của bạn</string>
+    <string name="spoof_ui_restore_action">Xóa giả mạo cho ứng dụng này</string>
+    <string name="spoof_ui_restore_notice">Thiết bị đã lưu của ứng dụng này và các chỉnh sửa COPG của nó sẽ bị xóa và công cụ được viết lại mà không có ứng dụng này. Các ứng dụng khác không bị ảnh hưởng. Khởi động lại ứng dụng mục tiêu sau đó.</string>
+    <string name="app_tab_spoof">giả mạo</string>
+    <string name="spoof_picker_title">Chọn một thiết bị</string>
+    <string name="spoof_picker_custom">Thông tin thiết bị tùy chỉnh</string>
+    <string name="spoof_picker_custom_hint">Nhập nhãn hiệu, model và dấu vân tay bạn muốn cho ứng dụng này</string>
+    <string name="spoof_custom_title">Thông tin thiết bị tùy chỉnh</string>
+    <string name="spoof_custom_rules">Tên, nhãn hiệu, kiểu máy, thiết bị và sản phẩm là bắt buộc, mỗi tên tối đa 120 ký tự, không có ký tự điều khiển. Nhà sản xuất, dấu vân tay và SDK là tùy chọn. Dấu vân tay phải bắt đầu bằng cùng một thương hiệu, sản phẩm và thiết bị.</string>
+    <string name="spoof_manufacturer">Nhà sản xuất (NHÀ SẢN XUẤT)</string>
+    <string name="spoof_sdk">Cấp SDK, tùy chọn, 1 đến 100</string>
+    <string name="spoof_custom_invalid">Một số trường không hợp lệ. Kiểm tra các quy tắc ở trên, sau đó lưu lại.</string>
+    <string name="spoof_custom_save">Lưu và chọn cho ứng dụng này</string>
+    <string name="spoof_impersonation_title">giả mạo</string>
+    <string name="spoof_impersonation_desc">Chỉ có các tùy chọn COPG miễn phí. Viết cho động cơ bằng cách xem xét và áp dụng.</string>
+    <string name="spoof_impersonation_summary_cpu">CPU giả mạo: %1$s</string>
+    <string name="spoof_impersonation_needs_device">Trước tiên hãy chọn một thiết bị cho ứng dụng này. Các tùy chọn này chỉ được viết bằng một thiết bị.</string>
+    <string name="spoof_cpu_spoof">CPU giả mạo</string>
+    <string name="spoof_cpu_real">Thực CPU</string>
+    <string name="spoof_cpu_block">Chặn CPU</string>
+    <string name="spoof_cpu_block_desc">Loại trừ ứng dụng này khỏi CPU giả mạo.</string>
+    <string name="spoof_cpu_picker_title">Chọn một CPU</string>
+    <string name="copg_tweaks_section">điều chỉnh COPG</string>
+    <string name="copg_tweak_nolog_title">Vô hiệu hóa ghi nhật ký</string>
+    <string name="copg_tweak_nolog_desc">Áp dụng tinh chỉnh ghi nhật ký COPG cho ứng dụng này. Đã lưu ở đây, được ghi vào công cụ bằng Review và áp dụng trong tab Giả mạo.</string>
+    <string name="copg_tweak_dab_title">Tắt độ sáng tự động</string>
+    <string name="copg_tweak_dab_desc">Áp dụng điều chỉnh độ sáng tự động COPG cho ứng dụng này. Đã lưu ở đây, được ghi vào công cụ bằng Review và áp dụng trong tab Giả mạo.</string>
+    <string name="copg_tweak_kso_title">Giữ màn hình luôn bật</string>
+    <string name="copg_tweak_kso_desc">Áp dụng tinh chỉnh giữ màn hình COPG cho ứng dụng này. Đã lưu ở đây, được ghi vào công cụ bằng Review và áp dụng trong tab Giả mạo.</string>
+    <string name="copg_tweak_needs_device">Trước tiên, cần có thiết bị cho ứng dụng này, trong tab Giả mạo.</string>
+</resources>

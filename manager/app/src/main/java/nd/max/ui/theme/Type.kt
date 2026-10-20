@@ -1,0 +1,242 @@
+/*
+ * Copyright (C) 2026-2027 Zexshia
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package nd.max.ui.theme
+
+import androidx.compose.material3.Typography
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.sp
+
+/**
+ * Display carries the app's personality (Space Grotesk, used with restraint
+ * and slightly tightened tracking so it reads as "engineered" rather than
+ * playful). Body stays a highly legible workhorse (Manrope) so long
+ * descriptions and safety notes never fight for attention. Sizes/line-heights
+ * follow the standard Material 3 scale -- those numbers are already tuned for
+ * Android reading distances; what changes here is family, weight and tracking.
+ */
+val Typography = Typography(
+    displayLarge = TextStyle(
+        fontFamily = DisplayFontFamily,
+        fontWeight = FontWeight.Bold,
+        fontSize = 57.sp,
+        lineHeight = 64.sp,
+        letterSpacing = (-0.5).sp
+    ),
+    displayMedium = TextStyle(
+        fontFamily = DisplayFontFamily,
+        fontWeight = FontWeight.ExtraBold,
+        fontSize = 45.sp,
+        lineHeight = 52.sp,
+        letterSpacing = (-0.25).sp
+    ),
+    displaySmall = TextStyle(
+        fontFamily = DisplayFontFamily,
+        fontWeight = FontWeight.Bold,
+        fontSize = 36.sp,
+        lineHeight = 44.sp,
+        letterSpacing = 0.sp
+    ),
+
+    headlineLarge = TextStyle(
+        fontFamily = DisplayFontFamily,
+        fontWeight = FontWeight.Bold,
+        fontSize = 32.sp,
+        lineHeight = 40.sp
+    ),
+    headlineMedium = TextStyle(
+        fontFamily = DisplayFontFamily,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 28.sp,
+        lineHeight = 36.sp
+    ),
+    headlineSmall = TextStyle(
+        fontFamily = DisplayFontFamily,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 24.sp,
+        lineHeight = 32.sp
+    ),
+
+    titleLarge = TextStyle(
+        fontFamily = DisplayFontFamily,
+        fontWeight = FontWeight.Bold,
+        fontSize = 22.sp,
+        lineHeight = 28.sp,
+        letterSpacing = 0.sp
+    ),
+    titleMedium = TextStyle(
+        fontFamily = DisplayFontFamily,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 16.sp,
+        lineHeight = 24.sp,
+        letterSpacing = 0.1.sp
+    ),
+    titleSmall = TextStyle(
+        fontFamily = DisplayFontFamily,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 14.sp,
+        lineHeight = 20.sp,
+        letterSpacing = 0.1.sp
+    ),
+
+    bodyLarge = TextStyle(
+        fontFamily = BodyFontFamily,
+        fontWeight = FontWeight.Normal,
+        fontSize = 16.sp,
+        lineHeight = 24.sp,
+        letterSpacing = 0.3.sp
+    ),
+    bodyMedium = TextStyle(
+        fontFamily = BodyFontFamily,
+        fontWeight = FontWeight.Normal,
+        fontSize = 14.sp,
+        lineHeight = 20.sp,
+        letterSpacing = 0.25.sp
+    ),
+    bodySmall = TextStyle(
+        fontFamily = BodyFontFamily,
+        fontWeight = FontWeight.Normal,
+        fontSize = 12.sp,
+        lineHeight = 16.sp,
+        letterSpacing = 0.2.sp
+    ),
+
+    // Labels get a touch more tracking than body text -- the "console eyebrow"
+    // treatment used for badges, chips, and section titles across the app.
+    labelLarge = TextStyle(
+        fontFamily = BodyFontFamily,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 14.sp,
+        lineHeight = 20.sp,
+        letterSpacing = 0.4.sp
+    ),
+    labelMedium = TextStyle(
+        fontFamily = BodyFontFamily,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 12.sp,
+        lineHeight = 16.sp,
+        letterSpacing = 0.5.sp
+    ),
+    labelSmall = TextStyle(
+        fontFamily = BodyFontFamily,
+        fontWeight = FontWeight.Bold,
+        fontSize = 11.sp,
+        lineHeight = 16.sp,
+        letterSpacing = 0.6.sp
+    )
+)
+
+/**
+ * Reserved for *live values only* -- MHz, percentages, core counts,
+ * temperatures. Pairing a monospace face with tabular figures makes numbers
+ * that change every couple of seconds easy to scan (they don't reflow
+ * horizontally as digits change), the same reason real instrument panels and
+ * terminal dashboards use a fixed-width readout font. Never used for labels
+ * or body copy -- mixing it in everywhere would just look like a "coder"
+ * costume instead of a considered choice.
+ */
+val MonoValueStyleLarge = TextStyle(
+    fontFamily = MonoFontFamily,
+    fontWeight = FontWeight.SemiBold,
+    fontSize = 28.sp,
+    lineHeight = 32.sp,
+    letterSpacing = 0.sp
+)
+val MonoValueStyleMedium = TextStyle(
+    fontFamily = MonoFontFamily,
+    fontWeight = FontWeight.SemiBold,
+    fontSize = 16.sp,
+    lineHeight = 20.sp,
+    letterSpacing = 0.sp
+)
+val MonoValueStyleSmall = TextStyle(
+    fontFamily = MonoFontFamily,
+    fontWeight = FontWeight.Medium,
+    fontSize = 12.sp,
+    lineHeight = 16.sp,
+    letterSpacing = 0.sp
+)
+
+/**
+ * Home-dashboard sizes that sit beside the shared scale above, so the reference
+ * "Now" layout can be tuned without moving the tokens every other screen reads.
+ * The hero's device name steps a notch under headlineSmall (one line for most
+ * models), the hero value tiles and the CPU/GPU clock readouts step down a little.
+ * Only the home screen uses these.
+ */
+val HeroTitleStyle = TextStyle(
+    fontFamily = DisplayFontFamily,
+    fontWeight = FontWeight.SemiBold,
+    fontSize = 19.sp,
+    lineHeight = 25.sp,
+    letterSpacing = 0.sp
+)
+val MonoValueStyleHero = TextStyle(
+    fontFamily = MonoFontFamily,
+    fontWeight = FontWeight.SemiBold,
+    fontSize = 15.sp,
+    lineHeight = 19.sp,
+    letterSpacing = 0.sp
+)
+val MonoValueStyleFrequency = TextStyle(
+    fontFamily = MonoFontFamily,
+    fontWeight = FontWeight.SemiBold,
+    fontSize = 14.sp,
+    lineHeight = 18.sp,
+    letterSpacing = 0.sp
+)
+
+/**
+ * النسخة المُقاسَة من سلّم [base] — تُضرَب **أحجام النصوص وارتفاعات الأسطر** وحدها في
+ * [scale] القادم من `theme_font_scale`.
+ *
+ * **ولماذا الحجم وحده:** الهوية هنا في العائلة والوزن والتباعد، لا في المقاس؛ تكبيرها كلها
+ * معًا يبدّل شخصية السلّم لا يكبّره. ونقطة التطبيق واحدة (`MaxManagerTheme`) فلا تتفرّق
+ * النسخ بين شاشة وشاشة.
+ *
+ * **والحماية مقيسة لا مُفترضة:** الضرب في `TextUnit` يرمي على القيمة غير المحدَّدة
+ * (`Unspecified`) — وكل أنماط هذا الملف معرَّفة المقاس والارتفاع اليوم، لكن نمطًا يُضاف
+ * غدًا بلا ارتفاعٍ لن يُسقط التركيب بفضل الحارس أدناه.
+ */
+fun scaledTypography(base: Typography, scale: Float): Typography {
+    if (scale == 1f) return base
+    return base.copy(
+        displayLarge = base.displayLarge.scaledBy(scale),
+        displayMedium = base.displayMedium.scaledBy(scale),
+        displaySmall = base.displaySmall.scaledBy(scale),
+        headlineLarge = base.headlineLarge.scaledBy(scale),
+        headlineMedium = base.headlineMedium.scaledBy(scale),
+        headlineSmall = base.headlineSmall.scaledBy(scale),
+        titleLarge = base.titleLarge.scaledBy(scale),
+        titleMedium = base.titleMedium.scaledBy(scale),
+        titleSmall = base.titleSmall.scaledBy(scale),
+        bodyLarge = base.bodyLarge.scaledBy(scale),
+        bodyMedium = base.bodyMedium.scaledBy(scale),
+        bodySmall = base.bodySmall.scaledBy(scale),
+        labelLarge = base.labelLarge.scaledBy(scale),
+        labelMedium = base.labelMedium.scaledBy(scale),
+        labelSmall = base.labelSmall.scaledBy(scale)
+    )
+}
+
+private fun TextStyle.scaledBy(scale: Float): TextStyle = copy(
+    // مقيسة على Compose UI 1.11: `TextUnit.Unspecified` هو الموجب العموميّ، و`isUnspecified`
+    // لم تعد في الواجهة (قِيس بـjavap على ui-unit-api.jar) — فالمقارنة هنا بالفهرسة الصحيحة.
+    fontSize = if (fontSize == TextUnit.Unspecified) fontSize else fontSize * scale,
+    lineHeight = if (lineHeight == TextUnit.Unspecified) lineHeight else lineHeight * scale
+)

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_spoof_ui_strings.xml -->
+<resources>
+    <string name="spoof_ui_real_device">ឧបករណ៍ពិត</string>
+    <string name="spoof_ui_pill_verified">កំណត់រចនាសម្ព័ន្ធបានផ្ទៀងផ្ទាត់</string>
+    <string name="spoof_ui_pill_unverified">មិនបានផ្ទៀងផ្ទាត់</string>
+    <string name="spoof_ui_pill_off">បិទ</string>
+    <string name="spoof_device_for_app">ឧបករណ៍សម្រាប់កម្មវិធីនេះ</string>
+    <string name="spoof_device_real_hint">កម្មវិធីនេះមើលឃើញឧបករណ៍ពិតរបស់អ្នក។ ប៉ះកាតដើម្បីជ្រើសរើសមួយ។</string>
+    <string name="spoof_device_pick">ប៉ះដើម្បីជ្រើសរើសឧបករណ៍ពីកាតាឡុក ឬបញ្ចូលព័ត៌មានឧបករណ៍ផ្ទាល់ខ្លួន។</string>
+    <string name="spoof_device_in_use">កំពុងប្រើ</string>
+    <string name="spoof_device_restart">ចាប់ផ្តើមកម្មវិធីគោលដៅឡើងវិញបន្ទាប់ពីនោះ មិនមែនប្រព័ន្ធទេ។</string>
+    <string name="spoof_ui_apply_title">ដាក់ពាក្យសម្រាប់កម្មវិធីនេះ</string>
+    <string name="spoof_ui_apply_action">ពិនិត្យ និងអនុវត្ត</string>
+    <string name="spoof_ui_apply_confirm_title">អនុវត្តកម្មវិធីនេះតែប៉ុណ្ណោះ?</string>
+    <string name="spoof_ui_apply_confirm_text">មានតែកម្មវិធីនេះទេដែលត្រូវបានរៀបចំ; កម្មវិធីផ្សេងទៀតមិនត្រូវបានប៉ះ។ ចាប់ផ្តើមកម្មវិធីគោលដៅឡើងវិញបន្ទាប់ពីនោះ មិនមែនប្រព័ន្ធទេ។ ការកែសម្រួលនៅពេលក្រោយលុបចោលការបញ្ជាក់នេះ។ ប្រសិនបើ COPG បានចុះបញ្ជីកម្មវិធីនេះរួចហើយ ឧបករណ៍របស់អ្នកមានអាទិភាព ហើយបន្ទាត់ COPG នឹងនៅដដែល។</string>
+    <string name="spoof_ui_apply_confirm">អនុវត្ត</string>
+    <string name="spoof_ui_apply_reason">ការបដិសេធម៉ាស៊ីន៖ %1$s</string>
+    <string name="spoof_engine_absent">ម៉ូឌុលម៉ាស៊ីនមិនអាចអានបានទេ។ បញ្ជាក់ម៉ូឌុលដែល module.prop និយាយថា id=COPG ដំឡើង ឬដំឡើងវាឡើងវិញ បន្ទាប់មកបើកអេក្រង់នេះឡើងវិញ។</string>
+    <string name="spoof_engine_disabled">ម៉ូឌុល COPG ត្រូវបានបិទនៅក្នុងកម្មវិធីគ្រប់គ្រងឫសរបស់អ្នក។ បើកវានៅទីនោះ ចាប់ផ្ដើមឡើងវិញ បន្ទាប់មកអនុវត្តម្តងទៀត។</string>
+    <string name="spoof_engine_removal_pending">COPG ត្រូវបានសម្គាល់សម្រាប់ការយកចេញ ហើយនឹងបាត់ទៅវិញបន្ទាប់ពីការចាប់ផ្ដើមឡើងវិញលើកក្រោយ។ ដំឡើងវាឡើងវិញមុនពេលដាក់ពាក្យ។</string>
+    <string name="spoof_engine_update_pending">ការអាប់ដេត COPG កំពុងរង់ចាំការចាប់ផ្ដើមឡើងវិញ។ ចាប់ផ្ដើមឡើងវិញជាមុន បន្ទាប់មកអនុវត្តម្តងទៀត។</string>
+    <string name="spoof_ui_apply_pending">បានផ្លាស់ប្តូរចាប់តាំងពីការដាក់ពាក្យចុងក្រោយ — អនុវត្តម្តងទៀតដើម្បីធ្វើឱ្យវាក្លាយជាការពិត។</string>
+    <string name="spoof_ui_restore_title">ប្រើឧបករណ៍ពិតរបស់អ្នក។</string>
+    <string name="spoof_ui_restore_action">លុបការក្លែងបន្លំសម្រាប់កម្មវិធីនេះ</string>
+    <string name="spoof_ui_restore_notice">ឧបករណ៍ដែលបានរក្សាទុករបស់កម្មវិធីនេះ និងការកែប្រែ COPG របស់វាត្រូវបានដកចេញ ហើយម៉ាស៊ីនត្រូវបានសរសេរឡើងវិញដោយគ្មានកម្មវិធីនេះ។ កម្មវិធីផ្សេងទៀតមិនត្រូវបានប៉ះ។ ចាប់ផ្តើមកម្មវិធីគោលដៅឡើងវិញបន្ទាប់ពីនោះ។</string>
+    <string name="app_tab_spoof">បញ្ឆោត</string>
+    <string name="spoof_picker_title">ជ្រើសរើសឧបករណ៍</string>
+    <string name="spoof_picker_custom">ព័ត៌មានឧបករណ៍ផ្ទាល់ខ្លួន</string>
+    <string name="spoof_picker_custom_hint">បញ្ចូលម៉ាក ម៉ូដែល និងស្នាមម្រាមដៃដែលអ្នកចង់បានសម្រាប់កម្មវិធីនេះ</string>
+    <string name="spoof_custom_title">ព័ត៌មានឧបករណ៍ផ្ទាល់ខ្លួន</string>
+    <string name="spoof_custom_rules">ឈ្មោះ ម៉ាក ម៉ូដែល ឧបករណ៍ និងផលិតផលត្រូវបានទាមទាររហូតដល់ 120 តួអក្សរនីមួយៗ ដោយគ្មានតួអក្សរគ្រប់គ្រង។ ក្រុមហ៊ុនផលិត ស្នាមម្រាមដៃ និង SDK គឺស្រេចចិត្ត។ ស្នាមម្រាមដៃត្រូវតែចាប់ផ្តើមជាមួយម៉ាក ផលិតផល និងឧបករណ៍ដូចគ្នា។</string>
+    <string name="spoof_manufacturer">ក្រុមហ៊ុនផលិត (MANUFACTURER)</string>
+    <string name="spoof_sdk">កម្រិត SDK ស្រេចចិត្ត 1 ដល់ 100</string>
+    <string name="spoof_custom_invalid">វាលខ្លះមិនត្រឹមត្រូវទេ។ សូមពិនិត្យមើលច្បាប់ខាងលើ បន្ទាប់មករក្សាទុកម្តងទៀត។</string>
+    <string name="spoof_custom_save">រក្សាទុក និងជ្រើសរើសសម្រាប់កម្មវិធីនេះ</string>
+    <string name="spoof_impersonation_title">ការក្លែងបន្លំ</string>
+    <string name="spoof_impersonation_desc">ជម្រើស COPG ឥតគិតថ្លៃតែប៉ុណ្ណោះ។ សរសេរទៅម៉ាស៊ីនដោយការពិនិត្យឡើងវិញនិងអនុវត្ត។</string>
+    <string name="spoof_impersonation_summary_cpu">CPU ការក្លែងបន្លំ៖ %1$s</string>
+    <string name="spoof_impersonation_needs_device">ជ្រើសរើសឧបករណ៍សម្រាប់កម្មវិធីនេះជាមុនសិន។ ជម្រើសទាំងនេះត្រូវបានសរសេរតែជាមួយឧបករណ៍ប៉ុណ្ណោះ។</string>
+    <string name="spoof_cpu_spoof">CPU ការក្លែងបន្លំ</string>
+    <string name="spoof_cpu_real">ពិតCPU</string>
+    <string name="spoof_cpu_block">រារាំង CPU</string>
+    <string name="spoof_cpu_block_desc">មិនរាប់បញ្ចូលកម្មវិធីនេះពីការក្លែងបន្លំCPU។</string>
+    <string name="spoof_cpu_picker_title">ជ្រើសរើស CPU</string>
+    <string name="copg_tweaks_section">ការផ្លាស់ប្តូរ COPG</string>
+    <string name="copg_tweak_nolog_title">បិទការកត់ត្រា</string>
+    <string name="copg_tweak_nolog_desc">អនុវត្តការកែប្រែការកត់ត្រា COPG ទៅកម្មវិធីនេះ។ រក្សាទុកនៅទីនេះ សរសេរទៅម៉ាស៊ីនដោយ ពិនិត្យ និងអនុវត្តនៅក្នុងផ្ទាំង ស្ពូល។</string>
+    <string name="copg_tweak_dab_title">បិទពន្លឺដោយស្វ័យប្រវត្តិ</string>
+    <string name="copg_tweak_dab_desc">អនុវត្តការកែប្រែពន្លឺដោយស្វ័យប្រវត្តិ COPG ទៅកម្មវិធីនេះ។ រក្សាទុកនៅទីនេះ សរសេរទៅម៉ាស៊ីនដោយ ពិនិត្យ និងអនុវត្តនៅក្នុងផ្ទាំងស្ពូល។</string>
+    <string name="copg_tweak_kso_title">បើកអេក្រង់</string>
+    <string name="copg_tweak_kso_desc">អនុវត្តការបង្កើនល្បឿនរក្សាអេក្រង់ COPG ទៅកម្មវិធីនេះ។ រក្សាទុកនៅទីនេះ សរសេរទៅម៉ាស៊ីនដោយ ពិនិត្យ និងអនុវត្តនៅក្នុងផ្ទាំង ស្ពូល។</string>
+    <string name="copg_tweak_needs_device">ត្រូវការឧបករណ៍សម្រាប់កម្មវិធីនេះជាមុនសិន នៅក្នុងផ្ទាំង Spoof ។</string>
+</resources>

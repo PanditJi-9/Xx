@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_sample_device_strings.xml -->
+<resources>
+    <string name="sample_pick_title">Izvēlieties ierīces paraugu</string>
+    <string name="sample_pick_button">Izvēlieties ierīces paraugu</string>
+    <string name="sample_auto_hint">Izvēloties ierīci, jūsu vietā tiek aizpildīts zīmols, ražotājs, modelis, ierīce, produkts un pirksta nospiedums. Izmantojiet manuāli, lai tos ierakstītu pats.</string>
+    <string name="sample_manual">Rokasgrāmata</string>
+    <string name="sample_close">Aizvērt</string>
+    <string name="sample_search">Meklēt ierīces</string>
+    <string name="sample_empty">Nav atbilstošas ​​ierīces.</string>
+    <string name="sample_unavailable">Ierīču katalogu nevarēja nolasīt.</string>
+    <string name="sample_row_sub">Android %1$s · %2$s</string>
+    <string name="sample_row_sub_plain">%1$s</string>
+    <string name="sample_fp_shared">Tas pats pirkstu nospiedums kā citai kataloga ierīcei</string>
+    <string name="sample_credit">Kataloga dati: COPG (Apache-2.0), %1$s</string>
+    <string name="sample_limit">Ir sasniegts profila ierobežojums (100).</string>
+</resources>

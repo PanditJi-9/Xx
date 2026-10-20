@@ -1,0 +1,817 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  النصوص التي أُضيفت أثناء نقل الشاشات إلى لغة تصميم MaxManager — النظير العربي
+  لملف values/max_screen_strings.xml، مطابق له مفتاحًا بمفتاح.
+
+  القاعدة نفسها: لا عبارات زخرفية. كل نص إما يسمّي شيئًا، أو يذكر حالة حقيقية،
+  أو يشرح لماذا لا يمكن فعل الشيء. المصطلحات مأخوذة من الترجمات المعتمدة مسبقًا
+  في هذا المستودع (مفعل/معطل، إعادة المحاولة، ميجابايت) كي لا تختلف النبرة بين الشاشات.
+
+  ملاحظة للمُراجع البشري: هذه ترجمة تقنية أُعدّت داخل المستودع لا عبر Crowdin؛
+  مراجعتها لغويًا مطلوبة كأي تغيير نصّي (انظر ADR-14 وADR-26).
+-->
+<resources>
+
+    <!-- إجراءات مشتركة -->
+    <string name="max_action_retry">إعادة المحاولة</string>
+    <string name="max_action_recheck">إعادة فحص الجهاز</string>
+    <string name="max_action_refresh">تحديث القراءات</string>
+
+    <!-- شاشة استجابة اللمس -->
+    <string name="max_touch_probe_title">جارٍ فحص مشغّل اللمس</string>
+    <string name="max_touch_probe_detail">قراءة عُقد اللمس الخاصة بالشركة المتاحة في هذه النواة.</string>
+    <string name="max_touch_unsupported_title">أدوات اللمس غير متاحة</string>
+    <string name="max_touch_input_boost_title">تعزيز الإدخال (المعالج)</string>
+    <string name="max_touch_input_boost_desc">يرفع الحدّ الأدنى لتردّد المعالج أثناء لمس الشاشة. هذا الجهاز لا يعرض تحكّمًا في أخذ عيّنات اللمس، فلا يتغيّر معدّل الإبلاغ نفسه.</string>
+    <string name="max_touch_input_boost_info">العقدة المكتشفة على هذا الجهاز هي تعزيز اللمس في معالج MediaTek (/proc/touch_boost/enable): ترفع حدود سياسات المعالج أثناء الإدخال. أما معدّل إبلاغ اللمس فيبقى لدى خدمة اللمس الخاصة بالشركة، ولا يكتبه MaxManager.</string>
+    <string name="max_touch_input_boost_node_note">عقدة تعزيز الإدخال: %1$s. خدمة اللمس الخاصة بالشركة تملك معدّل الإبلاغ؛ وMaxManager يكتب هذه العقدة وحدها.</string>
+    <string name="max_touch_node_input_boost">عقدة تعزيز الإدخال</string>
+    <string name="max_touch_node_input_boost_note">تعزيز سياسة المعالج عند اللمس؛ لا يغيّر معدّل أخذ عيّنات اللمس.</string>
+    <string name="max_touch_section_controls">استجابة اللمس</string>
+    <string name="max_touch_section_controls_desc">أدوات الإدخال الخاصة بالشركة المكتشفة على هذا الجهاز.</string>
+    <string name="max_touch_section_providers">المزوّدون</string>
+    <string name="max_touch_section_providers_desc">من أين يقرأ MaxManager هذه الإعدادات ويكتبها.</string>
+    <string name="max_touch_section_about">كيف يعمل هذا</string>
+    <string name="max_touch_rate_title">معدلات اللمس</string>
+    <string name="max_touch_rate_desc">أربعة أسئلة مختلفة، تُفصل عمدًا: أخذ العيّنات في العتاد، والحدّ الموثّق، وتسليم أحداث Android، والوضع التجريبي لمحوّل الشركة. لكلٍّ دليله، ولا يُستنتج أحدها من الآخر.</string>
+    <string name="max_touch_rate_native_label">معدّل تحديث اللوحة</string>
+    <string name="max_touch_rate_native_source">نمط العرض (قراءة نظام)</string>
+    <string name="max_touch_rate_measured_label">أحداث اللمس المقيسة</string>
+    <string name="max_touch_rate_measured_source">مقيسة في هذه الشاشة</string>
+    <string name="max_touch_rate_sample_state_label">آخر عيّنة والتبديل</string>
+    <string name="max_touch_rate_sample_state_note">خذ عيّنة والتبديل مغلق وأخرى وهو مفعّل. الصفّ المقيس يعدّ ما سلّمه Android، فتبقى المقارنة «قبل/بعد» ظاهرة لك.</string>
+    <string name="max_touch_rate_unit_events">حدث/ث</string>
+    <string name="max_touch_rate_pad_hint">اسحب أو انقر هنا لنصف ثانية على الأقل</string>
+    <string name="max_touch_rate_not_measured">لم يُقس بعد</string>
+    <string name="max_touch_rate_too_short">أقصر من أن يُحسب معدّلًا — أطل الضغط</string>
+    <string name="max_touch_rate_single_sample">عيّنة واحدة، لا بثّ مستمر</string>
+    <string name="max_touch_rate_limits">الصفّ المقيس يعدّ ما يسلّمه Android إلى التطبيق، لا معدّل أخذ العيّنات في العتاد. وينخفض تحت الحمل، ولا يمكن أن يتجاوز ما يسلّمه النظام ومركّب العرض. هو قياس لا إعداد، ولا يكتب شيئًا.</string>
+    <string name="max_touch_rate_panel_note">قراءة عرض تُعرض للسياق فقط؛ وليست معدّل أخذ عيّنات اللمس.</string>
+    <string name="max_touch_channel_hardware_label">معدّل أخذ العيّنات في العتاد</string>
+    <string name="max_touch_channel_hardware_source">عتاد اللمس</string>
+    <string name="max_touch_channel_hardware_note">لا يوفّر Android مسار قراءة عامًّا لمعدّل أخذ العيّنات في اللوحة، ولا يوجد إدخال مُتحقَّق لهذا المحكّم. ولا يُستنتج من طراز الهاتف أو الشريحة.</string>
+    <string name="max_touch_channel_official_label">الحدّ الرسميّ الموثّق</string>
+    <string name="max_touch_channel_official_source">توثيق مُتحقَّق</string>
+    <string name="max_touch_channel_official_note">لا يوجد حدّ موثّق مسجَّل لهذا المحكّم. المجهول يبقى مجهولًا، ولا يُنسخ من جهاز آخر بالشريحة نفسها.</string>
+    <string name="max_touch_channel_experimental_label">الوضع التجريبي لمحوّل الشركة</string>
+    <string name="max_touch_channel_experimental_source">خدمة اللمس للشركة</string>
+    <string name="max_touch_channel_experimental_note">يُعلنها هذا الروم، لكن لا يوجد طريق كتابة مُتحقَّق منه إلى قيم أوضاعها — فلا يُكتب فيها شيء. هذا رفضٌ بالعقد، لا فشل كتابة.</string>
+    <string name="max_touch_channel_experimental_absent">لا توجد خدمة لمس معلنة من الشركة على هذا الجهاز.</string>
+    <string name="max_touch_channel_experimental_available">يوجد طريق كتابة مُتحقَّق في محوّل الشركة؛ والوضع يبقى مطفأً افتراضيًّا، ولا يُطبَّق إلا بالمفتاح، ويُستعاد بالطريق نفسه.</string>
+    <string name="max_touch_channel_verified_entry">إدخال مُتحقَّق لهذا المحكّم</string>
+    <string name="max_touch_controller_title">محكّم اللمس</string>
+    <string name="max_touch_controller_desc">ما يعلنه Android عن جهاز الإدخال. ولا يُستعمل طراز الهاتف أبدًا لاستنتاج المحكّم أو معدّل.</string>
+    <string name="max_touch_controller_device_note">يعلنه النظام للتشخيص — وليس مدخلًا لأي معدّل.</string>
+    <string name="max_touch_controller_input">جهاز الإدخال (كما يُعلن)</string>
+    <string name="max_touch_controller_family">عائلة المحكّم</string>
+    <string name="max_touch_controller_family_note">مطابقة من اسم جهاز الإدخال المعلن — لا من طراز الهاتف.</string>
+    <string name="max_touch_controller_ids">البائع / المنتج</string>
+    <string name="max_touch_controller_source">InputManager في Android</string>
+    <string name="max_touch_controller_unknown">غير معروفة</string>
+    <string name="max_touch_controller_unknown_note">الاسم المعلن لم يطابق عائلة محكّم معروفة، فبقي مجهولًا.</string>
+    <string name="max_touch_controller_none">لا شاشة لمس معلنة من النظام</string>
+    <string name="max_touch_controller_none_note">لم يُعِد النظام أيّ جهاز إدخال بمصدر شاشة لمس.</string>
+    <string name="max_touch_node_game">عقدة وضع الألعاب</string>
+    <string name="max_touch_node_sample">عقدة معدّل الإبلاغ</string>
+    <string name="max_touch_node_dt2w">عقدة النقر المزدوج</string>
+    <string name="max_touch_node_missing">غير متاحة في هذه النواة</string>
+    <string name="max_touch_provider_hal">طبقة HAL من Xiaomi</string>
+    <string name="max_touch_provider_hal_detail">لم تُوجد عقدة sysfs قابلة للكتابة، لذا تُرسل التغييرات عبر طبقة HAL.</string>
+    <string name="max_touch_provider_hal_declared_detail">يُعلنها هذا الروم، لكن لا يوجد بعد طريق كتابة مُتحقَّق منه إلى قيم أوضاعها — فلا يُكتب فيها شيء.</string>
+    <string name="max_touch_provider_hal_read_only">خدمة اللمس معلَنة (قراءة فقط)</string>
+    <string name="max_touch_boost_locked">لا يوفّر هذا الجهاز عقدة لمس قابلة للكتابة، ولا طريق كتابة مُتحقَّقًا في محوّل المصنّع.</string>
+    <string name="max_touch_dt2w_locked">لا توفّر هذه النواة عقدة للنقر المزدوج.</string>
+    <string name="max_touch_source_sysfs">فحص sysfs</string>
+    <string name="max_touch_source_hal">طبقة HAL</string>
+    <string name="max_touch_state_on">مفعل</string>
+    <string name="max_touch_state_off">معطل</string>
+    <string name="max_touch_revert_notice">عودة المفتاح إلى موضعه تعني أن النواة رفضت الكتابة.</string>
+
+    <!-- شاشة الخمول / Doze -->
+    <string name="max_doze_probe_title">جارٍ قراءة متحكّم الخمول</string>
+    <string name="max_doze_probe_detail">استعلام متحكّم الخمول في أندرويد عن حالته الحالية.</string>
+    <string name="max_doze_unsupported_title">أدوات الخمول غير متاحة</string>
+    <string name="max_doze_source_deviceidle">deviceidle</string>
+    <string name="max_doze_section_state">حالة الخمول</string>
+    <string name="max_doze_section_state_desc">مصدرها أندرويد لا MaxManager. حدّث لإعادة القراءة.</string>
+    <string name="max_doze_metric_state">حالة المتحكّم</string>
+    <string name="max_doze_metric_idle_cycles">دورات الخمول العميق</string>
+    <string name="max_doze_metric_light_idle">دورات الخمول الخفيف</string>
+    <string name="max_doze_metric_gms">سياسة خدمات Play</string>
+    <string name="max_doze_section_policy">سياسة MaxManager</string>
+    <string name="max_doze_section_policy_desc">هذه المفاتيح تغيّر سياسة MaxManager، أما الحالة أعلاه فتبقى ملكيتها لأندرويد.</string>
+    <string name="max_doze_aggressive_locked">شغّل سياسة الخمول أولًا.</string>
+    <string name="max_doze_policy_on">نشط</string>
+    <string name="max_doze_policy_off">غير نشط</string>
+    <string name="max_doze_section_actions">أوامر خمول يدوية</string>
+    <string name="max_doze_section_actions_desc">أوامر تشخيص تُرسل مباشرة إلى متحكّم الخمول، والحالة أعلاه تُظهر النتيجة.</string>
+    <string name="max_doze_action_force_idle_desc">دفع الجهاز إلى الخمول العميق فورًا.</string>
+    <string name="max_doze_action_step_desc">تقديم آلة حالة الخمول خطوة واحدة.</string>
+    <string name="max_doze_action_unforce_desc">إعادة التحكم في الخمول إلى أندرويد.</string>
+    <string name="max_doze_action_reset_desc">تصفير العدّادات المعروضة أعلاه.</string>
+    <string name="max_doze_whitelist_desc">التطبيقات المدرجة هنا مستثناة من تحسين البطارية.</string>
+    <string name="max_doze_apps_loading_title">جارٍ تحميل التطبيقات المثبّتة</string>
+    <string name="max_doze_apps_loading_detail">قراءة قائمة الحزم والاستثناءات الحالية.</string>
+    <string name="max_doze_apps_empty_title">لا تطبيقات مطابقة لهذا المرشّح</string>
+    <string name="max_doze_app_exempt_on">مستثنى من التحسين</string>
+    <string name="max_doze_app_exempt_off">محسَّن بواسطة أندرويد</string>
+
+    <!-- شاشة الدقة / مقاس الشاشة -->
+    <string name="max_res_probe_title">جارٍ قراءة إعداد الشاشة</string>
+    <string name="max_res_probe_detail">سؤال مدير النوافذ عن مقاس اللوحة وكثافتها ومعدل تحديثها.</string>
+    <string name="max_res_unreadable_title">تعذّرت قراءة مقاس الشاشة</string>
+    <string name="max_res_unreadable_detail">لم يُبلّغ مدير النوافذ عن مقاس فيزيائي. يحتاج MaxManager إلى صلاحية root لقراءة إعداد الشاشة وتغييره.</string>
+    <string name="max_res_section_current">المخرج النشط</string>
+    <string name="max_res_section_current_desc">قُرئ مرة واحدة من مدير النوافذ. حدّث لإعادة القراءة بعد أي تغيير.</string>
+    <string name="max_res_metric_active">الدقة النشطة</string>
+    <string name="max_res_metric_native">الدقة الأصلية للوحة</string>
+    <string name="max_res_metric_scale">مقياس العرض</string>
+    <string name="max_res_metric_dpi">الكثافة</string>
+    <string name="max_res_metric_refresh">معدل التحديث</string>
+    <string name="max_res_source_wm">wm size · wm density</string>
+    <string name="max_res_source_derived">مشتق</string>
+    <string name="max_res_scale_note">العرض النشط مقسومًا على العرض الأصلي.</string>
+    <string name="max_res_dpi_native_note">افتراضي اللوحة: %1$d نقطة/بوصة</string>
+    <string name="max_res_refresh_missing">لم تُبلّغ به خدمة الشاشة.</string>
+    <string name="max_res_presets_desc">كل إعداد مسبق نسبة من دقة هذه اللوحة وكثافتها الأصليتين.</string>
+    <string name="max_res_section_manual_desc">تُرسل التغييرات عند إفلات شريط التمرير.</string>
+    <string name="max_res_height_derived">الارتفاع (من قفل النسبة)</string>
+    <string name="max_res_height_locked_note">يتبع الارتفاع نسبة اللوحة ما دام القفل مفعّلًا.</string>
+    <string name="max_res_section_reset">رجوع</string>
+
+    <!-- شاشة طبقة معدل الإطارات -->
+    <string name="max_fps_permission_title">مطلوب صلاحية الطبقات</string>
+    <string name="max_fps_permission_detail">يحتاج أندرويد إلى صلاحية «العرض فوق التطبيقات الأخرى» قبل أن يرسم MaxManager الطبقة.</string>
+    <string name="max_fps_permission_action">فتح إعدادات الصلاحية</string>
+    <string name="max_fps_section_source">مصدر بيانات الإطار</string>
+    <string name="max_fps_source_fallback_note">إذا لم يُرجع المصدر المختار شيئًا، ينتقل MaxManager تلقائيًا إلى مصدر آخر.</string>
+    <string name="max_fps_color_selected">محدد</string>
+    <string name="max_fps_color_not_selected">غير محدد</string>
+    <string name="max_fps_color_green">أخضر</string>
+    <string name="max_fps_color_black">أسود</string>
+    <string name="max_fps_color_cyan">سماوي</string>
+    <string name="max_fps_color_yellow">أصفر</string>
+    <string name="max_fps_color_orange">برتقالي</string>
+    <string name="max_fps_color_red">أحمر</string>
+    <string name="max_fps_color_white">أبيض</string>
+
+    <!-- مشتركة -->
+    <string name="max_action_dismiss">تجاهل</string>
+    <string name="max_action_turn_off">إيقاف</string>
+
+    <!-- مدير ZRAM -->
+    <string name="max_zram_probe_title">جارٍ قراءة حالة ZRAM</string>
+    <string name="max_zram_probe_detail">يقرأ MaxManager الملف /sys/block/zram0 وجدول swap في النواة.</string>
+    <string name="max_zram_unsupported_detail">لا توفّر هذه النواة الملف /sys/block/zram0/disksize، لذا لا يمكن قراءة الـswap المضغوط أو تغييره على هذا الجهاز.</string>
+    <string name="max_zram_source_sysfs">/sys/block/zram0</string>
+    <string name="max_zram_source_swaps">/proc/swaps</string>
+    <string name="max_zram_source_vm">/proc/sys/vm</string>
+    <string name="max_zram_metric_size">حجم الـswap</string>
+    <string name="max_zram_metric_used">المستخدم من الـswap</string>
+    <string name="max_zram_metric_ratio">نسبة الضغط</string>
+    <string name="max_zram_metric_saved">ذاكرة موفَّرة</string>
+    <string name="max_zram_metric_algo">المُرمِّز</string>
+    <string name="max_zram_metric_swappiness">ميل التبديل</string>
+    <string name="max_zram_metric_priority">أولوية الـswap</string>
+    <string name="max_zram_metric_streams">مسارات الضغط</string>
+    <string name="max_zram_unit_mb">ميجابايت</string>
+    <string name="max_zram_ratio_value">%1$s إلى 1</string>
+    <string name="max_zram_swap_off">متوقف</string>
+    <string name="max_zram_section_state_desc">تُقرأ من النواة وتُحدَّث كل ٣ ثوانٍ ما دامت هذه الشاشة مفتوحة.</string>
+    <string name="max_zram_section_size_desc">تغيير الحجم يوقف الـswap ثم يعيد تهيئته ثم يشغّله من جديد، وخلال ذلك تعود الصفحات المضغوطة إلى الذاكرة.</string>
+    <string name="max_zram_section_codec_desc">يُكتب المُرمِّز مع تغيير الحجم، لذا يُعاد تشغيل الجهاز عند تغييره.</string>
+    <string name="max_zram_section_pressure_desc">يتحكم «ميل التبديل» في مدى تسارع النواة إلى نقل الصفحات نحو الـswap المضغوط.</string>
+    <string name="max_zram_section_maintenance_desc">هذه الإجراءات تُنفّذ فورًا ولا يمكن التراجع عنها.</string>
+    <string name="max_zram_custom_value">%1$s ميجابايت</string>
+    <string name="max_zram_applying_size">جارٍ تغيير حجم الـswap المضغوط</string>
+    <string name="max_zram_applying_swappiness">جارٍ كتابة ميل التبديل</string>
+    <string name="max_zram_applying_algorithm">جارٍ تبديل المُرمِّز</string>
+    <string name="max_zram_applying_compact">جارٍ ضغط الذاكرة</string>
+    <string name="max_zram_applying_reset">جارٍ استعادة الحجم الافتراضي</string>
+    <string name="max_zram_applying_detail">انتظار تأكيد النواة للقيمة.</string>
+    <string name="max_zram_applied_title">تم التطبيق</string>
+    <string name="max_zram_applied_size">حجم الـswap الآن %1$s ميجابايت.</string>
+    <string name="max_zram_applied_swappiness">ميل التبديل الآن %1$s.</string>
+    <string name="max_zram_applied_algorithm">المُرمِّز الآن %1$s.</string>
+    <string name="max_zram_applied_compact">قبلت النواة طلب ضغط الذاكرة.</string>
+    <string name="max_zram_applied_reset">أُعيد الحجم الافتراضي 8192 ميجابايت.</string>
+    <string name="max_zram_failed_title">رفضت النواة التغيير</string>
+    <string name="max_zram_failed_size">طُلب %1$s ميجابايت، والجهاز يُبلّغ عن %2$s ميجابايت.</string>
+    <string name="max_zram_failed_swappiness">طُلب %1$s، والملف /proc/sys/vm/swappiness يُبلّغ عن %2$s.</string>
+    <string name="max_zram_failed_algorithm">طُلب %1$s، والمشغّل يُبلّغ عن %2$s.</string>
+    <string name="max_zram_failed_compact">تعذّرت كتابة مُشغّل ضغط الذاكرة.</string>
+    <string name="max_zram_failed_unreadable">طُلب %1$s، وتعذّرت إعادة قراءة القيمة.</string>
+    <string name="max_zram_failed_detail">كتابة عُقد النواة تحتاج صلاحية root ممنوحة لـMaxManager. وبعض نويات الشركات تقفل هذه العُقد تمامًا.</string>
+    <string name="max_zram_locked_root">يحتاج صلاحية root لكتابة عُقد النواة.</string>
+    <string name="max_zram_compaction_unsupported">الملف /proc/sys/vm/compact_memory غير موجود في هذه النواة.</string>
+    <string name="max_zram_compact_confirm_title">ضغط الذاكرة الآن؟</string>
+    <string name="max_zram_compact_confirm_body">تمرّ النواة على الصفحات المضغوطة لتحرير الشُّذَر، ويرتفع استخدام المعالج قليلًا.</string>
+    <string name="max_zram_reset_confirm_title">استعادة الحجم الافتراضي؟</string>
+    <string name="max_zram_reset_confirm_body">يُعاد إنشاء ZRAM بحجم 8192 ميجابايت وبالمُرمِّز الحالي، ويكون الـswap متوقفًا خلال التبديل.</string>
+
+    <!-- مُصرِّف التطبيقات (dex2oat) -->
+    <string name="max_dex_loading_title">جارٍ قراءة الحزم المثبّتة</string>
+    <string name="max_dex_loading_detail">يسرد MaxManager التطبيقات المثبّتة من مدير الحزم.</string>
+    <string name="max_dex_empty_title">لا تطبيقات مطابقة</string>
+    <string name="max_dex_empty_detail">امسح البحث أو بدّل النطاق لرؤية تطبيقات أكثر.</string>
+    <string name="max_memory_ledger_title">دفتر ذاكرة التطبيق</string>
+    <string name="max_memory_ledger_desc">تُؤخذ قراءة في كل مرّة تفتح فيها هذه الشاشة وتُقارَن بالتي قبلها. القياس عبر واجهة النظام بلا أي امتياز، والرقم الآتي من dumpsys يُوسَم منفصلًا ولا يُقارَن به.</string>
+    <string name="max_memory_ledger_view_desc">للقراءة فقط: تقيس هذه الشاشة ولا تحفظ شيئًا جديدًا؛ والمقارنة مع آخر قراءة سُجّلت.</string>
+    <string name="max_memory_current">PSS الحالي</string>
+    <string name="max_memory_method">طريقة القياس</string>
+    <string name="max_memory_method_own">واجهة النظام، بلا امتياز</string>
+    <string name="max_memory_method_dumpsys">dumpsys meminfo (يحتاج امتيازًا؛ وتحليله غير مضمون بين الإصدارات)</string>
+    <string name="max_memory_snapshots">القراءات المحفوظة</string>
+    <string name="max_memory_reading">جارٍ القراءة…</string>
+    <string name="max_memory_trend">مقابل القراءة السابقة</string>
+    <string name="max_memory_trend_insufficient">لا مقارنة — لا قراءة سابقة من النوع نفسه، فلا نَدّعي شيئًا</string>
+    <string name="max_memory_trend_stable">لا تغيّر يُذكر عن %1$s كيلوبايت</string>
+    <string name="max_memory_trend_grew">زادت %1$s%% أي +%2$s كيلوبايت</string>
+    <string name="max_memory_trend_shrank">نقصت %1$s%% أي −%2$s كيلوبايت</string>
+    <string name="max_memory_kb_format">%1$s كيلوبايت</string>
+    <string name="max_profile_share_title">شارك هذه البروفايلات</string>
+    <string name="max_profile_share_desc">كل قيمة تحمل مصدرها المعلَن: افتراضي مشحون، أو قيمة غيّرتها أنت، أو قياس يصرّح به من صدّرها. ونحن لا نوسم أرقامنا أنفسها بأنها مقيسة أبدًا.</string>
+    <string name="max_profile_share_copy">نسخ</string>
+    <string name="max_profile_share_paste">استيراد من الحافظة</string>
+    <string name="max_profile_share_copied">نُسخ إلى الحافظة.</string>
+    <string name="max_profile_import_unreadable">لا شيء صالح للاستخدام — الحافظة لا تحمل بروفايلًا مقروءًا من هذا الإصدار.</string>
+    <string name="max_profile_import_accepted">القيم المقبولة: %1$s</string>
+    <string name="max_profile_import_rejected">المرفوضة: %1$s (%2$s)</string>
+    <string name="max_profile_import_missing_source">%1$s قيمة بلا مصدر معلن — تُعرض كمجهولة، لا كافتراضي.</string>
+    <string name="max_profile_import_measured_claim">بعض القيم موسومة «مقيسة» من المُصدِّر — وهذا ادّعاؤه، لا قياس على هذا الجهاز.</string>
+    <string name="max_profile_import_device_same">صُدِّرت من جهاز بالمعرّف نفسه.</string>
+    <string name="max_profile_import_device_different">صُدِّرت من شريحة مختلفة — وقيمة قيست هناك ليست قياسًا هنا.</string>
+    <string name="max_profile_import_device_unknown">جهاز التصدير مجهول، فلا يمكن الحكم على قابلية النقل.</string>
+    <string name="max_profile_import_apply">طبّق القيم المقبولة</string>
+    <string name="max_profile_reject_range">قيمة خارج النطاق المعتمد</string>
+    <string name="max_profile_reject_number">القيمة ليست رقمًا</string>
+    <string name="max_profile_reject_name">اسم بروفايل مفقود</string>
+    <string name="max_charge_ledger_title">سجل دورات الشحن</string>
+    <string name="max_charge_ledger_desc">قياس طولي لا لحظي: تكلفة كل نقطة نسبة بالعدّاد، تُسجَّل في نافذة متحركة عند زيارتك هذه الشاشة. بلا خدمة خلفية، وبلا مشاركة أي قراءة مع أي جهة.</string>
+    <string name="max_charge_sessions">الجلسات المسجَّلة</string>
+    <string name="max_charge_last_range">مدى آخر جلسة</string>
+    <string name="max_charge_range_format">%1$s%% → %2$s%%</string>
+    <string name="max_charge_last_energy">الطاقة المضافة (العدّاد)</string>
+    <string name="max_charge_last_per_point">تكلفة النقطة الواحدة</string>
+    <string name="max_charge_verdict">الاتجاه</string>
+    <string name="max_charge_verdict_no_counter">عدّاد الشحن غير متاح على هذا الجهاز — لا أساس للقياس</string>
+    <string name="max_charge_verdict_insufficient">لا جلسات كافية بعد (%1$s من %2$s) — لا حكم</string>
+    <string name="max_charge_verdict_stable">مستقرّ حول %1$s mAh لكل نقطة</string>
+    <string name="max_charge_verdict_drifting">أعلى من المعتاد: %1$s mAh لكل نقطة سابقًا، و%2$s mAh لكل نقطة في آخر جلسة</string>
+    <string name="max_module_id">معرّف الوحدة</string>
+    <string name="max_module_version_label">إصدار الوحدة</string>
+    <string name="max_version_identity_title">هوية الإصدار</string>
+    <string name="max_version_identity_desc">إصدار التطبيق والوحدة يُقرآن من مصدر واحد، فيظهر الاختلاف بدل أن يُخمَّن.</string>
+    <string name="max_version_identity_app">التطبيق</string>
+    <string name="max_version_identity_module">الوحدة (المركَّبة)</string>
+    <string name="max_version_identity_agreement">التطابق</string>
+    <string name="max_version_identity_match">رقم الإصدار نفسه</string>
+    <string name="max_version_identity_mismatch">رقما الإصدار مختلفان — التطبيق والوحدة المركَّبة ليسا من الإصدار نفسه.</string>
+    <string name="max_dex_filter_desc">مرشّح مُصرِّف ART المستخدم في كل إجراءات هذه الشاشة. المخرجات المصروفة تُهدَر عند تحديث التطبيق نفسه، فالمكسب يبقى حتى التحديث القادم لذلك التطبيق فقط.</string>
+    <string name="max_dex_filter_speed_profile_desc">يصرّف الدوال المسجّلة في ملف التطبيق. وهو الخيار المتوازن الافتراضي.</string>
+    <string name="max_dex_filter_speed_desc">يصرّف كل الدوال مسبقًا: بدء أسرع، وملفات أكبر، وتصريف أطول.</string>
+    <string name="max_dex_filter_everything_desc">يصرّف كل دالة حتى النادرة الاستخدام. وهو الأطول زمنًا.</string>
+    <string name="max_dex_filter_quicker_desc">تصريف سطحي: سريع التنفيذ، وأبطأ في وقت التشغيل.</string>
+    <string name="max_dex_filter_verify_desc">تحقّق فقط بلا شيفرة أصلية: أصغر الملفات، وأبطأ تشغيل.</string>
+    <string name="max_dex_scope_desc">الإجراءات الجماعية تُطبّق المرشّح المختار أعلاه.</string>
+    <string name="max_dex_apps_count">%1$s من %2$s تطبيق</string>
+    <string name="max_dex_search_hint">ابحث بالاسم أو باسم الحزمة</string>
+    <string name="max_dex_search_clear">مسح البحث</string>
+    <string name="max_dex_tag_system">النظام</string>
+    <string name="max_dex_bulk_warning">التصريف الجماعي يُشغل المعالج ويُسخّن الجهاز، فاتركه على الشاحن.</string>
+    <string name="max_dex_applying_single">جارٍ تصريف %1$s</string>
+    <string name="max_dex_applying_reset_single">جارٍ إرجاع %1$s</string>
+    <string name="max_dex_applying_batch_detail">%1$s من %2$s تطبيق</string>
+    <string name="max_dex_applying_all">جارٍ تصريف كل الحزم</string>
+    <string name="max_dex_applying_reset_all">جارٍ إرجاع كل الحزم</string>
+    <string name="max_dex_applying_detail">يعمل ART في الخلفية. اترك الجهاز على الشاحن.</string>
+    <string name="max_dex_applied_title">تم</string>
+    <string name="max_dex_applied_single">صُرّف %1$s بمرشّح %2$s.</string>
+    <string name="max_dex_applied_reset_single">أُعيد %1$s إلى تصريفه وقت التثبيت.</string>
+    <string name="max_dex_applied_bulk">صُرّفت كل الحزم بمرشّح %1$s.</string>
+    <string name="max_dex_applied_reset_bulk">أُعيدت كل الحزم إلى تصريف وقت التثبيت.</string>
+    <string name="max_dex_applied_batch">صُرّف %1$s تطبيق بمرشّح %2$s.</string>
+    <string name="max_dex_failed_title">رفض ART الطلب</string>
+    <string name="max_dex_failed_single">لم يُصرّف %1$s.</string>
+    <string name="max_dex_failed_reset_single">لم يُعَد %1$s.</string>
+    <string name="max_dex_failed_bulk">أعاد مدير الحزم خطأً في أمر كل الحزم.</string>
+    <string name="max_dex_failed_batch">فشل %1$s من %2$s تطبيق.</string>
+    <string name="max_dex_failed_detail">التصريف ينفّذ cmd package compile بصلاحية root، وبعض الرومات تمنعه أيضًا للحزم المحمية.</string>
+
+    <string name="max_dex_scope_title">إجراءات جماعية</string>
+    <string name="max_dex_list_title">التطبيقات المثبّتة</string>
+    <string name="max_dex_no_match_title">لا تطبيقات مطابقة</string>
+    <string name="max_dex_no_match_detail">امسح البحث أو بدّل التبويب لرؤية بقية القائمة.</string>
+
+    <!-- لغة التطبيق (الإعدادات) -->
+    <string name="max_language_title">اللغة</string>
+    <string name="max_language_count">%1$d لغة</string>
+    <string name="max_language_desc">لغة عرض التطبيق، وتُطَبَّق فورًا.</string>
+    <string name="max_language_auto">تلقائي (النظام)</string>
+    <string name="max_language_search_hint">ابحث عن لغة</string>
+    <string name="max_language_empty">لا توجد لغات</string>
+    <string name="max_language_clear_search">مسح البحث</string>
+    <string name="max_language_device_section">لغات جهازك</string>
+    <string name="max_language_all_section">كل اللغات</string>
+    <string name="max_language_partial_note">بعض اللغات ما زالت مترجمة جزئيًا، والنص الناقص يظهر بالإنجليزية.</string>
+
+    <!-- الوصول والامتيازات (AR-20) -->
+    <string name="max_privilege_title">الوصول والامتيازات</string>
+    <string name="max_privilege_desc">أي الأدوات تستطيع استخدامها يعتمد على طبقة الامتياز التي تمنحها لـMaxManager. ولا يُفترض امتياز من تلقاء نفسه.</string>
+    <string name="max_privilege_current">الطبقة الحالية</string>
+    <string name="max_privilege_layers_title">طبقات وصولك</string>
+    <string name="max_privilege_auto_scan">يُفحص تلقائيًا عند فتح الشاشة، ولا يُطلب شيء بلا ضغطك.</string>
+    <string name="max_privilege_scanning">يفحص…</string>
+    <string name="max_privilege_rescan">أعِد الفحص</string>
+    <string name="max_privilege_level_none">بلا امتياز</string>
+    <string name="max_privilege_level_shizuku">Shizuku (مستوى ADB)</string>
+    <string name="max_privilege_level_root">جذر</string>
+    <string name="max_privilege_shizuku_row">Shizuku</string>
+    <string name="max_privilege_shizuku_desc">امتياز بمستوى ADB بلا جذر، وتعمل معه عدة أدوات.</string>
+    <string name="max_privilege_shizuku_unavailable">Shizuku لا يعمل. ثبّته وشغّله ثم اتصل.</string>
+    <string name="max_privilege_shizuku_granted">متصل بـShizuku</string>
+    <string name="max_privilege_shizuku_denied">Shizuku يعمل لكن الإذن لم يُمنح. اضغط «اتصال» لتطلب مجددًا.</string>
+    <string name="max_privilege_shizuku_connect">اتصل بـShizuku</string>
+    <string name="max_privilege_root_row">الجذر</string>
+    <string name="max_privilege_root_desc">وصول كامل، بما في ذلك كتابة العتاد والتحكم بالوحدة.</string>
+    <string name="max_privilege_root_granted">الجذر ممنوح</string>
+    <string name="max_privilege_root_denied">الجذر غير ممنوح</string>
+    <string name="max_privilege_check_root">افحص الجذر</string>
+    <string name="max_privilege_features_title">ما يعمل عند كل طبقة</string>
+    <string name="max_privilege_honesty_note">لا تُدرَج أداة إلا عند الطبقة التي تحتاجها فعلًا — بلا تقريب لأعلى.</string>
+    <string name="max_privilege_tier_none">تعمل بلا جذر</string>
+    <string name="max_privilege_tier_shizuku">تحتاج Shizuku</string>
+    <string name="max_privilege_tier_root">تحتاج جذرًا</string>
+    <string name="max_privilege_feat_device_info">معلومات الجهاز والنواة</string>
+    <string name="max_privilege_feat_battery_read">مستوى البطارية وحالتها</string>
+    <string name="max_privilege_feat_theme">المظهر واللغة</string>
+    <string name="max_privilege_feat_logs">عارض السجلات والأحداث</string>
+    <string name="max_privilege_feat_density">كثافة العرض وحجمه</string>
+    <string name="max_privilege_feat_dns">DNS الخاص</string>
+    <string name="max_privilege_feat_freeze">تجميد التطبيقات وتعطيلها</string>
+    <string name="max_privilege_feat_appops">صلاحيات التطبيقات (AppOps)</string>
+    <string name="max_privilege_feat_doze">قائمة Doze المسموح لها</string>
+    <string name="max_privilege_feat_netpolicy">سياسة الشبكة لكل تطبيق</string>
+    <string name="max_privilege_feat_framestats">قياس إطارات كل تطبيق</string>
+    <string name="max_privilege_feat_cpu">تردد وحاكم المعالج/الرسوميات</string>
+    <string name="max_privilege_feat_thermal">مناطق الحرارة والتبريد</string>
+    <string name="max_privilege_feat_zram">التحكم بـZRAM</string>
+    <string name="max_privilege_feat_module">صحة الوحدة والإنقاذ</string>
+    <string name="max_privilege_feat_dex2oat">تصريف التطبيقات (dex2oat)</string>
+
+    <!-- تاريخ الإقلاع (AR-02) -->
+    <string name="max_boot_title">آخر إقلاع</string>
+    <string name="max_boot_desc">لماذا أقلع الجهاز، وهل ترك النواة أثر انهيار. قراءة فقط.</string>
+    <string name="max_boot_reading">جارٍ القراءة…</string>
+    <string name="max_boot_loader">سبب المحمّل</string>
+    <string name="max_boot_system">سبب النظام</string>
+    <string name="max_boot_pstore">أثر انهيار النواة</string>
+    <string name="max_boot_unsupported">هذا الروم لا يُعلن سبب الإقلاع.</string>
+    <string name="max_boot_unreadable">تعذّرت قراءة مخزن الانهيار عند هذه الطبقة — الحالة مجهولة، وليست «لا شيء».</string>
+    <string name="max_boot_crash_found">%1$d أثر في pstore — الإقلاع السابق انتهى بانهيار نواة.</string>
+    <string name="max_boot_no_crash">لا أثر انهيار للنواة.</string>
+    <string name="max_boot_thermal_warning">سُجّل آخر إغلاق بسبب حرارة. راجع التبريد وإعدادات الحرارة.</string>
+
+    <!-- صحة الوحدة والإنقاذ (AR-05 + AR-18) -->
+    <string name="max_module_title">صحة الوحدة والإنقاذ</string>
+    <string name="max_module_health_title">حالة الوحدة</string>
+    <string name="max_module_health_desc">ما تُبلّغ به الوحدة عن نفسها. قراءة فقط.</string>
+    <string name="max_module_reading">جارٍ القراءة…</string>
+    <string name="max_module_not_detected">لم يُعثر على مجلد الوحدة — قراءته تحتاج جذرًا.</string>
+    <string name="max_module_boot_count">محاولات الإقلاع المعدودة</string>
+    <string name="max_module_disabled">الوحدة معطّلة بالإنقاذ</string>
+    <string name="max_module_rescue_triggered">حدث الإنقاذ</string>
+    <string name="max_module_update_pending">تحديث ينتظر إعادة الإقلاع</string>
+    <string name="max_module_version_code">إصدار الوحدة (versionCode)</string>
+    <string name="max_module_recovery_title">سجل التعافي</string>
+    <string name="max_module_recovery_desc">تُكتبه الوحدة عندما تُضطر لإعادة تمكين حزمة التطبيق. ولم يكن له قارئ حتى الآن.</string>
+    <string name="max_module_recovery_none">لا حدث تعافٍ مسجّلًا.</string>
+    <string name="max_module_recovery_count">أحداث التعافي</string>
+    <string name="max_module_rescue_title">إن لم يُقلع الجهاز</string>
+    <string name="max_module_rescue_desc">المسارات والخطوات التي تنطبق على هذه الوحدة فعلًا. بلا شبكة.</string>
+    <string name="max_module_rescue_step1">أنشئ ملفًا فارغًا باسم disable داخل /data/adb/modules/MaxManager/ — فتبقى الوحدة مطفيّة في الإقلاع التالي.</string>
+    <string name="max_module_rescue_step2">من مدير الجذر: KernelSU/APatch ← الوضع الآمن، أو نفّذ ksud module disable MaxManager؛ وMagisk ← أقلع بـmagisk --remove-modules.</string>
+    <string name="max_module_rescue_step3">من الـRecovery: استعد صورة الإقلاع الأصلية أو نسختك الاحتياطية أولًا — قبل أي شيء آخر.</string>
+    <string name="max_module_rescue_step4">لا تحذف المجلد: يكفي ملف disable لإبقائه مطفيًا حتى تُصلح ما تريد.</string>
+    <string name="max_module_rescue_offline">هذه الصفحة مدمجة في التطبيق ولا تحتاج اتصالًا.</string>
+    <string name="max_yes">نعم</string>
+    <string name="max_no">لا</string>
+
+    <!-- صحة البطارية والتخزين (AR-08 + AR-11) -->
+    <string name="max_battery_health_title">صحة البطارية</string>
+    <string name="max_battery_health_desc">السعة الحقيقية مقابل التصميمية، وعدد الدورات إن أعلنه النظام. قراءة فقط.</string>
+    <string name="max_battery_unsupported">هذا الجهاز لا يُعلن ملفات صحة البطارية.</string>
+    <string name="max_battery_estimated">بعض القيم مشتقّة من الأرقام المُعلَنة، وهي موسومة كتقدير.</string>
+    <string name="max_battery_design">سعة التصميم</string>
+    <string name="max_battery_full">السعة القصوى الحالية</string>
+    <string name="max_battery_soh">السعة مقابل التصميم</string>
+    <string name="max_battery_cycles">دورات الشحن</string>
+    <string name="max_storage_health_title">تآكل التخزين</string>
+    <string name="max_storage_health_desc">مستوى التآكل الذي تُعلنه الوسيطة. ولا يُكتب أو يُنظّف شيء من هنا.</string>
+    <string name="max_storage_device">الجهاز</string>
+    <string name="max_storage_wear">التآكل المقدَّر</string>
+    <string name="max_storage_eol">مؤشر نهاية العمر</string>
+    <string name="max_storage_eol_normal">عادي</string>
+    <string name="max_storage_eol_warning">تحذير</string>
+    <string name="max_storage_eol_urgent">عاجل</string>
+    <string name="max_storage_unsupported">هذه الوسيطة لا تُعلن مستوى التآكل.</string>
+    <string name="max_mah_format">%1$s م.أ.س</string>
+    <string name="max_percent_format">%1$d%%</string>
+
+    <!-- الانهيارات وANR (AR-06) -->
+    <string name="max_crash_title">الانهيارات وANR</string>
+    <string name="max_crash_desc">ما سجّله النظام. ملخّص فقط — ولا يُحلَّل الأثر الكامل.</string>
+    <string name="max_crash_anr">ملفات ANR</string>
+    <string name="max_crash_tombstones">ملفات tombstone</string>
+    <string name="max_crash_latest">الأحدث</string>
+    <string name="max_crash_none">لا سجلات انهيار.</string>
+    <string name="max_crash_unsupported">مجلدا الانهيار غير مقروءين عند هذه الطبقة — الحالة مجهولة، وليست صفرًا.</string>
+
+    <!-- ضغط الذاكرة ZRAM (AR-10) -->
+    <string name="max_zram_title">ضغط الذاكرة (ZRAM)</string>
+    <string name="max_zram_desc">كيف يضغط النظام الذاكرة الآن. قراءة فقط — ولا يُغيَّر شيء من هنا.</string>
+    <string name="max_zram_managed">تديره المنصّة</string>
+    <string name="max_zram_algorithm">خوارزمية الضغط</string>
+    <string name="max_zram_size">الحجم المطلوب</string>
+    <string name="max_zram_writeback">كتابة إلى الوميض (writeback)</string>
+    <string name="max_zram_recompress">دعم إعادة الضغط</string>
+    <string name="max_zram_idle">تتبّع الخمول</string>
+    <string name="max_zram_disk">حجم منطقة الضغط</string>
+    <string name="max_zram_unsupported">ZRAM غير موجود، أو غير مقروء عند هذه الطبقة.</string>
+    <string name="max_mb_format">%1$s م.ب</string>
+
+    <!-- حوكمة الخلفية (AR-14) -->
+    <string name="max_bg_title">الخلفية والبطارية</string>
+    <string name="max_bg_desc">آلية المنصّة المطبَّقة فعلًا على هذا التطبيق. قراءة فقط — ولا يُغيَّر شيء من هنا.</string>
+    <string name="max_bg_bucket">حاوية الخمول</string>
+    <string name="max_bg_doze">معفى من Doze</string>
+    <string name="max_bg_restricted">مقيَّد</string>
+    <string name="max_bg_unsupported">غير مقروء عند هذه الطبقة — الحالة مجهولة، وليست «طبيعية».</string>
+    <string name="max_bucket_exempted">معفى</string>
+    <string name="max_bucket_active">نشط</string>
+    <string name="max_bucket_working_set">مجموعة عمل</string>
+    <string name="max_bucket_frequent">متكرّر</string>
+    <string name="max_bucket_rare">نادر</string>
+    <string name="max_bucket_restricted">مقيَّد</string>
+    <string name="max_bucket_never">أبدًا</string>
+    <string name="max_bucket_unknown">مجهول</string>
+
+    <!-- مصدر التطبيق (AR-34) -->
+    <string name="max_app_source_title">مصدر التطبيق</string>
+    <string name="max_app_source_desc">من أين جاء هذا التطبيق، كما يُعلنه النظام. قراءة فقط.</string>
+    <string name="max_app_source_kind">المصدر</string>
+    <string name="max_app_source_installer">حزمة المُثبِّت</string>
+    <string name="max_app_source_originating">حزمة المنشأ</string>
+    <string name="max_source_system">تطبيق نظام</string>
+    <string name="max_source_play">متجر Play</string>
+    <string name="max_source_other_store">متجر آخر</string>
+    <string name="max_source_by_app">ثبّته تطبيق آخر</string>
+    <string name="max_source_unknown">مجهول</string>
+
+    <!-- Max Atlas على شاشة التشخيص (P7) — نفس المفردات ونفس الحدود المنطقية في النسخة العربية. -->
+    <string name="max_atlas_section_title">Max Atlas · واجهات الجهاز</string>
+    <string name="max_atlas_section_desc">يقرأ الواجهات التي يكشفها هذا الجهاز: المعرفة المراجَعة أولًا، ثم مفردات الواجهات المُجمَّعة. قراءة فقط — لا يُكتب أي عقدة.</string>
+    <string name="max_atlas_start">اقرأ</string>
+    <string name="max_atlas_retry">اقرأ مجددًا</string>
+    <string name="max_atlas_cancel">أوقف</string>
+    <string name="max_atlas_reading">يقرأ الواجهات…</string>
+    <string name="max_atlas_progress_detail">%1$s من %2$s واجهة</string>
+    <string name="max_atlas_phase_idle">لم تُقرأ بعد</string>
+    <string name="max_atlas_phase_running">يقرأ الآن</string>
+    <string name="max_atlas_phase_complete">كل واجهة أجابت</string>
+    <string name="max_atlas_phase_incomplete">بعض الواجهات لم تُجب</string>
+    <string name="max_atlas_phase_cancelled">أوقفتها أنت</string>
+    <string name="max_atlas_phase_denied">غير مسموح على هذا الجهاز</string>
+    <string name="max_atlas_phase_unavailable">لا خلفية قراءة متاحة</string>
+    <string name="max_atlas_status_idle">القراءة تستغرق لحظة ولا تُغيّر شيئًا.</string>
+    <string name="max_atlas_status_reading">مرور واحد محدود، على ميزانية ثابتة.</string>
+    <string name="max_atlas_status_limited">حدّ من الميزانية أوقف هذا المرور، فغياب إجابة ليس إجابة الجهاز.</string>
+    <string name="max_atlas_status_counts">%1$s قراءة من %2$s واجهة</string>
+    <string name="max_atlas_tier_reviewed">معرفة مراجَعة</string>
+    <string name="max_atlas_tier_candidates">مفردات مُجمَّعة</string>
+    <string name="max_atlas_tier_candidates_note">أسماء واجهات معروف أنها موجودة، ومعناها لم يُراجَع بعد. تُعدّ منفصلة عن القراءات المراجَعة عن قصد.</string>
+    <string name="max_atlas_tier_gaps">واجهات مراجَعة بلا إجابة</string>
+    <string name="max_atlas_tier_gaps_note">هذه هي التي يستحقّ التقرير أن يُرسَل عنها.</string>
+    <string name="max_atlas_domain_count">%1$s قراءة</string>
+    <string name="max_atlas_domain_more">%1$s قراءة أخرى</string>
+    <string name="max_atlas_source_reviewed">مراجَعة</string>
+    <string name="max_atlas_source_candidate">مرشَّحة</string>
+    <string name="max_atlas_age_seconds">قبل %1$s ث</string>
+    <string name="max_atlas_meaning_not_established">الواجهة أجابت، لكن معنى الرقم لم تُثبته مراجعة.</string>
+    <string name="max_atlas_domain_cpu">المعالج</string>
+    <string name="max_atlas_domain_gpu">الرسوميات</string>
+    <string name="max_atlas_domain_thermal">الحرارة</string>
+    <string name="max_atlas_domain_memory">الذاكرة</string>
+    <string name="max_atlas_domain_power">الطاقة</string>
+    <string name="max_atlas_domain_display">الشاشة</string>
+    <string name="max_atlas_domain_sensor">الحسّاسات</string>
+    <string name="max_atlas_domain_storage">التخزين</string>
+    <string name="max_atlas_domain_network">الشبكة</string>
+    <string name="max_atlas_domain_privilege">الامتياز</string>
+    <string name="max_atlas_condition_reading">يقرأ الجهاز</string>
+    <string name="max_atlas_condition_reading_desc">مرور واحد محدود. التقدّم يُعدّ بالواجهات، ولا يُعدّ بالثواني أبدأ.</string>
+    <string name="max_atlas_condition_partial">جزء من الجهاز لم يُجب</string>
+    <string name="max_atlas_condition_partial_desc">الواجهات الغائبة، أو التي لا يسمح بها هذا الجهاز، مُدرجة بعلّتها في التقرير.</string>
+    <string name="max_atlas_condition_limit">بلغنا حدًّا من الميزانية</string>
+    <string name="max_atlas_condition_limit_desc">انتهى الوقت أو العمليات أو المدخلات أو البايتات. «لم تُجب» هنا ستكون حدودنا لا غيابًا في الجهاز، فلا يُبلَّغ شيء على أنه ناقص.</string>
+    <string name="max_atlas_condition_cancelled">أوقفتَ المرور</string>
+    <string name="max_atlas_condition_cancelled_desc">المرور المُقاطَع لا يقول شيئًا عن الجهاز، فهو لا يعرض تقريرًا.</string>
+    <string name="max_atlas_condition_denied">محاولات أخيرة رُفضت</string>
+    <string name="max_atlas_condition_denied_desc">المسار الذي فشل حديثًا لا يُعاد فورًا؛ ميزانية الإعادة محدودة.</string>
+    <string name="max_atlas_condition_no_backend">لا خلفية قراءة</string>
+    <string name="max_atlas_condition_no_backend_desc">لا مسار قراءة مراجَع موصول في هذه النسخة، فكل واجهة تُبلِّغ «غير معروف» ولا تخمّن.</string>
+    <string name="max_atlas_report_title">جهّز تقرير دعم</string>
+    <string name="max_atlas_report_desc">اعرض الملف نفسه معاينةً أولًا، ثم اختر تطبيقًا لإرساله. لا يغادر جهازك حتى تختار الوجهة.</string>
+    <string name="max_atlas_report_blocked_title">لا تقرير الآن</string>
+    <string name="max_atlas_capture_title">سجّل دليل الجهاز</string>
+    <string name="max_atlas_capture_desc">يقرأ الواجهات نفسها مرة أخرى ويحفظ ما أجاب به جهازك في ملف واحد. ولمساعدة العمل بلا إرسال شيء، سلّمه أنت بيدك: لا يُرفع شيء، ولا يغادر الملف جهازك حتى تختار الوجهة.</string>
+    <string name="max_atlas_capture_done_title">حُفظ دليل الجهاز</string>
+    <string name="max_atlas_capture_done_detail">أجوبة مسجّلة: %1$s · مرفوضة بالسياسة: %2$s · تجاوزت حدّ الصيغة: %3$s</string>
+    <string name="max_atlas_capture_share">أرسل</string>
+    <string name="max_atlas_capture_blocked_title">لا تسجيل الآن</string>
+    <string name="max_atlas_refusal_not_finished">لم ينتهِ أي شيء بعد.</string>
+    <string name="max_atlas_refusal_cancelled">أُوقف المرور، فنتائجه تصف قراءة مُقاطَعة.</string>
+    <string name="max_atlas_refusal_bound">حدّ من الميزانية أوقف المرور؛ الأفضل أن تعيد المحاولة.</string>
+    <string name="max_atlas_refusal_too_many">عدد الواجهات أكبر من أن يحمله ملخّص.</string>
+    <string name="max_atlas_refusal_answered">كل ما روجع قد أجاب، فلا شيء يستحقّ التقرير.</string>
+    <string name="max_atlas_refusal_write_failed">تعذّر كتابة التقرير في مخزن التطبيق.</string>
+    <string name="max_atlas_preview_title">معاينة التقرير</string>
+    <string name="max_atlas_preview_tab_summary">الملخّص</string>
+    <string name="max_atlas_preview_tab_interfaces">الواجهات</string>
+    <string name="max_atlas_preview_tab_artifact">الملف</string>
+    <string name="max_atlas_preview_status">الحالة</string>
+    <string name="max_atlas_preview_readings">القراءات</string>
+    <string name="max_atlas_preview_gaps">فجوات مراجَعة</string>
+    <string name="max_atlas_preview_suppressed">محاولات مكبوتة</string>
+    <string name="max_atlas_preview_cache_hits">أُجيب من دليل محفوظ</string>
+    <string name="max_atlas_preview_line">%1$s: %2$s</string>
+    <string name="max_atlas_preview_dismiss">إغلاق</string>
+    <string name="max_atlas_preview_confirm">مشاركة…</string>
+    <string name="max_atlas_share_confirm_title">أتُشارك هذا التقرير؟</string>
+    <string name="max_atlas_share_confirm_message">التقرير يحمل أسماء واجهات ووحدات وأعمارًا ووصفًا تقريبيًّا للجهاز. ولا يحمل أي معرّف، ولا حساب، ولا مسارًا خاصًّا بك، ولا قائمة حزم، ولا سطر سجل. وأنت تختار الوجهة بعد ذلك.</string>
+    <string name="max_atlas_share">اختر تطبيقًا</string>
+    <string name="max_atlas_share_cancel">إلغاء</string>
+
+    <!-- ══ تكملة ١٣٨: نسخ الواجهة الذي كان مكتوبًا في الكود ══════════════════ -->
+
+    <!-- DiagnosticsScreen -->
+    <string name="diagnostics_live_hw_health">صحّة العتاد الحيّة</string>
+    <string name="diagnostics_active_ownership">ملكية التحكم النشطة</string>
+    <string name="diagnostics_hardware_report">تقرير العتاد</string>
+    <string name="diagnostics_hardware_report_desc">أنشئ تقريرًا موجزًا لأغراض الدعم والتوافق.</string>
+    <string name="diagnostics_copy">نسخ</string>
+
+    <!-- AboutScreen -->
+    <string name="about_project_name">مشروع MaxManager</string>
+    <string name="about_maker_title">من الصانع</string>
+    <string name="about_maker_note">أبني MaxManager بيدي — تغييرًا واحدًا مقيسًا في كل مرّة، وعلى هاتف حقيقي. وإن بدا لك شيء هنا شخصيًّا، فذلك لأنه كذلك.</string>
+    <string name="about_maker_signature">— Nader Magdy</string>
+
+    <!-- DisplayStudioScreen -->
+    <string name="display_studio_live_panel_config">ضبط اللوحة مباشرةً</string>
+    <string name="display_studio_current_canvas">اللوحة الحالية</string>
+    <string name="display_studio_badge_display">العرض</string>
+    <string name="display_studio_badge_live">مباشر</string>
+
+    <!-- ProcessManagerScreen -->
+    <string name="process_manager_overview_title">مدير العمليات</string>
+    <string name="process_manager_overview_subtitle">نشاط العمليات واستهلاك الموارد، مباشرةً</string>
+    <string name="process_manager_running_title">العمليات الجارية</string>
+    <string name="process_manager_running_hint">اضغط على عمليّة للإجراءات</string>
+    <string name="process_manager_refresh_hint">يُحدَّث كل ٣ ثوانٍ</string>
+
+    <!-- BypassChargeScreen -->
+    <string name="bypass_charge_section_control">التحكم</string>
+    <string name="bypass_charge_section_threshold">العتبة</string>
+    <string name="bypass_charge_section_configuration">التهيئة</string>
+    <string name="bypass_charge_row_path">مسار الشحن الجانبي</string>
+    <string name="bypass_charge_row_policy">سياسة التفعيل</string>
+    <string name="bypass_charge_row_behavior">سلوك الشحن</string>
+    <string name="bypass_charge_row_profile">نمط الأداء</string>
+    <string name="bypass_charge_row_stop_at">أوقف الشحن عند العتبة</string>
+    <string name="bypass_charge_state_unsupported">غير مدعوم</string>
+    <string name="bypass_charge_state_setup_required">يلزم التهيئة</string>
+    <string name="bypass_charge_state_needs_setup">يلزم الإعداد</string>
+    <string name="bypass_charge_state_enabled">مُفعَّل</string>
+    <string name="bypass_charge_state_ready">جاهز</string>
+    <string name="bypass_charge_daemon_controlled">يديره الديمون</string>
+    <string name="bypass_charge_note">يطبّق الديمون المميّز الشحن الجانبي على عقدة شحن مكتشَفة، ولا يعلن MaxManager الدعم حتى تُكتشَف عقدة متوافقة.</string>
+
+    <!-- AppSettingsScreen -->
+    <string name="app_settings_section_thermal_gpu">حاكم الحرارة ومعالج الرسوم</string>
+    <string name="app_settings_thermal_gpu_note">«الافتراضي» يترك الجهاز كما هو ويُسند إدارة التطبيق إلى HyperOS / Game Turbo.</string>
+    <string name="app_settings_cpu_governor">حاكم المعالج</string>
+    <string name="app_settings_gpu_governor">حاكم معالج الرسوم</string>
+    <string name="app_settings_cpu_governors_none">لم يُكتشَف أيّ حاكم معالج مشترك</string>
+    <string name="app_settings_cpu_governors_note">لا تُعرض إلا الحكام التي تدعمها كل سياسات المعالج</string>
+    <string name="app_settings_gpu_governors_none">لم تُكتشَف عقدة حاكم معالج الرسوم</string>
+    <string name="app_settings_gpu_governors_note">لا تُعرض إلا الحكام التي يبلّغ عنها مشغّل معالج الرسوم</string>
+    <string name="app_settings_customize_profiles">خصّص أنماط: موفّر / متوازن / ألعاب / أداء</string>
+    <string name="app_settings_reset_all">أعِد كل إعدادات التطبيق إلى الافتراضي</string>
+    <string name="app_settings_cpu_unavailable">التحكم في تردد المعالج غير متاح على هذه النواة.</string>
+    <string name="app_settings_save_cpu_controls">احفظ ضوابط المعالج</string>
+    <string name="app_settings_customize_thermal_presets">خصّص أنماط الحرارة / معالج الرسوم</string>
+    <string name="app_settings_restore_preset_defaults">أعِد قيم الأنماط الافتراضية</string>
+    <string name="app_settings_thermal_presets_note">كل نسبة مأخوذة من القدرة التي يعلنها الجهاز، لا من السقف الذي تصادف أن النظام يسمح به الآن. فـ«الألعاب» (٨٥٪) و«الأداء» (١٠٠٪) لا يهبطان أبدًا دون جهاز لم يُمسّ: وحين تُمسك سياسة الجهاز نفسها بسقف أدنى فإنّهما يطلبان السقف المُعلَن، ويسجّل السجل ما كان، وما يقدر عليه الجهاز، وما طُلب. وتحت ذلك تُقيّد النسبة سقف معالج الرسوم وكل سياسة معالج لم تضبطها بيدك، مقرَّبةً لأسفل إلى خطوة تردد حقيقية؛ ونمط تبريد (متوازن، موفّر، مخصّص) لا يخفض سقفًا إلا ولا يرفعه أبدًا.</string>
+
+    <!-- أسماء الأنماط في قوائم المنتقي -->
+    <string name="profile_label_power">موفّر</string>
+    <string name="profile_label_gaming">ألعاب</string>
+    <string name="profile_label_custom">مخصّص</string>
+
+    <!-- ══ تكملة ١٣٨ (ب): الصنف الذي لا تراه بوابة `hardcoded_ui_literals` ══ -->
+
+    <!-- بطاقة الميزات لكل تطبيق -->
+    <string name="appfeature_cpu_boost_title">تعزيز المعالج عند التشغيل</string>
+    <string name="appfeature_cpu_boost_summary">رفع ترددات المعالج مؤقّتًا عند فتح هذا التطبيق</string>
+    <string name="appfeature_kill_bg_title">إغلاق تطبيقات الخلفيّة</string>
+    <string name="appfeature_kill_bg_summary">مسح عمليات الخلفية ما دام هذا التطبيق في المقدّمة</string>
+    <string name="appfeature_gpu_freq_title">أقصى تردد لمعالج الرسوم</string>
+    <string name="appfeature_gpu_freq_none">التحكم في التردد غير متاح على هذه النواة</string>
+    <string name="appfeature_gpu_freq_capped">أعلى تردد لمعالج الرسوم ما دام هذا التطبيق مفتوحًا. وتُسرَد كل خطوة يعلنها المشغّل (حتى %1$s)؛ والجهاز يسمح حاليًّا بـ %2$s — واختيار الخطوة العليا يُحرّر ذلك السقف بدل تثبيت تردد. و«الافتراضي» يتركه ديناميكيًّا.</string>
+    <string name="appfeature_gpu_freq_dynamic">أعلى تردد لمعالج الرسوم ما دام هذا التطبيق مفتوحًا، من الخطوات التي يعلنها المشغّل. و«الافتراضي» يتركه ديناميكيًّا.</string>
+    <string name="appfeature_hw_ui_title">إجبار عرض الواجهة بالعتاد</string>
+    <string name="appfeature_hw_ui_summary">إجبار عرض كل طبقات الواجهة بمعالج الرسوم</string>
+    <string name="appfeature_touch_title">نمط استجابة اللمس</string>
+    <string name="appfeature_touch_summary">«سريع الاستجابة» يُفعّل عقدة التحكّم باللمس التي يعرضها هذا الجهاز ما دام التطبيق في المقدّمة (نمط ألعاب في وحدة اللمس إن وُجد، وإلا تعزيز إدخال المعالج)، و«مراعٍ للبطارية» يُبقيه مُطفأً. و«اتّبع النظام» يحترم الإعداد العام وكشف الألعاب المتوافقة. وهذا المفتاح لا يعيد كتابة معدّل الإبلاغ لدى الشركة.</string>
+    <string name="appfeature_touch_follow_rom">اتّبع النظام</string>
+    <string name="appfeature_touch_responsive">سريع الاستجابة</string>
+    <string name="appfeature_touch_battery_aware">مراعٍ للبطارية</string>
+    <string name="appfeature_haptic_title">تقليل الاهتزاز اللمسي</string>
+    <string name="appfeature_haptic_summary">تعطيل الاهتزاز أو تقليله لتحرير دورات المعالج</string>
+    <string name="appfeature_notif_title">إسكات الإشعارات</string>
+    <string name="appfeature_notif_summary">حجب أصوات الإشعارات وشاراتها ما دام هذا التطبيق نشطًا</string>
+    <string name="appfeature_wifi_title">منع سكون الواي فاي</string>
+    <string name="appfeature_wifi_summary">منع الواي فاي من الدخول في السكون ما دام هذا التطبيق نشطًا</string>
+
+    <!-- دليل الميزات لكل تطبيق -->
+    <string name="appguide_cd">دليل الميزات</string>
+    <string name="appguide_title">دليل ميزات كل تطبيق</string>
+    <string name="appguide_got_it">فهمت</string>
+    <string name="appguide_cpu_boost_desc">يرفع تردد المعالج إلى أقصاه لثلاث ثوانٍ عند فتح التطبيق، فيقلّ زمن التحميل بدرجة كبيرة.</string>
+    <string name="appguide_thermal_title">نمط الحرارة</string>
+    <string name="appguide_thermal_desc">يتجاوز حدود خفض الأداء الحراري الافتراضية في النظام. فنمط «الألعاب» يسمح بحرارة أعلى قبل إبطاء اللعبة، ونمط «موفّر الطاقة» يُبقي الهاتف باردًا.</string>
+    <string name="appguide_gpu_gov_title">حاكم معالج الرسوم</string>
+    <string name="appguide_gpu_gov_desc">يتحكم في سرعة تصاعد معالج الرسوم. فـ«msm-adreno-tz» ديناميكي، ونمط «الأداء» يفرض أقصى قدرة رسومية باستمرار.</string>
+    <string name="appguide_hw_ui_title">إجبار عرض الواجهة بالعتاد</string>
+    <string name="appguide_hw_ui_desc">يفرض عرض طبقات واجهة هذا التطبيق بمعالج الرسوم بدل العرض البرمجي. ويسري من التشغيل البارد التالي للتطبيق، لا فورًا على عملية تعمل بالفعل.</string>
+    <string name="appguide_kill_bg_title">إغلاق تطبيقات الخلفيّة</string>
+    <string name="appguide_kill_bg_desc">يُنفّذ كنسًا مكثّفًا للذاكرة كلّما جُلب هذا التطبيق إلى المقدّمة، ليتوفّر أقصى قدر من الذاكرة.</string>
+    <string name="appguide_bypass_title">الشحن الجانبي</string>
+    <string name="appguide_bypass_desc">إن دعمته النواة، يُغذّي اللوحة مباشرةً من الشاحن دون المرور بالبطارية، فيقلّ الحرارة أثناء اللعب المكثّف.</string>
+
+    <!-- قسم ضوابط المعالج لكل تطبيق -->
+    <string name="appsettings_cpu_mode">النمط</string>
+    <string name="appsettings_cpu_mode_dynamic">نطاق ديناميكي</string>
+    <string name="appsettings_cpu_mode_exact">تثبيت دقيق</string>
+    <string name="appsettings_cpu_min">الأدنى</string>
+    <string name="appsettings_cpu_max">الأعلى</string>
+    <string name="appsettings_cpu_locked">تردد مثبّت</string>
+    <string name="appsettings_cpu_summary_default">المعالج: الافتراضي</string>
+    <string name="appsettings_cpu_summary_exact">المعالج: تثبيت دقيق · %1$d</string>
+    <string name="appsettings_cpu_summary_dynamic">المعالج: نطاق ديناميكي · %1$d</string>
+    <string name="appsettings_cpu_not_applied">تعذّر تطبيق ضوابط المعالج.</string>
+    <string name="appsettings_cpu_verified">ضوابط المعالج مُتحقّقة للتطبيق النشط.</string>
+
+    <!-- شرائط هوية التطبيق -->
+    <string name="app_badge_system">نظام</string>
+    <string name="app_badge_game">لعبة</string>
+
+    <string name="display_studio_metric_refresh">التحديث</string>
+    <string name="display_studio_metric_density">الكثافة</string>
+    <string name="display_studio_metric_scale">المقياس</string>
+    <string name="display_studio_native">الأصلي %1$d × %2$d</string>
+    <string name="process_manager_metric_running">الجارية</string>
+    <string name="process_manager_metric_apps">التطبيقات</string>
+    <string name="process_manager_metric_system">النظام</string>
+
+    <!-- وصف صوتي لزرّي التسجيل في نافذة الأداء العائمة -->
+    <string name="fps_overlay_stop">أوقف التسجيل</string>
+    <string name="fps_overlay_record">ابدأ التسجيل</string>
+
+    <!-- ══ استوديو الذاكرة وUFS (MemoryUfsScreen) ══ -->
+    <string name="memufs_title">الذاكرة وUFS</string>
+    <string name="memufs_subtitle">أرضيات وسقوف تردّد عُقَد devfreq للذاكرة والتخزين كما تُعلنها هذه النواة — وكل قيمة درجةٌ يعلنها الجهاز نفسه.</string>
+
+    <string name="memufs_section_state">مقيس الآن</string>
+    <string name="memufs_section_state_desc">ما قرأته هذه الجلسة من الجهاز، لا ما يفترضه بروفايل.</string>
+    <string name="memufs_row_pressure">ضغط الذاكرة (PSI full)</string>
+    <string name="memufs_row_pressure_desc">نسبة الوقت الذي انتظرت فيه كل مهمة غير خاملة الذاكرة. وغير المقيس ليس صفرًا.</string>
+    <string name="memufs_pressure_value">%1$.1f٪ من آخر %2$d ثانية</string>
+    <string name="memufs_row_thermal">الحالة الحرارية للمنصّة</string>
+    <string name="memufs_row_thermal_desc">التصنيف الذي تعلنه المنصّة نفسها (0–6). والمجهول ليس &#8220;باردًا&#8221;.</string>
+    <string name="memufs_row_devices">أجهزة devfreq المرصودة</string>
+    <string name="memufs_row_devices_desc">مُعدَّدة من /sys/class/devfreq ومصنَّفة بالاسم الذي أعلنته النواة.</string>
+    <string name="memufs_devices_value">%1$d ذاكرة · %2$d تخزين</string>
+    <string name="memufs_value_unmeasured">غير مقيس</string>
+    <string name="memufs_thermal_none">لا خنق</string>
+    <string name="memufs_thermal_light">خفيف</string>
+    <string name="memufs_thermal_moderate">متوسّط</string>
+    <string name="memufs_thermal_severe">شديد</string>
+    <string name="memufs_thermal_critical">حرج</string>
+    <string name="memufs_thermal_emergency">طوارئ</string>
+    <string name="memufs_thermal_shutdown">إطفاء</string>
+
+    <string name="memufs_section_memory">تردّد الذاكرة (RAM)</string>
+    <string name="memufs_section_storage">تردّد التخزين (UFS)</string>
+    <string name="memufs_kind_none">أجاب العدّ فلم يحمل عقدةً من هذا النوع.</string>
+    <string name="memufs_kind_count">%1$d جهاز مرصود</string>
+    <string name="memufs_device_current">الآن %1$s</string>
+    <string name="memufs_device_range">المدى %1$s</string>
+    <string name="memufs_device_ladder">السلّم المُعلن (أعلى الدرجات)</string>
+    <string name="memufs_device_governor">الحاكم</string>
+    <string name="memufs_device_unit">وحدة العقدة الخام</string>
+    <string name="memufs_locked_title">للقراءة فقط على هذا الجهاز</string>
+    <string name="memufs_locked_no_device">لم يُرصد جهاز من هذا النوع، فلا شيء يُكتب.</string>
+    <string name="memufs_locked_unit">وحدة تردّد العقدة غير مُثبتة — وكتابة قيمة بسلّم خاطئ تُفسد min_freq أو max_freq.</string>
+    <string name="memufs_locked_ladder">لم تُعلن النواة سلّمًا من درجتين على الأقل، فلا يمكن طلب قيمة بصدق.</string>
+    <string name="memufs_locked_readonly">العقدتان min_freq وmax_freq موجودتان لكنهما غير قابلتين للكتابة هنا.</string>
+    <string name="memufs_locked_no_reading">أجابت العقدة بلا ساعة، فلا يمكن قراءة خط أساس مرتجعة.</string>
+
+    <string name="memufs_mode_capability">القدرة</string>
+    <string name="memufs_mode_capability_desc">سقف عند أعلى درجة يسمح بها السائق الآن.</string>
+    <string name="memufs_mode_sustained">مستدام</string>
+    <string name="memufs_mode_sustained_desc">75٪ من ذلك السقف — هامش حراري أوسع.</string>
+    <string name="memufs_mode_balanced">متوازن</string>
+    <string name="memufs_mode_efficiency">اقتصادي</string>
+    <string name="memufs_floor_title">الأرضية الدنيا</string>
+    <string name="memufs_floor_desc">الأرضية تقصّر الانتظار حين تكون عرض النطاق للذاكرة هي عنق الزجاجة. ولا يُختار إلا درجة مُعلنة.</string>
+    <string name="memufs_floor_none">بلا أرضية</string>
+    <string name="memufs_advice_title">توقّفات الذاكرة مرتفعة — ارفع الأرضية إلى %1$s</string>
+    <string name="memufs_advice_desc">مقيسة من PSI الآن. والاقتراح لا يتجاوز سقفك المختار، ولا يُطبَّق من تلقاء نفسه.</string>
+    <string name="memufs_apply">تطبيق</string>
+    <string name="memufs_revert">استرجاع خطوط الأساس</string>
+    <string name="memufs_apply_all">طبّق على كل الأجهزة</string>
+    <string name="memufs_apply_all_desc">النواة الواحدة كثيرًا ما تُصدّر أجهزة ذاكرة عدّة؛ فبروفايل واحد لها كلّها.</string>
+    <string name="memufs_applies_to_all">يُطبَّق على %1$d أجهزة</string>
+    <string name="memufs_section_revert">الاسترجاع</string>
+    <string name="memufs_section_revert_desc">تُسترجع المقابض التي كتبتها هذه الشاشة وحدها، من خط الأساس المقروء قبل كل كتابة.</string>
+    <string name="memufs_advanced_title">حقائق النواة</string>
+    <string name="memufs_advanced_summary">%1$d سطر دليل</string>
+
+    <string name="memufs_scanning_title">قراءة أجهزة devfreq</string>
+    <string name="memufs_scanning_detail">عدّ /sys/class/devfreq وقراءة اسم كل جهاز وسلّمه وحدوده.</string>
+    <string name="memufs_unsupported_title">لا عقدة devfreq للذاكرة أو التخزين</string>
+    <string name="memufs_unsupported_detail_scanned">أجاب العدّ فلم يحمل عقدةً يصنّفها هذا البناء ذاكرةً أو تخزينًا.</string>
+    <string name="memufs_unsupported_detail_unreadable">لم يُجب جذر devfreq، فلا يُدَّعى الغياب — يُقال فقط إن شيئًا لم يُقرأ.</string>
+    <string name="memufs_unsupported_detail_absent">هذه النواة لا تنشر صنف devfreq أصلًا، فالغياب هنا مقيسٌ لا مفترض.</string>
+    <string name="memufs_unreadable_title">%1$d عقدة لم تُجب بشيء</string>
+    <string name="memufs_unreadable_desc">هذه عُقَد devfreq رُصدت في التعديد، ولم يُقرأ منها سطر واحد. وعبورُ مجلّد أب محجوب يبدو هكذا بالضبط، فيُعلن التطبيق نقصَ قياس ولا يدّعي أن الميزة غائبة. ولا شيء هنا صُنِّف ولا عُلِّم ولا كُتب.</string>
+    <string name="memufs_unreadable_facts">مرصودة ولا تُقرأ — امنح الجذر، أو افحص عبور المجلّد الأب</string>
+
+    <string name="memufs_applying_title">جارٍ التطبيق</string>
+    <string name="memufs_applying_detail">كتابة، ثم قراءة العقدة مرتجعة قبل الإعلان عن أي تطبيق.</string>
+    <string name="memufs_applied_title">طُبِّق وقُرئ مرتجَعًا</string>
+    <string name="memufs_applied_detail">كُتب على %1$d جهاز. أوّلًا: %2$s ← %3$s</string>
+    <string name="memufs_failed_title">لم يُثبَت</string>
+    <string name="memufs_failed_detail">%1$s: %2$s</string>
+    <string name="memufs_refused_title">رُفض قبل الكتابة</string>
+    <string name="memufs_reason_no_range">لا درجة مُعلنة تلبّي الطلب</string>
+    <string name="memufs_reason_no_device">لم يُرصد أي جهاز devfreq</string>
+    <string name="memufs_reason_nothing_to_revert">لم يُكتب شيء في هذه الجلسة</string>
+    <string name="memufs_reason_manual_lock">قفلتَ هذا المقبض يدويًّا</string>
+    <string name="memufs_reason_write_failed">لم تُثبت النواة الكتابة</string>
+    <string name="memufs_nothing_reported">لم يُبلَّغ عن شيء.</string>
+
+    <string name="memufs_drifted_title">انحراف مرصود</string>
+    <string name="memufs_drifted_detail">قيمة كتبتها هذه الشاشة استردّها كاتب آخر. ولا يُستَرجع شيء تلقائيًّا بعد ذلك.</string>
+    <string name="max_role_memory_ufs">أرضيات وسقوف تردّد عُقَد devfreq للذاكرة والتخزين كما تُعلنها النواة، مقروءةً مرتجعة بعد كل كتابة</string>
+
+    <!-- تعليم الأجهزة: تصنيف يكتبه صاحب الجهاز حيث لا تعرف القواعد (Max Atlas) -->
+
+    <string name="memufs_teach_title">علّم %1$d عقدة بلا صنف</string>
+    <string name="memufs_teach_desc">هذه عُقَد devfreq أجابت بسلّم تردّد، ولم تصنّفها قاعدة مراجَعة. سمِّ الصنف مرّة واحدة فيستعمله Max Atlas — والعقدة تُفحص أولًا (لا بدّ أن يُقرأ منها سلّم تردّد)، ثم تُخزَّن. ولا يُكتب هنا شيء إلى العتاد.</string>
+    <string name="memufs_teach_facts">%1$s · %2$d درجة · %3$s</string>
+    <string name="memufs_teach_writable">قابلة للكتابة</string>
+    <string name="memufs_teach_readonly">للقراءة فقط</string>
+    <string name="memufs_teach_memory">ذاكرة</string>
+    <string name="memufs_teach_storage">تخزين</string>
+
+    <string name="memufs_taught_title">تصنيفك</string>
+    <string name="memufs_taught_desc">محفوظ في ملفّ هذا التطبيق الخاصّ، ويُقرأ في كل مسح. والقواعد المبنية تفوز دائمًا: التعليم لا يغيّر صنف عقدة تعرفها القواعد، وعُقَد الرسوميات تُرفض كي لا يصير لمقبض واحد مالكَان.</string>
+    <string name="memufs_taught_forget">انسَ %1$s</string>
+    <string name="memufs_taught_done_title">تمّ التعليم</string>
+    <string name="memufs_taught_done_detail">‏%1$s مصنَّفة الآن من ملفّك وتظهر في القائمة أعلاه.</string>
+    <string name="memufs_forgotten_title">تمّ النسيان</string>
+    <string name="memufs_teach_refused_title">لم تُعلَّم</string>
+
+    <string name="memufs_overlay_rejected_title">أسطر لم تُقبل</string>
+    <string name="memufs_overlay_rejected_desc">يُقرأ الملفّ سطرًا سطرًا؛ والسطر الخاطئ يُرفض بسببه ولا يُسقِط بقية الملفّ.</string>
+    <string name="memufs_overlay_rejected_line">السطر %1$d: %2$s</string>
+    <string name="memufs_overlay_reason_shape">يجب أن يكون السطر: اسم-الجهاز ثم الصنف فقط</string>
+    <string name="memufs_overlay_reason_name">اسم الجهاز ليس مقطعًا واحدًا</string>
+    <string name="memufs_overlay_reason_kind">صنف غير معروف — استعمل memory أو storage</string>
+    <string name="memufs_overlay_reason_graphics">عقدة رسومية: ملكها استوديو GPU، ولا يجوز أن يكون للمقبض الواحد مالكَان</string>
+    <string name="memufs_overlay_reason_conflict">أُعطي الجهاز نفسه صنفين — الأول هو المعتبر</string>
+    <string name="memufs_overlay_reason_limit">تجاوز الحدّ: ٦٤ سطرًا</string>
+    <string name="memufs_overlay_reason_unreadable">الملفّ نفسه لم يُقرأ</string>
+    <string name="memufs_overlay_reason_too_large">الملفّ أكبر من الحدّ: ٣٢ ك.ب</string>
+    <string name="memufs_overlay_reason_unknown">سبب غير مُدرَج — رمزه في التفصيل التقنيّ</string>
+
+    <string name="memufs_reason_probe_name">اسم الجهاز ليس مقطعًا مقنَّنًا واحدًا</string>
+    <string name="memufs_reason_probe_kind">هذه الشاشة تعلّم الذاكرة والتخزين فقط</string>
+    <string name="memufs_reason_probe_interface">لم يُقرأ سلّم تردّد من هذه العقدة، فلا شيء يُصنَّف هنا</string>
+    <string name="memufs_reason_probe_failed">الفحص نفسه فشل — وفشل الفحص ليس حكمًا على الجهاز</string>
+    <string name="memufs_reason_overlay_not_saved">التصنيف فُحص ولكن الملفّ لم يُكتب</string>
+    <string name="memufs_reason_graphics_owned">عقدة رسومية: ملكها استوديو GPU، ولا يجوز أن يكون للمقبض الواحد مالكَان</string>
+</resources>
