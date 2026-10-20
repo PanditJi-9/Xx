@@ -29,6 +29,7 @@
  */
 package nd.max.ui.design
 
+import nd.max.ui.component.rememberAnimationsEnabled
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -124,23 +125,31 @@ fun MaxEqualizerBars(
 ) {
     if (barCount <= 0) return
 
-    val transition = rememberInfiniteTransition(label = "maxEqualizerBars")
-    // «الحلقات» هنا `for` لا `List(n) { … }`: بناء `List` بدالّة أوّليّة ليس `inline`، فلا يُسمح
-    // فيه بنداءٍ `@Composable` — و`InfiniteTransition.animateFloat` كذلك.
-    val pulse = ArrayList<State<Float>>(barCount)
-    for (index in 0 until barCount) {
-        pulse += transition.animateFloat(
-            initialValue = 0.25f,
-            targetValue = 1f,
-            animationSpec = infiniteRepeatable(
-                animation = tween(
-                    durationMillis = ambientBarCycleMillis + index * 50,
-                    easing = FastOutSlowInEasing,
+    // الحركة هنا حالةٌ لا زينة: تُقرأ فقط والمحرّك يعمل، وتتوقف تمامًا حين يطلب النظام
+    // تقليل الحركة — فلا تبقى ساعةُ حركةٍ تدور في شاشةٍ ساكنة.
+    val animated = active && rememberAnimationsEnabled()
+    val pulse: List<State<Float>> = if (animated) {
+        val transition = rememberInfiniteTransition(label = "maxEqualizerBars")
+        // «الحلقات» هنا `for` لا `List(n) { … }`: بناء `List` بدالّة أوّليّة ليس `inline`، فلا يُسمح
+        // فيه بنداءٍ `@Composable` — و`InfiniteTransition.animateFloat` كذلك.
+        val bars = ArrayList<State<Float>>(barCount)
+        for (index in 0 until barCount) {
+            bars += transition.animateFloat(
+                initialValue = 0.25f,
+                targetValue = 1f,
+                animationSpec = infiniteRepeatable(
+                    animation = tween(
+                        durationMillis = ambientBarCycleMillis + index * 50,
+                        easing = FastOutSlowInEasing,
+                    ),
+                    repeatMode = RepeatMode.Reverse,
                 ),
-                repeatMode = RepeatMode.Reverse,
-            ),
-            label = "maxEqualizerBar$index",
-        )
+                label = "maxEqualizerBar$index",
+            )
+        }
+        bars
+    } else {
+        emptyList()
     }
     // الشكل الساكن: تعرّجٌ هادئ ثابت يُقرأ «معادلًا» ولا يدّعي حركةً ولا قراءة.
     val still = ArrayList<Float>(barCount)
@@ -169,7 +178,7 @@ fun MaxEqualizerBars(
 
         var x = 0f
         for (index in 0 until barCount) {
-            val level = if (active) pulse[index].value else still[index]
+            val level = if (animated && index < pulse.size) pulse[index].value else still[index]
             val barWidth = baseWidth * widths[index]
             val barHeight = (canvasHeight * level).coerceAtLeast(barWidth)
             drawRoundRect(

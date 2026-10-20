@@ -328,25 +328,35 @@ private fun VortexLivePulse(
     stageRadius: Dp,
     modifier: Modifier = Modifier,
 ) {
-    val transition = rememberInfiniteTransition(label = "vortex_live")
-    val breathe by transition.animateFloat(
-        initialValue = 0f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 2200, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse,
-        ),
-        label = "vortex_breathe",
-    )
-    val wave by transition.animateFloat(
-        initialValue = 0f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 2200, easing = LinearEasing),
-            repeatMode = RepeatMode.Restart,
-        ),
-        label = "vortex_wave",
-    )
+    // نبضٌ وغلافٌ حول زرّ التشغيل: يُقرآن فقط والجهاز يعمل، ويتوقّفان كلّيًّا حين
+    // يطلب النظام تقليل الحركة. الحالة الساكنة تحمل المعنى نفسه (هالة + حلقة).
+    val animationsEnabled = rememberAnimationsEnabled()
+    val breathe: Float
+    val wave: Float
+    if (animationsEnabled) {
+        val transition = rememberInfiniteTransition(label = "vortex_live")
+        breathe = transition.animateFloat(
+            initialValue = 0f,
+            targetValue = 1f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(durationMillis = 2200, easing = FastOutSlowInEasing),
+                repeatMode = RepeatMode.Reverse,
+            ),
+            label = "vortex_breathe",
+        ).value
+        wave = transition.animateFloat(
+            initialValue = 0f,
+            targetValue = 1f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(durationMillis = 2200, easing = LinearEasing),
+                repeatMode = RepeatMode.Restart,
+            ),
+            label = "vortex_wave",
+        ).value
+    } else {
+        breathe = 0.5f
+        wave = 0f
+    }
 
     Canvas(modifier = modifier) {
         val orbPx = orbRadius.toPx()

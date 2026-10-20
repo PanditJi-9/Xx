@@ -13,6 +13,8 @@ import nd.max.ui.design.MaxRadius
 import nd.max.ui.design.maxRadius
 import nd.max.ui.design.MaxSize
 import nd.max.ui.design.MaxSpace
+import nd.max.ui.design.MaxTone
+import nd.max.ui.design.content
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
@@ -154,15 +156,16 @@ fun MaxContentState(
     actionLabel: String? = null,
     onAction: (() -> Unit)? = null,
     secondaryActionLabel: String? = null,
-    onSecondaryAction: (() -> Unit)? = null
+    onSecondaryAction: (() -> Unit)? = null,
+    tone: MaxTone = MaxTone.Accent
 ) {
-    val accent = MaterialTheme.colorScheme.primary
+    val accent = tone.content()
     MaxContentState(
         title = title,
         message = message,
         modifier = modifier,
         iconContent = {
-            MaxStateTile {
+            MaxStateTile(tone) {
                 Icon(
                     icon,
                     contentDescription = null,
@@ -174,7 +177,8 @@ fun MaxContentState(
         actionLabel = actionLabel,
         onAction = onAction,
         secondaryActionLabel = secondaryActionLabel,
-        onSecondaryAction = onSecondaryAction
+        onSecondaryAction = onSecondaryAction,
+        tone = tone
     )
 }
 
@@ -187,9 +191,10 @@ fun MaxContentState(
     actionLabel: String? = null,
     onAction: (() -> Unit)? = null,
     secondaryActionLabel: String? = null,
-    onSecondaryAction: (() -> Unit)? = null
+    onSecondaryAction: (() -> Unit)? = null,
+    tone: MaxTone = MaxTone.Accent
 ) {
-    val accent = MaterialTheme.colorScheme.primary
+    val accent = tone.content()
     MaxSurface(
         modifier = modifier
             .fillMaxWidth()
@@ -235,10 +240,12 @@ fun MaxContentState(
  * في الداخل.
  */
 @Composable
-private fun MaxStateTile(content: @Composable () -> Unit) {
+private fun MaxStateTile(tone: MaxTone, content: @Composable () -> Unit) {
     androidx.compose.material3.Surface(
         shape = RoundedCornerShape(maxRadius(MaxRadius.tile)),
-        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
+        // الحالة تحمل نبرتها: الخطأ أحمر ثابت، والفراغ هادئ، والتحميل بلون الشاشة —
+        // فلا تتشابه الحالات الثلاث بمجرّد تغيير الأيقونة (طلب المالك: دلالات مختلفة).
+        color = tone.content().copy(alpha = 0.12f)
     ) {
         content()
     }
@@ -267,7 +274,8 @@ fun MaxLoadingState(
             title = title,
             message = message,
             modifier = modifier,
-            iconContent = { MaxAnimatedHourglass() }
+            iconContent = { MaxAnimatedHourglass(accent = MaxTone.Accent.content()) },
+            tone = MaxTone.Accent,
         )
     }
 }
@@ -286,22 +294,31 @@ fun MaxEmptyState(title: String, message: String, modifier: Modifier = Modifier,
         message = message,
         modifier = modifier,
         iconContent = {
-            MaxStateTile {
+            MaxStateTile(MaxTone.Neutral) {
                 MaxInkIllustration(
                     glyph = MaxInkGlyph.NotFound,
-                    tint = MaterialTheme.colorScheme.primary,
+                    tint = MaxTone.Neutral.content(),
                     modifier = Modifier.padding(MaxSpace.sm).size(MaxSize.iconContainer)
                 )
             }
         },
         actionLabel = actionLabel,
-        onAction = onAction
+        onAction = onAction,
+        tone = MaxTone.Neutral,
     )
 }
 
 @Composable
 fun MaxErrorState(title: String, message: String, retryLabel: String, onRetry: () -> Unit, modifier: Modifier = Modifier) {
-    MaxContentState(title, message, Icons.Rounded.ErrorOutline, modifier, retryLabel, onRetry)
+    MaxContentState(
+        title = title,
+        message = message,
+        icon = Icons.Rounded.ErrorOutline,
+        modifier = modifier,
+        actionLabel = retryLabel,
+        onAction = onRetry,
+        tone = MaxTone.Critical,
+    )
 }
 
 /**

@@ -193,10 +193,17 @@ internal fun FitText(
 /** مؤشّر انتظار صغير: قوس يدور. يُرى فقط حين يكون هناك تنفيذ جارٍ فعلًا. */
 @Composable
 internal fun CubeSpinner(color: Color, diameter: Dp) {
-    val angle by rememberInfiniteTransition(label = "spinner").animateFloat(
-        initialValue = 0f, targetValue = 360f,
-        animationSpec = infiniteRepeatable(tween(850, easing = LinearEasing)), label = "spinnerAngle"
-    )
+    // مؤشّر انتظار: إن أوقف المستخدم حركات النظام يبقى القوس ساكنًا ويُقرأ من النصّ المجاور.
+    val animationsEnabled = rememberAnimationsEnabled()
+    val angle: Float
+    if (animationsEnabled) {
+        angle = rememberInfiniteTransition(label = "spinner").animateFloat(
+            initialValue = 0f, targetValue = 360f,
+            animationSpec = infiniteRepeatable(tween(850, easing = LinearEasing)), label = "spinnerAngle"
+        ).value
+    } else {
+        angle = 0f
+    }
     Canvas(Modifier.size(diameter)) {
         val stroke = 2.dp.toPx()
         drawArc(
@@ -255,10 +262,17 @@ internal fun StatusBit(icon: ImageVector?, text: String) {
 /** قرص متوهّج مبسّط: حلقة واحدة مع قوس حمل ونبضة خفيفة — أقل ضجيجًا بصريًّا. */
 @Composable
 internal fun CubeOrb(tint: Color, loadPct: Int? = null, modifier: Modifier = Modifier) {
-    val spin by rememberInfiniteTransition(label = "orb").animateFloat(
-        initialValue = 0f, targetValue = 360f,
-        animationSpec = infiniteRepeatable(tween(5000, easing = LinearEasing)), label = "orbSpin"
-    )
+    // دوران القرص زخرفةٌ حركية بحتة: يتوقّف تمامًا مع تقليل الحركة ولا يحمل معلومة تُفقد.
+    val animationsEnabled = rememberAnimationsEnabled()
+    val spin: Float
+    if (animationsEnabled) {
+        spin = rememberInfiniteTransition(label = "orb").animateFloat(
+            initialValue = 0f, targetValue = 360f,
+            animationSpec = infiniteRepeatable(tween(5000, easing = LinearEasing)), label = "orbSpin"
+        ).value
+    } else {
+        spin = 0f
+    }
     val animatedLoad by animateFloatAsState(
         targetValue = (loadPct ?: 0) / 100f,
         animationSpec = tween(450),

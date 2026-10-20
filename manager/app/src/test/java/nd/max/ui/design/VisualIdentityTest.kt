@@ -297,6 +297,36 @@ class VisualIdentityTest {
         )
     }
 
+    // ── ⑪ الحالات تحمل دلالات مختلفة، لا أيقونة مختلفة فقط ─────────────
+
+    @Test
+    fun `content states keep distinct semantic tones`() {
+        val body = sourceFile("component/ContentStateComponents.kt").readText()
+        val error = body.substringAfter("fun MaxErrorState(").substringBefore("/**")
+        val empty = body.substringAfter("fun MaxEmptyState(").substringBefore("/**")
+        val loading = body.substringAfter("fun MaxLoadingState(").substringBefore("/**")
+
+        assertTrue("الخطأ يحمل نبرة Critical الحمراء الثابتة", error.contains("MaxTone.Critical"))
+        assertTrue("الفراغ هادئ لا يزاحم لون الشاشة", empty.contains("MaxTone.Neutral"))
+        assertTrue("التحميل يحمل لون الشاشة (Accent)", loading.contains("MaxTone.Accent"))
+    }
+
+    // ── ⑫ الحلقات الزخرفية تُحترم فيها الحركة ────────────────────────────
+
+    @Test
+    fun `looping visuals honour the system reduce motion setting`() {
+        listOf(
+            "design/MaxAudioVisuals.kt" to "معادل الصوت",
+            "component/CyberAudioVortex.kt" to "نبض الـVortex",
+            "component/CubeParts.kt" to "دوران قرص المكعّب",
+        ).forEach { (path, label) ->
+            assertTrue(
+                "$label يجب أن يقرأ rememberAnimationsEnabled قبل أن يدور",
+                sourceFile(path).readText().contains("rememberAnimationsEnabled()"),
+            )
+        }
+    }
+
     // ── أدوات القياس ───────────────────────────────────────────────────────
 
     /** سطحُ Max AI المشروع: ملفّه باسم `MaxAi…` أو `MaxLive…` (شاشة الحيّ)، أو وجهة الملاحة. */
