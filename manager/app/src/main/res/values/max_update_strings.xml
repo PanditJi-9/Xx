@@ -4,6 +4,7 @@
 <resources>
     <string name="update_dialog_title">Update available</string>
     <string name="update_dialog_title_required">Update required</string>
+    <string name="update_required_notice">This update is required to keep using MaxManager. Install it, then reopen the app.</string>
     <string name="update_dialog_body">Version %1$s is available. You are on %2$s.</string>
     <string name="update_block_title">Update required to continue</string>
     <string name="update_block_body">This build (%1$s) is no longer supported. Update to %2$s to keep using MaxManager.</string>

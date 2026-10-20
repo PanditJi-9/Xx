@@ -162,7 +162,36 @@ data class RemoteLatest(
     val version: String = "",
     val released: String = "",
     @SerialName("download_page") val page: String = "",
-)
+    /**
+     * `required` (أو `mandatory`/`force` كمرادفات لوحةٍ قديمة) ⇒ نافذة لا تُغلق حتى يُثبَّت
+     * الإصدار، وغيابه أو `optional` ⇒ نافذة إرشاديّة تُتخطّى وتعود بعد [reminderHours].
+     * والقيمة تُطبَّع هنا لا في الواجهة: حكمٌ واحد يقرأه كل مستهلك.
+     */
+    val mode: String = MODE_OPTIONAL,
+    /**
+     * فاصل التذكير بالساعات للإصدار الاختياري (١ ساعة .. ٣٠ يومًا). و`0` تعني «مرّة واحدة»
+     * في اللوحة القديمة، وتُقرأ كـ٢٤ ساعة لا ككتمان أبديّ.
+     */
+    @SerialName("reminder_hours") val reminderHours: Int = DEFAULT_REMINDER_HOURS,
+) {
+    /** هل هذا التحديث إلزاميّ؟ */
+    val required: Boolean
+        get() = mode.trim().lowercase() in REQUIRED_MODES
+
+    /** الفاصل الفعلي بعد التقييد — لا يثق بعنوانٍ من الخادم بلا سقف. */
+    val effectiveReminderHours: Int
+        get() = reminderHours.coerceIn(MIN_REMINDER_HOURS, MAX_REMINDER_HOURS)
+
+    companion object {
+        const val MODE_OPTIONAL = "optional"
+        const val MODE_REQUIRED = "required"
+        const val DEFAULT_REMINDER_HOURS = 24
+        const val MIN_REMINDER_HOURS = 1
+        const val MAX_REMINDER_HOURS = 24 * 30
+
+        private val REQUIRED_MODES = setOf(MODE_REQUIRED, "mandatory", "force", "forced", "blocking")
+    }
+}
 
 /**
  * سياسة الإحصاءات كما تُضبط من الخادم. **ولا تُلغي موافقة المستخدم أبدًا**: الجمع يقع إذا

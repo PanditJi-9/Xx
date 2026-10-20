@@ -108,6 +108,47 @@ object ConfigUpdates {
         return if (order == null || order > 0) Verdict.AVAILABLE else Verdict.UP_TO_DATE
     }
 
+    /**
+     * هل يعود الإصدار الاختياري للظهور الآن؟
+     *
+     * * إصدار منشور أحدث ولم يُتخطَّ بعد ⇒ نعم.
+     * * تخطّاه المستخدم ⇒ **ليس قبل الفاصل** الذي كتبه المالك في اللوحة.
+     * * وتخطٍّ قديم بلا زمن (بيانات النسخة السابقة) يُعامَل كأنه وقع الآن، فلا تنقلب
+     *   الترقية إلى نافذة تُفتح فورًا لكل من كان قد تخطّى الإصدار.
+     */
+    fun reminderDue(
+        latest: RemoteLatest?,
+        dismissedVersion: String,
+        dismissedAtMillis: Long,
+        nowMillis: Long,
+    ): Boolean {
+        val published = latest?.version?.trim().orEmpty()
+        if (published.isEmpty()) return false
+        if (published != dismissedVersion.trim()) return true
+        if (dismissedAtMillis <= 0L) return false
+        val interval = (latest?.effectiveReminderHours ?: RemoteLatest.DEFAULT_REMINDER_HOURS).toLong() *
+            MILLIS_PER_HOUR
+        return nowMillis - dismissedAtMillis >= interval
+    }
+
+    /**
+     * حكم الظهور الموحّد: الإلزاميّ يظهر دائمًا ما دام منشورًا أحدث، والاختياري يتبع
+     * [reminderDue]. ولا شيء هنا يقرأ التخزين — فيُقاس على JVM بلا Context.
+     */
+    fun shouldShow(
+        latest: RemoteLatest?,
+        verdict: Verdict,
+        dismissedVersion: String,
+        dismissedAtMillis: Long,
+        nowMillis: Long,
+    ): Boolean {
+        if (verdict != Verdict.AVAILABLE) return false
+        if (latest?.required == true) return true
+        return reminderDue(latest, dismissedVersion, dismissedAtMillis, nowMillis)
+    }
+
+    private const val MILLIS_PER_HOUR = 60L * 60L * 1_000L
+
     // ── الطلب اليدوي من «الإعدادات ← التحقّق من التحديثات» ─────────────────────────────────────
 
     private val _manualRequests = MutableStateFlow(0L)
@@ -137,16 +178,42 @@ class ConfigUpdateStore(context: Context) {
 
     fun dismissedVersion(): String = prefs.getString(KEY_DISMISSED, "").orEmpty()
 
-    fun dismiss(version: String) {
-        prefs.edit().putString(KEY_DISMISSED, version.trim()).apply()
+    /**
+     * زمن آخر تخطٍّ. وبيانات النسخة السابقة كانت تحفظ الإصدار وحده؛ عند أول قراءة نمنحها
+     * «الآن» فلا ينقلب تحديث قديم متخطّى إلى نافذة تُفتح في وجه المستخدم بعد الترقية.
+     */
+    fun dismissedAtMillis(nowMillis: Long = System.currentTimeMillis()): Long {
+        val stored = prefs.getLong(KEY_DISMISSED_AT, 0L)
+        if (stored > 0L) return stored
+        if (dismissedVersion().isNotEmpty()) {
+            prefs.edit().putLong(KEY_DISMISSED_AT, nowMillis).apply()
+            return nowMillis
+        }
+        return 0L
+    }
+
+    fun dismiss(version: String, atMillis: Long = System.currentTimeMillis()) {
+        prefs.edit()
+            .putString(KEY_DISMISSED, version.trim())
+            .putLong(KEY_DISMISSED_AT, atMillis)
+            .apply()
     }
 
     fun clear() {
-        prefs.edit().remove(KEY_DISMISSED).apply()
+        prefs.edit().remove(KEY_DISMISSED).remove(KEY_DISMISSED_AT).apply()
+    }
+
+    /** آخر طلب فحص يدوي عالجه مستضيف النافذة — يمنع إعادة الفتح عند كل تركيب جديد. */
+    fun handledManualRequest(): Long = prefs.getLong(KEY_MANUAL_HANDLED, 0L)
+
+    fun markManualRequestHandled(request: Long) {
+        prefs.edit().putLong(KEY_MANUAL_HANDLED, request).apply()
     }
 
     private companion object {
         const val FILE_NAME = "config_update_notice"
         const val KEY_DISMISSED = "dismissed_version"
+        const val KEY_DISMISSED_AT = "dismissed_at"
+        const val KEY_MANUAL_HANDLED = "manual_handled"
     }
 }

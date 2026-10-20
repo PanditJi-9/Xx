@@ -5,6 +5,10 @@
  */
 package nd.max.core.hardware
 
+import nd.max.core.atlas.AtlasControlGoal
+import nd.max.core.atlas.AtlasControlIntent
+import nd.max.core.atlas.AtlasControlTarget
+
 /**
  * مالك التحكم باللمس: **مفردة العُقَد، والاكتشاف، والقدرة، ومحرّك التسوية** — في موضع واحد.
  *
@@ -61,6 +65,12 @@ object TouchControlBackend {
     val GAME_MODE_NODES: List<Node> = listOf(
         Node("/proc/touchpanel/game_switch_enable", "1", "0", Kind.GAME_MODE),
         Node("/sys/touchpanel/game_switch_enable", "1", "0", Kind.GAME_MODE),
+        // أسماء صنف هي نفس العقدة على سوائق تختلف في مكان نشرها، لا معانٍ جديدة. والتعديد
+        // الديناميكي في `SystemAccess` يغطّي ما لا يُعرف مساره مسبقًا، وهذه تُسرّع الحالة الشائعة.
+        Node("/sys/class/touch/touch_dev/game_switch_enable", "1", "0", Kind.GAME_MODE),
+        Node("/sys/class/touchscreen/game_switch_enable", "1", "0", Kind.GAME_MODE),
+        Node("/sys/android_touch/game_switch_enable", "1", "0", Kind.GAME_MODE),
+        Node("/sys/devices/virtual/touch/touch_dev/game_switch_enable", "1", "0", Kind.GAME_MODE),
     )
 
     /**
@@ -89,6 +99,10 @@ object TouchControlBackend {
     val DOUBLE_TAP_WAKE_NODES: List<Node> = listOf(
         Node("/proc/touchpanel/double_tap_enable", "1", "0", Kind.DOUBLE_TAP_WAKE),
         Node("/sys/android_touch/doubletap2wake", "1", "0", Kind.DOUBLE_TAP_WAKE),
+        Node("/sys/class/touch/touch_dev/double_tap_enable", "1", "0", Kind.DOUBLE_TAP_WAKE),
+        Node("/sys/class/touchscreen/double_tap_enable", "1", "0", Kind.DOUBLE_TAP_WAKE),
+        Node("/sys/touchpanel/double_tap_enable", "1", "0", Kind.DOUBLE_TAP_WAKE),
+        Node("/sys/android_touch/double_tap_enable", "1", "0", Kind.DOUBLE_TAP_WAKE),
     )
 
     /**
@@ -126,6 +140,15 @@ object TouchControlBackend {
          * والافتراضي يجعل كل مُوجّه وهمي يعمل بلا تعديل: من يعرف `read` يعرف القائمة.
          */
         fun readMany(paths: List<String>): List<String?> = paths.map(::read)
+
+        /**
+         * عُقَد إضافية اكتُشفت **بالاسم المعياري** تحت مجلّدات الصنف، لا بتخمين مسار جهاز.
+         *
+         * والافتراضي فارغ: الاختبارات لا تعرف مجلّدات، والإنتاج يعدّد `/sys/class/touch` وما
+         * شابهها. والقائمة تُخزَّن مؤقتًا في [SystemAccess] لأن `reconcile` يُنادى كل ٥٠٠ م.ث —
+         * فليس من المقبول تنفيذ `ls` في كل دورة.
+         */
+        fun dynamicNodes(): List<Node> = emptyList()
     }
 
     /**
@@ -137,12 +160,63 @@ object TouchControlBackend {
 
     /** الوصول على الجهاز — كلّه عبر [RootFileAccess]، ولا قراءة ملفّ مباشرة من هنا. */
     object SystemAccess : Access {
+        @Volatile
+        private var dynamicCache: Pair<Long, List<Node>>? = null
+
         override fun read(path: String): String? = RootFileAccess.read(path)
         override fun exists(path: String): Boolean = RootFileAccess.exists(path)
         override fun writable(path: String): Boolean = RootFileAccess.writable(path)
         override fun readMany(paths: List<String>): List<String?> = RootFileAccess.readMany(paths)
         override fun writeVerified(path: String, value: String): WriteVerification.Outcome =
             RootFileAccess.writeVerified(path, value)
+
+        /**
+         * تعداد عُقَد اللمس تحت مجلّدات الصنف المعروفة — **بالاسم المعياري وحده**.
+         *
+         * ولماذا التعديد: السوائق تضع العقدة نفسها تحت مسارات مختلفة (`/sys/class/touch/touch_dev`
+         * أو `/proc/touchpanel`)، فقائمة مسارات ثابتة تفوت جهازًا يحمل المقبض. والتعديد لا يخمّن
+         * المعنى: لا يدخل إلا اسم عقدة معروف القيمتين (`0/1`)، ولا يدخل `sample_rate` لأن وحدته
+         * لم تُثبت. والنتيجة تُخزَّن دقيقة كاملة، فدورة المراقبة كل ٥٠٠ م.ث لا تنفّذ `ls`.
+         */
+        override fun dynamicNodes(): List<Node> {
+            val now = System.currentTimeMillis()
+            dynamicCache?.let { (at, nodes) ->
+                if (now - at in 0..DYNAMIC_TTL_MS) return nodes
+            }
+            val scanned = scanDynamicNodes()
+            dynamicCache = now to scanned
+            return scanned
+        }
+
+        private fun scanDynamicNodes(): List<Node> {
+            val roots = listOf(
+                "/sys/class/touch",
+                "/sys/class/touch/touch_dev",
+                "/sys/class/touchscreen",
+                "/sys/android_touch",
+                "/sys/touchpanel",
+                "/proc/touchpanel",
+                "/sys/devices/virtual/touch/touch_dev",
+            )
+            val seen = mutableSetOf<String>()
+            val nodes = mutableListOf<Node>()
+            for (root in roots) {
+                for (name in RootFileAccess.listNames(root)) {
+                    val kind = DYNAMIC_KINDS[name] ?: continue
+                    val path = "$root/$name"
+                    if (!seen.add(path)) continue
+                    nodes += Node(path, "1", "0", kind)
+                }
+            }
+            return nodes
+        }
+
+        private const val DYNAMIC_TTL_MS = 60_000L
+        private val DYNAMIC_KINDS: Map<String, Kind> = mapOf(
+            "game_switch_enable" to Kind.GAME_MODE,
+            "double_tap_enable" to Kind.DOUBLE_TAP_WAKE,
+            "doubletap2wake" to Kind.DOUBLE_TAP_WAKE,
+        )
     }
 
     /**
@@ -212,9 +286,9 @@ object TouchControlBackend {
 
         /** مسارات العُقَد المرصودة ووحداتها — دليلٌ يُكتب في البصمة والحزمة. */
         val evidence: List<String>
-            get() = ALL_NODES.filter { node ->
-                node == gameMode || node == sampleRate || node == inputBoost || node == doubleTap
-            }.map { "${it.kind.token}:${it.path}" } +
+            get() = listOfNotNull(gameMode, sampleRate, inputBoost, doubleTap)
+                .distinctBy(Node::path)
+                .map { "${it.kind.token}:${it.path}" } +
                 if (vendorTransportPresent) listOf(VENDOR_TRANSPORT_EVIDENCE) else emptyList()
 
         /**
@@ -237,27 +311,32 @@ object TouchControlBackend {
      * تحكّم — لا تُحكم عليها بالوجود، ولا تُنسب إليها كتابة.
      */
     fun discover(reads: Reads = SystemAccess, vendor: VendorBridge = vendorBridge): Discovery {
-        val boostReads = reads.readMany(BOOST_NODES.map(Node::path))
-        val gameMode = GAME_MODE_NODES.indices
-            .firstOrNull { boostReads.getOrNull(it) != null }
-            ?.let(GAME_MODE_NODES::get)
-        val sampleBase = GAME_MODE_NODES.size
-        val sampleRate = if (gameMode == null) {
-            SAMPLE_RATE_NODES.indices
-                .firstOrNull { boostReads.getOrNull(sampleBase + it) != null }
-                ?.let(SAMPLE_RATE_NODES::get)
-        } else null
+        val dynamic = runCatching { reads.dynamicNodes() }.getOrDefault(emptyList())
+        val gameCandidates = (GAME_MODE_NODES + dynamic.filter { it.kind == Kind.GAME_MODE })
+            .distinctBy(Node::path)
+        val sampleCandidates = (SAMPLE_RATE_NODES + dynamic.filter { it.kind == Kind.SAMPLE_RATE })
+            .distinctBy(Node::path)
+        val inputCandidates = (INPUT_BOOST_NODES + dynamic.filter { it.kind == Kind.INPUT_BOOST })
+            .distinctBy(Node::path)
+        val doubleCandidates = (DOUBLE_TAP_WAKE_NODES + dynamic.filter { it.kind == Kind.DOUBLE_TAP_WAKE })
+            .distinctBy(Node::path)
+
+        // قراءة واحدة لكل المرشّحين (بما فيهم المكتشفون بالاسم): الفحص الجماعي يمنع أن يرى
+        // كل فرع قيمةً مختلفة في اللحظة نفسها.
+        val all = gameCandidates + sampleCandidates + inputCandidates + doubleCandidates
+        val values = reads.readMany(all.map(Node::path))
+        val byPath = all.mapIndexed { index, node -> node.path to values.getOrNull(index) }.toMap()
+
+        fun firstReadable(nodes: List<Node>): Node? = nodes.firstOrNull { byPath[it.path] != null }
+
+        val gameMode = firstReadable(gameCandidates)
+        // معدّل العيّنات لا يُقرأ إلا عند غياب نمط اللعب: إن وُجد نمط لعب فهو المزوّد، وقراءة
+        // عقدة ثانية بلا استعمال تُطيل دورة المراقبة بلا فائدة.
+        val sampleRate = if (gameMode == null) firstReadable(sampleCandidates) else null
         // تعزيز الإدخال يُقرأ دائمًا (لا فقط عند غياب نمط اللعب): الشاشة تسمّيه في «المزوّدات»،
         // والقدرة تذكر دليله، ولو كان نمط اللعب موجودًا فهما عقدتان مختلفتان لا بديلان.
-        // والفهرس المحلي يُستعمل على القائمة المحلية — والمطلق على `boostReads` وحده.
-        val inputBase = sampleBase + SAMPLE_RATE_NODES.size
-        val inputBoost = INPUT_BOOST_NODES.indices
-            .firstOrNull { boostReads.getOrNull(inputBase + it) != null }
-            ?.let(INPUT_BOOST_NODES::get)
-        val doubleTapReads = reads.readMany(DOUBLE_TAP_WAKE_NODES.map(Node::path))
-        val doubleTap = DOUBLE_TAP_WAKE_NODES.indices
-            .firstOrNull { doubleTapReads.getOrNull(it) != null }
-            ?.let(DOUBLE_TAP_WAKE_NODES::get)
+        val inputBoost = firstReadable(inputCandidates)
+        val doubleTap = firstReadable(doubleCandidates)
         return Discovery(
             gameMode = gameMode,
             sampleRate = sampleRate,
@@ -356,6 +435,15 @@ object TouchControlBackend {
         private val access: Access = SystemAccess,
         private val vendor: () -> VendorBridge = { vendorBridge },
         private val clock: Clock = Clock { System.currentTimeMillis() },
+        /**
+         * مسار أطلس الاختياري. `null` = تسوية مباشرة (الاختبارات والبناء المحلي)، وغير `null` =
+         * المسار الإنتاجي: المخطِّط يختار والعقدة تُكتب بمعاملة المُحكِّم الكاملة.
+         *
+         * ووجودُ الاثنين مقصود: الاختبارات تقيس «هل كُتبت القيمة؟» على مُوجّه وهمي بلا مُنفِّذ
+         * حقيقي، والإنتاج يمرّ من العقد الواحد للكتابة. ولا يُختار المسار تلقائيًّا حتى لا يصير
+         * اختبارٌ حقيقيًّا يكتب في عتاد الجهاز.
+         */
+        private val atlas: AtlasRepairPort? = null,
     ) {
         @Volatile private var retryNotBeforeMs = 0L
         @Volatile private var lastVendorRequest: Boolean? = null
@@ -374,6 +462,9 @@ object TouchControlBackend {
             val now = clock.nowMs()
             if (now < retryNotBeforeMs) {
                 return Attempt(Result.DEFERRED, Channel.SYSFS, provider.path, "write-backoff", live)
+            }
+            if (atlas != null) {
+                return reconcileThroughAtlas(discovery, enabled, provider, wanted, live, now)
             }
             val outcome = runCatching { access.writeVerified(provider.path, wanted) }
                 .getOrDefault(WriteVerification.Outcome.WRITE_FAILED)
@@ -394,6 +485,85 @@ object TouchControlBackend {
                 path = provider.path,
                 reason = WriteVerification.verdictWord(outcome),
                 live = access.read(provider.path),
+            )
+        }
+
+        /**
+         * التسوية عبر أطلس: الخطة من المُلاءِم، والاختيار من المخطِّط، والكتابة من المُحكِّم.
+         *
+         * وليس في هذا المسار كاتب ثانٍ: `apply`/`restore` في المُلاءِم ينادِيان
+         * `access.writeVerified` نفسه، ثم يقرأ [HardwareRepairExecutor] العقدة في نافذة تأكيد
+         * bounded ويسترجع خط الأساس عند الانحراف. والفشل يُعيد رمز الكتابة القائم نفسه
+         * (`write_failed`) حتى يبقى دليل السجل موحَّدًا.
+         */
+        private fun reconcileThroughAtlas(
+            discovery: Discovery,
+            enabled: Boolean,
+            provider: Node,
+            wanted: String,
+            live: String?,
+            now: Long,
+        ): Attempt {
+            val nodes = listOfNotNull(discovery.gameMode, discovery.sampleRate, discovery.inputBoost)
+            val context = AtlasAdapterContext(
+                privileged = true,
+                touchNodes = nodes,
+                touchAccess = access,
+            )
+            val request = AtlasControlRequest.TouchBoost(
+                intent = AtlasControlIntent(
+                    target = AtlasControlTarget.TOUCH,
+                    goal = AtlasControlGoal.PERFORMANCE,
+                    desired = wanted,
+                ),
+                owner = ControlOwnership.Owner.GLOBAL_PROFILE,
+                token = ATLAS_TOKEN,
+                enabled = enabled,
+            )
+            val chosen = AtlasAdapterRegistry(listOf(TouchSysfsAdapter()))
+                .choose(AtlasControlTarget.TOUCH, context, request)
+            val plan = (chosen as? AtlasAdapterChoice.Chosen)
+                ?.adapter
+                ?.plan(context, request)
+            val bindings = plan?.bindings.orEmpty()
+            if (bindings.isEmpty()) {
+                retryNotBeforeMs = now + RETRY_BACKOFF_MS
+                return Attempt(
+                    result = Result.REFUSED,
+                    channel = Channel.SYSFS,
+                    path = provider.path,
+                    reason = "write_failed",
+                    live = access.read(provider.path),
+                )
+            }
+
+            val adaptive = AtlasAdaptiveExecutor(atlas!!).execute(request.intent, bindings)
+            val selected = adaptive.selectedRouteId
+                ?.let { id -> bindings.firstOrNull { it.candidate.id == id } }
+            if (adaptive.successful) {
+                retryNotBeforeMs = 0L
+                val path = selected?.request?.key
+                    ?.removePrefix(HardwareControlKey.TOUCH_BOOST_PREFIX)
+                    ?: provider.path
+                return Attempt(
+                    result = Result.APPLIED,
+                    channel = Channel.SYSFS,
+                    path = path,
+                    reason = "write-verified",
+                    live = adaptive.attempts.lastOrNull()?.actual ?: wanted,
+                )
+            }
+
+            retryNotBeforeMs = now + RETRY_BACKOFF_MS
+            val path = selected?.request?.key
+                ?.removePrefix(HardwareControlKey.TOUCH_BOOST_PREFIX)
+                ?: provider.path
+            return Attempt(
+                result = Result.REFUSED,
+                channel = Channel.SYSFS,
+                path = path,
+                reason = "write_failed",
+                live = adaptive.attempts.lastOrNull()?.actual ?: access.read(provider.path),
             )
         }
 
@@ -446,8 +616,10 @@ object TouchControlBackend {
             if (enabled) node.onValue else node.offValue
     }
 
-    /** محرّك التطبيق: على العتاد الحقيقي، وبالجسر المركَّب. */
-    val reconciler: Reconciler = Reconciler()
+    /** محرّك التطبيق: على العتاد الحقيقي، وبالجسر المركَّب، وبمسار أطلس. */
+    val reconciler: Reconciler = Reconciler(
+        atlas = HardwareRepairExecutor(HardwareControlArbiter()),
+    )
 
     /**
      * يسوّي مقبض تعزيز اللمس ويعيد **وصف** ما جرى.
@@ -465,6 +637,13 @@ object TouchControlBackend {
 
     /** رمز رفض محوّل المصنّع: النقل معلن، ومعنى أرقام الأوضاع غير مثبَت. */
     const val VENDOR_CONTRACT_REASON = "vendor-mode-contract-unproven"
+
+    /**
+     * بصمة مالك اللمس في أطلس — ثابتة حتى يبقى خط الأساس الأصلي عبر التبديل تشغيلًا/إيقافًا.
+     * ولو تغيّرت بين النداءين لبدأت كل معاملة من القيمة الحيّة، فيُفقد الاسترجاع إلى ما قبل
+     * أول تفعيل.
+     */
+    private const val ATLAS_TOKEN = "touch-boost-atlas"
 
     /** وسم دليل في البصمة: خدمة اللمس معلنة على هذا الروم. */
     const val VENDOR_TRANSPORT_EVIDENCE = "vendor-touch-transport-declared"

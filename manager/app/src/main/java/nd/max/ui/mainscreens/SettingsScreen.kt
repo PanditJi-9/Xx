@@ -77,6 +77,8 @@ import kotlinx.coroutines.withContext
 import nd.max.ui.component.maxAdaptiveContentWidth
 import nd.max.BuildConfig
 import nd.max.R
+import nd.max.core.access.RemoteAccess
+import nd.max.core.remote.RemoteFlags
 import nd.max.ui.component.*
 import nd.max.ui.component.MaxSnackbarHost
 import nd.max.ui.util.*
@@ -128,6 +130,9 @@ fun SettingsScreen(
     val uiState by settingsViewModel.uiState.collectAsStateWithLifecycle()
     val isAdvancedMode by preferenceSettingsViewModel.isAdvancedMode.collectAsStateWithLifecycle()
     val currentLanguage by preferenceSettingsViewModel.currentLanguage.collectAsStateWithLifecycle()
+    // صفّ الترخيص يظهر فقط عندما يفعّله المالك من Max Control؛ والافتراضي إخفاء.
+    val remote by RemoteAccess.state.collectAsStateWithLifecycle()
+    val licenseVisible = RemoteFlags.isOn(remote.config, RemoteFlags.LICENSE, BuildConfig.VERSION_CODE)
 
     // **القيمة هنا اسم اللغة فقط، لا «تلقائي (النظام) · …».**
     //
@@ -346,19 +351,22 @@ fun SettingsScreen(
                     // It is deliberately outside every `isLoaded` gate: a gate on the settings profile
                     // would have made the one screen that explains an unreadable device unreachable
                     // exactly when reading is already failing.
+                    val licenseEntry: (@Composable () -> Unit)? = if (licenseVisible) {
+                        {
+                            // `LICENSE-KEYS-01` — باب المفتاح يظهر **فقط** عندما يفعّله المالك من
+                            // لوحة التحكّم. الافتراضي إخفاء، ولا يُغلق مسار التفعيل من شاشة القفل.
+                            ExpressiveListItem(
+                                onClick = { MaxNavActions(navController).navigateTo(MaxDestination.License) },
+                                headlineContent = { Text(stringResource(R.string.max_license_title)) },
+                                supportingContent = { Text(stringResource(R.string.max_license_subtitle)) },
+                                leadingContent = { LeadingIcon(icon = Icons.Rounded.Key) },
+                                trailingContent = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null) }
+                            )
+                        }
+                    } else null
                     ExpressiveList(
-                        content = listOf(
-                            {
-                                // `LICENSE-KEYS-01` — باب المفتاح أوّلًا: من يحتاج الشراء يجب أن يجد
-                                // بابه بلا بحث، ولا يُدفن بين الأدوات ولا يُخفى بأي مفتاح بعيد.
-                                ExpressiveListItem(
-                                    onClick = { MaxNavActions(navController).navigateTo(MaxDestination.License) },
-                                    headlineContent = { Text(stringResource(R.string.max_license_title)) },
-                                    supportingContent = { Text(stringResource(R.string.max_license_subtitle)) },
-                                    leadingContent = { LeadingIcon(icon = Icons.Rounded.Key) },
-                                    trailingContent = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null) }
-                                )
-                            },
+                        content = listOfNotNull(
+                            licenseEntry,
                             {
                                 ExpressiveListItem(
                                     onClick = { MaxNavActions(navController).navigateTo(MaxDestination.Diagnostics) },

@@ -64,6 +64,106 @@ async function sha256Hex(text: string): Promise<string> {
   return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
+function hexBytes(bytes: Uint8Array): string {
+  return [...bytes].map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+// ── خزنة نصّ المفتاح: AES-256-GCM بمفتاح مشتقّ من سرّ الدالّة ────────────────────────────────
+// المفتاح لا يخرج من Edge Function، والنصّ لا يُعاد إلا في `license.detail` بعد `requireAdmin`.
+// و`LICENSE_VAULT_KEY` سرّ منفصل مستحسن؛ وغيابه يُشتقّ من مفتاح التوقيع حتى لا يتعطّل الإنشاء.
+
+async function vaultMaterial(): Promise<Uint8Array | null> {
+  const dedicated = Deno.env.get("LICENSE_VAULT_KEY") ?? "";
+  const signing = Deno.env.get("LICENSE_SIGNING_KEY_PKCS8") ?? "";
+  const source = dedicated || signing;
+  if (!source) return null;
+  const salt = dedicated ? "maxmanager-license-vault-v2" : "maxmanager-license-vault-v1";
+  const digest = await crypto.subtle.digest(
+    "SHA-256",
+    new TextEncoder().encode(`${salt}|${source}`),
+  );
+  return new Uint8Array(digest);
+}
+
+async function sealKey(display: string): Promise<string> {
+  const raw = await vaultMaterial();
+  if (!raw) return "";
+  const key = await crypto.subtle.importKey("raw", raw, "AES-GCM", false, ["encrypt"]);
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const cipher = await crypto.subtle.encrypt(
+    { name: "AES-GCM", iv },
+    key,
+    new TextEncoder().encode(display),
+  );
+  return `v1.${toB64(iv)}.${toB64(new Uint8Array(cipher))}`;
+}
+
+async function openKey(sealed: string): Promise<string> {
+  if (!sealed.startsWith("v1.")) return "";
+  const parts = sealed.split(".");
+  if (parts.length !== 3) return "";
+  const raw = await vaultMaterial();
+  if (!raw) return "";
+  try {
+    const key = await crypto.subtle.importKey("raw", raw, "AES-GCM", false, ["decrypt"]);
+    const clear = await crypto.subtle.decrypt(
+      { name: "AES-GCM", iv: fromB64(parts[1]) },
+      key,
+      fromB64(parts[2]),
+    );
+    return new TextDecoder().decode(clear);
+  } catch {
+    return "";
+  }
+}
+
+// ── إثبات حيازة مفتاح الجهاز: توقيع RSA-2048 من Android Keystore ────────────────────────────
+// `device` = أوّل 32 محرفًا من SHA-256 لمفتاح SPKI العامّ. الخادم يتحقّق من التوقيع على نصّ
+// قياسيّ يحمل الوجهة والموضوع والزمن؛ فلا يكفي نسخ معرّف الجهاز من ملفّ لتقليد التثبيت.
+
+const DEVICE_PROOF_PREFIX = "MAXMANAGER-LICENSE-V1";
+const DEVICE_PROOF_WINDOW_MS = 10 * 60 * 1000;
+
+function deviceProofPayload(action: string, device: string, subject: string, atMs: number): string {
+  return [DEVICE_PROOF_PREFIX, action, device, subject, String(Math.trunc(atMs))].join("\n");
+}
+
+async function verifyDeviceProof(
+  action: string,
+  device: string,
+  subject: string,
+  body: Record<string, unknown>,
+): Promise<"ok" | "legacy" | "bad"> {
+  const publicKey = clean(body.device_public_key, 4096);
+  const proof = clean(body.device_proof, 4096);
+  const at = Math.trunc(Number(body.device_proof_at ?? 0));
+  if (!publicKey && !proof) return "legacy";
+  if (!publicKey || !proof || !Number.isFinite(at) || at <= 0) return "bad";
+  if (Math.abs(Date.now() - at) > DEVICE_PROOF_WINDOW_MS) return "bad";
+  try {
+    const spki = fromB64(publicKey);
+    const signature = fromB64(proof);
+    const digest = await crypto.subtle.digest("SHA-256", spki);
+    if (hexBytes(new Uint8Array(digest)).slice(0, 32) !== device) return "bad";
+    const key = await crypto.subtle.importKey(
+      "spki",
+      spki,
+      { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" },
+      false,
+      ["verify"],
+    );
+    const ok = await crypto.subtle.verify(
+      "RSASSA-PKCS1-v1_5",
+      key,
+      signature,
+      new TextEncoder().encode(deviceProofPayload(action, device, subject, at)),
+    );
+    return ok ? "ok" : "bad";
+  } catch {
+    return "bad";
+  }
+}
+
 /**
  * WebCrypto يُعيد توقيع ECDSA **خامًّا** (r‖s، ٦٤ بايتًا لـP-256)، و`SHA256withECDSA` في
  * جافا (وهو ما يتحقق به التطبيق) يتوقّع **DER**: SEQUENCE { INTEGER r, INTEGER s }.
@@ -438,8 +538,13 @@ Deno.serve(async (req: Request) => {
         const device = String(body.device ?? "").toLowerCase();
         if (!HEX64.test(hash)) return reject("key_hash");
         if (!DEVICE.test(device)) return reject("device");
-        const label = clean(body.label, 40);
+        const legacyDevice = String(body.legacy_device ?? "").toLowerCase();
+        if (legacyDevice && !DEVICE.test(legacyDevice)) return reject("legacy_device");
+        const label = clean(body.label, 80);
         const version = clean(body.app_version, 20);
+        const proof = await verifyDeviceProof("license.redeem", device, hash, body);
+        if (proof === "bad") return reject("device_proof");
+        const publicKey = clean(body.device_public_key, 4096);
 
         const { data: licenseRow } = await svc
           .from("licenses")
@@ -463,11 +568,38 @@ Deno.serve(async (req: Request) => {
 
         const { data: devices } = await svc
           .from("license_devices")
-          .select("device,active")
+          .select("device,device_public_key,active")
           .eq("license_id", licenseId);
         const activeDevices = (devices ?? []).filter((d) => (d as { active?: boolean }).active !== false);
-        const known = activeDevices.some((d) => String((d as { device?: string }).device) === device);
-        if (!known && activeDevices.length >= deviceLimit) {
+        const knownRow = activeDevices.find((d) => String((d as { device?: string }).device) === device);
+        const known = knownRow !== undefined;
+        const legacyRow = !known && legacyDevice && legacyDevice !== device
+          ? activeDevices.find((d) => String((d as { device?: string }).device) === legacyDevice)
+          : undefined;
+        const boundKey = String(
+          (knownRow as { device_public_key?: string } | undefined)?.device_public_key ??
+            (legacyRow as { device_public_key?: string } | undefined)?.device_public_key ?? "",
+        );
+
+        // جهاز معروف ومرتبط بمفتاح: لا يُقبل إلا بتوقيع يطابق المفتاح المحفوظ.
+        if (known && boundKey) {
+          if (proof !== "ok" || publicKey !== boundKey) {
+            await svc.from("license_events").insert({ license_id: licenseId, kind: "redeem_rejected", detail: "device_proof" });
+            return deny("device_proof_required", "هذا الجهاز مرتبط بمفتاح آخر");
+          }
+        }
+        // ترحيل معرّف قديم (عشوائي) إلى الهوية الجديدة: نفس المقعد، بلا استهلاك إضافي.
+        if (!known && legacyRow) {
+          if (boundKey && (proof !== "ok" || publicKey !== boundKey)) {
+            await svc.from("license_events").insert({ license_id: licenseId, kind: "rebind_rejected", detail: "device_proof" });
+            return deny("device_proof_required", "الجهاز القديم مرتبط بمفتاح آخر");
+          }
+          if (proof !== "ok" || !publicKey) {
+            await svc.from("license_events").insert({ license_id: licenseId, kind: "rebind_rejected", detail: "no_proof" });
+            return deny("device_unknown", "أعد تفعيل المفتاح على النسخة الجديدة");
+          }
+        }
+        if (!known && !legacyRow && activeDevices.length >= deviceLimit) {
           await svc.from("license_events").insert({ license_id: licenseId, kind: "redeem_rejected", detail: "device_limit" });
           return deny("device_limit", "بلغ المفتاح حدّه من الأجهزة", {
             devices_used: activeDevices.length,
@@ -483,28 +615,45 @@ Deno.serve(async (req: Request) => {
         }
 
         const nowIso = new Date().toISOString();
-        const { error: upsertError } = await svc.from("license_devices").upsert(
-          {
-            license_id: licenseId,
-            device,
-            label,
-            app_version: version,
-            last_seen: nowIso,
-            active: true,
-            ...(known ? {} : { first_seen: nowIso }),
-          },
-          { onConflict: "license_id,device" },
-        );
-        if (upsertError) return fail(500, "server", upsertError.message);
+        if (!known && legacyRow) {
+          const { error: rebindError } = await svc
+            .from("license_devices")
+            .update({
+              device,
+              device_public_key: publicKey,
+              label,
+              app_version: version,
+              last_seen: nowIso,
+              active: true,
+            })
+            .eq("license_id", licenseId)
+            .eq("device", legacyDevice);
+          if (rebindError) return fail(500, "server", rebindError.message);
+        } else {
+          const { error: upsertError } = await svc.from("license_devices").upsert(
+            {
+              license_id: licenseId,
+              device,
+              device_public_key: publicKey || boundKey,
+              label,
+              app_version: version,
+              last_seen: nowIso,
+              active: true,
+              ...(known ? {} : { first_seen: nowIso }),
+            },
+            { onConflict: "license_id,device" },
+          );
+          if (upsertError) return fail(500, "server", upsertError.message);
+        }
 
         await svc.from("licenses").update({ starts_at: new Date(startsAtMs).toISOString(), updated_at: nowIso }).eq("id", licenseId);
         await svc.from("license_events").insert({
           license_id: licenseId,
-          kind: known ? "device_seen" : "device_added",
+          kind: known ? "device_seen" : legacyRow ? "device_rebound" : "device_added",
           detail: version,
         });
 
-        const used = known ? activeDevices.length : activeDevices.length + 1;
+        const used = known || legacyRow ? activeDevices.length : activeDevices.length + 1;
         const cert = await licenseCert({
           licenseId,
           device,
@@ -548,21 +697,74 @@ Deno.serve(async (req: Request) => {
           return reject("license_id");
         }
         if (!DEVICE.test(device)) return reject("device");
+        const legacyDevice = String(body.legacy_device ?? "").toLowerCase();
+        if (legacyDevice && !DEVICE.test(legacyDevice)) return reject("legacy_device");
         const version = clean(body.app_version, 20);
+        const proof = await verifyDeviceProof("license.validate", device, licenseId, body);
+        if (proof === "bad") return reject("device_proof");
+        const publicKey = clean(body.device_public_key, 4096);
 
         const { data: licenseRow } = await svc.from("licenses").select("*").eq("id", licenseId).maybeSingle();
         if (!licenseRow) return deny("not_found");
         const lic = licenseRow as Record<string, unknown>;
         if (lic.revoked === true) return deny("revoked");
 
-        const { data: deviceRow } = await svc
+        const { data: existingRow } = await svc
           .from("license_devices")
-          .select("device,active")
+          .select("device,device_public_key,active")
           .eq("license_id", licenseId)
           .eq("device", device)
           .maybeSingle();
+        let deviceRow = existingRow as
+          | { device?: string; device_public_key?: string; active?: boolean }
+          | null;
+
+        // ترحيل شفّاف: شهادة قديمة مربوطة بمعرّف عشوائي تنتقل إلى هوية المفتاح الجديدة
+        // بنفس المقعد — بشرط إثبات حيازة المفتاح الخاصّ، لا بمجرّد معرفة المعرّف القديم.
+        if (!deviceRow && legacyDevice && legacyDevice !== device) {
+          const { data: legacyRow } = await svc
+            .from("license_devices")
+            .select("device,device_public_key,active")
+            .eq("license_id", licenseId)
+            .eq("device", legacyDevice)
+            .maybeSingle();
+          const legacy = legacyRow as
+            | { device?: string; device_public_key?: string; active?: boolean }
+            | null;
+          if (legacy && legacy.active !== false) {
+            const legacyKey = String(legacy.device_public_key ?? "");
+            if (proof !== "ok" || !publicKey || (legacyKey && legacyKey !== publicKey)) {
+              await svc.from("license_events").insert({ license_id: licenseId, kind: "rebind_rejected", detail: "device_proof" });
+              return deny("device_proof_required", "الجهاز القديم مرتبط بمفتاح آخر");
+            }
+            const nowIso = new Date().toISOString();
+            const { error: rebindError } = await svc
+              .from("license_devices")
+              .update({ device, device_public_key: publicKey, last_seen: nowIso, app_version: version })
+              .eq("license_id", licenseId)
+              .eq("device", legacyDevice);
+            if (rebindError) return fail(500, "server", rebindError.message);
+            await svc.from("license_events").insert({ license_id: licenseId, kind: "device_rebound", detail: version });
+            deviceRow = { device, device_public_key: publicKey, active: true };
+          }
+        }
+
         if (!deviceRow) return deny("device_unknown");
-        if ((deviceRow as { active?: boolean }).active === false) return deny("device_removed");
+        if (deviceRow.active === false) return deny("device_removed");
+
+        const boundKey = String(deviceRow.device_public_key ?? "");
+        if (boundKey && (proof !== "ok" || publicKey !== boundKey)) {
+          await svc.from("license_events").insert({ license_id: licenseId, kind: "validate_rejected", detail: "device_proof" });
+          return deny("device_proof_required", "هذا الجهاز مرتبط بمفتاح آخر");
+        }
+        if (!boundKey && proof === "ok" && publicKey) {
+          // ترقية جهاز سبق تسجيله قبل إضافة الإثبات: يُثبَّت مفتاحه العامّ الآن.
+          await svc
+            .from("license_devices")
+            .update({ device_public_key: publicKey })
+            .eq("license_id", licenseId)
+            .eq("device", device);
+        }
 
         const { data: devices } = await svc.from("license_devices").select("active").eq("license_id", licenseId);
         const used = (devices ?? []).filter((d) => (d as { active?: boolean }).active !== false).length;
@@ -616,17 +818,20 @@ Deno.serve(async (req: Request) => {
         const keys: { display: string; hint: string; hash: string }[] = [];
         for (let i = 0; i < count; i++) keys.push(await newKey());
 
-        const { error: insertError } = await svc.from("licenses").insert(
-          keys.map((k) => ({
+        const rows = [];
+        for (const k of keys) {
+          rows.push({
             key_hash: k.hash,
             key_hint: k.hint,
+            key_ciphertext: await sealKey(k.display),
             plan,
             note,
             duration_days: days,
             device_limit: deviceLimit,
             created_by: who,
-          })),
-        );
+          });
+        }
+        const { error: insertError } = await svc.from("licenses").insert(rows);
         if (insertError) return fail(500, "server", insertError.message);
         await svc.from("license_events").insert({ kind: "created", detail: `${count}×${days}d/${deviceLimit}` });
         return json(200, { ok: true, keys: keys.map((k) => ({ key: k.display, hint: k.hint })) });
@@ -639,7 +844,11 @@ Deno.serve(async (req: Request) => {
         const query = clean(body.query, 40).replaceAll("…", "").toUpperCase();
         const limit = intIn(body.limit, 1, 500, 200);
 
-        let request = svc.from("licenses").select("*").order("created_at", { ascending: false }).limit(limit);
+        let request = svc
+          .from("licenses")
+          .select("id,key_hint,plan,note,duration_days,device_limit,revoked,starts_at,created_at")
+          .order("created_at", { ascending: false })
+          .limit(limit);
         if (query) request = request.ilike("key_hint", `%${query}%`);
         const { data: rows, error: listError } = await request;
         if (listError) return fail(500, "server", listError.message);
@@ -687,20 +896,35 @@ Deno.serve(async (req: Request) => {
         const who = await requireAdmin();
         if (who instanceof Response) return who;
         const id = String(body.id ?? "");
-        const { data: licenseRow } = await svc.from("licenses").select("*").eq("id", id).maybeSingle();
+        const { data: licenseRow } = await svc
+          .from("licenses")
+          .select("id,key_hint,key_ciphertext,plan,note,duration_days,device_limit,revoked,starts_at,created_at,updated_at")
+          .eq("id", id)
+          .maybeSingle();
         if (!licenseRow) return denial("not_found");
+        const rawLicense = licenseRow as Record<string, unknown>;
+        const sealed = String(rawLicense.key_ciphertext ?? "");
+        const fullKey = sealed ? await openKey(sealed) : "";
+        const license = { ...rawLicense };
+        delete license.key_ciphertext;
+        license.key = fullKey;
+        license.key_recoverable = fullKey.length > 0;
         const { data: devices } = await svc
           .from("license_devices")
-          .select("device,label,app_version,first_seen,last_seen,active")
+          .select("device,label,app_version,first_seen,last_seen,active,device_public_key")
           .eq("license_id", id)
           .order("last_seen", { ascending: false });
+        const devicesOut = (devices ?? []).map((row) => {
+          const { device_public_key, ...rest } = row as Record<string, unknown>;
+          return { ...rest, bound: String(device_public_key ?? "").length > 0 };
+        });
         const { data: events } = await svc
           .from("license_events")
           .select("kind,detail,at")
           .eq("license_id", id)
           .order("at", { ascending: false })
           .limit(50);
-        return json(200, { ok: true, license: licenseRow, devices: devices ?? [], events: events ?? [] });
+        return json(200, { ok: true, license, devices: devicesOut, events: events ?? [] });
       }
 
       // ═══ إلغاء / إعادة (مالك فقط) ═══════════════════════════════════════════════════════════

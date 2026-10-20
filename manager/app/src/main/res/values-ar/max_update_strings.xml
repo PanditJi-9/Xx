@@ -3,6 +3,7 @@
 <resources>
     <string name="update_dialog_title">يتوفّر تحديث</string>
     <string name="update_dialog_title_required">تحديث مطلوب</string>
+    <string name="update_required_notice">هذا التحديث إلزاميّ لمواصلة استخدام MaxManager. ثبّته ثم أعد فتح التطبيق.</string>
     <string name="update_dialog_body">الإصدار %1$s متاح، وأنت على %2$s.</string>
     <string name="update_block_title">تحتاج إلى التحديث للمتابعة</string>
     <string name="update_block_body">هذه النسخة (%1$s) لم تعد مدعومة. حدّث إلى %2$s لتواصل استخدام MaxManager.</string>

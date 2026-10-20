@@ -25,6 +25,7 @@ enum class AtlasControlTarget {
     CHARGING,
     MEMORY,
     STORAGE,
+    TOUCH,
 }
 
 /**

@@ -18,6 +18,7 @@ package nd.max.core.update
 
 import nd.max.core.remote.RemoteLatest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -77,5 +78,40 @@ class ConfigUpdatesTest {
         )
         // نسخة التطبيق غير مقروءة ⇒ لا نُخفي تحديثًا منشورًا (الواجهة تقول «غير معروفة»).
         assertEquals(ConfigUpdates.Verdict.AVAILABLE, ConfigUpdates.decide(published, "UNKNOWN"))
+    }
+
+    @Test
+    fun `optional updates return only after the configured reminder, required ones never wait`() {
+        val now = 1_000_000_000_000L
+        val hour = 60L * 60L * 1_000L
+        val optional = RemoteLatest(version = "2.2", page = "https://example.com/dl", reminderHours = 6)
+        val required = optional.copy(mode = RemoteLatest.MODE_REQUIRED)
+
+        // تخطٍّ الآن: لا ظهور قبل ستّ ساعات، ثم يعود.
+        assertFalse(ConfigUpdates.shouldShow(optional, ConfigUpdates.Verdict.AVAILABLE, "2.2", now, now))
+        assertFalse(ConfigUpdates.shouldShow(optional, ConfigUpdates.Verdict.AVAILABLE, "2.2", now, now + 6 * hour - 1))
+        assertTrue(ConfigUpdates.shouldShow(optional, ConfigUpdates.Verdict.AVAILABLE, "2.2", now, now + 6 * hour))
+
+        // إصدار جديد يتجاوز التخطّي فورًا.
+        assertTrue(ConfigUpdates.shouldShow(optional, ConfigUpdates.Verdict.AVAILABLE, "2.1", now, now))
+
+        // الإلزاميّ لا ينتظر فاصلًا، ولا ينفعه تخطٍّ قديم.
+        assertTrue(ConfigUpdates.shouldShow(required, ConfigUpdates.Verdict.AVAILABLE, "2.2", now, now))
+        assertTrue(ConfigUpdates.shouldShow(required, ConfigUpdates.Verdict.AVAILABLE, "2.2", 0L, now))
+
+        // تخطٍّ قديم بلا زمن لا يفتح النافذة فورًا (بيانات النسخة السابقة).
+        assertFalse(ConfigUpdates.shouldShow(optional, ConfigUpdates.Verdict.AVAILABLE, "2.2", 0L, now))
+    }
+
+    @Test
+    fun `the reminder interval is bounded and the mode has one meaning`() {
+        assertEquals(1, RemoteLatest(reminderHours = -5).effectiveReminderHours)
+        assertEquals(RemoteLatest.MAX_REMINDER_HOURS, RemoteLatest(reminderHours = 99_999).effectiveReminderHours)
+        assertFalse(RemoteLatest().required)
+        for (mode in listOf("required", "REQUIRED", "mandatory", "force", "blocking")) {
+            assertTrue("mode=$mode", RemoteLatest(mode = mode).required)
+        }
+        assertFalse(RemoteLatest(mode = "optional").required)
+        assertFalse(RemoteLatest(mode = "anything-else").required)
     }
 }

@@ -58,6 +58,7 @@ import nd.max.core.hardware.HardwareCapabilityResolver
 import nd.max.core.hardware.HardwareFeature
 import nd.max.core.hardware.MemoryUfsHardwareBackend
 import nd.max.core.hardware.SystemCeilingAccess
+import nd.max.core.hardware.TouchControlBackend
 import nd.max.core.hardware.SystemDevfreqCeilingAccess
 import nd.max.core.hardware.SystemGpuCeilingAccess
 import nd.max.core.threading.DispatcherProvider
@@ -491,6 +492,9 @@ class AtlasViewModel @Inject constructor(
         // العطب الذي يمنعه «ملك واحد لكل عقدة» في هذا المستودع.
         val discovery = MemoryUfsHardwareBackend.discover()
         val devfreq = discovery.devices
+        // واللمس يُقاس بالمصدر نفسه الذي يكتب: عُقَد مقروءة الآن، ووصول الكتابة عليها. فخريطة
+        // أطلس تعرض هدف TOUCH بحالته الحقيقية بدل أن تقول «لا شيء» لجهاز يحمل المقبض.
+        val touch = TouchControlBackend.discover()
         return AtlasAdapterContext(
             privileged = SystemCeilingAccess.privileged,
             cpuPolicies = CpuHardwareBackend.policies(),
@@ -506,6 +510,8 @@ class AtlasViewModel @Inject constructor(
             unclassifiedDevfreq = discovery.unclassified,
             // وللسبب نفسه يُنقل نقصُ القراءة أيضًا: رمز فجوة يقول «لم يُقرأ» لا «لم يُوجد».
             unreadableDevfreq = discovery.unreadable,
+            touchNodes = listOfNotNull(touch.gameMode, touch.sampleRate, touch.inputBoost),
+            touchAccess = TouchControlBackend.SystemAccess,
         )
     }
 

@@ -93,6 +93,23 @@ object ProfileApplier {
         return result.isSuccess
     }
 
+    /**
+     * يحفظ نيّة المستخدم في `API/max_ai_mode` — الملفّ الذي يقرؤه الخادم عند
+     * الإقلاع وعند كل حدث inotify. الكتابة **ليست عتادًا** (ملفّ حالة في مجلّد
+     * الوحدة)، لكنها تبقى هنا لا في `core/maxai`: طبقة السياسة ممنوعة من
+     * `RootFileAccess.write` مباشرةً (حرس `ControlPlaneArchitectureTest`)،
+     * والباب الواحد لتبديل الملفّ هو هذه الطبقة.
+     *
+     * تعيد `true` فقط إذا نجحت الكتابة فعلًا؛ والفشل يُسجَّل في التشخيص عند
+     * المستدعي لأن لكل مسار سببًا مختلفًا (صلاحية، ملفّ مقفل، مساحة).
+     */
+    fun persistMaxAiMode(profileId: String): Boolean {
+        if (profileId !in listOf(PROFILE_PERFORMANCE, PROFILE_BALANCED, PROFILE_ECO)) {
+            return false
+        }
+        return RootFileAccess.write(MaxManagerPaths.MAX_AI_MODE, "$profileId\n")
+    }
+
     /** الملف العام الحالي من ملف الوحدة، أو null عند تعذّر القراءة. */
     fun currentProfile(): String? = RootFileAccess.read(DAEMON_PROFILE_PATH)
 }

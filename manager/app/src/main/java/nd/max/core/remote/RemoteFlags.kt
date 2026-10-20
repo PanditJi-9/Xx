@@ -57,6 +57,12 @@ object RemoteFlags {
     const val EMUHUB = "emuhub"
     const val BYPASS_CHARGE = "bypass_charge"
 
+    /**
+     * ظهور صفّ «الترخيص» في الإعدادات — **مطفأ افتراضيًّا** بأمر المالك: يُخفى الباب ما دام
+     * هو لا يبيعه. وتشغيله من Max Control يُظهره؛ ولا يُغلق مسار التفعيل من شاشة القفل.
+     */
+    const val LICENSE = "license"
+
     val ALL: List<Flag> = listOf(
         Flag(GAMESPACE, enabledByDefault = true, surface = "ui/subscreens/GameLobbyScreen.kt"),
         Flag(AUDIO, enabledByDefault = true, surface = "core/audio"),
@@ -65,6 +71,7 @@ object RemoteFlags {
         Flag(SPOOF, enabledByDefault = true, surface = "ui/subscreens/AppSpoofSection.kt"),
         Flag(EMUHUB, enabledByDefault = true, surface = "ui/subscreens/EmulatorHubScreen.kt"),
         Flag(BYPASS_CHARGE, enabledByDefault = true, surface = "ui/subscreens/BypassChargeScreen.kt"),
+        Flag(LICENSE, enabledByDefault = false, surface = "ui/mainscreens/SettingsScreen.kt"),
     )
 
     private val byId: Map<String, Flag> = ALL.associateBy(Flag::id)

@@ -50,23 +50,44 @@ object DeviceIdentities {
      *   استهلاكًا لمقعدٍ جديد تبعاتٌ يعرفها المالك قبل أن يفتح تذكرة.
      */
     fun loadOrCreate(file: File): DeviceIdentity {
-        val existing = if (file.isFile) {
-            runCatching { file.readText(Charsets.UTF_8) }.getOrNull()?.trim()?.lowercase()
-        } else {
-            null
+        val existing = read(file)
+
+        // الهوية الأقوى: مفتاح RSA غير قابل للتصدير في Android Keystore، ومعرّفها بصمة
+        // مفتاحها العامّ. والتوقيع (في `DeviceProof`) هو ما يثبت حيازتها للخادم لاحقًا.
+        val loaded = DeviceProofs.load()
+        if (loaded != null) {
+            val legacy = existing?.takeIf { it != loaded.id }
+            if (existing == null) persist(file, loaded.id)
+            return DeviceIdentity(
+                id = loaded.id,
+                persisted = true,
+                legacyId = legacy,
+                proof = loaded.proof,
+            )
         }
-        if (existing != null && isValid(existing)) return DeviceIdentity(existing, persisted = true)
+
+        if (existing != null) return DeviceIdentity(existing, persisted = true)
 
         val fresh = newId()
+        return DeviceIdentity(fresh, persist(file, fresh))
+    }
+
+    private fun read(file: File): String? {
+        if (!file.isFile) return null
+        val text = runCatching { file.readText(Charsets.UTF_8) }.getOrNull()
+            ?.trim()?.lowercase() ?: return null
+        return text.takeIf(::isValid)
+    }
+
+    private fun persist(file: File, id: String): Boolean {
         val temporary = File(file.parentFile, "${file.name}.tmp")
-        val persisted = runCatching {
+        return runCatching {
             file.parentFile?.mkdirs()
-            temporary.writeText(fresh, Charsets.UTF_8)
+            temporary.writeText(id, Charsets.UTF_8)
             if (temporary.renameTo(file)) return@runCatching true
             if (!file.delete()) return@runCatching false
             temporary.renameTo(file)
         }.getOrDefault(false)
-        return DeviceIdentity(fresh, persisted)
     }
 
     /** عرضٌ مختصر للمستخدم (للدعم: «جهازك …1234») — لا يكشف المعرّف كاملًا في لقطة شاشة. */
@@ -74,5 +95,22 @@ object DeviceIdentities {
         if (id.length >= 10) id.substring(0, 6) + "…" + id.substring(id.length - 4) else id
 }
 
-/** المعرّف ونتيجة استقراره على القرص — مُدخلٌ للجلسة وللسجلّ. */
-data class DeviceIdentity(val id: String, val persisted: Boolean)
+/**
+ * المعرّف ونتيجة استقراره على القرص — مُدخلٌ للجلسة وللسجلّ.
+ *
+ * @property legacyId المعرّف العشوائي القديم (إن وُجد) — يُرسل مرّة للترحيل على الخادم،
+ *   ولا يُستخدم للتحقّق بعد ربط الهوية الجديدة.
+ * @property proof مفتاح الجهاز غير القابل للتصدير؛ يوقّع كل نداء ترخيص. ويغيب في بيئة JVM
+ *   أو إن تعذّر Keystore، فتعمل الهوية العشوائية القديمة كما كانت.
+ */
+class DeviceIdentity internal constructor(
+    val id: String,
+    val persisted: Boolean,
+    val legacyId: String? = null,
+    private val proof: DeviceProof? = null,
+) {
+    val publicKeyBase64: String? get() = proof?.publicKeyBase64
+
+    /** توقيع RSA-SHA256 (base64) على النصّ القياسيّ، أو null إن غاب المفتاح. */
+    fun sign(payload: String): String? = proof?.sign(payload)
+}

@@ -94,6 +94,7 @@ object HardwareRouteHealth {
         HardwareFeature.THERMAL_COOLING,
         HardwareFeature.DISPLAY_REFRESH,
         HardwareFeature.ZRAM,
+        HardwareFeature.TOUCH_CONTROL,
     )
 
     /**
@@ -139,6 +140,13 @@ object HardwareRouteHealth {
                     feature = feature,
                     target = AtlasControlTarget.GPU_GOVERNOR,
                     candidate = gpuGovernorRoute(snapshot, gpu),
+                )
+
+                HardwareFeature.TOUCH_CONTROL -> decide(
+                    snapshot = snapshot,
+                    feature = feature,
+                    target = AtlasControlTarget.TOUCH,
+                    candidate = touchRoute(snapshot),
                 )
 
                 // No verified route exists in this build for these yet. Reporting them as
@@ -211,6 +219,9 @@ object HardwareRouteHealth {
         HardwareFeature.THERMAL_COOLING, HardwareFeature.THERMAL_ZONES -> AtlasControlTarget.THERMAL_PROFILE
         HardwareFeature.DISPLAY_REFRESH, HardwareFeature.DISPLAY_RESOLUTION -> AtlasControlTarget.DISPLAY_REFRESH
         HardwareFeature.ZRAM, HardwareFeature.MEMORY_FREQUENCY -> AtlasControlTarget.MEMORY
+        // واللمس له هدفه الخاص: عقدة `game_switch_enable`/`touch_boost` ليست حرارة ولا تردّدًا،
+        // وإسقاطها على `THERMAL_PROFILE` كان يجعل الخريطة تصف شيئًا آخر.
+        HardwareFeature.TOUCH_CONTROL -> AtlasControlTarget.TOUCH
         // وقدرة التخزين صارت لها وجهتها الخاصة بدل السقوط على `THERMAL_PROFILE`: الخريطة تقول
         // حينها عن UFS شيئًا لا يخصّه، وهو أسوأ من سطر غائب.
         HardwareFeature.UFS_FREQUENCY -> AtlasControlTarget.STORAGE
@@ -317,6 +328,25 @@ object HardwareRouteHealth {
             baselineReadable = baselineReadable,
             rollbackProven = baselineReadable && writable,
             ambiguous = ambiguous,
+        )
+    }
+
+    private fun touchRoute(snapshot: HardwareCapabilitySnapshot): AtlasRouteCandidate? {
+        // لا عقدة مقروءة = لا مرشّح (review-required)؛ عقدة مقروءة غير قابلة للكتابة تصل إلى
+        // المخطِّط كمرشّح `READ_ONLY` فيُعلن `privilege_unavailable` لا «غير مدعوم».
+        val capability = snapshot.capability(HardwareFeature.TOUCH_CONTROL) ?: return null
+        if (capability.access == AccessLevel.NONE) return null
+        val writable = capability.access == AccessLevel.READ_WRITE
+        return candidate(
+            id = "touch.sysfs.arbiter",
+            target = AtlasControlTarget.TOUCH,
+            providerId = capability.backend,
+            readable = true,
+            privilegeAvailable = writable,
+            unitProven = true,
+            baselineReadable = true,
+            rollbackProven = writable,
+            ambiguous = false,
         )
     }
 

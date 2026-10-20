@@ -60,10 +60,10 @@ object MaxAiMode {
     fun currentProfileId(): String? =
         RootFileAccess.read(MaxManagerPaths.MAX_AI_MODE)?.trim()?.takeIf { isValid(it) }
 
-    /** يكتب النيّة وحدها — بلا لمس العتاد. */
+    /** يكتب النيّة وحدها — بلا لمس العتاد، عبر بوابة طبقة العتاد. */
     fun write(profileId: String): Boolean {
         if (!isValid(profileId)) return false
-        return RootFileAccess.write(MaxManagerPaths.MAX_AI_MODE, "$profileId\n")
+        return ProfileApplier.persistMaxAiMode(profileId)
     }
 
     /**

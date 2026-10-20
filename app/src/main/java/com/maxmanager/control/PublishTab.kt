@@ -16,6 +16,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -84,6 +85,28 @@ internal fun UpdateTab(
                 single = true,
                 keyboard = KeyboardType.Uri
             )
+            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                Column(Modifier.weight(1f)) {
+                    Text(
+                        if (d.updateRequired) "تحديث إلزاميّ — لا يُغلق حتى يُثبَّت" else "تحديث اختياري — يمكن تأجيله",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                    Text(
+                        "الإلزاميّ يمنع المتابعة؛ والاختياري يعود بعد الفاصل أدناه.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                Switch(checked = d.updateRequired, onCheckedChange = { d.updateRequired = it })
+            }
+            Field(
+                d.reminderHours,
+                { d.reminderHours = it },
+                "فاصل التذكير بالساعات للاختياري (1..720)",
+                latin = true,
+                single = true,
+                keyboard = KeyboardType.Number
+            )
             Text(
                 "أي رابط https تريده: GitHub أو خادمك — والزرّ في نافذة المستخدم **يفتحه في المتصفّح**، " +
                     "لا تنزيل داخل التطبيق.",
@@ -121,12 +144,22 @@ private fun UpdatePreview(d: Draft) {
             .padding(14.dp),
         verticalArrangement = Arrangement.spacedBy(6.dp)
     ) {
-        Text("يتوفّر تحديث", style = MaterialTheme.typography.titleMedium)
+        Text(
+            if (d.updateRequired) "تحديث مطلوب" else "يتوفّر تحديث",
+            style = MaterialTheme.typography.titleMedium
+        )
         Text(
             "الإصدار ${d.version.ifEmpty { "—" }} متاح، وأنت على نسختك الحالية.",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
+        if (d.updateRequired) {
+            Text(
+                "هذا التحديث إلزاميّ لمواصلة استخدام MaxManager. ثبّته ثم أعد فتح التطبيق.",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.error
+            )
+        }
         if (d.released.isNotBlank()) {
             Text(
                 "تاريخ الإصدار: ${d.released}",
@@ -144,7 +177,11 @@ private fun UpdatePreview(d: Draft) {
         Spacer(Modifier.height(2.dp))
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             // الزرّان رسمٌ لا فعل: هما في التطبيق، وهذا معرض للألوان والنصوص فقط.
-            Text("لاحقًا", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            if (!d.updateRequired) {
+                Text("لاحقًا", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            } else {
+                Text("لا يمكن التخطّي", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.error)
+            }
             Text("حدّث الآن", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.primary)
         }
     }

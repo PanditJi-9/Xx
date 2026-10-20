@@ -281,7 +281,7 @@ on conflict (key) do nothing;
 -- للبايتات الموقّعة نفسها، ويقرؤه التطبيق من العرض `config_signed` أدناه.
 --
 -- ولا `pgcrypto` هنا: المفاتيح تُولَّد وتُجزَّأ (hash) خارج SQL — في دالّة `maxctl` وحدها،
--- ولا تُخزَّن أي مفاتيح خامّ في قاعدة البيانات (تُخزَّن البصمة `key_hash` فقط).
+-- ويُحفظ نصّها مشفَّرًا (AES-GCM) لعرضه للمالك في التفاصيل. البصمة `key_hash` تبقى عمود التحقّق.
 -- التوثيق الكامل في `docs/ai/LICENSE-KEYS-01-spec.md`، ودالّة التوقيع في `supabase/functions/maxctl/`.
 
 -- ── ١) أعمدة النشر الموقّع على صفّ الإعداد ────────────────────────────────────────────────────
@@ -301,12 +301,15 @@ create or replace view public.config_signed as
 grant select on public.config_signed to anon, authenticated;
 
 -- ── ٢) جدول المفاتيح ──────────────────────────────────────────────────────────────────────────
--- لا يُخزَّن المفتاح الخامّ أبدًا: `key_hash` = SHA-256 للمفتاح بصيغته القانونية (في `maxctl`)،
--- و`key_hint` بأوّل خمسة محارف وآخر محرفين يعرضهما المالك للتعرّف فقط.
+-- `key_hash` = SHA-256 للمفتاح بصيغته القانونية (في `maxctl`) — هو ما يُتحقَّق منه عند التفعيل،
+-- و`key_hint` بأوّل خمسة محارف وآخر محرفين يعرضهما المالك للتعرّف فقط. ولمّا طلب المالك عرض
+-- المفتاح كاملًا، يُحفظ النصّ **مشفَّرًا** في `key_ciphertext` (AES-256-GCM بمفتاح داخل أسرار
+-- الدالّة)، ولا يُعاد إلا في `license.detail` بعد تحقّق admin. المفاتيح الأقدم تبقى بلا نصّ.
 create table if not exists public.licenses (
   id uuid primary key default gen_random_uuid(),
   key_hash text not null unique,
   key_hint text not null default '',
+  key_ciphertext text not null default '',
   plan text not null default '',
   note text not null default '',
   duration_days integer not null default 30 check (duration_days between 1 and 3650),
@@ -318,13 +321,18 @@ create table if not exists public.licenses (
   updated_at timestamptz not null default now()
 );
 create index if not exists licenses_created_idx on public.licenses (created_at desc);
+-- ترقية قاعدة قائمة: العمودان يُضافان بلا لمس الصفوف القديمة (تبقى `''` = غير قابل للاسترجاع).
+alter table public.licenses add column if not exists key_ciphertext text not null default '';
 
 -- ── ٣) جدول أجهزة كل مفتاح ───────────────────────────────────────────────────────────────────
--- `device` معرّف عشوائي يُنشئه التطبيق لكل تثبيت (لا معرّف عتاد — سياسة الخصوصية).
+-- `device` = بصمة أوّل 32 محرفًا من SHA-256 للمفتاح العامّ الذي يولّده Android Keystore
+--   (RSA-2048، غير قابل للتصدير). ولا يُقبل الجهاز لاحقًا إلا بتوقيع يثبت حيازة المفتاح الخاصّ.
+-- `device_public_key` = SPKI base64 — يُثبَّت عند أول تفعيل، ويُقارن في كل تحقّق.
 -- `active = false` تعني «أُزيل من اللوحة» فيتحرّر مقعد من `device_limit` ويبقى السجلّ للأثر.
 create table if not exists public.license_devices (
   license_id uuid not null references public.licenses (id) on delete cascade,
   device text not null,
+  device_public_key text not null default '',
   label text not null default '',
   app_version text not null default '',
   first_seen timestamptz not null default now(),
@@ -333,6 +341,7 @@ create table if not exists public.license_devices (
   primary key (license_id, device)
 );
 create index if not exists license_devices_license_idx on public.license_devices (license_id, active);
+alter table public.license_devices add column if not exists device_public_key text not null default '';
 
 -- ── ٤) سجلّ الأحداث (تدقيق) ──────────────────────────────────────────────────────────────────
 create table if not exists public.license_events (

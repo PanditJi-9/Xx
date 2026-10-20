@@ -80,6 +80,21 @@ private fun FeaturesSection(d: Draft) {
                     )
                 }
             }
+            Field(
+                d.floors[id] ?: "0",
+                { d.floors[id] = it },
+                "أقدم versionCode يفهم هذا المفتاح (0 = بلا حدّ)",
+                latin = true,
+                single = true,
+                keyboard = KeyboardType.Number
+            )
+            if (id == "license") {
+                Text(
+                    "هذا المفتاح يُظهر صفّ «الترخيص» في الإعدادات. الافتراضي إيقاف — فعّله فقط عندما تبدأ البيع.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
             if ((d.states[id] ?: "on") != "on") {
                 Field(d.msgsAr[id] ?: "", { d.msgsAr[id] = it }, "الرسالة بالعربية (تظهر في نافذة القفل)")
                 Field(d.msgsEn[id] ?: "", { d.msgsEn[id] = it }, "Message in English", latin = true)
@@ -107,6 +122,13 @@ private fun AnnouncementSection(d: Draft) {
         if (d.annEnabled) {
             Field(d.annAr, { d.annAr = it }, "نص الإعلان بالعربية")
             Field(d.annEn, { d.annEn = it }, "Announcement text in English", latin = true)
+            Field(
+                d.annUntil,
+                { d.annUntil = it },
+                "ينتهي الإعلان في (2026-10-20 أو ISO، اتركه فارغًا بلا نهاية)",
+                latin = true,
+                single = true
+            )
         }
     }
 }

@@ -41,8 +41,8 @@ import org.json.JSONObject
  * قسم المفاتيح — كل نداءاته تمرّ بدالّة `maxctl` وحدها (`Api.license*`).
  *
  * ثلاث حقائق تحكم رسمه:
- * ① **نصّ المفتاح يُعرض مرّة واحدة**: الخادم يخزّن بصمة `sha256` لا المفتاح، فلو أُغلق
- *    الصندوق بلا نسخٍ فلا سبيل لاستعادته — يُقال ذلك صراحةً فوق النصّ.
+ * ① **نصّ المفتاح يُعرض بعد الإنشاء ويمكن استرجاعه من التفاصيل**: يُحفظ على الخادم مشفَّرًا
+ *    بمفتاح لا يخرج منه، ولا يُعاد إلا لمالك مسجَّل. والمفاتيح الأقدم من تفعيل الحفظ لا نصّ لها.
  * ② **العمليات المدمِّرة تُؤكَّد**: الإلغاء وتصفير الأجهزة لا رجعة لهما من هنا.
  * ③ **كل زرّ يعيد الجلب بعد نجاحه**: الشاشة تعرض ما في الخادم لا ما تظنّ أنها أرسلته.
  *
@@ -100,10 +100,19 @@ internal fun KeysTab(session: Session, state: KeysState, onAuthExpired: (String)
             state.error = ""
             try {
                 block()
+            } catch (cancelled: kotlinx.coroutines.CancellationException) {
+                throw cancelled
             } catch (e: ApiException) {
                 if (e.authExpired) onAuthExpired(e.message.orEmpty()) else state.error = e.message.orEmpty()
+            } catch (e: Throwable) {
+                // **لا يسقط التطبيق على استجابة غير متوقّعة.** كان `ApiException` وحده يُلتقط،
+                // فأي `JSONException` أو `IllegalStateException` من ردٍّ مشوّه يقتل العملية.
+                // والرسالة تُبقى قصيرة: السجلّ الكامل ليس للمستخدم.
+                state.error = e.message?.takeIf { it.isNotBlank() }?.take(180)
+                    ?: "تعذّر إكمال العملية — تحقّق من اتصالك ثم أعد المحاولة."
+            } finally {
+                state.busy = false
             }
-            state.busy = false
         }
     }
 
@@ -121,7 +130,7 @@ internal fun KeysTab(session: Session, state: KeysState, onAuthExpired: (String)
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
         SectionCard(
             "إنشاء مفاتيح",
-            "نصّ المفتاح يُعرض مرّة واحدة: الخادم يحفظ بصمته لا نصّه — انسخه قبل أن تغلق القائمة."
+            "نصّ المفتاح يظهر بعد الإنشاء، ويمكنك إعادة عرضه من «تفاصيل» — محفوظ مشفَّرًا على الخادم."
         ) {
             if (state.error.isNotEmpty()) {
                 Text(state.error, color = MaterialTheme.colorScheme.error, style = MaterialTheme.typography.bodyMedium)
@@ -221,11 +230,12 @@ internal fun KeysTab(session: Session, state: KeysState, onAuthExpired: (String)
         }
 
         if (state.created.isNotEmpty()) {
-            SectionCard("المفاتيح الجديدة", "احفظها الآن — لا تُعرض مرّة ثانية") {
+            SectionCard("المفاتيح الجديدة", "احفظها الآن أو ارجع إليها من التفاصيل") {
                 Text(
-                    "انسخها الآن: الخادم يحفظ البصمة لا النصّ، ولا سبيل لاستعادة نصّ مفتاح بعد إغلاق هذه القائمة.",
+                    "نصّ كل مفتاح محفوظ مشفَّرًا على الخادم، ويُعاد عرضه في «تفاصيل» لحساب المالك وحده. " +
+                        "انسخه الآن أيضًا حتى لا تعتمد على اتصال لاحق.",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.error
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 state.created.forEach { (key, hint) ->
                     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
@@ -353,6 +363,7 @@ internal fun KeysTab(session: Session, state: KeysState, onAuthExpired: (String)
         val license = info.optJSONObject("license") ?: JSONObject()
         val devices = info.optJSONArray("devices") ?: JSONArray()
         val events = info.optJSONArray("events") ?: JSONArray()
+        val fullKey = license.optString("key")
         AlertDialog(
             onDismissRequest = { state.detail = null },
             title = { Text("تفاصيل ${license.optString("key_hint")}") },
@@ -367,14 +378,33 @@ internal fun KeysTab(session: Session, state: KeysState, onAuthExpired: (String)
                     if (starts.isNotEmpty()) {
                         Text("البداية: ${starts.take(10)}", style = MaterialTheme.typography.bodySmall)
                     }
+                    Text("المفتاح الكامل", style = MaterialTheme.typography.titleSmall)
+                    if (fullKey.isNotEmpty()) {
+                        Text(fullKey, style = MaterialTheme.typography.bodyMedium)
+                        TextButton(onClick = { clipboard.setText(AnnotatedString(fullKey)) }) {
+                            Text("نسخ المفتاح")
+                        }
+                    } else {
+                        Text(
+                            "النصّ الكامل غير متاح لهذا المفتاح: أُنشئ قبل تفعيل الحفظ المشفَّر، " +
+                                "ولا يمكن استرجاعه من البصمة.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
                     Text("الأجهزة (${devices.length()})", style = MaterialTheme.typography.titleSmall)
                     for (i in 0 until devices.length()) {
                         val d = devices.optJSONObject(i) ?: continue
                         val active = d.optBoolean("active", true)
+                        val label = d.optString("label").ifEmpty { "جهاز غير معروف" }
                         Text(
-                            "${d.optString("device").take(8)}… ${d.optString("label")} · " +
-                                "${if (active) "نشط" else "مُصفَّر"} · ${d.optString("last_seen").take(10)}",
+                            "$label · ${if (active) "نشط" else "مُصفَّر"} · ${d.optString("last_seen").take(10)}",
                             style = MaterialTheme.typography.bodySmall
+                        )
+                        Text(
+                            "معرّف الجهاز: ${d.optString("device").take(8)}…",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                     Text("السجلّ (${events.length()})", style = MaterialTheme.typography.titleSmall)

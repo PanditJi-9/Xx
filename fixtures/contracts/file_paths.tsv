@@ -37,6 +37,7 @@ API/.lock	lock	archdaemon/jni/include/MaxManager.h;mainfiles/post-fs-data.sh
 API/current_modes	file	archdaemon/jni/include/MaxManager.h;mainfiles/customize.sh;manager/app/src/main/java/nd/max/core/maxai/MaxAiEngine.kt
 API/current_profile	file	archdaemon/jni/include/MaxManager.h;archdaemon/jni/src/BinaryCLI/CLIUtility.c;manager/app/src/main/java/nd/max/AppMonitor.kt;manager/app/src/main/java/nd/max/core/hardware/ProfileApplier.kt;manager/app/src/main/java/nd/max/ui/util/RootUtil.kt;manager/app/src/main/java/nd/max/ui/viewmodel/TweakViewmodel.kt
 API/gameinfo	file	archdaemon/jni/include/MaxManager.h
+API/max_ai_mode	file	archdaemon/jni/include/MaxManager.h;manager/app/src/main/java/nd/max/MaxManagerPaths.kt
 API/per-app-recovery.json	file	manager/app/src/main/java/nd/max/core/hardware/PerAppRecoveryStore.kt
 API/perapp_thermal_prev	file	archdaemon/jni/src/SystemProfile/PerAppThermal.c
 app_status	state	archdaemon/jni/include/MaxManager.h;archdaemon/jni/src/AppLoader/StatusMonitor.c;mainfiles/service.sh;manager/app/src/main/java/nd/max/core/maxai/MaxAiEngine.kt

@@ -103,6 +103,15 @@ data class AtlasAdapterContext(
      * للاثنين يطلب الفعل الخطأ — وهو ما يُصلحه [MemoryUfsHardwareBackend.UNREADABLE_GAP_CODE].
      */
     val unreadableDevfreq: List<String> = emptyList(),
+    /**
+     * عُقَد اللمس كما قُرئت (نمط لعب/تعزيز إدخال/نقر مزدوج) ووصولها المُقاس.
+     *
+     * تُمرَّر كقائمة لا كعقدة واحدة لأن الجهاز قد يعرض أكثر من مقبض، والملاءِم يختار المقروء
+     * القابل للكتابة بقيمتَي `0/1` المثبَتتين. و`touchAccess = null` تعني «لم يُقس وصول» —
+     * فلا يُبنى مسار كتابة، ولا يُدّعى أن اللمس غير مدعوم.
+     */
+    val touchNodes: List<TouchControlBackend.Node> = emptyList(),
+    val touchAccess: TouchControlBackend.Access? = null,
 )
 
 /** حكم الملاءمة على هذا الجهاز الآن — ثلاث حالات لا تُختزل. */
@@ -188,6 +197,18 @@ sealed interface AtlasControlRequest {
         val ceilingByKnob: Map<String, Long?>,
         val floorByKnob: Map<String, Long?> = emptyMap(),
         val reviewed: (String) -> Boolean = { false },
+        override val measuredGoalAvailable: Boolean = true,
+    ) : AtlasControlRequest
+
+    /**
+     * تعزيز اللمس: قيمة `on/off` لعقدة **مثبَتة القيمتين** (0/1). والعقدة والوصول يُقرآن من
+     * السياق، والطلب يحمل القرار فقط — فلا يمرّر المستدعي مسارًا ولا قيمة سائق مخمَّنة.
+     */
+    data class TouchBoost(
+        override val intent: AtlasControlIntent,
+        val owner: ControlOwnership.Owner,
+        val token: String,
+        val enabled: Boolean,
         override val measuredGoalAvailable: Boolean = true,
     ) : AtlasControlRequest
 }
@@ -285,6 +306,7 @@ class AtlasAdapterRegistry(private val adapters: List<AtlasControlAdapter>) {
                 GpuOppPinCeilingAdapter(),
                 MemoryDevfreqCeilingAdapter(),
                 UfsDevfreqCeilingAdapter(),
+                TouchSysfsAdapter(),
             ),
         )
     }

@@ -92,7 +92,16 @@ class LicenseClient(
     }
 
     /** تفعيل مفتاح لأول مرة (أو بعد فقده) — الخادم يقرّر: صالح؟ مقاعد؟ منتهٍ؟ */
-    fun redeem(keyHash: String, device: String, label: String, appVersion: String): LicenseCallOutcome =
+    fun redeem(
+        keyHash: String,
+        device: String,
+        label: String,
+        appVersion: String,
+        legacyDevice: String = "",
+        devicePublicKey: String = "",
+        deviceProof: String = "",
+        deviceProofAt: Long = 0L,
+    ): LicenseCallOutcome =
         call(
             action = "license.redeem",
             fields = mapOf(
@@ -100,17 +109,33 @@ class LicenseClient(
                 "device" to device,
                 "label" to label,
                 "app_version" to appVersion,
+                "legacy_device" to legacyDevice,
+                "device_public_key" to devicePublicKey,
+                "device_proof" to deviceProof,
+                "device_proof_at" to if (deviceProofAt > 0L) deviceProofAt.toString() else "",
             ),
         )
 
     /** تجديد شهادة جهاز **مسجَّل** — يكشف الإلغاء ويبني الإيقاف المؤقّت المستجدّ. */
-    fun validate(licenseId: String, device: String, appVersion: String): LicenseCallOutcome =
+    fun validate(
+        licenseId: String,
+        device: String,
+        appVersion: String,
+        legacyDevice: String = "",
+        devicePublicKey: String = "",
+        deviceProof: String = "",
+        deviceProofAt: Long = 0L,
+    ): LicenseCallOutcome =
         call(
             action = "license.validate",
             fields = mapOf(
                 "license_id" to licenseId,
                 "device" to device,
                 "app_version" to appVersion,
+                "legacy_device" to legacyDevice,
+                "device_public_key" to devicePublicKey,
+                "device_proof" to deviceProof,
+                "device_proof_at" to if (deviceProofAt > 0L) deviceProofAt.toString() else "",
             ),
         )
 

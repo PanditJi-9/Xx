@@ -30,6 +30,7 @@ import nd.max.core.license.LicenseEnvelope
 import nd.max.core.license.LicenseFault
 import nd.max.core.license.LicenseFetchException
 import nd.max.core.license.LicenseKey
+import nd.max.core.license.LicenseProof
 import nd.max.core.license.LicenseRecord
 import nd.max.core.license.LicenseRejection
 import nd.max.core.license.LicenseState
@@ -207,15 +208,21 @@ object RemoteAccess {
 
         val client = licenseClient()
             ?: return@withContext finish(ActivationStatus.Failed(LicenseFault.NOT_CONFIGURED.code))
+        val keyHash = LicenseKey.sha256Hex(canonical)
+        val proof = proofFor("license.redeem", keyHash, identity)
 
         _activation.value = ActivationStatus.Running
         return@withContext try {
             when (
                 val outcome = client.redeem(
-                    keyHash = LicenseKey.sha256Hex(canonical),
+                    keyHash = keyHash,
                     device = identity.id,
                     label = deviceLabel(),
                     appVersion = appVersionCode.toString(),
+                    legacyDevice = proof.legacyDevice,
+                    devicePublicKey = proof.publicKey,
+                    deviceProof = proof.proof,
+                    deviceProofAt = proof.atMillis,
                 )
             ) {
                 is LicenseCallOutcome.Denied -> finish(ActivationStatus.Failed(outcome.code))
@@ -247,7 +254,30 @@ object RemoteAccess {
         }
     }
 
-    private fun deviceLabel(): String = runCatching { Build.MODEL ?: "" }.getOrDefault("").take(40)
+    private fun deviceLabel(): String = runCatching {
+        val manufacturer = Build.MANUFACTURER?.trim().orEmpty()
+            .replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
+        val model = Build.MODEL?.trim().orEmpty()
+        val android = Build.VERSION.RELEASE?.trim().orEmpty()
+        listOf(manufacturer, model)
+            .filter { it.isNotEmpty() }
+            .joinToString(" ")
+            .ifEmpty { "Android device" } +
+            (if (android.isNotEmpty()) " · Android $android (SDK ${Build.VERSION.SDK_INT})" else "")
+    }.getOrDefault("Android device").take(80)
+
+    /**
+     * حقول إثبات حيازة مفتاح الجهاز. غياب Keystore (أو فشل التوقيع) يُعيد المعرّف القديم
+     * وحده — فيبقى السلوك السابق بدل أن يمنع التفعيل كليًّا.
+     */
+    private fun proofFor(action: String, subject: String, identity: DeviceIdentity): DeviceProofArgs {
+        val legacy = identity.legacyId.orEmpty()
+        val publicKey = identity.publicKeyBase64 ?: return DeviceProofArgs(legacy, "", "", 0L)
+        val at = System.currentTimeMillis()
+        val signature = identity.sign(LicenseProof.payload(action, identity.id, subject, at))
+            ?: return DeviceProofArgs(legacy, "", "", 0L)
+        return DeviceProofArgs(legacy, publicKey, signature, at)
+    }
 
     private fun configClient(): ConfigClient? {
         val url = BuildConfig.SUPABASE_URL.trim()
@@ -320,8 +350,19 @@ object RemoteAccess {
         val current = record ?: return
         val client = licenseClient() ?: return
         val now = System.currentTimeMillis()
+        val proof = proofFor("license.validate", current.licenseId, identity)
         try {
-            when (val outcome = client.validate(current.licenseId, identity.id, appVersionCode.toString())) {
+            when (
+                val outcome = client.validate(
+                    licenseId = current.licenseId,
+                    device = identity.id,
+                    appVersion = appVersionCode.toString(),
+                    legacyDevice = proof.legacyDevice,
+                    devicePublicKey = proof.publicKey,
+                    deviceProof = proof.proof,
+                    deviceProofAt = proof.atMillis,
+                )
+            ) {
                 is LicenseCallOutcome.Granted -> {
                     val failure = admitGranted(outcome.envelope)
                     if (failure != null) {
@@ -435,3 +476,11 @@ object RemoteAccess {
 
     private const val COMPONENT = "license"
 }
+
+/** حقول الإثبات التي يرسلها كل نداء ترخيص إلى `maxctl` (فارغة في بيئة بلا Keystore). */
+private data class DeviceProofArgs(
+    val legacyDevice: String,
+    val publicKey: String,
+    val proof: String,
+    val atMillis: Long,
+)

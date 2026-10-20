@@ -53,14 +53,14 @@ import nd.max.ui.util.VersionIdentity
  *
  * ## دورة الظهور — ثلاث قواعد لا رابعة
  *
- * ① **تلقائيًّا مرّة**: إعداد منشور أحدث من المثبَّت ولم يُتخطَّ ⇒ تظهر. و«لاحقًا» أو
- *    «حدّث الآن» يسجّلان الإصدار نفسه فلا تعود حتى ينشر المالك إصدارًا أحدث منه.
+ * ① **تلقائيًّا مرّة**: إعداد منشور أحدث من المثبَّت ولم يُتخطَّ ⇒ تظهر. و«لاحقًا» يسجّل
+ *    الإصدار وزمنه فلا تعود قبل الفاصل الذي كتبه المالك (`reminder_hours`)، و«حدّث الآن»
+ *    يسجّلهما أيضًا. وإصدارٌ **إلزاميّ** (`mode=required`) لا يُتخطّى: يظهر كلّما فُتح
+ *    التطبيق حتى يُثبَّت، ولا يقبل الإغلاق من أي طريق.
  * ② **بالطلب**: «الإعدادات ← التحقّق من التحديثات» يمسح التخطّي ويعرض النافذة — من طلب بنفسه
- *    يريد أن يرى ما تخطّاه (نفس قاعدة `UpdateManager.checkNow`).
+ *    يريد أن يرى ما تخطّاه (نفس قاعدة `UpdateManager.checkNow`). ويُسجَّل الطلب كمعالَج كي
+ *    لا يعيد مستضيفٌ جديد فتح النافذة عند كل تنقّل.
  * ③ **بالجديد**: إصدار أحدث يُنشر ⇒ يعود الظهور من نفسه ولو كان السابق متخطّى.
- *
- * والنافذة لا تحجب: `CustomContentDialog` يقبل الإغلاق من كل طريق (نقرة خارجية أو رجوع)،
- * فالإلزام يبقى لقناة المانيفست وحدها (`UpdateVerdict.BLOCKED`).
  */
 @Composable
 fun ConfigUpdateHost() {
@@ -84,23 +84,38 @@ private fun ConfigUpdateSurface() {
     val verdict = remember(latest?.version, latest?.page, installed.versionName) {
         ConfigUpdates.decide(latest, installed.versionName)
     }
+    val mandatory = latest?.required == true
 
     var visible by remember { mutableStateOf(false) }
     var dismissedVersion by remember { mutableStateOf(store.dismissedVersion()) }
+    var dismissedAt by remember { mutableStateOf(store.dismissedAtMillis()) }
+    var handledManual by remember { mutableStateOf(store.handledManualRequest()) }
 
-    // ① الظهور التلقائي — لمرّة لكل إصدار منشور.
-    LaunchedEffect(verdict, latest?.version, dismissedVersion) {
-        val published = latest?.version?.trim().orEmpty()
-        if (verdict == ConfigUpdates.Verdict.AVAILABLE && published != dismissedVersion) {
+    // ① الظهور التلقائي — إلزاميّ في كل فتحة، واختياري بعد الفاصل فقط.
+    LaunchedEffect(verdict, latest?.version, latest?.reminderHours, dismissedVersion, dismissedAt) {
+        if (
+            ConfigUpdates.shouldShow(
+                latest = latest,
+                verdict = verdict,
+                dismissedVersion = dismissedVersion,
+                dismissedAtMillis = dismissedAt,
+                nowMillis = System.currentTimeMillis(),
+            )
+        ) {
             visible = true
         }
     }
 
-    // ② الطلب اليدوي من الإعدادات — يمسح التخطّي أولًا فلا يبقى سؤالٌ بلا جواب.
+    // ② الطلب اليدوي من الإعدادات — يمسح التخطّي أولًا فلا يبقى سؤالٌ بلا جواب. والعدّاد
+    // المعالَج محفوظ، فلا يُعاد الفتح عند كل تنقّل أو إعادة تركيب للمستضيف.
     LaunchedEffect(manualRequests) {
-        if (manualRequests > 0L) {
+        val request = manualRequests
+        if (request > handledManual) {
+            handledManual = request
+            store.markManualRequestHandled(request)
             store.clear()
             dismissedVersion = ""
+            dismissedAt = 0L
             if (verdict == ConfigUpdates.Verdict.AVAILABLE) visible = true
         }
     }
@@ -115,21 +130,29 @@ private fun ConfigUpdateSurface() {
     val page = latest?.page?.trim().orEmpty()
 
     fun settle() {
-        if (version.isNotEmpty()) store.dismiss(version)
+        if (version.isNotEmpty()) {
+            val now = System.currentTimeMillis()
+            store.dismiss(version, now)
+            dismissedAt = now
+        }
         dismissedVersion = version
         visible = false
     }
 
     CustomContentDialog(
         visible = true,
-        title = stringResource(R.string.update_dialog_title),
-        onDismiss = { settle() },
+        title = stringResource(
+            if (mandatory) R.string.update_dialog_title_required else R.string.update_dialog_title
+        ),
+        onDismiss = { if (!mandatory) settle() },
         onConfirm = {
-            settle()
+            // الإلزاميّ يبقى حتى يُثبَّت الإصدار: الضغط يفتح صفحة التنزيل ولا يغلق النافذة.
+            if (!mandatory) settle()
             openUpdatePage(context, page)
         },
         confirmText = stringResource(R.string.update_button_now),
-        dismissText = stringResource(R.string.update_button_later),
+        dismissText = if (mandatory) "" else stringResource(R.string.update_button_later),
+        dismissible = !mandatory,
     ) {
         Column(verticalArrangement = Arrangement.spacedBy(MaxSpace.sm)) {
             Text(
@@ -137,6 +160,13 @@ private fun ConfigUpdateSurface() {
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
+            if (mandatory) {
+                Text(
+                    text = stringResource(R.string.update_required_notice),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.error,
+                )
+            }
             val released = latest?.released?.trim().orEmpty()
             if (released.isNotEmpty()) {
                 Text(

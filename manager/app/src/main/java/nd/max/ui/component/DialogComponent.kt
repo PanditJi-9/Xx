@@ -473,6 +473,8 @@ fun CustomContentDialog(
     confirmEnabled: Boolean = true,
     confirmText: String = stringResource(id = android.R.string.ok),
     dismissText: String = stringResource(id = android.R.string.cancel),
+    /** `false` للنافذة الإلزاميّة: لا رجوع ولا نقرة خارجية ولا زرّ تخطٍّ. */
+    dismissible: Boolean = true,
     content: @Composable () -> Unit
 ) {
     val context = LocalContext.current
@@ -485,7 +487,7 @@ fun CustomContentDialog(
         enter = fadeIn(animationSpec = tween(250, easing = LinearOutSlowInEasing)),
         exit = fadeOut(animationSpec = tween(200, easing = FastOutSlowInEasing))
     ) {
-        BackHandler(onBack = onDismiss)
+        BackHandler(onBack = { if (dismissible) onDismiss() })
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -494,7 +496,7 @@ fun CustomContentDialog(
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = null,
-                    onClick = onDismiss 
+                    onClick = { if (dismissible) onDismiss() } 
                 ),
             contentAlignment = Alignment.Center
         ) {
@@ -558,7 +560,7 @@ fun CustomContentDialog(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        if (dismissText.isNotEmpty()) {
+                        if (dismissible && dismissText.isNotEmpty()) {
                             nd.max.ui.component.StudioTextButton(onClick = onDismiss, modifier = Modifier.weight(1f)) {
                                 Text(text = dismissText)
                             }

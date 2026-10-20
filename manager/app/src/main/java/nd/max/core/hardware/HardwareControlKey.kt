@@ -25,6 +25,16 @@ object HardwareControlKey {
     /** بادئة مفتاح مقبض تردد جهاز GPU — عامّة للسبب نفسه. */
     const val GPU_FREQUENCY_PREFIX = "gpu_frequency:"
 
+    /**
+     * مفتاح عقدة تعزيز اللمس (`game_switch_enable` أو `touch_boost`) — واحد لكل عقدة.
+     *
+     * والمسار جزء من المفتاح لأن الجهاز قد يعرض أكثر من عقدة (نمط لعب وتعزيز CPU)؛ ولو اتّحد
+     * المفتاح لتنازعت عقدتان على ملكية واحدة، وهو ما يرفضه الـarbiter.
+     */
+    const val TOUCH_BOOST_PREFIX = "touch_boost:"
+
+    fun touchBoost(path: String): String = TOUCH_BOOST_PREFIX + path
+
     fun cpuLimits(policyName: String): String = CPU_LIMITS_PREFIX + policyName
     fun gpuFrequency(deviceName: String): String = GPU_FREQUENCY_PREFIX + deviceName
     const val CPU_BOOST = "cpu_boost"

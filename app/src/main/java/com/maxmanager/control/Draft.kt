@@ -41,18 +41,25 @@ internal class Draft {
     var version by mutableStateOf("")
     var released by mutableStateOf("")
     var downloadUrl by mutableStateOf("")
+    /** `true` ⇒ تحديث إلزاميّ لا تُغلق نافذته حتى يُثبَّت. */
+    var updateRequired by mutableStateOf(false)
+    /** فاصل التذكير للإصدار الاختياري، بالساعات (1..720). */
+    var reminderHours by mutableStateOf("24")
     var subUrl by mutableStateOf("")
     var payAr by mutableStateOf("")
     var payEn by mutableStateOf("")
     var annEnabled by mutableStateOf(false)
     var annAr by mutableStateOf("")
     var annEn by mutableStateOf("")
+    var annUntil by mutableStateOf("")
     val promos = mutableStateListOf<PromoDraft>()
     val changelog = mutableStateListOf<JSONObject>()
     val titles = mutableStateMapOf<String, String>()
     val states = mutableStateMapOf<String, String>()
     val msgsAr = mutableStateMapOf<String, String>()
     val msgsEn = mutableStateMapOf<String, String>()
+    /** أقدم `versionCode` يفهم كل مفتاح — 0 يعني بلا حدّ. */
+    val floors = mutableStateMapOf<String, String>()
 
     val dirty: Boolean get() = snapshot.isNotEmpty() && build().toString() != snapshot
     val featureIds: List<String> get() = titles.keys.sortedBy { (titles[it] ?: it).lowercase() }
@@ -65,6 +72,9 @@ internal class Draft {
         version = latest.optString("version")
         released = latest.optString("released")
         downloadUrl = latest.optString("download_page")
+        updateRequired = latest.optString("mode").trim().lowercase() in
+            setOf("required", "mandatory", "force", "forced", "blocking")
+        reminderHours = latest.optInt("reminder_hours", 24).coerceIn(1, 720).toString()
         val sub = c.optJSONObject("subscription") ?: JSONObject()
         subUrl = sub.optString("url")
         payAr = sub.optString("payment_text_ar")
@@ -73,6 +83,7 @@ internal class Draft {
         annEnabled = ann.optBoolean("enabled", false)
         annAr = ann.optString("text_ar")
         annEn = ann.optString("text_en")
+        annUntil = ann.optString("until")
         changelog.clear()
         val log = c.optJSONArray("changelog") ?: JSONArray()
         for (i in 0 until log.length()) log.optJSONObject(i)?.let { changelog.add(it) }
@@ -88,7 +99,7 @@ internal class Draft {
                 }
             )
         }
-        titles.clear(); states.clear(); msgsAr.clear(); msgsEn.clear()
+        titles.clear(); states.clear(); msgsAr.clear(); msgsEn.clear(); floors.clear()
         val feats = c.optJSONObject("features") ?: JSONObject()
         feats.keys().forEach { id ->
             val f = feats.optJSONObject(id) ?: JSONObject()
@@ -96,6 +107,16 @@ internal class Draft {
             states[id] = f.optString("state", "on")
             msgsAr[id] = f.optString("message_ar")
             msgsEn[id] = f.optString("message_en")
+            floors[id] = f.optInt("min_version_code", 0).coerceAtLeast(0).toString()
+        }
+        // مفتاح الترخيص يُضاف إلى المسودّة حتى لو لم يره الخادم بعد: المالك يحتاجه ليُظهر
+        // صفّ الترخيص في الإعدادات، والافتراضي `off` يحفظ الإخفاء الحالي.
+        if (!titles.containsKey("license")) {
+            titles["license"] = "License"
+            states["license"] = "off"
+            msgsAr["license"] = ""
+            msgsEn["license"] = ""
+            floors["license"] = "0"
         }
         snapshot = build().toString()
     }
@@ -111,6 +132,8 @@ internal class Draft {
         // المالك يرفع النسخة حيث يشاء (GitHub أو خادمه)، ورابطٌ مُخمَّنٌ يكذب على المستخدم.
         latest.put("version", v).put("released", released.trim())
             .put("download_page", downloadUrl.trim())
+            .put("mode", if (updateRequired) "required" else "optional")
+            .put("reminder_hours", reminderHours.trim().toIntOrNull() ?: 24)
         out.put("latest", latest)
 
         val sub = out.optJSONObject("subscription") ?: JSONObject()
@@ -124,12 +147,14 @@ internal class Draft {
                 .put("state", states[id] ?: "on")
                 .put("message_ar", msgsAr[id] ?: "")
                 .put("message_en", msgsEn[id] ?: "")
+                .put("min_version_code", floors[id]?.trim()?.toIntOrNull()?.coerceAtLeast(0) ?: 0)
             feats.put(id, f)
         }
         out.put("features", feats)
 
         val ann = out.optJSONObject("announcement") ?: JSONObject()
         ann.put("enabled", annEnabled).put("text_ar", annAr).put("text_en", annEn)
+            .put("until", annUntil.trim())
         out.put("announcement", ann)
 
         val log = JSONArray()
@@ -162,9 +187,15 @@ internal class Draft {
         // رابط التنزيل تكتبه أنت، ويُرفض الفارغ: بلا رابط يفقد شاشة التحديث زرّ التنزيل عند
         // كل المستخدمين، وهذا أسوأ من رابط قديم — فالغياب عطب لا اختيار.
         !Validators.isHttpsUrl(downloadUrl.trim()) -> "رابط التنزيل يجب أن يبدأ بـ https:// (اكتبه بنفسك)"
+        reminderHours.trim().toIntOrNull()?.let { it in 1..720 } != true ->
+            "فاصل التذكير يجب أن يكون عددًا صحيحًا بين 1 و720 ساعة (30 يومًا)"
+        floors.any { (_, value) -> (value.trim().toIntOrNull() ?: -1) < 0 } ->
+            "حدّ الإصدار الأدنى لكل ميزة يجب أن يكون 0 أو رقم versionCode صحيحًا"
         subUrl.isNotBlank() && !Validators.isHttpsUrl(subUrl.trim()) -> "رابط الاشتراك يجب أن يبدأ بـ https://"
         states.values.any { it == "subscribe" } && subUrl.isBlank() -> "هناك ميزة بوضع «اشتراك» لكن رابط الاشتراك فارغ"
         annEnabled && annAr.isBlank() && annEn.isBlank() -> "الإعلان مفعَّل لكن نصّه فارغ"
+        annEnabled && annUntil.isNotBlank() && !Validators.isMoment(annUntil.trim()) ->
+            "نهاية الإعلان يجب أن تكون 2026-10-14 أو لحظة ISO كاملة"
         promos.any { !Validators.isMoment(it.from.trim()) || !Validators.isMoment(it.to.trim()) } ->
             "تواريخ فترة المجّاني يجب أن تكون 2026-10-14 أو لحظة ISO كاملة"
         promos.any { !Validators.isWindowOrdered(it.from.trim(), it.to.trim()) } ->

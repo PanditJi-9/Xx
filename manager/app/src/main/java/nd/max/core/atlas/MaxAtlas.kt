@@ -385,6 +385,10 @@ class MaxAtlas(
             context.storageDevices.any { it.currentFreq != null || it.maxFreq != null } ||
                 context.unclassifiedDevfreq.isNotEmpty()
 
+        // اللمس يُقاس بالعقدة المقروءة نفسها التي سيكتبها المُلاءِم: القائمة لا تُملأ إلا من
+        // قراءة أجابَت، فوجودها دليلُ قراءة — والكتابة تُقاس على حِدة في `assess`.
+        AtlasControlTarget.TOUCH -> context.touchNodes.isNotEmpty()
+
         // وما تبقّى (التحكم في التردّد العامّ، وتقديرات العرض، والشحن) لا مصدر قياس له هنا بعد —
         // و«لم يُقَس» تُعلن `false`، ولا تُقرأ «غير مدعوم».
         else -> false

@@ -57,8 +57,8 @@ class FilePathsContractTest {
     private val scanExtensions = setOf("c", "h", "rs", "kt", "sh")
 
     /** العدد المقيس — مفروض بالمساواة الدقيقة: جدول ينقص صفًّا بصمت يتوقّف عن القياس. */
-    // ٣٧ = ٣٦ + `runtime/gpu_discovery`: صفٌّ أُضيف عمدًا (لقطة اكتشاف GPU يكتبها الرفيق ويقرؤها `GpuDiscoverySnapshot`)، فالعدد يُرفع معه لا صامتًا.
-    private val expectedRows = 37
+    // ٣٨ = ٣٧ + `API/max_ai_mode`: نيّة المستخدم الواحدة التي يكتبها التطبيق ويقرؤها الخادم عند الإقلاع، فالعدد يُرفع معها لا صامتًا.
+    private val expectedRows = 38
 
     private fun root(): File {
         val r = ContractFixtures.repoRoot
