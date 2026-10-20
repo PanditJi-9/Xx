@@ -22452,3 +22452,22 @@ BUILD FAILED in 6m 12s
 - البوابات على الشجرة: `kt_balance` 3052/0 · `code_health` 0 · `i18n` 84+en/0 + prune 0 · `design_tokens` 252/300 · `resource_compile` ✓ · `jni_symbols` 23/0/0 (الطبقة ٢ غير متحققة: لا ثنائيات).
 - **حاجز QV:** محاولة `workflow_dispatch` (تشغيل `39453703575`) **لم تبدأ**؛ رسالة GitHub: «The job was not started because recent account payments have failed or your spending limit needs to be increased» — يلزم إصلاح الفوترة في GitHub، ولا علاقة له بالكود. والفرع المدفوع مؤقّت `ci/touch-pad-scroll-lock-20261020`، و`main` لم يُمسّ.
 - **لمس:** `TouchBoostScreen` صار يستهلك الإيماءة في `PointerEventPass.Initial` ويقفل تمرير الصفحة عبر `scrollEnabled = !padHeld`، ويُحرَّر في `finally`؛ التحقق النوعي/الاختبارات ✓، والأثر الحسي **يحتاج جهازًا**.
+
+## Executor log — DESIGN-EVOLUTION-01 — 2026-10-20 · DONE_WITH_CONCERNS
+
+**TASK (المالك):** جولة تطور تصميم — «حافظ على الهوية، لا تُسطّح الشاشات، قيّم كل تدرّج/حركة بمفرده، اجعل الحالات مختلفة الدلالة، واحترم تقليل الحركة» — مع تصحيح سجل §٩ لا ادّعاء إغلاقه.
+
+**WHAT (تغييرات مقصودة، مع الحفاظ على الشكل القائم):**
+- **دلالات الحالات:** `MaxContentState` صار يقبل `tone: MaxTone` (افتراضي Accent) ويستخدمه في البلاطة والحدّ، و`MaxErrorState` = **Critical** · `MaxEmptyState` = **Neutral** · `MaxLoadingState` = **Accent**. فالحالات الثلاث لم تعد تتشابه باللون نفسه؛ الأيقونة والنصّ يبقيان، واللون صار يحمل المعنى نفسه.
+- **تقليل الحركة:** `MaxEqualizerBars` لا ينشئ `rememberInfiniteTransition` أصلًا حين `System.ANIMATOR_DURATION_SCALE == 0` (أو حين يكون inactive)، ويعود للشكل الساكن. و`VortexLivePulse` في `CyberAudioVortex` و`CubeSpinner`/`CubeOrb` في `CubeParts` تقرأ `rememberAnimationsEnabled()` وتُظهر حالة ساكنة كاملة عند الإيقاف.
+- **لا حذف جماعي للتدرّجات:** الـ١٠٥ موضعًا فُحصت بالفئة (تلاشي حوافّ · عمق لوحة · مقاييس · هوية شاشة)، ولم يُحذف تدرّج لمجرّد وجوده؛ التغيير البصري هذه الجولة في الدلالات والحركة، لا في «تنظيف» الشكل.
+- **حارس:** `VisualIdentityTest` + حالتان: `content states keep distinct semantic tones` و`looping visuals honour the system reduce motion setting`.
+- **تصحيح سجل:** «§٩ done» في تكملة CUSTOMIZE-01 تعني **عَرَض النجمة**؛ البند نفسه ما زال غير مغلق بشهادة `FINAL-REPORT.md` §٦ و§٩(ج) — وهذا السطر يرفع التناقض.
+
+**MEASUREMENTS:** `kt_balance` 3052/0 · `code_health` 0 · `i18n --prune` 0 · `design_tokens` 252/300 · `resource_compile` ✓ · `design_doc` ✓ · محاكاة الحارسين تمرّ.
+
+**BUILD:** `:app:compileDebugKotlin` محليًّا **انتهت مهلته عند ٦٠٠ ثانية بلا حكم** (بيئة الهاتف/aapt2)، فـ**الترجمة غير مُتحقَّقة هنا**؛ QV في CI هو الحكم. لم يُشغَّل جهاز.
+
+**RESIDUAL RISK:** الحكم البصري (تباين الأحمر/الرمادي/الأزرق في الوضعين · RTL · خط كبير) يحتاج جهازًا · `LiveGraphComponent` (shimmer زخرفي) و`CockpitDeck` ما زالا كودًا ميتًا غير محذوف · ١٢ حلقة في ١١ ملفًا بقي بعضها بلا بوابة شاملة (المُصلَح: الصوت والمكعّب؛ والباقي إمّا يقبل `animate` من المستدعي أو ميت) · البناء الكامل ~١٨ دقيقة عند الطلب.
+
+**NEXT:** UAT بصري على الجهاز للحالات الثلاث وللصوت · إزالة/توصيل `LiveGraphComponent` في جولة مستقلة · ثم QV على الدفعة.
