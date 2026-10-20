@@ -136,7 +136,6 @@
     <string name="max_ai_objective_pick_balanced">ດຸ່ນດ່ຽງ</string>
     <string name="max_ai_objective_pick_battery">ແບັດເຕີຣີ</string>
     <string name="max_ai_refresh">ແລ່ນຮອບວຽນດຽວນີ້</string>
-    <string name="max_ai_refresh_desc">ວັດແທກ, ວາງແຜນແລະປະຕິບັດຫນຶ່ງຄັ້ງແທນທີ່ຈະລໍຖ້າຮອບວຽນ 30s.</string>
     <string name="max_ai_counters">ການຕັດສິນໃຈ %1$d · ຢັ້ງຢືນ %2$d · ປັບ %3$d · ບລັອກເພື່ອຄວາມປອດໄພ %4$d</string>
     <string name="max_ai_deck_title">ກະດານຄວບຄຸມ</string>
     <string name="max_ai_deck_desc">ສະວິດສົດແລະສະຖານະທີ່ມັນປ່ຽນແປງ. ທຸກສິ່ງທຸກຢ່າງຂ້າງລຸ່ມນີ້ແມ່ນຫຼັກຖານ.</string>
@@ -262,9 +261,7 @@
     <string name="max_live_plan_snapshot">ແຜນການປະເມີນຫຼ້າສຸດ, ບໍ່ແມ່ນກິດຈະກໍາໃນປະຈຸບັນ</string>
     <string name="max_ai_learning_coverage">ການຄຸ້ມຄອງການຮຽນຮູ້ %1$d%%</string>
     <string name="max_ai_cycle_running">ການປະເມີນອຸປະກອນ</string>
-    <string name="max_ai_cycle_running_desc">ຮອບວຽນກຳລັງດຳເນີນຢູ່. ການຮ້ອງຂໍຊໍ້າຄືນຈະຖືກລວມເຂົ້າກັນ, ບໍ່ມີການຫຼິ້ນຄືນ.</string>
     <string name="max_ai_cycle_failed">ການປະເມີນລົ້ມເຫລວ</string>
-    <string name="max_ai_cycle_failed_desc">ບໍ່ມີການອ້າງສິດການປະເມີນຜົນສຳເລັດ. ແຕະເພື່ອລອງໃໝ່; ລາຍລະອຽດແມ່ນຢູ່ໃນການວິນິດໄສ.</string>
     <string name="max_ai_decisions_enabled">ການຕັດສິນໃຈອັດຕະໂນມັດເປີດ</string>
     <string name="max_ai_decisions_disabled">ການຕັດສິນໃຈອັດຕະໂນມັດຖືກປິດໄວ້</string>
     <string name="max_ai_master_disabled_desc">ການເພີ່ມປະສິດທິພາບ AI ປິດຢູ່. ການຄວບຄຸມດ້ວຍມືແລະການປ້ອງກັນຄວາມຮ້ອນຍັງຄົງເປັນເອກະລາດ.</string>

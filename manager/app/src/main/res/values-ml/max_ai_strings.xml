@@ -136,7 +136,6 @@
     <string name="max_ai_objective_pick_balanced">സമതുലിതമായ</string>
     <string name="max_ai_objective_pick_battery">ബാറ്ററി</string>
     <string name="max_ai_refresh">ഇപ്പോൾ ഒരു സൈക്കിൾ ഓടിക്കുക</string>
-    <string name="max_ai_refresh_desc">30-കളുടെ സൈക്കിളിനായി കാത്തിരിക്കുന്നതിന് പകരം ഒരിക്കൽ അളക്കുക, ആസൂത്രണം ചെയ്യുക, പ്രവർത്തിക്കുക.</string>
     <string name="max_ai_counters">തീരുമാനങ്ങൾ %1$d · പരിശോധിച്ചുറപ്പിച്ചു %2$d · ക്രമീകരിച്ചു %3$d · സുരക്ഷയ്ക്കായി തടഞ്ഞു %4$d</string>
     <string name="max_ai_deck_title">കൺട്രോൾ ഡെക്ക്</string>
     <string name="max_ai_deck_desc">തത്സമയ സ്വിച്ചും അത് മാറുന്ന അവസ്ഥയും. ഇതിന് താഴെയുള്ളതെല്ലാം തെളിവാണ്.</string>
@@ -262,9 +261,7 @@
     <string name="max_live_plan_snapshot">അവസാനമായി വിലയിരുത്തിയ പ്ലാൻ, നിലവിലെ പ്രവർത്തനമല്ല</string>
     <string name="max_ai_learning_coverage">പഠന കവറേജ് %1$d%%</string>
     <string name="max_ai_cycle_running">ഉപകരണം വിലയിരുത്തുന്നു</string>
-    <string name="max_ai_cycle_running_desc">ഒരു ചക്രം പുരോഗമിക്കുകയാണ്. ആവർത്തിച്ചുള്ള അഭ്യർത്ഥനകൾ ലയിപ്പിച്ചതാണ്, വീണ്ടും പ്ലേ ചെയ്യുന്നില്ല.</string>
     <string name="max_ai_cycle_failed">മൂല്യനിർണയം പരാജയപ്പെട്ടു</string>
-    <string name="max_ai_cycle_failed_desc">വിജയകരമായ വിലയിരുത്തലൊന്നും അവകാശപ്പെടുന്നില്ല. വീണ്ടും ശ്രമിക്കാൻ ടാപ്പ് ചെയ്യുക; വിശദാംശങ്ങൾ ഡയഗ്നോസ്റ്റിക്സിൽ ഉണ്ട്.</string>
     <string name="max_ai_decisions_enabled">സ്വയമേവയുള്ള തീരുമാനങ്ങൾ പ്രവർത്തനക്ഷമമാക്കി</string>
     <string name="max_ai_decisions_disabled">സ്വയമേവയുള്ള തീരുമാനങ്ങൾ പ്രവർത്തനരഹിതമാക്കി</string>
     <string name="max_ai_master_disabled_desc">AI ഒപ്റ്റിമൈസേഷൻ ഓഫാണ്. മാനുവൽ നിയന്ത്രണങ്ങളും താപ സംരക്ഷണവും സ്വതന്ത്രമായി തുടരുന്നു.</string>

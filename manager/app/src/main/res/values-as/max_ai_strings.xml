@@ -134,7 +134,6 @@
     <string name="max_ai_objective_pick_balanced">সুষম</string>
     <string name="max_ai_objective_pick_battery">বেটাৰি</string>
     <string name="max_ai_refresh">এতিয়াই এটা চাইকেল চলাওক</string>
-    <string name="max_ai_refresh_desc">৩০ৰ দশকৰ চক্ৰলৈ অপেক্ষা কৰাৰ পৰিৱৰ্তে এবাৰ জোখ-মাখ, পৰিকল্পনা কৰক আৰু কাম কৰক।</string>
     <string name="max_ai_counters">সিদ্ধান্তসমূহ %1$d · পৰীক্ষা কৰা হৈছে %2$d · সামঞ্জস্য কৰা হৈছে %3$d · সুৰক্ষাৰ বাবে ব্লক কৰা হৈছে %4$d</string>
     <string name="max_ai_deck_title">নিয়ন্ত্ৰণ ডেক</string>
     <string name="max_ai_deck_desc">লাইভ চুইচ আৰু ই সলনি হোৱা অৱস্থা। ইয়াৰ তলৰ সকলোবোৰেই প্ৰমাণ।</string>
@@ -260,9 +259,7 @@
     <string name="max_live_plan_snapshot">শেষৰ মূল্যায়ন কৰা পৰিকল্পনা, বৰ্তমানৰ কাৰ্যকলাপ নহয়</string>
     <string name="max_ai_learning_coverage">শিক্ষণ কভাৰেজ %1$d%%</string>
     <string name="max_ai_cycle_running">ডিভাইচটোৰ মূল্যায়ন কৰা</string>
-    <string name="max_ai_cycle_running_desc">এটা চক্ৰ চলি আছে। বাৰে বাৰে কৰা অনুৰোধসমূহ একত্ৰিত কৰা হয়, পুনৰায় খেলা নহয়।</string>
     <string name="max_ai_cycle_failed">মূল্যায়ন বিফল হ’ল</string>
-    <string name="max_ai_cycle_failed_desc">কোনো সফল মূল্যায়নৰ দাবী কৰা হোৱা নাই। পুনৰ চেষ্টা কৰিবলৈ টেপ কৰক; বিৱৰণ ডায়েগনষ্টিকছত আছে।</string>
     <string name="max_ai_decisions_enabled">স্বয়ংক্ৰিয় সিদ্ধান্ত সক্ষম কৰা হৈছে</string>
     <string name="max_ai_decisions_disabled">স্বয়ংক্ৰিয় সিদ্ধান্তসমূহ নিষ্ক্ৰিয় কৰা হৈছে</string>
     <string name="max_ai_master_disabled_desc">AI অপ্টিমাইজেচন বন্ধ। হাতৰ নিয়ন্ত্ৰণ আৰু তাপ সুৰক্ষা স্বাধীন হৈ থাকে।</string>

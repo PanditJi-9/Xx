@@ -47,9 +47,7 @@
     <string name="max_live_plan_snapshot">Zuletzt ausgewerteter Plan, nicht aktuelle Aktivität</string>
     <string name="max_ai_learning_coverage">Lernabdeckung %1$d%%</string>
     <string name="max_ai_cycle_running">Gerät wird ausgewertet</string>
-    <string name="max_ai_cycle_running_desc">Ein Zyklus läuft. Wiederholte Anfragen werden zusammengeführt, nicht abgespielt.</string>
     <string name="max_ai_cycle_failed">Auswertung fehlgeschlagen</string>
-    <string name="max_ai_cycle_failed_desc">Keine erfolgreiche Auswertung wird behauptet. Tippe zum Wiederholen; Details stehen in der Diagnose.</string>
     <string name="max_ai_decisions_enabled">Automatische Entscheidungen aktiviert</string>
     <string name="max_ai_decisions_disabled">Automatische Entscheidungen deaktiviert</string>
     <string name="max_ai_master_disabled_desc">Die KI-Optimierung ist aus. Manuelle Regler und Thermoschutz bleiben unabhängig.</string>
@@ -187,7 +185,6 @@
     <string name="max_ai_objective_pick_balanced">Ausgewogen</string>
     <string name="max_ai_objective_pick_battery">Akku</string>
     <string name="max_ai_refresh">Jetzt einen Zyklus ausführen</string>
-    <string name="max_ai_refresh_desc">Einmal messen, planen und handeln, statt auf den 30-s-Zyklus zu warten.</string>
     <string name="max_ai_counters">Entscheidungen %1$d · verifiziert %2$d · angepasst %3$d · aus Sicherheit blockiert %4$d</string>
     <string name="max_ai_deck_title">Steuerpult</string>
     <string name="max_ai_deck_desc">Der Live-Schalter und der Zustand, den er ändert. Alles darunter ist der Nachweis.</string>

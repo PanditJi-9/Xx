@@ -136,7 +136,6 @@
     <string name="max_ai_objective_pick_balanced">Imesawazishwa</string>
     <string name="max_ai_objective_pick_battery">Betri</string>
     <string name="max_ai_refresh">Endesha mzunguko sasa</string>
-    <string name="max_ai_refresh_desc">Pima, panga na chukua hatua mara moja badala ya kungoja mzunguko wa miaka ya 30.</string>
     <string name="max_ai_counters">Maamuzi %1$d · yamethibitishwa %2$d · yamerekebishwa %3$d · yamezuiwa kwa usalama %4$d</string>
     <string name="max_ai_deck_title">Kiti cha kudhibiti</string>
     <string name="max_ai_deck_desc">Swichi ya moja kwa moja na hali inabadilika. Kila kitu hapa chini ni ushahidi.</string>
@@ -262,9 +261,7 @@
     <string name="max_live_plan_snapshot">Mpango uliotathminiwa mwisho, sio shughuli ya sasa</string>
     <string name="max_ai_learning_coverage">Ufikiaji wa masomo %1$d%%</string>
     <string name="max_ai_cycle_running">Tathmini ya kifaa</string>
-    <string name="max_ai_cycle_running_desc">Mzunguko unaendelea. Maombi yanayorudiwa yanaunganishwa, hayarudiwi.</string>
     <string name="max_ai_cycle_failed">Tathmini imeshindwa</string>
-    <string name="max_ai_cycle_failed_desc">Hakuna tathmini iliyofaulu inayodaiwa. Gusa ili kujaribu tena; maelezo ni katika uchunguzi.</string>
     <string name="max_ai_decisions_enabled">Maamuzi ya kiotomatiki yamewashwa</string>
     <string name="max_ai_decisions_disabled">Maamuzi ya kiotomatiki yamezimwa</string>
     <string name="max_ai_master_disabled_desc">Uboreshaji wa AI umezimwa. Udhibiti wa mwongozo na ulinzi wa joto hubaki huru.</string>

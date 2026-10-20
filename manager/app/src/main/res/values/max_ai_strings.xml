@@ -168,7 +168,6 @@
     <string name="max_ai_objective_pick_balanced">Balanced</string>
     <string name="max_ai_objective_pick_battery">Battery</string>
     <string name="max_ai_refresh">Run a cycle now</string>
-    <string name="max_ai_refresh_desc">Measure, plan and act once instead of waiting for the 30s cycle.</string>
     <string name="max_ai_counters">Decisions %1$d · verified %2$d · adjusted %3$d · blocked for safety %4$d</string>
 
     <!-- Control deck: the switch and the engine state behind it -->
@@ -319,9 +318,7 @@
     <string name="max_live_plan_snapshot">Last evaluated plan, not current activity</string>
     <string name="max_ai_learning_coverage">Learning coverage %1$d%%</string>
     <string name="max_ai_cycle_running">Evaluating the device</string>
-    <string name="max_ai_cycle_running_desc">A cycle is in progress. Repeated requests are merged, not replayed.</string>
     <string name="max_ai_cycle_failed">Evaluation failed</string>
-    <string name="max_ai_cycle_failed_desc">No successful evaluation is claimed. Tap to retry; details are in diagnostics.</string>
     <string name="max_ai_decisions_enabled">Automatic decisions enabled</string>
     <string name="max_ai_decisions_disabled">Automatic decisions disabled</string>
     <string name="max_ai_master_disabled_desc">AI optimization is off. Manual controls and thermal protection remain independent.</string>
@@ -331,8 +328,6 @@
     <string name="maxai_intro_title">What Max AI does</string>
     <string name="maxai_intro_subtitle">The engine, what it measures, and what it never claims</string>
     <string name="maxai_intro_teaser">The engine, and what is available on your device right now</string>
-    <string name="maxai_intro_loop_title">The loop</string>
-    <string name="maxai_intro_loop_desc">Four stages — and the loop only closes with a read after the write.</string>
     <string name="maxai_intro_stage1_title">Reads the state first</string>
     <string name="maxai_intro_stage1_body">Last known values and device-read limits come before any decision — no step is taken on an unknown.</string>
     <string name="maxai_intro_stage2_title">Diagnoses the limit, not the clock</string>
@@ -342,7 +337,6 @@
     <string name="maxai_intro_stage4_title">Verifies by reading back</string>
     <string name="maxai_intro_stage4_body">The value is read after the write; what did not change is reported as it is, and rollback happens only where it is safe.</string>
     <string name="maxai_intro_access_title">Available now</string>
-    <string name="maxai_intro_access_desc">From the live panel configuration and your license, as of this moment — not a marketing table.</string>
     <string name="maxai_intro_state_available">Available</string>
     <string name="maxai_intro_state_free">Free right now</string>
     <string name="maxai_intro_state_key">Needs a key</string>

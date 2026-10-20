@@ -122,7 +122,6 @@
     <string name="max_ai_objective_pick_balanced">Tasakaalustatud</string>
     <string name="max_ai_objective_pick_battery">Aku</string>
     <string name="max_ai_refresh">Jookse nüüd tsükkel</string>
-    <string name="max_ai_refresh_desc">Mõõtke, planeerige ja tegutsege üks kord, selle asemel, et oodata 30ndate tsüklit.</string>
     <string name="max_ai_counters">Otsused %1$d · kontrollitud %2$d · kohandatud %3$d · ohutuse tagamiseks blokeeritud %4$d</string>
     <string name="max_ai_deck_title">Juhtplokk</string>
     <string name="max_ai_deck_desc">Reaalajas lüliti ja olek, mida see muudab. Kõik allpool on tõendid.</string>
@@ -241,9 +240,7 @@
     <string name="max_live_plan_snapshot">Viimati hinnatud plaan, mitte praegune tegevus</string>
     <string name="max_ai_learning_coverage">Õppe katvus %1$d%%</string>
     <string name="max_ai_cycle_running">Seadme hindamine</string>
-    <string name="max_ai_cycle_running_desc">Tsükkel on pooleli. Korduvad taotlused liidetakse, mitte ei esitata uuesti.</string>
     <string name="max_ai_cycle_failed">Hindamine ebaõnnestus</string>
-    <string name="max_ai_cycle_failed_desc">Edukat hindamist ei väideta. Puudutage uuesti proovimiseks; üksikasjad on diagnostikas.</string>
     <string name="max_ai_decisions_enabled">Automaatsed otsused on lubatud</string>
     <string name="max_ai_decisions_disabled">Automaatsed otsused on keelatud</string>
     <string name="max_ai_master_disabled_desc">AI optimeerimine on välja lülitatud. Käsijuhtimine ja termokaitse jäävad sõltumatuks.</string>

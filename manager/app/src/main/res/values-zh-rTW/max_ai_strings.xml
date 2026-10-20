@@ -136,7 +136,6 @@
     <string name="max_ai_objective_pick_balanced">均衡</string>
     <string name="max_ai_objective_pick_battery">電池</string>
     <string name="max_ai_refresh">現在運行一個循環</string>
-    <string name="max_ai_refresh_desc">測量、計劃和行動一次，而不是等待 30 秒的週期。</string>
     <string name="max_ai_counters">決定 %1$d · 驗證 %2$d · 調整 %3$d · 為了安全而封鎖 %4$d</string>
     <string name="max_ai_deck_title">主機</string>
     <string name="max_ai_deck_desc">即時開關及其改變的狀態。下面的一切都是證據。</string>
@@ -262,9 +261,7 @@
     <string name="max_live_plan_snapshot">最後評估的計劃，而不是目前的活動</string>
     <string name="max_ai_learning_coverage">學習覆蓋率%1$d%%</string>
     <string name="max_ai_cycle_running">評估設備</string>
-    <string name="max_ai_cycle_running_desc">一個循環正在進行中。重複的請求將被合併，而不是重播。</string>
     <string name="max_ai_cycle_failed">評估失敗</string>
-    <string name="max_ai_cycle_failed_desc">沒有聲稱評估成功。點擊重試；詳細資訊在診斷中。</string>
     <string name="max_ai_decisions_enabled">啟用自動決策</string>
     <string name="max_ai_decisions_disabled">自動決策已停用</string>
     <string name="max_ai_master_disabled_desc">AI優化已關閉。手動控制和熱保護保持獨立。</string>

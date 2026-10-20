@@ -136,7 +136,6 @@
     <string name="max_ai_objective_pick_balanced">Balanseng</string>
     <string name="max_ai_objective_pick_battery">Baterya</string>
     <string name="max_ai_refresh">Magpatakbo ng isang cycle ngayon</string>
-    <string name="max_ai_refresh_desc">Sukatin, planuhin at kumilos nang isang beses sa halip na maghintay para sa 30s cycle.</string>
     <string name="max_ai_counters">Mga desisyon %1$d · na-verify %2$d · inayos %3$d · hinarangan para sa kaligtasan %4$d</string>
     <string name="max_ai_deck_title">Control deck</string>
     <string name="max_ai_deck_desc">Ang live na switch at ang estado na binago nito. Lahat ng nasa ibaba nito ay patunay.</string>
@@ -262,9 +261,7 @@
     <string name="max_live_plan_snapshot">Huling nasuri na plano, hindi kasalukuyang aktibidad</string>
     <string name="max_ai_learning_coverage">Saklaw ng pag-aaral %1$d%%</string>
     <string name="max_ai_cycle_running">Pagsusuri ng aparato</string>
-    <string name="max_ai_cycle_running_desc">May cycle na nangyayari. Ang mga paulit-ulit na kahilingan ay pinagsama, hindi nire-replay.</string>
     <string name="max_ai_cycle_failed">Nabigo ang pagsusuri</string>
-    <string name="max_ai_cycle_failed_desc">Walang na-claim na matagumpay na pagsusuri. I-tap para subukang muli; ang mga detalye ay nasa diagnostics.</string>
     <string name="max_ai_decisions_enabled">Pinagana ang mga awtomatikong pagpapasya</string>
     <string name="max_ai_decisions_disabled">Na-disable ang mga awtomatikong pagpapasya</string>
     <string name="max_ai_master_disabled_desc">Naka-off ang AI optimization. Ang mga manu-manong kontrol at thermal protection ay nananatiling independyente.</string>

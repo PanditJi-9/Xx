@@ -136,7 +136,6 @@
     <string name="max_ai_objective_pick_balanced">ਸੰਤੁਲਿਤ</string>
     <string name="max_ai_objective_pick_battery">ਬੈਟਰੀ</string>
     <string name="max_ai_refresh">ਹੁਣ ਇੱਕ ਚੱਕਰ ਚਲਾਓ</string>
-    <string name="max_ai_refresh_desc">30 ਦੇ ਚੱਕਰ ਦੀ ਉਡੀਕ ਕਰਨ ਦੀ ਬਜਾਏ ਇੱਕ ਵਾਰ ਮਾਪੋ, ਯੋਜਨਾ ਬਣਾਓ ਅਤੇ ਕੰਮ ਕਰੋ।</string>
     <string name="max_ai_counters">ਫੈਸਲੇ %1$d · ਪ੍ਰਮਾਣਿਤ %2$d · ਵਿਵਸਥਿਤ %3$d · ਸੁਰੱਖਿਆ ਲਈ ਬਲੌਕ ਕੀਤਾ ਗਿਆ %4$d</string>
     <string name="max_ai_deck_title">ਕੰਟਰੋਲ ਡੈੱਕ</string>
     <string name="max_ai_deck_desc">ਲਾਈਵ ਸਵਿੱਚ ਅਤੇ ਸਥਿਤੀ ਜਿਸ ਵਿੱਚ ਇਹ ਬਦਲਦਾ ਹੈ। ਇਸ ਦੇ ਹੇਠਾਂ ਸਭ ਕੁਝ ਸਬੂਤ ਹੈ।</string>
@@ -262,9 +261,7 @@
     <string name="max_live_plan_snapshot">ਆਖਰੀ ਮੁਲਾਂਕਣ ਕੀਤੀ ਯੋਜਨਾ, ਮੌਜੂਦਾ ਗਤੀਵਿਧੀ ਨਹੀਂ</string>
     <string name="max_ai_learning_coverage">ਸਿਖਲਾਈ ਕਵਰੇਜ %1$d%%</string>
     <string name="max_ai_cycle_running">ਡਿਵਾਈਸ ਦਾ ਮੁਲਾਂਕਣ ਕਰ ਰਿਹਾ ਹੈ</string>
-    <string name="max_ai_cycle_running_desc">ਇੱਕ ਚੱਕਰ ਚੱਲ ਰਿਹਾ ਹੈ। ਦੁਹਰਾਈਆਂ ਗਈਆਂ ਬੇਨਤੀਆਂ ਨੂੰ ਮਿਲਾਇਆ ਜਾਂਦਾ ਹੈ, ਦੁਬਾਰਾ ਨਹੀਂ ਚਲਾਇਆ ਜਾਂਦਾ ਹੈ।</string>
     <string name="max_ai_cycle_failed">ਮੁਲਾਂਕਣ ਅਸਫਲ ਰਿਹਾ</string>
-    <string name="max_ai_cycle_failed_desc">ਕੋਈ ਸਫਲ ਮੁਲਾਂਕਣ ਦਾ ਦਾਅਵਾ ਨਹੀਂ ਕੀਤਾ ਗਿਆ ਹੈ। ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰਨ ਲਈ ਟੈਪ ਕਰੋ; ਵੇਰਵੇ ਡਾਇਗਨੌਸਟਿਕਸ ਵਿੱਚ ਹਨ।</string>
     <string name="max_ai_decisions_enabled">ਸਵੈਚਲਿਤ ਫੈਸਲੇ ਸਮਰਥਿਤ ਹਨ</string>
     <string name="max_ai_decisions_disabled">ਸਵੈਚਲਿਤ ਫੈਸਲੇ ਅਯੋਗ ਹਨ</string>
     <string name="max_ai_master_disabled_desc">AI ਓਪਟੀਮਾਈਜੇਸ਼ਨ ਬੰਦ ਹੈ। ਦਸਤੀ ਨਿਯੰਤਰਣ ਅਤੇ ਥਰਮਲ ਸੁਰੱਖਿਆ ਸੁਤੰਤਰ ਰਹਿੰਦੇ ਹਨ।</string>

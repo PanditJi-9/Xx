@@ -134,7 +134,6 @@
     <string name="max_ai_objective_pick_balanced">ሚዛናዊ</string>
     <string name="max_ai_objective_pick_battery">ባትሪ</string>
     <string name="max_ai_refresh">አሁን ዑደት አሂድ</string>
-    <string name="max_ai_refresh_desc">የ30ዎቹን ዑደት ከመጠበቅ ይልቅ አንድ ጊዜ ይለኩ፣ ያቅዱ እና እርምጃ ይውሰዱ።</string>
     <string name="max_ai_deck_title">የመርከቧ መቆጣጠሪያ</string>
     <string name="max_ai_deck_desc">የቀጥታ ማብሪያ / ማጥፊያ እና የሚለወጠው ሁኔታ። ከዚህ በታች ያለው ሁሉ ማስረጃው ነው።</string>
     <string name="max_ai_deck_learning">የመማር እድገት</string>
@@ -259,9 +258,7 @@
     <string name="max_live_plan_snapshot">ለመጨረሻ ጊዜ የተገመገመ እቅድ እንጂ የአሁኑ እንቅስቃሴ አይደለም።</string>
     <string name="max_ai_learning_coverage">የመማር ሽፋን %1$d%%</string>
     <string name="max_ai_cycle_running">መሣሪያውን መገምገም</string>
-    <string name="max_ai_cycle_running_desc">ዑደት በሂደት ላይ ነው። ተደጋጋሚ ጥያቄዎች ተዋህደዋል እንጂ እንደገና አይጫወቱም።</string>
     <string name="max_ai_cycle_failed">ግምገማ አልተሳካም።</string>
-    <string name="max_ai_cycle_failed_desc">ምንም የተሳካ ግምገማ አልተጠየቀም። እንደገና ለመሞከር መታ ያድርጉ; ዝርዝሮች በምርመራዎች ውስጥ ናቸው.</string>
     <string name="max_ai_decisions_enabled">ራስ-ሰር ውሳኔዎች ነቅተዋል።</string>
     <string name="max_ai_decisions_disabled">አውቶማቲክ ውሳኔዎች ተሰናክለዋል።</string>
     <string name="max_ai_master_disabled_desc">AI ማመቻቸት ጠፍቷል። በእጅ መቆጣጠሪያዎች እና የሙቀት መከላከያዎች ገለልተኛ ሆነው ይቆያሉ.</string>

@@ -136,7 +136,6 @@
     <string name="max_ai_objective_pick_balanced">Subalansuota</string>
     <string name="max_ai_objective_pick_battery">Baterija</string>
     <string name="max_ai_refresh">Dabar paleiskite ciklą</string>
-    <string name="max_ai_refresh_desc">Išmatuokite, suplanuokite ir veikite vieną kartą, o ne laukite 30-ųjų ciklo.</string>
     <string name="max_ai_counters">Sprendimai %1$d · patvirtinti %2$d · pakoreguoti %3$d · užblokuoti dėl saugumo %4$d</string>
     <string name="max_ai_deck_title">Valdymo blokas</string>
     <string name="max_ai_deck_desc">Tiesioginis jungiklis ir būsena, kurią jis keičia. Viskas, kas yra žemiau, yra įrodymai.</string>
@@ -262,9 +261,7 @@
     <string name="max_live_plan_snapshot">Paskutinis įvertintas planas, o ne dabartinė veikla</string>
     <string name="max_ai_learning_coverage">Mokymosi aprėptis %1$d%%</string>
     <string name="max_ai_cycle_running">Įrenginio įvertinimas</string>
-    <string name="max_ai_cycle_running_desc">Vyksta ciklas. Pakartotinės užklausos sujungiamos, o ne atkuriamos.</string>
     <string name="max_ai_cycle_failed">Vertinimas nepavyko</string>
-    <string name="max_ai_cycle_failed_desc">Neteigiama, kad sėkmingas įvertinimas. Bakstelėkite, kad bandytumėte dar kartą; detalės yra diagnostikoje.</string>
     <string name="max_ai_decisions_enabled">Įjungti automatiniai sprendimai</string>
     <string name="max_ai_decisions_disabled">Automatiniai sprendimai išjungti</string>
     <string name="max_ai_master_disabled_desc">AI optimizavimas išjungtas. Rankinis valdymas ir šiluminė apsauga išlieka nepriklausomi.</string>

@@ -136,7 +136,6 @@
     <string name="max_ai_objective_pick_balanced">متعادل</string>
     <string name="max_ai_objective_pick_battery">باتری</string>
     <string name="max_ai_refresh">اکنون یک چرخه را اجرا کنید</string>
-    <string name="max_ai_refresh_desc">به جای انتظار برای چرخه دهه 30، یک بار اندازه گیری، برنامه ریزی و اقدام کنید.</string>
     <string name="max_ai_counters">تصمیمات %1$d · تایید شده %2$d · تنظیم شده %3$d · مسدود شده برای ایمنی %4$d</string>
     <string name="max_ai_deck_title">عرشه کنترل</string>
     <string name="max_ai_deck_desc">سوئیچ زنده و وضعیت تغییر آن. همه چیز زیر این شواهد است.</string>
@@ -262,9 +261,7 @@
     <string name="max_live_plan_snapshot">آخرین طرح ارزیابی شده، نه فعالیت فعلی</string>
     <string name="max_ai_learning_coverage">پوشش آموزشی %1$d%%</string>
     <string name="max_ai_cycle_running">ارزیابی دستگاه</string>
-    <string name="max_ai_cycle_running_desc">یک چرخه در حال انجام است. درخواست های مکرر ادغام می شوند، نه پخش مجدد.</string>
     <string name="max_ai_cycle_failed">ارزیابی ناموفق بود</string>
-    <string name="max_ai_cycle_failed_desc">هیچ ارزیابی موفقی ادعا نشده است. برای امتحان مجدد ضربه بزنید؛ جزئیات در تشخیص هستند</string>
     <string name="max_ai_decisions_enabled">تصمیم گیری خودکار فعال شد</string>
     <string name="max_ai_decisions_disabled">تصمیم گیری خودکار غیرفعال است</string>
     <string name="max_ai_master_disabled_desc">بهینه سازی هوش مصنوعی خاموش است. کنترل های دستی و حفاظت حرارتی مستقل باقی می مانند.</string>

@@ -135,7 +135,6 @@
     <string name="max_ai_objective_pick_balanced">Теңдестірілген</string>
     <string name="max_ai_objective_pick_battery">Батарея</string>
     <string name="max_ai_refresh">Қазір циклды іске қосыңыз</string>
-    <string name="max_ai_refresh_desc">30-шы жылдар циклін күтудің орнына бір рет өлшеңіз, жоспарлаңыз және әрекет етіңіз.</string>
     <string name="max_ai_counters">Шешімдер %1$d · тексерілді %2$d · реттелген %3$d · қауіпсіздік үшін блокталған %4$d</string>
     <string name="max_ai_deck_title">Басқару палубасы</string>
     <string name="max_ai_deck_desc">Тікелей қосқыш және оның өзгеретін күйі. Мұның астындағының бәрі дәлел.</string>
@@ -261,9 +260,7 @@
     <string name="max_live_plan_snapshot">Ағымдағы әрекет емес, соңғы бағаланған жоспар</string>
     <string name="max_ai_learning_coverage">Оқуды қамту %1$d%%</string>
     <string name="max_ai_cycle_running">Құрылғыны бағалау</string>
-    <string name="max_ai_cycle_running_desc">Цикл орындалуда. Қайталанатын сұраулар біріктіріледі, қайталанбайды.</string>
     <string name="max_ai_cycle_failed">Бағалау сәтсіз аяқталды</string>
-    <string name="max_ai_cycle_failed_desc">Сәтті бағалау туралы мәлімдемелер жоқ. Қайталау үшін түртіңіз; мәліметтер диагностикада.</string>
     <string name="max_ai_decisions_enabled">Автоматты шешімдер қосулы</string>
     <string name="max_ai_decisions_disabled">Автоматты шешімдер өшірілді</string>
     <string name="max_ai_master_disabled_desc">AI оңтайландыру өшірулі. Қолмен басқару және термиялық қорғаныс тәуелсіз болып қалады.</string>

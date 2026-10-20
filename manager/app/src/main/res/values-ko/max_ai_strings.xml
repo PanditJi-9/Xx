@@ -136,7 +136,6 @@
     <string name="max_ai_objective_pick_balanced">균형 잡힌</string>
     <string name="max_ai_objective_pick_battery">배터리</string>
     <string name="max_ai_refresh">지금 사이클을 실행해 보세요</string>
-    <string name="max_ai_refresh_desc">30년대 주기를 기다리지 말고 한 번만 측정하고 계획하고 실행하세요.</string>
     <string name="max_ai_counters">결정 %1$d · 확인됨 %2$d · 조정됨 %3$d · 안전을 위해 차단됨 %4$d</string>
     <string name="max_ai_deck_title">컨트롤 데크</string>
     <string name="max_ai_deck_desc">라이브 스위치와 상태가 변경됩니다. 이 아래의 모든 것이 증거입니다.</string>
@@ -262,9 +261,7 @@
     <string name="max_live_plan_snapshot">현재 활동이 아닌 마지막 평가 계획</string>
     <string name="max_ai_learning_coverage">학습 범위 %1$d%%</string>
     <string name="max_ai_cycle_running">장치 평가</string>
-    <string name="max_ai_cycle_running_desc">한 주기가 진행 중입니다. 반복되는 요청은 재생되지 않고 병합됩니다.</string>
     <string name="max_ai_cycle_failed">평가 실패</string>
-    <string name="max_ai_cycle_failed_desc">성공적인 평가가 주장되지 않습니다. 다시 시도하려면 탭하세요. 자세한 내용은 진단에 나와 있습니다.</string>
     <string name="max_ai_decisions_enabled">자동 결정 활성화</string>
     <string name="max_ai_decisions_disabled">자동 결정이 비활성화되었습니다.</string>
     <string name="max_ai_master_disabled_desc">AI 최적화가 꺼져 있습니다. 수동 제어 및 열 보호는 독립적으로 유지됩니다.</string>

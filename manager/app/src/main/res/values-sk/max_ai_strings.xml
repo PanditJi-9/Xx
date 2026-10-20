@@ -136,7 +136,6 @@
     <string name="max_ai_objective_pick_balanced">Vyvážený</string>
     <string name="max_ai_objective_pick_battery">Batéria</string>
     <string name="max_ai_refresh">Teraz spustite cyklus</string>
-    <string name="max_ai_refresh_desc">Merajte, plánujte a konajte raz namiesto čakania na cyklus 30 rokov.</string>
     <string name="max_ai_counters">Rozhodnutia %1$d · overené %2$d · upravené %3$d · zablokované pre bezpečnosť %4$d</string>
     <string name="max_ai_deck_title">Ovládací panel</string>
     <string name="max_ai_deck_desc">Živý prepínač a stav, ktorý sa mení. Všetko pod týmto je dôkazom.</string>
@@ -262,9 +261,7 @@
     <string name="max_live_plan_snapshot">Posledný hodnotený plán, nie aktuálna činnosť</string>
     <string name="max_ai_learning_coverage">Pokrytie vzdelávania %1$d%%</string>
     <string name="max_ai_cycle_running">Hodnotenie zariadenia</string>
-    <string name="max_ai_cycle_running_desc">Prebieha cyklus. Opakované požiadavky sa zlúčia, neprehrajú sa.</string>
     <string name="max_ai_cycle_failed">Hodnotenie zlyhalo</string>
-    <string name="max_ai_cycle_failed_desc">Nie je nárokované žiadne úspešné hodnotenie. Klepnutím to skúste znova; podrobnosti sú v diagnostike.</string>
     <string name="max_ai_decisions_enabled">Automatické rozhodnutia povolené</string>
     <string name="max_ai_decisions_disabled">Automatické rozhodnutia sú vypnuté</string>
     <string name="max_ai_master_disabled_desc">Optimalizácia AI je vypnutá. Manuálne ovládanie a tepelná ochrana zostávajú nezávislé.</string>

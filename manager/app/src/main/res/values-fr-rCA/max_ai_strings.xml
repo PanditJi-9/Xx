@@ -135,7 +135,6 @@
     <string name="max_ai_objective_pick_balanced">Équilibré</string>
     <string name="max_ai_objective_pick_battery">Pile</string>
     <string name="max_ai_refresh">Exécutez un cycle maintenant</string>
-    <string name="max_ai_refresh_desc">Mesurez, planifiez et agissez une fois au lieu d\'attendre le cycle des années 30.</string>
     <string name="max_ai_counters">Décisions %1$d · vérifiées %2$d · ajustées %3$d · bloquées pour des raisons de sécurité %4$d</string>
     <string name="max_ai_deck_title">Plateforme de contrôle</string>
     <string name="max_ai_deck_desc">Le commutateur en direct et l\'état qu\'il change. Tout ce qui se trouve en dessous est la preuve.</string>
@@ -259,9 +258,7 @@
     <string name="max_ai_exploration_inactive">Aucune approbation d\'exploration actuelle : l\'IA est désactivée ou attend un nouveau cycle d\'évaluation.</string>
     <string name="max_live_plan_snapshot">Dernier plan évalué, aucune activité en cours</string>
     <string name="max_ai_cycle_running">Évaluation de l\'appareil</string>
-    <string name="max_ai_cycle_running_desc">Un cycle est en cours. Les demandes répétées sont fusionnées et non relues.</string>
     <string name="max_ai_cycle_failed">Échec de l\'évaluation</string>
-    <string name="max_ai_cycle_failed_desc">Aucune évaluation réussie n\'est revendiquée. Appuyez pour réessayer ; les détails sont dans le diagnostic.</string>
     <string name="max_ai_decisions_enabled">Décisions automatiques activées</string>
     <string name="max_ai_decisions_disabled">Décisions automatiques désactivées</string>
     <string name="max_ai_master_disabled_desc">L\'optimisation de l\'IA est désactivée. Les commandes manuelles et la protection thermique demeurent indépendantes.</string>

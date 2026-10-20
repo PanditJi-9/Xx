@@ -136,7 +136,6 @@
     <string name="max_ai_objective_pick_balanced">సమతుల్యం</string>
     <string name="max_ai_objective_pick_battery">బ్యాటరీ</string>
     <string name="max_ai_refresh">ఇప్పుడే సైకిల్‌ను నడపండి</string>
-    <string name="max_ai_refresh_desc">30ల సైకిల్ కోసం వేచి ఉండే బదులు ఒకసారి కొలవండి, ప్లాన్ చేయండి మరియు చర్య తీసుకోండి.</string>
     <string name="max_ai_counters">నిర్ణయాలు %1$d · ధృవీకరించబడింది %2$d · సర్దుబాటు చేయబడింది %3$d · భద్రత కోసం బ్లాక్ చేయబడింది %4$d</string>
     <string name="max_ai_deck_title">కంట్రోల్ డెక్</string>
     <string name="max_ai_deck_desc">లైవ్ స్విచ్ మరియు అది మారుతున్న స్థితి. ఈ క్రింద ఉన్నవన్నీ సాక్ష్యం.</string>
@@ -262,9 +261,7 @@
     <string name="max_live_plan_snapshot">చివరిగా మూల్యాంకనం చేయబడిన ప్లాన్, ప్రస్తుత కార్యాచరణ కాదు</string>
     <string name="max_ai_learning_coverage">లెర్నింగ్ కవరేజ్ %1$d%%</string>
     <string name="max_ai_cycle_running">పరికరాన్ని మూల్యాంకనం చేస్తోంది</string>
-    <string name="max_ai_cycle_running_desc">ఒక చక్రం పురోగతిలో ఉంది. పునరావృత అభ్యర్థనలు విలీనం చేయబడ్డాయి, మళ్లీ ప్లే చేయబడవు.</string>
     <string name="max_ai_cycle_failed">మూల్యాంకనం విఫలమైంది</string>
-    <string name="max_ai_cycle_failed_desc">విజయవంతమైన మూల్యాంకనం దావా వేయబడలేదు. మళ్లీ ప్రయత్నించడానికి నొక్కండి; వివరాలు డయాగ్నస్టిక్స్‌లో ఉన్నాయి.</string>
     <string name="max_ai_decisions_enabled">స్వయంచాలక నిర్ణయాలు ప్రారంభించబడ్డాయి</string>
     <string name="max_ai_decisions_disabled">స్వయంచాలక నిర్ణయాలు నిలిపివేయబడ్డాయి</string>
     <string name="max_ai_master_disabled_desc">AI ఆప్టిమైజేషన్ ఆఫ్‌లో ఉంది. మాన్యువల్ నియంత్రణలు మరియు ఉష్ణ రక్షణ స్వతంత్రంగా ఉంటాయి.</string>

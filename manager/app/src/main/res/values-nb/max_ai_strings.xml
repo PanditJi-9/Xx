@@ -136,7 +136,6 @@
     <string name="max_ai_objective_pick_balanced">Balansert</string>
     <string name="max_ai_objective_pick_battery">Batteri</string>
     <string name="max_ai_refresh">Kjør en syklus nå</string>
-    <string name="max_ai_refresh_desc">Mål, planlegg og handle én gang i stedet for å vente på 30-tallssyklusen.</string>
     <string name="max_ai_counters">Beslutninger %1$d · verifisert %2$d · justert %3$d · blokkert for sikkerhets skyld %4$d</string>
     <string name="max_ai_deck_title">Kontrolldekk</string>
     <string name="max_ai_deck_desc">Strømbryteren og tilstanden den endrer. Alt under dette er beviset.</string>
@@ -262,9 +261,7 @@
     <string name="max_live_plan_snapshot">Sist evaluert plan, ikke gjeldende aktivitet</string>
     <string name="max_ai_learning_coverage">Læringsdekning %1$d%%</string>
     <string name="max_ai_cycle_running">Evaluering av enheten</string>
-    <string name="max_ai_cycle_running_desc">En syklus er i gang. Gjentatte forespørsler slås sammen, ikke avspilles på nytt.</string>
     <string name="max_ai_cycle_failed">Evaluering mislyktes</string>
-    <string name="max_ai_cycle_failed_desc">Det kreves ingen vellykket evaluering. Trykk for å prøve på nytt; detaljer er i diagnostikk.</string>
     <string name="max_ai_decisions_enabled">Automatiske beslutninger aktivert</string>
     <string name="max_ai_decisions_disabled">Automatiske avgjørelser deaktivert</string>
     <string name="max_ai_master_disabled_desc">AI-optimalisering er av. Manuelle kontroller og termisk beskyttelse forblir uavhengige.</string>

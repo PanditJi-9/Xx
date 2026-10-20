@@ -136,7 +136,6 @@
     <string name="max_ai_objective_pick_balanced">Избалансиран</string>
     <string name="max_ai_objective_pick_battery">Батерија</string>
     <string name="max_ai_refresh">Водете циклус сега</string>
-    <string name="max_ai_refresh_desc">Мери, планирај и дејствувај еднаш наместо да го чекаш циклусот 30-ти.</string>
     <string name="max_ai_counters">Одлуки %1$d · потврдени %2$d · приспособени %3$d · блокирани заради безбедност %4$d</string>
     <string name="max_ai_deck_title">Контролна палуба</string>
     <string name="max_ai_deck_desc">Прекинувачот во живо и состојбата што се менува. Сè што е под ова е доказ.</string>
@@ -262,9 +261,7 @@
     <string name="max_live_plan_snapshot">Последен оценет план, а не тековна активност</string>
     <string name="max_ai_learning_coverage">Покриеност на учење %1$d%%</string>
     <string name="max_ai_cycle_running">Оценување на уредот</string>
-    <string name="max_ai_cycle_running_desc">Во тек е циклус. Повторените барања се спојуваат, не се репродуцираат.</string>
     <string name="max_ai_cycle_failed">Евалуацијата не успеа</string>
-    <string name="max_ai_cycle_failed_desc">Не се бара успешна евалуација. Допрете за да се обидете повторно; деталите се во дијагностика.</string>
     <string name="max_ai_decisions_enabled">Овозможени се автоматски одлуки</string>
     <string name="max_ai_decisions_disabled">Автоматските одлуки се оневозможени</string>
     <string name="max_ai_master_disabled_desc">Оптимизацијата на вештачката интелигенција е исклучена. Рачните контроли и термичката заштита остануваат независни.</string>

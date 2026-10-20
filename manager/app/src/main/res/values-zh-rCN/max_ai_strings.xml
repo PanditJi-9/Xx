@@ -136,7 +136,6 @@
     <string name="max_ai_objective_pick_balanced">均衡</string>
     <string name="max_ai_objective_pick_battery">电池</string>
     <string name="max_ai_refresh">现在运行一个循环</string>
-    <string name="max_ai_refresh_desc">测量、计划和行动一次，而不是等待 30 秒的周期。</string>
     <string name="max_ai_counters">决定 %1$d · 验证 %2$d · 调整 %3$d · 为了安全而封锁 %4$d</string>
     <string name="max_ai_deck_title">控制台</string>
     <string name="max_ai_deck_desc">实时开关及其改变的状态。下面的一切都是证据。</string>
@@ -262,9 +261,7 @@
     <string name="max_live_plan_snapshot">最后评估的计划，而不是当前的活动</string>
     <string name="max_ai_learning_coverage">学习覆盖率%1$d%%</string>
     <string name="max_ai_cycle_running">评估设备</string>
-    <string name="max_ai_cycle_running_desc">一个循环正在进行中。重复的请求将被合并，而不是重播。</string>
     <string name="max_ai_cycle_failed">评估失败</string>
-    <string name="max_ai_cycle_failed_desc">没有声称评估成功。点击重试；详细信息在诊断中。</string>
     <string name="max_ai_decisions_enabled">启用自动决策</string>
     <string name="max_ai_decisions_disabled">自动决策已禁用</string>
     <string name="max_ai_master_disabled_desc">AI优化已关闭。手动控制和热保护保持独立。</string>

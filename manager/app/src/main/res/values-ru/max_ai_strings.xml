@@ -136,7 +136,6 @@
     <string name="max_ai_objective_pick_balanced">Сбалансированный</string>
     <string name="max_ai_objective_pick_battery">Батарея</string>
     <string name="max_ai_refresh">Запустите цикл сейчас</string>
-    <string name="max_ai_refresh_desc">Измеряйте, планируйте и действуйте один раз, вместо того, чтобы ждать 30-летнего цикла.</string>
     <string name="max_ai_counters">Решения %1$d · проверено %2$d · скорректировано %3$d · заблокировано в целях безопасности %4$d</string>
     <string name="max_ai_deck_title">Панель управления</string>
     <string name="max_ai_deck_desc">Живой переключатель и состояние, которое он меняет. Все, что ниже этого, является доказательством.</string>
@@ -262,9 +261,7 @@
     <string name="max_live_plan_snapshot">Последний оцененный план, а не текущая деятельность</string>
     <string name="max_ai_learning_coverage">Охват обучением %1$d%%</string>
     <string name="max_ai_cycle_running">Оценка устройства</string>
-    <string name="max_ai_cycle_running_desc">Идет цикл. Повторные запросы объединяются, а не воспроизводятся.</string>
     <string name="max_ai_cycle_failed">Оценка не удалась</string>
-    <string name="max_ai_cycle_failed_desc">Никакой успешной оценки не заявлено. Нажмите, чтобы повторить попытку; подробности в диагностике.</string>
     <string name="max_ai_decisions_enabled">Автоматические решения включены</string>
     <string name="max_ai_decisions_disabled">Автоматические решения отключены</string>
     <string name="max_ai_master_disabled_desc">Оптимизация AI отключена. Ручное управление и тепловая защита остаются независимыми.</string>

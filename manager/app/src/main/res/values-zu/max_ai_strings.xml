@@ -136,7 +136,6 @@
     <string name="max_ai_objective_pick_balanced">Ibhalansile</string>
     <string name="max_ai_objective_pick_battery">Ibhethri</string>
     <string name="max_ai_refresh">Yenza umjikelezo manje</string>
-    <string name="max_ai_refresh_desc">Linganisa, hlela futhi wenze kanye esikhundleni sokulinda umjikelezo wama-30s.</string>
     <string name="max_ai_counters">Izinqumo %1$d · ziqinisekisiwe %2$d · zilungisiwe %3$d · zivinjelwe ukuphepha %4$d</string>
     <string name="max_ai_deck_title">Idekhi yokulawula</string>
     <string name="max_ai_deck_desc">Iswishi ebukhoma kanye nesimo esishintshayo. Konke okungezansi kwalokhu kuwubufakazi.</string>
@@ -262,9 +261,7 @@
     <string name="max_live_plan_snapshot">Uhlelo olugcine ukubuyekezwa, hhayi umsebenzi wamanje</string>
     <string name="max_ai_learning_coverage">Ukufakwa kokufunda %1$d%%</string>
     <string name="max_ai_cycle_running">Ihlola idivayisi</string>
-    <string name="max_ai_cycle_running_desc">Umjikelezo uyaqhubeka. Izicelo eziphindaphindiwe ziyahlanganiswa, azidlalwa.</string>
     <string name="max_ai_cycle_failed">Ukuhlola kuhlulekile</string>
-    <string name="max_ai_cycle_failed_desc">Akukho ukuhlola okuyimpumelelo okufunwayo. Thepha ukuze uzame futhi; imininingwane iku-diagnostics.</string>
     <string name="max_ai_decisions_enabled">Izinqumo ezizenzakalelayo zinikwe amandla</string>
     <string name="max_ai_decisions_disabled">Izinqumo ezizenzakalelayo zikhutshaziwe</string>
     <string name="max_ai_master_disabled_desc">Ukulungiselelwa kwe-AI kuvaliwe. Izilawuli ezenziwa ngezandla kanye nokuvikelwa kokushisa kuhlala kuzimele.</string>

@@ -136,7 +136,6 @@
     <string name="max_ai_objective_pick_balanced">समतोल</string>
     <string name="max_ai_objective_pick_battery">बॅटरी</string>
     <string name="max_ai_refresh">आता सायकल चालवा</string>
-    <string name="max_ai_refresh_desc">30 च्या चक्राची वाट पाहण्याऐवजी एकदा मोजा, ​​योजना करा आणि कृती करा.</string>
     <string name="max_ai_counters">निर्णय %1$d · सत्यापित %2$d · समायोजित %3$d · सुरक्षिततेसाठी अवरोधित %4$d</string>
     <string name="max_ai_deck_title">नियंत्रण डेक</string>
     <string name="max_ai_deck_desc">थेट स्विच आणि त्याची स्थिती बदलते. या खाली सर्व काही पुरावा आहे.</string>
@@ -262,9 +261,7 @@
     <string name="max_live_plan_snapshot">अंतिम मूल्यमापन केलेली योजना, वर्तमान क्रियाकलाप नाही</string>
     <string name="max_ai_learning_coverage">शिक्षण कव्हरेज %1$d%%</string>
     <string name="max_ai_cycle_running">डिव्हाइसचे मूल्यांकन</string>
-    <string name="max_ai_cycle_running_desc">एक आवर्तन चालू आहे. वारंवार विनंत्या विलीन केल्या जातात, पुन्हा प्ले केल्या जात नाहीत.</string>
     <string name="max_ai_cycle_failed">मूल्यमापन अयशस्वी</string>
-    <string name="max_ai_cycle_failed_desc">कोणत्याही यशस्वी मूल्यांकनाचा दावा केला जात नाही. पुन्हा प्रयत्न करण्यासाठी टॅप करा; तपशील डायग्नोस्टिक्समध्ये आहेत.</string>
     <string name="max_ai_decisions_enabled">स्वयंचलित निर्णय सक्षम केले</string>
     <string name="max_ai_decisions_disabled">स्वयंचलित निर्णय अक्षम केले</string>
     <string name="max_ai_master_disabled_desc">AI ऑप्टिमायझेशन बंद आहे. मॅन्युअल नियंत्रणे आणि थर्मल संरक्षण स्वतंत्र राहतात.</string>

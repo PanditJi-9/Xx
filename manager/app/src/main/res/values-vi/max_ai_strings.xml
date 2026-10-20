@@ -136,7 +136,6 @@
     <string name="max_ai_objective_pick_balanced">Cân bằng</string>
     <string name="max_ai_objective_pick_battery">Ắc quy</string>
     <string name="max_ai_refresh">Chạy một chu kỳ bây giờ</string>
-    <string name="max_ai_refresh_desc">Đo lường, lập kế hoạch và hành động một lần thay vì chờ đợi chu kỳ 30s.</string>
     <string name="max_ai_counters">Quyết định %1$d · đã xác minh %2$d · đã điều chỉnh %3$d · bị chặn vì an toàn %4$d</string>
     <string name="max_ai_deck_title">Tầng điều khiển</string>
     <string name="max_ai_deck_desc">Công tắc trực tiếp và trạng thái thay đổi. Tất cả mọi thứ dưới đây là bằng chứng.</string>
@@ -262,9 +261,7 @@
     <string name="max_live_plan_snapshot">Kế hoạch được đánh giá lần cuối, không phải hoạt động hiện tại</string>
     <string name="max_ai_learning_coverage">Phạm vi học tập %1$d%%</string>
     <string name="max_ai_cycle_running">Đánh giá thiết bị</string>
-    <string name="max_ai_cycle_running_desc">Một chu kỳ đang diễn ra. Các yêu cầu lặp đi lặp lại sẽ được hợp nhất, không được phát lại.</string>
     <string name="max_ai_cycle_failed">Đánh giá không thành công</string>
-    <string name="max_ai_cycle_failed_desc">Không có đánh giá thành công được yêu cầu. Nhấn để thử lại; chi tiết có trong chẩn đoán.</string>
     <string name="max_ai_decisions_enabled">Đã bật quyết định tự động</string>
     <string name="max_ai_decisions_disabled">Quyết định tự động bị vô hiệu hóa</string>
     <string name="max_ai_master_disabled_desc">Tối ưu hóa AI bị tắt. Điều khiển bằng tay và bảo vệ nhiệt vẫn độc lập.</string>

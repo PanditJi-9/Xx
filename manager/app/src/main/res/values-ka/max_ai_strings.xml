@@ -136,7 +136,6 @@
     <string name="max_ai_objective_pick_balanced">დაბალანსებული</string>
     <string name="max_ai_objective_pick_battery">ბატარეა</string>
     <string name="max_ai_refresh">აწარმოე ციკლი ახლავე</string>
-    <string name="max_ai_refresh_desc">გაზომეთ, დაგეგმეთ და იმოქმედეთ ერთხელ, ნაცვლად იმისა, რომ დაელოდოთ 30-იანი წლების ციკლს.</string>
     <string name="max_ai_counters">გადაწყვეტილებები %1$d · დამოწმებული %2$d · მორგებული %3$d · დაბლოკილია უსაფრთხოებისთვის %4$d</string>
     <string name="max_ai_deck_title">საკონტროლო გემბანი</string>
     <string name="max_ai_deck_desc">ცოცხალი ჩამრთველი და მისი შეცვლა. ყველაფერი ქვემოთ არის მტკიცებულება.</string>
@@ -262,9 +261,7 @@
     <string name="max_live_plan_snapshot">ბოლო შეფასებული გეგმა და არა მიმდინარე აქტივობა</string>
     <string name="max_ai_learning_coverage">სწავლის გაშუქება %1$d%%</string>
     <string name="max_ai_cycle_running">მოწყობილობის შეფასება</string>
-    <string name="max_ai_cycle_running_desc">ციკლი მიმდინარეობს. განმეორებითი მოთხოვნები გაერთიანებულია და არ ითამაშებს ხელახლა.</string>
     <string name="max_ai_cycle_failed">შეფასება ჩაიშალა</string>
-    <string name="max_ai_cycle_failed_desc">წარმატებული შეფასება არ არის მოთხოვნილი. შეეხეთ ხელახლა საცდელად; დეტალები დიაგნოსტიკაშია.</string>
     <string name="max_ai_decisions_enabled">ჩართულია ავტომატური გადაწყვეტილებები</string>
     <string name="max_ai_decisions_disabled">ავტომატური გადაწყვეტილებები გამორთულია</string>
     <string name="max_ai_master_disabled_desc">AI ოპტიმიზაცია გამორთულია. მექანიკური კონტროლი და თერმული დაცვა რჩება დამოუკიდებელი.</string>

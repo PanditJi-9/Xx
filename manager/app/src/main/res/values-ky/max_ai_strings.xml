@@ -135,7 +135,6 @@
     <string name="max_ai_objective_pick_balanced">салмактуу</string>
     <string name="max_ai_objective_pick_battery">Батарея</string>
     <string name="max_ai_refresh">Азыр циклди иштетиңиз</string>
-    <string name="max_ai_refresh_desc">30-жылдардын циклин күтпөстөн, өлчөө, пландоо жана бир жолу аракет кылуу.</string>
     <string name="max_ai_counters">Чечимдер %1$d · текшерилген %2$d · туураланган %3$d · коопсуздук үчүн бөгөттөлгөн %4$d</string>
     <string name="max_ai_deck_title">Башкаруу палубасы</string>
     <string name="max_ai_deck_desc">Жандуу которуштуруу жана анын абалы өзгөрөт. Мунун астындагы баары далил.</string>
@@ -261,9 +260,7 @@
     <string name="max_live_plan_snapshot">Акыркы бааланган план, учурдагы иш эмес</string>
     <string name="max_ai_learning_coverage">Окууну камтуу %1$d%%</string>
     <string name="max_ai_cycle_running">Аппаратты баалоо</string>
-    <string name="max_ai_cycle_running_desc">Цикл жүрүп жатат. Кайталануучу сурамдар бириктирилет, кайталанбайт.</string>
     <string name="max_ai_cycle_failed">Баалоо ишке ашкан жок</string>
-    <string name="max_ai_cycle_failed_desc">Эч кандай ийгиликтүү баалоо талап кылынбайт. Кайра аракет кылуу үчүн таптаңыз; чоо-жайы диагностикада.</string>
     <string name="max_ai_decisions_enabled">Автоматтык чечимдер иштетилди</string>
     <string name="max_ai_decisions_disabled">Автоматтык чечимдер өчүрүлгөн</string>
     <string name="max_ai_master_disabled_desc">AI оптималдаштыруу өчүк. Кол менен башкаруу жана жылуулук коргоо көз карандысыз бойдон калууда.</string>

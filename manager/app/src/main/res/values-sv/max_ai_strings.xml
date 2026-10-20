@@ -136,7 +136,6 @@
     <string name="max_ai_objective_pick_balanced">Balanserad</string>
     <string name="max_ai_objective_pick_battery">Batteri</string>
     <string name="max_ai_refresh">Kör en cykel nu</string>
-    <string name="max_ai_refresh_desc">Mät, planera och agera en gång istället för att vänta på 30-talscykeln.</string>
     <string name="max_ai_counters">Beslut %1$d · verifierade %2$d · justerade %3$d · blockerade för säkerhets skull %4$d</string>
     <string name="max_ai_deck_title">Kontrolldäck</string>
     <string name="max_ai_deck_desc">Strömbrytaren och tillståndet den ändrar. Allt under detta är bevisen.</string>
@@ -262,9 +261,7 @@
     <string name="max_live_plan_snapshot">Senast utvärderade plan, inte aktuell aktivitet</string>
     <string name="max_ai_learning_coverage">Lärande täckning %1$d%%</string>
     <string name="max_ai_cycle_running">Utvärdera enheten</string>
-    <string name="max_ai_cycle_running_desc">En cykel pågår. Upprepade förfrågningar slås samman, inte spelas upp igen.</string>
     <string name="max_ai_cycle_failed">Utvärdering misslyckades</string>
-    <string name="max_ai_cycle_failed_desc">Ingen lyckad utvärdering görs anspråk på. Tryck för att försöka igen; detaljer finns i diagnostik.</string>
     <string name="max_ai_decisions_enabled">Automatiska beslut aktiverade</string>
     <string name="max_ai_decisions_disabled">Automatiska beslut inaktiverade</string>
     <string name="max_ai_master_disabled_desc">AI-optimering är avstängd. Manuella kontroller och termiskt skydd förblir oberoende.</string>

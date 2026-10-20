@@ -136,7 +136,6 @@
     <string name="max_ai_objective_pick_balanced">সুষম</string>
     <string name="max_ai_objective_pick_battery">ব্যাটারি</string>
     <string name="max_ai_refresh">এখন একটি চক্র চালান</string>
-    <string name="max_ai_refresh_desc">30 এর চক্রের জন্য অপেক্ষা করার পরিবর্তে একবার পরিমাপ করুন, পরিকল্পনা করুন এবং কাজ করুন।</string>
     <string name="max_ai_counters">সিদ্ধান্ত %1$d · যাচাইকৃত %2$d · সমন্বয় করা হয়েছে %3$d · নিরাপত্তার জন্য অবরুদ্ধ %4$d</string>
     <string name="max_ai_deck_title">কন্ট্রোল ডেক</string>
     <string name="max_ai_deck_desc">লাইভ সুইচ এবং রাষ্ট্র এটি পরিবর্তন. এর নিচের সবকিছুই প্রমাণ।</string>
@@ -262,9 +261,7 @@
     <string name="max_live_plan_snapshot">সর্বশেষ মূল্যায়ন করা পরিকল্পনা, বর্তমান কার্যকলাপ নয়</string>
     <string name="max_ai_learning_coverage">শেখার কভারেজ %1$d%%</string>
     <string name="max_ai_cycle_running">ডিভাইস মূল্যায়ন</string>
-    <string name="max_ai_cycle_running_desc">একটি চক্র চলছে। বারবার অনুরোধ একত্রিত করা হয়, পুনরায় প্লে করা হয় না.</string>
     <string name="max_ai_cycle_failed">মূল্যায়ন ব্যর্থ হয়েছে</string>
-    <string name="max_ai_cycle_failed_desc">কোন সফল মূল্যায়ন দাবি করা হয় না. পুনরায় চেষ্টা করতে আলতো চাপুন; বিস্তারিত ডায়গনিস্টিক আছে.</string>
     <string name="max_ai_decisions_enabled">স্বয়ংক্রিয় সিদ্ধান্ত সক্রিয়</string>
     <string name="max_ai_decisions_disabled">স্বয়ংক্রিয় সিদ্ধান্ত নিষ্ক্রিয়</string>
     <string name="max_ai_master_disabled_desc">এআই অপ্টিমাইজেশন বন্ধ আছে। ম্যানুয়াল নিয়ন্ত্রণ এবং তাপ সুরক্ষা স্বাধীন থাকে।</string>

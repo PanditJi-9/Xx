@@ -136,7 +136,6 @@
     <string name="max_ai_objective_pick_balanced">Equilibrat</string>
     <string name="max_ai_objective_pick_battery">Bateria</string>
     <string name="max_ai_refresh">Feu un cicle ara</string>
-    <string name="max_ai_refresh_desc">Mesura, planifica i actua una vegada en comptes d\'esperar al cicle dels 30.</string>
     <string name="max_ai_counters">Decisions %1$d · verificades %2$d · ajustades %3$d · bloquejades per seguretat %4$d</string>
     <string name="max_ai_deck_title">Coberta de control</string>
     <string name="max_ai_deck_desc">L\'interruptor en directe i l\'estat en què canvia. Tot per sota d\'això és l\'evidència.</string>
@@ -262,9 +261,7 @@
     <string name="max_live_plan_snapshot">Últim pla avaluat, no activitat actual</string>
     <string name="max_ai_learning_coverage">Cobertura d\'aprenentatge %1$d%%</string>
     <string name="max_ai_cycle_running">Avaluació del dispositiu</string>
-    <string name="max_ai_cycle_running_desc">Hi ha un cicle en curs. Les sol·licituds repetides es fusionen, no es reprodueixen.</string>
     <string name="max_ai_cycle_failed">L\'avaluació ha fallat</string>
-    <string name="max_ai_cycle_failed_desc">No es reclama cap avaluació satisfactòria. Toqueu per tornar-ho a provar; els detalls estan al diagnòstic.</string>
     <string name="max_ai_decisions_enabled">Decisions automàtiques habilitades</string>
     <string name="max_ai_decisions_disabled">Decisions automàtiques desactivades</string>
     <string name="max_ai_master_disabled_desc">L\'optimització d\'IA està desactivada. Els controls manuals i la protecció tèrmica romanen independents.</string>

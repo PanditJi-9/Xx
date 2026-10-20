@@ -136,7 +136,6 @@
     <string name="max_ai_objective_pick_balanced">מְאוּזָן</string>
     <string name="max_ai_objective_pick_battery">סוֹלְלָה</string>
     <string name="max_ai_refresh">הפעל מחזור עכשיו</string>
-    <string name="max_ai_refresh_desc">מדוד, תכנן ופעל פעם אחת במקום לחכות למחזור שנות ה-30.</string>
     <string name="max_ai_counters">החלטות %1$d · מאומתות %2$d · מותאמת %3$d · חסומות לבטיחות %4$d</string>
     <string name="max_ai_deck_title">סיפון בקרה</string>
     <string name="max_ai_deck_desc">המתג החי והמצב שהוא משנה. כל מה שמתחת לזה הוא הראיה.</string>
@@ -262,9 +261,7 @@
     <string name="max_live_plan_snapshot">תוכנית מוערכת אחרונה, לא פעילות נוכחית</string>
     <string name="max_ai_learning_coverage">כיסוי למידה %1$d%%</string>
     <string name="max_ai_cycle_running">הערכת המכשיר</string>
-    <string name="max_ai_cycle_running_desc">מחזור מתנהל. בקשות חוזרות מתמזגות, לא משוחזרות.</string>
     <string name="max_ai_cycle_failed">הערכה נכשלה</string>
-    <string name="max_ai_cycle_failed_desc">אין טענת הערכה מוצלחת. הקש כדי לנסות שוב; הפרטים נמצאים באבחון.</string>
     <string name="max_ai_decisions_enabled">החלטות אוטומטיות מופעלות</string>
     <string name="max_ai_decisions_disabled">החלטות אוטומטיות מושבתות</string>
     <string name="max_ai_master_disabled_desc">אופטימיזציה של AI כבויה. בקרות ידניות והגנה תרמית נשארים עצמאיים.</string>

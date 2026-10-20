@@ -136,7 +136,6 @@
     <string name="max_ai_objective_pick_balanced">Balansirano</string>
     <string name="max_ai_objective_pick_battery">Baterija</string>
     <string name="max_ai_refresh">Pokrenite ciklus sada</string>
-    <string name="max_ai_refresh_desc">Mjerite, planirajte i djelujte jednom umjesto da čekate ciklus od 30-ih.</string>
     <string name="max_ai_counters">Odluke %1$d · potvrđeno %2$d · prilagođeno %3$d · blokirano radi sigurnosti %4$d</string>
     <string name="max_ai_deck_title">Kontrolni špil</string>
     <string name="max_ai_deck_desc">Prekidač uživo i stanje koje se mijenja. Sve ispod ovoga su dokazi.</string>
@@ -262,9 +261,7 @@
     <string name="max_live_plan_snapshot">Posljednji evaluirani plan, a ne trenutna aktivnost</string>
     <string name="max_ai_learning_coverage">Pokrivenost učenjem %1$d%%</string>
     <string name="max_ai_cycle_running">Procjena uređaja</string>
-    <string name="max_ai_cycle_running_desc">U toku je ciklus. Ponovljeni zahtjevi se spajaju, ne reproduciraju.</string>
     <string name="max_ai_cycle_failed">Evaluacija nije uspjela</string>
-    <string name="max_ai_cycle_failed_desc">Ne traži se uspješna evaluacija. Dodirnite za ponovni pokušaj; detalji su u dijagnostici.</string>
     <string name="max_ai_decisions_enabled">Omogućene automatske odluke</string>
     <string name="max_ai_decisions_disabled">Automatske odluke su onemogućene</string>
     <string name="max_ai_master_disabled_desc">AI optimizacija je isključena. Ručne kontrole i termička zaštita ostaju nezavisne.</string>

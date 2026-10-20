@@ -136,7 +136,6 @@
     <string name="max_ai_objective_pick_balanced">မျှမျှတတ</string>
     <string name="max_ai_objective_pick_battery">ဘက်ထရီ</string>
     <string name="max_ai_refresh">အခုပဲ လည်ပတ်လိုက်ပါ။</string>
-    <string name="max_ai_refresh_desc">30s လည်ပတ်မှုကို စောင့်မည့်အစား တိုင်းတာပါ၊ အစီအစဉ်ဆွဲပြီး တစ်ကြိမ်လုပ်ဆောင်ပါ။</string>
     <string name="max_ai_counters">ဆုံးဖြတ်ချက်များ %1$d · စိစစ်ပြီး %2$d · ချိန်ညှိထားသော %3$d · လုံခြုံရေးအတွက် ပိတ်ဆို့ထားသည် %4$d</string>
     <string name="max_ai_deck_title">Control deck</string>
     <string name="max_ai_deck_desc">တိုက်ရိုက်ခလုတ်နှင့် ၎င်းသည် ပြောင်းလဲသည့်အခြေအနေ။ ဒီအောက်ကအရာအားလုံးက သက်သေပါပဲ။</string>
@@ -262,9 +261,7 @@
     <string name="max_live_plan_snapshot">လက်ရှိလုပ်ဆောင်ချက်မဟုတ်ဘဲ နောက်ဆုံးအကဲဖြတ်ထားသော အစီအစဉ်</string>
     <string name="max_ai_learning_coverage">သင်ယူမှုလွှမ်းခြုံနိုင်မှု %1$d%%</string>
     <string name="max_ai_cycle_running">စက်ပစ္စည်းကို အကဲဖြတ်ခြင်း။</string>
-    <string name="max_ai_cycle_running_desc">လည်ပတ်မှုတစ်ခု လုပ်ဆောင်နေသည်။ ထပ်ခါတလဲလဲ တောင်းဆိုမှုများကို ပေါင်းစည်းပြီး ပြန်မကစားပါ။</string>
     <string name="max_ai_cycle_failed">အကဲဖြတ်ခြင်း မအောင်မြင်ပါ။</string>
-    <string name="max_ai_cycle_failed_desc">အောင်မြင်သော အကဲဖြတ်မှုကို တောင်းဆိုထားခြင်းမရှိပါ။ ထပ်ကြိုးစားရန် တို့ပါ။ အသေးစိတ်အချက်အလက်များကို ရောဂါရှာဖွေရေးတွင် ဖော်ပြထားသည်။</string>
     <string name="max_ai_decisions_enabled">အလိုအလျောက် ဆုံးဖြတ်ချက်များကို ဖွင့်ထားသည်။</string>
     <string name="max_ai_decisions_disabled">အလိုအလျောက် ဆုံးဖြတ်ချက်များကို ပိတ်ထားသည်။</string>
     <string name="max_ai_master_disabled_desc">AI optimization ကို ပိတ်ထားသည်။ လက်ဖြင့်ထိန်းချုပ်မှုများနှင့် အပူကာကွယ်ရေးသည် သီးခြားတည်ရှိနေပါသည်။</string>

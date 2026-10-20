@@ -136,7 +136,6 @@
     <string name="max_ai_objective_pick_balanced">สมดุล</string>
     <string name="max_ai_objective_pick_battery">แบตเตอรี่</string>
     <string name="max_ai_refresh">วิ่งวงจรตอนนี้</string>
-    <string name="max_ai_refresh_desc">วัดผล วางแผน และดำเนินการเพียงครั้งเดียว แทนที่จะรอถึงรอบ 30 ปี</string>
     <string name="max_ai_counters">การตัดสินใจ %1$d · ตรวจสอบแล้ว %2$d · ปรับ %3$d · ถูกบล็อกเพื่อความปลอดภัย %4$d</string>
     <string name="max_ai_deck_title">ดาดฟ้าควบคุม</string>
     <string name="max_ai_deck_desc">สวิตช์สดและสถานะที่เปลี่ยนแปลง ทุกสิ่งด้านล่างนี้คือหลักฐาน</string>
@@ -262,9 +261,7 @@
     <string name="max_live_plan_snapshot">แผนการประเมินล่าสุด ไม่ใช่กิจกรรมปัจจุบัน</string>
     <string name="max_ai_learning_coverage">ความครอบคลุมการเรียนรู้ %1$d%%</string>
     <string name="max_ai_cycle_running">การประเมินอุปกรณ์</string>
-    <string name="max_ai_cycle_running_desc">วงจรอยู่ระหว่างดำเนินการ คำขอที่ซ้ำกันจะถูกรวมเข้าด้วยกัน ไม่ใช่การเล่นซ้ำ</string>
     <string name="max_ai_cycle_failed">การประเมินล้มเหลว</string>
-    <string name="max_ai_cycle_failed_desc">ไม่มีการอ้างสิทธิ์การประเมินที่สำเร็จ แตะเพื่อลองอีกครั้ง รายละเอียดอยู่ในการวินิจฉัย</string>
     <string name="max_ai_decisions_enabled">เปิดใช้งานการตัดสินใจอัตโนมัติแล้ว</string>
     <string name="max_ai_decisions_disabled">การตัดสินใจอัตโนมัติถูกปิดใช้งาน</string>
     <string name="max_ai_master_disabled_desc">การเพิ่มประสิทธิภาพ AI ปิดอยู่ การควบคุมแบบแมนนวลและการป้องกันความร้อนยังคงเป็นอิสระ</string>

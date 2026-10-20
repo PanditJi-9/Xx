@@ -128,7 +128,6 @@
     <string name="max_ai_objective_pick_balanced">ସନ୍ତୁଳିତ |</string>
     <string name="max_ai_objective_pick_battery">ବ୍ୟାଟେରୀ</string>
     <string name="max_ai_refresh">ବର୍ତ୍ତମାନ ଏକ ଚକ୍ର ଚଲାନ୍ତୁ |</string>
-    <string name="max_ai_refresh_desc">S ୦ ଦଶକର ଚକ୍ରକୁ ଅପେକ୍ଷା କରିବା ପରିବର୍ତ୍ତେ ଥରେ ମାପ, ଯୋଜନା ଏବଂ କାର୍ଯ୍ୟ କର |</string>
     <string name="max_ai_counters">ନିଷ୍ପତ୍ତି %1$d · ଯାଞ୍ଚ ହୋଇଥିବା %2$d · ନିୟନ୍ତ୍ରିତ %3$d · ସୁରକ୍ଷା ପାଇଁ ଅବରୋଧ %4$d</string>
     <string name="max_ai_deck_title">କଣ୍ଟ୍ରୋଲ୍ ଡେକ୍ |</string>
     <string name="max_ai_deck_learning">ଅଗ୍ରଗତି ଶିଖିବା |</string>
@@ -261,8 +260,6 @@
     <string name="max_ai_cadence_calm">କେବଳ ପର୍ଯ୍ୟାୟ ଚକ୍ର · ନିଷ୍ପତ୍ତି ବଦଳାଇଥିବା କ othing ଣସି ଜିନିଷ ଶେଷରୁ ଘୁଞ୍ଚି ନାହିଁ</string>
     <string name="max_ai_journal_clear_desc">ରେକର୍ଡ ହୋଇଥିବା ଲୁପ୍ ଡିଲିଟ୍ କରେ · ମାନୁଆଲ୍ ଲକ୍, ସାମ୍ପ୍ରତିକ ମାଲିକାନା ଏବଂ Max AI ଶିଖାଯାଇଥିବା ସବୁକିଛି ରଖାଯାଏ</string>
     <string name="max_ai_journal_clear_confirm_message">%1$d ରେକର୍ଡ ହୋଇଥିବା ଲୁପ୍ (ଗୁଡିକ) ବିଲୋପ ହେବ · ନୋବ ଲକ୍, ସାମ୍ପ୍ରତିକ ମାଲିକାନା ମାନଚିତ୍ର ଏବଂ ମାପାଯାଇଥିବା ପ୍ରଭାବଗୁଡିକ ଅସ୍ପୃଶ୍ୟ ରହିଥାଏ - କେବଳ ବର୍ଣ୍ଣନା ଲିଭାଯାଇଥାଏ</string>
-    <string name="max_ai_cycle_running_desc">ଏକ ଚକ୍ର ଚାଲିଛି · ବାରମ୍ବାର ଅନୁରୋଧଗୁଡିକ ମିଶ୍ରିତ ହୋଇଛି, ପୁନ play ଚିତ୍ରିତ ନୁହେଁ</string>
-    <string name="max_ai_cycle_failed_desc">କ successful ଣସି ସଫଳ ମୂଲ୍ୟାଙ୍କନ ଦାବି କରାଯାଇ ନାହିଁ · ପୁନ ry ଚେଷ୍ଟା କରିବାକୁ ଟ୍ୟାପ୍ କରନ୍ତୁ; ସବିଶେଷ ତଥ୍ୟ ନିଦାନରେ ଅଛି</string>
     <string name="max_ai_master_disabled_desc">AI ଅପ୍ଟିମାଇଜେସନ୍ ବନ୍ଦ ଅଛି · ମାନୁଆଲ ନିୟନ୍ତ୍ରଣ ଏବଂ ତାପଜ ସୁରକ୍ଷା ସ୍ୱାଧୀନ ରହିଥାଏ</string>
     <string name="max_ai_calibration_hits">%2$d ପୂର୍ବାନୁମାନ ମଧ୍ୟରୁ %1$s ମାପାଯାଇଥିବା ଲାଭର ±%3$s ମଧ୍ୟରେ ଅବତରଣ କଲା</string>
     <string name="max_ai_deck_live_summary">%1$d ନୋବ ନଜରରେ ଏବଂ %2$d ନିୟନ୍ତ୍ରିତ — ଚାଲୁଥିବା ଲୁପ୍ ର ଆନିମେଟେଡ୍ ଦୃଶ୍ୟ ଖୋଲନ୍ତୁ।</string>

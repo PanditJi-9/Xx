@@ -136,7 +136,6 @@
     <string name="max_ai_objective_pick_balanced">Vyrovnaný</string>
     <string name="max_ai_objective_pick_battery">Baterie</string>
     <string name="max_ai_refresh">Nyní spusťte cyklus</string>
-    <string name="max_ai_refresh_desc">Změřte, naplánujte a jednejte jednou místo čekání na cyklus 30s.</string>
     <string name="max_ai_counters">Rozhodnutí %1$d · ověřeno %2$d · upraveno %3$d · z důvodu bezpečnosti blokováno %4$d</string>
     <string name="max_ai_deck_title">Ovládací panel</string>
     <string name="max_ai_deck_desc">Živý přepínač a stav, který se mění. Všechno pod tím je důkazem.</string>
@@ -262,9 +261,7 @@
     <string name="max_live_plan_snapshot">Naposledy hodnocený plán, nikoli aktuální činnost</string>
     <string name="max_ai_learning_coverage">Pokrytí učení %1$d%%</string>
     <string name="max_ai_cycle_running">Hodnocení zařízení</string>
-    <string name="max_ai_cycle_running_desc">Probíhá cyklus. Opakované požadavky se slučují, nepřehrávají se.</string>
     <string name="max_ai_cycle_failed">Hodnocení se nezdařilo</string>
-    <string name="max_ai_cycle_failed_desc">Není nárokováno žádné úspěšné hodnocení. Klepnutím opakujte; podrobnosti jsou v diagnostice.</string>
     <string name="max_ai_decisions_enabled">Automatické rozhodování povoleno</string>
     <string name="max_ai_decisions_disabled">Automatická rozhodnutí zakázána</string>
     <string name="max_ai_master_disabled_desc">Optimalizace AI je vypnutá. Ruční ovládání a tepelná ochrana zůstávají nezávislé.</string>

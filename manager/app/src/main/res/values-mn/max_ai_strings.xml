@@ -136,7 +136,6 @@
     <string name="max_ai_objective_pick_balanced">Тэнцвэртэй</string>
     <string name="max_ai_objective_pick_battery">Зай</string>
     <string name="max_ai_refresh">Яг одоо мөчлөг гүйлгэ</string>
-    <string name="max_ai_refresh_desc">30-аад оны мөчлөгийг хүлээхийн оронд нэг удаа хэмжиж, төлөвлөж, үйлдэл хий.</string>
     <string name="max_ai_counters">Шийдвэр %1$d · баталгаажуулсан %2$d · тохируулсан %3$d · аюулгүй байдлын үүднээс блоклосон %4$d</string>
     <string name="max_ai_deck_title">Хяналтын тавцан</string>
     <string name="max_ai_deck_desc">Амьд шилжүүлэгч ба төлөв байдал нь өөрчлөгддөг. Үүний доорх бүх зүйл нотлох баримт юм.</string>
@@ -262,9 +261,7 @@
     <string name="max_live_plan_snapshot">Хамгийн сүүлд үнэлэгдсэн төлөвлөгөө, одоогийн үйл ажиллагаа биш</string>
     <string name="max_ai_learning_coverage">Сургалтын хамрах хүрээ %1$d%%</string>
     <string name="max_ai_cycle_running">Төхөөрөмжийг үнэлж байна</string>
-    <string name="max_ai_cycle_running_desc">Цикл явагдаж байна. Дахин давтагдах хүсэлтүүдийг нэгтгэж, дахин тоглуулахгүй.</string>
     <string name="max_ai_cycle_failed">Үнэлгээ амжилтгүй боллоо</string>
-    <string name="max_ai_cycle_failed_desc">Амжилттай үнэлгээ өгсөн гэж байхгүй. Дахин оролдохын тулд товшино уу; Нарийвчилсан мэдээлэл оношлогоонд байна.</string>
     <string name="max_ai_decisions_enabled">Автомат шийдвэрүүдийг идэвхжүүлсэн</string>
     <string name="max_ai_decisions_disabled">Автомат шийдвэрүүдийг идэвхгүй болгосон</string>
     <string name="max_ai_master_disabled_desc">AI оновчлол идэвхгүй байна. Гарын авлагын удирдлага, дулааны хамгаалалт нь бие даасан хэвээр байна.</string>

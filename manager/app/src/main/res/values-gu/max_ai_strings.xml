@@ -136,7 +136,6 @@
     <string name="max_ai_objective_pick_balanced">સંતુલિત</string>
     <string name="max_ai_objective_pick_battery">બેટરી</string>
     <string name="max_ai_refresh">હવે એક સાયકલ ચલાવો</string>
-    <string name="max_ai_refresh_desc">30 ના ચક્રની રાહ જોવાને બદલે એકવાર માપો, યોજના બનાવો અને કાર્ય કરો.</string>
     <string name="max_ai_counters">નિર્ણયો %1$d · ચકાસાયેલ %2$d · સમાયોજિત %3$d · સલામતી માટે અવરોધિત %4$d</string>
     <string name="max_ai_deck_title">નિયંત્રણ ડેક</string>
     <string name="max_ai_deck_desc">જીવંત સ્વીચ અને તે જે સ્થિતિમાં બદલાય છે. આની નીચે બધું જ પુરાવા છે.</string>
@@ -262,9 +261,7 @@
     <string name="max_live_plan_snapshot">છેલ્લી મૂલ્યાંકન કરેલ યોજના, વર્તમાન પ્રવૃત્તિ નહીં</string>
     <string name="max_ai_learning_coverage">શીખવાનું કવરેજ %1$d%%</string>
     <string name="max_ai_cycle_running">ઉપકરણનું મૂલ્યાંકન</string>
-    <string name="max_ai_cycle_running_desc">એક ચક્ર ચાલુ છે. પુનરાવર્તિત વિનંતીઓ મર્જ કરવામાં આવે છે, ફરીથી ચલાવવામાં આવતી નથી.</string>
     <string name="max_ai_cycle_failed">મૂલ્યાંકન નિષ્ફળ થયું</string>
-    <string name="max_ai_cycle_failed_desc">કોઈ સફળ મૂલ્યાંકનનો દાવો કરવામાં આવ્યો નથી. ફરી પ્રયાસ કરવા માટે ટેપ કરો; વિગતો ડાયગ્નોસ્ટિક્સમાં છે.</string>
     <string name="max_ai_decisions_enabled">સ્વચાલિત નિર્ણયો સક્ષમ</string>
     <string name="max_ai_decisions_disabled">સ્વચાલિત નિર્ણયો અક્ષમ છે</string>
     <string name="max_ai_master_disabled_desc">AI ઓપ્ટિમાઇઝેશન બંધ છે. મેન્યુઅલ નિયંત્રણો અને થર્મલ સંરક્ષણ સ્વતંત્ર રહે છે.</string>

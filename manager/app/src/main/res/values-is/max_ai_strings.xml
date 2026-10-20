@@ -136,7 +136,6 @@
     <string name="max_ai_objective_pick_balanced">Jafnvægi</string>
     <string name="max_ai_objective_pick_battery">Rafhlaða</string>
     <string name="max_ai_refresh">Hlaupa hring núna</string>
-    <string name="max_ai_refresh_desc">Mældu, skipuleggja og bregðast við einu sinni í stað þess að bíða eftir 30s hringrásinni.</string>
     <string name="max_ai_counters">Ákvarðanir %1$d · staðfestar %2$d · leiðréttar %3$d · lokað vegna öryggis %4$d</string>
     <string name="max_ai_deck_title">Stjórnborð</string>
     <string name="max_ai_deck_desc">Lifandi rofinn og ástandið sem það breytir. Allt fyrir neðan þetta er sönnunargögnin.</string>
@@ -262,9 +261,7 @@
     <string name="max_live_plan_snapshot">Síðast metin áætlun, ekki núverandi starfsemi</string>
     <string name="max_ai_learning_coverage">Námsumfjöllun %1$d%%</string>
     <string name="max_ai_cycle_running">Að meta tækið</string>
-    <string name="max_ai_cycle_running_desc">Hringrás er í gangi. Endurteknar beiðnir eru sameinaðar, ekki endurteknar.</string>
     <string name="max_ai_cycle_failed">Mat mistókst</string>
-    <string name="max_ai_cycle_failed_desc">Ekki er krafist árangursríks mats. Bankaðu til að reyna aftur; upplýsingar eru í greiningu.</string>
     <string name="max_ai_decisions_enabled">Sjálfvirkar ákvarðanir virkar</string>
     <string name="max_ai_decisions_disabled">Sjálfvirkar ákvarðanir óvirkar</string>
     <string name="max_ai_master_disabled_desc">Slökkt er á AI fínstillingu. Handvirkar stýringar og hitavörn haldast óháð.</string>

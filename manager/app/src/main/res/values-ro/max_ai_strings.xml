@@ -136,7 +136,6 @@
     <string name="max_ai_objective_pick_balanced">Echilibrat</string>
     <string name="max_ai_objective_pick_battery">Baterie</string>
     <string name="max_ai_refresh">Rulați un ciclu acum</string>
-    <string name="max_ai_refresh_desc">Măsurați, planificați și acționați o dată în loc să așteptați ciclul de 30 de ani.</string>
     <string name="max_ai_counters">Decizii %1$d · verificate %2$d · ajustate %3$d · blocate pentru siguranță %4$d</string>
     <string name="max_ai_deck_title">Puntea de control</string>
     <string name="max_ai_deck_desc">Comutatorul live și starea pe care o schimbă. Tot ce este mai jos este dovezi.</string>
@@ -262,9 +261,7 @@
     <string name="max_live_plan_snapshot">Ultimul plan evaluat, nu activitatea curentă</string>
     <string name="max_ai_learning_coverage">Acoperire de învățare %1$d%%</string>
     <string name="max_ai_cycle_running">Evaluarea dispozitivului</string>
-    <string name="max_ai_cycle_running_desc">Un ciclu este în desfășurare. Solicitările repetate sunt îmbinate, nu redate.</string>
     <string name="max_ai_cycle_failed">Evaluarea a eșuat</string>
-    <string name="max_ai_cycle_failed_desc">Nu se pretinde nicio evaluare de succes. Atingeți pentru a reîncerca; detaliile sunt in diagnosticare.</string>
     <string name="max_ai_decisions_enabled">Deciziile automate sunt activate</string>
     <string name="max_ai_decisions_disabled">Deciziile automate au fost dezactivate</string>
     <string name="max_ai_master_disabled_desc">Optimizarea AI este dezactivată. Comenzile manuale și protecția termică rămân independente.</string>

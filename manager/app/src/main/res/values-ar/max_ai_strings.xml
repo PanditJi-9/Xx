@@ -158,7 +158,6 @@
     <string name="max_ai_objective_pick_balanced">التوازن</string>
     <string name="max_ai_objective_pick_battery">البطارية</string>
     <string name="max_ai_refresh">شغّل دورة الآن</string>
-    <string name="max_ai_refresh_desc">قس وخطِّط ونفّذ مرة بدل انتطار دورة الثلاثين ثانية.</string>
     <string name="max_ai_counters">قرارات %1$d · مُتحقق %2$d · معدلة %3$d · محجوبة للأمان %4$d</string>
 
     <string name="max_ai_deck_title">سطح التحكم</string>
@@ -305,9 +304,7 @@
     <string name="max_live_plan_snapshot">آخر خطة جرى تقييمها، وليست نشاطا جاريا</string>
     <string name="max_ai_learning_coverage">تغطية التعلم %1$d%%</string>
     <string name="max_ai_cycle_running">جار تقييم الجهاز</string>
-    <string name="max_ai_cycle_running_desc">دورة قيد التنفيذ. الطلبات المتكررة تُدمج ولا تُعاد واحدة تلو الأخرى.</string>
     <string name="max_ai_cycle_failed">فشل التقييم</string>
-    <string name="max_ai_cycle_failed_desc">لا يُدعى نجاح التقييم. اضغط لإعادة المحاولة؛ التفاصيل في التشخيص.</string>
     <string name="max_ai_decisions_enabled">القرارات التلقائية مفعلة</string>
     <string name="max_ai_decisions_disabled">القرارات التلقائية متوقفة</string>
     <string name="max_ai_master_disabled_desc">تحسين الذكاء متوقف. التحكم اليدوي والحماية الحرارية يبقيان مستقلين.</string>
@@ -317,8 +314,6 @@
     <string name="maxai_intro_title">ما يفعله Max AI</string>
     <string name="maxai_intro_subtitle">المحرّك، وما يقيسه، وما لا يدّعيه</string>
     <string name="maxai_intro_teaser">المحرّك، وما هو متاح على جهازك الآن</string>
-    <string name="maxai_intro_loop_title">الحلقة</string>
-    <string name="maxai_intro_loop_desc">أربع مراحل — ولا تُغلق الحلقة إلا بقراءةٍ بعد الكتابة.</string>
     <string name="maxai_intro_stage1_title">يقرأ الحالة أوّلًا</string>
     <string name="maxai_intro_stage1_body">آخر القيم المعروفة والحدود المقروءة من الجهاز تأتي قبل أي قرار — فلا خطوة على مجهول.</string>
     <string name="maxai_intro_stage2_title">يشخّص الحدّ لا التردّد</string>
@@ -328,7 +323,6 @@
     <string name="maxai_intro_stage4_title">يتحقّق بالقراءة بعدها</string>
     <string name="maxai_intro_stage4_body">تُقرأ القيمة بعد الكتابة؛ وما لم يتغيّر يُعلَن كما هو، والتراجع لا يحدث إلا حيث يكون آمنًا.</string>
     <string name="maxai_intro_access_title">المتاح الآن</string>
-    <string name="maxai_intro_access_desc">من إعداد اللوحة وترخيصك في هذه اللحظة — لا جدول تسويقيّ.</string>
     <string name="maxai_intro_state_available">متاح</string>
     <string name="maxai_intro_state_free">مجّانيّ الآن</string>
     <string name="maxai_intro_state_key">يحتاج مفتاحًا</string>

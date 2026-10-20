@@ -136,7 +136,6 @@
     <string name="max_ai_objective_pick_balanced">Kiegyensúlyozott</string>
     <string name="max_ai_objective_pick_battery">Akkumulátor</string>
     <string name="max_ai_refresh">Futtasson most egy ciklust</string>
-    <string name="max_ai_refresh_desc">Mérjen, tervezzen és cselekedjen egyszer, ahelyett, hogy megvárná a 30-as évek ciklusát.</string>
     <string name="max_ai_counters">Döntések %1$d · ellenőrzött %2$d · módosítva %3$d · biztonsági szempontból letiltva %4$d</string>
     <string name="max_ai_deck_title">Vezérlőpult</string>
     <string name="max_ai_deck_desc">Az élő kapcsoló és az általa megváltoztatott állapot. Minden, ami ez alatt van, a bizonyíték.</string>
@@ -262,9 +261,7 @@
     <string name="max_live_plan_snapshot">Utoljára értékelt terv, nem aktuális tevékenység</string>
     <string name="max_ai_learning_coverage">Tanulási lefedettség %1$d%%</string>
     <string name="max_ai_cycle_running">A készülék értékelése</string>
-    <string name="max_ai_cycle_running_desc">Egy ciklus van folyamatban. Az ismétlődő kéréseket a rendszer összevonja, nem játssza le újra.</string>
     <string name="max_ai_cycle_failed">Az értékelés nem sikerült</string>
-    <string name="max_ai_cycle_failed_desc">Sikeres értékelést nem igényelnek. Koppintson az újrapróbálkozáshoz; részletek a diagnosztikában.</string>
     <string name="max_ai_decisions_enabled">Automatikus döntések engedélyezve</string>
     <string name="max_ai_decisions_disabled">Az automatikus döntések letiltva</string>
     <string name="max_ai_master_disabled_desc">Az AI optimalizálás ki van kapcsolva. A kézi vezérlés és a hővédelem függetlenek maradnak.</string>

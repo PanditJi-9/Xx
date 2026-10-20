@@ -136,7 +136,6 @@
     <string name="max_ai_objective_pick_balanced">सन्तुलित</string>
     <string name="max_ai_objective_pick_battery">ब्याट्री</string>
     <string name="max_ai_refresh">अब साइकल चलाउनुहोस्</string>
-    <string name="max_ai_refresh_desc">30s चक्रको लागि पर्खनुको सट्टा एक पटक मापन गर्नुहोस्, योजना गर्नुहोस् र कार्य गर्नुहोस्।</string>
     <string name="max_ai_counters">निर्णयहरू %1$d · प्रमाणित %2$d · समायोजित %3$d · सुरक्षाको लागि अवरुद्ध %4$d</string>
     <string name="max_ai_deck_title">कन्ट्रोल डेक</string>
     <string name="max_ai_deck_desc">प्रत्यक्ष स्विच र राज्य यो परिवर्तन हुन्छ। यो तल सबै प्रमाण हो।</string>
@@ -262,9 +261,7 @@
     <string name="max_live_plan_snapshot">पछिल्लो मूल्याङ्कन गरिएको योजना, हालको गतिविधि होइन</string>
     <string name="max_ai_learning_coverage">सिक्ने कवरेज %1$d%%</string>
     <string name="max_ai_cycle_running">यन्त्रको मूल्याङ्कन गर्दै</string>
-    <string name="max_ai_cycle_running_desc">एउटा चक्र चलिरहेको छ। दोहोर्याइएको अनुरोधहरू मर्ज गरिएका छन्, पुन: प्ले गरिएको छैन।</string>
     <string name="max_ai_cycle_failed">मूल्याङ्कन असफल भयो</string>
-    <string name="max_ai_cycle_failed_desc">कुनै सफल मूल्याङ्कन दावी गरिएको छैन। पुन: प्रयास गर्न ट्याप गर्नुहोस्; विवरण निदान मा छन्।</string>
     <string name="max_ai_decisions_enabled">स्वचालित निर्णयहरू सक्षम गरियो</string>
     <string name="max_ai_decisions_disabled">स्वचालित निर्णय अक्षम</string>
     <string name="max_ai_master_disabled_desc">एआई अप्टिमाइजेसन बन्द छ। म्यानुअल नियन्त्रण र थर्मल सुरक्षा स्वतन्त्र रहन्छ।</string>

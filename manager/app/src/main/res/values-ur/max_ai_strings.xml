@@ -136,7 +136,6 @@
     <string name="max_ai_objective_pick_balanced">متوازن</string>
     <string name="max_ai_objective_pick_battery">بیٹری</string>
     <string name="max_ai_refresh">اب ایک سائیکل چلائیں۔</string>
-    <string name="max_ai_refresh_desc">30s سائیکل کا انتظار کرنے کے بجائے ایک بار پیمائش کریں، منصوبہ بنائیں اور عمل کریں۔</string>
     <string name="max_ai_counters">فیصلے %1$d · تصدیق شدہ %2$d · ایڈجسٹ %3$d · حفاظت کے لیے مسدود %4$d</string>
     <string name="max_ai_deck_title">کنٹرول ڈیک</string>
     <string name="max_ai_deck_desc">لائیو سوئچ اور جس حالت میں یہ بدلتا ہے۔ اس کے نیچے سب کچھ ثبوت ہے۔</string>
@@ -262,9 +261,7 @@
     <string name="max_live_plan_snapshot">آخری جائزہ شدہ منصوبہ، موجودہ سرگرمی نہیں۔</string>
     <string name="max_ai_learning_coverage">سیکھنے کی کوریج %1$d%%</string>
     <string name="max_ai_cycle_running">ڈیوائس کا اندازہ لگانا</string>
-    <string name="max_ai_cycle_running_desc">ایک سائیکل جاری ہے۔ بار بار کی گئی درخواستوں کو ضم کیا جاتا ہے، دوبارہ نہیں چلایا جاتا ہے۔</string>
     <string name="max_ai_cycle_failed">تشخیص ناکام ہو گیا۔</string>
-    <string name="max_ai_cycle_failed_desc">کسی کامیاب تشخیص کا دعویٰ نہیں کیا گیا ہے۔ دوبارہ کوشش کرنے کے لیے تھپتھپائیں؛ تفصیلات تشخیص میں ہیں۔</string>
     <string name="max_ai_decisions_enabled">خودکار فیصلے فعال ہیں۔</string>
     <string name="max_ai_decisions_disabled">خودکار فیصلے غیر فعال ہیں۔</string>
     <string name="max_ai_master_disabled_desc">AI آپٹیمائزیشن آف ہے۔ دستی کنٹرول اور تھرمل تحفظ آزاد رہتے ہیں۔</string>

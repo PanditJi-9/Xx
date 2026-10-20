@@ -136,7 +136,6 @@
     <string name="max_ai_objective_pick_balanced">Seimbang</string>
     <string name="max_ai_objective_pick_battery">Bateri</string>
     <string name="max_ai_refresh">Jalankan kitaran sekarang</string>
-    <string name="max_ai_refresh_desc">Ukur, rancang dan bertindak sekali daripada menunggu kitaran 30-an.</string>
     <string name="max_ai_counters">Keputusan %1$d · disahkan %2$d · diselaraskan %3$d · disekat untuk keselamatan %4$d</string>
     <string name="max_ai_deck_title">Dek kawalan</string>
     <string name="max_ai_deck_desc">Suis hidup dan keadaan ia berubah. Semua di bawah ini adalah bukti.</string>
@@ -262,9 +261,7 @@
     <string name="max_live_plan_snapshot">Pelan penilaian terakhir, bukan aktiviti semasa</string>
     <string name="max_ai_learning_coverage">Liputan pembelajaran %1$d%%</string>
     <string name="max_ai_cycle_running">Menilai peranti</string>
-    <string name="max_ai_cycle_running_desc">Satu kitaran sedang berjalan. Permintaan berulang digabungkan, bukan dimainkan semula.</string>
     <string name="max_ai_cycle_failed">Penilaian gagal</string>
-    <string name="max_ai_cycle_failed_desc">Tiada penilaian yang berjaya dituntut. Ketik untuk mencuba semula; butiran ada dalam diagnostik.</string>
     <string name="max_ai_decisions_enabled">Keputusan automatik didayakan</string>
     <string name="max_ai_decisions_disabled">Keputusan automatik dilumpuhkan</string>
     <string name="max_ai_master_disabled_desc">Pengoptimuman AI dimatikan. Kawalan manual dan perlindungan terma kekal bebas.</string>

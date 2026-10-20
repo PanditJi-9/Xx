@@ -136,7 +136,6 @@
     <string name="max_ai_objective_pick_balanced">Ураўнаважаны</string>
     <string name="max_ai_objective_pick_battery">акумулятар</string>
     <string name="max_ai_refresh">Запусціце цыкл зараз</string>
-    <string name="max_ai_refresh_desc">Вымярайце, плануйце і дзейнічайце адзін раз, а не чакайце цыкла 30-х.</string>
     <string name="max_ai_counters">Рашэнні %1$d · праверана %2$d · скарэкціравана %3$d · заблакіравана для бяспекі %4$d</string>
     <string name="max_ai_deck_title">Калода кіравання</string>
     <string name="max_ai_deck_desc">Жывы пераключальнік і стан, які ён змяняе. Усё, што ніжэй, з\'яўляецца доказам.</string>
@@ -262,9 +261,7 @@
     <string name="max_live_plan_snapshot">Апошні ацэнены план, а не бягучая дзейнасць</string>
     <string name="max_ai_learning_coverage">Ахоп навучання %1$d%%</string>
     <string name="max_ai_cycle_running">Ацэнка прылады</string>
-    <string name="max_ai_cycle_running_desc">Ідзе цыкл. Паўторныя запыты аб\'ядноўваюцца, а не прайграваюцца.</string>
     <string name="max_ai_cycle_failed">Ацэнка няўдалая</string>
-    <string name="max_ai_cycle_failed_desc">Ніякай паспяховай ацэнкі не сцвярджаецца. Націсніце, каб паўтарыць; падрабязнасці ў дыягностыцы.</string>
     <string name="max_ai_decisions_enabled">Аўтаматычныя рашэнні ўключаны</string>
     <string name="max_ai_decisions_disabled">Аўтаматычнае прыняцце рашэнняў адключана</string>
     <string name="max_ai_master_disabled_desc">Аптымізацыя AI выключана. Ручнае кіраванне і цеплавая абарона застаюцца незалежнымі.</string>

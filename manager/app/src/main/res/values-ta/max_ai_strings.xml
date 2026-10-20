@@ -136,7 +136,6 @@
     <string name="max_ai_objective_pick_balanced">சமச்சீர்</string>
     <string name="max_ai_objective_pick_battery">பேட்டரி</string>
     <string name="max_ai_refresh">இப்போது ஒரு சுழற்சியை இயக்கவும்</string>
-    <string name="max_ai_refresh_desc">30களின் சுழற்சிக்காக காத்திருப்பதற்குப் பதிலாக ஒருமுறை அளந்து, திட்டமிட்டு செயல்படவும்.</string>
     <string name="max_ai_counters">முடிவுகள் %1$d · சரிபார்க்கப்பட்டது %2$d · சரிசெய்யப்பட்டது %3$d · பாதுகாப்பிற்காக தடுக்கப்பட்டது %4$d</string>
     <string name="max_ai_deck_title">கட்டுப்பாட்டு தளம்</string>
     <string name="max_ai_deck_desc">நேரலை சுவிட்ச் மற்றும் அது மாறும் நிலை. இதற்கு கீழே உள்ள அனைத்தும் ஆதாரம்.</string>
@@ -262,9 +261,7 @@
     <string name="max_live_plan_snapshot">கடைசியாக மதிப்பிடப்பட்ட திட்டம், தற்போதைய செயல்பாடு அல்ல</string>
     <string name="max_ai_learning_coverage">கற்றல் கவரேஜ் %1$d%%</string>
     <string name="max_ai_cycle_running">சாதனத்தை மதிப்பீடு செய்தல்</string>
-    <string name="max_ai_cycle_running_desc">ஒரு சுழற்சி நடந்து கொண்டிருக்கிறது. மீண்டும் மீண்டும் கோரிக்கைகள் ஒன்றிணைக்கப்படுகின்றன, மீண்டும் இயக்கப்படவில்லை.</string>
     <string name="max_ai_cycle_failed">மதிப்பீடு தோல்வியடைந்தது</string>
-    <string name="max_ai_cycle_failed_desc">வெற்றிகரமான மதிப்பீடு எதுவும் கோரப்படவில்லை. மீண்டும் முயற்சிக்க தட்டவும்; விவரங்கள் நோயறிதலில் உள்ளன.</string>
     <string name="max_ai_decisions_enabled">தானியங்கி முடிவுகள் இயக்கப்பட்டன</string>
     <string name="max_ai_decisions_disabled">தானியங்கி முடிவுகள் முடக்கப்பட்டன</string>
     <string name="max_ai_master_disabled_desc">AI மேம்படுத்தல் முடக்கப்பட்டுள்ளது. கைமுறை கட்டுப்பாடுகள் மற்றும் வெப்ப பாதுகாப்பு ஆகியவை சுதந்திரமாக இருக்கும்.</string>

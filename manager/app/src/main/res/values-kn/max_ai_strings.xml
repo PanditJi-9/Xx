@@ -136,7 +136,6 @@
     <string name="max_ai_objective_pick_balanced">ಸಮತೋಲಿತ</string>
     <string name="max_ai_objective_pick_battery">ಬ್ಯಾಟರಿ</string>
     <string name="max_ai_refresh">ಈಗ ಸೈಕಲ್ ಓಡಿಸಿ</string>
-    <string name="max_ai_refresh_desc">30 ರ ಚಕ್ರಕ್ಕಾಗಿ ಕಾಯುವ ಬದಲು ಒಮ್ಮೆ ಅಳೆಯಿರಿ, ಯೋಜಿಸಿ ಮತ್ತು ಕಾರ್ಯನಿರ್ವಹಿಸಿ.</string>
     <string name="max_ai_counters">ನಿರ್ಧಾರಗಳು %1$d · ಪರಿಶೀಲಿಸಲಾಗಿದೆ %2$d · ಸರಿಹೊಂದಿಸಲಾಗಿದೆ %3$d · ಸುರಕ್ಷತೆಗಾಗಿ ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ %4$d</string>
     <string name="max_ai_deck_title">ಕಂಟ್ರೋಲ್ ಡೆಕ್</string>
     <string name="max_ai_deck_desc">ಲೈವ್ ಸ್ವಿಚ್ ಮತ್ತು ಅದು ಬದಲಾಗುವ ಸ್ಥಿತಿ. ಈ ಕೆಳಗಿನವುಗಳೆಲ್ಲವೂ ಸಾಕ್ಷಿಯಾಗಿದೆ.</string>
@@ -262,9 +261,7 @@
     <string name="max_live_plan_snapshot">ಕೊನೆಯದಾಗಿ ಮೌಲ್ಯಮಾಪನ ಮಾಡಿದ ಯೋಜನೆ, ಪ್ರಸ್ತುತ ಚಟುವಟಿಕೆಯಲ್ಲ</string>
     <string name="max_ai_learning_coverage">ಕಲಿಕೆಯ ವ್ಯಾಪ್ತಿ %1$d%%</string>
     <string name="max_ai_cycle_running">ಸಾಧನದ ಮೌಲ್ಯಮಾಪನ</string>
-    <string name="max_ai_cycle_running_desc">ಒಂದು ಚಕ್ರವು ಪ್ರಗತಿಯಲ್ಲಿದೆ. ಪುನರಾವರ್ತಿತ ವಿನಂತಿಗಳನ್ನು ವಿಲೀನಗೊಳಿಸಲಾಗಿದೆ, ಮರುಪ್ಲೇ ಮಾಡಲಾಗುವುದಿಲ್ಲ.</string>
     <string name="max_ai_cycle_failed">ಮೌಲ್ಯಮಾಪನ ವಿಫಲವಾಗಿದೆ</string>
-    <string name="max_ai_cycle_failed_desc">ಯಾವುದೇ ಯಶಸ್ವಿ ಮೌಲ್ಯಮಾಪನವನ್ನು ಕ್ಲೈಮ್ ಮಾಡಲಾಗಿಲ್ಲ. ಮರುಪ್ರಯತ್ನಿಸಲು ಟ್ಯಾಪ್ ಮಾಡಿ; ವಿವರಗಳು ರೋಗನಿರ್ಣಯದಲ್ಲಿವೆ.</string>
     <string name="max_ai_decisions_enabled">ಸ್ವಯಂಚಾಲಿತ ನಿರ್ಧಾರಗಳನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</string>
     <string name="max_ai_decisions_disabled">ಸ್ವಯಂಚಾಲಿತ ನಿರ್ಧಾರಗಳನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</string>
     <string name="max_ai_master_disabled_desc">AI ಆಪ್ಟಿಮೈಸೇಶನ್ ಆಫ್ ಆಗಿದೆ. ಹಸ್ತಚಾಲಿತ ನಿಯಂತ್ರಣಗಳು ಮತ್ತು ಉಷ್ಣ ರಕ್ಷಣೆ ಸ್ವತಂತ್ರವಾಗಿ ಉಳಿಯುತ್ತದೆ.</string>

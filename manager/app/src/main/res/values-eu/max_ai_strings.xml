@@ -136,7 +136,6 @@
     <string name="max_ai_objective_pick_balanced">Orekatua</string>
     <string name="max_ai_objective_pick_battery">Bateria</string>
     <string name="max_ai_refresh">Exekutatu ziklo bat orain</string>
-    <string name="max_ai_refresh_desc">Neurtu, planifikatu eta ekin ezazu behin 30eko hamarkadaren zikloari itxaron beharrean.</string>
     <string name="max_ai_counters">Erabakiak %1$d · egiaztatuak %2$d · egokituak %3$d · blokeatuta segurtasunagatik %4$d</string>
     <string name="max_ai_deck_title">Kontrol-plataforma</string>
     <string name="max_ai_deck_desc">Zuzeneko etengailua eta aldatzen den egoera. Honen azpian dagoen guztia froga da.</string>
@@ -261,9 +260,7 @@
     <string name="max_live_plan_snapshot">Ebaluatutako azken plana, ez oraingo jarduera</string>
     <string name="max_ai_learning_coverage">Ikaskuntza-estaldura %1$d%%</string>
     <string name="max_ai_cycle_running">Gailua ebaluatzea</string>
-    <string name="max_ai_cycle_running_desc">Ziklo bat abian da. Errepikaturiko eskaerak batzen dira, ez errepikatzen.</string>
     <string name="max_ai_cycle_failed">Ebaluazioak huts egin du</string>
-    <string name="max_ai_cycle_failed_desc">Ez da ebaluazio arrakastatsua aldarrikatzen. Sakatu berriro saiatzeko; xehetasunak diagnostikoetan daude.</string>
     <string name="max_ai_decisions_enabled">Erabaki automatikoak gaituta</string>
     <string name="max_ai_decisions_disabled">Erabaki automatikoak desgaituta daude</string>
     <string name="max_ai_master_disabled_desc">AI optimizazioa desaktibatuta dago. Eskuzko kontrolak eta babes termikoa independenteak izaten jarraitzen dute.</string>

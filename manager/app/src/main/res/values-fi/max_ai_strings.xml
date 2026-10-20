@@ -136,7 +136,6 @@
     <string name="max_ai_objective_pick_balanced">Tasapainoinen</string>
     <string name="max_ai_objective_pick_battery">Akku</string>
     <string name="max_ai_refresh">Suorita sykli nyt</string>
-    <string name="max_ai_refresh_desc">Mittaa, suunnittele ja toimi kerran sen sijaan, että odotat 30-luvun sykliä.</string>
     <string name="max_ai_counters">Päätökset %1$d · vahvistettu %2$d · korjattu %3$d · estetty turvallisuuden vuoksi %4$d</string>
     <string name="max_ai_deck_title">Ohjauslevy</string>
     <string name="max_ai_deck_desc">Live-kytkin ja tila, jonka se muuttaa. Kaikki tämän alla on todisteita.</string>
@@ -262,9 +261,7 @@
     <string name="max_live_plan_snapshot">Viimeisin arvioitu suunnitelma, ei nykyinen toiminta</string>
     <string name="max_ai_learning_coverage">Oppimisen kattavuus %1$d%%</string>
     <string name="max_ai_cycle_running">Laitteen arviointi</string>
-    <string name="max_ai_cycle_running_desc">Jakso on käynnissä. Toistuvat pyynnöt yhdistetään, ei toisteta.</string>
     <string name="max_ai_cycle_failed">Arviointi epäonnistui</string>
-    <string name="max_ai_cycle_failed_desc">Ei väitetä onnistuneesta arvioinnista. Yritä uudelleen napauttamalla; tiedot löytyvät diagnostiikasta.</string>
     <string name="max_ai_decisions_enabled">Automaattiset päätökset käytössä</string>
     <string name="max_ai_decisions_disabled">Automaattiset päätökset poistettu käytöstä</string>
     <string name="max_ai_master_disabled_desc">AI-optimointi on pois päältä. Manuaalinen ohjaus ja lämpösuoja pysyvät itsenäisinä.</string>

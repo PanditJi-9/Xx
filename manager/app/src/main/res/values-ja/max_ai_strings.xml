@@ -136,7 +136,6 @@
     <string name="max_ai_objective_pick_balanced">バランスの取れた</string>
     <string name="max_ai_objective_pick_battery">バッテリー</string>
     <string name="max_ai_refresh">今すぐサイクルを実行してください</string>
-    <string name="max_ai_refresh_desc">30 代のサイクルを待つのではなく、一度測定し、計画し、行動しましょう。</string>
     <string name="max_ai_counters">決定 %1$d · 検証済み %2$d · 調整済み %3$d · 安全のためブロック %4$d</string>
     <string name="max_ai_deck_title">コントロールデッキ</string>
     <string name="max_ai_deck_desc">ライブスイッチとそれが変化する状態。これ以下はすべて証拠です。</string>
@@ -262,9 +261,7 @@
     <string name="max_live_plan_snapshot">現在のアクティビティではなく、最後に評価された計画</string>
     <string name="max_ai_learning_coverage">学習範囲 %1$d%%</string>
     <string name="max_ai_cycle_running">デバイスの評価</string>
-    <string name="max_ai_cycle_running_desc">サイクルが進行中です。繰り返されたリクエストはリプレイされずにマージされます。</string>
     <string name="max_ai_cycle_failed">評価に失敗しました</string>
-    <string name="max_ai_cycle_failed_desc">成功した評価は主張されません。タップして再試行します。詳細は診断に記載されています。</string>
     <string name="max_ai_decisions_enabled">自動決定の有効化</string>
     <string name="max_ai_decisions_disabled">自動決定が無効になっています</string>
     <string name="max_ai_master_disabled_desc">AIの最適化はオフになっています。手動制御と熱保護は独立したままです。</string>

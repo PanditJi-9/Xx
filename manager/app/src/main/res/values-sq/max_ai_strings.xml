@@ -136,7 +136,6 @@
     <string name="max_ai_objective_pick_balanced">E ekuilibruar</string>
     <string name="max_ai_objective_pick_battery">Bateria</string>
     <string name="max_ai_refresh">Drejtoni një cikël tani</string>
-    <string name="max_ai_refresh_desc">Matni, planifikoni dhe veproni një herë në vend që të prisni ciklin e viteve \'30.</string>
     <string name="max_ai_counters">Vendimet %1$d · verifikuar %2$d · rregulluar %3$d · bllokuar për siguri %4$d</string>
     <string name="max_ai_deck_title">Kuvertë kontrolli</string>
     <string name="max_ai_deck_desc">Ndërprerësi i drejtpërdrejtë dhe gjendja që ai ndryshon. Gjithçka poshtë kësaj është dëshmi.</string>
@@ -262,9 +261,7 @@
     <string name="max_live_plan_snapshot">Plani i fundit i vlerësuar, jo aktiviteti aktual</string>
     <string name="max_ai_learning_coverage">Mbulimi mësimor %1$d%%</string>
     <string name="max_ai_cycle_running">Vlerësimi i pajisjes</string>
-    <string name="max_ai_cycle_running_desc">Një cikël është në zhvillim e sipër. Kërkesat e përsëritura bashkohen, nuk riluhen.</string>
     <string name="max_ai_cycle_failed">Vlerësimi dështoi</string>
-    <string name="max_ai_cycle_failed_desc">Asnjë vlerësim i suksesshëm nuk pretendohet. Trokit për të riprovuar; detajet janë në diagnostifikim.</string>
     <string name="max_ai_decisions_enabled">Vendimet automatike janë aktivizuar</string>
     <string name="max_ai_decisions_disabled">Vendimet automatike janë çaktivizuar</string>
     <string name="max_ai_master_disabled_desc">Optimizimi i AI është joaktiv. Kontrollet manuale dhe mbrojtja termike mbeten të pavarura.</string>

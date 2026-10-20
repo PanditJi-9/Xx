@@ -136,7 +136,6 @@
     <string name="max_ai_objective_pick_balanced">Līdzsvarots</string>
     <string name="max_ai_objective_pick_battery">Akumulators</string>
     <string name="max_ai_refresh">Palaidiet ciklu tūlīt</string>
-    <string name="max_ai_refresh_desc">Izmēriet, plānojiet un rīkojieties vienreiz, nevis gaidiet 30. gadu ciklu.</string>
     <string name="max_ai_counters">Lēmumi %1$d · pārbaudīti %2$d · pielāgoti %3$d · bloķēti drošībai %4$d</string>
     <string name="max_ai_deck_title">Vadības bloks</string>
     <string name="max_ai_deck_desc">Tiešraides slēdzis un stāvoklis, ko tas maina. Viss, kas ir zemāks par šo, ir pierādījumi.</string>
@@ -262,9 +261,7 @@
     <string name="max_live_plan_snapshot">Pēdējais novērtētais plāns, nevis pašreizējā darbība</string>
     <string name="max_ai_learning_coverage">Mācību pārklājums %1$d%%</string>
     <string name="max_ai_cycle_running">Ierīces novērtēšana</string>
-    <string name="max_ai_cycle_running_desc">Notiek cikls. Atkārtoti pieprasījumi tiek apvienoti, nevis atkārtoti atskaņoti.</string>
     <string name="max_ai_cycle_failed">Novērtēšana neizdevās</string>
-    <string name="max_ai_cycle_failed_desc">Par veiksmīgu novērtējumu netiek apgalvots. Pieskarieties, lai mēģinātu vēlreiz; sīkāka informācija ir diagnostikā.</string>
     <string name="max_ai_decisions_enabled">Automātiskie lēmumi ir iespējoti</string>
     <string name="max_ai_decisions_disabled">Automātiskie lēmumi ir atspējoti</string>
     <string name="max_ai_master_disabled_desc">AI optimizācija ir izslēgta. Manuālā vadība un termiskā aizsardzība paliek neatkarīgi.</string>

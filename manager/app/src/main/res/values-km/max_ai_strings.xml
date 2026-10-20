@@ -136,7 +136,6 @@
     <string name="max_ai_objective_pick_balanced">មានតុល្យភាព</string>
     <string name="max_ai_objective_pick_battery">ថ្ម</string>
     <string name="max_ai_refresh">រត់​រង្វង់​មួយ​ឥឡូវ​នេះ។</string>
-    <string name="max_ai_refresh_desc">វាស់វែង រៀបចំផែនការ និងធ្វើសកម្មភាពម្តង ជំនួសឱ្យការរង់ចាំវដ្ត 30s ។</string>
     <string name="max_ai_counters">ការសម្រេចចិត្ត %1$d · បានផ្ទៀងផ្ទាត់ %2$d · កែសម្រួល %3$d · ទប់ស្កាត់សុវត្ថិភាព %4$d</string>
     <string name="max_ai_deck_title">បន្ទះត្រួតពិនិត្យ</string>
     <string name="max_ai_deck_desc">កុងតាក់បន្តផ្ទាល់ និងស្ថានភាពដែលវាផ្លាស់ប្តូរ។ អ្វី​គ្រប់​យ៉ាង​ខាងក្រោម​នេះ​ជា​ភស្តុតាង។</string>
@@ -262,9 +261,7 @@
     <string name="max_live_plan_snapshot">ផែនការដែលបានវាយតម្លៃចុងក្រោយ មិនមែនជាសកម្មភាពបច្ចុប្បន្នទេ។</string>
     <string name="max_ai_learning_coverage">ការគ្របដណ្តប់លើការសិក្សា %1$d%%</string>
     <string name="max_ai_cycle_running">ការវាយតម្លៃឧបករណ៍</string>
-    <string name="max_ai_cycle_running_desc">វដ្តមួយកំពុងដំណើរការ។ សំណើ​ម្តង​ហើយ​ម្តង​ទៀត​ត្រូវ​បាន​បញ្ចូល​ចូល​គ្នា មិន​ត្រូវ​បាន​ចាក់​ឡើង​វិញ​ទេ។</string>
     <string name="max_ai_cycle_failed">ការវាយតម្លៃបានបរាជ័យ</string>
-    <string name="max_ai_cycle_failed_desc">គ្មានការវាយតម្លៃជោគជ័យត្រូវបានទាមទារទេ។ ប៉ះដើម្បីព្យាយាមម្តងទៀត; ព័ត៌មានលម្អិតគឺស្ថិតនៅក្នុងរោគវិនិច្ឆ័យ។</string>
     <string name="max_ai_decisions_enabled">ការសម្រេចចិត្តដោយស្វ័យប្រវត្តិត្រូវបានបើក</string>
     <string name="max_ai_decisions_disabled">ការសម្រេចចិត្តដោយស្វ័យប្រវត្តិត្រូវបានបិទ</string>
     <string name="max_ai_master_disabled_desc">ការបង្កើនប្រសិទ្ធភាព AI ត្រូវបានបិទ។ ការគ្រប់គ្រងដោយដៃ និងការការពារកម្ដៅនៅតែឯករាជ្យ។</string>

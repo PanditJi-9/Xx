@@ -136,7 +136,6 @@
     <string name="max_ai_objective_pick_balanced">Balanslı</string>
     <string name="max_ai_objective_pick_battery">Batareya</string>
     <string name="max_ai_refresh">İndi bir dövrə keçin</string>
-    <string name="max_ai_refresh_desc">30-cu illərin dövrünü gözləmək əvəzinə bir dəfə ölçün, planlaşdırın və hərəkət edin.</string>
     <string name="max_ai_counters">Qərarlar %1$d · təsdiqlənmiş %2$d · düzəliş edilmiş %3$d · təhlükəsizlik üçün bloklanmış %4$d</string>
     <string name="max_ai_deck_title">Nəzarət göyərtəsi</string>
     <string name="max_ai_deck_desc">Canlı keçid və onun dəyişdiyi vəziyyət. Bunun altındakı hər şey dəlildir.</string>
@@ -262,9 +261,7 @@
     <string name="max_live_plan_snapshot">Son qiymətləndirilmiş plan, cari fəaliyyət deyil</string>
     <string name="max_ai_learning_coverage">Öyrənmə əhatəsi %1$d%%</string>
     <string name="max_ai_cycle_running">Cihazın qiymətləndirilməsi</string>
-    <string name="max_ai_cycle_running_desc">Bir dövrə davam edir. Təkrarlanan sorğular birləşdirilir, təkrar deyil.</string>
     <string name="max_ai_cycle_failed">Qiymətləndirmə uğursuz oldu</string>
-    <string name="max_ai_cycle_failed_desc">Uğurlu qiymətləndirmə iddia edilmir. Yenidən cəhd etmək üçün toxunun; təfərrüatlar diaqnostikadadır.</string>
     <string name="max_ai_decisions_enabled">Avtomatik qərarlar aktivləşdirildi</string>
     <string name="max_ai_decisions_disabled">Avtomatik qərarlar deaktiv edilib</string>
     <string name="max_ai_master_disabled_desc">AI optimallaşdırması deaktivdir. Manuel idarəetmə və istilik qorunması müstəqil olaraq qalır.</string>

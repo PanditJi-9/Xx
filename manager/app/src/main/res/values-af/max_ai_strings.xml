@@ -136,7 +136,6 @@
     <string name="max_ai_objective_pick_balanced">Gebalanseerd</string>
     <string name="max_ai_objective_pick_battery">Battery</string>
     <string name="max_ai_refresh">Begin nou \'n siklus</string>
-    <string name="max_ai_refresh_desc">Meet, beplan en tree een keer op in plaas daarvan om vir die 30s-siklus te wag.</string>
     <string name="max_ai_counters">Besluite %1$d · geverifieer %2$d · aangepas %3$d · geblokkeer vir veiligheid %4$d</string>
     <string name="max_ai_deck_title">Beheer dek</string>
     <string name="max_ai_deck_desc">Die lewendige skakelaar en die toestand wat dit verander. Alles hieronder is die bewyse.</string>
@@ -262,9 +261,7 @@
     <string name="max_live_plan_snapshot">Laaste geëvalueerde plan, nie huidige aktiwiteit nie</string>
     <string name="max_ai_learning_coverage">Leerdekking %1$d%%</string>
     <string name="max_ai_cycle_running">Evalueer die toestel</string>
-    <string name="max_ai_cycle_running_desc">’n Siklus is aan die gang. Herhaalde versoeke word saamgevoeg, nie oorgespeel nie.</string>
     <string name="max_ai_cycle_failed">Evaluering het misluk</string>
-    <string name="max_ai_cycle_failed_desc">Geen suksesvolle evaluering word geëis nie. Tik om weer te probeer; besonderhede is in diagnostiek.</string>
     <string name="max_ai_decisions_enabled">Outomatiese besluite geaktiveer</string>
     <string name="max_ai_decisions_disabled">Outomatiese besluite gedeaktiveer</string>
     <string name="max_ai_master_disabled_desc">KI-optimering is af. Handkontroles en termiese beskerming bly onafhanklik.</string>

@@ -136,7 +136,6 @@
     <string name="max_ai_objective_pick_balanced">Հավասարակշռված</string>
     <string name="max_ai_objective_pick_battery">Մարտկոց</string>
     <string name="max_ai_refresh">Գործարկել ցիկլը հիմա</string>
-    <string name="max_ai_refresh_desc">Չափեք, պլանավորեք և գործեք մեկ անգամ՝ 30-ականների ցիկլին սպասելու փոխարեն:</string>
     <string name="max_ai_counters">Որոշումներ %1$d · ստուգված %2$d · ճշգրտված %3$d · արգելափակված է անվտանգության համար %4$d</string>
     <string name="max_ai_deck_title">Կառավարման տախտակամած</string>
     <string name="max_ai_deck_desc">Ուղիղ անջատիչը և այն փոխվում է: Սրանից ներքեւ ամեն ինչ ապացույցն է:</string>
@@ -262,9 +261,7 @@
     <string name="max_live_plan_snapshot">Վերջին գնահատված պլանը, ոչ ընթացիկ գործունեությունը</string>
     <string name="max_ai_learning_coverage">Ուսուցման ծածկույթ %1$d%%</string>
     <string name="max_ai_cycle_running">Սարքի գնահատում</string>
-    <string name="max_ai_cycle_running_desc">Ընթացքի մեջ է ցիկլ. Կրկնվող հարցումները միավորվում են, չեն վերարտադրվում:</string>
     <string name="max_ai_cycle_failed">Գնահատումը ձախողվեց</string>
-    <string name="max_ai_cycle_failed_desc">Ոչ մի հաջող գնահատում չի պահանջվում: Հպեք՝ նորից փորձելու համար; մանրամասները ախտորոշման մեջ են։</string>
     <string name="max_ai_decisions_enabled">Ավտոմատ որոշումները միացված են</string>
     <string name="max_ai_decisions_disabled">Ավտոմատ որոշումներն անջատված են</string>
     <string name="max_ai_master_disabled_desc">AI օպտիմիզացումն անջատված է: Ձեռքով կառավարումը և ջերմային պաշտպանությունը մնում են անկախ:</string>

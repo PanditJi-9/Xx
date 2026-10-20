@@ -136,7 +136,6 @@
     <string name="max_ai_objective_pick_balanced">Ισορροπημένο</string>
     <string name="max_ai_objective_pick_battery">Μπαταρία</string>
     <string name="max_ai_refresh">Κάνε έναν κύκλο τώρα</string>
-    <string name="max_ai_refresh_desc">Μετρήστε, σχεδιάστε και ενεργήστε μια φορά αντί να περιμένετε τον κύκλο της δεκαετίας του \'30.</string>
     <string name="max_ai_counters">Αποφάσεις %1$d · επαληθευμένες %2$d · προσαρμοσμένες %3$d · αποκλεισμένες για ασφάλεια %4$d</string>
     <string name="max_ai_deck_title">Κατάστρωμα ελέγχου</string>
     <string name="max_ai_deck_desc">Ο ζωντανός διακόπτης και η κατάσταση που αλλάζει. Όλα κάτω από αυτό είναι η απόδειξη.</string>
@@ -262,9 +261,7 @@
     <string name="max_live_plan_snapshot">Τελευταίο αξιολογημένο σχέδιο, όχι τρέχουσα δραστηριότητα</string>
     <string name="max_ai_learning_coverage">Μάθηση %1$d%%</string>
     <string name="max_ai_cycle_running">Αξιολόγηση της συσκευής</string>
-    <string name="max_ai_cycle_running_desc">Ένας κύκλος βρίσκεται σε εξέλιξη. Τα επαναλαμβανόμενα αιτήματα συγχωνεύονται, δεν αναπαράγονται ξανά.</string>
     <string name="max_ai_cycle_failed">Η αξιολόγηση απέτυχε</string>
-    <string name="max_ai_cycle_failed_desc">Δεν αξιώνεται επιτυχής αξιολόγηση. Πατήστε για επανάληψη. οι λεπτομέρειες είναι στα διαγνωστικά.</string>
     <string name="max_ai_decisions_enabled">Ενεργοποιήθηκαν οι αυτόματες αποφάσεις</string>
     <string name="max_ai_decisions_disabled">Οι αυτόματες αποφάσεις απενεργοποιήθηκαν</string>
     <string name="max_ai_master_disabled_desc">Η βελτιστοποίηση AI είναι απενεργοποιημένη. Οι χειροκίνητοι έλεγχοι και η θερμική προστασία παραμένουν ανεξάρτητα.</string>

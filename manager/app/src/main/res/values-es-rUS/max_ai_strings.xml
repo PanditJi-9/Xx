@@ -136,7 +136,6 @@
     <string name="max_ai_objective_pick_balanced">Equilibrado</string>
     <string name="max_ai_objective_pick_battery">Batería</string>
     <string name="max_ai_refresh">Ejecute un ciclo ahora</string>
-    <string name="max_ai_refresh_desc">Mida, planifique y actúe una vez en lugar de esperar el ciclo de los 30.</string>
     <string name="max_ai_counters">Decisiones %1$d · verificadas %2$d · ajustadas %3$d · bloqueadas por seguridad %4$d</string>
     <string name="max_ai_deck_title">Plataforma de control</string>
     <string name="max_ai_deck_desc">El interruptor en vivo y el estado en el que cambia. Todo lo que está debajo de esto es la evidencia.</string>
@@ -262,9 +261,7 @@
     <string name="max_live_plan_snapshot">Último plan evaluado, no actividad actual</string>
     <string name="max_ai_learning_coverage">Cobertura de aprendizaje %1$d%%</string>
     <string name="max_ai_cycle_running">Evaluación del dispositivo</string>
-    <string name="max_ai_cycle_running_desc">Un ciclo está en marcha. Las solicitudes repetidas se fusionan, no se reproducen.</string>
     <string name="max_ai_cycle_failed">Evaluación fallida</string>
-    <string name="max_ai_cycle_failed_desc">No se afirma ninguna evaluación exitosa. Toque para volver a intentarlo; Los detalles están en el diagnóstico.</string>
     <string name="max_ai_decisions_enabled">Decisiones automáticas habilitadas</string>
     <string name="max_ai_decisions_disabled">Decisiones automáticas deshabilitadas</string>
     <string name="max_ai_master_disabled_desc">La optimización de la IA está desactivada. Los controles manuales y la protección térmica siguen siendo independientes.</string>

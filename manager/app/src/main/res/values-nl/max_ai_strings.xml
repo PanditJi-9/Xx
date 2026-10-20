@@ -136,7 +136,6 @@
     <string name="max_ai_objective_pick_balanced">Evenwichtig</string>
     <string name="max_ai_objective_pick_battery">Batterij</string>
     <string name="max_ai_refresh">Voer nu een cyclus uit</string>
-    <string name="max_ai_refresh_desc">Meet, plan en handel één keer in plaats van te wachten op de jaren \'30-cyclus.</string>
     <string name="max_ai_counters">Beslissingen %1$d · geverifieerd %2$d · aangepast %3$d · geblokkeerd voor de veiligheid %4$d</string>
     <string name="max_ai_deck_title">Controledek</string>
     <string name="max_ai_deck_desc">De live-schakelaar en de status waarin deze verandert. Alles daaronder is het bewijs.</string>
@@ -262,9 +261,7 @@
     <string name="max_live_plan_snapshot">Laatst geëvalueerd plan, niet huidige activiteit</string>
     <string name="max_ai_learning_coverage">Leerdekking %1$d%%</string>
     <string name="max_ai_cycle_running">Evalueren van het apparaat</string>
-    <string name="max_ai_cycle_running_desc">Er is een cyclus gaande. Herhaalde verzoeken worden samengevoegd en niet opnieuw afgespeeld.</string>
     <string name="max_ai_cycle_failed">Evaluatie mislukt</string>
-    <string name="max_ai_cycle_failed_desc">Er wordt geen succesvolle evaluatie geclaimd. Tik om het opnieuw te proberen; details staan ​​in diagnostiek.</string>
     <string name="max_ai_decisions_enabled">Automatische beslissingen ingeschakeld</string>
     <string name="max_ai_decisions_disabled">Automatische beslissingen uitgeschakeld</string>
     <string name="max_ai_master_disabled_desc">AI-optimalisatie staat uit. Handmatige bediening en thermische beveiliging blijven onafhankelijk.</string>
