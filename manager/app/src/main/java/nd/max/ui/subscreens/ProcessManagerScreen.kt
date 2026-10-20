@@ -66,6 +66,7 @@ import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import nd.max.R
 import nd.max.core.platform.ProcessFeed
+import nd.max.core.platform.ProcessReadState
 import nd.max.core.platform.ProcessReading
 import nd.max.core.platform.ProcessSample
 import nd.max.core.platform.ProcessScope
@@ -220,7 +221,7 @@ fun ProcessManagerScreen(
                     running = viewModel.tally.running,
                     apps = viewModel.tally.apps,
                     system = viewModel.tally.system,
-                    failed = viewModel.sample.failed,
+                    state = viewModel.readState,
                     overlayRunning = overlayRunning,
                     onToggleOverlay = { if (overlayRunning) stopOverlay(context) else requestOverlay() }
                 )
@@ -251,17 +252,17 @@ fun ProcessManagerScreen(
                 Spacer(Modifier.height(MaxSpace.xs))
             }
 
-            when {
-                // قبل أوّل عيّنة: انتظار يُعلن نفسه، لا خطأ. كان `failed` الابتدائي يُعرض هنا
-                // فيقرأ المستخدم «لا جواب من الجهاز» في أوّل ثانية ويظنّها عطبًا.
-                !viewModel.loaded -> item {
+            when (viewModel.readState) {
+                // قبل أوّل عيّنة **جديدة**: انتظار يُعلن نفسه، لا خطأ. ومحاولة فاشلة واحدة لا
+                // تنقل الشاشة إلى الحمراء — تبقى «جارٍ القراءة» حتى تتأكّد المحاولة الثانية.
+                ProcessReadState.Waiting -> item {
                     MaxLoadingState(
                         title = stringResource(R.string.processmgr_loading_title),
                         message = stringResource(R.string.processmgr_loading_hint)
                     )
                 }
 
-                viewModel.sample.failed -> item {
+                ProcessReadState.Failed -> item {
                     MaxErrorState(
                         title = stringResource(R.string.processmgr_no_answer),
                         message = stringResource(R.string.processmgr_no_answer_hint),
@@ -272,20 +273,24 @@ fun ProcessManagerScreen(
                     )
                 }
 
-                viewModel.visible.isEmpty() -> item {
-                    MaxEmptyState(
-                        title = stringResource(R.string.processmgr_empty_title),
-                        message = stringResource(R.string.processmgr_no_processes)
-                    )
-                }
-
-                else -> items(viewModel.visible, key = { it.pid }) { reading ->
-                    ProcessRow(
-                        reading = reading,
-                        sort = viewModel.sort,
-                        baseline = baselineOf(viewModel.visible, viewModel.sort),
-                        onClick = { selected = reading }
-                    )
+                // الحيّ والمحفوظ كلاهما جدول يُعرض؛ والفرق يقوله وسم الرأس («قراءة حيّة» مقابل
+                // «قراءة محفوظة»)، فلا يُمحى ما وصل بسبب محاولة تحديث لم تصل.
+                ProcessReadState.Live, ProcessReadState.Stale -> if (viewModel.visible.isEmpty()) {
+                    item {
+                        MaxEmptyState(
+                            title = stringResource(R.string.processmgr_empty_title),
+                            message = stringResource(R.string.processmgr_no_processes)
+                        )
+                    }
+                } else {
+                    items(viewModel.visible, key = { it.pid }) { reading ->
+                        ProcessRow(
+                            reading = reading,
+                            sort = viewModel.sort,
+                            baseline = baselineOf(viewModel.visible, viewModel.sort),
+                            onClick = { selected = reading }
+                        )
+                    }
                 }
             }
         }
@@ -373,7 +378,7 @@ private fun ReadingHeader(
     running: Int,
     apps: Int,
     system: Int,
-    failed: Boolean,
+    state: ProcessReadState,
     overlayRunning: Boolean,
     onToggleOverlay: () -> Unit
 ) {
@@ -401,9 +406,14 @@ private fun ReadingHeader(
                 }
                 MaxStatusPill(
                     text = stringResource(
-                        if (failed) R.string.processmgr_reading_failed else R.string.processmgr_reading_live
+                        when (state) {
+                            ProcessReadState.Waiting -> R.string.processmgr_loading_title
+                            ProcessReadState.Live -> R.string.processmgr_reading_live
+                            ProcessReadState.Stale -> R.string.processmgr_reading_stale
+                            ProcessReadState.Failed -> R.string.processmgr_reading_failed
+                        }
                     ),
-                    active = !failed
+                    active = state == ProcessReadState.Live
                 )
             }
             Spacer(Modifier.height(MaxSpace.lg))

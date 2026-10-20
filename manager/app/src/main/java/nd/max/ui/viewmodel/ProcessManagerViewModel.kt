@@ -14,8 +14,11 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import nd.max.core.platform.ProcessFeed
+import nd.max.core.platform.ProcessReadGuard
+import nd.max.core.platform.ProcessReadState
 import nd.max.core.platform.ProcessReading
 import nd.max.core.platform.ProcessSample
 import nd.max.core.platform.ProcessScope
@@ -61,15 +64,22 @@ class ProcessManagerViewModel : ViewModel() {
     var sample by mutableStateOf(ProcessSample.noAnswer)
         private set
 
+    /** حكم التتابع — يُعلَن قبل `readState` لأن قيمةه الابتدائية تُقرأ عند الإنشاء. */
+    private val reads = ProcessReadGuard()
+
     /**
-     * هل وصلت عيّنة واحدة على الأقل؟
+     * هل وصلت قراءة جديدة؟ وهل هي حيّة أم محفوظة أم فاشلة؟
      *
      * **ولماذا يلزم حقلٌ ثالث:** `failed = true` في البداية كانت تعني شيئين مختلفين — «لم تُقرأ
      * بعد» و«قُرئت وفشلت» — فكانت الشاشة تُفتح على «لا جواب من الجهاز» قبل أن تُمنح القراءة
-     * فرصتها، فيظنّ المستخدم أنّ عطلاً وقع. الحقل يفصل الانتظار عن العطب، ولا يغيّر حكم الفشل
-     * بعد أوّل عيّنة حقيقية.
+     * فرصتها، فيظنّ المستخدم أنّ عطلاً وقع. والحقل يفصل الانتظار عن العطب.
+     *
+     * **وصُحّح في ٢٠٢٦-١٠-٢١:** لم يكفِ الحقل وحده، لأن `ProcessWatch.snapshot` يبثّ قيمته
+     * المحفوظة فور الاشتراك (وكانت `noAnswer`)، فكانت «القيمة المحفوظة» تُعدّ عيّنةً جديدة
+     * وتُظهر البطاقة الحمراء ثوانيَ قبل أوّل جدول. الحكم الآن في [ProcessReadGuard] الذي يقيس
+     * تتابع العدّاد، ولا يعلن الفشل إلا بعد محاولتين، ولا يمسح جدولًا معروضًا لفشل عابر.
      */
-    var loaded by mutableStateOf(false)
+    var readState by mutableStateOf(reads.state)
         private set
 
     var scope by mutableStateOf(ProcessScope.All)
@@ -119,6 +129,9 @@ class ProcessManagerViewModel : ViewModel() {
 
     /** تسجيل الشاشة عند القارئ المشترك والاستماع للعيّنات. والتسجيل لا يتكرّر بنداء ثانٍ. */
     fun start(context: Context) {
+        // العدّاد يُقرأ **قبل** التسجيل: القيمة المحفوظة في `snapshot` تُبثّ فور الاشتراك،
+        // وهي ليست عيّنة جديدة — وهذا بعينه ما كان يُظهر البطاقة الحمراء قبل وصول أوّل جدول.
+        reads.begin(ProcessWatch.samples.value)
         ProcessWatch.start(
             context = context,
             owner = WATCH_OWNER,
@@ -126,9 +139,21 @@ class ProcessManagerViewModel : ViewModel() {
             settings = { ProcessWatchSettings(limit = limit, intervalSeconds = SCREEN_INTERVAL_SECONDS) }
         )
         // مستمع واحد فقط: `start` صار يُنادى عند كل ON_START، فلا يتراكم مستمع جديد في كل عودة.
+        // ويُجمع العدّاد مع العيّنة لأن `_snapshot` يُحدَّث **قبل** `_samples` في القارئ: بمراقبة
+        // العيّنة وحدها تُقرأ القيمة الجديدة بعدّادها القديم فتُحسب بثًّا محفوظًا وتُهمَل.
         if (collectJob?.isActive != true) {
-            collectJob = viewModelScope.launch { ProcessWatch.snapshot.collect { sample = it; loaded = true } }
+            collectJob = viewModelScope.launch {
+                combine(ProcessWatch.snapshot, ProcessWatch.samples) { incoming, tick -> incoming to tick }
+                    .collect { (incoming, tick) -> accept(incoming, tick) }
+            }
         }
+    }
+
+    /** يمرّر عيّنة إلى حكم التتابع، ويعرضها فقط إن حكم بأنها أحدث من المعروض وأصدق. */
+    private fun accept(incoming: ProcessSample, tick: Int) {
+        val show = reads.offer(tick, incoming.failed)
+        readState = reads.state
+        if (show) sample = incoming
     }
 
     private var collectJob: Job? = null

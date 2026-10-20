@@ -28,6 +28,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -199,8 +200,17 @@ fun CustomBottomSheet(
                 // تُقلّص القائمة. والحاشية هنا تُنقص الارتفاع المتاح للمحتوى، فتُمرَّر القوائم
                 // بـ`heightIn` كما هي وتُقرأ. **والسطح نفسه لم يتغيّر:** الخلفية والقُصاص خارج
                 // هذه الحاشية، فالورقة تبقى بعرض الشاشة والزاوية المستديرة كما كانت.
-                Column(modifier = Modifier.padding(bottom = extraBottomPadding)) {
-                    content()
+                // **ولون النصّ يُعلَن هنا لا في كل ورقة (٢٠٢٦-١٠-٢١):** خلفية الورقة
+                // `surfaceContainer` تُرسم بـ`background` لا بـ`Surface`، فـ`contentColorFor`
+                // لا يشتقّ لها لونًا و`LocalContentColor` يرث الافتراضي (أسود) — فيظهر عنوان
+                // العملية وأرقامها أسودَ على أسود في الثيم الداكن، وقد أبلغ المالك عن ذلك
+                // بلقطةٍ من ورقة «مراقب المهام». واللون الصحيح لسطح `surfaceContainer` هو
+                // `onSurface` نفسه (أبيض في الداكن، داكن في الفاتح)، ويُعلَن مرّة واحدة هنا
+                // فترثه كل الأوراق الأربع عشرة التي تستعمل هذه القشرة.
+                CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurface) {
+                    Column(modifier = Modifier.padding(bottom = extraBottomPadding)) {
+                        content()
+                    }
                 }
             }
         }

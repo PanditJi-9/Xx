@@ -1564,9 +1564,10 @@
     <string name="processmgr_scope_all">الكل</string>
     <string name="processmgr_sort_name">الاسم</string>
     <string name="processmgr_reading_live">قراءة حيّة</string>
+    <string name="processmgr_reading_stale">آخر قراءة</string>
     <string name="processmgr_reading_failed">تعذّرت القراءة</string>
     <string name="processmgr_loading_title">جارٍ قراءة العمليات</string>
-    <string name="processmgr_loading_hint">أول عيّنة في الطريق، وتأخذ عادةً ثانية.</string>
+    <string name="processmgr_loading_hint">تقرأ الأداة جدول العمليات الآن؛ أوّل عيّنة تأخذ ثوانيَ قليلة.</string>
     <string name="processmgr_no_answer">لا جواب من الجهاز</string>
     <string name="processmgr_no_answer_hint">لم يصل جدول العمليات — قد يكون الـroot قد رفض، أو لا يوجد أمر top صالح على هذا البناء. عملياتك ما زالت تعمل؛ والغائب هو القراءة وحدها، و«إعادة المحاولة» تسأل الجهاز من جديد.</string>
     <string name="processmgr_empty_title">لا نتائج</string>
