@@ -26,6 +26,7 @@ import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 import nd.max.core.diagnostics.DiagnosticCenter
 import nd.max.core.hardware.HardwareOverlayStore
+import nd.max.core.hardware.HardwareRepairExecutor
 import nd.max.core.hardware.ManualControlLocks
 import nd.max.core.hardware.MemoryUfsHardwareBackend
 import nd.max.core.daemon.ModuleWatchman
@@ -50,9 +51,12 @@ import nd.max.ui.settings.AppLanguage
 class MaxManagerApplication : Application() {
 
     @Inject lateinit var maxAiEngine: MaxAiEngine
+    @Inject lateinit var atlasRepairExecutor: HardwareRepairExecutor
 
     override fun onCreate() {
         super.onCreate()
+        // اللمس يمرّ من منفّذ أطلس الوحيد (مُحكِّم Hilt) لا من إنشاء ثانٍ في `TouchControlBackend`.
+        TouchControlBackend.installAtlasRepair(atlasRepairExecutor)
         // **بوّابة الإقلاع — أوّل سطر بعد `super` وقبل أي عمل.**
         //
         // ولماذا هنا تحديدًا لا في خيط خلفيّ: الحكم الذي يُبنى عليه الرفض يجب أن يكون

@@ -445,6 +445,21 @@ object TouchControlBackend {
          */
         private val atlas: AtlasRepairPort? = null,
     ) {
+        /**
+         * مسار أطلس المُثبَّت بعد الإقلاع. `null` = تسوية مباشرة (الاختبارات والبناء المحلي).
+         *
+         * والتركيب من `MaxManagerApplication` لا بإنشاء `HardwareControlArbiter` هنا: المُحكِّم
+         * `@Singleton` في مكوّن Hilt، وإنشاءُ ثانٍ يقسم جدول الطلبات (بوابة
+         * `oneArbiterInstancePerProcess`). ولمّا كان هذا الكائن يُنشأ قبل `onCreate`، يُثبَّت
+         * المنفّذ بعد الإقلاع ويبقى الحقل `@Volatile` لأن نداءات اللمس تأتي من خيوط متعددة.
+         */
+        @Volatile
+        private var atlasPort: AtlasRepairPort? = atlas
+
+        fun installAtlas(port: AtlasRepairPort) {
+            atlasPort = port
+        }
+
         @Volatile private var retryNotBeforeMs = 0L
         @Volatile private var lastVendorRequest: Boolean? = null
 
@@ -463,8 +478,8 @@ object TouchControlBackend {
             if (now < retryNotBeforeMs) {
                 return Attempt(Result.DEFERRED, Channel.SYSFS, provider.path, "write-backoff", live)
             }
-            if (atlas != null) {
-                return reconcileThroughAtlas(discovery, enabled, provider, wanted, live, now)
+            if (atlasPort != null) {
+                return reconcileThroughAtlas(discovery, enabled, provider, wanted, live, now, atlasPort!!)
             }
             val outcome = runCatching { access.writeVerified(provider.path, wanted) }
                 .getOrDefault(WriteVerification.Outcome.WRITE_FAILED)
@@ -503,6 +518,7 @@ object TouchControlBackend {
             wanted: String,
             live: String?,
             now: Long,
+            port: AtlasRepairPort,
         ): Attempt {
             val nodes = listOfNotNull(discovery.gameMode, discovery.sampleRate, discovery.inputBoost)
             val context = AtlasAdapterContext(
@@ -537,7 +553,7 @@ object TouchControlBackend {
                 )
             }
 
-            val adaptive = AtlasAdaptiveExecutor(atlas!!).execute(request.intent, bindings)
+            val adaptive = AtlasAdaptiveExecutor(port).execute(request.intent, bindings)
             val selected = adaptive.selectedRouteId
                 ?.let { id -> bindings.firstOrNull { it.candidate.id == id } }
             if (adaptive.successful) {
@@ -616,10 +632,13 @@ object TouchControlBackend {
             if (enabled) node.onValue else node.offValue
     }
 
-    /** محرّك التطبيق: على العتاد الحقيقي، وبالجسر المركَّب، وبمسار أطلس. */
-    val reconciler: Reconciler = Reconciler(
-        atlas = HardwareRepairExecutor(HardwareControlArbiter()),
-    )
+    /** محرّك التطبيق: على العتاد الحقيقي، وبالجسر المركَّب. مسار أطلس يُثبَّت عند الإقلاع. */
+    val reconciler: Reconciler = Reconciler()
+
+    /** يُنادى من `MaxManagerApplication` بمنفّذ Hilt الوحيد — لا بإنشاء مُحكِّم ثانٍ. */
+    fun installAtlasRepair(port: AtlasRepairPort) {
+        reconciler.installAtlas(port)
+    }
 
     /**
      * يسوّي مقبض تعزيز اللمس ويعيد **وصف** ما جرى.
