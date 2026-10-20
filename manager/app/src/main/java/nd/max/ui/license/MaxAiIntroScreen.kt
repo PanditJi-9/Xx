@@ -7,7 +7,15 @@
 package nd.max.ui.license
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Insights
 import androidx.compose.material.icons.rounded.Key
@@ -16,8 +24,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import androidx.compose.material3.Text
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import nd.max.R
@@ -26,7 +37,7 @@ import nd.max.core.access.RemoteAccess
 import nd.max.core.remote.RemoteFlags
 import nd.max.ui.design.MaxBullets
 import nd.max.ui.design.MaxCapsule
-import nd.max.ui.design.MaxCausalStage
+import nd.max.ui.design.MaxCardShell
 import nd.max.ui.design.MaxCondition
 import nd.max.ui.design.MaxConditionKind
 import nd.max.ui.design.MaxConditionNotice
@@ -35,6 +46,7 @@ import nd.max.ui.design.MaxNavigationRow
 import nd.max.ui.design.MaxRow
 import nd.max.ui.design.MaxScreen
 import nd.max.ui.design.MaxSection
+import nd.max.ui.design.MaxSpace
 import nd.max.ui.design.MaxTone
 import nd.max.ui.navigation.MaxDestination
 import java.util.Date
@@ -96,40 +108,33 @@ fun MaxAiIntroScreen(navController: NavHostController) {
             )
         }
 
-        MaxSection(
-            title = stringResource(R.string.maxai_intro_loop_title),
-            description = stringResource(R.string.maxai_intro_loop_desc),
-        ) {
-            introStages.forEachIndexed { index, stage ->
-                MaxCausalStage(
-                    order = index + 1,
-                    title = stringResource(stage.titleRes),
-                    body = stringResource(stage.bodyRes),
-                    tone = stage.tone,
-                    isLast = index == introStages.lastIndex,
-                )
-            }
+        // ── شجرة واحدة كبيرة بدل جدولين (طلب المالك ٢٠٢٦-١٠-٢٠) ─────────────────────────────
+        //
+        // «Max AI» جذرًا، ومنه تتفرّع الحلقة الأربع (قراءة · تشخيص · تنفيذ · تحقّق)، ثم أوراق
+        // القدرات بما هي عليه الآن. ولا جدول صفوف: الوصف كان يُقرأ كتقرير، لا كصورة ذهنية.
+        //
+        // **وكل نصّ في الشجرة موجود بلغاته الـ٨٥ أصلًا** (عناوين المراحل وأسماء الأسطح وحالاتها)
+        // فلا يحتاج التصميم الجديد ترجمةً ولا يخلق مفاتيح ناقصة في لغة.
+        // `for` لا `map`: `stringResource` دالة Composable، فلا تُنادى داخل lambda غير inline.
+        val stageLabels = ArrayList<Pair<String, String>>(introStages.size)
+        for (stage in introStages) {
+            stageLabels += stringResource(stage.titleRes) to stringResource(stage.bodyRes)
         }
-
-        MaxSection(
-            title = stringResource(R.string.maxai_intro_access_title),
-            description = stringResource(R.string.maxai_intro_access_desc),
-        ) {
-            MaxGroup {
-                introSurfaces.forEach { surface ->
-                    val state = access[surface.flagId] ?: PromoState.OFF
-                    MaxRow(
-                        title = stringResource(surface.nameRes),
-                        trailing = {
-                            MaxCapsule(
-                                text = stringResource(state.labelRes()),
-                                tone = state.tone(),
-                            )
-                        },
-                    )
-                }
-            }
+        val leafLabels = ArrayList<TreeLeaf>(introSurfaces.size)
+        for (surface in introSurfaces) {
+            val state = access[surface.flagId] ?: PromoState.OFF
+            leafLabels += TreeLeaf(
+                name = stringResource(surface.nameRes),
+                badge = stringResource(state.labelRes()),
+                tone = state.tone(),
+            )
         }
+        MaxAiTree(
+            modeLine = stringResource(R.string.max_ai_mode_desc),
+            stages = stageLabels,
+            leaves = leafLabels,
+            leavesTitle = stringResource(R.string.maxai_intro_access_title),
+        )
 
         MaxSection(title = stringResource(R.string.maxai_intro_honesty_title)) {
             MaxBullets(
@@ -198,6 +203,126 @@ private fun PromoState.tone(): MaxTone = when (this) {
     PromoState.FREE_NOW -> MaxTone.Accent
     PromoState.NEEDS_KEY -> MaxTone.Caution
     PromoState.OFF -> MaxTone.Neutral
+}
+
+/** ورقة في الشجرة: سطحٌ باسمه وحالته — النصّان موجودان بلغاتهما أصلًا. */
+private data class TreeLeaf(val name: String, val badge: String, val tone: MaxTone)
+
+/**
+ * الشجرة: جذرٌ واحد، وفروعٌ هي حلقة المحرّك، وأوراقٌ هي ما هو متاح الآن.
+ *
+ * **ولماذا رسم لا جدول:** الجدول يجعل كل صفٍّ سؤالًا مستقلًّا، فتُقرأ الشاشة كتقرير. والشجرة
+ * تقول ما يعنيه المحرّك: أصلٌ واحد تتفرّع عنه أعمالٌ محدودة، ثم قدراتٌ معلّقة بها.
+ *
+ * **وحدّها المعلن:** خطوطها زخرفية تحمل العلاقة فقط؛ المعنى كلّه في النصّ — ومن يقرأ بقارئ
+ * شاشة يسمع العناوين والأجساد بلا فقد (لا معلوحة محبوسة في الرسم).
+ */
+@Composable
+private fun MaxAiTree(
+    modeLine: String,
+    stages: List<Pair<String, String>>,
+    leavesTitle: String,
+    leaves: List<TreeLeaf>,
+) {
+    val cs = MaterialTheme.colorScheme
+    Column(modifier = Modifier.fillMaxWidth()) {
+        // الجذر
+        MaxCardShell(
+            modifier = Modifier.fillMaxWidth(),
+            container = cs.surfaceContainerHigh,
+            accent = cs.tertiary,
+        ) {
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = stringResource(R.string.maxai_intro_title),
+                    style = MaterialTheme.typography.titleLarge,
+                    color = cs.onSurface,
+                )
+                Text(
+                    text = modeLine,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = cs.onSurfaceVariant,
+                )
+            }
+        }
+
+        // الفروع: خطّ رأسي من الجذر ثم خطّ أفقي إلى كل مرحلة
+        stages.forEach { (title, body) ->
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(IntrinsicSize.Min),
+            ) {
+                Canvas(
+                    modifier = Modifier
+                        .width(36.dp)
+                        .fillMaxHeight(),
+                ) {
+                    val trunkX = size.width / 2f
+                    val midY = size.height / 2f
+                    val stroke = 2.dp.toPx()
+                    drawLine(
+                        color = cs.outlineVariant,
+                        start = Offset(trunkX, 0f),
+                        end = Offset(trunkX, midY),
+                        strokeWidth = stroke,
+                    )
+                    drawLine(
+                        color = cs.outlineVariant,
+                        start = Offset(trunkX, midY),
+                        end = Offset(size.width, midY),
+                        strokeWidth = stroke,
+                    )
+                }
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(vertical = MaxSpace.xs, horizontal = MaxSpace.sm),
+                ) {
+                    Text(
+                        text = title,
+                        style = MaterialTheme.typography.titleSmall,
+                        color = cs.onSurface,
+                    )
+                    Text(
+                        text = body,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = cs.onSurfaceVariant,
+                    )
+                }
+            }
+        }
+
+        // الأوراق: ما هو متاح الآن — باسمه وحالته
+        Row(modifier = Modifier.fillMaxWidth().padding(top = MaxSpace.sm)) {
+            Canvas(modifier = Modifier.width(36.dp).height(24.dp)) {
+                drawLine(
+                    color = cs.outlineVariant,
+                    start = Offset(size.width / 2f, 0f),
+                    end = Offset(size.width / 2f, size.height),
+                    strokeWidth = 2.dp.toPx(),
+                )
+            }
+            Text(
+                text = leavesTitle,
+                style = MaterialTheme.typography.labelLarge,
+                color = cs.onSurfaceVariant,
+                modifier = Modifier.padding(horizontal = MaxSpace.sm, vertical = 2.dp),
+            )
+        }
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 36.dp),
+        ) {
+            leaves.forEach { leaf ->
+                MaxRow(
+                    title = leaf.name,
+                    trailing = { MaxCapsule(text = leaf.badge, tone = leaf.tone) },
+                )
+            }
+        }
+    }
 }
 
 /** نصّ الشارة — مفردات الإعلان لا مفردات الحكم. */

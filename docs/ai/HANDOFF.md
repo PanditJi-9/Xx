@@ -60,6 +60,22 @@ MaxManager has a strong engine and a fragmented surface. `core/maxai` + `core/ha
 
 ## Executor log
 
+### ZIPS-TOUCH-AI-TREE-01 — الحزم تعود على الدفع · شاشة اللمس تُعاد تنظيمًا · «ما يفعله Max AI» شجرة — 2026-10-20 · DONE_WITH_CONCERNS (لا جهاز، ولا تشغيل CI)
+
+TASK: بلاغ المالك: «عند البناء لم يعد يصدر ملفات zip»؛ ثم «Touch Precision لا يعمل تحكم بالمس»، وأن شاشة اللمس تعرض «Not supported · Source…» مكرَّرًا بدل أزرار معدّلات؛ ثم حذف «Display Features» من شاشة العرض، وأن إطفاء Spoof من لوحة التحكم يترك شاشة فارغة، وأن Task Manager يُظهر «No answer from the device» قبل أوّل عيّنة؛ وأن شاشة «ما يفعله Max AI» تصير شجرة كبيرة مع زرّ دورة صغير بدل بطاقة.
+
+CHANGED:
+- `.github/workflows/build.yml` — أُعيد `push: branches: [main]` بجانب الوسوم. **السبب مُقاس:** سجل التشغيلات يُظهر أن آخر بناء كامل انطلق 2026-10-20T00:41 (`39349173029`، ١٩٫٥ دقيقة)، وكل دفعة بعده شغّلت `Quick Verify` وحده — وهو لا يبني الأصليّ ولا يغلّف، فلا `MaxManager-V2.zip` ولا حزمة المطوّرين. و`verify-quick.yml` بقي على `main` كمسار تغذية راجعة (٣–٥ د).
+- `core/hardware/TouchControlBackend.kt` — `writableProvider(discovery, reads)`: القدرة على الكتابة تُقاس بـ`Reads.writable` لا بالوجود. · `ui/viewmodel/TouchBoostViewModel.kt` — `boostWritable`. · `TouchBoostScreen.kt` — المفتاح يُفعَّل بقابلية الكتابة فقط (وإلا `max_touch_boost_locked` تقول السبب)، وحُذفت مصفوفة «Touch rates/Providers» المكرَّرة: القياس في الصدر، والقنوات والمسارات وهوية المحكّم داخل `MaxCollapsibleGroup` واحدة. · `TouchControlBackendTest` — اختبار: عقدة تُقرأ ولا تُكتب ليست مفتاحًا يُترك مضيئًا.
+- `DisplayStudioScreen.kt` — حُذف قسم «Display Features» ودالّة `DisplayUnavailableCard` (بقيت `display_*` resources غير مستعملة، والبوابة لا تعُدّها يتيمة).
+- `license/FeatureGate.kt` — `FeatureAccess.OFF` كان `Unit` (شاشة فارغة عند إطفاء السطح من لوحة التحكم) فصار `OffSurfacePanel` بنصّ صريح، بلا زرّ اشتراك. · نصوص `max_feature_off_*` في `values/` و`values-ar/`.
+- `ProcessManagerViewModel/Screen` — `loaded` يفصل «لم تُقرأ بعد» عن «فشلت القراءة»؛ الشاشة تعرض `MaxLoadingState` قبل أوّل عيّنة. · نصوص `processmgr_loading_*` (EN/AR).
+- `license/MaxAiIntroScreen.kt` — الحلقة وجدول «المتاح الآن» استُبدلا بـ`MaxAiTree`: جذر واحد، أربعة فروع (مراحل الحلقة)، وأوراق الأسطح بحالتها. **ولم تُضف نصوص جديدة:** كل عنوان موجود بلغاته الـ٨٥ أصلًا (عناوين المراحل وأسماء الأسطح وحالاتها)، فلا ترجمة ناقصة. · `MaxAiRuntimeStatus.kt` — «Run a cycle now» صار `TextButton` صغيرًا في آخر رأس الشاشة بدل صفٍّ كامل.
+
+GATES: `kt_balance --assert` 0 · `i18n_coverage --assert` 0 · `i18n --prune all --assert` 0 · `design_tokens --assert` 0 (252/300) · `resource_compile --assert` 0 · `code_health --assert` 0. · **الترجمة (هذه البيئة):** `:app:compileDebugKotlin` → `BUILD SUCCESSFUL in 17m 28s` (JDK 17 arm64، SDK `/usr/lib/android-sdk`) بعد إصلاح `MaxSpace` المفقود. · YAML للملفّين يُحلَّل ويُظهر `push: branches [main]`.
+
+BOUNDARY: لم يُشغَّل CI (التغييرات **غير مدفوعة**) — حكم الحزم على GitHub يبقى بعد الدفع. ولا UAT على جهاز: مقياس اللمس، وتبويب «تفاصيل تقنية»، وشكل الشجرة (RTL والخط الكبير) لم تُرَ بالعين. ومعدّلات اللمس القابلة للاختيار **لم تُضف** لأن `SAMPLE_RATE_NODES` فارغة عن قصد (وحدة القيمة غير مُثبتة) — زرٌّ لا يكتب رقمًا وعدٌ كاذب.
+
 ### CONTROL-LITERALS-GATE-01 — نصوص لوحة مركز التحكم من الكود إلى الموارد (EN + AR) — 2026-10-14 · DONE_WITH_CONCERNS (لم يُصرَّف)
 
 TASK: بوابة `hardcoded_ui_literals` كانت تفشل في CI (`build.yml` → «Build MaxManager» → خطوة Contract gates، الرقم `4 -> 22`). كل الزيادة الثماني عشرة كانت `Text("…")` حرفية في `manager/app/src/main/java/com/maxmanager/control/MainActivity.kt` (لوحة مركز التحكم)، والأربعة الباقية في ملفات قديمة. المطلوب إعادة العدّ إلى السقف بنقل النصوص إلى الموارد (ADR-14)، لا برفع السقف.
