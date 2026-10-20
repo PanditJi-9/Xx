@@ -21,26 +21,26 @@ package nd.max.ui.subscreens
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
+import androidx.compose.material.icons.rounded.Speed
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.semantics.Role
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.delay
@@ -49,6 +49,7 @@ import nd.max.ui.component.*
 import nd.max.ui.design.MaxAlpha
 import nd.max.ui.design.MaxBullets
 import nd.max.ui.design.MaxCardShell
+import nd.max.ui.design.MaxChoiceRow
 import nd.max.ui.design.MaxCondition
 import nd.max.ui.design.MaxConditionKind
 import nd.max.ui.design.FloatingNoticeDwellMillis
@@ -221,25 +222,19 @@ fun CpuCoreControlScreen(
 
             item {
                 MaxSection(title = stringResource(R.string.cpu_core_quick_title)) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm)
-                    ) {
-                        CpuCoreControlViewModel.QUICK_CONFIGS.forEach { config ->
-                            CoreQuickConfigTile(
-                                modifier = Modifier.weight(1f),
-                                icon = quickConfigIcon(config.id),
-                                // **النصّ من الموارد التي يحملها النموذج نفسه** — كان الإعداد يحمل
-                                // اسمي الموردين ثم تُكتب النصوص بيدها بالإنجليزية
-                                // (`quickConfigLabel`/`quickConfigDesc`) ولا تُترجم أبدًا، مع عكس معنى
-                                // `balanced` («Top cluster» والمقصود «العنقود الأعلى معطّل»).
-                                label = stringResource(config.labelRes),
-                                description = stringResource(config.descRes),
-                                accent = quickConfigAccent(config.id),
+                    // خيارات متبادلة في مجموعة واحدة بصفّ الاختيار المشترك (`MaxChoiceRow`)، كما في
+                    // اختيار المحرّك والوضع في بقية الشاشات. البلاطات الثلاث كانت تقصّ الوصف
+                    // («العنقود الأعلى مع…»)، والصفّ يعرضه كاملًا، والمختار يُعلَم بالدائرة لا باللون وحده.
+                    MaxGroup {
+                        CpuCoreControlViewModel.QUICK_CONFIGS.forEachIndexed { index, config ->
+                            if (index > 0) MaxGroupDivider()
+                            MaxChoiceRow(
+                                title = stringResource(config.labelRes),
+                                subtitle = stringResource(config.descRes),
                                 // الحالة المقروءة من الحالة لا من نيّة محليّة: الصفّ يعلن
                                 // أي نمط جرّبه المستخدم آخر مرة.
                                 selected = viewModel.appliedQuickConfig == config.id,
-                                onClick = { viewModel.applyQuickConfig(config.id) }
+                                onSelect = { viewModel.applyQuickConfig(config.id) }
                             )
                         }
                     }
@@ -985,91 +980,59 @@ private fun CpuCoresSection(
     coreRows: List<CpuCoreRow>,
     clusterMaxFreqMhz: Map<String, Int>
 ) {
+    // **صفوف في مجموعة واحدة لا بطاقات متجاورة:** على هاتف تضيق ثلاث بطاقات في صفّ إلى نحو
+    // ١٠٠dp، فينكسر اسم العنقود سطرين ويتقلّص الرقم. وقاعدة الشبكة في DESIGN.md تمنع ذلك:
+    // الهاتف عمود واحد ما لم تتّسع البطاقة ١٤٨dp. والصفّ يتّسع للاسم كاملًا.
     MaxSection(title = stringResource(R.string.cpu_core_cores_label)) {
-        FlowRow(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm),
-            verticalArrangement = Arrangement.spacedBy(MaxSpace.sm),
-            maxItemsInEachRow = 3
-        ) {
-            clusters.forEach { cluster ->
-                CpuClusterSummaryCard(
-                    modifier = Modifier.weight(1f, fill = true),
-                    cluster = cluster,
-                    rows = coreRows.filter { it.cluster.policyPath == cluster.policyPath },
-                    maxFreqMhz = CoreClockMath.ceilingMhz(cluster.policyPath, clusterMaxFreqMhz)
-                )
+        if (clusters.isNotEmpty()) {
+            MaxGroup {
+                clusters.forEachIndexed { index, cluster ->
+                    if (index > 0) MaxGroupDivider()
+                    CpuClusterRow(
+                        cluster = cluster,
+                        rows = coreRows.filter { it.cluster.policyPath == cluster.policyPath },
+                        maxFreqMhz = CoreClockMath.ceilingMhz(cluster.policyPath, clusterMaxFreqMhz)
+                    )
+                }
             }
         }
     }
 }
 
+/**
+ * صفّ عنقود: الاسم وعدد الأنوية المتصلة والتردّد.
+ *
+ * والتردّد **رقم حيّ** فيُكتب بالخط الأحادي (`MonoValueStyleFrequency`) وبترتيب LTR، لأن الواجهة
+ * العربية تقلب الرقم والوحدة إلى `GHz 3.25` إن تُركت لاتجاه الفقرة.
+ */
 @Composable
-private fun CpuClusterSummaryCard(
-    modifier: Modifier,
+private fun CpuClusterRow(
     cluster: CpuTopologyUtil.CpuCluster,
     rows: List<CpuCoreRow>,
     maxFreqMhz: Int
 ) {
     val scheme = MaterialTheme.colorScheme
-    val accent = clusterAccent(cluster)
-    val title = clusterDisplayName(cluster)
-    val frequency = if (maxFreqMhz > 0) String.format(java.util.Locale.US, "%.2f GHz", maxFreqMhz / 1000f) else "—"
-
+    val frequency = if (maxFreqMhz > 0) {
+        String.format(java.util.Locale.US, "%.2f GHz", maxFreqMhz / 1000f)
+    } else {
+        "\u2014"
+    }
     val online = rows.count { it.online }
-
-    // Three rows instead of five, and the title reserves two of them so the
-    // three summary tiles keep one height whatever the cluster name is. The
-    // previous card stacked icon / title / GHz / "3 / 3" / "Online" vertically,
-    // which made a summary tile taller than the controls it summarises and left
-    // the three tiles visibly ragged next to each other.
-    // **ترحيل إلى القشرة:** الحدّ يُمرّر بنبرة `borderStrong` التي يستعملها الآن (وهي أعلى من
-    // `edgeLight` التي تُعطيها معلمة `accent`) — فالترحيل لا يغيّر شدّة الحدّ.
-    MaxCardShell(
-        modifier = modifier,
-        borderColor = accent.copy(alpha = MaxAlpha.borderStrong),
-        contentPadding = 0.dp,
-        verticalArrangement = Arrangement.Top,
-    ) {
-        Column(
-            modifier = Modifier.padding(MaxSpace.md),
-            verticalArrangement = Arrangement.spacedBy(MaxSpace.xs)
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm)
-            ) {
-                Icon(
-                    imageVector = clusterIcon(cluster),
-                    contentDescription = null,
-                    tint = accent,
-                    modifier = Modifier.size(MaxSize.iconGlyph)
-                )
+    MaxRow(
+        title = clusterDisplayName(cluster),
+        subtitle = "$LTR_MARK$online/${rows.size}$LTR_MARK " + stringResource(R.string.cpu_core_online_label),
+        icon = clusterIcon(cluster),
+        iconTone = MaxTone.Accent,
+        trailing = {
+            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
                 Text(
-                    text = title,
-                    modifier = Modifier.weight(1f),
-                    style = MaterialTheme.typography.labelLarge,
-                    fontWeight = FontWeight.SemiBold,
-                    color = accent,
-                    minLines = 2,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
+                    text = frequency,
+                    style = MonoValueStyleFrequency,
+                    color = scheme.onSurface
                 )
             }
-            Text(
-                text = frequency,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = scheme.onSurface
-            )
-            Text(
-                text = "$LTR_MARK$online/${rows.size}$LTR_MARK " +
-                    stringResource(R.string.cpu_core_online_label),
-                style = MaterialTheme.typography.bodySmall,
-                color = scheme.onSurfaceVariant
-            )
         }
-    }
+    )
 }
 
 @Composable
@@ -1101,14 +1064,6 @@ private fun clusterDisplayName(cluster: CpuTopologyUtil.CpuCluster): String = wh
     "GOLD" -> stringResource(R.string.cpu_cluster_gold)
     "SILVER" -> stringResource(R.string.cpu_cluster_silver)
     else -> cluster.label
-}
-
-@Composable
-private fun quickConfigIcon(id: String) = when (id) {
-    "all_on" -> Icons.Filled.Bolt
-    "balanced" -> Icons.Outlined.Balance
-    "power_saver" -> Icons.Outlined.EnergySavingsLeaf
-    else -> Icons.Outlined.Tune
 }
 
 /**
@@ -1161,85 +1116,9 @@ private fun clusterAccent(cluster: CpuTopologyUtil.CpuCluster): Color = when (cl
 
 private fun clusterIcon(cluster: CpuTopologyUtil.CpuCluster): ImageVector = when (cluster.shortTag) {
     "PRIME" -> Icons.Filled.Bolt
-    "GOLD" -> Icons.Outlined.Balance
+    "GOLD" -> Icons.Rounded.Speed
     "SILVER" -> Icons.Outlined.EnergySavingsLeaf
     else -> Icons.Outlined.Memory
-}
-
-@Composable
-private fun quickConfigAccent(id: String): Color = when (id) {
-    "all_on" -> MaterialTheme.colorScheme.tertiary
-    "balanced" -> MaterialTheme.colorScheme.primary
-    "power_saver" -> MaterialTheme.colorScheme.secondary
-    else -> MaterialTheme.colorScheme.primary
-}
-
-/**
- * A quick-config preset as its own colored tile -- icon in a glow badge,
- * bold label, one-line description -- instead of the screen falling back
- * to ExpressiveTile's generic neutral treatment. Kept local to this screen
- * (not a change to ExpressiveTile itself) since that component is shared
- * with the tweak workspace and this per-preset coloring is specific to core
- * presets, not something every ExpressiveTile caller should inherit.
- */
-@Composable
-private fun CoreQuickConfigTile(
-    icon: ImageVector,
-    label: String,
-    description: String,
-    accent: Color,
-    selected: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val shape = MaterialTheme.shapes.large
-    // التحديد بإطار أعرض وتحوّل في التعبئة **معًا**: الإطار وحده لا يُقرأ من بعيد،
-    // والتعبئة وحدها لا تُقرأ في تباين منخفض.
-    val container = if (selected) {
-        Brush.linearGradient(listOf(accent.copy(alpha = 0.32f), MaterialTheme.colorScheme.surfaceContainerHigh))
-    } else {
-        Brush.linearGradient(listOf(accent.copy(alpha = 0.16f), MaterialTheme.colorScheme.surfaceContainerLow))
-    }
-    Column(
-        modifier = modifier
-            .clip(shape)
-            .background(container)
-            .border(
-                width = if (selected) MaxSize.activeRing else 1.dp,
-                color = accent.copy(alpha = if (selected) MaxAlpha.borderStrong else MaxAlpha.border),
-                shape = shape,
-            )
-            .selectable(
-                selected = selected,
-                role = Role.RadioButton,
-                onClick = onClick,
-            )
-            .padding(vertical = 12.dp, horizontal = MaxSpace.xs),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        IconBadge(icon = icon, tint = accent, size = 32)
-        Spacer(Modifier.height(MaxSpace.sm))
-        // Two reserved lines: the longest preset name must wrap instead of being
-        // cut mid-word, which is what "Performanc" was in the old one-line tile.
-        Text(
-            text = label,
-            style = MaterialTheme.typography.labelLarge,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface,
-            minLines = 2,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
-            textAlign = androidx.compose.ui.text.style.TextAlign.Center
-        )
-        Text(
-            text = description,
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            textAlign = androidx.compose.ui.text.style.TextAlign.Center
-        )
-    }
 }
 
 @Composable
