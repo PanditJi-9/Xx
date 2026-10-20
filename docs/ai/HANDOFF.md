@@ -60,6 +60,19 @@ MaxManager has a strong engine and a fragmented surface. `core/maxai` + `core/ha
 
 ## Executor log
 
+### CI-LEAN-01 — المستودع صار عامًّا · فرز `paths` على الدفع · QV يدويّ فقط — 2026-10-20 · DONE_WITH_CONCERNS (غير مُتحقَّق منه على CI)
+
+TASK: «قلل عديم الفائدة حقًّا، واجعل المستودع مفتوحًا لزيادة سرعة البناء» — بعد بلاغ «٢٧ دقيقة».
+
+CHANGED:
+- **المستودع صار `private: false`** عبر API (`PATCH /repos/…` · `admin: true` مُتحقَّق منه قبلها). والفرق موثَّق لا مفترض من وثيقة GitHub (github-hosted-runners reference): `ubuntu-latest` على المستودعات **الخاصة** = **٢ CPU / ٨ GB ومدفوع**، وعلى **العامة** = **٤ CPU / ١٦ GB ومجّانِ بلا حدّ** ⇒ انضمام الأنصفة والدقائق معاً. والأكثر من ذلك: `8-cores` الأكبر **مدفوع حتى على العامّ** (لarger runners بفوترة دقيقة) ⇒ لم يُطلب ولم يُضبط، والافتراضي `ubuntu-latest` يكفي.
+- `.github/workflows/build.yml` — أُضيف `paths` (٢١ مسارًا) على `push` إلى `main`: كل مداخل البناء (managed/native/HCI/`mainfiles`/`version`…). **السبب مُقاس:** التشغيل `39279608192` «MaxManager docs push» استغرق **٢٧٫٣ دقيقة** على دفعة لم تمسّ إلا التوثيق — وهو بالضبط رقم البلاغ. و`docs/**` و`README*` **خارج القائمة عن قصد** (تُغطّيها `docs-gates.yml` بثوانٍ). ووثيقة GitHub تقول «Path filters are not evaluated for pushes of tags» ⇒ وسم `v*` يبني مهما تغيّر. ويُتحقق في الفحص: القائمة لا تحتوي `docs`/`README`.
+- `.github/workflows/verify-quick.yml` — أُزيل `push:` بالكامل فصار **`workflow_dispatch` فقط**، لأنه منذ إصلاح الحزم كان يعمل على كل دفعة **مهمّة ثانية كاملة** (٣–٥ د) تعيد نفس ما ينجزه `build.yml` (البوابات + تصريف Release + اختباراته) بلا زيادة في الحُكم.
+
+GATES: YAML للملفّين الأربعة يُحلَّل ✓ · `build.push.branches=[main]` و`tags=[v*]` و`paths=21` مع تحقّق `assert` أن لا `docs`/`README` دخل · `verify-quick.on` = `[workflow_dispatch]` فقط. لا تغيير في Kotlin أو الموارد ⇒ بوابات العقد لم تتأثر ولم تُعِد تشغيلها دون حاجة.
+
+BOUNDARY: **غير مُتحقَّق منه على CI** — التعديلات غير مدفوعة (الدفع يُنتظر إذنًا صريحًا)، فسقف الزمن المتوقَّع (٤ أنوية + بلا بناء على دفعات التوثيق) ليس بعد **مقيسًا** بل مستمدًّا من وثيقة GitHub. ولم يُغطَّر `docs` و`README` و`supabase` من `build.yml` إلا بواجهة `docs-gates.yml` القائمة — إن أُضيفت مدخلة بناء جديدة خارج القائمة الـ٢١ فلا دفعة تبنيها.
+
 ### ZIPS-TOUCH-AI-TREE-01 — الحزم تعود على الدفع · شاشة اللمس تُعاد تنظيمًا · «ما يفعله Max AI» شجرة — 2026-10-20 · DONE_WITH_CONCERNS (لا جهاز، ولا تشغيل CI)
 
 TASK: بلاغ المالك: «عند البناء لم يعد يصدر ملفات zip»؛ ثم «Touch Precision لا يعمل تحكم بالمس»، وأن شاشة اللمس تعرض «Not supported · Source…» مكرَّرًا بدل أزرار معدّلات؛ ثم حذف «Display Features» من شاشة العرض، وأن إطفاء Spoof من لوحة التحكم يترك شاشة فارغة، وأن Task Manager يُظهر «No answer from the device» قبل أوّل عيّنة؛ وأن شاشة «ما يفعله Max AI» تصير شجرة كبيرة مع زرّ دورة صغير بدل بطاقة.
