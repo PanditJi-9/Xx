@@ -345,7 +345,7 @@
     <string name="display_blur_title">Window blur</string>
     <string name="display_blur_desc">Disable background blur to cut GPU load \u2014 less heat, slightly plainer UI</string>
     <string name="cpu_core_control_title">CPU cores</string>
-    <string name="cpu_core_probe_detail">Reading the CPU topology and cpufreq policies this kernel exposes.</string>
+    <string name="cpu_core_probe_detail">Reading the cores and their current frequencies.</string>
     <string name="cpu_core_control_desc">Toggle individual processor cores and set cluster power states by hand</string>
     <string name="cpu_core_control_subtitle">Hand-pick which physical cores stay powered, per cluster</string>
     <string name="cpu_core_unavailable">Per-core hotplug control isn\'t available on this device.</string>
@@ -387,6 +387,7 @@
     <string name="cpu_core_row_online">Online</string>
     <string name="cpu_core_row_offline">Off</string>
     <string name="cpu_core_safety_note">Turning cores off reduces power draw but lowers multi-threaded performance. The master core (CPU0) can\'t be turned off from here \u2014 most kernels refuse it anyway since interrupts are pinned to it.</string>
+    <string name="cpu_core_technical_source">Technical detail: /sys/devices/system/cpu</string>
     <string name="cpu_affinity_title">Task Affinity Groups</string>
     <string name="cpu_affinity_subtitle">Choose which cores each scheduling group is allowed to run threads on \u2014 e.g. pin \"Top App\" to the performance cluster only.</string>
     <string name="cpu_affinity_cores_summary">Cores: %1$s</string>
@@ -434,7 +435,7 @@
     <string name="cpu_notice_deferred_owner">A higher-priority owner (%1$s) holds this knob. Your request is stored and will be applied on release \u2014 nothing has changed on the device yet.</string>
     <string name="cpu_notice_owner_unknown">unknown owner</string>
     <string name="cpu_notice_not_verified">The write went out but did not read back as requested, so the values were left as they were.</string>
-    <string name="cpu_notice_unknown_node">The cpufreq node behind this policy is not one MaxManager can name, so nothing was written.</string>
+    <string name="cpu_notice_unknown_node">The frequency control behind this policy has no name MaxManager recognises, so nothing was written.</string>
     <string name="cpu_notice_hardware_range_unknown">The driver does not declare this policy\'s hardware bounds, so there is nothing to restore to.</string>
     <string name="cpu_notice_no_manual_intents">No hand-applied limits were recorded this session, so there was nothing to restore.</string>
     <string name="cpu_notice_partial_restore">Some limits could not be restored. Read the live values below.</string>
@@ -869,7 +870,7 @@
     <string name="net_sched_menu_desc">TCP congestion algorithm and kernel I/O scheduler tunables</string>
     <string name="net_sched_unavailable">Network and scheduler tuning isn\'t available on this device.</string>
     <string name="net_sched_edit_value">Value</string>
-    <string name="net_sched_probe_detail">Reading the TCP and scheduler nodes this kernel exposes.</string>
+    <string name="net_sched_probe_detail">Reading the network scheduler settings this device reports.</string>
 
     <string name="net_section_title">Network</string>
     <string name="net_congestion_title">TCP Congestion Control</string>
@@ -1478,7 +1479,7 @@
     <string name="detail_thermal_cooling_desc">What actually reduces heat, and how much of it is in use right now.</string>
     <string name="detail_thermal_cooling_state">%1$d of %2$d</string>
     <string name="detail_thermal_cooling_idle">Idle now</string>
-    <string name="detail_thermal_cooling_absent">This kernel exposes no cooling device under /sys/class/thermal.</string>
+    <string name="detail_thermal_cooling_absent">This device reports no cooling device.</string>
     <string name="detail_zone_cpu">CPU</string>
     <string name="detail_zone_gpu">GPU</string>
     <string name="detail_zone_battery">Battery</string>
@@ -1708,7 +1709,7 @@
     <string name="home_temperature_short">TEMP</string>
     <string name="home_gpu_max_freq">Max freq</string>
     <string name="home_cpu_cores">CPU core matrix</string>
-    <string name="home_waiting_core_data">Reading kernel topology and per-core clocks</string>
+    <string name="home_waiting_core_data">Reading core frequencies\u2026</string>
     <string name="home_cpu_cores_online">%1$d of %2$d cores online · live frequency</string>
     <string name="home_performance_monitor">Performance monitor</string>
     <string name="home_performance_monitor_desc">Resource load over the last 72 seconds</string>
@@ -2124,7 +2125,7 @@
     <string name="devinfo_cpu_core_lines">Per-core state</string>
     <string name="devinfo_cpu_core_lines_note">Core · current/highest · cluster · governor. A parked core is shown as such, never as 0 GHz.</string>
     <string name="devinfo_cpu_clusters">CPU clusters</string>
-    <string name="devinfo_cpu_clusters_note">This kernel declares no cpufreq policy for its clusters.</string>
+    <string name="devinfo_cpu_clusters_note">This device reports no frequency policy for its clusters.</string>
     <string name="devinfo_cpu_load">CPU load</string>
     <string name="devinfo_cpu_freq">Current frequency</string>
     <string name="devinfo_cpu_ceiling">Declared ceiling</string>
@@ -3190,7 +3191,7 @@
     <string name="cpu_live_cores">Cores</string>
     <string name="cpu_live_cluster_range">Cores %1$d–%2$d · up to %3$s</string>
     <string name="cpu_live_share">%1$d%% of %2$s</string>
-    <string name="cpu_live_hidden">Kernel hides cpufreq</string>
+    <string name="cpu_live_hidden">Frequency is hidden by the system</string>
     <string name="cpu_live_offline">Offline</string>
     <string name="cpu_live_parked">Parked</string>
     <string name="cpu_live_disclaimer">Android hides true utilisation. Every number here is a core clock as a share of its own maximum.</string>

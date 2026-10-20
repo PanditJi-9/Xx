@@ -22420,3 +22420,35 @@ BUILD FAILED in 6m 12s
 - C: `System.c` · `SystemProfiles.c` · `ProfileUtility.c` · `InotifyWatcher.c` · `CLIUtility.c` · `DaemonContext.c` · `MaxManager.h` · `archdaemon/tests/{Makefile,parity_test.c,cli_profile.c,host/props.c}`
 - نصوص: `values/max_ai_strings.xml` · `values-ar/max_ai_strings.xml` · `values/strings.xml` · `values-ar/strings.xml`
 - وثائق: `docs/max-ai.md` · `docs/ai/DECISIONS.md` (ADR-78)
+
+## Executor log — CI-FAST-01 + COPY-PLAIN-01 — 2026-10-20 · DONE_WITH_CONCERNS
+
+**TASK (المالك):** «البناء على GitHub Actions يستغرق الكثير جدًا… أريد على الأكثر ١٠ دقائق» · «الناس تقول إن تطبيقي من صنع AI… شاشة CPU تعرض `sys/devices/system/cpu`».
+
+**WHAT:**
+- **`build.yml`:** `push` صار للوسوم `v*` فقط؛ البناء الكامل (NDK/Rust/MaxFx + R8 + التوقيع + الحزم) يبقى لـ`workflow_dispatch` وطلب السحب والوسم. والسبب مقيس: التشغيل `39349173029` = **١٩٫٥ دقيقة للمهمّة** و**٣٨٫٥ دقيقة** للتشغيل كاملًا.
+- **`verify-quick.yml`:** صار يعمل على كل دفعة إلى `main` بنفس مسارات `build.yml`، وسقفه **١٠ دقائق** بدل ٢٠. وهو المسار السريع (بوابات + اختبارات release، بلا أصليّ/R8/توقيع/APK).
+- **`build.yml`:** أُزيل تصريف `src/debug` من مسار الإصدار (يبقيه بوابة طلب السحب حيث `variant=Debug`) — توفير ~١٫٥–٢ دقيقة في البناء الكامل.
+- **شاشة CPU:** أُزيل `CPU_SOURCES` من بطاقتَي التحميل/عدم الدعم، ونُقل المسار إلى المساعدة (`cpu_core_technical_source`)؛ وأُعيدت صياغة `cpu_core_probe_detail` و`net_sched_probe_detail` و`home_waiting_core_data` و`cpu_notice_unknown_node` و`devinfo_cpu_clusters_note` و`detail_thermal_cooling_absent` و`cpu_live_hidden` في **en+ar**.
+- **حارس:** `VisualIdentityTest` ← `user facing CPU copy names no kernel internals` (يمنع `/sys/` و`/proc/` و`cpufreq` و`topology` في النصوص المرئية، ويمنع `technicalDetail` في بطاقة CPU).
+- **`DESIGN.md`:** قاعدة «لا مسار عقدة في وجه المستخدم» في قسم Voice، مربوطة بالحارس نفسه.
+
+**MEASUREMENTS (الآن):** `kt_balance` 3052/0 · `code_health` exit 0 · `i18n` 0 عوائق · `--prune` 0 يتيم · `design_tokens` 252/300 · `resource_compile` ✓ aapt2 · YAML للملفّين يُحلَّل ✓ · محاكاة حارس النصّ تمرّ.
+
+**BUILD:** لم يُشغَّل محليًّا، ولم يُختبر QV حيًّا (لا دفع/التزام). الحكم في CI.
+
+**RESIDUAL RISK (معلنة):**
+- البناء الكامل ما زال ~١٨–١٩ دقيقة (أصليّ + R8 + توقيع) — لكنه **عند الطلب** لا مع كل دفعة.
+- QV **لا ينتج APK** لأن `jniLibs` تُبنى في CI ولا تُلتزم؛ الحزمة تحتاج `build.yml` يدويًّا.
+- تغيير أصليّ/`src/debug` في دفع مباشر بلا PR قد يصل إلى `main` قبل أن يمسكه بناء الإصدار/PR التالي.
+- إن أراد المالك APK مع كل دفعة: مسار سريع (NDK + JNI + `assembleDebug`) يُقدَّر بـ~٨ دقائق ويحتاج جولة مستقلة.
+
+**NEXT:** دفع التغييرات ومراقبة أول QV (يجب ≤١٠ دقائق) · ثم `build.yml` يدويًّا عند الحاجة إلى APK · ومراجعة بقيّة نصوص التنفيذ في الشاشات إن أراد المالك.
+
+**تحقّق لاحق (هذه الجلسة · Codespace لا الهاتف):** لم يُشغَّل Gradle محليًّا. نُسخ الالتزام `a102a508` (فرع `ci/touch-pad-scroll-lock-20261020`) إلى Codespace (4 vCPU/16GB) وطُبّقت عليه تعديلات هذه الجولة (CI + نصوص CPU + `VisualIdentityTest`)، ثم:
+- `:app:testReleaseUnitTest` أول مرة: **٦م٥٨ث** · ٣٤٣٦ اختبارًا · فشل واحد `MaxAiIntroTest` (مفتاح `license` الجديد ليس سطح قدرة) → أُصلح بـ`showInMaxAiIntro=false` واختبار يثبت الاستثناء.
+- إعادة كاملة بعد الإصلاح ومع تعديلات CI/CPU: **٤م٢٩ث** · **٣٤٣٦/٠/٥**.
+- بعد إضافة `VisualIdentityTest` الجديد: **٢٨ث** · **٣٤٣٧/٠/٥**.
+- البوابات على الشجرة: `kt_balance` 3052/0 · `code_health` 0 · `i18n` 84+en/0 + prune 0 · `design_tokens` 252/300 · `resource_compile` ✓ · `jni_symbols` 23/0/0 (الطبقة ٢ غير متحققة: لا ثنائيات).
+- **حاجز QV:** محاولة `workflow_dispatch` (تشغيل `39453703575`) **لم تبدأ**؛ رسالة GitHub: «The job was not started because recent account payments have failed or your spending limit needs to be increased» — يلزم إصلاح الفوترة في GitHub، ولا علاقة له بالكود. والفرع المدفوع مؤقّت `ci/touch-pad-scroll-lock-20261020`، و`main` لم يُمسّ.
+- **لمس:** `TouchBoostScreen` صار يستهلك الإيماءة في `PointerEventPass.Initial` ويقفل تمرير الصفحة عبر `scrollEnabled = !padHeld`، ويُحرَّر في `finally`؛ التحقق النوعي/الاختبارات ✓، والأثر الحسي **يحتاج جهازًا**.

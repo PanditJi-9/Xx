@@ -79,9 +79,6 @@ import nd.max.ui.theme.MonoValueStyleFrequency
 import nd.max.ui.viewmodel.CpuFrequencyControlState
 import nd.max.ui.design.maxRadius
 
-/** Nodes this screen reads; shown as machine truth on condition panels. */
-private const val CPU_SOURCES = "/sys/devices/system/cpu"
-
 /** Keeps core counters left-to-right inside an RTL layout. */
 private const val LTR_MARK = "\u200E"
 
@@ -106,14 +103,12 @@ fun CpuCoreControlScreen(
             kind = MaxConditionKind.Loading,
             title = screenTitle,
             detail = stringResource(R.string.cpu_core_probe_detail),
-            technicalDetail = CPU_SOURCES
         )
 
         false -> MaxCondition(
             kind = MaxConditionKind.Unsupported,
             title = screenTitle,
             detail = stringResource(R.string.cpu_core_unavailable),
-            technicalDetail = CPU_SOURCES
         )
 
         else -> null
@@ -155,9 +150,13 @@ fun CpuCoreControlScreen(
             condition = condition,
             floatingNotice = floatingNotice,
             actions = {
+                // ومسار sysfs لا يُعرض على بطاقة الحالة: كان يظهر تحت نصّ «جارٍ…» في أوّل
+                // ما يراه المستخدم، وهو تفصيل تنفيذيّ لا يخدم القرار. بقي في المساعدة
+                // لمن يريده، لا في وجه الجميع (ملاحظة المالك: «فقط AI يعرض sys/devices…»).
                 MaxHelpAction(
                     title = screenTitle,
-                    body = stringResource(R.string.cpu_core_safety_note)
+                    body = stringResource(R.string.cpu_core_safety_note) +
+                        "\n\n" + stringResource(R.string.cpu_core_technical_source)
                 )
             },
             // اختصار Max AI **أولًا وفي مكان ثابت**: `manual = true` لأن سقوف التردّد التي

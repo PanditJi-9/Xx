@@ -257,6 +257,46 @@ class VisualIdentityTest {
         )
     }
 
+    // ── ⑩ ولا مسار نواة في وجه المستخدم ─────────────────────────────────
+
+    @Test
+    fun `user facing CPU copy names no kernel internals`() {
+        val visibleKeys = listOf(
+            "cpu_core_probe_detail",
+            "net_sched_probe_detail",
+            "home_waiting_core_data",
+        )
+        val banned = listOf("/sys/", "/proc/", "cpufreq", "topology", "this kernel", "kernel exposes")
+        resourceDirs().forEach { dir ->
+            val strings = File(dir, "strings.xml").readText()
+            visibleKeys.forEach { key ->
+                val value = Regex(
+                    """<string name="$key"[^>]*>(.*?)</string>""",
+                    setOf(RegexOption.DOT_MATCHES_ALL),
+                ).find(strings)?.groupValues?.get(1)
+                    ?: error("المفتاح غائب: ${dir.name}/$key")
+                banned.forEach { term ->
+                    assertFalse(
+                        "${dir.name}/$key يعرض تفصيل تنفيذ ('$term') — المالك: «فقط AI يعرض sys/devices»",
+                        value.contains(term, ignoreCase = true),
+                    )
+                }
+            }
+        }
+
+        val screen = sourceFile("subscreens/CpuCoreControlScreen.kt").readText()
+        val condition = screen.substringAfter("val condition = when").substringBefore("// **نتيجة الإجراء")
+        assertFalse(
+            "بطاقة حالة CPU لا تعرض مسار sysfs — بقي في المساعدة وحدها",
+            condition.contains("technicalDetail"),
+        )
+        assertTrue(
+            "المسار لم يُفقد: متاح في المساعدة لمن يريده",
+            File(resRoot(), "values/strings.xml").readText()
+                .contains("name=\"cpu_core_technical_source\">Technical detail: /sys/devices/system/cpu<"),
+        )
+    }
+
     // ── أدوات القياس ───────────────────────────────────────────────────────
 
     /** سطحُ Max AI المشروع: ملفّه باسم `MaxAi…` أو `MaxLive…` (شاشة الحيّ)، أو وجهة الملاحة. */

@@ -253,8 +253,8 @@
     <string name="save_log_desc">تصدير سجل التصحيح إلى /sdcard</string>
     <string name="sched_tunes">ضبط الجدولة</string>
     <string name="sched_tunes_desc">تحسين إستراتيجية تغيير التردد لجميع مجموعات CPU (Schedutil/Schedhorizon)</string>
-    <string name="net_sched_probe_detail">جارٍ قراءة عُقد TCP والجدولة التي تكشفها النواة.</string>
-    <string name="cpu_core_probe_detail">جارٍ قراءة طوبولوجيا المعالج وسياسات التردد التي تكشفها النواة.</string>
+    <string name="net_sched_probe_detail">جارٍ قراءة إعدادات جدولة الشبكة التي يعلنها هذا الجهاز.</string>
+    <string name="cpu_core_probe_detail">جارٍ قراءة الأنوية وتردداتها الحالية.</string>
     <string name="cpu_freq_section_title">حدود التردد</string>
     <string name="cpu_freq_section_desc">اضبط حداً أدنى وأعلى لكل عنقود، أو ثبّته على درجة واحدة. كل كتابة يتم التحقق منها من العتاد.</string>
     <string name="cpu_freq_session_title">حدود الجلسة سارية</string>
@@ -292,7 +292,7 @@
     <string name="cpu_notice_deferred_owner">مالك أعلى أولوية (%1$s) يملك هذا المقبض. طلبك محفوظ وسيُطبَّق عند الإفلات — ولم يتغيّر شيء على الجهاز بعد.</string>
     <string name="cpu_notice_owner_unknown">مالك غير معروف</string>
     <string name="cpu_notice_not_verified">ذهب الطلب ولم يُقرأ كما طُلب، فتُركت القيم كما كانت.</string>
-    <string name="cpu_notice_unknown_node">عقدة cpufreq وراء هذه السياسة لا يستطيع MaxManager تسميتها، فلم يُكتب شيء.</string>
+    <string name="cpu_notice_unknown_node">مقبض التردد وراء هذه السياسة لا يعرفه MaxManager، فلم يُكتب شيء.</string>
     <string name="cpu_notice_hardware_range_unknown">الدرايفر لا يعلن مدى العتاد لهذه السياسة، فلا يوجد ما تُستعاد إليه.</string>
     <string name="cpu_notice_no_manual_intents">لا حدود يدوية مسجّلة في هذه الجلسة، فلا يوجد ما يُستعاد.</string>
     <string name="cpu_notice_partial_restore">تعذّرت استعادة بعض الحدود. اقرأ القيم الحيّة أدناه.</string>
@@ -655,7 +655,7 @@
     <string name="detail_thermal_cooling_desc">ما يخفّض الحرارة فعلًا، وكم يُستعمل منه الآن.</string>
     <string name="detail_thermal_cooling_state">%1$d من %2$d</string>
     <string name="detail_thermal_cooling_idle">غير مُستخدَم الآن</string>
-    <string name="detail_thermal_cooling_absent">هذه النواة لا تُعرّض جهاز تبريد تحت /sys/class/thermal.</string>
+    <string name="detail_thermal_cooling_absent">هذا الجهاز لا يعلن جهاز تبريد.</string>
     <string name="detail_zone_cpu">المعالج</string>
     <string name="detail_zone_gpu">الرسوميات</string>
     <string name="detail_zone_battery">البطارية</string>
@@ -905,7 +905,7 @@
     <string name="home_temperature_short">الحرارة</string>
     <string name="home_gpu_max_freq">أقصى تردد</string>
     <string name="home_cpu_cores">مصفوفة أنوية المعالج</string>
-    <string name="home_waiting_core_data">جارٍ قراءة بنية النواة وتردد كل نواة</string>
+    <string name="home_waiting_core_data">جارٍ قراءة ترددات الأنوية…</string>
     <string name="home_cpu_cores_online">%1$d من %2$d أنوية تعمل · تردد حي</string>
     <string name="home_performance_monitor">مراقبة الأداء</string>
     <string name="home_performance_monitor_desc">حمل الموارد خلال آخر 72 ثانية</string>
@@ -1294,6 +1294,7 @@
     <string name="cpu_core_row_online">مشتغلة</string>
     <string name="cpu_core_row_offline">متوقفة</string>
     <string name="cpu_core_safety_note">إيقاف الأنوية يقلل استهلاك الطاقة لكنه يخفض الأداء متعدد الخيوط. لا يمكن إيقاف النواة الرئيسية (CPU0) من هنا — ومعظم الأنوية ترفض ذلك أصلًا لأن المقاطعات مثبّتة عليها.</string>
+    <string name="cpu_core_technical_source">تفصيل تقني: /sys/devices/system/cpu</string>
     <string name="cpu_affinity_title">مجموعات ارتباط المهام</string>
     <string name="cpu_affinity_subtitle">اختر الأنوية التي يُسمح لكل مجموعة جدولة بتشغيل خيوطها عليها — مثلًا ثبّت «التطبيق الأعلى» على عنقود الأداء فقط.</string>
     <string name="cpu_affinity_cores_summary">الأنوية: %1$s</string>
@@ -2091,7 +2092,7 @@
     <string name="devinfo_cpu_core_lines">حالة كل نواة</string>
     <string name="devinfo_cpu_core_lines_note">النواة · الحالي/الأقصى · العنقود · الحاكم. والنواة المتوقّفة تُقال متوقّفة ولا تُكتب لها ٠ GHz.</string>
     <string name="devinfo_cpu_clusters">عناقيد المعالج</string>
-    <string name="devinfo_cpu_clusters_note">هذه النواة لا تُعلن سياسة تردّد لعناقيدها.</string>
+    <string name="devinfo_cpu_clusters_note">هذا الجهاز لا يعلن سياسة تردد لعناقيده.</string>
     <string name="devinfo_cpu_load">حمل المعالج</string>
     <string name="devinfo_cpu_freq">التردّد الحالي</string>
     <string name="devinfo_cpu_ceiling">السقف المُعلَن</string>
@@ -3138,7 +3139,7 @@
     <string name="cpu_live_cores">الأنوية</string>
     <string name="cpu_live_cluster_range">الأنوية %1$d–%2$d · حتى %3$s</string>
     <string name="cpu_live_share">%1$d%% من %2$s</string>
-    <string name="cpu_live_hidden">النواة تخفي cpufreq</string>
+    <string name="cpu_live_hidden">التردد مخفي من النظام</string>
     <string name="cpu_live_offline">متوقفة</string>
     <string name="cpu_live_parked">مسكّنة</string>
     <string name="cpu_live_disclaimer">أندرويد يخفي الاستخدام الحقيقي. كل رقم هنا = تردد النواة ÷ أقصاها.</string>

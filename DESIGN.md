@@ -451,6 +451,12 @@ does — “Free memory”, not “Optimize” — so the copy and the glyph can
 adjectives and dead copy do not ship: every AI-labelled string in `values/` has a call site, held by
 `VisualIdentityTest`.
 
+**No implementation detail in the main message.** A raw node path (`/sys/…`, `/proc/…`) never
+appears in a title, subtitle, loading line or empty state; it belongs in help or an expressly
+opened technical detail. The reader is told what is happening on their phone, not which kernel file
+the app just opened — the second reads as a debug log, not as a product. Held by the
+`user facing CPU copy names no kernel internals` case in `VisualIdentityTest`.
+
 ## Motion
 
 | Token | Duration | Use |
