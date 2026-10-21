@@ -22801,3 +22801,23 @@ BUILD FAILED in 6m 12s
 **NEXT:** تثبيت `MaxManager-V3.0.zip` من أثر التشغيل · فتح شاشة الجزيرة والتأكد بصريًّا أن الكبسولة تظهر أثناء الضبط وتختفي بعد الخروج · ثم ضبط أي قيمة بصرية على الجهاز.
 
 **FILES:** `tools/bundle_contract.py` · `res/values[-ar]/max_navigation_strings.xml` · `test/.../ControlLayoutModelTest.kt` · `ui/subscreens/AboutScreen.kt` · `island/engine/IslandController.kt` · `island/engine/IslandOverlay.kt` · `ui/subscreens/DynamicIslandScreen.kt`
+
+## Executor log — DECK-SYNC-01 (تنقّل الأقسام: تأخّر/نقرتان/رجوع فارغ/إقلاع أسود) — 2026-10-21 · DONE_WITH_CONCERNS
+
+**الطلب (المالك، فيديوان):** (١) انزلاق الأقسام الأفقي «سيّئ وغير سلس» ويتأخّر عن البار السفلي؛ (٢) النقرة الأولى على زرّ البار لا تنقل، تلزم نقرتان؛ (٣) شاشة سوداء نحو ١٠ث عند فتح التطبيق؛ (٤) إيماءة الرجوع تُظهر فراغًا بدل الشاشة السابقة.
+
+**الأسباب (من الكود، لا من قياس جهاز):**
+- (٢) النقر كان يغيّر المسار فقط، و`LaunchedEffect(currentRoute)` يتجاهل الحركة إن كان `isScrollInProgress`؛ ثم استقرار الصفحة القديمة يستدعي `onDeckSettled` فيعيد المسار إلى صفحته ← تضيع النقرة.
+- (١) مؤشّر البار يقرأ `currentRoute` الذي يُكتب **بعد** استقرار الصفحة ← يتأخّر بطول النابض؛ وكل صفحة تدفع تحويل تصغير+استدارة+قصّ+حدّ مرسومًا لكل إطار، وخلفية `PrimaryDeckBackdrop` تُرسم خلف صفحات معتمة.
+- (٤) `PrimaryDeck` كان يخرج من التركيب عند فتح أي شاشة فرعية والمقعد في `NavHost` فارغ، فلا شيء تحت الشاشة أثناء الرجوع التنبّئي.
+- (٣) `SecurityGate.evaluate` (قراءة الحزمة كلها + بصمات) على الخيط الرئيسيّ في `Application.onCreate`، والحكم لا يمنع شيئًا (`shouldRefuse` = false)؛ وأول إطار كان يركّب الصفحة الجارة (قائمة التطبيقات) مع الرئيسية.
+
+**التغيير:** `MaxManagerApplication.kt` (الفحص على خيط خلفيّ) · `PrimaryDeck.kt` (انزلاق خالص بلا تحويلات/حدّ/خلفية · `beyondViewportPageCount` = 0 ثم 1 بعد ٤٥٠ms · نابض `NoBouncy`+`StiffnessMedium`) · `MaxNavBar.kt` (مؤشّر البار بنفس النابض) · `MaxNavGraph.kt` (مُغلِّف `OpaqueScreen` للشاشات الفرعية يحجب اللمس؛ مقاعد الأقسام `navComposable` شفّافة) · `MainActivity.kt` (السطح يبقى مركَّبًا خلف أول شاشة فرعية · البار يقرأ `targetPage` · النقر يستدعي `animateScrollToPage` أولًا والمسار يلحق عند الاستقرار · حشوة سفلية ثابتة للسطح الخلفيّ · مصدر الضباب = ما فوق).
+
+**GATES:** `kt_balance --assert` 3064/0 · `--self-test` 17/0 · `code_health --assert` صحّة نظيفة · `design_tokens --assert` 251/300 · `i18n_coverage --assert` ✓.
+
+**BUILD:** غير مُشغَّل (أمر المالك §0.1). التحويلات كلها واجهات عامة مألوفة؛ نقطة الفحص بالمُصرّف: `import androidx.navigation.compose.composable as navComposable` ودالة `composable` الخاصة في `MaxNavGraph.kt` (تظليل الاسم).
+
+**RESIDUAL RISK (يحتاج جهازًا):** (أ) زمن الإقلاع لم يُقَس — إن بقي السواد فالمشتبه الثاني تركيب `HomeScreen`/ViewModel في أول إطار؛ (ب) الإحساس بالانزلاق؛ (ج) إيماءة الرجوع التنبّئي على Android 14+ — الصفحة الخلفية تبقى مركَّبة (ثمن ذاكرة/تركيب مقصود، المستوى الأول فقط)؛ (د) حُذف تأثير «البطاقة» (تصغير ٤٫٥٪/استدارة/حدّ) من انزلاق الأقسام — يُعاد من git إن أُريد.
+
+**FILES:** `MaxManagerApplication.kt` · `ui/navigation/PrimaryDeck.kt` · `ui/navigation/MaxNavBar.kt` · `ui/navigation/MaxNavGraph.kt` · `MainActivity.kt`

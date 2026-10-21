@@ -7,9 +7,7 @@ package nd.max.ui.navigation
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.LocalIndication
@@ -166,7 +164,9 @@ private fun Modifier.navSelectionIndicator(
             // **يتمطّط** أفقيًّا وهو يسير ثم يرتدّ إلى مستطيله. أثرٌ يُقرأ «مطّاطًا» لا
             // «مادّة»، خصوصًا مع صفحةٍ تنكمش في الوقت نفسه. صار شكلٌ صلبٌ واحد ينزلق إلى
             // موضعه: الحركة تُقرأ انتقالَ اختيار، لا تمدّد جسم.
-            val slide = spring<Float>(dampingRatio = 0.90f, stiffness = Spring.StiffnessMediumLow)
+            // نفس نابض الصفحات (`PrimaryDeckSnapSpring`): المؤشّر والصفحة يبدآن معًا ويصلان معًا،
+            // ولا يسبق أحدهما الآخر (شكوى المالك ٢٠٢٦-١٠-٢١: «الانتقال بالتمرير يتأخر عن البار»).
+            val slide = PrimaryDeckSnapSpring
             launch { left.animateTo(t.left, slide) }
             launch { right.animateTo(t.right, slide) }
             launch { top.animateTo(t.top, slide) }

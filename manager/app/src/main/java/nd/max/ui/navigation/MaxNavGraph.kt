@@ -6,11 +6,21 @@
 package nd.max.ui.navigation
 
 import android.content.Context
+import androidx.compose.animation.AnimatedContentScope
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NamedNavArgument
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
-import androidx.navigation.compose.composable
+import androidx.navigation.compose.composable as navComposable
 import androidx.navigation.navArgument
 import nd.max.core.remote.RemoteFlags
 import nd.max.ui.activitylauncher.ActivityLauncherScreen
@@ -33,9 +43,9 @@ fun NavGraphBuilder.maxNavGraph(navController: NavHostController) {
     // فوق هذه المقاعد: صفحةٌ واحدة لكل قسم، جاهزة قبل السحب. ولو بقي `HomeScreen(navController)`
     // هنا لَرُكِّبت الشاشة مرتين — مرة في السطح ومرة في الملاح — فتُستهلك اللمسة في نسخةٍ مخفيّة
     // ويُضاعف البثّ الحيّ. والمسارات باقية لأنها ما يملك الرجوع والتكديس وحفظ الحالة.
-    composable(MaxDestination.Now.route) { }
-    composable(MaxDestination.Control.route) { }
-    composable(MaxDestination.Apps.route) { }
+    navComposable(MaxDestination.Now.route) { }
+    navComposable(MaxDestination.Control.route) { }
+    navComposable(MaxDestination.Apps.route) { }
     composable(MaxDestination.MaxAi.route) { FeatureGate(RemoteFlags.MAXAI, navController) { MaxAiScreen(navController) } }
     composable(MaxDestination.MaxLive.route) { FeatureGate(RemoteFlags.MAXAI, navController) { MaxLiveScreen(navController) } }
     // §٥ — شاشة التعريف بالمحرّك: **غير مقفلة** بقصد؛ فوظيفتها أن تُشرح لا أن تُمنع.
@@ -58,7 +68,7 @@ fun NavGraphBuilder.maxNavGraph(navController: NavHostController) {
         )
     }
     // مقعد فارغ كبقية الأقسام — السطح يرسمها (انظر أعلى الدالة).
-    composable(MaxDestination.Settings.route) { }
+    navComposable(MaxDestination.Settings.route) { }
 
     // Control domain hubs: one parameterized entry per domain (F-07).
     composable(MaxDestination.CpuHub.route) { MaxDomainHubScreen(navController, MaxDestination.CpuHub) }
@@ -156,6 +166,38 @@ fun NavGraphBuilder.maxNavGraph(navController: NavHostController) {
     composable(MaxDestination.SetEdit.route) { SetEditScreen(navController) }
     composable(MaxDestination.ActivityLauncher.route) { ActivityLauncherScreen(navController) }
     composable(MaxDestination.FileManager.route) { FileManagerScreen() }
+}
+
+/**
+ * كل وجهة **فرعية** تُسجَّل بهذا المُغلِّف: سطحٌ معتم يحجب اللمس عمّا خلفه.
+ *
+ * **لماذا هنا لا في خلفية `NavHost`.** سطح الأقسام (`PrimaryDeck`) يبقى مركَّبًا **خلف** الشاشة
+ * الفرعية الأولى كي يجد الرجوع التنبّئي (إيماءة السحب من الحافّة) شاشةً حقيقيةً تحتها؛ وكان
+ * يخرج من التركيب فيظهر فراغٌ أسود أثناء السحب ثم تقفز الشاشة السابقة. ولو بقيت خلفية `NavHost`
+ * هي التي تُعتّم الشاشات الفرعية لحجبت السطحَ في أثناء الإيماءة أيضًا — فالعتمة تنتقل مع الشاشة
+ * نفسها: تنزلق وتصغر وتتلاشى فوق السطح الظاهر تحتها.
+ *
+ * و`pointerInput` الفارغ يُدخل العقدة في مسار الإصابة فلا تصل لمسةٌ إلى السطح الشبحيّ تحتها.
+ * الأقسام الأربعة الرئيسية تستعمل [navComposable] مباشرةً: مقاعدها فارغة بقصد والسطح يرسمها.
+ */
+private fun NavGraphBuilder.composable(
+    route: String,
+    arguments: List<NamedNavArgument> = emptyList(),
+    content: @Composable AnimatedContentScope.(NavBackStackEntry) -> Unit,
+) {
+    navComposable(route = route, arguments = arguments) { entry ->
+        OpaqueScreen { content(entry) }
+    }
+}
+
+@Composable
+private fun OpaqueScreen(content: @Composable () -> Unit) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.surface)
+            .pointerInput(Unit) {},
+    ) { content() }
 }
 
 /**

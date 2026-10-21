@@ -66,7 +66,15 @@ class MaxManagerApplication : Application() {
         // والكلفة مقيسة النوع: بصمة موقّع من `PackageManager` + قراءة كتلة توقيع الحزمة
         // + بصمات الأصول، مرّة واحدة في عمر العملية (والباقي قياسات حيّة رخيصة).
         // وحدّه المعلن: هذا الزمن **لم يُقَس على جهاز** في هذه البيئة ولا يُدّعى رقمه.
-        SecurityGate.evaluate(this, IntegrityCheckpoint.PROCESS)
+        //
+        // **تحديث (شاشة سوداء عند الإقلاع):** الفحص الثابت يقرأ الحزمة كلها ويحسب بصمات مدخلاتها،
+        // وكان يجري هنا على الخيط الرئيسيّ فتبقى النافذة سوداء حتى ينتهي. والحكم **لا يمنع شيئًا**
+        // (`SecurityGate.shouldRefuse` تُعيد false دائمًا؛ هو سجلّ تشخيص وحده) فلا فائدة من انتظار
+        // الواجهة له. صار على خيط خلفيّ؛ و`runStaticChecks` محميّ بـ`compareAndSet` فمن يسأل
+        // في أثنائه (نشاط/خدمة/مستقبِل) لا يكرّر الفحص ولا ينتظره.
+        Thread { runCatching { SecurityGate.evaluate(this, IntegrityCheckpoint.PROCESS) } }
+            .apply { isDaemon = true; name = "max-integrity-boot" }
+            .start()
         // لغة التطبيق أولًا: AppCompat يطبّق اللغة ويجدّد النشاط عند الحاجة، وهذا الوقت هو الوحيد
         // الخالي من أي نشاط. بدون هذا السطر كان اختيار المستخدم يُنسى بعد كل قتل للعملية (settings_prefs).
         AppLanguage.applySaved(this)

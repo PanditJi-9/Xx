@@ -49,6 +49,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -296,6 +297,30 @@ fun MainScreen(fromTileType: String? = null, widgetRoute: String? = null, widget
     // يظهر السطح على الأقسام الأربعة، وقبل استقرار أول مسار (`currentRoute == null`) كي لا
     // يبقى فراغُ سطحٍ بين الإقلاع وأول إطار.
     val showPrimaryDeck = isPrimaryRoute || (currentRoute == null && hasCompletedGetStarted)
+    // **السطح يبقى مركَّبًا خلف أول شاشة فرعية (الرجوع التنبّئي).** كان يخرج من التركيب عند فتح
+    // شاشة فرعية، فإذا سحب المستخدم من الحافّة للرجوع لم يجد الملاحُ شيئًا تحتها (المقعد فارغ
+    // بقصد) وظهر فراغٌ أسود ثم قفزت الشاشة السابقة. وهو يبقى للمستوى الأول فقط: الشاشة التي
+    // تحتها في المكدّس قسمٌ رئيسيّ. والشاشة الفرعية معتمة بنفسها وتحجب اللمس (`MaxNavGraph`).
+    // `previousBackStackEntry` واجهة عامة مستقرّة (يتجاوز رسم الملاح نفسه)، ويُعاد قراءتها كلما
+    // تغيّر المدخل الأعلى — وهو ما يرصده `navBackStackEntry` أعلاه.
+    val belowTopRoute = remember(navBackStackEntry) {
+        navController.previousBackStackEntry?.destination?.route
+    }
+    val deckBehindScreen = hasCompletedGetStarted && !isPrimaryRoute && currentRoute != null &&
+        belowTopRoute != null && belowTopRoute in primaryRoutes
+    val composeDeck = showPrimaryDeck || deckBehindScreen
+    // **البار يتبع الصفحة لا المسار.** المسار يُكتب عند استقرار الصفحة، فكان مؤشّر البار يتأخّر
+    // عن السحب كلّه، ونقرةٌ أثناء الاستقرار كانت تُلغى (الاستقرار القديم يعيد المسار). `targetPage`
+    // يتحرّك مع بدء السحب أو النقر مباشرةً، فيبدأ المؤشّر والصفحة معًا.
+    val barSelectedRoute by remember(deckPagerState, currentRoute, showPrimaryDeck, deckSynced) {
+        derivedStateOf {
+            if (showPrimaryDeck && deckSynced) {
+                MaxDestination.PrimaryDestinations.getOrNull(deckPagerState.targetPage)?.route ?: currentRoute
+            } else {
+                currentRoute
+            }
+        }
+    }
     // عند الخروج من الأقسام (شاشة فرعية) يُصفَّر العلم: العودة بعدها تقفز إلى مسارها الحقيقيّ
     // بلا انزلاقٍ عبر صفحات لم يرها المستخدم، ثم يعود السحب يزامن بالحركة كالمعتاد.
     LaunchedEffect(showPrimaryDeck) {
@@ -556,23 +581,33 @@ fun MainScreen(fromTileType: String? = null, widgetRoute: String? = null, widget
                 // شاشةً فوق السطح في السكون — لكنه يبقى هو من يملك الرجوع والتكديس، ولهذا لم
                 // يُستبدل. وحين يكون السطح ظاهرًا يُترك خلفه شفّافًا، وحين تُفتح شاشة فرعية يخرج
                 // السطح من التركيب (فلا لمسة شبح خلف شاشة معتمة) ويرتدي الملاح سطحَ التطبيق.
-                if (showPrimaryDeck) {
-                    PrimaryDeck(
-                        pagerState = deckPagerState,
-                        navController = navController,
-                        activeRoute = currentRoute,
-                        gesturesEnabled = swipePreference && !tourVisible,
-                        saveableStateHolder = deckStateHolder,
-                        tourTargets = if (tourVisible) tourTargets else null,
-                        onSettledPage = onDeckSettled,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(start = if (useNavigationRail) 96.dp else 0.dp)
-                            .nestedScroll(nestedScrollConnection)
-                            .then(
-                                if (isBlurEnabled) Modifier.hazeSource(state = hazeState) else Modifier
-                            ),
-                    )
+                if (composeDeck) {
+                    // حشوة المحتوى السفليّة للسطح ثابتة (ارتفاع البار الحقيقي) حتى وهو خلف شاشة
+                    // فرعية: القيمة العامة تصير صفرًا هناك (لا بار)، فكانت صفحاته ستُعاد تخطيطًا
+                    // وتقفز أثناء إيماءة الرجوع.
+                    val deckBottomInset = if (!useNavigationRail) {
+                        with(density) { bottomBarHeightPx.toDp() }
+                    } else 0.dp
+                    CompositionLocalProvider(LocalFloatingBottomBarHeight provides deckBottomInset) {
+                        PrimaryDeck(
+                            pagerState = deckPagerState,
+                            navController = navController,
+                            activeRoute = currentRoute,
+                            gesturesEnabled = swipePreference && !tourVisible && showPrimaryDeck,
+                            saveableStateHolder = deckStateHolder,
+                            tourTargets = if (tourVisible) tourTargets else null,
+                            onSettledPage = onDeckSettled,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(start = if (useNavigationRail) 96.dp else 0.dp)
+                                .nestedScroll(nestedScrollConnection)
+                                .then(
+                                    // مصدر الضباب هو ما يظهر **فوق**: السطح حين يعلو، والملاح
+                                    // حين تعلو شاشة فرعية (فزجاجها يطمس محتواها لا السطح خلفها).
+                                    if (isBlurEnabled && showPrimaryDeck) Modifier.hazeSource(state = hazeState) else Modifier
+                                ),
+                        )
+                    }
                 }
                 NavHost(
                     navController = navController,
@@ -589,8 +624,9 @@ fun MainScreen(fromTileType: String? = null, widgetRoute: String? = null, widget
                         .padding(start = if (useNavigationRail) 96.dp else 0.dp)
                         // شفّاف فوق سطح الأقسام (المقاعد فارغة)، ومعتم على الشاشات الفرعية
                         // وحدها — فهو خلفية الشاشات التي ترسم على `Scaffold` شفّاف.
+                        // شفّاف ما دام السطح مركَّبًا تحته (فوقه أو خلف شاشة فرعية معتمة بنفسها).
                         .background(
-                            if (showPrimaryDeck) Color.Transparent else MaterialTheme.colorScheme.surface
+                            if (composeDeck) Color.Transparent else MaterialTheme.colorScheme.surface
                         )
                         .nestedScroll(nestedScrollConnection)
                         .then(
@@ -705,16 +741,29 @@ fun MainScreen(fromTileType: String? = null, widgetRoute: String? = null, widget
                     ),
                 ) {
                     val onItemSelected: (String) -> Unit = { route ->
-                        // النقر يغيّر المسار، ومزامنة السطح تحرّك البطاقة إليه — انتقال واحد
-                        // يملكه الـPager لا انتقال مسارٍ فوقه.
-                        MaxDestination.PrimaryDestinations
-                            .firstOrNull { it.route == route }
-                            ?.let(navActions::navigateToPrimary)
+                        // **النقر يحرّك الصفحة أولًا، والمسار يلحق بها عند الاستقرار.** كان النقر
+                        // يغيّر المسار فقط وينتظر مزامنةً تتجاهل الحركة إن كانت صفحةٌ تستقرّ بعد
+                        // سحب، ثم يعيد استقرارُ تلك الصفحة المسارَ إلى ما كان — فتضيع النقرة
+                        // الأولى ويحتاج المستخدم إلى نقرتين. `animateScrollToPage` يقطع أي
+                        // استقرارٍ جارٍ (الأولوية نفسها) فتُنفَّذ النقرة من أول مرة.
+                        val index = MaxDestination.PrimaryDestinations.indexOfFirst { it.route == route }
+                        if (index >= 0) {
+                            if (showPrimaryDeck && deckSynced) {
+                                coroutineScope.launch {
+                                    deckPagerState.animateScrollToPage(
+                                        page = index,
+                                        animationSpec = PrimaryDeckSnapSpring,
+                                    )
+                                }
+                            } else {
+                                navActions.navigateToPrimary(MaxDestination.PrimaryDestinations[index])
+                            }
+                        }
                     }
                     if (useNavigationRail) {
                         NavigationRailBar(
                             items = navItems,
-                            selectedRoute = currentRoute ?: MaxDestination.Now.route,
+                            selectedRoute = barSelectedRoute ?: MaxDestination.Now.route,
                             isBlurEnabled = isBlurEnabled,
                             hazeState = hazeState,
                             style = navBarStyle,
@@ -724,7 +773,7 @@ fun MainScreen(fromTileType: String? = null, widgetRoute: String? = null, widget
                     } else {
                         BottomNavBar(
                             items = navItems,
-                            selectedRoute = currentRoute ?: MaxDestination.Now.route,
+                            selectedRoute = barSelectedRoute ?: MaxDestination.Now.route,
                             isBlurEnabled = isBlurEnabled,
                             hazeState = hazeState,
                             style = navBarStyle,
