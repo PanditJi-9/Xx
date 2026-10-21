@@ -161,13 +161,16 @@ private fun Modifier.navSelectionIndicator(
             right.snapTo(t.right)
             bottom.snapTo(t.bottom)
         } else {
-            val movingTowardEnd = t.left > left.value
-            val lead = spring<Float>(dampingRatio = 0.82f, stiffness = Spring.StiffnessMedium)
-            val trail = spring<Float>(dampingRatio = 0.90f, stiffness = Spring.StiffnessMediumLow)
-            launch { left.animateTo(t.left, if (movingTowardEnd) trail else lead) }
-            launch { right.animateTo(t.right, if (movingTowardEnd) lead else trail) }
-            launch { top.animateTo(t.top, lead) }
-            launch { bottom.animateTo(t.bottom, lead) }
+            // **نابضٌ واحد للحدود الأربعة (أمر المالك ٢٠٢٦-١٠-٢١: «أنيميشن التنقّل يبدو
+            // غريبًا»):** كان للحافتين القائدتين صلابة أعلى من التابعتين، فكان المؤشّر
+            // **يتمطّط** أفقيًّا وهو يسير ثم يرتدّ إلى مستطيله. أثرٌ يُقرأ «مطّاطًا» لا
+            // «مادّة»، خصوصًا مع صفحةٍ تنكمش في الوقت نفسه. صار شكلٌ صلبٌ واحد ينزلق إلى
+            // موضعه: الحركة تُقرأ انتقالَ اختيار، لا تمدّد جسم.
+            val slide = spring<Float>(dampingRatio = 0.90f, stiffness = Spring.StiffnessMediumLow)
+            launch { left.animateTo(t.left, slide) }
+            launch { right.animateTo(t.right, slide) }
+            launch { top.animateTo(t.top, slide) }
+            launch { bottom.animateTo(t.bottom, slide) }
         }
     }
 
