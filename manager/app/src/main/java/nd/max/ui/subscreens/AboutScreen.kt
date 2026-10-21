@@ -68,7 +68,6 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowCompat
@@ -80,7 +79,6 @@ import nd.max.BuildConfig
 import nd.max.R
 import nd.max.ui.component.*
 import nd.max.ui.design.MaxListScreen
-import nd.max.ui.design.MaxSpace
 import nd.max.core.platform.PropertyUtils
 
 
@@ -192,52 +190,8 @@ fun AboutScreen(navController: NavController) {
                 )
             }
 
-            // التوقيع في آخر الصفحة كما يُوقَّع الخطاب: هوية المشروع أعلاه، وصاحبه هنا.
-            // والرسمة ليست صورة: `MaxSignatureMark` يرسم خطًّا واحدًا أرقامه في
-            // `tools/makers_mark.py` — وهي نفسها في ملفّي الصفحة، والبوّابة تقيس التطابق.
-            item { AboutSectionTitle(stringResource(R.string.about_maker_title)) }
-            item {
-                ExpressiveList(
-                    content = listOf(
-                        {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(
-                                        horizontal = MaxSpace.rowPaddingHorizontal,
-                                        vertical = MaxSpace.rowPaddingVertical
-                                    ),
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                MaxSignatureMark(modifier = Modifier.size(72.dp))
-                                Spacer(modifier = Modifier.height(MaxSpace.md))
-                                Text(
-                                    text = stringResource(R.string.about_maker_note),
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    textAlign = TextAlign.Center
-                                )
-                                Spacer(modifier = Modifier.height(MaxSpace.sm))
-                                Text(
-                                    text = stringResource(R.string.about_maker_signature),
-                                    style = MaterialTheme.typography.titleSmall,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = MaterialTheme.colorScheme.primary
-                                )
-                            }
-                        }
-                    )
-                )
-            }
         }
     }
-}
-
-
-/** Thin wrapper over [MaxManagerSectionTitle] — kept so existing call sites don't change. */
-@Composable
-fun AboutSectionTitle(text: String) {
-    MaxManagerSectionTitle(text = text, accent = MaterialTheme.colorScheme.primary)
 }
 
  
