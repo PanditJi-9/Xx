@@ -60,6 +60,22 @@ MaxManager has a strong engine and a fragmented surface. `core/maxai` + `core/ha
 
 ## Executor log
 
+### SETTINGS-DEVICE-01 — بطاقة «قدرات الجهاز» في الإعدادات · «تأثيرات التمرير» تصير «الظهور التدريجي» بلا وصف — 2026-10-21 · DONE_WITH_CONCERNS (لا Gradle ولا kotlinc هنا · لا جهاز)
+
+TASK: «غيّر اسم تأثيرات التمرير (يُفهم أنها للتمرير الأفقي) وصغّر وصفها أو احذفه · واجعل إخفاء الميزات غير المتاحة بطاقةً في الإعدادات لا داخل بطاقة التخصيص». البند الأخير «خيار الحركة (بلا حركة)» لم يُفهم بوضوح، فلم يُمسّ (انظر BOUNDARY).
+
+CHANGED:
+- `values/` و`values-ar/`: `str_scroll_effects` = «الظهور التدريجي» / Gradual reveal، وحُذف `str_scroll_effects_summary` من اللغتين. وأُضيف `settings_device_section` = «قدرات الجهاز» / Device capabilities.
+- `ThemeStudioSections.kt`: أُزيل صفّ الإخفاء وأيقونته من الاستوديو، وصار صفّ الظهور بلا وصف. و`persistFlag` صار `internal` مع معامل `screen` افتراضيّه `CustomTheme` كما كان.
+- `SettingsScreen.kt`: بطاقة جديدة «قدرات الجهاز» بعد «التنقل» وخارج بوابة `isLoaded` (عرضٌ لا تحكّم). تكتب عبر `persistFlag(..., screen = "Settings")` بالمفتاح `ThemeKeys.HIDE_UNAVAILABLE` في ملف `settings` نفسه، فالبوّابة `rememberUnavailableVisible` لم تتغيّر.
+- `ThemeSettings.kt`: `ThemeStudio.PREFS_FILE = "settings"` ثابتٌ واحد لاسم الملف. والاسم الداخلي `SCROLL_EFFECTS` بقي كما هو عمدًا: تغييره يُصفّر تفضيل من أطفأ التأثير.
+- الاختبارات: `UnavailableFeaturesTest` (١٥) يقرأ `SettingsScreen.kt` ويحرس أن الاستوديو لا يحمل المفتاح ولا عنوانه. `ScrollEffectsTest` يتحقق من الاسم الجديد وغياب مفتاح الوصف، ويحرس أن الاسم المعروض لا يحمل «التمرير».
+- تعليقان قديمان صُحِّحا: `HardwareCapability.kt` (الموقع «شاشة الإعدادات») و`ThemeSettings.kt` (الاسم المعروض).
+
+GATES: `kt_balance --assert` 3057/0 · `kt_balance --self-test` 17/0 · `i18n_coverage --assert` ✓ · `--prune all --assert` يتامى 0 · `code_health --assert` صحّة نظيفة · `design_tokens` 251/300 · `rtl_guard` 0 مخالفات · `resource_compile --assert` خرج 0، لكن بلا `aapt2` فالترجمة **غير مُتحقَّقة** · وكل بوابات العقد في `build.yml` (٤٤ أمرًا) خرجت 0 على نسخة مستقلة من الشجرة النهائية.
+
+BOUNDARY: **غير مُتحقَّق منه:** تصريف Kotlin (لا kotlinc ولا Gradle هنا، فالتحقق من كود Kotlin مراجعةٌ بالقراءة فقط: الأقواس والاستيرادات والأسماء والتواقيع) · تشغيل `UnavailableFeaturesTest` و`ScrollEffectsTest` · الجهاز: المظهر في RTL، وقلب مفتاح الإخفاء من البطاقة، وأن شاشات مصفوفة القدرات تُعيد القراءة عند الدخول التالي بعد القلب. **مفتوح بانتظار المالك:** صفّ «الحركة» في الاستوديو (كاملة · هادئة · بلا حركة) لم يُنقل ولم يُغيَّر.
+
 ### CI-LEAN-01 — المستودع صار عامًّا · فرز `paths` على الدفع · QV يدويّ فقط — 2026-10-20 · DONE_WITH_CONCERNS (غير مُتحقَّق منه على CI)
 
 TASK: «قلل عديم الفائدة حقًّا، واجعل المستودع مفتوحًا لزيادة سرعة البناء» — بعد بلاغ «٢٧ دقيقة».
@@ -22590,3 +22606,33 @@ BUILD FAILED in 6m 12s
 2. **الجهاز:** سحب الأقسام الأربعة في LTR/RTL · تبديل تبويبات الشاشات السبع وMax AI وMax Backup · السحب من أول تبويب يعود · عدم إزعاج المعادل/الـPager/القوائم الأفقية/حقول النصّ/الأوراق · الخط الكبير · مفتاح الإعدادات OFF/ON (والافتراضي ON).
 3. **إن فشل QV:** سجل `:app:compileReleaseKotlin` يكفي لتحديد السطر؛ لا خطأ نوع معروف الآن.
 4. **NOTES:** `NEXT_TASK.md` حُدِّث بالبند نفسه في أعلى الملف.
+
+## Executor log — MAX-AI-ANALYSIS-01: تجميع تحليل Max AI في وثيقة مرجعية — 2026-10-21 · DONE
+
+**TASK (المالك):** «قم بتجميع تحاليلك عن max ai في md».
+
+**FILES:**
+- `docs/ai/MAX-AI-ANALYSIS.md` (جديد) — تحليل من الشيفرة: ما يفعله Max AI وما لا يفعله · نطاق التحكم
+  (سقوف CPU/GPU + CPU boost فقط) · الوضع الواحد ومفاتيحه · الأوضاع الثلاثة وما يكتبه كل ملف · الأمان
+  والملكية والتجارب · حدود التحليل. يربط الملخّص العام `docs/max-ai.md` بقرار ADR-78.
+- `docs/ai/HANDOFF.md` — هذا السجل.
+
+**GATES (مقيسة الآن):**
+- `python3 tools/kt_balance.py --assert` → 3057 ملفًا · 0 عوائق.
+- `python3 tools/code_health.py --assert` → صحّة نظيفة · exit 0 · الدَّين عند سقفه (8 oversized ·
+  26 own wildcard · 5 inline_ui_copy · 4 hardcoded · 20 presentation_hw_writes).
+- `python3 tools/i18n_coverage.py --assert` → 84+en · 0 عوائق.
+- `git diff --check` → 0.
+
+**BUILD:** لا بناء ولا اختبارات — التغيير توثيقي فقط. لا ادّعاء ترجمة أو سلوك جهاز.
+
+**RESIDUAL RISK (معلنة):**
+- الوثيقة قراءة شيفرة، لا UAT: كتابة sysfs، الإقلاع، inotify، وحرارة البطارية مقابل تعليق
+  `SafetyEngine` تحتاج قياسًا على جهاز.
+- لا مراجعة سلامة مستقلة: الوثيقة لا تغيّر كودًا.
+- الملاحظات المقروءة (مثل عدم وصل `MaxAiThermalBudget` بمسار القرار، وعدم إعادة ضبط `read_ahead`
+  في Eco) موثّقة كملاحظات، لا كأحكام عطب مثبتة على جهاز.
+
+**NEXT:**
+1. المالك: قراءة الوثيقة وطلب أي توسعة أو تصحيح.
+2. لا بند جهاز جديد لهذه المهمة؛ بنود SWIPE-NAV-01 السابقة تبقى كما هي.

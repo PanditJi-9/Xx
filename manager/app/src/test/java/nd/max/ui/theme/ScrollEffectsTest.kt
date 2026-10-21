@@ -14,7 +14,7 @@ import java.io.File
 import java.lang.reflect.Proxy
 
 /**
- * عقد **تأثيرات التمرير** — معيار القبول ٨: «مفعّلة افتراضيًّا · قابلة للتعطيل · تحترم إعدادات
+ * عقد **تأثيرات التمرير** (تُعرض باسم «الظهور التدريجي») — معيار القبول ٨: «مفعّلة افتراضيًّا · قابلة للتعطيل · تحترم إعدادات
  * إمكانية الوصول».
  *
  * والقياس هنا على ثلاثة مستويات، وكلٌّ منها يقيس ما يستطيعه:
@@ -115,16 +115,24 @@ class ScrollEffectsTest {
             "والقيمة لا تُكتب حين لا تتغيّر",
             sections.contains("if (old == new) return").not(),
         )
+        assertFalse(
+            "الصفّ بلا وصف طويل: لا يُقرأ مفتاح الوصف في الاستوديو",
+            sections.contains("str_scroll_effects_summary"),
+        )
     }
 
     @Test
-    fun `both strings exist in English and Arabic`() {
+    fun `the title exists in English and Arabic, and the title does not say scroll`() {
         val en = resFile("values/strings.xml").readText()
         val ar = resFile("values-ar/strings.xml").readText()
-        for (key in listOf("str_scroll_effects", "str_scroll_effects_summary")) {
-            assertTrue("ناقص في الإنجليزية: $key", en.contains("name=\"$key\""))
-            assertTrue("ناقص في العربية: $key", ar.contains("name=\"$key\""))
-        }
+        assertTrue("ناقص في الإنجليزية: str_scroll_effects", en.contains("name=\"str_scroll_effects\""))
+        assertTrue("ناقص في العربية: str_scroll_effects", ar.contains("name=\"str_scroll_effects\""))
+        // الوصف الطويل أُزيل من الصفّ: لا يبقى مفتاحه يتيمًا في اللغتين
+        assertFalse("الوصف أُزيل فلا مفتاح له", en.contains("str_scroll_effects_summary"))
+        assertFalse("الوصف أُزيل فلا مفتاح له", ar.contains("str_scroll_effects_summary"))
+        // الاسم لا يحمل «التمرير»: الكلمة صارت لإيماءة التنقّل الأفقي، فكان الاسم يُقرأ أنه أفقي
+        val arTitle = Regex("name=\"str_scroll_effects\">([^<]*)<").find(ar)?.groupValues?.get(1).orEmpty()
+        assertFalse("الاسم لا يحمل «التمرير»: $arTitle", arTitle.contains("التمرير"))
     }
 
     // ── أدوات القياس ─────────────────────────────────────────────────────────

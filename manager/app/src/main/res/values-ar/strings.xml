@@ -379,8 +379,7 @@
     <string name="str_enable_banner">تفعيل صورة اللافتة</string>
     <string name="str_expressive_blur">تأثير الزجاج المصنفر</string>
     <string name="str_expressive_blur_summary">تفعيل تأثير التمويه الزجاجي للواجهة</string>
-    <string name="str_scroll_effects">تأثيرات التمرير</string>
-    <string name="str_scroll_effects_summary">تظهر البطاقات والأقسام بتلاشٍ هادئ عند دخولها الشاشة. أوقفها ليظهر كل شيء فورًا — وخيار «تقليل الحركة» في إعدادات النظام محترم في الحالتين.</string>
+    <string name="str_scroll_effects">الظهور التدريجي</string>
     <string name="str_hide_unavailable_features">إخفاء الميزات غير المتاحة على جهازي</string>
     <string name="str_hide_unavailable_features_summary">تُخفى الميزات غير المتاحة من قوائم القدرات بدل عرضها رماديةً مع سببها. لا يُحذف مدعوم، ويُكتب عدد المخفيّ صراحةً دائمًا.</string>
     <string name="unavailable_hidden_count">مخفي بحسب إعدادك: %1$d من العناصر غير المتاحة</string>
@@ -983,6 +982,7 @@
     <string name="persist_note">لا شيء يُفرض على الجهاز كله: ملفّات كل لعبة تعود عند تشغيلها التالي، وما يرفضه الجهاز أو الصلاحيات يُترك بسبب مكتوب.</string>
     <string name="settings_home_section">الشاشة الرئيسية</string>
     <string name="settings_navigation_section">التنقل</string>
+    <string name="settings_device_section">قدرات الجهاز</string>
     <string name="swipe_navigation_title">التمرير بين الأقسام</string>
     <string name="swipe_navigation_desc">مرّر أفقيًا بين الأقسام الرئيسية والتبويبات، وللرجوع من بقية الشاشات. العناصر الأفقية تحتفظ بسحبها.</string>
     <string name="settings_activity_card_title">بطاقة النشاط</string>

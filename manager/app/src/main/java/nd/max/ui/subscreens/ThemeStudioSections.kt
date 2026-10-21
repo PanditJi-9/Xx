@@ -56,7 +56,6 @@ import androidx.compose.material.icons.outlined.Science
 import androidx.compose.material.icons.outlined.SpaceDashboard
 import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material.icons.outlined.ViewAgenda
-import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -709,7 +708,9 @@ fun ThemeInterfaceControls(
             }
         )
 
-        // ── تأثيرات التمرير ─────────────────────────────────────────────────
+        // ── الظهور التدريجي ─────────────────────────────────────────────────
+        // الاسم المعروض «الظهور التدريجي»، أمّا المفتاح `SCROLL_EFFECTS` فيبقى كما هو: تغييره
+        // يُصفّر تفضيل من أطفأ التأثير، والاسم الداخلي لا يظهر لأحد.
         // **مفعّلة افتراضيًّا، ومعطّلة بمفتاح واحد** (معيار القبول ٨): المفتاح هنا، والباب الذي
         // تمرّ به كل المواضع المربوطة `rememberScrollEffectsEnabled` في `MaxMotion` — فمن
         // أطفأها أُوقف الكشف في كل مكان، لا في شاشة دون أخرى. والمحتوى يُعرض فورًا كاملًا،
@@ -718,27 +719,10 @@ fun ThemeInterfaceControls(
         ExpressiveSwitchItem(
             icon = Icons.Outlined.Animation,
             title = stringResource(R.string.str_scroll_effects),
-            summary = stringResource(R.string.str_scroll_effects_summary),
             checked = scrollEffects,
             onCheckedChange = { next ->
                 scrollEffects = next
                 persistFlag(prefs, ThemeKeys.SCROLL_EFFECTS, next)
-            }
-        )
-
-        // ── إخفاء الميزات غير المتاحة على الجهاز (§٤-و) ─────────────────────
-        // **افتراضيّه «لا إخفاء»** (القيمة الغائبة = عرض): الميزات غير المتاحة تُعرض رماديةً مع
-        // سببها، ومن قلّب المفتاح أُخفيت من مصفوفتَي القدرات (العتاد في التشخيص والصوت في
-        // الأستوديو) مع سطرٍ يقول كم أخفى — فلا تُحجب معلومةٌ أساسيّة ولا يُنكر مخفيّ.
-        var hideUnavailable by remember { mutableStateOf(ThemeStudio.hideUnavailableFeatures(prefs)) }
-        ExpressiveSwitchItem(
-            icon = Icons.Rounded.VisibilityOff,
-            title = stringResource(R.string.str_hide_unavailable_features),
-            summary = stringResource(R.string.str_hide_unavailable_features_summary),
-            checked = hideUnavailable,
-            onCheckedChange = { next ->
-                hideUnavailable = next
-                persistFlag(prefs, ThemeKeys.HIDE_UNAVAILABLE, next, default = false)
             }
         )
     }
@@ -784,19 +768,20 @@ private fun persistChoice(prefs: SharedPreferences, key: String, old: String, ne
 }
 
 /**
- * كتابة مفتاح بوليانيّ (تأثيرات التمرير · وإخفاء الميزات غير المتاحة §٤-و) — بنفس ترتيب
- * [persistChoice]: حدثٌ ثم تفضيل. والقيمة نفسها لا تُكتب مرّتين، ولا يُكتب مفتاحٌ لم يتغيّر.
+ * كتابة مفتاح بوليانيّ (الظهور التدريجي · وإخفاء الميزات غير المتاحة §٤-و من شاشة الإعدادات) —
+ * بنفس ترتيب [persistChoice]: حدثٌ ثم تفضيل. والقيمة نفسها لا تُكتب مرّتين، ولا يُكتب مفتاحٌ لم يتغيّر.
  * و`default` هو افتراضيّ المفتاح نفسه: مفتاحٌ افتراضيّه «مفعّل» ومفتاحٌ افتراضيّه «مطفأ»
- * لا يُقرآن بالافتراضيّ نفسه، وإلا كُتب «تغيير» لم يقع.
+ * لا يُقرآن بالافتراضيّ نفسه، وإلا كُتب «تغيير» لم يقع. و`screen` اسم الشاشة في سجلّ الأحداث.
  */
-private fun persistFlag(
+internal fun persistFlag(
     prefs: SharedPreferences,
     key: String,
     new: Boolean,
     default: Boolean = true,
+    screen: String = "CustomTheme",
 ) {
     val old = prefs.getBoolean(key, default)
     if (old == new) return
-    EventLog.userAction(screen = "CustomTheme", field = key, old = old.toString(), new = new.toString())
+    EventLog.userAction(screen = screen, field = key, old = old.toString(), new = new.toString())
     prefs.edit { putBoolean(key, new) }
 }

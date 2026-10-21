@@ -1205,8 +1205,7 @@
     <string name="str_enable_banner">Enable Banner Image</string>
     <string name="str_expressive_blur">Expressive Blur</string>
     <string name="str_expressive_blur_summary">Enable interface blur effect</string>
-    <string name="str_scroll_effects">Scroll effects</string>
-    <string name="str_scroll_effects_summary">Cards and blocks fade in as they enter the screen. Turn it off to show everything at once — reduced motion in system settings is respected either way.</string>
+    <string name="str_scroll_effects">Gradual reveal</string>
     <string name="str_hide_unavailable_features">Hide features unavailable on my device</string>
     <string name="str_hide_unavailable_features_summary">Unavailable features are hidden from the capability lists instead of shown greyed with their reason. Nothing supported is removed, and the number of hidden items is always written out.</string>
     <string name="unavailable_hidden_count">Hidden by your setting: %1$d unavailable items</string>
@@ -1792,6 +1791,7 @@
     <string name="persist_note">Nothing is forced on the whole device: per-game profiles return on the game\'s next launch, and anything the device or permissions refuse is skipped with its reason.</string>
     <string name="settings_home_section">Home screen</string>
     <string name="settings_navigation_section">Navigation</string>
+    <string name="settings_device_section">Device capabilities</string>
     <string name="swipe_navigation_title">Swipe between sections</string>
     <string name="swipe_navigation_desc">Swipe horizontally across the main sections, in-screen tabs, and back from other screens. Horizontal controls keep their own swipe.</string>
     <string name="settings_activity_card_title">Activity card</string>

@@ -270,7 +270,8 @@ object ThemeKeys {
     const val MOTION = "theme_motion"
 
     /**
-     * تأثيرات التمرير — كشف الكتل عند دخولها الشاشة. **بوليانيّ لا عدديّ**: قيمة واحدة تُقلَب
+     * الظهور التدريجي (اسمها الداخليّ `SCROLL_EFFECTS` تاريخيّ) — كشف الكتل عند دخولها الشاشة.
+     * **بوليانيّ لا عدديّ**: قيمة واحدة تُقلَب
      * من الشاشة، والقيمة الغائبة تُقرأ «مفعّلة» ([ThemeStudio.scrollEffects]).
      */
     const val SCROLL_EFFECTS = "theme_scroll_effects"
@@ -297,6 +298,9 @@ object ThemeKeys {
 
 /** القراءة الوحيدة لخيارات الاستوديو من تفضيلات `settings` — بافتراضات آمنة دائمًا. */
 object ThemeStudio {
+    /** ملفّ التفضيلات الذي تكتب فيه السمة والإعدادات معًا، واسمه نصٌّ واحد هنا. */
+    const val PREFS_FILE = "settings"
+
     fun contrast(prefs: SharedPreferences): ThemeContrast =
         ThemeContrast.fromKey(prefs.getString(ThemeKeys.CONTRAST, null))
 

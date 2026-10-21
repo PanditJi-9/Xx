@@ -138,12 +138,18 @@ class UnavailableFeaturesTest {
 
     @Test
     fun `hide unavailable has one preference, one key and one gate`() {
-        val switch = mainSource("ThemeStudioSections.kt")
+        // بعد النقل: المفتاح يُكتب من بطاقة الإعدادات، ولا تبقى في استوديو السمة نسخةٌ ثانية منه
+        val switch = mainSource("SettingsScreen.kt")
+        val studio = mainSource("ThemeStudioSections.kt")
         val settings = mainSource("ThemeSettings.kt")
         // (١٥) المفتاح يُكتب بالمفتاح نفسه الذي تقرؤه البوابة — لا نصّ مفتاح ثانٍ في الشاشة
         assertTrue(switch.contains("ThemeKeys.HIDE_UNAVAILABLE"))
+        assertTrue(switch.contains("R.string.str_hide_unavailable_features"))
         assertTrue(settings.contains("const val HIDE_UNAVAILABLE"))
         assertTrue(settings.contains("getBoolean(ThemeKeys.HIDE_UNAVAILABLE, false)"))
+        // والاستوديو لم يعد يحمل المفتاح ولا عنوانه: البطاقة نُقلت لا نُسخت
+        assertFalse(studio.contains("ThemeKeys.HIDE_UNAVAILABLE"))
+        assertFalse(studio.contains("R.string.str_hide_unavailable_features"))
         // (١٦) والافتراضيّ «يُعرض»: لا إخفاء بلا طلب صريح من المستخدم
         assertFalse(settings.contains("getBoolean(ThemeKeys.HIDE_UNAVAILABLE, true)"))
         // (١٧) والباب واحد: مصفوفتا القدرات تمرّان بالبوابة، والبوابة وحدها تقرأ التفضيل

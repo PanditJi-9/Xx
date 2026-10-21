@@ -90,6 +90,9 @@ import nd.max.ui.viewmodel.*
 import nd.max.ui.settings.AppLanguage
 import nd.max.ui.settings.LanguagePickerSheet
 import nd.max.ui.settings.SettingsViewModel as PreferenceSettingsViewModel
+import nd.max.ui.subscreens.persistFlag
+import nd.max.ui.theme.ThemeKeys
+import nd.max.ui.theme.ThemeStudio
 
 
 /**
@@ -134,6 +137,12 @@ fun SettingsScreen(
     // صفّ الترخيص يظهر فقط عندما يفعّله المالك من Max Control؛ والافتراضي إخفاء.
     val remote by RemoteAccess.state.collectAsStateWithLifecycle()
     val licenseVisible = RemoteFlags.isOn(remote.config, RemoteFlags.LICENSE, BuildConfig.VERSION_CODE)
+
+    // «إخفاء الميزات غير المتاحة» — مفتاحه في ملفّ السمة `settings` (اسمه في `ThemeStudio.PREFS_FILE`)،
+    // فيُقرأ ويُكتب من الملف نفسه الذي تقرؤه البوّابة `rememberUnavailableVisible`. وقيمته تُقرأ مرّةً
+    // مع الشاشة وتُحدَّث عند كل قلبٍ، كما يفعل الاستوديو تمامًا.
+    val devicePrefs = remember { context.getSharedPreferences(ThemeStudio.PREFS_FILE, Context.MODE_PRIVATE) }
+    var hideUnavailable by remember { mutableStateOf(ThemeStudio.hideUnavailableFeatures(devicePrefs)) }
 
     // **القيمة هنا اسم اللغة فقط، لا «تلقائي (النظام) · …».**
     //
@@ -532,6 +541,36 @@ fun SettingsScreen(
                                     summary = stringResource(R.string.swipe_navigation_desc),
                                     checked = isSwipeNavigationEnabled,
                                     onCheckedChange = preferenceSettingsViewModel::setSwipeNavigationEnabled,
+                                )
+                            }
+                        )
+                    )
+                }
+
+                // ── قدرات الجهاز: إخفاء الميزات غير المتاحة (§٤-و) ──────────────────────
+                // كان هذا المفتاح داخل استوديو السمة، فنُقل إلى بطاقته هنا: هو قرارٌ عمّا يُعرض من
+                // القدرات، لا عن شكل الواجهة. المفتاح وملفّه لم يتغيّرا، فالبوّابة نفسها تقرؤه.
+                // وهو عرضٌ لا تحكّم جهاز، فلا يُحبس خلف `isLoaded` (كالتمرير بين الأقسام).
+                item { SettingsSectionTitle(stringResource(R.string.settings_device_section)) }
+                item {
+                    ExpressiveList(
+                        content = listOf(
+                            {
+                                ExpressiveSwitchItem(
+                                    icon = Icons.Rounded.VisibilityOff,
+                                    title = stringResource(R.string.str_hide_unavailable_features),
+                                    summary = stringResource(R.string.str_hide_unavailable_features_summary),
+                                    checked = hideUnavailable,
+                                    onCheckedChange = { next ->
+                                        hideUnavailable = next
+                                        persistFlag(
+                                            prefs = devicePrefs,
+                                            key = ThemeKeys.HIDE_UNAVAILABLE,
+                                            new = next,
+                                            default = false,
+                                            screen = "Settings",
+                                        )
+                                    },
                                 )
                             }
                         )
