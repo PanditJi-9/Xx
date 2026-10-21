@@ -168,7 +168,12 @@ internal fun PrimaryDeck(
                     // كل القراءات هنا داخل مرحلة الرسم: لا شيء منها يُعيد التركيب.
                     .graphicsLayer {
                         val offset = (pagerState.currentPage - page) + pagerState.currentPageOffsetFraction
-                        val steps = 1f - abs(offset).coerceIn(0f, 1f)
+                        // **`steps` من الصفر لا من الواحد:** الصفحة الساكنة (`offset = 0`) تملأ
+                        // الحواف بلا انكماشٍ ولا استدارة ولا قصّ، ومع أوّل حركة ينمو الرقم فيظهر
+                        // أثر البطاقة. وكان مقلوبًا (`1 - |offset|`) فتُصغَّر **الصفحة المعروضة**
+                        // وتُستدير في السكون: يقرؤها المستخدم «شاشة داخل شاشة» على خلفية سطح
+                        // أفتح من محتواها (طلب المالك: الحواف الغريبة و«كأنها شاشة صغيرة»).
+                        val steps = abs(offset).coerceIn(0f, 1f)
                         val scale = 1f - CARD_SCALE_DROP * steps
                         scaleX = scale
                         scaleY = scale
@@ -181,7 +186,9 @@ internal fun PrimaryDeck(
                     .drawWithContent {
                         drawContent()
                         val offset = (pagerState.currentPage - page) + pagerState.currentPageOffsetFraction
-                        val steps = 1f - abs(offset).coerceIn(0f, 1f)
+                        // نفس [steps] أعلاه: صفرٌ في السكون فلا يُرسم الحدّ الشعريّ حول صفحةٍ
+                        // تملأ الشاشة (وكان مقلوبًا فيُرسم الإطار حول الشاشة الساكنة دائمًا).
+                        val steps = abs(offset).coerceIn(0f, 1f)
                         if (steps <= 0.001f) return@drawWithContent
                         // حدّ شعريّ داخل القصّ: في السكون لا يُرسم شيء (الصفحة تملأ الحواف)،
                         // وعند الحركة يفصل البطاقة عن الخلفية بلا ظلّ — لغتنا تفصل بالحدّ لا بالارتفاع.

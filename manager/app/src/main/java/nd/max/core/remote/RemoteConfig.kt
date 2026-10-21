@@ -211,6 +211,21 @@ data class RemoteStats(
     val effectiveTtlHours: Int get() = ttlHours.coerceIn(1, 24)
 }
 
+/**
+ * سياسة نوافذ التحديث كما ينشرها المالك من لوحة التحكّم (`com.maxmanager.control`).
+ *
+ * **ولماذا في الإعداد الموقّع لا في مفتاحٍ محليّ:** كانت في التطبيق مفتاحًا للمستخدم في شاشة
+ * التحكّم، والمستخدم هو من يُسكِت إشعارات التحديث — وهي قدرة مالكٍ لا قدرة مستخدم (أمر المالك
+ * ٢٠٢٦-١٠-٢١: «أريده في `com.maxmanager.control` حتى أتمكّن من تعطيل إشعارات التحديث
+ * للمستخدمين»). والقيمة تصل موقّعة، وتُطبَّق عند اعتماد الإعداد، فلا تعتمد على شبكةٍ لحظةَ
+ * عرض النافذة.
+ */
+@Serializable
+data class RemoteUpdates(
+    /** `true` ⇒ لا نوافذ تحديث تلقائية. والفحص اليدويّ والحجب الأمنيّ لا يمسّهما هذا العلَم. */
+    @SerialName("disabled") val disabled: Boolean = false,
+)
+
 /** الـpayload الموقّع نفسه — هذا هو ما يُخزَّن كبايتات في الغلاف أعلاه. */
 @Serializable
 data class RemotePayload(
@@ -225,6 +240,7 @@ data class RemotePayload(
     val subscription: RemoteSubscription? = null,
     val promos: List<RemotePromo> = emptyList(),
     val changelog: List<RemoteRelease> = emptyList(),
+    val updates: RemoteUpdates? = null,
 )
 
 /**
@@ -256,6 +272,11 @@ data class RemoteConfig(
     val promos: List<PromoWindow> = emptyList(),
     /** سجلّ التغييرات كما كتبه المالك — تُقرأ منه ملاحظات الإصدار في نافذة التحديث. */
     val changelog: List<RemoteRelease> = emptyList(),
+    /**
+     * سياسة نوافذ التحديث كما نشرها المالك — `null` أي «لم تُنشر بعد» فتبقى النوافذ تظهر
+     * (السلوك السابق بالضبط)، فلا يكتم إعدادٌ ناقص إشعارًا لم يقصده المالك.
+     */
+    val updates: RemoteUpdates? = null,
     /** أسماء مفاتيح لم يعرفها هذا الإصدار — تُسجَّل ولا تُسقط الإعداد (توافقًا أماميًّا). */
     val unknownFeatureKeys: List<String>,
 ) {
@@ -491,6 +512,7 @@ object RemoteConfigs {
                 subscription = payload.subscription,
                 promos = promos,
                 changelog = changelog,
+                updates = payload.updates,
                 unknownFeatureKeys = unknown.sorted(),
             ),
         )

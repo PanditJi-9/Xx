@@ -44,13 +44,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.Cloud
 import androidx.compose.material.icons.rounded.Search
-import androidx.compose.material.icons.rounded.SystemUpdate
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -65,7 +63,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.launch
 import nd.max.R
-import nd.max.core.update.UpdateGate
 import nd.max.ui.component.ExpressiveList
 import nd.max.ui.component.ExpressiveListItem
 import nd.max.ui.component.LeadingIcon
@@ -75,7 +72,6 @@ import nd.max.ui.design.MaxHelpAction
 import nd.max.ui.design.MaxListScreen
 import nd.max.ui.design.MaxSection
 import nd.max.ui.design.MaxSpace
-import nd.max.ui.design.MaxSwitchRow
 import nd.max.ui.design.MaxViewMenu
 import nd.max.ui.navigation.MaxDestination
 import nd.max.ui.navigation.MaxNavActions
@@ -191,19 +187,10 @@ fun ControlScreen(navController: NavHostController) {
             )
         }
 
-        // **ومفتاح إلغاء التحديثات هنا (أمر المالك):** يُسكِت ظهور نوافذ التحديث الثلاث
-        // (قناة اللوحة · إعلان المانيفست · حوار التطبيق/الوحدة) من تلقاء نفسها، ويبقى
-        // الفحص اليدويّ والحجب الأمنيّ كما هما — عقده في [UpdateGate].
-        item(key = "control_updates_disabled") {
-            val updatesDisabled by UpdateGate.disabled.collectAsState()
-            MaxSwitchRow(
-                title = stringResource(R.string.control_updates_disabled_title),
-                subtitle = stringResource(R.string.control_updates_disabled_subtitle),
-                checked = updatesDisabled,
-                onCheckedChange = { enabled -> UpdateGate.setDisabled(context, enabled) },
-                icon = Icons.Rounded.SystemUpdate,
-            )
-        }
+        // **ولا مفتاح إلغاء تحديثات هنا (أمر المالك):** كان صفًّا في هذه الشاشة، وصار القرار
+        // قرار اللوحة (`com.maxmanager.control`) لا قرار المستخدم: المالك ينشر السياسة في الإعداد
+        // الموقّع (`updates.disabled`) فتُسكَت نوافذ التحديث الثلاث للمستخدمين جميعًا. والفحص
+        // اليدويّ والحجب الأمنيّ كما هما — عقده في `core/update/UpdateGate`.
     }
 
     // والورقة في جذر التطبيق لا داخل هذه الشاشة: مُوجِّد يعرض نتائج من كل مكان يجب أن يرتفع

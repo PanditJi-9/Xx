@@ -60,6 +60,20 @@ object UpdateGate {
         _disabled.value = value
     }
 
+    /**
+     * سياسة المالك المنشورة في الإعداد الموقّع (`updates.disabled`) — **المصدر الذي يقرّر الآن**.
+     *
+     * كان القرار قرار المستخدم من صفٍّ في شاشة التحكّم، وصار قرار المالك من لوحة التحكّم
+     * (`com.maxmanager.control`): يُنشَر العلَم مع الإعداد، ويُطبَّق هنا عند **كل اعتمادٍ**
+     * للإعداد (إقلاعًا من النسخة المخزّنة، وعند التحديث من الخادم) فيُكتب في نفس المفتاح.
+     * ونتيجتان مقصودتان: أن يسري الحجب على الأسطح الثلاثة بلا شبكة لحظةَ النافذة، وأن يُرفع
+     * الكتمان بأمرٍ منشورٍ جديد لا بضغط مستخدم.
+     */
+    fun applyPublishedPolicy(context: Context, disabled: Boolean) {
+        if (prefs(context).getBoolean(KEY_DISABLED, false) == disabled) return
+        setDisabled(context, disabled)
+    }
+
     private fun prefs(context: Context) =
         context.applicationContext.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
 }
