@@ -70,6 +70,7 @@ import nd.max.R
 import nd.max.core.access.RemoteAccess
 import nd.max.core.update.ConfigUpdates
 import nd.max.core.update.UpdateError
+import nd.max.core.update.UpdateGate
 import nd.max.core.update.UpdateManager
 import nd.max.core.update.UpdateManifests
 import nd.max.core.update.UpdateVerdict
@@ -110,11 +111,15 @@ fun UpdateHost(viewModel: UpdateViewModel = hiltViewModel()) {
 @Composable
 private fun UpdateSurface(viewModel: UpdateViewModel) {
     val state by viewModel.state.collectAsState()
+    // مفتاح «تعطيل التحديثات» (من شاشة التحكّم): يُسكِت **الإعلان** ولا يُسقط **الحجب** —
+    // حجب النسخة الممنوحة أمانٌ لا إزعاج، وتطبيقٌ مقفل بلا نافذة أسوأ من نافذةٍ مزعجة.
+    val updatesDisabled by UpdateGate.disabled.collectAsState()
     val decision = state.decision
     val maintaining = decision.verdict == UpdateVerdict.MAINTENANCE
     when {
         decision.verdict == UpdateVerdict.BLOCKED -> UpdateBlockOverlay(state, viewModel)
         maintaining && decision.blocking -> UpdateBlockOverlay(state, viewModel)
+        updatesDisabled -> Unit
         maintaining && !state.noticeDismissed -> UpdateDialogSurface(state, viewModel)
         decision.verdict == UpdateVerdict.OPTIONAL || decision.verdict == UpdateVerdict.REQUIRED ->
             UpdateDialogSurface(state, viewModel)

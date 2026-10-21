@@ -22748,3 +22748,32 @@ BUILD FAILED in 6m 12s
 1. المالك: حزمة/لقطة جديدة بعد التثبيت — البصمة يجب أن تُظهر `[gpu-selection]` بسطر `evidence` فيه `kgsl-…-surface`، وشاشة GPU تُظهر ترددًا ومدى وحاكمًا.
 2. إن بقي `NONE`، قراءة `[devfreq]` في البصمة تكفي لتحديد اسم العقدة الناقصة دون جولة ثانية.
 3. مرآة CI (`nahheh428-Star`/`Test`) تُدار يدويًّا: تشغيلها الحالي يقيس كودًا قديمًا، وإلزامي مراجعة مستقل على `core/hardware` لم يقع.
+
+## Executor log — PRIMARY-DECK-01 + VERSION-V3-00 — 2026-10-21 · DONE_WITH_CONCERNS
+
+**TASK (المالك):** (أ) «اجعل التمرير الأفقي والرأسي والإيماءات ناعمة وبلا تعارض، وحوّل التنقل بين الأقسام الأربعة إلى صفحات بطاقات أفقية لا انتقالات مسارات، مع الحفاظ على هوية التطبيق» — **وبلا بناء ولا اختبارات**. (ب) «غيّر رقم الإصدار في كل مكان إلى v3.0 بسرعة».
+
+**التنفيذ — سطح البطاقات (`PrimaryDeck.kt` جديد · `MainActivity.kt` · `MaxNavGraph.kt`):**
+1. `HorizontalPager` يملك الأقسام الأربعة: `beyondViewportPageCount = 1` (الجارة مُركَّبة قبل السحب) · `PagerSnapDistance.atMost(1)` (قسم واحد لكل قفزة) · نابضٌ واحد `PrimaryDeckSnapSpring` للسحب والنقر (`dampingRatio 0.9` · `StiffnessMediumLow`).
+2. الصفحة في السكون **تملأ الحواف**، ومع أول حركة تنكمش ٤٫٥٪ وترتفع `MaxSpace.xs` وتستدير `MaxRadius.group` — كل التحويلات تُقرأ من `PagerState` داخل `graphicsLayer`/`drawWithContent` (مرحلة الرسم) فلا إعادة تركيب في أي إطار. حدّ شعريّ `MaxAlpha.borderStrong` يفصل البطاقة أثناء الحركة وحدها.
+3. خلفية واحدة `PrimaryDeckBackdrop` (تدرّج سطح + رمز القسم النشط `MaxAlpha.toneContainer`)، ونبضة `haptics.step()` عند عبور صفحة **بيد المستخدم** فقط (الانتقال البرمجيّ له اهتزازه في الشريط).
+4. مسارات الأقسام في `maxNavGraph` صارت **مقاعد فارغة**: `NavHost` يبقى مالك الرجوع والتكديس، لكنه شفّاف فوق السطح، والسطح يخرج من التركيب على الشاشات الفرعية (لا لمسة شبح). حفظ حالة كل صفحة عبر `rememberSaveableStateHolder` في الجذر.
+5. مزامنة واحدة بين المسار والصفحة: أول مزامنة `scrollToPage` بلا حركة (إقلاع على قسم غير الرئيسية)، وما بعدها `animateScrollToPage` بالنابض نفسه؛ واستقرار الصفحة بعد سحب المستخدم هو ما يكتب المسار (`settledPage.drop(1)` + `deckSynced` يمنع الدورتين).
+6. **الإيماءات (`SwipeNavigation.kt` · `SwipeNavigationGesture.kt`):** قفل محور بعد حدّ اللمس (`resolveSwipeAxis` · `SWIPE_AXIS_LOCK_RATIO = 1.2`) — ما بدأ رأسيًّا لا يصير تنقّلًا ولو مال أفقيًّا قبل الرفع. والعتبات ٥٦dp/٢٨٠dp·ث بدل ٦٤/٣٢٠، والحكم النهائي عند الرفع يبقى `SWIPE_SLOPE_RATIO = 1.4`. وجذر الإيماءة **مطفأ على الأقسام الأربعة** لأن الـPager يملك الأفقي هناك؛ والسحب على الشاشات الفرعية باقٍ (رجوع/تبويبات) كما كان. أربعة اختبارات محور نقيّة أُضيفت **ولم تُشغَّل**.
+
+**التنفيذ — الإصدار:** `version` = `V3.0` · `mainfiles/module.prop` (`version=V3.0` · `versionCode=3`) · `archdaemon/jni/include/MaxManager.h` (`MODULE_VERSION "V3.0"`) · `manager/app/build.gradle.kts` (`versionCode = 3` · `versionName = "V3.0"`). **والثلاثة الأولى تُطابق بايت ببايت كما تطالب خطوة CI** (`Confirm the single version string across its three homes`) — قِيس الأمر نفسه هنا: `TRIANGLE OK`. و`docs/update/manifest.json` **لم يُلمس بقصد**: يولّده `tools/publish_update.py` من APK حقيقي (code/name/sha256/size) فتحريره يدويًّا يُعلن أثرًا غير موجود ببصمة قديمة.
+
+**القياس (لا ادّعاء):** `kt_balance --assert` **3064 ملفًا · عوائق 0** · `code_health --assert` **صحّة نظيفة** · `design_tokens --assert` **251/300** · (وسابقًا في الجلسة نفسها: `i18n_coverage --assert` ✓ · `--prune all` يتيمة 0 · `rtl_guard` 0 · `resource_compile --assert` ✓). **وتوقيعات Compose قِيست من AAR الحقيقي لا من الذاكرة:** `foundation-android 1.9.4` (BOM `2025.10.01`) — `javap` يثبت `PagerState.getInteractionSource/getSettledPage/getCurrentPageOffsetFraction` و`scrollToPage`/`animateScrollToPage`، و`PagerDefaults.flingBehavior(state, snapDistance, decaySpec, snapSpec, threshold)`، و`HorizontalPager` بأربعة عشر وسيطًا فيها `beyondViewportPageCount`، و`GraphicsLayerScope.setShape/setClip` — أي أن نقطة الفشل التي أعلنها سجلّ اللوبي سابقًا (`PagerDefaults.flingBehavior`) صارت مُتحقَّقة الاسم والترتيب.
+
+**BUILD:** **لم يُبنَ ولم تُشغَّل اختبارات** — أمر المالك الحاليّ (§0.1) وطلبه الصريح «بدون بناء او اختبارات». ⇒ **compilation unverified in this environment** لكل Kotlin المعدَّل، ولاختبارات المحور الأربعة.
+
+**RESIDUAL RISK (معلنة):**
+- **السلوك اللمسيّ والحسّيّ لم يُقَس على جهاز:** قفل المحور، حدود الانتقال، النبضة، واستقرار البطاقة قيمٌ مضبوطة هندسيًّا لا مُشاهدة.
+- **صفحة الجارة تبقى مُركَّبة في السكون** (`beyondViewportPageCount = 1`): ثمنٌ مقصود لأول إطار غير فارغ، ويجب قياسه على جهاز ضعيف (بثّان حيّان بدل واحد).
+- **الشاشات الأربعة صارت تُركَّب خارج `NavHost`** ⇒ `viewModel()`/`hiltViewModel()` فيها صار بنطاق النشاط لا `NavBackStackEntry`؛ الحالة تبقى بين الأقسام (مقصود) لكن أي افتراض قديم على نطاق الوجهة يسقط.
+- **`showPrimaryDeck` يسقط لحظة تغيّر المسار**، فانتقال الشاشة الفرعية يبدأ فوق سطح التطبيق لا فوق البطاقة — يحتاج UAT بصريًّا.
+- **`docs/update/manifest.json` وسكربت Supabase** ما زالا على 2.1: بيانات نشرٍ حيّة تُولَّد من أثر حقيقي، لا أرقام تُكتب بيد.
+
+**NEXT:** جهاز المالك: سحب بين الأقسام الأربعة · RTL · قائمة تمرير ثم ميل أفقي (يجب ألّا يُنقل قسمًا) · العودة من شاشة فرعية إلى قسمها · ضبط القيم البصرية. ثم عند الحاجة الحقيقية: `:app:compileReleaseKotlin` (أو QV) — وليس الآن. وعند نشر 3.0: `tools/publish_update.py` يملأ المانيفست من الـAPK.
+
+**FILES:** `manager/app/src/main/java/nd/max/ui/navigation/PrimaryDeck.kt` (جديد) · `ui/navigation/SwipeNavigation.kt` · `ui/navigation/SwipeNavigationGesture.kt` · `ui/navigation/MaxNavGraph.kt` · `MainActivity.kt` · `test/.../SwipeNavigationTest.kt` · `version` · `mainfiles/module.prop` · `archdaemon/jni/include/MaxManager.h` · `manager/app/build.gradle.kts`

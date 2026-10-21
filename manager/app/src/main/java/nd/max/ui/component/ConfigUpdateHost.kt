@@ -39,6 +39,7 @@ import nd.max.R
 import nd.max.core.access.RemoteAccess
 import nd.max.core.update.ConfigUpdateStore
 import nd.max.core.update.ConfigUpdates
+import nd.max.core.update.UpdateGate
 import nd.max.ui.design.MaxSpace
 import nd.max.ui.util.VersionIdentity
 
@@ -77,6 +78,9 @@ private fun ConfigUpdateSurface() {
     val context = LocalContext.current
     val snapshot by RemoteAccess.state.collectAsStateWithLifecycle()
     val manualRequests by ConfigUpdates.manualRequests.collectAsStateWithLifecycle()
+    // مفتاح «تعطيل التحديثات» من شاشة التحكّم: يُسكِت الظهور **التلقائيّ** (القاعدة ①) ولا
+    // يمسّ الطلب اليدويّ (القاعدة ②) — من ضغط «تحقّق من التحديثات» بنفسه يريد أن يرى ما وُجد.
+    val updatesDisabled by UpdateGate.disabled.collectAsStateWithLifecycle()
     val store = remember(context) { ConfigUpdateStore(context) }
     val installed = remember(context) { VersionIdentity.readApp(context) }
 
@@ -92,7 +96,8 @@ private fun ConfigUpdateSurface() {
     var handledManual by remember { mutableStateOf(store.handledManualRequest()) }
 
     // ① الظهور التلقائي — إلزاميّ في كل فتحة، واختياري بعد الفاصل فقط.
-    LaunchedEffect(verdict, latest?.version, latest?.reminderHours, dismissedVersion, dismissedAt) {
+    LaunchedEffect(verdict, latest?.version, latest?.reminderHours, dismissedVersion, dismissedAt, updatesDisabled) {
+        if (updatesDisabled) return@LaunchedEffect
         if (
             ConfigUpdates.shouldShow(
                 latest = latest,

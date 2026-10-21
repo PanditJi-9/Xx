@@ -595,8 +595,14 @@ def self_test() -> int:
     """
     print("═══ الفحص الذاتي: كل عقد يُكسر، والبوابة يجب أن تمسكه ═══")
     failures = 0
+    # **ولا يُكتب رقم الإصدار في الطَفرة:** كانت `("V2", "V3")`، فلمّا صار الإصدار `V3.0`
+    # لم يجد الفحص الذاتيّ نصّه وسقط عند أوّل طفرة (تشغيل `39606746670`). الطفرة تُشتقّ من
+    # `version` نفسه، فتبقى صالحة عند كل رفع إصدار — وهذا ما تقيسه البوابة لا العكس.
+    current_version = read(ROOT, "version").strip()
+    if not current_version:
+        raise SystemExit("version file is empty — cannot build the version_triangle mutation")
     mutations: list[tuple[str, list[tuple[str, str]], str]] = [
-        ("version_triangle", [("version", [("V2", "V3")])], "version_triangle"),
+        ("version_triangle", [("version", [(current_version, current_version + "-drift")])], "version_triangle"),
         ("module_identity", [("mainfiles/module.prop", [("name=MaxManager", "name=Max Manager")])], "module_identity"),
         ("daemon_path", [("android/aosp/maxmanager.rc", [("/system/bin/sys.maxmanager-service", "/vendor/bin/sys.maxmanager-service")])], "daemon_path"),
         ("rc_partition", [("android/aosp/product-inclusion.mk", [("TARGET_COPY_OUT_SYSTEM", "TARGET_COPY_OUT_VENDOR")])], "rc_partition"),
@@ -605,7 +611,9 @@ def self_test() -> int:
         ("sepolicy_partition", [("android/aosp/sepolicy/maxmanager.te", [("type maxmanager_exec, exec_type, file_type;", "type maxmanager_exec, exec_type, file_type, vendor_file_type;")])], "sepolicy_partition"),
         ("board_no_product", [("android/aosp/BoardConfig.mk", [("BOARD_SEPOLICY_DIRS +=", "PRODUCT_PACKAGES +=\nBOARD_SEPOLICY_DIRS +=")])], "board_no_product"),
         ("permission_xml", [("android/aosp/product-inclusion.mk", [("device/maxmanager/product/etc/permissions/privapp-permissions-nd.max.xml:$(TARGET_COPY_OUT_PRODUCT)", "device/maxmanager/product/etc/permissions/nd.max.xml:$(TARGET_COPY_OUT_PRODUCT)")])], "permission_xml"),
-        ("no_banner", [("mainfiles/module.prop", [("versionCode=2", "versionCode=2\nbanner=module.banner.avif")])], "no_banner"),
+        # والمرساة `id=` لا `versionCode=` — رقم البناء يتغيّر مع كل إصدار (ومن `2` إلى `3`
+        # الآن)، فطفرة معلّقة برقمٍ بعينه تسقط بلا أن يكون في العقد عطب.
+        ("no_banner", [("mainfiles/module.prop", [("id=MaxManager", "id=MaxManager\nbanner=module.banner.avif")])], "no_banner"),
         ("extract_targets", [("mainfiles/customize.sh", [("# Skip mountify", 'extract "$ZIPFILE" module.banner.avif "$MODPATH"\n# Skip mountify')])], "extract_targets"),
         ("no_sha256_shipped", [(".github/scripts/compile_zip.sh", [("-x *placeholder* *.map .shellcheckrc '*.sha256'", "-x *placeholder* *.map .shellcheckrc")])], "no_sha256_shipped"),
         ("verify_optional_hash", [("mainfiles/verify.sh", [('if [ -f "$hash_path" ]; then', 'abort_verify "Missing checksum for $file"\n\tif [ -f "$hash_path" ]; then')])], "verify_optional_hash"),

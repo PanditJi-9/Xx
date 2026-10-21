@@ -5,6 +5,7 @@
  */
 package nd.max
 import nd.max.core.security.SecurityEnforcement
+import nd.max.core.update.UpdateGate
 import nd.max.core.security.IntegrityCheckpoint
 import nd.max.core.platform.EventLog
 import android.content.Context
@@ -452,7 +453,9 @@ fun MainScreen(fromTileType: String? = null, widgetRoute: String? = null, widget
             // `AR-04`: إصدار التطبيق يُقرأ من **مصدر واحد** (`VersionIdentity`)، لا بتكرار
             // `getPackageInfo` هنا مع تفريع حسب إصدار النظام كما كان.
             val appVC = VersionIdentity.readApp(context).versionCode
-            if (appVC >= 0L && appVC < moduleVC.toLong() && apkAvailable) {
+            // مفتاح «تعطيل التحديثات» (شاشة التحكّم): هذا الحوار إعلانُ تحديثٍ أيضًا، فلولا هذا
+            // الشقّ لعادت النافذة من الباب الثالث بعد أن أُغلقت الأولين.
+            if (appVC >= 0L && appVC < moduleVC.toLong() && apkAvailable && !UpdateGate.isDisabled(context)) {
                 updateDialog.showConfirm(
                     title = resources.getString(R.string.dialog_update_available_title),
                     content = resources.getString(R.string.dialog_update_available_content, appVC, moduleVC),

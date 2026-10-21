@@ -1,3 +1,15 @@
+## PRIMARY-DECK-01 + VERSION-V3-00 — 2026-10-21 · DONE_WITH_CONCERNS (صفحات الأقسام بطاقاتٌ أفقية · قفل محور الإيماءة · الإصدار V3.0)
+
+**TASK (المالك):** سلاسة التمرير والإيماءات بلا تعارض، وتحويل الأقسام الأربعة إلى صفحات أفقية تحفظ الهوية — **بلا بناء ولا اختبارات**؛ ثم تغيير الإصدار إلى v3.0 في كل مكان.
+
+**التنفيذ:** `PrimaryDeck.kt` جديد (‏`HorizontalPager` · `beyondViewportPageCount=1` · `PagerSnapDistance.atMost(1)` · نابض واحد · تحويلات في مرحلة الرسم · قصّ/حدّ أثناء الحركة · نبضة عند عبور المستخدم) · `MainActivity` يضع السطح تحت `NavHost` الشفّاف ويزامن المسار↔الصفحة ويطلقه على الشاشات الفرعية · مسارات الأقسام في `MaxNavGraph` مقاعد فارغة · `SwipeNavigationGesture` يقفل المحور بعد حدّ اللمس (١٫٢) وعتباته ٥٦dp/٢٨٠dp·ث · اختبارات محور نقيّة (لم تُشغَّل).
+**الإصدار:** `version` · `module.prop` · `MaxManager.h` · `build.gradle.kts` = **V3.0 / versionCode 3**؛ الثلاثة الأولى تطابق بايت ببايت (`TRIANGLE OK` بالفحص نفسه الذي تشغّله CI). `docs/update/manifest.json` لم يُلمس (يُولَّد من APK حقيقي).
+
+**GATES:** kt_balance 3064/0 · code_health ✓ · design_tokens 251/300 · i18n/prune/rtl/resource_compile ✓ (الجولة نفسها). **وتوقيعات Compose قِيست من AAR 1.9.4 بـ`javap`** (PagerState · flingBehavior · HorizontalPager · GraphicsLayerScope).
+**BUILD:** compilation unverified in this environment — بأمر المالك؛ الاختبارات الأربعة لم تُشغَّل.
+**RISK:** اللمس/RTL/الأداء تحتاج جهازًا · الجارة تبقى مُركَّبة في السكون (ثمن مقصود) · نماذج الأقسام صارت بنطاق النشاط · انتقال الشاشة الفرعية يبدأ فوق السطح لا فوق البطاقة.
+**NEXT:** UAT على الجهاز (سحب أفقي/رأسي · RTL · ميل أفقي بعد قائمة · عودة من شاشة فرعية) ← قياس الأداء على جهاز ضعيف ← `:app:compileReleaseKotlin` عند الحاجة الحقيقية فقط.
+
 ## LOBBY-3D-01 — 2026-10-21 · DONE_WITH_CONCERNS (لوبي ثلاثيّ الأبعاد: مسرح بحلقة شرائح + سحب رأسيّ إلى مركز تحكم موحّد · حذف Combos · خيارات جديدة)
 
 **TASK (المالك):** «اريد ان يكون game Looby ناعم … تغيير التخطيط بشكل كامل معا 3D وإزالة combo ودمج الاعدادات وإضافة خيارات جديدة».
