@@ -64,6 +64,10 @@ class RemoteConfigArchitectureTest {
             setOf(
                 "schema", "revision", "issuedAt", "expiresAt", "features",
                 "announcement", "latest", "stats", "subscription", "promos", "changelog",
+                // `updates` — مُراجَع يدويًّا (٢٠٢٦-١٠-٢١) وهو **إسكات لا قدرة**: حقلٌ منطقيٌّ
+                // واحد يُطفئ نوافذ التحديث التلقائية، ولا يستطيع تشغيل تنزيلٍ ولا تثبيتٍ ولا
+                // تجاوز حجب النسخة. والفحص اليدويّ يبقى يرى ما وُجد، والحارس الأمنيّ لا يُلمس.
+                "updates",
             ),
             declaredFields("RemoteConfig.kt", "RemotePayload"),
         )
@@ -104,6 +108,8 @@ class RemoteConfigArchitectureTest {
             setOf(
                 "RemoteFeature", "RemoteAnnouncement", "RemoteLatest", "RemoteStats",
                 "RemotePayload", "RemoteSubscription", "RemotePromo", "RemoteRelease", "SignedEnvelope",
+                // قيمةٌ واحدة (`disabled`) — لا نصّ أمر ولا مسار على الجهاز.
+                "RemoteUpdates",
             ),
             wire,
         )
@@ -116,6 +122,8 @@ class RemoteConfigArchitectureTest {
             setOf(
                 "revision", "issuedAtMillis", "expiresAtMillis", "features",
                 "announcement", "latest", "stats", "subscription", "promos", "changelog",
+                // سياسة عرضٍ لا فعل: إسكات نوافذ التحديث التلقائية (نيابةً عن المالك المنشور).
+                "updates",
                 "unknownFeatureKeys",
             ),
             declaredFields("RemoteConfig.kt", "RemoteConfig"),
@@ -136,6 +144,7 @@ class RemoteConfigArchitectureTest {
             "RemoteSubscription" to "RemoteConfig.kt",
             "RemotePromo" to "RemoteConfig.kt",
             "RemoteRelease" to "RemoteConfig.kt",
+            "RemoteUpdates" to "RemoteConfig.kt",
         ).flatMap { (className, fileName) -> declaredFields(fileName, className) }
         names.forEach { name ->
             forbidden.forEach { smell ->
