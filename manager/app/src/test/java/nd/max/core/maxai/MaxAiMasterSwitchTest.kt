@@ -19,7 +19,7 @@ import java.io.File
  * والعطب كان سببان متعاضدان، وكلٌّ له دعوى قابلة للتكذيب هنا:
  *
  * 1. **الحالة تُنشر بعد دورة كاملة** (وفيها `RESPONSE_WINDOW_MS` لكل مقبض) ⇒ الزر لا يستجيب
- *    عشرات الثواني. الدعوى: `_state.update` يجب أن **يسبق** `runCycleSingleFlight()`.
+ *    عشرات الثواني. الدعوى: `_state.update` يجب أن **يسبق** `runCycleSingleFlight(…)`.
  * 2. **كتابة الخاصية لا تنتظر** (`Shell.cmd(…).submit()` في مسار `PropertyUtils.set` الاحتياطي)
  *    ⇒ الدورة التالية تقرأ قيمة قديمة فتُرجع الزر. الدعوى: مسار التبديل يستعمل
  *    `setAndConfirm` (المُتحقَّقة) ولا يحتوي `.submit()` أصلًا.
@@ -54,7 +54,11 @@ class MaxAiMasterSwitchTest {
     fun `the switch state is updated before the cycle is launched`() {
         val body = masterSwitchBody()
         val update = body.indexOf("_state.update")
-        val cycle = body.indexOf("runCycleSingleFlight()")
+        // **تصحيح حرس قديم (CI-GUARD-STALE-02):** كان هنا البحث عن `runCycleSingleFlight()`
+        // حرفيًّا. ثم صار المسار ينادي `runCycleSingleFlight(forceSample = true)` — وهو النداء
+        // نفسه بوسيط صريح، لا مسار آخر — فصار البحث يعود -1 ويفشل الحرس على **صياغة** لا على
+        // **بنية**. والمقيس هنا الترتيب، لا العدد: نبحث أول نداء للدورة كيفما كُتب وسيطه.
+        val cycle = Regex("runCycleSingleFlight\\s*\\(").find(body)?.range?.first ?: -1
         assertTrue("the switch must touch state at all", update >= 0)
         assertTrue("the cycle must still run", cycle >= 0)
         assertTrue(

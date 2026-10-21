@@ -130,11 +130,15 @@ class MaxAiInterruptSafetyTest {
             cycle.substring(close).contains("if (!keptWrite) restoreInterruptedWrite(step)"),
         )
         assertTrue("the deliberate-keep flag must start false", cycle.contains("var keptWrite = false"))
+        // **تصحيح حرس قديم (CI-GUARD-STALE-04):** كان العدد ٢ (غير المقيس، والمُتحسِّن). ثم
+        // أُضيف مسار ثالث **عمدي**: فرقٌ داخل ضجيج النافذة (`|Δ| < MEANINGFUL_GAIN`) — الكتابة
+        // تحققت ولا دليل على تراجع، فالاسترجاع كان كتابةً ثانية على العتاد بلا دليل. والغرض من
+        // هذا العدّ ليس تجميد الرقم بل منع **إبقاءٍ عارض**؛ وهذا الثالث مُعلَن في الكود نفسه.
         assertEquals(
-            "There are exactly two deliberate-keep exits: unmeasured, and improved. A third " +
-                "means a path that used to hand the baseline back now keeps the write — decide " +
-                "that on purpose, not by accident.",
-            2,
+            "There are exactly three deliberate-keep exits: unmeasured, inconclusive-" +
+                "within-noise, and improved. A fourth means a path that used to hand the " +
+                "baseline back now keeps the write — decide that on purpose, not by accident.",
+            3,
             Regex("keptWrite = true").findAll(cycle).count(),
         )
     }

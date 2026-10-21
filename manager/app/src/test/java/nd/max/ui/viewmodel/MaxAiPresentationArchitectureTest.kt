@@ -107,6 +107,16 @@ class MaxAiPresentationArchitectureTest {
     fun `refresh execution is owned by the engine not the waiting screen`() {
         val engine = source("core/maxai/MaxAiEngine.kt")
         val request = engine.substringAfter("suspend fun requestRefresh()").substringBefore("fun clearJournal")
-        assertTrue(request.contains("scope.async { runCycleSingleFlight() }.await()"))
+        // **تصحيح حرس قديم (CI-GUARD-STALE-03):** كان الشرط نصًّا حرفيًّا
+        // `scope.async { runCycleSingleFlight() }.await()`، ثم صار النداء يحمل
+        // `forceSample = true`. والبطلان الذي يحرسه الاختبار ليس الوسيط بل **البنية**:
+        // الدورة تُشغَّل في نطاق المحرك وتُنتظر بواسطة `.await()` — فلا تُشغَّل على خيط
+        // الشاشة ولا تُترك طائرة (`launch`). فصار يقيس هذه البنية مع أي وسيط.
+        assertTrue(
+            "refresh must run inside the engine's scope and be awaited, not fired and forgotten",
+            Regex(
+                "scope\\.async\\s*\\{\\s*runCycleSingleFlight\\s*\\([^)]*\\)\\s*}\\s*\\.await\\s*\\(\\s*\\)",
+            ).containsMatchIn(request),
+        )
     }
 }
