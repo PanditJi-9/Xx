@@ -40,11 +40,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.Outline
@@ -123,15 +126,24 @@ private const val DECK_REACH_PAGES = 3
 private const val EMBLEM_REST_SCALE = 0.86f
 private const val EMBLEM_PARALLAX = 0.16f
 private const val EMBLEM_LIFT_DP = 4f
-private const val EMBLEM_WIDTH_SHARE = 0.84f
+private const val EMBLEM_WIDTH_SHARE = 0.60f
+
+/** أكبر ضلع للأيقونة داخل الشريحة؛ تبقى أصغر من الشريحة بهامش واضح حولها. */
+private val EMBLEM_MAX_SIDE = 104.dp
 
 /** صبغة اللعبة في أعلى الشريحة، ولمعة الزجاج المنزلقة عبرها أثناء السحب. */
 private const val SLAB_WASH_ALPHA = 0.46f
 private const val SLAB_SHEEN_ALPHA = 0.13f
 private const val SLAB_SHEEN_TRAVEL = 0.75f
-private const val SLAB_TITLE_SIZE_MIN = 12f
-private const val SLAB_TITLE_SIZE_MAX = 15f
-private const val SLAB_TITLE_SHARE = 0.075f
+private const val SLAB_TITLE_SIZE_MIN = 13f
+private const val SLAB_TITLE_SIZE_MAX = 17f
+private const val SLAB_TITLE_SHARE = 0.068f
+
+/**
+ * عرض تلاشي حافتَي الحلقة بنسبة عرضها. الـPager يقصّ ما يخرج عن حدوده قصًّا حادًّا (يظهر خطًّا رأسيًّا
+ * يقطع الشريحة الجارة بجانب زرّ «ابدأ»)، فتُمحى الحافتان بقناع تدرّجيّ بدل القص.
+ */
+private const val DECK_EDGE_FADE_SHARE = 0.16f
 
 /** الخلفية: حجم أيقونة اللعبة المكبّرة، وانزياحها، وشفافيّتها. */
 private const val GHOST_SCALE = 1.25f
@@ -174,8 +186,8 @@ private val toneCache = LruCache<String, Int>(96)
 /** هامش رأسيّ حول الشريحة يتّسع لطفوها وتضخّم حافتها بالمنظور؛ الـPager يقصّ ما يخرج عن ارتفاعه. */
 internal val LobbyDeckPad = MaxSpace.xl
 
-/** نسبة عرض الشريحة إلى ارتفاعها (شبه مربّعة تليق بأيقونة لعبة). */
-internal const val LOBBY_SLAB_ASPECT = 0.86f
+/** نسبة عرض الشريحة إلى ارتفاعها: بطاقة عموديّة أطول قليلًا تتّسع لأيقونة بهامش واسع واسم من سطرين. */
+internal const val LOBBY_SLAB_ASPECT = 0.80f
 
 // ─────────────────────────────── أيقونات ولون ───────────────────────────────
 
@@ -266,7 +278,34 @@ internal fun LobbyDeck(
             state = state,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(slabHeight + LobbyDeckPad * 2),
+                .height(slabHeight + LobbyDeckPad * 2)
+                .graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
+                .drawWithContent {
+                    drawContent()
+                    val fade = size.width * DECK_EDGE_FADE_SHARE
+                    // DstIn: يُبقي من المحتوى بقدر ألفا القناع؛ شفّاف عند الحدّ وكامل عند عمق [fade].
+                    drawRect(
+                        brush = Brush.horizontalGradient(
+                            0f to Color.Transparent,
+                            1f to Color.Black,
+                            startX = 0f,
+                            endX = fade
+                        ),
+                        size = Size(fade, size.height),
+                        blendMode = BlendMode.DstIn
+                    )
+                    drawRect(
+                        brush = Brush.horizontalGradient(
+                            0f to Color.Black,
+                            1f to Color.Transparent,
+                            startX = size.width - fade,
+                            endX = size.width
+                        ),
+                        topLeft = Offset(size.width - fade, 0f),
+                        size = Size(fade, size.height),
+                        blendMode = BlendMode.DstIn
+                    )
+                },
             contentPadding = PaddingValues(horizontal = inset),
             pageSize = PageSize.Fixed(slabWidth),
             beyondViewportPageCount = DECK_REACH_PAGES,
@@ -357,7 +396,7 @@ internal fun LobbyDeckCard(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = MaxSpace.md, vertical = MaxSpace.md),
+                .padding(start = MaxSpace.lg, end = MaxSpace.lg, top = MaxSpace.lg, bottom = MaxSpace.md),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             BoxWithConstraints(
@@ -383,7 +422,7 @@ internal fun LobbyDeckCard(
             ) {
                 val art = icon
                 if (art != null) {
-                    val side = minOf(maxHeight, maxWidth * EMBLEM_WIDTH_SHARE, IconRaster)
+                    val side = minOf(maxHeight, maxWidth * EMBLEM_WIDTH_SHARE, EMBLEM_MAX_SIDE)
                     Image(
                         bitmap = art,
                         contentDescription = null,
@@ -402,16 +441,26 @@ internal fun LobbyDeckCard(
                     )
                 }
             }
-            Text(
-                text = title,
-                color = LobbyPalette.Ink,
-                fontSize = titleSize,
-                lineHeight = titleSize * 1.2f,
-                fontWeight = FontWeight.SemiBold,
-                textAlign = TextAlign.Center,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
-            )
+            // كتلة العنوان بارتفاع سطرين ثابت: تبقى الأيقونات على خطّ واحد بين شرائح بعناوين قصيرة وطويلة.
+            val titleBlock = with(LocalDensity.current) { (titleSize * 1.25f * 2f).toDp() }
+            Box(
+                modifier = Modifier
+                    .padding(top = MaxSpace.sm)
+                    .fillMaxWidth()
+                    .height(titleBlock),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = title,
+                    color = LobbyPalette.Ink,
+                    fontSize = titleSize,
+                    lineHeight = titleSize * 1.25f,
+                    fontWeight = FontWeight.SemiBold,
+                    textAlign = TextAlign.Center,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
         }
     }
 }

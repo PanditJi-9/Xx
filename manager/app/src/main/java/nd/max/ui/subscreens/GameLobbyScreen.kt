@@ -122,10 +122,10 @@ import nd.max.ui.viewmodel.AppSettingsViewModel
 import nd.max.ui.viewmodel.GameSpaceViewModel
 
 private val TopBarHeight = 56.dp
-private val MinSlabHeight = 120.dp
-private val MaxSlabHeight = 232.dp
+private val MinSlabHeight = 132.dp
+private val MaxSlabHeight = 288.dp
 private val RailReserve = MaxSpace.xl + MaxSpace.md
-private val HintReserve = 36.dp
+private val HintReserve = 32.dp
 
 /** عمود المعلومات والحلقة يقتسمان العرض؛ مركز الحلقة (لتوجيه الإضاءة) عند منتصف حصّتها. */
 private const val INFO_WEIGHT = 0.34f
@@ -133,7 +133,7 @@ private const val DECK_WEIGHT = 0.66f
 private const val DECK_CENTER_SHARE = INFO_WEIGHT + DECK_WEIGHT / 2f
 
 /** أقصى عرض للشريحة بنسبة عرض مساحة الحلقة؛ يبقي مكانًا للجارتين على الجانبين. */
-private const val SLAB_WIDTH_SHARE = 0.30f
+private const val SLAB_WIDTH_SHARE = 0.36f
 
 /** وميض الإطلاق: شدّة اللون، وتكبير الشاشة وتلاشيها أثناء الغوص. */
 private const val LAUNCH_ALPHA = 0.60f
@@ -466,7 +466,7 @@ fun GameLobbyScreen(
                                     tone = { toneState.value },
                                     breathe = breathe,
                                     modifier = Modifier
-                                        .padding(start = MaxSpace.xxl, end = MaxSpace.md)
+                                        .padding(start = MaxSpace.xxl, end = MaxSpace.xl)
                                         .lobbyIntro(intro, fromBelow = 24.dp, start = 0.1f)
                                 )
                             }
