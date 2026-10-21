@@ -22500,3 +22500,44 @@ BUILD FAILED in 6m 12s
 **RESIDUAL RISK:** الحكم البصري (تباين الأحمر/الرمادي/الأزرق في الوضعين · RTL · خط كبير) يحتاج جهازًا · `LiveGraphComponent` (shimmer زخرفي) و`CockpitDeck` ما زالا كودًا ميتًا غير محذوف · ١٢ حلقة في ١١ ملفًا بقي بعضها بلا بوابة شاملة (المُصلَح: الصوت والمكعّب؛ والباقي إمّا يقبل `animate` من المستدعي أو ميت) · البناء الكامل ~١٨ دقيقة عند الطلب.
 
 **NEXT:** UAT بصري على الجهاز للحالات الثلاث وللصوت · إزالة/توصيل `LiveGraphComponent` في جولة مستقلة · ثم QV على الدفعة.
+
+## Executor log — ISLAND-UX-03 + PROCESS-READ-02 — 2026-10-21 · DONE_WITH_CONCERNS
+
+**TASK (المالك):** أربعة إصلاحات من لقطات الجهاز: (١) نصّ أسود على أسود في ورقة تفاصيل العملية؛ (٢) بطاقة «لا جواب من الجهاز» الحمراء تظهر ثوانيَ قبل أوّل جدول؛ (٣) بطاقات الصلاحيات مكرّرة أعلى وأسفل شاشة الجزيرة؛ (٤) الشريط السفلي للجزيرة لا ينقل إلى بداية القسم، والجزيرة تظل ممتدّة عند الخمول/الخروج من الشاشة بدل أن تظهر فقط عند حدث.
+
+**FILES:**
+- `manager/app/src/main/java/nd/max/ui/component/BottomSheetComponent.kt` — `CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.onSurface)` حول محتوى `CustomBottomSheet`؛ يشمل كل الأوراق التي تمرّ من القشرة (١٤ ورقة) لا ورقة واحدة.
+- `manager/app/src/main/java/nd/max/core/platform/ProcessReadGuard.kt` (جديد) + `manager/app/src/test/java/nd/max/core/platform/ProcessReadGuardTest.kt` — أربع حالات (`Waiting`/`Live`/`Stale`/`Failed`)، بثّ محفوظ لا يُحتسب عيّنة، فشل واحد لا يُعلن عطبًا، والفشل بعد نجاح يُبقي الجدول.
+- `manager/app/src/main/java/nd/max/ui/viewmodel/ProcessManagerViewModel.kt` — `combine(ProcessWatch.snapshot, ProcessWatch.samples)` مع `ProcessReadGuard` بدل `loaded/failed`; `reads.begin(ProcessWatch.samples.value)` قبل التسجيل.
+- `manager/app/src/main/java/nd/max/ui/subscreens/ProcessManagerScreen.kt` — عرض `Waiting`/`Live`/`Stale`/`Failed`، والجدول يبقى عند فشل عابر، ووسم الرأس «آخر قراءة».
+- `manager/app/src/main/res/values/strings.xml` و`values-ar/strings.xml` — `processmgr_reading_stale` وصياغة `processmgr_loading_hint` بالإنجليزية والعربية فقط (§0.2).
+- `manager/app/src/main/java/nd/max/ui/subscreens/DynamicIslandScreen.kt` — حذف كتلة الصلاحيات المكرّرة بعد محتوى التبويب (بقيت مرّة في `CoreTabContent`)، وتمرير `scrollState` من الشاشة إلى `MaxScreen`، وقياس موضع `AnimatedContent` بـ`onGloballyPositioned` والتمرير إليه عند تغيير `selectedTab`.
+- `manager/app/src/main/java/nd/max/ui/design/MaxScreenScaffold.kt` — `MaxScreen` يقبل `scrollState: ScrollState = rememberScrollState()`؛ بقية الشاشات لا تتغيّر.
+- `manager/app/src/main/java/nd/max/island/core/IslandSettings.kt` — `idlePill` افتراضيًّا `false`، وهجرة لمرة واحدة `idlePillOffByDefaultV1` تُطفئ القيمة المحفوظة القديمة، و`resetAll()` يطفئها.
+- `manager/app/src/main/java/nd/max/island/engine/IslandOverlay.kt` — تعليق توضيحي فقط؛ منطق `visible = mode !is Idle || idlePill` كان صحيحًا.
+
+**GATES (مقيسة الآن):**
+- `python3 tools/kt_balance.py --assert` → 3054 ملفًا · 0 عوائق.
+- `python3 tools/code_health.py --assert` → صحّة نظيفة · exit 0 · الدَّين عند سقفه (8 oversized · 26 own wildcard · 20 presentation_hw_writes) ولم يزد.
+- `python3 tools/i18n_coverage.py --assert` → 84+en · 0 عوائق.
+- `python3 tools/i18n_coverage.py --prune all --assert` → 0 مفتاح يتيم.
+- `python3 tools/design_tokens.py --assert` → 251/300.
+- `python3 tools/jni_symbols.py --assert` → 23 تصريحًا · 0 نواقص/يتامى · الطبقة ٢ **غير مُتحقّقة** (لا ثنائيات في الشجرة).
+- `python3 tools/resource_compile.py --assert` → aapt2 ✓.
+- التغييرات الوظيفية في التزامي المالك `8e78aeaa` (الثيم + القراءة) و`0aec16c8` (الجزيرة + التبويبات).
+
+**BUILD:** لم يُشغَّل Gradle ولا `:app:compileReleaseKotlin` ولا الاختبارات في هذه الجلسة. ⇒ **الترجمة غير مُتحقّقة في هذه البيئة**، و`ProcessReadGuardTest` **لم يُنفَّذ**. البوابات البنيوية لا تُثبت النوع؛ الحكم النهائي QV/CI أو الجهاز.
+
+**RESIDUAL RISK (معلنة):**
+- `positionInParent()` في `DynamicIslandScreen` يقيس موضع `AnimatedContent` داخل عمود الصفحة؛ المتوقّع أن يضع أوّل صفّ للتبويب عند أعلى منفذ التمرير، ولم يُقَس على جهاز. الفرق المحتمل ≤ `BodyTopGap` (16dp) ولا يغيّر السلوك.
+- هجرة `idlePillOffByDefaultV1` تُطفئ اختيارًا قديمًا صريحًا **مرّة واحدة** (قرار المالك: الجزيرة لا تظهر إلا عند حدث)؛ من أراد الكبسولة يعيد تشغيل «إظهار كبسولة الخمول دائمًا» من «سلوك الجزيرة».
+- بطاقات الصلاحيات لم تعد تظهر في تبويبي «التصميم» و«المتقدم»؛ هذا هو أثر إزالة التكرار المقصود، وموضعها الوحيد قسم «الآن» في «الأساس».
+- إخفاء كبسولة الخمول لا يمسّ الإشعار/الموسيقى/الشحن: تظهر عند الحدث وتختفي عند انتهائه (منطق `AnimatedVisibility` القائم).
+- الثيم: الإصلاح مركزي في `CustomBottomSheet`، وأي ورقة لا تمرّ من هذه القشرة لا يشملها.
+- UAT الجهاز (التمرير · ظهور/اختفاء الجزيرة · RTL/خط كبير) لم يُنفَّذ.
+- JNI الطبقة ٢ غير متحققة (لا ثنائيات) — لا علاقة لها بهذه الجولة.
+
+**NEXT:**
+1. المالك/CI: QV أو `:app:testReleaseUnitTest` — وخاصة `ProcessReadGuardTest` — على هذه الشجرة.
+2. الجهاز: شاشة الجزيرة — تبديل «الأساس/التصميم/المتقدم» يبدأ كل قسم من أوله · تشغيل الجزيرة لا يُبقي كبسولة عند الخمول · «إظهار كبسولة الخمول دائمًا» ما زال يعمل عند الطلب · الخروج من الشاشة بلا كبسولة.
+3. الجهاز: «مراقب المهام» في الثيم الأسود — نصّ الورقة أبيض، وأول ثانيتين بلا حمراء، وفشل عابر يُبقي الجدول مع وسم «آخر قراءة».

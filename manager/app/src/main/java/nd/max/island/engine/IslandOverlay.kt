@@ -278,7 +278,9 @@ class IslandOverlay(
                     }
 
                     AnimatedVisibility(
-                        // Idle pill stays on screen so there is always something to tap (time / date / battery)
+                        // Opt-in only ("Always show idle pill"): by default an idle island is not on
+                        // screen at all, so turning the service on does not leave a black pill behind.
+                        // When enabled, it stays so there is something to tap (time / date / battery).
                         visible = mode !is IslandMode.Idle || idlePill,
                         // Fast + snappy: no slow spring, appears almost instantly
                         enter = scaleIn(tween(140), 0.6f, TransformOrigin(0.5f, 0f)) + fadeIn(tween(90)),

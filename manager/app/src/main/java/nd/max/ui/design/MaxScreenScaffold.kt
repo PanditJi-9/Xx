@@ -140,6 +140,8 @@ private fun PaddingValues.withoutBottom(): PaddingValues {
  *        usable, which is what makes a control screen feel stable.
  * @param scrollEnabled false stops the page from scrolling while a control on it owns a drag
  *        (an EQ band, a knob). Default true keeps every other screen unchanged.
+ * @param scrollState the page's scroll state; pass one when the screen must move the page itself
+ *        (tabbed pages that share a single scroll container). The shell owns it otherwise.
  * @param content sections. Spacing between sections is owned by the shell, so
  *        screens must NOT add their own vertical padding between sections.
  */
