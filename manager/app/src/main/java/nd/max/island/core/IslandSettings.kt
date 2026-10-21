@@ -145,7 +145,7 @@ object IslandSettings {
     val bgColor = MutableStateFlow(0xFF14121C.toInt())           // used when bgStyle == 2
     val islandAppAccent = MutableStateFlow(false)                // island glow uses the app accent instead of album art
     val autoCollapseSec = MutableStateFlow(6)                    // expanded card collapses by itself (0 = never)
-    val idlePill = MutableStateFlow(true)                        // small pill stays on screen when idle (tap = time / date / battery)
+    val idlePill = MutableStateFlow(false)                       // small pill when idle? Off: the island appears only for an event
     val swipeSkip = MutableStateFlow(true)                       // swipe left/right on the island to skip tracks
     val stickyNotif = MutableStateFlow(false)                    // notifications stay on the island until tapped / swiped away
     val swipeUp = MutableStateFlow(SwipeAction.Dismiss)
@@ -214,7 +214,19 @@ object IslandSettings {
             swipeLeft.value = SwipeAction.None
             swipeRight.value = SwipeAction.None
         }
-        idlePill.value = p.getBoolean("idlePill", true)
+        // **٢٠٢٦-١٠-٢١ — «الجزيرة لا تظهر إلا عند حدث» (طلب المالك):**
+        // كانت كبسولة الخمول مرئية افتراضيًّا، فتبقى قطعة سوداء فوق كل تطبيق بلا شيء تعرضه —
+        // «أضغط مفتتح تشغيل الجزيرة ويظل ممتدًّا دون شيء يفعله». صار الافتراضي إخفاءها، والأجهزة
+        // التي حفظت `idlePill = true` قبل هذا التغيير تُطفأ لها مرّة واحدة (هجرة واحدة يحملها
+        // مفتاح `idlePillOffByDefaultV1`)، ومن أرادها أعادها من «سلوك الجزيرة».
+        val idlePillMigrated = p.getBoolean("idlePillOffByDefaultV1", false)
+        idlePill.value = if (idlePillMigrated) p.getBoolean("idlePill", false) else false
+        if (!idlePillMigrated) {
+            p.edit()
+                .putBoolean("idlePill", false)
+                .putBoolean("idlePillOffByDefaultV1", true)
+                .apply()
+        }
         onboarded.value = p.getBoolean("onboarded", false)
         enabled.value = p.getBoolean("enabled", true)
     }
@@ -327,7 +339,7 @@ object IslandSettings {
         swipeDown.value = SwipeAction.None
         swipeLeft.value = SwipeAction.NextTrack
         swipeRight.value = SwipeAction.PrevTrack
-        idlePill.value = true
+        idlePill.value = false
         islandAppAccent.value = false
         theme.value = 0
         accentSource.value = 0

@@ -34,7 +34,6 @@
  */
 package nd.max.ui.subscreens
 
-import android.Manifest
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -120,6 +119,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -162,7 +162,6 @@ import nd.max.ui.component.kindStyleSummary
 import nd.max.ui.component.parseAccentHex
 import nd.max.ui.design.MaxCondition
 import nd.max.ui.design.MaxConditionKind
-import nd.max.ui.design.MaxConditionNotice
 import nd.max.ui.design.MaxConfirmDialog
 import nd.max.ui.design.MaxGroup
 import nd.max.ui.design.MaxGroupDivider
@@ -215,6 +214,15 @@ fun DynamicIslandScreen(navController: NavController) {
      * استدعاءاتها تقرأ حالة النظام — قراءة واحدة لكل «نبضة» تكفي وتُخزَّن بـ`remember`. */
     var permTick by remember { mutableIntStateOf(0) }
     var selectedTab by remember { mutableStateOf(IslandTab.CORE) }
+    // **تبويبات الجزيرة تتشارك حاوية تمرير واحدة:** كانت `MaxScreen` تحتفظ بموضع التمرير عند
+    // تبديل التبويب، فينتقل المستخدم من آخر «الأساس» إلى «التصميم» فيجده في منتصفه أو في آخره
+    // لا في أوّله (لقطتا المالك: الأساس متمرّرة، ثم التصميم عند نهايته). كل تبديل يبدأ القسم من
+    // أعلاه — أي من أوّل صفّ في التبويب، لا من بطاقة المعاينة المشتركة فوقه.
+    val pageScroll = rememberScrollState()
+    var tabTopPx by remember { mutableIntStateOf(0) }
+    LaunchedEffect(selectedTab) {
+        if (tabTopPx > 0) pageScroll.scrollTo(tabTopPx.toFloat()) else pageScroll.scrollTo(0)
+    }
     val owner = LocalLifecycleOwner.current
     DisposableEffect(owner) {
         val observer = LifecycleEventObserver { _, e ->
@@ -307,7 +315,9 @@ fun DynamicIslandScreen(navController: NavController) {
                         primaryActionLabel = stringResource(R.string.max_fps_permission_action),
                         onPrimaryAction = { Perms.openOverlaySettings(ctx) }
                     )
-                }
+                },
+                // التبويبات الثلاثة تشترك في هذه الحاوية؛ الشاشة تعيدها إلى الأعلى عند التبديل.
+                scrollState = pageScroll
             ) {
                 /* ── ٠. المعاينة الحيّة — الكبسولة نفسها بالمحرّك الحقيقي ────────── */
                 IslandLiveCard()
@@ -325,6 +335,10 @@ fun DynamicIslandScreen(navController: NavController) {
                 /* ── محتوى التبويبات ── */
                 AnimatedContent(
                     targetState = selectedTab,
+                    // موضع أوّل صفّ في التبويب داخل حاوية التمرير (بالبكسل) — يبدأ التمرير منه.
+                    modifier = Modifier.onGloballyPositioned {
+                        tabTopPx = it.positionInParent().y.roundToInt()
+                    },
                     transitionSpec = {
                         fadeIn(animationSpec = tween(MaxDuration.standard, easing = FastOutSlowInEasing)) +
                             slideInHorizontally(
@@ -402,42 +416,11 @@ fun DynamicIslandScreen(navController: NavController) {
                         )
                     }
                 }
-                    if (!a11yOk) {
-                        MaxConditionNotice(
-                            MaxCondition(
-                                kind = MaxConditionKind.PermissionRequired,
-                                title = stringResource(R.string.ify_home_taps_title),
-                                detail = stringResource(R.string.ify_home_taps_body),
-                                technicalDetail = stringResource(R.string.ify_home_taps_hint),
-                                primaryActionLabel = stringResource(R.string.ify_home_open_settings),
-                                onPrimaryAction = { Perms.openAccessibilitySettings(ctx) },
-                                secondaryActionLabel = stringResource(R.string.ify_common_app_info),
-                                onSecondaryAction = { Perms.openAppInfo(ctx) }
-                            )
-                        )
-                    }
-                    if (!listenerOk) {
-                        MaxConditionNotice(
-                            MaxCondition(
-                                kind = MaxConditionKind.PermissionRequired,
-                                title = stringResource(R.string.ify_perm_notification_access),
-                                detail = stringResource(R.string.ify_perm_notification_body),
-                                primaryActionLabel = stringResource(R.string.ify_home_open_settings),
-                                onPrimaryAction = { Perms.openListenerSettings(ctx) }
-                            )
-                        )
-                    }
-                    if (!postOk) {
-                        MaxConditionNotice(
-                            MaxCondition(
-                                kind = MaxConditionKind.PermissionRequired,
-                                title = stringResource(R.string.ify_perm_show_notifications),
-                                detail = stringResource(R.string.ify_perm_show_notifications_body),
-                                primaryActionLabel = stringResource(R.string.ify_perm_allow),
-                                onPrimaryAction = { postLauncher.launch(Manifest.permission.POST_NOTIFICATIONS) }
-                            )
-                        )
-                    }
+                /* **ولا تُكرَّر بطاقات الصلاحيات هنا (٢٠٢٦-١٠-٢١):** القسم الأوّل في تبويب
+                 * «الأساس» (`CoreTabContent`) يعرض بطاقات اللمسات والإشعارات ونشر الإشعارات
+                 * نفسها؛ وكانت تُعاد هنا بعد محتوى التبويب، فيراها المستخدم مرّتين — واحدة فوق
+                 * وسط الشاشة وأخرى في آخرها (بلقطتين أرسلهما المالك). موضعها واحد: حيث تُقرأ
+                 * الحالة التي تنقصها، لا أسفل كل تبويب. */
 
                 /* ختامُ المحتوى: حجزٌ لشريط التبويبات العائم فلا يقف آخر صفٍّ تحته */
                 Spacer(Modifier.height(64.dp))

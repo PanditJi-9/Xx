@@ -18,6 +18,7 @@
  */
 package nd.max.ui.design
 
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -158,6 +159,9 @@ fun MaxScreen(
     floatingAction: (@Composable () -> Unit)? = null,
     topBar: (@Composable (TopAppBarScrollBehavior) -> Unit)? = null,
     scrollEnabled: Boolean = true,
+    // تُمرَّر عندما تريد الشاشة التحكّم في موضع التمرير بنفسها (شاشة ذات تبويبات تشترك في
+    // حاوية واحدة: تبديل التبويب يجب أن يبدأ القسم من أعلاه لا من موضع التبويب السابق).
+    scrollState: ScrollState = rememberScrollState(),
     content: @Composable ColumnScope.() -> Unit
 ) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
@@ -204,14 +208,13 @@ fun MaxScreen(
         },
         floatingActionButton = { floatingAction?.invoke() }
     ) { scaffoldPadding ->
-        val contentScroll = rememberScrollState()
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(scaffoldPadding.withoutBottom())
                 .maxAdaptiveContentWidth()
                 // No vertical shading on the page shell: scrolled content ends at the bar with a hard edge.
-                .verticalScroll(contentScroll, enabled = scrollEnabled)
+                .verticalScroll(scrollState, enabled = scrollEnabled)
                 // الفراغ العلويّ جزءٌ من المحتوى المُمرَّر، لا نطاقٌ تُقصّ عنده المنطقة: فالمحتوى ينزلق
                 // حتى حافة البار نفسها، ولا يتوقّف 16dp تحتها ويترك شريطًا فارغًا. وعند فتح الشاشة
                 // يبقى الفراغ كما هو بين البار وأوّل عنصر.
