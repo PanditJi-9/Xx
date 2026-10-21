@@ -47,6 +47,7 @@ import nd.max.ui.design.MaxSpace
 import nd.max.ui.design.MaxSplitScreen
 import nd.max.ui.mainscreens.LabelText
 import nd.max.ui.mainscreens.SectionLoadingIndicator
+import nd.max.ui.navigation.RegisterSwipeNavigation
 import nd.max.ui.util.DebloatAppInfo
 import nd.max.ui.viewmodel.DebloatFreezeViewModel
 import nd.max.ui.viewmodel.DebloatTab
@@ -62,6 +63,27 @@ fun DebloatFreezeScreen(
     val colorScheme = MaterialTheme.colorScheme
     var isSearchMode by remember { mutableStateOf(false) }
     var pendingUninstall by remember { mutableStateOf<DebloatAppInfo?>(null) }
+
+    RegisterSwipeNavigation(
+        onNext = {
+            val next = DebloatTab.entries.getOrNull(viewModel.selectedTab.ordinal + 1)
+            if (next != null) {
+                viewModel.selectedTab = next
+                true
+            } else {
+                false
+            }
+        },
+        onPrevious = {
+            val previous = DebloatTab.entries.getOrNull(viewModel.selectedTab.ordinal - 1)
+            if (previous != null) {
+                viewModel.selectedTab = previous
+                true
+            } else {
+                false
+            }
+        },
+    )
 
     LaunchedEffect(Unit) {
         if (viewModel.allApps.isEmpty()) viewModel.loadApps(context)

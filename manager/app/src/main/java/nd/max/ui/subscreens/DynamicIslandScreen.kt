@@ -120,6 +120,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -174,6 +175,7 @@ import nd.max.ui.design.MaxSliderRow
 import nd.max.ui.design.MaxSpace
 import nd.max.ui.design.MaxSwitchRow
 import nd.max.ui.design.MaxTone
+import nd.max.ui.navigation.RegisterSwipeNavigation
 import nd.max.ui.util.IslandPrefs
 
 @Composable
@@ -221,8 +223,30 @@ fun DynamicIslandScreen(navController: NavController) {
     val pageScroll = rememberScrollState()
     var tabTopPx by remember { mutableIntStateOf(0) }
     LaunchedEffect(selectedTab) {
-        if (tabTopPx > 0) pageScroll.scrollTo(tabTopPx.toFloat()) else pageScroll.scrollTo(0)
+        if (tabTopPx > 0) pageScroll.scrollTo(tabTopPx) else pageScroll.scrollTo(0)
     }
+    // السحب الأفقي يقلب تبويبات الجزيرة، وعند أوّلها يعود إلى الشاشة السابقة:
+    // الإرجاع `false` عند الحدّ يُسلّم القرار إلى جذر التطبيق.
+    RegisterSwipeNavigation(
+        onNext = {
+            val next = IslandTab.entries.getOrNull(selectedTab.ordinal + 1)
+            if (next != null) {
+                selectedTab = next
+                true
+            } else {
+                false
+            }
+        },
+        onPrevious = {
+            val previous = IslandTab.entries.getOrNull(selectedTab.ordinal - 1)
+            if (previous != null) {
+                selectedTab = previous
+                true
+            } else {
+                false
+            }
+        },
+    )
     val owner = LocalLifecycleOwner.current
     DisposableEffect(owner) {
         val observer = LifecycleEventObserver { _, e ->

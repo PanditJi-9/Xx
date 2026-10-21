@@ -1791,6 +1791,9 @@
     <string name="persist_coverage">Covers overlays and panels · audio effects · GPU Studio · CPU governor &amp; I/O scheduler · network · scheduler flags · touch · display · RAM (zram) · memory &amp; UFS. Engine-owned profiles and thermal state are re-applied by the root engine from the same saved values.</string>
     <string name="persist_note">Nothing is forced on the whole device: per-game profiles return on the game\'s next launch, and anything the device or permissions refuse is skipped with its reason.</string>
     <string name="settings_home_section">Home screen</string>
+    <string name="settings_navigation_section">Navigation</string>
+    <string name="swipe_navigation_title">Swipe between sections</string>
+    <string name="swipe_navigation_desc">Swipe horizontally across the main sections, in-screen tabs, and back from other screens. Horizontal controls keep their own swipe.</string>
     <string name="settings_activity_card_title">Activity card</string>
     <string name="settings_activity_card_desc">What the card may show, and how. Only what was actually verified appears in it: a line with no measurement is never written as done, and a failure stays in the log.</string>
     <string name="activity_card_summary_auto">Automatic</string>

@@ -5,6 +5,7 @@ Binding decisions from the architect pass (2026-09-15). Executors follow these u
 ## ADR-01 — One navigation model; the pager mode is deleted
 **Why:** `use_scroll_animation` produces two runtime navigation architectures for the same four screens, doubling every nav concern (D-01), and it is invisible to users.
 **Consequence:** delete the `main` pager route, the flag read in `MainActivity`, and its settings toggle. Bottom bar + nav rail is the only model.
+**Amended (2026-10-21, `SWIPE-NAV-01`):** horizontal swipe is an **input layer on this same model**, not a second one. One root detector in `MainActivity` calls the existing `navigateToPrimary` / `NavHost` / `OnBackPressedDispatcher`; in-screen tabs register a handler and only the `RESUMED` destination owns the gesture. No second pager and no duplicated screens. It is enabled by default with an explicit Settings switch, and horizontal controls (pagers, rows, sliders) keep their own drag because the root only acts on unconsumed movement.
 
 ## ADR-02 — Routes become a typed registry outside `MainActivity`
 **Why:** 40+ string-literal routes inline in an 817-line activity produced dead aliases and untestable navigation (D-03).

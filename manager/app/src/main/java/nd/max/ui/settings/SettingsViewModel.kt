@@ -26,8 +26,13 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
     /** حالة زرّ «الخيارات المتقدّمة». */
     val isAdvancedMode: StateFlow<Boolean> = preferences.isAdvancedMode
 
+    /** حالة مفتاح «التمرير بين الأقسام» — مفعّل افتراضيًّا. */
+    val isSwipeNavigationEnabled: StateFlow<Boolean> = preferences.isSwipeNavigationEnabled
+
     /** يُحفظ العلم فورًا؛ لا يحتاج coroutine لأنه كتابة صغيرة على الذاكرة والملف. */
     fun setAdvancedMode(enabled: Boolean) = preferences.setAdvancedModeEnabled(enabled)
+
+    fun setSwipeNavigationEnabled(enabled: Boolean) = preferences.setSwipeNavigationEnabled(enabled)
 
     /**
      * يحفظ اللغة ويطبّقها فورًا على النشاطات القائمة.

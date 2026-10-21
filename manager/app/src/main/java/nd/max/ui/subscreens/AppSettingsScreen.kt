@@ -100,6 +100,7 @@ import nd.max.ui.viewmodel.ApplistViewmodel
 import nd.max.ui.mainscreens.LabelText
 import nd.max.ui.mainscreens.IconBadge
 import nd.max.ui.navigation.MaxDestination
+import nd.max.ui.navigation.RegisterSwipeNavigation
 import nd.max.ui.design.maxRadius
 
 // ────────────────────────────────────────────────────────────────────────────
@@ -187,6 +188,25 @@ fun AppSettingsScreen(
             label = stringResource(R.string.app_tab_spoof),
             icon = Icons.Filled.Fingerprint
         )
+    )
+
+    RegisterSwipeNavigation(
+        onNext = {
+            if (selectedTab < appTabs.lastIndex) {
+                selectedTab += 1
+                true
+            } else {
+                false
+            }
+        },
+        onPrevious = {
+            if (selectedTab > 0) {
+                selectedTab -= 1
+                true
+            } else {
+                false
+            }
+        },
     )
 
     ScreenAccentProvider(colorScheme.secondary) {

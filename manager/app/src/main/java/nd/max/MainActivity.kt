@@ -25,7 +25,9 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
+import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -64,9 +66,12 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -76,6 +81,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeSource
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import nd.max.core.ipc.RootNodeChannel
@@ -90,6 +96,7 @@ import nd.max.ui.mainscreens.LocalHomeTourRestart
 import nd.max.ui.mainscreens.LocalHomeTourTargets
 import nd.max.ui.navigation.*
 import nd.max.ui.settings.AppLanguage
+import nd.max.ui.settings.SettingsPreference
 import nd.max.ui.theme.MaxManagerTheme
 import nd.max.ui.theme.NavBarStyle
 import nd.max.ui.theme.ThemeMotion
@@ -268,6 +275,13 @@ fun MainScreen(fromTileType: String? = null, widgetRoute: String? = null, widget
     // Used for cheap local state refreshes; never for device probing.
     val currentPrimaryRoute = currentRoute?.takeIf { it in primaryRoutes }
     val coroutineScope = rememberCoroutineScope()
+    // إيماءة واحدة في الجذر: الشاشة ذات التبويبات تسجّل معالجها، وغيرها يعود للقسم/الرجوع.
+    val swipeController = remember { SwipeNavigationController() }
+    val preferenceSettings = remember(context) { SettingsPreference.getInstance(context) }
+    val swipePreference by preferenceSettings.isSwipeNavigationEnabled.collectAsState()
+    val isRtl = LocalLayoutDirection.current == LayoutDirection.Rtl
+    val backDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
+    var primarySwipeDirection by remember { mutableIntStateOf(0) }
     val configuration = LocalConfiguration.current
     val useNavigationRail = configuration.screenWidthDp >= 840
     val appPrefs = remember { context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE) }
@@ -294,6 +308,55 @@ fun MainScreen(fromTileType: String? = null, widgetRoute: String? = null, widget
     // وتُعرَض على التبويبات الأربعة وحدها: شاشة البداية مسارها مستقلّ، والشاشات الفرعية تُفتح من
     // داخل الجولة لا العكس — وغطاءٌ فوق شاشة تفاصيل يشرح عنصرًا في شاشة أخرى ويحجب ما فُتح لأجله.
     val tourVisible = tourActive && hasCompletedGetStarted && currentRoute in primaryRoutes
+    // مطفأ على شاشة البداية وأثناء الجولة: لكلتيهما أزرارها ومسارها، فلا تُسرق منهما الإيماءة.
+    val swipeEnabled = swipePreference && currentRoute != null &&
+        currentRoute != MaxDestination.GetStarted.route && !tourVisible
+    /**
+     * قرار السحب الواحد:
+     * 1) تبويبات الشاشة إن سجّلت معالجًا وأجابت «تولّيت الأمر».
+     * 2) قسم رئيسي تالٍ/سابق إن كنا على أحد الأقسام الأربعة.
+     * 3) رجوع عبر `OnBackPressedDispatcher` في بقية الشاشات — فيمرّ أولًا على أي
+     *    `BackHandler` مفتوح (ورقة سفلية مثلًا) قبل أن يُغلق الشاشة.
+     */
+    val handleSwipe: (SwipeDirection) -> Unit = { direction ->
+        if (direction != SwipeDirection.NONE) {
+            val screenHandlers = swipeController.current
+            val screenHandled = when {
+                screenHandlers == null -> false
+                direction == SwipeDirection.NEXT -> screenHandlers.onNext?.invoke() == true
+                direction == SwipeDirection.PREVIOUS -> screenHandlers.onPrevious?.invoke() == true
+                else -> false
+            }
+            if (!screenHandled) {
+                if (currentRoute in primaryRoutes) {
+                    val index = MaxDestination.PrimaryDestinations.indexOfFirst { it.route == currentRoute }
+                    if (index >= 0) {
+                        val targetIndex = if (direction == SwipeDirection.NEXT) index + 1 else index - 1
+                        if (targetIndex in MaxDestination.PrimaryDestinations.indices) {
+                            // +1: الصفحة الجديدة تدخل من اليمين. -1: من اليسار. والاتجاه في RTL معكوس.
+                            primarySwipeDirection = when {
+                                direction == SwipeDirection.NEXT && isRtl -> -1
+                                direction == SwipeDirection.NEXT -> 1
+                                isRtl -> 1
+                                else -> -1
+                            }
+                            navActions.navigateToPrimary(MaxDestination.PrimaryDestinations[targetIndex])
+                        }
+                    }
+                } else if (direction == SwipeDirection.PREVIOUS) {
+                    val dispatcher = backDispatcher
+                    if (dispatcher != null) dispatcher.onBackPressed() else navController.popBackStack()
+                }
+            }
+        }
+    }
+    // لا يُصفَّر الاتجاه فور تغيّر المسار: الانتقال (٢٦٠ms) يقرأه لحظة إنشائه.
+    LaunchedEffect(currentRoute) {
+        if (primarySwipeDirection != 0) {
+            delay(350)
+            primarySwipeDirection = 0
+        }
+    }
     var isBlurEnabled by remember { mutableStateOf(settingsPrefs.getBoolean("expressive_blur_ui", false)) }
     // نمط شريط التنقل (عائم/ملتصق) — يُقرأ كما يُقرأ البلور: عند الإقلاع، وعند تحديث الحالة،
     // وعند دخول أيّ وجهة رئيسّة (شاشة السمة فرعية، فيُعاد القراءة عند العودة منها).
@@ -446,11 +509,13 @@ fun MainScreen(fromTileType: String? = null, widgetRoute: String? = null, widget
         // قياس، فلا يدفع من لا جولة له ثمن `onGloballyPositioned` على كل كتلة معلَّمة.
         LocalHomeTourTargets provides if (tourVisible) tourTargets else null,
         LocalHomeTourRestart provides restartTour,
+        LocalSwipeNavigationController provides swipeController,
     ) {
         RootDialogsProvider {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
+                    .swipeNavigation(enabled = swipeEnabled, onSwipe = handleSwipe)
                     // The app's real background, painted behind everything. It shows through
                     // wherever a screen's own body does not cover the window (the pill's
                     // rounded corners, the gesture-bar strip) and keeps those slivers from
@@ -487,7 +552,18 @@ fun MainScreen(fromTileType: String? = null, widgetRoute: String? = null, widget
                                 animationSpec = tween(180, easing = LinearOutSlowInEasing)
                             )
                             ThemeMotion.FULL ->
-                                if (initialState.destination.route == MaxDestination.GetStarted.route && targetState.destination.route in primaryRoutes) {
+                                if (initialState.destination.route in primaryRoutes &&
+                                    targetState.destination.route in primaryRoutes &&
+                                    primarySwipeDirection != 0
+                                ) {
+                                    // السحب بين الأقسام يتحرّك أفقيًا في اتجاه الإصبع، بلا تحجيم:
+                                    // الحركة هنا تشرح «صفحة جاءت من الجانب» لا «شاشة كبرت».
+                                    fadeIn(animationSpec = tween(180, easing = LinearOutSlowInEasing)) +
+                                        slideInHorizontally(
+                                            initialOffsetX = { it * primarySwipeDirection },
+                                            animationSpec = tween(260, easing = FastOutSlowInEasing),
+                                        )
+                                } else if (initialState.destination.route == MaxDestination.GetStarted.route && targetState.destination.route in primaryRoutes) {
                                     // سقف الحركة (DESIGN.md): 360ms هو الأقصى؛ كان 700 = ضِعف السقف في أول
                                     // انتقال يراه المستخدم (§٩ · لا حركة زائدة).
                                     fadeIn(animationSpec = tween(MaxDuration.deliberate))
@@ -514,7 +590,16 @@ fun MainScreen(fromTileType: String? = null, widgetRoute: String? = null, widget
                                 animationSpec = tween(140, easing = FastOutSlowInEasing)
                             )
                             ThemeMotion.FULL ->
-                                if (initialState.destination.route == MaxDestination.GetStarted.route && targetState.destination.route in primaryRoutes) {
+                                if (initialState.destination.route in primaryRoutes &&
+                                    targetState.destination.route in primaryRoutes &&
+                                    primarySwipeDirection != 0
+                                ) {
+                                    fadeOut(animationSpec = tween(120)) +
+                                        slideOutHorizontally(
+                                            targetOffsetX = { -it * primarySwipeDirection },
+                                            animationSpec = tween(260, easing = FastOutSlowInEasing),
+                                        )
+                                } else if (initialState.destination.route == MaxDestination.GetStarted.route && targetState.destination.route in primaryRoutes) {
                                     fadeOut(animationSpec = tween(MaxDuration.deliberate))
                                 } else if (initialState.destination.route in primaryRoutes && targetState.destination.route !in primaryRoutes) {
                                     fadeOut(animationSpec = tween(180, easing = FastOutSlowInEasing)) +
@@ -581,6 +666,8 @@ fun MainScreen(fromTileType: String? = null, widgetRoute: String? = null, widget
                     ),
                 ) {
                     val onItemSelected: (String) -> Unit = { route ->
+                        // النقر انتقال عاديّ لا سحب: لا نترك اتجاه سحب سابق يلوّن حركته.
+                        primarySwipeDirection = 0
                         MaxDestination.PrimaryDestinations
                             .firstOrNull { it.route == route }
                             ?.let(navActions::navigateToPrimary)

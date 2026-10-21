@@ -982,6 +982,9 @@
     <string name="persist_coverage">يشمل: التراكبات واللوحات · مؤثرات الصوت · استوديو GPU · حاكم المعالج ومجدول الإدخال/الإخراج · الشبكة · أعلام المجدول · اللمس · الشاشة · الذاكرة (zram) · الذاكرة وUFS. وملفّات المحرّك والحرارة يعيدها المحرّك بالجذر من القيم المحفوظة نفسها.</string>
     <string name="persist_note">لا شيء يُفرض على الجهاز كله: ملفّات كل لعبة تعود عند تشغيلها التالي، وما يرفضه الجهاز أو الصلاحيات يُترك بسبب مكتوب.</string>
     <string name="settings_home_section">الشاشة الرئيسية</string>
+    <string name="settings_navigation_section">التنقل</string>
+    <string name="swipe_navigation_title">التمرير بين الأقسام</string>
+    <string name="swipe_navigation_desc">مرّر أفقيًا بين الأقسام الرئيسية والتبويبات، وللرجوع من بقية الشاشات. العناصر الأفقية تحتفظ بسحبها.</string>
     <string name="settings_activity_card_title">بطاقة النشاط</string>
     <string name="settings_activity_card_desc">ما تعرضه البطاقة وكيف. لا يظهر فيها إلا ما تُحقّق منه فعلًا: لا يُكتب سطر بلا قياس كإنجاز، والفشل مكانه السجل.</string>
     <string name="activity_card_summary_auto">تلقائي</string>

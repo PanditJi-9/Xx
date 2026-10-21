@@ -22541,3 +22541,52 @@ BUILD FAILED in 6m 12s
 1. المالك/CI: QV أو `:app:testReleaseUnitTest` — وخاصة `ProcessReadGuardTest` — على هذه الشجرة.
 2. الجهاز: شاشة الجزيرة — تبديل «الأساس/التصميم/المتقدم» يبدأ كل قسم من أوله · تشغيل الجزيرة لا يُبقي كبسولة عند الخمول · «إظهار كبسولة الخمول دائمًا» ما زال يعمل عند الطلب · الخروج من الشاشة بلا كبسولة.
 3. الجهاز: «مراقب المهام» في الثيم الأسود — نصّ الورقة أبيض، وأول ثانيتين بلا حمراء، وفشل عابر يُبقي الجدول مع وسم «آخر قراءة».
+
+## Executor log — SWIPE-NAV-01 + CI-FIX-05: التمرير الأفقي في التطبيق كله · وإصلاح عطبَي CI في `DynamicIslandScreen` — 2026-10-21 · DONE_WITH_CONCERNS
+
+**TASK (المالك):** «اريد ان يكون التطبيق باكمله بكل الشاشات او الاقسام السحب الأفقي» — مع اختيار «المحتوى مع احترام الأفقي»، ومفتاح في الإعدادات مفعّل افتراضيًّا. وأُرفقت لقطة CI فاشلة فيها خطأان في `DynamicIslandScreen` من الجولة السابقة، فأُصلحا في الجولة نفسها.
+
+**FILES:**
+- `manager/app/src/main/java/nd/max/ui/navigation/SwipeNavigation.kt` (جديد) — `SwipeDirection` · `resolveSwipeDirection` دالّة نقيّة (RTL منطقي · مسافة ٦٤dp · سرعة ٣٢٠dp/ث · ميل ١٫٤) · `SwipeNavigationHandlers` · `SwipeNavigationController` (آخر مسجّل، والنزع بالرمز وحده).
+- `manager/app/src/main/java/nd/max/ui/navigation/SwipeNavigationGesture.kt` (جديد) — `LocalSwipeNavigationController` · `RegisterSwipeNavigation` (تسجيل عند `ON_RESUME` ونزع عند `ON_PAUSE`) · `Modifier.swipeNavigation`: مستشعر الجذر يقرأ في `Final` ولا يستهلك، ويتجاهل ما استهلكه طفل بعد حدّ اللمس، ويلغي اللمس المتعدد.
+- `manager/app/src/main/java/nd/max/MainActivity.kt` — مستشعر واحد على جذر الشاشة · `swipeEnabled` من `SettingsPreference` (مفعّل افتراضيًّا) · `handleSwipe` ثلاث طبقات: تبويبات الشاشة ← الأقسام الرئيسية ← الرجوع عبر `OnBackPressedDispatcher` · انتقالات أفقية RTL-aware · تصفير الاتجاه عند النقر وعند الجولة/شاشة البداية.
+- `manager/app/src/main/java/nd/max/ui/settings/SettingsPreference.kt` + `SettingsViewModel.kt` + `manager/app/src/main/java/nd/max/ui/mainscreens/SettingsScreen.kt` — `is_swipe_navigation_enabled` (غياب المفتاح = `true`؛ لا ترحيل، والإطفاء وحده يُكتب) وقسم «التنقل» في الإعدادات.
+- `manager/app/src/main/res/values/strings.xml` + `values-ar/strings.xml` — ثلاثة نصوص إنجليزية/عربية فقط (§0.2).
+- `DynamicIslandScreen.kt` · `AppSettingsScreen.kt` · `EmulatorHubScreen.kt` · `DebloatFreezeScreen.kt` · `LogsViewerScreen.kt` · `AudioStudioScreen.kt` · `DeviceInfoScreen.kt` — تسجيل معالج التبويبات، و`EmulatorHub` صار يشارك قائمة `systems` واحدة بين الشريط والمعالج.
+- `MaxAiScreen.kt` (مساحات Max AI الأربع) و`MaxBackupHubScreen.kt` (نسخ/استرجاع) — `MaxSegmented` هناك **صفحات محتوى لا مرشّحات**، فأُضيف لهما التسجيل أيضًا. أمّا مرشّحات `Doze`/`Dex2oat`/`ProcessManager`/`SetEdit`/`FpsOverlay`/`DisplayStudio`/`GovSettings` وغيرها فبقيت بلا إيماءة عن قصد: تغيير ترتيب أو نطاق بالسحب ليس تنقّلًا.
+- `manager/app/src/test/java/nd/max/ui/navigation/SwipeNavigationTest.kt` (جديد) — ١١ اختبارًا: RTL/LTR · الميل · العتبات · الدوال النقيّة · سجلّ المتحكّم.
+- `docs/ai/DECISIONS.md` — تعديل صريح على ADR-01 (الإيماءة طبقة إدخال على النموذج نفسه، لا نموذج ثانٍ).
+
+**CI-FIX-05 (من لقطة المالك):** `DynamicIslandScreen.kt` — `pageScroll.scrollTo(tabTopPx)` بـ`Int` لا `Float` (خطأ 224:47 في السجل)، وإضافة `import androidx.compose.ui.layout.positionInParent` (خطأ 340:39). وكشف المُصرّف المحلي عطبًا ثالثًا في الكود الجديد: `VelocityTracker.addPointerInputChange` أُزيل في Compose UI 1.11 ⇒ استُبدل بـ`addPosition(uptimeMillis, position)`.
+
+**GATES (مقيسة الآن):**
+- `python3 tools/kt_balance.py --assert` → 3057 ملفًا · 0 عوائق.
+- `python3 tools/code_health.py --assert` → صحّة نظيفة · exit 0 · الدَّين عند سقفه (8 oversized · 26 own wildcard · 5 inline_ui_copy · 4 hardcoded · 20 presentation_hw_writes). **تنبيه مقيس:** إضافة `MaxBackupHubScreen` الأولى أوصلته إلى 1005 أسطر فصارت 9 ملفات متجاوزة؛ قُلّص التسجيل إلى سطرين فعاد الملف إلى 990 سطرًا وبقيت البوابة عند 8.
+- `python3 tools/i18n_coverage.py --assert` → 84+en · 0 عوائق.
+- `python3 tools/i18n_coverage.py --prune all --assert` → 0 مفتاح يتيم.
+- `python3 tools/design_tokens.py --assert` → 251/300.
+- `python3 tools/resource_compile.py --assert` → aapt2 ✓.
+- `python3 tools/jni_symbols.py --assert` → 23 تصريحًا · 0 نواقص/يتامى · الطبقة ٢ **غير مُتحقّقة** (لا ثنائيات في الشجرة).
+- `python3 tools/rtl_guard.py` → 0 مخالفة (3 أهداف لمس رمزية للمراجعة، لا تُسقط البوابة).
+
+**BUILD/VERIFY (مقيس الآن، لا مُدَّعى):**
+- `:app:compileReleaseKotlin` (JDK 17 · SDK 36 · `-Xmx6g`) → **BUILD SUCCESSFUL** · `EXIT=0` · صفر `e:` (آخر جولة بعد إضافة Max AI/Max Backup: 11m 13s؛ والأولى بعد إصلاح VelocityTracker: 1m 16s).
+- `:app:testReleaseUnitTest --tests "nd.max.ui.navigation.SwipeNavigationTest"` → **BUILD SUCCESSFUL** في 15m 20s · التقرير: `tests="11" skipped="0" failures="0" errors="0"`.
+- `:app:testReleaseUnitTest --tests "nd.max.core.platform.ProcessReadGuardTest"` → **BUILD SUCCESSFUL** في 2m 53s · `tests="6" skipped="0" failures="0" errors="0"` — **وهذا يُغلق البند المعلّق في تكملة ISLAND-UX-03**.
+- AAPT2 المحلي: ثنائي AGP x86-64 على مضيف arm64 ⇒ استُخدم غلاف qemu الموثّق في تكملة ٢٨٤: `-Pandroid.aapt2FromMavenOverride=/tmp/opencode/aapt2-shim/aapt2` (وهو يشغّل `/tmp/opencode/aapt2-bin` المستخرج من `aapt2-9.2.0-15009934-linux.jar`). محاولتان بلا الغلاف فشلتا في `mergeReleaseResources` وحده، لا في الكود.
+- CI نفسه **لم يُعَد تشغيله** هنا: التغييرات غير مُلتزمة، والقرار للمالك. الالتزامان المرصودان في السجل هما `46eca2bc` ثم الشجرة الحالية.
+
+**RESIDUAL RISK (معلنة):**
+- **الجهاز لم يُقَس:** تعارض الإيماءة مع حقول النصّ · أشرطة التمرير الأفقية/الـPager · الأوراق السفلية · RTL/الخط الكبير · الأداء. الأداة البنيوية والمُصرّف لا يريان السلوك.
+- «التطبيق كله» نُفِّذ بثلاث طبقات: الأقسام الرئيسية الأربعة · تبويبات داخل الشاشات (7 شرائط + مساحات Max AI + نسخ/استرجاع) · والرجوع على بقية الشاشات. **لا** تُقلب مرشّحات `MaxSegmented` بالسحب، وهذا معلن لا سهو.
+- على شاشة بلا تبويبات، السحب في اتجاه «التالي» لا يفعل شيئًا (لا مكدّس أمامي)، و«السابق» يمرّ عبر `OnBackPressedDispatcher` فيعطي `BackHandler`/الورقة المفتوحة الأولوية.
+- الإيماءة تُحسم عند رفع الإصبع لا تتبع الإصبع تفاعليًّا؛ والانتقال الأفقي 260ms ويحترم `ThemeMotion` (وضع تقليل الحركة لا يُظهر انزلاقًا أفقيًّا).
+- `positionInParent` في شاشة الجزيرة مُتحقَّق ترجمةً لا جهازًا (مخاطرة تكملة الجزيرة نفسها باقية: قد يختلف الموضع بمقدار `BodyTopGap`).
+- لم تُشغَّل **كل** الاختبارات، بل الاختباران المستهدفان + تصريف كل مصادر الاختبار؛ لا استنتاج لما لم يُقَس.
+- لا مراجعة سلامة مستقلة: التغيير واجهة/ملاحة فقط ولا يمسّ العتاد/SELinux/الإقلاع (شرط §2 غير مُفعَّل).
+
+**NEXT:**
+1. **المالك:** التزام الشجرة (أو أطلب منّي الالتزام) ثم QV/`build.yml`؛ لقطة CI السابقة يجب أن تختفي. لا دفع من هنا.
+2. **الجهاز:** سحب الأقسام الأربعة في LTR/RTL · تبديل تبويبات الشاشات السبع وMax AI وMax Backup · السحب من أول تبويب يعود · عدم إزعاج المعادل/الـPager/القوائم الأفقية/حقول النصّ/الأوراق · الخط الكبير · مفتاح الإعدادات OFF/ON (والافتراضي ON).
+3. **إن فشل QV:** سجل `:app:compileReleaseKotlin` يكفي لتحديد السطر؛ لا خطأ نوع معروف الآن.
+4. **NOTES:** `NEXT_TASK.md` حُدِّث بالبند نفسه في أعلى الملف.

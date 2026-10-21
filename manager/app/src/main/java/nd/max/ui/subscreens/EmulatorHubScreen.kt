@@ -55,6 +55,7 @@ import nd.max.ui.design.MaxSize
 import nd.max.ui.design.MaxSpace
 import nd.max.ui.design.MaxTab
 import nd.max.ui.design.MaxTabStrip
+import nd.max.ui.navigation.RegisterSwipeNavigation
 import nd.max.ui.viewmodel.EmulatorHubViewModel
 
 /**
@@ -86,9 +87,32 @@ fun EmulatorHubScreen(
     }
 
     val counts = remember(state.entries) { systemCounts(state.entries) }
+    val systems = remember(counts) { counts.keys.sortedBy { it.name } }
     val rows = remember(state.entries, system, query) {
         nd.max.core.emuhub.shelfRows(state.entries, system, query)
     }
+
+    RegisterSwipeNavigation(
+        onNext = {
+            val current = system?.let { systems.indexOf(it) + 1 } ?: 0
+            val next = systems.getOrNull(current)
+            if (next != null) {
+                system = next
+                true
+            } else {
+                false
+            }
+        },
+        onPrevious = {
+            val current = system?.let { systems.indexOf(it) + 1 } ?: 0
+            if (current > 0) {
+                system = if (current == 1) null else systems.getOrNull(current - 2)
+                true
+            } else {
+                false
+            }
+        },
+    )
 
     Box(Modifier.fillMaxSize()) {
         LobbyBackdrop(tone = LobbyPalette.Red)
@@ -100,10 +124,10 @@ fun EmulatorHubScreen(
             )
             MaxTabStrip(
                 tabs = listOf(MaxTab(stringResource(R.string.emu_shelf_all), badgeCount = state.entries.size)) +
-                    counts.entries.sortedBy { it.key.name }.map { MaxTab(it.key.name, badgeCount = it.value) },
-                selectedIndex = system?.let { counts.keys.sortedBy { k -> k.name }.indexOf(it) + 1 } ?: 0,
+                    systems.map { MaxTab(it.name, badgeCount = counts.getValue(it)) },
+                selectedIndex = system?.let { systems.indexOf(it) + 1 } ?: 0,
                 onSelect = { index ->
-                    system = if (index == 0) null else counts.keys.sortedBy { k -> k.name }.getOrNull(index - 1)
+                    system = if (index == 0) null else systems.getOrNull(index - 1)
                 },
                 modifier = Modifier.padding(horizontal = MaxSpace.gutter),
             )

@@ -129,6 +129,7 @@ fun SettingsScreen(
 
     val uiState by settingsViewModel.uiState.collectAsStateWithLifecycle()
     val isAdvancedMode by preferenceSettingsViewModel.isAdvancedMode.collectAsStateWithLifecycle()
+    val isSwipeNavigationEnabled by preferenceSettingsViewModel.isSwipeNavigationEnabled.collectAsStateWithLifecycle()
     val currentLanguage by preferenceSettingsViewModel.currentLanguage.collectAsStateWithLifecycle()
     // صفّ الترخيص يظهر فقط عندما يفعّله المالك من Max Control؛ والافتراضي إخفاء.
     val remote by RemoteAccess.state.collectAsStateWithLifecycle()
@@ -516,6 +517,25 @@ fun SettingsScreen(
                             )
                         }
                     }
+                }
+
+                // التمرير الأفقي إيماءة عرض لا تحكّم جهاز، فلا تُحبس خلف `isLoaded`:
+                // من تعذّرت قراءة ملفّه لا يزال يحتاج أن يوقف إيماءة تتعارض مع عناصره.
+                item { SettingsSectionTitle(stringResource(R.string.settings_navigation_section)) }
+                item {
+                    ExpressiveList(
+                        content = listOf(
+                            {
+                                ExpressiveSwitchItem(
+                                    icon = Icons.Rounded.SwapHoriz,
+                                    title = stringResource(R.string.swipe_navigation_title),
+                                    summary = stringResource(R.string.swipe_navigation_desc),
+                                    checked = isSwipeNavigationEnabled,
+                                    onCheckedChange = preferenceSettingsViewModel::setSwipeNavigationEnabled,
+                                )
+                            }
+                        )
+                    )
                 }
 
                 // ── «حفظ خياراتك وتطبيقها بعد إعادة التشغيل» (§3 من الطلب) ──

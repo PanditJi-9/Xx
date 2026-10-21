@@ -85,6 +85,7 @@ import nd.max.ui.design.maxBleed
 import nd.max.ui.mainscreens.SectionLoadingIndicator
 import nd.max.ui.navigation.MaxDestination
 import nd.max.ui.navigation.MaxNavActions
+import nd.max.ui.navigation.RegisterSwipeNavigation
 import nd.max.ui.settings.rememberAdvancedMode
 import nd.max.ui.viewmodel.HomeDashboardViewModel
 import androidx.compose.foundation.layout.WindowInsets
@@ -132,6 +133,27 @@ fun DeviceInfoScreen(
     // مفتاح الحركة من إعدادات النظام، وشفافية الصفحة عند القفز إلى تبويب بعيد (انظر `onSelect` أدناه).
     val animationsEnabled = rememberAnimationsEnabled()
     val pageAlpha = remember { Animatable(1f) }
+
+    // `HorizontalPager` يستهلك السحب بنفسه؛ هذا تسجيل احتياطيّ عند حدّ الصفحة الأولى/الأخيرة
+    // حتى لا يتحوّل السحب الزائد إلى رجوع مفاجئ، ويُبقي القرار في التبويبات.
+    RegisterSwipeNavigation(
+        onNext = {
+            if (pagerState.currentPage < DeviceInfoSection.entries.lastIndex) {
+                scope.launch { pagerState.animateScrollToPage(pagerState.currentPage + 1) }
+                true
+            } else {
+                false
+            }
+        },
+        onPrevious = {
+            if (pagerState.currentPage > 0) {
+                scope.launch { pagerState.animateScrollToPage(pagerState.currentPage - 1) }
+                true
+            } else {
+                false
+            }
+        },
+    )
 
     // ودورة القراءة **حاضرةً فقط**: تبدأ مع ظهور الشاشة وتقف بخروجها، فلا تُقاس
     // حرارة وتُقرأ عقد كلّ ثانيتين من شاشة نُظر إليها مرّة (نصّ الطلب: «إيقاف أو تخفيض

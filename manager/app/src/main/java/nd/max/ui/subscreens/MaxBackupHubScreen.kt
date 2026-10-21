@@ -89,6 +89,7 @@ import nd.max.ui.design.MaxRow
 import nd.max.ui.design.MaxSection
 import nd.max.ui.design.MaxSegmented
 import nd.max.ui.design.MaxTone
+import nd.max.ui.navigation.RegisterSwipeNavigation
 import nd.max.ui.util.MaxBackupCounts
 import nd.max.ui.util.MaxBackupEngine
 import nd.max.ui.util.MaxBackupFolders
@@ -287,6 +288,12 @@ internal fun MaxBackupHub(
     // `OCR-06`: هل أظهر المستخدم بقية النسخ؟ يُحفظ عبر إعادة التركيب لأن طيّ القائمة بعد
     // تمرير طويل يُفقد المكان الذي كان يقرأ فيه.
     var showAllCopies by rememberSaveable { mutableStateOf(false) }
+
+    // صفحتا «نسخ/استرجاع» محتوى لا مرشّح: السحب يبدّلهما، والحدّ يُسلّم القرار للجذر (رجوع).
+    RegisterSwipeNavigation(
+        onNext = { if (tab == 0) { tab = 1; true } else false },
+        onPrevious = { if (tab == 1) { tab = 0; true } else false },
+    )
 
     suspend fun reload() {
         snapshot = readBackupSnapshot(context)

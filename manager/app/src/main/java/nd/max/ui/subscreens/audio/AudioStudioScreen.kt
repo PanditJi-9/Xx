@@ -108,6 +108,7 @@ import nd.max.ui.design.MaxScreen
 import nd.max.ui.design.MaxSection
 import nd.max.ui.design.MaxSpace
 import nd.max.ui.navigation.MaxDestination
+import nd.max.ui.navigation.RegisterSwipeNavigation
 import nd.max.ui.viewmodel.AudioStudioUiState
 import nd.max.ui.viewmodel.AudioStudioViewModel
 
@@ -158,6 +159,27 @@ fun AudioStudioScreen(
     // ومؤثّر المصنّع، والمستويات تحكّمٌ عاديّ يُطلب مرّةً في الشهر — فلا يُقدَّم ما يُطلب أقلّ.
     var tabName by rememberSaveable { mutableStateOf(AudioTab.Engine.name) }
     val selected = remember(tabName) { AudioTab.entries.firstOrNull { it.name == tabName } ?: AudioTab.Engine }
+
+    RegisterSwipeNavigation(
+        onNext = {
+            val next = AudioTab.entries.getOrNull(selected.ordinal + 1)
+            if (next != null) {
+                tabName = next.name
+                true
+            } else {
+                false
+            }
+        },
+        onPrevious = {
+            val previous = AudioTab.entries.getOrNull(selected.ordinal - 1)
+            if (previous != null) {
+                tabName = previous.name
+                true
+            } else {
+                false
+            }
+        },
+    )
 
     // قفل التمرير أثناء سحب نطاقٍ من المعادل أو مقبضٍ: الشاشة لا تتحرّك تحت إصبعٍ يسحب شيئًا آخر.
     var interactionLocked by remember { mutableStateOf(false) }

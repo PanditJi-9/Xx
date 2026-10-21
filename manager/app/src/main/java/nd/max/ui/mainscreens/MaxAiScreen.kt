@@ -90,6 +90,7 @@ import nd.max.ui.design.MaxTone
 import nd.max.ui.design.MaxWeightBar
 import nd.max.ui.navigation.MaxDestination
 import nd.max.ui.navigation.MaxNavActions
+import nd.max.ui.navigation.RegisterSwipeNavigation
 import nd.max.ui.viewmodel.MaxAiViewModel
 
 /*
@@ -127,6 +128,28 @@ fun MaxAiScreen(
     var searchQuery by rememberSaveable { mutableStateOf("") }
     var journalContext by rememberSaveable { mutableStateOf<String?>(null) }
     var learningContext by rememberSaveable { mutableStateOf<String?>(null) }
+
+    // مساحات Max AI أربع صفحات محتوى لا مرشّحات: السحب بينها كالسحب بين التبويبات.
+    RegisterSwipeNavigation(
+        onNext = {
+            val next = MaxAiWorkspace.entries.getOrNull(workspace.ordinal + 1)
+            if (next != null) {
+                workspace = next
+                true
+            } else {
+                false
+            }
+        },
+        onPrevious = {
+            val previous = MaxAiWorkspace.entries.getOrNull(workspace.ordinal - 1)
+            if (previous != null) {
+                workspace = previous
+                true
+            } else {
+                false
+            }
+        },
+    )
 
     // A telemetry/clock tick must not repeat journal search or allocate its field lists.
     val filteredEpisodes = remember(episodes, timelineFilter, verdictFilter, searchQuery, journalContext) {

@@ -52,6 +52,7 @@ import nd.max.core.diagnostics.LogArea
 import nd.max.ui.component.*
 import nd.max.ui.design.MaxSplitScreen
 import nd.max.ui.mainscreens.SectionLoadingIndicator
+import nd.max.ui.navigation.RegisterSwipeNavigation
 import nd.max.ui.viewmodel.LogsViewerViewModel
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.navigationBars
@@ -72,6 +73,25 @@ fun LogsViewerScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     var settingsVisible by remember { mutableStateOf(false) }
     var shareVisible by remember { mutableStateOf(false) }
+
+    RegisterSwipeNavigation(
+        onNext = {
+            if (viewModel.viewerMode == LogsViewerViewModel.ViewerMode.LOGCAT) {
+                viewModel.setViewerMode(LogsViewerViewModel.ViewerMode.UNIFIED)
+                true
+            } else {
+                false
+            }
+        },
+        onPrevious = {
+            if (viewModel.viewerMode == LogsViewerViewModel.ViewerMode.UNIFIED) {
+                viewModel.setViewerMode(LogsViewerViewModel.ViewerMode.LOGCAT)
+                true
+            } else {
+                false
+            }
+        },
+    )
 
     val clearConfirmDialog = rememberConfirmDialog(
         onConfirm = {
