@@ -9,7 +9,9 @@ package nd.max.core.diagnostics
 import android.content.Context
 import android.os.Build
 import nd.max.core.hardware.CpuHardwareBackend
+import nd.max.core.hardware.GpuHardwareBackend
 import nd.max.core.hardware.HardwareCapabilityResolver
+import nd.max.core.hardware.MemoryUfsHardwareBackend
 import nd.max.core.platform.PropertyUtils
 import nd.max.core.platform.getChipsetIdentity
 
@@ -101,6 +103,33 @@ object DeviceBlueprint {
                     if (cap.evidence.isEmpty()) "" else " evidence=${cap.evidence.size} nodes"
             )
         }
+
+        // ── عقد `devfreq` كما تُرى من هذه العملية ────────────────────
+        //
+        // ولماذا هذا القسم: قدرة `NONE` وحدها لا تقول **لماذا** — أهي «لا عقدة على الجهاز»
+        // أم «عُقد رآها العدّ ولم يصنّفها أحد»؟ والفرق بينهما إجراءان مختلفان، وقد كلّف
+        // تمييزه جولتين على سنابدراجون (حزمة ٢٠٢٦-١٠-٢١: `no-memory-or-storage-devfreq-observed`
+        // بلا اسم واحد يدلّ على ما رآه العدّ). فتُطبع الأسماء **كما رآها هذا السياق**
+        // بأقسامها الثلاثة، فلا يُطلب من المستخدم جولة أخرى ليقول ما رآه التطبيق نفسه.
+        appendLine("[devfreq]")
+        val devfreq = MemoryUfsHardwareBackend.discover()
+        appendLine("  reason        : ${devfreq.reason}")
+        appendLine("  devices       : " + devfreq.devices.joinToString(",") { "${it.name}:${it.kind.name.lowercase()}" }
+            .ifBlank { "-" })
+        appendLine("  graphicsOwned : " + devfreq.graphicsOwned.joinToString(",").ifBlank { "-" })
+        appendLine("  unclassified  : " + devfreq.unclassified.joinToString(",") { it.directory }.ifBlank { "-" })
+        appendLine("  unreadable    : " + devfreq.unreadable.joinToString(",").ifBlank { "-" })
+
+        // ── اختيار مزوّد الرسوميات ودليله ──────────────────────────
+        //
+        // وهذا هو السطر الذي يُثبت الإصلاح أو ينفي في الحزمة القادمة: أي عقدة اختيرت،
+        // وبأي دليل (`kgsl-devfreq-surface` أو `kgsl-class-surface` أو `clocks-unreadable`).
+        appendLine("[gpu-selection]")
+        val gpu = GpuHardwareBackend.selection()
+        appendLine("  state         : ${gpu.state} / ${gpu.reason}")
+        appendLine("  provider      : ${gpu.device?.path ?: "-"}")
+        appendLine("  evidence      : ${gpu.device?.evidence?.joinToString(",")?.ifBlank { "-" } ?: "-"}")
+        appendLine("  candidates    : ${gpu.candidateSummary}")
 
         appendLine("[end]")
     }

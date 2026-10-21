@@ -726,6 +726,51 @@ class GpuControlModelTest {
         assertEquals(GpuHardwareBackend.SelectionState.READ_ONLY, selection.state)
     }
 
+    /**
+     * سنابدراجون SM8850 (حزمة ٢٠٢٦-١٠-٢١): عقدة `devfreq` تُرى ولا يُقرأ منها عمود واحد،
+     * وعقدة `kgsl` نفسها مقروءة (منها `gpu_busy_percentage` و`temp` في الشاشة). فالسطح البديل
+     * يُعطي التردد والمدى والحاكم — ويبقى المزوّد واحدًا.
+     */
+    @Test fun unreadableDevfreqClocksFallBackToTheKgslMirror() {
+        val node = "/sys/class/devfreq/3d00000.qcom,kgsl-3d0"
+        val mirror = "/sys/class/kgsl/kgsl-3d0/devfreq"
+        val fake = FakeIo(
+            mutableMapOf(
+                "$node/device_name" to "kgsl-3d0",
+                "$mirror/min_freq" to "220000000",
+                "$mirror/max_freq" to "1300000000",
+                "$mirror/cur_freq" to "650000000",
+                "$mirror/available_frequencies" to "220000000 650000000 1300000000",
+                "$mirror/governor" to "msm-adreno-tz",
+                "$mirror/available_governors" to "msm-adreno-tz performance",
+            ),
+            setOf("$mirror/min_freq", "$mirror/max_freq", "$mirror/governor"),
+        )
+        val selection = GpuHardwareBackend.selection(fake)
+        val device = selection.device!!
+        assertEquals("السطح المقروء هو ما يُختار للكتابة", mirror, device.path)
+        assertEquals(listOf(220000000L, 650000000L, 1300000000L), device.frequencies)
+        assertEquals(GpuHardwareBackend.FrequencyUnit.HZ, device.frequencyUnit)
+        assertEquals(650000000L, device.currentFreq)
+        assertTrue("المدى المكتوب على سطح `devfreq` مسموح", device.devfreqCeilingWritable)
+        assertEquals(GpuHardwareBackend.SelectionState.READY, selection.state)
+        assertTrue(device.evidence.contains("clocks-read-from-kgsl-mirror"))
+        // ولا تُخفى العقدة الأصلية: تبقى في المرشّحات بدليل نقص قراءتها — التشخيص لا يُطمَس.
+        assertTrue(selection.candidates.any { it.path == node })
+    }
+
+    /** والسطح البديل ليس مزوّدًا ثانيًا حين يقرأ المزوّد الأصلي: مقبضٌ واحد لمالكٍ واحد. */
+    @Test fun aReadableDevfreqNodeDoesNotGrowASecondGpuOwner() {
+        val fake = io(name = "kgsl-3d0")
+        fake.put("/sys/class/kgsl/kgsl-3d0/devfreq/min_freq", "220000000")
+        fake.put("/sys/class/kgsl/kgsl-3d0/devfreq/max_freq", "1300000000")
+        fake.put("/sys/class/kgsl/kgsl-3d0/devfreq/cur_freq", "650000000")
+        fake.put("/sys/class/kgsl/kgsl-3d0/devfreq/available_frequencies", "220000000 650000000 1300000000")
+        val selection = GpuHardwareBackend.selection(fake)
+        assertEquals(1, selection.candidates.size)
+        assertEquals("/sys/class/devfreq/test-gpu", selection.device!!.path)
+    }
+
     @Test fun unrecognizedNodeWithoutClocksIsStillDropped() {
         // عقدة مجهولة الاسم بلا ساعات: ليست GPU معروفة — تُسقَط كما كانت، فلا تُخترع
         // أجهزة من ضجيج `devfreq` (بلوتوث/ذاكرة بأسماء لا نعرفها).

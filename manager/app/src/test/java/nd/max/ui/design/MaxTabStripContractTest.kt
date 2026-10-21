@@ -59,4 +59,24 @@ class MaxTabStripContractTest {
         assertTrue("الاهتزاز ليس من المساعد المشترك", strip.contains("rememberMaxHaptics()"))
         assertFalse("نداء اهتزاز خام عاد", strip.contains("LocalHapticFeedback"))
     }
+
+    @Test
+    fun `the selected tab is centred instead of merely being brought into view`() {
+        assertTrue(
+            "الشريط لا يحسب مركز التبويب المختار: عاد سلوك «أظهره عند الحافة»",
+            strip.contains("centerFromStart") && strip.contains("viewport / 2f"),
+        )
+        assertTrue(
+            "التوسيط لا يُنفَّذ بسحب الشريط إلى الهدف",
+            strip.contains("animateScrollTo(target"),
+        )
+        assertTrue(
+            "اتجاه RTL غير محسوب: التوسيط سينزاح في العربية",
+            strip.contains("LayoutDirection.Rtl"),
+        )
+        assertFalse(
+            "عاد bringIntoView — يكفي أن يُرى عند الحافة، وهو ما رُفض بأمر المالك",
+            strip.contains("bringIntoView"),
+        )
+    }
 }

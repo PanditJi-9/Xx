@@ -78,6 +78,13 @@ sealed class MaxDestination(
     val parent: MaxDestination? = null,
     val risk: MaxRisk = MaxRisk.Normal,
     val isPrimary: Boolean = false,
+    /**
+     * **سطحٌ أخفاه المالك** — يبقى في السجلّ والرسم والمسار (فالإرجاع بضغطة واحدة)، لكنه
+     * لا يُعرض في أي قائمة: صفوف الإعدادات تُحذف منه، و`screenFinderTargets` تُصفّيه، ولا
+     * يُطلب له مدخل. والغرض أن يكون الإخفاء **حالةً واحدة في السجل** لا حذفًا مكرَّرًا في
+     * كل سطح يعرضه — وهذا ما يمنع أن يعود من بابٍ نُسي (البحث مثلًا).
+     */
+    val hidden: Boolean = false,
 ) {
     /**
      * المسار الذي يُفتح به هذا العنصر من قائمة، بلا نيّة سابقة عن تطبيق بعينه.
@@ -329,17 +336,21 @@ sealed class MaxDestination(
 
     /**
      * **«إحصاءات المجتمع»** (`MAX-CONTROL-01` §١٠.٣): باب الموافقة الواحدة — تشرح، وتعرض الرسالة
-     * التي ستُرسل حرفيًّا، وتحمل مفتاحًا واحدًا. **وتبقى ظاهرةً دائمًا** كالترخيص: من يريد أن
-     * يتحكّم في قناة الإحصاءات يجب أن يجد بابها بلا مفتاح ولا بحث.
+     * التي ستُرسل حرفيًّا، وتحمل مفتاحًا واحدًا.
+     *
+     * **ومخفيٌّ بأمر المالك (2026-10-21)** بعد أن كان «ظاهرًا دائمًا»: لا صفّ له في الإعدادات
+     * ولا في فهرس الشاشات. والقناة نفسها لم تُوقَف بهذا الإخفاء: الإرسال يبقى خاضعًا للموافقة
+     * المحفوظة، والافتراضي بلا موافقة = لا إرسال. والإرجاع بضغطة على [hidden] وحدها.
      */
-    data object CommunityStats : MaxDestination("community_stats", R.string.max_stats_title, Icons.Rounded.DataUsage, Settings)
+    data object CommunityStats : MaxDestination("community_stats", R.string.max_stats_title, Icons.Rounded.DataUsage, Settings, hidden = true)
 
     /**
      * `GAP-14` — عقد الطرف الثالث: الإضافات المركّبة، وما قُبل منها وما رُفض ولماذا.
-     * تحت الإعدادات لأنها **حالة النظام** لا تحكّم أداء، ولأن نصّ العقد يجب أن يكون
-     * في متناول من يكتب إضافة، لا مخفيًّا في صفحة مطوّرين.
+     *
+     * **ومخفيٌّ بأمر المالك (2026-10-21)** بعد أن كان مدخلُه في الإعدادات شرطًا لوصوله؛ فبقي
+     * في السجلّ والرسم ونصّ العقد كما هو، وخرج من الإعدادات ومن فهرس الشاشات معًا.
      */
-    data object Plugins : MaxDestination("plugins", R.string.max_plugins_title, Icons.Rounded.Extension, Settings)
+    data object Plugins : MaxDestination("plugins", R.string.max_plugins_title, Icons.Rounded.Extension, Settings, hidden = true)
 
     /**
      * `Max Backup` — نسخ التطبيقات احتياطيًّا وفحص سلامتها واسترجاعها.
@@ -432,5 +443,13 @@ sealed class MaxDestination(
 
         /** Route ids of the primary destinations, for bar visibility checks. */
         val PrimaryRoutes: Set<String> by lazy { PrimaryDestinations.map { it.route }.toSet() }
+
+        /**
+         * ما يُعرض في القوائم والفهارس: كل السجلّ **إلا** ما أخفاه المالك ([MaxDestination.hidden]).
+         *
+         * وجودُها هنا لا في الشاشات هو الفرق بين إخفاءٍ واحد وإخفاءاتٍ متفرّقة: أي سطح جديد
+         * يعرض «كل الشاشات» يقرأ هذه القائمة، فلا يعود السطح المخفيّ من بابٍ نُسي.
+         */
+        val Visible: List<MaxDestination> by lazy { All.filterNot { it.hidden } }
     }
 }

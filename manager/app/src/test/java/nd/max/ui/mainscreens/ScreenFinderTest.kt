@@ -22,8 +22,9 @@ import java.io.File
  *
  * وثلاثة عقود تُقفل هنا:
  *
- * 1. **الفهرس هو السجلّ**: `MaxDestination.All` ناقصًا ما لا يُفتح بلا معرّف. فلا وجهة جديدة
- *    تُنسى، ولا وجهة محذوفة تبقى، ولا ضغطة تفتح تفصيل حزمة اسمها فارغ.
+ * 1. **الفهرس هو السجلّ المرئيّ**: `MaxDestination.Visible` (كل السجلّ إلا ما أخفاه المالك)
+ *    ناقصًا ما لا يُفتح بلا معرّف. فلا وجهة جديدة تُنسى، ولا وجهة محذوفة تبقى، ولا ضغطة تفتح
+ *    تفصيل حزمة اسمها فارغ.
  * 2. **والترتيب موقعٌ لا وجود**: اسمُ الشاشة قبل سطر وصفها، وسطرُ الوصف قبل اسم مجالها —
  *    وإلا تصدّرت نتيجةٌ هامشية الشاشةَ التي اسمها هو نفسه ما كتبه المستخدم.
  * 3. **و«أين تسكن» من الشجرة**: أبُ الوجهة في السجلّ، بلا جدول ثانٍ ينحرف.
@@ -74,12 +75,26 @@ class ScreenFinderTest {
             targets.any { it.destination == MaxDestination.AppSettings },
         )
         assertEquals(
-            "الفهرس ليس السجلّ (وجهة نُسيت أو زيدت بيد)",
-            MaxDestination.All.count { !it.needsLaunchArgument },
+            "الفهرس ليس السجلّ المرئيّ (وجهة نُسيت أو زيدت بيد)",
+            MaxDestination.Visible.count { !it.needsLaunchArgument },
             targets.size,
         )
         assertTrue(
             "ووجهة لا معرّف لها تُعرض فعلًا (الفحص ليس سالبًا فقط)",
+            targets.any { it.destination == MaxDestination.ZramManager },
+        )
+    }
+
+    @Test
+    fun `a screen the owner hid does not come back through search`() {
+        val targets = screenFinderTargets({ "«$it»" })
+        assertFalse(
+            "سطح أخفاه المالك من الإعدادات لا يعود من باب فهرس الشاشات",
+            targets.any { it.destination.hidden },
+        )
+        // والفحص ليس سالبًا فقط: غير المخفيّ يظهر فعلًا.
+        assertTrue(
+            "الفهرس لا يعرض شيئًا — الفحص سالب بلا موجب",
             targets.any { it.destination == MaxDestination.ZramManager },
         )
     }
@@ -173,7 +188,12 @@ class ScreenFinderTest {
         )
         assertTrue(
             "والفهرس من السجلّ لا من قائمة مكتوبة بيد",
-            read("ui/mainscreens/ScreenFinderModel.kt").contains("MaxDestination.All"),
+            read("ui/mainscreens/ScreenFinderModel.kt").contains("MaxDestination.Visible"),
+        )
+        assertTrue(
+            "و«المرئيّ» مشتقٌّ من السجلّ لا قائمة ثانية:" +
+                " إخفاءٌ في السجلّ يسري على الفهرس بلا سطرٍ هنا",
+            read("ui/navigation/MaxDestinations.kt").contains("All.filterNot { it.hidden }"),
         )
     }
 
@@ -220,7 +240,7 @@ class ScreenFinderTest {
         )
         assertEquals(
             "الفهرس كله لا يسقط إذا كان في السجلّ مسار خارج السجلّ",
-            MaxDestination.All.count { !it.needsLaunchArgument },
+            MaxDestination.Visible.count { !it.needsLaunchArgument },
             targets.size,
         )
     }

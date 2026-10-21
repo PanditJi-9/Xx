@@ -19,6 +19,12 @@
  * بالضبط: لا تلحق به بنابض أثناء التمرير، ولا تبقى عالقة في موضع قديم حين يخرج تبويبها من الشاشة.
  * وتنزلق العدسة فقط حين يتغيّر الاختيار، أو يتغيّر عرض أحد التبويبات.
  *
+ * **والتبويب المختار في منتصف الشريط** (أمر المالك ٢٠٢٦-١٠-٢١، كالفيديو المرجعي): لا يكفيه أن يُرى
+ * عند الحافة. عند كل تغيّر اختيار يُحسب مركز التبويب في إحداثيات المحتوى، ويُسحب الشريط حتى يقع
+ * المركز على منتصف نافذة العرض — ويُثبَّت هناك. والقياس من بداية التمرير لا من اليسار، فيعمل في
+ * العربية كما في الإنجليزية (`ScrollState` يقيس المسافة من بداية المحتوى في الاتجاهين).
+ * الحدّ الوحيد طبيعيّ: أول تبويب وآخره لا يُجاوز بهما المحتوى، فيُثبَّتان عند الحافة (`coerceIn`).
+ *
  * **القيود المحسومة (كما كانت):**
  *  1. العرض للتبويب لا للصف: المقطع يأخذ عرضه الطبيعي (`softWrap = false`)، والشريط كله يتمرّر.
  *  2. لا تصغير خطّ: `labelLarge` هو حجم المقطع، والفرق كله في الشكل لا في الخط.
@@ -50,8 +56,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.relocation.BringIntoViewRequester
-import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -63,7 +67,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -78,11 +84,15 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInParent
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.toSize
+import kotlin.math.roundToInt
 import kotlinx.coroutines.launch
 import nd.max.ui.component.MaxMotion
 import nd.max.ui.component.maxPressMotion
@@ -118,13 +128,34 @@ fun MaxTabStrip(
     val scroll = rememberScrollState()
     val haptics = rememberMaxHaptics()
     val bounds = remember { TabBounds() }
-    val selectedRequester = remember { BringIntoViewRequester() }
+    val density = LocalDensity.current
+    val layoutDirection = LocalLayoutDirection.current
+    val animationsEnabled = rememberAnimationsEnabled()
+    // أول تثبيت يقفز لا ينزلق: الشريط يفتح واختياره في وسطه، فلا تُرى حركةٌ لم يُطلب سببها.
+    var centeredOnce by remember { mutableStateOf(false) }
 
-    // المقطع المختار يُرى عند التغيير: بلا هذا يصير تبويب مُختار خارج الشاشة عنوانًا لحالة لا تُرى،
-    // خصوصًا في العربية حيث يبدأ الشريط من اليمين.
-    LaunchedEffect(selectedIndex) {
-        if (selectedIndex in tabs.indices) {
-            runCatching { selectedRequester.bringIntoView() }
+    // **التبويب المختار في منتصف الشريط** (أمر المالك ٢٠٢٦-١٠-٢١، كالفيديو المرجعي): لا يكفيه أن
+    // يُرى عند الحافة. الموضع يُحسب من مركز التبويب المقيس (إحداثيات المحتوى) ومن عرض نافذة العرض،
+    // ثم يُسحب الشريط إليه. والمسافة تُقاس من **بداية التمرير**: في العربية بدايتها اليمنى، وهذا
+    // ما يقيسه `ScrollState` نفسه، فلا فرعٌ للاتجاه في الحساب.
+    val selectedRect = bounds.rects[selectedIndex]
+    val viewport = scroll.viewportSize
+    LaunchedEffect(selectedIndex, selectedRect, viewport, scroll.maxValue, layoutDirection) {
+        val rect = selectedRect ?: return@LaunchedEffect
+        if (viewport <= 0) return@LaunchedEffect
+        val gutterPx = with(density) { MaxSpace.gutter.toPx() }
+        val centerFromStart = if (layoutDirection == LayoutDirection.Rtl) {
+            (scroll.maxValue + viewport) - (gutterPx + rect.center.x)
+        } else {
+            gutterPx + rect.center.x
+        }
+        val target = (centerFromStart - viewport / 2f).roundToInt()
+            .coerceIn(0, scroll.maxValue)
+        if (!centeredOnce || !animationsEnabled) {
+            scroll.scrollTo(target)
+            centeredOnce = true
+        } else {
+            scroll.animateScrollTo(target, tabCenterSpring)
         }
     }
 
@@ -158,15 +189,7 @@ fun MaxTabStrip(
                         selected = index == selectedIndex,
                         accent = accent,
                         muted = index in mutedIndices,
-                        modifier = Modifier
-                            .recordTabBounds(bounds, index)
-                            .then(
-                                if (index == selectedIndex) {
-                                    Modifier.bringIntoViewRequester(selectedRequester)
-                                } else {
-                                    Modifier
-                                },
-                            ),
+                        modifier = Modifier.recordTabBounds(bounds, index),
                         onSelect = {
                             if (index != selectedIndex) {
                                 haptics.select()
@@ -203,6 +226,17 @@ private class TabLens {
 
 /** الحافة التابعة: تلحق بالقائدة بلا ارتداد، فيبدو المؤشّر مادّةً تنساب لا لوحًا يقفز. */
 private val trailingEdgeSpring = spring<Float>(
+    dampingRatio = Spring.DampingRatioNoBouncy,
+    stiffness = Spring.StiffnessMediumLow,
+)
+
+/**
+ * سحب الشريط حتى يستقرّ التبويب المختار في منتصفه.
+ *
+ * بلا ارتداد عن قصد: الارتداد مناسب لعدسة صغيرة، أما شريط كامل يترنّح تحت الإصبع فيُقرأ كخطأ
+ * تخطيط لا كحركة. والسرعة متوسّطة-منخفضة حتى يتزامن تقريبًا مع انزلاق العدسة نفسها.
+ */
+private val tabCenterSpring = spring<Float>(
     dampingRatio = Spring.DampingRatioNoBouncy,
     stiffness = Spring.StiffnessMediumLow,
 )

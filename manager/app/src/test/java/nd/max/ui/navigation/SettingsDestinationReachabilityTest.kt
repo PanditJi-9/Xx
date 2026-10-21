@@ -17,6 +17,7 @@
 package nd.max.ui.navigation
 
 import java.io.File
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -37,6 +38,10 @@ import org.junit.Test
  * ونطاقه `Settings` وحده عن قصد: وجهات `Control` يغطّيها `ControlLayoutModelTest` (لكل صف
  * مصدر في النموذج)، ووجهات `Apps` تُفتح من قائمة التطبيقات بمعرّف حزمة، ووجهات كل hub
  * يغطّيها اختبار «كل hub يسرد كل شاشاته».
+ *
+ * **والاستثناء الوحيد: ما أخفاه المالك (`hidden = true`).** الإخفاء لا يُسقِط الحارس — بل
+ * **يقلبه**: المخفيّ يُشترط ألّا يكون له مدخل، وإلا فالإخفاء لم يتمّ وبقي باب. والمجموعة
+ * المخفيّة مكتوبة هنا صراحةً ليُقرأ قرارها في المراجعة، ولا تُستنتج من الفشل.
  */
 class SettingsDestinationReachabilityTest {
 
@@ -101,6 +106,31 @@ class SettingsDestinationReachabilityTest {
         )
     }
 
+    /** ما أخفاه المالك — **اسمٌ صريح لكل سطح** (أمر ٢٠٢٦-١٠-٢١: الإحصاءات والإضافات). */
+    private val hiddenByOwner = setOf("CommunityStats", "Plugins")
+
+    @Test
+    fun `المخفيّ عمدًا مُعلَن لا صامت`() {
+        assertEquals(
+            "قائمة الإخفاء في السجلّ تغيّرت: كل تغيير هنا قرار يُكتب لا يُكتشف بالفشل",
+            hiddenByOwner,
+            MaxDestination.All.filter { it.hidden }.map { it::class.simpleName.orEmpty() }.toSet(),
+        )
+    }
+
+    @Test
+    fun `الوجهة المخفيّة لا مدخل لها في أي شاشة`() {
+        val files = entryPointFiles(sourceRoot()!!)
+        val leaking = MaxDestination.All.filter { it.hidden }
+            .filter { entryPointsOf(it, files).isNotEmpty() }
+            .map { "${it::class.simpleName} (${it.route})" }
+
+        assertTrue(
+            "سطح مخفيّ ما زال له مدخل — فالإخفاء لم يتمّ وبقي الباب: $leaking",
+            leaking.isEmpty(),
+        )
+    }
+
     @Test
     fun `كل وجهة تحت Settings لها مدخل في ملفّ آخر غير شاشتها`() {
         val files = entryPointFiles(sourceRoot()!!)
@@ -115,5 +145,5 @@ class SettingsDestinationReachabilityTest {
     }
 
     private fun settingsDestinations(): List<MaxDestination> =
-        MaxDestination.All.filter { it.parent == MaxDestination.Settings }
+        MaxDestination.All.filter { it.parent == MaxDestination.Settings && !it.hidden }
 }

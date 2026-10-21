@@ -80,6 +80,56 @@ object GpuHardwareBackend {
     private val ROLE_SEPARATORS = charArrayOf('.', '_', '-', ':', '/', ' ', '@', ',')
 
     /**
+     * سطح قراءة بديل لساعة GPU على سنابدراجون — حين تُرصد عقدة `devfreq` ولا تُقرأ أعمدتها.
+     *
+     * **العطب المقيس (حزمة ٢٠٢٦-١٠-٢١ · Xiaomi 17 Pro Max · SM8850 · Android 17):**
+     * عدّ `/sys/class/devfreq` يرى `3d00000.qcom,kgsl-3d0`، لكن قراءة `device_name`
+     * و`min_freq`/`max_freq`/`cur_freq`/`available_frequencies`/`governor` كلها تعود فارغة —
+     * فتظهر شاشة GPU Studio «Aucune lecture» للتردد والمدى والحاكم، وتُصنَّف القدرة `NONE`
+     * فتصير مقابض الرسوميات غير قابلة للتعديل. والدليل في اللقطة المنشورة:
+     * `clocks-unreadable-at-discovery` مع `none` في الحقول الستّة كلها.
+     *
+     * ولا يعني ذلك أن العتاد لا يعلن ساعته: نواة كوالكوم تنشر العقدة نفسها مرّتين — كصنف
+     * `devfreq`، وكعقدة `kgsl` تحت `/sys/class/kgsl/kgsl-3d0/devfreq` — وبعض الرومات تمنع
+     * الأولى عن عملية الاكتشاف (سياق `untrusted_app` على `vendor_sysfs_devfreq`) وتترك
+     * الثانية مقروءة (كما تُقرأ `gpu_busy_percentage` و`temp` منها في الشاشة نفسها).
+     *
+     * فالسطح البديل **قراءة لا تخمين**: نفس أسماء الأعمدة (`min_freq`/`max_freq`/…)،
+     * ويُقبل فقط إذا أعطى سلّمًا أو قيمة مقروءة بوحدة مؤكَّدة. ولا يُضاف إلا حين لا يوجد
+     * مزوّد ساعة مقروء أصلًا — فلا يصير للـGPU مالكَان (وهو ما يمنعه هذا المستودع).
+     */
+    private class ClockSurface(
+        val base: String,
+        val minKey: String,
+        val maxKey: String,
+        val currentKey: String,
+        val ladderKey: String,
+        val evidence: String,
+    )
+
+    private val QUALCOMM_CLOCK_SURFACES = listOf(
+        ClockSurface(
+            base = "/sys/class/kgsl/kgsl-3d0/devfreq",
+            minKey = "min_freq",
+            maxKey = "max_freq",
+            currentKey = "cur_freq",
+            ladderKey = "available_frequencies",
+            evidence = "kgsl-devfreq-surface",
+        ),
+        // والسطح الثاني هو عقد `kgsl` نفسها بأسماء كوالكوم القديمة (`gpuclk`/`max_gpuclk`).
+        // يُقبل لل**قراءة** فقط حين لا يوجد سطح `devfreq`: `min_freq`/`max_freq` غائبان عنه،
+        // فالكتابة تبقى غير مثبتة (FailClosed) والتردد الحيّ يُقرأ من `gpuclk`.
+        ClockSurface(
+            base = "/sys/class/kgsl/kgsl-3d0",
+            minKey = "min_gpuclk",
+            maxKey = "max_gpuclk",
+            currentKey = "gpuclk",
+            ladderKey = "gpu_available_frequencies",
+            evidence = "kgsl-class-surface",
+        ),
+    )
+
+    /**
      * سبب الغياب حين **تُرصد** عُقَد رسومية ولا مزوّد بينها: كلها مراقبات عرض نطاق.
      *
      * ولماذا ثابت مُعلَن لا نصّ في موضع واحد: الرمز يُقرأ في ثلاثة أماكن (السجل، وشاشة GPU،
@@ -358,15 +408,37 @@ object GpuHardwareBackend {
         val scan = scan(io)
         val local = scan.candidates
         val blinded = scan.listed == 0 && io.exists(ROOT)
-        if (local.isNotEmpty() || io !== SystemIo) return select(local, blinded)
+        // والشرط **قابلية القراءة** لا مجرّد وجود مرشّح: عقدة تُرى ولا يُقرأ منها عمود
+        // واحد ليست قياسًا، وعليها يُتبنّى قياس الرفيق (المقيس على SM8850 · ٢٠٢٦-١٠-٢١:
+        // المسح المحلي عاد بقشرة بلا ساعة فظلت الشاشة «Aucune lecture»).
+        val hasReadableLocal = local.any {
+            it.device.role == NodeRole.GPU_CLOCK && it.device.unitTrusted && it.device.frequencies.isNotEmpty()
+        }
+        if (hasReadableLocal || io !== SystemIo) return select(local, blinded)
         // العمى المحلي وحده لا يعني الغياب: لقطة الرفيق (تُقاس بالجذر حيث تُرى العقد)
-        // تُتبنّى بوسمها حين لا يجد العدّ المحلي شيئًا — وتبقى قيود الصدق نفسها (بلا
-        // سلّم ⇒ للقياس لا للكتابة)، فلا سلوك جديد بلا دليل جديد. والحارس `SystemIo`
-        // حتى لا تمسّ اختبارات الموجّه الوهمي قرصًا حقيقيًا عبر `RootFileAccess`.
+        // تُتبنّى بوسمها حين لا يجد العدّ المحلي قياسًا — والحارس `SystemIo` حتى لا تمسّ
+        // اختبارات الموجّه الوهمي قرصًا حقيقيًا عبر `RootFileAccess`.
         val published = GpuDiscoverySnapshot.read()?.entries.orEmpty()
         if (published.isEmpty()) return select(local, blinded)
-        return select(published.map { Candidate(it.device, it.score) })
+        // **والسلطة تُعاد قراءتها هنا لا تُنقل:** اللقطة تنقل ما رآه الرفيق من قيم، ولا
+        // تنقل حقّ الكتابة (تحفظه `false` عن قصد). ولو تُرك كذلك لصار كل جهاز متبنّى
+        // «للقراءة فقط» حتى لو كان الجذر يكتب عقده الآن — وهو عكس المطلوب. فتُقاس
+        // القابلية في هذه العملية بموصلها الحقيقي، وتبقى الكتابة محروسة بحكمٍ بعدها.
+        return select(published.map { Candidate(it.device.withWritabilityFrom(io), it.score) })
     }
+
+    /**
+     * يعيد بناء أعلام الكتابة **في العملية الحالية** لجهاز جاء من لقطة الرفيق.
+     *
+     * والقيم لا تُمسّ: ما قرأه الرفيق يبقى كما هو. والذي يُقاس هنا هو ما لا تستطيع
+     * لقطة أن تحمله — قدرة هذا السياق على الكتابة (`IO.writable` يمرّ بالجذر أيضًا).
+     */
+    private fun Device.withWritabilityFrom(io: Io): Device = copy(
+        minWritable = io.writable("$path/min_freq"),
+        maxWritable = io.writable("$path/max_freq"),
+        governorWritable = io.writable("$path/governor"),
+        mtkLockWritable = mtkFixedIndexPath?.let(io::writable) == true,
+    )
 
     /** آخر نشر للقطة (ذاكرة العملية) — النشر كل ٥ دقائق لا كل دورة. */
     @Volatile private var lastSnapshotPublishMs = 0L
@@ -472,8 +544,12 @@ object GpuHardwareBackend {
         )
     }
 
-    fun refresh(path: String, io: Io = SystemIo): Device? =
-        discoverCandidates(io).firstOrNull { it.device.path == path }?.device
+    fun refresh(path: String, io: Io = SystemIo): Device? {
+        discoverCandidates(io).firstOrNull { it.device.path == path }?.let { return it.device }
+        // والسطح البديل ليس تحت `devfreq`، فلا يجده المسح الأساسي — ويُعاد بناؤه بنفس قارئه
+        // (لا يُعاد استعمال جهاز قديم: القيمة تُقاس في كل نداء كما في المسح العادي).
+        return qualcommClockFallback(io, onlyBase = path)?.device
+    }
 
     fun effectiveFrequency(device: Device, io: Io = SystemIo): Long? =
         currentExactLockFrequency(device, io) ?: device.maxFreq
@@ -562,7 +638,7 @@ object GpuHardwareBackend {
      */
     fun currentFrequencyHz(device: Device, io: Io = SystemIo): Long? {
         val advertised = device.frequencies.filter { it > 0L }
-        for (path in listOf(GED_CURRENT_FREQUENCY, "${device.path}/cur_freq")) {
+        for (path in listOf(GED_CURRENT_FREQUENCY, "${device.path}/cur_freq", "${device.path}/gpuclk")) {
             val raw = io.read(path)?.trim()?.toLongOrNull() ?: continue
             if (raw <= 0L) continue
             normalizeToAdvertisedHz(raw, advertised)?.let { return it }
@@ -972,11 +1048,85 @@ object GpuHardwareBackend {
 
     private fun scan(io: Io): Scan {
         val names = io.listDirectories(ROOT)
+        val candidates = names.mapNotNull { readCandidate(it, io) }.toMutableList()
+        // ولا يُضاف سطح بديل حين يوجد مزوّد ساعة مقروء: الهدف سدّ نقص القراءة لا مضاعفة المالك.
+        val hasReadableClock = candidates.any {
+            it.device.role == NodeRole.GPU_CLOCK && it.device.unitTrusted && it.device.frequencies.isNotEmpty()
+        }
+        if (!hasReadableClock) qualcommClockFallback(io)?.let(candidates::add)
         return Scan(
-            candidates = names.mapNotNull { readCandidate(it, io) }
-                .sortedWith(compareByDescending<Candidate> { it.score }.thenBy { it.device.name }),
+            candidates = candidates.sortedWith(
+                compareByDescending<Candidate> { it.score }.thenBy { it.device.name },
+            ),
             listed = names.size,
         )
+    }
+
+    /**
+     * يقرأ ساعة GPU من سطح كوالكوم البديل ([QUALCOMM_CLOCK_SURFACES]) — أو `null` إن لم يُقرأ شيء.
+     *
+     * والأعمدة الستّة في **نداء واحد** كما في [readCandidate]؛ والوحدة تُستنتج من القيم نفسها
+     * ([inferFrequencyUnit]) ولا تُفترض: سطح بوحدة غامضة لا يُقبل مزوّدًا.
+     *
+     * ودلالة العائد كما في `readCandidate`: قيمة مقصوصة غير فارغة أو `null` — لا صفر ولا قيمة مخترعة.
+     */
+    private fun qualcommClockFallback(io: Io, onlyBase: String? = null): Candidate? {
+        for (surface in QUALCOMM_CLOCK_SURFACES) {
+            if (onlyBase != null && surface.base != onlyBase) continue
+            if (!io.exists(surface.base)) continue
+            val paths = listOf(
+                "${surface.base}/${surface.minKey}",
+                "${surface.base}/${surface.maxKey}",
+                "${surface.base}/${surface.currentKey}",
+                "${surface.base}/${surface.ladderKey}",
+                "${surface.base}/governor",
+                "${surface.base}/available_governors",
+            )
+            val reads = io.readMany(paths)
+            val frequencies = parseLongList(reads.getOrNull(3))
+            val min = reads.getOrNull(0)?.trim()?.toLongOrNull()
+            val max = reads.getOrNull(1)?.trim()?.toLongOrNull()
+            val current = reads.getOrNull(2)?.trim()?.toLongOrNull()
+            val governor = reads.getOrNull(4)?.trim()?.takeIf(String::isNotBlank)
+            val governors = reads.getOrNull(5).orEmpty()
+                .split(Regex("\\s+")).filter(String::isNotBlank).distinct()
+            if (frequencies.isEmpty() && min == null && max == null && current == null) continue
+            val unit = inferFrequencyUnit(frequencies + listOfNotNull(min, max, current))
+            if (unit == FrequencyUnit.AMBIGUOUS) continue
+            val evidence = buildList {
+                add("qualcomm-gpu-identity")
+                add("role-${NodeRole.GPU_CLOCK.token}")
+                add(surface.evidence)
+                add("clocks-read-from-kgsl-mirror")
+                if (min != null && max != null) add("live-range")
+                if (governor != null) add("live-governor")
+                if (frequencies.isNotEmpty()) add("devfreq-opp-table")
+                if (current != null) add("current-frequency")
+                add("consistent-${unit.name.lowercase()}-unit")
+            }
+            val device = Device(
+                path = surface.base,
+                name = "kgsl-3d0",
+                governor = governor,
+                governors = governors,
+                minFreq = min,
+                maxFreq = max,
+                currentFreq = current,
+                frequencies = frequencies,
+                family = Family.QUALCOMM,
+                loadPercent = readLoad(surface.base, Family.QUALCOMM, io),
+                thermalC = readGpuThermal(io),
+                frequencyUnit = unit,
+                minWritable = io.writable("${surface.base}/${surface.minKey}") &&
+                    surface.minKey == "min_freq",
+                maxWritable = io.writable("${surface.base}/${surface.maxKey}") &&
+                    surface.maxKey == "max_freq",
+                governorWritable = governor != null && io.writable("${surface.base}/governor"),
+                evidence = evidence,
+            )
+            return Candidate(device, candidateScore(100, frequencies, current, null))
+        }
+        return null
     }
 
     /**

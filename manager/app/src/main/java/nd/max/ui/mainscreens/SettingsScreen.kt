@@ -395,30 +395,12 @@ fun SettingsScreen(
                                     trailingContent = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null) }
                                 )
                             },
-                            {
-                                // إحصاءات المجتمع (`MAX-CONTROL-01` §١٠): الموافقة وقناة الإشارة
-                                // اليومية — بابٌ ظاهر دائمًا، يقود الشاشة التي تشرح وتعرض الرسالة
-                                // حرفيًّا وتحمل المفتاح الواحد.
-                                ExpressiveListItem(
-                                    onClick = { MaxNavActions(navController).navigateTo(MaxDestination.CommunityStats) },
-                                    headlineContent = { Text(stringResource(R.string.max_stats_title)) },
-                                    supportingContent = { Text(stringResource(R.string.max_stats_settings_summary)) },
-                                    leadingContent = { LeadingIcon(icon = Icons.Rounded.DataUsage) },
-                                    trailingContent = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null) }
-                                )
-                            },
-                            {
-                                // عقد إضافات الطرف الثالث (GAP-14): كانت الشاشة مبنية ومسارها
-                                // مسجّلًا لكن **لا مدخل لها**، فلا يصل إليها أحد. وُضعت هنا لأنها
-                                // حالة النظام لا تحكّم أداء — وبنصّ العقد في متناول من يكتب إضافة.
-                                ExpressiveListItem(
-                                    onClick = { MaxNavActions(navController).navigateTo(MaxDestination.Plugins) },
-                                    headlineContent = { Text(stringResource(R.string.max_plugins_title)) },
-                                    supportingContent = { Text(stringResource(R.string.max_plugins_subtitle)) },
-                                    leadingContent = { LeadingIcon(icon = Icons.Rounded.Extension) },
-                                    trailingContent = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null) }
-                                )
-                            },
+                            // **إحصاءات المجتمع وإضافات الطرف الثالث: مخفيّان بأمر المالك
+                            // (2026-10-21).** كانا صفّين هنا؛ والآن يحمل السجل نفسه علامة
+                            // `hidden = true` على الوجهتين، فيُخفيهما فهرس الشاشات أيضًا —
+                            // لا موضعان لقرار واحد. الشاشتان والمساران والنصوص باقية كما هي:
+                            // الإرجاع بضغطة على العلامة وحدها. ولا يوقف هذا قناة الإحصاءات:
+                            // إرسالها يبقى خاضعًا للموافقة المحفوظة (والافتراضي بلا موافقة).
                             {
                                 // السطح الموحّد للامتياز (AR-20): الجذر وShizuku في شاشة
                                 // واحدة، وهي نفسها المستخدمة في شاشة البداية. وهذا الصفّ

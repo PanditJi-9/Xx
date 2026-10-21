@@ -22636,3 +22636,50 @@ BUILD FAILED in 6m 12s
 **NEXT:**
 1. المالك: قراءة الوثيقة وطلب أي توسعة أو تصحيح.
 2. لا بند جهاز جديد لهذه المهمة؛ بنود SWIPE-NAV-01 السابقة تبقى كما هي.
+
+### Executor log — CI-GUARD-STALE-02/03/04 (2026-10-21) — البناء الأحمر من `logs_107223696597.zip`: ثلاثة حرّاس مصدر كانت تقيس **صياغة** لا **بنية**
+
+**TASK (المالك):** «أصلح مشكلة البناء في مجلد التحميلات `logs_107223696597.zip`».
+
+**ما وصل (من الحزمة نفسها، لا تخمينًا):** الالتزام `a165815b` · ‏`:app:testReleaseUnitTest` = **3484 اختبارًا · 2 فشل · 3 متجاوز**، والفشلان:
+- `MaxAiMasterSwitchTest > the switch state is updated before the cycle is launched` — `AssertionError` عند `MaxAiMasterSwitchTest.kt:59`.
+- `MaxAiPresentationArchitectureTest > refresh execution is owned by the engine not the waiting screen` — `AssertionError` عند `MaxAiPresentationArchitectureTest.kt:110`.
+
+والخطوة ٤٢ (التشخيص) تقول حرفيًّا «**لا أسطر مترجم في هذا التشغيل**» ⇒ العطب في الحرّاس لا في الشيفرة. (وفرق الـ289 ملفًا الذي طبعته تلك الخطوة هو فرق الشجرة عن اللقطة المرجعية، لا سبب الفشل.)
+
+**التشخيص المقيس:**
+- السطر ٥٩ كان `val cycle = body.indexOf("runCycleSingleFlight()")` ويشترط `cycle >= 0`. والشيفرة تنادي `runCycleSingleFlight(forceSample = true)` (`MaxAiEngine.kt:1961`) ⇒ `indexOf` يعود **-1**، فيفشل الحرس على **وسيطٍ لم يُكتب في النصّ** لا على غياب دورة.
+- السطر ١١٠ كان `assertTrue(request.contains("scope.async { runCycleSingleFlight() }.await()"))`، والشيفرة `scope.async { runCycleSingleFlight(forceSample = true) }.await()` (`MaxAiEngine.kt:1826`) ⇒ الصنف نفسه.
+- **وعطب ثالث كامن لم يبلغ CI بعد:** الشجرة كانت تحمل تعديلًا غير مُلتزم على `MaxAiEngine.decisionCycle` (التُزم أثناء الجلسة `95017030`) يضيف **مخرج إبقاء ثالثًا** (`keptWrite = true` عند فرقٍ داخل ضجيج النافذة)، و`MaxAiInterruptSafetyTest` كان يثبّت العدد **٢** حرفيًّا. والدليل المقيس: `grep -c "keptWrite = true"` على `decisionCycle` الحالية = **٣** ⇒ كان سيسقط عند أول بناء لهذه الشجرة.
+
+**الإصلاح (تقوية لا توهين — والمقيس هو البنية نفسها):**
+- `MaxAiMasterSwitchTest`: `Regex("runCycleSingleFlight\\s*\\(")` ← أول موضع. فالترتيب يُقاس مع أي وسيط، و**لا يمرّ** إن غاب النداء أصلًا.
+- `MaxAiPresentationArchitectureTest`: تعبير نمطي `scope.async { runCycleSingleFlight(…) }.await()` — أي **ملكية المحرك + الانتظار**، وهو البطلان المقصود؛ ولا يُقبل `launch` طائرة ولا نداء مباشر على خيط الشاشة.
+- `MaxAiInterruptSafetyTest`: العدد **٣** (غير المقيس · غير الحاسم داخل الضجيج · المُتحسِّن) مع نصّ يوجب أن أي مخرج رابع يُقرَّر **عمدًا**.
+- وحرّاس الملفّ الباقية لم تُمسّ: `_state.update` قبل الدورة · `setAndConfirm` بلا `.submit()` · ملفّ الأوضاع بـ`exec()`.
+
+**FILES:** `manager/app/src/test/java/nd/max/core/maxai/MaxAiMasterSwitchTest.kt` · `manager/app/src/test/java/nd/max/ui/viewmodel/MaxAiPresentationArchitectureTest.kt` · `manager/app/src/test/java/nd/max/core/maxai/MaxAiInterruptSafetyTest.kt` (اختبارات فقط · صفر تعديل على شيفرة المنتج).
+
+**GATES (مقيسة في هذه الجلسة بعد التعديل · exit 0 لكلها):**
+`kt_balance` 3063 ملفًا · 0 عوائق · `code_health` صحّة نظيفة (8 oversized · 26 wildcard · 5 inline_ui_copy · 4 hardcoded · 20 presentation_hw_writes — كلها عند السقف) ·
+`i18n_coverage` 84+en/0 و`--prune all` 0 مفتاح يتيم · `design_tokens` 251/300 · `resource_compile` ✓ بـ`/usr/bin/aapt2` · `jni_symbols` 23 تصريحًا · 0 نواقص/يتامى والطبقة ٢ **غير مُتحقّقة** (لا ثنائيات في الشجرة).
+
+**BUILD/VERIFY — قياسان مستقلّان، كلاهما أخضر:**
+1. **CI (البيئة الحاكمة):** التشغيل `39579071662` على الالتزام `ec9c6203` = **success** · المهمّة **17m 37s** ·
+   الخطوة ٤١ `:app:testReleaseUnitTest :app:assembleRelease -x :app:lintVitalRelease` = **BUILD SUCCESSFUL in 5m 25s**،
+   و`:app:testReleaseUnitTest` **نُفِّذت فعلًا** (09:57:36 ← 09:59:25 ≈ 1m 49s) · وكل الخطوات خضراء (NDK · Rust · `jni_symbols --require-binaries` · R8 · حزمة الإصدار · التحقق من الـAPK). والأثر: `MaxManager-V2.1.zip` 22.7MB · `MaxManager-developer-bundle.zip` 21.3MB · checksums.
+2. **محليًّا على هذا الجهاز:** `:app:testReleaseUnitTest --tests "*MaxAiMasterSwitchTest" --tests "*MaxAiPresentationArchitectureTest" --tests "*MaxAiInterruptSafetyTest"`
+   (JDK 17 · SDK المثبّت · غلاف aapt2 الموثّق) = **BUILD SUCCESSFUL في 40m 15s · EXIT=0** ·
+   والتقارير XML: `MaxAiMasterSwitchTest 4/0` · `MaxAiPresentationArchitectureTest 7/0` · `MaxAiInterruptSafetyTest 5/0` = **16 اختبارًا · 0 فشل · 0 خطأ**. (والـ٤٠ دقيقة كلفة إعادة تصريف المصادر على معالج الهاتف بعد تعديل المحرك، لا كلفة الاختبارات.)
+
+**ملاحظة على آلية المستودع (واقعة مقيسة، لا ادّعاء):** الالتزامان `95017030` (المحرك + `docs/max-ai.md`) و`ec9c6203` (هذه الاختبارات الثلاثة) ظهرا أثناء الجلسة (12:32 و12:42 +0300) وبُثّا إلى `origin/main` — **لم أُشغّل `git commit` ولا `git push`**؛ أداة المزامنة في هذه البيئة هي التي التزمت وبثّت. والتشغيل الأحمر `a165815b` صار أخضر على `ec9c6203`.
+
+**RESIDUAL RISK (معلنة):**
+- هذه **حرّاس مصدر**: تُثبت بنية الشيفرة لا سلوكها. كون `aiEnabled` يُنشر قبل الدورة، وكون الدورة تُنتظر — يبقى حكمه على جهاز.
+- مخرج «غير الحاسم» الجديد في `decisionCycle` (داخل ±0.02) **بلا قياس جهاز**: هل يُقلّل `regression rollback` فعلًا؟
+- لا مراجعة سلامة مستقلة: التغيير اختبارات فقط، وتعديل المحرك كان مُلتزمًا قبل الجلسة (`95017030`).
+
+**NEXT:**
+1. المالك: الـAPK من أثر التشغيل `39579071662` (أو QV عند أي دفعة جديدة) — لا حاجة لإعادة بناء من أجلي.
+2. إن تكرّر صنف «حرس يقيس صياغة»: القاعدة صارت موثّقة بأربع حالات (`CI-GUARD-STALE-01` … `-04`) — التعبيرات على **البنية** (`Regex`) لا نصوص النداء الحرفية.
+3. الجهاز: بنود `SWIPE-NAV-01` وسلوك تعديل المحرك (ضجيج النافذة) تبقى مفتوحة كما هي.

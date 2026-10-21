@@ -33,7 +33,7 @@ import nd.max.R
  * "what the hub contains" and "what the expanded page shows" the same list.
  */
 fun maxHubRows(hub: MaxDestination): List<MaxDestination> =
-    MaxDestination.All.filter { it.parent == hub } + extraRows(hub)
+    MaxDestination.Visible.filter { it.parent == hub } + extraRows(hub)
 
 /** Screens that belong to more than one domain (see the KDoc above). */
 private fun extraRows(hub: MaxDestination): List<MaxDestination> = when (hub) {
