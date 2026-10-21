@@ -25,7 +25,9 @@ class ControlLayoutModelTest {
 
     @Test
     fun `every destination parented by Control is reachable from the page`() {
-        val fromRegistry = MaxDestination.All.filter { it.parent == MaxDestination.Control }.toSet()
+        // والقياس على ما يراه المستخدم: `hidden` يخرج من الصفوف بقرار المالك (ADR-18)
+        // ولا يجوز أن يُطالب النموذج بعرضه.
+        val fromRegistry = MaxDestination.Visible.filter { it.parent == MaxDestination.Control }.toSet()
         val hubsInModel = hubs.map { it.hub }.toSet()
         val toolsInModel = controlToolEntries().map { it.destination }.toSet()
 
@@ -36,7 +38,9 @@ class ControlLayoutModelTest {
     @Test
     fun `each hub lists every screen the registry gives it`() {
         hubs.forEach { spec ->
-            val owned = MaxDestination.All.filter { it.parent == spec.hub }.map { it.route }
+            // `Visible` لا `All`: وجهةٌ أخفاها المالك (`hidden`) تبقى في السجلّ ومسارها صالح،
+            // لكنها ليست صفًّا في الصفحة — ومطالبة النموذج بها تُسقط الاختبار على قرارٍ مقصود.
+            val owned = MaxDestination.Visible.filter { it.parent == spec.hub }.map { it.route }
             val listed = spec.features.map { it.destination.route }
             assertTrue(
                 "${spec.hub.route} is missing ${owned - listed.toSet()}",

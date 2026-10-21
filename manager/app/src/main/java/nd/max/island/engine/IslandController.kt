@@ -102,6 +102,24 @@ object IslandController {
     private val _replying = MutableStateFlow(false)
     val replying = _replying.asStateFlow()
 
+    /**
+     * معاينة التخصيص — 「الجزيرة ظاهرة حتى يراها المستخدم وهو يضبطها」.
+     *
+     * **العطب الذي حلّ محلّه:** شاشة «الجزيرة الديناميكية» تُحرّك الموضع والمقاس والاستدارة
+     * والحركة بأشرطة، بينما الجزيرة نفسها لا تُرسم إلا عند حدث ([IslandMode.Idle] = لا شيء
+     * على الشاشة). فكان الضبط أعمى: يحرّك المستخدم الشريط ولا يرى شيئًا حتى تصل رسالة أو أغنية.
+     *
+     * **والحدّ مقصود:** تُرفع من شاشة التخصيص وحدها، وتُخفض بمجرّد مغادرتها (أو مغادرة
+     * التطبيق)؛ فتعود القاعدة بعدها: الجزيرة تظهر عند الحدث وحده. ولا تُكتب في التفضيلات
+     * لأنها حالة عرض عابرة لا خيار مستخدم — و«إبقاء الكبسولة» خيارٌ آخر ([IslandSettings.idlePill]).
+     */
+    private val _previewing = MutableStateFlow(false)
+    val previewing = _previewing.asStateFlow()
+
+    fun setPreviewing(on: Boolean) {
+        _previewing.value = on
+    }
+
     fun attach(ctx: Context) { appCtx = ctx.applicationContext }
 
     /** نصّ من الموارد: تنبيهات المحرّك كانت إنجليزية صلبة في الأصل المنقول. */

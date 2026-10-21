@@ -250,10 +250,25 @@ fun DynamicIslandScreen(navController: NavController) {
     val owner = LocalLifecycleOwner.current
     DisposableEffect(owner) {
         val observer = LifecycleEventObserver { _, e ->
-            if (e == Lifecycle.Event.ON_RESUME) permTick++
+            when (e) {
+                Lifecycle.Event.ON_RESUME -> {
+                    permTick++
+                    // **معاينة حيّة أثناء التخصيص:** الجزيرة ساكنة (Idle) لا تُرسم افتراضيًّا،
+                    // فكان ضبط الموضع والمقاس والحركة أعمى. تُرفع هنا — والشاشة وحدها — كي
+                    // يرى المستخدم أثر كل شريط فورًا، وتُخفض حين يغادرها فيعود سلوك الحدث وحده.
+                    IslandController.setPreviewing(true)
+                }
+                Lifecycle.Event.ON_PAUSE, Lifecycle.Event.ON_STOP ->
+                    IslandController.setPreviewing(false)
+                else -> Unit
+            }
         }
         owner.lifecycle.addObserver(observer)
-        onDispose { owner.lifecycle.removeObserver(observer) }
+        onDispose {
+            owner.lifecycle.removeObserver(observer)
+            // وما لا يُترك معلّقًا لو خرجت الشاشة من التركيب بلا ON_PAUSE.
+            IslandController.setPreviewing(false)
+        }
     }
     val a11yOk = remember(permTick) { Perms.accessibility(ctx) }
     val overlayOk = remember(permTick) { Perms.overlay(ctx) }

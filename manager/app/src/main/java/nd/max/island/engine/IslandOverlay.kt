@@ -253,6 +253,9 @@ class IslandOverlay(
                     val queued by IslandController.queued.collectAsState()
                     val secondary by IslandController.secondary.collectAsState()
                     val idlePill by IslandSettings.idlePill.collectAsState()
+                    // معاينة شاشة التخصيص: تبقى ظاهرة وهي Idle كي يرى المستخدم أثر كل شريط.
+                    // وتُطفأ بمجرّد مغادرة الشاشة — فلا كبسولة دائمة بلا طلب.
+                    val previewing by IslandController.previewing.collectAsState()
                     // Nothing happening -> the island is not on screen at all.
                     // It grows out of the top when an activity starts and shrinks away when it ends.
                     val last = remember { LastMode() }
@@ -277,17 +280,21 @@ class IslandOverlay(
                         }
                     }
 
+                    // الظهور في السكون له طريقان: خيار المستخدم الدائم (`idlePill`)، أو معاينة
+                    // التخصيص العابرة (`previewing`) التي تُمكّن الضبط بالعين لا بالتخمين.
+                    val showWhenIdle = idlePill || previewing
                     AnimatedVisibility(
                         // Opt-in only ("Always show idle pill"): by default an idle island is not on
                         // screen at all, so turning the service on does not leave a black pill behind.
-                        // When enabled, it stays so there is something to tap (time / date / battery).
-                        visible = mode !is IslandMode.Idle || idlePill,
+                        // When enabled — or while the customization screen is open — it stays so
+                        // there is something to see and tap (time / date / battery).
+                        visible = mode !is IslandMode.Idle || showWhenIdle,
                         // Fast + snappy: no slow spring, appears almost instantly
                         enter = scaleIn(tween(140), 0.6f, TransformOrigin(0.5f, 0f)) + fadeIn(tween(90)),
                         exit = scaleOut(tween(160), 0.6f, TransformOrigin(0.5f, 0f)) + fadeOut(tween(140)),
                     ) {
                     DynamicIslandUi(
-                        mode = if (mode is IslandMode.Idle && idlePill) mode else last.value,
+                        mode = if (mode is IslandMode.Idle && showWhenIdle) mode else last.value,
                         level = level,
                         scale = scale,
                         widthScale = widthScale,
