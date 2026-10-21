@@ -60,6 +60,10 @@ the one-time migration source; it is no longer a second selector.
 - **It will not touch a never-touch interface.** Thermal trip points and their relatives are refused
   before planning, before routing and before any transaction is built — see
   [max-atlas.md](max-atlas.md).
+- **It will not lift the vendor's thermal policy.** The MI thermal mode node (`sconfig`) is **read,
+  never written** by the app: on a real device log the previous code wrote `6` ("no limits") 944 times
+  in fourteen hours with no restore, which is exactly why the phone stayed hot after Max AI was turned
+  off. A ceiling the firmware holds below our request is now reported as clamped, not overridden.
 - **It will not claim a win it did not measure.** Success requires a verified write; a command that was
   merely sent is not a result.
 - **It will not invent telemetry.** Where a value is unknown the app says `status_unknown`; it never

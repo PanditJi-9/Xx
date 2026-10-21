@@ -111,6 +111,16 @@ class MaxAiEngine @Inject constructor(
         private const val RESPONSE_WINDOW_MS = 10_000L
 
         /**
+         * أصغر تغيّر في درجة الهدف يُعدّ **قابلًا للقياس** في نافذة العشر ثوانٍ.
+         *
+         * **ولماذا لا يكفي «> ٠»:** الدرجة يهيمن عليها `cpuLoad`، وهو يتقلّب بين نافذتين
+         * بأكثر من ٠٫٠٢ بلا علاقة بأي خطوة. وكان الحكم `objectiveGain > 0f` يعني أن أكثر
+         * الخطوات تُقرأ «تراجعًا» فتُرَدّ بكتابة استرجاع، ثم يُعاد التخطيط في الدورة التالية
+         * — وهو مصدر **٧٩** سطر `regression rollback` في سجل جهاز واحد. القاعدة الآن: تراجع
+         * حقيقي وحده (`≤ -0.02`) يُسترجع؛ وما بينهما غير حاسم ولا يُسمّى نجاحًا ولا فشلًا. */
+        private const val MEANINGFUL_GAIN = 0.02f
+
+        /**
          * نافذة الحكم المؤجل: عشر ثوانٍ تقيس الأداء والحرارة جيدًا، وتقيس
          * البطارية صفرًا لأن النسبة لا تتحرك أصلًا في هذا المدى. لذلك تُعاد
          * الحلقة نفسها بعد ربع ساعة لتحمل حكمًا ثانيًا مقيسًا لا ادعاءً.
@@ -913,7 +923,42 @@ class MaxAiEngine @Inject constructor(
             val objectiveGain = objective.score(after) - objective.score(before)
             planner.recordMeasuredOutcome(step, appContextKey, before, after, objective)
             val effectAfter = planner.effectOf(step.control.key, step.direction, appContextKey)
-            val improved = objectiveGain > 0f
+            val improved = objectiveGain >= MEANINGFUL_GAIN
+            val regressed = objectiveGain <= -MEANINGFUL_GAIN
+
+            // **حكم غير حاسم**: الكتابة تحققت، والفرق داخل ضجيج النافذة. لا ادّعاء نجاح
+            // ولا استرجاع أعمى: الاسترجاع كان كتابةً ثانية على العتاد بلا دليل، وكان يُعاد
+            // التخطيط بعدها في الدورة التالية. تُترك الخطوة للحكم المؤجل (١٥ دقيقة).
+            if (!improved && !regressed) {
+                bumpCounter(PREF_ADJUSTED)
+                val inconclusive = buildEpisode(
+                    plan = plan,
+                    step = step,
+                    objective = objective,
+                    objectiveSource = objectiveSource,
+                    appContextKey = appContextKey,
+                    before = before,
+                    after = after,
+                    appliedValue = outcome.actual,
+                    verdict = MaxAiVerdict.UNMEASURED,
+                    detail = "Δ%.3f داخل ضجيج النافذة — تُترك الخطوة لحكم ١٥ دقيقة".format(objectiveGain),
+                    effectBefore = effectBefore,
+                    effectAfter = effectAfter,
+                )
+                journal.record(inconclusive)
+                noteActed(inconclusive, step, appContextKey)
+                scheduleDeferredVerdict(inconclusive, objective)
+                publish(aiEnabled = true, snapshot = after) {
+                    copy(
+                        lastDecision = DecisionRecord(
+                            step.control.label, System.currentTimeMillis(),
+                            DecisionResult.EXECUTED, "Δ%.3f — أثر غير حاسم في ١٠ ثوانٍ".format(objectiveGain)
+                        )
+                    )
+                }
+                keptWrite = true
+                return@withContext
+            }
 
             if (!improved) {
                 val restored = rollbackOnRegression(step, outcome)
