@@ -47,6 +47,13 @@ object MaxAiRejection {
     const val NO_STEP = "no_step"
     const val MEASURED_HARM = "measured_harm"
     const val PREDICTED_HARM = "predicted_harm"
+
+    /**
+     * الخطوة سليمة تقنيًّا لكنها تنزل تحت **أرضية الاستجابة** — سقف يُجعل الهاتف بطيئًا
+     * بلا مكسب يُثبته القياس. سجلّ جهاز حقيقي يوثّق البلاغ: `cpu_limits:policy0` بلغ
+     * `300000:500000` في وضع الترشيد. والمنع هنا قرار سياسة لا شكّ في العتاد.
+     */
+    const val BELOW_RESPONSIVE_FLOOR = "below_responsive_floor"
 }
 
 /** مرشّح واحد كما رآه المخطِّط في هذه الدورة بالضبط. */

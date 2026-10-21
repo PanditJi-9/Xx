@@ -11,8 +11,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.util.VelocityTracker
@@ -89,13 +91,13 @@ fun RegisterSwipeNavigation(
 /**
  * مستشعر التمرير الأفقي في **جذر** التطبيق.
  *
- * **لماذا في الجذر:** كل شاشة تمرّ من `NavHost` واحد، فالقياس في مكان واحد يغطّي
- * الشاشات كلها — بما فيها الشاشات القديمة التي لم تُبنَ على `MaxScreen` — بلا أن
- * نضيف معاملًا إلى كل توقيع.
+ * **لماذا في الجذر:** كل شاشة تمرّ من `NavHost` واحد، فالقياس في مكان واحد يغطّي الشاشات كلها.
  *
- * **وحدّه المقصود:** لا يستهلك الإيماءة. يقرأها في `Final` بعد أن مرّت على الأطفال،
- * فإن كان طفلٌ قد استهلكها (قائمة أفقية · شريط تمرير · Carousel · معادل صوتي)
- * تُركت له. فالسحب على عنصر أفقي لا يقلب الصفحة من تحت إصبع المستخدم.
+ * **متى يُلغى التنقّل:** لا يُلغيه إلا ما يملك السحب الأفقي فعلًا: صفّ أو Pager أفقي استهلك حركته،
+ * أو عنصر غير تمرير (منزلق، مقبض) أخذ الإصبع. أمّا القائمة الرأسية فلا تُلغيه، لأنها تستهلك المحور الرأسي
+ * وحده، ويُحسم الأمر بالهندسة عند رفع الإصبع. التفصيل وأسبابه في [SwipeGestureArbiter].
+ *
+ * **ولماذا يقرأ في `Final`:** كي يرى ما استهلكه الأبناء في `Main` قبل أن يقرّر.
  */
 @Composable
 fun Modifier.swipeNavigation(
@@ -104,8 +106,10 @@ fun Modifier.swipeNavigation(
 ): Modifier {
     val latestOnSwipe by rememberUpdatedState(onSwipe)
     val isRtl = LocalLayoutDirection.current == LayoutDirection.Rtl
+    // واحد لكل جذر: الاتصال المتداخل مُسجَّل هنا فيراه كل ما تحته، والحلقة أدناه تسأله عند رفع الإصبع.
+    val arbiter = remember { SwipeGestureArbiter() }
 
-    return pointerInput(enabled, isRtl) {
+    return nestedScroll(arbiter.nestedScrollConnection).pointerInput(enabled, isRtl) {
         if (!enabled) return@pointerInput
         val minDistancePx = 64.dp.toPx()
         val minVelocityPxPerSecond = 320.dp.toPx()
@@ -113,10 +117,10 @@ fun Modifier.swipeNavigation(
 
         awaitEachGesture {
             val down = awaitFirstDown(requireUnconsumed = false, pass = PointerEventPass.Initial)
+            arbiter.beginGesture()
             val velocityTracker = VelocityTracker()
             velocityTracker.addPosition(down.uptimeMillis, down.position)
             var lastPosition = down.position
-            var consumedAfterSlop = false
             var multiTouch = false
 
             while (true) {
@@ -125,23 +129,23 @@ fun Modifier.swipeNavigation(
                 val change = event.changes.firstOrNull { it.id == down.id } ?: break
                 lastPosition = change.position
 
-                // لا نحسب استهلاك «الضغط» نفسه: كل زرّ يستهلكه ليعرض أثره، ومع ذلك
-                // نريد أن يعمل السحب الذي يبدأ فوقه. ننتظر تجاوز حدّ اللمس أولًا.
-                if (!consumedAfterSlop && change.pressed && change.isConsumed) {
-                    val travelled = (change.position - down.position).getDistance()
-                    if (travelled > touchSlop) consumedAfterSlop = true
-                }
+                // لا نحسب استهلاك «الضغط» نفسه: كل زرّ يستهلكه ليعرض أثره. لا يُعدّ الاستهلاك
+                // إلا بعد أن يتجاوز الإصبع حدّ اللمس.
+                val travelled = (change.position - down.position).getDistance()
+                arbiter.onPointerEvent(
+                    consumedPastSlop = change.pressed && change.isConsumed && travelled > touchSlop,
+                    dx = change.position.x - down.position.x,
+                    dy = change.position.y - down.position.y,
+                )
 
                 velocityTracker.addPosition(change.uptimeMillis, change.position)
                 if (!change.pressed) break
             }
 
-            if (!multiTouch && !consumedAfterSlop) {
-                val dx = lastPosition.x - down.position.x
-                val dy = lastPosition.y - down.position.y
+            if (!multiTouch && !arbiter.isTakenByContent) {
                 val direction = resolveSwipeDirection(
-                    dx = dx,
-                    dy = dy,
+                    dx = lastPosition.x - down.position.x,
+                    dy = lastPosition.y - down.position.y,
                     velocityX = velocityTracker.calculateVelocity().x,
                     minDistancePx = minDistancePx,
                     minVelocityPxPerSecond = minVelocityPxPerSecond,

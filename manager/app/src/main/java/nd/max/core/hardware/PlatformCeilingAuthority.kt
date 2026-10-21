@@ -54,7 +54,18 @@ object PlatformCeilingAuthority {
     private const val GED_CUST_BOOST = "/sys/module/ged/parameters/gpu_cust_boost_freq"
     private const val GED_DVFS_ENABLE = "/sys/module/ged/parameters/gpu_dvfs_enable"
 
-    /** `6` = «بلا حدود» في واجهة حرارة MI. وتُكتب عند كل طلب فلا تبقى حدود جلسة سابقة. */
+    /**
+     * `6` = «بلا حدود» في واجهة حرارة MI — قيمة تُقرأ ولا تُكتب من هذا التطبيق.
+     *
+     * **وسجلّ الجهاز (rodin · ٢٠٢٦-١٠-١٤) هو سبب هذا التعليق:** ٩٤٤ كتابة
+     * `sconfig wrote=6 read=6 verdict=matched` في أربع عشرة ساعة، بلا حفظ للقيمة السابقة وبلا
+     * استرجاع — أي أن التطبيق كان يُبقي حماية المصنّع الحرارية مطفأة معظم الوقت، ثم يتركها
+     * مطفأة بعد إطفاء Max AI. وهذا يُفسّر بالضبط: حرارة ٤٥–٤٦°م في الاستخدام العادي، وبقاءها
+     * بعد الإطفاء. وهو خطّ أحمر لا يُخترق: **لا نُعطّل حماية حرارية ولا نُضعفها.**
+     *
+     * فصارت القيمة مقياسًا للقراءة فقط: يُعرف بها هل سقف المنصّة مفتوح، ويُبلَّغ الرفع فوقه
+     * صادقًا (`clamped`) بدل أن يُغيَّر وضع الحماية كي ينجح.
+     */
     const val MI_THERMAL_NO_LIMITS_MODE = 6
 
     /**
@@ -83,7 +94,15 @@ object PlatformCeilingAuthority {
 
     /** ما تمّ فعلًا — يُعاد للمتصل ليُسجَّل، ولا يُخزَّن هنا (لا حالة في هذا الملف). */
     data class Report(
-        val releasedMiThermalMode: Boolean,
+        /**
+         * وضع حرارة MI كما قُرئ **قبل** الطلب: `true` = مفتوح (٦، لا سقف منصّة)،
+         * `false` = سقف منصّة فعّال، `null` = العقدة غائبة أو غير مقروءة.
+         *
+         * **وقراءة لا كتابة:** كان الحقل `releasedMiThermalMode` ويُملأ من كتابة
+         * `sconfig=6` في كل طلب سقف — أي تحرير حماية المصنّع كي يمرّ الرفع
+         * (٩٤٤ كتابة مقيسة في سجل جهاز). والآن يُقاس الوضع ويُبلَّغ، ولا يُغيَّر.
+         */
+        val vendorThermalModeOpen: Boolean?,
         val cpuLimitAccepted: Boolean,
         val powerhalRangeAccepted: Boolean,
         val gpuCoolingReleased: Boolean,
@@ -136,14 +155,17 @@ object PlatformCeilingAuthority {
      * @return تقرير بما استُقبل فعلًا؛ وكل قناة غائبة تُترك `false` فلا يُدّعى تحرير لم يقع.
      */
     fun permitCpu(policyIndex: Int, minKHz: Long?, maxKHz: Long?): Report {
-        val released = releaseMiThermalMode()
+        // **ولا تحرير لوضع حرارة MI.** كان `releaseMiThermalMode()` يكتب `6` («بلا حدود»)
+        // قبل كل سقف: ٩٤٤ كتابة في سجل جهاز واحد، بلا حفظ ولا استرجاع. وهذا إضعافٌ مباشر
+        // لحماية المنصّة، وهو أصل الحرارة التي بقيت بعد إطفاء Max AI. صار الوضع يُقرأ فقط.
+        val open = miThermalModeOpen()
         // `cpu_limits` عقدة تكتب فقط: التحقق عليها كان `unreadable` دائمًا (و`false` دائمًا
         // هنا تبعًا له) — فيُرسَل الأمر ويُسجَّل `write_only_sent` بلا قراءة مستحيلة.
         val limitAccepted = maxKHz != null &&
             writeFireAndForget(MI_THERMAL_CPU_LIMITS, cpuLimitRequest(policyIndex, maxKHz))
         val rangeAccepted = minKHz != null && maxKHz != null &&
             writePowerhalRange(policyIndex, minKHz, maxKHz)
-        return Report(released, limitAccepted, rangeAccepted, false, false)
+        return Report(open, limitAccepted, rangeAccepted, false, false)
     }
 
     /** `/proc/powerhal_cpu_ctrl/perfserv_freq` وحده — لمسار لا يعرف `min`. */
@@ -155,10 +177,17 @@ object PlatformCeilingAuthority {
      * فوق أي كتابة. والقيمة تُقرأ بعدها، فرجوع الجهاز إلى وضع مقصود (مثلًا أثناء شحن) يُبلَّغ عنه
      * بدل أن يُدّعى تحرير لم يستقرّ.
      */
-    fun releaseMiThermalMode(): Boolean =
-        // عند الحاجة فقط: تُنادى في كل `permitCpu` (كل سياسة في كل تبديل)، والوضع غالبًا `6`
-        // أصلًا — فكتابة عمياء كل مرة سطرٌ وكتابة بلا تغيّر قيمة.
-        writeVerifiedIfDifferent(MI_THERMAL_SCONFIG, MI_THERMAL_NO_LIMITS_MODE.toString())
+    /**
+     * وضع حرارة MI كما هو الآن: `true` = مفتوح (٦)، `false` = سقف فعّال، `null` = لا قراءة.
+     *
+     * **قراءة فقط — ولا تُضاف كتابة هنا.** الوضع ملك المنصّة؛ من يكتبه يُطفئ حمايتها، ومن
+     * يكتبه كل طلب (كما كان) يُطفئها كل دقيقة ويتركها مطفأة بعد الإطفاء. والمستدعي يستعمل
+     * النتيجة للتبليغ لا للتجاوز: إن كان السقف مغلقًا فالرفع سيُقصّ، وهذا يُقال صادقًا.
+     */
+    fun miThermalModeOpen(): Boolean? {
+        val raw = RootFileAccess.read(MI_THERMAL_SCONFIG)?.trim()?.toIntOrNull() ?: return null
+        return raw == MI_THERMAL_NO_LIMITS_MODE
+    }
 
     // ── GPU ────────────────────────────────────────────────────────────────────
 
@@ -192,7 +221,13 @@ object PlatformCeilingAuthority {
         // الجهاز يبقى على تردد ضعيف بلا سبب ظاهر في أي شاشة. (وهذا خطأ أدركناه في المراجعة،
         // ومسجّل هنا لأنه لا يظهر في أي اختبار وحدة: يظهر بعد تحرير المستخدم للتثبيت.)
         setGedDvfs(enabled = !lock)
-        return Report(false, false, false, coolingReleased, gedReleased)
+        return Report(
+            vendorThermalModeOpen = null,
+            cpuLimitAccepted = false,
+            powerhalRangeAccepted = false,
+            gpuCoolingReleased = coolingReleased,
+            gedCeilingReleased = gedReleased,
+        )
     }
 
     /**

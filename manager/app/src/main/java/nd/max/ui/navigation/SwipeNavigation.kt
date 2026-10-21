@@ -59,7 +59,7 @@ fun resolveSwipeDirection(
  * أقل ميل مقبول: الأفقي يجب أن يتجاوز الرأسي بنسبة ١٫٤. أقل من ذلك تمريرٌ مائل
  * يُترك للقائمة الرأسية كما هو.
  */
-private const val SWIPE_SLOPE_RATIO = 1.4f
+internal const val SWIPE_SLOPE_RATIO = 1.4f
 
 /**
  * ما تسجّله شاشة ذات تبويبات عند الجذر: ماذا تفعل حين يُسحب المحتوى.

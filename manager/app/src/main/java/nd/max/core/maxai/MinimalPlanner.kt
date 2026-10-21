@@ -171,6 +171,29 @@ class MinimalPlanner @Inject constructor(
                 return@forEach
             }
 
+            // **أرضية الاستجابة** — لا نُسقِف الجهاز إلى حدّ يُجعله بطيئًا بلا مكسب.
+            //
+            // والعطب مقيس لا مُتخيَّل: `cpu_limits:policy0` بلغ `300000:500000` (٥٠٠ ميجاهرتز)
+            // على rodin في وضع الترشيد، لأن السلّم يسمح بالنزول إلى أرضية العتاد والهدف لا
+            // يتحقّق أبدًا (انظر `Objective.BATTERY_COMFORT_FRACTION`). والنتيجة لاغ حادّ
+            // يُلاحظه المستخدم ولا يُبرّره أي توفير مقيس.
+            //
+            // وقاعدة النزول تُخالف قاعدة الرفع عن قصد: الأمان يستطيع أن يُسقف إلى ٢٥٪ من المدى
+            // (`MaxAiThermalCurve.overshootFloorCap`) لأن حرارة خطرٍ تبرّر البطء؛ أما Max AI
+            // فلا يملك هذا التبرير — لا يملك قياسَ حرارةٍ يستوجبها، ومهمّته «أصغر تدخّل كافٍ».
+            if (direction == ControlRegistry.Direction.SAVE_ENERGY &&
+                belowResponsiveFloor(control, next)
+            ) {
+                traces += CandidateTrace(
+                    key = control.key, label = control.label, from = current, to = next,
+                    utility = 0f, credibility = cred,
+                    predictedGain = null, predictedThermalC = null, predictionConfidence = null,
+                    samples = effect.samples, rejection = MaxAiRejection.BELOW_RESPONSIVE_FLOOR,
+                    chosen = false,
+                )
+                return@forEach
+            }
+
             // استُبعد بالتجربة: يسخّن بلا مكسب يُذكر (تعلّم سابق مقيس).
             if (outcomeModel.isThermallyHarmful(control.key, direction, appContext)) {
                 traces += CandidateTrace(
@@ -466,6 +489,40 @@ class MinimalPlanner @Inject constructor(
         /** فوق هذه الدرجة يُعد الجهاز محققًا للهدف فلا يتدخل العقل. */
         const val SATISFIED_SCORE = 0.75f
         const val MIN_EXPECTED_IMPACT = 0.01f
+
+        /**
+         * أدنى موضع يُسمح لـMax AI أن ينزل به سقف CPU إليه، كسرًا من سلّم العتاد.
+         *
+         * ٥٠٪: نصف مدى العنقود يبقى قادرًا على العمل اليومي (واجهة، تمرير، تطبيقات)،
+         * والوقوف عند حدّ أفضل من بلوغ أرضية العتاد. والأمان يتجاوزه إلى ٢٥٪ عند الخطر
+         * (`MaxAiThermalCurve`)، فالحدّ يخصّ طبقة الترشيد وحدها.
+         */
+        const val MIN_RESPONSIVE_CPU_FRACTION = 0.5f
+
+        /** نظيره لGPU: ٣٥٪ — ترشيدُ تردد الرسوم لا يُوقف الواجهة عند حدّ أعلى. */
+        const val MIN_RESPONSIVE_GPU_FRACTION = 0.35f
+
+        /**
+         * هل تقع هذه القيمة، على سلّم المقبض، تحت أرضية الاستجابة؟
+         *
+         * ويُقاس **بالموضع على السلّم** لا بالهرتز: السلّم نفسه هو ما اكتشفه التطبيق من العتاد
+         * (من الأرضية إلى الأعلى)، فموضعه نسبةٌ من المدى الحقيقي — والهرتز المطلق يختلف بين
+         * الأجهزة والعناقيد فلا يصلح حدًّا عامًّا.
+         */
+        internal fun belowResponsiveFloor(
+            control: ControlRegistry.Control,
+            to: String,
+        ): Boolean {
+            val floor = when (control.feature) {
+                HardwareFeature.CPU_FREQUENCY -> MIN_RESPONSIVE_CPU_FRACTION
+                HardwareFeature.GPU_FREQUENCY -> MIN_RESPONSIVE_GPU_FRACTION
+                else -> return false
+            }
+            val span = control.ladder.size - 1
+            if (span <= 0) return false
+            val index = control.indexOf(to) ?: return false
+            return index.toFloat() / span < floor
+        }
 
         /** فوق هذه الثقة يُعتمد التنبؤ في الاستبعاد المسبق. */
         const val TRUST_CONFIDENCE = 0.45f
