@@ -76,7 +76,7 @@ class MaxTabStripContractTest {
         )
         assertFalse(
             "عاد bringIntoView — يكفي أن يُرى عند الحافة، وهو ما رُفض بأمر المالك",
-            strip.contains("bringIntoView"),
+            strip.contains("bringIntoViewRequester") || strip.contains(".bringIntoView("),
         )
     }
 }

@@ -11,10 +11,10 @@ import android.content.pm.ActivityInfo
 import android.os.BatteryManager
 import android.provider.Settings
 import android.text.format.DateFormat
+import android.view.WindowManager
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.shape.GenericShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.State
@@ -23,16 +23,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Outline
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -44,13 +37,11 @@ import kotlinx.coroutines.delay
  * الفاتح (نفس سابقة `GamePanelSurface`). الألوان هنا ثوابت السطح وحده؛ أمّا الفراغات والأنصاف فتأتي
  * من `MaxSpace`/`MaxRadius` حتى لا يتفرّع لها نظام ثانٍ.
  *
- * ### الشكل الحالي: بطاقات Carousel بعمق
+ * ### الشكل الحالي: حلقة 3D + مركز تحكم
  *
- * بطاقة اللعبة المحدَّدة كبيرة بإطار متوهّج، وجارتاها أصغر ومائلتان وخافتتان؛ شريط تبويب علويّ
- * مائل؛ وصفّ أزرار سفليّ يتوسّطه «ابدأ». هذا الشكل طلبه المالك صراحةً لهذه الشاشة (يتقدّم على
- * بند «لا تقليد شكل» في `AGENTS.md` §0.4 لها وحدها — انظر تسجيله في `NEXT_TASK.md`).
- * **ولم يُنقل أيّ أصل**: لا شعار، لا صورة، لا خط، لا ألوان؛ الأشكال والتوهّج مرسومة هنا بالكود،
- * والصور هي أيقونات التطبيقات المثبَّتة فعلًا على الجهاز.
+ * مسرح بحلقة بطاقات ثلاثية الأبعاد (ميل وعمق وتقارب) يمين عمود معلومات اللعبة وزرّ «ابدأ»، وسحبة
+ * رأسية تنقل المسرح إلى «مركز التحكم» الذي يضمّ كل الإعدادات في سطح واحد. التخطيط والأشكال والألوان
+ * مرسومة هنا بالكود، **ولم يُنقل أيّ أصل** — والصور هي أيقونات التطبيقات المثبَّتة على الجهاز.
  *
  * ### أحمر العلامة ثابت هنا عن قصد
  *
@@ -91,97 +82,6 @@ object LobbyPalette {
 
     /** نفس `Caution` في `DESIGN.md` على الداكن (تباين ١٠٫٥٠). */
     val Caution = Color(0xFFFFB86B)
-}
-
-/**
- * سداسيّ مدبَّب الجانبين — للعناصر الصغيرة التي تحمل صورة. محفوظ كما كان.
- */
-val LobbyHexShape = GenericShape { size, _ ->
-    val w = size.width
-    val h = size.height
-    val k = w * 0.25f
-    moveTo(k, 0f)
-    lineTo(w - k, 0f)
-    lineTo(w, h / 2f)
-    lineTo(w - k, h)
-    lineTo(k, h)
-    lineTo(0f, h / 2f)
-    close()
-}
-
-/** ثُمانيّ بزوايا مقطوعة — زرّ «ابدأ». */
-val LobbyAngledShape = GenericShape { size, _ ->
-    val c = size.height * 0.30f
-    val w = size.width
-    val h = size.height
-    moveTo(c, 0f)
-    lineTo(w - c, 0f)
-    lineTo(w, c)
-    lineTo(w, h - c)
-    lineTo(w - c, h)
-    lineTo(c, h)
-    lineTo(0f, h - c)
-    lineTo(0f, c)
-    close()
-}
-
-/**
- * شبه منحرف أعرض عند الأعلى بكتفين منحنيين — شريط التبويب العلويّ المعلَّق: الضلعان ينحدران بحدّة
- * قرب السقف ثم يلتفّان نحو الحافة السفلى الأضيق.
- */
-val LobbyStripShape = GenericShape { size, _ ->
-    val w = size.width
-    val h = size.height
-    val inset = h * 0.85f
-    val shoulder = h * 0.25f
-    moveTo(0f, 0f)
-    lineTo(w, 0f)
-    quadraticBezierTo(w - shoulder, h * 0.55f, w - inset, h)
-    lineTo(inset, h)
-    quadraticBezierTo(shoulder, h * 0.55f, 0f, 0f)
-    close()
-}
-
-/**
- * سداسيّ مفلطح مدبَّب الجانبين بحافتين مائلتين ٤٥° — أزرار الصفّ السفليّ. القطع [k] نصف الارتفاع
- * (وبحدّ أقصى ٣٠٪ من العرض) فتبقى الزاويتان متماثلتين مهما اختلف عرض الزرّ.
- */
-val LobbyHexButtonShape = GenericShape { size, _ ->
-    val w = size.width
-    val h = size.height
-    val k = minOf(h * 0.5f, w * 0.30f)
-    moveTo(k, 0f)
-    lineTo(w - k, 0f)
-    lineTo(w, h / 2f)
-    lineTo(w - k, h)
-    lineTo(k, h)
-    lineTo(0f, h / 2f)
-    close()
-}
-
-/**
- * بصمة اللوبي: زاويتان مقطوعتان بزاوية ٤٥° (بداية-أعلى ونهاية-أسفل) والأخريان حادّتان.
- * تنعكس في RTL فيبقى القطع على القطر نفسه بصريًّا. شكلٌ واحد للبطاقة والبلاطات بدل
- * `GenericShape` متفرّقة بأحجام مختلفة.
- */
-class LobbyChamferShape(private val cut: Dp) : Shape {
-    override fun createOutline(size: Size, layoutDirection: LayoutDirection, density: Density): Outline {
-        val c = with(density) { cut.toPx() }.coerceAtMost(minOf(size.width, size.height) / 2f)
-        val w = size.width
-        val h = size.height
-        val rtl = layoutDirection == LayoutDirection.Rtl
-        fun x(v: Float): Float = if (rtl) w - v else v
-        val path = Path().apply {
-            moveTo(x(c), 0f)
-            lineTo(x(w), 0f)
-            lineTo(x(w), h - c)
-            lineTo(x(w - c), h)
-            lineTo(x(0f), h)
-            lineTo(x(0f), c)
-            close()
-        }
-        return Outline.Generic(path)
-    }
 }
 
 /**
@@ -264,6 +164,20 @@ fun LobbyWindowEffect() {
             controller?.show(WindowInsetsCompat.Type.systemBars())
             activity?.requestedOrientation = restoreOrientation
         }
+    }
+}
+
+/**
+ * يُبقي الشاشة مضاءة ما دام اللوبي ظاهرًا و[enabled] صحيح، ويُزيل العلَم عند الخروج أو الإيقاف.
+ * لا أحد في التطبيق يضع هذا العلَم غير اللوبي، فإزالته آمنة ولا تمسّ شاشة أخرى.
+ */
+@Composable
+fun LobbyKeepScreenOn(enabled: Boolean) {
+    val context = LocalContext.current
+    DisposableEffect(context, enabled) {
+        val window = if (enabled) context.findActivity()?.window else null
+        window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        onDispose { window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON) }
     }
 }
 

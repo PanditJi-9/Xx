@@ -187,41 +187,6 @@ fun AppConfig.customizedFieldCount(): Int = listOf(
 ).count { it != "default" } + if (decodePerAppCpuPolicyControls(cpu_policy_controls).isNotEmpty()) 1 else 0
 
 /**
- * §1.1 — **قيمة مفتاح من مفاتيح المجموعات** في هذا الملفّ، و`"default"` لما ليس منها.
- *
- * وهي مرآة قراءةٍ لكتالوج `GameComboCatalog` نفسه: بها تُقرأ المجموعة الجديدة من واقع اللعبة
- * («ابدأ من الحالي»)، ويُعرض بها المحرّرُ قيمة اللعبة الحالية بجانب اختيار المجموعة. ودالّةٌ
- * واحدة هنا خيرٌ من `when`ين ينحرف أحدهما في سطر، فيُعرض «ما هو موجود» وليس ما وُجد فعلًا.
- */
-fun AppConfig.comboValue(key: String): String = when (key) {
-    "touch_boost" -> touch_boost
-    "haptic_feedback" -> haptic_feedback
-    "perf_lite_mode" -> perf_lite_mode
-    "cpu_boost" -> cpu_boost
-    "kill_bg_apps" -> kill_bg_apps
-    "game_preload" -> game_preload
-    "force_hw_ui" -> force_hw_ui
-    "wifi_no_sleep" -> wifi_no_sleep
-    "dnd_on_gaming" -> dnd_on_gaming
-    "disable_notifs" -> disable_notifs
-    "bypass_charging" -> bypass_charging
-    "gpu_profile" -> gpu_profile
-    "refresh_rate" -> refresh_rate
-    "resolution_downscale" -> resolution_downscale
-    else -> "default"
-}
-
-/**
- * §1.1 — **لقطة تخصيصات اللعبة الآن**: مفتاح → قيمته، وما كان `default` لا يدخل.
- *
- * فالمجموعة الجديدة تبدأ من الواقع لا من فراغ: تُفتح وفيها ما عدّله صاحب الجهاز فعلًا، فيرى
- * ماذا ستحمل، ويضيف أو يُسقط. والمفتاح الذي قيمته `default` لا يدخل مجموعة عن قصد — المجموعة
- * اختياراتٌ، و`default` ليست اختيارًا بل غيابَه.
- */
-fun AppConfig.comboSnapshot(keys: List<String>): Map<String, String> =
-    keys.mapNotNull { key -> comboValue(key).takeIf { it != "default" }?.let { key to it } }.toMap()
-
-/**
  * مقبض سقف GPU: **مالك واحد** لكل تطبيق — والاختياران لا يجتمعان.
  *
  * ولماذا هذا دالّة خالصة لا سطرين داخل `updateSetting`: لأن العطب الذي أوجبتها **مقيس من سجل

@@ -10,7 +10,7 @@ package nd.max.core.gamespace
 import java.util.Locale
 
 /**
- * منطق نقيّ للوبي الجديد (بطاقات Carousel) — يُقاس بلا جهاز. الرسم نفسه في `LobbyCarousel`
+ * منطق نقيّ للوبي (حلقة الشرائح 3D) — يُقاس بلا جهاز. الرسم نفسه في `LobbyStage` و`LobbyChrome`
  * و`GameLobbyScreen` ولا يعرف هذه الأرقام.
  *
  * ما هنا يخدم قاعدة واحدة من `DESIGN.md`: **الرقم الذي لا يملكه التطبيق يُعرض شرطةً لا صفرًا**

@@ -22683,3 +22683,35 @@ BUILD FAILED in 6m 12s
 1. المالك: الـAPK من أثر التشغيل `39579071662` (أو QV عند أي دفعة جديدة) — لا حاجة لإعادة بناء من أجلي.
 2. إن تكرّر صنف «حرس يقيس صياغة»: القاعدة صارت موثّقة بأربع حالات (`CI-GUARD-STALE-01` … `-04`) — التعبيرات على **البنية** (`Regex`) لا نصوص النداء الحرفية.
 3. الجهاز: بنود `SWIPE-NAV-01` وسلوك تعديل المحرك (ضجيج النافذة) تبقى مفتوحة كما هي.
+
+## Executor log — LOBBY-3D-01 (لوبي ثلاثيّ الأبعاد · مركز تحكم موحّد · حذف Combos · خيارات جديدة) — 2026-10-21 · DONE_WITH_CONCERNS
+
+**TASK (المالك):** تغيير تخطيط اللوبي بالكامل إلى 3D مع سحب رأسيّ ناعم، وإزالة Combos، ودمج الإعدادات، وإضافة خيارات جديدة.
+
+**التنفيذ:**
+- `LobbyStage.kt` (جديد): حلقة شرائح بميل وعمق وتقارب عبر `graphicsLayer`؛ خلفية من أيقونة اللعبة المثبَّتة؛ جسيمات زينة؛ مسطرة موضع؛ هيكل تحميل.
+- `GameLobbyScreen.kt` (مُعاد كتابته): `VerticalPager` بصفحتين (المسرح ⇄ مركز التحكم)؛ التبويبات العلويّة تنزلق مع الإصبع؛ الرجوع والريموت (↑/R1/L1) ومفاتيح الاتجاه.
+- `LobbyControlCenter.kt` (جديد): سطح واحد بأربعة أقسام (ملف اللعبة · اللوحة الجانبية · اللوبي · المكتبة) بدل أربع نوافذ منبثقة.
+- `LobbyChrome.kt` (جديد): تبويبات، كبسولة حالة (قراءات حقيقية، `—` لما لا يُقرأ)، أزرار، عمود معلومات، تلميح سحب، إشعار.
+- `LobbyDeckMath.kt` · `LobbyPrefs.kt` · `LobbyPrefsModel.kt` (جديد): رياضيات الحلقة ومنطق الترتيب والتفضيلات النقيّة، بلا Android في الاختبارات.
+- الخيارات الجديدة (٩): عمق 3D · تأثيرات محيطة · وميض الإطلاق · ألوان من اللعبة · ترتيب · كبسولة الحالة · اهتزاز اللوبي · إبقاء الشاشة مضاءة · الفتح على آخر لعبة. كلها تفضيلات عرض محلّية (ADR-11: لا كتابة عتاد).
+- حُذف: `GameCombo.kt` · `GameComboStore.kt` · `GameCombosDialog.kt` · `GameComboTest.kt` · `comboValue`/`comboSnapshot` في `AppConfigUtil.kt` · ٢٤ نصًّا `combos_*`، و`LobbyCarousel.kt` · `LobbyCockpit.kt` · `GameProfileDialog.kt` · `PanelHandleSettingsDialog.kt` · `GameLobbyManageDialog.kt`.
+- نصوص en/ar فقط (§0.2): ٣٢ مفتاحًا جديدًا، ومفتاحان مُحدَّثان (الزينة).
+
+**ADR-12 (مُطبَّق):** التأثيرات المحيطة ووميض الإطلاق **مُطفأة افتراضيًّا** مع ملاحظة تكلفة في نصّ الخيار، ولا تُركَّب حركتها المستمرّة إلا عند تفعيلها. التخطيط ثلاثيّ الأبعاد (تحويل هندسي) مُفعَّل افتراضيًّا بطلب المالك.
+
+**تصحيح قبل التسليم (يُعلن ولا يُخفى):** كتبتُ في تعليقات أولى ثلاثة ادّعاءات بلا سند — «قياس» لمسافة الكاميرا من لقطة لم تُقَس، وإحالة إلى «§14» غير موجودة في الوثائق، وإحالة إلى ADR-12 بمعنى غير معناه. صُحِّحت كلها. وكانت التأثيرات الزخرفية مُفعَّلة افتراضيًّا فخالفت ADR-12 وأُطفئت.
+
+**GATES:** kt_balance ٠ عوائق · code_health exit 0 · design_tokens exit 0 (٢٥٢/٣٠٠) · rtl_guard exit 0 · i18n `--assert` exit 0 · i18n `--prune all` (dry-run) مفاتيح يتيمة ٠ · license_audit `--assert` exit 0 · اختبارات المنطق النقيّ ١٥/١٥ (أداة JUnit مُبسَّطة، لا Gradle).
+
+**BUILD:** compilation unverified in this environment (ADR-15). فحص نحويّ لكل الملفات المتغيّرة: صفر أخطاء بنيوية. كل مراجع `nd.max` وكل `R.string` (١٠٨) تُحلّ. تجربة ضابطة: الملفات الأصلية تعطي نمط الأخطاء نفسه في هذه البيئة، فالأخطاء المتبقية بيئية (لا Android/Compose هنا).
+
+**RESIDUAL RISK (يُعلن ولا يُدَّعى):**
+- توقيع `PagerDefaults.flingBehavior` (`pagerSnapDistance`, `snapAnimationSpec`) غير متحقَّق منه في نسخة Compose هنا، ولا استعمال سابق له في الريبو — أول نقطة فشل محتملة في CI.
+- كل القيم البصرية تقديرية ولم تُقَس على جهاز: سلاسة ٦٠fps، عتبة الانتقال الرأسيّ، القفل العرضي، إخفاء الأشرطة، قصّ الكاميرا، إشارة الميل في RTL.
+- `docs/PROVENANCE.md` لم يُعَد توليده (يحتاج `python3 tools/license_audit.py --provenance` وgit). `docs/ai/source-manifest.txt` لم يُعَد توليده لأن مرجعه لا يطابق الشجرة أصلًا (٢٣٠ ملفًا مختلفًا، بينها ملفات لم أمسّها).
+- الخيارات الجديدة ٩، ولم تُنفَّذ قائمة الـ١٠٠ فكرة المذكورة سابقًا.
+
+**NEXT:** CI compile + اختبارات الوحدة ← UAT لمس على الجهاز ← ضبط القيم البصرية بالقياس.
+
+**FILES:** `manager/app/src/main/java/nd/max/ui/subscreens/GameLobbyScreen.kt` · `ui/subscreens/LobbyControlCenter.kt` · `ui/component/LobbyStage.kt` · `ui/component/LobbyChrome.kt` · `ui/component/LobbyVisuals.kt` · `core/gamespace/LobbyDeckMath.kt` · `core/gamespace/LobbyPrefs.kt` · `core/gamespace/LobbyPrefsModel.kt` · `core/gamespace/LobbyModel.kt` · `ui/util/AppConfigUtil.kt` · `ui/component/ShelfRomCard.kt` · `ui/subscreens/LobbyProfileComponents.kt` · `res/values/max_gaming_strings.xml` · `res/values-ar/max_gaming_strings.xml` · اختبارات: `LobbyDeckMathTest.kt` · `LobbyPrefsModelTest.kt`
