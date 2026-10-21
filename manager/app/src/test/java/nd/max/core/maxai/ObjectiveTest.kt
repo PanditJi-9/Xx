@@ -73,6 +73,44 @@ class ObjectiveTest {
     }
 
     @Test
+    fun `eco can be satisfied above the battery comfort line`() {
+        // **العطب المقيس (سجل جهاز + لقطات ٢٠٢٦-١٠-٢١):** كان وزن البطارية هو نسبة الشحن
+        // نفسها، فسقف الدرجة في وضع الترشيد عند ١٥٪ = 0.253 — و`SATISFIED_SCORE = 0.75`
+        // غير قابل للبلوغ رياضيًّا. فالمحرك بلا راحة: يهبط بسقف CPU درجة كل ٣٠ ثانية إلى
+        // أرضية السلّم. الدعوى القابلة للتكذيب: عند شحن ٦٠٪ وحمل منخفض وجهاز بارد يجب أن
+        // يبلغ الجهاز عتبة الرضا فلا يتدخل.
+        val score = Objective.ECO.score(
+            snapshot(cpuLoad = 0.4f, thermal = 0.35f, battery = 0.6f)
+        )
+        assertTrue("درجة $score يجب أن تبلغ ${MinimalPlanner.SATISFIED_SCORE}", score >= MinimalPlanner.SATISFIED_SCORE)
+    }
+
+    @Test
+    fun `eco still sees a gap when the battery is genuinely low`() {
+        val score = Objective.ECO.score(
+            snapshot(cpuLoad = 0.57f, thermal = 0.441f, battery = 0.15f)
+        )
+        assertTrue("الشحن المنخفض يبقى فجوة تُبرّر خطوة", score < MinimalPlanner.SATISFIED_SCORE)
+    }
+
+    @Test
+    fun `battery headroom saturates at the comfort line and never exceeds one`() {
+        assertEquals(0f, Objective.batteryHeadroom(0f), 0.0001f)
+        assertEquals(0.5f, Objective.batteryHeadroom(Objective.BATTERY_COMFORT_FRACTION / 2f), 0.0001f)
+        assertEquals(1f, Objective.batteryHeadroom(Objective.BATTERY_COMFORT_FRACTION), 0.0001f)
+        assertEquals(1f, Objective.batteryHeadroom(1f), 0.0001f)
+    }
+
+    @Test
+    fun `performance never raises on a low battery`() {
+        // رفع السقف عند شحن منخفض نقيضُ طلب المستخدم ومصدر حرارةٍ لا يُبرّره وضع الأداء.
+        val direction = Objective.PERFORMANCE.preferredDirection(
+            snapshot(cpuLoad = 0.95f, thermal = 0.3f, battery = 0.2f)
+        )
+        assertEquals(ControlRegistry.Direction.SAVE_ENERGY, direction)
+    }
+
+    @Test
     fun `preference round-trips through labels`() {
         listOf(
             "performance" to Objective.PERFORMANCE,

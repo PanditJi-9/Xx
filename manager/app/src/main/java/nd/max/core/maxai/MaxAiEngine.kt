@@ -42,6 +42,7 @@ import kotlin.math.abs
 import nd.max.core.jni.PredictorBridge
 import nd.max.core.platform.EventLog
 import nd.max.core.platform.PropertyUtils
+import nd.max.core.platform.ThermalUtil
 import nd.max.receiver.MaxManagerReceiver
 
 /**
@@ -93,24 +94,18 @@ class MaxAiEngine @Inject constructor(
 
         /** دورة المراقبة: بطيئة عمدًا (مبدأ FDE.AI — تحكم لا يتأرجح). */
         private const val CYCLE_MS = 30_000L
-        private const val SAFETY_CYCLE_MS = 1_000L
 
         /**
-         * إيقاع حلقة السلامة والشاشة مطفأة — خمس ثوانٍ بدل ثانية.
+         * إيقاع الحلقة السريعة في [`MaxAiDutyCycle`] — ثانية/خمس ثوانٍ/ربع دقيقة
+         * (يعمل/شاشة مطفأة/مطفأ). والقرار انتقل إلى هناك كدالّة نقية تُقاس باختبار JVM
+         * بدل أن يكون رقمين مدفونين في حلقة لا تُختبر.
          *
-         * **العطب المقيس (جولة الحرارة واللاغ):** الحلقة تعمل منذ `start()` في
-         * `MaxManagerApplication` **ولا تُوقف أبدًا** (لا `stop()` في الشجرة)، وفي كل دورة
-         * (كل ثانية، ٣٦٠٠ في الساعة) تُجمع حالة الجهاز كاملة والتصنيفات تُحسب وتُسجَّل
-         * (`DeviceStateCollector.collect` + `predictThermal` + `evaluate` + `noteCadence`).
-         * وهذا يقع في جيب المستخدم أيضًا، وفي أكثر ساعات اليوم تكون الشاشة مطفأة والمحتوى
-         * الحراري لا يتغيّر إلا على مدى دقائق — فالاستطلاع كل ثانية بلا حدث.
-         *
-         * **ولا يُسقط هذا شرطًا:** نفس الدورة ونفس القراءة ونفس [SafetyEngine] تكمل — يُبطأ
-         * الإيقاع فقط حين لا شاشة. وثابت الوقاية (‏`EMERGENCY_TEMP_C = 58`) أعلى من كل عتبات
-         * الاستخدام، وثابت الزمن الحراري دقائق لا ثوانٍ؛ فالفرق العملي ر٤ ثوانٍ في الكشف
-         * مقابل **٨٠٪ أقل استطلاع** في أكثر الوقت. **وهذا موضع سلامة: يحتاج مراجعة مستقلة قبل الإغلاق.**
+         * **والعطب المقيس (جولة الحرارة واللاغ):** الحلقة تعمل منذ `start()` ولا تتوقّف،
+         * وفي كل ثانية تُجمع حالة الجهاز كاملة وتُستدعى JNI وتُقيَّم السلامة وتُسجَّل —
+         * **والمحرك مطفأ كما وهو يعمل**. فمن يُطفئ Max AI لا يُوقف عمله الخلفي. والإصلاح:
+         * المطفأ لا يأخذ إلا حاجز الطوارئ (قراءة حرارة واحدة كل ربع دقيقة). **موضع سلامة:
+         * يحتاج مراجعة مستقلة قبل الإغلاق.**
          */
-        private const val SAFETY_SCREEN_OFF_CYCLE_MS = 5_000L
 
         /** مهلة استجابة النظام بين التنفيذ وقياس النتيجة. */
         private const val RESPONSE_WINDOW_MS = 10_000L
@@ -210,6 +205,15 @@ class MaxAiEngine @Inject constructor(
     val profileRequest: StateFlow<ProfileRequestState> = _profileRequest.asStateFlow()
 
     private val cycleRunner = CoalescingCycleRunner()
+
+    /**
+     * حارس معدّل الكتابة — يمنع تأرجح الاتجاه ومسير السقف إلى الأرضية.
+     *
+     * والعطب الذي وُلد منه مقيس في سجل جهاز: ٣٠١ كتابة سقف في ١٥ ساعة، وسقف
+     * `cpu_limits:policy0` يتأرجح ١٫٠↔١٫٤ جيجاهرتز كل ٤٠–٥٠ ثانية، ونزول إلى ٥٠٠ ميجاهرتز.
+     * التفصيل والحدود في [`InterventionGuard`] نفسه.
+     */
+    private val interventionGuard = InterventionGuard()
     private val profileMutex = Mutex()
     private val _cycleStatus = MutableStateFlow(MaxAiCycleStatus())
     val cycleStatus: StateFlow<MaxAiCycleStatus> = _cycleStatus.asStateFlow()
@@ -231,6 +235,9 @@ class MaxAiEngine @Inject constructor(
     @Volatile private var announcedObjective: String? = null
     private val announceMutex = Mutex()
     @Volatile private var lastNoActionAtMs = 0L
+
+    /** تهدئة تسجيل حجب الحارس — لا حلقة متطابقة كل ٣٠ ثانية في الدفتر. */
+    @Volatile private var lastHoldNotedAtMs = 0L
 
     private val trendSamples = ArrayDeque<MaxAiSample>()
     private val trendLock = Any()
@@ -358,6 +365,23 @@ class MaxAiEngine @Inject constructor(
         }
         scope.launch {
             while (isActive) {
+                // الحالة تُقرأ من الخاصية (المرجع الذي يقرأه الخادم) لا من مرآة الواجهة وحدها،
+                // فإن غيّرها مسار خارجي (تطبيق آخر كتب الخاصية) تُصحَّح المرآة في النبضة التالية.
+                val aiEnabled = readAiEnabled()
+                if (aiEnabled != _state.value.aiEnabled) {
+                    _state.update { it.copy(aiEnabled = aiEnabled) }
+                    if (aiEnabled) safetyEngine.arm()
+                }
+
+                if (!aiEnabled) {
+                    // **حلقة المطفأ**: حاجز الطوارئ وحده. لا لقطة كاملة، لا تنبؤ JNI، لا دفتر،
+                    // لا حلقة توقيت — فإطفاء Max AI يُوقف عمله الخلفي فعلًا، وهذا نصّ الشكوى.
+                    runCatching { emergencyGuardTick() }
+                        .onFailure { Log.w(TAG, "emergency guard tick failed", it) }
+                    delay(MaxAiDutyCycle.IDLE_GUARD_MS)
+                    continue
+                }
+
                 // الافتراض قبل الجمع: لو تعذّرت القراءة نبقى على الإيقاع السريع — الأمان لا يُبطأ
                 // بسبب فشل قياس، بل بسبب شاشة مطفأة والقراءة ناجحة.
                 var screenOn = true
@@ -378,20 +402,34 @@ class MaxAiEngine @Inject constructor(
                         "safety", "fast cycle failed: ${it.message ?: it.javaClass.simpleName}"
                     )
                 }
-                // والشاشة مطفأة يبطؤ الإيقاع (والحلقة تُكمل): نفس القرار، بلا استطلاع ثانيةً بثانية.
-                delay(if (screenOn) SAFETY_CYCLE_MS else SAFETY_SCREEN_OFF_CYCLE_MS)
+                // الإيقاع نفسه والقرار في `MaxAiDutyCycle` — والشاشة مطفأة يبطؤ ولا يتوقّف.
+                delay(MaxAiDutyCycle.fast(aiEnabled = true, screenOn = screenOn).delayMs)
             }
         }
         EventLog.userAction("MaxAiEngine", "engine", "lifecycle", "started")
     }
 
+    /**
+     * نبضة حاجز الطوارئ والمحرك مطفأ — **أرخص ما يمكن** ولا تُسقط السلامة.
+     *
+     * خطوتان فقط: تجريد الحماية إن كانت مسلَّحة (مرة واحدة في العمر)، وقراءة حرارة
+     * البطارية وحدها، وتقييمها في [SafetyEngine] المجرَّد — حيث لا يبقى إلا شرط الطوارئ
+     * (`EMERGENCY_TEMP_C = 58`). لا لقطة جهاز، ولا `PredictorBridge`، ولا دفتر، ولا توقيت:
+     * كل عمل الحلقة كان يقع والمحرك مطفأ بلا مستفيد.
+     */
+    private fun emergencyGuardTick() {
+        if (safetyEngine.isArmed) safetyEngine.disarm("ai off (idle guard)")
+        val thermalC = runCatching { ThermalUtil.readBatteryTemperatureC(appContext) }.getOrDefault(0f)
+        if (thermalC > 0f) safetyEngine.evaluate(thermalC)
+    }
+
     // ── الدورة الواحدة ────────────────────────────────────
 
-    private suspend fun runCycleSingleFlight() {
+    private suspend fun runCycleSingleFlight(forceSample: Boolean = false) {
         cycleRunner.run {
             _cycleStatus.update { it.copy(inFlight = true) }
             try {
-                cycle()
+                cycle(forceSample)
                 _cycleStatus.value = MaxAiCycleStatus(lastCompletedAtMs = System.currentTimeMillis())
             } catch (cancelled: CancellationException) {
                 throw cancelled
@@ -408,11 +446,27 @@ class MaxAiEngine @Inject constructor(
         }
     }
 
-    private suspend fun cycle() = withContext(Dispatchers.IO) {
+    /**
+     * @param forceSample يُطلب الترشيح عند **سؤال المستخدم** (فتح شاشة Max AI) لا في
+     *   الاستطلاع الدوري: في وضع الإطفاء لا تستحقّ قراءاتٌ حيّة أن تُسحب كل ثلاثين ثانية
+     *   أبدًا، لكن الشاشة التي فُتحت تُقرأ لها الحالة مرة واحدة.
+     */
+    private suspend fun cycle(forceSample: Boolean = false) = withContext(Dispatchers.IO) {
         // يُسجَّل في البداية لا في النهاية: التوقيت يقيس «متى قرّرنا آخر مرة»
         // لا «متى انتهت الكتابة» — فدورة طويلة لا تُنشئ استيقاظًا مزدحمًا بعدها.
         lastCycleAtMs = System.currentTimeMillis()
         val aiEnabled = readAiEnabled()
+
+        // مطفأ ولا سؤال من المستخدم ⇒ لا عمل.
+        //
+        // **وهذا إسقاط لعمل كان يقع دائمًا:** الدورة كاملة (جمع + توأم رقمي + تنبؤ JNI +
+        // تقييم + دفع الحالة) كانت تُنفَّذ كل ٣٠ ثانية والمحرك مطفأ، وتُثبت `_state.aiEnabled`
+        // (=false) بعد أن شغّلت كل ذلك. صفر مستفيد: لا قرار يُتخذ ولا مقبض يُكتب.
+        // والقراءات عند الحاجة تُطلب بـ`requestRefresh()` من الشاشة نفسها.
+        if (!aiEnabled && !forceSample) {
+            if (_state.value.aiEnabled) publish(aiEnabled = false)
+            return@withContext
+        }
 
         // 1) كشف: القياس المشترك الموحد (يغذي المتنبئ والتوأم أيضًا).
         val snapshot = runCatching { DeviceStateCollector.collect(appContext) }.getOrNull()
@@ -681,6 +735,46 @@ class MaxAiEngine @Inject constructor(
             return@withContext
         }
 
+        // ── حارس معدّل التدخل: لا عكس خطوة قبل أن تُقاس، ولا ميزانية بلا حدّ ──
+        //
+        // والعطب الذي يحجبه مقيس في سجل جهاز (rodin · ٢٠٢٦-١٠-١٤): سقف `policy0` يتأرجح
+        // ١٫٠↔١٫٤ جيجاهرتز كل ٤٠–٥٠ ثانية، ٣٠١ كتابة في ١٥ ساعة، ونزول إلى ٥٠٠ ميجاهرتز.
+        // والاتجاه في `Objective.preferredDirection` دالّة لحظية في `cpuLoad`، فعبور ٧٠٪
+        // ذهابًا وعودة يقلب القرار — وكل قلب كتابة على النواة لا قرار جديد.
+        val guardNow = System.currentTimeMillis()
+        val guard = interventionGuard.check(step.control.key, step.direction, guardNow)
+        if (guard.blocked) {
+            if (guardNow - lastHoldNotedAtMs >= NO_ACTION_MIN_INTERVAL_MS) {
+                lastHoldNotedAtMs = guardNow
+                journal.record(
+                    buildEpisode(
+                        plan = plan,
+                        step = null,
+                        objective = objective,
+                        objectiveSource = objectiveSource,
+                        appContextKey = appContextKey,
+                        before = before,
+                        after = null,
+                        appliedValue = null,
+                        verdict = MaxAiVerdict.NO_ACTION,
+                        detail = "${guard.reason}:${step.control.key} retry_in=${guard.retryInMs / 1000}s",
+                        effectBefore = null,
+                        effectAfter = null,
+                    )
+                )
+            }
+            publish(aiEnabled = true, snapshot = before) {
+                copy(
+                    strategyLabel = if (guard.reason == InterventionGuard.Reason.STEP_BUDGET) {
+                        "مراقبة — ميزانية التدخل على هذا المقبض استُهلكت"
+                    } else {
+                        "مراقبة — تهدئة بعد خطوة سابقة قبل عكسها"
+                    }
+                )
+            }
+            return@withContext
+        }
+
         // حالة التعلّم قبل التنفيذ — كي يكون "ماذا تعلّم" فرقًا مقيسًا
         // بين قيمتين حقيقيتين لا عبارة عامة.
         val effectBefore = planner.effectOf(step.control.key, step.direction, appContextKey)
@@ -737,6 +831,8 @@ class MaxAiEngine @Inject constructor(
 
         // نُفِّذ وتُحقق منه: العدّاد يُصفَّر — الفشل العابر لا يُعدم المقبض لهذه الجلسة.
         noteVerified(step.control.key)
+        // وميزانية الحارس تُستهلك بكتابة حقيقية لا بنيّة: التسجيل بعد التحقق وحده.
+        interventionGuard.record(step.control.key, step.direction, System.currentTimeMillis())
 
         // نُفِّذ وتُحقق منه: انتظر استجابة النطام ثم قِس الأثر الفعلي.
         //
@@ -1679,7 +1775,10 @@ class MaxAiEngine @Inject constructor(
     suspend fun requestRefresh() {
         // A screen leaving during the response window must not cancel probe restoration.
         // The application engine owns execution; the caller owns only its wait.
-        scope.async { runCycleSingleFlight() }.await()
+        //
+        // و`forceSample = true`: هي الفرق بين **سؤال المستخدم** واستطلاع دائم — فتح الشاشة
+        // يستحق لقطة حيّة ولو كان Max AI مطفأً، أما مؤقّت الثلاثين ثانية فلا.
+        scope.async { runCycleSingleFlight(forceSample = true) }.await()
     }
 
     /**
@@ -1800,6 +1899,9 @@ class MaxAiEngine @Inject constructor(
             // (٣) فإن فشلت الكتابة حقًّا عاد الزر إلى ما هو كائن — تصحيح لا ادّعاء.
             if (!confirmed) _state.update { it.copy(aiEnabled = readAiEnabled()) }
             if (!enabled) {
+                // ميزانية الحارس تخصّ جلسة تشغيل: تُصفَّر عند الإطفاء فلا يبدأ التشغيل القادم
+                // محجوبًا بخطوات جلسة انتهت.
+                interventionGuard.reset()
                 standDownToControlPlane("ai switched off")
             } else {
                 safetyEngine.arm()
@@ -1809,7 +1911,9 @@ class MaxAiEngine @Inject constructor(
                 val mode = runCatching { MaxAiMode.migrateIfMissing() }.getOrNull()
                 if (mode != null) runCatching { MaxAiMode.applyProfile(mode, fromAi = true) }
             }
-            runCycleSingleFlight()
+            // `forceSample`: الإطفاء يجب أن ينشر حالته فورًا (القراءة الحيّة لازمة لهذه النشرة
+            // وحدها)، والتشغيل يمرّ بالمسار الكامل أصلًا لأن الخاصية صارت `1`.
+            runCycleSingleFlight(forceSample = true)
         }
     }
 

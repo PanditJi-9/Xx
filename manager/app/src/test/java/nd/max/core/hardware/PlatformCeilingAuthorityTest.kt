@@ -10,6 +10,7 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import java.io.File
 
 /**
  * طبقة سلطة المنصّة تُختبر من جزئها **الخالص**: صيغة الطلب، وتعرّف جهاز تبريد GPU.
@@ -35,8 +36,34 @@ class PlatformCeilingAuthorityTest {
     @Test
     fun `no-limits mode keeps the value the vendor interface documents`() {
         // `6` ليست اختيارًا من عندنا: هي القيمة التي تتوقّعها واجهة حرارة MI. وتغييرها يجعل
-        // «التحرير» يضبط حدًّا بدل أن يرفعه.
+        // القراءة تُفسّر وضعًا آخر — والثابت **للقراءة** لا للكتابة (انظر الحارس أدناه).
         assertEquals(6, PlatformCeilingAuthority.MI_THERMAL_NO_LIMITS_MODE)
+    }
+
+    @Test
+    fun `the vendor thermal mode is observed and never written`() {
+        // **خطّ أحمر مقيس:** سجل جهاز rodin يحمل ٩٤٤ كتابة `sconfig wrote=6 read=6 verdict=matched`
+        // في ١٤ ساعة، بلا حفظ للقيمة السابقة ولا استرجاع — أي أن التطبيق كان يُبقي حماية المصنّع
+        // الحرارية مطفأة، ثم يتركها مطفأة بعد إطفاء Max AI. وهذا مصدر الحرارة الذي بقي بعد الإطفاء.
+        val source = File("src/main/java/nd/max/core/hardware/PlatformCeilingAuthority.kt")
+            .takeIf { it.exists() }
+            ?: File("manager/app/src/main/java/nd/max/core/hardware/PlatformCeilingAuthority.kt")
+        org.junit.Assume.assumeTrue("source not found; guard not evaluated", source.exists())
+        val code = source.readText()
+            .replace(Regex("/\\*.*?\\*/", RegexOption.DOT_MATCHES_ALL), "")
+            .replace(Regex("//[^\\n]*"), "")
+        assertFalse(
+            "لا كتابة على عقدة حرارة MI من Kotlin: الوضع يُقاس ولا يُغيَّر",
+            code.contains("writeVerifiedIfDifferent(MI_THERMAL_SCONFIG"),
+        )
+        assertFalse(
+            "لا دالة تحرير لوضع الحرارة: حماية المصنّع لا تُرفع",
+            code.contains("releaseMiThermalMode(") && code.contains("fun releaseMiThermalMode"),
+        )
+        assertTrue(
+            "ويبقى القياس متاحًا لتبليغ الحقيقة",
+            code.contains("fun miThermalModeOpen("),
+        )
     }
 
     @Test
@@ -62,7 +89,7 @@ class PlatformCeilingAuthorityTest {
     fun `a report with no accepted channel claims no release`() {
         // الشرط السلوكي الوحيد: لا يُدّعى تحرير لم يقع. وتقرير فارغ يجب أن يقول ذلك صراحةً.
         val none = PlatformCeilingAuthority.Report(
-            releasedMiThermalMode = false,
+            vendorThermalModeOpen = null,
             cpuLimitAccepted = false,
             powerhalRangeAccepted = false,
             gpuCoolingReleased = false,

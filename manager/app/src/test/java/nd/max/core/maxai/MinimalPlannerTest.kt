@@ -6,6 +6,7 @@
 package nd.max.core.maxai
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -68,6 +69,55 @@ class MinimalPlannerTest {
     fun `satisfaction threshold marks a healthy device`() {
         // مبدأ "لا تدخل بلا فجوة": العتبة المعلنة هي الحد الفاصل.
         assertEquals(0.75f, MinimalPlanner.SATISFIED_SCORE, 0.0001f)
+    }
+
+    // ── أرضية الاستجابة ────────────────────────────────────
+
+    private fun cpuControl(ladderSize: Int = 10): ControlRegistry.Control {
+        val ladder = (0 until ladderSize).map { (it * 100_000).toString() }
+        return ControlRegistry.Control(
+            key = "cpu_limits:policy0",
+            feature = nd.max.core.hardware.HardwareFeature.CPU_FREQUENCY,
+            label = "سقف policy0",
+            ladder = ladder,
+            cost = 0.2f,
+            read = { ladder.first() },
+            apply = { it },
+        )
+    }
+
+    @Test
+    fun `a save-energy step below the responsive floor is rejected`() {
+        // **عطب مقيس على rodin:** `cpu_limits:policy0` بلغ `300000:500000` (٥٠٠ ميجاهرتز)
+        // لأن السّلّم يسمح بالنزول إلى الأرضية والهدف لا يتحقّق أبدًا. والمنع هنا سياسة
+        // لا شكّ في العتاد: نصف المدى يبقى قادرًا على الاستخدام اليومي.
+        val control = cpuControl()
+        val floorIndex = ((control.ladder.size - 1) * MinimalPlanner.MIN_RESPONSIVE_CPU_FRACTION).toInt()
+        assertTrue(
+            "موضع $floorIndex من ${control.ladder.last()} تحت الأرضية",
+            MinimalPlanner.belowResponsiveFloor(control, control.ladder[floorIndex - 1]),
+        )
+        assertTrue(
+            "والموضع ٩٠٪ فوقها",
+            !MinimalPlanner.belowResponsiveFloor(control, control.ladder[9]),
+        )
+    }
+
+    @Test
+    fun `the responsive floor does not apply to boosting or to non-frequency knobs`() {
+        val control = cpuControl()
+        // الرفع يذهب إلى أعلى السّلّم أبدًا — والأرضية لا تعني شيئًا في اتجاه الرفع
+        // (الاستدعاء المقيّد في المخطّط على SAVE_ENERGY وحده).
+        assertFalse(MinimalPlanner.belowResponsiveFloor(control, control.ladder[9]))
+        val boost = control.copy(
+            key = "cpu_boost",
+            feature = nd.max.core.hardware.HardwareFeature.CPU_BOOST,
+            ladder = listOf("0", "1"),
+        )
+        assertFalse(
+            "مقبض ثنائي لا مدى ترددات له: لا أرضية استجابة",
+            MinimalPlanner.belowResponsiveFloor(boost, "0"),
+        )
     }
 
     @Test
