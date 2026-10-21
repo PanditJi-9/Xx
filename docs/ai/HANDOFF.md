@@ -22777,3 +22777,27 @@ BUILD FAILED in 6m 12s
 **NEXT:** جهاز المالك: سحب بين الأقسام الأربعة · RTL · قائمة تمرير ثم ميل أفقي (يجب ألّا يُنقل قسمًا) · العودة من شاشة فرعية إلى قسمها · ضبط القيم البصرية. ثم عند الحاجة الحقيقية: `:app:compileReleaseKotlin` (أو QV) — وليس الآن. وعند نشر 3.0: `tools/publish_update.py` يملأ المانيفست من الـAPK.
 
 **FILES:** `manager/app/src/main/java/nd/max/ui/navigation/PrimaryDeck.kt` (جديد) · `ui/navigation/SwipeNavigation.kt` · `ui/navigation/SwipeNavigationGesture.kt` · `ui/navigation/MaxNavGraph.kt` · `MainActivity.kt` · `test/.../SwipeNavigationTest.kt` · `version` · `mainfiles/module.prop` · `archdaemon/jni/include/MaxManager.h` · `manager/app/build.gradle.kts`
+
+## Executor log — BUILD-GREEN-01 + ABOUT-MAKER-01 + ISLAND-PREVIEW-01 — 2026-10-21 · DONE
+
+**TASK (المالك):** «تحقق من عملية البناء واصلح المشاكل» (بتوكن CI) · «أزل ”من الصانع“ من شاشة حول في الإعدادات بالكامل» · «اجعل الجزيرة الديناميكية عند تفعيلها ظاهرة حتى يتمكن المستخدم من تخصيصها، وتعود للاختفاء عند خروجه من شاشتها وتظهر فقط عند حدث (أغاني/رسائل)».
+
+**١) سلسلة أعطال البناء — كلها مُشخَّصة من سجلّ التشغيل نفسه لا من التخمين:**
+- **`39606746670` (‏`86c18480`):** سقطت خطوة «Contract gates» عند `bundle_contract.py --self-test`. السبب: طفرة `version_triangle` مكتوبة حرفيًّا `("V2","V3")` وطفرة `no_banner` معلّقة بـ`versionCode=2`؛ فلمّا صار الإصدار `V3.0`/`versionCode=3` لم تجد الطفرة نصّها فأسقطت الأداة نفسها. **الإصلاح:** الطفرة تُشتقّ الآن من `version` الحقيقي (`current_version + "-drift"`)، ومرساة `no_banner` صارت `id=MaxManager` لا رقمًا يتغيّر مع كل إصدار.
+- **`39610615176` (‏`6acaab35`):** `code_health` كشف `unresolved_resource: 2` — مفتاح «إسكات مطالبات التحديث» في `ControlScreen` بلا نصوص. **الإصلاح:** `control_updates_disabled_title` و`_subtitle` في `values/` و`values-ar/` وحدهما (ADR-14 · §0.2).
+- **`39611426541` (‏`d2e5e0cb`):** بوّابات العقد نجحت، ثم سقط اختبار واحد من ٣٥٠١: `ControlLayoutModelTest.each hub lists every screen…` لأن `TouchBoost` صار `hidden = true` والاختبار كان يطالب بـ`MaxDestination.All`. **الإصلاح:** القياس على `MaxDestination.Visible` في الاختبارين — الوجهة المخفيّة تبقى في السجلّ والمسار، ولا تُطالَب كصفّ.
+- **النتيجة المقيسة:** التشغيل **`39617848172` على `060f1be8` = completed success** · ١٩د٤٤ث · **54 خطوة كلها ✓** · `:app:testReleaseUnitTest + :app:assembleRelease` نجحا · **٣٥٠١ اختبارًا · ٠ فشل · ٣ متخطّاة** · والأثر `MaxManager-V3.0.zip` (٢٦ مدخلًا في `checksums-module.sha256`) رُفع مع حزمة المطوّرين والبصمات. وأول تشغيل بعد رفع الإصدار أثبت `version_triangle` (`V3.0` في المواضع الثلاثة) واسم الأثر الجديد.
+
+**٢) شاشة «حول»:** حُذف قسم «من الصانع» بكامله — عنوانه، وبطاقة `MaxSignatureMark`، ونصّا التوقيع — مع الغلاف `AboutSectionTitle` الذي لم يبق له مستدعٍ، واستيرادَي `TextAlign` و`MaxSpace` اللذين صارا ميتين. **وبقيت مفاتيح `about_maker_*` في الموارد بقصد:** حذفها من `values/` وحدها يجعلها يتيمة في ٨٤ لغة ويسقط `i18n_coverage --prune`؛ وحذفها من كل لغة يخالف §0.2 بلا أمر «زامن». فلا نصّ منها يُعرض، والقرار النهائي في تنظيفها يعود للمالك.
+
+**٣) معاينة الجزيرة أثناء التخصيص:** أُضيف `IslandController.previewing` (حالة عرض عابرة لا تفضيلًا محفوظًا)، و`IslandOverlay` صار يقرأ `showWhenIdle = idlePill || previewing` فيُرسم في السكون أثناء فتح الشاشة فقط. وشاشة `DynamicIslandScreen` ترفع المعاينة عند `ON_RESUME` وتخفضها عند `ON_PAUSE`/`ON_STOP`/`onDispose`. فالمستخدم يرى أثر الموضع والمقاس والاستدارة والحركة فورًا، وبمجرّد مغادرة الشاشة أو التطبيق تعود القاعدة: لا شيء على الشاشة حتى يقع الحدث المفّعل (أغنية/رسالة/شحن…). و`idlePill` يبقى الخيار الدائم المستقلّ لمن يريده.
+
+**GATES (على الشجرة النهائية):** `kt_balance --assert` 3064/0 · `code_health --assert` صحّة نظيفة · `design_tokens --assert` 251/300 · وبوّابات العقد كاملة (٣٧ أداة تشغيل/فحص ذاتي) = `exit 0` محليًّا، ثم نفسها في CI ✓.
+
+**BUILD:** **مُتحقَّق في CI لا محليًّا:** `39617848172` نجح كاملًا (compile + 3501 test + R8 + assembleRelease + zip + checksums + رفع). ولم يُشغَّل Gradle على هذا الجهاز في هذه الجولة.
+
+**RESIDUAL RISK:** معاينة الجزيرة تحتاج جهازًا بحكم طبيعتها (نافذة فوق النظام + خدمة وصولية/تصريح overlay) — لم تُشاهَد هنا؛ ومنطقها مقيس بنيويًّا فقط. والاختبار المعدَّل يثبّت عقد «المخفيّ لا يُطالب به» ولم يُعَد تشغيله محليًّا (CI هو من نفّذه).
+
+**NEXT:** تثبيت `MaxManager-V3.0.zip` من أثر التشغيل · فتح شاشة الجزيرة والتأكد بصريًّا أن الكبسولة تظهر أثناء الضبط وتختفي بعد الخروج · ثم ضبط أي قيمة بصرية على الجهاز.
+
+**FILES:** `tools/bundle_contract.py` · `res/values[-ar]/max_navigation_strings.xml` · `test/.../ControlLayoutModelTest.kt` · `ui/subscreens/AboutScreen.kt` · `island/engine/IslandController.kt` · `island/engine/IslandOverlay.kt` · `ui/subscreens/DynamicIslandScreen.kt`
