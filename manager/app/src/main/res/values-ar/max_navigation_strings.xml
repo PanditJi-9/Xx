@@ -8,6 +8,9 @@
     <string name="max_nav_settings">الإعدادات</string>
     <string name="max_nav_advanced_tools">أدوات</string>
     <string name="max_nav_config_backup">النسخ والاستعادة</string>
+    <!-- شاشة التحكّم: مفتاح واحد يُسكِت أسطح التحديث التلقائية الثلاثة -->
+    <string name="control_updates_disabled_title">إسكات مطالبات التحديث</string>
+    <string name="control_updates_disabled_subtitle">يخفي نوافذ التحديث التلقائية. الفحص اليدوي والحجب الأمني يبقيان فعّالين.</string>
 
     <!-- Domain hub titles (ADR-04) -->
     <string name="max_hub_cpu">المعالج</string>
