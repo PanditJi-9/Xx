@@ -31,6 +31,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import nd.max.core.platform.PropertyUtils
 import nd.max.core.hardware.ZramHardwareBackend
+import nd.max.core.privilege.PrivilegeManager
 
 data class ZramSizePreset(
     val id: String,
@@ -40,6 +41,16 @@ data class ZramSizePreset(
 
 /** Which zram write an operation notice refers to. */
 enum class ZramOpKind { Size, Swappiness, Algorithm, Compact, Reset }
+
+/**
+ * سبب الفشل — لأنّ «رفضت النواة» ليست سببًا.
+ *
+ * الجهاز الفعليّ (POCO · Android): المبادلة مشغولة بـ~4GB، وكانت السلسلة تنادي
+ * `swapoff /sys/block/zram0` (مجلّد sysfs لا عقدة كتلة) فيفشل الفصل، ويبقى الجهاز مشغولًا
+ * فترفض النواة `reset` و`disksize` — ويظهر للمستخدم «النواة رفضت» بلا سبب. والتمييز هنا
+ * يجعل الشاشة تقول ما حدث فعلًا: جذرٌ غير ممنوح؟ عقدة كتلة غائبة؟ مبادلة لا تُفصل الآن؟
+ */
+enum class ZramFailureReason { KernelRefused, NoRoot, SwapBusy, DeviceNode, Unverified }
 
 /**
  * State of the last zram write. Nothing is reported as applied until the value has been read back
@@ -56,6 +67,9 @@ sealed class ZramOperation {
         override val kind: ZramOpKind,
         val requested: String? = null,
         val actual: String? = null,
+        val reason: ZramFailureReason = ZramFailureReason.KernelRefused,
+        /** نصّ النواة نفسه والخطوة التي رفضتها — تقنيّ، لا يُختصر إلى «فشل». */
+        val detail: String? = null,
     ) : ZramOperation()
 }
 
@@ -120,6 +134,15 @@ class ZramViewModel : ViewModel() {
     var swappinessKnown by mutableStateOf(true)
         private set
 
+    /**
+     * هل الجذر ممنوح؟ `null` = لم يُسأل بعد.
+     *
+     * ولا يكفي وجود صدفة: libsu تعطي صدفةً بصلاحية التطبيق إن رُفض الجذر، فتُنفَّذ الأوامر
+     * وتفشل الكتابة صامتةً — وهو أوّل ما يجب أن تقوله الشاشة بدل «رفضت النواة».
+     */
+    var rootGranted by mutableStateOf<Boolean?>(null)
+        private set
+
     /** In-flight or finished state of the last write; the UI never claims unverified success. */
     var operation by mutableStateOf<ZramOperation?>(null)
         private set
@@ -133,9 +156,12 @@ class ZramViewModel : ViewModel() {
 
             if (!exists) {
                 isAvailable = false
+                rootGranted = PrivilegeManager.cachedRootGranted()
                 return@launch
             }
             isAvailable = true
+            // بعد أوّل أمر صدفةً صار الحكم معلومًا: صدفة بصلاحية تطبيق = لا كتابة على العقد.
+            rootGranted = PrivilegeManager.cachedRootGranted() || ZramHardwareBackend.isRoot()
 
             // دورة كل ٣ ثوانٍ: كل `cat` عبر صدفة كان رحلة كاملة — والقراءة الآن عبر الطبقة
             // الموحّدة (أصلي ← IPC ← ملف ← صدفة).
@@ -239,32 +265,48 @@ class ZramViewModel : ViewModel() {
     private fun applySizeMb(mb: Int, kind: ZramOpKind, presetId: String) {
         operation = ZramOperation.Applying(kind)
         viewModelScope.launch(Dispatchers.IO) {
-            val bytes = mb.toLong() * 1024 * 1024
-            if (mb == 0) {
-                Shell.cmd(
-                    "swapoff $ZRAM_DEV 2>/dev/null",
-                    "echo 1 > $ZRAM_DEV/reset 2>/dev/null"
-                ).exec()
-            } else {
-                Shell.cmd(
-                    "swapoff $ZRAM_DEV 2>/dev/null",
-                    "echo 1 > $ZRAM_DEV/reset 2>/dev/null",
-                    "echo $compAlgorithm > $ZRAM_DEV/comp_algorithm 2>/dev/null",
-                    "echo $bytes > $ZRAM_DEV/disksize 2>/dev/null",
-                    "mkswap $ZRAM_DEV 2>/dev/null",
-                    "swapon $ZRAM_DEV 2>/dev/null"
-                ).exec()
-            }
+            // السلسلة كلها في [ZramHardwareBackend.apply] — بعقدة الكتلة لا بمسار sysfs،
+            // وبتحقّق بعد كل خطوة، وبإعادة المبادلة إن فشل ما بعد فصلها. وكانت هنا نسخة
+            // ثانية من الأوامر (نفس عطب المسار) فتتباعد عن الأولى بلا قياس.
+            val result = ZramHardwareBackend.apply(sizeBytes = mb.toLong() * 1024 * 1024)
             refreshStats()
-            val liveMb = currentDiskSizeMb
-            if (liveMb == mb) {
-                selectedPresetId = presetId
-                PropertyUtils.set(PROP_SIZE_MB, mb.toString())
-                PropertyUtils.set(MaxManagerProps.Storage.ZRAM_PRESET, presetId)
-                operation = ZramOperation.Applied(kind, mb.toString())
-            } else {
-                operation = ZramOperation.Failed(kind, mb.toString(), liveMb.toString())
+            if (result.notRoot) rootGranted = false
+            when {
+                result.notRoot -> operation = ZramOperation.Failed(
+                    kind, mb.toString(), currentDiskSizeMb.toString(), ZramFailureReason.NoRoot,
+                )
+
+                result.failedStage != null -> operation = ZramOperation.Failed(
+                    kind = kind,
+                    requested = mb.toString(),
+                    actual = currentDiskSizeMb.toString(),
+                    reason = when (result.failedStage) {
+                        ZramHardwareBackend.Stage.Detach ->
+                            if (result.node == null) ZramFailureReason.DeviceNode else ZramFailureReason.SwapBusy
+                        else -> ZramFailureReason.KernelRefused
+                    },
+                    detail = "${result.failedStage.name.lowercase()}: ${result.message.orEmpty()}",
+                )
+
+                else -> {
+                    selectedPresetId = presetId
+                    PropertyUtils.set(PROP_SIZE_MB, mb.toString())
+                    PropertyUtils.set(MaxManagerProps.Storage.ZRAM_PRESET, presetId)
+                    operation = ZramOperation.Applied(kind, mb.toString())
+                }
             }
+        }
+    }
+
+    /**
+     * فعلٌ صريح من المستخدم: يطلب الجذر (قد تُظهر نافذة الصلاحية) ثم يعيد القراءة.
+     * ولا يُطلب الجذر تلقائيًّا عند فتح الشاشة — القراءة لا تحتاجه، والطلب فعل المستخدم.
+     */
+    fun requestRoot() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val granted = PrivilegeManager.requestRoot()
+            rootGranted = granted
+            if (granted) loadState()
         }
     }
 
@@ -272,7 +314,7 @@ class ZramViewModel : ViewModel() {
         val clamped = value.coerceIn(0, 200)
         operation = ZramOperation.Applying(ZramOpKind.Swappiness)
         viewModelScope.launch(Dispatchers.IO) {
-            Shell.cmd("echo $clamped > /proc/sys/vm/swappiness 2>/dev/null").exec()
+            val step = ZramHardwareBackend.writeSwappiness(clamped)
             val live = readSwappiness()
             swappinessKnown = live != null
             if (live != null) swappiness = live
@@ -280,42 +322,76 @@ class ZramViewModel : ViewModel() {
                 PropertyUtils.set(PROP_SWAPPINESS, clamped.toString())
                 operation = ZramOperation.Applied(ZramOpKind.Swappiness, clamped.toString())
             } else {
-                operation = ZramOperation.Failed(ZramOpKind.Swappiness, clamped.toString(), live?.toString())
+                operation = ZramOperation.Failed(
+                    kind = ZramOpKind.Swappiness,
+                    requested = clamped.toString(),
+                    actual = live?.toString(),
+                    reason = when {
+                        // «لا جذر» يُسأل عنه صراحةً: رمز الخروج وحده لا يميّز رفض الكتابة
+                        // بسبب الصلاحية عن رفضها بسبب القيمة.
+                        !ZramHardwareBackend.isRoot() -> {
+                            rootGranted = false
+                            ZramFailureReason.NoRoot
+                        }
+
+                        else -> ZramFailureReason.KernelRefused
+                    },
+                    detail = "swappiness: ${step.message.ifBlank { "exit=${step.code}" }}",
+                )
             }
         }
     }
 
     /**
      * Changing the compression codec hits the same kernel constraint as resizing (the device must be
-     * swapped off + reset first), so this mirrors applySizeMb()'s sequence rather than a separate,
-     * easy-to-drift copy. The codec is only reported as applied when the driver echoes it back.
+     * swapped off + reset first), so this goes through the same single sequence in
+     * [ZramHardwareBackend.apply] rather than a second, easy-to-drift copy. The codec is only
+     * reported as applied when the driver echoes it back.
      */
     fun setCompAlgorithm(algo: String) {
         if (algo == compAlgorithm) return
         val previous = compAlgorithm
         operation = ZramOperation.Applying(ZramOpKind.Algorithm)
         viewModelScope.launch(Dispatchers.IO) {
-            val bytes = currentDiskSizeMb.toLong() * 1024 * 1024
-            if (currentDiskSizeMb > 0) {
-                Shell.cmd(
-                    "swapoff $ZRAM_DEV 2>/dev/null",
-                    "echo 1 > $ZRAM_DEV/reset 2>/dev/null",
-                    "echo $algo > $ZRAM_DEV/comp_algorithm 2>/dev/null",
-                    "echo $bytes > $ZRAM_DEV/disksize 2>/dev/null",
-                    "mkswap $ZRAM_DEV 2>/dev/null",
-                    "swapon $ZRAM_DEV 2>/dev/null"
-                ).exec()
-            } else {
-                Shell.cmd("echo $algo > $ZRAM_DEV/comp_algorithm 2>/dev/null").exec()
-            }
+            val result = ZramHardwareBackend.apply(algorithm = algo)
             val live = ZramHardwareBackend.readState()
-            if (live.exists && live.algorithm == algo) {
-                compAlgorithm = algo
-                PropertyUtils.set(PROP_COMP_ALGO, algo)
-                operation = ZramOperation.Applied(ZramOpKind.Algorithm, algo)
-            } else {
-                compAlgorithm = live.algorithm ?: previous
-                operation = ZramOperation.Failed(ZramOpKind.Algorithm, algo, live.algorithm)
+            if (result.notRoot) rootGranted = false
+            when {
+                result.notRoot -> {
+                    compAlgorithm = live.algorithm ?: previous
+                    operation = ZramOperation.Failed(
+                        ZramOpKind.Algorithm, algo, live.algorithm, ZramFailureReason.NoRoot,
+                    )
+                }
+
+                result.failedStage != null -> {
+                    compAlgorithm = live.algorithm ?: previous
+                    operation = ZramOperation.Failed(
+                        kind = ZramOpKind.Algorithm,
+                        requested = algo,
+                        actual = live.algorithm,
+                        reason = when (result.failedStage) {
+                            ZramHardwareBackend.Stage.Detach ->
+                                if (result.node == null) ZramFailureReason.DeviceNode else ZramFailureReason.SwapBusy
+                            else -> ZramFailureReason.KernelRefused
+                        },
+                        detail = "${result.failedStage.name.lowercase()}: ${result.message.orEmpty()}",
+                    )
+                }
+
+                live.algorithm == algo -> {
+                    compAlgorithm = algo
+                    PropertyUtils.set(PROP_COMP_ALGO, algo)
+                    operation = ZramOperation.Applied(ZramOpKind.Algorithm, algo)
+                }
+
+                else -> {
+                    compAlgorithm = live.algorithm ?: previous
+                    operation = ZramOperation.Failed(
+                        ZramOpKind.Algorithm, algo, live.algorithm, ZramFailureReason.Unverified,
+                        detail = "readback: ${live.algorithm}",
+                    )
+                }
             }
             refreshStats()
         }

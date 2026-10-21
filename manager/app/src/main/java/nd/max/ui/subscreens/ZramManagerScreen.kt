@@ -63,6 +63,7 @@ import nd.max.ui.component.MaxDeviceInfoShortcut
 import nd.max.ui.component.rememberMemoryLedgerFields
 import nd.max.ui.navigation.MaxDestination
 import nd.max.ui.settings.rememberAdvancedMode
+import nd.max.ui.viewmodel.ZramFailureReason
 import nd.max.ui.viewmodel.ZramOpKind
 import nd.max.ui.viewmodel.ZramOperation
 import nd.max.ui.viewmodel.ZramSizePreset
@@ -111,7 +112,10 @@ fun ZramManagerScreen(
     val operation = viewModel.operation
     val busy = operation is ZramOperation.Applying
     val available = viewModel.isAvailable == true
-    val canWrite = available && !busy
+    // **والجذر شرط للكتابة لا هامش:** بصندوقٍ بلا جذر تُنفَّذ الأوامر بصلاحية التطبيق، فتفشل
+    // الكتابة صامتةً ويظهر «رفضت النواة» — وهو ما بلّغ عنه المالك: «أي تغيير لا ينجح».
+    val rootMissing = viewModel.rootGranted == false
+    val canWrite = available && !busy && !rootMissing
 
     val diskMb = viewModel.currentDiskSizeMb
     val swapOff = diskMb <= 0
@@ -142,6 +146,13 @@ fun ZramManagerScreen(
     val rootReason = stringResource(R.string.max_zram_locked_root)
     val supportedLabel = stringResource(R.string.zram_hw_supported)
     val unsupportedLabel = stringResource(R.string.zram_hw_unsupported)
+    // سببٌ واحد يُعرض على كل مقبضٍ مقفل: «مشغول الآن» أو «يحتاج جذرًا» — بدل صفٍّ يبدو قابلًا
+    // للضغط ثم لا يفعل شيئًا.
+    val writeLockReason = when {
+        busy -> busyReason
+        rootMissing -> rootReason
+        else -> null
+    }
 
     // Screen level explanation lives in the top bar help dialog instead of
     // occupying permanent vertical space under every section title.
@@ -191,14 +202,28 @@ fun ZramManagerScreen(
             onPrimaryAction = { viewModel.clearOperation() }
         )
 
-        is ZramOperation.Failed -> MaxCondition(
-            kind = MaxConditionKind.Failed,
-            title = stringResource(R.string.max_zram_failed_title),
-            detail = failedDetail(operation),
-            technicalDetail = stringResource(R.string.max_zram_failed_detail),
-            primaryActionLabel = stringResource(R.string.max_action_dismiss),
-            onPrimaryAction = { viewModel.clearOperation() }
-        )
+        is ZramOperation.Failed -> {
+            val noRoot = operation.reason == ZramFailureReason.NoRoot
+            MaxCondition(
+                kind = MaxConditionKind.Failed,
+                title = stringResource(
+                    when (operation.reason) {
+                        ZramFailureReason.NoRoot -> R.string.max_zram_root_needed_title
+                        ZramFailureReason.SwapBusy -> R.string.max_zram_swap_busy_title
+                        ZramFailureReason.DeviceNode -> R.string.max_zram_node_missing_title
+                        else -> R.string.max_zram_failed_title
+                    }
+                ),
+                detail = failedDetail(operation, viewModel.usedSwapMb),
+                technicalDetail = operation.detail ?: stringResource(R.string.max_zram_failed_detail),
+                primaryActionLabel = stringResource(
+                    if (noRoot) R.string.max_action_grant_root else R.string.max_action_dismiss
+                ),
+                onPrimaryAction = {
+                    if (noRoot) viewModel.requestRoot() else viewModel.clearOperation()
+                }
+            )
+        }
     }
 
     MaxScreen(
@@ -285,7 +310,7 @@ fun ZramManagerScreen(
                         },
                         selected = viewModel.selectedPresetId == preset.id,
                         enabled = canWrite,
-                        lockedReason = if (busy) busyReason else null,
+                        lockedReason = writeLockReason,
                         onSelect = {
                             if (preset.mb <= 0) confirmDisable = true else viewModel.applyPreset(preset)
                         }
@@ -308,7 +333,7 @@ fun ZramManagerScreen(
                         }
                     },
                     enabled = canWrite,
-                    lockedReason = if (busy) busyReason else null,
+                    lockedReason = writeLockReason,
                     onValueChangeFinished = {
                         val target = snapSizeMb(sizeSlider)
                         if (target <= 0) confirmDisable = true else viewModel.applyCustomSizeMb(target)
@@ -343,7 +368,7 @@ fun ZramManagerScreen(
                             subtitle = description?.let { stringResource(it) },
                             selected = algorithm.equals(viewModel.compAlgorithm, ignoreCase = true),
                             enabled = canWrite,
-                            lockedReason = if (busy) busyReason else null,
+                            lockedReason = writeLockReason,
                             onSelect = { viewModel.setCompAlgorithm(algorithm) }
                         )
                     }
@@ -371,9 +396,8 @@ fun ZramManagerScreen(
                     },
                     enabled = canWrite && viewModel.swappinessKnown,
                     lockedReason = when {
-                        busy -> busyReason
                         !viewModel.swappinessKnown -> rootReason
-                        else -> null
+                        else -> writeLockReason
                     },
                     onValueChangeFinished = {
                         viewModel.applySwappiness(swappinessSlider.roundToInt())
@@ -617,7 +641,14 @@ private fun appliedDetail(operation: ZramOperation.Applied): String {
  * error message.
  */
 @Composable
-private fun failedDetail(operation: ZramOperation.Failed): String {
+private fun failedDetail(operation: ZramOperation.Failed, swapUsedMb: Int): String {
+    // الحالات الأربع التي كانت تُخلط في «رفضت النواة»: لكلٍّ سببها ونصّها.
+    when (operation.reason) {
+        ZramFailureReason.NoRoot -> return stringResource(R.string.max_zram_root_needed_detail)
+        ZramFailureReason.SwapBusy -> return stringResource(R.string.max_zram_swap_busy_detail, swapUsedMb.toString())
+        ZramFailureReason.DeviceNode -> return stringResource(R.string.max_zram_node_missing_detail)
+        else -> Unit
+    }
     val requested = operation.requested ?: MAX_VALUE_UNAVAILABLE
     val actual = operation.actual
     return when (operation.kind) {

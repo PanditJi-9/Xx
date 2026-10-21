@@ -168,7 +168,10 @@ def module_of(path: str, mods: dict) -> str | None:
 
 # ─────────────────────────── الفحوص ───────────────────────────
 
-R_REF = re.compile(r"(?<!android\.)\bR\.(\w+)\.(\w+)")
+# ولماذا `(?![\w$])`: مرجعٌ يقطعه قالب Kotlin (`R.string.prefix_$node`) اسمه ليس ثابتًا،
+# فلا يصحّ مطالبته بمفتاحٍ في `values`. وبدون هذا الشرط يُقتطع الاسم عند `$` فيُبلَّغ
+# `R.string.maxai_tree_` عطبًا وهو ليس مرجعًا أصلًا (عطبٌ وهميّ أسقط البوابة).
+R_REF = re.compile(r"(?<!android\.)\bR\.(\w+)\.(\w+)(?![\w$])")
 WILDCARD = re.compile(r"^import\s+([\w.]+)\.\*$", re.M)
 PKG = re.compile(r"^package\s+([\w.]+)", re.M)
 # نص واجهة صلب: Text("…") أو Text(text = "…") بنص حرفي لا قالب ولا رموز فقط.
@@ -610,7 +613,11 @@ def build_fixture() -> str:
     _write(os.path.join(java, "nd/max/ui/Refs.kt"),
            'package nd.max.ui\n\n'
            'val a = R.string.declared_only\n'
-           'val b = R.string.nowhere\n')
+           'val b = R.string.nowhere\n'
+           # مرجعٌ يقطعه قالب نصّي (`R.string.prefix_$node`) ليس مرجعًا ثابتًا: اسمه
+           # يُبنى وقت التشغيل، فلا يصحّ الحكم عليه بالغياب (عطبٌ وهميّ وقع في اختبار
+           # MaxAiIntro: `R.string.maxai_tree_$node`).
+           'val c = "R.string.dynamic_$node"\n')
     # ④عقد محتوى بلا @Composable (يُفسد كل مواضع النداء) + نظيراه السليمان.
     #
     # **والوسيط في سطر مستقلّ عن قصد** — وهذا هو الشكل الذي يقرأه `CONTENT_PARAM`
@@ -700,6 +707,7 @@ def self_test() -> int:
         # ③المورد غير المعلَن وحده.
         expect("unresolved_resource: الغائب انمسك", blob("unresolved_resource").count("nowhere"), 1)
         expect("unresolved_resource: المُعلَن لم يُبلّغ", "declared_only" in blob("unresolved_resource"), False)
+        expect("unresolved_resource: المقطوع بقالب لا يُبلَّغ", "dynamic_" in blob("unresolved_resource"), False)
         # ④عقد المحتوى: بلا @Composable فقط (وسليل `ColumnScope` استثناء موثَّق).
         content = blob("noncomposable_content_lambda")
         # والتأكيد باسم **الدالة** لا باسم الوسيط: الأول ما يميّز البلاغ عن غيره،

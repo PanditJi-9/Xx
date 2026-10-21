@@ -204,6 +204,15 @@
     <string name="max_zram_failed_unreadable">Asked for %1$s, the value could not be read back.</string>
     <string name="max_zram_failed_detail">Writing kernel nodes needs root access granted to MaxManager. Some vendor kernels lock these nodes entirely.</string>
     <string name="max_zram_locked_root">Needs root access to write kernel nodes.</string>
+    <!-- لماذا تكفي الأسباب الأربعة: كان كل فشل يُعرض «رفضت النواة» فيُخفي السبب الحقيقي
+         (جذر غير ممنوح · مبادلة لا تُفصل الآن · عقدة كتلة غائبة · نصّ النواة نفسه). -->
+    <string name="max_zram_root_needed_title">Root access is required</string>
+    <string name="max_zram_root_needed_detail">MaxManager is running without root right now, so the kernel nodes cannot be written. Grant root, then retry.</string>
+    <string name="max_zram_swap_busy_title">Swap is in use</string>
+    <string name="max_zram_swap_busy_detail">%1$s MB of swap is in use, so it cannot be detached now. Close heavy apps (or reboot), then retry. Nothing was changed and swap stays on.</string>
+    <string name="max_zram_node_missing_title">Block device node is missing</string>
+    <string name="max_zram_node_missing_detail">The kernel exposes the zram disk, but /dev/block/zram0 is missing, so swap cannot be detached and reattached.</string>
+    <string name="max_action_grant_root">Grant root</string>
     <string name="max_zram_compaction_unsupported">/proc/sys/vm/compact_memory is missing on this kernel.</string>
     <string name="max_zram_compact_confirm_title">Compact memory now?</string>
     <string name="max_zram_compact_confirm_body">The kernel walks compressed pages to free fragments. CPU use rises briefly.</string>

@@ -207,6 +207,13 @@
     <string name="max_zram_failed_unreadable">طُلب %1$s، وتعذّرت إعادة قراءة القيمة.</string>
     <string name="max_zram_failed_detail">كتابة عُقد النواة تحتاج صلاحية root ممنوحة لـMaxManager. وبعض نويات الشركات تقفل هذه العُقد تمامًا.</string>
     <string name="max_zram_locked_root">يحتاج صلاحية root لكتابة عُقد النواة.</string>
+    <string name="max_zram_root_needed_title">صلاحية الجذر مطلوبة</string>
+    <string name="max_zram_root_needed_detail">MaxManager يعمل الآن بلا جذر، فلا يمكن الكتابة في عُقد النواة. امنح الجذر ثم أعد المحاولة.</string>
+    <string name="max_zram_swap_busy_title">المبادلة قيد الاستخدام</string>
+    <string name="max_zram_swap_busy_detail">%1$s ميجابايت من المبادلة قيد الاستخدام، فلا يمكن فصلها الآن. أغلق التطبيقات الثقيلة (أو أعد التشغيل) ثم حاول مجددًا. لم يتغيّر شيء والمبادلة باقية.</string>
+    <string name="max_zram_node_missing_title">عقدة جهاز الكتلة غائبة</string>
+    <string name="max_zram_node_missing_detail">النواة تعرض قرص zram لكن /dev/block/zram0 غير موجود، فلا يمكن فصل المبادلة وإعادتها.</string>
+    <string name="max_action_grant_root">امنح الجذر</string>
     <string name="max_zram_compaction_unsupported">الملف /proc/sys/vm/compact_memory غير موجود في هذه النواة.</string>
     <string name="max_zram_compact_confirm_title">ضغط الذاكرة الآن؟</string>
     <string name="max_zram_compact_confirm_body">تمرّ النواة على الصفحات المضغوطة لتحرير الشُّذَر، ويرتفع استخدام المعالج قليلًا.</string>
