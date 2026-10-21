@@ -636,10 +636,13 @@ fun MainScreen(fromTileType: String? = null, widgetRoute: String? = null, widget
                                 Modifier
                             }
                         ),
+                    // **قسمٌ ← قسم بلا مشهد في الأربع (دخولًا وخروجًا ورجوعًا):** مقاعد الأقسام فارغة والحركة
+                    // كلها للـPager، فكان تلاشٍ وتحجيمٌ يعملان على لا شيء بعد استقرار كل سحب — إطاراتٌ
+                    // تُنفَق في اللحظة التي يبدأ فيها المستخدم سحبه التالي.
                     enterTransition = {
                         // مستوى الحركة يُقرأ **لحظة الانتقال** لا لحظة التركيب: لا حالة تُراقَب
                         // ولا إعادة رسم — الانتقال نفسه هو القارئ، فيسري الخيار فورًا.
-                        when (ThemeStudio.motion(settingsPrefs)) {
+                        when (if (initialState.destination.route in primaryRoutes && targetState.destination.route in primaryRoutes) ThemeMotion.NONE else ThemeStudio.motion(settingsPrefs)) {
                             // «بلا حركة»: التنقّل نفسه بلا مشهد.
                             ThemeMotion.NONE -> EnterTransition.None
                             // «هادئة»: تلاشٍ قصير وحده — بلا انزلاق ولا تحجيم.
@@ -668,7 +671,7 @@ fun MainScreen(fromTileType: String? = null, widgetRoute: String? = null, widget
                         }
                     },
                     exitTransition = {
-                        when (ThemeStudio.motion(settingsPrefs)) {
+                        when (if (initialState.destination.route in primaryRoutes && targetState.destination.route in primaryRoutes) ThemeMotion.NONE else ThemeStudio.motion(settingsPrefs)) {
                             ThemeMotion.NONE -> ExitTransition.None
                             ThemeMotion.CALM -> fadeOut(
                                 animationSpec = tween(140, easing = FastOutSlowInEasing)
@@ -685,7 +688,7 @@ fun MainScreen(fromTileType: String? = null, widgetRoute: String? = null, widget
                         }
                     },
                     popEnterTransition = {
-                        when (ThemeStudio.motion(settingsPrefs)) {
+                        when (if (initialState.destination.route in primaryRoutes && targetState.destination.route in primaryRoutes) ThemeMotion.NONE else ThemeStudio.motion(settingsPrefs)) {
                             ThemeMotion.NONE -> EnterTransition.None
                             ThemeMotion.CALM -> fadeIn(
                                 animationSpec = tween(180, easing = LinearOutSlowInEasing)
@@ -704,7 +707,7 @@ fun MainScreen(fromTileType: String? = null, widgetRoute: String? = null, widget
                         }
                     },
                     popExitTransition = {
-                        when (ThemeStudio.motion(settingsPrefs)) {
+                        when (if (initialState.destination.route in primaryRoutes && targetState.destination.route in primaryRoutes) ThemeMotion.NONE else ThemeStudio.motion(settingsPrefs)) {
                             ThemeMotion.NONE -> ExitTransition.None
                             ThemeMotion.CALM -> fadeOut(
                                 animationSpec = tween(140, easing = FastOutSlowInEasing)

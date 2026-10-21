@@ -144,7 +144,6 @@ fun CpuCoreControlScreen(
     ScreenAccentProvider(accent) {
         MaxListScreen(
             title = screenTitle,
-            subtitle = stringResource(R.string.cpu_core_control_subtitle),
             onBack = { navController.popBackStack() },
             accentIcon = Icons.Outlined.Memory,
             accent = accent,
@@ -156,8 +155,8 @@ fun CpuCoreControlScreen(
                 // لمن يريده، لا في وجه الجميع (ملاحظة المالك: «فقط AI يعرض sys/devices…»).
                 MaxHelpAction(
                     title = screenTitle,
-                    body = stringResource(R.string.cpu_core_safety_note) +
-                        "\n\n" + stringResource(R.string.cpu_core_technical_source)
+                    body = listOf(stringResource(R.string.cpu_core_control_subtitle), stringResource(R.string.cpu_core_safety_note) +
+                        "\n\n" + stringResource(R.string.cpu_core_technical_source)).joinToString(separator = "\n\n")
                 )
             },
             // اختصار Max AI **أولًا وفي مكان ثابت**: `manual = true` لأن سقوف التردّد التي

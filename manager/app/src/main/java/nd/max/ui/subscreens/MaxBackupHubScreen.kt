@@ -560,7 +560,6 @@ internal fun MaxBackupHub(
 
     MaxListScreen(
         title = stringResource(R.string.max_backup_title),
-        subtitle = stringResource(R.string.max_backup_home_subtitle),
         onBack = { navController.popBackStack() },
         accentIcon = Icons.Rounded.Backup,
         condition = if (loading) {
@@ -577,7 +576,7 @@ internal fun MaxBackupHub(
         actions = {
             MaxHelpAction(
                 title = stringResource(R.string.max_backup_title),
-                body = stringResource(R.string.max_backup_help),
+                body = listOf(stringResource(R.string.max_backup_home_subtitle), stringResource(R.string.max_backup_help)).joinToString(separator = "\n\n"),
             )
             IconButton(onClick = { scope.launch { reload() } }, enabled = !busy) {
                 Icon(

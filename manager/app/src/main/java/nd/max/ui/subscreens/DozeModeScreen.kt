@@ -162,7 +162,6 @@ fun DozeModeScreen(
         MaxListScreen(
             title = stringResource(R.string.dozemode_title),
             onBack = { navController.popBackStack() },
-            subtitle = if (viewModel.isAvailable == true) stateLabel else null,
             accentIcon = Icons.Rounded.Bedtime,
             accent = scheme.tertiary,
             condition = condition,

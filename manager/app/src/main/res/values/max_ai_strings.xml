@@ -351,4 +351,20 @@
     <string name="maxai_intro_gate_action">What does Max AI do?</string>
     <string name="maxai_intro_promo_title">Free for everyone until %1$s</string>
     <string name="maxai_intro_promo_detail">Everything that needs a key is open right now — the window comes from the panel, not from this screen.</string>
+
+    <!-- شجرة قدرات Max AI (شاشة «ما يفعله Max AI» صارت صورة واحدة) -->
+    <string name="maxai_tree_subtitle">How Max AI reads, learns, decides and verifies</string>
+    <string name="maxai_tree_teaser">The Max AI capabilities tree</string>
+    <string name="maxai_tree_root">Max AI</string>
+    <string name="maxai_tree_mode">Mode</string>
+    <string name="maxai_tree_readings">Live readings</string>
+    <string name="maxai_tree_gpu">GPU limit</string>
+    <string name="maxai_tree_thermal">Thermal protection</string>
+    <string name="maxai_tree_cpu">CPU limit &amp; boost</string>
+    <string name="maxai_tree_learning">Learning</string>
+    <string name="maxai_tree_safety">Safe bounds</string>
+    <string name="maxai_tree_decide">Live decisions</string>
+    <string name="maxai_tree_verify">Read-back check</string>
+    <string name="maxai_tree_perf">Performance</string>
+    <string name="maxai_tree_battery">Battery saving</string>
 </resources>

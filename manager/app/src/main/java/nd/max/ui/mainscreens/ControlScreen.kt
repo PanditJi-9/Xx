@@ -121,7 +121,6 @@ fun ControlScreen(navController: NavHostController) {
     MaxListScreen(
         scrollState = listState,
         title = stringResource(R.string.max_nav_control),
-        subtitle = stringResource(R.string.control_workspace_subtitle),
         onBack = actions::back,
         accentIcon = MaxDestination.Control.icon,
         snackbarHostState = snackbarHostState,
@@ -146,7 +145,7 @@ fun ControlScreen(navController: NavHostController) {
             )
             MaxHelpAction(
                 title = stringResource(R.string.control_map_title),
-                body = stringResource(R.string.control_map_desc),
+                body = listOf(stringResource(R.string.control_workspace_subtitle), stringResource(R.string.control_map_desc)).joinToString(separator = "\n\n"),
             )
             IconButton(onClick = backupFlow::showSheet) {
                 Icon(

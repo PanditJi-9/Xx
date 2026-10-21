@@ -203,7 +203,6 @@ fun ZramManagerScreen(
 
     MaxScreen(
         title = stringResource(R.string.zram_title),
-        subtitle = stringResource(R.string.zram_desc),
         onBack = { navController.popBackStack() },
         accentIcon = Icons.Rounded.Memory,
         condition = condition,
@@ -217,7 +216,7 @@ fun ZramManagerScreen(
             }
             MaxHelpAction(
                 title = stringResource(R.string.zram_title),
-                body = helpBody
+                body = listOf(stringResource(R.string.zram_desc), helpBody).joinToString(separator = "\n\n")
             )
         }
     ) {

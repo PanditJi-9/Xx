@@ -131,7 +131,6 @@ fun PluginsScreen(navController: NavController) {
 
     MaxListScreen(
         title = stringResource(R.string.max_plugins_title),
-        subtitle = stringResource(R.string.max_plugins_subtitle),
         onBack = { navController.popBackStack() },
         accentIcon = MaxDestination.Plugins.icon,
         accent = MaxTone.Accent.content(),
@@ -140,7 +139,7 @@ fun PluginsScreen(navController: NavController) {
         actions = {
             MaxHelpAction(
                 title = stringResource(R.string.max_plugins_help_title),
-                body = stringResource(R.string.max_plugins_help_body),
+                body = listOf(stringResource(R.string.max_plugins_subtitle), stringResource(R.string.max_plugins_help_body)).joinToString(separator = "\n\n"),
             )
             IconButton(onClick = reload) {
                 Icon(

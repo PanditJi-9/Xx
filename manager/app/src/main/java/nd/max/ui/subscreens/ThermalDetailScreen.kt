@@ -219,7 +219,6 @@ fun ThermalDetailScreen(navController: NavHostController) {
 
     MaxListScreen(
         title = stringResource(R.string.detail_thermal),
-        subtitle = stringResource(R.string.detail_thermal_label),
         onBack = { navController.popBackStack() },
         accentIcon = Icons.Rounded.Thermostat,
         accent = accent,
@@ -227,7 +226,7 @@ fun ThermalDetailScreen(navController: NavHostController) {
         actions = {
             MaxHelpAction(
                 title = stringResource(R.string.detail_thermal),
-                body = stringResource(R.string.detail_thermal_subtitle)
+                body = listOf(stringResource(R.string.detail_thermal_label), stringResource(R.string.detail_thermal_subtitle)).joinToString(separator = "\n\n")
             )
         },
         header = {

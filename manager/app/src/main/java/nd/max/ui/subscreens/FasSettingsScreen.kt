@@ -21,7 +21,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import nd.max.R
-import nd.max.ui.component.MaxManagerInsight
 import nd.max.ui.component.ScreenAccentProvider
 import nd.max.ui.design.MaxScreen
 
@@ -37,11 +36,7 @@ fun FasScreen(navController: NavController) {
         MaxScreen(
             title = stringResource(R.string.str_frame_aware_scheduling),
             onBack = { navController.popBackStack() },
-        ) {
-            MaxManagerInsight(
-                text = stringResource(R.string.str_fas_is_a_user_space_implementa),
-                accent = MaterialTheme.colorScheme.secondary,
-            )
-        }
+            subtitle = stringResource(R.string.str_fas_is_a_user_space_implementa),
+        ) {}
     }
 }

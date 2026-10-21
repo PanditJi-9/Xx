@@ -204,7 +204,7 @@ fun MaxAiScreen(
     MaxListScreen(
         title = stringResource(R.string.max_ai_title),
         onBack = { navController.popBackStack() },
-        subtitle = state.strategyLabel,
+        status = state.strategyLabel,
         accentIcon = Icons.Rounded.Psychology,
         accent = MaterialTheme.colorScheme.tertiary,
         banner = banner,
@@ -224,12 +224,12 @@ fun MaxAiScreen(
                     iconTone = MaxTone.Accent,
                 )
             }
-            // §٥: بابٌ إلى شاشة التعريف — ما يفعله المحرّك، وما هو متاح الآن، وما لا نفعله.
+            // §٥: بابٌ إلى شاشة التعريف — صورة شجرة قدرات المحرّك.
             // ولا يُخفى خلف ترخيص: السطح نفسه هو ما يُشتَرى، وهذه الشاشة تشرحه.
             MaxGroup {
                 MaxNavigationRow(
                     title = stringResource(R.string.maxai_intro_title),
-                    subtitle = stringResource(R.string.maxai_intro_teaser),
+                    subtitle = stringResource(R.string.maxai_tree_teaser),
                     icon = Icons.Rounded.Insights,
                     iconTone = MaxTone.Accent,
                     onClick = { navController.navigate(MaxDestination.MaxAiIntro.launchRoute) },

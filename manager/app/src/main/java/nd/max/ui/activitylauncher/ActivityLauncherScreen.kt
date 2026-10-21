@@ -283,7 +283,7 @@ private fun DetailLevel(
 
     MaxListScreen(
         title = app.label,
-        subtitle = app.packageName,
+        status = app.packageName,
         accentIcon = Icons.AutoMirrored.Rounded.Launch,
         onBack = onBack,
         condition = condition,

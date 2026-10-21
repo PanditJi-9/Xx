@@ -28,9 +28,11 @@ import androidx.compose.runtime.saveable.SaveableStateHolder
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.first
 import nd.max.ui.component.rememberMaxHaptics
 import nd.max.ui.mainscreens.ApplistScreen
 import nd.max.ui.mainscreens.ControlScreen
@@ -130,21 +132,30 @@ internal fun PrimaryDeck(
         snapAnimationSpec = PrimaryDeckSnapSpring,
     )
 
-    // **الإقلاع أخفّ:** أول إطار يركّب الصفحة المعروضة وحدها. كان `beyondViewportPageCount = 1`
-    // من اللحظة الأولى فيركّب معها الجارة كاملةً (قائمة التطبيقات بتحميلها) قبل أن يظهر شيء —
-    // وهذا جزءٌ من الشاشة السوداء عند الفتح. والجارة تُجهَّز بعد أن يستقرّ الإطار الأول، فيبقى
-    // أول سحب بلا أول إطار فارغ.
-    var warmed by remember(pagerState) { mutableStateOf(false) }
+    // **الإقلاع أخفّ، ثم السحب بلا تركيبٍ في منتصفه.** أول إطار يركّب الصفحة المعروضة وحدها (كان
+    // `beyondViewportPageCount = 1` من اللحظة الأولى فيركّب معها الجارة كاملةً قبل أن يظهر شيء —
+    // جزءٌ من الشاشة السوداء عند الفتح). ثم تُجهَّز بقية الصفحات **صفحةً صفحةً** في أوقات الفراغ.
+    //
+    // **لماذا لا تكفي الجارة وحدها:** كلما عبر السحب منتصف صفحةٍ صارت جارتها الجديدة بعيدةً عن
+    // الصفحة الحالية، فيركّبها الـPager **أثناء حركة الاستقرار نفسها** — وهذا هو التقطيع في الانتقال
+    // الثاني (قائمة التطبيقات والتحكّم أثقل ما في التطبيق تركيبًا). وبعد التجهيز لا تركيب أثناء
+    // أي سحب. وكل خطوة تنتظر **سكون الـPager** أولًا فلا تُركَّب صفحةٌ تحت إصبع المستخدم.
+    var warmedPages by remember(pagerState) { mutableIntStateOf(0) }
     LaunchedEffect(pagerState) {
         delay(PrimaryDeckWarmupMillis)
-        warmed = true
+        val target = MaxDestination.PrimaryDestinations.size - 1
+        while (warmedPages < target) {
+            snapshotFlow { pagerState.isScrollInProgress }.first { scrolling -> !scrolling }
+            warmedPages += 1
+            delay(PrimaryDeckWarmStepMillis)
+        }
     }
 
     Box(modifier = modifier.fillMaxSize()) {
         HorizontalPager(
             state = pagerState,
             modifier = Modifier.fillMaxSize(),
-            beyondViewportPageCount = if (warmed) 1 else 0,
+            beyondViewportPageCount = warmedPages,
             userScrollEnabled = gesturesEnabled,
             flingBehavior = fling,
             key = { index -> MaxDestination.PrimaryDestinations[index].route },
@@ -154,9 +165,14 @@ internal fun PrimaryDeck(
 
             // الصفحة معتمة بنفسها: الشاشات الأربعة ترسم على `Scaffold` شفّاف (الخلفية كانت
             // تأتي من `NavHost`).
+            // **وللصفحة طبقة رسمها الخاصّة (`graphicsLayer`):** الـPager يحرّك الصفحات بتغيير موضعها كل
+            // إطار. بلا طبقةٍ لكل صفحة يُعاد تسجيل رسم ما فيها (بطاقات وخطوط ومنحنيات الرئيسية) مع كل
+            // إطار سحب؛ ومعها تُنقَل الطبقة المسجَّلة كما هي، ولا يُعاد الرسم إلا حين يتغيّر محتواها فعلًا.
+            // بلا تعتيمٍ ولا قصّ ولا ذاكرة رسمٍ إضافية: طبقةٌ فارغة الإعدادات.
             Box(
                 modifier = Modifier
                     .fillMaxSize()
+                    .graphicsLayer { }
                     .background(MaterialTheme.colorScheme.surface),
             ) {
                 CompositionLocalProvider(
@@ -178,6 +194,9 @@ internal fun PrimaryDeck(
 
 /** مهلة تجهيز الصفحة الجارة بعد أول إطار: تكفي لأن تُرسم الصفحة الأولى قبل أن تُركَّب الثانية. */
 private const val PrimaryDeckWarmupMillis = 450L
+
+/** الفاصل بين تجهيز صفحةٍ وأخرى بعد الأولى: يترك للرئيسية أن تُحمَّل بياناتها بلا منافسة. */
+private const val PrimaryDeckWarmStepMillis = 900L
 
 /**
  * نابض الاستقرار الواحد — يملكه السحب والنقر معًا.

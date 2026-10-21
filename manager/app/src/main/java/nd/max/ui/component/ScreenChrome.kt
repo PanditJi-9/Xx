@@ -49,6 +49,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
@@ -59,7 +60,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -73,18 +73,24 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import nd.max.ui.design.MaxRadius
 import nd.max.ui.design.MaxSectionSpec
+import nd.max.ui.design.MaxSize
 import nd.max.ui.design.MaxSpace
 import nd.max.R
 import nd.max.ui.design.maxRadius
@@ -190,8 +196,7 @@ internal fun maxTopBarInsets(hasBack: Boolean): WindowInsets {
  * [MaxStyledTopBar]. فشاشةٌ بُنيت على هيكلها الخاصّ (لا `MaxScreenScaffold`) تكتسب النمط بلا أيّ
  * تعديلٍ في ملفّها — الباب واحد والتفريعات خلفه، ولا شاشة تنفرد بشريطها.
  *
- * **والوصف اختياريّ** (بلا قيمة افتراضيّة غير `null`): النمطان اللذان يملكانه (سينمائيّ · تقنيّ)
- * يعرضانه حين يُمرَّر، ومن لم يمرّره (شاشةٌ تصف نفسها في جسمها) لا يُكرَّر سطرُها إطلاقًا.
+ * **والوصف (`subtitle`) لا يُرسم في الشريط في أيّ نمط**: الهياكل تفتحه من زرّ علامة الاستفهام في طرف الشريط (`withScreenHelp`)، فلا يُكرَّر سطرٌ ولا يُقتطع في شريط ضيّق. والمعامل باقٍ لتوافق المنادين.
  */
 @Composable
 fun MaxManagerSubScreenTopBar(
@@ -336,9 +341,17 @@ fun rememberTopBarStyle(): TopBarStyle {
  * والباب العامّ [MaxManagerSubScreenTopBar] يقرأ النمط ويفوّض إليها — فتكتسب الأنماطَ شاشاتٌ
  * بُنيت على هياكلها الخاصّة بلا تعديلٍ في ملفّاتها.
  *
- * **وقواعد النمط بياناتٌ على [TopBarStyle]** (عنوان كبير؟ مصغَّر؟ يملك الوصف؟ يعرض رمز المجال؟)
- * — تُقاس على JVM، والرسم هنا يقرؤها. وكلّها تُبقي الإجراءات (`actions`) وزرّ العودة، فلا نمط
- * يُخفي قدرة، والوصف لا يُكرَّر: من يملكه الشريط يُخفي جسم الصفحة سطره.
+ * **وقواعد النمط بياناتٌ على [TopBarStyle]** (صفّ ثابت؟ زرّ رجوع؟ أيقونة مجال؟ شفّاف فوق المحتوى؟)
+ * — تُقاس على JVM، والرسم هنا يقرؤها. وكلّها تُبقي الإجراءات (`actions`) فلا نمط يُخفي قدرة.
+ *
+ * - [TopBarStyle.CLASSIC] كما كان: عنوان كبير يطوي، وأيقونة تتقلّص، وزرّ رجوع مُعبَّأ.
+ * - الثلاثة الباقية **صفّ ثابت لا يتمدّد ولا يطوي**، فلا ترسم بـ`scrollBehavior` — والوصف (`subtitle`)
+ *   يُفتح من زرّ علامة الاستفهام في طرف الشريط في كل الأنماط، فلا يُرسم في الشريط ولا يُكرَّر.
+ *
+ * **وتثبيت حدّ الطيّ عند الصفر لازم لا زينة:** الهياكل تربط `exitUntilCollapsedScrollBehavior`
+ * بالـ`Scaffold`، وحدّه الافتراضيّ `-Float.MAX_VALUE` لا يغيّره إلا شريطٌ يرسم به. فبلا هذا التثبيت
+ * يظلّ الاتصال «يطوي» شريطًا لا وجود له ويبتلع كل دفعة تمرير صاعدة — فلا تتحرّك الصفحة. مع
+ * الصفر لا يتغيّر `heightOffset` أبدًا فلا يُستهلك شيء (والكلاسيكيّ يضبط حدّه بنفسه).
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -352,6 +365,9 @@ fun MaxStyledTopBar(
     subtitle: String? = null,
     actions: @Composable RowScope.() -> Unit = {}
 ) {
+    if (style.compactBar) {
+        SideEffect { scrollBehavior.state.heightOffsetLimit = 0f }
+    }
     when (style) {
         TopBarStyle.CLASSIC -> ClassicMediumTopBar(
             scrollBehavior = scrollBehavior,
@@ -362,34 +378,63 @@ fun MaxStyledTopBar(
             actions = actions
         )
 
-        TopBarStyle.MINIMAL -> MinimalTopBar(
-            scrollBehavior = scrollBehavior,
+        TopBarStyle.COMPACT_ICON -> CompactIconTopBar(
             title = title,
-            onBack = onBack,
-            actions = actions
-        )
-
-        TopBarStyle.CINEMATIC -> CinematicTopBar(
-            scrollBehavior = scrollBehavior,
-            title = title,
-            subtitle = subtitle,
             onBack = onBack,
             accentIcon = accentIcon,
             accent = accent,
             actions = actions
         )
 
-        TopBarStyle.TECHNICAL -> TechnicalTopBar(
-            scrollBehavior = scrollBehavior,
+        TopBarStyle.TITLE_ONLY -> TitleOnlyTopBar(
             title = title,
-            subtitle = subtitle,
+            actions = actions
+        )
+
+        TopBarStyle.TRANSLUCENT -> TranslucentTopBar(
+            title = title,
             onBack = onBack,
             actions = actions
         )
     }
 }
 
-/** زرّ العودة العاري — النمطان المصغّر والتقنيّ لا يُعبّئان الزرّ: كثافةٌ أعلى وصخبٌ أقلّ. */
+/**
+ * أرقام التدرّج في [TopBarStyle.TRANSLUCENT] — في موضع واحد مُعلَن لا مبثوثة في الرسم، فمن أراد
+ * شريطًا أخفّ أو أثقل غيّر هنا وحده.
+ *
+ * التدرّج من لون **الصفحة نفسه** (`surface`) لا من لون ثابت، فيصحّ في الفاتح والداكن وAMOLED
+ * وكل سمة ديناميكية. وهو عمودي من الأعلى: كثيف خلف شريط الحالة حتى لا تتداخل أيقوناته مع نصّ
+ * ينزلق، ثم يخفّ عند صفّ العنوان فيُرى المحتوى خلفه خافتًا، ثم يذوب إلى الشفّاف كليًّا.
+ */
+private object TranslucentBarSpec {
+    /** كثافة اللون عند الحافّة العلوية (خلف شريط الحالة). */
+    const val TOP_ALPHA = 0.96f
+
+    /** كثافته عند صفّ العنوان — فوق نصف الكثافة ليبقى العنوان مقروءًا فوق نصٍّ ينزلق تحته. */
+    const val TITLE_ALPHA = 0.80f
+
+    /** كثافته عند الحافّة السفلية للشريط، قبل أن يذوب في منطقة التلاشي. */
+    const val EDGE_ALPHA = 0.42f
+
+    /** أين يقع صفّ العنوان من ارتفاع الشريط (نسبة) — النقطة الوسطى في التدرّج. */
+    const val TITLE_STOP = 0.6f
+}
+
+/** عنوان الشريط في الأنماط الثابتة: سطر واحد بخطّ الكلاسيكيّ نفسه، ومعلَّم عنوانًا لقارئ الشاشة. */
+@Composable
+private fun BarTitle(title: String) {
+    Text(
+        text = title,
+        modifier = Modifier.semantics { heading() },
+        style = MaterialTheme.typography.titleLarge,
+        fontWeight = FontWeight.Bold,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis
+    )
+}
+
+/** زرّ العودة العاري — النمط الشفّاف لا يُعبّئ الزرّ: يطفو فوق التدرّج بلا صندوق. */
 @Composable
 private fun PlainBackButton(onBack: () -> Unit) {
     IconButton(onClick = onBack) {
@@ -397,153 +442,143 @@ private fun PlainBackButton(onBack: () -> Unit) {
     }
 }
 
-/** مصغّر: صفّ واحد بلا رمز مجال وبلا عنوان كبير — والمساحة كلها للمحتوى. */
-@OptIn(ExperimentalMaterial3Api::class)
+/**
+ * **مربّع الأيقونة الذي يحلّ محلّ زرّ الرجوع**: بحجم أرض اللمس نفسها (٤٨dp) وبتعبئة الزرّ
+ * الكلاسيكيّ وبزواياه، فيقع على خطّ الـgutter حيث كان الزرّ يقع، وتبقى الأيقونة بلون المجال.
+ * وهو **علامة لا زرّ**: لا نقر عليه — الرجوع بإيماءة النظام وزرّه.
+ */
 @Composable
-private fun MinimalTopBar(
-    scrollBehavior: TopAppBarScrollBehavior,
-    title: String,
-    onBack: () -> Unit,
-    actions: @Composable RowScope.() -> Unit
-) {
-    Column(
+private fun BarGlyphBox(icon: ImageVector, accent: Color) {
+    Box(
         modifier = Modifier
-            .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surface)
+            .size(MaxSize.minTouchTarget)
+            .background(
+                MaterialTheme.colorScheme.surfaceContainerHigh,
+                RoundedCornerShape(maxRadius(MaxRadius.inset))
+            ),
+        contentAlignment = Alignment.Center
     ) {
-        MaxManagerTopBarScrim {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = title,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                },
-                navigationIcon = { PlainBackButton(onBack) },
-                actions = actions,
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent,
-                    scrolledContainerColor = Color.Transparent
-                ),
-                scrollBehavior = scrollBehavior,
-                windowInsets = maxTopBarInsets(hasBack = true)
-            )
-        }
+        Icon(imageVector = icon, contentDescription = null, tint = accent)
     }
 }
 
 /**
- * سينمائيّ: عنوان كبير ورمز مجال ثابت، **والوصف سطرًا داخل الشريط** حتى يطوى (نسبة الطيّ ≤ ٠٫٥)
- * فيُخفى بدل أن يُقتطع في شريط الطيّ الضيّق — الرسم يتبع الحركة، لا يقاومها.
+ * مدمج بأيقونة ([TopBarStyle.COMPACT_ICON]): الشريط الكلاسيكيّ **وهو مطويّ** — صفّ بارتفاع ثابت
+ * وعنوان بجوار مربّع — لكن المربّع يحمل **أيقونة الشاشة** بدل سهم الرجوع. لا يتمدّد ولا يطوي
+ * (لا `scrollBehavior`): ما يُرى عند فتح الشاشة هو ما يبقى عند التمرير.
+ *
+ * وشاشةٌ لم تُمرّر أيقونة مجال تحتفظ بزرّ الرجوع في الخانة نفسها بدل خانة فارغة، فلا يبقى
+ * العنوان بلا مرساه ولا تفقد الشاشة طريق العودة داخل التطبيق.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun CinematicTopBar(
-    scrollBehavior: TopAppBarScrollBehavior,
+private fun CompactIconTopBar(
     title: String,
-    subtitle: String?,
     onBack: () -> Unit,
     accentIcon: ImageVector?,
     accent: Color,
     actions: @Composable RowScope.() -> Unit
 ) {
-    val expanded = 1f - scrollBehavior.state.collapsedFraction
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surface)
-    ) {
-        MaxManagerTopBarScrim {
-            LargeTopAppBar(
-                title = {
-                    Column {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            if (accentIcon != null) {
-                                ScreenAccentGlyph(icon = accentIcon, accent = accent)
-                                Spacer(Modifier.width(10.dp))
-                            }
-                            Text(
-                                text = title,
-                                modifier = Modifier.weight(1f),
-                                fontWeight = FontWeight.Bold,
-                                maxLines = 2,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        }
-                        if (!subtitle.isNullOrBlank() && expanded > 0.5f) {
-                            Text(
-                                text = subtitle,
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                maxLines = 2,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        }
+    MaxManagerTopBarScrim {
+        TopAppBar(
+            title = { BarTitle(title) },
+            navigationIcon = {
+                if (accentIcon != null) {
+                    BarGlyphBox(icon = accentIcon, accent = accent)
+                } else {
+                    IconButton(
+                        onClick = onBack,
+                        modifier = Modifier.background(
+                            MaterialTheme.colorScheme.surfaceContainerHigh,
+                            RoundedCornerShape(maxRadius(MaxRadius.inset))
+                        )
+                    ) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.cd_back))
                     }
-                },
-                navigationIcon = { PlainBackButton(onBack) },
-                actions = actions,
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent,
-                    scrolledContainerColor = Color.Transparent
-                ),
-                scrollBehavior = scrollBehavior,
-                windowInsets = maxTopBarInsets(hasBack = true)
-            )
-        }
+                }
+            },
+            actions = actions,
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = Color.Transparent,
+                scrolledContainerColor = Color.Transparent
+            ),
+            windowInsets = maxTopBarInsets(hasBack = true)
+        )
     }
 }
 
-/** تقنيّ: صفّان عمليّان — العنوان ثمّ سطر معلومات كثيف (الوصف) تحته؛ بلا رمز مجال. */
+/**
+ * العنوان فقط ([TopBarStyle.TITLE_ONLY]): **اسم الشاشة وحده** — بلا أيقونة ولا زرّ رجوع. صفّ ثابت
+ * يبدأ عنوانه على خطّ الـgutter كما تبدأ البطاقات (`hasBack = false`)، والإجراءات إن وُجدت تبقى
+ * في النهاية: النمط يسقط الزخرفة لا القدرة.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun TechnicalTopBar(
-    scrollBehavior: TopAppBarScrollBehavior,
+private fun TitleOnlyTopBar(
     title: String,
-    subtitle: String?,
+    actions: @Composable RowScope.() -> Unit
+) {
+    MaxManagerTopBarScrim {
+        TopAppBar(
+            title = { BarTitle(title) },
+            actions = actions,
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = Color.Transparent,
+                scrolledContainerColor = Color.Transparent
+            ),
+            windowInsets = maxTopBarInsets(hasBack = false)
+        )
+    }
+}
+
+/**
+ * شفّاف ومظلَّل ([TopBarStyle.TRANSLUCENT]): **لا سطح معتم** — تدرّج عمودي من لون الصفحة يغطّي
+ * الشريط وشريط الحالة ثم يمتدّ تحت حافّته بمقدار `MaxSpace.lg` (فراغ جسم الصفحة العلويّ نفسه)
+ * ويذوب إلى الشفّاف. والمحتوى في الهياكل ينزلق **تحت** هذا التدرّج فيخفت عند العنوان بدل أن
+ * يُقصّ بحافّة صلبة؛ وعند الراحة لا يغطّي التدرّج شيئًا لأن منطقته الممتدّة هي الفراغ بين الشريط
+ * وأوّل عنصر.
+ *
+ * والتدرّج **رسمٌ لا قياس** (`drawBehind`): لا يزيد ارتفاع الشريط ولا يعترض لمسًا، فما تحت
+ * منطقة التلاشي يبقى قابلًا للنقر. وزرّ الرجوع عارٍ فوقه، والعنوان بخطّ الأنماط الثابتة.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun TranslucentTopBar(
+    title: String,
     onBack: () -> Unit,
     actions: @Composable RowScope.() -> Unit
 ) {
-    Column(
+    val surface = MaterialTheme.colorScheme.surface
+    val fadeBelow = MaxSpace.lg
+    Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surface)
+            .drawBehind {
+                val total = size.height + fadeBelow.toPx()
+                val barEnd = size.height / total
+                drawRect(
+                    brush = Brush.verticalGradient(
+                        0f to surface.copy(alpha = TranslucentBarSpec.TOP_ALPHA),
+                        barEnd * TranslucentBarSpec.TITLE_STOP to surface.copy(alpha = TranslucentBarSpec.TITLE_ALPHA),
+                        barEnd to surface.copy(alpha = TranslucentBarSpec.EDGE_ALPHA),
+                        1f to Color.Transparent,
+                        startY = 0f,
+                        endY = total
+                    ),
+                    size = Size(size.width, total)
+                )
+            }
     ) {
-        MaxManagerTopBarScrim {
-            TopAppBar(
-                title = {
-                    Column {
-                        Text(
-                            text = title,
-                            style = MaterialTheme.typography.titleSmall,
-                            fontWeight = FontWeight.SemiBold,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                        if (!subtitle.isNullOrBlank()) {
-                            Text(
-                                text = subtitle,
-                                style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        }
-                    }
-                },
-                navigationIcon = { PlainBackButton(onBack) },
-                actions = actions,
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent,
-                    scrolledContainerColor = Color.Transparent
-                ),
-                scrollBehavior = scrollBehavior,
-                windowInsets = maxTopBarInsets(hasBack = true)
-            )
-        }
+        TopAppBar(
+            title = { BarTitle(title) },
+            navigationIcon = { PlainBackButton(onBack) },
+            actions = actions,
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = Color.Transparent,
+                scrolledContainerColor = Color.Transparent
+            ),
+            windowInsets = maxTopBarInsets(hasBack = true)
+        )
     }
 }
 

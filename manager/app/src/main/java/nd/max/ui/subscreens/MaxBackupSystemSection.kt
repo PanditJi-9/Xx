@@ -182,7 +182,6 @@ internal fun MaxBackupSystemMode(
 
     MaxListScreen(
         title = stringResource(R.string.max_backup_title),
-        subtitle = stringResource(R.string.max_backup_system_subtitle),
         onBack = onBack,
         accentIcon = Icons.Rounded.SimCard,
         condition = condition,
@@ -191,7 +190,7 @@ internal fun MaxBackupSystemMode(
         actions = {
             MaxHelpAction(
                 title = stringResource(R.string.max_backup_mode_system),
-                body = stringResource(R.string.max_backup_system_help),
+                body = listOf(stringResource(R.string.max_backup_system_subtitle), stringResource(R.string.max_backup_system_help)).joinToString(separator = "\n\n"),
             )
         },
         header = {

@@ -257,16 +257,15 @@ fun DeviceInfoScreen(
 
     MaxListScreen(
         title = stringResource(R.string.device_info),
-        subtitle = stringResource(R.string.devinfo_subtitle),
         onBack = actions::back,
         accentIcon = Icons.Rounded.Info,
         reserveBottom = false,
         actions = {
             MaxHelpAction(
                 title = stringResource(R.string.devinfo_help_title),
-                body = stringResource(
+                body = listOf(stringResource(R.string.devinfo_subtitle), stringResource(
                     if (advancedHelp) R.string.devinfo_help_desc else R.string.devinfo_help_desc_basic,
-                ),
+                )).joinToString(separator = "\n\n"),
             )
         },
     ) {

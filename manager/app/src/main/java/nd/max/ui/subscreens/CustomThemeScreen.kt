@@ -1096,14 +1096,14 @@ private fun BannerGradientPreview(gradientAlpha: Float, customBannerUri: String?
 // ─── Theme preview phone card ─────────────────────────────────────────────────
 
 /**
- * ارتفاع كتلة الشريط في المعاينة بحسب النمط — **الرقم تابع للبنية لا ذوقًا**: المصغّر أقصر
- * (صفّ واحد)، والسينمائيّ أطول (عنوان كبير + سطر وصف)، والتقنيّ في الوسط بسطرَي معلومات،
- * والكلاسيكيّ على ما كان عليه فلا تتغيّر معاينةُ من لم يختر.
+ * ارتفاع كتلة الشريط في المعاينة بحسب النمط — **الرقم تابع للبنية لا ذوقًا**: الأنماط الثلاثة
+ * الجديدة صفٌّ ثابت (لا عنوان كبير يتمدّد) فأقصر من الكلاسيكيّ، والشفّاف أعلى قليلًا ليتّسع
+ * لتدرّجه، والكلاسيكيّ على ما كان عليه فلا تتغيّر معاينةُ من لم يختر.
  */
 private fun previewHeroHeight(style: TopBarStyle): Dp = when (style) {
-    TopBarStyle.MINIMAL -> 40.dp
-    TopBarStyle.CINEMATIC -> 84.dp
-    TopBarStyle.TECHNICAL -> 54.dp
+    TopBarStyle.COMPACT_ICON -> 40.dp
+    TopBarStyle.TITLE_ONLY -> 40.dp
+    TopBarStyle.TRANSLUCENT -> 44.dp
     TopBarStyle.CLASSIC -> 62.dp
 }
 @Composable
@@ -1230,14 +1230,26 @@ private fun ThemePreviewCard(
                 }
 
                 // Banner / hero strip — **والنمط العلويّ يُرى هنا أيضًا**: المعاينة وعدٌ يُصدَّق
-                // بنقرة، فترتفع بالسينمائيّ (عنوان كبير + سطر وصف) وتنخفض بالمصغّر (بلا لمعة).
+                // بنقرة. الكلاسيكيّ بلمعته وارتفاعه؛ والثلاثة الباقية صفٌّ ثابت: «أيقونة» بمربّع
+                // الأيقونة قبل العنوان (بدل الرجوع)، و«العنوان» بسطر العنوان وحده، و«شفّاف» بلا
+                // سطح معتم — تدرّج يذوب إلى الشفّاف ودائرة الرجوع قبل العنوان.
                 Surface(
                     modifier = Modifier.fillMaxWidth().height(previewHeroHeight(topBarStyle)),
                     shape = RoundedCornerShape(maxRadius(MaxRadius.row)),
-                    color = cs.secondaryContainer.copy(alpha = 0.65f)
+                    color = if (topBarStyle.overlaysContent) {
+                        Color.Transparent
+                    } else {
+                        cs.secondaryContainer.copy(alpha = 0.65f)
+                    }
                 ) {
-                    Box(contentAlignment = Alignment.BottomStart) {
-                        if (topBarStyle != TopBarStyle.MINIMAL) {
+                    Box(
+                        contentAlignment = if (topBarStyle.compactBar) {
+                            Alignment.CenterStart
+                        } else {
+                            Alignment.BottomStart
+                        }
+                    ) {
+                        if (topBarStyle == TopBarStyle.CLASSIC) {
                             Box(
                                 modifier = Modifier
                                     .fillMaxSize()
@@ -1251,24 +1263,50 @@ private fun ThemePreviewCard(
                                     )
                             )
                         }
-                        Column(
-                            modifier = Modifier.padding(start = 8.dp, bottom = 6.dp),
-                            verticalArrangement = Arrangement.spacedBy(4.dp)
+                        if (topBarStyle.overlaysContent) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .background(
+                                        Brush.verticalGradient(
+                                            listOf(
+                                                cs.secondaryContainer.copy(alpha = 0.9f),
+                                                Color.Transparent
+                                            )
+                                        )
+                                    )
+                            )
+                        }
+                        Row(
+                            modifier = Modifier.padding(
+                                start = 8.dp,
+                                bottom = if (topBarStyle.compactBar) 0.dp else 6.dp
+                            ),
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
+                            if (topBarStyle.showsGlyph && topBarStyle.compactBar) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(16.dp)
+                                        .clip(RoundedCornerShape(maxRadius(MaxRadius.control) / 3))
+                                        .background(cs.primary.copy(alpha = 0.45f))
+                                )
+                                Spacer(Modifier.width(6.dp))
+                            } else if (topBarStyle.showsBack && topBarStyle.compactBar) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(14.dp)
+                                        .clip(CircleShape)
+                                        .background(cs.onSecondaryContainer.copy(alpha = 0.3f))
+                                )
+                                Spacer(Modifier.width(6.dp))
+                            }
                             Box(
                                 modifier = Modifier
                                     .size(width = 28.dp, height = 5.dp)
                                     .clip(RoundedCornerShape(3.dp))
                                     .background(cs.onSecondaryContainer.copy(alpha = 0.55f))
                             )
-                            if (topBarStyle.ownsDescription) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(width = 46.dp, height = 4.dp)
-                                        .clip(RoundedCornerShape(2.dp))
-                                        .background(cs.onSecondaryContainer.copy(alpha = 0.32f))
-                                )
-                            }
                         }
                     }
                 }

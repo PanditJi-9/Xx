@@ -154,7 +154,6 @@ fun NetworkDetailScreen(navController: NavHostController) {
 
     MaxListScreen(
         title = stringResource(R.string.detail_network),
-        subtitle = stringResource(R.string.detail_live_traffic),
         onBack = { navController.popBackStack() },
         accentIcon = Icons.Rounded.NetworkCheck,
         accent = accent,
@@ -162,7 +161,7 @@ fun NetworkDetailScreen(navController: NavHostController) {
         actions = {
             MaxHelpAction(
                 title = stringResource(R.string.detail_network),
-                body = stringResource(R.string.detail_trafficstats_subtitle)
+                body = listOf(stringResource(R.string.detail_live_traffic), stringResource(R.string.detail_trafficstats_subtitle)).joinToString(separator = "\n\n")
             )
         },
         header = {

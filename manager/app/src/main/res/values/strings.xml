@@ -1323,9 +1323,9 @@
     <string name="theme_nav_title">Navigation bar</string>
     <string name="theme_topbar_title">Top bar style</string>
     <string name="theme_topbar_classic">Classic</string>
-    <string name="theme_topbar_minimal">Minimal</string>
-    <string name="theme_topbar_cinematic">Cinematic</string>
-    <string name="theme_topbar_technical">Technical</string>
+    <string name="theme_topbar_icon">Icon</string>
+    <string name="theme_topbar_title_only">Title</string>
+    <string name="theme_topbar_translucent">Shaded</string>
     <string name="theme_opt_standard">Standard</string>
     <string name="theme_preset_amoled">Pure black</string>
     <string name="theme_preset_blossom">Blossom</string>

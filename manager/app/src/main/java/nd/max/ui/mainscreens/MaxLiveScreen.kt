@@ -102,7 +102,7 @@ fun MaxLiveScreen(
     MaxListScreen(
         title = stringResource(R.string.max_live_title),
         onBack = { navController.popBackStack() },
-        subtitle = if (freshness == SampleFreshness.Missing) {
+        status = if (freshness == SampleFreshness.Missing) {
             stringResource(R.string.max_live_empty)
         } else {
             state.strategyLabel

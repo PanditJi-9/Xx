@@ -213,14 +213,6 @@ fun TouchBoostScreen(
         // التمرير يتوقّف طوال وضع الإصبع/الكف على وسادة القياس، لا الإيماءة وحدها — نفس
         // عقد `AudioStudioScreen`: البطاقة لا تنزلق تحت يدٍ تقيس.
         scrollEnabled = !padHeld,
-        subtitle = gameNode?.path
-            ?: sampleNode?.path
-            ?: inputBoostNode?.path
-            ?: when {
-                halWritable -> stringResource(R.string.max_touch_provider_hal)
-                halDeclared -> stringResource(R.string.max_touch_provider_hal_read_only)
-                else -> null
-            },
         accentIcon = Icons.Rounded.TouchApp,
         accent = MaterialTheme.colorScheme.secondary,
         condition = condition,

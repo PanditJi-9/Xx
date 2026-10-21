@@ -205,7 +205,6 @@ fun StorageDetailScreen(navController: NavHostController) {
 
     MaxListScreen(
         title = stringResource(R.string.detail_storage),
-        subtitle = stringResource(R.string.detail_filesystem_view),
         onBack = { navController.popBackStack() },
         accentIcon = Icons.Rounded.Storage,
         accent = accent,
@@ -214,7 +213,7 @@ fun StorageDetailScreen(navController: NavHostController) {
         actions = {
             MaxHelpAction(
                 title = stringResource(R.string.detail_storage),
-                body = stringResource(R.string.detail_storage_note)
+                body = listOf(stringResource(R.string.detail_filesystem_view), stringResource(R.string.detail_storage_note)).joinToString(separator = "\n\n")
             )
         },
         header = {

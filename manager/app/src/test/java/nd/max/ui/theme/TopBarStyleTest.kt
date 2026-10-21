@@ -18,21 +18,25 @@ import java.lang.reflect.Proxy
  * بنية التصميم نفسها، وليس اللون فقط… كل نمط يجب أن يمتلك قواعد واضحة للمسافات والطباعة
  * والأيقونات والعناوين والإجراءات والحركة، وألّا يكون مجرّد نسخة أخرى من النمط نفسه».
  *
+ * **وأُعيد تصميم ثلاثة منها بأمر المالك (٢٠٢٦-١٠-٢٢) والكلاسيكيّ كما هو:** «أيقونة» (صفّ ثابت
+ * وأيقونة الشاشة بدل زرّ الرجوع) · «العنوان» (اسم الشاشة وحده) · «شفّاف» (تدرّج مظلَّل فوق
+ * المحتوى). والمفاتيح القديمة (مصغّر · سينمائيّ · تقنيّ) تُقرأ بموضعها فلا يُصفَّر تفضيل أحد.
+ *
  * والقياس هنا على ثلاثة مستويات، وكلٌّ يقيس ما يستطيعه:
  *
  * 1. **القراءة والافتراضيّ** (JVM حقيقي): [ThemeStudio.topBarStyle] بمخزن تفضيلات مصنوع
  *    بـ`Proxy` — الغياب والمفتاح المجهول والقيمة غير النصّيّة تعود كلها [TopBarStyle.CLASSIC]،
- *    أي شريط التطبيق القائم؛ فلا يتغيّر شكل شاشةٍ على صاحبها.
- * 2. **الفروق البنيوية**: قواعد النمط بياناتٌ على التعداد ([TopBarStyle.heroTitle] ·
- *    `compactBar` · `ownsDescription` · `showsGlyph`)، ويُقاس أن لا نمطين يتقاسمان القواعد
+ *    أي شريط التطبيق القائم؛ فلا يتغيّر شكل شاشةٍ على صاحبها. والمفاتيح القديمة تُقرأ بموضعها.
+ * 2. **الفروق البنيوية**: قواعد النمط بياناتٌ على التعداد ([TopBarStyle.compactBar] ·
+ *    `showsBack` · `showsGlyph` · `overlaysContent`)، ويُقاس أن لا نمطين يتقاسمان القواعد
  *    الأربع نفسها — وهو نصّ البند («ألّا يكون مجرّد نسخة أخرى»).
  * 3. **الحياكة**: نقطة رسم واحدة ([MaxStyledTopBar]) بأربعة فروع، وبابٌ عامّ يقرأ النمط
  *    ويفوّض ([MaxManagerSubScreenTopBar]) فتكتسبه الشاشات ذات الهياكل الخاصّة، والهياكل الثلاثة
  *    تمرّ بالنقطة نفسها، والاستوديو يكتب المفتاح، والمعاينة ترسم النمط.
  *
  * **والحدّ المُعلَن:** «هل يبدو النمط جيّدًا فعلًا؟ وهل يصمد مع RTL والشاشات الصغيرة والفتحة
- * العلويّة والقارئ الشاشيّ؟» — UAT على جهاز، لا يُدّعى هنا. والمقيس في هذا الملف: القواعد
- * والربط؛ لا الذوق ولا البكسل ولا سلوك اللمس.
+ * العلويّة والقارئ الشاشيّ؟ وهل يخفت المحتوى خلف الشفّاف كما ينبغي؟» — UAT على جهاز، لا يُدّعى
+ * هنا. والمقيس في هذا الملف: القواعد والربط؛ لا الذوق ولا البكسل ولا سلوك اللمس.
  */
 class TopBarStyleTest {
 
@@ -74,12 +78,41 @@ class TopBarStyleTest {
         )
     }
 
+    @Test
+    fun `legacy keys read by position so no stored choice is reset`() {
+        assertEquals(
+            "مصغّر (الثاني) ⇒ الثاني الجديد",
+            TopBarStyle.COMPACT_ICON,
+            ThemeStudio.topBarStyle(prefsOf(mapOf(ThemeKeys.TOP_BAR to "MINIMAL"))),
+        )
+        assertEquals(
+            "سينمائيّ (الثالث) ⇒ الثالث الجديد",
+            TopBarStyle.TITLE_ONLY,
+            ThemeStudio.topBarStyle(prefsOf(mapOf(ThemeKeys.TOP_BAR to "CINEMATIC"))),
+        )
+        assertEquals(
+            "تقنيّ (الرابع) ⇒ الرابع الجديد",
+            TopBarStyle.TRANSLUCENT,
+            ThemeStudio.topBarStyle(prefsOf(mapOf(ThemeKeys.TOP_BAR to "TECHNICAL"))),
+        )
+        assertEquals(
+            "والترتيب هو الترتيب: كلاسيكيّ · أيقونة · عنوان · شفّاف",
+            listOf(
+                TopBarStyle.CLASSIC,
+                TopBarStyle.COMPACT_ICON,
+                TopBarStyle.TITLE_ONLY,
+                TopBarStyle.TRANSLUCENT,
+            ),
+            TopBarStyle.entries.toList(),
+        )
+    }
+
     // ── ② الفروق البنيوية: لا نمط نسخةٌ من آخر ──────────────────────────────
 
     @Test
     fun `no two styles share the same structural rules`() {
         val shapes = TopBarStyle.entries.map {
-            listOf(it.heroTitle, it.compactBar, it.ownsDescription, it.showsGlyph)
+            listOf(it.compactBar, it.showsBack, it.showsGlyph, it.overlaysContent)
         }
         assertEquals(
             "أربعة أنماط بقواعدَ مختلفة — لا نمط نسخةٌ من آخر",
@@ -87,28 +120,44 @@ class TopBarStyleTest {
             shapes.toSet().size,
         )
         assertEquals(
-            "عنوان كبير واحد فقط (سينمائيّ)",
-            setOf(TopBarStyle.CINEMATIC),
-            TopBarStyle.entries.filter { it.heroTitle }.toSet(),
+            "الكلاسيكيّ وحده يتمدّد ويطوي؛ البقية صفٌّ ثابت",
+            setOf(TopBarStyle.CLASSIC),
+            TopBarStyle.entries.filter { !it.compactBar }.toSet(),
         )
         assertEquals(
-            "الوصف داخل الشريط في النمطين اللذين يملكانه فقط",
-            setOf(TopBarStyle.CINEMATIC, TopBarStyle.TECHNICAL),
-            TopBarStyle.entries.filter { it.ownsDescription }.toSet(),
+            "زرّ الرجوع يُرسم في الكلاسيكيّ والشفّاف؛ ويغيب في «أيقونة» و«العنوان» بطلب المالك",
+            setOf(TopBarStyle.CLASSIC, TopBarStyle.TRANSLUCENT),
+            TopBarStyle.entries.filter { it.showsBack }.toSet(),
         )
         assertEquals(
-            "رمز المجال يُرسم في الكلاسيكيّ والسينمائيّ وحدهما",
-            setOf(TopBarStyle.CLASSIC, TopBarStyle.CINEMATIC),
+            "أيقونة المجال تُرسم في الكلاسيكيّ و«أيقونة» (بدل الرجوع) وحدهما",
+            setOf(TopBarStyle.CLASSIC, TopBarStyle.COMPACT_ICON),
             TopBarStyle.entries.filter { it.showsGlyph }.toSet(),
         )
         assertEquals(
-            "المصغّر هو الوحيد بشريط الصفّ الواحد",
-            setOf(TopBarStyle.MINIMAL),
-            TopBarStyle.entries.filter { it.compactBar }.toSet(),
+            "الشريط الشفّاف الوحيد الذي يُرسم فوق المحتوى",
+            setOf(TopBarStyle.TRANSLUCENT),
+            TopBarStyle.entries.filter { it.overlaysContent }.toSet(),
         )
         assertFalse(
-            "والمصغّر لا يخفي معلومة ثمّ يُعلن أنه لا يخفيها: لا رمز مجال ولا وصف في شريطه",
-            TopBarStyle.MINIMAL.showsGlyph || TopBarStyle.MINIMAL.ownsDescription,
+            "«أيقونة» تحلّ محلّ الرجوع لا تضيف إليه: أيقونة بلا سهم في الخانة نفسها",
+            TopBarStyle.COMPACT_ICON.showsBack,
+        )
+        assertTrue(
+            "و«العنوان» اسم الشاشة وحده: لا أيقونة ولا رجوع ولا تظليل",
+            !TopBarStyle.TITLE_ONLY.showsBack &&
+                !TopBarStyle.TITLE_ONLY.showsGlyph &&
+                !TopBarStyle.TITLE_ONLY.overlaysContent,
+        )
+        assertEquals(
+            "والكلاسيكيّ يبقى بقواعده القائمة: عنوان كبير ورجوع وأيقونة، ومعتم",
+            listOf(false, true, true, false),
+            listOf(
+                TopBarStyle.CLASSIC.compactBar,
+                TopBarStyle.CLASSIC.showsBack,
+                TopBarStyle.CLASSIC.showsGlyph,
+                TopBarStyle.CLASSIC.overlaysContent,
+            ),
         )
     }
 
@@ -148,7 +197,7 @@ class TopBarStyleTest {
     }
 
     @Test
-    fun `the three shells pass through the styled bar and never duplicate the description`() {
+    fun `the three shells pass through the styled bar and keep the description in the body`() {
         val shell = sourceFile("ui/design/MaxScreenScaffold.kt").readText()
         assertEquals(
             "ثلاثة هياكل (صفحة · مفصّلة · قائمة) تمرّ بنقطة الرسم الواحدة",
@@ -160,15 +209,51 @@ class TopBarStyleTest {
             3,
             Regex("rememberTopBarStyle\\(\\)").findAll(shell).count(),
         )
+        assertFalse(
+            "ولا شريط يملك الوصف بعد الآن: الوصف في جسم الصفحة دائمًا فلا يغيب ولا يتكرّر",
+            shell.contains("barOwnsDescription") || shell.contains("ownsDescription"),
+        )
         assertEquals(
-            "وقرار «الشريط يملك الوصف»: إعلانٌ وشرطٌ في كل هيكل (٣ + ٣)",
-            6,
-            Regex("barOwnsDescription").findAll(shell).count(),
+            "والوصف يُرسم بشرط واحد هو وجوده: في الهياكل الثلاثة، وفي لوح الحالة الحاجبة في القائمة",
+            4,
+            Regex("if \\(!subtitle\\.isNullOrBlank\\(\\)\\)").findAll(shell).count(),
+        )
+    }
+
+    @Test
+    fun `translucent bar overlaps the body in the scrolling shells only`() {
+        val shell = sourceFile("ui/design/MaxScreenScaffold.kt").readText()
+        assertTrue(
+            "الشفّاف يُحسب من النمط ومن غياب شريطٍ تملكه الشاشة",
+            shell.contains("val overlaysBar = topBarStyle.overlaysContent && topBar == null"),
+        )
+        assertEquals(
+            "هيكلا التمرير (صفحة · قائمة) يمتدّ جسمهما تحت الشريط الشفّاف",
+            2,
+            Regex("withoutBottom\\(includeTop = !overlaysBar\\)").findAll(shell).count(),
+        )
+        assertEquals(
+            "وارتفاع الشريط ينتقل إلى حشوة المحتوى المُمرَّر فلا يُغطّى أوّل عنصر عند الراحة",
+            2,
+            Regex("barOverlap\\(overlaysBar\\)").findAll(shell).count(),
         )
         assertTrue(
-            "والشرط لا يُخفي وصفًا حين لا وصف: النمط يملكه والوصف موجود",
-            shell.contains("topBarStyle.ownsDescription && !subtitle.isNullOrBlank()"),
+            "وتلاشي حافّة القائمة العلوية يُترك للتدرّج حتى لا يتضاعف التظليل",
+            shell.contains("fadeTop = scrollState.canScrollBackward && !overlaysBar"),
         )
+    }
+
+    @Test
+    fun `fixed-height styles pin the collapse limit so the shell scroll connection stays inert`() {
+        val chrome = sourceFile("ui/component/ScreenChrome.kt").readText()
+        assertTrue(
+            "الأنماط الثابتة تثبّت حدّ الطيّ عند الصفر — وإلا ابتلع الاتصال كل دفعة تمرير صاعدة",
+            chrome.contains("if (style.compactBar) {") &&
+                chrome.contains("scrollBehavior.state.heightOffsetLimit = 0f"),
+        )
+        for (retired in listOf("LargeTopAppBar", "CinematicTopBar", "TechnicalTopBar", "MinimalTopBar")) {
+            assertFalse("وما أُحيل إلى التقاعد لا يبقى في الرسم: $retired", chrome.contains(retired))
+        }
     }
 
     @Test
@@ -198,7 +283,7 @@ class TopBarStyleTest {
         assertEquals(
             "ولكل نمط ارتفاعه في المعاينة — فلا نمط يُعرض بارتفاع غيره",
             TopBarStyle.entries.size,
-            Regex("TopBarStyle\\.[A-Z]+ ->").findAll(screen).count(),
+            Regex("TopBarStyle\\.[A-Z_]+ ->").findAll(screen).count(),
         )
     }
 
@@ -209,9 +294,9 @@ class TopBarStyleTest {
         for (key in listOf(
             "theme_topbar_title",
             "theme_topbar_classic",
-            "theme_topbar_minimal",
-            "theme_topbar_cinematic",
-            "theme_topbar_technical",
+            "theme_topbar_icon",
+            "theme_topbar_title_only",
+            "theme_topbar_translucent",
         )) {
             assertTrue("ناقص في الإنجليزية: $key", en.contains("name=\"$key\""))
             assertTrue("ناقص في العربية: $key", ar.contains("name=\"$key\""))

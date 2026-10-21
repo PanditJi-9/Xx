@@ -19,6 +19,7 @@
 package nd.max.ui.subscreens
 
 
+import nd.max.ui.design.MaxHelpAction
 import android.app.Activity
 import android.content.Context
 import android.os.Build
@@ -129,13 +130,6 @@ fun GovSettings(
                     modifier = Modifier.padding(bottom = 4.dp)
                 )
             }
-            item {
-                MaxManagerInsight(
-                    text = stringResource(R.string.gov_settingsdesc2),
-                    accent = colorScheme.tertiary,
-                    modifier = Modifier.padding(bottom = 12.dp)
-                )
-            }
             
             item { TweaksSectionTitle(stringResource(R.string.section_CPUSettings)) }
             item {
@@ -243,7 +237,13 @@ fun GovSettingsTopAppBar(scrollBehavior: TopAppBarScrollBehavior, onBack: () -> 
         title = stringResource(R.string.gov_settings),
         onBack = onBack,
         accentIcon = Icons.Filled.Speed,
-        accent = MaterialTheme.colorScheme.tertiary
+        accent = MaterialTheme.colorScheme.tertiary,
+        actions = {
+            MaxHelpAction(
+                title = stringResource(R.string.gov_settings),
+                body = stringResource(R.string.gov_settingsdesc2),
+            )
+        }
     )
 }
             

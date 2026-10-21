@@ -8,87 +8,27 @@ package nd.max.ui.license
 import java.io.File
 import nd.max.core.access.FeatureAccess
 import nd.max.core.access.PromoState
-import nd.max.core.remote.RemoteFlags
-import nd.max.ui.design.MaxTone
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
 /**
- * عقد **شاشة «ما يفعله Max AI»** (§٥): «أنشئ شاشة أو عرضًا بصريًّا احترافيًّا يعرّف المستخدم
- * بقدرات Max AI ويمنحه سببًا مقنعًا لاكتشاف الميزات المدفوعة» — بلا رقمٍ مكتوب بيد.
+ * عقد **شاشة «ما يفعله Max AI»**: صورةٌ واحدة هي شجرة القدرات ([MaxAiCapabilityTree])، بلا نصوصٍ
+ * ولا جدولٍ ولا صفِّ ترخيص (طلب المالك ٢٠٢٦-١٠-٢٢).
  *
- * والقياس على أربعة مستويات:
+ * والمقيس على ثلاثة مستويات:
  *
- * 1. **الحلقة**: أربع مراحل، عناوينها وأسطرها مختلفة (لا نسخةٌ من سطر)، وبنبراتها المرسومة.
- * 2. **الجدول**: معرّفات الأسطح = [RemoteFlags.ALL].filter { it.showInMaxAiIntro } **في
- *    الاتجاهين** — فلا سطح يسقط ولا صفٌّ يُخترع، وكلها بلا تكرار.
- * 3. **المفردات**: [PromoState] تغطّي [FeatureAccess] تغطيةً متبادلة (٤ مقابل ٤، ولا حكمان
- *    يشتركان في حالة عرض) — فالشارة لا تقول «متاح» على حكمٍ لم يُتَّخذ.
- * 4. **الوصول والحياكة**: الشاشة **غير مقفلة** في الرسم الملاحيّ (وظيفتها أن تُشرح)، ولها بابان
- *    (شاشة المحرّك · لوح قفله)، ولا يُوجَّه إليها من قفل سطحٍ آخر، والحكم يُقرأ **لكل صفّ**
- *    من `RemoteAccess.access` لحظة العرض لا من نسخة محفوظة.
+ * 1. **المفردات**: [PromoState] تغطّي [FeatureAccess] تغطيةً متبادلة (يقرؤها غير هذه الشاشة).
+ * 2. **الوصول والحياكة**: الشاشة **غير مقفلة** في الرسم الملاحيّ، ولها بابان (شاشة المحرّك ·
+ *    لوح قفله)، وجسمها هو الشجرة وحدها.
+ * 3. **النصوص**: عناوين عقد الشجرة موجودة بالإنجليزية والعربية، وكل عقدة مقروءة في الرسم.
  *
- * **والحدّ المُعلَن:** «هل تقنع الشاشة فعلًا؟» و«هل تُقرأ بسلاسة مع RTL والشاشات الصغيرة؟» —
- * UAT على جهاز. والمقيس هنا: التطابق والربط، لا الذوق.
+ * **والحدّ المُعلَن:** «هل الرسم جميلٌ ومقروء على الشاشات الصغيرة مع RTL؟» — UAT على جهاز.
  */
 class MaxAiIntroTest {
 
-    // ── ① الحلقة ─────────────────────────────────────────────────────────────
-
-    @Test
-    fun `the loop is four distinct stages, and no two share a line`() {
-        assertEquals(
-            "الحلقة أربع مراحل كما في المحرّك: قراءة ← تشخيص ← تنفيذ ← تحقُّق",
-            4,
-            introStages.size,
-        )
-        assertEquals(
-            "ولا سطران بعنوان واحد",
-            introStages.size,
-            introStages.map { it.titleRes }.toSet().size,
-        )
-        assertEquals(
-            "ولا سطر شرحٍ مكرَّر",
-            introStages.size,
-            introStages.map { it.bodyRes }.toSet().size,
-        )
-        assertEquals(
-            "ونبرات الرسم هي المرسومة: محايد ← لون الشاشة ← تنبيه ← مؤكَّد",
-            listOf(MaxTone.Neutral, MaxTone.Accent, MaxTone.Caution, MaxTone.Positive),
-            introStages.map { it.tone },
-        )
-    }
-
-    // ── ② الجدول: تطابقٌ في الاتجاهين ────────────────────────────────────────
-
-    @Test
-    fun `the access table is exactly the intro-facing flag registry — no missing row, no invented one`() {
-        val rowIds = introSurfaces.map { it.flagId }
-        assertEquals(
-            "لا سطحٌ مسجَّل سقط من الجدول",
-            RemoteFlags.ALL.filter { it.showInMaxAiIntro }.map { it.id }.toSet(),
-            rowIds.toSet(),
-        )
-        assertEquals(
-            "ولا يُستبعد من الجدول إلا ما أُعلن أنه ليس سطح قدرة",
-            setOf(RemoteFlags.LICENSE),
-            RemoteFlags.ALL.filterNot { it.showInMaxAiIntro }.map { it.id }.toSet(),
-        )
-        assertEquals(
-            "ولا صفّان للمعرّف نفسه",
-            rowIds.size,
-            rowIds.toSet().size,
-        )
-        assertEquals(
-            "وكل صفٍّ له اسمه من الموارد",
-            introSurfaces.size,
-            introSurfaces.map { it.nameRes }.toSet().size,
-        )
-    }
-
-    // ── ③ المفردات: ترجمةٌ متبادلة بلا سقوط ──────────────────────────────────
+    // ── ① المفردات: ترجمةٌ متبادلة بلا سقوط ──────────────────────────────────
 
     @Test
     fun `every verdict maps to one state and every state to one verdict`() {
@@ -115,10 +55,10 @@ class MaxAiIntroTest {
         )
     }
 
-    // ── ④ الوصول والحياكة ────────────────────────────────────────────────────
+    // ── ② الوصول والحياكة ────────────────────────────────────────────────────
 
     @Test
-    fun `the intro stays reachable without a licence, and reads a live verdict per row`() {
+    fun `the intro stays reachable without a licence and its body is the tree alone`() {
         val graph = sourceFile("ui/navigation/MaxNavGraph.kt").readText()
         assertTrue(
             "المسار مسجَّل في الرسم الملاحيّ",
@@ -131,12 +71,12 @@ class MaxAiIntroTest {
 
         val screen = sourceFile("ui/license/MaxAiIntroScreen.kt").readText()
         assertTrue(
-            "وحكم كل صفٍّ يُقرأ لحظة العرض من السجلّ الحيّ لا من نسخة محفوظة",
-            screen.contains("PromoState.of(RemoteAccess.access(surface.flagId))"),
+            "وجسم الشاشة هو شجرة القدرات",
+            screen.contains("MaxAiCapabilityTree("),
         )
-        assertTrue(
-            "والإعلان (مجّانيّ حتى تاريخ) من نافذة اللوحة نفسها",
-            screen.contains("snapshot.promo"),
+        assertFalse(
+            "ولا جدولَ صفوفٍ ولا قائمةَ نصوصٍ تعود إليها",
+            screen.contains("MaxSection(") || screen.contains("MaxBullets(") || screen.contains("MaxNavigationRow("),
         )
 
         val ai = sourceFile("ui/mainscreens/MaxAiScreen.kt").readText()
@@ -154,7 +94,7 @@ class MaxAiIntroTest {
         )
     }
 
-    // ── ⑤ النصوص: لغتان، ولا ثالثة ──────────────────────────────────────────
+    // ── ③ النصوص: لغتان، ولا ثالثة ──────────────────────────────────────────
 
     @Test
     fun `every intro string exists in English and Arabic`() {
@@ -162,31 +102,21 @@ class MaxAiIntroTest {
         val ar = resFile("values-ar/max_ai_strings.xml").readText()
         val keys = listOf(
             "maxai_intro_title",
-            "maxai_intro_subtitle",
-            "maxai_intro_teaser",
-            "maxai_intro_stage1_title",
-            "maxai_intro_stage1_body",
-            "maxai_intro_stage2_title",
-            "maxai_intro_stage2_body",
-            "maxai_intro_stage3_title",
-            "maxai_intro_stage3_body",
-            "maxai_intro_stage4_title",
-            "maxai_intro_stage4_body",
-            "maxai_intro_access_title",
-            "maxai_intro_state_available",
-            "maxai_intro_state_free",
-            "maxai_intro_state_key",
-            "maxai_intro_state_off",
-            "maxai_intro_honesty_title",
-            "maxai_intro_honest_measured",
-            "maxai_intro_honest_readback",
-            "maxai_intro_honest_unknown",
-            "maxai_intro_honest_hardware",
-            "maxai_intro_license_row",
-            "maxai_intro_license_sub",
             "maxai_intro_gate_action",
-            "maxai_intro_promo_title",
-            "maxai_intro_promo_detail",
+            "maxai_tree_subtitle",
+            "maxai_tree_teaser",
+            "maxai_tree_root",
+            "maxai_tree_mode",
+            "maxai_tree_readings",
+            "maxai_tree_gpu",
+            "maxai_tree_thermal",
+            "maxai_tree_cpu",
+            "maxai_tree_learning",
+            "maxai_tree_safety",
+            "maxai_tree_decide",
+            "maxai_tree_verify",
+            "maxai_tree_perf",
+            "maxai_tree_battery",
         )
         for (key in keys) {
             assertTrue("ناقص في الإنجليزية: $key", en.contains("name=\"$key\""))
@@ -203,6 +133,19 @@ class MaxAiIntroTest {
             resFile("values/strings.xml").readText().contains("name=\"max_role_maxai_intro\"") &&
                 resFile("values-ar/strings.xml").readText().contains("name=\"max_role_maxai_intro\""),
         )
+    }
+
+    @Test
+    fun `the tree draws every node string it declares`() {
+        val tree = sourceFile("ui/license/MaxAiCapabilityTree.kt").readText()
+        val nodes = listOf(
+            "root", "mode", "readings", "gpu", "thermal", "cpu",
+            "learning", "safety", "decide", "verify", "perf", "battery",
+        )
+        for (node in nodes) {
+            assertTrue("عقدةٌ بلا نصّ في الرسم: $node", tree.contains("R.string.maxai_tree_$node"))
+            assertTrue("وعقدةٌ بلا رسمٍ: $node", tree.contains("nodeText(measurer, $node,"))
+        }
     }
 
     // ── أدوات القياس ─────────────────────────────────────────────────────────

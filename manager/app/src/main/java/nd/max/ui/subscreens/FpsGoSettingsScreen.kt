@@ -18,6 +18,7 @@
 
 package nd.max.ui.subscreens
 
+import nd.max.ui.design.MaxHelpAction
 import nd.max.MaxManagerProps
 
 
@@ -109,13 +110,6 @@ fun FpsGoSettings(navController: NavController) {
             ),
             
         ) {
-            item {
-                MaxManagerInsight(
-                    text = stringResource(R.string.str_fpsgo_frame_per_second_go_is_a),
-                    accent = MaterialTheme.colorScheme.secondary,
-                    modifier = Modifier.padding(bottom = 12.dp)
-                )
-            }
             
             item {
                 var fpsgostate by remember { mutableStateOf<Boolean?>(null) }
@@ -201,7 +195,13 @@ fun FpsGoTopAppBar(scrollBehavior: TopAppBarScrollBehavior, onBack: () -> Unit) 
         title = stringResource(R.string.str_fpsgo_settings),
         onBack = onBack,
         accentIcon = Icons.Filled.SportsEsports,
-        accent = MaterialTheme.colorScheme.secondary
+        accent = MaterialTheme.colorScheme.secondary,
+        actions = {
+            MaxHelpAction(
+                title = stringResource(R.string.str_fpsgo_settings),
+                body = stringResource(R.string.str_fpsgo_frame_per_second_go_is_a),
+            )
+        }
     )
 }
             

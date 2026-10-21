@@ -101,14 +101,13 @@ fun LicenseScreen(navController: NavHostController) {
 
     MaxScreen(
         title = stringResource(R.string.max_license_title),
-        subtitle = stringResource(R.string.max_license_subtitle),
         onBack = navActions::back,
         accentIcon = Icons.Rounded.Key,
         snackbarHostState = snackbarHostState,
         actions = {
             MaxHelpAction(
                 title = stringResource(R.string.max_license_title),
-                body = stringResource(R.string.max_license_help_body),
+                body = listOf(stringResource(R.string.max_license_subtitle), stringResource(R.string.max_license_help_body)).joinToString(separator = "\n\n"),
             )
         },
     ) {

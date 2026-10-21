@@ -10,6 +10,7 @@
 
 package nd.max.ui.subscreens
 
+import nd.max.ui.design.MaxHelpAction
 import androidx.compose.foundation.layout.fillMaxWidth
 import nd.max.ui.design.maxEdgeFade
 import nd.max.ui.design.maxBleed
@@ -111,12 +112,6 @@ fun DebloatFreezeScreen(
                 )
             }
         ) {
-            MaxManagerInsight(
-                text = stringResource(R.string.debloat_subtitle),
-                accent = MaterialTheme.colorScheme.error,
-                modifier = Modifier.padding(start = 16.dp, top = 12.dp, end = 16.dp, bottom = 10.dp)
-            )
-
             DebloatTabRow(
                 selectedTab = viewModel.selectedTab,
                 totalCount = viewModel.totalCount,
@@ -368,6 +363,10 @@ private fun DebloatFreezeTopAppBar(
                 IconButton(onClick = onRefresh) {
                     Icon(Icons.Default.Refresh, stringResource(R.string.menu_refresh))
                 }
+                MaxHelpAction(
+                    title = stringResource(R.string.debloat_freeze_title),
+                    body = stringResource(R.string.debloat_subtitle),
+                )
             }
         )
     }

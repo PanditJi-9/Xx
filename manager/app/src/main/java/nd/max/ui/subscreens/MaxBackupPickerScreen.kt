@@ -276,7 +276,6 @@ internal fun MaxBackupAppsPicker(
 
     MaxListScreen(
         title = stringResource(R.string.max_backup_title),
-        subtitle = stringResource(R.string.max_backup_picker_desc),
         onBack = onBack,
         accentIcon = Icons.Rounded.Backup,
         condition = if (batch == null) condition else null,
@@ -285,7 +284,7 @@ internal fun MaxBackupAppsPicker(
         actions = {
             MaxHelpAction(
                 title = stringResource(R.string.max_backup_title),
-                body = stringResource(R.string.max_backup_help),
+                body = listOf(stringResource(R.string.max_backup_picker_desc), stringResource(R.string.max_backup_help)).joinToString(separator = "\n\n"),
             )
             IconButton(onClick = { scope.launch { reload() } }, enabled = !busy) {
                 Icon(

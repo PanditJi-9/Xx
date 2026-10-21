@@ -6,330 +6,33 @@
 
 package nd.max.ui.license
 
-import androidx.annotation.StringRes
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Insights
-import androidx.compose.material.icons.rounded.Key
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
-import androidx.compose.material3.Text
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import nd.max.R
-import nd.max.core.access.PromoState
-import nd.max.core.access.RemoteAccess
-import nd.max.core.remote.RemoteFlags
-import nd.max.ui.design.MaxBullets
-import nd.max.ui.design.MaxCapsule
-import nd.max.ui.design.MaxCardShell
-import nd.max.ui.design.MaxCondition
-import nd.max.ui.design.MaxConditionKind
-import nd.max.ui.design.MaxConditionNotice
-import nd.max.ui.design.MaxGroup
-import nd.max.ui.design.MaxNavigationRow
-import nd.max.ui.design.MaxRow
 import nd.max.ui.design.MaxScreen
-import nd.max.ui.design.MaxSection
-import nd.max.ui.design.MaxSpace
-import nd.max.ui.design.MaxTone
-import nd.max.ui.navigation.MaxDestination
-import java.util.Date
 
 /**
- * **شاشة «ما يفعله Max AI»** (§٥): تعريفُ المحرّك بحلقته، وجدولُ ما هو **متاح الآن فعلًا**،
- * وسطورُ ما لا نفعله. ومن هنا يجد من لا يملك مفتاحًا سببًا واضحًا للاكتشاف — لا وعدًا بيعيًّا.
+ * **شاشة «ما يفعله Max AI»** — صورةٌ واحدة هي شجرة قدرات المحرّك ([MaxAiCapabilityTree]).
  *
- * ## ومصادرها — كلّها حيّة، ولا رقم واحد مكتوب بيد
- *
- * 1. **الحلقة**: عنوانان لكل مرحلة من مراحل النموذج القائمة (`MaxCausalStage`) — تصف ما يفعله
- *    المحرّك بالترتيب، وتُقرأ من نصوص المواردة لا من محفور.
- * 2. **جدول الأسطح السبعة**: معرّفاته من [RemoteFlags] (سجلّ المفاتيح — لا نسخة ثانية له)،
- *    وأسماؤه من موارد الشاشات القائمة (نفس الاسم الذي يراه المستخدم في مكانه)، وحالة كل صفٍّ
- *    من `RemoteAccess.access` **الآن** — تُترجم بـ[PromoState] بلا حكم ثانٍ. والصفوف هي
- *    `RemoteFlags.ALL.filter { it.showInMaxAiIntro }`؛ فمفتاح [RemoteFlags.LICENSE] يحكم
- *    ظهور صفٍّ في الإعدادات لا سطحَ قدرة، فلا يُقرأ هنا كأنه ميزة.
- * 3. **الإعلان** (مجّانيّ حتى تاريخ): من نافذة المالك في اللقطة نفسها، وبالتاريخ نفسه الذي
- *    تعرضه شاشة الترخيص (`DateFormat` الوسط) — مصدرٌ واحد لا نسختان تتباعدان.
- *
- * ## وما لا تدّعيه
- *
- * لا نسبة تحسّن هنا، ولا «تسريع» بلا قياس، ولا صفُّ سطحٍ لم يُقرأ حكمه من السجلّ. والمقيس في
- * الاختبار: تطابق الجدول مع السجلّ في الاتجاهين، وتغطية مفردات الحالة، ووجود النصوص بلغتين،
- * ومسارُ الوصول (مفتوحٌ لكلٍّ حتى وهو مقفل — فالغرض أن يُعرَض لا أن يُخفى).
- *
- * **والحدّ المُعلَن:** «هل الشاشة مقنعةٌ وجميلة؟» — UAT على جهاز؛ ولا يُدّعى هنا ذوقٌ ولا بكسل.
+ * كانت الشاشة نصوصًا وجدولًا وقائمة «ما لا نفعله» وصفَّ ترخيص، فأُزيلت كلها بطلب المالك
+ * (٢٠٢٦-١٠-٢٢): «غير مفيد». ويبقى للشاشة بابان كما كانا: من شاشة المحرّك، ومن لوح قفله —
+ * وهي غير مقفلة في الرسم الملاحيّ، فيراها من لا يملك مفتاحًا أيضًا.
  */
 @Composable
 fun MaxAiIntroScreen(navController: NavHostController) {
-    val snapshot by RemoteAccess.state.collectAsStateWithLifecycle()
-    val context = LocalContext.current
-    val access = remember(snapshot) {
-        introSurfaces.associate { surface ->
-            surface.flagId to PromoState.of(RemoteAccess.access(surface.flagId))
-        }
-    }
-
     MaxScreen(
         title = stringResource(R.string.maxai_intro_title),
-        subtitle = stringResource(R.string.maxai_intro_subtitle),
+        subtitle = stringResource(R.string.maxai_tree_subtitle),
         onBack = { navController.popBackStack() },
         accentIcon = Icons.Rounded.Insights,
         accent = MaterialTheme.colorScheme.tertiary,
     ) {
-        val promo = snapshot.promo
-        if (promo != null) {
-            val until = remember(promo.toMillis) {
-                android.text.format.DateFormat.getMediumDateFormat(context)
-                    .format(Date(promo.toMillis))
-            }
-            MaxConditionNotice(
-                condition = MaxCondition(
-                    kind = MaxConditionKind.Applied,
-                    title = stringResource(R.string.maxai_intro_promo_title, until),
-                    detail = stringResource(R.string.maxai_intro_promo_detail),
-                ),
-                modifier = Modifier.fillMaxWidth(),
-            )
-        }
-
-        // ── شجرة واحدة كبيرة بدل جدولين (طلب المالك ٢٠٢٦-١٠-٢٠) ─────────────────────────────
-        //
-        // «Max AI» جذرًا، ومنه تتفرّع الحلقة الأربع (قراءة · تشخيص · تنفيذ · تحقّق)، ثم أوراق
-        // القدرات بما هي عليه الآن. ولا جدول صفوف: الوصف كان يُقرأ كتقرير، لا كصورة ذهنية.
-        //
-        // **وكل نصّ في الشجرة موجود بلغاته الـ٨٥ أصلًا** (عناوين المراحل وأسماء الأسطح وحالاتها)
-        // فلا يحتاج التصميم الجديد ترجمةً ولا يخلق مفاتيح ناقصة في لغة.
-        // `for` لا `map`: `stringResource` دالة Composable، فلا تُنادى داخل lambda غير inline.
-        val stageLabels = ArrayList<Pair<String, String>>(introStages.size)
-        for (stage in introStages) {
-            stageLabels += stringResource(stage.titleRes) to stringResource(stage.bodyRes)
-        }
-        val leafLabels = ArrayList<TreeLeaf>(introSurfaces.size)
-        for (surface in introSurfaces) {
-            val state = access[surface.flagId] ?: PromoState.OFF
-            leafLabels += TreeLeaf(
-                name = stringResource(surface.nameRes),
-                badge = stringResource(state.labelRes()),
-                tone = state.tone(),
-            )
-        }
-        MaxAiTree(
-            modeLine = stringResource(R.string.max_ai_mode_desc),
-            stages = stageLabels,
-            leaves = leafLabels,
-            leavesTitle = stringResource(R.string.maxai_intro_access_title),
-        )
-
-        MaxSection(title = stringResource(R.string.maxai_intro_honesty_title)) {
-            MaxBullets(
-                lines = listOf(
-                    stringResource(R.string.maxai_intro_honest_measured),
-                    stringResource(R.string.maxai_intro_honest_readback),
-                    stringResource(R.string.maxai_intro_honest_unknown),
-                    stringResource(R.string.maxai_intro_honest_hardware),
-                ),
-            )
-        }
-
-        MaxGroup {
-            MaxNavigationRow(
-                title = stringResource(R.string.maxai_intro_license_row),
-                subtitle = stringResource(R.string.maxai_intro_license_sub),
-                icon = Icons.Rounded.Key,
-                iconTone = MaxTone.Accent,
-                onClick = { navController.navigate(MaxDestination.License.launchRoute) },
-            )
-        }
+        MaxAiCapabilityTree(modifier = Modifier.fillMaxWidth())
     }
-}
-
-/** مرحلة في حلقة المحرّك: عنوانٌ وسطرُ شرح ونبرةُ رسم — والأرقام يرسمها [MaxCausalStage]. */
-internal data class IntroStage(
-    @StringRes val titleRes: Int,
-    @StringRes val bodyRes: Int,
-    val tone: MaxTone,
-)
-
-/**
- * الحلقة في أربع مراحل — بترتيب المحرّك نفسه: قراءةٌ ثم تشخيصٌ ثم تنفيذٌ مقيَّد ثم تحقُّقٌ
- * بالقراءة، ومن التحقُّق تعود القراءة. ولا مرحلة خامسة: ما لا يفعله المحرّك لا يُكتَب هنا.
- */
-internal val introStages = listOf(
-    IntroStage(R.string.maxai_intro_stage1_title, R.string.maxai_intro_stage1_body, MaxTone.Neutral),
-    IntroStage(R.string.maxai_intro_stage2_title, R.string.maxai_intro_stage2_body, MaxTone.Accent),
-    IntroStage(R.string.maxai_intro_stage3_title, R.string.maxai_intro_stage3_body, MaxTone.Caution),
-    IntroStage(R.string.maxai_intro_stage4_title, R.string.maxai_intro_stage4_body, MaxTone.Positive),
-)
-
-/** سطحٌ يُعرض في جدول «المتاح الآن»: معرّفه من [RemoteFlags] واسمه من مورد قائم. */
-internal data class IntroSurface(
-    val flagId: String,
-    @StringRes val nameRes: Int,
-)
-
-/**
- * الأسطح السبعة — **واحدًا واحدًا كما في [RemoteFlags.ALL] بعد استبعاد ما ليس سطح قدرة**:
- * والاختبار يقيس التطابق في الاتجاهين، فلا يسقط سطحٌ من الجدول ولا يُخترع صفٌّ بلا مفتاح.
- */
-internal val introSurfaces = listOf(
-    IntroSurface(RemoteFlags.MAXAI, R.string.max_nav_max_ai),
-    IntroSurface(RemoteFlags.AUDIO, R.string.max_hub_audio),
-    IntroSurface(RemoteFlags.GAMESPACE, R.string.game_lobby_title),
-    IntroSurface(RemoteFlags.ATLAS, R.string.max_atlas_section_title),
-    IntroSurface(RemoteFlags.SPOOF, R.string.spoof_title),
-    IntroSurface(RemoteFlags.EMUHUB, R.string.emu_hub_title),
-    IntroSurface(RemoteFlags.BYPASS_CHARGE, R.string.bcharging),
-)
-
-/** نبرة الشارة: «متاح» مؤكَّد، و«مجّانيّ الآن» لون الشاشة، و«يحتاج مفتاحًا» تنبيهٌ هادئ. */
-private fun PromoState.tone(): MaxTone = when (this) {
-    PromoState.AVAILABLE -> MaxTone.Positive
-    PromoState.FREE_NOW -> MaxTone.Accent
-    PromoState.NEEDS_KEY -> MaxTone.Caution
-    PromoState.OFF -> MaxTone.Neutral
-}
-
-/** ورقة في الشجرة: سطحٌ باسمه وحالته — النصّان موجودان بلغاتهما أصلًا. */
-private data class TreeLeaf(val name: String, val badge: String, val tone: MaxTone)
-
-/**
- * الشجرة: جذرٌ واحد، وفروعٌ هي حلقة المحرّك، وأوراقٌ هي ما هو متاح الآن.
- *
- * **ولماذا رسم لا جدول:** الجدول يجعل كل صفٍّ سؤالًا مستقلًّا، فتُقرأ الشاشة كتقرير. والشجرة
- * تقول ما يعنيه المحرّك: أصلٌ واحد تتفرّع عنه أعمالٌ محدودة، ثم قدراتٌ معلّقة بها.
- *
- * **وحدّها المعلن:** خطوطها زخرفية تحمل العلاقة فقط؛ المعنى كلّه في النصّ — ومن يقرأ بقارئ
- * شاشة يسمع العناوين والأجساد بلا فقد (لا معلوحة محبوسة في الرسم).
- */
-@Composable
-private fun MaxAiTree(
-    modeLine: String,
-    stages: List<Pair<String, String>>,
-    leavesTitle: String,
-    leaves: List<TreeLeaf>,
-) {
-    val cs = MaterialTheme.colorScheme
-    Column(modifier = Modifier.fillMaxWidth()) {
-        // الجذر
-        MaxCardShell(
-            modifier = Modifier.fillMaxWidth(),
-            container = cs.surfaceContainerHigh,
-            accent = cs.tertiary,
-        ) {
-            Column(modifier = Modifier.fillMaxWidth()) {
-                Text(
-                    text = stringResource(R.string.maxai_intro_title),
-                    style = MaterialTheme.typography.titleLarge,
-                    color = cs.onSurface,
-                )
-                Text(
-                    text = modeLine,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = cs.onSurfaceVariant,
-                )
-            }
-        }
-
-        // الفروع: خطّ رأسي من الجذر ثم خطّ أفقي إلى كل مرحلة
-        stages.forEach { (title, body) ->
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(IntrinsicSize.Min),
-            ) {
-                Canvas(
-                    modifier = Modifier
-                        .width(36.dp)
-                        .fillMaxHeight(),
-                ) {
-                    val trunkX = size.width / 2f
-                    val midY = size.height / 2f
-                    val stroke = 2.dp.toPx()
-                    drawLine(
-                        color = cs.outlineVariant,
-                        start = Offset(trunkX, 0f),
-                        end = Offset(trunkX, midY),
-                        strokeWidth = stroke,
-                    )
-                    drawLine(
-                        color = cs.outlineVariant,
-                        start = Offset(trunkX, midY),
-                        end = Offset(size.width, midY),
-                        strokeWidth = stroke,
-                    )
-                }
-                Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(vertical = MaxSpace.xs, horizontal = MaxSpace.sm),
-                ) {
-                    Text(
-                        text = title,
-                        style = MaterialTheme.typography.titleSmall,
-                        color = cs.onSurface,
-                    )
-                    Text(
-                        text = body,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = cs.onSurfaceVariant,
-                    )
-                }
-            }
-        }
-
-        // الأوراق: ما هو متاح الآن — باسمه وحالته
-        Row(modifier = Modifier.fillMaxWidth().padding(top = MaxSpace.sm)) {
-            Canvas(modifier = Modifier.width(36.dp).height(24.dp)) {
-                drawLine(
-                    color = cs.outlineVariant,
-                    start = Offset(size.width / 2f, 0f),
-                    end = Offset(size.width / 2f, size.height),
-                    strokeWidth = 2.dp.toPx(),
-                )
-            }
-            Text(
-                text = leavesTitle,
-                style = MaterialTheme.typography.labelLarge,
-                color = cs.onSurfaceVariant,
-                modifier = Modifier.padding(horizontal = MaxSpace.sm, vertical = 2.dp),
-            )
-        }
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 36.dp),
-        ) {
-            leaves.forEach { leaf ->
-                MaxRow(
-                    title = leaf.name,
-                    trailing = { MaxCapsule(text = leaf.badge, tone = leaf.tone) },
-                )
-            }
-        }
-    }
-}
-
-/** نصّ الشارة — مفردات الإعلان لا مفردات الحكم. */
-@StringRes
-private fun PromoState.labelRes(): Int = when (this) {
-    PromoState.AVAILABLE -> R.string.maxai_intro_state_available
-    PromoState.FREE_NOW -> R.string.maxai_intro_state_free
-    PromoState.NEEDS_KEY -> R.string.maxai_intro_state_key
-    PromoState.OFF -> R.string.maxai_intro_state_off
 }

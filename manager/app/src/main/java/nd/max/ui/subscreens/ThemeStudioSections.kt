@@ -634,17 +634,17 @@ fun ThemeInterfaceControls(
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(MaxSpace.xl)) {
         // ── بنية الشريط العلوي (§٦-أ) ───────────────────────────────────────
-        // **أنماطها تختلف في البنية لا في اللون:** مصغّر (صفّ واحد كثيف) · سينمائيّ (عنوان كبير
-        // والوصف داخل الشريط) · تقنيّ (سطر معلومات عمليّ) — والكلاسيكيّ هو القائم. والمفتاح هنا
+        // **أنماطها تختلف في البنية لا في اللون:** أيقونة (صفّ ثابت وأيقونة الشاشة بدل الرجوع) ·
+        // عنوان (اسم الشاشة وحده) · شفّاف (تدرّج فوق المحتوى) — والكلاسيكيّ هو القائم. والمفتاح هنا
         // يكتب النمط، والشريط في `ScreenChrome` يقرؤه، والمعاينة أعلاه ترسم به.
         ThemeChoiceRow(
             icon = Icons.Outlined.ViewAgenda,
             title = stringResource(R.string.theme_topbar_title),
             options = listOf(
                 stringResource(R.string.theme_topbar_classic),
-                stringResource(R.string.theme_topbar_minimal),
-                stringResource(R.string.theme_topbar_cinematic),
-                stringResource(R.string.theme_topbar_technical),
+                stringResource(R.string.theme_topbar_icon),
+                stringResource(R.string.theme_topbar_title_only),
+                stringResource(R.string.theme_topbar_translucent),
             ),
             selectedIndex = currentTopBar.ordinal,
             onSelect = { index ->

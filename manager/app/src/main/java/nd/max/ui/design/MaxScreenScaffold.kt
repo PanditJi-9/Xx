@@ -118,20 +118,48 @@ fun floatingBottomBarPadding(fallback: Dp): Dp {
 /**
  * فراغ الهيكل دون قاعه. الجسم يحجز شريط التنقّل بنفسه في حشوته السفلية (`bottomPadding`)،
  * فلا يُؤخذ قاع الـ`Scaffold` فوقه فيُحسب الشريط مرّتين ويقع فراغٌ ميّت تحت القائمة.
+ *
+ * @param includeTop `false` للشريط الشفّاف ([TopBarStyle.overlaysContent]): الجسم يمتدّ **تحت**
+ *        الشريط فلا يُقصّ عند حافّته، والفراغ العلويّ ينتقل إلى حشوة المحتوى المُمرَّر
+ *        (انظر [barOverlap]) فيبدأ أوّل عنصر عند الراحة تحت الشريط تمامًا كما كان.
  */
 @Composable
-private fun PaddingValues.withoutBottom(): PaddingValues {
+private fun PaddingValues.withoutBottom(includeTop: Boolean = true): PaddingValues {
     val direction = LocalLayoutDirection.current
     return PaddingValues(
         start = calculateStartPadding(direction),
-        top = calculateTopPadding(),
+        top = if (includeTop) calculateTopPadding() else 0.dp,
         end = calculateEndPadding(direction),
     )
 }
 
 /**
+ * ارتفاع الشريط الذي يجب أن يحجزه **المحتوى المُمرَّر** من داخله لا الهيكل من خارجه: صفر لكل
+ * نمط معتم (الهيكل يحجزه بحشوته كما كان)، وارتفاع الشريط نفسه للشفّاف الذي ينزلق المحتوى
+ * تحته. وهو ما يجعل «شفّاف» لا يغطّي أوّل عنصر عند فتح الشاشة، ويتركه يمرّ تحت التدرّج بعد التمرير.
+ */
+private fun PaddingValues.barOverlap(overlaysBar: Boolean): Dp =
+    if (overlaysBar) calculateTopPadding() else 0.dp
+
+/**
+ * زرّ الشرح في الشريط العلوي: الوصف الشارح للشاشة لم يعد سطرًا تحت الشريط.
+ *
+ * يُعرض خلف علامة استفهام في طرف الشريط تفتح الشرح عند الضغط، فيبقى متاحًا دون أن يزاحم
+ * المحتوى. ويأتي الزرّ **بعد** إجراءات الشاشة نفسها (أقصى الطرف)، وإن لم يوجد شرح فلا زرّ.
+ */
+private fun withScreenHelp(
+    title: String,
+    help: String?,
+    actions: @Composable RowScope.() -> Unit,
+): @Composable RowScope.() -> Unit = {
+    actions()
+    if (!help.isNullOrBlank()) MaxHelpAction(title = title, body = help)
+}
+
+/**
  * Standard scrolling screen.
  *
+ * @param subtitle the screen's explanatory copy. It sits behind the top-bar help button, never under the bar.
  * @param condition when non-null the body is REPLACED by an explained state
  *        (root missing, unsupported SoC, read failed...). Use this only when
  *        nothing on the page is usable.
@@ -169,10 +197,11 @@ fun MaxScreen(
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
         rememberTopAppBarState()
     )
-    // نمط الشريط العلوي (§٦-أ): يُقرأ مرّة للصفحة، ويُمرَّر إلى الشريط المشترك. ومن يملك الشريط
-    // الوصف (سينمائيّ · تقنيّ) لا يكرّره الجسم تحته — لا سطرٌ مرّتين.
+    // نمط الشريط العلوي (§٦-أ): يُقرأ مرّة للصفحة، ويُمرَّر إلى الشريط المشترك. والوصف يبقى في
+    // جسم الصفحة في كل الأنماط (لا يملكه الشريط). والشفّاف يُرسم فوق المحتوى — إلا إن ملكت
+    // الشاشةُ شريطَها بنفسها (`topBar`) فلا شريطَ لنا نمتدّ تحته.
     val topBarStyle = rememberTopBarStyle()
-    val barOwnsDescription = topBarStyle.ownsDescription && !subtitle.isNullOrBlank()
+    val overlaysBar = topBarStyle.overlaysContent && topBar == null
     val navigationBarPadding = WindowInsets.navigationBars.asPaddingValues()
         .calculateBottomPadding()
     val bottomPadding = floatingBottomBarPadding(MaxSpace.pageBottom + navigationBarPadding)
@@ -201,7 +230,7 @@ fun MaxScreen(
                     accentIcon = accentIcon,
                     accent = accent,
                     subtitle = subtitle,
-                    actions = actions
+                    actions = withScreenHelp(title = title, help = subtitle, actions = actions)
                 )
             }
         },
@@ -213,19 +242,20 @@ fun MaxScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(scaffoldPadding.withoutBottom())
+                .padding(scaffoldPadding.withoutBottom(includeTop = !overlaysBar))
                 .maxAdaptiveContentWidth()
-                // No vertical shading on the page shell: scrolled content ends at the bar with a hard edge.
+                // No vertical shading on the page shell: scrolled content ends at the bar with a hard edge
+                // (the translucent bar shades itself — see TranslucentTopBar).
                 .verticalScroll(scrollState, enabled = scrollEnabled)
                 // الفراغ العلويّ جزءٌ من المحتوى المُمرَّر، لا نطاقٌ تُقصّ عنده المنطقة: فالمحتوى ينزلق
                 // حتى حافة البار نفسها، ولا يتوقّف 16dp تحتها ويترك شريطًا فارغًا. وعند فتح الشاشة
-                // يبقى الفراغ كما هو بين البار وأوّل عنصر.
-                .padding(top = BodyTopGap)
+                // يبقى الفراغ كما هو بين البار وأوّل عنصر. وفي الشريط الشفّاف يضاف ارتفاعه هنا
+                // (`barOverlap`) لأن الجسم يمتدّ تحته: يبدأ المحتوى تحته ثم ينزلق خلف التدرّج.
+                .padding(top = BodyTopGap + scaffoldPadding.barOverlap(overlaysBar))
                 .padding(horizontal = MaxSpace.gutter)
                 .padding(bottom = bottomPadding),
             verticalArrangement = Arrangement.spacedBy(maxSpace(MaxSpace.section))
         ) {
-            if (!subtitle.isNullOrBlank() && !barOwnsDescription) MaxScreenDescription(text = subtitle, accent = accent)
             if (condition != null) {
                 MaxConditionPanel(condition)
             } else {
@@ -272,10 +302,10 @@ fun MaxSplitScreen(
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
         rememberTopAppBarState()
     )
-    // نمط الشريط العلوي (§٦-أ): يُقرأ مرّة للصفحة، ويُمرَّر إلى الشريط المشترك. ومن يملك الشريط
-    // الوصف (سينمائيّ · تقنيّ) لا يكرّره الجسم تحته — لا سطرٌ مرّتين.
+    // نمط الشريط العلوي (§٦-أ): يُقرأ مرّة للصفحة، ويُمرَّر إلى الشريط المشترك. والوصف يبقى في
+    // جسم الصفحة في كل الأنماط (لا يملكه الشريط). والهيكل المقسوم يحجز الشريط الشفّاف كالمعتم:
+    // أجسامه ألواحٌ تدير تمريرها بنفسها، فلا محتوى ممرَّرًا هنا ينزلق تحت التدرّج.
     val topBarStyle = rememberTopBarStyle()
-    val barOwnsDescription = topBarStyle.ownsDescription && !subtitle.isNullOrBlank()
     val navigationBarPadding = WindowInsets.navigationBars.asPaddingValues()
         .calculateBottomPadding()
     val bottomPadding = floatingBottomBarPadding(MaxSpace.pageBottom + navigationBarPadding)
@@ -300,7 +330,7 @@ fun MaxSplitScreen(
                     accentIcon = accentIcon,
                     accent = accent,
                     subtitle = subtitle,
-                    actions = actions
+                    actions = withScreenHelp(title = title, help = subtitle, actions = actions)
                 )
             }
         },
@@ -317,13 +347,6 @@ fun MaxSplitScreen(
                 .padding(horizontal = MaxSpace.gutter)
                 .padding(bottom = if (reserveBottom) bottomPadding else 0.dp)
         ) {
-            if (!subtitle.isNullOrBlank() && !barOwnsDescription) {
-                MaxScreenDescription(
-                    text = subtitle,
-                    accent = accent,
-                    modifier = Modifier.padding(bottom = MaxSpace.section)
-                )
-            }
             if (condition != null) {
                 MaxConditionPanel(condition)
             } else {
@@ -341,6 +364,7 @@ fun MaxSplitScreen(
  * lazy: building 300 rows eagerly inside a scrolling Column is the main reason
  * the old list screens dropped frames while telemetry was updating.
  *
+ * @param status a live readout shown under the bar, such as the active profile or a current state. It is data, not explanatory copy.
  * @param floatingNotice an action outcome shown as a floating card pinned to the bottom of
  *        the viewport ([MaxFloatingNotice]) instead of a `banner` at the very top of a long
  *        list. A row at the top of a screen is where the user *is not* after pressing a
@@ -359,6 +383,7 @@ fun MaxListScreen(
     accent: Color = MaterialTheme.colorScheme.primary,
     condition: MaxCondition? = null,
     banner: MaxCondition? = null,
+    status: String? = null,
     floatingNotice: MaxCondition? = null,
     snackbarHostState: SnackbarHostState? = null,
     actions: @Composable RowScope.() -> Unit = {},
@@ -373,10 +398,11 @@ fun MaxListScreen(
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
         rememberTopAppBarState()
     )
-    // نمط الشريط العلوي (§٦-أ): يُقرأ مرّة للصفحة، ويُمرَّر إلى الشريط المشترك. ومن يملك الشريط
-    // الوصف (سينمائيّ · تقنيّ) لا يكرّره الجسم تحته — لا سطرٌ مرّتين.
+    // نمط الشريط العلوي (§٦-أ): يُقرأ مرّة للصفحة، ويُمرَّر إلى الشريط المشترك. والوصف يبقى في
+    // جسم الصفحة في كل الأنماط (لا يملكه الشريط). والشفّاف يُرسم فوق المحتوى — إلا إن ملكت
+    // الشاشةُ شريطَها بنفسها (`topBar`) فلا شريطَ لنا نمتدّ تحته.
     val topBarStyle = rememberTopBarStyle()
-    val barOwnsDescription = topBarStyle.ownsDescription && !subtitle.isNullOrBlank()
+    val overlaysBar = topBarStyle.overlaysContent && topBar == null
     val navigationBarPadding = WindowInsets.navigationBars.asPaddingValues()
         .calculateBottomPadding()
     val bottomPadding = floatingBottomBarPadding(MaxSpace.pageBottom + navigationBarPadding)
@@ -413,7 +439,7 @@ fun MaxListScreen(
                     accentIcon = accentIcon,
                     accent = accent,
                     subtitle = subtitle,
-                    actions = actions
+                    actions = withScreenHelp(title = title, help = subtitle, actions = actions)
                 )
             }
         },
@@ -449,9 +475,9 @@ fun MaxListScreen(
                         .maxAdaptiveContentWidth()
                         .padding(horizontal = MaxSpace.gutter)
                 ) {
-                    if (!subtitle.isNullOrBlank()) {
+                    if (!status.isNullOrBlank()) {
                         MaxScreenDescription(
-                            text = subtitle,
+                            text = status,
                             accent = accent,
                             modifier = Modifier.padding(bottom = MaxSpace.section)
                         )
@@ -463,9 +489,11 @@ fun MaxListScreen(
                     state = scrollState,
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(scaffoldPadding.withoutBottom())
+                        .padding(scaffoldPadding.withoutBottom(includeTop = !overlaysBar))
                         .maxVerticalEdgeFade(
-                            fadeTop = scrollState.canScrollBackward,
+                            // الشريط الشفّاف يُظلِّل نفسه: تلاشي الحافّة العلوية هنا يقع خلف شريط
+                            // الحالة ويُضاعف التظليل، فيُترك له وحده.
+                            fadeTop = scrollState.canScrollBackward && !overlaysBar,
                             fadeBottom = scrollState.canScrollForward,
                         )
                         .maxAdaptiveContentWidth(),
@@ -473,8 +501,9 @@ fun MaxListScreen(
                         start = MaxSpace.gutter,
                         end = MaxSpace.gutter,
                         // أوّل عنصر كان يبدأ عند حافة الشريط بالضبط (صفر فاصل) — وهو عطب كلّ
-                        // صفحة قائمة في التطبيق، لا شاشة واحدة.
-                        top = BodyTopGap,
+                        // صفحة قائمة في التطبيق، لا شاشة واحدة. وفي الشفّاف يُضاف ارتفاع الشريط
+                        // (`barOverlap`) لأن القائمة تمتدّ تحته: تبدأ تحته وتنزلق خلف التدرّج.
+                        top = BodyTopGap + scaffoldPadding.barOverlap(overlaysBar),
                         // الحشوة القائمة + النافذة العائمة ورفعها: فآخر عنصر ينتهي عند حافة
                         // النافذة العلوية بالضبط ويظلّ قابلًا للتمرير إلى ما فوقها.
                         bottom = if (reserveBottom) {
@@ -487,9 +516,9 @@ fun MaxListScreen(
                     ),
                     verticalArrangement = Arrangement.spacedBy(MaxSpace.row)
                 ) {
-                    if (!subtitle.isNullOrBlank() && !barOwnsDescription) {
-                        item(key = "max_subtitle") {
-                            MaxScreenDescription(text = subtitle, accent = accent)
+                    if (!status.isNullOrBlank()) {
+                        item(key = "max_status") {
+                            MaxScreenDescription(text = status, accent = accent)
                         }
                     }
                     if (banner != null) {

@@ -56,14 +56,13 @@ fun ConfigBackupScreen(
 
     MaxScreen(
         title = stringResource(R.string.max_nav_config_backup),
-        subtitle = stringResource(R.string.max_config_backup_desc),
         onBack = navActions::back,
         accentIcon = Icons.Rounded.Backup,
         snackbarHostState = snackbarHostState,
         actions = {
             MaxHelpAction(
                 title = stringResource(R.string.max_nav_config_backup),
-                body = stringResource(R.string.max_config_backup_help),
+                body = listOf(stringResource(R.string.max_config_backup_desc), stringResource(R.string.max_config_backup_help)).joinToString(separator = "\n\n"),
             )
         },
     ) {

@@ -187,7 +187,6 @@ fun GpuStudioScreen(
 
     MaxListScreen(
         title = title,
-        subtitle = stringResource(R.string.max_gpu_subtitle),
         onBack = navController::popBackStack,
         accentIcon = Icons.Outlined.Memory,
         condition = condition,
@@ -195,7 +194,7 @@ fun GpuStudioScreen(
         actions = {
             MaxHelpAction(
                 title = stringResource(R.string.max_gpu_help_title),
-                body = stringResource(R.string.max_gpu_help_body),
+                body = listOf(stringResource(R.string.max_gpu_subtitle), stringResource(R.string.max_gpu_help_body)).joinToString(separator = "\n\n"),
             )
         },
         // السقف الذي يُكتب هنا هو مقبض المحرّك نفسه (`ControlRegistry` ← `GPU_FREQUENCY`)

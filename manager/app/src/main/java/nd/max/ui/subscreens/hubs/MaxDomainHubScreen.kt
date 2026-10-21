@@ -67,13 +67,12 @@ fun MaxDomainHubScreen(navController: NavHostController, destination: MaxDestina
 
     MaxScreen(
         title = stringResource(destination.titleRes),
-        subtitle = stringResource(maxHubDescription(destination)),
         onBack = actions::back,
         accentIcon = destination.icon,
         actions = {
             MaxHelpAction(
                 title = stringResource(maxHubQuestionTitle(destination)),
-                body = stringResource(maxHubQuestionDescription(destination)),
+                body = listOf(stringResource(maxHubDescription(destination)), stringResource(maxHubQuestionDescription(destination))).joinToString(separator = "\n\n"),
             )
         },
     ) {

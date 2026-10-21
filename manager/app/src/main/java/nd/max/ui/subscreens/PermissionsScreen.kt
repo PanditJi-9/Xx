@@ -216,7 +216,6 @@ private fun AppOpsDetail(navController: NavController, pkg: String) {
 
     MaxListScreen(
         title = label,
-        subtitle = stringResource(R.string.max_perms_subtitle),
         onBack = { navController.popBackStack() },
         accentIcon = Icons.Rounded.Shield,
         condition = condition,
@@ -224,7 +223,7 @@ private fun AppOpsDetail(navController: NavController, pkg: String) {
         actions = {
             MaxHelpAction(
                 title = stringResource(R.string.max_perms_title),
-                body = stringResource(R.string.max_perms_help),
+                body = listOf(stringResource(R.string.max_perms_subtitle), stringResource(R.string.max_perms_help)).joinToString(separator = "\n\n"),
             )
         },
         header = {
@@ -691,13 +690,12 @@ private fun AppOpsPicker(navController: NavController) {
 
     MaxListScreen(
         title = stringResource(R.string.max_perms_title),
-        subtitle = stringResource(R.string.max_perms_picker_desc),
         onBack = { navController.popBackStack() },
         accentIcon = MaxDestination.Permissions.icon,
         actions = {
             MaxHelpAction(
                 title = stringResource(R.string.max_perms_title),
-                body = stringResource(R.string.max_perms_help),
+                body = listOf(stringResource(R.string.max_perms_picker_desc), stringResource(R.string.max_perms_help)).joinToString(separator = "\n\n"),
             )
         },
         header = {

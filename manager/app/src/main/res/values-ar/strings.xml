@@ -497,9 +497,9 @@
     <string name="theme_nav_title">شريط التنقّل</string>
     <string name="theme_topbar_title">نمط الشريط العلوي</string>
     <string name="theme_topbar_classic">الكلاسيكيّ</string>
-    <string name="theme_topbar_minimal">مصغّر</string>
-    <string name="theme_topbar_cinematic">سينمائيّ</string>
-    <string name="theme_topbar_technical">تقنيّ</string>
+    <string name="theme_topbar_icon">أيقونة</string>
+    <string name="theme_topbar_title_only">العنوان</string>
+    <string name="theme_topbar_translucent">شفّاف</string>
     <string name="theme_opt_standard">قياسيّ</string>
     <string name="theme_preset_amoled">أسود صافٍ</string>
     <string name="theme_preset_blossom">زهر</string>

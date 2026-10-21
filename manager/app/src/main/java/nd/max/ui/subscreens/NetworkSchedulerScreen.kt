@@ -107,7 +107,6 @@ fun NetworkSchedulerScreen(
     ScreenAccentProvider(accent) {
         MaxScreen(
             title = screenTitle,
-            subtitle = stringResource(R.string.net_sched_menu_desc),
             onBack = { navController.popBackStack() },
             accentIcon = Icons.Outlined.SettingsEthernet,
             accent = accent,
@@ -115,7 +114,7 @@ fun NetworkSchedulerScreen(
             actions = {
                 MaxHelpAction(
                     title = screenTitle,
-                    body = stringResource(R.string.sched_advanced_desc)
+                    body = listOf(stringResource(R.string.net_sched_menu_desc), stringResource(R.string.sched_advanced_desc)).joinToString(separator = "\n\n")
                 )
             }
         ) {

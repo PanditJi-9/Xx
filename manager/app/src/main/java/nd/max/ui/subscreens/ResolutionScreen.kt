@@ -161,11 +161,6 @@ fun ResolutionScreen(
         MaxScreen(
             title = stringResource(R.string.resolution_title),
             onBack = { navController.popBackStack() },
-            subtitle = if (panelReadable) {
-                "${viewModel.activeWidthPx}×${viewModel.activeHeightPx}"
-            } else {
-                null
-            },
             accentIcon = Icons.Rounded.AspectRatio,
             accent = scheme.secondary,
             condition = condition,
