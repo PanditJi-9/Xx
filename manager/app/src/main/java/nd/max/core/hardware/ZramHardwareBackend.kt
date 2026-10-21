@@ -191,6 +191,14 @@ object ZramHardwareBackend {
                 failedStage = Stage.Detach, message = "no-block-node:$root",
             )
 
+        // بلا حجمٍ مقروء لا يمكن إعادة المبادلة بعد `reset` — فلا نبدأ سلسلةً لا رجعة فيها.
+        if (before.sizeBytes == null) {
+            return ApplyResult(
+                sizeBytes, algorithm, null, before.algorithm,
+                failedStage = Stage.Size, message = "unreadable-disksize",
+            )
+        }
+
         if (algorithm != null && algorithm !in before.algorithms) {
             return ApplyResult(
                 sizeBytes, algorithm, before.sizeBytes, before.algorithm,
@@ -227,10 +235,13 @@ object ZramHardwareBackend {
             }
         }
 
-        if (sizeChanged) {
-            val write = run("echo $sizeBytes > ${quote("$root/disksize")}")
+        // **الكتابة ليست «تغييرًا» بل إعادة إحياء:** `reset` يجعل `disksize` صفرًا، فحتى
+        // تغيير الكودك وحده يحتاج كتابة الحجم المستهدف من جديد — وإلا صار `mkswap` على
+        // جهازٍ حجمه صفر وفشلت إعادة المبادلة.
+        if (targetSize > 0L) {
+            val write = run("echo $targetSize > ${quote("$root/disksize")}")
             val live = readState().sizeBytes
-            if (!write.ok || live != sizeBytes) {
+            if (!write.ok || live != targetSize) {
                 val why = write.message.ifBlank { "readback:$live" }
                 return restoreThenFail(before, node, wasActive, Stage.Size, why, sizeBytes, algorithm)
             }
@@ -248,7 +259,8 @@ object ZramHardwareBackend {
         }
 
         val after = readState()
-        val sizeOk = sizeBytes == null || after.sizeBytes == sizeBytes
+        // الحجم المستهدف يُتحقّق دائمًا (حتى في تغيير الكودك وحده)، لأن `reset` صفّره.
+        val sizeOk = after.sizeBytes == targetSize
         val algoOk = algorithm == null || after.algorithm == algorithm
         val swapOk = isActiveSwap(node) == wantSwap
         if (!sizeOk || !algoOk || !swapOk) {
