@@ -54,9 +54,54 @@ internal fun CustomizeTab(d: Draft, loaded: Boolean) {
             return@Column
         }
         FeaturesSection(d)
+        UpdatesSection(d)
         SubscriptionSection(d)
         AnnouncementSection(d)
         PromosSection(d)
+    }
+}
+
+/**
+ * نوافذ التحديث — القرار الوحيد في هذه الصفحة الذي **يخصّ الإزعاج لا الميزة**.
+ *
+ * كان المفتاح في شاشة التحكّم داخل تطبيق المستخدم نفسه، أي أنّ من يُسكِت إشعار التحديث هو من
+ * يُفترض أن يُبلَّغ به؛ ونُقل إلى هنا بأمر المالك (٢٠٢٦-١٠-٢١) ليصير قرارًا منشورًا: يُطفأ مرّة
+ * فلا يرى مستخدمٌ نافذة تحديث تلقائية — ويبقى من ضغط «تحقّق الآن» بنفسه يرى نتيجة فحصه، ويبقى
+ * حجب النسخة الأمنيّ ساريًا. والعلَم يُكتب في الإعداد الموقّع (`updates.disabled`).
+ */
+@Composable
+private fun UpdatesSection(d: Draft) {
+    SectionCard(
+        "نوافذ التحديث",
+        "إطفاء المفتاح يمنع نوافذ التحديث التلقائية عند كل المستخدمين (نافذة اللوحة · إعلان " +
+            "المانيفست · حوار «التطبيق أقدم من الوحدة»). والفحص اليدوي وحجب النسخ الأمني لا " +
+            "يتأثّران — فالمستخدم الذي يضغط «تحقّق الآن» يرى ما وُجد."
+    ) {
+        Row(
+            Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(Modifier.weight(1f)) {
+                Text("إسكات مطالبات التحديث", style = MaterialTheme.typography.titleSmall)
+                Text(
+                    if (d.updatesDisabled) {
+                        "مُسكتة الآن — لن تظهر نافذة تحديث تلقائية حتى ترفع هذا المفتاح."
+                    } else {
+                        "تظهر للمستخدمين كما هي اليوم."
+                    },
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            Switch(checked = d.updatesDisabled, onCheckedChange = { d.updatesDisabled = it })
+        }
+        Text(
+            "السريان: عند أول اعتمادٍ للإعداد في جهاز المستخدم (إقلاعًا كان أو تحديثًا) — لا " +
+                "يحتاج التطبيق أن يكون مفتوحًا حين تنشر.",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
     }
 }
 

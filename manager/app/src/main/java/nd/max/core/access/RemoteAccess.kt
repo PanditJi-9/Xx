@@ -47,6 +47,7 @@ import nd.max.core.remote.RemoteConfig
 import nd.max.core.remote.RemoteFetchException
 import nd.max.core.remote.RemoteFlags
 import nd.max.core.remote.StoredConfig
+import nd.max.core.update.UpdateGate
 import java.io.File
 
 /**
@@ -450,6 +451,13 @@ object RemoteAccess {
             license = LicenseStates.evaluate(record, now),
             promo = config.activePromoAt(now),
         )
+        // **سياسة نوافذ التحديث تُطبَّق هنا** — في الموضع الواحد الذي يُعتمد فيه كل إعداد
+        // (النسخة المخزّنة عند الإقلاع، ومن الخادم عند التحديث). ولا تُقرأ لحظةَ عرض النافذة:
+        // العلَم يُكتب محليًّا فيسري بلا شبكة، ويُحدَّث تلقائيًّا بنشرٍ جديد. وغيابه من الحمولة
+        // (`null`) يعني «لم تُنشر بعد» فلا يتغيّر شيء عمّا كان.
+        config.updates?.let { policy ->
+            appContext?.let { app -> UpdateGate.applyPublishedPolicy(app, policy.disabled) }
+        }
     }
 
     private fun publishLicense(code: String?) {

@@ -45,6 +45,15 @@ internal class Draft {
     var updateRequired by mutableStateOf(false)
     /** فاصل التذكير للإصدار الاختياري، بالساعات (1..720). */
     var reminderHours by mutableStateOf("24")
+    /**
+     * نوافذ التحديث التلقائية: `true` ⇒ لا تظهر للمستخدمين إطلاقًا.
+     *
+     * كان هذا القرار مفتاحًا في شاشة التحكّم **داخل تطبيق المستخدم** — أي أنّ من يُسكِت إشعار
+     * التحديث هو من يُفترض أن يُبلَّغ به. صار قرار المالك: يُنشَر هنا مع الإعداد الموقّع
+     * (`updates.disabled`) فيقرؤه التطبيق عند اعتماد الإعداد. والفحص اليدويّ («تحقّق الآن»)
+     * وحجب النسخ الأمنيّ لا يمسّهما هذا العلَم.
+     */
+    var updatesDisabled by mutableStateOf(false)
     var subUrl by mutableStateOf("")
     var payAr by mutableStateOf("")
     var payEn by mutableStateOf("")
@@ -75,6 +84,7 @@ internal class Draft {
         updateRequired = latest.optString("mode").trim().lowercase() in
             setOf("required", "mandatory", "force", "forced", "blocking")
         reminderHours = latest.optInt("reminder_hours", 24).coerceIn(1, 720).toString()
+        updatesDisabled = c.optJSONObject("updates")?.optBoolean("disabled", false) ?: false
         val sub = c.optJSONObject("subscription") ?: JSONObject()
         subUrl = sub.optString("url")
         payAr = sub.optString("payment_text_ar")
@@ -157,6 +167,11 @@ internal class Draft {
             .put("until", annUntil.trim())
         out.put("announcement", ann)
 
+        // سياسة نوافذ التحديث — تُوقَّع مع الإعداد نفسه، فيقرؤها التطبيق عند الاعتماد ويحجب
+        // النوافذ الثلاث عن المستخدمين. تُكتب دائمًا (لا تُحذف عند الإطفاء) كي يرفع الإطفاءُ
+        // الكتمانَ فعلًا بدل أن يترك العلَم القديم في النسخة المخزّنة على جهاز المستخدم.
+        out.put("updates", JSONObject().put("disabled", updatesDisabled))
+
         val log = JSONArray()
         changelog.forEach { log.put(it) }
         out.put("changelog", log)
@@ -237,6 +252,9 @@ internal class Draft {
         }
         if (before.optJSONObject("announcement")?.toString() != after.optJSONObject("announcement")?.toString()) {
             out += "الإعلان تغيّر"
+        }
+        if (before.optJSONObject("updates")?.optBoolean("disabled", false) != updatesDisabled) {
+            out += if (updatesDisabled) "نوافذ التحديث: تُسكَت للمستخدمين" else "نوافذ التحديث: تعود للظهور"
         }
         val promosBefore = before.optJSONArray("promos")?.toString()
         val promosAfter = after.optJSONArray("promos")?.toString()
