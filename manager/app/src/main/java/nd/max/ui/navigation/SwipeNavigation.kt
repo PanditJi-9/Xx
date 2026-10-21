@@ -21,6 +21,40 @@ enum class SwipeDirection {
 }
 
 /**
+ * المحور الذي أُقفل عليه الإصبع بعد أن تجاوز حدّ اللمس.
+ *
+ * **ولماذا قفلٌ لا نسبةٌ عند الرفع وحدها:** النسبة عند الرفع تقرأ **المحصّلة**، لا **البداية**.
+ * فإصبعٌ نزل رأسيًّا فمرّر قائمة ثم مال أفقيًّا في آخر ٤٠ بكسل يُخرج نسبةً أفقية ويُنقَل إلى قسم
+ * آخر — والقائمة نفسها تحرّكت بالفعل. والقفل عند أوّل ميل حاسم يمنع ذلك: ما بدأ رأسيًّا يبقى
+ * رأسيًّا حتى يُرفع، وما بدأ أفقيًّا يبقى أفقيًّا. والدالّة نقيّة لتُقاس على JVM.
+ */
+enum class SwipeAxis {
+    HORIZONTAL,
+    VERTICAL,
+    NONE,
+}
+
+/**
+ * يحدّد المحور من الإزاحة التراكمية منذ نزول الإصبع.
+ *
+ * لا يُقفل قبل [touchSlopPx] (فالنقرة والارتعاش ليسا سحبًا)، وبعدها يلزم أن يتجاوز أحد المحورين
+ * الآخر بنسبة [SWIPE_AXIS_LOCK_RATIO] — والقطريّ المتساوي يبقى [SwipeAxis.NONE] حتى يحسم نفسه.
+ *
+ * @param dx الإزاحة الأفقية بالبكسل (موجبة = يمين).
+ * @param dy الإزاحة الرأسية بالبكسل.
+ */
+fun resolveSwipeAxis(dx: Float, dy: Float, touchSlopPx: Float): SwipeAxis {
+    val horizontal = abs(dx)
+    val vertical = abs(dy)
+    if (horizontal <= touchSlopPx && vertical <= touchSlopPx) return SwipeAxis.NONE
+    return when {
+        horizontal > vertical * SWIPE_AXIS_LOCK_RATIO -> SwipeAxis.HORIZONTAL
+        vertical > horizontal * SWIPE_AXIS_LOCK_RATIO -> SwipeAxis.VERTICAL
+        else -> SwipeAxis.NONE
+    }
+}
+
+/**
  * حكم التمرير من قياس خام: المسافة والسرعة والاتجاه.
  *
  * **ولماذا دالّة نقيّة:** القرار الذي يقع في كل لمسة يجب أن يُقاس على JVM بلا جهاز
@@ -60,6 +94,16 @@ fun resolveSwipeDirection(
  * يُترك للقائمة الرأسية كما هو.
  */
 internal const val SWIPE_SLOPE_RATIO = 1.4f
+
+/**
+ * نسبة قفل المحور عند أوّل ميل بعد حدّ اللمس.
+ *
+ * أُخفضت عن [SWIPE_SLOPE_RATIO] قليلًا (١٫٢ لا ١٫٤) لأن القفل **قرار بداية** لا **حكم نهاية**:
+ * المنتصف بين المحورين يبقى بلا قفل حتى يحسم الإصبع نفسه، فالسحب المائل لا يُسرق من القائمة
+ * لمجرد أنه مال أفقيًّا درجتين، ولا يُترك للقائمة إن كان أفقيًّا واضحًا. والحكم النهائي عند
+ * الرفع يبقى بـ[SWIPE_SLOPE_RATIO]، فالقفل ليس تخفيفًا للشرط النهائي.
+ */
+internal const val SWIPE_AXIS_LOCK_RATIO = 1.2f
 
 /**
  * ما تسجّله شاشة ذات تبويبات عند الجذر: ماذا تفعل حين يُسحب المحتوى.

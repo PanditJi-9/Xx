@@ -22715,3 +22715,36 @@ BUILD FAILED in 6m 12s
 **NEXT:** CI compile + اختبارات الوحدة ← UAT لمس على الجهاز ← ضبط القيم البصرية بالقياس.
 
 **FILES:** `manager/app/src/main/java/nd/max/ui/subscreens/GameLobbyScreen.kt` · `ui/subscreens/LobbyControlCenter.kt` · `ui/component/LobbyStage.kt` · `ui/component/LobbyChrome.kt` · `ui/component/LobbyVisuals.kt` · `core/gamespace/LobbyDeckMath.kt` · `core/gamespace/LobbyPrefs.kt` · `core/gamespace/LobbyPrefsModel.kt` · `core/gamespace/LobbyModel.kt` · `ui/util/AppConfigUtil.kt` · `ui/component/ShelfRomCard.kt` · `ui/subscreens/LobbyProfileComponents.kt` · `res/values/max_gaming_strings.xml` · `res/values-ar/max_gaming_strings.xml` · اختبارات: `LobbyDeckMathTest.kt` · `LobbyPrefsModelTest.kt`
+
+## Executor log — SNAPGPU-READ-01 + LOBBY-3D-01-MERGE-01 — 2026-10-21 · DONE_WITH_CONCERNS
+
+**TASK (المالك):** (أ) «تطبيقي لا يتعامل جيدًا مع سنابدراجون: بعض الأشياء لا تُقرأ بشكل صحيح حتى يمكن تعديلها — تحقق من السجل `MaxManager_Logs_20261021_091736.tar.gz` واللقطتين». (ب) «دمج ما تم في مشروعي `/storage/emulated/0/Download/MaxManager-LOBBY-3D-01.zip`».
+
+**القياس الذي بُني عليه الإصلاح (لا تخمين):** من الحزمة نفسها —
+`MaxManagerConfig/runtime/gpu_discovery` يقول: `device /sys/class/devfreq/3d00000.qcom,kgsl-3d0 … QUALCOMM 100 none none none none none none AMBIGUOUS qualcomm-gpu-identity,role-gpu-clock,clocks-unreadable-at-discovery`،
+أي عقدة تُرى ولا يُقرأ منها عمود واحد من الستّة. وشاشة GPU Studio في اللقطة تقول `Fréquence en direct: Aucune lecture` · `Plage effective: Aucune lecture` · `Gouverneur: Aucune lecture`، و`Charge 31%` و`66 °C` **تُقرأان** (من `/sys/class/kgsl/kgsl-3d0/gpu_busy_percentage`) — أي أنّ عائلة `kgsl` نفسها مقروءة في العملية نفسها. والبصمة تُصنِّف `GPU_FREQUENCY NONE backend=gpu-backend:qualcomm` فتصير المقابض غير قابلة للتعديل. ورفض SELinux مقيس أيضًا: `avc: denied { search/read } … name="devfreq" … u:r:untrusted_app … app=nd.max` (٤٠ مرة في الحزمة).
+
+**التنفيذ:**
+1. `GpuHardwareBackend.kt`: سطح قراءة بديل (`QUALCOMM_CLOCK_SURFACES`): `/sys/class/kgsl/kgsl-3d0/devfreq` (نفس أسماء الأعمدة القياسية) ثم `/sys/class/kgsl/kgsl-3d0` (`gpuclk`/`max_gpuclk`/`gpu_available_frequencies`). ويُضاف **فقط حين لا يوجد مزوّد ساعة مقروء أصلًا** (لا مالكَان لـGPU)، ويُقبل فقط بسلّم أو قيمة **بوحدة مؤكَّدة**، والكتابة تبقى محروسة: أعلام الكتابة تُثبت على `min_freq`/`max_freq` القياسية وحدهما (`FailClosed`). وأدلة السطح تُكتب في `evidence` (`kgsl-devfreq-surface`/`kgsl-class-surface`/`clocks-read-from-kgsl-mirror`).
+2. `selection()`: تبنّي لقطة الرفيق صار مشروطًا **بوجود قياس مقروء محليًّا** لا بوجود مرشّح (قشرة بلا ساعة = عدم قياس)، و**أعلام الكتابة تُعاد قراءة في هذه العملية** (`withWritabilityFrom`) — فاللقطة تنقل القيم لا السلطة، وبذلك لا يبقى جهاز متبنّى «للقراءة فقط» بينما الجذر يكتب عقده.
+3. `refresh()` و`currentFrequencyHz()` يعرفان مسار السطح البديل (`gpuclk` بديل `cur_freq`)، فيبقى العرض الحيّ مقيسًا لا مخزَّنًا.
+4. `DeviceBlueprint.kt`: قسمان جديدان يُجيبان في الحزمة القادمة بدل جولة مراسلة: `[devfreq]` (السبب والأسماء مقسومة: devices/graphicsOwned/unclassified/unreadable) و`[gpu-selection]` (الحالة · المسار · الأدلة · المرشّحات).
+5. **دمج LOBBY-3D-01:** ١٦ ملفًّا دُمجت (LobbyDeckMath/LobbyModel/LobbyPrefs*/LobbyChrome/LobbyStage/LobbyVisuals/ShelfRomCard/GameLobbyScreen/LobbyControlCenter/LobbyProfileComponents/AppConfigUtil + لغتا `max_gaming_strings.xml` + اختباران)، وحُذفت ٩ ملفات بحسب `REMOVED.txt` (GameCombo/Store · LobbyCarousel/Cockpit · ٥ حواريات · GameComboTest) — **صفر مراجع متبقّية** للرموز المحذوفة في كل `manager/app/src` (مقاس بـ`grep`). والوثائق: أُضيفت قسمة `LOBBY-3D-01` وحدها إلى `NEXT_TASK.md` (مقدَّمة) و`HANDOFF.md` (منتهاة) بدل استبدال المستودع — المستودع أعمّ من الحزمة (أقسام ١٠ مقابل ١ في كل وثيقة).
+
+**GATES (كلّها على الشجرة المدموجة):** `kt_balance --assert` 3062/0 ✓ · `code_health --assert` ✓ · `i18n_coverage --assert` 84+en/0 ✓ · `--prune all --assert` يتيمة=0 ✓ · `design_tokens --assert` 251/300 ✓ · `resource_compile --assert` ✓ · `jni_symbols --assert` 23/0/0 ✓ (الطبقة الثانية غير مُتحقّقة بلا ثنائيات).
+
+**BUILD:** `:app:compileReleaseKotlin` (JDK 17 · SDK المثبّت · offline) = **BUILD SUCCESSFUL · EXIT=0** (شجرة ما قبل دمج اللوبي · 19m07s) ثم **CI على الشجرة المدموجة**: `PanditJi-9/Xx` تشغيل `MaxManager` رقم `39598005787` على `cabcfaf3` = **completed success** (12:14Z) · و`MaxManager docs` `39598005813` success. **وأسطر الاختبارات المحلية لم تُنفَّذ**: `:app:testReleaseUnitTest` سقط محليًّا مرتين في `mergeReleaseResources`/`aapt2` قبل أن يُضبط غلاف aapt2 الموثّق؛ ويُعوَّض رأيه الآن بـCI.
+
+**علّة CI التي أُرسلت في الجلسة (`MaxTabStripContractTest.kt:77`) — مُشخَّصة مقيسة لا مُقدَّرة:** الفشل جاء من مرآة `nahheh428-star/Test` على `3c7a882`، وهناك `MaxTabStrip.kt` يحمل `bringIntoViewRequester` مرتين و`.bringIntoView(` مرة (أُشير إليها بـ`API contents`) بينما `centerFromStart` و`viewport / 2f` و`animateScrollTo(target` و`LayoutDirection.Rtl` = صفر كلّها. وفي المستودع الحقيقي `PanditJi-9/Xx@cabcfaf3` يحقّق الملفّ الخمسة كلّها: `centerFromStart` 2 · `viewport / 2f` 1 · `animateScrollTo(target` 1 · `LayoutDirection.Rtl` 1 · `bringIntoViewRequester` 0 · `.bringIntoView(` 0 ⇒ شرط `assertFalse` يمرّ. (التسجيل `https://api.github.com/.../actions/jobs/<id>/log` يعود 404 بتوكن هذه البيئة، فقُرئ الملفّ نفسه لا السجلّ.)
+
+**RESIDUAL RISK (معلنة):**
+- **قراءة GPU على جهاز المالك غير مُتحقَّقة هنا**: ما أُثبت رفعت دليلِ الفراغ فقط. الحُكم الحقيقي: حزمة جديدة تقول `[gpu-selection] provider=…` و`evidence=…kgsl-…-surface` وشاشة `Fréquence en direct` بقيمة، فإن عادت `clocks-unreadable` بسطر من `[devfreq]` (أسماء مقروءة/غير مقروءة) فالمفقود اسمٌ ناقص لا سطح.
+- **كتابة السقف على هذا الجهاز لم تُختبر**: أعلام الكتابة تُثبت على `min_freq`/`max_freq` فلو كانت عقد `devfreq` وحدها هي القابلة والسطح البديل مقروء فقط، تبقى القدرة `READ_ONLY` ويبقى الرفض مُعلَنًا — وهذا أدقّ من نجاح بلا خط أساس.
+- **`MEMORY_FREQUENCY`/`UFS_FREQUENCY` بقيت `NONE`** (`no-memory-or-storage-devfreq-observed`) — قسم `[devfreq]` الجديد هو ما سيسمّي العقد التي رآها العدّ؛ لم يُغيَّر تصنيفٌ بلا اسم.
+- اللمس بقي `no-touch-provider`/`vendor-mode-contract-unproven` — رفض عقد لا نقص قراءة.
+- التغيير يمسّ `core/hardware` ⇒ **حكم سلامة مستقل إلزامي ولم يقع**.
+
+**NEXT:**
+1. المالك: حزمة/لقطة جديدة بعد التثبيت — البصمة يجب أن تُظهر `[gpu-selection]` بسطر `evidence` فيه `kgsl-…-surface`، وشاشة GPU تُظهر ترددًا ومدى وحاكمًا.
+2. إن بقي `NONE`، قراءة `[devfreq]` في البصمة تكفي لتحديد اسم العقدة الناقصة دون جولة ثانية.
+3. مرآة CI (`nahheh428-Star`/`Test`) تُدار يدويًّا: تشغيلها الحالي يقيس كودًا قديمًا، وإلزامي مراجعة مستقل على `core/hardware` لم يقع.

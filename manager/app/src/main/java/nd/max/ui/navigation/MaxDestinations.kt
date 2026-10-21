@@ -221,7 +221,13 @@ sealed class MaxDestination(
     data object Resolution : MaxDestination("resolutionscreen", R.string.resolution_title, Icons.Rounded.AspectRatio, DisplayHub)
 
     // Feature screens: Responsiveness domain
-    data object TouchBoost : MaxDestination("touchboost", R.string.touch_boost_title, Icons.Rounded.TouchApp, ResponsivenessHub)
+    /**
+     * **ومخفيٌّ بأمر المالك (2026-10-21)**: «أخفِ بطاقة Touch Precision في Responsiveness» —
+     * فخرجت من صفوف مجال الاستجابة ومن فهرس الشاشات ومن التحكّم معاً (كلها تقرأ [hidden] عبر
+     * `maxHubRows`/`Visible`)، وبقيت في السجلّ والرسم فالمسار يبقى صالحًّا لو أراد المالكُ إعادتها
+     * بطبقة واحدة. والتعديل لا يمسّ عتاد اللمس: [TouchControlBackend] وأعطاله كما هي.
+     */
+    data object TouchBoost : MaxDestination("touchboost", R.string.touch_boost_title, Icons.Rounded.TouchApp, ResponsivenessHub, hidden = true)
     data object FpsGo : MaxDestination("fpsgoscreen", R.string.str_fpsgo_settings, Icons.Rounded.Speed, ResponsivenessHub)
     data object Fas : MaxDestination("FasScreen", R.string.str_frame_aware_scheduling, Icons.Rounded.Schedule, ResponsivenessHub)
 

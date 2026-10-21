@@ -154,10 +154,10 @@ internal fun LegendaryHomeDashboard(
                 onMaxAi = { onNavigate(MaxDestination.MaxAi.route) },
             )
         }
-        // «مدار الطاقة»: يظهر أثناء الشحن فقط، فلا يتغيّر شكل الرئيسية في وضعها العادي.
-        if (dashboard.isCharging && dashboard.batteryPercent > 0) {
-            HomeOrbitPowerCard(dashboard)
-        }
+        // «مدار الطاقة» (أنيميشن البطّارية أثناء الشحن) — **مُخفٰى بأمر المالك ٢٠٢٦-١٠-٢١**
+        // («أخفِ انيميشن البطاريه في الشاشة الرئيسية»): صار غير مستدعًى هنا، والملفّ
+        // [HomeOrbitPowerCard] بقي كما هو فلا يُحذف عملٌ مُنجز (إرجاعه بسطر واحد)، وشرطُه
+        // القديم كان الشحن وحده.
         if (focusFirst) {
             FocusCard(dashboard, onNavigate, storageCardVisible, onHideStorage)
         }

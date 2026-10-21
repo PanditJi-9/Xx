@@ -95,7 +95,8 @@ fun RegisterSwipeNavigation(
  *
  * **متى يُلغى التنقّل:** لا يُلغيه إلا ما يملك السحب الأفقي فعلًا: صفّ أو Pager أفقي استهلك حركته،
  * أو عنصر غير تمرير (منزلق، مقبض) أخذ الإصبع. أمّا القائمة الرأسية فلا تُلغيه، لأنها تستهلك المحور الرأسي
- * وحده، ويُحسم الأمر بالهندسة عند رفع الإصبع. التفصيل وأسبابه في [SwipeGestureArbiter].
+ * وحده. **والمحور يُقفل عليه عند أوّل ميل بعد حدّ اللمس** ([resolveSwipeAxis]): إيماءة بدأت رأسيًّا
+ * لا تصير تنقّلًا ولو مال الإصبع أفقيًّا قبل الرفع. التفصيل وأسبابه في [SwipeGestureArbiter].
  *
  * **ولماذا يقرأ في `Final`:** كي يرى ما استهلكه الأبناء في `Main` قبل أن يقرّر.
  */
@@ -111,8 +112,11 @@ fun Modifier.swipeNavigation(
 
     return nestedScroll(arbiter.nestedScrollConnection).pointerInput(enabled, isRtl) {
         if (!enabled) return@pointerInput
-        val minDistancePx = 64.dp.toPx()
-        val minVelocityPxPerSecond = 320.dp.toPx()
+        // ٥٦dp لا ٦٤dp: بعد قفل المحور صار الشرط النهائي أضيقَ احتمالًا للخطأ، فالسحب القصير
+        // الواضح يمرّ بدل أن يُطلب من المستخدم أن يبالغ في حركته. والعتبة الثانية للقفزة السريعة
+        // التي تقطع مسافة قصيرة بسرعة عالية (٢٨٠dp/ث بدل ٣٢٠).
+        val minDistancePx = 56.dp.toPx()
+        val minVelocityPxPerSecond = 280.dp.toPx()
         val touchSlop = viewConfiguration.touchSlop
 
         awaitEachGesture {
@@ -122,27 +126,38 @@ fun Modifier.swipeNavigation(
             velocityTracker.addPosition(down.uptimeMillis, down.position)
             var lastPosition = down.position
             var multiTouch = false
+            // يُحسم مرّة واحدة بعد حدّ اللمس ولا يُعاد فتحه في هذه الإيماءة: ما بدأ رأسيًّا
+            // لا يصير أفقيًّا لأن الإصبع مال في نهايته.
+            var axis = SwipeAxis.NONE
 
             while (true) {
                 val event = awaitPointerEvent(PointerEventPass.Final)
                 if (event.changes.size > 1) multiTouch = true
                 val change = event.changes.firstOrNull { it.id == down.id } ?: break
                 lastPosition = change.position
+                val dx = change.position.x - down.position.x
+                val dy = change.position.y - down.position.y
+
+                if (axis == SwipeAxis.NONE) {
+                    axis = resolveSwipeAxis(dx = dx, dy = dy, touchSlopPx = touchSlop)
+                }
 
                 // لا نحسب استهلاك «الضغط» نفسه: كل زرّ يستهلكه ليعرض أثره. لا يُعدّ الاستهلاك
                 // إلا بعد أن يتجاوز الإصبع حدّ اللمس.
                 val travelled = (change.position - down.position).getDistance()
                 arbiter.onPointerEvent(
                     consumedPastSlop = change.pressed && change.isConsumed && travelled > touchSlop,
-                    dx = change.position.x - down.position.x,
-                    dy = change.position.y - down.position.y,
+                    dx = dx,
+                    dy = dy,
                 )
 
                 velocityTracker.addPosition(change.uptimeMillis, change.position)
                 if (!change.pressed) break
             }
 
-            if (!multiTouch && !arbiter.isTakenByContent) {
+            // ولا يُنقل إلا ما قُفل أفقيًّا: الرأسيّ ملك القائمة، والمحتوى الذي أخذ السحب (صفّ
+            // أفقي أو مقبض) يبقى مالكه كما قرّره [SwipeGestureArbiter].
+            if (!multiTouch && axis == SwipeAxis.HORIZONTAL && !arbiter.isTakenByContent) {
                 val direction = resolveSwipeDirection(
                     dx = lastPosition.x - down.position.x,
                     dy = lastPosition.y - down.position.y,

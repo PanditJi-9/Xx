@@ -106,8 +106,8 @@ class SettingsDestinationReachabilityTest {
         )
     }
 
-    /** ما أخفاه المالك — **اسمٌ صريح لكل سطح** (أمر ٢٠٢٦-١٠-٢١: الإحصاءات والإضافات). */
-    private val hiddenByOwner = setOf("CommunityStats", "Plugins")
+    /** ما أخفاه المالك — **اسمٌ صريح لكل سطح** (أمر ٢٠٢٦-١٠-٢١: الإحصاءات والإضافات · وبطاقة "Touch Precision" في مجال الاستجابة). */
+    private val hiddenByOwner = setOf("CommunityStats", "Plugins", "TouchBoost")
 
     @Test
     fun `المخفيّ عمدًا مُعلَن لا صامت`() {

@@ -29,9 +29,13 @@ import nd.max.ui.subscreens.hubs.*
 fun NavGraphBuilder.maxNavGraph(navController: NavHostController) {
     // Onboarding + primary destinations
     composable(MaxDestination.GetStarted.route) { GetStartedScreen(navController) }
-    composable(MaxDestination.Now.route) { HomeScreen(navController) }
-    composable(MaxDestination.Control.route) { ControlScreen(navController) }
-    composable(MaxDestination.Apps.route) { ApplistScreen(navController) }
+    // **الأقسام الأربعة مقاعد فارغة بقصد (PrimaryDeck).** محتواها يرسمه `PrimaryDeck` في الجذر
+    // فوق هذه المقاعد: صفحةٌ واحدة لكل قسم، جاهزة قبل السحب. ولو بقي `HomeScreen(navController)`
+    // هنا لَرُكِّبت الشاشة مرتين — مرة في السطح ومرة في الملاح — فتُستهلك اللمسة في نسخةٍ مخفيّة
+    // ويُضاعف البثّ الحيّ. والمسارات باقية لأنها ما يملك الرجوع والتكديس وحفظ الحالة.
+    composable(MaxDestination.Now.route) { }
+    composable(MaxDestination.Control.route) { }
+    composable(MaxDestination.Apps.route) { }
     composable(MaxDestination.MaxAi.route) { FeatureGate(RemoteFlags.MAXAI, navController) { MaxAiScreen(navController) } }
     composable(MaxDestination.MaxLive.route) { FeatureGate(RemoteFlags.MAXAI, navController) { MaxLiveScreen(navController) } }
     // §٥ — شاشة التعريف بالمحرّك: **غير مقفلة** بقصد؛ فوظيفتها أن تُشرح لا أن تُمنع.
@@ -53,7 +57,8 @@ fun NavGraphBuilder.maxNavGraph(navController: NavHostController) {
             sectionKey = entry.arguments?.getString("section"),
         )
     }
-    composable(MaxDestination.Settings.route) { SettingsScreen(navController) }
+    // مقعد فارغ كبقية الأقسام — السطح يرسمها (انظر أعلى الدالة).
+    composable(MaxDestination.Settings.route) { }
 
     // Control domain hubs: one parameterized entry per domain (F-07).
     composable(MaxDestination.CpuHub.route) { MaxDomainHubScreen(navController, MaxDestination.CpuHub) }

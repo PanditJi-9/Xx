@@ -25,9 +25,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
-import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -36,6 +34,7 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.RestartAlt
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -54,10 +53,12 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -66,10 +67,8 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.navigation.NavController
@@ -81,7 +80,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeSource
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import nd.max.core.ipc.RootNodeChannel
@@ -223,6 +221,13 @@ fun MainScreen(fromTileType: String? = null, widgetRoute: String? = null, widget
     val settingsPrefs = remember { context.getSharedPreferences("settings", Context.MODE_PRIVATE) }
     val primaryRoutes = remember { MaxDestination.PrimaryRoutes }
     val navActions = remember(navController) { MaxNavActions(navController) }
+    // سطح الأقسام الأربعة: حالة الصفحة وحافظ حالاتها يعيشان في الجذر لا في السطح نفسه،
+    // فينجو موضع كل قائمة حين يخرج السطح من التركيب عند فتح شاشة فرعية.
+    val deckPagerState = rememberPagerState(initialPage = 0) {
+        MaxDestination.PrimaryDestinations.size
+    }
+    val deckStateHolder = rememberSaveableStateHolder()
+    var deckSynced by remember { mutableStateOf(false) }
 
     // **والسجلّ الواحد يُكتب هنا — في المكان الوحيد الذي تمرّ به كل وجهة:** مستمعٌ واحدٌ على
     // الرّسّام يقيس **أيّ** شاشةٍ تُفتح من أيّ مكان، لا نقرات مكان بعينه؛ فمن يفتح الحرارة من
@@ -279,14 +284,55 @@ fun MainScreen(fromTileType: String? = null, widgetRoute: String? = null, widget
     val swipeController = remember { SwipeNavigationController() }
     val preferenceSettings = remember(context) { SettingsPreference.getInstance(context) }
     val swipePreference by preferenceSettings.isSwipeNavigationEnabled.collectAsState()
-    val isRtl = LocalLayoutDirection.current == LayoutDirection.Rtl
     val backDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
-    var primarySwipeDirection by remember { mutableIntStateOf(0) }
     val configuration = LocalConfiguration.current
     val useNavigationRail = configuration.screenWidthDp >= 840
     val appPrefs = remember { context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE) }
     val hasCompletedGetStarted = remember {
         appPrefs.getBoolean("has_completed_get_started", false)
+    }
+    val isPrimaryRoute = currentRoute != null && currentRoute in primaryRoutes
+    // يظهر السطح على الأقسام الأربعة، وقبل استقرار أول مسار (`currentRoute == null`) كي لا
+    // يبقى فراغُ سطحٍ بين الإقلاع وأول إطار.
+    val showPrimaryDeck = isPrimaryRoute || (currentRoute == null && hasCompletedGetStarted)
+    // عند الخروج من الأقسام (شاشة فرعية) يُصفَّر العلم: العودة بعدها تقفز إلى مسارها الحقيقيّ
+    // بلا انزلاقٍ عبر صفحات لم يرها المستخدم، ثم يعود السحب يزامن بالحركة كالمعتاد.
+    LaunchedEffect(showPrimaryDeck) {
+        if (!showPrimaryDeck) deckSynced = false
+    }
+    /**
+     * مزامنة واحدة بين المسار والصفحة.
+     *
+     * - أول مزامنة **تقفز بلا حركة**: إقلاعٌ على قسم غير الرئيسية (ودجة تفتح التحكّم مثلًا) لا
+     *   يجوز أن يُرى فيه انزلاقٌ لم يطلبه المستخدم.
+     * - وما بعدها يتحرّك بفيزياء السحب نفسها، فالنقر على الشريط والقفز بالجولة يبدوان كحركة
+     *   بطاقةٍ واحدة لا كقطعٍ إلى شاشة أخرى.
+     * - وأثناء سحب المستخدم لا تُقاطَع الصفحة: استقرارها هو من يكتب المسار ([onDeckSettled]).
+     */
+    LaunchedEffect(currentRoute) {
+        val target = MaxDestination.PrimaryDestinations.indexOfFirst { it.route == currentRoute }
+        if (target < 0) return@LaunchedEffect
+        if (!deckSynced) {
+            deckPagerState.scrollToPage(target)
+            deckSynced = true
+        } else if (deckPagerState.currentPage != target && !deckPagerState.isScrollInProgress) {
+            deckPagerState.animateScrollToPage(
+                page = target,
+                animationSpec = PrimaryDeckSnapSpring,
+            )
+        }
+    }
+    /**
+     * ما استقرّت عليه الصفحة يصير هو المسار — لا العكس.
+     *
+     * والشرطان يمنعان دورتين: `deckSynced` يمنع أول نداء قبل معرفة مسار الإقلاع، ومقارنة المسار
+     * تمنع إعادة التنقّل إلى الوجهة نفسها بعد انتقال برمجيّ (شريط التنقّل أو الجولة).
+     */
+    val onDeckSettled: (Int) -> Unit = { page ->
+        val destination = MaxDestination.PrimaryDestinations.getOrNull(page)
+        if (deckSynced && isPrimaryRoute && destination != null && currentRoute != destination.route) {
+            navActions.navigateToPrimary(destination)
+        }
     }
     LaunchedEffect(Unit) {
         WallpaperCache.init(context)
@@ -307,16 +353,19 @@ fun MainScreen(fromTileType: String? = null, widgetRoute: String? = null, widget
     }
     // وتُعرَض على التبويبات الأربعة وحدها: شاشة البداية مسارها مستقلّ، والشاشات الفرعية تُفتح من
     // داخل الجولة لا العكس — وغطاءٌ فوق شاشة تفاصيل يشرح عنصرًا في شاشة أخرى ويحجب ما فُتح لأجله.
-    val tourVisible = tourActive && hasCompletedGetStarted && currentRoute in primaryRoutes
-    // مطفأ على شاشة البداية وأثناء الجولة: لكلتيهما أزرارها ومسارها، فلا تُسرق منهما الإيماءة.
+    val tourVisible = tourActive && hasCompletedGetStarted && isPrimaryRoute
+    // مطفأ على شاشة البداية والأقسام الأربعة وأثناء الجولة: الأقسام يملكها سطح البطاقات،
+    // وشاشة البداية والجولة لكلتيهما أزرارها ومسارها.
     val swipeEnabled = swipePreference && currentRoute != null &&
-        currentRoute != MaxDestination.GetStarted.route && !tourVisible
+        currentRoute != MaxDestination.GetStarted.route && !isPrimaryRoute && !tourVisible
     /**
-     * قرار السحب الواحد:
+     * قرار السحب الواحد على الشاشات الفرعية:
      * 1) تبويبات الشاشة إن سجّلت معالجًا وأجابت «تولّيت الأمر».
-     * 2) قسم رئيسي تالٍ/سابق إن كنا على أحد الأقسام الأربعة.
-     * 3) رجوع عبر `OnBackPressedDispatcher` في بقية الشاشات — فيمرّ أولًا على أي
+     * 2) رجوع عبر `OnBackPressedDispatcher` في بقية الشاشات — فيمرّ أولًا على أي
      *    `BackHandler` مفتوح (ورقة سفلية مثلًا) قبل أن يُغلق الشاشة.
+     *
+     * **ولا قسم رئيسي هنا بعد اليوم:** الانتقال بين الأقسام بطاقاتٌ في `PrimaryDeck` يملكها
+     * أفقيًّا `HorizontalPager`، فلا يشاركه جذرُ الإيماءة قرارًا.
      */
     val handleSwipe: (SwipeDirection) -> Unit = { direction ->
         if (direction != SwipeDirection.NONE) {
@@ -327,34 +376,10 @@ fun MainScreen(fromTileType: String? = null, widgetRoute: String? = null, widget
                 direction == SwipeDirection.PREVIOUS -> screenHandlers.onPrevious?.invoke() == true
                 else -> false
             }
-            if (!screenHandled) {
-                if (currentRoute in primaryRoutes) {
-                    val index = MaxDestination.PrimaryDestinations.indexOfFirst { it.route == currentRoute }
-                    if (index >= 0) {
-                        val targetIndex = if (direction == SwipeDirection.NEXT) index + 1 else index - 1
-                        if (targetIndex in MaxDestination.PrimaryDestinations.indices) {
-                            // +1: الصفحة الجديدة تدخل من اليمين. -1: من اليسار. والاتجاه في RTL معكوس.
-                            primarySwipeDirection = when {
-                                direction == SwipeDirection.NEXT && isRtl -> -1
-                                direction == SwipeDirection.NEXT -> 1
-                                isRtl -> 1
-                                else -> -1
-                            }
-                            navActions.navigateToPrimary(MaxDestination.PrimaryDestinations[targetIndex])
-                        }
-                    }
-                } else if (direction == SwipeDirection.PREVIOUS) {
-                    val dispatcher = backDispatcher
-                    if (dispatcher != null) dispatcher.onBackPressed() else navController.popBackStack()
-                }
+            if (!screenHandled && direction == SwipeDirection.PREVIOUS) {
+                val dispatcher = backDispatcher
+                if (dispatcher != null) dispatcher.onBackPressed() else navController.popBackStack()
             }
-        }
-    }
-    // لا يُصفَّر الاتجاه فور تغيّر المسار: الانتقال (٢٦٠ms) يقرأه لحظة إنشائه.
-    LaunchedEffect(currentRoute) {
-        if (primarySwipeDirection != 0) {
-            delay(350)
-            primarySwipeDirection = 0
         }
     }
     var isBlurEnabled by remember { mutableStateOf(settingsPrefs.getBoolean("expressive_blur_ui", false)) }
@@ -483,7 +508,7 @@ fun MainScreen(fromTileType: String? = null, widgetRoute: String? = null, widget
     // وحده، وما لا يعمل بلا جذر تُعلنه الشاشة نفسها بحالة قدرة (`MaxConditionKind.RootRequired`)
     // بدل أن يُسدّ الطريق كلّه. وحالة الجذر تبقى لما يخصّها فعلًا: إشعار تحديث الوحدة، وزرّ
     // إعادة التشغيل المعلّق.
-    val isPrimaryBarVisible = currentRoute in primaryRoutes
+    val isPrimaryBarVisible = isPrimaryRoute
     // Reserved bottom space for the pages that show the bar. Zero in navigation-rail
     // layouts (the rail lives on the start edge, so the bottom stays free) and on every
     // route without the bar. The value already includes the system navigation-bar inset,
@@ -523,6 +548,29 @@ fun MainScreen(fromTileType: String? = null, widgetRoute: String? = null, widget
                     // what used to make the pill look bolted onto a black slab.
                     .background(MaterialTheme.colorScheme.background),
             ) {
+                // **سطح الأقسام أوّلًا، والملاح فوقه للشاشات الفرعية وحدها.**
+                // مسارات الأقسام الأربعة في `maxNavGraph` صارت مقاعد فارغة، فـ`NavHost` لا يرسم
+                // شاشةً فوق السطح في السكون — لكنه يبقى هو من يملك الرجوع والتكديس، ولهذا لم
+                // يُستبدل. وحين يكون السطح ظاهرًا يُترك خلفه شفّافًا، وحين تُفتح شاشة فرعية يخرج
+                // السطح من التركيب (فلا لمسة شبح خلف شاشة معتمة) ويرتدي الملاح سطحَ التطبيق.
+                if (showPrimaryDeck) {
+                    PrimaryDeck(
+                        pagerState = deckPagerState,
+                        navController = navController,
+                        activeRoute = currentRoute,
+                        gesturesEnabled = swipePreference && !tourVisible,
+                        saveableStateHolder = deckStateHolder,
+                        tourTargets = if (tourVisible) tourTargets else null,
+                        onSettledPage = onDeckSettled,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(start = if (useNavigationRail) 96.dp else 0.dp)
+                            .nestedScroll(nestedScrollConnection)
+                            .then(
+                                if (isBlurEnabled) Modifier.hazeSource(state = hazeState) else Modifier
+                            ),
+                    )
+                }
                 NavHost(
                     navController = navController,
                     startDestination = if (hasCompletedGetStarted) {
@@ -536,10 +584,18 @@ fun MainScreen(fromTileType: String? = null, widgetRoute: String? = null, widget
                         // reserves space for the navigation rail on wide layouts, because
                         // the rail covers the content instead of the other way round.
                         .padding(start = if (useNavigationRail) 96.dp else 0.dp)
-                        .background(MaterialTheme.colorScheme.surface)
+                        // شفّاف فوق سطح الأقسام (المقاعد فارغة)، ومعتم على الشاشات الفرعية
+                        // وحدها — فهو خلفية الشاشات التي ترسم على `Scaffold` شفّاف.
+                        .background(
+                            if (showPrimaryDeck) Color.Transparent else MaterialTheme.colorScheme.surface
+                        )
                         .nestedScroll(nestedScrollConnection)
                         .then(
-                            if (isBlurEnabled) Modifier.hazeSource(state = hazeState) else Modifier
+                            if (!showPrimaryDeck && isBlurEnabled) {
+                                Modifier.hazeSource(state = hazeState)
+                            } else {
+                                Modifier
+                            }
                         ),
                     enterTransition = {
                         // مستوى الحركة يُقرأ **لحظة الانتقال** لا لحظة التركيب: لا حالة تُراقَب
@@ -552,18 +608,7 @@ fun MainScreen(fromTileType: String? = null, widgetRoute: String? = null, widget
                                 animationSpec = tween(180, easing = LinearOutSlowInEasing)
                             )
                             ThemeMotion.FULL ->
-                                if (initialState.destination.route in primaryRoutes &&
-                                    targetState.destination.route in primaryRoutes &&
-                                    primarySwipeDirection != 0
-                                ) {
-                                    // السحب بين الأقسام يتحرّك أفقيًا في اتجاه الإصبع، بلا تحجيم:
-                                    // الحركة هنا تشرح «صفحة جاءت من الجانب» لا «شاشة كبرت».
-                                    fadeIn(animationSpec = tween(180, easing = LinearOutSlowInEasing)) +
-                                        slideInHorizontally(
-                                            initialOffsetX = { it * primarySwipeDirection },
-                                            animationSpec = tween(260, easing = FastOutSlowInEasing),
-                                        )
-                                } else if (initialState.destination.route == MaxDestination.GetStarted.route && targetState.destination.route in primaryRoutes) {
+                                if (initialState.destination.route == MaxDestination.GetStarted.route && targetState.destination.route in primaryRoutes) {
                                     // سقف الحركة (DESIGN.md): 360ms هو الأقصى؛ كان 700 = ضِعف السقف في أول
                                     // انتقال يراه المستخدم (§٩ · لا حركة زائدة).
                                     fadeIn(animationSpec = tween(MaxDuration.deliberate))
@@ -590,16 +635,7 @@ fun MainScreen(fromTileType: String? = null, widgetRoute: String? = null, widget
                                 animationSpec = tween(140, easing = FastOutSlowInEasing)
                             )
                             ThemeMotion.FULL ->
-                                if (initialState.destination.route in primaryRoutes &&
-                                    targetState.destination.route in primaryRoutes &&
-                                    primarySwipeDirection != 0
-                                ) {
-                                    fadeOut(animationSpec = tween(120)) +
-                                        slideOutHorizontally(
-                                            targetOffsetX = { -it * primarySwipeDirection },
-                                            animationSpec = tween(260, easing = FastOutSlowInEasing),
-                                        )
-                                } else if (initialState.destination.route == MaxDestination.GetStarted.route && targetState.destination.route in primaryRoutes) {
+                                if (initialState.destination.route == MaxDestination.GetStarted.route && targetState.destination.route in primaryRoutes) {
                                     fadeOut(animationSpec = tween(MaxDuration.deliberate))
                                 } else if (initialState.destination.route in primaryRoutes && targetState.destination.route !in primaryRoutes) {
                                     fadeOut(animationSpec = tween(180, easing = FastOutSlowInEasing)) +
@@ -666,8 +702,8 @@ fun MainScreen(fromTileType: String? = null, widgetRoute: String? = null, widget
                     ),
                 ) {
                     val onItemSelected: (String) -> Unit = { route ->
-                        // النقر انتقال عاديّ لا سحب: لا نترك اتجاه سحب سابق يلوّن حركته.
-                        primarySwipeDirection = 0
+                        // النقر يغيّر المسار، ومزامنة السطح تحرّك البطاقة إليه — انتقال واحد
+                        // يملكه الـPager لا انتقال مسارٍ فوقه.
                         MaxDestination.PrimaryDestinations
                             .firstOrNull { it.route == route }
                             ?.let(navActions::navigateToPrimary)

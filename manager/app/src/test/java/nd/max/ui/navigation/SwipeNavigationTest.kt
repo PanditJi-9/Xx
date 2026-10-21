@@ -87,6 +87,27 @@ class SwipeNavigationTest {
     }
 
     @Test
+    fun `horizontal travel locks the horizontal axis`() {
+        assertEquals(SwipeAxis.HORIZONTAL, resolveSwipeAxis(dx = 40f, dy = 6f, touchSlopPx = 10f))
+    }
+
+    @Test
+    fun `vertical travel locks the vertical axis`() {
+        assertEquals(SwipeAxis.VERTICAL, resolveSwipeAxis(dx = 6f, dy = 40f, touchSlopPx = 10f))
+    }
+
+    @Test
+    fun `a diagonal inside the lock band stays unlocked`() {
+        // ٢٥ مقابل ٢٥: لا أحد يتجاوز الآخر بنسبة ١٫٢، فلا يُسرق السحب من أيّ محور.
+        assertEquals(SwipeAxis.NONE, resolveSwipeAxis(dx = 25f, dy = 25f, touchSlopPx = 10f))
+    }
+
+    @Test
+    fun `a tap inside touch slop locks nothing`() {
+        assertEquals(SwipeAxis.NONE, resolveSwipeAxis(dx = 6f, dy = 6f, touchSlopPx = 10f))
+    }
+
+    @Test
     fun `controller exposes the last registered screen and removes only its own token`() {
         val controller = SwipeNavigationController()
         val firstHandlers = SwipeNavigationHandlers(onNext = { true })
