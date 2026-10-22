@@ -8,6 +8,7 @@ package nd.max.core.security
 import android.content.Context
 import nd.max.BuildConfig
 import nd.max.core.diagnostics.DiagnosticCenter
+import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * البوابة: **نقطة واحدة يُسأل منها كل موضع، ولا تحكم بنفسها**.
@@ -30,18 +31,26 @@ import nd.max.core.diagnostics.DiagnosticCenter
  * نقطة لا يزيد شيئًا، بينما تكرار قياس «هل هناك متتبّع الآن؟» في كل نقطة هو ما يجعل حذف
  * نقطة واحدة بلا فائدة للمهاجم — فيبقى الحكم قائمًا من النقاط التي لم تُحذف.
  *
- * ## ولا تُنفَّذ الفحوص الثقيلة على خيط الواجهة
+ * ## ولا تُنفَّذ الفحوص الثقيلة على خيط الواجهة — أبدًا
  *
- * الاستدعاء من `Application.onCreate` يعمل مرّة على خيط خلفيّ، والحكم يُقرأ لاحقًا من
- * النقاط التي تهمّ فعلًا (النشاط والخدمات). ولو انتظر الإقلاع حكمًا ثقيلًا لصار ثمن حماية
- * الملكية تأخيرًا يراه المستخدم في كل فتح — وهي مقايضة مرفوضة بلا دليل.
+ * الفحص الثابت يقرأ الحزمة كلها ويحسب بصمات مدخلاتها، وقد يبلغ ثوانٍ على جهاز بطيء. وكان
+ * `Application.onCreate` يطلقه على خيط خلفيّ، لكن `MainActivity.onCreate` قد يسبقه في
+ * `SecurityEnforcement.refuseActivity` فيجد الراية غير مرفوعة ويشغّل الفحص **على الخيط
+ * الرئيسيّ** — فتظلّ النافذة سوداء حتى ينتهي. صار الطلب هنا **جدولةً لا انتظارًا**: أول
+ * مستدعٍ يرفع راية `staticChecksStarted` ويبدأ خيطًا خلفيًّا منخفض الأولوية، وكل مستدعٍ
+ * بعدها يُكمل فحوص الموضع الحيّة ويعود فورًا. والحكم (`enforce = false`) لا يمنع شيئًا
+ * أصلًا، فانتظار الواجهة له مقايضة مرفوضة.
  */
 object SecurityGate {
 
     private val ledger = IntegrityLedger()
 
+    /** انتهى الفحص الثابت فعلًا (لا «بدأ») — يُقرأ للتشخيص وحده. */
     @Volatile
     private var staticChecksCompleted = false
+
+    /** حرس «خيط واحد فقط»: يُرفع قبل بدء الخيط، فلا يبدأ فحصان في سباق الإقلاع. */
+    private val staticChecksStarted = AtomicBoolean(false)
 
     @Volatile
     private var diagnosticsWritten = false
@@ -63,11 +72,20 @@ object SecurityGate {
      */
     fun evaluate(context: Context, checkpoint: IntegrityCheckpoint): IntegrityVerdict {
         val active = policy()
-        if (!staticChecksCompleted) runStaticChecks(context, active)
+        // جدولة لا انتظار: الفحص الثابت ثقيل، ولا يجوز أن يدفع ثمنه أوّل إطار في النشاط.
+        ensureStaticChecks(context, active)
         runLiveChecks(checkpoint, active)
         val verdict = ledger.verdict()
         if (verdict != IntegrityVerdict.CLEAN) writeDiagnosticsOnce(context, verdict)
         return verdict
+    }
+
+    /**
+     * يُشغّل الفحص الثابت مرّة على خيط خلفيّ ويعود فورًا — للاستدعاء من `Application.onCreate`
+     * بلا خيط إضافيّ حوله. ومناداة `evaluate` من أي موضع تفعل الشيء نفسه.
+     */
+    fun warmUp(context: Context) {
+        ensureStaticChecks(context, policy())
     }
 
     /** هل يُرفض التشغيل الآن؟ يُشغّل الفحص للتشخيص ويُعيد false دائمًا لضمان استقرار التطبيق. */
@@ -89,6 +107,7 @@ object SecurityGate {
     internal fun resetForTest() {
         ledger.reset()
         staticChecksCompleted = false
+        staticChecksStarted.set(false)
         diagnosticsWritten = false
     }
 
@@ -103,11 +122,32 @@ object SecurityGate {
     }
 
     /**
-     * الفحوص الثابتة — مرّة واحدة لكل عملية. والحماية بـ`compareAndSet` لا بـ`if` لأن
-     * الإقلاع والواجهة يطلبانها على خيطين مختلفين في أول لحظات التشغيل.
+     * جدولة الفحوص الثابتة **مرّة واحدة** على خيط خلفيّ منخفض الأولوية.
+     *
+     * والراية تُرفع بـ`compareAndSet` قبل بدء الخيط، فلا يبدأ فحصان في سباق الإقلاع/الواجهة.
+     * ومناداة ثانية أثناء العمل تعود فورًا؛ ولا ينتظرها أحد. وأولوية الخيط دنيا كي لا تزاحم
+     * أوّل إطار، والفحص تشخيصيّ لا يمنع تشغيلًا (`enforce = false`).
      */
+    private fun ensureStaticChecks(context: Context, active: IntegrityPolicy) {
+        if (staticChecksCompleted) return
+        if (!staticChecksStarted.compareAndSet(false, true)) return
+        Thread {
+            try {
+                runStaticChecks(context, active)
+            } finally {
+                // «اكتمل» تعني انتهى فعلًا؛ حتى لو رمى الفحص تبقى الراية مرفوعة فلا إعادة محاولة
+                // في كل فتح شاشة — الفشل يُسجَّل في `DiagnosticCenter` داخل `runCatching`.
+                staticChecksCompleted = true
+            }
+        }.apply {
+            name = "max-integrity-static"
+            isDaemon = true
+            priority = Thread.MIN_PRIORITY
+        }.start()
+    }
+
+    /** الفحوص الثابتة — يُستدعى من [ensureStaticChecks] وحده، على الخيط الخلفيّ. */
     private fun runStaticChecks(context: Context, active: IntegrityPolicy) {
-        if (!compareAndSetStatic()) return
         runCatching {
             val pinned = SecurityPin.expected
             if (pinned == null) {
@@ -123,6 +163,12 @@ object SecurityGate {
             checkApkContent(context)
             checkNativeImage(context)
             checkSealedAssets(context)
+        }.onFailure {
+            DiagnosticCenter.record(
+                component = COMPONENT,
+                message = "integrity: static checks failed: ${it.message}",
+                throwable = it,
+            )
         }
     }
 
@@ -152,14 +198,6 @@ object SecurityGate {
                 message = "integrity: apk content verification unavailable",
             )
             ApkContentVerification.Outcome.VERIFIED -> Unit
-        }
-    }
-
-    private fun compareAndSetStatic(): Boolean {
-        synchronized(lock) {
-            if (staticChecksCompleted) return false
-            staticChecksCompleted = true
-            return true
         }
     }
 
@@ -275,8 +313,6 @@ object SecurityGate {
             )
         }
     }
-
-    private val lock = Any()
 
     /** اسم المكوّن في التشخيص — ثابت واحد حتى لا تتفرّق الأسطر في بحث المستخدم. */
     const val COMPONENT = "security"

@@ -2,22 +2,37 @@
 <!--
   Single source of truth for MaxManager privileged permissions.
 
-  Consumed by three integration paths that must stay identical:
-     1. Magisk module: NOT shipped. The module installs the Manager APK as a
-        normal user app, which cannot hold privileged permissions.
-    2. Image modders (super.img unpack/repack): copied to the same
-       path inside the product partition image.
-    3. AOSP source builds: PRODUCT_COPY_FILES into
-       $(TARGET_COPY_OUT_PRODUCT)/etc/permissions/.
+  Consumed by two integration paths that must stay identical:
+     1. Image modders (super.img unpack/repack): copied to the same
+        path inside the product partition image.
+     2. AOSP source builds: PRODUCT_COPY_FILES into
+        $(TARGET_COPY_OUT_PRODUCT)/etc/permissions/.
 
-  Only permissions with a "privileged" component belong here.
-  WRITE_SECURE_SETTINGS is signature|privileged: the allowlist grants
-  it to a non-platform-signed priv-app. WRITE_SETTINGS and
-  SYSTEM_ALERT_WINDOW are appop permissions handled at runtime by
-  service.sh (appops set), not by this file.
+  The Magisk module does not ship this file: it installs the Manager as a
+  normal user app, and a privapp allowlist cannot apply to a /data/app package.
+  The module applies the equivalent runtime grants in service.sh:
+      appops set nd.max SYSTEM_ALERT_WINDOW allow
+      appops set nd.max WRITE_SETTINGS allow
+      appops set nd.max GET_USAGE_STATS allow
+      appops set nd.max MANAGE_EXTERNAL_STORAGE allow
+      appops set nd.max REQUEST_INSTALL_PACKAGES allow
+
+  Only permissions whose protectionLevel contains "privileged" belong here.
+  The app declares exactly two:
+    * WRITE_SECURE_SETTINGS  — signature|privileged
+    * PACKAGE_USAGE_STATS    — signature|privileged|development|appop
+  The allowlist grants both to a priv-app even when it is not
+  platform-signed, which is exactly why the ROM path carries this file.
+
+  Deliberately absent (not "forgotten"): SYSTEM_ALERT_WINDOW, WRITE_SETTINGS,
+  MANAGE_EXTERNAL_STORAGE, REQUEST_INSTALL_PACKAGES and the GET_USAGE_STATS
+  appop have no "privileged" component, so a privapp allowlist cannot grant
+  them. The module grants them in service.sh; on the ROM path Game Space now
+  shows the missing-overlay notice and opens the system toggle for the user.
 -->
 <permissions>
     <privapp-permissions package="nd.max">
         <permission name="android.permission.WRITE_SECURE_SETTINGS"/>
+        <permission name="android.permission.PACKAGE_USAGE_STATS"/>
     </privapp-permissions>
 </permissions>

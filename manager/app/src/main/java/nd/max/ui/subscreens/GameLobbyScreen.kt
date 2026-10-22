@@ -34,6 +34,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
@@ -68,6 +69,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -88,6 +92,7 @@ import nd.max.core.gamespace.LobbyOrder
 import nd.max.core.gamespace.LobbyPrefs
 import nd.max.core.gamespace.LobbyPrefsState
 import nd.max.core.gamespace.LobbySort
+import nd.max.core.gamespace.PanelOverlayGate
 import nd.max.core.gamespace.SidePanelArmedStore
 import nd.max.core.gamespace.gameLibrary
 import nd.max.core.platform.ForegroundAppResolver
@@ -122,6 +127,7 @@ import nd.max.ui.design.MaxSpace
 import nd.max.ui.navigation.openAppSettings
 import nd.max.ui.util.AppConfig
 import nd.max.ui.util.GamePanelPrefs
+import nd.max.ui.util.OverlayPermission
 import nd.max.ui.util.customizedFieldCount
 import nd.max.ui.viewmodel.AppSettingsViewModel
 import nd.max.ui.viewmodel.GameSpaceViewModel
@@ -211,6 +217,25 @@ fun GameLobbyScreen(
     val context = LocalContext.current
     val haptic = LocalHapticFeedback.current
     val scope = rememberCoroutineScope()
+
+    // صلاحية التراكب تُقرأ عند كل عودة إلى الشاشة لا مرة واحدة: المنح يقع في إعدادات النظام
+    // خارج التطبيق، وقراءة واحدة كانت تُبقي البند ظاهرًا بعد المنح أو تُخفيه قبل تحقّقه.
+    var overlayGranted by remember { mutableStateOf(OverlayPermission.granted(context)) }
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                val granted = OverlayPermission.granted(context)
+                overlayGranted = granted
+                // بعد المنح لا ننتظر إعادة الإقلاع: تُطابَق الخدمة فتُثبّت اللوحة إن كانت لعبة مفعّلة.
+                if (granted && GamePanelPrefs.load(context).enabledPackages.isNotEmpty()) {
+                    GamePanelService.reconcile(context)
+                }
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
 
     var lobbyPrefs by remember { mutableStateOf(LobbyPrefs.load(context)) }
     // دالّة تحوّل الخيارات الحاليّة إلى الجديدة وتحفظها؛ تقرأ الحالة لحظة النداء فلا تضيع تغييرات متتابعة.
@@ -309,6 +334,12 @@ fun GameLobbyScreen(
     var launching by remember { mutableStateOf(false) }
 
     val setPanel: (Boolean) -> Unit = { enabled ->
+        // التفعيل بلا صلاحية تراكب كان يمرّ صامتًا: المفتاح يقول «مفعّل» والخدمة تفشل في
+        // إضافة النافذة وتُغلق. فيُفتح المنح لحظة التفعيل، ويبقى البند الإرشادي بعد العودة
+        // إن أُلغي المنح — فلا يُظنّ أن اللوحة لا تعمل أصلًا.
+        if (enabled && !OverlayPermission.granted(context)) {
+            OverlayPermission.openSettings(context)
+        }
         active?.packageName?.let { pkg ->
             if (GamePanelPrefs.setEnabled(context, pkg, enabled)) {
                 panelRevision += 1
@@ -691,6 +722,14 @@ fun GameLobbyScreen(
                 if (library.failed) LobbyNotice(stringResource(R.string.gaming_config_failed), caution = true)
                 if (launchFailed) LobbyNotice(stringResource(R.string.game_space_launch_failed), caution = true)
                 if (panelArmFailed) LobbyNotice(stringResource(R.string.lobby_panel_arm_failed), caution = true)
+                if (PanelOverlayGate.needsGrant(panelPrefs.enabledPackages, overlayGranted)) {
+                    LobbyNotice(
+                        message = stringResource(R.string.game_space_overlay_needed),
+                        caution = true,
+                        action = stringResource(R.string.game_space_overlay_grant),
+                        onAction = { OverlayPermission.openSettings(context) }
+                    )
+                }
             }
 
             // طبقة الإطلاق: رسم فقط (لا مدخلات)، تُقرأ فيها `burst` في مرحلة الرسم فلا إعادة تركيب أثناء الحركة.

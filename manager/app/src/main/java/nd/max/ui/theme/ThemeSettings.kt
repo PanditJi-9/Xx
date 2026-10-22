@@ -207,8 +207,8 @@ enum class NavBarStyle(val key: String) {
  * مجرّد نسخة أخرى من النمط نفسه».
  *
  * والقواعد **بياناتٌ على النمط نفسه** لا فروعٌ متناثرة في الرسم: الشريط يقرؤها، واختبار JVM
- * يقيسها، والمعاينة في الاستوديو ترسم بها. والافتراضيّ [CLASSIC] — هو شريط التطبيق القائم، فلا
- * يتغيّر شكل شاشة لمن لم يطلب.
+ * يقيسها، والمعاينة في الاستوديو ترسم بها. والافتراضيّ [COMPACT_ICON] بأمر المالك
+ * (٢٠٢٦-١٠-٢٢) — شريط الصفّ الثابت بأيقونة الشاشة؛ ومن اختار [CLASSIC] أو غيره يبقى اختياره.
  *
  * ## ما تغيّر (أمر المالك ٢٠٢٦-١٠-٢٢)
  *
@@ -266,7 +266,7 @@ enum class TopBarStyle(val key: String) {
         )
 
         fun fromKey(value: String?): TopBarStyle =
-            entries.firstOrNull { it.key == value } ?: legacyKeys[value] ?: CLASSIC
+            entries.firstOrNull { it.key == value } ?: legacyKeys[value] ?: COMPACT_ICON
     }
 }
 
@@ -311,7 +311,8 @@ object ThemeKeys {
 
     /**
      * بنية الشريط العلوي (§٦-أ) — **نصّ المفتاح لا الرقم**: النمط يُخزَّن بمفتاحه (`CLASSIC`…)،
-     * والقيمة الغائبة تُقرأ [TopBarStyle.CLASSIC] ([ThemeStudio.topBarStyle]).
+     * والقيمة الغائبة تُقرأ [TopBarStyle.COMPACT_ICON] ([ThemeStudio.topBarStyle]) بأمر المالك
+     * (٢٠٢٦-١٠-٢٢): «أيقونة» هو الافتراضي.
      */
     const val TOP_BAR = "theme_top_bar"
 
@@ -339,7 +340,10 @@ object ThemeStudio {
     fun navBarStyle(prefs: SharedPreferences): NavBarStyle =
         NavBarStyle.fromKey(prefs.getString(ThemeKeys.NAV_BAR_STYLE, null))
 
-    /** بنية الشريط العلوي — [TopBarStyle.CLASSIC] عند الغياب أو عند مفتاح لا يُعرف. */
+    /**
+     * بنية الشريط العلوي — [TopBarStyle.COMPACT_ICON] عند الغياب أو عند مفتاح لا يُعرف
+     * (أمر المالك ٢٠٢٦-١٠-٢٢: «أيقونة» هو الافتراضي). ومن اختار نمطًا سابقًا يبقى اختياره.
+     */
     fun topBarStyle(prefs: SharedPreferences): TopBarStyle =
         TopBarStyle.fromKey(prefs.getString(ThemeKeys.TOP_BAR, null))
 

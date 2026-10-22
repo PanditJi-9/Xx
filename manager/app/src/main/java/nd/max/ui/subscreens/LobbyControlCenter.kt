@@ -512,6 +512,7 @@ private fun PanelBody(
                 Text(text = stringResource(R.string.panel_handle_reset), color = LobbyPalette.Ink)
             }
         }
+        CrosshairSettingsCard()
     }
 }
 

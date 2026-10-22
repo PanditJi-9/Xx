@@ -27,6 +27,7 @@ need_integrity=(
 	"mainfiles/action.sh"
 	"mainfiles/uninstall.sh"
 	"mainfiles/module.prop"
+	"mainfiles/README.md"
     "mainfiles/maxmanagerApplist.json"
     "mainfiles/app/MaxManager.apk"
     "mainfiles/props.sh"

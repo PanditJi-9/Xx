@@ -332,7 +332,7 @@ fun ColorPaletteScreen(navController: NavController) {
         currentRoundness = ThemeRoundness.STANDARD
         currentFontScale = ThemeFontScale.STANDARD
         currentNavStyle = NavBarStyle.FLOATING
-        currentTopStyle = TopBarStyle.CLASSIC
+        currentTopStyle = TopBarStyle.COMPACT_ICON
         currentMotion = ThemeMotion.FULL
         currentDensity = ThemeDensity.STANDARD
         currentCardStyle = MaxCardStyle.OUTLINED
@@ -346,7 +346,7 @@ fun ColorPaletteScreen(navController: NavController) {
             putString(ThemeKeys.ROUNDNESS, ThemeRoundness.STANDARD.key)
             putString(ThemeKeys.FONT_SCALE, ThemeFontScale.STANDARD.key)
             putString(ThemeKeys.NAV_BAR_STYLE, NavBarStyle.FLOATING.key)
-            putString(ThemeKeys.TOP_BAR, TopBarStyle.CLASSIC.key)
+            putString(ThemeKeys.TOP_BAR, TopBarStyle.COMPACT_ICON.key)
             putString(ThemeKeys.MOTION, ThemeMotion.FULL.key)
             putString(ThemeKeys.DENSITY, ThemeDensity.STANDARD.key)
             putString(ThemeKeys.CARD_STYLE, MaxCardStyle.OUTLINED.key)

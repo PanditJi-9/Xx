@@ -25,8 +25,9 @@ import java.lang.reflect.Proxy
  * والقياس هنا على ثلاثة مستويات، وكلٌّ يقيس ما يستطيعه:
  *
  * 1. **القراءة والافتراضيّ** (JVM حقيقي): [ThemeStudio.topBarStyle] بمخزن تفضيلات مصنوع
- *    بـ`Proxy` — الغياب والمفتاح المجهول والقيمة غير النصّيّة تعود كلها [TopBarStyle.CLASSIC]،
- *    أي شريط التطبيق القائم؛ فلا يتغيّر شكل شاشةٍ على صاحبها. والمفاتيح القديمة تُقرأ بموضعها.
+ *    بـ`Proxy` — الغياب والمفتاح المجهول والقيمة غير النصّيّة تعود كلها
+ *    [TopBarStyle.COMPACT_ICON]، أي «أيقونة» الافتراضي بأمر المالك (٢٠٢٦-١٠-٢٢). والمفاتيح
+ *    القديمة تُقرأ بموضعها.
  * 2. **الفروق البنيوية**: قواعد النمط بياناتٌ على التعداد ([TopBarStyle.compactBar] ·
  *    `showsBack` · `showsGlyph` · `overlaysContent`)، ويُقاس أن لا نمطين يتقاسمان القواعد
  *    الأربع نفسها — وهو نصّ البند («ألّا يكون مجرّد نسخة أخرى»).
@@ -43,15 +44,15 @@ class TopBarStyleTest {
     // ── ① القراءة والافتراضيّ ────────────────────────────────────────────────
 
     @Test
-    fun `absent or unknown key reads classic, and every style key round-trips`() {
+    fun `absent or unknown key reads the icon style, and every style key round-trips`() {
         assertEquals(
-            "لا مفتاح ⇒ الشريط القائم (لا يتغيّر شكلُ من لم يطلب)",
-            TopBarStyle.CLASSIC,
+            "لا مفتاح ⇒ «أيقونة» الافتراضي (أمر المالك ٢٠٢٦-١٠-٢٢)",
+            TopBarStyle.COMPACT_ICON,
             ThemeStudio.topBarStyle(prefsOf(emptyMap())),
         )
         assertEquals(
-            "ومفتاحٌ لا يُعرف (نسخة أقدم أو ملفّ عُدّل يدويًّا) يعود بالقائم لا يُسقط الشاشة",
-            TopBarStyle.CLASSIC,
+            "ومفتاحٌ لا يُعرف (نسخة أقدم أو ملفّ عُدّل يدويًّا) يعود بالافتراضي لا يُسقط الشاشة",
+            TopBarStyle.COMPACT_ICON,
             ThemeStudio.topBarStyle(prefsOf(mapOf(ThemeKeys.TOP_BAR to "NONSENSE"))),
         )
         for (style in TopBarStyle.entries) {
@@ -71,9 +72,9 @@ class TopBarStyleTest {
     @Test
     fun `a value of another type never crashes the read`() {
         // مخزن أقدم أو ملفّ عُدّل يدويًّا: المفتاح موجود بقيمة غير نصّيّة. القراءة لا تُسقط
-        // شيئًا، وتعود بالشريط القائم.
+        // شيئًا، وتعود بالافتراضي «أيقونة».
         assertEquals(
-            TopBarStyle.CLASSIC,
+            TopBarStyle.COMPACT_ICON,
             ThemeStudio.topBarStyle(prefsOf(mapOf(ThemeKeys.TOP_BAR to 42))),
         )
     }
@@ -281,8 +282,8 @@ class TopBarStyleTest {
             screen.contains("ThemeStudio.topBarStyle(prefs)"),
         )
         assertTrue(
-            "وإعادة الضبط تعيد الشريط القائم صراحةً لا بالحذف وحده",
-            screen.contains("putString(ThemeKeys.TOP_BAR, TopBarStyle.CLASSIC.key)"),
+            "وإعادة الضبط تعيد «أيقونة» الافتراضي صراحةً لا بالحذف وحده",
+            screen.contains("putString(ThemeKeys.TOP_BAR, TopBarStyle.COMPACT_ICON.key)"),
         )
         assertTrue(
             "والمعاينة ترسم النمط بالدالّة النقيّة",

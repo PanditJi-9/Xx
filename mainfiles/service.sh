@@ -112,12 +112,21 @@ done
 if [ "$PACKAGE_READY" -eq 1 ]; then
     log_recovery "package available path=$(pm path nd.max 2>/dev/null | tr '\n' ' ')"
 
-    # A user app cannot hold WRITE_SECURE_SETTINGS; runtime grants and appops still apply.
+    # A user app cannot hold a privapp allowlist; runtime grants and appops still apply.
+    # This is the module-path equivalent of privapp-permissions-nd.max.xml — every
+    # protected capability the manifest declares, granted by the package name.
+    # SYSTEM_ALERT_WINDOW is the Game Space side panel: without it mount() fails and
+    # the panel used to disappear with no explanation. Game Space now also shows the
+    # grant notice when this command could not apply (first boot before this block,
+    # a ROM that ignores appops, or a user who revoked the toggle).
     pm grant nd.max android.permission.POST_NOTIFICATIONS >/dev/null 2>&1
     pm grant nd.max android.permission.READ_EXTERNAL_STORAGE >/dev/null 2>&1
     pm grant nd.max android.permission.READ_MEDIA_IMAGES >/dev/null 2>&1
     appops set nd.max SYSTEM_ALERT_WINDOW allow >/dev/null 2>&1
     appops set nd.max WRITE_SETTINGS allow >/dev/null 2>&1
+    appops set nd.max GET_USAGE_STATS allow >/dev/null 2>&1
+    appops set nd.max MANAGE_EXTERNAL_STORAGE allow >/dev/null 2>&1
+    appops set nd.max REQUEST_INSTALL_PACKAGES allow >/dev/null 2>&1
 
     # الأيقونة تبقى ظاهرة دائمًا — بلا حالة محفوظة تُقلَب.
     #

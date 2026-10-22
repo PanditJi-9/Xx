@@ -26,6 +26,7 @@
  */
 package nd.max.ui.util
 
+import android.Manifest
 import android.app.AppOpsManager
 import android.app.usage.StorageStatsManager
 import android.content.Context
@@ -66,6 +67,18 @@ object AppStorageReader {
 
     /** صلاحية «الوصول إلى بيانات الاستخدام» ممنوحة؟ — فحص صامت لا نافذة. */
     fun hasUsageAccess(context: Context): Boolean = runCatching {
+        // مسار priv-app: ملفّ السماح يمنح PACKAGE_USAGE_STATS، و`StorageStatsManager` يقبل
+        // الصلاحية نفسها بلا عملية appops. والفحص هنا يمنع شاشةً تقول «تحتاج منحًا» لتطبيق
+        // مُنح فعلًا عبر XML — وهو عين الإصلاح الذي طلبه المالك.
+        if (context.checkPermission(
+                Manifest.permission.PACKAGE_USAGE_STATS,
+                Process.myPid(),
+                Process.myUid(),
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            return@runCatching true
+        }
+        // مسار تطبيق المستخدم (الوحدة): العملية وحدها هي ما يمنحه `service.sh`.
         val appOps = context.getSystemService(Context.APP_OPS_SERVICE) as AppOpsManager
         val mode = appOps.unsafeCheckOpNoThrow(
             AppOpsManager.OPSTR_GET_USAGE_STATS,

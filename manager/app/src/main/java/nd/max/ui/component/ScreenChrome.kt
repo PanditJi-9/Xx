@@ -323,7 +323,7 @@ private fun ClassicMediumTopBar(
 /**
  * نمط الشريط العلوي المختار (§٦-أ) — يُقرأ عند التركيب كقراءة تفضيلات الاستوديو نفسها، ومن قلّب
  * النمط عاد فوجد شاشاته بالنمط الجديد. والقيمة الغائبة (أو مفتاحٌ مجهول) تُقرأ
- * [TopBarStyle.CLASSIC] — أي الشريط القائم، فلا يتغيّر شكل شاشةٍ لمن لم يطلب.
+ * [TopBarStyle.COMPACT_ICON] — أي «أيقونة»، وهو الافتراضي بأمر المالك (٢٠٢٦-١٠-٢٢).
  */
 @Composable
 fun rememberTopBarStyle(): TopBarStyle {
@@ -331,7 +331,7 @@ fun rememberTopBarStyle(): TopBarStyle {
     return remember(context) {
         runCatching {
             ThemeStudio.topBarStyle(context.getSharedPreferences("settings", Context.MODE_PRIVATE))
-        }.getOrDefault(TopBarStyle.CLASSIC)
+        }.getOrDefault(TopBarStyle.COMPACT_ICON)
     }
 }
 

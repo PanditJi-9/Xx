@@ -273,4 +273,39 @@
     <string name="panel_handle_hint">اضغط مطوّلًا على المقبض ثم اسحبه أينما تريد؛ يلتصق بأقرب حافة ويتذكّر مكانه.</string>
     <string name="panel_handle_reset">إعادة الضبط</string>
     <string name="panel_handle_done">تمّ</string>
+    <string name="game_space_overlay_needed">تحتاج اللوحة الجانبية إلى صلاحية «الظهور فوق التطبيقات الأخرى» لتظهر فوق اللعبة.</string>
+    <string name="game_space_overlay_grant">منح الصلاحية</string>
+
+    <!-- التصويب (تراكب Game Turbo) -->
+    <string name="crosshair_title">التصويب</string>
+    <string name="crosshair_switch">إظهار التصويب</string>
+    <string name="crosshair_switch_desc">علامة تصويب دقيقة فوق اللعبة. تظهر أثناء تشغيل Game Turbo ولا تستهلك اللمس.</string>
+    <string name="crosshair_style">الشكل</string>
+    <string name="crosshair_style_cross">صليب</string>
+    <string name="crosshair_style_dot">نقطة</string>
+    <string name="crosshair_style_circle">دائرة</string>
+    <string name="crosshair_style_tee">T</string>
+    <string name="crosshair_color">اللون</string>
+    <string name="crosshair_color_white">أبيض</string>
+    <string name="crosshair_color_green">أخضر نيون</string>
+    <string name="crosshair_color_cyan">سماوي</string>
+    <string name="crosshair_color_red">أحمر</string>
+    <string name="crosshair_color_amber">كهرماني</string>
+    <string name="crosshair_color_magenta">ماجنتا</string>
+    <string name="crosshair_size">الحجم</string>
+    <string name="crosshair_thickness">السماكة</string>
+    <string name="crosshair_gap">الفراغ المركزي</string>
+    <string name="crosshair_opacity">الشفافية</string>
+    <string name="crosshair_outline">حدود داكنة</string>
+    <string name="crosshair_outline_desc">تُبقي التصويب مقروءًا على المشاهد الفاتحة.</string>
+    <string name="crosshair_position">الموضع</string>
+    <string name="crosshair_horizontal">أفقي</string>
+    <string name="crosshair_vertical">عمودي</string>
+    <string name="crosshair_left">يسار</string>
+    <string name="crosshair_right">يمين</string>
+    <string name="crosshair_up">فوق</string>
+    <string name="crosshair_down">تحت</string>
+    <string name="crosshair_center">وسط</string>
+    <string name="crosshair_reset">إعادة ضبط التصويب</string>
+    <string name="crosshair_note">تُطبَّق التغييرات مباشرةً على تراكب Game Turbo، ويبقى التصويب كاملًا داخل الشاشة عند الحواف.</string>
 </resources>

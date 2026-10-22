@@ -17,7 +17,6 @@
 package nd.max
 
 import nd.max.core.security.SecurityGate
-import nd.max.core.security.IntegrityCheckpoint
 import nd.max.core.access.RemoteAccess
 import nd.max.AppMonitorLogger
 import android.app.Application
@@ -70,11 +69,9 @@ class MaxManagerApplication : Application() {
         // **تحديث (شاشة سوداء عند الإقلاع):** الفحص الثابت يقرأ الحزمة كلها ويحسب بصمات مدخلاتها،
         // وكان يجري هنا على الخيط الرئيسيّ فتبقى النافذة سوداء حتى ينتهي. والحكم **لا يمنع شيئًا**
         // (`SecurityGate.shouldRefuse` تُعيد false دائمًا؛ هو سجلّ تشخيص وحده) فلا فائدة من انتظار
-        // الواجهة له. صار على خيط خلفيّ؛ و`runStaticChecks` محميّ بـ`compareAndSet` فمن يسأل
-        // في أثنائه (نشاط/خدمة/مستقبِل) لا يكرّر الفحص ولا ينتظره.
-        Thread { runCatching { SecurityGate.evaluate(this, IntegrityCheckpoint.PROCESS) } }
-            .apply { isDaemon = true; name = "max-integrity-boot" }
-            .start()
+        // الواجهة له. صار `warmUp` **يُجدول** الفحص على خيط مستقلّ منخفض الأولوية ويعود فورًا،
+        // و`evaluate` تفعل الشيء نفسه؛ فلا ينتظر النشاط ولا الخدمة الفحصَ الثقيل.
+        SecurityGate.warmUp(this)
         // لغة التطبيق أولًا: AppCompat يطبّق اللغة ويجدّد النشاط عند الحاجة، وهذا الوقت هو الوحيد
         // الخالي من أي نشاط. بدون هذا السطر كان اختيار المستخدم يُنسى بعد كل قتل للعملية (settings_prefs).
         AppLanguage.applySaved(this)

@@ -12,6 +12,7 @@ import nd.max.core.security.IntegrityCheckpoint
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.provider.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -27,6 +28,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import nd.max.R
+import nd.max.AppMonitorLogger
 import nd.max.core.gamespace.GameLibraryAccess
 import nd.max.core.gamespace.GameProfileRepository
 import nd.max.core.gamespace.GameThermalProfiles
@@ -48,6 +50,7 @@ import nd.max.core.gamespace.ThermalVerdict
 import nd.max.core.gamespace.PANEL_REFRESH_CHOICES
 import nd.max.core.gamespace.PanelSessionClock
 import nd.max.core.gamespace.PanelLifetime
+import nd.max.core.gamespace.CrosshairState
 import nd.max.core.gamespace.gameLibrary
 import nd.max.core.gamespace.nextRefreshRate
 import nd.max.core.gamespace.panelPlacement
@@ -68,6 +71,7 @@ import nd.max.ui.overlay.OverlayWindow
 import nd.max.ui.settings.AppLanguage
 import nd.max.ui.overlay.SilkDragController
 import androidx.compose.ui.geometry.Offset
+import nd.max.ui.util.CrosshairPrefs
 import nd.max.ui.util.FpsOverlayPrefs
 import nd.max.ui.util.GamePanelPrefs
 
@@ -120,11 +124,22 @@ class GamePanelService : LifecycleService() {
          * أو من مشغّل خارجي أو بعد إعادة تشغيل الجهاز. ولا يمكن أن تنتظر الخدمة فتح اللعبة إن لم تكن حيّة أصلًا،
          * فتُشغَّل هنا، وعند إقلاع التطبيق أو تحديثه عبر `ModuleWatchReceiver`.
          *
-         * وإن لم تكن هناك لعبة مُفعَّلة فلا يُشغَّل شيء: لا خدمة أمامية بلا سبب، ولا إشعار دائم لم يُطلب.
+         * وإن لم تكن هناك لعبة مُفعَّلة **ولا تصويب مخصّص** فلا يُشغَّل شيء: لا خدمة أمامية بلا سبب،
+         * ولا إشعار دائم لم يُطلب.
          */
         fun ensureRunning(context: Context) {
-            val enabled = GamePanelPrefs.load(context).enabledPackages
-            if (enabled.isEmpty() || isRunning) return
+            val panel = GamePanelPrefs.load(context).enabledPackages
+            // التصويب سطحٌ مستقلّ داخل Game Turbo: يُشغّل الخدمة ولو لم تُفعَّل لوحة لعبة،
+            // لأن العلامة تعمل فوق أي لعبة في المكتبة. والشرط يبقى: لا خدمة أمامية بلا سبب.
+            val crosshair = CrosshairPrefs.load(context).enabled
+            if ((panel.isEmpty() && !crosshair) || isRunning) return
+            // تطبيق المستخدم لا يرسم تراكبًا بلا صلاحية التراكب: بدء الخدمة كان يُنشر إشعارًا
+            // أماميًّا ثم يُزال بعد فشل `addView`، ويُترك المستخدم يظنّ أن اللوحة لا تعمل. البند
+            // الإرشادي في Game Space هو الإشارة الصادقة، و`service.sh` يمنح العملية عند الإقلاع.
+            if (!Settings.canDrawOverlays(context)) {
+                AppMonitorLogger.w("EVENT=GAME_PANEL_OVERLAY_MISSING source=ensureRunning")
+                return
+            }
             val intent = Intent(context, GamePanelService::class.java)
             runCatching {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -137,16 +152,20 @@ class GamePanelService : LifecycleService() {
 
         /**
          * يُطابق الخدمة مع الألعاب المُفعَّلة عند كل تغيير من الردهة: تبقى إن بقيت لعبة مُفعَّلة، وتُوقف إن لم تبقَ.
-         * **ولا يُوقفها تعطيلُ لعبة واحدة ما دامت أخرى مُفعَّلة.**
+         * **ولا يُوقفها تعطيلُ لعبة واحدة ما دامت أخرى مُفعَّلة.** وتبقى إن كان التصويب المخصّص
+         * مفعّلًا ولو لم تبقَ لعبة مُفعَّلة. وتُوقف إذا سُحبت صلاحية التراكب، فلا خدمة أمامية بلا
+         * نافذة ممكنة، أو إذا لم يبقَ سببٌ للعمل.
          */
         fun reconcile(context: Context) {
-            if (GamePanelPrefs.load(context).enabledPackages.isEmpty()) {
+            val panel = GamePanelPrefs.load(context).enabledPackages
+            val crosshair = CrosshairPrefs.load(context).enabled
+            if ((panel.isEmpty() && !crosshair) || !Settings.canDrawOverlays(context)) {
                 if (isRunning) {
                     context.startService(Intent(context, GamePanelService::class.java).setAction(ACTION_STOP))
                 }
-            } else {
-                ensureRunning(context)
+                return
             }
+            ensureRunning(context)
         }
     }
 
@@ -154,6 +173,10 @@ class GamePanelService : LifecycleService() {
     /** لغة التطبيق التي بُني بها التراكب الآن: إن تغيّرت من الإعدادات أُعيد بناؤه بالجديدة. */
     private var overlayLanguage = ""
     private var state by mutableStateOf(GamePanelState())
+    /** حالة التصويب المقروءة الآن — يستهلكها الرسم والتراكب من المخزن الواحد. */
+    private var crosshair by mutableStateOf(CrosshairState())
+    private var crosshairOverlay: CrosshairOverlay? = null
+    private val mainHandler = android.os.Handler(android.os.Looper.getMainLooper())
     private var library: Set<String> = emptySet()
 
     /** المجموعة المُفعَّلة التي قُرئت معها المكتبة، ومتى قُرئت — تُعاد القراءة عند تغيّرها أو بعد [nd.max.core.gamespace.PANEL_LIBRARY_TTL_MS]. */
@@ -198,7 +221,14 @@ class GamePanelService : LifecycleService() {
      * قفل يظهر أثره في لحظته. ومفتاح الارتفاع مستثنى لأن الخدمة نفسها هي من يكتبه عند استقرار السحب.
      */
     private val prefsListener = android.content.SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
-        if (key != null && key.startsWith("game_panel_") && key != "game_panel_handle_y") applyPrefsNow()
+        when {
+            key == null -> Unit
+            key.startsWith("game_crosshair_") -> {
+                crosshair = CrosshairPrefs.load(applicationContext)
+                syncCrosshair(crosshair)
+            }
+            key.startsWith("game_panel_") && key != "game_panel_handle_y" -> applyPrefsNow()
+        }
     }
 
     /**
@@ -223,6 +253,7 @@ class GamePanelService : LifecycleService() {
         PanelClockReader.prewarm()
         overlayLanguage = AppLanguage.savedTag(this)
         panelPrefs = saved
+        crosshair = CrosshairPrefs.load(this)
         handleScale = saved.handleSize.scale
         // الإزاحة صفر نحو الداخل من الحافة المختارة: لا حساب بمقاس شاشة (قد يكون قديمًا ساعة الإقلاع).
         buildOverlay(
@@ -249,6 +280,14 @@ class GamePanelService : LifecycleService() {
         // كل بدء عبر `startForegroundService` يُلزم الخدمة باستدعاء `startForeground` خلال خمس ثوانٍ، حتى لو
         // كانت تعمل. والرفيق الجذري يبدأها عند كل دخول لعبة مُفعَّلة، فيُستدعى الإشعار هنا في كل مرة.
         ensureForeground()
+        // الرفيق الجذري يبدأ الخدمة بلا مرور من `ensureRunning`، فالفحص هنا واجب: بلا صلاحية
+        // التراكب يرفض `WindowManager.addView` النافذة، وكانت الخدمة تُغلق بلا أثر يشرح السبب.
+        if (!Settings.canDrawOverlays(this)) {
+            AppMonitorLogger.w("EVENT=GAME_PANEL_OVERLAY_MISSING source=onStartCommand")
+            isRunning = false
+            stopSelf()
+            return START_NOT_STICKY
+        }
         if (!window.isShown) {
             // **بلا سحب مقصود:** اللوحة ملتصقة بالحافة بموضع محسوب ([panelPlacement])، والسحب
             // كان سيجعلها تُسحب ثم يُعيدها الاستطلاع كل ثانية ونصف إلى موضعها — أي صراعًا يقرأه
@@ -332,6 +371,8 @@ class GamePanelService : LifecycleService() {
     override fun onConfigurationChanged(newConfig: android.content.res.Configuration) {
         super.onConfigurationChanged(newConfig)
         redockSoon()
+        // نافذة التصويب MATCH_PARENT: تُعاد قراءة المقاس الجديد في الرسم التالي.
+        crosshairOverlay?.refresh()
     }
 
     /**
@@ -378,6 +419,8 @@ class GamePanelService : LifecycleService() {
         HudSampler.stop(HUD_OWNER_PANEL)
         silk.release()
         window.unmount()
+        crosshairOverlay?.destroy()
+        crosshairOverlay = null
         isRunning = false
         super.onDestroy()
     }
@@ -392,10 +435,16 @@ class GamePanelService : LifecycleService() {
     private suspend fun poll() {
         while (lifecycleScope.isActive) {
             val prefs = GamePanelPrefs.load(applicationContext)
-            if (panelServiceLifetime(prefs.enabledPackages) == PanelLifetime.Stop) {
+            val crosshairNow = CrosshairPrefs.load(applicationContext)
+            // التصويب سببٌ مستقلّ لبقاء الخدمة: من أطفأ لوحات الألعاب كلها وأبقى العلامة
+            // لا يُوقف خدمته فجأة. وإن لم يبقَ أيّ سبب — لا لوحة ولا تصويب — تُوقف.
+            if (panelServiceLifetime(prefs.enabledPackages) == PanelLifetime.Stop &&
+                !crosshairNow.enabled
+            ) {
                 stopSelf()
                 return
             }
+            crosshair = crosshairNow
             panelPrefs = prefs
             handleScale = prefs.handleSize.scale
             refreshLibraryIfNeeded(prefs.enabledPackages)
@@ -432,6 +481,9 @@ class GamePanelService : LifecycleService() {
                 fadeOutCockpit()
             }
             state = step.state
+            // العلامة تتبع اللعبة الأمامية: تظهر مع `Tracked` وتختفي مع غيرها، وتُخفى
+            // واللوحة مفتوحة حتى لا تُرسم فوق أزرارها.
+            syncCrosshair(crosshairNow)
             // ساعة الجلسة تُلمس لكل لعبة ترى الخدمة في المقدّمة، مُفعَّلةً كانت أم لا، كما كانت قبل التقسيم.
             (state.subject as? PanelSubject.Tracked)?.let { PanelSessionClock.touch(it.packageName) }
             if (!silk.busy) handleY = prefs.handleY
@@ -492,6 +544,38 @@ class GamePanelService : LifecycleService() {
     }
 
     /**
+     * يطابق نافذة التصويب مع الحالة: مفعّلة + لعبة في المكتبة أمامية + اللوحة غير مفتوحة.
+     *
+     * **ولا تُعرض فوق التطبيقات الأخرى:** العلامة جزء من Game Turbo فوق لعبة، لا تراكب عامّ
+     * يبقى على الشاشة الرئيسية. والإضافة والإزالة على الخيط الرئيسيّ دائمًا (شرط `WindowManager`)،
+     * حتى لو وصل التغيير من مستمع تفضيلات على خيط آخر.
+     */
+    private fun syncCrosshair(prefs: CrosshairState = crosshair) {
+        if (android.os.Looper.myLooper() != android.os.Looper.getMainLooper()) {
+            mainHandler.post { syncCrosshair(prefs) }
+            return
+        }
+        val wanted = prefs.enabled &&
+            state.subject is PanelSubject.Tracked &&
+            state.mode != GamePanelMode.Open &&
+            Settings.canDrawOverlays(this)
+        if (!wanted) {
+            crosshairOverlay?.hide()
+            return
+        }
+        val overlay = crosshairOverlay ?: CrosshairOverlay(this).also { crosshairOverlay = it }
+        overlay.show(prefs)
+    }
+
+    /** تبديل سريع من بلاطة اللوحة: يكتب المفتاح الواحد ويطبّقه فورًا. */
+    private fun toggleCrosshair() {
+        val next = crosshair.copy(enabled = !crosshair.enabled)
+        crosshair = next
+        CrosshairPrefs.save(applicationContext, next)
+        syncCrosshair(next)
+    }
+
+    /**
      * الترددات الحيّة (`PanelClockReader`) كل [CLOCK_TICK_MS] ما دامت اللوحة مفتوحة. **كانت تُقرأ في دورة
      * الاستطلاع نفسها** (ثانية ونصف إلى ثانيتين) وبعد أن تُرسم اللوحة، فتُفتح اللوحة على «—» ثانيتين
      * وتبدو العدّادات والأشرطة جامدة. وقراءة فاشلة تُبقي آخر قيمة صحيحة بدل أن تُفرغ الشاشة.
@@ -546,6 +630,7 @@ class GamePanelService : LifecycleService() {
      */
     private fun dismissPanel() {
         state = dismissGamePanel(state)
+        syncCrosshair()
         syncClockLoop(false)
         window.setFullScreen(false, dockAt?.first, dockAt?.second)
         window.setTouchHandler(silk)
@@ -718,6 +803,7 @@ class GamePanelService : LifecycleService() {
         window.setTouchHandler(null)
         window.hostView()?.alpha = 1f
         state = state.copy(mode = GamePanelMode.Open, openByUser = true)
+        syncCrosshair()
         syncClockLoop(true)
         window.setFullScreen(true)
     }
@@ -760,6 +846,7 @@ class GamePanelService : LifecycleService() {
             onOpen = { openPanel() },
             onCollapse = {
                 state = state.copy(mode = GamePanelMode.Handle, openByUser = false)
+                syncCrosshair()
                 syncClockLoop(false)
                 window.setFullScreen(false, dockAt?.first, dockAt?.second)
                 window.setTouchHandler(silk)
@@ -774,6 +861,8 @@ class GamePanelService : LifecycleService() {
             onOpenControls = { openAppSettings() },
             onSelectProfile = { id -> selectProfile(id) },
             onToggleBypass = { toggleBypass() },
+            crosshairEnabled = crosshair.enabled,
+            onToggleCrosshair = { toggleCrosshair() },
             thermal = thermal,
             onSelectThermal = { id -> selectThermal(id) },
             handleFx = silk.fx,

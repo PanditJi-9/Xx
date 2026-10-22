@@ -274,4 +274,39 @@
     <string name="panel_handle_hint">Long-press the handle, then drag it anywhere. It snaps to the nearest edge and remembers where you left it.</string>
     <string name="panel_handle_reset">Reset to defaults</string>
     <string name="panel_handle_done">Done</string>
+    <string name="game_space_overlay_needed">The side panel needs the “Display over other apps” permission before it can appear over a game.</string>
+    <string name="game_space_overlay_grant">Grant permission</string>
+
+    <!-- Crosshair (Game Turbo overlay) -->
+    <string name="crosshair_title">Crosshair</string>
+    <string name="crosshair_switch">Show crosshair</string>
+    <string name="crosshair_switch_desc">A precise aim marker over the game. It appears while Game Turbo is running and never takes touches.</string>
+    <string name="crosshair_style">Shape</string>
+    <string name="crosshair_style_cross">Cross</string>
+    <string name="crosshair_style_dot">Dot</string>
+    <string name="crosshair_style_circle">Circle</string>
+    <string name="crosshair_style_tee">T</string>
+    <string name="crosshair_color">Color</string>
+    <string name="crosshair_color_white">White</string>
+    <string name="crosshair_color_green">Neon green</string>
+    <string name="crosshair_color_cyan">Cyan</string>
+    <string name="crosshair_color_red">Red</string>
+    <string name="crosshair_color_amber">Amber</string>
+    <string name="crosshair_color_magenta">Magenta</string>
+    <string name="crosshair_size">Size</string>
+    <string name="crosshair_thickness">Thickness</string>
+    <string name="crosshair_gap">Center gap</string>
+    <string name="crosshair_opacity">Opacity</string>
+    <string name="crosshair_outline">Dark outline</string>
+    <string name="crosshair_outline_desc">Keeps the crosshair readable on bright scenes.</string>
+    <string name="crosshair_position">Position</string>
+    <string name="crosshair_horizontal">Horizontal</string>
+    <string name="crosshair_vertical">Vertical</string>
+    <string name="crosshair_left">Left</string>
+    <string name="crosshair_right">Right</string>
+    <string name="crosshair_up">Up</string>
+    <string name="crosshair_down">Down</string>
+    <string name="crosshair_center">Center</string>
+    <string name="crosshair_reset">Reset crosshair</string>
+    <string name="crosshair_note">Changes apply live to the Game Turbo overlay. The crosshair stays fully on screen at the edges.</string>
 </resources>

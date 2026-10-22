@@ -53,6 +53,7 @@ import androidx.compose.material.icons.rounded.DoNotDisturbOn
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.FiberManualRecord
+import androidx.compose.material.icons.rounded.GpsFixed
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Language
@@ -222,6 +223,8 @@ fun GamePanelCockpit(
     onOpenControls: () -> Unit,
     onSelectProfile: (String) -> Unit,
     onToggleBypass: () -> Unit,
+    crosshairEnabled: Boolean = false,
+    onToggleCrosshair: () -> Unit = {},
     thermal: ThermalPanelState = ThermalPanelState(),
     onSelectThermal: (String) -> Unit = {},
     refreshChoices: List<Int> = emptyList(),
@@ -289,6 +292,7 @@ fun GamePanelCockpit(
     val lShot = stringResource(R.string.game_panel_tool_shot)
     val lFps = stringResource(R.string.game_panel_tool_fps)
     val lFpsOn = stringResource(R.string.game_panel_tool_fps_on)
+    val lCrosshair = stringResource(R.string.crosshair_title)
     val lRotation = stringResource(R.string.game_panel_tool_rotation)
     val lOptimize = stringResource(R.string.game_panel_tool_optimize)
     val lTouch = stringResource(R.string.game_panel_tool_touch)
@@ -611,6 +615,12 @@ fun GamePanelCockpit(
                         }
                     )
                 }
+            }))
+            // تصويب مخصّص بلمسة من داخل اللوحة: المفتاح واحد، والتخصيص الكامل في Game Space.
+            add(CubeTileSpec(Icons.Rounded.GpsFixed, null, lCrosshair, crosshairEnabled, onClick = {
+                hold()
+                say(String.format(if (crosshairEnabled) fmtOff else fmtOn, lCrosshair))
+                onToggleCrosshair()
             }))
             add(CubeTileSpec(Icons.Rounded.Videocam, null, if (screenRec) lScreenOn else lScreen, screenRec, onClick = {
                 hold()

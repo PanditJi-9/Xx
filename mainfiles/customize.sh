@@ -141,6 +141,8 @@ extract "$ZIPFILE" module.prop "$MODPATH"
 cp "$MODPATH/module.prop" "$MODPATH/module.prop.orig"
 echo "- Extracting uninstall.sh..."
 extract "$ZIPFILE" uninstall.sh "$MODPATH"
+echo "- Extracting README.md..."
+extract "$ZIPFILE" README.md "$MODPATH"
 if [ ! -f "$MODULE_CONFIG/gamelist/maxmanagerApplist.json" ]; then
     echo "- Extracting Applist.json..."
     extract "$ZIPFILE" maxmanagerApplist.json "$MODULE_CONFIG/gamelist"

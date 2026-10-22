@@ -137,6 +137,8 @@ fun GamePanelSurface(
     onSelectRefresh: (Int?) -> Unit = {},
     handleFx: HandleFx? = null,
     handleScale: Float = 1f,
+    crosshairEnabled: Boolean = false,
+    onToggleCrosshair: () -> Unit = {},
     origin: Offset = Offset(1f, 0.5f)
 ) {
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
@@ -173,6 +175,8 @@ fun GamePanelSurface(
                 onOpenControls = onOpenControls,
                 onSelectProfile = onSelectProfile,
                 onToggleBypass = onToggleBypass,
+                crosshairEnabled = crosshairEnabled,
+                onToggleCrosshair = onToggleCrosshair,
                 thermal = thermal,
                 onSelectThermal = onSelectThermal,
                 refreshChoices = refreshChoices,

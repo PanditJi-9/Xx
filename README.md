@@ -578,6 +578,9 @@ uninstalling puts everything back.
 2. Reboot.
 3. Open **MaxManager** and walk through **Setup**, which explains what *your* device exposes.
 
+For a step-by-step flashing guide and the exact three files a custom ROM needs, see
+**[the module README](mainfiles/README.md)**.
+
 Builds come from CI as workflow artifacts: the flashable module, a developer bundle, and checksums —
 see **[docs/building.md](docs/building.md#releases)** for what each release channel contains. If the
 module fails to reach a stable boot twice in a row, it disables itself and says so in its own
