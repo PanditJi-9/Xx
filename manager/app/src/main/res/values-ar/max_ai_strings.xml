@@ -312,31 +312,7 @@
 
     <!-- §٥ — شاشة «ما يفعله Max AI»: التعريف، والمتاح الآن، وما لا نفعله. -->
     <string name="maxai_intro_title">ما يفعله Max AI</string>
-    <string name="maxai_intro_subtitle">المحرّك، وما يقيسه، وما لا يدّعيه</string>
-    <string name="maxai_intro_teaser">المحرّك، وما هو متاح على جهازك الآن</string>
-    <string name="maxai_intro_stage1_title">يقرأ الحالة أوّلًا</string>
-    <string name="maxai_intro_stage1_body">آخر القيم المعروفة والحدود المقروءة من الجهاز تأتي قبل أي قرار — فلا خطوة على مجهول.</string>
-    <string name="maxai_intro_stage2_title">يشخّص الحدّ لا التردّد</string>
-    <string name="maxai_intro_stage2_body">يفرّق بين اختناق قابل للإصلاح وحدٍّ في العتاد أو النظام، ويقول أيّهما وجد.</string>
-    <string name="maxai_intro_stage3_title">ينفّذ بحدود آمنة</string>
-    <string name="maxai_intro_stage3_body">الكتابة تمرّ بالمُحكّم وحده، ومقيَّدة بما أبلغه الجهاز — لا رفع تردّد عشوائيّ.</string>
-    <string name="maxai_intro_stage4_title">يتحقّق بالقراءة بعدها</string>
-    <string name="maxai_intro_stage4_body">تُقرأ القيمة بعد الكتابة؛ وما لم يتغيّر يُعلَن كما هو، والتراجع لا يحدث إلا حيث يكون آمنًا.</string>
-    <string name="maxai_intro_access_title">المتاح الآن</string>
-    <string name="maxai_intro_state_available">متاح</string>
-    <string name="maxai_intro_state_free">مجّانيّ الآن</string>
-    <string name="maxai_intro_state_key">يحتاج مفتاحًا</string>
-    <string name="maxai_intro_state_off">موقوف حاليًّا</string>
-    <string name="maxai_intro_honesty_title">ما لا نفعله</string>
-    <string name="maxai_intro_honest_measured">لا نعرض تحسّنًا لم يُقس على جهازك.</string>
-    <string name="maxai_intro_honest_readback">لا نُعلن نجاح كتابة قبل قراءتها.</string>
-    <string name="maxai_intro_honest_unknown">المجهول يبقى مجهولًا — لا رقمًا مخترعًا.</string>
-    <string name="maxai_intro_honest_hardware">لا نعد بتسريع لا يسمح به العتاد.</string>
-    <string name="maxai_intro_license_row">الترخيص والمفتاح</string>
-    <string name="maxai_intro_license_sub">لتفعيل ما يحتاج مفتاحًا، ولقراءة حالة ترخيصك.</string>
     <string name="maxai_intro_gate_action">ما الذي يفعله Max AI؟</string>
-    <string name="maxai_intro_promo_title">مجّانيّ للجميع حتى %1$s</string>
-    <string name="maxai_intro_promo_detail">كل ما يحتاج مفتاحًا مفتوح الآن — والنافذة من اللوحة، لا من هذه الشاشة.</string>
 
     <!-- شجرة قدرات Max AI (شاشة «ما يفعله Max AI» صارت صورة واحدة) -->
     <string name="maxai_tree_subtitle">كيف يقرأ Max AI ويتعلّم ويقرّر ويتحقّق</string>

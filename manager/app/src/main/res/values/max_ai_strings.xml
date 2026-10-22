@@ -326,31 +326,7 @@
 
     <!-- §٥ — شاشة «ما يفعله Max AI»: التعريف، والمتاح الآن، وما لا نفعله. -->
     <string name="maxai_intro_title">What Max AI does</string>
-    <string name="maxai_intro_subtitle">The engine, what it measures, and what it never claims</string>
-    <string name="maxai_intro_teaser">The engine, and what is available on your device right now</string>
-    <string name="maxai_intro_stage1_title">Reads the state first</string>
-    <string name="maxai_intro_stage1_body">Last known values and device-read limits come before any decision — no step is taken on an unknown.</string>
-    <string name="maxai_intro_stage2_title">Diagnoses the limit, not the clock</string>
-    <string name="maxai_intro_stage2_body">It separates a fixable bottleneck from a hardware or system limit, and says which one it found.</string>
-    <string name="maxai_intro_stage3_title">Acts within safe bounds</string>
-    <string name="maxai_intro_stage3_body">Writes go through the arbiter alone, bounded by what the device reported — never a random clock bump.</string>
-    <string name="maxai_intro_stage4_title">Verifies by reading back</string>
-    <string name="maxai_intro_stage4_body">The value is read after the write; what did not change is reported as it is, and rollback happens only where it is safe.</string>
-    <string name="maxai_intro_access_title">Available now</string>
-    <string name="maxai_intro_state_available">Available</string>
-    <string name="maxai_intro_state_free">Free right now</string>
-    <string name="maxai_intro_state_key">Needs a key</string>
-    <string name="maxai_intro_state_off">Currently off</string>
-    <string name="maxai_intro_honesty_title">What we never do</string>
-    <string name="maxai_intro_honest_measured">We never show an improvement that was not measured on your device.</string>
-    <string name="maxai_intro_honest_readback">We never declare a write successful before reading it back.</string>
-    <string name="maxai_intro_honest_unknown">An unknown stays unknown — never an invented number.</string>
-    <string name="maxai_intro_honest_hardware">We never promise a speed-up the hardware cannot give.</string>
-    <string name="maxai_intro_license_row">License and key</string>
-    <string name="maxai_intro_license_sub">To activate what needs a key, and to read your license state.</string>
     <string name="maxai_intro_gate_action">What does Max AI do?</string>
-    <string name="maxai_intro_promo_title">Free for everyone until %1$s</string>
-    <string name="maxai_intro_promo_detail">Everything that needs a key is open right now — the window comes from the panel, not from this screen.</string>
 
     <!-- شجرة قدرات Max AI (شاشة «ما يفعله Max AI» صارت صورة واحدة) -->
     <string name="maxai_tree_subtitle">How Max AI reads, learns, decides and verifies</string>

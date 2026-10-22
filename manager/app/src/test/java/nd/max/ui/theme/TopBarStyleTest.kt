@@ -197,7 +197,7 @@ class TopBarStyleTest {
     }
 
     @Test
-    fun `the three shells pass through the styled bar and keep the description in the body`() {
+    fun `the three shells pass through the styled bar and open the description from its help action`() {
         val shell = sourceFile("ui/design/MaxScreenScaffold.kt").readText()
         assertEquals(
             "ثلاثة هياكل (صفحة · مفصّلة · قائمة) تمرّ بنقطة الرسم الواحدة",
@@ -210,13 +210,21 @@ class TopBarStyleTest {
             Regex("rememberTopBarStyle\\(\\)").findAll(shell).count(),
         )
         assertFalse(
-            "ولا شريط يملك الوصف بعد الآن: الوصف في جسم الصفحة دائمًا فلا يغيب ولا يتكرّر",
+            "ولا شريط يملك الوصف بعد الآن",
             shell.contains("barOwnsDescription") || shell.contains("ownsDescription"),
         )
+        // **الوصف لم يعد سطرًا تحت الشريط (٢٠٢٦-١٠-٢٢):** يُفتح من زرّ المساعدة في طرف الشريط
+        // في الهياكل الثلاثة، فلا يُكرَّر نصٌّ ولا يُقتطع في شريطٍ ضيّق. ويُقاس هنا أن الأبواب
+        // الثلاثة تُمرّره إلى الإجراء نفسه — لا أن يبنيه كلٌّ منها بنصّه.
         assertEquals(
-            "والوصف يُرسم بشرط واحد هو وجوده: في الهياكل الثلاثة، وفي لوح الحالة الحاجبة في القائمة",
-            4,
-            Regex("if \\(!subtitle\\.isNullOrBlank\\(\\)\\)").findAll(shell).count(),
+            "والوصف يمرّ إلى إجراء المساعدة نفسه في الهياكل الثلاثة",
+            3,
+            Regex("withScreenHelp\\(title = title, help = subtitle, actions = actions\\)")
+                .findAll(shell).count(),
+        )
+        assertFalse(
+            "ولا يُرسم الوصف سطرًا في جسم الصفحة (لا نسختان تتباعدان)",
+            shell.contains("text = subtitle"),
         )
     }
 

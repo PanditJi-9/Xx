@@ -197,9 +197,10 @@ fun MaxScreen(
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
         rememberTopAppBarState()
     )
-    // نمط الشريط العلوي (§٦-أ): يُقرأ مرّة للصفحة، ويُمرَّر إلى الشريط المشترك. والوصف يبقى في
-    // جسم الصفحة في كل الأنماط (لا يملكه الشريط). والشفّاف يُرسم فوق المحتوى — إلا إن ملكت
-    // الشاشةُ شريطَها بنفسها (`topBar`) فلا شريطَ لنا نمتدّ تحته.
+    // نمط الشريط العلوي (§٦-أ): يُقرأ مرّة للصفحة، ويُمرَّر إلى الشريط المشترك. والوصف لا
+    // يُرسم سطرًا تحت الشريط في أيّ نمط: يُفتح من زرّ المساعدة فيه (`withScreenHelp`)، فلا
+    // يُكرَّر ولا يُقتطع في شريطٍ ضيّق. والشفّاف يُرسم فوق المحتوى — إلا إن ملكت الشاشةُ
+    // شريطَها بنفسها (`topBar`) فلا شريطَ لنا نمتدّ تحته.
     val topBarStyle = rememberTopBarStyle()
     val overlaysBar = topBarStyle.overlaysContent && topBar == null
     val navigationBarPadding = WindowInsets.navigationBars.asPaddingValues()
@@ -302,8 +303,8 @@ fun MaxSplitScreen(
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
         rememberTopAppBarState()
     )
-    // نمط الشريط العلوي (§٦-أ): يُقرأ مرّة للصفحة، ويُمرَّر إلى الشريط المشترك. والوصف يبقى في
-    // جسم الصفحة في كل الأنماط (لا يملكه الشريط). والهيكل المقسوم يحجز الشريط الشفّاف كالمعتم:
+    // نمط الشريط العلوي (§٦-أ): يُقرأ مرّة للصفحة، ويُمرَّر إلى الشريط المشترك. والوصف لا
+    // يُرسم سطرًا تحت الشريط: يُفتح من زرّ المساعدة فيه. والهيكل المقسوم يحجز الشريط الشفّاف كالمعتم:
     // أجسامه ألواحٌ تدير تمريرها بنفسها، فلا محتوى ممرَّرًا هنا ينزلق تحت التدرّج.
     val topBarStyle = rememberTopBarStyle()
     val navigationBarPadding = WindowInsets.navigationBars.asPaddingValues()
@@ -398,9 +399,10 @@ fun MaxListScreen(
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
         rememberTopAppBarState()
     )
-    // نمط الشريط العلوي (§٦-أ): يُقرأ مرّة للصفحة، ويُمرَّر إلى الشريط المشترك. والوصف يبقى في
-    // جسم الصفحة في كل الأنماط (لا يملكه الشريط). والشفّاف يُرسم فوق المحتوى — إلا إن ملكت
-    // الشاشةُ شريطَها بنفسها (`topBar`) فلا شريطَ لنا نمتدّ تحته.
+    // نمط الشريط العلوي (§٦-أ): يُقرأ مرّة للصفحة، ويُمرَّر إلى الشريط المشترك. والوصف لا
+    // يُرسم سطرًا تحت الشريط في أيّ نمط: يُفتح من زرّ المساعدة فيه (`withScreenHelp`)، فلا
+    // يُكرَّر ولا يُقتطع في شريطٍ ضيّق. والشفّاف يُرسم فوق المحتوى — إلا إن ملكت الشاشةُ
+    // شريطَها بنفسها (`topBar`) فلا شريطَ لنا نمتدّ تحته.
     val topBarStyle = rememberTopBarStyle()
     val overlaysBar = topBarStyle.overlaysContent && topBar == null
     val navigationBarPadding = WindowInsets.navigationBars.asPaddingValues()
