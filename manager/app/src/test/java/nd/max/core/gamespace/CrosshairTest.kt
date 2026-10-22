@@ -92,11 +92,15 @@ class CrosshairTest {
             offsetX = CrosshairState.MAX_OFFSET,
             offsetY = CrosshairState.MAX_OFFSET
         )
-        val geometry = crosshairGeometry(state, width = 200f, height = 320f, density = 3f)
+        // لوحة 200x320 dp بكثافة 3 (أي 600x960 بكسل): يجب أن تتّسع فيها العلامة القصوى،
+        // وإلا طلب الاختبار المستحيل. اللوحة الأضيق من العلامة تُرسم مقصوصةً عمدًا (راجع KDoc في Crosshair.kt).
+        val width = 600f
+        val height = 960f
+        val geometry = crosshairGeometry(state, width = width, height = height, density = 3f)
         val half = CrosshairState.MAX_SIZE_DP * 3f / 2f
         val stroke = CrosshairState.MAX_THICKNESS_DP * 3f
-        assertTrue("الحافة اليمنى", geometry.centerX + half + stroke <= 200f + 0.01f)
-        assertTrue("الحافة السفلى", geometry.centerY + half + stroke <= 320f + 0.01f)
+        assertTrue("الحافة اليمنى", geometry.centerX + half + stroke <= width + 0.01f)
+        assertTrue("الحافة السفلى", geometry.centerY + half + stroke <= height + 0.01f)
         assertTrue("لا يخرج من اليسار", geometry.centerX - half - stroke >= -0.01f)
         assertTrue("لا يخرج من الأعلى", geometry.centerY - half - stroke >= -0.01f)
     }
