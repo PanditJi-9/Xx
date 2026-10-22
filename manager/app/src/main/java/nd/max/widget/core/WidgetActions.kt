@@ -41,6 +41,9 @@ object WidgetIntents {
     const val ROUTE_STORAGE = "storage_care"
     const val ROUTE_CONTROL = "control"
     const val ROUTE_ISLAND = "dynamic_island"
+
+    /** لوبي مساحة الألعاب: يفتحه اختصار الشاشة الرئيسية (`GameSpaceShortcut`) فيبدأ بالدخول السينمائيّ. */
+    const val ROUTE_GAME_LOBBY = "game_lobby"
 }
 
 /**

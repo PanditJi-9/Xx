@@ -72,6 +72,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlin.math.abs
 import nd.max.R
+import nd.max.core.gamespace.LobbyCue
 import nd.max.core.gamespace.LobbyModel
 import nd.max.ui.design.MAX_VALUE_UNAVAILABLE
 import nd.max.ui.design.MaxAlpha
@@ -115,6 +116,7 @@ internal fun LobbyTopTabs(
 ) {
     val rtl = LocalLayoutDirection.current == LayoutDirection.Rtl
     val shape = remember { RoundedCornerShape(MaxRadius.pill) }
+    val sounds = LocalLobbySounds.current
     Row(
         modifier = modifier
             .semantics { contentDescription = description }
@@ -154,7 +156,10 @@ internal fun LobbyTopTabs(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null,
                         role = Role.Tab,
-                        onClick = { onSelect(i) }
+                        onClick = {
+                            if (i != selected) sounds.play(LobbyCue.Tap)
+                            onSelect(i)
+                        }
                     ),
                 contentAlignment = Alignment.Center
             ) {
@@ -266,9 +271,11 @@ internal fun LobbyRoundButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     selected: Boolean = false,
-    tone: Color = LobbyPalette.Red
+    tone: Color = LobbyPalette.Red,
+    cue: LobbyCue? = LobbyCue.Tap
 ) {
     val interaction = remember { MutableInteractionSource() }
+    val sounds = LocalLobbySounds.current
     Box(
         modifier = modifier
             .minimumInteractiveComponentSize()
@@ -280,7 +287,10 @@ internal fun LobbyRoundButton(
                 interactionSource = interaction,
                 indication = null,
                 role = Role.Button,
-                onClick = onClick
+                onClick = {
+                    if (cue != null) sounds.play(cue)
+                    onClick()
+                }
             ),
         contentAlignment = Alignment.Center
     ) {
@@ -376,10 +386,12 @@ internal fun LobbyInfoTile(
     active: Boolean,
     tone: Color,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    cue: LobbyCue? = LobbyCue.Tap
 ) {
     val interaction = remember { MutableInteractionSource() }
     val shape = remember { RoundedCornerShape(MaxRadius.control) }
+    val sounds = LocalLobbySounds.current
     Row(
         modifier = modifier
             .lobbyPress(interaction)
@@ -394,7 +406,10 @@ internal fun LobbyInfoTile(
                 interactionSource = interaction,
                 indication = null,
                 role = Role.Button,
-                onClick = onClick
+                onClick = {
+                    if (cue != null) sounds.play(cue)
+                    onClick()
+                }
             )
             .padding(horizontal = MaxSpace.md, vertical = MaxSpace.md),
         verticalAlignment = Alignment.CenterVertically,
@@ -486,7 +501,8 @@ internal fun LobbyInfoPanel(
                 ),
                 onClick = onFavorite,
                 selected = favorite,
-                tone = accent
+                tone = accent,
+                cue = if (favorite) LobbyCue.Off else LobbyCue.On
             )
         }
         Spacer(Modifier.height(MaxSpace.lg))
@@ -512,7 +528,8 @@ internal fun LobbyInfoPanel(
                 active = panelOn,
                 tone = accent,
                 onClick = onPanel,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
+                cue = if (panelOn) LobbyCue.Off else LobbyCue.On
             )
         }
     }

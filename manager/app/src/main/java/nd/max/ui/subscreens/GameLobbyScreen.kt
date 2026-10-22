@@ -33,6 +33,7 @@ import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
@@ -81,6 +82,7 @@ import nd.max.core.gamespace.GameApp
 import nd.max.core.gamespace.GameLibraryAccess
 import nd.max.core.gamespace.GameLobbyMeta
 import nd.max.core.gamespace.GameLobbyMetaReader
+import nd.max.core.gamespace.LobbyCue
 import nd.max.core.gamespace.LobbyModel
 import nd.max.core.gamespace.LobbyOrder
 import nd.max.core.gamespace.LobbyPrefs
@@ -95,6 +97,7 @@ import nd.max.ui.component.LobbyDeck
 import nd.max.ui.component.LobbyDeckCard
 import nd.max.ui.component.LobbyDeckPad
 import nd.max.ui.component.LobbyDeckSkeleton
+import nd.max.ui.component.LobbyEntrance
 import nd.max.ui.component.LobbyInfoPanel
 import nd.max.ui.component.LobbyKeepScreenOn
 import nd.max.ui.component.LobbyNotice
@@ -107,10 +110,12 @@ import nd.max.ui.component.LobbyStageBackdrop3D
 import nd.max.ui.component.LobbyStatusCapsule
 import nd.max.ui.component.LobbyTopTabs
 import nd.max.ui.component.LobbyWindowEffect
+import nd.max.ui.component.LocalLobbySounds
 import nd.max.ui.component.lobbyIntro
 import nd.max.ui.component.lobbyLoop
 import nd.max.ui.component.rememberLobbyAnimationsEnabled
 import nd.max.ui.component.rememberLobbyIntro
+import nd.max.ui.component.rememberLobbySounds
 import nd.max.ui.component.rememberLobbyTone
 import nd.max.ui.design.MaxDuration
 import nd.max.ui.design.MaxSpace
@@ -153,6 +158,10 @@ private const val ROOT_TILT_DEGREES = 9f
 private const val ROOT_CAMERA = 20f
 private const val ROOT_BACKDROP_DIM = 0.55f
 
+/** سرعة مسحة الانتقال بين الصفحتين: أسرع صعودًا إلى مركز التحكّم، وأبطأ نزولًا إلى المسرح. */
+private const val SWISH_UP_RATE = 1.15f
+private const val SWISH_DOWN_RATE = 0.85f
+
 /** دورة انجراف الجسيمات بطيئة عمدًا (ms)؛ تنفّس البطاقة أسرع. */
 private const val DRIFT_MS = 40_000
 private const val BREATHE_MS = 2800
@@ -171,6 +180,15 @@ private val metaCache = LruCache<String, GameLobbyMeta>(64)
  * يرتفع المركز ويستقيم، والتبويبات العلويّة تنزلق مع الموضع نفسه. من الريموت: ↑ أو R1 يفتح المركز،
  * L1 أو الرجوع يعيد المسرح.
  *
+ * ### الدخول السينمائيّ والأصوات (بطلب المالك ٢٠٢٦-١٠-٢١)
+ *
+ *  - عند فتح اللوبي يعلوه دخول قصير (~٣٫٤ث): اندفاع ضوئيّ ← وميض ← شعار ← تلاشٍ، وتنساب عناصر
+ *    اللوبي بعده. يُتخطّى بلمسة أو رجوع أو أي زرّ ريموت، ويُلغى إن كان أنيميشن النظام مُطفأً أو
+ *    أُوقف مفتاحه في «خيارات اللوبي». (الخطّ الزمنيّ في `LobbyEntranceTimeline`، والرسم في `LobbyEntrance`.)
+ *  - أصوات للنقر (`Tap`) وعبور البطاقات (`Tick`) والانتقال بين الصفحتين (`Swish`) والمفاتيح (`On`/`Off`)
+ *    و«ابدأ» (`Start`) والدخول (`Intro`)، عبر `LocalLobbySounds` فلا يعرف المكوّن غير `cue`. مفتاحها
+ *    «أصوات اللوبي»، وتعمل بمستوى الوسائط.
+ *
  * ### حدود لم تتغيّر
  *
  * - لا كتابة عتاد من هذه الشاشة (ADR-11): التشغيل بـ`GameLibraryAccess.launch`، والإعدادات
@@ -181,7 +199,8 @@ private val metaCache = LruCache<String, GameLobbyMeta>(64)
  * - لا أصول منقولة: كل رسم بالكود، والصور أيقونات التطبيقات المثبَّتة.
  *
  * **غير مُتحقَّق على جهاز:** القفل العرضي وإخفاء الأشرطة وقصّ الكاميرا، وإشارة ميل الشرائح ورفع
- * الصفحة في RTL، وسلاسة ٦٠fps أثناء السحب، وعتبة الانتقال الرأسيّ.
+ * الصفحة في RTL، وسلاسة ٦٠fps أثناء السحب، وعتبة الانتقال الرأسيّ، وتزامن صوت الدخول مع الوميض،
+ * وزمن استجابة النقر الصوتيّ، وسلاسة الدخول على الأجهزة الضعيفة.
  */
 @Composable
 fun GameLobbyScreen(
@@ -202,6 +221,7 @@ fun GameLobbyScreen(
     }
     LobbyWindowEffect()
     LobbyKeepScreenOn(lobbyPrefs.keepScreenOn)
+    val sounds = rememberLobbySounds(lobbyPrefs.sounds)
 
     val library by viewModel.library.collectAsStateWithLifecycle()
     var selected by rememberSaveable {
@@ -255,12 +275,20 @@ fun GameLobbyScreen(
             }
         }
     }
-    // نقرة اهتزاز خفيفة كلما عبرت شريحة جديدة المركز بسحبة حقيقية (لا بإعادة الموضع البرمجية).
+    // نقرة اهتزاز ونبضة صوت خفيفتان كلما عبرت شريحة جديدة المركز بحركة حقيقية (سحب أو لمس بطاقة مجاورة)،
+    // لا بإعادة الموضع البرمجية. لكلٍّ مفتاحه: `haptics` للاهتزاز، و`sounds` داخل محرّك الصوت.
     LaunchedEffect(deckState) {
         snapshotFlow { deckState.currentPage }.drop(1).collect {
-            if (restore.games === gamesState.value && deckState.isScrollInProgress && lobbyPrefs.haptics) {
-                haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+            if (restore.games === gamesState.value && deckState.isScrollInProgress) {
+                if (lobbyPrefs.haptics) haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                sounds.play(LobbyCue.Tick)
             }
+        }
+    }
+    // انتقال المسرح ⇄ مركز التحكّم: مسحة هواء حين تعبر الصفحة منتصفها (سحبًا أو بلمس التبويب).
+    LaunchedEffect(rootState) {
+        snapshotFlow { rootState.currentPage }.drop(1).collect { page ->
+            sounds.play(LobbyCue.Swish, rate = if (page == 1) SWISH_UP_RATE else SWISH_DOWN_RATE)
         }
     }
 
@@ -305,7 +333,12 @@ fun GameLobbyScreen(
 
     val animations = rememberLobbyAnimationsEnabled()
     val ambient = animations && lobbyPrefs.ambient
-    val intro = rememberLobbyIntro(animations)
+    // الدخول السينمائيّ: مرّة لكل فتح للشاشة (`rememberSaveable` فلا يُعاد عند تدوير الجهاز). ويُحجَز معه
+    // انسياب عناصر اللوبي (`hold`) ليبدأ حين يتلاشى الغطاء لا خلفه.
+    var entranceDone by rememberSaveable { mutableStateOf(false) }
+    var entranceSkip by remember { mutableIntStateOf(0) }
+    val entranceOn = animations && lobbyPrefs.entrance && !entranceDone
+    val intro = rememberLobbyIntro(animations, hold = entranceOn)
     val breathe = lobbyLoop(ambient, BREATHE_MS, RepeatMode.Reverse, FastOutSlowInEasing, rest = 0.5f)
     val drift = lobbyLoop(ambient, DRIFT_MS, RepeatMode.Restart, LinearEasing, rest = 0f)
 
@@ -331,6 +364,7 @@ fun GameLobbyScreen(
         if (launching) return@start
         launching = true
         if (lobbyPrefs.haptics) haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+        sounds.play(LobbyCue.Start)
         scope.launch {
             if (animations && lobbyPrefs.launchFlash) {
                 burst.animateTo(1f, tween(MaxDuration.standard, easing = FastOutSlowInEasing))
@@ -360,321 +394,338 @@ fun GameLobbyScreen(
             .distinctBy { it.packageName }
     }
 
-    Box(
-        Modifier
-            .fillMaxSize()
-            .onKeyEvent { event ->
-                if (event.type != KeyEventType.KeyDown) {
-                    false
-                } else if (rootState.currentPage != 0) {
-                    when (event.key) {
-                        Key.ButtonL1 -> { closeControl(); true }
-                        else -> false
-                    }
-                } else {
-                    when (event.key) {
-                        Key.DirectionLeft -> { step(if (rtl) 1 else -1); true }
-                        Key.DirectionRight -> { step(if (rtl) -1 else 1); true }
-                        Key.DirectionUp -> { openControl(LobbySection.Game); true }
-                        Key.ButtonR1 -> { openControl(section); true }
-                        Key.Enter, Key.NumPadEnter, Key.ButtonA -> { start(); true }
-                        Key.ButtonX -> { if (active != null) openControl(LobbySection.Game); true }
-                        else -> false
+    CompositionLocalProvider(LocalLobbySounds provides sounds) {
+        Box(
+            Modifier
+                .fillMaxSize()
+                .onKeyEvent { event ->
+                    if (event.type != KeyEventType.KeyDown) {
+                        false
+                    } else if (entranceOn) {
+                        entranceSkip += 1
+                        true
+                    } else if (rootState.currentPage != 0) {
+                        when (event.key) {
+                            Key.ButtonL1 -> { closeControl(); true }
+                            else -> false
+                        }
+                    } else {
+                        when (event.key) {
+                            Key.DirectionLeft -> { step(if (rtl) 1 else -1); true }
+                            Key.DirectionRight -> { step(if (rtl) -1 else 1); true }
+                            Key.DirectionUp -> { openControl(LobbySection.Game); true }
+                            Key.ButtonR1 -> { openControl(section); true }
+                            Key.Enter, Key.NumPadEnter, Key.ButtonA -> { start(); true }
+                            Key.ButtonX -> { if (active != null) openControl(LobbySection.Game); true }
+                            else -> false
+                        }
                     }
                 }
-            }
-            .focusRequester(focus)
-            .focusable()
-    ) {
-        LobbyStageBackdrop3D(
-            tone = { toneState.value },
-            position = { deckState.currentPage + deckState.currentPageOffsetFraction },
-            packages = packages,
-            drift = drift,
-            motes = ambient,
-            focusX = focusX,
-            modifier = Modifier.graphicsLayer {
-                val progress = (rootState.currentPage + rootState.currentPageOffsetFraction).coerceIn(0f, 1f)
-                alpha = 1f - ROOT_BACKDROP_DIM * progress
-            }
-        )
+                .focusRequester(focus)
+                .focusable()
+        ) {
+            LobbyStageBackdrop3D(
+                tone = { toneState.value },
+                position = { deckState.currentPage + deckState.currentPageOffsetFraction },
+                packages = packages,
+                drift = drift,
+                motes = ambient,
+                focusX = focusX,
+                modifier = Modifier.graphicsLayer {
+                    val progress = (rootState.currentPage + rootState.currentPageOffsetFraction).coerceIn(0f, 1f)
+                    alpha = 1f - ROOT_BACKDROP_DIM * progress
+                }
+            )
 
-        VerticalPager(
-            state = rootState,
-            modifier = Modifier
-                .fillMaxSize()
-                .graphicsLayer {
-                    val p = burst.value
-                    alpha = 1f - DIVE_FADE * p
-                    scaleX = 1f + DIVE_ZOOM * p
-                    scaleY = scaleX
-                },
-            beyondViewportPageCount = 1,
-            flingBehavior = rootFling,
-            key = { it }
-        ) { page ->
-            Box(
-                Modifier
+            VerticalPager(
+                state = rootState,
+                modifier = Modifier
                     .fillMaxSize()
                     .graphicsLayer {
-                        val slot = page - (rootState.currentPage + rootState.currentPageOffsetFraction)
-                        val a = abs(slot).coerceIn(0f, 1f)
-                        val shrink = 1f - ROOT_SHRINK * a
-                        scaleX = shrink
-                        scaleY = shrink
-                        alpha = 1f - ROOT_FADE * a
-                        rotationX = ROOT_TILT_DEGREES * depthStrength * a
-                        cameraDistance = ROOT_CAMERA * density
-                    }
-            ) {
-                if (page == 0) {
-                    // ─────────────── المسرح ───────────────
-                    Row(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .displayCutoutPadding()
-                            .padding(top = TopBarHeight),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .weight(INFO_WEIGHT)
-                                .fillMaxHeight(),
-                            contentAlignment = Alignment.CenterStart
-                        ) {
-                            if (active != null) {
-                                val tweaks = activeConfig?.customizedFieldCount() ?: 0
-                                val favorite = active.packageName in library.favorites
-                                LobbyInfoPanel(
-                                    title = active.label,
-                                    meta = rememberLobbyMetaText(active.packageName),
-                                    favorite = favorite,
-                                    onFavorite = {
-                                        tick()
-                                        viewModel.favorite(active.packageName, !favorite)
-                                    },
-                                    profileValue = if (tweaks > 0) {
-                                        stringResource(R.string.lobby_tile_profile_value, tweaks)
-                                    } else {
-                                        stringResource(R.string.lobby_tile_profile_none)
-                                    },
-                                    onProfile = { openControl(LobbySection.Game) },
-                                    panelValue = stringResource(
-                                        if (panelEnabled) R.string.lobby_state_on else R.string.lobby_state_off
-                                    ),
-                                    panelOn = panelEnabled,
-                                    onPanel = {
-                                        tick()
-                                        setPanel(!panelEnabled)
-                                    },
-                                    startLabel = stringResource(R.string.lobby_start),
-                                    onStart = start,
-                                    tone = { toneState.value },
-                                    breathe = breathe,
-                                    modifier = Modifier
-                                        .padding(start = MaxSpace.xxl, end = MaxSpace.xl)
-                                        .lobbyIntro(intro, fromBelow = 24.dp, start = 0.1f)
-                                )
-                            }
+                        val p = burst.value
+                        alpha = 1f - DIVE_FADE * p
+                        scaleX = 1f + DIVE_ZOOM * p
+                        scaleY = scaleX
+                    },
+                beyondViewportPageCount = 1,
+                flingBehavior = rootFling,
+                key = { it }
+            ) { page ->
+                Box(
+                    Modifier
+                        .fillMaxSize()
+                        .graphicsLayer {
+                            val slot = page - (rootState.currentPage + rootState.currentPageOffsetFraction)
+                            val a = abs(slot).coerceIn(0f, 1f)
+                            val shrink = 1f - ROOT_SHRINK * a
+                            scaleX = shrink
+                            scaleY = shrink
+                            alpha = 1f - ROOT_FADE * a
+                            rotationX = ROOT_TILT_DEGREES * depthStrength * a
+                            cameraDistance = ROOT_CAMERA * density
                         }
-                        BoxWithConstraints(
+                ) {
+                    if (page == 0) {
+                        // ─────────────── المسرح ───────────────
+                        Row(
                             modifier = Modifier
-                                .weight(DECK_WEIGHT)
-                                .fillMaxHeight(),
-                            contentAlignment = Alignment.Center
+                                .fillMaxSize()
+                                .displayCutoutPadding()
+                                .padding(top = TopBarHeight),
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            val fitHeight = (maxHeight - LobbyDeckPad * 2 - RailReserve - HintReserve)
-                                .coerceIn(MinSlabHeight, MaxSlabHeight)
-                            val slabWidth = minOf(fitHeight * LOBBY_SLAB_ASPECT, maxWidth * SLAB_WIDTH_SHARE)
-                            val slabHeight = slabWidth / LOBBY_SLAB_ASPECT
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                when {
-                                    games.isNotEmpty() -> {
-                                        LobbyDeck(
-                                            state = deckState,
-                                            depth = lobbyPrefs.depth,
+                            Box(
+                                modifier = Modifier
+                                    .weight(INFO_WEIGHT)
+                                    .fillMaxHeight(),
+                                contentAlignment = Alignment.CenterStart
+                            ) {
+                                if (active != null) {
+                                    val tweaks = activeConfig?.customizedFieldCount() ?: 0
+                                    val favorite = active.packageName in library.favorites
+                                    LobbyInfoPanel(
+                                        title = active.label,
+                                        meta = rememberLobbyMetaText(active.packageName),
+                                        favorite = favorite,
+                                        onFavorite = {
+                                            tick()
+                                            viewModel.favorite(active.packageName, !favorite)
+                                        },
+                                        profileValue = if (tweaks > 0) {
+                                            stringResource(R.string.lobby_tile_profile_value, tweaks)
+                                        } else {
+                                            stringResource(R.string.lobby_tile_profile_none)
+                                        },
+                                        onProfile = { openControl(LobbySection.Game) },
+                                        panelValue = stringResource(
+                                            if (panelEnabled) R.string.lobby_state_on else R.string.lobby_state_off
+                                        ),
+                                        panelOn = panelEnabled,
+                                        onPanel = {
+                                            tick()
+                                            setPanel(!panelEnabled)
+                                        },
+                                        startLabel = stringResource(R.string.lobby_start),
+                                        onStart = start,
+                                        tone = { toneState.value },
+                                        breathe = breathe,
+                                        modifier = Modifier
+                                            .padding(start = MaxSpace.xxl, end = MaxSpace.xl)
+                                            .lobbyIntro(intro, fromBelow = 24.dp, start = 0.1f)
+                                    )
+                                }
+                            }
+                            BoxWithConstraints(
+                                modifier = Modifier
+                                    .weight(DECK_WEIGHT)
+                                    .fillMaxHeight(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                val fitHeight = (maxHeight - LobbyDeckPad * 2 - RailReserve - HintReserve)
+                                    .coerceIn(MinSlabHeight, MaxSlabHeight)
+                                val slabWidth = minOf(fitHeight * LOBBY_SLAB_ASPECT, maxWidth * SLAB_WIDTH_SHARE)
+                                val slabHeight = slabWidth / LOBBY_SLAB_ASPECT
+                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                    when {
+                                        games.isNotEmpty() -> {
+                                            LobbyDeck(
+                                                state = deckState,
+                                                depth = lobbyPrefs.depth,
+                                                slabWidth = slabWidth,
+                                                slabHeight = slabHeight,
+                                                breathe = breathe,
+                                                onSelect = { target ->
+                                                    scope.launch { deckState.animateScrollToPage(target) }
+                                                },
+                                                modifier = Modifier.lobbyIntro(
+                                                    intro,
+                                                    fromBelow = 24.dp,
+                                                    start = 0.1f,
+                                                    scaleFrom = 0.94f
+                                                ),
+                                                key = { index -> games.getOrNull(index)?.packageName ?: index }
+                                            ) { index, slot ->
+                                                val app = games.getOrNull(index)
+                                                if (app != null) {
+                                                    LobbyDeckCard(
+                                                        packageName = app.packageName,
+                                                        title = app.label,
+                                                        description = stringResource(
+                                                            R.string.lobby_card_position,
+                                                            app.label,
+                                                            index + 1,
+                                                            games.size
+                                                        ),
+                                                        gameColors = lobbyPrefs.gameColors,
+                                                        slot = slot
+                                                    )
+                                                }
+                                            }
+                                            // مسطرة الموضع: «أين أنا من القائمة» بنظرة؛ لا تُرسم لأقل من لعبتين.
+                                            LobbyPositionRail(
+                                                count = games.size,
+                                                position = { deckState.currentPage + deckState.currentPageOffsetFraction },
+                                                tone = { toneState.value },
+                                                modifier = Modifier
+                                                    .padding(top = MaxSpace.xs)
+                                                    .lobbyIntro(intro, fromBelow = MaxSpace.lg, start = 0.2f)
+                                            )
+                                            LobbyPullHint(
+                                                text = stringResource(R.string.lobby_pull_hint),
+                                                bob = breathe,
+                                                modifier = Modifier.padding(top = MaxSpace.sm)
+                                            )
+                                        }
+                                        library.loading -> LobbyDeckSkeleton(
                                             slabWidth = slabWidth,
                                             slabHeight = slabHeight,
-                                            breathe = breathe,
-                                            onSelect = { target ->
-                                                scope.launch { deckState.animateScrollToPage(target) }
-                                            },
-                                            modifier = Modifier.lobbyIntro(
-                                                intro,
-                                                fromBelow = 24.dp,
-                                                start = 0.1f,
-                                                scaleFrom = 0.94f
-                                            ),
-                                            key = { index -> games.getOrNull(index)?.packageName ?: index }
-                                        ) { index, slot ->
-                                            val app = games.getOrNull(index)
-                                            if (app != null) {
-                                                LobbyDeckCard(
-                                                    packageName = app.packageName,
-                                                    title = app.label,
-                                                    description = stringResource(
-                                                        R.string.lobby_card_position,
-                                                        app.label,
-                                                        index + 1,
-                                                        games.size
-                                                    ),
-                                                    gameColors = lobbyPrefs.gameColors,
-                                                    slot = slot
+                                            pulse = breathe,
+                                            description = stringResource(R.string.lobby_loading)
+                                        )
+                                        else -> Column(
+                                            horizontalAlignment = Alignment.CenterHorizontally,
+                                            verticalArrangement = Arrangement.spacedBy(MaxSpace.lg)
+                                        ) {
+                                            LobbyNotice(
+                                                stringResource(
+                                                    if (favoritesOnly) R.string.lobby_empty_favorites else R.string.lobby_empty
                                                 )
-                                            }
-                                        }
-                                        // مسطرة الموضع: «أين أنا من القائمة» بنظرة؛ لا تُرسم لأقل من لعبتين.
-                                        LobbyPositionRail(
-                                            count = games.size,
-                                            position = { deckState.currentPage + deckState.currentPageOffsetFraction },
-                                            tone = { toneState.value },
-                                            modifier = Modifier
-                                                .padding(top = MaxSpace.xs)
-                                                .lobbyIntro(intro, fromBelow = MaxSpace.lg, start = 0.2f)
-                                        )
-                                        LobbyPullHint(
-                                            text = stringResource(R.string.lobby_pull_hint),
-                                            bob = breathe,
-                                            modifier = Modifier.padding(top = MaxSpace.sm)
-                                        )
-                                    }
-                                    library.loading -> LobbyDeckSkeleton(
-                                        slabWidth = slabWidth,
-                                        slabHeight = slabHeight,
-                                        pulse = breathe,
-                                        description = stringResource(R.string.lobby_loading)
-                                    )
-                                    else -> Column(
-                                        horizontalAlignment = Alignment.CenterHorizontally,
-                                        verticalArrangement = Arrangement.spacedBy(MaxSpace.lg)
-                                    ) {
-                                        LobbyNotice(
-                                            stringResource(
-                                                if (favoritesOnly) R.string.lobby_empty_favorites else R.string.lobby_empty
                                             )
-                                        )
-                                        if (!favoritesOnly) {
-                                            OutlinedButton(onClick = { openControl(LobbySection.Library) }) {
-                                                Text(
-                                                    text = stringResource(R.string.lobby_manage_games),
-                                                    color = LobbyPalette.Ink
-                                                )
+                                            if (!favoritesOnly) {
+                                                OutlinedButton(onClick = { openControl(LobbySection.Library) }) {
+                                                    Text(
+                                                        text = stringResource(R.string.lobby_manage_games),
+                                                        color = LobbyPalette.Ink
+                                                    )
+                                                }
                                             }
                                         }
                                     }
                                 }
                             }
                         }
-                    }
-                } else {
-                    // ─────────────── مركز التحكم ───────────────
-                    LobbyControlCenter(
-                        section = section,
-                        onSection = { section = it },
-                        app = active,
-                        config = activeConfig ?: AppConfig(),
-                        panelEnabled = panelEnabled,
-                        onPanelEnabled = setPanel,
-                        onUpdate = { key, value ->
-                            active?.let { settingsViewModel.updateSetting(it.packageName, key, value) }
-                        },
-                        onOpenFull = { active?.let { navController.openAppSettings(it.packageName) } },
-                        prefs = lobbyPrefs,
-                        onPrefs = updatePrefs,
-                        apps = manageApps,
-                        manual = library.manual,
-                        excluded = library.excluded,
-                        onToggleGame = viewModel::membership,
-                        accent = toneState.value,
-                        modifier = Modifier
-                            .displayCutoutPadding()
-                            .padding(top = TopBarHeight)
-                    )
-                }
-            }
-        }
-
-        // الشريط العلويّ ثابت فوق الصفحتين: تبويبات تنزلق مع السحب + كبسولة الحالة + أزرار.
-        Row(
-            modifier = Modifier
-                .align(Alignment.TopCenter)
-                .fillMaxWidth()
-                .displayCutoutPadding()
-                .height(TopBarHeight)
-                .padding(horizontal = MaxSpace.xxl)
-                .lobbyIntro(intro, fromBelow = (-24).dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm)
-        ) {
-            LobbyTopTabs(
-                labels = listOf(
-                    stringResource(R.string.lobby_tab_games),
-                    stringResource(R.string.lobby_tab_control)
-                ),
-                selected = rootState.currentPage,
-                position = { rootState.currentPage + rootState.currentPageOffsetFraction },
-                tone = { toneState.value },
-                description = stringResource(R.string.lobby_tab_lobby),
-                onSelect = { index -> scope.launch { rootState.animateScrollToPage(index) } }
-            )
-            Spacer(Modifier.weight(1f))
-            if (lobbyPrefs.showStatus) LobbyStatusCapsule()
-            LobbyRoundButton(
-                icon = Icons.Rounded.Star,
-                description = stringResource(R.string.lobby_favorites_filter),
-                onClick = {
-                    tick()
-                    favoritesOnly = !favoritesOnly
-                },
-                selected = favoritesOnly,
-                tone = toneState.value
-            )
-            LobbyRoundButton(
-                icon = Icons.Rounded.Refresh,
-                description = stringResource(R.string.gaming_refresh),
-                onClick = { viewModel.refresh() }
-            )
-            LobbyRoundButton(
-                icon = Icons.Rounded.Close,
-                description = stringResource(R.string.lobby_close),
-                onClick = { navController.navigateUp() }
-            )
-        }
-
-        Column(
-            modifier = Modifier
-                .align(Alignment.TopCenter)
-                .displayCutoutPadding()
-                .padding(top = TopBarHeight),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(MaxSpace.xs)
-        ) {
-            if (library.failed) LobbyNotice(stringResource(R.string.gaming_config_failed), caution = true)
-            if (launchFailed) LobbyNotice(stringResource(R.string.game_space_launch_failed), caution = true)
-            if (panelArmFailed) LobbyNotice(stringResource(R.string.lobby_panel_arm_failed), caution = true)
-        }
-
-        // طبقة الإطلاق: رسم فقط (لا مدخلات)، تُقرأ فيها `burst` في مرحلة الرسم فلا إعادة تركيب أثناء الحركة.
-        Box(
-            Modifier
-                .fillMaxSize()
-                .drawBehind {
-                    val p = burst.value
-                    if (p > 0f) {
-                        val tone = toneState.value
-                        drawRect(
-                            brush = Brush.radialGradient(
-                                0f to tone.copy(alpha = LAUNCH_ALPHA * (1f - p * 0.4f)),
-                                0.55f to tone.copy(alpha = LAUNCH_ALPHA * 0.35f),
-                                1f to Color.Transparent,
-                                center = Offset(size.width * 0.5f, size.height * 0.88f),
-                                radius = size.maxDimension * (0.2f + p * 1.1f)
-                            ),
-                            alpha = p.coerceIn(0f, 1f)
+                    } else {
+                        // ─────────────── مركز التحكم ───────────────
+                        LobbyControlCenter(
+                            section = section,
+                            onSection = { section = it },
+                            app = active,
+                            config = activeConfig ?: AppConfig(),
+                            panelEnabled = panelEnabled,
+                            onPanelEnabled = setPanel,
+                            onUpdate = { key, value ->
+                                active?.let { settingsViewModel.updateSetting(it.packageName, key, value) }
+                            },
+                            onOpenFull = { active?.let { navController.openAppSettings(it.packageName) } },
+                            prefs = lobbyPrefs,
+                            onPrefs = updatePrefs,
+                            apps = manageApps,
+                            manual = library.manual,
+                            excluded = library.excluded,
+                            onToggleGame = viewModel::membership,
+                            accent = toneState.value,
+                            modifier = Modifier
+                                .displayCutoutPadding()
+                                .padding(top = TopBarHeight)
                         )
                     }
                 }
-        )
+            }
+
+            // الشريط العلويّ ثابت فوق الصفحتين: تبويبات تنزلق مع السحب + كبسولة الحالة + أزرار.
+            Row(
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .fillMaxWidth()
+                    .displayCutoutPadding()
+                    .height(TopBarHeight)
+                    .padding(horizontal = MaxSpace.xxl)
+                    .lobbyIntro(intro, fromBelow = (-24).dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm)
+            ) {
+                LobbyTopTabs(
+                    labels = listOf(
+                        stringResource(R.string.lobby_tab_games),
+                        stringResource(R.string.lobby_tab_control)
+                    ),
+                    selected = rootState.currentPage,
+                    position = { rootState.currentPage + rootState.currentPageOffsetFraction },
+                    tone = { toneState.value },
+                    description = stringResource(R.string.lobby_tab_lobby),
+                    onSelect = { index -> scope.launch { rootState.animateScrollToPage(index) } }
+                )
+                Spacer(Modifier.weight(1f))
+                if (lobbyPrefs.showStatus) LobbyStatusCapsule()
+                LobbyRoundButton(
+                    icon = Icons.Rounded.Star,
+                    description = stringResource(R.string.lobby_favorites_filter),
+                    onClick = {
+                        tick()
+                        favoritesOnly = !favoritesOnly
+                    },
+                    selected = favoritesOnly,
+                    tone = toneState.value,
+                    cue = if (favoritesOnly) LobbyCue.Off else LobbyCue.On
+                )
+                LobbyRoundButton(
+                    icon = Icons.Rounded.Refresh,
+                    description = stringResource(R.string.gaming_refresh),
+                    onClick = { viewModel.refresh() }
+                )
+                LobbyRoundButton(
+                    icon = Icons.Rounded.Close,
+                    description = stringResource(R.string.lobby_close),
+                    onClick = { navController.navigateUp() }
+                )
+            }
+
+            Column(
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .displayCutoutPadding()
+                    .padding(top = TopBarHeight),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(MaxSpace.xs)
+            ) {
+                if (library.failed) LobbyNotice(stringResource(R.string.gaming_config_failed), caution = true)
+                if (launchFailed) LobbyNotice(stringResource(R.string.game_space_launch_failed), caution = true)
+                if (panelArmFailed) LobbyNotice(stringResource(R.string.lobby_panel_arm_failed), caution = true)
+            }
+
+            // طبقة الإطلاق: رسم فقط (لا مدخلات)، تُقرأ فيها `burst` في مرحلة الرسم فلا إعادة تركيب أثناء الحركة.
+            Box(
+                Modifier
+                    .fillMaxSize()
+                    .drawBehind {
+                        val p = burst.value
+                        if (p > 0f) {
+                            val tone = toneState.value
+                            drawRect(
+                                brush = Brush.radialGradient(
+                                    0f to tone.copy(alpha = LAUNCH_ALPHA * (1f - p * 0.4f)),
+                                    0.55f to tone.copy(alpha = LAUNCH_ALPHA * 0.35f),
+                                    1f to Color.Transparent,
+                                    center = Offset(size.width * 0.5f, size.height * 0.88f),
+                                    radius = size.maxDimension * (0.2f + p * 1.1f)
+                                ),
+                                alpha = p.coerceIn(0f, 1f)
+                            )
+                        }
+                    }
+            )
+
+            // الدخول السينمائيّ: أعلى طبقة فوق كل شيء (يستهلك اللمس ليُتخطّى)، ويُزال حين ينتهي.
+            if (entranceOn) {
+                LobbyEntrance(
+                    title = stringResource(R.string.game_space_title).uppercase(),
+                    skipLabel = stringResource(R.string.lobby_entrance_skip),
+                    tone = { toneState.value },
+                    skipSignal = entranceSkip,
+                    onFinished = { entranceDone = true }
+                )
+            }
+        }
     }
 }
 

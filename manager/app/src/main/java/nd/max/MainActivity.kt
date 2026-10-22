@@ -148,7 +148,15 @@ class MainActivity : ComponentActivity() {
         } else null
         // نيّة الودجة (WidgetKit): مسار شاشة مطلوب من الإجراء الخارجيّ — تُقرأ إلى الحالة
         // التي يقرؤها الملاح (والتي يحدّثها `onNewIntent` أيضًا فوق مهمة قائمة).
-        widgetRouteState.value = intent.getStringExtra(WidgetIntents.EXTRA_OPEN_ROUTE)
+        // **إطلاق فعليّ فقط (`savedInstanceState == null`)**: النشاط بلا `configChanges` فيُعاد إنشاؤه عند
+        // كل تغيّر في الاتجاه أو اللغة أو الوضع الداكن، والنيّة الأصلية تبقى في `getIntent()`. فلو قُرئ
+        // المسار في كل `onCreate` لأُعيد التوجيه إلى الشاشة المطلوبة بعد كل إعادة إنشاء — واللوبي بالذات
+        // يقلب الاتجاه عند الدخول ويعيده عند الخروج، فكان إغلاقه يعيدك إليه إلى الأبد. والإنشاء من حالة
+        // محفوظة (تدوير أو إعادة بعد قتل العملية) لا يحمل طلبًا جديدًا: الملاح يستعيد موضعه بنفسه،
+        // وأمّا الطلب الجديد على نشاط قائم فيصل من `onNewIntent` دائمًا.
+        if (savedInstanceState == null) {
+            widgetRouteState.value = intent.getStringExtra(WidgetIntents.EXTRA_OPEN_ROUTE)
+        }
         setContent {
             MaxManagerTheme {
                 MainScreen(
@@ -270,6 +278,7 @@ fun MainScreen(fromTileType: String? = null, widgetRoute: String? = null, widget
             WidgetIntents.ROUTE_STORAGE -> MaxDestination.StorageCare.route
             WidgetIntents.ROUTE_CONTROL -> MaxDestination.Control.route
             WidgetIntents.ROUTE_ISLAND -> MaxDestination.DynamicIsland.route
+            WidgetIntents.ROUTE_GAME_LOBBY -> MaxDestination.GameLobby.route
             else -> null
         }
         if (target != null) {
@@ -636,13 +645,10 @@ fun MainScreen(fromTileType: String? = null, widgetRoute: String? = null, widget
                                 Modifier
                             }
                         ),
-                    // **قسمٌ ← قسم بلا مشهد في الأربع (دخولًا وخروجًا ورجوعًا):** مقاعد الأقسام فارغة والحركة
-                    // كلها للـPager، فكان تلاشٍ وتحجيمٌ يعملان على لا شيء بعد استقرار كل سحب — إطاراتٌ
-                    // تُنفَق في اللحظة التي يبدأ فيها المستخدم سحبه التالي.
                     enterTransition = {
                         // مستوى الحركة يُقرأ **لحظة الانتقال** لا لحظة التركيب: لا حالة تُراقَب
                         // ولا إعادة رسم — الانتقال نفسه هو القارئ، فيسري الخيار فورًا.
-                        when (if (initialState.destination.route in primaryRoutes && targetState.destination.route in primaryRoutes) ThemeMotion.NONE else ThemeStudio.motion(settingsPrefs)) {
+                        when (ThemeStudio.motion(settingsPrefs)) {
                             // «بلا حركة»: التنقّل نفسه بلا مشهد.
                             ThemeMotion.NONE -> EnterTransition.None
                             // «هادئة»: تلاشٍ قصير وحده — بلا انزلاق ولا تحجيم.
@@ -671,7 +677,7 @@ fun MainScreen(fromTileType: String? = null, widgetRoute: String? = null, widget
                         }
                     },
                     exitTransition = {
-                        when (if (initialState.destination.route in primaryRoutes && targetState.destination.route in primaryRoutes) ThemeMotion.NONE else ThemeStudio.motion(settingsPrefs)) {
+                        when (ThemeStudio.motion(settingsPrefs)) {
                             ThemeMotion.NONE -> ExitTransition.None
                             ThemeMotion.CALM -> fadeOut(
                                 animationSpec = tween(140, easing = FastOutSlowInEasing)
@@ -688,7 +694,7 @@ fun MainScreen(fromTileType: String? = null, widgetRoute: String? = null, widget
                         }
                     },
                     popEnterTransition = {
-                        when (if (initialState.destination.route in primaryRoutes && targetState.destination.route in primaryRoutes) ThemeMotion.NONE else ThemeStudio.motion(settingsPrefs)) {
+                        when (ThemeStudio.motion(settingsPrefs)) {
                             ThemeMotion.NONE -> EnterTransition.None
                             ThemeMotion.CALM -> fadeIn(
                                 animationSpec = tween(180, easing = LinearOutSlowInEasing)
@@ -707,7 +713,7 @@ fun MainScreen(fromTileType: String? = null, widgetRoute: String? = null, widget
                         }
                     },
                     popExitTransition = {
-                        when (if (initialState.destination.route in primaryRoutes && targetState.destination.route in primaryRoutes) ThemeMotion.NONE else ThemeStudio.motion(settingsPrefs)) {
+                        when (ThemeStudio.motion(settingsPrefs)) {
                             ThemeMotion.NONE -> ExitTransition.None
                             ThemeMotion.CALM -> fadeOut(
                                 animationSpec = tween(140, easing = FastOutSlowInEasing)

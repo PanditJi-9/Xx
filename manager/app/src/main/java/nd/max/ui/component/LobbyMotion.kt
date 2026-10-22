@@ -65,12 +65,17 @@ internal fun lobbyLoop(
     )
 }
 
-/** مقدّمة الشاشة 0→1 في [MaxDuration.deliberate]؛ تُقرأ داخل [lobbyIntro] فقط. لحظة واحدة منسَّقة لا حركة في كل عنصر. */
+/**
+ * مقدّمة الشاشة 0→1 في [MaxDuration.deliberate]؛ تُقرأ داخل [lobbyIntro] فقط. لحظة واحدة منسَّقة لا حركة في كل عنصر.
+ *
+ * [hold] يُبقيها عند الصفر ريثما يعمل الدخول السينمائيّ فوق الشاشة، فإذا انتهى (`hold = false`) تنساب
+ * عناصر اللوبي إلى مواضعها خلف تلاشي الغطاء بدل أن تنتهي حركتها وراءه دون أن يراها أحد.
+ */
 @Composable
-fun rememberLobbyIntro(animate: Boolean): State<Float> {
+fun rememberLobbyIntro(animate: Boolean, hold: Boolean = false): State<Float> {
     val intro = remember { Animatable(if (animate) 0f else 1f) }
-    LaunchedEffect(animate) {
-        if (animate) intro.animateTo(1f, tween(MaxDuration.deliberate, easing = FastOutSlowInEasing))
+    LaunchedEffect(animate, hold) {
+        if (animate && !hold) intro.animateTo(1f, tween(MaxDuration.deliberate, easing = FastOutSlowInEasing))
     }
     return intro.asState()
 }

@@ -33,6 +33,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.AddToHomeScreen
 import androidx.compose.material.icons.rounded.Layers
 import androidx.compose.material.icons.rounded.RestartAlt
 import androidx.compose.material.icons.rounded.Tune
@@ -69,6 +70,7 @@ import androidx.compose.ui.unit.sp
 import nd.max.R
 import nd.max.core.gamespace.GameApp
 import nd.max.core.gamespace.HandleSize
+import nd.max.core.gamespace.LobbyCue
 import nd.max.core.gamespace.LobbyDepth
 import nd.max.core.gamespace.LobbyPrefsState
 import nd.max.core.gamespace.LobbySort
@@ -78,6 +80,7 @@ import nd.max.core.gamespace.lobbyEnumOr
 import nd.max.ui.component.AppIconImage
 import nd.max.ui.component.LobbyNotice
 import nd.max.ui.component.LobbyPalette
+import nd.max.ui.component.LocalLobbySounds
 import nd.max.ui.component.canvasScaleLabel
 import nd.max.ui.design.MaxDuration
 import nd.max.ui.design.MaxRadius
@@ -86,6 +89,8 @@ import nd.max.ui.design.MaxSpace
 import nd.max.ui.design.maxRadius
 import nd.max.ui.util.AppConfig
 import nd.max.ui.util.GamePanelPrefs
+import nd.max.ui.util.GameSpaceShortcutPinner
+import nd.max.ui.util.PinOutcome
 import nd.max.ui.util.canvasScaleOptions
 import nd.max.ui.util.getSupportedRefreshRates
 
@@ -214,6 +219,7 @@ private fun ControlSidebar(
                 )
             }
         }
+        val sounds = LocalLobbySounds.current
         LobbySection.entries.forEach { item ->
             val isSelected = item == selected
             Row(
@@ -227,7 +233,14 @@ private fun ControlSidebar(
                         if (isSelected) accent.copy(alpha = 0.60f) else Color.Transparent,
                         shape
                     )
-                    .selectable(selected = isSelected, role = Role.Tab, onClick = { onSelect(item) })
+                    .selectable(
+                        selected = isSelected,
+                        role = Role.Tab,
+                        onClick = {
+                            if (!isSelected) sounds.play(LobbyCue.Tap)
+                            onSelect(item)
+                        }
+                    )
                     .padding(horizontal = MaxSpace.md),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(MaxSpace.md)
@@ -510,6 +523,10 @@ private fun LobbyOptionsBody(
     prefs: LobbyPrefsState,
     onPrefs: ((LobbyPrefsState) -> LobbyPrefsState) -> Unit
 ) {
+    val context = LocalContext.current
+    val sounds = LocalLobbySounds.current
+    val shortcutLabel = stringResource(R.string.game_space_title)
+    var shortcutOutcome by remember { mutableStateOf<PinOutcome?>(null) }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -575,6 +592,18 @@ private fun LobbyOptionsBody(
                 onChange = { value -> onPrefs { it.copy(haptics = value) } }
             )
             LobbyToggleRow(
+                title = stringResource(R.string.lobby_row_sounds),
+                detail = stringResource(R.string.lobby_row_sounds_desc),
+                checked = prefs.sounds,
+                onChange = { value -> onPrefs { it.copy(sounds = value) } }
+            )
+            LobbyToggleRow(
+                title = stringResource(R.string.lobby_row_entrance),
+                detail = stringResource(R.string.lobby_row_entrance_desc),
+                checked = prefs.entrance,
+                onChange = { value -> onPrefs { it.copy(entrance = value) } }
+            )
+            LobbyToggleRow(
                 title = stringResource(R.string.lobby_row_awake),
                 detail = stringResource(R.string.lobby_row_awake_desc),
                 checked = prefs.keepScreenOn,
@@ -586,6 +615,34 @@ private fun LobbyOptionsBody(
                 checked = prefs.resumeLast,
                 onChange = { value -> onPrefs { it.copy(resumeLast = value) } }
             )
+        }
+        LobbySectionCard(stringResource(R.string.lobby_head_shortcut)) {
+            Text(
+                text = stringResource(R.string.lobby_shortcut_desc),
+                color = LobbyPalette.Steel,
+                fontSize = 12.sp
+            )
+            OutlinedButton(
+                onClick = {
+                    sounds.play(LobbyCue.Tap)
+                    shortcutOutcome = GameSpaceShortcutPinner.requestPin(context, shortcutLabel)
+                },
+                border = BorderStroke(MaxSize.hairlineBorder, LobbyPalette.Hairline),
+                modifier = Modifier.heightIn(min = MaxSize.minTouchTarget)
+            ) {
+                Icon(imageVector = Icons.Rounded.AddToHomeScreen, contentDescription = null, tint = LobbyPalette.Ink)
+                Text(
+                    text = stringResource(R.string.lobby_shortcut_add),
+                    color = LobbyPalette.Ink,
+                    modifier = Modifier.padding(start = MaxSpace.sm)
+                )
+            }
+            shortcutOutcome?.let { outcome ->
+                LobbyNotice(
+                    message = stringResource(outcome.messageRes()),
+                    caution = outcome == PinOutcome.Unsupported || outcome == PinOutcome.Failed
+                )
+            }
         }
         Text(
             text = stringResource(R.string.lobby_scope_note),
@@ -604,6 +661,14 @@ private fun LobbyOptionsBody(
             )
         }
     }
+}
+
+/** نصّ نتيجة طلب الاختصار؛ كل نتيجة تُقال صراحةً (لا «تمّ» عامّة) لأن قرار التثبيت للمشغّل لا لنا. */
+private fun PinOutcome.messageRes(): Int = when (this) {
+    PinOutcome.Requested -> R.string.lobby_shortcut_requested
+    PinOutcome.AlreadyPinned -> R.string.lobby_shortcut_exists
+    PinOutcome.Unsupported -> R.string.lobby_shortcut_unsupported
+    PinOutcome.Failed -> R.string.lobby_shortcut_failed
 }
 
 // ─────────────────────────────── قسم المكتبة ───────────────────────────────
@@ -734,6 +799,7 @@ private fun <T> LobbyChoiceRow(
     onSelect: (T) -> Unit
 ) {
     val shape = remember { RoundedCornerShape(MaxRadius.control) }
+    val sounds = LocalLobbySounds.current
     Column(verticalArrangement = Arrangement.spacedBy(MaxSpace.sm)) {
         Text(text = title, color = LobbyPalette.Ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm)) {
@@ -753,7 +819,14 @@ private fun <T> LobbyChoiceRow(
                             if (on) LobbyPalette.RedBright else LobbyPalette.Hairline,
                             shape
                         )
-                        .selectable(selected = on, role = Role.RadioButton, onClick = { onSelect(value) }),
+                        .selectable(
+                            selected = on,
+                            role = Role.RadioButton,
+                            onClick = {
+                                if (!on) sounds.play(LobbyCue.Tap)
+                                onSelect(value)
+                            }
+                        ),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
@@ -772,11 +845,19 @@ private fun <T> LobbyChoiceRow(
 /** صفّ تبديل بعنوان وشرح اختياريّ؛ الصفّ كلّه هدف اللمس. */
 @Composable
 private fun LobbyToggleRow(title: String, detail: String?, checked: Boolean, onChange: (Boolean) -> Unit) {
+    val sounds = LocalLobbySounds.current
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .heightIn(min = MaxSize.minTouchTarget)
-            .toggleable(value = checked, role = Role.Switch, onValueChange = onChange),
+            .toggleable(
+                value = checked,
+                role = Role.Switch,
+                onValueChange = { value ->
+                    sounds.play(if (value) LobbyCue.On else LobbyCue.Off)
+                    onChange(value)
+                }
+            ),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(MaxSpace.md)
     ) {

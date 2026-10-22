@@ -34,7 +34,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import nd.max.R
+import nd.max.core.gamespace.LobbyCue
 import nd.max.ui.component.LobbyPalette
+import nd.max.ui.component.LocalLobbySounds
 import nd.max.ui.design.MaxRadius
 import nd.max.ui.design.MaxSize
 import nd.max.ui.design.MaxSpace
@@ -77,6 +79,7 @@ internal fun LobbyOptionRow(
     selected: String,
     onSelect: (String) -> Unit
 ) {
+    val sounds = LocalLobbySounds.current
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(MaxSpace.lg)) {
         Text(
             text = title,
@@ -102,7 +105,14 @@ internal fun LobbyOptionRow(
                             if (isSelected) LobbyPalette.Hairline else Color.Transparent,
                             RoundedCornerShape(LobbyChipRadius)
                         )
-                        .selectable(selected = isSelected, role = Role.RadioButton, onClick = { onSelect(value) })
+                        .selectable(
+                            selected = isSelected,
+                            role = Role.RadioButton,
+                            onClick = {
+                                if (!isSelected) sounds.play(LobbyCue.Tap)
+                                onSelect(value)
+                            }
+                        )
                         .padding(horizontal = MaxSpace.lg),
                     contentAlignment = Alignment.Center
                 ) {

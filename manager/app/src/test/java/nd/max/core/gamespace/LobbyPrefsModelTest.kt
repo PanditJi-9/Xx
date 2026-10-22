@@ -35,6 +35,14 @@ class LobbyPrefsModelTest {
     }
 
     @Test
+    fun `sounds and the cinematic entrance are on by explicit owner request`() {
+        // استثناء مقصود من «الزينة مُطفأة» (ADR-12): طلب المالك ٢٠٢٦-١٠-٢١ الأصوات والدخول صراحةً.
+        val d = LobbyPrefsState()
+        assertTrue(d.sounds)
+        assertTrue(d.entrance)
+    }
+
+    @Test
     fun `depth strengths are ordered flat soft deep`() {
         assertTrue(LobbyDepth.Flat.strength < LobbyDepth.Soft.strength)
         assertTrue(LobbyDepth.Soft.strength < LobbyDepth.Deep.strength)

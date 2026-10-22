@@ -22,6 +22,8 @@ object LobbyPrefs {
     private const val KEY_SORT = "sort"
     private const val KEY_FLASH = "launch_flash"
     private const val KEY_HAPTICS = "haptics"
+    private const val KEY_SOUNDS = "sounds"
+    private const val KEY_ENTRANCE = "entrance"
     private const val KEY_AWAKE = "keep_screen_on"
     private const val KEY_RESUME = "resume_last"
     private const val KEY_LAST = "last_package"
@@ -40,6 +42,8 @@ object LobbyPrefs {
             sort = lobbyEnumOr(p.getString(KEY_SORT, null), LobbySort.entries, d.sort),
             launchFlash = p.getBoolean(KEY_FLASH, d.launchFlash),
             haptics = p.getBoolean(KEY_HAPTICS, d.haptics),
+            sounds = p.getBoolean(KEY_SOUNDS, d.sounds),
+            entrance = p.getBoolean(KEY_ENTRANCE, d.entrance),
             keepScreenOn = p.getBoolean(KEY_AWAKE, d.keepScreenOn),
             resumeLast = p.getBoolean(KEY_RESUME, d.resumeLast),
             lastPackage = p.getString(KEY_LAST, null)?.takeIf { it.isNotBlank() }
@@ -55,6 +59,8 @@ object LobbyPrefs {
         editor.putString(KEY_SORT, state.sort.name)
         editor.putBoolean(KEY_FLASH, state.launchFlash)
         editor.putBoolean(KEY_HAPTICS, state.haptics)
+        editor.putBoolean(KEY_SOUNDS, state.sounds)
+        editor.putBoolean(KEY_ENTRANCE, state.entrance)
         editor.putBoolean(KEY_AWAKE, state.keepScreenOn)
         editor.putBoolean(KEY_RESUME, state.resumeLast)
         val last = state.lastPackage
