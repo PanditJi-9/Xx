@@ -6,6 +6,11 @@
 >
 > This guide is for users flashing the module and for custom-ROM image modders copying files into
 > `product` and `system` images. It is **not** an AOSP source-build guide.
+>
+> This file sits at the **root of the module zip** (`README.md`) and is installed to
+> `/data/adb/modules/MaxManager/README.md`.
+>
+> هذا الملفّ في **جذر حزمة الوحدة** (`README.md`)، ويُثبَّت في `/data/adb/modules/MaxManager/README.md`.
 
 ---
 

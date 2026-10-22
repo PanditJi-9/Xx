@@ -228,6 +228,15 @@ object ZramHardwareBackend {
             }
         }
 
+        // **الضبط خطوة مستقلة، لا أثرًا جانبيًا:** بعد `swapoff` يبقى `disksize` مضبوطًا،
+        // و`disksize_store` يرفض الكتابة على جهازٍ مُهيَّأ (`EBUSY`). وكان غياب هذا السطر
+        // هو سبب «أي تغيير لا يعمل»: تفشل كتابة الحجم، ثم يعيد مسار الاستعادة الضبط
+        // والحجم القديم، فيرى المستخدم «رفضت النواة» مع الحجم القديم (`swap-restored`).
+        val reset = run("echo 1 > ${quote("$root/reset")}")
+        if (!reset.ok) {
+            return restoreThenFail(before, node, wasActive, Stage.Reset, reset.message, sizeBytes, algorithm)
+        }
+
         if (algoChanged) {
             val write = run("echo ${quote(algorithm!!)} > ${quote("$root/comp_algorithm")}")
             if (!write.ok) {
@@ -242,7 +251,9 @@ object ZramHardwareBackend {
             val write = run("echo $targetSize > ${quote("$root/disksize")}")
             val live = readState().sizeBytes
             if (!write.ok || live != targetSize) {
-                val why = write.message.ifBlank { "readback:$live" }
+                val why = write.message.ifBlank {
+                    "write-exit=${write.code} readback:$live"
+                }
                 return restoreThenFail(before, node, wasActive, Stage.Size, why, sizeBytes, algorithm)
             }
         }
