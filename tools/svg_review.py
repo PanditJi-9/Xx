@@ -89,6 +89,7 @@ def parse_texts(svg: str) -> list[dict]:
             "y": float(a("y", "0") or 0),
             "size": float(a("font-size", "16") or 16),
             "anchor": a("text-anchor", "start"),
+            "dir": a("direction", "ltr"),
             "family": a("font-family", "sans"),
         })
     return out
@@ -105,9 +106,14 @@ def span(t: dict, vw: float) -> tuple[float, float]:
     caps = sum(1 for c in letters if c.isupper()) / max(1, len(letters))
     adv = ADV_MONO if "mono" in t["family"] else (ADV_CAPS if caps > 0.7 else ADV_SANS)
     w = adv * t["size"] * len(t["txt"])
-    if t["anchor"] == "middle":
+    anchor = t["anchor"]
+    # في SVG يُقلب معنى start/end حين يكون الاتّجاه rtl (البداية = الطرف الأيمن) — ونسخ README
+    # العربيّة تعتمد ذلك، فيُقاس النصّ بمعناه لا بمعنى اللاتينيّ.
+    if t.get("dir") == "rtl" and anchor in ("start", "end"):
+        anchor = "end" if anchor == "start" else "start"
+    if anchor == "middle":
         return t["x"] - w / 2, t["x"] + w / 2
-    if t["anchor"] == "end":
+    if anchor == "end":
         return t["x"] - w, t["x"]
     return t["x"], t["x"] + w
 
@@ -463,9 +469,17 @@ def self_test() -> int:
          "بلاطة", True)
     case("دائرة كاملة خارج اللوحة", head + '<circle cx="200" cy="450" r="10"/></svg>',
          "دائرة كاملة", True)
+    case("نصّ rtl بمحاذاة end يمتدّ يمينًا خارج اللوحة",
+         head + '<text x="380" y="40" font-size="30" text-anchor="end" direction="rtl">'
+                'نصّ عربيّ طويل بما يكفي</text></svg>',
+         "خارج حدود اللوحة", True)
     # سلبية: الصحيح يجب ألّا يُبلَّغ عنه
     case("نصّ كبير يُقرأ", head + '<text x="20" y="40" font-size="30">readable</text></svg>',
          "غير مقروء على الهاتف", False)
+    case("نصّ rtl بمحاذاة start عند الحافة اليمنى يمتدّ يسارًا — سليم",
+         head + '<text x="380" y="40" font-size="30" direction="rtl">'
+                'نصّ عربيّ طويل بما يكفي</text></svg>',
+         "خارج حدود اللوحة", False)
     case("خلفية اللوحة ليست بلاطة مقصوصة",
          head + '<rect x="0" y="0" width="400" height="200"/></svg>', "بلاطة", False)
     case("دائرة تنزف عن عمد (توهّج)", head + '<circle cx="390" cy="100" r="112"/></svg>',

@@ -328,12 +328,12 @@ def assess(root: str = ROOT) -> tuple[list[str], dict]:
 
 
 def palette_dicts(root: str) -> list[dict]:
-    """اللوحتان المُعلَنتان للأصول — تُستوردان من المولّد نفسه، فليستا نسخة ثانية تُقارَن بنسخة."""
+    """لوحات الأصول المُعلَنة (التطبيق: DARK/LIGHT، والـREADME: SURFACE_DARK/SURFACE_LIGHT) — تُستوردان من المولّد نفسه، فليستا نسخة ثانية تُقارَن بنسخة."""
     sys.path.insert(0, os.path.join(root, "tools"))
     for mod in [m for m in sys.modules if m == "gen_readme_assets"]:
         del sys.modules[mod]  # الشجرة قد تُقاس أكثر من مرّة، والوحدة تُقرأ من القرص في كل مرّة
     import gen_readme_assets as gen  # noqa: E402
-    return [gen.DARK, gen.LIGHT]
+    return [gen.DARK, gen.LIGHT, gen.SURFACE_DARK, gen.SURFACE_LIGHT]
 
 
 def palette_under(root: str) -> set[str]:
@@ -353,7 +353,7 @@ def check_palette_tones(root: str, app_colours: set[str]) -> list[str]:
     """
     problems: list[str] = []
     for i, pal in enumerate(palette_dicts(root)):
-        mode = "DARK" if i == 0 else "LIGHT"
+        mode = ("DARK", "LIGHT", "SURFACE_DARK", "SURFACE_LIGHT")[min(i, 3)]
         for key, value in pal.items():
             if key.startswith("tone") and value.upper() not in app_colours:
                 problems.append(

@@ -49,6 +49,14 @@ LIGHT = dict(bg="#FFFFFF", panel="#F4F7FA", edge="#D3DDE5", ink="#12212B",
              shimmer="#0B7A59", tile="#FFFFFF",
              tonePositive="#0B6B4F", toneCaution="#8A5200", toneCritical="#9A1B1B")
 
+# سطح الـREADME له **تمييزه الخاصّ**: القارئ طلب ألّا يسيطر الأخضر على الصور. و`DARK`/`LIGHT` أعلاه
+# **مربوطتان بالتطبيق** (نغمة «الإيجابي» الخضراء ثابتة في `MaxTokens.kt` وتقاس بها بوّابة المتجر والوسم)
+# فلا تُمسّان؛ وهاتان اللوحتان تأخذانهما كما هما وتبدّلان **التمييز واللمعان فقط** إلى أزرق،
+# فتبقى نغمات الحالة (إيجابي · تحذير · حرج) على حالها حيث تعني حالة، ويزول الأخضر حيث كان زينة.
+# وكل رسم في `docs/assets/` يستهلك هاتين، وبوّابة `design_doc.py` تقيس ألوانه عليهما.
+SURFACE_DARK = dict(DARK, accent="#5AA9FF", shimmer="#BBDCFF")
+SURFACE_LIGHT = dict(LIGHT, accent="#1F6FEB", shimmer="#1558C0")
+
 SANS = "-apple-system, 'Segoe UI', Inter, Roboto, Helvetica, Arial, sans-serif"
 MONO = "'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace"
 
@@ -65,12 +73,18 @@ def esc(s):
     return (s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;"))
 
 
-def text(x, y, s, size, fill, anchor="start", weight=None, family=SANS, opacity=None):
+def text(x, y, s, size, fill, anchor="start", weight=None, family=SANS, opacity=None, rtl=False):
+    # عند `direction="rtl"` يُقلب معنى `start`/`end` في SVG (البداية = الطرف الأيمن). والمُستدعي
+    # يفكّر بالجهة الفيزيائيّة (`end` = محاذاة لليمين) والمساعد يترجمها، وبوّابة `svg_review`
+    # تقرأ `direction` فتقيس بالمعنى نفسه — فلا يُقاس نصّ عربيّ بمعنى اللاتينيّ.
+    if rtl:
+        anchor = {"start": "end", "end": "start"}.get(anchor, anchor)
     a = f' text-anchor="{anchor}"' if anchor != "start" else ""
     w = f' font-weight="{weight}"' if weight else ""
     o = f' opacity="{opacity}"' if opacity is not None else ""
+    d = ' direction="rtl"' if rtl else ""
     return (f'  <text x="{x:.1f}" y="{y:.1f}" font-size="{size}" fill="{fill}"'
-            f'{a}{w}{o} font-family="{family}">{esc(s)}</text>')
+            f'{a}{w}{o}{d} font-family="{family}">{esc(s)}</text>')
 
 
 def circle_arrow(x, y, angle_deg, fill, scale=1.0):
@@ -361,143 +375,557 @@ def max_ai(pal):
 
 
 # ═══════════════════════════════════════════════════════════════════════════
-# 3. banners — the hero, product words only
+# 3. banners — the hero (v2): product emblem in orbit, product words only
 # ═══════════════════════════════════════════════════════════════════════════
+def _measured():
+    """الأرقام المقيسة من الشجرة — فلا يُكتب رقم بيد في أصل. وإن غابت الأداة (شجرة مصغّرة في\n    فحص ذاتيّ) فالقيم الاحتياطيّة هي المقيسة يوم الكتابة، وبوّابة ⑪ تكشف تقادمها في اللافتة."""
+    try:
+        import sys as _sys
+        _sys.path.insert(0, os.path.join(ROOT, "tools"))
+        import readme_assets as _ra
+        return _ra.measure_tree()
+    except Exception:  # noqa: BLE001 — القياس تحسين لا شرط
+        return {"screens": 65, "locales": 84}
+
+
+def _fit(s, size, maxw, mono=False):
+    """يرفض نصًّا يتجاوز عرضه بتقدير البوّابة نفسه (`svg_review.span`) — فيُكتشف العطب عند التوليد."""
+    letters = [c for c in s if c.isalpha()]
+    caps = sum(1 for c in letters if c.isupper()) / max(1, len(letters))
+    adv = 0.6 if mono else (0.62 if caps > 0.7 else 0.52)
+    w = adv * size * len(s)
+    assert w <= maxw, f"نصّ أعرض من مساحته: {s!r} = {w:.0f} > {maxw:.0f}"
+    return s
+
+
+def _shield(cx, cy, s):
+    """درع المنتج — هندسته هي هندسة `ic-shield` مكبَّرة، حول مركز."""
+    def P(dx, dy):
+        return f"{cx + dx * s:.1f} {cy + dy * s:.1f}"
+    return (f"M{P(0, -34)} L{P(30, -23)} L{P(30, -1)} C{P(30, 15)} {P(18, 27)} {P(0, 33)} "
+            f"C{P(-18, 27)} {P(-30, 15)} {P(-30, -1)} L{P(-30, -23)} Z")
+
+
+def _sat(cx, cy, r, deg, size, fill, op=1.0):
+    a = math.radians(deg)
+    return (f'    <circle cx="{cx + r * math.cos(a):.1f}" cy="{cy + r * math.sin(a):.1f}" '
+            f'r="{size}" fill="{fill}" opacity="{op}"/>')
+
+
+def _spin(cx, cy, dur, reverse=False):
+    a, b = ("360", "0") if reverse else ("0", "360")
+    return (f'    <animateTransform attributeName="transform" type="rotate" '
+            f'values="{a} {cx} {cy};{b} {cx} {cy}" keyTimes="0;1" dur="{dur}s" '
+            f'repeatCount="indefinite"/>')
+
+
+def _twinkle(cx, cy, r, tone, begin, dur=5.0, lo=0.18, hi=0.9):
+    return "\n".join([
+        f'  <circle cx="{cx}" cy="{cy}" r="{r}" fill="{tone}" opacity="{lo}">',
+        f'    <animate attributeName="opacity" values="{lo};{hi};{lo}" keyTimes="0;0.5;1" '
+        f'dur="{dur}s" begin="{begin}s" repeatCount="indefinite"/>',
+        '  </circle>',
+    ])
+
+
 def banner(pal, dark=True):
-    """اللافتة — سطح منتج لا سطرا نصّ على مستطيل.
+    """اللافتة (الإصدار ٢) — اسم المنتج ورسالته على اليسار، وعلامته **في مدار** على اليمين.
 
-    **والعطب الذي أُصلح مقيس لا مُتخيَّل:** النسخة السابقة كانت ثلاثة أسطر نصّ على مستطيل مسطّح،
-    وفيها **ثلث أيمن فارغ لا يحمل شيئًا** إلا دائرتين بتعتيم ٧٪. أي أنّ أوّل ما يراه الزائر كان
-    نصًّا بلا علامة منتج، وصفحة كاملة من الرسم الهندسي لا يعرف منه أنّ للتطبيق هوية. فصارت
-    اللافتة مركّبة من ثلاث طبقات تعمل معًا: **لوح بعمق**، و**علامة المنتج** (الدرع والتأشير —
-    نفس مفردات الرماز في `ic-shield` و`ic-ask`، فلا تكون اللافتة عالمًا بصريًّا آخر)، و**إيقاع**
-    (شريط يطول ويثبت، وتأشير يُرسم، ونقطة تنبض). والنصّ يبقى البطل: لا يُزاحم، ولا تُوضع معلومة
-    هندسية عليه.
-
-    **وأرقام الاختبارات والبوّابات ليست هنا عمدًا** — هي حقائق هندسية وموضعها `docs/verification.md`،
-    فاللافتة ليست صفحة حالة.
-    """
-    W, H = 960, 280
+    الطبقات: لوح بعمق · هالتان تتنفّسان · **مدار** يدور (حلقة منقّطة بثلاثة توابع، وحلقة داخليّة\n    تدور عكسها) · الدرع والتأشير (نفس مفردات `ic-shield`/`ic-ask`) · لمعان يعبر اللوح مرّة كل\n    دورة · نجوم تومض بإزاحات مختلفة. والنصّ يبقى البطل: يدخل بالكشف ثم بالتلاشي، ولا شيء يمرّ\n    فوقه إلا لمعان بـ١٠٪.\n\n    **والقاعدة الصلبة:** كلّ حركة هنا زينة فوق قراءة صحيحة — بلا SMIL يبقى الاسم والرسالة والوسوم\n    كاملةً في مواضعها، والدرع والتأشير مرسومَين. والأرقام الظاهرة (شاشات) من `measure_tree` لا من اليد.\n    """
+    W, H = 960, 360
     uid = "bn"
+    cx, cy = 832, 182
+    meas = _measured()
     out = []
     out.append(f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" '
                f'width="{W}" height="{H}" role="img" aria-labelledby="bt bd">')
     out.append('  <title id="bt">MaxManager — performance control that asks before it acts</title>')
     out.append('  <desc id="bd">MaxManager, adaptive chip-aware performance control for rooted '
-               'Android, with Max AI and Max Atlas, in 84 languages, and with no telemetry.</desc>')
-    out.append(defs_panel(uid, pal))
-    # الاسم يُمحى إليه بالكشف لا بالظهور: `clipPath` يُجرَّد على GitHub إن جُرِّد، ومرجعٌ غير موجود
-    # في `clip-path` لا يقطع شيئًا — فالاسم يبقى **كاملًا ومرئيًّا** بلا الحركة. أي أنّ الزينة
-    # تُضاف فوق قراءة صحيحة، ولا يُبنى عليها.
+               'Android, with Max AI and Max Atlas, in 84 languages, and with no telemetry. '
+               'A shield with a tick turns in a slow orbit beside the name.</desc>')
     out.append('  <defs>')
+    out.append(f'    <linearGradient id="{uid}" x1="0" y1="0" x2="0" y2="1">')
+    out.append(f'      <stop offset="0" stop-color="{pal["panelTop"]}"/>')
+    out.append(f'      <stop offset="1" stop-color="{pal["panelBottom"]}"/>')
+    out.append('    </linearGradient>')
+    out.append(f'    <linearGradient id="{uid}-glare" x1="0" y1="0" x2="1" y2="0">')
+    out.append(f'      <stop offset="0" stop-color="{pal["shimmer"]}" stop-opacity="0"/>')
+    out.append(f'      <stop offset="0.5" stop-color="{pal["shimmer"]}" stop-opacity="0.11"/>')
+    out.append(f'      <stop offset="1" stop-color="{pal["shimmer"]}" stop-opacity="0"/>')
+    out.append('    </linearGradient>')
     out.append('    <clipPath id="bn-wipe">')
-    out.append('      <rect x="40" y="44" width="480" height="88">')
-    out.append('        <animate attributeName="width" values="0;480" keyTimes="0;1" '
+    out.append('      <rect x="40" y="44" width="520" height="96">')
+    out.append('        <animate attributeName="width" values="0;520" keyTimes="0;1" '
                'dur="1.3s" repeatCount="1" fill="freeze"/>')
     out.append('      </rect>')
     out.append('    </clipPath>')
     out.append('  </defs>')
     out.append(panel(uid, 0, 0, W, H, 22, pal))
-    # الحافة الداخليّة عند `y = 6` لا عند حدّ اللوح: البوّابة تشترط هامش `EDGE_MARGIN` (٤px)
-    # عن حدود الـ`viewBox`، وقد قاست الإصدار الأوّل منها على `y = 1.6` وأبلغته — فالحدّ البنيويّ
-    # عاد التصميم لا العكس.
     out.append(edge_light(34, 6, W - 68, pal))
-    out.append(breathe(838, 58, 150, pal["accent"], 0.06, 0.13, 9.0))
-    out.append(breathe(772, 238, 112, pal["steel"], 0.05, 0.11, 11.0))
+    out.append(breathe(cx, cy, 150, pal["accent"], 0.06, 0.14, 9.0))
+    if dark:  # على الفاتح يصير القرص الفولاذيّ بقعة رماديّة لا عمقًا
+        out.append(breathe(150, 330, 170, pal["steel"], 0.04, 0.09, 12.0))
 
-    out.append(f'  <circle cx="880" cy="140" r="62" fill="none" stroke="{pal["steel"]}" '
-               f'stroke-width="1.4" opacity="0.42"/>')
-    out.append(f'  <circle cx="880" cy="140" r="46" fill="none" stroke="{pal["edge"]}" '
-               f'stroke-width="1.4"/>')
-    out.append(f'  <circle cx="880" cy="140" r="38" fill="{pal["accent"]}" opacity="0.08">')
-    out.append('    <animate attributeName="opacity" values="0.06;0.14;0.06" '
+    # ── المدار ──────────────────────────────────────────────────────────
+    out.append(f'  <circle cx="{cx}" cy="{cy}" r="82" fill="none" stroke="{pal["edge"]}" '
+               f'stroke-width="1.6"/>')
+    out.append(f'  <circle cx="{cx}" cy="{cy}" r="60" fill="{pal["accent"]}" opacity="0.08">')
+    out.append('    <animate attributeName="opacity" values="0.06;0.15;0.06" '
                'keyTimes="0;0.5;1" dur="7s" repeatCount="indefinite"/>')
     out.append('  </circle>')
-    out.append(f'  <path d="M880 106 910 117v22c0 16-12 28-30 34-18-6-30-18-30-34v-22z" '
-               f'fill="none" stroke="{pal["steel"]}" stroke-width="2.6" opacity="0.85"/>')
-    out.append(draw_in("M866 140 876 150 896 128", pal["accent"], 4.4, 48))
-    out.append(tick(880, 78, 5.5, pal, dur=6.0))
-
-    out.append('  <g clip-path="url(#bn-wipe)">')
-    out.append(text(40, 112, "MaxManager", 60, pal["ink"], weight="800"))
+    out.append('  <g>')
+    out.append(_spin(cx, cy, 48))
+    out.append(f'    <circle cx="{cx}" cy="{cy}" r="116" fill="none" stroke="{pal["steel"]}" '
+               f'stroke-width="1.6" stroke-dasharray="2 9" stroke-linecap="round" opacity="0.55"/>')
+    out.append(_sat(cx, cy, 116, 205, 7, pal["accent"]))
+    out.append(_sat(cx, cy, 116, 325, 5.5, pal["steel"]))
+    out.append(_sat(cx, cy, 116, 95, 5, pal["clay"]))
     out.append('  </g>')
-    out.append(rule(40, 130, 96, pal, height=6))
-    out.append(text(40, 190, "Performance control that asks before it acts.",
-                    31, pal["steel"]))
-    out.append(text(40, 234, "Every switch you see works here — or it is not shown.",
-                    28, pal["muted"]))
+    out.append('  <g>')
+    out.append(_spin(cx, cy, 34, reverse=True))
+    out.append(f'    <circle cx="{cx}" cy="{cy}" r="94" fill="none" stroke="{pal["accent"]}" '
+               f'stroke-width="1.8" stroke-dasharray="16 22" stroke-linecap="round" opacity="0.5"/>')
+    out.append('  </g>')
+    out.append(f'  <path d="{_shield(cx, cy, 1.15)}" fill="{pal["panelBottom"]}" '
+               f'fill-opacity="0.55" stroke="{pal["steel"]}" stroke-width="3" '
+               f'stroke-linejoin="round" opacity="0.95"/>')
+    tk = (f"M{cx - 16:.1f} {cy + 2:.1f} L{cx - 4:.1f} {cy + 14:.1f} L{cx + 19:.1f} {cy - 12:.1f}")
+    out.append(draw_in(tk, pal["accent"], 5.2, 62))
+    for (x, y, r, tone, b, d) in [(716, 64, 2.6, pal["accent"], 0.0, 5.0),
+                                  (926, 78, 2.2, pal["steel"], 1.4, 6.0),
+                                  (930, 296, 2.8, pal["accent"], 2.2, 5.5),
+                                  (712, 304, 2.2, pal["clay"], 0.8, 6.5),
+                                  (790, 36, 2.0, pal["steel"], 3.0, 5.0),
+                                  (880, 328, 2.0, pal["accent"], 1.9, 6.0),
+                                  (698, 186, 2.4, pal["steel"], 2.6, 5.5)]:
+        out.append(_twinkle(x, y, r, tone, b, d))
+
+    # ── اللمعان العابر (يمرّ مرّة كل دورة، وقاعدته داخل اللوح) ─────────
+    # القاعدة شفّافة (`opacity="0"`): خارج لحظة العبور لا أثر للمعان، وبلا SMIL لا شريط ثابت على الحافة.
+    out.append(f'  <rect x="12" y="18" width="120" height="324" fill="url(#{uid}-glare)" opacity="0">')
+    out.append('    <animateTransform attributeName="transform" type="translate" '
+               'values="0 0;0 0;820 0;820 0" keyTimes="0;0.55;0.8;1" dur="11s" '
+               'repeatCount="indefinite"/>')
+    out.append('    <animate attributeName="opacity" values="0;0;1;1;0;0" '
+               'keyTimes="0;0.55;0.58;0.77;0.8;1" dur="11s" repeatCount="indefinite"/>')
+    out.append('  </rect>')
+
+    # ── النصّ ───────────────────────────────────────────────────────────
+    out.append('  <g clip-path="url(#bn-wipe)">')
+    out.append(text(40, 112, "MaxManager", 64, pal["ink"], weight="800"))
+    out.append('  </g>')
+    out.append(rule(40, 136, 96, pal, height=6))
+    for y, line, b, ks in [(196, "Performance control that", "0.5", "0;0.4;1"),
+                           (240, "asks before it acts.", "0.8", "0;0.4;1")]:
+        out.append('  <g>')
+        out.append(f'    <animate attributeName="opacity" values="0;0;1" keyTimes="{ks}" '
+                   f'dur="1.4s" begin="0s" fill="freeze"/>')
+        out.append("  " + text(40, y, _fit(line, 36, 560), 36, pal["steel"], weight="600"))
+        out.append('  </g>')
+
+    # ── الوسوم: أرقام مقيسة، ولا قياس عن بُعد ───────────────────────────
+    chips = [(f'{meas["screens"]} screens', pal["accent"]), ("84 languages", pal["steel"]),
+             ("No telemetry", pal["clay"])]
+    x = 40.0
+    for label, tone in chips:
+        out.append(chip(x, 268, label, 28, tone))
+        x += 0.56 * 28 * len(label) + 28 + 14
+    assert x - 14 < 700, "الوسوم تدخل منطقة المدار"
     out.append('</svg>')
     return "\n".join(out) + "\n"
 
 
 # ═══════════════════════════════════════════════════════════════════════════
-# 4. control-plane.svg — the one write path, in product words (no file names)
+# 3b. stats strip — أربعة أرقام، ولكل رقم رمز يتحرّك (EN / AR)
+# ═══════════════════════════════════════════════════════════════════════════
+def stats_strip(pal, lang="en"):
+    """شريط الأرقام: ٦٥ شاشة · ٨٤ لغة · عشرة مجالات · صفر قياس عن بُعد.
+
+    الأرقام **مقيسة** (`measure_tree`) حيث للشجرة قياس، والباقي ادّعاء صفحة معلَن (عشرة مجالات = المجالات\n    في `domains.svg`، والصفر = «بلا قياس عن بُعد»). والنصّ كلّه **مُوسَّط** — فنسخة العربيّة نفس الهندسة\n    بلا مرآة، والاتجاه يُعلَن على النصّ (`direction="rtl"`).
+    """
+    ar = lang == "ar"
+    meas = _measured()
+    W, H = 720, 224
+    uid = "st"
+    labels = ({"screens": "شاشة", "langs": "لغة", "domains": "مجالات ضبط", "telemetry": "قياس عن بُعد"}
+              if ar else
+              {"screens": "screens", "langs": "languages", "domains": "domains",
+               "telemetry": "telemetry"})
+    nums = [str(meas["screens"]), str(meas["locales"]), "10", "0"]
+    keys = ["screens", "langs", "domains", "telemetry"]
+    tw, gap, th, top = 162.0, 14.0, 188.0, 18.0
+    x0 = (W - (4 * tw + 3 * gap)) / 2
+    xs = [x0 + i * (tw + gap) for i in range(4)]
+    if ar:
+        xs = xs[::-1]
+    out = []
+    out.append(f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="{W}" '
+               f'height="{H}" role="img" aria-labelledby="{uid}t {uid}d">')
+    title = ("MaxManager بالأرقام" if ar else "MaxManager in four numbers")
+    desc = (f'{meas["screens"]} screens, {meas["locales"]} languages, ten control domains and '
+            'zero telemetry — measured from the source tree where the tree can measure.')
+    out.append(f'  <title id="{uid}t">{title}</title>')
+    out.append(f'  <desc id="{uid}d">{desc}</desc>')
+    out.append(defs_all(uid, pal, card=f"{uid}-card"))
+    out.append(panel(uid, 0, 0, W, H, 22, pal))
+    out.append(edge_light(34, 6, W - 68, pal))
+    out.append(breathe(W / 2, 30, 190, pal["accent"], 0.03, 0.08, 10.0))
+    for i, (x, key, num) in enumerate(zip(xs, keys, nums)):
+        # الترتيب المنطقيّ: شاشات · لغات · مجالات · قياس — والعربيّة تقرأ من اليمين
+        k = keys.index(key)
+        cx = x + tw / 2
+        out.append(f'  <rect x="{x:.1f}" y="{top:.0f}" width="{tw:.0f}" height="{th:.0f}" rx="18" '
+                   f'fill="url(#{uid}-card)" stroke="{pal["edge"]}" stroke-width="1.4"/>')
+        out.extend(_stat_glyph(k, cx, top + 44, pal, i))
+        tone = pal["accent"] if k == 3 else pal["ink"]
+        out.append(text(cx, top + 118, num, 54, tone, anchor="middle", weight="800"))
+        lab = _fit(labels[key], 22, tw - 14)
+        out.append(text(cx, top + 164, lab, 22, pal["muted"], anchor="middle", rtl=ar))
+    out.append('</svg>')
+    return "\n".join(out) + "\n"
+
+
+def _stat_glyph(k, cx, cy, pal, i):
+    steel, acc, clay = pal["steel"], pal["accent"], pal["clay"]
+    g = []
+    if k == 0:  # ثلاث شاشات: الوسطى مضاءة، والجانبان يتبادلان
+        for dx, w, h, dy, b in [(-34, 16, 28, 5, 0.0), (-11, 22, 38, 0, 0.6), (18, 16, 28, 5, 1.2)]:
+            g.append(f'  <rect x="{cx + dx:.1f}" y="{cy - 19 + dy:.1f}" width="{w}" height="{h}" '
+                     f'rx="4" fill="none" stroke="{steel}" stroke-width="2"/>')
+            g.append(f'  <rect x="{cx + dx + 3:.1f}" y="{cy - 16 + dy:.1f}" width="{w - 6}" '
+                     f'height="{h - 12}" rx="2" fill="{acc}" opacity="0.30">')
+            g.append(f'    <animate attributeName="opacity" values="0.25;0.85;0.25" '
+                     f'keyTimes="0;0.5;1" dur="4s" begin="{b}s" repeatCount="indefinite"/>')
+            g.append('  </rect>')
+    elif k == 1:  # كرة بخطَّي طول يتّسع ويضيق
+        g.append(f'  <circle cx="{cx}" cy="{cy}" r="22" fill="none" stroke="{steel}" stroke-width="2"/>')
+        g.append(f'  <ellipse cx="{cx}" cy="{cy}" rx="9" ry="22" fill="none" stroke="{acc}" stroke-width="2">')
+        g.append('    <animate attributeName="rx" values="9;20;9" keyTimes="0;0.5;1" dur="6s" '
+                 'repeatCount="indefinite"/>')
+        g.append('  </ellipse>')
+        g.append(f'  <path d="M{cx - 22} {cy} H{cx + 22}" fill="none" stroke="{steel}" '
+                 f'stroke-width="1.6" stroke-linecap="round"/>')
+    elif k == 2:  # عشر نقاط تُضاء بالتتابع
+        n = 0
+        for r in range(2):
+            for c in range(5):
+                g.append(f'  <circle cx="{cx - 24 + c * 12:.1f}" cy="{cy - 6 + r * 14:.1f}" r="4.4" '
+                         f'fill="{acc}" opacity="0.4">')
+                g.append(f'    <animate attributeName="opacity" values="0.35;1;0.35" '
+                         f'keyTimes="0;0.5;1" dur="3.6s" begin="{n * 0.22:.2f}s" '
+                         f'repeatCount="indefinite"/>')
+                g.append('  </circle>')
+                n += 1
+    else:  # بثّ مشطوب: حلقات متّحدة المركز وخطّ يُرسم فوقها
+        for r, op in [(8, 0.85), (16, 0.6), (24, 0.38)]:
+            g.append(f'  <circle cx="{cx}" cy="{cy}" r="{r}" fill="none" stroke="{steel}" '
+                     f'stroke-width="2" opacity="{op}"/>')
+        g.append(f'  <circle cx="{cx}" cy="{cy}" r="3.4" fill="{steel}"/>')
+        g.append(f'  <path d="M{cx - 25} {cy + 25} L{cx + 25} {cy - 25}" fill="none" stroke="{clay}" '
+                 f'stroke-width="3.4" stroke-linecap="round" stroke-dasharray="71" '
+                 f'stroke-dashoffset="0">')
+        g.append('    <animate attributeName="stroke-dashoffset" values="71;0;0;71" '
+                 'keyTimes="0;0.2;0.85;1" dur="7s" repeatCount="indefinite"/>')
+        g.append('  </path>')
+    return g
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# 3c. pillars — أربعة مبادئ بطاقات (EN / AR)
+# ═══════════════════════════════════════════════════════════════════════════
+PILLARS = {
+    "en": [
+        ("Absent, not disabled",
+         ["A control your kernel", "does not expose is not", "on the screen at all."]),
+        ("Verified, not assumed",
+         ["Every write is read back.", "A change that did not hold", "is reported as a failure."]),
+        ("Honest about unknowns",
+         ["When it does not know,", "it says status_unknown —", "never a plausible zero."]),
+        ("Nothing runs unseen",
+         ["Engines stay off until you", "enable them. Every write", "uses one audited path."]),
+    ],
+    "ar": [
+        ("غائب لا معطَّل",
+         ["الضابط الذي لا تكشفه", "نواتك لا يظهر على", "الشاشة أصلًا."]),
+        ("مُثبَّت لا مُفترَض",
+         ["كل كتابة تُقرأ بعد حفظها،", "والتغيير الذي لم يستقرّ", "يُبلَّغ عنه كفشل."]),
+        ("صريح حين لا يعلم",
+         ["حين لا يعلم يقول", "status_unknown", "لا صفرًا معقولًا قط."]),
+        ("لا شيء خلف ظهرك",
+         ["المحرّكات مطفأة حتى", "تشغّلها، وكل كتابة تمرّ", "بمسار واحد مُدقَّق."]),
+    ],
+}
+
+
+def pillars(pal, lang="en"):
+    ar = lang == "ar"
+    W = 720
+    cw, ch, gap, x0, y0, pad = 342.0, 222.0, 12.0, 12.0, 14.0, 26.0
+    H = int(y0 + 2 * ch + gap + 14)
+    uid = "pl"
+    out = []
+    out.append(f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="{W}" '
+               f'height="{H}" role="img" aria-labelledby="{uid}t {uid}d">')
+    out.append(f'  <title id="{uid}t">' + ("أربعة مبادئ" if ar else "Four rules the app keeps") + '</title>')
+    out.append(f'  <desc id="{uid}d">' + (
+        "غائب لا معطَّل؛ مُثبَّت لا مُفترَض؛ صريح حين لا يعلم؛ لا شيء خلف ظهرك."
+        if ar else
+        "Absent, not disabled; verified, not assumed; honest about unknowns; "
+        "nothing runs unseen.") + '</desc>')
+    out.append(defs_all(uid, pal, card=f"{uid}-card"))
+    out.append(panel(uid, 0, 0, W, H, 22, pal))
+    out.append(edge_light(34, 6, W - 68, pal))
+    out.append(breathe(W - 90, 40, 170, pal["accent"], 0.03, 0.08, 11.0))
+    cards = PILLARS[lang]
+    for i, (title, lines) in enumerate(cards):
+        r, c = divmod(i, 2)
+        if ar:
+            c = 1 - c
+        x = x0 + c * (cw + gap)
+        y = y0 + r * (ch + gap)
+        out.append(f'  <rect x="{x:.1f}" y="{y:.1f}" width="{cw:.0f}" height="{ch:.0f}" rx="18" '
+                   f'fill="url(#{uid}-card)" stroke="{pal["edge"]}" stroke-width="1.4"/>')
+        gx = (x + cw - pad - 24) if ar else (x + pad + 24)
+        out.extend(_pillar_glyph(i, gx, y + 48, pal))
+        tx = (x + cw - pad) if ar else (x + pad)
+        anchor = "end" if ar else "start"
+        out.append(text(tx, y + 116, _fit(title, 25, cw - 2 * pad), 25, pal["ink"],
+                        anchor=anchor, weight="700", rtl=ar))
+        for j, line in enumerate(lines):
+            out.append(text(tx, y + 150 + j * 27, _fit(line, 21, cw - 2 * pad), 21, pal["muted"],
+                            anchor=anchor, rtl=ar))
+    out.append('</svg>')
+    return "\n".join(out) + "\n"
+
+
+def _pillar_glyph(i, gx, gy, pal):
+    steel, acc = pal["steel"], pal["accent"]
+    g = []
+    if i == 0:  # مفتاح يتلاشى: غائب لا معطَّل
+        g.append('  <g>')
+        g.append('    <animate attributeName="opacity" values="1;0.22;1" keyTimes="0;0.5;1" '
+                 'dur="5s" repeatCount="indefinite"/>')
+        g.append(f'    <rect x="{gx - 24:.1f}" y="{gy - 13:.1f}" width="48" height="26" rx="13" '
+                 f'fill="none" stroke="{steel}" stroke-width="2.2" stroke-dasharray="5 4"/>')
+        g.append(f'    <circle cx="{gx - 11:.1f}" cy="{gy:.1f}" r="7.5" fill="{steel}" opacity="0.7"/>')
+        g.append('  </g>')
+    elif i == 1:  # تأشير يُرسم داخل حلقة: مقروء بعد الكتابة
+        g.append(f'  <circle cx="{gx:.1f}" cy="{gy:.1f}" r="22" fill="none" stroke="{steel}" '
+                 f'stroke-width="2.2"/>')
+        g.append(draw_in(f"M{gx - 10:.1f} {gy:.1f} L{gx - 3:.1f} {gy + 8:.1f} L{gx + 11:.1f} {gy - 9:.1f}",
+                         acc, 4, 38))
+    elif i == 2:  # علامة استفهام داخل وسم: مجهول لا صفر
+        g.append(f'  <rect x="{gx - 24:.1f}" y="{gy - 18:.1f}" width="48" height="36" rx="18" '
+                 f'fill="{acc}" opacity="0.10">')
+        g.append('    <animate attributeName="opacity" values="0.07;0.2;0.07" keyTimes="0;0.5;1" '
+                 'dur="4.5s" repeatCount="indefinite"/>')
+        g.append('  </rect>')
+        g.append(f'  <rect x="{gx - 24:.1f}" y="{gy - 18:.1f}" width="48" height="36" rx="18" '
+                 f'fill="none" stroke="{acc}" stroke-width="1.8" opacity="0.7"/>')
+        g.append(text(gx, gy + 9, "?", 26, acc, anchor="middle", weight="800"))
+    else:  # قفل: مسار واحد مُدقَّق
+        g.append(f'  <rect x="{gx - 15:.1f}" y="{gy - 3:.1f}" width="30" height="24" rx="6" '
+                 f'fill="{acc}" fill-opacity="0.12" stroke="{steel}" stroke-width="2.2"/>')
+        g.append(f'  <path d="M{gx - 8:.1f} {gy - 3:.1f} V{gy - 10:.1f} Q{gx - 8:.1f} {gy - 21:.1f} '
+                 f'{gx:.1f} {gy - 21:.1f} Q{gx + 8:.1f} {gy - 21:.1f} {gx + 8:.1f} {gy - 10:.1f} '
+                 f'V{gy - 3:.1f}" fill="none" stroke="{steel}" stroke-width="2.2" '
+                 f'stroke-linecap="round"/>')
+        g.append(f'  <circle cx="{gx:.1f}" cy="{gy + 9:.1f}" r="3.2" fill="{acc}">')
+        g.append('    <animate attributeName="opacity" values="1;0.35;1" keyTimes="0;0.5;1" '
+                 'dur="3.5s" repeatCount="indefinite"/>')
+        g.append('  </circle>')
+    return g
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# 3d. install-flow — ثلاث خطوات ونقطة تعبرها (EN / AR)
+# ═══════════════════════════════════════════════════════════════════════════
+INSTALL = {
+    "en": [("Flash", ["in Magisk or", "KernelSU"]),
+           ("Reboot", ["Fully", "reversible"]),
+           ("Grant root", ["Accept the", "root prompt"]),
+           ("Open the app", ["Setup reads", "your device"])],
+    "ar": [("افلش", ["في Magisk أو", "KernelSU"]),
+           ("أعد التشغيل", ["قابل للإزالة", "كاملًا"]),
+           ("امنحه الجذر", ["اقبل طلب", "الجذر"]),
+           ("افتح التطبيق", ["الإعداد يقرأ", "جهازك"])],
+}
+
+
+def install_flow(pal, lang="en"):
+    """أربع خطوات: فلاش ← إعادة تشغيل ← منح الجذر ← فتح التطبيق، ونقطة تعبرها وتقف عند كل واحدة."""
+    ar = lang == "ar"
+    W, H = 720, 236
+    uid = "in"
+    xs = [108.0, 276.0, 444.0, 612.0]
+    if ar:
+        xs = xs[::-1]
+    cy, rr = 72.0, 32.0
+    steps = INSTALL[lang]
+    out = []
+    out.append(f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="{W}" '
+               f'height="{H}" role="img" aria-labelledby="{uid}t {uid}d">')
+    out.append(f'  <title id="{uid}t">' + ("التثبيت في أربع خطوات" if ar else "Install in four steps") + '</title>')
+    out.append(f'  <desc id="{uid}d">' + (
+        "افلش الوحدة في Magisk أو KernelSU، ثم أعد التشغيل، ثم امنح MaxManager الجذر حين "
+        "يطلبه مدير الجذر، ثم افتح التطبيق وأكمل الإعداد."
+        if ar else
+        "Flash the module in Magisk or KernelSU, reboot, grant MaxManager root when your root "
+        "manager asks, then open the app and walk through setup.") + '</desc>')
+    out.append(defs_all(uid, pal))
+    out.append(panel(uid, 0, 0, W, H, 22, pal))
+    out.append(edge_light(34, 6, W - 68, pal))
+    out.append(breathe(W / 2, 80, 200, pal["accent"], 0.03, 0.08, 10.0))
+    # الوصلات: خطّ متقطّع يجري من خطوة إلى التالية (الاتجاه = اتجاه الخطّ)
+    for a_, b_ in zip(xs, xs[1:]):
+        sgn = 1 if b_ > a_ else -1
+        out.append(f'  <path d="M{a_ + sgn * (rr + 6):.1f} {cy:.1f} H{b_ - sgn * (rr + 6):.1f}" '
+                   f'fill="none" stroke="{pal["steel"]}" stroke-width="2.6" stroke-linecap="round" '
+                   f'stroke-dasharray="4 10" stroke-dashoffset="0" opacity="0.8">')
+        out.append('    <animate attributeName="stroke-dashoffset" values="0;-28" keyTimes="0;1" '
+                   'dur="1.6s" repeatCount="indefinite"/>')
+        out.append('  </path>')
+    # النقطة العابرة: تبدأ من الخطوة الأولى وتمرّ بالأربع، ثم تبقى لحظة عند الأخيرة
+    out.append(f'  <circle cx="{xs[0]:.1f}" cy="{cy:.1f}" r="6.5" fill="{pal["accent"]}">')
+    out.append(f'    <animate attributeName="cx" '
+               f'values="{xs[0]:.1f};{xs[1]:.1f};{xs[2]:.1f};{xs[3]:.1f};{xs[3]:.1f}" '
+               f'keyTimes="0;0.27;0.54;0.81;1" dur="8s" repeatCount="indefinite"/>')
+    out.append('  </circle>')
+    for i, (x, (title, sub)) in enumerate(zip(xs, steps)):
+        out.append(f'  <circle cx="{x:.1f}" cy="{cy:.1f}" r="{rr:.0f}" fill="{pal["panelBottom"]}" '
+                   f'stroke="{pal["accent"]}" stroke-width="2.4"/>')
+        out.append(f'  <circle cx="{x:.1f}" cy="{cy:.1f}" r="{rr - 4:.0f}" fill="{pal["accent"]}" opacity="0">')
+        # قمّة التوهّج عند وصول النقطة: 0.27 × 8 = 2.16s بين خطوة وأخرى، والبدء السالب يُزيح الطور
+        out.append(f'    <animate attributeName="opacity" values="0;0.3;0" keyTimes="0;0.5;1" '
+                   f'dur="8s" begin="{-4 + 2.16 * i:.2f}s" repeatCount="indefinite"/>')
+        out.append('  </circle>')
+        out.append(text(x, cy + 11, str(i + 1), 30, pal["ink"], anchor="middle", weight="800"))
+        out.append(text(x, 152, _fit(title, 24, 162), 24, pal["ink"], anchor="middle",
+                        weight="700", rtl=ar))
+        for j, line in enumerate(sub):
+            out.append(text(x, 184 + j * 26, _fit(line, 21, 162), 21, pal["muted"],
+                            anchor="middle", rtl=ar))
+    out.append('</svg>')
+    return "\n".join(out) + "\n"
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# 3e. divider — فاصل بين الأقسام: خطّ ونبضة تعبره
+# ═══════════════════════════════════════════════════════════════════════════
+def divider(pal):
+    W, H = 960, 28
+    uid = "dv"
+    out = []
+    out.append(f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" width="{W}" '
+               f'height="{H}" role="img" aria-labelledby="{uid}t {uid}d">')
+    out.append(f'  <title id="{uid}t">Section divider</title>')
+    out.append(f'  <desc id="{uid}d">A thin line with a pulse travelling along it and a small '
+               'mark in the middle.</desc>')
+    out.append('  <defs>')
+    out.append(f'    <linearGradient id="{uid}-line" x1="0" y1="0" x2="1" y2="0">')
+    out.append(f'      <stop offset="0" stop-color="{pal["steel"]}" stop-opacity="0"/>')
+    out.append(f'      <stop offset="0.25" stop-color="{pal["steel"]}" stop-opacity="0.55"/>')
+    out.append(f'      <stop offset="0.5" stop-color="{pal["accent"]}" stop-opacity="0.9"/>')
+    out.append(f'      <stop offset="0.75" stop-color="{pal["steel"]}" stop-opacity="0.55"/>')
+    out.append(f'      <stop offset="1" stop-color="{pal["steel"]}" stop-opacity="0"/>')
+    out.append('    </linearGradient>')
+    out.append('  </defs>')
+    out.append(f'  <rect x="40" y="13" width="880" height="2" rx="1" fill="url(#{uid}-line)"/>')
+    out.append(f'  <circle cx="480" cy="14" r="7" fill="none" stroke="{pal["accent"]}" stroke-width="1.8"/>')
+    out.append(f'  <circle cx="480" cy="14" r="3" fill="{pal["accent"]}">')
+    out.append('    <animate attributeName="opacity" values="1;0.35;1" keyTimes="0;0.5;1" '
+               'dur="4s" repeatCount="indefinite"/>')
+    out.append('  </circle>')
+    out.append(f'  <circle cx="450" cy="14" r="2" fill="{pal["steel"]}" opacity="0.7"/>')
+    out.append(f'  <circle cx="510" cy="14" r="2" fill="{pal["steel"]}" opacity="0.7"/>')
+    out.append(f'  <circle cx="40" cy="14" r="4.5" fill="{pal["accent"]}" opacity="0">')
+    out.append('    <animate attributeName="cx" values="40;920" keyTimes="0;1" dur="7s" '
+               'repeatCount="indefinite"/>')
+    out.append('    <animate attributeName="opacity" values="0;0.95;0.95;0" '
+               'keyTimes="0;0.12;0.88;1" dur="7s" repeatCount="indefinite"/>')
+    out.append('  </circle>')
+    out.append('</svg>')
+    return "\n".join(out) + "\n"
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# 4. control-plane.svg — one road for every change, in product words (no file names)
 # ═══════════════════════════════════════════════════════════════════════════
 def control_plane(pal):
-    W, H = 720, 510
-    steps = [("Your screen", "your tap"),
-             ("One arbiter", "one owner"),
-             ("Root bridge", "the border"),
-             ("Kernel", "answers")]
+    """طريق واحد لكل تغيير: لمسة ← مالك واحد ← كتابة بالجذر ← قراءة مرتدّة، ثم إحدى نتيجتين.
+
+    **المحتوى كُتب للقارئ لا للمهندس:** كل بطاقة تقول ما يحدث له (لمسته، من يقرّر، أين تُكتب، هل ثبتت)،
+    وتنتهي بنتيجتين صريحتين: ثبت فيبقى، أو لم يثبت فيُبلَّغ عنه ويُتراجع. وبلا أسماء ملفّات ولا كلام عن
+    الاختبارات. والحركة زينة فوق قراءة صحيحة: نقطة تعبر سكّة فوق البطاقات، وتتوهّج كل بطاقة حين تبلغها.
+    """
+    W, H = 720, 528
+    steps = [("You tap", ["a switch or", "a slider"]),
+             ("One owner", ["decides if", "it is safe"]),
+             ("Root write", ["one audited", "door"]),
+             ("Read back", ["did the", "change hold?"])]
     out = []
     out.append(f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" '
                f'width="{W}" height="{H}" role="img" aria-labelledby="ct cd">')
-    out.append('  <title id="ct">One write path</title>')
-    out.append('  <desc id="cd">Every change goes through one arbiter to a single root bridge, and the '
-               'device is read back afterwards. A screen can never write to the kernel directly.</desc>')
+    out.append('  <title id="ct">One road for every change</title>')
+    out.append('  <desc id="cd">You tap; one owner decides whether it is safe; a single audited root '
+               'write applies it; the device is read back. If the change held it stays; if not it is '
+               'reported and undone. No screen can write to the kernel by itself.</desc>')
     out.append(defs_all("cp", pal, card="cp-card"))
     out.append(panel("cp", 0, 0, W, H, 22, pal))
     out.append(edge_light(34, 6, W - 68, pal))
-    out.append(breathe(614, 74, 152, pal["accent"], 0.04, 0.09, 10.0))
-    out.append(text(36, 62, "One write path", 38, pal["ink"], weight="700"))
-    out.append(text(36, 96, "Nothing touches the kernel behind your back.", 22, pal["muted"]))
+    out.append(breathe(614, 74, 152, pal["accent"], 0.04, 0.10, 10.0))
+    out.append(text(36, 62, "One road for every change", 36, pal["ink"], weight="700"))
+    out.append(text(36, 98, "Nothing touches the kernel behind your back.", 22, pal["muted"]))
 
-    bw, gap, bh, by = 156.0, 18.0, 116.0, 132.0
+    bw, gap, bh, by = 156.0, 18.0, 150.0, 140.0
+    xs = [21 + i * (bw + gap) for i in range(4)]
+    rail_y = by - 14
+    out.append(f'  <path d="M{xs[0] + bw / 2:.1f} {rail_y:.1f} H{xs[3] + bw / 2:.1f}" fill="none" '
+               f'stroke="{pal["steel"]}" stroke-width="2.2" stroke-linecap="round" '
+               f'stroke-dasharray="4 9" opacity="0.7"/>')
+    out.append(f'  <circle cx="{xs[0] + bw / 2:.1f}" cy="{rail_y:.1f}" r="6" fill="{pal["accent"]}">')
+    out.append(f'    <animate attributeName="cx" values="{";".join(f"{x + bw / 2:.1f}" for x in xs)};'
+               f'{xs[3] + bw / 2:.1f}" keyTimes="0;0.27;0.54;0.81;1" dur="7s" '
+               f'repeatCount="indefinite"/>')
+    out.append('  </circle>')
     for i, (label, caption) in enumerate(steps):
-        x = 30 + i * (bw + gap)
+        x = xs[i]
         out.append(f'  <rect x="{x:.1f}" y="{by:.1f}" width="{bw:.1f}" height="{bh:.0f}" rx="16" '
                    f'fill="url(#cp-card)" stroke="{pal["edge"]}"/>')
-        out.append(text(x + bw / 2, by + 50, label, 22, pal["ink"], anchor="middle", weight="600"))
-        out.append(text(x + bw / 2, by + 86, caption, 21, pal["muted"], anchor="middle"))
+        out.append(f'  <rect x="{x + 1:.1f}" y="{by + 1:.1f}" width="{bw - 2:.1f}" height="{bh - 2:.0f}" '
+                   f'rx="15" fill="{pal["accent"]}" opacity="0">')
+        out.append(f'    <animate attributeName="opacity" values="0;0.14;0" keyTimes="0;0.5;1" '
+                   f'dur="7s" begin="{-3.5 + 1.89 * i:.2f}s" repeatCount="indefinite"/>')
+        out.append('  </rect>')
+        out.append(f'  <circle cx="{x + 28:.1f}" cy="{by + 28:.1f}" r="12" fill="none" '
+                   f'stroke="{pal["accent"]}" stroke-width="2"/>')
+        out.append(text(x + 28, by + 36, str(i + 1), 21, pal["accent"], anchor="middle", weight="700"))
+        out.append(text(x + bw / 2, by + 84, _fit(label, 24, bw - 16), 24, pal["ink"],
+                        anchor="middle", weight="700"))
+        for j, line in enumerate(caption):
+            out.append(text(x + bw / 2, by + 114 + j * 25, _fit(line, 21, bw - 16), 21, pal["muted"],
+                            anchor="middle"))
         if i < 3:
             ax = x + bw + gap / 2
-            out.append(f'  <path d="M{ax-7:.1f},{by + bh/2:.1f} L{ax+5:.1f},{by + bh/2:.1f} '
-                       f'L{ax:.1f},{by + bh/2 - 7:.1f} Z" fill="{pal["steel"]}"/>')
+            out.append(f'  <path d="M{ax - 6:.1f},{by + 28:.1f} L{ax + 5:.1f},{by + 28:.1f} '
+                       f'L{ax - 0.5:.1f},{by + 21:.1f} Z" fill="{pal["steel"]}"/>')
 
-    # the read-back loop, drawn as a return arc
-    ry = by + bh + 40
-    # **ونقطة تحكّم القوس كانت تقطع جملة العودة** — عطب مقيس لا مذوق.
-    #
-    # القوس يبدأ وينتهي عند `by + bh + 8` = 256، وأدنى نقطة له = `s + 0.75·(c − s)`.
-    # ونقطة التحكّم `ry + 40` = 328 تعطي أدنى نقطة **310**، وصندوق جملة العودة يقابلها
-    # `306.2..327.2` (سطر أساس 322 وحجم 21) ⇒ **المسار يمرّ في وسط الجملة**: قِيس فعليًّا
-    # x 291.7..446.3 · y 307.8..310.0. وبـ`by + bh + 36` = 284 تكون الأدنى **277**،
-    # أي فرجة **29px** فوق الجملة وتحت البطاقات (248).
-    #
-    # **ولم تُكشف بأداة:** `svg_review` تشترط «نصّان على خطّ أساس واحد لا يتداخلان» — فهي
-    # تقيس نصًّا مع نصّ، ولا تقيس **مسارًا يمرّ في نصّ**؛ وهذا الصنف كان يمرّ صامتًا في كل
-    # تشغيل حتّى رآه المالك بعينه. وقيست الـSVG الإحدى عشرة الأخرى فكانت نظيفة.
-    arc_ctrl_y = by + bh + 36
-    # ومسار العودة **يسير**: تحريك `stroke-dashoffset` على مسار منقّط يُبحر بالنقاط من النواة إلى
-    # الشاشة — وهي بعينها القراءة المرتدّة التي يعد بها الرسم. و`<animate>` **ابنٌ للمسار** لا
-    # عنصرًا مستقلًّا (القاعدة ⑤: المستقلّ يُجرَّد على GitHub فيُهمل بصمت). والساكن صحيح: بلا SMIL
-    # تبقى النقاط منقّطة في مواضعها بإزاحة صفر.
-    out.append(f'  <path d="M{30 + 3*(bw+gap) + bw/2:.1f},{by + bh + 8:.1f} '
-               f'C{30 + 3*(bw+gap) + bw/2:.1f},{arc_ctrl_y:.1f} {30 + bw/2:.1f},{arc_ctrl_y:.1f} '
-               f'{30 + bw/2:.1f},{by + bh + 8:.1f}" fill="none" stroke="{pal["accent"]}" '
-               f'stroke-width="2" stroke-dasharray="6 6">')
-    out.append('    <animate attributeName="stroke-dashoffset" values="0;-24" keyTimes="0;1" '
-               'dur="1.6s" repeatCount="indefinite"/>')
-    out.append('  </path>')
-    out.append(text(W / 2, ry + 34, "then read back — a change that did not hold is not a success",
-                    21, pal["accent"], anchor="middle"))
-
-    ys = ry + 74
-    out.append(f'  <rect x="30" y="{ys:.1f}" width="{W-60:.0f}" height="112" rx="14" '
-               f'fill="url(#ma-card)" stroke="{pal["edge"]}"/>')
-    out.append(text(52, ys + 38, "There is no shortcut", 21, pal["clay"], weight="700"))
-    out.append(text(52, ys + 68, "no screen can write to the kernel itself,", 21, pal["muted"]))
-    out.append(text(52, ys + 96, "and a test fails the build if one ever does", 21, pal["muted"]))
+    # ── النتيجتان ──
+    cy0 = by + bh + 34
+    out.append(text(W / 2, cy0, "Then one of two things happens", 21, pal["steel"], anchor="middle"))
+    cw, ch = 333.0, 118.0
+    cards = [(21.0, "It held", ["The change stays,", "and the app says so."], pal["accent"]),
+             (366.0, "It did not hold", ["Reported as a failure,", "then undone."], pal["clay"])]
+    for k, (x, title, lines, tone) in enumerate(cards):
+        y = cy0 + 20
+        out.append(f'  <rect x="{x:.0f}" y="{y:.0f}" width="{cw:.0f}" height="{ch:.0f}" rx="14" '
+                   f'fill="url(#cp-card)" stroke="{pal["edge"]}"/>')
+        out.append(f'  <rect x="{x + 18:.0f}" y="{y + 20:.0f}" width="5" height="26" rx="2.5" fill="{tone}"/>')
+        out.append(text(x + 36, y + 42, _fit(title, 24, cw - 56), 24, tone, weight="700"))
+        for j, line in enumerate(lines):
+            out.append(text(x + 36, y + 72 + j * 26, _fit(line, 21, cw - 56), 21, pal["muted"]))
+    out.append(text(W / 2, H - 28, "No screen can write to the kernel by itself.", 21, pal["steel"],
+                    anchor="middle"))
     out.append('</svg>')
     return "\n".join(out) + "\n"
 
@@ -591,121 +1019,76 @@ def locales_art(pal):
 
 
 # ═══════════════════════════════════════════════════════════════════════════
-# 6.5 design-language.svg — لغة التصميم معروضة كنظام، لا كذوق
+# 6.5 design-language.svg — لغة التصميم في نظرة واحدة
 # ═══════════════════════════════════════════════════════════════════════════
-# **ولماذا أصلٌ كهذا:** مجموعة `VoltAgent/awesome-design-md` تبني كلّ عرضها على لوحة تُري القارئ
-# الألوان والمقامات والمسافات وأدوار المحارف مجتمعة، فيفهم النظام في نظرة واحدة بدل أن يقرأ عنه.
-# ولم يكن عندنا نظير: الصفحة كانت تشرح المنتج بالإنجليزية الدقيقة ولا تُري ماهيّته البصرية — وهي
-# منتج يبيع نفسه بالوضوح. فصُنعت هذه اللوحة **من الرموز نفسها** (`MaxTokens.kt` · `theme/Type.kt`):
-# كل رقم تراه هنا مسحوب من الشيفرة، و`tools/design_doc.py` تفشل إن انحرف أحدها.
-#
-# **وحدّها المعلَن:** هّذه اللوحة تُعرض بعرض الهاتف 390px، فكل نصّ فيها ≥ 21px في الـviewBox
-# (720) — أي ≥ 11px عند العرض الحقيقي، وهو حدّ `svg_review`. ولذلك لا تُعرض فيها المقاسات الصغيرة
-# (11sp · 12sp) بمقاسها الحقيقيّ بل بأسمائها: الرسم التوضيحي لـ`11sp` عند 11px يكون غير مقروء.
-# **والخريطة لا تُقاس على العرض الحقيقيّ، والأدوار تُذكر بأسماءها ومعها ما يلزم لقراءتها.**
+# اللوحة **للقارئ**: ما يراه في التطبيق (لون واحد يتبع ثيمه، لونا تحذير ثابتان، ثلاثة محارف، شكل
+# موحّد، حركة قصيرة) لا ما يهمّ من يراجع الشيفرة. فسقطت منها مقاييس المسافات وأرقام التباين وجملة
+# «بوّابة تفشل»، وسقطت عيّنة «الإيجابي» الخضراء من الصورة (تبقى نغمة حالة في التطبيق، لا زينة هنا).
+# وكل نصّ ≥ 21px في الـviewBox (720) أي ≥ 11px على الهاتف، وهو حدّ `svg_review`.
 def design_language(pal, dark=True):
-    W = 720
+    W, H = 720, 880
     out = []
-    H = 1160
     out.append(f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" '
                f'width="{W}" height="{H}" role="img" aria-labelledby="dl-t dl-d">')
-    out.append('  <title id="dl-t">The MaxManager design language: palette, type, spacing, '
-               'radii and motion, taken from the app itself</title>')
-    out.append('  <desc id="dl-d">One accent that follows the user theme, three warning colours that '
-               'never do, three typefaces with one job each, a single 4dp spacing scale, five '
-               'meaningful corner radii, and a motion budget whose ceiling is 360 milliseconds. '
-               'Every value shown is read from the app token layer.</desc>')
+    out.append('  <title id="dl-t">The MaxManager look: one accent, two warnings, three typefaces</title>')
+    out.append('  <desc id="dl-d">One accent colour that follows the user theme, two fixed warning '
+               'colours, three typefaces with one job each, a small set of corner radii, and motion '
+               'that stays between 90 and 360 milliseconds.</desc>')
     out.append(defs_all("dl", pal, card="dl-card"))
     out.append(panel("dl", 0, 0, W, H, 22, pal))
     out.append(edge_light(34, 6, W - 68, pal))
-    out.append(breathe(620, 70, 140, pal["accent"], 0.03, 0.07, 12.0))
-
-    out.append(header(36, 44, "Design language",
-                      "Drawn by rules, not taste — as the app's own tokens.", pal))
+    out.append(breathe(620, 70, 140, pal["accent"], 0.03, 0.08, 12.0))
+    out.append(header(36, 44, "The look",
+                      "One accent. Two warnings. Nothing else shouts.", pal))
 
     def eyebrow(y, s):
         out.append(text(36, y, s, 21, pal["muted"], weight="600"))
 
-    # ── A. اللوحة ──
-    eyebrow(188, "PALETTE — ONE ACCENT, THREE FIXED WARNINGS")
-    swatches = [("Accent", "your theme", pal["accent"]),
-                ("Positive", pal["tonePositive"], pal["tonePositive"]),
+    eyebrow(188, "COLOUR")
+    swatches = [("Accent", "follows your theme", pal["accent"]),
                 ("Caution", pal["toneCaution"], pal["toneCaution"]),
                 ("Critical", pal["toneCritical"], pal["toneCritical"])]
     for i, (name, note, tone) in enumerate(swatches):
-        x = 36 + i * 168
-        # نصف قطر البلاطة 10 هو `MaxRadius.chip` — فاللوحة تُرسم بالرمز الذي تصفه.
-        out.append(f'  <rect x="{x}" y="206" width="88" height="88" rx="10" fill="{tone}"/>')
-        if i == 0:
-            out.append(f'  <rect x="{x}" y="206" width="88" height="88" rx="10" fill="none" '
-                       f'stroke="{pal["ink"]}" stroke-width="1.5" stroke-dasharray="6 5" '
-                       f'opacity="0.55"/>')
-        out.append(text(x, 322, name, 21, pal["ink"], weight="600"))
-        out.append(text(x, 350, note, 21, pal["muted"]))
-    out.append(text(36, 390, "Contrast 10.2 · 10.5 · 8.8 on the dark surface,", 21, pal["muted"]))
-    out.append(text(36, 416, "6.5 · 6.4 · 8.3 on light. Only the accent moves.", 21, pal["muted"]))
+        x = 36 + i * 224
+        out.append(f'  <rect x="{x}" y="206" width="96" height="88" rx="14" fill="{tone}"/>')
+        out.append(text(x, 326, name, 22, pal["ink"], weight="700"))
+        out.append(text(x, 354, _fit(note, 21, 214), 21, pal["muted"]))
+    out.append(text(36, 396, "Readable on dark and on light — only the accent moves.", 21, pal["steel"]))
 
-    # ── B. المحارف ──
-    eyebrow(462, "TYPE — THREE FACES, EACH WITH ONE JOB")
-    out.append(text(36, 498, "Space Grotesk · display", 21, pal["muted"]))
-    out.append(text(360, 498, "Page title", 34, pal["ink"], weight="700"))
-    out.append(text(36, 556, "Manrope · body and labels", 21, pal["muted"]))
-    out.append(text(360, 556, "Supporting copy", 22, pal["ink"]))
-    out.append(text(36, 614, "Mono · live values only", 21, pal["muted"]))
-    out.append(text(360, 614, "42.5 °C · 3.1 GHz", 30, pal["accent"], weight="600", family=MONO))
+    eyebrow(452, "TYPE")
+    out.append(text(36, 492, "Space Grotesk", 21, pal["muted"]))
+    out.append(text(300, 496, "Page title", 34, pal["ink"], weight="700"))
+    out.append(text(36, 546, "Manrope", 21, pal["muted"]))
+    out.append(text(300, 548, "Supporting copy", 22, pal["ink"]))
+    out.append(text(36, 600, "Mono, for live values", 21, pal["muted"]))
+    out.append(text(300, 602, "42.5 °C · 3.1 GHz", 30, pal["accent"], weight="600", family=MONO))
 
-    # ── C. المسافات ──
-    eyebrow(660, "SPACE — ONE 4dp SCALE")
-    x = 36.0
-    for step in (4, 8, 12, 16, 20, 28):
-        w = step * 3
-        out.append(f'  <rect x="{x:.0f}" y="692" width="{w}" height="8" rx="4" '
-                   f'fill="{pal["accent"]}" opacity="0.85"/>')
-        out.append(text(x, 726, str(step), 21, pal["muted"]))
-        x += w + 16
-    out.append(text(36, 760, "8 between rows · 20 as the page gutter · 28 between sections",
-                    21, pal["steel"]))
-
-    # ── D. أنصاف الأقطار ──
-    eyebrow(800, "RADII — A ROW, A CARD AND A SHEET DIFFER")
-    for i, (radius, label) in enumerate(((12, "12"), (14, "14"), (18, "18"),
-                                         (22, "22"), (28, "28"))):
+    eyebrow(662, "SHAPE")
+    for i, radius in enumerate((12, 14, 18, 22, 28)):
         x = 36 + i * 100
-        out.append(f'  <rect x="{x}" y="832" width="60" height="60" rx="{radius}" '
+        out.append(f'  <rect x="{x}" y="688" width="60" height="60" rx="{radius}" '
                    f'fill="url(#dl-card)" stroke="{pal["edge"]}" stroke-width="1.5"/>')
-        out.append(text(x + 30, 924, label, 21, pal["muted"], anchor="middle"))
-    out.append(f'  <rect x="520" y="838" width="132" height="48" rx="24" fill="none" '
+    out.append(f'  <rect x="544" y="694" width="132" height="48" rx="24" fill="none" '
                f'stroke="{pal["accent"]}" stroke-width="1.5"/>')
-    out.append(text(586, 924, "status only", 21, pal["muted"], anchor="middle"))
+    out.append(text(36, 786, "Rows, cards and sheets each get their own corner.", 21, pal["steel"]))
 
-    # ── E. الحركة ──
-    eyebrow(964, "MOTION — AT MOST 360ms, AND NO LOOPS")
-    x = 36.0
+    eyebrow(828, "MOTION")
+    x = 150.0
     for i, ms in enumerate((90, 160, 240, 360)):
-        w = ms * 0.6
-        # الأعمدة تتحرّك **من قيمتها الكاملة** وتعود: أي أنّ الأصل بلا SMIL يقرأ صحيحًا تمامًا،
-        # والحركة تُضاف فوق قراءة سليمة لا تُبنى عليها — نفس قاعدة بقية الأصول.
-        out.append(f'  <rect x="{x:.0f}" y="996" width="{w:.0f}" height="10" rx="5" '
+        w = ms * 0.5
+        out.append(f'  <rect x="{x:.0f}" y="816" width="{w:.0f}" height="10" rx="5" '
                    f'fill="{pal["accent"]}" opacity="0.85">')
         out.append(f'    <animate attributeName="opacity" values="0.85;0.45;0.85" keyTimes="0;0.5;1" '
                    f'dur="4.5s" begin="{i * 0.25:.2f}s" repeatCount="indefinite"/>')
         out.append('  </rect>')
-        out.append(text(x, 1034, f"{ms}", 21, pal["muted"]))
-        x += w + 18
-    out.append(text(600, 1034, "ms", 21, pal["muted"]))
-
-    # ── التذييل ──
-    out.append(f'  <line x1="36" y1="1076" x2="{W-36}" y2="1076" stroke="{pal["edge"]}"/>')
-    out.append(text(36, 1110, "Every number is read from the app's own tokens.",
-                    21, pal["steel"]))
-    out.append(text(36, 1136, "A gate fails when this picture and the code disagree.",
-                    21, pal["muted"]))
+        x += w + 14
+    out.append(text(36, 858, "Short and quiet: 90 to 360 ms.", 21, pal["steel"]))
     out.append('</svg>')
     return "\n".join(out) + "\n"
 
 
 # ═══════════════════════════════════════════════════════════════════════════
-# 7. domains.svg / integration.svg — آلتان كانتا مكتوبتين بيد، فصارتا من المولّد
+# 7. domains.svg — كانت مكتوبة بيد، فصارت من المولّد
 # ═══════════════════════════════════════════════════════════════════════════
 # **لماذا نُقلتا إلى هنا:** كانتا الملفّين الوحيدين في `docs/assets/` لا يولّدهما شيء — فبقيا
 # بلغتين أُخريين: لوح `#12202A` لا `#151C22`، ونصف قطر ١٤ لا ٢٢، **وبلا حدّ على اللوح نفسه**
@@ -775,107 +1158,6 @@ def domains_art(pal):
     return "\n".join(out) + "\n"
 
 
-def integration_art(pal):
-    """ثلاثة مسارات للدمج، والأسماء الثلاثة التي يجب أن تتفق.
-
-    **العطب الذي أُصلح هنا (مقيس):** الملف القديم كان فيه `id="it"` مرّتين: للعنوان `<title>`
-    وللتدرّج `linearGradient`. فكان `url(#it)` يُحلّ على العنوان لا على التدرّج، فيصير اللوح
-    شفّافًا، ويبقى العنوان الفاتح شبه غائب على خلفية الصفحة البيضاء. الآن كل معرّف فريد.
-
-    **والحجم:** أصغر نصّ 21 وحدة، أي نحو 12.8px على هاتف 390px، وهو فوق حدّ البوابة (11px).
-    **والعدّ:** الأسماء ثلاثة لا أربعة. الوسم الرابع (`maxmanager_exec`) يتبع اسم النطاق في
-    الكيت، فيُكتب سطرًا تفسيريًّا تحت الأسماء لا سطرًا خامسًا في القائمة.
-
-    كل سطر يُقاس عرضه بالمقدِّر نفسه الذي تستعمله `svg_review`، ويفشل البناء إن خرج عن اللوح.
-    """
-    W = 640
-    top = 150.0                       # أول بطاقة مسار
-    row_h, row_gap = 110.0, 12.0
-    names_top = top + 3 * row_h + 2 * row_gap + 16.0
-    names_h = 224.0
-    H = int(names_top + names_h + 24)
-
-    # كل مسار: العنوان · مكان الملفّ · سطرين تفسيريين (من الشجرة نفسها لا من الوعد)
-    paths = [
-        ("Systemless module", "MaxManager-V2.zip",
-         "Flash the zip in Magisk or KernelSU.",
-         "/system is not changed; uninstall reverts it."),
-        ("AOSP integration", "android/aosp/",
-         "Soong files, an init service, a sepolicy domain,",
-         "and a privileged-permission allowlist."),
-        ("KernelSU Next", "android/kernelsu/",
-         "The same module, packaged for KernelSU Next.",
-         "Use it when the device roots with KernelSU."),
-    ]
-    # الأسماء الثلاثة: (الاسم · البادئة · الجذر المشترك · اللاحقة). الجذر `maxmanager` واحد في الثلاثة.
-    names = [
-        ("binary", "/system/bin/sys.", "maxmanager", "-service"),
-        ("service", "sys.", "maxmanager", "-service"),
-        ("SELinux", "u:r:", "maxmanager", ":s0"),
-    ]
-    footnote = "file_contexts labels the binary maxmanager_exec."
-
-    # ── فحص العرض بالمقدِّر نفسه: sans 0.52em، mono 0.6em (كما في svg_review) ──
-    def sans_w(size, s):
-        return 0.52 * size * len(s)
-
-    def mono_w(size, s):
-        return 0.6 * size * len(s)
-
-    for title, loc, l1, l2 in paths:
-        assert 40 + sans_w(26, title) < 600 - mono_w(21, loc) - 16, f"title/location clash: {title}"
-        assert 40 + sans_w(22, l1) <= 600, f"line too wide: {l1}"
-        assert 40 + sans_w(22, l2) <= 600, f"line too wide: {l2}"
-    for label, pre, root, suf in names:
-        assert 40 + sans_w(21, label) < 150 - 8, f"label collides with value: {label}"
-        assert 150 + mono_w(22, pre + root + suf) <= 600, f"value too wide: {pre}{root}{suf}"
-    assert 40 + sans_w(21, footnote) <= 600, "footnote too wide"
-
-    out = []
-    out.append(f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W} {H}" '
-               f'width="{W}" height="{H}" role="img" aria-labelledby="it-t it-d">')
-    out.append('  <title id="it-t">Integrating MaxManager into a ROM — three paths and the three '
-               'names that must agree</title>')
-    out.append('  <desc id="it-d">Three integration paths: flash the systemless module MaxManager-V2.zip '
-               'in Magisk or KernelSU; build the android/aosp kit into an AOSP tree with Soong files, '
-               'an init service, a sepolicy domain and a privileged-permission allowlist; or use the '
-               'android/kernelsu package for KernelSU Next. The binary path, the init service name and '
-               'the SELinux domain must agree: /system/bin/sys.maxmanager-service, '
-               'sys.maxmanager-service and u:r:maxmanager:s0. The binary is labelled '
-               'maxmanager_exec by file_contexts.</desc>')
-    # معرّفات فريدة: التدرّج باسم `it-panel` والبطاقة باسم `it-card` — لا يتشاركان اسمًا مع العنوان
-    out.append(defs_all("it-panel", pal, card="it-card"))
-    out.append(panel("it-panel", 0, 0, W, H, 22, pal))
-    out.append(edge_light(34, 6, W - 68, pal))
-    out.append(breathe(560, 78, 140, pal["accent"], 0.04, 0.09, 10.0))
-    out.append(header(36, 40, "Three integration paths",
-                      "Pick one path. Then match the three names below.", pal))
-
-    for i, (title, loc, l1, l2) in enumerate(paths):
-        y = top + i * (row_h + row_gap)
-        out.append(f'  <rect x="16" y="{y:.1f}" width="608" height="{row_h:.0f}" rx="18" '
-                   f'fill="url(#it-card)" stroke="{pal["edge"]}" stroke-width="1.4"/>')
-        out.append(f'  <rect x="16" y="{y:.1f}" width="4" height="{row_h:.0f}" rx="2" '
-                   f'fill="{pal["accent"]}" opacity="0.75"/>')
-        out.append(text(40, y + 42, title, 26, pal["accent"], weight="700"))
-        out.append(text(600, y + 42, loc, 21, pal["muted"], anchor="end", family=MONO))
-        out.append(text(40, y + 72, l1, 22, pal["steel"]))
-        out.append(text(40, y + 98, l2, 22, pal["muted"]))
-
-    out.append(f'  <rect x="16" y="{names_top:.1f}" width="608" height="{names_h:.0f}" rx="18" '
-               f'fill="url(#it-card)" stroke="{pal["accent"]}" stroke-width="1.6"/>')
-    out.append(text(40, names_top + 46, "Three names that must agree", 26, pal["ink"], weight="700"))
-    for i, (label, pre, root, suf) in enumerate(names):
-        yy = names_top + 92 + i * 36
-        out.append(text(40, yy, label, 21, pal["muted"]))
-        out.append(f'  <text x="150.0" y="{yy:.1f}" font-size="22" fill="{pal["ink"]}" '
-                   f'font-family="{MONO}">{esc(pre)}'
-                   f'<tspan fill="{pal["accent"]}">{esc(root)}</tspan>{esc(suf)}</text>')
-    out.append(text(40, names_top + 200, footnote, 21, pal["muted"]))
-    out.append('</svg>')
-    return "\n".join(out) + "\n"
-
-
 # ═══════════════════════════════════════════════════════════════════════════
 # 8. ic-*.svg — أيقونات سياقية: واحدة بجانب كل عنوان، وواحدة بجانب كل وصف
 # ═══════════════════════════════════════════════════════════════════════════
@@ -885,34 +1167,34 @@ def integration_art(pal):
 #
 # وحدودها معلَنة: شبكة 24×24، والفنّ كلّه داخل [4.2, 19.8] فلا يلامس حدًّا ولا يُقصّ، والبلاطة
 # كاملة 24×24 (فتُستثنى من فحص القصّ في `svg_review` كما تُستثنى خلفية اللوحة في الأصل الكبير).
-# والألوان من اللوحة نفسها: بلاطة `DARK["bg"]` · حدّها `DARK["tileEdge"]` · نعناعي `DARK["accent"]`
+# والألوان من اللوحة نفسها: بلاطة `DARK["bg"]` · حدّها `DARK["tileEdge"]` · تمييزيّ `SURFACE_DARK["accent"]`
 # (العنصر الأساس) · فولاذي `DARK["steel"]`. والاختيار مقصود: **البلاطة الداكنة تُقرأ في الوضعين**
 # — الرمز يُحمَّل في `<img>` فلا يرث ألوان الصفحة، ولو رُسم بخطّ ملوّن وحده لاختفى في الوضع الفاتح.
 ICON_TILE = ('<rect x="0" y="0" width="24" height="24" rx="6.5" fill="' + DARK["bg"] + '" '
              'stroke="' + DARK["tileEdge"] + '" stroke-width="1"/>')
-ICON_MINT, ICON_STEEL = DARK["accent"], DARK["steel"]
+ICON_ACCENT, ICON_STEEL = SURFACE_DARK["accent"], SURFACE_DARK["steel"]
 
 
-def _ink(d, color=ICON_MINT, w=1.5):
+def _ink(d, color=ICON_ACCENT, w=1.9):
     """خطّ مرسوم: نهايات وزوايا مدوّرة — فلا تظهر رؤوس حراب في رمز 20px."""
     return (f'<path d="{d}" fill="none" stroke="{color}" stroke-width="{w}" '
             f'stroke-linecap="round" stroke-linejoin="round"/>')
 
 
-def _solid(d, color=ICON_MINT):
+def _solid(d, color=ICON_ACCENT):
     return f'<path d="{d}" fill="{color}"/>'
 
 
-def _box(x, y, w, h, rx, color=ICON_STEEL, sw=1.4, fill="none"):
+def _box(x, y, w, h, rx, color=ICON_STEEL, sw=1.8, fill="none"):
     return (f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="{rx}" fill="{fill}" '
             f'stroke="{color}" stroke-width="{sw}"/>')
 
 
-def _disc(cx, cy, r, color=ICON_MINT):
+def _disc(cx, cy, r, color=ICON_ACCENT):
     return f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="{color}"/>'
 
 
-def _ring(cx, cy, r, color=ICON_STEEL, sw=1.4):
+def _ring(cx, cy, r, color=ICON_STEEL, sw=1.8):
     return (f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="none" stroke="{color}" '
             f'stroke-width="{sw}"/>')
 
@@ -949,40 +1231,36 @@ def icons_sections():
         ]),
         ("ic-phone", "Screens", "A phone with a lit screen.", [
             _box(6.6, 4.4, 10.8, 15.2, 2.4, sw=1.5),
-            _box(8.4, 7.4, 7.2, 8, 1.2, fill=ICON_MINT, sw=1),
+            _box(8.4, 7.4, 7.2, 8, 1.2, fill=ICON_ACCENT, sw=1),
             _ink("M10.4 17.2h3.2"),
         ]),
         ("ic-globe", "Languages", "A globe with a meridian: the interface travels.", [
             _ring(12, 12, 7.2),
             f'<ellipse cx="12" cy="12" rx="3.3" ry="7.2" fill="none" '
-            f'stroke="{ICON_MINT}" stroke-width="1.4"/>',
+            f'stroke="{ICON_ACCENT}" stroke-width="1.4"/>',
             _ink("M5.2 12h13.6", ICON_STEEL),
         ]),
     ]
 
 
 def icons_setup():
-    """رماز المسار العمليّ: المتطلبات · التثبيت · مطوّرو الروم · ما لن يفعله المنتج."""
+    """رماز المسار العمليّ: المتطلبات · التثبيت · ما لن يفعله المنتج."""
     return [
         ("ic-checklist", "Requirements", "A clipboard with a tick: what the device must be.", [
             _box(6, 5.4, 12, 14.2, 2.4),
-            _box(9.4, 4.2, 5.2, 2.8, 1.2, fill=ICON_MINT, sw=1),
-            _ink("M8.6 12.4 10.8 14.6 14.8 10.2", ICON_MINT, 1.6),
+            _box(9.4, 4.2, 5.2, 2.8, 1.2, fill=ICON_ACCENT, sw=1),
+            _ink("M8.6 12.4 10.8 14.6 14.8 10.2", ICON_ACCENT, 1.6),
             _ink("M8.6 17h4.6", ICON_STEEL),
         ]),
         ("ic-download", "Install", "An arrow onto a tray: the module is flashed, not compiled by you.", [
-            _ink("M12 4.6v8.4M8.6 10.2 12 13.6 15.4 10.2", ICON_MINT, 1.7),
+            _ink("M12 4.6v8.4M8.6 10.2 12 13.6 15.4 10.2", ICON_ACCENT, 1.7),
             _ink("M5.4 15.2v1.4c0 1.6 1.2 2.8 2.8 2.8h7.6c1.6 0 2.8-1.2 2.8-2.8v-1.4",
                  ICON_STEEL),
-        ]),
-        ("ic-cube", "ROM developers", "An isometric cube: the same product, built into the system.", [
-            _ink("M12 4.6 19.2 8.6v7.2L12 19.8 4.8 16.2V8.6z", ICON_STEEL),
-            _ink("M12 4.6v7.7M4.8 8.6 12 12.3 19.2 8.6"),
         ]),
         ("ic-shield", "Never touched", "A shield you cannot switch off, with a line through it.", [
             _ink("M12 4.2 18.8 6.8v5.2c0 3.6-2.8 6.4-6.8 7.7-4-1.3-6.8-4.1-6.8-7.7V6.8z",
                  ICON_STEEL, 1.5),
-            _ink("M9 15.4 15.2 9.2", ICON_MINT, 1.8),
+            _ink("M9 15.4 15.2 9.2", ICON_ACCENT, 1.8),
         ]),
     ]
 
@@ -997,7 +1275,7 @@ def icons_reference():
         ]),
         ("ic-question", "FAQ", "A question mark in a circle.", [
             _ring(12, 12, 7.2, ICON_STEEL, 1.5),
-            _ink("M9.4 10.2c0-2.6 5.4-2.6 5.4 0.2 0 2-2.4 1.8-2.4 4.2", ICON_MINT, 1.7),
+            _ink("M9.4 10.2c0-2.6 5.4-2.6 5.4 0.2 0 2-2.4 1.8-2.4 4.2", ICON_ACCENT, 1.7),
             _disc(12.4, 17.1, 1.2),
         ]),
         ("ic-bubble", "Support", "A speech bubble with three dots: a report a person reads.", [
@@ -1017,7 +1295,7 @@ def icons_reference():
         ("ic-credit", "Credits", "A trophy: the work this project thanks.", [
             # الانحناءان مكتوبان صراحةً (`c…c…`) لا بالمنعكس المختصر `s`: أداة القراءة النصّية
             # في هذه البيئة لا تعرف `s`، فرسمٌ لا يُقرأ لا يُتحقّق منه — وتناظر الكأس أصلًا صريح.
-            _ink("M9 5.2h6v3.4c0 2.5-1.4 4.4-3 4.4c-1.6 0-3-1.9-3-4.4z", ICON_MINT, 1.6),
+            _ink("M9 5.2h6v3.4c0 2.5-1.4 4.4-3 4.4c-1.6 0-3-1.9-3-4.4z", ICON_ACCENT, 1.6),
             _ink("M9 6.9H7.6Q6.4 10 9 11", ICON_STEEL, 1.5),
             _ink("M15 6.9h1.4Q17.6 10 15 11", ICON_STEEL, 1.5),
             _ink("M12 13v2.2", ICON_STEEL, 1.5),
@@ -1035,14 +1313,14 @@ def icons_domains():
     """
     return [
         ("ic-cpu", "CPU", "A chip with pins: cores, governor, per-cluster bounds.", [
-            _box(7, 7, 10, 10, 2, ICON_MINT, 1.6),
+            _box(7, 7, 10, 10, 2, ICON_ACCENT, 1.6),
             _box(10.2, 10.2, 3.6, 3.6, 0.8, fill=ICON_STEEL, sw=1),
             _ink("M9.4 7V4.4M14.6 7V4.4M9.4 17v2.6M14.6 17v2.6M7 9.4H4.4M7 14.6H4.4"
                  "M17 9.4h2.6M17 14.6h2.6", ICON_STEEL, 1.3),
         ]),
         ("ic-gpu", "GPU", "A graphics card with a fan: frequencies and vendor parameters.", [
             _box(4.6, 7.4, 14.8, 9.2, 2),
-            _ring(9.6, 12, 2.8, ICON_MINT),
+            _ring(9.6, 12, 2.8, ICON_ACCENT),
             _ink("M14.4 10.4h3M14.4 13.6h3"),
         ]),
         ("ic-memory", "Memory", "A memory stick: compression, swappiness, reclaim.", [
@@ -1062,7 +1340,7 @@ def icons_domains():
             _ink("M7.4 18.4h9.2", ICON_STEEL),
         ]),
         ("ic-thermal", "Thermal", "A thermometer with heat marks: zones and policy.", [
-            _box(10.6, 4.4, 2.8, 10.6, 1.4, ICON_MINT, 1.5),
+            _box(10.6, 4.4, 2.8, 10.6, 1.4, ICON_ACCENT, 1.5),
             _disc(12, 16.6, 3.4),
             _ink("M16.4 8.4h3M16.4 12h2M16.4 15.6h3", ICON_STEEL),
         ]),
@@ -1081,7 +1359,7 @@ def icons_domains():
         # وأبعد نقطة `19.8` (الحدّ ٢٠) لأنّ ورقة الأمان تُقاس على الإحداثيّ نفسه لا على الرسم.
         # وتفرّدت عن `ic-remember`/`ic-pulse` بالمثلّث الوحيد المائل إلى اليمين.
         ("ic-audio", "Audio", "A speaker with two waves: output devices and declared effects.", [
-            _ink("M5.2 9.6h3.4l4.6-4.2v13.2l-4.6-4.2H5.2z", ICON_MINT, 1.5),
+            _ink("M5.2 9.6h3.4l4.6-4.2v13.2l-4.6-4.2H5.2z", ICON_ACCENT, 1.5),
             _ink("M15.6 9.8Q17.2 12 15.6 14.2", ICON_STEEL, 1.5),
             _ink("M18 7.6Q19.8 12 18 16.4", ICON_STEEL, 1.5),
         ]),
@@ -1108,13 +1386,13 @@ def icons_ai_steps():
         ]),
         ("ic-decide", "Decide", "A target: the smallest change that could close the gap.", [
             _ring(12, 12, 6.6),
-            _ring(12, 12, 3.2, ICON_MINT, 1.4),
+            _ring(12, 12, 3.2, ICON_ACCENT, 1.4),
             _disc(12, 12, 1.3),
         ]),
         ("ic-ask", "Ask", "A shield with a tick: the safety layer answers first.", [
             _ink("M12 4.2 18.8 6.8v5.2c0 3.6-2.8 6.4-6.8 7.7-4-1.3-6.8-4.1-6.8-7.7V6.8z",
                  ICON_STEEL),
-            _ink("M9.4 11.8 11.2 13.6 15 9.6", ICON_MINT, 1.7),
+            _ink("M9.4 11.8 11.2 13.6 15 9.6", ICON_ACCENT, 1.7),
         ]),
         ("ic-verify", "Verify", "A lens with a tick: the value is read back.", [
             _ring(10.8, 10.8, 5.4, ICON_STEEL, 1.5),
@@ -1122,7 +1400,7 @@ def icons_ai_steps():
             _ink("M8.6 10.9 10.4 12.7 13.4 9.4"),
         ]),
         ("ic-remember", "Remember", "A bookmark: the outcome is kept.", [
-            _ink("M7.2 4.6h9.6v15l-4.8-4-4.8 4z", ICON_MINT, 1.6),
+            _ink("M7.2 4.6h9.6v15l-4.8-4-4.8 4z", ICON_ACCENT, 1.6),
         ]),
     ]
 
@@ -1154,17 +1432,23 @@ def write(name, body):
 
 if __name__ == "__main__":
     files = [
-        ("atlas-cycle.svg", atlas_cycle(DARK)),
-        ("max-ai.svg", max_ai(DARK)),
-        ("banner-dark.svg", banner(DARK)),
-        ("banner-light.svg", banner(LIGHT, dark=False)),
-        ("control-plane.svg", control_plane(DARK)),
-        ("gates.svg", gates_strip(DARK)),
-        ("locales.svg", locales_art(DARK)),
-        ("design-language.svg", design_language(DARK)),
-        ("design-language-light.svg", design_language(LIGHT, dark=False)),
-        ("domains.svg", domains_art(DARK)),
-        ("integration.svg", integration_art(DARK)),
+        ("atlas-cycle.svg", atlas_cycle(SURFACE_DARK)),
+        ("max-ai.svg", max_ai(SURFACE_DARK)),
+        ("banner-dark.svg", banner(SURFACE_DARK)),
+        ("banner-light.svg", banner(SURFACE_LIGHT, dark=False)),
+        ("control-plane.svg", control_plane(SURFACE_DARK)),
+        ("gates.svg", gates_strip(SURFACE_DARK)),
+        ("locales.svg", locales_art(SURFACE_DARK)),
+        ("design-language.svg", design_language(SURFACE_DARK)),
+        ("design-language-light.svg", design_language(SURFACE_LIGHT, dark=False)),
+        ("domains.svg", domains_art(SURFACE_DARK)),
+        ("stats.svg", stats_strip(SURFACE_DARK)),
+        ("stats-ar.svg", stats_strip(SURFACE_DARK, "ar")),
+        ("pillars.svg", pillars(SURFACE_DARK)),
+        ("pillars-ar.svg", pillars(SURFACE_DARK, "ar")),
+        ("install-flow.svg", install_flow(SURFACE_DARK)),
+        ("install-flow-ar.svg", install_flow(SURFACE_DARK, "ar")),
+        ("divider.svg", divider(SURFACE_DARK)),
     ]
     # الرماز السياقية: تُولَّد من التعريف نفسه الذي يُقّاس، فلا يُكتب رسم بيد في ملفّ SVG
     files += [(f"{n}.svg", icon_svg(n, t, d, b)) for n, t, d, b in all_icons()]

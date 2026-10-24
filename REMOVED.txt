@@ -1,0 +1,11 @@
+# حذف يدوي — ملفات لم تعد موجودة
+
+[المستودع المغلق المصدر — Xx-main]
+docs/assets/ic-cube.svg
+docs/assets/integration.svg
+
+[المستودع العام nader295/MaxManager — احذفها من الفرع main]
+docs/assets/integration.svg
+docs/assets/ic-cube.svg
+
+# كل ما في public-repo/ يُنسخ فوق جذر المستودع العام، ويستبدل الملفات الموجودة بنفس الاسم.

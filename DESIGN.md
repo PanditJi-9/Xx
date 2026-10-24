@@ -171,9 +171,9 @@ nothing here is drawn from a screenshot:
 
 <p align="center">
 <picture>
-  <source media="(prefers-color-scheme: light)" srcset="docs/assets/design-language-light.svg?v=2">
-  <img src="docs/assets/design-language.svg?v=2" width="100%"
-       alt="The MaxManager design language: one accent that follows the theme and three fixed warning colours, three typefaces with one job each, a single 4dp spacing scale, five meaningful corner radii, and a motion budget of at most 360ms">
+  <source media="(prefers-color-scheme: light)" srcset="docs/assets/design-language-light.svg?v=5">
+  <img src="docs/assets/design-language.svg?v=5" width="100%"
+       alt="The MaxManager look: one accent that follows the theme, two fixed warning colours, three typefaces with one job each, five meaningful corner radii, and motion between 90 and 360 ms">
 </picture>
 </p>
 
@@ -221,8 +221,10 @@ same instinct produced `status_unknown` at the data layer and the five-state tru
   is the thing you came here for". It is the *only* colour that follows the user's theme. There is no
   fixed hex for it, deliberately: theming is a feature, and pinning the accent would make the product
   fight the phone it lives on.
-- The README surface uses `#5FD9AC` as its accent on dark, which is byte-identical to the app's
-  Positive-on-dark tone. The page borrows the product's own green rather than inventing a brand colour.
+- The README surface uses its own blue accent — `#5AA9FF` on dark, `#1F6FEB` on light — and
+  deliberately **not** the app's green. In the app, green is the `Positive` tone and means "healthy";
+  spending it on decoration would blur the one place it carries meaning. The status tones below stay the
+  app's own wherever an image shows a state.
 
 ### Semantic tones (fixed)
 
@@ -510,8 +512,9 @@ words, and the app's screens are shipped as real captures rather than as mockups
 The public page is a **second register** of the same language, and is documented here so it stops being
 an unwritten one.
 
-- It reuses the product's own accent on dark (`#5FD9AC` — the app's Positive-on-dark tone) and the same
-  4dp-derived rhythm, the same 22dp panel radius and the same 1dp hairline.
+- It uses a page accent of its own (`#5AA9FF` on dark, `#1F6FEB` on light — `SURFACE_DARK` and
+  `SURFACE_LIGHT` in the asset generator) over the app's own panel colours, and the same 4dp-derived
+  rhythm, the same 22dp panel radius and the same 1dp hairline.
 - It declares a **page palette** of its own for ink and secondary text, because those values come from
   the theme at runtime in the app and therefore have no fixed hex to import. The palette is listed in
   the README asset generator (private repository) and checked by the gate.

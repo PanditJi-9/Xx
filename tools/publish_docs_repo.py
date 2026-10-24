@@ -67,47 +67,54 @@ TREE_GLOBS = {"docs/assets": ("*.svg",), "docs/screenshots": ("*.png",)}
 
 # (file, old, new) — every replacement spells out why it exists.
 EDITS: list[tuple[str, str, str]] = [
-    # 1. The build badge pointed at a workflow that lives with the private source.
+    # 1. The build badge was removed from the pages (it pointed at a workflow that lives with the
+    #    private source); the public face gets a download badge in front of the platform badges.
     (
         "README.md",
-        '  <a href="https://github.com/catui0041-alt/Gg/actions/workflows/build.yml">'
-        '<img alt="Build" src="https://github.com/catui0041-alt/Gg/actions/workflows/build.yml/badge.svg?v=2"></a>',
+        '  <img alt="Android" src="https://img.shields.io/badge/Android',
         f'  <a href="{NEW_REPO}/releases/latest"><img alt="Download" '
-        'src="https://img.shields.io/badge/download-latest_release-2ea44f?style=for-the-badge"></a>',
+        'src="https://img.shields.io/badge/download-latest_release-2ea44f?style=for-the-badge"></a>\n'
+        '  <img alt="Android" src="https://img.shields.io/badge/Android',
     ),
     (
         "README.ar.md",
-        '  <a href="https://github.com/catui0041-alt/Gg/actions/workflows/build.yml">'
-        '<img alt="البناء" src="https://github.com/catui0041-alt/Gg/actions/workflows/build.yml/badge.svg?v=2"></a>',
+        '  <img alt="أندرويد" src="https://img.shields.io/badge/Android',
         f'  <a href="{NEW_REPO}/releases/latest"><img alt="التنزيل" '
-        'src="https://img.shields.io/badge/download-latest_release-2ea44f?style=for-the-badge"></a>',
+        'src="https://img.shields.io/badge/download-latest_release-2ea44f?style=for-the-badge"></a>\n'
+        '  <img alt="أندرويد" src="https://img.shields.io/badge/Android',
     ),
-    # 2. The one-line summary promised the kit sits in this repository.
+    # 3. The install line named a release file that changes from one release to the next.
+    #    The public page names no file: it sends the reader to the release page, where the module
+    #    that is current actually lives, so the step cannot go stale.
     (
         "README.md",
-        "[For ROM developers](#for-rom-developers) — the integration kit in `android/aosp/` |",
-        "[For ROM developers](#for-rom-developers) — the integration kit, on request |",
-    ),
-    (
-        "README.ar.md",
-        "[لمطوّري الروم](#لمطوّري-الروم) — عدّة الدمج في `android/aosp/` |",
-        "[لمطوّري الروم](#لمطوّري-الروم) — عدّة الدمج، عند الطلب |",
-    ),
-    # 3. Install pointed at a file name the release does not use, and at a build page
-    #    that describes a private toolchain.
-    (
-        "README.md",
-        "1. Flash `MaxManager-v1.0.zip` in **Magisk** or **KernelSU** (or a compatible root manager).",
-        "1. Download `MaxManager-v1.0-module.zip` from "
+        "1. Flash `MaxManager-V2.zip` in **Magisk** or **KernelSU** (or a compatible root manager).",
+        "1. Download the module from "
         f"**[Releases]({NEW_REPO}/releases/latest)** and flash it in **Magisk** or **KernelSU** "
         "(or a compatible root manager).",
     ),
     (
         "README.ar.md",
-        "1. افلش `MaxManager-v1.0.zip` في **Magisk** أو **KernelSU** (أو مدير جذر متوافق).",
-        "1. نزّل `MaxManager-v1.0-module.zip` من "
-        f"**[الإصدارات]({NEW_REPO}/releases/latest)** وافلشه في **Magisk** أو **KernelSU** "
+        "1. افلش `MaxManager-V2.zip` في **Magisk** أو **KernelSU** (أو مدير جذر متوافق).",
+        "1. نزّل الوحدة من "
+        f"**[الإصدارات]({NEW_REPO}/releases/latest)** وافلشها في **Magisk** أو **KernelSU** "
         "(أو مدير جذر متوافق).",
+    ),
+    # 3b. The install paragraph sent a ROM builder to a file inside the private repository. The public
+    #     page points at the release notes instead, which say what changed and how to verify the download.
+    (
+        "README.md",
+        "For a step-by-step flashing guide and the exact three files a custom ROM needs, see\n"
+        "**[the module README](mainfiles/README.md)**.",
+        "The v1.0 release notes, and how to verify the download, are in\n"
+        "**[docs/releases/v1.0.md](docs/releases/v1.0.md)**.",
+    ),
+    (
+        "README.ar.md",
+        "لدليل تفليش خطوة بخطوة، والملفّات الثلاثة التي يحتاجها الروم المخصّص، انظر\n"
+        "**[README داخل الوحدة](mainfiles/README.md)**.",
+        "ملاحظات الإصدار v1.0، وكيف تتحقّق من التنزيل، في\n"
+        "**[docs/releases/v1.0.md](docs/releases/v1.0.md)**.",
     ),
     (
         "README.md",
@@ -125,23 +132,6 @@ EDITS: list[tuple[str, str, str]] = [
         "التنزيل قبل تفليشه؛ والأمران في **[docs/releases/v1.0.md](docs/releases/v1.0.md)**. وإذا فشلت\n"
         "الوحدة في بلوغ إقلاع",
     ),
-    # 4. "The kit ships in this repository" — it does not, and saying so would be false.
-    (
-        "README.md",
-        "The integration kit ships in this repository under **`android/aosp/`** — Soong build files, an init\n"
-        "service, a sepolicy domain and a privileged-permission allowlist. `android/kernelsu/` holds the same\n"
-        "module packaged for KernelSU Next.",
-        "The integration kit is **not published here** — the source is private. It is released to ROM\n"
-        "maintainers **on written request**: Soong build files, an init service, a sepolicy domain and a\n"
-        "privileged-permission allowlist, plus the same module packaged for KernelSU Next.",
-    ),
-    (
-        "README.ar.md",
-        "عدّة الدمج موجودة في هذا المستودع تحت **`android/aosp/`** — ملفّات Soong، وخدمة init، ونطاق sepolicy،\n"
-        "وقائمة صلاحيات مُمتَزَجة. و`android/kernelsu/` تحمل الوحدة نفسها مُحزَّمة لـKernelSU Next.",
-        "عدّة الدمج **غير منشورة هنا** — المصدر مغلق. وتُسلَّم لمطوّري الروم **بطلب كتابي**: ملفّات Soong،\n"
-        "وخدمة init، ونطاق sepolicy، وقائمة صلاحيات مُمتَزَجة، والوحدة نفسها مُحزَّمة لـKernelSU Next.",
-    ),
     # 5. The docs index listed a page that exists only with the private toolchain.
     (
         "README.md",
@@ -158,22 +148,6 @@ EDITS: list[tuple[str, str, str]] = [
         "docs/verification.md",
         "[`mainfiles/customize.sh`](../mainfiles/customize.sh)",
         "the module's own installer script",
-    ),
-    # 7. A generator named with a path that cannot resolve here.
-    (
-        "DESIGN.md",
-        "[`tools/gen_readme_assets.py`](tools/gen_readme_assets.py)",
-        "the README asset generator (private repository)",
-    ),
-    # 8. The release notes claimed the AOSP kit ships in "the repository".
-    (
-        "docs/releases/v1.0.md",
-        "The integration kit is in the repository under **`android/aosp/`** — Soong build files, an init\n"
-        "service, a sepolicy domain and a privileged-permission allowlist; `android/kernelsu/` holds the same\n"
-        "module packaged for KernelSU Next.",
-        "The integration kit is **released to ROM maintainers on written request** — Soong build files, an\n"
-        "init service, a sepolicy domain and a privileged-permission allowlist, plus the same module packaged\n"
-        "for KernelSU Next.",
     ),
     # 9. Every page opens by saying what this repository is — and what it is not.
     (
@@ -228,7 +202,6 @@ EDITS: list[tuple[str, str, str]] = [
         "`docs/AUTHENTICITY.md`",
     ),
     # 14. The design document cited the private tree's own contract files.
-    ("DESIGN.md", "[`AGENTS.md`](AGENTS.md)", "`AGENTS.md`"),
     (
         "DESIGN.md",
         "[`MAX_TOKENS`](manager/app/src/main/java/nd/max/ui/design/MaxTokens.kt)",
@@ -250,18 +223,6 @@ EDITS: list[tuple[str, str, str]] = [
         "README.ar.md",
         '<a href="docs/screenshots/README.md">عقد الالتقاط</a> يذكرها كلّها.',
         '<a href="docs/screenshots/">مجلّد اللقطات</a> يحملها كلّها.',
-    ),
-    # 16. The release notes linked the notices file from one directory too deep.
-    (
-        "docs/releases/v1.0.md",
-        "[`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md)",
-        "[`THIRD_PARTY_NOTICES.md`](../../THIRD_PARTY_NOTICES.md)",
-    ),
-    # 17. The AOSP kit paragraph, matched as the file actually wraps it.
-    (
-        "docs/releases/v1.0.md",
-        "The integration kit is in the repository under **`android/aosp/`** — Soong build files, an init service, a\nsepolicy domain and a privileged-permission allowlist; `android/kernelsu/` holds the same module packaged\nfor KernelSU Next.",
-        "The integration kit is **released to ROM maintainers on written request** — Soong build files, an init\nservice, a sepolicy domain and a privileged-permission allowlist, plus the same module packaged for\nKernelSU Next.",
     ),
 ]
 
@@ -299,7 +260,7 @@ the answers you reach for when the tour raised a question.
 | [releases/v1.0.md](releases/v1.0.md) | The v1.0 release notes, and how to verify the download |
 | [faq.md](faq.md) | The questions that keep coming back |
 | [../DESIGN.md](../DESIGN.md) | The design language: tokens, roles, components, motion, and the gaps we know about |
-| [screenshots/](screenshots/) | The 48 screens, in the order the app shows them |
+| [screenshots/](screenshots/) | The screens, in the order the app shows them |
 
 ## What this repository contains, and what it deliberately keeps
 

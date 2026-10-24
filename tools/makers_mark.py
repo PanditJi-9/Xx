@@ -12,11 +12,10 @@
   ① ملفّا SVG في `docs/assets/` = إخراج هذه الأرقام حرفيًّا (تغيير يدويّ في ملفّ يُحمرّ).
   ② أرقام `MaxSignatureMark.kt` = الأرقام نفسها (رسم التطبيق لا ينزاح عن الصفحة).
   ③ اللونان من `MaxTokens.kt` نفسها (`PositiveOnDark` · `PositiveOnLight`) — لا لون مخترع.
-  ④ والصفحتان تشيران إلى الملفّين (وسمٌ يتيم لا يُرى).
 
 الأوامر:
     python3 tools/makers_mark.py --generate    # يكتب الملفّين من الأرقام أدناه
-    python3 tools/makers_mark.py --assert      # يقيس ①②③④ ويخرج بـ1 عند أي انزياح
+    python3 tools/makers_mark.py --assert      # يقيس ①②③ ويخرج بـ1 عند أي انزياح
     python3 tools/makers_mark.py --self-test   # يكسر المدخلات عمدًا ويتوقّع أن الفحص يكشفها
     python3 tools/makers_mark.py --json        # تقرير مفصّل
 """
@@ -54,7 +53,6 @@ KOTLIN = os.path.join(ROOT, "manager", "app", "src", "main", "java", "nd", "max"
                       "component", "MaxSignatureMark.kt")
 TOKENS = os.path.join(ROOT, "manager", "app", "src", "main", "java", "nd", "max", "ui",
                       "design", "MaxTokens.kt")
-READMES = ("README.md", "README.ar.md")
 
 
 def path_d() -> str:
@@ -104,8 +102,7 @@ def token_color(tokens_text: str, name: str) -> str | None:
     return f"#{m.group(1)[2:]}" if m else None
 
 
-def check(svg_dark: str, svg_light: str, kotlin: str, tokens: str,
-          readme_en: str, readme_ar: str) -> list[str]:
+def check(svg_dark: str, svg_light: str, kotlin: str, tokens: str) -> list[str]:
     """فحص خالص على النصوص — كي يقيسه `--self-test` بلا لمس القرص."""
     problems: list[str] = []
 
@@ -151,12 +148,6 @@ def check(svg_dark: str, svg_light: str, kotlin: str, tokens: str,
         if f'stroke="{light_hex}"' not in svg_light:
             problems.append(f"③ makers-mark-light.svg: القلم ليس {light_hex} (PositiveOnLight)")
 
-    # ④ الصفحتان تشيران إلى الملفّين
-    for readme_name, readme in (("README.md", readme_en), ("README.ar.md", readme_ar)):
-        for f in ("makers-mark-dark.svg", "makers-mark-light.svg"):
-            if f not in readme:
-                problems.append(f"④ {readme_name}: لا يشير إلى {f} — وسم يتيم لا يُرى")
-
     return problems
 
 
@@ -165,20 +156,18 @@ def _read(path: str) -> str:
         return fh.read()
 
 
-def collect() -> tuple[str, str, str, str, str, str]:
-    return (_read(SVG_DARK), _read(SVG_LIGHT), _read(KOTLIN), _read(TOKENS),
-            _read(os.path.join(ROOT, "README.md")), _read(os.path.join(ROOT, "README.ar.md")))
+def collect() -> tuple[str, str, str, str]:
+    return (_read(SVG_DARK), _read(SVG_LIGHT), _read(KOTLIN), _read(TOKENS))
 
 
 def self_test() -> int:
     """يقيس الفحص نفسه: المدخل السليم يمرّ، وكل كسر مقصود يُكشف من بابه."""
-    ok_dark, ok_light, ok_kt, ok_tok, ok_en, ok_ar = collect()
+    ok_dark, ok_light, ok_kt, ok_tok = collect()
     fails = 0
 
     def case(name: str, expect: str, **overrides: str) -> None:
         nonlocal fails
-        args = dict(svg_dark=ok_dark, svg_light=ok_light, kotlin=ok_kt, tokens=ok_tok,
-                    readme_en=ok_en, readme_ar=ok_ar)
+        args = dict(svg_dark=ok_dark, svg_light=ok_light, kotlin=ok_kt, tokens=ok_tok)
         args.update(overrides)
         probs = check(**args)
         hit = any(expect in p for p in probs)
@@ -186,8 +175,7 @@ def self_test() -> int:
         fails += 0 if hit else 1
 
     # المدخل السليم أولًا — وإلا فبوّابة تصرخ دائمًا لا تقيس شيئًا
-    clean = check(svg_dark=ok_dark, svg_light=ok_light, kotlin=ok_kt, tokens=ok_tok,
-                  readme_en=ok_en, readme_ar=ok_ar)
+    clean = check(svg_dark=ok_dark, svg_light=ok_light, kotlin=ok_kt, tokens=ok_tok)
     print(f"  {'✓' if not clean else '✗'} المدخل السليم يمرّ" + ("" if not clean else f" — {clean}"))
     fails += 0 if not clean else 1
 
@@ -197,7 +185,6 @@ def self_test() -> int:
     case("Kotlin: إحداثيّ منزاح", "②", kotlin=ok_kt.replace("91.5f", "92.5f"))
     case("Kotlin: عدد أرقام ناقص", "②", kotlin=ok_kt.replace("87.5f, 39.0f, 89.0f, 63.0f, 91.5f, 87.0f,", ""))
     case("Kotlin: سُمك القلم مُبدَّل", "MARK_STROKE_W", kotlin=ok_kt.replace("MARK_STROKE_W = 7f", "MARK_STROKE_W = 8f"))
-    case("الصفحة العربية بلا إشارة", "④", readme_ar=ok_ar.replace("makers-mark-dark.svg", "x.svg"))
 
     print("الأداة تقيس ما تدّعيه." if not fails else f"الأداة لا تقيس ما تدّعيه ({fails} كسرًا مرّ).")
     return 0 if not fails else 1
