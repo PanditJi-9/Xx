@@ -24,8 +24,18 @@ package nd.max.core.daemon
  * | الشاشة مضاءة بلا تطبيق مُدار | ١٠٠٠ م.ث | ثانية واحدة في التقاط تبديل تطبيق لا يُطبَّق عليه شيء فورًا |
  * | الشاشة مطفأة | ٥٠٠٠ م.ث | لا مقدّمة تُطبَّق عليها، ولا قارئ لملف الحالة — وهو معظم اليوم |
  *
- * **وما لا يتغيّر:** الإيقاع لا يُغيّر ما يُكتب ولا قرارًا واحدًا؛ كل مسارات التطبيق والتراجع
- * ومهل السماح تعمل بالقيمة نفسها — تُقرأ أقلّ حين لا يتغيّر شيء، لا أقلّ دقّة.
+ * **والفرق الذي لا يُقرأ في تعليق:** الحالة الثانية كانت **لا تقع أبدًا** لأن المنادي كان يمرّر
+ * «هل آخر حزمة غير فارغة؟» بدل «هل التطبيق المُدار هو الذي في المقدّمة؟» — والحزمة غير الفارغة
+ * تكون المشغّل أو أي تطبيق عاديّ. فطُول اليوم كان ٥٠٠ م.ث، وكانت الحالات الثلاث على الورق فقط.
+ * فصارت الحالة تُحسب من [nd.max.core.gamespace.PerAppSessionRules] (له إدخال حقيقيّ ومُعدَّل)،
+ * لا من «اسم حزمة موجود».
+ *
+ * ### ولماذا Battery Saver هنا لا في الشاشة
+ *
+ * «توفير البطارية» كان مفتاحًا يُكتب ويُقرأ ولا يغيّر إيقاعًا واحدًا (قِيس بالبحث: لا مستهلك
+ * لـ`isPowerSaveMode` في مسار المراقبة). وربطُه بالإيقاع في **هذا الملف** يجعله قرارًا واحدًا
+ * قابلًا للقياس بدل شرطٍ يُنسى في دورة. ولا يُبطَّأ **أمان**: مسار الحارس الحراري ما زال عشر
+ * ثوانٍ ويعمل ما دام تطبيق مُدار في المقدّمة، وقراءة حالة الشاشة لا تُبطَّأ.
  */
 object CompanionPollPolicy {
 
@@ -35,6 +45,15 @@ object CompanionPollPolicy {
     /** الشاشة مضاءة ولا تطبيق مُدار: تبديل التطبيق يُلتقط في ثانية. */
     const val IDLE_MS = 1_000L
 
+    /**
+     * الإيقاع الخامل **وتوفير البطارية مُفعَّل من النظام**: ثانيتان.
+     *
+     * **ولماذا لا ٥٠٠ كما كان:** لا شيء في هذه الحالة يُطبَّق على العتاد؛ العمل الوحيد هو معرفة
+     * متى يفتح المستخدم تطبيقًا مُدارًا. وثانيتان أسوأ ما في الأمر: تأخير ثانية واحدة في تطبيق
+     * إعدادات تطبيق. وأفضل ما فيه: نصف نداءات Binder ونصف استيقاظات المعالج.
+     */
+    const val IDLE_POWER_SAVE_MS = 2_000L
+
     /** الشاشة مطفأة: لا مقدّمة، ولا قارئ. و١٠٪ من الاستيقاظ السابق. */
     const val SCREEN_OFF_MS = 5_000L
 
@@ -42,11 +61,17 @@ object CompanionPollPolicy {
      * إيقاع دورة الاستطلاع.
      *
      * @param screenInteractive الشاشة مضاءة الآن (`PowerManager.isInteractive`).
-     * @param managedAppOwnsForeground تطبيق مُدار هو الذي في المقدّمة (أي تعديلات per-app حيّة).
+     * @param managedAppOwnsForeground تطبيق **له إدخال إعدادات فعّال** هو الذي في المقدّمة.
+     * @param powerSave وضع توفير البطارية في النظام (يُقرأ من مخبأ قصير، لا في كل دورة).
      */
-    fun intervalMs(screenInteractive: Boolean, managedAppOwnsForeground: Boolean): Long = when {
+    fun intervalMs(
+        screenInteractive: Boolean,
+        managedAppOwnsForeground: Boolean,
+        powerSave: Boolean = false,
+    ): Long = when {
         !screenInteractive -> SCREEN_OFF_MS
         managedAppOwnsForeground -> ACTIVE_MS
+        powerSave -> IDLE_POWER_SAVE_MS
         else -> IDLE_MS
     }
 
@@ -54,9 +79,23 @@ object CompanionPollPolicy {
     const val CONFIG_WATCH_ACTIVE_MS = 400L
     const val CONFIG_WATCH_IDLE_MS = 1_000L
 
-    /** إيقاع المراقب بحسب وجود تطبيق مُدار (نفس شرط الإيقاع الكامل). */
-    fun configWatchMs(managedAppOwnsForeground: Boolean): Long =
-        if (managedAppOwnsForeground) CONFIG_WATCH_ACTIVE_MS else CONFIG_WATCH_IDLE_MS
+    /**
+     * إيقاع المراقب والشاشة مطفأة — ثانيتان.
+     *
+     * الملفّ لا يُقرأ في هذه الحالة بلا مستخدم، و`stat` واحد كل ثانيتين يكشف التعديل قبل الإضاءة
+     * بهامش لا يُحسّ. وكان قبل ذلك ثانية كاملة على مدار الليل.
+     */
+    const val CONFIG_WATCH_SCREEN_OFF_MS = 2_000L
+
+    /** إيقاع المراقب بحسب الحالة — نفس شرط الإيقاع الكامل، مع احترام إطفاء الشاشة. */
+    fun configWatchMs(
+        managedAppOwnsForeground: Boolean,
+        screenInteractive: Boolean = true,
+    ): Long = when {
+        !screenInteractive -> CONFIG_WATCH_SCREEN_OFF_MS
+        managedAppOwnsForeground -> CONFIG_WATCH_ACTIVE_MS
+        else -> CONFIG_WATCH_IDLE_MS
+    }
 
     /**
      * عدد دورات الاستيقاظ في الساعة للحالة المعطاة — الرقم الذي يُقاس عليه الوعد.

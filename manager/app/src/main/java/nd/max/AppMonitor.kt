@@ -49,6 +49,7 @@ import java.util.Date
 import java.util.Locale
 import nd.max.core.atlas.AtlasControlTarget
 import nd.max.core.daemon.DaemonSupervisor
+import nd.max.core.gamespace.PerAppSessionRules
 import nd.max.core.gamespace.SidePanelArmed
 import nd.max.core.diagnostics.DeviceFacts
 import nd.max.core.diagnostics.LogHeader
@@ -202,6 +203,8 @@ object AppMonitor {
     @Volatile private var notifiedPid = "0"
     @Volatile private var notifiedAiSignature = ""
     @Volatile private var notifiedConfigModified = -1L
+    private var notifiedCheckedAtMs = 0L
+    private const val NOTIFICATION_CHECK_INTERVAL_MS = 5_000L
 
     // هل تعديلات per-app حيّة على العتاد الآن؟ يُنشر في app_status
     // (perapp_active) كي يتحول محرك MAX AI إلى وضع المراقبة أثناء
@@ -642,10 +645,16 @@ object AppMonitor {
             var last = appListModified()
             while (!Thread.currentThread().isInterrupted) {
                 try {
-                    // ١٢٠ م.ث والتطبيق مُدار في المقدّمة (وقت التبديل الحيّ)، وثانية كاملة غير ذلك:
-                    // الفحص `stat` واحد فلا كلفة تُذكر، لكنه لا يستحق إيقاظ المعالج في الخلفية.
-                    // الإيقاع من السياسة نفسها: تطبيق مُدار ⇒ ٤٠٠ م.ث، وإلا ثانية.
-                    Thread.sleep(CompanionPollPolicy.configWatchMs(lastAppliedPkg.isNotBlank()))
+                    // ٤٠٠ م.ث والتطبيق **المُدار** في المقدّمة (وقت التبديل الحيّ)، وثانية غير ذلك،
+                    // وثانيتان والشاشة مطفأة: الفحص `stat` واحد فلا كلفة تُذكر، لكنه لا يستحق
+                    // إيقاظ المعالج في الخلفية. والشرط هو «تطبيق مُدار» لا «اسم حزمة موجود» —
+                    // وإلا صار ٤٠٠ م.ث طوال اليوم والمشغّل في المقدّمة.
+                    Thread.sleep(
+                        CompanionPollPolicy.configWatchMs(
+                            managedAppOwnsForeground = managedAppOwnsForeground(),
+                            screenInteractive = powerManager?.isInteractive == true,
+                        )
+                    )
                     val now = appListModified()
                     if (now != last) {
                         last = now
@@ -675,8 +684,39 @@ object AppMonitor {
      */
     private fun currentPollIntervalMs(): Long = CompanionPollPolicy.intervalMs(
         screenInteractive = powerManager?.isInteractive == true,
-        managedAppOwnsForeground = lastAppliedPkg.isNotBlank(),
+        managedAppOwnsForeground = managedAppOwnsForeground(),
+        powerSave = isPowerSaveNow(),
     )
+
+    /**
+     * هل التطبيق الذي في المقدّمة تطبيق **يُدار فعلًا** — لا مجرّد اسم حزمة؟
+     *
+     * **وهذا الشرط هو الذي كان يُبطل الإيقاع المتكيّف كلّه:** كان المنادي يمرّر
+     * `lastAppliedPkg.isNotBlank()`، وهي صحيحة للمشغّل وأي تطبيق عاديّ — فالحالة الخاملة
+     * لم تكن تقع أبدًا، وبقي الإيقاع ٥٠٠ م.ث طوال اليوم على الورق والجهاز. والآن يشترط:
+     * إدخال إعدادات حقيقيًّا (تحقّقه [PerAppSessionRules] عند التطبيق) أو تعديلات حيّة على العتاد.
+     */
+    private fun managedAppOwnsForeground(): Boolean {
+        if (lastAppliedPkg.isBlank()) return false
+        if (perAppOverridesActive) return true
+        refreshConfigCacheIfChanged()
+        return cachedGameListText?.contains("\"$lastAppliedPkg\":") == true
+    }
+
+    // ── وضع توفير البطارية: يُقرأ من مخبأ قصير لا في كل دورة ────────────────────
+    // `PowerManager.isPowerSaveMode` رحلة Binder إلى خدمة الطاقة. وكانت تُنادى في كل دورة
+    // (خمس مرات في الثانية) وفي `buildStatus` أيضًا — وهي قيمة تتغيّر بدقائق. فمخبأ خمس
+    // ثوانٍ يُبقي القرار صحيحًا ويُنزع عنه الرحلتين.
+    private var powerSaveCachedAtMs = 0L
+    private var cachedPowerSave = false
+
+    private fun isPowerSaveNow(): Boolean {
+        val now = System.currentTimeMillis()
+        if (powerSaveCachedAtMs != 0L && now - powerSaveCachedAtMs < SLOW_VALUE_TTL_MS) return cachedPowerSave
+        cachedPowerSave = powerManager?.isPowerSaveMode == true
+        powerSaveCachedAtMs = now
+        return cachedPowerSave
+    }
 
     // ── مخبأ القيم البطيئة التغيّر ─────────────────────────────────────────────
     // كل مخبأ يعلن مدّته وحدوده: القيمة المُخزَّنة تُعاد داخل المدّة، وتُقرأ من جديد بعدها.
@@ -733,8 +773,12 @@ object AppMonitor {
             AppMonitorLogger.i(
                 "EVENT=PERAPP_DEFERRED_REVERT pkg=$pkg reason=${if (died) "app_died" else "grace_expired"} sw=$currentSwitchId"
             )
-            runCatching { revertPerAppConfig() }
-                .onFailure { AppMonitorLogger.e("EVENT=REVERT_FAILED pkg=$pkg sw=$currentSwitchId (deferred)", it) }
+            // ولا تراجع بلا جلسة: `revertPerAppConfig()` يُعيد تطبيق الملف العام عبر خدمة
+            // الوحدة (‏٣٢ كتابة + عملية)، ولا شيء منها مطلوب إن لم يُطبَّق حقل واحد.
+            if (perAppOverridesActive) {
+                runCatching { revertPerAppConfig() }
+                    .onFailure { AppMonitorLogger.e("EVENT=REVERT_FAILED pkg=$pkg sw=$currentSwitchId (deferred)", it) }
+            }
             // الجلسة انتهت: تُعلَم الحزمة بذلك فلا تُقرأ قراءةُ المقدّمة بلا معرّف عملية — التي
             // تبقى بعد الموت دهرًا — على أنها «التطبيق نفسه ما زال سارٍ» فتُعاد الدورة كل ثانيتين.
             endedForegroundPkg = pkg
@@ -1075,10 +1119,20 @@ object AppMonitor {
      */
     private var backgroundAppsWrittenWhileScreenOff = false
 
+    // آخر حزمة بُنيت لها القائمة — فلا تُعاد القراءة الثقيلة كل ثانية لتطبيق غير مُدار،
+    // وتُعاد مرة واحدة فور تبديل التطبيق (فلا يفقد الخادم معرّفات اللعبة الجديدة).
+    private var lastBackgroundAppsPkg = ""
+
     private fun writeBackgroundApps() {
         val screenOn = powerManager?.isInteractive == true
         if (!screenOn && backgroundAppsWrittenWhileScreenOff) return
         backgroundAppsWrittenWhileScreenOff = !screenOn
+        // **ولا تُقرأ قائمة العمليات بلا جلسة.** الملفّ يخدم شيئًا واحدًا: أن يجد الخادم معرّفات
+        // عملية **التطبيق المُدار الذي في المقدّمة** (`get_pids_of`). فبناؤه والعرض في المقدّمة
+        // تطبيق عاديّ كان `runningAppProcesses` + `getRecentTasks(30)` **كل ثانية**: مئات الكائنات
+        // في كل دورة، ولا قارئ لها. والقياس من حزمة المستخدم: ٦٤٦٢ تبديلًا في ٤٣ ساعة، ومعظمها
+        // لا يخصّ تطبيقًا مُدارًا. والمخبأ يبقى كما هو فلا يُكتب ملفّ فارغ عند الخمول.
+        if (screenOn && !managedAppOwnsForeground() && lastBackgroundAppsPkg == lastAppliedPkg) return
 
         val processes = activityManager?.runningAppProcesses ?: return
         
@@ -1094,6 +1148,7 @@ object AppMonitor {
             }
         }
 
+        lastBackgroundAppsPkg = lastAppliedPkg
         if (currentApps == lastBackgroundApps) return
 
         try {
@@ -1172,7 +1227,7 @@ object AppMonitor {
 
     private fun buildStatus(focusedApp: String, foregroundConfirmed: Boolean): String {
         val screenAwake = if (powerManager?.isInteractive == true) 1 else 0
-        val batterySaver = if (powerManager?.isPowerSaveMode == true) 1 else 0
+        val batterySaver = if (isPowerSaveNow()) 1 else 0
         val zenMode = getZenMode()
         val batteryLevel = getBatteryLevel()
         val isCharging = getChargingStatus()
@@ -1242,7 +1297,7 @@ object AppMonitor {
                     // المستخدم أو وضعه MAX AI (الملف العام يعيد كتابة حدود الأنوية).
                     // فالملكية وحدها تُرخَّص: إمّا أن التطبيق المغادر كان مُدارًا،
                     // وإمّا أن تعديلات per-app حيّة على العتاد الآن.
-                    if (prevPkg.isNotBlank() && (prevManaged || perAppOverridesActive)) {
+                    if (perAppOverridesActive) {
                         runCatching { revertPerAppConfig() }
                             .onFailure { AppMonitorLogger.e("EVENT=REVERT_FAILED pkg=$prevPkg sw=$currentSwitchId", it) }
                     }
@@ -1258,7 +1313,7 @@ object AppMonitor {
                     // وMAX AI محفوظة داخل الـarbiter ولا تُستعاد فوقها.
                     gracePkg = null
                     graceDeadlineMs = 0L
-                    if (prevPkg.isNotBlank() && (prevManaged || perAppOverridesActive)) {
+                    if (perAppOverridesActive) {
                         AppMonitorLogger.i(
                             "EVENT=PERAPP_REVERT_ON_FOREGROUND_LOSS pkg=$prevPkg reason=foreground-lost sw=$currentSwitchId"
                         )
@@ -1340,7 +1395,7 @@ object AppMonitor {
                     // تراجع شامل ولا إعادة التقاط لخط الأساس — يُعاد المقبض وحده. وأي تغيير آخر
                     // في إعداد التطبيق، أو غياب البصمة، يرجع إلى المسار الكامل كما كان.
                     if (!reapplyGpuProfileOnly(pkgName)) {
-                        revertPerAppConfig()
+                        if (perAppOverridesActive) revertPerAppConfig()
                         applyPerAppConfig(pkgName)
                     }
                     lastAppliedPkg = pkgName
@@ -1354,10 +1409,16 @@ object AppMonitor {
         // عندما يعدّل إعدادات تطبيق من داخل MaxManager (فلا يكون التطبيق في المقدمة أصلًا،
         // وكان الإشعار يبقى على نصّه القديم حتى تبديل تطبيق تالٍ — وهي الشكوى المنقولة).
         if (notifiedPkg.isNotBlank()) {
-            val ai = aiSignature()
-            val modified = appListModified()
-            if (ai != notifiedAiSignature || modified != notifiedConfigModified) {
-                updateActiveAppNotification(notifiedPkg, if (pkgName == notifiedPkg) focusedApp else "")
+            // الفحص نفسه مؤجَّل خمس ثوانٍ: `aiSignature()` يقرأ ملفّات وخصائص، و`appListModified()`
+            // `stat` — ولا يتغيّر أيّهما أسرع من ذلك. وكان يقع خمس مرات في الثانية مع الإشعار قائمًا.
+            val now = System.currentTimeMillis()
+            if (now - notifiedCheckedAtMs >= NOTIFICATION_CHECK_INTERVAL_MS) {
+                notifiedCheckedAtMs = now
+                val ai = aiSignature()
+                val modified = appListModified()
+                if (ai != notifiedAiSignature || modified != notifiedConfigModified) {
+                    updateActiveAppNotification(notifiedPkg, if (pkgName == notifiedPkg) focusedApp else "")
+                }
             }
         }
 
@@ -1426,12 +1487,20 @@ object AppMonitor {
     // للمقدّمة، فتطلب من النظام تشغيل الخدمة. والطلب يتكرّر عند دخول اللعبة، ثم ببطء ما دامت أمامية،
     // لأن الخدمة قد تُقتل في منتصف الجلسة. وطلب تشغيل خدمة تعمل أصلًا لا أثر له.
     private val sidePanelRetryMs = longArrayOf(5_000L, 15_000L, 120_000L)
+    private var sidePanelCheckedAtMs = 0L
+    private const val SIDE_PANEL_CHECK_INTERVAL_MS = 1_000L
     private var sidePanelPkg = ""
     private var sidePanelStep = 0
     private var sidePanelNextAtMs = 0L
 
     private fun maybeStartSidePanel(pkgName: String, screenAwake: Boolean) {
         runCatching {
+            // ملفّ التسلّح يُفحص مرّة كل ثانية لا في كل دورة: نداؤه من `buildStatus` كان
+            // `File.exists()` + `lastModified()` خمس مرات في الثانية، وسلّم المحاولات نفسه
+            // يبدأ من ٥ ثوانٍ فلا تُفقد استجابة.
+            val checkedAt = android.os.SystemClock.uptimeMillis()
+            if (checkedAt - sidePanelCheckedAtMs < SIDE_PANEL_CHECK_INTERVAL_MS) return
+            sidePanelCheckedAtMs = checkedAt
             if (!SidePanelArmed.contains(readSidePanelArmed(), pkgName)) {
                 sidePanelPkg = ""
                 return
@@ -1539,17 +1608,27 @@ object AppMonitor {
     }
 
     private fun readAppConfigField(pkgName: String, field: String): String {
-        refreshConfigCacheIfChanged()
-        val json = cachedGameListText ?: return ""
+        val pkgBlock = appConfigEntry(pkgName) ?: return ""
         return try {
-            // Fast regex-based extraction: find the package block and the field inside it.
-            // واسم الحزمة يُهرَّب قبل أن يصير نمطًا: أسماء الحزم تحمل نقاطًا (أي محرفًا يقبل
-            // أي حرف) — فلا يخطئ المطابقة اليوم ولا يهرب حرف خاص لو تغيّر نطاق الأسماء لاحقًا.
-            val pkgPattern = Regex(""""${Regex.escape(pkgName)}"\s*:\s*\{([^}]+)\}""")
-            val pkgBlock = pkgPattern.find(json)?.groupValues?.getOrNull(1) ?: return ""
             val fieldPattern = Regex(""""$field"\s*:\s*"([^"]*)"|\b$field\b\s*:\s*([^,}\n]+)""")
             fieldPattern.find(pkgBlock)?.groupValues?.let { it[1].ifEmpty { it[2].trim() } } ?: ""
         } catch (_: Exception) { "" }
+    }
+
+    /**
+     * كتلة إعداد تطبيق واحد (محتوى الكائن بلا أقواس) من الكاش — أو `null` إن لم يُدرَج.
+     *
+     * واسم الحزمة يُهرَّب قبل أن يصير نمطًا: أسماء الحزم تحمل نقاطًا (أي محرفًا يقبل أي حرف) —
+     * فلا يخطئ المطابقة اليوم ولا يهرب حرف خاص لو تغيّر نطاق الأسماء لاحقًا. والأقواس تقبل
+     * الكائن الفارغ `{}` (‏`[^}]*` لا `+`)، فإدخالٌ بلا حقول يُقرأ فراغًا لا "غير موجود".
+     */
+    private fun appConfigEntry(pkgName: String): String? {
+        refreshConfigCacheIfChanged()
+        val json = cachedGameListText ?: return null
+        return try {
+            Regex(""""${Regex.escape(pkgName)}"\s*:\s*\{([^}]*)\}""")
+                .find(json)?.groupValues?.getOrNull(1)
+        } catch (_: Exception) { null }
     }
 
     // ─────────────────────────────────────────────────────────────────────
@@ -2038,11 +2117,19 @@ object AppMonitor {
         // ببصمة تطبيق سابق.
         appliedNonGpuFingerprint = null
         hardwareControlRegistry.beginApp(pkgName)
-        // سجل نتائج جلسة جديدة: حالة تطبيق سابق تُقرأ على أنها حالة الآن = تشخيص كاذب.
-        PerAppHardwareStatus.beginSession(pkgName)
         // Refresh cache and verify this package has an enabled Per-App entry.
         refreshConfigCacheIfChanged()
-        if (cachedGameListText?.contains("\"$pkgName\":") != true) return
+        val entry = appConfigEntry(pkgName) ?: return
+        // **وإدخال بلا حقل صريح لا يفتح جلسة عتاد.** القياس من حزمة المستخدم: `com.termux` أنتج
+        // ٢٩٠ جلسة و٢٩٠ تراجعًا، وكل مقابضه `profile-is-default` — أي التقاطُ خط أساس (عشرات
+        // أوامر shell)، وسجل استعادة، وإعلان `perapp_active`، ثم إعادةُ الملف العام كاملًا عند
+        // كل خروج… مقابل لا شيء. وهذا هو الحمل الذي يُقاس حرارةً في الاستخدام العادي.
+        if (!PerAppSessionRules.hasExplicitOverride(entry)) {
+            AppMonitorLogger.i("EVENT=PERAPP_SESSION_SKIPPED pkg=$pkgName reason=no-overrides sw=$currentSwitchId")
+            return
+        }
+        // سجل نتائج جلسة جديدة: حالة تطبيق سابق تُقرأ على أنها حالة الآن = تشخيص كاذب.
+        PerAppHardwareStatus.beginSession(pkgName)
         appliedNonGpuFingerprint = nonGpuFingerprint(pkgName)
 
         // Save the live kernel state before any per-app override.

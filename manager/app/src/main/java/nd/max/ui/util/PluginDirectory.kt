@@ -34,10 +34,10 @@ data class PluginScan(
 object PluginDirectory {
 
     fun load(): PluginScan {
-        val ids = PrivilegedShell.run("ls -1 ${PrivilegedShell.quote(PluginContract.DIRECTORY)}")
+        val ids = RootShell.run("ls -1 ${RootShell.quote(PluginContract.DIRECTORY)}")
         if (ids == null) {
             // لا نعرف: موجود ولم نُقرأ، أم غير موجود أصلًا؟ نسأل سؤالًا ثانيًا بدل التخمين.
-            val present = PrivilegedShell.run("test -d ${PrivilegedShell.quote(PluginContract.DIRECTORY)}") != null
+            val present = RootShell.run("test -d ${RootShell.quote(PluginContract.DIRECTORY)}") != null
             return PluginScan(directoryPresent = present, directoryReadable = false)
         }
 
@@ -46,7 +46,7 @@ object PluginDirectory {
         for (raw in ids) {
             val id = raw.trim()
             if (id.isEmpty() || id == "." || id == "..") continue
-            val lines = PrivilegedShell.run("cat ${PrivilegedShell.quote(PluginContract.manifestPath(id))}")
+            val lines = RootShell.run("cat ${RootShell.quote(PluginContract.manifestPath(id))}")
             if (lines == null) {
                 unreadable += id
                 continue

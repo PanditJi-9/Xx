@@ -109,7 +109,7 @@ object MaxBackupEngine {
     // الصلاحية والأدوات
     // ────────────────────────────────────────────────────────────────────────
 
-    internal fun quote(value: String): String = PrivilegedShell.quote(value)
+    internal fun quote(value: String): String = RootShell.quote(value)
 
     /** جذر فعلي: نتحقّق بأن UID يساوي 0 ولا نفترضه من وجود الوحدة. */
     fun hasRoot(): Boolean = runCatching {
@@ -117,7 +117,7 @@ object MaxBackupEngine {
         result.isSuccess && result.out.firstOrNull()?.trim() == "0"
     }.getOrDefault(false)
 
-    internal fun shell(vararg commands: String): List<String>? = PrivilegedShell.run(*commands)
+    internal fun shell(vararg commands: String): List<String>? = RootShell.run(*commands)
 
     /** بصمة `sha256` لملف. `null` = تعذّرت القراءة — ولا نُخترع بصمة. */
     internal fun sha256Of(path: String): String? {

@@ -39,6 +39,9 @@ import androidx.compose.material.icons.outlined.*
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import nd.max.core.gamespace.InAppProfileRules
+import nd.max.core.privilege.ExecutionModeStore
+import nd.max.core.privilege.PrivilegeManager
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -129,6 +132,15 @@ fun AppSettingsScreen(
     val config = viewModel.fullConfig[packageName]
     // Verified repository state, not an optimistic switch that stays on after a failed save.
     val localMasterOn = config != null
+    // خيارات الحوكمة الجذرية في الوضعين غير الجذريين: تُعطَّل (كانت تُحفظ وتبدو فعّالة ولا يطبّقها أحد). والثلاثة
+    // التي يطبّقها التطبيق نفسه — عدم الإزعاج ومعدّل التحديث والاهتزاز — تبقى فعّالة. الجذر يُقرأ من الصدفة المخزّنة
+    // أيضًا لأن لقطة الامتياز قد تسبق اكتمال القراءة الأولى فتُظهر «لا جذر» خطأً لحظة الفتح.
+    val privilege by PrivilegeManager.snapshot.collectAsState()
+    val inAppProfile = InAppProfileRules.isActive(
+        ExecutionModeStore.current(),
+        privilege.rootGranted || PrivilegeManager.cachedRootGranted()
+    )
+    val rootKnobs = !inAppProfile
     LaunchedEffect(packageName, localMasterOn) {
         if (localMasterOn) viewModel.refreshCpuRuntimeStatus(packageName)
     }
@@ -306,6 +318,14 @@ fun AppSettingsScreen(
                 if (viewModel.configFailed) item {
                     Text(stringResource(R.string.gaming_config_failed), color = MaterialTheme.colorScheme.error)
                 }
+                if (inAppProfile) item {
+                    Text(
+                        text = stringResource(R.string.profile_mode_banner),
+                        color = colorScheme.onSurfaceVariant,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(horizontal = MaxSpace.md)
+                    )
+                }
 
                 // ── مُزالة: الخلفية والبطارية (AR-14) ────────────────────────────
                 // أُزيلت هاتان البطاقتان من هذه الشاشة **بقرار مالك** لا لخطأ فيهما.
@@ -354,7 +374,7 @@ fun AppSettingsScreen(
                                 content = buildList {
                                     add {
                                         ExpressiveDropdownItem(
-                                            enabled = localMasterOn,
+                                            enabled = localMasterOn && rootKnobs,
                                             icon = Icons.Rounded.Bolt,
                                             title = stringResource(R.string.perf_lite_mode),
                                             summary = stringResource(R.string.perf_lite_mode_desc_short),
@@ -365,7 +385,7 @@ fun AppSettingsScreen(
                                     }
                                     add {
                                         ExpressiveDropdownItem(
-                                            enabled = localMasterOn,
+                                            enabled = localMasterOn && rootKnobs,
                                             icon = Icons.Rounded.FlashOn,
                                             title = stringResource(R.string.appfeature_cpu_boost_title),
                                             summary = stringResource(R.string.appfeature_cpu_boost_summary),
@@ -376,7 +396,7 @@ fun AppSettingsScreen(
                                     }
                                     add {
                                         ExpressiveDropdownItem(
-                                            enabled = localMasterOn,
+                                            enabled = localMasterOn && rootKnobs,
                                             // نفس رمز المحور لنفس المفتاح (`Cached`): الوظيفة تُبقي
                                             // المكتبات جاهزة، ولا تُطلق شيئًا.
                                             icon = Icons.Rounded.Cached,
@@ -389,7 +409,7 @@ fun AppSettingsScreen(
                                     }
                                     add {
                                         ExpressiveDropdownItem(
-                                            enabled = localMasterOn,
+                                            enabled = localMasterOn && rootKnobs,
                                             icon = Icons.Rounded.SwapVerticalCircle,
                                             title = stringResource(R.string.app_priority),
                                             summary = stringResource(R.string.app_priority_desc),
@@ -400,7 +420,7 @@ fun AppSettingsScreen(
                                     }
                                     add {
                                         ExpressiveDropdownItem(
-                                            enabled = localMasterOn,
+                                            enabled = localMasterOn && rootKnobs,
                                             icon = Icons.Rounded.Block,
                                             title = stringResource(R.string.appfeature_kill_bg_title),
                                             summary = stringResource(R.string.appfeature_kill_bg_summary),
@@ -453,7 +473,7 @@ fun AppSettingsScreen(
                                 selected = cfg.gpu_profile,
                                 labels = gpuProfileLabels,
                                 values = gpuProfileValues,
-                                enabled = localMasterOn,
+                                enabled = localMasterOn && rootKnobs,
                                 onSelectProfile = { profile -> packageName?.let { viewModel.updateSetting(it, "gpu_profile", profile) } }
                             )
                             ExpressiveList(
@@ -464,7 +484,7 @@ fun AppSettingsScreen(
                                         val cpuGovernorLabels = listOf(defaultLabel) + viewModel.availableCpuGovernors
                                         val selected = cpuGovernorValues.indexOfFirst { it.equals(cfg.cpu_governor, true) }.coerceAtLeast(0)
                                         ExpressiveDropdownItem(
-                                            enabled = localMasterOn,
+                                            enabled = localMasterOn && rootKnobs,
                                             icon = Icons.Rounded.Memory,
                                             title = stringResource(R.string.app_settings_cpu_governor),
                                             summary = if (viewModel.availableCpuGovernors.isEmpty()) stringResource(R.string.app_settings_cpu_governors_none) else stringResource(R.string.app_settings_cpu_governors_note),
@@ -478,7 +498,7 @@ fun AppSettingsScreen(
                                         val gpuGovernorLabels = listOf(defaultLabel) + viewModel.availableGpuGovernors
                                         val selected = gpuGovernorValues.indexOfFirst { it.equals(cfg.gpu_governor, true) }.coerceAtLeast(0)
                                         ExpressiveDropdownItem(
-                                            enabled = localMasterOn,
+                                            enabled = localMasterOn && rootKnobs,
                                             icon = Icons.Rounded.DeveloperBoard,
                                             title = stringResource(R.string.app_settings_gpu_governor),
                                             summary = if (viewModel.availableGpuGovernors.isEmpty()) stringResource(R.string.app_settings_gpu_governors_none) else stringResource(R.string.app_settings_gpu_governors_note),
@@ -507,7 +527,7 @@ fun AppSettingsScreen(
                                             else -> stringResource(R.string.appfeature_gpu_freq_dynamic)
                                         }
                                         ExpressiveDropdownItem(
-                                            enabled = localMasterOn,
+                                            enabled = localMasterOn && rootKnobs,
                                             icon = Icons.Rounded.Tune,
                                             title = stringResource(R.string.appfeature_gpu_freq_title),
                                             summary = freqSummary,
@@ -525,7 +545,7 @@ fun AppSettingsScreen(
                                 encodedControls = cfg.cpu_policy_controls,
                                 policies = viewModel.cpuPolicies,
                                 runtimeStatus = viewModel.cpuRuntimeStatus,
-                                enabled = localMasterOn,
+                                enabled = localMasterOn && rootKnobs,
                                 onSave = { encoded -> packageName?.let { viewModel.updateSetting(it, "cpu_policy_controls", encoded) } },
                                 onRefreshStatus = { viewModel.refreshCpuRuntimeStatus(packageName) }
                             )
@@ -586,7 +606,7 @@ fun AppSettingsScreen(
                                         val rendererValues = listOf("default","skiavk","skiavkthreaded","skiagl","skiaglthreaded","opengl","openglthreaded","vulkan")
                                         val rendererLabels = listOf(defaultLabel,"SkiaVK","SkiaVK (Threaded)","SkiaGL","SkiaGL (Threaded)","OpenGL ES","OpenGL ES (Threaded)","Vulkan")
                                         ExpressiveDropdownItem(
-                                            enabled = localMasterOn,
+                                            enabled = localMasterOn && rootKnobs,
                                             icon = Icons.Rounded.Layers,
                                             title = stringResource(R.string.renderengine),
                                             summary = stringResource(R.string.renderengine_desc),
@@ -597,7 +617,7 @@ fun AppSettingsScreen(
                                     }
                                     add {
                                         ExpressiveDropdownItem(
-                                            enabled = localMasterOn,
+                                            enabled = localMasterOn && rootKnobs,
                                             icon = Icons.Rounded.Brush,
                                             title = stringResource(R.string.appfeature_hw_ui_title),
                                             summary = stringResource(R.string.appfeature_hw_ui_summary),
@@ -637,7 +657,7 @@ fun AppSettingsScreen(
                                     content = buildList {
                                         add {
                                             ExpressiveDropdownItem(
-                                                enabled = localMasterOn,
+                                                enabled = localMasterOn && rootKnobs,
                                                 icon = Icons.Rounded.AspectRatio,
                                                 title = stringResource(R.string.resolution_downscale_title),
                                                 summary = stringResource(R.string.resolution_downscale_desc),
@@ -659,7 +679,7 @@ fun AppSettingsScreen(
                                                 mutableStateOf(rawDownscaleSteps.indexOf(cfg.resolution_downscale).coerceAtLeast(0).toFloat())
                                             }
                                             ExpressiveSliderItem(
-                                                enabled = localMasterOn,
+                                                enabled = localMasterOn && rootKnobs,
                                                 icon = Icons.Rounded.Tune,
                                                 title = stringResource(R.string.resolution_downscale_custom_title),
                                                 subtitle = stringResource(R.string.resolution_downscale_custom_desc),
@@ -743,7 +763,7 @@ fun AppSettingsScreen(
                                                 "false" to stringResource(R.string.appfeature_touch_battery_aware)
                                             )
                                             ExpressiveDropdownItem(
-                                                enabled = localMasterOn,
+                                                enabled = localMasterOn && rootKnobs,
                                                 icon = Icons.Rounded.TouchApp,
                                                 title = stringResource(R.string.appfeature_touch_title),
                                                 summary = stringResource(R.string.appfeature_touch_summary),
@@ -777,7 +797,7 @@ fun AppSettingsScreen(
                                     }
                                     add {
                                         ExpressiveDropdownItem(
-                                            enabled = localMasterOn,
+                                            enabled = localMasterOn && rootKnobs,
                                             icon = Icons.Filled.NotificationsOff,
                                             title = stringResource(R.string.appfeature_notif_title),
                                             summary = stringResource(R.string.appfeature_notif_summary),
@@ -797,7 +817,7 @@ fun AppSettingsScreen(
                                 content = buildList {
                                     add {
                                         ExpressiveDropdownItem(
-                                            enabled = localMasterOn,
+                                            enabled = localMasterOn && rootKnobs,
                                             icon = Icons.Rounded.Cable,
                                             title = stringResource(R.string.bcharging),
                                             summary = stringResource(R.string.enable_bypass_charge_desc),
@@ -808,7 +828,7 @@ fun AppSettingsScreen(
                                     }
                                     add {
                                         ExpressiveDropdownItem(
-                                            enabled = localMasterOn,
+                                            enabled = localMasterOn && rootKnobs,
                                             icon = Icons.Rounded.Wifi,
                                             title = stringResource(R.string.appfeature_wifi_title),
                                             summary = stringResource(R.string.appfeature_wifi_summary),

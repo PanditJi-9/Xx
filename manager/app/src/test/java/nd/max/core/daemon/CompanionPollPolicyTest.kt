@@ -71,4 +71,47 @@ class CompanionPollPolicyTest {
             CompanionPollPolicy.CONFIG_WATCH_ACTIVE_MS in 200L..999L,
         )
     }
+
+    @Test
+    fun `the config watcher backs off while the screen is off`() {
+        assertEquals(
+            CompanionPollPolicy.CONFIG_WATCH_SCREEN_OFF_MS,
+            CompanionPollPolicy.configWatchMs(managedAppOwnsForeground = true, screenInteractive = false),
+        )
+        assertTrue(
+            "screen off is the slowest watcher, and still a single stat every two seconds",
+            CompanionPollPolicy.CONFIG_WATCH_SCREEN_OFF_MS >= CompanionPollPolicy.CONFIG_WATCH_IDLE_MS,
+        )
+    }
+
+    @Test
+    fun `battery saver slows the idle loop but never the gaming moment`() {
+        assertEquals(
+            "a managed app in front keeps 500ms even in battery saver — the session path is not optional",
+            CompanionPollPolicy.ACTIVE_MS,
+            CompanionPollPolicy.intervalMs(true, managedAppOwnsForeground = true, powerSave = true),
+        )
+        assertEquals(
+            CompanionPollPolicy.IDLE_POWER_SAVE_MS,
+            CompanionPollPolicy.intervalMs(true, managedAppOwnsForeground = false, powerSave = true),
+        )
+        assertEquals(
+            "screen off is already slower than the power-save idle interval",
+            CompanionPollPolicy.SCREEN_OFF_MS,
+            CompanionPollPolicy.intervalMs(false, managedAppOwnsForeground = false, powerSave = true),
+        )
+    }
+
+    @Test
+    fun `power save halving the idle wakeups is arithmetic, not a claim`() {
+        val idle = CompanionPollPolicy.wakeupsPerHour(
+            CompanionPollPolicy.intervalMs(true, managedAppOwnsForeground = false, powerSave = false),
+        )
+        val saving = CompanionPollPolicy.wakeupsPerHour(
+            CompanionPollPolicy.intervalMs(true, managedAppOwnsForeground = false, powerSave = true),
+        )
+        assertEquals(3_600L, idle)
+        assertEquals(1_800L, saving)
+        assertEquals(idle / 2, saving)
+    }
 }

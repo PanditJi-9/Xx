@@ -1,6 +1,6 @@
 package nd.max.core.gamespace
 
-import com.topjohnwu.superuser.Shell
+import nd.max.core.privilege.PrivilegedShell
 import kotlin.math.roundToInt
 
 /** إعداد مسبق لدقّة الشاشة: العرض والارتفاع بالبكسل والكثافة، و`id` ثابت يعرفه باقي التطبيق. */
@@ -33,11 +33,14 @@ object PanelResolution {
     private val PHYSICAL_DENSITY = Regex("Physical density:\\s*(\\d+)")
     private val OVERRIDE_DENSITY = Regex("Override density:\\s*(\\d+)")
 
-    /** الدقّة الحالية من الصدفة، أو `null` إن لم يُقرأ الأصل. */
-    fun read(): DisplayReading? {
-        val out = runCatching {
-            Shell.cmd("wm size", "wm density").exec().out.joinToString("\n")
-        }.getOrNull() ?: return null
+    /** الدقّة الحالية عبر المسار الموحَّد، أو `null` إن لم يُقرأ الأصل (أو رُفض الأمر في الوضع المختار). */
+    suspend fun read(): DisplayReading? {
+        val outcome = PrivilegedShell.exec("wm size; wm density") as? PrivilegedShell.Outcome.Ran ?: return null
+        return parse(outcome.output)
+    }
+
+    /** تحليل خَرْج `wm size` و`wm density` — **نقيّ** فيُقاس على JVM. */
+    fun parse(out: String): DisplayReading? {
         val physical = PHYSICAL_SIZE.find(out) ?: return null
         val density = PHYSICAL_DENSITY.find(out) ?: return null
         val nw = physical.groupValues[1].toIntOrNull() ?: return null
@@ -80,21 +83,16 @@ object PanelResolution {
         }?.id ?: "custom"
     }
 
-    /** يطبّق إعدادًا مسبقًا في الجلسة الحالية؛ `native` يُعيد الأصل. */
-    fun apply(p: ScalePreset) {
-        if (p.id == "native") {
-            Shell.cmd("wm size reset", "wm density reset").exec()
-        } else {
-            Shell.cmd("wm size ${p.widthPx}x${p.heightPx}", "wm density ${p.dpi}").exec()
-        }
-    }
+    /** يطبّق إعدادًا مسبقًا في الجلسة الحالية؛ `native` يُعيد الأصل. يعيد `true` إن نُفِّذ الأمر ونجح. */
+    suspend fun apply(p: ScalePreset): Boolean =
+        execute(if (p.id == "native") RESET else "wm size ${p.widthPx}x${p.heightPx}; wm density ${p.dpi}")
 
     /** يعيد الشاشة إلى ما كانت عليه قبل الجلسة: تجاوزها الأصلي إن وُجد، وإلا الأصل. */
-    fun restore(before: DisplayReading) {
-        if (!before.overridden) {
-            Shell.cmd("wm size reset", "wm density reset").exec()
-        } else {
-            Shell.cmd("wm size ${before.activeW}x${before.activeH}", "wm density ${before.activeDpi}").exec()
-        }
-    }
+    suspend fun restore(before: DisplayReading): Boolean =
+        execute(if (!before.overridden) RESET else "wm size ${before.activeW}x${before.activeH}; wm density ${before.activeDpi}")
+
+    private const val RESET = "wm size reset; wm density reset"
+
+    private suspend fun execute(command: String): Boolean =
+        (PrivilegedShell.exec(command) as? PrivilegedShell.Outcome.Ran)?.ok == true
 }

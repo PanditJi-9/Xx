@@ -113,7 +113,7 @@ object AppOpsUtil {
      * و«لا أوضاع»، وهو فرق يحكم هذا المستودع كله.
      */
     fun readOps(pkg: String): List<OpState>? {
-        val out = PrivilegedShell.run("cmd appops get ${PrivilegedShell.quote(pkg)} 2>/dev/null")
+        val out = RootShell.run("cmd appops get ${RootShell.quote(pkg)} 2>/dev/null")
             ?: return null
         val parsed = PermissionPolicy.parseAppOps(out)
         // مخرج مقروء لكن بلا سطر واحد نفهمه: لا نقول «لا أوضاع»، بل «لم أفهم».
@@ -122,8 +122,8 @@ object AppOpsUtil {
 
     /** عملية واحدة كما هي الآن. `null` = لم تُعلَن. */
     fun readOp(pkg: String, op: String): OpMode? = PermissionPolicy.parseSingleOp(
-        PrivilegedShell.run(
-            "cmd appops get ${PrivilegedShell.quote(pkg)} ${PrivilegedShell.quote(op)} 2>/dev/null",
+        RootShell.run(
+            "cmd appops get ${RootShell.quote(pkg)} ${RootShell.quote(op)} 2>/dev/null",
         )
     )
 
@@ -135,8 +135,8 @@ object AppOpsUtil {
      */
     fun setOp(pkg: String, op: String, mode: OpMode): OpWriteResult {
         val startedAt = SystemClock.elapsedRealtime()
-        val commandOk = PrivilegedShell.run(
-            "cmd appops set ${PrivilegedShell.quote(pkg)} ${PrivilegedShell.quote(op)} ${mode.id} 2>/dev/null",
+        val commandOk = RootShell.run(
+            "cmd appops set ${RootShell.quote(pkg)} ${RootShell.quote(op)} ${mode.id} 2>/dev/null",
         ) != null
         val readBack = if (commandOk) readOp(pkg, op) else null
         val verdict = PermissionPolicy.verdict(wrote = mode, readBack = readBack, commandSucceeded = commandOk)

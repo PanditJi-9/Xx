@@ -9,7 +9,8 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.provider.Settings
 import com.topjohnwu.superuser.Shell
-import nd.max.ui.util.PrivilegedShell
+import nd.max.core.privilege.PrivilegeManager
+import nd.max.ui.util.RootShell
 
 /**
  * أمر النافذة العائمة كما يُكتب، بلا تنفيذ: هذا الجزء صافٍ فيُقاس على JVM.
@@ -52,14 +53,21 @@ object PanelFloatingLauncher {
         }.getOrDefault(false)
     }
 
-    private fun rootAvailable(): Boolean = runCatching { Shell.getShell().isRoot }.getOrDefault(false)
+    /**
+     * قراءة **سلبية**: الصدفة التي أنشأها التطبيق عند الإقلاع (`MaxManagerApplication`) أو حكم libsu المُخزَّن.
+     * كانت `Shell.getShell().isRoot` تُنشئ صدفة `su` من داخل اللوحة وتُظهر نافذة الصلاحية — وهذا ما
+     * يمنعه فصل الأوضاع: وضع Shizuku/Basic لا يستدعي `su` أبدًا.
+     */
+    private fun rootAvailable(): Boolean =
+        GameRootGate.allowed() &&
+            (PrivilegeManager.cachedRootGranted() || runCatching { Shell.isAppGrantedRoot() == true }.getOrDefault(false))
 
     /**
      * يفعّل النوافذ الحرّة بالجذر حين يطلب المستخدم فتح تطبيق عائم والجهاز لا يدعمها.
      * أثره عكسيّ (خيارا المطوّر نفسهما) ويُبلَّغ به في [launch] لا يُسكَت عنه.
      */
     private fun enableFreeform(context: Context): Boolean {
-        PrivilegedShell.run(*PanelFloatingCommand.enableFreeform().toTypedArray())
+        RootShell.run(*PanelFloatingCommand.enableFreeform().toTypedArray())
         repeat(4) {
             if (supported(context)) return true
             Thread.sleep(120L)
@@ -73,7 +81,7 @@ object PanelFloatingLauncher {
             ?: return Outcome.NotLaunchable
         if (!rootAvailable()) return Outcome.NoRoot
         if (!supported(context) && !enableFreeform(context)) return Outcome.Unsupported
-        val output = PrivilegedShell.run(PanelFloatingCommand.build(component.flattenToShortString()))
+        val output = RootShell.run(PanelFloatingCommand.build(component.flattenToShortString()))
         return if (PanelFloatingCommand.succeeded(output)) Outcome.Opened else Outcome.Failed
     }
 }

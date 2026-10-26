@@ -372,6 +372,12 @@ void run_profiler(const int profile);
 bool should_apply_freq_balance(bool screen_on, bool balanced_or_eco, bool screen_turned_on,
                                bool request_changed);
 
+// تغيير `app_status`: هل يستحقّ إعادة فحص الملفّ الشخصيّ؟ — قرار نقيّ في `ProfileUtility.c`
+// يُقاس في `archdaemon/tests/parity_test.c`. والسبب: كل كتابة (نسبة بطارية، معدّل شاشة،
+// حالة صمت) كانت تطلب فحصًا كاملًا بلا مقارنة — انظر تعليق الدالة نفسه.
+bool app_status_needs_profile_checkup(const char* previous_focused, const char* previous_switch,
+                                      const char* focused, const char* switch_id);
+
 // الوضع الواحد (Max AI mode): قرارات خالصة تُقاس في `archdaemon/tests/parity_test.c`،
 // وقراءة الملفّ/الخاصية تُستعمل عند الإقلاع وعند تغيير الملفّ. التفصيل في `MaxAiMode.c`.
 ProfileMode max_ai_mode_from_saved(int saved);

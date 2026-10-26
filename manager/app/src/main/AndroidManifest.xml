@@ -372,7 +372,34 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <!--
+                اختصارات الضغط المطوّل على الأيقونة (`res/xml/shortcuts.xml`): تُعلَن على النشاط الذي يحمل
+                `MAIN`+`LAUNCHER` وهو هذا الـalias، ولا تمرّ بإذن «اختصارات الشاشة الرئيسية».
+            -->
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
         </activity-alias>
+
+        <!--
+            أيقونة «لوبي الألعاب» المستقلّة: **مُعطَّلة افتراضيًّا** ويفعّلها المستخدم من خيارات اللوبي
+            (`GameLobbyIcon`). مدخل شفّاف يُطلق `MainActivity` بنيّة اللوبي ثم ينتهي؛ بلا `taskAffinity`
+            وبلا ظهور في «الحديثة» فلا يترك مهمّة فارغة. وهي الطريق الذي لا يحتاج إذن اختصارات المشغّل.
+        -->
+        <activity
+            android:name=".GameLobbyEntryActivity"
+            android:enabled="false"
+            android:excludeFromRecents="true"
+            android:exported="true"
+            android:icon="@mipmap/ic_game_lobby"
+            android:label="@string/game_lobby_title"
+            android:taskAffinity=""
+            android:theme="@android:style/Theme.NoDisplay">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
 
         <!--
             حارس الوحدة: يُوفِّق الرفيق والخادم بعد فتح المستخدم لتخزينه (وبعد تحديث الحزمة).

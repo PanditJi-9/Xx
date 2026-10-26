@@ -163,7 +163,7 @@ class MaxViewMenuContractTest {
         val screen = source("ui/subscreens/FileManagerScreen.kt")
         assertFalse(
             "الشاشة تنادي shell مباشرة (ADR-11 يمنعه من طبقة العرض)",
-            screen.contains("Shell.cmd(") || screen.contains("PrivilegedShell"),
+            screen.contains("Shell.cmd(") || screen.contains("PrivilegedShell") || screen.contains("RootShell"),
         )
         assertFalse(
             "مسار يُبنى بدمج نصّي داخل الشاشة بدل النموذج",

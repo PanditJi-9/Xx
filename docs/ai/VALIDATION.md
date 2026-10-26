@@ -559,3 +559,14 @@ python3 tools/jni_symbols.py --assert                     # عقود JNI (٢٥ �
 python3 tools/repo_audit.py                               # PROBLEMS: 0
 python3 tools/source_manifest.py --write && python3 tools/source_manifest.py   # بصمة مطابقة
 ```
+
+## 12. Game Space على جهاز (P5)
+
+الأوامر والجداول الكاملة في [`GAME-SPACE-DEVICE-CHECKLIST.md`](GAME-SPACE-DEVICE-CHECKLIST.md). أول خطوة آلية:
+
+```sh
+bash tools/gamespace_shell_probe.sh -n 5 -o probe-$(date +%F).txt
+```
+
+غير مدمِّر (يعيد كل قيمة إلى حالها)، ويجرّب بصلاحية الـshell **الأوامر نفسها** التي تُرسَل عبر `PrivilegedShell.exec` تحت Shizuku.
+`GameSpaceProbeParityTest` يحرس تطابق مفاتيح المسبار وأوامره مع الكود. نتيجة كل جولة تُسجَّل هنا بتاريخها وطراز الجهاز.

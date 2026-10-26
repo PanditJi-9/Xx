@@ -16,14 +16,16 @@ import android.os.Looper
 import android.os.SystemClock
 import android.provider.Settings
 import android.widget.Toast
-import com.topjohnwu.superuser.Shell
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import nd.max.AppMonitorLogger
 import nd.max.MaxManagerProps
-import nd.max.core.hardware.RootFileAccess
 import nd.max.core.privilege.PrivilegedShell
 import nd.max.core.hardware.TouchControlBackend
 import nd.max.core.platform.PropertyUtils
@@ -34,6 +36,9 @@ import java.util.Locale
  * كل دالة `set*` تُستدعى من خيط IO فقط، وكل `*On` قراءة رخيصة؛ واللوحة تعيد القراءة بعد الكتابة
  * فلا تعرض حالة لم تحدث. أمّا التحويل الجانبي: لا أداة تُعرض هنا إن لم يكن لها أثر حقيقي على الجهاز.
  */
+/** إخفاق كتابة مقبض: [key] مفتاح المقبض (`wifi` · `data` · `dnd`)، و[refused] = لم يُنفَّذ أصلًا. */
+data class PanelWriteFailure(val key: String, val refused: Boolean)
+
 object PanelToggles {
     /** نطاق للكتابة يعيش أطول من اللوحة: طيّ اللوحة بعد الضغط لا يلغي الكتابة. */
     private val io = CoroutineScope(SupervisorJob() + Dispatchers.IO)
@@ -72,17 +77,31 @@ object PanelToggles {
                 AppMonitorLogger.w(
                     "EVENT=PANEL_WRITE_FAILED key=$key lane=${outcome.lane} code=${outcome.code}",
                 )
+                _failures.tryEmit(PanelWriteFailure(key, refused = false))
             }
 
-            is PrivilegedShell.Outcome.Refused -> AppMonitorLogger.w(
-                "EVENT=PANEL_WRITE_REFUSED key=$key reason=${outcome.reason}",
-            )
+            is PrivilegedShell.Outcome.Refused -> {
+                AppMonitorLogger.w("EVENT=PANEL_WRITE_REFUSED key=$key reason=${outcome.reason}")
+                _failures.tryEmit(PanelWriteFailure(key, refused = true))
+            }
 
-            is PrivilegedShell.Outcome.Failed -> AppMonitorLogger.w(
-                "EVENT=PANEL_WRITE_FAILED key=$key reason=${outcome.reason}",
-            )
+            is PrivilegedShell.Outcome.Failed -> {
+                AppMonitorLogger.w("EVENT=PANEL_WRITE_FAILED key=$key reason=${outcome.reason}")
+                _failures.tryEmit(PanelWriteFailure(key, refused = false))
+            }
         }
     }
+
+    /**
+     * إخفاق الكتابة يُقال للمستخدم لا للّوج وحده: كان الضغط على مقبض يفشل فيعود المقبض بعد إعادة القراءة
+     * ولا يعرف السبب. [PanelWriteFailure.refused] = رُفض قبل التنفيذ (الوضع/الامتياز)، وغيره = نُفِّذ وفشل.
+     * بلا تراكم: الأحداث القديمة تُسقَط، فلا تتأخّر رسالة عن ضغطتها.
+     */
+    private val _failures = MutableSharedFlow<PanelWriteFailure>(
+        extraBufferCapacity = 4,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST,
+    )
+    val failures: SharedFlow<PanelWriteFailure> = _failures.asSharedFlow()
 
     /**
      * لا تظهر الأداة إلا إن وُجد عقدة لمس **أو** محوّل مصنّع معلن على هذا الجهاز.
@@ -92,6 +111,7 @@ object PanelToggles {
      * والاكتشاف الآن من المالك الواحد: [TouchControlBackend.discover]، وهو الذي يكتب أيضًا.
      */
     fun touchAvailable(): Boolean {
+        if (!GameRootGate.allowed()) return false
         val found = TouchControlBackend.discover()
         return found.hasBoostNode || found.vendorTransportPresent
     }
@@ -105,6 +125,7 @@ object PanelToggles {
      * الآن» (`DEFERRED` عند عقدة تحمل المطلوب أصلًا)، لا «رُفضت» ولا «لا مزوّد».
      */
     fun setTouch(on: Boolean) {
+        if (!GameRootGate.allowed()) return
         val attempt = TouchControlBackend.reconcile(on)
         if (attempt.persistable) PropertyUtils.set(MaxManagerProps.Touch.BOOST, if (on) "1" else "0")
     }
@@ -162,67 +183,76 @@ object PanelReminder {
 }
 
 /**
- * تسجيل الشاشة بالروت عبر `screenrecord` (مقاطع ≤ 3 دقائق متتابعة حتى الإيقاف) إلى
- * `Movies/MaxManager`. العلم ملفّ في `/data/local/tmp` فيعيش خارج عمر اللوحة، ولو فشل
+ * تسجيل الشاشة عبر `screenrecord` (مقاطع ≤ 3 دقائق متتابعة حتى الإيقاف) إلى `Movies/MaxManager`،
+ * **بالمسار الموحَّد** ([PrivilegedShell]): جذر، أو Shizuku (uid الـshell يملك `screenrecord` والكتابة إلى
+ * `/sdcard`)، أو رفض معلَن. العلم ملفّ في `/data/local/tmp` فيعيش خارج عمر اللوحة، ولو فشل
  * `screenrecord` توقّفت الحلقة بدل أن تدور بلا نهاية.
+ *
+ * **غير مقيس على جهاز:** استمرار الحلقة الخلفية (`&`) بعد عودة الأمر تحت خدمة Shizuku. والتحقّق من
+ * الحالة يبقى على ملفّ العلم نفسه، فإن لم تستمرّ تُعلن اللوحة فشل البدء بدل «بدأ التسجيل».
  */
 object PanelScreenRecorder {
     private const val DIR = "/sdcard/Movies/MaxManager"
     private const val FLAG = "/data/local/tmp/.max_screenrec"
 
     /** الحالة من ملفّ العلم نفسه: لو مات `screenrecord` وحذف العلم، تتصحّح اللوحة وحدها. */
-    fun isRecording(): Boolean = RootFileAccess.exists(FLAG)
+    suspend fun isRecording(): Boolean =
+        PanelShellOutput.lastLine(PrivilegedShell.exec("[ -f $FLAG ] && echo 1 || echo 0")) == "1"
 
-    fun start() {
-        Shell.cmd(
-            "mkdir -p $DIR",
-            "touch $FLAG",
-            "(while [ -f $FLAG ]; do screenrecord --time-limit 180 $DIR/Max_\$(date +%Y%m%d_%H%M%S).mp4 " +
-                "|| { rm -f $FLAG; break; }; done) >/dev/null 2>&1 &"
-        ).exec()
+    suspend fun start() {
+        PrivilegedShell.exec(
+            "mkdir -p $DIR && touch $FLAG && " +
+                "((while [ -f $FLAG ]; do screenrecord --time-limit 180 $DIR/Max_\$(date +%Y%m%d_%H%M%S).mp4 " +
+                "|| { rm -f $FLAG; break; }; done) >/dev/null 2>&1 &)"
+        )
     }
 
-    fun stop() {
-        Shell.cmd(
-            "rm -f $FLAG",
-            "pkill -2 screenrecord || killall -2 screenrecord",
-            "sleep 1",
-            "for f in $DIR/*.mp4; do am broadcast -a android.intent.action.MEDIA_SCANNER_SCAN_FILE -d file://\$f >/dev/null 2>&1; done"
-        ).exec()
+    suspend fun stop() {
+        PrivilegedShell.exec(
+            "rm -f $FLAG; pkill -2 screenrecord || killall -2 screenrecord; sleep 1; " +
+                "for f in $DIR/*.mp4; do am broadcast -a android.intent.action.MEDIA_SCANNER_SCAN_FILE " +
+                "-d file://\$f >/dev/null 2>&1; done"
+        )
     }
 }
 
 /**
- * لقطة شاشة إلى `Pictures/MaxManager` — **والتحقق قبل الإعلان**.
+ * لقطة شاشة إلى `Pictures/MaxManager` — **والتحقق قبل الإعلان**، وبالمسار الموحَّد ([PrivilegedShell]).
  *
  * `screencap` قد يُنهي أمره رمزيًّا ويكتب ملفًا صفريًّا (محتوى محمي، أو تنفيذ بلا صلاحية
  * رسومية)، والملفّ الفارغ يُقرأ «نجاحًا» في الواجهة وهو لا شيء. فالقاعدة نفسها التي تحكم
  * القياس تحكم الالتقاط: **لا يُعلن ما لم يُقَس** — لا يُعاد مسار إلا بعد أن يقول الملفّ إنه
  * صورة (مقاسه > صفر)، وما دونه يُحذف فورًا فلا يبقى أثر يوهم بنجاح (§9.3 من الطلب).
+ * ورفضُ المسار (لا امتياز في الوضع المختار) يُعامَل كأي فشل: الحجم صفر ⇒ `null`.
  */
 object PanelScreenshot {
     private const val DIR = "/sdcard/Pictures/MaxManager"
 
-    /** يلتقط ويعيد مسار الصورة، أو `null` إن فشل الالتقاط أو الكتابة. من خيط IO. */
-    fun capture(): String? {
+    /** يلتقط ويعيد مسار الصورة، أو `null` إن فشل الالتقاط أو الكتابة. من أي سياق (يتحوّل إلى IO داخليًا). */
+    suspend fun capture(): String? {
         val stamp = java.text.SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(java.util.Date())
         val path = "$DIR/Max_$stamp.png"
-        runCatching { Shell.cmd("mkdir -p $DIR", "screencap -p $path").exec() }
-        val size = runCatching {
-            Shell.cmd("stat -c %s $path 2>/dev/null || echo 0").exec().out
-                .firstOrNull()?.trim()?.toLongOrNull()
-        }.getOrNull() ?: 0L
+        PrivilegedShell.exec("mkdir -p $DIR && screencap -p $path")
+        val size = PanelShellOutput.lastLine(PrivilegedShell.exec("stat -c %s $path 2>/dev/null || echo 0"))
+            ?.toLongOrNull() ?: 0L
         if (size <= 0L) {
-            runCatching { Shell.cmd("rm -f $path").exec() }
+            PrivilegedShell.exec("rm -f $path")
             return null
         }
-        runCatching {
-            Shell.cmd(
-                "am broadcast -a android.intent.action.MEDIA_SCANNER_SCAN_FILE -d file://$path >/dev/null 2>&1"
-            ).exec()
-        }
+        PrivilegedShell.exec(
+            "am broadcast -a android.intent.action.MEDIA_SCANNER_SCAN_FILE -d file://$path >/dev/null 2>&1"
+        )
         return path
     }
+}
+
+/** قراءة خَرْج أمر المسار الموحَّد: آخر سطر غير فارغ إن نُفِّذ فعلًا، و`null` إن رُفض أو فشل الطريق. */
+internal object PanelShellOutput {
+    fun lastLine(outcome: PrivilegedShell.Outcome): String? =
+        (outcome as? PrivilegedShell.Outcome.Ran)?.output
+            ?.lineSequence()
+            ?.map { it.trim() }
+            ?.lastOrNull { it.isNotEmpty() }
 }
 
 /** ساعة الجلسة: منذ متى اللعبة الحالية أمامية (تُصفَّر بتبدّل اللعبة). */

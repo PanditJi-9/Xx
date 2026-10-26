@@ -14,7 +14,7 @@ import kotlinx.coroutines.withContext
  *
  * **لماذا واجهة واحدة:** كل موضع كان يستدعي `Shell.cmd` مباشرةً يفترض أن الصدفة جذرية؛ وحين لا
  * تكون، تُنفَّذ الأوامر بصلاحية التطبيق العادية فتفشل بأثر جانبيّ صامت أو تبدو كأنها نُفِّذت. هنا
- * القرار صريح ومركزيّ: الجذر إن وُجد، وإلا Shizuku إن كان جاهزًا، وإلا رفض — والمستدعي يعرف بأي
+ * القرار صريح ومركزيّ ويحكمه [ExecutionMode] (الافتراضي AUTO): الجذر إن وُجد، وإلا Shizuku إن كان جاهزًا، وإلا رفض — والمستدعي يعرف بأي
  * طبقة نُفِّذ ([Outcome.Ran.lane])، فتقول الواجهة الحقيقة.
  *
  * **الحدود المعلنة:** لا ترقية امتياز داخل النداء (لا `su` من مسار Shizuku ولا العكس)، والكتابة
@@ -51,11 +51,13 @@ object PrivilegedShell {
      * فالنداء ينتظر ربط الخدمة إلى مهلة صريحة، ولا يجوز أن ينتظر واجهة.
      */
     suspend fun exec(command: String): Outcome = withContext(Dispatchers.IO) {
+        // الوضع يختاره المستخدم ([ExecutionMode]): AUTO = السلوك السابق، وغيره يحصر المسار ولا يتنازل صامتًا.
+        val mode = ExecutionModeStore.current()
         val snapshot = PrivilegeManager.refresh()
-        when (PrivilegedShellRules.laneFor(snapshot.rootGranted, snapshot.shizuku.ready)) {
+        when (ExecutionModeRules.lane(mode, snapshot.rootGranted, snapshot.shizuku.ready)) {
             PrivilegedShellRules.Lane.ROOT -> root(command)
             PrivilegedShellRules.Lane.SHIZUKU -> shizuku(command)
-            null -> Outcome.Refused(REASON_NO_PRIVILEGE)
+            null -> Outcome.Refused(ExecutionModeRules.refusalReason(mode))
         }
     }
 

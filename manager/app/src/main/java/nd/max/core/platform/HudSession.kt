@@ -390,6 +390,19 @@ object HudSampler {
     /** إيقاع الاستطلاع والشاشة مطفأة — خمس ثوانٍ: يُبقي الجلسة حيّة بلا كلفة ثانية بثانية. */
     private const val SCREEN_OFF_SAMPLE_MS = 5_000L
 
+    /**
+     * أدنى فاصل **وتوفير البطارية مُفعَّل** — ثانيتان.
+     *
+     * **ولماذا هنا:** كل عيّنة تمرّ بمسار الصدفة وقراءة عقود (‏FPS · تردّدات · حمل) — وهذا أثقل
+     * عمل اختياريّ في التطبيق. وكان `isPowerSaveMode` لا يقرِّر شيئًا في هذا المسار: يُفعّل
+     * المستخدم توفير البطارية فلا يتبدّل إيقاع واحد. والتراكب لا يفقد قراءة صالحة بفاصل ثانيتين،
+     * ومن يفتحه يرى الأرقام تتحرّك.
+     */
+    private const val POWER_SAVE_SAMPLE_MS = 2_000L
+
+    /** عمر مخبأ حالة توفير البطارية — عشر ثوانٍ (قراءتها رحلة Binder). */
+    private const val POWER_SAVE_CACHE_MS = 10_000L
+
     private var job: Job? = null
     private var appContext: Context? = null
 
@@ -439,8 +452,14 @@ object HudSampler {
                 val ctx = appContext!!
                 val power = ctx.getSystemService(Context.POWER_SERVICE) as? PowerManager
                 job = loop.launch {
+                    var powerSave = false
+                    var powerSaveReadAtMs = 0L
                     while (isActive) {
                         val began = System.currentTimeMillis()
+                        if (power != null && began - powerSaveReadAtMs >= POWER_SAVE_CACHE_MS) {
+                            powerSaveReadAtMs = began
+                            powerSave = runCatching { power.isPowerSaveMode }.getOrDefault(false)
+                        }
                         // **الشاشة مطفأة: لا استطلاع** (جولة الحرارة واللاغ). الطلب كان يبقى قائمًا بلا
                         // نهاية — وكل عينة تحمل صدفة المصدر وقراءات عقد — بينما المستهلك (التراكب
                         // والشاشة) لا يُعرض أحدهما والشاشة مطفأة. فالنوم يطول (`SCREEN_OFF_SAMPLE_MS`) بدل
@@ -454,7 +473,8 @@ object HudSampler {
                             HudLive.publish(reading, joinedOwner(), intervalMs)
                             HudRecorder.feed(reading, System.currentTimeMillis())
                         }
-                        delay((intervalMs - (System.currentTimeMillis() - began)).coerceAtLeast(150L))
+                        val cadence = if (powerSave) maxOf(intervalMs, POWER_SAVE_SAMPLE_MS) else intervalMs
+                        delay((cadence - (System.currentTimeMillis() - began)).coerceAtLeast(150L))
                     }
                 }
             }

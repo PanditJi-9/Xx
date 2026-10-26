@@ -209,7 +209,7 @@ object StorageCareEngine {
         when (category) {
             StorageCareCategory.AppCaches -> {
                 // نظامي لا `rm`: النظام يخفض كاش كل تطبيق بآليته.
-                executed = PrivilegedShell.run(TRIM_CACHES) != null
+                executed = RootShell.run(TRIM_CACHES) != null
                 verified = executed
             }
 
@@ -479,7 +479,7 @@ object StorageCareEngine {
     /** أحجام مسارات معروفة: `du -sk` واحد عليها كلها. `null` يعني «لم يُقرأ» لا «صفر». */
     private fun duByPath(paths: List<String>): Map<String, Long>? {
         if (paths.isEmpty()) return emptyMap()
-        val command = "du -sk " + paths.joinToString(" ") { PrivilegedShell.quote(it) }
+        val command = "du -sk " + paths.joinToString(" ") { RootShell.quote(it) }
         val output = duOutput(command) ?: return null
         val sizes = output.mapNotNull(StorageCareModel::parseDuRow).toMap()
         // أمر ناجح بلا سطر واحد غير مفهوم يعني فشل القراءة، لا صفرًا: الصفر يُكتب من سطر
@@ -495,7 +495,7 @@ object StorageCareEngine {
      * ومخرج فيه أسطر يعني قياسًا (فيه ما لم يُقرأ، وهو المعلَن في الشاشة).
      */
     private fun duOutput(command: String): List<String>? {
-        val result = PrivilegedShell.runDetailed(command) ?: return null
+        val result = RootShell.runDetailed(command) ?: return null
         if (result.out.isEmpty() && !result.success) return null
         return result.out
     }
@@ -516,7 +516,7 @@ object StorageCareEngine {
         var executed = true
         var verified = true
         for (dir in dirs) {
-            val outcome = deleteMatching(PrivilegedShell.quote(dir.path) + "/*")
+            val outcome = deleteMatching(RootShell.quote(dir.path) + "/*")
             executed = executed && outcome.first
             verified = verified && outcome.second
         }
@@ -534,7 +534,7 @@ object StorageCareEngine {
     fun clearAppData(packageName: String): CleanOutcome {
         val dataDir = "/data/data/$packageName"
         val before = duByPath(listOf(dataDir))
-        val output = PrivilegedShell.run("pm clear ${PrivilegedShell.quote(packageName)}")
+        val output = RootShell.run("pm clear ${RootShell.quote(packageName)}")
             ?: return CleanOutcome(executed = false, verified = false, freedBytes = 0L)
         val executed = output.any { it.equals("Success", ignoreCase = true) }
         val after = if (executed) duByPath(listOf(dataDir)) else null
@@ -585,10 +585,10 @@ object StorageCareEngine {
      */
     private fun corpsePaths(): List<String>? {
         val parents = corpseParents(Environment.getExternalStorageDirectory())
-        val listings = parents.map { dir -> PrivilegedShell.run("ls -1 ${PrivilegedShell.quote(dir.path)}") }
+        val listings = parents.map { dir -> RootShell.run("ls -1 ${RootShell.quote(dir.path)}") }
         if (listings.all { it == null }) return null
 
-        val installed = PrivilegedShell.run("pm list packages")
+        val installed = RootShell.run("pm list packages")
             ?.asSequence()
             ?.map { it.removePrefix("package:").trim() }
             ?.filter { it.isNotBlank() }
@@ -612,7 +612,7 @@ object StorageCareEngine {
      * قبل `rm`، فلا يُقرأ الاسم جزءًا ثانيًا من الأمر.
      */
     private fun deleteMatching(glob: String): Pair<Boolean, Boolean> {
-        val listed = PrivilegedShell.run("ls -d $glob") ?: return false to false
+        val listed = RootShell.run("ls -d $glob") ?: return false to false
         val paths = listed.filter { it.isNotBlank() && it != glob }
         if (paths.isEmpty()) return true to true
         val outcome = FileSystemEngine.delete(paths)
@@ -626,7 +626,7 @@ object StorageCareEngine {
      * «لم يُقس» لا «صفر».
      */
     private fun measureViaShell(category: StorageCareCategory, vararg patterns: String): CleanMeasurement? {
-        val output = PrivilegedShell.run("du -sk ${patterns.joinToString(" ")}") ?: return null
+        val output = RootShell.run("du -sk ${patterns.joinToString(" ")}") ?: return null
         if (output.isEmpty()) return CleanMeasurement(category, 0L, 0)
         var kilobytes = 0L
         var count = 0
@@ -831,7 +831,7 @@ object StorageCareEngine {
             // عنصر — أي «طُبِع سطر» تُقرأ «نجح»، و«لم يطبع» تُقرأ فشلًا، ولا علاقة لأيّهما
             // بالنتيجة. والصواب قراءة حكم الأمر نفسه (`runDetailed().success` = رمز الخروج)،
             // ثم فحص ما يجب أن يبقى قائمًا بعده: `VACUUM` لا يحذف الملفّ، فوجوده شاهدٌ للسلامة.
-            val outcome = PrivilegedShell.runDetailed("sqlite3 ${PrivilegedShell.quote(path)} 'VACUUM;'")
+            val outcome = RootShell.runDetailed("sqlite3 ${RootShell.quote(path)} 'VACUUM;'")
             val ok = outcome?.success == true
             if (!ok) executed = false
             verified = verified && ok && runCatching { File(path).exists() }.getOrDefault(false)

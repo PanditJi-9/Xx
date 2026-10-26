@@ -281,6 +281,42 @@ void suite_freq_balance_gate(void) {
 }
 
 /* ────────────────────────────────────────────────────────────────────────────
+ * ٣.١) app_status → profile checkup: "event" لا "كل كتابة".
+ *
+ * **العطب الذي تحرسه هذه الدعاوى (جولة الحرارة واللاغ):** كل `IN_MODIFY` على `app_status`
+ * كان يضبط `need_profile_checkup` بلا مقارنة. والملفّ يُكتب عند كل تغيّر (نسبة البطارية،
+ * معدّل الشاشة، حالة الصمت…) — أي دورة فحص كاملة لعشرات المرات في الساعة بلا سبب.
+ * ولا تُفقد حالة: البطارية والوضع يُقرآن من الكاش في كل دورة، والمقيم هو ما يحدّد الفحص.
+ * ──────────────────────────────────────────────────────────────────────────── */
+void suite_app_status_gate(void) {
+    printf("\n\033[1m[app_status_gate] profile checkup only on a real foreground change\033[0m\n");
+
+    /* تغيّر الحزمة المقيمة: الفحص مطلوب — وإلا بقيت اللعبة السابقة هي الهدف. */
+    CHECK(app_status_needs_profile_checkup("com.miui.home", "sw-1", "com.game", "sw-2"),
+          "a new foreground package asks for a checkup");
+
+    /* نفس الحزمة، وكتابة جديدة بلا تغيّر: **لا فحص** — وهذا هو العطب نفسه. */
+    CHECK(!app_status_needs_profile_checkup("com.game", "sw-2", "com.game", "sw-2"),
+          "same package + same session (battery/refresh write) asks for nothing");
+
+    /* نفس الحزمة بجلسة جديدة: جلسة أُعيد فتحها (عودة تطبيق بعد موت عمليته) ⇒ فحص. */
+    CHECK(app_status_needs_profile_checkup("com.game", "sw-2", "com.game", "sw-9"),
+          "a reopened session on the same package still asks for a checkup");
+
+    /* أول قراءة (الكاش صفر): "" ليست حزمة، فيُطلب فحص. */
+    CHECK(app_status_needs_profile_checkup("", "", "com.game", "sw-1"),
+          "the first status read is always a change");
+
+    /* وحزمة فارغة (لا مقدّمة) لا تطلب فحصًا بنفسها: الإطفاء يمرّ بمسار آخر. */
+    CHECK(!app_status_needs_profile_checkup("", "", "", "sw-1"),
+          "an empty foreground is not a change worth a checkup");
+    CHECK(!app_status_needs_profile_checkup(NULL, NULL, NULL, NULL),
+          "NULL inputs are tolerated, not dereferenced");
+    CHECK(app_status_needs_profile_checkup(NULL, "sw-1", "com.game", "sw-1"),
+          "an unknown previous package is a change");
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
  * ٤) ChargingNodes — the bypass registry's structural invariants.
  * ──────────────────────────────────────────────────────────────────────────── */
 void suite_bypass_registry(void) {
@@ -709,6 +745,7 @@ int main(void) {
     suite_profile_logic();
     suite_max_ai_mode();
     suite_freq_balance_gate();
+    suite_app_status_gate();
     suite_bypass_registry();
     suite_resolution();
     suite_renderer();

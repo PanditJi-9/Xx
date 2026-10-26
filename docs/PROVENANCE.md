@@ -1024,7 +1024,7 @@
 | `manager/app/src/main/java/nd/max/ui/util/PermissionPolicy.kt` | Zexshia | Apache-2.0 | APACHE_HEADER_RETAINED | REVIEW |
 | `manager/app/src/main/java/nd/max/ui/util/PluginContract.kt` | Zexshia | Apache-2.0 | APACHE_HEADER_RETAINED | REVIEW |
 | `manager/app/src/main/java/nd/max/ui/util/PluginDirectory.kt` | Zexshia | Apache-2.0 | APACHE_HEADER_RETAINED | REVIEW |
-| `manager/app/src/main/java/nd/max/ui/util/PrivilegedShell.kt` | Zexshia | Apache-2.0 | APACHE_HEADER_RETAINED | REVIEW |
+| `manager/app/src/main/java/nd/max/ui/util/RootShell.kt` | Zexshia | Apache-2.0 | APACHE_HEADER_RETAINED | REVIEW |
 | `manager/app/src/main/java/nd/max/ui/util/ProcessOverlayPrefs.kt` | MaxManager app | Proprietary (All rights reserved) | NO_HEADER | KEEP |
 | `manager/app/src/main/java/nd/max/ui/util/ProfilePresetStore.kt` | MaxManager app | Proprietary (All rights reserved) | NO_HEADER | KEEP |
 | `manager/app/src/main/java/nd/max/ui/util/ProfileSharing.kt` | Zexshia | Apache-2.0 | APACHE_HEADER_RETAINED | REVIEW |

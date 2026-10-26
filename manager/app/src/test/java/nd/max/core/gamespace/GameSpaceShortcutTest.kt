@@ -126,4 +126,63 @@ class GameSpaceShortcutTest {
             for (key in keys) assertTrue("$key missing from $folder", key in declared)
         }
     }
+
+    private fun manifest(): String = File(sourceRoot, "../../../AndroidManifest.xml").canonicalFile.readText()
+
+    private fun widgetConst(name: String): String =
+        Regex("const val $name = \"([^\"]+)\"").find(code("widget/core/WidgetActions.kt"))
+            ?.groupValues?.get(1) ?: error("$name not found in WidgetActions.kt")
+
+    /**
+     * اختصارات الضغط المطوّل لا تمرّ بإذن «اختصارات الشاشة الرئيسية» عند المشغّل. وحلقاتها ثلاث لا يراها
+     * المُصرّف: `meta-data` على نشاط `LAUNCHER` ← `shortcuts.xml` ← نيّة مطابقة لنيّة الاختصار المثبَّت.
+     */
+    @Test
+    fun `the static shortcut carries the same action and lobby route as the pinned one`() {
+        val launcher = manifest().substringAfter("<activity-alias").substringBefore("</activity-alias>")
+        assertTrue(
+            "the launcher alias must declare android.app.shortcuts",
+            launcher.contains("android:name=\"android.app.shortcuts\"") &&
+                launcher.contains("android:resource=\"@xml/shortcuts\"")
+        )
+        val xml = File(resRoot, "xml/shortcuts.xml").takeIf { it.isFile }?.readText()
+        assertNotNull("res/xml/shortcuts.xml is missing", xml)
+        xml!!
+        assertTrue(xml.contains("android:action=\"${GameSpaceShortcut.ACTION_OPEN_LOBBY}\""))
+        assertTrue(xml.contains("android:targetClass=\"nd.max.MainActivity\""))
+        assertTrue(xml.contains("android:targetPackage=\"nd.max\""))
+        assertTrue(
+            "the static shortcut must carry the open-route extra",
+            Regex(
+                "<extra\\s+android:name=\"${Regex.escape(widgetConst("EXTRA_OPEN_ROUTE"))}\"\\s+" +
+                    "android:value=\"${Regex.escape(widgetConst("ROUTE_GAME_LOBBY"))}\""
+            ).containsMatchIn(xml)
+        )
+        for (label in listOf("shortcutShortLabel", "shortcutLongLabel")) {
+            assertTrue("$label must use a string resource", xml.contains("android:$label=\"@string/game_lobby_title\""))
+        }
+    }
+
+    /**
+     * الأيقونة المستقلّة: مدخل `LAUNCHER` مُعطَّل افتراضيًّا (لا تظهر إلا بطلب المستخدم)، شفّاف، يُطلق النيّة
+     * نفسها التي يطلقها الاختصار المثبَّت ثم ينتهي في `onCreate` (شرط `Theme.NoDisplay`).
+     */
+    @Test
+    fun `the standalone lobby icon is an opt-in transparent launcher entry`() {
+        val block = manifest().substringAfter("android:name=\".GameLobbyEntryActivity\"").substringBefore("</activity>")
+        assertTrue("must be disabled by default", block.contains("android:enabled=\"false\""))
+        assertTrue("must be exported for the launcher", block.contains("android:exported=\"true\""))
+        assertTrue("must be a LAUNCHER entry", block.contains("android.intent.category.LAUNCHER"))
+        assertTrue("must be transparent", block.contains("@android:style/Theme.NoDisplay"))
+        assertTrue("must not leave an empty task behind", block.contains("android:excludeFromRecents=\"true\""))
+        val entry = squash(code("GameLobbyEntryActivity.kt"))
+        assertTrue(entry.contains("startActivity(GameSpaceShortcutPinner.lobbyIntent(this))"))
+        assertTrue("NoDisplay must finish before onResume", entry.contains("finish()"))
+        val icon = squash(code("ui/util/GameLobbyIcon.kt"))
+        assertTrue(icon.contains("GameLobbyEntryActivity::class.java"))
+        assertTrue(icon.contains("PackageManager.DONT_KILL_APP"))
+        for (res in listOf("mipmap-anydpi-v26/ic_game_lobby.xml", "drawable/ic_game_lobby_background.xml", "drawable/ic_game_lobby_foreground.xml")) {
+            assertTrue("$res is missing", File(resRoot, res).isFile)
+        }
+    }
 }

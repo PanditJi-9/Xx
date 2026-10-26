@@ -313,6 +313,8 @@ fun GamePanelCockpit(
     val msgShotFailed = stringResource(R.string.game_panel_msg_shot_failed)
     val msgFreedNone = stringResource(R.string.game_panel_msg_freed_none)
     val msgNeedsRoot = stringResource(R.string.game_panel_msg_needs_root)
+    val fmtWriteRefused = stringResource(R.string.game_panel_msg_write_refused)
+    val fmtWriteFailed = stringResource(R.string.game_panel_msg_write_failed)
     val msgFpsFailed = stringResource(R.string.game_panel_msg_fps_failed)
     val cdList = stringResource(R.string.game_panel_view_list)
     val cdGrid = stringResource(R.string.game_panel_view_grid)
@@ -486,6 +488,20 @@ fun GamePanelCockpit(
         reason.contains("no-gpu-provider") || reason.contains("not-writable") || reason.contains("unsupported") -> rUnsupported
         reason.contains("held") || reason.contains("suppress") || reason.contains("blocked") || reason.contains("lock") -> rHeld
         else -> rGeneric
+    }
+
+    // إخفاق كتابة مقبض (رفض بالوضع/الامتياز أو فشل التنفيذ) يُقال بمقبضه — لا يعود المقبض صامتًا.
+    LaunchedEffect(Unit) {
+        PanelToggles.failures.collect { failure ->
+            hold()
+            val label = when (failure.key) {
+                "wifi" -> lWifi
+                "data" -> lData
+                "dnd" -> lDnd
+                else -> failure.key
+            }
+            say(String.format(if (failure.refused) fmtWriteRefused else fmtWriteFailed, label))
+        }
     }
 
     // نتيجة تبديل البروفايل تُقال مرّة عند وصولها (لا كل إعادة تركيب).

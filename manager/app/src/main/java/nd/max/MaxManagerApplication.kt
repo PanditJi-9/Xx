@@ -33,6 +33,9 @@ import nd.max.core.hardware.SharedControlStorage
 import nd.max.core.hardware.SharedHardwareOwnershipStore
 import nd.max.core.hardware.TouchControlBackend
 import nd.max.core.maxai.MaxAiEngine
+import nd.max.core.gamespace.GameProfileRepository
+import nd.max.core.privilege.ExecutionModeRules
+import nd.max.core.privilege.ExecutionModeStore
 import nd.max.core.privilege.ShizukuGateway
 import nd.max.core.gamespace.SidePanelArmedStore
 import nd.max.service.GamePanelService
@@ -128,7 +131,15 @@ class MaxManagerApplication : Application() {
         //
         // ولا يُغيَّر سلوك فاشل: إن رُفض الجذر أو غاب، يسقط الاستدعاء الراجع صامتًا ويبقى كل
         // مسار كما هو (كل نداء جذر بعدها يسأل الصدفة نفسها ويُعلن فشله في موضعه).
-        Shell.getShell { }
+        //
+        // **إلا في وضعَي Shizuku وBasic** ([ExecutionModeRules.mayUseRoot]): من اختارهما يريد ألّا يُستدعى
+        // `su` من التطبيق أبدًا، فتسخين الصدفة هنا كان سيُظهر نافذة الصلاحية عند أول إقلاع. والوضع يُقرأ
+        // قبل التسخين لأن `PrivilegedShell.exec` يقرأ النسخة الذاكرية نفسها في كل عملية (التطبيق ولوحة الألعاب).
+        // مكان وثيقة بروفايلات الألعاب المحلية (بلا جذر) يُحدَّد قبل أي قراءة لها.
+        GameProfileRepository.install(this)
+        if (ExecutionModeRules.mayUseRoot(ExecutionModeStore.load(this))) {
+            Shell.getShell { }
+        }
 
         // **وسياق جسر Shizuku يُثبَّت هنا — لأن ربط خدمة المستخدم يحتاج `ComponentName` من اسم الحزمة.**
         // ويُثبَّت في الإقلاع لا عند أول نداء: أوّل تنفيذ قد يقع من لوحة الألعاب، وهي خدمة مستقلّة

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    اختصارات الضغط المطوّل على أيقونة التطبيق. **لا تمرّ بمربّع تثبيت المشغّل ولا بإذن «اختصارات الشاشة
+    الرئيسية»** (وهو ما يُسقط التثبيت اليدوي على بعض المشغّلات)، فهي الطريق الذي لا يتعطّل.
+    النيّة هي نيّة الاختصار المثبَّت نفسها حرفيًّا (`GameSpaceShortcut.ACTION_OPEN_LOBBY` +
+    `WidgetIntents.EXTRA_OPEN_ROUTE = game_lobby`) فيمرّ بنفس بوابة `RemoteFlags.GAMESPACE`.
+    معرّف الحزمة ثابت `nd.max` (لا لاحقة تصحيح في `build.gradle.kts`)؛ ويحرس `GameSpaceShortcutTest` الاتساق.
+-->
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:enabled="true"
+        android:icon="@mipmap/ic_game_lobby"
+        android:shortcutId="static_game_lobby"
+        android:shortcutLongLabel="@string/game_lobby_title"
+        android:shortcutShortLabel="@string/game_lobby_title">
+        <intent
+            android:action="nd.max.action.OPEN_GAME_LOBBY"
+            android:targetClass="nd.max.MainActivity"
+            android:targetPackage="nd.max">
+            <extra
+                android:name="nd.max.widget.OPEN_ROUTE"
+                android:value="game_lobby" />
+        </intent>
+    </shortcut>
+</shortcuts>

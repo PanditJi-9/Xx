@@ -29,7 +29,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import nd.max.R
 import nd.max.AppMonitorLogger
+import nd.max.core.gamespace.ForegroundSource
+import nd.max.core.gamespace.GameForeground
 import nd.max.core.gamespace.GameLibraryAccess
+import nd.max.core.gamespace.InAppProfileApplier
+import nd.max.core.gamespace.UsageStatsForeground
 import nd.max.core.gamespace.GameProfileRepository
 import nd.max.core.gamespace.GameThermalProfiles
 import nd.max.core.gamespace.GamePanelMode
@@ -56,6 +60,7 @@ import nd.max.core.gamespace.nextRefreshRate
 import nd.max.core.gamespace.panelPlacement
 import nd.max.core.gamespace.panelServiceLifetime
 import nd.max.core.gamespace.dismissGamePanel
+import nd.max.core.gamespace.panelForegroundProbeMs
 import nd.max.core.gamespace.panelLibraryStale
 import nd.max.core.gamespace.panelStep
 import nd.max.core.gamespace.preferFocusedPackage
@@ -113,6 +118,9 @@ class GamePanelService : LifecycleService() {
 
         /** أقصى ما يُحتفظ فيه بوضع النظام المختار قبل أن يُعاد الحكم للقراءة الحقيقية. */
         private const val PROFILE_HOLD_MS = 6_000L
+
+        /** عمر مخبأ وضع توفير البطارية — عشر ثوانٍ: قرار عرض لا قياس لحظيّ. */
+        private const val POWER_SAVE_CACHE_MS = 10_000L
 
         /** فاصل قراءة الترددات الحيّة واللوحة مفتوحة: يتحرّك الشريط والرقم بسلاسة دون إرهاق العقد. */
         private const val CLOCK_TICK_MS = 700L
@@ -182,6 +190,31 @@ class GamePanelService : LifecycleService() {
     /** المجموعة المُفعَّلة التي قُرئت معها المكتبة، ومتى قُرئت — تُعاد القراءة عند تغيّرها أو بعد [nd.max.core.gamespace.PANEL_LIBRARY_TTL_MS]. */
     private var libraryFor: Set<String> = emptySet()
     private var libraryLoadedAt = 0L
+
+    /** آخر مصدر استُعمل لكشف اللعبة الأمامية — تبديله يُصفّر حالة أحداث الاستخدام. */
+    private var lastForegroundSource: ForegroundSource? = null
+
+    /**
+     * آخر جواب عن اللعبة الأمامية ووقت سؤاله — **السؤال لا يقع في كل دورة**.
+     *
+     * وكل سؤال في مسار الجذر يفتح صدفةً تُنفّذ `dumpsys activity activities` (أثقل تفريغ في
+     * النظام). وكان السؤال مع كل دورة: ١٨٠٠ صدفة في الساعة والخدمة خاملة. والفاصل الآن من
+     * [nd.max.core.gamespace.panelForegroundProbeMs] — ويبقى ١٫٥ ث واللعبة أمامية.
+     */
+    private var lastForegroundProbeAtMs = 0L
+    private var lastForeground: String? = null
+
+    /** مخبأ وضع توفير البطارية: `isPowerSaveMode` رحلة Binder، وقيمته تتغيّر بدقائق. */
+    private var powerSaveCachedAtMs = 0L
+    private var powerSaveCached = false
+
+    private fun powerSaveNow(): Boolean {
+        val now = android.os.SystemClock.uptimeMillis()
+        if (powerSaveCachedAtMs != 0L && now - powerSaveCachedAtMs < POWER_SAVE_CACHE_MS) return powerSaveCached
+        powerSaveCached = powerManager?.isPowerSaveMode == true
+        powerSaveCachedAtMs = now
+        return powerSaveCached
+    }
 
     /** هل القارئ الواحد (`HudSampler`) مملوك لهذه الخدمة الآن؟ يُشغَّل مع الحاجة ويُوقَف بدونها. */
     private var samplerRunning = false
@@ -414,6 +447,11 @@ class GamePanelService : LifecycleService() {
             (getSystemService(Context.DISPLAY_SERVICE) as android.hardware.display.DisplayManager)
                 .unregisterDisplayListener(displayListener)
         }
+        // إيقاف الخدمة يُعيد إعدادات اللعبة فورًا؛ وإن تعذّر بقيت اللقطة محفوظة ويُكمل `recover` عند الإقلاع.
+        val appContext = applicationContext
+        kotlinx.coroutines.CoroutineScope(Dispatchers.IO).launch {
+            runCatching { InAppProfileApplier.release(appContext) }
+        }
         clockJob?.cancel()
         RootNodeChannel.disconnect(RootNodeChannel.OWNER_GAME_PANEL)
         HudSampler.stop(HUD_OWNER_PANEL)
@@ -433,6 +471,8 @@ class GamePanelService : LifecycleService() {
      * تنتهي حين لا تبقى لعبة مُفعَّلة، أو بزرّ الإيقاف في الإشعار.
      */
     private suspend fun poll() {
+        // ما بقي من جلسة سابقة ماتت قبل أن تُعيد إعدادات اللعبة (عدم الإزعاج، معدّل التحديث…) يُعاد أولًا.
+        runCatching { withContext(Dispatchers.IO) { InAppProfileApplier.recover(applicationContext) } }
         while (lifecycleScope.isActive) {
             val prefs = GamePanelPrefs.load(applicationContext)
             val crosshairNow = CrosshairPrefs.load(applicationContext)
@@ -456,16 +496,40 @@ class GamePanelService : LifecycleService() {
 
             // الشاشة المطفأة لا تُستطلع: لا لعبة تُلعب والشاشة مطفأة، فتُطوى اللوحة ([PanelSubject.Unknown]).
             val interactive = powerManager?.isInteractive ?: true
-            val foreground = if (!interactive) null else withContext(Dispatchers.IO) {
-                val resumed = runCatching { FpsMonitorUtil.getForegroundPackage() }.getOrNull()
-                // مراجعة نافذة التركيز **حين تبدو لعبةً فقط** (فلا يُدفع ثمنها في الخمول): إن كان المقيم
-                // لعبة من المكتبة فالتركيز هو الحَكَم، لأن اللعبة قد تبقى «مقيمة» بعد مغادرتها فيبقى
-                // المقبض ظاهرًا فوق الشاشة الرئيسية وفوق التطبيقات.
-                if (resumed != null && resumed in library) {
-                    preferFocusedPackage(resumed, runCatching { FpsMonitorUtil.getFocusedWindowPackage() }.getOrNull())
-                } else {
-                    resumed
-                }
+            val powerSave = powerSaveNow()
+            // **السؤال عن المقدّمة لا يقع في كل دورة.** إيقاع الحالة (‏١٫٥/٢/١٠ ث) هو إيقاع
+            // الرسم والقرار؛ وسؤال النظام أثقل منه وأبطأ حاجةً (لا يتغيّر إلا بتبديل تطبيق).
+            // فبين سؤاليْن تُعاد قيمة صحيحة معروفة، والمصدر لا يُعاد اختياره كل دورة أيضًا
+            // (‏`GameForeground.source` يقرأ AppOps و`cachedRootGranted`).
+            val probeMs = panelForegroundProbeMs(
+                interactive = interactive,
+                gameInFront = state.subject is PanelSubject.Tracked,
+                powerSave = powerSave,
+            )
+            val probeAt = android.os.SystemClock.uptimeMillis()
+            val foreground = if (!interactive) {
+                null
+            } else if (probeMs == Long.MAX_VALUE || probeAt - lastForegroundProbeAtMs < probeMs) {
+                lastForeground
+            } else {
+                lastForegroundProbeAtMs = probeAt
+                withContext(Dispatchers.IO) {
+                    // المصدر بحسب الوضع والإذن: جذر ⇒ `dumpsys` كما كان، وغيره ⇒ أحداث الاستخدام (بلا جذر).
+                    val source = GameForeground.source(applicationContext)
+                    if (source != lastForegroundSource) {
+                        UsageStatsForeground.reset()
+                        lastForegroundSource = source
+                    }
+                    val resumed = runCatching { GameForeground.current(applicationContext, source) }.getOrNull()
+                    // مراجعة نافذة التركيز **حين تبدو لعبةً فقط** (فلا يُدفع ثمنها في الخمول): إن كان المقيم
+                    // لعبة من المكتبة فالتركيز هو الحَكَم، لأن اللعبة قد تبقى «مقيمة» بعد مغادرتها فيبقى
+                    // المقبض ظاهرًا فوق الشاشة الرئيسية وفوق التطبيقات. (مسار الصدفة وحده: التركيز يُقرأ بها.)
+                    if (source == ForegroundSource.SHELL && resumed != null && resumed in library) {
+                        preferFocusedPackage(resumed, runCatching { FpsMonitorUtil.getFocusedWindowPackage() }.getOrNull())
+                    } else {
+                        resumed
+                    }
+                }.also { lastForeground = it }
             }
             val step = panelStep(
                 previous = state,
@@ -473,7 +537,8 @@ class GamePanelService : LifecycleService() {
                 side = prefs.side,
                 interactive = interactive,
                 foreground = foreground,
-                library = library
+                library = library,
+                powerSave = powerSave,
             )
             // مغادرة اللعبة والوحة مفتوحة: تتلاشى اللوحة أولًا ثم تُطوى، بدل أن تبقى مجمّدة على الشاشة حتى الاستطلاع التالي.
             if (state.mode == GamePanelMode.Open && step.state.mode != GamePanelMode.Open) {
@@ -486,6 +551,10 @@ class GamePanelService : LifecycleService() {
             syncCrosshair(crosshairNow)
             // ساعة الجلسة تُلمس لكل لعبة ترى الخدمة في المقدّمة، مُفعَّلةً كانت أم لا، كما كانت قبل التقسيم.
             (state.subject as? PanelSubject.Tracked)?.let { PanelSessionClock.touch(it.packageName) }
+            // بروفايل اللعبة بلا رفيق الجذر: يدخل مع اللعبة المتتبَّعة ويخرج بخروجها. المطبِّق نفسه يقرّر هل هو
+            // المسؤول (مسار الجذر يبقى لـ`AppMonitor`)، وعند عدم المسؤولية لا يفعل شيئًا.
+            val trackedPkg = (state.subject as? PanelSubject.Tracked)?.packageName
+            withContext(Dispatchers.IO) { runCatching { InAppProfileApplier.sync(applicationContext, trackedPkg) } }
             if (!silk.busy) handleY = prefs.handleY
             if (state.mode == GamePanelMode.Open) {
                 val fresh = withContext(Dispatchers.IO) { runCatching { PanelControls.read() }.getOrDefault(controls) }

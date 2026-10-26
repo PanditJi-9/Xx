@@ -32,7 +32,7 @@
  *    و`drop_caches` **لا يُستخدم هنا**: هو إسقاط لمخابئ النواة لا قتل تطبيقات، ويُبطئ القراءة
  *    بعدها، والخطة تنصّ أن مكانه أدوات الجذر بتنبيه — لا زرٌّ يوميّ في الرئيسية.
  *
- * 3. **ولا يأخذ مسارًا ثانيًا:** التنفيذ عبر `PrivilegedShell`، وهو الغلاف الوحيد على `Shell`
+ * 3. **ولا يأخذ مسارًا ثانيًا:** التنفيذ عبر `RootShell`، وهو الغلاف الوحيد على `Shell`
  *    في المستودع كله (نفس ما يستخدمه مدير الملفات وAppOps). ولمّا كان `am` يحتاج uid الصدفة،
  *    فالتعزيز **يحتاج جذرًا** فعلًا — و`ShizukuGateway` يعلن في تعليقه أن تشغيل أوامر عبر
  *    شيزوكو (UserService) **غير منفَّذ بعد**، فلا نَدّعي قدرة لا نملكها. من لا جذر له يقرأ
@@ -86,7 +86,7 @@ object MemoryBoostEngine {
      */
     fun boost(readAvailableMb: () -> Int?): BoostOutcome {
         val before = readAvailableMb()
-        val executed = PrivilegedShell.run(KILL_ALL) != null
+        val executed = RootShell.run(KILL_ALL) != null
         if (!executed) return BoostOutcome(executed = false, freedMb = null)
         val after = readAvailableMb()
         val freed = if (before != null && after != null) (after - before).takeIf { it > 0 } else null

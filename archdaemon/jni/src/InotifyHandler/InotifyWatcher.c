@@ -157,12 +157,28 @@ bool process_inotify_events(int inotify_fd, DaemonContext* ctx, int timeout_ms) 
                             }
                         }
                         if (strcmp(event->name, "app_status") == 0) {
+                            // **الفحص عند تغيّر الحزمة/الجلسة، لا عند كل كتابة.** الملفّ يُكتب
+                            // عند كل تغيّر (نسبة بطارية، معدّل شاشة، حالة صمت…) — وكل واحدة كانت
+                            // تُطلب لها دورة فحص كاملة بلا أن يتغيّر ما يخصّ الملفّ. والقرار في
+                            // `app_status_needs_profile_checkup` (مقيس في parity_test).
+                            char previous_focused[sizeof(current_system_cache.focused_app)];
+                            char previous_switch[sizeof(current_system_cache.switch_id)];
+                            snprintf(previous_focused, sizeof(previous_focused), "%s",
+                                     current_system_cache.focused_app);
+                            snprintf(previous_switch, sizeof(previous_switch), "%s",
+                                     current_system_cache.switch_id);
                             read_app_status(&current_system_cache);
-                            ctx->need_profile_checkup = true;
-                        } else if (strcmp(event->name, "background_apps") == 0) {
-                            handle_background_apps_event(ctx);
-                            if (gamestart == NULL)
+                            if (app_status_needs_profile_checkup(previous_focused, previous_switch,
+                                                                 current_system_cache.focused_app,
+                                                                 current_system_cache.switch_id)) {
                                 ctx->need_profile_checkup = true;
+                            }
+                        } else if (strcmp(event->name, "background_apps") == 0) {
+                            // **ولا فحص من هنا.** الملفّ يُكتب فقط لجلسة تطبيق مُدار (انظر
+                            // `AppMonitor.writeBackgroundApps`)، و`get_gamestart()` يقرأ
+                            // المقيم من `app_status` لا منه. والفحص عند `gamestart == NULL`
+                            // كان يفتح دورة كاملة على كل تحديث قائمة عمليات بلا تغيّر.
+                            handle_background_apps_event(ctx);
                         } else if (strcmp(event->name, "current_profile") == 0) {
                             FILE* fp_prof = fopen(PROFILE_MODE, "r");
                             if (fp_prof) {

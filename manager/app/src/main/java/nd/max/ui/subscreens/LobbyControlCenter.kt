@@ -45,9 +45,12 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -68,6 +71,16 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import nd.max.R
+import nd.max.core.gamespace.GameCapabilities
+import nd.max.core.gamespace.GameFeature
+import nd.max.core.gamespace.GameModeStatus
+import nd.max.core.gamespace.GameProfileRepository
+import nd.max.core.gamespace.InAppProfileRules
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import nd.max.core.gamespace.UsageAccess
 import nd.max.core.gamespace.GameApp
 import nd.max.core.gamespace.HandleSize
 import nd.max.core.gamespace.LobbyCue
@@ -76,6 +89,12 @@ import nd.max.core.gamespace.LobbyPrefsState
 import nd.max.core.gamespace.LobbySort
 import nd.max.core.gamespace.PanelSensitivity
 import nd.max.core.gamespace.PanelSide
+import nd.max.core.privilege.ExecutionMode
+import nd.max.core.privilege.ExecutionModeStore
+import nd.max.core.privilege.ExecutionModeRules
+import nd.max.core.privilege.PrivilegeLevel
+import nd.max.core.privilege.PrivilegedShellRules
+import nd.max.core.privilege.PrivilegeManager
 import nd.max.core.gamespace.lobbyEnumOr
 import nd.max.ui.component.AppIconImage
 import nd.max.ui.component.LobbyNotice
@@ -89,6 +108,7 @@ import nd.max.ui.design.MaxSpace
 import nd.max.ui.design.maxRadius
 import nd.max.ui.util.AppConfig
 import nd.max.ui.util.GamePanelPrefs
+import nd.max.ui.util.GameLobbyIcon
 import nd.max.ui.util.GameSpaceShortcutPinner
 import nd.max.ui.util.PinOutcome
 import nd.max.ui.util.canvasScaleOptions
@@ -528,6 +548,22 @@ private fun LobbyOptionsBody(
     val sounds = LocalLobbySounds.current
     val shortcutLabel = stringResource(R.string.game_space_title)
     var shortcutOutcome by remember { mutableStateOf<PinOutcome?>(null) }
+    var iconEnabled by remember { mutableStateOf(GameLobbyIcon.isEnabled(context)) }
+    var iconFailed by remember { mutableStateOf(false) }
+    var mode by remember { mutableStateOf(ExecutionModeStore.current()) }
+    val privilege by PrivilegeManager.snapshot.collectAsState()
+    val modeScope = rememberCoroutineScope()
+    var usageGranted by remember { mutableStateOf(UsageAccess.isGranted(context)) }
+    var usageManual by remember { mutableStateOf(false) }
+    // الإذن يُمنح من صفحة الإعدادات أيضًا: يُعاد قياسه بخفّة (فحص AppOps) ما دامت هذه الصفحة ظاهرة.
+    LaunchedEffect(Unit) {
+        while (true) {
+            usageGranted = UsageAccess.isGranted(context)
+            delay(1_500)
+        }
+    }
+    // قراءة سلبية للامتياز عند فتح الصفحة (لا نافذة صلاحية): تملأ حالة الجذر وShizuku للبطاقة أدناه.
+    LaunchedEffect(Unit) { withContext(Dispatchers.IO) { PrivilegeManager.refresh() } }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -617,6 +653,101 @@ private fun LobbyOptionsBody(
                 onChange = { value -> onPrefs { it.copy(resumeLast = value) } }
             )
         }
+        LobbySectionCard(stringResource(R.string.lobby_head_mode)) {
+            LobbyOptionRow(
+                title = stringResource(R.string.lobby_row_mode),
+                options = ExecutionMode.entries.map { it.id to stringResource(it.labelRes()) },
+                selected = mode.id,
+                onSelect = { raw ->
+                    val next = ExecutionMode.fromId(raw)
+                    mode = next
+                    ExecutionModeStore.save(context, next)
+                    // مالك وثيقة بروفايلات الألعاب يتغيّر بالوضع (جذر ⇄ محلي): تُعاد قراءتها من المالك الجديد.
+                    modeScope.launch { GameProfileRepository.load() }
+                }
+            )
+            if (InAppProfileRules.isActive(mode, privilege.rootGranted)) {
+                LobbyNotice(message = stringResource(R.string.lobby_mode_profiles_local))
+            }
+            val status = GameModeStatus.of(mode, privilege.rootGranted, privilege.shizuku.ready)
+            LobbyNotice(message = stringResource(status.messageRes()), caution = status.isCaution())
+            LobbyNotice(message = stringResource(R.string.lobby_mode_scope))
+            // كشف اللعبة الأمامية: الجذر يقرأه بالصدفة؛ وبغيره يلزم إذن «وصول الاستخدام» (وإلا لا تعرف اللوحة اللعبة).
+            val rootLane = ExecutionModeRules.lane(mode, privilege.rootGranted, shizukuReady = false) ==
+                PrivilegedShellRules.Lane.ROOT
+            if (!rootLane) {
+                Text(
+                    text = stringResource(R.string.lobby_mode_usage_title),
+                    color = LobbyPalette.Ink,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+                LobbyNotice(
+                    message = stringResource(
+                        if (usageGranted) R.string.lobby_mode_usage_on else R.string.lobby_mode_usage_off
+                    ),
+                    caution = !usageGranted
+                )
+                if (!usageGranted) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm)) {
+                        OutlinedButton(
+                            onClick = {
+                                sounds.play(LobbyCue.Tap)
+                                modeScope.launch {
+                                    val granted = withContext(Dispatchers.IO) { UsageAccess.grantViaPrivilege(context) }
+                                    usageGranted = granted
+                                    usageManual = !granted
+                                }
+                            },
+                            border = BorderStroke(MaxSize.hairlineBorder, LobbyPalette.Hairline),
+                            modifier = Modifier.heightIn(min = MaxSize.minTouchTarget)
+                        ) {
+                            Text(
+                                text = stringResource(R.string.lobby_mode_usage_grant),
+                                color = LobbyPalette.Ink,
+                                fontSize = 13.sp
+                            )
+                        }
+                        OutlinedButton(
+                            onClick = {
+                                sounds.play(LobbyCue.Tap)
+                                runCatching { context.startActivity(UsageAccess.settingsIntent(context)) }
+                            },
+                            border = BorderStroke(MaxSize.hairlineBorder, LobbyPalette.Hairline),
+                            modifier = Modifier.heightIn(min = MaxSize.minTouchTarget)
+                        ) {
+                            Text(
+                                text = stringResource(R.string.lobby_mode_usage_open),
+                                color = LobbyPalette.Ink,
+                                fontSize = 13.sp
+                            )
+                        }
+                    }
+                    if (usageManual) {
+                        LobbyNotice(message = stringResource(R.string.lobby_mode_usage_manual), caution = true)
+                    }
+                }
+            }
+            val blocked = GameFeature.entries.mapNotNull { feature ->
+                val verdict = GameCapabilities.availability(feature, mode, privilege.rootGranted, privilege.shizuku.ready)
+                (verdict as? GameCapabilities.Availability.Unavailable)?.let { feature to it }
+            }
+            if (blocked.isNotEmpty()) {
+                Text(
+                    text = stringResource(R.string.lobby_mode_blocked_head),
+                    color = LobbyPalette.Ink,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+                blocked.forEach { (feature, why) ->
+                    Text(
+                        text = stringResource(feature.titleRes()) + " — " + stringResource(why.reasonRes()),
+                        color = LobbyPalette.Steel,
+                        fontSize = 12.sp
+                    )
+                }
+            }
+        }
         LobbySectionCard(stringResource(R.string.lobby_head_shortcut)) {
             Text(
                 text = stringResource(R.string.lobby_shortcut_desc),
@@ -643,6 +774,22 @@ private fun LobbyOptionsBody(
                     message = stringResource(outcome.messageRes()),
                     caution = outcome == PinOutcome.Unsupported || outcome == PinOutcome.Failed
                 )
+            }
+            // الأيقونة المستقلة: الطريق الذي لا يعتمد على إذن «اختصارات الشاشة الرئيسية» عند المشغّل.
+            LobbyToggleRow(
+                title = stringResource(R.string.lobby_shortcut_icon_title),
+                detail = stringResource(R.string.lobby_shortcut_icon_detail),
+                checked = iconEnabled,
+                onChange = { value ->
+                    val accepted = GameLobbyIcon.setEnabled(context, value)
+                    iconFailed = !accepted
+                    if (accepted) iconEnabled = value
+                }
+            )
+            if (iconFailed) {
+                LobbyNotice(message = stringResource(R.string.lobby_shortcut_icon_failed), caution = true)
+            } else if (iconEnabled) {
+                LobbyNotice(message = stringResource(R.string.lobby_shortcut_icon_on), caution = false)
             }
         }
         Text(
@@ -877,4 +1024,48 @@ private fun LobbyToggleRow(title: String, detail: String?, checked: Boolean, onC
             )
         )
     }
+}
+
+// ── وضع التنفيذ: ترجمة القيم النقيّة إلى نصوص (الدوال غير مركّبة ⇒ تُنادى من أي موضع) ──
+
+private fun ExecutionMode.labelRes(): Int = when (this) {
+    ExecutionMode.AUTO -> R.string.lobby_mode_auto
+    ExecutionMode.ROOT -> R.string.lobby_mode_root
+    ExecutionMode.SHIZUKU -> R.string.lobby_mode_shizuku
+    ExecutionMode.BASIC -> R.string.lobby_mode_basic
+}
+
+private fun GameModeStatus.messageRes(): Int = when (this) {
+    GameModeStatus.ACTIVE_ROOT -> R.string.lobby_mode_status_root
+    GameModeStatus.ACTIVE_SHIZUKU -> R.string.lobby_mode_status_shizuku
+    GameModeStatus.ACTIVE_BASIC -> R.string.lobby_mode_status_basic
+    GameModeStatus.NEEDS_ROOT -> R.string.lobby_mode_status_needs_root
+    GameModeStatus.NEEDS_SHIZUKU -> R.string.lobby_mode_status_needs_shizuku
+    GameModeStatus.NO_PRIVILEGE -> R.string.lobby_mode_status_none
+}
+
+private fun GameModeStatus.isCaution(): Boolean =
+    this == GameModeStatus.NEEDS_ROOT || this == GameModeStatus.NEEDS_SHIZUKU || this == GameModeStatus.NO_PRIVILEGE
+
+private fun GameFeature.titleRes(): Int = when (this) {
+    GameFeature.CROSSHAIR_OVERLAY -> R.string.game_feature_crosshair
+    GameFeature.WIFI_TOGGLE -> R.string.game_feature_wifi
+    GameFeature.MOBILE_DATA_TOGGLE -> R.string.game_feature_mobile_data
+    GameFeature.DND_TOGGLE -> R.string.game_feature_dnd
+    GameFeature.SCREENSHOT -> R.string.game_feature_screenshot
+    GameFeature.SCREEN_RECORD -> R.string.game_feature_screen_record
+    GameFeature.DISPLAY_SCALE -> R.string.game_feature_display_scale
+    GameFeature.FLOATING_WINDOW -> R.string.game_feature_floating_window
+    GameFeature.MEMORY_FREE -> R.string.game_feature_memory_free
+    GameFeature.TOUCH_BOOST -> R.string.game_feature_touch_boost
+    GameFeature.BYPASS_CHARGING -> R.string.game_feature_bypass_charging
+    GameFeature.CLOCK_CONTROL -> R.string.game_feature_clock_control
+    GameFeature.PROFILE_AUTOMATION -> R.string.game_feature_profile_automation
+}
+
+/** «بدّل الوضع» إن كان الجهاز يملك الامتياز والوضع يستبعده، وإلا ما يلزم منحه. */
+private fun GameCapabilities.Availability.Unavailable.reasonRes(): Int = when {
+    cause == GameCapabilities.Cause.MODE_EXCLUDES -> R.string.lobby_mode_reason_switch
+    requires == PrivilegeLevel.ROOT -> R.string.lobby_mode_reason_root
+    else -> R.string.lobby_mode_reason_shizuku
 }

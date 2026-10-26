@@ -45,6 +45,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -73,7 +74,10 @@ import androidx.compose.ui.unit.sp
 import kotlin.math.abs
 import nd.max.R
 import nd.max.core.gamespace.LobbyCue
+import nd.max.core.gamespace.GameModeStatus
 import nd.max.core.gamespace.LobbyModel
+import nd.max.core.privilege.ExecutionModeStore
+import nd.max.core.privilege.PrivilegeManager
 import nd.max.ui.design.MAX_VALUE_UNAVAILABLE
 import nd.max.ui.design.MaxAlpha
 import nd.max.ui.design.MaxDuration
@@ -238,8 +242,35 @@ internal fun LobbyStatusCapsule(modifier: Modifier = Modifier) {
             description = stringResource(R.string.lobby_ready_ram_cd, ramText ?: unavailable),
             tint = LobbyPalette.Cyan
         )
+        // المسار الذي تنفَّذ به أوامر مساحة الألعاب الآن (جذر · Shizuku · أساسي): يُقرأ من الحالة المُخزَّنة بلا
+        // نافذة صلاحية، ويُعرض نصًّا فلا يُعتمد على اللون وحده.
+        val privilege by PrivilegeManager.snapshot.collectAsState()
+        val lane = GameModeStatus.of(
+            ExecutionModeStore.current(),
+            privilege.rootGranted || PrivilegeManager.cachedRootGranted(),
+            privilege.shizuku.ready
+        )
+        val laneText = stringResource(lane.badgeRes())
+        Text(
+            text = laneText,
+            color = if (lane.isCautionBadge()) LobbyPalette.Caution else LobbyPalette.Positive,
+            fontSize = 11.sp,
+            fontWeight = FontWeight.SemiBold,
+            maxLines = 1,
+            modifier = Modifier.semantics { contentDescription = laneText }
+        )
     }
 }
+
+private fun GameModeStatus.badgeRes(): Int = when (this) {
+    GameModeStatus.ACTIVE_ROOT -> R.string.lobby_lane_root
+    GameModeStatus.ACTIVE_SHIZUKU -> R.string.lobby_lane_shizuku
+    GameModeStatus.ACTIVE_BASIC -> R.string.lobby_lane_basic
+    GameModeStatus.NEEDS_ROOT, GameModeStatus.NEEDS_SHIZUKU, GameModeStatus.NO_PRIVILEGE -> R.string.lobby_lane_none
+}
+
+private fun GameModeStatus.isCautionBadge(): Boolean =
+    this == GameModeStatus.NEEDS_ROOT || this == GameModeStatus.NEEDS_SHIZUKU || this == GameModeStatus.NO_PRIVILEGE
 
 @Composable
 private fun StatusReading(icon: ImageVector, text: String, description: String, tint: Color) {

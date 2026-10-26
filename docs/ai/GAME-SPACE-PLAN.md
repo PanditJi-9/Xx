@@ -938,3 +938,99 @@ service/GameOverlayService      ← التراكب (فوق OverlayWindow الق�
 حقيقيًّا. **وما لا يُعدَّل:** **الشكل يُرسم من `ui/design/`** ولا يُستنسخ من واجهة `Game Space` الأصلية؛
 والأسماء واللوحات والأيقونات عندنا لا عندهم. والبوّابة المقيسة: `python3 tools/license_audit.py --assert`
 ⇒ **exit 0** («لا مكوّن GPL في مسار الإصدار»).
+
+---
+
+## ملحق ٢٠٢٦-١٠-٢٥ — تصحيح الحالة + فصل أوضاع root / Shizuku / Basic وتجربة اللوبي والتراكب
+
+### أ) تصحيح صفوف تقادمت في هذا الملف (مقيسة بقراءة الكود في هذه الجولة)
+| الصفّ (السطر) | كان | الآن |
+| --- | --- | --- |
+| طبقة ١ — Shizuku (٧٨) · «لا تنفيذ shell بShizuku» (١٣٠) · «غير منفَّذ» (٣٦٢) | قراءة فقط، والـUserService مقترح | **منفَّذ**: `ShizukuShellService` + AIDL + `PrivilegedShell` بمساره؛ **غير مقيس على جهاز** (I-72) |
+| «لا `AccessibilityService`» (١٢٦) | صفر | موجود `IslandA11yService` (خاص بالجزيرة) + `MaxNotificationListener` |
+| «لا `UsageStats`» (١٢٤) | صفر مطابقة | **مُستعمل منذ P2** (`UsageStatsForeground` + `UsageAccess`): مصدر الكشف الأمامي في وضع غير الجذر |
+
+### ب) التشخيص (الأعداد مقيسة بـ`grep` على الشجرة)
+- لا اختيار وضع من المستخدم: `PrivilegeManager` يختار تلقائيًّا، وشاشات Game Space (لوبي · مركز تحكّم · كوكبت · خدمة) **لا تقرأ الوضع**.
+- ~١٧١ استدعاء `Shell.cmd/getShell/su` مباشر في ٦٠ ملفًّا خارج طبقة الصلاحيات؛ منادٍ واحد لـ`PrivilegedShell.exec`.
+- كان في المشروع كلاسان باسم `PrivilegedShell` (واحد يعرف المسار، والآخر جذر فقط) — **أُنجز:** الثاني صار `RootShell`.
+- `PanelFloating.rootAvailable()` كان يستدعي `Shell.getShell().isRoot` (ينشئ `su` من اللوحة) — **أُنجز:** قراءة سلبية.
+- كشف اللعبة الأمامية `FpsMonitorUtil.getForegroundPackage` يمشي بـ`Shell.cmd` جذر، وفتح اللوحة تلقائيًّا يعتمد على `AppMonitor` ⇒ في Shizuku/Basic لا تظهر اللوحة (قراءة كود، غير مجرَّب).
+- `GameProfileRepository` يقرأ/يكتب في مسار الوحدة بالجذر ⇒ لا مخزن بروفايلات بلا جذر.
+- أزرار اللوحة تفشل في صمت (`PanelToggles.write` يسجّل الرفض فقط).
+- اختصار سطح المكتب: `requestPinShortcut` يرجع `true` حتى لو رفض المشغّل (HyperOS/MIUI: إذن «اختصارات الشاشة الرئيسية» — فرضية تُقاس على جهاز)؛ ولم يكن `shortcuts.xml` ولا `LAUNCHER` للوبي.
+
+### ج) المعمارية المقرَّرة لفصل الأوضاع
+1. `ExecutionMode { AUTO, ROOT, SHIZUKU, BASIC }` في التفضيلات؛ الفعلي = الأقل بين المختار والمتاح؛ وضع Shizuku/Basic **لا يستدعي `su` أبدًا**.
+2. سجلّ قدرات `GameCapabilities`: دالة نقية (وضع × لقطة صلاحيات × فحص جهاز) ⇒ لكل ميزة: متاحة / متاحة بترقية + السبب / غير مدعومة. تُعرض الأخيرتان باهتتين بسببهما لا تختفيان (ADR-07).
+3. مطبِّق واحد لكل وضع: الجذر ← `AppMonitor` (المالك الوحيد)، وغيره ← مطبِّق داخل `GamePanelService`؛ لا يعملان معًا.
+4. مصدر الأمامية بالاستراتيجية: daemon (جذر) · `UsageStats` (Shizuku يمنحه عبر appops، والمستخدم يدويًّا في Basic). **القرار: UsageStats لا Accessibility.**
+5. مخزن بروفايلات داخل التطبيق لغير الجذر + نقل لمرة عند تبديل الوضع.
+6. حارس: `GameSpaceExecutionGuardTest` — سقف تنازلي لـ`Shell.cmd/getShell/su` المباشر في `core/gamespace` وشاشات اللعب (الدَّين الحالي: PanelToggles 6 · PanelResolution 5 · PanelDevice 3 · PanelControls 1)، وملف جديد سقفه صفر. **أُنجز.**
+
+### د) مصفوفة الميزات (\* = يُقاس على جهاز)
+| الميزة | Root | Shizuku | Basic |
+| --- | --- | --- | --- |
+| لوحة جانبية + مقبض | ✓ | ✓ | ✓ (تراكب) |
+| كشف اللعبة الأمامية | daemon | UsageStats | UsageStats |
+| Wi-Fi / Data | ✓ | ✓ | ✗ |
+| DND / سطوع / تدوير | ✓ | ✓ | ✓ (أذونات المستخدم) |
+| لقطة / تسجيل شاشة | ✓ | ✓\* | ✗ (MediaProjection لاحقًا) |
+| دقة / كثافة | ✓ | ✓\* | ✗ |
+| Refresh rate لكل لعبة | ✓ | ✓\* | ✗ |
+| Game Mode لكل لعبة (`cmd game mode`) | ✓\* | ✓\* | ✗ |
+| عدادات CPU/GPU | ✓ | جزئي\* | «—» |
+| سقوف CPU/GPU · حراري · bypass · drop_caches | ✓ | ✗ | ✗ |
+
+### هـ) التحكم من داخل التراكب (مقترحات مُرتَّبة)
+وضع تحريك التصويب (لمس مؤقت ثم `NOT_TOUCHABLE` ويحفظ `offsetX/Y`) · صف تصويب مصغّر (نمط/حجم/شفافية/لون) · تصويب لكل لعبة · Mini bar عائم · إيماءات على المقبض قابلة للتخصيص · نظام تحريك موحّد للعناصر العائمة · حماية الحواف من اللمس العرضي · درع الإشعارات · تحكم ميديا · تنبيه حرارة ذكي · صوت لكل لعبة.
+
+### و) شاشة بداية اللوبي
+الدخول الكامل (٣٫٤ث) بعد الإقلاع البارد فقط ونسخة ~١٫٢ث بعدها وفوري من الاختصار/اللوحة · تحميل أثناء الدخول بلا هياكل · بطاقة «أكمل» (آخر لعبة) + تشغيل تلقائي اختياري · زرّ «جهّز» (بروفايل + DND + ضغط ذاكرة؛ لا قتل تطبيقات) · شريط جاهزية الجهاز والوضع · اكتشاف لعبة جديدة · نسخة بورتريه.
+
+### ز) المراحل
+- **P0 (أُنجز في هذه الجولة، غير مبني):** `res/xml/shortcuts.xml` + `meta-data` على `.Launcher` · `GameLobbyEntryActivity` (أيقونة «لوبي الألعاب» مستقلة، معطّلة افتراضيًّا) + `GameLobbyIcon` + صفّ تبديل في خيارات اللوبي · رسائل الـpin أصدق (إرشاد HyperOS + البديل) · `ui.util.PrivilegedShell` ⇒ `RootShell` · إصلاح `PanelFloating` · `GameSpaceExecutionGuardTest` · اختباران في `GameSpaceShortcutTest`.
+- **P1:** `ExecutionMode` + `GameCapabilities` + شيت الوضع + شارات المسار + نتيجة على كل زرّ؛ نقل لقطة/تسجيل/`wm` إلى `PrivilegedShell.exec` (يُخفَّض السقف في الدفعة نفسها)؛ `GameLobbyEntryActivity` ⇒ لوبي بنشاط خفيف مستقل.
+- **P2:** مصدر الأمامية بالاستراتيجية · مخزن بروفايلات داخلي · مطبِّق داخل الخدمة · منح UsageStats عبر Shizuku.
+- **P3:** بنود (هـ) و(و).
+- **P4:** قوالب بالنوع · Game Mode لكل لعبة · درع الإشعارات · ping · اختصار لكل لعبة · ملخّص جلسة ومعرض لقطات · «ليه لاغت؟» · API أتمتة بإذن `nd.max.permission.MANAGE`.
+- **P5:** قائمة تحقق على جهاز (Shizuku الفعلي · ظهور اللوحة بلا جذر · صلاحية الـshell uid لكل أمر · الاختصار على HyperOS · سلاسة اللوبي · RTL).
+
+### ح) تحديث P1 — ٢٠٢٦-١٠-٢٥ (أُنجز، غير مبني)
+- **الوضع:** `core/privilege/ExecutionMode` (AUTO · ROOT · SHIZUKU · BASIC) + `ExecutionModeRules` نقيّة + `ExecutionModeStore` (SharedPreferences `execution_mode` + نسخة ذاكرية). `PrivilegedShell.exec` يحصر المسار بالوضع ولا يتنازل صامتًا (ROOT لا يرجع إلى Shizuku، وSHIZUKU لا يستعمل الجذر وإن مُنح، وBASIC يرفض كل أمر مميَّز بمفتاح رفض خاص بكل وضع).
+- **الإقلاع:** `MaxManagerApplication` يقرأ الوضع قبل تسخين صدفة `su`، ولا يسخّنها في SHIZUKU/BASIC (لا نافذة صلاحية عند أول إقلاع).
+- **القدرات:** `core/gamespace/GameCapabilities` — `GameFeature` (١٣ ميزة بأدنى امتياز تعمل به **اليوم** لا المأمول) + `availability(feature, mode, root, shizuku)` ⇒ متاحة / غير متاحة بسبب `MODE_EXCLUDES` («بدّل الوضع») أو `NOT_GRANTED` («امنح الامتياز») + `GameModeStatus` لحال الوضع.
+- **نقل إلى المسار الموحَّد:** لقطة الشاشة وتسجيلها (`PanelScreenshot` · `PanelScreenRecorder` صارتا `suspend`) و`PanelResolution` (`read/apply/restore` + `parse` نقيّ). سقف الحارس: PanelToggles 6⇒0 · PanelResolution 5⇒0؛ ويبقى PanelControls 1 · PanelDevice 3. العدّ العام للاستدعاءات المباشرة خارج طبقة الصلاحيات ١٧١ ⇒ ١٦١ بالقياس نفسه.
+- **بوّابة الجذر (`GameRootGate`):** المواضع التي ما زالت بصدفة جذر مباشرة (`setBypass` · `cleanMemory` · `PanelFloating` · دفعة اللمس) تُرفض في SHIZUKU/BASIC بدل أن تعمل لأن الجذر ممنوح بالصدفة؛ ويحرسها `GameSpaceExecutionGuardTest`.
+- **الواجهة:** بطاقة «وضع التنفيذ» في خيارات اللوبي: اختيار الوضع، حاله الآن (مع الفرق بين «لم يُمنح» و«لا امتياز»)، وقائمة ما لا يتوفّر في هذا الوضع مع سببه.
+- **ما لم يُنجَز من P1 ويُنقل إلى P2:** نتيجة على كل زرّ (التسجيل ما زال في اللوج) · شارة المسار على البلاطات · ترقية `GameLobbyEntryActivity` إلى نشاط لوبي خفيف · نقل `PanelControls`/`PanelDevice` إلى المسار الموحَّد · احترام الوضع في مسارات الجذر خارج اللوحة (`PanelClocks` · قراءة HUD · `AppMonitor`).
+
+### ط) تحديث P2 — ٢٠٢٦-١٠-٢٥ (جزئي، غير مبني)
+**أُنجز:**
+- **كشف اللعبة الأمامية بلا جذر:** `ForegroundSourceRules.choose(mode, root, usageAccess)` ⇒ `SHELL` (جذر: السلوك السابق حرفيًّا بما فيه مراجعة نافذة التركيز) · `USAGE_STATS` (أحداث `ACTIVITY_RESUMED/PAUSED` عبر `UsageForegroundRules.reduce` النقيّ، مع تداخل ١٫٥ث وإعادة تطبيق آمنة) · `NONE` (مجهول — لا تخمين). `GamePanelService` يقرأ من `GameForeground` ويُصفّر حالة الاستخدام عند تبديل المصدر. وضع Shizuku/Basic **لا يقرأ بالصدفة الجذرية وإن مُنح الجذر**.
+- **إذن وصول الاستخدام:** `UsageAccess` — قراءة (`AppOps`) · منح بالمسار الموحَّد (`appops set <pkg> GET_USAGE_STATS allow`، ويُعاد قياس الإذن بعده ولا يُعلَن النجاح بلا قياس) · بديل يدوي (صفحة الإعدادات). في بطاقة «وضع التنفيذ» صفّ «كشف اللعبة الأمامية» بزرّي «امنح» و«افتح الإعدادات» حين لا يكون مسار الجذر هو الفعّال.
+- **نتيجة على كل مقبض:** `PanelToggles.failures` (SharedFlow بلا تراكم) تُقال في اللوحة: «لم يتغيّر X: الوضع المختار لا يملك الامتياز اللازم له» أو «لم يتغيّر X»، بدل اللوج وحده.
+
+**لم يُنجَز (ينتقل إلى P3) ولماذا:**
+- **مخزن بروفايلات داخلي + مطبِّق داخل الخدمة.** التصميم جاهز: `GameProfilePersistence.Io` واجهة قراءة/كتابة أصلًا، فيكفي `AppPrivateIo` (ملفّ في `filesDir` بكتابة ذرّية) واختيار الـIo بحسب الوضع (يلزم `install(context)` في `MaxManagerApplication` لأن المستودع مفرد بلا سياق). والمطبِّق يبدأ بالمجموعة الجزئية غير الجذرية (`dnd_on_gaming` · `resolution_downscale` عبر `PanelResolution` · `refresh_rate` بعد منح `WRITE_SECURE_SETTINGS` عبر Shizuku) — **ويحتاج أولًا قراءة دلالات قيم هذه الحقول في `AppMonitor`** (لم تُقرأ) وتجربة على جهاز، فلم يُكتب بلا قياس.
+- شارة المسار على البلاطات · نشاط لوبي خفيف مستقل · نقل `PanelControls`/`PanelDevice` إلى المسار الموحَّد · احترام الوضع في `PanelClocks` وقراءة HUD.
+
+### ي) تحديث P3 — ٢٠٢٦-١٠-٢٥ (بروفايل اللعبة بلا رفيق الجذر، غير مبني)
+**دلالات الحقول المقروءة من `AppMonitor` (لا تخمين):** `dnd_on_gaming=="true"` ⇒ `zen_mode=1` **فقط إن كان الصفر** (لا يُخفَّض نمط أقوى) ويُسترجع عند الخروج · `refresh_rate` عدد صحيح بالهرتز يُقرَّب إلى أقرب معدّل مدعوم ويُكتب في المفاتيح الأربعة التي يكتبها `PerAppRefreshRateController` (`secure user_refresh_rate` · `secure miui_refresh_rate` · `system peak_refresh_rate` · `system min_refresh_rate`) · `haptic_feedback=="true"` ⇒ `haptic_feedback_enabled=0`.
+**أُنجز:**
+- `InAppProfileRules` (نقيّة): ما المطلوب من `AppConfig`، وخطة الكتابة من القيم الحالية، واللقطة وترميزها، وأوامر `settings get/put/delete` المقتبسة. قواعدها: لا كتابة بلا لقطة قابلة للاسترجاع · قيمة غير آمنة للاقتباس ⇒ يُتخطّى المقبض كله · لقطة محفوظة فاسدة ⇒ لا تُنفَّذ أوامرها.
+- `InAppProfileApplier` داخل `GamePanelService`: يدخل مع اللعبة المتتبَّعة ويخرج بخروجها، **ويكون المسؤول فقط حين لا يكون مسار الأوامر جذرًا** (`isActive`) فلا يزاحم `AppMonitor`. اللقطة تُحفظ بـ`commit` قبل أول كتابة وتنجو من موت العملية (`recover` عند الإقلاع و`release` عند الإيقاف)، وفشل الاسترجاع لا يُتبَع بتطبيق جديد، وكل كتابة تُقرأ بعدها (`INAPP_PROFILE_APPLIED written/verified` في السجل). وإن لم يكن المسار جاهزًا تُعاد المحاولة بعد ١٠ث لا كل ثانية.
+- **وثيقة البروفايلات تتبع الوضع:** `GameProfileRepository` يختار الوثيقة الجذرية (ROOT، أو AUTO ما لم يثبت غياب الجذر) أو **وثيقة محلية بالتنسيق نفسه** في `filesDir` (SHIZUKU/BASIC)؛ الغياب في المحلية وثيقة فارغة لا فشل، والكتابة ذرّية. ويُعاد تحميلها عند تبديل الوضع من بطاقة «وضع التنفيذ» التي تقول الآن ما الذي يُطبَّق في الوضع غير الجذري.
+**خارج هذه المجموعة عمدًا (يبقى لرفيق الجذر):** CPU/GPU/المحافظات · البايباس · `wifi_no_sleep` (يحتاج أذونات `ACCESS_WIFI_STATE`/`CHANGE_WIFI_STATE`/`WAKE_LOCK` غير معلنة في البيان) · `disable_notifs` · `resolution_downscale` (عقد `DisplayUtil` لم يُقرأ) · `kill_bg_apps`.
+**P4 المتبقّي:** إخفاء/تعطيل خيارات البروفايل الجذرية في شاشات التحرير حين لا يكون الجذر هو الفعّال · شارة المسار · نشاط لوبي خفيف · نقل `PanelControls`/`PanelDevice` · `wifi_no_sleep` بعد تعريف أذوناته.
+
+### ك) تحديث P4 — ٢٠٢٦-١٠-٢٥ (جزئي، غير مبني)
+**أُنجز:**
+- **شاشة بروفايل اللعبة بحسب الوضع:** `AppSettingsScreen` تعطّل ١٨ صفًّا لحقول جذرية (`perf_lite_mode` · `cpu_boost` · `game_preload` · `app_priority` · `kill_bg_apps` · `gpu_profile` · `cpu_governor` · `gpu_governor` · `gpu_max_freq` · `cpu_policy_controls` · `renderer` · `force_hw_ui` · `resolution_downscale`×٢ · `touch_boost` · `disable_notifs` · `bypass_charging` · `wifi_no_sleep`) بـ`enabled = localMasterOn && rootKnobs` حين يكون `InAppProfileRules.isActive` (أي حين لا يطبّق الجذر)، مع سطر يشرح «تُحفظ ولا تُطبَّق». وتبقى فعّالة دائمًا الثلاثة التي يطبّقها التطبيق: `dnd_on_gaming` · `refresh_rate` · `haptic_feedback`. الجذر يُقرأ من الصدفة المخزّنة أيضًا حتى لا تُعطَّل الخيارات خطأً قبل اكتمال أول قراءة. يحرس ذلك `AppSettingsRootKnobsTest`.
+- **شارة المسار** في كبسولة حالة اللوبي: Root / Shizuku / أساسي / بلا امتياز (نص + لون)، من `GameModeStatus` والحالة المخزّنة بلا نافذة صلاحية.
+- **`PanelDevice`:** الاحتياطيان بلا إذن «كتابة الإعدادات» (السطوع وقفل التدوير) انتقلا إلى `PrivilegedShell.exec`؛ سقف الحارس ٣⇒١. الباقي `cleanMemory` جذريّ بطبيعته (`/proc/sys/vm` لا يكتبه uid الـshell).
+**لم يُنجَز ولماذا:**
+- **نشاط لوبي خفيف مستقل:** `GameLobbyEntryActivity` ما زال مدخلًا شفّافًا يفتح `MainActivity`. نشاط مستقل يعني فصل اللوبي عن `MainScreen`/الملاحة (ViewModels والثيم والاتجاه) وهذا يحتاج بناءً وتجربة؛ لم يُغامَر به بلا قياس لوقت الإقلاع البارد على جهاز.
+- **`wifi_no_sleep` داخل التطبيق:** يلزم إعلان `ACCESS_WIFI_STATE`/`CHANGE_WIFI_STATE`/`WAKE_LOCK` في البيان (وهي أذونات عادية) ومراجعة عقود الأذونات أولًا.
+- **`PanelControls` (البايباس):** كتابة ملفّ sysfs بالجذر — لا بديل في Shizuku؛ يبقى محصورًا ببوّابة الوضع.
+**P5:** قائمة التحقق على جهاز (القسم ز) + قياس وقت الإقلاع البارد قبل قرار النشاط الخفيف.

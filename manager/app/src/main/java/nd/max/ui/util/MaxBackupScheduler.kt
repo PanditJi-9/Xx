@@ -273,7 +273,7 @@ object MaxBackupScheduler {
             val parent = FileBrowser.parentOf(path) ?: return@forEach
             val name = FileBrowser.nameOf(path)
             if (name.isBlank()) return@forEach
-            if (PrivilegedShell.run("test -d ${PrivilegedShell.quote(path)}") == null) {
+            if (RootShell.run("test -d ${RootShell.quote(path)}") == null) {
                 // مسار اختفى (بطاقة SD أُزيلت، أو مجلد حُذف): يُسجَّل غيابه ولا يُفشل البقية.
                 index.append(name).append('\t').append(path).append('\t').append("missing").append('\n')
                 return@forEach

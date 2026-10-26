@@ -12,6 +12,7 @@ import android.media.AudioManager
 import android.provider.Settings
 import com.topjohnwu.superuser.Shell
 import nd.max.core.privilege.PrivilegeManager
+import nd.max.core.privilege.PrivilegedShell
 
 /**
  * سطوع النظام وصوت الوسائط الحقيقيّان للوحة. السطوع على مدى الجهاز نفسه (يُقرأ من موارد النظام
@@ -36,8 +37,11 @@ class PanelDevice(context: Context) {
                 Settings.System.putInt(app.contentResolver, Settings.System.SCREEN_BRIGHTNESS_MODE, 0) &&
                 Settings.System.putInt(app.contentResolver, Settings.System.SCREEN_BRIGHTNESS, value)
         }.getOrDefault(false)
+        // بلا إذن «كتابة الإعدادات»: المسار الموحَّد (جذر أو Shizuku حسب الوضع)، لا صدفة جذر مباشرة.
         if (!written) {
-            Shell.cmd("settings put system screen_brightness_mode 0", "settings put system screen_brightness $value").submit()
+            PanelToggles.async {
+                PrivilegedShell.exec("settings put system screen_brightness_mode 0; settings put system screen_brightness $value")
+            }
         }
     }
 
@@ -62,7 +66,7 @@ class PanelDevice(context: Context) {
             Settings.System.canWrite(app) &&
                 Settings.System.putInt(app.contentResolver, Settings.System.ACCELEROMETER_ROTATION, value)
         }.getOrDefault(false)
-        if (!written) Shell.cmd("settings put system accelerometer_rotation $value").submit()
+        if (!written) PanelToggles.async { PrivilegedShell.exec("settings put system accelerometer_rotation $value") }
     }
 
     /** «18:23 · 33%» بصيغة ساعة المستخدم (12/24)، و«⚡» أثناء الشحن. بلا إذن. */
@@ -105,7 +109,7 @@ class PanelDevice(context: Context) {
     fun cleanMemory(): Int? {
         // **بلا جذر لا عمل:** الكتابة في `drop_caches` تفشل، وكانت الدالّة تُعيد «0» فيُقال
         // «حُرِّر 0» وكأن شيئًا جرى — وهذا نجاح وهمي ممنوع (§9.4). فالغياب يُعلن صراحةً.
-        if (!PrivilegeManager.cachedRootGranted()) return null
+        if (!GameRootGate.allowed() || !PrivilegeManager.cachedRootGranted()) return null
         val before = availMb()
         val done = Shell.cmd(
             "sync",

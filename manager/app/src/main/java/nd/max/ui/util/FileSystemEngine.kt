@@ -22,7 +22,7 @@
  * 1. **لا تحليل لمخرج `ls` للحصول على البيانات.** `ls -l` نصّ بشري يتغيّر شكله بين
  *    toybox وcoreutils، وتحليله بالمسافات هو أصل أكثر مدراء الملفات هشاشةً. فنقرأ
  *    `stat -c` بحقول مفصولة بـ`tab` ومع الاسم **أخيرًا**.
- * 2. **لكل مسار معنى صريح**: كل قيمة تُمرَّر إلى shell تُقتبس بـ[PrivilegedShell.quote]،
+ * 2. **لكل مسار معنى صريح**: كل قيمة تُمرَّر إلى shell تُقتبس بـ[RootShell.quote]،
  *    وكل المسارات مُطبَّعة من الجذر — فلا يبدأ أي منها بـ`-` فيُقرأ كخيار.
  * 3. **لا «نجاح» بلا إثبات** أين يمكن الإثبات: بعد النسخ/النقل/الإنشاء/إعادة التسمية
  *    نتحقّق من وجود الهدف، و`verified` تُعلن النتيجة لا تُفترض.
@@ -66,7 +66,7 @@ object FileSystemEngine {
             Probe.Ok -> Unit
         }
 
-        val statLines = PrivilegedShell.run(statLoop(path))
+        val statLines = RootShell.run(statLoop(path))
         if (statLines != null) {
             val parsed = FileStatParser.parse(statLines, path)
             return DirectoryListing.Entries(path, parsed.entries, parsed.skipped, attributesAvailable = true)
@@ -74,7 +74,7 @@ object FileSystemEngine {
 
         // `stat` غير متاح أو مرفوض: ننزل إلى **الأسماء وحدها** ونُعلن أن الصفات غير مقروءة،
         // بدل أن نُعلن مجلدًا فارغًا — وهو كذب يُفقد المستخدم ثقته فورًا.
-        val names = PrivilegedShell.run("ls -1A ${PrivilegedShell.quote(path)}")
+        val names = RootShell.run("ls -1A ${RootShell.quote(path)}")
             ?: return DirectoryListing.Unreadable(path, ListingFailure.ShellUnavailable)
         return DirectoryListing.Entries(
             path = path,
@@ -92,23 +92,23 @@ object FileSystemEngine {
      * بدل أن يُنتج صفًّا مزيّفًا باسم `*`.
      */
     private fun statLoop(path: String): String {
-        val dir = PrivilegedShell.quote(path)
-        val format = PrivilegedShell.quote(FileStatParser.FORMAT)
+        val dir = RootShell.quote(path)
+        val format = RootShell.quote(FileStatParser.FORMAT)
         return "for f in $dir/* $dir/.[!.]* $dir/..?*; " +
             "do if [ -e \"\$f\" ] || [ -L \"\$f\" ]; then stat -c $format \"\$f\"; fi; done"
     }
 
     private fun probe(path: String): Probe {
-        val quoted = PrivilegedShell.quote(path)
-        val exists = PrivilegedShell.run("test -e $quoted")
+        val quoted = RootShell.quote(path)
+        val exists = RootShell.run("test -e $quoted")
         if (exists == null) {
             // الفشل قد يكون «المسار غير موجود» أو «لا shell جذر». نفرّق بـ`File`:
             // ما نراه بأنفسنا موجود، فالمشكلة في الجذر لا في المسار.
             return if (File(path).exists()) Probe.ShellDown else Probe.Missing
         }
-        val isDirectory = PrivilegedShell.run("test -d $quoted")
+        val isDirectory = RootShell.run("test -d $quoted")
             ?: return Probe.ShellDown
-        val accessible = PrivilegedShell.run("test -r $quoted && test -x $quoted")
+        val accessible = RootShell.run("test -r $quoted && test -x $quoted")
         if (accessible == null) return Probe.NotAccessible
         return Probe.Ok
     }
@@ -116,11 +116,11 @@ object FileSystemEngine {
     /** معاينة نصّية محدودة. الثنائي يُكتشف من محتواه لا من امتداده. */
     fun preview(rawPath: String, maxBytes: Long = MAX_PREVIEW_BYTES): TextPreview {
         val path = FileBrowser.normalize(rawPath)
-        val sizeLine = PrivilegedShell.run("stat -c %s ${PrivilegedShell.quote(path)}")
+        val sizeLine = RootShell.run("stat -c %s ${RootShell.quote(path)}")
             ?.firstOrNull()?.trim()?.toLongOrNull()
         if (sizeLine != null && sizeLine > maxBytes) return TextPreview.TooLarge
 
-        val lines = PrivilegedShell.run("head -c $maxBytes ${PrivilegedShell.quote(path)}")
+        val lines = RootShell.run("head -c $maxBytes ${RootShell.quote(path)}")
             ?: return TextPreview.Unreadable
         val text = lines.joinToString("\n")
         if (text.isBlank()) return TextPreview.Ready("", truncated = false)
@@ -166,14 +166,14 @@ object FileSystemEngine {
         var executed = true
         for (source in sources) {
             val target = FileTargets.destinationFor(source, dir, renamed)
-            executed = executed && PrivilegedShell.run(
-                "$command ${PrivilegedShell.quote(source)} ${PrivilegedShell.quote(target)}"
+            executed = executed && RootShell.run(
+                "$command ${RootShell.quote(source)} ${RootShell.quote(target)}"
             ) != null
         }
         // الإثبات: كل مصدر يجب أن يكون له مقابل في الهدف، **بالاسم الذي وُعد به**.
         val verified = executed && sources.all { source ->
-            PrivilegedShell.run(
-                "test -e ${PrivilegedShell.quote(FileTargets.destinationFor(source, dir, renamed))}"
+            RootShell.run(
+                "test -e ${RootShell.quote(FileTargets.destinationFor(source, dir, renamed))}"
             ) != null
         }
         return FileOpOutcome(executed, verified)
@@ -193,10 +193,10 @@ object FileSystemEngine {
         val path = FileBrowser.normalize(rawPath)
         val bytes = text.toByteArray(Charsets.UTF_8)
         val encoded = android.util.Base64.encodeToString(bytes, android.util.Base64.NO_WRAP)
-        val executed = PrivilegedShell.run(
-            "echo ${PrivilegedShell.quote(encoded)} | base64 -d > ${PrivilegedShell.quote(path)}"
+        val executed = RootShell.run(
+            "echo ${RootShell.quote(encoded)} | base64 -d > ${RootShell.quote(path)}"
         ) != null
-        val measured = PrivilegedShell.run("stat -c %s ${PrivilegedShell.quote(path)}")
+        val measured = RootShell.run("stat -c %s ${RootShell.quote(path)}")
             ?.firstOrNull()?.trim()?.toLongOrNull()
         return FileOpOutcome(executed, executed && measured == bytes.size.toLong())
     }
@@ -205,26 +205,26 @@ object FileSystemEngine {
         if (paths.isEmpty()) return FileOpOutcome(false, false)
         var executed = true
         for (path in paths) {
-            executed = executed && PrivilegedShell.run("rm -rf ${PrivilegedShell.quote(path)}") != null
+            executed = executed && RootShell.run("rm -rf ${RootShell.quote(path)}") != null
         }
-        val verified = executed && paths.all { PrivilegedShell.run("test -e ${PrivilegedShell.quote(it)}") == null }
+        val verified = executed && paths.all { RootShell.run("test -e ${RootShell.quote(it)}") == null }
         return FileOpOutcome(executed, verified)
     }
 
     fun rename(path: String, newName: String): FileOpOutcome {
         val parent = FileBrowser.parentOf(path) ?: return FileOpOutcome(false, false)
         val target = FileBrowser.childPath(parent, newName)
-        val executed = PrivilegedShell.run(
-            "mv -f ${PrivilegedShell.quote(FileBrowser.normalize(path))} ${PrivilegedShell.quote(target)}"
+        val executed = RootShell.run(
+            "mv -f ${RootShell.quote(FileBrowser.normalize(path))} ${RootShell.quote(target)}"
         ) != null
-        val verified = executed && PrivilegedShell.run("test -e ${PrivilegedShell.quote(target)}") != null
+        val verified = executed && RootShell.run("test -e ${RootShell.quote(target)}") != null
         return FileOpOutcome(executed, verified)
     }
 
     fun createDirectory(parent: String, name: String): FileOpOutcome {
         val target = FileBrowser.childPath(FileBrowser.normalize(parent), name)
-        val executed = PrivilegedShell.run("mkdir -p ${PrivilegedShell.quote(target)}") != null
-        val verified = executed && PrivilegedShell.run("test -d ${PrivilegedShell.quote(target)}") != null
+        val executed = RootShell.run("mkdir -p ${RootShell.quote(target)}") != null
+        val verified = executed && RootShell.run("test -d ${RootShell.quote(target)}") != null
         return FileOpOutcome(executed, verified)
     }
 
@@ -236,8 +236,8 @@ object FileSystemEngine {
      */
     fun createFile(parent: String, name: String): FileOpOutcome {
         val target = FileBrowser.childPath(FileBrowser.normalize(parent), name)
-        val executed = PrivilegedShell.run("touch ${PrivilegedShell.quote(target)}") != null
-        val verified = executed && PrivilegedShell.run("test -f ${PrivilegedShell.quote(target)}") != null
+        val executed = RootShell.run("touch ${RootShell.quote(target)}") != null
+        val verified = executed && RootShell.run("test -f ${RootShell.quote(target)}") != null
         return FileOpOutcome(executed, verified)
     }
 
@@ -272,11 +272,11 @@ object FileSystemEngine {
      */
     private fun tarThroughShell(paths: List<String>, archive: String): FileOpOutcome {
         val parent = FileBrowser.parentOf(paths.first()) ?: return FileOpOutcome(false, false)
-        val names = paths.map(FileBrowser::nameOf).joinToString(" ") { PrivilegedShell.quote(it) }
-        val executed = PrivilegedShell.run(
-            "tar -czf ${PrivilegedShell.quote(archive)} -C ${PrivilegedShell.quote(parent)} $names"
+        val names = paths.map(FileBrowser::nameOf).joinToString(" ") { RootShell.quote(it) }
+        val executed = RootShell.run(
+            "tar -czf ${RootShell.quote(archive)} -C ${RootShell.quote(parent)} $names"
         ) != null
-        val verified = executed && PrivilegedShell.run("test -e ${PrivilegedShell.quote(archive)}") != null
+        val verified = executed && RootShell.run("test -e ${RootShell.quote(archive)}") != null
         return FileOpOutcome(executed, verified)
     }
 
@@ -295,9 +295,9 @@ object FileSystemEngine {
         if (FileArchive.isZip(archive) || outcome.failure != ArchiveFailure.UnreadableSource) {
             return outcome.toFileOpOutcome()
         }
-        val prepared = PrivilegedShell.run("mkdir -p ${PrivilegedShell.quote(dir)}") != null
-        val executed = prepared && PrivilegedShell.run(
-            "tar -xzf ${PrivilegedShell.quote(archive)} -C ${PrivilegedShell.quote(dir)}"
+        val prepared = RootShell.run("mkdir -p ${RootShell.quote(dir)}") != null
+        val executed = prepared && RootShell.run(
+            "tar -xzf ${RootShell.quote(archive)} -C ${RootShell.quote(dir)}"
         ) != null
         return FileOpOutcome(executed, verified = executed)
     }
@@ -330,7 +330,7 @@ object FileSystemEngine {
      */
     fun nodeBytes(rawPath: String): Long? {
         val path = FileBrowser.normalize(rawPath)
-        val line = PrivilegedShell.run("du -sb ${PrivilegedShell.quote(path)}")
+        val line = RootShell.run("du -sb ${RootShell.quote(path)}")
             ?.firstOrNull()
             ?.trim()
             ?: return null
@@ -347,7 +347,7 @@ object FileSystemEngine {
      * وهي أول ما يحتاجه من يضبط وحدة Magisk.
      */
     fun selinuxContext(path: String): String? {
-        val line = PrivilegedShell.run("ls -Zd ${PrivilegedShell.quote(FileBrowser.normalize(path))}")
+        val line = RootShell.run("ls -Zd ${RootShell.quote(FileBrowser.normalize(path))}")
             ?.firstOrNull()?.trim() ?: return null
         // الشكل المتوقّع: `<context> <owner> <group> <size> <date…> <name>`
         // والحقل الأول هو السياق؛ ونشترط فيه نقطتان على الأقل (`u:object_r:system_file:s0`)

@@ -109,13 +109,15 @@ Open problems as of 2026-09-15. `P1` blocks the redesign, `P2` degrades quality,
   / ٠ فشل). أي أن العطب في استراتيجية التنفيذ داخل العملية لا في الكود. **لم نُعدّل
   `gradle.properties`** لأنه إعداد مشروع لا قرار منفّذ. **المسار:** قرار مالك (daemon، أو
   رفع ذاكرة Gradle) ثم إثبات في CI.
-- I-72 (**P2**): **تنفيذ أوامر shell بامتياز Shizuku غير مُنفَّذ بعد.** طبقة الاتصال/الإذن
-  والفهرس تعمل، لكن `Shizuku.newProcess` **خاصّ (غير عام)** في
-  `dev.rikka.shizuku:api:13.1.5` — مُتحقَّق بـ`javap` على الـAAR المستخرج من ذاكرة Gradle.
-  فالواجهة العامة تعطي: التوفر، طلب/فحص الإذن، `ShizukuSystemProperties`، والـUserService.
-  **لذلك لا يُدَّعى أن أدوات طبقة SHIZUKU تُنفَّذ الآن** — تُعرَض كـ«أدنى طبقة تحتاجها»،
-  والـUserService (`bindUserService` + AIDL) هو الخطوة التالية. **المسار:** تنفيذ
-  UserService + اختبار على جهاز بـShizuku، وتسجيل النتيجة في `VALIDATION.md` §0.
+- I-72 (**P2**): **تنفيذ أوامر shell بامتياز Shizuku مُنفَّذ في الكود وغير مقيس على جهاز.**
+  (حُدِّث 2026-10-25؛ كان المدوَّن «غير منفَّذ» وقد تقادم.) `Shizuku.newProcess` ما زال خاصًّا في
+  `dev.rikka.shizuku:api:13.1.5`، فالتنفيذ يمرّ عبر **UserService + AIDL**
+  (`core/privilege/ShizukuShellService` · `ShizukuGateway` · `ShizukuExec`) ويُختار مساره في
+  `core/privilege/PrivilegedShell` (جذر ← Shizuku ← رفض معلَن). **غير المُثبَت:** عمل الخدمة فعليًّا على
+  جهاز بـShizuku، وأيّ الأوامر يقبلها uid الـshell (لقطة/تسجيل الشاشة، `wm size/density`،
+  `cmd game mode`، `settings put`). **والمعمّم قليل:** منادٍ واحد لـ`PrivilegedShell.exec` (`PanelToggles`)
+  مقابل ~١٧١ استدعاء `Shell.cmd/getShell/su` مباشرًا في ٦٠ ملفًّا — انظر ملحق GAME-SPACE-PLAN ٢٠٢٦-١٠-٢٥.
+  **المسار:** P1/P2 من الملحق + اختبار على جهاز بـShizuku وتسجيل النتيجة في `VALIDATION.md` §0.
 - I-73 (**P2**): **`PrivilegePanel` وسلوك شاشة البداية عند مستخدم بلا جذر لم يُجرَّبا على
   جهاز.** المُثبَت: التجميع + ٣٤٠ اختبار JVM (منها `BootHistoryUtilTest` = ٦) + سليمة
   `ControlLayoutModelTest` بعد إضافة وجهة `privilege`. **غير المُثبَت:** الربط الفعلي

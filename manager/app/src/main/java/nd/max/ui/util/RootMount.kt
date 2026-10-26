@@ -88,7 +88,7 @@ object RootMount {
 
     /** أمر إعادة التعليق: الاحتياطي الأول حين لا توجد وحدة جذر تفعلها. */
     fun remountCommand(point: String, readWrite: Boolean): String =
-        "mount -o remount,${if (readWrite) "rw" else "ro"} ${PrivilegedShell.quote(FileBrowser.normalize(point))}"
+        "mount -o remount,${if (readWrite) "rw" else "ro"} ${RootShell.quote(FileBrowser.normalize(point))}"
 
     // ────────────────────────────────────────────────────────────────────────
     // التنفيذ (رقيق: قراءة ونداء)
@@ -96,7 +96,7 @@ object RootMount {
 
     /** قراءة الجدول من الجهاز. `null` تعني «لم تُقرأ» لا «لا تعليقات». */
     fun read(): List<MountEntry>? =
-        PrivilegedShell.run("cat $PROC_MOUNTS")?.let(::parse)
+        RootShell.run("cat $PROC_MOUNTS")?.let(::parse)
 
     fun currentAccess(rawPath: String): MountAccess = accessFor(read().orEmpty(), rawPath)
 
@@ -104,11 +104,11 @@ object RootMount {
      * هل يُنفَّذ أمر بصلاحية الجذر الآن؟ **يُقاس** بتنفيذ أمر واحد، ولا يُفترض من إعداد
      * سابق ولا من منحٍ قديم.
      *
-     * ووُجدت هنا لأن الشاشة كانت تنادي `PrivilegedShell` مباشرة لسؤال واحد — والوصول إلى
+     * ووُجدت هنا لأن الشاشة كانت تنادي `RootShell` مباشرة لسؤال واحد — والوصول إلى
      * shell من طبقة العرض ممنوع بقاعدة المستودع (ADR-11)، ولو كان السؤال بريئًا. فصار
      * السؤال دالّة مُسمّاة في طبقة الأدوات، والشاشة تسأل ولا تُنفّذ.
      */
-    fun granted(): Boolean = PrivilegedShell.run("id") != null
+    fun granted(): Boolean = RootShell.run("id") != null
 
     /**
      * تغيير الحالة إلى rw/ro ثم **قياس النتيجة**.
@@ -119,7 +119,7 @@ object RootMount {
      */
     fun remount(rawPath: String, readWrite: Boolean): FileOpOutcome {
         val point = entryFor(read().orEmpty(), rawPath)?.point ?: return FileOpOutcome(false, false)
-        val executed = PrivilegedShell.run(remountCommand(point, readWrite)) != null
+        val executed = RootShell.run(remountCommand(point, readWrite)) != null
         if (!executed) return FileOpOutcome(false, false)
         val after = accessFor(read().orEmpty(), rawPath)
         val wanted = if (readWrite) MountAccess.ReadWrite else MountAccess.ReadOnly

@@ -81,6 +81,41 @@ bool should_apply_freq_balance(bool screen_on, bool balanced_or_eco, bool screen
     return screen_turned_on || request_changed;
 }
 
+/**
+ * @brief هل تستحقّ كتابةٌ جديدة لـ`app_status` إعادةَ فحصٍ للملفّ الشخصيّ؟
+ *
+ * **العطب المقيس الذي وُلد منه هذا القرار (جولة الحرارة واللاغ):** كان كل حدث `IN_MODIFY`
+ * على `app_status` يضبط `need_profile_checkup = true` — بلا مقارنة. والرفيق Java يكتب الملفّ
+ * عند **كل تغيّر في محتواه**: نسبة البطارية (‏١٪)، ومعدّل الشاشة، واسم التطبيق، وحالة الصمت،
+ * و`perapp_active`. فكل واحدة منها كانت تُعيد دورة فحص كاملة: قراءة `app_status`، و`get_gamestart`
+ * (‏`get_visible_package` + قفل + مسح قائمة الإعدادات)، ثم العودة إلى `apply_base_profile`.
+ * وما لا يتغيّر فيها شيئًا يخصّ الملفّ هو **التطبيق المقيم** — وهو وحده ما يحدّد `gamestart`.
+ *
+ * **والقاعدة:** إعادةُ الفحص تُطلب عند **تغيّر الحزمة المقيمة** أو **معرّف الجلسة**، لا عند
+ * تغيّر أيّ حقل آخر. ولا يُسقط ذلك حالة: البطارية والوضع يُقرآن من الكاش في كل دورة على أيّ
+ * حال، و`perapp_active` يُقرأ عند بناء القرار نفسه.
+ *
+ * **وحدّه المُعلن:** المقارنة على حقلين لا على الملفّ كلّه؛ فمن يغيّر إعدادًا يخصّ `gamestart`
+ * دون تغيير الحزمة أو الجلسة لا يُطلب له فحص (ولا يوجد اليوم حقل كهذا في العقد — يُقاس في
+ * `fixtures/contracts/`).
+ *
+ * @param previous_focused الحزمة المقيمة قبل القراءة (‏`""` عند أول قراءة).
+ * @param previous_switch  معرّف الجلسة قبل القراءة.
+ * @param focused          الحزمة المقيمة بعد القراءة.
+ * @param switch_id        معرّف الجلسة بعد القراءة.
+ * @return true حين يجب أن يُعاد الفحص.
+ */
+bool app_status_needs_profile_checkup(const char* previous_focused, const char* previous_switch,
+                                      const char* focused, const char* switch_id) {
+    if (!focused || !focused[0])
+        return false;
+    if (!previous_focused || strcmp(previous_focused, focused) != 0)
+        return true;
+    if (previous_switch && switch_id && strcmp(previous_switch, switch_id) != 0)
+        return true;
+    return false;
+}
+
 void run_profiler(const int profile) {
     is_kanged();
 

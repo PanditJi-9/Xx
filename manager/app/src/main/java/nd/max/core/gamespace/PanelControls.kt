@@ -46,6 +46,8 @@ object PanelControls {
     }
 
     fun setBypass(on: Boolean): Boolean {
+        // وضع Shizuku/Basic لا يلمس الجذر: الرفض معلن (false) لا تنفيذ صامت بصدفة جذر مُخزَّنة.
+        if (!GameRootGate.allowed()) return false
         val value = if (on) "1" else "0"
         // الحكم من القراءة بعد الكتابة (`setAndConfirm` تتصعّد: انعكاس ← setprop ← resetprop)،
         // والملفّ أفضل جهد لأن مسار القراءة في هذا التطبيق هو الخصيصة لا الملفّ.

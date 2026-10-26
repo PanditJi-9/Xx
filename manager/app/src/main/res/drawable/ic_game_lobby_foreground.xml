@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    ذراع تحكّم داخل المنطقة الآمنة (٢١..٨٧ من ١٠٨). مسار واحد بلون واحد وثقوب `evenOdd` للأزرار،
+    فيصلح أيضًا طبقةً أحاديّةً للأيقونات المتناغمة مع ألوان الخلفية (monochrome).
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#FFEAF2FF"
+        android:fillType="evenOdd"
+        android:pathData="M30,46 C30,41 34,38 39,38 L69,38 C74,38 78,41 78,46 L81,62 C82,67 78,72 73,72 C69,72 67,70 65,67 L61,62 L47,62 L43,67 C41,70 39,72 35,72 C30,72 26,67 27,62 Z M40,45 L44,45 L44,48 L47,48 L47,52 L44,52 L44,55 L40,55 L40,52 L37,52 L37,48 L40,48 Z M62.7,47 A2.3,2.3 0 1,0 67.3,47 A2.3,2.3 0 1,0 62.7,47 Z M68.7,53 A2.3,2.3 0 1,0 73.3,53 A2.3,2.3 0 1,0 68.7,53 Z" />
+</vector>

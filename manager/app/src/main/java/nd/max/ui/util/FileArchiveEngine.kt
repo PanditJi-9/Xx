@@ -439,7 +439,7 @@ object FileArchiveEngine {
      * فكّ **بأي صيغة مدعومة** — zip أو tar أو tar.gz — من نقطة واحدة.
      *
      * **ولماذا وُجدت:** كان قرار الصيغة موزَّعًا على مستدعِينَ: `extractZip` لـ`zip`، و`tar`
-     * عبر `PrivilegedShell` لما عداها (انظر [FileSystemEngine])؛ فمن نادى المحرّك مباشرةً على
+     * عبر `RootShell` لما عداها (انظر [FileSystemEngine])؛ فمن نادى المحرّك مباشرةً على
      * `.tar.gz` أخذ `CorruptArchive`. فصار القرار **من الاسم، مرة واحدة، هنا** — والصيغ الأربع
      * المُعلنة في `FileArchive.SUPPORTED` صار لها مسار داخلي فعليّ.
      */

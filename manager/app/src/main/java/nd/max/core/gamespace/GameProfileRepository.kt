@@ -1,6 +1,8 @@
 /* Copyright (C) 2026 Nader Magdy. All rights reserved. */
 package nd.max.core.gamespace
 
+import android.content.Context
+import com.topjohnwu.superuser.Shell
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,9 +13,12 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
+import java.io.File
 import nd.max.MaxManagerPaths
 import nd.max.core.hardware.RootFileAccess
 import nd.max.core.platform.ForegroundAppResolver
+import nd.max.core.privilege.ExecutionMode
+import nd.max.core.privilege.ExecutionModeStore
 import nd.max.ui.util.AppConfig
 
 /** Process singleton shared even by non-Hilt legacy ViewModels. AppMonitor reads this same file. */
@@ -25,9 +30,56 @@ object GameProfileRepository {
     private val mutex = Mutex()
     private val json = Json { ignoreUnknownKeys = true; encodeDefaults = true }
     private val path get() = MaxManagerPaths.APPLIST_JSON
-    private val persistence = GameProfilePersistence(object : GameProfilePersistence.Io {
+
+    /** مسار الملف المحلي (داخل التطبيق) — يُضبط من `install` عند الإقلاع. */
+    @Volatile private var localFile: File? = null
+
+    /** وثيقة المالك الجذري: يقرؤها `AppMonitor` نفسها (لا قاعدة بيانات موازية). */
+    private val rootIo = object : GameProfilePersistence.Io {
         override fun read() = RootFileAccess.read(path)
         override fun write(text: String) = RootFileAccess.atomicWriteText(path, text)
+    }
+
+    /**
+     * وثيقة بلا جذر: ملفّ في `filesDir` **بالتنسيق نفسه**، كتابة ذرّية (مؤقّت ثم إعادة تسمية). الغياب = وثيقة فارغة
+     * لا فشل (أول استعمال)، بخلاف الجذري الذي غيابه عطب.
+     */
+    private val localIo = object : GameProfilePersistence.Io {
+        override fun read(): String? {
+            val file = localFile ?: return null
+            return if (file.isFile) runCatching { file.readText() }.getOrNull() else "{}"
+        }
+
+        override fun write(text: String): Boolean {
+            val file = localFile ?: return false
+            return runCatching {
+                val temp = File(file.parentFile, file.name + ".tmp")
+                temp.writeText(text)
+                temp.renameTo(file)
+            }.getOrDefault(false)
+        }
+    }
+
+    /**
+     * من يملك الوثيقة؟ **الجذر** في ROOT، وفي AUTO ما لم يثبت غيابه (`false` صريح — المجهول يُعامَل جذرًا حتى لا
+     * يتغيّر سلوك من لديه جذر لم تُسخَّن صدفته بعد). وفي SHIZUKU وBASIC: الملف المحلي، فلا نافذة `su` ولا فشل.
+     */
+    private fun usesRootDocument(): Boolean = when (ExecutionModeStore.current()) {
+        ExecutionMode.ROOT -> true
+        ExecutionMode.AUTO -> runCatching { Shell.isAppGrantedRoot() != false }.getOrDefault(true)
+        ExecutionMode.SHIZUKU, ExecutionMode.BASIC -> false
+    }
+
+    private fun io(): GameProfilePersistence.Io = if (usesRootDocument()) rootIo else localIo
+
+    /** يُنادى مرة عند الإقلاع: يحدّد مكان الملف المحلي. */
+    fun install(context: Context) {
+        localFile = File(context.applicationContext.filesDir, LOCAL_FILE_NAME)
+    }
+
+    private val persistence = GameProfilePersistence(object : GameProfilePersistence.Io {
+        override fun read() = io().read()
+        override fun write(text: String) = io().write(text)
     }, validate = { document -> document.values.forEach { json.decodeFromString<AppConfig>(it.toString()) } })
 
     suspend fun load() = withContext(Dispatchers.IO) {
@@ -55,7 +107,7 @@ object GameProfileRepository {
         }
     }
 
-    private fun readDocument() = GameProfileDocument.parse(RootFileAccess.read(path) ?: error("profile-document-unreadable"))
+    private fun readDocument() = GameProfileDocument.parse(io().read() ?: error("profile-document-unreadable"))
     private fun publish(document: JsonObject) {
         val profiles = document.mapValues { (_, value) -> migrate(json.decodeFromString<AppConfig>(value.toString())) }
         mutable.value = State(profiles, loading = false, revision = mutable.value.revision + 1)
@@ -68,4 +120,6 @@ object GameProfileRepository {
         if (config.gpu_profile == "default" && config.thermal_profile != "default") config.copy(
             gpu_profile = if (config.thermal_profile.lowercase() == "powersave") "power" else config.thermal_profile.lowercase(),
             thermal_profile = "default") else config
+
+    private const val LOCAL_FILE_NAME = "applist.local.json"
 }

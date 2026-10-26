@@ -195,17 +195,59 @@ const val PANEL_SCREEN_OFF_POLL_MS: Long = 10_000L
 const val PANEL_OPEN_POLL_MS: Long = 1_000L
 
 /**
+ * الإيقاع الخامل **وتوفير البطارية مُفعَّل** — ثماني ثوانٍ.
+ *
+ * **المقيس الذي أوجبه:** الاستطلاع ليس `stat`؛ كل دورة تسأل النظام عن المقدّمة بصدفة
+ * (`FpsMonitorUtil`: `dumpsys activity activities` وهو أثقل تفريغ في النظام). فثانيتان خاملة
+ * معناها **١٨٠٠ صدفة في الساعة** بلا لعبة في المقدّمة. وتوفير البطارية يعني: كشف فتح اللعبة
+ * يتأخّر ثوانيَ معدودة، وهو ثمن مقبول مقابل إسكات المسار الأثقل.
+ */
+const val PANEL_IDLE_POWER_SAVE_POLL_MS: Long = 8_000L
+
+/** والوحة مفتوحة في توفير البطارية: ثانيتان — لا تُجمَّد أمام المستخدم. */
+const val PANEL_OPEN_POWER_SAVE_POLL_MS: Long = 2_000L
+
+/**
  * كم ينتظر الاستطلاع التالي.
  *
  * **ولماذا يبطؤ حين لا لعبة:** الخدمة تبقى على الجهاز ما دامت هناك لعبة مُفعَّلة، وكل استطلاع يسأل
  * النظام عن المقدّمة بصدفة. فالخمول كل ثانيتين (وهو السقف نفسه الذي يلتزم به `AppMonitor` في قراءته
  * بالصدفة)، والشاشة المطفأة لا تُستطلع أصلًا، لأنه لا لعبة تُلعب والشاشة مطفأة.
+ *
+ * @param powerSave وضع توفير البطارية في النظام — يُبطئ الخمول وحده، **لا** لحظة اللعب.
  */
-fun panelPollDelayMs(interactive: Boolean, gameInFront: Boolean, cockpitOpen: Boolean = false): Long = when {
+fun panelPollDelayMs(
+    interactive: Boolean,
+    gameInFront: Boolean,
+    cockpitOpen: Boolean = false,
+    powerSave: Boolean = false,
+): Long = when {
     !interactive -> PANEL_SCREEN_OFF_POLL_MS
-    cockpitOpen -> PANEL_OPEN_POLL_MS
+    cockpitOpen -> if (powerSave) PANEL_OPEN_POWER_SAVE_POLL_MS else PANEL_OPEN_POLL_MS
     gameInFront -> PANEL_ACTIVE_POLL_MS
+    powerSave -> PANEL_IDLE_POWER_SAVE_POLL_MS
     else -> PANEL_IDLE_POLL_MS
+}
+
+/**
+ * كم يمرّ بين سؤاليْن عن التطبيق المقدّمة — **منفصل عن إيقاع الحالة**.
+ *
+ * **العطب المقيس:** `poll()` كان يسأل النظام عن المقدّمة **في كل دورة**، فصار الإيقاع الخامل
+ * (٢ ث) هو إيقاع السؤال نفسه. والجواب لا يلزم إلا لمعرفة «هل فُتحت لعبة؟»؛ وقيمة أخيرة معروفة
+ * تكفي بين سؤاليْن لأن كل ما يُبنى عليها (`panelStep`) لا يتغيّر بغير تبديل المقدّمة.
+ *
+ * والقيم: لحظة اللعب تُبقى على إيقاع الاستطلاع نفسه (‏١٫٥ ث)، والخمول ثماني ثوانٍ، وتوفير
+ * البطارية عشرين، والشاشة المطفأة لا سؤال أصلًا (`Long.MAX_VALUE`).
+ */
+fun panelForegroundProbeMs(
+    interactive: Boolean,
+    gameInFront: Boolean,
+    powerSave: Boolean = false,
+): Long = when {
+    !interactive -> Long.MAX_VALUE
+    gameInFront -> PANEL_ACTIVE_POLL_MS
+    powerSave -> 20_000L
+    else -> 8_000L
 }
 
 /** خيارات معدّل التحديث المعروضة في اللوحة، بالهرتز. */
@@ -300,7 +342,8 @@ fun panelStep(
     side: PanelSide,
     interactive: Boolean,
     foreground: String?,
-    library: Set<String>
+    library: Set<String>,
+    powerSave: Boolean = false,
 ): PanelStep {
     val subject = if (interactive) panelSubject(foreground, library) else PanelSubject.Unknown
     val sameGame = subject is PanelSubject.Tracked && previous.subject == subject
@@ -319,7 +362,8 @@ fun panelStep(
         nextDelayMs = panelPollDelayMs(
             interactive = interactive,
             gameInFront = panelServiceNeeded(enabledPackages, foreground),
-            cockpitOpen = next.mode == GamePanelMode.Open
+            cockpitOpen = next.mode == GamePanelMode.Open,
+            powerSave = powerSave,
         )
     )
 }

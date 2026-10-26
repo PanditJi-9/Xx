@@ -328,8 +328,8 @@ object StorageUtil {
      *   يعني أن المجموع **حدّ أدنى**؛ والشاشة تقول ذلك بدل أن تعرضه كأنه كامل.
      */
     fun topFolders(root: File): FolderScan? {
-        val base = PrivilegedShell.quote(root.path)
-        val listing = PrivilegedShell.runDetailed("ls -d1 $base/*/ $base/.[!.]*/ 2>/dev/null") ?: return null
+        val base = RootShell.quote(root.path)
+        val listing = RootShell.runDetailed("ls -d1 $base/*/ $base/.[!.]*/ 2>/dev/null") ?: return null
         val dirs = listing.out.filter { it.endsWith("/") }.map(::File)
         if (dirs.isEmpty()) {
             // لا نتيجة و`ls` فشل: «لا مجلدات» و«لا قراءة» يفرّقهما وجود الجذر نفسه.
@@ -344,8 +344,8 @@ object StorageUtil {
         val targets = mutableListOf<Pair<File, String>>()
         for (dir in dirs) {
             if (dir.name == "Android") {
-                val quoted = PrivilegedShell.quote(dir.path)
-                val inner = PrivilegedShell.run("ls -d1 $quoted/*/ $quoted/.[!.]*/ 2>/dev/null")
+                val quoted = RootShell.quote(dir.path)
+                val inner = RootShell.run("ls -d1 $quoted/*/ $quoted/.[!.]*/ 2>/dev/null")
                     ?.filter { it.endsWith("/") }
                     ?.map(::File)
                     .orEmpty()
@@ -357,8 +357,8 @@ object StorageUtil {
             targets += dir to dir.name
         }
 
-        val command = "du -sk " + targets.joinToString(" ") { PrivilegedShell.quote(it.first.path) }
-        val measured = PrivilegedShell.runDetailed(command) ?: return null
+        val command = "du -sk " + targets.joinToString(" ") { RootShell.quote(it.first.path) }
+        val measured = RootShell.runDetailed(command) ?: return null
         val byPath = targets.associate { it.first.path to it.second }
         val slices = measured.out.mapNotNull { line ->
             val (path, bytes) = StorageCareModel.parseDuRow(line) ?: return@mapNotNull null

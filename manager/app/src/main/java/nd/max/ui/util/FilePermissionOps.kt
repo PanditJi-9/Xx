@@ -22,7 +22,7 @@
  * الـarbiter تُطبَّق هنا: **لا «نجح» بلا قياس** — تُقرأ الصلاحيات بعد الأمر وتُقارن.
  *
  * وبناء الأوامر مفصول عن تنفيذها: النصّ يُختبر في JVM (اقتباس صحيح، ورفض رقم غير صالح
- * **قبل** أن يصل إلى shell)، والتنفيذ رقيق بقدر ما يمرّ بـ[PrivilegedShell].
+ * **قبل** أن يصل إلى shell)، والتنفيذ رقيق بقدر ما يمرّ بـ[RootShell].
  */
 package nd.max.ui.util
 
@@ -47,19 +47,19 @@ object FilePermissionOps {
         // الرقم يُمرَّر بـ[FilePermissionRules.parseOctal] أولًا: بها يُطبَّع الشكل
         // (`0o644` و`0644` يصيران `644`) وبها يُرفض غير الصالح — تطبيع واحد لا تطبيعان.
         val requested = FilePermissionRules.parseOctal(octal) ?: return null
-        val path = PrivilegedShell.quote(FileBrowser.normalize(rawPath))
+        val path = RootShell.quote(FileBrowser.normalize(rawPath))
         return "chmod ${requested.octal} $path"
     }
 
     /** أمر `chown`، أو `null` إن كان المالك/المجموعة غير صالحين. */
     fun chownCommand(rawPath: String, owner: String, group: String): String? {
         val spec = FilePermissionRules.ownerSpec(owner, group) ?: return null
-        val path = PrivilegedShell.quote(FileBrowser.normalize(rawPath))
-        return "chown ${PrivilegedShell.quote(spec)} $path"
+        val path = RootShell.quote(FileBrowser.normalize(rawPath))
+        return "chown ${RootShell.quote(spec)} $path"
     }
 
     fun statCommand(rawPath: String): String =
-        "stat -c ${PrivilegedShell.quote(STAT_FORMAT)} ${PrivilegedShell.quote(FileBrowser.normalize(rawPath))}"
+        "stat -c ${RootShell.quote(STAT_FORMAT)} ${RootShell.quote(FileBrowser.normalize(rawPath))}"
 
     fun parseStat(line: String?): PermissionStat? {
         val parts = line?.trim()?.split('\t') ?: return null
@@ -99,9 +99,9 @@ object FilePermissionOps {
         var verifiedAll = true
         for (path in paths) {
             val command = chmodCommand(path, octal) ?: return FileOpOutcome(executedAny, false)
-            val executed = PrivilegedShell.run(command) != null
+            val executed = RootShell.run(command) != null
             executedAny = executedAny || executed
-            val observed = parseStat(PrivilegedShell.run(statCommand(path))?.firstOrNull())
+            val observed = parseStat(RootShell.run(statCommand(path))?.firstOrNull())
             val apply = verdict(requested, observed)
             if (apply != PermissionApply.Applied) verifiedAll = false
         }
@@ -118,9 +118,9 @@ object FilePermissionOps {
         var verifiedAll = true
         for (path in paths) {
             val command = chownCommand(path, owner, group) ?: return FileOpOutcome(executedAny, false)
-            val executed = PrivilegedShell.run(command) != null
+            val executed = RootShell.run(command) != null
             executedAny = executedAny || executed
-            val observed = parseStat(PrivilegedShell.run(statCommand(path))?.firstOrNull())
+            val observed = parseStat(RootShell.run(statCommand(path))?.firstOrNull())
             val matches = observed != null && observed.owner == expectedOwner && observed.group == expectedGroup
             if (!matches) verifiedAll = false
         }

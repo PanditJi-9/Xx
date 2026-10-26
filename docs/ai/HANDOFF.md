@@ -60,6 +60,34 @@ MaxManager has a strong engine and a fragmented surface. `core/maxai` + `core/ha
 
 ## Executor log
 
+### PERF-AUDIT-01 — جولة الحرارة والطاقة والموارد: الإيقاعات صارت تتبع الحقيقة · جلسات العتاد بلا طلب لا تُفتح · فحص `app_status` صار حدثًا لا كل كتابة — 2026-10-26 · DONE_WITH_CONCERNS (٣٥ اختبارًا تمرّ · لا جهاز ولا قياس CPU/PSS)
+
+TASK: تتبّع مصادر استهلاك CPU/الذاكرة/الحرارة في MaxManager وإصلاح العيوب المثبتة بأقل تغيير صحيح: إيقاف العمل الدوري غير الضروري، وفعليّة Battery Saver، ومنع تكرار المهام وكتابة العتاد بلا داعٍ، مع الحفاظ على مسار السلامة.
+
+**الأدلة التي وُجدت في الحزمة (`/tmp/mm_logs` · ٤٣ ساعة · ٢٠٦٠–٢٠٦٥ سجلًا):**
+- **٦١٧٢ حدث `FOREGROUND/SWITCH`** في ٤٣ ساعة — والشرط كان `lastAppliedPkg.isNotBlank()`، أي أن **الإيقاع الخامل (٥٠٠ م.ث) لم يقع أبدًا** لأن المشغّل «حزمة غير فارغة». الحالات الثلاث في `CompanionPollPolicy` كانت على الورق وحده.
+- **٢٩٠ جلسة عتاد لكل `com.termux`** وحده: ٢٩٠ `PERAPP_GOV_BASELINE_CAPTURED` + ٢٩٠ `PERAPP_REVERT_ON_FOREGROUND_LOSS` + ٢٩٠ `PERAPP_KNOB … reason=profile-is-default` — أي التقاط خط أساس وإعادة ملفّ عام كاملة مقابل إدخال كل حقوله `default`.
+- **`app_status` يُكتب عند كل تغيّر فيه** (نسبة بطارية ١٪، معدّل شاشة، صمت…)، والخادم كان يضبط `need_profile_checkup` على **كل `IN_MODIFY`** بلا مقارنة.
+- خدمة اللوحة كانت تسأل `dumpsys activity activities` **في كل دورة** (≈١٨٠٠ صدفة/ساعة والخدمة خاملة)، و`writeBackgroundApps` يبني `runningAppProcesses` + `getRecentTasks(30)` كل ثانية بلا قارئ حين لا جلسة.
+
+CHANGED:
+- `core/daemon/CompanionPollPolicy.kt` — الشرط صار `managedAppOwnsForeground()` (إدخال فعّال أو تعديلات حيّة) بدل «الاسم غير الفارغ»، وإضافة `IDLE_POWER_SAVE_MS=2000` و`CONFIG_WATCH_SCREEN_OFF_MS=2000` و`configWatchMs(managed, screenInteractive)`.
+- `AppMonitor.kt` — `managedAppOwnsForeground()` · مخزّن `isPowerSaveNow()` بـ`SLOW_VALUE_TTL_MS=5s` (كان `isPowerSaveMode` يُنادى ٥ مرات/ثانية) · `writeBackgroundApps` لا يُعيد بناء القائمة بلا جلسة ولا أمام تطبيق غير مُدار · تأجيل فحص تغيّر توقيع الإشعار ٥ ثوانٍ · تأجيل فحص ملفّ التسلّح ١ ثانية · `revertPerAppConfig()` لا يُنادى إلا إذا `perAppOverridesActive` (٣ مواضع) · بوابة `PerAppSessionRules.hasExplicitOverride(entry)` قبل `applyPerAppConfig` (إدخال `default` كلّه ⇒ لا جلسة ولا استعادة) · دالّة `appConfigEntry()` تمنع إعادة بناء `Regex` pkg لكل حقل.
+- `core/gamespace/PerAppSessionRules.kt` (**جديد**) + `PerAppSessionRulesTest.kt` (**جديد**, ٧ دعاوى) — قاعدة «حقل واحد صريح على الأقل»، مع ربط `KNOB_KEYS` بـ`AppConfig.serializer()` حتى لا يُنسى حقل.
+- `core/gamespace/GameSessionPanel.kt` — فصل **إيقاع الحالة** عن **سؤال المقدّمة**: `panelForegroundProbeMs()` (خمول ٨ث · توفير بطاقة ٢٠ث · لعب ١٫٥ث · شاشة مطفأة لا سؤال) و`PANEL_IDLE_POWER_SAVE_POLL_MS=8s` و`PANEL_OPEN_POWER_SAVE_POLL_MS=2s`.
+- `service/GamePanelService.kt` — استدعاء السؤال بالفاصل أعلاه مع مخزّن قيمة معروفة، ومصدر مقدّمة يُختار مرّة (`GameForeground.source`) لا كل دورة، ومخزّن `powerSaveNow()` ١٠ث، و`InAppProfileApplier.recover/release` عند الدخول والخروج من الخدمة.
+- `core/platform/HudSession.kt` — `POWER_SAVE_SAMPLE_MS=2s` (أدنى فاصل لعيّنات FPS/ترددات) مع مخزّن `isPowerSaveMode` ١٠ث؛ مسار الأمان الحراري (١٠ث) لم يُمَسّ.
+- `archdaemon/jni/src/SystemProfile/ProfileUtility.c` + `include/MaxManager.h` — `app_status_needs_profile_checkup(prev_focused, prev_switch, focused, switch_id)` = قرار نقيّ: فحص عند تغيّر الحزمة أو الجلسة فقط.
+- `archdaemon/jni/src/InotifyHandler/InotifyWatcher.c` — يستدعي القرار بدل `need_profile_checkup = true` العمياء على `app_status`، ويلغي الفحص المربوط بـ`background_apps`.
+- `archdaemon/tests/parity_test.c` — `suite_app_status_gate` (٧ دعاوى) مُسجَّلة في `main`.
+- اختبارات: `CompanionPollPolicyTest` (٨) · `GamePanelProbePolicyTest.kt` (**جديد**, ٥) · `GamePanelStepTest` (١٥) · `PerAppSessionRulesTest` (٧).
+
+GATES: `kt_balance --assert` ٣١٠٧ ملفًا/عوائق 0 ✓ · `i18n_coverage --assert` ✓ · `--prune all --assert` يتامى 0 ✓ · `design_tokens --assert` 249/300 ✓ · `jni_symbols --assert` تصريحات 23/نواقص 0 ✓ (ثنائيات 0 ⇒ الطبقة ٢ غير مُتحقَّقة) · `resource_compile --assert` بـ`aapt2` حقيقي ✓ · `code_health --assert` ✓ **بعد رفعٍ مُعلَن لا صامت** (قرار المالك «المستسن»): `oversized_files` كان 9 > 8 فرُفِع السقف إلى 9 في `tools/code_health_baseline.json` مع حقل `_why_oversized_9` — السبب `LobbyControlCenter.kt` (880 ← 1071، +١٩١ سطرًا ببطاقة أوضاع اللعب من جولة Game Space P5 **السابقة** لا من هذه الجولة)، ولم يُقسم الملف خارج نطاق جولة الأداء؛ وبرفعٍ واحد انخفض `presentation_hw_writes` 20 → 12 (حجب مراجع التراجع خارج طبقة العرض). و`CHANGES.txt` (حطام جذر) حُذف بعد نسخ محتواه أعلاه · اختبارات Gradle: `:app:testReleaseUnitTest` **٣٥/٣٥** على نسخة Release، و`compileReleaseKotlin` نجح بعد إصلاح `Conflicting declarations` في `AppMonitor.maybeStartSidePanel` · `archdaemon/tests`: **325/325** (بما فيها `app_status_gate`)، وحزمة واحدة يتخطّاها المضيف كما كانت.
+
+**ونقل عن `CHANGES.txt` (كان حطام جذر مُبلَّغًا من البوابة):** GAMESPACE-MODES-P5 (delta over P4) — 2026-10-26 · ADDED: `docs/ai/GAME-SPACE-DEVICE-CHECKLIST.md` · `GameSpaceProbeParityTest.kt` · `tools/gamespace_shell_probe.sh` · MODIFIED: `docs/ai/HANDOFF.md` · `docs/ai/VALIDATION.md`. **حُذف الملفّ بعد نسخ محتواه هنا** بقرار المالك («المستحسن»): التسليم هو الشجرة، والبوابة لا تقبل حطامًا في الجذر.
+
+BOUNDARY: **غير مُتحقَّق منه:** الجهاز — لا `adb` ولا Profiler في هذه البيئة، فكل رقم CPU/PSS/WakeLock/حرارة في التقرير إمّا من حزمة المالك أو **غير متوفر**؛ الترجمة تحققت بالكامل من بناء Gradle ومن ٣٥ اختبارًا، لكن سلوك Battery Saver والمقدّمة والمراقب على جهاز حقيقي يبقى **يحتاج جهازًا** · الطبقة ٢ من `jni_symbols` (رموز `.so`) بلا NDK · لم يُقَس انخفاض حرارة قبل/بعد. وتقديرات التوفير في التقرير **مشتقّة من عدد النداءات المعدودة في السجل**، لا قياسًا لطاقة.
+
 ### SETTINGS-DEVICE-01 — بطاقة «قدرات الجهاز» في الإعدادات · «تأثيرات التمرير» تصير «الظهور التدريجي» بلا وصف — 2026-10-21 · DONE_WITH_CONCERNS (لا Gradle ولا kotlinc هنا · لا جهاز)
 
 TASK: «غيّر اسم تأثيرات التمرير (يُفهم أنها للتمرير الأفقي) وصغّر وصفها أو احذفه · واجعل إخفاء الميزات غير المتاحة بطاقةً في الإعدادات لا داخل بطاقة التخصيص». البند الأخير «خيار الحركة (بلا حركة)» لم يُفهم بوضوح، فلم يُمسّ (انظر BOUNDARY).
@@ -22849,3 +22877,105 @@ BUILD FAILED in 6m 12s
 **NEXT:** تثبيت الأثر الجديد وتجربة شاشة الذاكرة: تغيير الحجم إلى 12032 · zstd · swappiness 100 — يجب أن تنجح أو تُعلن سببًا محدّدًا (لا «رفضت النواة»). ثم تدوير التوكن الذي وصل في المحادثة (لم يُكتب في أي ملف بالمستودع؛ استُخدم من `/tmp/opencode/.gh_token` بصلاحية 600 ويُحذف بعد الجولة).
 
 **FILES:** `manager/.../core/hardware/ZramHardwareBackend.kt` · `ui/viewmodel/ZramViewModel.kt` · `ui/subscreens/ZramManagerScreen.kt` · `res/values[-ar]/max_screen_strings.xml` · `tools/code_health.py` · `res/values[-ar]/max_ai_strings.xml` · `test/.../TopBarStyleTest.kt` · `ui/design/MaxScreenScaffold.kt`
+
+## GAMESPACE-MODES-P0 — 2026-10-25 · DONE_WITH_CONCERNS (اختصار اللوبي + أيقونة مستقلة · تنظيف طبقة الصلاحيات · حارس تنفيذ)
+
+**TASK (المالك):** خطة لتحسين UI/UX وكل ما يخصّ Game Space وإضافة ميزات والفصل بين وضعي root وShizuku؛ ثم إضافة التحكم من داخل التراكب وتحسين شاشة بداية اللوبي واختصار سطح المكتب «لأنه لا يعمل حقًّا»؛ ثم «نفّذ وابدأ» ⇒ نُفِّذت **P0** من الملحق الجديد في `GAME-SPACE-PLAN.md`.
+
+**التنفيذ:**
+- **الاختصار:** `res/xml/shortcuts.xml` (اختصار ثابت بنيّة الاختصار المثبَّت نفسها) + `meta-data android.app.shortcuts` على `.Launcher` · `GameLobbyEntryActivity` (مدخل `LAUNCHER` شفّاف **مُعطَّل افتراضيًّا** يُطلق `MainActivity` بنيّة اللوبي ثم ينتهي) + `ui/util/GameLobbyIcon` (تبديل حالة المكوّن بـ`DONT_KILL_APP`) + أيقونة تكيّفية جديدة (`ic_game_lobby`) + صفّ تبديل في خيارات اللوبي + أربعة نصوص جديدة وتعديل نصّي `lobby_shortcut_requested/exists` (EN+AR). السبب المرجَّح للعطب (يُقاس على جهاز): `requestPinShortcut` يرجع `true` حتى حين يرفض المشغّل، وعلى HyperOS إذن «اختصارات الشاشة الرئيسية» مغلق افتراضيًّا؛ والنظام يعتبر المعرّف المثبَّت سابقًا «موجودًا» فلا يعيد الطلب ⇒ أُضيف إرشاد وبديل لا يحتاج الإذن.
+- **الصلاحيات:** `ui/util/PrivilegedShell` ⇒ **`RootShell`** (الملف والكلاس وكل المنادين في `ui/util` وتحديث `docs/PROVENANCE.md` والحارس في `MaxViewMenuContractTest`) لإزالة التباس كلاسين بالاسم نفسه · `PanelFloating.rootAvailable()` صار قراءة سلبية (`PrivilegeManager.cachedRootGranted()` + `Shell.isAppGrantedRoot()`) بدل `Shell.getShell()` الذي ينشئ `su` من اللوحة.
+- **الحارس:** `GameSpaceExecutionGuardTest` — سقف تنازلي للاستدعاءات المباشرة (PanelToggles 6 · PanelResolution 5 · PanelDevice 3 · PanelControls 1)، وملف جديد سقفه صفر. وفي `GameSpaceShortcutTest` اختباران: اتساق الاختصار الثابت مع المثبَّت، وعقد الأيقونة المستقلة.
+- **الوثائق:** ملحق الخطة (تشخيص + معمارية + مصفوفة + مراحل P0–P5) · تصحيح I-72 في `KNOWN_ISSUES.md` · صفوف تقادمت في الخطة مصحَّحة في الملحق.
+
+**GATES (على الشجرة النهائية):** `kt_balance --assert` 0 · `license_audit` 0 · `i18n_coverage` 0 · `code_health` 0 · `design_tokens` 0 · `repo_audit` 0 · `dead_modules` 0 · `source_manifest --check` 0 · `resource_compile` rc=0 لكن **aapt2 غير متاح هنا** فلم يُترجَم أي مورد حقيقيًّا (أُثبتت سلامة XML بالتحليل فقط).
+**BUILD:** compilation unverified in this environment — لم يُشغَّل Gradle ولا الاختبارات (الاختبارات الجديدة بنيوية تقرأ المصدر؛ وقد حوكيت محاكاةً لحارس التنفيذ ⇒ ٥٧ ملفًّا · ٠ مخالفة).
+
+**RESIDUAL RISK (معلنة):** (أ) الأيقونة التكيّفية والاختصار الثابت لم يُترجَما بـaapt2 ولم يُجرَّبا على مشغّل؛ (ب) سبب عطب الاختصار فرضية تحتاج جهاز HyperOS؛ (ج) `cachedRootGranted()` يعتمد على صدفة `MaxManagerApplication` المُنشأة عند الإقلاع — لو لم تكتمل بعد فالنتيجة `NoRoot` مؤقتًا؛ (د) إعادة تسمية `PrivilegedShell` ⇒ `RootShell` تمسّ ١٢ ملفًّا بالاستبدال النصّي (لم تُترجَم)؛ (هـ) رأس الملف المُعاد تسميته Apache-2.0 (Zexshia) محفوظ كما هو.
+**NEXT:** `:app:compileReleaseKotlin` + `:app:testReleaseUnitTest` عبر Quick Verify · تجربة الاختصار والأيقونة على HyperOS · ثم **P1** (`ExecutionMode` + `GameCapabilities` + نقل لقطة/تسجيل/`wm` إلى `PrivilegedShell.exec`).
+
+**FILES:** `AndroidManifest.xml` · `res/xml/shortcuts.xml` · `res/drawable/ic_game_lobby_{background,foreground}.xml` · `res/mipmap-anydpi-v26/ic_game_lobby.xml` · `res/values[-ar]/max_gaming_strings.xml` · `GameLobbyEntryActivity.kt` · `ui/util/{GameLobbyIcon,RootShell}.kt` (+١٢ ملفًّا في `ui/util` بالاستبدال) · `core/gamespace/PanelFloating.kt` · `ui/subscreens/LobbyControlCenter.kt` · `test/.../GameSpaceShortcutTest.kt` · `GameSpaceExecutionGuardTest.kt` · `MaxViewMenuContractTest.kt` · `docs/PROVENANCE.md` · `docs/ai/{GAME-SPACE-PLAN,KNOWN_ISSUES,HANDOFF}.md`
+
+## GAMESPACE-MODES-P1 — 2026-10-25 · DONE_WITH_CONCERNS (وضع التنفيذ + القدرات + نقل اللقطة/التسجيل/الدقّة إلى المسار الموحَّد)
+
+**TASK (المالك):** «اكمل» ⇒ P1 من ملحق `GAME-SPACE-PLAN.md`.
+
+**التنفيذ:** `ExecutionMode`/`ExecutionModeRules`/`ExecutionModeStore` (core/privilege) · `PrivilegedShell.exec` يحكمه الوضع · `MaxManagerApplication` لا يسخّن `su` في SHIZUKU/BASIC · `GameCapabilities` (+`GameFeature` · `GameModeStatus` · `GameRootGate`) · `PanelScreenshot`/`PanelScreenRecorder`/`PanelResolution` عبر `PrivilegedShell.exec` (suspend؛ المنادون كلهم داخل سياق معلّق) · `PanelResolution.parse` نقيّ · بطاقة «وضع التنفيذ» في `LobbyControlCenter` · ٣٠ نصًّا EN+AR · `GameRootGate` على `setBypass` و`cleanMemory` و`PanelFloating` و`touchAvailable/setTouch`.
+**الاختبارات المضافة:** `ExecutionModeRulesTest` (٨) · `GameCapabilitiesTest` (٦) · ٣ في `PanelResolutionTest` · اختبار جديد في `GameSpaceExecutionGuardTest` لبوّابة الوضع على المواضع الجذرية، وسقفا PanelToggles/PanelResolution نزلا إلى صفر.
+
+**GATES:** `kt_balance --assert` · `license_audit` · `i18n_coverage` · `code_health` · `design_tokens` · `repo_audit` · `dead_modules` · `source_manifest --check` كلها rc=0. حارس التنفيذ حوكي بالبايثون: ٥٨ ملفًّا · ٠ مخالفة.
+**BUILD:** compilation unverified in this environment — لا Gradle ولا اختبارات ولا aapt2.
+
+**RESIDUAL RISK (معلنة):**
+- (أ) أي الأوامر يقبله uid الـshell تحت Shizuku **غير مقيس**: `svc` · `screencap` · `screenrecord` · `wm` · `settings put global`؛ وجدول `GameFeature` مبنيّ على المسار لا على قبول Shizuku.
+- (ب) استمرار حلقة `screenrecord` الخلفية (`&`) بعد عودة الأمر تحت خدمة Shizuku غير مقيس؛ واللوحة تكشف الفشل بملفّ العلم وتُعلن «فشل البدء».
+- (ج) **الوضع لا يحكم كل شيء:** `PanelClocks` وقراءة HUD و`AppMonitor` وبقية شاشات الجذر ما زالت بصدفتها؛ والبطاقة تقول «أدوات اللوحة» لا «كل التطبيق». وفي SHIZUKU/BASIC لا تظهر اللوحة تلقائيًّا بعد (كشف اللعبة الأمامية جذريّ — P2).
+- (د) `isRecording()` صار يمرّ بالمسار الموحَّد كل دورة استطلاع؛ تحت Shizuku هذا نداء IPC في كل دورة — يُقاس ثمنه على جهاز.
+- (هـ) تغيير توقيعات `suspend` يُراجَع بالبناء (المنادون الأربعة في `GamePanelCockpit` داخل `withContext`/`PanelToggles.async`).
+**NEXT:** Quick Verify (`:app:compileReleaseKotlin` ثم `testReleaseUnitTest`) · تجربة بطاقة الوضع على جهاز بـShizuku وجذر · ثم **P2** (مصدر الأمامية + مخزن بروفايلات داخلي + مطبِّق داخل الخدمة + نتيجة على كل زرّ).
+
+## GAMESPACE-MODES-P2 — 2026-10-25 · DONE_WITH_CONCERNS (كشف اللعبة الأمامية بلا جذر + إذن الاستخدام + نتيجة المقابض)
+
+**TASK (المالك):** «اكمل» ⇒ P2 من ملحق `GAME-SPACE-PLAN.md`؛ نُفِّذ **جزء** منه (القسم ط).
+
+**التنفيذ:** `core/gamespace/GameForeground.kt` (`ForegroundSource` · `ForegroundSourceRules` · `ForegroundEvent` · `UsageForegroundRules` — نقيّة) · `GameForegroundSources.kt` (`UsageAccess` · `UsageStatsForeground` · `GameForeground` — أندرويد) · `GamePanelService` يقرأ الأمامية من `GameForeground` · `PanelToggles.failures` + `PanelWriteFailure` · مُجمِّع في `GamePanelCockpit` يقول الإخفاق · صفّ «كشف اللعبة الأمامية» في بطاقة الوضع (امنح/افتح الإعدادات) · ٦ نصوص واجهة + نصّان لإخفاق المقبض (EN+AR).
+**الاختبارات:** `GameForegroundTest` (٩): اختيار المصدر لكل وضع، واختزال الأحداث (آخر استئناف · إيقاف الحالية · إيقاف غيرها · ترتيب زمني · إعادة تطبيق آمنة)، وحارس بنيوي على الخدمة.
+
+**GATES:** `kt_balance --assert` · `license_audit` · `i18n_coverage` · `code_health` · `design_tokens` · `repo_audit` · `dead_modules` · `source_manifest --check` كلها rc=0. **BUILD:** compilation unverified in this environment (لا Gradle ولا aapt2).
+
+**RESIDUAL RISK (معلنة):**
+- (أ) `appops set <pkg> GET_USAGE_STATS allow` تحت Shizuku **غير مقيس**؛ ولا يُعلَن النجاح إلا بإعادة قراءة الإذن، والبديل اليدوي حاضر.
+- (ب) أحداث الاستخدام: حدث `ACTIVITY_PAUSED` للّعبة قبل `RESUMED` للتالي إن انقسم بين استعلامين يترك «مجهول» لدورة واحدة — تُقاس على جهاز. والنافذة الأولى ساعتان: لعبة بدأت قبل ذلك بلا أحداث لا تُلتقط حتى حدث جديد.
+- (ج) الخدمة لا تبدأ وحدها بلا جذر: تبقى حيّة بـ`GamePanelService.reconcile` (يستدعيه اللوبي) بشرط إذن التراكب وتفعيل لعبة؛ فلعبة تُفتح من المشغّل **بعد** إغلاق الخدمة لا تُلتقط. (وكان `AppMonitor` الجذري يغطّي هذا.)
+- (د) فتح اللوحة تلقائيًّا يعتمد الآن على أن الخدمة حيّة؛ لم يُجرَّب الإقلاع البارد بلا جذر.
+- (هـ) **لم يُنفَّذ مخزن البروفايلات الداخلي ولا مطبِّقه** (القسم ط يشرح التصميم ولماذا تأجّل).
+**NEXT:** Quick Verify · تجربة على جهاز Shizuku: (١) بطاقة الوضع → «امنح» → ظهور اللوحة مع لعبة، (٢) رسالة إخفاق مقبض في Basic · ثم **P3**: مخزن بروفايلات + مطبِّق جزئي بعد قراءة دلالات حقول `AppMonitor`، وشارة المسار، ونشاط اللوبي الخفيف.
+
+## GAMESPACE-MODES-P3 — 2026-10-25 · DONE_WITH_CONCERNS (بروفايل اللعبة بلا رفيق الجذر: وثيقة محلية + مطبِّق داخل الخدمة)
+
+**TASK (المالك):** «اكمل» ⇒ ما تأجّل من P2: مخزن بروفايلات داخلي ومطبِّق جزئي، بعد قراءة دلالات حقول `AppMonitor` (القسم ي في ملحق الخطة).
+
+**التنفيذ:** `core/gamespace/InAppProfile.kt` (`InAppProfileRules` نقيّة) · `InAppProfileApplier.kt` (داخل الخدمة) · `GameProfileRepository` يختار الوثيقة الجذرية أو المحلية بالوضع (`install(context)` من `MaxManagerApplication`) · `GamePanelService`: `recover` قبل الحلقة، و`sync` بعد تحديد الحزمة المتتبَّعة، و`release` في `onDestroy` · بطاقة الوضع: تحميل الوثيقة من المالك الجديد عند التبديل + إشعار بما يُطبَّق في الوضع غير الجذري · نصّ EN+AR واحد.
+**الاختبارات:** `InAppProfileTest` (١٣) · `InAppProfileWiringTest` (٣).
+
+**GATES:** `kt_balance --assert` · `license_audit` · `i18n_coverage` · `code_health` · `design_tokens` · `repo_audit` · `dead_modules` · `source_manifest --check` كلها rc=0؛ وحوكيت شروط اختبارات التوصيل وحارس التنفيذ على الملفات الفعلية. **BUILD:** compilation unverified in this environment.
+
+**RESIDUAL RISK (معلنة):**
+- (أ) قبول uid الـshell تحت Shizuku لـ`settings put` على `secure`/`system`/`global` **غير مقيس**؛ فإن رُفض سُجِّل `written<writes` أو `verified<writes` ولا يُعلَن نجاح.
+- (ب) **ازدواج التطبيق:** إن بقي رفيق الجذر (`AppMonitor`) يعمل أثناء وضع Shizuku/Basic فقد يطبّق من الوثيقة **الجذرية القديمة** مع المطبِّق الداخلي على مفاتيح متقاطعة. القاعدتان الواقيتان: «لا خفض لعدم الإزعاج الأقوى» ولقطة المطبِّق الداخلي تُؤخذ من القيم الحيّة؛ لكن التقاطع غير مُجرَّب.
+- (ج) إطفاء الشاشة أثناء اللعب يجعل الموضوع «مجهولًا» فيُسترجع كل شيء ثم يُعاد تطبيقه عند عودة الشاشة (وميض في عدم الإزعاج) — يُقاس على جهاز ويُخفَّف بمهلة إن ثبت.
+- (د) في AUTO يُعامَل «الجذر المجهول» جذرًا (`Shell.isAppGrantedRoot() != false`) حتى لا تتغيّر وثيقة من لديه جذر لم تُسخَّن صدفته بعد؛ فمن بلا جذر وصدفته لم تُحسم قد يرى فشل التحميل لحظة الإقلاع الأولى ثم ينجح بعد تحميل ثانٍ.
+- (هـ) شاشات تحرير البروفايل ما زالت تعرض الخيارات الجذرية في الوضعين غير الجذريين (تُحفظ ولا تُطبَّق)؛ والإشعار في بطاقة الوضع يقول ذلك — الإخفاء الصريح في P4.
+- (و) تغييرات التوقيع: `GameProfileRepository.install` جديدة؛ وكل ما سبق لم يُترجَم.
+**NEXT:** Quick Verify (`:app:compileReleaseKotlin` ثم `testReleaseUnitTest`) · تجربة على جهاز Shizuku: فعّل DND/معدّل تحديث لكل لعبة ثم افتح اللعبة وراقب سجل `INAPP_PROFILE_*` · ثم **P4** (إخفاء الخيارات الجذرية في التحرير، شارة المسار، نشاط لوبي خفيف، `wifi_no_sleep`).
+
+## GAMESPACE-MODES-P4 — 2026-10-25 · DONE_WITH_CONCERNS (تعطيل الخيارات الجذرية في الوضع غير الجذري + شارة المسار + PanelDevice)
+
+**TASK (المالك):** «اكمل» ⇒ P4 (القسم ك في ملحق الخطة).
+
+**التنفيذ:** `AppSettingsScreen` (`rootKnobs` + سطر الشرح + ١٨ صفًّا مُعطَّلًا) · `LobbyStatusCapsule` (شارة المسار) · `PanelDevice` (احتياطيّا السطوع والتدوير عبر `PrivilegedShell.exec`) · ٥ نصوص EN+AR (`profile_mode_banner` · `lobby_lane_*`).
+**الاختبارات:** `AppSettingsRootKnobsTest` (٣) · سقف `PanelDevice` في `GameSpaceExecutionGuardTest` ٣⇒١.
+
+**GATES:** `kt_balance --assert` · `license_audit` · `i18n_coverage` · `code_health` · `design_tokens` · `repo_audit` · `dead_modules` · `source_manifest --check` كلها rc=0؛ وحوكي حارس التنفيذ (٦٢ ملفًّا · ٠ مخالفة) وشروط اختبار الصفوف على الملف الفعلي. **BUILD:** compilation unverified in this environment.
+
+**RESIDUAL RISK (معلنة):**
+- (أ) الصفوف الأربعة ذات الحقل غير المعروف في الشاشة (`copgHasDevice` ×٣ + قسم CPU) لم تُلمَس؛ فقد يبقى فيها خيار جذريّ فعّال في الوضع غير الجذري (لم تُقرأ دلالاتها).
+- (ب) `ExecutionModeStore.current()` في `AppSettingsScreen` وكبسولة اللوبي قراءة غير مُراقَبة: تبديل الوضع من بطاقة الخيارات ثم العودة لا يُعيد التركيب حتى تتغيّر حالة أخرى — يظهر الصواب عند فتح الشاشة من جديد.
+- (ج) الشارة في AUTO تعرض «Root» ما دام الجذر ممنوحًا حتى لو كان `AppMonitor` متوقفًا؛ فهي تقول «المسار» لا «الرفيق».
+- (د) تغيير سلوك احتياطي السطوع/التدوير: صار يُرفض بوضوح (لا ينفَّذ) في Basic، وكان ينفَّذ بالصدفة الجذرية المخزّنة؛ ويمرّ بـIPC لكل حركة منزلق تحت Shizuku (يُقاس).
+**NEXT:** Quick Verify · تجربة على جهاز (القسم ز + P3) · قياس الإقلاع البارد ثم قرار النشاط الخفيف · إعلان أذونات `wifi_no_sleep`.
+
+## GAMESPACE-MODES-P5 — 2026-10-26 · DONE_WITH_CONCERNS (أدوات التحقق على جهاز: مسبار الـshell + قائمة التحقق)
+
+**TASK (المالك):** «اكمل» ⇒ P5. لا جهاز هنا، فالمبني أدوات تُغلق المجهولات المعلنة في P1–P4 بدل ادّعاء إغلاقها.
+
+**التنفيذ:** `tools/gamespace_shell_probe.sh` — يجرّب بصلاحية **uid الـshell** (وهو uid خدمة Shizuku المبدوءة عبر adb) الأوامر نفسها التي ترسلها الميزات عبر `PrivilegedShell.exec`: كتابة `settings` في `global`/`secure`/`system` بمفتاح اختبار يُحذف، إعادة `zen_mode` ومفاتيح معدّل التحديث والاهتزاز لقيمها، `screencap`، `screenrecord` + بقاء الحلقة الخلفية بعد عودة الصدفة، `wm size/density`، `appops set GET_USAGE_STATS`، `svc wifi/data`، وجود `cmd game`، وقياس الإقلاع البارد (`-n`) للتطبيق ولاختصار اللوبي. **غير مدمِّر** (كل كتابة إعادة نفس القيمة أو مفتاح اختبار أو ملفّ مؤقّت)، خروجه ١ إن فشل مسبار. `docs/ai/GAME-SPACE-DEVICE-CHECKLIST.md` (جداول الوضعين Shizuku وBasic والبروفايل والاختصار وقاعدة قرار النشاط الخفيف + ما يفعله كل فشل في `GameFeature.requires`) · `VALIDATION.md` §12 · `GameSpaceProbeParityTest` (٣) يجمع مفاتيح المسبار وأوامره مع الكود.
+
+**GATES:** `kt_balance --assert` · `license_audit` · `i18n_coverage` · `code_health` · `design_tokens` · `repo_audit` · `dead_modules` · `source_manifest --check` كلها rc=0. **المسبار:** `bash -n` سليم، وشُغِّل على `adb` مُحاكى في مسارَي نجاح وفشل (التدفّق وتقرير الفشل ورمز الخروج)؛ **لم يُشغَّل على جهاز**. **BUILD:** compilation unverified in this environment.
+
+**RESIDUAL RISK (معلنة):**
+- (أ) المحاكي يتحقق من منطق السكربت لا من قبول الجهاز للأوامر؛ المعلومة التي يعطيها المسبار تظهر فقط عند تشغيله على جهاز حقيقي.
+- (ب) uid `adb shell` يطابق Shizuku المبدوء عبر adb فقط؛ Shizuku المبدوء بالجذر (uid 0) أو بخدمة Wireless-debugging قد يختلف — المسبار يطبع الـuid ويحذّر.
+- (ج) بقاء الحلقة الخلفية يُقاس بصدفة `adb shell` لا بخدمة Shizuku (`UserService`)؛ النتيجة تقريبية، وتجربة التسجيل ٣ دقائق في القائمة (٢٫٨) هي الحَكَم.
+- (د) `TotalTime` يقيس أول إطار للنشاط لا جاهزية اللوبي؛ قاعدة القرار في القائمة تقول ذلك وتطلب `Displayed` من logcat للجاهزية.
+**NEXT:** شغّل `bash tools/gamespace_shell_probe.sh -n 5` على الجهاز وألصق التقرير هنا، ثم الجداول ٢–٥ في القائمة؛ وعلى نتائجها يُعدَّل `GameFeature.requires` وتُقرَّر ترقية نشاط اللوبي.
