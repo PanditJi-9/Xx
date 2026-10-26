@@ -689,18 +689,27 @@ object AppMonitor {
     )
 
     /**
-     * هل التطبيق الذي في المقدّمة تطبيق **يُدار فعلًا** — لا مجرّد اسم حزمة؟
+     * هل التطبيق الذي في المقدّمة تطبيق **مُدار** — أي **مُدرج في قائمة اللعب**؟
+     *
+     * **والمعنى الدقيق:** «مُدار» هنا يعني وجوده في قائمة اللعب (لعبة يخدمها الخادم
+     * ويقرأ PIDsها)، لا «له حقل إعداد صريح». فالإدخال الذي كل حقوله `default` يبقى
+     * لعبة نشطة لإيقاع المراقبة. أما **جلسة العتاد** (التقاط خط أساس/استعادة) فتشترط
+     * حقلًا صريحًا واحدًا على الأقل، وهذا قرار [PerAppSessionRules] عند
+     * `applyPerAppConfig` — فلا يُخلط بين السؤالين.
      *
      * **وهذا الشرط هو الذي كان يُبطل الإيقاع المتكيّف كلّه:** كان المنادي يمرّر
      * `lastAppliedPkg.isNotBlank()`، وهي صحيحة للمشغّل وأي تطبيق عاديّ — فالحالة الخاملة
-     * لم تكن تقع أبدًا، وبقي الإيقاع ٥٠٠ م.ث طوال اليوم على الورق والجهاز. والآن يشترط:
-     * إدخال إعدادات حقيقيًّا (تحقّقه [PerAppSessionRules] عند التطبيق) أو تعديلات حيّة على العتاد.
+     * لم تكن تقع أبدًا، وبقي الإيقاع ٥٠٠ م.ث طوال اليوم على الورق والجهاز. والآن يشترط
+     * وجود اسم في قائمة اللعب أو تعديلات حيّة على العتاد.
      */
     private fun managedAppOwnsForeground(): Boolean {
         if (lastAppliedPkg.isBlank()) return false
-        if (perAppOverridesActive) return true
         refreshConfigCacheIfChanged()
-        return cachedGameListText?.contains("\"$lastAppliedPkg\":") == true
+        return CompanionPollPolicy.isManagedForeground(
+            lastAppliedPkg = lastAppliedPkg,
+            hardwareOverridesActive = perAppOverridesActive,
+            appListText = cachedGameListText,
+        )
     }
 
     // ── وضع توفير البطارية: يُقرأ من مخبأ قصير لا في كل دورة ────────────────────
@@ -1119,18 +1128,21 @@ object AppMonitor {
      */
     private var backgroundAppsWrittenWhileScreenOff = false
 
-    // آخر حزمة بُنيت لها القائمة — فلا تُعاد القراءة الثقيلة كل ثانية لتطبيق غير مُدار،
-    // وتُعاد مرة واحدة فور تبديل التطبيق (فلا يفقد الخادم معرّفات اللعبة الجديدة).
+    // آخر حزمة بُنيت لها القائمة — لتطبيق **غير مُدار** لا تُعاد القراءة الثقيلة كل ثانية،
+    // بل مرة واحدة عند تغيّر الحزمة. وأما التطبيق **المُدار** (المدرج في قائمة اللعب) فتُبنى
+    // له كل دورة: الخادم يقرأ PIDs من الملفّ، وإعادة تشغيل عملية اللعبة لا يلتقطها تغيّر
+    // اسم الحزمة. وهذا فرق مقصود بين الإيقاع والجلسة، لا سهو.
     private var lastBackgroundAppsPkg = ""
 
     private fun writeBackgroundApps() {
         val screenOn = powerManager?.isInteractive == true
         if (!screenOn && backgroundAppsWrittenWhileScreenOff) return
         backgroundAppsWrittenWhileScreenOff = !screenOn
-        // **ولا تُقرأ قائمة العمليات بلا جلسة.** الملفّ يخدم شيئًا واحدًا: أن يجد الخادم معرّفات
-        // عملية **التطبيق المُدار الذي في المقدّمة** (`get_pids_of`). فبناؤه والعرض في المقدّمة
-        // تطبيق عاديّ كان `runningAppProcesses` + `getRecentTasks(30)` **كل ثانية**: مئات الكائنات
-        // في كل دورة، ولا قارئ لها. والقياس من حزمة المستخدم: ٦٤٦٢ تبديلًا في ٤٣ ساعة، ومعظمها
+        // **ولا تُقرأ قائمة العمليات بلا تطبيق مُدار في المقدّمة** (ولا والشاشة مطفأة).
+        // الملفّ يخدم شيئًا واحدًا: أن يجد الخادم معرّفات عملية **التطبيق المُدار الذي في
+        // المقدّمة** (`get_pids_of`). فبناؤه والعرض في المقدّمة تطبيق عاديّ كان
+        // `runningAppProcesses` + `getRecentTasks(30)` **كل ثانية**: مئات الكائنات في كل
+        // دورة، ولا قارئ لها. والقياس من حزمة المستخدم: ٦٤٦٢ تبديلًا في ٤٣ ساعة، ومعظمها
         // لا يخصّ تطبيقًا مُدارًا. والمخبأ يبقى كما هو فلا يُكتب ملفّ فارغ عند الخمول.
         if (screenOn && !managedAppOwnsForeground() && lastBackgroundAppsPkg == lastAppliedPkg) return
 

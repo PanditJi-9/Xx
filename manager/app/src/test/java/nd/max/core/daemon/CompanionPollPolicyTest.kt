@@ -6,6 +6,7 @@
 package nd.max.core.daemon
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -113,5 +114,53 @@ class CompanionPollPolicyTest {
         assertEquals(3_600L, idle)
         assertEquals(1_800L, saving)
         assertEquals(idle / 2, saving)
+    }
+
+    @Test
+    fun `a listed game with every field default is still managed for cadence`() {
+        val list = """{"com.game":{"gpu_profile":"default","cpu_governor":"default"}}"""
+        assertTrue(
+            "the cadence follows the game list, not the hardware-session gate; a default entry is still a game",
+            CompanionPollPolicy.isManagedForeground("com.game", hardwareOverridesActive = false, appListText = list),
+        )
+    }
+
+    @Test
+    fun `an unlisted foreground package falls back to the idle cadence`() {
+        val list = """{"com.game":{"gpu_profile":"default"}}"""
+        assertFalse(
+            CompanionPollPolicy.isManagedForeground("com.other", hardwareOverridesActive = false, appListText = list),
+        )
+        assertFalse(
+            "a missing app-list cache is not a reason to keep 500ms",
+            CompanionPollPolicy.isManagedForeground("com.game", hardwareOverridesActive = false, appListText = null),
+        )
+    }
+
+    @Test
+    fun `a live hardware session keeps the active cadence even before the list catches up`() {
+        assertTrue(
+            CompanionPollPolicy.isManagedForeground("com.game", hardwareOverridesActive = true, appListText = null),
+        )
+    }
+
+    @Test
+    fun `a blank foreground is never managed, even with live overrides`() {
+        assertFalse(
+            CompanionPollPolicy.isManagedForeground("", hardwareOverridesActive = true, appListText = """{"com.game":{}}"""),
+        )
+        assertFalse(
+            "whitespace is not a package",
+            CompanionPollPolicy.isManagedForeground("   ", hardwareOverridesActive = false, appListText = """{"com.game":{}}"""),
+        )
+    }
+
+    @Test
+    fun `a package-name prefix does not match another game entry`() {
+        val list = """{"com.game.beta":{"gpu_profile":"performance"}}"""
+        assertFalse(
+            "com.game is not a key just because com.game.beta is; the quoted colon is required",
+            CompanionPollPolicy.isManagedForeground("com.game", hardwareOverridesActive = false, appListText = list),
+        )
     }
 }
