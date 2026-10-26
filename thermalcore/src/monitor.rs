@@ -44,6 +44,20 @@ enum RunMode {
     Poll,
 }
 
+/// مهلة انتظار `poll` بالمللي ثانية حتى موعد التقييم الاحتياطيّ القادم.
+///
+/// **ولماذا لا ١٠٠٠ ثابتة (تكملة `PERF-AUDIT-01`):** التقييم الاحتياطيّ صار كل
+/// [FALLBACK_EVAL_SECS] ثانية، لكن `poll` كان يستيقظ كل ثانية ليفحص موعدًا لم يحن — أربع
+/// إيقاظات من خمسة بلا عمل في خدمة تعمل دائمًا. المهلة الآن = ما بقي حتى الموعد، فالاستيقاظ
+/// يقع عند الحاجة وحدها؛ والحدث الحقيقي (تغيّر ملف الحرارة) يقطع الانتظار فورًا كما كان.
+///
+/// والقيمة محبوسة في `[0, FALLBACK_EVAL_SECS × 1000]`: موعد ماضٍ يعني «قيّم فورًا» (صفر)،
+/// وموعد شاذّ بعيد (ساعة رتيبة قفزت أو حُقن رقم) لا يترك المراقب نائمًا بلا تقييم أبدًا.
+fn fallback_poll_timeout_ms(now_secs: u64, next_eval_secs: u64) -> u16 {
+    let remaining_ms = next_eval_secs.saturating_sub(now_secs).saturating_mul(1000);
+    remaining_ms.min(FALLBACK_EVAL_SECS.saturating_mul(1000)).min(u16::MAX as u64) as u16
+}
+
 pub struct ThermalMonitor {
     pub logger: Logger,
     pub learning_data: ThermalAI,
@@ -65,6 +79,11 @@ pub struct ThermalMonitor {
     /// تتغيّر حرارة واحدة: قراءة العقد + تحديث السياق الخارجي (شاشة/بطارية) + قراءة عدّادات
     /// المعالج + تسجيل حدث في نموذج التعلّم. والحدث الحقيقي (تغيّر ملف الحرارة) يُقيَّم فورًا كما
     /// كان؛ وهذا الخُلُف **احتياطي** فقط لمن لا تصل أحداثه، فصار كل [FALLBACK_EVAL_SECS] ثانية.
+    ///
+    /// **ويُحدَّث مع كل تقييم لا مع التقييم الاحتياطيّ وحده (تكملة `PERF-AUDIT-01`):** التقييم
+    /// الذي سبّبه حدث حقيقي يبعد الموعد أيضًا؛ وإلا فحدث وقع قبل الموعد بلحظة يعقبه تقييم
+    /// احتياطيّ فوريّ لا لزوم له. والمهلة المحسوبة منه في [run] تجعل `poll` يستيقظ عند الموعد
+    /// لا كل ثانية ([fallback_poll_timeout_ms]).
     next_fallback_eval: u64,
 
     external_context: ExternalContext,
@@ -137,9 +156,12 @@ impl ThermalMonitor {
     }
 
     fn handle_temperature_change(&mut self) {
-        if let Ok(raw_temp) = self.read_temperature() {
-            let now = get_monotonic_time();
+        // كل تقييم — حدثًا كان أو احتياطيًّا — يبعد الموعد الاحتياطيّ عنه؛ فلا يتلوه تقييم
+        // فوريّ لأن حدثًا وقع قبل الموعد بلحظة (تكملة `PERF-AUDIT-01`).
+        let now = get_monotonic_time();
+        self.next_fallback_eval = now + FALLBACK_EVAL_SECS;
 
+        if let Ok(raw_temp) = self.read_temperature() {
             let dt = now.saturating_sub(self.last_loop_time) as f32;
             let dt = if dt < 0.1 { 1.0 } else { dt };
             self.last_loop_time = now;
@@ -242,13 +264,17 @@ impl ThermalMonitor {
                     let borrowed_fd = unsafe { BorrowedFd::borrow_raw(fd) };
                     let poll_fd = PollFd::new(borrowed_fd, PollFlags::POLLIN);
 
-                    match poll(&mut [poll_fd], PollTimeout::from(1000u16)) {
+                    // انتظار حتى الموعد الاحتياطيّ لا نبضة كل ثانية (تكملة `PERF-AUDIT-01`).
+                    let timeout = fallback_poll_timeout_ms(
+                        get_monotonic_time(),
+                        self.next_fallback_eval
+                    );
+                    match poll(&mut [poll_fd], PollTimeout::from(timeout)) {
                         Ok(0) => {
                             // لا حدث في المهلة: تقييم احتياطيّ **متقطّع** لا كل ثانية.
                             // (والحدث الحقيقي أدناه يبقى فوريًّا: ملف الحرارة يتغيّر ⇒ تقييم فوريّ.)
                             let now = get_monotonic_time();
                             if now >= self.next_fallback_eval {
-                                self.next_fallback_eval = now + FALLBACK_EVAL_SECS;
                                 self.handle_temperature_change();
                             }
                             continue;
@@ -260,6 +286,10 @@ impl ThermalMonitor {
                                 }
                             }
                         }
+                        // إشارة قطعت الانتظار ليست عطبًا: نعيد الانتظار ولا نُسقط المراقب.
+                        // (كان كل `Err` يُحوّل إلى وضع الاستطلاع: فقدان الأحداث الفورية
+                        //  وإيقاظ كل ٣ ثوانٍ — وهو أسوأ من العطب العابر نفسه.)
+                        Err(nix::errno::Errno::EINTR) => continue,
                         Err(_) => {
                             mode = RunMode::Poll;
                             inotify = None;
@@ -280,5 +310,36 @@ impl ThermalMonitor {
                 }
             }
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::fallback_poll_timeout_ms;
+    use crate::constants::FALLBACK_EVAL_SECS;
+
+    /// **تثبيت المهلة المشتقّة** (تكملة `PERF-AUDIT-01`): كان `poll` يستيقظ كل ثانية ليفحص
+    /// موعدًا لا يحين إلا كل خمس — أربعة إيقاظات من خمسة بلا عمل، في خدمة تعمل دائمًا.
+    #[test]
+    fn waits_exactly_until_the_fallback_deadline() {
+        assert_eq!(fallback_poll_timeout_ms(10, 15), 5_000);
+        assert_eq!(fallback_poll_timeout_ms(12, 15), 3_000);
+        assert_eq!(fallback_poll_timeout_ms(14, 15), 1_000);
+    }
+
+    #[test]
+    fn a_deadline_already_reached_wakes_immediately() {
+        assert_eq!(fallback_poll_timeout_ms(15, 15), 0);
+        assert_eq!(fallback_poll_timeout_ms(99, 15), 0);
+    }
+
+    /// ساعة قافزة أو موعد محقون: النوم الأطول من الدورة يفقد التقييم الاحتياطيّ نفسه، والصفر
+    /// الدائم يحوّل الحلقة إلى دوران محموم. فالسقف هو الدورة، والأرضية هي «الآن».
+    #[test]
+    fn a_far_or_broken_deadline_never_sleeps_past_the_fallback_period() {
+        let cap = FALLBACK_EVAL_SECS * 1000;
+        assert_eq!(fallback_poll_timeout_ms(0, u64::MAX), 5_000);
+        assert_eq!(fallback_poll_timeout_ms(0, 1_000_000), 5_000);
+        assert!(u64::from(fallback_poll_timeout_ms(0, u64::MAX)) <= cap);
     }
 }

@@ -44,6 +44,11 @@ class MaxNotificationListener : NotificationListenerService() {
 
     override fun onNotificationPosted(sbn: StatusBarNotification?) {
         val posted = sbn ?: return
+        // **أول شرط: هل للجزيرة مالك؟** المستمع يعمل بصلاحيته ما دامت ممنوحة، ولو كانت الجزيرة
+        // متوقّفة لكان كل إشعار يُكلّف قراءة اسم حزمة من `PackageManager` وترتيبًا من النظام ثم
+        // يضيع في `recompute()` بلا مستهلك (تكملة `PERF-AUDIT-01`). و`IslandLive.start()` يصفّر
+        // المصادر عند الإقلاع، فالإشعار الذي يصل قبل الملك لا يُفقد من عرضٍ قائم أصلًا.
+        if (!IslandLive.isLive) return
         if (posted.packageName == packageName) return
         if (posted.isOngoing) return
         val notification = posted.notification ?: return

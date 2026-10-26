@@ -153,8 +153,11 @@ class IslandService : LifecycleService() {
     private fun watchdog() {
         lifecycleScope.launch {
             while (isActive) {
-                syncPosition()
-                syncSampler()
+                // قراءة واحدة للتفضيلات لكل نبضة: الموضع والمصادر يقرآن المفاتيح نفسها،
+                // وقراءتان متتاليتان في الثانية ثمنٌ بلا مقابل (تكملة `PERF-AUDIT-01`).
+                val prefs = IslandPrefs.load(applicationContext)
+                syncPosition(prefs)
+                syncSampler(prefs)
                 delay(WATCHDOG_MS)
             }
         }
@@ -167,9 +170,8 @@ class IslandService : LifecycleService() {
      * يتغيّر مع محتواها (نقطة هادئة ← إشعار بعنوان طويل)، وحدّ الإزاحة الأفقية يعتمد عليه — فإعادة
      * الحساب كل ثانية هي ما يمنع كبسولةً واسعة عند أقصى اليمين من الخروج بحافّتها. والحساب رخيص ودالّته نقيّة.
      */
-    private fun syncPosition() {
+    private fun syncPosition(prefs: IslandPrefs.State) {
         val panel = island ?: return
-        val prefs = IslandPrefs.load(applicationContext)
         val (screenWidth, screenHeight) = panel.screenBounds()
         val size = panel.contentSize()
         val islandWidth = size?.first ?: 0
@@ -192,8 +194,8 @@ class IslandService : LifecycleService() {
         panel.setGravity(Gravity.TOP or Gravity.CENTER_HORIZONTAL, x, y)
     }
 
-    private fun syncSampler() {
-        val wanted = IslandPrefs.load(applicationContext).showIndicators
+    private fun syncSampler(prefs: IslandPrefs.State) {
+        val wanted = prefs.showIndicators
         val owner = HudSampler.currentOwner
         when {
             wanted && owner == null -> HudSampler.start(

@@ -302,24 +302,44 @@ class OverlayWindow(
     /**
      * وضع ملء الشاشة للوحة المفتوحة: نافذة MATCH_PARENT تمتدّ تحت القصّة (cutout) وشرائط النظام،
      * وتعود إلى WRAP_CONTENT للمقبض. لا يُستدعى إلا على الخيط الرئيسي بعد `mount`.
+     *
+     * **ولا يُرسل طلبًا لا يغيّر شيئًا (تكملة `PERF-AUDIT-01`):** كان كل نداء يدفع
+     * `updateViewLayout` إلى `WindowManager`، و`GamePanelService.placeWindow()` يناديها كل
+     * استطلاع (ثانيتان في الخمول) ليبقي المقبض غير ملء الشاشة. فصار الإطار المطلوب يُقارن
+     * بالقائم، وما طابقه لا يمسّ `WindowManager` أصلًا. (والحساب النقيّ في
+     * [OverlayGeometry.fullScreenTarget] يُقاس على JVM.)
      */
     fun setFullScreen(on: Boolean, atX: Int? = null, atY: Int? = null) {
-        val size = if (on) WindowManager.LayoutParams.MATCH_PARENT else WindowManager.LayoutParams.WRAP_CONTENT
+        val current = OverlayGeometry.Frame(
+            fullScreen = params.width == WindowManager.LayoutParams.MATCH_PARENT &&
+                params.height == WindowManager.LayoutParams.MATCH_PARENT,
+            x = params.x,
+            y = params.y,
+            layoutInScreen =
+                params.flags and WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN != 0
+        )
+        val target = OverlayGeometry.fullScreenTarget(on, current, atX, atY)
+        if (target == current) return
+        val size = if (target.fullScreen) {
+            WindowManager.LayoutParams.MATCH_PARENT
+        } else {
+            WindowManager.LayoutParams.WRAP_CONTENT
+        }
         params.width = size
         params.height = size
+        params.x = target.x
+        params.y = target.y
+        params.flags = if (target.layoutInScreen) {
+            params.flags or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
+        } else {
+            params.flags and WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN.inv()
+        }
         if (on) {
-            params.x = 0
-            params.y = 0
-            params.flags = params.flags or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 params.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS
             } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                 params.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
             }
-        } else {
-            params.flags = params.flags and WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN.inv()
-            atX?.let { params.x = it }
-            atY?.let { params.y = it }
         }
         refresh()
     }

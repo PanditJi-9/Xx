@@ -165,4 +165,46 @@ class OverlayGeometryTest {
             }
         }
     }
+
+    // ───────────────────────────── ملء الشاشة ─────────────────────────────
+
+    /** مقبض عاديّ: WRAP_CONTENT على الحافة، بلا عَلَم التمدّد. */
+    private val handle = OverlayGeometry.Frame(fullScreen = false, x = 0, y = 600, layoutInScreen = false)
+
+    /** اللوحة مفتوحة: MATCH_PARENT من الأصل مع العَلَم. */
+    private val full = OverlayGeometry.Frame(fullScreen = true, x = 0, y = 0, layoutInScreen = true)
+
+    @Test fun openingFullScreenAlwaysTargetsTheOriginWithTheFlag() {
+        assertEquals(full, OverlayGeometry.fullScreenTarget(on = true, current = handle, atX = 700, atY = 900))
+    }
+
+    @Test fun closingFullScreenWithoutCoordinatesKeepsTheCurrentPosition() {
+        // النداء المتكرّر من الاستطلاع لا يمرّر إحداثيات — فتُحفظ كما هي ولا يُعاد المقبض إلى
+        // موضع قديم محفوظ في الخدمة.
+        assertEquals(handle, OverlayGeometry.fullScreenTarget(on = false, current = handle))
+        assertEquals(
+            OverlayGeometry.Frame(fullScreen = false, x = 0, y = 0, layoutInScreen = false),
+            OverlayGeometry.fullScreenTarget(on = false, current = full)
+        )
+    }
+
+    @Test fun closingFullScreenAppliesTheCoordinatesWhenGiven() {
+        assertEquals(
+            OverlayGeometry.Frame(fullScreen = false, x = 700, y = 60, layoutInScreen = false),
+            OverlayGeometry.fullScreenTarget(on = false, current = full, atX = 700, atY = 60)
+        )
+    }
+
+    @Test fun askingForWhatIsAlreadySetIsANoOp() {
+        // هذا هو منع معاملة Binder: المستدعي يقارن الهدف بالقائم، والتساوي يعني «لا refresh».
+        assertEquals(handle, OverlayGeometry.fullScreenTarget(on = false, current = handle, atX = 0, atY = 600))
+        assertEquals(full, OverlayGeometry.fullScreenTarget(on = true, current = full))
+    }
+
+    @Test fun aDifferentCoordinateIsAChange() {
+        // الحالة الوحيدة التي يجب أن تُرسل فيها معاملة: طلب إحداثيّ مختلف عن القائم.
+        val target = OverlayGeometry.fullScreenTarget(on = false, current = handle, atX = 0, atY = 300)
+        assertTrue(target != handle)
+        assertEquals(300, target.y)
+    }
 }

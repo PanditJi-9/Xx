@@ -54,6 +54,45 @@ object OverlayGeometry {
     }
 
     /**
+     * الحقول التي يغيّرها ملء الشاشة، **نسخة نقيّة عن `LayoutParams`** بلا أندرويد في هذا الملف.
+     *
+     * `fullScreen` تعني أن العرض والارتفاع `MATCH_PARENT`، و`layoutInScreen` تعني وجود
+     * `FLAG_LAYOUT_IN_SCREEN`. أمّا `x`/`y` فهما إحداثيّا النافذة كما يقرأهما المستدعي.
+     *
+     * **ولماذا وُجدت (تكملة `PERF-AUDIT-01`):** `GamePanelService.placeWindow()` ينادي
+     * `setFullScreen(false)` **كل استطلاع** (كل ثانيتين في الخمول) ليبقي المقبض بحجمه. وكان
+     * كل نداء يدفع `updateViewLayout` إلى `WindowManager` ولو كان الإطار مطابقًا — أي معاملة
+     * Binder كل ثانيتين ما دامت لعبة مفعّلة، والخدمة تعيش دائمًا. فصار الطلب يُقارن بالقائم أولًا.
+     */
+    data class Frame(
+        val fullScreen: Boolean,
+        val x: Int,
+        val y: Int,
+        val layoutInScreen: Boolean
+    )
+
+    /**
+     * الإطار المطلوب بعد طلب ملء الشاشة — تشغيلًا أو إيقافًا.
+     *
+     * - **تشغيل:** `MATCH_PARENT` عند الأصل `(0,0)` مع عَلَم التمدّد تحت شرائط النظام.
+     * - **إيقاف:** `WRAP_CONTENT` بلا العَلَم، والإحداثيّان المطلوبان إن مُرِّرا — و`null` يعني
+     *   «أبقِ الحالي»، حتى لا يُحرَّك المقبض إلى موضع قديم عند نداءٍ لا يمرّر إحداثيات.
+     *
+     * والدالّة نقيّة: المقارنة `target == current` في المستدعي هي التي تمنع المعاملة الزائدة.
+     */
+    fun fullScreenTarget(on: Boolean, current: Frame, atX: Int? = null, atY: Int? = null): Frame =
+        if (on) {
+            Frame(fullScreen = true, x = 0, y = 0, layoutInScreen = true)
+        } else {
+            Frame(
+                fullScreen = false,
+                x = atX ?: current.x,
+                y = atY ?: current.y,
+                layoutInScreen = false
+            )
+        }
+
+    /**
      * مستطيل قصّة (نتوء) بإحداثيّات الشاشة — **نسخة نقيّة عن `android.graphics.Rect`** لأن
      * الوحدة لا تلمس أندرويد (فلا `Rect` غير المُختبر في JVM هنا)، والقصّة نفسها تُقرأ من
      * `Display.getCutout()` في موضع النداء وتُحوَّل إلى هذا الشكل.
