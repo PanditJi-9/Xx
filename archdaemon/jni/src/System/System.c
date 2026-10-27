@@ -56,6 +56,11 @@ static void cleanup_runtime_state(DaemonContext* ctx, const char* reason) {
         ctx->resolution_applied = false;
     }
 
+    // A per-app renderer left in `debug.hwui.renderer` outlives the session that asked
+    // for it. Restoring it here (not only in Eco/Balanced) is what keeps the transient
+    // choice transient when the daemon stops mid-game.
+    restore_saved_renderer(ctx, reason ? reason : "cleanup");
+
     release_per_app_thermal_policy();
     release_native_mtk_gpu_lock();
     __system_property_set("sys.maxmanager.perapp.governor_isolation", "0");
@@ -132,6 +137,13 @@ int main_daemon(void) {
     ctx.need_profile_checkup = true;
     bool need_loop = true;
     runthermalcore();
+
+    // A fresh daemon owns no Per-App session yet, so any isolation flag still set here
+    // belongs to a previous run that died without its exit path (SIGKILL, crash). Clear it
+    // before the first profiler call: `run_profiler()` now preserves an existing 1 when it
+    // has no local target (the CLI case), and a stale 1 would keep `binprofiles` muted
+    // forever after a service restart.
+    __system_property_set("sys.maxmanager.perapp.governor_isolation", "0");
     run_profiler(PERFCOMMON);
 
     // `run_profiler(0)` يهيّئ النظام ولا يطبّق وضعًا. نعلن التهيئة مكتملة هنا
@@ -241,6 +253,7 @@ int main_daemon(void) {
                 // remain in gamestart and keep renderer/thermal/profile state alive.
                 update_per_app_thermal_policy(NULL, NULL);
                 __system_property_set("sys.maxmanager.perapp.governor_isolation", "0");
+                restore_saved_renderer(&ctx, "per_app_exit");
                 if (gamestart) {
                     if (ctx.resolution_applied)
                         restore_resolution_target(&ctx, gamestart);
@@ -326,6 +339,11 @@ int main_daemon(void) {
                         ctx.fg_away_active = false;
                         ctx.fg_away_timer = 0;
                         restore_resolution_target(&ctx, gamestart);
+                        restore_saved_renderer(&ctx, "foreground_lost");
+                        // This path frees the target below, so the per-app governor/ceiling
+                        // ownership ends here too. Leaving the flag at 1 would make
+                        // `binprofiles` stand down for a session that no longer exists.
+                        __system_property_set("sys.maxmanager.perapp.governor_isolation", "0");
                         free(gamestart);
                         gamestart = NULL;
                         if (active_app_name) {
@@ -399,6 +417,8 @@ int main_daemon(void) {
                     } else {
                         log_zenith(LOG_ERROR, "EVENT=PID_FETCH_GAVE_UP pkg=%s retries=5",
                                    active_app_name ? active_app_name : gamestart);
+                        restore_saved_renderer(&ctx, "pid_gave_up");
+                        __system_property_set("sys.maxmanager.perapp.governor_isolation", "0");
                         free(gamestart);
                         gamestart = NULL;
                         if (active_app_name) {

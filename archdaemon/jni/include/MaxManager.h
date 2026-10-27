@@ -321,6 +321,7 @@ void check_module_version(void);
 void apply_dynamic_refresh_rate(int target_rr);
 int get_max_refresh_rate(void);
 bool apply_smart_renderer(const char* target_type, char* saved_ref, char* saved_sys);
+void restore_saved_renderer(DaemonContext* ctx, const char* reason);
 bool apply_resolution_target(DaemonContext* ctx, const char* pkg,
                                const char* downscale);
 void restore_resolution_target(DaemonContext* ctx, const char* pkg);

@@ -23094,3 +23094,10 @@ BUILD FAILED in 6m 12s
 فيه يظهر أثر تغييرات Kotlin/الـworkflow. (٢) مراجعة سلامة مستقلة على الـdiff (نموذج غير المنفّذ، رسالة
 `AGENTS.md` §4). (٣) على جهاز: قائمة NT-13 (ملفّا الحالة/العتبة · `freqoffset` · `compact_memory` · عقد
 العرض) ثم تُغلق المهمة.
+
+**تحديث القياس بعد الدفع (2026-10-27 03:02Z):** CI على `ad67a01c` **أخضر** — تشغيل `MaxManager`
+`40440018842` (١٩م ١٤ث): «Contract gates» ✓ · «Rust unit tests (thermal core, host)» ✓ (ويشمل اختبارات
+التنبؤ السبع) · «Tests + assemble + package (contract gate)» ✓ (`:app:testReleaseUnitTest` و
+`:app:assembleRelease`) · «Unit test count evidence» ✓. ⇒ **الترجمة الكاملة للـKotlin والـAPK مُتحقَّقة في CI**،
+و«غير مُتحقَّقة في هذه البيئة» تبقى صحيحة بمعناها الحرفي (لا Gradle هنا). ويبقى معلَّقًا كما هو: **سلوك
+الجهاز** و**حكم `safety-reviewer` المستقل** — لا يشتريهما تشغيل CI.

@@ -253,6 +253,101 @@ void suite_cli_profile(void) {
     host_set_daemon_running(true);
 
     /*
+     * ── عزل الحاكم بين العمليتين: `--profile` لا يملك جلسة Per-App ────────────────────────
+     *
+     * **العطب الذي تُثبِّته هذه الكتلة:** مسار `--profile` يعمل في **عملية أخرى** غير الخادم،
+     * فـ`gamestart` و`opts` فيها فارغان دائمًا ولو كانت لعبة مُدارة في المقدّمة. وكان
+     * `run_profiler()` يعيد حساب علم العزل من هذين الفارغين فينشر `0`، فيرى `binprofiles` أن
+     * لا مالك للتجاوز ويكتب حاكم/سقف الـGPU العام فوق سقف التطبيق — وهو «البروفايل يرتدّ بعد
+     * لمسة في لوحة اللعبة» بعينه (ثم يعيده إصلاح الانحراف بعد ١٠ ثوانٍ فيرتدّ ثانيًا).
+     *
+     * والقياس هنا على **الخاصية نفسها** بعد نداء `handle_profile` الحقيقي — لا على سطر سجلّ
+     * فقط — ولذلك ثلاث حالات متقابلة:
+     *   ١. علم مرفوع + CLI  ⇒ يبقى مرفوعًا (ولا يستطيع الخادم أن يفقده من عملية لا تعرف حاله).
+     *   ٢. لا جلسة حيّة (علم `0`) ⇒ يبقى `0` ولا سطر «preserved» كاذب.
+     *   ٣. الخادم نفسه (هدف محلي بلا أي تجاوز) ⇒ **يُنزل** العلم، وإلا صار الحرّاس صمّاء للأبد.
+     */
+    static const char* cli_profiles[] = {"1", "2", "3"};
+    for (size_t p = 0; p < sizeof(cli_profiles) / sizeof(cli_profiles[0]); p++) {
+        host_reset_capture();
+        host_prop_reset();
+        host_prop_set("persist.sys.maxmanagerconf.AIenabled", "0");
+        host_prop_set("sys.maxmanager.perapp.governor_isolation", "1");
+
+        const char* argv[] = {"sys.maxmanager-service", "--profile", cli_profiles[p]};
+        int saved_iso[2];
+        silence_streams_begin(saved_iso);
+        int rc = handle_profile(3, (char**)argv);
+        silence_streams_end(saved_iso);
+
+        char live[PROP_VALUE_MAX] = {0};
+        __system_property_get("sys.maxmanager.perapp.governor_isolation", live);
+
+        char iso_label[192];
+        snprintf(iso_label, sizeof(iso_label),
+                 "[isolation] CLI profile %s leaves a live per-app flag raised", cli_profiles[p]);
+        CHECK(rc == 0 && strcmp(live, "1") == 0, iso_label);
+
+        snprintf(iso_label, sizeof(iso_label),
+                 "[isolation] CLI profile %s records the preserve decision", cli_profiles[p]);
+        CHECK(host_log_contains("EVENT=PERAPP_ISOLATION_PRESERVED"), iso_label);
+    }
+
+    host_reset_capture();
+    host_prop_reset();
+    host_prop_set("persist.sys.maxmanagerconf.AIenabled", "0");
+    host_prop_set("sys.maxmanager.perapp.governor_isolation", "0");
+    {
+        const char* argv[] = {"sys.maxmanager-service", "--profile", "2"};
+        int saved_iso[2];
+        silence_streams_begin(saved_iso);
+        int rc = handle_profile(3, (char**)argv);
+        silence_streams_end(saved_iso);
+        char live[PROP_VALUE_MAX] = {0};
+        __system_property_get("sys.maxmanager.perapp.governor_isolation", live);
+        CHECK(rc == 0 && live[0] == '0', "[isolation] an idle system stays cleared (no session invented)");
+        CHECK(!host_log_contains("EVENT=PERAPP_ISOLATION_PRESERVED"),
+              "[isolation] no false 'preserved' line without a live flag");
+    }
+
+    /*
+     * الحالة الثالثة: الخادم نفسه. `gamestart` هدف محلي، وكل حقول `opts` صريحة `default`،
+     * فلا تجاوز ⇒ العلم يُنزل. وهذه هي الدعوى التي تمنع "الحل" من أن يصير قفلًا دائمًا.
+     */
+    {
+        char* saved_gamestart = gamestart;
+        GameConfig saved_opts = opts;
+
+        gamestart = strdup("com.example.hostgame");
+        memset(&opts, 0, sizeof(opts));
+        strcpy(opts.gpu_profile, "default");
+        strcpy(opts.thermal_profile, "default");
+        strcpy(opts.cpu_governor, "default");
+        strcpy(opts.gpu_governor, "default");
+        strcpy(opts.gpu_max_freq, "default");
+        host_reset_capture();
+        host_prop_reset();
+        host_prop_set("sys.maxmanager.perapp.governor_isolation", "1");
+        run_profiler(PERFORMANCE_PROFILE);
+        char live[PROP_VALUE_MAX] = {0};
+        __system_property_get("sys.maxmanager.perapp.governor_isolation", live);
+        CHECK(live[0] == '0', "[isolation] a local target with no overrides lowers the flag");
+        CHECK(!host_log_contains("EVENT=PERAPP_ISOLATION_PRESERVED"),
+              "[isolation] a local target never takes the preserve branch");
+
+        /* والعكس: تجاوز صريح محلي ⇒ العلم مرفوع من نفس العملية بلا سطر preserved. */
+        strcpy(opts.gpu_profile, "gaming");
+        host_prop_set("sys.maxmanager.perapp.governor_isolation", "0");
+        run_profiler(PERFORMANCE_PROFILE);
+        __system_property_get("sys.maxmanager.perapp.governor_isolation", live);
+        CHECK(strcmp(live, "1") == 0, "[isolation] a local per-app override raises the flag");
+
+        free(gamestart);
+        gamestart = saved_gamestart;
+        opts = saved_opts;
+    }
+
+    /*
      * A table silently truncated by a bad edit would make this suite assert fewer things while
      * still printing "all checks passed" — the failure mode this pin exists to catch.
      */

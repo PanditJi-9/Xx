@@ -162,6 +162,72 @@ void apply_performance_profile(DaemonContext* ctx) {
 }
 
 /**
+ * @brief Restores the HWUI renderer that was live before a per-app session changed it.
+ *
+ * Three properties of this helper are deliberate:
+ *
+ * 1. **One copy.** The same block lived twice (Eco and Balanced), byte for byte. A restore
+ *    that drifts between the two profiles is a restore that works in one mode only.
+ * 2. **The saved pair is cleared even when the live value already matches**, so a later
+ *    session starts from a clean slate instead of restoring a value from two games ago.
+ * 3. **It is the only place that clears `has_applied_renderer` together with the saved
+ *    values**, so "we still own a saved renderer" and the pending-behavior flag cannot
+ *    disagree.
+ *
+ * @param ctx Pointer to DaemonContext.
+ * @param reason Short tag for the log line (ECO, BALANCED, per_app_exit, cleanup...).
+ */
+void restore_saved_renderer(DaemonContext* ctx, const char* reason) {
+    if (!ctx || strlen(ctx->saved_renderer) == 0)
+        return;
+
+    char current_now[PROP_VALUE_MAX] = {0};
+    __system_property_get("debug.hwui.renderer", current_now);
+
+    if (strlen(current_now) == 0)
+        strcpy(current_now, "default");
+
+    if (strcmp(current_now, ctx->saved_renderer) != 0) {
+        log_zenith(LOG_INFO, "EVENT=RENDERER_RESTORE reason=%s renderer=%s sw=%s",
+                   reason ? reason : "unknown", ctx->saved_renderer,
+                   ctx->cur_switch_id[0] ? ctx->cur_switch_id : "unknown");
+        if (strcmp(ctx->saved_renderer, "default") == 0) {
+            systemv("sys.maxmanager-utilityconf setrender default");
+            __system_property_set("persist.sys.maxmanagerconf.renderer", "default");
+        } else {
+            systemv("sys.maxmanager-utilityconf setrender %s", ctx->saved_renderer);
+            __system_property_set("persist.sys.maxmanagerconf.renderer", ctx->saved_sys_renderer);
+        }
+    } else {
+        log_zenith(LOG_INFO, "EVENT=RENDERER_RESTORE_SKIP reason=%s renderer=already_live",
+                   reason ? reason : "unknown");
+    }
+
+    memset(ctx->saved_renderer, 0, sizeof(ctx->saved_renderer));
+    memset(ctx->saved_sys_renderer, 0, sizeof(ctx->saved_sys_renderer));
+    ctx->has_applied_renderer = false;
+}
+
+/**
+ * @brief Asked while a managed game is in front: can the global renderer be restored now?
+ *
+ * Restoring `debug.hwui.renderer` mid-session is not free. The daemon re-applies the
+ * per-app renderer on the next game entry, `apply_smart_renderer()` reports a change, and
+ * that triggers `restart_target_app()` -- a force-stop of a game the user is playing. So
+ * Eco/Balanced defer the restore until the per-app session ends; the saved value survives
+ * in `ctx->saved_renderer` and `restore_saved_renderer()` runs on every exit path.
+ */
+static bool renderer_restore_deferred(DaemonContext* ctx, const char* profile) {
+    if (!ctx || gamestart == NULL || strlen(ctx->saved_renderer) == 0)
+        return false;
+
+    log_zenith(LOG_INFO,
+               "EVENT=RENDERER_RESTORE_DEFERRED profile=%s target=%s reason=per_app_session_active",
+               profile, active_app_name ? active_app_name : gamestart);
+    return true;
+}
+
+/**
  * @brief Reverts system to Endurance state (Eco Mode).
  * @param ctx Pointer to DaemonContext structure.
  */
@@ -197,27 +263,8 @@ void apply_eco_profile(DaemonContext* ctx) {
     }
     ctx->saved_zen_mode = -1;
 
-    if (strlen(ctx->saved_renderer) > 0) {
-        char current_now[PROP_VALUE_MAX] = {0};
-        __system_property_get("debug.hwui.renderer", current_now);
-
-        if (strlen(current_now) == 0)
-            strcpy(current_now, "default");
-
-        if (strcmp(current_now, ctx->saved_renderer) != 0) {
-            log_zenith(LOG_INFO, "EVENT=RENDERER_RESTORE profile=ECO renderer=%s sw=%s", ctx->saved_renderer,
-                       ctx->cur_switch_id[0] ? ctx->cur_switch_id : "unknown");
-            if (strcmp(ctx->saved_renderer, "default") == 0) {
-                systemv("sys.maxmanager-utilityconf setrender default");
-                __system_property_set("persist.sys.maxmanagerconf.renderer", "default");
-            } else {
-                systemv("sys.maxmanager-utilityconf setrender %s", ctx->saved_renderer);
-                __system_property_set("persist.sys.maxmanagerconf.renderer", ctx->saved_sys_renderer);
-            }
-        }
-        memset(ctx->saved_renderer, 0, sizeof(ctx->saved_renderer));
-        memset(ctx->saved_sys_renderer, 0, sizeof(ctx->saved_sys_renderer));
-    }
+    if (!renderer_restore_deferred(ctx, "ECO"))
+        restore_saved_renderer(ctx, "ECO");
     
     EXECUTE("ECO Mode", run_profiler(ECO_MODE));
     
@@ -290,27 +337,8 @@ void apply_balanced_profile(DaemonContext* ctx) {
     }
     ctx->saved_zen_mode = -1;
 
-    if (strlen(ctx->saved_renderer) > 0) {
-        char current_now[PROP_VALUE_MAX] = {0};
-        __system_property_get("debug.hwui.renderer", current_now);
-
-        if (strlen(current_now) == 0)
-            strcpy(current_now, "default");
-
-        if (strcmp(current_now, ctx->saved_renderer) != 0) {
-            log_zenith(LOG_INFO, "EVENT=RENDERER_RESTORE profile=BALANCED renderer=%s sw=%s", ctx->saved_renderer,
-                       ctx->cur_switch_id[0] ? ctx->cur_switch_id : "unknown");
-            if (strcmp(ctx->saved_renderer, "default") == 0) {
-                systemv("sys.maxmanager-utilityconf setrender default");
-                __system_property_set("persist.sys.maxmanagerconf.renderer", "default");
-            } else {
-                systemv("sys.maxmanager-utilityconf setrender %s", ctx->saved_renderer);
-                __system_property_set("persist.sys.maxmanagerconf.renderer", ctx->saved_sys_renderer);
-            }
-        }
-        memset(ctx->saved_renderer, 0, sizeof(ctx->saved_renderer));
-        memset(ctx->saved_sys_renderer, 0, sizeof(ctx->saved_sys_renderer));
-    }
+    if (!renderer_restore_deferred(ctx, "BALANCED"))
+        restore_saved_renderer(ctx, "BALANCED");
 
     EXECUTE("Balanced Profile", run_profiler(BALANCED_PROFILE));
 

@@ -84,6 +84,8 @@ static void handle_background_apps_event(DaemonContext* ctx) {
                 log_zenith(LOG_INFO, "EVENT=APP_CLOSED target=%s action=exit_performance_mode",
                            active_app_name ? active_app_name : gamestart);
                 restore_resolution_target(ctx, gamestart);
+                restore_saved_renderer(ctx, "app_closed");
+                __system_property_set("sys.maxmanager.perapp.governor_isolation", "0");
                 free(gamestart);
                 gamestart = NULL;
                 if (active_app_name) {
@@ -213,6 +215,9 @@ bool process_inotify_events(int inotify_fd, DaemonContext* ctx, int timeout_ms) 
                                                    ai_state, (int)ctx->base_mode);
                                         strcpy(ctx->prev_ai_state, ai_state);
                                         if (strcmp(ai_state, "1") == 0) {
+                                            restore_saved_renderer(ctx, "ai_enabled");
+                                            __system_property_set(
+                                                "sys.maxmanager.perapp.governor_isolation", "0");
                                             if (gamestart) {
                                                 free(gamestart);
                                                 gamestart = NULL;

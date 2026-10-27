@@ -146,6 +146,27 @@ void run_profiler(const int profile) {
                             (!IS_DEFAULT(opts.gpu_profile) || !IS_DEFAULT(opts.thermal_profile) ||
                              !IS_DEFAULT(opts.cpu_governor) || !IS_DEFAULT(opts.gpu_governor) ||
                              !IS_DEFAULT(opts.gpu_max_freq) || opts.cpu_policy_controls[0] != '\0');
+
+    /*
+     * The one-shot CLI (`sys.maxmanager-service -p/-profile`) is a **separate process**:
+     * `gamestart` and `opts` are its own empty globals even while the daemon is running a
+     * Per-App session. Recomputing the flag from them published 0 and let `binprofiles`
+     * overwrite the live per-app governor and frequency ceiling -- the reported "profile
+     * jumps back after a tap in the game panel" (the daemon's 10 s drift repair then made
+     * it jump again). With no local target this process cannot know better than the owner,
+     * so an already-published 1 is preserved; the daemon is the only writer of 1 and clears
+     * it on every session end and at its own startup.
+     */
+    if (!per_app_governor && gamestart == NULL) {
+        char isolated[PROP_VALUE_MAX] = {0};
+        if (__system_property_get("sys.maxmanager.perapp.governor_isolation", isolated) > 0 &&
+            isolated[0] == '1') {
+            per_app_governor = true;
+            log_zenith(LOG_INFO, "EVENT=PERAPP_ISOLATION_PRESERVED reason=no_local_target profile=%d",
+                       profile);
+        }
+    }
+
     set_per_app_governor_isolation(per_app_governor);
 
     // Suggestion for future: Replace systemv with native property setting for performance
