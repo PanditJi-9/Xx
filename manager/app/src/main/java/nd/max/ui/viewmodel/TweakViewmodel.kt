@@ -45,6 +45,14 @@ import nd.max.ui.util.HardwareChoice
 import nd.max.ui.util.MaxPrefsBundle
 import nd.max.core.platform.PropertyUtils
 
+/**
+ * ملفّ إزاحة التردّد الذي يقرؤه الخادم عبر `inotify`.
+ *
+ * وكان يُكتب بصدفة خام (`echo … >`) في موضعين — من الاستعادة ومن `saveFreqOffset` — فيفلت من
+ * قناة الجذر ورقصة `chmod` وقراءة التحقّق (`NT-13`). والكتابة الآن عبر `RootFileAccess`.
+ */
+private const val FREQ_OFFSET_FILE = "/data/adb/.config/MaxManager/freqoffset"
+
 
 class TweakViewModel : ViewModel() {
     data class ValidationResult(
@@ -253,7 +261,7 @@ class TweakViewModel : ViewModel() {
                         PropertyUtils.set(key, value)
                         
                         if (key == MaxManagerProps.Conf.FREQ_OFFSET) {
-                            Shell.cmd("echo $value > /data/adb/.config/MaxManager/freqoffset").exec()
+                            RootFileAccess.write(FREQ_OFFSET_FILE, value)
                         }
                     }
                 }
@@ -517,7 +525,7 @@ class TweakViewModel : ViewModel() {
         val propValue = if (index == 0) "Disabled" else offsetLabels[index].replace("%", "")
         viewModelScope.launch(Dispatchers.IO) {
             PropertyUtils.set(MaxManagerProps.Conf.FREQ_OFFSET, propValue)
-            Shell.cmd("echo $propValue > /data/adb/.config/MaxManager/freqoffset").exec()
+            RootFileAccess.write(FREQ_OFFSET_FILE, propValue)
         }
     }
 

@@ -10,7 +10,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.topjohnwu.superuser.Shell
 import nd.max.core.hardware.RootFileAccess
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -158,7 +157,7 @@ class NetworkSchedulerViewModel : ViewModel() {
     var genericTunables by mutableStateOf<List<TunableItem>>(emptyList())
         private set
 
-    // ---- Shell helpers ----
+    // ---- Node helpers ----
 
     // القراءة/الوجود عبر الطبقة الموحّدة (قارئ أصلي ← IPC الجذر ← ملف ← صدفة) بدل صدفة
     // كاملة لكل عقدة — وشاشة الشبكة تقرأ عشرات المقابض عند فتحها.
@@ -167,8 +166,9 @@ class NetworkSchedulerViewModel : ViewModel() {
     private fun readNode(path: String): String = RootFileAccess.read(path).orEmpty()
 
     private fun writeNode(path: String, value: String) {
-        val safeValue = value.replace("'", "'\\''")
-        Shell.cmd("echo '$safeValue' > $path 2>/dev/null").exec()
+        // القيمة تُمرَّر كما هي: الطبقة تُقتبسها بنفسها (`quote`)، فالاقتباس اليدوي هنا كان
+        // يُنتج `'\''` مزدوجًا عند تمريرها إلى سطر صدفة آخر (`NT-13`).
+        RootFileAccess.write(path, value)
     }
 
     private fun isOn(value: String): Boolean = value.trim() == "1"

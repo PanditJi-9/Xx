@@ -25,6 +25,7 @@ pub mod effectiveness;
 pub mod learning;
 pub mod monitor;
 pub mod policy_manager;
+pub mod prediction;
 pub mod state;
 pub mod thermal_zones;
 pub mod utils;

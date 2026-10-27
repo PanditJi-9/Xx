@@ -721,7 +721,7 @@ inotify (`InotifyWatcher.c:176`). **والدلالة مقيسة:** كل ما ل�
 | **CLI الخادم (١٣ عَلَمًا)** | ✅ **مُنجَز**: `fixtures/contracts/daemon_cli.tsv` — العَلَم والمُرادف والدالّة **وموضع خطّ `require_daemon_running()`** (٩ قبله · ٤ بعده) — والحرس كشف **٤ أعلام غائبة عن `--help`** فأُضيفت | `DaemonCliContractTest` (٦ دعاوى) · و`--profile` سلوكيًّا في `suite_cli_profile` |
 | **نواة القرار الحرارية (PID)** | ✅ **مُنجَز**: `fixtures/contracts/thermal_policy.tsv` (١٣ صفًّا · ٦ تشغيلات، بقيم **مشتقّة حسابيًّا**) — والربط صار مشروطًا بـ`android` فصار `cargo test` يعمل على المضيف | ٣ دعاوى `cargo test` في `thermalcore` · **١١/١١ طفرة أُسقطت** |
 | **ما تبقّى من Rust** | 📄 **مُعلَن**: `preloadbin` (١٥٠ سطرًا C في `jni/main.c` — vmtouch: تثبيت صفحات، لا نواة قرار) · `manager/src/main/rust` (٥٩ `#[test]` قائمة في CI) · وبقية `thermalcore` (دورة المراقبة نفسها: `inotify` + قراءة `sysfs`) | يحتاج جهازًا للسلوك · أو تجريدًا لدورة المراقبة |
-| **`thermalcore/src/prediction.rs` — ملفّ خارج شجرة الوحدات** | 📄 **مُسجَّل لا مُنظَّف** (ADR-18): لا `mod prediction` في `lib.rs`، ولو وُصل لَما تُرجم — يقرأ سبعة حقول لا وجود لها في `ThermalEvent` | إصلاحه **قرار سلوك** لا قرار تنسيق، فيبقى مُعلنًا |
+| **`thermalcore/src/prediction.rs`** | ✅ **مُنجَز** (ADR-82): أُعيد بناؤه على `(زمن رتيب، حرارة)` فقط — انحدار خطّي بالمربعات الصغرى بثلاثة حرّاس، ووُصل بـ`monitor` للسطر التشخيصي وحده (لا قرار تبريد) | ٧ اختبارات `cargo test` · والتنبؤ على جهاز **غير مقيس** |
 
 **ما قِيس فعلًا في هذه الطبقة (وقُل كمًا لا وصفًا):**
 
@@ -883,7 +883,7 @@ Benchmark · Real-device validation · Cleanup   → يحتاج جهازًا
 
 | المجال | العدد | الميت |
 | --- | --- | --- |
-| Rust (‏`thermalcore` · `binutils` · `binprofiles` · `manager/src/main/rust`) | ٤١ ملفًّا | **١** — `thermalcore/src/prediction.rs` |
+| Rust (‏`thermalcore` · `binutils` · `binprofiles` · `manager/src/main/rust`) | ٤١ ملفًّا | **٠** — الأساس صار فارغًا (ADR-82) |
 | C الخادم (`Main.c` + ٣٣ وحدة تحت `src/*/*.c`) | ٣٤ ملفًّا | **٠** |
 | ترويسات C (‏`archdaemon/jni/include`) | ٣ | **٠** بلا مُضمِّن |
 

@@ -399,12 +399,16 @@ class ZramViewModel : ViewModel() {
 
     /**
      * Writes the kernel's real memory-compaction trigger. The node is write-only, so the outcome
-     * comes from the shell exit status; there is nothing to read back.
+     * comes from the write command's exit status; there is nothing to read back.
+     *
+     * ولماذا `writeFireAndForget` لا `write`: العقدة **لا تُقرأ أبدًا**، فكل كتابة متحقَّقة
+     * عليها تُسجَّل `unreadable` — دليل ناقص يُقرأ عطبًا. الطبقة تُسجّل `write_only_sent` وتُبقي
+     * السبب ظاهرًا (`NT-13`: الصدفة الخام كانت تُخفي `2>/dev/null` كل فشل).
      */
     fun compactZram() {
         operation = ZramOperation.Applying(ZramOpKind.Compact)
         viewModelScope.launch(Dispatchers.IO) {
-            val ok = Shell.cmd("echo 1 > /proc/sys/vm/compact_memory 2>/dev/null").exec().isSuccess
+            val ok = RootFileAccess.writeFireAndForget("/proc/sys/vm/compact_memory", "1")
             refreshStats()
             operation = if (ok) {
                 ZramOperation.Applied(ZramOpKind.Compact, null)

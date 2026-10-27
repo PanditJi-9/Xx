@@ -417,13 +417,20 @@ def content_contract_offenders(files: list[str]) -> list[str]:
     return offenders
 
 
-# كتابة العتاد من طبقة العرض (ADR-11).
-# الاصطياد هنا يجب أن يكون دقيقًا، وقد أخطأنا مرتين قبل أن يستقيم:
+# كتابة العتاد من طبقة العرض (ADR-11 · NT-13).
+# الاصطياد هنا يجب أن يكون دقيقًا، وقد أخطأ ثلاث مرات قبل أن يستقيم:
 #   ① `2>/dev/null` إخماد لـ stderr لا كتابة إلى عقدة — مجرّد مطابقة `>` أعطت ٨٧ بلاغًا كاذبًا.
 #   ② وصف الحالة داخل تعليق/KDoc ليس كودًا — سطر واحد في NetworkSchedulerViewModel مطابق نصيًا.
-# ولذلك: نقرأ الكود المُنفّذ فقط، ونطلب أداة كتابة صريحة (echo/printf/tee) مع إعادة توجيه.
+#   ③ ونصٌّ يُعرض للمستخدم (`technicalDetail = "echo 1 > …"`) ليس كتابة، و`CrosshairStyle.TEE`
+#      طابق كلمة `tee` ثم سهم `->`. فالقاعدة صارت: **أمر كتابة داخل استدعاء يشغّل عملية** —
+#      على السطر نفسه، أو في سطر متابعة يبدأ بعلامة تنصيص (نداء متعدّد الأسطر).
+# و`RootFileAccess.*` **ليس مخالفة**: هو الطبقة المصرَّحة بنصّ ADR-11، وكان يُحتسب لأن البوابة
+# تعدّ موضع الاستدعاء لا التجاوز — وهذا هو التعريف المصحَّح (ADR-83).
 SHELL_WRITE = re.compile(r"\b(echo|printf|tee)\b[^\n]*>>?[^\n/]", re.I)
-ROOTFILE_WRITE = re.compile(r"RootFileAccess\s*\.\s*(atomicWriteText|write|writeText|append)\s*\(")
+PROCESS_SPAWN = re.compile(
+    r"\bShell\s*\.\s*(?:cmd|sh)\s*\(|Runtime\s*\.\s*getRuntime\s*\(\s*\)\s*\.\s*exec\s*\(|ProcessBuilder\s*\("
+)
+CALL_CONTINUATION = re.compile(r'^\s*"')
 COMMENT_LINE = re.compile(r"^(//|\*|/\*)")
 
 
@@ -474,8 +481,8 @@ def collect_debt(files: list[str]) -> dict:
                 s = line.strip()
                 if COMMENT_LINE.match(s):
                     continue
-                hit = SHELL_WRITE.search(s) or ROOTFILE_WRITE.search(s)
-                if hit:
+                hit = SHELL_WRITE.search(s)
+                if hit and (PROCESS_SPAWN.search(s) or CALL_CONTINUATION.match(s)):
                     presentation_writes.append(f"{rp}:{i}: {s[:70]}")
 
     return {"presentation_hw_writes": presentation_writes,
@@ -644,13 +651,19 @@ def build_fixture() -> str:
            '    Card(title = "In argument", summary = "Also argument")\n'
            '    Card(title = "nd.max")\n'
            '}\n')
-    # ⑥كتابة عتاد من طبقة العرض: كتابة حقيقية، وإخماد، وتعليق.
+    # ⑥كتابة عتاد من طبقة العرض: كل أسباب الخطأ الثلاثة التي مرّت بها القاعدة، ونظيرها السليم.
     _write(os.path.join(java, "nd/max/ui/Hw.kt"),
            'package nd.max.ui\n\n'
            'fun write() {\n'
-           '    exec("echo 1 > /sys/devices/x")\n'
-           '    exec("cmd 2>/dev/null")\n'
-           '    // exec("echo 1 > /sys/devices/y")\n'
+           '    Shell.cmd("echo 1 > /sys/devices/x").exec()\n'
+           '    Shell.cmd("cmd 2>/dev/null").exec()\n'
+           '    // Shell.cmd("echo 1 > /sys/devices/y").exec()\n'
+           '    Shell.cmd(\n'
+           '        "echo 1 > /sys/devices/z"\n'
+           '    ).exec()\n'
+           '    RootFileAccess.write("/sys/devices/w", "1")\n'
+           '    technicalDetail = "echo 1 > /sys/devices/v"\n'
+           '    when (style) { CrosshairStyle.TEE -> 1 }\n'
            '}\n')
     # ⑦استيراد شامل لموديل تابع مقابل استيراد منصّة.
     _write(os.path.join(java, "nd/max/ui/Imports.kt"),
@@ -670,7 +683,7 @@ def build_fixture() -> str:
 
 
 def self_test() -> int:
-    """يقيس الأداة على شجرة مصنوعة معلومة النتيجة: ١٥ تأكيدًا متعاكسًا."""
+    """يقيس الأداة على شجرة مصنوعة معلومة النتيجة: ٣١ تأكيدًا متعاكسًا."""
     global _REPO, APP, RES, JAVA, MANAGER
 
     print("═══ الفحص الذاتي: فاحص النظافة يُقاس على شجرة معلومة ═══")
@@ -724,11 +737,18 @@ def self_test() -> int:
         expect("inline: الوسيط حُسب", sum("argument" in lit for lit in inline), 2)
         expect("inline: التعليق لم يُحسب", any("comment" in lit for lit in inline), False)
         expect("inline: نصّ شبه-كوديّ لم يُحسب", any("nd.max" in lit for lit in inline), False)
-        # ⑥كتابة العتاد: الكتابة وحدها — لا الإخماد ولا التعليق.
-        writes = len(debt["presentation_hw_writes"])
-        expect("hw writes: الكتابة حُسبت", writes, 1)
-        expect("hw writes: `2>/dev/null` لم يُحسب", any("dev/null" in w for w in debt["presentation_hw_writes"]), False)
-        expect("hw writes: التعليق لم يُحسب", any("/sys/devices/y" in w for w in debt["presentation_hw_writes"]), False)
+        # ⑥كتابة العتاد: نداء يشغّل عملية + أمر كتابة — لا الإخماد ولا التعليق ولا النصّ المعروض،
+        # ولا `RootFileAccess` المصرَّح (ADR-11)، ولا `CrosshairStyle.TEE ->`. والنداء متعدّد
+        # الأسطر يُمسك من سطر المتابعة الذي يبدأ بعلامة تنصيص.
+        writes = debt["presentation_hw_writes"]
+        expect("hw writes: الكتابة على السطر حُسبت", any("/sys/devices/x" in w for w in writes), True)
+        expect("hw writes: النداء متعدّد الأسطر حُسب", any("/sys/devices/z" in w for w in writes), True)
+        expect("hw writes: العدد الصحيح", len(writes), 2)
+        expect("hw writes: `2>/dev/null` لم يُحسب", any("dev/null" in w for w in writes), False)
+        expect("hw writes: التعليق لم يُحسب", any("/sys/devices/y" in w for w in writes), False)
+        expect("hw writes: `RootFileAccess` المصرَّح لم يُحسب", any("/sys/devices/w" in w for w in writes), False)
+        expect("hw writes: النصّ المعروض لم يُحسب", any("/sys/devices/v" in w for w in writes), False)
+        expect("hw writes: `TEE ->` لم يُحسب", any("TEE" in w for w in writes), False)
         # ⑦الملف الضخم على الحدّ بالضبط، والاستيراد الشامل بقسميه.
         expect("oversized: على الحدّ انمسك", len(debt["oversized_files"]), 1)
         expect("oversized: أسفل الحدّ مرّ", debt["oversized_files"][0][0].endswith("Big.kt"), True)

@@ -28,6 +28,7 @@ use crate::android_ffi::Logger;
 use crate::cooling::CoolingDevice;
 use crate::learning::ThermalAI;
 use crate::policy_manager::PolicyManager;
+use crate::prediction::TrendPredictor;
 use crate::utils::{ TemperatureFilter, get_thermal_path, get_data_path };
 use crate::cpu::CpuMonitor;
 use crate::context::{ ExternalContext, ScreenState };
@@ -63,6 +64,11 @@ pub struct ThermalMonitor {
     pub learning_data: ThermalAI,
     cooling_devices: Vec<CoolingDevice>,
     temp_filter: TemperatureFilter,
+    /// نافذة اتجاه الحرارة — تُغذّى بكل تقييم، وتُقرأ في سطر التشخيص وحده.
+    ///
+    /// **ولا تدخل قرارًا:** `apply_intensity` لا يراها. (السبب معلَن في `prediction.rs`:
+    /// تنبؤ بلا معايرة على جهاز يصلح للقراءة لا للتحكّم.)
+    trend: TrendPredictor,
     cpu_monitor: CpuMonitor,
     last_temp: i32,
     last_loop_time: u64,
@@ -118,6 +124,7 @@ impl ThermalMonitor {
             cooling_devices,
             learning_data,
             temp_filter: TemperatureFilter::new(5),
+            trend: TrendPredictor::new(),
             cpu_monitor: CpuMonitor::new(),
             last_temp: 0,
             last_loop_time: now,
@@ -168,6 +175,10 @@ impl ThermalMonitor {
 
             self.temp_filter.add(raw_temp);
             let temp = self.temp_filter.get_ewma(0.3);
+            // عيّنة الاتجاه من **الحرارة المفلترة** لا الخام: الخام تتذبذب بعُشر واحد فيُقرأ
+            // الميل ضجيجًا. والتغذية هنا (لا في سطر السجل) حتى لا يعتمد حكم التنبؤ على معدّل
+            // تسجيل التشخيص.
+            self.trend.push(now, temp);
 
             self.external_context.update(&self.logger);
             let cpu_features = self.cpu_monitor.get_features(&self.logger);
@@ -209,14 +220,29 @@ impl ThermalMonitor {
             }
 
             if now.saturating_sub(self.last_log_time) >= LOG_RATE_LIMIT_NORMAL_SECS {
+                // اتجاه الحرارة يُضاف إلى **السطر نفسه** لا كسطر ثانٍ: لا إيقاظ إضافيّ ولا
+                // كلفة سجلّ ثانية، والرقم يُقرأ بجانب الحرارة التي وُلد منها. وغياب العيّنات
+                // (أول ٥ تقييمات) يُبقي السطر كما كان بلا صفر مخترع (ADR-07).
+                let trend = self
+                    .trend
+                    .forecast_default()
+                    .map(|forecast| {
+                        format!(
+                            " | Pred:{:.1}°C/{}s",
+                            forecast.predicted_deci_c as f32 / 10.0,
+                            forecast.horizon_secs
+                        )
+                    })
+                    .unwrap_or_default();
                 self.logger.debug(
                     &format!(
-                        "T:{}°C | Target:{}°C | Mode:{:?} | Var:{:.3} | PID_Out:{:.2}",
+                        "T:{}°C | Target:{}°C | Mode:{:?} | Var:{:.3} | PID_Out:{:.2}{}",
                         temp / 10,
                         target_temp / 10,
                         self.learning_data.current_mode,
                         cpu_features.load_variance,
-                        throttle_intensity
+                        throttle_intensity,
+                        trend
                     )
                 );
                 self.last_log_time = now;

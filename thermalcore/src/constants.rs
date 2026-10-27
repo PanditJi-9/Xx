@@ -79,6 +79,20 @@ pub const STATE_DOWNGRADE_GUARD_SECS: u64 = 120;
 pub const LOG_RATE_LIMIT_NORMAL_SECS: u64 = 15;
 pub const PREDICTION_HORIZON_SECS: u64 = 45;
 pub const PREDICTION_MIN_SAMPLES: usize = 5;
+
+/// نافذة التنبؤ: ١٢ عيّنة ≈ دقيقة عند الإيقاع الاحتياطيّ (٥ ثوانٍ)، وأقلّ من دقيقتين مع الأحداث.
+///
+/// **ولماذا لا نافذة أطول:** الميل يُقرأ ليُنبّه على **صعود جارٍ**، لا ليصف منحنى ساعة كاملة؛
+/// ونافذة طويلة تُخفي ارتفاعًا بدأ الآن خلف هبوط قديم. و[`crate::prediction::TrendPredictor`] يحتفظ
+/// بهذا العدد فقط، فلا ذاكرة تنمو بلا حدّ في خدمة تعمل دائمًا.
+pub const PREDICTION_WINDOW_SAMPLES: usize = 12;
+
+/// حدّا التنبؤ (عُشر درجة): ‏−٤٠٫٠°م إلى ١٥٠٫٠°م.
+///
+/// **ولماذا حبس صريح:** ميل شاذّ من عيّنة قافزة واحدة ينتج رقمًا بمئات الدرجات؛ وحبسه يمنع
+/// رقمًا مستحيلًا يُقرأ عطبًا في سطر التشخيص، ويُبقيه في نطاق حرارة جهاز حقيقيّ.
+pub const PREDICTION_MIN_TEMP_DECI_C: i32 = -400;
+pub const PREDICTION_MAX_TEMP_DECI_C: i32 = 1500;
 pub const ANOMALY_TEMP_JUMP_THRESHOLD: i32 = 100;
 pub const GRADIENT_EMA_ALPHA: f32 = 0.2;
 pub const GRADIENT_HIGH_SUSTAINED_SECS: u64 = 30;

@@ -194,7 +194,9 @@ class DisplayStudioViewModel : ViewModel() {
     private fun apply(node: FeatureNode?, enabled: Boolean) {
         node?.let {
             val value = if (enabled) it.onValue else it.offValue
-            Shell.cmd("echo $value > ${it.path} 2>/dev/null").exec()
+            // الطبقة المصرَّحة (ADR-11): قناة الجذر ثم رقصة chmod ثم قراءة تحقّق — بدل صدفة
+            // خام تُخفي `2>/dev/null` كل سبب فشل (`NT-13`).
+            RootFileAccess.write(it.path, value)
         }
     }
 

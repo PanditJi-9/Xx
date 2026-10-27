@@ -23031,3 +23031,66 @@ BUILD FAILED in 6m 12s
 - (ج) بقاء الحلقة الخلفية يُقاس بصدفة `adb shell` لا بخدمة Shizuku (`UserService`)؛ النتيجة تقريبية، وتجربة التسجيل ٣ دقائق في القائمة (٢٫٨) هي الحَكَم.
 - (د) `TotalTime` يقيس أول إطار للنشاط لا جاهزية اللوبي؛ قاعدة القرار في القائمة تقول ذلك وتطلب `Displayed` من logcat للجاهزية.
 **NEXT:** شغّل `bash tools/gamespace_shell_probe.sh -n 5` على الجهاز وألصق التقرير هنا، ثم الجداول ٢–٥ في القائمة؛ وعلى نتائجها يُعدَّل `GameFeature.requires` وتُقرَّر ترقية نشاط اللوبي.
+
+## PERF-AUDIT-01-CLOSE — **إحياء `prediction.rs` + ترحيل كتابة العتاد من طبقة العرض (NT-13)** — 2026-10-27 · DONE_WITH_CONCERNS (بوابات خفيفة ✓ · `cargo test` 14/14 ✓ · الجهاز والمراجعة المستقلة لم يُغلقا)
+
+**TASK (المالك):** «قم باصلاح رفم 1 وتنفيذ رقم 3» — أي البند (١) `thermalcore/src/prediction.rs` الميت، والبند
+(٣) `NT-13` (كتابة العتاد من `ui/**`).
+
+**ما نُفِّذ:**
+
+1. **`prediction.rs` أُعيد بناؤه لا حُذف** (`ADR-82`): كان خارج شجرة الوحدات ويقرأ ٧ حقول غير موجودة في
+   `ThermalEvent`؛ صار `TrendPredictor` على `(at_secs, deci_c)` فقط — انحدار خطّي بالمربعات الصغرى على
+   نافذة ١٢ عيّنة، بثلاثة حرّاس (أقلّ من ٥ عيّنات ⇒ `None` · تباين زمني صفري ⇒ `None` · حبس −٤٠٫٠…١٥٠٫٠°م)،
+   ووُصل بـ`monitor`: يُغذّى بالحرارة المفلترة بعد الـEWMA، ويُقرأ **في سطر التشخيص وحده**
+   (` | Pred:{:.1}°C/45s`). **ولا يدخل `apply_intensity`** — تنبؤ بلا معايرة على جهاز يصلح للقراءة لا للتحكّم.
+   و`RUST_DEAD_BASELINE` صار فارغًا في `dead_modules.py`.
+2. **NT-13**: المواضع السبعة الحقيقية حُوّلت إلى `RootFileAccess` (اقتباس داخلي · IPC الجذر · رقصة `chmod` ·
+   قراءة تحقّق) في `BypassChargeScreen` (ملفّا الحالة والعتبة) · `DisplayStudioViewModel` ·
+   `NetworkSchedulerViewModel` · `TweakViewmodel` (الاستعادة والحفظ) · `ZramViewModel`
+   (`compact_memory` عبر `writeFireAndForget` لأن العقدة لا تُقرأ). وعتبة الشحن: الخاصية أثناء السحب،
+   والملفّ **مرّة واحدة عند `onValueChangeFinished`**. وصار تعريف البوابة يقيس **تجاوز الطبقة** لا ذكر
+   أمر كتابة (`ADR-83`): يُشترط نداء يشغّل عملية (`Shell.cmd/sh` أو `Runtime.exec` أو `ProcessBuilder`)
+   مع أمر كتابة، أو سطر متابعة يبدأ بعلامة تنصيص؛ و`RootFileAccess.*` ليس مخالفة. **السقف ١٢ ← ٠.**
+
+**FILES:**
+- **معدَّل:** `thermalcore/src/prediction.rs` (إعادة كتابة + ٧ اختبارات) · `thermalcore/src/monitor.rs` ·
+  `thermalcore/src/constants.rs` · `thermalcore/src/lib.rs` · `tools/dead_modules.py` · `tools/code_health.py`
+  (القاعدة + التجهيز + ٣١ تأكيدًا) · `tools/code_health_baseline.json` ·
+  `manager/app/src/main/java/nd/max/ui/subscreens/BypassChargeScreen.kt` ·
+  `.../ui/viewmodel/{DisplayStudioViewModel,NetworkSchedulerViewModel,TweakViewmodel,ZramViewModel}.kt` ·
+  `docs/ai/DECISIONS.md` (ADR-82/83) · `docs/ai/NEXT_TASK.md` (NT-13) · `docs/ai/ARCHITECTURE-AUDIT.md`.
+
+**GATES (مقيسة هنا):**
+- `cargo test` في `thermalcore`: **١٤/١٤** (منها ٧ للتنبؤ) — بلا تحذيرات في مخرج الاختبار.
+- `python3 tools/code_health.py --self-test`: **٣١/٣١** · `--assert`: **exit 0**، و`presentation_hw_writes`
+  **١٢ → ٠**.
+- `python3 tools/kt_balance.py --assert`: **٠ عوائق** (٣١٠٧ ملفًا) · `tools/dead_modules.py --assert`:
+  **٠ ميت** (وبدون أساس استثناء) · `tools/bundle_contract.py --assert`: **١٦/١٦ ✓**.
+- `tools/i18n_coverage.py --assert`: **exit 0** (٠ عوائق، ٨٥ مجلد/كود) · `--prune all --assert`: **٠ يتيم**.
+- `tools/design_tokens.py --assert`: **exit 0** (المجموع ٢٤٩/٣٠٠) · `tools/resource_compile.py --assert`:
+  **exit 0** (`aapt2` على مجلّدَي `res`) · `tools/jni_symbols.py --assert`: **exit 0**، ٢٣ تصريحًا،
+  **الطبقة الثانية (رموز الثنائيات) غير مُتحقّقة** لغياب الثنائيات في هذه البيئة.
+- `git diff --check`: نظيف.
+
+**BUILD:** **compilation unverified in this environment** — لم يُشغَّل Gradle/APK (بوابات خفيفة + `cargo test`
+فقط، وفق §0.1). فلا يُقال إن Kotlin «يترجم»؛ وCI/Quick Verify هو المُصرّف عند الدفع. (`cargo test` يصرّف
+`thermalcore` على المضيف، لا NDK ولا التطبيق.)
+
+**RESIDUAL RISK (معلنة):**
+- **(أ) الجهاز غائب:** كل كتابة محوَّلة سلوكها غير مُتحقَّق — هل تصل ملفّات `bypasschgconfig/` ويُطلق الخادم
+  `inotify`؟ هل تُقرأ `freqoffset` بعد الكتابة؟ هل يقبل `compact_memory` رقصة `chmod`؟ هل تثبت عقد عرض
+  sysfs على HyperOS 3؟ ولا يُقال «يعمل» قبل ذلك.
+- **(ب) مراجعة السلامة المستقلة لم تُجرَ** (يشترطها §2 لتغيير يمسّ العتاد). البوابات الخفيفة لا تُغني عنها.
+- **(ج) تغيير سلوك مقصود:** عتبة الشحن تُكتب في الملفّ عند نهاية السحب لا في كل خطوة؛ فإن كان الخادم يقرأ
+  العتبة أثناء السحب سيرى القيمة السابقة حتى الإفلات (مقصود: أوامر جذر أقل). يُقاس على جهاز.
+- **(د) `writeFireAndForget`** يحكم بالنجاح على رمز خروج آخر أمر (استعادة `chmod`)؛ لعقدة `compact_memory`
+  هذا يعتمد على قبول `chmod` لها — يُقاس.
+- **(هـ) التنبؤ استقراء خطّي** لا نموذج حراري؛ لا يعرف الشحن ولا الحمل؛ فائدته التشخيصية لم تُقَس على عتاد.
+- **(و) `RootFileAccess.write` يقرأ بعد الكتابة** (كلفة قراءة إضافية في مسارات الإعداد والتوجّل، لا في مسار
+  إطار-بإطار) — مقصودة للتشخيص، وتُقاس على جهاز.
+
+**NEXT:** (١) إذن المالك بالدفع ثم Quick Verify (`:app:compileReleaseKotlin` + `testReleaseUnitTest`) —
+فيه يظهر أثر تغييرات Kotlin/الـworkflow. (٢) مراجعة سلامة مستقلة على الـdiff (نموذج غير المنفّذ، رسالة
+`AGENTS.md` §4). (٣) على جهاز: قائمة NT-13 (ملفّا الحالة/العتبة · `freqoffset` · `compact_memory` · عقد
+العرض) ثم تُغلق المهمة.

@@ -55,6 +55,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -69,7 +70,9 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import com.topjohnwu.superuser.Shell
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import nd.max.core.hardware.RootFileAccess
 import nd.max.MaxManagerProps
 import nd.max.R
 import nd.max.ui.component.MaxUiMetrics
@@ -84,6 +87,15 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import kotlin.math.roundToInt
 import nd.max.ui.design.maxRadius
 
+/**
+ * ملفّا الحالة اللذان يقرؤهما الخادم عبر `inotify` — والكتابة إليهما **عبر الطبقة المصرَّحة**
+ * (`RootFileAccess`، ADR-11) لا بصدفة خام: الطبقة تُجرّب قناة الجذر أولًا، ثم تُعيد رقصة
+ * `chmod` على HyperOS، ثم **تقرأ بعد الكتابة** وتُسجّل الحكم (`WRITE_CHECK`). والصدفة الخام
+ * كانت تُفلت من الأربعة معًا (`NT-13`).
+ */
+private const val BYPASS_STATE_FILE = "/data/adb/.config/MaxManager/bypasschgconfig/bypasschg"
+private const val BYPASS_THRESHOLD_FILE = "/data/adb/.config/MaxManager/bypasschgconfig/bypasschgthreshold"
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BypassChargeScreen(navController: NavHostController) {
@@ -93,6 +105,9 @@ fun BypassChargeScreen(navController: NavHostController) {
     var bypassEnabled by remember { mutableStateOf<Boolean?>(null) }
     var threshold by remember { mutableStateOf<Float?>(null) }
 
+    // كل كتابة ملفّ على IO: الطبقة تقرأ بعد الكتابة وتُسجّل الحكم، فلا تُحجب بها إطار الرسم.
+    val ioScope = rememberCoroutineScope()
+
     val unsupported = bypassPath == "UNSUPPORTED"
     val needsSetup = bypassPath == "NEED_SETUP" || bypassPath.isBlank()
     val configured = !needsSetup && !unsupported
@@ -100,12 +115,22 @@ fun BypassChargeScreen(navController: NavHostController) {
     fun writeBypassState(enabled: Boolean) {
         val value = if (enabled) "1" else "0"
         PropertyUtils.set(MaxManagerProps.Conf.BYPASS_CHARGE, value)
-        Shell.cmd("echo $value > /data/adb/.config/MaxManager/bypasschgconfig/bypasschg").exec()
+        ioScope.launch(Dispatchers.IO) { RootFileAccess.write(BYPASS_STATE_FILE, value) }
     }
 
-    fun writeThreshold(value: Int) {
+    /** الخاصية وحدها أثناء السحب: نداء أصليّ رخيص، فلا تُطلق صدفة لكل خطوة إصبع. */
+    fun previewThreshold(value: Int) {
         PropertyUtils.set(MaxManagerProps.Conf.BYPASS_CHARGE_THRESHOLD, value.toString())
-        Shell.cmd("echo $value > /data/adb/.config/MaxManager/bypasschgconfig/bypasschgthreshold").exec()
+    }
+
+    /**
+     * كتابة الملفّ **مرّة واحدة عند نهاية السحب** (`onValueChangeFinished`) بدل كل خطوة.
+     *
+     * وكانت `echo` خامًّا في `onValueChange` — أي صدفة جذر لكل خطوة، وتُفلت من التحقّق. والآن
+     * كتابة واحدة متحقَّقة عند الإفلات، والقيمة التي يقرؤها الخادم هي آخر ما استقرّ عليه المؤشّر.
+     */
+    fun persistThreshold(value: Int) {
+        ioScope.launch(Dispatchers.IO) { RootFileAccess.write(BYPASS_THRESHOLD_FILE, value.toString()) }
     }
 
     LaunchedEffect(Unit) {
@@ -229,7 +254,10 @@ fun BypassChargeScreen(navController: NavHostController) {
                                     onValueChange = { raw ->
                                         val snapped = ((raw / 5f).roundToInt() * 5).coerceIn(20, 50)
                                         threshold = snapped.toFloat()
-                                        writeThreshold(snapped)
+                                        previewThreshold(snapped)
+                                    },
+                                    onValueChangeFinished = {
+                                        threshold?.let { persistThreshold(it.roundToInt()) }
                                     },
                                     valueRange = 20f..50f,
                                     steps = 5,
