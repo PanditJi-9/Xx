@@ -14,7 +14,7 @@
 
 **GATES:** kt_balance ٣١١٣/٠ · code_health ✓ · i18n ٠ عوائق و٠ يتيم (٨٥ كودًا) · design_tokens ٢٤٩/٣٠٠ ·
 resource_compile ✓ · jni ٢٣/٠/٠ (الطبقة ٢ غير مُتحقَّقة) · archdaemon ٣٣٦/٣٣٦ (مجموعة متخطّاة) · diff check ✓.
-**BUILD:** compilation unverified in this environment (Gradle المحلّي أُلغي بإعادة تشغيل الخادم) — CI هو المُصرّف. **CI:** يُلحق بالنتيجة أعلاه.
+**BUILD:** compilation unverified in this environment (Gradle المحلّي أُلغي بإعادة تشغيل الخادم) — **CI هو المُصرّف: ثلاث تشغيلات خضراء** (`40516337125` كامل + `40516414884` سريع + `40516337116` مستندات) على الالتزام `35de3f29`، ومنها `:app:testReleaseUnitTest` وR8 والحزم. العدد الإجماليّ في ملخّص تشغيل GitHub وحده (لا تُصدّره الواجهة البرمجية المتاحة) فلا يُدّعى رقم.
 **NEXT:** CI ← جهاز (GPU مع لعبة · Wi‑Fi/بيانات حيّ · DND بصلاحية وبلاها · `setprop` بعد إقلاع · `modules_update` · جزيرة بعد إقلاع) ← مراجعة سلامة مستقلة ← نصّ تصميم الجزيرة من المالك إن أراده.
 
 ## BUILD-GREEN-01 + ABOUT-MAKER-01 + ISLAND-PREVIEW-01 — 2026-10-21 · DONE (بناء 3.0 أخضر · إزالة «من الصانع» · معاينة الجزيرة أثناء التخصيص)

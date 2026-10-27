@@ -23182,8 +23182,25 @@ BUILD FAILED in 6m 12s
 أفضل» صار **CI هو المُصرّف**: الدفع إلى `main` يشغّل `build.yml` (بواباته + الأصليّ + R8 + التوقيع +
 الحزم + `:app:testReleaseUnitTest`)، ونتيجته الفعلية تُلحق أدناه.
 
-**CI:** **قيد التشغيل عند كتابة السطر** — يُستبدل هذا السطر بالحكم المقيس (رقم التشغيل · الالتزام ·
-عدد الاختبارات · الفشل · الحزم) فور انتهائه، ولا يُكتب «أخضر» قبل ذلك.
+**CI (مقيس بعد الدفع، الالتزام `35de3f29`):**
+- **`40516337125` (MaxManager، دفع) = success** — ٥٦ خطوة، كلّها ناجحة: «Contract gates» ✓ ·
+  «Verify JNI symbols in built libraries» ✓ (**الطبقة الثانية صارت مقيسة على `.so` الحقيقية**، بعد أن
+  كانت «غير مُتحقّقة» محليًّا) · «Tests + assemble + package (contract gate)» ✓
+  (`:app:testReleaseUnitTest` نُفِّذ 14:07:09Z، و`BUILD SUCCESSFUL in 3m 18s`) · R8 ✓ · APK ✓ ·
+  الحزمة ✓ · الرفع ✓. والأثر: `MaxManager-V3.0.zip` (٢٣٫٩MB) · `MaxManager-developer-bundle.zip`
+  (٢٢٫٥MB) · `MaxManager-checksums`.
+- **`40516414884` (Quick Verify، يدويّ) = success** — «Release compile + release unit tests» ✓
+  و«Unit test count evidence» ✓.
+- **`40516337116` (MaxManager docs) = success** — بوّابات العقد بلا مُصرّف على المستندات ✓.
+- **وحدّ مُعلَن:** العدد الإجماليّ للاختبارات يكتبه `test_report_summary.py` في **ملخّص المهمّة**، وواجهة
+  GitHub البرمجية المتاحة هنا لا تُصدّر ملخّصات الخطوات (جُرّبت `.../jobs/{id}/summary` ⇒ 404)، وصفحة
+  المهمّة لا تُحمِّل الملخّص بلا تسجيل دخول. **فالمُقاس:** مهمّة `testReleaseUnitTest` نُفِّذت وانتهت
+  بنجاح (أي أن كل أصناف الاختبار المكتشفة مرّت، وبلا مُرشِّحات في `build.gradle.kts`)، وصرّف
+  `compileReleaseUnitTestKotlin` الأصناف الجديدة. **ولا يُكتب عددٌ لم يُقرأ** — العدد في ملخّص التشغيل
+  على GitHub لمن يفتحه.
+- **عدد توابع `@Test` في المصدر** (قياس على الملفّات، لا على التنفيذ): `DndControlTest` ٩ ·
+  `IslandBootRestoreTest` ١٠ · `SetEditBootTest` ١٢ · `PanelTogglesTest` ٦ · `SpoofEngineGateTest` ١٢ ·
+  `LogCodeGlossaryTest` ١١ — وكلّها داخل المهمّة الناجحة أعلاه.
 
 **RESIDUAL RISK (معلنة):**
 - **(أ) الجهاز غائب:** هذه البيئة PRoot لا جهاز جذر (لا binder ولا خدمة خصائص؛ `setprop` يفشل و`adb
