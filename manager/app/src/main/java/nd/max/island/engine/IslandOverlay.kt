@@ -6,6 +6,8 @@
 package nd.max.island.engine
 
 import nd.max.R
+import nd.max.island.core.IslandInsets
+import nd.max.island.core.IslandLayout
 import nd.max.island.core.IslandSettings
 import nd.max.island.core.Trigger
 import android.bluetooth.BluetoothClass
@@ -17,6 +19,7 @@ import android.content.IntentFilter
 import android.app.NotificationManager
 import android.graphics.PixelFormat
 import android.hardware.camera2.CameraManager
+import android.hardware.display.DisplayManager
 import android.media.AudioManager
 import android.os.Handler
 import android.os.Looper
@@ -24,6 +27,8 @@ import android.os.BatteryManager
 import android.os.Build
 import android.view.Gravity
 import android.view.MotionEvent
+import android.view.View
+import android.view.WindowInsets
 import android.view.WindowManager
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.spring
@@ -32,24 +37,35 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
-import androidx.compose.runtime.withFrameNanos
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.withFrameNanos
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.*
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.LifecycleRegistry
+import androidx.lifecycle.ViewModelStore
+import androidx.lifecycle.ViewModelStoreOwner
+import androidx.lifecycle.setViewTreeLifecycleOwner
+import androidx.lifecycle.setViewTreeViewModelStoreOwner
 import androidx.savedstate.SavedStateRegistry
 import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
@@ -58,6 +74,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 
@@ -86,7 +103,19 @@ class IslandOverlay(
     private var params: WindowManager.LayoutParams? = null
     private var receiversOn = false
 
+    /** أقصى عرض آمن مقيس من القصّة والحواف — يُغذّي Compose بدل «عرض الشاشة ناقص ٨dp». */
+    private val maxWidth = MutableStateFlow(0)
+
     val shown: Boolean get() = view != null
+
+    /** دوران الشاشة يغيّر الحواف الآمنة وقد لا يغيّر مقاس النافذة — فيُعاد الحساب هنا أيضًا. */
+    private val configCallback = object : android.content.ComponentCallbacks {
+        override fun onConfigurationChanged(newConfig: android.content.res.Configuration) {
+            view?.post { applyPos() }
+        }
+
+        override fun onLowMemory() = Unit
+    }
 
     private val powerReceiver = object : BroadcastReceiver() {
         override fun onReceive(c: Context, i: Intent) {
@@ -253,6 +282,11 @@ class IslandOverlay(
                     val queued by IslandController.queued.collectAsState()
                     val secondary by IslandController.secondary.collectAsState()
                     val idlePill by IslandSettings.idlePill.collectAsState()
+                    val hidden by IslandController.hidden.collectAsState()
+                    val gestureV by IslandController.gestureVelocity.collectAsState()
+                    val maxW by maxWidth.collectAsState()
+                    val rtl = host.resources.configuration.layoutDirection == View.LAYOUT_DIRECTION_RTL
+                    val dir = if (rtl) LayoutDirection.Rtl else LayoutDirection.Ltr
                     // معاينة شاشة التخصيص: تبقى ظاهرة وهي Idle كي يرى المستخدم أثر كل شريط.
                     // وتُطفأ بمجرّد مغادرة الشاشة — فلا كبسولة دائمة بلا طلب.
                     val previewing by IslandController.previewing.collectAsState()
@@ -260,6 +294,8 @@ class IslandOverlay(
                     // It grows out of the top when an activity starts and shrinks away when it ends.
                     val last = remember { LastMode() }
                     if (mode !is IslandMode.Idle) last.value = mode
+                    // A fast flick collapses / expands with a shorter, bolder transition than a slow drag.
+                    val motion = remember(gestureV) { IslandLayout.transitionFor(gestureV) }
 
                     // PRE-WARM: draw the island once, invisible and tiny, right after the window is added.
                     // The first real composition (icons, theme, springs) is what made the first call /
@@ -282,48 +318,68 @@ class IslandOverlay(
 
                     // الظهور في السكون له طريقان: خيار المستخدم الدائم (`idlePill`)، أو معاينة
                     // التخصيص العابرة (`previewing`) التي تُمكّن الضبط بالعين لا بالتخمين.
-                    val showWhenIdle = idlePill || previewing
-                    AnimatedVisibility(
-                        // Opt-in only ("Always show idle pill"): by default an idle island is not on
-                        // screen at all, so turning the service on does not leave a black pill behind.
-                        // When enabled — or while the customization screen is open — it stays so
-                        // there is something to see and tap (time / date / battery).
-                        visible = mode !is IslandMode.Idle || showWhenIdle,
-                        // Fast + snappy: no slow spring, appears almost instantly
-                        enter = scaleIn(tween(140), 0.6f, TransformOrigin(0.5f, 0f)) + fadeIn(tween(90)),
-                        exit = scaleOut(tween(160), 0.6f, TransformOrigin(0.5f, 0f)) + fadeOut(tween(140)),
-                    ) {
-                    DynamicIslandUi(
-                        mode = if (mode is IslandMode.Idle && showWhenIdle) mode else last.value,
-                        level = level,
-                        scale = scale,
-                        widthScale = widthScale,
-                        heightScale = heightScale,
-                        cornerFactor = corner,
-                        animSpeed = speed,
-                        glow = glow,
-                        haptics = haptics,
-                        onClick = IslandController::toggle,
-                        onLongPress = IslandController::large,
-                        onDismiss = IslandController::dismiss,
-                        onPrev = IslandController::prev,
-                        onPlayPause = IslandController::playPause,
-                        onNext = IslandController::next,
-                        onSeek = IslandController::seekTo,
-                        onAnswer = IslandController::answerCall,
-                        onDecline = IslandController::declineCall,
-                        onMarkRead = IslandController::markRead,
-                        onReply = IslandController::startReply,
-                        onSendReply = IslandController::sendReply,
-                        onCancelReply = IslandController::cancelReply,
-                        replying = replying,
-                        onOpenMedia = IslandController::openMedia,
-                        secondary = secondary,
-                        queued = queued,
-                        onSwipeSide = IslandController::skip,
-                        onSwipe = IslandController::swipe,
-                        appAccent = if (useAppAccent) MaterialTheme.colorScheme.primary else null,
-                    )
+                    val showWhenIdle = (idlePill || previewing) && !hidden
+                    // اثنان قد يظهران معًا: الجزيرة، ومقبض الاستعادة. بلا Box يصطفّان في زاوية
+                    // النافذة بدل التوسيط، والمقبض يهبط بعيدًا عن موضعه المقصود.
+                    Box(Modifier.wrapContentSize(), contentAlignment = Alignment.TopCenter) {
+                        AnimatedVisibility(
+                            // Opt-in only ("Always show idle pill"): by default an idle island is not on
+                            // screen at all, so turning the service on does not leave a black pill behind.
+                            // When enabled — or while the customization screen is open — it stays so
+                            // there is something to see and tap (time / date / battery).
+                            visible = (mode !is IslandMode.Idle || showWhenIdle) && !hidden,
+                            // Fast + snappy: velocity decides the duration / starting scale.
+                            enter = scaleIn(
+                                tween(motion.durationMs), motion.startScale, TransformOrigin(0.5f, 0f)
+                            ) + fadeIn(tween((motion.durationMs * 0.65f).toInt().coerceAtLeast(1))),
+                            exit = scaleOut(
+                                tween(motion.durationMs), motion.startScale, TransformOrigin(0.5f, 0f)
+                            ) + fadeOut(tween((motion.durationMs * 0.75f).toInt().coerceAtLeast(1))),
+                        ) {
+                            CompositionLocalProvider(LocalLayoutDirection provides dir) {
+                                DynamicIslandUi(
+                                    mode = if (mode is IslandMode.Idle && showWhenIdle) mode else last.value,
+                                    level = level,
+                                    scale = scale,
+                                    widthScale = widthScale,
+                                    heightScale = heightScale,
+                                    cornerFactor = corner,
+                                    animSpeed = speed,
+                                    glow = glow,
+                                    haptics = haptics,
+                                    onClick = IslandController::toggle,
+                                    onLongPress = IslandController::large,
+                                    onDismiss = IslandController::dismiss,
+                                    onPrev = IslandController::prev,
+                                    onPlayPause = IslandController::playPause,
+                                    onNext = IslandController::next,
+                                    onSeek = IslandController::seekTo,
+                                    onAnswer = IslandController::answerCall,
+                                    onDecline = IslandController::declineCall,
+                                    onMarkRead = IslandController::markRead,
+                                    onReply = IslandController::startReply,
+                                    onSendReply = IslandController::sendReply,
+                                    onCancelReply = IslandController::cancelReply,
+                                    replying = replying,
+                                    onOpenMedia = IslandController::openMedia,
+                                    secondary = secondary,
+                                    queued = queued,
+                                    onSwipeSide = IslandController::skip,
+                                    onSwipe = IslandController::swipe,
+                                    onPromoteSecondary = IslandController::promoteSecondary,
+                                    maxWidthPx = maxW,
+                                    appAccent = if (useAppAccent) MaterialTheme.colorScheme.primary else null,
+                                )
+                            }
+                        }
+                        // بعد الإخفاء يبقى مقبض صغير — بلا مقبض يصير سحب-الإخفاء طريقًا بلا رجوع.
+                        AnimatedVisibility(
+                            visible = hidden && !previewing,
+                            enter = fadeIn(tween(160)) + scaleIn(tween(180), 0.7f, TransformOrigin(0.5f, 0f)),
+                            exit = fadeOut(tween(120)),
+                        ) {
+                            IslandRestoreHandle(onRestore = IslandController::restore)
+                        }
                     }
                 }
             }
@@ -353,6 +409,7 @@ class IslandOverlay(
         params = lp
         view = v
         registerReceivers()
+        runCatching { host.registerComponentCallbacks(configCallback) }
 
         // Replying needs the keyboard: make the window focusable only while the user is typing
         s.launch {
@@ -365,9 +422,13 @@ class IslandOverlay(
             }
         }
 
-        // Sliders in the app move the island live
+        // Sliders in the app move the island live; the safe-area switch re-places it immediately.
         s.launch {
-            combine(IslandSettings.offsetX, IslandSettings.offsetY) { x, y -> x to y }
+            combine(
+                IslandSettings.offsetX,
+                IslandSettings.offsetY,
+                IslandSettings.avoidSystemUi
+            ) { x, y, avoid -> Triple(x, y, avoid) }
                 .collect { applyPos() }
         }
     }
@@ -376,16 +437,124 @@ class IslandOverlay(
         if (Build.VERSION.SDK_INT >= 30) wm.currentWindowMetrics.bounds.width()
         else host.resources.displayMetrics.widthPixels
 
-    /** Center the window horizontally (+ user offset) and apply the vertical offset. */
+    private fun screenH(): Int =
+        if (Build.VERSION.SDK_INT >= 30) wm.currentWindowMetrics.bounds.height()
+        else host.resources.displayMetrics.heightPixels
+
+    private fun statusBarPx(): Int = runCatching {
+        val id = host.resources.getIdentifier("status_bar_height", "dimen", "android")
+        if (id > 0) host.resources.getDimensionPixelSize(id) else 0
+    }.getOrDefault(0)
+
+    /**
+     * القراءة الفيزيائية الواحدة: القصّة، شريط الحالة، الحواف الآمنة، والاتجاه.
+     *
+     * ولا يُفترض صفرًا عند الفشل: `status_bar_height` يبقى احتياطًا حين لا تُعلن قصّة،
+     * والأكبر بينهما هو ما يُتجنّب (فجهاز يعلن قصّة ويخفي شريط الحالة لا تهبط كبسولته تحت الكاميرا).
+     */
+    private fun readInsets(): IslandInsets {
+        val dm = host.resources.displayMetrics
+        val width = screenW()
+        val height = screenH()
+        var left = 0
+        var top = statusBarPx()
+        var right = 0
+        var bottom = 0
+        var cl = -1
+        var ct = -1
+        var cr = -1
+        var cb = -1
+        if (Build.VERSION.SDK_INT >= 30) {
+            runCatching {
+                val wi = wm.currentWindowMetrics.windowInsets
+                val bars = wi.getInsetsIgnoringVisibility(
+                    WindowInsets.Type.systemBars() or WindowInsets.Type.displayCutout()
+                )
+                left = bars.left
+                top = maxOf(top, bars.top)
+                right = bars.right
+                bottom = bars.bottom
+                wi.displayCutout?.let { cut ->
+                    cutoutUnion(cut)?.let { r ->
+                        cl = r.left
+                        ct = r.top
+                        cr = r.right
+                        cb = r.bottom
+                    }
+                    left = maxOf(left, cut.safeInsetLeft)
+                    top = maxOf(top, cut.safeInsetTop)
+                    right = maxOf(right, cut.safeInsetRight)
+                    bottom = maxOf(bottom, cut.safeInsetBottom)
+                }
+            }
+        } else if (Build.VERSION.SDK_INT >= 29) {
+            runCatching {
+                val display = host.getSystemService(DisplayManager::class.java)
+                    ?.getDisplay(android.view.Display.DEFAULT_DISPLAY)
+                display?.cutout?.let { cut ->
+                    cutoutUnion(cut)?.let { r ->
+                        cl = r.left
+                        ct = r.top
+                        cr = r.right
+                        cb = r.bottom
+                    }
+                    left = maxOf(left, cut.safeInsetLeft)
+                    top = maxOf(top, cut.safeInsetTop)
+                    right = maxOf(right, cut.safeInsetRight)
+                    bottom = maxOf(bottom, cut.safeInsetBottom)
+                }
+            }
+        }
+        return IslandInsets(
+            screenWidthPx = width,
+            screenHeightPx = height,
+            density = dm.density,
+            safeLeftPx = left,
+            safeTopPx = top,
+            safeRightPx = right,
+            safeBottomPx = bottom,
+            statusBarPx = statusBarPx(),
+            cutoutLeftPx = cl,
+            cutoutTopPx = ct,
+            cutoutRightPx = cr,
+            cutoutBottomPx = cb,
+            landscape = width > height,
+            rtl = host.resources.configuration.layoutDirection == View.LAYOUT_DIRECTION_RTL,
+        )
+    }
+
+    /**
+     * اتحاد مستطيلات القصّة: الجهاز قد يُعلن أكثر من مستطيل (ثقبان)، والمقصود «أين المحظور»
+     * لا شكل الثقب. ولا تُستعمل `boundingRectLeft` ونظائرها لأنّ أنواعها تختلف بين إصدارات
+     * الـSDK (فبعض الـstubs الحديثة يعيدها `Rect` لا `int`)، فيُبنى الاتحاد من القائمة
+     * المشتركة `boundingRects` — وهي موجودة في الجميع وتغطّي تعدّد الثقوب.
+     */
+    private fun cutoutUnion(cut: android.view.DisplayCutout): android.graphics.Rect? {
+        val rects = runCatching { cut.boundingRects }.getOrNull() ?: return null
+        val first = rects.firstOrNull() ?: return null
+        val u = android.graphics.Rect(first)
+        for (i in 1 until rects.size) u.union(rects[i])
+        return u
+    }
+
+    /** Place the window inside the safe area (+ user offset) and publish the safe width to Compose. */
     private fun applyPos() {
         val v = view ?: return
         val p = params ?: return
         if (v.width <= 0) return
-        val nx = (screenW() - v.width) / 2 + (IslandSettings.offsetX.value * density).toInt()
-        val ny = (IslandSettings.offsetY.value * density).toInt()
-        if (p.x != nx || p.y != ny) {
-            p.x = nx
-            p.y = ny
+        val insets = readInsets()
+        val at = IslandLayout.place(
+            insets = insets,
+            offsetXf = IslandSettings.offsetX.value,
+            offsetYf = IslandSettings.offsetY.value,
+            islandWidthPx = v.width,
+            islandHeightPx = v.height,
+            avoidSystemUi = IslandSettings.avoidSystemUi.value,
+        )
+        if (maxWidth.value != at.maxWidthPx) maxWidth.value = at.maxWidthPx
+        if (p.x != at.xPx || p.y != at.yPx) {
+            p.x = at.xPx
+            p.y = at.yPx
             runCatching { wm.updateViewLayout(v, p) }
         }
     }
@@ -393,6 +562,7 @@ class IslandOverlay(
     fun hide() {
         val v = view ?: return
         unregisterReceivers()
+        runCatching { host.unregisterComponentCallbacks(configCallback) }
         scope?.cancel()
         scope = null
         runCatching { wm.removeView(v) }

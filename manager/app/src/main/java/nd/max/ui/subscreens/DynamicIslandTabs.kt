@@ -62,6 +62,7 @@ import androidx.compose.material.icons.rounded.FlashOn
 import androidx.compose.material.icons.rounded.Headphones
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.material.icons.rounded.KeyboardArrowUp
+import androidx.compose.material.icons.rounded.Layers
 import androidx.compose.material.icons.rounded.Lightbulb
 import androidx.compose.material.icons.rounded.MusicNote
 import androidx.compose.material.icons.rounded.Navigation
@@ -70,6 +71,7 @@ import androidx.compose.material.icons.rounded.PowerSettingsNew
 import androidx.compose.material.icons.rounded.PushPin
 import androidx.compose.material.icons.rounded.RestartAlt
 import androidx.compose.material.icons.rounded.SwapHoriz
+import androidx.compose.material.icons.rounded.SwapVert
 import androidx.compose.material.icons.rounded.Timer
 import androidx.compose.material.icons.rounded.Tune
 import androidx.compose.material.icons.rounded.Vibration
@@ -112,6 +114,7 @@ import nd.max.island.core.IslandControl
 import nd.max.island.core.IslandKind
 import nd.max.island.core.IslandSettings
 import nd.max.island.core.KindStyle
+import nd.max.island.core.NativeIslandProbe
 import nd.max.island.core.Perms
 import nd.max.island.core.SwipeAction
 import nd.max.island.core.SwipeDir
@@ -441,7 +444,8 @@ internal fun DesignTabContent(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(MaxSpace.section)
     ) {
-        /* ── ٥. الموضع: منزلقان ثم تحريك دقيق بلمسات ───────────────────── */
+        val avoidUi by IslandSettings.avoidSystemUi.collectAsState()
+        val dual by IslandSettings.secondaryEnabled.collectAsState()
         MaxSection(title = stringResource(R.string.ify_cust_position)) {
             MaxGroup {
                 MaxSliderRow(
@@ -504,6 +508,21 @@ internal fun DesignTabContent(
         }
 
         /* ── ٦. الشكل: قوالب جاهزة ثم القياسات الدقيقة ─────────────────── */
+        MaxSection(title = stringResource(R.string.ify_cust_layout_title)) {
+            MaxGroup {
+                MaxSwitchRow(
+                    title = stringResource(R.string.ify_cust_safe_layout),
+                    subtitle = stringResource(R.string.ify_cust_safe_layout_sub),
+                    checked = avoidUi,
+                    onCheckedChange = {
+                        IslandSettings.avoidSystemUi.value = it
+                        IslandSettings.save()
+                    },
+                    icon = Icons.Rounded.Layers
+                )
+            }
+        }
+
         MaxSection(title = stringResource(R.string.ify_cust_shape)) {
             Row(
                 Modifier.horizontalScroll(rememberScrollState()),
@@ -629,6 +648,17 @@ internal fun DesignTabContent(
                     onCheckedChange = { IslandSettings.islandAppAccent.value = it; IslandSettings.save() },
                     icon = Icons.Rounded.Palette
                 )
+                MaxGroupDivider()
+                MaxSwitchRow(
+                    title = stringResource(R.string.ify_cust_dual),
+                    subtitle = stringResource(R.string.ify_cust_dual_sub),
+                    checked = dual,
+                    onCheckedChange = {
+                        IslandSettings.secondaryEnabled.value = it
+                        IslandSettings.save()
+                    },
+                    icon = Icons.Rounded.SwapVert
+                )
             }
         }
 
@@ -687,6 +717,27 @@ internal fun AdvancedTabContent(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(MaxSpace.section)
     ) {
+        /* ── ٠. الجزيرة الأصلية: كشفٌ صادق، ولا تحكّم أعمى في SystemUI ───────── */
+        val ctx = LocalContext.current
+        val native = remember { NativeIslandProbe.read(ctx) }
+        MaxSection(title = stringResource(R.string.ify_native_island_title)) {
+            MaxGroup {
+                MaxSwitchRow(
+                    title = stringResource(R.string.ify_native_island_control),
+                    subtitle = if (native.nativeLikely) {
+                        stringResource(R.string.ify_native_island_detected, native.vendor ?: "")
+                    } else {
+                        stringResource(R.string.ify_native_island_none)
+                    },
+                    checked = false,
+                    enabled = false,
+                    lockedReason = stringResource(R.string.ify_native_island_locked),
+                    onCheckedChange = {},
+                    icon = Icons.Rounded.Layers
+                )
+            }
+        }
+
         /* ── ٩. إيماءات السحب — كل صفّ يفتح مُنتقي إجرائه ─────────────── */
         MaxSection(title = stringResource(R.string.ify_cust_swipe_title)) {
             MaxGroup {

@@ -6,7 +6,9 @@
 package nd.max.island.engine
 
 import nd.max.R
+import nd.max.island.core.IslandLayout
 import nd.max.island.core.IslandSettings
+import nd.max.island.core.IslandText
 import nd.max.island.core.KindStyle
 import nd.max.island.core.SwipeDir
 import nd.max.island.core.kindOf
@@ -150,6 +152,7 @@ internal class IslandActions(
     val replying: Boolean,
     val onOpenMedia: () -> Unit,
     val queued: Int,
+    val onPromoteSecondary: () -> Unit,
 )
 
 /**
@@ -188,9 +191,12 @@ fun DynamicIslandUi(
     onSwipeSide: (Int) -> Unit = {},
     appAccent: Color? = null,
     onOpenMedia: () -> Unit = {},
-    secondary: IslandMode.Media? = null,   // music next to a timer / navigation
+    secondary: IslandMode? = null,         // the second activity beside the main one
     queued: Int = 0,                       // banners waiting behind the current one
     onSwipe: ((SwipeDir) -> Unit)? = null, // null = old behaviour (up = onDismiss, left / right = onSwipeSide)
+    onPromoteSecondary: () -> Unit = {},   // tap the companion -> make it the main activity
+    maxWidthPx: Int = 0,                   // measured safe width from the window (0 = derive from the screen)
+    maxHeightPx: Int = 0,                  // measured room under the window's top (0 = no cap)
 ) {
     val base = LocalDensity.current
     // Text size of this kind (banners scale their own text, cards / pills scale the font here)
@@ -198,13 +204,14 @@ fun DynamicIslandUi(
     val textMul = if (level == IslandLevel.Banner) 1f else (kindOf(mode)?.let { kindStyles[it.key]?.text } ?: 1f)
     val actions = IslandActions(
         onPrev, onPlayPause, onNext, onSeek, onAnswer, onDecline,
-        onMarkRead, onReply, onSendReply, onCancelReply, replying, onOpenMedia, queued
+        onMarkRead, onReply, onSendReply, onCancelReply, replying, onOpenMedia, queued,
+        onPromoteSecondary
     )
     CompositionLocalProvider(LocalDensity provides Density(base.density * scale, base.fontScale * textMul)) {
         IslandBody(
             mode, level, widthScale, heightScale, cornerFactor, animSpeed, glow, haptics,
             onClick, onLongPress, onDismiss, actions,
-            onSwipeSide, appAccent, secondary, queued, onSwipe
+            onSwipeSide, appAccent, secondary, queued, onSwipe, maxWidthPx, maxHeightPx
         )
     }
 }
@@ -225,9 +232,11 @@ internal fun IslandBody(
     actions: IslandActions,
     onSwipeSide: (Int) -> Unit,
     appAccent: Color?,
-    secondary: IslandMode.Media?,
+    secondary: IslandMode?,
     queued: Int,
     onSwipe: ((SwipeDir) -> Unit)?,
+    maxWidthPx: Int = 0,
+    maxHeightPx: Int = 0,
 ) {
     val lvl = level
     val kindStyles by IslandSettings.kindStyles.collectAsState()
@@ -235,8 +244,8 @@ internal fun IslandBody(
     val kind = kindOf(mode)
     val bs = kind?.let { kindStyles[it.key] } ?: KindStyle()
     val isPopup = kind?.popup == true
-    // Music is only the second part while a timer / navigation is the main thing
-    val sec = if (mode is IslandMode.Live || mode is IslandMode.Timer) secondary else null
+    // The second activity: never the same thing twice, never during a call (its buttons need the room).
+    val sec = secondary?.takeIf { it != mode && it !is IslandMode.Call && it !is IslandMode.Idle }
     val haptic = LocalHapticFeedback.current
     val hapticOn by rememberUpdatedState(haptics)
 
@@ -245,6 +254,9 @@ internal fun IslandBody(
     val dDismiss by rememberUpdatedState(onDismiss)
     val dSide by rememberUpdatedState(onSwipeSide)
     val dSwipe by rememberUpdatedState(onSwipe)
+
+    // سرعة آخر إيماءة: تُغيّر الزنبرك وانتقال المحتوى، فلا تكون كل حركة بنفس المدّة.
+    var gestureSpeed by remember { mutableFloatStateOf(0f) }
 
     // Light haptic on expand / collapse (not on the first composition)
     var firstLevel by remember { mutableStateOf(true) }
@@ -258,12 +270,12 @@ internal fun IslandBody(
             IslandMode.Idle -> 118.dp
             is IslandMode.Charging -> 150.dp
             is IslandMode.Timer -> if (sec != null) 214.dp else 160.dp
-            is IslandMode.Notification -> 224.dp
+            is IslandMode.Notification -> if (sec != null) 274.dp else 224.dp
             is IslandMode.Media -> 224.dp
             is IslandMode.Call -> 210.dp
-            is IslandMode.Device -> 200.dp
+            is IslandMode.Device -> if (sec != null) 250.dp else 200.dp
             is IslandMode.LowBattery -> 150.dp
-            is IslandMode.Toggle -> 190.dp
+            is IslandMode.Toggle -> if (sec != null) 240.dp else 190.dp
             is IslandMode.Live -> if (sec != null) 256.dp else 224.dp
         }
         IslandLevel.Banner -> bannerWidth(mode)
@@ -281,9 +293,18 @@ internal fun IslandBody(
         }
     }
 
-    // Never wider than the screen (density is already scaled, so derive dp from it)
+    // Never wider than the safe area the window measured (cutout / side insets included).
     val screenPx = LocalContext.current.resources.displayMetrics.widthPixels
-    val maxW = (screenPx / LocalDensity.current.density).dp - 8.dp
+    val widthPx = if (maxWidthPx > 0) maxWidthPx else screenPx - 24
+    val density = LocalDensity.current.density
+    val maxW = (widthPx / density).dp
+    // ميزانية النصّ من العرض المقيس لا من رقم ثابت: على شاشة ضيّقة أو مع قصّة جانبية
+    // ينقص عدد الحروف، ولا يبقى نصٌّ يُرسم تحت الأيقونة أو يُقصّ في منتصف كلمة.
+    // والثابت القديم يبقى **سقفًا** فلا يتغيّر شكل الجزيرة على الأجهزة العاديّة.
+    val companionPx = if (sec != null) (56f * density).roundToInt() else 0
+    val budget = remember(widthPx, companionPx, lvl) {
+        IslandLayout.textBudget((widthPx - companionPx).coerceAtLeast(1), density, lvl)
+    }
     val targetW = (baseW * (when (lvl) {
         IslandLevel.Banner -> bs.w
         IslandLevel.Compact -> widthScale * (if (isPopup) 1f else bs.w)
@@ -297,14 +318,19 @@ internal fun IslandBody(
         IslandLevel.Banner -> bs.h   // own height for each banner type
         else -> heightScale * bs.cardH
     })
+    // سقف الارتفاع من المساحة الحقيقيّة تحت موضع النافذة: بطاقة طويلة في الوضع العرضيّ
+    // تُدفع تحت القصّة إن لم تُحدّ. والرقم من قياس النافذة لا من نسبة مفترضة.
+    val targetHCapped = if (maxHeightPx > 0) targetH.coerceAtMost((maxHeightPx / density).dp) else targetH
 
-    // Higher animSpeed = faster spring
+    // Higher animSpeed = faster spring; a fast flick stiffens it further (no fixed duration).
+    val springSpec = remember(animSpeed, gestureSpeed) { IslandLayout.springFor(gestureSpeed, animSpeed) }
     val spec = spring<Dp>(
-        dampingRatio = 0.8f,
-        stiffness = (Spring.StiffnessMedium * 1.6f * animSpeed).coerceIn(300f, 6000f)
+        dampingRatio = springSpec.dampingRatio,
+        stiffness = springSpec.stiffness,
     )
+    val motion = remember(gestureSpeed) { IslandLayout.transitionFor(gestureSpeed) }
     val width by animateDpAsState(targetW, spec, label = "w")
-    val height by animateDpAsState(targetH, spec, label = "h")
+    val height by animateDpAsState(targetHCapped, spec, label = "h")
     val cf = if (bs.corner >= 0f) bs.corner else cornerFactor
     val corner = (height / 2 * cf).coerceIn(12.dp, 46.dp)
     val shape = RoundedCornerShape(corner)
@@ -404,6 +430,8 @@ internal fun IslandBody(
                         val dist = if (vertical) abs(dy) else abs(dx)
                         val speed = if (vertical) abs(velo.y) else abs(velo.x)
                         if (dist >= slop * 2f || speed >= 500f) {
+                            gestureSpeed = speed
+                            IslandController.noteGestureVelocity(speed)
                             val dir = if (vertical) (if (dy < 0) SwipeDir.Up else SwipeDir.Down)
                                       else (if (dx < 0) SwipeDir.Left else SwipeDir.Right)
                             val cb = dSwipe
@@ -416,6 +444,7 @@ internal fun IslandBody(
                             }
                         }
                     } else if (tap) {
+                        gestureSpeed = 0f
                         dClick()
                     }
                 }
@@ -425,23 +454,26 @@ internal fun IslandBody(
         AnimatedContent(
             modifier = Modifier.fillMaxSize(),
             targetState = mode to lvl,
-            // A timer ticking every second must not re-trigger the transition
-            contentKey = { it.first::class to it.second },
+            // A timer ticking every second must not re-trigger the transition; a new track must.
+            contentKey = { (m, l) ->
+                if (m is IslandMode.Media) "media:${m.title}:$l" else "${m::class.java.name}:$l"
+            },
             transitionSpec = {
-                (fadeIn(tween(120)) + scaleIn(tween(140), initialScale = 0.9f)) togetherWith
+                (fadeIn(tween(motion.durationMs)) +
+                    scaleIn(tween(motion.durationMs), initialScale = motion.startScale)) togetherWith
                     fadeOut(tween(60))
             },
             contentAlignment = Alignment.Center,
             label = "content"
         ) { (m, l) ->
             if (l == IslandLevel.Compact) {
-                Compact(m, queued, sec)
+                Compact(m, queued, sec, actions)
             } else if (l == IslandLevel.Banner) {
-                Banner(m, queued)
-            } else if (sec != null && (m is IslandMode.Live || m is IslandMode.Timer)) {
+                Banner(m, queued, actions)
+            } else if (sec != null) {
                 Column(Modifier.fillMaxSize()) {
                     Box(Modifier.weight(1f)) { Expanded(m, l, actions) }
-                    MiniPlayer(sec, actions)
+                    CompanionRow(sec, actions)
                 }
             } else {
                 Expanded(m, l, actions)
@@ -493,8 +525,17 @@ internal fun DownloadRing(progress: Int, size: Dp) {
 }
 
 @Composable
-internal fun Compact(m: IslandMode, queued: Int, sec: IslandMode.Media?) {
+internal fun Compact(
+    m: IslandMode,
+    queued: Int,
+    sec: IslandMode?,
+    a: IslandActions,
+    // Measured character cap for this pill (0 = keep the long-standing constant).
+    measuredChars: Int = 0,
+) {
     val primary = MaterialTheme.colorScheme.primary
+    // The old per-mode constant is a ceiling: a narrow screen lowers it, never raises it.
+    fun cap(fallback: Int): Int = if (measuredChars > 0) minOf(measuredChars, fallback) else fallback
     Row(
         Modifier.fillMaxSize().padding(horizontal = 13.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -509,16 +550,18 @@ internal fun Compact(m: IslandMode, queued: Int, sec: IslandMode.Media?) {
                     null, tint = c, modifier = Modifier.size(20.dp)
                 )
                 Label("${m.percent}%", color = c, size = 14, weight = FontWeight.Bold)
+                if (sec != null) MiniActivity(sec, primary) { a.onPromoteSecondary() }
             }
             is IslandMode.Notification -> {
                 Avatar(m.app, 24.dp)
                 Label(
-                    m.title.ifBlank { m.app },
+                    IslandText.fit(m.title.ifBlank { m.app }, cap(if (sec != null) 20 else 28)),
                     Modifier.weight(1f).padding(horizontal = 9.dp),
                     size = 13
                 )
                 if (queued > 0) CountBadge(queued, primary)
                 else Box(Modifier.size(7.dp).clip(CircleShape).background(primary))
+                if (sec != null) MiniActivity(sec, primary) { a.onPromoteSecondary() }
             }
             is IslandMode.Media -> {
                 Art(m, 25.dp, 7.dp)
@@ -534,7 +577,7 @@ internal fun Compact(m: IslandMode, queued: Int, sec: IslandMode.Media?) {
                         Spacer(Modifier.width(6.dp))
                         Label(formatTime(m.remainingSec), color = Orange, size = 14, weight = FontWeight.Bold, tabular = true)
                     }
-                    MiniMusic(sec, primary)
+                    MiniActivity(sec, primary) { a.onPromoteSecondary() }
                 }
             }
             is IslandMode.Call -> {
@@ -553,19 +596,22 @@ internal fun Compact(m: IslandMode, queued: Int, sec: IslandMode.Media?) {
                     null, tint = Color(0xFF0A84FF), modifier = Modifier.size(19.dp)
                 )
                 Label(m.name, Modifier.weight(1f).padding(start = 9.dp), size = 13)
+                if (sec != null) MiniActivity(sec, primary) { a.onPromoteSecondary() }
             }
             is IslandMode.LowBattery -> {
                 Icon(Icons.Rounded.BatteryAlert, null, tint = Red, modifier = Modifier.size(20.dp))
                 Label("${m.percent}%", color = Red, size = 14, weight = FontWeight.Bold)
+                if (sec != null) MiniActivity(sec, primary) { a.onPromoteSecondary() }
             }
             is IslandMode.Toggle -> {
                 Icon(m.icon(), null, tint = m.tint(), modifier = Modifier.size(19.dp))
                 Label(m.title(), Modifier.weight(1f).padding(start = 9.dp), size = 13)
+                if (sec != null) MiniActivity(sec, primary) { a.onPromoteSecondary() }
             }
             is IslandMode.Live -> {
                 Icon(m.icon(), null, tint = LiveBlue, modifier = Modifier.size(20.dp))
                 Label(
-                    m.title.ifBlank { m.app },
+                    IslandText.fit(m.title.ifBlank { m.app }, cap(if (sec != null) 16 else 24)),
                     Modifier.weight(1f).padding(horizontal = 9.dp),
                     size = 13
                 )
@@ -573,9 +619,9 @@ internal fun Compact(m: IslandMode, queued: Int, sec: IslandMode.Media?) {
                     DownloadRing(m.progress, 18.dp)
                     if (sec != null) {
                         Spacer(Modifier.width(6.dp))
-                        MiniMusic(sec, primary)
+                        MiniActivity(sec, primary) { a.onPromoteSecondary() }
                     }
-                } else if (sec != null) MiniMusic(sec, primary)
+                } else if (sec != null) MiniActivity(sec, primary) { a.onPromoteSecondary() }
                 else Box(Modifier.size(7.dp).clip(CircleShape).background(LiveBlue))
             }
         }
@@ -608,9 +654,17 @@ internal fun BannerRow(
     ) {
         lead()
         Spacer(Modifier.width(9.dp))
-        Column(Modifier.weight(1f), verticalArrangement = Arrangement.Center) {
-            Label(title, size = (13 * ts).roundToInt(), weight = FontWeight.SemiBold)
-            if (subtitle.isNotBlank()) Label(subtitle, color = Muted, size = (11 * ts).roundToInt(), weight = FontWeight.Normal)
+        BoxWithConstraints(Modifier.weight(1f)) {
+            // Measure the real row width before drawing, then cut at a word boundary instead of
+            // letting Text ellipsize a word in the middle (the visible defect on narrow pills).
+            val titleChars = (maxWidth.value / (6.4f * ts)).roundToInt().coerceIn(8, 80)
+            val bodyChars = (maxWidth.value / (5.4f * ts)).roundToInt().coerceIn(8, 96)
+            Column(verticalArrangement = Arrangement.Center) {
+                Label(IslandText.fit(title, titleChars), size = (13 * ts).roundToInt(), weight = FontWeight.SemiBold)
+                if (subtitle.isNotBlank()) {
+                    Label(IslandText.fit(subtitle, bodyChars), color = Muted, size = (11 * ts).roundToInt(), weight = FontWeight.Normal)
+                }
+            }
         }
         if (trail != null) {
             Spacer(Modifier.width(8.dp))
@@ -643,7 +697,7 @@ internal fun BannerBadge(icon: ImageVector, tint: Color, bg: Color, ts: Float = 
 }
 
 @Composable
-internal fun Banner(m: IslandMode, queued: Int) {
+internal fun Banner(m: IslandMode, queued: Int, a: IslandActions) {
     val primary = MaterialTheme.colorScheme.primary
     val kindStyles by IslandSettings.kindStyles.collectAsState()
     val ts = kindOf(m)?.let { kindStyles[it.key]?.text } ?: 1f
@@ -698,6 +752,6 @@ internal fun Banner(m: IslandMode, queued: Int) {
             subtitle = m.subtitle(),
             ts = ts
         )
-        else -> Compact(m, queued, null)
+        else -> Compact(m, queued, null, a)
     }
 }

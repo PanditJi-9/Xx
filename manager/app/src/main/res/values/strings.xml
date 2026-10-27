@@ -3463,12 +3463,28 @@
     <string name="ify_cust_swipe_hint">Choose what each swipe does. Music actions work only while music is on the island.</string>
     <string name="ify_swipe_act_none">Do nothing</string>
     <string name="ify_swipe_act_dismiss">Dismiss / hide</string>
+    <string name="ify_swipe_act_hide">Hide until next event</string>
     <string name="ify_swipe_act_clear">Clear all pop-ups</string>
     <string name="ify_swipe_act_expand">Open card</string>
     <string name="ify_swipe_act_open">Open the app</string>
     <string name="ify_swipe_act_next">Next track</string>
     <string name="ify_swipe_act_prev">Previous track</string>
     <string name="ify_swipe_act_playpause">Play / pause</string>
+
+    <!-- 2026-10-27 — safe layout, two activities, restore handle, native island status -->
+    <string name="ify_cust_layout_title">Safe area</string>
+    <string name="ify_cust_safe_layout">Keep clear of camera &amp; status bar</string>
+    <string name="ify_cust_safe_layout_sub">Places the island below the cutout and never under the system icons. Turn off only if you want it at the very top edge.</string>
+    <string name="ify_cust_dual">Two activities at once</string>
+    <string name="ify_cust_dual_sub">Keeps a small music indicator next to timers, navigation, downloads and pop-ups. Tap it to swap.</string>
+    <string name="ify_promote_music">Make music the main activity</string>
+    <string name="ify_switch_activity">Show this activity as the main one</string>
+    <string name="ify_island_restore">Show the island again</string>
+    <string name="ify_native_island_title">System dynamic island</string>
+    <string name="ify_native_island_control">Disable the built-in island</string>
+    <string name="ify_native_island_none">No built-in dynamic island was detected on this device.</string>
+    <string name="ify_native_island_detected">%1$s ships its own dynamic island.</string>
+    <string name="ify_native_island_locked">Not available: Android has no documented switch for it, and MaxManager never disables or kills System UI. To avoid duplicates, turn off the activities you do not want below.</string>
 
     <!-- Island engine live strings — added by MaxManager (merge wave) -->
     <string name="ify_toggle_silent">Silent</string>

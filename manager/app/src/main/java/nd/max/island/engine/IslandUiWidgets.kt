@@ -12,6 +12,7 @@ package nd.max.island.engine
 
 import nd.max.R
 import nd.max.island.core.IslandSettings
+import nd.max.island.core.IslandText
 import nd.max.island.core.KindStyle
 import nd.max.island.core.SwipeDir
 import nd.max.island.core.kindOf
@@ -28,6 +29,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.drag
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -68,13 +70,17 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.coerceIn
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -324,7 +330,12 @@ internal fun Expanded(m: IslandMode, level: IslandLevel, a: IslandActions) {
             Column(Modifier.weight(1f)) {
                 Label(m.app.uppercase(), color = LiveBlue, size = 11, weight = FontWeight.Bold, spacing = 0.8f)
                 Spacer(Modifier.height(3.dp))
-                Label(m.title.ifBlank { m.app }, size = 17, weight = FontWeight.SemiBold, lines = if (large) 2 else 1)
+                Label(
+                    // A download keeps its extension visible; a navigation title can be cut at a word.
+                    if (m.kind == LiveKind.Download) IslandText.fitMiddle(m.title.ifBlank { m.app }, if (large) 42 else 30)
+                    else IslandText.fit(m.title.ifBlank { m.app }, if (large) 48 else 32),
+                    size = 17, weight = FontWeight.SemiBold, lines = if (large) 2 else 1
+                )
                 Spacer(Modifier.height(2.dp))
                 val isDl = m.kind == LiveKind.Download
                 Label(
@@ -359,6 +370,35 @@ internal fun Expanded(m: IslandMode, level: IslandLevel, a: IslandActions) {
 
 /* ------------------------------ PIECES ------------------------------ */
 
+/**
+ * مقبض الاستعادة بعد إخفاء المستخدم: شريط صغير شبه شفّاف. لمسة تُعيد الجزيرة، وسحب أفقي
+ * (تكرار الإيماءة التي أخفتها) يُعيدها أيضًا — فلا يبقى الإخفاء بلا رجوع.
+ */
+@Composable
+internal fun IslandRestoreHandle(onRestore: () -> Unit) {
+    val desc = stringResource(R.string.ify_island_restore)
+    Box(
+        Modifier
+            .width(64.dp)
+            .height(22.dp)
+            .clip(RoundedCornerShape(50))
+            .background(Color.Black.copy(alpha = 0.45f))
+            .border(0.6.dp, Color(0xFF2C2C2E), RoundedCornerShape(50))
+            .semantics { contentDescription = desc }
+            .pointerInput(Unit) { detectTapGestures { onRestore() } }
+            .pointerInput(Unit) { detectHorizontalDragGestures(onDragStart = { onRestore() }) { _, _ -> } },
+        contentAlignment = Alignment.Center
+    ) {
+        Box(
+            Modifier
+                .width(24.dp)
+                .height(4.dp)
+                .clip(RoundedCornerShape(50))
+                .background(Color(0xFF8E8E93))
+        )
+    }
+}
+
 /** "+2": how many more banners are waiting. */
 @Composable
 internal fun CountBadge(n: Int, color: Color) {
@@ -375,13 +415,95 @@ internal fun CountBadge(n: Int, color: Color) {
     }
 }
 
-/** Music as the small second part of the compact pill: art + waveform. */
+/**
+ * The second activity as a tiny indicator: music art, timer count, or live-app icon. It is always
+ * tappable and promotes the companion to the main slot — that is the "switch" in two activities.
+ */
 @Composable
-internal fun MiniMusic(m: IslandMode.Media, fallback: Color) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Art(m, 22.dp, 6.dp)
-        Spacer(Modifier.width(6.dp))
-        Waveform(m.playing, m.accentColor(fallback), Modifier.height(14.dp))
+internal fun MiniActivity(m: IslandMode, fallback: Color, onClick: () -> Unit) {
+    // «اجعل الموسيقى الأساس» صحيح للموسيقى وحدها؛ ولمؤقّت أو تنزيل يُقال الإجراء العامّ.
+    val promote = stringResource(
+        if (m is IslandMode.Media) R.string.ify_promote_music else R.string.ify_switch_activity
+    )
+    Row(
+        Modifier
+            .clip(RoundedCornerShape(50))
+            .clickable(onClick = onClick)
+            .semantics { contentDescription = promote }
+            .padding(horizontal = 4.dp, vertical = 2.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        when (m) {
+            is IslandMode.Media -> {
+                Art(m, 22.dp, 6.dp)
+                Spacer(Modifier.width(5.dp))
+                Waveform(m.playing, m.accentColor(fallback), Modifier.height(14.dp))
+            }
+            is IslandMode.Timer -> {
+                Icon(Icons.Rounded.Timer, null, tint = Orange, modifier = Modifier.size(15.dp))
+                Spacer(Modifier.width(4.dp))
+                Label(formatTime(m.remainingSec), color = Orange, size = 12, weight = FontWeight.Bold, tabular = true)
+            }
+            is IslandMode.Live -> {
+                Icon(m.icon(), null, tint = LiveBlue, modifier = Modifier.size(15.dp))
+                Spacer(Modifier.width(4.dp))
+                Label(IslandText.fit(m.title.ifBlank { m.app }, 12), size = 11)
+            }
+            is IslandMode.Notification -> {
+                Avatar(m.app, 18.dp)
+                Spacer(Modifier.width(4.dp))
+                Label(IslandText.fit(m.title.ifBlank { m.app }, 10), size = 11)
+            }
+            else -> Icon(Icons.Rounded.Bolt, null, tint = fallback, modifier = Modifier.size(15.dp))
+        }
+    }
+}
+
+/**
+ * The companion under an expanded card: a full mini player for music, a compact row for any other
+ * activity. Tapping it promotes it; it never steals the main card's space.
+ */
+@Composable
+internal fun CompanionRow(m: IslandMode, a: IslandActions) {
+    if (m is IslandMode.Media) {
+        MiniPlayer(m, a)
+        return
+    }
+    val title = when (m) {
+        is IslandMode.Timer -> formatTime(m.remainingSec)
+        is IslandMode.Live -> m.title.ifBlank { m.app }
+        is IslandMode.Notification -> m.title.ifBlank { m.app }
+        // لا اسم عامّ هنا: تسمية زرّ «تبديل» كعنوان نشاط وهمٌ. النشاط المجهول بلا عنوان أفضل.
+        else -> ""
+    }
+    val subtitle = when (m) {
+        is IslandMode.Live -> m.app
+        is IslandMode.Notification -> m.text
+        is IslandMode.Timer -> stringResource(R.string.ify_demo_timer)
+        else -> ""
+    }
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .height(48.dp)
+            .padding(horizontal = 18.dp)
+            .padding(bottom = 6.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .clickable { a.onPromoteSecondary() }
+            .padding(horizontal = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        when (m) {
+            is IslandMode.Live -> Icon(m.icon(), null, tint = LiveBlue, modifier = Modifier.size(20.dp))
+            is IslandMode.Notification -> Avatar(m.app, 26.dp)
+            else -> Icon(Icons.Rounded.Timer, null, tint = Orange, modifier = Modifier.size(20.dp))
+        }
+        Spacer(Modifier.width(10.dp))
+        Column(Modifier.weight(1f)) {
+            Label(IslandText.fit(title, 30), size = 13, weight = FontWeight.SemiBold)
+            if (subtitle.isNotBlank()) Label(IslandText.fit(subtitle, 34), color = Muted, size = 11, weight = FontWeight.Normal)
+        }
+        Icon(Icons.Rounded.SwapVert, stringResource(R.string.ify_promote_music), tint = Muted, modifier = Modifier.size(18.dp))
     }
 }
 
@@ -410,6 +532,10 @@ internal fun MiniPlayer(m: IslandMode.Media, a: IslandActions) {
                 Label(m.artist, color = Muted, size = 12, weight = FontWeight.Normal)
             }
         }
+        RoundIcon(
+            Icons.Rounded.SwapVert, 36.dp, Color.Transparent, Muted, a.onPromoteSecondary,
+            desc = stringResource(R.string.ify_promote_music)
+        )
         RoundIcon(Icons.Rounded.SkipPrevious, 36.dp, Color.Transparent, Color.White, a.onPrev)
         RoundIcon(
             if (m.playing) Icons.Rounded.Pause else Icons.Rounded.PlayArrow,
@@ -562,15 +688,20 @@ internal fun SeekBar(m: IslandMode.Media, accent: Color, onSeek: (Long) -> Unit)
     }
     val dur = m.durationMs
     val frac = if (dur > 0) (pos / dur.toFloat()).coerceIn(0f, 1f) else 0f
+    val rtl = LocalLayoutDirection.current == LayoutDirection.Rtl
 
     Column {
         Box(
             Modifier
                 .fillMaxWidth()
                 .height(18.dp)
-                .pointerInput(dur) {
+                .pointerInput(dur, rtl) {
                     detectTapGestures { off ->
-                        if (dur > 0) onSeek((off.x / size.width * dur).toLong().coerceIn(0L, dur))
+                        if (dur > 0) {
+                            // In RTL the start of the bar is on the right; map the touch accordingly.
+                            val f = (off.x / size.width.coerceAtLeast(1)).coerceIn(0f, 1f)
+                            onSeek(((if (rtl) 1f - f else f) * dur).toLong().coerceIn(0L, dur))
+                        }
                     }
                 },
             contentAlignment = Alignment.CenterStart
@@ -633,6 +764,7 @@ internal fun RoundIcon(
     bg: Color,
     tint: Color,
     onClick: () -> Unit,
+    desc: String? = null,
 ) {
     Box(
         Modifier
@@ -642,7 +774,8 @@ internal fun RoundIcon(
             .clickable(onClick = onClick),
         contentAlignment = Alignment.Center
     ) {
-        Icon(icon, null, tint = tint, modifier = Modifier.size(size * 0.58f))
+        // An icon inside a button needs a name: without one a screen reader says only «زر».
+        Icon(icon, desc, tint = tint, modifier = Modifier.size(size * 0.58f))
     }
 }
 

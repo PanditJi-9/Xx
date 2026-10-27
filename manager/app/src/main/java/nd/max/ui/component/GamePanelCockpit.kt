@@ -678,8 +678,20 @@ fun GamePanelCockpit(
                 }
             }))
             add(CubeTileSpec(if (rotationLocked) Icons.Rounded.ScreenLockRotation else Icons.Rounded.ScreenRotation, null, lRotation, rotationLocked, onClick = {
-                rotationLocked = !rotationLocked
-                device.setRotationLock(rotationLocked)
+                val want = !rotationLocked
+                rotationLocked = want
+                device.setRotationLock(want)
+                // اكتب ثم اقرأ: النظام قد يرفض الكتابة (لا WRITE_SETTINGS ولا جذر)، والبلاطة التي
+                // تقلب شكلها وحدها تدّعي نجاحًا لم يقع. القراءة بعد مهلة قصيرة تُصحّحها وتُعلن الفشل.
+                scope.launch {
+                    delay(700)
+                    val live = withContext(Dispatchers.IO) { device.rotationLocked() }
+                    rotationLocked = live
+                    if (live != want) {
+                        hold()
+                        say(String.format(fmtWriteFailed, lRotation))
+                    }
+                }
             }))
             // **المكنسة لا الصاروخ (§٩):** البلاطة تُنادي `cleanMemory` وتُعلن الميجابايت المحرَّرة،
             // فرسمُ إطلاقٍ فوقها يقول فعلًا لم يقع. والرمز الآن هو نفس رمز «قاتل الذاكرة» في المحور

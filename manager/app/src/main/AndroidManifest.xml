@@ -135,6 +135,13 @@
 
     <queries>
         <package android:name="org.frknkrc44.hma_oss" />
+        <!-- قراءة حالة الجزيرة الأصلية (كشف فقط): بلا هذا الإعلان يخفي Android 11+ الحزم. -->
+        <package android:name="com.miui.systemui" />
+        <package android:name="com.oplus.systemui" />
+        <package android:name="com.coloros.systemui" />
+        <package android:name="com.vivo.systemui" />
+        <package android:name="com.hihonor.systemui" />
+        <package android:name="com.huawei.systemui" />
         <intent>
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.LAUNCHER" />

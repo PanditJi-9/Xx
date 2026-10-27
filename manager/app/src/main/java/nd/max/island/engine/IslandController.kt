@@ -6,6 +6,8 @@
 package nd.max.island.engine
 
 import nd.max.R
+import nd.max.island.core.IslandActivityRules
+import nd.max.island.core.IslandSelection
 import nd.max.island.core.IslandSettings
 import nd.max.island.core.SwipeAction
 import nd.max.island.core.SwipeDir
@@ -141,7 +143,33 @@ object IslandController {
     private class Dl(val mode: IslandMode.Live, val open: PendingIntent?, val pkg: String?)
     private val downloads = LinkedHashMap<String, Dl>()
     private var dlMode: IslandMode.Live? = null
-    private var hidden = false
+
+    /**
+     * **الإخفاء بطلب المستخدم** — لا «نهاية النشاط».
+     *
+     * الفرق مهمّ: نشاط ينتهي يعود إذا جاء حدث جديد، وإخفاء المستخدم يمنع الجزيرة كلّها حتى
+     * يطلبها هو. ومن هنا صار مقبض استعادة صغير يظهر بعد الإخفاء؛ فبلا مقبض كان الإخفاء
+     * (وهو الافتراضي لسحب لأسفل) طريقًا بلا رجوع إلا بانتظار إشعار.
+     */
+    private val _hidden = MutableStateFlow(false)
+    val hidden = _hidden.asStateFlow()
+
+    /** آخر سرعة إيماءة بالبكسل/ثانية — تُغذّي زنبرك الفتح والإغلاق بدل مدّة ثابتة. */
+    private val _gestureVelocity = MutableStateFlow(0f)
+    val gestureVelocity = _gestureVelocity.asStateFlow()
+
+    fun noteGestureVelocity(pxPerSec: Float) {
+        if (pxPerSec.isFinite()) _gestureVelocity.value = abs(pxPerSec)
+    }
+
+    /**
+     * الموسيقى رُقّيت إلى الأساس بلمسة المستخدم، فيبقى الأساس السابق رفيقًا حتى يعود.
+     * و[promotedBaseClass] يمنع ترقيةً أبدية: نشاط جديد مختلف (مكالمة، ملاحة أخرى) يستعيد
+     * الأولوية الطبيعية بدل أن تظلّ الموسيقى محتكرةً للكبسولة.
+     */
+    private var mediaPromoted = false
+    private var promotedBaseClass: Class<*>? = null
+
     private var flashJob: Job? = null
 
     /** A banner (notification / charging / device...) that is on screen or waiting for its turn. */
@@ -175,10 +203,11 @@ object IslandController {
     val queued = _queued.asStateFlow()
 
     /**
-     * Music that plays next to a timer or navigation. The island shows it as a small second part
-     * (compact: art + waveform, card: a mini player). Only used while the main mode is Timer / Live.
+     * النشاط الثاني بجانب الأساس. كان `IslandMode.Media?` ومكتوبًا في الواجهة بشرط
+     * «الأساس مؤقّت أو ملاحة»؛ صار عامًّا: أيّ نشاط يمكن أن يكون رفيقًا، والقاعدة في
+     * [IslandActivityRules] تُختبر على JVM. والمكالمة لا تقبل رفيقًا.
      */
-    private val _secondary = MutableStateFlow<IslandMode.Media?>(null)
+    private val _secondary = MutableStateFlow<IslandMode?>(null)
     val secondary = _secondary.asStateFlow()
     private var timerJob: Job? = null
 
@@ -186,22 +215,108 @@ object IslandController {
     private var pauseJob: Job? = null
     private var pausedHide = false
 
-    private fun base(): IslandMode {
+    private fun selection(): IslandSelection =
+        IslandActivityRules.select(
+            mediaPromoted = mediaPromoted,
+            timer = timerMode,
+            live = liveMode,
+            download = dlMode,
+            media = if (pausedHide) null else mediaMode,
+        )
+
+    private fun base(sel: IslandSelection = selection()): IslandMode {
         callMode?.let { return it }
-        if (hidden) return IslandMode.Idle
-        return timerMode ?: liveMode ?: dlMode ?: (if (pausedHide) null else mediaMode) ?: IslandMode.Idle
+        if (_hidden.value) return IslandMode.Idle
+        return sel.primary ?: IslandMode.Idle
     }
 
     private fun refresh() {
-        _secondary.value = if (pausedHide) null else mediaMode
+        // ترقية الموسيقى تنتهي بانتهائها أو بوصول نشاط أساس مختلف — لا تبقى محتكرة.
+        val unpromoted = IslandActivityRules.select(
+            mediaPromoted = false,
+            timer = timerMode,
+            live = liveMode,
+            download = dlMode,
+            media = if (pausedHide) null else mediaMode,
+        )
+        if (mediaPromoted) {
+            val baseNow = unpromoted.primary
+            if (pausedHide || mediaMode == null ||
+                (promotedBaseClass != null && baseNow?.javaClass != promotedBaseClass)
+            ) {
+                mediaPromoted = false
+                promotedBaseClass = null
+            }
+        }
+        if (callMode != null && mediaPromoted) {
+            mediaPromoted = false
+            promotedBaseClass = null
+        }
+        val sel = selection()
+        val activeMedia = if (pausedHide) null else mediaMode
+        val shown = if (flashJob?.isActive == true) _mode.value else sel.primary
+        _secondary.value = when {
+            !IslandSettings.secondaryEnabled.value -> null
+            shown == null || shown is IslandMode.Idle || shown is IslandMode.Call -> null
+            flashJob?.isActive == true -> activeMedia
+            else -> sel.companion
+        }?.takeIf { it != shown }
         // startReply() cancels flashJob, so also check _replying: otherwise every timer tick /
         // music update would overwrite the notification card while the user is typing.
         if (flashJob?.isActive == true || _replying.value) return
-        val b = base()
+        val b = base(sel)
         // Idle card (time / date / battery) must not stay open when a real activity arrives
         val prev = _mode.value
         if ((prev is IslandMode.Idle) != (b is IslandMode.Idle)) _level.value = IslandLevel.Compact
         _mode.value = b
+    }
+
+    /**
+     * تبديل الأساس والرفيق. الموسيقى وحدها تُرقّى حاليًّا (رفيقها النشاط الأساس السابق)،
+     * واللمسة الثانية على الرفيق بعد الترقية تُعيد الأساس السابق — تبديلٌ في الاتجاهين.
+     */
+    fun promoteSecondary() {
+        val s = selection()
+        // A pop-up (notification / banner) is on top while music waits beside it. Tapping the music
+        // must dismiss the pop-up and bring the music forward; otherwise the tap looked dead.
+        if (flashJob?.isActive == true) {
+            if (s.companion !is IslandMode.Media && mediaMode == null) return
+            promotedBaseClass = s.primary?.javaClass
+            mediaPromoted = s.primary != null
+            endFlash()
+            return
+        }
+        if (mediaPromoted) {
+            mediaPromoted = false
+            promotedBaseClass = null
+            refresh()
+            return
+        }
+        if (!IslandActivityRules.canPromote(s.primary, s.companion)) return
+        if (s.companion !is IslandMode.Media) return
+        promotedBaseClass = s.primary?.javaClass
+        mediaPromoted = true
+        refresh()
+    }
+
+    /** إظهار الجزيرة بعد إخفاء المستخدم. تُستدعى من مقبض الاستعادة أو من إشعار جديد. */
+    fun restore() {
+        if (!_hidden.value) return
+        _hidden.value = false
+        pausedHide = false
+        pauseJob?.cancel()
+        refresh()
+    }
+
+    /** إخفاء حتى حدث جديد — لا يمسّ المكالمة، ولا يمسّ النشاط الجاري في الخلفية. */
+    fun hideIsland() {
+        if (callMode != null) return
+        if (flashJob?.isActive == true) endFlash()
+        if (_level.value != IslandLevel.Compact) _level.value = IslandLevel.Compact
+        if (_mode.value !is IslandMode.Idle) {
+            _hidden.value = true
+            refresh()
+        }
     }
 
     /* ---------------- gestures ---------------- */
@@ -291,7 +406,7 @@ object IslandController {
             _replying.value -> cancelReply()
             flashJob?.isActive == true -> endFlash()
             _level.value != IslandLevel.Compact -> _level.value = IslandLevel.Compact
-            callMode == null && _mode.value !is IslandMode.Idle -> { hidden = true; refresh() }
+            callMode == null && _mode.value !is IslandMode.Idle -> hideIsland()
         }
     }
 
@@ -308,9 +423,7 @@ object IslandController {
     }
 
     private fun musicOnIsland(): Boolean {
-        val m = _mode.value
-        return media != null && (m is IslandMode.Media ||
-            ((m is IslandMode.Live || m is IslandMode.Timer) && mediaMode != null))
+        return media != null && (_mode.value is IslandMode.Media || _secondary.value is IslandMode.Media)
     }
 
     /** A swipe on the island: runs whatever the user chose for that direction (Customize > Swipe gestures). */
@@ -318,13 +431,16 @@ object IslandController {
         when (IslandSettings.swipeFlow(dir).value) {
             SwipeAction.None -> Unit
             SwipeAction.Dismiss -> dismiss()
+            SwipeAction.Hide -> hideIsland()
             SwipeAction.ClearAll -> clearAll()
             SwipeAction.Expand -> if (!_replying.value && _level.value == IslandLevel.Compact) toggle()
             SwipeAction.OpenApp -> if (!_replying.value && openSource()) {
                 if (flashJob?.isActive == true) endFlash() else _level.value = IslandLevel.Compact
             }
-            SwipeAction.NextTrack -> if (musicOnIsland()) next()
-            SwipeAction.PrevTrack -> if (musicOnIsland()) prev()
+            // A track gesture with no music to act on hides instead of dying silently — so a
+            // horizontal swipe still does something useful when only a timer / notification is up.
+            SwipeAction.NextTrack -> if (musicOnIsland()) next() else hideIsland()
+            SwipeAction.PrevTrack -> if (musicOnIsland()) prev() else hideIsland()
             SwipeAction.PlayPause -> if (musicOnIsland()) playPause()
         }
     }
@@ -342,8 +458,12 @@ object IslandController {
             val expected = old.positionMs + ((m.updatedAt - old.updatedAt) * old.speed).toLong()
             if (abs(expected - m.positionMs) < 1500) return
         }
-        if (m == null || old == null || old.title != m.title || old.playing != m.playing) hidden = false
+        if (m == null || old == null || old.title != m.title || old.playing != m.playing) _hidden.value = false
         mediaMode = m
+        if (m == null) {
+            mediaPromoted = false
+            promotedBaseClass = null
+        }
         if (m == null || m.playing) {
             pauseJob?.cancel()
             pausedHide = false
@@ -390,7 +510,7 @@ object IslandController {
         callMode = c
         callAnswer = answer
         callDecline = decline
-        hidden = false
+        _hidden.value = false
         _replying.value = false
         if (stickyHeld) curFlash?.let { parkSticky(it) }   // keep the sticky pill (before cancel)
         flashJob?.cancel()
@@ -528,7 +648,7 @@ object IslandController {
         flashPkg = f.pkg
         flashReply = f.reply
         flashMarkRead = f.markRead
-        hidden = false
+        _hidden.value = false
         _mode.value = f.mode
         _level.value = if (f.seen) IslandLevel.Compact else f.level
         // "Keep notifications until I act": a real notification (it has a source app) stays on the
@@ -561,7 +681,10 @@ object IslandController {
         _queued.value = flashQueue.size
         if (next != null) startFlash(next) else {
             curFlash = null
-            _mode.value = base()
+            // The coroutine that runs this is still active; clear it first or refresh() would think
+            // a pop-up is still on screen and keep the old mode / companion.
+            flashJob = null
+            refresh()
         }
     }
 
@@ -653,7 +776,7 @@ object IslandController {
     fun startTimer(seconds: Int) {
         timerJob?.cancel()
         extKey = null
-        hidden = false
+        _hidden.value = false
         timerJob = scope.launch {
             // Work from an end time (like the Clock timer): "delay(1000)" per loop adds up the
             // time spent drawing / refreshing and the countdown slowly drifts.
@@ -674,7 +797,7 @@ object IslandController {
     fun stopTimer() {
         if (extKey != null) {
             // Clock ka timer Clock me chalta rahega, island se sirf hide hoga
-            hidden = true
+            _hidden.value = true
             _level.value = IslandLevel.Compact
             refresh()
             return
@@ -693,7 +816,7 @@ object IslandController {
         val left = ceil((endAt - now) / 1000.0).toInt()
         if (left <= 0) return
         val same = key == extKey
-        if (!same) hidden = false
+        if (!same) _hidden.value = false
         extTotal = if (same && extTotal >= left) extTotal else left
         extKey = key
         extEnd = endAt
@@ -753,7 +876,7 @@ object IslandController {
         val old = liveMode
         if (old == m && liveKey == key) return
         // A swipe-up hides it until a different app starts its own live activity
-        if (old == null || old.app != m.app) hidden = false
+        if (old == null || old.app != m.app) _hidden.value = false
         liveMode = m
         liveKey = key
         liveOpen = open
@@ -779,7 +902,7 @@ object IslandController {
     fun setDownload(m: IslandMode.Live, key: String, open: PendingIntent?, pkg: String?) {
         val old = downloads[key]
         if (old != null && old.mode == m) return          // nothing changed
-        if (old == null) hidden = false                   // a new download shows again after a swipe-up
+        if (old == null) _hidden.value = false            // a new download shows again after a swipe-up
         downloads[key] = Dl(m, open, pkg)                 // replacing keeps the order
         syncDownload()
     }
@@ -816,6 +939,11 @@ object IslandController {
     }
 
     init {
+        // Turning "two activities" off drops the companion immediately instead of waiting for the
+        // next event; turning it back on brings the music indicator back the same way.
+        scope.launch {
+            IslandSettings.secondaryEnabled.collect { refresh() }
+        }
         // An expanded / large card goes back to the small pill after a few seconds,
         // so a card can never stay open and make the island look huge.
         scope.launch {

@@ -105,6 +105,7 @@ enum class SwipeDir { Up, Down, Left, Right }
 enum class SwipeAction(val key: String, @StringRes val label: Int) {
     None("none", R.string.ify_swipe_act_none),
     Dismiss("dismiss", R.string.ify_swipe_act_dismiss),          // collapse, then hide
+    Hide("hide", R.string.ify_swipe_act_hide),                   // hide until something new happens
     ClearAll("clear", R.string.ify_swipe_act_clear),             // dismiss + drop every waiting pop-up
     Expand("expand", R.string.ify_swipe_act_expand),             // pill -> card
     OpenApp("open", R.string.ify_swipe_act_open),                // open the app the island is showing
@@ -134,6 +135,20 @@ object IslandSettings {
     val glow = MutableStateFlow(true)       // album art / accent glow
     val haptics = MutableStateFlow(true)
 
+    /**
+     * **الموضع الآمن** — افتراضيًّا يهبط تحت الكاميرا/شريط الحالة ولا يمتدّ تحت الحافّات.
+     *
+     * إطفاؤه خيار صريح: من يريد الكبسولة ملاصقة للحافّة العليا (فوق شريط الحالة) يطفئه،
+     * ولا يُغيّر إطفاؤه شيئًا في حساب الهامش الأفقي — تبقى الكبسولة داخل حدود الشاشة دائمًا.
+     */
+    val avoidSystemUi = MutableStateFlow(true)
+
+    /**
+     * **نشاطان معًا** — الموسيقى تبقى مؤشّرًا صغيرًا بجانب المؤقّت/الملاحة/الإشعار،
+     * ويمكن تبديل أيّهما إلى الأساس بلمسة. إطفاؤه يعيد قاعدة «نشاط واحد».
+     */
+    val secondaryEnabled = MutableStateFlow(true)
+
     val triggers = MutableStateFlow(Trigger.entries.map { it.key }.toSet())
     val blockedApps = MutableStateFlow<Set<String>>(emptySet())
 
@@ -149,7 +164,7 @@ object IslandSettings {
     val swipeSkip = MutableStateFlow(true)                       // swipe left/right on the island to skip tracks
     val stickyNotif = MutableStateFlow(false)                    // notifications stay on the island until tapped / swiped away
     val swipeUp = MutableStateFlow(SwipeAction.Dismiss)
-    val swipeDown = MutableStateFlow(SwipeAction.None)
+    val swipeDown = MutableStateFlow(SwipeAction.Hide)
     val swipeLeft = MutableStateFlow(SwipeAction.NextTrack)
     val swipeRight = MutableStateFlow(SwipeAction.PrevTrack)
 
@@ -197,6 +212,8 @@ object IslandSettings {
         animSpeed.value = p.getFloat("speed", 1f)
         glow.value = p.getBoolean("glow", true)
         haptics.value = p.getBoolean("haptics", true)
+        avoidSystemUi.value = p.getBoolean("avoidSystemUi", true)
+        secondaryEnabled.value = p.getBoolean("secondaryEnabled", true)
         // New activity types added in an update are switched ON once; after that the user decides.
         val allKeys = Trigger.entries.map { it.key }.toSet()
         val legacyKeys = setOf("notif", "media", "call", "charge", "timer", "device")
@@ -215,7 +232,7 @@ object IslandSettings {
         swipeSkip.value = p.getBoolean("swipeSkip", true)
         stickyNotif.value = p.getBoolean("stickyNotif", false)
         swipeUp.value = SwipeAction.from(p.getString("swipeUp", null), SwipeAction.Dismiss)
-        swipeDown.value = SwipeAction.from(p.getString("swipeDown", null), SwipeAction.None)
+        swipeDown.value = SwipeAction.from(p.getString("swipeDown", null), SwipeAction.Hide)
         swipeLeft.value = SwipeAction.from(p.getString("swipeLeft", null), SwipeAction.NextTrack)
         swipeRight.value = SwipeAction.from(p.getString("swipeRight", null), SwipeAction.PrevTrack)
         // Old "Swipe to skip tracks" switch was OFF: keep left / right off
@@ -253,6 +270,8 @@ object IslandSettings {
             ?.putFloat("speed", animSpeed.value)
             ?.putBoolean("glow", glow.value)
             ?.putBoolean("haptics", haptics.value)
+            ?.putBoolean("avoidSystemUi", avoidSystemUi.value)
+            ?.putBoolean("secondaryEnabled", secondaryEnabled.value)
             ?.putStringSet("triggers", triggers.value)
             ?.putStringSet("triggersSeen", Trigger.entries.map { it.key }.toSet())
             ?.putStringSet("blocked", blockedApps.value)
@@ -347,11 +366,13 @@ object IslandSettings {
         swipeSkip.value = true
         stickyNotif.value = false
         swipeUp.value = SwipeAction.Dismiss
-        swipeDown.value = SwipeAction.None
+        swipeDown.value = SwipeAction.Hide
         swipeLeft.value = SwipeAction.NextTrack
         swipeRight.value = SwipeAction.PrevTrack
         idlePill.value = false
         islandAppAccent.value = false
+        avoidSystemUi.value = true
+        secondaryEnabled.value = true
         theme.value = 0
         accentSource.value = 0
         accentSeed.value = 0xFF7B3DF5.toInt()

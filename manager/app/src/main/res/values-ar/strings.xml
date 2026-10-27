@@ -3411,12 +3411,28 @@
     <string name="ify_cust_swipe_hint">اختر ما يفعله كل سحب. إجراءات الموسيقى تعمل فقط والموسيقى على الجزيرة.</string>
     <string name="ify_swipe_act_none">لا شيء</string>
     <string name="ify_swipe_act_dismiss">إبعاد / إخفاء</string>
+    <string name="ify_swipe_act_hide">إخفاء حتى الحدث التالي</string>
     <string name="ify_swipe_act_clear">مسح كل النوافذ</string>
     <string name="ify_swipe_act_expand">فتح البطاقة</string>
     <string name="ify_swipe_act_open">فتح التطبيق</string>
     <string name="ify_swipe_act_next">المقطع التالي</string>
     <string name="ify_swipe_act_prev">المقطع السابق</string>
     <string name="ify_swipe_act_playpause">تشغيل / إيقاف</string>
+
+    <!-- ٢٠٢٦-١٠-٢٧ — الموضع الآمن، نشاطان، مقبض الاستعادة، حالة الجزيرة الأصلية -->
+    <string name="ify_cust_layout_title">المنطقة الآمنة</string>
+    <string name="ify_cust_safe_layout">بعيدًا عن الكاميرا وشريط الحالة</string>
+    <string name="ify_cust_safe_layout_sub">يضع الجزيرة أسفل القصّة ولا يتركها تحت أيقونات النظام. أطفئه فقط إن أردتها ملاصقة للحافّة العليا.</string>
+    <string name="ify_cust_dual">نشاطان في وقت واحد</string>
+    <string name="ify_cust_dual_sub">يبقي مؤشّر موسيقى صغيرًا بجانب المؤقّت والملاحة والتنزيلات والنوافذ. المسه للتبديل.</string>
+    <string name="ify_promote_music">اجعل الموسيقى النشاط الأساس</string>
+    <string name="ify_switch_activity">اجعل هذا النشاط هو الأساس</string>
+    <string name="ify_island_restore">أظهر الجزيرة مرة أخرى</string>
+    <string name="ify_native_island_title">الجزيرة الديناميكية في النظام</string>
+    <string name="ify_native_island_control">تعطيل الجزيرة الأصلية</string>
+    <string name="ify_native_island_none">لم تُكتشف جزيرة ديناميكية أصلية على هذا الجهاز.</string>
+    <string name="ify_native_island_detected">%1$s يشحن جزيرة ديناميكية خاصة به.</string>
+    <string name="ify_native_island_locked">غير متاح: لا يوجد في أندرويد مفتاح موثّق لها، وMaxManager لا يعطّل واجهة النظام ولا يقتلها أبدًا. لتفادي التكرار أطفئ الأنشطة التي لا تريدها بالأسفل.</string>
 
     <!-- نصوص المحرّك الحيّة للمنقول — أضافها MaxManager (موجة الدمج) -->
     <string name="ify_toggle_silent">صامت</string>
