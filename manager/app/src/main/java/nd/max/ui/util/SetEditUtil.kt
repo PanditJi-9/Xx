@@ -46,6 +46,32 @@ data class SetEditItem(val key: String, val value: String, val category: SetEdit
 enum class SetEditValueKind { Boolean, Text }
 
 /**
+ * حكم كتابة واحدة — رمز لا جملة، والواجهة تترجمه.
+ *
+ * والفرق بين [APPLIED] و[SENT] مقصود: الأوّل أثبتته قراءة، والثاني رسالة تحكّم (`ctl.*`) لا حالة
+ * تُقرأ لها؛ ولا يُخلطان، فادّعاء «حُفظ» حيث لا حالة يُقرأ هو عين العطب الذي أُصلح.
+ */
+enum class SetEditWriteOutcome {
+    /** كُتبت القيمة وطابقتها قراءة بعد الكتابة. */
+    APPLIED,
+
+    /** رسالة تحكّم أُرسلت؛ لا حالة قابلة للقراءة، فلا تُدّعى قراءة. */
+    SENT,
+
+    /** نُفِّذ الأمر ولم تطابق القراءة القيمة المطلوبة. */
+    NOT_HONOURED,
+
+    /** `ro.*`/`init.svc.*`: لا تُكتب أثناء التشغيل. */
+    READ_ONLY,
+
+    /** رُفض المفتاح أو فشل التنفيذ. */
+    REFUSED,
+
+    /** مفتاح خارج المحارف المقبولة — لا يُبنى له سطر صدفة أصلًا. */
+    INVALID_KEY,
+}
+
+/**
  * يقرأ نوع القيمة من **القيمة نفسها** لا من المفتاح ولا من تخمين.
  *
  * والثنائي يُعرّف بأنّه يساوي واحدة من أربع صيغ بالضبط (
@@ -141,18 +167,53 @@ object SetEditUtil {
         return if (category == null) unique.sortedBy { it.key } else unique
     }
 
-    fun set(category: SetEditCategory, key: String, value: String): Boolean {
+    fun set(category: SetEditCategory, key: String, value: String): SetEditWriteOutcome {
+        if (!isValidSetEditKey(category, key)) return SetEditWriteOutcome.INVALID_KEY
+        val persistence = setEditPersistenceOf(category, key)
+        if (persistence == SetEditPersistence.READ_ONLY) return SetEditWriteOutcome.READ_ONLY
         return try {
-            val cmd = writeCommand(category, key, value)
-            Shell.cmd(cmd).exec().isSuccess
+            val ran = Shell.cmd(writeCommand(category, key, value)).exec().isSuccess
+            when {
+                !ran -> SetEditWriteOutcome.REFUSED
+                // رسالة تحكّم: أُرسلت ولا حالة تُقرأ. لا «حُفظت».
+                persistence == SetEditPersistence.CONTROL -> SetEditWriteOutcome.SENT
+                SetEditWriteRules.honoured(value, readValue(category, key)) -> SetEditWriteOutcome.APPLIED
+                else -> {
+                    // بعض مزوّدات الإعدادات تطبّق بعد العودة؛ قراءة ثانية بعد مهلة قصيرة قبل الحكم.
+                    Thread.sleep(150L)
+                    if (SetEditWriteRules.honoured(value, readValue(category, key))) {
+                        SetEditWriteOutcome.APPLIED
+                    } else {
+                        SetEditWriteOutcome.NOT_HONOURED
+                    }
+                }
+            }
         } catch (e: Exception) {
-            false
+            SetEditWriteOutcome.REFUSED
         }
+    }
+
+    /**
+     * القيمة الحيّة من الجهاز — **المصدر الوحيد لحكم الكتابة**.
+     *
+     * و`getprop`/`settings get` يعيدان `""`/`null` للغائب؛ ولا يُترجَم أيّهما إلى «نجاح»: المقارنة
+     * في [SetEditWriteRules] تعامل الغياب اختلافًا.
+     */
+    fun readValue(category: SetEditCategory, key: String): String? = try {
+        val command = if (category == SetEditCategory.ANDROID_PROP) {
+            "getprop $key"
+        } else {
+            "settings get ${category.settingsNamespace} $key"
+        }
+        Shell.cmd(command).exec().out.joinToString("\n").trim()
+    } catch (e: Exception) {
+        null
     }
 
     /** Android system properties (getprop) can't be individually removed - only `settings` keys can. */
     fun delete(category: SetEditCategory, key: String): Boolean {
         if (category == SetEditCategory.ANDROID_PROP) return false
+        if (!isValidSetEditKey(category, key)) return false
         return try {
             Shell.cmd("settings delete ${category.settingsNamespace} $key").exec().isSuccess
         } catch (e: Exception) {
@@ -160,12 +221,16 @@ object SetEditUtil {
         }
     }
 
-    private fun writeCommand(category: SetEditCategory, key: String, value: String): String {
-        val escaped = value.replace("\"", "\\\"")
+    /**
+     * سطر الكتابة — والمفتاح مُتحقَّق منه قبل الوصول هنا ([isValidSetEditKey])، والقيمة مقتبسة
+     * اقتباسًا أحاديًّا ([setEditShellQuote]) فلا تُنفَّذ `$()` أو backtick بصلاحية الجذر.
+     */
+    internal fun writeCommand(category: SetEditCategory, key: String, value: String): String {
+        val quoted = setEditShellQuote(value)
         return if (category == SetEditCategory.ANDROID_PROP) {
-            "setprop $key \"$escaped\""
+            "setprop $key $quoted"
         } else {
-            "settings put ${category.settingsNamespace} $key \"$escaped\""
+            "settings put ${category.settingsNamespace} $key $quoted"
         }
     }
 

@@ -209,6 +209,7 @@ object LogCodeGlossary {
         "zen-mode-set" to "do-not-disturb was switched on for the game and confirmed by reading it back",
         "zen-mode-already-on" to "the device was already in a do-not-disturb mode, which can be stronger than the gaming value, so nothing was written over it",
         "zen-mode-write-not-honoured" to "the write ran and the read back still reports no do-not-disturb: the request is not in effect",
+        "zen-mode-no-real-path" to "this Android version has no do-not-disturb write path without notification policy access, so nothing was written",
         // اللوحة الجانبية — ملفّ القائمة الذي يقرؤه الرفيق الجذري (SidePanelArmedStore)
         "written" to "side-panel arming: the game list file was written and read back as written",
         "already-in-sync" to "side-panel arming: the file already held the enabled game list, so nothing was written",
@@ -293,7 +294,9 @@ object LogCodeGlossary {
         "write-backoff" to "wait for the next retry; if every retry reports write_failed, the node is not writable on this kernel and the touch switch cannot be honoured there",
         // عدم الإزعاج أثناء اللعب
         "zen-mode-write-not-honoured" to
-            "read zen_mode by hand; if the write keeps being ignored the settings provider is refusing this caller, so grant it or switch do-not-disturb manually",
+            "the app writes through the notification service, not the settings row; if this keeps appearing, another policy holder changed do-not-disturb right after the write, so check the automation or profile that owns it",
+        "zen-mode-no-real-path" to
+            "grant do-not-disturb access to MaxManager in system settings, or run Android 11 or newer where the shell command exists",
         // اللوحة الجانبية
         "write-refused" to "check that the module config directory exists and root is granted, then toggle the side-panel switch again",
         "write-unverified" to "read the file path named in this line by hand: the write claimed success while the content did not arrive",

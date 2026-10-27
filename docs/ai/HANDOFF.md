@@ -23101,3 +23101,103 @@ BUILD FAILED in 6m 12s
 `:app:assembleRelease`) · «Unit test count evidence» ✓. ⇒ **الترجمة الكاملة للـKotlin والـAPK مُتحقَّقة في CI**،
 و«غير مُتحقَّقة في هذه البيئة» تبقى صحيحة بمعناها الحرفي (لا Gradle هنا). ويبقى معلَّقًا كما هو: **سلوك
 الجهاز** و**حكم `safety-reviewer` المستقل** — لا يشتريهما تشغيل CI.
+
+## FIVE-FIXES-01 — 2026-10-27 · DONE_WITH_CONCERNS (خمسة عطوب: ملفّ GPU · مزامنة Game Turbo · بقاء محرّر الإعدادات · كشف وحدة التمويه · الجزيرة بعد الإقلاع)
+
+**TASK (المالك، بالترتيب):** (١) استقرار ملفّ GPU · (٢) مزامنة مفتاح Game Turbo وبيانات الجوال ·
+(٣) بقاء محرّر الإعدادات بعد الإقلاع · (٤) كشف وحدة التمويه ووظيفتها الحقيقية · (٥) تحسينات الجزيرة
+الديناميكية — **بلا ادّعاء نجاح بلا دليل، وبلا مفتاح زينة لا يفعل شيئًا**.
+
+**ROOT CAUSES (مقيسة من الشجرة، لا مُرجَّحة):**
+1. **GPU:** مسار إنهاء جلسة الملفّ كان يزيل `sys.maxmanager.perapp.governor_isolation` **حتى حين
+   يوجد هدف لكل تطبيق**، ومسار استعادة الـrenderer كان مكرّرًا/مشروطًا في بعض المخارج — فملفّ
+   Eco/Balanced كان يستطيع أن يطمس renderer لعبةٍ في المقدّمة. **الإصلاح:** الحفاظ على العزل حين
+   لا هدف محليًّا (`EVENT=PERAPP_ISOLATION_PRESERVED reason=no_local_target`)، ومسحٌ صريح في كل
+   مخارج الجلسة وفي إقلاع الخادم، واستخراج `restore_saved_renderer()`، وتأجيل استعادة Eco/Balanced
+   ما دامت لعبة مُدارة في المقدّمة، والاستعادة عند خروج هدف التطبيق.
+2. **Game Turbo:** (أ) المفتاح كان يقرأ المرآة المخزَّنة (`wifi_on`/`mobile_data`) لا الحالة الحيّة،
+   فيقول «مغلق» وWi‑Fi/البيانات مفعّلة. (ب) «عدم الإزعاج» كان يُكتب بـ`settings put global zen_mode`
+   ثم يُقرأ كما تُرك — و`ZenModeHelper` في AOSP يعيد كتابة الصفّ من حالته الداخلية كلّما رآه مختلفًا
+   (`Fixing zen mode setting`)، و«النجاح» كان يُعلن من رمز خروج صفر. **الإصلاح:** قراءة حيّة
+   (`WifiManager.isWifiEnabled()` · `TelephonyManager.isDataEnabled()`)، وتحقّق محدود بعد الكتابة
+   (`80/160/320/640 ms`) بحكم صريح، وDND عبر `NotificationManager.setInterruptionFilter` أو
+   `cmd notification set_dnd` (‏API ≥ 30)، وإخفاء المفتاح حين لا مسار حقيقي، ومنع كتابة صفّ
+   `zen_mode`. وملكية الجلسة: `savedZenMode` يُلتقط مرّة، و`wasZenSet` لا يُضبط إلا على `APPLIED`،
+   والاستعادة لا تحدث إلا إذا كانت الحالة الحيّة ما زالت `1`.
+3. **محرّر الإعدادات:** `setprop` لا يحفظ إلا `persist.*`؛ و`ro.*` غير قابل للتغيير؛ و«النجاح» كان
+   يُعلن من رمز الخروج؛ والاقتباس المزدوج كان يسمح بـ`$(…)`/backtick أن يُنفَّذ بصلاحية الجذر.
+   **الإصلاح:** مخزن تجاوز إقلاع (`SetEditBootStore`) يعيد `PersistRestorer` تطبيقه، وتصنيف المفاتيح
+   (`persist.*` · `ro.*` · `ctl.*` · `settings`)، واقتباس أحاديّ، وفحص محارف المفتاح، وحكم من قراءة
+   مطابقة (`APPLIED` · `SENT` · `NOT_HONOURED` · `READ_ONLY` · `INVALID_KEY` · `REFUSED`)، ومفاتيح
+   `settings` **لا تُعاد** بعد الإقلاع. وحذف خصيصة أندرويد صار يعني إزالة تجاوز الإقلاع، لا ادّعاء حذف.
+4. **موديول التمويه:** `eligibility` كان يقرأ `/data/adb/modules/<id>/module.prop` وحده، فوحدة
+   ثُبِّتت للتوّ (وهي في `modules_update` بالتصميم) تُقرأ «غائبة» ويُطلب تثبيت لا معنى له؛ والواجهة
+   كانت تجمع «الجذر مرفوض» و«الملفّ غير موجود» و«غير مقروء» في رمز واحد؛ ومسار الكتالوج في
+   `THIRD_PARTY_NOTICES.md` كان قديمًا. **الإصلاح:** فحص `modules_update` قبل الحكم بالغياب، وسطر
+   تشخيص `EVENT=SPOOF_ENGINE_PROBE` بكل ما قيس، وشرائط `unmeasured`/`config-missing`/
+   `config-unreadable`، وتصحيح المسار إلى
+   `manager/app/src/main/assets-internal/spoof/device_catalog.json`. **و`id=COPG` والمسارات الوظيفية
+   لم تُغيَّر.**
+5. **الجزيرة:** `PersistRestorer` كان يعيد **المحرّك القديم** (`nd.max.service.IslandService`) من
+   `IslandPrefs`، والمحرّك الحاليّ (`nd.max.island.engine.IslandService`) لا يُقلعه أحد بعد الإقلاع؛
+   و`IslandSettings.enabled` افتراضيّه `true`؛ والإطفاء كان يوقف المحرّك الحاليّ وحده؛ ونافذة
+   الاحتياط كانت تظهر بمجرّد وجود صلاحية الرسم ولو كانت الجزيرة مطفأة. **الإصلاح:** `IslandBootRestore`
+   دالّة نقيّة (نيّة → وصولية مستضافة → خدمة حيّة → رسم فوق التطبيقات → انتظار ربط الوصولية → لا
+   صلاحية) ونقل نيّة المحرّك القديم في الإقلاع والشاشة معًا، وافتراضيّ **مطفأ**، والإطفاء يتقاعد
+   المحرّكين من كلا الطرفين، ونافذة الاحتياط تتبع `enabled && !a11y && overlay`. والمحرّك القديم
+   لا يُقلع من أيّ مسار بعد اليوم.
+
+**FILES:**
+- **جديد:** `manager/app/src/main/java/nd/max/island/core/IslandBootRestore.kt` ·
+  `.../ui/util/SetEditBoot.kt` · `.../src/test/java/nd/max/island/core/IslandBootRestoreTest.kt` ·
+  `.../test/java/nd/max/core/gamespace/DndControlTest.kt` · `.../test/java/nd/max/ui/util/SetEditBootTest.kt`.
+- **معدَّل (Kotlin):** `core/gamespace/{DndControl,PanelToggles,GameCapabilities}.kt` · `AppMonitor.kt` ·
+  `core/persist/PersistRestorer.kt` · `core/spoof/{SpoofEngineGate,SpoofConfigTransaction,SpoofCopgBackend}.kt` ·
+  `island/core/IslandSettings.kt` · `island/engine/IslandService.kt` ·
+  `ui/subscreens/{AppSpoofSection,DynamicIslandScreen,DynamicIslandTabs,IslandTabBar,SetEditScreen}.kt` ·
+  `ui/component/GamePanelCockpit.kt` · `ui/util/SetEditUtil.kt` · `ui/viewmodel/SetEditViewModel.kt` ·
+  `core/diagnostics/LogCodeGlossary.kt` · المانيفست (ثلاث صلاحيات معلنة صراحةً: `ACCESS_WIFI_STATE` ·
+  `ACCESS_NETWORK_STATE` · `ACCESS_NOTIFICATION_POLICY`).
+- **معدَّل (أصليّ، في الدفعتين السابقتين غير المدفوعتين):** `archdaemon/jni/src/SystemProfile/ProfileUtility.c` ·
+  `SystemProfiles.c` · `archdaemon/jni/src/System/System.c` · `archdaemon/tests/cli_profile.c`.
+- **نصوص:** `values/` و`values-ar/` فقط (١٤ مفتاحًا لكل لغة) — **ولا لغة ثالثة** (§0.2).
+- **وثائق:** `THIRD_PARTY_NOTICES.md` (مسار الكتالوج) · هذا السجل · `NEXT_TASK.md`.
+
+**GATES (مقيسة هنا، بعد آخر تعديل):**
+- `python3 tools/kt_balance.py --assert`: **٠ عوائق** (٣١١٣ ملفًا).
+- `python3 tools/code_health.py --assert`: **exit 0**، «صحّة نظيفة».
+- `python3 tools/i18n_coverage.py --assert`: **٠ عوائق** (٨٤ مجلّدًا + `en` · ٨٥ كودًا · `locales_config` ٨٥) ·
+  `--prune all --assert`: **٠ يتيم**.
+- `python3 tools/design_tokens.py --assert`: **exit 0** (المجموع ٢٤٩/٣٠٠).
+- `python3 tools/resource_compile.py --assert`: **exit 0** (`aapt2` على مجلّدَي `res`).
+- `python3 tools/jni_symbols.py --assert`: **exit 0** — ٢٣ تصريحًا، ٠ ناقص، ٠ يتيم؛ **الطبقة الثانية
+  (رموز `.so`) غير مُتحقّقة** لغياب الثنائيات في هذه البيئة.
+- `make -C archdaemon/tests run`: **٣٣٦/٣٣٦** ناجحًا، **مجموعة واحدة متخطّاة** على هذا المضيف
+  (ادّعاؤها غير مُتحقَّق هنا)، وفحص الطفرة يفشل ٦ توكيدات عزل — أي أن توكيدات العزل الجديدة حاملة.
+- `git diff --check`: نظيف.
+
+**BUILD:** **compilation unverified in this environment.** أُطلق محليًّا
+`:app:testReleaseUnitTest --tests nd.max.island.core.IslandBootRestoreTest` على JDK 17، ثم **أُلغي
+بإعادة تشغيل الخادم بعد ~٢٨ دقيقة بلا مخرج** — وليس فشل ترجمة. وبأمر المالك «ادفع واختبر من هنا
+أفضل» صار **CI هو المُصرّف**: الدفع إلى `main` يشغّل `build.yml` (بواباته + الأصليّ + R8 + التوقيع +
+الحزم + `:app:testReleaseUnitTest`)، ونتيجته الفعلية تُلحق أدناه.
+
+**CI:** **قيد التشغيل عند كتابة السطر** — يُستبدل هذا السطر بالحكم المقيس (رقم التشغيل · الالتزام ·
+عدد الاختبارات · الفشل · الحزم) فور انتهائه، ولا يُكتب «أخضر» قبل ذلك.
+
+**RESIDUAL RISK (معلنة):**
+- **(أ) الجهاز غائب:** هذه البيئة PRoot لا جهاز جذر (لا binder ولا خدمة خصائص؛ `setprop` يفشل و`adb
+  devices` فارغ). فسلوك العزل/الـrenderer، وقبول DND، وبقاء `setprop` بعد إقلاع حقيقي، وكشف وحدة
+  في `modules_update`، ونافذة الجزيرة بعد إقلاع — **كلّها تحتاج جهازًا** ولا يُقال «تعمل».
+- **(ب) المراجعة المستقلة للسلامة لم تُجرَ**؛ تحتاج تبديل المالك إلى نموذج غير المنفّذ (§2).
+- **(ج) البند ٥ إصلاحٌ لا إعادة تصميم:** لا نصّ تصميم جديد من المالك، والجولة أبقت التبويبات الثلاثة
+  والمعاينة الحيّة كما هي (ADR-18). إعادةُ التصميم تحتاج كلمته.
+- **(د) تغيير سلوك مقصود:** الجزيرة صارت **مطفأة افتراضيًّا** لمن لم يفعّلها؛ ومن كانت نيته القديمة
+  محفوظة تُنقل إلى المحرّك الجديد في الإقلاع أوّل فتح (لا يُترك بمحرّكين ولا بلا جزيرة).
+- **(هـ) DND:** التحقّق المحدود يضيف حتى ~١٫٢ ث على خيط المراقبة (لا خيط الواجهة) عند الفشل، وهو
+  سقف مقصود لا حلقة.
+
+**NEXT:** (١) نتيجة CI أعلاه؛ إن خضراء فالحزم جاهزة و`testReleaseUnitTest` مقيس. (٢) على جهاز: ملفّ
+GPU مع لعبة في المقدّمة · مفتاح Wi‑Fi/البيانات الحيّ · DND بصلاحية سياسة وبلاها · محرّر الإعدادات
+بعد إقلاع · وحدة تمويه في `modules_update` · الجزيرة بعد إقلاع مع/بدون وصولية. (٣) مراجعة سلامة
+مستقلة على الـdiff. (٤) إن أراد المالك إعادة تصميم الجزيرة، يُطلب منه النصّ الحرفي أولًا.

@@ -13,6 +13,22 @@
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
     <!--
+      قراءة حالة Wi-Fi وبيانات الجوال **حيّةً** في لوحة Game Turbo (`PanelToggles`):
+      - `ACCESS_WIFI_STATE`: `WifiManager.isWifiEnabled()` — بدل مفتاح `wifi_on` المخزَّن وحده.
+      - `ACCESS_NETWORK_STATE`: `TelephonyManager.isDataEnabled()` للشريحة الافتراضية — بدل
+        `mobile_data` القديم الذي لا يتبع الشريحة على الأجهزة متعددة الشرائح.
+      وكلتاهما **عاديّة** تُمنح عند التثبيت. وكانتا تصلان ضمْنًا من مكتبة (ظهرتا في المانيفست المدموج
+      بلا إعلان في المصدر)؛ والإعلان الصريح يمنع أن يقطعهما تحديث تبعية صامتًا فتعود القراءة إلى
+      المفتاح المخزَّن بلا أن يظهر ذلك في البناء.
+      و`ACCESS_NOTIFICATION_POLICY` تُعلن **أهلية** التطبيق لطلب «الوصول إلى عدم الإزعاج» من الإعدادات؛
+      وهي لا تمنح الوصول بذاتها، بل تجعل مسار `NotificationManager.setInterruptionFilter` ممكنًا بعد
+      منح المستخدم (ولهذا يفحصه `DndControl` قبل كل كتابة). والمسار الافتراضي يبقى
+      `cmd notification set_dnd` بجذر/Shizuku، و`settings put global zen_mode` ممنوع لأنه يُردّ.
+    -->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
+    <!--
       `MODIFY_AUDIO_SETTINGS` صلاحية **عادية** (لا نافذة إذن): يمنحها النظام عند التثبيت، وهي شرط
       إنشاء مؤثّرات `android.media.audiofx.*` والتحكّم بها — وقسم `AQ-01` يقيس بها قبول المزج
       العامّ، وأقسام `AQ-02`…`AQ-05` تكتب بها فيه. **ولا تُطلب بدلًا من `RECORD_AUDIO`:** ذاك للإذن

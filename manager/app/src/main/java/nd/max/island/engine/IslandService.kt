@@ -49,10 +49,14 @@ class IslandService : Service() {
 
         val o = IslandOverlay(this, WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY)
         fallback = o
+        // **ونافذة الاحتياط تتبع المفتاح لا الصلاحية وحدها:** كانت تُعرض متى وُجدت صلاحية
+        // الرسم ولو كانت الجزيرة مطفأة — فخدمةٌ عادت للعمل تترك نافذةً لا يريدها المستخدم.
+        // والشرط الآن ثلاثة معًا: مفتاحٌ مفتوح، وبلا استضافة وصولية، وصلاحية رسم.
         scope.launch {
-            IslandA11yService.connected.collect { a11y ->
-                if (a11y || !Perms.overlay(this@IslandService)) o.hide() else o.show()
-            }
+            combine(IslandSettings.enabled, IslandA11yService.connected) { on, a11y -> on && !a11y }
+                .collect { visible ->
+                    if (visible && Perms.overlay(this@IslandService)) o.show() else o.hide()
+                }
         }
         running.value = true
     }

@@ -3,21 +3,26 @@
  * Proprietary and confidential — not licensed for use, copying, or distribution
  * without prior written permission from the copyright holder.
  *
-حالة محرّر الإعدادات: البحث والتصنيف، والتعديل بإثبات، وتاريخ يسمح بالرجوع. */
+ * حالة محرّر الإعدادات: البحث والتصنيف، والتعديل بإثبات، وتاريخ يسمح بالرجوع. */
 
 package nd.max.ui.viewmodel
 
+import android.app.Application
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import nd.max.ui.util.SetEditBootStore
 import nd.max.ui.util.SetEditCategory
 import nd.max.ui.util.SetEditItem
+import nd.max.ui.util.SetEditPersistence
 import nd.max.ui.util.SetEditUtil
+import nd.max.ui.util.SetEditWriteOutcome
+import nd.max.ui.util.setEditPersistenceOf
 
 enum class SetEditAction { CREATED, MODIFIED, DELETED }
 
@@ -37,7 +42,23 @@ data class SetEditHistoryEntry(
     val previousValue: String? = null
 )
 
-class SetEditViewModel : ViewModel() {
+/**
+ * يقود الشاشة، **ولا يدّعي حفظًا بلا قراءة**.
+ *
+ * والفرق عن السابق في ثلاثة مواضع، وكلّها من عطب «لا تبقى بعد الإقلاع»:
+ *
+ * 1. `SetEditUtil.set` صار يُعيد [SetEditWriteOutcome] لا `Boolean`: `APPLIED` بعد قراءة مطابقة،
+ *    و`READ_ONLY` لخصائص `ro.*`، و`SENT` لرسائل التحكّم التي لا حالة لها، و`NOT_HONOURED` حين
+ *    يقبل الأمر ثم تختلف القراءة.
+ * 2. الخصيصة العاديّة (لا `persist.*`) تُسجَّل في [SetEditBootStore] **بعد** `APPLIED` وحدها،
+ *    فيعيدها `PersistRestorer` بعد الإقلاع — لأن خدمة الخصائص لا تحفظها.
+ * 3. حذف خصيصة صار يعني «أوقف إعادتها بعد الإقلاع»؛ فلا زرّ يفشل بلا بديل، ولا قيمة تُعاد بلا
+ *    طريق للتخلّص منها.
+ *
+ * و[AndroidViewModel] لأن الخطة تعيش في تخزين التطبيق الخاصّ (‏SharedPreferences) لا في خصائص
+ * النظام، ولا يصحّ تمرير سياق عبر كل دالة.
+ */
+class SetEditViewModel(application: Application) : AndroidViewModel(application) {
 
     /** null = "All categories" tab. */
     var selectedCategory by mutableStateOf<SetEditCategory?>(null)
@@ -112,7 +133,7 @@ class SetEditViewModel : ViewModel() {
      * إرجاع مفتاح إلى قيمته السابقة مباشرةً — نفس مسار الكتابة الواحد ([SetEditUtil.set])،
      * فتسجيل اليوميّة لا يختلف عن أي تعديل آخر.
      */
-    fun revert(key: String, resultLabel: (Boolean, String) -> String) {
+    fun revert(key: String, resultLabel: (SetEditWriteOutcome, String) -> String) {
         val previous = previousValueOf(key) ?: return
         val item = items.firstOrNull { it.key == key } ?: return
         saveItem(item, previous, resultLabel)
@@ -133,20 +154,42 @@ class SetEditViewModel : ViewModel() {
         }
     }
 
-    fun saveItem(item: SetEditItem, newValue: String, resultLabel: (Boolean, String) -> String) {
+    /**
+     * حفظ قيمة — **والحكم من نتيجة الكتابة لا من إغلاق الورقة**.
+     *
+     * ولا تُسجَّل الخصيصة في خطة الإقلاع إلا إذا كانت `UNTIL_REBOOT` ونتيجتها `APPLIED`: تسجيل
+     * قيمة لم تُقرأ يعني إعادة قيمة غير التي رآها المستخدم عند الإقلاع التالي.
+     */
+    fun saveItem(item: SetEditItem, newValue: String, resultLabel: (SetEditWriteOutcome, String) -> String) {
         viewModelScope.launch(Dispatchers.IO) {
-            val ok = SetEditUtil.set(item.category, item.key, newValue)
-            if (ok) {
-                history = history + SetEditHistoryEntry(action = SetEditAction.MODIFIED, item = item.copy(value = newValue), previousValue = item.value)
+            val outcome = SetEditUtil.set(item.category, item.key, newValue)
+            val accepted = outcome == SetEditWriteOutcome.APPLIED || outcome == SetEditWriteOutcome.SENT
+            if (accepted) {
+                rememberForBoot(item.category, item.key, newValue, outcome)
+                history = history + SetEditHistoryEntry(
+                    action = SetEditAction.MODIFIED,
+                    item = item.copy(value = newValue),
+                    previousValue = item.value
+                )
                 refresh()
             }
-            withContext(Dispatchers.Main) { actionResult = (if (ok) "ok:" else "err:") + resultLabel(ok, item.key) }
+            withContext(Dispatchers.Main) {
+                actionResult = (if (accepted) "ok:" else "err:") + resultLabel(outcome, item.key)
+            }
         }
     }
 
+    /**
+     * حذف: لـ`settings` يمحو المفتاح، وللخصائص **يُلغي إعادتها بعد الإقلاع** — وهو الفعل الوحيد
+     * الممكن، فخصائص أندرويد لا تُحذف. وكانت الرسالة تقول «لا يمكن الحذف» بلا طريق بديل.
+     */
     fun deleteItem(item: SetEditItem, resultLabel: (Boolean, String) -> String) {
         viewModelScope.launch(Dispatchers.IO) {
-            val ok = SetEditUtil.delete(item.category, item.key)
+            val ok = if (item.category == SetEditCategory.ANDROID_PROP) {
+                SetEditBootStore.forget(getApplication(), item.key)
+            } else {
+                SetEditUtil.delete(item.category, item.key)
+            }
             if (ok) {
                 history = history + SetEditHistoryEntry(action = SetEditAction.DELETED, item = item)
                 refresh()
@@ -155,26 +198,52 @@ class SetEditViewModel : ViewModel() {
         }
     }
 
-    fun createItem(category: SetEditCategory, key: String, value: String, resultLabel: (Boolean, String) -> String) {
+    fun createItem(category: SetEditCategory, key: String, value: String, resultLabel: (SetEditWriteOutcome, String) -> String) {
         viewModelScope.launch(Dispatchers.IO) {
-            val ok = SetEditUtil.set(category, key, value)
-            if (ok) {
-                history = history + SetEditHistoryEntry(action = SetEditAction.CREATED, item = SetEditItem(key, value, category))
+            val outcome = SetEditUtil.set(category, key, value)
+            val accepted = outcome == SetEditWriteOutcome.APPLIED || outcome == SetEditWriteOutcome.SENT
+            if (accepted) {
+                rememberForBoot(category, key, value, outcome)
+                history = history + SetEditHistoryEntry(
+                    action = SetEditAction.CREATED,
+                    item = SetEditItem(key, value, category)
+                )
                 refresh()
             }
-            withContext(Dispatchers.Main) { actionResult = (if (ok) "ok:" else "err:") + resultLabel(ok, key) }
+            withContext(Dispatchers.Main) {
+                actionResult = (if (accepted) "ok:" else "err:") + resultLabel(outcome, key)
+            }
         }
     }
 
     /** إنشاء أو تعديل أو حذف — واليوميّة تفقد السطر المُرجَع إليه بعد نجاح الكتابة، فلا تَعِد بزرّ رجوع لا يجد ما يُرجِع. */
-    fun restoreFromHistory(entry: SetEditHistoryEntry, resultLabel: (Boolean, String) -> String) {
+    fun restoreFromHistory(entry: SetEditHistoryEntry, resultLabel: (SetEditWriteOutcome, String) -> String) {
         viewModelScope.launch(Dispatchers.IO) {
-            val ok = SetEditUtil.set(entry.item.category, entry.item.key, entry.item.value)
-            if (ok) {
+            val outcome = SetEditUtil.set(entry.item.category, entry.item.key, entry.item.value)
+            val accepted = outcome == SetEditWriteOutcome.APPLIED || outcome == SetEditWriteOutcome.SENT
+            if (accepted) {
+                rememberForBoot(entry.item.category, entry.item.key, entry.item.value, outcome)
                 history = history.filter { it.id != entry.id }
                 refresh()
             }
-            withContext(Dispatchers.Main) { actionResult = (if (ok) "ok:" else "err:") + resultLabel(ok, entry.item.key) }
+            withContext(Dispatchers.Main) {
+                actionResult = (if (accepted) "ok:" else "err:") + resultLabel(outcome, entry.item.key)
+            }
         }
+    }
+
+    /**
+     * الخصيصة العاديّة تُسجَّل بعد قراءة مطابقة وحدها. و`persist.*` و`settings` لا تُسجَّلان:
+     * النظام يحفظهما، وإعادة كتابتهما بعد الإقلاع تصادم مالكًا حيًّا (خدمة أو مستخدمًا) بلا سبب.
+     */
+    private fun rememberForBoot(
+        category: SetEditCategory,
+        key: String,
+        value: String,
+        outcome: SetEditWriteOutcome,
+    ) {
+        if (outcome != SetEditWriteOutcome.APPLIED) return
+        if (setEditPersistenceOf(category, key) != SetEditPersistence.UNTIL_REBOOT) return
+        SetEditBootStore.record(getApplication(), key, value)
     }
 }

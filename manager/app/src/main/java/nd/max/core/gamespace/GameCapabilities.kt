@@ -36,7 +36,11 @@ enum class GameFeature(val requires: PrivilegeLevel) {
     /** `svc data` عبر المسار الموحَّد. */
     MOBILE_DATA_TOGGLE(PrivilegeLevel.SHIZUKU),
 
-    /** `settings put global zen_mode` عبر المسار الموحَّد. */
+    /**
+     * «عدم الإزعاج» عبر `cmd notification set_dnd` (‏Android 11+) على المسار الموحَّد، أو
+     * `NotificationManager.setInterruptionFilter` إن مُنحت صلاحية سياسة الإشعارات.
+     * و`settings put global zen_mode` **ليس** مسارًا: `ZenModeHelper` يردّه (انظر `DndControl`).
+     */
     DND_TOGGLE(PrivilegeLevel.SHIZUKU),
 
     /** `screencap` عبر المسار الموحَّد. */

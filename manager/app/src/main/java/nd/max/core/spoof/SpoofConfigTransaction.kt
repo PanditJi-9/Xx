@@ -75,12 +75,49 @@ class SpoofConfigTransaction @Inject constructor(
         path(engine) // reject any non-allowlisted target before root access
         if (!SharedHardwareOwnershipStore.isConfigured()) return SpoofEngineReason.STORE_UNCONFIGURED
         if (!PrivilegeManager.cachedRootGranted() && (!requestRoot || !PrivilegeManager.requestRoot())) return SpoofEngineReason.ROOT_REQUIRED
-        val dir = "/data/adb/modules/$engine"
-        SpoofEngineGate.identityReason(RootFileAccess.read("$dir/module.prop"), engine)?.let { return it }
+        val dir = moduleDir(engine)
+        val identity = SpoofEngineGate.identityReason(RootFileAccess.read("$dir/module.prop"), engine)
+        if (identity != null) {
+            // التثبيت/التحديث الجديد يُوضع في `modules_update` حتى الإقلاع لا في `modules`.
+            // فقراءة المسار المباشر وحده كانت تُعلن «الوحدة غائبة» عن وحدةٍ ثُبِّتت للتوّ.
+            SpoofEngineGate.stagedReason(RootFileAccess.read("${stagedDir(engine)}/module.prop"), engine)
+                ?.let { return it }
+            return identity
+        }
         return SpoofEngineGate.markerReason(
             SpoofEngineGate.markers.filterTo(mutableSetOf()) { RootFileAccess.exists("$dir/$it") },
         )
     }
+
+    /**
+     * قياس التشخيص — **قراءة فقط**، تُستدعى عند عرض الحالة لا عند كل كتابة.
+     *
+     * وحدّها: `module.prop` يُقرأ مرّة أخرى بعد [eligibility]، فالتكلفة قراءتان إضافيتان في حالة
+     * الفشل وحدهما. وهذا مقصود: السطر يجب أن يحمل ما قيس لا ما استُنتج من الرمز.
+     */
+    internal fun probe(engine: String, reason: SpoofEngineReason): EngineProbe {
+        path(engine)
+        val dir = moduleDir(engine)
+        val staged = stagedDir(engine)
+        val moduleProp = RootFileAccess.read("$dir/module.prop")
+        val stagedProp = RootFileAccess.read("$staged/module.prop")
+        return EngineProbe(
+            engine = engine,
+            reason = reason,
+            rootGranted = PrivilegeManager.cachedRootGranted(),
+            moduleDirPresent = RootFileAccess.exists(dir),
+            modulePropReadable = moduleProp != null,
+            moduleIdValue = SpoofEngineGate.idValue(moduleProp),
+            stagedDirPresent = RootFileAccess.exists(staged),
+            stagedPropReadable = stagedProp != null,
+            // «لم يُقرأ» ليس «مطابق»: `identityReason(null, …)` تعيد سبب الغياب، فتُقلب إلى
+            // `true` لو كُتبت مباشرة — والسطر التشخيصيّ كان يقول `staged_id=1` عن ملفّ لم يُقرأ.
+            stagedIdMatches = stagedProp != null && SpoofEngineGate.identityReason(stagedProp, engine) == null,
+        )
+    }
+
+    private fun moduleDir(engine: String): String = "/data/adb/modules/$engine"
+    private fun stagedDir(engine: String): String = "/data/adb/modules_update/$engine"
 
     fun apply(engine: String, original: String, target: String): SpoofEngineWrite = transaction.apply(engine, original, target)
     fun restore(engine: String): SpoofEngineWrite = transaction.restore(engine)

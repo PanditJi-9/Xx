@@ -44,11 +44,13 @@ import android.view.Display
 import android.provider.Settings
 import android.media.AudioManager
 import android.net.wifi.WifiManager
+import kotlinx.coroutines.runBlocking
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import nd.max.core.atlas.AtlasControlTarget
 import nd.max.core.daemon.DaemonSupervisor
+import nd.max.core.gamespace.DndControl
 import nd.max.core.gamespace.PerAppSessionRules
 import nd.max.core.gamespace.SidePanelArmed
 import nd.max.core.diagnostics.DeviceFacts
@@ -1567,6 +1569,23 @@ object AppMonitor {
         } catch (_: Exception) {}
     }
 
+    /**
+     * كود خروج أمر الصدفة — للحكم على كتابة لا يكفي فيها «لم يرمِ استثناءً».
+     *
+     * والفرق مقيس في عطب «عدم الإزعاج»: `settings put global zen_mode 1` كان يخرج بصفر
+     * (مزوّد الإعدادات قبله) بينما `ZenModeHelper` يردّه في اللحظة التالية — فرمز الخروج
+     * وحده لا يقول إن الحالة تغيّرت. ويُستعمل هنا مع [DndControl] الذي يقرأ بعد الكتابة.
+     */
+    private fun shellExit(cmd: String): Int = try {
+        val process = Runtime.getRuntime().exec(arrayOf("sh", "-c", cmd))
+        process.waitFor()
+        val code = process.exitValue()
+        process.destroy()
+        code
+    } catch (_: Exception) {
+        -1
+    }
+
     private fun shellRead(cmd: String): String {
         return try {
             val p = Runtime.getRuntime().exec(arrayOf("sh", "-c", cmd))
@@ -2195,9 +2214,14 @@ object AppMonitor {
         // elsewhere in this project: try the API, fall back to the `settings` shell
         // command (a legitimate caller, so it works even when the API path doesn't),
         // and never let one failing read take the rest of the function down with it.
-        savedZenMode = runCatching {
-            systemContext?.contentResolver?.let { Settings.Global.getInt(it, "zen_mode", 0) }
-        }.getOrNull() ?: shellRead("settings get global zen_mode").toIntOrNull()
+        // **خط الأساس يُلتقط مرّة واحدة لكل جلسة**، لا عند كل تطبيق. وكان يُعاد التقاطه، فإعادة
+        // تطبيق داخل الجلسة نفسها تقرأ النمط الذي كتبناه نحن (1) وتنسى الأساس الحقيقي (0) — فيبقى
+        // «عدم الإزعاج» مفعّلًا بعد الخروج. والتصفير في مسار التراجع وحده.
+        if (savedZenMode == null) {
+            savedZenMode = runCatching {
+                systemContext?.contentResolver?.let { Settings.Global.getInt(it, "zen_mode", 0) }
+            }.getOrNull() ?: shellRead("settings get global zen_mode").toIntOrNull()
+        }
         savedPeakRefreshRate = runCatching {
             systemContext?.contentResolver?.let { Settings.System.getString(it, "peak_refresh_rate") }
         }.getOrNull()
@@ -2525,12 +2549,14 @@ object AppMonitor {
             }
         }.onFailure { AppMonitorLogger.e("cpu_boost knob failed for '$pkgName' sw=$currentSwitchId", it) }
 
-        // ── «عدم الإزعاج أثناء اللعب»: كتابة **متحقَّقة** لا وعد بالكتابة ────────────────────────
+        // ── «عدم الإزعاج أثناء اللعب»: الكتابة التي يحترمها النظام، لا التي يردّها ─────────────────
         //
-        // وكانت الكتلة تكتب `zen_mode=1` وتُعلن النجاح بمجرّد ألّا يرمي النداء استثناءً: لا قراءة
-        // بعد الكتابة، ولا سطر في السجل، ولا تمييز بين «كُتب» و«قُبل ثم ردّه النظام» و«رُفض».
-        // ولذلك لم يحمل ملف سجل المستخدم (POCO X6 Pro · ٢٠٢٦-١٠-١٥) أيّ سطر عن «عدم الإزعاج»،
-        // وكان سؤاله «هل فعّلته؟» بلا جواب في الملف نفسه.
+        // وكانت الكتلة تكتب `zen_mode=1` مباشرةً وتُعلن النجاح بمجرّد ألّا يرمي النداء استثناءً.
+        // والسبب الجذريّ ليس الصلاحية: `ZenModeHelper.SettingsObserver` يعيد كتابة `zen_mode` من
+        // حالته الداخلية كلّما رآه مختلفًا عنها، فالكتابة في الإعدادات **ترتدّ** دائمًا. وسجلّ
+        // جهاز المالك يحمل الأثر: `EVENT=LOG_HEADER … code=zen-mode-write-not-honoured`.
+        // فصار المسار [DndControl]: صلاحية سياسة إشعارات ⇒ `setInterruptionFilter`، وإلا
+        // `cmd notification set_dnd` (جذر/Shizuku)، وإلا إعلان أن لا مسار — بلا كتابة وهميّة.
         //
         // وحدّ ثانٍ لا يُخترق: **لا نخفض نمطًا أقوى**. `zen_mode` ليس منطقيًّا بل مدرّجًا
         // (1 = أولويات فقط، 2 = صمت تام، 3 = منبّهات فقط). فمن كان في «صمت تام» ثم فُتحت اللعبة،
@@ -2541,23 +2567,37 @@ object AppMonitor {
             if (dnd == "true") {
                 val before = getZenMode()
                 if (before != 0) {
-                    wasZenSet = false
+                    // ولا تُمسّ ملكية الجلسة: إن كنا نحن من رفع النمط ثم أُعيد التطبيق، يبقى
+                    // الاسترجاع واجبًا عند الخروج؛ وتصفيرها هنا كان يترك «عدم الإزعاج» عالقًا.
                     noteHardware("dnd_on_gaming", Outcome.SKIPPED, "zen-mode-already-on", "1", before.toString())
                 } else {
-                    wasZenSet = true
-                    // النداء الأول عبر الإعدادات، والثاني عبر shell — نفس نمط `zen_mode` في
-                    // [restoreSystemSettingWithShellFallback]: provider الإعدادات يرفض المتصلات من
-                    // الخلفية على بعض الرومات بلا `WRITE_SECURE_SETTINGS`، ومسار shell ينجح.
-                    val apiOk = runCatching {
-                        systemContext?.contentResolver?.let { Settings.Global.putInt(it, "zen_mode", 1) } == true
-                    }.getOrDefault(false)
-                    if (!apiOk) shellExec("settings put global zen_mode 1")
-                    // والحكم **من قراءة** عبر مدير الإشعارات — نفس المصدر الذي يُبنى عليه سطر
-                    // الحالة (`zenMode` في `AppStatusProtocol`)، فلا يُقال «طُبِّق» بلا دليل يُقرأ.
+                    // خيط المراقبة متزامن، و`runBlocking` هنا لا يحجب الواجهة (لا واجهة في هذه
+                    // العملية)؛ والانتظار محدود (١٫٢ ث) داخل `DndControl` نفسه.
+                    val verdict = runBlocking {
+                        DndControl.apply(
+                            zen = 1,
+                            policy = systemContext?.let { DndControl.notificationManager(it) },
+                            shell = { command ->
+                                if (shellExit(command) == 0) DndControl.ShellVerdict.RAN
+                                else DndControl.ShellVerdict.FAILED
+                            },
+                            read = { getZenMode() },
+                        )
+                    }
+                    wasZenSet = verdict == DndControl.Verdict.APPLIED
                     val after = getZenMode()
-                    when {
-                        after != 0 -> noteHardware("dnd_on_gaming", Outcome.APPLIED, "zen-mode-set", "1", after.toString())
-                        else -> noteHardware("dnd_on_gaming", Outcome.NOT_VERIFIED, "zen-mode-write-not-honoured", "1", "0")
+                    when (verdict) {
+                        DndControl.Verdict.APPLIED ->
+                            noteHardware("dnd_on_gaming", Outcome.APPLIED, "zen-mode-set", "1", after.toString())
+
+                        DndControl.Verdict.UNSUPPORTED ->
+                            noteHardware("dnd_on_gaming", Outcome.UNSUPPORTED, "zen-mode-no-real-path", "1", after.toString())
+
+                        // لا طبقة تنفيذ (Refused) أو نُفِّذت فلم تُحترم: الحصيلة واحدة — الطلب
+                        // ليس قائمًا، ولم يُغيَّر شيء. والرمز يبقى المفصَّل في القاموس.
+                        DndControl.Verdict.REFUSED,
+                        DndControl.Verdict.NOT_HONOURED ->
+                            noteHardware("dnd_on_gaming", Outcome.NOT_VERIFIED, "zen-mode-write-not-honoured", "1", after.toString())
                     }
                 }
             }
@@ -3085,11 +3125,28 @@ object AppMonitor {
         }.onFailure { AppMonitorLogger.e("revert: thermal_profile restore failed while leaving '$lastAppliedPkg' sw=$currentSwitchId", it) }
 
         runCatching {
-            savedZenMode?.let { value ->
-                val changed = runCatching {
-                    systemContext?.contentResolver?.let { Settings.Global.putInt(it, "zen_mode", value) } == true
-                }.getOrDefault(false)
-                if (!changed) shellExec("settings put global zen_mode $value")
+            // **ولا نكتب شيئًا إن لم نكن نحن من غيّر النمط.** كان الشرط غياب `null` وحده، فكل
+            // جلسة تنتهي تُعيد كتابة القيمة المحفوظة حتى لو لم نلمس «عدم الإزعاج» — فتمحو اختيار
+            // المستخدم إن غيّره أثناء اللعب. و`wasZenSet` صار يُضبط على `APPLIED` وحده، ويُتحقّق
+            // أن الحالة ما زالت هي التي كتبناها قبل الاسترجاع، فلا نُلغي تغييرًا ليس لنا.
+            val target = savedZenMode
+            if (wasZenSet && target != null && getZenMode() == 1) {
+                val verdict = runBlocking {
+                    DndControl.apply(
+                        zen = target,
+                        policy = systemContext?.let { DndControl.notificationManager(it) },
+                        shell = { command ->
+                            if (shellExit(command) == 0) DndControl.ShellVerdict.RAN
+                            else DndControl.ShellVerdict.FAILED
+                        },
+                        read = { getZenMode() },
+                    )
+                }
+                if (verdict != DndControl.Verdict.APPLIED) {
+                    AppMonitorLogger.w(
+                        "EVENT=DND_RESTORE_NOT_HONOURED target=$target verdict=$verdict sw=$currentSwitchId",
+                    )
+                }
             }
             savedZenMode = null
             wasZenSet = false

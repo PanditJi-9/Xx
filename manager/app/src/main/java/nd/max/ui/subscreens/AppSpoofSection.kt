@@ -155,10 +155,18 @@ internal fun AppSpoofSection(
             }
         }
 
-        // حال المحرّك تُقال قبل الفعل لا بعده (انظر تعليق الإصدار السابق: الرفض يُعرض باسمه).
-        engineConfig?.unavailableReason?.let { reason ->
-            MaxInfoStrip(text = engineRefusalText(reason), accent = MaxTone.Caution.content())
+        // حال المحرّك تُقال قبل الفعل لا بعده. وثلاث حالات كانت صامتة تمامًا: بلا جذر (غير مقيسة)،
+        // وملفّ الإعداد غائب، وملفّ موجود لا يُقرأ — وكلّها تنتهي برفض عند «تجهيز» بلا سبب ظاهر.
+        val engine = engineConfig
+        val engineReason = engine?.unavailableReason
+        val engineNotice = when {
+            engineReason != null -> engineRefusalText(engineReason)
+            engine != null && engine.engineAvailable == null -> stringResource(R.string.spoof_engine_unmeasured)
+            engine != null && engine.present == false -> stringResource(R.string.spoof_engine_config_missing)
+            engine != null && engine.parseable == false -> stringResource(R.string.spoof_engine_config_unreadable)
+            else -> null
         }
+        if (engineNotice != null) MaxInfoStrip(text = engineNotice, accent = MaxTone.Caution.content())
 
         // 2 — الانتحال: مطوٍ ومغلق افتراضيًا. الخيارات المجانية فقط.
         MaxSection(

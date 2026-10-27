@@ -978,7 +978,7 @@
     <string name="persist_dangerous_title">الخطير جدًا تلقائيًّا</string>
     <string name="persist_dangerous_desc">الذاكرة (zram) والذاكرة/UFS ومقاس الشاشة واللمس. يُغلق نفسه إن تكرّر إقلاع الجهاز.</string>
     <string name="persist_dangerous_bootloop">أُغلق التطبيق التلقائي للإعدادات الخطيرة جدًا بعد إقلاعات متكرّرة. أعد فتحه بعد أن يُقلع الجهاز طبيعيًّا.</string>
-    <string name="persist_coverage">يشمل: التراكبات واللوحات · مؤثرات الصوت · استوديو GPU · حاكم المعالج ومجدول الإدخال/الإخراج · الشبكة · أعلام المجدول · اللمس · الشاشة · الذاكرة (zram) · الذاكرة وUFS. وملفّات المحرّك والحرارة يعيدها المحرّك بالجذر من القيم المحفوظة نفسها.</string>
+    <string name="persist_coverage">يشمل: التراكبات واللوحات · مؤثرات الصوت · استوديو GPU · حاكم المعالج ومجدول الإدخال/الإخراج · الشبكة · أعلام المجدول · اللمس · الشاشة · الذاكرة (zram) · الذاكرة وUFS · خصائص عُدِّلت في محرّر الخصائص. وملفّات المحرّك والحرارة يعيدها المحرّك بالجذر من القيم المحفوظة نفسها.</string>
     <string name="persist_note">لا شيء يُفرض على الجهاز كله: ملفّات كل لعبة تعود عند تشغيلها التالي، وما يرفضه الجهاز أو الصلاحيات يُترك بسبب مكتوب.</string>
     <string name="settings_home_section">الشاشة الرئيسية</string>
     <string name="settings_navigation_section">التنقل</string>
@@ -1638,6 +1638,15 @@
     <string name="setedit_msg_create_failed">تعذّر إنشاء %1$s</string>
     <string name="setedit_msg_restored">اسْتُعيد %1$s</string>
     <string name="setedit_msg_restore_failed">تعذّرت استعادة %1$s</string>
+    <string name="setedit_msg_read_only">%1$s خاصيّة للقراءة فقط؛ لم يتغيّر شيء</string>
+    <string name="setedit_msg_invalid_key">%1$s مفتاح غير صالح</string>
+    <string name="setedit_msg_not_honoured">كُتب %1$s لكن الجهاز ما زال يعرض قيمة أخرى</string>
+    <string name="setedit_msg_sent">أُرسل %1$s؛ ولا حالة مقروءة له</string>
+    <string name="setedit_msg_override_cleared">لن يُعاد تطبيق %1$s بعد إعادة التشغيل</string>
+    <string name="setedit_delete_prop_confirm_desc">خصائص أندرويد لا تُحذف. هذا يزيل القيمة المحفوظة التي يعيد MaxManager تطبيقها بعد الإقلاع؛ وتبقى القيمة الحالية حتى الإقلاع التالي.</string>
+    <string name="setedit_persist_read_only_desc">للقراءة فقط: أندرويد يثبّت خصائص ro.* عند الإقلاع، ولا يمكن تغييرها أثناء التشغيل.</string>
+    <string name="setedit_persist_until_reboot">تُطبَّق الآن. ومع تفعيل «حفظ خياراتك وتطبيقها بعد إعادة التشغيل» يعيد MaxManager تطبيقها بعد الإقلاع التالي.</string>
+    <string name="setedit_persist_control">رسالة تحكّم: تُسلَّم الآن ولا تُعاد عند الإقلاع.</string>
     <string name="logsviewer_title">وحدة السجل</string>
     <string name="logsviewer_menu_desc">بث logcat حي مع تصفية وبحث وتصدير</string>
     <string name="logsviewer_search_hint">ابحث في الوسم أو الرسالة</string>

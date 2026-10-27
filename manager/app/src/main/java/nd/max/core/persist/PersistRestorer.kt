@@ -34,16 +34,26 @@ import nd.max.core.hardware.SystemDevfreqCeilingAccess
 import nd.max.core.hardware.TouchControlBackend
 import nd.max.core.hardware.ZramHardwareBackend
 import nd.max.core.platform.PropertyUtils
+import nd.max.island.core.IslandBootRestore
+import nd.max.island.core.IslandControl
+import nd.max.island.core.IslandSettings
+import nd.max.island.core.Perms
+import nd.max.island.engine.IslandA11yService
+import nd.max.island.engine.IslandService as IslandEngine
 import nd.max.service.AudioEffectService
 import nd.max.service.FpsOverlayService
 import nd.max.service.GamePanelService
-import nd.max.service.IslandService
+import nd.max.service.IslandService as LegacyIsland
 import nd.max.service.ProcessOverlayService
 import nd.max.ui.util.AudioEffectPrefs
 import nd.max.ui.util.FpsOverlayPrefs
 import nd.max.ui.util.GamePanelPrefs
 import nd.max.ui.util.IslandPrefs
 import nd.max.ui.util.ProcessOverlayPrefs
+import nd.max.ui.util.SetEditBootStore
+import nd.max.ui.util.SetEditCategory
+import nd.max.ui.util.SetEditUtil
+import nd.max.ui.util.SetEditWriteOutcome
 
 /**
  * مُشغّل الاستعادة — **جولة واحدة، وفيها يُقاس كل بند على حدة**.
@@ -58,8 +68,9 @@ import nd.max.ui.util.ProcessOverlayPrefs
  *    الألعاب، ومحرّك الصوت. ولا يُقلع ما لم يُطلب: تفضيله المطفأ أو مجموعته الفارغة = `Skipped`
  *    بسبب مكتوب، لا خدمة أمامية بلا سبب.
  * 2. **مقابض يكتبها التطبيق** — تُعاد عبر مسارها الإنتاجيّ نفسه: بروتوكولات الشبكة، ومعاملات
- *    المجدول، واللمس، ودقّة/مقاس الشاشة، وحجم zram، ومدى الذاكرة/UFS. والكتابة تُقاس بقراءة
- *    بعدها، وما لم يُقرأ يُعلَن `Failed` بسببه — لا نجاحًا بلا دليل.
+ *    المجدول، واللمس، ودقّة/مقاس الشاشة، وحجم zram، ومدى الذاكرة/UFS، وخصائص محرّر الخصائص
+ *    العاديّة (‏`setprop` لا يحفظها النظام). والكتابة تُقاس بقراءة بعدها، وما لم يُقرأ يُعلَن
+ *    `Failed` بسببه — لا نجاحًا بلا دليل.
  * 3. **ما يعيده المحرّك بالجذر** — GPU Studio وخصائص الأداء العامة: يُقرأ الحيّ ويُقارَن
  *    بالمحفوظ، فإن طابقه فبرهانُ قراءة (`Applied`)، وإلا `Pending` بمعنى «المحرّك سيعيده» —
  *    ولا يُكتب من هنا بلا سبب، لأن للمقبض الواحد كاتبًا واحدًا.
@@ -115,16 +126,7 @@ object PersistRestorer {
                 }
             }
         },
-        Item("island") { app ->
-            val prefs = IslandPrefs.load(app)
-            if (!prefs.enabled) {
-                PersistStatus.Skipped to "disabled-by-user"
-            } else {
-                awaitService(app, needsOverlay = true, start = IslandService::start) {
-                    IslandService.isRunning
-                }
-            }
-        },
+        Item("island") { app -> restoreIsland(app) },
         Item("process_overlay") { app ->
             val prefs = ProcessOverlayPrefs.load(app)
             if (!prefs.enabled) {
@@ -163,6 +165,7 @@ object PersistRestorer {
         Item("display", dangerous = true) { restoreDisplay() },
         Item("zram", dangerous = true) { restoreZram() },
         Item("memory_ufs", dangerous = true) { app -> restoreMemoryUfs(app) },
+        Item("property_editor", dangerous = true) { app -> restoreSetEditProperties(app) },
     )
 
     /**
@@ -234,6 +237,70 @@ object PersistRestorer {
                 context.startForegroundService(intent)
             } else {
                 context.startService(intent)
+            }
+        }
+    }
+
+    /**
+     * الجزيرة — **محرّك واحد، ونيّة واحدة، ونقلٌ في الإقلاع لا في الشاشة وحدها**.
+     *
+     * ### العطب الذي يُصلحه
+     *
+     * كان هذا البند يُقلع `nd.max.service.IslandService` (المحرّك القديم) من `IslandPrefs`،
+     * والمحرّك الحاليّ (`nd.max.island.engine.IslandService`) لا يُقلعه أحد بعد الإقلاع.
+     * فنتيجتان بلا تفسير للمستخدم:
+     *
+     * 1. من لم يفتح شاشة الجزيرة بعد الترقية تعود له **الجزيرة القديمة** وحدها — محرّكٌ غير
+     *    الذي يراه في الشاشة.
+     * 2. ومن منح «الرسم فوق التطبيقات» وحده (بلا وصولية) **لا تعود له الجزيرة**، لأن النظام
+     *    يعيد ربط خدمة الوصولية وحدها بعد الإقلاع.
+     *
+     * ### والحدّ
+     *
+     * لا تُفتح إعدادات من بثّ إقلاع: مسار [IslandControl.start] يفتح شاشة الوصولية حين لا
+     * صلاحية، وذاك مقبول من نقرة مستخدم لا من الإقلاع. فالقرار يُتخذ أولًا ([IslandBootRestore]).
+     */
+    private suspend fun restoreIsland(app: Context): Pair<PersistStatus, String> {
+        IslandSettings.init(app)
+        // ١) النيّة القديمة تُنقل هنا أيضًا — لا عند فتح الشاشة وحدها.
+        val legacy = IslandPrefs.load(app)
+        val handover = IslandBootRestore.handover(
+            legacyActive = legacy.enabled || LegacyIsland.isRunning,
+            currentEnabled = IslandSettings.enabled.value,
+        )
+        if (handover.clearLegacy) {
+            if (LegacyIsland.isRunning) runCatching { LegacyIsland.stop(app) }
+            IslandPrefs.save(app, legacy.copy(enabled = false))
+        }
+        if (handover.enableCurrent && !IslandSettings.enabled.value) {
+            IslandSettings.enabled.value = true
+            IslandSettings.save()
+        }
+
+        // ٢) القرار من قياس واحد، ثم تنفيذ فرعٍ واحد.
+        return when (
+            IslandBootRestore.decide(
+                enabled = IslandSettings.enabled.value,
+                accessibilityConnected = IslandA11yService.connected.value,
+                accessibilityEnabled = Perms.accessibility(app),
+                overlayGranted = Settings.canDrawOverlays(app),
+                serviceRunning = IslandEngine.running.value,
+            )
+        ) {
+            IslandBootRestore.Step.SKIP_DISABLED -> PersistStatus.Skipped to "disabled-by-user"
+            IslandBootRestore.Step.ACCESSIBILITY_HOSTED -> PersistStatus.Applied to "accessibility-hosted"
+            IslandBootRestore.Step.ALREADY_RUNNING -> PersistStatus.Applied to "already-running"
+            // مقيس لا مأمول: الصلاحية ممنوحة لكن الربط لم يحدث بعد، فلا «Applied» بلا دليل.
+            IslandBootRestore.Step.WAIT_FOR_ACCESSIBILITY -> PersistStatus.Pending to "accessibility-not-bound"
+            IslandBootRestore.Step.SKIP_NO_PERMISSION -> PersistStatus.Skipped to "no-overlay-permission"
+            IslandBootRestore.Step.START_SERVICE -> {
+                IslandControl.start(app)
+                // تحقّق محدود كبقيّة الخدمات: محاولتان ثم حكم صريح، بلا حلقة.
+                for (wait in longArrayOf(900L, 2_100L)) {
+                    delay(wait)
+                    if (IslandEngine.running.value) return PersistStatus.Applied to "service-started"
+                }
+                PersistStatus.Failed to "service-did-not-start"
             }
         }
     }
@@ -546,6 +613,44 @@ object PersistRestorer {
             applied > 0 -> PersistStatus.Applied to "read-back-ok"
             refused > 0 -> PersistStatus.Skipped to "range-no-longer-offered"
             gone > 0 -> PersistStatus.Skipped to "device-gone"
+            else -> PersistStatus.Skipped to "nothing-saved"
+        }
+    }
+
+    /**
+     * خصائص محرّر الخصائص — **إعادة الخصيصة العاديّة وحدها، وبعد قراءة**.
+     *
+     * وخدمة خصائص أندرويد لا تحفظ إلا `persist.*` في `/data/property/persistent_properties`؛ وما
+     * عداها يعيش في الذاكرة ويسقط بالإقلاع. والخادم/المحرّك لا يعرف خصائص حرّرها المستخدم بيده،
+     * فلا مسار آخر يعيدها؛ ولهذا تُسجَّل عند تعديلها ([SetEditBootStore]) وتُعاد هنا.
+     *
+     * ولا تُعاد `settings`: النظام يحفظها، وإعادة كتابة مفتاح تملكه خدمة حيّة بعد الإقلاع تصادمٌ
+     * لا استعادة. ولا تُعاد `ro.*` (يثبّتها `init`) ولا `ctl.*` (رسائل تحكّم ذات أثر جانبيّ)؛
+     * والترميز نفسه يُسقطها عند القراءة دفاعًا عن خطة قديمة أو تالفة.
+     *
+     * وخصيصة غابت عن `getprop` بعد تحديث نظام تبقى في الخطة ولا تُحذف: قد تعود، والحذف الصامت
+     * يُفقد قرار المستخدم بلا سبب — كما في الذاكرة/UFS.
+     */
+    private fun restoreSetEditProperties(app: Context): Pair<PersistStatus, String> {
+        val entries = SetEditBootStore.load(app)
+        if (entries.isEmpty()) return PersistStatus.Skipped to "nothing-saved"
+        var applied = 0
+        var failed = 0
+        for (entry in entries) {
+            // قراءة أولى: القيمة نفسها ليست «كتابة ناجحة» بل «لا حاجة لكتابة».
+            if (SetEditUtil.readValue(SetEditCategory.ANDROID_PROP, entry.key)?.trim() == entry.value.trim()) {
+                applied++
+                continue
+            }
+            when (SetEditUtil.set(SetEditCategory.ANDROID_PROP, entry.key, entry.value)) {
+                SetEditWriteOutcome.APPLIED -> applied++
+                // SENT/READ_ONLY/INVALID_KEY لا تصل من الخطة (الترميز يرشّحها)، لكنها ليست نجاحًا.
+                else -> failed++
+            }
+        }
+        return when {
+            failed > 0 -> PersistStatus.Failed to "property-write-refused"
+            applied > 0 -> PersistStatus.Applied to "read-back-ok"
             else -> PersistStatus.Skipped to "nothing-saved"
         }
     }

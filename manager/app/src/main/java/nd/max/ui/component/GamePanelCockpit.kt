@@ -273,6 +273,10 @@ fun GamePanelCockpit(
     val gridScroll = rememberScrollState()
     val notes = remember { mutableStateListOf<String>() }
     val hasCellular = remember { PanelToggles.hasCellular(context) }
+    // لا مفتاح «عدم إزعاج» بلا مسار حقيقي: على Android 10 بلا صلاحية سياسة إشعارات لا مسار أصلًا.
+    val dndAvailable by produceState(false) {
+        value = withContext(Dispatchers.IO) { PanelToggles.dndAvailable(context) }
+    }
     val touchAvailable by produceState(false) { value = withContext(Dispatchers.IO) { PanelToggles.touchAvailable() } }
     val quickApps by produceState(emptyList<QuickApp>(), shelfPicks, shelfUses) {
         value = withContext(Dispatchers.IO) { PanelShelf.build(context, shelfPicks, shelfUses) }
@@ -596,10 +600,10 @@ fun GamePanelCockpit(
         // ── بلاطات التحكّم (كلها تكتب فعلًا): قائمة واحدة للتخطيطين العرضي والطولي
         val bypassOn = controls.bypass == BypassState.On
         val tiles = buildList {
-            add(CubeTileSpec(Icons.Rounded.Wifi, null, lWifi, wifi, onClick = { flip(lWifi, wifi, { wifi = it }) { PanelToggles.setWifi(it) } }))
-            if (hasCellular) add(CubeTileSpec(Icons.Rounded.Language, null, lData, mobile, onClick = { flip(lData, mobile, { mobile = it }) { PanelToggles.setData(it) } }))
+            add(CubeTileSpec(Icons.Rounded.Wifi, null, lWifi, wifi, onClick = { flip(lWifi, wifi, { wifi = it }) { PanelToggles.setWifi(context, it) } }))
+            if (hasCellular) add(CubeTileSpec(Icons.Rounded.Language, null, lData, mobile, onClick = { flip(lData, mobile, { mobile = it }) { PanelToggles.setData(context, it) } }))
             add(CubeTileSpec(null, refreshRateHz?.toString() ?: "Hz", refreshRateHz?.let { "$it Hz" } ?: lDefault, refreshRateHz != null, onClick = onCycleRefresh))
-            add(CubeTileSpec(Icons.Rounded.DoNotDisturbOn, null, lDnd, dnd, onClick = { flip(lDnd, dnd, { dnd = it }) { PanelToggles.setDnd(it) } }))
+            if (dndAvailable) add(CubeTileSpec(Icons.Rounded.DoNotDisturbOn, null, lDnd, dnd, onClick = { flip(lDnd, dnd, { dnd = it }) { PanelToggles.setDnd(context, it) } }))
             // البروفايلات ظاهرة دائمًا في الطولي وفي العرضي حين يُفتح العمود؛ وإلا تُختصر في بلاطة.
             if (!portrait && !leftOpen) {
                 add(CubeTileSpec(
@@ -739,7 +743,9 @@ fun GamePanelCockpit(
                     label = "GPU", value = PanelClockMath.mhz(clocks.gpuShownMhz) ?: MAX_VALUE_UNAVAILABLE, unit = "MHz",
                     level = clocks.gpuLevel, loadPct = clocks.gpuLoadPct, pill = if (dnd) lDnd else lNormal,
                     pillOpen = menu == CubeMenu.Notify,
-                    onPill = { menu = if (menu == CubeMenu.Notify) CubeMenu.None else CubeMenu.Notify },
+                    onPill = {
+                        if (dndAvailable) menu = if (menu == CubeMenu.Notify) CubeMenu.None else CubeMenu.Notify
+                    },
                     onPillBounds = { gpuPill = it },
                     description = String.format(fmtGpuFreq, gpuMaxTag ?: MAX_VALUE_UNAVAILABLE)
                 ),
@@ -785,7 +791,9 @@ fun GamePanelCockpit(
                     level = clocks.gpuLevel,
                     loadText = clocks.gpuLoadPct?.let { String.format(fmtLoad, it) },
                     pill = if (dnd) lDnd else lNormal,
-                    onPill = { menu = if (menu == CubeMenu.Notify) CubeMenu.None else CubeMenu.Notify },
+                    onPill = {
+                        if (dndAvailable) menu = if (menu == CubeMenu.Notify) CubeMenu.None else CubeMenu.Notify
+                    },
                     onPillBounds = { gpuPill = it },
                     description = String.format(fmtGpuFreq, gpuMaxTag ?: MAX_VALUE_UNAVAILABLE)
                 ),
@@ -836,7 +844,7 @@ fun GamePanelCockpit(
                 onSelect = { id ->
                     menu = CubeMenu.None
                     val want = id == "dnd"
-                    if (want != dnd) flip(lDnd, dnd, { dnd = it }) { PanelToggles.setDnd(it) }
+                    if (dndAvailable && want != dnd) flip(lDnd, dnd, { dnd = it }) { PanelToggles.setDnd(context, it) }
                 },
                 onDismiss = { menu = CubeMenu.None }
             )

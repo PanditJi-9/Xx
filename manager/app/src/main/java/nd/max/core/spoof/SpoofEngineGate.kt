@@ -73,4 +73,66 @@ internal object SpoofEngineGate {
         UPDATE in present -> SpoofEngineReason.ENGINE_UPDATE_PENDING
         else -> null
     }
+
+    /**
+     * تثبيتٌ أو تحديثٌ جديد يعيش في `modules_update` حتى الإقلاع — **فلا يُحكم بالغياب**.
+     *
+     * كان `eligibility` يقرأ `/data/adb/modules/<id>/module.prop` وحده، فوحدةٌ ثُبِّتت للتوّ
+     * (وهي في `modules_update` بالتصميم) تُقرأ «غائبة» وتُطلب إعادة تثبيتٍ لا معنى لها. وهذا
+     * مقيس من تصميم مديري الجذر: المجلّد المرحليّ يُدمج عند الإقلاع، والملفّ يُقرأ الآن.
+     *
+     * وحدّه: [stagedModuleProp] بلا سطر `id=` مطابق **ليس** دليلًا على أن محرّكنا هو المرحّل
+     * (قد تكون وحدة أخرى في الطابور)، فيُترك الحكم للسبب الأصليّ. والوسيط `null` يعني
+     * «لم يُقرأ» لا «غير موجود»؛ وكلاهما لا ينتج سببًا هنا.
+     */
+    fun stagedReason(stagedModuleProp: String?, engineId: String): SpoofEngineReason? =
+        if (stagedModuleProp != null && identityReason(stagedModuleProp, engineId) == null) {
+            SpoofEngineReason.ENGINE_UPDATE_PENDING
+        } else {
+            null
+        }
+
+    /** قيمة سطر `id=` الأول (بعد `=`)، أو `null` إن لم يُقرأ السطر. */
+    fun idValue(moduleProp: String?): String? = moduleProp?.lineSequence()
+        ?.map { it.trim() }
+        ?.firstOrNull { it.startsWith("id=") }
+        ?.substringAfter('=')
+        ?.takeIf { it.isNotEmpty() }
+
+    /**
+     * تشخيص المحرّك: **ما قيس فعلًا**، لا استنتاجًا من رمز الرفض.
+     *
+     * سؤال المالك المتكرّر «لماذا ظهرت الرسالة؟» كان بلا جواب في التصدير: الرمز يقول
+     * `ENGINE_MODULE_ABSENT` ولا يقول أيّ شرطٍ من شروطه الأربعة سقط. والسطر هنا يُجيب بالحقول
+     * نفسها التي حكمت: الجذر، وجود المجلّد، قراءة `module.prop`، سطر `id=`, وحالة التثبيت
+     * المرحليّ. وهو **للقراءة فقط** ولا يغيّر أي حكم.
+     */
+    fun probeLine(probe: EngineProbe): String = buildString {
+        append("EVENT=SPOOF_ENGINE_PROBE engine=").append(safe(probe.engine))
+        append(" reason=").append(probe.reason?.name ?: "OK")
+        append(" root=").append(if (probe.rootGranted) 1 else 0)
+        append(" dir=").append(if (probe.moduleDirPresent) 1 else 0)
+        append(" prop=").append(if (probe.modulePropReadable) 1 else 0)
+        append(" id=").append(probe.moduleIdValue?.let(::safe) ?: "none")
+        append(" staged_dir=").append(if (probe.stagedDirPresent) 1 else 0)
+        append(" staged_prop=").append(if (probe.stagedPropReadable) 1 else 0)
+        append(" staged_id=").append(if (probe.stagedIdMatches) 1 else 0)
+    }
+
+    /** قيمة دخيلة (سطر `module.prop`) لا تُكسر سطر السجل ولا تحمل فراغًا أو اقتباسًا. */
+    private fun safe(value: String): String =
+        value.replace(Regex("[^A-Za-z0-9_.:-]"), "_").take(64)
 }
+
+/** قياسات المحرّك كما قرأها [SpoofConfigTransaction] — لا حكم فيها بذاتها. */
+internal data class EngineProbe(
+    val engine: String,
+    val reason: SpoofEngineReason?,
+    val rootGranted: Boolean,
+    val moduleDirPresent: Boolean = false,
+    val modulePropReadable: Boolean = false,
+    val moduleIdValue: String? = null,
+    val stagedDirPresent: Boolean = false,
+    val stagedPropReadable: Boolean = false,
+    val stagedIdMatches: Boolean = false,
+)

@@ -779,6 +779,15 @@
     <string name="setedit_msg_create_failed">Couldn\'t create %1$s</string>
     <string name="setedit_msg_restored">Restored %1$s</string>
     <string name="setedit_msg_restore_failed">Couldn\'t restore %1$s</string>
+    <string name="setedit_msg_read_only">%1$s is read-only; nothing was changed</string>
+    <string name="setedit_msg_invalid_key">%1$s is not a valid key</string>
+    <string name="setedit_msg_not_honoured">%1$s was written, but the device still shows a different value</string>
+    <string name="setedit_msg_sent">%1$s was sent; it has no readable state</string>
+    <string name="setedit_msg_override_cleared">%1$s will no longer be re-applied after reboot</string>
+    <string name="setedit_delete_prop_confirm_desc">Android properties cannot be deleted. This removes the saved value MaxManager re-applies after reboot; the current value stays until the next boot.</string>
+    <string name="setedit_persist_read_only_desc">Read-only: Android sets ro.* properties during boot, and they cannot change while it runs.</string>
+    <string name="setedit_persist_until_reboot">Applies now. While “Preserve &amp; Restore settings” is on, MaxManager re-applies it after the next boot.</string>
+    <string name="setedit_persist_control">Control message: delivered now and never re-sent at boot.</string>
 
     <string name="logsviewer_title">Log Console</string>
     <string name="logsviewer_menu_desc">Live logcat stream with filtering, search, and export</string>
@@ -1787,7 +1796,7 @@
     <string name="persist_dangerous_title">Very dangerous settings automatically</string>
     <string name="persist_dangerous_desc">RAM (zram), memory/UFS, display size and touch. Turns itself off if the device restarts repeatedly.</string>
     <string name="persist_dangerous_bootloop">Automatic restore of very dangerous settings was turned off after repeated restarts. Turn it back on only after the device boots normally.</string>
-    <string name="persist_coverage">Covers overlays and panels · audio effects · GPU Studio · CPU governor &amp; I/O scheduler · network · scheduler flags · touch · display · RAM (zram) · memory &amp; UFS. Engine-owned profiles and thermal state are re-applied by the root engine from the same saved values.</string>
+    <string name="persist_coverage">Covers overlays and panels · audio effects · GPU Studio · CPU governor &amp; I/O scheduler · network · scheduler flags · touch · display · RAM (zram) · memory &amp; UFS · properties edited in the Property Editor. Engine-owned profiles and thermal state are re-applied by the root engine from the same saved values.</string>
     <string name="persist_note">Nothing is forced on the whole device: per-game profiles return on the game\'s next launch, and anything the device or permissions refuse is skipped with its reason.</string>
     <string name="settings_home_section">Home screen</string>
     <string name="settings_navigation_section">Navigation</string>

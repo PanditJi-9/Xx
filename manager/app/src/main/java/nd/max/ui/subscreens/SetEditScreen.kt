@@ -7,6 +7,7 @@
 
 package nd.max.ui.subscreens
 
+import android.content.res.Resources
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,6 +27,7 @@ import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.History
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.WarningAmber
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -42,6 +44,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
@@ -72,7 +76,10 @@ import nd.max.ui.design.MaxSwitchRow
 import nd.max.ui.mainscreens.SectionLoadingIndicator
 import nd.max.ui.util.SetEditCategory
 import nd.max.ui.util.SetEditItem
+import nd.max.ui.util.SetEditPersistence
+import nd.max.ui.util.SetEditWriteOutcome
 import nd.max.ui.util.isSensitiveSetEditKey
+import nd.max.ui.util.setEditPersistenceOf
 import nd.max.ui.util.setEditValueKind
 import nd.max.ui.util.SetEditValueKind
 import nd.max.ui.viewmodel.SetEditAction
@@ -125,12 +132,13 @@ fun SetEditScreen(
         onConfirm = {
             pendingDelete?.let { item ->
                 viewModel.deleteItem(item) { ok, key ->
-                    if (!ok && item.category == SetEditCategory.ANDROID_PROP) {
-                        resources.getString(R.string.setedit_msg_delete_unsupported)
-                    } else if (ok) {
-                        resources.getString(R.string.setedit_msg_deleted, key)
-                    } else {
-                        resources.getString(R.string.setedit_msg_delete_failed, key)
+                    when {
+                        item.category == SetEditCategory.ANDROID_PROP && ok ->
+                            resources.getString(R.string.setedit_msg_override_cleared, key)
+                        item.category == SetEditCategory.ANDROID_PROP ->
+                            resources.getString(R.string.setedit_msg_delete_unsupported)
+                        ok -> resources.getString(R.string.setedit_msg_deleted, key)
+                        else -> resources.getString(R.string.setedit_msg_delete_failed, key)
                     }
                 }
             }
@@ -224,25 +232,42 @@ fun SetEditScreen(
                 item = item,
                 previousValue = viewModel.previousValueOf(item.key),
                 onSave = { newValue ->
-                    viewModel.saveItem(item, newValue) { ok, key ->
-                        if (ok) resources.getString(R.string.setedit_msg_saved, key)
-                        else resources.getString(R.string.setedit_msg_save_failed, key)
+                    viewModel.saveItem(item, newValue) { outcome, key ->
+                        setEditResultMessage(
+                            resources = resources,
+                            outcome = outcome,
+                            key = key,
+                            appliedRes = R.string.setedit_msg_saved,
+                            failedRes = R.string.setedit_msg_save_failed,
+                        )
                     }
                     selectedItem = null
                 },
                 onRevert = { previous ->
-                    viewModel.saveItem(item, previous) { ok, key ->
-                        if (ok) resources.getString(R.string.setedit_msg_saved, key)
-                        else resources.getString(R.string.setedit_msg_save_failed, key)
+                    viewModel.saveItem(item, previous) { outcome, key ->
+                        setEditResultMessage(
+                            resources = resources,
+                            outcome = outcome,
+                            key = key,
+                            appliedRes = R.string.setedit_msg_saved,
+                            failedRes = R.string.setedit_msg_save_failed,
+                        )
                     }
                     selectedItem = null
                 },
                 onDelete = {
                     pendingDelete = item
+                    val content = if (item.category == SetEditCategory.ANDROID_PROP) {
+                        // خصيصة أندرويد لا تُحذف؛ والحذف هنا يعني «أوقف إعادتها بعد الإقلاع» —
+                        // فالنصّ يقول ذلك بدل وعد بحذف لا يقع.
+                        resources.getString(R.string.setedit_delete_prop_confirm_desc)
+                    } else {
+                        resources.getString(R.string.setedit_delete_confirm_desc) +
+                            if (isSensitiveSetEditKey(item.key)) "\n\n" + resources.getString(R.string.setedit_sensitive_warning) else ""
+                    }
                     deleteConfirmDialog.showConfirm(
                         title = resources.getString(R.string.setedit_delete_confirm_title, item.key),
-                        content = resources.getString(R.string.setedit_delete_confirm_desc) +
-                            if (isSensitiveSetEditKey(item.key)) "\n\n" + resources.getString(R.string.setedit_sensitive_warning) else "",
+                        content = content,
                         confirm = resources.getString(R.string.setedit_action_delete),
                         dismiss = resources.getString(R.string.no)
                     )
@@ -255,9 +280,14 @@ fun SetEditScreen(
         JournalSheet(
             entries = viewModel.journal,
             onRestore = { entry ->
-                viewModel.restoreFromHistory(entry) { ok, key ->
-                    if (ok) resources.getString(R.string.setedit_msg_restored, key)
-                    else resources.getString(R.string.setedit_msg_restore_failed, key)
+                viewModel.restoreFromHistory(entry) { outcome, key ->
+                    setEditResultMessage(
+                        resources = resources,
+                        outcome = outcome,
+                        key = key,
+                        appliedRes = R.string.setedit_msg_restored,
+                        failedRes = R.string.setedit_msg_restore_failed,
+                    )
                 }
             }
         )
@@ -266,9 +296,14 @@ fun SetEditScreen(
     CustomBottomSheet(visible = showAdd, onDismiss = { showAdd = false }) {
         AddSheet(
             onCreate = { category, key, value ->
-                viewModel.createItem(category, key, value) { ok, k ->
-                    if (ok) resources.getString(R.string.setedit_msg_created, k)
-                    else resources.getString(R.string.setedit_msg_create_failed, k)
+                viewModel.createItem(category, key, value) { outcome, k ->
+                    setEditResultMessage(
+                        resources = resources,
+                        outcome = outcome,
+                        key = k,
+                        appliedRes = R.string.setedit_msg_created,
+                        failedRes = R.string.setedit_msg_create_failed,
+                    )
                 }
                 showAdd = false
             }
@@ -422,6 +457,10 @@ private fun DetailSheet(
     var editValue by remember(item.key) { mutableStateOf(item.value) }
     val isSensitive = remember(item.key) { isSensitiveSetEditKey(item.key) }
     val kind = remember(item.value) { setEditValueKind(item.value) }
+    // التصنيف من المفتاح لا من نجاح الكتابة: `ro.*` لا يتغيّر أصلًا، والخصيصة العاديّة تحتاج
+    // إعادةً بعد الإقلاع — والورقة تقول ذلك قبل الضغط لا بعده.
+    val persistence = remember(item.category, item.key) { setEditPersistenceOf(item.category, item.key) }
+    val readOnly = persistence == SetEditPersistence.READ_ONLY
 
     Column(
         modifier = Modifier.fillMaxWidth().padding(horizontal = MaxSpace.gutter, vertical = MaxSpace.sm)
@@ -438,6 +477,32 @@ private fun DetailSheet(
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         Spacer(Modifier.height(MaxSpace.md))
+
+        when (persistence) {
+            SetEditPersistence.READ_ONLY -> PersistenceNote(
+                icon = Icons.Outlined.WarningAmber,
+                text = stringResource(R.string.setedit_persist_read_only_desc),
+                container = MaterialTheme.colorScheme.errorContainer,
+                content = MaterialTheme.colorScheme.onErrorContainer,
+            )
+
+            SetEditPersistence.UNTIL_REBOOT -> PersistenceNote(
+                icon = Icons.Outlined.Info,
+                text = stringResource(R.string.setedit_persist_until_reboot),
+                container = MaterialTheme.colorScheme.surfaceContainerHigh,
+                content = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+
+            SetEditPersistence.CONTROL -> PersistenceNote(
+                icon = Icons.Outlined.Info,
+                text = stringResource(R.string.setedit_persist_control),
+                container = MaterialTheme.colorScheme.surfaceContainerHigh,
+                content = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+
+            SetEditPersistence.PERSISTENT -> Unit
+        }
+        if (persistence != SetEditPersistence.PERSISTENT) Spacer(Modifier.height(MaxSpace.md))
 
         if (isSensitive) {
             Surface(
@@ -489,7 +554,8 @@ private fun DetailSheet(
                 title = stringResource(R.string.setedit_label_new_value),
                 subtitle = stringResource(R.string.setedit_boolean_hint),
                 checked = editValue.equals(item.booleanTrue, ignoreCase = true),
-                onCheckedChange = { on -> editValue = if (on) item.booleanTrue else item.booleanFalse }
+                onCheckedChange = { on -> editValue = if (on) item.booleanTrue else item.booleanFalse },
+                enabled = !readOnly
             )
             Spacer(Modifier.height(MaxSpace.xs))
         }
@@ -497,6 +563,7 @@ private fun DetailSheet(
         OutlinedTextField(
             value = editValue,
             onValueChange = { editValue = it },
+            enabled = !readOnly,
             label = { Text(stringResource(R.string.setedit_label_new_value)) },
             singleLine = true,
             shape = RoundedCornerShape(maxRadius(MaxRadius.control)),
@@ -515,6 +582,7 @@ private fun DetailSheet(
             }
             StudioButton(
                 onClick = { onSave(editValue) },
+                enabled = !readOnly,
                 modifier = Modifier.weight(1f),
                 shape = RoundedCornerShape(maxRadius(MaxRadius.control))
             ) {
@@ -647,6 +715,8 @@ private fun AddSheet(onCreate: (SetEditCategory, String, String) -> Unit) {
     var category by remember { mutableStateOf(SetEditCategory.GLOBAL) }
     var key by remember { mutableStateOf("") }
     var value by remember { mutableStateOf("") }
+    // مفتاح `ro.*` مكتوبًا بيد هنا لا يمكن أن ينجح؛ فالتنبيه يظهر قبل «إنشاء» لا بعده.
+    val readOnly = setEditPersistenceOf(category, key.trim()) == SetEditPersistence.READ_ONLY
     val categories = listOf(
         SetEditCategory.GLOBAL to stringResource(R.string.setedit_tab_global),
         SetEditCategory.SECURE to stringResource(R.string.setedit_tab_secure),
@@ -696,9 +766,19 @@ private fun AddSheet(onCreate: (SetEditCategory, String, String) -> Unit) {
         )
         Spacer(Modifier.height(MaxSpace.md))
 
+        if (readOnly) {
+            PersistenceNote(
+                icon = Icons.Outlined.WarningAmber,
+                text = stringResource(R.string.setedit_persist_read_only_desc),
+                container = MaterialTheme.colorScheme.errorContainer,
+                content = MaterialTheme.colorScheme.onErrorContainer,
+            )
+            Spacer(Modifier.height(MaxSpace.md))
+        }
+
         StudioButton(
             onClick = { onCreate(category, key.trim(), value) },
-            enabled = key.isNotBlank(),
+            enabled = key.isNotBlank() && !readOnly,
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(maxRadius(MaxRadius.control))
         ) {
@@ -707,3 +787,53 @@ private fun AddSheet(onCreate: (SetEditCategory, String, String) -> Unit) {
         Spacer(Modifier.height(MaxSpace.sm))
     }
 }
+
+/**
+ * سطر حقيقة عن بقاء القيمة — لا زخرفة: الغلاف واللون من الرموز القائمة، والنصّ من المفتاح.
+ *
+ * وموضعه قبل الحقل لا بعده، لأن السؤال «هل ستبقى؟» يُطرح قبل الكتابة لا بعد اكتشاف الإقلاع.
+ */
+@Composable
+private fun PersistenceNote(
+    icon: ImageVector,
+    text: String,
+    container: Color,
+    content: Color,
+) {
+    Surface(
+        color = container,
+        shape = RoundedCornerShape(maxRadius(MaxRadius.control)),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier.padding(MaxSpace.md),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(icon, contentDescription = null, tint = content)
+            Spacer(Modifier.width(MaxSpace.sm))
+            Text(text, style = MaterialTheme.typography.bodySmall, color = content)
+        }
+    }
+}
+
+/**
+ * ترجمة حكم الكتابة إلى رسالة — في موضع واحد، فالسطور الأربعة لا تختلف في معنى `APPLIED`.
+ * و`SENT` ليست `APPLIED`: رسالة التحكّم لا حالة تُقرأ لها، والرسالة تقول ذلك.
+ */
+private fun setEditResultMessage(
+    resources: Resources,
+    outcome: SetEditWriteOutcome,
+    key: String,
+    appliedRes: Int,
+    failedRes: Int,
+): String = resources.getString(
+    when (outcome) {
+        SetEditWriteOutcome.APPLIED -> appliedRes
+        SetEditWriteOutcome.SENT -> R.string.setedit_msg_sent
+        SetEditWriteOutcome.NOT_HONOURED -> R.string.setedit_msg_not_honoured
+        SetEditWriteOutcome.READ_ONLY -> R.string.setedit_msg_read_only
+        SetEditWriteOutcome.INVALID_KEY -> R.string.setedit_msg_invalid_key
+        SetEditWriteOutcome.REFUSED -> failedRes
+    },
+    key,
+)

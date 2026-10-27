@@ -66,7 +66,7 @@ class LogCodeGlossaryTest {
             "node-holds-request", "write-backoff", "write-verified", "no-touch-provider",
             "vendor-applied", "vendor-refused", "vendor-already-asked",
             // عدم الإزعاج أثناء اللعب
-            "zen-mode-set", "zen-mode-already-on", "zen-mode-write-not-honoured",
+            "zen-mode-set", "zen-mode-already-on", "zen-mode-write-not-honoured", "zen-mode-no-real-path",
             // اللوحة الجانبية: حصيلة مزامنة ملف القائمة
             "written", "already-in-sync", "write-refused", "write-unverified", "no-armed-games",
             "prefs-write-refused", "arm-sync-threw",
@@ -148,7 +148,7 @@ class LogCodeGlossaryTest {
             "goal-unmeasurable", "route-not-reviewed",
             // اللمس وعدم الإزعاج واللوحة الجانبية
             "no-touch-provider", TouchControlBackend.VENDOR_CONTRACT_REASON, "write-backoff",
-            "zen-mode-write-not-honoured", "write-refused", "write-unverified",
+            "zen-mode-write-not-honoured", "zen-mode-no-real-path", "write-refused", "write-unverified",
             "prefs-write-refused", "arm-sync-threw",
         )
 

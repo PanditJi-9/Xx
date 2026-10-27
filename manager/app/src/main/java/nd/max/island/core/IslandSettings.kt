@@ -161,7 +161,16 @@ object IslandSettings {
     }
 
     val onboarded = MutableStateFlow(false)  // has the setup screen been completed once?
-    val enabled = MutableStateFlow(true)     // has the user left the island switched on?
+
+    /**
+     * **نيّة المستخدم** — لا «هل الخدمة تعمل؟».
+     *
+     * والافتراضيّ **مطفأ**، لا `true` كما كان ميراثًا من الاستوديو: كنتيجةٍ كان مفتاح الشاشة
+     * يعرض «مطفأة» (لأنه يقرأ `running`)، بينما النيّة المخزونة مفعّلة — ففتحُ الشاشة وحدها
+     * يُشعل الجزيرة عبر التشغيل التلقائيّ، وبابُ الاستعادة بعد الإقلاع يُعيدها لمن لم يطلبها.
+     * ومن أطفأها يبقى مطفأً، ومن فعّلها صراحةً تُحفظ نيته فتعود.
+     */
+    val enabled = MutableStateFlow(false)
 
     fun init(ctx: Context) {
         if (prefs != null) return
@@ -228,7 +237,9 @@ object IslandSettings {
                 .apply()
         }
         onboarded.value = p.getBoolean("onboarded", false)
-        enabled.value = p.getBoolean("enabled", true)
+        // الافتراضيّ مطفأ: الجزيرة تراكبٌ فوق كل التطبيقات، فلا تُشعل بلا نيّة. ومن فعّلها
+        // صراحةً تحمل نيته `true` في المخزن فتعود بعد الإقلاع (انظر `IslandBootRestore`).
+        enabled.value = p.getBoolean("enabled", false)
     }
 
     fun save() {

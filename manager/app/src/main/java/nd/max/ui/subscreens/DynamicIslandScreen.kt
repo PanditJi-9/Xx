@@ -133,6 +133,7 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavController
 import kotlin.math.roundToInt
 import nd.max.R
+import nd.max.island.core.IslandBootRestore
 import nd.max.island.core.IslandControl
 import nd.max.island.core.IslandKind
 import nd.max.island.core.IslandSettings
@@ -292,12 +293,26 @@ fun DynamicIslandScreen(navController: NavController) {
     var resetConfirm by remember { mutableStateOf(false) }
 
     /* ---------- التشغيل/الإيقاف ---------- */
+    /**
+     * المحرّك القديم يُطفأ من **كلا طرفَي المفتاح**، لا من طرف التشغيل وحده.
+     *
+     * كان الإطفاء يستدعي `IslandControl.stop` وحده، فيبقى `nd.max.service.IslandService`
+     * يعمل إن كان حيًّا (محرّكان في جهاز واحد). والشاشة كانت تُطفئه في الترحيل عند أوّل فتح،
+     * فالعطب لا يظهر إلا إن أُطفئت الجزيرة قبل أن يصل الترحيل — وهو ما لا يجوز أن يعتمد
+     * على ترتيب آمن.
+     */
+    fun retireLegacyEngine() {
+        val legacy = IslandPrefs.load(ctx)
+        // الإيقاف نداء خدمة، وقد يرفضه النظام في حالة حدّية؛ لا يجوز أن يمنع ذلك إطفاء
+        // المحرّك الجديد أو تشغيله. والنيّة القديمة تُطفأ على أي حال.
+        if (IslandService.isRunning) runCatching { IslandService.stop(ctx) }
+        if (legacy.enabled) IslandPrefs.save(ctx, legacy.copy(enabled = false))
+    }
+
     fun setEnabled(on: Boolean) {
+        // مساران لا يعملان معًا: يُطوى القديم قبل أيّ قرار، تشغيلًا أو إطفاءً.
+        retireLegacyEngine()
         if (on) {
-            // مساران لا يعملان معًا: قبل تشغيل المحرّك الجديد يُوقف القديم وتُنزع «نيّته»
-            val legacy = IslandPrefs.load(ctx)
-            if (IslandService.isRunning) IslandService.stop(ctx)
-            if (legacy.enabled) IslandPrefs.save(ctx, legacy.copy(enabled = false))
             IslandControl.start(ctx)
         } else {
             IslandControl.stop(ctx)
@@ -313,14 +328,19 @@ fun DynamicIslandScreen(navController: NavController) {
 
     /* ---------- الترحيل من الجزيرة القديمة (مرة واحدة عند أول فتح) ----------
      * المحرّك السابق كان له مسار تشغيل مستقلّ تمامًا عن الاستوديو، فمن كان على الجزيرة
-     * القديمة لا يُترك بمحرّكين يعملان ولا بمحرّك لا يعمل: تُنقل النيّة للمحرّك الجديد. */
+     * القديمة لا يُترك بمحرّكين يعملان ولا بمحرّك لا يعمل: تُنقل النيّة للمحرّك الجديد.
+     * والقاعدة نفسها التي يُنفّذها باب الاستعادة بعد الإقلاع (`IslandBootRestore`): نيّة
+     * قديمة قائمة تُشعل الجديد وتُطفئ القديم، ونيّة غير قائمة لا تمسّ الجديد. */
     LaunchedEffect(Unit) {
         IslandSettings.onboarded.value = true
         IslandSettings.save()
         val legacy = IslandPrefs.load(ctx)
-        if (IslandService.isRunning || legacy.enabled) {
-            if (IslandService.isRunning) IslandService.stop(ctx)
-            IslandPrefs.save(ctx, legacy.copy(enabled = false))
+        val handover = IslandBootRestore.handover(
+            legacyActive = legacy.enabled || IslandService.isRunning,
+            currentEnabled = IslandSettings.enabled.value,
+        )
+        if (handover.clearLegacy) retireLegacyEngine()
+        if (handover.enableCurrent && !IslandSettings.enabled.value) {
             IslandSettings.enabled.value = true
             IslandSettings.save()
         }

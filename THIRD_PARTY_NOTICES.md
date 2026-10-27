@@ -95,4 +95,4 @@ python3 tools/license_audit.py --self-test    # يقيس الأداة نفسها
 
 - **COPG (مفردات الوسوم)** — `CopgTag.kt` يعيد صياغة **مفردات** وسوم الحزم الموصوفة في README المستودع (Apache-2.0)؛ **لا شيفرة منقولة**. الإسناد: AlirezaParsi/COPG (README الإصدار 6.8.0 وREADME أقدم منه، قُرئا 2026-10-04).
 
-- **COPG (بيانات كتالوج الأجهزة)** — `app/src/main/assets/spoof/device_catalog.json` مستخرَج من `module/COPG.json` (كتل `PACKAGES_*_DEVICE` فقط) في AlirezaParsi/COPG، فرع `JSON` عند `e1d7da6c24cb571c5d123a6f7c85fafbb42b870b` (قُرئ 2026-10-04)، **Apache-2.0**. **عُدِّل**: أُعيد ترميز المفاتيح وحُذفت قوائم الحزم والوسوم. نصّ الترخيص مرفق: `assets/spoof/device_catalog.LICENSE.txt`. شُحنت البيانات كما هي (لا بصمة اختُلقت).
+- **COPG (بيانات كتالوج الأجهزة)** — `manager/app/src/main/assets-internal/spoof/device_catalog.json` مستخرَج من `module/COPG.json` (كتل `PACKAGES_*_DEVICE` فقط) في AlirezaParsi/COPG، فرع `JSON` عند `e1d7da6c24cb571c5d123a6f7c85fafbb42b870b` (قُرئ 2026-10-04)، **Apache-2.0**. **عُدِّل**: أُعيد ترميز المفاتيح وحُذفت قوائم الحزم والوسوم. نصّ الترخيص مرفق: `manager/app/src/main/assets/spoof/device_catalog.LICENSE.txt`. شُحنت البيانات كما هي (لا بصمة اختُلقت).

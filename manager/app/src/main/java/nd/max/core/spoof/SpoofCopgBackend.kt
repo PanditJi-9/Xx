@@ -1,6 +1,7 @@
 /* Copyright (C) 2026 Nader Magdy. All rights reserved. */
 package nd.max.core.spoof
 
+import nd.max.core.diagnostics.DiagnosticCenter
 import nd.max.core.hardware.RootFileAccess
 import nd.max.core.privilege.PrivilegeManager
 import javax.inject.Inject
@@ -27,13 +28,44 @@ data class SpoofEngineConfig(
 class SpoofCopgBackend @Inject constructor(private val transaction: SpoofConfigTransaction) {
     fun snapshot(): SpoofEngineConfig {
         val path = SpoofCopgContract.CONFIG_PATH
-        if (!PrivilegeManager.cachedRootGranted()) return SpoofEngineConfig(path, null, null, emptyList())
+        if (!PrivilegeManager.cachedRootGranted()) {
+            logProbe(SpoofEngineReason.ROOT_REQUIRED)
+            return SpoofEngineConfig(path, null, null, emptyList())
+        }
         val text = RootFileAccess.read(path)
         val keys = text?.let(SpoofCopgContract::ownedKeys)
         // القياس مرّة واحدة: الحكم والسبب من نداء واحد، فلا يُسأل مدير الجذر سؤالًا يعرف جوابه.
         val reason = transaction.eligibility(SpoofCopgContract.MODULE_ID, requestRoot = false)
+        logProbe(reason)
         return SpoofEngineConfig(path, RootFileAccess.exists(path), if (text == null) null else keys != null,
             keys.orEmpty(), reason == null, reason)
+    }
+
+    /**
+     * سطر تشخيص واحد لكل عرض — يسمّي **ما قيس** لا ما استُنتج.
+     *
+     * والعطب الذي يمنعه: تصديرٌ يقول `ENGINE_MODULE_ABSENT` عن وحدةٍ قد تكون مثبَّتة في
+     * `modules_update` أو معرّفها مختلفًا أو `module.prop` غير مقروء — ثلاثة علاجات مختلفة
+     * برمزٍ واحد. والسطر يبقى بعد الجولة، فيُجيب التصدير القادم بلا سؤال جديد.
+     *
+     * وموضعه [DiagnosticCenter] لا السجل المفصّل: ذاك لا يُكتب إلا بعد أن يفعّل المستخدم
+     * المفتاح **قبل** العطب، وهذه بالضبط الحالة التي يقول عنها التصدير «لا أثر». و[DiagnosticCenter]
+     * يعمل دائمًا، ويُدمج في كل تصدير، ويعيد عدّ الحالات المتطابقة بدل إغراق السجل.
+     * والمستوى `INFO` مقصود: «الوحدة غير مثبَّتة» حالة مستخدم مشروعة لا عطلًا يُلوّن عدّاد
+     * الإعدادات. والحالة الناجحة لا تُسجَّل أصلًا — لا شيء يُشخَّص فيها.
+     */
+    private fun logProbe(reason: SpoofEngineReason?) {
+        if (reason == null) return
+        val probe = if (!PrivilegeManager.cachedRootGranted()) {
+            EngineProbe(SpoofCopgContract.MODULE_ID, SpoofEngineReason.ROOT_REQUIRED, rootGranted = false)
+        } else {
+            transaction.probe(SpoofCopgContract.MODULE_ID, reason)
+        }
+        DiagnosticCenter.record(
+            component = SCREEN,
+            message = SpoofEngineGate.probeLine(probe),
+            level = DiagnosticCenter.Level.INFO,
+        )
     }
 
     fun apply(workspace: SpoofWorkspace): SpoofEngineWrite {
@@ -65,4 +97,9 @@ class SpoofCopgBackend @Inject constructor(private val transaction: SpoofConfigT
 
     /** Removes only our namespaced assignments, preserving foreign entries. */
     fun clear(): SpoofEngineWrite = apply(SpoofWorkspace())
+
+    private companion object {
+        /** معرّف الشاشة في السجل — مطابق لما يكتبه `SpoofStudioViewModel` فلا ينشأ مصدران. */
+        const val SCREEN = "SpoofPerApp"
+    }
 }

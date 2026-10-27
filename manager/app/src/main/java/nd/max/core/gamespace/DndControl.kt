@@ -11,6 +11,7 @@ import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
 import android.provider.Settings
+import kotlinx.coroutines.delay
 
 /**
  * «عدم الإزعاج» — الكتابة التي يحترمها النظام، لا التي يُلغيها.
@@ -132,23 +133,23 @@ object DndControl {
      *
      * [policy] غير الفارغ يعني أن الصلاحية ممنوحة (انظر [notificationManager])؛ و[shell] مسار
      * الصدفة (جذر/Shizuku) أو `null` عند من لا صدفة له. و[read] تقرأ الحالة الحيّة — تُمرَّر
-     * من المستدعي ليبقى هذا الملفّ بلا اعتماد على سياق أو انعكاس. و[sdkInt]/[sleep] قابلان
+     * من المستدعي ليبقى هذا الملفّ بلا اعتماد على سياق أو انعكاس. و[sdkInt]/[pause] قابلان
      * للحقن في الاختبار (لا وقت ولا إصدار حقيقيَّين).
      */
-    fun apply(
+    suspend fun apply(
         zen: Int,
         policy: NotificationManager?,
-        shell: ((String) -> ShellVerdict)?,
+        shell: (suspend (String) -> ShellVerdict)?,
         read: () -> Int,
         sdkInt: Int = Build.VERSION.SDK_INT,
-        sleep: (Long) -> Unit = { Thread.sleep(it) },
+        pause: suspend (Long) -> Unit = { delay(it) },
     ): Verdict {
         if (zen !in 0..3) return Verdict.UNSUPPORTED
 
         if (policy != null) {
             val accepted = runCatching { policy.setInterruptionFilter(filterForZen(zen)) }.isSuccess
             // سباق صلاحية (سُحبت بين الفحص والنداء) يُسقط إلى الصدفة، لا إلى «نجاح» وهميّ.
-            if (accepted) return if (await(zen, read, sleep)) Verdict.APPLIED else Verdict.NOT_HONOURED
+            if (accepted) return if (await(zen, read, pause)) Verdict.APPLIED else Verdict.NOT_HONOURED
         }
 
         if (sdkInt < SHELL_MIN_API || shell == null) return Verdict.UNSUPPORTED
@@ -159,16 +160,16 @@ object DndControl {
             ShellVerdict.REFUSED -> Verdict.REFUSED
             // أمر انتهى بخطأ لا يُقرأ نجاحًا، ولو كانت الحالة مصادفةً صحيحة.
             ShellVerdict.FAILED -> Verdict.NOT_HONOURED
-            ShellVerdict.RAN -> if (await(zen, read, sleep)) Verdict.APPLIED else Verdict.NOT_HONOURED
+            ShellVerdict.RAN -> if (await(zen, read, pause)) Verdict.APPLIED else Verdict.NOT_HONOURED
         }
     }
 
     /** قراءة أولى فوريّة ثم إعادات محدودة — ولا يُتوقَّف على قراءة ترمي (انقطاع binder مثلًا). */
-    private fun await(zen: Int, read: () -> Int, sleep: (Long) -> Unit): Boolean {
+    private suspend fun await(zen: Int, read: () -> Int, pause: suspend (Long) -> Unit): Boolean {
         fun observed(): Int = runCatching(read).getOrDefault(-1)
         if (observed() == zen) return true
         for (ms in VERIFY_DELAYS_MS) {
-            sleep(ms)
+            pause(ms)
             if (observed() == zen) return true
         }
         return false

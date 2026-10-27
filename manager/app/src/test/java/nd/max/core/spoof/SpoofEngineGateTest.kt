@@ -2,6 +2,7 @@
 package nd.max.core.spoof
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -81,5 +82,56 @@ class SpoofEngineGateTest {
         SpoofEngineGate.markers.forEach { marker ->
             assertNotNull("marker without a cause: $marker", SpoofEngineGate.markerReason(setOf(marker)))
         }
+    }
+
+    @Test fun aStagedInstallIsPendingNotAbsent() {
+        // التثبيت/التحديث الجديد يعيش في `modules_update` حتى الإقلاع: الحكم بالغياب يطلب إعادة
+        // تثبيتٍ لا معنى لها، والصمت عن الطابور يجعل المستخدم يعيد ما هو منتظر أصلًا.
+        assertEquals(SpoofEngineReason.ENGINE_UPDATE_PENDING, SpoofEngineGate.stagedReason(prop, "COPG"))
+        // ووحدة أخرى في الطابور ليست محرّكنا: لا تُنسب إلى COPG.
+        assertNull(SpoofEngineGate.stagedReason("id=other", "COPG"))
+        // ولم يُقرأ ≠ غير موجود: كلاهما لا ينتج سببًا من هذه الجهة.
+        assertNull(SpoofEngineGate.stagedReason(null, "COPG"))
+        assertNull(SpoofEngineGate.stagedReason("", "COPG"))
+    }
+
+    @Test fun theIdentifierIsTheFirstIdLineNotTheDisplayName() {
+        assertEquals("COPG", SpoofEngineGate.idValue(prop))
+        assertEquals("COPG", SpoofEngineGate.idValue("name=COPG\n  id=COPG  \n"))
+        assertNull(SpoofEngineGate.idValue("name=COPG"))
+        assertNull(SpoofEngineGate.idValue(null))
+    }
+
+    @Test fun probeLineNamesEveryMeasuredFact() {
+        val line = SpoofEngineGate.probeLine(
+            EngineProbe(
+                engine = "COPG",
+                reason = SpoofEngineReason.ENGINE_MODULE_ABSENT,
+                rootGranted = true,
+                moduleDirPresent = true,
+                modulePropReadable = false,
+                stagedDirPresent = true,
+                stagedPropReadable = true,
+                stagedIdMatches = true,
+            )
+        )
+        assertEquals(
+            "EVENT=SPOOF_ENGINE_PROBE engine=COPG reason=ENGINE_MODULE_ABSENT root=1 dir=1 " +
+                "prop=0 id=none staged_dir=1 staged_prop=1 staged_id=1",
+            line,
+        )
+    }
+
+    @Test fun probeLineCannotBeSplitByTheIdentifierItRead() {
+        // سطر `id=` مقروء من ملف قد يحمل محارف تكسر السجل (فراغ، اقتباس، سطر جديد) — تُستبدل.
+        val line = SpoofEngineGate.probeLine(
+            EngineProbe("COPG", SpoofEngineReason.ENGINE_MODULE_ABSENT, true, moduleIdValue = "COPG 6.9.8")
+        )
+        assertTrue(line.contains("id=COPG_6.9.8"))
+        val injected = SpoofEngineGate.probeLine(
+            EngineProbe("COPG", SpoofEngineReason.ENGINE_MODULE_ABSENT, true, moduleIdValue = "a\nb'c")
+        )
+        assertFalse(injected.contains("\n"))
+        assertFalse(injected.contains("'"))
     }
 }
