@@ -289,7 +289,16 @@ impl ThermalMonitor {
                         // إشارة قطعت الانتظار ليست عطبًا: نعيد الانتظار ولا نُسقط المراقب.
                         // (كان كل `Err` يُحوّل إلى وضع الاستطلاع: فقدان الأحداث الفورية
                         //  وإيقاظ كل ٣ ثوانٍ — وهو أسوأ من العطب العابر نفسه.)
-                        Err(nix::errno::Errno::EINTR) => continue,
+                        //
+                        // **ولا نُجوّع التقييم الاحتياطيّ:** `continue` وحدها تُعيد الانتظار، فإن
+                        // تكرّرت الإشارات (‏`SIGCHLD` لمقصلة عمليات، أو `SIGTERM` أخير) قبل كل
+                        // مهلة، لم يبلغ الموعد أبدًا. فحين يحين الموعد نُقيّم هنا كما في `Ok(0)`.
+                        Err(nix::errno::Errno::EINTR) => {
+                            if get_monotonic_time() >= self.next_fallback_eval {
+                                self.handle_temperature_change();
+                            }
+                            continue;
+                        }
                         Err(_) => {
                             mode = RunMode::Poll;
                             inotify = None;

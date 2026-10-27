@@ -210,6 +210,16 @@ jobs:
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
           CONFIG_PUBLIC_KEY: ${{ secrets.CONFIG_PUBLIC_KEY }}
 
+      # ── إثبات عدد الاختبارات — لا يُدّعى عدد بلا تقرير ──
+      #
+      # Gradle يطبع `BUILD SUCCESSFUL` ولا يطبع عدد الاختبارات. فالعدد كان يُكتب في
+      # `HANDOFF` بلا تقرير يُعاد قراءته (وهذا حدّ أُعلن في جولة `PERF-AUDIT-01`).
+      # هنا يُقرأ XML الذي يكتبه Gradle نفسه، ويُطبع جدولًا في ملخّص التشغيل — بلا
+      # حزمة تُنزَّل ولا رفع يستهلك تخزينًا. و`always()` ليقصّ التشخيص عند الفشل أيضًا.
+      - name: Unit test count evidence (JUnit XML)
+        if: always()
+        run: python3 tools/test_report_summary.py >> "$GITHUB_STEP_SUMMARY"
+
       # ── عند السقوط وحده: سجل Gradle وتقرير الاختبار — فيُرى سبب الفشل من صفحة التشغيل
       #    دون إعادة إنتاج على الهاتف. (لا أثر عند النجاح: لا وقت ولا تخزين.) ──
       - name: Upload failure evidence
