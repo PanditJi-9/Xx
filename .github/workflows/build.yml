@@ -419,6 +419,14 @@ jobs:
           # غائب عن البيان.
           python3 tools/store_thumbnails.py --assert
           python3 tools/store_thumbnails.py --self-test
+          # ── إثبات عدد الاختبارات: الأداة تُقاس هنا أيضًا ──
+          #
+          # `test_report_summary.py` تقرأ XML وتكتب جدولًا في ملخّص التشغيل (خطوة
+          # «Unit test count evidence» أدناه)، وتسجّل `--self-test`. و**عقد `selftests_wired`
+          # في `bundle_contract.py` هو الذي أمسك غياب هذا السطر**: أداة تسجّل فحصًا ذاتيًّا
+          # ولا يشغّله أيّ تشغيل تصدأ بصمت — وهو العطب الذي وقع فعلًا في أول دفع لهذه
+          # الأداة وأسقط بوّابة العقد في CI. فالسطر هنا ليس تزيّدًا: هو شرط العقد نفسه.
+          python3 tools/test_report_summary.py --self-test
           echo "✅ Contract gates passed in $((SECONDS - start))s"
 
       # ── تكافؤ منطق الخادم الأصلي — بلا NDK وبلا جهاز ──
