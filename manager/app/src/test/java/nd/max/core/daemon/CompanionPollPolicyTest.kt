@@ -175,7 +175,7 @@ class CompanionPollPolicyTest {
             CompanionPollPolicy.SCREEN_OFF_STATUS_MS,
             CompanionPollPolicy.statusRefreshMs(screenInteractive = false),
         )
-        // 720 دورة/ساعة ليلًا ⇒ 12 بناءً فقط: سُدس العدد، لا «أبطأ قليلًا».
+        // 720 دورة/ساعة ليلًا ⇒ 12 بناءً فقط: جزء من ستّين، لا «أبطأ قليلًا».
         assertEquals(12L, CompanionPollPolicy.wakeupsPerHour(CompanionPollPolicy.SCREEN_OFF_STATUS_MS))
         assertEquals(
             "the screen-off rebuild is one sixtieth of the 720 loop ticks",
@@ -192,5 +192,33 @@ class CompanionPollPolicyTest {
             "the fallback is strictly coarser than every polling cadence it replaces",
             CompanionPollPolicy.CONFIG_WATCH_FALLBACK_MS > CompanionPollPolicy.CONFIG_WATCH_SCREEN_OFF_MS,
         )
+    }
+
+    @Test
+    fun `charging or a hardware session keeps status current with the screen off`() {
+        assertEquals(0L, CompanionPollPolicy.statusRefreshMs(false, requiresLiveStatus = true))
+        assertTrue(CompanionPollPolicy.statusRefreshDue(1L, 0L, false, false, true))
+    }
+
+    @Test
+    fun `an idle status refresh waits until its exact deadline`() {
+        val last = 1_000L
+        val interval = CompanionPollPolicy.SCREEN_OFF_STATUS_MS
+        assertFalse(CompanionPollPolicy.statusRefreshDue(last + interval - 1, last, false, false, false))
+        assertTrue(CompanionPollPolicy.statusRefreshDue(last + interval, last, false, false, false))
+    }
+
+    @Test
+    fun `screen charging and revert changes bypass the throttle`() {
+        assertTrue(CompanionPollPolicy.statusRefreshDue(1_001L, 1_000L, true, false, false))
+        assertTrue(CompanionPollPolicy.statusRefreshDue(1_001L, 1_000L, false, true, false))
+    }
+
+    @Test
+    fun `a failed write remains due until a successful write advances the timestamp`() {
+        val interval = CompanionPollPolicy.SCREEN_OFF_STATUS_MS
+        assertTrue(CompanionPollPolicy.statusRefreshDue(interval, 0L, false, false, false))
+        assertTrue(CompanionPollPolicy.statusRefreshDue(interval + 1, 0L, false, false, false))
+        assertFalse(CompanionPollPolicy.statusRefreshDue(interval + 1, interval, false, false, false))
     }
 }

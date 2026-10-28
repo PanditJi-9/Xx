@@ -31,6 +31,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import nd.max.R
 import nd.max.core.maxai.MaxAiEngine
@@ -75,13 +76,13 @@ class HomeViewModel @Inject constructor(
 
     private val prefListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
         if (key == "enable_banner_image") {
-            _uiState.value = _uiState.value.copy(isBannerEnabled = context.isBannerImageEnabled())
+            _uiState.update { it.copy(isBannerEnabled = context.isBannerImageEnabled()) }
         }
     }
 
     init {
         prefs.registerOnSharedPreferenceChangeListener(prefListener)
-        _uiState.value = _uiState.value.copy(isBannerEnabled = context.isBannerImageEnabled())
+        _uiState.update { it.copy(isBannerEnabled = context.isBannerImageEnabled()) }
         
         observeRootUtils()
         fetchInitialSystemData()
@@ -91,18 +92,21 @@ class HomeViewModel @Inject constructor(
         // **لا استطلاع والشاشة غير مرئيّة (FOOTPRINT-01):** كانت الحلقتان تعملان طوال حياة
         // الـ`ViewModel` — أي ولو كان التطبيق في الخلفية — وكل دورة `pidof` في صدفة جذر وقراءة
         // ملفّ الجذر. والشارة لا تُعرَض أصلًا حين لا شاشة، فالإيقاف عند `ON_STOP` يُلغي
-        // آلاف الأوامر في الساعة بلا فقد معلومة. (وحالة الملفّ الحدثيّة تبقى مشتركة.)
+        // الاشتراكات الثلاثة تتوقّف معًا، وتعيد قراءة الحالة الحالية عند العودة.
         viewModelScope.launch(Dispatchers.IO) {
             visible.collectLatest { on ->
                 if (!on) return@collectLatest
                 RootUtils.observeServiceStatusRes().collect { (statusRes, pid) ->
-                    _uiState.value = _uiState.value.copy(serviceStatusRes = statusRes, servicePid = pid)
+                    _uiState.update { it.copy(serviceStatusRes = statusRes, servicePid = pid) }
                 }
             }
         }
         viewModelScope.launch(Dispatchers.IO) {
-            RootUtils.observeProfileRes().collect { profileRes ->
-                _uiState.value = _uiState.value.copy(currentProfileRes = profileRes)
+            visible.collectLatest { on ->
+                if (!on) return@collectLatest
+                RootUtils.observeProfileRes().collect { profileRes ->
+                    _uiState.update { it.copy(currentProfileRes = profileRes) }
+                }
             }
         }
 
@@ -110,11 +114,11 @@ class HomeViewModel @Inject constructor(
             visible.collectLatest { on ->
                 if (!on) return@collectLatest
                 RootUtils.observeGameInfo().collect { info ->
-                    _uiState.value = _uiState.value.copy(
+                    _uiState.update { it.copy(
                         runningGamePkg = info.pkg,
                         runningGamePid = info.pid,
                         runningGameStartTime = info.startTime
-                    )
+                    ) }
                 }
             }
         }
@@ -138,11 +142,11 @@ class HomeViewModel @Inject constructor(
             // وهذه الدالة تُنادى عند الإقلاع وعند كل تحديث لحالة المفتاح — فالتوفير متكرّر.
             val mode = PropertyUtils.get(MaxManagerProps.Conf.AI_ENABLED)
 
-            _uiState.value = _uiState.value.copy(
+            _uiState.update { it.copy(
                 rootStatus = isRooted,
                 moduleInstalled = isModuleInstalled,
                 autoMode = mode
-            )
+            ) }
         }
     }
 
@@ -204,7 +208,7 @@ class HomeViewModel @Inject constructor(
     fun refreshAiMode() {
         viewModelScope.launch(Dispatchers.IO) {
             val mode = PropertyUtils.get(MaxManagerProps.Conf.AI_ENABLED)
-            _uiState.value = _uiState.value.copy(autoMode = mode)
+            _uiState.update { it.copy(autoMode = mode) }
         }
     }
 

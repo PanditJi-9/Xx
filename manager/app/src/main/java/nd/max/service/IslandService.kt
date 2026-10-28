@@ -11,6 +11,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.view.Gravity
+import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
@@ -47,7 +48,7 @@ import nd.max.ui.util.IslandPrefs
  *
  * ### وما تفعله هذه الخدمة فوق التركيب
  *
- * **ساعة حراسة واحدة (ثانية واحدة)** تُزامن شيئين لا يصلح لهما حدث:
+     * **حراسة متكيّفة مع إيقاظ حدثيّ** تُزامن شيئين:
  *
  * 1. **الموضع** — اختيار المستخدم (أعلى الشاشة أو تحت شريط الحالة) وإزاحتاه (يمينًا/يسارًا
  *    وأعلى/أسفل) يُطبَّقون على النافذة بلا إعادة تشغيل، والإزاحة الأفقية تُحبس بعرض الكبسولة
@@ -78,10 +79,10 @@ class IslandService : LifecycleService() {
         /**
          * نبضة الحراسة والجزيرة هادئة — خمس ثوانٍ (FOOTPRINT-01).
          *
-         * **العطب المقيس:** النبضة كانت ثانيةً واحدة **دائمًا**، وكلّها تقرأ حدود الشاشة
-         * (`WindowManager.currentWindowMetrics` — رحلة Binder) والقصّة (`Display.getCutout`)
-         * وتعيد حساب الموضع: ٣٦٠٠ نبضة و٧٢٠٠ رحلة Binder في الساعة، والجزيرة قد تكون نقطةً
-         * ساكنة لا محتوى لها. والموضع لا يتغيّر إلا بثلاثة أحداث: تدوير الشاشة، أو تغيير
+         * النبضة كانت ثانيةً واحدة **دائمًا**، وكلّها تستدعي قراءة حدود الشاشة والقصّة
+         * وتعيد حساب الموضع: ٣٦٠٠ دورة مجدولة في الساعة. عدد معاملات Binder الفعليّ وكلفة
+         * البطارية يحتاجان قياس جهاز، ولا يُستنتجان من عدد الاستدعاءات. أحداث الموضع:
+         * تدوير الشاشة، أو تغيير
          * المستخدم للإعداد، أو تغيّر عرض المحتوى. فصار الإيقاع ٥ ثوانٍ عند السكون، و**ثانيةً
          * واحدة عند وجود محتوى حيّ** (نشاط · مؤقّت · مؤشّرات)، مع استيقاظ فوريّ عند تدوير
          * الشاشة (`onConfigurationChanged`) فلا يُرى موضع قديم بعد الدوران.
@@ -115,6 +116,9 @@ class IslandService : LifecycleService() {
     private var boundsCache: Pair<Int, Int>? = null
     private var cutoutsCache: List<OverlayGeometry.Cutout>? = null
     private var geometryDirty = true
+    private val layoutListener = View.OnLayoutChangeListener { _, l, t, r, b, oldL, oldT, oldR, oldB ->
+        if (r - l != oldR - oldL || b - t != oldB - oldT) geometryWake.trySend(Unit)
+    }
 
     override fun onCreate() {
         super.onCreate()
@@ -159,6 +163,7 @@ class IslandService : LifecycleService() {
                 return START_NOT_STICKY
             }
             isRunning = true
+            panel.hostView()?.addOnLayoutChangeListener(layoutListener)
             IslandLive.start(
                 context = applicationContext,
                 listenerComponent = ComponentName(this, MaxNotificationListener::class.java)
@@ -171,21 +176,26 @@ class IslandService : LifecycleService() {
     override fun onDestroy() {
         HudSampler.stop(HUD_OWNER_ISLAND)
         IslandLive.stop()
+        island?.hostView()?.removeOnLayoutChangeListener(layoutListener)
         island?.unmount()
         isRunning = false
         super.onDestroy()
     }
 
     private fun watchdog() {
+        // Reuse the existing preference StateFlow: no new preferences poll or disk reader.
+        lifecycleScope.launch {
+            IslandLive.config.collect { geometryWake.trySend(Unit) }
+        }
         lifecycleScope.launch {
             while (isActive) {
                 // قراءة واحدة للتفضيلات لكل نبضة: الموضع والمصادر يقرآن المفاتيح نفسها،
                 // وقراءتان متتاليتان في الثانية ثمنٌ بلا مقابل (تكملة `PERF-AUDIT-01`).
-                val prefs = IslandPrefs.load(applicationContext)
+                val prefs = IslandLive.config.value ?: IslandPrefs.load(applicationContext)
                 syncPosition(prefs)
                 syncSampler(prefs)
                 // النبضة السريعة تُشترى فقط حين يكون هناك ما يتغيّر فعلًا: محتوى حيّ أو مؤشّرات.
-                // والتدوير يُوقظ الحلقة فورًا عبر `geometryWake`، فلا يُنتظر الإيقاع البطيء.
+                // التدوير والتفضيلات وقياس محتوى جديد توقظ الحلقة دون انتظار الإيقاع البطيء.
                 val busy = prefs.showIndicators ||
                     IslandLive.state.value.content != IslandContent.Hidden
                 withTimeoutOrNull(if (busy) WATCHDOG_MS else WATCHDOG_IDLE_MS) {
@@ -213,15 +223,18 @@ class IslandService : LifecycleService() {
      */
     private fun syncPosition(prefs: IslandPrefs.State) {
         val panel = island ?: return
-        // **القراءتان الغاليتان تُخبَّآن (FOOTPRINT-01):** `screenBounds()` رحلة Binder إلى
-        // `WindowManager`، و`DisplayCutouts.of` قراءة قصّة الشاشة — ولا تتغيّران إلا بتدوير
+        // **القراءتان تُخبَّآن (FOOTPRINT-01):** الحدود وقراءة قصّة الشاشة تتغيّران بتدوير
         // أو تبدّل نافذة. وكانتا في كل نبضة (٣٦٠٠/ساعة) بلا فائدة. والقصّة الفارغة قيمة صحيحة
         // (جهاز بلا قصّة) فلا تُخلط بـ`null` التي تعني «لم تُقرأ بعد».
         val bounds = boundsCache?.takeIf { !geometryDirty } ?: panel.screenBounds().also { boundsCache = it }
         val (screenWidth, screenHeight) = bounds
         val cutouts = cutoutsCache?.takeIf { !geometryDirty } ?: run {
             val host = panel.hostView()
-            if (host == null) emptyList() else DisplayCutouts.of(host).also { cutoutsCache = it }
+            if (host == null || !host.isAttachedToWindow || host.display == null) {
+                emptyList()
+            } else {
+                DisplayCutouts.of(host).also { cutoutsCache = it }
+            }
         }
         if (boundsCache != null && cutoutsCache != null) geometryDirty = false
 

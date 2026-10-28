@@ -28,12 +28,18 @@ import com.topjohnwu.superuser.io.SuFile
 import java.io.File
 import java.io.IOException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import nd.max.R
 import nd.max.core.hardware.RootFileAccess
 
@@ -43,6 +49,7 @@ object RootUtils {
     private const val API_DIR_PATH = "/data/data/nd.max/API"
     private const val PROFILE_FILE_NAME = "current_profile"
     private const val GAMEINFO_FILE_NAME = "gameinfo"
+    private const val API_WATCH_FALLBACK_MS = 60_000L
     private const val PROFILE_PATH = "$API_DIR_PATH/$PROFILE_FILE_NAME"
     private const val DAEMON_PROFILE_PATH = "/data/adb/.config/MaxManager/API/current_profile"
 
@@ -115,58 +122,62 @@ object RootUtils {
      * **العطب المقيس:** كانت تُقرأ `/data/data/nd.max/API/gameinfo` **كل ثانيتين** طوال حياة
      * الـ`ViewModel`، ولو كان التطبيق في الخلفية على شاشة الرئيسية. وقراءتها تمرّ بـ`RootFileAccess`
      * (مسار الجذر)، أي ١٨٠٠ قراءة/ساعة بلا تغيّر — والملفّ لا يتغيّر إلا عند تبديل لعبة.
-     * صار المراقب `FileObserver` على المجلّد نفسه (نمط `observeProfileRes` القائم)، فالسعر
-     * صفرٌ حتى يقع حدث، والقيمة الأولى تُقرأ مرة واحدة عند الاشتراك.
+     * صار المراقب حدثيًّا، مع فحص احتياطي كل دقيقة أثناء الاشتراك فقط. القراءة على IO،
+     * لا على خيط FileObserver المشترك، كي لا يوقف أمر root مراقبي الملفات الآخرين.
      */
-    fun observeGameInfo(): Flow<GameInfo> = callbackFlow {
-        fun read(): GameInfo {
+    fun observeGameInfo(): Flow<GameInfo> = observeApiFileChanges(GAMEINFO_FILE_NAME)
+        .map {
             val raw = readRootFile("$API_DIR_PATH/$GAMEINFO_FILE_NAME")
-            if (raw.isNullOrBlank()) return GameInfo(null, null, null)
+            if (raw.isNullOrBlank()) return@map GameInfo(null, null, null)
             val lines = raw.lines()
             val firstLine = lines[0].split(" ")
             val pkg = firstLine.getOrNull(0)?.takeIf { it != "NULL" && it.isNotBlank() }
             val pid = firstLine.getOrNull(1)?.toIntOrNull()?.takeIf { it > 0 }
             val time = lines.find { it.startsWith("Time:") }?.substringAfter("Time:")?.trim()
-            return GameInfo(pkg, pid, time)
+            GameInfo(pkg, pid, time)
         }
+        .distinctUntilChanged()
+        .flowOn(Dispatchers.IO)
 
-        trySend(read())
+    /**
+     * Watch the directory, not an inode replaced by rename. Register before the first read;
+     * callbacks only enqueue a conflated signal. A visible-only fallback also re-arms a lost
+     * watch (startWatching has no success result). CLOSE_WRITE avoids reading a partial write.
+     */
+    private fun observeApiFileChanges(fileName: String): Flow<Unit> = callbackFlow {
         val apiDir = File(API_DIR_PATH).apply { if (!exists()) mkdirs() }
         val observer = object : FileObserver(
             apiDir,
-            FileObserver.MODIFY or FileObserver.CLOSE_WRITE or
-                FileObserver.MOVED_TO or FileObserver.CREATE,
+            FileObserver.CLOSE_WRITE or FileObserver.MOVED_TO or FileObserver.DELETE or
+                FileObserver.DELETE_SELF or FileObserver.MOVE_SELF,
         ) {
             override fun onEvent(event: Int, path: String?) {
-                if (path == null || path == GAMEINFO_FILE_NAME) trySend(read())
+                if (path == null || path == fileName) trySend(Unit)
             }
         }
-        // فشل تسجيل المراقب (حدّ inotify مثلًا) لا يُسقط التدفّق: القيمة الأولى وصلت، والواجهة
-        // تعرضها؛ وعدم وصول تحديثات لاحقة أهون من انهيار الاشتراك كلّه.
         runCatching { observer.startWatching() }
-        awaitClose { runCatching { observer.stopWatching() } }
-    }.flowOn(Dispatchers.IO)
-    fun observeProfileRes(): Flow<Int> = callbackFlow {
-        syncProfileState()
-
-        trySend(getCurrentProfileRes())
-
-        val apiDir = File(API_DIR_PATH)
-        if (!apiDir.exists()) {
-            apiDir.mkdirs()
-        }
-
-        val observer = object : FileObserver(apiDir, MODIFY or CREATE or MOVED_TO) {
-            override fun onEvent(event: Int, path: String?) {
-                if (path == PROFILE_FILE_NAME) {
-                    trySend(getCurrentProfileRes())
+        trySend(Unit)
+        val fallback = launch {
+            while (true) {
+                delay(API_WATCH_FALLBACK_MS)
+                runCatching {
+                    observer.stopWatching()
+                    if (!apiDir.exists()) apiDir.mkdirs()
+                    observer.startWatching()
                 }
+                trySend(Unit)
             }
         }
+        awaitClose {
+            fallback.cancel()
+            runCatching { observer.stopWatching() }
+        }
+    }.buffer(Channel.CONFLATED).flowOn(Dispatchers.IO)
 
-        observer.startWatching()
-        awaitClose { observer.stopWatching() }
-    }.flowOn(Dispatchers.IO)
+    fun observeProfileRes(): Flow<Int> = flow {
+        syncProfileState()
+        emitAll(observeApiFileChanges(PROFILE_FILE_NAME).map { getCurrentProfileRes() })
+    }.distinctUntilChanged().flowOn(Dispatchers.IO)
 
     fun getCurrentProfileRes(): Int {
         val content = readRootFile(PROFILE_PATH)

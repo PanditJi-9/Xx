@@ -183,17 +183,15 @@ object AppMonitor {
 
     // ── بوابة ملفّ الحالة (FOOTPRINT-01) ──────────────────────────────────
     //
-    // الشاشة المطفأة: لا مقدّمة تُطبَّق عليها، ولا قارئ لملفّ الحالة. فبناء الحالة كل ٥ ثوانٍ
-    // ليلًا كان ٧٢٠ بناءً في الساعة — كلٌّ منها يحلّ المقدّمة (انعكاس + Binder) وأربع قراءات
-    // Binder — بلا فائدة تُذكر. صار البناء كلّ خمس دقائق (`CompanionPollPolicy.SCREEN_OFF_STATUS_MS`)،
-    // **ويُفرَض فورًا** في حالتين فقط: تبديل حالة الشاشة (`statusDirty` عند التبديل)، وانتهاء
-    // جلسة per-app (`statusDirty` في `serviceDeferredRevert`). وهما اللحظتان اللتان يتغيّر
-    // فيهما معنى الملفّ فعلًا.
+    // في الخمول غير الموصول بالشاحن يصير بناء الحالة كل خمس دقائق، لا كل خمس ثوانٍ.
+    // أثناء الشحن/جلسة العتاد تبقى الحالة على إيقاع الدورة: bypass يستهلك نسبة البطارية.
+    // تغيّر الشاشة والشحن والتراجع يفرض التحديث أيضًا؛ أرقام الدورات ليست قياس بطارية جهاز.
     private var lastScreenInteractive: Boolean? = null
+    private var lastStatusCharging: Int? = null
     private var statusDirty = true
     private var lastStatusWriteAtMs = 0L
 
-    /** مراقب ملفّ الإعدادات الحدثيّ — `null` يعني «غير مدعوم» فيعود المراقب إلى `stat` دوريّ. */
+    /** Retain the observer; startWatching has no success result, so a fallback remains. */
     private var configObserver: FileObserver? = null
 
     private var outputPath = ""
@@ -700,8 +698,8 @@ object AppMonitor {
      * **ولماذا المجلّد لا الملفّ:** الكتابة الذرّية الشائعة هي `tmp` ثم `rename`، فتغيّر الملفّ
      * يظهر كـ`MOVED_TO` على المجلّد؛ ومراقبة الملفّ نفسه تفقد المشاهدة بعد أوّل استبدال.
      *
-     * **والحدّ:** الحدث يُوقظ الحلقة، لكن القرار يبقى على `lastModified` (كما كان) — فلا يُطبَّق
-     * إعداد نصف مكتوب، ولا يُعتمد على اسم الحدث وحده.
+     * CLOSE_WRITE/MOVED_TO يوقظان بعد انتهاء الكتابة؛ الفحص الدوري يبقى شبكة أمان.
+     * startWatching لا يعيد حكم نجاح، فلا يُدّعى تأكيد تسجيله من غياب استثناء وحده.
      */
     private fun startConfigFileObserver(): Boolean {
         if (configObserver != null) return true
@@ -711,8 +709,8 @@ object AppMonitor {
         return runCatching {
             val observer = object : FileObserver(
                 dir,
-                FileObserver.MODIFY or FileObserver.CLOSE_WRITE or
-                    FileObserver.MOVED_TO or FileObserver.CREATE,
+                FileObserver.CLOSE_WRITE or FileObserver.MOVED_TO or FileObserver.DELETE or
+                    FileObserver.DELETE_SELF or FileObserver.MOVE_SELF,
             ) {
                 override fun onEvent(event: Int, path: String?) {
                     // `null` حدثٌ على المجلّد نفسه: يُوقظ احتياطًا، فالقرار للملفّ لا للاسم.
@@ -727,7 +725,7 @@ object AppMonitor {
 
     private fun awaitNextMonitorCycle() {
         monitorWake.poll(currentPollIntervalMs(), java.util.concurrent.TimeUnit.MILLISECONDS)
-        monitorWake.clear()
+        // poll consumes one signal. Clearing here could discard a newer edit arriving after it.
     }
 
     /**
@@ -800,27 +798,34 @@ object AppMonitor {
 
     private fun runMonitorLoop() {
         startConfigWatcher()
-        while (!Thread.currentThread().isInterrupted) {
-            try {
-                serviceDeferredRevert()
-                writeStatus()
-                writeBackgroundApps()
-                reassertDriftedKnobs()
-                // لقطة اكتشاف GPU للعمليات العمياء (أطلس): تُنشر من هنا — هذه العملية جذر
-                // ترى العقد كلها — كل ٥ دقائق، فتتبنّاها عملية التطبيق بوسمها حين يعمى عدّها.
-                // والتفصيل والضمانات في [`nd.max.core.hardware.GpuDiscoverySnapshot`].
-                runCatching {
-                    if (GpuHardwareBackend.publishDiscoverySnapshot()) {
-                        AppMonitorLogger.i("EVENT=GPU_DISCOVERY_PUBLISHED sw=$currentSwitchId")
-                    }
-                }.onFailure { AppMonitorLogger.e("EVENT=GPU_DISCOVERY_PUBLISH_FAILED sw=$currentSwitchId", it) }
-                awaitNextMonitorCycle()
-            } catch (_: InterruptedException) {
-                Thread.currentThread().interrupt()
-                break
-            } catch (t: Throwable) {
-                AppMonitorLogger.e("Uncaught error in monitor loop iteration", t)
+        try {
+            while (!Thread.currentThread().isInterrupted) {
+                try {
+                    serviceDeferredRevert()
+                    writeStatus()
+                    writeBackgroundApps()
+                    reassertDriftedKnobs()
+                    // لقطة اكتشاف GPU للعمليات العمياء (أطلس): تُنشر من هنا — هذه العملية جذر
+                    // ترى العقد كلها — كل ٥ دقائق، فتتبنّاها عملية التطبيق بوسمها حين يعمى عدّها.
+                    // والتفصيل والضمانات في [`nd.max.core.hardware.GpuDiscoverySnapshot`].
+                    runCatching {
+                        if (GpuHardwareBackend.publishDiscoverySnapshot()) {
+                            AppMonitorLogger.i("EVENT=GPU_DISCOVERY_PUBLISHED sw=$currentSwitchId")
+                        }
+                    }.onFailure { AppMonitorLogger.e("EVENT=GPU_DISCOVERY_PUBLISH_FAILED sw=$currentSwitchId", it) }
+                    awaitNextMonitorCycle()
+                } catch (_: InterruptedException) {
+                    Thread.currentThread().interrupt()
+                    break
+                } catch (t: Throwable) {
+                    AppMonitorLogger.e("Uncaught error in monitor loop iteration", t)
+                }
             }
+        } finally {
+            configWatcher?.interrupt()
+            configWatcher = null
+            runCatching { configObserver?.stopWatching() }
+            configObserver = null
         }
     }
 
@@ -1120,12 +1125,20 @@ object AppMonitor {
 
     private fun writeStatus() {
         val screenOn = powerManager?.isInteractive == true
+        val charging = getChargingStatus()
         // تبديل حالة الشاشة يُفرض فورًا: ملفّ الحالة يقول `screen_awake`، فتأجيله يعني قيمة كاذبة.
         if (lastScreenInteractive != null && lastScreenInteractive != screenOn) statusDirty = true
+        if (lastStatusCharging != null && lastStatusCharging != charging) statusDirty = true
         lastScreenInteractive = screenOn
-        val refreshMs = CompanionPollPolicy.statusRefreshMs(screenInteractive = screenOn)
+        lastStatusCharging = charging
         val nowMs = android.os.SystemClock.elapsedRealtime()
-        if (!statusDirty && refreshMs > 0L && nowMs - lastStatusWriteAtMs < refreshMs) return
+        if (!CompanionPollPolicy.statusRefreshDue(
+                nowMs = nowMs,
+                lastRefreshAtMs = lastStatusWriteAtMs,
+                dirty = statusDirty,
+                screenInteractive = screenOn,
+                requiresLiveStatus = charging == 1 || perAppOverridesActive || gracePkg != null,
+            )) return
 
         val focusedApp = waitForValidFocusedApp() ?: return
         // ومعرّف العملية **جزء من الدليل** لا زينة: `pkg 0 0` تعني «لم أجد عملية هذا التطبيق»،
@@ -1158,7 +1171,7 @@ object AppMonitor {
                 // يفرض كتابة فلاش كاملة لكل تبديل — أثقل عملية إدخال/إخراج في الدورة.
             }
 
-            tmpFile.renameTo(file)
+            check(tmpFile.renameTo(file)) { "Atomic status rename failed: $outputPath" }
             
             lastStatus = currentStatus
             lastStatusWriteAtMs = nowMs
@@ -1215,7 +1228,6 @@ object AppMonitor {
     private fun writeBackgroundApps() {
         val screenOn = powerManager?.isInteractive == true
         if (!screenOn && backgroundAppsWrittenWhileScreenOff) return
-        backgroundAppsWrittenWhileScreenOff = !screenOn
         // **ولا تُقرأ قائمة العمليات بلا تطبيق مُدار في المقدّمة** (ولا والشاشة مطفأة).
         // الملفّ يخدم شيئًا واحدًا: أن يجد الخادم معرّفات عملية **التطبيق المُدار الذي في
         // المقدّمة** (`get_pids_of`). فبناؤه والعرض في المقدّمة تطبيق عاديّ كان
@@ -1238,8 +1250,11 @@ object AppMonitor {
             }
         }
 
-        lastBackgroundAppsPkg = lastAppliedPkg
-        if (currentApps == lastBackgroundApps) return
+        if (currentApps == lastBackgroundApps) {
+            lastBackgroundAppsPkg = lastAppliedPkg
+            backgroundAppsWrittenWhileScreenOff = !screenOn
+            return
+        }
 
         try {
             val file = File(backgroundOutputPath)
@@ -1254,9 +1269,11 @@ object AppMonitor {
                 // فالقارئ لا يرى نصف ملفّ. و`fsync` هنا كان كتابة فلاش كاملة عند كل تغيّر قائمة.
             }
 
-            tmpFile.renameTo(file)
+            check(tmpFile.renameTo(file)) { "Atomic background-apps rename failed: $backgroundOutputPath" }
 
             lastBackgroundApps = currentApps
+            lastBackgroundAppsPkg = lastAppliedPkg
+            backgroundAppsWrittenWhileScreenOff = !screenOn
         } catch (e: Exception) {
             AppMonitorLogger.e("Failed to write background apps file '$backgroundOutputPath'", e)
         }

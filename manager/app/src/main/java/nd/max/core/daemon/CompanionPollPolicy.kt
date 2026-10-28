@@ -128,10 +128,10 @@ object CompanionPollPolicy {
      *
      * **العطب المقيس:** الدورة كانت تبني الحالة كل ٥ ثوانٍ ليلًا — أي ٧٢٠ بناءً في الساعة،
      * وفي كلّها حلّ المقدّمة (انعكاس + Binder) وأربع قراءات Binder (الصمت · البطارية · الشحن ·
-     * اسم الحزمة) — **بلا قارئ**: لا مقدّمة تُطبَّق عليها، والملفّ يقرأه الخادم عند أحداث
-     * الحِزم لا في السبات. فالبناء صار كلّ خمس دقائق (١٢ في الساعة، **سُدس العدد**)، ويبقى
-     * فوريّاً عند **تبديل حالة الشاشة** وعند **تراجع per-app** — وهما اللحظتان اللتان يتغيّر
-     * فيهما المعنى فعلًا.
+     * اسم الحزمة). في الخمول غير الموصول بالشاحن صار البناء كلّ خمس دقائق (١٢ في الساعة،
+     * **جزء من ستّين**). أمّا الشحن أو جلسة عتاد/مهلة تراجع قائمة فتبقى على إيقاع الدورة:
+     * الخادم يستهلك battery_level/is_charging للتحكّم في bypass، فلا يؤخّر التوفير هذا المسار.
+     * تبديل حالة الشاشة والشحن والتراجع يفرض التحديث في الدورة التالية أيضًا.
      */
     const val SCREEN_OFF_STATUS_MS = 300_000L
 
@@ -157,9 +157,20 @@ object CompanionPollPolicy {
     /**
      * كم يمرّ بين بناءَي ملفّ الحالة: `0` = كلّ دورة (الشاشة مضاءة، فالمقدّمة تتغيّر).
      *
-     * والشاشة المطفأة لا مقدّمة لها ولا قارئ، فالبناء يُؤجَّل إلى [SCREEN_OFF_STATUS_MS]
-     * ويُستثنى منه تبديل حالة الشاشة والتراجع عن تعديلات per-app (يُفرَضان بـ`statusDirty`).
+     * أثناء الشحن أو وجود جلسة عتاد لا يُؤجَّل التحديث ولو كانت الشاشة مطفأة.
      */
-    fun statusRefreshMs(screenInteractive: Boolean): Long =
-        if (screenInteractive) 0L else SCREEN_OFF_STATUS_MS
+    fun statusRefreshMs(screenInteractive: Boolean, requiresLiveStatus: Boolean = false): Long =
+        if (screenInteractive || requiresLiveStatus) 0L else SCREEN_OFF_STATUS_MS
+
+    /** A failed write never advances lastRefreshAtMs; dirty changes bypass the idle throttle. */
+    fun statusRefreshDue(
+        nowMs: Long,
+        lastRefreshAtMs: Long,
+        dirty: Boolean,
+        screenInteractive: Boolean,
+        requiresLiveStatus: Boolean,
+    ): Boolean {
+        val interval = statusRefreshMs(screenInteractive, requiresLiveStatus)
+        return dirty || interval == 0L || nowMs - lastRefreshAtMs >= interval
+    }
 }
