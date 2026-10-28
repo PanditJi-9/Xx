@@ -160,17 +160,20 @@ import nd.max.ui.design.MaxSwitchRow
 import nd.max.ui.design.MaxTone
 import nd.max.ui.design.maxRadius
 import nd.max.ui.util.IslandPrefs
+import androidx.compose.material.icons.rounded.Sensors
+
 /**
- * التبويبات الثلاثة للجزيرة الديناميكية: الأساس — التصميم — المتقدم.
- * كل تبويب يجمّع الأقسام ذات الصلة لتقليل التمرير وتحسين الاكتشاف.
+ * التبويبات الأربعة للجزيرة الديناميكية: الأساس (الرئيسية) — الأنشطة — التصميم (التخصيص) — التطبيقات.
+ * تصميم متكامل يطابق استوديو الجزيرة وميزات HyperOS 4 وColorOS 17.
  */
 enum class IslandTab(
     @StringRes val label: Int,
     val icon: ImageVector
 ) {
     CORE(R.string.island_tab_core, Icons.Rounded.PictureInPictureAlt),
+    ACTIVITIES(R.string.ify_tab_activities, Icons.Rounded.Sensors),
     DESIGN(R.string.island_tab_design, Icons.Rounded.Tune),
-    ADVANCED(R.string.island_tab_advanced, Icons.Rounded.SettingsApplications);
+    APPS(R.string.ify_tab_apps, Icons.Rounded.Android);
 }
 
 /**

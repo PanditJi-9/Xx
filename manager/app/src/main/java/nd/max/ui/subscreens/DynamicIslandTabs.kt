@@ -102,7 +102,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
@@ -118,7 +117,6 @@ import nd.max.island.core.IslandControl
 import nd.max.island.core.IslandKind
 import nd.max.island.core.IslandSettings
 import nd.max.island.core.KindStyle
-import nd.max.island.core.NativeIslandProbe
 import nd.max.island.core.Perms
 import nd.max.island.core.SwipeAction
 import nd.max.island.core.SwipeDir
@@ -194,7 +192,7 @@ private fun TestGroup(@StringRes title: Int, actions: List<TestAction>) {
 }
 
 /**
- * محتوى تبويب «الأساس»: حالة التشغيل، الاختبارات، الأنشطة.
+ * محتوى تبويب «الأساس» (الرئيسية): النمط الرائد، الميزات، حالة التشغيل، الاختبارات.
  */
 @Composable
 internal fun CoreTabContent(
@@ -208,10 +206,6 @@ internal fun CoreTabContent(
     ctx: Context,
     postLauncher: androidx.activity.result.ActivityResultLauncher<String>,
     btLauncher: androidx.activity.result.ActivityResultLauncher<String>,
-    triggers: Set<String>,
-    blocked: Set<String>,
-    appsOpen: Boolean,
-    appsOpenSetter: (Boolean) -> Unit,
     demoMsg: String,
     demoMsg2: String,
     demoMsg3: String,
@@ -226,6 +220,10 @@ internal fun CoreTabContent(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(MaxSpace.section)
     ) {
+        /* ── ٠. النمط الرائد (HyperOS 4 / ColorOS 17 / iOS / Material) والميزات الذكية ── */
+        IslandStyleSelectorSection()
+        IslandFlagshipFeaturesSection()
+
         /* ── ١. الحالة والمفتاح الرئيس + ما ينقص من صلاحيات ─────────────── */
         MaxSection(title = stringResource(R.string.hud_section_state)) {
             MaxGroup {
@@ -394,35 +392,6 @@ internal fun CoreTabContent(
                 )
             )
         }
-
-        /* ── ٤. ما تعرضه الجزيرة: ١٢ نشاطًا ثم التطبيقات في الصفّ نفسه ──── */
-        MaxSection(title = stringResource(R.string.ify_act_title)) {
-            MaxGroup {
-                Trigger.entries.forEachIndexed { i, t ->
-                    if (i > 0) MaxGroupDivider()
-                    MaxSwitchRow(
-                        title = stringResource(t.label),
-                        subtitle = stringResource(t.hint()),
-                        checked = t.key in triggers,
-                        onCheckedChange = { IslandSettings.setTrigger(t, it) },
-                        icon = t.icon()
-                    )
-                }
-                MaxGroupDivider()
-                MaxNavigationRow(
-                    title = stringResource(R.string.ify_tab_apps),
-                    valueText = stringResource(R.string.ify_apps_blocked, blocked.size),
-                    icon = Icons.Rounded.Android,
-                    onClick = { appsOpenSetter(true) }
-                )
-            }
-            Text(
-                text = stringResource(R.string.ify_act_footer),
-                style = MaterialTheme.typography.bodySmall,
-                color = scheme.onSurfaceVariant,
-                modifier = Modifier.padding(horizontal = MaxSpace.groupPadding)
-            )
-        }
     }
 }
 
@@ -449,6 +418,19 @@ internal fun DesignTabContent(
     seed: Int,
     ctx: Context,
     nudge: (Float, Float) -> Unit,
+    swUp: SwipeAction,
+    swDown: SwipeAction,
+    swLeft: SwipeAction,
+    swRight: SwipeAction,
+    swipeDir: SwipeDir?,
+    swipeDirSetter: (SwipeDir?) -> Unit,
+    styles: Map<String, KindStyle>,
+    kindSheetKind: IslandKind?,
+    kindSheetKindSetter: (IslandKind?) -> Unit,
+    kindSheetAll: Boolean,
+    kindSheetAllSetter: (Boolean) -> Unit,
+    resetConfirm: Boolean,
+    resetConfirmSetter: (Boolean) -> Unit,
     scheme: ColorScheme
 ) {
     Column(
@@ -703,53 +685,6 @@ internal fun DesignTabContent(
                 )
             }
         }
-    }
-}
-
-/**
- * محتوى تبويب «المتقدم»: إيماءات السحب، النوافذ، إعادة الضبط.
- */
-@Composable
-internal fun AdvancedTabContent(
-    swUp: SwipeAction,
-    swDown: SwipeAction,
-    swLeft: SwipeAction,
-    swRight: SwipeAction,
-    swipeDir: SwipeDir?,
-    swipeDirSetter: (SwipeDir?) -> Unit,
-    styles: Map<String, KindStyle>,
-    kindSheetKind: IslandKind?,
-    kindSheetKindSetter: (IslandKind?) -> Unit,
-    kindSheetAll: Boolean,
-    kindSheetAllSetter: (Boolean) -> Unit,
-    resetConfirm: Boolean,
-    resetConfirmSetter: (Boolean) -> Unit,
-    scheme: ColorScheme
-) {
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(MaxSpace.section)
-    ) {
-        /* ── ٠. الجزيرة الأصلية: كشفٌ صادق، ولا تحكّم أعمى في SystemUI ───────── */
-        val ctx = LocalContext.current
-        val native = remember { NativeIslandProbe.read(ctx) }
-        MaxSection(title = stringResource(R.string.ify_native_island_title)) {
-            MaxGroup {
-                MaxSwitchRow(
-                    title = stringResource(R.string.ify_native_island_control),
-                    subtitle = if (native.nativeLikely) {
-                        stringResource(R.string.ify_native_island_detected, native.vendor ?: "")
-                    } else {
-                        stringResource(R.string.ify_native_island_none)
-                    },
-                    checked = false,
-                    enabled = false,
-                    lockedReason = stringResource(R.string.ify_native_island_locked),
-                    onCheckedChange = {},
-                    icon = Icons.Rounded.Layers
-                )
-            }
-        }
 
         /* ── ٩. إيماءات السحب — كل صفّ يفتح مُنتقي إجرائه ─────────────── */
         MaxSection(title = stringResource(R.string.ify_cust_swipe_title)) {
@@ -790,7 +725,7 @@ internal fun AdvancedTabContent(
             )
         }
 
-        /* ── ١١. النوافذ والأنشطة: كل صفّ يفتح ورقة تعديله الحيّة ───────── */
+        /* ── ١٠. النوافذ والأنشطة: كل صفّ يفتح ورقة تعديله الحيّة ───────── */
         MaxSection(
             title = stringResource(R.string.ify_cust_banner),
             description = stringResource(R.string.ify_cust_banner_sub)
@@ -824,7 +759,7 @@ internal fun AdvancedTabContent(
             }
         }
 
-        /* ── ١٢. إعادة الضبط — بلا مساس بالأنشطة والتطبيقات ───────────── */
+        /* ── ١١. إعادة الضبط — بلا مساس بالأنشطة والتطبيقات ───────────── */
         MaxGroup {
             MaxNavigationRow(
                 title = stringResource(R.string.ify_cust_reset),

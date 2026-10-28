@@ -63,6 +63,10 @@ internal fun IslandLiveCard(modifier: Modifier = Modifier) {
     val glow by IslandSettings.glow.collectAsState()
     val haptics by IslandSettings.haptics.collectAsState()
     val appAccentOn by IslandSettings.islandAppAccent.collectAsState()
+    val splitIsland by IslandSettings.splitIsland.collectAsState()
+    val cutoutAnchor by IslandSettings.cutoutAnchor.collectAsState()
+    val hyperCharge by IslandSettings.hyperCharge.collectAsState()
+    val themeStyle by IslandSettings.islandThemeStyle.collectAsState()
 
     var demo by remember { mutableStateOf(IslandDemo.Notification) }
     var level by remember { mutableStateOf(IslandLevel.Expanded) }
@@ -75,9 +79,39 @@ internal fun IslandLiveCard(modifier: Modifier = Modifier) {
         Column(Modifier.padding(bottom = MaxSpace.md)) {
             IslandTheme {
                 IslandDemoStage(height = 210.dp, modifier = Modifier.padding(10.dp)) {
+                    // محاكاة ثقب الكاميرا الأمامية حسب موضع الارتكاز (وسط / يسار / يمين)
+                    val punchAlign = when (cutoutAnchor) {
+                        1 -> Alignment.TopStart
+                        2 -> Alignment.TopEnd
+                        else -> Alignment.TopCenter
+                    }
+                    val punchPad = when (cutoutAnchor) {
+                        1 -> Modifier.padding(start = 24.dp, top = 26.dp)
+                        2 -> Modifier.padding(end = 24.dp, top = 26.dp)
+                        else -> Modifier.padding(top = 26.dp)
+                    }
+                    Box(
+                        modifier = Modifier
+                            .align(punchAlign)
+                            .then(punchPad)
+                            .size(14.dp)
+                            .clip(androidx.compose.foundation.shape.CircleShape)
+                            .background(androidx.compose.ui.graphics.Color.Black)
+                            .border(1.dp, androidx.compose.ui.graphics.Color(0xFF2E2E30), androidx.compose.foundation.shape.CircleShape)
+                    )
+
                     Box(Modifier.padding(top = 14.dp)) {
+                        val activeMode = if (demo == IslandDemo.Charging && hyperCharge) {
+                            IslandMode.Charging(88, true, 120)
+                        } else {
+                            demo.toMode()
+                        }
+                        val secMode = if (splitIsland && level == IslandLevel.Compact && demo == IslandDemo.Media) {
+                            IslandMode.Timer(42, 60)
+                        } else null
+
                         DynamicIslandUi(
-                            mode = demo.toMode(),
+                            mode = activeMode,
                             level = level,
                             scale = if (level == IslandLevel.Banner) scale else scale.coerceAtMost(1.25f),
                             widthScale = w,
@@ -86,6 +120,7 @@ internal fun IslandLiveCard(modifier: Modifier = Modifier) {
                             animSpeed = speed,
                             glow = glow,
                             haptics = haptics,
+                            secondary = secMode,
                             appAccent = if (appAccentOn) MaterialTheme.colorScheme.primary else null,
                             onClick = {
                                 level = if (level == IslandLevel.Expanded) IslandLevel.Compact else IslandLevel.Expanded

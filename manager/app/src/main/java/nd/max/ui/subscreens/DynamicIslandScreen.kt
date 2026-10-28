@@ -406,10 +406,6 @@ fun DynamicIslandScreen(navController: NavController) {
                             ctx = ctx,
                             postLauncher = postLauncher,
                             btLauncher = btLauncher,
-                            triggers = triggers,
-                            blocked = blocked,
-                            appsOpen = appsOpen,
-                            appsOpenSetter = { appsOpen = it },
                             demoMsg = demoMsg,
                             demoMsg2 = demoMsg2,
                             demoMsg3 = demoMsg3,
@@ -418,6 +414,11 @@ fun DynamicIslandScreen(navController: NavController) {
                             demoOrder = demoOrder,
                             demoArrive = demoArrive,
                             demoDownload = demoDownload,
+                            scheme = scheme
+                        )
+                        IslandTab.ACTIVITIES -> ActivitiesTabContent(
+                            triggers = triggers,
+                            kindSheetAllSetter = { kindSheetAll = it },
                             scheme = scheme
                         )
                         IslandTab.DESIGN -> DesignTabContent(
@@ -439,9 +440,6 @@ fun DynamicIslandScreen(navController: NavController) {
                             seed = seed,
                             ctx = ctx,
                             nudge = ::nudge,
-                            scheme = scheme
-                        )
-                        IslandTab.ADVANCED -> AdvancedTabContent(
                             swUp = swUp,
                             swDown = swDown,
                             swLeft = swLeft,
@@ -456,6 +454,9 @@ fun DynamicIslandScreen(navController: NavController) {
                             resetConfirm = resetConfirm,
                             resetConfirmSetter = { resetConfirm = it },
                             scheme = scheme
+                        )
+                        IslandTab.APPS -> AppsTabContent(
+                            blocked = blocked
                         )
                     }
                 }
