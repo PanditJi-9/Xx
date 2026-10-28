@@ -32,15 +32,15 @@ class IslandLayoutTest {
     )
 
     @Test
-    fun `the island is pushed below the cutout and the status bar by default`() {
-        // 10dp = 30px، لكن القصّة تنتهي عند 96px + فراغ 12px = 108px.
-        assertEquals(108, IslandLayout.preferredTopPx(portrait, 10f, avoidSystemUi = true))
-        // ومن وضعها أسفل منهما لا تُسحب إلى أعلى.
+    fun `the island wraps the camera cutout at the top by default`() {
+        // مركز الكاميرا 48px، الكبسولة تُطوّق الكاميرا في الأعلى + إزاحة المستخدم 10dp (30px) = 30px.
+        assertEquals(30, IslandLayout.preferredTopPx(portrait, 10f, avoidSystemUi = true))
+        // وعند زيادة إزاحة المستخدم إلى 100dp (300px) تنزل بسلاسة.
         assertEquals(300, IslandLayout.preferredTopPx(portrait, 100f, avoidSystemUi = true))
     }
 
     @Test
-    fun `opting out of system ui avoidance is explicit and keeps the user offset`() {
+    fun `user offset is respected when wrapping the camera`() {
         assertEquals(30, IslandLayout.preferredTopPx(portrait, 10f, avoidSystemUi = false))
     }
 

@@ -240,12 +240,17 @@ internal fun IslandBody(
 ) {
     val lvl = level
     val kindStyles by IslandSettings.kindStyles.collectAsState()
+    val islandThemeStyle by IslandSettings.islandThemeStyle.collectAsState()
+    val splitIslandSetting by IslandSettings.splitIsland.collectAsState()
+
     // Each banner type (message, charging, unplugged, ...) has its own size
     val kind = kindOf(mode)
     val bs = kind?.let { kindStyles[it.key] } ?: KindStyle()
     val isPopup = kind?.popup == true
     // The second activity: never the same thing twice, never during a call (its buttons need the room).
     val sec = secondary?.takeIf { it != mode && it !is IslandMode.Call && it !is IslandMode.Idle }
+    val isSplit = splitIslandSetting && sec != null && lvl == IslandLevel.Compact
+
     val haptic = LocalHapticFeedback.current
     val hapticOn by rememberUpdatedState(haptics)
 
@@ -268,15 +273,15 @@ internal fun IslandBody(
     val baseW = when (lvl) {
         IslandLevel.Compact -> when (mode) {
             IslandMode.Idle -> 118.dp
-            is IslandMode.Charging -> 150.dp
-            is IslandMode.Timer -> if (sec != null) 214.dp else 160.dp
-            is IslandMode.Notification -> if (sec != null) 274.dp else 224.dp
-            is IslandMode.Media -> if (sec != null) 268.dp else 224.dp
-            is IslandMode.Call -> 210.dp
-            is IslandMode.Device -> if (sec != null) 250.dp else 200.dp
-            is IslandMode.LowBattery -> 150.dp
-            is IslandMode.Toggle -> if (sec != null) 240.dp else 190.dp
-            is IslandMode.Live -> if (sec != null) 256.dp else 224.dp
+            is IslandMode.Charging -> 146.dp
+            is IslandMode.Timer -> if (sec != null && !isSplit) 196.dp else 156.dp
+            is IslandMode.Notification -> if (sec != null && !isSplit) 214.dp else 190.dp
+            is IslandMode.Media -> if (sec != null && !isSplit) 206.dp else 180.dp
+            is IslandMode.Call -> 190.dp
+            is IslandMode.Device -> if (sec != null && !isSplit) 206.dp else 176.dp
+            is IslandMode.LowBattery -> 146.dp
+            is IslandMode.Toggle -> if (sec != null && !isSplit) 206.dp else 176.dp
+            is IslandMode.Live -> if (sec != null && !isSplit) 214.dp else 186.dp
         }
         IslandLevel.Banner -> bannerWidth(mode)
         else -> 368.dp
@@ -294,15 +299,20 @@ internal fun IslandBody(
     }
 
     // Never wider than the safe area the window measured (cutout / side insets included).
+    // In Compact mode, strictly reserve margins so status bar icons (clock & battery) are never covered.
     val screenPx = LocalContext.current.resources.displayMetrics.widthPixels
     val widthPx = if (maxWidthPx > 0) maxWidthPx else screenPx - 24
     val density = LocalDensity.current.density
     val maxW = (widthPx / density).dp
+    val compactMaxW = if (lvl == IslandLevel.Compact) {
+        ((screenPx / density) - 162f).coerceAtLeast(140f).dp
+    } else maxW
+
     val targetW = (baseW * (when (lvl) {
         IslandLevel.Banner -> bs.w
         IslandLevel.Compact -> widthScale * (if (isPopup) 1f else bs.w)
         else -> widthScale * bs.cardW
-    })).coerceAtMost(maxW)
+    })).coerceAtMost(compactMaxW)
     // ميزانية النصّ من **عرض الكبسولة الفعليّ** ومن المساحة المحجوزة للأيقونات داخلها، لا من
     // عرض الشاشة: شريط العرض يضيّق الكبسولة، ونصٌّ محسوب على عرض الشاشة يُقصّ في منتصف كلمة.
     // والثابت القديم يبقى **سقفًا أعلى**، فلا يصير النصّ أطول مما كان في أي وضع.
@@ -319,8 +329,18 @@ internal fun IslandBody(
     // تُدفع تحت القصّة إن لم تُحدّ. والرقم من قياس النافذة لا من نسبة مفترضة.
     val targetHCapped = if (maxHeightPx > 0) targetH.coerceAtMost((maxHeightPx / density).dp) else targetH
 
+    val palette = remember(islandThemeStyle, appAccent, mode, glow) {
+        IslandStyleFactory.resolvePalette(islandThemeStyle, appAccent, mode, glow)
+    }
+
     // Higher animSpeed = faster spring; a fast flick stiffens it further (no fixed duration).
-    val springSpec = remember(animSpeed, gestureSpeed) { IslandLayout.springFor(gestureSpeed, animSpeed) }
+    val springSpec = remember(animSpeed, gestureSpeed, palette) {
+        val base = IslandLayout.springFor(gestureSpeed, animSpeed)
+        IslandSpringSpec(
+            dampingRatio = (base.dampingRatio * (palette.springDamping / 0.86f)).coerceIn(0.60f, 0.96f),
+            stiffness = (base.stiffness * (palette.springStiffness / 2400f)).coerceIn(300f, 6000f)
+        )
+    }
     val spec = spring<Dp>(
         dampingRatio = springSpec.dampingRatio,
         stiffness = springSpec.stiffness,
@@ -332,149 +352,133 @@ internal fun IslandBody(
     val corner = (height / 2 * cf).coerceIn(12.dp, 46.dp)
     val shape = RoundedCornerShape(corner)
 
-    // Glow: accent color from the album art / current mode
-    val glowTarget: Color = if (!glow) Color.Transparent else when (mode) {
-        is IslandMode.Media -> appAccent ?: mode.accent?.let { Color(it) } ?: Color.Transparent
-        is IslandMode.Charging -> Green
-        is IslandMode.Call -> Green
-        is IslandMode.Timer -> Orange
-        is IslandMode.LowBattery -> Red
-        is IslandMode.Live -> LiveBlue
-        is IslandMode.Toggle -> mode.tint()
-        else -> Color.Transparent
-    }
+    val glowTarget: Color = if (!glow) Color.Transparent else palette.glowColor
     val glowColor by animateColorAsState(glowTarget, tween(200), label = "glow")
 
-    Box(
-        modifier = Modifier
-            .width(width)
-            .height(height)
-            .clip(shape)
-            .background(Color.Black)
-            .drawBehind {
-                if (glowColor.alpha > 0f) {
-                    drawRect(
-                        Brush.radialGradient(
-                            listOf(glowColor.copy(alpha = glowColor.alpha * 0.32f), Color.Transparent),
-                            center = Offset(size.width * 0.16f, size.height * 0.5f),
-                            radius = size.width * 0.75f
-                        )
-                    )
-                }
-            }
-            .border(
-                0.6.dp,
-                if (glowColor.alpha > 0f) glowColor.copy(alpha = glowColor.alpha * 0.55f) else Color(0xFF1F1F21),
-                shape
-            )
-            // One gesture handler for everything: tap, long-press and swipe.
-            // (No separate clickable: two handlers fighting over the same touch is what made taps unreliable.)
-            .pointerInput(Unit) {
-                awaitEachGesture {
-                    // Default requireUnconsumed = true: a touch that starts on an inner button
-                    // (prev / play / next / answer...) belongs to that button, not to us.
-                    val down = awaitFirstDown()
-                    val tracker = VelocityTracker()
-                    tracker.addPosition(down.uptimeMillis, down.position)
-                    val slop = viewConfiguration.touchSlop
-                    var accum = Offset.Zero
-                    var swipe = false
-                    var tap = false
-
-                    // Phase 1: watch until the long-press timeout.
-                    // Finger moved = swipe, finger lifted = tap, still down = long-press.
-                    val timedOut = withTimeoutOrNull(viewConfiguration.longPressTimeoutMillis) {
-                        while (true) {
-                            val ev = awaitPointerEvent()
-                            val ch = ev.changes.firstOrNull { it.id == down.id }
-                            // Lost, or an inner button consumed it: not our gesture
-                            if (ch == null || ch.isConsumed) return@withTimeoutOrNull
-                            if (ch.changedToUpIgnoreConsumed()) {
-                                tap = true
-                                return@withTimeoutOrNull
-                            }
-                            accum += ch.positionChange()
-                            tracker.addPosition(ch.uptimeMillis, ch.position)
-                            if (accum.getDistance() > slop) {
-                                swipe = true
-                                return@withTimeoutOrNull
-                            }
-                        }
-                    } == null
-
-                    if (timedOut) {
-                        // Long press = large card (no dragging)
-                        if (hapticOn) haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                        dLong()
-                        // Swallow the rest of the touch until the finger lifts
-                        drag(down.id) { ch -> ch.consume() }
-                        currentEvent.changes.forEach { it.consume() }
-                    } else if (swipe) {
-                        var dx = accum.x
-                        var dy = accum.y
-                        drag(down.id) { ch ->
-                            val d = ch.positionChange()
-                            dx += d.x
-                            dy += d.y
-                            tracker.addPosition(ch.uptimeMillis, ch.position)
-                            ch.consume()
-                        }
-                        currentEvent.changes.forEach { it.consume() }
-                        // FIX: the old rule needed a long drag (18dp, and it shrank with the island scale).
-                        // Now a short quick flick counts too, and the distance is not tied to the scale.
-                        val velo = tracker.calculateVelocity()
-                        val vertical = abs(dy) >= abs(dx)
-                        val dist = if (vertical) abs(dy) else abs(dx)
-                        val speed = if (vertical) abs(velo.y) else abs(velo.x)
-                        if (dist >= slop * 2f || speed >= 500f) {
-                            gestureSpeed = speed
-                            IslandController.noteGestureVelocity(speed)
-                            val dir = if (vertical) (if (dy < 0) SwipeDir.Up else SwipeDir.Down)
-                                      else (if (dx < 0) SwipeDir.Left else SwipeDir.Right)
-                            val cb = dSwipe
-                            if (cb != null) cb(dir)
-                            else when (dir) {
-                                SwipeDir.Up -> dDismiss()
-                                SwipeDir.Left -> dSide(1)
-                                SwipeDir.Right -> dSide(-1)
-                                SwipeDir.Down -> Unit
-                            }
-                        }
-                    } else if (tap) {
-                        gestureSpeed = 0f
-                        dClick()
-                    }
-                }
-            },
-        contentAlignment = Alignment.Center
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
     ) {
-        AnimatedContent(
-            modifier = Modifier.fillMaxSize(),
-            targetState = mode to lvl,
-            // A timer ticking every second must not re-trigger the transition; a new track must.
-            contentKey = { (m, l) ->
-                if (m is IslandMode.Media) "media:${m.title}:$l" else "${m::class.java.name}:$l"
-            },
-            transitionSpec = {
-                (fadeIn(tween(motion.durationMs)) +
-                    scaleIn(tween(motion.durationMs), initialScale = motion.startScale)) togetherWith
-                    fadeOut(tween(60))
-            },
-            contentAlignment = Alignment.Center,
-            label = "content"
-        ) { (m, l) ->
-            if (l == IslandLevel.Compact) {
-                Compact(m, queued, sec, actions, budget.titleChars)
-            } else if (l == IslandLevel.Banner) {
-                Banner(m, queued, actions)
-            } else if (sec != null) {
-                Column(Modifier.fillMaxSize()) {
-                    Box(Modifier.weight(1f)) { Expanded(m, l, actions) }
-                    CompanionRow(sec, actions)
+        Box(
+            modifier = Modifier
+                .width(width)
+                .height(height)
+                .clip(shape)
+                .background(palette.backgroundBrush)
+                .drawIslandSurface(palette, corner)
+                .border(
+                    palette.borderWidth,
+                    if (glowColor.alpha > 0f) glowColor.copy(alpha = 0.55f) else palette.borderColor,
+                    shape
+                )
+                // One gesture handler for everything: tap, long-press and swipe.
+                .pointerInput(Unit) {
+                    awaitEachGesture {
+                        val down = awaitFirstDown()
+                        val tracker = VelocityTracker()
+                        tracker.addPosition(down.uptimeMillis, down.position)
+                        val slop = viewConfiguration.touchSlop
+                        var accum = Offset.Zero
+                        var swipe = false
+                        var tap = false
+
+                        val timedOut = withTimeoutOrNull(viewConfiguration.longPressTimeoutMillis) {
+                            while (true) {
+                                val ev = awaitPointerEvent()
+                                val ch = ev.changes.firstOrNull { it.id == down.id }
+                                if (ch == null || ch.isConsumed) return@withTimeoutOrNull
+                                if (ch.changedToUpIgnoreConsumed()) {
+                                    tap = true
+                                    return@withTimeoutOrNull
+                                }
+                                accum += ch.positionChange()
+                                tracker.addPosition(ch.uptimeMillis, ch.position)
+                                if (accum.getDistance() > slop) {
+                                    swipe = true
+                                    return@withTimeoutOrNull
+                                }
+                            }
+                        } == null
+
+                        if (timedOut) {
+                            if (hapticOn) haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                            dLong()
+                            drag(down.id) { ch -> ch.consume() }
+                            currentEvent.changes.forEach { it.consume() }
+                        } else if (swipe) {
+                            var dx = accum.x
+                            var dy = accum.y
+                            drag(down.id) { ch ->
+                                val d = ch.positionChange()
+                                dx += d.x
+                                dy += d.y
+                                tracker.addPosition(ch.uptimeMillis, ch.position)
+                                ch.consume()
+                            }
+                            currentEvent.changes.forEach { it.consume() }
+                            val velo = tracker.calculateVelocity()
+                            val vertical = abs(dy) >= abs(dx)
+                            val dist = if (vertical) abs(dy) else abs(dx)
+                            val speed = if (vertical) abs(velo.y) else abs(velo.x)
+                            if (dist >= slop * 2f || speed >= 500f) {
+                                gestureSpeed = speed
+                                IslandController.noteGestureVelocity(speed)
+                                val dir = if (vertical) (if (dy < 0) SwipeDir.Up else SwipeDir.Down)
+                                          else (if (dx < 0) SwipeDir.Left else SwipeDir.Right)
+                                val cb = dSwipe
+                                if (cb != null) cb(dir)
+                                else when (dir) {
+                                    SwipeDir.Up -> dDismiss()
+                                    SwipeDir.Left -> dSide(1)
+                                    SwipeDir.Right -> dSide(-1)
+                                    SwipeDir.Down -> Unit
+                                }
+                            }
+                        } else if (tap) {
+                            gestureSpeed = 0f
+                            dClick()
+                        }
+                    }
+                },
+            contentAlignment = Alignment.Center
+        ) {
+            AnimatedContent(
+                modifier = Modifier.fillMaxSize(),
+                targetState = mode to lvl,
+                contentKey = { (m, l) ->
+                    if (m is IslandMode.Media) "media:${m.title}:$l" else "${m::class.java.name}:$l"
+                },
+                transitionSpec = {
+                    (fadeIn(tween(motion.durationMs, easing = FastOutSlowInEasing)) +
+                        scaleIn(spring(dampingRatio = palette.springDamping, stiffness = palette.springStiffness), initialScale = motion.startScale)) togetherWith
+                        fadeOut(tween((motion.durationMs * 0.6f).roundToInt(), easing = FastOutSlowInEasing))
+                },
+                contentAlignment = Alignment.Center,
+                label = "content"
+            ) { (m, l) ->
+                if (l == IslandLevel.Compact) {
+                    Compact(m, queued, if (isSplit) null else sec, actions, budget.titleChars)
+                } else if (l == IslandLevel.Banner) {
+                    Banner(m, queued, actions)
+                } else if (sec != null) {
+                    Column(Modifier.fillMaxSize()) {
+                        Box(Modifier.weight(1f)) { Expanded(m, l, actions) }
+                        CompanionRow(sec, actions)
+                    }
+                } else {
+                    Expanded(m, l, actions)
                 }
-            } else {
-                Expanded(m, l, actions)
             }
+        }
+
+        if (isSplit && sec != null) {
+            Spacer(Modifier.width(8.dp))
+            SecondaryFloatingBubble(
+                secondary = sec,
+                palette = palette,
+                height = height,
+                onClick = { actions.onPromoteSecondary() }
+            )
         }
     }
 }
@@ -527,102 +531,154 @@ internal fun Compact(
     queued: Int,
     sec: IslandMode?,
     a: IslandActions,
-    // Measured character cap for this pill (0 = keep the long-standing constant).
     measuredChars: Int = 0,
 ) {
     val primary = MaterialTheme.colorScheme.primary
-    // The old per-mode constant is a ceiling: a narrow screen lowers it, never raises it.
+    val hyperChargeOn by IslandSettings.hyperCharge.collectAsState()
     fun cap(fallback: Int): Int = if (measuredChars > 0) minOf(measuredChars, fallback) else fallback
+
     Row(
-        Modifier.fillMaxSize().padding(horizontal = 13.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
+        Modifier
+            .fillMaxSize()
+            .padding(horizontal = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
         when (m) {
             IslandMode.Idle -> Unit
+
             is IslandMode.Charging -> {
-                val c = if (m.connected) Green else Orange
+                val c = if (m.connected) {
+                    if (hyperChargeOn) IslandStyleFactory.HyperNeonGreen else Green
+                } else Orange
                 Icon(
-                    if (m.connected) Icons.Rounded.BatteryChargingFull else Icons.Rounded.BatteryStd,
-                    null, tint = c, modifier = Modifier.size(20.dp)
+                    if (m.connected) (if (hyperChargeOn) Icons.Rounded.ElectricBolt else Icons.Rounded.BatteryChargingFull)
+                    else Icons.Rounded.BatteryStd,
+                    null,
+                    tint = c,
+                    modifier = Modifier.size(19.dp)
                 )
-                Label("${m.percent}%", color = c, size = 14, weight = FontWeight.Bold)
-                if (sec != null) MiniActivity(sec, primary) { a.onPromoteSecondary() }
-            }
-            is IslandMode.Notification -> {
-                Avatar(m.app, 24.dp)
-                Label(
-                    IslandText.fit(m.title.ifBlank { m.app }, cap(if (sec != null) 20 else 28)),
-                    Modifier.weight(1f).padding(horizontal = 9.dp),
-                    size = 13
-                )
-                if (queued > 0) CountBadge(queued, primary)
-                else Box(Modifier.size(7.dp).clip(CircleShape).background(primary))
-                if (sec != null) MiniActivity(sec, primary) { a.onPromoteSecondary() }
-            }
-            is IslandMode.Media -> {
-                Art(m, 25.dp, 7.dp)
-                Waveform(m.playing, m.accentColor(primary), Modifier.height(16.dp))
-                // بعد ترقية الموسيقى إلى الأساس يصير النشاط السابق رفيقًا: بلا هذا السطر
-                // يختفي الرفيق في الكبسولة ويبقى في البطاقة وحدها — وعدٌ ناقص بنشاطين.
-                if (sec != null) MiniActivity(sec, primary) { a.onPromoteSecondary() }
-            }
-            is IslandMode.Timer -> {
-                if (sec == null) {
-                    Icon(Icons.Rounded.Timer, null, tint = Orange, modifier = Modifier.size(20.dp))
-                    Label(formatTime(m.remainingSec), color = Orange, size = 14, weight = FontWeight.Bold, tabular = true)
-                } else {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Rounded.Timer, null, tint = Orange, modifier = Modifier.size(20.dp))
-                        Spacer(Modifier.width(6.dp))
-                        Label(formatTime(m.remainingSec), color = Orange, size = 14, weight = FontWeight.Bold, tabular = true)
-                    }
+                // منطقة الكاميرا فارغة تمامًا في المنتصف
+                Spacer(Modifier.weight(1f))
+                Label("${m.percent}%", color = c, size = 13, weight = FontWeight.Bold)
+                if (sec != null) {
+                    Spacer(Modifier.width(6.dp))
                     MiniActivity(sec, primary) { a.onPromoteSecondary() }
                 }
             }
-            is IslandMode.Call -> {
-                Icon(Icons.Rounded.Call, null, tint = Green, modifier = Modifier.size(19.dp))
-                Label(IslandText.fit(m.name, cap(if (m.incoming) 18 else 16)), Modifier.weight(1f).padding(horizontal = 9.dp), size = 13)
-                if (m.incoming) {
-                    Waveform(true, Green, Modifier.height(14.dp))
-                } else {
-                    val sec = rememberElapsedSec(m.since)
-                    Label(formatTime(sec), color = Green, size = 13, weight = FontWeight.Bold, tabular = true)
+
+            is IslandMode.Notification -> {
+                Avatar(m.app, 22.dp)
+                // منطقة الكاميرا فارغة تمامًا في المنتصف
+                Spacer(Modifier.weight(1f))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Label(
+                        IslandText.fit(m.title.ifBlank { m.app }, cap(if (sec != null) 12 else 16)),
+                        size = 12,
+                        weight = FontWeight.Medium
+                    )
+                    Spacer(Modifier.width(6.dp))
+                    if (queued > 0) CountBadge(queued, primary)
+                    else Box(Modifier.size(6.dp).clip(CircleShape).background(primary))
+                }
+                if (sec != null) {
+                    Spacer(Modifier.width(6.dp))
+                    MiniActivity(sec, primary) { a.onPromoteSecondary() }
                 }
             }
+
+            is IslandMode.Media -> {
+                Art(m, 22.dp, 6.dp)
+                // منطقة الكاميرا فارغة تمامًا في المنتصف
+                Spacer(Modifier.weight(1f))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    DynamicWaveform(
+                        playing = m.playing,
+                        color = m.accentColor(primary),
+                        modifier = Modifier.height(14.dp)
+                    )
+                }
+                if (sec != null) {
+                    Spacer(Modifier.width(6.dp))
+                    MiniActivity(sec, primary) { a.onPromoteSecondary() }
+                }
+            }
+
+            is IslandMode.Timer -> {
+                Icon(Icons.Rounded.Timer, null, tint = Orange, modifier = Modifier.size(19.dp))
+                // منطقة الكاميرا فارغة تمامًا في المنتصف
+                Spacer(Modifier.weight(1f))
+                Label(formatTime(m.remainingSec), color = Orange, size = 13, weight = FontWeight.Bold, tabular = true)
+                if (sec != null) {
+                    Spacer(Modifier.width(6.dp))
+                    MiniActivity(sec, primary) { a.onPromoteSecondary() }
+                }
+            }
+
+            is IslandMode.Call -> {
+                Icon(Icons.Rounded.Call, null, tint = Green, modifier = Modifier.size(19.dp))
+                // منطقة الكاميرا فارغة تمامًا في المنتصف
+                Spacer(Modifier.weight(1f))
+                if (m.incoming) {
+                    DynamicWaveform(true, Green, Modifier.height(14.dp))
+                } else {
+                    val secElapsed = rememberElapsedSec(m.since)
+                    Label(formatTime(secElapsed), color = Green, size = 13, weight = FontWeight.Bold, tabular = true)
+                }
+            }
+
             is IslandMode.Device -> {
                 Icon(
                     if (m.headphones) Icons.Rounded.Headphones else Icons.Rounded.Bluetooth,
                     null, tint = Color(0xFF0A84FF), modifier = Modifier.size(19.dp)
                 )
-                Label(IslandText.fit(m.name, cap(20)), Modifier.weight(1f).padding(start = 9.dp), size = 13)
-                if (sec != null) MiniActivity(sec, primary) { a.onPromoteSecondary() }
+                // منطقة الكاميرا فارغة تمامًا في المنتصف
+                Spacer(Modifier.weight(1f))
+                Label(IslandText.fit(m.name, cap(12)), size = 12, weight = FontWeight.Medium)
+                if (sec != null) {
+                    Spacer(Modifier.width(6.dp))
+                    MiniActivity(sec, primary) { a.onPromoteSecondary() }
+                }
             }
+
             is IslandMode.LowBattery -> {
-                Icon(Icons.Rounded.BatteryAlert, null, tint = Red, modifier = Modifier.size(20.dp))
-                Label("${m.percent}%", color = Red, size = 14, weight = FontWeight.Bold)
-                if (sec != null) MiniActivity(sec, primary) { a.onPromoteSecondary() }
+                Icon(Icons.Rounded.BatteryAlert, null, tint = Red, modifier = Modifier.size(19.dp))
+                // منطقة الكاميرا فارغة تمامًا في المنتصف
+                Spacer(Modifier.weight(1f))
+                Label("${m.percent}%", color = Red, size = 13, weight = FontWeight.Bold)
+                if (sec != null) {
+                    Spacer(Modifier.width(6.dp))
+                    MiniActivity(sec, primary) { a.onPromoteSecondary() }
+                }
             }
+
             is IslandMode.Toggle -> {
                 Icon(m.icon(), null, tint = m.tint(), modifier = Modifier.size(19.dp))
-                Label(IslandText.fit(m.title(), cap(20)), Modifier.weight(1f).padding(start = 9.dp), size = 13)
-                if (sec != null) MiniActivity(sec, primary) { a.onPromoteSecondary() }
+                // منطقة الكاميرا فارغة تمامًا في المنتصف
+                Spacer(Modifier.weight(1f))
+                Label(IslandText.fit(m.title(), cap(12)), size = 12, weight = FontWeight.Medium)
+                if (sec != null) {
+                    Spacer(Modifier.width(6.dp))
+                    MiniActivity(sec, primary) { a.onPromoteSecondary() }
+                }
             }
+
             is IslandMode.Live -> {
-                Icon(m.icon(), null, tint = LiveBlue, modifier = Modifier.size(20.dp))
-                Label(
-                    IslandText.fit(m.title.ifBlank { m.app }, cap(if (sec != null) 16 else 24)),
-                    Modifier.weight(1f).padding(horizontal = 9.dp),
-                    size = 13
-                )
+                Icon(m.icon(), null, tint = LiveBlue, modifier = Modifier.size(19.dp))
+                // منطقة الكاميرا فارغة تمامًا في المنتصف
+                Spacer(Modifier.weight(1f))
                 if (m.kind == LiveKind.Download) {
                     DownloadRing(m.progress, 18.dp)
-                    if (sec != null) {
-                        Spacer(Modifier.width(6.dp))
-                        MiniActivity(sec, primary) { a.onPromoteSecondary() }
-                    }
-                } else if (sec != null) MiniActivity(sec, primary) { a.onPromoteSecondary() }
-                else Box(Modifier.size(7.dp).clip(CircleShape).background(LiveBlue))
+                } else {
+                    Label(
+                        IslandText.fit(m.title.ifBlank { m.app }, cap(if (sec != null) 10 else 14)),
+                        size = 12,
+                        weight = FontWeight.Medium
+                    )
+                }
+                if (sec != null) {
+                    Spacer(Modifier.width(6.dp))
+                    MiniActivity(sec, primary) { a.onPromoteSecondary() }
+                }
             }
         }
     }

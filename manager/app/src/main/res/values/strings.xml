@@ -3533,6 +3533,30 @@
     <string name="ify_demo_order_eta">Arriving in 12 min</string>
     <string name="ify_demo_download">45 MB of 120 MB</string>
 
+    <!-- Dynamic Island Flagship Experience & Styles -->
+    <string name="island_style_title">Island Visual Style</string>
+    <string name="island_style_desc">Choose the aesthetic and motion physics for the Dynamic Island</string>
+    <string name="island_style_hyperos">HyperOS 4 (HyperIsland)</string>
+    <string name="island_style_coloros">ColorOS 17 (Aqua Dynamics)</string>
+    <string name="island_style_ios">iOS Modern (Squircle)</string>
+    <string name="island_style_material">Dynamic Material (Neon)</string>
+    <string name="island_dual_split_title">Split Dual Island</string>
+    <string name="island_dual_split_desc">Separate concurrent tasks into a primary pill and a detached floating bubble</string>
+    <string name="island_cutout_anchor_title">Camera Cutout Position</string>
+    <string name="island_cutout_center">Center Punch-Hole</string>
+    <string name="island_cutout_left">Left Punch-Hole</string>
+    <string name="island_cutout_right">Right Punch-Hole</string>
+    <string name="island_cutout_top">Top Edge / Notch</string>
+    <string name="island_turbo_charge_title">HyperCharge / SuperVOOC Effects</string>
+    <string name="island_turbo_charge_desc">Display animated wattage, turbo charging badges and energy aura</string>
+    <string name="island_interactive_waveform_title">Dynamic Equalizer Visualizer</string>
+    <string name="island_interactive_waveform_desc">Animated multi-bar rhythm equalizer reacting to music playback</string>
+    <string name="island_test_dual_capsule">Test Dual Island</string>
+    <string name="island_test_hyper_charge">Test Turbo Charge</string>
+    <string name="island_test_call">Test Call</string>
+    <string name="island_test_timer">Test Timer</string>
+
+
 
     <string name="theme_accent_custom">Custom</string>
     <string name="theme_accent_custom_hint">Drag to tune. The preview updates as you move, and the color is saved when you let go.</string>

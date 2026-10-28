@@ -440,8 +440,9 @@ class IslandOverlay(
             combine(
                 IslandSettings.offsetX,
                 IslandSettings.offsetY,
-                IslandSettings.avoidSystemUi
-            ) { x, y, avoid -> Triple(x, y, avoid) }
+                IslandSettings.avoidSystemUi,
+                IslandSettings.cutoutAnchor
+            ) { _, _, _, _ -> Unit }
                 .collect { applyPos() }
         }
     }
@@ -563,6 +564,7 @@ class IslandOverlay(
             islandWidthPx = v.width,
             islandHeightPx = v.height,
             avoidSystemUi = IslandSettings.avoidSystemUi.value,
+            cutoutAnchor = IslandSettings.cutoutAnchor.value,
         )
         if (maxWidth.value != at.maxWidthPx) maxWidth.value = at.maxWidthPx
         // الارتفاع المتاح من **موضع الارتساء** (لا من y بعد الضغط) إلى أسفل المنطقة الآمنة.

@@ -131,21 +131,53 @@ object IslandLayout {
         return available.coerceIn(1, cap)
     }
 
+    /** حجز مساحة أيقونات شريط الحالة (الساعة على اليسار 76dp، البطارية والواي فاي على اليمين 86dp) */
+    const val STATUS_BAR_LEFT_RESERVE_DP = 76f
+    const val STATUS_BAR_RIGHT_RESERVE_DP = 86f
+
     /**
-     * أعلى نقطة مسموحة للكبسولة.
-     *
-     * [avoidSystemUi] = false يعيد إزاحة المستخدم كما هي (اختيار صريح للتراكب)، و[avoidSystemUi]
-     * = true يرفعها إلى ما تحت القصّة/شريط الحالة. ولا يُرفع إلا إلى الأدنى: من وضعها أسفل
-     * منهما لا تُسحب إلى أعلى.
+     * العرض الآمن في شريط الحالة للوضع المصغر (Compact Pill Safe Width):
+     * يضمن أن الكبسولة المضغوطة لا تتجاوز المساحة الفارغة في المنتصف ولا تغطي الساعة أو البطارية.
      */
-    fun preferredTopPx(insets: IslandInsets, offsetYf: Float, avoidSystemUi: Boolean): Int {
+    fun compactSafeWidthPx(insets: IslandInsets): Int {
         val i = insets.sanitized()
-        val desired = (finite(offsetYf, 0f, 10_000f) * i.density).roundToInt()
-        if (!avoidSystemUi) return desired
-        val systemTop = maxOf(i.safeTopPx, i.statusBarPx)
-        val gap = (CUTOUT_GAP_DP * i.density).roundToInt()
+        val left = (STATUS_BAR_LEFT_RESERVE_DP * i.density).roundToInt()
+        val right = (STATUS_BAR_RIGHT_RESERVE_DP * i.density).roundToInt()
+        val available = i.screenWidthPx - left - right
+        return available.coerceAtLeast((120f * i.density).roundToInt())
+    }
+
+    /**
+     * أعلى نقطة مسموحة للكبسولة — **ارتكاز الكاميرا الذكي (Smart OEM Camera Cutout Wrap)**:
+     *
+     * الجزيرة تجلس مباشرة عند الكاميرا (تُطوّق الكاميرا) بدلاً من الهبوط تحت شريط الحالة.
+     * إذا وُجدت قصة للكاميرا، تتمركز الكبسولة رأسيًا حولها بحيث تجلس الكاميرا في مركز الكبسولة تمامًا.
+     * وإذا لم تُكتشف قصة، تتمركز الكبسولة داخل شريط الحالة متناغمة مع ارتفاعه.
+     * وتُضاف إزاحة المستخدم [offsetYf] للتعديل اليدوي الدقيق إن رغب في ذلك.
+     */
+    fun preferredTopPx(
+        insets: IslandInsets,
+        offsetYf: Float,
+        islandHeightPx: Int = 0,
+        avoidSystemUi: Boolean = true
+    ): Int {
+        val i = insets.sanitized()
+        val userOffset = (finite(offsetYf, -10_000f, 10_000f) * i.density).roundToInt()
+
+        val cameraCenterY = if (i.cutoutBottomPx > 0) {
+            val top = if (i.cutoutTopPx >= 0) i.cutoutTopPx else 0
+            (top + i.cutoutBottomPx) / 2
+        } else {
+            val sb = if (i.statusBarPx > 0) i.statusBarPx else (28f * i.density).roundToInt()
+            sb / 2
+        }
+
+        val h = if (islandHeightPx > 0) islandHeightPx else (36f * i.density).roundToInt()
+        val naturalTop = (cameraCenterY - h / 2).coerceAtLeast(0)
+
+        val top = (naturalTop + userOffset).coerceAtLeast(0)
         val limit = i.screenHeightPx / 3
-        return maxOf(desired, systemTop + gap).coerceAtMost(limit)
+        return top.coerceAtMost(limit)
     }
 
     /** عرض القصّة **فقط** إن كانت وسطية (الكاميرا في الوسط) — وإلا فليست حاجزًا للكبسولة الوسطية. */
@@ -170,21 +202,24 @@ object IslandLayout {
         islandWidthPx: Int,
         islandHeightPx: Int,
         avoidSystemUi: Boolean,
+        cutoutAnchor: Int = 0,
     ): IslandPlacement {
         val i = insets.sanitized()
         val margin = (EDGE_MARGIN_DP * i.density).roundToInt()
         val w = islandWidthPx.coerceAtLeast(0)
         val h = islandHeightPx.coerceAtLeast(0)
         val maxW = maxWidthPx(i)
-        val anchor = preferredTopPx(i, offsetYf, avoidSystemUi)
+        val anchor = preferredTopPx(i, offsetYf, h, avoidSystemUi)
 
         val minX = i.safeLeftPx + margin
         val maxX = (i.screenWidthPx - i.safeRightPx - margin - w).coerceAtLeast(minX)
-        // في الوضع العرضي قد تكون القصّة على أحد الجانبين: التوسيط داخل المساحة الآمنة لا داخل
-        // الشاشة كلّها، وإلا بدت الكبسولة منزاحةً نحو الجانب الذي بلا قصّة.
         val area = (maxX - minX).coerceAtLeast(0)
-        val centered = minX + area / 2
-        val x = (centered + (finite(offsetXf, -10_000f, 10_000f) * i.density).roundToInt()).coerceIn(minX, maxX)
+        val baseAnchorX = when (cutoutAnchor) {
+            1 -> minX
+            2 -> maxX
+            else -> minX + area / 2
+        }
+        val x = (baseAnchorX + (finite(offsetXf, -10_000f, 10_000f) * i.density).roundToInt()).coerceIn(minX, maxX)
 
         val bottomRoom = (i.screenHeightPx - i.safeBottomPx - margin - h).coerceAtLeast(0)
         val y = anchor.coerceIn(0, bottomRoom)
@@ -196,7 +231,7 @@ object IslandLayout {
             yPx = y,
             maxWidthPx = maxW,
             anchorTopPx = anchor,
-            belowSystemUi = y >= maxOf(systemTop, cutoutBottom),
+            belowSystemUi = false,
             cutoutSpanPx = centeredCutoutSpanPx(i),
         )
     }

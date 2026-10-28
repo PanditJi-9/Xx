@@ -68,6 +68,8 @@ import androidx.compose.material.icons.rounded.MusicNote
 import androidx.compose.material.icons.rounded.Navigation
 import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.material.icons.rounded.PowerSettingsNew
+import androidx.compose.material.icons.rounded.ElectricBolt
+import androidx.compose.material.icons.rounded.FlipToFront
 import androidx.compose.material.icons.rounded.PushPin
 import androidx.compose.material.icons.rounded.RestartAlt
 import androidx.compose.material.icons.rounded.SwapHoriz
@@ -75,6 +77,8 @@ import androidx.compose.material.icons.rounded.SwapVert
 import androidx.compose.material.icons.rounded.Timer
 import androidx.compose.material.icons.rounded.Tune
 import androidx.compose.material.icons.rounded.Vibration
+import nd.max.ui.component.IslandFlagshipFeaturesSection
+import nd.max.ui.component.IslandStyleSelectorSection
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FilledTonalIconButton
@@ -309,6 +313,13 @@ internal fun CoreTabContent(
                     TestAction(R.string.ify_demo_charging, Icons.Rounded.Bolt) {
                         IslandController.flash(IslandMode.Charging(82))
                     },
+                    TestAction(R.string.island_test_hyper_charge, Icons.Rounded.ElectricBolt) {
+                        IslandController.flash(IslandMode.Charging(88, true, 120), 4000)
+                    },
+                    TestAction(R.string.island_test_dual_capsule, Icons.Rounded.FlipToFront) {
+                        IslandController.setMedia(IslandMode.Media("Starboy", "The Weeknd", true))
+                        IslandController.startTimer(120)
+                    },
                     TestAction(R.string.ify_test_timer_60, Icons.Rounded.Timer) {
                         IslandController.startTimer(60)
                     },
@@ -444,6 +455,8 @@ internal fun DesignTabContent(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(MaxSpace.section)
     ) {
+        IslandStyleSelectorSection()
+        IslandFlagshipFeaturesSection()
         val avoidUi by IslandSettings.avoidSystemUi.collectAsState()
         val dual by IslandSettings.secondaryEnabled.collectAsState()
         MaxSection(title = stringResource(R.string.ify_cust_position)) {

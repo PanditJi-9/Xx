@@ -3480,6 +3480,29 @@
     <string name="ify_demo_order_status">طلبك في الطريق</string>
     <string name="ify_demo_order_eta">يصل خلال 12 دقيقة</string>
     <string name="ify_demo_download">45 من 120 م.ب</string>
+    <!-- نمط وتجربة الجزيرة الديناميكية الفائقة -->
+    <string name="island_style_title">النمط البصري للجزيرة</string>
+    <string name="island_style_desc">اختر المظهر وفيزيائية الحركة للجزيرة الديناميكية</string>
+    <string name="island_style_hyperos">HyperOS 4 (هايبر آيلاند)</string>
+    <string name="island_style_coloros">ColorOS 17 (أكوا ديناميكس)</string>
+    <string name="island_style_ios">iOS الحديث (سكويركل)</string>
+    <string name="island_style_material">ماتيريال ديناميكي (نيون)</string>
+    <string name="island_dual_split_title">الجزيرة المزدوجة المنقسمة</string>
+    <string name="island_dual_split_desc">فصل المهام المتزامنة إلى كبسولة رئيسية وفقاعة عائمة مستقلة</string>
+    <string name="island_cutout_anchor_title">موضع فتحة الكاميرا</string>
+    <string name="island_cutout_center">فتحة كاميرا بالوسط</string>
+    <string name="island_cutout_left">فتحة كاميرا باليسار</string>
+    <string name="island_cutout_right">فتحة كاميرا باليمين</string>
+    <string name="island_cutout_top">أعلى الشاشة / نتوء</string>
+    <string name="island_turbo_charge_title">مؤثرات الشحن الفائق (HyperCharge)</string>
+    <string name="island_turbo_charge_desc">عرض الواط والنسبة ورسوم الشحن التوربيني النابضة</string>
+    <string name="island_interactive_waveform_title">عارض الموجات التفاعلي</string>
+    <string name="island_interactive_waveform_desc">مخطط ترددات حركي يتفاعل مباشرة مع إيقاع الموسيقى</string>
+    <string name="island_test_dual_capsule">اختبار الجزيرة المنقسمة</string>
+    <string name="island_test_hyper_charge">اختبار الشحن الفائق</string>
+    <string name="island_test_call">اختبار مكالمة</string>
+    <string name="island_test_timer">اختبار المؤقت</string>
+
 
 
     <string name="theme_accent_custom">مخصّص</string>

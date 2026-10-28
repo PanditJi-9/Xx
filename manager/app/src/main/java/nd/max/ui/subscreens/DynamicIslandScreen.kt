@@ -301,17 +301,7 @@ fun DynamicIslandScreen(navController: NavController) {
      * فالعطب لا يظهر إلا إن أُطفئت الجزيرة قبل أن يصل الترحيل — وهو ما لا يجوز أن يعتمد
      * على ترتيب آمن.
      */
-    fun retireLegacyEngine() {
-        val legacy = IslandPrefs.load(ctx)
-        // الإيقاف نداء خدمة، وقد يرفضه النظام في حالة حدّية؛ لا يجوز أن يمنع ذلك إطفاء
-        // المحرّك الجديد أو تشغيله. والنيّة القديمة تُطفأ على أي حال.
-        if (IslandService.isRunning) runCatching { IslandService.stop(ctx) }
-        if (legacy.enabled) IslandPrefs.save(ctx, legacy.copy(enabled = false))
-    }
-
     fun setEnabled(on: Boolean) {
-        // مساران لا يعملان معًا: يُطوى القديم قبل أيّ قرار، تشغيلًا أو إطفاءً.
-        retireLegacyEngine()
         if (on) {
             IslandControl.start(ctx)
         } else {
@@ -326,11 +316,6 @@ fun DynamicIslandScreen(navController: NavController) {
         IslandSettings.save()
     }
 
-    /* ---------- الترحيل من الجزيرة القديمة (مرة واحدة عند أول فتح) ----------
-     * المحرّك السابق كان له مسار تشغيل مستقلّ تمامًا عن الاستوديو، فمن كان على الجزيرة
-     * القديمة لا يُترك بمحرّكين يعملان ولا بمحرّك لا يعمل: تُنقل النيّة للمحرّك الجديد.
-     * والقاعدة نفسها التي يُنفّذها باب الاستعادة بعد الإقلاع (`IslandBootRestore`): نيّة
-     * قديمة قائمة تُشعل الجديد وتُطفئ القديم، ونيّة غير قائمة لا تمسّ الجديد. */
     LaunchedEffect(Unit) {
         IslandSettings.onboarded.value = true
         IslandSettings.save()
@@ -339,7 +324,6 @@ fun DynamicIslandScreen(navController: NavController) {
             legacyActive = legacy.enabled || IslandService.isRunning,
             currentEnabled = IslandSettings.enabled.value,
         )
-        if (handover.clearLegacy) retireLegacyEngine()
         if (handover.enableCurrent && !IslandSettings.enabled.value) {
             IslandSettings.enabled.value = true
             IslandSettings.save()

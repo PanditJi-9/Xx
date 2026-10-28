@@ -149,6 +149,27 @@ object IslandSettings {
      */
     val secondaryEnabled = MutableStateFlow(true)
 
+    /**
+     * **النمط البصري (Theme Style):**
+     * 0 = HyperOS 4 (HyperIsland)
+     * 1 = ColorOS 17 (Aqua Dynamics)
+     * 2 = iOS Modern (Squircle)
+     * 3 = Dynamic Material (Neon)
+     */
+    val islandThemeStyle = MutableStateFlow(0)
+
+    /** **الجزيرة المنقسمة (Dual Capsule / Split Island)** — كبسولتان عند وجود نشاطين. */
+    val splitIsland = MutableStateFlow(true)
+
+    /** **تموضع الكاميرا (Cutout Anchor):** 0 = وسط، 1 = يسار، 2 = يمين، 3 = أعلى. */
+    val cutoutAnchor = MutableStateFlow(0)
+
+    /** **رسوم الشحن الفائق (HyperCharge / SuperVOOC):** عرض الواط والتوهج التوربيني. */
+    val hyperCharge = MutableStateFlow(true)
+
+    /** **عارض الموجات الحركي:** مخطط ترددات يتفاعل مع الموسيقى. */
+    val interactiveWaveform = MutableStateFlow(true)
+
     val triggers = MutableStateFlow(Trigger.entries.map { it.key }.toSet())
     val blockedApps = MutableStateFlow<Set<String>>(emptySet())
 
@@ -214,6 +235,11 @@ object IslandSettings {
         haptics.value = p.getBoolean("haptics", true)
         avoidSystemUi.value = p.getBoolean("avoidSystemUi", true)
         secondaryEnabled.value = p.getBoolean("secondaryEnabled", true)
+        islandThemeStyle.value = p.getInt("islandThemeStyle", 0)
+        splitIsland.value = p.getBoolean("splitIsland", true)
+        cutoutAnchor.value = p.getInt("cutoutAnchor", 0)
+        hyperCharge.value = p.getBoolean("hyperCharge", true)
+        interactiveWaveform.value = p.getBoolean("interactiveWaveform", true)
         // New activity types added in an update are switched ON once; after that the user decides.
         val allKeys = Trigger.entries.map { it.key }.toSet()
         val legacyKeys = setOf("notif", "media", "call", "charge", "timer", "device")
@@ -272,6 +298,11 @@ object IslandSettings {
             ?.putBoolean("haptics", haptics.value)
             ?.putBoolean("avoidSystemUi", avoidSystemUi.value)
             ?.putBoolean("secondaryEnabled", secondaryEnabled.value)
+            ?.putInt("islandThemeStyle", islandThemeStyle.value)
+            ?.putBoolean("splitIsland", splitIsland.value)
+            ?.putInt("cutoutAnchor", cutoutAnchor.value)
+            ?.putBoolean("hyperCharge", hyperCharge.value)
+            ?.putBoolean("interactiveWaveform", interactiveWaveform.value)
             ?.putStringSet("triggers", triggers.value)
             ?.putStringSet("triggersSeen", Trigger.entries.map { it.key }.toSet())
             ?.putStringSet("blocked", blockedApps.value)
@@ -373,6 +404,11 @@ object IslandSettings {
         islandAppAccent.value = false
         avoidSystemUi.value = true
         secondaryEnabled.value = true
+        islandThemeStyle.value = 0
+        splitIsland.value = true
+        cutoutAnchor.value = 0
+        hyperCharge.value = true
+        interactiveWaveform.value = true
         theme.value = 0
         accentSource.value = 0
         accentSeed.value = 0xFF7B3DF5.toInt()

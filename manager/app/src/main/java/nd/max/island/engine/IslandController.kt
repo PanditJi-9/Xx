@@ -28,7 +28,7 @@ import kotlinx.coroutines.flow.*
 
 sealed interface IslandMode {
     data object Idle : IslandMode
-    data class Charging(val percent: Int, val connected: Boolean = true) : IslandMode
+    data class Charging(val percent: Int, val connected: Boolean = true, val watts: Int = 0) : IslandMode
     data class Notification(
         val app: String,
         val title: String,

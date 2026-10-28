@@ -106,18 +106,26 @@ internal fun Expanded(m: IslandMode, level: IslandLevel, a: IslandActions) {
                 CircularProgressIndicator(
                     progress = { m.percent / 100f },
                     modifier = Modifier.size(76.dp),
-                    color = Green, trackColor = Color(0xFF16301D),
+                    color = IslandStyleFactory.HyperNeonGreen, trackColor = Color(0xFF16301D),
                     strokeWidth = 8.dp, strokeCap = StrokeCap.Round
                 )
                 Label("${m.percent}", size = 22, weight = FontWeight.Bold)
             }
             Spacer(Modifier.width(20.dp))
             Column {
-                Label(stringResource(if (m.connected) R.string.ify_demo_charging else R.string.ify_live_charger_removed), size = 20, weight = FontWeight.SemiBold)
-                Label(stringResource(if (m.connected) R.string.ify_live_power_connected else R.string.ify_live_unplugged), color = Muted, size = 14)
+                val turboTitle = if (m.connected) {
+                    if (IslandSettings.hyperCharge.value) "HyperCharge"
+                    else stringResource(R.string.ify_demo_charging)
+                } else stringResource(R.string.ify_live_charger_removed)
+                val turboSub = if (m.connected) {
+                    if (m.watts > 0) "${m.watts}W • " + stringResource(R.string.ify_live_power_connected)
+                    else stringResource(R.string.ify_live_power_connected)
+                } else stringResource(R.string.ify_live_unplugged)
+                Label(turboTitle, size = 20, weight = FontWeight.SemiBold)
+                Label(turboSub, color = Muted, size = 14)
             }
             Spacer(Modifier.weight(1f))
-            Icon(Icons.Rounded.Bolt, null, tint = Green, modifier = Modifier.size(30.dp))
+            Icon(Icons.Rounded.Bolt, null, tint = IslandStyleFactory.HyperNeonGreen, modifier = Modifier.size(30.dp))
         }
 
         is IslandMode.Notification -> {
@@ -189,17 +197,20 @@ internal fun Expanded(m: IslandMode, level: IslandLevel, a: IslandActions) {
                     )
                     SeekBar(m, accent, a.onSeek)
                 }
-                Row(
-                    Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    RoundIcon(Icons.Rounded.SkipPrevious, 46.dp, Color.Transparent, Color.White, a.onPrev)
-                    RoundIcon(
-                        if (m.playing) Icons.Rounded.Pause else Icons.Rounded.PlayArrow,
-                        54.dp, Color.White, Color.Black, a.onPlayPause
-                    )
-                    RoundIcon(Icons.Rounded.SkipNext, 46.dp, Color.Transparent, Color.White, a.onNext)
+                // ترتيب التحكّم (السابق · تشغيل · التالي) ثابت في كل لغة، ومجموعة في الوسط.
+                CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+                    Row(
+                        Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(28.dp, Alignment.CenterHorizontally),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RoundIcon(Icons.Rounded.SkipPrevious, 46.dp, Color.Transparent, Color.White, a.onPrev)
+                        RoundIcon(
+                            if (m.playing) Icons.Rounded.Pause else Icons.Rounded.PlayArrow,
+                            54.dp, Color.White, Color.Black, a.onPlayPause
+                        )
+                        RoundIcon(Icons.Rounded.SkipNext, 46.dp, Color.Transparent, Color.White, a.onNext)
+                    }
                 }
             }
         }
@@ -452,7 +463,7 @@ internal fun MiniActivity(m: IslandMode, fallback: Color, onClick: () -> Unit) {
             is IslandMode.Notification -> {
                 Avatar(m.app, 18.dp)
                 Spacer(Modifier.width(4.dp))
-                Label(IslandText.fit(m.title.ifBlank { m.app }, 10), size = 11)
+                Label(IslandText.fit(m.title.ifBlank { m.app }, 14), size = 11)
             }
             else -> Icon(Icons.Rounded.Bolt, null, tint = fallback, modifier = Modifier.size(15.dp))
         }
@@ -532,16 +543,20 @@ internal fun MiniPlayer(m: IslandMode.Media, a: IslandActions) {
                 Label(IslandText.fit(m.artist, 30), color = Muted, size = 12, weight = FontWeight.Normal)
             }
         }
-        RoundIcon(
-            Icons.Rounded.SwapVert, 36.dp, Color.Transparent, Muted, a.onPromoteSecondary,
-            desc = stringResource(R.string.ify_promote_music)
-        )
-        RoundIcon(Icons.Rounded.SkipPrevious, 36.dp, Color.Transparent, Color.White, a.onPrev)
-        RoundIcon(
-            if (m.playing) Icons.Rounded.Pause else Icons.Rounded.PlayArrow,
-            36.dp, Color.White, Color.Black, a.onPlayPause
-        )
-        RoundIcon(Icons.Rounded.SkipNext, 36.dp, Color.Transparent, Color.White, a.onNext)
+        CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                RoundIcon(
+                    Icons.Rounded.SwapVert, 36.dp, Color.Transparent, Muted, a.onPromoteSecondary,
+                    desc = stringResource(R.string.ify_promote_music)
+                )
+                RoundIcon(Icons.Rounded.SkipPrevious, 36.dp, Color.Transparent, Color.White, a.onPrev)
+                RoundIcon(
+                    if (m.playing) Icons.Rounded.Pause else Icons.Rounded.PlayArrow,
+                    36.dp, Color.White, Color.Black, a.onPlayPause
+                )
+                RoundIcon(Icons.Rounded.SkipNext, 36.dp, Color.Transparent, Color.White, a.onNext)
+            }
+        }
     }
 }
 
