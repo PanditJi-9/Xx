@@ -28,3 +28,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "MaxManager"
 include(":app")
+include(":xposedapi")

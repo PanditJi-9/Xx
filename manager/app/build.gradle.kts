@@ -515,6 +515,9 @@ androidComponents {
 }
 
 dependencies {
+    // واجهة Xposed للتصريف فقط (خطّاف IMEI في `nd.max.xposed`)؛ الصنف الحقيقي يوفّره LSPosed وقت التشغيل.
+    compileOnly(project(":xposedapi"))
+
     implementation(platform(libs.androidx.compose.bom))
     
     implementation(libs.androidx.compose.material)

@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Block
 import androidx.compose.material.icons.rounded.Memory
+import androidx.compose.material.icons.rounded.Refresh
+import androidx.compose.material.icons.rounded.SimCard
 import androidx.compose.material.icons.rounded.PhoneAndroid
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.FilledTonalButton
@@ -32,6 +34,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import nd.max.R
+import nd.max.core.spoof.ImeiSpoofStore
 import nd.max.core.spoof.PerAppDeviceModel
 import nd.max.core.spoof.SampleDeviceCatalog
 import nd.max.core.spoof.SpoofCpuCatalog
@@ -58,7 +61,9 @@ import nd.max.ui.viewmodel.SpoofStudioViewModel
  * 1. **نوع الجهاز الآن**: بطاقة واحدة. نقرها يفتح نافذة بكل أجهزة الكتالوج، وآخرها «معلومات جهاز مخصص».
  * 2. **الانتحال**: مطوٍ ومغلق افتراضيًا، ويضم **الخيارات المجانية فقط** من مجموعة COPG (انتحال المعالج
  *    وحظره). خيارات PRO (COW وAndroid ID) لا تُنقل. وتعديلات COPG الأخرى ليست هنا، بل في تبويبات
- *    الأداء والعرض حيث تعمل.
+ *    الأداء والعرض حيث تعمل. ويضاف إليها **تزييف IMEI** — وهو **ليس من COPG ولا PRO**: خطّاف LSPosed من
+ *    عندنا ([nd.max.xposed.ImeiHook]) يقرأ قيمة هذا التطبيق من [ImeiSpoofStore]؛ فلا يمرّ بملفّ المحرّك ولا
+ *    بزرّ «تجهيز»، ولا يحتاج جهازًا مختارًا.
  * 3. **تجهيز / إرجاع**: كتابة ملفّ محرّك COPG مع قراءة بعدها، كما كانت.
  *
  * ### الصدق (ADR-07)
@@ -77,6 +82,9 @@ internal fun AppSpoofSection(
     val engineConfig by viewModel.engineConfig.collectAsStateWithLifecycle()
     val verifiedRevision by viewModel.verifiedRevision.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    // تزييف IMEI من عندنا: يُكتب عند النقر فورًا (لا «تجهيز»)، ويقرؤه الخطّاف داخل عملية التطبيق الهدف.
+    val imeiStore = remember(context) { ImeiSpoofStore(context) }
+    var imei by remember(packageName) { mutableStateOf(imeiStore.imeiFor(packageName)) }
     // الكتالوجان مشحونان مع التطبيق، ويُقرآن من الأصول مرّة واحدة لكل شاشة.
     val catalog by produceState<SampleDeviceCatalog?>(null, context) {
         value = withContext(Dispatchers.IO) {
@@ -117,12 +125,16 @@ internal fun AppSpoofSection(
         id.startsWith(SpoofCustomDevice.PROFILE_PREFIX) && workspace.bindings[packageName] == id &&
             workspace.bindings.values.count { it == id } == 1
     }
-    val impersonationSummary = when {
-        device == null -> stringResource(R.string.spoof_impersonation_needs_device)
+    val cpuSummary = when {
         cpuName != null -> stringResource(R.string.spoof_impersonation_summary_cpu, cpuName)
         blocksCpu -> stringResource(R.string.spoof_cpu_block)
         else -> stringResource(R.string.spoof_cpu_real)
     }
+    val imeiSummary = stringResource(R.string.spoof_imei_summary)
+    val impersonationSummary = listOfNotNull(
+        cpuSummary.takeIf { device != null },
+        imeiSummary.takeIf { imei != null },
+    ).joinToString(" · ").ifEmpty { stringResource(R.string.spoof_impersonation_needs_device) }
 
     Column(verticalArrangement = Arrangement.spacedBy(MaxSpace.lg)) {
         // 1 — نوع الجهاز الآن. البطاقة نفسها تفتح نافذة الأجهزة الكاملة.
@@ -167,6 +179,11 @@ internal fun AppSpoofSection(
         }
         if (engineNotice != null) MaxInfoStrip(text = engineNotice, accent = MaxTone.Caution.content())
 
+        // الصدق: إن لم تُفعَّل الوحدة في LSPosed فالقيمة تُحفظ ولا يقرؤها الخطّاف أبدًا — فيُقال ذلك لا يُسكَت عنه.
+        if (imei != null && !imeiStore.hookReachable) {
+            MaxInfoStrip(text = stringResource(R.string.spoof_imei_module_inactive), accent = MaxTone.Caution.content())
+        }
+
         // 2 — الانتحال: مطوٍ ومغلق افتراضيًا. الخيارات المجانية فقط.
         MaxSection(
             title = stringResource(R.string.spoof_impersonation_title),
@@ -198,6 +215,40 @@ internal fun AppSpoofSection(
                         )
                     },
                 )
+                MaxGroupDivider()
+                MaxRow(
+                    title = stringResource(R.string.spoof_imei_spoof),
+                    subtitle = imei?.let { stringResource(R.string.spoof_imei_active, it) }
+                        ?: stringResource(R.string.spoof_imei_spoof_desc),
+                    icon = Icons.Rounded.SimCard,
+                    iconTone = if (imei != null) MaxTone.Accent else MaxTone.Neutral,
+                    enabled = !busy,
+                    trailing = {
+                        Switch(
+                            checked = imei != null,
+                            enabled = !busy,
+                            onCheckedChange = { on ->
+                                if (on) {
+                                    imei = imeiStore.enable(packageName)
+                                } else {
+                                    imeiStore.disable(packageName)
+                                    imei = null
+                                }
+                            },
+                        )
+                    },
+                )
+                if (imei != null) {
+                    MaxGroupDivider()
+                    MaxRow(
+                        title = stringResource(R.string.spoof_imei_regenerate),
+                        subtitle = stringResource(R.string.spoof_imei_regenerate_desc),
+                        icon = Icons.Rounded.Refresh,
+                        iconTone = MaxTone.Neutral,
+                        enabled = !busy,
+                        onClick = { imei = imeiStore.regenerate(packageName) },
+                    )
+                }
             }
         }
 

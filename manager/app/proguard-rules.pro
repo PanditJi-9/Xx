@@ -84,3 +84,9 @@
 -keep class nd.max.core.privilege.ShizukuShellService { *; }
 -keep interface nd.max.core.privilege.IShizukuShell { *; }
 -keep class nd.max.core.privilege.IShizukuShell$Stub { *; }
+
+# ── وحدة LSPosed (خطّاف IMEI) ──
+# الإطار يحمّل الصنف **بالاسم** من `assets/xposed_init` عبر الانعكاس، فلا يجوز أن يُعاد تسميته أو يُحذف.
+# وواجهة Xposed نفسها (`de.robv.android.xposed.*`) لا تُحزَّم: يوفّرها LSPosed وقت التشغيل.
+-keep class nd.max.xposed.ImeiHook { *; }
+-dontwarn de.robv.android.xposed.**

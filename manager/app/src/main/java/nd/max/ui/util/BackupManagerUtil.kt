@@ -22,6 +22,7 @@ import android.content.Context
 import android.net.Uri
 import android.util.Base64
 import java.io.ByteArrayOutputStream
+import java.security.MessageDigest
 import javax.crypto.Cipher
 import javax.crypto.spec.SecretKeySpec
 import org.json.JSONObject
@@ -45,8 +46,20 @@ object BackupManager {
     }
 
 
+    /**
+     * AES accepts only 16, 24 or 32-byte keys, but [SECRET_KEY] is 27 bytes. Passing those bytes
+     * straight to `Cipher.init` throws InvalidKeyException on every call, so backup creation always
+     * failed and no backup file could be read back. Hashing the same passphrase yields a valid
+     * 256-bit key.
+     */
+    private fun aesKey(): SecretKeySpec {
+        val digest = MessageDigest.getInstance("SHA-256").digest(SECRET_KEY.toByteArray(Charsets.UTF_8))
+        return SecretKeySpec(digest, ALGORITHM)
+    }
+
+
     private fun encryptData(data: String): ByteArray {
-        val keySpec = SecretKeySpec(SECRET_KEY.toByteArray(), ALGORITHM)
+        val keySpec = aesKey()
         val cipher = Cipher.getInstance(ALGORITHM)
         cipher.init(Cipher.ENCRYPT_MODE, keySpec)
         val encrypted = cipher.doFinal(data.toByteArray())
@@ -56,7 +69,7 @@ object BackupManager {
 
     private fun decryptData(data: ByteArray): String {
         val decoded = Base64.decode(data, Base64.NO_WRAP)
-        val keySpec = SecretKeySpec(SECRET_KEY.toByteArray(), ALGORITHM)
+        val keySpec = aesKey()
         val cipher = Cipher.getInstance(ALGORITHM)
         cipher.init(Cipher.DECRYPT_MODE, keySpec)
         return String(cipher.doFinal(decoded))

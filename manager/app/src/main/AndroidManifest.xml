@@ -168,6 +168,16 @@
         android:localeConfig="@xml/locales_config"
         android:theme="@style/Theme.MaxManager"> 
         
+        <!--
+          وحدة LSPosed: خطّاف IMEI لكل تطبيق (`nd.max.xposed.ImeiHook`، ويُسمّى في `assets/xposed_init`).
+          لا تعمل إلا بعد أن يفعّلها المستخدم في LSPosed ويختار التطبيقات الهدف في نطاقها.
+          `xposedsharedprefs` يجعل ملفّ التفضيلات الذي نكتبه مقروءًا للخطّاف داخل عملية التطبيق الهدف.
+        -->
+        <meta-data android:name="xposedmodule" android:value="true" />
+        <meta-data android:name="xposeddescription" android:value="MaxManager per-app IMEI spoofing" />
+        <meta-data android:name="xposedminversion" android:value="82" />
+        <meta-data android:name="xposedsharedprefs" android:value="true" />
+
         <!-- Shizuku: يوفّر مسار الصلاحية لطبقة الامتياز الثانية (AR-20).
              لا يُتصدَّر إلا لمدير الشيزوكو بحكم إذنه الخاص. -->
         <provider
