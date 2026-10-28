@@ -29,6 +29,7 @@ import android.content.Intent
 import android.content.Context
 import android.os.BatteryManager
 import android.os.Build
+import android.os.FileObserver
 import android.os.IBinder
 import android.os.PowerManager
 import java.io.File
@@ -179,6 +180,21 @@ object AppMonitor {
     private var lastForegroundPackage = ""
     private var lastShellProbeAtMs = 0L
     private var cachedShellPackage: String? = null
+
+    // ── بوابة ملفّ الحالة (FOOTPRINT-01) ──────────────────────────────────
+    //
+    // الشاشة المطفأة: لا مقدّمة تُطبَّق عليها، ولا قارئ لملفّ الحالة. فبناء الحالة كل ٥ ثوانٍ
+    // ليلًا كان ٧٢٠ بناءً في الساعة — كلٌّ منها يحلّ المقدّمة (انعكاس + Binder) وأربع قراءات
+    // Binder — بلا فائدة تُذكر. صار البناء كلّ خمس دقائق (`CompanionPollPolicy.SCREEN_OFF_STATUS_MS`)،
+    // **ويُفرَض فورًا** في حالتين فقط: تبديل حالة الشاشة (`statusDirty` عند التبديل)، وانتهاء
+    // جلسة per-app (`statusDirty` في `serviceDeferredRevert`). وهما اللحظتان اللتان يتغيّر
+    // فيهما معنى الملفّ فعلًا.
+    private var lastScreenInteractive: Boolean? = null
+    private var statusDirty = true
+    private var lastStatusWriteAtMs = 0L
+
+    /** مراقب ملفّ الإعدادات الحدثيّ — `null` يعني «غير مدعوم» فيعود المراقب إلى `stat` دوريّ. */
+    private var configObserver: FileObserver? = null
 
     private var outputPath = ""
     private var cachedGameListModified = -1L
@@ -643,20 +659,27 @@ object AppMonitor {
 
     private fun startConfigWatcher() {
         if (configWatcher?.isAlive == true) return
+        // **الحدث أوّلًا، والاستيقاظ احتياطًا (FOOTPRINT-01):** كان المراقب `stat` كل ٤٠٠ م.ث
+        // (٩٠٠٠ استيقاظ/ساعة أثناء اللعب) وكل ثانيتين ليلًا (١٨٠٠) — لسؤال واحد: «هل تغيّر
+        // ملفّ الإعداد؟». و`inotify` يجيب بالحدث نفسه، فصار الفحص الدوري دقيقةً واحدة شبكةَ
+        // أمان فقط. وإن لم يُدعَم المراقب (أو فشل تسجيله) يعود الإيقاع المتكيّف القديم كما هو.
+        val observing = startConfigFileObserver()
         configWatcher = Thread({
             var last = appListModified()
             while (!Thread.currentThread().isInterrupted) {
                 try {
-                    // ٤٠٠ م.ث والتطبيق **المُدار** في المقدّمة (وقت التبديل الحيّ)، وثانية غير ذلك،
-                    // وثانيتان والشاشة مطفأة: الفحص `stat` واحد فلا كلفة تُذكر، لكنه لا يستحق
-                    // إيقاظ المعالج في الخلفية. والشرط هو «تطبيق مُدار» لا «اسم حزمة موجود» —
-                    // وإلا صار ٤٠٠ م.ث طوال اليوم والمشغّل في المقدّمة.
-                    Thread.sleep(
+                    val waitMs = if (observing) {
+                        CompanionPollPolicy.CONFIG_WATCH_FALLBACK_MS
+                    } else {
+                        // ٤٠٠ م.ث والتطبيق **المُدار** في المقدّمة (وقت التبديل الحيّ)، وثانية
+                        // غير ذلك، وثانيتان والشاشة مطفأة. والشرط هو «تطبيق مُدار» لا «اسم حزمة
+                        // موجود» — وإلا صار ٤٠٠ م.ث طوال اليوم والمشغّل في المقدّمة.
                         CompanionPollPolicy.configWatchMs(
                             managedAppOwnsForeground = managedAppOwnsForeground(),
                             screenInteractive = powerManager?.isInteractive == true,
                         )
-                    )
+                    }
+                    Thread.sleep(waitMs)
                     val now = appListModified()
                     if (now != last) {
                         last = now
@@ -669,6 +692,37 @@ object AppMonitor {
                 }
             }
         }, "applist-watcher").apply { isDaemon = true; start() }
+    }
+
+    /**
+     * مراقب حدثيّ لملفّ الإعدادات — يعيد `true` إن نجح تسجيله.
+     *
+     * **ولماذا المجلّد لا الملفّ:** الكتابة الذرّية الشائعة هي `tmp` ثم `rename`، فتغيّر الملفّ
+     * يظهر كـ`MOVED_TO` على المجلّد؛ ومراقبة الملفّ نفسه تفقد المشاهدة بعد أوّل استبدال.
+     *
+     * **والحدّ:** الحدث يُوقظ الحلقة، لكن القرار يبقى على `lastModified` (كما كان) — فلا يُطبَّق
+     * إعداد نصف مكتوب، ولا يُعتمد على اسم الحدث وحده.
+     */
+    private fun startConfigFileObserver(): Boolean {
+        if (configObserver != null) return true
+        val file = runCatching { File(MaxManagerPaths.APPLIST_JSON) }.getOrNull() ?: return false
+        val dir = file.parentFile ?: return false
+        if (!dir.isDirectory) return false
+        return runCatching {
+            val observer = object : FileObserver(
+                dir,
+                FileObserver.MODIFY or FileObserver.CLOSE_WRITE or
+                    FileObserver.MOVED_TO or FileObserver.CREATE,
+            ) {
+                override fun onEvent(event: Int, path: String?) {
+                    // `null` حدثٌ على المجلّد نفسه: يُوقظ احتياطًا، فالقرار للملفّ لا للاسم.
+                    if (path == null || path == file.name) monitorWake.offer(Unit)
+                }
+            }
+            observer.startWatching()
+            configObserver = observer
+            true
+        }.getOrDefault(false)
     }
 
     private fun awaitNextMonitorCycle() {
@@ -796,6 +850,9 @@ object AppMonitor {
             missingFocusPkg = null
             missingFocusCount = 0
             gracePkg = null
+            // ملفّ الحالة يجب أن يقول «انتهت الجلسة» في الدورة نفسها، لا بعد خمس دقائق:
+            // هذه اللحظة تُغيّر معنى الملفّ (‏`perapp_active`)، فتُفرَض كتابته.
+            statusDirty = true
         }
     }
 
@@ -1062,6 +1119,14 @@ object AppMonitor {
     }
 
     private fun writeStatus() {
+        val screenOn = powerManager?.isInteractive == true
+        // تبديل حالة الشاشة يُفرض فورًا: ملفّ الحالة يقول `screen_awake`، فتأجيله يعني قيمة كاذبة.
+        if (lastScreenInteractive != null && lastScreenInteractive != screenOn) statusDirty = true
+        lastScreenInteractive = screenOn
+        val refreshMs = CompanionPollPolicy.statusRefreshMs(screenInteractive = screenOn)
+        val nowMs = android.os.SystemClock.elapsedRealtime()
+        if (!statusDirty && refreshMs > 0L && nowMs - lastStatusWriteAtMs < refreshMs) return
+
         val focusedApp = waitForValidFocusedApp() ?: return
         // ومعرّف العملية **جزء من الدليل** لا زينة: `pkg 0 0` تعني «لم أجد عملية هذا التطبيق»،
         // وهي إشارة نهاية جلسة لا «نفس التطبيق ما زال في المقدّمة». وكانت تُسقَط هنا (الدالة
@@ -1071,7 +1136,12 @@ object AppMonitor {
         val currentStatus = runCatching { buildStatus(focusedApp, foregroundConfirmed) }
             .onFailure { AppMonitorLogger.e("buildStatus() failed for focused app '$focusedApp'", it) }
             .getOrNull() ?: return
-        if (currentStatus == lastStatus) return
+        if (currentStatus == lastStatus) {
+            // لا تغيّر في المحتوى: تُحدَّث البصمة الزمنية فلا يُعاد البناء في الدورة القادمة.
+            lastStatusWriteAtMs = nowMs
+            statusDirty = false
+            return
+        }
 
         try {
             val file = File(outputPath)
@@ -1081,12 +1151,18 @@ object AppMonitor {
 
             FileOutputStream(tmpFile).use { fos ->
                 fos.write(currentStatus.toByteArray(Charsets.UTF_8))
-                fos.fd.sync()
+                // **بلا `fd.sync()` (FOOTPRINT-01):** هذا ملفّ حالة لحظيّة لا بيانات مستخدم —
+                // يُعاد بناؤه في الدورة التالية، ويُكتب من جديد عند الإقلاع. و`renameTo` على
+                // نفس نظام الملفّات ذرّيّ بالنسبة لمدخل المجلّد، فالقارئ لا يرى نصف ملفّ أبدًا.
+                // وكان `fsync` في كل تبديل تطبيق (٦٤٦٢ تبديلًا في ٤٣ ساعة، مقيسة في السجلّ)
+                // يفرض كتابة فلاش كاملة لكل تبديل — أثقل عملية إدخال/إخراج في الدورة.
             }
 
             tmpFile.renameTo(file)
             
             lastStatus = currentStatus
+            lastStatusWriteAtMs = nowMs
+            statusDirty = false
         } catch (e: Exception) {
             AppMonitorLogger.e("Failed to write status file '$outputPath'", e)
         }
@@ -1173,7 +1249,9 @@ object AppMonitor {
 
             FileOutputStream(tmpFile).use { fos ->
                 fos.write(currentApps.toByteArray(Charsets.UTF_8))
-                fos.fd.sync()
+                // **بلا `fd.sync()` (FOOTPRINT-01):** القائمة تُبنى من جديد في الدورة التالية
+                // لكل تطبيق مُدار، والملفّ حالة لحظيّة لا بيانات مستخدم. و`renameTo` ذرّيّ،
+                // فالقارئ لا يرى نصف ملفّ. و`fsync` هنا كان كتابة فلاش كاملة عند كل تغيّر قائمة.
             }
 
             tmpFile.renameTo(file)

@@ -163,4 +163,34 @@ class CompanionPollPolicyTest {
             CompanionPollPolicy.isManagedForeground("com.game", hardwareOverridesActive = false, appListText = list),
         )
     }
+
+    @Test
+    fun `the status file is not rebuilt on every screen-off tick`() {
+        assertEquals(
+            "screen on: the foreground can change every cycle, so the file is rebuilt every cycle",
+            0L,
+            CompanionPollPolicy.statusRefreshMs(screenInteractive = true),
+        )
+        assertEquals(
+            CompanionPollPolicy.SCREEN_OFF_STATUS_MS,
+            CompanionPollPolicy.statusRefreshMs(screenInteractive = false),
+        )
+        // 720 دورة/ساعة ليلًا ⇒ 12 بناءً فقط: سُدس العدد، لا «أبطأ قليلًا».
+        assertEquals(12L, CompanionPollPolicy.wakeupsPerHour(CompanionPollPolicy.SCREEN_OFF_STATUS_MS))
+        assertEquals(
+            "the screen-off rebuild is one sixtieth of the 720 loop ticks",
+            720L / 60L,
+            CompanionPollPolicy.wakeupsPerHour(CompanionPollPolicy.SCREEN_OFF_STATUS_MS),
+        )
+    }
+
+    @Test
+    fun `the config fallback is a safety net, not a poll`() {
+        // 60 فحصًا في الساعة بدل 1800 (ليلًا) أو 9000 (لحظة اللعب) — والحدث نفسه فوريّ.
+        assertEquals(60L, CompanionPollPolicy.wakeupsPerHour(CompanionPollPolicy.CONFIG_WATCH_FALLBACK_MS))
+        assertTrue(
+            "the fallback is strictly coarser than every polling cadence it replaces",
+            CompanionPollPolicy.CONFIG_WATCH_FALLBACK_MS > CompanionPollPolicy.CONFIG_WATCH_SCREEN_OFF_MS,
+        )
+    }
 }

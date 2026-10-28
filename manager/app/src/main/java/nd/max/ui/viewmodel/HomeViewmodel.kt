@@ -30,6 +30,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import nd.max.R
 import nd.max.core.maxai.MaxAiEngine
@@ -66,6 +67,12 @@ class HomeViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
+    /**
+     * بوّابة العمل الخلفيّ: تبقى `false` حتى تُثبت شاشة الرئيسية أنّها `STARTED`، وتعود `false`
+     * عند `ON_STOP`. وهي التي تُلغي استطلاع حالة الخدمة ومعلومات اللعبة في الخلفية (FOOTPRINT-01).
+     */
+    private val visible = MutableStateFlow(false)
+
     private val prefListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
         if (key == "enable_banner_image") {
             _uiState.value = _uiState.value.copy(isBannerEnabled = context.isBannerImageEnabled())
@@ -81,9 +88,16 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun observeRootUtils() {
+        // **لا استطلاع والشاشة غير مرئيّة (FOOTPRINT-01):** كانت الحلقتان تعملان طوال حياة
+        // الـ`ViewModel` — أي ولو كان التطبيق في الخلفية — وكل دورة `pidof` في صدفة جذر وقراءة
+        // ملفّ الجذر. والشارة لا تُعرَض أصلًا حين لا شاشة، فالإيقاف عند `ON_STOP` يُلغي
+        // آلاف الأوامر في الساعة بلا فقد معلومة. (وحالة الملفّ الحدثيّة تبقى مشتركة.)
         viewModelScope.launch(Dispatchers.IO) {
-            RootUtils.observeServiceStatusRes().collect { (statusRes, pid) ->
-                _uiState.value = _uiState.value.copy(serviceStatusRes = statusRes, servicePid = pid)
+            visible.collectLatest { on ->
+                if (!on) return@collectLatest
+                RootUtils.observeServiceStatusRes().collect { (statusRes, pid) ->
+                    _uiState.value = _uiState.value.copy(serviceStatusRes = statusRes, servicePid = pid)
+                }
             }
         }
         viewModelScope.launch(Dispatchers.IO) {
@@ -93,14 +107,26 @@ class HomeViewModel @Inject constructor(
         }
 
         viewModelScope.launch(Dispatchers.IO) {
-            RootUtils.observeGameInfo().collect { info ->
-                _uiState.value = _uiState.value.copy(
-                    runningGamePkg = info.pkg,
-                    runningGamePid = info.pid,
-                    runningGameStartTime = info.startTime
-                )
+            visible.collectLatest { on ->
+                if (!on) return@collectLatest
+                RootUtils.observeGameInfo().collect { info ->
+                    _uiState.value = _uiState.value.copy(
+                        runningGamePkg = info.pkg,
+                        runningGamePid = info.pid,
+                        runningGameStartTime = info.startTime
+                    )
+                }
             }
         }
+    }
+
+    /**
+     * هل شاشة الرئيسية مرئيّة الآن؟ يُنادى من `LifecycleStartEffect` في `HomeScreen`.
+     *
+     * والافتراضيّ `false`: لا عمل خلفيّ قبل أن تُثبت الواجهة أنّها معروضة.
+     */
+    fun setVisible(value: Boolean) {
+        visible.value = value
     }
 
 

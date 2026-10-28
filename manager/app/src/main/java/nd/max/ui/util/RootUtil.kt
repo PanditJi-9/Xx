@@ -42,6 +42,7 @@ object RootUtils {
     private const val MODULE_DIR = "/data/adb/modules/MaxManager"
     private const val API_DIR_PATH = "/data/data/nd.max/API"
     private const val PROFILE_FILE_NAME = "current_profile"
+    private const val GAMEINFO_FILE_NAME = "gameinfo"
     private const val PROFILE_PATH = "$API_DIR_PATH/$PROFILE_FILE_NAME"
     private const val DAEMON_PROFILE_PATH = "/data/adb/.config/MaxManager/API/current_profile"
 
@@ -108,31 +109,43 @@ object RootUtils {
 
     data class GameInfo(val pkg: String?, val pid: Int?, val startTime: String?)
 
-    fun observeGameInfo(): Flow<GameInfo> = flow {
-        var lastInfo: GameInfo? = null
-        while (true) {
-            val raw = readRootFile("/data/data/nd.max/API/gameinfo")
-            var currentInfo = GameInfo(null, null, null)
-
-            if (!raw.isNullOrBlank()) {
-                val lines = raw.lines()
-                val firstLine = lines[0].split(" ")
-
-                val pkg = firstLine.getOrNull(0)?.takeIf { it != "NULL" && it.isNotBlank() }
-                val pid = firstLine.getOrNull(1)?.toIntOrNull()?.takeIf { it > 0 }
-                val time = lines.find { it.startsWith("Time:") }?.substringAfter("Time:")?.trim()
-
-                currentInfo = GameInfo(pkg, pid, time)
-            }
-
-            if (currentInfo != lastInfo) {
-                emit(currentInfo)
-                lastInfo = currentInfo
-            }
-            delay(2000)
+    /**
+     * معلومات اللعبة الجارية — **حدثيًّا لا باستطلاع (FOOTPRINT-01)**.
+     *
+     * **العطب المقيس:** كانت تُقرأ `/data/data/nd.max/API/gameinfo` **كل ثانيتين** طوال حياة
+     * الـ`ViewModel`، ولو كان التطبيق في الخلفية على شاشة الرئيسية. وقراءتها تمرّ بـ`RootFileAccess`
+     * (مسار الجذر)، أي ١٨٠٠ قراءة/ساعة بلا تغيّر — والملفّ لا يتغيّر إلا عند تبديل لعبة.
+     * صار المراقب `FileObserver` على المجلّد نفسه (نمط `observeProfileRes` القائم)، فالسعر
+     * صفرٌ حتى يقع حدث، والقيمة الأولى تُقرأ مرة واحدة عند الاشتراك.
+     */
+    fun observeGameInfo(): Flow<GameInfo> = callbackFlow {
+        fun read(): GameInfo {
+            val raw = readRootFile("$API_DIR_PATH/$GAMEINFO_FILE_NAME")
+            if (raw.isNullOrBlank()) return GameInfo(null, null, null)
+            val lines = raw.lines()
+            val firstLine = lines[0].split(" ")
+            val pkg = firstLine.getOrNull(0)?.takeIf { it != "NULL" && it.isNotBlank() }
+            val pid = firstLine.getOrNull(1)?.toIntOrNull()?.takeIf { it > 0 }
+            val time = lines.find { it.startsWith("Time:") }?.substringAfter("Time:")?.trim()
+            return GameInfo(pkg, pid, time)
         }
-    }.flowOn(Dispatchers.IO)
 
+        trySend(read())
+        val apiDir = File(API_DIR_PATH).apply { if (!exists()) mkdirs() }
+        val observer = object : FileObserver(
+            apiDir,
+            FileObserver.MODIFY or FileObserver.CLOSE_WRITE or
+                FileObserver.MOVED_TO or FileObserver.CREATE,
+        ) {
+            override fun onEvent(event: Int, path: String?) {
+                if (path == null || path == GAMEINFO_FILE_NAME) trySend(read())
+            }
+        }
+        // فشل تسجيل المراقب (حدّ inotify مثلًا) لا يُسقط التدفّق: القيمة الأولى وصلت، والواجهة
+        // تعرضها؛ وعدم وصول تحديثات لاحقة أهون من انهيار الاشتراك كلّه.
+        runCatching { observer.startWatching() }
+        awaitClose { runCatching { observer.stopWatching() } }
+    }.flowOn(Dispatchers.IO)
     fun observeProfileRes(): Flow<Int> = callbackFlow {
         syncProfileState()
 
@@ -180,18 +193,6 @@ object RootUtils {
         return Shell.getShell().isRoot
     }
 
-    fun observeServiceStatusRes(): Flow<Pair<Int, String>> = flow {
-        var lastStatus: Pair<Int, String>? = null
-        while (true) {
-            val currentStatus = getServiceStatusRes()
-            if (currentStatus != lastStatus) {
-                emit(currentStatus)
-                lastStatus = currentStatus
-            }
-            delay(2000)
-        }
-    }.flowOn(Dispatchers.IO)
-
     fun isRootGranted(): Boolean {
         val currentShell = Shell.getCachedShell()
         if (currentShell != null && !currentShell.isRoot) {
@@ -213,6 +214,29 @@ object RootUtils {
             R.string.status_suspended to ""
         }
     }
+
+    /**
+     * حالة خدمة الجذر — **بإيقاع يختاره المستدعي وبلا استيقاظ حين لا شاشة**.
+     *
+     * **العطب المقيس (FOOTPRINT-01):** كانت كل ثانيتين، **طوال حياة الـViewModel** — أي ولو
+     * كان التطبيق في الخلفية على شاشة الرئيسية. وكل دورة تُنفّذ `pidof` في صدفة جذر: حتى
+     * ١٨٠٠ أمر جذر في الساعة لسؤال جوابه لا يتغيّر إلا عند إعادة تشغيل الوحدة.
+     *
+     * **والإصلاح طبقتان:** (١) المستدعي يوقف الاشتراك حين تخرج الشاشة من `STARTED` (انظر
+     * `HomeViewModel.setVisible`)، فلا استيقاظ أصلًا في الخلفية؛ (٢) الإيقاع صار خمس ثوانٍ
+     * (٧٢٠/ساعة كحدّ أقصى وهو مرئيّ) — والشارة لا تحتاج أدقّ من ذلك.
+     */
+    fun observeServiceStatusRes(intervalMs: Long = 5_000L): Flow<Pair<Int, String>> = flow {
+        var lastStatus: Pair<Int, String>? = null
+        while (true) {
+            val currentStatus = getServiceStatusRes()
+            if (currentStatus != lastStatus) {
+                emit(currentStatus)
+                lastStatus = currentStatus
+            }
+            delay(intervalMs)
+        }
+    }.flowOn(Dispatchers.IO)
 
     fun isUpdateApkAvailable(): Boolean {
         return SuFile(MaxManagerPaths.MODULE_APK).exists()

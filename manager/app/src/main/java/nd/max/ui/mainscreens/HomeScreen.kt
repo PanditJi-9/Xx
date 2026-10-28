@@ -145,11 +145,16 @@ fun HomeScreen(
     }
     val deckEntries = homeDeckSelection(deckMode, deckManual, deckUsage)
 
-    LifecycleStartEffect(dashboardViewModel, isVisible) {
+    LifecycleStartEffect(dashboardViewModel, homeViewModel, isVisible) {
         if (isVisible && lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
             dashboardViewModel.setPollingActive(true)
+            // حالة الخدمة ومعلومات اللعبة لا تُستطلعان في الخلفية (FOOTPRINT-01).
+            homeViewModel.setVisible(true)
         }
-        onStopOrDispose { dashboardViewModel.setPollingActive(false) }
+        onStopOrDispose {
+            dashboardViewModel.setPollingActive(false)
+            homeViewModel.setVisible(false)
+        }
     }
 
     // ولا مضيف `Snackbar` هنا: كاتبه الوحيد كان ردّ «ملف الأداء» المُزال، ومضيف بلا رسالة

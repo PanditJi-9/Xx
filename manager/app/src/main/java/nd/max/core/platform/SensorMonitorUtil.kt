@@ -84,8 +84,13 @@ object SensorMonitorUtil {
             }
 
             // رفض التسجيل ليس فشلًا صامتًا: يعني «لم أستطع القراءة» صراحةً.
+            //
+            // **`NORMAL` لا `FASTEST` (FOOTPRINT-01):** المطلوب **قيمة واحدة** خلال ١٫٥ ثانية،
+            // لا معدّل تحديث عالٍ. و`FASTEST` يفتح المستشعر بأقصى معدّل يستطيعه العتاد (مئات
+            // الهرتزات) لأجل قراءة واحدة — فيُوقظ المعالج مرّاتٍ لا تُقرأ. و`NORMAL` يسلّم أول
+            // قيمة في أجزاء من الثانية على كل جهاز تقريبًا، وهو نفس ما تقيسه المهلة.
             val registered = runCatching {
-                manager.registerListener(listener, sensor, SensorManager.SENSOR_DELAY_FASTEST)
+                manager.registerListener(listener, sensor, SensorManager.SENSOR_DELAY_NORMAL)
             }.getOrDefault(false)
             if (!registered) {
                 return@runCatching SensorInventory.lightReading(
