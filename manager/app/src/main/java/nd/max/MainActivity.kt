@@ -286,7 +286,6 @@ fun MainScreen(fromTileType: String? = null, widgetRoute: String? = null, widget
             WidgetIntents.ROUTE_THERMAL -> MaxDestination.ThermalDetail.route
             WidgetIntents.ROUTE_BATTERY -> MaxDestination.PowerHub.route
             WidgetIntents.ROUTE_DISPLAY -> MaxDestination.DisplayStudio.route
-            WidgetIntents.ROUTE_TOUCH -> MaxDestination.TouchBoost.route
             WidgetIntents.ROUTE_AUDIO -> MaxDestination.AudioStudio.route
             WidgetIntents.ROUTE_NETWORK -> MaxDestination.NetworkScheduler.route
             WidgetIntents.ROUTE_APP_FREEZER -> MaxDestination.DebloatFreeze.route

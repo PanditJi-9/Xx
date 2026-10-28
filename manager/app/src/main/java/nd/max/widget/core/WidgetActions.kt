@@ -44,7 +44,7 @@ object WidgetIntents {
     const val ROUTE_STORAGE = "storage_care"
     const val ROUTE_CONTROL = "control"
     const val ROUTE_ISLAND = "dynamic_island"
-    const val ROUTE_GAME_LOBBY = "gamelobby"
+    const val ROUTE_GAME_LOBBY = "game_lobby"
     const val ROUTE_GPU_STUDIO = "gpustudio"
     const val ROUTE_FPS_OVERLAY = "fpsoverlay"
     const val ROUTE_FPS_GO = "fpsgoscreen"
