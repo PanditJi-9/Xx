@@ -3483,7 +3483,7 @@
     <string name="ify_native_island_title">System dynamic island</string>
     <string name="ify_native_island_control">Disable the built-in island</string>
     <string name="ify_native_island_none">No built-in dynamic island was detected on this device.</string>
-    <string name="ify_native_island_detected">%1$s ships its own dynamic island.</string>
+    <string name="ify_native_island_detected">%1$s may ship its own dynamic island.</string>
     <string name="ify_native_island_locked">Not available: Android has no documented switch for it, and MaxManager never disables or kills System UI. To avoid duplicates, turn off the activities you do not want below.</string>
 
     <!-- Island engine live strings — added by MaxManager (merge wave) -->

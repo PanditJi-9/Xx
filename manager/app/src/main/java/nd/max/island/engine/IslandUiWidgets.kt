@@ -225,9 +225,9 @@ internal fun Expanded(m: IslandMode, level: IslandLevel, a: IslandActions) {
             // In-app timer: the button really stops it. Clock app timer: it only hides the island
             // (the timer keeps running in Clock), so it must not look like a stop button.
             if (m.external) {
-                RoundIcon(Icons.Rounded.VisibilityOff, 46.dp, Color(0xFF2C2C2E), Color.White) { IslandController.stopTimer() }
+                RoundIcon(Icons.Rounded.VisibilityOff, 46.dp, Color(0xFF2C2C2E), Color.White, onClick = { IslandController.stopTimer() })
             } else {
-                RoundIcon(Icons.Rounded.Close, 46.dp, Red, Color.White) { IslandController.stopTimer() }
+                RoundIcon(Icons.Rounded.Close, 46.dp, Red, Color.White, onClick = { IslandController.stopTimer() })
             }
         }
 
@@ -528,8 +528,8 @@ internal fun MiniPlayer(m: IslandMode.Media, a: IslandActions) {
             Art(m, 34.dp, 9.dp)
             Spacer(Modifier.width(10.dp))
             Column(Modifier.weight(1f)) {
-                Label(m.title.ifBlank { stringResource(R.string.ify_unknown) }, size = 13, weight = FontWeight.SemiBold)
-                Label(m.artist, color = Muted, size = 12, weight = FontWeight.Normal)
+                Label(IslandText.fit(m.title.ifBlank { stringResource(R.string.ify_unknown) }, 26), size = 13, weight = FontWeight.SemiBold)
+                Label(IslandText.fit(m.artist, 30), color = Muted, size = 12, weight = FontWeight.Normal)
             }
         }
         RoundIcon(
@@ -600,7 +600,7 @@ internal fun ReplyBar(onSend: (String) -> Unit, onCancel: () -> Unit) {
             )
         }
         Spacer(Modifier.width(8.dp))
-        RoundIcon(Icons.AutoMirrored.Rounded.Send, 40.dp, primary, Color.White) { send() }
+        RoundIcon(Icons.AutoMirrored.Rounded.Send, 40.dp, primary, Color.White, onClick = { send() })
         Spacer(Modifier.width(6.dp))
         RoundIcon(Icons.Rounded.Close, 40.dp, Color(0xFF2C2C2E), Color.White, onCancel)
     }

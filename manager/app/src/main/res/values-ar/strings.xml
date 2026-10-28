@@ -3431,7 +3431,7 @@
     <string name="ify_native_island_title">الجزيرة الديناميكية في النظام</string>
     <string name="ify_native_island_control">تعطيل الجزيرة الأصلية</string>
     <string name="ify_native_island_none">لم تُكتشف جزيرة ديناميكية أصلية على هذا الجهاز.</string>
-    <string name="ify_native_island_detected">%1$s يشحن جزيرة ديناميكية خاصة به.</string>
+    <string name="ify_native_island_detected">%1$s قد يأتي بجزيرة ديناميكية خاصة به.</string>
     <string name="ify_native_island_locked">غير متاح: لا يوجد في أندرويد مفتاح موثّق لها، وMaxManager لا يعطّل واجهة النظام ولا يقتلها أبدًا. لتفادي التكرار أطفئ الأنشطة التي لا تريدها بالأسفل.</string>
 
     <!-- نصوص المحرّك الحيّة للمنقول — أضافها MaxManager (موجة الدمج) -->

@@ -271,7 +271,7 @@ internal fun IslandBody(
             is IslandMode.Charging -> 150.dp
             is IslandMode.Timer -> if (sec != null) 214.dp else 160.dp
             is IslandMode.Notification -> if (sec != null) 274.dp else 224.dp
-            is IslandMode.Media -> 224.dp
+            is IslandMode.Media -> if (sec != null) 268.dp else 224.dp
             is IslandMode.Call -> 210.dp
             is IslandMode.Device -> if (sec != null) 250.dp else 200.dp
             is IslandMode.LowBattery -> 150.dp
@@ -298,18 +298,15 @@ internal fun IslandBody(
     val widthPx = if (maxWidthPx > 0) maxWidthPx else screenPx - 24
     val density = LocalDensity.current.density
     val maxW = (widthPx / density).dp
-    // ميزانية النصّ من العرض المقيس لا من رقم ثابت: على شاشة ضيّقة أو مع قصّة جانبية
-    // ينقص عدد الحروف، ولا يبقى نصٌّ يُرسم تحت الأيقونة أو يُقصّ في منتصف كلمة.
-    // والثابت القديم يبقى **سقفًا** فلا يتغيّر شكل الجزيرة على الأجهزة العاديّة.
-    val companionPx = if (sec != null) (56f * density).roundToInt() else 0
-    val budget = remember(widthPx, companionPx, lvl) {
-        IslandLayout.textBudget((widthPx - companionPx).coerceAtLeast(1), density, lvl)
-    }
     val targetW = (baseW * (when (lvl) {
         IslandLevel.Banner -> bs.w
         IslandLevel.Compact -> widthScale * (if (isPopup) 1f else bs.w)
         else -> widthScale * bs.cardW
     })).coerceAtMost(maxW)
+    // ميزانية النصّ من **عرض الكبسولة الفعليّ** ومن المساحة المحجوزة للأيقونات داخلها، لا من
+    // عرض الشاشة: شريط العرض يضيّق الكبسولة، ونصٌّ محسوب على عرض الشاشة يُقصّ في منتصف كلمة.
+    // والثابت القديم يبقى **سقفًا أعلى**، فلا يصير النصّ أطول مما كان في أي وضع.
+    val budget = IslandLayout.textBudget((targetW.value * density).roundToInt(), density, lvl)
     // The small pill keeps a sane height; the height slider mainly shapes the cards
     // The mini player adds a row under the card
     val miniExtra = if (sec != null && (lvl == IslandLevel.Expanded || lvl == IslandLevel.Large)) 52.dp else 0.dp
@@ -467,7 +464,7 @@ internal fun IslandBody(
             label = "content"
         ) { (m, l) ->
             if (l == IslandLevel.Compact) {
-                Compact(m, queued, sec, actions)
+                Compact(m, queued, sec, actions, budget.titleChars)
             } else if (l == IslandLevel.Banner) {
                 Banner(m, queued, actions)
             } else if (sec != null) {
@@ -566,6 +563,9 @@ internal fun Compact(
             is IslandMode.Media -> {
                 Art(m, 25.dp, 7.dp)
                 Waveform(m.playing, m.accentColor(primary), Modifier.height(16.dp))
+                // بعد ترقية الموسيقى إلى الأساس يصير النشاط السابق رفيقًا: بلا هذا السطر
+                // يختفي الرفيق في الكبسولة ويبقى في البطاقة وحدها — وعدٌ ناقص بنشاطين.
+                if (sec != null) MiniActivity(sec, primary) { a.onPromoteSecondary() }
             }
             is IslandMode.Timer -> {
                 if (sec == null) {
@@ -582,7 +582,7 @@ internal fun Compact(
             }
             is IslandMode.Call -> {
                 Icon(Icons.Rounded.Call, null, tint = Green, modifier = Modifier.size(19.dp))
-                Label(m.name, Modifier.weight(1f).padding(horizontal = 9.dp), size = 13)
+                Label(IslandText.fit(m.name, cap(if (m.incoming) 18 else 16)), Modifier.weight(1f).padding(horizontal = 9.dp), size = 13)
                 if (m.incoming) {
                     Waveform(true, Green, Modifier.height(14.dp))
                 } else {
@@ -595,7 +595,7 @@ internal fun Compact(
                     if (m.headphones) Icons.Rounded.Headphones else Icons.Rounded.Bluetooth,
                     null, tint = Color(0xFF0A84FF), modifier = Modifier.size(19.dp)
                 )
-                Label(m.name, Modifier.weight(1f).padding(start = 9.dp), size = 13)
+                Label(IslandText.fit(m.name, cap(20)), Modifier.weight(1f).padding(start = 9.dp), size = 13)
                 if (sec != null) MiniActivity(sec, primary) { a.onPromoteSecondary() }
             }
             is IslandMode.LowBattery -> {
@@ -605,7 +605,7 @@ internal fun Compact(
             }
             is IslandMode.Toggle -> {
                 Icon(m.icon(), null, tint = m.tint(), modifier = Modifier.size(19.dp))
-                Label(m.title(), Modifier.weight(1f).padding(start = 9.dp), size = 13)
+                Label(IslandText.fit(m.title(), cap(20)), Modifier.weight(1f).padding(start = 9.dp), size = 13)
                 if (sec != null) MiniActivity(sec, primary) { a.onPromoteSecondary() }
             }
             is IslandMode.Live -> {

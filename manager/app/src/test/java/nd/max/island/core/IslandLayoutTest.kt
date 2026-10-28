@@ -138,7 +138,11 @@ class IslandLayoutTest {
         assertTrue(fast.durationMs < slow.durationMs)
         assertTrue(fast.startScale < slow.startScale)
         assertTrue(fast.slideFraction > slow.slideFraction)
-        assertEquals(slow, IslandLayout.transitionFor(-1f))
+        // سرعة سالبة أو شبه ساكنة = لا حركة: نفس المدّة ونفس البداية (بفارق float).
+        val idle = IslandLayout.transitionFor(-1f)
+        assertEquals(slow.durationMs, idle.durationMs)
+        assertEquals(slow.startScale, idle.startScale, 0.001f)
+        assertEquals(slow.slideFraction, idle.slideFraction, 0.001f)
     }
 
     @Test

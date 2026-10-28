@@ -106,11 +106,22 @@ class IslandOverlay(
     /** أقصى عرض آمن مقيس من القصّة والحواف — يُغذّي Compose بدل «عرض الشاشة ناقص ٨dp». */
     private val maxWidth = MutableStateFlow(0)
 
+    /** المساحة تحت موضع النافذة — سقف ارتفاع يمنع بطاقةً تُدفع تحت القصّة في الوضع العرضيّ. */
+    private val maxHeight = MutableStateFlow(0)
+
     val shown: Boolean get() = view != null
+
+    /**
+     * الحوافّ تُقرأ من النظام مرّة، وتُعاد القراءة عند تغيّر الإعداد فقط.
+     * والسبب مقيس: تغيّر عرض الكبسولة يُعيد التوسيط في كل إطار من الحركة، وقراءة
+     * `currentWindowMetrics` في كل إطار نداء IPC إلى مدير النوافذ — تُثقل الحركة بلا فائدة.
+     */
+    private var cachedInsets: IslandInsets? = null
 
     /** دوران الشاشة يغيّر الحواف الآمنة وقد لا يغيّر مقاس النافذة — فيُعاد الحساب هنا أيضًا. */
     private val configCallback = object : android.content.ComponentCallbacks {
         override fun onConfigurationChanged(newConfig: android.content.res.Configuration) {
+            cachedInsets = null
             view?.post { applyPos() }
         }
 
@@ -285,6 +296,7 @@ class IslandOverlay(
                     val hidden by IslandController.hidden.collectAsState()
                     val gestureV by IslandController.gestureVelocity.collectAsState()
                     val maxW by maxWidth.collectAsState()
+                    val maxH by maxHeight.collectAsState()
                     val rtl = host.resources.configuration.layoutDirection == View.LAYOUT_DIRECTION_RTL
                     val dir = if (rtl) LayoutDirection.Rtl else LayoutDirection.Ltr
                     // معاينة شاشة التخصيص: تبقى ظاهرة وهي Idle كي يرى المستخدم أثر كل شريط.
@@ -368,6 +380,7 @@ class IslandOverlay(
                                     onSwipe = IslandController::swipe,
                                     onPromoteSecondary = IslandController::promoteSecondary,
                                     maxWidthPx = maxW,
+                                    maxHeightPx = maxH,
                                     appAccent = if (useAppAccent) MaterialTheme.colorScheme.primary else null,
                                 )
                             }
@@ -542,7 +555,7 @@ class IslandOverlay(
         val v = view ?: return
         val p = params ?: return
         if (v.width <= 0) return
-        val insets = readInsets()
+        val insets = cachedInsets ?: readInsets().also { cachedInsets = it }
         val at = IslandLayout.place(
             insets = insets,
             offsetXf = IslandSettings.offsetX.value,
@@ -552,6 +565,11 @@ class IslandOverlay(
             avoidSystemUi = IslandSettings.avoidSystemUi.value,
         )
         if (maxWidth.value != at.maxWidthPx) maxWidth.value = at.maxWidthPx
+        // الارتفاع المتاح من **موضع الارتساء** (لا من y بعد الضغط) إلى أسفل المنطقة الآمنة.
+        // لو حُسب من y بعد ضغطه لصار السقف مساويًا للارتفاع الحاليّ، فلا تكبر البطاقة أبدًا.
+        val margin = (IslandLayout.EDGE_MARGIN_DP * insets.density).toInt().coerceAtLeast(0)
+        val room = (insets.screenHeightPx - at.anchorTopPx - insets.safeBottomPx - margin).coerceAtLeast(0)
+        if (maxHeight.value != room) maxHeight.value = room
         if (p.x != at.xPx || p.y != at.yPx) {
             p.x = at.xPx
             p.y = at.yPx
@@ -561,6 +579,7 @@ class IslandOverlay(
 
     fun hide() {
         val v = view ?: return
+        cachedInsets = null
         unregisterReceivers()
         runCatching { host.unregisterComponentCallbacks(configCallback) }
         scope?.cancel()

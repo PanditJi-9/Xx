@@ -61,7 +61,7 @@ object NativeIslandRules {
     private val samsung = setOf("samsung")
 
     private val knownPackages = mapOf(
-        "Xiaomi / Redmi / POCO" to setOf("com.miui.systemui", "com.miui.home"),
+        "Xiaomi / Redmi / POCO" to setOf("com.miui.systemui"),
         "OPPO / OnePlus / realme" to setOf("com.oplus.systemui", "com.coloros.systemui"),
         "vivo / iQOO" to setOf("com.vivo.systemui"),
         "HONOR / Huawei" to setOf("com.hihonor.systemui", "com.huawei.systemui"),

@@ -120,6 +120,9 @@ object IslandController {
 
     fun setPreviewing(on: Boolean) {
         _previewing.value = on
+        // شاشة التخصيص تُظهر الجزيرة للمعاينة حتى لو كان المستخدم قد أخفاها للتوّ:
+        // معاينةٌ مخفيّة ليست معاينة، والمقبض وحده لا يُظهر أثر شريط العرض.
+        if (on && _hidden.value) restore()
     }
 
     fun attach(ctx: Context) { appCtx = ctx.applicationContext }
@@ -253,6 +256,11 @@ object IslandController {
             promotedBaseClass = null
         }
         val sel = selection()
+        // لا نشاط يستحقّ الإخفاء ⇒ لا مقبض استعادة بلا معنى. كان الإخفاء يبقى بعد انتهاء
+        // المؤقّت مثلًا، فيظهر مقبض صغير وضغطه لا يُظهر شيئًا.
+        if (_hidden.value && callMode == null && flashJob?.isActive != true && sel.primary == null) {
+            _hidden.value = false
+        }
         val activeMedia = if (pausedHide) null else mediaMode
         val shown = if (flashJob?.isActive == true) _mode.value else sel.primary
         _secondary.value = when {
