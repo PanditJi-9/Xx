@@ -80,6 +80,7 @@ SELFTEST_FLAG = re.compile(r"add_argument\([^)]*--self-test", re.S)
 # لا بوابة تقيس (المحرّك والاوزان تُثبّت خارج المستودع عمدًا).
 SELFTEST_NOT_IN_CI = {
     "read_image_text.py": "يحتاج محرّك OCR خارجيًّا (tesseract/easyocr) لا يوجد في الـrunner",
+    "test_footprint_jvm.py": "يحتاج jar-ات Kotlin وJUnit من مخزن Gradle المحلي (~/.gradle/caches) — لا يتوفر قبل تصريف Gradle في CI",
 }
 
 
