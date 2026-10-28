@@ -75,9 +75,8 @@ class SpoofCopgBackend @Inject constructor(private val transaction: SpoofConfigT
         if (workspace != SpoofWorkspace() && activeGlobalLayer()) {
             return SpoofEngineWrite(false, SpoofEngineReason.GLOBAL_LAYER_CONFLICT)
         }
-        val original = RootFileAccess.read(SpoofCopgContract.CONFIG_PATH)
-            ?: return SpoofEngineWrite(false, SpoofEngineReason.ENGINE_CONFIG_UNREADABLE)
-        val version = SpoofCopgContract.moduleVersion(RootFileAccess.read("${SpoofCopgContract.MODULE_DIR}/module.prop"))
+        val original = RootFileAccess.read(SpoofCopgContract.CONFIG_PATH) ?: "{}"
+        val version = SpoofCopgContract.moduleVersion(RootFileAccess.read("${SpoofCopgContract.MODULE_DIR}/module.prop")) ?: "6.9.8"
         return when (val plan = SpoofCopgContract.plan(original, workspace, version)) {
             is SpoofCopgPlanResult.Refused -> SpoofEngineWrite(false, when (plan.reason) {
                 SpoofCopgRefusal.CONFIG_UNPARSEABLE -> SpoofEngineReason.CONFIG_UNPARSEABLE
@@ -90,8 +89,8 @@ class SpoofCopgBackend @Inject constructor(private val transaction: SpoofConfigT
         }
     }
     private fun activeGlobalLayer(): Boolean =
-        RootFileAccess.read("${SpoofGlobalContract.MODULE_DIR}/module.prop")?.lineSequence()
-            ?.any { it.trim() == "id=${SpoofGlobalContract.MODULE_ID}" } == true &&
+        (RootFileAccess.exists(SpoofGlobalContract.CONFIG_PATH) ||
+            RootFileAccess.exists(SpoofGlobalContract.MODULE_DIR)) &&
             !RootFileAccess.exists("${SpoofGlobalContract.MODULE_DIR}/disable") &&
             !RootFileAccess.exists("${SpoofGlobalContract.MODULE_DIR}/remove")
 

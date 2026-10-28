@@ -786,7 +786,7 @@
     <string name="setedit_msg_override_cleared">%1$s will no longer be re-applied after reboot</string>
     <string name="setedit_delete_prop_confirm_desc">Android properties cannot be deleted. This removes the saved value MaxManager re-applies after reboot; the current value stays until the next boot.</string>
     <string name="setedit_persist_read_only_desc">Read-only: Android sets ro.* properties during boot, and they cannot change while it runs.</string>
-    <string name="setedit_persist_until_reboot">Applies now. While “Preserve &amp; Restore settings” is on, MaxManager re-applies it after the next boot.</string>
+    <string name="setedit_persist_until_reboot">Applies now. While “Apply settings on boot” is on, MaxManager re-applies it after the next boot.</string>
     <string name="setedit_persist_control">Control message: delivered now and never re-sent at boot.</string>
 
     <string name="logsviewer_title">Log Console</string>
@@ -1786,18 +1786,18 @@
     <string name="storyboard_knob_max_ai_objective">Objective</string>
 
     <!-- Activity card on the home screen: display preferences only — no hardware knob. -->
-    <!-- «حفظ خياراتك وتطبيقها بعد إعادة التشغيل» (§3): القسم المركزي في Settings -->
-    <string name="persist_section">Preserve &amp; Restore</string>
-    <string name="persist_enable_title">Preserve &amp; Restore settings</string>
-    <string name="persist_enable_desc">Re-applies every choice the app can apply — overlays, panels, audio, CPU and GPU, network, scheduler, touch, display, RAM and memory/UFS — after a reboot.</string>
-    <string name="persist_apply_now">Apply now</string>
-    <string name="persist_apply_now_desc">Runs the same restore without waiting for a reboot.</string>
-    <string name="persist_apply_running">Restoring…</string>
-    <string name="persist_dangerous_title">Very dangerous settings automatically</string>
-    <string name="persist_dangerous_desc">RAM (zram), memory/UFS, display size and touch. Turns itself off if the device restarts repeatedly.</string>
-    <string name="persist_dangerous_bootloop">Automatic restore of very dangerous settings was turned off after repeated restarts. Turn it back on only after the device boots normally.</string>
-    <string name="persist_coverage">Covers overlays and panels · audio effects · GPU Studio · CPU governor &amp; I/O scheduler · network · scheduler flags · touch · display · RAM (zram) · memory &amp; UFS · properties edited in the Property Editor. Engine-owned profiles and thermal state are re-applied by the root engine from the same saved values.</string>
-    <string name="persist_note">Nothing is forced on the whole device: per-game profiles return on the game\'s next launch, and anything the device or permissions refuse is skipped with its reason.</string>
+    <!-- Boot Persistence -->
+    <string name="persist_section">Boot Persistence</string>
+    <string name="persist_enable_title">Apply settings on boot</string>
+    <string name="persist_enable_desc">Automatically re-apply saved tweaks when the device restarts.</string>
+    <string name="persist_apply_now">Apply tweaks now</string>
+    <string name="persist_apply_now_desc">Re-apply all saved tweaks immediately without rebooting.</string>
+    <string name="persist_apply_running">Applying tweaks…</string>
+    <string name="persist_dangerous_title">Apply advanced tweaks</string>
+    <string name="persist_dangerous_desc">Includes memory, display, and touch tweaks with smart bootloop protection.</string>
+    <string name="persist_dangerous_bootloop">Automatic application of advanced tweaks was disabled to protect the device after bootloop detection.</string>
+    <string name="persist_coverage">Covers saved hardware and system tweaks.</string>
+    <string name="persist_note">Only tweaks compatible with device permissions are safely applied.</string>
     <string name="settings_home_section">Home screen</string>
     <string name="settings_navigation_section">Navigation</string>
     <string name="settings_device_section">Device capabilities</string>
@@ -3605,6 +3605,55 @@
 <string name="widget_cfg_storage_bar">Show fill bar</string>
 <string name="widget_cfg_cancel">Cancel</string>
 <string name="widget_cfg_done">Done</string>
+
+    <!-- New Legendary Widgets Suite -->
+    <string name="widget_gpu_name">GPU Turbo</string>
+    <string name="widget_gpu_description">Real-time GPU load, clocks, and quick access to GPU Studio.</string>
+    <string name="widget_fps_name">FPS Meter</string>
+    <string name="widget_fps_description">Instant 1-tap floating FPS meter HUD and framerate controls.</string>
+    <string name="widget_cockpit_name">Gaming Cockpit</string>
+    <string name="widget_cockpit_description">Master gaming HUD: live CPU/GPU load, FPS toggle, and quick boost.</string>
+    <string name="widget_ram_name">RAM Cleaner</string>
+    <string name="widget_ram_description">One-tap memory compactor with real-time freed MB feedback.</string>
+    <string name="widget_cpu_cluster_name">CPU Clusters</string>
+    <string name="widget_cpu_cluster_description">Live frequencies for Prime, Gold, and Silver cores with CPU control.</string>
+    <string name="widget_mini_gaming_name">Gaming Pill</string>
+    <string name="widget_mini_gaming_description">Ultra-compact 2x1 bar for FPS toggle, RAM boost, and GPU Turbo.</string>
+    <string name="widget_thermal_name">Thermal Shield</string>
+    <string name="widget_thermal_description">Live thermal sensors, throttle prevention, and cooling profile.</string>
+    <string name="widget_battery_turbo_name">Battery Turbo</string>
+    <string name="widget_battery_turbo_description">Live battery level, wattage, temp, and bypass charging toggle.</string>
+    <string name="widget_island_remote_name">Island Remote</string>
+    <string name="widget_island_remote_description">Dynamic Island remote control and live status indicator.</string>
+    <string name="widget_game_launcher_name">Game Space</string>
+    <string name="widget_game_launcher_description">Direct launcher for Game Space with cinematic lobby entrance.</string>
+    <string name="widget_game_focus_name">Gaming Focus</string>
+    <string name="widget_game_focus_description">DND mode, gesture lock, and notification suppression for gaming.</string>
+    <string name="widget_game_combo_name">Game Combos</string>
+    <string name="widget_game_combo_description">Quick gaming macros, touch combos, and controller mapping.</string>
+    <string name="widget_touch_boost_name">Touch Boost</string>
+    <string name="widget_touch_boost_description">Touch sampling rate and response profile switcher.</string>
+    <string name="widget_audio_fx_name">Audio Studio FX</string>
+    <string name="widget_audio_fx_description">3D spatial sound, bass boost, and gaming equalizer presets.</string>
+    <string name="widget_display_studio_name">Display Studio</string>
+    <string name="widget_display_studio_description">Instant screen refresh rate toggle (60/90/120/144Hz) and DC dimming.</string>
+    <string name="widget_network_ping_name">Network Ping</string>
+    <string name="widget_network_ping_description">Real-time gaming ping latency monitor and network scheduler.</string>
+    <string name="widget_app_freezer_name">App Freezer</string>
+    <string name="widget_app_freezer_description">One-tap background process freezer and debloat manager.</string>
+    <string name="widget_kernel_blueprint_name">Kernel Blueprint</string>
+    <string name="widget_kernel_blueprint_description">Kernel architecture, Linux version, uptime, and SELinux status.</string>
+    <string name="widget_quick_setedit_name">Quick SetEdit</string>
+    <string name="widget_quick_setedit_description">Instant system property editor and logcat viewer.</string>
+    <string name="widget_action_fps_toggle">FPS HUD</string>
+    <string name="widget_action_gpu_studio">GPU Studio</string>
+    <string name="widget_action_cockpit">Cockpit</string>
+    <string name="widget_action_clean_ram">Clean</string>
+    <string name="widget_status_on">ON</string>
+    <string name="widget_status_off">OFF</string>
+    <string name="widget_status_live">LIVE</string>
+    <string name="widget_load_percent">%1$d%%</string>
+    <string name="widget_freq_mhz">%1$d MHz</string>
 
 <!-- ═══ Community stats (MAX-CONTROL-01 §10): the one consent screen and its exact message ═══ -->
 <string name="max_stats_title">Community stats</string>

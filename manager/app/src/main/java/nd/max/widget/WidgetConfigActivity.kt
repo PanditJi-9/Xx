@@ -103,6 +103,7 @@ class WidgetConfigActivity : ComponentActivity() {
             ?: WidgetConfigStore.INVALID_ID
         val kind = widgetKindFor(this, appWidgetId)
         if (kind == null) {
+            setResult(RESULT_OK, resultIntent(appWidgetId))
             finish()
             return
         }
@@ -126,6 +127,8 @@ class WidgetConfigActivity : ComponentActivity() {
                                     context = this@WidgetConfigActivity,
                                     id = manager.getGlanceIdBy(appWidgetId),
                                 )
+                            }.recoverCatching {
+                                widgetFor(kind).updateAll(this@WidgetConfigActivity)
                             }
                             setResult(RESULT_OK, resultIntent(appWidgetId))
                             finish()
@@ -154,10 +157,11 @@ class WidgetConfigActivity : ComponentActivity() {
                 .getAppWidgetInfo(appWidgetId)
                 ?.provider
                 ?: return null
-            return when (provider) {
-                ComponentName(context, PulseReceiver::class.java) -> WidgetKind.Pulse
-                ComponentName(context, ControlsReceiver::class.java) -> WidgetKind.Controls
-                ComponentName(context, StorageReceiver::class.java) -> WidgetKind.Storage
+            val cls = provider.className
+            return when {
+                cls.endsWith("PulseReceiver") -> WidgetKind.Pulse
+                cls.endsWith("ControlsReceiver") -> WidgetKind.Controls
+                cls.endsWith("StorageReceiver") -> WidgetKind.Storage
                 else -> null
             }
         }

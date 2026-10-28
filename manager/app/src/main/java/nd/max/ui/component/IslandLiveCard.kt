@@ -5,6 +5,8 @@
  */
 package nd.max.ui.component
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Notifications
@@ -28,13 +31,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import nd.max.R
 import nd.max.island.core.IslandSettings
 import nd.max.island.engine.DynamicIslandUi
 import nd.max.island.engine.IslandLevel
+import nd.max.island.engine.IslandMode
 import nd.max.island.engine.IslandTheme
 import nd.max.ui.design.MaxRadius
 import nd.max.ui.design.MaxSpace
@@ -95,9 +102,9 @@ internal fun IslandLiveCard(modifier: Modifier = Modifier) {
                             .align(punchAlign)
                             .then(punchPad)
                             .size(14.dp)
-                            .clip(androidx.compose.foundation.shape.CircleShape)
-                            .background(androidx.compose.ui.graphics.Color.Black)
-                            .border(1.dp, androidx.compose.ui.graphics.Color(0xFF2E2E30), androidx.compose.foundation.shape.CircleShape)
+                            .clip(CircleShape)
+                            .background(Color.Black)
+                            .border(1.dp, Color(0xFF2E2E30), CircleShape)
                     )
 
                     Box(Modifier.padding(top = 14.dp)) {

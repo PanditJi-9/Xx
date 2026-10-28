@@ -101,7 +101,7 @@
 #define MODULE_UPDATE "/data/adb/modules/MaxManager/update"
 #define MODULE_REMOVE "/data/adb/modules/MaxManager/remove"
 #define BYPASSCHG_CONFIG "/data/adb/.config/MaxManager/bypasschgconfig"
-#define MODULE_VERSION "V3.0"
+#define MODULE_VERSION "V4"
 #define APP_MONITOR_FILE "/data/adb/.config/MaxManager/app_status"
 #define DAEMON_STATE_FILE "/data/adb/.config/MaxManager/daemon_state"
 

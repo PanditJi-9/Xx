@@ -24,13 +24,12 @@ class SpoofGlobalBackend @Inject constructor(private val transaction: SpoofConfi
     fun prepare(workspace: SpoofWorkspace): SpoofEngineWrite {
         transaction.eligibility(SpoofGlobalContract.MODULE_ID)?.let { return SpoofEngineWrite(false, it) }
         // Until hook ordering is proved, do not activate two independent injection layers together.
-        val copgPresent = RootFileAccess.read("${SpoofCopgContract.MODULE_DIR}/module.prop")?.lineSequence()
-            ?.any { it.trim() == "id=${SpoofCopgContract.MODULE_ID}" } == true &&
+        val copgPresent = (RootFileAccess.exists(SpoofCopgContract.CONFIG_PATH) ||
+            RootFileAccess.exists(SpoofCopgContract.MODULE_DIR)) &&
             !RootFileAccess.exists("${SpoofCopgContract.MODULE_DIR}/disable") &&
             !RootFileAccess.exists("${SpoofCopgContract.MODULE_DIR}/remove")
         if (copgPresent) return SpoofEngineWrite(false, SpoofEngineReason.GLOBAL_LAYER_CONFLICT)
-        val original = RootFileAccess.read(SpoofGlobalContract.CONFIG_PATH)
-            ?: return SpoofEngineWrite(false, SpoofEngineReason.ENGINE_CONFIG_UNREADABLE)
+        val original = RootFileAccess.read(SpoofGlobalContract.CONFIG_PATH) ?: "{}"
         val target = SpoofGlobalContract.plan(original, workspace)
             ?: return SpoofEngineWrite(false, SpoofEngineReason.UNSUPPORTED_POLICY)
         return transaction.apply(SpoofGlobalContract.MODULE_ID, original, target)

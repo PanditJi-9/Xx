@@ -524,5 +524,214 @@
                 android:resource="@xml/widget_storage_info" />
         </receiver>
 
+        <receiver
+            android:name="nd.max.widget.legendary.GpuTurboReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_gpu_turbo_info" />
+        </receiver>
+
+        <receiver
+            android:name="nd.max.widget.legendary.FpsMeterReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_fps_meter_info" />
+        </receiver>
+
+        <receiver
+            android:name="nd.max.widget.legendary.CockpitReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_cockpit_info" />
+        </receiver>
+
+        <receiver
+            android:name="nd.max.widget.legendary.RamCleanerReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_ram_cleaner_info" />
+        </receiver>
+
+        <receiver
+            android:name="nd.max.widget.legendary.CpuClusterReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_cpu_cluster_info" />
+        </receiver>
+
+        <receiver
+            android:name="nd.max.widget.legendary.MiniGamingPillReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_mini_gaming_info" />
+        </receiver>
+
+        <receiver
+            android:name="nd.max.widget.legendary.ThermalShieldReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_thermal_shield_info" />
+        </receiver>
+
+        <receiver
+            android:name="nd.max.widget.legendary.BatteryTurboReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_battery_turbo_info" />
+        </receiver>
+
+        <receiver
+            android:name="nd.max.widget.legendary.IslandRemoteReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_island_remote_info" />
+        </receiver>
+
+        <receiver
+            android:name="nd.max.widget.legendary.GameLauncherReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_game_launcher_info" />
+        </receiver>
+
+        <receiver
+            android:name="nd.max.widget.legendary.GameFocusReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_game_focus_info" />
+        </receiver>
+
+        <receiver
+            android:name="nd.max.widget.legendary.GameComboReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_game_combo_info" />
+        </receiver>
+
+        <receiver
+            android:name="nd.max.widget.legendary.TouchBoostReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_touch_boost_info" />
+        </receiver>
+
+        <receiver
+            android:name="nd.max.widget.legendary.AudioMaxFxReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_audio_max_fx_info" />
+        </receiver>
+
+        <receiver
+            android:name="nd.max.widget.legendary.DisplayStudioReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_display_studio_info" />
+        </receiver>
+
+        <receiver
+            android:name="nd.max.widget.legendary.NetworkPingReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_network_ping_info" />
+        </receiver>
+
+        <receiver
+            android:name="nd.max.widget.legendary.AppFreezerReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_app_freezer_info" />
+        </receiver>
+
+        <receiver
+            android:name="nd.max.widget.legendary.KernelBlueprintReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_kernel_blueprint_info" />
+        </receiver>
+
+        <receiver
+            android:name="nd.max.widget.legendary.QuickSetEditReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_quick_setedit_info" />
+        </receiver>
+
     </application>
 </manifest>

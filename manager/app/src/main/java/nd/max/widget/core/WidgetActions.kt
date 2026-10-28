@@ -25,8 +25,11 @@ import androidx.glance.appwidget.action.ActionCallback
 import androidx.glance.appwidget.updateAll
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import android.content.Intent
+import android.os.Build
 import nd.max.island.core.IslandControl
 import nd.max.island.engine.IslandService
+import nd.max.service.FpsOverlayService
 import nd.max.ui.util.MemoryBoostEngine
 import nd.max.widget.controls.ControlsWidget
 import nd.max.widget.pulse.PulseWidget
@@ -41,9 +44,20 @@ object WidgetIntents {
     const val ROUTE_STORAGE = "storage_care"
     const val ROUTE_CONTROL = "control"
     const val ROUTE_ISLAND = "dynamic_island"
-
-    /** لوبي مساحة الألعاب: يفتحه اختصار الشاشة الرئيسية (`GameSpaceShortcut`) فيبدأ بالدخول السينمائيّ. */
-    const val ROUTE_GAME_LOBBY = "game_lobby"
+    const val ROUTE_GAME_LOBBY = "gamelobby"
+    const val ROUTE_GPU_STUDIO = "gpustudio"
+    const val ROUTE_FPS_OVERLAY = "fpsoverlay"
+    const val ROUTE_FPS_GO = "fpsgoscreen"
+    const val ROUTE_CPU_CONTROL = "cpucorecontrol"
+    const val ROUTE_THERMAL = "thermal_detail"
+    const val ROUTE_BATTERY = "hub_power"
+    const val ROUTE_DISPLAY = "displaystudio"
+    const val ROUTE_TOUCH = "touchboost"
+    const val ROUTE_AUDIO = "audio_studio"
+    const val ROUTE_NETWORK = "networkscheduler"
+    const val ROUTE_APP_FREEZER = "debloatfreeze"
+    const val ROUTE_SETEDIT = "setedit"
+    const val ROUTE_DEVICE_INFO = "device_info"
 }
 
 /**
@@ -55,9 +69,35 @@ object WidgetIntents {
 class RefreshWidgetsAction : ActionCallback {
 
     override suspend fun onAction(context: Context, glanceId: GlanceId, parameters: ActionParameters) {
-        PulseWidget().updateAll(context)
-        ControlsWidget().updateAll(context)
-        StorageWidget().updateAll(context)
+        runCatching { PulseWidget().updateAll(context) }
+        runCatching { ControlsWidget().updateAll(context) }
+        runCatching { StorageWidget().updateAll(context) }
+    }
+}
+
+/**
+ * تشغيل أو إطفاء تراكب عداد الإطارات (FPS Overlay) بضغطة واحدة من الودجة.
+ */
+class ToggleFpsOverlayAction : ActionCallback {
+
+    override suspend fun onAction(context: Context, glanceId: GlanceId, parameters: ActionParameters) {
+        val running = FpsOverlayService.isRunning
+        if (running) {
+            FpsOverlayService.stop(context)
+        } else {
+            runCatching {
+                val intent = Intent(context, FpsOverlayService::class.java)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    context.startForegroundService(intent)
+                } else {
+                    context.startService(intent)
+                }
+            }
+        }
+        withContext(Dispatchers.IO) {
+            kotlinx.coroutines.delay(200L)
+        }
+        RefreshWidgetsAction().onAction(context, glanceId, parameters)
     }
 }
 

@@ -279,10 +279,23 @@ fun MainScreen(fromTileType: String? = null, widgetRoute: String? = null, widget
             WidgetIntents.ROUTE_CONTROL -> MaxDestination.Control.route
             WidgetIntents.ROUTE_ISLAND -> MaxDestination.DynamicIsland.route
             WidgetIntents.ROUTE_GAME_LOBBY -> MaxDestination.GameLobby.route
-            else -> null
+            WidgetIntents.ROUTE_GPU_STUDIO -> MaxDestination.GpuStudio.route
+            WidgetIntents.ROUTE_FPS_OVERLAY -> MaxDestination.FpsOverlay.route
+            WidgetIntents.ROUTE_FPS_GO -> MaxDestination.FpsGo.route
+            WidgetIntents.ROUTE_CPU_CONTROL -> MaxDestination.CpuCoreControl.route
+            WidgetIntents.ROUTE_THERMAL -> MaxDestination.ThermalDetail.route
+            WidgetIntents.ROUTE_BATTERY -> MaxDestination.PowerHub.route
+            WidgetIntents.ROUTE_DISPLAY -> MaxDestination.DisplayStudio.route
+            WidgetIntents.ROUTE_TOUCH -> MaxDestination.TouchBoost.route
+            WidgetIntents.ROUTE_AUDIO -> MaxDestination.AudioStudio.route
+            WidgetIntents.ROUTE_NETWORK -> MaxDestination.NetworkScheduler.route
+            WidgetIntents.ROUTE_APP_FREEZER -> MaxDestination.DebloatFreeze.route
+            WidgetIntents.ROUTE_SETEDIT -> MaxDestination.SetEdit.route
+            WidgetIntents.ROUTE_DEVICE_INFO -> MaxDestination.DeviceInfo.route
+            else -> widgetRoute
         }
         if (target != null) {
-            navController.navigate(target) { launchSingleTop = true }
+            runCatching { navController.navigate(target) { launchSingleTop = true } }
         }
     }
     val navBackStackEntry by navController.currentBackStackEntryAsState()

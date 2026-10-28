@@ -77,6 +77,39 @@ object WidgetData {
         val stat = StatFs(Environment.getDataDirectory().path)
         StorageVitals(freeBytes = stat.availableBytes, totalBytes = stat.totalBytes)
     }.getOrNull()
+
+    fun isFpsServiceRunning(): Boolean = nd.max.service.FpsOverlayService.isRunning
+
+    fun fpsValue(): Float = runCatching { FpsMonitorUtil.getFps() }.getOrDefault(0f)
+
+    fun powerWatt(): Float = runCatching { FpsMonitorUtil.getPowerWatt() }.getOrDefault(0f)
+
+    fun gpuLoad(): Int? = runCatching {
+        val kgsl = java.io.File("/sys/class/kgsl/kgsl-3d0/gpu_busy_percentage")
+        if (kgsl.exists()) {
+            kgsl.readText().trim().trimEnd('%').toIntOrNull()
+        } else {
+            val ged = java.io.File("/sys/module/ged/parameters/gpu_idle")
+            if (ged.exists()) {
+                val idle = ged.readText().trim().toIntOrNull()
+                idle?.let { (100 - it).coerceIn(0, 100) }
+            } else null
+        }
+    }.getOrNull()
+
+    fun gpuFreqMhz(): Int? = runCatching {
+        val kgslClock = java.io.File("/sys/class/kgsl/kgsl-3d0/gpuclk")
+        if (kgslClock.exists()) {
+            val hz = kgslClock.readText().trim().toLongOrNull() ?: 0L
+            (hz / 1_000_000L).toInt().takeIf { it > 0 }
+        } else {
+            val devfreq = java.io.File("/sys/class/devfreq/13000000.mali/cur_freq")
+            if (devfreq.exists()) {
+                val hz = devfreq.readText().trim().toLongOrNull() ?: 0L
+                (hz / 1_000_000L).toInt().takeIf { it > 0 }
+            } else null
+        }
+    }.getOrNull()
 }
 
 /**

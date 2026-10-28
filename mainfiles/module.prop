@@ -1,7 +1,7 @@
 id=MaxManager
 name=MaxManager
-version=V3.0
-versionCode=3
+version=V4
+versionCode=4
 author=MaxManager Project
 description=MaxManager - adaptive, chip-aware performance tuning for your device.
 updateJson=

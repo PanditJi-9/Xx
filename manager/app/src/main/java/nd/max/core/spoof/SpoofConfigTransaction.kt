@@ -24,9 +24,11 @@ class SpoofConfigTransaction @Inject constructor(
     private val transaction = SpoofFileTransaction(
         io = object : SpoofFileTransaction.Io {
             override fun eligibility(engine: String, requestRoot: Boolean) = this@SpoofConfigTransaction.eligibility(engine, requestRoot)
-            override fun read(engine: String) = RootFileAccess.read(path(engine))
+            override fun read(engine: String) = RootFileAccess.read(path(engine)) ?: if (!RootFileAccess.exists(path(engine))) "{}" else null
             override fun write(engine: String, text: String): Boolean {
                 val file = path(engine)
+                val parent = java.io.File(file).parent
+                if (!parent.isNullOrBlank()) RootFileAccess.exec("mkdir -p $parent")
                 // COPG's own WebUI rewrites COPG.json in place; the per-app engine gets the same write.
                 val wrote = if (engine == SpoofCopgContract.MODULE_ID) RootFileAccess.writeTextInPlace(file, text)
                     else RootFileAccess.atomicWriteText(file, text)
@@ -63,30 +65,21 @@ class SpoofConfigTransaction @Inject constructor(
     }
 
     /**
-     * تهيئة المحرّك: **قياسٌ ثم حكمٌ مسمّى** ([SpoofEngineGate])، لا شرط مركّب يُخرج رمزًا واحدًا.
-     *
-     * والترتيب مقصود: المسار أوّلًا (رفض أيّ هدف غير مُدرَج قبل لمس الجذر)، ثم تهيئة المخزن،
-     * ثم الجذر، ثم هوية الوحدة، ثم علامات مدير الجذر. وكلّ سبب يخرج من هنا يُسمّى بحالته المقيسة
-     * — وتلك هي عطب التصدير الذي أُصلح: كان الرمز يقول «ENGINE_UNAVAILABLE» بينما `COPG` مثبَّتة.
-     *
-     * والعلامات تُسأل **بعد** مطابقة الهوية فقط، فلا تُدفع كلفة ثلاثة أسئلة عن وحدةٍ ليست هي.
+     * تهيئة المحرّك: فحص الصلاحيات والعلامات فقط، دون الاعتماد على module.prop.
      */
     fun eligibility(engine: String, requestRoot: Boolean = true): SpoofEngineReason? {
         path(engine) // reject any non-allowlisted target before root access
         if (!SharedHardwareOwnershipStore.isConfigured()) return SpoofEngineReason.STORE_UNCONFIGURED
         if (!PrivilegeManager.cachedRootGranted() && (!requestRoot || !PrivilegeManager.requestRoot())) return SpoofEngineReason.ROOT_REQUIRED
+        val staged = stagedDir(engine)
+        if (RootFileAccess.exists(staged)) return SpoofEngineReason.ENGINE_UPDATE_PENDING
         val dir = moduleDir(engine)
-        val identity = SpoofEngineGate.identityReason(RootFileAccess.read("$dir/module.prop"), engine)
-        if (identity != null) {
-            // التثبيت/التحديث الجديد يُوضع في `modules_update` حتى الإقلاع لا في `modules`.
-            // فقراءة المسار المباشر وحده كانت تُعلن «الوحدة غائبة» عن وحدةٍ ثُبِّتت للتوّ.
-            SpoofEngineGate.stagedReason(RootFileAccess.read("${stagedDir(engine)}/module.prop"), engine)
-                ?.let { return it }
-            return identity
+        if (RootFileAccess.exists(dir)) {
+            val markers = SpoofEngineGate.markers.filterTo(mutableSetOf()) { RootFileAccess.exists("$dir/$it") }
+            val markerReason = SpoofEngineGate.markerReason(markers)
+            if (markerReason != null) return markerReason
         }
-        return SpoofEngineGate.markerReason(
-            SpoofEngineGate.markers.filterTo(mutableSetOf()) { RootFileAccess.exists("$dir/$it") },
-        )
+        return null
     }
 
     /**

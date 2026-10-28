@@ -162,7 +162,6 @@ internal fun AppSpoofSection(
         val engineNotice = when {
             engineReason != null -> engineRefusalText(engineReason)
             engine != null && engine.engineAvailable == null -> stringResource(R.string.spoof_engine_unmeasured)
-            engine != null && engine.present == false -> stringResource(R.string.spoof_engine_config_missing)
             engine != null && engine.parseable == false -> stringResource(R.string.spoof_engine_config_unreadable)
             else -> null
         }

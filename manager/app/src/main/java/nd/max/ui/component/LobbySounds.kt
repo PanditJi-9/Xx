@@ -55,12 +55,23 @@ class LobbySounds internal constructor(
     private val sampleIds = HashMap<LobbyCue, Int>()
     private val ready: MutableSet<Int> = ConcurrentHashMap.newKeySet()
     private val lastPlayed = HashMap<LobbyCue, Long>()
+    private val pendingCallbacks = ConcurrentHashMap<LobbyCue, (Int) -> Unit>()
 
     init {
         val p = pool
         if (p != null && context != null) {
             p.setOnLoadCompleteListener { _, sampleId, status ->
-                if (status == 0) ready.add(sampleId)
+                if (status == 0) {
+                    ready.add(sampleId)
+                    for ((cue, id) in sampleIds) {
+                        if (id == sampleId) {
+                            pendingCallbacks.remove(cue)?.let { callback ->
+                                val stream = play(cue)
+                                callback(stream)
+                            }
+                        }
+                    }
+                }
             }
             for (cue in LobbyCue.entries) {
                 sampleIds[cue] = p.load(context, cue.rawRes(), 1)
@@ -107,6 +118,32 @@ class LobbySounds internal constructor(
             delay(durationMs / FADE_STEPS.toLong())
         }
         p.stop(stream)
+    }
+
+    /**
+     * يشغّل [cue] فورًا إن كانت عيّنته جاهزة، أو ينتظر انتهاء تحميلها ثم يشغّلها ويُخطر [onPlayed].
+     * مفيد لعيّنة المقدّمة التي قد تتأخّر أجزاء من الثانية في الإقلاع البارد.
+     */
+    fun playWhenReady(cue: LobbyCue, rate: Float = 1f, onPlayed: (Int) -> Unit = {}): Int {
+        val stream = play(cue, rate)
+        if (stream != 0) {
+            onPlayed(stream)
+            return stream
+        }
+        if (isEnabled) {
+            pendingCallbacks[cue] = onPlayed
+        }
+        return 0
+    }
+
+    /** يلغي أي تشغيل معلّق للصوت المحدد إن تم تخطّيه أو انتهاء وقته. */
+    fun cancelPending(cue: LobbyCue) {
+        pendingCallbacks.remove(cue)
+    }
+
+    /** يوقف بثًا صوتيًا محددًا. */
+    fun stop(stream: Int) {
+        if (stream != 0) pool?.stop(stream)
     }
 
     internal fun release() {

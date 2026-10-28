@@ -163,7 +163,7 @@ fun AppInfoHeaderContent(modifier: Modifier = Modifier) {
                     color = MaterialTheme.colorScheme.primary.copy(alpha = 0.10f)
                 ) {
                     Text(
-                        text = "v${BuildConfig.VERSION_NAME}",
+                        text = if (BuildConfig.VERSION_NAME.startsWith("v", ignoreCase = true)) BuildConfig.VERSION_NAME else "v${BuildConfig.VERSION_NAME}",
                         modifier = Modifier.padding(horizontal = 10.dp, vertical = 7.dp),
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.primary,

@@ -80,7 +80,7 @@ private const val EMBLEM_SCALE_FROM = 1.22f
 private const val RING_COUNT = 14
 private const val RING_TRAVEL = 9f
 private const val STREAK_COUNT = 56
-private const val READY_TIMEOUT_MS = 700L
+private const val READY_TIMEOUT_MS = 2000L
 private val TwoPi = (2.0 * PI).toFloat()
 
 /**
@@ -113,6 +113,7 @@ internal fun LobbyEntrance(
     val skip: () -> Unit = {
         if (!skipped) {
             skipped = true
+            sounds.cancelPending(LobbyCue.Intro)
             scope.launch {
                 launch { sounds.fadeOutAndStop(stream, LobbyEntranceTimeline.SKIP_FADE_MS) }
                 skipFade.animateTo(1f, tween(LobbyEntranceTimeline.SKIP_FADE_MS, easing = LinearEasing))
@@ -124,15 +125,22 @@ internal fun LobbyEntrance(
     LaunchedEffect(skipSignal) { if (skipSignal > 0) skip() }
     BackHandler(enabled = !skipped) { skip() }
 
-    // الصوت والصورة يبدآن معًا: ننتظر فكّ ترميز العيّنة (≤٧٠٠ms) ثم نُطلق الساعة. إن تأخّرت العيّنة
-    // أو كانت الأصوات مُطفأة يمضي الدخول صامتًا بلا انتظار إضافيّ.
+    // الصوت والصورة يبدآن معًا: ننتظر جاهزية عيّنة الدخول حتى ثانيتين، مع ربط بثّ فوريّ حال
+    // اكتمال فكّ الترميز حتى لو تأخّر قليلاً في الإقلاع البارد، فلا يسقط الصوت عشوائيًا.
     LaunchedEffect(Unit) {
-        if (sounds.isEnabled) sounds.awaitReady(LobbyCue.Intro, READY_TIMEOUT_MS)
-        if (!skipped) stream = sounds.play(LobbyCue.Intro)
+        if (sounds.isEnabled) {
+            sounds.awaitReady(LobbyCue.Intro, READY_TIMEOUT_MS)
+            if (!skipped) {
+                sounds.playWhenReady(LobbyCue.Intro) { streamId ->
+                    if (!skipped) stream = streamId else sounds.stop(streamId)
+                }
+            }
+        }
         clock.animateTo(
             LobbyEntranceTimeline.TOTAL_MS.toFloat(),
             tween(LobbyEntranceTimeline.TOTAL_MS, easing = LinearEasing)
         )
+        sounds.cancelPending(LobbyCue.Intro)
         if (!skipped) finished.value()
     }
 

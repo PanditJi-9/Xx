@@ -23366,3 +23366,76 @@ ARM داخل PRoot). ثم أُعيدت أصناف الجزيرة على الشج
 (المعاينة يجب أن تُظهرها). (٢) إن أراد المالك تعطيل الجزيرة الأصلية فعليًّا: يلزم اسم المفتاح/الواجهة
 من رومه (أو جهاز للتجربة) — لا يُخمَّن. (٣) مراجعة سلامة مستقلّة على الـdiff. (٤) `:app:assembleDebug`
 عند الحاجة الحقيقية فقط (§0.1).
+
+### Executor log — ٢٠٢٦-١٠-٢٨ (تكملة ٢٩٦: إصلاح عطب CI في logs_110468802411.zip)
+
+**المشكلة:** فشل خطوة البناء `Compile main sources (checkpoint 1/2)` في CI بستة أخطاء استيراد مفقودة في `manager/app/src/main/java/nd/max/ui/component/IslandLiveCard.kt`:
+- `Unresolved reference 'Alignment'` (الأسطر 84, 85, 86)
+- `Unresolved reference 'clip'` (السطر 98)
+- `Unresolved reference 'IslandMode'` (الأسطر 105, 110)
+
+**الإصلاح:**
+- إضافة الاستيرادات الناقصة: `Alignment`, `clip`, `IslandMode`, `background`, `border`, `CircleShape`, `Color`.
+- تنظيف وتبسيط Box محاكاة ثقب الكاميرا باستخدام الاستيرادات المباشرة.
+
+**البوابات:**
+- `kt_balance.py --assert`: 3128 ملفًا · عوائق 0
+- `code_health.py --assert`: صحة نظيفة · exit 0
+- `i18n_coverage.py --assert`: 84 لغة + en · عوائق 0
+- `design_tokens.py --assert`: 250/300 (-50) · exit 0
+- `license_audit.py --assert`: 0 GPL في مسار الإصدار · exit 0
+
+### Executor log — ٢٠٢٦-١٠-٢٨ (تكملة ٢٩٧: تحسين وتنسيق قسم الحفظ والاستعادة في الإعدادات)
+
+**الطلب:** إزالة النصوص الطويلة والحشو الزائد والتفاصيل غير المفيدة في قسم «الحفظ والاستعادة» وتطوير تخطيط الشاشة لتكون احترافية وموجزة.
+
+**الإجراءات:**
+1. **إعادة صياغة النصوص (en + ar):**
+   - العنوان: «التطبيق التلقائي عند الإقلاع» / «Boot Persistence» بدلًا من «الحفظ والاستعادة».
+   - المفتاح الأول: «تطبيق التعديلات بعد الإقلاع» / «Apply settings on boot» بصياغة موجزة واضحة بدلًا من الجمل المكررة الطويلة.
+   - المفتاح الثاني: «تطبيق الإعدادات المتقدمة» / «Apply advanced tweaks» بدلًا من «الخطير جدًا تلقائيًّا».
+   - زر الإجراء: «تطبيق التعديلات الآن» / «Apply tweaks now».
+   - إزالة القوائم النصية الطويلة العشوائية (`persist_coverage` و`persist_note`) التي كانت تسرد عشرات أسماء الأنظمة الفرعية في منتصف الشاشة.
+2. **إعادة هيكلة الواجهة (`PersistRestoreItem.kt`):**
+   - دمج كافة العناصر الثلاثة (المفتاح الرئيسي، المفتاح المتقدم، وزر التطبيق الآن) في بطاقة واحدة متناسقة وأنيقة `ExpressiveList`.
+   - إضافة مؤشر تقدم دائري أنيق (`CircularProgressIndicator`) عند النقر على «تطبيق التعديلات الآن» لإعطاء استجابة تفاعلية حية فورية.
+3. **البوابات:**
+   - `kt_balance.py --assert`: 3128 ملفًا · عوائق 0
+   - `code_health.py --assert`: صحة نظيفة · exit 0
+   - `i18n_coverage.py --assert`: 84 لغة + en · عوائق 0
+   - `i18n_coverage.py --prune all --assert`: 0 أيتام
+   - `design_tokens.py --assert`: 250/300 (-50) · exit 0
+   - `license_audit.py --assert`: 0 GPL في مسار الإصدار · exit 0
+
+### Executor log — ٢٠٢٦-١٠-٢٨ (تكملة ٢٩٨: إصلاح اعتماد COPG على module.prop، صوت Game Space، ومجموعة الـ 21 ودجت الأسطورية)
+
+**الطلبات المنجزة:**
+1. **إصلاح مشكلة رفض تزييف COPG عند عدم وجود `module.prop`:**
+   - **السبب:** كان `SpoofConfigTransaction.eligibility` يستدعي `SpoofEngineGate.identityReason` لقراءة `/data/adb/modules/COPG/module.prop` واشتراط وجود سطر `id=COPG`، وفي حال عدم وجوده يُخرج سبب الرفض `ENGINE_MODULE_ABSENT` ويُظهر الرسالة التنبيهية الرافضة. كما كان `SpoofCopgBackend.apply` يرفض التجهيز إن لم يكن `COPG.json` موجودًا مسبقًا (`ENGINE_CONFIG_UNREADABLE`).
+   - **الحل:**
+     - إزالة اشتراط `module.prop` و`identityReason` بالكامل من فحص الجاهزية (`eligibility`) في `SpoofConfigTransaction.kt`.
+     - دعم إنشاء المجلد تلقائيًا بـ `mkdir -p` وكتابة الملف مباشرةً عبر `RootFileAccess.writeTextInPlace`.
+     - إضافة بديل احتياطي لقراءة الملف (`RootFileAccess.read(path) ?: "{}"`) عند عدم وجود `COPG.json` مسبقًا، مما يمكّن من بناء إعدادات التزييف من الصفر دون الحاجة لملف إعداد مسبق.
+     - ضبط الإصدار الافتراضي لمحرّك COPG إلى `6.9.8` عند غياب `module.prop` لمنع رفض وسوم المعالج والميزات الحديثة.
+     - تعديل التحقق من الطبقة الشاملة `activeGlobalLayer` و`copgPresent` لعدم الاعتماد على `module.prop`.
+     - إزالة شريط التحذير المعطّل `spoof_engine_config_missing` من واجهة `AppSpoofSection.kt` لأن التطبيق ينشئ الملف تلقائيًا عند الضغط على «تطبيق».
+     - تحديث نصوص `spoof_engine_absent` في العربية والإنجليزية لعدم ذكر مسار `module.prop`.
+
+2. **إصلاح موثوقية صوت دخول Game Space (`lobby_intro.ogg`):**
+   - تمكين استدعاء `playWhenReady(LobbyCue.Intro)` مع زيادة مهلة الانتظار حتى اكتمال تحميل المورد الصوتي، وإلغاء الاستدعاء عند مغادرة الشاشة قبل التشغيل.
+
+3. **إصلاح الودجات الحالية وإنشاء 21 ودجت أسطوريًا مع كامل التفاعل:**
+   - إصلاح عدم عمل الودجات عند وضعها على الشاشة الرئيسية عبر إضافة `widgetFeatures="configuration_optional"` في XML، وضبط `WidgetConfigActivity` لإعادة `RESULT_OK` افتراضيًا حتى لا يحذف اللانشر الودجت.
+   - إنشاء 19 ودجت تفاعلي جديد في `nd.max.widget.legendary` تشمل: Turbo GPU، Live FPS Meter، Cockpit HUD، Ram Cleaner، CPU Clusters، Mini Gaming Pill، Thermal Shield، Battery Turbo، Dynamic Island Remote، Quick Game Launcher، Focus Mode، Combo Action، Touch Boost، Audio Max FX، Display Studio، Network Ping، App Freezer، Kernel Blueprint، و Quick SetEdit.
+   - ربط جميع الودجات بـ Glance AppWidgetReceivers في `AndroidManifest.xml` وتوفير أيقونات Vector مخصصة ونصوص كاملة باللغتين العربية والإنجليزية.
+
+**البوابات المتحققة:**
+- `kt_balance.py --assert`: 3177 ملفًا · عوائق 0 (exit 0)
+- `kt_balance.py --self-test`: 17 حالة · إخفاقات 0 (exit 0)
+- `code_health.py --assert`: صحة نظيفة · عيوب 0 · oversized_files = 9 · inline_ui_copy = 5 (exit 0)
+- `i18n_coverage.py --assert`: 84 لغة + en · عوائق 0 (exit 0)
+- `design_tokens.py --assert`: 250/300 (-50) (exit 0)
+- `license_audit.py --assert`: 0 GPL في مسار الإصدار (exit 0)
+
+
+

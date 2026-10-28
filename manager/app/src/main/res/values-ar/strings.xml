@@ -968,18 +968,18 @@
     <string name="storyboard_knob_max_ai_objective">الهدف</string>
 
     <!-- بطاقة النشاط في الشاشة الرئيسية: تفضيلات عرض فقط — لا مقبض عتاد -->
-    <!-- «حفظ خياراتك وتطبيقها بعد إعادة التشغيل» (§3): القسم المركزي في Settings -->
-    <string name="persist_section">الحفظ والاستعادة</string>
-    <string name="persist_enable_title">حفظ خياراتك وتطبيقها بعد إعادة التشغيل</string>
-    <string name="persist_enable_desc">يعيد تطبيق كل خيار يستطيع التطبيق تطبيقه — التراكبات واللوحات والصوت والمعالج والرسوميات والشبكة والمجدول واللمس والشاشة والذاكرة وUFS — بعد إعادة التشغيل.</string>
-    <string name="persist_apply_now">استعادة الآن</string>
-    <string name="persist_apply_now_desc">تُشغّل الاستعادة نفسها دون انتظار إعادة تشغيل.</string>
-    <string name="persist_apply_running">جارٍ الاستعادة…</string>
-    <string name="persist_dangerous_title">الخطير جدًا تلقائيًّا</string>
-    <string name="persist_dangerous_desc">الذاكرة (zram) والذاكرة/UFS ومقاس الشاشة واللمس. يُغلق نفسه إن تكرّر إقلاع الجهاز.</string>
-    <string name="persist_dangerous_bootloop">أُغلق التطبيق التلقائي للإعدادات الخطيرة جدًا بعد إقلاعات متكرّرة. أعد فتحه بعد أن يُقلع الجهاز طبيعيًّا.</string>
-    <string name="persist_coverage">يشمل: التراكبات واللوحات · مؤثرات الصوت · استوديو GPU · حاكم المعالج ومجدول الإدخال/الإخراج · الشبكة · أعلام المجدول · اللمس · الشاشة · الذاكرة (zram) · الذاكرة وUFS · خصائص عُدِّلت في محرّر الخصائص. وملفّات المحرّك والحرارة يعيدها المحرّك بالجذر من القيم المحفوظة نفسها.</string>
-    <string name="persist_note">لا شيء يُفرض على الجهاز كله: ملفّات كل لعبة تعود عند تشغيلها التالي، وما يرفضه الجهاز أو الصلاحيات يُترك بسبب مكتوب.</string>
+    <!-- الحفظ والتطبيق التلقائي عند الإقلاع -->
+    <string name="persist_section">التطبيق التلقائي عند الإقلاع</string>
+    <string name="persist_enable_title">تطبيق التعديلات بعد الإقلاع</string>
+    <string name="persist_enable_desc">إعادة تطبيق الخيارات المحفوظة تلقائيًا عند إعادة تشغيل الجهاز.</string>
+    <string name="persist_apply_now">تطبيق التعديلات الآن</string>
+    <string name="persist_apply_now_desc">إعادة تفعيل كافة الإعدادات فورًا دون انتظار إعادة التشغيل.</string>
+    <string name="persist_apply_running">جارٍ تطبيق التعديلات…</string>
+    <string name="persist_dangerous_title">تطبيق الإعدادات المتقدمة</string>
+    <string name="persist_dangerous_desc">يشمل تعديلات الذاكرة والشاشة واللمس، مع حماية ذكية ضد تكرار الإقلاع.</string>
+    <string name="persist_dangerous_bootloop">تم إيقاف تطبيق الإعدادات المتقدمة تلقائيًا لحماية الجهاز بعد تكرار الإقلاع.</string>
+    <string name="persist_coverage">يشمل التعديلات المحفوظة للعتاد والنظام.</string>
+    <string name="persist_note">تُطبَّق التعديلات المتوافقة مع صلاحيات الجهاز بأمان.</string>
     <string name="settings_home_section">الشاشة الرئيسية</string>
     <string name="settings_navigation_section">التنقل</string>
     <string name="settings_device_section">قدرات الجهاز</string>
@@ -1645,7 +1645,7 @@
     <string name="setedit_msg_override_cleared">لن يُعاد تطبيق %1$s بعد إعادة التشغيل</string>
     <string name="setedit_delete_prop_confirm_desc">خصائص أندرويد لا تُحذف. هذا يزيل القيمة المحفوظة التي يعيد MaxManager تطبيقها بعد الإقلاع؛ وتبقى القيمة الحالية حتى الإقلاع التالي.</string>
     <string name="setedit_persist_read_only_desc">للقراءة فقط: أندرويد يثبّت خصائص ro.* عند الإقلاع، ولا يمكن تغييرها أثناء التشغيل.</string>
-    <string name="setedit_persist_until_reboot">تُطبَّق الآن. ومع تفعيل «حفظ خياراتك وتطبيقها بعد إعادة التشغيل» يعيد MaxManager تطبيقها بعد الإقلاع التالي.</string>
+    <string name="setedit_persist_until_reboot">تُطبَّق الآن. ومع تفعيل «تطبيق التعديلات بعد الإقلاع» يعيد MaxManager تطبيقها بعد الإقلاع التالي.</string>
     <string name="setedit_persist_control">رسالة تحكّم: تُسلَّم الآن ولا تُعاد عند الإقلاع.</string>
     <string name="logsviewer_title">وحدة السجل</string>
     <string name="logsviewer_menu_desc">بث logcat حي مع تصفية وبحث وتصدير</string>
@@ -3552,6 +3552,55 @@
 <string name="widget_cfg_storage_bar">إظهار شريط الامتلاء</string>
 <string name="widget_cfg_cancel">إلغاء</string>
 <string name="widget_cfg_done">تمّ</string>
+
+    <!-- ودجات الشاشة الرئيسية الأسطورية الجديدة -->
+    <string name="widget_gpu_name">مسرّع الرسّام GPU</string>
+    <string name="widget_gpu_description">حمل الرسّام وتردده الحيّ مع وصول سريع إلى استوديو GPU.</string>
+    <string name="widget_fps_name">عداد الإطارات FPS</string>
+    <string name="widget_fps_description">تشغيل وإطفاء تراكب معدل الإطارات العائم بلمسة واحدة مباشرة.</string>
+    <string name="widget_cockpit_name">لوحة قيادة الألعاب</string>
+    <string name="widget_cockpit_description">شاشة القيادة الكاملة للألعاب: أحمال المعالج والرسّام والإطارات والتحرير السريع.</string>
+    <string name="widget_ram_name">منظف الذاكرة RAM</string>
+    <string name="widget_ram_description">ضغط الذاكرة بلمسة واحدة مع إشعار فوري بحجم الميغابايت المحررة.</string>
+    <string name="widget_cpu_cluster_name">أنوية المعالج CPU</string>
+    <string name="widget_cpu_cluster_description">ترددات أنوية المعالج الفائقة والمتوسطة والاقتصادية مع ضبط الأنوية.</string>
+    <string name="widget_mini_gaming_name">شريط الألعاب المصغّر</string>
+    <string name="widget_mini_gaming_description">شريط مصغّر فائق السرعة لعداد FPS وتحرير الذاكرة وتوربو GPU.</string>
+    <string name="widget_thermal_name">درع الحرارة</string>
+    <string name="widget_thermal_description">مراقبة حساسات الحرارة ومنع الخنق الحراري مع اختيار أنماط التبريد.</string>
+    <string name="widget_battery_turbo_name">شاحن البطارية التوربو</string>
+    <string name="widget_battery_turbo_description">نسبة البطارية وقدرة الشحن والحرارة واختصار الشحن المتجاوز.</string>
+    <string name="widget_island_remote_name">ريموت الجزيرة</string>
+    <string name="widget_island_remote_description">التحكم في الجزيرة التفاعلية مع مؤشر حي لحالتها الحالية.</string>
+    <string name="widget_game_launcher_name">مساحة الألعاب</string>
+    <string name="widget_game_launcher_description">إطلاق مساحة الألعاب مباشرة بالدخول السينمائي وتأثيراته الصوتية.</string>
+    <string name="widget_game_focus_name">تركيز الألعاب</string>
+    <string name="widget_game_focus_description">وضع عدم الإزعاج وقفل الإيماءات وحجب الإشعارات أثناء اللعب.</string>
+    <string name="widget_game_combo_name">ماكرو الألعاب</string>
+    <string name="widget_game_combo_description">اختصارات الماكرو والكومبو اللمسي السريع للألعاب.</string>
+    <string name="widget_touch_boost_name">تعزيز اللمس</string>
+    <string name="widget_touch_boost_description">معدل استجابة اللمس ومستويات الحساسية والسرعة اللمسية.</string>
+    <string name="widget_audio_fx_name">مؤثرات الصوت 3D</string>
+    <string name="widget_audio_fx_description">الصوت المحيطي ثلاثي الأبعاد وتعزيز البيس ومعادل الألعاب.</string>
+    <string name="widget_display_studio_name">استوديو الشاشة</string>
+    <string name="widget_display_studio_description">تبديل معدل تحديث الشاشة فورًا (60/90/120/144Hz) وإلغاء وميض DC.</string>
+    <string name="widget_network_ping_name">بينج الشبكة</string>
+    <string name="widget_network_ping_description">قياس زمن استجابة الشبكة الحي بينج ومجدول الألعاب.</string>
+    <string name="widget_app_freezer_name">تجميد التطبيقات</string>
+    <string name="widget_app_freezer_description">تجميد تطبيقات الخلفية بضغطة واحدة لتحرير موارد المعالج.</string>
+    <string name="widget_kernel_blueprint_name">مخطط النواة Kernel</string>
+    <string name="widget_kernel_blueprint_description">إصدار نواة Linux ومعمارية الجهاز ووقت التشغيل وحالة SELinux.</string>
+    <string name="widget_quick_setedit_name">محرر SetEdit السريع</string>
+    <string name="widget_quick_setedit_description">تعديل خصائص النظام السريعة وعارض السجلات Logcat.</string>
+    <string name="widget_action_fps_toggle">عداد FPS</string>
+    <string name="widget_action_gpu_studio">استوديو GPU</string>
+    <string name="widget_action_cockpit">قمرة القيادة</string>
+    <string name="widget_action_clean_ram">تنظيف</string>
+    <string name="widget_status_on">مشغّل</string>
+    <string name="widget_status_off">مطفأ</string>
+    <string name="widget_status_live">مباشر</string>
+    <string name="widget_load_percent">%1$d%%</string>
+    <string name="widget_freq_mhz">%1$d م.هرتز</string>
 
 <!-- ═══ إحصاءات المجتمع (MAX-CONTROL-01 §١٠): شاشة الموافقة الواحدة ورسالتها حرفيًّا ═══ -->
 <string name="max_stats_title">إحصاءات المجتمع</string>

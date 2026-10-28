@@ -15,7 +15,7 @@
     <string name="spoof_ui_apply_confirm_text">Only this app is prepared; other apps are untouched. Restart the target app afterwards, not the system. A later edit cancels this confirmation. If COPG already lists this app, your device takes priority and the COPG line stays as it is.</string>
     <string name="spoof_ui_apply_confirm">Apply</string>
     <string name="spoof_ui_apply_reason">Engine refusal: %1$s</string>
-    <string name="spoof_engine_absent">The COPG engine wasn\'t confirmed. Check that /data/adb/modules/COPG/module.prop exists and contains id=COPG, or install COPG and reboot if it was just installed or updated.</string>
+    <string name="spoof_engine_absent">The COPG engine was not confirmed. Install COPG or grant root access, then try again.</string>
     <string name="spoof_engine_disabled">The COPG module is disabled in your root manager. Enable it there, reboot, then apply again.</string>
     <string name="spoof_engine_removal_pending">COPG is marked for removal and will be gone after the next reboot. Reinstall it before applying.</string>
     <string name="spoof_engine_update_pending">A COPG update is waiting for a reboot. Reboot first, then apply again.</string>

@@ -21,7 +21,7 @@
 **المتطلبات:** أندرويد 10 أو أحدث (API 29) · معمارية `arm64-v8a` أو `armeabi-v7a` · مدير جذر
 (Magisk · KernelSU · KernelSU Next · APatch).
 
-نزّل **`MaxManager-<version>.zip`** من صفحة الإصدارات (مثال: `MaxManager-V3.0.zip`). لا تستعمل
+نزّل **`MaxManager-<version>.zip`** من صفحة الإصدارات (مثال: `MaxManager-V4.zip`). لا تستعمل
 `MaxManager-developer-bundle.zip` للتفليش؛ تلك حزمة معدّلي الرومات.
 
 1. افتح مدير الجذر ← **Modules**.
@@ -154,7 +154,7 @@ adb shell appops get nd.max SYSTEM_ALERT_WINDOW
 **Requirements:** Android 10+ (API 29) · `arm64-v8a` or `armeabi-v7a` · a root manager
 (Magisk · KernelSU · KernelSU Next · APatch).
 
-Download **`MaxManager-<version>.zip`** from the Releases page (for example `MaxManager-V3.0.zip`).
+Download **`MaxManager-<version>.zip`** from the Releases page (for example `MaxManager-V4.zip`).
 Do **not** flash `MaxManager-developer-bundle.zip`; that one is for ROM modders.
 
 1. Open your root manager → **Modules**.

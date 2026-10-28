@@ -221,6 +221,44 @@ internal fun VerticalHairline(track: ColorProvider) {
     ) {}
 }
 
+/** ترويسة أنيقة وموحدة للودجات مع أيقونة وعنوان ووصف فرعي. */
+@Composable
+internal fun WidgetHeader(
+    title: String,
+    subtitle: String? = null,
+    iconRes: Int? = null,
+    palette: WidgetPalette,
+    modifier: GlanceModifier = GlanceModifier,
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        if (iconRes != null) {
+            Image(
+                provider = ImageProvider(iconRes),
+                contentDescription = null,
+                modifier = GlanceModifier.size(16.dp),
+                colorFilter = ColorFilter.tint(palette.colorAccent()),
+            )
+            Spacer(GlanceModifier.width(6.dp))
+        }
+        Text(
+            text = title,
+            style = TextStyle(color = palette.colorText(), fontSize = 13.sp, fontWeight = FontWeight.Bold),
+            maxLines = 1,
+            modifier = GlanceModifier.defaultWeight(),
+        )
+        if (subtitle != null) {
+            Text(
+                text = subtitle,
+                style = TextStyle(color = palette.colorDim(), fontSize = 11.sp),
+                maxLines = 1,
+            )
+        }
+    }
+}
+
 /** نيّة «افتح شاشةً داخل التطبيق» — تُقرأ في `MainActivity` وتُنقل إلى الملاح. */
 internal fun openRouteAction(context: Context, route: String): Action =
     actionStartActivity(

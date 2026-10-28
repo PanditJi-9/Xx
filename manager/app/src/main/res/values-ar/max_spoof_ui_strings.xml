@@ -15,7 +15,7 @@
     <string name="spoof_ui_apply_confirm_text">يُجهَّز هذا التطبيق وحده؛ لا تُمسّ التطبيقات الأخرى. أعد تشغيل التطبيق المستهدف بعدها لا النظام. أي تعديل لاحق يلغي هذا التأكيد. إن كانت COPG تُسند هذا التطبيق أصلًا، فجهازك أولى ويبقى سطر COPG كما هو.</string>
     <string name="spoof_ui_apply_confirm">تطبيق</string>
     <string name="spoof_ui_apply_reason">رفض المحرّك: %1$s</string>
-    <string name="spoof_engine_absent">لم يُتأكَّد من محرّك COPG. تحقّق من وجود /data/adb/modules/COPG/module.prop وأنه يحوي id=COPG، أو ثبّت COPG وأعد الإقلاع إن كان التثبيت أو التحديث للتوّ.</string>
+    <string name="spoof_engine_absent">لم يُتأكَّد من محرّك COPG. ثبّت COPG أو امنح صلاحية الروت، ثم حاول مرة أخرى.</string>
     <string name="spoof_engine_disabled">وحدة COPG معطَّلة في مدير الجذر. فعّلها من هناك وأعد الإقلاع ثم جهّز مرة أخرى.</string>
     <string name="spoof_engine_removal_pending">COPG في طابور الحذف وسيزول بعد الإقلاع القادم. أعد تثبيتها قبل التجهيز.</string>
     <string name="spoof_engine_update_pending">تحديث COPG ينتظر إقلاعًا. أعد الإقلاع أولًا ثم جهّز مرة أخرى.</string>
