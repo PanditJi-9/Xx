@@ -44,7 +44,6 @@ import androidx.compose.ui.text.font.FontWeight
 import nd.max.R
 import nd.max.island.core.IslandSettings
 import nd.max.island.engine.IslandThemeStyle
-import nd.max.ui.design.MaxBorder
 import nd.max.ui.design.MaxGroup
 import nd.max.ui.design.MaxGroupDivider
 import nd.max.ui.design.MaxRadius
@@ -179,7 +178,7 @@ fun IslandFlagshipFeaturesSection() {
                     stringResource(R.string.island_cutout_top)
                 )
                 MaxSegmented(
-                    items = cutoutLabels,
+                    options = cutoutLabels,
                     selectedIndex = cutoutAnchor.coerceIn(0, 3),
                     onSelect = {
                         IslandSettings.cutoutAnchor.value = it

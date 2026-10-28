@@ -8,6 +8,7 @@ package nd.max.island.engine
 import nd.max.R
 import nd.max.island.core.IslandLayout
 import nd.max.island.core.IslandSettings
+import nd.max.island.core.IslandSpringSpec
 import nd.max.island.core.IslandText
 import nd.max.island.core.KindStyle
 import nd.max.island.core.SwipeDir
@@ -334,7 +335,7 @@ internal fun IslandBody(
     }
 
     // Higher animSpeed = faster spring; a fast flick stiffens it further (no fixed duration).
-    val springSpec = remember(animSpeed, gestureSpeed, palette) {
+    val springSpec = remember<IslandSpringSpec>(animSpeed, gestureSpeed, palette) {
         val base = IslandLayout.springFor(gestureSpeed, animSpeed)
         IslandSpringSpec(
             dampingRatio = (base.dampingRatio * (palette.springDamping / 0.86f)).coerceIn(0.60f, 0.96f),

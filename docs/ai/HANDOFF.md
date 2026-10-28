@@ -74,6 +74,11 @@ TASK: «dynamic island في مشروعي سيئ جدا وبه عيوب كثير 
    - دعم خيارات موضع الثقب (`cutoutAnchor`): ثقب في المنتصف، أو ثقب يسار، أو ثقب يمين.
 4. إزالة إيقاف الجزيرة الأصلية: حذف استدعاء `retireLegacyEngine()` القسري من `DynamicIslandScreen.kt` وإبقاء خدمة `IslandService` الأصلية متاحة بالكامل.
 5. رسوم الشحن فائق السرعة وتوافق التصميم: دعم Turbo Charging بالوات في `IslandController` و`IslandUiWidgets`، وواجهات تحكم إعدادات جديدة في `IslandStyleSelector.kt` مع الالتزام الصارم برموز التصميم `ui/design/`، وحفظ حقوق Islandify (MIT) في `THIRD_PARTY_NOTICES.md`.
+6. تشخيص وإصلاح أخطاء المترجم من سجل فشل البناء (`logs_110338684102.zip`):
+   - كشف السجل في مهمة GitHub Actions عن 7 أخطاء تجميع في خطوة `:app:compileReleaseKotlin`:
+     * 4 في `IslandUi.kt`: عدم استيراد `nd.max.island.core.IslandSpringSpec` مما عطّل استنتاج نوع `remember` وخاصيتي `dampingRatio` و`stiffness`.
+     * 3 في `IslandStyleSelector.kt`: استيراد غير مستعمل وغير موجود `MaxBorder`، واستخدام المعامل `items` بدل `options` في `MaxSegmented`.
+   - تم إصلاح الاستيرادات والمعاملات بالكامل وضمان توازنها واجتياز البوابات.
 
 GATES:
 - `kt_balance --assert` ⇒ 3126 ملفًا / 0 عوائق
