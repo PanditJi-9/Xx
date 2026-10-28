@@ -77,6 +77,28 @@ class FootprintContractTest {
     }
 
     @Test
+    fun `monitor errors still wait instead of retrying in a busy loop`() {
+        val monitor = source("AppMonitor.kt")
+        val loop = monitor.substringAfter("private fun runMonitorLoop()")
+            .substringBefore("private fun serviceDeferredRevert()")
+        val error = loop.indexOf("Uncaught error in monitor loop iteration")
+        val wait = loop.indexOf("awaitNextMonitorCycle()")
+        assertTrue("the shared wait must follow error handling, not be skipped by it", error >= 0 && wait > error)
+        assertTrue(loop.substring(wait).contains("catch (_: InterruptedException)"))
+    }
+
+    @Test
+    fun `screen wake invalidates the old off snapshot before an idle early return`() {
+        val monitor = source("AppMonitor.kt")
+        val background = monitor.substringAfter("private fun writeBackgroundApps()")
+            .substringBefore("private fun waitForValidFocusedApp")
+        val reset = background.indexOf("if (screenOn) backgroundAppsWrittenWhileScreenOff = false")
+        val idleReturn = background.indexOf("if (screenOn && !managedAppOwnsForeground()")
+        assertTrue(reset >= 0 && idleReturn > reset)
+        assertTrue(background.contains("if (!screenOn && backgroundAppsWrittenWhileScreenOff) return"))
+    }
+
+    @Test
     fun `status writes keep safety live and only cache a successful rename`() {
         val monitor = source("AppMonitor.kt")
         assertTrue(monitor.contains("requiresLiveStatus = charging == 1 || perAppOverridesActive || gracePkg != null"))

@@ -91,8 +91,8 @@ class HomeViewModel @Inject constructor(
     private fun observeRootUtils() {
         // **لا استطلاع والشاشة غير مرئيّة (FOOTPRINT-01):** كانت الحلقتان تعملان طوال حياة
         // الـ`ViewModel` — أي ولو كان التطبيق في الخلفية — وكل دورة `pidof` في صدفة جذر وقراءة
-        // ملفّ الجذر. والشارة لا تُعرَض أصلًا حين لا شاشة، فالإيقاف عند `ON_STOP` يُلغي
-        // الاشتراكات الثلاثة تتوقّف معًا، وتعيد قراءة الحالة الحالية عند العودة.
+        // ملفّ الجذر. والشارة لا تُعرَض أصلًا حين لا شاشة، فتتوقّف الاشتراكات الثلاثة
+        // عند `ON_STOP`، وتعيد قراءة الحالة الحالية عند العودة.
         viewModelScope.launch(Dispatchers.IO) {
             visible.collectLatest { on ->
                 if (!on) return@collectLatest

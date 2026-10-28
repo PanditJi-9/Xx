@@ -693,7 +693,7 @@ object AppMonitor {
     }
 
     /**
-     * مراقب حدثيّ لملفّ الإعدادات — يعيد `true` إن نجح تسجيله.
+     * مراقب حدثيّ لملفّ الإعدادات — `true` تعني محاولة تسجيله بلا استثناء، لا تأكيد نجاحها.
      *
      * **ولماذا المجلّد لا الملفّ:** الكتابة الذرّية الشائعة هي `tmp` ثم `rename`، فتغيّر الملفّ
      * يظهر كـ`MOVED_TO` على المجلّد؛ ومراقبة الملفّ نفسه تفقد المشاهدة بعد أوّل استبدال.
@@ -813,12 +813,19 @@ object AppMonitor {
                             AppMonitorLogger.i("EVENT=GPU_DISCOVERY_PUBLISHED sw=$currentSwitchId")
                         }
                     }.onFailure { AppMonitorLogger.e("EVENT=GPU_DISCOVERY_PUBLISH_FAILED sw=$currentSwitchId", it) }
-                    awaitNextMonitorCycle()
                 } catch (_: InterruptedException) {
                     Thread.currentThread().interrupt()
                     break
                 } catch (t: Throwable) {
                     AppMonitorLogger.e("Uncaught error in monitor loop iteration", t)
+                }
+                // A persistent read/permission failure must not turn the 24/7 loop into a
+                // busy retry. Successful and failed iterations share the same bounded wait.
+                try {
+                    awaitNextMonitorCycle()
+                } catch (_: InterruptedException) {
+                    Thread.currentThread().interrupt()
+                    break
                 }
             }
         } finally {
@@ -1167,8 +1174,8 @@ object AppMonitor {
                 // **بلا `fd.sync()` (FOOTPRINT-01):** هذا ملفّ حالة لحظيّة لا بيانات مستخدم —
                 // يُعاد بناؤه في الدورة التالية، ويُكتب من جديد عند الإقلاع. و`renameTo` على
                 // نفس نظام الملفّات ذرّيّ بالنسبة لمدخل المجلّد، فالقارئ لا يرى نصف ملفّ أبدًا.
-                // وكان `fsync` في كل تبديل تطبيق (٦٤٦٢ تبديلًا في ٤٣ ساعة، مقيسة في السجلّ)
-                // يفرض كتابة فلاش كاملة لكل تبديل — أثقل عملية إدخال/إخراج في الدورة.
+                // وكان `fsync` يطلب مزامنة التخزين عند كل تبديل؛ عدد معاملات الفلاش الفعلية
+                // وزمنها يحتاجان قياس جهاز، ولا يُستنتجان من عدد التبديلات.
             }
 
             check(tmpFile.renameTo(file)) { "Atomic status rename failed: $outputPath" }
@@ -1227,6 +1234,9 @@ object AppMonitor {
 
     private fun writeBackgroundApps() {
         val screenOn = powerManager?.isInteractive == true
+        // Forget the previous screen-off snapshot on wake even if the unchanged foreground
+        // takes the idle early return. The next screen-off transition needs its own snapshot.
+        if (screenOn) backgroundAppsWrittenWhileScreenOff = false
         if (!screenOn && backgroundAppsWrittenWhileScreenOff) return
         // **ولا تُقرأ قائمة العمليات بلا تطبيق مُدار في المقدّمة** (ولا والشاشة مطفأة).
         // الملفّ يخدم شيئًا واحدًا: أن يجد الخادم معرّفات عملية **التطبيق المُدار الذي في
@@ -1266,7 +1276,7 @@ object AppMonitor {
                 fos.write(currentApps.toByteArray(Charsets.UTF_8))
                 // **بلا `fd.sync()` (FOOTPRINT-01):** القائمة تُبنى من جديد في الدورة التالية
                 // لكل تطبيق مُدار، والملفّ حالة لحظيّة لا بيانات مستخدم. و`renameTo` ذرّيّ،
-                // فالقارئ لا يرى نصف ملفّ. و`fsync` هنا كان كتابة فلاش كاملة عند كل تغيّر قائمة.
+                // فالقارئ لا يرى نصف ملفّ. حذف طلب مزامنة التخزين لا يثبت مقدار توفير البطارية.
             }
 
             check(tmpFile.renameTo(file)) { "Atomic background-apps rename failed: $backgroundOutputPath" }

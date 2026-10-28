@@ -9,6 +9,7 @@ Source wiring guards do not prove FileObserver delivery or battery use on a phon
 import argparse
 import os
 from pathlib import Path
+import re
 import subprocess
 import tempfile
 
@@ -21,6 +22,7 @@ TEST = ROOT / "manager/app/src/test/java/nd/max/core/daemon"
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--work-dir", type=Path, default=Path("/tmp/opencode"))
+    parser.add_argument("--self-test", action="store_true", help="prove the parser and two new wiring guards reject regressions")
     args = parser.parse_args()
     cache = Path(os.environ.get("GRADLE_USER_HOME", Path.home() / ".gradle")) / "caches/modules-2/files-2.1"
 
@@ -88,10 +90,39 @@ class CheckFootprintSyntax {
             "-no-stdlib", "-no-reflect", "-jvm-target", "17", "-classpath", runtime_cp,
             "-d", output, *map(str, sources),
         ], cwd=ROOT, check=True)
+        junit_command = [java, "-cp", output + os.pathsep + runtime_cp, "org.junit.runner.JUnitCore"]
         subprocess.run([
-            java, "-cp", output + os.pathsep + runtime_cp, "org.junit.runner.JUnitCore",
+            *junit_command,
             "nd.max.core.daemon.CompanionPollPolicyTest", "nd.max.core.daemon.FootprintContractTest",
         ], cwd=ROOT, check=True)
+        if args.self_test:
+            broken = Path(output) / "Broken.kt"
+            broken.write_text("fun broken() {\n", encoding="utf-8")
+            result = subprocess.run([java, "-cp", compiler_cp, str(syntax), str(broken)],
+                                    cwd=ROOT, capture_output=True, text=True)
+            if result.returncode == 0 or "Kotlin syntax errors" not in result.stderr:
+                raise AssertionError("Kotlin parser failed to reject a known unclosed brace")
+            print("Parser self-test: malformed Kotlin rejected", flush=True)
+
+            # Only mutate a temporary source mirror. Run the real compiled JUnit guards;
+            # no checkout, mocks, or edits to the working tree are needed for the negative test.
+            mirror = Path(output) / "guard-mutations"
+            for name in android_sources[:5]:
+                text = (SOURCE / name).read_text(encoding="utf-8")
+                if name == "AppMonitor.kt":
+                    text = text.replace("                    awaitNextMonitorCycle()", "", 1)
+                    text = text.replace("        if (screenOn) backgroundAppsWrittenWhileScreenOff = false", "", 1)
+                target = mirror / "manager/app/src/main/java/nd/max" / name
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text(text, encoding="utf-8")
+            result = subprocess.run([*junit_command, "nd.max.core.daemon.FootprintContractTest"],
+                                    cwd=mirror, capture_output=True, text=True)
+            if result.returncode != 1 or not re.search(r"Tests run: 9,\s+Failures: 2", result.stdout):
+                raise AssertionError("Expected exactly two wiring failures:\n" + result.stdout + result.stderr)
+            for guard in ("monitor errors still wait", "screen wake invalidates"):
+                if guard not in result.stdout:
+                    raise AssertionError("The intended regression was not rejected: " + guard)
+            print("Wiring self-test: both injected regressions rejected; 7 other guards pass", flush=True)
 
 
 if __name__ == "__main__":
