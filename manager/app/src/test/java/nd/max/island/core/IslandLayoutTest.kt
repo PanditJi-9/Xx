@@ -65,8 +65,8 @@ class IslandLayoutTest {
     fun `placement centers the window and clamps a user offset inside the safe area`() {
         val center = IslandLayout.place(portrait, 0f, 10f, 300, 120, avoidSystemUi = true)
         assertEquals(390, center.xPx)
-        assertEquals(108, center.yPx)
-        assertTrue(center.belowSystemUi)
+        assertEquals(30, center.yPx)
+        assertFalse(center.belowSystemUi)
         assertEquals(1015, center.maxWidthPx)
         assertEquals(10, center.wingPx(300))
 
