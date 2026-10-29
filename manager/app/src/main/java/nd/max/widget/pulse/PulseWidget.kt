@@ -28,7 +28,6 @@ import androidx.glance.Image
 import androidx.glance.ImageProvider
 import androidx.glance.LocalContext
 import androidx.glance.LocalSize
-import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.LinearProgressIndicator
 import androidx.glance.appwidget.SizeMode
@@ -65,6 +64,7 @@ import nd.max.widget.core.WidgetTheme
 import nd.max.widget.core.WidgetThemeMode
 import nd.max.widget.core.WidgetTone
 import nd.max.widget.toneColor
+import nd.max.widget.MaxGlanceWidget
 
 /**
  * ودجة «نبض الجهاز».
@@ -77,11 +77,11 @@ import nd.max.widget.toneColor
  * والمقاسان المُعلَنان: شبكة ٢×٢ صغيرة، وشريط ٤×١ عريض — و`Responsive` يختار
  * بحسب ما أعطاه المشغّل، والاختيار هنا بـ [LocalSize] لا بتخمين.
  */
-class PulseWidget : GlanceAppWidget() {
+class PulseWidget : MaxGlanceWidget() {
 
     override val sizeMode: SizeMode = SizeMode.Responsive(setOf(SMALL, WIDE))
 
-    override suspend fun provideGlance(context: Context, id: GlanceId) {
+    override suspend fun renderGlance(context: Context, id: GlanceId) {
         val appWidgetId = runCatching { GlanceAppWidgetManager(context).getAppWidgetId(id) }
             .getOrDefault(WidgetConfigStore.INVALID_ID)
         val config = if (appWidgetId == WidgetConfigStore.INVALID_ID) {

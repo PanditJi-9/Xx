@@ -8,6 +8,7 @@
     android:minResizeWidth="220dp"
     android:minWidth="250dp"
     android:previewLayout="@layout/widget_preview_pulse"
+    android:previewImage="@drawable/widget_preview_image_wide"
     android:resizeMode="horizontal|vertical"
     android:targetCellHeight="2"
     android:targetCellWidth="4"

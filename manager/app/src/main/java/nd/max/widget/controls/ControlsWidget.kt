@@ -24,7 +24,6 @@ import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
 import androidx.glance.LocalContext
 import androidx.glance.LocalSize
-import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.SizeMode
 import androidx.glance.appwidget.action.actionRunCallback
@@ -60,6 +59,7 @@ import nd.max.widget.core.WidgetPalette
 import nd.max.widget.core.WidgetTheme
 import nd.max.widget.openRouteAction
 import nd.max.widget.openStudioAction
+import nd.max.widget.MaxGlanceWidget
 
 /**
  * ودجة «التحكّم السريع».
@@ -69,11 +69,11 @@ import nd.max.widget.openStudioAction
  * القراءة المريحة في شبكة ٢×٢ لا حدّ تقنيّ)، وحالة الجزيرة تُرى باللون:
  * معبّأة بلون التمييز = تعمل الآن.
  */
-class ControlsWidget : GlanceAppWidget() {
+class ControlsWidget : MaxGlanceWidget() {
 
     override val sizeMode: SizeMode = SizeMode.Responsive(setOf(SMALL, WIDE))
 
-    override suspend fun provideGlance(context: Context, id: GlanceId) {
+    override suspend fun renderGlance(context: Context, id: GlanceId) {
         val appWidgetId = runCatching { GlanceAppWidgetManager(context).getAppWidgetId(id) }
             .getOrDefault(WidgetConfigStore.INVALID_ID)
         val store = WidgetConfigStore(context)

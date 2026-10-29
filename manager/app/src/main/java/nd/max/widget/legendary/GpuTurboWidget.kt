@@ -56,6 +56,7 @@ import nd.max.widget.core.WidgetIntents
 import nd.max.widget.core.WidgetTheme
 import nd.max.widget.core.WidgetThemeMode
 import nd.max.widget.openRouteAction
+import nd.max.widget.MaxGlanceWidget
 
 /** ناقل ودجة مسرّع الرسّام GPU Turbo */
 class GpuTurboReceiver : GlanceAppWidgetReceiver() {
@@ -66,11 +67,11 @@ class GpuTurboReceiver : GlanceAppWidgetReceiver() {
  * ودجة «مسرّع الرسّام GPU Turbo»:
  * تعرض تردد الرسّام الحي ونسبة التحميل وزرّ القفز المباشر إلى استوديو GPU.
  */
-class GpuTurboWidget : GlanceAppWidget() {
+class GpuTurboWidget : MaxGlanceWidget() {
 
     override val sizeMode: SizeMode = SizeMode.Responsive(setOf(SMALL, WIDE))
 
-    override suspend fun provideGlance(context: Context, id: GlanceId) {
+    override suspend fun renderGlance(context: Context, id: GlanceId) {
         val palette = WidgetTheme.palette(WidgetAccent.Brand, WidgetThemeMode.System)
         val load = WidgetData.gpuLoad()
         val freq = WidgetData.gpuFreqMhz()

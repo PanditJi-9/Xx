@@ -53,6 +53,7 @@ import nd.max.widget.core.WidgetPalette
 import nd.max.widget.core.WidgetTheme
 import nd.max.widget.core.WidgetThemeMode
 import nd.max.widget.openRouteAction
+import nd.max.widget.MaxGlanceWidget
 
 /** ناقل ودجة مشغّل مساحة الألعاب Game Launcher */
 class GameLauncherReceiver : GlanceAppWidgetReceiver() {
@@ -63,11 +64,11 @@ class GameLauncherReceiver : GlanceAppWidgetReceiver() {
  * ودجة «مشغّل مساحة الألعاب Game Space» (٢×٢):
  * إطلاق سينمائي فوري لمساحة الألعاب مع عرض موجز لأداء المعالج والرسّام.
  */
-class GameLauncherWidget : GlanceAppWidget() {
+class GameLauncherWidget : MaxGlanceWidget() {
 
     override val sizeMode: SizeMode = SizeMode.Single
 
-    override suspend fun provideGlance(context: Context, id: GlanceId) {
+    override suspend fun renderGlance(context: Context, id: GlanceId) {
         val palette = WidgetTheme.palette(WidgetAccent.Brand, WidgetThemeMode.System)
         val cpu = WidgetData.cpuLoad()
 

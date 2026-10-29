@@ -48,6 +48,7 @@ import nd.max.widget.core.WidgetPalette
 import nd.max.widget.core.WidgetTheme
 import nd.max.widget.core.WidgetThemeMode
 import nd.max.widget.openRouteAction
+import nd.max.widget.MaxGlanceWidget
 
 /** ناقل ودجة عداد الإطارات FPS Meter */
 class FpsMeterReceiver : GlanceAppWidgetReceiver() {
@@ -58,11 +59,11 @@ class FpsMeterReceiver : GlanceAppWidgetReceiver() {
  * ودجة «اختصار عداد الإطارات FPS»:
  * نقرة واحدة تشغّل أو تطفئ التراكب العائم فورًا، مع زرّ فتح شاشة الضبط.
  */
-class FpsMeterWidget : GlanceAppWidget() {
+class FpsMeterWidget : MaxGlanceWidget() {
 
     override val sizeMode: SizeMode = SizeMode.Single
 
-    override suspend fun provideGlance(context: Context, id: GlanceId) {
+    override suspend fun renderGlance(context: Context, id: GlanceId) {
         val palette = WidgetTheme.palette(WidgetAccent.Brand, WidgetThemeMode.System)
         val isRunning = WidgetData.isFpsServiceRunning()
 

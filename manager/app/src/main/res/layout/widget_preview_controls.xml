@@ -33,7 +33,7 @@
             android:textSize="11sp" />
     </LinearLayout>
 
-    <View
+    <FrameLayout
         android:layout_width="6dp"
         android:layout_height="1dp" />
 
@@ -62,7 +62,7 @@
             android:textSize="11sp" />
     </LinearLayout>
 
-    <View
+    <FrameLayout
         android:layout_width="6dp"
         android:layout_height="1dp" />
 

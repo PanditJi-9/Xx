@@ -47,6 +47,7 @@ import nd.max.widget.core.WidgetPalette
 import nd.max.widget.core.WidgetTheme
 import nd.max.widget.core.WidgetThemeMode
 import nd.max.widget.openRouteAction
+import nd.max.widget.MaxGlanceWidget
 
 /** ناقل ودجة أنوية المعالج CPU Cluster */
 class CpuClusterReceiver : GlanceAppWidgetReceiver() {
@@ -57,11 +58,11 @@ class CpuClusterReceiver : GlanceAppWidgetReceiver() {
  * ودجة «أنوية المعالج CPU Clusters» (٤×١):
  * شريط أفقي عريض يعرض أحمال الأنوية وحمل المعالج العام مع النقر لفتح ضبط الأنوية.
  */
-class CpuClusterWidget : GlanceAppWidget() {
+class CpuClusterWidget : MaxGlanceWidget() {
 
     override val sizeMode: SizeMode = SizeMode.Single
 
-    override suspend fun provideGlance(context: Context, id: GlanceId) {
+    override suspend fun renderGlance(context: Context, id: GlanceId) {
         val palette = WidgetTheme.palette(WidgetAccent.Brand, WidgetThemeMode.System)
         val load = WidgetData.cpuLoad()
 

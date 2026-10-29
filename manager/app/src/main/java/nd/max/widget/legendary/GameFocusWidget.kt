@@ -44,6 +44,7 @@ import nd.max.widget.core.WidgetPalette
 import nd.max.widget.core.WidgetTheme
 import nd.max.widget.core.WidgetThemeMode
 import nd.max.widget.openRouteAction
+import nd.max.widget.MaxGlanceWidget
 
 /** ناقل ودجة تركيز الألعاب Game Focus */
 class GameFocusReceiver : GlanceAppWidgetReceiver() {
@@ -54,11 +55,11 @@ class GameFocusReceiver : GlanceAppWidgetReceiver() {
  * ودجة «تركيز الألعاب Game Focus» (٢×١):
  * تشغيل سريع لنمط عدم الإزعاج وتثبيت الأداء وحجب الإشعارات أثناء اللعب.
  */
-class GameFocusWidget : GlanceAppWidget() {
+class GameFocusWidget : MaxGlanceWidget() {
 
     override val sizeMode: SizeMode = SizeMode.Single
 
-    override suspend fun provideGlance(context: Context, id: GlanceId) {
+    override suspend fun renderGlance(context: Context, id: GlanceId) {
         val palette = WidgetTheme.palette(WidgetAccent.Brand, WidgetThemeMode.System)
 
         provideContent {

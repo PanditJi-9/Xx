@@ -51,6 +51,7 @@ import nd.max.widget.core.WidgetPalette
 import nd.max.widget.core.WidgetTheme
 import nd.max.widget.core.WidgetThemeMode
 import nd.max.widget.openRouteAction
+import nd.max.widget.MaxGlanceWidget
 
 /** ناقل ودجة ريموت الجزيرة Island Remote */
 class IslandRemoteReceiver : GlanceAppWidgetReceiver() {
@@ -61,11 +62,11 @@ class IslandRemoteReceiver : GlanceAppWidgetReceiver() {
  * ودجة «ريموت الجزيرة Island Remote» (٢×٢):
  * تحكّم فوري بتشغيل أو إيقاف الجزيرة التفاعلية مع مؤشر حي لحالتها الحالية واختصار للإعدادات.
  */
-class IslandRemoteWidget : GlanceAppWidget() {
+class IslandRemoteWidget : MaxGlanceWidget() {
 
     override val sizeMode: SizeMode = SizeMode.Single
 
-    override suspend fun provideGlance(context: Context, id: GlanceId) {
+    override suspend fun renderGlance(context: Context, id: GlanceId) {
         val palette = WidgetTheme.palette(WidgetAccent.Brand, WidgetThemeMode.System)
         val active = runCatching { IslandService.isActive() }.getOrDefault(false)
 

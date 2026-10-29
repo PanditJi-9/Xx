@@ -45,6 +45,7 @@ import nd.max.widget.core.WidgetPalette
 import nd.max.widget.core.WidgetTheme
 import nd.max.widget.core.WidgetThemeMode
 import nd.max.widget.openRouteAction
+import nd.max.widget.MaxGlanceWidget
 
 /** ناقل ودجة مخطط النواة Kernel Blueprint */
 class KernelBlueprintReceiver : GlanceAppWidgetReceiver() {
@@ -55,11 +56,11 @@ class KernelBlueprintReceiver : GlanceAppWidgetReceiver() {
  * ودجة «مخطط النواة Kernel Blueprint» (٤×١):
  * شريط أنيق يعرض معمارية النظام وإصدار النواة ووقت تشغيل الجهاز.
  */
-class KernelBlueprintWidget : GlanceAppWidget() {
+class KernelBlueprintWidget : MaxGlanceWidget() {
 
     override val sizeMode: SizeMode = SizeMode.Single
 
-    override suspend fun provideGlance(context: Context, id: GlanceId) {
+    override suspend fun renderGlance(context: Context, id: GlanceId) {
         val palette = WidgetTheme.palette(WidgetAccent.Brand, WidgetThemeMode.System)
         val uptimeHours = (SystemClock.elapsedRealtime() / (1000 * 60 * 60)).toInt()
 

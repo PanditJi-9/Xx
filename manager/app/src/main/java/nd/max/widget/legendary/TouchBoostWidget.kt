@@ -47,6 +47,7 @@ import nd.max.widget.core.WidgetPalette
 import nd.max.widget.core.WidgetTheme
 import nd.max.widget.core.WidgetThemeMode
 import nd.max.widget.openRouteAction
+import nd.max.widget.MaxGlanceWidget
 
 /** ناقل ودجة تعزيز اللمس Touch Boost */
 class TouchBoostReceiver : GlanceAppWidgetReceiver() {
@@ -57,11 +58,11 @@ class TouchBoostReceiver : GlanceAppWidgetReceiver() {
  * ودجة «تعزيز اللمس Touch Boost» (٢×٢):
  * تحسين سرعة استجابة الشاشة ومعدل أخذ العينات اللمسية مع زر فتح تخصيص اللمس.
  */
-class TouchBoostWidget : GlanceAppWidget() {
+class TouchBoostWidget : MaxGlanceWidget() {
 
     override val sizeMode: SizeMode = SizeMode.Single
 
-    override suspend fun provideGlance(context: Context, id: GlanceId) {
+    override suspend fun renderGlance(context: Context, id: GlanceId) {
         val palette = WidgetTheme.palette(WidgetAccent.Brand, WidgetThemeMode.System)
 
         provideContent {

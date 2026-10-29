@@ -12,6 +12,7 @@
     android:minResizeWidth="110dp"
     android:minWidth="110dp"
     android:previewLayout="@layout/widget_preview_controls"
+    android:previewImage="@drawable/widget_preview_image_square"
     android:resizeMode="horizontal|vertical"
     android:targetCellHeight="2"
     android:targetCellWidth="2"

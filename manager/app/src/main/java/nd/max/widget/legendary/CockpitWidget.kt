@@ -58,6 +58,7 @@ import nd.max.widget.core.WidgetPalette
 import nd.max.widget.core.WidgetTheme
 import nd.max.widget.core.WidgetThemeMode
 import nd.max.widget.openRouteAction
+import nd.max.widget.MaxGlanceWidget
 
 /** ناقل ودجة قمرة القيادة للألعاب Cockpit */
 class CockpitReceiver : GlanceAppWidgetReceiver() {
@@ -69,11 +70,11 @@ class CockpitReceiver : GlanceAppWidgetReceiver() {
  * قمرة تحكم متكاملة تعرض أحمال المعالج والرسّام والذاكرة، مع أزرار تشغيل FPS
  * وتحرير الذاكرة والدخول إلى مساحة الألعاب.
  */
-class CockpitWidget : GlanceAppWidget() {
+class CockpitWidget : MaxGlanceWidget() {
 
     override val sizeMode: SizeMode = SizeMode.Single
 
-    override suspend fun provideGlance(context: Context, id: GlanceId) {
+    override suspend fun renderGlance(context: Context, id: GlanceId) {
         val palette = WidgetTheme.palette(WidgetAccent.Brand, WidgetThemeMode.System)
         val cpu = WidgetData.cpuLoad()
         val gpu = WidgetData.gpuLoad()

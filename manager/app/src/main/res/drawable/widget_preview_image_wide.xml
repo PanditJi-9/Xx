@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- معاينة ثابتة للودجة في منتقي الودجات (previewImage) بألوان لوحة الودجة نفسها. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="250dp"
+    android:height="110dp"
+    android:viewportWidth="250"
+    android:viewportHeight="110">
+    <path android:fillColor="@color/widget_preview_bg" android:pathData="M22,0 H228 A22,22 0 0 1 250,22 V88 A22,22 0 0 1 228,110 H22 A22,22 0 0 1 0,88 V22 A22,22 0 0 1 22,0 Z" />
+    <path android:fillColor="@color/widget_preview_surface" android:pathData="M28,12 H112 A16,16 0 0 1 128,28 V82 A16,16 0 0 1 112,98 H28 A16,16 0 0 1 12,82 V28 A16,16 0 0 1 28,12 Z" />
+    <path android:fillColor="@color/widget_preview_accent" android:pathData="M150,12 H222 A16,16 0 0 1 238,28 V82 A16,16 0 0 1 222,98 H150 A16,16 0 0 1 134,82 V28 A16,16 0 0 1 150,12 Z" />
+    <path android:fillColor="@color/widget_preview_accent" android:pathData="M61,38 A9,9 0 1 0 79,38 A9,9 0 1 0 61,38 Z" />
+    <path android:fillColor="@color/widget_preview_track" android:pathData="M43,62 H97 A3,3 0 0 1 100,65 V65 A3,3 0 0 1 97,68 H43 A3,3 0 0 1 40,65 V65 A3,3 0 0 1 43,62 Z" />
+    <path android:fillColor="@color/widget_preview_accent" android:pathData="M43,62 H75 A3,3 0 0 1 78,65 V65 A3,3 0 0 1 75,68 H43 A3,3 0 0 1 40,65 V65 A3,3 0 0 1 43,62 Z" />
+    <path android:fillColor="@color/widget_preview_bg" android:pathData="M177,38 A9,9 0 1 0 195,38 A9,9 0 1 0 177,38 Z" />
+    <path android:fillColor="@color/widget_preview_bg" android:pathData="M155,62 H215 A3,3 0 0 1 218,65 V65 A3,3 0 0 1 215,68 H155 A3,3 0 0 1 152,65 V65 A3,3 0 0 1 155,62 Z" />
+</vector>

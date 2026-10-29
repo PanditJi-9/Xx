@@ -25,7 +25,6 @@ import androidx.glance.GlanceId
 import androidx.glance.GlanceModifier
 import androidx.glance.LocalContext
 import androidx.glance.LocalSize
-import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetManager
 import androidx.glance.appwidget.LinearProgressIndicator
 import androidx.glance.appwidget.SizeMode
@@ -58,6 +57,7 @@ import nd.max.widget.core.WidgetPalette
 import nd.max.widget.core.WidgetTheme
 import nd.max.widget.openRouteAction
 import nd.max.widget.toneColor
+import nd.max.widget.MaxGlanceWidget
 
 /**
  * ودجة «عناية التخزين».
@@ -67,11 +67,11 @@ import nd.max.widget.toneColor
  * والنقرة كلها تفتح شاشة العناية، فالحذف نفسه لا يقع من خلف ظهر المستخدم:
  * الودجة تُرشد، والقرار يبقى في الشاشة التي تُقيس وتُؤكِّد.
  */
-class StorageWidget : GlanceAppWidget() {
+class StorageWidget : MaxGlanceWidget() {
 
     override val sizeMode: SizeMode = SizeMode.Responsive(setOf(SMALL, WIDE))
 
-    override suspend fun provideGlance(context: Context, id: GlanceId) {
+    override suspend fun renderGlance(context: Context, id: GlanceId) {
         val appWidgetId = runCatching { GlanceAppWidgetManager(context).getAppWidgetId(id) }
             .getOrDefault(WidgetConfigStore.INVALID_ID)
         val config = if (appWidgetId == WidgetConfigStore.INVALID_ID) {

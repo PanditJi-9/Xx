@@ -50,6 +50,7 @@ import nd.max.widget.core.WidgetFormat
 import nd.max.widget.core.WidgetPalette
 import nd.max.widget.core.WidgetTheme
 import nd.max.widget.core.WidgetThemeMode
+import nd.max.widget.MaxGlanceWidget
 
 /** ناقل ودجة منظف الذاكرة RAM Cleaner */
 class RamCleanerReceiver : GlanceAppWidgetReceiver() {
@@ -60,11 +61,11 @@ class RamCleanerReceiver : GlanceAppWidgetReceiver() {
  * ودجة «منظف الذاكرة RAM Cleaner» (٢×١):
  * زر سريع ومباشر لتنظيف وضغط الذاكرة وإظهار المساحة المتاحة فورًا.
  */
-class RamCleanerWidget : GlanceAppWidget() {
+class RamCleanerWidget : MaxGlanceWidget() {
 
     override val sizeMode: SizeMode = SizeMode.Single
 
-    override suspend fun provideGlance(context: Context, id: GlanceId) {
+    override suspend fun renderGlance(context: Context, id: GlanceId) {
         val palette = WidgetTheme.palette(WidgetAccent.Brand, WidgetThemeMode.System)
         val ram = WidgetData.ramMb(context)
 

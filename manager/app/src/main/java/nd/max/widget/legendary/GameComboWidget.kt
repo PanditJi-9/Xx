@@ -44,6 +44,7 @@ import nd.max.widget.core.WidgetPalette
 import nd.max.widget.core.WidgetTheme
 import nd.max.widget.core.WidgetThemeMode
 import nd.max.widget.openRouteAction
+import nd.max.widget.MaxGlanceWidget
 
 /** ناقل ودجة ماكرو الألعاب Game Combo */
 class GameComboReceiver : GlanceAppWidgetReceiver() {
@@ -54,11 +55,11 @@ class GameComboReceiver : GlanceAppWidgetReceiver() {
  * ودجة «ماكرو الألعاب Game Combos» (٢×١):
  * وصول فوري لاختصارات الكومبو والماكرو والتحكم اللمسي في الألعاب.
  */
-class GameComboWidget : GlanceAppWidget() {
+class GameComboWidget : MaxGlanceWidget() {
 
     override val sizeMode: SizeMode = SizeMode.Single
 
-    override suspend fun provideGlance(context: Context, id: GlanceId) {
+    override suspend fun renderGlance(context: Context, id: GlanceId) {
         val palette = WidgetTheme.palette(WidgetAccent.Brand, WidgetThemeMode.System)
 
         provideContent {

@@ -48,6 +48,7 @@ import nd.max.widget.core.WidgetPalette
 import nd.max.widget.core.WidgetTheme
 import nd.max.widget.core.WidgetThemeMode
 import nd.max.widget.openRouteAction
+import nd.max.widget.MaxGlanceWidget
 
 /** ناقل ودجة شريط الألعاب المصغر Mini Gaming Pill */
 class MiniGamingPillReceiver : GlanceAppWidgetReceiver() {
@@ -58,11 +59,11 @@ class MiniGamingPillReceiver : GlanceAppWidgetReceiver() {
  * ودجة «شريط الألعاب المصغّر» (٢×١):
  * كبسولة أنيقة ومضغوطة تحتوي على تحرير الذاكرة وتفعيل عداد FPS وتوربو GPU.
  */
-class MiniGamingPillWidget : GlanceAppWidget() {
+class MiniGamingPillWidget : MaxGlanceWidget() {
 
     override val sizeMode: SizeMode = SizeMode.Single
 
-    override suspend fun provideGlance(context: Context, id: GlanceId) {
+    override suspend fun renderGlance(context: Context, id: GlanceId) {
         val palette = WidgetTheme.palette(WidgetAccent.Brand, WidgetThemeMode.System)
         val isFpsRunning = WidgetData.isFpsServiceRunning()
 

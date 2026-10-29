@@ -44,6 +44,7 @@ import nd.max.widget.core.WidgetPalette
 import nd.max.widget.core.WidgetTheme
 import nd.max.widget.core.WidgetThemeMode
 import nd.max.widget.openRouteAction
+import nd.max.widget.MaxGlanceWidget
 
 /** ناقل ودجة محرر SetEdit السريع Quick SetEdit */
 class QuickSetEditReceiver : GlanceAppWidgetReceiver() {
@@ -54,11 +55,11 @@ class QuickSetEditReceiver : GlanceAppWidgetReceiver() {
  * ودجة «محرر SetEdit السريع» (٢×١):
  * وصول فوري لمحرر خصائص النظام SetEdit وعارض سجلات النظام.
  */
-class QuickSetEditWidget : GlanceAppWidget() {
+class QuickSetEditWidget : MaxGlanceWidget() {
 
     override val sizeMode: SizeMode = SizeMode.Single
 
-    override suspend fun provideGlance(context: Context, id: GlanceId) {
+    override suspend fun renderGlance(context: Context, id: GlanceId) {
         val palette = WidgetTheme.palette(WidgetAccent.Brand, WidgetThemeMode.System)
 
         provideContent {
