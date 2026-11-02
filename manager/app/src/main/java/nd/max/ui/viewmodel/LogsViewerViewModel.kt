@@ -726,7 +726,7 @@ class LogsViewerViewModel : ViewModel() {
      */
     fun clearUnifiedLogs(context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
-            Shell.cmd("'${MaxManagerPaths.SERVICE_BIN}' --clearlogs").exec()
+            Shell.cmd("'${MaxManagerPaths.serviceBin()}' --clearlogs").exec()
             synchronized(allUnifiedLogs) { allUnifiedLogs.clear() }
             synchronized(pendingRawUnifiedLines) { pendingRawUnifiedLines.clear() }
             unifiedTotalLineCount = 0

@@ -16,6 +16,7 @@
 
 package nd.max.ui.util
 import nd.max.core.platform.PropertyUtils
+import nd.max.core.daemon.RomRuntimeKick
 import nd.max.core.platform.EventLog
 
 import nd.max.MaxManagerPaths
@@ -201,7 +202,7 @@ object RootUtils {
         if (currentShell != null && !currentShell.isRoot) {
             currentShell.close()
         }
-        return Shell.getShell().isRoot
+        return Shell.getShell().isRoot.also { if (it) RomRuntimeKick.onRootGranted() }
     }
 
     fun isRootGranted(): Boolean {
@@ -209,11 +210,12 @@ object RootUtils {
         if (currentShell != null && !currentShell.isRoot) {
             currentShell.close()
         }
-        return Shell.getShell().isRoot
+        return Shell.getShell().isRoot.also { if (it) RomRuntimeKick.onRootGranted() }
     }
 
+    /** موديول مثبّت، **أو** تثبيت مدمج في الروم (ديمون في قسم النظام) — كلاهما «مثبّت» لا «ناقص». */
     fun isModuleInstalled(): Boolean {
-        return SuFile(MODULE_DIR).exists()
+        return SuFile(MODULE_DIR).exists() || MaxManagerPaths.isRomInstall()
     }
 
     fun getServiceStatusRes(): Pair<Int, String> {

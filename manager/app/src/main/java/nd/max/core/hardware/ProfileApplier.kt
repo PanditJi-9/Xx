@@ -66,21 +66,21 @@ object ProfileApplier {
     }
 
     private fun runService(profileId: String, fromAi: Boolean): Boolean {
-        val serviceBin = SuFile(MaxManagerPaths.SERVICE_BIN)
+        val serviceBin = SuFile(MaxManagerPaths.serviceBin())
         if (!serviceBin.exists()) {
             // الوحدة مثبتة لكن خدمتها غير موجودة — أثر بالغ الأهمية في
             // التشخيص: كل تبديل ملف من الواجهة يفشل بصمت خلافًا لذلك.
             DiagnosticCenter.record(
                 "profile",
-                "service binary missing at ${MaxManagerPaths.SERVICE_BIN}",
+                "service binary missing at ${MaxManagerPaths.serviceBin()}",
                 level = DiagnosticCenter.Level.ERROR
             )
             return false
         }
         val cmd = if (fromAi) {
-            "${MaxManagerPaths.SERVICE_BIN} -p $profileId --from-ai"
+            "${MaxManagerPaths.serviceBin()} -p $profileId --from-ai"
         } else {
-            "${MaxManagerPaths.SERVICE_BIN} -p $profileId"
+            "${MaxManagerPaths.serviceBin()} -p $profileId"
         }
         val result = Shell.cmd(cmd).exec()
         if (!result.isSuccess) {

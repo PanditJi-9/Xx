@@ -150,7 +150,7 @@ data class StartOutcome(
  */
 class DaemonStarter(
     private val io: DaemonIo = RootDaemonIo,
-    private val serviceBin: String = MaxManagerPaths.SERVICE_BIN,
+    private val serviceBin: String = MaxManagerPaths.serviceBin(),
     private val logPath: String = MaxManagerPaths.MAXMANAGER_LOG,
 ) {
 
@@ -195,7 +195,7 @@ class DaemonStarter(
  */
 class DaemonSupervisor(
     private val io: DaemonIo = RootDaemonIo,
-    private val serviceBin: String = MaxManagerPaths.SERVICE_BIN,
+    private val serviceBin: String = MaxManagerPaths.serviceBin(),
     private val logPath: String = MaxManagerPaths.MAXMANAGER_LOG,
     private val intervalMs: Long = DaemonSupervisorPolicy.CHECK_INTERVAL_MS,
     /** سطر خَبَر (نجاح/إقلاع). */
@@ -278,6 +278,11 @@ class DaemonSupervisor(
      */
     fun blockReason(): BlockReason? {
         if (!io.exists(serviceBin)) return BlockReason.BinaryMissing(serviceBin)
+
+        // **وضع الروم:** الثنائيّ في قسم النظام لا في `/data/adb/modules/MaxManager`، فلا `module.prop`
+        // ولا علامات `update`/`remove` لتُقرأ. وكان غيابها يُحكم عليه «PropUnreadable» فيُمنع التشغيل
+        // حتمًا (والخادم نفسه صار يتخطّى حارس الوحدة في هذا الوضع: `is_rom_install()`).
+        if (!serviceBin.startsWith("${MaxManagerPaths.MODULE_DIR}/")) return null
 
         val markers = MODULE_MARKERS.filter { io.exists("${MaxManagerPaths.MODULE_DIR}/$it") }
         if (markers.isNotEmpty()) return BlockReason.ModuleChanging(markers)

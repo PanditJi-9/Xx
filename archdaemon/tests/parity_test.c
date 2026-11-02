@@ -730,6 +730,11 @@ void suite_module_integrity(void) {
     host_route_open(MODULE_PROP, BUILD_DIR "/no_such_module_prop_here.prop");
     CHECK(module_identity_violated(), "an unreadable module.prop is refused, never assumed clean");
 
+    /* ── ٥) وضع الروم: القياس مسار الثنائيّ نفسه — وثنائيّ الاختبار ليس تحت `/system/bin` ──
+     * فيبقى الحارس يعمل هنا بلا تخفيف (وإلا سقط ٣ و٤ أعلاه). والفرع الموجب (ثنائيّ تحت
+     * `/system/bin` يعبر الحارس دون `module.prop`) **يحتاج جهازًا** — `readlink(/proc/self/exe)` لا يُوجَّه. */
+    CHECK(!is_rom_install(), "a host test binary is not a ROM-installed daemon, so the guard stays armed");
+
     host_clear_routes();
 }
 

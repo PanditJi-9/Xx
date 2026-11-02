@@ -16,8 +16,10 @@
 
 #include <MaxManager.h>
 
+#include <limits.h>
 #include <stdio.h>
 #include <string.h>
+#include <unistd.h>
 
 /**
  * هوية الوحدة كما هي مشحونة فعلًا في `mainfiles/module.prop`.
@@ -112,12 +114,47 @@ bool module_identity_ok(const char* prop_text) {
 }
 
 /**
+ * @brief هل هذا الخادم **مدمج في الروم** لا مُشغَّل من موديول Magisk/KernelSU؟
+ *
+ * **العطب المقيس (جهاز POCO X6 Pro، ٢٠٢٦-١١-٠١):** في الروم لا يوجد `/data/adb/modules/MaxManager`،
+ * فكان `module_identity_violated()` يرى `module.prop` غير مقروء ⇒ «موت مقصود» ⇒ `exit(EXIT_FAILURE)`
+ * في أول `is_kanged()` — فلا يعمل الخادم حتى لو شُغّل بنجاح.
+ *
+ * والقياس **مسار الثنائيّ نفسه** (`/proc/self/exe`) لا وجود مجلّد: مجلّد الموديول قد يغيب لحظةً في
+ * تحديث، أمّا ثنائيّ يعمل من `/system/bin` أو `/system_ext/bin` أو `/product/bin` أو `/vendor/bin`
+ * فهو روم حتمًا. وثنائيّ الموديول يقع تحت `/data/adb/modules/` فلا يُلتبس به، فيبقى حارس العبث
+ * (`modified_by_third_party`) على الموديول كما كان بلا تخفيف.
+ */
+bool is_rom_install(void) {
+    static const char* const ROM_BIN_DIRS[] = {"/system/bin/", "/system_ext/bin/", "/product/bin/", "/vendor/bin/"};
+
+    char exe[PATH_MAX] = {0};
+    const ssize_t length = readlink("/proc/self/exe", exe, sizeof(exe) - 1);
+    if (length <= 0) {
+        return false;
+    }
+    exe[length] = '\0';
+
+    for (size_t index = 0; index < sizeof(ROM_BIN_DIRS) / sizeof(ROM_BIN_DIRS[0]); index++) {
+        if (strncmp(exe, ROM_BIN_DIRS[index], strlen(ROM_BIN_DIRS[index])) == 0) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/**
  * @brief قرار الحارس: هل يجب أن يموت الخادم الآن؟
  * @return `true` حين يكون الملفّ غير مقروء **أو** الهوية مخالفة؛ و`false` على وحدة سليمة.
  * @note الملفّ غير المقروء يبقى موتًا مقصودًا (لا هوية تُتحقَّق) — نفس سلوك النسخة القديمة.
  * @note يُقاس على المضيف عبر `fopen` الموجَّه (`host_route_open`)، فلا يحتاج جهازًا ولا صدفة.
  */
 bool module_identity_violated(void) {
+    /* روم مدمج: لا موديول ولا `module.prop` ليُحكم على هويّته — لا مخالفة تُقاس. */
+    if (is_rom_install()) {
+        return false;
+    }
+
     char prop[MODULE_PROP_MAX_LEN] = {0};
 
     FILE* handle = fopen(MODULE_PROP, "r");
@@ -151,6 +188,11 @@ void is_kanged(void) {
  * @brief Compares the version inside module.prop with the daemon version.
  */
 void check_module_version(void) {
+    /* روم مدمج: لا `module.prop` فيه سطر `version=` ليُقارن (الثنائيّ والتطبيق يُشحنان معًا). */
+    if (is_rom_install()) {
+        return;
+    }
+
     char DAEMON_VERSION[MAX_LINE] = {0};
 
     snprintf(DAEMON_VERSION, sizeof(DAEMON_VERSION), "%s", MODULE_VERSION);

@@ -6,19 +6,34 @@
 # الاسم الرسمي الوحيد هو `sys.maxmanager-service` — نفس الثنائيّ الذي يبنيه
 # `archdaemon/jni/Android.mk` (LOCAL_MODULE) ويشغّله الموديول من `system/bin/`.
 # ولا يوجد اسم ثانٍ (`maxmanager_daemon`) ولا مسار ثانٍ (`/vendor/bin`).
-service sys.maxmanager-service /system/bin/sys.maxmanager-service
+#
+# ── لماذا صار بدء init مشروطًا (عطب مقيس، POCO X6 Pro، 2026-11-01) ────────────────
+#
+# كان السطر `service … ` بلا `--run`، وكانت الخدمة تبدأ عند `sys.boot_completed=1` دائمًا. وعلى
+# روم مجمَّع بنسخ الملفّات إلى الصور (بلا بناء sepolicy) لا يوجد النطاق `maxmanager` في السياسة،
+# فكان `dmesg` يقول:
+#     init: cannot setexeccon('u:r:maxmanager:s0') for sys.maxmanager-service: Invalid argument
+#     init: Service 'sys.maxmanager-service' received SIGABRT
+# ولم يعمل الخادم قطّ، وبقيت شارة التطبيق `IDLE`.
+#
+# فالبدء من init صار **اختياريًّا**: لا يعمل إلا إن أعلن البناءُ أنّ `sepolicy/maxmanager.te` مضمَّنة
+# فعلًا في سياسته (`ro.maxmanager.sepolicy=1` — انظر `product-inclusion.mk`). وفي غير ذلك (الحالة
+# الافتراضية) يشغّل **التطبيق** الخادم بالجذر الذي مُنح له (`ModuleWatchman` ← `RomRuntime`)،
+# بالنطاق نفسه الذي يعمل به الموديول، فلا يُشترط أي تعديل في SELinux.
+service sys.maxmanager-service /system/bin/sys.maxmanager-service --run
     class main
     user root
     group root system
     capabilities NET_ADMIN SYS_ADMIN
     seclabel u:r:maxmanager:s0
+    oneshot
     disabled
 
-on property:sys.boot_completed=1
+on property:sys.boot_completed=1 && property:ro.maxmanager.sepolicy=1
     start sys.maxmanager-service
 
-on property:maxmanager.enable=1
+on property:maxmanager.enable=1 && property:ro.maxmanager.sepolicy=1
     start sys.maxmanager-service
 
-on property:maxmanager.enable=0
+on property:maxmanager.enable=0 && property:ro.maxmanager.sepolicy=1
     stop sys.maxmanager-service

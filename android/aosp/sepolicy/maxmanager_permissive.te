@@ -1,0 +1,4 @@
+# TEMPORARY - first boot only, to record what the daemon needs.
+# Add this file next to maxmanager.te, build, flash, collect the log, run make_sepolicy.py,
+# then DELETE this file and add the generated maxmanager_generated.te instead.
+permissive maxmanager;

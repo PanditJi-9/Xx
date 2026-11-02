@@ -34,3 +34,8 @@ PRODUCT_COPY_FILES += \
 PRODUCT_PROPERTY_OVERRIDES += \
     maxmanager.enable=1 \
     maxmanager.verbose=0
+
+# بدء الخادم من init **اختياريّ**: فعّله (أزل الشرطة) فقط إن ضمّنتَ sepolicy/maxmanager.te فعلًا في
+# سياسة بنائك (BOARD_SEPOLICY_DIRS). بدونها يغيب النطاق `maxmanager` فيُجهِض init الخدمة
+# (`cannot setexeccon('u:r:maxmanager:s0')`). وبغير هذا السطر يشغّل التطبيقُ الخادمَ بالجذر.
+# PRODUCT_PROPERTY_OVERRIDES += ro.maxmanager.sepolicy=1

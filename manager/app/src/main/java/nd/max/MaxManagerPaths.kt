@@ -16,6 +16,8 @@
 
 package nd.max
 
+import java.io.File
+
 /**
  * Shared on-device path constants.
  *
@@ -49,6 +51,58 @@ object MaxManagerPaths {
     /** قائمة اللوحة الجانبية المُفعَّلة، نسخة يقرؤها الرفيق الجذري (انظر `SidePanelArmed`). */
     const val SIDE_PANEL_ARMED = "$MODULE_CONFIG/gamelist/side_panel_armed.txt"
     const val SERVICE_BIN = "$MODULE_DIR/system/bin/sys.maxmanager-service"
+
+    /**
+     * **وضع الروم (ROM install) — عطب مقيس من جهاز حقيقي، ٢٠٢٦-١١-٠١.**
+     *
+     * حين يُدمج MaxManager في صورة الروم (حزمة المطوّرين) يقع الديمون في `/system/bin` والـAPK في
+     * `/product/priv-app/MaxManager` — **ولا يوجد** `/data/adb/modules/MaxManager` أصلًا. وكان كل
+     * مستهلك في التطبيق يقرأ [SERVICE_BIN] (مسار الموديول) فيجد «service binary missing» ويبقى
+     * الرئيسي على `IDLE` مهما مُنح الجذر. فالمسار صار **يُحلّ** ([serviceBin]) لا يُفترض.
+     *
+     * والقائمة مرتّبة بنفس أولويّة الأقسام التي تنشر إليها حزمة المطوّرين (`system` أولًا).
+     */
+    private const val DAEMON_NAME = "sys.maxmanager-service"
+    val ROM_SERVICE_BINS: List<String> = listOf(
+        "/system/bin/$DAEMON_NAME",
+        "/system_ext/bin/$DAEMON_NAME",
+        "/product/bin/$DAEMON_NAME",
+        "/vendor/bin/$DAEMON_NAME",
+    )
+
+    /** مواضع الـAPK المميَّز في الروم — بنفس مسار حزمة المطوّرين `product/priv-app/MaxManager`. */
+    val ROM_APK_PATHS: List<String> = listOf(
+        "/product/priv-app/MaxManager/MaxManager.apk",
+        "/system/priv-app/MaxManager/MaxManager.apk",
+        "/system_ext/priv-app/MaxManager/MaxManager.apk",
+        "/product/app/MaxManager/MaxManager.apk",
+        "/system/app/MaxManager/MaxManager.apk",
+    )
+
+    /**
+     * ثنائيّ الديمون المدموج في الروم، أو `null`. ومواضع الأقسام مقروءة لعملية التطبيق (بخلاف
+     * `/data/adb` المحجوب عنها)، فالقياس صالح بلا جذر. والـ`exists` مُمرَّر ليُقاس على المضيف.
+     */
+    fun romServiceBin(exists: (String) -> Boolean = { File(it).exists() }): String? =
+        ROM_SERVICE_BINS.firstOrNull(exists)
+
+    /** هل التثبيت مدمج في الروم؟ (ديمون في قسم نظام لا في الموديول). */
+    fun isRomInstall(exists: (String) -> Boolean = { File(it).exists() }): Boolean =
+        romServiceBin(exists) != null
+
+    /**
+     * الثنائيّ الذي يجب أن يُشغَّل ويُنادى: ثنائيّ الروم إن وُجد، وإلا ثنائيّ الموديول ([SERVICE_BIN]).
+     * وعلى المضيف (اختبارات الوحدة) لا يوجد ثنائيّ روم فيعود [SERVICE_BIN] كما كان.
+     */
+    fun serviceBin(exists: (String) -> Boolean = { File(it).exists() }): String =
+        romServiceBin(exists) ?: SERVICE_BIN
+
+    /**
+     * الـAPK الذي يُشغَّل منه رفيق الجذر (`app_process -Djava.class.path=…`): نسخة الموديول [MODULE_APK]
+     * أولًا إن كانت مقروءة، ثم أول APK روم موجود، وإلا يعود [MODULE_APK] (السلوك السابق بلا تغيير).
+     */
+    fun companionApk(exists: (String) -> Boolean = { File(it).exists() }): String =
+        if (exists(MODULE_APK)) MODULE_APK else ROM_APK_PATHS.firstOrNull(exists) ?: MODULE_APK
 
     /**
      * `module.prop` المشحون — يقرؤه حارس هويّة الخادم (`is_kanged` في `ModuleIntegrity.c`)

@@ -24,6 +24,18 @@ void verify_system_integrity(void) {
         fprintf(stderr, "\033[31mERROR:\033[0m Daemon is already running!\n");
         exit(EXIT_FAILURE);
     }
+
+    /* وضع الروم: لا `customize.sh` أنشأ مجلّد الإعداد ولا قائمة الألعاب (والخادم يخرج دونها أدناه).
+     * يُجهَّزان هنا، ولا يُمَسّ ملفّ موجود. والتطبيق يفعل الشيء نفسه قبل أن يشغّل الخادم
+     * (`RomRuntime.PREPARE`) — فالمسارات الثلاثة (init · التطبيق · تشغيل يدويّ بـ`su`) تلتقي على بيئة واحدة. */
+    if (is_rom_install()) {
+        systemv("mkdir -p /data/adb/.config/MaxManager/debug /data/adb/.config/MaxManager/API "
+                "/data/adb/.config/MaxManager/preload /data/adb/.config/MaxManager/bypasschgconfig "
+                "/data/adb/.config/MaxManager/gamelist");
+        if (access(GAMELIST, F_OK) != 0) {
+            systemv("echo '{}' > %s", GAMELIST);
+        }
+    }
     systemv("touch %s", PROFILE_MODE_APP);
     systemv("touch %s", GAME_INFO_APP);
 

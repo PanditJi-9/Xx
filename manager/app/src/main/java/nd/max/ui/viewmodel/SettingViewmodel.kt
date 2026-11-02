@@ -74,7 +74,7 @@ class SettingsViewModel : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             val flag = if (enabled) "-sn" else "-hn"
             PropertyUtils.set(MaxManagerProps.General.PROFILE_NOTIFICATIONS, if (enabled) "1" else "0")
-            Shell.cmd("/data/adb/modules/MaxManager/system/bin/sys.maxmanager-service $flag").submit()            
+            Shell.cmd("${nd.max.MaxManagerPaths.serviceBin()} $flag").submit()            
         }
     }
     

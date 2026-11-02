@@ -182,7 +182,7 @@ def check_module_identity(root: str) -> str | None:
 
 
 def service_line(root: str) -> tuple[str, str] | None:
-    match = re.search(r"^service\s+(\S+)\s+(\S+)\s*$", read(root, "android/aosp/maxmanager.rc"), re.M)
+    match = re.search(r"^service[ \t]+(\S+)[ \t]+(\S+)(?:[ \t]+\S[^\n]*)?[ \t]*$", read(root, "android/aosp/maxmanager.rc"), re.M)
     return (match.group(1), match.group(2)) if match else None
 
 

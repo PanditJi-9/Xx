@@ -595,7 +595,7 @@ fun SettingsScreen(
                                 {
                                     ExpressiveListItem(
                                         onClick = {
-                                            Shell.cmd("/data/adb/modules/MaxManager/system/bin/sys.maxmanager-service --rerun").submit { result ->
+                                            Shell.cmd(nd.max.core.daemon.DaemonCommands.restart(nd.max.MaxManagerPaths.serviceBin())).submit { result ->
                                                 if (result.isSuccess) {
                                                     coroutineScope.launch {
                                                         snackbarHostState.showSnackbar(restartToastText)

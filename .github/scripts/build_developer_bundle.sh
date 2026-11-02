@@ -53,6 +53,7 @@ DAEMON_SRC="${DAEMON_SRC:-archdaemon/libs/arm64-v8a/sys.maxmanager-service}"
 [ -f "$DAEMON_SRC" ] || { echo "ERROR: the daemon is missing: $DAEMON_SRC" >&2; exit 1; }
 for src in android/aosp/maxmanager.rc android/aosp/sepolicy/maxmanager.te \
            android/aosp/sepolicy/file_contexts android/aosp/BoardConfig.mk \
+           android/aosp/sepolicy/make_sepolicy.py android/aosp/sepolicy/maxmanager_permissive.te \
            android/overlay/product/etc/permissions/privapp-permissions-nd.max.xml; do
 	[ -f "$src" ] || { echo "ERROR: bundle input missing: $src" >&2; exit 1; }
 done
@@ -83,6 +84,7 @@ cp android/overlay/product/etc/permissions/privapp-permissions-nd.max.xml \
 cp android/aosp/maxmanager.rc "$root/system/etc/init/maxmanager.rc"
 cp android/aosp/sepolicy/maxmanager.te "$root/sepolicy/"
 cp android/aosp/sepolicy/file_contexts "$root/sepolicy/"
+cp android/aosp/sepolicy/make_sepolicy.py android/aosp/sepolicy/maxmanager_permissive.te "$root/sepolicy/"
 cp android/aosp/BoardConfig.mk "$root/BoardConfig.mk"
 chmod 0755 "$root/system/bin/sys.maxmanager-service"
 
@@ -159,6 +161,13 @@ PRODUCT_COPY_FILES += \
 PRODUCT_PROPERTY_OVERRIDES += \
     maxmanager.enable=1 \
     maxmanager.verbose=0
+
+# Starting the daemon from init is OPT-IN. Enable the next line (remove the '#') only if
+# you really compile sepolicy/maxmanager.te into your policy (BOARD_SEPOLICY_DIRS).
+# Without it the SELinux domain u:r:maxmanager:s0 does not exist and init aborts the
+# service ("cannot setexeccon('u:r:maxmanager:s0') ... Invalid argument"). Without this
+# line the app starts the daemon itself with the root it was granted.
+# PRODUCT_PROPERTY_OVERRIDES += ro.maxmanager.sepolicy=1
 MAKEFILE
 
 # ── README: جدول النسخ، لأن «مسار واحد» لا يكفي لمن ينقل ملفًّا ملفًّا ──────
@@ -181,6 +190,8 @@ Layout (paths are the real destination paths)
       init service; starts the daemon at sys.boot_completed=1
   sepolicy/maxmanager.te, sepolicy/file_contexts
       SELinux domain, exec label and the daemon's data directory
+  sepolicy/make_sepolicy.py, sepolicy/maxmanager_permissive.te
+      generator for the rules your ROM needs (see "Creating the sepolicy" below)
   BoardConfig.mk
       board-level fragment: BOARD_SEPOLICY_DIRS only (PRODUCT_* is not read from
       a BoardConfig, which is why product-inclusion.mk exists)
@@ -208,10 +219,39 @@ B) AOSP source builds
    android/aosp/Android.bp — that variant compiles the app from sources and the
    daemon from archdaemon/jni.
 
+Creating the sepolicy (only if you want the daemon to start from init, without app root)
+------------------------------------------------------------------------------------
+Rules differ per ROM, so generate them from your own device instead of guessing:
+1. Add sepolicy/maxmanager.te, sepolicy/file_contexts and sepolicy/maxmanager_permissive.te
+   to your policy build (permissive = nothing is blocked, everything is only logged).
+   Also set PRODUCT_PROPERTY_OVERRIDES += ro.maxmanager.sepolicy=1.
+2. Build, flash, boot, use the app for a few minutes.
+3. On the phone/PC:  adb shell su -c dmesg > avc.txt   (or: adb logcat -d > avc.txt)
+4. On the PC:  python3 sepolicy/make_sepolicy.py avc.txt
+   -> writes maxmanager_generated.te
+5. Delete maxmanager_permissive.te, add maxmanager_generated.te to the same sepolicy
+   directory, rebuild. If the build reports a neverallow error, delete that line from
+   the generated file; the matching feature then stays unavailable in that ROM.
+Not covered: this was written without a real ROM to test on. Test on a spare device.
+
 C) Rooted users
 ---------------
 Use the flashable module zip (MaxManager-V2.zip), not this bundle. This tree
 has no installer and no Magisk metadata.
+
+How the daemon starts (read this if the app shows IDLE)
+------------------------------------------------------
+Default (no sepolicy in your image, e.g. super.img repack): init does NOT start the
+daemon. After the user grants root to MaxManager (KernelSU / Magisk / APatch), the app
+itself prepares /data/adb/.config/MaxManager, starts the Java companion from the
+installed APK and then runs `/system/bin/sys.maxmanager-service --run` as root, in the
+same SELinux context the Magisk module uses. Nothing else is required in the ROM, and
+it is retried at every app start, at boot (BOOT_COMPLETED) and the moment root is granted.
+
+Opt-in (you built sepolicy/maxmanager.te into the policy): add
+`PRODUCT_PROPERTY_OVERRIDES += ro.maxmanager.sepolicy=1` and init starts the daemon at
+boot_completed. Do NOT set it without the policy: the missing domain makes init abort
+the service (dmesg: "cannot setexeccon('u:r:maxmanager:s0') ... Invalid argument").
 
 The daemon is required
 ----------------------

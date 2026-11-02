@@ -140,7 +140,7 @@ object AppMonitorLogger {
             val process = Runtime.getRuntime().exec(
                 arrayOf(
                     "sh", "-c",
-                    "'${MaxManagerPaths.SERVICE_BIN}' --log '$TAG' '$level' '$summary' >/dev/null 2>&1"
+                    "'${MaxManagerPaths.serviceBin()}' --log '$TAG' '$level' '$summary' >/dev/null 2>&1"
                 )
             )
             process.waitFor()

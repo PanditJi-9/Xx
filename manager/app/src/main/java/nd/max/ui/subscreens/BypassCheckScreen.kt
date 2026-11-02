@@ -129,7 +129,7 @@ fun BypassChargeCheckScreen(navController: NavController) {
         activePath = PropertyUtils.get(MaxManagerProps.Conf.BYPASS_PATH, "UNSUPPORTED")
         
         scope.launch(Dispatchers.IO) {
-            val binary = MaxManagerPaths.SERVICE_BIN
+            val binary = MaxManagerPaths.serviceBin()
             val result = Shell.cmd("$binary -bpl 2>&1").exec()
             val output = result.out
             val ansi = Regex("\u001B\\[[;\\d]*m")
@@ -217,7 +217,7 @@ fun BypassChargeCheckScreen(navController: NavController) {
     
             // المسار من `MaxManagerPaths` لا مكتوبًا هنا ثانيةً: مركزيّ منذ `SERVICE_BIN`،
             // ونسخة ثانية منه تنحرف بأوّل تغيير للمسار.
-            Shell.cmd("${MaxManagerPaths.SERVICE_BIN} -cbc 2>&1").to(callbackList).submit { result ->
+            Shell.cmd("${MaxManagerPaths.serviceBin()} -cbc 2>&1").to(callbackList).submit { result ->
                 isRunning = false
                 hasRunDiagnosis = true
     

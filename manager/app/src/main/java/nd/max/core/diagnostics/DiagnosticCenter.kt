@@ -191,7 +191,7 @@ object DiagnosticCenter {
      */
     internal var forwarder: (String, Level, String) -> Unit = { component, level, message ->
         Shell.cmd(
-            "'${MaxManagerPaths.SERVICE_BIN}' --log 'diag' '${level.daemonLevel}' '${shellSafe(message)}'"
+            "'${MaxManagerPaths.serviceBin()}' --log 'diag' '${level.daemonLevel}' '${shellSafe(message)}'"
         ).submit()
     }
 

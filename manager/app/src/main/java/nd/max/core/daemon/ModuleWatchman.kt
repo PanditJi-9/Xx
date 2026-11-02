@@ -123,7 +123,7 @@ object CompanionCommands {
      * الخلفيّة، قفل الرفيق)، ومخرَجه **يُضاف** إلى `sysmon.log` لا يُقتطع (فلا يُمحى دليل فشل سابق
      * بإعادة تشغيل — وهو العطب نفسه الذي يمنعه `DaemonSupervisor`).
      */
-    fun launch(apkPath: String = MaxManagerPaths.MODULE_APK): String {
+    fun launch(apkPath: String = MaxManagerPaths.companionApk()): String {
         val config = MaxManagerPaths.MODULE_CONFIG
         return "nohup app_process -Djava.class.path='$apkPath' / --nice-name=$NICE_NAME $MAIN_CLASS " +
             "'$config/app_status' '$config/background_apps' '$config/java.lock' " +
@@ -165,7 +165,7 @@ class ModuleWatchman(
     private val cheapIo: DaemonIo = RootDaemonIo,
     /** الطريق المُثبِت: بالجذر — قياسًا وفعلًا. */
     private val rootIo: DaemonIo = RootShellDaemonIo,
-    private val serviceBin: String = MaxManagerPaths.SERVICE_BIN,
+    private val serviceBin: String = MaxManagerPaths.serviceBin(),
     private val logPath: String = MaxManagerPaths.MAXMANAGER_LOG,
     private val info: (String) -> Unit = {},
     private val problem: (String) -> Unit = {},
@@ -186,6 +186,12 @@ class ModuleWatchman(
         // ٢) المُثبِت: القياس نفسه بجذر، لأنّ «لم أجده» من صدفة لا ترى كل عمليّة **مجهول** لا «ميّت».
         val daemon = rootDaemonProbe.read()
         val companion = companionLiveness(rootIo)
+        // **وضع الروم:** لا `customize.sh` يُنشئ مجلّد الإعداد ولا `service.sh` يشغّل الرفيق — فيُجهَّز
+        // المجلّد هنا بالجذر قبل أيّ تشغيل (الخادم يخرج إن غابت قائمة الألعاب).
+        if (daemon != DaemonLiveness.Alive && RomRuntime.isRom(serviceBin)) {
+            val prepared = rootIo.shell(RomRuntime.PREPARE)
+            if (prepared.exit != 0) problem("EVENT=ROM_RUNTIME_PREPARE_FAILED exit=${prepared.exit}")
+        }
         val blocked = blockReason()
         val decision = ModuleWatchmanPolicy.decide(daemon, companion, blocked)
         when (decision) {

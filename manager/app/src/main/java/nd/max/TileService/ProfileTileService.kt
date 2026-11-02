@@ -39,7 +39,7 @@ class ProfileTileService : TileService() {
 
     companion object {
         private const val AI_PROP = MaxManagerProps.Conf.AI_ENABLED
-        private const val DAEMON_BIN = "/data/adb/modules/MaxManager/system/bin/sys.maxmanager-service"
+        private val DAEMON_BIN: String get() = nd.max.MaxManagerPaths.serviceBin()
     }
 
     override fun onCreate() {

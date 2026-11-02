@@ -7,6 +7,7 @@
 package nd.max.core.daemon
 
 import java.io.File
+import nd.max.MaxManagerPaths
 
 /**
  * قياس الخادم الأصلي: **حَيّ · ميّت · مجهول** — ثلاثة أحكام لا اثنان.
@@ -196,6 +197,21 @@ object DaemonCommands {
     /** يشغّل الخادم مفصولًا **بلا** مسح سجلّ: مخرَجه يُضاف إلى سجلّه هو (رسائل `stderr` الخام). */
     fun start(serviceBin: String, logPath: String): String =
         "$serviceBin --run >> '$logPath' 2>&1 </dev/null &"
+
+    /**
+     * إعادة التشغيل من زرّ الإعدادات.
+     *
+     * في **الموديول** `--rerun` هو الطريق (يمرّ بـ`sys.maxmanager-utilityconf restartservice` و`service.sh`).
+     * وفي **الروم** لا يوجد `utilityconf` ولا `service.sh` — فـ`--rerun` يفشل صامتًا ويبقى الخادم ميّتًا —
+     * فيُنهى الخادم الحيّ بـ`kill` على pid (لا `pkill -f` الذي يطابق سطر هذه الصدفة نفسها) ثم يُشغَّل
+     * `--run` مباشرةً، وهو الأمر نفسه الذي ينفّذه [start].
+     */
+    fun restart(serviceBin: String): String =
+        if (serviceBin.startsWith("${MaxManagerPaths.MODULE_DIR}/")) {
+            "$serviceBin --rerun"
+        } else {
+            "kill \$(pidof sys.maxmanager-service) 2>/dev/null; sleep 1; $serviceBin --run </dev/null >/dev/null 2>&1 &"
+        }
 
     /** إصدار الخادم من فمه: `printversion` قبل بوّابة التوفّر في `Main.c` فيعمل والخادم متوقّف. */
     fun version(serviceBin: String): String = "$serviceBin --version 2>/dev/null"

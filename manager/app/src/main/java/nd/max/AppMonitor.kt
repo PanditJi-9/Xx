@@ -3139,7 +3139,7 @@ object AppMonitor {
         val profile = shellRead("cat /data/adb/.config/MaxManager/API/current_profile 2>/dev/null")
         if (profile !in setOf("1", "2", "3")) return false
         return runCatching {
-            val process = Runtime.getRuntime().exec(arrayOf("sh", "-c", "/data/adb/modules/MaxManager/system/bin/sys.maxmanager-service --profile '$profile' >/dev/null 2>&1"))
+            val process = Runtime.getRuntime().exec(arrayOf("sh", "-c", "${MaxManagerPaths.serviceBin()} --profile '$profile' >/dev/null 2>&1"))
             process.waitFor() == 0
         }.getOrDefault(false)
     }
