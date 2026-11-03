@@ -7,10 +7,15 @@
 #include <MaxManager.h>
 #include <SepolicyGen.h>
 
+#include <IpcServer.h>
 #include <ctype.h>
+#include <dirent.h>
 #include <errno.h>
+#include <limits.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
+#include <sys/xattr.h>
 
 #define SEPOL_DEFAULT_OUTPUT "/sdcard/Download/maxmanager_generated.te"
 
@@ -208,6 +213,181 @@ void sepol_render(const SepolRules* set, FILE* out) {
     }
 }
 
+SepolConHook sepol_con_hook = NULL;
+const char* sepol_fs_root = "";
+
+#define SCAN_MAX_DEPTH 6
+#define SCAN_MAX_ENTRIES 6000
+
+typedef struct {
+    SepolRules* set;
+    const char* domain;
+    int visited;
+} ScanContext;
+
+static void real_path(const char* logical, char* real, size_t size) {
+    snprintf(real, size, "%s%s", sepol_fs_root, logical);
+}
+
+/** @brief نوع SELinux للعقدة: `u:object_r:TYPE:s0` → `TYPE`. (lgetxattr: لا يتبع الرابط، فيُقاس الرابط نفسه) */
+static bool node_type(const char* logical, bool follow, char* type, size_t size) {
+    if (sepol_con_hook) {
+        return sepol_con_hook(logical, type, size) == 0;
+    }
+    char real[PATH_MAX];
+    real_path(logical, real, sizeof(real));
+    char context[256];
+    const ssize_t got = follow ? getxattr(real, "security.selinux", context, sizeof(context) - 1)
+                               : lgetxattr(real, "security.selinux", context, sizeof(context) - 1);
+    if (got <= 0) {
+        return false;
+    }
+    context[got] = '\0';
+    const char* first = strchr(context, ':');
+    const char* second = first ? strchr(first + 1, ':') : NULL;
+    const char* third = second ? strchr(second + 1, ':') : NULL;
+    if (!second || !third || (size_t)(third - second - 1) >= size) {
+        return false;
+    }
+    memcpy(type, second + 1, (size_t)(third - second - 1));
+    type[third - second - 1] = '\0';
+    return true;
+}
+
+static void grant(ScanContext* scan, const char* type, const char* tclass, const char* perms) {
+    char copy[256];
+    snprintf(copy, sizeof(copy), "%s", perms);
+    char* save = NULL;
+    for (char* token = strtok_r(copy, " ", &save); token; token = strtok_r(NULL, " ", &save)) {
+        sepol_add(scan->set, scan->domain, type, tclass, token);
+    }
+}
+
+static bool skip_name(const char* name) {
+    static const char* const SKIP[] = {"subsystem", "device", "driver", "module", "firmware_node", "of_node", "power", "uevent"};
+    for (size_t index = 0; index < sizeof(SKIP) / sizeof(SKIP[0]); index++) {
+        if (strcmp(name, SKIP[index]) == 0) {
+            return true;
+        }
+    }
+    return false;
+}
+
+/** @brief مجلّدات المسار الأعلى (`/sys`, `/sys/class`…): بلا `search` عليها لا يصل الخادم إلى شيء تحتها. */
+static void record_ancestors(ScanContext* scan, const char* logical) {
+    char path[IPC_PATH_MAX];
+    snprintf(path, sizeof(path), "%s", logical);
+    for (char* slash = strchr(path + 1, '/'); slash; slash = strchr(slash + 1, '/')) {
+        *slash = '\0';
+        char type[SEPOL_NAME_MAX];
+        if (node_type(path, true, type, sizeof(type))) {
+            grant(scan, type, "dir", "search getattr");
+        }
+        *slash = '/';
+    }
+}
+
+static void scan_node(ScanContext* scan, const char* logical, int depth, bool walk) {
+    if (scan->visited++ >= SCAN_MAX_ENTRIES) {
+        return;
+    }
+    char real[PATH_MAX];
+    real_path(logical, real, sizeof(real));
+    struct stat link_info;
+    char type[SEPOL_NAME_MAX];
+    if (lstat(real, &link_info) != 0) {
+        return;
+    }
+    if (S_ISLNK(link_info.st_mode) && node_type(logical, false, type, sizeof(type))) {
+        grant(scan, type, "lnk_file", "read getattr"); /* realpath() يقرأ الرابط */
+    }
+    struct stat info;
+    if (stat(real, &info) != 0 || !node_type(logical, true, type, sizeof(type))) {
+        return;
+    }
+    if (S_ISDIR(info.st_mode)) {
+        grant(scan, type, "dir", "search getattr read open");
+        if (!walk || depth >= SCAN_MAX_DEPTH) {
+            return;
+        }
+        DIR* dir = opendir(real);
+        if (!dir) {
+            return;
+        }
+        const struct dirent* entry;
+        while ((entry = readdir(dir)) != NULL) {
+            if (entry->d_name[0] == '.' || skip_name(entry->d_name)) {
+                continue;
+            }
+            char child[IPC_PATH_MAX];
+            if (snprintf(child, sizeof(child), "%s%s%s", logical, logical[strlen(logical) - 1] == '/' ? "" : "/", entry->d_name) >= (int)sizeof(child)) {
+                continue;
+            }
+            scan_node(scan, child, depth + 1, true);
+        }
+        closedir(dir);
+        return;
+    }
+    if (!S_ISREG(info.st_mode)) {
+        return;
+    }
+    /* القائمتان نفسهما تحكمان: ما لا تسمح به القناة لا تُمنَح له قاعدة */
+    if (ipc_write_path_allowed(logical)) {
+        grant(scan, type, "file", "read write open getattr setattr");
+    } else if (ipc_path_allowed(logical)) {
+        grant(scan, type, "file", "read open getattr");
+    }
+}
+
+static void emit_target(const char* path, bool walk, void* context) {
+    ScanContext* scan = context;
+    record_ancestors(scan, path);
+    scan_node(scan, path, 0, walk);
+}
+
+typedef struct {
+    const char* path;
+    const char* tclass;
+    const char* perms;
+    bool inherit_for_children; /* ملفّات الإعداد تُنشأ داخل المجلّد فتأخذ نوعه: تُمنح صلاحيّات الإنشاء والكتابة */
+} ExtraPath;
+
+/* ما يحتاجه الخادم بنفسه خارج القناة: قائمة الحزم، مجموعة top-app، ومجلّد إعداده. */
+static const ExtraPath EXTRA_PATHS[] = {
+    {"/data/system/packages.list", "file", "read open getattr", false},
+    {"/dev/cpuset/top-app", "dir", "search getattr read open", false},
+    {"/dev/cpuset/top-app/cgroup.procs", "file", "read open getattr", false},
+    {"/dev/cpuset/top-app/tasks", "file", "read open getattr", false},
+    {"/dev/cpuctl/top-app", "dir", "search getattr read open", false},
+    {"/dev/cpuctl/top-app/cgroup.procs", "file", "read open getattr", false},
+    {"/dev/cpuctl/top-app/tasks", "file", "read open getattr", false},
+    {"/data/adb/.config/MaxManager", "dir", "search getattr read open write add_name remove_name create setattr rename rmdir", true},
+};
+
+/**
+ * @brief يفحص الجهاز ويملأ [set] بقواعد النطاق. يعيد عدد العقد المفحوصة (0 = لم يُقرأ شيء، كأن /sys غير مقروء).
+ */
+int sepol_scan_device(SepolRules* set, const char* domain) {
+    ScanContext scan = {.set = set, .domain = domain, .visited = 0};
+    ipc_scan_targets(emit_target, &scan);
+    for (size_t index = 0; index < sizeof(EXTRA_PATHS) / sizeof(EXTRA_PATHS[0]); index++) {
+        char real[PATH_MAX];
+        char type[SEPOL_NAME_MAX];
+        real_path(EXTRA_PATHS[index].path, real, sizeof(real));
+        struct stat info;
+        if (stat(real, &info) != 0 || !node_type(EXTRA_PATHS[index].path, true, type, sizeof(type))) {
+            continue;
+        }
+        record_ancestors(&scan, EXTRA_PATHS[index].path);
+        grant(&scan, type, EXTRA_PATHS[index].tclass, EXTRA_PATHS[index].perms);
+        if (EXTRA_PATHS[index].inherit_for_children) {
+            grant(&scan, type, "file", "create read write open getattr setattr rename unlink append");
+        }
+        scan.visited++;
+    }
+    return scan.visited;
+}
+
 static int collect_from_command(const char* command, const char* domain, SepolRules* set) {
     FILE* pipe = popen(command, "r");
     if (!pipe) {
@@ -229,8 +409,14 @@ int handle_gen_sepolicy(int argc, char** argv) {
     const char* output = SEPOL_DEFAULT_OUTPUT;
     const char* files[16];
     int file_count = 0;
+    bool do_scan = true;
+    bool do_logs = true;
     for (int index = 2; index < argc; index++) {
-        if (strcmp(argv[index], "-o") == 0 && index + 1 < argc) {
+        if (strcmp(argv[index], "--no-scan") == 0) {
+            do_scan = false;
+        } else if (strcmp(argv[index], "--scan-only") == 0) {
+            do_logs = false;
+        } else if (strcmp(argv[index], "-o") == 0 && index + 1 < argc) {
             output = argv[++index];
         } else if (strcmp(argv[index], "-d") == 0 && index + 1 < argc) {
             domain = argv[++index];
@@ -255,11 +441,17 @@ int handle_gen_sepolicy(int argc, char** argv) {
         }
     }
     int accepted = 0;
-    if (file_count == 0) {
+    if (do_scan) {
+        const int scanned = sepol_scan_device(&set, domain);
+        fprintf(stderr, "device scan: %d nodes checked, %d rules so far\n", scanned, set.count);
+    }
+    if (!do_logs) {
+        /* فحص الجهاز وحده */
+    } else if (file_count == 0) {
         accepted += collect_from_command("dmesg 2>/dev/null", domain, &set);
         accepted += collect_from_command("logcat -d -b all 2>/dev/null", domain, &set);
     }
-    for (int index = 0; index < file_count; index++) {
+    for (int index = 0; do_logs && index < file_count; index++) {
         FILE* file = fopen(files[index], "r");
         if (!file) {
             fprintf(stderr, "cannot read %s: %s\n", files[index], strerror(errno));

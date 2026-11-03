@@ -317,6 +317,30 @@ int ipc_write_node(const char* resolved, const char* value) {
 }
 
 /**
+ * @brief يعدّد ما يجب فحص نوعه في SELinux لتوليد القواعد: كل ما تسمح به القائمتان (قراءة وكتابة) — فلا تنحرف
+ * قواعد السياسة عن ما تسمح به القناة فعلًا.
+ */
+void ipc_scan_targets(IpcScanEmit emit, void* context) {
+    for (size_t index = 0; index < sizeof(READ_FILES) / sizeof(READ_FILES[0]); index++) {
+        emit(READ_FILES[index], false, context);
+    }
+    for (size_t index = 0; index < sizeof(READ_PREFIXES) / sizeof(READ_PREFIXES[0]); index++) {
+        emit(READ_PREFIXES[index], true, context);
+    }
+    for (size_t rule = 0; rule < sizeof(WRITE_RULES) / sizeof(WRITE_RULES[0]); rule++) {
+        if (!WRITE_RULES[rule].exact) {
+            emit(WRITE_RULES[rule].prefix, true, context);
+            continue;
+        }
+        for (size_t index = 0; WRITE_RULES[rule].suffixes[index] != NULL; index++) {
+            char path[IPC_PATH_MAX];
+            snprintf(path, sizeof(path), "%s%s", WRITE_RULES[rule].prefix, WRITE_RULES[rule].suffixes[index] + 1);
+            emit(path, false, context);
+        }
+    }
+}
+
+/**
  * @brief المسار **بعد حلّ الروابط**: يبقى داخل `/sys` أو `/proc` ولا يدخل ما يُحجَب.
  *
  * عقد sysfs كلّها روابط (`/sys/class/power_supply/battery` ← `/sys/devices/platform/...`) فلا يصحّ

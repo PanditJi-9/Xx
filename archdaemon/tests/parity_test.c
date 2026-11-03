@@ -16,6 +16,7 @@
  * writes (fixtures/contracts/), and the --profile/--from-ai decision table.
  */
 #include <ctype.h>
+#include <fcntl.h>
 #include <stdlib.h>
 #include <errno.h>
 #include <dirent.h>
@@ -886,6 +887,115 @@ static void suite_sepolicy_gen(void) {
     }
 }
 
+static int fake_con(const char* path, char* type, size_t size) {
+    const char* value = "sysfs";
+    if (strcmp(path, "/proc/meminfo") == 0) {
+        value = "proc_meminfo";
+    } else if (strncmp(path, "/proc", 5) == 0) {
+        value = "proc";
+    } else if (strncmp(path, "/dev/cpuset", 11) == 0) {
+        value = "cgroup";
+    } else if (strcmp(path, "/data/system/packages.list") == 0) {
+        value = "packages_list_file";
+    } else if (strncmp(path, "/data/adb", 9) == 0) {
+        value = "adb_data_file";
+    } else if (strncmp(path, "/data", 5) == 0) {
+        value = "system_data_root_file";
+    } else if (strncmp(path, "/dev", 4) == 0) {
+        value = "device";
+    } else if (strncmp(path, "/sys/kernel/debug", 17) == 0) {
+        value = "debugfs";
+    } else if (strncmp(path, "/sys/class/devfreq/x.mali/max_freq", 34) == 0) {
+        value = "sysfs_devfreq";
+    } else if (strstr(path, "/power_supply/battery/") != NULL) {
+        value = "sysfs_batteryinfo";
+    }
+    snprintf(type, size, "%s", value);
+    return 0;
+}
+
+static void make_dirs(const char* path) {
+    char copy[256];
+    snprintf(copy, sizeof(copy), "%s", path);
+    for (char* slash = strchr(copy + 1, '/'); slash; slash = strchr(slash + 1, '/')) {
+        *slash = '\0';
+        (void)mkdir(copy, 0755);
+        *slash = '/';
+    }
+    (void)mkdir(copy, 0755);
+}
+
+static void make_file(const char* root, const char* logical) {
+    char full[300];
+    snprintf(full, sizeof(full), "%s%s", root, logical);
+    char dir[300];
+    snprintf(dir, sizeof(dir), "%s", full);
+    *strrchr(dir, '/') = '\0';
+    make_dirs(dir);
+    const int fd = open(full, O_WRONLY | O_CREAT, 0644);
+    if (fd >= 0) {
+        close(fd);
+    }
+}
+
+static void suite_sepolicy_scan(void) {
+    printf("\n\033[1m[sepolicy-scan] types read from the device, no logs and no rebuild\033[0m\n");
+    char root[] = "/tmp/sepol_fake_XXXXXX";
+    CHECK(mkdtemp(root) != NULL, "a fake device root is created");
+    make_file(root, "/sys/class/power_supply/battery/capacity");
+    make_file(root, "/sys/class/power_supply/battery/constant_charge_current_max");
+    make_file(root, "/sys/class/devfreq/x.mali/max_freq");
+    make_file(root, "/sys/kernel/debug/secret");
+    make_file(root, "/proc/meminfo");
+    make_file(root, "/dev/cpuset/top-app/cgroup.procs");
+    make_file(root, "/data/system/packages.list");
+    char config[300];
+    snprintf(config, sizeof(config), "%s/data/adb/.config/MaxManager/x", root);
+    make_dirs(config);
+
+    sepol_fs_root = root;
+    sepol_con_hook = fake_con;
+    SepolRules set;
+    CHECK(sepol_init(&set), "the scan rule set allocates");
+    const int scanned = sepol_scan_device(&set, "maxmanager");
+    sepol_con_hook = NULL;
+    sepol_fs_root = "";
+    CHECK(scanned > 5, "the scan checked the nodes it found");
+
+    char* text = NULL;
+    size_t text_size = 0;
+    FILE* out = open_memstream(&text, &text_size);
+    sepol_render(&set, out);
+    fclose(out);
+    CHECK(strstr(text, "allow maxmanager sysfs_batteryinfo:file { getattr open read setattr write };") != NULL,
+          "a read node and a write node of one type merge into one rule");
+    CHECK(strstr(text, "allow maxmanager sysfs_devfreq:file { getattr open read setattr write };") != NULL,
+          "a variable-middle write node (devfreq max_freq) gets write permission");
+    CHECK(strstr(text, "allow maxmanager proc_meminfo:file { getattr open read };") != NULL, "a read-only exact file gets read permission only");
+    CHECK(strstr(text, "allow maxmanager cgroup:file { getattr open read };") != NULL, "the top-app cgroup file is covered");
+    CHECK(strstr(text, "allow maxmanager packages_list_file:file { getattr open read };") != NULL, "packages.list is covered");
+    CHECK(strstr(text, "allow maxmanager adb_data_file:dir {") != NULL && strstr(text, "add_name") != NULL,
+          "the daemon's own config directory gets directory permissions");
+    CHECK(strstr(text, "allow maxmanager adb_data_file:file {") != NULL && strstr(text, "create") != NULL,
+          "files created inside the config directory are covered");
+    {
+        const char* dir_rule = strstr(text, "allow maxmanager sysfs:dir {");
+        const char* dir_end = dir_rule ? strchr(dir_rule, ';') : NULL;
+        char dir_text[160] = {0};
+        if (dir_rule && dir_end && (size_t)(dir_end - dir_rule) < sizeof(dir_text)) {
+            memcpy(dir_text, dir_rule, (size_t)(dir_end - dir_rule));
+        }
+        CHECK(strstr(dir_text, "search") != NULL && strstr(dir_text, "getattr") != NULL,
+              "ancestor and walked directories get search and getattr (merged into one dir rule)");
+    }
+    CHECK(strstr(text, "debugfs") == NULL, "a node outside the allowlists never gets a rule");
+    free(text);
+    sepol_free(&set);
+    char cleanup[320];
+    snprintf(cleanup, sizeof(cleanup), "rm -rf %s", root);
+    CHECK(system(cleanup) == 0, "the fake root is removed");
+}
+
 static void suite_foreground_observer(void) {
     printf("\n\033[1m[foreground] the native observer that replaces the root companion\033[0m\n");
 
@@ -921,6 +1031,7 @@ static void suite_foreground_observer(void) {
 
 void suite_ipc(void) {
     suite_foreground_observer();
+    suite_sepolicy_scan();
     suite_sepolicy_gen();
     printf("\n\033[1m[ipc] the app-to-daemon channel: closed whitelist, identity first\033[0m\n");
 

@@ -42,6 +42,16 @@ bool sepol_parse_avc_line(const char* line, const char* domain, SepolRules* set)
 int sepol_collect(FILE* in, const char* domain, SepolRules* set);
 int sepol_load_existing(FILE* in, SepolRules* set);
 void sepol_render(const SepolRules* set, FILE* out);
+/*
+ * فحص الجهاز (بلا سجلّات ولا بناء ولا فلاش): يقرأ نوع SELinux الحقيقيّ لكل عقدة تسمح بها قناة الخادم (قوائم
+ * IpcServer) وللملفّات التي يحتاجها الخادم بنفسه، فيكتب `allow maxmanager <النوع> …`. وهو يعمل على الروم
+ * الحاليّ للمطوّر مهما كانت سياسته — فالأنواع تُقرأ ولا تُخمَّن، وتُصاغ القواعد بأنواع هذا الروم نفسه.
+ * `sepol_con_hook` و`sepol_fs_root` للاختبارات فقط (نوع وهميّ وجذر مؤقّت).
+ */
+typedef int (*SepolConHook)(const char* logical_path, char* type, size_t size);
+extern SepolConHook sepol_con_hook;
+extern const char* sepol_fs_root;
+int sepol_scan_device(SepolRules* set, const char* domain);
 int handle_gen_sepolicy(int argc, char** argv);
 
 #endif /* MAXMANAGER_SEPOLICY_GEN_H */

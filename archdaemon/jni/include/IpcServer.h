@@ -86,6 +86,9 @@ bool ipc_prop_allowed(const char* key, const char* value);
 size_t ipc_execute(const IpcCommand* command, const IpcBackend* backend, char* reply, size_t reply_size);
 void ipc_handle_connection(int fd, uid_t peer_uid, const IpcBackend* backend);
 int ipc_spawn_self_profile(char profile, bool from_ai);
+/* يعدّد أهداف الفحص من القوائم البيضاء نفسها (مصدر واحد): ملفّ محدّد (walk=false) أو مجلّد يُنزَل فيه (walk=true). */
+typedef void (*IpcScanEmit)(const char* path, bool walk, void* context);
+void ipc_scan_targets(IpcScanEmit emit, void* context);
 void start_ipc_server(void);
 
 #endif /* MAXMANAGER_IPC_SERVER_H */

@@ -223,20 +223,25 @@ B) AOSP source builds
 
 Creating the sepolicy (only if you want the daemon to start from init, without app root)
 ------------------------------------------------------------------------------------
-Rules differ per ROM, so they are generated from YOUR phone - no PC and no Python needed:
-1. Put this bundle's sepolicy/ folder in your policy build. It starts PERMISSIVE (nothing is
-   blocked, everything is only logged). Also set ro.maxmanager.sepolicy=1. Flash, use the
-   phone a few minutes and open MaxManager.
-2. On the phone, in a root shell (adb shell, or Termux):
+Rules differ per ROM, so they are generated from YOUR phone - a few minutes, no PC, no Python:
+1. On the phone you already have (your current ROM, rooted; NO sepolicy and NO rebuild needed),
+   in a root shell (adb shell, or Termux):
        su -c "sys.maxmanager-service --gen-sepolicy"
-   It reads the phone's own denials and saves  /sdcard/Download/maxmanager_generated.te
-   (the same file is also inside the app's exported logs, as log/maxmanager_generated.te).
-3. Copy that file into sepolicy/, DELETE sepolicy/maxmanager_permissive.te, rebuild, flash.
-   Repeat 2-3 until the command prints "No new rules - you are done." (each round merges with
-   the file from the last one). If the build reports a neverallow error, delete that line from
-   maxmanager_generated.te: that one feature stays off in your ROM, the rest keeps working.
-Prefer a PC? Same result:  python3 sepolicy/make_sepolicy.py MaxManager_Logs_*.tar.gz
-(or  --adb  with the phone plugged in); it writes a ready sepolicy_out/ folder.
+   It reads the REAL SELinux type of every node the daemon needs (CPU/GPU/thermal/battery/zram,
+   the config folder, packages.list, the top-app cgroup...) and also any denials already in the
+   logs. It saves  /sdcard/Download/maxmanager_generated.te  - types of YOUR ROM, nothing guessed.
+   Run it on the same device model / ROM build you are going to ship.
+2. Copy that file into this bundle's sepolicy/ folder (do NOT add maxmanager_permissive.te),
+   set ro.maxmanager.sepolicy=1, and build ONCE.
+3. Flash, use the phone a few minutes, run the same command again. It adds what only shows up at
+   run time (binder, properties, sockets) and prints how many rules are new. Copy the file,
+   rebuild, repeat until it prints "No new rules - you are done." Most ROMs need one or two rounds.
+   If the build reports a neverallow error, delete that line from maxmanager_generated.te: that
+   one feature stays off in your ROM, the rest keeps working.
+Options: --scan-only (only device types), --no-scan (only logs), -o FILE (output), and log files
+as arguments. Prefer a PC? python3 sepolicy/make_sepolicy.py MaxManager_Logs_*.tar.gz (logs only).
+The first build can also start permissive (sepolicy/maxmanager_permissive.te) if you want the
+logs to show everything at once instead of the scan; delete that file before shipping.
 
 What works without root in this mode (phase 1): the daemon runs from init in its own SELinux
 domain (no Java companion is needed) and the app talks to it over the abstract socket
