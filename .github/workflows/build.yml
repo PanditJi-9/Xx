@@ -733,10 +733,23 @@ jobs:
       # معًا (arm64-v8a/armeabi-v7a) لأنّ نسخةً واحدة تعني «الميزة لا تعمل» على الهاتف الآخر — وهو
       # بالضبط ما سقطت به مكتبةٌ طرفية سابقة (ADR-53). والبناء من `maxfx/jni/` بنمط `archdaemon`:
       # مجلد خروجه `maxfx/libs/` منفصل، فلا يمسّه `clean-installed-binaries` ولا يمسّ `jniLibs`.
+      #
+      # ── وفي الخلفية لا في المقدّمة (CI-TIME-01، تكملة ٢٩٣) ──
+      #
+      # كانت هذه الخطوة **٢٠٢ ثانية على ٤ أنوية** من التشغيل `41733104638` — أي ٣٫٤ دقيقة تُنفق
+      # وحدها **قبل** أن يبدأ Gradle، ولا يشاركها شيء لأن المهمّة الوحيدة أمامها (اختبارات DSP
+      # والجوهر الأصلي) انتهت. وهي لا تحتاج Gradle ولا يحتاجها Gradle **إلّا عند `assemble`**.
+      # فالعلاج: تشغيلها في الخلفية بصدفة كتابة شهادة، مع **انتظار صريح قبل خطوة الاختبارات
+      # والتغليف** — فلا يبدأ `assemble` وفيه `maxfx/libs` غير موجود، ولا تُشحن حزمة بلا مكتبة.
+      # (ويبقى الحرّاس الثلاثة كما هي: الرموز الخمسة · خطوة `Validate Manager APK` · وصدفة الخروج.)
+      #
+      # ⚠️ و`set -e` **داخل صدفة داخلية** كالخطوة التالية: `set -e` في الصدفة الأمّ يُقفلها عند
+      # أوّل فشل **قبل** كتابة ملف الشهادة، فينتظر المنتظر ثماني دقائق على ملف لن يُكتب.
       - name: Build the MaxFx system effect and verify its five contract symbols (AELI + AIDL)
         run: |
-          set -e
-          set -e
+          (
+            (
+              set -e
           # ── رؤوس AIDL أوّلًا: غلافُ العقد المزدوج يُترجم بها ──
           #
           # `aidl` من `build-tools` في SDK هذه البيئة، والتوليد **مُعلَن نتيجته**
@@ -828,6 +841,11 @@ jobs:
             echo "✅ $so · الخمسة مُصدَّرة"
             printf '%s\n' "$symbols" | grep -E '^(AELI|createEffect|queryEffect|destroyEffect)$' | sed 's/^/     /'
           done
+            ) > maxfx-build.log 2>&1
+            echo $? > maxfx-build.exit
+          ) &
+          echo $! > maxfx-build.pid
+          echo "بدأ بناء MaxFx في الخلفية (pid $(cat maxfx-build.pid)) — يُحصَد قبل خطوة الاختبارات والتغليف."
 
       # والخمسة الباقية تُشغَّل في الخلفية وتُحصَد بعد Gradle (الشرح أعلاه).
       # ولا `wait` بين الخطوتين: كل خطوة صدفة shell مستقلة، فالشهادة هنا **ملفٌ تكتبه الخلفية**
@@ -1256,6 +1274,43 @@ jobs:
         working-directory: ./manager
         run: |
           set -o pipefail
+
+          # ── حصاد MaxFx قبل التغليف (CI-TIME-01) ──
+          #
+          # البناء في الخلفية من خطوة `Build the MaxFx …`، وهذا أوّل موضع **يحتاجه فعلًا**:
+          # `assemble` يقرأ `maxfx/libs` ويدخلها الحزمة. فالحصاد هنا **شرط صحّة** لا مجرّد انتظار:
+          # لو انتهى البناء بفشل، أو انتهى صامتًا بلا مكتبة، أو مات ولم يكتب شهادة — يسقط التشغيل
+          # **قبل** التغليف لا بعده. والمهلة ٨ دقائق: أطول قياس للبناء ٢٠٢ ثانية، والباقي هامش.
+          for _ in $(seq 1 96); do
+            [ -f ../maxfx-build.exit ] && break
+            maxfx_pid="$(cat ../maxfx-build.pid 2>/dev/null || true)"
+            if [ -n "$maxfx_pid" ] && ! kill -0 "$maxfx_pid" 2>/dev/null; then
+              echo "::error::بناء MaxFx مات بلا كتابة ملفّ خروجه"
+              tail -200 ../maxfx-build.log || true
+              exit 1
+            fi
+            sleep 5
+          done
+          if [ ! -f ../maxfx-build.exit ]; then
+            echo "::error::بناء MaxFx لم ينته في ٨ دقائق"
+            tail -200 ../maxfx-build.log || true
+            exit 1
+          fi
+          maxfx_code="$(tr -d '[:space:]' < ../maxfx-build.exit)"
+          if [ "$maxfx_code" != "0" ]; then
+            echo "::error::فشل بناء MaxFx (exit $maxfx_code)"
+            cat ../maxfx-build.log
+            exit 1
+          fi
+          for abi in arm64-v8a armeabi-v7a; do
+            if [ ! -s "../maxfx/libs/$abi/libmaxfx.so" ]; then
+              echo "::error::libmaxfx.so غائب في $abi بعد بناءٍ «ناجح» — لا يُغلَّف APK بلا مكتبة"
+              tail -100 ../maxfx-build.log || true
+              exit 1
+            fi
+          done
+          echo "✅ MaxFx جاهز قبل التغليف:"
+          tail -8 ../maxfx-build.log
 
           # ── نفس علاج تكملة ٢٨١ فوق: عطل الحلّ العابر يُعاد فيه نداء Gradle مرة واحدة؛
           #    وفشل الاختبارات الفعلي لا يطابق التوقيع فلا يُقنَّع بإعادة محاولة.
