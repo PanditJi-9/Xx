@@ -1,0 +1,14 @@
+# Copyright (C) 2026 Nader Magdy. All rights reserved.
+# Proprietary and confidential — not licensed for use, copying, or distribution
+# without prior written permission from the copyright holder.
+#
+# صلاحية التطبيق (بلا جذر): الاتصال بقناة الخادم فقط.
+#
+# التطبيق يعمل أصلًا في النطاق `priv_app` (مثبَّت في product/priv-app، ومقيس من السجل: scontext=u:r:priv_app)،
+# فلا نغيّر نطاقه — فتبقى كل وظائفه الحالية كما هي — ونضيف قاعدة واحدة له.
+#
+# **الحصر بالتطبيق وحده يتمّ في الخادم لا هنا:** `priv_app` نطاق مشترك بين كل التطبيقات المميَّزة، فالقاعدة
+# تسمح لها بالوصول إلى السوكيت، ثم يرفض الخادم كل uid غير uid `nd.max` المسجَّل في packages.list
+# (IpcServer.c ← ipc_uid_allowed). وللحصر على مستوى SELinux نفسه أنشئ نطاقًا خاصًّا بالتطبيق كما يفعل Rodin
+# (seapp_contexts + mac_permissions.xml بتوقيع التطبيق) — وهذا أثقل ويغيّر نطاق التطبيق كلّه، فلم يُجعل افتراضيًا.
+allow priv_app maxmanager:unix_stream_socket connectto;

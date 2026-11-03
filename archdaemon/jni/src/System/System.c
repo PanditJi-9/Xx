@@ -15,6 +15,8 @@
  */
 
 #include "MaxManager.h"
+#include "IpcServer.h"
+#include "ForegroundObserver.h"
 
 /*
  * Best-effort native cleanup for MediaTek's authoritative GPU OPP lock.
@@ -94,12 +96,15 @@ int main_daemon(void) {
     if (pipe(java_lock_pipe) != 0) {
         log_zenith(LOG_ERROR, "EVENT=JAVA_LOCK_PIPE_FAILED reason=pipe_syscall_failed errno=%d", errno);
     } else {
-        pthread_t lock_thread;
-        pthread_attr_t attr;
-        pthread_attr_init(&attr);
-        pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
-        pthread_create(&lock_thread, &attr, java_lock_watcher_thread, (void*)ctx.java_lock_path);
-        pthread_attr_destroy(&attr);
+        /* مستقلّ: لا رفيق فلا قفل يُراقَب — والأنبوبة تبقى (لا تُترك fd صفرًا فيُستطلَع stdin) بلا من يكتب فيها. */
+        if (!is_standalone_mode()) {
+            pthread_t lock_thread;
+            pthread_attr_t attr;
+            pthread_attr_init(&attr);
+            pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
+            pthread_create(&lock_thread, &attr, java_lock_watcher_thread, (void*)ctx.java_lock_path);
+            pthread_attr_destroy(&attr);
+        }
     }
 
     log_zenith(LOG_INFO, "EVENT=APPLIST_READ_START");
@@ -113,6 +118,11 @@ int main_daemon(void) {
     __system_property_set("persist.sys.maxmanager.state", "running");
     notify("Initializing...", "Starting MaxManager service...", false, 0);
     setspid();
+    start_ipc_server();
+    /* مستقلّ (بلا رفيق Java): المراقب الأصليّ يكتب `app_status` من cgroup/proc. وإن أمسك رفيقٌ القفل لاحقًا سكت. */
+    if (is_standalone_mode()) {
+        start_foreground_observer(ctx.java_lock_path);
+    }
 
     FILE* fp_ai_init = fopen(DAEMON_MODES, "r");
     if (fp_ai_init) {

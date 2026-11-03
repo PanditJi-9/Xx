@@ -56,6 +56,9 @@ object PropertyUtils {
     }
 
     fun set(key: String, value: String) {
+        // قناة الخادم أولًا: كتابة `persist.*` من سياق التطبيق يرفضها `init` (انظر أدناه)، أمّا الخادم فنطاقه يملكها.
+        // ولا يُعتدّ بغير تأكيده: أيّ فشل (لا قناة، مفتاح خارج القائمة) يُكمل بالمسار القديم كما كان.
+        if (nd.max.core.daemon.DaemonIpc.default.setProperty(key, value)) return
         try {
             setMethod.invoke(null, key, value)
         } catch (e: Exception) {

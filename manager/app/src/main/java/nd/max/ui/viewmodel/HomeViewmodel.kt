@@ -47,6 +47,8 @@ data class HomeUiState(
     val moduleInstalled: Boolean = false,
     val autoMode: String? = null,
     val rootStatus: Boolean = false,
+    /** الخادم يردّ على القناة — يكفي (مع التثبيت) لشارة «نشط» بلا جذر. */
+    val daemonOnline: Boolean = false,
     val serviceStatusRes: Int = R.string.status_suspended,
     val servicePid: String = "",
     val currentProfileRes: Int = R.string.status_initializing,
@@ -138,12 +140,14 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             val isRooted = RootUtils.requestRootAccess()
             val isModuleInstalled = RootUtils.isModuleInstalled()
+            val daemonOnline = nd.max.core.daemon.DaemonIpc.default.ping()
             // قراءة داخل العملية (bionic) بدل صدفة `getprop`: مقيس ٢٣٦٦ ميكرو ⇒ ١٢٫٦.
             // وهذه الدالة تُنادى عند الإقلاع وعند كل تحديث لحالة المفتاح — فالتوفير متكرّر.
             val mode = PropertyUtils.get(MaxManagerProps.Conf.AI_ENABLED)
 
             _uiState.update { it.copy(
                 rootStatus = isRooted,
+                daemonOnline = daemonOnline,
                 moduleInstalled = isModuleInstalled,
                 autoMode = mode
             ) }

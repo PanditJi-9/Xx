@@ -57,6 +57,9 @@ SHIM := $(CURDIR)/host/shim
 UNITS := \
     $(ROOT)/jni/src/MaxManagerUtility/DaemonUtility.c \
     $(ROOT)/jni/src/MaxManagerUtility/ModuleIntegrity.c \
+    $(ROOT)/jni/src/Ipc/IpcServer.c \
+    $(ROOT)/jni/src/Ipc/SepolicyGen.c \
+    $(ROOT)/jni/src/Standalone/ForegroundObserver.c \
     $(ROOT)/jni/src/SystemProfile/ProfileUtility.c \
     $(ROOT)/jni/src/SystemProfile/MaxAiMode.c \
     $(ROOT)/jni/src/SystemProfile/PerAppKernel.c \

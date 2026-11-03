@@ -15,6 +15,7 @@
  */
 
 #include <MaxManager.h>
+#include <SepolicyGen.h>
 #include <libgen.h>
 #include <string.h>
 #define IS_CMD(arg, long_cmd, short_cmd) (strcmp(arg, long_cmd) == 0 || strcmp(arg, short_cmd) == 0)
@@ -62,6 +63,8 @@ int main(int argc, char* argv[]) {
     }
     if (IS_CMD(cmd, "--rerun", "-rr")) 
         return restart_service();
+    if (IS_CMD(cmd, "--gen-sepolicy", "-gsp"))
+        return handle_gen_sepolicy(argc, argv);
 
     if (!require_daemon_running()) {
         return 1;

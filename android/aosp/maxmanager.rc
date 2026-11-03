@@ -23,7 +23,11 @@
 service sys.maxmanager-service /system/bin/sys.maxmanager-service --run
     class main
     user root
-    group root system
+    # readproc (gid 3009): /proc يُركَّب بـhidepid، فبلا هذه المجموعة لا يقرأ الخادم `/proc/<pid>/cmdline` لعمليّات
+    # التطبيقات (مراقب المقدّمة الأصليّ) — ولا تكفي القدرات NET_ADMIN/SYS_ADMIN (ptrace_may_access يطلب SYS_PTRACE).
+    # package_info (gid 1032): `/data/system/packages.list` بصلاحية 0640 system:package_info — منه يعرف الخادم uid
+    # التطبيق ليحصر القناة عليه. وبلا هذه المجموعة (والقدرات محدودة) تفشل القراءة فيُرفض التطبيق نفسه.
+    group root system readproc package_info
     capabilities NET_ADMIN SYS_ADMIN
     seclabel u:r:maxmanager:s0
     oneshot

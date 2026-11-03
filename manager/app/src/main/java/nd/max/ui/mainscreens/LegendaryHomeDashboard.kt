@@ -131,7 +131,7 @@ internal fun LegendaryHomeDashboard(
     storageCardVisible: Boolean = false,
     onHideStorage: () -> Unit = {},
 ) {
-    val online = ui.rootStatus && ui.moduleInstalled
+    val online = (ui.rootStatus || ui.daemonOnline) && ui.moduleInstalled
     // ترتيب حسب الخطورة: بطاقة الخلل الحقيقي تصعد تحت البطل، وإلا تبقى في موضعها المحدّد.
     val focusFirst = HomeFocusModel.focusKind(
         heatC = deviceHeatC(dashboard) ?: 0,

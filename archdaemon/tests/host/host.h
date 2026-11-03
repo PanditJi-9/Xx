@@ -88,6 +88,7 @@ extern int g_checks_failed;
     } while (0)
 
 void suite_prop_validator(void);
+void suite_ipc(void);
 void suite_string_utils(void);
 void suite_profile_logic(void);
 void suite_freq_balance_gate(void);

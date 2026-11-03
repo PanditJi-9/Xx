@@ -144,6 +144,20 @@ bool is_rom_install(void) {
 }
 
 /**
+ * @brief هل يعمل الخادم **مستقلًّا** (بدء init + sepolicy، بلا جذر في التطبيق)؟
+ *
+ * العلم `ro.maxmanager.sepolicy=1` يضعه بانو الروم **فقط** بعد أن يضمّنوا `sepolicy/` في سياسة بنائهم
+ * (انظر `maxmanager.rc`). وفي هذا الوضع لا يوجد رفيق Java: الرفيق يُشغَّل بجذر التطبيق عبر
+ * `app_process`، ولا جذر هنا — فانتظاره كان يقتل الخادم بعد ٢٠ ثانية (`JAVA_COMPANION_ABSENT`).
+ * فيُتخطّى الانتظار ومراقبة القفل، ويبقى الخادم يخدم القناة (`IpcServer`).
+ */
+bool is_standalone_mode(void) {
+    char value[PROP_VALUE_MAX] = {0};
+    __system_property_get("ro.maxmanager.sepolicy", value);
+    return strcmp(value, "1") == 0;
+}
+
+/**
  * @brief قرار الحارس: هل يجب أن يموت الخادم الآن؟
  * @return `true` حين يكون الملفّ غير مقروء **أو** الهوية مخالفة؛ و`false` على وحدة سليمة.
  * @note الملفّ غير المقروء يبقى موتًا مقصودًا (لا هوية تُتحقَّق) — نفس سلوك النسخة القديمة.

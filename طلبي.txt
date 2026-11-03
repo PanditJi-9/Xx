@@ -1,0 +1,492 @@
+DeepSeek V4.1 Flash — MaxManager Radical Transformation & Reverse Engineering Project
+
+I want to undertake a major transformation of MaxManager, turning it into a significantly more advanced, intelligent, professional, modular, and efficient Android system management platform.
+
+This is not a small feature update, UI refresh, or simple code refactoring. I want you to thoroughly understand the existing project, study the reference applications and their implementations, rethink the architecture, and develop a new long-term technical direction for MaxManager.
+
+You have access to GitHub Codespaces. Use it as your primary development, reverse-engineering, and testing environment because my phone has limited hardware resources.
+
+1. Reference files and applications
+
+The following files are located on my phone:
+
+/storage/emulated/0/MT2/apks/DevCheck_6.61_apks.apk
+/storage/emulated/0/MT2/apks/Franco Kernel Manager_7.0.29.apk
+/storage/emulated/0/MT2/apks/ZenBubble.apk
+/storage/emulated/0/MT2/apks/HyperCool_v2.0.zip
+
+Main reverse-engineering tool:
+
+https://github.com/morluto/rea
+
+Study all four references, but give each a distinct analytical purpose:
+
+DevCheck 6.61 — Primary reference
+
+- Device information and hardware identification.
+- CPU and GPU monitoring.
+- RAM and memory management information.
+- Battery statistics, charging, health, and temperature.
+- Thermal zones and sensors.
+- Storage, partitions, and filesystem information.
+- Display, refresh rate, resolution, and capabilities.
+- Network, connectivity, and hardware information.
+- System interfaces and methods used to collect information.
+
+Franco Kernel Manager 7.0.29 — Kernel and performance reference
+
+- CPU and GPU controls.
+- Frequency and governor management.
+- Kernel interfaces and supported parameters.
+- Battery and thermal controls.
+- Per-app profiles and automation.
+- Root access and privileged execution.
+- Read/write mechanisms and persistence.
+- Performance and power management architecture.
+
+ZenBubble — UI and feature reference
+
+- Analyze its functionality and internal architecture.
+- Identify reusable concepts, animations, interactions, and UI patterns.
+- Determine which features could be independently redesigned in MaxManager.
+
+HyperCool v2.0 — System-level reference
+
+- Inspect its ZIP structure and identify its actual purpose.
+- Analyze scripts, binaries, configuration files, module structure, permissions, and system modifications.
+- Understand its optimization and thermal management mechanisms.
+- Identify useful techniques that can be independently and safely implemented in MaxManager.
+
+Do not assume that these applications use the same architecture or provide the same capabilities.
+
+2. REA and reverse-engineering environment
+
+First inspect:
+
+https://github.com/morluto/rea
+
+Determine:
+
+- Its actual capabilities and supported formats.
+- Dependencies and installation requirements.
+- How it handles APKs, DEX, resources, and native libraries.
+- Its limitations and known issues.
+- The correct commands and workflow.
+
+Use REA as the primary reverse-engineering tool where appropriate.
+
+You may use additional tools when necessary, including:
+
+- JADX
+- Apktool
+- Baksmali / Smali
+- Android SDK build tools
+- Ghidra for relevant native libraries
+- AAPT2
+- Other appropriate static-analysis utilities.
+
+Do not add tools without a technical reason.
+
+Codespaces requirements
+
+Use GitHub Codespaces for:
+
+- APK extraction and decompilation.
+- Static analysis.
+- Native library inspection.
+- Code analysis.
+- Documentation.
+- Development and testing.
+- Building Android artifacts when needed.
+
+My phone should only be used to transfer files and perform final device testing.
+
+Establish a reliable transfer method from my phone to Codespaces. Verify every transferred file using SHA-256 checksums and file-integrity checks.
+
+Keep original reference files untouched.
+
+Authentication security:
+Use the existing authenticated GitHub/Codespaces session where possible. Never ask me to paste a personal access token into this prompt, source code, terminal logs, or repository. If authentication is necessary, use GitHub's secure authentication and minimum required permissions. Never expose or commit credentials.
+
+3. Comprehensive reverse engineering
+
+Perform a structured analysis of all reference files.
+
+For APKs, inspect:
+
+- AndroidManifest.xml.
+- DEX files and class structure.
+- Resources, layouts, drawables, and XML.
+- Activities, services, receivers, and providers.
+- Permissions and protected APIs.
+- Native libraries and JNI.
+- System property access.
+- Shell commands and privileged interfaces.
+- Data collection mechanisms.
+- Background services and scheduling.
+- Storage and configuration mechanisms.
+- UI architecture and navigation.
+- Third-party libraries and dependencies.
+
+For HyperCool, inspect:
+
+- ZIP integrity.
+- Module installation scripts.
+- service.sh and post-fs-data.sh, if present.
+- System property modifications.
+- Kernel interfaces.
+- Binaries and executable scripts.
+- SELinux policies.
+- Configuration and persistence.
+- Uninstall and recovery mechanisms.
+
+Do not blindly execute unknown binaries or scripts.
+
+Create a technical map of how each application works, distinguishing verified findings from assumptions.
+
+4. Radical MaxManager transformation
+
+This is the most important part.
+
+Do not simply copy features from the reference applications and add them to the existing interface.
+
+I want you to reconsider MaxManager as a complete product.
+
+First audit the current repository and identify:
+
+- Existing architecture.
+- Core modules.
+- Existing features.
+- Duplicated or obsolete implementations.
+- Performance bottlenecks.
+- Background processes.
+- Memory consumption.
+- Battery consumption.
+- UI inconsistencies.
+- Security weaknesses.
+- Technical debt.
+- Unfinished features.
+- Compatibility problems.
+
+Then develop a new architecture and product direction.
+
+Architectural objectives
+
+Build a clean, modular, maintainable architecture with clear separation between:
+
+1. Hardware information and monitoring.
+2. Device capability detection.
+3. Kernel and system control.
+4. Performance management.
+5. Battery optimization.
+6. Thermal safety.
+7. Per-app profiles.
+8. Automation.
+9. Root and privileged execution.
+10. Diagnostics and system health.
+11. User interface and settings.
+12. Configuration and persistence.
+
+Use a modular architecture that is appropriate for Android. Avoid unnecessary abstraction and overengineering.
+
+Each module must have a clear responsibility and a documented interface.
+
+New device intelligence system
+
+Develop a reliable device information layer that can identify:
+
+- SoC and chipset.
+- CPU architecture and cores.
+- CPU frequencies and governors.
+- GPU and supported frequencies.
+- RAM and memory configuration.
+- Battery information.
+- Thermal sensors.
+- Display capabilities.
+- Storage devices and partitions.
+- Kernel version and build information.
+- Android version and security patch.
+- Available system interfaces.
+
+Every value should have a known source and confidence level.
+
+Never fabricate hardware information or display misleading values when an interface is unavailable.
+
+New monitoring system
+
+Develop efficient hardware monitoring with:
+
+- Accurate readings.
+- Adaptive sampling intervals.
+- Event-driven updates where possible.
+- No unnecessary polling.
+- No permanent high-frequency monitoring.
+- No unnecessary wake locks.
+- Minimal CPU and RAM consumption.
+- Correct lifecycle management.
+
+Monitoring should primarily operate when the relevant screen or feature is active.
+
+The application must have near-zero idle impact.
+
+New performance and battery engine
+
+Reconsider the existing optimization mechanisms.
+
+Build a system that understands the difference between:
+
+- Actual device capabilities.
+- Available kernel controls.
+- Read-only information.
+- Writable interfaces.
+- Unsupported controls.
+- Device-specific implementations.
+
+Do not assume every Android device supports the same kernel parameters.
+
+Support appropriate root and non-root execution paths, and use Shizuku or other privileged mechanisms only where technically justified.
+
+Safety and control architecture
+
+Preserve and strengthen the existing MaxManager safety principles.
+
+The priority must remain:
+
+SAFETY > APP PROFILE > MAX AI > MANUAL
+
+All system modifications must pass through a single controlled write mechanism.
+
+Use:
+
+1. Read current value.
+2. Validate the requested change.
+3. Check device and kernel compatibility.
+4. Apply the change.
+5. Read back the actual value.
+6. Confirm whether the change succeeded.
+7. Roll back when verification fails.
+
+Do not report success merely because a command returned exit code zero.
+
+Never modify dangerous thermal protections, watchdog mechanisms, power safety interfaces, or unknown system-critical nodes.
+
+Unsupported controls must remain unavailable rather than being presented as functional.
+
+5. New user experience and visual identity
+
+I want a substantial UI/UX transformation.
+
+Do not preserve outdated layouts simply because they already exist.
+
+Study the existing interface, identify its weaknesses, and propose a new visual system.
+
+The target should be:
+
+- Premium and professional.
+- Modern Android design.
+- Advanced without intimidating ordinary users.
+- Smooth and responsive.
+- Consistent across all sections.
+- Well-organized information hierarchy.
+- Meaningful animations rather than decorative animations.
+- Clear distinction between monitoring and dangerous system controls.
+
+Explore a redesigned navigation structure, dashboards, device information pages, monitoring screens, optimization controls, and per-app management.
+
+Use a consistent design system for colors, typography, spacing, components, icons, and animations.
+
+Maintain MaxManager's recognizable identity while giving it a genuinely new appearance.
+
+Do not create a superficial redesign that leaves the underlying architecture unchanged.
+
+6. Feature mapping and independent implementation
+
+Before implementing a feature, create a detailed comparison matrix:
+
+Reference| Feature| Technical mechanism| MaxManager implementation| Requirements| Limitations
+
+Classify every feature into:
+
+- Directly implementable through public Android APIs.
+- Implementable through root.
+- Implementable through Shizuku or privileged access.
+- Requires a device-specific adapter.
+- Requires a vendor interface.
+- Requires further investigation.
+- Not technically or legally appropriate to reproduce.
+
+Reverse engineering is for technical understanding and interoperability.
+
+Do not copy proprietary source code, decompiled implementations, copyrighted assets, branding, or protected UI designs.
+
+Create independent implementations based on verified technical findings and appropriate APIs.
+
+7. Implementation strategy
+
+Do not immediately rewrite the entire codebase.
+
+Use a controlled transformation process:
+
+Phase 1 — Repository reconnaissance
+
+Inspect the complete MaxManager repository, build system, architecture, dependencies, and existing functionality.
+
+Phase 2 — Reference analysis
+
+Analyze all four reference files and produce technical reports.
+
+Phase 3 — Architecture redesign
+
+Design the new MaxManager architecture, module boundaries, interfaces, data models, and UI structure.
+
+Phase 4 — Migration strategy
+
+Create a feature-preservation matrix. Identify what should be retained, rewritten, improved, replaced, or removed.
+
+Phase 5 — Core implementation
+
+Implement the new foundation, hardware information layer, capability detection, monitoring infrastructure, and safety architecture.
+
+Phase 6 — Feature migration
+
+Migrate and independently implement the most valuable features in small, testable stages.
+
+Phase 7 — UI transformation
+
+Implement the new visual identity and redesigned navigation using the new architecture.
+
+Phase 8 — Testing and optimization
+
+Verify functionality, compatibility, performance, memory usage, battery impact, and regression behavior.
+
+Use separate Git branches for major changes. Keep each milestone reviewable and reversible.
+
+Do not force-push, overwrite important branches, or delete existing functionality without documented justification.
+
+8. Testing requirements
+
+Create meaningful tests for:
+
+- Hardware information collection.
+- CPU and GPU readings.
+- Battery and thermal readings.
+- Device capability detection.
+- Permission handling.
+- Root execution.
+- Unsupported interfaces.
+- Kernel write operations.
+- Read-back verification.
+- Rollback behavior.
+- Settings persistence.
+- Per-app profile switching.
+- Lifecycle management.
+- Background resource consumption.
+- Existing functionality.
+
+Test on the available Android environment where possible.
+
+Distinguish between:
+
+- Unit-tested.
+- Build-verified.
+- Emulator-tested.
+- Device-tested.
+- Not yet verified.
+
+Never claim that a feature works without evidence.
+
+Do not claim near-zero battery impact without measurements.
+
+9. Performance targets
+
+Performance is a fundamental requirement, not an optional improvement.
+
+Prioritize:
+
+- Minimal idle CPU consumption.
+- Minimal background RAM usage.
+- No unnecessary services.
+- No uncontrolled polling loops.
+- No redundant shell processes.
+- No excessive file reads.
+- No unnecessary Gradle dependencies.
+- No duplicate hardware monitoring.
+- No excessive wake locks.
+- No overheating caused by MaxManager itself.
+
+Retain full functionality without sacrificing device stability.
+
+10. Deliverables
+
+Maintain clear documentation inside the repository.
+
+Create:
+
+docs/
+  REA_ANALYSIS.md
+  DEVCheck_ANALYSIS.md
+  FKM_ANALYSIS.md
+  ZENBUBBLE_ANALYSIS.md
+  HYPERCOOL_ANALYSIS.md
+  CURRENT_ARCHITECTURE.md
+  NEW_ARCHITECTURE.md
+  FEATURE_MAPPING.md
+  MIGRATION_PLAN.md
+  SECURITY_AND_SAFETY.md
+  PERFORMANCE_REPORT.md
+  TEST_REPORT.md
+  CHANGELOG.md
+
+Adapt the filenames if needed, but preserve the documentation structure and purpose.
+
+Also provide:
+
+1. A complete audit of the existing MaxManager.
+2. A detailed analysis of all four references.
+3. A proposed new product architecture.
+4. A new UI/UX implementation plan.
+5. A feature migration matrix.
+6. Actual code changes.
+7. Build and test results.
+8. A list of modified, added, and removed files.
+9. Remaining tasks and known limitations.
+10. A clear explanation of what is genuinely new or substantially improved.
+
+11. Working rules
+
+- Work directly with the actual MaxManager repository.
+- First verify the Git remote and current branch.
+- Do not assume the repository is empty or start a replacement project.
+- Do not invent missing source files, APIs, or capabilities.
+- Read existing code before modifying it.
+- Preserve working features unless there is a documented reason to replace them.
+- Avoid unnecessary dependencies.
+- Do not introduce permanent background workloads just to make the app appear intelligent.
+- Do not sacrifice safety for benchmark scores.
+- Do not make cosmetic changes and call them architectural improvements.
+- Do not mark incomplete work as completed.
+- Keep all modifications organized and committed in logical milestones.
+
+12. First actions
+
+Start with these tasks in this exact order:
+
+1. Inspect the active GitHub repository and identify the actual MaxManager project.
+2. Inspect its build system, source structure, architecture, and current implementation.
+3. Inspect the REA repository and establish its real capabilities.
+4. Establish the Codespaces environment.
+5. Design a reliable and verifiable transfer workflow for the four reference files.
+6. Perform an initial read-only audit.
+7. Produce the architecture assessment and a detailed transformation roadmap.
+8. Present the proposed new architecture and migration strategy before modifying existing project code.
+9. Then proceed with the transformation in small, verifiable milestones.
+
+Final vision:
+
+I do not want MaxManager to remain an ordinary Android optimization application with a collection of unrelated features.
+
+I want to transform it into a complete, intelligent, hardware-aware Android management platform with a strong architecture, accurate device intelligence, advanced kernel management, excellent UX, reliable automation, strict safety controls, and extremely low resource consumption.
+
+Think like a senior Android systems engineer, reverse engineer, performance engineer, and software architect.
+
+The quality of the final engineering matters more than the number of features or the speed of implementation.

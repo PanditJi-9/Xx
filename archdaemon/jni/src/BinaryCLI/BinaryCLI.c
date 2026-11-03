@@ -30,6 +30,7 @@ void print_help(void) {
            "     -r,    --run              Start MaxManager daemon service\n"
            "\n"
            "     -rr,   --rerun            Restart the MaxManager daemon service (detached)\n"
+           "     -gsp,  --gen-sepolicy     Build sepolicy rules from this phone's SELinux denials (root)\n"
            "\n"
            "     -c,    --clearlogs        Clear MaxManager log caches and app notifications\n"
            "\n"

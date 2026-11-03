@@ -246,28 +246,28 @@ class DisplayStudioViewModel : ViewModel() {
     fun updateFontScale(scale: Float) {
         fontScale = scale
         viewModelScope.launch(Dispatchers.IO) {
-            Shell.cmd("settings put system font_scale $scale").exec()
+            nd.max.core.platform.SettingsAccess.put("system", "font_scale", scale.toString())
         }
     }
 
     fun setScreenTimeout(seconds: Int) {
         screenTimeoutSeconds = seconds
         viewModelScope.launch(Dispatchers.IO) {
-            Shell.cmd("settings put system screen_off_timeout ${seconds * 1000}").exec()
+            nd.max.core.platform.SettingsAccess.put("system", "screen_off_timeout", (seconds * 1000).toString())
         }
     }
 
     fun setNightLight(enabled: Boolean) {
         nightLightEnabled = enabled
         viewModelScope.launch(Dispatchers.IO) {
-            Shell.cmd("settings put secure night_display_activated ${if (enabled) 1 else 0}").exec()
+            nd.max.core.platform.SettingsAccess.put("secure", "night_display_activated", if (enabled) "1" else "0")
         }
     }
 
     fun setColorInversion(enabled: Boolean) {
         colorInversionEnabled = enabled
         viewModelScope.launch(Dispatchers.IO) {
-            Shell.cmd("settings put secure accessibility_display_inversion_enabled ${if (enabled) 1 else 0}").exec()
+            nd.max.core.platform.SettingsAccess.put("secure", "accessibility_display_inversion_enabled", if (enabled) "1" else "0")
         }
     }
 

@@ -19,6 +19,7 @@ package nd.max.core.hardware
 import com.topjohnwu.superuser.Shell
 import com.topjohnwu.superuser.io.SuFile
 import nd.max.MaxManagerPaths
+import nd.max.core.daemon.DaemonIpc
 import nd.max.core.diagnostics.DiagnosticCenter
 
 /**
@@ -66,6 +67,21 @@ object ProfileApplier {
     }
 
     private fun runService(profileId: String, fromAi: Boolean): Boolean {
+        // **القناة أولًا (بلا جذر):** الخادم هو من يطبّق الملفّ. فإن ردّ نجح الأمر أو رُفض صراحةً فلا
+        // تُعاد المحاولة بالجذر (كانت ستنفّذه مرّتين أو تتجاوز بوّابة AI). وإن تعذّر الوصول إلى القناة
+        // (خادم قديم، موديول بلا قناة، رفض SELinux) يبقى المسار القديم أدناه كما كان حرفًا بحرف.
+        when (val ipc = DaemonIpc.default.profile(profileId, fromAi)) {
+            is DaemonIpc.Result.Ok -> return true
+            is DaemonIpc.Result.Refused -> {
+                DiagnosticCenter.record(
+                    "profile",
+                    "apply profileId=$profileId fromAi=$fromAi refused by daemon: ${ipc.reason}",
+                    level = DiagnosticCenter.Level.WARN,
+                )
+                return false
+            }
+            DaemonIpc.Result.Unreachable -> Unit
+        }
         val serviceBin = SuFile(MaxManagerPaths.serviceBin())
         if (!serviceBin.exists()) {
             // الوحدة مثبتة لكن خدمتها غير موجودة — أثر بالغ الأهمية في

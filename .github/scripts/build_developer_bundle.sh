@@ -54,6 +54,7 @@ DAEMON_SRC="${DAEMON_SRC:-archdaemon/libs/arm64-v8a/sys.maxmanager-service}"
 for src in android/aosp/maxmanager.rc android/aosp/sepolicy/maxmanager.te \
            android/aosp/sepolicy/file_contexts android/aosp/BoardConfig.mk \
            android/aosp/sepolicy/make_sepolicy.py android/aosp/sepolicy/maxmanager_permissive.te \
+           android/aosp/sepolicy/maxmanager_app.te \
            android/overlay/product/etc/permissions/privapp-permissions-nd.max.xml; do
 	[ -f "$src" ] || { echo "ERROR: bundle input missing: $src" >&2; exit 1; }
 done
@@ -85,6 +86,7 @@ cp android/aosp/maxmanager.rc "$root/system/etc/init/maxmanager.rc"
 cp android/aosp/sepolicy/maxmanager.te "$root/sepolicy/"
 cp android/aosp/sepolicy/file_contexts "$root/sepolicy/"
 cp android/aosp/sepolicy/make_sepolicy.py android/aosp/sepolicy/maxmanager_permissive.te "$root/sepolicy/"
+cp android/aosp/sepolicy/maxmanager_app.te "$root/sepolicy/"
 cp android/aosp/BoardConfig.mk "$root/BoardConfig.mk"
 chmod 0755 "$root/system/bin/sys.maxmanager-service"
 
@@ -221,17 +223,40 @@ B) AOSP source builds
 
 Creating the sepolicy (only if you want the daemon to start from init, without app root)
 ------------------------------------------------------------------------------------
-Rules differ per ROM, so generate them from your own device instead of guessing:
-1. Add sepolicy/maxmanager.te, sepolicy/file_contexts and sepolicy/maxmanager_permissive.te
-   to your policy build (permissive = nothing is blocked, everything is only logged).
-   Also set PRODUCT_PROPERTY_OVERRIDES += ro.maxmanager.sepolicy=1.
-2. Build, flash, boot, use the app for a few minutes.
-3. On the phone/PC:  adb shell su -c dmesg > avc.txt   (or: adb logcat -d > avc.txt)
-4. On the PC:  python3 sepolicy/make_sepolicy.py avc.txt
-   -> writes maxmanager_generated.te
-5. Delete maxmanager_permissive.te, add maxmanager_generated.te to the same sepolicy
-   directory, rebuild. If the build reports a neverallow error, delete that line from
-   the generated file; the matching feature then stays unavailable in that ROM.
+Rules differ per ROM, so they are generated from YOUR phone - no PC and no Python needed:
+1. Put this bundle's sepolicy/ folder in your policy build. It starts PERMISSIVE (nothing is
+   blocked, everything is only logged). Also set ro.maxmanager.sepolicy=1. Flash, use the
+   phone a few minutes and open MaxManager.
+2. On the phone, in a root shell (adb shell, or Termux):
+       su -c "sys.maxmanager-service --gen-sepolicy"
+   It reads the phone's own denials and saves  /sdcard/Download/maxmanager_generated.te
+   (the same file is also inside the app's exported logs, as log/maxmanager_generated.te).
+3. Copy that file into sepolicy/, DELETE sepolicy/maxmanager_permissive.te, rebuild, flash.
+   Repeat 2-3 until the command prints "No new rules - you are done." (each round merges with
+   the file from the last one). If the build reports a neverallow error, delete that line from
+   maxmanager_generated.te: that one feature stays off in your ROM, the rest keeps working.
+Prefer a PC? Same result:  python3 sepolicy/make_sepolicy.py MaxManager_Logs_*.tar.gz
+(or  --adb  with the phone plugged in); it writes a ready sepolicy_out/ folder.
+
+What works without root in this mode (phase 1): the daemon runs from init in its own SELinux
+domain (no Java companion is needed) and the app talks to it over the abstract socket
+@maxmanager.sock with a closed command list: PING, STATUS, PROFILE 1|2|3, EXISTS/READ of an
+allow-listed set of sysfs/proc nodes (CPU, GPU, thermal, battery, zram), and SETPROP for keys
+under persist.sys.maxmanagerconf. only. Profile switching, the ACTIVE badge, node reads and
+config-property writes use it, which covers the charging screen's reads and settings.
+Phase 3 adds WRITE/CANWRITE for a narrow list of tuning nodes (CPU/GPU ceilings and governors,
+zram, vm and a few sched/tcp sysctls, display and touch switches, charge-current nodes); the
+daemon does the HyperOS chmod dance itself. Anything outside those lists, and anything that
+runs a shell command from the app, still needs root.
+Phase 4 (standalone mode only): the daemon itself watches the foreground app from the top-app
+cgroup and /proc, and writes app_status like the root companion does, so per-game profiles
+work without root. It only knows "a managed game is in the foreground" (plus screen and battery);
+the companion's per-app Settings changes, refresh-rate control and side panel still need root.
+If the companion is running (root is available) the daemon stays silent and the companion wins.
+Phase 5: display and battery-saver settings are written with the platform Settings API, which
+needs only the WRITE_SECURE_SETTINGS grant already in privapp-permissions-nd.max.xml (no root).
+The root shell stays as the automatic fallback when the platform refuses. Per-app automatic switching needs the
+companion, which needs root.
 Not covered: this was written without a real ROM to test on. Test on a spare device.
 
 C) Rooted users
@@ -249,8 +274,10 @@ same SELinux context the Magisk module uses. Nothing else is required in the ROM
 it is retried at every app start, at boot (BOOT_COMPLETED) and the moment root is granted.
 
 Opt-in (you built sepolicy/maxmanager.te into the policy): add
-`PRODUCT_PROPERTY_OVERRIDES += ro.maxmanager.sepolicy=1` and init starts the daemon at
-boot_completed. Do NOT set it without the policy: the missing domain makes init abort
+`PRODUCT_PROPERTY_OVERRIDES += ro.maxmanager.sepolicy=1` (image repack without makefiles: put
+the line `ro.maxmanager.sepolicy=1` in product/etc/build.prop) and init starts the daemon at
+boot_completed. The service is `oneshot` (the daemon forks itself), so if it ever dies in this
+mode it is not restarted until the next boot, or until the app runs it with root. Do NOT set it without the policy: the missing domain makes init abort
 the service (dmesg: "cannot setexeccon('u:r:maxmanager:s0') ... Invalid argument").
 
 The daemon is required

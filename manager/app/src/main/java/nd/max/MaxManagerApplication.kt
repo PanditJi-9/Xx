@@ -57,6 +57,7 @@ class MaxManagerApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        nd.max.core.platform.SettingsAccess.init(this)
         // اللمس يمرّ من منفّذ أطلس الوحيد (مُحكِّم Hilt) لا من إنشاء ثانٍ في `TouchControlBackend`.
         TouchControlBackend.installAtlasRepair(atlasRepairExecutor)
         // **بوّابة الإقلاع — أوّل سطر بعد `super` وقبل أي عمل.**
@@ -157,7 +158,7 @@ class MaxManagerApplication : Application() {
         // جذر إلا إذا نفى القياس حياة أحدهما حقًّا ([`ModuleWatchman`] يشرح الطريقين). والخيط
         // منفصل ومنتظر لا يشارك الإقلاع، فلا يُبطئ أوّل شاشة.
         if (isUserUnlocked()) {
-            Thread { runCatching { ModuleWatchman().watch() } }
+            Thread { runCatching { ModuleWatchman().watchWhenRootAllows() } }
                 .apply { isDaemon = true }
                 .start()
         }

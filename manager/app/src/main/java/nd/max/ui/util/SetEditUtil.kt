@@ -205,7 +205,12 @@ object SetEditUtil {
         } else {
             "settings get ${category.settingsNamespace} $key"
         }
-        Shell.cmd(command).exec().out.joinToString("\n").trim()
+        // الإعداد المحفوظ يُقرأ بواجهة المنصّة أوّلًا (بلا جذر)؛ والغائب/المرفوض يسأل الصدفة كما كان، فلا يُترجَم
+        // غيابٌ إلى قيمة (المقارنة في SetEditWriteRules تعامله اختلافًا).
+        val direct = category.settingsNamespace
+            ?.takeIf { category != SetEditCategory.ANDROID_PROP }
+            ?.let { nd.max.core.platform.SettingsAccess.getDirect(it, key) }
+        direct ?: Shell.cmd(command).exec().out.joinToString("\n").trim()
     } catch (e: Exception) {
         null
     }

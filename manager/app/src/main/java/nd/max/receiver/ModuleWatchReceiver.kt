@@ -48,7 +48,7 @@ class ModuleWatchReceiver : BroadcastReceiver() {
         val pending = goAsync()
         Thread {
             try {
-                ModuleWatchman().watch()
+                ModuleWatchman().watchWhenRootAllows()
             } finally {
                 pending.finish()
             }

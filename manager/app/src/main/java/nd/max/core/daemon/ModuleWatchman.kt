@@ -6,6 +6,7 @@
 
 package nd.max.core.daemon
 
+import com.topjohnwu.superuser.Shell
 import nd.max.MaxManagerPaths
 
 /**
@@ -218,6 +219,17 @@ class ModuleWatchman(
         }
         return decision
     }
+
+    /**
+     * نقطة الدخول الإنتاجية: **لا شيء يُفعل إن رُفض الجذر صراحةً**.
+     *
+     * بلا جذر يكون كلّ ما يملكه الحارس خاطئًا: تشغيل الرفيق بـ`app_process` بصلاحية التطبيق نفسه (لا
+     * الجذر)، وتشغيل الخادم يفشل. والخادم المستقلّ (`ro.maxmanager.sepolicy=1`) تشغّله init لا هذا الحارس،
+     * ويخدم التطبيق عبر القناة ([DaemonIpc]). و`null` (لم يُجَب الطلب بعد) يمضي كما كان: الحارس نفسه هو
+     * ما يستدعي نافذة الإذن حين يطلب صدفة الجذر.
+     */
+    fun watchWhenRootAllows(): WatchDecision =
+        if (Shell.isAppGrantedRoot() == false) WatchDecision.Wait else watch()
 
     /** حضوره يُقاس بالاسم — لا بقفل ولا بحالة محفوظة. */
     fun companionLiveness(io: DaemonIo = cheapIo): CompanionLiveness {

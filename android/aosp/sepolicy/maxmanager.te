@@ -62,3 +62,42 @@ allow maxmanager rootfs:file { read open getattr };
 allow maxmanager urandom_device:chr_file { read open };
 
 # This file must be added to BOARD_SEPOLICY_DIRS in BoardConfig.mk
+
+# ── قناة التطبيق ↔ الخادم (archdaemon/jni/src/Ipc/IpcServer.c) ───────────────────────────────
+# سوكيت unix مجرّد `@maxmanager.sock`: الخادم ينشئه ويقبل عليه، ويقرأ uid التطبيق من packages.list
+# ليتحقّق منه بنفسه (SO_PEERCRED)، ويشغّل ثنائيّه بـ`--profile N` فيحتاج `execute_no_trans` على نفسه.
+# ملاحظة: هذه القواعد كُتبت بلا روم حقيقي للاختبار؛ ما يغيب منها يُولَّد من سجلّ جهازك بـ`make_sepolicy.py`.
+allow maxmanager self:unix_stream_socket create_stream_socket_perms;
+allow maxmanager priv_app:unix_stream_socket { getattr getopt read write shutdown };
+allow maxmanager packages_list_file:file r_file_perms;
+allow maxmanager maxmanager_exec:file { read open getattr map execute_no_trans };
+allow maxmanager proc:lnk_file { read getattr };
+# `ro.maxmanager.sepolicy` (علم الوضع المستقلّ) خاصية `ro.*` بلا تسمية خاصة فتقع في default_prop.
+get_prop(maxmanager, default_prop)
+
+# ── قراءة العقد وكتابة الخصائص لحساب التطبيق (المرحلة الثانية: READ / EXISTS / SETPROP) ───────────
+# التطبيق بلا جذر يطلب عبر القناة، والخادم وحده يفتح العقدة بنطاقه. القراءة تشمل كل أنواع sysfs
+# (الأسماء الدقيقة تختلف بين الرومات: sysfs_batteryinfo، sysfs_devfreq، sysfs_kgsl… — لذلك النوع الجامع).
+allow maxmanager sysfs_type:file r_file_perms;
+allow maxmanager sysfs_type:dir r_dir_perms;
+# `persist.sys.maxmanagerconf.*` تقع في system_prop (ذُكرت قاعدة الكتابة أعلاه). وقراءتها لحساب التطبيق
+# قائمة أصلًا لنطاق priv_app؛ فلا تسمية خاصة ولا قاعدة إضافية للتطبيق.
+
+# ── كتابة العقد لحساب التطبيق (المرحلة الثالثة: WRITE) ───────────────────────────────────────────
+# `setattr` لرقصة chmod (عقد HyperOS 3 تأتي 0444). و`sysctl_type` هو النوع الجامع لعقد /proc/sys/*
+# (vm، kernel، net…). وقائمة المسارات المسموحة في IpcServer.c أضيق بكثير من هذه الأنواع.
+allow maxmanager sysfs_type:file { write setattr };
+allow maxmanager sysctl_type:file rw_file_perms;
+
+# ── مراقب المقدّمة الأصليّ (archdaemon/jni/src/Standalone/ForegroundObserver.c) ─────────────────────
+# يقرأ مجموعة top-app في cgroup (v1 أو v2) ثم `/proc/<pid>/cmdline` لعمليّات التطبيقات، ويكتب `app_status`
+# في مجلّد الإعداد (adb_data_file) بكتابة مؤقّتة + rename. وعقد البطارية والإضاءة تغطّيها sysfs_type أعلاه.
+allow maxmanager cgroup:dir r_dir_perms;
+allow maxmanager cgroup:file r_file_perms;
+allow maxmanager cgroup_v2:dir r_dir_perms;
+allow maxmanager cgroup_v2:file r_file_perms;
+allow maxmanager appdomain:dir { search getattr };
+allow maxmanager appdomain:file { read open getattr };
+allow maxmanager adb_data_file:dir create_dir_perms;
+allow maxmanager adb_data_file:file create_file_perms;
+

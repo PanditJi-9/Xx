@@ -134,6 +134,11 @@ void wait_for_java_companion(DaemonContext* ctx) {
 /** كل كم فحصٍ يُسأل `/proc` — الكلفة معلنة ولا تُدفع حيث لا قرار لها. */
 #define COMPANION_PROBE_EVERY 5
 
+    if (is_standalone_mode()) {
+        log_zenith(LOG_INFO, "EVENT=JAVA_COMPANION_SKIPPED reason=standalone_mode");
+        return;
+    }
+
     log_zenith(LOG_INFO, "EVENT=JAVA_COMPANION_WAIT_START max_checks=%d", MAX_JAVA_RETRIES);
     int java_check_retries = 0;
     bool companion_seen = false;

@@ -63,7 +63,7 @@ object RomRuntimeKick {
         val last = lastKickMs.get()
         if (last != 0L && now - last < MIN_GAP_MS) return
         if (!lastKickMs.compareAndSet(last, now)) return
-        Thread { runCatching { ModuleWatchman().watch() } }
+        Thread { runCatching { ModuleWatchman().watchWhenRootAllows() } }
             .apply { isDaemon = true }
             .start()
     }

@@ -311,6 +311,7 @@ bool module_identity_ok(const char* prop_text);
 bool module_identity_violated(void);
 void is_kanged(void);
 bool is_rom_install(void);
+bool is_standalone_mode(void);
 void checkstate(void);
 void escape_shell_string(char *dest, const char *src, size_t max_size);
 char* timern(void);

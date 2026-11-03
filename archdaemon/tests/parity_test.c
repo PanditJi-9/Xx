@@ -16,10 +16,18 @@
  * writes (fixtures/contracts/), and the --profile/--from-ai decision table.
  */
 #include <ctype.h>
+#include <stdlib.h>
+#include <errno.h>
 #include <dirent.h>
+#include <stddef.h>
+#include <sys/socket.h>
 #include <sys/stat.h>
+#include <sys/un.h>
 #include <unistd.h>
 
+#include <ForegroundObserver.h>
+#include <SepolicyGen.h>
+#include <IpcServer.h>
 #include <MaxManager.h>
 
 #include "host/host.h"
@@ -738,6 +746,391 @@ void suite_module_integrity(void) {
     host_clear_routes();
 }
 
+/* ── قناة التطبيق ↔ الخادم (المرحلة الأولى) ─────────────────────────────────────────────── */
+static int g_ipc_calls;
+static char g_ipc_profile;
+static bool g_ipc_ai;
+static int g_ipc_rc;
+
+static int fake_profile_runner(char profile, bool from_ai) {
+    g_ipc_calls++;
+    g_ipc_profile = profile;
+    g_ipc_ai = from_ai;
+    return g_ipc_rc;
+}
+
+static int g_ipc_setprops;
+static char g_ipc_prop_key[IPC_KEY_MAX];
+static char g_ipc_prop_value[IPC_VALUE_MAX];
+
+static int fake_property_setter(const char* key, const char* value) {
+    g_ipc_setprops++;
+    snprintf(g_ipc_prop_key, sizeof(g_ipc_prop_key), "%s", key);
+    snprintf(g_ipc_prop_value, sizeof(g_ipc_prop_value), "%s", value);
+    return 0;
+}
+
+static const IpcBackend FAKE_BACKEND = {.profile = fake_profile_runner, .setprop = fake_property_setter};
+
+static void ipc_roundtrip(uid_t peer, const char* request, char* reply, size_t size) {
+    int pair[2];
+    reply[0] = '\0';
+    if (socketpair(AF_UNIX, SOCK_STREAM, 0, pair) != 0) {
+        return;
+    }
+    if (write(pair[1], request, strlen(request)) < 0) {
+        close(pair[0]);
+        close(pair[1]);
+        return;
+    }
+    ipc_handle_connection(pair[0], peer, &FAKE_BACKEND);
+    const ssize_t got = read(pair[1], reply, size - 1);
+    reply[got > 0 ? got : 0] = '\0';
+    close(pair[0]);
+    close(pair[1]);
+}
+
+/* LockFile.c ليست في وحدات الاختبار؛ المراقب لا يستدعيها إلا من خيطه الحيّ، فيكفي مرساة للرابط. */
+bool is_java_lock_held(const char* lock_path) {
+    (void)lock_path;
+    return false;
+}
+
+static void suite_sepolicy_gen(void) {
+    printf("\n\033[1m[sepolicy] the on-phone generator (--gen-sepolicy)\033[0m\n");
+    SepolRules set;
+    CHECK(sepol_init(&set), "the rule set allocates");
+
+    CHECK(sepol_parse_avc_line("[  1.2] audit: type=1400 avc:  denied  { read open } for comm=\"x\" scontext=u:r:maxmanager:s0 tcontext=u:object_r:sysfs_batteryinfo:s0 tclass=file permissive=1", "maxmanager", &set),
+          "a dmesg-shaped denial is accepted");
+    CHECK(sepol_parse_avc_line("avc:  denied  { write read } for scontext=u:r:maxmanager:s0 tcontext=u:object_r:sysfs_batteryinfo:s0 tclass=file permissive=0", "maxmanager", &set),
+          "a logcat-shaped denial is accepted and merged");
+    CHECK(sepol_parse_avc_line("avc:  denied  { connectto } for scontext=u:r:priv_app:s0:c512,c768 tcontext=u:r:maxmanager:s0 tclass=unix_stream_socket permissive=0", "maxmanager", &set),
+          "the app's denied connect (daemon as TARGET) is accepted");
+    CHECK(!sepol_parse_avc_line("avc:  denied  { read } for scontext=u:r:priv_app:s0 tcontext=u:object_r:sysfs:s0 tclass=file permissive=0", "maxmanager", &set),
+          "a denial unrelated to the daemon is ignored");
+    CHECK(!sepol_parse_avc_line("ordinary log line scontext=u:r:maxmanager:s0", "maxmanager", &set), "a non-avc line is ignored");
+    CHECK(!sepol_parse_avc_line("avc:  denied  { read } for scontext=u:r:maxmanager:s0 tcontext=u:object_r:x:s0", "maxmanager", &set),
+          "a denial without a class is ignored");
+    CHECK(set.count == 2 && set.denials_seen == 3 && set.enforcing_seen == 2, "two rules, three denials, two enforcing");
+    CHECK(!sepol_add(&set, "maxmanager", "bad name;rm", "file", "read"), "a malformed name never reaches the policy file");
+    CHECK(!sepol_add(&set, "maxmanager", "x", "file", "re ad"), "a malformed permission never reaches the policy file");
+
+    char* text = NULL;
+    size_t text_size = 0;
+    FILE* out = open_memstream(&text, &text_size);
+    sepol_render(&set, out);
+    fclose(out);
+    CHECK(strstr(text, "allow maxmanager sysfs_batteryinfo:file { open read write };") != NULL, "permissions are merged and sorted");
+    CHECK(strstr(text, "allow priv_app maxmanager:unix_stream_socket { connectto };") != NULL, "the app rule is rendered");
+
+    SepolRules again;
+    CHECK(sepol_init(&again), "a second set allocates");
+    FILE* in = fmemopen(text, strlen(text), "r");
+    CHECK(sepol_load_existing(in, &again) == 4 && again.count == 2, "the rendered file loads back for the next round (iteration)");
+    fclose(in);
+    sepol_add(&again, "maxmanager", "ptrace_target", "process", "ptrace");
+    char* second = NULL;
+    size_t second_size = 0;
+    FILE* out2 = open_memstream(&second, &second_size);
+    sepol_render(&again, out2);
+    fclose(out2);
+    CHECK(strstr(second, "REVIEW") != NULL, "a dangerous permission is flagged for review");
+    free(second);
+    free(text);
+    sepol_free(&again);
+    sepol_free(&set);
+
+    /* الأمر كاملًا على ملفّات حقيقيّة: جولتان تتراكمان في الملفّ نفسه */
+    {
+        char avc_path[] = "/tmp/sepol_avc_XXXXXX";
+        char out_path[] = "/tmp/sepol_out_XXXXXX";
+        const int avc_fd = mkstemp(avc_path);
+        const int out_fd = mkstemp(out_path);
+        CHECK(avc_fd >= 0 && out_fd >= 0, "scratch files are created");
+        if (avc_fd >= 0 && out_fd >= 0) {
+            close(out_fd);
+            unlink(out_path); /* الجولة الأولى تبدأ بلا ملفّ ناتج */
+            const char* round1 = "avc:  denied  { read } for scontext=u:r:maxmanager:s0 tcontext=u:object_r:sysfs_a:s0 tclass=file permissive=1\n";
+            CHECK(write(avc_fd, round1, strlen(round1)) == (ssize_t)strlen(round1), "round 1 log is written");
+            close(avc_fd);
+            char* args1[] = {"x", "--gen-sepolicy", avc_path, "-o", out_path};
+            CHECK(handle_gen_sepolicy(5, args1) == 0, "round 1 succeeds");
+            FILE* check = fopen(out_path, "r");
+            char body[2048] = {0};
+            if (check) {
+                (void)fread(body, 1, sizeof(body) - 1, check);
+                fclose(check);
+            }
+            CHECK(strstr(body, "allow maxmanager sysfs_a:file { read };") != NULL, "round 1 wrote the rule");
+
+            FILE* append = fopen(avc_path, "w");
+            if (append) {
+                fputs("avc:  denied  { write } for scontext=u:r:maxmanager:s0 tcontext=u:object_r:sysfs_a:s0 tclass=file permissive=1\n", append);
+                fclose(append);
+            }
+            char* args2[] = {"x", "--gen-sepolicy", avc_path, "-o", out_path};
+            CHECK(handle_gen_sepolicy(5, args2) == 0, "round 2 succeeds");
+            check = fopen(out_path, "r");
+            memset(body, 0, sizeof(body));
+            if (check) {
+                (void)fread(body, 1, sizeof(body) - 1, check);
+                fclose(check);
+            }
+            CHECK(strstr(body, "allow maxmanager sysfs_a:file { read write };") != NULL, "round 2 merged with round 1 instead of replacing it");
+            unlink(avc_path);
+            unlink(out_path);
+        }
+        char* none[] = {"x", "--gen-sepolicy", "/tmp/definitely_absent_avc_log", "-o", "-"};
+        CHECK(handle_gen_sepolicy(5, none) == 1, "no denials found is reported as a failure, not an empty success");
+    }
+}
+
+static void suite_foreground_observer(void) {
+    printf("\n\033[1m[foreground] the native observer that replaces the root companion\033[0m\n");
+
+    char pkg[128];
+    CHECK(fg_package_from_cmdline("com.miHoYo.GenshinImpact", pkg, sizeof(pkg)) && strcmp(pkg, "com.miHoYo.GenshinImpact") == 0,
+          "a plain package name is accepted");
+    CHECK(fg_package_from_cmdline("com.tencent.ig:remote", pkg, sizeof(pkg)) && strcmp(pkg, "com.tencent.ig") == 0,
+          "a :subprocess suffix is stripped back to the package");
+    CHECK(!fg_package_from_cmdline("zygote64", pkg, sizeof(pkg)), "a system process without a dot is not an app");
+    CHECK(!fg_package_from_cmdline("/system/bin/surfaceflinger", pkg, sizeof(pkg)), "a path is not a package");
+    CHECK(!fg_package_from_cmdline("0.85", pkg, sizeof(pkg)), "a number is not a package (the documented 0.85 failure)");
+    CHECK(!fg_package_from_cmdline(".hidden.app", pkg, sizeof(pkg)), "a leading dot is not a package");
+    CHECK(!fg_package_from_cmdline("com.x.", pkg, sizeof(pkg)), "a trailing dot is not a package");
+    CHECK(!fg_package_from_cmdline("com.a b.c", pkg, sizeof(pkg)), "a space is not a package character");
+    CHECK(!fg_package_from_cmdline("", pkg, sizeof(pkg)), "an empty command line is not a package");
+    CHECK(!fg_package_from_cmdline(NULL, pkg, sizeof(pkg)), "NULL is not a package");
+
+    const char* list = "{\"com.tencent.ig\": {\"mode\": 1}, \"com.mobile.legends\" :{\"mode\": 2},\n \"note\": \"com.fake.value\"}";
+    CHECK(fg_gamelist_contains(list, "com.tencent.ig"), "a managed package is found as a key");
+    CHECK(fg_gamelist_contains(list, "com.mobile.legends"), "whitespace before the colon is tolerated");
+    CHECK(!fg_gamelist_contains(list, "com.fake.value"), "a string value is not a key");
+    CHECK(!fg_gamelist_contains(list, "com.tencent"), "a package prefix is not a match");
+    CHECK(!fg_gamelist_contains("{}", "com.tencent.ig"), "an empty list manages nothing");
+    CHECK(!fg_gamelist_contains(NULL, "com.tencent.ig"), "no list manages nothing");
+
+    char text[512];
+    fg_format_status(text, sizeof(text), "com.tencent.ig", 4242, 10234, 1, 87, 0, "sw-1");
+    CHECK_STR_EQ(text,
+                 "focused_app com.tencent.ig 4242 10234\nscreen_awake 1\nbattery_saver 0\nzen_mode 0\n"
+                 "app_name com.tencent.ig\nbattery_level 87\nis_charging 0\nswitch_id sw-1\n",
+                 "the status text matches the format the daemon parses");
+}
+
+void suite_ipc(void) {
+    suite_foreground_observer();
+    suite_sepolicy_gen();
+    printf("\n\033[1m[ipc] the app-to-daemon channel: closed whitelist, identity first\033[0m\n");
+
+    IpcCommand cmd;
+    CHECK(ipc_parse_command("PING\n", &cmd) && cmd.kind == IPC_CMD_PING, "PING parses");
+    CHECK(ipc_parse_command("STATUS", &cmd) && cmd.kind == IPC_CMD_STATUS, "STATUS parses without a newline");
+    CHECK(ipc_parse_command("PROFILE 2\n", &cmd) && cmd.kind == IPC_CMD_PROFILE && cmd.profile == '2' && !cmd.from_ai,
+          "PROFILE 2 is a manual selection");
+    CHECK(ipc_parse_command("PROFILE 1 AI\r\n", &cmd) && cmd.profile == '1' && cmd.from_ai,
+          "PROFILE 1 AI carries the from-ai flag (CRLF tolerated)");
+
+    CHECK(!ipc_parse_command("PROFILE 4\n", &cmd), "profile 4 does not exist");
+    CHECK(!ipc_parse_command("PROFILE 0\n", &cmd), "profile 0 is initialize-only and not reachable");
+    CHECK(!ipc_parse_command("PROFILE 12\n", &cmd), "two digits are not a profile");
+    CHECK(!ipc_parse_command("PROFILE 1; reboot\n", &cmd), "a shell separator is refused before any parsing");
+    CHECK(!ipc_parse_command("PROFILE $(id)\n", &cmd), "command substitution is refused");
+    CHECK(!ipc_parse_command("PROFILE 1 AI extra\n", &cmd), "trailing words are refused");
+    CHECK(!ipc_parse_command("PROFILE 1 ROOT\n", &cmd), "only the AI flag exists");
+    CHECK(!ipc_parse_command("PING now\n", &cmd), "PING takes no argument");
+    CHECK(!ipc_parse_command("RUN id\n", &cmd), "there is no generic run verb");
+    CHECK(!ipc_parse_command("\n", &cmd), "an empty line is not a command");
+    CHECK(!ipc_parse_command(NULL, &cmd), "NULL is not a command");
+
+    uid_t uid = 0;
+    const char* list = "com.android.shell 2000 0 /data/user/0/com.android.shell default:targetSdk=36\n"
+                       "nd.max 10234 0 /data/user/0/nd.max default:targetSdk=36 1078,3002\n"
+                       "nd.max.other 10999 0 /data/user/0/nd.max.other default:targetSdk=36\n";
+    CHECK(ipc_app_uid_from_text(list, "nd.max", &uid) && uid == 10234, "the app uid is read from packages.list");
+    CHECK(!ipc_app_uid_from_text("nd.max.other 10999 0 /x\n", "nd.max", &uid), "a longer package name is not a prefix match");
+    CHECK(!ipc_app_uid_from_text("", "nd.max", &uid), "an empty list has no app");
+
+    CHECK(ipc_uid_allowed(10234, true, 10234), "the installed app uid is allowed");
+    CHECK(ipc_uid_allowed(0, false, 0), "root is allowed for local tools");
+    CHECK(!ipc_uid_allowed(10235, true, 10234), "another app is refused");
+    CHECK(!ipc_uid_allowed(2000, true, 10234), "the adb shell is refused in production");
+    CHECK(!ipc_uid_allowed(10234, false, 0), "unknown app uid means refuse, never allow");
+
+    char reply[IPC_REPLY_MAX];
+    g_ipc_calls = 0;
+    g_ipc_rc = 0;
+    ipc_roundtrip(0, "PING\n", reply, sizeof(reply));
+    CHECK_STR_EQ(reply, "OK 1\n", "PING round-trips");
+    ipc_roundtrip(0, "STATUS\n", reply, sizeof(reply));
+    CHECK(strncmp(reply, "OK state=", 9) == 0, "STATUS reports daemon state");
+    ipc_roundtrip(0, "PROFILE 3 AI\n", reply, sizeof(reply));
+    CHECK_STR_EQ(reply, "OK\n", "an allowed profile request succeeds");
+    CHECK(g_ipc_calls == 1 && g_ipc_profile == '3' && g_ipc_ai, "the runner received exactly profile 3 with the AI flag");
+
+    g_ipc_rc = 1;
+    ipc_roundtrip(0, "PROFILE 2\n", reply, sizeof(reply));
+    CHECK_STR_EQ(reply, "ERR exit=1\n", "a runner failure (e.g. manual blocked by AI) is reported, not hidden");
+
+    const int calls_before = g_ipc_calls;
+    ipc_roundtrip(12345, "PROFILE 1\n", reply, sizeof(reply));
+    CHECK_STR_EQ(reply, "ERR denied\n", "an unknown peer is denied");
+    CHECK(g_ipc_calls == calls_before, "a denied peer never reaches the runner");
+    ipc_roundtrip(0, "PROFILE 9\n", reply, sizeof(reply));
+    CHECK_STR_EQ(reply, "ERR invalid\n", "an invalid command is refused");
+    CHECK(g_ipc_calls == calls_before, "an invalid command never reaches the runner");
+
+
+    /* ── المرحلة الثانية: قراءة العقد، فحص الوجود، كتابة خصائص الإعداد ── */
+    CHECK(ipc_parse_command("READ /sys/class/power_supply/battery/capacity\n", &cmd) && cmd.kind == IPC_CMD_READ &&
+              strcmp(cmd.path, "/sys/class/power_supply/battery/capacity") == 0,
+          "READ of a battery node parses");
+    CHECK(ipc_parse_command("EXISTS /sys/class/kgsl/kgsl-3d0/gpubusy", &cmd) && cmd.kind == IPC_CMD_EXISTS,
+          "EXISTS of a GPU node parses");
+    CHECK(ipc_parse_command("READ /proc/meminfo", &cmd), "an allowed /proc file parses");
+
+    CHECK(!ipc_parse_command("READ /etc/passwd", &cmd), "a path outside the list is refused");
+    CHECK(!ipc_parse_command("READ /data/adb/modules/x", &cmd), "/data is never readable through the channel");
+    CHECK(!ipc_parse_command("READ /proc/self/environ", &cmd), "/proc/self is not on the list");
+    CHECK(!ipc_parse_command("READ /sys/kernel/debug/tracing/trace", &cmd), "debugfs is not on the list");
+    CHECK(!ipc_parse_command("READ /sys/class/power_supply/../../../etc/passwd", &cmd), "dot-dot traversal is refused");
+    CHECK(!ipc_parse_command("READ /sys/class/thermal//thermal_zone0/temp", &cmd), "a double slash is refused");
+    CHECK(!ipc_parse_command("READ /sys/class/thermal/", &cmd), "a bare directory prefix is not a node");
+    CHECK(!ipc_parse_command("READ /sys/class/thermal/a b", &cmd), "a space splits tokens, so extra words are refused");
+    CHECK(!ipc_parse_command("READ /sys/class/thermal/$(id)", &cmd), "shell metacharacters are refused");
+    CHECK(!ipc_parse_command("READ", &cmd), "READ needs a path");
+
+    CHECK(ipc_parse_command("SETPROP persist.sys.maxmanagerconf.fastchg_ma 3000", &cmd) && cmd.kind == IPC_CMD_SETPROP &&
+              strcmp(cmd.key, "persist.sys.maxmanagerconf.fastchg_ma") == 0 && strcmp(cmd.value, "3000") == 0,
+          "SETPROP of a config key parses");
+    CHECK(!ipc_parse_command("SETPROP persist.sys.maxmanager.state 1", &cmd), "the daemon's own state keys are not writable");
+    CHECK(!ipc_parse_command("SETPROP ro.build.fingerprint x", &cmd), "system keys are not writable");
+    CHECK(!ipc_parse_command("SETPROP persist.sys.maxmanagerconf. 1", &cmd), "an empty key suffix is refused");
+    CHECK(!ipc_parse_command("SETPROP persist.sys.maxmanagerconf.a one two", &cmd), "extra tokens are refused");
+    CHECK(!ipc_parse_command("SETPROP persist.sys.maxmanagerconf.a $(id)", &cmd), "a value with shell syntax is refused");
+    CHECK(!ipc_parse_command("SETPROP persist.sys.maxmanagerconf.a", &cmd), "SETPROP needs a value");
+
+    CHECK(ipc_resolved_allowed("/sys/devices/platform/charger/power_supply/battery/capacity"), "a real sysfs target is fine");
+    CHECK(!ipc_resolved_allowed("/etc/passwd"), "a link that resolves outside the kernel filesystems is refused");
+    CHECK(!ipc_resolved_allowed("/sys/kernel/debug/x"), "a link into debugfs is refused");
+    CHECK(!ipc_resolved_allowed("/proc/self/environ"), "a link into /proc/self is refused");
+
+    ipc_roundtrip(0, "EXISTS /proc/meminfo\n", reply, sizeof(reply));
+    CHECK_STR_EQ(reply, "OK 1\n", "EXISTS finds a real node");
+    ipc_roundtrip(0, "EXISTS /sys/class/power_supply/definitely_absent_node\n", reply, sizeof(reply));
+    CHECK_STR_EQ(reply, "OK 0\n", "EXISTS reports an allowed-but-absent node as 0");
+    ipc_roundtrip(0, "READ /proc/meminfo\n", reply, sizeof(reply));
+    CHECK(strncmp(reply, "OK ", 3) == 0 && strstr(reply, "\nMemTotal") != NULL, "READ returns a length header then the node body");
+    ipc_roundtrip(0, "READ /etc/passwd\n", reply, sizeof(reply));
+    CHECK_STR_EQ(reply, "ERR invalid\n", "an unlisted path never reaches open()");
+
+    g_ipc_setprops = 0;
+    ipc_roundtrip(0, "SETPROP persist.sys.maxmanagerconf.sic_boost 1\n", reply, sizeof(reply));
+    CHECK_STR_EQ(reply, "OK\n", "an allowed SETPROP succeeds");
+    CHECK(g_ipc_setprops == 1 && strcmp(g_ipc_prop_key, "persist.sys.maxmanagerconf.sic_boost") == 0 &&
+              strcmp(g_ipc_prop_value, "1") == 0,
+          "the setter received exactly the requested pair");
+    ipc_roundtrip(0, "SETPROP ro.debuggable 1\n", reply, sizeof(reply));
+    CHECK_STR_EQ(reply, "ERR invalid\n", "a forbidden SETPROP is refused");
+    CHECK(g_ipc_setprops == 1, "a forbidden SETPROP never reaches the setter");
+    ipc_roundtrip(12345, "SETPROP persist.sys.maxmanagerconf.sic_boost 0\n", reply, sizeof(reply));
+    CHECK_STR_EQ(reply, "ERR denied\n", "a denied peer cannot set properties");
+    CHECK(g_ipc_setprops == 1, "a denied peer never reaches the setter");
+
+
+    /* ── المرحلة الثالثة: الكتابة (WRITE) — أضيق قائمة، ورقصة chmod، وقيم ضيّقة ── */
+    CHECK(ipc_parse_command("WRITE /sys/devices/system/cpu/cpu6/cpufreq/scaling_max_freq 2500000\n", &cmd) &&
+              cmd.kind == IPC_CMD_WRITE && strcmp(cmd.value, "2500000") == 0,
+          "WRITE of a CPU ceiling parses");
+    CHECK(ipc_parse_command("WRITE /sys/devices/system/cpu/cpufreq/policy4/scaling_governor schedutil", &cmd), "a cpufreq policy governor parses");
+    CHECK(ipc_parse_command("WRITE /sys/class/devfreq/13000000.mali/max_freq 900000000", &cmd), "a devfreq ceiling parses");
+    CHECK(ipc_parse_command("WRITE /sys/module/ged/parameters/gpu_cust_upbound_freq 1000000", &cmd), "a GED parameter parses");
+    CHECK(ipc_parse_command("WRITE /proc/sys/vm/swappiness 60", &cmd), "swappiness parses");
+    CHECK(ipc_parse_command("WRITE /sys/block/zram0/disksize 4294967296", &cmd), "zram disksize parses");
+    CHECK(ipc_parse_command("WRITE /sys/block/sda/queue/scheduler mq-deadline", &cmd), "an IO scheduler parses");
+    CHECK(ipc_parse_command("WRITE /sys/class/power_supply/battery/constant_charge_current_max 3000000", &cmd), "a charge-current node parses");
+    CHECK(ipc_parse_command("WRITE /sys/devices/virtual/thermal/thermal_message/cpu_limits 480000 1400000", &cmd) &&
+              strcmp(cmd.value, "480000 1400000") == 0,
+          "a value with an inner space keeps the rest of the line");
+    CHECK(ipc_parse_command("READ /proc/sys/net/ipv4/tcp_congestion_control", &cmd), "a writable node is also readable, for read-back verification");
+
+    CHECK(!ipc_parse_command("WRITE /proc/sys/kernel/core_pattern x", &cmd), "core_pattern (code execution as root) is not writable");
+    CHECK(!ipc_parse_command("WRITE /proc/sys/kernel/modprobe x", &cmd), "modprobe is not writable");
+    CHECK(!ipc_parse_command("WRITE /sys/devices/system/cpu/online 0", &cmd), "an empty middle segment is not a CPU node");
+    CHECK(!ipc_parse_command("WRITE /proc/1234/dolby_vision/enable 1", &cmd), "a fixed node cannot be reached through a variable middle");
+    CHECK(!ipc_parse_command("WRITE /sys/class/power_supply/battery/capacity 1", &cmd), "a read-only attribute is not writable");
+    CHECK(!ipc_parse_command("WRITE /sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq/../x 1", &cmd), "dot-dot is refused for writes too");
+    CHECK(!ipc_parse_command("WRITE /etc/passwd root", &cmd), "arbitrary files are not writable");
+    CHECK(!ipc_parse_command("WRITE /data/adb/x 1", &cmd), "/data is not writable");
+    CHECK(!ipc_parse_command("WRITE /proc/sys/vm/swappiness", &cmd), "WRITE needs a value");
+    CHECK(!ipc_parse_command("WRITE /proc/sys/vm/swappiness 1;reboot", &cmd), "shell syntax in a value is refused");
+    CHECK(!ipc_parse_command("WRITE /proc/sys/vm/swappiness $(id)", &cmd), "command substitution in a value is refused");
+
+    CHECK(ipc_write_value_allowed("1") && ipc_write_value_allowed("schedutil") && ipc_write_value_allowed("480000 1400000"), "ordinary values are accepted");
+    CHECK(!ipc_write_value_allowed("") && !ipc_write_value_allowed(" 1") && !ipc_write_value_allowed("1 "), "empty or padded values are refused");
+    CHECK(!ipc_write_value_allowed("0123456789012345678901234567890123456789012345678901234567890123456789"), "an over-long value is refused");
+
+    {
+        char tmp_template[] = "/tmp/ipc_write_node_XXXXXX";
+        const int tmp_fd = mkstemp(tmp_template);
+        CHECK(tmp_fd >= 0, "a scratch node can be created");
+        if (tmp_fd >= 0) {
+            close(tmp_fd);
+            chmod(tmp_template, 0444); /* مثل عقدة HyperOS 3: لا كتابة */
+            CHECK(ipc_write_node(tmp_template, "7") == 0, "a 0444 node is written through the chmod dance");
+            struct stat info;
+            CHECK(stat(tmp_template, &info) == 0 && (info.st_mode & 07777) == 0444, "the original mode is restored after the write");
+            char back[16] = {0};
+            FILE* check = fopen(tmp_template, "r");
+            if (check) {
+                (void)fgets(back, sizeof(back), check);
+                fclose(check);
+            }
+            CHECK_STR_EQ(back, "7\n", "the node holds the written value plus a newline");
+            unlink(tmp_template);
+        }
+        CHECK(ipc_write_node("/tmp", "1") == EINVAL, "a directory is not a node");
+        CHECK(ipc_write_node("/tmp/definitely_absent_node_xyz", "1") == ENOENT, "an absent node reports ENOENT");
+    }
+
+    ipc_roundtrip(0, "WRITE /sys/class/devfreq/zzz.absent/governor performance\n", reply, sizeof(reply));
+    CHECK_STR_EQ(reply, "ERR notfound\n", "a write to an absent node is reported, not invented");
+    CHECK(ipc_parse_command("CANWRITE /proc/sys/vm/swappiness", &cmd) && cmd.kind == IPC_CMD_CANWRITE, "CANWRITE of a listed node parses");
+    CHECK(!ipc_parse_command("CANWRITE /proc/meminfo", &cmd), "a read-only node is not a CANWRITE candidate");
+    CHECK(!ipc_parse_command("CANWRITE /proc/sys/vm/swappiness 1", &cmd), "CANWRITE takes no value");
+    ipc_roundtrip(0, "CANWRITE /sys/class/devfreq/zzz.absent/governor\n", reply, sizeof(reply));
+    CHECK_STR_EQ(reply, "OK 0\n", "CANWRITE on an absent node is 0");
+    ipc_roundtrip(0, "WRITE /proc/sys/kernel/core_pattern x\n", reply, sizeof(reply));
+    CHECK_STR_EQ(reply, "ERR invalid\n", "an unlisted write never reaches open()");
+    ipc_roundtrip(12345, "WRITE /proc/sys/vm/swappiness 60\n", reply, sizeof(reply));
+    CHECK_STR_EQ(reply, "ERR denied\n", "a denied peer cannot write");
+
+    /* السوكيت الحقيقيّ في الفضاء المجرّد + SO_PEERCRED: الطرف هنا هو هذه العملية نفسها (uid الاختبار)،
+     * وهو ليس تطبيقًا مسجَّلًا في packages.list — فالجواب الصحيح **رفض** (والجذر يُسمح له). */
+    start_ipc_server();
+    const int client = socket(AF_UNIX, SOCK_STREAM, 0);
+    struct sockaddr_un address;
+    memset(&address, 0, sizeof(address));
+    address.sun_family = AF_UNIX;
+    memcpy(address.sun_path + 1, IPC_SOCKET_NAME, strlen(IPC_SOCKET_NAME));
+    const socklen_t address_length = (socklen_t)(offsetof(struct sockaddr_un, sun_path) + 1 + strlen(IPC_SOCKET_NAME));
+    CHECK(client >= 0 && connect(client, (struct sockaddr*)&address, address_length) == 0,
+          "the abstract @maxmanager.sock listener accepts a connection");
+    if (client >= 0) {
+        char live[64] = {0};
+        (void)send(client, "PING\n", 5, 0);
+        const ssize_t got = recv(client, live, sizeof(live) - 1, 0);
+        live[got > 0 ? got : 0] = '\0';
+        CHECK_STR_EQ(live, getuid() == 0 ? "OK 1\n" : "ERR denied\n",
+                     "the live socket applies the peer-uid check (root allowed, an unregistered uid denied)");
+        close(client);
+    }
+
+    /* وضع الخادم المستقلّ: يتبع علم الروم، ويغيب بغيره فيبقى سلوك الموديول كما كان. */
+    CHECK(!is_standalone_mode(), "without ro.maxmanager.sepolicy the daemon is not standalone");
+}
+
 int main(void) {
     printf("\033[1mMaxManager — archdaemon host parity suite\033[0m\n");
     printf("Real daemon units compiled for the host with an Android-property shim.\n");
@@ -756,6 +1149,7 @@ int main(void) {
     suite_renderer();
     suite_per_app_governor();
     suite_module_integrity();
+    suite_ipc();
     suite_file_protocols();
     suite_app_loader();
     suite_cli_profile();

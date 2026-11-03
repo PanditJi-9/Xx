@@ -87,6 +87,7 @@ suspend fun dumpDiagnosticLogs(context: Context, saveToDownloads: Boolean): File
     }
     
     val d = "$" 
+    val serviceBin = nd.max.MaxManagerPaths.serviceBin()
     
     val script = """
         TMP_DIR="/data/local/tmp/az_logs_tmp"
@@ -170,6 +171,39 @@ suspend fun dumpDiagnosticLogs(context: Context, saveToDownloads: Boolean): File
         dmesg 2>/dev/null | grep -E 'avc:.*(nd[.]max|maxmanager)' | tail -n 40 >> "${d}INFO_FILE"
         echo "[module properties]" >> "${d}INFO_FILE"
         getprop 2>/dev/null | grep -E 'persist[.]sys[.]maxmanager' | sort >> "${d}INFO_FILE"
+        # ── الوضع المستقلّ / التثبيت في الروم (بلا موديول): ما يحتاجه من يضبط sepolicy من جهاز حقيقي ──
+        # كل سطر هنا يجيب عن سؤال واحد: هل وُجد الثنائيّ؟ هل بدأته init؟ بأيّ نطاق/مجموعات/قدرات؟ هل القناة مفتوحة؟
+        # هل كتب المراقب `app_status`؟ هل ملفّات cgroup المقروءة موجودة؟ وأيّ رفض SELinux يخصّ الخادم؟
+        echo "[rom install: flag, init state, binary]" >> "${d}INFO_FILE"
+        echo "ro.maxmanager.sepolicy=${d}(getprop ro.maxmanager.sepolicy 2>/dev/null)" >> "${d}INFO_FILE"
+        echo "init.svc.sys.maxmanager-service=${d}(getprop init.svc.sys.maxmanager-service 2>/dev/null)" >> "${d}INFO_FILE"
+        ls -lZ /system/bin/sys.maxmanager-service /system_ext/bin/sys.maxmanager-service /product/bin/sys.maxmanager-service /vendor/bin/sys.maxmanager-service 2>&1 | grep -v 'No such' >> "${d}INFO_FILE"
+        ls -lZ /product/priv-app/MaxManager /system/priv-app/MaxManager /system_ext/priv-app/MaxManager 2>&1 | grep -v 'No such' >> "${d}INFO_FILE"
+        echo "[ipc socket @maxmanager.sock]" >> "${d}INFO_FILE"
+        grep -a maxmanager /proc/net/unix 2>/dev/null >> "${d}INFO_FILE"
+        echo "[daemon identity: uid/gid/groups/caps/domain]" >> "${d}INFO_FILE"
+        DPID=${d}(pidof sys.maxmanager-service 2>/dev/null | cut -d' ' -f1)
+        if [ -n "${d}DPID" ]; then
+            grep -E '^(Uid|Gid|Groups|CapEff|CapBnd):' /proc/${d}DPID/status >> "${d}INFO_FILE" 2>/dev/null
+            cat /proc/${d}DPID/attr/current >> "${d}INFO_FILE" 2>/dev/null
+            echo "" >> "${d}INFO_FILE"
+        else
+            echo "daemon not running" >> "${d}INFO_FILE"
+        fi
+        echo "[app_status written by the daemon or the companion]" >> "${d}INFO_FILE"
+        ls -l /data/adb/.config/MaxManager/app_status >> "${d}INFO_FILE" 2>&1
+        cat /data/adb/.config/MaxManager/app_status >> "${d}INFO_FILE" 2>/dev/null
+        echo "[top-app cgroup files used by the native foreground observer]" >> "${d}INFO_FILE"
+        for cg in /dev/cpuset/top-app/cgroup.procs /dev/cpuset/top-app/tasks /dev/cpuctl/top-app/cgroup.procs /dev/cpuctl/top-app/tasks; do
+            if [ -e "${d}cg" ]; then
+                echo "${d}cg: ${d}(head -n 8 "${d}cg" 2>/dev/null | tr '\n' ' ')" >> "${d}INFO_FILE"
+            fi
+        done
+        echo "[selinux denials involving the maxmanager domain: dmesg + logcat, ready for make_sepolicy.py]" >> "${d}INFO_FILE"
+        { dmesg 2>/dev/null; logcat -d -b all 2>/dev/null; } | grep -aE 'avc:.*denied.*maxmanager' | sort -u > ${d}TMP_DIR/log/avc_maxmanager.txt
+        tail -n 60 ${d}TMP_DIR/log/avc_maxmanager.txt >> "${d}INFO_FILE"
+        # القواعد جاهزة من الهاتف نفسه (بلا بايثون): تُنسخ إلى مجلّد sepolicy في الروم. فشلها (خادم قديم) لا يضرّ.
+        $serviceBin --gen-sepolicy ${d}TMP_DIR/log/avc_maxmanager.txt -o ${d}TMP_DIR/log/maxmanager_generated.te >/dev/null 2>&1
         echo "[other installed modules]" >> "${d}INFO_FILE"
         ls -1 /data/adb/modules 2>/dev/null >> "${d}INFO_FILE"
         # سبب الإقلاع وحداثة pstore: حزمة ٢٠٢٦-١٠-١٥ أقلعت مرتين `kernel_panic/AP_WDT`

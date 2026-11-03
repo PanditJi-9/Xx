@@ -10,6 +10,7 @@
 package nd.max.core.hardware
 
 import com.topjohnwu.superuser.Shell
+import nd.max.core.daemon.DaemonIpc
 import nd.max.core.jni.ProbeBridge
 import nd.max.core.platform.EventLog
 import nd.max.core.ipc.RootNodeChannel
@@ -21,6 +22,8 @@ object RootFileAccess {
     fun exists(path: String): Boolean = runCatching {
         if (RootNodeChannel.service?.exists(path) == true) return@runCatching true
         if (File(path).exists()) return@runCatching true
+        // قناة الخادم (بلا جذر في التطبيق): جوابها قاطع في الاتجاهين لأنّ الخادم يقيس بالجذر، فلا صدفة بعدها.
+        DaemonIpc.default.exists(path)?.let { return@runCatching it }
         shellTest(path)
     }.getOrDefault(false)
 
@@ -52,10 +55,15 @@ object RootFileAccess {
 
     fun writable(path: String): Boolean = runCatching {
         if (File(path).canWrite()) return@runCatching true
+        if (DaemonIpc.default.canWrite(path) == true) return@runCatching true
         Shell.cmd("test -w ${quote(path)}").exec().isSuccess
     }.getOrDefault(false)
 
-    fun read(path: String): String? = readViaChannel(path) ?: readDirect(path) ?: shellRead(path)
+    fun read(path: String): String? =
+        readViaChannel(path) ?: readDirect(path) ?: readViaDaemon(path) ?: shellRead(path)
+
+    /** قناة الخادم المستقلّ — لا جذر في التطبيق. `null` لأيّ سبب فتُكمل الطبقة التالية. */
+    private fun readViaDaemon(path: String): String? = runCatching { DaemonIpc.default.read(path) }.getOrNull()
 
     /*
      * **ولماذا ثلاث دوالّ لا سلسلة `?:` واحدة داخل `runCatching` واحدة (عطب مقيس):** كانت الطبقات
@@ -236,6 +244,9 @@ object RootFileAccess {
 
     /** أمر الكتابة وحده (IPC ثم صدفة الجذر) — بلا قراءة ولا تسجيل؛ القرار للمتصل. */
     private fun runWriteCommand(path: String, value: String): Boolean = runCatching {
+            // قناة الخادم أولًا (بلا جذر في التطبيق): يكتب الخادم بنطاقه مع رقصة chmod لعقد HyperOS 0444.
+            // وأيّ غير النجاح الصريح — لا قناة، مسار خارج القائمة، فشل كتابة — يُكمل بالطريقين الاحتياطيين أدناه.
+            if (DaemonIpc.default.write(path, value)) return@runCatching true
             // IPC first: RootNodeService.writeText performs the HyperOS chmod
             // dance internally, so a false return is a real failure and the shell
             // path below re-runs the same dance. Plain root writes to 0444 sysfs
