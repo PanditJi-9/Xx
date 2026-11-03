@@ -3229,6 +3229,10 @@
     <string name="emu_shelf_open">Open with an emulator</string>
     <string name="emu_shelf_requested">System picker requested. This does not prove the game started.</string>
     <string name="emu_shelf_open_failed">No app accepted this file.</string>
+    <string name="emu_launch_handed">Handed to %1$s — this is not proof the game started.</string>
+    <string name="emu_launch_needs_root">This emulator blocks launches from another app; root is not used here.</string>
+    <string name="emu_launch_missing">The launch recipe needs %1$s, which this file does not provide.</string>
+    <string name="emu_launch_refused">The system refused the launch request.</string>
     <string name="emu_shelf_refresh">Rescan sources</string>
     <string name="emu_shelf_back">Back</string>
     <string name="master_switch">Master Switch</string>

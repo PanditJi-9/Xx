@@ -3177,6 +3177,10 @@
     <string name="emu_shelf_open">افتح بمحاكٍ</string>
     <string name="emu_shelf_requested">طُلب منتقي النظام. هذا لا يثبت بدء اللعبة.</string>
     <string name="emu_shelf_open_failed">لا تطبيق يقبل هذا الملفّ.</string>
+    <string name="emu_launch_handed">سُلِّمت إلى %1$s — وهذا ليس إثباتًا لبدء اللعبة.</string>
+    <string name="emu_launch_needs_root">هذا المحاكي يمنع التشغيل من تطبيق آخر؛ ولا يُستعمل الجذر هنا.</string>
+    <string name="emu_launch_missing">وصفة التشغيل تحتاج %1$s، وهذا الملفّ لا يوفّره.</string>
+    <string name="emu_launch_refused">رفض النظام طلب التشغيل.</string>
     <string name="emu_shelf_refresh">أعد مسح المصادر</string>
     <string name="emu_shelf_back">رجوع</string>
     <!-- الشاشة الرئيسية: نافذة الكتابة الحرّة التي تُفتح من كلمة MAX -->

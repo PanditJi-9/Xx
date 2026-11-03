@@ -15,6 +15,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import nd.max.core.emuhub.LaunchExecutor
+import nd.max.core.emuhub.LaunchReport
 import nd.max.core.emuhub.RomEntry
 import nd.max.core.emuhub.RomLibraryAccess
 import nd.max.core.emuhub.groupDiscSets
@@ -34,6 +36,8 @@ class EmulatorHubViewModel @Inject constructor(
         val hasFolders: Boolean = false,
         val hasDocuments: Boolean = false,
         val loading: Boolean = true,
+        /** آخر طلب تشغيل — `Idle` حتى يُطلب، فلا تُعرض رسالة بلا فعل. */
+        val lastLaunch: LaunchReport = LaunchReport.Idle,
     )
 
     private val mutable = MutableStateFlow(State())
@@ -49,6 +53,18 @@ class EmulatorHubViewModel @Inject constructor(
             }
             refresh()
         }
+    }
+
+    /**
+     * يحاول تشغيل عنصر بوصفة مُدرجة أو بمنتقي النظام، ويُبلّغ بالنتيجة.
+     *
+     * **والنتيجة تُكتب في الحالة لا في `Toast`:** الرسالة تبقى مرئيّة بعد الإطلاق، ومن فاتته يعيد
+     * الضغط فيقرؤها. و`HandedTo` تعني «سُلّمت النيّة» لا «بدأت اللعبة» — والنصّ يقولها بنصّه.
+     */
+    fun launch(entry: RomEntry) = viewModelScope.launch {
+        mutable.value = mutable.value.copy(lastLaunch = LaunchReport.Idle)
+        val report = withContext(Dispatchers.IO) { LaunchExecutor.launch(context, entry) }
+        mutable.value = mutable.value.copy(lastLaunch = report)
     }
 
     fun refresh() = viewModelScope.launch {

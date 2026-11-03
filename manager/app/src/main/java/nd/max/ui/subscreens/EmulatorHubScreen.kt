@@ -29,7 +29,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -43,6 +42,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import nd.max.R
+import nd.max.core.emuhub.LaunchReport
 import nd.max.core.emuhub.RomEntry
 import nd.max.core.emuhub.RomLibraryAccess
 import nd.max.core.emuhub.RomSystem
@@ -77,7 +77,6 @@ fun EmulatorHubScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
     var query by remember { mutableStateOf("") }
     var system by remember { mutableStateOf<RomSystem?>(null) }
-    var message by remember { mutableIntStateOf(0) }
 
     val folderPicker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocumentTree()) { uri ->
         if (uri != null) viewModel.addFolder(uri)
@@ -155,13 +154,7 @@ fun EmulatorHubScreen(
                                 meta = hubMetaText(entry, context),
                                 systemLabel = hubSystemLabel(entry),
                                 playDescription = stringResource(R.string.emu_shelf_open),
-                                onPlay = {
-                                    message = if (RomLibraryAccess.open(context, entry.parts.first())) {
-                                        R.string.emu_shelf_requested
-                                    } else {
-                                        R.string.emu_shelf_open_failed
-                                    }
-                                },
+                                onPlay = { viewModel.launch(entry) },
                             )
                         }
                     }
@@ -169,15 +162,23 @@ fun EmulatorHubScreen(
             }
             // الإضافة الفاشلة تُعلَن هنا لا في منطقة القائمة: الرفّ الممتلئ يُخفي [hubEmptyText]
             // فيصير رفض الصلاحية أو الحفظ صامتًا — وهو أسوأ من رسالة.
-            val notice = when {
-                state.outcome == RomLibraryAccess.ScanOutcome.NO_ACCESS -> R.string.emu_shelf_no_access
-                state.outcome == RomLibraryAccess.ScanOutcome.FAILED -> R.string.emu_shelf_failed
-                message != 0 -> message
-                else -> 0
+            // ورسالة التشغيل من نفس الموضع: `HandedTo` تعني «سُلّمت النيّة» لا «بدأت اللعبة».
+            val report = state.lastLaunch
+            val noticeText = when {
+                state.outcome == RomLibraryAccess.ScanOutcome.NO_ACCESS -> stringResource(R.string.emu_shelf_no_access)
+                state.outcome == RomLibraryAccess.ScanOutcome.FAILED -> stringResource(R.string.emu_shelf_failed)
+                report is LaunchReport.HandedTo -> stringResource(R.string.emu_launch_handed, report.packageName)
+                report is LaunchReport.ChooserShown -> stringResource(R.string.emu_shelf_requested)
+                report is LaunchReport.NeedsRoot -> stringResource(R.string.emu_launch_needs_root)
+                report is LaunchReport.NoHandler -> stringResource(R.string.emu_shelf_open_failed)
+                report is LaunchReport.Refused -> report.token
+                    ?.let { stringResource(R.string.emu_launch_missing, it) }
+                    ?: stringResource(R.string.emu_launch_refused)
+                else -> null
             }
-            if (notice != 0) {
+            if (noticeText != null) {
                 Text(
-                    text = stringResource(notice),
+                    text = noticeText,
                     color = LobbyPalette.Muted,
                     fontSize = 13.sp,
                     modifier = Modifier.padding(horizontal = MaxSpace.gutter, vertical = MaxSpace.sm),
