@@ -1,9 +1,9 @@
-# Daemon CLI surface — سطح `sys.maxmanager-service` (§٤: «١٣ عَلَمًا · ❌»)
+# Daemon CLI surface — سطح `sys.maxmanager-service` (§٤: «١٤ عَلَمًا · ❌»)
 #
 # المُصدِر: `archdaemon/jni/Main.c` (الموزِّع) و`archdaemon/jni/src/BinaryCLI/BinaryCLI.c` (نصّ `--help`).
 # والمستهلك: المستخدم عبر الصدفة، و`manager/**` و`mainfiles/**` التي تستدعي الخادم بالأعلام.
 #
-# و«البوّابة» هي البند الحامل: `Main.c` ينفّذ أوّلًا تسعة أعلام **بلا خادم يعمل**، ثم يمرّ بـ
+# و«البوّابة» هي البند الحامل: `Main.c` ينفّذ أوّلًا عشرة أعلام **بلا خادم يعمل**، ثم يمرّ بـ
 # `require_daemon_running()`، ثم ينفّذ أربعة. فلو انتقل عَلَم من فوق الخط إلى تحته (أو العكس)
 # تغيّر شرط عمله **بلا أي تغيير في نصّه** — وهو عطب صامت لا يكشفه إلا قياس الترتيب.
 #
@@ -25,6 +25,7 @@ long	short	gate	handler	in_help	effect
 --shownotifications	-sn	none	shownotifications	yes	re-post the notification of the current profile
 --bypasspathlist	-bpl	none	print_bypass_path_list	yes	print the embedded bypass-charging paths
 --rerun	-rr	none	restart_service	yes	restart the daemon detached
+--gen-sepolicy	-gsp	none	handle_gen_sepolicy	yes	build sepolicy rules from this phone: scan real node types and read denials into a reviewable .te (root)
 --profile	-p	requires-daemon	handle_profile	yes	apply profile n (0 is initialize-only); see cli_profile.tsv
 --log	-l	requires-daemon	handle_log	yes	write a log line through the daemon's logger
 --verboselog	-vl	requires-daemon	handle_verboselog	yes	write a verbose log line

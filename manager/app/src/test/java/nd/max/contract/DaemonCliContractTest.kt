@@ -16,7 +16,7 @@ import java.io.File
  * (`--profile`) عبر `archdaemon/tests/cli_profile.c`؛ أمّا **الجدول نفسه** — عَلَمٌ · مُرادف ·
  * بوّابة · دالّة — فلم يكن مكتوبًا في أي موضع.
  *
- * **والبند الحامل هو البوّابة لا الأسماء:** `Main.c` ينفّذ تسعة أعلام **قبل** `require_daemon_running()`
+ * **والبند الحامل هو البوّابة لا الأسماء:** `Main.c` ينفّذ عشرة أعلام **قبل** `require_daemon_running()`
  * وأربعة **بعده**. فلو انتقل عَلَم عبر الخط تغيّر شرط عمله بلا تغيير في نصّه — `--version` أو
  * `--clearlogs` يصيران «لا يعملان إلا بخادم يعمل»، وهو انحدار صامت. فيقيس هذا الحرس **مجموعتي
  * الأعلام على جانبَي الخط** لا وجودها فقط.
@@ -43,8 +43,14 @@ class DaemonCliContractTest {
     private val mainPath = "archdaemon/jni/Main.c"
     private val helpPath = "archdaemon/jni/src/BinaryCLI/BinaryCLI.c"
 
-    /** العدد المقيس — مفروض بالمساواة الدقيقة: جدول ينقص عَلَمًا بصمت يتوقّف عن القياس. */
-    private val expectedRows = 13
+    /**
+     * العدد المقيس — مفروض بالمساواة الدقيقة: جدول ينقص عَلَمًا بصمت يتوقّف عن القياس.
+     *
+     * **١٤ لا ١٣:** الحرس كشف `--gen-sepolicy` (مُوزَّعًا في `Main.c` قبل البوّابة، وموثَّقًا في
+     * `print_help()`، ومستعملًا من `LogUtil.kt`) بلا صفّ — فأُضيف صفّه عن قصد. العدد يتغيّر مع
+     * السطح المُعلَن، لا مع صمت الجدول.
+     */
+    private val expectedRows = 14
 
     private fun root(): File {
         val r = ContractFixtures.repoRoot
@@ -109,7 +115,7 @@ class DaemonCliContractTest {
     }
 
     @Test
-    fun `the gate split matches the table — nine flags before require_daemon_running, four after`() {
+    fun `the gate split matches the table — ten flags before require_daemon_running, four after`() {
         val (before, after) = splitAtGate()
         val beforeFlags = isCmd.findAll(before).map { it.groupValues[1] }.toSet()
         val afterFlags = isCmd.findAll(after).map { it.groupValues[1] }.toSet()
