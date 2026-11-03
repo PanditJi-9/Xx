@@ -1,3 +1,16 @@
+## EH-03-SLICE-01 — 2026-11-03 · DONE (وصفة تشغيل معلنة + `LaunchExecutor` · CI أخضر · الإطلاق الحقيقيّ يحتاج جهازًا)
+
+**TASK (المالك):** «نقل المشاريع الأربعة إلى مشروعي» — والأربعة مراجع `EMULATOR-HUB-PLAN.md`.
+**القرار الملزم:** ثلاثة ناسخة (GPLv3 · GPLv3 · LGPL-2.1) والرابع محرّك C مؤجَّل ⇒ **صفر كود** (§0.4)،
+والمنقول **قدرة** لا نصًّا. فأُخذ المقطع التالي في الخطة: **EH-03** (التشغيل).
+**المُنجَز:** `LaunchRecipe.kt` (متغيّرات مغلقة · حلّ يُعلن النقص · `LaunchReport` بستّ حالات · وصفة
+RetroArch مُدرجة) ·`LaunchExecutor.kt` (نيَّة صريحة أو منتقي · لا مسار جذر جديد) ·ربط الشاشة والـVM
+بنصّ لكل نتيجة (en/ar فقط) · `LaunchRecipeTest` ٧ دعاوى.
+**GATES:** kt_balance ٣١٩٣/٠ · code_health ✓ · i18n ٠ عوائق · design ✓ · resource_compile ✓.
+**BUILD:** **Quick Verify `41741567045` = success** (تصريف release + اختباراته).
+**NEXT:** EH-02 (الغلاف و`gamelist.xml`) أو EH-03-ب (وصفات مستخدم/مُتعلَّمة) — ثم جهاز: إطلاق فعليّ
+و`NeedsRoot` على محاكٍ يمنع الإطلاق الخارجيّ.
+
 ## REFERENCE-TEARDOWN-01 — 2026-11-03 · DONE_WITH_CONCERNS (تشريح المراجع الأربعة · اتجاه معماري · `refdump.py` · صفر كود منقول)
 
 **TASK (المالك):** تحويل كبير مع دراسة DevCheck 6.61 · FKM 7.0.29 · ZenBubble · HyperCool v2.0 بأداة REA،

@@ -60,6 +60,33 @@ MaxManager has a strong engine and a fragmented surface. `core/maxai` + `core/ha
 
 ## Executor log
 
+### EH-03-SLICE-01 — مركز المحاكيات: وصفة تشغيل معلنة + بلاغ صادق (`LaunchRecipe` · `LaunchExecutor`) — 2026-11-03 · DONE (CI أخضر مُقاس · والسلوك على الجهاز غير مُتحقَّق)
+
+TASK: «لنكمل التالي وهو نقل المشاريع الأربعة إلي مشروعي». **والأربعة لا تُنقل:** ثلاثة منها ناسخة
+(‏GPLv3/GPLv3/LGPL-2.1) والرابع محرّك C/NDK مؤجَّل بخطة — فالقرار التزام §0.4: **صفر كود**، والمُسلَّم
+**قدرة** لا نصًّا. والمقطع التالي في خطة `EMULATOR-HUB-PLAN.md` هو **EH-03**.
+
+CHANGED:
+- `core/emuhub/LaunchRecipe.kt` (جديد · نقيّ): `LaunchVariable` بقائمة **مغلقة** من ٥ متغيّرات ·
+  `LaunchRecipe` · `resolve()` يُرجع `Ready(extras)` أو `Missing(token)` **بلا إرسال قالب حرفيّ** ·
+  `LaunchReport` بستّ حالات · ووصفة `RetroArch` المُدرجة (مكوّن صريح + إضافة `ROM`).
+- `core/emuhub/LaunchExecutor.kt` (جديد · يمسّ Android): نيَّة صريحة إن كانت الحزمة مثبَّتة، وإلّا
+  منتقي النظام؛ ونتيجة صريحة: `HandedTo` · `ChooserShown` · `NeedsRoot` · `NoHandler` · `Refused`.
+  **ولا مسار جذر جديد:** `am start` لا يمرّر إضافات، فأمرُ ناقص يبدو ناجحًا أسوأ من الامتناع.
+- `EmulatorHubViewModel`: `lastLaunch` في الحالة + `launch(entry)` على `IO`؛ والشاشة تربط كل نتيجة
+  بنصّها (4 مفاتيح جديدة في `values/` و`values-ar/` **فقط**، §0.2).
+- `test/.../emuhub/LaunchRecipeTest.kt`: ٧ دعاوى نقيّة (حلّ كل متغيّر · نقص يُسمّى · قوس مجهول
+  يُرفض · الوصفة المُدرجة · `null` للنظام المجهول).
+
+VERIFIED (مقيس):
+- **CI: Quick Verify `41741567045` = success** (‏`Release Kotlin + release unit tests`): الشيفرة الجديدة
+  **تُصرَّف** والاختبارات تمرّ على نسخة release — وهذا هو الحكم الذي لا تراه البوّابات البنيوية.
+- بوّابات العقد محلّيًا: `kt_balance` ‍٣١٩٣/٠ · `code_health` ✓ · `i18n_coverage` ٠ عوائق ·
+  `design_tokens` ✓ · `resource_compile` ✓.
+
+LIMITS: **لا إطلاق حقيقيّ** — يحتاج جهازًا فيه محاكٍ مثبّت (و‏RetroArch نفسه عقدُه متغيّر بإصدار،
+بلاغ `libretro/RetroArch#17433`). ولا تُنفَّذ وصفات بجذر. و`gamelist.xml` والغلاف (‏EH-02) لم تُمسّا.
+
 ### CI-CONTRACT-14 — بناء `main` كان أحمر: `--gen-sepolicy` بلا صفّ · وقياس زمن البناء — 2026-11-03 · DONE (أخضر مُقاس · والهدف ١٠ دقائق **لم يُبلغ** وثُبِّت قياسه)
 
 TASK: «اكمل العمل علي التطبيق» بعد تسليمٍ سابق. فقيس أوّلًا حال `main` الحقيقية لا حال الشجرة.
