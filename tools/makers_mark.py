@@ -160,6 +160,22 @@ def collect() -> tuple[str, str, str, str]:
     return (_read(SVG_DARK), _read(SVG_LIGHT), _read(KOTLIN), _read(TOKENS))
 
 
+# المصادر الأربعة صريحة كي يُسمّى الغائب باسمه بدل انهيار بـ`FileNotFoundError`. وسببه مقيس:
+# غياب ملفَّي الصفحة أسقط خطوة CI الخامسة برمي استثناء لا ببلاغ، وكان البلاغ يلزمه أن يقول
+# **أيّ ملفّ** غاب. والحكم لم يتغيّر: غياب أحدها ما زال `exit 1` — يتبدّل البلاغ وحده.
+SOURCES: tuple[tuple[str, str], ...] = (
+    ("makers-mark-dark.svg", SVG_DARK),
+    ("makers-mark-light.svg", SVG_LIGHT),
+    ("MaxSignatureMark.kt", KOTLIN),
+    ("MaxTokens.kt", TOKENS),
+)
+
+
+def missing_sources() -> list[str]:
+    """الملفّات الغائبة من المصادر الأربعة — فارغة إذا كانت كلها حاضرة."""
+    return [f"{name} ⇒ {os.path.relpath(path, ROOT)}" for name, path in SOURCES if not os.path.isfile(path)]
+
+
 def self_test() -> int:
     """يقيس الفحص نفسه: المدخل السليم يمرّ، وكل كسر مقصود يُكشف من بابه."""
     ok_dark, ok_light, ok_kt, ok_tok = collect()
@@ -200,6 +216,18 @@ def main() -> int:
 
     if args.self_test:
         return self_test()
+
+    absent = missing_sources()
+    if absent:
+        print("وسم الصانع: مصدر غائب — لا قياس:")
+        for line in absent:
+            print(f"  ✗ {line}")
+        if args.as_json:
+            print(json.dumps({"missing": absent}, ensure_ascii=False, indent=2))
+            return 0
+        print("\nالإصلاح: python3 tools/makers_mark.py --generate" if not args.assert_ else
+              "\nالإصلاح: python3 tools/makers_mark.py --generate\n\nبوّابة وسم الصانع: exit 1")
+        return 1 if args.assert_ else 0
 
     if args.generate:
         for path, dark in ((SVG_DARK, True), (SVG_LIGHT, False)):
