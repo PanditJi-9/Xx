@@ -92,7 +92,7 @@ class DaemonCliContractTest {
             rows.map { it.long }.toSet() == setOf(
                 "--help", "--appactivity", "--run", "--version", "--clearlogs", "--hidenotifications",
                 "--shownotifications", "--bypasspathlist", "--rerun", "--profile", "--log",
-                "--verboselog", "--checkbypasschg",
+                "--verboselog", "--checkbypasschg", "--gen-sepolicy",
             ),
         )
         assertTrue("every flag must name a handler", rows.all { it.handler.isNotBlank() })
