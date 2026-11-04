@@ -60,6 +60,38 @@ MaxManager has a strong engine and a fragmented surface. `core/maxai` + `core/ha
 
 ## Executor log
 
+### M1-CATALOG-01 — كتالوج `ControlKey` المعلن: ٣١ مدخلًا · ٥٨ مرشّحًا · تطابق ١٤ بادئة باختبار نقيّ — 2026-11-03 · DONE (المدقّق والبوّابات مُتحقَّقة · واختبار Kotlin ينتظر CI)
+
+TASK: «نقل المشاريع الأربعة إلي مشروعي» — والمقصود **مراجع REA**: DevCheck 6.61 · FKM 7.0.29 ·
+ZenBubble · HyperCool v2.0. والترخيص يحكم: **HyperCool GPL-3، والثلاثة مغلقة ⇒ صفر كود**. فالمنقول
+**آلية**، وأوّلها ما فقده التشريح: **العتاد شيفرة لا بيانات** (فجوة FKM `JsonSchemaGenerator`). وهذا
+هو **M1** في `M1-CATALOG-PLAN.md` — وقد بدأت الجولة خطأً في مركز المحاكيات، فصُحّح المسار.
+
+DELIVERED:
+- `manager/app/src/main/assets/control_catalog.json` (بيانات ملتزمة): **٣١ مدخلًا · ٥٨ مرشّحًا · ١ غير
+  مُخطَّط**، كل مفتاح بالحقول الستّة (kind · candidates · verify · privilege · danger · transport).
+- `tools/gen_control_catalog.py`: مدقّق stdlib بـ**ثلاثة أوضاع**: `--assert` (الحكم) · `--check`
+  (الصيغة القانونية بايت-ببايت) · `--self-test` (يحقن **أربعة عطوب** ويشترط إمساكها كلها + عدم إيجابية
+  كاذبة على الأصل). و`--self-test` **كشف نقصًا في المدقّق نفسه**: لم يكن يفحص تغطية البوادئ فأُضيف.
+- `ControlCatalogParityTest.kt`: ٩ دعاوى — ٥ موجبة (كل بادئة · لا مفتاح مخترع · `PROTECTED` بلا
+  كتابة · عقدة بلا مرشّح · كل مسار مقيس مُغطّى) و**٣ سلبية إلزامية** + حالة `NODE` بلا مرشّح.
+
+DECISION مُعلن (تعارض في الخطة كُشف بالقياس): بذرة الخطة تُعطي **كتابةً** لمفاتيح لا بادئة لها في
+`HardwareControlKey` (`zram.{n}.size` · `cpu.perfserv_freq` · `gpu_governor_policy` ·
+`cpu_core_online` · `touch_gesture`). وقاعدة «مقبض واحد بكاتب واحد» تمنع ذلك، فصارت هذه المداخل
+**قراءة فقط** (`write: []` + `read_only_until_canonical_key: true`) حتى يُعلَن مفتاحها القياسيّ في M2.
+⇒ ٣١ مدخلًا، منها **٥ بانتظار مفتاح**؛ والبديل (كتابة بمفتاح مخترع) مرفوض.
+
+VERIFIED (مُقاس):
+- `gen_control_catalog.py --assert` = 0 · `--check` = 0 (الصيغة مطابقة) · `--self-test` = 0
+  (**٤/٤ عطوب مُمسكة + الأصل يمرّ**).
+- البوّابات: `kt_balance` ٣١٩٤/٠ · `code_health` ✓ · `i18n_coverage` ٠ عوائق · `design_tokens` ✓ ·
+  `resource_compile` ✓.
+
+LIMITS: المدقّق يقرأ `HardwareControlKey.kt` بـregex لا بمُصرّف (حدّ مُعلن — يكشفه CI لو تغيّر الشكل).
+واختبار التطابق **لم يُصرَّف بعد** في هذه اللحظة؛ حكمه من CI. ولا توصيل بـ`HardwareCapabilityResolver`
+في هذه الدفعة (M1 يقبل البيانات + الاختبار)، ولا كتابة عبر الكتالوج إطلاقًا.
+
 ### EH-03-SLICE-01 — مركز المحاكيات: وصفة تشغيل معلنة + بلاغ صادق (`LaunchRecipe` · `LaunchExecutor`) — 2026-11-03 · DONE (CI أخضر مُقاس · والسلوك على الجهاز غير مُتحقَّق)
 
 TASK: «لنكمل التالي وهو نقل المشاريع الأربعة إلي مشروعي». **والأربعة لا تُنقل:** ثلاثة منها ناسخة

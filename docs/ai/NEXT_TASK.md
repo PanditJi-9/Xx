@@ -1,3 +1,15 @@
+## M1-CATALOG-01 — 2026-11-03 · DONE (الكتالوج والمدقّق والاختبار · حكم الاختبار من CI)
+
+**TASK (المالك):** «نقل المشاريع الأربعة إلى مشروعي» — **مراجع REA**: DevCheck · FKM · ZenBubble · HyperCool.
+**القرار:** الثلاثة مغلقة وHyperCool GPL-3 ⇒ **صفر كود**؛ المنقول آلية. وأوّل آلية: **العتاد بيانات لا شيفرة** (M1).
+**المُنجَز:** `assets/control_catalog.json` (٣١ مدخلًا · ٥٨ مرشّحًا · ١ unmapped) · `tools/gen_control_catalog.py`
+(`--assert` · `--check` · `--self-test` بأربعة عطوب) · `ControlCatalogParityTest` (٥ موجب + ٣ سالب).
+**قرار مُعلن:** ٥ مفاتيح من بذرة الخطة لا بادئة لها في `HardwareControlKey` ⇒ صارت **قراءة فقط** حتى M2.
+**GATES:** catalog 3/3 = 0 · kt_balance ٣١٩٤/٠ · code_health ✓ · i18n ٠ · design ✓ · resource ✓.
+**BUILD:** اختبار Kotlin ينتظر CI (لم يُنفَّذ محليًّا).
+**NEXT:** ① حكم CI على الاختبار. ② M2: إعلان مفاتيح الـ٥ في `HardwareControlKey` **أو** تركها قراءة فقط بقرار مكتوب.
+③ توصيل `HardwareCapabilityResolver` بالكتالوج (قراءة أولًا).
+
 ## EH-03-SLICE-01 — 2026-11-03 · DONE (وصفة تشغيل معلنة + `LaunchExecutor` · CI أخضر · الإطلاق الحقيقيّ يحتاج جهازًا)
 
 **TASK (المالك):** «نقل المشاريع الأربعة إلى مشروعي» — والأربعة مراجع `EMULATOR-HUB-PLAN.md`.

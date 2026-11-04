@@ -1,0 +1,873 @@
+{
+  "version": 1,
+  "entries": [
+    {
+      "key": "cpu_limits:{policy}",
+      "transport": "NODE",
+      "kind": "FREQUENCY_RANGE",
+      "candidates": [
+        {
+          "path": "/sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq",
+          "origin": "MEASURED"
+        },
+        {
+          "path": "/sys/devices/system/cpu/$cpu/cpufreq",
+          "origin": "MEASURED"
+        },
+        {
+          "path": "/sys/devices/system/cpu/cpufreq",
+          "origin": "MEASURED"
+        }
+      ],
+      "verify": {
+        "policy": "READ_BACK_EQUAL",
+        "tolerance": 0
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": [
+          "MAGISK",
+          "KSU",
+          "APATCH",
+          "SU_BARE",
+          "DAEMON"
+        ]
+      },
+      "danger": "MEDIUM"
+    },
+    {
+      "key": "cpu_boost",
+      "transport": "NODE",
+      "kind": "BOOL",
+      "candidates": [
+        {
+          "path": "/sys/devices/system/cpu/cpufreq/boost",
+          "origin": "MEASURED"
+        }
+      ],
+      "verify": {
+        "policy": "READ_BACK_EQUAL",
+        "tolerance": 0
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": [
+          "MAGISK",
+          "KSU",
+          "APATCH",
+          "SU_BARE"
+        ]
+      },
+      "danger": "MEDIUM"
+    },
+    {
+      "key": "cpu_core_online:{n}",
+      "transport": "NODE",
+      "kind": "BOOL",
+      "candidates": [
+        {
+          "path": "/sys/devices/system/cpu/cpu$cpu/online",
+          "origin": "MEASURED"
+        },
+        {
+          "path": "/sys/devices/system/cpu/$it/online",
+          "origin": "MEASURED"
+        }
+      ],
+      "verify": {
+        "policy": "READ_BACK_EQUAL",
+        "tolerance": 0
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": []
+      },
+      "danger": "HIGH",
+      "read_only_until_canonical_key": true
+    },
+    {
+      "key": "cpu_topology",
+      "transport": "NODE",
+      "kind": "STRING",
+      "candidates": [
+        {
+          "path": "/sys/devices/system/cpu",
+          "origin": "MEASURED"
+        },
+        {
+          "path": "/sys/devices/system/cpu/cpufreq",
+          "origin": "MEASURED"
+        }
+      ],
+      "verify": {
+        "policy": "NONE",
+        "tolerance": 0
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": []
+      },
+      "danger": "LOW"
+    },
+    {
+      "key": "gpu_frequency:{device}",
+      "transport": "NODE",
+      "kind": "FREQUENCY_RANGE",
+      "candidates": [
+        {
+          "path": "/sys/class/kgsl/kgsl-3d0",
+          "origin": "MEASURED"
+        },
+        {
+          "path": "/sys/class/kgsl/kgsl-3d0/devfreq",
+          "origin": "MEASURED"
+        },
+        {
+          "path": "/sys/module/ged/parameters/gpu_cust_boost_freq",
+          "origin": "MEASURED"
+        },
+        {
+          "path": "/sys/module/ged/parameters/gpu_cust_upbound_freq",
+          "origin": "MEASURED"
+        },
+        {
+          "path": "/sys/kernel/ged/hal/custom_upbound_gpu_freq",
+          "origin": "MEASURED"
+        },
+        {
+          "path": "/proc/gpufreq/gpufreq_opp_freq",
+          "origin": "MEASURED"
+        },
+        {
+          "path": "/proc/gpufreqv2/fix_target_opp_index",
+          "origin": "MEASURED"
+        },
+        {
+          "path": "/sys/class/devfreq",
+          "origin": "MEASURED"
+        }
+      ],
+      "verify": {
+        "policy": "READ_BACK_EQUAL",
+        "tolerance": 0
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": [
+          "MAGISK",
+          "KSU",
+          "APATCH",
+          "SU_BARE"
+        ]
+      },
+      "danger": "MEDIUM"
+    },
+    {
+      "key": "gpu_governor_policy:{device}",
+      "transport": "NODE",
+      "kind": "ENUM",
+      "candidates": [
+        {
+          "path": "/sys/module/ged/parameters/gpu_dvfs_enable",
+          "origin": "MEASURED"
+        },
+        {
+          "path": "/sys/module/ged/parameters/gpu_idle",
+          "origin": "MEASURED"
+        }
+      ],
+      "verify": {
+        "policy": "READ_BACK_EQUAL",
+        "tolerance": 0
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": []
+      },
+      "danger": "MEDIUM",
+      "read_only_until_canonical_key": true
+    },
+    {
+      "key": "gpu.busy_percentage",
+      "transport": "NODE",
+      "kind": "PERCENT",
+      "candidates": [
+        {
+          "path": "/sys/class/kgsl/kgsl-3d0/gpu_busy_percentage",
+          "origin": "MEASURED"
+        },
+        {
+          "path": "/sys/kernel/ged/hal/current_freqency",
+          "origin": "MEASURED"
+        }
+      ],
+      "verify": {
+        "policy": "NONE",
+        "tolerance": 0
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": []
+      },
+      "danger": "LOW"
+    },
+    {
+      "key": "gpu.opp_table.{family}",
+      "transport": "PROC",
+      "kind": "STRING",
+      "candidates": [
+        {
+          "path": "/proc/gpufreq/gpufreq_opp_dump",
+          "origin": "MEASURED"
+        },
+        {
+          "path": "/proc/gpufreqv2/gpu_working_opp_table",
+          "origin": "MEASURED"
+        },
+        {
+          "path": "/proc/gpufreqv2/stack_signed_opp_table",
+          "origin": "MEASURED"
+        }
+      ],
+      "verify": {
+        "policy": "NONE",
+        "tolerance": 0
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": []
+      },
+      "danger": "LOW"
+    },
+    {
+      "key": "touch_boost:{path}",
+      "transport": "NODE",
+      "kind": "BOOL",
+      "candidates": [
+        {
+          "path": "/sys/android_touch/game_switch_enable",
+          "origin": "MEASURED"
+        },
+        {
+          "path": "/sys/class/touch/touch_dev/game_switch_enable",
+          "origin": "MEASURED"
+        },
+        {
+          "path": "/sys/class/touchscreen/game_switch_enable",
+          "origin": "MEASURED"
+        },
+        {
+          "path": "/sys/devices/virtual/touch/touch_dev/game_switch_enable",
+          "origin": "MEASURED"
+        },
+        {
+          "path": "/sys/touchpanel/game_switch_enable",
+          "origin": "MEASURED"
+        },
+        {
+          "path": "/proc/touchpanel/game_switch_enable",
+          "origin": "MEASURED"
+        },
+        {
+          "path": "/proc/touch_boost/enable",
+          "origin": "MEASURED"
+        }
+      ],
+      "verify": {
+        "policy": "READ_BACK_EQUAL",
+        "tolerance": 0
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": [
+          "MAGISK",
+          "KSU",
+          "APATCH",
+          "SU_BARE"
+        ]
+      },
+      "danger": "LOW"
+    },
+    {
+      "key": "touch_gesture:{path}",
+      "transport": "NODE",
+      "kind": "BOOL",
+      "candidates": [
+        {
+          "path": "/sys/android_touch/double_tap_enable",
+          "origin": "MEASURED"
+        },
+        {
+          "path": "/sys/android_touch/doubletap2wake",
+          "origin": "MEASURED"
+        },
+        {
+          "path": "/sys/class/touch/touch_dev/double_tap_enable",
+          "origin": "MEASURED"
+        },
+        {
+          "path": "/sys/class/touchscreen/double_tap_enable",
+          "origin": "MEASURED"
+        },
+        {
+          "path": "/sys/touchpanel/double_tap_enable",
+          "origin": "MEASURED"
+        },
+        {
+          "path": "/proc/touchpanel/double_tap_enable",
+          "origin": "MEASURED"
+        }
+      ],
+      "verify": {
+        "policy": "READ_BACK_EQUAL",
+        "tolerance": 0
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": []
+      },
+      "danger": "LOW",
+      "read_only_until_canonical_key": true
+    },
+    {
+      "key": "touch_device_index",
+      "transport": "NODE",
+      "kind": "STRING",
+      "candidates": [
+        {
+          "path": "/sys/android_touch",
+          "origin": "MEASURED"
+        },
+        {
+          "path": "/sys/class/touch",
+          "origin": "MEASURED"
+        },
+        {
+          "path": "/sys/class/touch/touch_dev",
+          "origin": "MEASURED"
+        },
+        {
+          "path": "/sys/class/touchscreen",
+          "origin": "MEASURED"
+        },
+        {
+          "path": "/sys/devices/virtual/touch/touch_dev",
+          "origin": "MEASURED"
+        },
+        {
+          "path": "/sys/touchpanel",
+          "origin": "MEASURED"
+        },
+        {
+          "path": "/proc/touchpanel",
+          "origin": "MEASURED"
+        }
+      ],
+      "verify": {
+        "policy": "NONE",
+        "tolerance": 0
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": []
+      },
+      "danger": "LOW"
+    },
+    {
+      "key": "zram.{n}.size",
+      "transport": "NODE",
+      "kind": "INT",
+      "candidates": [
+        {
+          "path": "/sys/block/zram0",
+          "origin": "MEASURED"
+        },
+        {
+          "path": "/sys/block/zram*",
+          "origin": "MEASURED"
+        },
+        {
+          "path": "/sys/block/zram",
+          "origin": "MEASURED"
+        },
+        {
+          "path": "/sys/block/",
+          "origin": "MEASURED"
+        }
+      ],
+      "verify": {
+        "policy": "READ_BACK_EQUAL",
+        "tolerance": 0
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": []
+      },
+      "danger": "HIGH",
+      "read_only_until_canonical_key": true
+    },
+    {
+      "key": "mem_frequency:{device}",
+      "transport": "NODE",
+      "kind": "FREQUENCY_RANGE",
+      "candidates": [
+        {
+          "path": "/sys/class/devfreq",
+          "origin": "MEASURED"
+        }
+      ],
+      "verify": {
+        "policy": "READ_BACK_EQUAL",
+        "tolerance": 0
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": [
+          "MAGISK",
+          "KSU",
+          "APATCH",
+          "SU_BARE"
+        ]
+      },
+      "danger": "MEDIUM"
+    },
+    {
+      "key": "ufs_frequency:{device}",
+      "transport": "NODE",
+      "kind": "FREQUENCY_RANGE",
+      "candidates": [
+        {
+          "path": "/sys/class/devfreq",
+          "origin": "MEASURED"
+        }
+      ],
+      "verify": {
+        "policy": "READ_BACK_EQUAL",
+        "tolerance": 0
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": [
+          "MAGISK",
+          "KSU",
+          "APATCH",
+          "SU_BARE"
+        ]
+      },
+      "danger": "MEDIUM"
+    },
+    {
+      "key": "battery_health",
+      "transport": "NODE",
+      "kind": "STRING",
+      "candidates": [
+        {
+          "path": "/sys/class/power_supply/battery",
+          "origin": "MEASURED"
+        }
+      ],
+      "verify": {
+        "policy": "NONE",
+        "tolerance": 0
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": []
+      },
+      "danger": "LOW"
+    },
+    {
+      "key": "thermal_zone",
+      "transport": "NODE",
+      "kind": "STRING",
+      "candidates": [
+        {
+          "path": "/sys/class/thermal",
+          "origin": "MEASURED"
+        }
+      ],
+      "verify": {
+        "policy": "NONE",
+        "tolerance": 0
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": []
+      },
+      "danger": "LOW"
+    },
+    {
+      "key": "thermal_message.cpu_limits",
+      "transport": "NODE",
+      "kind": "STRING",
+      "candidates": [
+        {
+          "path": "/sys/devices/virtual/thermal/thermal_message/cpu_limits",
+          "origin": "MEASURED"
+        }
+      ],
+      "verify": {
+        "policy": "NONE",
+        "tolerance": 0
+      },
+      "privilege": {
+        "read": [
+          "NONE",
+          "SHIZUKU",
+          "MAGISK",
+          "KSU",
+          "APATCH",
+          "DAEMON"
+        ],
+        "write": []
+      },
+      "danger": "PROTECTED"
+    },
+    {
+      "key": "thermal_message.sconfig",
+      "transport": "NODE",
+      "kind": "STRING",
+      "candidates": [
+        {
+          "path": "/sys/devices/virtual/thermal/thermal_message/sconfig",
+          "origin": "MEASURED"
+        }
+      ],
+      "verify": {
+        "policy": "NONE",
+        "tolerance": 0
+      },
+      "privilege": {
+        "read": [
+          "NONE",
+          "SHIZUKU",
+          "MAGISK",
+          "KSU",
+          "APATCH",
+          "DAEMON"
+        ],
+        "write": []
+      },
+      "danger": "PROTECTED"
+    },
+    {
+      "key": "system.load",
+      "transport": "PROC",
+      "kind": "STRING",
+      "candidates": [
+        {
+          "path": "/proc/loadavg",
+          "origin": "MEASURED"
+        }
+      ],
+      "verify": {
+        "policy": "NONE",
+        "tolerance": 0
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": []
+      },
+      "danger": "LOW"
+    },
+    {
+      "key": "system.memory_pressure",
+      "transport": "PROC",
+      "kind": "STRING",
+      "candidates": [
+        {
+          "path": "/proc/pressure/memory",
+          "origin": "MEASURED"
+        }
+      ],
+      "verify": {
+        "policy": "NONE",
+        "tolerance": 0
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": []
+      },
+      "danger": "LOW"
+    },
+    {
+      "key": "system.swaps",
+      "transport": "PROC",
+      "kind": "STRING",
+      "candidates": [
+        {
+          "path": "/proc/swaps",
+          "origin": "MEASURED"
+        }
+      ],
+      "verify": {
+        "policy": "NONE",
+        "tolerance": 0
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": []
+      },
+      "danger": "LOW"
+    },
+    {
+      "key": "system.boot_id",
+      "transport": "PROC",
+      "kind": "STRING",
+      "candidates": [
+        {
+          "path": "/proc/sys/kernel/random/boot_id",
+          "origin": "MEASURED"
+        }
+      ],
+      "verify": {
+        "policy": "NONE",
+        "tolerance": 0
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": []
+      },
+      "danger": "LOW"
+    },
+    {
+      "key": "cpu.perfserv_freq",
+      "transport": "NODE",
+      "kind": "FREQUENCY_RANGE",
+      "candidates": [
+        {
+          "path": "/proc/powerhal_cpu_ctrl/perfserv_freq",
+          "origin": "MEASURED"
+        }
+      ],
+      "verify": {
+        "policy": "READ_BACK_EQUAL",
+        "tolerance": 0
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": []
+      },
+      "danger": "HIGH",
+      "read_only_until_canonical_key": true
+    },
+    {
+      "key": "audio_stream:{token}",
+      "transport": "AUDIO",
+      "kind": "PERCENT",
+      "candidates": [],
+      "verify": {
+        "policy": "READ_BACK_TOLERANCE",
+        "tolerance": 1
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": [
+          "NONE",
+          "SHIZUKU"
+        ]
+      },
+      "danger": "LOW"
+    },
+    {
+      "key": "audio_effect:{token}:{param}",
+      "transport": "AUDIO",
+      "kind": "STRING",
+      "candidates": [],
+      "verify": {
+        "policy": "READ_BACK_EQUAL",
+        "tolerance": 0
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": [
+          "NONE",
+          "SHIZUKU"
+        ]
+      },
+      "danger": "LOW"
+    },
+    {
+      "key": "audio_mixer:{deviceId}:{attr}",
+      "transport": "AUDIO",
+      "kind": "INT",
+      "candidates": [],
+      "verify": {
+        "policy": "READ_BACK_EQUAL",
+        "tolerance": 0
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": [
+          "MAGISK",
+          "KSU",
+          "APATCH",
+          "SU_BARE"
+        ]
+      },
+      "danger": "LOW"
+    },
+    {
+      "key": "audio_route:{name}",
+      "transport": "AUDIO",
+      "kind": "STRING",
+      "candidates": [],
+      "verify": {
+        "policy": "NONE",
+        "tolerance": 0
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": [
+          "MAGISK",
+          "KSU",
+          "APATCH",
+          "SU_BARE"
+        ]
+      },
+      "danger": "MEDIUM"
+    },
+    {
+      "key": "audio_system:{target}",
+      "transport": "AUDIO",
+      "kind": "ENUM",
+      "candidates": [],
+      "verify": {
+        "policy": "READ_BACK_EQUAL",
+        "tolerance": 0
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": [
+          "MAGISK",
+          "KSU",
+          "APATCH",
+          "SU_BARE"
+        ]
+      },
+      "danger": "LOW"
+    },
+    {
+      "key": "audio_vendor:{target}",
+      "transport": "AUDIO",
+      "kind": "STRING",
+      "candidates": [],
+      "verify": {
+        "policy": "NONE",
+        "tolerance": 0
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": [
+          "MAGISK",
+          "KSU",
+          "APATCH",
+          "SU_BARE"
+        ]
+      },
+      "danger": "MEDIUM"
+    },
+    {
+      "key": "audio_maxfx:{target}",
+      "transport": "AUDIO",
+      "kind": "ENUM",
+      "candidates": [],
+      "verify": {
+        "policy": "READ_BACK_EQUAL",
+        "tolerance": 0
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": [
+          "DAEMON"
+        ]
+      },
+      "danger": "MEDIUM"
+    },
+    {
+      "key": "spoof_engine:{target}",
+      "transport": "PROP",
+      "kind": "BOOL",
+      "candidates": [],
+      "verify": {
+        "policy": "READ_BACK_EQUAL",
+        "tolerance": 0
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": [
+          "MAGISK",
+          "KSU",
+          "APATCH",
+          "SU_BARE"
+        ]
+      },
+      "danger": "HIGH"
+    }
+  ],
+  "unmapped": [
+    {
+      "path": "/proc/$pid/stat",
+      "reason": "ROOT_ONLY",
+      "note": "AppMonitor يقرأها مباشرة في الرفيق، ولا مقبض تحكّم لها"
+    }
+  ]
+}
