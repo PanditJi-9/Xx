@@ -67,7 +67,9 @@ class BatteryDrainTest {
         assertEquals(12f, summary.activePerHour!!, 0.001f)
         assertEquals(2f, summary.idlePerHour!!, 0.001f)
         assertEquals(1f, summary.activeSpanHours, 0.001f)
-        assertEquals(3f, summary.idleSpanHours, 0.001f)
+        // The hour between the two states is a transition pair: it can only be
+        // counted overall, never in either bucket — so the idle span is two hours.
+        assertEquals(2f, summary.idleSpanHours, 0.001f)
         // 18% over four hours overall.
         assertEquals(4.5f, summary.overallPerHour!!, 0.001f)
     }
