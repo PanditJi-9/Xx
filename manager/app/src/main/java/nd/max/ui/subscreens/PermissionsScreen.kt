@@ -37,6 +37,7 @@
 
 package nd.max.ui.subscreens
 
+import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -97,7 +98,7 @@ import nd.max.ui.design.MaxSection
 import nd.max.ui.design.MaxSize
 import nd.max.ui.design.MaxSpace
 import nd.max.ui.design.MaxTone
-import nd.max.ui.design.MonoValueStyleSmall
+import nd.max.ui.theme.MonoValueStyleSmall
 import nd.max.ui.navigation.MaxDestination
 import nd.max.ui.util.AppOpsUtil
 import nd.max.ui.util.ManifestFacts
@@ -857,10 +858,10 @@ private fun ManifestRow(title: String, value: String, subtitle: String? = null) 
  */
 @Composable
 private fun installLocationText(location: Int): String = when (location) {
-    PackageManager.INSTALL_LOCATION_INTERNAL_ONLY ->
+    PackageInfo.INSTALL_LOCATION_INTERNAL_ONLY ->
         stringResource(R.string.max_perms_manifest_location_internal)
 
-    PackageManager.INSTALL_LOCATION_PREFER_EXTERNAL ->
+    PackageInfo.INSTALL_LOCATION_PREFER_EXTERNAL ->
         stringResource(R.string.max_perms_manifest_location_external)
 
     else -> stringResource(R.string.max_perms_manifest_location_auto)
