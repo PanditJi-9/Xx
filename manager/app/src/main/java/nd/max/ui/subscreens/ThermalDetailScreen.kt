@@ -35,6 +35,9 @@
  */
 package nd.max.ui.subscreens
 
+import android.content.Context
+import android.content.Intent
+import android.widget.Toast
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -45,6 +48,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material.icons.rounded.Thermostat
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -53,6 +57,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.geometry.Offset
@@ -63,12 +68,17 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.core.content.FileProvider
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import nd.max.R
+import nd.max.core.thermal.ThermalHistory
+import nd.max.core.thermal.ThermalSessionSample
 import nd.max.ui.component.MaxAiShortcut
 import nd.max.ui.component.MaxDeviceInfoShortcut
 import nd.max.ui.component.MaxSurface
@@ -95,6 +105,7 @@ import nd.max.ui.theme.MonoValueStyleSmall
 import nd.max.core.platform.CoolingDeviceInfo
 import nd.max.ui.util.ThermalLevel
 import nd.max.ui.util.ThermalModel
+import java.io.File
 import nd.max.core.platform.ThermalUtil
 import nd.max.core.platform.ThermalZoneInfo
 import nd.max.ui.util.ThrottleState
@@ -103,9 +114,6 @@ import kotlin.math.roundToInt
 
 private const val LTR = "\u200E"
 private const val ZONE_REFRESH_MS = 3_000L
-
-/** نافذة تاريخ الحرارة: ١٠٠ عيّنة × ٣ ثوانٍ = خمس دقائق. */
-private const val HISTORY_CAPACITY = 100
 
 /** مصدر بديل مُعلَن: `dumpsys thermalservice` — يُقرأ فقط حين لا تُقرأ مناطق النواة. */
 private const val THERMAL_SERVICE_SOURCE = "dumpsys thermalservice"
@@ -117,6 +125,8 @@ private const val THERMAL_SERVICE_SOURCE = "dumpsys thermalservice"
  * لا المحتوى — فتعريف بيانات يُوهم بمساواة لا توجد أسوأ من غيابه (`ArrayInDataClass` في lint).
  */
 private class ThermalSample(
+    /** زمن القراءة: منه تُحسب أزمنة CSV والمدّة المغطّاة، لا من عدّ العيّنات. */
+    val atMs: Long,
     val zones: List<ThermalZoneInfo>,
     val cooling: List<CoolingDeviceInfo>,
     val batteryHeat: Float,
@@ -129,6 +139,8 @@ private const val BAR_SCALE_C = 100f
 @Composable
 fun ThermalDetailScreen(navController: NavHostController) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    var exportFailed by remember { mutableStateOf(false) }
 
     var zones by remember { mutableStateOf<List<ThermalZoneInfo>>(emptyList()) }
     var cooling by remember { mutableStateOf<List<CoolingDeviceInfo>>(emptyList()) }
@@ -137,8 +149,8 @@ fun ThermalDetailScreen(navController: NavHostController) {
     var trips by remember { mutableStateOf<Map<String, List<TripReading>>>(emptyMap()) }
     var isLoading by remember { mutableStateOf(true) }
 
-    // تاريخ الجلسة: أعلى درجة في كل عيّنة. في الذاكرة فقط، ولا يُحفظ ولا يُصدَّر.
-    var history by remember { mutableStateOf<List<Int>>(emptyList()) }
+    // تاريخ الجلسة: أعلى درجة في كل عيّنة، مع زمنها ومنطقتها. في الذاكرة فقط، ولا يُحفظ.
+    var history by remember { mutableStateOf<List<ThermalSessionSample>>(emptyList()) }
 
     // نقاط التخفيف تُقرأ **مرة واحدة**: ثابتة في النواة، وقراءتها لكل منطقة مع كل عيّنة
     // (كل ٣ ثوان) كانت مئات قراءات sysfs لعرض رقم لا يتغيّر.
@@ -166,6 +178,7 @@ fun ThermalDetailScreen(navController: NavHostController) {
                     null
                 }
                 ThermalSample(
+                    atMs = System.currentTimeMillis(),
                     zones = live,
                     cooling = ThermalUtil.readCoolingDevices(),
                     batteryHeat = ThermalUtil.readBatteryTemperatureC(context),
@@ -177,7 +190,14 @@ fun ThermalDetailScreen(navController: NavHostController) {
                 .filter { it.isEnabled && it.temperatureC > 0 }
                 .maxByOrNull { it.temperatureC }
                 ?.let { hottestNow ->
-                    history = (history + hottestNow.temperatureC).takeLast(HISTORY_CAPACITY)
+                    history = ThermalHistory.push(
+                        history,
+                        ThermalSessionSample(
+                            atMs = sample.atMs,
+                            zone = hottestNow.label,
+                            celsius = hottestNow.temperatureC
+                        )
+                    )
                 }
             cooling = sample.cooling
             batteryHeat = sample.batteryHeat
@@ -278,7 +298,7 @@ fun ThermalDetailScreen(navController: NavHostController) {
                     ) {
                         if (history.size >= 2) {
                             ThermalTrend(
-                                history = history,
+                                history = history.map { it.celsius },
                                 accent = accent,
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -299,7 +319,7 @@ fun ThermalDetailScreen(navController: NavHostController) {
                             title = stringResource(R.string.detail_thermal_history_peak),
                             trailing = {
                                 Text(
-                                    text = "${history.max()}°C",
+                                    text = "${history.maxOf { it.celsius }}°C",
                                     style = MonoValueStyleSmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -310,7 +330,7 @@ fun ThermalDetailScreen(navController: NavHostController) {
                             title = stringResource(R.string.detail_thermal_history_low),
                             trailing = {
                                 Text(
-                                    text = "${history.min()}°C",
+                                    text = "${history.minOf { it.celsius }}°C",
                                     style = MonoValueStyleSmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -323,13 +343,33 @@ fun ThermalDetailScreen(navController: NavHostController) {
                                 Text(
                                     text = stringResource(
                                         R.string.detail_thermal_history_window_value,
-                                        history.size * (ZONE_REFRESH_MS / 1000L).toInt()
+                                        ThermalHistory.windowSeconds(history, ZONE_REFRESH_MS)
                                     ),
                                     style = MonoValueStyleSmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                             }
                         )
+                        MaxGroupDivider()
+                        MaxRow(
+                            title = stringResource(R.string.detail_thermal_export),
+                            subtitle = stringResource(R.string.detail_thermal_export_desc),
+                            icon = Icons.Rounded.Share,
+                            enabled = history.isNotEmpty(),
+                            onClick = {
+                                exportFailed = false
+                                exportThermalSession(context, scope, history) {
+                                    exportFailed = true
+                                }
+                            }
+                        )
+                        if (exportFailed) {
+                            MaxGroupDivider()
+                            MaxRow(
+                                title = stringResource(R.string.detail_thermal_export_failed),
+                                subtitle = stringResource(R.string.detail_thermal_export_failed_desc)
+                            )
+                        }
                     }
                 }
             }
@@ -721,5 +761,58 @@ private fun ThermalTrend(history: List<Int>, accent: Color, modifier: Modifier =
             color = accent,
             style = Stroke(width = 2.5.dp.toPx(), cap = StrokeCap.Round)
         )
+    }
+}
+
+/**
+ * جلسة الحرارة ملفًّا، ثم حصّة للمشاركة.
+ *
+ * **ولماذا `cacheDir`:** ملفّ قياس مؤقّت لا يستحقّ أن يُلوّث مجلّد التنزيلات، ويُشارَك بالمسار
+ * الذي يصرّح به `file_paths.xml` (`cache-path`) كما تفعل جلسة الـHUD وتاريخ البطارية.
+ *
+ * **وما يُكتب هو ما على الشاشة:** العيّنات المحفوظة نفسها، لا قراءة جديدة عند الضغط — فلا
+ * يخرج ملفّ يخالف المنحنى الذي رآه المستخدم.
+ */
+private fun exportThermalSession(
+    context: Context,
+    scope: CoroutineScope,
+    history: List<ThermalSessionSample>,
+    onFailed: () -> Unit
+) {
+    if (history.isEmpty()) {
+        Toast.makeText(
+            context,
+            context.getString(R.string.detail_thermal_export_empty),
+            Toast.LENGTH_SHORT
+        ).show()
+        return
+    }
+    val body = ThermalHistory.csv(history)
+    scope.launch {
+        val share = withContext(Dispatchers.IO) {
+            runCatching {
+                val folder = File(context.cacheDir, "thermal").apply { mkdirs() }
+                val file = File(folder, "maxmanager-thermal-${System.currentTimeMillis()}.csv")
+                file.writeText(body)
+                val uri = FileProvider.getUriForFile(
+                    context,
+                    "${context.packageName}.provider",
+                    file
+                )
+                Intent.createChooser(
+                    Intent(Intent.ACTION_SEND).apply {
+                        type = "text/csv"
+                        putExtra(Intent.EXTRA_STREAM, uri)
+                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    },
+                    context.getString(R.string.detail_thermal_export_chooser)
+                )
+            }.getOrNull()
+        }
+        if (share == null) {
+            onFailed()
+        } else {
+            runCatching { context.startActivity(share) }.onFailure { onFailed() }
+        }
     }
 }

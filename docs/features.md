@@ -53,7 +53,9 @@ and no profile may override them.
 A **session trend** draws the hottest readable zone once every three seconds for as long as the screen
 stays open — five minutes of window, scaled to the range actually measured rather than to a fixed scale,
 with peak and low shown beside it. It lives in memory only: leaving the screen discards it, and nothing
-is written to storage.
+is written to storage on its own. **Export session** writes exactly the samples on screen — elapsed
+time, zone, temperature — to a temporary CSV in the cache and hands it to the share sheet, so the file
+matches the curve the user is looking at.
 
 ### Power — *"Charging, bypass, sleep and battery health"*
 

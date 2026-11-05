@@ -675,6 +675,12 @@
     <string name="detail_thermal_history_low">الأدنى في هذه الزيارة</string>
     <string name="detail_thermal_history_window">المدة المغطّاة</string>
     <string name="detail_thermal_history_window_value">%1$d ثانية</string>
+    <string name="detail_thermal_export">تصدير الجلسة</string>
+    <string name="detail_thermal_export_desc">ملفّ CSV بالعيّنات المعروضة نفسها: الزمن المنقضي، والمنطقة، والدرجة. يُشارَك عبر ورقة المشاركة، ولا يبقى منه شيء بعدها.</string>
+    <string name="detail_thermal_export_chooser">مشاركة جلسة الحرارة</string>
+    <string name="detail_thermal_export_empty">لا عيّنات بعد.</string>
+    <string name="detail_thermal_export_failed">فشل التصدير</string>
+    <string name="detail_thermal_export_failed_desc">لم يُكتب الملفّ أو لم يُسلَّم إلى تطبيق.</string>
     <string name="detail_thermal_heat">الحرارة</string>
     <string name="detail_thermal_heat_note">من مصدر الشاشة الرئيسية نفسه: بثّ Android ثم عقدة البطارية.</string>
     <string name="detail_thermal_reading">جارٍ قراءة مناطق الحرارة…</string>

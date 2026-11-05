@@ -203,7 +203,7 @@
 | --- | --- | --- |
 | P1/6 استوديو المراقبة | **مشحون** (٣ مراقبات، خدمة واحدة، قارئ واحد) | `ui/util/MonitorPrefs.kt` · `service/FpsOverlayService.kt` · `FpsOverlayScreen.kt` |
 | P1/9 تصدير المخططات | **مشحون للبطارية** (CSV من النافذة المعروضة عبر ورقة المشاركة) | `BatteryHistoryStore.csv/writeCsv` + `BatteryHistoryCsvTest` |
-| P1/9 مخططات النظام التاريخية | **مشحون للجلسة**: منحنى الحرارة يرسم أسخن منطقة مقروءة كل ٣ ثوانٍ (نافذة ٥ دقائق، ١٠٠ عيّنة) بمقياس مشتقّ من المقيس، مع الذروة والأدنى، وفي الذاكرة وحدها — لا يُكتب شيء على التخزين | `ThermalDetailScreen.kt` (`ThermalTrend` + `HISTORY_CAPACITY`) |
+| P1/9 مخططات النظام التاريخية | **مشحون للجلسة**: منحنى الحرارة يرسم أسخن منطقة مقروءة كل ٣ ثوانٍ (نافذة ٥ دقائق، ١٠٠ عيّنة) بمقياس مشتقّ من المقيس، مع الذروة والأدنى، وفي الذاكرة وحدها — لا يُكتب شيء على التخزين قبل طلبك. **وتصدير الجلسة**: CSV بالعيّنات المعروضة نفسها (زمن منقضي، منطقة، درجة) يُشارَك عبر ورقة المشاركة | `core/thermal/ThermalHistory.kt` + `ThermalHistoryTest` · `ThermalDetailScreen.kt` (`ThermalTrend` · `exportThermalSession`) |
 | P2/17 خريطة الشبكة | **شُحن القياس لا الخريطة**: تحليل اسم + أزمنة اتصال TCP + تذبذب + تقدير الوصلة، عند الطلب فقط | `core/net/LinkProbe.kt` · `LinkQualitySection` |
 | P0/3 توسيع Device Lab | **مشحون**: ميكروفون (مستوى dBFS حيّ + ذروة، ولا يُسجَّل شيء) · قدرات العرض والـHDR · مُفكّكات الفيديو المعلنة | `MicrophoneTest` · `DisplayCapabilities` · `CodecCapabilities` في `DeviceLabScreen.kt` |
 | P0/4 بلاطة الوضع الليلي | **مشحون**: بلاطة إعدادات سريعة تقلب `secure/night_display_activated` نفسه الذي تكتبه شاشة العرض، وتقرأ المفتاح بعد الكتابة — فحين تُرفض الكتابة تقول «لم يُطبَّق» لا حالة لم تقبلها المنصّة | `TileService/NightLightTileService.kt` · `res/drawable/ic_tile_night.xml` |

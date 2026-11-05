@@ -1523,6 +1523,12 @@
     <string name="detail_thermal_history_low">Lowest this visit</string>
     <string name="detail_thermal_history_window">Window covered</string>
     <string name="detail_thermal_history_window_value">%1$d s</string>
+    <string name="detail_thermal_export">Export session</string>
+    <string name="detail_thermal_export_desc">A CSV of exactly the samples on screen: elapsed time, zone and temperature. Shared through the share sheet; nothing is stored after it.</string>
+    <string name="detail_thermal_export_chooser">Share thermal session</string>
+    <string name="detail_thermal_export_empty">Nothing recorded yet.</string>
+    <string name="detail_thermal_export_failed">Export failed</string>
+    <string name="detail_thermal_export_failed_desc">The file could not be written or handed to an app.</string>
     <string name="detail_thermal_heat">Heat</string>
     <string name="detail_thermal_heat_note">Same source as the home screen: the Android battery broadcast, then the battery node.</string>
     <string name="detail_thermal_reading">Reading thermal zones…</string>
