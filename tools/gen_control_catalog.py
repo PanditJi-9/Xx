@@ -127,8 +127,12 @@ def self_test() -> int:
     """يقيس المدقّق نفسه: كل عطب محقون يجب أن يُمسك بالاسم."""
     base = load()
     known = prefixes()
-    if len(known) != 15:
-        print(f"✗ البوادئ المقيسة {len(known)} لا ١٥ — توقّف القياس قبل الحقن")
+    # حرس القياس: الرقم هو عدد ثوابت `HardwareControlKey` المقروءة، لا عددًا سحريًّا.
+    # كان ١٥ ثم صار ١٩ بعد إضافة مفاتيح VM/audio/spoof؛ ويجب أن يطابق
+    # `ControlCatalogParityTest` حرفيًّا، وإلّا توقّف الحقن قبل أن يقيس شيئًا.
+    expected_prefixes = 19
+    if len(known) != expected_prefixes:
+        print(f"✗ البوادئ المقيسة {len(known)} لا {expected_prefixes} — توقّف القياس قبل الحقن")
         return 1
     cases: list[tuple[str, dict]] = []
 
