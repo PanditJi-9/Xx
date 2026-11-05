@@ -17,7 +17,7 @@ import org.junit.Test
  */
 class ThermalHistoryTest {
 
-    private fun sample(atMs: Long, zone: String = "cpu-0", celsius: Int = 50) =
+    private fun sample(atMs: Long = 0L, zone: String = "cpu-0", celsius: Int = 50) =
         ThermalSessionSample(atMs = atMs, zone = zone, celsius = celsius)
 
     @Test
