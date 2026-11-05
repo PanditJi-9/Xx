@@ -3784,6 +3784,12 @@
 <string name="device_lab_output_none">No outputs reported</string>
 <string name="device_lab_stop">Stop</string>
 <string name="device_lab_unavailable">Not available on this device</string>
+    <string name="device_lab_mic_title">Microphone level</string>
+    <string name="device_lab_mic_desc">Speak and watch the bar. Nothing is recorded or saved: the samples are discarded once the level is computed.</string>
+    <string name="device_lab_mic_level">%1$.0f dBFS · peak %2$.0f dBFS</string>
+    <string name="device_lab_mic_allow">Allow microphone</string>
+    <string name="device_lab_mic_allow_desc">Android asks for the microphone permission. The test reads the raw level only and stores nothing.</string>
+    <string name="device_lab_mic_denied">Microphone permission is off, so there is nothing to measure.</string>
 <string name="device_lab_touch_hint">Touch anywhere with one or more fingers</string>
 <string name="device_lab_fingers">%1$d fingers</string>
 <string name="device_lab_touch_max">Most seen: %1$d</string>

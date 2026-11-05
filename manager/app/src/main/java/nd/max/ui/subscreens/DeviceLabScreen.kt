@@ -5,10 +5,12 @@
  */
 package nd.max.ui.subscreens
 
+import android.Manifest
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.PackageManager
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -20,7 +22,9 @@ import android.media.AudioDeviceCallback
 import android.media.AudioDeviceInfo
 import android.media.AudioFormat
 import android.media.AudioManager
+import android.media.AudioRecord
 import android.media.AudioTrack
+import android.media.MediaRecorder
 import android.os.BatteryManager
 import android.os.Build
 import android.os.VibrationEffect
@@ -36,6 +40,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material.icons.Icons
@@ -44,6 +49,7 @@ import androidx.compose.material.icons.rounded.BatteryChargingFull
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.FlashOn
 import androidx.compose.material.icons.rounded.Keyboard
+import androidx.compose.material.icons.rounded.Mic
 import androidx.compose.material.icons.rounded.RestartAlt
 import androidx.compose.material.icons.rounded.Science
 import androidx.compose.material.icons.rounded.Sensors
@@ -55,6 +61,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -70,6 +78,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.foundation.focusable
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.luminance
@@ -84,11 +93,15 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import nd.max.R
 import nd.max.ui.design.MaxGroup
 import nd.max.ui.design.MaxGroupDivider
@@ -102,7 +115,9 @@ import nd.max.ui.design.MaxTone
 import nd.max.ui.theme.MonoValueStyleSmall
 import java.util.Locale
 import kotlin.math.PI
+import kotlin.math.log10
 import kotlin.math.sin
+import kotlin.math.sqrt
 
 /**
  * Device lab — the interactive counterpart to Diagnostics.
@@ -245,6 +260,7 @@ fun DeviceLabScreen(navController: NavHostController) {
             TorchTest(
                 onError = { scope.launch { snackbar.showSnackbar(torchError) } },
             )
+            MicrophoneTest()
             SensorTest()
             BatteryTest()
         }
@@ -806,9 +822,166 @@ private fun TorchTest(onError: () -> Unit) {
 }
 
 // ---------------------------------------------------------------------------
-// Sensors
+// Microphone
 // ---------------------------------------------------------------------------
 
+/** معدّل العيّنة القياسي: 44.1 kHz أحادي 16-bit، وهو ما يقبله كل جهاز تقريبًا. */
+private const val MIC_SAMPLE_RATE = 44_100
+
+/** أرضية العرض: -90 dBFS تعني «صمت» في عدّاد 16-bit، لا «صفر طاقة». */
+private const val MIC_FLOOR_DB = -90f
+
+/**
+ * مستوى الميكروفون — قياس حيّ بلا تسجيل.
+ *
+ * **ولماذا لا يُحفظ شيء:** الغرض أن يعرف المستخدم أن الميكروفون يلتقط، لا أن يُنتج ملفًّا. فالعيّنات
+ * تُقرأ وتُطرح بعد حساب RMS ولا تُكتب في ذاكرة ولا تُرسل. والإيقاف يستدعي `stop` و`release` في
+ * `finally`، فحتى الخروج المفاجئ من الشاشة لا يترك التقاطًا يعمل في الخلفية.
+ *
+ * **والحدّ يُعلن:** القيمة dBFS نسبةً إلى أقصى ما يمثّله 16-bit، لا مستوى صوت مطلقًا؛ ولا تُقارن
+ * بين جهازين لأن حساسية الميكروفون تختلف. والإذن يُطلب عند أوّل استعمال بضغطة صريحة.
+ */
+@Composable
+private fun MicrophoneTest() {
+    val context = LocalContext.current
+    var granted by remember {
+        mutableStateOf(
+            ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) ==
+                PackageManager.PERMISSION_GRANTED
+        )
+    }
+    var on by remember { mutableStateOf(false) }
+    var levelDb by remember { mutableStateOf<Float?>(null) }
+    var peakDb by remember { mutableStateOf<Float?>(null) }
+    var unavailable by remember { mutableStateOf(false) }
+    val unavailableText = stringResource(R.string.device_lab_unavailable)
+    val deniedText = stringResource(R.string.device_lab_mic_denied)
+
+    val launcher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { allowed -> granted = allowed }
+
+    LaunchedEffect(on) {
+        if (!on) {
+            levelDb = null
+            return@LaunchedEffect
+        }
+        peakDb = null
+        unavailable = false
+        withContext(Dispatchers.IO) {
+            val minBuffer = AudioRecord.getMinBufferSize(
+                MIC_SAMPLE_RATE,
+                AudioFormat.CHANNEL_IN_MONO,
+                AudioFormat.ENCODING_PCM_16BIT
+            )
+            if (minBuffer <= 0) {
+                unavailable = true
+                on = false
+                return@withContext
+            }
+            val record = runCatching {
+                AudioRecord(
+                    MediaRecorder.AudioSource.MIC,
+                    MIC_SAMPLE_RATE,
+                    AudioFormat.CHANNEL_IN_MONO,
+                    AudioFormat.ENCODING_PCM_16BIT,
+                    minBuffer * 2
+                )
+            }.getOrNull()
+            if (record == null || record.state != AudioRecord.STATE_INITIALIZED) {
+                runCatching { record?.release() }
+                unavailable = true
+                on = false
+                return@withContext
+            }
+            val buffer = ShortArray(minBuffer)
+            var lastUiAt = 0L
+            try {
+                record.startRecording()
+                while (isActive) {
+                    val read = record.read(buffer, 0, buffer.size)
+                    if (read <= 0) continue
+                    var sum = 0.0
+                    for (index in 0 until read) {
+                        val sample = buffer[index] / 32768.0
+                        sum += sample * sample
+                    }
+                    val rms = sqrt(sum / read)
+                    val db = (20.0 * log10(rms.coerceAtLeast(1e-7)))
+                        .toFloat()
+                        .coerceIn(MIC_FLOOR_DB, 0f)
+                    val now = System.nanoTime()
+                    // الكتابة إلى حالة الواجهة عشر مرّات في الثانية: أسرع من ذلك لا يُقرأ بالعين.
+                    if (now - lastUiAt >= 100_000_000L) {
+                        lastUiAt = now
+                        levelDb = db
+                        peakDb = maxOf(peakDb ?: db, db)
+                    }
+                }
+            } finally {
+                runCatching { record.stop() }
+                runCatching { record.release() }
+            }
+        }
+    }
+
+    MaxGroup {
+        if (!granted) {
+            MaxNavigationRow(
+                title = stringResource(R.string.device_lab_mic_allow),
+                subtitle = stringResource(R.string.device_lab_mic_allow_desc),
+                icon = Icons.Rounded.Mic,
+                iconTone = MaxTone.Accent,
+                onClick = { launcher.launch(Manifest.permission.RECORD_AUDIO) }
+            )
+            MaxGroupDivider()
+        }
+        val level = levelDb
+        val peak = peakDb
+        MaxSwitchRow(
+            title = stringResource(R.string.device_lab_mic_title),
+            subtitle = when {
+                !granted -> deniedText
+                unavailable -> unavailableText
+                on && level != null && peak != null ->
+                    stringResource(R.string.device_lab_mic_level, level, peak)
+                else -> stringResource(R.string.device_lab_mic_desc)
+            },
+            icon = Icons.Rounded.Mic,
+            iconTone = MaxTone.Accent,
+            checked = on,
+            enabled = granted && !unavailable,
+            lockedReason = if (granted) null else deniedText,
+            onCheckedChange = { next -> on = next }
+        )
+        if (on && level != null) {
+            MicLevelBar(level = level)
+        }
+    }
+}
+
+/** شريط المستوى: -90..0 dBFS إلى 0..1 من العرض — الرقم نفسه الذي في السطر، بلا مقياس موازٍ. */
+@Composable
+private fun MicLevelBar(level: Float) {
+    val track = MaterialTheme.colorScheme.surfaceVariant
+    val accent = MaterialTheme.colorScheme.primary
+    Canvas(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = MaxSpace.groupPadding)
+            .height(10.dp)
+    ) {
+        val fraction = ((level - MIC_FLOOR_DB) / -MIC_FLOOR_DB).coerceIn(0f, 1f)
+        drawRect(color = track)
+        if (fraction > 0f) {
+            drawRect(color = accent, size = Size(size.width * fraction, size.height))
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Sensors
+// ---------------------------------------------------------------------------
 @Composable
 private fun SensorTest() {
     val context = LocalContext.current

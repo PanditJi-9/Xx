@@ -3731,6 +3731,12 @@
 <string name="device_lab_output_none">لا مخارج معلنة</string>
 <string name="device_lab_stop">إيقاف</string>
 <string name="device_lab_unavailable">غير متاح على هذا الجهاز</string>
+    <string name="device_lab_mic_title">مستوى الميكروفون</string>
+    <string name="device_lab_mic_desc">تكلّم وراقب الشريط. لا شيء يُسجَّل أو يُحفظ: العيّنات تُطرح بعد حساب المستوى.</string>
+    <string name="device_lab_mic_level">%1$.0f dBFS · الذروة %2$.0f dBFS</string>
+    <string name="device_lab_mic_allow">السماح بالميكروفون</string>
+    <string name="device_lab_mic_allow_desc">يطلب أندرويد إذن الميكروفون. الاختبار يقرأ المستوى الخام فقط ولا يحفظ شيئًا.</string>
+    <string name="device_lab_mic_denied">إذن الميكروفون مُطفأ، فلا شيء يُقاس.</string>
 <string name="device_lab_touch_hint">المس أي مكان بإصبع أو أكثر</string>
 <string name="device_lab_fingers">%1$d أصابع</string>
 <string name="device_lab_touch_max">أكثر عدد ظهر: %1$d</string>

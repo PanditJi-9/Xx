@@ -109,7 +109,7 @@ package in an unexplained state.
 | Tool | What it gives you |
 | --- | --- |
 | **Process manager** | What is running, what it costs, and what can be stopped. |
-| **Device lab** | Interactive hardware checks on the device itself: screen colours, multi-touch, hardware keys, vibration, speaker tone and earpiece routing, live audio outputs, flashlight, live sensors, and charging state. |
+| **Device lab** | Interactive hardware checks on the device itself: screen colours, multi-touch, hardware keys, vibration, speaker tone and earpiece routing, live audio outputs, microphone level, flashlight, live sensors, and charging state. The microphone test asks for the permission on the spot, shows a live dBFS level and peak, and keeps nothing: samples are discarded after each reading. |
 | **Usage stats** | Foreground time per app from Android's usage database, and network bytes per app per period — read-only, one access switch. |
 | **FPS overlay** | A live frame-rate and load HUD drawn over other apps, with optional battery level and network rate fields. Up to three independent monitors can float at once, each with its own fields, shape and position, all fed by one reading loop. |
 | **Quick settings tiles** | Bypass charging, profile, clean status bar, battery-history recording, high-brightness mode and the FPS overlay, each reading its state back before it claims to have changed anything. |
