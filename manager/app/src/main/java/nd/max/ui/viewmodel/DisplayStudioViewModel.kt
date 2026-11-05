@@ -18,6 +18,7 @@ package nd.max.ui.viewmodel
 
 import nd.max.MaxManagerProps
 import nd.max.core.display.DisplayFeatureNode
+import nd.max.core.display.NightLightSchedule
 import nd.max.core.display.DisplayFeatureNodes
 import nd.max.core.hardware.RootFileAccess
 
@@ -89,6 +90,16 @@ class DisplayStudioViewModel : ViewModel() {
     var fontScale by mutableStateOf(1f); private set
     var screenTimeoutSeconds by mutableStateOf(30); private set
     var nightLightEnabled by mutableStateOf(false); private set
+
+    /**
+     * جدولة الوضع الليلي: نافذة زمنية تكتب المفتاح نفسه الذي يكتبه المفتاح اليدوي.
+     *
+     * **ولماذا الحالة هنا لا في الشاشة وحدها:** الشاشة تُغلق، والمنبّه يبقى؛ فالقيم
+     * تُقرأ من `NightLightSchedule` عند كل فتح، لا من `remember` يُصفَّر.
+     */
+    var nightScheduleEnabled by mutableStateOf(false); private set
+    var nightStartMinute by mutableStateOf(NightLightSchedule.DEFAULT_START_MINUTE); private set
+    var nightEndMinute by mutableStateOf(NightLightSchedule.DEFAULT_END_MINUTE); private set
     var colorInversionEnabled by mutableStateOf(false); private set
 
     /**
@@ -149,6 +160,9 @@ class DisplayStudioViewModel : ViewModel() {
             fontScale = readSetting(resolver, "system", "font_scale")?.toFloatOrNull() ?: 1f
             screenTimeoutSeconds = ((readSetting(resolver, "system", "screen_off_timeout")?.toLongOrNull() ?: 30_000L) / 1000L).toInt()
             nightLightEnabled = readSetting(resolver, "secure", "night_display_activated") == "1"
+            nightScheduleEnabled = NightLightSchedule.isEnabled(context)
+            nightStartMinute = NightLightSchedule.startMinute(context)
+            nightEndMinute = NightLightSchedule.endMinute(context)
             colorInversionEnabled = readSetting(resolver, "secure", "accessibility_display_inversion_enabled") == "1"
             windowBlurDisabled = readSetting(resolver, "global", WINDOW_BLUR_KEY) == "1"
 
@@ -255,6 +269,33 @@ class DisplayStudioViewModel : ViewModel() {
         nightLightEnabled = enabled
         viewModelScope.launch(Dispatchers.IO) {
             nd.max.core.platform.SettingsAccess.put("secure", "night_display_activated", if (enabled) "1" else "0")
+        }
+    }
+
+    /**
+     * تشغيل الجدولة أو إيقافها.
+     *
+     * التطبيق الفوري داخل `NightLightSchedule.setEnabled` لا هنا: الرحلة إلى القرص
+     * والمنبّه والكتابة كلها في الخيط الخلفي، والشاشة ترى القيمة المطلوبة في الحال.
+     */
+    fun setNightScheduleEnabled(context: Context, enabled: Boolean) {
+        nightScheduleEnabled = enabled
+        viewModelScope.launch(Dispatchers.IO) {
+            NightLightSchedule.setEnabled(context.applicationContext, enabled)
+        }
+    }
+
+    fun setNightStartMinute(context: Context, minute: Int) {
+        nightStartMinute = minute
+        viewModelScope.launch(Dispatchers.IO) {
+            NightLightSchedule.setWindow(context.applicationContext, minute, nightEndMinute)
+        }
+    }
+
+    fun setNightEndMinute(context: Context, minute: Int) {
+        nightEndMinute = minute
+        viewModelScope.launch(Dispatchers.IO) {
+            NightLightSchedule.setWindow(context.applicationContext, nightStartMinute, minute)
         }
     }
 

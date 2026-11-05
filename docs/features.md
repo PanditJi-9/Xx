@@ -37,6 +37,12 @@ because a nearly-full-but-idle device and a stalling device need opposite respon
 **Display studio** and **Resolution** (including per-app downscaling) — always validated against what the
 platform advertises, with the current mode readable.
 
+Night light is the platform's own switch, not a private filter: the screen, the Quick Settings tile and
+the **schedule** all write `secure/night_display_activated` and read it back, so they cannot disagree.
+The schedule is a start/end hour window that may cross midnight, applied on a single batched alarm —
+the system may fire it a few minutes late, and the description says so instead of implying stopwatch
+precision.
+
 ### Responsiveness — *"Touch, frame pacing and scheduling latency"*
 
 Touch boost, **FPS GO** (frame-rate governance), and **FAS** (frame-aware scheduling). The **FPS

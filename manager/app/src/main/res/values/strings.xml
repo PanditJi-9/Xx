@@ -370,6 +370,10 @@
     <string name="display_screen_timeout_desc">How long the screen stays on when idle</string>
     <string name="display_night_light_title">Night Light</string>
     <string name="display_night_light_desc">Tint the display warmer to reduce eye strain at night</string>
+    <string name="display_night_schedule_title">Night light schedule</string>
+    <string name="display_night_schedule_desc">Switches the same platform night light on at the start hour and off at the end hour. The system batches alarms to save power, so a switch may land a few minutes late — this is a schedule, not a stopwatch.</string>
+    <string name="display_night_start_title">Turns on at</string>
+    <string name="display_night_end_title">Turns off at</string>
     <string name="display_color_inversion_title">Color inversion</string>
     <string name="display_color_inversion_desc">Invert on-screen colors system-wide (accessibility)</string>
     <string name="display_blur_title">Window blur</string>

@@ -571,6 +571,22 @@
             </intent-filter>
         </receiver>
 
+        <!--
+          تبديلة الوضع الليلي المجدول: المنبّه الخاصّ بنا (لا يحتاج مرشّحًا لأنه صريح)
+          وإعادة القراءة بعد الإقلاع أو تحديث الحزمة أو تغيّر الساعة/المنطقة الزمنية.
+          غير مُصدَّر: لا شيء خارج التطبيق يطلب هذه التبديلة.
+        -->
+        <receiver
+            android:name=".receiver.NightLightScheduleReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+            </intent-filter>
+        </receiver>
+
         <receiver
             android:name=".receiver.AudioSessionReceiver"
             android:exported="true">

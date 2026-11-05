@@ -168,6 +168,37 @@ fun DisplayStudioScreen(
                                 },
                                 {
                                     ExpressiveSwitchItem(
+                                        icon = Icons.Outlined.Schedule,
+                                        title = stringResource(R.string.display_night_schedule_title),
+                                        summary = stringResource(R.string.display_night_schedule_desc),
+                                        checked = viewModel.nightScheduleEnabled,
+                                        onCheckedChange = { viewModel.setNightScheduleEnabled(context, it) }
+                                    )
+                                },
+                                {
+                                    ExpressiveDropdownItem(
+                                        icon = Icons.Outlined.NightlightRound,
+                                        title = stringResource(R.string.display_night_start_title),
+                                        summary = formatHour(viewModel.nightStartMinute / 60),
+                                        items = HOUR_LABELS,
+                                        enabled = viewModel.nightScheduleEnabled,
+                                        selectedIndex = (viewModel.nightStartMinute / 60).coerceIn(0, HOUR_LABELS.lastIndex),
+                                        onItemSelected = { viewModel.setNightStartMinute(context, it * 60) }
+                                    )
+                                },
+                                {
+                                    ExpressiveDropdownItem(
+                                        icon = Icons.Outlined.NightlightRound,
+                                        title = stringResource(R.string.display_night_end_title),
+                                        summary = formatHour(viewModel.nightEndMinute / 60),
+                                        items = HOUR_LABELS,
+                                        enabled = viewModel.nightScheduleEnabled,
+                                        selectedIndex = (viewModel.nightEndMinute / 60).coerceIn(0, HOUR_LABELS.lastIndex),
+                                        onItemSelected = { viewModel.setNightEndMinute(context, it * 60) }
+                                    )
+                                },
+                                {
+                                    ExpressiveSwitchItem(
                                         icon = Icons.Outlined.InvertColors,
                                         title = stringResource(R.string.display_color_inversion_title),
                                         summary = stringResource(R.string.display_color_inversion_desc),
@@ -297,3 +328,12 @@ private fun DisplayMetric(label: String, value: String, modifier: Modifier, onCl
     }
 }
 
+/**
+ * ساعات اليوم كما تُختار من القائمة: `00:00`..`23:00`.
+ *
+ * الدقائق لا تُعرض: نافذة ليلية تُضبط بالساعة، ودقّة الدقيقة تُوهم بضبط لا يقع
+ * فعلًا لأن المنبّه نفسه غير دقيق (يُجمعه النظام لتوفير البطارية).
+ */
+private val HOUR_LABELS: List<String> = (0..23).map { formatHour(it) }
+
+private fun formatHour(hour: Int): String = "%02d:00".format(hour)
