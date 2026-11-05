@@ -23835,3 +23835,37 @@ Quick Verify على GitHub Actions (لا بناء على الهاتف بأمر �
 **NEXT:** (١) المالك: **تدوير التوكن** (حُذف `/tmp/opencode/.gh_token`). (٢) المالك: يختار ما يُفتح
 أوّلًا: جهاز للاختبار الحقيقي · إذن الموقع لخريطة الشبكة · مراجعة سلامة مستقلة لمحرّك الوصفات.
 (٣) قراءة Quick Verify `42067634144` على `a67aa9a6` وإصلاحه إن كان أحمر.
+
+### REFERENCE-HARVEST-01 — تذييل الإغلاق (دفعتان إضافيتان + دليل CI النهائي)
+
+**FILES (بعد السجل الأصلي):**
+- `c94000dd` **بلاطة الوضع الليلي**: `TileService/NightLightTileService.kt` + `res/drawable/ic_tile_night.xml` +
+  خدمة في `AndroidManifest.xml` + نصوص `tile_night_light/_on/_off/_unknown` (EN+AR). تقلب المفتاح نفسه
+  الذي تكتبه شاشة العرض (`secure/night_display_activated`) وتعيد قراءته بعد الكتابة: كتابةٌ رُفضت
+  تُعرض «لم يُطبَّق» لا حالةً لم تقبلها المنصّة.
+- `0b534070` سجل الحصاد: §٧ (عدّ البوابات ٣٢٣٠، وسلسلة CI) و§٨ (صف P0/4) و«ما أُغلق».
+- `da2553a6` **تصدير جلسة الحرارة**: `core/thermal/ThermalHistory.kt` (نموذج `ThermalSessionSample`,
+  `CAPACITY=100`, `CSV_HEADER="elapsed_ms,zone,temp_c"`, `push`/`csv`/`windowSeconds`/`escape`) +
+  `ThermalHistoryTest` (حدّ السعة، هروب الفاصلة والاقتباس، العمود الفارغ، النافذة المقيسة لا المفترضة) +
+  `ThermalDetailScreen.kt` (العيّنة تحمل `atMs`، سطر «تصدير الجلسة» عبر `FileProvider`، `exportThermalSession`) +
+  نصوص `detail_thermal_export*` (EN+AR) + `docs/features.md`.
+- `2ec1979f` ترويسة `NEXT_TASK.md` محدَّثة.
+
+**GATES (مقيسة هنا، آخرها `da2553a6`):** `kt_balance --assert` **3232 ملفًا · 0 عوائق** · `code_health` ✓ ·
+`i18n_coverage` ٠ عوائق · `design_tokens` ✓ · `resource_compile` كل مجلّدات res · `license_audit` نظيف ·
+`gen_capabilities_doc` ٤١ مدخلًا. (وبعد تعديلات `.md` وحدها أُعيدت الأربع الحسّاسة فورًا.)
+
+**BUILD (CI وحده، بأمر المالك):** نجح Quick Verify على `c94000dd` (`42071616923`) و`a4c9b104`
+(`42070360309`) و`f2c6572e` (`42069671267`). وفشل ثم أُصلح مرتين في ملخّص المانيفست:
+`a67aa9a6` (`MonoValueStyleSmall` من `ui.design` بدل `ui.theme`، و`INSTALL_LOCATION_*` من
+`PackageManager` بدل `PackageInfo`) و`eef6dacb` (`installLocation` يُقرأ من `ApplicationInfo`).
+**`da2553a6` أُرسل ولم تُقرأ نتيجته.**
+
+**RESIDUAL RISK:** كل ما سبق إعلانه قائم: سلوك العتاد (لمس، ميكروفون، تراكب، شبكة، تصدير عبر ورقة
+مشاركة على جهاز حقيقي) **غير مُتحقَّق**؛ الآيلاند والمعايرة يحتاجان جهازًا؛ محرّك الوصفات يحتاج الوسيط
+ومراجعة سلامة مستقلة؛ خريطة قناة Wi-Fi تحتاج `ACCESS_FINE_LOCATION`؛ ميزانية تكلفة المراقبة تحتاج
+قياسًا. وما أُضيف هنا (بلاطة الوضع الليلي، تصدير جلسة الحرارة) **يحتاج جهازًا** أيضًا: البلاطة تحتاج
+`WRITE_SECURE_SETTINGS` أو جذرًا، والتصدير يحتاج ورقة مشاركة حقيقية.
+
+**NEXT:** (١) المالك يدوّر التوكن (حُذف الملف). (٢) يختار ما يُفتح: جهاز / إذن الموقع / مراجعة سلامة.
+(٣) قراءة Quick Verify `da2553a6` وإصلاحه إن كان أحمر.
