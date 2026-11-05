@@ -29,6 +29,7 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -85,6 +86,7 @@ import nd.max.ui.design.MaxGroupDivider
 import nd.max.ui.design.MaxMetric
 import nd.max.ui.design.MaxMetricLine
 import nd.max.ui.design.MaxNavigationRow
+import nd.max.ui.design.MaxRow
 import nd.max.ui.design.MaxScreen
 import nd.max.ui.design.MaxSection
 import nd.max.ui.design.MaxSegmented
@@ -96,6 +98,8 @@ import nd.max.ui.component.AccentSwatches
 import nd.max.ui.component.ScreenAccentProvider
 import nd.max.ui.component.parseAccentHex
 import nd.max.ui.util.FpsOverlayPrefs
+import nd.max.ui.util.MonitorPrefs
+import nd.max.ui.util.MonitorSpec
 import nd.max.ui.util.presetOrNull
 import nd.max.ui.util.withPreset
 
@@ -514,6 +518,18 @@ fun FpsOverlayScreen(navController: NavController) {
                     }
                 }
             }
+
+            // ── ٦. المراقبات الإضافية: نوافذ مستقلّة، خدمة واحدة ───────────
+            MaxSection(
+                title = stringResource(R.string.hud_section_monitors),
+                description = stringResource(R.string.hud_section_monitors_desc)
+            ) {
+                HudMonitorsSection(
+                    onChanged = {
+                        if (state.enabled && hasOverlayPermission) startPanel(context)
+                    }
+                )
+            }
         }
     }
 }
@@ -687,3 +703,154 @@ private fun stopPanel(context: Context) {
             .setAction(FpsOverlayService.ACTION_STOP)
     )
 }
+
+/**
+ * مراقبات إضافية فوق المراقب الأوّل.
+ *
+ * **والأوّل غير معروض هنا بقصد:** له قسمه الكامل أعلاه (الحقول/الشكل/الحجم/الموضع)، وعرضه
+ * مرة ثانية كبطاقة كان سيجعل إعدادًا واحدًا في مكانين. هذه البطاقات **للإضافات فقط**.
+ *
+ * **والحدّ يُقال لا يُخفى:** عند بلوغ [MonitorPrefs.MAX_EXTRA] يُعطَّل صفّ الإضافة بسببه
+ * الظاهر، بدل أن يُقبل الضغط ثم لا يحدث شيء.
+ */
+@Composable
+private fun HudMonitorsSection(onChanged: () -> Unit) {
+    val context = LocalContext.current
+    val scheme = MaterialTheme.colorScheme
+    var monitors by remember { mutableStateOf(MonitorPrefs.load(context)) }
+
+    fun refresh() {
+        monitors = MonitorPrefs.load(context)
+        onChanged()
+    }
+
+    fun update(spec: MonitorSpec) {
+        MonitorPrefs.update(context, spec)
+        refresh()
+    }
+
+    val formOptions = listOf(
+        stringResource(R.string.hud_form_strip),
+        stringResource(R.string.hud_form_pane),
+        stringResource(R.string.hud_form_ring),
+        stringResource(R.string.hud_form_badge)
+    )
+    val arrangementOptions = listOf(
+        stringResource(R.string.hud_arrangement_line),
+        stringResource(R.string.hud_arrangement_stack)
+    )
+
+    if (monitors.isEmpty()) {
+        Text(
+            text = stringResource(R.string.hud_monitors_empty),
+            style = MaterialTheme.typography.bodySmall,
+            color = scheme.onSurfaceVariant,
+            modifier = Modifier.padding(horizontal = MaxSpace.groupPadding)
+        )
+    }
+
+    monitors.forEachIndexed { index, spec ->
+        MaxGroup {
+            MaxRow(
+                title = stringResource(R.string.hud_monitor_title, index + 2),
+                subtitle = stringResource(R.string.hud_monitor_own_settings),
+                icon = Icons.Rounded.Speed,
+                iconTone = MaxTone.Accent
+            )
+            MaxGroupDivider()
+            MaxNavigationRow(
+                title = stringResource(R.string.hud_monitor_delete),
+                subtitle = stringResource(R.string.hud_monitor_delete_desc),
+                onClick = {
+                    MonitorPrefs.remove(context, spec.id)
+                    refresh()
+                }
+            )
+        }
+
+        HudFieldGrid(
+            reading = null,
+            selected = spec.fields,
+            onToggle = { field ->
+                val next = spec.fields.toMutableSet()
+                if (!next.add(field)) next.remove(field)
+                update(spec.copy(fields = next))
+            }
+        )
+
+        MaxSegmented(
+            options = formOptions,
+            selectedIndex = spec.form.ordinal,
+            onSelect = { update(spec.copy(form = HudForm.entries[it])) }
+        )
+        MaxSegmented(
+            options = arrangementOptions,
+            selectedIndex = spec.arrangement.ordinal,
+            onSelect = { update(spec.copy(arrangement = HudArrangement.entries[it])) },
+            enabled = spec.form.acceptsArrangement()
+        )
+
+        MaxGroup {
+            MaxSwitchRow(
+                title = stringResource(R.string.hud_graph_title),
+                subtitle = stringResource(R.string.hud_graph_desc),
+                checked = spec.showGraph,
+                onCheckedChange = { update(spec.copy(showGraph = it)) }
+            )
+            if (spec.showGraph) {
+                MaxSegmented(
+                    options = FpsOverlayPrefs.GRAPH_SPANS.map {
+                        stringResource(R.string.hud_graph_span, it)
+                    },
+                    selectedIndex = FpsOverlayPrefs.GRAPH_SPANS.indexOf(spec.graphSpan)
+                        .coerceAtLeast(0),
+                    onSelect = {
+                        update(spec.copy(graphSpan = FpsOverlayPrefs.GRAPH_SPANS[it]))
+                    }
+                )
+            }
+            MaxGroupDivider()
+            MaxSwitchRow(
+                title = stringResource(R.string.hud_snap_title),
+                subtitle = stringResource(R.string.hud_snap_desc),
+                checked = spec.snapEdges,
+                onCheckedChange = { update(spec.copy(snapEdges = it)) }
+            )
+        }
+
+        Spacer(Modifier.height(MaxSpace.sm))
+    }
+
+    val canAdd = monitors.size < MonitorPrefs.MAX_EXTRA
+    MaxGroup {
+        MaxNavigationRow(
+            title = stringResource(R.string.hud_monitor_add),
+            subtitle = stringResource(R.string.hud_monitor_add_desc),
+            enabled = canAdd,
+            lockedReason = if (canAdd) {
+                null
+            } else {
+                stringResource(R.string.hud_monitor_max, MonitorPrefs.MAX_MONITORS)
+            },
+            onClick = {
+                if (canAdd) {
+                    MonitorPrefs.add(
+                        context,
+                        MonitorSpec(
+                            id = MonitorPrefs.newId(),
+                            form = FpsOverlayPrefs.load(context).form,
+                            arrangement = FpsOverlayPrefs.load(context).arrangement,
+                            colorHex = FpsOverlayPrefs.load(context).colorHex,
+                            textSizeSp = FpsOverlayPrefs.load(context).textSizeSp,
+                            backgroundAlpha = FpsOverlayPrefs.load(context).backgroundAlpha,
+                            widthScale = FpsOverlayPrefs.load(context).widthScale,
+                            snapEdges = FpsOverlayPrefs.load(context).snapEdges
+                        )
+                    )
+                    refresh()
+                }
+            }
+        )
+    }
+}
+

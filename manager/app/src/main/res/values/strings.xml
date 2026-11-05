@@ -647,6 +647,16 @@
     <string name="hud_graph_span">%1$d samples</string>
     <string name="hud_snap_title">Snap to the edge</string>
     <string name="hud_snap_desc">On release the window jumps to the nearest side instead of staying where it blocks the view.</string>
+    <string name="hud_section_monitors">Extra monitors</string>
+    <string name="hud_section_monitors_desc">Up to two more floating panels. Each has its own fields, shape, size and position; all share one reading loop.</string>
+    <string name="hud_monitors_empty">Only the monitor above is shown. Add another to watch a second set of fields without leaving what you are doing.</string>
+    <string name="hud_monitor_title">Monitor %1$d</string>
+    <string name="hud_monitor_own_settings">Its own fields, shape and position.</string>
+    <string name="hud_monitor_delete">Remove monitor</string>
+    <string name="hud_monitor_delete_desc">Closes this panel only; the others stay.</string>
+    <string name="hud_monitor_add">Add monitor</string>
+    <string name="hud_monitor_add_desc">A separate floating panel with its own settings.</string>
+    <string name="hud_monitor_max">%1$d monitors is the limit; remove one to add another.</string>
     <string name="hud_source_surfaceflinger_note">Counts frames from the display compositor — the most accurate and the cheapest to read.</string>
     <string name="hud_source_kernel_note">Reads a kernel node the vendor exposes. Availability depends on the kernel, not on the app.</string>
     <string name="hud_source_dumpsys_note">Asks the graphics service for an average. Slower and coarser, but it answers on devices where the others do not.</string>

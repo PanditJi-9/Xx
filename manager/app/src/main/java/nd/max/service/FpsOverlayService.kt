@@ -3,7 +3,7 @@
  * Proprietary and confidential — not licensed for use, copying, or distribution
  * without prior written permission from the copyright holder.
  *
- * خدمة لوحة الأداء: تُشغّل دورة القراءة الواحدة وتملك النافذة العائمة، وتُمرّر الرسم إلى
+ * خدمة لوحة الأداء: تُشغّل دورة القراءة الواحدة وتملك النوافذ العائمة، وتُمرّر الرسم إلى
  * `HudSurface`. ولا تقرأ عتادًا بنفسها ولا تكتب عليه — القارئ هو `HudSampler`.
  * */
 
@@ -18,15 +18,17 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.LifecycleService
-import androidx.lifecycle.lifecycleScope
 import nd.max.R
 import nd.max.core.platform.HUD_OWNER_OVERLAY
+import nd.max.core.platform.HudArrangement
+import nd.max.core.platform.HudField
+import nd.max.core.platform.HudForm
 import nd.max.core.platform.HudLive
 import nd.max.core.platform.HudRecorder
 import nd.max.core.platform.HudSampler
@@ -34,9 +36,11 @@ import nd.max.ui.component.HudRestoreTab
 import nd.max.ui.component.HudSurface
 import nd.max.ui.overlay.OverlayWindow
 import nd.max.ui.util.FpsOverlayPrefs
+import nd.max.ui.util.MonitorPrefs
+import nd.max.ui.util.MonitorSpec
 
 /**
- * النافذة العائمة التي تُظهر أداء الجهاز فوق أيّ تطبيق آخر.
+ * النوافذ العائمة التي تُظهر أداء الجهاز فوق أيّ تطبيق آخر.
  *
  * **وما تغيّر في إعادة البناء:** هذه الخدمة كانت تحمل ثلاث مسؤوليات معًا — عقد النافذة
  * العائمة، ورسم اللوحة بثلاث شيفرات منفصلة، وقراءة المقاييس. فصارت تحمل **واحدة**: القيادة.
@@ -48,75 +52,64 @@ import nd.max.ui.util.FpsOverlayPrefs
  * | قراءة المقاييس وحلقة التحديث | `core/platform/HudSession.kt` (`HudSampler`) |
  * | رسم اللوحة بثلاث صور | `ui/component/HudSurface.kt` (مُصيِّر واحد يستعمله التراكب والمعاينة) |
  *
- * **ولماذا هذا ليس تجميلًا:** كانت اللوحة تُرسم بشيفرة لا تعرفها شاشة الإعدادات، فالمعاينة
- * وصفٌ بالكلام لا صورة، وكل اختيار يُجرَّب بالخروج إلى لعبة. ووحدة الرسم تُزيل هذا الصنف من
- * العطب لا تُصلح حالة منه.
+ * **وتعدّد المراقبات لا يعني تعدّد الخدمات:** خدمة واحدة، و[OverlayWindow] واحدة لكل مراقب،
+ * وقارئ واحد ([HudSampler]) يضمّ حقول المالكين. فإضافة مراقب ثالث لا تفتح حلقة قراءة ثالثة
+ * ولا تُكرّر المراقبة التي يمنعها العقد.
  *
- * **والقارئ واحد:** حين تكون شاشة الإعدادات مفتوحة تُغيَّر الحقول فورًا لأنّ `HudSampler` يقرأ
- * التفضيلات كل دورة — لا عند الإقلاع فقط.
+ * **والمراقب الأوّل يبقى على مفاتيحه القديمة** (`FpsOverlayPrefs`): لاحظه `PersistRestorer`
+ * وتقرؤه الاختبارات، فتحويله إلى المخزن الجديد يهجر إعدادًا محفوظًا بلا مقابل.
  */
 class FpsOverlayService : LifecycleService() {
 
     companion object {
-        /** هل التراكب معروض الآن؟ تقرأه شاشة الإعدادات قبل أن تعير القارئ منها. */
+        private const val PRIMARY_ID = "primary"
+
         var isRunning = false
             private set
 
-        const val CHANNEL_ID = "maxmanager_fps_overlay"
-        const val NOTIF_ID = 9021
+        private const val CHANNEL_ID = "maxmanager_fps_overlay"
+        private const val NOTIF_ID = 9021
         const val ACTION_STOP = "nd.max.service.FpsOverlayService.STOP"
-
-        /** أضيق عرض للوحة قبل معامل العرض — رقم واحد يقرأه الرسم والتلميح معًا. */
         private const val PANEL_MIN_WIDTH_DP = 90f
 
-        /**
-         * يُشغّل التراكب من أي واجهة: شاشة الإعدادات، أو **اختصار FPS داخل تراكب اللعبة**
-         * (§1.2 من الطلب).
-         *
-         * و`startForegroundService` من سياق أمامي هو المسار الصحيح هنا: الاختصار يُلمس واللعبة
-         * أمامية، والخدمة تُعلن إشعارها في `onCreate` فلا تُخرق مهلة الإشعار. وإقلاعه مرّتين
-         * أو وهو يعمل لا يضرّ (`START_STICKY` وonStartCommand يتعافيان).
-         */
         fun start(context: Context) {
             runCatching {
-                ContextCompat.startForegroundService(context, Intent(context, FpsOverlayService::class.java))
+                ContextCompat.startForegroundService(
+                    context,
+                    Intent(context, FpsOverlayService::class.java)
+                )
             }
         }
 
-        /** يُوقف التراكب من أي واجهة — بنفس الأمر الذي تُوقف به الشاشة نفسها. */
         fun stop(context: Context) {
             runCatching {
-                context.startService(Intent(context, FpsOverlayService::class.java).setAction(ACTION_STOP))
+                context.startService(
+                    Intent(context, FpsOverlayService::class.java).setAction(ACTION_STOP)
+                )
             }
         }
     }
 
-    private lateinit var panel: OverlayWindow
+    /** نوافذ المراقبات المفتوحة، بمعرّف المراقب. */
+    private val panels = LinkedHashMap<String, OverlayWindow>()
 
     /**
-     * هل طُويت اللوحة الآن؟
+     * طيّ كل مراقب على حِدة.
      *
-     * **وفي الخدمة لا في التفضيلات عن قصد:** الطيّ قرار لحظة («أُخفيها لألعب الآن») لا إعداد
-     * دائم — ولو خُزِّن لعاد التراكب كبسولةً في كل تشغيل، ويظنّ المستخدم أنّ اللوحة لم تعمل
-     * أصلًا، وهو عطب أشبه بالاختفاء من أن يكون راحة. تُصفَّر عند إقلاع الخدمة، ويُصفَّر أيضًا
-     * إن أُطفئ التراكب ثم أُشعل.
+     * **ولماذا خريطة لا بوليًا واحدًا:** كانت اللوحة الواحدة تُطوى وتُسترجع معًا. ومع ثلاثة
+     * مراقبات، طيّ واحد كان سيُخفي الثلاثة بينما العنوان يقول إنه طوى واحدًا.
      */
-    private val hidden = mutableStateOf(false)
+    private val hidden = mutableStateMapOf<String, Boolean>()
+
+    private var refused = false
 
     override fun onCreate() {
         super.onCreate()
-        // بوّابة الخدمة: خدمة تعمل على نسخة معدَّلة تُنفّذ طلب المعدِّل بلا واجهة أصلًا.
-        if (SecurityEnforcement.refuseService(this, IntegrityCheckpoint.SERVICE)) return
-        panel = OverlayWindow(
-            this,
-            // الموضع يُحفظ عند استقراره لا في كل إطار، ويُستعاد عند الإقلاع — فلا تعود
-            // اللوحة إلى الزاوية في كل مرة تُشغَّل.
-            onMoved = { x, y -> FpsOverlayPrefs.savePosition(applicationContext, x, y) },
-            // §2: «منع تداخل اللوحة مع حواف الشاشة أو النتوءات» — هذه اللوحة وحدها بين
-            // نوافذ التراكب تطلب ذلك (الجزيرة تقصد وسط الأعلى، ومقبض اللوحة يعيش على الحافة عمدًا).
-            avoidCutout = true
-        )
-        hidden.value = false
+        if (SecurityEnforcement.refuseService(this, IntegrityCheckpoint.SERVICE)) {
+            refused = true
+            return
+        }
+        hidden.clear()
         startOverlayForeground(
             OverlayNotice(
                 channelId = CHANNEL_ID,
@@ -136,80 +129,214 @@ class FpsOverlayService : LifecycleService() {
             stopSelf()
             return START_NOT_STICKY
         }
-        if (!panel.isShown) {
-            val mounted = panel.mount(
-                dragEnabled = true,
-                // يُقرأ لحظة الإفلات لا لحظة التركيب: إطفاء الالتصاق يُطبَّق بلا إعادة تشغيل.
-                snapToEdges = { FpsOverlayPrefs.load(applicationContext).snapEdges }
-            ) {
-                Panel()
-            }
-            if (!mounted) {
-                isRunning = false
-                stopSelf()
-                return START_NOT_STICKY
-            }
-            isRunning = true
-            // الموضع المحفوظ يُستعاد بعد أوّل قياس للمحتوى (يحتاج مقاس النافذة للقصّ).
-            FpsOverlayPrefs.loadPosition(applicationContext)?.let { (x, y) ->
-                panel.restorePosition(x, y)
-            }
-            HudSampler.start(
-                context = applicationContext,
-                owner = HUD_OWNER_OVERLAY,
-                fields = { FpsOverlayPrefs.load(applicationContext).fields }
-            )
+        if (refused) {
+            stopSelf()
+            return START_NOT_STICKY
         }
-        return START_STICKY
+
+        // كل نداء يزامن القائمة المحفوظة مع النوافذ القائمة: إضافة مراقب أو حذفه تظهر بلا
+        // إعادة تشغيل الخدمة، وفشل نافذة واحدة لا يُسقط الباقيات.
+        syncPanels()
+        isRunning = panels.isNotEmpty()
+        return if (isRunning) {
+            START_STICKY
+        } else {
+            stopSelf()
+            START_NOT_STICKY
+        }
     }
 
     override fun onDestroy() {
-        HudSampler.stop(HUD_OWNER_OVERLAY)
-        panel.unmount()
+        panels.keys.toList().forEach { id ->
+            panels.remove(id)?.unmount()
+            HudSampler.stop(ownerOf(id))
+            hidden.remove(id)
+        }
         isRunning = false
         super.onDestroy()
     }
 
+    /** مالك القارئ لهذا المراقب: الأوّل باسمه القديم، والإضافات باسمها الخاص. */
+    private fun ownerOf(id: String): String =
+        if (id == PRIMARY_ID) HUD_OWNER_OVERLAY else "monitor:$id"
+
+    private fun wantedMonitors(): List<MonitorView> {
+        val monitors = ArrayList<MonitorView>(MonitorPrefs.MAX_MONITORS)
+        monitors.add(MonitorView(id = PRIMARY_ID, owner = HUD_OWNER_OVERLAY, primary = true))
+        MonitorPrefs.load(applicationContext).forEach { spec ->
+            monitors.add(MonitorView(id = spec.id, owner = ownerOf(spec.id), primary = false))
+        }
+        return monitors
+    }
+
     /**
-     * اللوحة تُقرأ كل دورة: التفضيلات تُعاد قراءتها عند كل عيّنة، فتغيير الشكل أو اللون أو
-     * الحقول من الشاشة يظهر في النافذة خلال ثانية بلا إعادة تشغيل الخدمة.
+     * يُطابق النوافذ القائمة مع المطلوب: يُنشئ الناقص، ويُسقط الزائد.
+     *
+     * **ورفضُ التركيب يُعلن نفسه:** نافذة لم تُركَّب لا تدخل الخريطة، فإن فشلت كلها صارت
+     * `isRunning = false` وتوقّفت الخدمة بدل إشعار أماميّ بلا نافذة.
      */
+    private fun syncPanels() {
+        val wanted = wantedMonitors()
+        val wantedIds = wanted.mapTo(HashSet()) { it.id }
+
+        panels.keys.filter { it !in wantedIds }.forEach { id ->
+            panels.remove(id)?.unmount()
+            HudSampler.stop(ownerOf(id))
+            hidden.remove(id)
+        }
+
+        wanted.forEach { view ->
+            if (panels.containsKey(view.id)) return@forEach
+
+            val window = OverlayWindow(
+                this,
+                onMoved = { x, y -> savePosition(view, x, y) },
+                avoidCutout = true
+            )
+            val mounted = runCatching {
+                window.mount(
+                    dragEnabled = true,
+                    snapToEdges = { loadView(view).snapEdges }
+                ) { Panel(view) }
+            }.getOrDefault(false)
+
+            if (!mounted) {
+                runCatching { window.unmount() }
+                return@forEach
+            }
+
+            panels[view.id] = window
+            savedPosition(view)?.let { (x, y) -> window.restorePosition(x, y) }
+            HudSampler.start(
+                context = applicationContext,
+                owner = view.owner,
+                fields = { loadView(view).fields.toSet() }
+            )
+        }
+    }
+
+    private fun savePosition(view: MonitorView, x: Int, y: Int) {
+        if (view.primary) {
+            FpsOverlayPrefs.savePosition(applicationContext, x, y)
+        } else {
+            MonitorPrefs.savePosition(applicationContext, view.id, x, y)
+        }
+    }
+
+    private fun savedPosition(view: MonitorView): Pair<Int, Int>? {
+        if (view.primary) return FpsOverlayPrefs.loadPosition(applicationContext)
+        val spec = MonitorPrefs.load(applicationContext).firstOrNull { it.id == view.id }
+            ?: return null
+        val x = spec.posX ?: return null
+        val y = spec.posY ?: return null
+        return x to y
+    }
+
+    /**
+     * إعدادات الرسم لهذا المراقب، مقروءة الآن.
+     *
+     * والمراقب المحذوف من التخزين يعود إلى الافتراضي بدل أن يختفي فجأة: النافذة تُسحب في
+     * المزامنة التالية، وما بينهما يرسم إعدادًا صالحًا لا فراغًا.
+     */
+    private fun loadView(view: MonitorView): HudView {
+        if (view.primary) {
+            val state = FpsOverlayPrefs.load(applicationContext)
+            return HudView(
+                fields = state.orderedFields,
+                form = state.form,
+                arrangement = state.arrangement,
+                colorHex = state.colorHex,
+                textSizeSp = state.textSizeSp,
+                backgroundAlpha = state.backgroundAlpha,
+                widthScale = state.widthScale,
+                showGraph = state.showGraph,
+                graphSpan = state.graphSpan,
+                snapEdges = state.snapEdges
+            )
+        }
+
+        val spec = MonitorPrefs.load(applicationContext).firstOrNull { it.id == view.id }
+            ?: MonitorSpec(id = view.id)
+        return HudView(
+            fields = spec.orderedFields,
+            form = spec.form,
+            arrangement = spec.arrangement,
+            colorHex = spec.colorHex,
+            textSizeSp = spec.textSizeSp,
+            backgroundAlpha = spec.backgroundAlpha,
+            widthScale = spec.widthScale,
+            showGraph = spec.showGraph,
+            graphSpan = spec.graphSpan,
+            snapEdges = spec.snapEdges
+        )
+    }
+
+    /** إغلاق مراقب: الأوّل يُوقف الخدمة، والإضافي يُحذف ويُسقط وحده. */
+    private fun closeMonitor(view: MonitorView) {
+        if (view.primary) {
+            stopSelf()
+            return
+        }
+        MonitorPrefs.remove(applicationContext, view.id)
+        panels.remove(view.id)?.unmount()
+        HudSampler.stop(view.owner)
+        hidden.remove(view.id)
+        isRunning = panels.isNotEmpty()
+    }
+
     @Composable
-    private fun Panel() {
+    private fun Panel(view: MonitorView) {
         val snapshot by HudLive.snapshot.collectAsState()
-        val prefs = remember(snapshot.sampledAtMs) { FpsOverlayPrefs.load(applicationContext) }
-        val accent = remember(prefs.colorHex) {
-            runCatching { Color(android.graphics.Color.parseColor(prefs.colorHex)) }
+        // التفضيلات تُقرأ كل دورة: تغيير الحقول أو الشكل يظهر خلال ثانية بلا إعادة تشغيل.
+        val hud = remember(view.id, snapshot.sampledAtMs) { loadView(view) }
+        val accent = remember(hud.colorHex) {
+            runCatching { Color(android.graphics.Color.parseColor(hud.colorHex)) }
                 .getOrDefault(Color(0xFF00E676))
         }
 
-        // الطيّ: لا تُرسم اللوحة أصلًا بل الكبسولة وحدها. والقارئ (`HudSampler`) لا يتوقّف —
-        // فهو مالك مشترك يخدم معاينة الشاشة أيضًا، وإيقافه وإشعاله هنا يُدخلان حالة ثالثة
-        // وتوقيتًا لا لزوم له في مقابل قراءة ملفّ في الثانية.
-        if (hidden.value) {
-            HudRestoreTab(onShow = { hidden.value = false })
+        if (hidden[view.id] == true) {
+            HudRestoreTab(onShow = { hidden[view.id] = false })
             return
         }
 
         HudSurface(
-            form = prefs.form,
-            arrangement = prefs.arrangement,
+            form = hud.form,
+            arrangement = hud.arrangement,
             reading = snapshot.reading,
-            fields = prefs.orderedFields,
+            fields = hud.fields,
             accent = accent,
-            textSizeSp = prefs.textSizeSp,
-            backgroundAlpha = prefs.backgroundAlpha,
-            framesHistory = snapshot.framesHistory.takeLast(prefs.graphSpan),
-            showGraph = prefs.showGraph,
+            textSizeSp = hud.textSizeSp,
+            backgroundAlpha = hud.backgroundAlpha,
+            framesHistory = snapshot.framesHistory.takeLast(hud.graphSpan),
+            showGraph = hud.showGraph,
             recording = snapshot.recording,
             onToggleRecording = {
                 if (HudRecorder.isLive) HudRecorder.stop() else HudRecorder.start()
             },
-            // الطيّ يبقى في النافذة (الخدمة تعمل)، والإغلاق يُنهيها — وهو الفرق الذي يفصله
-            // الشكل نفسه: زرّ العين يُرجع، وزرّ × يُنزل الإشعار.
-            onHide = { hidden.value = true },
-            onClose = { stopSelf() },
-            modifier = Modifier.widthIn(min = (PANEL_MIN_WIDTH_DP * prefs.widthScale).dp)
+            onHide = { hidden[view.id] = true },
+            onClose = { closeMonitor(view) },
+            modifier = Modifier.widthIn(min = (PANEL_MIN_WIDTH_DP * hud.widthScale).dp)
         )
     }
 }
+
+/** مراقب واحد كما تراه الخدمة: معرّفه ومالكه وهل هو الأوّل. */
+private data class MonitorView(
+    val id: String,
+    val owner: String,
+    val primary: Boolean
+)
+
+/** لقطة إعدادات الرسم — تُوحّد مصدرين (القديم والجديد) في شكل واحد. */
+private data class HudView(
+    val fields: List<HudField>,
+    val form: HudForm,
+    val arrangement: HudArrangement,
+    val colorHex: String,
+    val textSizeSp: Float,
+    val backgroundAlpha: Float,
+    val widthScale: Float,
+    val showGraph: Boolean,
+    val graphSpan: Int,
+    val snapEdges: Boolean
+)

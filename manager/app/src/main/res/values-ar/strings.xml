@@ -1508,6 +1508,16 @@
     <string name="hud_graph_span">%1$d عيّنة</string>
     <string name="hud_snap_title">الالتصاق بالحافة</string>
     <string name="hud_snap_desc">عند الإفلات تنتقل النافذة إلى أقرب جانب بدل أن تبقى حيث تحجب الرؤية.</string>
+    <string name="hud_section_monitors">مراقبات إضافية</string>
+    <string name="hud_section_monitors_desc">حتى لوحين عائمين إضافيين. لكلٍّ حقوله وشكله وحجمه وموضعه، وكلها تشترك في حلقة قراءة واحدة.</string>
+    <string name="hud_monitors_empty">المعروض الآن هو المراقب أعلاه وحده. أضف آخر لمتابعة مجموعة حقول ثانية دون مغادرة ما تفعله.</string>
+    <string name="hud_monitor_title">المراقب %1$d</string>
+    <string name="hud_monitor_own_settings">حقوله وشكله وموضعه الخاصّة.</string>
+    <string name="hud_monitor_delete">حذف المراقب</string>
+    <string name="hud_monitor_delete_desc">يُغلق هذا اللوح وحده، وتبقى البقيّة.</string>
+    <string name="hud_monitor_add">إضافة مراقب</string>
+    <string name="hud_monitor_add_desc">لوح عائم منفصل بإعداداته الخاصّة.</string>
+    <string name="hud_monitor_max">الحدّ %1$d مراقبات؛ احذف واحدًا لتضيف آخر.</string>
     <string name="hud_source_surfaceflinger_note">يعدّ الإطارات من مُركّب العرض — وهو الأدقّ وأرخص ما يُقرأ.</string>
     <string name="hud_source_kernel_note">يقرأ عقدة نواة تُتيحها الشركة المصنّعة. وتوفّرها يعتمد على النواة لا على التطبيق.</string>
     <string name="hud_source_dumpsys_note">يسأل خدمة الرسوم عن متوسط. أبطأ وأخشن، لكنه يجيب على أجهزة لا يجيب عليها غيره.</string>
