@@ -20,6 +20,30 @@ internal data class CatalogEntry(
     val candidates: List<String>,
     val write: List<String>,
     val danger: String,
+    val readOnly: Boolean = false,
+    val readOnlyReason: String? = null,
+)
+
+/**
+ * مفاتيح بقيت **قراءةً فقط** بقرار مكتوب (ADR-89).
+ *
+ * **ولماذا قائمة في الاختبار:** القرار نفسه يجب أن يُقاس. فلو حُوّل أحدها إلى قابل للكتابة بلا
+ * جولة قرار جديدة، سقط الاختبار بالاسم — بدل أن يمرّ التغيير صامتًا لأن «الكتالوج ما زال سليمًا».
+ */
+internal val IMPOUNDED_READ_ONLY_KEYS = listOf(
+    "cpu.perfserv_freq",
+    "cpu_core_online:{n}",
+    "gpu_governor_policy:{device}",
+    "touch_gesture:{path}",
+    "zram.{n}.size",
+)
+
+/** مفردات الأسباب المعلنة — مطابقة لِـ`READ_ONLY_REASONS` في `tools/gen_control_catalog.py`. */
+internal val READ_ONLY_REASONS = setOf(
+    "EXISTING_WRITER_NOT_ROUTED",
+    "AWAITING_CANONICAL_KEY",
+    "NO_WRITE_PATH",
+    "PROTECTED_BY_DESIGN",
 )
 
 /**
@@ -57,6 +81,8 @@ class ControlCatalogParityTest {
                 write = entry.getValue("privilege").jsonObject.getValue("write").jsonArray
                     .map { it.jsonPrimitive.content },
                 danger = entry.str("danger"),
+                readOnly = entry["read_only_until_canonical_key"]?.jsonPrimitive?.content?.toBoolean() == true,
+                readOnlyReason = entry["read_only_reason"]?.jsonPrimitive?.content,
             )
         }
         unmapped = root.getValue("unmapped").jsonArray.map { it.jsonObject.str("path") }
@@ -115,6 +141,21 @@ class ControlCatalogParityTest {
         )
     }
 
+    @Test
+    fun theReadOnlyLedgerIsExactlyTheDecidedFive() {
+        assertEquals(IMPOUNDED_READ_ONLY_KEYS.sorted(), entries.filter { it.readOnly }.map { it.key }.sorted())
+    }
+
+    @Test
+    fun aReadOnlyEntryCarriesADeclaredReason() {
+        assertEquals(emptyList<String>(), CatalogGaps.readOnlyWithoutReason(entries, READ_ONLY_REASONS))
+        assertEquals(
+            "سبب بلا عَلَم — سببٌ يتيم",
+            emptyList<String>(),
+            CatalogGaps.reasonWithoutReadOnly(entries),
+        )
+    }
+
     // ───────────────────────────── الحالات السلبية ─────────────────────────────
 
     @Test
@@ -156,6 +197,23 @@ class ControlCatalogParityTest {
         )
         assertTrue(CatalogGaps.emptyNodeCandidates(mutated).contains(HardwareControlKey.CPU_BOOST))
     }
+
+    @Test
+    fun aReadOnlyEntryWithoutAReasonIsCaughtByName() {
+        val key = "cpu.perfserv_freq"
+        val mutated = listOf(CatalogEntry(key, "NODE", listOf("/proc/x"), listOf("MAGISK"), "HIGH", readOnly = true))
+        assertEquals(listOf(key), CatalogGaps.readOnlyWithoutReason(mutated, READ_ONLY_REASONS))
+    }
+
+    @Test
+    fun anInventedReadOnlyReasonIsCaught() {
+        val key = "zram.{n}.size"
+        val mutated = listOf(
+            CatalogEntry(key, "NODE", listOf("/sys/block/zram0/disksize"), emptyList(), "HIGH",
+                readOnly = true, readOnlyReason = "BECAUSE"),
+        )
+        assertEquals(listOf(key), CatalogGaps.readOnlyWithoutReason(mutated, READ_ONLY_REASONS))
+    }
 }
 
 /**
@@ -184,6 +242,16 @@ internal object CatalogGaps {
 
     fun emptyNodeCandidates(entries: List<CatalogEntry>): List<String> =
         entries.filter { it.transport == "NODE" && it.candidates.isEmpty() }.map { it.key }
+
+    /** قراءة-فقط بلا سبب معلن — أو بسبب خارج المفردات. */
+    fun readOnlyWithoutReason(entries: List<CatalogEntry>, reasons: Set<String>): List<String> =
+        entries.filter { entry ->
+            entry.readOnly && entry.readOnlyReason?.let { it in reasons } != true
+        }.map { it.key }
+
+    /** سببٌ كُتب بلا عَلَم — سببٌ يتيم يشير إلى قرار غير قائم. */
+    fun reasonWithoutReadOnly(entries: List<CatalogEntry>): List<String> =
+        entries.filter { !it.readOnly && it.readOnlyReason != null }.map { it.key }
 
     fun uncoveredMeasured(
         measured: List<String>,

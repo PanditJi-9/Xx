@@ -11,7 +11,7 @@
 الاستعمال:
     python3 tools/gen_control_catalog.py --assert     # الحكم: exit 0 أو تفصيل المخالفات
     python3 tools/gen_control_catalog.py --check      # الصيغة القانونية (بايت-ببايت)
-    python3 tools/gen_control_catalog.py --self-test  # يقيس المدقّق نفسه بحقن أربعة عطوب
+    python3 tools/gen_control_catalog.py --self-test  # يقيس المدقّق نفسه بحقن خمسة عطوب
 """
 
 from __future__ import annotations
@@ -31,6 +31,15 @@ POLICIES = {"READ_BACK_EQUAL", "READ_BACK_TOLERANCE", "NONE"}
 DANGERS = {"LOW", "MEDIUM", "HIGH", "PROTECTED"}
 ORIGINS = {"MEASURED", "DERIVED"}
 REASONS = {"ROOT_ONLY", "NO_NODE", "NO_PERMISSION", "DENIED_BY_POLICY", "UNKNOWN"}
+
+# سبب بقاء مدخلٍ قابلٍ للكتابة فيزيائيًّا **قراءةً فقط** — مفردات مغلقة، فلا يُترك السبب نصًّا حرًّا
+# لا يُقاس. (ADR-89: المفتاح لا يُعلَن ما دام كاتبه القائم خارج الكتالوج.)
+READ_ONLY_REASONS = {
+    "EXISTING_WRITER_NOT_ROUTED",  # كاتب قائم في `ui/` أو backend لا يمرّ بالـarbiter بعد
+    "AWAITING_CANONICAL_KEY",      # لا بادئة في HardwareControlKey بعد
+    "NO_WRITE_PATH",               # العقدة تُقرأ فقط بحكم النواة
+    "PROTECTED_BY_DESIGN",         # محميّة بقرار (حرارة/watchdog)
+}
 
 
 def canonical(data: dict) -> str:
@@ -96,6 +105,13 @@ def violations(data: dict, known_prefixes: list[str]) -> list[str]:
                 out.append(f"{where}: candidate path ليس مسارًا مطلقًا ({candidate.get('path')})")
         if danger == "PROTECTED" and write:
             out.append(f"{where}: PROTECTED بقائمة كتابة {write} — محظور")
+        # قراءة-فقط بلا سبب = قرار مخفيّ. والقاعدة تُقفل الاتجاهين: لا عَلَم بلا سبب، ولا سبب بلا عَلَم.
+        read_only = entry.get("read_only_until_canonical_key") is True
+        reason = entry.get("read_only_reason")
+        if read_only and reason not in READ_ONLY_REASONS:
+            out.append(f"{where}: قراءة-فقط بلا سبب معلن ({reason}) — القرار يُكتب لا يُفهم")
+        if not read_only and reason is not None:
+            out.append(f"{where}: سبب قراءة-فقط بلا عَلَم ({reason}) — سببٌ يتيم")
     # وكل بادئة معلنة يجب أن تظهر — وإلّا فُقد مقبض كامل بلا سطر.
     for prefix in known_prefixes:
         if prefix and not any(str(e.get("key", "")).startswith(prefix) for e in entries):
@@ -138,6 +154,13 @@ def self_test() -> int:
     empty["entries"][0]["transport"] = "NODE"
     cases.append(("عقدة بلا مرشّح", empty))
 
+    silent = json.loads(json.dumps(base))
+    for entry in silent["entries"]:
+        if entry.get("read_only_until_canonical_key") is True:
+            entry.pop("read_only_reason", None)
+            break
+    cases.append(("قراءة-فقط بلا سبب معلن", silent))
+
     failed = 0
     for name, data in cases:
         found = violations(data, known)
@@ -174,8 +197,10 @@ def main(argv: list[str]) -> int:
             print("   " + line)
         return 1
     covered = sum(len(e.get("candidates") or []) for e in data["entries"])
+    read_only = [e["key"] for e in data["entries"] if e.get("read_only_until_canonical_key") is True]
     print(f"✓ الكتالوج: {len(data['entries'])} مدخلًا · {covered} مرشّحًا · "
-          f"{len(data.get('unmapped') or [])} غير مُخطَّط · {len(known)} بادئة")
+          f"{len(data.get('unmapped') or [])} غير مُخطَّط · {len(known)} بادئة · "
+          f"{len(read_only)} قراءة-فقط بسبب معلن")
     return 0
 
 

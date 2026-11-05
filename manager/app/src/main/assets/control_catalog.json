@@ -89,7 +89,8 @@
         "write": []
       },
       "danger": "HIGH",
-      "read_only_until_canonical_key": true
+      "read_only_until_canonical_key": true,
+      "read_only_reason": "EXISTING_WRITER_NOT_ROUTED"
     },
     {
       "key": "cpu_topology",
@@ -197,7 +198,8 @@
         "write": []
       },
       "danger": "MEDIUM",
-      "read_only_until_canonical_key": true
+      "read_only_until_canonical_key": true,
+      "read_only_reason": "EXISTING_WRITER_NOT_ROUTED"
     },
     {
       "key": "gpu.busy_percentage",
@@ -347,7 +349,8 @@
         "write": []
       },
       "danger": "LOW",
-      "read_only_until_canonical_key": true
+      "read_only_until_canonical_key": true,
+      "read_only_reason": "EXISTING_WRITER_NOT_ROUTED"
     },
     {
       "key": "touch_device_index",
@@ -415,6 +418,10 @@
         {
           "path": "/sys/block/",
           "origin": "MEASURED"
+        },
+        {
+          "path": "/sys/block/zram0/disksize",
+          "origin": "MEASURED"
         }
       ],
       "verify": {
@@ -428,7 +435,8 @@
         "write": []
       },
       "danger": "HIGH",
-      "read_only_until_canonical_key": true
+      "read_only_until_canonical_key": true,
+      "read_only_reason": "EXISTING_WRITER_NOT_ROUTED"
     },
     {
       "key": "mem_frequency:{device}",
@@ -691,7 +699,8 @@
         "write": []
       },
       "danger": "HIGH",
-      "read_only_until_canonical_key": true
+      "read_only_until_canonical_key": true,
+      "read_only_reason": "EXISTING_WRITER_NOT_ROUTED"
     },
     {
       "key": "audio_stream:{token}",

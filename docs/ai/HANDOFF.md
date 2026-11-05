@@ -60,6 +60,55 @@ MaxManager has a strong engine and a fragmented surface. `core/maxai` + `core/ha
 
 ## Executor log
 
+### M2-BROKER-SLICE-01 + M1-CATALOG-WIRING-01 — الكتالوج يدخل المحلّل · طريق الكتابة يُعلَن مع كل كتابة · الخمسة تُقفل بقرار مقيس — 2026-11-05 · DONE (البوّابات مُتحقَّقة · والترجمة غير مُتحقَّقة في هذه البيئة)
+
+TASK: «أكمل من مكان توقفنا بدمج المشاريع الأربعة … إلى أن تترك فيهم العظم» — والمكان المسجّل هو
+`NEXT_TASK` أعلى الملفّ: ② قرار مفاتيح M2، ③ توصيل `HardwareCapabilityResolver` بالكتالوج (قراءة أوّلًا).
+
+CHANGED (٤ ملفّات منتج/اختبار جديدة + ٤ معدَّلة):
+- `core/hardware/CatalogControlIndex.kt` (جديد · نقيّ): قارئ `control_catalog.json` بـ
+  `kotlinx.serialization` (تبعية قائمة)، ومطابقة **ميزة عتاد ← مدخلها** بجدول رموز واحد، وترشيح
+  `literalNodes` (**قالب `{}`/`$` ونمط `*` ليسا عقدة تُقاس**)، و`CatalogCapabilityOverlay.apply`:
+  يرفع فقط (`NONE → READ_ONLY → READ_WRITE`)، ولا يرفع إلى كتابة من مدخل `PROTECTED`.
+- `core/hardware/HardwareCapabilityResolver.kt`: `overlayCatalog()` بعد القياس القائم (ADR-87 §4)،
+  وقراءة واحدة مخبَّأة للأصل، وقياس المرشّح بـ`File(path).isFile` (مجلّد ≠ قدرة · ADR-07).
+- `core/hardware/WriteReceipt.kt` (جديد): `WriteRoute { DAEMON, BINDER, ROOT_SHELL }` · `WriteAttempt`
+  · `WriteRouting.run` النقيّ · `WriteReceipt(path/wrote/readBack/outcome/route)`.
+- `core/hardware/RootFileAccess.kt`: الطبقات الثلاث صارت **محاولةً معزولة لكلٍّ** عبر
+  `WriteRouting.run`؛ وأُضيف `writeReceipt`/`writeReceiptWith` (الطريق مع الحكم). و`write` ·
+  `writeVerified` · `writeVerifiedWith` · `writeFireAndForget` بعوائدها القديمة حرفيًّا.
+- `FeatureCapability.catalogKeys` (افتراضيّ فارغ) — القياس يُعلَن ولا يُدمج في `backend` المعروض.
+- الكتالوج: `read_only_reason` للخمسة (`EXISTING_WRITER_NOT_ROUTED`)، ومرشّح `zram` الحقيقيّ
+  `/sys/block/zram0/disksize` بدل الاعتماد على مجلّدات. ٣١ مدخلًا · **٥٩** مرشّحًا.
+- الحرّاس: `gen_control_catalog.py` يفشل على عَلَمٍ بلا سبب/سبب خارج المفردات/سبب يتيم
+  (`--self-test` صار **٥ عطوب**)، و`ControlCatalogParityTest` يقيس **قائمة الخمسة بالاسم**.
+- CI: `gen_control_catalog.py --assert` دخل «Contract gates» في `build.yml` (+`--self-test`)
+  و`verify-quick.yml` — كانت البوابة موجودة ولا يشغّلها أحد، فالبيانات تُقاس الآن حيث يُقاس المُصرّف.
+
+VERIFIED (مقيس هنا):
+- **العطب الحقيقيّ الذي أُغلق:** استثناء `DaemonIpc` كان يُسقط كتلة الكتابة كلها فلا تُجرَّب طبقة
+  binder ولا صدفة الجذر (الفرع القديم `runCatching { … }` واحد). الآن كل طبقة معزولة — يقيسه
+  `WriteRoutingTest.aThrowingDaemonDoesNotBlockTheBinder`.
+- `gen_control_catalog.py --assert` = 0 · `--check` = 0 · `--self-test` = 0 (**٥/٥ + لا إيجابية كاذبة**).
+- مطابقة البيانات بالاسم في بايثون: المعلَّقون خمسة بالضبط، صفر سبب ناقص، صفر سبب يتيم.
+- قياس مرشّحات الكتالوج على هذه البيئة: **٥٥** مرشّحًا حرفيًّا، منها **٣** ملفّات موجودة فقط
+  (`scaling_cur_freq` · `/proc/loadavg` · `boot_id`) و**٤** قوالب مستثناة — أي أن الدمج لا يدّعي
+  قدرةً من مجلّد أو قالب.
+- البوّابات: `kt_balance` **٣١٩٨/٠** · `code_health` ✓ (الدَّين كما هو 9/26/5/4/0) · `i18n` ٠ عوائق
+  وprune ٠ يتيم · `design_tokens` ٢٥٠/٣٠٠ · `jni_symbols` ٢٣/٠/٠ (الطبقة ٢ بلا ثنائيات) ·
+  `resource_compile`: **لا `aapt2` هنا ⇒ غير مُتحقَّقة**.
+- اختبارات جديدة: **٢٠** دعوى (٦ `WriteRoutingTest` · ١٠ `CatalogControlIndexTest` · ٤ في التطابق).
+
+LIMITS: **لم تُصرَّف Kotlin** — لا JVM ولا Android SDK في هذه الجلسة (`java` غير موجود،
+`/usr/lib/android-sdk` غائب) ولا توكن GitHub في `/tmp/opencode` ⇒ **CI غير قابل للإطلاق من هنا**.
+فالحكم على الأنواع والاختبارات **من CI**، ويُكتب بجانبه: «الترجمة غير مُتحقَّقة في هذه البيئة».
+ولا مساس بأي كاتب قائم (`ui/**` لم تُلمس) — وترقية الخمسة إلى كتابة تحتاج جهازًا (ADR-89 §3).
+
+NEXT: ① CI: `Quick Verify` على هذه الشجرة (اختبارا الملفّين الجديدين + التطابق). ② M2-ب: توجيه كاتب
+واحد (ZRAM أو touch) عبر الـarbiter كمثالٍ مقيس، ثم قياس «صفر كتابة مباشرة من `ui/**`». ③ M3: أوّل
+مراقب `memoryStall` من `/proc/pressure/memory` بعقد `Observation`. ④ جهاز: هل يرفع الكتالوج قدرةً
+على عتاد MTK لم يرها `GpuHardwareBackend`؟
+
 ### M1-CATALOG-01 — كتالوج `ControlKey` المعلن: ٣١ مدخلًا · ٥٨ مرشّحًا · تطابق ١٤ بادئة باختبار نقيّ — 2026-11-03 · DONE (المدقّق والبوّابات مُتحقَّقة · واختبار Kotlin ينتظر CI)
 
 TASK: «نقل المشاريع الأربعة إلي مشروعي» — والمقصود **مراجع REA**: DevCheck 6.61 · FKM 7.0.29 ·

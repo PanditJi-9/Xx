@@ -163,14 +163,14 @@ object RootFileAccess {
      * (`!= WRITE_FAILED` مكافئة لـ`exec().isSuccess` القديمة).
      */
     fun write(path: String, value: String): Boolean =
-        writeOutcome(path, value) != WriteVerification.Outcome.WRITE_FAILED
+        writeReceipt(path, value).outcome != WriteVerification.Outcome.WRITE_FAILED
 
     /**
      * كتابة **متحقَّقة**: تُعيد حكمًا على **القيمة** لا على الأمر. الحكم يُحسب **مرّة واحدة**
      * هنا ويُعاد استخدامه، فلا تُقرأ العقدة مرّتين لمتصل يريد الحكم.
      */
     fun writeVerified(path: String, value: String): WriteVerification.Outcome =
-        writeOutcome(path, value)
+        writeReceipt(path, value).outcome
 
     /**
      * كتابة متحقَّقة بمقارِن مخصَّص — لعقدة تُرجع في القراءة أكثر مما كُتب (متجه حالة
@@ -181,7 +181,45 @@ object RootFileAccess {
         path: String,
         value: String,
         verify: (wrote: String, readBack: String?) -> WriteVerification.Outcome,
-    ): WriteVerification.Outcome = writeOutcome(path, value, verify)
+    ): WriteVerification.Outcome = writeReceiptWith(path, value, verify).outcome
+
+    /**
+     * الكتابة كاملةً مع **الطريق الفائز** (M2 · ADR-89).
+     *
+     * وهذا هو المدخل الجديد الوحيد: `write`/`writeVerified` تبقى بعائدها القديم حرفيًّا، فلا
+     * يتغيّر مستهلك واحد، ومن يريد معرفة الطبقة التي كتبت يقرأ منها.
+     */
+    fun writeReceipt(path: String, value: String): WriteReceipt =
+        writeReceiptWith(path, value, WriteVerification::compare)
+
+    /** نظير [writeVerifiedWith] بإيصال كامل — للمقارنات المخصّصة (متجهات الحالة). */
+    fun writeReceiptWith(
+        path: String,
+        value: String,
+        verify: (wrote: String, readBack: String?) -> WriteVerification.Outcome,
+    ): WriteReceipt {
+        val attempt = runWrite(path, value)
+
+        // `PEER-8`/`AR-31`: كل كتابة تُقرأ بعدها وتُسجَّل نتيجتها. الكلفة: قراءة واحدة إضافية —
+        // وليست في مسار إطار-بإطار بل في تغيير إعداد/تطبيق ملف.
+        val readBack = if (attempt.ok) read(path) else null
+        val outcome = if (!attempt.ok) {
+            WriteVerification.Outcome.WRITE_FAILED
+        } else {
+            verify(value, readBack)
+        }
+        try {
+            EventLog.writeCheck(
+                path = path,
+                wrote = value,
+                readBack = readBack,
+                verdict = WriteVerification.verdictWord(outcome),
+            )
+        } catch (_: Exception) {
+            // التسجيل لا يُسقط كتابةً نجحت.
+        }
+        return WriteReceipt(path, value, readBack, outcome, attempt.route)
+    }
 
     /**
      * كتابة لعقدة **تكتب فقط**: أمر الكتابة وحده بلا قراءة بعدها.
@@ -193,7 +231,7 @@ object RootFileAccess {
      * @return نجاح أمر الكتابة وحده (لا حكم على القيمة — لا قيمة مقروءة أصلًا).
      */
     fun writeFireAndForget(path: String, value: String): Boolean {
-        val wrote = runWriteCommand(path, value)
+        val wrote = runWrite(path, value).ok
         try {
             EventLog.writeCheck(
                 path = path,
@@ -211,50 +249,16 @@ object RootFileAccess {
     }
 
     /**
-     * النواة الواحدة: أمر الكتابة، ثم **قراءة للتحقّق**، ثم تسجيل الحكم. لا إصلاح ولا إعادة
-     * محاولة — القرار يبقى للمتصل.
+     * الكاتب نفسه مع **الطريق الفائز** — وهو ما يُعاد في [WriteReceipt] (M2).
+     *
+     * والطبقات الثلاث هي نفسها بلا تغيير: الخادم أولًا (بلا جذر في التطبيق) مع رقصة `chmod`
+     * لعقد HyperOS 0444، ثم binder، ثم صدفة الجذر. والفرق الوحيد أن كل طبقة معزولة في محاولتها،
+     * فالاستثناء في واحدة لا يمنع التي بعدها.
      */
-    private fun writeOutcome(
-        path: String,
-        value: String,
-        verify: (String, String?) -> WriteVerification.Outcome = WriteVerification::compare,
-    ): WriteVerification.Outcome {
-        val wrote = runWriteCommand(path, value)
-
-        // `PEER-8`/`AR-31`: كل كتابة تُقرأ بعدها وتُسجَّل نتيجتها. الكلفة: قراءة واحدة إضافية —
-        // وليست في مسار إطار-بإطار بل في تغيير إعداد/تطبيق ملف.
-        val readBack = if (wrote) read(path) else null
-        val outcome = if (!wrote) {
-            WriteVerification.Outcome.WRITE_FAILED
-        } else {
-            verify(value, readBack)
-        }
-        try {
-            EventLog.writeCheck(
-                path = path,
-                wrote = value,
-                readBack = readBack,
-                verdict = WriteVerification.verdictWord(outcome),
-            )
-        } catch (_: Exception) {
-            // التسجيل لا يُسقط كتابةً نجحت.
-        }
-        return outcome
-    }
-
-    /** أمر الكتابة وحده (IPC ثم صدفة الجذر) — بلا قراءة ولا تسجيل؛ القرار للمتصل. */
-    private fun runWriteCommand(path: String, value: String): Boolean = runCatching {
-            // قناة الخادم أولًا (بلا جذر في التطبيق): يكتب الخادم بنطاقه مع رقصة chmod لعقد HyperOS 0444.
-            // وأيّ غير النجاح الصريح — لا قناة، مسار خارج القائمة، فشل كتابة — يُكمل بالطريقين الاحتياطيين أدناه.
-            if (DaemonIpc.default.write(path, value)) return@runCatching true
-            // IPC first: RootNodeService.writeText performs the HyperOS chmod
-            // dance internally, so a false return is a real failure and the shell
-            // path below re-runs the same dance. Plain root writes to 0444 sysfs
-            // nodes are denied with EACCES on HyperOS 3 — real-device log showed
-            // every registry PERAPP_COMMIT ending in live-value-mismatch without it.
-            // A binder exception must not block the shell fallback either.
-            val viaIpc = try { RootNodeChannel.service?.writeText(path, value) } catch (_: Exception) { false }
-            if (viaIpc == true) return@runCatching true
+    internal fun runWrite(path: String, value: String): WriteAttempt = WriteRouting.run(
+        daemon = { DaemonIpc.default.write(path, value) },
+        binder = { RootNodeChannel.service?.writeText(path, value) },
+        shell = {
             val p = quote(path)
             Shell.cmd(
                 "m=\$(stat -c %a $p 2>/dev/null)",
@@ -262,7 +266,8 @@ object RootFileAccess {
                 "printf '%s\\n' ${quote(value)} > $p",
                 "chmod \$m $p 2>/dev/null"
             ).exec().isSuccess
-        }.getOrDefault(false)
+        },
+    )
 
     /** Read-only listing of both files and directories for discovery transports. */
     fun listNames(path: String): List<String> = runCatching {

@@ -26,6 +26,14 @@ enum class HardwareFeature {
     UFS_FREQUENCY,
     THERMAL_ZONES,
     THERMAL_COOLING,
+
+    /**
+     * هامش الحرارة من المنصّة (ADPF) — يُقرأ ولا يُكتب، وبلا جذر ولا عقدة `/sys`.
+     *
+     * وقدرةٌ مستقلّة عن [THERMAL_ZONES] عن قصد: تلك تقيس حرارةً **حدثت**، وهذه تقدّر خنقًا
+     * **سيقع**؛ وغياب إحداهما لا يقول شيئًا عن الأخرى. فتُعرض في المصفوفة بصفّها لا مدموجة.
+     */
+    THERMAL_HEADROOM,
     BATTERY_TELEMETRY,
     ZRAM,
     DISPLAY_REFRESH,
@@ -44,6 +52,15 @@ data class FeatureCapability(
     val access: AccessLevel,
     val backend: String,
     val evidence: List<String> = emptyList(),
+
+    /**
+     * مفاتيح الكتالوج التي فسّرت هذه القدرة (M1 §6 · ADR-87).
+     *
+     * **ولماذا حقل مستقلّ لا لاحقة في [backend]:** `backend` يُعرض ويُطبع في بصمة الجهاز، فتغييره
+     * يُغيّر نصًّا يراه المستخدم مقابل إضافة قياس. الحقل الجديد لا يلمس أي نصّ قائم، ويقول أيّ مدخلٍ
+     * بيانات أعطى هذه القدرة — وهو ما ستحتاجه المرحلة الرابعة لتوليد جدول القدرات من الكتالوج.
+     */
+    val catalogKeys: List<String> = emptyList(),
 ) {
     val readable: Boolean get() = access != AccessLevel.NONE
     val writable: Boolean get() = access == AccessLevel.READ_WRITE

@@ -122,6 +122,9 @@ jobs:
           python3 tools/i18n_coverage.py --assert
           python3 tools/i18n_coverage.py --prune all --assert
           python3 tools/design_tokens.py --assert
+          # كتالوج مفاتيح التحكّم (M1): مفتاح خارج `HardwareControlKey`، أو `PROTECTED` يقبل
+          # الكتابة، أو «قراءة-فقط بلا سبب معلن» (ADR-89) — كلّها تفشل في ثوانٍ هنا.
+          python3 tools/gen_control_catalog.py --assert
           python3 tools/jni_symbols.py --assert
           # aapt2 الحقيقي: حكم المورد الذي يُسقط البناء الحتميّ — موجود في صورة الـrunner.
           python3 tools/resource_compile.py --assert

@@ -7,7 +7,11 @@ package nd.max.core.hardware
 
 import android.content.Context
 import android.os.Build
+import nd.max.core.platform.HeadroomSample
+import nd.max.core.platform.HeadroomStatus
 import nd.max.core.platform.PropertyUtils
+import nd.max.core.platform.ThermalHeadroom
+import java.io.File
 
 /**
  * Read-only capability discovery. Unsupported controls remain visible to the
@@ -17,6 +21,9 @@ object HardwareCapabilityResolver {
     private const val THERMAL_ROOT = "/sys/class/thermal"
     private const val CPU_ROOT = "/sys/devices/system/cpu/cpufreq"
     private const val ZRAM_ROOT = "/sys/block/zram0"
+
+    /** مصدر هامش الحرارة — واجهة منصّة لا عقدة، فيُسمّى كما هو. */
+    private const val HEADROOM_EVIDENCE = "PowerManager.getThermalHeadroom"
 
     fun resolve(context: Context? = null): HardwareCapabilitySnapshot {
         val platform = firstNonBlank(
@@ -42,7 +49,74 @@ object HardwareCapabilityResolver {
         devfreqCapabilities().forEach { features[it.feature] = it }
         displayCapabilities(context).forEach { features[it.feature] = it }
         touchCapabilities().forEach { features[it.feature] = it }
+        features[HardwareFeature.THERMAL_HEADROOM] = headroomCapability(context)
+        overlayCatalog(features, context)
         return HardwareCapabilitySnapshot(vendor, platform, features)
+    }
+
+    /**
+     * هامش الحرارة (ADPF) — قدرة قراءة لا تحكّم.
+     *
+     * **ولماذا تُقاس هنا لا داخل [thermalCapabilities]:** تلك تنادي `RootFileAccess` (صدفة أو
+     * خادم)، وهذه واجهة منصّة عاديّة **بلا امتياز**. وخلطهما كان يجعل صفّ الهامش يظهر «غير متاح»
+     * على جهازٍ لا يملك امتيازًا وهو يقيس الهامش فعلًا.
+     *
+     * والرقم لا يُعرض في المصفوفة (الصفّ يقول مدعوم/غير مدعوم)؛ من يريد النسبة يقرأ
+     * [ThermalHeadroom.observe] مباشرة.
+     */
+    private fun headroomCapability(context: Context?): FeatureCapability {
+        val sample = if (context == null) {
+            HeadroomSample(ThermalHeadroom.HORIZON_SECONDS, null, HeadroomStatus.NO_SERVICE)
+        } else {
+            ThermalHeadroom.observe(context)
+        }
+        return FeatureCapability(
+            feature = HardwareFeature.THERMAL_HEADROOM,
+            access = if (sample.supported) AccessLevel.READ_ONLY else AccessLevel.NONE,
+            backend = "adpf-headroom",
+            evidence = if (sample.supported) listOf(HEADROOM_EVIDENCE) else emptyList(),
+        )
+    }
+
+    /**
+     * الكتالوج فوق القياس القائم — **إضافة لا استبدال** (ADR-87 §4).
+     *
+     * **ولماذا هنا لا في كل دالّة قدرة:** الكتالوج يصف عائلات العقد لا جهازًا بعينه؛ فإدخاله داخل
+     * `gpuCapabilities()` كان يعني قياسًا ثانيًا لكل ميزة. وهنا يُقاس **بعد** القياس القائم، فيرفع
+     * ما وجده ولم يجده الكود المحفور — وأبرز مثالٍ مقيس: عائلات MTK في `gpufreq` التي لا يعرفها
+     * مسار KGSL وحده.
+     *
+     * **وحدّه المعلن:** المرشّح يُقاس بـ`File(path).isFile` (نداء واحد، بلا صدفة ولا جذر). فما
+     * حجبت النواة بياناته (`stat`) لا يُدَّعى — نقصُ قياسٍ لا قدرةٌ مُختلقة (ADR-07).
+     */
+    private fun overlayCatalog(features: MutableMap<HardwareFeature, FeatureCapability>, context: Context?) {
+        val index = catalogIndex(context)
+        if (index.entries.isEmpty()) return
+        val probe = CatalogCapabilityOverlay.Probe(
+            exists = { path -> File(path).isFile },
+            writable = { path -> RootFileAccess.writable(path) },
+        )
+        features.keys.toList().forEach { feature ->
+            val current = features[feature] ?: return@forEach
+            features[feature] = CatalogCapabilityOverlay.apply(current, index, probe)
+        }
+    }
+
+    /**
+     * الكتالوج يُقرأ مرّة واحدة ويُحفظ — والشاشات تنادي `resolve()` كثيرًا.
+     *
+     * والسباق حميد: القراءة نفسها متطابقة، وأسوأ حالة قراءتان متزامنتان عند أوّل نداء.
+     */
+    private var cachedCatalog: CatalogControlIndex? = null
+
+    private fun catalogIndex(context: Context?): CatalogControlIndex {
+        cachedCatalog?.let { return it }
+        val ctx = context ?: return CatalogControlIndex.empty()
+        val loaded = runCatching {
+            ctx.assets.open(CatalogControlIndex.ASSET).bufferedReader().use { CatalogControlIndex.parse(it.readText()) }
+        }.getOrDefault(CatalogControlIndex.empty())
+        if (loaded.entries.isNotEmpty()) cachedCatalog = loaded
+        return loaded
     }
 
     private fun allFeatures() = HardwareFeature.entries

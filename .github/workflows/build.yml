@@ -263,6 +263,12 @@ jobs:
           # معروف — وفيه حالتان متعاكستان: الرمز لا يُعدّ، والتعليق لا يُعدّ.
           python3 tools/design_tokens.py --assert
           python3 tools/design_tokens.py --self-test
+          # ← كتالوج مفاتيح التحكّم (M1 · ADR-87/89): البيانات المعلنة تُقاس كبيانات لا كنثر.
+          # يفشل على مفتاح خارج `HardwareControlKey`، وعلى `PROTECTED` بقائمة كتابة، وعلى
+          # «قراءة-فقط» بلا سبب من المفردات المغلقة، وعلى سببٍ يتيم بلا عَلَم. و`--self-test`
+          # يحقن **٥ عطوب** — بينها العطب الذي كان يمرّ صامتًا: قرارٌ بلا سبب مكتوب.
+          python3 tools/gen_control_catalog.py --assert
+          python3 tools/gen_control_catalog.py --self-test
           # ← عقد التحزيم والتكامل: ١٤ فحصًا جمعت ما كان يُقاس بالعين في جولة
           # `BUNDLE-01` — وأهمّها عقدان كلف أحدهما ثباتًا والآخر عطبًا حقيقيًّا:
           #   • سلسلة الإصدار متّفقة في ثلاثتها (`version` · `module.prop` · `MaxManager.h`)
