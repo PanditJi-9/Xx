@@ -3800,7 +3800,7 @@
     <string name="device_lab_display_none">Not reported</string>
     <string name="device_lab_display_nits">%1$d / %2$d nits</string>
     <string name="device_lab_section_codecs">Video decoders</string>
-    <string name="device_lab_codecs_desc">What this device reports it can decode, and the largest frame each format accepts. Read from the platform's codec list; nothing is played.</string>
+    <string name="device_lab_codecs_desc">What this device reports it can decode, and the largest frame each format accepts. Read from the platform\'s codec list; nothing is played.</string>
     <string name="device_lab_codec_reading">Reading codecs…</string>
     <string name="device_lab_codec_none">Not reported</string>
     <string name="device_lab_codec_more">+%1$d more formats</string>
