@@ -6,7 +6,6 @@
 package nd.max.ui.util
 
 import android.content.Context
-import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 
 /**
@@ -61,7 +60,8 @@ object ManifestFactsReader {
             versionCode = info.longVersionCode,
             minSdk = app?.minSdkVersion ?: 0,
             targetSdk = app?.targetSdkVersion ?: 0,
-            installLocation = app?.installLocation ?: PackageInfo.INSTALL_LOCATION_AUTO,
+            // `installLocation` lives on `PackageInfo`, not on `ApplicationInfo`.
+            installLocation = info.installLocation,
             activities = activities.size,
             services = services.size,
             receivers = receivers.size,
