@@ -3722,4 +3722,31 @@
 <string name="device_lab_color_blue">أزرق</string>
 <string name="device_lab_color_black">أسود</string>
 <string name="device_lab_color_grey">رمادي</string>
+
+<!-- استخدام التطبيقات (`USAGE-STATS-01`): زمن المقدّمة من قاعدة أندرويد نفسها. -->
+<string name="usage_stats_title">استخدام التطبيقات</string>
+<string name="usage_stats_subtitle">زمن المقدّمة الذي يقرّره أندرويد نفسه؛ لا استنتاج ولا تقدير.</string>
+<string name="usage_stats_permission_title">مطلوب إذن الوصول إلى الاستخدام</string>
+<string name="usage_stats_permission_detail">يحفظ أندرويد سجلّ استخدام التطبيقات خلف مفتاح وصول خاص. امنحه مرّة واحدة ليقرأ هذا السطح زمن المقدّمة لكل تطبيق.</string>
+<string name="usage_stats_permission_action">فتح الوصول إلى الاستخدام</string>
+<string name="usage_stats_period">الفترة</string>
+<string name="usage_stats_period_today">اليوم</string>
+<string name="usage_stats_period_week">٧ أيام</string>
+<string name="usage_stats_period_month">٣٠ يومًا</string>
+<string name="usage_stats_summary">الملخّص</string>
+<string name="usage_stats_total">إجمالي زمن المقدّمة</string>
+<string name="usage_stats_total_detail">مجموع ما سجّله أندرويد لكل تطبيق؛ الشاشة المنقسمة قد تُحسب مرّتين.</string>
+<string name="usage_stats_app_count">تطبيقات لها استخدام مسجّل</string>
+<string name="usage_stats_top_apps">الأكثر استخدامًا</string>
+<string name="usage_stats_top_apps_detail">مرتّبة بحسب زمن المقدّمة في الفترة المختارة.</string>
+<string name="usage_stats_loading">قراءة قاعدة استخدام أندرويد…</string>
+<string name="usage_stats_empty_title">لا استخدام مسجّل</string>
+<string name="usage_stats_empty_detail">لا سجلّات مقدّمة لأندرويد في هذه الفترة. استعمل الجهاز قليلًا ثم حدّث.</string>
+<string name="usage_stats_error_title">تعذّرت قراءة الاستخدام</string>
+<string name="usage_stats_error_detail">رفضت خدمة الاستخدام الاستعلام. تحقّق من بقاء إذن الوصول ممنوحًا.</string>
+<string name="usage_stats_refresh">تحديث</string>
+<string name="usage_stats_duration_hm">%1$d س %2$d د</string>
+<string name="usage_stats_duration_m">%1$d د</string>
+<string name="usage_stats_duration_s">%1$d ث</string>
+<string name="max_role_usage_stats">زمن المقدّمة لكل تطبيق من قاعدة استخدام أندرويد نفسها — قراءةً فقط.</string>
 </resources>

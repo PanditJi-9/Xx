@@ -3775,4 +3775,31 @@
 <string name="device_lab_color_blue">Blue</string>
 <string name="device_lab_color_black">Black</string>
 <string name="device_lab_color_grey">Grey</string>
+
+<!-- App usage (`USAGE-STATS-01`): foreground time read from Android's own usage database. -->
+<string name="usage_stats_title">App usage</string>
+<string name="usage_stats_subtitle">Foreground time reported by Android itself. Nothing is inferred or estimated.</string>
+<string name="usage_stats_permission_title">Usage access is required</string>
+<string name="usage_stats_permission_detail">Android keeps app-usage history behind a special access switch. Grant it once and this screen can read foreground time per app.</string>
+<string name="usage_stats_permission_action">Open usage access</string>
+<string name="usage_stats_period">Period</string>
+<string name="usage_stats_period_today">Today</string>
+<string name="usage_stats_period_week">7 days</string>
+<string name="usage_stats_period_month">30 days</string>
+<string name="usage_stats_summary">Summary</string>
+<string name="usage_stats_total">Total foreground time</string>
+<string name="usage_stats_total_detail">Sum of every app Android recorded; split-screen can count twice.</string>
+<string name="usage_stats_app_count">Apps with recorded use</string>
+<string name="usage_stats_top_apps">Most used apps</string>
+<string name="usage_stats_top_apps_detail">Ordered by foreground time in the selected period.</string>
+<string name="usage_stats_loading">Reading Android\'s usage database…</string>
+<string name="usage_stats_empty_title">No usage recorded</string>
+<string name="usage_stats_empty_detail">Android has no foreground records in this period. Use the device for a while and refresh.</string>
+<string name="usage_stats_error_title">Could not read usage</string>
+<string name="usage_stats_error_detail">The usage service refused the query. Check that usage access is still granted.</string>
+<string name="usage_stats_refresh">Refresh</string>
+<string name="usage_stats_duration_hm">%1$d h %2$d min</string>
+<string name="usage_stats_duration_m">%1$d min</string>
+<string name="usage_stats_duration_s">%1$d s</string>
+<string name="max_role_usage_stats">Foreground time per app from Android\'s own usage database — read-only.</string>
 </resources>

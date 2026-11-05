@@ -124,6 +124,7 @@ fun NavGraphBuilder.maxNavGraph(navController: NavHostController) {
     // Settings children
     composable(MaxDestination.Diagnostics.route) { DiagnosticsScreen(navController) }
     composable(MaxDestination.DeviceLab.route) { DeviceLabScreen(navController) }
+    composable(MaxDestination.UsageStats.route) { UsageStatsScreen(navController) }
     // `LICENSE-KEYS-01` — باب المفتاح. ولا بوّابة عليه: من يحتاج الشراء يجب أن يجد بابه دائمًا.
     composable(MaxDestination.License.route) { LicenseScreen(navController) }
 

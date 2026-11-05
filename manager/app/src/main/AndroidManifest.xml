@@ -9,6 +9,12 @@
     -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- `USAGE-STATS-01`: قراءة سجلّ استخدام التطبيقات من خدمة أندرويد. الإذن يُمنح من
+         «الوصول إلى الاستخدام» في الإعدادات، لا من نافذة الأذونات؛ والتصريح هنا ضروري
+         ليظهر التطبيق في تلك القائمة. وهو قراءة فقط ولا يمنح وصولًا إلى بيانات المستخدم. -->
+    <uses-permission
+        android:name="android.permission.PACKAGE_USAGE_STATS"
+        tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />

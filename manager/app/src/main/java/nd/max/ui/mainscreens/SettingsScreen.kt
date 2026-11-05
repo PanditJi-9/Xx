@@ -398,6 +398,17 @@ fun SettingsScreen(
                                 )
                             },
                             {
+                                // `USAGE-STATS-01` — زمن المقدّمة من قاعدة أندرويد نفسها، لا من
+                                // عدّاد شبكة ولا من عمليات. إذن واحد، وقراءة فقط.
+                                ExpressiveListItem(
+                                    onClick = { MaxNavActions(navController).navigateTo(MaxDestination.UsageStats) },
+                                    headlineContent = { Text(stringResource(R.string.usage_stats_title)) },
+                                    supportingContent = { Text(stringResource(R.string.usage_stats_subtitle)) },
+                                    leadingContent = { LeadingIcon(icon = Icons.Rounded.DataUsage) },
+                                    trailingContent = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null) }
+                                )
+                            },
+                            {
                                 ExpressiveListItem(
                                     onClick = { MaxNavActions(navController).navigateTo(MaxDestination.ConfigBackup) },
                                     headlineContent = { Text(stringResource(R.string.max_nav_config_backup)) },
