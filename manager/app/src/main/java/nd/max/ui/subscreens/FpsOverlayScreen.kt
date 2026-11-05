@@ -790,6 +790,13 @@ private fun HudMonitorsSection(onChanged: () -> Unit) {
             enabled = spec.form.acceptsArrangement()
         )
 
+        AccentSwatches(
+            selectedHex = spec.colorHex,
+            onSelect = { hex -> update(spec.copy(colorHex = hex)) }
+        )
+
+        MonitorTuning(spec = spec, onCommit = ::update)
+
         MaxGroup {
             MaxSwitchRow(
                 title = stringResource(R.string.hud_graph_title),
@@ -850,6 +857,52 @@ private fun HudMonitorsSection(onChanged: () -> Unit) {
                     refresh()
                 }
             }
+        )
+    }
+}
+
+/**
+ * أشرطة الحجم والشفافية والعرض لهذا المراقب.
+ *
+ * **والحفظ عند انتهاء السحب لا مع كل بكسل:** كل تغيير يمرّ بـ`onChanged` الذي يوقظ الخدمة
+ * لتزامن النوافذ؛ كتابة كل بكسل تعني عشرات نداءات الخدمة في السحب الواحد. فالقيمة تُعرض حيّة
+ * محليًّا، وتُثبَّت مرة واحدة عند الإفلات.
+ */
+@Composable
+private fun MonitorTuning(spec: MonitorSpec, onCommit: (MonitorSpec) -> Unit) {
+    var textSize by remember(spec.id) { mutableStateOf(spec.textSizeSp) }
+    var alpha by remember(spec.id) { mutableStateOf(spec.backgroundAlpha) }
+    var width by remember(spec.id) { mutableStateOf(spec.widthScale) }
+
+    MaxGroup {
+        MaxSliderRow(
+            title = stringResource(R.string.fps_overlay_text_size),
+            value = textSize,
+            onValueChange = { textSize = it },
+            valueText = "${textSize.toInt()} sp",
+            valueRange = 10f..24f,
+            steps = 6,
+            onValueChangeFinished = { onCommit(spec.copy(textSizeSp = textSize)) }
+        )
+        MaxGroupDivider()
+        MaxSliderRow(
+            title = stringResource(R.string.fps_overlay_bg_alpha),
+            value = alpha,
+            onValueChange = { alpha = it },
+            valueText = "${(alpha * 100).toInt()} %",
+            valueRange = 0f..1f,
+            steps = 9,
+            onValueChangeFinished = { onCommit(spec.copy(backgroundAlpha = alpha)) }
+        )
+        MaxGroupDivider()
+        MaxSliderRow(
+            title = stringResource(R.string.fps_overlay_width_scale),
+            value = width,
+            onValueChange = { width = it },
+            valueText = "×${"%.1f".format(width)}",
+            valueRange = 0.6f..2f,
+            steps = 13,
+            onValueChangeFinished = { onCommit(spec.copy(widthScale = width)) }
         )
     }
 }
