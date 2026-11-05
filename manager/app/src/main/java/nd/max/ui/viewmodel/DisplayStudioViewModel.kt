@@ -17,6 +17,8 @@
 package nd.max.ui.viewmodel
 
 import nd.max.MaxManagerProps
+import nd.max.core.display.DisplayFeatureNode
+import nd.max.core.display.DisplayFeatureNodes
 import nd.max.core.hardware.RootFileAccess
 
 import android.content.ContentResolver
@@ -33,32 +35,24 @@ import kotlinx.coroutines.launch
 import nd.max.core.platform.PropertyUtils
 import nd.max.ui.util.XiaomiVendorHalUtil
 
+/** Keeps the view model's existing name while the shared type lives in core. */
+private typealias FeatureNode = DisplayFeatureNode
+
 /**
  * Display panel feature nodes, like touch nodes, are vendor-specific rather than
  * a common kernel API. Each feature probes a short list of real-world OEM sysfs
  * paths and only exposes the toggle if a matching node is actually present.
+ *
+ * The node lists themselves live in [DisplayFeatureNodes] so the Quick Settings
+ * tile and this screen probe the same paths.
  */
 class DisplayStudioViewModel : ViewModel() {
 
-    data class FeatureNode(val path: String, val onValue: String, val offValue: String)
-
     companion object {
-        private val SUNLIGHT_CANDIDATES = listOf(
-            FeatureNode("/sys/class/leds/lcd-backlight/hbm", "1", "0"),
-            FeatureNode("/sys/devices/platform/mtk-hbm/hbm_enable", "1", "0")
-        )
-        private val SILKY_CANDIDATES = listOf(
-            FeatureNode("/sys/class/graphics/fb0/aod_brightness_smooth", "1", "0"),
-            FeatureNode("/proc/silky_brightness/enable", "1", "0")
-        )
-        private val VIDEO_ENH_CANDIDATES = listOf(
-            FeatureNode("/sys/class/graphics/fb0/video_enhance", "1", "0"),
-            FeatureNode("/proc/mtk_video_enhance/enable", "1", "0")
-        )
-        private val HDR_CANDIDATES = listOf(
-            FeatureNode("/sys/class/graphics/fb0/hdr_enable", "1", "0"),
-            FeatureNode("/proc/dolby_vision/enable", "1", "0")
-        )
+        private val SUNLIGHT_CANDIDATES = DisplayFeatureNodes.SUNLIGHT
+        private val SILKY_CANDIDATES = DisplayFeatureNodes.SILKY
+        private val VIDEO_ENH_CANDIDATES = DisplayFeatureNodes.VIDEO_ENHANCE
+        private val HDR_CANDIDATES = DisplayFeatureNodes.HDR
 
         private const val PROP_SUNLIGHT = MaxManagerProps.Display.SUNLIGHT_MODE
         private const val PROP_SILKY = MaxManagerProps.Display.SILKY_BRIGHTNESS
@@ -193,10 +187,10 @@ class DisplayStudioViewModel : ViewModel() {
 
     private fun apply(node: FeatureNode?, enabled: Boolean) {
         node?.let {
-            val value = if (enabled) it.onValue else it.offValue
             // الطبقة المصرَّحة (ADR-11): قناة الجذر ثم رقصة chmod ثم قراءة تحقّق — بدل صدفة
-            // خام تُخفي `2>/dev/null` كل سبب فشل (`NT-13`).
-            RootFileAccess.write(it.path, value)
+            // خام تُخفي `2>/dev/null` كل سبب فشل (`NT-13`). المنطق نفسه في
+            // [DisplayFeatureNodes.write] لأن بلاطة الإعدادات السريعة تكتب العقدة نفسها.
+            DisplayFeatureNodes.write(it, enabled)
         }
     }
 

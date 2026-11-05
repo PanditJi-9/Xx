@@ -62,6 +62,11 @@
     <string name="tile_statusbar_on">الرموز مخفيّة</string>
     <string name="tile_statusbar_off">الرموز ظاهرة</string>
     <string name="tile_statusbar_denied">غير مسموح</string>
+    <string name="tile_battery_history">سجلّ البطارية</string>
+    <string name="tile_battery_history_on">يسجّل كل ١٥ دقيقة</string>
+    <string name="tile_battery_history_off">التسجيل متوقّف</string>
+    <string name="tile_sunlight_on">تعزيز السطوع مطبَّق</string>
+    <string name="tile_sunlight_off">تعزيز السطوع متوقّف</string>
     <string name="vm_section_title">مقابض نواة VM</string>
     <string name="vm_section_desc">الكتابة عبر مسار الكتابة الواحد، وكل قيمة تُقرأ مرتجعة قبل أن تُعدّ ناجحة.</string>
     <string name="vm_loading">جارٍ قراءة قيم النواة…</string>
@@ -3748,6 +3753,27 @@
 <string name="usage_stats_duration_hm">%1$d س %2$d د</string>
 <string name="usage_stats_duration_m">%1$d د</string>
 <string name="usage_stats_duration_s">%1$d ث</string>
+
+<!-- استهلاك الشبكة لكل تطبيق (`NETWORK-USAGE-01`): بايتات من NetworkStatsManager لا من عدّاد مخترَع. -->
+<string name="usage_stats_mode">العرض</string>
+<string name="usage_stats_mode_time">زمن المقدّمة</string>
+<string name="usage_stats_mode_network">بيانات الشبكة</string>
+<string name="usage_network_summary">البيانات المستهلكة</string>
+<string name="usage_network_summary_detail">بايتات يعدّها النظام في الفترة المختارة؛ واي‑فاي وبيانات الجوال نقلان منفصلان.</string>
+<string name="usage_network_wifi">واي‑فاي</string>
+<string name="usage_network_mobile">بيانات الجوال</string>
+<string name="usage_network_total">الإجمالي</string>
+<string name="usage_network_transport_unavailable">لم يُبلّغ هذا النقل عن بيانات في الفترة، أو لا يستطيع الجهاز قياسه.</string>
+<string name="usage_network_apps_title">البيانات بحسب التطبيق</string>
+<string name="usage_network_apps_detail">مرتّبة بحسب إجمالي البايتات في الفترة المختارة.</string>
+<string name="usage_network_empty_title">لا بيانات مسجّلة</string>
+<string name="usage_network_empty_detail">لا سجلّات بايتات لهذه الفترة. استعمل الشبكة ثم حدّث.</string>
+<string name="usage_network_totals_only_title">تفصيل التطبيقات غير متاح</string>
+<string name="usage_network_totals_only_detail">هذا النظام يُبلّغ بإجماليات الجهاز وحدها، فتُخفى صفوف التطبيقات بدل تخمينها.</string>
+<string name="usage_network_error_title">تعذّرت قراءة استهلاك الشبكة</string>
+<string name="usage_network_error_detail">رفضت خدمة استهلاك الشبكة الاستعلام. تحقّق من بقاء إذن الوصول ممنوحًا.</string>
+<string name="usage_network_split_wifi">واي‑فاي %1$s</string>
+<string name="usage_network_split_mobile">جوال %1$s</string>
 <string name="max_role_usage_stats">زمن المقدّمة لكل تطبيق من قاعدة استخدام أندرويد نفسها — قراءةً فقط.</string>
 
     <string name="battery_history_title">سجلّ البطارية</string>

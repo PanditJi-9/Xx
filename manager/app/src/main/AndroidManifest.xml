@@ -251,6 +251,35 @@
         </service>
 
         <!--
+          بلاط سجلّ البطارية: يقلب تسجيل العيّنات الدوري (كل ١٥ دقيقة) ويقرأ الحالة
+          الفعلية بعد الكتابة. لا صلاحية ولا جذر: يغيّر تفضيل التطبيق ومنبّهه فقط.
+        -->
+        <service
+            android:name=".TileService.BatteryHistoryTileService"
+            android:icon="@drawable/ic_tile_battery_history" android:label="@string/tile_battery_history"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+
+        <!--
+          بلاط الوضوح في الخارج (HBM): يكتب عقدة اللوحة عبر مسار الكتابة الواحد
+          (`DisplayFeatureNodes`)، ولا يعلن «طُبِّق» إلا بعد قراءة مرتجعة. والعقدة
+          خاصّة بمزوّد العتاد، فحين لا توجد يظهر البلاط «غير مدعوم» ولا يُخمَّن مسار.
+        -->
+        <service
+            android:name=".TileService.SunlightTileService"
+            android:icon="@drawable/ic_tile_sunlight" android:label="@string/sunlight_mode"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+
+        <!--
           عامل النسخ المجدول: رقيقة عن قصد — كل المنطق في `MaxBackupScheduler`، وهذه
           تعرف `jobFinished` فقط. ولا تُصدَّر: لا أحد خارجنا يُشغّلها.
         -->

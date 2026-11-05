@@ -12,6 +12,7 @@ import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.Process
 import android.provider.Settings
+import android.text.format.Formatter
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -52,6 +53,8 @@ import androidx.navigation.NavHostController
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import nd.max.R
+import nd.max.core.net.NetworkUsageReader
+import nd.max.core.net.NetworkUsageSnapshot
 import nd.max.ui.design.MaxCondition
 import nd.max.ui.design.MaxConditionKind
 import nd.max.ui.design.MaxGroup
@@ -67,17 +70,27 @@ import java.time.LocalDate
 import java.time.ZoneId
 
 /**
- * App usage — foreground time as Android itself recorded it.
+ * App usage — two views of the same question, both read from Android's own
+ * databases.
  *
- * This is the second surface taken from the reference teardown's "device facts"
- * family: Diagnostics explains what the hardware exposes, Device Lab proves that
- * it works, and this screen answers "what has actually been used?". The source
- * is `UsageStatsManager`, not an inference from processes or network counters.
+ * **Screen time** is `UsageStatsManager`: foreground milliseconds per app.
+ * **Data usage** is `NetworkStatsManager`: bytes per uid, split by transport.
+ * Neither number is inferred from the other; a device that reports one and not
+ * the other shows exactly that.
  *
- * Licensing: the reference app's usage screen was read for behaviour only. This
- * file is written against the Android SDK; no reference layout, string or code
- * is reused.
+ * The two share one permission (Usage access), one period selector and one
+ * list, so the screen stays a single destination instead of two lookalikes.
+ *
+ * Licensing: the reference app's usage screens were read for behaviour only.
+ * This file is written against the Android SDK; no reference layout, string or
+ * code is reused.
  */
+
+/** The two measurable views. Both answer the same period selector. */
+private enum class UsageMode(@StringRes val labelRes: Int) {
+    TIME(R.string.usage_stats_mode_time),
+    NETWORK(R.string.usage_stats_mode_network)
+}
 
 /** The three windows a usage query can answer without guessing. */
 private enum class UsagePeriod(val days: Int, @StringRes val labelRes: Int) {
@@ -99,15 +112,29 @@ private data class UsageSnapshot(
     val apps: List<UsageApp>
 )
 
+private data class NetworkAppRow(
+    val packageName: String,
+    val label: String,
+    val icon: Drawable?,
+    val wifiBytes: Long,
+    val mobileBytes: Long
+) {
+    val totalBytes: Long get() = wifiBytes + mobileBytes
+}
+
 @Composable
 fun UsageStatsScreen(navController: NavHostController) {
     val context = LocalContext.current
+    var mode by remember { mutableStateOf(UsageMode.TIME) }
     var period by remember { mutableStateOf(UsagePeriod.TODAY) }
     var permissionGranted by remember { mutableStateOf(hasUsageAccess(context)) }
     var reload by remember { mutableIntStateOf(0) }
     var loading by remember { mutableStateOf(true) }
     var snapshot by remember { mutableStateOf<UsageSnapshot?>(null) }
-    var failed by remember { mutableStateOf(false) }
+    var timeFailed by remember { mutableStateOf(false) }
+    var network by remember { mutableStateOf<NetworkUsageSnapshot?>(null) }
+    var networkApps by remember { mutableStateOf<List<NetworkAppRow>>(emptyList()) }
+    var networkFailed by remember { mutableStateOf(false) }
 
     // Returning from the system's usage-access switch must not require a manual
     // refresh. The resume hook re-checks the permission and re-queries only when
@@ -117,20 +144,37 @@ fun UsageStatsScreen(navController: NavHostController) {
         reload++
     }
 
-    LaunchedEffect(period, reload, permissionGranted) {
+    LaunchedEffect(mode, period, reload, permissionGranted) {
         if (!permissionGranted) {
             loading = false
             return@LaunchedEffect
         }
         loading = true
-        failed = false
-        readUsage(context, period)
-            .onSuccess { snapshot = it }
-            .onFailure { failed = true }
+        when (mode) {
+            UsageMode.TIME -> {
+                timeFailed = false
+                readUsage(context, period)
+                    .onSuccess { snapshot = it }
+                    .onFailure { timeFailed = true }
+            }
+            UsageMode.NETWORK -> {
+                networkFailed = false
+                readNetwork(context, period)
+                    .onSuccess {
+                        network = it.first
+                        networkApps = it.second
+                    }
+                    .onFailure { networkFailed = true }
+            }
+        }
         loading = false
     }
 
-    val data = snapshot
+    val timeData = snapshot
+    val networkData = network
+    val failed = if (mode == UsageMode.TIME) timeFailed else networkFailed
+    val loaded = if (mode == UsageMode.TIME) timeData != null else networkData != null
+
     val condition = when {
         !permissionGranted -> MaxCondition(
             kind = MaxConditionKind.PermissionRequired,
@@ -143,22 +187,51 @@ fun UsageStatsScreen(navController: NavHostController) {
                 }
             }
         )
-        failed -> MaxCondition(
-            kind = MaxConditionKind.Error,
-            title = stringResource(R.string.usage_stats_error_title),
-            detail = stringResource(R.string.usage_stats_error_detail)
-        )
-        loading && data == null -> MaxCondition(
+        failed -> if (mode == UsageMode.TIME) {
+            MaxCondition(
+                kind = MaxConditionKind.Error,
+                title = stringResource(R.string.usage_stats_error_title),
+                detail = stringResource(R.string.usage_stats_error_detail)
+            )
+        } else {
+            MaxCondition(
+                kind = MaxConditionKind.Error,
+                title = stringResource(R.string.usage_network_error_title),
+                detail = stringResource(R.string.usage_network_error_detail)
+            )
+        }
+        loading && !loaded -> MaxCondition(
             kind = MaxConditionKind.Loading,
             title = stringResource(R.string.usage_stats_title),
             detail = stringResource(R.string.usage_stats_loading)
         )
-        data != null && data.apps.isEmpty() -> MaxCondition(
+        mode == UsageMode.TIME && timeData != null && timeData.apps.isEmpty() -> MaxCondition(
             kind = MaxConditionKind.Empty,
             title = stringResource(R.string.usage_stats_empty_title),
             detail = stringResource(R.string.usage_stats_empty_detail)
         )
+        mode == UsageMode.NETWORK && networkData != null &&
+            networkData.perAppAvailable && networkData.totalBytes == 0L -> MaxCondition(
+            kind = MaxConditionKind.Empty,
+            title = stringResource(R.string.usage_network_empty_title),
+            detail = stringResource(R.string.usage_network_empty_detail)
+        )
         else -> null
+    }
+
+    // A single combined counter is a real answer, not a failure: the totals are
+    // shown and the missing breakdown is named in the banner instead of being
+    // rendered as an empty list.
+    val banner = if (
+        mode == UsageMode.NETWORK && networkData != null && !networkData.perAppAvailable
+    ) {
+        MaxCondition(
+            kind = MaxConditionKind.Unsupported,
+            title = stringResource(R.string.usage_network_totals_only_title),
+            detail = stringResource(R.string.usage_network_totals_only_detail)
+        )
+    } else {
+        null
     }
 
     MaxListScreen(
@@ -167,6 +240,7 @@ fun UsageStatsScreen(navController: NavHostController) {
         subtitle = stringResource(R.string.usage_stats_subtitle),
         accentIcon = Icons.Rounded.DataUsage,
         condition = condition,
+        banner = banner,
         actions = {
             IconButton(
                 onClick = { reload++ },
@@ -179,14 +253,21 @@ fun UsageStatsScreen(navController: NavHostController) {
             }
         },
         header = {
-            MaxSection(title = stringResource(R.string.usage_stats_period)) {
+            MaxSection(title = stringResource(R.string.usage_stats_mode)) {
                 MaxSegmented(
-                    options = UsagePeriod.values().map { stringResource(it.labelRes) },
-                    selectedIndex = period.ordinal,
-                    onSelect = { period = UsagePeriod.values()[it] }
+                    options = UsageMode.entries.map { stringResource(it.labelRes) },
+                    selectedIndex = mode.ordinal,
+                    onSelect = { mode = UsageMode.entries[it] }
                 )
             }
-            if (data != null) {
+            MaxSection(title = stringResource(R.string.usage_stats_period)) {
+                MaxSegmented(
+                    options = UsagePeriod.entries.map { stringResource(it.labelRes) },
+                    selectedIndex = period.ordinal,
+                    onSelect = { period = UsagePeriod.entries[it] }
+                )
+            }
+            if (mode == UsageMode.TIME && timeData != null) {
                 MaxSection(title = stringResource(R.string.usage_stats_summary)) {
                     MaxGroup {
                         MaxRow(
@@ -195,7 +276,7 @@ fun UsageStatsScreen(navController: NavHostController) {
                             icon = Icons.Rounded.Timer,
                             trailing = {
                                 Text(
-                                    text = formatDuration(data.totalMs),
+                                    text = formatDuration(timeData.totalMs),
                                     style = MonoValueStyleSmall
                                 )
                             }
@@ -207,7 +288,7 @@ fun UsageStatsScreen(navController: NavHostController) {
                             icon = Icons.Rounded.Apps,
                             trailing = {
                                 Text(
-                                    text = data.appCount.toString(),
+                                    text = timeData.appCount.toString(),
                                     style = MonoValueStyleSmall
                                 )
                             }
@@ -219,12 +300,84 @@ fun UsageStatsScreen(navController: NavHostController) {
                     description = stringResource(R.string.usage_stats_top_apps_detail)
                 ) { }
             }
+            if (mode == UsageMode.NETWORK && networkData != null) {
+                MaxSection(
+                    title = stringResource(R.string.usage_network_summary),
+                    description = stringResource(R.string.usage_network_summary_detail)
+                ) {
+                    MaxGroup {
+                        MaxRow(
+                            title = stringResource(R.string.usage_network_wifi),
+                            subtitle = if (networkData.wifiAvailable) {
+                                stringResource(period.labelRes)
+                            } else {
+                                stringResource(R.string.usage_network_transport_unavailable)
+                            },
+                            trailing = {
+                                Text(
+                                    text = if (networkData.wifiAvailable) {
+                                        formatBytes(context, networkData.wifiBytes)
+                                    } else {
+                                        stringResource(R.string.device_lab_value_unavailable)
+                                    },
+                                    style = MonoValueStyleSmall
+                                )
+                            }
+                        )
+                        MaxGroupDivider()
+                        MaxRow(
+                            title = stringResource(R.string.usage_network_mobile),
+                            subtitle = if (networkData.mobileAvailable) {
+                                stringResource(period.labelRes)
+                            } else {
+                                stringResource(R.string.usage_network_transport_unavailable)
+                            },
+                            trailing = {
+                                Text(
+                                    text = if (networkData.mobileAvailable) {
+                                        formatBytes(context, networkData.mobileBytes)
+                                    } else {
+                                        stringResource(R.string.device_lab_value_unavailable)
+                                    },
+                                    style = MonoValueStyleSmall
+                                )
+                            }
+                        )
+                        MaxGroupDivider()
+                        MaxRow(
+                            title = stringResource(R.string.usage_network_total),
+                            trailing = {
+                                Text(
+                                    text = formatBytes(context, networkData.totalBytes),
+                                    style = MonoValueStyleSmall
+                                )
+                            }
+                        )
+                    }
+                }
+                if (networkData.perAppAvailable) {
+                    MaxSection(
+                        title = stringResource(R.string.usage_network_apps_title),
+                        description = stringResource(R.string.usage_network_apps_detail)
+                    ) { }
+                }
+            }
         }
     ) {
-        val apps = data?.apps.orEmpty()
-        items(items = apps, key = { it.packageName }) { app ->
-            UsageAppRow(app)
-            if (app != apps.last()) MaxGroupDivider()
+        when (mode) {
+            UsageMode.TIME -> {
+                val apps = timeData?.apps.orEmpty()
+                items(items = apps, key = { it.packageName }) { app ->
+                    UsageAppRow(app)
+                    if (app != apps.last()) MaxGroupDivider()
+                }
+            }
+            UsageMode.NETWORK -> {
+                items(items = networkApps, key = { it.packageName }) { app ->
+                    NetworkAppRowItem(app)
+                    if (app != networkApps.last()) MaxGroupDivider()
+                }
+            }
         }
     }
 }
@@ -286,6 +439,86 @@ private fun UsageAppRow(app: UsageApp) {
 }
 
 @Composable
+private fun NetworkAppRowItem(app: NetworkAppRow) {
+    val context = LocalContext.current
+    val iconBitmap = remember(app.packageName) { app.icon?.toBitmap()?.asImageBitmap() }
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(min = MaxSize.minTouchTarget)
+            .padding(
+                horizontal = MaxSpace.rowPaddingHorizontal,
+                vertical = MaxSpace.rowPaddingVertical
+            ),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(MaxSpace.md)
+    ) {
+        if (iconBitmap != null) {
+            Image(
+                bitmap = iconBitmap,
+                contentDescription = null,
+                modifier = Modifier.size(MaxSize.rowIconContainer)
+            )
+        } else {
+            Icon(
+                imageVector = Icons.Rounded.Android,
+                contentDescription = null,
+                modifier = Modifier.size(MaxSize.rowIconContainer),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(MaxSpace.hairline)
+        ) {
+            Text(
+                text = app.label,
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            Text(
+                text = networkSplit(context, app),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+        Text(
+            text = formatBytes(context, app.totalBytes),
+            style = MonoValueStyleSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
+}
+
+@Composable
+private fun networkSplit(context: Context, app: NetworkAppRow): String {
+    val parts = buildList {
+        if (app.wifiBytes > 0L) {
+            add(
+                stringResource(
+                    R.string.usage_network_split_wifi,
+                    formatBytes(context, app.wifiBytes)
+                )
+            )
+        }
+        if (app.mobileBytes > 0L) {
+            add(
+                stringResource(
+                    R.string.usage_network_split_mobile,
+                    formatBytes(context, app.mobileBytes)
+                )
+            )
+        }
+    }
+    return parts.ifEmpty { listOf(app.packageName) }.joinToString(" · ")
+}
+
+@Composable
 private fun formatDuration(ms: Long): String {
     val totalMinutes = (ms / 60_000L).coerceAtLeast(0L)
     val hours = totalMinutes / 60L
@@ -300,6 +533,10 @@ private fun formatDuration(ms: Long): String {
     }
 }
 
+/** Platform-localised, so `١٢٫٣ ميغابايت` reads right without a second table. */
+private fun formatBytes(context: Context, bytes: Long): String =
+    Formatter.formatFileSize(context, bytes)
+
 private fun hasUsageAccess(context: Context): Boolean {
     val appOps = context.getSystemService(AppOpsManager::class.java) ?: return false
     val mode = appOps.checkOpNoThrow(
@@ -310,18 +547,22 @@ private fun hasUsageAccess(context: Context): Boolean {
     return mode == AppOpsManager.MODE_ALLOWED
 }
 
+private fun periodStart(period: UsagePeriod): Long {
+    val zone = ZoneId.systemDefault()
+    return LocalDate.now(zone)
+        .minusDays((period.days - 1).toLong())
+        .atStartOfDay(zone)
+        .toInstant()
+        .toEpochMilli()
+}
+
 private suspend fun readUsage(
     context: Context,
     period: UsagePeriod
 ): Result<UsageSnapshot> = withContext(Dispatchers.IO) {
     runCatching {
-        val zone = ZoneId.systemDefault()
         val end = System.currentTimeMillis()
-        val start = LocalDate.now(zone)
-            .minusDays((period.days - 1).toLong())
-            .atStartOfDay(zone)
-            .toInstant()
-            .toEpochMilli()
+        val start = periodStart(period)
 
         val manager = context.getSystemService(UsageStatsManager::class.java)
             ?: error("UsageStatsManager unavailable")
@@ -357,5 +598,37 @@ private suspend fun readUsage(
             appCount = stats.values.count { it.totalTimeInForeground > 0L },
             apps = apps.take(40)
         )
+    }
+}
+
+/**
+ * Network counters in the same window.
+ *
+ * The reader returns platform totals; this function only attaches the icon and
+ * label the row needs. An app whose package disappeared still contributes to
+ * the platform total but has no row, which is stated in the section
+ * description instead of being silently dropped.
+ */
+private suspend fun readNetwork(
+    context: Context,
+    period: UsagePeriod
+): Result<Pair<NetworkUsageSnapshot, List<NetworkAppRow>>> = withContext(Dispatchers.IO) {
+    runCatching {
+        val end = System.currentTimeMillis()
+        val snapshot = NetworkUsageReader.read(context, periodStart(period), end).getOrThrow()
+        val packageManager = context.packageManager
+        val rows = snapshot.apps.map { app ->
+            val icon = runCatching {
+                packageManager.getApplicationIcon(app.packageName)
+            }.getOrNull()
+            NetworkAppRow(
+                packageName = app.packageName,
+                label = app.label,
+                icon = icon,
+                wifiBytes = app.wifiBytes,
+                mobileBytes = app.mobileBytes
+            )
+        }
+        snapshot to rows
     }
 }

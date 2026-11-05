@@ -55,6 +55,11 @@ and no profile may override them.
 Charging and battery health in one screen, **bypass charging** (running from the cable without pushing
 current through the pack) with a dedicated **status check**, and **Doze**.
 
+**Battery history** keeps a local timeline of level, voltage and temperature — one point every fifteen
+minutes, off until you switch it on. The curve is drawn only from points the platform actually
+recorded, so gaps stay gaps, and the discharge rate is computed from discharging points alone rather
+than modelled. Clearing the history deletes the local file and nothing else.
+
 ### Storage & compiler — *"Compilation mode and storage health"*
 
 **Dex2oat** compilation mode and storage health. Storage scanning is done in the native layer in
@@ -62,7 +67,11 @@ batches, not by shelling out per directory.
 
 ### Network — *"Traffic scheduling and link state"*
 
-Network detail (what the link is doing right now) and the scheduler controls.
+Network detail (what the link is doing right now) and the scheduler controls. **Usage stats** reads
+Android's own usage database for foreground time per app, and the same screen can switch to **network
+usage per app** — Wi-Fi and mobile bytes split, with totals. A transport the device does not report is
+shown as unavailable, not as zero; when the platform returns only aggregate counters, the screen says so
+and hides the per-app list instead of inventing one.
 
 ### Audio — *"Output devices, streams and declared effects"*
 
@@ -91,7 +100,10 @@ package in an unexplained state.
 | Tool | What it gives you |
 | --- | --- |
 | **Process manager** | What is running, what it costs, and what can be stopped. |
+| **Device lab** | Interactive hardware checks on the device itself: screen colours, multi-touch, hardware keys, vibration, speaker tone, flashlight, live sensors, and charging state. |
+| **Usage stats** | Foreground time per app from Android's usage database, and network bytes per app per period — read-only, one access switch. |
 | **FPS overlay** | A live frame-rate and load HUD drawn over other apps. |
+| **Quick settings tiles** | Bypass charging, profile, clean status bar, battery-history recording and high-brightness mode, each reading its state back before it claims to have changed anything. |
 | **Log viewer** | The device log, parsed into events with a **glossary written into the log file itself** — the file explains its own fields. |
 | **Max Backup** | Back up apps and check their integrity; restore when you need to. |
 | **Permissions** | Declared permissions vs what the platform actually allows (`AppOps`), in one place, because "declared" and "granted" differ. |

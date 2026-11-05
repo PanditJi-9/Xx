@@ -103,6 +103,11 @@
     <string name="tile_statusbar_on">Icons hidden</string>
     <string name="tile_statusbar_off">Icons shown</string>
     <string name="tile_statusbar_denied">Not permitted</string>
+    <string name="tile_battery_history">Battery history</string>
+    <string name="tile_battery_history_on">Recording every 15 min</string>
+    <string name="tile_battery_history_off">Recording off</string>
+    <string name="tile_sunlight_on">Brightness boost applied</string>
+    <string name="tile_sunlight_off">Brightness boost off</string>
     <string name="vm_section_title">Kernel VM knobs</string>
     <string name="vm_section_desc">Written through the single write path; every value is read back before it counts.</string>
     <string name="vm_loading">Reading kernel values…</string>
@@ -3801,6 +3806,27 @@
 <string name="usage_stats_duration_hm">%1$d h %2$d min</string>
 <string name="usage_stats_duration_m">%1$d min</string>
 <string name="usage_stats_duration_s">%1$d s</string>
+
+<!-- استهلاك الشبكة لكل تطبيق (`NETWORK-USAGE-01`): بايتات من NetworkStatsManager لا من عدّاد مخترَع. -->
+<string name="usage_stats_mode">View</string>
+<string name="usage_stats_mode_time">Foreground time</string>
+<string name="usage_stats_mode_network">Network data</string>
+<string name="usage_network_summary">Data used</string>
+<string name="usage_network_summary_detail">Bytes counted by the system for the selected period. Wi-Fi and mobile data are separate transports.</string>
+<string name="usage_network_wifi">Wi-Fi</string>
+<string name="usage_network_mobile">Mobile data</string>
+<string name="usage_network_total">Total</string>
+<string name="usage_network_transport_unavailable">This transport reported no data in the period, or the device cannot measure it.</string>
+<string name="usage_network_apps_title">Data by app</string>
+<string name="usage_network_apps_detail">Ordered by total bytes in the selected period.</string>
+<string name="usage_network_empty_title">No data recorded</string>
+<string name="usage_network_empty_detail">The system has no byte records for this period. Use the network and refresh.</string>
+<string name="usage_network_totals_only_title">Per-app split unavailable</string>
+<string name="usage_network_totals_only_detail">This system reports device totals only, so app rows are hidden rather than guessed.</string>
+<string name="usage_network_error_title">Could not read network usage</string>
+<string name="usage_network_error_detail">The network usage service refused the query. Check that usage access is still granted.</string>
+<string name="usage_network_split_wifi">Wi-Fi %1$s</string>
+<string name="usage_network_split_mobile">Mobile %1$s</string>
 <string name="max_role_usage_stats">Foreground time per app from Android\'s own usage database — read-only.</string>
 
     <string name="battery_history_title">Battery history</string>
