@@ -1512,6 +1512,13 @@
     <string name="detail_hottest_zone">Hottest zone</string>
     <string name="detail_thermal_summary">Summary</string>
     <string name="detail_thermal_summary_desc">Read once per sample, from the same sources as the rest of the app.</string>
+    <string name="detail_thermal_history_title">Session trend</string>
+    <string name="detail_thermal_history_desc">The hottest readable zone at each three-second sample, kept in memory for this visit only. Nothing is written to storage.</string>
+    <string name="detail_thermal_history_collecting">Collecting the first samples… the curve appears after two readings.</string>
+    <string name="detail_thermal_history_peak">Peak this visit</string>
+    <string name="detail_thermal_history_low">Lowest this visit</string>
+    <string name="detail_thermal_history_window">Window covered</string>
+    <string name="detail_thermal_history_window_value">%1$d s</string>
     <string name="detail_thermal_heat">Heat</string>
     <string name="detail_thermal_heat_note">Same source as the home screen: the Android battery broadcast, then the battery node.</string>
     <string name="detail_thermal_reading">Reading thermal zones…</string>

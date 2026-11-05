@@ -35,6 +35,7 @@
  */
 package nd.max.ui.subscreens
 
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -54,9 +55,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -97,6 +104,9 @@ import kotlin.math.roundToInt
 private const val LTR = "\u200E"
 private const val ZONE_REFRESH_MS = 3_000L
 
+/** نافذة تاريخ الحرارة: ١٠٠ عيّنة × ٣ ثوانٍ = خمس دقائق. */
+private const val HISTORY_CAPACITY = 100
+
 /** مصدر بديل مُعلَن: `dumpsys thermalservice` — يُقرأ فقط حين لا تُقرأ مناطق النواة. */
 private const val THERMAL_SERVICE_SOURCE = "dumpsys thermalservice"
 
@@ -126,6 +136,9 @@ fun ThermalDetailScreen(navController: NavHostController) {
     var serviceTemps by remember { mutableStateOf<IntArray?>(null) }
     var trips by remember { mutableStateOf<Map<String, List<TripReading>>>(emptyMap()) }
     var isLoading by remember { mutableStateOf(true) }
+
+    // تاريخ الجلسة: أعلى درجة في كل عيّنة. في الذاكرة فقط، ولا يُحفظ ولا يُصدَّر.
+    var history by remember { mutableStateOf<List<Int>>(emptyList()) }
 
     // نقاط التخفيف تُقرأ **مرة واحدة**: ثابتة في النواة، وقراءتها لكل منطقة مع كل عيّنة
     // (كل ٣ ثوان) كانت مئات قراءات sysfs لعرض رقم لا يتغيّر.
@@ -160,6 +173,12 @@ fun ThermalDetailScreen(navController: NavHostController) {
                 )
             }
             zones = sample.zones
+            sample.zones
+                .filter { it.isEnabled && it.temperatureC > 0 }
+                .maxByOrNull { it.temperatureC }
+                ?.let { hottestNow ->
+                    history = (history + hottestNow.temperatureC).takeLast(HISTORY_CAPACITY)
+                }
             cooling = sample.cooling
             batteryHeat = sample.batteryHeat
             serviceTemps = sample.serviceTemps
@@ -244,6 +263,78 @@ fun ThermalDetailScreen(navController: NavHostController) {
             }
         }
     ) {
+        // ── تاريخ الجلسة: ماذا فعلت الحرارة منذ فتحت الشاشة ───────────────────
+        item(key = "thermal_history") {
+            MaxSection(
+                title = stringResource(R.string.detail_thermal_history_title),
+                description = stringResource(R.string.detail_thermal_history_desc)
+            ) {
+                MaxGroup {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = MaxSpace.md, vertical = MaxSpace.md),
+                        verticalArrangement = Arrangement.spacedBy(MaxSpace.sm)
+                    ) {
+                        if (history.size >= 2) {
+                            ThermalTrend(
+                                history = history,
+                                accent = accent,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(140.dp)
+                            )
+                        } else {
+                            Text(
+                                text = stringResource(R.string.detail_thermal_history_collecting),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                }
+                if (history.isNotEmpty()) {
+                    MaxGroup {
+                        MaxRow(
+                            title = stringResource(R.string.detail_thermal_history_peak),
+                            trailing = {
+                                Text(
+                                    text = "${history.max()}°C",
+                                    style = MonoValueStyleSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        )
+                        MaxGroupDivider()
+                        MaxRow(
+                            title = stringResource(R.string.detail_thermal_history_low),
+                            trailing = {
+                                Text(
+                                    text = "${history.min()}°C",
+                                    style = MonoValueStyleSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        )
+                        MaxGroupDivider()
+                        MaxRow(
+                            title = stringResource(R.string.detail_thermal_history_window),
+                            trailing = {
+                                Text(
+                                    text = stringResource(
+                                        R.string.detail_thermal_history_window_value,
+                                        history.size * (ZONE_REFRESH_MS / 1000L).toInt()
+                                    ),
+                                    style = MonoValueStyleSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        )
+                    }
+                }
+            }
+        }
+
         item(key = "thermal_summary") {
             // وزرّ قسم الحرارة في «معلومات الجهاز» في آخر بطاقة الحرارة — أوّل بطاقة في
             // الشاشة: من قرأ الحرارة هنا يصل إلى ما يُعلنه الجهاز عنها في مقعد معلومات الجهاز
@@ -589,4 +680,46 @@ private fun coolingCategoryLabel(category: String): String = when (category) {
     "Display" -> stringResource(R.string.detail_cooling_display)
     "Thermal" -> stringResource(R.string.detail_cooling_thermal)
     else -> stringResource(R.string.detail_bucket_other)
+}
+
+/**
+ * منحنى أعلى درجة عبر الجلسة.
+ *
+ * **والحدّان من البيانات لا من ثابت:** جهاز يقرأ ٣٥–٤٢° وجهاز يقرأ ٦٠–٨٥° لا يُرسمان على
+ * سلّم واحد، وإلا صار أحد المنحنيين خطًّا مستقيمًا لا يقول شيئًا. السلّم هنا أدنى/أعلى ما
+ * قِيس في النافذة نفسها، بهامش درجتين حتى لا يلتصق الخطّ بالحافة.
+ *
+ * **ولماذا في الذاكرة فقط:** هذه لمحة عن الجلسة الحالية، لا سجلّ. وحفظها على القرص كان
+ * سيضيف ملفًّا يُكتب كل ٣ ثوانٍ بلا طلب من المالك، والسجلّ الدائم للبطارية قائم في شاشته.
+ */
+@Composable
+private fun ThermalTrend(history: List<Int>, accent: Color, modifier: Modifier = Modifier) {
+    val gridColor = MaterialTheme.colorScheme.outlineVariant
+    val low = (history.minOrNull() ?: 0) - 2f
+    val high = (history.maxOrNull() ?: 0) + 2f
+    val span = (high - low).takeIf { it > 0f } ?: 1f
+    Canvas(modifier = modifier) {
+        if (history.size < 2) return@Canvas
+        val stepX = size.width / (history.size - 1)
+        val path = Path()
+        history.forEachIndexed { index, value ->
+            val x = index * stepX
+            val y = size.height * (1f - ((value - low) / span).coerceIn(0f, 1f))
+            if (index == 0) path.moveTo(x, y) else path.lineTo(x, y)
+        }
+        listOf(0.25f, 0.5f, 0.75f).forEach { fraction ->
+            val y = size.height * fraction
+            drawLine(
+                color = gridColor,
+                start = Offset(0f, y),
+                end = Offset(size.width, y),
+                strokeWidth = 1.dp.toPx()
+            )
+        }
+        drawPath(
+            path = path,
+            color = accent,
+            style = Stroke(width = 2.5.dp.toPx(), cap = StrokeCap.Round)
+        )
+    }
 }

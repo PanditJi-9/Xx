@@ -50,6 +50,11 @@ daemon (see [thermal.md](thermal.md)) is the part that acts: it learns how this 
 predicts. **Thermal trip points are on the never-touch list** — they are the hardware's own protection,
 and no profile may override them.
 
+A **session trend** draws the hottest readable zone once every three seconds for as long as the screen
+stays open — five minutes of window, scaled to the range actually measured rather than to a fixed scale,
+with peak and low shown beside it. It lives in memory only: leaving the screen discards it, and nothing
+is written to storage.
+
 ### Power — *"Charging, bypass, sleep and battery health"*
 
 Charging and battery health in one screen, **bypass charging** (running from the cable without pushing

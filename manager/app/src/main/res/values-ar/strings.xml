@@ -664,6 +664,13 @@
     <string name="detail_hottest_zone">أعلى منطقة</string>
     <string name="detail_thermal_summary">الملخّص</string>
     <string name="detail_thermal_summary_desc">تُقرأ مع كل عيّنة، ومن نفس مصادر بقية التطبيق.</string>
+    <string name="detail_thermal_history_title">منحنى الجلسة</string>
+    <string name="detail_thermal_history_desc">أعلى منطقة قابلة للقراءة عند كل عيّنة من ثلاث ثوانٍ، في الذاكرة لهذه الزيارة وحدها. ولا يُكتب شيء على التخزين.</string>
+    <string name="detail_thermal_history_collecting">تُجمع العيّنات الأولى… يظهر المنحنى بعد قراءتين.</string>
+    <string name="detail_thermal_history_peak">الأعلى في هذه الزيارة</string>
+    <string name="detail_thermal_history_low">الأدنى في هذه الزيارة</string>
+    <string name="detail_thermal_history_window">المدة المغطّاة</string>
+    <string name="detail_thermal_history_window_value">%1$d ثانية</string>
     <string name="detail_thermal_heat">الحرارة</string>
     <string name="detail_thermal_heat_note">من مصدر الشاشة الرئيسية نفسه: بثّ Android ثم عقدة البطارية.</string>
     <string name="detail_thermal_reading">جارٍ قراءة مناطق الحرارة…</string>
