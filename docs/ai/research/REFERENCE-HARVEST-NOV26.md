@@ -203,6 +203,7 @@
 | --- | --- | --- |
 | P1/6 استوديو المراقبة | **مشحون** (٣ مراقبات، خدمة واحدة، قارئ واحد) | `ui/util/MonitorPrefs.kt` · `service/FpsOverlayService.kt` · `FpsOverlayScreen.kt` |
 | P1/9 تصدير المخططات | **مشحون للبطارية** (CSV من النافذة المعروضة عبر ورقة المشاركة) | `BatteryHistoryStore.csv/writeCsv` + `BatteryHistoryCsvTest` |
+| P1/9 مخططات النظام التاريخية | **مشحون للجلسة**: منحنى الحرارة يرسم أسخن منطقة مقروءة كل ٣ ثوانٍ (نافذة ٥ دقائق، ١٠٠ عيّنة) بمقياس مشتقّ من المقيس، مع الذروة والأدنى، وفي الذاكرة وحدها — لا يُكتب شيء على التخزين | `ThermalDetailScreen.kt` (`ThermalTrend` + `HISTORY_CAPACITY`) |
 | P2/17 خريطة الشبكة | **شُحن القياس لا الخريطة**: تحليل اسم + أزمنة اتصال TCP + تذبذب + تقدير الوصلة، عند الطلب فقط | `core/net/LinkProbe.kt` · `LinkQualitySection` |
 | P0/3 توسيع Device Lab | **مشحون**: ميكروفون (مستوى dBFS حيّ + ذروة، ولا يُسجَّل شيء) · قدرات العرض والـHDR · مُفكّكات الفيديو المعلنة | `MicrophoneTest` · `DisplayCapabilities` · `CodecCapabilities` في `DeviceLabScreen.kt` |
 | P1/10 عارض المانيفست/الأذونات | **مشحون**: ملخّص مانيفست الحزمة قبل قائمة الصلاحيات (إصدار ورقمه، أدنى/أهدف SDK، موضع التثبيت، عدّ المكوّنات والمُصدَّر منها، أجزاء APK، قابلية التنقيح) — وكل ما لا يعدّه مدير الحزم يُعرض «غير معلوم» لا صفرًا | `ui/util/ManifestFacts.kt` (`ManifestFactsReader.read`) + `PermissionsScreen.kt` |
