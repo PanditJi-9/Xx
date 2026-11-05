@@ -82,6 +82,6 @@ object ThermalReadout {
         if (Build.VERSION.SDK_INT < MIN_API) return ThermalStatusSample(ThermalStatus.UNKNOWN)
         val power = context.getSystemService(PowerManager::class.java)
             ?: return ThermalStatusSample(ThermalStatus.UNKNOWN)
-        return classify(Build.VERSION.SDK_INT) { power.thermalStatus }
+        return classify(Build.VERSION.SDK_INT) { power.currentThermalStatus }
     }
 }

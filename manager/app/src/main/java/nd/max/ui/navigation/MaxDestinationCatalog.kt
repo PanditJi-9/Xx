@@ -119,6 +119,8 @@ fun maxDestinationRole(destination: MaxDestination): Int = when (destination) {
     // ثلاثة أقسام في `Device Info` (النظرة العامة والنظام والمستشعرات) يحتاج سطرًا يقول ما
     // يجده هناك — وإلا قرأ المستخدم «واجهة تحكّم» على باب لا يضبط شيئًا.
     MaxDestination.Diagnostics -> R.string.max_role_diagnostics
+    // ومختبر الجهاز: دورٌ يقول إنه **يفحص** العتاد تفاعليًّا، لا أنه يعرض أرقامًا فقط.
+    MaxDestination.DeviceLab -> R.string.max_role_device_lab
     // وشاشة تعريف المحرّك (§٥): شاشة قراءةٍ أيضًا — تشرح الحلقة والمتاح، ولا تضبط شيئًا.
     // فالعبارة العامة («افتح واجهة التحكم المركّزة هذه») وصفٌ خاطئ لها كما كانت للتشخيص.
     MaxDestination.MaxAiIntro -> R.string.max_role_maxai_intro

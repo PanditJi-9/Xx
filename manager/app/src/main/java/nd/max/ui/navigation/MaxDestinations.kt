@@ -314,6 +314,13 @@ sealed class MaxDestination(
     data object Diagnostics : MaxDestination("diagnostics", R.string.section_diagnostics, Icons.Rounded.BugReport, Settings)
 
     /**
+     * `DEVICE-LAB-01` — الاختبار التفاعليّ للعتاد: شاشة ولمس وأزرار واهتزاز وصوت
+     * وفلاش ومستشعرات وبطارية. تحت الإعدادات كالتشخيص، لأنها شاشة **فحص** لا تحكّم،
+     * وتستعمل واجهات النظام العامة وحدها: لا جذر ولا Shizuku ولا كتابة في sysfs.
+     */
+    data object DeviceLab : MaxDestination("device_lab", R.string.device_lab_title, Icons.Rounded.Science, Settings)
+
+    /**
      * `LICENSE-KEYS-01` — شاشة الترخيص: مفتاحٌ يُكتب مرّة، وشهادة موقّعة تعمل بعدها بلا إنترنت.
      *
      * **تحت الإعدادات** لأنها حالة الجهاز لا تحكّم أداء، والصفّ الذي يفتحها يُعرض دائمًا
@@ -441,7 +448,7 @@ sealed class MaxDestination(
                 ThermalDetail, Charging, BypassCharging, BypassChargingCheck, DozeMode,
                 Dex2oat, StorageDetail, StorageCare, NetworkScheduler, NetworkDetail,
                 ProcessManager, DebloatFreeze, AppSettings, GameLobby, EmulatorHub, HmaCompanion,
-                ColorPalette, ColorScheme, Diagnostics, License, Logs, ConfigBackup, CommunityStats, Plugins, MaxBackup, Permissions, About,
+                ColorPalette, ColorScheme, Diagnostics, DeviceLab, License, Logs, ConfigBackup, CommunityStats, Plugins, MaxBackup, Permissions, About,
                 Privilege, ModuleHealth,
                 SetEdit, ActivityLauncher, FileManager,
             )

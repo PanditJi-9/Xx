@@ -54,6 +54,8 @@
     <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS"
         tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.VIBRATE" />
+    <!-- `DEVICE-LAB-01`: تشغيل فلاش الكاميرا من مختبر الجهاز. صلاحية عادية بلا طلب وقت التشغيل. -->
+    <uses-permission android:name="android.permission.FLASHLIGHT" />
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
@@ -95,6 +97,8 @@
       **تُطلَب عند الاستعمال**، والقدرة ليست شرط تشغيل — وهو نفس ما يقوله تعليق فئات النسخ أعلاه.
     -->
     <uses-feature android:name="android.hardware.telephony" android:required="false" />
+    <!-- المختبر يعمل بلا فلاش: الصفّ يُعرض «غير متاح» ولا يُشترط وجوده للتثبيت. -->
+    <uses-feature android:name="android.hardware.camera.flash" android:required="false" />
     <uses-permission android:name="android.permission.READ_USER_DICTIONARY" />
     <uses-permission android:name="android.permission.WRITE_USER_DICTIONARY" />
 

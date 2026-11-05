@@ -387,6 +387,17 @@ fun SettingsScreen(
                                 )
                             },
                             {
+                                // `DEVICE-LAB-01` — الفحص التفاعليّ بجانب التشخيص: الأول يقول
+                                // «ما الذي يعلنه الجهاز؟» والثاني «هل يعمل فعلًا؟». وكلاهما بلا جذر.
+                                ExpressiveListItem(
+                                    onClick = { MaxNavActions(navController).navigateTo(MaxDestination.DeviceLab) },
+                                    headlineContent = { Text(stringResource(R.string.device_lab_title)) },
+                                    supportingContent = { Text(stringResource(R.string.device_lab_subtitle)) },
+                                    leadingContent = { LeadingIcon(icon = Icons.Rounded.Science) },
+                                    trailingContent = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null) }
+                                )
+                            },
+                            {
                                 ExpressiveListItem(
                                     onClick = { MaxNavActions(navController).navigateTo(MaxDestination.ConfigBackup) },
                                     headlineContent = { Text(stringResource(R.string.max_nav_config_backup)) },
