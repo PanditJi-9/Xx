@@ -54,6 +54,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import nd.max.R
+import nd.max.core.battery.BatteryDrain
 import nd.max.core.battery.BatteryHistoryStore
 import nd.max.core.battery.BatterySample
 import nd.max.ui.design.MaxCondition
@@ -130,6 +131,8 @@ fun BatteryHistoryScreen(navController: NavHostController) {
     val lowest = levels.minOrNull()
     val highest = levels.maxOrNull()
     val drain = dischargeRate(samples)
+    // الفصل بحسب الشاشة: نفس العيّنات، والحكم في `BatteryDrain` كي يُختبر بلا شاشة.
+    val drainSplit = BatteryDrain.summarise(samples)
     val lastAt = samples.lastOrNull()?.atMillis
     val lastText = lastAt?.let {
         "${dateFormat.format(Date(it))} · ${timeFormat.format(Date(it))}"
@@ -321,6 +324,30 @@ fun BatteryHistoryScreen(navController: NavHostController) {
                 )
                 MaxGroupDivider()
                 MaxRow(
+                    title = stringResource(R.string.battery_history_drain_active),
+                    subtitle = stringResource(R.string.battery_history_drain_active_desc),
+                    trailing = {
+                        Text(
+                            text = drainRateText(drainSplit.activePerHour),
+                            style = MonoValueStyleSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                )
+                MaxGroupDivider()
+                MaxRow(
+                    title = stringResource(R.string.battery_history_drain_idle),
+                    subtitle = stringResource(R.string.battery_history_drain_idle_desc),
+                    trailing = {
+                        Text(
+                            text = drainRateText(drainSplit.idlePerHour),
+                            style = MonoValueStyleSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                )
+                MaxGroupDivider()
+                MaxRow(
                     title = stringResource(R.string.battery_history_samples),
                     trailing = {
                         Text(
@@ -480,6 +507,14 @@ private enum class HistoryPeriod(val windowMs: Long, val labelRes: Int) {
  * fifteen minutes and negative drops (the level rose): both produce no number
  * rather than a confident wrong one.
  */
+@Composable
+private fun drainRateText(perHour: Float?): String = perHour?.let {
+    stringResource(
+        R.string.battery_history_drain_value,
+        String.format(Locale.getDefault(), "%.1f", it)
+    )
+} ?: stringResource(R.string.device_lab_value_unavailable)
+
 private fun dischargeRate(samples: List<BatterySample>): Float? {
     val discharging = samples.filter { it.discharging }
     if (discharging.size < 2) return null

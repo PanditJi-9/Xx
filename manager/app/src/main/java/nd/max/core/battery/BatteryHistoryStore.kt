@@ -11,6 +11,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.BatteryManager
+import android.os.PowerManager
 import nd.max.receiver.BatterySampleReceiver
 import org.json.JSONObject
 import java.io.File
@@ -22,7 +23,14 @@ import java.util.concurrent.Executors
  * The values are the platform's own reports, not estimates:
  *  - level / voltage / temperature / status / plugged come from the sticky
  *    `ACTION_BATTERY_CHANGED` broadcast;
- *  - current comes from `BatteryManager.BATTERY_PROPERTY_CURRENT_NOW`.
+ *  - current comes from `BatteryManager.BATTERY_PROPERTY_CURRENT_NOW`;
+ *  - screen state comes from `PowerManager.isInteractive`.
+ *
+ * **Why the screen state is stored at all:** a drain rate is only meaningful
+ * when it says whether the screen was on. A device losing 4%/h with the panel
+ * lit and the same 4%/h with it dark are two different machines, and averaging
+ * them hides exactly the number the user came for. `null` means the state was
+ * not recorded (older samples), not "off".
  *
  * Nothing here needs root, Shizuku or a new runtime permission.
  */
@@ -33,7 +41,8 @@ data class BatterySample(
     val temperatureC: Float?,
     val status: Int,
     val plugged: Int,
-    val currentUa: Long?
+    val currentUa: Long?,
+    val screenOn: Boolean? = null
 ) {
     /** True while the charger is not supplying power. */
     val discharging: Boolean
@@ -129,7 +138,12 @@ object BatteryHistoryStore {
                 BatteryManager.BATTERY_STATUS_UNKNOWN
             ),
             plugged = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, 0),
-            currentUa = currentUa
+            currentUa = currentUa,
+            // A refused read stays `null`; the drain split then ignores the
+            // sample rather than guessing which side it belonged to.
+            screenOn = runCatching {
+                (app.getSystemService(Context.POWER_SERVICE) as PowerManager).isInteractive
+            }.getOrNull()
         )
     }
 
@@ -277,7 +291,12 @@ object BatteryHistoryStore {
                 temperatureC = if (json.isNull("temp")) null else json.optDouble("temp").toFloat(),
                 status = json.optInt("status", BatteryManager.BATTERY_STATUS_UNKNOWN),
                 plugged = json.optInt("plugged", 0),
-                currentUa = if (json.isNull("current")) null else json.optLong("current")
+                currentUa = if (json.isNull("current")) null else json.optLong("current"),
+                screenOn = if (json.has("screen") && !json.isNull("screen")) {
+                    json.optBoolean("screen")
+                } else {
+                    null
+                }
             )
         }.getOrNull()
     }
@@ -290,5 +309,8 @@ object BatteryHistoryStore {
         put("status", status)
         put("plugged", plugged)
         put("current", currentUa ?: JSONObject.NULL)
+        // Absent, not `false`: a sample written before this field existed must
+        // stay unknown instead of silently counting as a screen-off point.
+        if (screenOn != null) put("screen", screenOn)
     }
 }

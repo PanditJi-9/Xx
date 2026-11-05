@@ -3884,6 +3884,10 @@
     <string name="battery_history_drain">معدّل التفريغ</string>
     <string name="battery_history_drain_desc">نسبة مئوية في الساعة عبر نقاط التفريغ وحدها.</string>
     <string name="battery_history_drain_value">%1$s%%/س</string>
+    <string name="battery_history_drain_active">والشاشة مُضيئة</string>
+    <string name="battery_history_drain_active_desc">العيّنات المسجَّلة والشاشة مضيئة وحدها، فلا يُخفَّف الرقم بساعات الخمول.</string>
+    <string name="battery_history_drain_idle">والشاشة مطفأة</string>
+    <string name="battery_history_drain_idle_desc">العيّنات المسجَّلة والشاشة مطفأة وحدها. النوم العميق هو حيث يظهر أي عملية شاذّة.</string>
     <string name="battery_history_samples">النقاط المخزّنة</string>
     <string name="battery_history_last_sample">آخر نقطة</string>
     <string name="battery_history_voltage">الجهد</string>

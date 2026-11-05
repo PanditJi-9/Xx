@@ -3937,6 +3937,10 @@
     <string name="battery_history_drain">Discharge rate</string>
     <string name="battery_history_drain_desc">Percent per hour across discharging points only.</string>
     <string name="battery_history_drain_value">%1$s%%/h</string>
+    <string name="battery_history_drain_active">Screen on</string>
+    <string name="battery_history_drain_active_desc">Only points recorded with the display lit, so the figure is not diluted by idle hours.</string>
+    <string name="battery_history_drain_idle">Screen off</string>
+    <string name="battery_history_drain_idle_desc">Only points recorded with the display dark. Deep sleep is where a runaway process shows.</string>
     <string name="battery_history_samples">Stored points</string>
     <string name="battery_history_last_sample">Last point</string>
     <string name="battery_history_voltage">Voltage</string>
