@@ -37,6 +37,7 @@
 
 package nd.max.ui.subscreens
 
+import android.content.pm.PackageManager
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -96,8 +97,11 @@ import nd.max.ui.design.MaxSection
 import nd.max.ui.design.MaxSize
 import nd.max.ui.design.MaxSpace
 import nd.max.ui.design.MaxTone
+import nd.max.ui.design.MonoValueStyleSmall
 import nd.max.ui.navigation.MaxDestination
 import nd.max.ui.util.AppOpsUtil
+import nd.max.ui.util.ManifestFacts
+import nd.max.ui.util.ManifestFactsReader
 import nd.max.ui.util.PermissionPolicy
 import nd.max.ui.viewmodel.ApplistViewmodel
 import nd.max.ui.design.maxRadius
@@ -158,6 +162,7 @@ private fun AppOpsDetail(navController: NavController, pkg: String) {
 
     var permissions by remember(pkg) { mutableStateOf<List<AppOpsUtil.DeclaredPermission>?>(null) }
     var loaded by remember(pkg) { mutableStateOf(false) }
+    var manifest by remember(pkg) { mutableStateOf<ManifestFacts?>(null) }
     var ops by remember(pkg) { mutableStateOf<List<PermissionPolicy.OpState>?>(null) }
     var opsLoaded by remember(pkg) { mutableStateOf(false) }
     var reference by remember(pkg) { mutableStateOf<PermissionPolicy.Reference?>(null) }
@@ -189,6 +194,8 @@ private fun AppOpsDetail(navController: NavController, pkg: String) {
         ops = loadedData.second.first
         reference = loadedData.second.second
         opsLoaded = true
+        // قراءة المانيفست في نفس دورة التحميل: قسمُه لا يظهر قبلها، فلا يمرّ المستخدم بحالة «فارغ».
+        manifest = withContext(Dispatchers.IO) { ManifestFactsReader.read(context, pkg) }
     }
 
     LaunchedEffect(pkg) { reload() }
@@ -227,6 +234,68 @@ private fun AppOpsDetail(navController: NavController, pkg: String) {
             )
         },
         header = {
+            // ── ملخّص المانيفست: ما تعلنه الحزمة عن نفسها ───────────────
+            MaxSection(
+                title = stringResource(R.string.max_perms_manifest_title),
+                description = stringResource(R.string.max_perms_manifest_desc),
+            ) {
+                val facts = manifest
+                if (facts == null) {
+                    MaxGroup {
+                        MaxRow(title = stringResource(R.string.max_perms_manifest_none))
+                    }
+                } else {
+                    MaxGroup {
+                        ManifestRow(
+                            title = stringResource(R.string.max_perms_manifest_version),
+                            value = if (facts.versionName.isNullOrBlank()) {
+                                facts.versionCode.toString()
+                            } else {
+                                "${facts.versionName} (${facts.versionCode})"
+                            },
+                        )
+                        MaxGroupDivider()
+                        ManifestRow(
+                            title = stringResource(R.string.max_perms_manifest_sdk),
+                            value = if (facts.minSdk > 0 && facts.targetSdk > 0) {
+                                "${facts.minSdk} → ${facts.targetSdk}"
+                            } else {
+                                stringResource(R.string.max_perms_manifest_unknown)
+                            },
+                        )
+                        MaxGroupDivider()
+                        ManifestRow(
+                            title = stringResource(R.string.max_perms_manifest_location),
+                            value = installLocationText(facts.installLocation),
+                        )
+                        MaxGroupDivider()
+                        ManifestRow(
+                            title = stringResource(R.string.max_perms_manifest_components),
+                            subtitle = stringResource(R.string.max_perms_manifest_components_order),
+                            value = "${facts.activities} · ${facts.services} · " +
+                                "${facts.receivers} · ${facts.providers}",
+                        )
+                        MaxGroupDivider()
+                        ManifestRow(
+                            title = stringResource(R.string.max_perms_manifest_exported),
+                            value = facts.exportedComponents.toString(),
+                        )
+                        MaxGroupDivider()
+                        ManifestRow(
+                            title = stringResource(R.string.max_perms_manifest_splits),
+                            value = facts.splitCount.toString(),
+                        )
+                        MaxGroupDivider()
+                        ManifestRow(
+                            title = stringResource(R.string.max_perms_manifest_debug),
+                            value = stringResource(
+                                if (facts.debuggable) R.string.yes else R.string.no
+                            ),
+                        )
+                    }
+                }
+            }
+
             // ── صلاحيات البيان (بلا امتياز) ──────────────────────────────
             MaxSection(
                 title = stringResource(R.string.max_perms_declared_title),
@@ -757,4 +826,42 @@ private fun AppOpsPicker(navController: NavController) {
             }
         }
     }
+}
+
+/**
+ * صفّ في ملخّص المانيفست: العنوان عربيًّا، والقيمة كما أعلنها النظام.
+ *
+ * **ولماذا القيمة بخطّ القيم لا بنصّ عاديّ:** الأرقام هنا (`57`، `29 → 36`، `12 · 4 · 3 · 2`)
+ * أرقام جهاز تُقارن وتُنقل، لا جملة تُقرأ؛ فتُعرض بالخطّ نفسه الذي تُعرض به بقية قيم الشاشات.
+ */
+@Composable
+private fun ManifestRow(title: String, value: String, subtitle: String? = null) {
+    MaxRow(
+        title = title,
+        subtitle = subtitle,
+        trailing = {
+            Text(
+                text = value,
+                style = MonoValueStyleSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        },
+    )
+}
+
+/**
+ * موضع تثبيت الحزمة كما يسمّيه `PackageManager`.
+ *
+ * والقيمة غير المعروفة تعود إلى «تلقائي» لأن هذا هو ما يعنيه `INSTALL_LOCATION_AUTO` نفسه،
+ * لا إلى فراغ يوهم بجهل.
+ */
+@Composable
+private fun installLocationText(location: Int): String = when (location) {
+    PackageManager.INSTALL_LOCATION_INTERNAL_ONLY ->
+        stringResource(R.string.max_perms_manifest_location_internal)
+
+    PackageManager.INSTALL_LOCATION_PREFER_EXTERNAL ->
+        stringResource(R.string.max_perms_manifest_location_external)
+
+    else -> stringResource(R.string.max_perms_manifest_location_auto)
 }

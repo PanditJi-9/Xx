@@ -76,4 +76,21 @@
     <string name="max_perms_entry_title">الصلاحيات و‏AppOps</string>
     <string name="max_perms_entry_desc">اطّلع على ما يُعلنه هذا التطبيق وما تسمح به المنصّة فعلًا</string>
     <string name="max_perms_entry_action">افتح الصلاحيات</string>
+
+    <!-- ملخّص المانيفست -->
+    <string name="max_perms_manifest_title">ملخّص المانيفست</string>
+    <string name="max_perms_manifest_desc">يُقرأ من مدير الحزم: الإصدار، ونطاق SDK، والمكوّنات وكم منها مُصدَّر. والمكوّن المُصدَّر يمكن لتطبيق آخر تشغيله.</string>
+    <string name="max_perms_manifest_version">الإصدار</string>
+    <string name="max_perms_manifest_sdk">نطاق SDK</string>
+    <string name="max_perms_manifest_location">موضع التثبيت</string>
+    <string name="max_perms_manifest_location_auto">تلقائي</string>
+    <string name="max_perms_manifest_location_internal">التخزين الداخلي فقط</string>
+    <string name="max_perms_manifest_location_external">يُفضّل الخارجي</string>
+    <string name="max_perms_manifest_components">المكوّنات</string>
+    <string name="max_perms_manifest_components_order">أنشطة · خدمات · مستقبلات · مزوّدات</string>
+    <string name="max_perms_manifest_exported">مكوّنات مُصدَّرة</string>
+    <string name="max_perms_manifest_splits">أجزاء APK</string>
+    <string name="max_perms_manifest_debug">قابل للتنقيح</string>
+    <string name="max_perms_manifest_none">لا يعدّه مدير الحزم.</string>
+    <string name="max_perms_manifest_unknown">غير معلوم</string>
 </resources>

@@ -115,7 +115,7 @@ package in an unexplained state.
 | **Quick settings tiles** | Bypass charging, profile, clean status bar, battery-history recording, high-brightness mode and the FPS overlay, each reading its state back before it claims to have changed anything. |
 | **Log viewer** | The device log, parsed into events with a **glossary written into the log file itself** — the file explains its own fields. |
 | **Max Backup** | Back up apps and check their integrity; restore when you need to. |
-| **Permissions** | Declared permissions vs what the platform actually allows (`AppOps`), in one place, because "declared" and "granted" differ. |
+| **Permissions** | Declared permissions vs what the platform actually allows (`AppOps`), in one place, because "declared" and "granted" differ. A manifest summary above the list reads what the package itself declares: version and version code, minimum and target SDK, install location, component counts (activities, services, receivers, providers) with the exported ones called out, split APKs, and whether the build is debuggable. Anything the package manager does not report is shown as unknown, never as zero. |
 | **SetEdit** | Direct access to the settings database for values with no UI. |
 | **Activity Launcher** | Launch exported and internal activities. |
 | **File manager** | A file browser for the paths this kind of work touches, with bookmarks and history. |

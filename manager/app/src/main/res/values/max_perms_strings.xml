@@ -76,4 +76,21 @@
     <string name="max_perms_entry_title">Permissions &amp; App ops</string>
     <string name="max_perms_entry_desc">See what this app declares and what the system actually allows</string>
     <string name="max_perms_entry_action">Open permissions</string>
+
+    <!-- ملخّص المانيفست -->
+    <string name="max_perms_manifest_title">Manifest summary</string>
+    <string name="max_perms_manifest_desc">Read from the package manager: version, SDK range, components and how many of them are exported. An exported component can be started by other apps.</string>
+    <string name="max_perms_manifest_version">Version</string>
+    <string name="max_perms_manifest_sdk">SDK range</string>
+    <string name="max_perms_manifest_location">Install location</string>
+    <string name="max_perms_manifest_location_auto">Automatic</string>
+    <string name="max_perms_manifest_location_internal">Internal storage only</string>
+    <string name="max_perms_manifest_location_external">Prefers external</string>
+    <string name="max_perms_manifest_components">Components</string>
+    <string name="max_perms_manifest_components_order">activities · services · receivers · providers</string>
+    <string name="max_perms_manifest_exported">Exported components</string>
+    <string name="max_perms_manifest_splits">Split APKs</string>
+    <string name="max_perms_manifest_debug">Debuggable</string>
+    <string name="max_perms_manifest_none">Not reported by the package manager.</string>
+    <string name="max_perms_manifest_unknown">Unknown</string>
 </resources>
