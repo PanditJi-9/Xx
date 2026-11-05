@@ -100,7 +100,33 @@ fun hudFieldText(reading: HudReading?, field: HudField): String = when (field) {
     HudField.Ram -> reading?.ramMb?.let { "$it MB" } ?: MAX_VALUE_UNAVAILABLE
     HudField.Power -> reading?.watt?.let { "%.1f W".format(it) } ?: MAX_VALUE_UNAVAILABLE
     HudField.Heat -> reading?.heat?.let { "%.0f°C".format(it) } ?: MAX_VALUE_UNAVAILABLE
+    HudField.Battery -> reading?.battery?.let { "$it%" } ?: MAX_VALUE_UNAVAILABLE
+    HudField.Network -> reading?.let {
+        // الزوج يُعرض معًا؛ وغياب الاتجاهين شرطة، وغياب أحدهما يدلّ على «لم يُقَس بعد».
+        if (it.rxBps == null && it.txBps == null) {
+            MAX_VALUE_UNAVAILABLE
+        } else {
+            "↓${hudRateText(it.rxBps)} ↑${hudRateText(it.txBps)}"
+        }
+    } ?: MAX_VALUE_UNAVAILABLE
     HudField.Renderer -> reading?.renderer ?: MAX_VALUE_UNAVAILABLE
+}
+
+/**
+ * معدّل بايت/ثانية بصيغة قصيرة.
+ *
+ * **والفروق الثلاثة مقصودة:** الصفر **قياس صالح** (لا حركة تُذكر) فلا يُستبدل بشرطة؛
+ * والغائب/غير المنتهي/السالب لا يُطبع له رقم؛ والوحدات تُبدّل عند العتبة لا عند التقدير.
+ */
+fun hudRateText(bytesPerSecond: Float?): String {
+    if (bytesPerSecond == null || !bytesPerSecond.isFinite() || bytesPerSecond < 0f) {
+        return MAX_VALUE_UNAVAILABLE
+    }
+    return when {
+        bytesPerSecond < 1024f -> "%.0f B/s".format(bytesPerSecond)
+        bytesPerSecond < 1024f * 1024f -> "%.1f KB/s".format(bytesPerSecond / 1024f)
+        else -> "%.1f MB/s".format(bytesPerSecond / (1024f * 1024f))
+    }
 }
 
 /**
@@ -124,6 +150,8 @@ fun hudFieldLabel(field: HudField): String = stringResource(
         HudField.Ram -> R.string.hud_field_ram
         HudField.Power -> R.string.hud_field_power
         HudField.Heat -> R.string.hud_field_heat
+        HudField.Battery -> R.string.hud_field_battery
+        HudField.Network -> R.string.hud_field_network
         HudField.Renderer -> R.string.hud_field_renderer
     }
 )

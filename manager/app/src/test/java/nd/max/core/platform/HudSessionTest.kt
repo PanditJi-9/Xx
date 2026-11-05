@@ -197,7 +197,8 @@ class HudSessionTest {
         // §2: «تحسين ترتيب معلومات ... وفقًا لأهميتها». والترتيب قرار واحد في موضع واحد (ترتيب
         // النوع)، وكل سطح يقرؤه منه — وهذا الاختبار يثبّته فلا تعود الحرارة إلى ما بعد القدرة.
         assertEquals(
-            listOf("Frames", "Cpu", "Heat", "Ram", "Power", "Renderer"),
+            // البطارية والشبكة بعد القدرة وقبل المُصيِّر: تُقرآن بنظرة لا تُزاحم الإطارات.
+            listOf("Frames", "Cpu", "Heat", "Ram", "Power", "Battery", "Network", "Renderer"),
             HudField.entries.map { it.name }
         )
     }

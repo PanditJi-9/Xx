@@ -16,7 +16,10 @@ import android.hardware.SensorManager
 import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraManager
 import android.media.AudioAttributes
+import android.media.AudioDeviceCallback
+import android.media.AudioDeviceInfo
 import android.media.AudioFormat
+import android.media.AudioManager
 import android.media.AudioTrack
 import android.os.BatteryManager
 import android.os.Build
@@ -124,7 +127,8 @@ fun DeviceLabScreen(navController: NavHostController) {
 
     val speakerError = stringResource(R.string.device_lab_speaker_error)
     val torchError = stringResource(R.string.device_lab_torch_error)
-    val player = remember { StereoTonePlayer() }
+    val player = remember { StereoTonePlayer(context) }
+    var earpieceRoute by remember { mutableStateOf<Int?>(null) }
 
     DisposableEffect(Unit) {
         onDispose { player.stop() }
@@ -206,10 +210,35 @@ fun DeviceLabScreen(navController: NavHostController) {
                 )
                 MaxGroupDivider()
                 SpeakerActionRow(
+                    label = stringResource(R.string.device_lab_play_earpiece),
+                    onClick = {
+                        if (!player.play(left = 1f, right = 1f, earpiece = true)) {
+                            scope.launch { snackbar.showSnackbar(speakerError) }
+                        } else {
+                            earpieceRoute = player.lastRoutedDeviceType
+                        }
+                    },
+                )
+                earpieceRoute?.let { type ->
+                    MaxGroupDivider()
+                    LabValueRow(
+                        title = stringResource(R.string.device_lab_routed_to),
+                        value = stringResource(outputTypeLabel(type)),
+                    )
+                }
+                MaxGroupDivider()
+                SpeakerActionRow(
                     label = stringResource(R.string.device_lab_stop),
                     onClick = { player.stop() },
                 )
             }
+        }
+
+        MaxSection(
+            title = stringResource(R.string.device_lab_outputs_title),
+            description = stringResource(R.string.device_lab_outputs_desc),
+        ) {
+            AudioOutputsTest()
         }
 
         MaxSection(title = stringResource(R.string.device_lab_section_hardware)) {
@@ -559,13 +588,41 @@ private fun SpeakerActionRow(label: String, onClick: () -> Unit) {
  * A mono [android.media.ToneGenerator] cannot prove which speaker works, which
  * is the point of the test. The buffer is generated once per request, played
  * statically and released on the next request or on dispose.
+ *
+ * **The earpiece route is a request, not a claim.** Android may ignore it (for
+ * example while a call is active or on devices without an earpiece). After
+ * playback starts the player reads `AudioTrack.routedDevice` — the platform's
+ * own routing report — and the screen shows what it actually selected. When the
+ * platform reports nothing, the row says so instead of assuming the request
+ * worked.
  */
-private class StereoTonePlayer {
+private class StereoTonePlayer(context: Context) {
+    private val audioManager = context.applicationContext.getSystemService(AudioManager::class.java)
+    private var previousMode: Int? = null
     private var track: AudioTrack? = null
 
-    fun play(left: Float, right: Float, durationMs: Int = 1800): Boolean {
+    /** The type of the device Android actually routed to, or `null` if unreported. */
+    var lastRoutedDeviceType: Int? = null
+        private set
+
+    fun play(
+        left: Float,
+        right: Float,
+        durationMs: Int = 1800,
+        earpiece: Boolean = false,
+    ): Boolean {
         stop()
         return runCatching {
+            // Communication mode plus speakerphone off is the public way to
+            // request the earpiece; the mode is restored in [stop].
+            if (earpiece) {
+                audioManager?.let { manager ->
+                    previousMode = manager.mode
+                    manager.mode = AudioManager.MODE_IN_COMMUNICATION
+                    @Suppress("DEPRECATION")
+                    manager.isSpeakerphoneOn = false
+                }
+            }
             val sampleRate = 44_100
             val frames = sampleRate * durationMs / 1000
             val samples = ShortArray(frames * 2)
@@ -575,11 +632,21 @@ private class StereoTonePlayer {
                 samples[frame * 2] = (value * left).toInt().toShort()
                 samples[frame * 2 + 1] = (value * right).toInt().toShort()
             }
+            val usage = if (earpiece) {
+                AudioAttributes.USAGE_VOICE_COMMUNICATION
+            } else {
+                AudioAttributes.USAGE_MEDIA
+            }
+            val contentType = if (earpiece) {
+                AudioAttributes.CONTENT_TYPE_SPEECH
+            } else {
+                AudioAttributes.CONTENT_TYPE_MUSIC
+            }
             val created = AudioTrack.Builder()
                 .setAudioAttributes(
                     AudioAttributes.Builder()
-                        .setUsage(AudioAttributes.USAGE_MEDIA)
-                        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                        .setUsage(usage)
+                        .setContentType(contentType)
                         .build()
                 )
                 .setAudioFormat(
@@ -594,6 +661,7 @@ private class StereoTonePlayer {
                 .build()
             created.write(samples, 0, samples.size)
             created.play()
+            lastRoutedDeviceType = runCatching { created.routedDevice?.type }.getOrNull()
             track = created
             true
         }.getOrDefault(false)
@@ -605,7 +673,84 @@ private class StereoTonePlayer {
             runCatching { player.release() }
         }
         track = null
+        lastRoutedDeviceType = null
+        previousMode?.let { mode ->
+            runCatching { audioManager?.mode = mode }
+            previousMode = null
+        }
     }
+}
+
+// ---------------------------------------------------------------------------
+// Audio outputs
+// ---------------------------------------------------------------------------
+
+/**
+ * The outputs Android reports right now, kept live by [AudioDeviceCallback].
+ *
+ * This is a read-only inventory: plugging a headset, connecting Bluetooth
+ * audio or attaching a USB DAC adds a row without reopening the screen. A
+ * device that reports nothing shows "none" — an empty list is never presented
+ * as "no audio hardware exists".
+ */
+@Composable
+private fun AudioOutputsTest() {
+    val context = LocalContext.current
+    val audioManager = remember { context.getSystemService(AudioManager::class.java) }
+    var outputs by remember { mutableStateOf(audioOutputs(audioManager)) }
+
+    DisposableEffect(audioManager) {
+        val callback = object : AudioDeviceCallback() {
+            override fun onAudioDevicesAdded(addedDevices: Array<out AudioDeviceInfo>) {
+                outputs = audioOutputs(audioManager)
+            }
+
+            override fun onAudioDevicesRemoved(removedDevices: Array<out AudioDeviceInfo>) {
+                outputs = audioOutputs(audioManager)
+            }
+        }
+        runCatching { audioManager?.registerAudioDeviceCallback(callback, null) }
+        onDispose { runCatching { audioManager?.unregisterAudioDeviceCallback(callback) } }
+    }
+
+    MaxGroup {
+        val unavailable = stringResource(R.string.device_lab_value_unavailable)
+        if (outputs.isEmpty()) {
+            LabValueRow(
+                title = stringResource(R.string.device_lab_outputs_title),
+                value = stringResource(R.string.device_lab_output_none),
+            )
+        } else {
+            outputs.forEachIndexed { index, output ->
+                if (index > 0) MaxGroupDivider()
+                LabValueRow(
+                    title = stringResource(outputTypeLabel(output.type)),
+                    value = output.name.ifBlank { unavailable },
+                )
+            }
+        }
+    }
+}
+
+private data class AudioOutput(val type: Int, val name: String)
+
+private fun audioOutputs(manager: AudioManager?): List<AudioOutput> =
+    runCatching {
+        manager?.getDevices(AudioManager.GET_DEVICES_OUTPUTS)?.map { device ->
+            AudioOutput(device.type, device.productName?.toString().orEmpty())
+        }.orEmpty()
+    }.getOrDefault(emptyList())
+
+private fun outputTypeLabel(type: Int): Int = when (type) {
+    AudioDeviceInfo.TYPE_BUILTIN_SPEAKER -> R.string.device_lab_output_speaker
+    AudioDeviceInfo.TYPE_BUILTIN_EARPIECE -> R.string.device_lab_output_earpiece
+    AudioDeviceInfo.TYPE_WIRED_HEADSET -> R.string.device_lab_output_wired_headset
+    AudioDeviceInfo.TYPE_WIRED_HEADPHONES -> R.string.device_lab_output_wired_headphones
+    AudioDeviceInfo.TYPE_BLUETOOTH_A2DP,
+    AudioDeviceInfo.TYPE_BLUETOOTH_SCO -> R.string.device_lab_output_bluetooth
+    AudioDeviceInfo.TYPE_USB_DEVICE,
+    AudioDeviceInfo.TYPE_USB_HEADSET -> R.string.device_lab_output_usb
+    else -> R.string.device_lab_output_other
 }
 
 // ---------------------------------------------------------------------------

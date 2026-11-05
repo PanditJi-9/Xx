@@ -1481,6 +1481,8 @@
     <string name="hud_field_power">الطاقة</string>
     <string name="hud_field_heat">الحرارة</string>
     <string name="hud_field_renderer">المُصيّر</string>
+    <string name="hud_field_battery">البطارية</string>
+    <string name="hud_field_network">الشبكة</string>
     <string name="hud_field_shown">ظاهر</string>
     <string name="hud_field_hidden">مخفي</string>
     <string name="hud_preset_compact">مصغّر</string>
@@ -3680,6 +3682,18 @@
 <string name="device_lab_play_left">اليسار</string>
 <string name="device_lab_play_right">اليمين</string>
 <string name="device_lab_play_both">الاثنان</string>
+<string name="device_lab_play_earpiece">سماعة الأذن</string>
+<string name="device_lab_routed_to">يوجّه أندرويد إلى</string>
+<string name="device_lab_outputs_title">مخارج الصوت</string>
+<string name="device_lab_outputs_desc">قائمة حيّة من أندرويد؛ وصّل سماعة سلكية أو بلوتوث أو DAC عبر USB فيظهر هنا.</string>
+<string name="device_lab_output_speaker">سماعة الهاتف</string>
+<string name="device_lab_output_earpiece">سماعة الأذن</string>
+<string name="device_lab_output_wired_headset">سماعة سلكية</string>
+<string name="device_lab_output_wired_headphones">هيدفون سلكي</string>
+<string name="device_lab_output_bluetooth">صوت بلوتوث</string>
+<string name="device_lab_output_usb">صوت USB</string>
+<string name="device_lab_output_other">مخرج آخر</string>
+<string name="device_lab_output_none">لا مخارج معلنة</string>
 <string name="device_lab_stop">إيقاف</string>
 <string name="device_lab_unavailable">غير متاح على هذا الجهاز</string>
 <string name="device_lab_touch_hint">المس أي مكان بإصبع أو أكثر</string>

@@ -6,6 +6,8 @@
 package nd.max.core.platform
 
 import android.content.Context
+import android.net.TrafficStats
+import android.os.BatteryManager
 import android.os.PowerManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -68,8 +70,8 @@ fun HudForm.acceptsArrangement(): Boolean = this != HudForm.Ring
  * موضع واحد، فلا يُرتَّب حقل في شاشة على خلاف أخرى.
  *
  * الترتيب: الإطارات أولًا (وجود اللوحة لأجلها)، ثم حِمل المعالج (أقرب رقم إلى سبب التقطيع)، ثم
- * الحرارة (السقف الحراري هو ما يُقرأ خلف الأداء)، ثم الذاكرة، فالقدرة، فالرسّام (ثابت لا يتغيّر
- * جريانه، فهو آخر ما يُراقَب). الحقول تُخزَّن **بالاسم** لا بالرقم، فإعادة الترتيب تُغيّر القراءة
+ * الحرارة (السقف الحراري هو ما يُقرأ خلف الأداء)، ثم الذاكرة، فالقدرة، فمستوى البطارية، فالشبكة،
+ * فالرسّام (ثابت لا يتغيّر جريانه، فهو آخر ما يُراقَب). الحقول تُخزَّن **بالاسم** لا بالرقم، فإعادة الترتيب تُغيّر القراءة
  * لا تُفسد محفوظًا.
  *
  * **والحدّ المعلن — ولا حقل GPU هنا:** قراءة الرسّام الحيّة بين أيدينا (`GpuLiveRead`) تحتاج
@@ -95,6 +97,17 @@ enum class HudField {
 
     /** قدرة البطارية الواطية. */
     Power,
+
+    /** نسبة البطارية كما يعلنها النظام (٠–١٠٠). */
+    Battery,
+
+    /**
+     * حركة الشبكة اللحظية: نزول ورفع بالبايت/ثانية، من فروق عدّادات النظام.
+     *
+     * **ولماذا ليست هنا قراءة لكل تطبيق:** هذه لوحة أداء كلية، وتفصيل كل تطبيق يخصّ شاشة
+     * الاستخدام. والفرق بين العدّادين هو القياس؛ وما لا يُقاس يبقى `null` لا صفرًا.
+     */
+    Network,
 
     /** مُصيّر الرسوم للتطبيق الأمامي (GL/Vulkan). */
     Renderer
@@ -130,6 +143,12 @@ data class HudReading(
     val ramMb: Int? = null,
     val watt: Float? = null,
     val heat: Float? = null,
+    /** نسبة البطارية المئوية؛ `null` حين لا يعلنها النظام. */
+    val battery: Int? = null,
+    /** نزول الشبكة بالبايت/ثانية — `null` قبل أوّل فرق مقيس. */
+    val rxBps: Float? = null,
+    /** رفع الشبكة بالبايت/ثانية — `null` قبل أوّل فرق مقيس. */
+    val txBps: Float? = null,
     val renderer: String? = null
 ) {
     /** هل أجاب مصدر الإطارات؟ هو المصدر الوحيد الذي يفشل بحسب الوضع المُختار. */
@@ -141,6 +160,10 @@ data class HudReading(
         HudField.Ram -> ramMb
         HudField.Power -> watt
         HudField.Heat -> heat
+        HudField.Battery -> battery
+        // زوج الشبكة يُصاغ في `hudFieldText`؛ وهذه الدالة تعطي اتجاه النزول وحده
+        // لمن يريد رقمًا واحدًا (الفرز/التصدير)، لا عرضًا.
+        HudField.Network -> rxBps
         HudField.Renderer -> renderer
     }
 }
@@ -454,6 +477,11 @@ object HudSampler {
                 job = loop.launch {
                     var powerSave = false
                     var powerSaveReadAtMs = 0L
+                    // عدّادات الشبكة السابقة: الفرق بين عيّنتين هو معدّل البايت/ثانية.
+                    // `UNSUPPORTED` تعني «لا يُعلنها النظام» فتبقى القراءة غيابًا لا صفرًا.
+                    var lastRx = TrafficStats.UNSUPPORTED.toLong()
+                    var lastTx = TrafficStats.UNSUPPORTED.toLong()
+                    var lastTrafficAt = 0L
                     while (isActive) {
                         val began = System.currentTimeMillis()
                         if (power != null && began - powerSaveReadAtMs >= POWER_SAVE_CACHE_MS) {
@@ -468,7 +496,31 @@ object HudSampler {
                             delay(SCREEN_OFF_SAMPLE_MS)
                             continue
                         }
-                        val reading = read(ctx, unionFields())
+                        val fields = unionFields()
+                        var rxBps: Float? = null
+                        var txBps: Float? = null
+                        val rx = TrafficStats.getTotalRxBytes()
+                        val tx = TrafficStats.getTotalTxBytes()
+                        if (HudField.Network in fields &&
+                            rx != TrafficStats.UNSUPPORTED.toLong() &&
+                            tx != TrafficStats.UNSUPPORTED.toLong()
+                        ) {
+                            if (lastTrafficAt > 0L && began > lastTrafficAt) {
+                                val seconds = (began - lastTrafficAt) / 1000f
+                                val rxDelta = rx - lastRx
+                                val txDelta = tx - lastTx
+                                if (seconds > 0f) {
+                                    // العدّاد يُصفَّر عند تبدّل الواجهة أو إعادة التشغيل: سالبٌ يعني
+                                    // «بدأ العدّ من جديد»، فتُعلن صفرًا مقيسًا لا معدّلًا وهميًّا.
+                                    rxBps = if (rxDelta < 0L) 0f else rxDelta / seconds
+                                    txBps = if (txDelta < 0L) 0f else txDelta / seconds
+                                }
+                            }
+                            lastRx = rx
+                            lastTx = tx
+                            lastTrafficAt = began
+                        }
+                        val reading = read(ctx, fields, rxBps, txBps)
                         if (isActive) {
                             HudLive.publish(reading, joinedOwner(), intervalMs)
                             HudRecorder.feed(reading, System.currentTimeMillis())
@@ -510,7 +562,12 @@ object HudSampler {
         owners.keys.joinToString("+")
     }
 
-    private fun read(context: Context, fields: Set<HudField>): HudReading {
+    private fun read(
+        context: Context,
+        fields: Set<HudField>,
+        rxBps: Float? = null,
+        txBps: Float? = null
+    ): HudReading {
         if (fields.isEmpty()) return HudReading()
         val wantsFrames = HudField.Frames in fields
         val renderer = if (HudField.Renderer in fields) {
@@ -542,6 +599,16 @@ object HudSampler {
             } else {
                 null
             },
+            battery = if (HudField.Battery in fields) {
+                runCatching {
+                    context.getSystemService(BatteryManager::class.java)
+                        ?.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY)
+                }.getOrNull()?.takeIf { it in 0..100 }
+            } else {
+                null
+            },
+            rxBps = if (HudField.Network in fields) rxBps else null,
+            txBps = if (HudField.Network in fields) txBps else null,
             renderer = renderer
         )
     }

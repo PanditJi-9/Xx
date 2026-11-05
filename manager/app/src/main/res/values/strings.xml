@@ -620,6 +620,8 @@
     <string name="hud_field_power">Power</string>
     <string name="hud_field_heat">Heat</string>
     <string name="hud_field_renderer">Renderer</string>
+    <string name="hud_field_battery">Battery</string>
+    <string name="hud_field_network">Network</string>
     <string name="hud_field_shown">Shown</string>
     <string name="hud_field_hidden">Hidden</string>
     <string name="hud_preset_compact">Compact</string>
@@ -3733,6 +3735,18 @@
 <string name="device_lab_play_left">Left</string>
 <string name="device_lab_play_right">Right</string>
 <string name="device_lab_play_both">Both</string>
+<string name="device_lab_play_earpiece">Earpiece</string>
+<string name="device_lab_routed_to">Android routed to</string>
+<string name="device_lab_outputs_title">Audio outputs</string>
+<string name="device_lab_outputs_desc">Live list from Android; connect a headset, Bluetooth audio or a USB DAC and it appears here.</string>
+<string name="device_lab_output_speaker">Built-in speaker</string>
+<string name="device_lab_output_earpiece">Earpiece</string>
+<string name="device_lab_output_wired_headset">Wired headset</string>
+<string name="device_lab_output_wired_headphones">Wired headphones</string>
+<string name="device_lab_output_bluetooth">Bluetooth audio</string>
+<string name="device_lab_output_usb">USB audio</string>
+<string name="device_lab_output_other">Other output</string>
+<string name="device_lab_output_none">No outputs reported</string>
 <string name="device_lab_stop">Stop</string>
 <string name="device_lab_unavailable">Not available on this device</string>
 <string name="device_lab_touch_hint">Touch anywhere with one or more fingers</string>
