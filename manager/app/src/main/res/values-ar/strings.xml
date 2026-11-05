@@ -3746,6 +3746,11 @@
     <string name="device_lab_display_gamut_title">لون واسع</string>
     <string name="device_lab_display_none">غير معلوم</string>
     <string name="device_lab_display_nits">%1$d / %2$d شمعة</string>
+    <string name="device_lab_section_codecs">مُفكّكات الفيديو</string>
+    <string name="device_lab_codecs_desc">ما يعلن هذا الجهاز قدرته على فكّه، وأكبر إطار يقبله كل تنسيق. تُقرأ من قائمة المُفكّكات في المنصّة، ولا يُشغَّل أي فيديو.</string>
+    <string name="device_lab_codec_reading">جارٍ قراءة المُفكّكات…</string>
+    <string name="device_lab_codec_none">غير معلوم</string>
+    <string name="device_lab_codec_more">+%1$d تنسيقًا آخر</string>
 <string name="device_lab_touch_hint">المس أي مكان بإصبع أو أكثر</string>
 <string name="device_lab_fingers">%1$d أصابع</string>
 <string name="device_lab_touch_max">أكثر عدد ظهر: %1$d</string>

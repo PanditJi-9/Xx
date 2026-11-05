@@ -24,6 +24,7 @@ import android.media.AudioFormat
 import android.media.AudioManager
 import android.media.AudioRecord
 import android.media.AudioTrack
+import android.media.MediaCodecList
 import android.media.MediaRecorder
 import android.os.BatteryManager
 import android.os.Build
@@ -183,6 +184,13 @@ fun DeviceLabScreen(navController: NavHostController) {
             description = stringResource(R.string.device_lab_display_desc),
         ) {
             DisplayCapabilities()
+        }
+
+        MaxSection(
+            title = stringResource(R.string.device_lab_section_codecs),
+            description = stringResource(R.string.device_lab_codecs_desc),
+        ) {
+            CodecCapabilities()
         }
 
         MaxSection(title = stringResource(R.string.device_lab_section_controls)) {
@@ -1352,4 +1360,119 @@ private fun hdrTypeName(type: Int): String = when (type) {
     Display.HdrCapabilities.HDR_TYPE_HLG -> "HLG"
     Display.HdrCapabilities.HDR_TYPE_HDR10_PLUS -> "HDR10+"
     else -> ""
+}
+
+// ---------------------------------------------------------------------------
+// Video decoders
+// ---------------------------------------------------------------------------
+
+/** سقف الصفوف المعروضة: قائمة المُفكّكات قد تبلغ العشرات، والأسئلة الحقيقية ثلاثة أو أربعة. */
+private const val MAX_CODEC_ROWS = 8
+
+/** مُفكّك واحد كما يُعلنه النظام: الصيغة وأكبر إطار يقبله. */
+private data class VideoDecoder(
+    val mime: String,
+    val maxWidth: Int,
+    val maxHeight: Int,
+    val maxFps: Int?,
+)
+
+/**
+ * ما يستطيع هذا الجهاز فكّه فعلًا.
+ *
+ * **والفرق بين هذا وبين «يدعم AV1» في ورقة المواصفات:** هذه قراءة من `MediaCodecList` لجهازك
+ * أنت — وحده يعلن مفكّكاته وأكبر إطار لكل صيغة. ولذلك تُقرأ في `Dispatchers.IO` وتُعرض بحالة
+ * تحميل صريحة، لا تُحسب في التكوين.
+ *
+ * **والصيغة التي تُعلن بلا حدود تقرأ:** `videoCapabilities` قد ترمي على نوع غير مرئي أو غير
+ * مهيّأ، فكل قراءة في `runCatching`، وما لم يُقرأ يُسقَط الصفّ بدل اختراع حدّ.
+ */
+@Composable
+private fun CodecCapabilities() {
+    var decoders by remember { mutableStateOf<List<VideoDecoder>?>(null) }
+
+    LaunchedEffect(Unit) {
+        decoders = withContext(Dispatchers.IO) { readVideoDecoders() }
+    }
+
+    val none = stringResource(R.string.device_lab_codec_none)
+    val list = decoders
+
+    MaxGroup {
+        when {
+            list == null -> LabValueRow(
+                title = stringResource(R.string.device_lab_codec_reading),
+                value = "…",
+            )
+
+            list.isEmpty() -> LabValueRow(
+                title = stringResource(R.string.device_lab_section_codecs),
+                value = none,
+            )
+
+            else -> {
+                list.take(MAX_CODEC_ROWS).forEachIndexed { index, decoder ->
+                    if (index > 0) MaxGroupDivider()
+                    LabValueRow(
+                        title = codecLabel(decoder.mime),
+                        value = buildString {
+                            append("${decoder.maxWidth}×${decoder.maxHeight}")
+                            decoder.maxFps?.let { append(" · $it fps") }
+                        },
+                    )
+                }
+                val hidden = list.size - MAX_CODEC_ROWS
+                if (hidden > 0) {
+                    MaxGroupDivider()
+                    LabValueRow(
+                        title = stringResource(R.string.device_lab_codec_more, hidden),
+                        value = "",
+                    )
+                }
+            }
+        }
+    }
+}
+
+private fun readVideoDecoders(): List<VideoDecoder> {
+    val codecs = runCatching {
+        MediaCodecList(MediaCodecList.REGULAR_CODECS).codecInfos
+    }.getOrDefault(emptyArray())
+
+    val byMime = LinkedHashMap<String, VideoDecoder>()
+    codecs.filterNot { it.isEncoder }.forEach { info ->
+        info.supportedTypes.filter { it.startsWith("video/") }.forEach { mime ->
+            val capabilities = runCatching { info.getCapabilitiesForType(mime) }.getOrNull()
+                ?: return@forEach
+            val video = runCatching { capabilities.videoCapabilities }.getOrNull()
+                ?: return@forEach
+            val width = runCatching { video.supportedWidths.upper }.getOrNull()
+                ?: return@forEach
+            val height = runCatching { video.supportedHeights.upper }.getOrNull()
+                ?: return@forEach
+            val fps = runCatching {
+                video.getSupportedFrameRatesFor(width, height).upper.toInt()
+            }.getOrNull()
+
+            val current = byMime[mime]
+            // أعلى دقّة تُعلنها أي شريحة مفكّك لهذه الصيغة — لا أوّل واحدة في القائمة.
+            if (current == null || width.toLong() * height > current.maxWidth.toLong() * current.maxHeight) {
+                byMime[mime] = VideoDecoder(mime, width, height, fps)
+            }
+        }
+    }
+    return byMime.values.sortedBy { it.mime }
+}
+
+/** الاسم المتعارف عليه للصيغة؛ ما لا اسم له يُعرض باسمها الفرعي كما هو. */
+private fun codecLabel(mime: String): String = when {
+    mime.endsWith("avc") -> "H.264 / AVC"
+    mime.endsWith("hevc") -> "HEVC / H.265"
+    mime.endsWith("av01") -> "AV1"
+    mime.endsWith("vp9") -> "VP9"
+    mime.endsWith("vp8") -> "VP8"
+    mime.endsWith("mp4v-es") -> "MPEG-4"
+    mime.contains("dolby-vision") -> "Dolby Vision"
+    mime.contains("dolby") -> "Dolby"
+    else -> mime.substringAfter('/')
 }
