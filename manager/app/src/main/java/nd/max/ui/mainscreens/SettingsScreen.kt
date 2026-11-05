@@ -409,6 +409,17 @@ fun SettingsScreen(
                                 )
                             },
                             {
+                                // `BATTERY-HISTORY-01` — سجلّ طويل يُقاس ويُحفظ في ملفّ
+                                // التطبيق وحده؛ بلا جذر وبلا خدمة خلفية ثقيلة.
+                                ExpressiveListItem(
+                                    onClick = { MaxNavActions(navController).navigateTo(MaxDestination.BatteryHistory) },
+                                    headlineContent = { Text(stringResource(R.string.battery_history_title)) },
+                                    supportingContent = { Text(stringResource(R.string.battery_history_subtitle)) },
+                                    leadingContent = { LeadingIcon(icon = Icons.Rounded.BatteryFull) },
+                                    trailingContent = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null) }
+                                )
+                            },
+                            {
                                 ExpressiveListItem(
                                     onClick = { MaxNavActions(navController).navigateTo(MaxDestination.ConfigBackup) },
                                     headlineContent = { Text(stringResource(R.string.max_nav_config_backup)) },

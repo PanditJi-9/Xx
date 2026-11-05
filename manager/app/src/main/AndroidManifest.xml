@@ -496,6 +496,22 @@
             </intent-filter>
         </receiver>
 
+        <!--
+            سجلّ البطارية: يقظة خفيفة بعد الإقلاع/فتح المستخدم لإعادة جدولة العيّنة الدورية،
+            ولا يفعل شيئًا إن كان التسجيل متوقّفًا. و`exported="false"`: النظام وحده يسلّم
+            بثّ الإقلاع، والمنبّه صريح إلى هذا الصنف. ولا `LOCKED_BOOT_COMPLETED` للسبب نفسه:
+            تخزين المستخدم لم يُفتح بعد.
+        -->
+        <receiver
+            android:name=".receiver.BatterySampleReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.USER_UNLOCKED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
+
         <receiver
             android:name=".receiver.AudioSessionReceiver"
             android:exported="true">

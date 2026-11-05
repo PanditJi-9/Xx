@@ -15,7 +15,7 @@
 
 MaxManager reads the device it runs on — temperature, load, battery, memory, clocks — and prints every value with two things a performance tool usually hides: where the value came from, and how old it is. A number whose source cannot be read is shown as unreadable, never as a plausible guess.
 
-Control is organised by hardware domain (67 screens in all), and every knob that is written says who set it: you, the per-app profile, the module, or the kernel default. Manual ownership can be taken back at any time.
+Control is organised by hardware domain (68 screens in all), and every knob that is written says who set it: you, the per-app profile, the module, or the kernel default. Manual ownership can be taken back at any time.
 
 Max AI decides from measurements, not from a script: the objective, the safety verdict, the change and the rollback are written to a journal you can read.
 
@@ -35,7 +35,7 @@ MaxManager is proprietary software. This listing describes the same build that t
 
 يقرأ MaxManager الجهازَ الذي يعمل عليه — الحرارة والحمل والبطارية والذاكرة والترددات — ويطبع كل قيمة ومعهما شيئان يخفيهما عادةً كل أداة أداء: من أين جاءت القيمة، ومتى قُرئت. والقيمة التي لا يُقرأ مصدرها تُعرض «غير مقروءة»، لا تخمينًا مقنعًا.
 
-التحكّم منظَّم بحسب مجالات العتاد (67 شاشة في المجموع)، وكل مقبض يُكتب يقول من ضبطه: أنت، أو بروفايل التطبيق، أو الوحدة، أو افتراضيّ النواة. والملكية اليدوية تُسترجع في أي لحظة.
+التحكّم منظَّم بحسب مجالات العتاد (68 شاشة في المجموع)، وكل مقبض يُكتب يقول من ضبطه: أنت، أو بروفايل التطبيق، أو الوحدة، أو افتراضيّ النواة. والملكية اليدوية تُسترجع في أي لحظة.
 
 وMax AI يقرّر من قياسات لا من نصّ: الهدف وحكم السلامة والتغيير والرجوع تُكتب في سجلّ يمكنك قراءته.
 

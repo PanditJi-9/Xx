@@ -328,6 +328,13 @@ sealed class MaxDestination(
     data object UsageStats : MaxDestination("usage_stats", R.string.usage_stats_title, Icons.Rounded.DataUsage, Settings)
 
     /**
+     * `BATTERY-HISTORY-01` — سجلّ البطارية الطويل: عيّنات دورية كل ١٥ دقيقة،
+     * ومنحنى مستوى ومعدّل تصريف من القياس لا من التقدير. تحت الإعدادات لأنها
+     * حالة جهاز تُقرأ، والكتابة الوحيدة فيها ملفّها في `filesDir`.
+     */
+    data object BatteryHistory : MaxDestination("battery_history", R.string.battery_history_title, Icons.Rounded.BatteryFull, Settings)
+
+    /**
      * `LICENSE-KEYS-01` — شاشة الترخيص: مفتاحٌ يُكتب مرّة، وشهادة موقّعة تعمل بعدها بلا إنترنت.
      *
      * **تحت الإعدادات** لأنها حالة الجهاز لا تحكّم أداء، والصفّ الذي يفتحها يُعرض دائمًا
@@ -455,7 +462,7 @@ sealed class MaxDestination(
                 ThermalDetail, Charging, BypassCharging, BypassChargingCheck, DozeMode,
                 Dex2oat, StorageDetail, StorageCare, NetworkScheduler, NetworkDetail,
                 ProcessManager, DebloatFreeze, AppSettings, GameLobby, EmulatorHub, HmaCompanion,
-                ColorPalette, ColorScheme, Diagnostics, DeviceLab, UsageStats, License, Logs, ConfigBackup, CommunityStats, Plugins, MaxBackup, Permissions, About,
+                ColorPalette, ColorScheme, Diagnostics, DeviceLab, UsageStats, BatteryHistory, License, Logs, ConfigBackup, CommunityStats, Plugins, MaxBackup, Permissions, About,
                 Privilege, ModuleHealth,
                 SetEdit, ActivityLauncher, FileManager,
             )
