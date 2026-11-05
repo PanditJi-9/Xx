@@ -32,6 +32,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
@@ -192,6 +193,49 @@ fun BatteryHistoryScreen(navController: NavHostController) {
                             )
                             Text(
                                 text = stringResource(R.string.battery_history_chart_high),
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+        if (samples.size >= 2) {
+            MaxSection(
+                title = stringResource(R.string.battery_history_temp_chart_title),
+                description = stringResource(R.string.battery_history_temp_chart_desc)
+            ) {
+                val temperatureDescription =
+                    stringResource(R.string.battery_history_temp_chart_desc)
+                MaxGroup {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = MaxSpace.md, vertical = MaxSpace.md),
+                        verticalArrangement = Arrangement.spacedBy(MaxSpace.sm)
+                    ) {
+                        TemperatureChart(
+                            samples = samples,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(150.dp)
+                                .semantics {
+                                    contentDescription = temperatureDescription
+                                }
+                        )
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = stringResource(R.string.battery_history_temp_chart_low),
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Text(
+                                text = stringResource(R.string.battery_history_temp_chart_high),
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -403,16 +447,67 @@ private fun statusText(status: Int): String = when (status) {
 
 @Composable
 private fun BatteryChart(samples: List<BatterySample>, modifier: Modifier = Modifier) {
-    val lineColor = MaterialTheme.colorScheme.primary
+    SeriesChart(
+        values = samples.map { it.levelPercent.toFloat() },
+        min = 0f,
+        max = 100f,
+        modifier = modifier
+    )
+}
+
+/**
+ * حرارة البطارية عبر النافذة نفسها.
+ *
+ * **والحدّان من البيانات لا من ثابت:** نطاق الحرارة يختلف بين جهاز وآخر؛ تثبيت ٠–١٠٠ كان
+ * سيحوّل كل منحنى إلى خطٍّ مستقيم في وسطه، وهو رسم لا يقول شيئًا. فالحدّان هنا أدنى/أعلى ما
+ * قِيس فعلًا، معامَدان بهامش بسيط.
+ */
+@Composable
+private fun TemperatureChart(samples: List<BatterySample>, modifier: Modifier = Modifier) {
+    val known = samples.mapNotNull { it.temperatureC }
+    if (known.size < 2) return
+    val low = known.minOrNull() ?: 0f
+    val high = known.maxOrNull() ?: 0f
+    val padding = ((high - low) * 0.15f).coerceAtLeast(1f)
+    SeriesChart(
+        values = samples.map { it.temperatureC },
+        min = low - padding,
+        max = high + padding,
+        modifier = modifier,
+        lineColor = MaterialTheme.colorScheme.tertiary
+    )
+}
+
+/**
+ * رسم خطّي لسلسلة قد تحوي فراغات.
+ *
+ * **والفراغ يُقطع لا يُوصل:** عيّنة بلا قراءة ليست صفرًا ولا تقفز إلى جارتها؛ الخطّ ينقطع
+ * عندها ويُستأنف بعدها — فالرسم لا يدّعي قياسًا لم يُقَس.
+ */
+@Composable
+private fun SeriesChart(
+    values: List<Float?>,
+    min: Float,
+    max: Float,
+    modifier: Modifier = Modifier,
+    lineColor: Color = MaterialTheme.colorScheme.primary
+) {
     val gridColor = MaterialTheme.colorScheme.outlineVariant
     Canvas(modifier = modifier) {
-        if (samples.size < 2) return@Canvas
-        val stepX = size.width / (samples.size - 1)
+        if (values.size < 2) return@Canvas
+        val span = (max - min).takeIf { it > 0f } ?: 1f
+        val stepX = size.width / (values.size - 1)
         val path = Path()
-        samples.forEachIndexed { index, sample ->
+        var started = false
+        values.forEachIndexed { index, value ->
+            if (value == null) {
+                started = false
+                return@forEachIndexed
+            }
             val x = index * stepX
-            val y = size.height * (1f - sample.levelPercent / 100f)
-            if (index == 0) path.moveTo(x, y) else path.lineTo(x, y)
+            val y = size.height * (1f - ((value - min) / span).coerceIn(0f, 1f))
+            if (started) path.lineTo(x, y) else path.moveTo(x, y)
+            started = true
         }
         listOf(0.25f, 0.5f, 0.75f).forEach { fraction ->
             val y = size.height * fraction

@@ -56,9 +56,10 @@ Charging and battery health in one screen, **bypass charging** (running from the
 current through the pack) with a dedicated **status check**, and **Doze**.
 
 **Battery history** keeps a local timeline of level, voltage and temperature — one point every fifteen
-minutes, off until you switch it on. The curve is drawn only from points the platform actually
-recorded, so gaps stay gaps, and the discharge rate is computed from discharging points alone rather
-than modelled. Clearing the history deletes the local file and nothing else.
+minutes, off until you switch it on. The level curve and a separate battery-temperature trend are
+drawn only from points the platform actually recorded, so gaps stay gaps (the line breaks instead of
+inventing a value), and the discharge rate is computed from discharging points alone rather than
+modelled. Clearing the history deletes the local file and nothing else.
 
 ### Storage & compiler — *"Compilation mode and storage health"*
 

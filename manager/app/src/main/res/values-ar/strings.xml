@@ -3814,6 +3814,10 @@
     <string name="battery_history_chart_desc">تُرسم نقطة فقط حين يسجّلها أندرويد؛ والفجوات تبقى فجوات.</string>
     <string name="battery_history_chart_low">الأدنى</string>
     <string name="battery_history_chart_high">الأعلى</string>
+    <string name="battery_history_temp_chart_title">منحنى الحرارة</string>
+    <string name="battery_history_temp_chart_desc">حرارة البطارية عند كل عيّنة محفوظة. الفراغ يبقى فراغًا: العيّنة بلا قراءة تقطع الخطّ بدل رسم قيمة غير مقيسة.</string>
+    <string name="battery_history_temp_chart_low">الأبرد</string>
+    <string name="battery_history_temp_chart_high">الأحرّ</string>
     <string name="battery_history_summary_title">الملخّص</string>
     <string name="battery_history_summary_desc">محسوب من النقاط المخزّنة في هذه الفترة.</string>
     <string name="battery_history_current">المستوى الحالي</string>

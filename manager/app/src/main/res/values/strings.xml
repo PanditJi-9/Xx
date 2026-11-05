@@ -3867,6 +3867,10 @@
     <string name="battery_history_chart_desc">A point is drawn only when Android recorded one; gaps stay gaps.</string>
     <string name="battery_history_chart_low">Low</string>
     <string name="battery_history_chart_high">High</string>
+    <string name="battery_history_temp_chart_title">Temperature trend</string>
+    <string name="battery_history_temp_chart_desc">Battery temperature at each stored sample. A gap stays a gap: samples without a reading break the line instead of drawing a false value.</string>
+    <string name="battery_history_temp_chart_low">Cooler</string>
+    <string name="battery_history_temp_chart_high">Hotter</string>
     <string name="battery_history_summary_title">Summary</string>
     <string name="battery_history_summary_desc">Computed from the stored points in this period.</string>
     <string name="battery_history_current">Current level</string>
