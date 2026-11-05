@@ -280,6 +280,20 @@
         </service>
 
         <!--
+          تراكب معدّل الإطارات: يبدأ/يوقف الخدمة القائمة نفسها ولا ينشئ خدمة ثانية.
+          ويُعلن «غير متاح» حين ينقص إذن التراكب بدل أن يبدو مفعّلًا وهو لا يرسم.
+        -->
+        <service
+            android:name=".TileService.FpsOverlayTileService"
+            android:icon="@drawable/ic_tile_fps" android:label="@string/tile_fps_overlay"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+
+        <!--
           عامل النسخ المجدول: رقيقة عن قصد — كل المنطق في `MaxBackupScheduler`، وهذه
           تعرف `jobFinished` فقط. ولا تُصدَّر: لا أحد خارجنا يُشغّلها.
         -->

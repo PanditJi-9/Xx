@@ -103,7 +103,7 @@ package in an unexplained state.
 | **Device lab** | Interactive hardware checks on the device itself: screen colours, multi-touch, hardware keys, vibration, speaker tone and earpiece routing, live audio outputs, flashlight, live sensors, and charging state. |
 | **Usage stats** | Foreground time per app from Android's usage database, and network bytes per app per period — read-only, one access switch. |
 | **FPS overlay** | A live frame-rate and load HUD drawn over other apps, with optional battery level and network rate fields. |
-| **Quick settings tiles** | Bypass charging, profile, clean status bar, battery-history recording and high-brightness mode, each reading its state back before it claims to have changed anything. |
+| **Quick settings tiles** | Bypass charging, profile, clean status bar, battery-history recording, high-brightness mode and the FPS overlay, each reading its state back before it claims to have changed anything. |
 | **Log viewer** | The device log, parsed into events with a **glossary written into the log file itself** — the file explains its own fields. |
 | **Max Backup** | Back up apps and check their integrity; restore when you need to. |
 | **Permissions** | Declared permissions vs what the platform actually allows (`AppOps`), in one place, because "declared" and "granted" differ. |

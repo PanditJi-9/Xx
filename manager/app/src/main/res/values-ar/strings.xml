@@ -67,6 +67,10 @@
     <string name="tile_battery_history_off">التسجيل متوقّف</string>
     <string name="tile_sunlight_on">تعزيز السطوع مطبَّق</string>
     <string name="tile_sunlight_off">تعزيز السطوع متوقّف</string>
+    <string name="tile_fps_overlay">تراكب معدّل الإطارات</string>
+    <string name="tile_fps_overlay_on">ظاهر فوق التطبيقات</string>
+    <string name="tile_fps_overlay_off">مخفي</string>
+    <string name="tile_fps_overlay_permission">يلزم إذن التراكب</string>
     <string name="vm_section_title">مقابض نواة VM</string>
     <string name="vm_section_desc">الكتابة عبر مسار الكتابة الواحد، وكل قيمة تُقرأ مرتجعة قبل أن تُعدّ ناجحة.</string>
     <string name="vm_loading">جارٍ قراءة قيم النواة…</string>

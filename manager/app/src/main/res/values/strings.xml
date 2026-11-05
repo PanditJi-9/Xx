@@ -108,6 +108,10 @@
     <string name="tile_battery_history_off">Recording off</string>
     <string name="tile_sunlight_on">Brightness boost applied</string>
     <string name="tile_sunlight_off">Brightness boost off</string>
+    <string name="tile_fps_overlay">FPS overlay</string>
+    <string name="tile_fps_overlay_on">Showing over apps</string>
+    <string name="tile_fps_overlay_off">Hidden</string>
+    <string name="tile_fps_overlay_permission">Overlay permission needed</string>
     <string name="vm_section_title">Kernel VM knobs</string>
     <string name="vm_section_desc">Written through the single write path; every value is read back before it counts.</string>
     <string name="vm_loading">Reading kernel values…</string>
