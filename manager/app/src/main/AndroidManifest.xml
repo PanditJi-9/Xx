@@ -294,6 +294,22 @@
         </service>
 
         <!--
+          بلاط الوضع الليلي: يقلب مفتاح المنصّة `secure/night_display_activated`
+          نفسه الذي تكتبه شاشة العرض، ويقرأ الحالة بعد الكتابة. الكتابة تحتاج
+          WRITE_SECURE_SETTINGS أو مسار الجذر في `SettingsAccess` — وحين تُرفض
+          يظهر «لم يُطبَّق» بدل حالة لم تقبلها المنصّة.
+        -->
+        <service
+            android:name=".TileService.NightLightTileService"
+            android:icon="@drawable/ic_tile_night" android:label="@string/tile_night_light"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+
+        <!--
           عامل النسخ المجدول: رقيقة عن قصد — كل المنطق في `MaxBackupScheduler`، وهذه
           تعرف `jobFinished` فقط. ولا تُصدَّر: لا أحد خارجنا يُشغّلها.
         -->

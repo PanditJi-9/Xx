@@ -112,6 +112,10 @@
     <string name="tile_fps_overlay_on">Showing over apps</string>
     <string name="tile_fps_overlay_off">Hidden</string>
     <string name="tile_fps_overlay_permission">Overlay permission needed</string>
+    <string name="tile_night_light">Night light</string>
+    <string name="tile_night_on">Night light on</string>
+    <string name="tile_night_off">Night light off</string>
+    <string name="tile_night_unknown">State unreadable</string>
     <string name="vm_section_title">Kernel VM knobs</string>
     <string name="vm_section_desc">Written through the single write path; every value is read back before it counts.</string>
     <string name="vm_loading">Reading kernel values…</string>

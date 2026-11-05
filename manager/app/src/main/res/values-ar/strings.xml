@@ -71,6 +71,10 @@
     <string name="tile_fps_overlay_on">ظاهر فوق التطبيقات</string>
     <string name="tile_fps_overlay_off">مخفي</string>
     <string name="tile_fps_overlay_permission">يلزم إذن التراكب</string>
+    <string name="tile_night_light">الوضع الليلي</string>
+    <string name="tile_night_on">الوضع الليلي مفعّل</string>
+    <string name="tile_night_off">الوضع الليلي متوقّف</string>
+    <string name="tile_night_unknown">الحالة غير مقروءة</string>
     <string name="vm_section_title">مقابض نواة VM</string>
     <string name="vm_section_desc">الكتابة عبر مسار الكتابة الواحد، وكل قيمة تُقرأ مرتجعة قبل أن تُعدّ ناجحة.</string>
     <string name="vm_loading">جارٍ قراءة قيم النواة…</string>
