@@ -82,24 +82,36 @@ object MonitorPrefs {
      * لحقل يُهمَل (حقل أُعيد تسميته لا يُخمَّن). وملفّ قديم بلا هذا المفتاح يعطي فارغة —
      * أي «مراقب واحد» — بلا هجرة ولا فقدان.
      */
-    fun load(context: Context): List<MonitorSpec> {
-        val raw = prefs(context).getString(KEY, null) ?: return emptyList()
-        if (raw.isBlank()) return emptyList()
+    fun load(context: Context): List<MonitorSpec> = decode(prefs(context).getString(KEY, null))
+
+    /**
+     * القائمة من نصّ JSON خام — دالّة صافية بلا `Context`، فتُقاس بالاختبار مباشرة.
+     *
+     * **والصفّ التالف لا يُسقط جاره:** كل صفّ يُفكّ وحده، وفشله يعني تخطّيه لا إلغاء القائمة.
+     * والزيادة على [MAX_EXTRA] تُقتطع عند القراءة لأن ملفًّا كُتب بيد أو من نسخة أقدم قد يحمل أكثر.
+     */
+    fun decode(raw: String?): List<MonitorSpec> {
+        if (raw.isNullOrBlank()) return emptyList()
         val array = runCatching { JSONArray(raw) }.getOrNull() ?: return emptyList()
         val result = ArrayList<MonitorSpec>(minOf(array.length(), MAX_EXTRA))
         for (index in 0 until array.length()) {
             if (result.size >= MAX_EXTRA) break
             val row = runCatching { array.getJSONObject(index) }.getOrNull() ?: continue
-            decode(row)?.let(result::add)
+            decodeRow(row)?.let(result::add)
         }
         return result
     }
 
+    /** النصّ المحفوظ — صافٍ كذلك، فيُقاس الذهاب والعودة بلا جهاز. */
+    fun encode(monitors: List<MonitorSpec>): String {
+        val array = JSONArray()
+        monitors.take(MAX_EXTRA).forEach { array.put(encodeRow(it)) }
+        return array.toString()
+    }
+
     /** يحفظ القائمة كاملةً، ويقتطع عند السقف بدل كتابة ما لا يُقرأ. */
     fun save(context: Context, monitors: List<MonitorSpec>) {
-        val array = JSONArray()
-        monitors.take(MAX_EXTRA).forEach { array.put(encode(it)) }
-        prefs(context).edit().putString(KEY, array.toString()).apply()
+        prefs(context).edit().putString(KEY, encode(monitors)).apply()
     }
 
     /** يضيف مراقبًا إن كان هناك موضع؛ ويعيد القائمة الناتجة. */
@@ -135,7 +147,7 @@ object MonitorPrefs {
     private fun prefs(context: Context) =
         context.applicationContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
 
-    private fun encode(spec: MonitorSpec): JSONObject = JSONObject().apply {
+    private fun encodeRow(spec: MonitorSpec): JSONObject = JSONObject().apply {
         put(K_ID, spec.id)
         put(K_FIELDS, JSONArray(spec.orderedFields.map { it.name }))
         put(K_FORM, spec.form.name)
@@ -151,7 +163,7 @@ object MonitorPrefs {
         spec.posY?.let { put(K_POS_Y, it) }
     }
 
-    private fun decode(row: JSONObject): MonitorSpec? {
+    private fun decodeRow(row: JSONObject): MonitorSpec? {
         val id = runCatching { row.getString(K_ID) }.getOrNull()?.takeIf { it.isNotBlank() }
             ?: return null
         val fields = if (row.has(K_FIELDS)) {
