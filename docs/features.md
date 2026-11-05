@@ -74,6 +74,12 @@ usage per app** — Wi-Fi and mobile bytes split, with totals. A transport the d
 shown as unavailable, not as zero; when the platform returns only aggregate counters, the screen says so
 and hides the per-app list instead of inventing one.
 
+**Link quality** is measured only on request: one name lookup and four TCP connects to a named host,
+reported as fastest, average and jitter, with failed attempts counted and named instead of drawn as
+zero. The screen states that these are TCP handshakes rather than ICMP ping, that a repeated lookup is
+cached, and that the bandwidth figures are the platform's own link estimate — nothing is downloaded to
+produce a number.
+
 ### Audio — *"Output devices, streams and declared effects"*
 
 Read-only today, and deliberately so: the hub reports what the platform declares for the primary

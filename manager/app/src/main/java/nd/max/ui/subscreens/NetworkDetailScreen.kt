@@ -54,7 +54,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -70,7 +72,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import nd.max.R
+import nd.max.core.net.LinkProbe
+import nd.max.core.net.LinkReport
 import nd.max.ui.component.LivePulseDot
 import nd.max.ui.component.MaxDeviceInfoShortcut
 import nd.max.ui.design.MaxAlpha
@@ -84,6 +89,8 @@ import nd.max.ui.design.MaxHelpAction
 import nd.max.ui.design.MaxListScreen
 import nd.max.ui.design.MaxMetric
 import nd.max.ui.design.MaxMetricLine
+import nd.max.ui.design.MaxNavigationRow
+import nd.max.ui.design.MaxRow
 import nd.max.ui.design.MaxSection
 import nd.max.ui.design.MaxSize
 import nd.max.ui.design.MaxSpace
@@ -100,6 +107,9 @@ private const val HISTORY_CAPACITY = 36
 /** مسار الاشتقاق كما يُعلن للمستخدم؛ `TrafficStats` هو المصدر الحقيقي الوحيد في هذه الشاشة. */
 private const val TRAFFIC_SOURCE = "TrafficStats"
 
+/** مصدر قسم جودة الوصلة: قياس حقيقي عند الطلب، لا عدّاد منصّة. */
+private const val PROBE_SOURCE = "LinkProbe"
+
 /** ارتفاع الرسم الزمني بالضبط كما كان، فلا يصغر السطح بعد إعادة البناء. */
 private val SparklineHeight = 168.dp
 
@@ -112,6 +122,12 @@ fun NetworkDetailScreen(navController: NavHostController) {
     var peakUploadKbps by remember { mutableLongStateOf(0L) }
     // مجهول حتى يثبت العكس: `-1` من `TrafficStats` يعني «هذا الجهاز لا يعرضها»، لا «صفر».
     var countersReadable by remember { mutableStateOf(true) }
+
+    // قياس جودة الوصلة: لا يبدأ من نفسه. `null` = لم يُقس بعد، وهو حالة لا رقم.
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    var linkReport by remember { mutableStateOf<LinkReport?>(null) }
+    var probing by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         var lastRx = TrafficStats.getTotalRxBytes()
@@ -201,6 +217,23 @@ fun NetworkDetailScreen(navController: NavHostController) {
                     MaxDeviceInfoShortcut(navController, MaxDestination.NetworkDetail)
                 }
             }
+        }
+
+        // ── جودة الوصلة: قياس عند الطلب لا استنتاج ─────────────────────────
+        item(key = "network_quality") {
+            LinkQualitySection(
+                report = linkReport,
+                probing = probing,
+                onMeasure = {
+                    if (!probing) {
+                        scope.launch {
+                            probing = true
+                            linkReport = runCatching { LinkProbe.measure(context) }.getOrNull()
+                            probing = false
+                        }
+                    }
+                }
+            )
         }
 
         item(key = "network_timeline") {
@@ -399,4 +432,195 @@ private fun formatByteTotal(bytes: Long): String = when {
     bytes >= 1_073_741_824L -> String.format(java.util.Locale.US, "%.2f GB", bytes / 1_073_741_824.0)
     bytes >= 1_048_576L -> String.format(java.util.Locale.US, "%.1f MB", bytes / 1_048_576.0)
     else -> "${bytes.coerceAtLeast(0L) / 1024L} KB"
+}
+
+/**
+ * جودة الوصلة — قياس لا استنتاج.
+ *
+ * **ولماذا قسم مستقلّ لا صفّ داخل «الحركة الحيّة»:** حركة `TrafficStats` تُقاس كل ثانية بلا
+ * إذن ولا اتصال خارجي. أمّا هذا فيفتح اتصالًا حقيقيًا بعنوان مذكور، فلابد أن يكون **بضغطة**،
+ * وأن يقول قبلها إلى أين يتصل. خلطهما كان سيجعل الشاشة تتصل بالشبكة لمجرّد فتحها.
+ *
+ * **والفشل يُعرض فشلًا:** محاولة لم تصل تُحسب في «محاولات فاشلة» ويُسمّى نوع العطب، ولا تُحوّل
+ * إلى `0 ms` — الصفر يعني «فوري» وهو أنجح نتيجة ممكنة، لا أسوأها.
+ */
+@Composable
+private fun LinkQualitySection(
+    report: LinkReport?,
+    probing: Boolean,
+    onMeasure: () -> Unit
+) {
+    val scheme = MaterialTheme.colorScheme
+    MaxSection(
+        title = stringResource(R.string.detail_link_quality),
+        description = stringResource(R.string.detail_link_quality_desc)
+    ) {
+        MaxGroup {
+            MaxNavigationRow(
+                title = stringResource(
+                    if (probing) R.string.detail_probe_running else R.string.detail_probe_run
+                ),
+                subtitle = stringResource(
+                    R.string.detail_probe_target,
+                    LinkProbe.DEFAULT_HOST,
+                    LinkProbe.DEFAULT_PORT
+                ),
+                enabled = !probing,
+                onClick = onMeasure
+            )
+        }
+
+        if (report == null) {
+            Text(
+                text = stringResource(R.string.detail_probe_never),
+                style = MaterialTheme.typography.bodySmall,
+                color = scheme.onSurfaceVariant,
+                modifier = Modifier.padding(horizontal = MaxSpace.groupPadding, vertical = MaxSpace.sm)
+            )
+            return@MaxSection
+        }
+
+        MaxGroup {
+            MaxMetricLine(
+                metric = MaxMetric(
+                    label = stringResource(R.string.detail_probe_dns),
+                    value = report.dnsMs?.let { stringResource(R.string.detail_probe_ms, it) },
+                    trust = MaxDataTrust.Snapshot,
+                    source = PROBE_SOURCE
+                )
+            )
+            MaxGroupDivider()
+            MaxMetricLine(
+                metric = MaxMetric(
+                    label = stringResource(R.string.detail_probe_best),
+                    value = report.bestMs?.let { stringResource(R.string.detail_probe_ms, it) },
+                    trust = MaxDataTrust.Snapshot,
+                    source = PROBE_SOURCE
+                )
+            )
+            MaxGroupDivider()
+            MaxMetricLine(
+                metric = MaxMetric(
+                    label = stringResource(R.string.detail_probe_average),
+                    value = report.averageMs?.let { stringResource(R.string.detail_probe_ms, it) },
+                    trust = MaxDataTrust.Snapshot,
+                    source = PROBE_SOURCE
+                )
+            )
+            MaxGroupDivider()
+            MaxMetricLine(
+                metric = MaxMetric(
+                    label = stringResource(R.string.detail_probe_jitter),
+                    value = report.jitterMs?.let { stringResource(R.string.detail_probe_ms, it) },
+                    trust = MaxDataTrust.Snapshot,
+                    source = PROBE_SOURCE
+                )
+            )
+            if (report.failures > 0) {
+                MaxGroupDivider()
+                MaxMetricLine(
+                    metric = MaxMetric(
+                        label = stringResource(R.string.detail_probe_failures),
+                        value = "${report.failures} / ${report.attempts}",
+                        trust = MaxDataTrust.Snapshot,
+                        source = report.lastFailure ?: PROBE_SOURCE
+                    )
+                )
+            }
+        }
+
+        MaxGroup {
+            MaxRow(
+                title = stringResource(R.string.detail_probe_validated),
+                trailing = {
+                    Text(
+                        text = when (report.validated) {
+                            true -> stringResource(R.string.yes)
+                            false -> stringResource(R.string.no)
+                            null -> stringResource(R.string.detail_probe_unknown)
+                        },
+                        style = MonoValueStyleSmall,
+                        color = scheme.onSurface
+                    )
+                }
+            )
+            if (report.captivePortal == true) {
+                MaxGroupDivider()
+                MaxRow(
+                    title = stringResource(R.string.detail_probe_captive),
+                    trailing = {
+                        Text(
+                            text = stringResource(R.string.yes),
+                            style = MonoValueStyleSmall,
+                            color = scheme.onSurface
+                        )
+                    }
+                )
+            }
+            MaxGroupDivider()
+            MaxRow(
+                title = stringResource(R.string.detail_probe_transport),
+                trailing = {
+                    Text(
+                        text = report.transports.takeIf { it.isNotEmpty() }?.joinToString(", ")
+                            ?: stringResource(R.string.detail_probe_unknown),
+                        style = MonoValueStyleSmall,
+                        color = scheme.onSurface
+                    )
+                }
+            )
+            MaxGroupDivider()
+            MaxRow(
+                title = stringResource(R.string.detail_probe_metered),
+                trailing = {
+                    Text(
+                        text = when (report.metered) {
+                            true -> stringResource(R.string.yes)
+                            false -> stringResource(R.string.no)
+                            null -> stringResource(R.string.detail_probe_unknown)
+                        },
+                        style = MonoValueStyleSmall,
+                        color = scheme.onSurface
+                    )
+                }
+            )
+            MaxGroupDivider()
+            MaxRow(
+                title = stringResource(R.string.detail_probe_link_down),
+                trailing = {
+                    Text(
+                        text = report.downstreamKbps?.let { formatNetSpeed(it.toLong()) }
+                            ?: stringResource(R.string.detail_probe_unknown),
+                        style = MonoValueStyleSmall,
+                        color = scheme.onSurface
+                    )
+                }
+            )
+            MaxGroupDivider()
+            MaxRow(
+                title = stringResource(R.string.detail_probe_link_up),
+                trailing = {
+                    Text(
+                        text = report.upstreamKbps?.let { formatNetSpeed(it.toLong()) }
+                            ?: stringResource(R.string.detail_probe_unknown),
+                        style = MonoValueStyleSmall,
+                        color = scheme.onSurface
+                    )
+                }
+            )
+        }
+
+        Text(
+            text = stringResource(R.string.detail_probe_not_icmp),
+            style = MaterialTheme.typography.bodySmall,
+            color = scheme.onSurfaceVariant,
+            modifier = Modifier.padding(horizontal = MaxSpace.groupPadding, vertical = MaxSpace.sm)
+        )
+        Text(
+            text = stringResource(R.string.detail_probe_cached_note),
+            style = MaterialTheme.typography.bodySmall,
+            color = scheme.onSurfaceVariant,
+            modifier = Modifier.padding(horizontal = MaxSpace.groupPadding)
+        )
+    }
 }
