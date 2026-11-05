@@ -1,0 +1,216 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:maxmanager:control-catalog:v1",
+  "title": "MaxManager control catalog",
+  "description": "The hardware-control catalogue as the app ships it. Shape only: whether a path exists on a device is decided at runtime, not here.",
+  "type": "object",
+  "required": [
+    "version",
+    "entries",
+    "unmapped"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "entries": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/entry"
+      }
+    },
+    "unmapped": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/unmapped"
+      }
+    }
+  },
+  "$defs": {
+    "entry": {
+      "type": "object",
+      "required": [
+        "key",
+        "transport",
+        "kind",
+        "candidates",
+        "verify",
+        "privilege",
+        "danger"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "key": {
+          "type": "string",
+          "minLength": 1
+        },
+        "transport": {
+          "type": "string",
+          "enum": [
+            "AUDIO",
+            "NODE",
+            "PROC",
+            "PROP",
+            "SETTINGS"
+          ]
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "BOOL",
+            "ENUM",
+            "FREQUENCY_RANGE",
+            "INT",
+            "PERCENT",
+            "STRING"
+          ]
+        },
+        "candidates": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/candidate"
+          }
+        },
+        "verify": {
+          "$ref": "#/$defs/verify"
+        },
+        "privilege": {
+          "$ref": "#/$defs/privilege"
+        },
+        "danger": {
+          "type": "string",
+          "enum": [
+            "HIGH",
+            "LOW",
+            "MEDIUM",
+            "PROTECTED"
+          ]
+        },
+        "read_only_reason": {
+          "type": "string",
+          "enum": [
+            "AWAITING_CANONICAL_KEY",
+            "EXISTING_WRITER_NOT_ROUTED",
+            "NO_WRITE_PATH",
+            "PROTECTED_BY_DESIGN"
+          ]
+        },
+        "read_only_until_canonical_key": {
+          "type": "boolean"
+        }
+      }
+    },
+    "candidate": {
+      "type": "object",
+      "required": [
+        "path",
+        "origin"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "origin": {
+          "type": "string",
+          "enum": [
+            "DERIVED",
+            "MEASURED"
+          ]
+        }
+      }
+    },
+    "verify": {
+      "type": "object",
+      "required": [
+        "policy"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "policy": {
+          "type": "string",
+          "enum": [
+            "NONE",
+            "READ_BACK_EQUAL",
+            "READ_BACK_TOLERANCE"
+          ]
+        },
+        "tolerance": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "privilege": {
+      "type": "object",
+      "required": [
+        "read",
+        "write"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "read": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "APATCH",
+              "DAEMON",
+              "KSU",
+              "MAGISK",
+              "NONE",
+              "SHIZUKU",
+              "SU_BARE"
+            ]
+          }
+        },
+        "write": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "APATCH",
+              "DAEMON",
+              "KSU",
+              "MAGISK",
+              "NONE",
+              "SHIZUKU",
+              "SU_BARE"
+            ]
+          }
+        }
+      }
+    },
+    "unmapped": {
+      "type": "object",
+      "required": [
+        "path",
+        "reason"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string",
+          "minLength": 1
+        },
+        "reason": {
+          "type": "string",
+          "enum": [
+            "DENIED_BY_POLICY",
+            "NO_NODE",
+            "NO_PERMISSION",
+            "ROOT_ONLY",
+            "UNKNOWN"
+          ]
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

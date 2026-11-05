@@ -272,6 +272,10 @@ jobs:
           # ← مستند القدرات المولّد (`docs/CAPABILITIES.md`): مرآة الكتالوج، وتفشل إن تقادم.
           python3 tools/gen_capabilities_doc.py --assert
           python3 tools/gen_capabilities_doc.py --self-test
+          # ← مخطط JSON للكتالوج (`docs/control-catalog.schema.json`): الشكل نفسه صار عقدًا
+          #   تقرؤه الأدوات، ويُتحقَّق أن الكتالوج الموجود يطابقه.
+          python3 tools/gen_catalog_schema.py --assert
+          python3 tools/gen_catalog_schema.py --self-test
           # ← عقد التحزيم والتكامل: ١٤ فحصًا جمعت ما كان يُقاس بالعين في جولة
           # `BUNDLE-01` — وأهمّها عقدان كلف أحدهما ثباتًا والآخر عطبًا حقيقيًّا:
           #   • سلسلة الإصدار متّفقة في ثلاثتها (`version` · `module.prop` · `MaxManager.h`)
