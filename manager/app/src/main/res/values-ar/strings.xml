@@ -1042,6 +1042,11 @@
     <string name="persist_dangerous_title">تطبيق الإعدادات المتقدمة</string>
     <string name="persist_dangerous_desc">يشمل تعديلات الذاكرة والشاشة واللمس، مع حماية ذكية ضد تكرار الإقلاع.</string>
     <string name="persist_dangerous_bootloop">تم إيقاف تطبيق الإعدادات المتقدمة تلقائيًا لحماية الجهاز بعد تكرار الإقلاع.</string>
+    <string name="persist_last_run_title">آخر جولة استعادة</string>
+    <string name="persist_last_run_never">لم يُعَد تطبيق شيء على هذا التثبيت بعد.</string>
+    <string name="persist_fast_boots_title">إقلاعات سريعة متتالية</string>
+    <string name="persist_fast_boots_desc">%1$d أحصاها حارس الإقلاع. اثنان متتاليان يُشغّلانه.</string>
+    <string name="persist_fast_boots_tripped">اشتغل الحارس: التطبيق التلقائي للإعدادات المتقدمة موقوف حتى تعيد تشغيله.</string>
     <string name="persist_coverage">يشمل التعديلات المحفوظة للعتاد والنظام.</string>
     <string name="persist_note">تُطبَّق التعديلات المتوافقة مع صلاحيات الجهاز بأمان.</string>
     <string name="settings_home_section">الشاشة الرئيسية</string>

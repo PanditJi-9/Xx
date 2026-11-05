@@ -52,6 +52,15 @@ object PersistStore {
         prefs(context).edit().putBoolean(KEY_ENABLED, enabled).apply()
     }
 
+    /**
+     * عدّاد الإقلاعات السريعة المتتالية كما حكم به [BootLoopGuard].
+     *
+     * **ولماذا يُعرض:** هذا الرقم هو الدليل الوحيد على أن الحارس عمل — بدونه
+     * يرى المستخدم «التطبيق التلقائي مُطفأ» ولا يعرف السبب. قراءة فقط: لا
+     * يُصفَّر هنا، لأن تصفيره يعني إخفاء إقلاع سريع وقع فعلًا.
+     */
+    fun fastBootStreak(context: Context): Int = prefs(context).getInt(KEY_FAST_STREAK, 0)
+
     /** زمن آخر جولة (أيًّا كان مصدرها) — تُقرأ في بوابة التكرار وحدها. */
     fun lastRunAtMs(context: Context): Long = prefs(context).getLong(KEY_LAST_RUN, 0L)
 

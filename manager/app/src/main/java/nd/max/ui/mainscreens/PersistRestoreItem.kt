@@ -28,6 +28,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import android.text.format.DateUtils
+import androidx.compose.material.icons.rounded.RestartAlt
+import androidx.compose.material.icons.rounded.History
 import kotlinx.coroutines.launch
 import nd.max.R
 import nd.max.core.persist.PersistRestorer
@@ -49,6 +52,8 @@ fun PersistRestoreItem() {
     var busy by remember { mutableStateOf(false) }
     var dangerousAuto by remember { mutableStateOf(PersistStore.dangerousAutoEnabled(context)) }
     var dangerousReason by remember { mutableStateOf(PersistStore.dangerousAutoOffReason(context)) }
+    var lastRunAtMs by remember { mutableStateOf(PersistStore.lastRunAtMs(context)) }
+    var fastBoots by remember { mutableStateOf(PersistStore.fastBootStreak(context)) }
 
     Column(verticalArrangement = Arrangement.spacedBy(MaxSpace.sm)) {
         ExpressiveList(
@@ -86,6 +91,8 @@ fun PersistRestoreItem() {
                                 busy = true
                                 scope.launch {
                                     PersistRestorer.restoreNow(context)
+                                    lastRunAtMs = PersistStore.lastRunAtMs(context)
+                                    fastBoots = PersistStore.fastBootStreak(context)
                                     busy = false
                                 }
                             }
@@ -113,6 +120,53 @@ fun PersistRestoreItem() {
                 }
             )
         )
+
+        // وقائع الحارس: آخر جولة، وكم إقلاعًا سريعًا رآه. قراءة فقط — لا زرّ يصفّر
+        // عدّادًا، لأن الصفر الكاذب يُخفي إقلاعًا وقع.
+        ExpressiveList(
+            content = listOf(
+                {
+                    ExpressiveListItem(
+                        headlineContent = { Text(stringResource(R.string.persist_last_run_title)) },
+                        supportingContent = {
+                            Text(
+                                if (lastRunAtMs == 0L) {
+                                    stringResource(R.string.persist_last_run_never)
+                                } else {
+                                    DateUtils.getRelativeTimeSpanString(
+                                        lastRunAtMs,
+                                        System.currentTimeMillis(),
+                                        DateUtils.MINUTE_IN_MILLIS
+                                    ).toString()
+                                }
+                            )
+                        },
+                        leadingContent = {
+                            LeadingIcon(icon = Icons.Rounded.History, contentDescription = null)
+                        }
+                    )
+                },
+                {
+                    ExpressiveListItem(
+                        headlineContent = { Text(stringResource(R.string.persist_fast_boots_title)) },
+                        supportingContent = {
+                            Text(stringResource(R.string.persist_fast_boots_desc, fastBoots))
+                        },
+                        leadingContent = {
+                            LeadingIcon(icon = Icons.Rounded.RestartAlt, contentDescription = null)
+                        }
+                    )
+                }
+            )
+        )
+
+        if (fastBoots >= 2) {
+            Text(
+                text = stringResource(R.string.persist_fast_boots_tripped),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.error
+            )
+        }
 
         if (!dangerousAuto && dangerousReason == PersistStore.REASON_BOOTLOOP) {
             Text(

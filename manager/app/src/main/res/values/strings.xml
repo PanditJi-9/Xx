@@ -1876,6 +1876,11 @@
     <string name="persist_dangerous_title">Apply advanced tweaks</string>
     <string name="persist_dangerous_desc">Includes memory, display, and touch tweaks with smart bootloop protection.</string>
     <string name="persist_dangerous_bootloop">Automatic application of advanced tweaks was disabled to protect the device after bootloop detection.</string>
+    <string name="persist_last_run_title">Last restore run</string>
+    <string name="persist_last_run_never">Nothing re-applied yet on this install.</string>
+    <string name="persist_fast_boots_title">Fast reboots in a row</string>
+    <string name="persist_fast_boots_desc">%1$d counted by the boot guard. Two in a row trip it.</string>
+    <string name="persist_fast_boots_tripped">The guard tripped: automatic application of advanced tweaks is held back until you turn it back on.</string>
     <string name="persist_coverage">Covers saved hardware and system tweaks.</string>
     <string name="persist_note">Only tweaks compatible with device permissions are safely applied.</string>
     <string name="settings_home_section">Home screen</string>
