@@ -11,6 +11,9 @@ import nd.max.core.platform.HeadroomSample
 import nd.max.core.platform.HeadroomStatus
 import nd.max.core.platform.PropertyUtils
 import nd.max.core.platform.ThermalHeadroom
+import nd.max.core.platform.ThermalReadout
+import nd.max.core.platform.ThermalStatus
+import nd.max.core.platform.ThermalStatusSample
 import java.io.File
 
 /**
@@ -24,6 +27,9 @@ object HardwareCapabilityResolver {
 
     /** مصدر هامش الحرارة — واجهة منصّة لا عقدة، فيُسمّى كما هو. */
     private const val HEADROOM_EVIDENCE = "PowerManager.getThermalHeadroom"
+
+    /** مصدر حالة الحرارة — الواجهة نفسها، دالّة أخرى. */
+    private const val STATUS_EVIDENCE = "PowerManager.getThermalStatus"
 
     fun resolve(context: Context? = null): HardwareCapabilitySnapshot {
         val platform = firstNonBlank(
@@ -50,6 +56,7 @@ object HardwareCapabilityResolver {
         displayCapabilities(context).forEach { features[it.feature] = it }
         touchCapabilities().forEach { features[it.feature] = it }
         features[HardwareFeature.THERMAL_HEADROOM] = headroomCapability(context)
+        features[HardwareFeature.THERMAL_STATUS] = thermalStatusCapability(context)
         overlayCatalog(features, context)
         return HardwareCapabilitySnapshot(vendor, platform, features)
     }
@@ -74,7 +81,29 @@ object HardwareCapabilityResolver {
             feature = HardwareFeature.THERMAL_HEADROOM,
             access = if (sample.supported) AccessLevel.READ_ONLY else AccessLevel.NONE,
             backend = "adpf-headroom",
-            evidence = if (sample.supported) listOf(HEADROOM_EVIDENCE) else emptyList(),
+            // النسبة تُلحق بالمصدر: بطاقة المصفوفة تعرض `evidence`، فتصير النسبة مرئية بلا تعديل واجهة.
+            evidence = sample.percent?.let { listOf("$HEADROOM_EVIDENCE = $it") }.orEmpty(),
+        )
+    }
+
+    /**
+     * حالة الحرارة الحالية (DevCheck) — قراءة من المنصّة، لا من `sysfs`.
+     *
+     * والفرق عن [headroomCapability] عمليّ: الهامش يتنبّأ بالخنق، والحالة تقول إن الخنق **قائم الآن**.
+     * ودائرة حرارةٍ باردة مع حالة `SEVERE` تعني أن التبريد تأخّر عن قرار النظام — ولا يعرف ذلك صفّ
+     * الحرارة المقيسة.
+     */
+    private fun thermalStatusCapability(context: Context?): FeatureCapability {
+        val sample = if (context == null) {
+            ThermalStatusSample(ThermalStatus.UNKNOWN)
+        } else {
+            ThermalReadout.observe(context)
+        }
+        return FeatureCapability(
+            feature = HardwareFeature.THERMAL_STATUS,
+            access = if (sample.supported) AccessLevel.READ_ONLY else AccessLevel.NONE,
+            backend = "thermal-status",
+            evidence = if (sample.supported) listOf(STATUS_EVIDENCE) else emptyList(),
         )
     }
 

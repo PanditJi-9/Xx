@@ -7,6 +7,9 @@ package nd.max.core.hardware
 
 import com.topjohnwu.superuser.Shell
 import nd.max.core.jni.ProbeBridge
+import nd.max.core.platform.VmTunable
+import nd.max.core.platform.VmTuning
+import nd.max.core.platform.VmWriteOutcome
 
 /**
  * Idempotent ZRAM backend with safety checks and live verification.
@@ -105,7 +108,20 @@ object ZramHardwareBackend {
      * الخروج: ملفٌّ للقراءة فقط مع الجذر يردّ `Permission denied`، وكان يُترجَم إلى
      * «رفضت النواة» بلا تمييز بين «لا جذر» و«قيمة غير مقبولة».
      */
-    fun writeSwappiness(value: Int): Step = run("echo $value > /proc/sys/vm/swappiness")
+    /**
+     * كتابة `swappiness` — **عبر مسار الكتابة الواحد** (`VmTuning` ⇒ `RootFileAccess`)، لا بـ`echo`.
+     *
+     * وكانت `echo $value > /proc/sys/vm/swappiness` تكتب خارج المُحكِّم: لا إيصال بطريق، ولا تحقّق
+     * قراءة-بعد-كتابة، ولا تمييز بين «لا جذر» و«قيمة مرفوضة». والنتيجة هنا تُترجم من
+     * [VmWriteOutcome] إلى رمز خطوة، فتُقرأ في الواجهة كما تُقرأ كل خطوة أخرى.
+     */
+    fun writeSwappiness(value: Int): Step = when (val outcome = VmTuning.system().set(VmTunable.SWAPPINESS, value.toLong())) {
+        VmWriteOutcome.APPLIED -> Step(0, "swappiness=$value")
+        VmWriteOutcome.REJECTED_RANGE -> Step(-1, "out-of-range")
+        VmWriteOutcome.REJECTED_INVALID -> Step(-1, "node-unreadable")
+        VmWriteOutcome.REJECTED_NOT_WRITABLE -> Step(-1, "not-writable")
+        VmWriteOutcome.UNVERIFIED -> Step(-1, "not-read-back")
+    }
 
     /**
      * عقدة الكتلة المقابلة للجهاز: `/dev/block/zramN`.

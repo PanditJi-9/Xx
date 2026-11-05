@@ -118,7 +118,22 @@ class ControlPlaneArchitectureTest {
     fun canonicalKeysAreNotReinvented() {
         // Two spellings of the same knob silently break priority arbitration:
         // the ledger would treat them as unrelated keys.
-        val offenders = listOf("\"cpu_limits:", "\"gpu_frequency:")
+        //
+        // The needle list covers every prefix `CatalogControlIndex` matches against the catalog,
+        // not only the two it started with: a catalog token typed as a literal in a feature→knob
+        // map is the same defect as a policy key typed in a backend, and it went unseen once.
+        val prefixes = listOf(
+            "\"cpu_limits:",
+            "\"gpu_frequency:",
+            "\"cpu_core_online:",
+            "\"gpu_governor_policy:",
+            "\"mem_frequency:",
+            "\"ufs_frequency:",
+            "\"touch_boost:",
+            "\"touch_gesture:",
+            "\"zram.",
+        )
+        val offenders = prefixes
             .flatMap { offenders(it, skip = setOf("HardwareControlKey.kt")) }
             .distinct()
         assertTrue(

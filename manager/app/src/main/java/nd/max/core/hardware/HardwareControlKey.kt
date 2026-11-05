@@ -40,6 +40,15 @@ object HardwareControlKey {
     const val CPU_BOOST = "cpu_boost"
 
     /**
+     * بادئة مفتاح **مقبض نواة VM** — `vm.<param>` (`vm.dirty_ratio` …).
+     *
+     * ولماذا بادئة معلنة: الكتالوج يرفض أيّ مفتاح قابل للكتابة لا يبدأ ببادئة من هنا. و`vm.` تفصل
+     * مقابض النواة عن مقابض `sysfs` في العتاد، فلو أُضيف مفتاح VM بمفتاح `cpu_*` لصار للمعامل
+     * الواحد كتابتان بأسماء مختلفة — وهو ما تمنعه `ControlPlaneArchitectureTest`.
+     */
+    const val VM_TUNING_PREFIX = "vm."
+
+    /**
      * بادئة مفتاح **مستوى دفق صوتيّ** — كتابةٌ ليست `sysfs`: تمرّ بالـarbiter كما تمرّ غيرها.
      *
      * ولماذا تُوضع هنا لا في `core/audio/`: العقد الملزم في `SOUND-SCREEN-PLAN` §7 بند ١ — الاستوديو
@@ -256,6 +265,38 @@ object HardwareControlKey {
     /** اسم الجهاز داخل مفتاح تردّد التخزين؛ `null` لأي مقبض آخر. */
     fun ufsFrequencyDevice(key: String): String? =
         if (isUfsFrequency(key)) key.substring(STORAGE_FREQUENCY_PREFIX.length).takeIf(String::isNotEmpty) else null
+
+    /**
+     * بادئة مفتاح **إحصاء نوى المعالج** — `cpu_core_online:<n>`.
+     *
+     * والنواة جزءٌ من المفتاح: إعادة `CPU7` إلى الخدمة ليست إعادة `CPU4`، ولو اتّحد المفتاح لصار
+     * مالكٌ واحد يمثّل ثمانية مقابض في السجلّ.
+     */
+    const val CPU_CORE_ONLINE_PREFIX = "cpu_core_online:"
+
+    /**
+     * بادئة مفتاح **سياسة مُحكِّم GPU** — `gpu_governor_policy:<device>`.
+     *
+     * منفصلةٌ عن `gpu_frequency:` لأن العقدة والأثر مختلفان: التردّد يقيّد، والسياسة تختار
+     * سلوك المُحكِّم — وخلطُهما كان يجعل تراجع أحدهما يمحو الآخر.
+     */
+    const val GPU_GOVERNOR_PREFIX = "gpu_governor_policy:"
+
+    /**
+     * بادئة مفتاح **إيماءة اللمس** — `touch_gesture:<path>`.
+     *
+     * والمسار داخل المفتاح كـ[TOUCH_BOOST_PREFIX]: الجهاز قد يُصدّر أكثر من عقدة إيماءات،
+     * والمفتاح الموحّد كان يجعل عقدتين تتنازعان ملكيةً واحدة.
+     */
+    const val TOUCH_GESTURE_PREFIX = "touch_gesture:"
+
+    /**
+     * بادئة مفتاح **ZRAM** — `zram.<n>.size`.
+     *
+     * والرقم جزءٌ من المفتاح بعد البادئة (جهازٌ لكل `zramN`)، فتُطابَق البادئةُ وحدها عند
+     * ربط الميزة بمدخلاتها في `CatalogControlIndex`.
+     */
+    const val ZRAM_KEY_PREFIX = "zram."
 
     /** المفتاح القياسي لجهاز `devfreq` بحسب نوعه — موضعٌ واحد يبني المفتاحين، فلا ينزلق أحدهما. */
     fun devfreqFrequency(kind: MemoryUfsHardwareBackend.Kind, deviceName: String): String = when (kind) {

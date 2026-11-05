@@ -2,7 +2,7 @@
 """كاتالوج مفاتيح التحكّم (M1) — مدقّق البيانات المعلنة، لا مولّد كود بلا قارئ.
 
 **المصدر الملتزم:** `manager/app/src/main/assets/control_catalog.json`.
-**الحكم:** كل مفتاح يجب أن يبدأ ببادئة من `HardwareControlKey` (١٤ `const val`)، وكل مدخل
+**الحكم:** كل مفتاح يجب أن يبدأ ببادئة من `HardwareControlKey` (١٥ `const val`)، وكل مدخل
 `PROTECTED` لا يقبل الكتابة، وكل قبضة `NODE` لها مرشّح واحد على الأقل.
 
 ولماذا مدقّق لا مولّد: الكتالوج يُقرأ في الاختبار النقيّ من JSON مباشرةً، وتوليد Kotlin لا يضيف
@@ -127,8 +127,8 @@ def self_test() -> int:
     """يقيس المدقّق نفسه: كل عطب محقون يجب أن يُمسك بالاسم."""
     base = load()
     known = prefixes()
-    if len(known) != 14:
-        print(f"✗ البوادئ المقيسة {len(known)} لا ١٤ — توقّف القياس قبل الحقن")
+    if len(known) != 15:
+        print(f"✗ البوادئ المقيسة {len(known)} لا ١٥ — توقّف القياس قبل الحقن")
         return 1
     cases: list[tuple[str, dict]] = []
 

@@ -60,6 +60,152 @@ MaxManager has a strong engine and a fragmented surface. `core/maxai` + `core/ha
 
 ## Executor log
 
+### REF-EXTRACT-04-FIX — عطب CI الوحيد: مفاتيح كتالوج مكتوبة حرفيًّا في `CatalogControlIndex` — 2026-11-05 · DONE (الترجمة الآن مُتحقَّقة من CI)
+
+TASK: تشغيل CI أظهر `ControlPlaneArchitectureTest.canonicalKeysAreNotReinvented` فاشلًا (٣٧٨٠ اختبارًا،
+واحد فشل) — أي **البوابة عملت**، لا العطب في الاختبار.
+
+CAUSE (مقيس): `CatalogControlIndex.TOKENS` كانت تكتب `"cpu_limits:"` و`"gpu_frequency:"` حرفيًّا بدل
+`HardwareControlKey`، وهي بعينها ما تمنعه البوابة (مفتاحان لشيء واحد ⇒ محكّمان لا يتنازعان). والباقي
+(٧ رموز) لم يكن محروسًا أصلًا لأن قائمة الإبر كانت اثنتين فقط.
+
+CHANGED:
+- `HardwareControlKey`: أربعة ثوابت جديدة بنصّها التوثيقي — `CPU_CORE_ONLINE_PREFIX` ·
+  `GPU_GOVERNOR_PREFIX` · `TOUCH_GESTURE_PREFIX` · `ZRAM_KEY_PREFIX` (وكانت الثلاثة الأولى بلا موضع).
+- `CatalogControlIndex.TOKENS`: **صفر حرفيّ** — الاثنا عشر رمزًا كلها من `HardwareControlKey`
+  (`CPU_LIMITS_PREFIX` · `CPU_CORE_ONLINE_PREFIX` · `CPU_BOOST` · `GPU_FREQUENCY_PREFIX` ·
+  `GPU_GOVERNOR_PREFIX` · `MEMORY_FREQUENCY_PREFIX` · `STORAGE_FREQUENCY_PREFIX` · `ZRAM_KEY_PREFIX` ·
+  `TOUCH_BOOST_PREFIX` + `TOUCH_GESTURE_PREFIX` · `VM_TUNING_PREFIX` · النصّان التامّان `battery_health`
+  و`thermal_zone` لأن الكتالوج يكتبهما مفاتيح تامّة لا بادئات).
+- `ControlPlaneArchitectureTest.canonicalKeysAreNotReinvented`: الإبر **٩** بدل ٢ (كل بادئة يطابقها
+  الفهرس) — فالعطب نفسه لا يعود من الباب الآخر.
+
+MEASURED HERE: مرآة بايثون لدالة `offenders()` على **٨٦٣ ملف Kotlin** ⇒ التسع كلها `clean` خارج
+`HardwareControlKey.kt` · `kt_balance` ٣٢٠٩/٠ · `code_health` ✓ · `i18n` ٠ · `design_tokens` ✓ ·
+`gen_control_catalog --check` ✓ (**١٩ بادئة** الآن، ٤١ مدخلًا · ٦٩ مرشّحًا · ٥ قراءة-فقط).
+
+BUILD: **CI قاس ما لم أقسه**: `compileReleaseKotlin` نجح، وكل ملفات الواجهة الجديدة
+(`VmTuningSection.kt`) و`VmTunable.step` تُرجمت، و٣٧٨٠ اختبارًا بُنيت — الفشل الوحيد كان هذه البوابة.
+فادّعاء «الترجمة غير مُتحقَّقة» في REF-EXTRACT-04 **صار منسوخًا بالنسبة للملفات التي شملها ذلك التشغيل**؛
+والملفّان المعدّلان الآن (`HardwareControlKey` · `CatalogControlIndex` · الاختبار) **لم يُصرَّفا بعد** ⇒
+يحتاجان تشغيلًا ثانيًا للتأكيد.
+
+### REF-EXTRACT-04 — Batch 3: واجهة مقابض VM + ترحيل كتابتَي `swappiness` + نسبة هامش الحرارة — 2026-11-05 · DONE_WITH_CONCERNS (الترجمة غير مُتحقَّقة)
+
+TASK: «اكمل كل شيئ دفعة واحدة» — إغلاق ما تبقّى من باكلوج `REFERENCE-EXTRACTION-NOV26.md` (بند ٢ كاملًا
+وبند ٣).
+
+CHANGED:
+- `ui/subscreens/VmTuningSection.kt` (جديد، ١٤٩ سطرًا): قسم «مقابض نواة VM» يُدرَج في
+  `MemoryUfsScreen` بعد قسم التراجع — **بلا route جديدة** (route كانت تكلّف مدخل تنقّل + دور + كتالوج
+  لأجل عشرة صفوف). يقرأ `snapshot()` في `LaunchedEffect` على `Dispatchers.IO`، ويقدّم لكل مفتاح زرَّي
+  `±step` بحدّي `min/max`، ويعرض رمز النتيجة الخمسة كما هو من `VmTuning`.
+- `VmTunable` اكتسب حقلًا رابعًا `step` (مشتقًّا من مقياس المعامل: ١ لـ`oom_kill_allocating_task` ·
+  ١٠ لـ`swappiness`/`vfs_cache_pressure` · ١٠٢٤ لمساحات `kbytes` · ١٠٠ لـ`dirty_writeback_centisecs`).
+- `ZramHardwareBackend.writeSwappiness` (سطر ١١٧) و`PersistRestorer.restoreZram` (سطر ٥٥١) —
+  **كاتب واحد لعقدة `swappiness`**: كلاهما صار يمرّ بـ`VmTuning.system().set(...)`؛ الثانية كانت
+  `writeAndRead` خاصًّا خارج المُحكِّم، والأولى كانت `echo $value > /proc/sys/vm/swappiness` بلا
+  قراءة مرتجعة ولا تفريق بين «لا جذر» و«قيمة مرفوضة». النتائج تُترجم إلى `Step`/`PersistStatus` بالرمز.
+- `HardwareCapabilityResolver`: نسبة `getThermalHeadroom(10)` تُلحق بمصدر الصفّ (`… = 0.42`)، وبطاقة
+  المصفوفة تعرض `evidence` أصلًا (٣ عناصر) ⇒ النسبة مرئية **بلا لمس Compose**.
+- ١٣ نصًّا جديدًا في `values/` **و`values-ar/`** (عنوان القسم ووصفه والحالات الخمس والمدى والزرّان).
+
+MEASURED: `kt_balance` **٣٢٠٩ ملفًا · ٠ عوائق** · `code_health` **exit 0** (دَين ٢٥٠/٣٠٠) ·
+`i18n_coverage` **٠ عوائق** · `design_tokens` **exit 0** · `gen_control_catalog --check` **0** (٤١/٦٩/١٥،
+٥ عيوب محقونة تُمسك) · `jni_symbols` ٢٣/٠/٠ · `grep` يؤكّد **صفر** كاتب آخر لـ`/proc/sys/vm/swappiness`
+(بقي `drop_caches`/`compact_memory` في `PanelDevice` وسيُذكران).
+
+CONCERNS:
+- **(١) الترجمة غير مُتحقَّقة في هذه البيئة** — لا JVM ولا Android SDK؛ الملفّان الجديدان
+  (`VmTuningSection.kt` ١٤٩ سطرًا و`VmTunable.step`) لم يُصرَّفا. ما تحقّق هنا: بوابات بنيوية + XML +
+  تساوي النصوص.
+- **(٢) انحراف معلن:** الواجهة تنادي `VmTuning.system()` مباشرة بلا ViewModel — والعقد يوجب أن تمرّ
+  الكتابة بالـarbiter (`RootFileAccess` هو مسارها الوحيد هنا) لا أن تمرّ حتمًا بـViewModel. مقبول
+  لهذه الدفعة، ويُنقل إلى ViewModel عند أوّل صيانة للشاشة.
+- **(٣)** `PanelDevice.kt:116-117` لا يزال يكتب `drop_caches`/`compact_memory` بـ`echo` داخل صنف
+  `core/*` — ليس من مقابض `vm.*` (لا قراءة مرتجعة لهما، بل مُشغِّلات لمرّة واحدة) ⇒ خارج نطاق
+  `VmTuning` عمدًا، ويُسجَّل كبند مفتوح.
+- **(٤)** الأثر السلوكيّ (هل تقبل النواة كل قيمة؟ هل تُقرأ النسبة رقمًا لا `NaN`؟) **يحتاج جهازًا**.
+- **(٥)** توكن GitHub ظهر في المحادثة — **لم يُكتب في ملف**، ويُدوَّر فورًا.
+
+### REF-EXTRACT-03 — Batch 2 من الاستخراج: مقابض `/proc/sys/vm` عبر الكتالوج + حالة الحرارة — 2026-11-05 · DONE_WITH_CONCERNS (الترجمة غير مُتحقَّقة)
+
+TASK: «اكمل» — أي البنود ٢ و٣ من باكلوج `REFERENCE-EXTRACTION-NOV26.md`.
+
+CHANGED:
+- `core/platform/VmTuning.kt` (جديد): عشرة مقابض `VmTunable` بحدود معلنة لكلٍّ، `parse` صارم (يرفض
+  `12abc` و`""` و>٣٢بت)، `set()` يفحص **قبل** الكتابة ثم يتحقّق بالقراءة بعدها، وخمس نتائج
+  (`APPLIED` · `REJECTED_RANGE` · `REJECTED_INVALID` · `REJECTED_NOT_WRITABLE` · `UNVERIFIED`)،
+  والكتابة عبر `RootFileAccess` وحده.
+- `core/platform/ThermalStatus.kt` (جديد): سبعة رموز + `UNKNOWN`، `classify(apiLevel, read)` نقيّة،
+  `isThrottling` يبدأ من `MODERATE`، والقراءة من `PowerManager.getThermalStatus` (API 29).
+- `HardwareFeature.KERNEL_VM` + `TOKENS("vm.")` + `HardwareControlKey.VM_TUNING_PREFIX` (**البادئة ١٥**،
+  بزيادة مقصودة في `gen_control_catalog --self-test` و`ControlCatalogParityTest`).
+- `control_catalog.json`: +١٠ مداخل `vm.*` ⇒ **٤١ مدخلًا · ٦٩ مرشّحًا · ١٥ بادئة · ٥ قراءة-فقط**.
+  `vm.extra_free_kbytes` وُسم `DERIVED` لأنه غير موجود على نواة القياس (صدق الوسم لا تمنّيه).
+- `HardwareFeature.THERMAL_STATUS` + `thermalStatusCapability()` ⇒ صفّان جديدان في المصفوفة بلا لمس Compose.
+- `VmTuningTest` (٨ دعاوى) · `ThermalStatusTest` (٦).
+
+MEASURED: `gen_control_catalog --check/--assert/--self-test` = 0 (٤١/٦٩/١٥، والحقن الخمسة تُمسك) ·
+`kt_balance` ٣٢٠٨/٠ · `code_health` ✓ · `i18n` ٠ · `design_tokens` ✓ · `jni_symbols` ٢٣/٠/٠ ·
+منطق `parse` أُعيد في بايثون ⇒ ٨/٨ · خرائط الحرارة ٧+١ ⇒ مطابقة.
+
+CONCERNS: (١) الترجمة غير مُتحقَّقة (لا JVM/SDK) — `HardwareFeature` صار ١٩ ثابتًا وكل `when` عليه
+تحقّق يدويًّا أن له `else` (`HardwareRouteHealth` ×٢ · `MinimalPlanner` ×٢). (٢) لا واجهة تُحرّك
+`VmTuning` بعد: الصفّ يظهر في المصفوفة، والكتابة تُستدعى من الشاشة لاحقًا. (٣) `ZramHardwareBackend`
+لا يزال يكتب `swappiness` بـ`echo` خارج الـarbiter ⇒ بند M2-ب القادم.
+
+### REF-EXTRACT-02 — فكّ المراجع الأربعة **دائمًا** + أوّل ميزة UX مأخوذة (شريط حالة نظيف) — 2026-11-05 · DONE_WITH_CONCERNS (الترجمة غير مُتحقَّقة)
+
+TASK: «فكّهم مجددا من خلال rea واحتفظ بهم بشكل دائم وليس في tmp» ثم «خذ كل شيء مفيد: ميزات،
+شاشات، UX، أفكار، ثغرات، خبرات».
+
+DONE:
+- **مستودع دائم** `/storage/emulated/0/MT2/ref-analysis/` (خارج git وخارج `/tmp`): `src-fkm` (3,845
+  ملفًا · 25 MB) · `src-zenbubble` (19,124 · 184 MB) · `src-devcheck` (3,756 · 35 MB) ·
+  `hypercool/` (37 ملفًا) · `extract/` (مسارات/أوامر/أذونات) · `tools/jadx 1.5.6` ·
+  `MANIFEST.txt` (بصمات الأصل + JDK 17.0.20.1) · `INDEX.md` (الفهرس + إعادة البناء).
+- **REA لم تُشغَّل** (تحتاج x64 + Node 22)؛ استُدعي محرّكها `jadx` مباشرةً — وهو البديل الموثَّق.
+  ملاحظة تشغيلية: `/sdcard` بلا تنفيذ ⇒ `sh bin/jadx`.
+- **جديد في المنتج:** `core/platform/StatusBarIcons.kt` (تعداد ١٧ رمزًا · `parse`/`encode` نقيّان
+  يحفظان رموز الروم المجهولة · hide/show/toggle/setAllHidden · immersive · badging · notification
+  icon · حقن قراءة/كتابة) + `StatusBarTileService` + أيقونة + ٤ نصوص (en/ar) + خدمة في المانيفست +
+  ٧ دعاوى. الآلية من ZenBubble، والكود صفر نقل.
+- **مستند جديد:** `docs/ai/REFERENCE-EXTRACTION-NOV26.md` — فجوة المسارات مقيسة (FKM: ٢٢/٣٥١
+  مشترك · DevCheck: ٢٣/٢٢٧)، ومجموعات الناقص، والأوامر، وأصناف DevCheck، وآليات HyperCool، وباكلوج
+  ١٠ بنود مرتّب مع الحائل.
+
+MEASURED: منطق القائمة أُعيد في بايثون ⇒ ٧/٧ · `kt_balance` ٣٢٠٤/٠ · `code_health` ✓ ·
+`i18n_coverage` ٠ عوائق (المفاتيح الجديدة في `values` و`values-ar` فقط، بقية اللغات ناقصة بلا فشل) ·
+`design_tokens` ✓ · الكتالوج ٠.
+
+CONCERNS: (١) **التوكن الذي أرسله المالك في المحادثة لم يُكتب في أي ملف ولا سجلّ** — ويجب تدويره،
+فهو مكشوف في نصّ المحادثة. (٢) الترجمة غير مُتحقَّقة (لا JVM/SDK) و`resource_compile` غير مُتحقَّقة
+(لا `aapt2`) ⇒ البلاط والمانيفست لم يُبنَ. (٣) سلوك `icon_blacklist` على أندرويد ١٤+ يحتاج جهازًا.
+
+### M3-HEADROOM-01 — أوّل قدرة **جديدة** من المراجع: هامش الحرارة ADPF صفًّا في مصفوفة القدرات — 2026-11-05 · DONE (المنطق مقيس · والترجمة غير مُتحقَّقة)
+
+TASK: «لماذا لم تأخذ أي ميزات جديدة … حتى يتحسّن MaxManager؟» — والجواب كان ناقصًا: معظم «الفجوات»
+في `REFERENCE-TEARDOWN §9` موجود فعلًا (فحصٌ بالاسم: `MemoryStall` · `ResponseModel` · `IslandActivity.rank`
+· `cutoutAnchor` · `PersistRestoreReceiver`)، لكن **ADPF headroom كان غائبًا فعلًا** (`grep` على
+`getThermalHeadroom` = صفر).
+
+CHANGED:
+- `core/platform/ThermalHeadroom.kt` (جديد): `HeadroomStatus` بخمس حالات (`LIVE` · `NO_API` ·
+  `NO_SERVICE` · `UNSUPPORTED` · `THREW`) و`HeadroomSample(horizonSeconds, percent, status)`، و
+  `classify(apiLevel, read)` **نقيّة** تُقاس بالحقن، و`observe(context)` تقرأ
+  `PowerManager.getThermalHeadroom(10)`.
+- `HardwareFeature.THERMAL_HEADROOM` (ميزة ١٧): تُقاس في `resolve()` بمسار **بلا امتياز**،
+  و`READ_ONLY` حين `LIVE` و`NONE` لغيره — فالصفّ يظهر في `CapabilityMatrixCard` بلا لمس Compose.
+- `ThermalHeadroomTest` (٧ دعاوى).
+
+VERIFIED: منطق التصنيف أُعيد تنفيذه في بايثون على الحالات السبع ⇒ مطابقة (`NO_API` بلا قراءة ·
+`NaN`≠٠٪ · قصّ 9.5→5 · سالب→0 · استثناء منفصل عن «غير مدعوم»). `kt_balance` **٣٢٠٠/٠** ·
+`code_health` ✓ · `gen_control_catalog` ٠. وأضيف صفٌّ للمصفوفة دون أي تعديل واجهة.
+
+LIMITS: **لم تُصرَّف Kotlin** (لا JVM/SDK)؛ ومنحنى القيمة الحقيقيّ (`NaN` مقابل رقم، وأثر الرقم على
+قرار Atlas) **يحتاج جهازًا**؛ والرقم لا يُعرض بعد — الصفّ يقول «مدعوم/غير مدعوم» فقط.
+
 ### M2-BROKER-SLICE-01 + M1-CATALOG-WIRING-01 — الكتالوج يدخل المحلّل · طريق الكتابة يُعلَن مع كل كتابة · الخمسة تُقفل بقرار مقيس — 2026-11-05 · DONE (البوّابات مُتحقَّقة · والترجمة غير مُتحقَّقة في هذه البيئة)
 
 TASK: «أكمل من مكان توقفنا بدمج المشاريع الأربعة … إلى أن تترك فيهم العظم» — والمكان المسجّل هو

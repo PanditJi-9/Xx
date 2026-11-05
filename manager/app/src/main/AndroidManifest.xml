@@ -227,6 +227,20 @@
         </service>
 
         <!--
+          شريط حالة نظيف: يخفي رموز النظام عبر `Settings.Secure.icon_blacklist`، ويحفظ رموز الروم
+          المجهولة كما هي (انظر `StatusBarIcons`). لا يُصدَّر إلا بصلاحية البلاط المعتادة.
+        -->
+        <service
+            android:name=".TileService.StatusBarTileService"
+            android:icon="@drawable/ic_statusbar_clean" android:label="@string/tile_statusbar_clean"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+
+        <!--
           عامل النسخ المجدول: رقيقة عن قصد — كل المنطق في `MaxBackupScheduler`، وهذه
           تعرف `jobFinished` فقط. ولا تُصدَّر: لا أحد خارجنا يُشغّلها.
         -->

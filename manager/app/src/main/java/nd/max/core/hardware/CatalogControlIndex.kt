@@ -69,17 +69,21 @@ internal class CatalogControlIndex private constructor(val entries: List<Catalog
 
         /** ميزة عتاد ← رموز مفاتيحها في الكتالوج (بادئة منتهية بـ`:` أو `.`، أو مفتاح تامّ). */
         private val TOKENS: Map<HardwareFeature, List<String>> = mapOf(
-            HardwareFeature.CPU_FREQUENCY to listOf("cpu_limits:"),
-            HardwareFeature.CPU_CORE_CONTROL to listOf("cpu_core_online:"),
-            HardwareFeature.CPU_BOOST to listOf("cpu_boost"),
-            HardwareFeature.GPU_FREQUENCY to listOf("gpu_frequency:"),
-            HardwareFeature.GPU_GOVERNOR to listOf("gpu_governor_policy:"),
-            HardwareFeature.MEMORY_FREQUENCY to listOf("mem_frequency:"),
-            HardwareFeature.UFS_FREQUENCY to listOf("ufs_frequency:"),
-            HardwareFeature.ZRAM to listOf("zram."),
-            HardwareFeature.TOUCH_CONTROL to listOf("touch_boost:", "touch_gesture:"),
+            HardwareFeature.CPU_FREQUENCY to listOf(HardwareControlKey.CPU_LIMITS_PREFIX),
+            HardwareFeature.CPU_CORE_CONTROL to listOf(HardwareControlKey.CPU_CORE_ONLINE_PREFIX),
+            HardwareFeature.CPU_BOOST to listOf(HardwareControlKey.CPU_BOOST),
+            HardwareFeature.GPU_FREQUENCY to listOf(HardwareControlKey.GPU_FREQUENCY_PREFIX),
+            HardwareFeature.GPU_GOVERNOR to listOf(HardwareControlKey.GPU_GOVERNOR_PREFIX),
+            HardwareFeature.MEMORY_FREQUENCY to listOf(HardwareControlKey.MEMORY_FREQUENCY_PREFIX),
+            HardwareFeature.UFS_FREQUENCY to listOf(HardwareControlKey.STORAGE_FREQUENCY_PREFIX),
+            HardwareFeature.ZRAM to listOf(HardwareControlKey.ZRAM_KEY_PREFIX),
+            HardwareFeature.TOUCH_CONTROL to listOf(
+                HardwareControlKey.TOUCH_BOOST_PREFIX,
+                HardwareControlKey.TOUCH_GESTURE_PREFIX,
+            ),
             HardwareFeature.BATTERY_TELEMETRY to listOf("battery_health"),
             HardwareFeature.THERMAL_ZONES to listOf("thermal_zone"),
+            HardwareFeature.KERNEL_VM to listOf(HardwareControlKey.VM_TUNING_PREFIX),
         )
 
         fun empty(): CatalogControlIndex = CatalogControlIndex(emptyList())

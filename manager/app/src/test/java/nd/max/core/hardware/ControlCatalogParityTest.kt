@@ -112,7 +112,7 @@ class ControlCatalogParityTest {
 
     @Test
     fun everyHardwareControlKeyPrefixHasAnEntry() {
-        assertEquals("البوادئ المقيسة تغيّرت — حدّث المصدر لا الاختبار", 14, prefixes.size)
+        assertEquals("البوادئ المقيسة تغيّرت — حدّث المصدر لا الاختبار", 15, prefixes.size)
         assertEquals(emptyList<String>(), CatalogGaps.missingPrefixes(entries, prefixes))
     }
 

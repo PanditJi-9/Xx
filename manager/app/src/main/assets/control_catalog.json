@@ -870,6 +870,286 @@
         ]
       },
       "danger": "HIGH"
+    },
+    {
+      "key": "vm.swappiness",
+      "transport": "PROC",
+      "kind": "INT",
+      "candidates": [
+        {
+          "path": "/proc/sys/vm/swappiness",
+          "origin": "MEASURED"
+        }
+      ],
+      "verify": {
+        "policy": "READ_BACK_EQUAL",
+        "tolerance": 0
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": [
+          "MAGISK",
+          "KSU",
+          "APATCH",
+          "SU_BARE",
+          "DAEMON"
+        ]
+      },
+      "danger": "LOW"
+    },
+    {
+      "key": "vm.dirty_ratio",
+      "transport": "PROC",
+      "kind": "PERCENT",
+      "candidates": [
+        {
+          "path": "/proc/sys/vm/dirty_ratio",
+          "origin": "MEASURED"
+        }
+      ],
+      "verify": {
+        "policy": "READ_BACK_EQUAL",
+        "tolerance": 1
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": [
+          "MAGISK",
+          "KSU",
+          "APATCH",
+          "SU_BARE",
+          "DAEMON"
+        ]
+      },
+      "danger": "MEDIUM"
+    },
+    {
+      "key": "vm.dirty_background_ratio",
+      "transport": "PROC",
+      "kind": "PERCENT",
+      "candidates": [
+        {
+          "path": "/proc/sys/vm/dirty_background_ratio",
+          "origin": "MEASURED"
+        }
+      ],
+      "verify": {
+        "policy": "READ_BACK_EQUAL",
+        "tolerance": 1
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": [
+          "MAGISK",
+          "KSU",
+          "APATCH",
+          "SU_BARE",
+          "DAEMON"
+        ]
+      },
+      "danger": "MEDIUM"
+    },
+    {
+      "key": "vm.dirty_writeback_centisecs",
+      "transport": "PROC",
+      "kind": "INT",
+      "candidates": [
+        {
+          "path": "/proc/sys/vm/dirty_writeback_centisecs",
+          "origin": "MEASURED"
+        }
+      ],
+      "verify": {
+        "policy": "READ_BACK_EQUAL",
+        "tolerance": 1
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": [
+          "MAGISK",
+          "KSU",
+          "APATCH",
+          "SU_BARE",
+          "DAEMON"
+        ]
+      },
+      "danger": "MEDIUM"
+    },
+    {
+      "key": "vm.vfs_cache_pressure",
+      "transport": "PROC",
+      "kind": "INT",
+      "candidates": [
+        {
+          "path": "/proc/sys/vm/vfs_cache_pressure",
+          "origin": "MEASURED"
+        }
+      ],
+      "verify": {
+        "policy": "READ_BACK_EQUAL",
+        "tolerance": 1
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": [
+          "MAGISK",
+          "KSU",
+          "APATCH",
+          "SU_BARE",
+          "DAEMON"
+        ]
+      },
+      "danger": "LOW"
+    },
+    {
+      "key": "vm.min_free_kbytes",
+      "transport": "PROC",
+      "kind": "INT",
+      "candidates": [
+        {
+          "path": "/proc/sys/vm/min_free_kbytes",
+          "origin": "MEASURED"
+        }
+      ],
+      "verify": {
+        "policy": "READ_BACK_EQUAL",
+        "tolerance": 1024
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": [
+          "MAGISK",
+          "KSU",
+          "APATCH",
+          "SU_BARE",
+          "DAEMON"
+        ]
+      },
+      "danger": "HIGH"
+    },
+    {
+      "key": "vm.extra_free_kbytes",
+      "transport": "PROC",
+      "kind": "INT",
+      "candidates": [
+        {
+          "path": "/proc/sys/vm/extra_free_kbytes",
+          "origin": "DERIVED"
+        }
+      ],
+      "verify": {
+        "policy": "READ_BACK_EQUAL",
+        "tolerance": 0
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": [
+          "MAGISK",
+          "KSU",
+          "APATCH",
+          "SU_BARE",
+          "DAEMON"
+        ]
+      },
+      "danger": "HIGH"
+    },
+    {
+      "key": "vm.overcommit_ratio",
+      "transport": "PROC",
+      "kind": "PERCENT",
+      "candidates": [
+        {
+          "path": "/proc/sys/vm/overcommit_ratio",
+          "origin": "MEASURED"
+        }
+      ],
+      "verify": {
+        "policy": "READ_BACK_EQUAL",
+        "tolerance": 0
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": [
+          "MAGISK",
+          "KSU",
+          "APATCH",
+          "SU_BARE",
+          "DAEMON"
+        ]
+      },
+      "danger": "MEDIUM"
+    },
+    {
+      "key": "vm.watermark_scale_factor",
+      "transport": "PROC",
+      "kind": "INT",
+      "candidates": [
+        {
+          "path": "/proc/sys/vm/watermark_scale_factor",
+          "origin": "MEASURED"
+        }
+      ],
+      "verify": {
+        "policy": "READ_BACK_EQUAL",
+        "tolerance": 10
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": [
+          "MAGISK",
+          "KSU",
+          "APATCH",
+          "SU_BARE",
+          "DAEMON"
+        ]
+      },
+      "danger": "MEDIUM"
+    },
+    {
+      "key": "vm.oom_kill_allocating_task",
+      "transport": "PROC",
+      "kind": "BOOL",
+      "candidates": [
+        {
+          "path": "/proc/sys/vm/oom_kill_allocating_task",
+          "origin": "MEASURED"
+        }
+      ],
+      "verify": {
+        "policy": "READ_BACK_EQUAL",
+        "tolerance": 0
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": [
+          "MAGISK",
+          "KSU",
+          "APATCH",
+          "SU_BARE",
+          "DAEMON"
+        ]
+      },
+      "danger": "LOW"
     }
   ],
   "unmapped": [

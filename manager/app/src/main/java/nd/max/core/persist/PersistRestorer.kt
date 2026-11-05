@@ -34,6 +34,9 @@ import nd.max.core.hardware.SystemDevfreqCeilingAccess
 import nd.max.core.hardware.TouchControlBackend
 import nd.max.core.hardware.ZramHardwareBackend
 import nd.max.core.platform.PropertyUtils
+import nd.max.core.platform.VmTunable
+import nd.max.core.platform.VmTuning
+import nd.max.core.platform.VmWriteOutcome
 import nd.max.island.core.IslandBootRestore
 import nd.max.island.core.IslandControl
 import nd.max.island.core.IslandSettings
@@ -547,10 +550,12 @@ object PersistRestorer {
             }
         }
         if (swappiness != null) {
-            val clamped = swappiness.coerceIn(0, 200).toString()
-            when (writeAndRead("/proc/sys/vm/swappiness", clamped)) {
-                WriteOutcome.MISMATCH -> ok = false
-                else -> Unit
+            // كاتبٌ واحد لعقدة `swappiness`: `VmTuning` (⇒ `RootFileAccess`) لا `writeAndRead` ثانٍ.
+            // والقراءة المرتجعة هناك هي نفسها الحكم هنا: `UNVERIFIED` تعني «كُتبت ولم تُقرأ» فلا تُعدّ نجاحًا.
+            val clamped = swappiness.coerceIn(0, 200).toLong()
+            when (VmTuning.system().set(VmTunable.SWAPPINESS, clamped)) {
+                VmWriteOutcome.APPLIED -> Unit
+                else -> ok = false
             }
         }
         return if (ok) PersistStatus.Applied to "read-back-ok" else PersistStatus.Failed to "zram-write-refused"
