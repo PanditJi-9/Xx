@@ -269,6 +269,9 @@ jobs:
           # يحقن **٥ عطوب** — بينها العطب الذي كان يمرّ صامتًا: قرارٌ بلا سبب مكتوب.
           python3 tools/gen_control_catalog.py --assert
           python3 tools/gen_control_catalog.py --self-test
+          # ← مستند القدرات المولّد (`docs/CAPABILITIES.md`): مرآة الكتالوج، وتفشل إن تقادم.
+          python3 tools/gen_capabilities_doc.py --assert
+          python3 tools/gen_capabilities_doc.py --self-test
           # ← عقد التحزيم والتكامل: ١٤ فحصًا جمعت ما كان يُقاس بالعين في جولة
           # `BUNDLE-01` — وأهمّها عقدان كلف أحدهما ثباتًا والآخر عطبًا حقيقيًّا:
           #   • سلسلة الإصدار متّفقة في ثلاثتها (`version` · `module.prop` · `MaxManager.h`)
