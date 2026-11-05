@@ -59,7 +59,9 @@ current through the pack) with a dedicated **status check**, and **Doze**.
 minutes, off until you switch it on. The level curve and a separate battery-temperature trend are
 drawn only from points the platform actually recorded, so gaps stay gaps (the line breaks instead of
 inventing a value), and the discharge rate is computed from discharging points alone rather than
-modelled. Clearing the history deletes the local file and nothing else.
+modelled. The visible window can be exported as one CSV file (ISO timestamp plus the raw epoch, empty
+fields where the platform reported nothing) and handed to an app of your choice through the system
+share sheet — nothing is uploaded. Clearing the history deletes the local file and nothing else.
 
 ### Storage & compiler — *"Compilation mode and storage health"*
 

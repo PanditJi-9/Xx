@@ -3915,6 +3915,11 @@
     <string name="battery_history_recording_switch_desc">One point every 15 minutes. Uses an inexact alarm and a local file.</string>
     <string name="battery_history_clear">Clear history</string>
     <string name="battery_history_clear_desc">Deletes the local points; recording stays as it is.</string>
+    <string name="battery_history_export">Export CSV</string>
+    <string name="battery_history_export_desc">Writes the points in the selected window to one CSV file and hands it to the app you pick. Nothing is uploaded.</string>
+    <string name="battery_history_export_chooser">Export battery history</string>
+    <string name="battery_history_export_failed">The file could not be shared</string>
+    <string name="battery_history_export_failed_desc">Writing the CSV or opening the share sheet failed on this device. The stored history is unchanged.</string>
     <string name="battery_history_clear_title">Clear battery history?</string>
     <string name="battery_history_clear_message">Every stored point will be deleted. This cannot be undone.</string>
     <string name="battery_history_clear_confirm">Clear</string>

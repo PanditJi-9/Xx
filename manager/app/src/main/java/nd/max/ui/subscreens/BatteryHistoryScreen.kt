@@ -14,10 +14,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import android.content.Intent
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.BatteryFull
 import androidx.compose.material.icons.rounded.DeleteOutline
 import androidx.compose.material.icons.rounded.Refresh
+import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -28,6 +30,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,9 +47,11 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
+import androidx.core.content.FileProvider
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import nd.max.R
 import nd.max.core.battery.BatteryHistoryStore
@@ -95,6 +100,8 @@ fun BatteryHistoryScreen(navController: NavHostController) {
     var enabled by remember { mutableStateOf(BatteryHistoryStore.isEnabled(context)) }
     var reload by remember { mutableIntStateOf(0) }
     var showClear by remember { mutableStateOf(false) }
+    var exportFailed by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
 
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
         enabled = BatteryHistoryStore.isEnabled(context)
@@ -384,6 +391,54 @@ fun BatteryHistoryScreen(navController: NavHostController) {
                         reload++
                     }
                 )
+                MaxGroupDivider()
+                MaxRow(
+                    title = stringResource(R.string.battery_history_export),
+                    subtitle = stringResource(R.string.battery_history_export_desc),
+                    icon = Icons.Rounded.Share,
+                    enabled = samples.isNotEmpty(),
+                    onClick = {
+                        exportFailed = false
+                        scope.launch {
+                            val file = withContext(Dispatchers.IO) {
+                                BatteryHistoryStore.writeCsv(context, samples)
+                            }
+                            val uri = file?.let {
+                                runCatching {
+                                    FileProvider.getUriForFile(
+                                        context,
+                                        "${context.packageName}.provider",
+                                        it
+                                    )
+                                }.getOrNull()
+                            }
+                            if (uri == null) {
+                                exportFailed = true
+                                return@launch
+                            }
+                            val send = Intent(Intent.ACTION_SEND).apply {
+                                type = "text/csv"
+                                putExtra(Intent.EXTRA_STREAM, uri)
+                                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                            }
+                            runCatching {
+                                context.startActivity(
+                                    Intent.createChooser(
+                                        send,
+                                        context.getString(R.string.battery_history_export_chooser)
+                                    )
+                                )
+                            }.onFailure { exportFailed = true }
+                        }
+                    }
+                )
+                if (exportFailed) {
+                    MaxGroupDivider()
+                    MaxRow(
+                        title = stringResource(R.string.battery_history_export_failed),
+                        subtitle = stringResource(R.string.battery_history_export_failed_desc)
+                    )
+                }
                 MaxGroupDivider()
                 MaxRow(
                     title = stringResource(R.string.battery_history_clear),

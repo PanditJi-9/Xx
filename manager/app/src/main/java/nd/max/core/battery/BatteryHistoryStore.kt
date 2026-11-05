@@ -65,6 +65,9 @@ object BatteryHistoryStore {
 
     private const val MAX_SAMPLES = 4 * 24 * 35 // 35 days at one sample per 15 min
     private const val FILE_NAME = "battery-history.jsonl"
+    private const val EXPORT_PREFIX = "battery-history-"
+    private const val CSV_HEADER =
+        "timestamp_iso,epoch_ms,level_percent,voltage_mv,temperature_c,status,plugged,current_ua,discharging"
     private const val PREFS_NAME = "battery_history"
     private const val KEY_ENABLED = "enabled"
 
@@ -154,6 +157,58 @@ object BatteryHistoryStore {
         io.execute {
             runCatching { File(app.filesDir, FILE_NAME).delete() }
         }
+    }
+
+    /**
+     * The stored points as CSV, one row per sample, oldest first.
+     *
+     * **Why the columns are named and ordered here, not in the screen:** the
+     * file is meant to be opened in a spreadsheet, so its shape is part of the
+     * contract. A screen-local builder would drift the moment a second caller
+     * appears. Missing readings are empty fields, never `0` — a voltage that
+     * was not reported must not read as a measured zero.
+     *
+     * Timestamps are ISO-8601 in UTC (`Instant.toString()`) plus the raw epoch
+     * milliseconds, so a tool that cannot parse ISO still has a number.
+     */
+    fun csv(samples: List<BatterySample>): String {
+        val out = StringBuilder(64 + samples.size * 64)
+        out.append(CSV_HEADER).append('\n')
+        samples.forEach { sample ->
+            out.append(java.time.Instant.ofEpochMilli(sample.atMillis).toString())
+            out.append(',').append(sample.atMillis)
+            out.append(',').append(sample.levelPercent)
+            out.append(',').append(sample.voltageMv ?: "")
+            out.append(',').append(sample.temperatureC ?: "")
+            out.append(',').append(sample.status)
+            out.append(',').append(sample.plugged)
+            out.append(',').append(sample.currentUa ?: "")
+            out.append(',').append(if (sample.discharging) '1' else '0')
+            out.append('\n')
+        }
+        return out.toString()
+    }
+
+    /**
+     * Writes [csv] to a fresh file in the app cache and returns it, or `null`.
+     *
+     * **Why the cache and not external storage:** the file is handed to one app
+     * the user picks through `FileProvider` (already declared under
+     * `cache-path`), and it dies with the cache instead of leaving a second
+     * copy of the history on shared storage. Earlier exports are deleted first
+     * so repeated taps cannot pile up copies of the same timeline.
+     */
+    fun writeCsv(context: Context, samples: List<BatterySample>): File? {
+        val cache = context.applicationContext.cacheDir
+        return runCatching {
+            cache.listFiles { file -> file.name.startsWith(EXPORT_PREFIX) }
+                ?.forEach { old -> runCatching { old.delete() } }
+            val stamp = java.text.SimpleDateFormat("yyyyMMdd-HHmmss", java.util.Locale.US)
+                .format(java.util.Date())
+            val file = File(cache, "$EXPORT_PREFIX$stamp.csv")
+            file.writeText(csv(samples))
+            file
+        }.getOrNull()
     }
 
     /**

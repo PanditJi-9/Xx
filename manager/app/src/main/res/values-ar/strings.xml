@@ -3862,6 +3862,11 @@
     <string name="battery_history_recording_switch_desc">نقطة كل ١٥ دقيقة، بمنبّه غير دقيق وملفّ محلّي.</string>
     <string name="battery_history_clear">محو السجلّ</string>
     <string name="battery_history_clear_desc">يحذف النقاط المحلّية؛ ويترك التسجيل كما هو.</string>
+    <string name="battery_history_export">تصدير CSV</string>
+    <string name="battery_history_export_desc">يكتب نقاط النافذة المختارة في ملف CSV واحد ويسلّمه للتطبيق الذي تختاره. لا يُرفع شيء.</string>
+    <string name="battery_history_export_chooser">تصدير تاريخ البطارية</string>
+    <string name="battery_history_export_failed">لم يُشارك الملفّ</string>
+    <string name="battery_history_export_failed_desc">فشل كتابة CSV أو فتح قائمة المشاركة على هذا الجهاز. التاريخ المحفوظ لم يتغيّر.</string>
     <string name="battery_history_clear_title">محو سجلّ البطارية؟</string>
     <string name="battery_history_clear_message">ستُحذف كل نقطة مخزّنة، ولا يمكن التراجع.</string>
     <string name="battery_history_clear_confirm">محو</string>
