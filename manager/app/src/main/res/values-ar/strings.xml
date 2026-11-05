@@ -3737,6 +3737,15 @@
     <string name="device_lab_mic_allow">السماح بالميكروفون</string>
     <string name="device_lab_mic_allow_desc">يطلب أندرويد إذن الميكروفون. الاختبار يقرأ المستوى الخام فقط ولا يحفظ شيئًا.</string>
     <string name="device_lab_mic_denied">إذن الميكروفون مُطفأ، فلا شيء يُقاس.</string>
+    <string name="device_lab_section_display">قدرات العرض</string>
+    <string name="device_lab_display_desc">ما يُعلنه هذا اللوح عن قدرته على العرض، مقروءًا من المنصّة. وما لا يُعلنه النظام يُكتب «غير معلوم» لا صفرًا.</string>
+    <string name="device_lab_display_mode_title">الوضع الحالي</string>
+    <string name="device_lab_display_modes_title">الأوضاع المدعومة</string>
+    <string name="device_lab_display_hdr_title">أنواع HDR</string>
+    <string name="device_lab_display_luminance_title">ذروة السطوع</string>
+    <string name="device_lab_display_gamut_title">لون واسع</string>
+    <string name="device_lab_display_none">غير معلوم</string>
+    <string name="device_lab_display_nits">%1$d / %2$d شمعة</string>
 <string name="device_lab_touch_hint">المس أي مكان بإصبع أو أكثر</string>
 <string name="device_lab_fingers">%1$d أصابع</string>
 <string name="device_lab_touch_max">أكثر عدد ظهر: %1$d</string>

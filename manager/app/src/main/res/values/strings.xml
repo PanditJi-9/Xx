@@ -3790,6 +3790,15 @@
     <string name="device_lab_mic_allow">Allow microphone</string>
     <string name="device_lab_mic_allow_desc">Android asks for the microphone permission. The test reads the raw level only and stores nothing.</string>
     <string name="device_lab_mic_denied">Microphone permission is off, so there is nothing to measure.</string>
+    <string name="device_lab_section_display">Display capabilities</string>
+    <string name="device_lab_display_desc">What this panel reports it can show, read from the platform. Anything the system does not report is written as not reported rather than as zero.</string>
+    <string name="device_lab_display_mode_title">Current mode</string>
+    <string name="device_lab_display_modes_title">Supported modes</string>
+    <string name="device_lab_display_hdr_title">HDR types</string>
+    <string name="device_lab_display_luminance_title">Peak luminance</string>
+    <string name="device_lab_display_gamut_title">Wide colour gamut</string>
+    <string name="device_lab_display_none">Not reported</string>
+    <string name="device_lab_display_nits">%1$d / %2$d nits</string>
 <string name="device_lab_touch_hint">Touch anywhere with one or more fingers</string>
 <string name="device_lab_fingers">%1$d fingers</string>
 <string name="device_lab_touch_max">Most seen: %1$d</string>

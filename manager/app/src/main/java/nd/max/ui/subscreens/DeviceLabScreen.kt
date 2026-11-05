@@ -30,6 +30,8 @@ import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.VibratorManager
+import android.view.Display
+import android.view.WindowManager
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -174,6 +176,13 @@ fun DeviceLabScreen(navController: NavHostController) {
                     onClick = { openTest = LabTest.TOUCH },
                 )
             }
+        }
+
+        MaxSection(
+            title = stringResource(R.string.device_lab_section_display),
+            description = stringResource(R.string.device_lab_display_desc),
+        ) {
+            DisplayCapabilities()
         }
 
         MaxSection(title = stringResource(R.string.device_lab_section_controls)) {
@@ -1238,4 +1247,109 @@ private fun LabValueRow(title: String, value: String) {
             )
         },
     )
+}
+
+// ---------------------------------------------------------------------------
+// Display capabilities
+// ---------------------------------------------------------------------------
+
+/**
+ * ما يُعلنه هذا اللوح عن نفسه: الدقّة والتحديث، وأنواع HDR، واللون الواسع.
+ *
+ * **ولماذا هنا مع أن معدّل التحديث يُقرأ في مكان آخر:** `AppMonitor` يقرأه ليضبط كل تطبيق، وهذا
+ * القسم يقرأه ليقول للمستخدم **ما يدعمه عتاده**. الأول قرار، والثاني جواب. وما لا يُعلنه النظام
+ * يُكتب «غير معلوم» بدل صفر أو قائمة فارغة تُقرأ كأنها «لا شيء».
+ */
+@Composable
+private fun DisplayCapabilities() {
+    val context = LocalContext.current
+    val display = remember {
+        runCatching {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                context.display
+            } else {
+                @Suppress("DEPRECATION")
+                context.getSystemService(WindowManager::class.java).defaultDisplay
+            }
+        }.getOrNull()
+    }
+    val none = stringResource(R.string.device_lab_display_none)
+
+    if (display == null) {
+        MaxGroup {
+            LabValueRow(
+                title = stringResource(R.string.device_lab_display_mode_title),
+                value = none,
+            )
+        }
+        return
+    }
+
+    val mode = remember(display) { runCatching { display.mode }.getOrNull() }
+    val modes = remember(display) { runCatching { display.supportedModes.toList() }.getOrDefault(emptyList()) }
+    val hdr = remember(display) { runCatching { display.hdrCapabilities }.getOrNull() }
+    val wideGamut = remember(display) { runCatching { display.isWideColorGamut }.getOrNull() }
+
+    val resolutions = modes.map { it.physicalWidth to it.physicalHeight }.distinct()
+    val rates = modes.map { it.refreshRate }.distinct().sorted()
+    val modesText = if (modes.isEmpty()) {
+        none
+    } else {
+        resolutions.take(3).joinToString(" / ") { (width, height) -> "$width×$height" } +
+            " · " + rates.joinToString("/") { it.toInt().toString() } + " Hz"
+    }
+
+    val hdrText = hdr?.let { capabilities ->
+        val names = capabilities.supportedHdrTypes.map(::hdrTypeName).filter { it.isNotEmpty() }
+        if (names.isEmpty()) none else names.joinToString(" · ")
+    } ?: none
+
+    val luminance = hdr?.let {
+        stringResource(
+            R.string.device_lab_display_nits,
+            it.desiredMaxLuminance.toInt(),
+            it.desiredMaxAverageLuminance.toInt(),
+        )
+    } ?: none
+
+    MaxGroup {
+        LabValueRow(
+            title = stringResource(R.string.device_lab_display_mode_title),
+            value = mode?.let { "${it.physicalWidth} × ${it.physicalHeight} · ${it.refreshRate.toInt()} Hz" }
+                ?: none,
+        )
+        MaxGroupDivider()
+        LabValueRow(
+            title = stringResource(R.string.device_lab_display_modes_title),
+            value = modesText,
+        )
+        MaxGroupDivider()
+        LabValueRow(
+            title = stringResource(R.string.device_lab_display_hdr_title),
+            value = hdrText,
+        )
+        MaxGroupDivider()
+        LabValueRow(
+            title = stringResource(R.string.device_lab_display_luminance_title),
+            value = luminance,
+        )
+        MaxGroupDivider()
+        LabValueRow(
+            title = stringResource(R.string.device_lab_display_gamut_title),
+            value = when (wideGamut) {
+                true -> stringResource(R.string.yes)
+                false -> stringResource(R.string.no)
+                null -> none
+            },
+        )
+    }
+}
+
+/** أسماء أنواع HDR كما تُعلنها المنصّة — أسماء تقنية لا تُترجم. */
+private fun hdrTypeName(type: Int): String = when (type) {
+    Display.HdrCapabilities.HDR_TYPE_DOLBY_VISION -> "Dolby Vision"
+    Display.HdrCapabilities.HDR_TYPE_HDR10 -> "HDR10"
+    Display.HdrCapabilities.HDR_TYPE_HLG -> "HLG"
+    Display.HdrCapabilities.HDR_TYPE_HDR10_PLUS -> "HDR10+"
+    else -> ""
 }
