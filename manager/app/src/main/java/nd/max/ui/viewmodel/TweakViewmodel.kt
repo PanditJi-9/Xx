@@ -17,6 +17,7 @@
 package nd.max.ui.viewmodel
 
 import nd.max.core.backup.ConfigDiff
+import nd.max.ui.util.PrefsDelta
 import nd.max.MaxManagerProps
 
 
@@ -71,6 +72,8 @@ class TweakViewModel : ViewModel() {
         // استبدال قائمة التطبيقات ملفّ كامل: يُقاس حجمه بالأسطر لا بالمفاتيح.
         val applistAdded: Int = 0,
         val applistRemoved: Int = 0,
+        // التفضيلات تُدمج لا تُمحى، لكن قيمتها تُستبدل — فيُقاس كم مفتاحًا يتغيّر.
+        val prefsChanged: Int = 0,
     )
     
     var isUiLoaded by mutableStateOf(false)
@@ -258,6 +261,10 @@ class TweakViewModel : ViewModel() {
                 ConfigDiff.LineDelta(added = 0, removed = 0)
             }
 
+            val prefsChanged = prefBundles?.let { bundles ->
+                PrefsDelta.count(bundles, MaxPrefsBundle.read(context, bundles.keys))
+            } ?: 0
+
             ValidationResult(
                 isValid = true,
                 message = "",
@@ -270,6 +277,7 @@ class TweakViewModel : ViewModel() {
                 changes = changes,
                 applistAdded = applistDelta.added,
                 applistRemoved = applistDelta.removed,
+                prefsChanged = prefsChanged,
             )
         }
     }

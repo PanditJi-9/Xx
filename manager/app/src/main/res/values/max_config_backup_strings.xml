@@ -9,6 +9,7 @@
     <string name="max_cfg_diff_unset">not set</string>
     <string name="max_cfg_diff_more">and %1$d more</string>
     <string name="max_cfg_diff_applist">%1$d app-list lines added, %2$d removed — the whole list is replaced, not merged.</string>
+    <string name="max_cfg_diff_prefs">%1$d preference keys differ — merged, not wiped.</string>
 
     <string name="max_cfg_declared_absent_title">Will not be included, and why</string>
     <string name="max_cfg_declared_absent_line">• %1$s — %2$s</string>

@@ -441,6 +441,15 @@ fun rememberConfigBackupFlow(
                         )
                         Spacer(Modifier.height(8.dp))
                     }
+                    // التفضيلات تُدمج: العدّ يقول كم قيمة ستُستبدل، لا كم ملفًّا سيُمحى.
+                    if (result.prefsChanged > 0) {
+                        Text(
+                            text = stringResource(R.string.max_cfg_diff_prefs, result.prefsChanged),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Spacer(Modifier.height(8.dp))
+                    }
                     if (result.hasTweaks) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
