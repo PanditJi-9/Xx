@@ -71,4 +71,45 @@ class ConfigDiffTest {
         )
         assertEquals(listOf(a, b), changes.map { it.key })
     }
+
+    @Test
+    fun an_identical_line_file_has_no_delta() {
+        val delta = ConfigDiff.lineDelta("a\nb\n", "a\nb\n")
+        assertEquals(0, delta.added)
+        assertEquals(0, delta.removed)
+        assertEquals(0, delta.total)
+    }
+
+    @Test
+    fun a_new_line_counts_as_added_and_a_missing_one_as_removed() {
+        val delta = ConfigDiff.lineDelta("a\nb\n", "a\nb\nc\n")
+        assertEquals(1, delta.added)
+        assertEquals(0, delta.removed)
+
+        val shrunk = ConfigDiff.lineDelta("a\nb\nc\n", "a\n")
+        assertEquals(0, shrunk.added)
+        assertEquals(2, shrunk.removed)
+    }
+
+    @Test
+    fun a_single_changed_line_is_one_added_and_one_removed() {
+        // السطر ليس هويّة عنصر بل نصّه: تغيّر حرف واحد يعني حذف سطر وإضافة آخر.
+        val delta = ConfigDiff.lineDelta("com.a\n", "com.b\n")
+        assertEquals(1, delta.added)
+        assertEquals(1, delta.removed)
+    }
+
+    @Test
+    fun a_duplicate_line_is_counted_once_per_copy() {
+        // القائمة قد تحمل السطر نفسه لعنصرين؛ عدّه مرة واحدة يُخفي حذفًا وقع.
+        val delta = ConfigDiff.lineDelta("x\nx\n", "x\n")
+        assertEquals(0, delta.added)
+        assertEquals(1, delta.removed)
+    }
+
+    @Test
+    fun blank_lines_and_padding_are_not_lines() {
+        val delta = ConfigDiff.lineDelta("  a  \n\n   \n", "a\n")
+        assertEquals(0, delta.total)
+    }
 }

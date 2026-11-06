@@ -428,6 +428,19 @@ fun rememberConfigBackupFlow(
                         }
                         Spacer(Modifier.height(8.dp))
                     }
+                    // قائمة التطبيقات تُستبدل كملفّ كامل: العدد هنا يقول حجم ما سيُستبدل.
+                    if (result.hasApplist && (result.applistAdded + result.applistRemoved) > 0) {
+                        Text(
+                            text = stringResource(
+                                R.string.max_cfg_diff_applist,
+                                result.applistAdded,
+                                result.applistRemoved,
+                            ),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Spacer(Modifier.height(8.dp))
+                    }
                     if (result.hasTweaks) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,

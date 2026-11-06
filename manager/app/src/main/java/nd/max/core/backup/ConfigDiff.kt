@@ -36,4 +36,40 @@ object ConfigDiff {
                 if (from == to) null else Change(key, from, to)
             }
             .sortedBy { it.key }
+
+    /** كم سطرًا يُضاف وكم يُحذف في ملف نصّي (قائمة التطبيقات) — بالتكرار لا بالمجموعة. */
+    data class LineDelta(val added: Int, val removed: Int) {
+        val total: Int get() = added + removed
+    }
+
+    /**
+     * فرق ملف أسطر (قائمة التطبيقات) بين الحالي والقادم.
+     *
+     * **ولماذا بالتكرار لا بالمجموعة:** القائمة قد تحمل السطر نفسه مرّتين لعنصرين
+     * مختلفين؛ عدّه مرة واحدة يُخفي حذفًا وقع. والفراغات وأسطر التعليق الفارغة
+     * تُسقط من الطرفين، لأنها ليست عناصر.
+     *
+     * والعدّ ليس تعديلًا: الاستعادة تكتب الملف كاملًا، والفرق يُعلن حجم ما سيُستبدل
+     * قبل أن يُستبدل — لا أكثر.
+     */
+    fun lineDelta(current: String, incoming: String): LineDelta {
+        val before = counts(current)
+        val after = counts(incoming)
+        var added = 0
+        var removed = 0
+        (before.keys + after.keys).forEach { line ->
+            val was = before[line] ?: 0
+            val now = after[line] ?: 0
+            if (now > was) added += now - was
+            if (was > now) removed += was - now
+        }
+        return LineDelta(added = added, removed = removed)
+    }
+
+    private fun counts(text: String): Map<String, Int> =
+        text.lineSequence()
+            .map { it.trim() }
+            .filter { it.isNotEmpty() }
+            .groupingBy { it }
+            .eachCount()
 }

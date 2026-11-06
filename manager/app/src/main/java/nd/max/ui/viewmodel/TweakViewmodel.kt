@@ -68,6 +68,9 @@ class TweakViewModel : ViewModel() {
         val hasAppPrefs: Boolean = false,
         // `GAP-14`: ما سيتغيّر فعلًا على هذا الجهاز — يُقاس قبل أي كتابة.
         val changes: List<ConfigDiff.Change> = emptyList(),
+        // استبدال قائمة التطبيقات ملفّ كامل: يُقاس حجمه بالأسطر لا بالمفاتيح.
+        val applistAdded: Int = 0,
+        val applistRemoved: Int = 0,
     )
     
     var isUiLoaded by mutableStateOf(false)
@@ -244,6 +247,17 @@ class TweakViewModel : ViewModel() {
                 incoming = incomingTweaks,
             )
 
+            // استبدال قائمة التطبيقات ملفّ كامل — أخطر ما يُطبَّق وأقلّه ظهورًا،
+            // فيُقاس حجم التغيير بالأسطر **قبل** الضغط لا بعده.
+            val applistDelta = if (hasApplist) {
+                ConfigDiff.lineDelta(
+                    current = RootFileAccess.read(APPLIST_PATH).orEmpty(),
+                    incoming = backupData[APPLIST_BACKUP_KEY].orEmpty(),
+                )
+            } else {
+                ConfigDiff.LineDelta(added = 0, removed = 0)
+            }
+
             ValidationResult(
                 isValid = true,
                 message = "",
@@ -254,6 +268,8 @@ class TweakViewModel : ViewModel() {
                 hasAppearance = prefBundles?.keys?.any { it in appearanceFiles } == true,
                 hasAppPrefs = prefBundles?.keys?.any { it in appPrefFiles } == true,
                 changes = changes,
+                applistAdded = applistDelta.added,
+                applistRemoved = applistDelta.removed,
             )
         }
     }

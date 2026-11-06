@@ -8,6 +8,7 @@
     <string name="max_cfg_diff_line">%1$s: %2$s ← %3$s</string>
     <string name="max_cfg_diff_unset">غير مضبوط</string>
     <string name="max_cfg_diff_more">و%1$d غيرها</string>
+    <string name="max_cfg_diff_applist">%1$d سطرًا يُضاف في قائمة التطبيقات و%2$d يُحذف — القائمة تُستبدل كاملة ولا تُدمج.</string>
 
     <string name="max_cfg_declared_absent_title">لن تُحفظ — ولماذا</string>
     <string name="max_cfg_declared_absent_line">• %1$s — %2$s</string>

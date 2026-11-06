@@ -66,7 +66,7 @@ matches the curve the user is looking at.
 ### Power — *"Charging, bypass, sleep and battery health"*
 
 Charging and battery health in one screen, **bypass charging** (running from the cable without pushing
-current through the pack) with a dedicated **status check**, and **Doze**. Before a backup is applied, the restore dialog lists the saved settings that actually differ from this device (old → new), so the confirm button is a decision rather than a guess; keys that exist only on the device are not counted, because a restore writes and never deletes. The restore that runs after a reboot now reports the last time it ran and how many fast reboots
+current through the pack) with a dedicated **status check**, and **Doze**. Before a backup is applied, the restore dialog lists the saved settings that actually differ from this device (old → new), so the confirm button is a decision rather than a guess; keys that exist only on the device are not counted, because a restore writes and never deletes. The app list is measured the same way — lines added and removed — because it is replaced as a whole file rather than merged. The restore that runs after a reboot now reports the last time it ran and how many fast reboots
 the boot guard has counted, with a warning at two — read-only, and deliberately without a reset
 button, because a zeroed counter would hide the reboot it was counted for. The nodes it changes are read first, so the previous values can be written back with one tap
 — an undo of the last restore, not a history of every run.
