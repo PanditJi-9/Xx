@@ -116,6 +116,9 @@
     <string name="tile_night_on">Night light on</string>
     <string name="tile_night_off">Night light off</string>
     <string name="tile_night_unknown">State unreadable</string>
+    <string name="tile_freeze_manager">Freeze manager</string>
+    <string name="tile_freeze_choose_app">Choose an app</string>
+    <string name="tile_freeze_open_failed">Could not open the manager</string>
     <string name="vm_section_title">Kernel VM knobs</string>
     <string name="vm_section_desc">Written through the single write path; every value is read back before it counts.</string>
     <string name="vm_loading">Reading kernel values…</string>

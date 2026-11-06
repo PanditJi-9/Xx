@@ -103,6 +103,7 @@ import nd.max.ui.theme.ThemeMotion
 import nd.max.ui.theme.ThemeStudio
 import nd.max.ui.util.*
 import nd.max.widget.core.WidgetIntents
+import nd.max.TileService.FreezeManagerTileService
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     /**
@@ -157,6 +158,11 @@ class MainActivity : ComponentActivity() {
         if (savedInstanceState == null) {
             widgetRouteState.value = intent.getStringExtra(WidgetIntents.EXTRA_OPEN_ROUTE)
         }
+        // A long press on the freeze tile uses the platform's preferences intent.
+        // Like widget entrances, it is a new request only on a fresh launch.
+        if (savedInstanceState == null && widgetRouteState.value == null) {
+            widgetRouteState.value = freezeTilePreferencesRoute(intent)
+        }
         setContent {
             MaxManagerTheme {
                 MainScreen(
@@ -176,9 +182,24 @@ class MainActivity : ComponentActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
-        val route = intent.getStringExtra(WidgetIntents.EXTRA_OPEN_ROUTE) ?: return
+        val route = intent.getStringExtra(WidgetIntents.EXTRA_OPEN_ROUTE)
+            ?: freezeTilePreferencesRoute(intent)
+            ?: return
         widgetRouteState.value = route
         widgetRouteSeq.intValue++
+    }
+
+    private fun freezeTilePreferencesRoute(incoming: Intent): String? {
+        if (incoming.action != android.service.quicksettings.TileService.ACTION_QS_TILE_PREFERENCES) return null
+        val component = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+            incoming.getParcelableExtra(Intent.EXTRA_COMPONENT_NAME, android.content.ComponentName::class.java)
+        } else {
+            @Suppress("DEPRECATION")
+            incoming.getParcelableExtra<android.content.ComponentName>(Intent.EXTRA_COMPONENT_NAME)
+        }
+        return if (component?.className == FreezeManagerTileService::class.java.name) {
+            WidgetIntents.ROUTE_APP_FREEZER
+        } else null
     }
 
     /**

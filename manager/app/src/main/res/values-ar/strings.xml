@@ -75,6 +75,9 @@
     <string name="tile_night_on">الوضع الليلي مفعّل</string>
     <string name="tile_night_off">الوضع الليلي متوقّف</string>
     <string name="tile_night_unknown">الحالة غير مقروءة</string>
+    <string name="tile_freeze_manager">إدارة التجميد</string>
+    <string name="tile_freeze_choose_app">اختر تطبيقًا</string>
+    <string name="tile_freeze_open_failed">تعذّر فتح إدارة التجميد</string>
     <string name="vm_section_title">مقابض نواة VM</string>
     <string name="vm_section_desc">الكتابة عبر مسار الكتابة الواحد، وكل قيمة تُقرأ مرتجعة قبل أن تُعدّ ناجحة.</string>
     <string name="vm_loading">جارٍ قراءة قيم النواة…</string>

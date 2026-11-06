@@ -316,6 +316,17 @@
             </intent-filter>
         </service>
 
+        <!-- إدارة التجميد: تفتح الشاشة القائمة لاختيار الحزمة؛ لا تجميد ولا حذف من البلاطة. -->
+        <service
+            android:name=".TileService.FreezeManagerTileService"
+            android:icon="@drawable/widget_ic_freeze" android:label="@string/tile_freeze_manager"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+
         <!--
           عامل النسخ المجدول: رقيقة عن قصد — كل المنطق في `MaxBackupScheduler`، وهذه
           تعرف `jobFinished` فقط. ولا تُصدَّر: لا أحد خارجنا يُشغّلها.
