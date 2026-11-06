@@ -398,6 +398,36 @@ fun rememberConfigBackupFlow(
                         Spacer(Modifier.height(8.dp))
                     }
 
+                    // `GAP-14`: الفرق الذي سيفعله الزرّ — قبل الضغط لا بعده.
+                    // تُعرض ستة مفاتيح وخُلاصة الباقي: القائمة الكاملة تُغرق الحوار،
+                    // والعدد يقول إن هناك المزيد بدل أن يُخفيه.
+                    if (result.changes.isNotEmpty()) {
+                        Text(
+                            text = stringResource(R.string.max_cfg_diff_title, result.changes.size),
+                            style = MaterialTheme.typography.titleSmall,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        result.changes.take(6).forEach { change ->
+                            Text(
+                                text = stringResource(
+                                    R.string.max_cfg_diff_line,
+                                    change.key.substringAfterLast('.'),
+                                    change.from ?: stringResource(R.string.max_cfg_diff_unset),
+                                    change.to,
+                                ),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        if (result.changes.size > 6) {
+                            Text(
+                                text = stringResource(R.string.max_cfg_diff_more, result.changes.size - 6),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        Spacer(Modifier.height(8.dp))
+                    }
                     if (result.hasTweaks) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,

@@ -16,6 +16,7 @@
 
 package nd.max.ui.viewmodel
 
+import nd.max.core.backup.ConfigDiff
 import nd.max.MaxManagerProps
 
 
@@ -65,6 +66,8 @@ class TweakViewModel : ViewModel() {
         // `GAP-12`: قسما المظهر والتفضيلات — يُكتشفان من الحِزمة المُعلَنة لا بالتخمين.
         val hasAppearance: Boolean = false,
         val hasAppPrefs: Boolean = false,
+        // `GAP-14`: ما سيتغيّر فعلًا على هذا الجهاز — يُقاس قبل أي كتابة.
+        val changes: List<ConfigDiff.Change> = emptyList(),
     )
     
     var isUiLoaded by mutableStateOf(false)
@@ -227,6 +230,20 @@ class TweakViewModel : ViewModel() {
             val appearanceFiles = ConfigBackupInventory.prefFilesOf(ConfigBackupInventory.Section.APPEARANCE)
             val appPrefFiles = ConfigBackupInventory.prefFilesOf(ConfigBackupInventory.Section.APP_PREFS)
     
+            // ما سيُكتب مقياسًا على الحالة الحالية: المفاتيح التي يحملها الملف وحده،
+            // وبلا حِزمة التفضيلات (ليست خصائص نظام) وبلا نوع المنصّة (وصفٌ لا إعداد).
+            val incomingTweaks = backupData.filterKeys { key ->
+                key.startsWith(MaxManagerProps.General.MASTER) &&
+                    key != MaxManagerProps.General.SOC_TYPE &&
+                    key != MaxManagerProps.General.SOC_TYPE_DEBUG &&
+                    key != APPLIST_BACKUP_KEY &&
+                    key != ConfigBackupInventory.PREFS_KEY_PREFIX
+            }
+            val changes = ConfigDiff.diff(
+                current = incomingTweaks.keys.associateWith { PropertyUtils.get(it) },
+                incoming = incomingTweaks,
+            )
+
             ValidationResult(
                 isValid = true,
                 message = "",
@@ -236,6 +253,7 @@ class TweakViewModel : ViewModel() {
                 data = backupData,
                 hasAppearance = prefBundles?.keys?.any { it in appearanceFiles } == true,
                 hasAppPrefs = prefBundles?.keys?.any { it in appPrefFiles } == true,
+                changes = changes,
             )
         }
     }

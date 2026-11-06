@@ -4,6 +4,10 @@
 
     <string name="max_cfg_backup_appearance">المظهر والواجهة</string>
     <string name="max_cfg_backup_app_prefs">تفضيلات التطبيق واللغة</string>
+    <string name="max_cfg_diff_title">%1$d إعدادًا محفوظًا يختلف عن هذا الجهاز</string>
+    <string name="max_cfg_diff_line">%1$s: %2$s ← %3$s</string>
+    <string name="max_cfg_diff_unset">غير مضبوط</string>
+    <string name="max_cfg_diff_more">و%1$d غيرها</string>
 
     <string name="max_cfg_declared_absent_title">لن تُحفظ — ولماذا</string>
     <string name="max_cfg_declared_absent_line">• %1$s — %2$s</string>
