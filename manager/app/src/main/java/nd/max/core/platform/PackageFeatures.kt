@@ -15,28 +15,31 @@ package nd.max.core.platform
  *
  * **وحدوده:** الإعلان وحده؛ بعض الحزم تطلب ميزة بلا `required="true"` فتعمل منقوصة، وهذا
  * لا يُستنتج من هنا. ولا تُقرأ حالة الإذن ولا دعم العتاد الفعليّ — فقط ما يعلنه مدير الحزم.
+ *
+ * **ولماذا `split` في رفيق الصفّ لا في `object` ثانٍ باسمه:** الكوتلن يرفض صنفًا وكائنًا
+ * بالاسم نفسه في حزمة واحدة (`Redeclaration`) — ويُقاس هذا في QV لا في التحرير.
  */
 data class PackageFeatures(
     val required: List<String>,
     val unsupported: List<String>
 ) {
     val supported: List<String> get() = required - unsupported.toSet()
-}
 
-object PackageFeatures {
+    companion object {
 
-    /**
-     * يقارن المطلوب بالمتاح. الأسماء تُشذَّب وتُنزع تكرارها وتُرتَّب، والفارغ يُسقط — لأن
-     * `FeatureInfo.name` قد يكون `null` أو فراغًا، وعرضه سطرًا فارغًا يوهم بميزة بلا اسم.
-     */
-    fun split(required: List<String>, available: Set<String>): PackageFeatures {
-        val names = required
-            .mapNotNull { it.trim().takeIf(String::isNotEmpty) }
-            .distinct()
-            .sorted()
-        return PackageFeatures(
-            required = names,
-            unsupported = names.filterNot { it in available }
-        )
+        /**
+         * يقارن المطلوب بالمتاح. الأسماء تُشذَّب وتُنزع تكرارها وتُرتَّب، والفارغ يُسقط — لأن
+         * `FeatureInfo.name` قد يكون `null` أو فراغًا، وعرضه سطرًا فارغًا يوهم بميزة بلا اسم.
+         */
+        fun split(required: List<String>, available: Set<String>): PackageFeatures {
+            val names = required
+                .mapNotNull { it.trim().takeIf(String::isNotEmpty) }
+                .distinct()
+                .sorted()
+            return PackageFeatures(
+                required = names,
+                unsupported = names.filterNot { it in available }
+            )
+        }
     }
 }

@@ -122,7 +122,7 @@ device announced none), while an unreadable one is reported as unreadable rather
 | --- | --- |
 | **Apps** | Everything installed, searchable, with per-app policy entry points. |
 | **App settings** (per app) | Per-app performance, refresh rate and resolution, thermal ceiling, and its own quick actions — the same knobs as the global screens, scoped to one package. |
-| **Debloat & freeze** | Disable or freeze apps you do not want running, reversibly. |
+| **Debloat & freeze** | Disable or freeze apps you do not want running, reversibly. The first freeze asks once, names what can break (launcher, keyboard, services, this app), and records that you accepted it; unfreezing never asks. |
 
 Per-app work is tracked per knob, with a recovery store, so a session that ends badly does not leave a
 package in an unexplained state.
