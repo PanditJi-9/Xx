@@ -24019,3 +24019,41 @@ subscribe to OpenCode Go»، ووكيل `127.0.0.1:8788` المحلي لا يج�
 
 **AGENTS:** التفويض ما زال محجوبًا بحدّ «Free usage limit reached … subscribe to OpenCode Go» (قيس
 مرتين هذا اليوم)، ووكيل `127.0.0.1:8788` المحلي لا يجيب؛ فالعمل كله في الجلسة الأم ويُعلن الحدّ.
+
+## ROUND-CLOSE-10 — 2026-11-06 · خريطة قنوات Wi-Fi + تصحيح صفوف في سجل الحصاد
+
+**TASK:** بإذن المالك «أضف ACCESS_FINE_LOCATION (موصى)»: عرض قنوات Wi-Fi (المتّصل بها، الشبكات لكل
+نطاق، أكثر قناة ازدحامًا) داخل قسم قائم في `DeviceLabScreen` — لا `MaxDestination` جديد (٦٨).
+
+**FILES:**
+- `manager/app/src/main/java/nd/max/core/net/WifiChannel.kt` (جديد): حكم نقيّ — `bandOf`/`channelOf`
+  (‏2484⇒14 · ٢٫٤⇒(f−2407)/5 · ٥⇒((f−5000)/5) بشريط 32..196 · ٦⇒((f−5950)/5) بشريط 1..233) و
+  `summarise(frequencies, connectedFrequencyMhz?)` يرتّب تنازليًّا بالشبكات ثم بالقناة.
+- `manager/app/src/test/java/nd/max/core/net/WifiChannelTest.kt` (جديد): ٦ اختبارات.
+- `manager/app/src/main/java/nd/max/ui/util/WifiChannelReader.kt` (جديد): يقرأ ويسمّي الحاجز.
+- `manager/app/src/main/java/nd/max/ui/subscreens/DeviceLabScreen.kt`: قسم `device_lab_section_wifi`
+  قبل قسم العتاد + `WifiChannels()` في نهاية الملف (طلب الإذن بضغطة، وأزرار إعادة القراءة).
+- `manager/app/src/main/res/values/strings.xml` + `values-ar/strings.xml`: ١٥ مفتاحًا جديدًا بالعربية.
+- `manager/app/src/main/AndroidManifest.xml`: `ACCESS_FINE_LOCATION` + `NEARBY_WIFI_DEVICES`.
+- `docs/features.md`: فقرة Wi-Fi channels (تشرح لماذا يعرض الحاجز ولا يخفي القسم).
+- `docs/ai/research/REFERENCE-HARVEST-NOV26.md`: صف Wi-Fi في §٩ + تصحيح أربعة صفوف (§٢.٤ سطور
+  ٥٧/٦٠/٦٢ · §٩ سطر ٢٢٩) كانت تعدّ مشحونًا: تاريخ البطارية مع `ChargeLedger`، وإحصاء الشبكة لكل
+  تطبيق، و`QUERY_ALL_PACKAGES` (سطر ٨٢ في المانيفست، خلافًا لما قاله السجل) — فالمتبقي هو **واجهة**
+  عارض حِزم أخرى لا الإذن.
+
+**GATES:** الثماني كلها exit 0: `kt_balance` **3247 ملفًا · 0 عوائق** · code_health 0 · i18n 0 ·
+design_tokens 0 · resource_compile كل المجلدات · license نظيف · capabilities 41 · catalog 41/1.
+وقراءةً: `kt_balance --self-test` «17 حالة · إخفاقات 0» · `i18n --prune all --assert` 0 ·
+`jni_symbols --assert` تصريحات 23 · نواقص 0.
+
+**BUILD:** ثلاث محاولات. `71d4f549` — QV `42211758581` = failure: الترجمة مرّت، والفشل توقّع ترتيب
+خاطئ في اختبار واحد. `eae7682b` — QV `42212754787` = failure: بقي عدّان خاطئان (٢/٤ بدل ٣/٣) في
+السطر ٥٧. `06c62fb9` — QV **`42213509186` = success**. الحصيلة: ثلاثة إصلاحات كلّها في **توقّعات
+الاختبار** لا في منطق القناة — وهو ما يؤكّد أن الحكم النقيّ كان صحيحًا والأرقام هي التي كُتبت خطأً.
+
+**RESIDUAL RISK:** القياس على شبكة حقيقية **يحتاج جهازًا**؛ وعلى أندرويد ١٣+ قد يعود المسح فارغًا بلا
+`NEARBY_WIFI_DEVICES` ممنوح، والقسم يعرض المتّصل به وحده بدل أن يخفي نفسه. ولا توصية بقناة: العدّ
+قياسٌ لِما رآه الجهاز الآن لا حكمٌ على الأفضل.
+
+**AGENTS:** التفويض ما زال محجوبًا («Free usage limit reached … OpenCode Go»)، فالعمل كله في الجلسة
+الأم ويُعلن الحدّ.
