@@ -38,6 +38,12 @@ class ExcludedCapabilityTest {
         return file.readText()
     }
 
+    /** المصدر بلا تعليقات: الفحص عن عنصر واجهة لا عن كلمة في شرح. */
+    private fun code(relative: String): String =
+        text(relative)
+            .replace(Regex("/\\*[\\s\\S]*?\\*/"), " ")
+            .replace(Regex("//[^\\n]*"), " ")
+
     @Test
     fun every_declared_string_exists_in_english_and_arabic() {
         val model = text("manager/app/src/main/java/nd/max/core/policy/ExcludedCapability.kt")
@@ -72,7 +78,8 @@ class ExcludedCapabilityTest {
 
     @Test
     fun the_card_offers_no_control_and_is_reached_from_diagnostics() {
-        val card = text("manager/app/src/main/java/nd/max/ui/component/ExcludedCapabilitiesCard.kt")
+        // التعليقات تُنزع قبل الفحص: تعليق يشرح «لماذا لا onClick» ليس onClick.
+        val card = code("manager/app/src/main/java/nd/max/ui/component/ExcludedCapabilitiesCard.kt")
         val screen = text("manager/app/src/main/java/nd/max/ui/mainscreens/DiagnosticsScreen.kt")
 
         // لا مفتاح ولا صفّ قابل للضغط: القائمة تُعلن، والفعل يعيش مع إقراره (ADR-07 · ADR-91).
