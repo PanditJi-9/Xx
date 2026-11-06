@@ -175,7 +175,7 @@ fun UsageStatsScreen(navController: NavHostController) {
                     .onSuccess { snapshot = it }
                     .onFailure { timeFailed = true }
                 // الرسم أسبوعي دائمًا: الفترة المختارة تخصّ القائمة، لا المحور الزمني.
-                withContext(Dispatchers.IO) { DailyUsageReader.read(context, 7) }
+                withContext(Dispatchers.IO) { DailyUsageReader.read(context, 14) }
                     .onSuccess { daily = it }
                     .onFailure { dailyFailed = true }
             }
@@ -330,7 +330,12 @@ fun UsageStatsScreen(navController: NavHostController) {
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         } else {
-                            DailyUsageBars(days = daily)
+                            // الرسم سبعةٌ دائمًا، والمقارنة تحتاج سبعةً ثانية خلفها.
+                            DailyUsageBars(days = daily.takeLast(7))
+                            DailyUsageComparison(
+                                compare = DailyUsage.weekOverWeek(daily),
+                                modifier = Modifier.padding(top = MaxSpace.sm)
+                            )
                         }
                     }
                 }
@@ -733,4 +738,37 @@ private fun DailyUsageBars(days: List<DailyUsage.Day>) {
             }
         }
     }
+}
+
+/**
+ * سطر المقارنة: يقول الفرق بلغته، ويمتنع حين لا أساس له.
+ *
+ * **ولماذا لا يعرض سهمًا ملوّنًا وحده:** اللون وحده لا يُقرأ بقارئ الشاشة ولا يُفهم بلا نظر؛
+ * والنصّ يقول «أعلى/أقلّ» صريحًا ثم يضع المدة والنسبة. وحين يكون الأسبوع السابق صفرًا لا تُخترع
+ * نسبة، بل يُقال إنه لا أساس للمقارنة بعد.
+ */
+@Composable
+private fun DailyUsageComparison(compare: DailyUsage.WeekOverWeek?, modifier: Modifier = Modifier) {
+    if (compare == null) return
+    val percent = compare.percentChange
+    val text = when {
+        percent == null -> stringResource(R.string.usage_stats_daily_compare_none)
+        percent == 0 -> stringResource(R.string.usage_stats_daily_compare_same)
+        percent > 0 -> stringResource(
+            R.string.usage_stats_daily_compare_up,
+            formatDuration(compare.deltaMillis),
+            percent
+        )
+        else -> stringResource(
+            R.string.usage_stats_daily_compare_down,
+            formatDuration(-compare.deltaMillis),
+            -percent
+        )
+    }
+    Text(
+        text = text,
+        modifier = modifier,
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant
+    )
 }

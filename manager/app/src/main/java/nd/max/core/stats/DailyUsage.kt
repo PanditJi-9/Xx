@@ -8,6 +8,7 @@ package nd.max.core.stats
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
+import kotlin.math.roundToInt
 
 /**
  * تفصيل الاستخدام **يومًا بيوم** من فترات المقدّمة الخام.
@@ -118,4 +119,38 @@ object DailyUsage {
     /** أول ملّي ثانية في اليوم — تُقرأ من المنطقة نفسها لا من إزاحة ثابتة. */
     internal fun startOfDay(epochDay: Long, zone: ZoneId): Long =
         LocalDate.ofEpochDay(epochDay).atStartOfDay(zone).toInstant().toEpochMilli()
+
+    /**
+     * مقارنة السبعة الأخيرة بالسبعة التي قبلها — الرقم الذي كان الرسم لا يقوله.
+     *
+     * **ولماذا `percentChange` قد تكون `null`:** صفرٌ في الأسبوع السابق ليس أساسًا للمقارنة؛
+     * «+∞٪» أو «+١٠٠٪» كلاهما كذب. فنُبلّغ بالمجموعين ونمتنع عن النسبة، والشاشة تقول ذلك بلفظه.
+     */
+    data class WeekOverWeek(val currentMillis: Long, val previousMillis: Long) {
+
+        /** الفرق المطلق بإشارته؛ سالبٌ يعني أن هذا الأسبوع أقلّ. */
+        val deltaMillis: Long get() = currentMillis - previousMillis
+
+        /** النسبة المقرّبة إلى عدد صحيح، أو `null` حين لا أساس للمقارنة. */
+        val percentChange: Int?
+            get() = if (previousMillis <= 0L) {
+                null
+            } else {
+                ((deltaMillis * 100.0) / previousMillis).roundToInt()
+            }
+    }
+
+    /**
+     * يقارن آخر سبعة أيام بالسبعة السابقة لها، أو `null` إن لم تُقرأ أربعة عشر يومًا.
+     *
+     * **والترتيب هو العقد:** القائمة مرتّبة تصاعديًّا باليوم، وآخر عنصر هو اليوم؛ فالمقارنة
+     * تُقرأ من النهاية لا من البداية. وما قبل الأربعة عشر لا يدخل الحساب أصلًا حتى لا يتغيّر
+     * المعنى إن قرأ القارئ ثلاثين يومًا لغرض آخر.
+     */
+    fun weekOverWeek(days: List<Day>): WeekOverWeek? {
+        if (days.size < 14) return null
+        val current = days.subList(days.size - 7, days.size).sumOf { it.millis }
+        val previous = days.subList(days.size - 14, days.size - 7).sumOf { it.millis }
+        return WeekOverWeek(current, previous)
+    }
 }

@@ -100,7 +100,9 @@ overlapping foreground activity sessions and splits them at local midnight, incl
 changes. Bar heights are relative to that week's busiest day; screen-reader descriptions include each
 date and duration. Android may retain incomplete events, so this is an estimate that can differ from the
 app totals. A read failure is shown as unavailable, and no counted events is not proof of no usage.
-Reading runs off the UI thread and needs no new permission, root access, or network request.
+Below the bars one line states the change from the 7 days before them — a duration and a percentage, or
+plainly that nothing was counted earlier, since a percentage against zero would be invented rather than
+measured. Reading runs off the UI thread and needs no new permission, root access, or network request.
 
 **Wi-Fi channels** in Device Lab read the connected channel, how many networks the last scan saw, and
 which channel they crowd. Android returns scan results only to an app holding the location permission, so

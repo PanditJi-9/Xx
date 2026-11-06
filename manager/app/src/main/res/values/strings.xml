@@ -3953,7 +3953,11 @@
 <string name="usage_stats_top_apps">Most used apps</string>
 <string name="usage_stats_top_apps_detail">Ordered by foreground time in the selected period.</string>
 <string name="usage_stats_daily_title">Last 7 days</string>
-<string name="usage_stats_daily_detail">Observed foreground time each day, always for the last 7 days. Bars use a relative scale: the tallest is the busiest day. Android may retain incomplete events; these totals can differ from the app list.</string>
+<string name="usage_stats_daily_detail">Observed foreground time each day. The bars are always the last 7 days and use a relative scale: the tallest is the busiest day. The line below them compares those 7 days with the 7 that came before. Android may retain incomplete events; these totals can differ from the app list.</string>
+<string name="usage_stats_daily_compare_up">Up %1$s (%2$d%%) from the 7 days before</string>
+<string name="usage_stats_daily_compare_down">Down %1$s (%2$d%%) from the 7 days before</string>
+<string name="usage_stats_daily_compare_same">Level with the 7 days before</string>
+<string name="usage_stats_daily_compare_none">Nothing was counted in the 7 days before, so there is no baseline to compare with yet.</string>
 <string name="usage_stats_daily_empty">No foreground duration could be counted from the available events. This does not prove that the device was unused.</string>
 <string name="usage_stats_daily_unavailable">Android\'s usage events could not be read. No daily totals are available.</string>
 <string name="usage_stats_daily_value">%1$s: %2$s observed</string>
