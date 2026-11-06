@@ -23987,3 +23987,35 @@ commit/load/clear`، `FORMAT=1`، `MAX_ENTRIES=60`، `encode/decode` بـ`org.js
 subscribe to OpenCode Go»، ووكيل `127.0.0.1:8788` المحلي لا يجيب (`/v1/models` فراغ) ⇒ لا نموذج مدفوع
 بديل. أُضيف بند ٠ في `orchestrator_append.md`: يُجرَّب الوكيل **مرة واحدة في الجولة** ثم يُنجَز العمل
 في الجلسة الأم ويُذكر الحدّ سطرًا.
+
+## ROUND-CLOSE-09 — 2026-11-06 · DONE (فرق التفضيلات قبل الاستعادة · CI أخضر)
+
+**المُنجَز:** المحور الثالث في حوار الاستعادة: عدد **مفاتيح التفضيلات** التي ستتغيّر فعلًا حين تُطبَّق
+حِزم التفضيلات المحفوظة. وهو عدّ لا كتابة: الاستعادة **تدمج ولا تمحو**، فالسطر يقول «كم قيمة ستُستبدل»
+لا «كم ملفًّا سيُمحى» — وهذا فرقٌ يُخفي لو لم يُقل. والمقارنة تتم بين الحزمة القادمة وما هو على الجهاز
+الآن عبر `MaxPrefsBundle.read`، والحساب كله قبل الضغط.
+
+**FILES:** `manager/app/src/main/java/nd/max/ui/util/PrefsDelta.kt` (جديد: `count(incoming, current)`
+يعدّ المفاتيح التي تختلف قيمتها داخل الملفات المشتركة فقط؛ ملفّ جديد على الجهاز ليس استبدالًا لملفّ
+قديم) · `manager/app/src/test/java/nd/max/ui/util/PrefsDeltaTest.kt` (٦ اختبارات: متطابق ٠ · قيمة
+تغيّرت ١ · مفتاح غائب ١ · `current = null` يعدّ الكل · مفاتيح الجهاز وحدها ٠ · ملفّ غائب يُعدّ
+مفاتيحه) · `ui/viewmodel/TweakViewmodel.kt` (`ValidationResult.prefsChanged = 0` افتراضيًّا وحسابه
+قبل البناء) · `ui/component/ConfigBackupFlow.kt` (سطر `max_cfg_diff_prefs` بعد سطر قائمة التطبيقات
+وقبل `hasTweaks`) · `res/values/max_config_backup_strings.xml` + `values-ar/…`
+(`max_cfg_diff_prefs`) · `docs/features.md`.
+
+**GATES:** الثماني `--assert` قبل الالتزام: `kt_balance` **3244 ملفًا · 0 عوائق** · `code_health` 0 ·
+`i18n_coverage` 0 · `design_tokens` 0 · `resource_compile` كل المجلدات · `license_audit` نظيف ·
+`gen_capabilities_doc` 41 · `gen_catalog_schema` 41/1.
+
+**BUILD:** `ddeee0f6` «Report how many preference keys a restore would change» — QV **`42206812350`** =
+**success** (`gh run watch … --exit-status` أعاد ٠؛ التحذيرات setup-java/ubuntu مهجورة فقط).
+و`bde3afcc` «Measure the app list a restore will replace» — QV **`42203217070`** = **success** أيضًا
+(قُرئ بعد كتابة ROUND-CLOSE-08 الذي كان يقول «لم يُقرأ»). `origin/main` = `ddeee0f6`.
+
+**RESIDUAL RISK:** العدّ يقارن بالقيم المقروءة الآن؛ ما لا يُقرأ بلا جذر يظهر مختلفًا فيُبالغ في العدّ
+— والخطأ في هذا الاتجاه يُخيف ولا يُخفي. ولا شيء يُكتب قبل الضغط، وسلوك الكتابة/الدمج على جهاز حقيقي
+**يحتاج جهازًا**.
+
+**AGENTS:** التفويض ما زال محجوبًا بحدّ «Free usage limit reached … subscribe to OpenCode Go» (قيس
+مرتين هذا اليوم)، ووكيل `127.0.0.1:8788` المحلي لا يجيب؛ فالعمل كله في الجلسة الأم ويُعلن الحدّ.
