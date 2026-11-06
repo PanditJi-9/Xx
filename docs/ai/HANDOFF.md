@@ -23949,3 +23949,41 @@ commit/load/clear`، `FORMAT=1`، `MAX_ENTRIES=60`، `encode/decode` بـ`org.js
 
 **NEXT:** لا شيء معلّق في CI. المتبقي كله يحتاج جهازًا (سلوك العتاد/الجدولة/الكتابة) أو إذنًا
 (`ACCESS_FINE_LOCATION`) أو مراجعة سلامة (محرّك الوصفات) أو قياسًا (ميزانية المراقبة).
+
+
+## ROUND-CLOSE-08 — 2026-11-06 · DONE (فرق الاستعادة قبل التطبيق: الخصائص وقائمة التطبيقات · CI أخضر للأولى)
+
+**المُنجَز:** حوار الاستعادة صار يقول ما سيتغيّر **قبل** الضغط لا بعده، على محورين:
+(١) الخصائص المحفوظة التي تختلف فعلًا عن هذا الجهاز (قديم ← جديد، ستة صفوف وخلاصة الباقي)،
+(٢) قائمة التطبيقات لأنها تُستبدل كملفّ كامل: عدد الأسطر التي تُضاف والتي تُحذف. ولا شيء يُكتب
+قبل الضغط — الحساب قراءة فقط، ويُعاد في `ValidationResult` لا في الشاشة.
+
+**FILES:** `manager/app/src/main/java/nd/max/core/backup/ConfigDiff.kt` (جديد: `Change(key, from, to)`،
+`diff(current, incoming)` يُسقط الفارغ ويُطبّع `from` الفارغة إلى `null` ولا يعدّ مفاتيح الجهاز وحدها
+لأن الاستعادة تكتب ولا تمحو ويرتّب بالمفتاح؛ و`LineDelta(added, removed)` + `lineDelta` بعدّ بالتكرار
+لا بالمجموعة وبإسقاط الفراغات) · `manager/app/src/test/java/nd/max/core/backup/ConfigDiffTest.kt`
+(١٢ اختبارًا: سبعة للخصائص وخمسة للأسطر — سطر واحد تغيّر = إضافة وحذف، والتكرار يُعدّ نه نسخة) ·
+`ui/viewmodel/TweakViewmodel.kt` (`ValidationResult.changes` + `applistAdded/applistRemoved` بحقول
+افتراضية، وحسابهما في `validateAndRestoreFile` من `PropertyUtils.get` ومن
+`RootFileAccess.read(APPLIST_PATH)`) · `ui/component/ConfigBackupFlow.kt` (كتلة الفرق قبل
+`hasTweaks`، وسطر القائمة قبل الخيارات) · `res/values/max_config_backup_strings.xml` +
+`values-ar/…` (`max_cfg_diff_title` · `max_cfg_diff_line` · `max_cfg_diff_unset` · `max_cfg_diff_more`
+· `max_cfg_diff_applist`) · `docs/features.md`.
+
+**GATES:** الثماني `--assert` قبل الالتزامين: `kt_balance` **3242 ملفًا · 0 عوائق** · `code_health` 0 ·
+`i18n_coverage` 0 · `design_tokens` 0 · `resource_compile` كل المجلدات · `license_audit` نظيف ·
+`gen_capabilities_doc` 41 · `gen_catalog_schema` 41/1.
+
+**BUILD:** `78b9a54c` «Show what a restore will change before it is applied» — QV **`42201578255`** =
+**success**. `bde3afcc` «Measure the app list a restore will replace» — QV **`42203217070`** أُرسل
+ولم يُقرأ حكمه بعد (لا يُدّعى أخضر). `origin/main` = `bde3afcc`.
+
+**RESIDUAL RISK:** قراءة الخاصية عبر `PropertyUtils.get` (انعكاس `SystemProperties`) قد تعيد `null`
+بلا جذر ⇒ يظهر المفتاح «غير مضبوط» فيُعلن تغييرًا قد يكون موجودًا؛ والخطأ في هذا الاتجاه يُخيف ولا
+يُخفي، لكنه يبقى حدًّا يُعلن. وقياس قائمة التطبيقات يقرأ الملف الحالي فقط — سلوك الكتابة نفسه على
+جهاز حقيقي **يحتاج جهازًا**.
+
+**AGENTS:** قيس حدّ التفويض نهائيًّا: `explorer` و`gatekeeper` رجعا فورًا بـ«Free usage limit reached …
+subscribe to OpenCode Go»، ووكيل `127.0.0.1:8788` المحلي لا يجيب (`/v1/models` فراغ) ⇒ لا نموذج مدفوع
+بديل. أُضيف بند ٠ في `orchestrator_append.md`: يُجرَّب الوكيل **مرة واحدة في الجولة** ثم يُنجَز العمل
+في الجلسة الأم ويُذكر الحدّ سطرًا.
