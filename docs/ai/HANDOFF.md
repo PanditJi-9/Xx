@@ -24057,3 +24057,57 @@ design_tokens 0 · resource_compile كل المجلدات · license نظيف ·
 
 **AGENTS:** التفويض ما زال محجوبًا («Free usage limit reached … OpenCode Go»)، فالعمل كله في الجلسة
 الأم ويُعلن الحدّ.
+
+## ROUND-CLOSE-11 — 2026-11-06 · ADR-90 مطبَّقًا: أربع بوابات إقرار + ميزات الحزمة
+
+**TASK:** أمر المالك «اضف كل شيئ ما يحتاج لاذني والمحظور والخطر فقط اضف انه خطير وهو يتحمل المسئولية»
++ «اكمل». الترجمة إلى سياسة قابلة للقياس: `ADR-90` في `docs/ai/DECISIONS.md` (الخطير يُشحن بوسم خطر
+وإقرار مرة واحدة يُسجَّل بزمنه، والمسؤولية على المستخدم) — مع حدودها: الترخيص والاستحالة التقنية وما
+يحتاج جهازًا لا يفتحها الإقرار.
+
+**FILES:**
+- `manager/app/src/main/java/nd/max/core/policy/DangerConsent.kt` (جديد): `RESTORE_DANGEROUS` ·
+  `CPU_FREQ_LIMITS` · `GPU_LIMITS` · `PACKAGE_FREEZE`; `acknowledgedAt`/`isAcknowledged`/`acknowledge`/
+  `revoke`، و`encode`/`decode` بترميز `id=زمن;…` مرتّبًا (مدخل غير صالح يُسقَط، والتكرار يحفظ **الأول**).
+- `manager/app/src/test/java/nd/max/core/policy/DangerConsentTest.kt` (جديد): ٧ اختبارات ترميز.
+- `manager/app/src/main/java/nd/max/ui/component/DangerGate.kt` (جديد): `rememberDangerGate(id, title,
+  message, confirmLabel, technicalDetail = null, onAllowed): () -> Unit` — تُعيد لامبدا تُمرّر الفعل إن
+  كان مُقرًّا، وإلا تفتح `MaxConfirmDialog` ثم تُنفّذ. (لا يجوز أن تحتوي KDocs مثالًا فيه `R.string.…`
+  لأن `code_health` يعدّه مرجعًا غير محلول.)
+- `manager/app/src/main/java/nd/max/ui/mainscreens/PersistRestoreItem.kt`: حوار إقرار على مفتاح
+  «التطبيق التلقائي الخطير» (`persist_danger_confirm_{title,body,action}`) — الفتح يحتاج إقرارًا والإطفاء لا.
+- `manager/app/src/main/java/nd/max/ui/subscreens/CpuCoreControlScreen.kt`: `applyLimits` في
+  `CpuFrequencyControlGroup` (`cpu_danger_{title,body,action}`) وزرّ التطبيق صار `onClick = applyLimits`.
+- `manager/app/src/main/java/nd/max/ui/subscreens/GpuStudioScreen.kt`: `applyPreview` في `GpuReview`
+  (`max_gpu_danger_{title,body,action}`) وزرّ التطبيق `onClick = applyPreview`.
+- `manager/app/src/main/java/nd/max/ui/subscreens/DebloatFreezeScreen.kt`: `freezeGate` داخل كتلة الصفّ؛
+  **التجميد** يحتاج إقرارًا و**إلغاء التجميد** لا (`debloat_danger_freeze_{title,body,action}`).
+- `manager/app/src/main/java/nd/max/core/platform/PackageFeatures.kt` (جديد): `data class` + `split` في
+  **`companion object`** (وجودها في `object` ثانٍ بالاسم نفسه = `Redeclaration` في الكوتلن).
+- `manager/app/src/test/java/nd/max/core/platform/PackageFeaturesTest.kt` (جديد): ٤ اختبارات.
+- `manager/app/src/main/java/nd/max/ui/util/PackageFeaturesReader.kt` (جديد): `getPackageInfo(pkg,
+  GET_CONFIGURATIONS).reqFeatures` مقابل `systemAvailableFeatures`.
+- `manager/app/src/main/java/nd/max/ui/subscreens/PermissionsScreen.kt`: قسم
+  `max_perms_features_{title,desc,loading,none,required,unsupported}` يعرض المطلوب وغير المدعوم.
+- `manager/app/src/main/res/values*/…`: نصوص الإقرارات الأربعة + نصوص الميزات (عربي وإنجليزي فقط).
+- `docs/features.md`: فقرات الإقرار مرة واحدة، وصفّ Debloat & freeze، والميزات.
+- `docs/ai/research/REFERENCE-HARVEST-NOV26.md`: تصحيح صفوف البلاطات (التجميد **دالته موجودة**،
+  الناقص بلاطته) و§٣.٤، وصفّ عارض المانيفست (صار لأي حزمة + الميزات)، وP1/8 المشغّل الأمامي
+  (مشحون للألعاب عبر `InAppProfileApplier`)، وفقرة «سياسة الخطير (ADR-90)».
+
+**GATES:** الثماني exit 0 في كل التزامات الدفعة: `kt_balance` **3253 ملفًا · 0 عوائق** · code_health 0 ·
+i18n 0 · design_tokens 0 · resource_compile كل المجلدات · license نظيف · capabilities 41 · catalog 41/1.
+(`resource_compile` أعطى exit=1 مرّة ثم exit=0 مرّتين بنفس الشجرة ⇒ تذبذب في الأداة لا عطب مورد.)
+
+**BUILD:** `ec34ba99` (DangerConsent + الحوار الأول + ADR-90) — QV `42216032783` = **success**.
+`9ae38d4c` (GPU) + `e9151a23` (freeze + تصحيحات السجل) — QV `42219791207` = **failure**، والسبب
+`PackageFeatures.kt:19/26 Redeclaration` و`PackageFeaturesReader.kt:34 Unresolved reference 'split'`
+(ترجمة، لا اختبار). `6f1f029b` «Move the feature split into the companion…» — QV **`42220634484` =
+success** (٣٨٨٣ اختبارًا). فالبوابات الأربع كلها مقيسة بترجمة واختبارات، لا بالقراءة.
+
+**RESIDUAL RISK:** الإقرار **لا** يمنح صلاحية نظامية ولا يتجاوز `HardwareControlArbiter` (ADR-11)؛ وما
+يرفضه النظام يبقى مرفوضًا. والكتابة الفعلية على العتاد «تحتاج جهازًا» — الإقرار يغيّر من يُخبر، لا ما
+يحدث في النواة. وzram/الحدود الحرارية ما زالت بتأكيد فوري (`MaxConfirmDialog`) لا بإقرار مرة واحدة.
+
+**AGENTS:** التفويض ما زال محجوبًا («Free usage limit reached … OpenCode Go»)، فالعمل كله في الجلسة الأم
+ويُعلن الحدّ.
