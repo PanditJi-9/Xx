@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.dp
 import android.text.format.DateUtils
 import androidx.compose.material.icons.rounded.RestartAlt
 import androidx.compose.material.icons.rounded.History
-import androidx.compose.material.icons.rounded.Undo
+import androidx.compose.material.icons.automirrored.rounded.Undo
 import kotlinx.coroutines.launch
 import nd.max.R
 import nd.max.core.persist.PersistRestorer
@@ -196,7 +196,7 @@ fun PersistRestoreItem() {
                                 Text(stringResource(R.string.persist_snapshot_desc, snapshotCount))
                             },
                             leadingContent = {
-                                LeadingIcon(icon = Icons.Rounded.Undo, contentDescription = null)
+                                LeadingIcon(icon = Icons.AutoMirrored.Rounded.Undo, contentDescription = null)
                             }
                         )
                     }
