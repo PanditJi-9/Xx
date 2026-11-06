@@ -1921,6 +1921,11 @@
     <string name="diagnostics_excluded_title">المستبعَد والمرفوض</string>
     <string name="diagnostics_excluded_desc">ما لا يقدّمه هذا التطبيق بقرارٍ منّا، وسبب كل بند — لا مفتاح مطفأ يمكنك إجباره.</string>
     <string name="diagnostics_excluded_warning">لا شيء في هذه القائمة يُشغَّل بإقرارٍ أو بجذر أو بإعداد مخفيّ: ما لا تُظهره النواة يبقى غير متاح، وما رفضناه يبقى مرفوضًا.</string>
+    <string name="diagnostics_nodes_title">كتالوج عُقد النواة</string>
+    <string name="diagnostics_nodes_desc">عُقد الجهاز التي يعرفها التطبيق. قراءة فقط: الوجود لا يمنح كتابة، ولا يتجاوز الـarbiter، ولا يثبت أن العقدة تقبل قيمة.</string>
+    <string name="diagnostics_nodes_present">مقروءة الآن: %1$d من %2$d</string>
+    <string name="diagnostics_nodes_absent">غير موجودة على هذا الجهاز: %1$d</string>
+    <string name="diagnostics_nodes_unreadable">موجودة لكن النظام يمنع قراءتها: %1$d</string>
     <string name="excluded_kind_refused">مرفوض بقرار</string>
     <string name="excluded_kind_unsupported">غير متاح على هذه المنصّة</string>
     <string name="excluded_kind_dangerous">مشحون — خطر، خلف إقرار واحد يُسجَّل</string>

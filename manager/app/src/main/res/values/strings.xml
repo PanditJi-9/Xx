@@ -1182,6 +1182,11 @@
     <string name="diagnostics_excluded_title">Excluded and refused</string>
     <string name="diagnostics_excluded_desc">What this app deliberately does not offer, and the reason for each — not a disabled switch you can force on.</string>
     <string name="diagnostics_excluded_warning">Nothing in this list can be turned on with an acknowledgement, root or a hidden setting. A control the kernel does not expose stays unavailable, and a control we refused stays refused.</string>
+    <string name="diagnostics_nodes_title">Kernel node catalog</string>
+    <string name="diagnostics_nodes_desc">The device nodes this app knows about. Read only: presence does not grant a write, does not bypass the arbiter, and does not prove the node accepts a value.</string>
+    <string name="diagnostics_nodes_present">Readable now: %1$d of %2$d</string>
+    <string name="diagnostics_nodes_absent">Not present on this device: %1$d</string>
+    <string name="diagnostics_nodes_unreadable">Present but refused by the system: %1$d</string>
     <string name="excluded_kind_refused">Refused by decision</string>
     <string name="excluded_kind_unsupported">Not available on this platform</string>
     <string name="excluded_kind_dangerous">Shipped — dangerous, behind one recorded acknowledgement</string>
