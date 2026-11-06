@@ -24267,3 +24267,49 @@ Gradle محليًا؛ هذا حكم ترجمة release واختباراتها، 
 **NEXT:** فارق Per-App: المقابض التي يقبلها السجلّ مقابل ما يطبّقه المسار بلا جذر، وحالات الفشل التي
 لا اسم لها؛ ثم ما يبقى محجوبًا: جهاز حقيقي (عتاد/جدولة/كتابة sysfs/ظهور البلاطة) · مراجعة سلامة مستقلة
 قبل أي كتابة موسَّعة · قياس ميزانية المراقبة.
+
+## ROUND-CLOSE-15 — 2026-11-06 · مقارنة الأسبوع بالسبعة السابقة، ورفض نسبة على صفر
+
+**TASK:** أمر المالك «اكما» (= اكمل) بعد إغلاق ROUND-CLOSE-14 ⇒ البند التالي في السجل: الرسم السباعي
+كان يقول «كم استُخدم» ولا يقول **أتحسّن أم تراجع**. وهو تحسين للقائم لا نظير جديد (AGENTS §0.5 · ADR-91),
+فلم تُضَف شاشة ولا قسم ولا `MaxDestination` (بقي ٦٨).
+
+**FILES:**
+- `manager/app/src/main/java/nd/max/core/stats/DailyUsage.kt` (+35): `data class WeekOverWeek(currentMillis,
+  previousMillis)` فيه `deltaMillis` و`percentChange: Int?` — و`fun weekOverWeek(days): WeekOverWeek?`
+  يعود `null` إن كانت الأيام أقل من ١٤، ويقارن `subList(size-7,size)` بـ`subList(size-14,size-7)`، أي
+  **يقرأ من النهاية** فالقائمة الأطول لا تُزحزح المقارنة. و`percentChange` **`null` حين
+  `previousMillis <= 0`**: نسبةٌ على صفر مُختلَقة، فتُرفض بدل أن تُكتب ٠٪ أو ∞.
+- `manager/app/src/test/java/nd/max/core/stats/DailyUsageWeekOverWeekTest.kt` (جديد): ٦ اختبارات —
+  أقل من ١٤ ⇒ `null` · ١٤ بالضبط ⇒ ‎14000 مقابل 7000‎ و+١٠٠٪ · أسبوعان متساويان ⇒ ٠٪ · أسبوع هادئ
+  ⇒ ‎−7000‎ و−٥٠٪ · سابق صفري ⇒ النسبة `null` والمجموعان صحيحان · ٢٠ يومًا ⇒ الأقدم يُتجاهل.
+- `manager/app/src/main/java/nd/max/ui/subscreens/UsageStatsScreen.kt` (+42/−5): `DailyUsageReader.read(context, 14)`;
+  الأعمدة `daily.takeLast(7)` فتبقى سبعةً على الشاشة؛ وسطر جديد `DailyUsageComparison(...)` تحت الرسم
+  (`MaxSpace.sm`)، وهو `@Composable private` في نهاية الملف: `null` ⇒ `compare_none` · ٠ ⇒ `compare_same`
+  · موجب ⇒ `compare_up` · سالب ⇒ `compare_down` بالمدة `formatDuration` والنسبة المطلقة. النصّ
+  (`bodySmall` · `onSurfaceVariant`) يحمل المعنى كاملًا، واللون زينة لا دليل — KDocs تقول ذلك.
+- `manager/app/src/main/res/values/strings.xml` + `values-ar/strings.xml`: عُدّل `usage_stats_daily_detail`
+  (الأعمدة سبعة، والسطر تحتها يقارنها بالسبعة السابقة)، وأُضيفت ٤ مفاتيح لكل لغة:
+  `usage_stats_daily_compare_{up,down,same,none}` — والعربية تستعمل `٪` لا `%` في النصّ لتجنّب
+  محرف تنسيق. **لا لغة ثالثة** (أمر المالك: EN/AR فقط حتى يقال «زامن»).
+- `docs/features.md` (+3/−1): يشرح المقارنة، ورفض النسبة بلا أساس، وأنها لا تفتح إذنًا ولا جذرًا ولا شبكة.
+
+**GATES:** الثماني كلها exit 0 على التغيير نفسه قبل الالتزام: `kt_balance` **3263 ملفًا · 0 عوائق** ·
+`code_health` نظيفة (0) · `i18n_coverage` 0 · `design_tokens` 0 (250/300 بلا رفع سقوف) ·
+`resource_compile` كل المجلدات بـ`aapt2` الحقيقي · `license_audit` لا GPL · `gen_capabilities_doc` 41 ·
+`gen_catalog_schema` 41/1 · و`git diff --check` 0.
+
+**BUILD:** QV **`42288022408`** على `7ec88c782b11ca3bdf21045933ad1f2498ac0954` = **success**
+(`gh run watch … --exit-status` أعاد ٠؛ خطوات العقد + تصريف/اختبارات release + عدّ الاختبارات كلها
+success، و«Upload failure evidence» متجاوَزة لعدم وجود فشل). **بلا بناء محلي وبلا جهاز** — الترجمة
+والاختبارات على GitHub Actions وحدها.
+
+**RESIDUAL RISK:** الأرقام تأتي من أحداث `UsageStats` التي يحتفظ بها النظام، وقد تكون **ناقصة**؛ فالمقارنة
+**تقديرية** لا محاسبة، و«صفر» قد يعني «لا حدث محفوظ» لا «لا استخدام» — وهذا مكتوب في نصّ الواجهة لا
+مخفيًا. والعرض البصري (ارتفاع الأعمدة وموضع السطر) **يحتاج جهازًا**، وكذلك أي مقارنة تتجاوز أسبوعين.
+
+**AGENTS:** لم يُجرَّب التفويض في هذه الجولة (عمل جلسة أمّ مباشر: ملف واحد نقيّ + اختبار + سطر واجهة).
+
+**NEXT:** فارق Per-App — المقابض التي يقبلها السجلّ مقابل ما يطبّقه `InAppProfileApplier` بلا جذر؛
+ثم ما يبقى محجوبًا: جهاز حقيقي (عتاد/جدولة/كتابة sysfs/ظهور بصري) · مراجعة سلامة مستقلة قبل توسيع
+الكتابة · قياس ميزانية المراقبة.
