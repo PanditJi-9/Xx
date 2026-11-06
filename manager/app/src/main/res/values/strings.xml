@@ -3952,8 +3952,10 @@
 <string name="usage_stats_app_count">Apps with recorded use</string>
 <string name="usage_stats_top_apps">Most used apps</string>
 <string name="usage_stats_top_apps_detail">Ordered by foreground time in the selected period.</string>
-<string name="usage_stats_daily_title">Last 7 days</string>
-<string name="usage_stats_daily_detail">Observed foreground time each day. The bars are always the last 7 days and use a relative scale: the tallest is the busiest day. The line below them compares those 7 days with the 7 that came before. Android may retain incomplete events; these totals can differ from the app list.</string>
+<string name="usage_stats_daily_title">Daily usage</string>
+<string name="usage_stats_daily_detail">Observed foreground time per day. Choose 7 days or 30; the bars use a relative scale, so the tallest is the busiest day in that window. The line below them compares the last 7 days with the 7 before them, whichever window is shown. Android may retain incomplete events; these totals can differ from the app list.</string>
+<string name="usage_stats_daily_window_week">7 days</string>
+<string name="usage_stats_daily_window_month">30 days</string>
 <string name="usage_stats_daily_compare_up">Up %1$s (%2$d%%) from the 7 days before</string>
 <string name="usage_stats_daily_compare_down">Down %1$s (%2$d%%) from the 7 days before</string>
 <string name="usage_stats_daily_compare_same">Level with the 7 days before</string>

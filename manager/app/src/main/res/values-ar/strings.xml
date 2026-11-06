@@ -3899,8 +3899,10 @@
 <string name="usage_stats_app_count">تطبيقات لها استخدام مسجّل</string>
 <string name="usage_stats_top_apps">الأكثر استخدامًا</string>
 <string name="usage_stats_top_apps_detail">مرتّبة بحسب زمن المقدّمة في الفترة المختارة.</string>
-<string name="usage_stats_daily_title">آخر ٧ أيام</string>
-<string name="usage_stats_daily_detail">زمن المقدّمة المرصود يومًا بيوم. الأعمدة لآخر ٧ أيام دائمًا ومقياسها نسبي: أطولها هو أكثر الأيام استعمالًا. والسطر تحتها يقارن هذه السبعة بالسبعة التي قبلها. قد يحتفظ أندرويد بأحداث ناقصة، فتختلف هذه المجاميع عن قائمة التطبيقات.</string>
+<string name="usage_stats_daily_title">الاستخدام اليومي</string>
+<string name="usage_stats_daily_detail">زمن المقدّمة المرصود يومًا بيوم. اختر ٧ أيام أو ٣٠؛ مقياس الأعمدة نسبي فأطولها هو أكثر الأيام استعمالًا داخل النافذة. والسطر تحتها يقارن آخر ٧ أيام بالسبعة التي قبلها أيًّا كانت النافذة. قد يحتفظ أندرويد بأحداث ناقصة، فتختلف هذه المجاميع عن قائمة التطبيقات.</string>
+<string name="usage_stats_daily_window_week">٧ أيام</string>
+<string name="usage_stats_daily_window_month">٣٠ يومًا</string>
 <string name="usage_stats_daily_compare_up">أعلى بـ%1$s (%2$d٪) من السبعة السابقة</string>
 <string name="usage_stats_daily_compare_down">أقلّ بـ%1$s (%2$d٪) من السبعة السابقة</string>
 <string name="usage_stats_daily_compare_same">مساوٍ للسبعة السابقة</string>

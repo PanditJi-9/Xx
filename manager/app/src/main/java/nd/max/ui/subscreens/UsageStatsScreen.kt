@@ -105,6 +105,15 @@ private enum class UsageMode(@StringRes val labelRes: Int) {
 }
 
 /** The three windows a usage query can answer without guessing. */
+/**
+ * نافذة العرض في رسم الاستخدام اليومي: أسبوع أو شهر — والقراءة واحدة لثلاثين يومًا،
+ * فالشهر يظهر كاملًا والأسبوع يُؤخذ من آخره فتبقى المقارنة على السبعة السابقة نفسها.
+ */
+private enum class DailyWindow(val days: Int, @StringRes val labelRes: Int) {
+    WEEK(7, R.string.usage_stats_daily_window_week),
+    MONTH(30, R.string.usage_stats_daily_window_month)
+}
+
 private enum class UsagePeriod(val days: Int, @StringRes val labelRes: Int) {
     TODAY(1, R.string.usage_stats_period_today),
     WEEK(7, R.string.usage_stats_period_week),
@@ -139,6 +148,7 @@ fun UsageStatsScreen(navController: NavHostController) {
     val context = LocalContext.current
     var mode by remember { mutableStateOf(UsageMode.TIME) }
     var period by remember { mutableStateOf(UsagePeriod.TODAY) }
+    var dailyWindow by remember { mutableStateOf(DailyWindow.WEEK) }
     var permissionGranted by remember { mutableStateOf(hasUsageAccess(context)) }
     var reload by remember { mutableIntStateOf(0) }
     var loading by remember { mutableStateOf(true) }
@@ -175,7 +185,7 @@ fun UsageStatsScreen(navController: NavHostController) {
                     .onSuccess { snapshot = it }
                     .onFailure { timeFailed = true }
                 // الرسم أسبوعي دائمًا: الفترة المختارة تخصّ القائمة، لا المحور الزمني.
-                withContext(Dispatchers.IO) { DailyUsageReader.read(context, 14) }
+                withContext(Dispatchers.IO) { DailyUsageReader.read(context, 30) }
                     .onSuccess { daily = it }
                     .onFailure { dailyFailed = true }
             }
@@ -330,8 +340,18 @@ fun UsageStatsScreen(navController: NavHostController) {
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         } else {
-                            // الرسم سبعةٌ دائمًا، والمقارنة تحتاج سبعةً ثانية خلفها.
-                            DailyUsageBars(days = daily.takeLast(7))
+                            // النافذة تُختار من نفس المكوّن المستخدم في بقية الشاشة، والمقارنة
+                            // تحتاج سبعةً ثانية خلف السبعة المعروضة فتُقرأ ثلاثون.
+                            MaxSegmented(
+                                options = DailyWindow.entries.map { stringResource(it.labelRes) },
+                                selectedIndex = dailyWindow.ordinal,
+                                onSelect = { dailyWindow = DailyWindow.entries[it] }
+                            )
+                            DailyUsageBars(
+                                days = DailyUsage.tail(daily, dailyWindow.days),
+                                labelEvery = if (dailyWindow.days > 7) 5 else 1,
+                                modifier = Modifier.padding(top = MaxSpace.sm)
+                            )
                             DailyUsageComparison(
                                 compare = DailyUsage.weekOverWeek(daily),
                                 modifier = Modifier.padding(top = MaxSpace.sm)
@@ -683,7 +703,11 @@ private suspend fun readNetwork(
  * لا دليلًا أن الجهاز لم يُستعمل. وصف الوصول يضمّ التاريخ الكامل والمدة.
  */
 @Composable
-private fun DailyUsageBars(days: List<DailyUsage.Day>) {
+private fun DailyUsageBars(
+    days: List<DailyUsage.Day>,
+    labelEvery: Int = 1,
+    modifier: Modifier = Modifier
+) {
     val peak = days.maxOfOrNull { it.millis } ?: 0L
     if (peak <= 0L) {
         Text(
@@ -698,11 +722,11 @@ private fun DailyUsageBars(days: List<DailyUsage.Day>) {
         DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).withLocale(locale)
     }
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs),
         verticalAlignment = Alignment.Bottom
     ) {
-        days.forEach { day ->
+        days.forEachIndexed { index, day ->
             val fraction = (day.millis.toFloat() / peak).coerceIn(0f, 1f)
             val description = stringResource(
                 R.string.usage_stats_daily_value,
@@ -730,8 +754,14 @@ private fun DailyUsageBars(days: List<DailyUsage.Day>) {
                             .background(MaterialTheme.colorScheme.primary)
                     )
                 }
+                // في الشهر لا يتّسع كل يوم لرقمه: يُكتب كل خامس يوم من النهاية، وآخر يوم دائمًا.
+                // والفراغ بالحجم نفسه فلا تتزحزح الأعمدة حين يغيب الرقم.
                 Text(
-                    text = LocalDate.ofEpochDay(day.epochDay).dayOfMonth.toString(),
+                    text = if (labelEvery <= 1 || (days.size - 1 - index) % labelEvery == 0) {
+                        LocalDate.ofEpochDay(day.epochDay).dayOfMonth.toString()
+                    } else {
+                        ""
+                    },
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

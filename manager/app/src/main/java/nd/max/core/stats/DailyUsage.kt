@@ -153,4 +153,17 @@ object DailyUsage {
         val previous = days.subList(days.size - 14, days.size - 7).sumOf { it.millis }
         return WeekOverWeek(current, previous)
     }
+
+    /**
+     * آخر [size] يومًا من القائمة — نافذة العرض في الشاشة (أسبوع أو شهر).
+     *
+     * **ولماذا دالة لا `takeLast` في الواجهة:** القاعدة التي تُختبر هي «لا يُعرض أكثر مما
+     * قُرئ، ولا يُقصّ ما لا يوجد»؛ ووضعها هنا يجعلها مقيسة بـJVM بدل أن تُترك لتعبير في
+     * Composable لا يُقاس إلا على جهاز. والقائمة القصيرة تُعاد كما هي، و[`size`] غير الموجب
+     * يعطي قائمة فارغة — فشل آمن لا استثناء في شاشة.
+     */
+    fun tail(days: List<Day>, size: Int): List<Day> {
+        if (size <= 0) return emptyList()
+        return if (days.size <= size) days else days.subList(days.size - size, days.size)
+    }
 }

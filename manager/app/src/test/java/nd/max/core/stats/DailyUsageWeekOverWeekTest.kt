@@ -84,4 +84,24 @@ class DailyUsageWeekOverWeekTest {
         assertEquals(7_000L, result?.previousMillis)
         assertEquals(100, result?.percentChange)
     }
+
+    @Test
+    fun tail_keeps_the_requested_window_from_the_end() {
+        val all = days(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+
+        assertEquals(listOf(8L, 9L, 10L), DailyUsage.tail(all, 3).map { it.millis })
+    }
+
+    @Test
+    fun tail_returns_the_whole_list_when_it_is_shorter_than_the_window() {
+        val all = days(1, 2, 3)
+
+        assertEquals(3, DailyUsage.tail(all, 30).size)
+    }
+
+    @Test
+    fun a_non_positive_window_is_empty_rather_than_a_crash() {
+        assertTrue(DailyUsage.tail(days(1, 2), 0).isEmpty())
+        assertTrue(DailyUsage.tail(days(1, 2), -5).isEmpty())
+    }
 }

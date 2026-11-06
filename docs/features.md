@@ -95,11 +95,14 @@ usage per app** — Wi-Fi and mobile bytes split, with totals. A transport the d
 shown as unavailable, not as zero; when the platform returns only aggregate counters, the screen says so
 and hides the per-app list instead of inventing one.
 
-The time view also charts **the last seven days**, regardless of the app-list period. It unions
+The time view also charts **daily observed usage**, regardless of the app-list period, with a choice of
+a 7-day or 30-day window — one read covers 30 days, and the week is taken from the end so the comparison
+below does not move when the window changes. It unions
 overlapping foreground activity sessions and splits them at local midnight, including daylight-saving
 changes. Bar heights are relative to that week's busiest day; screen-reader descriptions include each
 date and duration. Android may retain incomplete events, so this is an estimate that can differ from the
 app totals. A read failure is shown as unavailable, and no counted events is not proof of no usage.
+In the 30-day window only every fifth day carries its date so the bars do not shrink to fit labels.
 Below the bars one line states the change from the 7 days before them — a duration and a percentage, or
 plainly that nothing was counted earlier, since a percentage against zero would be invented rather than
 measured. Reading runs off the UI thread and needs no new permission, root access, or network request.
