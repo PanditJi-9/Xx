@@ -7,8 +7,6 @@
 package nd.max.core.persist
 
 import android.content.Context
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import android.content.Intent
 import android.os.Build
 import android.provider.Settings
