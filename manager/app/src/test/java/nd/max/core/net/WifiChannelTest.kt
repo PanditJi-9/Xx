@@ -54,8 +54,9 @@ class WifiChannelTest {
             connectedFrequencyMhz = 5180,
         )
         assertEquals(7, summary.total)
-        assertEquals(2, summary.twoFour)
-        assertEquals(4, summary.five)
+        // ٢٫٤GHz = 2412 مرّتين + 2437 مرّة = ٣، و5GHz = 5180 ثلاث مرّات = ٣.
+        assertEquals(3, summary.twoFour)
+        assertEquals(3, summary.five)
         assertEquals(1, summary.six)
         // الأكثر شبكاتٍ أولًا (٣٦ بـ٣)، ثم الأقل؛ وعند التساوي أصغر رقم قناة (١ قبل ٦).
         assertEquals(36, summary.busiest.first().channel)
