@@ -1391,6 +1391,9 @@
     <string name="debloat_tab_frozen">المجمّدة</string>
     <string name="debloat_label_frozen">مجمّد</string>
     <string name="debloat_action_freeze">تجميد</string>
+    <string name="debloat_danger_freeze_title">تجميد الحِزم؟</string>
+    <string name="debloat_danger_freeze_body">التجميد يعطّل الحزمة لهذا المستخدم. تجميد مشغّل أو لوحة مفاتيح أو خدمة نظام أو هذا التطبيق نفسه قد يترك الجهاز بلا واجهة صالحة، وقد يحتاج العودة إلى جهاز آخر. يسجّل التطبيق أنك أقررت بذلك مرة واحدة — والمسؤولية عن الحِزم التي تجمّدها عليك. وإلغاء التجميد لا يسأل أبدًا.</string>
+    <string name="debloat_danger_freeze_action">أفهم ذلك — جمّد</string>
     <string name="debloat_action_unfreeze">إلغاء التجميد</string>
     <string name="debloat_action_uninstall">إزالة لمستخدم هذا الجهاز</string>
     <string name="debloat_action_app_info">معلومات التطبيق</string>

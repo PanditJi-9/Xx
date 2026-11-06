@@ -53,6 +53,8 @@ import nd.max.ui.util.DebloatAppInfo
 import nd.max.ui.viewmodel.DebloatFreezeViewModel
 import nd.max.ui.viewmodel.DebloatTab
 import nd.max.ui.design.maxRadius
+import nd.max.core.policy.DangerConsent
+import nd.max.ui.component.rememberDangerGate
 
 @Composable
 fun DebloatFreezeScreen(
@@ -142,9 +144,19 @@ fun DebloatFreezeScreen(
                         bottom = MaxSpace.sm
                     )
                 ) { app ->
+                    // ADR-90: التجميد يكتب حالة الحزمة في مدير الحزم، وحزمة خاطئة تُسقط
+                    // مشغّلًا أو خدمة. الإقرار مرة واحدة؛ والتراجع (إلغاء التجميد) بلا حاجز.
+                    val freezeGate = rememberDangerGate(
+                        id = DangerConsent.PACKAGE_FREEZE,
+                        title = stringResource(R.string.debloat_danger_freeze_title),
+                        message = stringResource(R.string.debloat_danger_freeze_body),
+                        confirmLabel = stringResource(R.string.debloat_danger_freeze_action)
+                    ) { viewModel.toggleFreeze(context, app) }
                     DebloatAppRow(
                         app = app,
-                        onToggleFreeze = { viewModel.toggleFreeze(context, app) },
+                        onToggleFreeze = {
+                            if (app.isEnabled) freezeGate() else viewModel.toggleFreeze(context, app)
+                        },
                         onUninstall = { pendingUninstall = app },
                         onOpenSettings = { viewModel.openAppSettings(context, app.packageName) }
                     )

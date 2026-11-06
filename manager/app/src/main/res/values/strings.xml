@@ -488,6 +488,9 @@
     <string name="debloat_tab_frozen">Frozen</string>
     <string name="debloat_label_frozen">FROZEN</string>
     <string name="debloat_action_freeze">Freeze</string>
+    <string name="debloat_danger_freeze_title">Freeze packages?</string>
+    <string name="debloat_danger_freeze_body">Freezing disables the package for this user. Freezing a launcher, an input method, a system service or this app itself can leave the device without a usable interface, and getting back may need another device. The app records that you accepted this once — the responsibility for which packages you freeze is yours. Unfreezing never asks.</string>
+    <string name="debloat_danger_freeze_action">I understand — freeze</string>
     <string name="debloat_action_unfreeze">Unfreeze</string>
     <string name="debloat_action_uninstall">Uninstall for this user</string>
     <string name="debloat_action_app_info">App info</string>

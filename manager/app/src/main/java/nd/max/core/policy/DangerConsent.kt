@@ -32,6 +32,9 @@ object DangerConsent {
     /** كتابة حدود/ترددات الرسوميات على عقد GPU (min/max freq، governor). */
     const val GPU_LIMITS = "gpu_limits"
 
+    /** تجميد حزمة (‏`pm disable-user`) — قد يُسقط مشغّلًا أو خدمة يحتاجها النظام. */
+    const val PACKAGE_FREEZE = "package_freeze"
+
     private const val PREFS = "maxmanager_danger_consent"
     private const val KEY = "acknowledged"
 
