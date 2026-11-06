@@ -24166,3 +24166,60 @@ Gradle محليًا؛ هذا حكم ترجمة release واختباراتها، 
 
 **AGENTS:** محاولة التفويض أعادت «Free usage limit reached … OpenCode Go»؛ لا إعادة محاولة في المهمة.
 التنفيذ والتحقق في الجلسة الأم، وحد البيئة معلن.
+
+## ROUND-CLOSE-13 — 2026-11-06 · بلاطة «إدارة التجميد» (مدخل إلى الشاشة القائمة)
+
+**TASK:** من أمر المالك «اكمل» وبند NEXT السابق: بلاطة إعدادات سريعة للتجميد. والقرار المتّخذ قبل
+الكتابة: البلاطة **مدخل** لا مفتاح حالة، لأن التجميد يحتاج اختيار حزمة؛ بلاطة «تجميد الكل» أو «تجميد
+حزمة مخمّنة» تُنشئ فعلًا لم يطلبه أحد على حزمة لم يخترها.
+
+**FILES:**
+- `manager/app/src/main/java/nd/max/TileService/FreezeManagerTileService.kt` (جديد، ٨٣ سطرًا):
+  `TileService` بـ`onTileAdded`/`onStartListening` ترسم `STATE_INACTIVE` دائمًا، و`onClick` يفتح
+  `MainActivity` بـ`ACTION_OPEN_FREEZER` (فعل مستقلّ يمنع تصادم هوية `PendingIntent`) +
+  `WidgetIntents.EXTRA_OPEN_ROUTE = ROUTE_APP_FREEZER`، وأعلام `NEW_TASK or CLEAR_TOP` بلا
+  `CLEAR_TASK`. على API 34+ يمرّ عبر `startActivityAndCollapse(PendingIntent…)` بـ`FLAG_IMMUTABLE`
+  و`FLAG_UPDATE_CURRENT`، وقبلها بالحمولة المهجورة نفسها المستعملة في `FpsOverlayTileService`.
+  فشل الفتح يحلّ إلى سطر `tile_freeze_open_failed`؛ ولا حالة «مجمَّد» تُعلن.
+- `manager/app/src/main/java/nd/max/MainActivity.kt` (+٢٣/−١): كتلة الإقلاع الباردة الأصلية **باقية
+  حرفيًّا** ليظلّ `GameSpaceShortcutTest` صالحًا؛ وبعدها fallback للبلاطة حين لا يوجد route.
+  و`onNewIntent` صار يقرأ route ثم fallback البلاطة ثم يعود. والدالة الجديدة
+  `freezeTilePreferencesRoute(incoming)` تقبل `ACTION_QS_TILE_PREFERENCES` وحدها وتطابق
+  `EXTRA_COMPONENT_NAME` على اسم `FreezeManagerTileService` وحده (بالحمولة المكتوبة على API 33+
+  والعامة قبلها)، وتُعيد مسار التجميد أو `null`. ولا تغيير في `MainScreen` أو `MaxNavGraph`.
+- `manager/app/src/main/AndroidManifest.xml` (+١١): خدمة بـ`BIND_QUICK_SETTINGS_TILE` و`exported`
+  وبفعل `android.service.quicksettings.action.QS_TILE` واحد، وأيقونة `@drawable/widget_ic_freeze`
+  القائمة (لا أصل جديد، ولا اعتماد). صارت البلاطات ثمانيًا لا سبعًا.
+- `manager/app/src/main/res/values/strings.xml` + `values-ar/strings.xml`: `tile_freeze_manager` ·
+  `tile_freeze_choose_app` · `tile_freeze_open_failed` — الإنجليزية والعربية فقط، ثلاثة مفاتيح في كلٍّ؛ ولا لغة أخرى مُسّت.
+- `manager/app/src/test/java/nd/max/core/platform/FreezeManagerTileTest.kt` (جديد، ٦ حرّاس مصدر):
+  تسجيل الخدمة في XML الحقيقي (مرة واحدة، الإذن، exported، الفعل، وجود الأيقونة) · شكل الـIntent
+  والفعل المستقلّ والأعلام · فرعَي API 34/الأقدم ونفي `FLAG_MUTABLE` · أن الضغط يفتح المدير فقط
+  وأن الحالة `INACTIVE` وأن الملف لا يستدعي `DebloatFreezeUtil`/`toggleFreeze`/`Shizuku`/`Shell` ·
+  بقاء كتلة الإقلاع الأصلية حرفيًّا ومسار fallback وربط الشاشة القائمة بالإقرار · وجود المفاتيح
+  الثلاثة في اللغتين. وهي حرّاس **مصدر** لا محاكاة أندرويد.
+- `docs/features.md` · `docs/ai/research/REFERENCE-HARVEST-NOV26.md`: صفّا البلاطات صارا يقولان إن
+  البلاطة شُحنت، مع بقاء الحقيقة أن شاشة التجميد تحتاج Shizuku للتجميد الفعلي.
+
+**GATES:** الثماني كلها `--assert` = ٠ محليًّا: `kt_balance` **٣٢٥٩ ملفًا · ٠ عوائق** · `code_health`
+(كل فحوص الصحّة صفر؛ الدَّين ١٠ oversized/٢٦ wildcard/٥ inline-copy/٤ hardcoded — بلا زيادة سقف) ·
+`i18n_coverage` ٠ عوائق (التغطية ليست ١٠٠٪: المفاتيح الثلاثة بالإنجليزية والعربية وحدهما) ·
+`design_tokens` ٢٥٠/٣٠٠ بلا رفع سقف · `resource_compile` بـ`/usr/bin/aapt2` على جذرَي res وكلها
+تُترجم · `license_audit` نظيف · القدرات ٤١ · المخطط ٤١/١. و`git diff --check` نظيف.
+
+**BUILD:** الالتزام `6184e970` «Add a freeze manager tile that opens the existing chooser» →
+دُفع إلى `device-lab` و`device-lab:main` → QV **42266269846** =
+**success**، و`headSha` في حكم التشغيل هو `6184e970…` نفسه (مُطابَق آليًّا، لا مفترضًا)، وخطوات
+«Contract gates» و«Release compile + release unit tests» وملخّص JUnit نجحت. ترجمة release
+واختباراته على GitHub Actions وحدها: **لا بناء محلي ولا APK ولا NDK**.
+
+**RESIDUAL RISK:** وجود البلاطة في شريط الإعدادات السريعة، والضغط الطويل، وسلوك قفل الشاشة، وفتح
+الشاشة فعلًا — كلها **تحتاج جهازًا**. والحرّاس الستة تقرأ المصادر؛ وهي تُثبت الشكل لا السلوك. ولم
+يُعدَّل مسار التجميد نفسه: `DebloatFreezeUtil` ما زال يستعمل libsu، ونجاحه الفعلي على جهاز بـShizuku
+غير مُتحقَّق هنا. والبلاطة **لا تجمّد شيئًا بنفسها** — وهذا مقصود ومُعلن في نصّها.
+
+**AGENTS:** محاولة تفويض واحدة هذه المهمة (`explorer`) أعادت «Free usage limit reached … OpenCode Go»،
+فلم تُعَد؛ التنفيذ والقياس في الجلسة الأم، والحدّ معلن هنا وفي التسليم.
+
+**NEXT:** تعميم بروفايل الألعاب على تطبيق اعتباري · محرّك الوصفات بعد كتالوج عقد مُتحقَّق ومراجعة
+سلامة · قياس ميزانية المراقبة على جهاز. لا تُستبدل تأكيدات zram/الحرارة الفورية الأقوى بإقرار مرة واحدة.

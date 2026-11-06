@@ -160,7 +160,7 @@
 ### ما أُغلق من القائمة
 - **P0/١ تاريخ البطارية** — شُحن (`BatteryHistoryStore` + `BatteryHistoryScreen`).
 - **P0/٢ مستندات القدرات** — شُحن (`docs/CAPABILITIES.md` ٥٠٤ أسطر من ٤١ مدخلًا).
-- **P0/٤ البلاطات** — شُحن منها: تسجيل البطارية والسطوع العالي (HBM) **والوضع الليلي** (`NightLightTileService` على مفتاح المنصّة نفسه `secure/night_display_activated`). الباقي (مراقبة/ملف) لم يُبنَ بعد. **والتجميد دالته موجودة** (`DebloatFreezeScreen`، بصلاحية Shizuku `freeze_disable`)، فبلاطته صارت ممكنة ولم تُبنَ بعد.
+- **P0/٤ البلاطات** — شُحن منها: تسجيل البطارية والسطوع العالي (HBM) **والوضع الليلي** (`NightLightTileService` على مفتاح المنصّة نفسه `secure/night_display_activated`) **وبلاطة «إدارة التجميد»** (`FreezeManagerTileService`: مدخل يفتح الشاشة القائمة ولا يجمّد شيئًا بنفسه؛ R-CLOSE-13). الباقي (مراقبة/ملف) لم يُبنَ بعد.
 - **P1/٧ إحصاء الشبكة لكل تطبيق** — شُحن داخل Usage Stats بلا إذن جديد (إذن الاستخدام وحده).
 
 ### P0 — بلا جذر، أثر مرئي، خطر منخفض
@@ -230,7 +230,7 @@
 | §٢.٤ مراقبات عائمة | «لا مراقب مستقل قابل للسحب والتخصيص» | شُحن استوديو بثلاث مراقبات في نافذة واحدة، مع موضع ومظهر محفوظين وخدمة واحدة | `ui/util/MonitorPrefs.kt` · `service/FpsOverlayService.kt` |
 | §٢.٤ مخططات النظام | «لا شاشة مخططات بنوافذ زمنية وتصدير» | شُحن **للبطارية وجلسة الحرارة** (نوافذ + CSV)؛ ولا تزال المخططات العامة غير مشحونة | سجل البطارية · `ThermalHistory` |
 | §٣.٤ مستندات القدرات | «لا · الأولوية التالية» | شُحنت مستندات مولّدة من الكتالوج، مع `--assert` في البوابات | `tools/gen_capabilities_doc.py` |
-| §٣.٤ البلاطات | «لا NightShift/HBM/مراقبة/ملف لعب/تجميد» | شُحنت: الوضع الليلي · السطوع العالي · تاريخ البطارية · مراقبة FPS · ملف اللعب. **والتجميد موجود فعلًا** كشاشة كاملة (`DebloatFreezeScreen` + `DebloatFreezeUtil` + `PrivilegeFeature("freeze_disable", SHIZUKU)`)، وما لم يُبنَ هو **بلاطة** له لا دالته | `ui/subscreens/DebloatFreezeScreen.kt` · `ui/util/DebloatFreezeUtil.kt` |
+| §٣.٤ البلاطات | «لا NightShift/HBM/مراقبة/ملف لعب/تجميد» | شُحنت: الوضع الليلي · السطوع العالي · تاريخ البطارية · مراقبة FPS · ملف اللعب. **والتجميد موجود فعلًا** كشاشة كاملة (`DebloatFreezeScreen` + `DebloatFreezeUtil` + `PrivilegeFeature("freeze_disable", SHIZUKU)`) **وبلاطة مدخل** (`FreezeManagerTileService` + مسار `ACTION_QS_TILE_PREFERENCES` في `MainActivity`؛ لا تجميد تلقائي ولا حزمة مخمّنة) | `ui/subscreens/DebloatFreezeScreen.kt` · `ui/util/DebloatFreezeUtil.kt` · `TileService/FreezeManagerTileService.kt` |
 | §٣.٤ النسخ/الاستعادة | «لا تصدير ملف جهاز بمخطط إصدار ومقارنة قبل التطبيق» | شُحنا: مخطط إصدار للتفضيلات، وفرق قبل التطبيق في ثلاثة محاور (خصائص · قائمة تطبيقات · تفضيلات) | `ConfigBackupInventory` · `ConfigDiff` · `PrefsDelta` |
 | §٣.٤ مخطط التوابل (سطر ٩١) | «لا عرض كل ما يعلنه الجهاز» | **شُحن كاملًا**: الكتالوج والمخطط والمستندات، وقائمة `features` المعلنة داخل شاشة الأذونات | `docs/control-catalog.schema.json` · `PackageFeatures` |
 | §٥.٢ حارس الإقلاع (سطر ١٤٠) | «الفجوة سطح استعادة» | شُحن السطح (آخر جولة + عدّاد الإقلاعات) والرجوع عبر `PersistSnapshot` | `PersistRestoreItem.kt` · `PersistSnapshot.kt` |
