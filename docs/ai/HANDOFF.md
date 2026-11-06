@@ -23918,3 +23918,34 @@ Wi-Fi تحتاج `ACCESS_FINE_LOCATION`؛ ميزانية تكلفة المراق
 **NEXT:** (١) المالك يقرّر ما يُفتح تاليًا (جهاز للاختبار / إذن الموقع / مراجعة سلامة).
 (٢) عند توفر رصيد وكلاء: استخدام `@gatekeeper` و`@ci-runner` بحسب `orchestrator_append.md`.
 (٣) لا شيء معلّق في CI: `5ca38158` أخضر.
+
+## ROUND-CLOSE-07 — 2026-11-06 · DONE (تراجع بضغطة عن آخر استعادة · CI أخضر)
+
+**TASK:** البند الوحيد المتبقي بلا جهاز بعد تدقيق البنود الأربعة: لقطة قيم ما قبل التطبيق في
+`core/persist/` (البلاطات السبع مشحونة، ولكل-تطبيق تفضيلات ومخطط إصدار وتأكيد قبل الاستعادة).
+
+**FILES:** `manager/app/src/main/java/nd/max/core/persist/PersistSnapshot.kt` (جديد: `begin/record/
+commit/load/clear`، `FORMAT=1`، `MAX_ENTRIES=60`، `encode/decode` بـ`org.json` يرفض الإصدار غير ١
+والمسارات غير المطلقة) · `core/persist/PersistRestorer.kt` (`begin` قبل حلقة ITEMS و`commit` بعدها،
+و`record` في `writeAndRead` بعد قراءة القيمة السابقة، و`restoreSnapshot(context): Int` يكتب القيم
+القديمة بـ`RootFileAccess` مع قراءة تحقق ويمسح اللقطة فقط إذا نجح ردّ الكل) ·
+`ui/mainscreens/PersistRestoreItem.kt` (صفّ «تراجع» يظهر فقط عند وجود لقطة؛ فعل لا سجلّ، بأمر المالك) ·
+`res/values/strings.xml` + `values-ar/strings.xml` (`persist_snapshot_title` · `persist_snapshot_desc`
+بـ`%1$d`) · `docs/features.md` · `manager/app/src/test/java/nd/max/core/persist/PersistSnapshotTest.kt`
+(٦ اختبارات: round-trip، إصدار مرفوض، تصفية المسارات، سلة فارغة/نص تالف، سقف ٦٠).
+
+**GATES:** الثماني `--assert` قبل الالتزامين: `kt_balance` **3240 ملفًا · 0 عوائق** · `code_health` 0 ·
+`i18n_coverage` 0 · `design_tokens` 0 · `resource_compile` كل المجلدات · `license_audit` نظيف ·
+`gen_capabilities_doc` 41 · `gen_catalog_schema` 41/1.
+
+**BUILD:** QV `42198312805` على `c20eafcd` = **failure** — سبب واحد: استيراد `Dispatchers` مكرر
+(`PersistRestorer.kt:10` و`:20`، «Conflicting import … ambiguous»)؛ أُصلح في **`536dbcc2`**
+(«Drop the duplicated coroutine imports that broke the release compile»)، والبوابات أعيدت خضراء،
+وQV **`42199058186`** على `536dbcc2` = **success**. `origin/main` = `536dbcc2`.
+
+**RESIDUAL RISK:** `restoreSnapshot` يكتب عقد sysfs ويقرأ للتحقق — سلوكه على جهاز حقيقي ومسار الكتابة
+عبر الجذر **يحتاج جهازًا**؛ ومسح اللقطة مشروط بنجاح ردّ كل القيم لا بعضها. والتفويض: محاولة `explorer`
+رجعت **cancelled** بلا تقرير ⇒ أُكمل التدقيق في الجلسة الأم.
+
+**NEXT:** لا شيء معلّق في CI. المتبقي كله يحتاج جهازًا (سلوك العتاد/الجدولة/الكتابة) أو إذنًا
+(`ACCESS_FINE_LOCATION`) أو مراجعة سلامة (محرّك الوصفات) أو قياسًا (ميزانية المراقبة).
