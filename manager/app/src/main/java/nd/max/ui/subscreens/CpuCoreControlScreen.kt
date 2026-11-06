@@ -45,6 +45,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.delay
 import nd.max.R
+import nd.max.core.policy.DangerConsent
 import nd.max.ui.component.*
 import nd.max.ui.design.MaxAlpha
 import nd.max.ui.design.MaxBullets
@@ -765,6 +766,16 @@ private fun CpuFrequencyControlGroup(
     var pinSelection by remember(control.policyPath, control.resetTick) { mutableStateOf<Long?>(null) }
     val effectivePin = pinSelection ?: activeMax
     val pinModified = pinned && (effectivePin != control.maxKHz || effectivePin != control.minKHz)
+
+    // ADR-90: كتابة حدود التردد فعلٌ يمسّ النواة — إقرارٌ مرة واحدة، والمسؤولية على المستخدم.
+    val applyLimits = rememberDangerGate(
+        id = DangerConsent.CPU_FREQ_LIMITS,
+        title = stringResource(R.string.cpu_danger_title),
+        message = stringResource(R.string.cpu_danger_body),
+        confirmLabel = stringResource(R.string.cpu_danger_action)
+    ) {
+        if (pinned) onApply(effectivePin, effectivePin) else onApply(activeMin, activeMax)
+    }
     val tableMissing = stringResource(R.string.cpu_freq_table_missing)
     val liveLimits = "${formatCpuFrequency(control.minKHz ?: 0L)} \u2013 " +
         formatCpuFrequency(control.maxKHz ?: 0L)
@@ -861,9 +872,7 @@ private fun CpuFrequencyControlGroup(
                 Text(stringResource(R.string.cpu_freq_hardware_range))
             }
             Button(
-                onClick = {
-                    if (pinned) onApply(effectivePin, effectivePin) else onApply(activeMin, activeMax)
-                },
+                onClick = applyLimits,
                 modifier = Modifier.weight(1f),
                 enabled = editable && (if (pinned) pinModified else isModified)
             ) {

@@ -443,6 +443,9 @@
     <string name="cpu_freq_table_missing">This cluster publishes no selectable frequency table, so the live limits stay read-only.</string>
     <string name="cpu_freq_pin_action">Pin</string>
     <string name="cpu_freq_hardware_range">Hardware range</string>
+    <string name="cpu_danger_title">Write CPU frequency limits?</string>
+    <string name="cpu_danger_body">This writes the minimum and maximum frequency of this cluster into the kernel policy nodes. A limit the governor cannot satisfy can freeze the device, and pinning a high frequency raises heat and drain. The app records that you accepted this once — the responsibility for the values you apply is yours.</string>
+    <string name="cpu_danger_action">I understand — apply</string>
     <string name="cpu_freq_verified">Verified against the hardware</string>
     <string name="cpu_freq_verified_reasserted">Re-applied automatically, then verified (attempt %1$d)</string>
     <string name="cpu_freq_overridden">Something outside the app reset the limits after the write</string>

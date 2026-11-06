@@ -302,6 +302,9 @@
     <string name="cpu_freq_table_missing">هذا العنقود لا يعلن جدول ترددات قابلاً للاختيار، فتبقى الحدود الحية للقراءة فقط.</string>
     <string name="cpu_freq_pin_action">تثبيت</string>
     <string name="cpu_freq_hardware_range">مدى العتاد</string>
+    <string name="cpu_danger_title">كتابة حدود تردد المعالج؟</string>
+    <string name="cpu_danger_body">هذا يكتب أقل وأعلى تردد لهذه المجموعة على عقد سياسة النواة. حدٌّ لا يستطيعه الحاكم قد يُعلّق الجهاز، وتثبيت تردد عالٍ يرفع الحرارة والاستهلاك. يسجّل التطبيق أنك أقررت بذلك مرة واحدة — والمسؤولية عن القيم التي تطبّقها عليك.</string>
+    <string name="cpu_danger_action">أفهم ذلك — طبّق</string>
     <string name="cpu_freq_verified">تم التحقق من العتاد</string>
     <string name="cpu_freq_verified_reasserted">أُعيد التثبيت تلقائياً ثم تم التحقق (محاولة %1$d)</string>
     <string name="cpu_freq_overridden">كِيان خارجي أعاد ضبط الحدود بعد الكتابة</string>

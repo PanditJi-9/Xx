@@ -26,6 +26,9 @@ object DangerConsent {
     /** إعادة تشغيل التطبيق التلقائي للخطير بعد أن أوقفه حارس الإقلاع. */
     const val RESTORE_DANGEROUS = "restore_dangerous_auto"
 
+    /** كتابة حدود تردد المعالج على عقد سياسة النواة (scaling_min/max_freq). */
+    const val CPU_FREQ_LIMITS = "cpu_freq_limits"
+
     private const val PREFS = "maxmanager_danger_consent"
     private const val KEY = "acknowledged"
 
