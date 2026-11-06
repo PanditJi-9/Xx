@@ -29,6 +29,9 @@ object DangerConsent {
     /** كتابة حدود تردد المعالج على عقد سياسة النواة (scaling_min/max_freq). */
     const val CPU_FREQ_LIMITS = "cpu_freq_limits"
 
+    /** كتابة حدود/ترددات الرسوميات على عقد GPU (min/max freq، governor). */
+    const val GPU_LIMITS = "gpu_limits"
+
     private const val PREFS = "maxmanager_danger_consent"
     private const val KEY = "acknowledged"
 

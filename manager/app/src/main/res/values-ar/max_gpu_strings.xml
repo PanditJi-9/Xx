@@ -49,6 +49,9 @@
     <string name="max_gpu_review_requested">المطلوب: %1$s</string>
     <string name="max_gpu_review_release">المطلوب: تحرير القفل والعودة إلى التحجيم الديناميكي</string>
     <string name="max_gpu_apply">تطبيق والتحقق</string>
+    <string name="max_gpu_danger_title">كتابة حدود الرسوميات؟</string>
+    <string name="max_gpu_danger_body">هذا يكتب نافذة ترددات الرسوميات والحاكم على عقد GPU. نافذة يرفضها المشغّل، أو حاكم لا يلحق بالحمل، قد تُحدث تقطيعًا في الواجهة كلها أو تُجمّد الشاشة. يسجّل التطبيق أنك أقررت بذلك مرة واحدة — والمسؤولية عن القيم التي تطبّقها عليك.</string>
+    <string name="max_gpu_danger_action">أفهم ذلك — طبّق</string>
     <string name="max_gpu_applying">جارٍ التطبيق والتحقق</string>
     <string name="max_gpu_cancel">إلغاء</string>
     <string name="max_gpu_restore_session">استعادة بداية الجلسة</string>

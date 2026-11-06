@@ -80,8 +80,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import nd.max.R
 import nd.max.core.hardware.GpuFrequencyWindow
+import nd.max.core.policy.DangerConsent
 import nd.max.core.hardware.GpuHardwareBackend
 import nd.max.ui.component.MaxAiShortcut
+import nd.max.ui.component.rememberDangerGate
 import nd.max.ui.component.MaxDeviceInfoShortcut
 import nd.max.ui.navigation.MaxDestination
 import nd.max.ui.design.MaxChoiceRow
@@ -505,6 +507,13 @@ private fun GpuIntents(state: GpuStudioUiState, vm: GpuStudioViewModel) {
 
 @Composable
 private fun GpuReview(state: GpuStudioUiState, vm: GpuStudioViewModel) {
+    // ADR-90: كتابة ترددات الرسوميات تمسّ العتاد — إقرارٌ مرة واحدة، والمسؤولية على المستخدم.
+    val applyPreview = rememberDangerGate(
+        id = DangerConsent.GPU_LIMITS,
+        title = stringResource(R.string.max_gpu_danger_title),
+        message = stringResource(R.string.max_gpu_danger_body),
+        confirmLabel = stringResource(R.string.max_gpu_danger_action)
+    ) { vm.applyPreview() }
     val device = state.device ?: return
     val pending = state.pending ?: return
 
@@ -556,7 +565,7 @@ private fun GpuReview(state: GpuStudioUiState, vm: GpuStudioViewModel) {
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Button(
-                    onClick = vm::applyPreview,
+                    onClick = applyPreview,
                     modifier = Modifier.weight(1f),
                     // الزرّ معطّل لنفس السبب الذي يمنع الكتابة في الطبقة الخلفية —
                     // لا لتحفّظ بصري.

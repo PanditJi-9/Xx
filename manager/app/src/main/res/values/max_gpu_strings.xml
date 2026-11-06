@@ -57,6 +57,9 @@
     <string name="max_gpu_review_requested">Requested: %1$s</string>
     <string name="max_gpu_review_release">Requested: release the lock and return to dynamic scaling</string>
     <string name="max_gpu_apply">Apply and verify</string>
+    <string name="max_gpu_danger_title">Write GPU limits?</string>
+    <string name="max_gpu_danger_body">This writes the graphics frequency window and governor into the GPU nodes. A window the driver rejects, or a governor that cannot keep up, can stutter the whole interface or freeze the panel. The app records that you accepted this once — the responsibility for the values you apply is yours.</string>
+    <string name="max_gpu_danger_action">I understand — apply</string>
     <string name="max_gpu_applying">Applying and verifying</string>
     <string name="max_gpu_cancel">Cancel</string>
     <string name="max_gpu_restore_session">Restore session start</string>
