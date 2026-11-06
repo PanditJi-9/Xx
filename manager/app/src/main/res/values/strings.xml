@@ -1876,6 +1876,9 @@
     <string name="persist_dangerous_title">Apply advanced tweaks</string>
     <string name="persist_dangerous_desc">Includes memory, display, and touch tweaks with smart bootloop protection.</string>
     <string name="persist_dangerous_bootloop">Automatic application of advanced tweaks was disabled to protect the device after bootloop detection.</string>
+    <string name="persist_danger_confirm_title">Turn dangerous auto-apply back on?</string>
+    <string name="persist_danger_confirm_body">This re-enables automatic writes to kernel and device nodes at boot, including nodes that can hang or bootloop the device. The app will mark it as dangerous and record that you accepted it once — you bear the responsibility for what it changes.</string>
+    <string name="persist_danger_confirm_action">I understand — turn it on</string>
     <string name="persist_last_run_title">Last restore run</string>
     <string name="persist_last_run_never">Nothing re-applied yet on this install.</string>
     <string name="persist_fast_boots_title">Fast reboots in a row</string>

@@ -1042,6 +1042,9 @@
     <string name="persist_dangerous_title">تطبيق الإعدادات المتقدمة</string>
     <string name="persist_dangerous_desc">يشمل تعديلات الذاكرة والشاشة واللمس، مع حماية ذكية ضد تكرار الإقلاع.</string>
     <string name="persist_dangerous_bootloop">تم إيقاف تطبيق الإعدادات المتقدمة تلقائيًا لحماية الجهاز بعد تكرار الإقلاع.</string>
+    <string name="persist_danger_confirm_title">إعادة التطبيق التلقائي الخطير؟</string>
+    <string name="persist_danger_confirm_body">هذا يُعيد الكتابة التلقائية على عقد النواة والجهاز عند الإقلاع، ومنها عقد قد تُعلّق الجهاز أو تُدخله في حلقة إقلاع. سيسجّل التطبيق أنه خطر وأنك أقررت به مرة واحدة — والمسؤولية عليك عمّا يغيّره.</string>
+    <string name="persist_danger_confirm_action">أفهم ذلك — شغّله</string>
     <string name="persist_last_run_title">آخر جولة استعادة</string>
     <string name="persist_last_run_never">لم يُعَد تطبيق شيء على هذا التثبيت بعد.</string>
     <string name="persist_fast_boots_title">إقلاعات سريعة متتالية</string>

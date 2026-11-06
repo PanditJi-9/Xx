@@ -14,6 +14,7 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.rounded.PowerSettingsNew
 import androidx.compose.material.icons.rounded.Shield
+import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -37,10 +38,12 @@ import nd.max.R
 import nd.max.core.persist.PersistRestorer
 import nd.max.core.persist.PersistSnapshot
 import nd.max.core.persist.PersistStore
+import nd.max.core.policy.DangerConsent
 import nd.max.ui.component.ExpressiveList
 import nd.max.ui.component.ExpressiveListItem
 import nd.max.ui.component.ExpressiveSwitchItem
 import nd.max.ui.component.LeadingIcon
+import nd.max.ui.design.MaxConfirmDialog
 import nd.max.ui.design.MaxSpace
 
 /**
@@ -56,6 +59,7 @@ fun PersistRestoreItem() {
     var dangerousReason by remember { mutableStateOf(PersistStore.dangerousAutoOffReason(context)) }
     var lastRunAtMs by remember { mutableStateOf(PersistStore.lastRunAtMs(context)) }
     var fastBoots by remember { mutableStateOf(PersistStore.fastBootStreak(context)) }
+    var pendingDangerConfirm by remember { mutableStateOf(false) }
     var snapshotCount by remember { mutableStateOf(PersistSnapshot.load(context)?.values?.size ?: 0) }
 
     Column(verticalArrangement = Arrangement.spacedBy(MaxSpace.sm)) {
@@ -80,10 +84,15 @@ fun PersistRestoreItem() {
                         summary = stringResource(R.string.persist_dangerous_desc),
                         checked = dangerousAuto,
                         enabled = enabled,
-                        onCheckedChange = {
-                            dangerousAuto = it
-                            PersistStore.setDangerousAutoEnabled(context, it)
-                            dangerousReason = PersistStore.dangerousAutoOffReason(context)
+                        onCheckedChange = { wanted ->
+                            // الفتح فقط يحتاج إقرارًا: الإطفاء تراجعٌ لا مخاطرة.
+                            if (wanted && !DangerConsent.isAcknowledged(context, DangerConsent.RESTORE_DANGEROUS)) {
+                                pendingDangerConfirm = true
+                            } else {
+                                dangerousAuto = wanted
+                                PersistStore.setDangerousAutoEnabled(context, wanted)
+                                dangerousReason = PersistStore.dangerousAutoOffReason(context)
+                            }
                         }
                     )
                 },
@@ -202,6 +211,25 @@ fun PersistRestoreItem() {
                 color = MaterialTheme.colorScheme.error
             )
         }
+
+        // إقرار المخاطر مرة واحدة لكل ميزة: يُعرض مرة، ويُسجَّل بزمنه، ولا يُلغى تلقائيًّا.
+        // والرسالة تقول المسؤولية صريحةً — لا «هل أنت متأكد؟» التي لا تقول شيئًا.
+        MaxConfirmDialog(
+            visible = pendingDangerConfirm,
+            title = stringResource(R.string.persist_danger_confirm_title),
+            message = stringResource(R.string.persist_danger_confirm_body),
+            confirmLabel = stringResource(R.string.persist_danger_confirm_action),
+            onConfirm = {
+                DangerConsent.acknowledge(context, DangerConsent.RESTORE_DANGEROUS)
+                dangerousAuto = true
+                PersistStore.setDangerousAutoEnabled(context, true)
+                dangerousReason = PersistStore.dangerousAutoOffReason(context)
+                pendingDangerConfirm = false
+            },
+            onDismiss = { pendingDangerConfirm = false },
+            icon = Icons.Rounded.Warning,
+            destructive = true
+        )
 
         if (!dangerousAuto && dangerousReason == PersistStore.REASON_BOOTLOOP) {
             Text(
