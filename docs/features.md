@@ -95,6 +95,13 @@ usage per app** — Wi-Fi and mobile bytes split, with totals. A transport the d
 shown as unavailable, not as zero; when the platform returns only aggregate counters, the screen says so
 and hides the per-app list instead of inventing one.
 
+The time view also charts **the last seven days**, regardless of the app-list period. It unions
+overlapping foreground activity sessions and splits them at local midnight, including daylight-saving
+changes. Bar heights are relative to that week's busiest day; screen-reader descriptions include each
+date and duration. Android may retain incomplete events, so this is an estimate that can differ from the
+app totals. A read failure is shown as unavailable, and no counted events is not proof of no usage.
+Reading runs off the UI thread and needs no new permission, root access, or network request.
+
 **Wi-Fi channels** in Device Lab read the connected channel, how many networks the last scan saw, and
 which channel they crowd. Android returns scan results only to an app holding the location permission, so
 the section shows why it is empty and asks for the permission on a tap — it never asks for a position,
