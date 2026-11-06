@@ -89,7 +89,7 @@
 | المجال | حالتنا | الفجوة |
 |---|---|---|
 | مخطط التوابل | `control_catalog.json` (٤١ مدخلًا/٦٩ مرشّحًا) | **شُحنت المستندات** (`docs/CAPABILITIES.md`) و**شُحن JSON Schema** (`docs/control-catalog.schema.json` من `tools/gen_catalog_schema.py`)؛ والفجوة الباقية بعدها: عرض «كل ما تعلنه الحزمة من features» كقائمة داخل شاشة قائمة (§٩) |
-| ملفات لكل تطبيق | `PerAppControlRegistry` + gamespace | لا كشف تطبيق أمامي + تطبيق/رجوع تلقائي عامّ |
+| ملفات لكل تطبيق | **عامّ ومشحون لأي حزمة**: `AppMonitor.applyPerAppConfig` (سطر ٢٢٥١) و`revertPerAppConfig` (٣١٤٨) عبر `PerAppControlRegistry` (٢٨١ سطرًا، يمرّ بالـarbiter)، و`AppSettingsScreen` تُفتح من قائمة التطبيقات لأي حزمة، و`PerAppSessionRules.hasExplicitOverride` يمنع جلسة بلا إعداد صريح | الفارق: المُطبِّق بلا جذر `InAppProfileApplier` يقبل ثلاثة مقابض فقط (`InAppKnob {DND, REFRESH_RATE, HAPTICS}`) ولحزم مكتبة الألعاب وحدها |
 | البطارية | بطاقة صحة + سجل شحن | لا مراقب تاريخي/إشعار active-idle |
 | wakelocks/LMK/stune/PPM | غير موجودة | تحتاج جذرًا ومسارات مُكتشفة؛ ليست واجهة عامة |
 | البلاطات | ٣ أنواع | لا NightShift/HBM/مراقبة/ملف لعب/تجميد |
