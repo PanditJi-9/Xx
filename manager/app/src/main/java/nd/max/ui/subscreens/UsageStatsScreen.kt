@@ -15,10 +15,14 @@ import android.provider.Settings
 import android.text.format.Formatter
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -42,9 +46,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.Lifecycle
@@ -55,6 +63,7 @@ import kotlinx.coroutines.withContext
 import nd.max.R
 import nd.max.core.net.NetworkUsageReader
 import nd.max.core.net.NetworkUsageSnapshot
+import nd.max.core.stats.DailyUsage
 import nd.max.ui.design.MaxCondition
 import nd.max.ui.design.MaxConditionKind
 import nd.max.ui.design.MaxGroup
@@ -65,9 +74,12 @@ import nd.max.ui.design.MaxSection
 import nd.max.ui.design.MaxSegmented
 import nd.max.ui.design.MaxSize
 import nd.max.ui.design.MaxSpace
+import nd.max.ui.util.DailyUsageReader
 import nd.max.ui.theme.MonoValueStyleSmall
 import java.time.LocalDate
 import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 
 /**
  * App usage — two views of the same question, both read from Android's own
@@ -132,6 +144,8 @@ fun UsageStatsScreen(navController: NavHostController) {
     var loading by remember { mutableStateOf(true) }
     var snapshot by remember { mutableStateOf<UsageSnapshot?>(null) }
     var timeFailed by remember { mutableStateOf(false) }
+    var daily by remember { mutableStateOf<List<DailyUsage.Day>>(emptyList()) }
+    var dailyFailed by remember { mutableStateOf(false) }
     var network by remember { mutableStateOf<NetworkUsageSnapshot?>(null) }
     var networkApps by remember { mutableStateOf<List<NetworkAppRow>>(emptyList()) }
     var networkFailed by remember { mutableStateOf(false) }
@@ -146,6 +160,8 @@ fun UsageStatsScreen(navController: NavHostController) {
 
     LaunchedEffect(mode, period, reload, permissionGranted) {
         if (!permissionGranted) {
+            daily = emptyList()
+            snapshot = null
             loading = false
             return@LaunchedEffect
         }
@@ -153,9 +169,15 @@ fun UsageStatsScreen(navController: NavHostController) {
         when (mode) {
             UsageMode.TIME -> {
                 timeFailed = false
+                daily = emptyList()
+                dailyFailed = false
                 readUsage(context, period)
                     .onSuccess { snapshot = it }
                     .onFailure { timeFailed = true }
+                // الرسم أسبوعي دائمًا: الفترة المختارة تخصّ القائمة، لا المحور الزمني.
+                withContext(Dispatchers.IO) { DailyUsageReader.read(context, 7) }
+                    .onSuccess { daily = it }
+                    .onFailure { dailyFailed = true }
             }
             UsageMode.NETWORK -> {
                 networkFailed = false
@@ -205,7 +227,8 @@ fun UsageStatsScreen(navController: NavHostController) {
             title = stringResource(R.string.usage_stats_title),
             detail = stringResource(R.string.usage_stats_loading)
         )
-        mode == UsageMode.TIME && timeData != null && timeData.apps.isEmpty() -> MaxCondition(
+        mode == UsageMode.TIME && timeData != null && timeData.apps.isEmpty() &&
+            daily.none { it.millis > 0L } && !dailyFailed -> MaxCondition(
             kind = MaxConditionKind.Empty,
             title = stringResource(R.string.usage_stats_empty_title),
             detail = stringResource(R.string.usage_stats_empty_detail)
@@ -293,6 +316,22 @@ fun UsageStatsScreen(navController: NavHostController) {
                                 )
                             }
                         )
+                    }
+                }
+                if (permissionGranted && !loading && !timeFailed) {
+                    MaxSection(
+                        title = stringResource(R.string.usage_stats_daily_title),
+                        description = stringResource(R.string.usage_stats_daily_detail)
+                    ) {
+                        if (dailyFailed) {
+                            Text(
+                                text = stringResource(R.string.usage_stats_daily_unavailable),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        } else {
+                            DailyUsageBars(days = daily)
+                        }
                     }
                 }
                 MaxSection(
@@ -630,5 +669,68 @@ private suspend fun readNetwork(
             )
         }
         snapshot to rows
+    }
+}
+
+/**
+ * أعمدة الأيام السبعة — الرسم نفسه لا يخترع أرقامًا: أعلى عمود هو أكثر يوم استعمالًا
+ * في هذا الأسبوع، وليس هدفًا ثابتًا. الصفر يعني أن الأحداث المتاحة لم تعطِ زمنًا،
+ * لا دليلًا أن الجهاز لم يُستعمل. وصف الوصول يضمّ التاريخ الكامل والمدة.
+ */
+@Composable
+private fun DailyUsageBars(days: List<DailyUsage.Day>) {
+    val peak = days.maxOfOrNull { it.millis } ?: 0L
+    if (peak <= 0L) {
+        Text(
+            text = stringResource(R.string.usage_stats_daily_empty),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        return
+    }
+    val locale = LocalConfiguration.current.locales[0]
+    val dateFormat = remember(locale) {
+        DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT).withLocale(locale)
+    }
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs),
+        verticalAlignment = Alignment.Bottom
+    ) {
+        days.forEach { day ->
+            val fraction = (day.millis.toFloat() / peak).coerceIn(0f, 1f)
+            val description = stringResource(
+                R.string.usage_stats_daily_value,
+                LocalDate.ofEpochDay(day.epochDay).format(dateFormat),
+                formatDuration(day.millis)
+            )
+            Column(
+                modifier = Modifier.weight(1f).semantics(mergeDescendants = true) {
+                    contentDescription = description
+                },
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(MaxSpace.xs)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(MaxSize.iconContainer * 2),
+                    contentAlignment = Alignment.BottomCenter
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .fillMaxHeight(fraction)
+                            .clip(MaterialTheme.shapes.extraSmall)
+                            .background(MaterialTheme.colorScheme.primary)
+                    )
+                }
+                Text(
+                    text = LocalDate.ofEpochDay(day.epochDay).dayOfMonth.toString(),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
     }
 }

@@ -3869,6 +3869,11 @@
 <string name="usage_stats_app_count">تطبيقات لها استخدام مسجّل</string>
 <string name="usage_stats_top_apps">الأكثر استخدامًا</string>
 <string name="usage_stats_top_apps_detail">مرتّبة بحسب زمن المقدّمة في الفترة المختارة.</string>
+<string name="usage_stats_daily_title">آخر ٧ أيام</string>
+<string name="usage_stats_daily_detail">زمن المقدّمة المرصود يومًا بيوم، لآخر ٧ أيام دائمًا. مقياس الأعمدة نسبي: أطولها هو أكثر الأيام استعمالًا. قد يحتفظ أندرويد بأحداث ناقصة، فتختلف هذه المجاميع عن قائمة التطبيقات.</string>
+<string name="usage_stats_daily_empty">تعذّر حساب زمن مقدّمة من الأحداث المتاحة. هذا لا يثبت أن الجهاز لم يُستعمل.</string>
+<string name="usage_stats_daily_unavailable">تعذّرت قراءة أحداث الاستخدام من أندرويد. مجاميع الأيام غير متاحة.</string>
+<string name="usage_stats_daily_value">%1$s: %2$s مرصودة</string>
 <string name="usage_stats_loading">قراءة قاعدة استخدام أندرويد…</string>
 <string name="usage_stats_empty_title">لا استخدام مسجّل</string>
 <string name="usage_stats_empty_detail">لا سجلّات مقدّمة لأندرويد في هذه الفترة. استعمل الجهاز قليلًا ثم حدّث.</string>
