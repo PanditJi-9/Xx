@@ -57,9 +57,11 @@ class WifiChannelTest {
         assertEquals(2, summary.twoFour)
         assertEquals(4, summary.five)
         assertEquals(1, summary.six)
-        assertEquals(1, summary.busiest.first().channel)
-        assertEquals(2, summary.busiest.first().networks)
-        assertEquals(3, summary.busiest[1].networks)
+        // الأكثر شبكاتٍ أولًا (٣٦ بـ٣)، ثم الأقل؛ وعند التساوي أصغر رقم قناة (١ قبل ٦).
+        assertEquals(36, summary.busiest.first().channel)
+        assertEquals(3, summary.busiest.first().networks)
+        assertEquals(1, summary.busiest[1].channel)
+        assertEquals(2, summary.busiest[1].networks)
         assertEquals(5180, summary.connected?.frequencyMhz)
         assertEquals(36, summary.connected?.channel)
     }
