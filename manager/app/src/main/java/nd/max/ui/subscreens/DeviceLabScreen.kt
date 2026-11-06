@@ -58,6 +58,7 @@ import androidx.compose.material.icons.rounded.Science
 import androidx.compose.material.icons.rounded.Sensors
 import androidx.compose.material.icons.rounded.TouchApp
 import androidx.compose.material.icons.rounded.Vibration
+import androidx.compose.material.icons.rounded.Wifi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -106,6 +107,8 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import nd.max.R
+import nd.max.core.net.WifiChannel
+import nd.max.ui.util.WifiChannelReader
 import nd.max.ui.design.MaxGroup
 import nd.max.ui.design.MaxGroupDivider
 import nd.max.ui.design.MaxNavigationRow
@@ -271,6 +274,13 @@ fun DeviceLabScreen(navController: NavHostController) {
             description = stringResource(R.string.device_lab_outputs_desc),
         ) {
             AudioOutputsTest()
+        }
+
+        MaxSection(
+            title = stringResource(R.string.device_lab_section_wifi),
+            description = stringResource(R.string.device_lab_wifi_desc),
+        ) {
+            WifiChannels()
         }
 
         MaxSection(title = stringResource(R.string.device_lab_section_hardware)) {
@@ -1475,4 +1485,101 @@ private fun codecLabel(mime: String): String = when {
     mime.contains("dolby-vision") -> "Dolby Vision"
     mime.contains("dolby") -> "Dolby"
     else -> mime.substringAfter('/')
+}
+
+// ---------------------------------------------------------------------------
+// Wi-Fi channels
+// ---------------------------------------------------------------------------
+
+/**
+ * قنوات Wi-Fi كما يراها الجهاز الآن — قراءة، لا كتابة.
+ *
+ * **ولماذا الإذن يُطلب بضغطة:** أندرويد يحجب نتائج المسح عن تطبيقٍ بلا إذن الموقع،
+ * وطلبُ الإذن عند فتح الشاشة يُفاجئ المستخدم بسببٍ لا علاقة له بما جاء يفعله. هنا
+ * يُعرض السبب أولًا، ولا يُطلب الإذن إلا بضغطة صريحة على السطر نفسه.
+ *
+ * **ولا توصية بقناة:** الأسطر تقول ما قِيس (القناة المتّصل بها، وعدد الشبكات على
+ * القناة الأكثر ازدحامًا). «الأفضل» حكمٌ يحتاج عرض القناة والتداخل، وليس عدّ الشبكات.
+ */
+@Composable
+private fun WifiChannels() {
+    val context = LocalContext.current
+    var state by remember { mutableStateOf(WifiChannelReader.read(context)) }
+    val askLocation = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {
+        state = WifiChannelReader.read(context)
+    }
+    val summary = state.summary
+
+    MaxGroup {
+        if (state.blocker == WifiChannelReader.Blocker.NoPermission) {
+            LabActionRow(
+                title = stringResource(R.string.device_lab_wifi_grant),
+                icon = Icons.Rounded.Wifi,
+                enabled = true,
+                lockedReason = stringResource(R.string.device_lab_wifi_denied),
+                onClick = { askLocation.launch(Manifest.permission.ACCESS_FINE_LOCATION) },
+            )
+        } else if (state.blocker != null || summary == null) {
+            LabValueRow(
+                title = stringResource(R.string.device_lab_wifi_connected),
+                value = stringResource(blockerLabel(state.blocker)),
+            )
+        } else {
+            val connected = summary.connected
+            LabValueRow(
+                title = stringResource(R.string.device_lab_wifi_connected),
+                value = if (connected == null) {
+                    stringResource(R.string.device_lab_wifi_no_frequency)
+                } else {
+                    stringResource(
+                        R.string.device_lab_wifi_value_connected,
+                        connected.channel,
+                        bandLabel(connected.band),
+                    )
+                },
+            )
+            MaxGroupDivider()
+            LabValueRow(
+                title = stringResource(R.string.device_lab_wifi_seen),
+                value = stringResource(R.string.device_lab_wifi_value_seen, summary.total, summary.twoFour),
+            )
+            summary.busiest.firstOrNull()?.let { busiest ->
+                MaxGroupDivider()
+                LabValueRow(
+                    title = stringResource(R.string.device_lab_wifi_busiest),
+                    value = stringResource(
+                        R.string.device_lab_wifi_value_busiest,
+                        busiest.channel,
+                        busiest.networks,
+                    ),
+                )
+            }
+            MaxGroupDivider()
+            LabActionRow(
+                title = stringResource(R.string.device_lab_wifi_refresh),
+                icon = Icons.Rounded.RestartAlt,
+                enabled = true,
+                lockedReason = null,
+                onClick = { state = WifiChannelReader.read(context) },
+            )
+        }
+    }
+}
+
+@Composable
+private fun bandLabel(band: WifiChannel.Band): String = stringResource(
+    when (band) {
+        WifiChannel.Band.TwoFourGhz -> R.string.device_lab_band_2g
+        WifiChannel.Band.FiveGhz -> R.string.device_lab_band_5g
+        WifiChannel.Band.SixGhz -> R.string.device_lab_band_6g
+        WifiChannel.Band.Unknown -> R.string.device_lab_band_unknown
+    }
+)
+
+@Composable
+private fun blockerLabel(blocker: WifiChannelReader.Blocker?): Int = when (blocker) {
+    WifiChannelReader.Blocker.LocationOff -> R.string.device_lab_wifi_location_off
+    WifiChannelReader.Blocker.WifiOff -> R.string.device_lab_wifi_off
+    WifiChannelReader.Blocker.Unreadable -> R.string.device_lab_wifi_unreadable
+    WifiChannelReader.Blocker.NoPermission, null -> R.string.device_lab_wifi_unreadable
 }

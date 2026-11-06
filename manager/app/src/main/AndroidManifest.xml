@@ -32,6 +32,13 @@
       `cmd notification set_dnd` بجذر/Shizuku، و`settings put global zen_mode` ممنوع لأنه يُردّ.
     -->
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <!--
+      خريطة قنوات Wi-Fi: أندرويد لا يعطي نتائج المسح إلا لتطبيق يحمل إذن الموقع،
+      وNEARBY_WIFI_DEVICES هي بديله من أندرويد ١٣ لعمليات Wi-Fi — ولا يُقرأ موقع
+      ولا يُحفظ ولا يُرسل (النصّ المعروض يقول ذلك للمستخدم).
+    -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.NEARBY_WIFI_DEVICES" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
     <!--

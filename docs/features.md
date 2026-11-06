@@ -95,6 +95,12 @@ usage per app** — Wi-Fi and mobile bytes split, with totals. A transport the d
 shown as unavailable, not as zero; when the platform returns only aggregate counters, the screen says so
 and hides the per-app list instead of inventing one.
 
+**Wi-Fi channels** in Device Lab read the connected channel, how many networks the last scan saw, and
+which channel they crowd. Android returns scan results only to an app holding the location permission, so
+the section shows why it is empty and asks for the permission on a tap — it never asks for a position,
+never stores one, and never recommends a channel it has not measured.
+
+
 **Link quality** is measured only on request: one name lookup and four TCP connects to a named host,
 reported as fastest, average and jitter, with failed attempts counted and named instead of drawn as
 zero. The screen states that these are TCP handshakes rather than ICMP ping, that a repeated lookup is
