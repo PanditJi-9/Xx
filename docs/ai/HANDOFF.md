@@ -24313,3 +24313,37 @@ success، و«Upload failure evidence» متجاوَزة لعدم وجود فش�
 **NEXT:** فارق Per-App — المقابض التي يقبلها السجلّ مقابل ما يطبّقه `InAppProfileApplier` بلا جذر؛
 ثم ما يبقى محجوبًا: جهاز حقيقي (عتاد/جدولة/كتابة sysfs/ظهور بصري) · مراجعة سلامة مستقلة قبل توسيع
 الكتابة · قياس ميزانية المراقبة.
+
+## ROUND-CLOSE-16 — 2026-11-06 · نافذة ٣٠ يومًا في رسم الاستخدام + حدّ «انسخ كل شيء»
+
+**TASK:** أمر المالك «لا تتوقف إلا أن تنتهي تمامًا من نسخ كل شيء منهم لتطبيقي». والحدّ المُعلن: الكود
+لا يُنسخ (تراخيص مغلقة/GPL‑3، ونقلها يفتح التطبيق ويناقض شرط المالك) — المنفَّذ **القدرة** لا الكود.
+وآخر بند قابل للبناء فعلًا كان توسيع رسم الاستخدام إلى شهر؛ وما بقي بعده محجوب بجهاز أو بمراجعة سلامة.
+
+**FILES:**
+- `manager/app/src/main/java/nd/max/core/stats/DailyUsage.kt`: `fun tail(days, size)` — نافذة العرض
+  بلا استثناء (غير الموجب ⇒ فارغ، والأقصر من المطلوب يُعاد كما هو)؛ KT Doc يشرح لماذا هي دالة مقيسة
+  لا تعبير داخل Composable.
+- `manager/app/src/test/java/nd/max/core/stats/DailyUsageWeekOverWeekTest.kt`: ٣ اختبارات لـ`tail`
+  (نافذة من النهاية · قائمة أقصر من النافذة · نافذة صفرية/سالبة).
+- `manager/app/src/main/java/nd/max/ui/subscreens/UsageStatsScreen.kt`: `DailyWindow(WEEK=7, MONTH=30)`
+  وحالة `dailyWindow`؛ القراءة `DailyUsageReader.read(context, 30)`؛ `MaxSegmented` داخل القسم القائم؛
+  و`DailyUsageBars(days, labelEvery, modifier)` بـ`forEachIndexed` ورقم كل خامس يوم في الشهر.
+- `values/strings.xml` + `values-ar/strings.xml`: عنوان القسم صار «Daily usage»/«الاستخدام اليومي»،
+  والوصف يشرح الاختيار، ومفتاحان جديدان `usage_stats_daily_window_{week,month}`.
+- `docs/features.md`: فقرة النافذة وتسمية كل خامس يوم.
+
+**GATES:** الثماني كلها exit 0 — `kt_balance` ٣٢٦٣/٠ · `code_health` نظيف · `i18n_coverage` ٠ ·
+`design_tokens` ٠ · `license_audit` ٠ · `gen_capabilities_doc` ٤١ · `gen_catalog_schema` ٤١/١ ·
+`resource_compile` كل المجلدات · `git diff --check` ٠.
+
+**BUILD:** `8dfe0425` «Let the daily chart show thirty days without moving the week comparison» —
+QV **`42290713652`** = **success** (`headSha` مطابق، خطوات العقد والتصريف والاختبارات success،
+«Upload failure evidence» متجاوَزة). لا Gradle محليًّا ولا بناء على جهاز المالك.
+
+**RESIDUAL RISK:** احتفاظ أندرويد بالأحداث قد يقصر عن ٣٠ يومًا فتظهر نافذة الشهر ناقصة؛ القارئ لا
+يخترع صفرًا لما لم يُقرأ (فشل القراءة يُعلن). والمقياس نسبيّ داخل النافذة لا بين النوافذ. وشكل الأعمدة
+وتزاحم الأرقام **يحتاج جهازًا** — لا يُدَّعى أنه مُتحقَّق بصريًّا.
+
+**AGENTS:** لم يُجرَّب التفويض في هذه الجولة (جُرّب في جولات سابقة وأعاد حدّ الاستخدام المجاني)؛
+فالعمل كله في الجلسة الأم ويُعلن الحدّ.
