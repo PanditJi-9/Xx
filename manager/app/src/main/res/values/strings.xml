@@ -1178,6 +1178,33 @@
       untranslated because this screen is the raw inspection surface.
     -->
     <string name="diagnostics_capability_matrix">Hardware capability matrix</string>
+    <!-- سجلّ المستبعَد: قرارنا لا حالة الجهاز (ADR-91). بلا مفتاح واحد. -->
+    <string name="diagnostics_excluded_title">Excluded and refused</string>
+    <string name="diagnostics_excluded_desc">What this app deliberately does not offer, and the reason for each — not a disabled switch you can force on.</string>
+    <string name="diagnostics_excluded_warning">Nothing in this list can be turned on with an acknowledgement, root or a hidden setting. A control the kernel does not expose stays unavailable, and a control we refused stays refused.</string>
+    <string name="excluded_kind_refused">Refused by decision</string>
+    <string name="excluded_kind_unsupported">Not available on this platform</string>
+    <string name="excluded_kind_dangerous">Shipped — dangerous, behind one recorded acknowledgement</string>
+    <string name="excluded_voltage_title">Processor and GPU voltages</string>
+    <string name="excluded_voltage_reason">No verified node path on this kernel, and nothing measured here can tell a safe step from one that ends the device.</string>
+    <string name="excluded_soc_tunables_title">KLapse, GED and PPM tunables</string>
+    <string name="excluded_soc_tunables_reason">Stored SoC tunables owned by the vendor; writing them blind is how a governor locks or a device stops booting.</string>
+    <string name="excluded_sysconfig_title">GMS sysconfig and Doze edits</string>
+    <string name="excluded_sysconfig_reason">Editing these breaks notifications and needs a system flash to undo.</string>
+    <string name="excluded_kernel_flash_title">Kernel and boot image flashing</string>
+    <string name="excluded_kernel_flash_reason">Flashes a boot image from outside the app, and a failed flash is not recoverable from inside it.</string>
+    <string name="excluded_benchmark_title">Competitive benchmark ranking</string>
+    <string name="excluded_benchmark_reason">Reordering threads to rank higher is cheating the score, not measuring the device.</string>
+    <string name="excluded_telemetry_title">Turning telemetry off without measuring it</string>
+    <string name="excluded_telemetry_reason">Disabling it without measuring the cost is a claim, not a result.</string>
+    <string name="excluded_wakelocks_title">Wakelocks, LMK and stune</string>
+    <string name="excluded_wakelocks_reason">Needs root and node paths this device does not declare, so the switch would lie about what it did.</string>
+    <string name="excluded_cpu_limits_title">CPU frequency limits</string>
+    <string name="excluded_gpu_limits_title">GPU frequency limits</string>
+    <string name="excluded_freeze_title">Freezing and disabling packages</string>
+    <string name="excluded_restore_title">Automatic re-apply after boot</string>
+    <string name="excluded_reason_dangerous">Offered with the rest of the app, behind one recorded acknowledgement that names the risk and puts the responsibility on you.</string>
+
     <string name="diagnostics_detecting_interfaces">Detecting hardware interfaces…</string>
     <string name="diagnostics_refresh">Refresh</string>
     <string name="diagnostics_access_read_write">Supported • read/write</string>

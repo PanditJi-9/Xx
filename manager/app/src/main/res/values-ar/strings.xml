@@ -1917,6 +1917,33 @@
     <string name="diagnostics_workflow_desc">ابدأ بالعمليات الحية ثم افحص الأحداث والسجلات ثم استخدم طرفية الجذر فقط عند الحاجة إلى تحقق أعمق.</string>
     <string name="diagnostics_inspection_only">فحص فقط</string>
     <string name="diagnostics_capability_matrix">مصفوفة قدرات العتاد</string>
+    <!-- سجلّ المستبعَد: قرارنا لا حالة الجهاز (ADR-91). بلا مفتاح واحد. -->
+    <string name="diagnostics_excluded_title">المستبعَد والمرفوض</string>
+    <string name="diagnostics_excluded_desc">ما لا يقدّمه هذا التطبيق بقرارٍ منّا، وسبب كل بند — لا مفتاح مطفأ يمكنك إجباره.</string>
+    <string name="diagnostics_excluded_warning">لا شيء في هذه القائمة يُشغَّل بإقرارٍ أو بجذر أو بإعداد مخفيّ: ما لا تُظهره النواة يبقى غير متاح، وما رفضناه يبقى مرفوضًا.</string>
+    <string name="excluded_kind_refused">مرفوض بقرار</string>
+    <string name="excluded_kind_unsupported">غير متاح على هذه المنصّة</string>
+    <string name="excluded_kind_dangerous">مشحون — خطر، خلف إقرار واحد يُسجَّل</string>
+    <string name="excluded_voltage_title">فولتية المعالج والرسوميات</string>
+    <string name="excluded_voltage_reason">لا مسار عقدة مُتحقَّق على هذه النواة، ولا شيء يُقاس هنا يفرّق خطوةً آمنة عن خطوة تُنهي الجهاز.</string>
+    <string name="excluded_soc_tunables_title">توابل KLapse وGED وPPM</string>
+    <string name="excluded_soc_tunables_reason">قيم مشحونة في العتاد يملكها المورّد؛ كتابتها بلا مسار مُتحقَّق هي طريق قفل الحاكم أو منع الإقلاع.</string>
+    <string name="excluded_sysconfig_title">تعديلات sysconfig وDoze</string>
+    <string name="excluded_sysconfig_reason">تعديلها يكسر الإشعارات ويحتاج فلاشًا للنظام للتراجع عنه.</string>
+    <string name="excluded_kernel_flash_title">تفليش النواة وصورة الإقلاع</string>
+    <string name="excluded_kernel_flash_reason">تفليش صورة الإقلاع يقع خارج التطبيق، وفشله لا يُستدرَك من داخله.</string>
+    <string name="excluded_benchmark_title">ترتيب البنشمارك التنافسي</string>
+    <string name="excluded_benchmark_reason">إعادة ترتيب الخيوط لترتفع في الترتيب هي غشّ للنتيجة لا قياس للجهاز.</string>
+    <string name="excluded_telemetry_title">إطفاء التليمتري بلا قياس</string>
+    <string name="excluded_telemetry_reason">تعطيله بلا قياس كلفته ادّعاء لا نتيجة.</string>
+    <string name="excluded_wakelocks_title">wakelocks وLMK وstune</string>
+    <string name="excluded_wakelocks_reason">تحتاج جذرًا ومسارات عقد لا يعلنها هذا الجهاز، فالمفتاح سيكذب في وصف ما فعله.</string>
+    <string name="excluded_cpu_limits_title">حدود تردّد المعالج</string>
+    <string name="excluded_gpu_limits_title">حدود تردّد الرسوميات</string>
+    <string name="excluded_freeze_title">تجميد الحِزم وتعطيلها</string>
+    <string name="excluded_restore_title">إعادة التطبيق التلقائي بعد الإقلاع</string>
+    <string name="excluded_reason_dangerous">متاح مع بقية التطبيق، خلف إقرار واحد يُسجَّل بزمنه، يسمّي الخطر ويضع المسؤولية عليك.</string>
+
     <string name="diagnostics_detecting_interfaces">جارٍ الكشف عن واجهات العتاد…</string>
     <string name="diagnostics_refresh">تحديث</string>
     <string name="diagnostics_access_read_write">مدعوم · قراءة/كتابة</string>

@@ -94,6 +94,7 @@ import nd.max.ui.util.ZramPlatformState
 import nd.max.ui.util.ZramPlatformUtil
 import nd.max.ui.util.StorageHealthUtil
 import nd.max.ui.util.StorageMediaHealth
+import nd.max.ui.component.ExcludedCapabilitiesCard
 import androidx.compose.ui.platform.LocalContext
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -224,6 +225,11 @@ fun DiagnosticsScreen(navController: NavHostController) {
                         )
                     },
                 )
+            }
+            item {
+                // سجلّ المستبعَد: قرارنا لا حالة الجهاز — بطاقة مستقلة عن مصفوفة القدرات،
+                // وبلا مفتاح واحد (§0.5 · ADR-07 · ADR-91).
+                ExcludedCapabilitiesCard()
             }
             item {
                 RuntimeHealthCard(runtime)
