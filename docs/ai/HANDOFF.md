@@ -23869,3 +23869,52 @@ Quick Verify على GitHub Actions (لا بناء على الهاتف بأمر �
 
 **NEXT:** (١) المالك يدوّر التوكن (حُذف الملف). (٢) يختار ما يُفتح: جهاز / إذن الموقع / مراجعة سلامة.
 (٣) لا شيء معلّق في CI: `ed54a942` أخضر، وكل التزامات الجولة مُتحقَّقة.
+
+### ROUND-CLOSE-06 — 2026-11-06 · الدفعات الخمس + وكيلا البوّابات وCI (DONE)
+
+**FILES (كلها على `main`):**
+- `2cbb481b` + `1afb9591` **استنزاف البطارية active/idle**: تقسيم `BatteryDrain` إلى دلوين لا يخلطان
+  زوجًا انتقاليًّا (شاشة مضيئة ← مطفأة) بأي دلو؛ والزوج الانتقالي يُحسب في `overall` وحده. الاختبار
+  الذي أسقط أول دفع كان يتوقّع `idleSpanHours = 3f` والصحيح `2f` — أُصلح التوقّع لا المنطق، ونجح عليه QV.
+- `febd4bb7` **JSON Schema للكتالوج**: `tools/gen_catalog_schema.py` (draft 2020-12 مشتقّ من مفردات
+  المدقّق، بلا حزم خارجية) + `docs/control-catalog.schema.json` + مدقّق داخلي و`--self-test` (٨ فحوص)،
+  مضاف إلى «Contract gates» في `build.yml` و`verify-quick.yml`.
+- `4e3473a0` **جدولة الوضع الليلي**: `core/display/NightLightWindow.kt` (دالّة نقية تعبر منتصف الليل،
+  والبداية داخلة والنهاية خارجة، و`start == end` تعني ملغاة لا ٢٤ ساعة) + `NightLightSchedule.kt`
+  (منبّه واحد `setAndAllowWhileIdle`، لا `SCHEDULE_EXACT_ALARM`، ويكتب مفتاح المنصّة نفسه
+  `secure/night_display_activated`) + `receiver/NightLightScheduleReceiver.kt` (إقلاع/تحديث/تغيّر ساعة
+  أو منطقة) + `NightLightWindowTest` (٨ اختبارات) + مفتاح وساعتان في `DisplayStudioScreen` +
+  نصوص EN/AR + مستقبل في المانيفست + `docs/features.md` + سجل الحصاد.
+- `94987178` **سطح استعادة الإقلاع**: `PersistStore.fastBootStreak` + عرض آخر جولة (زمن نسبيّ) وعدّاد
+  الإقلاعات السريعة مع تحذير عند ٢ في `PersistRestoreItem` — قراءة فقط وبلا زر تصفير.
+- `e2efc653` **تصحيح Vulkan/OpenGL**: التقرير كان مشحونًا أصلًا (`glEsVersion` من `dumpsys SurfaceFlinger`،
+  و`vulkanVersion`/`vulkanLevel` من `getSystemAvailableFeatures()`، معروضة في `DeviceInfoFacts`)،
+  فصُحّح سطران في سجل الحصاد ووُسم البند مشحونًا — **لم يُبنَ كود ثانٍ**.
+- `69000d8f` **إصلاح اختبار منتصف الليل**: كان الاختبار يضع ٢١:٥٩ داخل نافذة ٢٢:٠٠–٠٧:٠٠؛ صار
+  `assertFalse` مع تعليق.
+- `5ca38158` **توثيق الوكيلين**: تصحيح ادّعاء `AGENTS.md` §2.1 (أداة `subagent` موجودة، والحاجز حدّ
+  الاستخدام المجاني)، وصفّا Gatekeeper وCI Runner في الروستر، و`docs/ai/team/gatekeeper.md` و`ci-runner.md`.
+
+**AGENTS (إعداد وقت التشغيل، خارج المستودع):** `/root/.config/opencode/oh-my-opencode-slim.json` زاد
+`gatekeeper` و`ci-runner` (نموذج `opencode/deepseek-v4.1-flash-free`، و`orchestratorPrompt` لكلٍّ)،
+والـpreset `nader-ip-free` لم يُمَس. وأُضيف `orchestrator_append.md` (٧ قواعد تفويض) و`fixer_append.md`
+(قواعد المستودع الملزمة: هرب `\'`، `MonoValueStyleSmall` في `ui.theme`، `installLocation` على
+`PackageInfo`، قيم افتراضية لمُساعد الاختبار، لا Gradle محليًّا، البوابات الثماني قبل الالتزام).
+**الحدّ المقيس:** إنشاء وكيل فرعي يرجع فورًا «Free usage limit reached … OpenCode Go» ⇒ الإعداد جاهز
+لكن التفويض نفسه محجوب في هذه البيئة.
+
+**GATES:** الثماني `--assert` قبل كل التزام، آخرها `kt_balance` **3238 ملفًا · 0 عوائق** · `code_health` 0 ·
+`i18n_coverage` 0 · `design_tokens` 0 · `resource_compile` كل المجلدات · `license_audit` نظيف ·
+`gen_capabilities_doc` 41 · `gen_catalog_schema` 41/1 و`--self-test` 8.
+
+**BUILD (CI وحده):** QV `42139782101` على `69000d8f` = **success** · QV `42142299477` على `5ca38158`
+= **success**. والفشل الوحيد في الجولة (`42087722622`) كان اختبار النافذة الليلية وأُصلح في `69000d8f`.
+تشغيلان `42084927547` و`42086602605` = cancelled (concurrency) لا فشل، وكلاهما سلف لالتزام أخضر.
+
+**RESIDUAL RISK:** سلوك الجدولة على ساعة حقيقية، والبلاطة التي تحتاج `WRITE_SECURE_SETTINGS`/جذرًا،
+وسلوك العتاد عمومًا: **يحتاج جهازًا**. محرّك الوصفات يحتاج arbiter ومراجعة سلامة مستقلة؛ خريطة قناة
+Wi-Fi تحتاج `ACCESS_FINE_LOCATION`؛ ميزانية تكلفة المراقبة تحتاج قياسًا.
+
+**NEXT:** (١) المالك يقرّر ما يُفتح تاليًا (جهاز للاختبار / إذن الموقع / مراجعة سلامة).
+(٢) عند توفر رصيد وكلاء: استخدام `@gatekeeper` و`@ci-runner` بحسب `orchestrator_append.md`.
+(٣) لا شيء معلّق في CI: `5ca38158` أخضر.
