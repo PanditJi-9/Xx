@@ -91,6 +91,12 @@
     <string name="max_perms_manifest_exported">Exported components</string>
     <string name="max_perms_manifest_splits">Split APKs</string>
     <string name="max_perms_manifest_debug">Debuggable</string>
+    <string name="max_perms_features_title">Declared features</string>
+    <string name="max_perms_features_desc">What the package requires from the device, compared with what this device advertises. A required feature missing here usually means the app will not work fully — it is a claim from the package manager, not a guess.</string>
+    <string name="max_perms_features_loading">Reading the package\'s declared features…</string>
+    <string name="max_perms_features_none">The package declares no required features.</string>
+    <string name="max_perms_features_required">Required</string>
+    <string name="max_perms_features_unsupported">Not on this device</string>
     <string name="max_perms_manifest_none">Not reported by the package manager.</string>
     <string name="max_perms_manifest_unknown">Unknown</string>
 </resources>

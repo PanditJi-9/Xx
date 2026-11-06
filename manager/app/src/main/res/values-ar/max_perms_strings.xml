@@ -91,6 +91,12 @@
     <string name="max_perms_manifest_exported">مكوّنات مُصدَّرة</string>
     <string name="max_perms_manifest_splits">أجزاء APK</string>
     <string name="max_perms_manifest_debug">قابل للتنقيح</string>
+    <string name="max_perms_features_title">الميزات المعلَنة</string>
+    <string name="max_perms_features_desc">ما تطلبه الحزمة من الجهاز مقابل ما يعلنه جهازك. ميزة مطلوبة وغائبة هنا تعني عادةً أن التطبيق لن يعمل كاملًا — وهي دعوى من مدير الحزم لا تخمين.</string>
+    <string name="max_perms_features_loading">تُقرأ ميزات الحزمة المعلَنة…</string>
+    <string name="max_perms_features_none">الحزمة لا تعلن أي ميزة مطلوبة.</string>
+    <string name="max_perms_features_required">مطلوبة</string>
+    <string name="max_perms_features_unsupported">غير موجودة على هذا الجهاز</string>
     <string name="max_perms_manifest_none">لا يعدّه مدير الحزم.</string>
     <string name="max_perms_manifest_unknown">غير معلوم</string>
 </resources>

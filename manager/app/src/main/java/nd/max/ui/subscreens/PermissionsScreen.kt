@@ -101,8 +101,10 @@ import nd.max.ui.design.MaxTone
 import nd.max.ui.theme.MonoValueStyleSmall
 import nd.max.ui.navigation.MaxDestination
 import nd.max.ui.util.AppOpsUtil
+import nd.max.core.platform.PackageFeatures
 import nd.max.ui.util.ManifestFacts
 import nd.max.ui.util.ManifestFactsReader
+import nd.max.ui.util.PackageFeaturesReader
 import nd.max.ui.util.PermissionPolicy
 import nd.max.ui.viewmodel.ApplistViewmodel
 import nd.max.ui.design.maxRadius
@@ -164,6 +166,7 @@ private fun AppOpsDetail(navController: NavController, pkg: String) {
     var permissions by remember(pkg) { mutableStateOf<List<AppOpsUtil.DeclaredPermission>?>(null) }
     var loaded by remember(pkg) { mutableStateOf(false) }
     var manifest by remember(pkg) { mutableStateOf<ManifestFacts?>(null) }
+    var features by remember(pkg) { mutableStateOf<PackageFeatures?>(null) }
     var ops by remember(pkg) { mutableStateOf<List<PermissionPolicy.OpState>?>(null) }
     var opsLoaded by remember(pkg) { mutableStateOf(false) }
     var reference by remember(pkg) { mutableStateOf<PermissionPolicy.Reference?>(null) }
@@ -197,6 +200,7 @@ private fun AppOpsDetail(navController: NavController, pkg: String) {
         opsLoaded = true
         // قراءة المانيفست في نفس دورة التحميل: قسمُه لا يظهر قبلها، فلا يمرّ المستخدم بحالة «فارغ».
         manifest = withContext(Dispatchers.IO) { ManifestFactsReader.read(context, pkg) }
+        features = withContext(Dispatchers.IO) { PackageFeaturesReader.read(context, pkg) }
     }
 
     LaunchedEffect(pkg) { reload() }
@@ -293,6 +297,40 @@ private fun AppOpsDetail(navController: NavController, pkg: String) {
                                 if (facts.debuggable) R.string.yes else R.string.no
                             ),
                         )
+                    }
+                }
+            }
+
+            // ── الميزات المعلَنة: ما تطلبه الحزمة مقابل ما يقدّمه الجهاز ──────
+            MaxSection(
+                title = stringResource(R.string.max_perms_features_title),
+                description = stringResource(R.string.max_perms_features_desc),
+            ) {
+                val declared = features
+                when {
+                    // `null` = لم تُقرأ بعد؛ لا نكتب «لا متطلبات» لأنها دعوى كاذبة قبل القراءة.
+                    declared == null -> MaxGroup {
+                        MaxRow(title = stringResource(R.string.max_perms_features_loading))
+                    }
+
+                    declared.required.isEmpty() -> MaxGroup {
+                        MaxRow(title = stringResource(R.string.max_perms_features_none))
+                    }
+
+                    else -> MaxGroup {
+                        ManifestRow(
+                            title = stringResource(R.string.max_perms_features_required),
+                            subtitle = declared.required.take(4).joinToString(" · "),
+                            value = declared.required.size.toString(),
+                        )
+                        if (declared.unsupported.isNotEmpty()) {
+                            MaxGroupDivider()
+                            ManifestRow(
+                                title = stringResource(R.string.max_perms_features_unsupported),
+                                subtitle = declared.unsupported.take(4).joinToString(" · "),
+                                value = declared.unsupported.size.toString(),
+                            )
+                        }
                     }
                 }
             }
