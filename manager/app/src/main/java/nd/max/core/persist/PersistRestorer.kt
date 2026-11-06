@@ -7,6 +7,8 @@
 package nd.max.core.persist
 
 import android.content.Context
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import android.content.Intent
 import android.os.Build
 import android.provider.Settings
@@ -196,8 +198,31 @@ object PersistRestorer {
         return withContext(Dispatchers.IO) { run(app, automatic = false) }
     }
 
+    /**
+     * يردّ القيم التي كانت قبل آخر كتابة، ويعيد عدد ما أُعيد فعلًا.
+     *
+     * **ولا يمرّ بـ[writeAndRead]:** تلك تسجّل لقطة جديدة قبل كل كتابة، فتصير
+     * عملية التراجع نفسها هي «آخر تغيير» — ويُفقد ما نريد ردّه. هنا كتابة مباشرة
+     * بقراءة تحقّق، واللقطة تُمسح فقط إذا نجح ردّ **كل** القيم.
+     */
+    suspend fun restoreSnapshot(context: Context): Int = withContext(Dispatchers.IO) {
+        val snapshot = PersistSnapshot.load(context.applicationContext) ?: return@withContext 0
+        var restored = 0
+        snapshot.values.forEach { (path, old) ->
+            runCatching {
+                if (RootFileAccess.exists(path) && RootFileAccess.read(path)?.trim() != old) {
+                    RootFileAccess.write(path, old)
+                    if (RootFileAccess.read(path)?.trim() == old) restored++
+                }
+            }
+        }
+        if (restored == snapshot.values.size) PersistSnapshot.clear(context.applicationContext)
+        restored
+    }
+
     private suspend fun run(app: Context, automatic: Boolean): List<PersistEntry> {
         val holdDangerous = automatic && !PersistStore.dangerousAutoEnabled(app)
+        PersistSnapshot.begin()
         val entries = mutableListOf<PersistEntry>()
         for (item in ITEMS) {
             val (status, detail) = if (item.dangerous && holdDangerous) {
@@ -211,6 +236,7 @@ object PersistRestorer {
             entries += PersistEntry(item.id, status, detail, System.currentTimeMillis())
             delay(STAGE_GAP_MS)
         }
+        PersistSnapshot.commit(app)
         log(entries, automatic, holdDangerous)
         return entries
     }
@@ -702,7 +728,9 @@ private enum class WriteOutcome { OK, NO_NODE, MISMATCH }
  */
 private fun writeAndRead(path: String, value: String): WriteOutcome {
     if (!RootFileAccess.exists(path)) return WriteOutcome.NO_NODE
-    if (RootFileAccess.read(path)?.trim() == value) return WriteOutcome.OK
+    val previous = RootFileAccess.read(path)?.trim()
+    if (previous == value) return WriteOutcome.OK
+    PersistSnapshot.record(path, previous)
     RootFileAccess.write(path, value)
     return if (RootFileAccess.read(path)?.trim() == value) WriteOutcome.OK else WriteOutcome.MISMATCH
 }

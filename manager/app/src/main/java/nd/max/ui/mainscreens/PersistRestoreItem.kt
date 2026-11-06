@@ -31,9 +31,11 @@ import androidx.compose.ui.unit.dp
 import android.text.format.DateUtils
 import androidx.compose.material.icons.rounded.RestartAlt
 import androidx.compose.material.icons.rounded.History
+import androidx.compose.material.icons.rounded.Undo
 import kotlinx.coroutines.launch
 import nd.max.R
 import nd.max.core.persist.PersistRestorer
+import nd.max.core.persist.PersistSnapshot
 import nd.max.core.persist.PersistStore
 import nd.max.ui.component.ExpressiveList
 import nd.max.ui.component.ExpressiveListItem
@@ -54,6 +56,7 @@ fun PersistRestoreItem() {
     var dangerousReason by remember { mutableStateOf(PersistStore.dangerousAutoOffReason(context)) }
     var lastRunAtMs by remember { mutableStateOf(PersistStore.lastRunAtMs(context)) }
     var fastBoots by remember { mutableStateOf(PersistStore.fastBootStreak(context)) }
+    var snapshotCount by remember { mutableStateOf(PersistSnapshot.load(context)?.values?.size ?: 0) }
 
     Column(verticalArrangement = Arrangement.spacedBy(MaxSpace.sm)) {
         ExpressiveList(
@@ -93,6 +96,7 @@ fun PersistRestoreItem() {
                                     PersistRestorer.restoreNow(context)
                                     lastRunAtMs = PersistStore.lastRunAtMs(context)
                                     fastBoots = PersistStore.fastBootStreak(context)
+                                    snapshotCount = PersistSnapshot.load(context)?.values?.size ?: 0
                                     busy = false
                                 }
                             }
@@ -159,6 +163,37 @@ fun PersistRestoreItem() {
                 }
             )
         )
+
+        // تراجع عن آخر قيم كُتبت: فعل لا سجلّ. يظهر فقط إن كانت هناك لقطة،
+        // لأن زرًّا لا يفعل شيئًا أسوأ من غيابه.
+        if (snapshotCount > 0) {
+            ExpressiveList(
+                content = listOf(
+                    {
+                        ExpressiveListItem(
+                            onClick = {
+                                if (!busy) {
+                                    busy = true
+                                    scope.launch {
+                                        PersistRestorer.restoreSnapshot(context)
+                                        snapshotCount = PersistSnapshot.load(context)?.values?.size ?: 0
+                                        lastRunAtMs = PersistStore.lastRunAtMs(context)
+                                        busy = false
+                                    }
+                                }
+                            },
+                            headlineContent = { Text(stringResource(R.string.persist_snapshot_title)) },
+                            supportingContent = {
+                                Text(stringResource(R.string.persist_snapshot_desc, snapshotCount))
+                            },
+                            leadingContent = {
+                                LeadingIcon(icon = Icons.Rounded.Undo, contentDescription = null)
+                            }
+                        )
+                    }
+                )
+            )
+        }
 
         if (fastBoots >= 2) {
             Text(

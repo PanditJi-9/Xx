@@ -1047,6 +1047,8 @@
     <string name="persist_fast_boots_title">إقلاعات سريعة متتالية</string>
     <string name="persist_fast_boots_desc">%1$d أحصاها حارس الإقلاع. اثنان متتاليان يُشغّلانه.</string>
     <string name="persist_fast_boots_tripped">اشتغل الحارس: التطبيق التلقائي للإعدادات المتقدمة موقوف حتى تعيد تشغيله.</string>
+    <string name="persist_snapshot_title">تراجع عن آخر قيم طُبّقت</string>
+    <string name="persist_snapshot_desc">%1$d قيمة يمكن ردّها إلى ما كانت عليه قبل آخر استعادة.</string>
     <string name="persist_coverage">يشمل التعديلات المحفوظة للعتاد والنظام.</string>
     <string name="persist_note">تُطبَّق التعديلات المتوافقة مع صلاحيات الجهاز بأمان.</string>
     <string name="settings_home_section">الشاشة الرئيسية</string>
