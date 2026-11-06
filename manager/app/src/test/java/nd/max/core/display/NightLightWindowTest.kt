@@ -44,7 +44,9 @@ class NightLightWindowTest {
 
     @Test
     fun a_window_across_midnight_is_active_on_both_sides() {
-        assertTrue(NightLightWindow.isActive(at22 - 1, at22, at07))
+        // قبل البداية بدقيقة واحدة: خارج النافذة. والاختبار الذي كان هنا وقع في
+        // هذا الفخّ نفسه: ٢١:٥٩ ليست داخل ٢٢:٠٠–٠٧:٠٠، والذيل لا يُقرأ من الاسم.
+        assertFalse(NightLightWindow.isActive(at22 - 1, at22, at07))
         assertTrue(NightLightWindow.isActive(at22 + 60, at22, at07))
         assertTrue(NightLightWindow.isActive(0, at22, at07))
         assertTrue(NightLightWindow.isActive(6 * 60 + 59, at22, at07))
