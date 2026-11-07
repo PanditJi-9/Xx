@@ -1,3 +1,17 @@
+## ROUND-CLOSE-29 — شارة الوصول تفتح نافذة واحدة صادقة — 2026-11-07 · DONE_WITH_CONCERNS
+
+**TASK:** محدّد وضع وصول في الرئيسية (Auto/Root/Shizuku/Basic) مثل Scene، مع مدير الجذر وSELinux، وفلتر «ما يدعمه الوضع فقط» أو «كل شيء»، وتغييره من الإعدادات أيضًا.
+
+**CHANGED:** `core/privilege/AccessPreferences.kt` (فلتر + كاشف مدير جذر + قارئ SELinux) · `ui/component/AccessModeDialog.kt` · شارة البطل قابلة للنقر · زرّ «وضع الوصول» في `PrivilegePanel` مع تطبيق الفلتر · تحميل الفلتر في الإقلاع · ٢٧ نصًّا EN+AR.
+
+**GATES:** التسع + `--prune all` + `rtl_guard` + `git diff --check` ⇒ خضراء (`a29-*`)، مع إعادة `kt_balance`/`diffcheck` بعد آخر تعديل.
+
+**BUILD:** `__SHA8__` → `MaxManager` تشغيل `__RUN__` — الحكم يُقرأ قبل إعلانه.
+
+**RESIDUAL:** الفلتر على قائمة القدرات فقط (بطاقات الرئيسية بلا حقل طبقة) · كشف مدير الجذر يحتاج جذرًا · SELinux `UNKNOWN` حيث لا يُقرأ.
+
+**NEXT:** تحقّق جهاز: الأوضاع الأربعة وحالتها · كشف Magisk/KernelSU/APatch · أثر الفلتر.
+
 ## ROUND-CLOSE-28 — 2026-11-07 · DONE_WITH_CONCERNS (عائلات الذاكرة والشاحن · FAS حقائق · حكم CI يُقرأ)
 
 **TASK:** تنفيذ ما بقي من قائمة الأفكار المستخرجة من الشجرتين بلا نقل كود.

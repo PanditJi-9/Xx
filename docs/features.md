@@ -237,6 +237,8 @@ engine you switched on.
 
 <p align="center"><img src="assets/locales.svg" width="100%" alt="84 languages, and right-to-left is first class"></p>
 
+- **One access sheet** from the home chip and from Settings: the current privilege level, the detected root manager, the SELinux state, a four-way execution mode (Auto, Root, Shizuku, Basic), and a filter that either hides what the mode cannot do or shows everything with the level it needs.
+
 
 - **Light and dark**, with a themable key colour and a custom palette screen.
 - **84 locales** plus English; the picker follows the system language without a restart.

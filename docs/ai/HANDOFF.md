@@ -60,6 +60,20 @@ MaxManager has a strong engine and a fragmented surface. `core/maxai` + `core/ha
 
 ## Executor log
 
+### ROUND-CLOSE-29 — شارة الوصول تفتح نافذة واحدة صادقة — 2026-11-07 · DONE_WITH_CONCERNS
+
+**TASK:** طلب المالك: محدّد وضع وصول في الرئيسية (Auto/Root/Shizuku/Basic) مثل Scene، مع مدير الجذر وSELinux، وفلتر «ما يدعمه الوضع فقط» أو «كل شيء»، وتغييره من الإعدادات أيضًا.
+
+**CHANGED:** `core/privilege/AccessPreferences.kt` جديد (فلتر محفوظ · كاشف مدير جذر عبر `PrivilegedShell` · قارئ SELinux بلا جذر) · `ui/component/AccessModeDialog.kt` جديد (الحالة + الأوضاع الأربعة بأوصاف صادقة + الفلتر) · شارة البطل صارت قابلة للنقر (`onAccess` في `HomeHeroCard`/`LegendaryHomeDashboard`/`HomeScreen`) · زرّ «وضع الوصول» في `PrivilegePanel` مع تطبيق الفلتر على قائمة القدرات · `AccessFilterStore.load` في `MaxManagerApplication` · ٢٧ نصًّا EN+AR.
+
+**MEASURED:** الكتالوج لم يتغيّر ٨٣ مدخلًا/١٤٩ مرشّحًا/٢٣ بادئة · `values` ٣٩٩٤ و`values-ar` ٣٩٨٢ · البوابات خضراء (`a29-*`) + إعادة `kt_balance`/`diffcheck` بعد آخر تعديل.
+
+**BUILD:** `__SHA8__` → `MaxManager` تشغيل `__RUN__`.
+
+**RESIDUAL:** الفلتر يُطبَّق على قائمة `PrivilegeCatalog` فقط لأن بطاقات الرئيسية لا تحمل حقل طبقة · كشف مدير الجذر يحتاج جذرًا ممنوحًا · SELinux قد يكون غير مقروء على بعض النوى ⇒ `UNKNOWN` · الوضع لا يحكم إلا مسار الأوامر المميّزة ومساحة الألعاب؛ بقية الشاشات لها صدفتها.
+
+**NEXT:** جهاز: هل تظهر الأوضاع الأربعة بحالتها الحقيقية · هل يُكتشف Magisk/KernelSU/APatch · هل يقلّل الفلتر القائمة كما يُعلن.
+
 ### ROUND-CLOSE-28 — عائلات الذاكرة والشاحن تُعلن، وصفحة FAS تصير حقائق — 2026-11-07 · DONE_WITH_CONCERNS (البوابات خضراء · حكم CI يُقرأ لا يُدّعى)
 
 **TASK:** تنفيذ بقيّة قائمة الأفكار المستخرجة من `fde_ai` و`scene_n1` بلا نقل كود: عائلة LMK · حدود CPU عبر `msm_performance` · step charging وإيقاف الإدخال · حالة PD · حرارة إضافية · ضغط الذاكرة وZRAM · memcg · وشاشة FAS.
