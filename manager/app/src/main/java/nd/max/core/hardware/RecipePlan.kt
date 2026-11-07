@@ -52,13 +52,29 @@ object RecipePlan {
     fun parse(recipe: String): List<Pair<String, String>> = recipe.lineSequence()
         .map { it.trim() }
         .filter { it.isNotEmpty() && !it.startsWith("#") }
-        .mapNotNull { line ->
-            val at = line.indexOf('=')
-            if (at <= 0 || at == line.lastIndex) null
-            else line.substring(0, at).trim() to line.substring(at + 1).trim()
-        }
-        .filter { (key, value) -> key.isNotEmpty() && value.isNotEmpty() }
+        .mapNotNull(::resolveLine)
         .toList()
+
+    /**
+     * عدد الأسطر التي **لم تُفهم**: غير فارغة، غير معلّقة، ولم تُحلّ إلى `key=value`.
+     *
+     * **ولماذا يُعدّ بدل أن يُسكَت عنه:** [parse] تُسقط ما لا تفهمه، وهو الصواب للمحرّك (سطر
+     * معطوب لا يمنع سطرًا صحيحًا). لكن سطحًا يقول «٣ أسطر جاهزة» عن نصّ فيه خمسة أسطر يوهم أن
+     * السطرين الآخرين طُبِّقا. فالعدد **للعرض وحده**، ولا يدخل حكم [plan] ولا يمنع تطبيقًا.
+     */
+    fun ignored(recipe: String): Int = recipe.lineSequence()
+        .map { it.trim() }
+        .filter { it.isNotEmpty() && !it.startsWith("#") }
+        .count { resolveLine(it) == null }
+
+    /** حسم سطر واحد إلى زوج، أو `null` إن لم يكن `key=value` مكتملًا. */
+    private fun resolveLine(line: String): Pair<String, String>? {
+        val at = line.indexOf('=')
+        if (at <= 0 || at == line.lastIndex) return null
+        val key = line.substring(0, at).trim()
+        val value = line.substring(at + 1).trim()
+        return if (key.isEmpty() || value.isEmpty()) null else key to value
+    }
 
     fun plan(recipe: String, catalog: List<Entry>): Plan {
         val byKey = catalog.associateBy { it.key }

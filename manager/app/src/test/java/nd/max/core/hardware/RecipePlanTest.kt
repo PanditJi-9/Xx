@@ -108,6 +108,17 @@ class RecipePlanTest {
     }
 
     @Test
+    fun lines_that_are_not_key_value_are_counted_as_ignored_but_do_not_block_a_valid_one() {
+        val recipe = "cpu.min=300000\ncpu.max 2000000\n# a comment\n\ndisplay.hbm="
+
+        // سطران لا صيغة لهما (`cpu.max 2000000` بلا `=`، و`display.hbm=` بقيمة فارغة)،
+        // والتعليق والسطر الفارغ ليسا «مُهمَلين» بل غير مكتوبين أصلًا.
+        assertEquals(2, RecipePlan.ignored(recipe))
+        assertEquals(1, RecipePlan.parse(recipe).size)
+        assertEquals(0, RecipePlan.ignored("cpu.min=300000"))
+    }
+
+    @Test
     fun an_entry_without_candidates_is_refused() {
         assertEquals(
             RecipePlan.Verdict.NO_NODE,

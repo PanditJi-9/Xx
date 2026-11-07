@@ -35,6 +35,15 @@ object DangerConsent {
     /** تجميد حزمة (‏`pm disable-user`) — قد يُسقط مشغّلًا أو خدمة يحتاجها النظام. */
     const val PACKAGE_FREEZE = "package_freeze"
 
+    /**
+     * تطبيق وصفة عقد نواة (مجموعة `key=value`) — كل سطر يكتب في عتاد حقيقي.
+     *
+     * والإقرار هنا **لفعلٍ مركّب** لا لمفتاح واحد: الوصفة قد تحمل عشرة أسطر من عائلات مختلفة،
+     * فلا يصلح إقرار حدود المعالج أو الرسوميات وحده. والوصفة لا تتجاوزه: كل خطوة تمرّ بالـarbiter
+     * بعد الإقرار، وما ترفضه النواة يبقى مرفوضًا.
+     */
+    const val RECIPE_APPLY = "recipe_apply"
+
     private const val PREFS = "maxmanager_danger_consent"
     private const val KEY = "acknowledged"
 

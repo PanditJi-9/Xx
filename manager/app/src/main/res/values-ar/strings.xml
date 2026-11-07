@@ -3998,4 +3998,38 @@
     <string name="battery_history_clear_confirm">محو</string>
     <string name="battery_history_refresh">تحديث</string>
     <string name="max_role_battery_history">خطّ زمنيّ محلّي لمستوى البطارية من بثّ النظام — بلا جذر وبلا تقدير.</string>
+
+    <string name="recipe_section_title">وصفة عقد النواة</string>
+    <string name="recipe_section_desc">دفعة كتابات key=value تُحسم مقابل كتالوج التحكّم قبل لمس أي عقدة. وسطر واحد غير صالح يُسقط الوصفة كلها.</string>
+    <string name="recipe_summary_empty">لا وصفة بعد</string>
+    <string name="recipe_summary_ready">%1$d من %2$d أسطر جاهزة</string>
+    <string name="recipe_summary_blocked">%1$d من %2$d أسطر محجوبة</string>
+    <string name="recipe_input_label">الوصفة</string>
+    <string name="recipe_input_placeholder">vm.swappiness=60</string>
+    <string name="recipe_review">مراجعة</string>
+    <string name="recipe_clear">مسح</string>
+    <string name="recipe_empty_hint">سطر واحد لكل key=value، والأسطر التي تبدأ بـ# تُهمَل.</string>
+    <string name="recipe_catalog_missing">تعذّرت قراءة كتالوج التحكّم على هذا الجهاز، فسيُرفض كل سطر. هذه مشكلة بناء لا صلاحية.</string>
+    <string name="recipe_apply">تطبيق الوصفة</string>
+    <string name="recipe_running">يُطبَّق…</string>
+    <string name="recipe_danger_title">تطبيق هذه الوصفة؟</string>
+    <string name="recipe_danger_body">كل سطر يكتب قيمة في عقدة نواة. والخطوة التي لا تُقرأ بعد الكتابة تُستعاد، والخطوة الفاشلة تُعيد ما قبلها — لكن قيمة تقبلها النواة قد تغيّر السلوك حتى إعادة التشغيل.</string>
+    <string name="recipe_danger_confirm">تطبيق</string>
+    <string name="recipe_result_ok">طُبِّقت الخطوات كلها (%1$d) وقُرئت بعدها.</string>
+    <string name="recipe_result_failed">توقّفت: %1$d مطبَّقة، و%2$d مستعادة، و%3$d فاشلة.</string>
+    <string name="recipe_verdict_ready">جاهزة</string>
+    <string name="recipe_verdict_unknown_key">مفتاح مجهول</string>
+    <string name="recipe_verdict_no_node">لا عقدة</string>
+    <string name="recipe_verdict_not_writable">غير قابلة للكتابة</string>
+    <string name="recipe_verdict_protected">محميّة</string>
+    <string name="recipe_verdict_bad_value">القيمة لا تناسب</string>
+    <string name="recipe_verdict_templated">مفتاح عائلة</string>
+    <string name="recipe_outcome_applied">كُتبت وقُرئت</string>
+    <string name="recipe_outcome_mismatch_restored">اختلفت القراءة — أُعيدت القيمة السابقة</string>
+    <string name="recipe_outcome_restore_failed">اختلفت القراءة وتعذّرت إعادة القيمة السابقة</string>
+    <string name="recipe_outcome_write_failed">رُفضت الكتابة</string>
+    <string name="recipe_outcome_rolled_back">أُعيدت لأن خطوة لاحقة فشلت</string>
+    <string name="recipe_outcome_rollback_failed">فشلت الإعادة — قد تبقى القيمة مكتوبة</string>
+    <string name="recipe_outcome_blocked">لم تبدأ</string>
+    <string name="recipe_lines_ignored">أسطر مُهمَلة (ليست بصيغة key=value): %1$d</string>
 </resources>
