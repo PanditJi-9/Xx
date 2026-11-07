@@ -213,6 +213,22 @@
         {
           "path": "/sys/kernel/ged/hal/current_freqency",
           "origin": "MEASURED"
+        },
+        {
+          "path": "/sys/class/kgsl/kgsl-3d0/gpubusy",
+          "origin": "DERIVED"
+        },
+        {
+          "path": "/sys/class/misc/mali0/device/utilization",
+          "origin": "DERIVED"
+        },
+        {
+          "path": "/sys/class/misc/mali0/device/devfreq/gpufreq/gpu_scene_aware/utilisation",
+          "origin": "DERIVED"
+        },
+        {
+          "path": "/sys/kernel/gpu/gpu_busy",
+          "origin": "DERIVED"
         }
       ],
       "verify": {
@@ -1148,6 +1164,269 @@
           "SU_BARE",
           "DAEMON"
         ]
+      },
+      "danger": "LOW"
+    },
+    {
+      "key": "gpu.clock.current",
+      "transport": "NODE",
+      "kind": "FREQUENCY_RANGE",
+      "candidates": [
+        {
+          "path": "/sys/class/kgsl/kgsl-3d0/gpuclk",
+          "origin": "DERIVED"
+        },
+        {
+          "path": "/sys/class/kgsl/kgsl-3d0/clock_mhz",
+          "origin": "DERIVED"
+        },
+        {
+          "path": "/sys/class/misc/mali0/device/clock",
+          "origin": "DERIVED"
+        },
+        {
+          "path": "/sys/class/misc/mali0/device/clk_rate",
+          "origin": "DERIVED"
+        },
+        {
+          "path": "/sys/module/mali/parameters/gpu_freq_cur",
+          "origin": "DERIVED"
+        },
+        {
+          "path": "/sys/class/devfreq/gpufreq/cur_freq",
+          "origin": "DERIVED"
+        },
+        {
+          "path": "/sys/class/devfreq/ffa30000.mali/cur_freq",
+          "origin": "DERIVED"
+        },
+        {
+          "path": "/sys/class/devfreq/57000000.gpu/cur_freq",
+          "origin": "DERIVED"
+        },
+        {
+          "path": "/sys/class/devfreq/50000000.gpu/cur_freq",
+          "origin": "DERIVED"
+        },
+        {
+          "path": "/sys/class/devfreq/1c00000.qcom,kgsl-3d0/cur_freq",
+          "origin": "DERIVED"
+        },
+        {
+          "path": "/sys/class/devfreq/0.qcom,kgsl-3d0/cur_freq",
+          "origin": "DERIVED"
+        },
+        {
+          "path": "/sys/class/devfreq/17000000.g3d/cur_freq",
+          "origin": "DERIVED"
+        },
+        {
+          "path": "/sys/class/devfreq/11800000.g3d/cur_freq",
+          "origin": "DERIVED"
+        },
+        {
+          "path": "/sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/gpuclk",
+          "origin": "DERIVED"
+        },
+        {
+          "path": "/sys/devices/platform/kgsl-3d0.0/devfreq/kgsl-3d0/cur_freq",
+          "origin": "DERIVED"
+        },
+        {
+          "path": "/sys/devices/platform/mali.0/devfreq/mali/cur_freq",
+          "origin": "DERIVED"
+        },
+        {
+          "path": "/sys/devices/platform/11800000.g3d/devfreq/11800000.g3d/cur_freq",
+          "origin": "DERIVED"
+        },
+        {
+          "path": "/sys/kernel/tegra_gpu/gpu_rate",
+          "origin": "DERIVED"
+        },
+        {
+          "path": "/sys/devices/platform/omap/pvrsrvkm.0/sgxfreq/frequency",
+          "origin": "DERIVED"
+        },
+        {
+          "path": "/proc/mali/cur_freq",
+          "origin": "DERIVED"
+        },
+        {
+          "path": "/proc/gpufreq/gpufreq_cur",
+          "origin": "DERIVED"
+        }
+      ],
+      "verify": {
+        "policy": "NONE"
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": []
+      },
+      "danger": "LOW"
+    },
+    {
+      "key": "battery.cycle_count",
+      "transport": "NODE",
+      "kind": "INT",
+      "candidates": [
+        {
+          "path": "/sys/class/power_supply/battery/cycle_count",
+          "origin": "DERIVED"
+        },
+        {
+          "path": "/sys/class/power_supply/battery/fg_cycle_count",
+          "origin": "DERIVED"
+        },
+        {
+          "path": "/sys/class/power_supply/battery/charge_full_cycles",
+          "origin": "DERIVED"
+        },
+        {
+          "path": "/sys/class/power_supply/bms/cycle_count",
+          "origin": "DERIVED"
+        },
+        {
+          "path": "/sys/class/power_supply/maxfg/cycle_count",
+          "origin": "DERIVED"
+        },
+        {
+          "path": "/sys/class/power_supply/pmic/cycle_count",
+          "origin": "DERIVED"
+        }
+      ],
+      "verify": {
+        "policy": "NONE"
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": []
+      },
+      "danger": "LOW"
+    },
+    {
+      "key": "battery.resistance",
+      "transport": "NODE",
+      "kind": "INT",
+      "candidates": [
+        {
+          "path": "/sys/class/power_supply/bms/resistance",
+          "origin": "DERIVED"
+        }
+      ],
+      "verify": {
+        "policy": "NONE"
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": []
+      },
+      "danger": "LOW"
+    },
+    {
+      "key": "battery.voltage.now",
+      "transport": "NODE",
+      "kind": "INT",
+      "candidates": [
+        {
+          "path": "/sys/class/power_supply/battery/voltage_now",
+          "origin": "DERIVED"
+        },
+        {
+          "path": "/sys/class/power_supply/bms/voltage_now",
+          "origin": "DERIVED"
+        },
+        {
+          "path": "/sys/class/power_supply/maxfg/voltage_now",
+          "origin": "DERIVED"
+        },
+        {
+          "path": "/sys/class/power_supply/pmic/voltage_now",
+          "origin": "DERIVED"
+        }
+      ],
+      "verify": {
+        "policy": "NONE"
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": []
+      },
+      "danger": "LOW"
+    },
+    {
+      "key": "battery.voltage.avg",
+      "transport": "NODE",
+      "kind": "INT",
+      "candidates": [
+        {
+          "path": "/sys/class/power_supply/battery/voltage_avg",
+          "origin": "DERIVED"
+        },
+        {
+          "path": "/sys/class/power_supply/battery/batt_vol",
+          "origin": "DERIVED"
+        }
+      ],
+      "verify": {
+        "policy": "NONE"
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": []
+      },
+      "danger": "LOW"
+    },
+    {
+      "key": "memory.meminfo",
+      "transport": "PROC",
+      "kind": "STRING",
+      "candidates": [
+        {
+          "path": "/proc/meminfo",
+          "origin": "DERIVED"
+        }
+      ],
+      "verify": {
+        "policy": "NONE"
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": []
+      },
+      "danger": "LOW"
+    },
+    {
+      "key": "zram.comp_algorithm",
+      "transport": "NODE",
+      "kind": "ENUM",
+      "candidates": [
+        {
+          "path": "/sys/block/zram0/comp_algorithm",
+          "origin": "DERIVED"
+        }
+      ],
+      "verify": {
+        "policy": "NONE"
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": []
       },
       "danger": "LOW"
     }

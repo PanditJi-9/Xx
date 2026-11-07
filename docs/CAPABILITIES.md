@@ -7,8 +7,8 @@
 ## الخلاصة
 
 - إصدار الكتالوج: **1**
-- المداخل: **41**
-- المرشّحون: **69**
+- المداخل: **48**
+- المرشّحون: **109**
 - غير المُخطَّط: **14**
 
 ## المداخل
@@ -56,6 +56,13 @@
 | `vm.overcommit_ratio` | PERCENT | PROC | MAGISK، KSU، APATCH، SU_BARE، DAEMON | MEDIUM | `/proc/sys/vm/overcommit_ratio` |
 | `vm.watermark_scale_factor` | INT | PROC | MAGISK، KSU، APATCH، SU_BARE، DAEMON | MEDIUM | `/proc/sys/vm/watermark_scale_factor` |
 | `vm.oom_kill_allocating_task` | BOOL | PROC | MAGISK، KSU، APATCH، SU_BARE، DAEMON | LOW | `/proc/sys/vm/oom_kill_allocating_task` |
+| `gpu.clock.current` | FREQUENCY_RANGE | NODE | — | LOW | `/sys/class/kgsl/kgsl-3d0/gpuclk` |
+| `battery.cycle_count` | INT | NODE | — | LOW | `/sys/class/power_supply/battery/cycle_count` |
+| `battery.resistance` | INT | NODE | — | LOW | `/sys/class/power_supply/bms/resistance` |
+| `battery.voltage.now` | INT | NODE | — | LOW | `/sys/class/power_supply/battery/voltage_now` |
+| `battery.voltage.avg` | INT | NODE | — | LOW | `/sys/class/power_supply/battery/voltage_avg` |
+| `memory.meminfo` | STRING | PROC | — | LOW | `/proc/meminfo` |
+| `zram.comp_algorithm` | ENUM | NODE | — | LOW | `/sys/block/zram0/comp_algorithm` |
 
 ## تفصيل المرشّحين
 
@@ -141,6 +148,10 @@
 - المرشّحون:
   - `/sys/class/kgsl/kgsl-3d0/gpu_busy_percentage` — `MEASURED`
   - `/sys/kernel/ged/hal/current_freqency` — `MEASURED`
+  - `/sys/class/kgsl/kgsl-3d0/gpubusy` — `DERIVED`
+  - `/sys/class/misc/mali0/device/utilization` — `DERIVED`
+  - `/sys/class/misc/mali0/device/devfreq/gpufreq/gpu_scene_aware/utilisation` — `DERIVED`
+  - `/sys/kernel/gpu/gpu_busy` — `DERIVED`
 
 ### `gpu.opp_table.{family}`
 
@@ -496,6 +507,105 @@
 - الخطر: **LOW**
 - المرشّحون:
   - `/proc/sys/vm/oom_kill_allocating_task` — `MEASURED`
+
+### `gpu.clock.current`
+
+- النوع: `FREQUENCY_RANGE` · النقل: `NODE`
+- القراءة: NONE
+- الكتابة: —
+- التحقّق: `NONE`
+- الخطر: **LOW**
+- المرشّحون:
+  - `/sys/class/kgsl/kgsl-3d0/gpuclk` — `DERIVED`
+  - `/sys/class/kgsl/kgsl-3d0/clock_mhz` — `DERIVED`
+  - `/sys/class/misc/mali0/device/clock` — `DERIVED`
+  - `/sys/class/misc/mali0/device/clk_rate` — `DERIVED`
+  - `/sys/module/mali/parameters/gpu_freq_cur` — `DERIVED`
+  - `/sys/class/devfreq/gpufreq/cur_freq` — `DERIVED`
+  - `/sys/class/devfreq/ffa30000.mali/cur_freq` — `DERIVED`
+  - `/sys/class/devfreq/57000000.gpu/cur_freq` — `DERIVED`
+  - `/sys/class/devfreq/50000000.gpu/cur_freq` — `DERIVED`
+  - `/sys/class/devfreq/1c00000.qcom,kgsl-3d0/cur_freq` — `DERIVED`
+  - `/sys/class/devfreq/0.qcom,kgsl-3d0/cur_freq` — `DERIVED`
+  - `/sys/class/devfreq/17000000.g3d/cur_freq` — `DERIVED`
+  - `/sys/class/devfreq/11800000.g3d/cur_freq` — `DERIVED`
+  - `/sys/devices/platform/kgsl-3d0.0/kgsl/kgsl-3d0/gpuclk` — `DERIVED`
+  - `/sys/devices/platform/kgsl-3d0.0/devfreq/kgsl-3d0/cur_freq` — `DERIVED`
+  - `/sys/devices/platform/mali.0/devfreq/mali/cur_freq` — `DERIVED`
+  - `/sys/devices/platform/11800000.g3d/devfreq/11800000.g3d/cur_freq` — `DERIVED`
+  - `/sys/kernel/tegra_gpu/gpu_rate` — `DERIVED`
+  - `/sys/devices/platform/omap/pvrsrvkm.0/sgxfreq/frequency` — `DERIVED`
+  - `/proc/mali/cur_freq` — `DERIVED`
+  - `/proc/gpufreq/gpufreq_cur` — `DERIVED`
+
+### `battery.cycle_count`
+
+- النوع: `INT` · النقل: `NODE`
+- القراءة: NONE
+- الكتابة: —
+- التحقّق: `NONE`
+- الخطر: **LOW**
+- المرشّحون:
+  - `/sys/class/power_supply/battery/cycle_count` — `DERIVED`
+  - `/sys/class/power_supply/battery/fg_cycle_count` — `DERIVED`
+  - `/sys/class/power_supply/battery/charge_full_cycles` — `DERIVED`
+  - `/sys/class/power_supply/bms/cycle_count` — `DERIVED`
+  - `/sys/class/power_supply/maxfg/cycle_count` — `DERIVED`
+  - `/sys/class/power_supply/pmic/cycle_count` — `DERIVED`
+
+### `battery.resistance`
+
+- النوع: `INT` · النقل: `NODE`
+- القراءة: NONE
+- الكتابة: —
+- التحقّق: `NONE`
+- الخطر: **LOW**
+- المرشّحون:
+  - `/sys/class/power_supply/bms/resistance` — `DERIVED`
+
+### `battery.voltage.now`
+
+- النوع: `INT` · النقل: `NODE`
+- القراءة: NONE
+- الكتابة: —
+- التحقّق: `NONE`
+- الخطر: **LOW**
+- المرشّحون:
+  - `/sys/class/power_supply/battery/voltage_now` — `DERIVED`
+  - `/sys/class/power_supply/bms/voltage_now` — `DERIVED`
+  - `/sys/class/power_supply/maxfg/voltage_now` — `DERIVED`
+  - `/sys/class/power_supply/pmic/voltage_now` — `DERIVED`
+
+### `battery.voltage.avg`
+
+- النوع: `INT` · النقل: `NODE`
+- القراءة: NONE
+- الكتابة: —
+- التحقّق: `NONE`
+- الخطر: **LOW**
+- المرشّحون:
+  - `/sys/class/power_supply/battery/voltage_avg` — `DERIVED`
+  - `/sys/class/power_supply/battery/batt_vol` — `DERIVED`
+
+### `memory.meminfo`
+
+- النوع: `STRING` · النقل: `PROC`
+- القراءة: NONE
+- الكتابة: —
+- التحقّق: `NONE`
+- الخطر: **LOW**
+- المرشّحون:
+  - `/proc/meminfo` — `DERIVED`
+
+### `zram.comp_algorithm`
+
+- النوع: `ENUM` · النقل: `NODE`
+- القراءة: NONE
+- الكتابة: —
+- التحقّق: `NONE`
+- الخطر: **LOW**
+- المرشّحون:
+  - `/sys/block/zram0/comp_algorithm` — `DERIVED`
 
 ## غير المُخطَّط
 
