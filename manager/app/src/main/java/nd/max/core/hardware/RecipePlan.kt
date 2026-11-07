@@ -20,7 +20,7 @@ package nd.max.core.hardware
 object RecipePlan {
 
     /** حكم كل سطر. الأسباب مختلفة فيُعرض السبب، ولا يُخفى السطر المرفوض. */
-    enum class Verdict { READY, UNKNOWN_KEY, NO_NODE, NOT_WRITABLE, PROTECTED, BAD_VALUE }
+    enum class Verdict { READY, UNKNOWN_KEY, NO_NODE, NOT_WRITABLE, PROTECTED, BAD_VALUE, TEMPLATED }
 
     data class Entry(
         val key: String,
@@ -69,6 +69,10 @@ object RecipePlan {
                     entry == null -> Step(key, value, null, Verdict.UNKNOWN_KEY)
                     entry.danger == "PROTECTED" -> Step(key, value, null, Verdict.PROTECTED)
                     entry.writePrivilege.isEmpty() -> Step(key, value, null, Verdict.NOT_WRITABLE)
+                    // مفتاح بقالب (`cpu_limits:{policy}`) يصف **عائلة** عقد لا عقدة؛ واختيار أول
+                    // مرشّح له حكمٌ بلا أساس: قد يكون مجلّدًا، أو عقدة قراءة، أو مقبض تعزيز لا حدًّا.
+                    // فيُرفض بسببٍ مسمّى بدل أن تُكتب قيمة إلى عقدة لم يخترها أحد.
+                    isTemplated(entry.key) -> Step(key, value, null, Verdict.TEMPLATED)
                     entry.candidates.isEmpty() -> Step(key, value, null, Verdict.NO_NODE)
                     !valueFits(entry.kind, value) -> Step(key, value, null, Verdict.BAD_VALUE)
                     else -> Step(key, value, entry.candidates.first(), Verdict.READY)
@@ -81,6 +85,15 @@ object RecipePlan {
      * فحص القيمة بنوع المدخل. القبول واسع عن قصد للأنواع النصّية، وضيّق حيث الخطأ يعني كتابة رقمية
      * خارج المدى — لأن العقدة قد تقبلها وتُفسد السلوك بدل أن ترفضها.
      */
+    /**
+     * مفتاح قالبي؟ القالب يعني «اختر جهازًا/سياسة» وهذا الاختيار ليس من عمل المحرّك.
+     *
+     * والمرشّح نفسه يُشترط أن يكون مسارًا حرفيًّا مطلقًا بلا `{}`/`$`/`*` — نفس شرط
+     * `CatalogControlIndex.isLiteralNode` — لأن القالب والمجلّد ليسا عقدة.
+     */
+    internal fun isTemplated(key: String): Boolean =
+        key.contains('{') || key.contains('}') || key.contains('$') || key.contains('*')
+
     internal fun valueFits(kind: String, value: String): Boolean = when (kind) {
         "BOOL" -> value in setOf("0", "1", "true", "false")
         "INT" -> value.toLongOrNull() != null

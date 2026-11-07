@@ -77,6 +77,37 @@ class RecipePlanTest {
     }
 
     @Test
+    fun a_templated_key_is_refused_instead_of_picking_an_arbitrary_node() {
+        val catalog = listOf(
+            entry("cpu_limits:{policy}", kind = "FREQUENCY_RANGE", candidates = listOf("/sys/devices/system/cpu/cpu0/cpufreq")),
+        )
+
+        val plan = RecipePlan.plan("cpu_limits:0=1800000", catalog)
+
+        // الصيغة المحلولة (`cpu_limits:0`) ليست مفتاحًا في الكتالوج، والقالب وحده هو الموجود:
+        // فالنتيجة «مفتاح مجهول» — لا اختيار عقدة عشوائية تحت قالب.
+        assertEquals(RecipePlan.Verdict.UNKNOWN_KEY, plan.steps.single().verdict)
+        assertFalse(plan.applicable)
+    }
+
+    @Test
+    fun a_templated_catalog_key_is_refused_even_when_the_recipe_names_it_exactly() {
+        val catalog = listOf(
+            entry(
+                key = "cpu_limits:{policy}",
+                kind = "FREQUENCY_RANGE",
+                candidates = listOf("/sys/devices/system/cpu/cpu0/cpufreq"),
+            ),
+        )
+
+        // المحرّك يطابق المفتاح حرفيًّا لو جاء به النصّ، فيجب أن يرفضه بـTEMPLATED لا أن يختار أوّل مرشّح.
+        val plan = RecipePlan.plan("cpu_limits:{policy}=1800000", catalog)
+
+        assertEquals(RecipePlan.Verdict.TEMPLATED, plan.steps.single().verdict)
+        assertFalse(plan.applicable)
+    }
+
+    @Test
     fun an_entry_without_candidates_is_refused() {
         assertEquals(
             RecipePlan.Verdict.NO_NODE,

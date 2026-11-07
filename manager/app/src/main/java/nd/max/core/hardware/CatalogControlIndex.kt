@@ -23,6 +23,11 @@ internal data class CatalogControl(
     val writeTiers: List<String>,
     val danger: String,
     val readOnlyReason: String? = null,
+    /**
+     * نوع القيمة المعلَن (`INT` · `PERCENT` · `FREQUENCY_RANGE` …) — يقرؤه محرّك الوصفات ليرفض
+     * قيمةً لا تناسب عقدتها قبل الكتابة. افتراضيّ فارغ كي لا ينكسر بناءُ مدخلٍ قديم بلا هذا الحقل.
+     */
+    val kind: String = "",
 ) {
     /** `PROTECTED` لا يُكتب بأيّ طبقة — يُقرأ ولا يُمسّ (خطّة M1 §3). */
     val isProtected: Boolean get() = danger == DANGER_PROTECTED
@@ -111,6 +116,7 @@ internal class CatalogControlIndex private constructor(val entries: List<Catalog
                             .map { it.jsonPrimitive.content },
                         danger = entry["danger"]?.jsonPrimitive?.content.orEmpty(),
                         readOnlyReason = entry["read_only_reason"]?.jsonPrimitive?.content,
+                        kind = entry["kind"]?.jsonPrimitive?.content.orEmpty(),
                     )
                 }
             }.getOrDefault(emptyList())
