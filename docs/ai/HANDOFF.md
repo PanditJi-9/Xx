@@ -60,6 +60,17 @@ MaxManager has a strong engine and a fragmented surface. `core/maxai` + `core/ha
 
 ## Executor log
 
+### ROUND-CLOSE-28 — عائلات الذاكرة والشاحن تُعلن، وصفحة FAS تصير حقائق — 2026-11-07 · DONE_WITH_CONCERNS (البوابات خضراء · حكم CI يُقرأ لا يُدّعى)
+
+**TASK:** تنفيذ بقيّة قائمة الأفكار المستخرجة من `fde_ai` و`scene_n1` بلا نقل كود: عائلة LMK · حدود CPU عبر `msm_performance` · step charging وإيقاف الإدخال · حالة PD · حرارة إضافية · ضغط الذاكرة وZRAM · memcg · وشاشة FAS.
+
+**CHANGED:** `control_catalog.json` **64→83 مدخلًا** و**125→149 مرشّحًا** (١١ قابلًا للكتابة · ٨ قراءة-فقط) · `HardwareControlKey` **20→23 بادئة** (`memory.` · `cpu.` · `battery.`) · `ChargingViewModel`/`ChargingScreen` مفتاحا **Step charging** و**Input suspend** (يظهران حيث تعلنهما النواة فقط، وقراءة بعد كل كتابة) · `FasSettingsScreen` من ٤٢ سطرًا فارغًا إلى صفحة تقرأ المعدّل المعلن والمدعوم وتربط بملفّات التطبيقات · ١٦ مفتاح نصّ EN+AR · تصحيح نصّ FAS الذي كان يدّعي مراقبة الإطارات · `docs/features.md` و`docs/CAPABILITIES.md`.
+
+**MEASURED:** التسع + `--prune all` + `rtl_guard` + `git diff --check` = 0 (`n1-*` و`n2-*`) · الكتالوج ٨٣/١٤٩/٢٣ · `kt_balance` ٣٢٨٣ ملفًا/٠ عوائق · `resource_compile` بـaapt2 حقيقي.
+**BUILD:** `07b8ed43` → `MaxManager` تشغيل `42396456709` (يُقرأ لا يُدّعى).
+**RESIDUAL:** كل عائلة جديدة تحتاج جهازًا: وجود `lowmemorykiller/minfree` و`msm_performance` وقبول الكتابة، وصيغة `minfree` (قائمة صفحات)، و`step_charging_enabled`/`input_suspend` على نواة المالك، وقيمة `writeback`، و`memcg` على هذه النواة. وFAS: هل يعلن النظام معدّلًا، وهل يطبّق `AppMonitor` عند تبديل التطبيقات.
+**NEXT:** ما بقي كله جهازيّ.
+
 ### ROUND-CLOSE-27 — خمس دفعات من الشجرتين المرجعيتين: كتالوج المسارات · ثبات الإطارات · منحنى الشحن · عائلة المجدول — 2026-11-07 · DONE_WITH_CONCERNS (البوابات المحلية خضراء · وحكم CI يُقرأ لا يُدّعى)
 
 TASK: استخراج ما يستحقّ من `fde_ai` و`scene_n1` **بلا نقل كود** (الشجرتان بلا ملفّ ترخيص مقروء، و`scene_n1`
