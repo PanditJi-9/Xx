@@ -198,7 +198,8 @@ class HudSessionTest {
         // النوع)، وكل سطح يقرؤه منه — وهذا الاختبار يثبّته فلا تعود الحرارة إلى ما بعد القدرة.
         assertEquals(
             // البطارية والشبكة بعد القدرة وقبل المُصيِّر: تُقرآن بنظرة لا تُزاحم الإطارات.
-            listOf("Frames", "Cpu", "Heat", "Ram", "Power", "Battery", "Network", "Renderer"),
+            // والثبات بجانب الإطارات لأنه يجيب السؤال نفسه («هل هي سلسة؟») بمدى لا بلحظة.
+            listOf("Frames", "Stability", "Cpu", "Heat", "Ram", "Power", "Battery", "Network", "Renderer"),
             HudField.entries.map { it.name }
         )
     }
