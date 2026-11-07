@@ -203,6 +203,7 @@
             "DENIED_BY_POLICY",
             "NO_NODE",
             "NO_PERMISSION",
+            "READ_ONLY_PROBE",
             "ROOT_ONLY",
             "UNKNOWN"
           ]

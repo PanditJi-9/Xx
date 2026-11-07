@@ -30,7 +30,11 @@ KINDS = {"FREQUENCY_RANGE", "ENUM", "BOOL", "INT", "STRING", "PERCENT"}
 POLICIES = {"READ_BACK_EQUAL", "READ_BACK_TOLERANCE", "NONE"}
 DANGERS = {"LOW", "MEDIUM", "HIGH", "PROTECTED"}
 ORIGINS = {"MEASURED", "DERIVED"}
-REASONS = {"ROOT_ONLY", "NO_NODE", "NO_PERMISSION", "DENIED_BY_POLICY", "UNKNOWN"}
+REASONS = {
+    "ROOT_ONLY", "NO_NODE", "NO_PERMISSION", "DENIED_BY_POLICY", "UNKNOWN",
+    # مسار يُقرأ لكتالوج العُقد ولا يُقصَد به مقبض تحكّم: الوجود يُقاس، والكتابة لا تُدّعى.
+    "READ_ONLY_PROBE",
+}
 
 # سبب بقاء مدخلٍ قابلٍ للكتابة فيزيائيًّا **قراءةً فقط** — مفردات مغلقة، فلا يُترك السبب نصًّا حرًّا
 # لا يُقاس. (ADR-89: المفتاح لا يُعلَن ما دام كاتبه القائم خارج الكتالوج.)

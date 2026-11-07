@@ -1157,6 +1157,71 @@
       "path": "/proc/$pid/stat",
       "reason": "ROOT_ONLY",
       "note": "AppMonitor يقرأها مباشرة في الرفيق، ولا مقبض تحكّم لها"
+    },
+    {
+      "path": "/sys/block/zram0/mem_used",
+      "reason": "READ_ONLY_PROBE",
+      "note": "يُقرأ لكتالوج عُقد التشخيص (قراءة فقط)؛ لا مقبض تحكّم ولا كتابة مقصودة"
+    },
+    {
+      "path": "/sys/class/kgsl/kgsl-3d0/gpu_model",
+      "reason": "READ_ONLY_PROBE",
+      "note": "يُقرأ لكتالوج عُقد التشخيص (قراءة فقط)؛ لا مقبض تحكّم ولا كتابة مقصودة"
+    },
+    {
+      "path": "/sys/class/kgsl/kgsl-3d0/max_clock_mhz",
+      "reason": "READ_ONLY_PROBE",
+      "note": "يُقرأ لكتالوج عُقد التشخيص (قراءة فقط)؛ لا مقبض تحكّم ولا كتابة مقصودة"
+    },
+    {
+      "path": "/sys/class/kgsl/kgsl-3d0/min_clock_mhz",
+      "reason": "READ_ONLY_PROBE",
+      "note": "يُقرأ لكتالوج عُقد التشخيص (قراءة فقط)؛ لا مقبض تحكّم ولا كتابة مقصودة"
+    },
+    {
+      "path": "/sys/class/power_supply/battery/capacity",
+      "reason": "READ_ONLY_PROBE",
+      "note": "يُقرأ لكتالوج عُقد التشخيص (قراءة فقط)؛ لا مقبض تحكّم ولا كتابة مقصودة"
+    },
+    {
+      "path": "/sys/class/power_supply/battery/status",
+      "reason": "READ_ONLY_PROBE",
+      "note": "يُقرأ لكتالوج عُقد التشخيص (قراءة فقط)؛ لا مقبض تحكّم ولا كتابة مقصودة"
+    },
+    {
+      "path": "/sys/class/thermal/thermal_zone0/temp",
+      "reason": "READ_ONLY_PROBE",
+      "note": "يُقرأ لكتالوج عُقد التشخيص (قراءة فقط)؛ لا مقبض تحكّم ولا كتابة مقصودة"
+    },
+    {
+      "path": "/sys/devices/soc0/machine",
+      "reason": "READ_ONLY_PROBE",
+      "note": "يُقرأ لكتالوج عُقد التشخيص (قراءة فقط)؛ لا مقبض تحكّم ولا كتابة مقصودة"
+    },
+    {
+      "path": "/sys/devices/soc0/soc_id",
+      "reason": "READ_ONLY_PROBE",
+      "note": "يُقرأ لكتالوج عُقد التشخيص (قراءة فقط)؛ لا مقبض تحكّم ولا كتابة مقصودة"
+    },
+    {
+      "path": "/sys/devices/system/cpu/cpufreq/policy0/scaling_governor",
+      "reason": "READ_ONLY_PROBE",
+      "note": "يُقرأ لكتالوج عُقد التشخيص (قراءة فقط)؛ لا مقبض تحكّم ولا كتابة مقصودة"
+    },
+    {
+      "path": "/sys/devices/system/cpu/cpufreq/policy0/scaling_max_freq",
+      "reason": "READ_ONLY_PROBE",
+      "note": "يُقرأ لكتالوج عُقد التشخيص (قراءة فقط)؛ لا مقبض تحكّم ولا كتابة مقصودة"
+    },
+    {
+      "path": "/sys/devices/system/cpu/cpufreq/policy0/scaling_min_freq",
+      "reason": "READ_ONLY_PROBE",
+      "note": "يُقرأ لكتالوج عُقد التشخيص (قراءة فقط)؛ لا مقبض تحكّم ولا كتابة مقصودة"
+    },
+    {
+      "path": "/sys/kernel/gpu/gpu_max_clock",
+      "reason": "READ_ONLY_PROBE",
+      "note": "يُقرأ لكتالوج عُقد التشخيص (قراءة فقط)؛ لا مقبض تحكّم ولا كتابة مقصودة"
     }
   ]
 }

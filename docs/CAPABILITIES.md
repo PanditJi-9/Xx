@@ -9,7 +9,7 @@
 - إصدار الكتالوج: **1**
 - المداخل: **41**
 - المرشّحون: **69**
-- غير المُخطَّط: **1**
+- غير المُخطَّط: **14**
 
 ## المداخل
 
@@ -502,3 +502,16 @@
 | المسار | السبب | ملاحظة |
 | --- | --- | --- |
 | `/proc/$pid/stat` | ROOT_ONLY | AppMonitor يقرأها مباشرة في الرفيق، ولا مقبض تحكّم لها |
+| `/sys/block/zram0/mem_used` | READ_ONLY_PROBE | يُقرأ لكتالوج عُقد التشخيص (قراءة فقط)؛ لا مقبض تحكّم ولا كتابة مقصودة |
+| `/sys/class/kgsl/kgsl-3d0/gpu_model` | READ_ONLY_PROBE | يُقرأ لكتالوج عُقد التشخيص (قراءة فقط)؛ لا مقبض تحكّم ولا كتابة مقصودة |
+| `/sys/class/kgsl/kgsl-3d0/max_clock_mhz` | READ_ONLY_PROBE | يُقرأ لكتالوج عُقد التشخيص (قراءة فقط)؛ لا مقبض تحكّم ولا كتابة مقصودة |
+| `/sys/class/kgsl/kgsl-3d0/min_clock_mhz` | READ_ONLY_PROBE | يُقرأ لكتالوج عُقد التشخيص (قراءة فقط)؛ لا مقبض تحكّم ولا كتابة مقصودة |
+| `/sys/class/power_supply/battery/capacity` | READ_ONLY_PROBE | يُقرأ لكتالوج عُقد التشخيص (قراءة فقط)؛ لا مقبض تحكّم ولا كتابة مقصودة |
+| `/sys/class/power_supply/battery/status` | READ_ONLY_PROBE | يُقرأ لكتالوج عُقد التشخيص (قراءة فقط)؛ لا مقبض تحكّم ولا كتابة مقصودة |
+| `/sys/class/thermal/thermal_zone0/temp` | READ_ONLY_PROBE | يُقرأ لكتالوج عُقد التشخيص (قراءة فقط)؛ لا مقبض تحكّم ولا كتابة مقصودة |
+| `/sys/devices/soc0/machine` | READ_ONLY_PROBE | يُقرأ لكتالوج عُقد التشخيص (قراءة فقط)؛ لا مقبض تحكّم ولا كتابة مقصودة |
+| `/sys/devices/soc0/soc_id` | READ_ONLY_PROBE | يُقرأ لكتالوج عُقد التشخيص (قراءة فقط)؛ لا مقبض تحكّم ولا كتابة مقصودة |
+| `/sys/devices/system/cpu/cpufreq/policy0/scaling_governor` | READ_ONLY_PROBE | يُقرأ لكتالوج عُقد التشخيص (قراءة فقط)؛ لا مقبض تحكّم ولا كتابة مقصودة |
+| `/sys/devices/system/cpu/cpufreq/policy0/scaling_max_freq` | READ_ONLY_PROBE | يُقرأ لكتالوج عُقد التشخيص (قراءة فقط)؛ لا مقبض تحكّم ولا كتابة مقصودة |
+| `/sys/devices/system/cpu/cpufreq/policy0/scaling_min_freq` | READ_ONLY_PROBE | يُقرأ لكتالوج عُقد التشخيص (قراءة فقط)؛ لا مقبض تحكّم ولا كتابة مقصودة |
+| `/sys/kernel/gpu/gpu_max_clock` | READ_ONLY_PROBE | يُقرأ لكتالوج عُقد التشخيص (قراءة فقط)؛ لا مقبض تحكّم ولا كتابة مقصودة |
