@@ -24530,3 +24530,32 @@ QV **`42327839249`** = **success** (`headSha` مطابق؛ التشغيل الس
 **AGENTS:** التفويض ما زال مرفوضًا بحدّ الاستخدام المجاني؛ العمل كله في الجلسة الأم.
 **NEXT:** كتالوج مقابض كتابة معلنة (جهاز) · عارض حِزم أخرى (الإذن `QUERY_ALL_PACKAGES` قائم والواجهة
 ناقصة) · الآيلاند/المعايرة/الحرارة/البطارية/Wi‑Fi/ميزانية المراقبة (جهاز).
+
+## ROUND-CLOSE-22 — 2026-11-07 · مكتبة الألعاب تُقبل عضوًا من شاشة التطبيق
+
+**TASK:** توصيل قدرة كانت مبنية بلا باب. القياس: `GameSpaceRepository.membership` (سطور ٣٥-٥٢) و
+`GameSpaceViewModel.membership` و`GameLibraryAccess.saveManual` — لا نادِي لأيٍّ منها في الواجهة؛
+فبروفايل (DND · معدّل تحديث · اهتزاز) لا يصل إلا ما يعلنه النظام لعبةً.
+
+**FILES:**
+- `ui/subscreens/AppSettingsScreen.kt`: صفّ **مكتبة الألعاب** بعد شريط التبويبات — أي خارج تبويب بعينه،
+  لأن العضوية خاصية تطبيق لا تبويب أداء. الحالة تُقرأ من `GameSpaceViewModel.library` (نفس
+  `StateFlow` الذي يقرؤه مدير المكتبة) فلا نسخة ثانية تنزاح؛ والتبديل يكتب بـ`membership(pkg, include)`
+  الذي يضيف إلى `manual` ويحذف من `excluded` (وبالعكس) وفق `GameLibraryMembership.change`.
+- **الحدّ المقيس:** `gameLibrary()` في `core/gamespace/GameLibrary.kt:8` يرشّح `apps` ثم
+  `pkg !in excluded && (detectedGame || manual)`؛ و`apps` من `GameLibraryAccess.apps()` = استعلام
+  المشغّلات فقط. فحزمة بلا مدخل مشغّل تبقى غير مرئية ولو صارت `manual` ⇒ `listedInLibrary` يقفل
+  ظهور الصفّ، فتُعرض الوصلة حيث تصدق فقط.
+- الموارد: `app_game_library_section` · `app_game_library_title` · `app_game_library_summary` في
+  `values/` و`values-ar/` فقط.
+- `docs/ai/research/REFERENCE-HARVEST-NOV26.md`: تصحيح الأسطر ٦٠ · ٢٢٩ · ٢٥١ — كانت تقول إن عارض
+  مانيفست حِزم أخرى **غير مبنيّ**؛ والمبنيّ يخالفها: `AppSettingsScreen` يفتح
+  `max_perms?pkg={pkg}`، و`PermissionsScreen` تقرأ `ManifestFactsReader.read(context, pkg)` وتُنقّل
+  بين الحِزم (`PermissionsScreen.kt:844`).
+
+**GATES:** التسع exit 0 · `i18n_coverage --prune all` صفر يتيم · `git diff --check` ٠.
+**BUILD:** QV `42345884682` على `bf9d44d3` = **success**. لا Gradle محليًّا.
+**RESIDUAL RISK:** أن العضوية تُكتب صحيحةً مقيس بالكود والاختبارات القائمة، أمّا **أن البروفايل يُطبَّق
+على التطبيق المُدرَج أثناء عمله** فحكمه على الجهاز (خدمة اللوحة + القارئ الأمامي).
+**AGENTS:** التفويض ما زال مرفوضًا بحدّ الاستخدام المجاني؛ العمل كله في الجلسة الأم.
+**NEXT:** كتالوج مقابض كتابة معلنة (جهاز) · الآيلاند/المعايرة/الحرارة/البطارية/Wi‑Fi/ميزانية المراقبة (جهاز).

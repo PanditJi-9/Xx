@@ -1,3 +1,27 @@
+## ROUND-CLOSE-22 — 2026-11-07 · DONE (عضوية مكتبة الألعاب من شاشة التطبيق · تصحيح ثلاثة أسطر حصاد · CI أخضر)
+
+**المُنجَز:** `GameSpaceRepository.membership` كان مكتوبًا ومُختبَرًا و**لا واجهة تناديه**، و
+`GameLibraryAccess.saveManual` لا نادِي له؛ و`gameLibrary()` يشترط `detectedGame || manual`، فكل
+تطبيق لا يعلنه النظام لعبة كان **لا سبيل** إلى بروفايله (`InAppProfileApplier` عبر `GamePanelService`).
+صار له صفّ في شاشة التطبيق (`AppSettingsScreen`) يكتب العضوية من المصدر الواحد نفسه
+(`GameSpaceViewModel.library`) — بلا `MaxDestination` جديد.
+
+**وحدّ مقيس قيّد الوعد:** `gameLibrary()` يرشّح **من `apps`** (نتيجة استعلام المشغّلات) لا من الحزم
+المثبّتة؛ فحزمة بلا مدخل مشغّل لا تظهر في المكتبة ولو صارت `manual`. فيُعرض الصفّ فقط حين تكون الحزمة
+في `library.apps` — لا يُوعد بما لا يقع.
+
+**وأُصلح كذبٌ في السجل:** ثلاثة أسطر في `REFERENCE-HARVEST-NOV26.md` (٦٠ · ٢٢٩ · ٢٥١) كانت تنفي شحن
+**عارض مانيفست الحِزم الأخرى**؛ والقياس يكذبها: `AppSettingsScreen` يفتح `max_perms?pkg={pkg}` ويقرأ
+`ManifestFactsReader.read(context, pkg)` لأي حزمة، و`PermissionsScreen` نفسها تُنقّل بين الحِزم.
+
+**FILES:** `ui/subscreens/AppSettingsScreen.kt` · `res/values/strings.xml` و`res/values-ar/strings.xml`
+(٣ مفاتيح) · `docs/ai/research/REFERENCE-HARVEST-NOV26.md` (تصحيح فقط).
+**GATES:** التسع exit 0 · `--prune all` صفر يتيم · `git diff --check` ٠.
+**BUILD:** QV `42345884682` على `bf9d44d3` = **success**.
+**RESIDUAL:** هل يُطبَّق البروفايل فعلًا على التطبيق المُدرَج؟ **يحتاج جهازًا** (اللوحة والخدمة).
+**NEXT:** كتالوج مقابض كتابة معلنة (جهاز) · والآيلاند/المعايرة/الحرارة/البطارية/Wi‑Fi/ميزانية المراقبة
+(جهاز).
+
 ## ROUND-CLOSE-21 — 2026-11-07 · DONE (سطح الوصفة داخل شاشة · إقرار خطر مستقل · الأسطر المُهمَلة تُعلَن · CI أخضر)
 
 **المُنجَز:** صار لمحرّك الوصفات **سطح يُستعمل**: نصّ `key=value` ← مراجعة تحكم كل سطر قبل لمس
