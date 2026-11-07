@@ -84,8 +84,8 @@ fun AccessModeDialog(onDismiss: () -> Unit) {
                 verticalArrangement = Arrangement.spacedBy(MaxSpace.sm)
             ) {
                 FactRow(stringResource(R.string.access_status_level), stringResource(snapshot.level.labelRes))
-                FactRow(stringResource(R.string.access_status_root_manager), stringResource(rootManager.labelRes))
-                FactRow(stringResource(R.string.access_status_selinux), stringResource(selinux.labelRes))
+                FactRow(stringResource(R.string.access_status_root_manager), stringResource(rootManager.labelRes()))
+                FactRow(stringResource(R.string.access_status_selinux), stringResource(selinux.labelRes()))
 
                 SectionTitle(stringResource(R.string.access_mode_section))
                 ExecutionMode.entries.forEach { entry ->
