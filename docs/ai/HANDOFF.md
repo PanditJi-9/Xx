@@ -24645,3 +24645,29 @@ QV **`42327839249`** = **success** (`headSha` مطابق؛ التشغيل الس
 **RESIDUAL RISK:** لا شيء في هذا الحذف يحتاج جهازًا؛ ما يبقى جهازيًّا هو ما كان: قبول SAF والإطلاق.
 **AGENTS:** التفويض مرفوض بحدّ الاستخدام المجاني.
 **NEXT:** ما بقي كله جهازيّ.
+
+
+## ROUND-CLOSE-26 — 2026-11-07 · البناء الأحمر: أيقونة اتجاهية واحدة، ودرسٌ في عدد البوابات
+
+**TASK:** المالك قال «اصلح مشكلة البناء». القياس أولًا: `gh run list` على عشرين تشغيلًا أظهر أن **كل**
+دفعة تُطلق `MaxManager` و`MaxManager docs` وكلاهما `failure`، بينما Quick Verify أخضر دائمًا.
+
+**التشخيص:** `gh run view <id> --json jobs` ⇒ الخطوة الفاشلة الوحيدة هي `Contract gates (fast, no
+compiler)`. و`--log-failed` ⇒ `نُفّذ 51 أمرًا · فشل 1` ثم `✗ python3 tools/rtl_guard.py --assert`.
+وتكراره محليًّا أعطى المخالفة الوحيدة: `ui/component/RecipeCard.kt: Icons.Rounded.Undo` — أيقونة
+اتجاهية غير منعكسة (‏RTL). وهي من ROUND-CLOSE-21، ولهذا صار البناء أحمر منذ `a200f10a`.
+
+**الإصلاح:** `import androidx.compose.material.icons.automirrored.rounded.Undo` و`Icons.AutoMirrored.
+Rounded.Undo` (نفس نمط `FileEditorDialog.kt` و`GamePanelCockpit.kt`). بعدها `rtl_guard` ⇒ ٠ مخالفة.
+
+**الجذر الذي يستحقّ التسجيل:** كنت أشغّل **تسع** بوابات محليًّا؛ وCI يشغّل **٥١ أمرًا** في تلك الخطوة،
+و`docs-gates.yml` يستخرج نفس الكتلة من `build.yml`. فكل ما لم أكن أشغّله كان **غير مقيس** أصلًا،
+وظهر عطبًا في CI بعد الدفع. استُخرجت الكتلة كاملة إلى سكربت وشُغّلت محليًّا: **٣٠٧ ثانية** ⇒
+`✅ Contract gates passed`. والوصفة صارت في `VALIDATION.md` §13 كي لا تتكرّر.
+
+**GATES:** الخمسون محليًّا (‏`bash -e /tmp/opencode/nodes/contract_gates.sh`) ⇒ `exit=0` ·
+`✅ Contract gates passed in 307s`.
+**BUILD:** `MaxManager` **`42363625192`** على `__SHA8__` = **success** (كل المهام: `Build MaxManager`).
+**RESIDUAL RISK:** أخضر يعني «يترجم ويجتاز بواباته واختباراته»؛ ولا يعني أنه يعمل على جهاز.
+**AGENTS:** التفويض مرفوض بحدّ الاستخدام المجاني.
+**NEXT:** ما بقى جهازيّ.

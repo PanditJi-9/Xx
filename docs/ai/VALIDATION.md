@@ -570,3 +570,34 @@ bash tools/gamespace_shell_probe.sh -n 5 -o probe-$(date +%F).txt
 
 غير مدمِّر (يعيد كل قيمة إلى حالها)، ويجرّب بصلاحية الـshell **الأوامر نفسها** التي تُرسَل عبر `PrivilegedShell.exec` تحت Shizuku.
 `GameSpaceProbeParityTest` يحرس تطابق مفاتيح المسبار وأوامره مع الكود. نتيجة كل جولة تُسجَّل هنا بتاريخها وطراز الجهاز.
+
+## 13. بوابات CI الحقيقية — ٥١ أمرًا لا تسعة
+
+`AGENTS.md` §0.1 يسمّي سبع بوابات خفيفة، لكن خطوة **«Contract gates (fast, no compiler)»** في
+`.github/workflows/build.yml` تُنفّذ **٥١ أمرًا**، و`docs-gates.yml` يستخرج **نفس الكتلة** من
+`build.yml` ويُشغّلها. فمن يشغّل السبع وحدها قد يدفع بناءً أحمر بلا أن يرى السبب — سابقة
+`rtl_guard` وأيقونة `Icons.Rounded.Undo` في `RecipeCard.kt` (‏`a200f10a` ← `a5d2702f`).
+
+الاستخراج والتشغيل محليًّا بلا Gradle (مُختبَر: الناتج مطابق للكتلة التي مرّت في CI):
+
+```sh
+python3 - <<'PY'
+import pathlib
+lines = pathlib.Path(".github/workflows/build.yml").read_text(encoding="utf-8").splitlines()
+i = next(n for n, l in enumerate(lines) if l.strip().startswith("- name: Contract gates"))
+j = next(n for n in range(i, len(lines)) if lines[n].strip() == "run: |")
+indent = len(lines[j]) - len(lines[j].lstrip()) + 2
+body = []
+for l in lines[j + 1:]:
+    if l.strip() and (len(l) - len(l.lstrip())) < indent:
+        break
+    body.append(l[indent:] if len(l) > indent else "")
+while body and not body[-1].strip():
+    body.pop()
+pathlib.Path("/tmp/contract_gates.sh").write_text("\n".join(body) + "\n", encoding="utf-8")
+PY
+bash -e /tmp/contract_gates.sh
+```
+
+المتوقّع: `✅ Contract gates passed in <n>s` و`exit=0` (‏٣٠٧ ثانية على هذا المستودع). وحدّها: ما
+يحتاج `aapt2` أو JDK أو NDK يبقى كما هو محليًّا، وما لا بيئة له يُعلن «غير مُتحقَّقة» لا «تمرّ».
