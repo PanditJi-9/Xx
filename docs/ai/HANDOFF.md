@@ -24618,3 +24618,30 @@ QV **`42327839249`** = **success** (`headSha` مطابق؛ التشغيل الس
 **يحتاج جهازًا**.
 **AGENTS:** التفويض مرفوض بحدّ الاستخدام المجاني؛ العمل في الجلسة الأم.
 **NEXT:** قرار في الكتالوج الميت · وما بقى جهازيّ.
+
+
+## ROUND-CLOSE-25 — 2026-11-07 · حذف `EmuSystemCatalog` بإثبات تغطية كاملة
+
+**TASK:** قرار المالك «احذفه» على كتالوج أنظمة ميت. نُفِّذ بالقياس أولًا، لا بالثقة في التصنيف
+السابق («صفر مراجع»).
+
+**القياس قبل الحذف:**
+- أنظمة الكتالوج: ٢١ · امتداداته: ٣٤.
+- `RomSystems.SPECS`: ٣٢ امتدادًا · `RomSystems.AMBIGUOUS_EXTENSIONS`: سبعة
+  (`bin` · `iso` · `chd` · `cue` · `zip` · `7z` · `m3u`).
+- الفرق: `dead_ext - live_specs - ambiguous = ∅` ⇒ كل امتداد في الميت مغطّى بالحيّ.
+- مراجع `EmuSystem` / `EmuExtensionIndex` / `RomClassification` / `EmuRomIndexer` خارج الملفّ في
+  `manager/app/src` (main وtest): **صفر**.
+
+**ما حُذف:** `core/emuhub/EmuSystemCatalog.kt` (١٣١ سطرًا) — `enum EmuSystem` (٢١ نظامًا) ·
+`object EmuExtensionIndex` · `sealed interface RomClassification`.
+
+**ما لم يُفقد:** لا سلوك — لم يكن لأيٍّ من هذه قارئ في التطبيق ولا في الاختبارات. أمّا **الفضل**
+فباقٍ: `RomSystems.kt` يحمل نفس نسبة الجدول إلى `Swordfish90/Lemuroid` (GPLv3 ⇒ صفر كود، واقعة
+جدول فقط)، و`THIRD_PARTY_NOTICES.md` و`Credits` لم يتغيّرا لأن النسبة لم تتغيّر.
+
+**GATES:** التسع exit 0 · `--prune all` ٠ · `git diff --check` ٠.
+**BUILD:** QV `42361832791` على `7a613110` = **success**.
+**RESIDUAL RISK:** لا شيء في هذا الحذف يحتاج جهازًا؛ ما يبقى جهازيًّا هو ما كان: قبول SAF والإطلاق.
+**AGENTS:** التفويض مرفوض بحدّ الاستخدام المجاني.
+**NEXT:** ما بقي كله جهازيّ.
