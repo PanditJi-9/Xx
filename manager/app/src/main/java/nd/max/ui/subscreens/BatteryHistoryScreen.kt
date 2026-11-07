@@ -57,6 +57,7 @@ import nd.max.R
 import nd.max.core.battery.BatteryDrain
 import nd.max.core.battery.BatteryHistoryStore
 import nd.max.core.battery.BatterySample
+import nd.max.core.battery.ChargeCurve
 import nd.max.ui.design.MaxCondition
 import nd.max.ui.design.MaxConditionKind
 import nd.max.ui.design.MaxConditionNotice
@@ -72,6 +73,7 @@ import nd.max.ui.design.MaxSwitchRow
 import nd.max.ui.theme.MonoValueStyleSmall
 import java.util.Date
 import java.util.Locale
+import kotlin.math.roundToInt
 
 /**
  * Battery history — the time axis that Diagnostics was missing.
@@ -205,6 +207,84 @@ fun BatteryHistoryScreen(navController: NavHostController) {
                                 text = stringResource(R.string.battery_history_chart_high),
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+        // منحنى الشحن: نافذة لا لحظة. يُحسب من العيّنات المسجّلة سلفًا — لا مصدر قياس جديد ولا خدمة
+        // خلفية، ولا صلاحية تُطلب. ويرفض نفسه إن كانت النافذة أقصر من دقيقة أو لم يرتفع المستوى.
+        val chargeWindow = ChargeCurve.window(samples)
+        if (chargeWindow != null) {
+            MaxSection(
+                title = stringResource(R.string.charge_curve_title),
+                description = stringResource(R.string.charge_curve_desc)
+            ) {
+                MaxGroup {
+                    MaxRow(
+                        title = stringResource(R.string.charge_curve_window),
+                        subtitle = stringResource(
+                            R.string.charge_curve_window_value,
+                            chargeWindow.startLevel,
+                            chargeWindow.endLevel,
+                            chargeWindow.spanMinutes.roundToInt()
+                        )
+                    )
+                    val peakWatts = chargeWindow.peakWatts
+                    if (peakWatts != null) {
+                        MaxGroupDivider()
+                        MaxRow(
+                            title = stringResource(R.string.charge_curve_peak),
+                            trailing = {
+                                Text(
+                                    text = String.format(Locale.US, "%.1f W", peakWatts),
+                                    style = MonoValueStyleSmall,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                            }
+                        )
+                    }
+                    val meanWatts = chargeWindow.meanWatts
+                    if (meanWatts != null) {
+                        MaxGroupDivider()
+                        MaxRow(
+                            title = stringResource(R.string.charge_curve_mean),
+                            trailing = {
+                                Text(
+                                    text = String.format(Locale.US, "%.1f W", meanWatts),
+                                    style = MonoValueStyleSmall,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                            }
+                        )
+                    }
+                    val minutesToFull = chargeWindow.minutesToFull
+                    if (minutesToFull != null) {
+                        MaxGroupDivider()
+                        MaxRow(
+                            title = stringResource(R.string.charge_curve_eta),
+                            subtitle = stringResource(
+                                R.string.charge_curve_minutes,
+                                minutesToFull.roundToInt()
+                            )
+                        )
+                    }
+                    if (peakWatts != null && peakWatts > 0f) {
+                        MaxGroupDivider()
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = MaxSpace.md, vertical = MaxSpace.md)
+                        ) {
+                            SeriesChart(
+                                values = chargeWindow.points.map { it.watts },
+                                min = 0f,
+                                max = peakWatts * 1.15f,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(96.dp)
                             )
                         }
                     }
