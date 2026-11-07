@@ -23,30 +23,40 @@ class AdaptiveProfileEngine(
         val t = input.temperatureC
         val battery = input.batteryPct
         val load = input.loadPct
-        val next = when {
-            t != null && t >= hotThresholdC -> Profile.POWER
-            battery != null && battery <= 12 && !input.charging -> Profile.POWER
-            t != null && t >= warmThresholdC -> Profile.BALANCED
-            // GAMING must be checked before PERFORMANCE: PERFORMANCE's load
-            // gate (>= 80) is a strict subset of GAMING's (>= 55), so ordering
-            // PERFORMANCE first made GAMING unreachable at any load.
-            load != null && load >= 55 -> Profile.GAMING
-            load != null && load >= 80 && (input.charging || (battery ?: 100) >= 30) -> Profile.PERFORMANCE
-            t != null && t <= coolThresholdC - hysteresisC && load != null && load < 45 -> Profile.BALANCED
-            else -> last ?: Profile.BALANCED
+        // الحكم والسبب يُقرَّران في `when` واحد عن قصد: كانا سلسلتين متوازيتين، فانزاحا —
+        // الفرع الأعلى (`PERFORMANCE`) جاء بعد `GAMING` فصار **غير قابل للبلوغ** لأن شرطه
+        // أضيق، بينما وصفتُه في السبب تبقى "high-load" على بروفايل `GAMING`. سلسلة واحدة
+        // تُقرن فيها كل حالة بسببها تجعل هذا الانزياح مستحيلًا بنيويًّا.
+        //
+        // والترتيب: الأضيق قبل الأوسع. `PERFORMANCE` (حمل ≥ ٨٠ مع شحن أو بطارية كافية)
+        // أضيق من `GAMING` (حمل ≥ ٥٥)، فلو تأخّر لالتهمه `GAMING` كما كان.
+        val (next, reason) = when {
+            t != null && t >= hotThresholdC -> Profile.POWER to "temperature-hot"
+            battery != null && battery <= CRITICAL_BATTERY && !input.charging ->
+                Profile.POWER to "battery-critical"
+            t != null && t >= warmThresholdC -> Profile.BALANCED to "temperature-warm"
+            load != null && load >= PERFORMANCE_LOAD &&
+                (input.charging || (battery ?: 100) >= MIN_BATTERY) ->
+                Profile.PERFORMANCE to "high-load"
+            load != null && load >= GAMING_LOAD -> Profile.GAMING to "medium-load"
+            t != null && t <= coolThresholdC - hysteresisC && load != null && load < COOL_LOAD ->
+                Profile.BALANCED to "stable"
+            else -> (last ?: Profile.BALANCED) to "stable"
         }
         val changed = next != last
         last = next
-        val reason = when {
-            t != null && t >= hotThresholdC -> "temperature-hot"
-            battery != null && battery <= 12 && !input.charging -> "battery-critical"
-            t != null && t >= warmThresholdC -> "temperature-warm"
-            load != null && load >= 80 -> "high-load"
-            load != null && load >= 55 -> "medium-load"
-            else -> "stable"
-        }
         return Decision(next, reason, changed)
     }
 
     @Synchronized fun reset() { last = null }
+
+    private companion object {
+        /** حملٌ يبلغه اللعب وحده؛ أعلى من [GAMING_LOAD] فشرطُه أضيق. */
+        const val PERFORMANCE_LOAD = 80
+        const val GAMING_LOAD = 55
+        /** تحت هذا الحمل مع برودة كافية يعود التوازن صريحًا. */
+        const val COOL_LOAD = 45
+        const val MIN_BATTERY = 30
+        const val CRITICAL_BATTERY = 12
+    }
 }

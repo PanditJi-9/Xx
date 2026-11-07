@@ -25,7 +25,12 @@ class DriftGuard<T> {
             val live = runCatching { entry.reader() }.getOrNull()
             if (live == entry.desired) return@mapNotNull null
             val result = VerifiedControl.apply(entry.desired, entry.writer, entry.reader)
-            if (!result.successful) return@mapNotNull result.copy(error = result.error ?: "drift repair failed for $key")
+            // المفتاح يُلحق بالخطأ لأن `VerificationResult` لا يحمله: مع عدّة مفاتيح منجرفة
+            // كان الخطأ "write rejected" بلا اسم، فلا يُعرف أيّها الذي لم يُصلح.
+            if (!result.successful) {
+                val detail = result.error ?: "drift repair failed"
+                return@mapNotNull result.copy(error = "$key: $detail")
+            }
             result
         }
     }
