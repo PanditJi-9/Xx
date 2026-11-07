@@ -24347,3 +24347,55 @@ QV **`42290713652`** = **success** (`headSha` مطابق، خطوات العقد
 
 **AGENTS:** لم يُجرَّب التفويض في هذه الجولة (جُرّب في جولات سابقة وأعاد حدّ الاستخدام المجاني)؛
 فالعمل كله في الجلسة الأم ويُعلن الحدّ.
+
+## ROUND-CLOSE-17 — 2026-11-07 · كتالوج عُقد النواة (قراءة فقط) + إعلان مسارات القياس
+
+**TASK:** اختار المالك «الاثنان معًا»: أبني أساس محرّك الوصفات القابل للبناء بلا جهاز — كتالوج
+العُقد — بالتوازي مع مراجعة السلامة التي يجريها هو في نموذج آخر. والشرط: **قراءة فقط**، بلا كتابة
+sysfs، بلا صلاحية جديدة، بلا `MaxDestination` جديد.
+
+**FILES:**
+- `manager/app/src/main/java/nd/max/core/hardware/NodeCatalog.kt` (جديد): `object` بـ`enum Scope`
+  (CPU/GPU/THERMAL/MEMORY/POWER/PLATFORM) و`data class Node(id, path, scope)` و`val nodes` = ١٩ عقدة،
+  كل مسار مأخوذ من كود قائم (`PersistRestorer` وواجهات العتاد) لا من دليل جهاز؛ و`byScope()` بترتيب
+  ثابت. المعرّف مستقرّ لأنه يُخزَّن في السجلات، والمسار لا يُستعمل مفتاحًا لأنه يتغيّر بين الأجهزة.
+- `manager/app/src/main/java/nd/max/core/hardware/NodeCatalogReader.kt` (جديد): `State{PRESENT, ABSENT,
+  UNREADABLE}` · `Reading(node, state, value?)` · `Summary(total, present, absent, unreadable)` ·
+  `read(root = File("/"), nodes = NodeCatalog.nodes)` — الجذر **معامل** ليقيس الاختبار على شجرة مؤقّتة
+  لا على نواة المصدر؛ والمجلّد أو العقدة الفارغة أو غير المقروءة ⇒ `UNREADABLE`، ولا نصّ بديل مُختلق.
+- `manager/app/src/main/java/nd/max/ui/component/NodeCatalogCard.kt` (جديد): بطاقة في مركز التشخيص
+  تقرأ على `Dispatchers.IO` وتعرض ثلاثة أعداد (مقروءة الآن من المجموع · غير موجودة · موجودة والنظام
+  يرفضها)، بلا `Switch` ولا `onClick` — الوجود شرط لازم لا إذن.
+- `manager/app/src/main/java/nd/max/ui/mainscreens/DiagnosticsScreen.kt`: استيراد + `NodeCatalogCard()`
+  بعد `ExcludedCapabilitiesCard()` في نفس `item`.
+- `manager/app/src/test/java/nd/max/core/hardware/NodeCatalogReaderTest.kt` (جديد): ٧ اختبارات على
+  `Files.createTempDirectory` — عقدة مقروءة بقيمتها · غائبة بلا قيمة · مجلّد مكان العقدة ⇒ غير مقروءة ·
+  عقدة فارغة ⇒ غير مقروءة لا صفرًا · عدّ الحالات الثلاث مرة واحدة · سلامة الكتالوج (معرّفات فريدة،
+  مسارات مطلقة، كل نطاق مستعمل) · جذر فارغ ⇒ كل العُقد غائبة.
+- `res/values/strings.xml` + `values-ar/strings.xml`: ٥ مفاتيح `diagnostics_nodes_{title,desc,present,
+  absent,unreadable}` بعد `diagnostics_excluded_warning`.
+- `docs/features.md`: صفّ **Kernel node catalog** يشرح القراءة فقط وأن الوجود ليس إذنًا.
+- إصلاح الفحص: `tools/gen_control_catalog.py` (مفردة `READ_ONLY_PROBE` في `REASONS` بشرحها) ·
+  `manager/app/src/main/assets/control_catalog.json` (١٣ مسارًا في `unmapped` بملاحظة «قراءة لكتالوج
+  العُقد؛ لا مقبض تحكّم») · `docs/control-catalog.schema.json` و`docs/CAPABILITIES.md` مُعاد توليدهما.
+
+**GATES:** الثماني (والتاسعة مع مدقّق الكتالوج) كلها exit 0: `kt_balance` **3267/0** · `code_health`
+نظيف · `i18n_coverage` 0 · `design_tokens` 0 · `license_audit` 0 · `gen_capabilities_doc` 41 ·
+`gen_catalog_schema` 41/1 · `gen_control_catalog` 41 مدخلًا/14 غير مُخطَّط/19 بادئة/5 قراءة-فقط ·
+`resource_compile` كل المجلدات · `git diff --check` 0. وقياس محلي مسبق لمنطق الفحص نفسه: ٧٠ مسارًا
+مقيسًا · **٠ غير مغطّى**.
+
+**BUILD:** QV `42313458037` على `950453c8` = **failure**: الترجمة مرّت، وسقط اختبار واحد
+`ControlCatalogParityTest > everyMeasuredPathIsInTheCatalogOrDeclaredUnmapped` (سطر ١٣٩) لأن ١٣ من
+١٩ مسارًا جديدًا لم تُعلَن — الفحص أدّى دوره. الإصلاح `a009c3b1` «Declare the read-only probe paths so
+the catalog parity check stays honest» ⇒ QV **`42322533762` = success** (`headSha` مطابق، خطوات العقد
+والتصريف والاختبارات success).
+
+**RESIDUAL RISK:** على أندرويد حديث أكثر هذه العُقد لا تُقرأ لتطبيق عاديّ (SELinux)، فتُعرض «رفض
+النظام» — وهذا هو الصدق المقصود لا نقص. والوجود **شرط لازم لا كافٍ**: البطاقة لا تمنح كتابة ولا تتجاوز
+`HardwareControlArbiter` (ADR-11). وشكل البطاقة وتزاحم الأعداد **يحتاج جهازًا**.
+
+**AGENTS:** لم يُجرَّب التفويض هذه الجولة؛ العمل كله في الجلسة الأم ويُعلن الحدّ.
+
+**NEXT:** محرّك الوصفات يحتاج وصل الملكية عبر الـarbiter (لكل كتابة baseline واسترجاع) ثم مراجعة سلامة
+مستقلة؛ وما بعدها محجوب بجهاز (آيلاند/معايرة/حرارة/بطارية/شبكة) أو بقياس (ميزانية المراقبة).
