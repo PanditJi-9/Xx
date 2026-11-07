@@ -7,7 +7,7 @@ copyleft)، وتسليمه دفعاتٍ قابلة للتحقق: جداول مس
 **CHANGED:** الدفعة ١ `030968db` (الكتالوج ٤١←٤٨ مدخلًا و٦٩←١٠٩ مرشّحًا: GPU ×٢١ · دورة/مقاومة/جهد
 البطارية · meminfo · zram) · الدفعة ٢ `fa176e15` (`FrameWindow` + `HudField.Stability`) · الدفعة ٣
 `fc2b2ea8` (`ChargeCurve` + قسم المنحنى داخل `BatteryHistoryScreen`) · الدفعة ٤ `c11d2c75` (١٢ مدخلًا
-`sched.*` + `SCHED_PREFIX`) · الدفعة ٥ `ff71a55d` (٤ مداخل `sched.*` + `AGENTS.md` §0.5) ·
+`sched.*` + `SCHED_PREFIX`) · الدفعة ٥ `ff71a55d` (٤ مداخل `sched.*` + `AGENTS.md` §0.6) ·
 الاختبارات `6e040134` (٦+٧ اختبارات وتثبيت ترتيب `HudField`).
 
 **العَرَض:** `MaxManager` أحمر على `fa176e15` و`fc2b2ea8` و`6e040134`.

@@ -79,7 +79,7 @@ CHANGED:
 - **الدفعة ٤ — `c11d2c75`:** ١٢ مدخلًا حرفيًّا `sched.*` (`uclamp` × ٧ · `shares` · `schedtune` × ٢ ·
   `sched_{up,down}migrate`) + `HardwareControlKey.SCHED_PREFIX` + عدّاد البوادئ ١٩ ← ٢٠ في المولّد والاختبار.
 - **الدفعة ٥ — `ff71a55d`:** ٤ مداخل (`sched.group.{up,down}migrate` · `sched.force_lb_enable` ·
-  `sched.lib.mask_force`) ⇒ الكتالوج **٦٤ مدخلًا · ١٢٥ مرشّحًا · ٢٠ بادئة**؛ و`AGENTS.md` §0.5 (لا انتظار
+  `sched.lib.mask_force`) ⇒ الكتالوج **٦٤ مدخلًا · ١٢٥ مرشّحًا · ٢٠ بادئة**؛ و`AGENTS.md` §0.6 (لا انتظار
   لبناء، وكل ما يمكن تشغيله خلفيًّا يُشغَّل خلفيًّا).
 - **الإصلاح — `6e040134` ثم `db3a5b44`:** `FrameWindowTest` (٦) · `ChargeCurveTest` (٧) · ونقل `Stability` بجانب `Frames`
   وتحديث تثبيت الترتيب في `HudSessionTest`. **سبب البناءين الأحمرين** (`fa176e15` و`fc2b2ea8`) كان اختبار
