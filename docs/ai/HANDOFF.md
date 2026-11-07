@@ -24399,3 +24399,37 @@ the catalog parity check stays honest» ⇒ QV **`42322533762` = success** (`hea
 
 **NEXT:** محرّك الوصفات يحتاج وصل الملكية عبر الـarbiter (لكل كتابة baseline واسترجاع) ثم مراجعة سلامة
 مستقلة؛ وما بعدها محجوب بجهاز (آيلاند/معايرة/حرارة/بطارية/شبكة) أو بقياس (ميزانية المراقبة).
+
+## ROUND-CLOSE-18 — 2026-11-07 · نواة محرّك الوصفات: القرار قبل الكتابة
+
+**TASK:** بعد قرار المالك **«اسقط الشرط واكمل بسرعة»** (إسقاط شرط المراجعة المستقلة لمحرّك الوصفات)،
+بُنيت النواة التي يجب أن تسبق أي كتابة: تحويل وصفة نصّية إلى خطة خطوات، ورفضها كاملةً إن سقطت خطوة.
+
+**FILES:**
+- `manager/app/src/main/java/nd/max/core/hardware/RecipePlan.kt` (جديد): `enum Verdict { READY,
+  UNKNOWN_KEY, NO_NODE, NOT_WRITABLE, PROTECTED, BAD_VALUE }` · `Entry(key, transport, candidates,
+  writePrivilege, danger, kind)` · `Step(key, value, path, verdict)` · `Plan(steps)` بـ`ready`/`blocked`/
+  `applicable` · `parse(recipe)` (سطر `key=value`، يتجاهل الفراغ و`#`) · `plan(recipe, catalog)`
+  (الترتيب: مفتاح مجهول ← محميّ ← بلا صلاحية كتابة ← بلا مسار ← قيمة خارج النوع ← READY بأول مرشّح) ·
+  `valueFits` (BOOL/INT/PERCENT/FREQUENCY_RANGE/non-blank).
+- `manager/app/src/test/java/nd/max/core/hardware/RecipePlanTest.kt` (جديد): ١٠ اختبارات تشمل رفض
+  الوصفة كلها عند خطوة واحدة سيئة، والمفاتيح المكرّرة، والوصفة الفارغة.
+- KDocs: النواة لا تفتح ملفًا ولا تكتب؛ الكتالوج هو المصدر الوحيد للمسارات (ADR-18)؛ ولا تتجاوز
+  `HardwareControlArbiter` (ADR-11)؛ وحكمها **بنيويّ** لا سلوكيّ.
+
+**GATES:** التسع كلها exit 0 قبل الالتزام: `kt_balance` 3267/0 · `code_health` · `i18n_coverage` ·
+`design_tokens` · `license_audit` · capabilities 41 · schema 41/1 · control_catalog · `resource_compile`
+· `git diff --check` 0.
+
+**BUILD:** `adc1b7b1` «Decide a recipe before writing it: resolve, refuse, and check the value» —
+QV **`42325942037`** = **success** (`headSha` مطابق، خطوات العقد والتصريف والاختبارات success). لا
+Gradle محليًّا.
+
+**RESIDUAL RISK:** النواة **تقرّر ولا تنفّذ**: لا كتابة، ولا لقطة، ولا استرجاع. والوصل بالـarbiter
+(لقطة قبل كل خطوة + استرجاع عند الفشل + ملكية لكل مفتاح) هو الخطوة التالية ولم تُبنَ بعد. وسلوك
+العُقد الفعلي على الجهاز يبقى **يحتاج جهازًا**.
+
+**AGENTS:** لم يُجرَّب التفويض هذه الجولة؛ وقرار المالك بإسقاط المراجعة المستقلة مُسجَّل أعلاه.
+
+**NEXT:** وصل `Plan` بالـarbiter لخطوة واحدة آمنة (لقطة → كتابة → قراءة تحقّق → استرجاع إن اختلف)،
+ثم سطح وصفة داخل شاشة قائمة — بلا `MaxDestination` جديد.
