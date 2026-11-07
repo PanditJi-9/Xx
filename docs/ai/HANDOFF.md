@@ -24433,3 +24433,34 @@ Gradle محليًّا.
 
 **NEXT:** وصل `Plan` بالـarbiter لخطوة واحدة آمنة (لقطة → كتابة → قراءة تحقّق → استرجاع إن اختلف)،
 ثم سطح وصفة داخل شاشة قائمة — بلا `MaxDestination` جديد.
+
+## ROUND-CLOSE-19 — 2026-11-07 · منفّذ الوصفة (قراءة تحقّق + استرجاع + تراجع عكسي)
+
+**TASK:** بعد نواة القرار `RecipePlan` في ROUND-CLOSE-18، أمر المالك «اسقط الشرط واكمل بسرعة»:
+بناء **المنفّذ** الذي يكتب فعلًا ويثبت أنه كتب، بلا جهاز.
+
+**FILES:**
+- `manager/app/src/main/java/nd/max/core/hardware/RecipeRun.kt` (جديد): `interface NodeIo { read(path): String?;
+  write(path, value): Boolean }` · `enum Outcome { APPLIED, MISMATCH_RESTORED, RESTORE_FAILED, WRITE_FAILED,
+  ROLLED_BACK, ROLLBACK_FAILED, BLOCKED }` · `StepResult(step, outcome, before?, after?)` ·
+  `Report(results)` فيه `ok`/`applied`/`rolledBack`/`failed`. `run(plan, io)` يرفض الخطة كلها `BLOCKED`
+  إن لم تكن `applicable` أو فيها مسار `null`؛ وإلا: قراءة قبل ← كتابة ← قراءة بعد ← مقارنة `trim`؛
+  فاختلافٌ يعني استرجاع القيمة السابقة (`MISMATCH_RESTORED`) أو إعلان `RESTORE_FAILED` إن لم تُقرأ،
+  ثم `rollback` عكسيًّا للمطبَّقة وحدها.
+- `manager/app/src/test/java/nd/max/core/hardware/RecipeRunTest.kt` (جديد): ٧ اختبارات بـ`FakeIo`
+  في الذاكرة — نجاح بخطوتين · اختلاف القراءة ⇒ استرجاع (والكتابة الثانية هي الاسترجاع) · قيمة سابقة
+  غير مقروءة ⇒ `RESTORE_FAILED` بلا ادّعاء تراجع · رفض كتابة يوقف ويسترجع · رفض الاسترجاع أيضًا ⇒
+  `ROLLBACK_FAILED` · خطة فيها خطوة مرفوضة ⇒ `BLOCKED` و`io.writes == 0` · خطة فارغة ⇒ `ok == false`.
+
+**GATES:** التسع كلها exit 0 — `kt_balance` ٣٢٦٩/٠ · `code_health` نظيف · `i18n` ٠ · `design_tokens` ٠ ·
+`license_audit` ٠ · capabilities ٤١ · schema ٤١/١ · control_catalog سليم · `resource_compile` كل المجلدات ·
+`git diff --check` ٠.
+
+**BUILD:** `59edc4d8` «Write a step only when it reads back, and roll back when it does not» —
+QV **`42327839249`** = **success** (`headSha` مطابق؛ التشغيل السابق `42327145402` سقط في توقّع اختبار واحد فأُصلح). لا Gradle محليًّا ولا بناء على جهاز المالك.
+
+**RESIDUAL RISK:** المحرّك **لا يعرف الصلاحيات ولا يفتح ملفًا** — يُمرَّر إليه `NodeIo`؛ والوصل الحقيقي
+(`RootFileAccess.read` + `writeFireAndForget`) وتمرير كل خطوة عبر `HardwareControlArbiter` (ADR-11)
+هما الخطوة التالية. وكل كتابة فعلية على عتاد **تحتاج جهازًا** مهما نجحت الاختبارات.
+
+**AGENTS:** التفويض لم يُجرَّب في هذه الجولة؛ العمل كله في الجلسة الأم.
