@@ -4090,4 +4090,5 @@
     <string name="app_game_library_section">Game library</string>
     <string name="app_game_library_title">Include in game library</string>
     <string name="app_game_library_summary">Makes this app reachable in the game panel, so its per-app profile (DND, refresh rate, haptics) applies while it runs. Detection alone covers only apps the system marks as a game.</string>
+    <string name="hud_field_stability">Stability</string>
 </resources>

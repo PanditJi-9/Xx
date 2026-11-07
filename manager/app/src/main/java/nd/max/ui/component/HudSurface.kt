@@ -110,6 +110,7 @@ fun hudFieldText(reading: HudReading?, field: HudField): String = when (field) {
         }
     } ?: MAX_VALUE_UNAVAILABLE
     HudField.Renderer -> reading?.renderer ?: MAX_VALUE_UNAVAILABLE
+    HudField.Stability -> reading?.stability?.let { "$it%" } ?: MAX_VALUE_UNAVAILABLE
 }
 
 /**
@@ -153,6 +154,7 @@ fun hudFieldLabel(field: HudField): String = stringResource(
         HudField.Battery -> R.string.hud_field_battery
         HudField.Network -> R.string.hud_field_network
         HudField.Renderer -> R.string.hud_field_renderer
+        HudField.Stability -> R.string.hud_field_stability
     }
 )
 

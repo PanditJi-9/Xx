@@ -6,9 +6,11 @@
 package nd.max.core.platform
 
 import android.content.Context
+import android.hardware.display.DisplayManager
 import android.net.TrafficStats
 import android.os.BatteryManager
 import android.os.PowerManager
+import android.view.Display
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -19,6 +21,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlin.math.roundToInt
 
 /**
  * لوحة الأداء — الطبقة البيانية. **لا واجهة في هذا الملف**: تُقرأ منه اللوحة العائمة داخل
@@ -110,7 +113,16 @@ enum class HudField {
     Network,
 
     /** مُصيّر الرسوم للتطبيق الأمامي (GL/Vulkan). */
-    Renderer
+    Renderer,
+
+    /**
+     * ثبات الإطارات: حصة العيّنات القريبة من هدف الشاشة، **من نافذة متدحرجة لا من لحظة**.
+     *
+     * والفرق جوهريّ: الإطارات اللحظية قد تُقرأ في هبّة فتبدو اللعبة متعثّرة، أو بين هبّتين فتبدو
+     * مثالية — والرقم نفسه. فالثبات يجيب سؤال اللاعب («هل هي سلسة؟») بما لا تجيبه اللحظة.
+     * ويُحسب في [FrameWindow] من معدّل الإطارات المُعايَن، وهدفه معدّل تحديث الشاشة نفسه.
+     */
+    Stability
 }
 
 /**
@@ -149,7 +161,9 @@ data class HudReading(
     val rxBps: Float? = null,
     /** رفع الشبكة بالبايت/ثانية — `null` قبل أوّل فرق مقيس. */
     val txBps: Float? = null,
-    val renderer: String? = null
+    val renderer: String? = null,
+    /** ثبات الإطارات ٠..١٠٠ من نافذة متدحرجة؛ `null` قبل أن تكتمل عيّنات كافية. */
+    val stability: Int? = null
 ) {
     /** هل أجاب مصدر الإطارات؟ هو المصدر الوحيد الذي يفشل بحسب الوضع المُختار. */
     val framesAnswered: Boolean get() = frames != null
@@ -165,6 +179,7 @@ data class HudReading(
         // لمن يريد رقمًا واحدًا (الفرز/التصدير)، لا عرضًا.
         HudField.Network -> rxBps
         HudField.Renderer -> renderer
+        HudField.Stability -> stability
     }
 }
 
@@ -450,6 +465,15 @@ object HudSampler {
     private val loop = CoroutineScope(SupervisorJob() + Dispatchers.Default)
 
     /**
+     * نافذة الثبات: تُغذّى من كل عيّنة إطارات، وتُقرأ فقط حين يطلبها أحد الحقول.
+     *
+     * **ولماذا هي هنا لا في القارئ:** `FpsMonitorUtil` يعطي اللحظة، والنافذة تجمعها؛ ووضعها في
+     * الحلقة يعني أنها تُعاد مع كل مالك (تراكب + شاشة) على حدة — وهو تكرارٌ لا يُقاس عليه.
+     * و[FrameWindow] آمنة للنداء من عدّة خيوط، فالقراءة من حلقة والكتابة من أخرى لا تتزاحم.
+     */
+    private val frameWindow = FrameWindow()
+
+    /**
      * أوّل مالك أو `null`.
      *
      * **و`null` تعني «بلا قارئ»:** الجزيرة تقرأها فلا تسبق مالكًا قائمًا (عقدها في [HUD_OWNER_ISLAND]).
@@ -570,6 +594,15 @@ object HudSampler {
     ): HudReading {
         if (fields.isEmpty()) return HudReading()
         val wantsFrames = HudField.Frames in fields
+        // الثبات يحتاج العيّنات أيضًا: من أظهر الثبات وحده دون الإطارات يجب أن تُغذّى نافذته،
+        // وإلا صار الحقل شرطةً دائمةً لأنه لم يُسجَّل شيء.
+        val wantsSamples = wantsFrames || HudField.Stability in fields
+        val framesNow = if (wantsSamples) {
+            runCatching { FpsMonitorUtil.getFps() }.getOrNull().positive()
+        } else {
+            null
+        }
+        if (wantsSamples) frameWindow.record(framesNow)
         val renderer = if (HudField.Renderer in fields) {
             runCatching { FpsMonitorUtil.getCurrentRenderer(FpsMonitorUtil.getForegroundPackage()) }
                 .getOrNull()?.takeIf { it.isNotBlank() && it != "FPS" }
@@ -578,7 +611,7 @@ object HudSampler {
         }
         return HudReading(
             // `0` من القارئ تعني «لم يُجِب» لا «صفر إطار» — فتُترجم غيابًا.
-            frames = if (wantsFrames) runCatching { FpsMonitorUtil.getFps() }.getOrNull().positive() else null,
+            frames = if (wantsFrames) framesNow else null,
             cpu = if (HudField.Cpu in fields) {
                 runCatching { FpsMonitorUtil.getCpuLoad() }.getOrNull()?.takeIf { it > 0 }
             } else {
@@ -609,8 +642,24 @@ object HudSampler {
             },
             rxBps = if (HudField.Network in fields) rxBps else null,
             txBps = if (HudField.Network in fields) txBps else null,
-            renderer = renderer
+            renderer = renderer,
+            stability = if (HudField.Stability in fields) stabilityPercent(context) else null
         )
+    }
+
+    /**
+     * نسبة الثبات ٠..١٠٠ أو `null`.
+     *
+     * **والهدف يُقرأ من الشاشة لا يُفترض:** افتراض ٦٠ على شاشة ١٢٠ يجعل الجهاز «غير ثابت» أبدًا،
+     * وافتراض ١٢٠ على شاشة ٦٠ يجعل الرقم مستحيلًا. وحين لا يُعلن النظام معدّله يبقى `null` — لا
+     * رقمٌ مبنيّ على تخمين.
+     */
+    private fun stabilityPercent(context: Context): Int? {
+        val hz = runCatching {
+            context.getSystemService(DisplayManager::class.java)
+                ?.getDisplay(Display.DEFAULT_DISPLAY)?.refreshRate
+        }.getOrNull()?.takeIf { it.isFinite() && it > 0f } ?: return null
+        return frameWindow.stableShare(hz)?.let { (it * 100f).roundToInt() }
     }
 }
 
