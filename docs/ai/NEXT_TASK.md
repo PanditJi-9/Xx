@@ -19,8 +19,8 @@ copyleft)، وتسليمه دفعاتٍ قابلة للتحقق: جداول مس
 
 **GATES:** التسع `--assert` + `--prune all` + `rtl_guard --assert` + `git diff --check` خضراء
 (`y3-*` · `z4-*` · `t5-*` · `u5-*`) · `gen_control_catalog --assert` ⇒ ٦٤/١٢٥/٢٠.
-**BUILD:** `42390371801` على `6e040134` = failure (السبب أعلاه) · `db3a5b44` قيد التشغيل عند كتابة
-السطر — وحكمه لا يُدّعى قبل قراءته.
+**BUILD:** `42390371801` على `6e040134` = failure (السبب أعلاه) · **`42391423269` على `db3a5b44` =
+success** (الإصلاح) · **`MaxManager docs` `42391791330` على `67c2ee63` = success** (التوثيق).
 **RESIDUAL:** كل ما يمسّ العتاد يحتاج جهازًا: قبول النواة `cpu.uclamp.*` / `cpu.schedtune.*` /
 `sched_*migrate` · أيّ مسار GPU يظهر من الـ٢١ · إشارة `currentUa` وشكل المنحنى · صيغة
 `sched.lib.mask_force` عند البائع. ولا شيء من الشجرتين نُقل: لا `.so` ولا daemon ولا `.o` BPF ولا

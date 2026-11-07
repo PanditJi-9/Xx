@@ -93,7 +93,8 @@ MEASURED HERE: التسع `--assert` + `--prune all` + `rtl_guard --assert` + `g
 BUILD: `MaxManager` `42390371801` على `6e040134` = **failure** — والسبب مقروء لا مُفترض:
 `HudSession.kt:99:14 Syntax error: Expecting ';' after the last enum entry`، لأن نقل `Stability` بجانب
 `Frames` تركها **بلا فاصلة** قبل `Cpu` (`cat -A` أثبت ذلك). و`ff71a55d` ورث العطب نفسه. أُصلح في
-**`db3a5b44`** («Fix the enum separator the move left out») وأُعيد الدفع؛ وحكمه يُقرأ قبل إغلاق الجولة.
+**`db3a5b44`** («Fix the enum separator the move left out») وأُعيد الدفع ⇒ `MaxManager` **`42391423269`**
+= **success**. و`MaxManager docs` على `67c2ee63` (التوثيق فقط فوق الإصلاح) = **success** (`42391791330`).
 (آخر بناء أخضر مقروء: `42368526042` على `030968db`.)
 
 RESIDUAL RISK: كل ما يمسّ العتاد يبقى على الجهاز — قبول النواة الكتابة إلى `cpu.uclamp.*` / `cpu.schedtune.*`
