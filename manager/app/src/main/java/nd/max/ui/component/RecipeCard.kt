@@ -19,7 +19,7 @@ import androidx.compose.material.icons.rounded.HelpOutline
 import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.Restore
 import androidx.compose.material.icons.rounded.Tune
-import androidx.compose.material.icons.rounded.Undo
+import androidx.compose.material.icons.automirrored.rounded.Undo
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -276,7 +276,7 @@ private fun outcomeIcon(outcome: RecipeRun.Outcome): ImageVector = when (outcome
     RecipeRun.Outcome.MISMATCH_RESTORED -> Icons.Rounded.Restore
     RecipeRun.Outcome.RESTORE_FAILED -> Icons.Rounded.ErrorOutline
     RecipeRun.Outcome.WRITE_FAILED -> Icons.Rounded.ErrorOutline
-    RecipeRun.Outcome.ROLLED_BACK -> Icons.Rounded.Undo
+    RecipeRun.Outcome.ROLLED_BACK -> Icons.AutoMirrored.Rounded.Undo
     RecipeRun.Outcome.ROLLBACK_FAILED -> Icons.Rounded.ErrorOutline
     RecipeRun.Outcome.BLOCKED -> Icons.Rounded.Block
 }
