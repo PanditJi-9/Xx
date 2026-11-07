@@ -27,7 +27,7 @@ class RecipeCatalogTest {
               "danger": "LOW",
               "candidates": [
                 { "path": "/proc/sys/vm/swappiness", "origin": "MEASURED" },
-                { "path": "/proc/sys/vm/\$knob", "origin": "TEMPLATE" }
+                { "path": "/proc/sys/vm/${'$'}knob", "origin": "TEMPLATE" }
               ],
               "privilege": { "read": ["NONE"], "write": ["MAGISK", "DAEMON"] }
             },
