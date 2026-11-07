@@ -7,8 +7,8 @@
 ## الخلاصة
 
 - إصدار الكتالوج: **1**
-- المداخل: **60**
-- المرشّحون: **121**
+- المداخل: **64**
+- المرشّحون: **125**
 - غير المُخطَّط: **14**
 
 ## المداخل
@@ -41,6 +41,10 @@
 | `memory.meminfo` | STRING | PROC | — | LOW | `/proc/meminfo` |
 | `sched.cpu_shares.top` | INT | NODE | MAGISK، KSU، APATCH، SU_BARE، DAEMON | HIGH | `/dev/cpuctl/top-app/cpu.shares` |
 | `sched.downmigrate` | INT | NODE | MAGISK، KSU، APATCH، SU_BARE، DAEMON | HIGH | `/proc/sys/kernel/sched_downmigrate` |
+| `sched.force_lb_enable` | BOOL | NODE | MAGISK، KSU، APATCH، SU_BARE، DAEMON | HIGH | `/proc/sys/kernel/sched_force_lb_enable` |
+| `sched.group.downmigrate` | INT | NODE | MAGISK، KSU، APATCH، SU_BARE، DAEMON | HIGH | `/proc/sys/kernel/sched_group_downmigrate` |
+| `sched.group.upmigrate` | INT | NODE | MAGISK، KSU، APATCH، SU_BARE، DAEMON | HIGH | `/proc/sys/kernel/sched_group_upmigrate` |
+| `sched.lib.mask_force` | STRING | NODE | MAGISK، KSU، APATCH، SU_BARE، DAEMON | HIGH | `/proc/sys/kernel/sched_lib_mask_force` |
 | `sched.stune.boost.top` | INT | NODE | MAGISK، KSU، APATCH، SU_BARE، DAEMON | HIGH | `/dev/stune/top-app/cpu.schedtune.boost` |
 | `sched.stune.prefer_idle.top` | BOOL | NODE | MAGISK، KSU، APATCH، SU_BARE، DAEMON | HIGH | `/dev/stune/top-app/cpu.schedtune.prefer_idle` |
 | `sched.uclamp.background.max` | INT | NODE | MAGISK، KSU، APATCH، SU_BARE، DAEMON | HIGH | `/dev/cpuctl/background/cpu.uclamp.max` |
@@ -378,6 +382,46 @@
 - الخطر: **HIGH**
 - المرشّحون:
   - `/proc/sys/kernel/sched_downmigrate` — `DERIVED`
+
+### `sched.force_lb_enable`
+
+- النوع: `BOOL` · النقل: `NODE`
+- القراءة: NONE
+- الكتابة: MAGISK، KSU، APATCH، SU_BARE، DAEMON
+- التحقّق: `READ_BACK_EQUAL` · تفاوت 0
+- الخطر: **HIGH**
+- المرشّحون:
+  - `/proc/sys/kernel/sched_force_lb_enable` — `DERIVED`
+
+### `sched.group.downmigrate`
+
+- النوع: `INT` · النقل: `NODE`
+- القراءة: NONE
+- الكتابة: MAGISK، KSU، APATCH، SU_BARE، DAEMON
+- التحقّق: `READ_BACK_EQUAL` · تفاوت 0
+- الخطر: **HIGH**
+- المرشّحون:
+  - `/proc/sys/kernel/sched_group_downmigrate` — `DERIVED`
+
+### `sched.group.upmigrate`
+
+- النوع: `INT` · النقل: `NODE`
+- القراءة: NONE
+- الكتابة: MAGISK، KSU، APATCH، SU_BARE، DAEMON
+- التحقّق: `READ_BACK_EQUAL` · تفاوت 0
+- الخطر: **HIGH**
+- المرشّحون:
+  - `/proc/sys/kernel/sched_group_upmigrate` — `DERIVED`
+
+### `sched.lib.mask_force`
+
+- النوع: `STRING` · النقل: `NODE`
+- القراءة: NONE
+- الكتابة: MAGISK، KSU، APATCH، SU_BARE، DAEMON
+- التحقّق: `READ_BACK_EQUAL` · تفاوت 0
+- الخطر: **HIGH**
+- المرشّحون:
+  - `/proc/sys/kernel/sched_lib_mask_force` — `DERIVED`
 
 ### `sched.stune.boost.top`
 

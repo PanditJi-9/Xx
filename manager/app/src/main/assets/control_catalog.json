@@ -792,6 +792,118 @@
       "danger": "HIGH"
     },
     {
+      "key": "sched.force_lb_enable",
+      "transport": "NODE",
+      "kind": "BOOL",
+      "candidates": [
+        {
+          "path": "/proc/sys/kernel/sched_force_lb_enable",
+          "origin": "DERIVED"
+        }
+      ],
+      "verify": {
+        "policy": "READ_BACK_EQUAL",
+        "tolerance": 0
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": [
+          "MAGISK",
+          "KSU",
+          "APATCH",
+          "SU_BARE",
+          "DAEMON"
+        ]
+      },
+      "danger": "HIGH"
+    },
+    {
+      "key": "sched.group.downmigrate",
+      "transport": "NODE",
+      "kind": "INT",
+      "candidates": [
+        {
+          "path": "/proc/sys/kernel/sched_group_downmigrate",
+          "origin": "DERIVED"
+        }
+      ],
+      "verify": {
+        "policy": "READ_BACK_EQUAL",
+        "tolerance": 0
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": [
+          "MAGISK",
+          "KSU",
+          "APATCH",
+          "SU_BARE",
+          "DAEMON"
+        ]
+      },
+      "danger": "HIGH"
+    },
+    {
+      "key": "sched.group.upmigrate",
+      "transport": "NODE",
+      "kind": "INT",
+      "candidates": [
+        {
+          "path": "/proc/sys/kernel/sched_group_upmigrate",
+          "origin": "DERIVED"
+        }
+      ],
+      "verify": {
+        "policy": "READ_BACK_EQUAL",
+        "tolerance": 0
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": [
+          "MAGISK",
+          "KSU",
+          "APATCH",
+          "SU_BARE",
+          "DAEMON"
+        ]
+      },
+      "danger": "HIGH"
+    },
+    {
+      "key": "sched.lib.mask_force",
+      "transport": "NODE",
+      "kind": "STRING",
+      "candidates": [
+        {
+          "path": "/proc/sys/kernel/sched_lib_mask_force",
+          "origin": "DERIVED"
+        }
+      ],
+      "verify": {
+        "policy": "READ_BACK_EQUAL",
+        "tolerance": 0
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": [
+          "MAGISK",
+          "KSU",
+          "APATCH",
+          "SU_BARE",
+          "DAEMON"
+        ]
+      },
+      "danger": "HIGH"
+    },
+    {
       "key": "sched.stune.boost.top",
       "transport": "NODE",
       "kind": "INT",
