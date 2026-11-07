@@ -25,11 +25,18 @@ class RecipeRunTest {
         val refuseWrite = mutableSetOf<String>()
         var ignoreWrites = false
 
+        /**
+         * كل كتابة بعد هذا العدد تُرفَض — لبناء حالة «نجحت الأولى، وفشلت الثانية، وفشل تراجعها»
+         * بلا أن نرفض الأولى أيضًا.
+         */
+        var refuseAfter = Int.MAX_VALUE
+
         override fun read(path: String): String? = values[path]
 
         override fun write(path: String, value: String): Boolean {
             writes++
             if (path in refuseWrite) return false
+            if (writes > refuseAfter) return false
             if (!ignoreWrites) values[path] = value
             return true
         }
@@ -101,8 +108,9 @@ class RecipeRunTest {
 
     @Test
     fun a_rollback_that_the_io_refuses_is_reported_as_failed_not_hidden() {
+        // الأولى تُكتب فعلًا، ثم تُرفَض الثانية **وتراجعها**: فيُعلن الفشلان معًا لا يُخفى أحدهما.
         val io = FakeIo("/cpu/min" to "100", "/cpu/max" to "200").apply {
-            refuseWrite += setOf("/cpu/max", "/cpu/min")
+            refuseAfter = 1
         }
         val plan = planOf(ready("cpu_min", "300", "/cpu/min"), ready("cpu_max", "400", "/cpu/max"))
 
