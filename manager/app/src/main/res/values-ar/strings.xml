@@ -4063,4 +4063,32 @@
     <string name="fas_open_apps_desc">افتح قائمة التطبيقات ثم إعدادات التطبيق لتحديد معدّله.</string>
     <string name="fas_limits_title">ما يمكن لهذه الشاشة أن تَعِد به وما لا يمكن</string>
     <string name="fas_limits_body">لا يُكتب المعدّل إلا عبر مسار مُميَّز (جذر أو Shizuku). بلا مسار يبقى الاختيار محفوظًا ولا يُعلن مطبَّقًا؛ والقيمة أعلاه ما يعلنه النظام الآن، لا ما طُلب.</string>
+    <!-- وضع الوصول: الطبقة ومدير الجذر وSELinux والفلتر -->
+    <string name="access_title">الوصول</string>
+    <string name="access_status_level">مستوى الصلاحية</string>
+    <string name="access_status_root_manager">مدير الجذر</string>
+    <string name="access_status_selinux">SELinux</string>
+    <string name="access_root_manager_none">غير مكتشف</string>
+    <string name="access_root_manager_magisk">Magisk</string>
+    <string name="access_root_manager_kernel_su">KernelSU</string>
+    <string name="access_root_manager_apatch">APatch</string>
+    <string name="access_root_manager_other">أخرى</string>
+    <string name="access_selinux_enforcing">مُفعَّل</string>
+    <string name="access_selinux_permissive">متساهل</string>
+    <string name="access_selinux_unknown">غير متاح</string>
+    <string name="access_mode_section">وضع التنفيذ</string>
+    <string name="access_mode_auto_desc">يختار أعلى مسار متاح عند كل أمر.</string>
+    <string name="access_mode_root_desc_granted">الجذر ممنوح؛ تُنفَّذ الأوامر عبر su.</string>
+    <string name="access_mode_root_desc_missing">الجذر غير ممنوح؛ يسأل التطبيق عند الحاجة.</string>
+    <string name="access_mode_shizuku_desc_ready">Shizuku متصل ومُصرَّح.</string>
+    <string name="access_mode_shizuku_desc_missing">Shizuku غير متصل.</string>
+    <string name="access_mode_basic_desc">بلا أوامر مميّزة؛ تبقى الشاشات القرائية تعمل.</string>
+    <string name="access_filter_section">ما يُعرض</string>
+    <string name="access_filter_supported">ما يدعمه هذا الوضع فقط</string>
+    <string name="access_filter_supported_desc">يخفي الميزات التي تحتاج صلاحية أعلى.</string>
+    <string name="access_filter_everything">كل شيء</string>
+    <string name="access_filter_everything_desc">يعرض كل الميزات موسومة بالمستوى الذي تحتاجه.</string>
+    <string name="access_note">يُطبَّق الفلتر على قائمة القدرات في لوحة الوصول. أما الشاشات التي تكتشف عقدها بنفسها فتبقي مخفيًّا ما لا يعلنه الجهاز.</string>
+    <string name="access_close">تم</string>
+    <string name="access_open">وضع الوصول</string>
 </resources>

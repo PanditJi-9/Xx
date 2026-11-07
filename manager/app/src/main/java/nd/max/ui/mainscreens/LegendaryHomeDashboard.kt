@@ -130,6 +130,8 @@ internal fun LegendaryHomeDashboard(
     /** بطاقة «التخزين يكاد يمتلئ»: تظهر حين تُستحقّ ولم يُخفِها المستخدم (`HomeFocusModel`). */
     storageCardVisible: Boolean = false,
     onHideStorage: () -> Unit = {},
+    /** فتح نافذة وضع الوصول من شارة البطل. */
+    onAccess: () -> Unit = {},
 ) {
     val online = (ui.rootStatus || ui.daemonOnline) && ui.moduleInstalled
     // ترتيب حسب الخطورة: بطاقة الخلل الحقيقي تصعد تحت البطل، وإلا تبقى في موضعها المحدّد.
@@ -152,6 +154,7 @@ internal fun LegendaryHomeDashboard(
                 // نظرة الجهاز: المالك الوحيد لفكرة «نظرة على الجهاز» (طلب المالك).
                 onOverview = { onNavigate(MaxDestination.DeviceInfo.route) },
                 onMaxAi = { onNavigate(MaxDestination.MaxAi.route) },
+                onAccess = onAccess,
             )
         }
         // «مدار الطاقة» (أنيميشن البطّارية أثناء الشحن) — **مُخفٰى بأمر المالك ٢٠٢٦-١٠-٢١**

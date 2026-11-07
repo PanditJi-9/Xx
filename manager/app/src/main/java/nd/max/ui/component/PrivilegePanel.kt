@@ -68,6 +68,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import nd.max.R
+import nd.max.core.privilege.AccessFilter
+import nd.max.core.privilege.AccessFilterStore
 import nd.max.core.privilege.PrivilegeCatalog
 import nd.max.core.privilege.PrivilegeLevel
 import nd.max.core.privilege.PrivilegeManager
@@ -107,6 +109,10 @@ fun PrivilegePanel(
     var rootAttempted by remember { mutableStateOf(false) }
     // التفاصيل مطوية افتراضيًّا، وتبقى على حالتها عبر إعادة التركيب.
     var detailsOpen by rememberSaveable { mutableStateOf(false) }
+    // وضع الوصول والفلتر: المصدر الواحد نفسه الذي تفتحه شارة الرئيسية.
+    var accessOpen by remember { mutableStateOf(false) }
+    var filter by remember { mutableStateOf(AccessFilterStore.current()) }
+    LaunchedEffect(accessOpen) { if (!accessOpen) filter = AccessFilterStore.current() }
 
     // ── الاكتشاف التلقائي ───────────────────────────────────────────────────────
     // يُسجّل المستمعين على الخيط الرئيسي (كما يشترط جسر Shizuku) ثم يقرأ الطبقتين على
@@ -206,6 +212,15 @@ fun PrivilegePanel(
                         }
                     }
                 }
+            }
+
+            Spacer(Modifier.height(MaxSpace.sm))
+
+            OutlinedButton(
+                onClick = { accessOpen = true },
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text(stringResource(R.string.access_open))
             }
 
             Spacer(Modifier.height(MaxSpace.sm))
@@ -335,19 +350,23 @@ fun PrivilegePanel(
                     exit = shrinkVertically(tween(MaxDuration.quick)) +
                         fadeOut(tween(MaxDuration.quick)),
                 ) {
-                    FeatureDetails(level = snapshot.level)
+                    FeatureDetails(level = snapshot.level, filter = filter)
                 }
             } else if (detailsOpen) {
                 // بلا حركة (تفضيل النظام): يظهر المحتوى مباشرة.
-                FeatureDetails(level = snapshot.level)
+                FeatureDetails(level = snapshot.level, filter = filter)
             }
         }
+    }
+
+    if (accessOpen) {
+        AccessModeDialog(onDismiss = { accessOpen = false })
     }
 }
 
 /** تفاصيل مطوية: ما تعنيه اللوحة، وما يحدث عند طلب الجذر، ثم ما يعمل عند كل طبقة. */
 @Composable
-private fun FeatureDetails(level: PrivilegeLevel) {
+private fun FeatureDetails(level: PrivilegeLevel, filter: AccessFilter) {
     Column(modifier = Modifier.fillMaxWidth().padding(top = MaxSpace.xs)) {
         Text(
             text = stringResource(R.string.max_privilege_desc),
@@ -373,11 +392,11 @@ private fun FeatureDetails(level: PrivilegeLevel) {
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Spacer(Modifier.height(MaxSpace.sm))
-        TierSection(PrivilegeTier.NO_ROOT, level)
+        TierSection(PrivilegeTier.NO_ROOT, level, filter)
         Spacer(Modifier.height(MaxSpace.sm))
-        TierSection(PrivilegeTier.SHIZUKU, level)
+        TierSection(PrivilegeTier.SHIZUKU, level, filter)
         Spacer(Modifier.height(MaxSpace.sm))
-        TierSection(PrivilegeTier.ROOT, level)
+        TierSection(PrivilegeTier.ROOT, level, filter)
     }
 }
 
@@ -462,8 +481,11 @@ private fun PrivilegeLayer(
 }
 
 @Composable
-private fun TierSection(tier: PrivilegeTier, level: PrivilegeLevel) {
-    val features = PrivilegeCatalog.byTier(tier)
+private fun TierSection(tier: PrivilegeTier, level: PrivilegeLevel, filter: AccessFilter) {
+    // «المدعوم فقط» يخفي ما فوق الطبقة؛ و«كل شيء» يُبقيها بعلامة تحتاج طبقةً أعلى.
+    val features = PrivilegeCatalog.byTier(tier).filter {
+        filter == AccessFilter.EVERYTHING || PrivilegeCatalog.availableAt(it, level)
+    }
     if (features.isEmpty()) return
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(

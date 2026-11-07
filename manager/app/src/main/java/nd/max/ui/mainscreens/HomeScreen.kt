@@ -10,6 +10,7 @@ package nd.max.ui.mainscreens
 import androidx.compose.runtime.produceState
 
 import nd.max.ui.util.BatteryHealthUtil
+import nd.max.ui.component.AccessModeDialog
 import nd.max.ui.design.floatingBottomBarPadding
 import nd.max.ui.navigation.MaxDestination
 import nd.max.ui.navigation.MaxNavActions
@@ -247,6 +248,8 @@ fun HomeDashboardContent(
     // القائمة تبقى هنا لا في الغطاء: الجولة تطلب تمريرها عبر سجلّ المراسي، فمن يملك القائمة يعرف
     // كيف يمرّرها — والغطاء لا يحمل `LazyListState` ولا يحتاج حالة قائمة لكل تبويب يمرّ به.
     val listState = rememberLazyListState()
+    // نافذة وضع الوصول: تُفتح من شارة البطل، والمصدر الواحد للحالة في الشاشة.
+    var showAccessDialog by remember { mutableStateOf(false) }
     HomeTourScrollBinding(listState)
     // **بلا وهج ترحيبيّ (§٩):** كان خلف الشبكة تدرّجٌ شعاعيّ بلون التطبيق (0.14) يملأ أعلى الشاشة،
     // فيقرأ الناظر «هالة عرض» قبل أن يقرأ قراءةً. الأصل هو السطح والشبكة الهندسية وحدها —
@@ -286,6 +289,7 @@ fun HomeDashboardContent(
                     onOpenDeck = onOpenDeck,
                     onConfigureDeck = onConfigureDeck,
                     accessLevel = accessLevel,
+                    onAccess = { showAccessDialog = true },
                     timeLeftMinutes = timeLeftMinutes,
                     storageCardVisible = storageCardVisible,
                     onHideStorage = onHideStorage,
@@ -296,6 +300,9 @@ fun HomeDashboardContent(
             }
         }
         EdgeScrim(colors.background, true, Modifier.align(Alignment.TopCenter))
+        if (showAccessDialog) {
+            AccessModeDialog(onDismiss = { showAccessDialog = false })
+        }
         // ولا غطاء جولة هنا: يُرسم في جذر النافذة (`MainActivity`) فوق الشريط السفلي، لأن الجولة
         // تنتقل إلى التحكم والتطبيقات والإعدادات — وغطاءٌ داخل هذه الشاشة يختفي معها لحظة الانتقال.
         // Only the top edge is scrimmed: the dashboard scrolls underneath the floating

@@ -34,6 +34,7 @@ import nd.max.core.hardware.SharedHardwareOwnershipStore
 import nd.max.core.hardware.TouchControlBackend
 import nd.max.core.maxai.MaxAiEngine
 import nd.max.core.gamespace.GameProfileRepository
+import nd.max.core.privilege.AccessFilterStore
 import nd.max.core.privilege.ExecutionModeRules
 import nd.max.core.privilege.ExecutionModeStore
 import nd.max.core.privilege.ShizukuGateway
@@ -137,6 +138,8 @@ class MaxManagerApplication : Application() {
         // `su` من التطبيق أبدًا، فتسخين الصدفة هنا كان سيُظهر نافذة الصلاحية عند أول إقلاع. والوضع يُقرأ
         // قبل التسخين لأن `PrivilegedShell.exec` يقرأ النسخة الذاكرية نفسها في كل عملية (التطبيق ولوحة الألعاب).
         // مكان وثيقة بروفايلات الألعاب المحلية (بلا جذر) يُحدَّد قبل أي قراءة لها.
+        // فلتر القدرات يُقرأ قبل أوّل رسم: اختيار المستخدم ينجو من إعادة تشغيل العملية.
+        AccessFilterStore.load(this)
         GameProfileRepository.install(this)
         if (ExecutionModeRules.mayUseRoot(ExecutionModeStore.load(this))) {
             Shell.getShell { }

@@ -4117,4 +4117,32 @@
     <string name="fas_open_apps_desc">Open the app list, then the settings of an app, to set its rate.</string>
     <string name="fas_limits_title">What this screen can and cannot promise</string>
     <string name="fas_limits_body">A rate is written only through a privileged lane (root or Shizuku). Without one the choice stays stored and is not reported as applied; the value above is what the system reports now, not what was requested.</string>
+    <!-- وضع الوصول: الطبقة ومدير الجذر وSELinux والفلتر -->
+    <string name="access_title">Access</string>
+    <string name="access_status_level">Privilege level</string>
+    <string name="access_status_root_manager">Root manager</string>
+    <string name="access_status_selinux">SELinux</string>
+    <string name="access_root_manager_none">Not detected</string>
+    <string name="access_root_manager_magisk">Magisk</string>
+    <string name="access_root_manager_kernel_su">KernelSU</string>
+    <string name="access_root_manager_apatch">APatch</string>
+    <string name="access_root_manager_other">Other</string>
+    <string name="access_selinux_enforcing">Enforcing</string>
+    <string name="access_selinux_permissive">Permissive</string>
+    <string name="access_selinux_unknown">Unavailable</string>
+    <string name="access_mode_section">Execution mode</string>
+    <string name="access_mode_auto_desc">Chooses the highest path available for each command.</string>
+    <string name="access_mode_root_desc_granted">Root is granted; commands run through su.</string>
+    <string name="access_mode_root_desc_missing">Root is not granted; the app asks when a command needs it.</string>
+    <string name="access_mode_shizuku_desc_ready">Shizuku is connected and authorized.</string>
+    <string name="access_mode_shizuku_desc_missing">Shizuku is not connected.</string>
+    <string name="access_mode_basic_desc">No privileged commands; read-only screens keep working.</string>
+    <string name="access_filter_section">What to show</string>
+    <string name="access_filter_supported">Only what this mode supports</string>
+    <string name="access_filter_supported_desc">Hides features that need a higher privilege level.</string>
+    <string name="access_filter_everything">Everything</string>
+    <string name="access_filter_everything_desc">Shows every feature, marked with the level it needs.</string>
+    <string name="access_note">The filter applies to the capability list in the access panel. Screens that detect their own nodes still hide what the device does not report.</string>
+    <string name="access_close">Done</string>
+    <string name="access_open">Access mode</string>
 </resources>

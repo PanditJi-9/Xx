@@ -83,6 +83,8 @@ internal fun HomeHeroCard(
     /** الباب إلى نظرة الجهاز: المالك الوحيد لفكرة «نظرة على الجهاز» بأقسامها. */
     onOverview: () -> Unit,
     onMaxAi: () -> Unit,
+    /** فتح نافذة وضع الوصول: الطبقة ومدير الجذر وSELinux والفلتر. */
+    onAccess: () -> Unit,
 ) {
     val p = neuralPalette()
     val access = accessAccent(accessLevel, p)
@@ -135,6 +137,8 @@ internal fun HomeHeroCard(
                 accent = access,
                 filled = true,
                 dot = true,
+                navigates = true,
+                onClick = onAccess,
             )
             if (accessLevel == PrivilegeLevel.NONE) {
                 Text(
