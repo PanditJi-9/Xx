@@ -68,7 +68,7 @@ MaxManager has a strong engine and a fragmented surface. `core/maxai` + `core/ha
 
 **MEASURED:** الكتالوج لم يتغيّر ٨٣ مدخلًا/١٤٩ مرشّحًا/٢٣ بادئة · `values` ٣٩٩٤ و`values-ar` ٣٩٨٢ · البوابات خضراء (`a29-*`) + إعادة `kt_balance`/`diffcheck` بعد آخر تعديل.
 
-**BUILD:** `__SHA8__` → `MaxManager` تشغيل `__RUN__`.
+**BUILD:** `6cac73e8` → `MaxManager` تشغيل `42401360880`.
 
 **RESIDUAL:** الفلتر يُطبَّق على قائمة `PrivilegeCatalog` فقط لأن بطاقات الرئيسية لا تحمل حقل طبقة · كشف مدير الجذر يحتاج جذرًا ممنوحًا · SELinux قد يكون غير مقروء على بعض النوى ⇒ `UNKNOWN` · الوضع لا يحكم إلا مسار الأوامر المميّزة ومساحة الألعاب؛ بقية الشاشات لها صدفتها.
 
@@ -24737,7 +24737,7 @@ Rounded.Undo` (نفس نمط `FileEditorDialog.kt` و`GamePanelCockpit.kt`). ب�
 
 **GATES:** الخمسون محليًّا (‏`bash -e /tmp/opencode/nodes/contract_gates.sh`) ⇒ `exit=0` ·
 `✅ Contract gates passed in 307s`.
-**BUILD:** `MaxManager` **`42363625192`** على `__SHA8__` = **success** (كل المهام: `Build MaxManager`).
+**BUILD:** `MaxManager` **`42363625192`** على `a5d2702f` = **success** (كل المهام: `Build MaxManager`).
 **RESIDUAL RISK:** أخضر يعني «يترجم ويجتاز بواباته واختباراته»؛ ولا يعني أنه يعمل على جهاز.
 **AGENTS:** التفويض مرفوض بحدّ الاستخدام المجاني.
 **NEXT:** ما بقى جهازيّ.
