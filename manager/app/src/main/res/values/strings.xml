@@ -1305,7 +1305,7 @@
     <string name="str_hide_unavailable_features">Hide features unavailable on my device</string>
     <string name="str_hide_unavailable_features_summary">Unavailable features are hidden from the capability lists instead of shown greyed with their reason. Nothing supported is removed, and the number of hidden items is always written out.</string>
     <string name="unavailable_hidden_count">Hidden by your setting: %1$d unavailable items</string>
-    <string name="str_fas_is_a_user_space_implementa">FAS (Frame-Aware Scheduling) is a userspace implementation, offering greater versatility and adaptability compared to kernel-level MI FEAS. It monitors frame rendering and dynamically schedules performance to ensure rendering efficiency while minimizing system overhead.</string>
+    <string name="str_fas_is_a_user_space_implementa">FAS here is per-app refresh-rate scheduling: the background monitor applies the rate stored in an app profile when that app comes to the front, and restores the previous value when it leaves. It does not inspect frames or predict load.</string>
     <string name="str_fpsgo_desc">MediaTek FPSGO related settings</string>
     <string name="str_fpsgo_frame_per_second_go_is_a">FPSGO (Frames Per Second Go) is a MediaTek kernel module that dynamically adjusts CPU/GPU frequency based on real-time frame rate. It actively lowers frequency to save power when frame rate is stable, and quickly boosts frequency to ensure smoothness when frame rate is strained.</string>
     <string name="str_fpsgo_settings">FPSGO Settings</string>
@@ -4100,4 +4100,21 @@
     <string name="charge_curve_mean">Average power</string>
     <string name="charge_curve_eta">Estimated to full</string>
     <string name="charge_curve_minutes">%1$d min</string>
+    <!-- عائلة المجدول والشاحن: عقد تُقاس عند الفتح، والفارغ ليس صفرًا -->
+    <string name="charging_step_charging_title">Step charging</string>
+    <string name="charging_step_charging_desc">Tapers the charge current in stages. The switch follows the node, not the request.</string>
+    <string name="charging_input_suspend_title">Stop charger input</string>
+    <string name="charging_input_suspend_desc">Cuts the charger input until you turn it off: the phone stops charging while this is on.</string>
+    <string name="fas_display_title">Display</string>
+    <string name="fas_current_rate_title">Current refresh rate</string>
+    <string name="fas_supported_rates_title">Supported rates</string>
+    <string name="fas_rate_value">%1$d Hz</string>
+    <string name="fas_rate_unavailable">Not reported by this system</string>
+    <string name="fas_rate_reading">Reading…</string>
+    <string name="fas_per_app_title">Per-app override</string>
+    <string name="fas_per_app_desc">Each app profile can pin a rate. The background monitor applies it when that app comes to the front and restores the previous value when it leaves.</string>
+    <string name="fas_open_apps">Choose an app</string>
+    <string name="fas_open_apps_desc">Open the app list, then the settings of an app, to set its rate.</string>
+    <string name="fas_limits_title">What this screen can and cannot promise</string>
+    <string name="fas_limits_body">A rate is written only through a privileged lane (root or Shizuku). Without one the choice stays stored and is not reported as applied; the value above is what the system reports now, not what was requested.</string>
 </resources>

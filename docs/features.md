@@ -44,6 +44,13 @@ off by a thousand.
 engine also reads **memory stall pressure** (`/proc/pressure/memory`) rather than fill percentage,
 because a nearly-full-but-idle device and a stalling device need opposite responses.
 
+The catalog also declares the memory-pressure family as **named knobs, not guesses**: the low-memory
+killer's `minfree` and adaptive switch, the memcompress statistics, the memcg force-swapout and
+force-reclaim entries, and the ZRAM `backing_dev`/`writeback` pair next to the swap meminfo. They are
+declared with their danger, verify policy and privilege lanes — and they are **not** surfaced as
+switches yet: a node that is absent or refuses a write must be discovered on the device, not assumed
+here.
+
 ### Display — *"Refresh rate, colour and canvas scale"*
 
 **Display studio** and **Resolution** (including per-app downscaling) — always validated against what the
@@ -54,6 +61,13 @@ the **schedule** all write `secure/night_display_activated` and read it back, so
 The schedule is a start/end hour window that may cross midnight, applied on a single batched alarm —
 the system may fire it a few minutes late, and the description says so instead of implying stopwatch
 precision.
+
+**Frame-Aware Scheduling** is no longer an empty explanation page. It reports the refresh rate the
+system says it is enforcing now and the rates the panel advertises, then links to the per-app
+profiles where a rate can be pinned. The applying itself already lives in the background monitor:
+when a profile's app comes to the front its stored rate is written and verified, and when it leaves the
+previous value is restored. The screen states its own limit — a rate is written only through a
+privileged lane (root or Shizuku); without one the choice stays stored and is not reported as applied.
 
 ### Responsiveness — *"Touch, frame pacing and scheduling latency"*
 
@@ -102,6 +116,13 @@ absolute value, because the sign of `CURRENT_NOW` differs between kernels), and 
 charging window, peak and average power, and an estimate to full that extends the measured rate instead
 of promising one. A window shorter than a minute is refused, and a full battery has no estimate — the
 number appears only where the data supports it.
+
+**Charger controls** now include two nodes that appear only where the kernel declares them: **step
+charging** (the driver tapers current in stages) and **stop charger input** (the input is cut until the
+switch is turned off, and the description says the phone stops charging while it is on). Both are read
+back after every write and the switch follows the node, not the request — and neither is restored after
+a reboot, because the kernel does not keep it either. The same section reads Power-Delivery state
+(`pd_active`, `pd_allowed`) as facts, not as promises that the charger negotiates PD.
 
 ### Storage & compiler — *"Compilation mode and storage health"*
 
@@ -201,7 +222,7 @@ engine you switched on.
 | **Diagnostic centre** | Live memory of what is wrong right now, instead of making you read log files. |
 | **Route health** | For any control: *why* it can or cannot be activated on this device, from facts. |
 | **Excluded ledger** | Every capability this app deliberately does **not** ship, in the diagnostic centre, with the reason and what would happen if it were forced — in three separate groups, because the reasons differ: refused by our own policy (voltages, SoC tunables under a custom kernel, sysconfig/Doze edits, kernel flashing, competitive benchmark ordering, disabling telemetry without measurement), unsupported by this platform (wakelocks, LMK, stune), and shipped but dangerous, which sits behind a one-time recorded acknowledgement rather than a hidden switch. It is a list, not a control: no switch, no toggle, nothing to tap — an entry that looked operable but did nothing would be worse than saying why it is absent. |
-| **Kernel node catalog** | The diagnostic centre counts the device nodes this app actually knows — read here, not assumed present: how many are readable now, how many do not exist on this device, and how many exist but the system refuses to read. It is read-only and it is the honest precondition for any later recipe writing: a node that is absent cannot be configured, and one we cannot read is not "supported". The card has no switch, because existence is a necessary condition, never a permission. The catalog now declares **64 keys over 125 candidates** — the GPU clock across 21 vendor paths, the battery cycle counter across six, voltage and resistance across the power-supply families, `/proc/meminfo`, the ZRAM algorithm, and the scheduler family one literal knob at a time. Candidates are tried in order and the first readable path is the one reported; the rest are not claimed to exist. |
+| **Kernel node catalog** | The diagnostic centre counts the device nodes this app actually knows — read here, not assumed present: how many are readable now, how many do not exist on this device, and how many exist but the system refuses to read. It is read-only and it is the honest precondition for any later recipe writing: a node that is absent cannot be configured, and one we cannot read is not "supported". The card has no switch, because existence is a necessary condition, never a permission. The catalog now declares **83 keys over 149 candidates** — the GPU clock across 21 vendor paths, the battery cycle counter across six, voltage and resistance across the power-supply families, `/proc/meminfo`, the ZRAM algorithm, the scheduler family one literal knob at a time, and the memory-pressure, charger and thermal families added since (LMK, `msm_performance` CPU bounds, step charging, input suspend, PD state, board temperature, memcompress, memcg force swapout, ZRAM backing device and writeback). Candidates are tried in order and the first readable path is the one reported; the rest are not claimed to exist. |
 | **Recipe decisions** | A recipe is text, and it is decided before anything is touched: every line is resolved to a key, a path and a privilege from the control catalog, or the whole recipe is refused with the reason (unknown key, protected entry, no write privilege, no candidate path, or a value that does not fit its declared kind, or a templated family key that stands for many nodes and cannot be resolved to one without a device). A partial application is never offered, because half a recipe is a state nobody chose. The decider opens no file and writes nothing. |
 | **Recipe execution** | A recipe is applied one step at a time, and every step is read back before it counts: the old value is captured first, the write is verified against what the node reports, and a mismatch restores the old value. If any step fails, the steps already applied are undone in reverse order, and a recipe containing one unusable step is not started at all — so a half-applied recipe is never left on the device. The runner opens no file and knows no privilege; the write path and the arbiter are supplied to it, and every step is submitted to the arbiter under the global-profile owner — so a manual lock or a higher-priority owner still wins over a recipe. |
 | **Recipe surface** | The recipe is written, reviewed and applied inside the preference-tweaks screen, so no new destination is spent on it. Review lists every line with its verdict (ready, unknown key, no node, no write privilege, protected, wrong value, or a family key that stands for many nodes) and the path each ready line resolved to; lines that are not key=value are counted and declared instead of vanishing. Apply exists only when every line is ready, sits behind a one-time danger acknowledgement, and the report says per step what the device actually did: read back, restored, refused, or undone. |

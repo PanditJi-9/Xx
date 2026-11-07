@@ -270,6 +270,28 @@ fun ChargingScreen(
                             )
                             MaxGroupDivider()
                         }
+                        if (viewModel.stepChargingNodePath != null) {
+                            MaxSwitchRow(
+                                title = stringResource(R.string.charging_step_charging_title),
+                                checked = viewModel.stepChargingEnabled,
+                                onCheckedChange = { viewModel.setStepCharging(it) },
+                                subtitle = stringResource(R.string.charging_step_charging_desc),
+                                icon = Icons.Outlined.BatteryChargingFull,
+                                iconTone = MaxTone.Accent
+                            )
+                            MaxGroupDivider()
+                        }
+                        if (viewModel.inputSuspendNodePath != null) {
+                            MaxSwitchRow(
+                                title = stringResource(R.string.charging_input_suspend_title),
+                                checked = viewModel.inputSuspendEnabled,
+                                onCheckedChange = { viewModel.setInputSuspend(it) },
+                                subtitle = stringResource(R.string.charging_input_suspend_desc),
+                                icon = Icons.Outlined.PowerSettingsNew,
+                                iconTone = MaxTone.Caution
+                            )
+                            MaxGroupDivider()
+                        }
                         if (viewModel.fastChargeAvailable) {
                             MaxSliderRow(
                                 title = stringResource(R.string.charging_fast_current),

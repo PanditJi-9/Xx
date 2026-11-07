@@ -419,7 +419,7 @@
     <string name="str_hide_unavailable_features">إخفاء الميزات غير المتاحة على جهازي</string>
     <string name="str_hide_unavailable_features_summary">تُخفى الميزات غير المتاحة من قوائم القدرات بدل عرضها رماديةً مع سببها. لا يُحذف مدعوم، ويُكتب عدد المخفيّ صراحةً دائمًا.</string>
     <string name="unavailable_hidden_count">مخفي بحسب إعدادك: %1$d من العناصر غير المتاحة</string>
-    <string name="str_fas_is_a_user_space_implementa">تنفيذ FAS (جدولة واعية بالإطارات) في مساحة المستخدم، يتمتع بقابلية عامة ومرونة تكيف أعلى مقارنة بـ MI FEAS على مستوى النواة؛ يراقب أداء الجدولة الديناميكية لعرض الإطارات مع تقليل الحمل النظامي قدر الإمكان مع الحفاظ على كفاءة التقديم</string>
+    <string name="str_fas_is_a_user_space_implementa">FAS هنا جدولة معدّل التحديث لكل تطبيق: يطبّق المراقب في الخلفية المعدّل المحفوظ في ملفّ التطبيق عند مجيئه إلى المقدّمة، ويعيد القيمة السابقة عند مغادرته. ولا يفحص الإطارات ولا يتنبّأ بالحمل.</string>
     <string name="str_fpsgo_desc">إعدادات FPSGO من MediaTek</string>
     <string name="str_fpsgo_frame_per_second_go_is_a">FPSGO (تعديل ديناميكي لمعدل الإطارات) هو وحدة نواة من MediaTek تضبط تردد CPU/GPU ديناميكيًا بناءً على معدل الإطارات الفعلي؛ يخفض التردد تلقائيًا لتوفير الطاقة عندما يكون معدل الإطارات مستقرًا، ويرفعه بسرعة لضمان السلاسة عندما يكون معدل الإطارات منخفضًا</string>
     <string name="str_fpsgo_settings">إعدادات FPSGO</string>
@@ -4046,4 +4046,21 @@
     <string name="charge_curve_mean">متوسط القدرة</string>
     <string name="charge_curve_eta">المتوقّع حتى الامتلاء</string>
     <string name="charge_curve_minutes">%1$d دقيقة</string>
+    <!-- عائلة المجدول والشاحن: عقد تُقاس عند الفتح، والفارغ ليس صفرًا -->
+    <string name="charging_step_charging_title">الشحن المتدرّج</string>
+    <string name="charging_step_charging_desc">يُدرّج تيار الشحن على مراحل. المفتاح يتبع العقدة لا الطلب.</string>
+    <string name="charging_input_suspend_title">إيقاف إدخال الشاحن</string>
+    <string name="charging_input_suspend_desc">يقطع إدخال الشاحن حتى تُطفئه: الهاتف يتوقّف عن الشحن ما دام مفعّلًا.</string>
+    <string name="fas_display_title">العرض</string>
+    <string name="fas_current_rate_title">معدّل التحديث الحالي</string>
+    <string name="fas_supported_rates_title">المعدّلات المدعومة</string>
+    <string name="fas_rate_value">%1$d هرتز</string>
+    <string name="fas_rate_unavailable">لا يعلنها هذا النظام</string>
+    <string name="fas_rate_reading">جارٍ القراءة…</string>
+    <string name="fas_per_app_title">تجاوز لكل تطبيق</string>
+    <string name="fas_per_app_desc">يمكن لكل ملفّ تطبيق تثبيت معدّل. يطبّقه المراقب في الخلفية عند مجيء التطبيق إلى المقدّمة، ويعيد القيمة السابقة عند مغادرته.</string>
+    <string name="fas_open_apps">اختر تطبيقًا</string>
+    <string name="fas_open_apps_desc">افتح قائمة التطبيقات ثم إعدادات التطبيق لتحديد معدّله.</string>
+    <string name="fas_limits_title">ما يمكن لهذه الشاشة أن تَعِد به وما لا يمكن</string>
+    <string name="fas_limits_body">لا يُكتب المعدّل إلا عبر مسار مُميَّز (جذر أو Shizuku). بلا مسار يبقى الاختيار محفوظًا ولا يُعلن مطبَّقًا؛ والقيمة أعلاه ما يعلنه النظام الآن، لا ما طُلب.</string>
 </resources>

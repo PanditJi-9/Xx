@@ -94,6 +94,10 @@ class ChargingViewModel : ViewModel() {
         private const val CHARGE_LIMIT_NODE_NAME = "charge_control_limit"
         private const val CHARGE_LIMIT_DEFAULT_ON_PERCENT = 80
         private const val CHARGE_LIMIT_DISABLED_PERCENT = 100
+        // عقدتان تدعمان الشاحن على أجهزة مختلفة: بعض النوى تعلن خطوة الشحن، وبعضها يوقف الإدخال
+        // بدل حدّ النسبة. وجودهما يُقاس عند فتح الشاشة، ولا يُفترض.
+        private const val STEP_CHARGING_NODE_NAME = "step_charging_enabled"
+        private const val INPUT_SUSPEND_NODE_NAME = "input_suspend"
     }
 
     var isCharging by mutableStateOf(false)
@@ -117,6 +121,15 @@ class ChargingViewModel : ViewModel() {
     var sicBoostEnabled by mutableStateOf(false)
         private set
     var sicModeCurrentValue by mutableStateOf<String?>(null)
+        private set
+
+    var stepChargingNodePath by mutableStateOf<String?>(null)
+        private set
+    var stepChargingEnabled by mutableStateOf(false)
+        private set
+    var inputSuspendNodePath by mutableStateOf<String?>(null)
+        private set
+    var inputSuspendEnabled by mutableStateOf(false)
         private set
 
     var fastChargeAvailable by mutableStateOf(false)
@@ -196,6 +209,19 @@ class ChargingViewModel : ViewModel() {
                 if (RootFileAccess.exists(limitPath)) {
                     chargeLimitNodePath = limitPath
                     chargeLimitSupported = true
+                }
+
+                // العقدتان تُقرأان لا تُفترضان: الغياب يعني «غير مدعوم على هذه النواة»،
+                // والقيمة الحيّة هي ما يُعرض — لا رغبة محفوظة من جلسة سابقة.
+                val stepPath = "$dir/$STEP_CHARGING_NODE_NAME"
+                if (RootFileAccess.exists(stepPath)) {
+                    stepChargingNodePath = stepPath
+                    stepChargingEnabled = RootFileAccess.read(stepPath)?.trim() == "1"
+                }
+                val suspendPath = "$dir/$INPUT_SUSPEND_NODE_NAME"
+                if (RootFileAccess.exists(suspendPath)) {
+                    inputSuspendNodePath = suspendPath
+                    inputSuspendEnabled = RootFileAccess.read(suspendPath)?.trim() == "1"
                 }
 
                 loadStaticBatteryInfo(dir)
@@ -388,6 +414,40 @@ class ChargingViewModel : ViewModel() {
     private fun applySicBoostInternal(enabled: Boolean): ChargingHardwareBackend.Outcome {
         val value = if (enabled) SIC_MODE_BOOST_VALUE else SIC_MODE_OFF_VALUE
         return ChargingHardwareBackend.write(sicModeNodePath, value)
+    }
+
+    /**
+     * الشحن المتدرّج: عقدة منطقية يعلنها بعض السائقين.
+     *
+     * ولا تُحفظ الرغبة في خاصية: العقدة نفسها هي الحالة، وتُقرأ عند كل فتح. ولو حفظنا رغبة
+     * ثم أُعيد تشغيل الجهاز لَعاد السائق إلى وضعه الافتراضي وبقيت الواجهة تدّعي خلافه.
+     */
+    fun setStepCharging(enabled: Boolean) {
+        val previous = stepChargingEnabled
+        stepChargingEnabled = enabled
+        viewModelScope.launch(Dispatchers.IO) {
+            val outcome = ChargingHardwareBackend.write(stepChargingNodePath, if (enabled) "1" else "0")
+            if (!acceptChargingWrite("step_charging", outcome.path ?: "none", outcome)) {
+                stepChargingEnabled = outcome.actual?.trim()?.let { it == "1" } ?: previous
+            }
+        }
+    }
+
+    /**
+     * إيقاف إدخال الشاحن: يقطع الشحن فعليًّا حتى يُعاد إلى `0`.
+     *
+     * وهذا أخطر مفتاح في الشاشة، ولذلك يُعرض بوصفه الصريح: «الهاتف يتوقّف عن الشحن ما دام
+     * مفعّلًا». ولا يُشغَّل تلقائيًّا ولا يُستعاد بعد الإقلاع — فالنواة تعيده إلى حالته.
+     */
+    fun setInputSuspend(enabled: Boolean) {
+        val previous = inputSuspendEnabled
+        inputSuspendEnabled = enabled
+        viewModelScope.launch(Dispatchers.IO) {
+            val outcome = ChargingHardwareBackend.write(inputSuspendNodePath, if (enabled) "1" else "0")
+            if (!acceptChargingWrite("input_suspend", outcome.path ?: "none", outcome)) {
+                inputSuspendEnabled = outcome.actual?.trim()?.let { it == "1" } ?: previous
+            }
+        }
     }
 
     /** Toggles the charge limit on/off, defaulting a fresh enable to [CHARGE_LIMIT_DEFAULT_ON_PERCENT]. */

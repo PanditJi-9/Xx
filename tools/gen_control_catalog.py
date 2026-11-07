@@ -134,7 +134,7 @@ def self_test() -> int:
     # حرس القياس: الرقم هو عدد ثوابت `HardwareControlKey` المقروءة، لا عددًا سحريًّا.
     # كان ١٥ ثم صار ١٩ بعد إضافة مفاتيح VM/audio/spoof؛ ويجب أن يطابق
     # `ControlCatalogParityTest` حرفيًّا، وإلّا توقّف الحقن قبل أن يقيس شيئًا.
-    expected_prefixes = 20
+    expected_prefixes = 23
     if len(known) != expected_prefixes:
         print(f"✗ البوادئ المقيسة {len(known)} لا {expected_prefixes} — توقّف القياس قبل الحقن")
         return 1

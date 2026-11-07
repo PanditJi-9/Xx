@@ -149,6 +149,38 @@
       "danger": "MEDIUM"
     },
     {
+      "key": "battery.charging_enabled",
+      "transport": "NODE",
+      "kind": "BOOL",
+      "candidates": [
+        {
+          "path": "/sys/class/power_supply/battery/battery_charging_enabled",
+          "origin": "DERIVED"
+        },
+        {
+          "path": "/sys/class/power_supply/battery/charging_enabled",
+          "origin": "DERIVED"
+        }
+      ],
+      "verify": {
+        "policy": "READ_BACK_EQUAL",
+        "tolerance": 0
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": [
+          "MAGISK",
+          "KSU",
+          "APATCH",
+          "SU_BARE",
+          "DAEMON"
+        ]
+      },
+      "danger": "HIGH"
+    },
+    {
       "key": "battery.cycle_count",
       "transport": "NODE",
       "kind": "INT",
@@ -190,6 +222,80 @@
       "danger": "LOW"
     },
     {
+      "key": "battery.input_suspend",
+      "transport": "NODE",
+      "kind": "BOOL",
+      "candidates": [
+        {
+          "path": "/sys/class/power_supply/battery/input_suspend",
+          "origin": "DERIVED"
+        },
+        {
+          "path": "/sys/class/power_supply/bms/input_suspend",
+          "origin": "DERIVED"
+        }
+      ],
+      "verify": {
+        "policy": "READ_BACK_EQUAL",
+        "tolerance": 0
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": [
+          "MAGISK",
+          "KSU",
+          "APATCH",
+          "SU_BARE",
+          "DAEMON"
+        ]
+      },
+      "danger": "HIGH"
+    },
+    {
+      "key": "battery.pd_active",
+      "transport": "NODE",
+      "kind": "BOOL",
+      "candidates": [
+        {
+          "path": "/sys/class/power_supply/usb/pd_active",
+          "origin": "DERIVED"
+        }
+      ],
+      "verify": {
+        "policy": "NONE"
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": []
+      },
+      "danger": "LOW"
+    },
+    {
+      "key": "battery.pd_allowed",
+      "transport": "NODE",
+      "kind": "BOOL",
+      "candidates": [
+        {
+          "path": "/sys/class/power_supply/usb/pd_allowed",
+          "origin": "DERIVED"
+        }
+      ],
+      "verify": {
+        "policy": "NONE"
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": []
+      },
+      "danger": "LOW"
+    },
+    {
       "key": "battery.resistance",
       "transport": "NODE",
       "kind": "INT",
@@ -209,6 +315,38 @@
         "write": []
       },
       "danger": "LOW"
+    },
+    {
+      "key": "battery.step_charging",
+      "transport": "NODE",
+      "kind": "BOOL",
+      "candidates": [
+        {
+          "path": "/sys/class/power_supply/battery/step_charging_enabled",
+          "origin": "DERIVED"
+        },
+        {
+          "path": "/sys/class/power_supply/bms/step_charging_enabled",
+          "origin": "DERIVED"
+        }
+      ],
+      "verify": {
+        "policy": "READ_BACK_EQUAL",
+        "tolerance": 0
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": [
+          "MAGISK",
+          "KSU",
+          "APATCH",
+          "SU_BARE",
+          "DAEMON"
+        ]
+      },
+      "danger": "HIGH"
     },
     {
       "key": "battery.voltage.avg",
@@ -313,6 +451,70 @@
       "danger": "HIGH",
       "read_only_until_canonical_key": true,
       "read_only_reason": "EXISTING_WRITER_NOT_ROUTED"
+    },
+    {
+      "key": "cpu.qcom.max",
+      "transport": "NODE",
+      "kind": "INT",
+      "candidates": [
+        {
+          "path": "/sys/module/msm_performance/parameters/cpu_max_freq",
+          "origin": "DERIVED"
+        },
+        {
+          "path": "/sys/kernel/msm_performance/parameters/cpu_max_freq",
+          "origin": "DERIVED"
+        }
+      ],
+      "verify": {
+        "policy": "READ_BACK_EQUAL",
+        "tolerance": 0
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": [
+          "MAGISK",
+          "KSU",
+          "APATCH",
+          "SU_BARE",
+          "DAEMON"
+        ]
+      },
+      "danger": "HIGH"
+    },
+    {
+      "key": "cpu.qcom.min",
+      "transport": "NODE",
+      "kind": "INT",
+      "candidates": [
+        {
+          "path": "/sys/module/msm_performance/parameters/cpu_min_freq",
+          "origin": "DERIVED"
+        },
+        {
+          "path": "/sys/kernel/msm_performance/parameters/cpu_min_freq",
+          "origin": "DERIVED"
+        }
+      ],
+      "verify": {
+        "policy": "READ_BACK_EQUAL",
+        "tolerance": 0
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": [
+          "MAGISK",
+          "KSU",
+          "APATCH",
+          "SU_BARE",
+          "DAEMON"
+        ]
+      },
+      "danger": "HIGH"
     },
     {
       "key": "cpu_boost",
@@ -713,6 +915,139 @@
         ]
       },
       "danger": "MEDIUM"
+    },
+    {
+      "key": "memory.compression",
+      "transport": "NODE",
+      "kind": "STRING",
+      "candidates": [
+        {
+          "path": "/sys/kernel/mm/memcompress/stat",
+          "origin": "DERIVED"
+        }
+      ],
+      "verify": {
+        "policy": "NONE"
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": []
+      },
+      "danger": "LOW"
+    },
+    {
+      "key": "memory.force_reclaim_zram",
+      "transport": "NODE",
+      "kind": "INT",
+      "candidates": [
+        {
+          "path": "/dev/memcg/memory.force_reclaim_zram",
+          "origin": "DERIVED"
+        }
+      ],
+      "verify": {
+        "policy": "READ_BACK_EQUAL",
+        "tolerance": 0
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": [
+          "MAGISK",
+          "KSU",
+          "APATCH",
+          "SU_BARE",
+          "DAEMON"
+        ]
+      },
+      "danger": "HIGH"
+    },
+    {
+      "key": "memory.force_swapout",
+      "transport": "NODE",
+      "kind": "INT",
+      "candidates": [
+        {
+          "path": "/dev/memcg/memory.force_swapout",
+          "origin": "DERIVED"
+        }
+      ],
+      "verify": {
+        "policy": "READ_BACK_EQUAL",
+        "tolerance": 0
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": [
+          "MAGISK",
+          "KSU",
+          "APATCH",
+          "SU_BARE",
+          "DAEMON"
+        ]
+      },
+      "danger": "HIGH"
+    },
+    {
+      "key": "memory.lmk.adaptive",
+      "transport": "NODE",
+      "kind": "BOOL",
+      "candidates": [
+        {
+          "path": "/sys/module/lowmemorykiller/parameters/enable_adaptive_lmk",
+          "origin": "DERIVED"
+        }
+      ],
+      "verify": {
+        "policy": "READ_BACK_EQUAL",
+        "tolerance": 0
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": [
+          "MAGISK",
+          "KSU",
+          "APATCH",
+          "SU_BARE",
+          "DAEMON"
+        ]
+      },
+      "danger": "HIGH"
+    },
+    {
+      "key": "memory.lmk.minfree",
+      "transport": "NODE",
+      "kind": "STRING",
+      "candidates": [
+        {
+          "path": "/sys/module/lowmemorykiller/parameters/minfree",
+          "origin": "DERIVED"
+        }
+      ],
+      "verify": {
+        "policy": "READ_BACK_EQUAL",
+        "tolerance": 0
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": [
+          "MAGISK",
+          "KSU",
+          "APATCH",
+          "SU_BARE",
+          "DAEMON"
+        ]
+      },
+      "danger": "HIGH"
     },
     {
       "key": "memory.meminfo",
@@ -1294,6 +1629,69 @@
       "danger": "LOW"
     },
     {
+      "key": "thermal.board_temp",
+      "transport": "NODE",
+      "kind": "INT",
+      "candidates": [
+        {
+          "path": "/sys/class/thermal/thermal_message/board_sensor_temp",
+          "origin": "DERIVED"
+        }
+      ],
+      "verify": {
+        "policy": "NONE"
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": []
+      },
+      "danger": "LOW"
+    },
+    {
+      "key": "thermal.dynamic_tj",
+      "transport": "NODE",
+      "kind": "INT",
+      "candidates": [
+        {
+          "path": "/sys/class/thermal/thermal_message/dynamic_tj",
+          "origin": "DERIVED"
+        }
+      ],
+      "verify": {
+        "policy": "NONE"
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": []
+      },
+      "danger": "LOW"
+    },
+    {
+      "key": "thermal.ttj",
+      "transport": "NODE",
+      "kind": "INT",
+      "candidates": [
+        {
+          "path": "/sys/kernel/thermal/ttj",
+          "origin": "DERIVED"
+        }
+      ],
+      "verify": {
+        "policy": "NONE"
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": []
+      },
+      "danger": "LOW"
+    },
+    {
       "key": "thermal_message.cpu_limits",
       "transport": "NODE",
       "kind": "STRING",
@@ -1818,6 +2216,34 @@
       "danger": "MEDIUM"
     },
     {
+      "key": "zram.backing_dev",
+      "transport": "NODE",
+      "kind": "STRING",
+      "candidates": [
+        {
+          "path": "/sys/block/zram0/backing_dev",
+          "origin": "DERIVED"
+        }
+      ],
+      "verify": {
+        "policy": "READ_BACK_EQUAL",
+        "tolerance": 0
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": [
+          "MAGISK",
+          "KSU",
+          "APATCH",
+          "SU_BARE",
+          "DAEMON"
+        ]
+      },
+      "danger": "HIGH"
+    },
+    {
       "key": "zram.comp_algorithm",
       "transport": "NODE",
       "kind": "ENUM",
@@ -1837,6 +2263,76 @@
         "write": []
       },
       "danger": "LOW"
+    },
+    {
+      "key": "zram.hybridswap_meminfo",
+      "transport": "NODE",
+      "kind": "STRING",
+      "candidates": [
+        {
+          "path": "/sys/block/zram0/hybridswap_meminfo",
+          "origin": "DERIVED"
+        }
+      ],
+      "verify": {
+        "policy": "NONE"
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": []
+      },
+      "danger": "LOW"
+    },
+    {
+      "key": "zram.smartswap_meminfo",
+      "transport": "NODE",
+      "kind": "STRING",
+      "candidates": [
+        {
+          "path": "/sys/block/zram0/smartswap_meminfo",
+          "origin": "DERIVED"
+        }
+      ],
+      "verify": {
+        "policy": "NONE"
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": []
+      },
+      "danger": "LOW"
+    },
+    {
+      "key": "zram.writeback",
+      "transport": "NODE",
+      "kind": "INT",
+      "candidates": [
+        {
+          "path": "/sys/block/zram0/writeback",
+          "origin": "DERIVED"
+        }
+      ],
+      "verify": {
+        "policy": "READ_BACK_EQUAL",
+        "tolerance": 0
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": [
+          "MAGISK",
+          "KSU",
+          "APATCH",
+          "SU_BARE",
+          "DAEMON"
+        ]
+      },
+      "danger": "HIGH"
     },
     {
       "key": "zram.{n}.size",

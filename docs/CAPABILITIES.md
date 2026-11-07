@@ -7,8 +7,8 @@
 ## الخلاصة
 
 - إصدار الكتالوج: **1**
-- المداخل: **64**
-- المرشّحون: **125**
+- المداخل: **83**
+- المرشّحون: **149**
 - غير المُخطَّط: **14**
 
 ## المداخل
@@ -22,12 +22,19 @@
 | `audio_stream:{token}` | PERCENT | AUDIO | NONE، SHIZUKU | LOW | `—` |
 | `audio_system:{target}` | ENUM | AUDIO | MAGISK، KSU، APATCH، SU_BARE | LOW | `—` |
 | `audio_vendor:{target}` | STRING | AUDIO | MAGISK، KSU، APATCH، SU_BARE | MEDIUM | `—` |
+| `battery.charging_enabled` | BOOL | NODE | MAGISK، KSU، APATCH، SU_BARE، DAEMON | HIGH | `/sys/class/power_supply/battery/battery_charging_enabled` |
 | `battery.cycle_count` | INT | NODE | — | LOW | `/sys/class/power_supply/battery/cycle_count` |
+| `battery.input_suspend` | BOOL | NODE | MAGISK، KSU، APATCH، SU_BARE، DAEMON | HIGH | `/sys/class/power_supply/battery/input_suspend` |
+| `battery.pd_active` | BOOL | NODE | — | LOW | `/sys/class/power_supply/usb/pd_active` |
+| `battery.pd_allowed` | BOOL | NODE | — | LOW | `/sys/class/power_supply/usb/pd_allowed` |
 | `battery.resistance` | INT | NODE | — | LOW | `/sys/class/power_supply/bms/resistance` |
+| `battery.step_charging` | BOOL | NODE | MAGISK، KSU، APATCH، SU_BARE، DAEMON | HIGH | `/sys/class/power_supply/battery/step_charging_enabled` |
 | `battery.voltage.avg` | INT | NODE | — | LOW | `/sys/class/power_supply/battery/voltage_avg` |
 | `battery.voltage.now` | INT | NODE | — | LOW | `/sys/class/power_supply/battery/voltage_now` |
 | `battery_health` | STRING | NODE | — | LOW | `/sys/class/power_supply/battery` |
 | `cpu.perfserv_freq` | FREQUENCY_RANGE | NODE | — | HIGH | `/proc/powerhal_cpu_ctrl/perfserv_freq` |
+| `cpu.qcom.max` | INT | NODE | MAGISK، KSU، APATCH، SU_BARE، DAEMON | HIGH | `/sys/module/msm_performance/parameters/cpu_max_freq` |
+| `cpu.qcom.min` | INT | NODE | MAGISK، KSU، APATCH، SU_BARE، DAEMON | HIGH | `/sys/module/msm_performance/parameters/cpu_min_freq` |
 | `cpu_boost` | BOOL | NODE | MAGISK، KSU، APATCH، SU_BARE | MEDIUM | `/sys/devices/system/cpu/cpufreq/boost` |
 | `cpu_core_online:{n}` | BOOL | NODE | — | HIGH | `/sys/devices/system/cpu/cpu$cpu/online` |
 | `cpu_limits:{policy}` | FREQUENCY_RANGE | NODE | MAGISK، KSU، APATCH، SU_BARE، DAEMON | MEDIUM | `/sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq` |
@@ -38,6 +45,11 @@
 | `gpu_frequency:{device}` | FREQUENCY_RANGE | NODE | MAGISK، KSU، APATCH، SU_BARE | MEDIUM | `/sys/class/kgsl/kgsl-3d0` |
 | `gpu_governor_policy:{device}` | ENUM | NODE | — | MEDIUM | `/sys/module/ged/parameters/gpu_dvfs_enable` |
 | `mem_frequency:{device}` | FREQUENCY_RANGE | NODE | MAGISK، KSU، APATCH، SU_BARE | MEDIUM | `/sys/class/devfreq` |
+| `memory.compression` | STRING | NODE | — | LOW | `/sys/kernel/mm/memcompress/stat` |
+| `memory.force_reclaim_zram` | INT | NODE | MAGISK، KSU، APATCH، SU_BARE، DAEMON | HIGH | `/dev/memcg/memory.force_reclaim_zram` |
+| `memory.force_swapout` | INT | NODE | MAGISK، KSU، APATCH، SU_BARE، DAEMON | HIGH | `/dev/memcg/memory.force_swapout` |
+| `memory.lmk.adaptive` | BOOL | NODE | MAGISK، KSU، APATCH، SU_BARE، DAEMON | HIGH | `/sys/module/lowmemorykiller/parameters/enable_adaptive_lmk` |
+| `memory.lmk.minfree` | STRING | NODE | MAGISK، KSU، APATCH، SU_BARE، DAEMON | HIGH | `/sys/module/lowmemorykiller/parameters/minfree` |
 | `memory.meminfo` | STRING | PROC | — | LOW | `/proc/meminfo` |
 | `sched.cpu_shares.top` | INT | NODE | MAGISK، KSU، APATCH، SU_BARE، DAEMON | HIGH | `/dev/cpuctl/top-app/cpu.shares` |
 | `sched.downmigrate` | INT | NODE | MAGISK، KSU، APATCH، SU_BARE، DAEMON | HIGH | `/proc/sys/kernel/sched_downmigrate` |
@@ -60,6 +72,9 @@
 | `system.load` | STRING | PROC | — | LOW | `/proc/loadavg` |
 | `system.memory_pressure` | STRING | PROC | — | LOW | `/proc/pressure/memory` |
 | `system.swaps` | STRING | PROC | — | LOW | `/proc/swaps` |
+| `thermal.board_temp` | INT | NODE | — | LOW | `/sys/class/thermal/thermal_message/board_sensor_temp` |
+| `thermal.dynamic_tj` | INT | NODE | — | LOW | `/sys/class/thermal/thermal_message/dynamic_tj` |
+| `thermal.ttj` | INT | NODE | — | LOW | `/sys/kernel/thermal/ttj` |
 | `thermal_message.cpu_limits` | STRING | NODE | — | PROTECTED | `/sys/devices/virtual/thermal/thermal_message/cpu_limits` |
 | `thermal_message.sconfig` | STRING | NODE | — | PROTECTED | `/sys/devices/virtual/thermal/thermal_message/sconfig` |
 | `thermal_zone` | STRING | NODE | — | LOW | `/sys/class/thermal` |
@@ -77,7 +92,11 @@
 | `vm.swappiness` | INT | PROC | MAGISK، KSU، APATCH، SU_BARE، DAEMON | LOW | `/proc/sys/vm/swappiness` |
 | `vm.vfs_cache_pressure` | INT | PROC | MAGISK، KSU، APATCH، SU_BARE، DAEMON | LOW | `/proc/sys/vm/vfs_cache_pressure` |
 | `vm.watermark_scale_factor` | INT | PROC | MAGISK، KSU، APATCH، SU_BARE، DAEMON | MEDIUM | `/proc/sys/vm/watermark_scale_factor` |
+| `zram.backing_dev` | STRING | NODE | MAGISK، KSU، APATCH، SU_BARE، DAEMON | HIGH | `/sys/block/zram0/backing_dev` |
 | `zram.comp_algorithm` | ENUM | NODE | — | LOW | `/sys/block/zram0/comp_algorithm` |
+| `zram.hybridswap_meminfo` | STRING | NODE | — | LOW | `/sys/block/zram0/hybridswap_meminfo` |
+| `zram.smartswap_meminfo` | STRING | NODE | — | LOW | `/sys/block/zram0/smartswap_meminfo` |
+| `zram.writeback` | INT | NODE | MAGISK، KSU، APATCH، SU_BARE، DAEMON | HIGH | `/sys/block/zram0/writeback` |
 | `zram.{n}.size` | INT | NODE | — | HIGH | `/sys/block/zram0` |
 
 ## تفصيل المرشّحين
@@ -145,6 +164,17 @@
 - الخطر: **MEDIUM**
 - المرشّحون: — (مفتاح غير عقديّ بعد)
 
+### `battery.charging_enabled`
+
+- النوع: `BOOL` · النقل: `NODE`
+- القراءة: NONE
+- الكتابة: MAGISK، KSU، APATCH، SU_BARE، DAEMON
+- التحقّق: `READ_BACK_EQUAL` · تفاوت 0
+- الخطر: **HIGH**
+- المرشّحون:
+  - `/sys/class/power_supply/battery/battery_charging_enabled` — `DERIVED`
+  - `/sys/class/power_supply/battery/charging_enabled` — `DERIVED`
+
 ### `battery.cycle_count`
 
 - النوع: `INT` · النقل: `NODE`
@@ -160,6 +190,37 @@
   - `/sys/class/power_supply/maxfg/cycle_count` — `DERIVED`
   - `/sys/class/power_supply/pmic/cycle_count` — `DERIVED`
 
+### `battery.input_suspend`
+
+- النوع: `BOOL` · النقل: `NODE`
+- القراءة: NONE
+- الكتابة: MAGISK، KSU، APATCH، SU_BARE، DAEMON
+- التحقّق: `READ_BACK_EQUAL` · تفاوت 0
+- الخطر: **HIGH**
+- المرشّحون:
+  - `/sys/class/power_supply/battery/input_suspend` — `DERIVED`
+  - `/sys/class/power_supply/bms/input_suspend` — `DERIVED`
+
+### `battery.pd_active`
+
+- النوع: `BOOL` · النقل: `NODE`
+- القراءة: NONE
+- الكتابة: —
+- التحقّق: `NONE`
+- الخطر: **LOW**
+- المرشّحون:
+  - `/sys/class/power_supply/usb/pd_active` — `DERIVED`
+
+### `battery.pd_allowed`
+
+- النوع: `BOOL` · النقل: `NODE`
+- القراءة: NONE
+- الكتابة: —
+- التحقّق: `NONE`
+- الخطر: **LOW**
+- المرشّحون:
+  - `/sys/class/power_supply/usb/pd_allowed` — `DERIVED`
+
 ### `battery.resistance`
 
 - النوع: `INT` · النقل: `NODE`
@@ -169,6 +230,17 @@
 - الخطر: **LOW**
 - المرشّحون:
   - `/sys/class/power_supply/bms/resistance` — `DERIVED`
+
+### `battery.step_charging`
+
+- النوع: `BOOL` · النقل: `NODE`
+- القراءة: NONE
+- الكتابة: MAGISK، KSU، APATCH، SU_BARE، DAEMON
+- التحقّق: `READ_BACK_EQUAL` · تفاوت 0
+- الخطر: **HIGH**
+- المرشّحون:
+  - `/sys/class/power_supply/battery/step_charging_enabled` — `DERIVED`
+  - `/sys/class/power_supply/bms/step_charging_enabled` — `DERIVED`
 
 ### `battery.voltage.avg`
 
@@ -213,6 +285,28 @@
 - الخطر: **HIGH**
 - المرشّحون:
   - `/proc/powerhal_cpu_ctrl/perfserv_freq` — `MEASURED`
+
+### `cpu.qcom.max`
+
+- النوع: `INT` · النقل: `NODE`
+- القراءة: NONE
+- الكتابة: MAGISK، KSU، APATCH، SU_BARE، DAEMON
+- التحقّق: `READ_BACK_EQUAL` · تفاوت 0
+- الخطر: **HIGH**
+- المرشّحون:
+  - `/sys/module/msm_performance/parameters/cpu_max_freq` — `DERIVED`
+  - `/sys/kernel/msm_performance/parameters/cpu_max_freq` — `DERIVED`
+
+### `cpu.qcom.min`
+
+- النوع: `INT` · النقل: `NODE`
+- القراءة: NONE
+- الكتابة: MAGISK، KSU، APATCH، SU_BARE، DAEMON
+- التحقّق: `READ_BACK_EQUAL` · تفاوت 0
+- الخطر: **HIGH**
+- المرشّحون:
+  - `/sys/module/msm_performance/parameters/cpu_min_freq` — `DERIVED`
+  - `/sys/kernel/msm_performance/parameters/cpu_min_freq` — `DERIVED`
 
 ### `cpu_boost`
 
@@ -352,6 +446,56 @@
 - الخطر: **MEDIUM**
 - المرشّحون:
   - `/sys/class/devfreq` — `MEASURED`
+
+### `memory.compression`
+
+- النوع: `STRING` · النقل: `NODE`
+- القراءة: NONE
+- الكتابة: —
+- التحقّق: `NONE`
+- الخطر: **LOW**
+- المرشّحون:
+  - `/sys/kernel/mm/memcompress/stat` — `DERIVED`
+
+### `memory.force_reclaim_zram`
+
+- النوع: `INT` · النقل: `NODE`
+- القراءة: NONE
+- الكتابة: MAGISK، KSU، APATCH، SU_BARE، DAEMON
+- التحقّق: `READ_BACK_EQUAL` · تفاوت 0
+- الخطر: **HIGH**
+- المرشّحون:
+  - `/dev/memcg/memory.force_reclaim_zram` — `DERIVED`
+
+### `memory.force_swapout`
+
+- النوع: `INT` · النقل: `NODE`
+- القراءة: NONE
+- الكتابة: MAGISK، KSU، APATCH، SU_BARE، DAEMON
+- التحقّق: `READ_BACK_EQUAL` · تفاوت 0
+- الخطر: **HIGH**
+- المرشّحون:
+  - `/dev/memcg/memory.force_swapout` — `DERIVED`
+
+### `memory.lmk.adaptive`
+
+- النوع: `BOOL` · النقل: `NODE`
+- القراءة: NONE
+- الكتابة: MAGISK، KSU، APATCH، SU_BARE، DAEMON
+- التحقّق: `READ_BACK_EQUAL` · تفاوت 0
+- الخطر: **HIGH**
+- المرشّحون:
+  - `/sys/module/lowmemorykiller/parameters/enable_adaptive_lmk` — `DERIVED`
+
+### `memory.lmk.minfree`
+
+- النوع: `STRING` · النقل: `NODE`
+- القراءة: NONE
+- الكتابة: MAGISK، KSU، APATCH، SU_BARE، DAEMON
+- التحقّق: `READ_BACK_EQUAL` · تفاوت 0
+- الخطر: **HIGH**
+- المرشّحون:
+  - `/sys/module/lowmemorykiller/parameters/minfree` — `DERIVED`
 
 ### `memory.meminfo`
 
@@ -572,6 +716,36 @@
 - المرشّحون:
   - `/proc/swaps` — `MEASURED`
 
+### `thermal.board_temp`
+
+- النوع: `INT` · النقل: `NODE`
+- القراءة: NONE
+- الكتابة: —
+- التحقّق: `NONE`
+- الخطر: **LOW**
+- المرشّحون:
+  - `/sys/class/thermal/thermal_message/board_sensor_temp` — `DERIVED`
+
+### `thermal.dynamic_tj`
+
+- النوع: `INT` · النقل: `NODE`
+- القراءة: NONE
+- الكتابة: —
+- التحقّق: `NONE`
+- الخطر: **LOW**
+- المرشّحون:
+  - `/sys/class/thermal/thermal_message/dynamic_tj` — `DERIVED`
+
+### `thermal.ttj`
+
+- النوع: `INT` · النقل: `NODE`
+- القراءة: NONE
+- الكتابة: —
+- التحقّق: `NONE`
+- الخطر: **LOW**
+- المرشّحون:
+  - `/sys/kernel/thermal/ttj` — `DERIVED`
+
 ### `thermal_message.cpu_limits`
 
 - النوع: `STRING` · النقل: `NODE`
@@ -759,6 +933,16 @@
 - المرشّحون:
   - `/proc/sys/vm/watermark_scale_factor` — `MEASURED`
 
+### `zram.backing_dev`
+
+- النوع: `STRING` · النقل: `NODE`
+- القراءة: NONE
+- الكتابة: MAGISK، KSU، APATCH، SU_BARE، DAEMON
+- التحقّق: `READ_BACK_EQUAL` · تفاوت 0
+- الخطر: **HIGH**
+- المرشّحون:
+  - `/sys/block/zram0/backing_dev` — `DERIVED`
+
 ### `zram.comp_algorithm`
 
 - النوع: `ENUM` · النقل: `NODE`
@@ -768,6 +952,36 @@
 - الخطر: **LOW**
 - المرشّحون:
   - `/sys/block/zram0/comp_algorithm` — `DERIVED`
+
+### `zram.hybridswap_meminfo`
+
+- النوع: `STRING` · النقل: `NODE`
+- القراءة: NONE
+- الكتابة: —
+- التحقّق: `NONE`
+- الخطر: **LOW**
+- المرشّحون:
+  - `/sys/block/zram0/hybridswap_meminfo` — `DERIVED`
+
+### `zram.smartswap_meminfo`
+
+- النوع: `STRING` · النقل: `NODE`
+- القراءة: NONE
+- الكتابة: —
+- التحقّق: `NONE`
+- الخطر: **LOW**
+- المرشّحون:
+  - `/sys/block/zram0/smartswap_meminfo` — `DERIVED`
+
+### `zram.writeback`
+
+- النوع: `INT` · النقل: `NODE`
+- القراءة: NONE
+- الكتابة: MAGISK، KSU، APATCH، SU_BARE، DAEMON
+- التحقّق: `READ_BACK_EQUAL` · تفاوت 0
+- الخطر: **HIGH**
+- المرشّحون:
+  - `/sys/block/zram0/writeback` — `DERIVED`
 
 ### `zram.{n}.size`
 
