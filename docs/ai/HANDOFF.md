@@ -60,6 +60,50 @@ MaxManager has a strong engine and a fragmented surface. `core/maxai` + `core/ha
 
 ## Executor log
 
+### ROUND-CLOSE-27 — خمس دفعات من الشجرتين المرجعيتين: كتالوج المسارات · ثبات الإطارات · منحنى الشحن · عائلة المجدول — 2026-11-07 · DONE_WITH_CONCERNS (البوابات المحلية خضراء · وحكم CI يُقرأ لا يُدّعى)
+
+TASK: استخراج ما يستحقّ من `fde_ai` و`scene_n1` **بلا نقل كود** (الشجرتان بلا ملفّ ترخيص مقروء، و`scene_n1`
+copyleft)، وتسليمه دفعاتٍ قابلة للتحقق: جداول مسارات، ونافذة قياس، ومنحنى محسوب من بيانات مسجّلة، وعائلة
+مقابض معلنة.
+
+CHANGED:
+- **الدفعة ١ — `030968db`:** `assets/control_catalog.json` ٤١ ← ٤٨ مدخلًا و٦٩ ← ١٠٩ مرشّحًا: `gpu.clock.current`
+  (٢١ مسارًا) · `gpu.busy` (٤) · `battery.cycle_count` (٦) · `battery.resistance` · `battery.voltage.now` (٤) ·
+  `battery.voltage.avg` (٢) · `memory.meminfo` · `zram.comp_algorithm`. المصادر بـ`path:line` في
+  `docs/ai/research/REFERENCE-HARVEST-NOV26-B.md`.
+- **الدفعة ٢ — `fa176e15`:** `core/platform/FrameWindow.kt` (جديد: نافذة ١٢٠ عيّنة · `mean` · `percentile` ·
+  `stableShare` بأرضية ٠٫٩) + `HudField.Stability` عبر `HudSession`/`HudSurface` + مفاتيح EN/AR.
+- **الدفعة ٣ — `fc2b2ea8`:** `core/battery/ChargeCurve.kt` (جديد: `watts` بالقيمة المطلقة · نافذة شحن ·
+  أعلى/متوسط · زمن متبقٍّ · سقف ٢٤٠ نقطة · رفض نافذة < دقيقة) + قسم منحنى الشحن داخل
+  `BatteryHistoryScreen.kt` + ٨ مفاتيح EN/AR. **لا مصدر قياس جديد ولا خدمة خلفية.**
+- **الدفعة ٤ — `c11d2c75`:** ١٢ مدخلًا حرفيًّا `sched.*` (`uclamp` × ٧ · `shares` · `schedtune` × ٢ ·
+  `sched_{up,down}migrate`) + `HardwareControlKey.SCHED_PREFIX` + عدّاد البوادئ ١٩ ← ٢٠ في المولّد والاختبار.
+- **الدفعة ٥ — `ff71a55d`:** ٤ مداخل (`sched.group.{up,down}migrate` · `sched.force_lb_enable` ·
+  `sched.lib.mask_force`) ⇒ الكتالوج **٦٤ مدخلًا · ١٢٥ مرشّحًا · ٢٠ بادئة**؛ و`AGENTS.md` §0.5 (لا انتظار
+  لبناء، وكل ما يمكن تشغيله خلفيًّا يُشغَّل خلفيًّا).
+- **الإصلاح — `6e040134` ثم `db3a5b44`:** `FrameWindowTest` (٦) · `ChargeCurveTest` (٧) · ونقل `Stability` بجانب `Frames`
+  وتحديث تثبيت الترتيب في `HudSessionTest`. **سبب البناءين الأحمرين** (`fa176e15` و`fc2b2ea8`) كان اختبار
+  الترتيب القائم، لا الكود الجديد. ثم كشف سجل CI عطبًا ثانيًا: `Stability` بلا فاصلة بعد نقلها ⇒
+  `db3a5b44` يضيف الفاصلة (سبب `Syntax error` على السطر ٩٩).
+
+MEASURED HERE: التسع `--assert` + `--prune all` + `rtl_guard --assert` + `git diff --check` خضراء في كل
+دفعة (`y3-*` · `z4-*` · `t5-*` · `u5-*`) · `gen_control_catalog --assert` ⇒ ٦٤/١٢٥/٢٠ · `gen_capabilities_doc`
+مطابق بعد `--write`.
+
+BUILD: `MaxManager` `42390371801` على `6e040134` = **failure** — والسبب مقروء لا مُفترض:
+`HudSession.kt:99:14 Syntax error: Expecting ';' after the last enum entry`، لأن نقل `Stability` بجانب
+`Frames` تركها **بلا فاصلة** قبل `Cpu` (`cat -A` أثبت ذلك). و`ff71a55d` ورث العطب نفسه. أُصلح في
+**`db3a5b44`** («Fix the enum separator the move left out») وأُعيد الدفع؛ وحكمه يُقرأ قبل إغلاق الجولة.
+(آخر بناء أخضر مقروء: `42368526042` على `030968db`.)
+
+RESIDUAL RISK: كل ما يمسّ العتاد يبقى على الجهاز — قبول النواة الكتابة إلى `cpu.uclamp.*` / `cpu.schedtune.*`
+/ `sched_*migrate` · أيّ مسار GPU يظهر من الـ٢١ · إشارة `currentUa` وشكل منحنى الشحن · صيغة
+`sched.lib.mask_force` عند البائع. ولا شيء من الشجرتين نُقل: لا `.so` ولا daemon ولا `.o` BPF ولا `kr-script`
+ولا سكربت جاهز ولا تخطيط.
+
+NEXT: قراءة حكم `db3a5b44` (الإصلاح) و`MaxManager docs` عليه؛ ثم ما بقي كله جهازيّ (الآيلاند · المعايرة ·
+الرفّ SAF · Wi‑Fi · ميزانية المراقبة · حكم اللمس/الحرارة/البطارية).
+
 ### REF-EXTRACT-04-FIX — عطب CI الوحيد: مفاتيح كتالوج مكتوبة حرفيًّا في `CatalogControlIndex` — 2026-11-05 · DONE (الترجمة الآن مُتحقَّقة من CI)
 
 TASK: تشغيل CI أظهر `ControlPlaneArchitectureTest.canonicalKeysAreNotReinvented` فاشلًا (٣٧٨٠ اختبارًا،

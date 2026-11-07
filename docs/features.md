@@ -19,12 +19,24 @@ explains which of the seven capability states applies ([Max Atlas](max-atlas.md)
 | **Governors** | The available governors per policy with the ability to select one. Choices are validated against what the kernel actually advertises. |
 | **Property tweaks** | Reviewer-managed system properties that affect scheduling and power, applied in a form you can read before and after. |
 
+The control catalog declares the **scheduler family** one literal knob at a time — `uclamp` floors and
+ceilings per cgroup, `cpu.shares`, `schedtune` boost and idle preference, the up/down migration
+thresholds, the group migration pair and the load-balance switch. A family key that stood for several
+nodes could not be resolved without a device, so each node is named: `/dev/cpuctl/*`, `/dev/stune/*` and
+`/proc/sys/kernel/sched_*`. Every one of them is high danger, read back after writing, and reached only
+through the arbiter with a one-time acknowledgement.
+
 ### GPU — *"GPU frequencies and graphics-specific vendor parameters"*
 
 **GPU Reality Studio** discovers the driver's advertised frequency table, its unit (Hz vs MHz is a real
 mismatch between vendors), the writable controls, and a restoration baseline — then presents only what
 it could verify. On MediaTek devices the OPP table is read as a whole table rather than a first-match,
 because the first match can be a runtime-narrowed view.
+
+The catalog carries **21 vendor clock paths** (kgsl, mali, devfreq, tegra, omap) and four busy paths,
+tried in order, because the node that exists differs per SoC. The existing frequency reader normalizes
+the unit and declares an ambiguous path instead of guessing — a clock read as MHz when it is Hz would be
+off by a thousand.
 
 ### Memory — *"Compression, VM behaviour and swappiness"*
 
@@ -47,7 +59,9 @@ precision.
 
 Touch boost, **FPS GO** (frame-rate governance), and **FAS** (frame-aware scheduling). The **FPS
 overlay** — a live HUD over other apps — lives with the tools rather than here, because it is something
-you look at, not something you tune.
+you look at, not something you tune. Its **stability** field is a share over a rolling window of frames,
+not a single reading: a momentary frame rate can catch a stutter or miss one entirely, and the same
+number can describe both — the window answers whether the last seconds were actually smooth.
 
 ### Thermal — *"Temperatures, throttling and thermal parameters"*
 
@@ -81,6 +95,13 @@ night describes neither. The visible window can be exported as one CSV file (ISO
 raw epoch, empty fields where the platform reported nothing) and handed to an app of your choice
 through the system share sheet — nothing is uploaded. Clearing the history deletes the local file and
 nothing else.
+
+**The charge curve** is drawn from those same recorded samples while the charger was connected — no new
+measurement source, no background service, no extra permission. Power is voltage times current (taken in
+absolute value, because the sign of `CURRENT_NOW` differs between kernels), and the section reports the
+charging window, peak and average power, and an estimate to full that extends the measured rate instead
+of promising one. A window shorter than a minute is refused, and a full battery has no estimate — the
+number appears only where the data supports it.
 
 ### Storage & compiler — *"Compilation mode and storage health"*
 
@@ -180,7 +201,7 @@ engine you switched on.
 | **Diagnostic centre** | Live memory of what is wrong right now, instead of making you read log files. |
 | **Route health** | For any control: *why* it can or cannot be activated on this device, from facts. |
 | **Excluded ledger** | Every capability this app deliberately does **not** ship, in the diagnostic centre, with the reason and what would happen if it were forced — in three separate groups, because the reasons differ: refused by our own policy (voltages, SoC tunables under a custom kernel, sysconfig/Doze edits, kernel flashing, competitive benchmark ordering, disabling telemetry without measurement), unsupported by this platform (wakelocks, LMK, stune), and shipped but dangerous, which sits behind a one-time recorded acknowledgement rather than a hidden switch. It is a list, not a control: no switch, no toggle, nothing to tap — an entry that looked operable but did nothing would be worse than saying why it is absent. |
-| **Kernel node catalog** | The diagnostic centre counts the device nodes this app actually knows — read here, not assumed present: how many are readable now, how many do not exist on this device, and how many exist but the system refuses to read. It is read-only and it is the honest precondition for any later recipe writing: a node that is absent cannot be configured, and one we cannot read is not "supported". The card has no switch, because existence is a necessary condition, never a permission. |
+| **Kernel node catalog** | The diagnostic centre counts the device nodes this app actually knows — read here, not assumed present: how many are readable now, how many do not exist on this device, and how many exist but the system refuses to read. It is read-only and it is the honest precondition for any later recipe writing: a node that is absent cannot be configured, and one we cannot read is not "supported". The card has no switch, because existence is a necessary condition, never a permission. The catalog now declares **64 keys over 125 candidates** — the GPU clock across 21 vendor paths, the battery cycle counter across six, voltage and resistance across the power-supply families, `/proc/meminfo`, the ZRAM algorithm, and the scheduler family one literal knob at a time. Candidates are tried in order and the first readable path is the one reported; the rest are not claimed to exist. |
 | **Recipe decisions** | A recipe is text, and it is decided before anything is touched: every line is resolved to a key, a path and a privilege from the control catalog, or the whole recipe is refused with the reason (unknown key, protected entry, no write privilege, no candidate path, or a value that does not fit its declared kind, or a templated family key that stands for many nodes and cannot be resolved to one without a device). A partial application is never offered, because half a recipe is a state nobody chose. The decider opens no file and writes nothing. |
 | **Recipe execution** | A recipe is applied one step at a time, and every step is read back before it counts: the old value is captured first, the write is verified against what the node reports, and a mismatch restores the old value. If any step fails, the steps already applied are undone in reverse order, and a recipe containing one unusable step is not started at all — so a half-applied recipe is never left on the device. The runner opens no file and knows no privilege; the write path and the arbiter are supplied to it, and every step is submitted to the arbiter under the global-profile owner — so a manual lock or a higher-priority owner still wins over a recipe. |
 | **Recipe surface** | The recipe is written, reviewed and applied inside the preference-tweaks screen, so no new destination is spent on it. Review lists every line with its verdict (ready, unknown key, no node, no write privilege, protected, wrong value, or a family key that stands for many nodes) and the path each ready line resolved to; lines that are not key=value are counted and declared instead of vanishing. Apply exists only when every line is ready, sits behind a one-time danger acknowledgement, and the report says per step what the device actually did: read back, restored, refused, or undone. |

@@ -1,3 +1,32 @@
+## ROUND-CLOSE-27 — 2026-11-07 · DONE_WITH_CONCERNS (خمس دفعات من الشجرتين · إصلاح فاصلة enum · حكم CI يُقرأ لا يُدّعى)
+
+**TASK:** استخراج ما يستحقّ من `fde_ai` و`scene_n1` **بلا نقل كود** (الأولى بلا ترخيص مقروء، والثانية
+copyleft)، وتسليمه دفعاتٍ قابلة للتحقق: جداول مسارات، نافذة قياس، منحنى محسوب من بيانات مسجّلة،
+وعائلة مقابض معلنة.
+
+**CHANGED:** الدفعة ١ `030968db` (الكتالوج ٤١←٤٨ مدخلًا و٦٩←١٠٩ مرشّحًا: GPU ×٢١ · دورة/مقاومة/جهد
+البطارية · meminfo · zram) · الدفعة ٢ `fa176e15` (`FrameWindow` + `HudField.Stability`) · الدفعة ٣
+`fc2b2ea8` (`ChargeCurve` + قسم المنحنى داخل `BatteryHistoryScreen`) · الدفعة ٤ `c11d2c75` (١٢ مدخلًا
+`sched.*` + `SCHED_PREFIX`) · الدفعة ٥ `ff71a55d` (٤ مداخل `sched.*` + `AGENTS.md` §0.5) ·
+الاختبارات `6e040134` (٦+٧ اختبارات وتثبيت ترتيب `HudField`).
+
+**العَرَض:** `MaxManager` أحمر على `fa176e15` و`fc2b2ea8` و`6e040134`.
+**التشخيص الأول (مقروء):** `HudSessionTest > fields are ordered by importance ... FAILED` —
+`Stability` كانت في الذيل والاختبار يثبّت الترتيب حرفيًّا ⇒ نُقلت بجانب `Frames` في `6e040134`.
+**التشخيص الثاني (مقروء بـ`cat -A`):** نقل الكتلة ترك `Stability` **بلا فاصلة** قبل KDoc الخاص بـ`Cpu`
+⇒ `HudSession.kt:99:14 Syntax error: Expecting ';' after the last enum entry` وعشرات
+`Unresolved reference`. الإصلاح `db3a5b44` يضيف الفاصلة وحدها.
+
+**GATES:** التسع `--assert` + `--prune all` + `rtl_guard --assert` + `git diff --check` خضراء
+(`y3-*` · `z4-*` · `t5-*` · `u5-*`) · `gen_control_catalog --assert` ⇒ ٦٤/١٢٥/٢٠.
+**BUILD:** `42390371801` على `6e040134` = failure (السبب أعلاه) · `db3a5b44` قيد التشغيل عند كتابة
+السطر — وحكمه لا يُدّعى قبل قراءته.
+**RESIDUAL:** كل ما يمسّ العتاد يحتاج جهازًا: قبول النواة `cpu.uclamp.*` / `cpu.schedtune.*` /
+`sched_*migrate` · أيّ مسار GPU يظهر من الـ٢١ · إشارة `currentUa` وشكل المنحنى · صيغة
+`sched.lib.mask_force` عند البائع. ولا شيء من الشجرتين نُقل: لا `.so` ولا daemon ولا `.o` BPF ولا
+`kr-script` ولا سكربت ولا تخطيط.
+**NEXT:** قراءة حكم `db3a5b44` و`MaxManager docs`؛ ثم ما بقي كله جهازيّ.
+
 ## ROUND-CLOSE-26 — 2026-11-07 · DONE (سبب البناء الأحمر: أيقونة اتجاهية · الباني الكامل أخضر)
 
 **العَرَض:** كل دفع يُطلق `MaxManager` و`MaxManager docs`، وكلاهما أحمر — وQuick Verify وحده أخضر.
