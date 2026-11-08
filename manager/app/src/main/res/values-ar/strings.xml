@@ -420,7 +420,7 @@
     <string name="str_hide_unavailable_features">إخفاء الميزات غير المتاحة على جهازي</string>
     <string name="str_hide_unavailable_features_summary">إخفاء غير المتاح بدل إظهاره رماديًّا.</string>
     <string name="unavailable_hidden_count">مخفي بحسب إعدادك: %1$d من العناصر غير المتاحة</string>
-    <string name="str_fas_is_a_user_space_implementa">FAS هنا جدولة معدّل التحديث لكل تطبيق: يطبّق المراقب في الخلفية المعدّل المحفوظ في ملفّ التطبيق عند مجيئه إلى المقدّمة، ويعيد القيمة السابقة عند مغادرته. ولا يفحص الإطارات ولا يتنبّأ بالحمل.</string>
+    <string name="str_fas_is_a_user_space_implementa">جدولة معدّل التحديث لكل تطبيق، دون فحص الإطارات.</string>
     <string name="str_fpsgo_desc">إعدادات FPSGO من MediaTek</string>
     <string name="str_fpsgo_frame_per_second_go_is_a">FPSGO (تعديل ديناميكي لمعدل الإطارات) هو وحدة نواة من MediaTek تضبط تردد CPU/GPU ديناميكيًا بناءً على معدل الإطارات الفعلي؛ يخفض التردد تلقائيًا لتوفير الطاقة عندما يكون معدل الإطارات مستقرًا، ويرفعه بسرعة لضمان السلاسة عندما يكون معدل الإطارات منخفضًا</string>
     <string name="str_fpsgo_settings">إعدادات FPSGO</string>
@@ -480,7 +480,7 @@
     <string name="str_these_settings_apply_to_all_en">تنطبق الإعدادات أعلاه افتراضيًا على جميع التطبيقات المفعلة، ويمكن تكوينها بشكل فردي لكل تطبيق في قائمة التطبيقات</string>
     <string name="str_tweak_configuration_settings">إعدادات التعديل</string>
     <string name="str_unavailable">غير متاح</string>
-    <string name="str_use_fpsgo_summary">عند التفعيل، يخفض التردد تلقائيًا عندما يكون معدل الإطارات مستقرًا لتوفير الطاقة؛ يمكن للمستخدمين الذين يسعون للحصول على أقصى أداء ويقبلون حرارة أعلى إيقاف تشغيله</string>
+    <string name="str_use_fpsgo_summary">يخفض التردد عند استقرار الإطارات لتوفير الطاقة.</string>
     <string name="str_use_fpsgo_title">تفعيل FPSGO في ملف تعريف الأداء</string>
     <string name="str_v_appdetails_third">v%1$s</string>
     <string name="str_version_buildconfig_version_na">الإصدار %1$s</string>
@@ -625,7 +625,7 @@
     <string name="detail_readable_paths">تم العثور على %1$d مسار/مسارات قابلة للقراءة</string>
     <string name="detail_refresh_number">تحديث رقم %1$d</string>
     <string name="detail_how_to_read">كيفية قراءة البيانات</string>
-    <string name="detail_storage_note">قد يعرض Android المسارين /data و/sdcard كنقطتي تحميل مختلفتين مع اعتمادهما على نفس مساحة التخزين الفيزيائية. القيم هنا تمثل أنظمة ملفات، وليست شرائح تخزين منفصلة.</string>
+    <string name="detail_storage_note">المساران /data و/sdcard مساحة واحدة؛ والقيم لأنظمة ملفات.</string>
     <string name="detail_storage_overview">نظرة عامة</string>
     <string name="detail_storage_total">السعة</string>
     <string name="detail_storage_filesystem">نظام الملفات</string>
@@ -736,7 +736,7 @@
     <string name="detail_android_counters">عدادات على مستوى الجهاز يعرضها Android.</string>
     <string name="detail_peaks">الذروات</string>
     <string name="detail_link_quality">جودة الوصلة</string>
-    <string name="detail_link_quality_desc">يعمل عندما تطلبه وحدك: تحليل اسم واحد وأربع محاولات اتصال TCP بالمضيف المذكور أدناه. لا يُنزَّل شيء، ولا يُحفظ شيء، ولا يُتّصل بأي عنوان آخر.</string>
+    <string name="detail_link_quality_desc">تحليل اسم واحد وأربع محاولات TCP؛ لا تنزيل ولا حفظ.</string>
     <string name="detail_probe_run">قِس الآن</string>
     <string name="detail_probe_running">جارٍ القياس…</string>
     <string name="detail_probe_target">%1$s منفذ %2$d · اتصال TCP</string>
@@ -1359,7 +1359,7 @@
     <string name="display_night_light_title">الإضاءة الليلية</string>
     <string name="display_night_light_desc">اجعل الشاشة أدفأ لتقليل إجهاد العين ليلًا</string>
     <string name="display_night_schedule_title">جدولة الإضاءة الليلية</string>
-    <string name="display_night_schedule_desc">تُشعل الإضاءة الليلية نفسها التي تشعلها المنصّة عند ساعة البداية وتُطفئها عند ساعة النهاية. النظام يجمع المنبّهات لتوفير البطارية، فقد تتأخّر التبديلة دقائق — هذه جدولة لا ساعة توقيت.</string>
+    <string name="display_night_schedule_desc">تشغيل الإضاءة الليلية وإطفاؤها في مواعيدها؛ قد تتأخّر دقائق.</string>
     <string name="display_night_start_title">تُشعل عند</string>
     <string name="display_night_end_title">تُطفئ عند</string>
     <string name="display_color_inversion_title">عكس الألوان</string>
@@ -2855,7 +2855,7 @@
 
     <!-- تكملة ٢٣٥: MaxFx — مؤثّرنا النظاميّ. والوحدات رموزٌ دوليّة (dB/Hz/ms) لا تُترجم. -->
     <string name="max_audio_maxfx_title">محرّك ماكس إف إكس</string>
-    <string name="max_audio_maxfx_description">مؤثّرٌ نظاميٌّ نملكه: يُبنى لنظام الصوت ويُقاد بخاصيّات النظام. أضِفه إلى طبقة المؤثّرات وأعد التشغيل ثم اضبط — وكل كتابةٍ تُقرأ بعدها من الخاصية</string>
+    <string name="max_audio_maxfx_description">مؤثّر نظامي: أضِفه وأعد التشغيل ثم اضبط؛ كل كتابة تُقرأ بعدها.</string>
     <string name="max_audio_maxfx_install">إضافة ماكس إف إكس إلى طبقة المؤثّرات</string>
     <string name="max_audio_maxfx_install_note">يُكتب ملفّ الوحدة وفيه تصريح ماكس إف إكس — وتحتاج إعادة تشغيل ليحمّله نظام الصوت</string>
     <string name="max_audio_maxfx_value_default">%1$s · افتراضي</string>
@@ -3059,7 +3059,7 @@
     <string name="emu_hub_add">أضف ملفات</string>
     <string name="hma_companion_title">رفيق HMA</string>
     <string name="hma_companion_presence">الوجود والحدود</string>
-    <string name="hma_companion_scope">رفيق للقراءة فقط. لا نخفي تطبيقات ولا ندير إعدادات HMA أو نثبت تشغيل خطّافاته. الأعداد تخص ما يراه MaxManager فقط؛ التثبيت والإزالة وسياسة الرؤية قد تغيّرها أيضًا.</string>
+    <string name="hma_companion_scope">قراءة فقط: لا نخفي تطبيقات ولا نغيّر سياسة HMA.</string>
     <string name="hma_companion_version">إصدار تطبيق HMA المرئي: %1$s</string>
     <string name="hma_companion_unobserved">إصدار تطبيق HMA غير مقروء؛ غيابه أو تشغيله الفعلي غير مثبت.</string>
     <string name="hma_companion_modules">عدد الوحدات في الجرد المقروء: %1$s. هوية وحدة HMA غير متحققة.</string>
@@ -3760,7 +3760,7 @@
 <string name="max_stats_payload_title">الرسالة كما ستُرسل</string>
 <string name="max_stats_payload_desc">هذه نفس البايتات التي ستُرسل، من الشيفرة نفسها — لا وصفًا لها.</string>
 <string name="max_stats_switch_title">شارِك مرّة يوميًّا على الأكثر</string>
-<string name="max_stats_switch_summary">إشارة واحدة عند فتح التطبيق: مرّة كل ٢٤ ساعة على الأكثر، وتتوقّف إن لم يتغيّر شيء. وإطفاء المفتاح يحذف سجلّنا المحلّيّ ويرسل طلب حذف واحدًا.</string>
+<string name="max_stats_switch_summary">إشارة كل ٢٤ ساعة على الأكثر؛ الإطفاء يحذف السجل المحلي.</string>
 
 <!-- مختبر الجهاز: اختبارات عتاد تفاعلية عبر واجهات النظام العامة فقط، بلا كتابة في إعدادات النظام. -->
 <string name="device_lab_title">مختبر الجهاز</string>
@@ -3780,7 +3780,7 @@
 <string name="device_lab_speaker_desc">شغّل نغمة على السماعة اليسرى أو اليمنى أو الاثنتين.</string>
 <string name="device_lab_section_hardware">المستشعرات والطاقة</string>
 <string name="device_lab_section_wifi">قنوات Wi-Fi</string>
-<string name="device_lab_wifi_desc">أي قناة تستعملها هذه الشبكة وكم جارًا يشاركها فيها. أندرويد لا يعطي نتائج المسح إلا لتطبيق يحمل إذن الموقع، مع أن شيئًا هنا لا يسأل عن موقعك.</string>
+<string name="device_lab_wifi_desc">القناة المستعملة وعدد الجيران عليها.</string>
 <string name="device_lab_wifi_connected">القناة المتّصل بها</string>
 <string name="device_lab_wifi_seen">الشبكات المرئية</string>
 <string name="device_lab_wifi_busiest">أكثر القنوات ازدحامًا</string>
@@ -3907,7 +3907,7 @@
 <string name="usage_stats_top_apps">الأكثر استخدامًا</string>
 <string name="usage_stats_top_apps_detail">مرتّبة بحسب زمن المقدّمة في الفترة المختارة.</string>
 <string name="usage_stats_daily_title">الاستخدام اليومي</string>
-<string name="usage_stats_daily_detail">زمن المقدّمة المرصود يومًا بيوم. اختر ٧ أيام أو ٣٠؛ مقياس الأعمدة نسبي فأطولها هو أكثر الأيام استعمالًا داخل النافذة. والسطر تحتها يقارن آخر ٧ أيام بالسبعة التي قبلها أيًّا كانت النافذة. قد يحتفظ أندرويد بأحداث ناقصة، فتختلف هذه المجاميع عن قائمة التطبيقات.</string>
+<string name="usage_stats_daily_detail">زمن المقدّمة يومًا بيوم؛ اختر ٧ أو ٣٠ يومًا.</string>
 <string name="usage_stats_daily_window_week">٧ أيام</string>
 <string name="usage_stats_daily_window_month">٣٠ يومًا</string>
 <string name="usage_stats_daily_compare_up">أعلى بـ%1$s (%2$d٪) من السبعة السابقة</string>
@@ -4062,7 +4062,7 @@
     <string name="fas_rate_unavailable">لا يعلنها هذا النظام</string>
     <string name="fas_rate_reading">جارٍ القراءة…</string>
     <string name="fas_per_app_title">تجاوز لكل تطبيق</string>
-    <string name="fas_per_app_desc">يمكن لكل ملفّ تطبيق تثبيت معدّل. يطبّقه المراقب في الخلفية عند مجيء التطبيق إلى المقدّمة، ويعيد القيمة السابقة عند مغادرته.</string>
+    <string name="fas_per_app_desc">كل ملف تطبيق يثبّت معدّله، ويُعاد عند المغادرة.</string>
     <string name="fas_open_apps">اختر تطبيقًا</string>
     <string name="fas_open_apps_desc">افتح قائمة التطبيقات ثم إعدادات التطبيق لتحديد معدّله.</string>
     <string name="fas_limits_title">ما يمكن لهذه الشاشة أن تَعِد به وما لا يمكن</string>

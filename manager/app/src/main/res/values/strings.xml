@@ -375,7 +375,7 @@
     <string name="display_night_light_title">Night Light</string>
     <string name="display_night_light_desc">Tint the display warmer to reduce eye strain at night</string>
     <string name="display_night_schedule_title">Night light schedule</string>
-    <string name="display_night_schedule_desc">Switches the same platform night light on at the start hour and off at the end hour. The system batches alarms to save power, so a switch may land a few minutes late — this is a schedule, not a stopwatch.</string>
+    <string name="display_night_schedule_desc">Night light on and off on schedule; may lag minutes.</string>
     <string name="display_night_start_title">Turns on at</string>
     <string name="display_night_end_title">Turns off at</string>
     <string name="display_color_inversion_title">Color inversion</string>
@@ -1306,7 +1306,7 @@
     <string name="str_hide_unavailable_features">Hide features unavailable on my device</string>
     <string name="str_hide_unavailable_features_summary">Hide unavailable features instead of graying them out.</string>
     <string name="unavailable_hidden_count">Hidden by your setting: %1$d unavailable items</string>
-    <string name="str_fas_is_a_user_space_implementa">FAS here is per-app refresh-rate scheduling: the background monitor applies the rate stored in an app profile when that app comes to the front, and restores the previous value when it leaves. It does not inspect frames or predict load.</string>
+    <string name="str_fas_is_a_user_space_implementa">Per-app refresh-rate scheduling; no frame inspection.</string>
     <string name="str_fpsgo_desc">MediaTek FPSGO related settings</string>
     <string name="str_fpsgo_frame_per_second_go_is_a">FPSGO (Frames Per Second Go) is a MediaTek kernel module that dynamically adjusts CPU/GPU frequency based on real-time frame rate. It actively lowers frequency to save power when frame rate is stable, and quickly boosts frequency to ensure smoothness when frame rate is strained.</string>
     <string name="str_fpsgo_settings">FPSGO Settings</string>
@@ -1366,7 +1366,7 @@
     <string name="str_these_settings_apply_to_all_en">The above settings apply to all enabled apps by default. You can configure them individually for each app in the app list.</string>
     <string name="str_tweak_configuration_settings">Tweak Configuration Settings</string>
     <string name="str_unavailable">Unavailable</string>
-    <string name="str_use_fpsgo_summary">When enabled, the frequency automatically lowers to save power when the frame rate is stable. Users who prefer maximum performance and can tolerate higher heat may disable this.</string>
+    <string name="str_use_fpsgo_summary">Lowers frequency when frames are steady, to save power.</string>
     <string name="str_use_fpsgo_title">Enable FPSGO in performance profile</string>
     <string name="str_v_appdetails_third">v%1$s</string>
     <string name="str_version_buildconfig_version_na">Version %1$s</string>
@@ -1512,7 +1512,7 @@
     <string name="detail_readable_paths">%1$d readable path%2$s reported</string>
     <string name="detail_refresh_number">refresh #%1$d</string>
     <string name="detail_how_to_read">How to read this</string>
-    <string name="detail_storage_note">Android can expose /data and /sdcard as different mount points backed by the same physical storage. These values describe filesystem views, not separate storage chips.</string>
+    <string name="detail_storage_note">/data and /sdcard share one space; values are filesystems, not chips.</string>
     <string name="detail_storage_overview">Overview</string>
     <string name="detail_storage_total">Capacity</string>
     <string name="detail_storage_filesystem">File system</string>
@@ -1628,7 +1628,7 @@
     <string name="detail_android_counters">Device-wide counters exposed by Android.</string>
     <string name="detail_peaks">peaks</string>
     <string name="detail_link_quality">Link quality</string>
-    <string name="detail_link_quality_desc">Runs only when you ask: one name lookup and four TCP connects to the host shown below. Nothing is downloaded, nothing is stored, and no other address is contacted.</string>
+    <string name="detail_link_quality_desc">One name, four TCP attempts; nothing downloaded or stored.</string>
     <string name="detail_probe_run">Measure now</string>
     <string name="detail_probe_running">Measuring…</string>
     <string name="detail_probe_target">%1$s port %2$d · TCP connect</string>
@@ -2889,7 +2889,7 @@
 
     <!-- تكملة ٢٣٥: MaxFx — مؤثّرنا النظاميّ. والوحدات رموزٌ دوليّة (dB/Hz/ms) لا تُترجم. -->
     <string name="max_audio_maxfx_title">MaxFx audio engine</string>
-    <string name="max_audio_maxfx_description">A system effect we own: built for audioserver, driven by system properties. Add it to the effects layer, reboot, then tune — every write is read back from the property</string>
+    <string name="max_audio_maxfx_description">A system effect: add it, restart, then tune; every write is read back.</string>
     <string name="max_audio_maxfx_install">Add MaxFx to the effects layer</string>
     <string name="max_audio_maxfx_install_note">Writes the layer module with MaxFx declared in it — a reboot is required for audioserver to load it</string>
     <string name="max_audio_maxfx_value_default">%1$s · default</string>
@@ -3093,7 +3093,7 @@
     <string name="emu_hub_add">Add files</string>
     <string name="hma_companion_title">HMA companion</string>
     <string name="hma_companion_presence">Presence and limits</string>
-    <string name="hma_companion_scope">Read-only companion. We do not hide apps, manage HMA settings or prove its hooks are active. Package counts describe MaxManager visibility only; installs, removals and visibility policy can also change them.</string>
+    <string name="hma_companion_scope">Read-only: we hide no apps and change no HMA policy.</string>
     <string name="hma_companion_version">Visible HMA app version: %1$s</string>
     <string name="hma_companion_unobserved">HMA app version was not readable; absence or runtime activation is not established.</string>
     <string name="hma_companion_modules">Readable module inventory count: %1$s. HMA module identity is not verified.</string>
@@ -3813,7 +3813,7 @@
 <string name="max_stats_payload_title">The exact message</string>
 <string name="max_stats_payload_desc">These are the same bytes that would be sent, built by the same code — not a description of them.</string>
 <string name="max_stats_switch_title">Share at most once a day</string>
-<string name="max_stats_switch_summary">One signal at app launch: once per 24 hours at most, and it stops when nothing changed. Turning it off deletes our local record and sends one deletion request.</string>
+<string name="max_stats_switch_summary">One ping every 24 h at most; off deletes the local record.</string>
 
 <!-- Device lab: interactive hardware tests (public APIs only, no system writes). -->
 <string name="device_lab_title">Device lab</string>
@@ -3833,7 +3833,7 @@
 <string name="device_lab_speaker_desc">Play a tone on the left, right or both speakers.</string>
 <string name="device_lab_section_hardware">Sensors and power</string>
 <string name="device_lab_section_wifi">Wi-Fi channels</string>
-<string name="device_lab_wifi_desc">Which channel this network uses and how many neighbours share it. Android hands scan results only to an app holding the location permission, even though nothing here asks for your position.</string>
+<string name="device_lab_wifi_desc">Which channel this network uses, and its neighbours.</string>
 <string name="device_lab_wifi_connected">Connected channel</string>
 <string name="device_lab_wifi_seen">Networks seen</string>
 <string name="device_lab_wifi_busiest">Busiest channel</string>
@@ -3960,7 +3960,7 @@
 <string name="usage_stats_top_apps">Most used apps</string>
 <string name="usage_stats_top_apps_detail">Ordered by foreground time in the selected period.</string>
 <string name="usage_stats_daily_title">Daily usage</string>
-<string name="usage_stats_daily_detail">Observed foreground time per day. Choose 7 days or 30; the bars use a relative scale, so the tallest is the busiest day in that window. The line below them compares the last 7 days with the 7 before them, whichever window is shown. Android may retain incomplete events; these totals can differ from the app list.</string>
+<string name="usage_stats_daily_detail">Foreground time day by day; pick 7 or 30 days.</string>
 <string name="usage_stats_daily_window_week">7 days</string>
 <string name="usage_stats_daily_window_month">30 days</string>
 <string name="usage_stats_daily_compare_up">Up %1$s (%2$d%%) from the 7 days before</string>
@@ -4116,7 +4116,7 @@
     <string name="fas_rate_unavailable">Not reported by this system</string>
     <string name="fas_rate_reading">Reading…</string>
     <string name="fas_per_app_title">Per-app override</string>
-    <string name="fas_per_app_desc">Each app profile can pin a rate. The background monitor applies it when that app comes to the front and restores the previous value when it leaves.</string>
+    <string name="fas_per_app_desc">Each app profile pins its rate, restored on leave.</string>
     <string name="fas_open_apps">Choose an app</string>
     <string name="fas_open_apps_desc">Open the app list, then the settings of an app, to set its rate.</string>
     <string name="fas_limits_title">What this screen can and cannot promise</string>
