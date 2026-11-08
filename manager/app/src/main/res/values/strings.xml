@@ -2059,6 +2059,7 @@
     <string name="control_group_performance_desc">CPU, GPU, memory and responsiveness controls grouped by runtime pressure.</string>
     <string name="control_group_environment">Thermal and power</string>
     <string name="control_group_environment_desc">Heat, charging, display and power decisions that affect sustained performance.</string>
+    <string name="control_group_inspect">Device checks</string>
     <string name="control_group_system">System paths</string>
     <string name="control_group_system_desc">Storage and network paths that shape loading, updates and online workloads.</string>
     <string name="control_advanced_tools_desc">High-risk utilities belong with Control, not Settings. They stay explicit, labeled and reversible where possible.</string>

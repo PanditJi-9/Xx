@@ -29,7 +29,9 @@ class ControlLayoutModelTest {
         // ولا يجوز أن يُطالب النموذج بعرضه.
         val fromRegistry = MaxDestination.Visible.filter { it.parent == MaxDestination.Control }.toSet()
         val hubsInModel = hubs.map { it.hub }.toSet()
-        val toolsInModel = controlToolEntries().map { it.destination }.toSet()
+        // وشريطان للأدوات: «الأدوات» و«فحص الجهاز» — كلاهما من الجدول نفسه، والمجموع يغطّي
+        // كل وجهة أبوّتها `Control`؛ ولا صفّ يُعدّ مرّتين.
+        val toolsInModel = (controlToolEntries() + controlInspectEntries()).map { it.destination }.toSet()
 
         assertEquals(fromRegistry, hubsInModel + toolsInModel)
         assertEquals(hubsInModel.size + toolsInModel.size, (hubsInModel + toolsInModel).size)

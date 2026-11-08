@@ -73,11 +73,6 @@ val ControlToolDestinations: List<MaxDestination> = listOf(
     MaxDestination.Permissions,
     MaxDestination.FileManager,
     MaxDestination.ProcessManager,
-    // **أدوات الجهاز الثلاث بأمر المالك:** كانت صفوفًا في الإعدادات، فصارت هنا — الفحص
-    // والاستخدام وسجلّ البطارية تُقرأ من مكان التحكّم نفسه، لا من مسار الإعدادات.
-    MaxDestination.DeviceLab,
-    MaxDestination.UsageStats,
-    MaxDestination.BatteryHistory,
     MaxDestination.Logs,
     MaxDestination.FpsOverlay,
     MaxDestination.DynamicIsland,
@@ -85,6 +80,18 @@ val ControlToolDestinations: List<MaxDestination> = listOf(
     MaxDestination.SetEdit,
     MaxDestination.ActivityLauncher,
     // الأخطف آخرًا: لا يُفتح بلمسة عابرة.
+)
+
+/**
+ * **فحص الجهاز — شريطٌ ثانٍ لا صفوفٌ في صندوق الأدوات** (أمر المالك نقلها إلى التحكّم):
+ * مختبر الجهاز واستخدام التطبيقات وسجلّ البطارية **تقرأ** حالة الجهاز ولا تكتب سقفًا ولا
+ * سياسة. فلمّا انتقلت من الإعدادات إلى هنا، جُعلت مجموعةً بعنوانها بدل أن تُكدَّس في قائمة
+ * «الأدوات» الطويلة: القارئ يفرّق بالعنوان بين «أداة أفتحها لتفعل» و«صفحة أفتحها لأعرف».
+ */
+val ControlInspectDestinations: List<MaxDestination> = listOf(
+    MaxDestination.DeviceLab,
+    MaxDestination.UsageStats,
+    MaxDestination.BatteryHistory,
 )
 
 /** Which hubs belong to which band, and in what order. Editorial, nothing more. */
@@ -143,6 +150,11 @@ fun controlLayoutModel(access: nd.max.ui.navigation.DestinationAccess? = null): 
 /** Rows of the advanced-tools band, from the same role table as everything else. */
 fun controlToolEntries(access: nd.max.ui.navigation.DestinationAccess? = null): List<ControlEntry> =
     ControlToolDestinations.filter { access == null || access.visible(it) }
+        .map { destination -> ControlEntry(destination, maxDestinationRole(destination)) }
+
+/** Rows of the device-check band — same table, same visibility gate. */
+fun controlInspectEntries(access: nd.max.ui.navigation.DestinationAccess? = null): List<ControlEntry> =
+    ControlInspectDestinations.filter { access == null || access.visible(it) }
         .map { destination -> ControlEntry(destination, maxDestinationRole(destination)) }
 
 /**

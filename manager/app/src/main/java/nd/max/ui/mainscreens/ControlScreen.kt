@@ -116,6 +116,7 @@ fun ControlScreen(navController: NavHostController) {
     val access = nd.max.ui.navigation.rememberDestinationAccess()
     val bands = controlLayoutModel(access)
     val tools = controlToolEntries(access)
+    val inspect = controlInspectEntries(access)
 
     val listState = androidx.compose.foundation.lazy.rememberLazyListState()
     HomeTourScrollBinding(listState)
@@ -186,6 +187,19 @@ fun ControlScreen(navController: NavHostController) {
                 expanded = expandedLayout,
                 onOpen = actions::navigateTo,
             )
+        }
+
+        // **وعنوانٌ يفصل «أداة» عن «فحص»:** الثلاث كانت صفوفًا في الإعدادات (أمر المالك)،
+        // وصار لها شريطها هنا بدل أن تُكدَّس في قائمة الأدوات — تقرأ حالةً ولا تكتب سقفًا.
+        if (inspect.isNotEmpty()) {
+            item(key = "control_inspect") {
+                ControlBand(
+                    titleRes = R.string.control_group_inspect,
+                    entries = inspect,
+                    expanded = expandedLayout,
+                    onOpen = actions::navigateTo,
+                )
+            }
         }
 
         // **ولا مفتاح إلغاء تحديثات هنا (أمر المالك):** كان صفًّا في هذه الشاشة، وصار القرار

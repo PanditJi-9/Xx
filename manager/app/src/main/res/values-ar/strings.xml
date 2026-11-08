@@ -2067,6 +2067,7 @@
     <string name="control_group_performance_desc">تحكمات المعالج والرسوميات والذاكرة والاستجابة مجمّعة حسب ضغط التشغيل.</string>
     <string name="control_group_environment">الحرارة والطاقة</string>
     <string name="control_group_environment_desc">قرارات الحرارة والشحن والعرض والطاقة التي تؤثر في الأداء المستمر.</string>
+    <string name="control_group_inspect">فحص الجهاز</string>
     <string name="control_group_system">مسارات النظام</string>
     <string name="control_group_system_desc">مسارات التخزين والشبكة التي تصوغ التحميل والتحديثات والعمل عبر الشبكة.</string>
     <string name="control_advanced_tools_desc">الأدوات عالية الخطورة مكانها مع التحكم لا الإعدادات. تبقى صريحة ومعلّمة وقابلة للتراجع حيث أمكن.</string>
