@@ -48,11 +48,16 @@ class SettingsDestinationReachabilityTest {
     /**
      * الملفات التي **تعريف** الوجهة فيها لا **استعمالها**: السجل نفسه، والرسم، وجدول الأدوار.
      * ذِكرها في أحدها ليس مدخلًا.
+     *
+     * و`DestinationAccess.kt` جدول أدوار الامتياز: يصنّف `TouchBoost` كـROOT لأنه يكتب sysfs،
+     * وذكره هناك **تصنيف** لا انتقال. ولو حُسب مدخلًا لسقط الحارس على شاشة مخفيّة بلا باب —
+     * وهو عكس ما يثبته هذا الاختبار.
      */
     private val registryFiles = setOf(
         "MaxDestinations.kt",
         "MaxNavGraph.kt",
         "MaxDestinationCatalog.kt",
+        "DestinationAccess.kt",
     )
 
     private fun sourceRoot(): File? {

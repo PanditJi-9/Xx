@@ -32,12 +32,15 @@ object RootNodeChannel {
     /**
      * الخدمة المربوطة أو `null`، تُقرأ من خيوط متعددة (مسح الحرارة يعمل خارج الخيط الرئيسي).
      * `@Volatile` لأن الكتابة تحدث في خيط الربط والقراءة في خيوط العمل.
+     *
+     * **والقراءة تمرّ بحكم الوضع:** الحقل قد يحمل وكيلًا محروسًا من وضع سابق، لكن `service`
+     * لا يُسلّمه بعد تبديل الوضع إلى Shizuku/Basic — فيعود المستدعي إلى الطريق المحلي بدل
+     * أن يقرأ فراغًا يظنه قيمة. والكتابة تبقى خاصة بهذا الملف وحده (`private set`).
      */
     @Volatile
-    private var connectedService: IRootNodeService? = null
-
-    val service: IRootNodeService?
-        get() = connectedService.takeIf { rootAllowed() }
+    var service: IRootNodeService? = null
+        private set
+        get() = field.takeIf { rootAllowed() }
 
     private fun rootAllowed() = ExecutionModeRules.mayUseRoot(ExecutionModeStore.current())
 
@@ -64,16 +67,16 @@ object RootNodeChannel {
             binding = false
             if (owners.isEmpty() || !rootAllowed()) {
                 runCatching { RootService.unbind(this) }
-                connectedService = null
+                service = null
                 return
             }
-            connectedService = guarded(IRootNodeService.Stub.asInterface(binder))
+            service = guarded(IRootNodeService.Stub.asInterface(binder))
             log("connected")
         }
 
         override fun onServiceDisconnected(name: ComponentName) {
             binding = false
-            connectedService = null
+            service = null
             log("disconnected")
         }
     }
@@ -92,7 +95,7 @@ object RootNodeChannel {
     fun connect(context: Context, owner: String = OWNER_ACTIVITY) {
         if (!rootAllowed()) return
         owners.add(owner)
-        if (connectedService != null || binding) return
+        if (service != null || binding) return
         binding = true
         val intent = Intent(context.applicationContext, RootNodeService::class.java)
         runCatching { RootService.bind(intent, connection) }.onFailure {
@@ -105,10 +108,10 @@ object RootNodeChannel {
     fun disconnect(owner: String = OWNER_ACTIVITY) {
         owners.remove(owner)
         if (owners.isNotEmpty()) return
-        if (connectedService == null && !binding) return
+        if (service == null && !binding) return
         runCatching { RootService.unbind(connection) }
         binding = false
-        connectedService = null
+        service = null
     }
 
     private fun log(message: String) {
