@@ -60,6 +60,24 @@ MaxManager has a strong engine and a fragmented surface. `core/maxai` + `core/ha
 
 ## Executor log
 
+### ROUND-CLOSE-32 — وثيقة الألعاب تُبذر بالجذر، فلا تبقى رسالة «تعذّرت قراءة الإعداد» — 2026-11-08 · DONE_WITH_CONCERNS
+
+**TASK:** طلب المالك: بعد تثبيت الروم بثلاثة ملفات (`privapp-permissions-nd.max.xml` · `MaxManager.apk` · `sys.maxmanager-service`) ومنح الجذر، لماذا تبقى رسالة per-app «Configuration could not be read or saved. No successful profile change is confirmed»؟
+
+**ROOT CAUSE (مقيس من الشجرة):** `GameProfileRepository.readDocument()` يرمي حين يعيد `io().read()` القيمة `null`، و`GameProfilePersistence.update()` يرمي كذلك قبل أي كتابة. ووثيقة الجذر `/data/adb/.config/MaxManager/gamelist/maxmanagerApplist.json` ينشئها `customize.sh`/`service.sh` في تثبيت الموديول وحده؛ وتثبيت الروم لا يشغّلهما، و`RomRuntime.PREPARE` كان يُنادى من `ModuleWatchman` فقط. فغياب الملف = `failed = true` = الرسالة، ولو كان الجذر ممنوحًا.
+
+**CHANGED:** `core/gamespace/GameProfileRepository.kt`: `rootIo.read()` يقرأ؛ فإن كان `null` أعاد طلب الجذر حين يكون `cachedRootVerdict() == true` والصدفة المخبّأة غير جذرية (`requestRoot()` وحده يغلقها ويعيد طلبها)، ثم شغّل `RomRuntime.PREPARE` (يبذر `{}` ولا يمسّ ملفًّا غير فارغ) وأعاد القراءة؛ والفشل يبقى `null` فلا يُخترع نجاح. البذر بأمر الروم نفسه لا بوثيقة محلية ثانية كي لا ينفصل مصدر الحقيقة عن `AppMonitor`. و`ui/subscreens/AppSettingsScreen.kt`: `LifecycleEventEffect(ON_RESUME)` يعيد `loadConfig()` إن كان `configFailed`، فيُعاد السؤال بعد منح الجذر المتأخر.
+
+**GATES:** `kt_balance` (3293 ملفًا · 0) · `code_health` (0 · الدَّين عند السقف) · `i18n_coverage` · `i18n --prune all` (84 لغة · 0 يتيم) · `design_tokens` (251/300) · `jni_symbols` (الطبقة ١ · ٢ غير متحقّقة) · `license_audit` (GPL 0) · `git diff --check` — كلها exit 0.
+
+**BUILD:** `:app:compileReleaseKotlin` محليًّا — **BUILD SUCCESSFUL in 9m 53s** (JDK 17 arm64 · SDK `/usr/lib/android-sdk` · 11 مهمة). وQuick Verify يُرسل على الالتزام، وحكمه يُقرأ قبل إعلانه.
+
+**REVIEW:** لا حكم مستقل جديد (المحاولات السابقة فشلت لأسباب مزوّد)؛ المسار اليدوي قائم.
+
+**RESIDUAL:** الإصلاح لا يعمل إن مُنع `su` عن `priv_app` (KernelSU/APatch قد تختلف عن Magisk) · وثيقة موجودة لكنها JSON فاسد تبقى فشلًا مقصودًا ولا تُستبدل · سلوك الجذر المتأخر والواجهة يحتاج جهازًا.
+
+**NEXT:** جهاز: ثلاثة ملفات + منح الجذر بعد الفتح + `su -c 'ls -l /data/adb/.config/MaxManager/gamelist/maxmanagerApplist.json'` ثم حفظ بروفايل من per-app · مراجعة يدوية بنموذج غير المنفّذ.
+
 ### ROUND-CLOSE-29 — شارة الوصول تفتح نافذة واحدة صادقة — 2026-11-07 · DONE_WITH_CONCERNS
 
 **TASK:** طلب المالك: محدّد وضع وصول في الرئيسية (Auto/Root/Shizuku/Basic) مثل Scene، مع مدير الجذر وSELinux، وفلتر «ما يدعمه الوضع فقط» أو «كل شيء»، وتغييره من الإعدادات أيضًا.

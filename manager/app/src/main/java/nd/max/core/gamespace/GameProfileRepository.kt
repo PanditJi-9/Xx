@@ -14,6 +14,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import java.io.File
 import nd.max.MaxManagerPaths
+import nd.max.core.daemon.RomRuntime
 import nd.max.core.hardware.RootFileAccess
 import nd.max.core.platform.ForegroundAppResolver
 import nd.max.core.privilege.ExecutionMode
@@ -36,7 +37,27 @@ object GameProfileRepository {
 
     /** وثيقة المالك الجذري: يقرؤها `AppMonitor` نفسها (لا قاعدة بيانات موازية). */
     private val rootIo = object : GameProfilePersistence.Io {
-        override fun read() = RootFileAccess.read(path)
+        /**
+         * **غياب الوثيقة في مسار الجذر ليس «أول استعمال».** `customize.sh`/`service.sh` هما من ينشئانها
+         * في تثبيت الموديول، ولا أحد ينشئها في تثبيت الروم — فيفشل كل حفظ برسالة «تعذّرت قراءة الإعداد».
+         * والبذر هنا بأمر الروم نفسه ([RomRuntime.PREPARE] لا يمسّ ملفًّا غير فارغ)، لا بوثيقة محلية
+         * ثانية تُفرّق مصدر الحقيقة الذي يقرؤه `AppMonitor`.
+         *
+         * وفشل البذر (جذر مرفوض) يُبقي `null`، فيُعلَن الفشل ولا يُخترع نجاح.
+         */
+        override fun read(): String? {
+            RootFileAccess.read(path)?.let { return it }
+            // **جذر مُنح وصدفة مخبّأة قديمة غير جذرية:** `RootCommands` يرى `Shell.getShell()` المخبّأة
+            // فترفض، و`requestRoot()` وحده يغلقها ويعيد طلبها. وهذه هي الحالة بعد منح الإذن من مدير
+            // الجذر والتطبيق مفتوح — بلا هذا السطر يبقى كل حفظ فاشلًا ولو كان الإذن ممنوحًا.
+            if (!PrivilegeManager.cachedRootGranted() && PrivilegeManager.cachedRootVerdict() == true) {
+                PrivilegeManager.requestRoot()
+                RootFileAccess.read(path)?.let { return it }
+            }
+            if (RootFileAccess.exec(RomRuntime.PREPARE) != 0) return null
+            return RootFileAccess.read(path)
+        }
+
         override fun write(text: String) = RootFileAccess.atomicWriteText(path, text)
     }
 

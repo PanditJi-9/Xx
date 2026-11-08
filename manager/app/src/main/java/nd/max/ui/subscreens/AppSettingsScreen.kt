@@ -61,6 +61,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import kotlin.math.roundToInt
@@ -128,6 +130,13 @@ fun AppSettingsScreen(
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 
     LaunchedEffect(packageName) { viewModel.loadConfig(); viewModel.loadKernelCapabilities(packageName) }
+
+    // **إعادة السؤال عند العودة إلى الشاشة:** قد يُمنح الجذر بعد فشل القراءة الأولى، فتبقى رسالة
+    // «تعذّرت قراءة الإعداد» معلّقة على شاشة لم يُعَد فيها السؤال. نداء واحد لكل عودة — ولا حلقة،
+    // لأن `configFailed` لا يتغيّر بمحاولة فاشلة أخرى.
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
+        if (viewModel.configFailed) viewModel.loadConfig()
+    }
 
     val config = viewModel.fullConfig[packageName]
     // Verified repository state, not an optimistic switch that stays on after a failed save.

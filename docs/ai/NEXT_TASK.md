@@ -1,3 +1,21 @@
+## ROUND-CLOSE-32 — وثيقة الألعاب تُبذر بالجذر — 2026-11-08 · DONE_WITH_CONCERNS
+
+**TASK:** إصلاح رسالة per-app «Configuration could not be read or saved. No successful profile change is confirmed» في تثبيت الروم بثلاثة ملفات + جذر ممنوح.
+
+**ROOT CAUSE:** وثيقة الجذر `maxmanagerApplist.json` لا ينشئها أحد في تثبيت الروم، و`GameProfileRepository` يعامل غيابها فشلًا (`readDocument`/`GameProfilePersistence.update` يرميان على `null`).
+
+**CHANGED:** `GameProfileRepository.rootIo.read()` يعيد طلب الجذر عند الحاجة، ثم يشغّل `RomRuntime.PREPARE` لبذر `{}` بالجذر نفسه (لا وثيقة محلية ثانية)، ثم يعيد القراءة · `AppSettingsScreen` يعيد `loadConfig()` عند `ON_RESUME` إن كان `configFailed`.
+
+**GATES:** الثماني `--assert` + `git diff --check` = 0.
+
+**BUILD:** `:app:compileReleaseKotlin` محليًّا — **BUILD SUCCESSFUL in 9m 53s** (JDK 17 arm64). Quick Verify على الالتزام، وحكمه يُقرأ قبل إعلانه.
+
+**REVIEW:** لا حكم مستقل جديد؛ المسار اليدوي قائم.
+
+**RESIDUAL:** `su` الممنوع عن `priv_app` يبقي الرسالة · JSON فاسد يبقى فشلًا مقصودًا · الجهاز غير متاح.
+
+**NEXT:** جهاز: التحقق من إنشاء الملف بعد منح الجذر، ثم حفظ بروفايل من per-app.
+
 ## ROUND-CLOSE-31 — الجذر المتأخر في تثبيت الروم — 2026-11-08 · DONE_WITH_CONCERNS
 
 **TASK:** جعل التطبيق يعمل بثلاثة ملفات روم فقط وبلا SELinux بعد منح الجذر: الشارة ACTIVE، وGPU/المحافظ تعمل.
