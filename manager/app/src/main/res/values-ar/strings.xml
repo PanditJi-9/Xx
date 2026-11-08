@@ -6,9 +6,9 @@
     <string name="all_checks_finished">جميع الفحوصات منتهية</string>
     <string name="all_set">كل شيء جاهز، يمكنك الآن استخدام Max Manager</string>
     <string name="allow_verbose_log">السجل التفصيلي لخدمة الوحدة</string>
-    <string name="allow_verbose_log_desc">تجعل خدمة الوحدة الخلفية (daemon) تسجّل تفاصيل عملياتها الداخلية في MaxManager.log — مفيد لتشخيص سلوك الوحدة نفسها عند الإبلاغ عن مشكلة</string>
+    <string name="allow_verbose_log_desc">تسجيل تفاصيل الوحدة في السجل</string>
     <string name="detailed_activity_log">سجل نشاطك المفصل</string>
-    <string name="detailed_activity_log_desc">تسجيل كل إعداد تغيّره وكل تبديل تطبيق في MaxManager.log، مع معرّف مشترك يربط المشكلة بسببها. مطفأ افتراضيًا</string>
+    <string name="detailed_activity_log_desc">سجلّ لكل تغيير وتبديل تطبيق، بمعرّف ربط.</string>
     <string name="android_version">إصدار Android</string>
     <string name="app_name">MaxManager</string>
     <string name="app_name_settings">اسم التطبيق</string>
@@ -236,7 +236,7 @@
     <string name="prev">السابق</string>
     <string name="profile_perflite">أداء خفيف</string>
     <string name="profile_timeout">انتهاء مهلة ملف تعريف الأداء</string>
-    <string name="profile_timeout_desc">الخروج تلقائيًا من ملف تعريف الأداء بعد 30 ثانية من تبديل اللعبة إلى الخلفية؛ هذه الميزة مفيدة إذا نسيت مسح اللعبة من المهام الأخيرة أحيانًا</string>
+    <string name="profile_timeout_desc">خروج تلقائي بعد ٣٠ ثانية في الخلفية</string>
     <string name="Profile_Balanced">وضع متوازن</string>
     <string name="Profile_ECO_mode">وضع توفير الطاقة</string>
     <string name="Profile_Performance">وضع الأداء</string>
@@ -418,7 +418,7 @@
     <string name="str_expressive_blur_summary">تفعيل تأثير التمويه الزجاجي للواجهة</string>
     <string name="str_scroll_effects">الظهور التدريجي</string>
     <string name="str_hide_unavailable_features">إخفاء الميزات غير المتاحة على جهازي</string>
-    <string name="str_hide_unavailable_features_summary">تُخفى الميزات غير المتاحة من قوائم القدرات بدل عرضها رماديةً مع سببها. لا يُحذف مدعوم، ويُكتب عدد المخفيّ صراحةً دائمًا.</string>
+    <string name="str_hide_unavailable_features_summary">إخفاء غير المتاح بدل إظهاره رماديًّا.</string>
     <string name="unavailable_hidden_count">مخفي بحسب إعدادك: %1$d من العناصر غير المتاحة</string>
     <string name="str_fas_is_a_user_space_implementa">FAS هنا جدولة معدّل التحديث لكل تطبيق: يطبّق المراقب في الخلفية المعدّل المحفوظ في ملفّ التطبيق عند مجيئه إلى المقدّمة، ويعيد القيمة السابقة عند مغادرته. ولا يفحص الإطارات ولا يتنبّأ بالحمل.</string>
     <string name="str_fpsgo_desc">إعدادات FPSGO من MediaTek</string>
@@ -582,7 +582,7 @@
     <string name="str_use_scroll_animation">استخدام تأثيرات التمرير</string>
     <string name="str_use_scroll_animation_summary">تمكين تأثير التمرير السريع بين الصفحات</string>
     <string name="disable_tweak">تعطيل التعديلات</string>
-    <string name="disable_tweak_desc">إيقاف Max Manager عن تطبيق التعديلات على جميع ملفات التعريف بما في ذلك إعدادات المحافظ وإعدادات جدولة الإدخال/الإخراج</string>
+    <string name="disable_tweak_desc">إيقاف تطبيق التعديلات على كل الملفات.</string>
     <string name="gov_settings">إعدادات المحافظ</string>
     <string name="gov_settingsdesc">تكوين المحافظ والمجدولات</string>
     <string name="gov_settingsdesc2">تكوين قيم محافظ CPU وGPU ومجدول I/O لجهازك، حيث يتم تطبيق كل قيمة على كل ملف تعريف Max Manager</string>
@@ -910,7 +910,7 @@
 
     <string name="settings_workspace_title">إعدادات MaxManager</string>
     <string name="settings_workspace_state">مساحة إعدادات التطبيق</string>
-    <string name="settings_workspace_guidance">اضبط MaxManager من هنا. التحكم العام موجود في Tweaks والتحكم لكل تطبيق موجود في Apps.</string>
+    <string name="settings_workspace_guidance">إعدادات التطبيق نفسه هنا؛ والأداء في التعديلات.</string>
     <string name="ok">موافق</string>
     <string name="cancel">إلغاء</string>
 
@@ -1065,7 +1065,7 @@
     <string name="settings_navigation_section">التنقل</string>
     <string name="settings_device_section">قدرات الجهاز</string>
     <string name="swipe_navigation_title">التمرير بين الأقسام</string>
-    <string name="swipe_navigation_desc">مرّر أفقيًا بين الأقسام الرئيسية والتبويبات، وللرجوع من بقية الشاشات. العناصر الأفقية تحتفظ بسحبها.</string>
+    <string name="swipe_navigation_desc">اسحب أفقيًا بين الأقسام وللرجوع.</string>
     <string name="settings_activity_card_title">بطاقة النشاط</string>
     <string name="settings_activity_card_desc">ما تعرضه البطاقة وكيف. لا يظهر فيها إلا ما تُحقّق منه فعلًا: لا يُكتب سطر بلا قياس كإنجاز، والفشل مكانه السجل.</string>
     <string name="activity_card_summary_auto">تلقائي</string>
@@ -1189,7 +1189,7 @@
     <string name="app_tab_gaming">الألعاب</string>
     <string name="app_tab_power">الطاقة والاتصال</string>
     <string name="advanced_mode_title">الوضع المتقدم</string>
-    <string name="advanced_mode_desc">أظهر أدوات المستخدم الخبير (الحاكمات اليدوية وملفات الحرارة الخام) بدل إبقائها مخفية</string>
+    <string name="advanced_mode_desc">أظهر أدوات الخبير: حكامات وحرارية خام.</string>
     <string name="show_advanced_options">إظهار الخيارات المتقدمة</string>
     <string name="warning_thermal_gpu_override">الحاكمات اليدوية وملفات الحرارة تتجاوز حدود الأمان الخاصة بالجهاز. التوليفة الخاطئة قد تسبب سخونة زائدة أو خنقًا أو حلقة إعادة تشغيل — غيّر إعدادًا واحدًا في كل مرة وراقب التطبيق بضع دقائق.</string>
     <string name="applist_customized_summary">%1$d من %2$d تطبيقًا مخصصًا</string>
@@ -1909,9 +1909,9 @@
     <string name="section_tools_diagnostics">الأدوات والتشخيص</string>
     <string name="dozemode_tab_whitelist">في قائمة السماح</string>
     <string name="settings_diagnostics_entry_desc">مراقب المهام ووحدة السجل والطرفية وأدوات متقدمة أخرى</string>
-    <string name="diagnostics_intro">أدوات متقدمة منخفضة المستوى لاستكشاف الأخطاء. معظم الناس لا يحتاجون إلى هنا أبدًا — الضبط اليومي موجود في التعديلات والتطبيقات.</string>
+    <string name="diagnostics_intro">أدوات استكشاف أخطاء متقدمة.</string>
     <string name="diagnostics_workspace_state">مساحة الفحص</string>
-    <string name="diagnostics_workspace_guidance">استخدم هذه الأدوات لفهم ما يفعله MaxManager والنظام. تغييرات إعدادات الأداء العامة مكانها في التعديلات.</string>
+    <string name="diagnostics_workspace_guidance">افهم ما يفعله النظام؛ والضبط في التعديلات.</string>
     <string name="diagnostics_tools_title">أدوات الفحص</string>
     <string name="diagnostics_tools_desc">اختر مستوى التفصيل الذي تحتاجه: العمليات أو السجلات أو طرفية بصلاحيات الجذر.</string>
     <string name="diagnostics_workflow_title">مسار التحقيق</string>
@@ -2023,28 +2023,28 @@
     <string name="max_hub_audio_question_desc">أدوات الصوت تبدأ من ما تُعلنه المنصّة — أجهزة الإخراج ومعدّل العيّنة والمؤثرات المُعلَنة — قبل تغيير أي مستوى.</string>
     <string name="max_hub_generic_question_title">أي نظام يملك هذا السلوك؟</string>
     <string name="max_hub_generic_question_desc">افتح الأداة المركّزة المطابقة للعَرَض قبل تغيير إعدادات متقدمة.</string>
-    <string name="max_role_cpu_core">افحص الأنوية المشتغلة والعناقيد والارتباط وحدود التردد.</string>
-    <string name="max_role_governor">اختر إعدادات مسبقة لنية حاكم المعالج والإدخال والإخراج وMali.</string>
-    <string name="max_role_preference_tweaks">طبّق تفضيلات أدنى مستوى للمجدول والذاكرة الافتراضية والتتبع والحرارة.</string>
-    <string name="max_role_gpu_studio">اضبط نطاق المعالج الرسومي وسلوك التعزيز وسياسة الطاقة وحالة سقف الحرارة.</string>
-    <string name="max_role_zram">افهم حجم المبادلة المضغوطة ونسبة استخدامها وطبّق إعدادات آمنة.</string>
-    <string name="max_role_display_studio">تحكم في تحسينات العرض وإعدادات عرض النظام.</string>
-    <string name="max_role_resolution">قارن مقياس اللوحة الأصلي والنشط والكثافة وسلوك معدل التحديث.</string>
-    <string name="max_role_touch">تحكم في تعزيز اللمس وموفّري النقر المزدوج للاستيقاظ.</string>
-    <string name="max_role_fpsgo">فعّل إعدادات إيقاع الإطارات FPSGO/GED حين تكون مدعومة.</string>
-    <string name="max_role_fas">سياق جدولة واعٍ بالإطارات للأنوية الداعمة.</string>
-    <string name="max_role_fps_overlay">اعرض مصدر معدل الإطارات ونمط الطبقة وحالة الإذن.</string>
-    <string name="max_role_thermal">افحص المناطق الحرارية والاتجاهات وسياق الخنق.</string>
-    <string name="max_role_charging">اقرأ قدرة الشحن الحية وحالة الكابل والصحة والتحكمات المرتبطة.</string>
-    <string name="max_role_battery_and_charging">حالة البطارية والتحكم بالشحن في موضع واحد: ما تفعله الحزمة الآن، وما يمكن تغييره فيها.</string>
-    <string name="max_role_bypass">اضبط سلوك تجاوز الشحن وحدّه.</string>
-    <string name="max_role_bypass_check">شخّص ما إذا كان الجهاز يكشف عقد تجاوز آمنة.</string>
-    <string name="max_role_doze">افحص حالة الخمول وقائمة السماح وسلوك GMS.</string>
-    <string name="max_role_battery">راجع تفاصيل البطارية خارج مسار الشحن.</string>
-    <string name="max_role_dex2oat">صرّف أو أعد ضبط ملفات البايت كود للتطبيقات حسب النطاق.</string>
-    <string name="max_role_storage">افحص استخدام التخزين وضغط نظام الملفات.</string>
-    <string name="max_role_network_scheduler">عدّل معاملات الشبكة والمجدول في النواة.</string>
-    <string name="max_role_network_detail">افحص نشاط الشبكة الحالي وإشارات التفصيل.</string>
+    <string name="max_role_cpu_core">الأنوية والتردد</string>
+    <string name="max_role_governor">حكام المعالج والإدخال/الإخراج</string>
+    <string name="max_role_preference_tweaks">تفضيلات المجدول والذاكرة</string>
+    <string name="max_role_gpu_studio">نطاق GPU والتعزيز</string>
+    <string name="max_role_zram">المبادلة المضغوطة</string>
+    <string name="max_role_display_studio">تحسينات العرض</string>
+    <string name="max_role_resolution">الأبعاد والكثافة</string>
+    <string name="max_role_touch">تعزيز اللمس</string>
+    <string name="max_role_fpsgo">إيقاع الإطارات</string>
+    <string name="max_role_fas">جدولة واعية بالإطارات</string>
+    <string name="max_role_fps_overlay">طبقة معدل الإطارات</string>
+    <string name="max_role_thermal">المناطق الحرارية</string>
+    <string name="max_role_charging">الشحن الحي والصحة</string>
+    <string name="max_role_battery_and_charging">حالة البطارية والشحن</string>
+    <string name="max_role_bypass">سلوك الشحن التجاوزي وحدّه</string>
+    <string name="max_role_bypass_check">فحص التجاوز الآمن</string>
+    <string name="max_role_doze">الخمول وقائمة السماح</string>
+    <string name="max_role_battery">تفاصيل البطارية خارج الشحن</string>
+    <string name="max_role_dex2oat">تصريف البايت كود</string>
+    <string name="max_role_storage">استخدام التخزين وضغطه</string>
+    <string name="max_role_network_scheduler">شبكة النواة والمجدول</string>
+    <string name="max_role_network_detail">نشاط الشبكة وإشاراتها</string>
     <string name="max_role_open_screen">افتح واجهة التحكم المركّزة هذه.</string>
 
 
@@ -2072,16 +2072,16 @@
     <string name="control_group_system">مسارات النظام</string>
     <string name="control_group_system_desc">مسارات التخزين والشبكة التي تصوغ التحميل والتحديثات والعمل عبر الشبكة.</string>
     <string name="control_advanced_tools_desc">الأدوات عالية الخطورة مكانها مع التحكم لا الإعدادات. تبقى صريحة ومعلّمة وقابلة للتراجع حيث أمكن.</string>
-    <string name="max_role_process_manager">اعرف ما يعمل الآن وأوقف ما لا يجب أن يعمل.</string>
-    <string name="max_role_logs">اقرأ سجل التطبيق نفسه ورشّحه إلى الإخفاقات وحدها.</string>
-    <string name="max_role_color_palette">اختر لون التمييز وهويّة التطبيق اللونية.</string>
-    <string name="max_role_color_scheme">اختر أن يتبع التطبيق ثيم النظام أو يحتفظ بثيمه الخاص.</string>
-    <string name="max_role_setedit">افحص إعدادات أندرويد وعدّلها مع تعليم واضح للمخاطرة المتقدمة.</string>
-<string name="max_role_max_backup">انسخ أي تطبيق وبياناته واستعدها، مع فحص بصمة بعد كل كتابة.</string>
-    <string name="max_role_permissions">افحص صلاحيات البيان و AppOps لكل تطبيق واضبطها، مقابل مرجع مدوَّن.</string>
-    <string name="max_role_file_manager">تصفّح الملفات وافحصها وعدّلها بالجذر، وكل عملية محروسة ومتحقَّق منها.</string>
-    <string name="max_role_plugins">اقرأ العقد المنشور لإضافات الطرف الثالث، وما قُبل أو رُفض على هذا الجهاز.</string>
-    <string name="max_role_activity_launcher">افتح أنشطة أندرويد المخفية لتنقيح الأخطاء وأدوات المصنّع.</string>
+    <string name="max_role_process_manager">ما يعمل الآن</string>
+    <string name="max_role_logs">سجل التطبيق</string>
+    <string name="max_role_color_palette">لون التمييز وهوية التطبيق</string>
+    <string name="max_role_color_scheme">ثيم التطبيق</string>
+    <string name="max_role_setedit">إعدادات أندرويد</string>
+<string name="max_role_max_backup">نسخ التطبيقات واستعادتها</string>
+    <string name="max_role_permissions">صلاحيات التطبيقات</string>
+    <string name="max_role_file_manager">الملفات بالجذر</string>
+    <string name="max_role_plugins">عقود الإضافات</string>
+    <string name="max_role_activity_launcher">الأنشطة المخفية</string>
 
     <!-- Device Info — أقسام وحقول شاشة معلومات الجهاز -->
     <string name="devinfo_sec_overview">نظرة عامة</string>
@@ -2282,10 +2282,10 @@
     <string name="maxai_shortcut_subtitle">المحرّك الذي يضبط الأداء عنك</string>
     <string name="maxai_shortcut_value_on">مُشغَّل</string>
     <string name="maxai_shortcut_value_off">متوقّف</string>
-    <string name="max_role_device_info">اقرأ ما يُعلنه جهازك عن معالجه وذاكرته وبطارياته وشاشته ومستشعراته — قراءةً فقط.</string>
-    <string name="max_role_maxai_intro">تشرح ما يفعله المحرّك وما هو متاح على هذا الجهاز — قراءةً فقط.</string>
-    <string name="max_role_diagnostics">مصفوفة القدرات وتقرير العتاد وجرد المستشعرات كاملًا — قراءةً فقط.</string>
-    <string name="max_role_device_lab">فحوص عتاد تفاعلية: الشاشة واللمس والأزرار والاهتزاز والصوت والفلاش والمستشعرات — بلا كتابة في النظام.</string>
+    <string name="max_role_device_info">ما يعلنه الجهاز</string>
+    <string name="max_role_maxai_intro">ما يفعله المحرّك</string>
+    <string name="max_role_diagnostics">تقرير العتاد والقدرات</string>
+    <string name="max_role_device_lab">فحص الشاشة واللمس والمستشعرات</string>
     <string name="devinfo_swap_used_unread">قُرئ حجم الـswap ولم تُقرأ كميته المستخدمة — فلا يُعرض رقم.</string>
     <!-- الصوت (الخطة الثالثة، AU-02/AU-04): سطح قراءة فقط — ما يُعلنه هذا الجهاز.
          وثلاث حالات لا رابع لها: قراءة تُعرض، وقائمة فارغة تُقال، وعدم قراءة يُعلن (ADR-07). -->
@@ -2551,7 +2551,7 @@
     <string name="max_audio_caps_reason_no_uid">لا تُعلن المنصّة هويّة تطبيق ولا معرّف جلسة للتشغيل</string>
     <string name="max_audio_caps_reason_no_class">لا صنف مؤثّر التفاف في المنصّة</string>
     <string name="max_audio_caps_reason_unknown">سببٌ بلا صياغة مترجمة بعد</string>
-    <string name="max_role_audio_studio">مستويات الدفقات، وحدود المحرّك بأسمائها</string>
+    <string name="max_role_audio_studio">مستويات الدفقات وحدود المحرّك</string>
     <string name="devinfo_sec_audio">الصوت</string>
 
     <!-- استوديو الصوت المتقدّم (تكملة ٢٢٨، المراحل AQ-02…AQ-08) — إنجليزيّ وعربيّ فقط (§0.2) -->
@@ -3278,9 +3278,9 @@
     <string name="storage_care_apps_loading">تُقرأ أحجام التطبيقات…</string>
     <string name="storage_care_apps_empty">تعذّرت قراءة أحجام التطبيقات.</string>
     <string name="storage_care_tools_title">أدوات أخرى</string>
-    <string name="max_role_max_live">حلقة القرار كما تجري، وما قرّرته.</string>
-    <string name="max_role_storage_care">كاش وبقايا وسجلات بمقاسات مقيسة — مع تحليل وإدارة تطبيقات.</string>
-    <string name="max_role_dynamic_island">إشعارات ووسائط وشحن ومؤشرات في كبسولة حيّة واحدة.</string>
+    <string name="max_role_max_live">حلقة القرار حيّةً</string>
+    <string name="max_role_storage_care">كاش وبقايا مقيسة</string>
+    <string name="max_role_dynamic_island">كبسولة الإشعارات</string>
 
     <string name="cpu_live_subtitle">التردد الحي لكل نواة</string>
     <string name="cpu_live_average">المتوسط</string>
@@ -3947,7 +3947,7 @@
 <string name="usage_network_error_detail">رفضت خدمة استهلاك الشبكة الاستعلام. تحقّق من بقاء إذن الوصول ممنوحًا.</string>
 <string name="usage_network_split_wifi">واي‑فاي %1$s</string>
 <string name="usage_network_split_mobile">جوال %1$s</string>
-<string name="max_role_usage_stats">زمن المقدّمة لكل تطبيق من قاعدة استخدام أندرويد نفسها — قراءةً فقط.</string>
+<string name="max_role_usage_stats">زمن الاستخدام لكل تطبيق</string>
 
     <string name="battery_history_title">سجلّ البطارية</string>
     <string name="battery_history_subtitle">مستوى البطارية عبر الزمن من بثّ النظام؛ لا يُرسم تقدير كأنه قياس.</string>
@@ -3999,7 +3999,7 @@
     <string name="battery_history_clear_message">ستُحذف كل نقطة مخزّنة، ولا يمكن التراجع.</string>
     <string name="battery_history_clear_confirm">محو</string>
     <string name="battery_history_refresh">تحديث</string>
-    <string name="max_role_battery_history">خطّ زمنيّ محلّي لمستوى البطارية من بثّ النظام — بلا جذر وبلا تقدير.</string>
+    <string name="max_role_battery_history">سجلّ مستوى البطارية</string>
 
     <string name="recipe_section_title">وصفة عقد النواة</string>
     <string name="recipe_section_desc">دفعة كتابات key=value تُحسم مقابل كتالوج التحكّم قبل لمس أي عقدة. وسطر واحد غير صالح يُسقط الوصفة كلها.</string>

@@ -8,7 +8,7 @@
     <string name="all_checks_finished">All checks finished</string>
     <string name="all_set">All set, you can now use Max Manager</string>
     <string name="allow_verbose_log">Daemon verbose logging</string>
-    <string name="allow_verbose_log_desc">Makes the module\'s background service log its internal operations to MaxManager.log — useful when diagnosing the module\'s own behavior</string>
+    <string name="allow_verbose_log_desc">Log the module internals</string>
     <string name="android_version">Android Version</string>
     <string name="app_name">MaxManager</string>
     <string name="app_name_settings">App Name</string>
@@ -32,7 +32,7 @@
     <string name="app_tab_gaming">Gaming</string>
     <string name="app_tab_power">Power &amp; Connectivity</string>
     <string name="advanced_mode_title">Advanced Mode</string>
-    <string name="advanced_mode_desc">Show power-user controls (manual governors, raw thermal profiles) instead of keeping them tucked away</string>
+    <string name="advanced_mode_desc">Show expert tools: governors and raw thermal.</string>
     <string name="show_advanced_options">Show advanced options</string>
     <string name="warning_thermal_gpu_override">Manual governors and thermal profiles bypass the device\'s own safety limits. A bad combination can cause overheating, throttling, or a reboot loop — change one at a time and watch the app for a few minutes.</string>
     <string name="appearance">Appearance</string>
@@ -140,7 +140,7 @@
     <string name="default_label">Default</string>
     <string name="default_val">Default (%1$d)</string>
     <string name="detailed_activity_log">Detailed activity log</string>
-    <string name="detailed_activity_log_desc">Log every setting you change and every app switch to MaxManager.log, tagged with a shared id so a problem can be traced back to what caused it. Off by default.</string>
+    <string name="detailed_activity_log_desc">Log every change and app switch, with a trace id.</string>
     <string name="device_info">Device Info</string>
     <string name="device_name">Device Name</string>
     <string name="devinfo_shortcut_cd">Open the %1$s section in Device Info</string>
@@ -1103,7 +1103,7 @@
     <string name="prev">Previous</string>
     <string name="profile_perflite">Lite Performance</string>
     <string name="profile_timeout">Performance Profile Timeout</string>
-    <string name="profile_timeout_desc">Exit the performance profile automatically 30 seconds after the game goes to background. Useful if you occasionally forget to clear the game from recent tasks.</string>
+    <string name="profile_timeout_desc">Auto-exit 30 s after backgrounding</string>
     <string name="Profile_Balanced">Balanced</string>
     <string name="Profile_ECO_mode">Eco Mode</string>
     <string name="Profile_Performance">Performance</string>
@@ -1165,9 +1165,9 @@
     <string name="section_diagnostics">Diagnostics</string>
     <string name="section_tools_diagnostics">Tools &amp; Diagnostics</string>
     <string name="settings_diagnostics_entry_desc">Task monitor, log console, shell, and other advanced tools</string>
-    <string name="diagnostics_intro">Advanced, low-level tools for troubleshooting. Most people never need to come here — everyday tuning lives in Tweaks and Apps.</string>
+    <string name="diagnostics_intro">Advanced troubleshooting tools.</string>
     <string name="diagnostics_workspace_state">Inspection workspace</string>
-    <string name="diagnostics_workspace_guidance">Use these tools to understand what MaxManager and the system are doing. Changes to global performance settings belong in Tweaks.</string>
+    <string name="diagnostics_workspace_guidance">Understand the system; tune in Tweaks.</string>
     <string name="diagnostics_tools_title">Inspection tools</string>
     <string name="diagnostics_tools_desc">Choose the level of detail you need: processes, logs, or a rooted shell.</string>
     <string name="diagnostics_workflow_title">Investigation workflow</string>
@@ -1304,7 +1304,7 @@
     <string name="str_expressive_blur_summary">Enable interface blur effect</string>
     <string name="str_scroll_effects">Gradual reveal</string>
     <string name="str_hide_unavailable_features">Hide features unavailable on my device</string>
-    <string name="str_hide_unavailable_features_summary">Unavailable features are hidden from the capability lists instead of shown greyed with their reason. Nothing supported is removed, and the number of hidden items is always written out.</string>
+    <string name="str_hide_unavailable_features_summary">Hide unavailable features instead of graying them out.</string>
     <string name="unavailable_hidden_count">Hidden by your setting: %1$d unavailable items</string>
     <string name="str_fas_is_a_user_space_implementa">FAS here is per-app refresh-rate scheduling: the background monitor applies the rate stored in an app profile when that app comes to the front, and restores the previous value when it leaves. It does not inspect frames or predict load.</string>
     <string name="str_fpsgo_desc">MediaTek FPSGO related settings</string>
@@ -1468,7 +1468,7 @@
     <string name="str_use_scroll_animation">Use Scroll Animation</string>
     <string name="str_use_scroll_animation_summary">Enable swipe animation between Page</string>
     <string name="disable_tweak">Disable Tweaks</string>
-    <string name="disable_tweak_desc">Stop Max Manager from Applying tweak to all Profiles including governor settings and io scheduler settings</string>
+    <string name="disable_tweak_desc">Stop applying tweaks to all profiles.</string>
     <string name="gov_settings">Clock Governor</string>
     <string name="gov_settingsdesc">Set the CPU/GPU governor and I/O scheduler per profile</string>
     <string name="gov_settingsdesc2">Configure your device’s CPU, GPU governor and I/O scheduler values — each set is applied per Max Manager profile</string>
@@ -1800,7 +1800,7 @@
     <string name="max_home_power">Power</string>
     <string name="settings_workspace_title">MAXMANAGER CONFIGURATION</string>
     <string name="settings_workspace_state">Preferences workspace</string>
-    <string name="settings_workspace_guidance">Configure MaxManager itself here. Performance controls remain in Tweaks and per-app behavior remains in Apps.</string>
+    <string name="settings_workspace_guidance">App settings here; performance in Tweaks.</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
 
@@ -1934,7 +1934,7 @@
     <string name="settings_navigation_section">Navigation</string>
     <string name="settings_device_section">Device capabilities</string>
     <string name="swipe_navigation_title">Swipe between sections</string>
-    <string name="swipe_navigation_desc">Swipe horizontally across the main sections, in-screen tabs, and back from other screens. Horizontal controls keep their own swipe.</string>
+    <string name="swipe_navigation_desc">Swipe across sections, and to go back.</string>
     <string name="settings_activity_card_title">Activity card</string>
     <string name="settings_activity_card_desc">What the card may show, and how. Only what was actually verified appears in it: a line with no measurement is never written as done, and a failure stays in the log.</string>
     <string name="activity_card_summary_auto">Automatic</string>
@@ -2013,28 +2013,28 @@
     <string name="max_hub_audio_question_desc">Audio tools start from what the platform declares — output devices, sample rate and the effects it exposes — before any level is changed.</string>
     <string name="max_hub_generic_question_title">What system owns this behavior?</string>
     <string name="max_hub_generic_question_desc">Open the focused tool that matches the symptom before changing advanced settings.</string>
-    <string name="max_role_cpu_core">Inspect online cores, clusters, affinity and frequency limits.</string>
-    <string name="max_role_governor">Choose CPU, I/O and Mali governor intent presets.</string>
-    <string name="max_role_preference_tweaks">Apply lower-level scheduler, VM, tracing and thermal preferences.</string>
-    <string name="max_role_gpu_studio">Tune GPU range, boost behavior, power policy and thermal clamp state.</string>
-    <string name="max_role_zram">Understand compressed swap size, usage ratio and apply safe presets.</string>
-    <string name="max_role_display_studio">Control display enhancements and system display settings.</string>
-    <string name="max_role_resolution">Compare native and active canvas scale, DPI and refresh behavior.</string>
-    <string name="max_role_touch">Control touch boost and double-tap wake providers.</string>
-    <string name="max_role_fpsgo">Enable FPSGO/GED frame pacing parameters when supported.</string>
-    <string name="max_role_fas">Frame-aware scheduling context for supported kernels.</string>
-    <string name="max_role_fps_overlay">Show FPS source, overlay style and permission state.</string>
-    <string name="max_role_thermal">Inspect thermal zones, trends and throttling context.</string>
-    <string name="max_role_charging">Read live charging power, cable state, health and related controls.</string>
-    <string name="max_role_battery_and_charging">Battery state and charging control in one place: what the pack is doing now, and what may be changed about it.</string>
-    <string name="max_role_bypass">Configure bypass charging behavior and threshold.</string>
-    <string name="max_role_bypass_check">Diagnose whether the device exposes safe bypass nodes.</string>
-    <string name="max_role_doze">Inspect idle state, whitelist and GMS behavior.</string>
-    <string name="max_role_battery">Review battery details outside the charging flow.</string>
-    <string name="max_role_dex2oat">Compile or reset app bytecode profiles by scope.</string>
-    <string name="max_role_storage">Inspect storage usage and filesystem pressure.</string>
-    <string name="max_role_network_scheduler">Edit kernel network and scheduler parameters.</string>
-    <string name="max_role_network_detail">Inspect current network activity and detail signals.</string>
+    <string name="max_role_cpu_core">Cores and frequency</string>
+    <string name="max_role_governor">CPU and I/O governors</string>
+    <string name="max_role_preference_tweaks">Scheduler and VM tweaks</string>
+    <string name="max_role_gpu_studio">GPU range and boost</string>
+    <string name="max_role_zram">Compressed swap</string>
+    <string name="max_role_display_studio">Display enhancements</string>
+    <string name="max_role_resolution">Size and density</string>
+    <string name="max_role_touch">Touch boost</string>
+    <string name="max_role_fpsgo">Frame pacing</string>
+    <string name="max_role_fas">Frame-aware scheduling</string>
+    <string name="max_role_fps_overlay">FPS overlay</string>
+    <string name="max_role_thermal">Thermal zones</string>
+    <string name="max_role_charging">Live charging and health</string>
+    <string name="max_role_battery_and_charging">Battery state and charging</string>
+    <string name="max_role_bypass">Bypass charging: behavior and threshold</string>
+    <string name="max_role_bypass_check">Safe bypass check</string>
+    <string name="max_role_doze">Idle and whitelist</string>
+    <string name="max_role_battery">Battery details, outside charging</string>
+    <string name="max_role_dex2oat">Bytecode compilation</string>
+    <string name="max_role_storage">Storage usage and pressure</string>
+    <string name="max_role_network_scheduler">Kernel network and scheduler</string>
+    <string name="max_role_network_detail">Network activity and signals</string>
     <string name="max_role_open_screen">Open this focused control surface.</string>
 
 
@@ -2064,16 +2064,16 @@
     <string name="control_group_system">System paths</string>
     <string name="control_group_system_desc">Storage and network paths that shape loading, updates and online workloads.</string>
     <string name="control_advanced_tools_desc">High-risk utilities belong with Control, not Settings. They stay explicit, labeled and reversible where possible.</string>
-    <string name="max_role_process_manager">See what is running right now and stop what should not be.</string>
-    <string name="max_role_logs">Read the app\'s own log and filter it down to the failures only.</string>
-    <string name="max_role_color_palette">Pick the accent and the app\'s own colour identity.</string>
-    <string name="max_role_color_scheme">Choose whether the app follows the system theme or keeps its own.</string>
-    <string name="max_role_setedit">Inspect and edit Android settings with clear advanced-risk labeling.</string>
-    <string name="max_role_max_backup">Back up and restore any app and its data, with a fingerprint check after every write.</string>
-    <string name="max_role_permissions">Inspect and set declared permissions and App ops per app, against a recorded reference.</string>
-    <string name="max_role_file_manager">Browse, inspect and modify files as root, with every operation guarded and verified.</string>
-    <string name="max_role_plugins">Read the published contract for third-party plugins and what was accepted or refused on this device.</string>
-    <string name="max_role_activity_launcher">Open hidden Android activities for debugging and vendor tools.</string>
+    <string name="max_role_process_manager">What is running</string>
+    <string name="max_role_logs">App log</string>
+    <string name="max_role_color_palette">Accent and app colour identity</string>
+    <string name="max_role_color_scheme">App theme</string>
+    <string name="max_role_setedit">Android settings</string>
+    <string name="max_role_max_backup">App backup and restore</string>
+    <string name="max_role_permissions">App permissions</string>
+    <string name="max_role_file_manager">Files with root</string>
+    <string name="max_role_plugins">Plugin contracts</string>
+    <string name="max_role_activity_launcher">Hidden activities</string>
 
     <!-- Neural home dashboard v2 -->
     <string name="home_spectrum_title">Load spectrum</string>
@@ -2315,10 +2315,10 @@
     <string name="maxai_shortcut_subtitle">The engine that tunes performance for you</string>
     <string name="maxai_shortcut_value_on">Active</string>
     <string name="maxai_shortcut_value_off">Off</string>
-    <string name="max_role_device_info">Read what your device declares about its CPU, memory, battery, display and sensors — read-only.</string>
-    <string name="max_role_maxai_intro">Explains what the engine does and what is available on this device — read-only.</string>
-    <string name="max_role_diagnostics">The capability matrix, the hardware report and the full sensor inventory — read-only.</string>
-    <string name="max_role_device_lab">Interactive hardware checks: screen, touch, keys, vibration, sound, flash and sensors — no system writes.</string>
+    <string name="max_role_device_info">What the device declares</string>
+    <string name="max_role_maxai_intro">What the engine does</string>
+    <string name="max_role_diagnostics">Hardware and capabilities</string>
+    <string name="max_role_device_lab">Screen, touch and sensor checks</string>
     <string name="devinfo_swap_used_unread">Total swap was read; the amount in use was not — so no figure is shown.</string>
 
     <!-- الصوت (الخطة الثالثة، AU-02/AU-04): سطح قراءة فقط — ما يُعلنه هذا الجهاز.
@@ -2520,7 +2520,7 @@
     <string name="max_audio_caps_reason_no_uid">The platform exposes no app identity or session id for playback</string>
     <string name="max_audio_caps_reason_no_class">No impulse-response effect exists in the platform</string>
     <string name="max_audio_caps_reason_unknown">A reason with no translated wording yet</string>
-    <string name="max_role_audio_studio">Stream levels, and the engine limits it names</string>
+    <string name="max_role_audio_studio">Stream levels and engine limits</string>
     <string name="devinfo_sec_audio">Audio</string>
 
     <!-- استوديو الصوت المتقدّم (تكملة ٢٢٨، المراحل AQ-02…AQ-08) — إنجليزيّ وعربيّ فقط (§0.2) -->
@@ -3329,9 +3329,9 @@
     <string name="storage_care_apps_loading">Reading app sizes…</string>
     <string name="storage_care_apps_empty">No app sizes could be read.</string>
     <string name="storage_care_tools_title">More tools</string>
-    <string name="max_role_max_live">The decision loop as it happens, and what it decided.</string>
-    <string name="max_role_storage_care">Measured caches, leftovers and logs — plus analysis and apps.</string>
-    <string name="max_role_dynamic_island">Notifications, media, charging and indicators in one live capsule.</string>
+    <string name="max_role_max_live">The decision loop, live</string>
+    <string name="max_role_storage_care">Measured cache and leftovers</string>
+    <string name="max_role_dynamic_island">Notification capsule</string>
 
     <!-- CPU: the screen answers "what is each core clocked at right now". -->
     <string name="cpu_live_subtitle">Live clock of every core</string>
@@ -4000,7 +4000,7 @@
 <string name="usage_network_error_detail">The network usage service refused the query. Check that usage access is still granted.</string>
 <string name="usage_network_split_wifi">Wi-Fi %1$s</string>
 <string name="usage_network_split_mobile">Mobile %1$s</string>
-<string name="max_role_usage_stats">Foreground time per app from Android\'s own usage database — read-only.</string>
+<string name="max_role_usage_stats">Per-app usage time</string>
 
     <string name="battery_history_title">Battery history</string>
     <string name="battery_history_subtitle">Level over time from the platform battery broadcast. No estimate is drawn as data.</string>
@@ -4052,7 +4052,7 @@
     <string name="battery_history_clear_message">Every stored point will be deleted. This cannot be undone.</string>
     <string name="battery_history_clear_confirm">Clear</string>
     <string name="battery_history_refresh">Refresh</string>
-    <string name="max_role_battery_history">A local battery-level timeline from the platform broadcast — no root and no estimate.</string>
+    <string name="max_role_battery_history">Battery level history</string>
 
     <!-- سطح الوصفة: نصّ ← مراجعة ← تطبيق. كل مفتاح يُستخدم في `ui/component/RecipeCard.kt`. -->
     <string name="recipe_section_title">Kernel recipe</string>
