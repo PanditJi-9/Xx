@@ -73,6 +73,11 @@ val ControlToolDestinations: List<MaxDestination> = listOf(
     MaxDestination.Permissions,
     MaxDestination.FileManager,
     MaxDestination.ProcessManager,
+    // **أدوات الجهاز الثلاث بأمر المالك:** كانت صفوفًا في الإعدادات، فصارت هنا — الفحص
+    // والاستخدام وسجلّ البطارية تُقرأ من مكان التحكّم نفسه، لا من مسار الإعدادات.
+    MaxDestination.DeviceLab,
+    MaxDestination.UsageStats,
+    MaxDestination.BatteryHistory,
     MaxDestination.Logs,
     MaxDestination.FpsOverlay,
     MaxDestination.DynamicIsland,

@@ -385,39 +385,9 @@ fun SettingsScreen(
                                     trailingContent = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null) }
                                 )
                             },
-                            {
-                                // `DEVICE-LAB-01` — الفحص التفاعليّ بجانب التشخيص: الأول يقول
-                                // «ما الذي يعلنه الجهاز؟» والثاني «هل يعمل فعلًا؟». وكلاهما بلا جذر.
-                                ExpressiveListItem(
-                                    onClick = { MaxNavActions(navController).navigateTo(MaxDestination.DeviceLab) },
-                                    headlineContent = { Text(stringResource(R.string.device_lab_title)) },
-                                    supportingContent = { Text(stringResource(R.string.device_lab_subtitle)) },
-                                    leadingContent = { LeadingIcon(icon = Icons.Rounded.Science) },
-                                    trailingContent = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null) }
-                                )
-                            },
-                            {
-                                // `USAGE-STATS-01` — زمن المقدّمة من قاعدة أندرويد نفسها، لا من
-                                // عدّاد شبكة ولا من عمليات. إذن واحد، وقراءة فقط.
-                                ExpressiveListItem(
-                                    onClick = { MaxNavActions(navController).navigateTo(MaxDestination.UsageStats) },
-                                    headlineContent = { Text(stringResource(R.string.usage_stats_title)) },
-                                    supportingContent = { Text(stringResource(R.string.usage_stats_subtitle)) },
-                                    leadingContent = { LeadingIcon(icon = Icons.Rounded.DataUsage) },
-                                    trailingContent = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null) }
-                                )
-                            },
-                            {
-                                // `BATTERY-HISTORY-01` — سجلّ طويل يُقاس ويُحفظ في ملفّ
-                                // التطبيق وحده؛ بلا جذر وبلا خدمة خلفية ثقيلة.
-                                ExpressiveListItem(
-                                    onClick = { MaxNavActions(navController).navigateTo(MaxDestination.BatteryHistory) },
-                                    headlineContent = { Text(stringResource(R.string.battery_history_title)) },
-                                    supportingContent = { Text(stringResource(R.string.battery_history_subtitle)) },
-                                    leadingContent = { LeadingIcon(icon = Icons.Rounded.BatteryFull) },
-                                    trailingContent = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null) }
-                                )
-                            },
+                            // **مختبر الجهاز واستخدام التطبيقات وسجلّ البطارية انتقلت إلى التحكّم**
+                            // بأمر المالك: أدوات تُقرأ من مكان التحكّم لا من مسار الإعدادات،
+                            // والوجهات الثلاث تغيّرت أبوّتها في `MaxDestinations` نفسها.
                             {
                                 ExpressiveListItem(
                                     onClick = { MaxNavActions(navController).navigateTo(MaxDestination.ConfigBackup) },

@@ -315,24 +315,23 @@ sealed class MaxDestination(
 
     /**
      * `DEVICE-LAB-01` — الاختبار التفاعليّ للعتاد: شاشة ولمس وأزرار واهتزاز وصوت
-     * وفلاش ومستشعرات وبطارية. تحت الإعدادات كالتشخيص، لأنها شاشة **فحص** لا تحكّم،
-     * وتستعمل واجهات النظام العامة وحدها: لا جذر ولا Shizuku ولا كتابة في sysfs.
+     * وفلاش ومستشعرات وبطارية. **تحت التحكّم بأمر المالك** (كانت في الإعدادات): أدوات
+     * الجهاز تُطلب من مكان واحد. وتستعمل واجهات النظام العامة وحدها: لا جذر ولا كتابة في sysfs.
      */
-    data object DeviceLab : MaxDestination("device_lab", R.string.device_lab_title, Icons.Rounded.Science, Settings)
+    data object DeviceLab : MaxDestination("device_lab", R.string.device_lab_title, Icons.Rounded.Science, Control)
 
     /**
      * `USAGE-STATS-01` — زمن المقدّمة لكل تطبيق من قاعدة استخدام أندرويد نفسها.
-     * تحت الإعدادات كالتشخيص والفحص: سطح **قراءة** لحالة الجهاز، لا تحكّم عتاد،
-     * ويحتاج إذن الوصول إلى الاستخدام وحده.
+     * **تحت التحكّم بأمر المالك.** سطح قراءة لحالة الجهاز، ويحتاج إذن الوصول إلى الاستخدام وحده.
      */
-    data object UsageStats : MaxDestination("usage_stats", R.string.usage_stats_title, Icons.Rounded.DataUsage, Settings)
+    data object UsageStats : MaxDestination("usage_stats", R.string.usage_stats_title, Icons.Rounded.DataUsage, Control)
 
     /**
      * `BATTERY-HISTORY-01` — سجلّ البطارية الطويل: عيّنات دورية كل ١٥ دقيقة،
-     * ومنحنى مستوى ومعدّل تصريف من القياس لا من التقدير. تحت الإعدادات لأنها
-     * حالة جهاز تُقرأ، والكتابة الوحيدة فيها ملفّها في `filesDir`.
+     * ومنحنى مستوى ومعدّل تصريف من القياس لا من التقدير. **تحت التحكّم بأمر المالك**،
+     * والكتابة الوحيدة فيها ملفّها في `filesDir`.
      */
-    data object BatteryHistory : MaxDestination("battery_history", R.string.battery_history_title, Icons.Rounded.BatteryFull, Settings)
+    data object BatteryHistory : MaxDestination("battery_history", R.string.battery_history_title, Icons.Rounded.BatteryFull, Control)
 
     /**
      * `LICENSE-KEYS-01` — شاشة الترخيص: مفتاحٌ يُكتب مرّة، وشهادة موقّعة تعمل بعدها بلا إنترنت.

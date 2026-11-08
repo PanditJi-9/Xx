@@ -69,7 +69,6 @@ import nd.max.ui.component.ExpressiveListItem
 import nd.max.ui.component.LeadingIcon
 import nd.max.ui.component.RootAppDialog
 import nd.max.ui.component.rememberConfigBackupFlow
-import nd.max.ui.design.MaxGovernanceLadder
 import nd.max.ui.design.MaxHelpAction
 import nd.max.ui.design.MaxListScreen
 import nd.max.ui.design.MaxSection
@@ -158,17 +157,6 @@ fun ControlScreen(navController: NavHostController) {
             }
         },
     ) {
-        // **الحكّام قبل المقابض (إعادة هندسة التجربة §٥.٤).** سطر ثابت يقول من يمنع من، ورابط
-        // إلى الحكّام النشطين في التشخيص. ولا يقرأ عتادًا ولا يغيّر أولوية: السياسة في
-        // `ControlOwnership` وحدها وهذا عرضٌ لها (تشخيص UX §٢). ولهذا لا يدّعي أنه «الحاكم الآن»:
-        // من يملك المفتاح فعلًا يُقرأ لحظة فتح التشخيص.
-        item(key = "governance") {
-            MaxGovernanceLadder(
-                modifier = Modifier.padding(bottom = MaxSpace.sm),
-                onOpenDetails = { actions.navigateTo(MaxDestination.Diagnostics) },
-            )
-        }
-
         bands.forEachIndexed { bandIndex, band ->
             item(key = band.key) {
                 val content: @Composable () -> Unit = {

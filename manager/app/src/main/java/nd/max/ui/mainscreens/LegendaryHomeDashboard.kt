@@ -65,10 +65,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlin.math.max
 import nd.max.ui.design.MaxRadius
-import nd.max.ui.design.MaxGovernorStrip
 import nd.max.ui.design.MaxSpace
 import nd.max.R
-import nd.max.core.hardware.ControlOwnership
 import nd.max.core.maxai.MaxAiState
 import nd.max.core.privilege.PrivilegeLevel
 import nd.max.ui.component.NeuralSectionHeader
@@ -134,12 +132,6 @@ internal fun LegendaryHomeDashboard(
     onHideStorage: () -> Unit = {},
     /** فتح نافذة وضع الوصول من شارة البطل. */
     onAccess: () -> Unit = {},
-    /**
-     * الحكّام النشطون لحظة البناء — تُمرَّر من الشاشة التي تقرأ `ControlOwnership.snapshot()`
-     * داخل تركيبها، فتُعاد القراءة مع كل دورة تحديث للوحة بلا مؤقّت جديد (تشخيص UX §٢).
-     */
-    governance: List<ControlOwnership.Lease> = emptyList(),
-    onOpenGovernance: () -> Unit = {},
 ) {
     val online = (ui.rootStatus || ui.daemonOnline) && ui.moduleInstalled
     // ترتيب حسب الخطورة: بطاقة الخلل الحقيقي تصعد تحت البطل، وإلا تبقى في موضعها المحدّد.
@@ -150,10 +142,6 @@ internal fun LegendaryHomeDashboard(
     ) != null
     Column(modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(MaxSpace.lg)) {
         HomeHeader(online, onReboot, onShowGuide)
-        // **«من يحكم الآن» قبل أي بطاقة (تشخيص UX §٢):** السؤال يُطرح هنا أوّلًا، وجوابه سطرٌ
-        // واحد لا لوحة. ولا يقرأ عتادًا: القائمة وصلت جاهزة من الشاشة، والضغط يفتح بطاقة
-        // الحكّام النشطين في التشخيص حيث تُقرأ لحظتها.
-        MaxGovernorStrip(leases = governance, onOpen = onOpenGovernance)
         // المرساة تُعلَّق من الجذر (`LocalHomeTourTargets`) لا من وسيط في التوقيع: نفس المرساة
         // تعيش في أربع شاشات، وتوقيعٌ يحملها كان يجعل كل شاشة تعرف بجولة تعرضها أخرى.
         HomeTourAnchor(HomeTourTarget.Hero) {

@@ -123,6 +123,19 @@ fun AppSettingsScreen(
     val resources = LocalResources.current
     val appDetails = remember(packageName) { getAppDetails(context, packageName) }
     val isGameApp = remember(packageName) { isGameCategory(context, packageName) }
+    // **مكتبة الألعاب: مفتاح في شريط العنوان لا بطاقة داخل الصفحة** (أمر المالك: البطاقة الضخمة
+    // لا تشبه صفوف الشاشة وتزاحم المحتوى). والحكم من نفس `StateFlow` الذي يقرؤه مدير المكتبة،
+    // والزرّ لا يظهر إلا حيث يصدق الوعد: حزمة لها مدخل مشغّل تظهر في المكتبة فعلًا.
+    val gameSpace: nd.max.ui.viewmodel.GameSpaceViewModel = hiltViewModel()
+    val gameLibrary by gameSpace.library.collectAsStateWithLifecycle()
+    val listedInLibrary = packageName?.let { pkg -> gameLibrary.apps.any { it.packageName == pkg } } == true
+    val inGameLibrary = when {
+        packageName == null -> false
+        packageName in gameLibrary.excluded -> false
+        packageName in gameLibrary.manual -> true
+        // المكتشَف لعبةً داخل أصلًا؛ والقلب يُخرجه بـ`excluded` لا بـ`manual`.
+        else -> isGameApp
+    }
     val colorScheme = MaterialTheme.colorScheme
     var showProfileEditor by remember { mutableStateOf(false) }
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
@@ -230,6 +243,23 @@ fun AppSettingsScreen(
             },
             accent = colorScheme.secondary,
             actions = {
+                // العضوية اليدوية في مكتبة الألعاب: أيقونة حالة في الشريط، بلا بطاقة تزاحم المحتوى.
+                if (listedInLibrary && packageName != null) {
+                    IconButton(
+                        enabled = !gameLibrary.loading,
+                        onClick = { gameSpace.membership(packageName, !inGameLibrary) },
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.SportsEsports,
+                            contentDescription = stringResource(
+                                if (inGameLibrary) R.string.app_game_library_remove_cd
+                                else R.string.app_game_library_add_cd
+                            ),
+                            tint = if (inGameLibrary) colorScheme.primary
+                            else MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                }
                 IconButton(onClick = {
                     packageName?.let { pkg ->
                         navController.navigate(MaxDestination.MaxBackup.route.replace("{pkg}", pkg))
@@ -351,51 +381,6 @@ fun AppSettingsScreen(
                             onSelect = { selectedTab = it },
                         )
                         Spacer(Modifier.height(MaxSpace.md))
-
-                        // ══ مكتبة الألعاب: عضوية يدوية لأي حزمة ═══════════════════
-                        //
-                        // **ولماذا هنا:** `GameSpaceRepository.membership` كان مكتوبًا ولا واجهة تناديه،
-                        // فكل تطبيق لا يعلنه النظام لعبة كان **لا سبيل** إلى بروفايله: `gameLibrary()`
-                        // يشترط `detectedGame || manual`، و`manual` لا كاتب له في الواجهة. فالصفّ هنا هو
-                        // الوصلة نفسها، داخل شاشة التطبيق — فلا تُضاف وجهة جديدة (٦٨ قائمة).
-                        //
-                        // والحكم من مصدر واحد: `library` هو نفس `StateFlow` الذي يقرؤه مدير المكتبة،
-                        // فلا يُخمَّن «أهو في المكتبة» من نسخة ثانية تنزاح.
-                        //
-                        // **وحدّ مقيس يقيّد ظهور الصفّ:** `gameLibrary()` يُرشّح **من `apps`** (نتيجة استعلام
-                        // المشغّلات) لا من الحزم المثبّتة؛ فحزمة بلا مدخل مشغّل لا تظهر في المكتبة ولو صارت
-                        // `manual`، ولا يصلها بروفايل. فيُعرض الصفّ حيث يصدق الوعد فقط، ولا يُوعد بما لا يقع.
-                        val gameSpace: nd.max.ui.viewmodel.GameSpaceViewModel = hiltViewModel()
-                        val library by gameSpace.library.collectAsStateWithLifecycle()
-                        val listedInLibrary = packageName?.let { pkg -> library.apps.any { it.packageName == pkg } } == true
-                        if (listedInLibrary && packageName != null) {
-                            val inGameLibrary = when {
-                                packageName in library.excluded -> false
-                                packageName in library.manual -> true
-                                // المكتشَف لعبةً داخل أصلًا؛ والقلب يُخرجه بـ`excluded` لا بـ`manual`.
-                                else -> isGameApp
-                            }
-                            SettingsSectionTitle(
-                                Icons.Filled.SportsEsports,
-                                stringResource(R.string.app_game_library_section),
-                                colorScheme.secondary,
-                            )
-                            ExpressiveList(
-                                modifier = Modifier,
-                                content = buildList {
-                                    add {
-                                        ExpressiveSwitchItem(
-                                            icon = Icons.Filled.SportsEsports,
-                                            title = stringResource(R.string.app_game_library_title),
-                                            summary = stringResource(R.string.app_game_library_summary),
-                                            checked = inGameLibrary,
-                                            enabled = !library.loading,
-                                            onCheckedChange = { value -> gameSpace.membership(packageName, value) },
-                                        )
-                                    }
-                                }
-                            )
-                        }
 
                         val spoofPackage = packageName?.takeIf(nd.max.core.spoof.SpoofWorkspace::validPackage)
                         if (selectedTab == SPOOF_TAB) {

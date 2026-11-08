@@ -12,7 +12,6 @@ import androidx.compose.runtime.produceState
 import nd.max.ui.util.BatteryHealthUtil
 import nd.max.ui.component.AccessModeDialog
 import nd.max.ui.design.floatingBottomBarPadding
-import nd.max.core.hardware.ControlOwnership
 import nd.max.ui.navigation.MaxDestination
 import nd.max.ui.navigation.MaxNavActions
 
@@ -193,10 +192,6 @@ fun HomeScreen(
             onNavigate = navActions::navigateRoute,
             onReboot = { showReboot = true },
             onSettings = { navActions.navigateTo(MaxDestination.Settings) },
-            // **قراءة واحدة رخيصة (تشخيص UX §٢):** `snapshot()` قائمةٌ في الذاكرة لا قراءة عتاد
-            // ولا I/O، وتُعاد مع كل دورة تحديث للوحة؛ فلا مؤقّت جديد ولا شريطٌ يتجمّد.
-            governance = ControlOwnership.snapshot(),
-            onOpenGovernance = { navActions.navigateTo(MaxDestination.Diagnostics) },
         )
     }
 
@@ -255,8 +250,6 @@ fun HomeDashboardContent(
     onShowGuide: () -> Unit = {},
     boost: nd.max.ui.viewmodel.MemoryBoostState = nd.max.ui.viewmodel.MemoryBoostState(),
     onBoost: () -> Unit = {},
-    governance: List<nd.max.core.hardware.ControlOwnership.Lease> = emptyList(),
-    onOpenGovernance: () -> Unit = {},
 ) {
     val colors = MaterialTheme.colorScheme
     // القائمة تبقى هنا لا في الغطاء: الجولة تطلب تمريرها عبر سجلّ المراسي، فمن يملك القائمة يعرف
@@ -310,8 +303,6 @@ fun HomeDashboardContent(
                     onShowGuide = onShowGuide,
                     boost = boost,
                     onBoost = onBoost,
-                    governance = governance,
-                    onOpenGovernance = onOpenGovernance,
                 )
             }
         }
