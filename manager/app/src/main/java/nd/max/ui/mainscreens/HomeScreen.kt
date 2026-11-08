@@ -106,8 +106,15 @@ fun HomeScreen(
     // نافذة صلاحية. ويُعاد عند تغيّر `rootStatus` لأن أول فحصٍ للجذر يملأ الصدفة المخبّأة التي يقرؤها.
     LaunchedEffect(isVisible, ui.rootStatus) {
         if (isVisible) {
-            withContext(Dispatchers.IO) {
-                nd.max.core.privilege.PrivilegeManager.refresh()
+            // **الطلب لا القراءة وحدها:** العودة من مدير الجذر بعد منح الإذن يجب أن تُعيد الفحص،
+            // لا أن تقرأ صدفةً مخبّأة فارغة. و`refreshRootStatus()` مقيَّدة زمنيًّا، فلا تُلحّ
+            // بنافذة صلاحية عند كل تركيب. وحين يكون الجذر ممنوحًا تبقى قراءة الحالة السلبية كافية.
+            if (!ui.rootStatus) {
+                homeViewModel.refreshRootStatus()
+            } else {
+                withContext(Dispatchers.IO) {
+                    nd.max.core.privilege.PrivilegeManager.refresh()
+                }
             }
         }
     }

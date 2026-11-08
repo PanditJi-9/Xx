@@ -38,7 +38,11 @@ import nd.max.core.platform.EventLog
 import nd.max.core.platform.PropertyUtils
 import nd.max.ui.util.RootUtils
 import nd.max.ui.util.isBannerImageEnabled
+import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
+
+/** لا يُعاد طلب الجذر أكثر من مرّة كل ١٥ ثانية من الرئيسية — الطلب قد يُظهر نافذة صلاحية. */
+private const val ROOT_REFRESH_MIN_GAP_MS = 15_000L
 
 
 data class HomeUiState(
@@ -74,6 +78,13 @@ class HomeViewModel @Inject constructor(
      * عند `ON_STOP`. وهي التي تُلغي استطلاع حالة الخدمة ومعلومات اللعبة في الخلفية (FOOTPRINT-01).
      */
     private val visible = MutableStateFlow(false)
+
+    /** يمنع طلبَي جذر متوازيين من الرئيسية ونشاط الجذر. */
+    private val rootRefreshInFlight = AtomicBoolean(false)
+
+    /** آخر محاولة طلب جذر — يقيّد تكرار النافذة عند كل عودة إلى الرئيسية. */
+    @Volatile
+    private var lastRootRefreshMs = 0L
 
     private val prefListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
         if (key == "enable_banner_image") {
@@ -134,22 +145,65 @@ class HomeViewModel @Inject constructor(
         visible.value = value
     }
 
+    /**
+     * **إعادة فحص الجذر عند العودة إلى الرئيسية، لا مرّةً واحدة عند فتح التطبيق.**
+     *
+     * في تثبيت الروم يمنح المالك الجذر من مدير الجذر **بعد** فتح التطبيق؛ و`fetchInitialSystemData()`
+     * طلبَه مرّةً واحدة، فإن تأخّر المنح (أو رُفض ثم عُدّل) بقي `rootStatus = false` والشارة `IDLE`
+     * حتى يُقتل التطبيق. وهنا يُعاد الطلب على IO، ويُحدَّث معه الخادم وحالة التثبيت، ثم يُحدَّث
+     * [PrivilegeManager] من الصدفة المخبّأة بعد المنح. والتكرار مقيَّد بـ[ROOT_REFRESH_MIN_GAP_MS]
+     * كي لا تظهر نافذة الصلاحية عند كل إعادة تركيب.
+     */
+    fun refreshRootStatus(force: Boolean = false) {
+        val now = System.currentTimeMillis()
+        if (!force && now - lastRootRefreshMs < ROOT_REFRESH_MIN_GAP_MS) return
+        if (!rootRefreshInFlight.compareAndSet(false, true)) return
+        lastRootRefreshMs = now
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                // الطلب نفسه يعيد تشغيل RomRuntimeKick عند النجاح، فيبدأ الخادم بجذر التطبيق
+                // في وضع الروم بلا init rc ولا سياسة SELinux.
+                val isRooted = RootUtils.requestRootAccess()
+                val isModuleInstalled = RootUtils.isModuleInstalled()
+                val daemonOnline = nd.max.core.daemon.DaemonIpc.default.ping()
+                nd.max.core.privilege.PrivilegeManager.refresh()
+                _uiState.update {
+                    it.copy(
+                        rootStatus = isRooted,
+                        daemonOnline = daemonOnline,
+                        moduleInstalled = isModuleInstalled,
+                    )
+                }
+            } finally {
+                rootRefreshInFlight.set(false)
+            }
+        }
+    }
+
 
     private fun fetchInitialSystemData() {
+        // أوّل طلب جذر يبدأ هنا؛ نسجّل وقتَه كي لا تكرّره الرئيسية فورًا عند أوّل تركيب.
+        lastRootRefreshMs = System.currentTimeMillis()
+        // ونحجز نفس مقعد الطلب: عودة الرئيسية أثناء نافذة الصلاحية لا تفتح طلبًا ثانيًا.
+        if (!rootRefreshInFlight.compareAndSet(false, true)) return
         viewModelScope.launch(Dispatchers.IO) {
-            val isRooted = RootUtils.requestRootAccess()
-            val isModuleInstalled = RootUtils.isModuleInstalled()
-            val daemonOnline = nd.max.core.daemon.DaemonIpc.default.ping()
-            // قراءة داخل العملية (bionic) بدل صدفة `getprop`: مقيس ٢٣٦٦ ميكرو ⇒ ١٢٫٦.
-            // وهذه الدالة تُنادى عند الإقلاع وعند كل تحديث لحالة المفتاح — فالتوفير متكرّر.
-            val mode = PropertyUtils.get(MaxManagerProps.Conf.AI_ENABLED)
+            try {
+                val isRooted = RootUtils.requestRootAccess()
+                val isModuleInstalled = RootUtils.isModuleInstalled()
+                val daemonOnline = nd.max.core.daemon.DaemonIpc.default.ping()
+                // قراءة داخل العملية (bionic) بدل صدفة `getprop`: مقيس ٢٣٦٦ ميكرو ⇒ ١٢٫٦.
+                // وهذه الدالة تُنادى عند الإقلاع وعند كل تحديث لحالة المفتاح — فالتوفير متكرّر.
+                val mode = PropertyUtils.get(MaxManagerProps.Conf.AI_ENABLED)
 
-            _uiState.update { it.copy(
-                rootStatus = isRooted,
-                daemonOnline = daemonOnline,
-                moduleInstalled = isModuleInstalled,
-                autoMode = mode
-            ) }
+                _uiState.update { it.copy(
+                    rootStatus = isRooted,
+                    daemonOnline = daemonOnline,
+                    moduleInstalled = isModuleInstalled,
+                    autoMode = mode
+                ) }
+            } finally {
+                rootRefreshInFlight.set(false)
+            }
         }
     }
 

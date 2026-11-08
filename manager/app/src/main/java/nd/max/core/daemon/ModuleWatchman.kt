@@ -227,8 +227,16 @@ class ModuleWatchman(
      * ويخدم التطبيق عبر القناة ([DaemonIpc]). و`null` (لم يُجَب الطلب بعد) يمضي كما كان: الحارس نفسه هو
      * ما يستدعي نافذة الإذن حين يطلب صدفة الجذر.
      */
-    fun watchWhenRootAllows(): WatchDecision =
-        if (nd.max.core.privilege.PrivilegeManager.cachedRootVerdict() == false) WatchDecision.Wait else watch()
+    fun watchWhenRootAllows(): WatchDecision {
+        // **والصدفة المخبّأة تسبق الحكم السلبي:** بعد `requestRoot()` الناجح تكون الصدفة جذرًا
+        // فعلًا، وقد يعود `isAppGrantedRoot()` سالبًا من ذاكرة libsu قبل تحديثها. لو حكمنا
+        // بالحكم السلبي وحده لانتظر الحارس بلا نهاية بعد منح الجذر — وهو عين عطب «IDLE» في
+        // تثبيت الروم. فحين تكون الصدفة جذرًا نمضي، ولا ننتظر إلا إذا لم يكن هناك جذر مخبّأ
+        // والحكم صريح بالرفض.
+        val cachedRoot = nd.max.core.privilege.PrivilegeManager.cachedRootGranted()
+        val verdict = nd.max.core.privilege.PrivilegeManager.cachedRootVerdict()
+        return if (!cachedRoot && verdict == false) WatchDecision.Wait else watch()
+    }
 
     /** حضوره يُقاس بالاسم — لا بقفل ولا بحالة محفوظة. */
     fun companionLiveness(io: DaemonIo = cheapIo): CompanionLiveness {

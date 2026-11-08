@@ -43,7 +43,13 @@ object PrivilegeManager {
      */
     fun cachedRootVerdict(): Boolean? = runCatching { Shell.isAppGrantedRoot() }.getOrNull()
 
-    /** فعل صريح من المستخدم: يطلب الجذر (قد تُظهر نافذة الصلاحية). */
+    /**
+     * فعل صريح من المستخدم: يطلب الجذر (قد تُظهر نافذة الصلاحية).
+     *
+     * `@Synchronized` لأن نشاط الجذر والرئيسية قد يطلبان في اللحظة نفسها عند الإقلاع؛
+     * بلا قفل تُفتح نافذتا صلاحية أو تتسابق صدفة مخبّأة واحدة بين طلبين.
+     */
+    @Synchronized
     fun requestRoot(): Boolean = runCatching {
         if (!ExecutionModeRules.mayUseRoot(ExecutionModeStore.current())) return false
         val generation = ExecutionModeStore.generation()
