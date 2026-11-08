@@ -124,8 +124,27 @@ fun ScreenFinderSheet(
             list.isEmpty() && query.isBlank() ->
                 FinderNote(stringResource(R.string.screen_finder_hint, targets.size))
 
-            list.isEmpty() ->
+            // **الفراغ له سبب وفعل** (§٥.٤): السطر يقول ما لم يُعثر عليه، وتحته ما تفتحه
+            // فعلًا — فلا تنتهي المحاولة عند «لا شيء». والاقتراح من عدّاد حقيقي: من لم يفتح
+            // شيئًا لا يرى قائمةً فارغة تنتحل معرفة.
+            list.isEmpty() -> Column(modifier = Modifier.fillMaxWidth()) {
                 FinderNote(stringResource(R.string.screen_finder_no_results, query))
+                if (suggestions.isNotEmpty()) {
+                    FinderLabel(stringResource(R.string.screen_finder_recent))
+                    MaxGroup(modifier = Modifier.padding(horizontal = MaxSpace.gutter)) {
+                        suggestions.forEachIndexed { index, target ->
+                            if (index > 0) MaxGroupDivider()
+                            FinderRow(
+                                target = target,
+                                onOpen = {
+                                    query = ""
+                                    onOpen(target.destination)
+                                },
+                            )
+                        }
+                    }
+                }
+            }
 
             else -> LazyColumn(
                 modifier = Modifier
