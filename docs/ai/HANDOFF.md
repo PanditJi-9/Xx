@@ -24772,3 +24772,32 @@ Rounded.Undo` (نفس نمط `FileEditorDialog.kt` و`GamePanelCockpit.kt`). ب�
 **AGENTS:** المراجعة المستقلة إلزامية لهذا النوع من التغييرات، وقد تعذّرت بحدود المزوّد ستّ مرات؛ سُجّلت المحاولات بأسمائها وأخطائها، ولم تُستبدل بادّعاء. والدفع تمّ بعد اكتمال الحزمة وقراءة CI، لا قبلهما.
 
 **NEXT:** مراجعة سلامة مستقلة يدويًّا (نموذج غير المنفّذ) · تحقّق جهاز للأوضاع الأربعة وحالتها · قرار في دعم AxManager كناقل خامس إن أراده المالك.
+
+## ROUND-CLOSE-31 — تثبيت الروم بثلاثة ملفات: الجذر يُمنح بعد الفتح، والشارة تبقى IDLE — 2026-11-08 · DONE_WITH_CONCERNS
+
+**TASK:** المالك ركّب `privapp-permissions-nd.max.xml` و`MaxManager.apk` و`sys.maxmanager-service` في الروم، ومنح التطبيق الجذر، لكن الشارة بقيت `IDLE` ولم يعمل تغيير تردد GPU ولا المحافظ. وطلب صراحةً أن يعمل بثلاثة ملفات فقط، بلا SELinux، بمجرّد منح الجذر.
+
+**التشخيص:**
+- `requestRootAccess()` كان يُنادى مرة واحدة عند فتح التطبيق (`HomeViewmodel.fetchInitialSystemData` و`MainActivity.refreshStatus`). ومنح الجذر بعد الفتح لا يُعيد الفحص؛ و`HomeScreen` كان يستدعي `PrivilegeManager.refresh()` فقط، وهي قراءة من صدفة مخبّأة لا طلب.
+- `ModuleWatchman.watchWhenRootAllows()` كان ينتظر إذا أعاد `Shell.isAppGrantedRoot()` قيمة `false`، حتى لو كانت الصدفة المخبّأة جذرًا؛ فيبقى الخادم متوقفًا بعد منح الجذر.
+- طلبان متوازيان للجذر من النشاط والرئيسية قد يفتحان نافذتي إذن أو يتسابقان على الصدفة المخبّأة.
+- تثبيت الروم بثلاثة ملفات لا يضمّ `maxmanager.rc` ولا sepolicy، و`ro.maxmanager.sepolicy=1` معلَّق في `product-inclusion.mk`؛ فـinit لا يبدأ الخادم. المسار البديل هو أن يبدأ التطبيق الخادم بجذرٍ ممنوح (`RomRuntimeKick` ← `ModuleWatchman`)، وهو لا يحتاج سياسة SELinux لأنه يعمل من صدفة `su` لا من init.
+- `privapp-permissions` يمنح `WRITE_SECURE_SETTINGS` و`PACKAGE_USAGE_STATS` فقط، ولا يمنح uid 0. الجذر الحقيقي يحتاج منح `su` من مدير الجذر.
+- على Magisk، النطاقات المختارة ومنها `priv_app` مسموح لها بالاتصال بـ`magisk` (سوكِت `su`)، فالتركيب في `/product/priv-app` لا يمنع الجذر. KernelSU/APatch قد تختلف سياساتها؛ إن مُنع `priv_app` من تنفيذ `su` فلا إصلاح من جهة التطبيق بلا سياسة.
+
+**الإصلاح:**
+- `HomeViewmodel.refreshRootStatus(force)` جديد: يعيد طلب الجذر على IO عند العودة إلى الرئيسية، ويحدّث `rootStatus`/`daemonOnline`/`moduleInstalled`، ويستدعي `PrivilegeManager.refresh()`؛ مقيَّد بـ15 ثانية و`AtomicBoolean` لمنع الطلبات المتوازية، ويحجز نفس المقعد في `fetchInitialSystemData`.
+- `HomeScreen`: عند `isVisible && !ui.rootStatus` يستدعي `refreshRootStatus()` بدل القراءة السلبية؛ وإلا يبقى `PrivilegeManager.refresh()`.
+- `ModuleWatchman.watchWhenRootAllows()`: يقرأ `cachedRootGranted()` أولًا؛ لا ينتظر إلا إذا لم تكن الصدفة جذرًا وكان الحكم صريحًا بالرفض. فمنح الجذر بعد الفتح لا يترك الخادم متوقفًا.
+- `PrivilegeManager.requestRoot()` صار `@Synchronized` لتسلسل طلبات النشاط والرئيسية.
+- لا يُشترط init rc/sepolicy للثلاثة ملفات؛ يبقى منح `su` الحقيقي شرطًا. والكتابة على GPU/المحافظ تمرّ عبر `RootFileAccess` → `RootCommands`، فتعمل بلا خادم متى توفّر الجذر.
+
+**GATES:** `git diff --check` · `kt_balance --assert` (3293 ملفًا · 0) · `code_health --assert` · `i18n_coverage --assert` · `i18n_coverage --prune all --assert` · `design_tokens --assert` — كلها exit 0.
+
+**BUILD:** `:app:compileReleaseKotlin` محليًّا بعد التعديلات الأربعة: **BUILD SUCCESSFUL in 9m 49s** (`compile-exit=0`). Quick Verify **`42477071385`** على `5a021e15` = **success**: بوابات العقد ✓ ثم `:app:compileReleaseKotlin` و`:app:testReleaseUnitTest` ✓، وخطوة عدّ الاختبارات ✓. QV لا يبني APK/native/R8.
+
+**REVIEW:** لا مراجعة مستقلة جديدة لهذه الجولة. محاولات الجولة السابقة الست فشلت لأسباب مزوّد، ولا حكم موجود؛ لا يُدّعى. المسار اليدوي في `AGENTS.md` §2.1.
+
+**RESIDUAL RISK:** منح الجذر المتأخر، وبدء الخادم، وتغيير GPU/المحافظ، وسلوك SELinux/مدير الجذر — كلها تحتاج جهازًا. على Magisk يُتوقّع أن يعمل `priv_app`؛ KernelSU/APatch قد تمنع `su` لـ`priv_app`، وعندها لا بد من سياسة أو تثبيت كتطبيق عادي. لم يُبنَ APK في هذه الجولة.
+
+**NEXT:** اختبار جهاز بثلاثة ملفات + منح الجذر بعد الفتح، وقراءة `logcat | grep avc` عند بقاء IDLE · مراجعة سلامة يدوية · إن ثبت منع `su` لـ`priv_app` فالقرار بين سياسة init أو تثبيت عادي.

@@ -1,3 +1,19 @@
+## ROUND-CLOSE-31 — الجذر المتأخر في تثبيت الروم — 2026-11-08 · DONE_WITH_CONCERNS
+
+**TASK:** جعل التطبيق يعمل بثلاثة ملفات روم فقط وبلا SELinux بعد منح الجذر: الشارة ACTIVE، وGPU/المحافظ تعمل.
+
+**CHANGED:** `HomeViewmodel.refreshRootStatus()` + حارس `fetchInitialSystemData` · `HomeScreen` يعيد الطلب عند `!rootStatus` · `ModuleWatchman.watchWhenRootAllows()` يفضّل الصدفة الجذرية على الحكم السلبي · `PrivilegeManager.requestRoot()` `@Synchronized`.
+
+**GATES:** `git diff --check` · `kt_balance` · `code_health` · `i18n` · `i18n --prune all` · `design_tokens` — exit 0 · Quick Verify `42477071385` على `5a021e15` = success (بوابات العقد + compile + release unit tests).
+
+**BUILD:** `:app:compileReleaseKotlin` محليًّا 9m49s · QV success · QV لا يبني APK.
+
+**REVIEW:** لا حكم مستقل جديد؛ المحاولات الست السابقة فشلت لأسباب مزوّد، والمسار اليدوي قائم.
+
+**RESIDUAL:** تحقّق جهاز للجذر المتأخر والخادم وGPU/المحافظ · Magisk يسمح `priv_app` بـ`su`، وKernelSU/APatch قد تختلف · إن مُنع `su` فلا حل بلا سياسة أو تثبيت عادي · لا APK في هذه الجولة.
+
+**NEXT:** جهاز: ثلاثة ملفات + منح الجذر بعد الفتح + `logcat | grep avc` · مراجعة يدوية · قرار السياسة/التثبيت العادي عند المنع.
+
 ## ROUND-CLOSE-30 — فرض وضع الوصول على كل مسار مميَّز — 2026-11-08 · DONE_WITH_CONCERNS
 
 **TASK:** إكمال فرض الأوضاع الأربعة (Auto/Root/Shizuku/Basic) على كل مسار مميَّز، وإظهار «ما يدعمه الوضع فقط» أو «كل شيء» من الرئيسية والإعدادات، والإجابة بصدق: هل تُدعم كل الأوضاع فعلًا؟
