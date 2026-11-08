@@ -9,5 +9,6 @@
     <string name="studio_display">Display</string>
     <string name="studio_power">Power options</string>
     <string name="studio_settings">Settings</string>
+    <string name="audio_dsp_live">DSP live</string>
     <string name="max_audio_session_label">Audio session #%1$d</string>
 </resources>

@@ -1,0 +1,20 @@
+{
+  "total": 24,
+  "by_file": {
+    "manager/app/src/main/java/nd/max/ui/component/ConfigUpdateHost.kt": 1,
+    "manager/app/src/main/java/nd/max/ui/component/CubeParts.kt": 1,
+    "manager/app/src/main/java/nd/max/ui/component/CyberCurveEqualizer.kt": 1,
+    "manager/app/src/main/java/nd/max/ui/component/GamePanelHandle.kt": 1,
+    "manager/app/src/main/java/nd/max/ui/component/GamePanelPortrait.kt": 1,
+    "manager/app/src/main/java/nd/max/ui/component/RecipeCard.kt": 2,
+    "manager/app/src/main/java/nd/max/ui/component/StudioComponents.kt": 2,
+    "manager/app/src/main/java/nd/max/ui/mainscreens/HomeOrbitPowerCard.kt": 1,
+    "manager/app/src/main/java/nd/max/ui/subscreens/AppSettingsScreen.kt": 1,
+    "manager/app/src/main/java/nd/max/ui/subscreens/DeviceInfoFacts.kt": 2,
+    "manager/app/src/main/java/nd/max/ui/subscreens/DisplayStudioScreen.kt": 2,
+    "manager/app/src/main/java/nd/max/ui/subscreens/LogsViewerSections.kt": 1,
+    "manager/app/src/main/java/nd/max/ui/subscreens/MaxBackupHubScreen.kt": 1,
+    "manager/app/src/main/java/nd/max/ui/subscreens/ThermalDetailScreen.kt": 3,
+    "manager/app/src/main/java/nd/max/ui/viewmodel/ZramViewModel.kt": 4
+  }
+}

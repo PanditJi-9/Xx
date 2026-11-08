@@ -155,6 +155,7 @@
     <string name="screen_finder_no_results">Nothing matches “%1$s”. Try a word from the screen\'s name.</string>
     <string name="screen_finder_where_bar">Bottom bar</string>
     <string name="screen_finder_recent">What you open most</string>
+    <string name="logs_visible_count">%1$d shown</string>
     <!-- العدّاد الواحد: يقرؤه المُوجِّد ومنصة التحكم معًا، فلا يقول أحدهما غير ما يقوله الآخر. -->
     <string name="screen_opens_count">opened %1$d×</string>
     <string name="diagnostic_complete">Diagnostic Complete</string>

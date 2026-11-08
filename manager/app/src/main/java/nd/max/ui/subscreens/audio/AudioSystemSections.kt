@@ -88,7 +88,7 @@ internal fun AudioActiveSessionsSection(
                         iconTone = MaxTone.Positive,
                         trailing = {
                             MaxCapsule(
-                                text = "DSP LIVE",
+                                text = stringResource(R.string.audio_dsp_live),
                                 tone = MaxTone.Positive,
                             )
                         },

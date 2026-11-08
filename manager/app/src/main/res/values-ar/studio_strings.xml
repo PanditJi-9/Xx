@@ -9,5 +9,6 @@
     <string name="studio_display">الشاشة</string>
     <string name="studio_power">خيارات الطاقة</string>
     <string name="studio_settings">الإعدادات</string>
+    <string name="audio_dsp_live">DSP مباشر</string>
     <string name="max_audio_session_label">جلسة صوت #%1$d</string>
 </resources>

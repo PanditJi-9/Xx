@@ -135,7 +135,7 @@ internal fun LogViewerStatusHeader(
                 fontWeight = FontWeight.Bold
             )
             Text(
-                text = "${filtered} shown",
+                text = stringResource(R.string.logs_visible_count, filtered),
                 style = MaterialTheme.typography.labelSmall,
                 color = colors.onSurfaceVariant
             )

@@ -112,6 +112,7 @@
     <string name="screen_finder_no_results">لا شيء يطابق «%1$s». جرّب كلمة من اسم الشاشة.</string>
     <string name="screen_finder_where_bar">الشريط السفلي</string>
     <string name="screen_finder_recent">أكثر ما تفتحه</string>
+    <string name="logs_visible_count">%1$d معروض</string>
     <!-- العدّاد الواحد: يقرؤه المُوجِّد ومنصة التحكم معًا، فلا يقول أحدهما غير ما يقوله الآخر. -->
     <string name="screen_opens_count">فُتحت %1$d مرة</string>
     <string name="diagnostic_complete">اكتمل التشخيص</string>
