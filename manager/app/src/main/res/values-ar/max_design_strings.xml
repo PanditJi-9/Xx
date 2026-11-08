@@ -42,7 +42,7 @@
     <string name="max_gov_owner_recovery">الاسترداد</string>
     <string name="max_gov_owner_safety">الحماية الحرارية</string>
     <string name="max_gov_owner_per_app">ملف التطبيق</string>
-    <string name="max_gov_owner_max_ai">MAX AI</string>
+    <string name="max_gov_owner_max_ai">Max AI</string>
     <string name="max_gov_owner_global">الملف العام</string>
     <string name="max_gov_owner_system">النظام</string>
     <string name="max_gov_owner_a11y">%1$s يملك مفتاحًا على العتاد</string>
