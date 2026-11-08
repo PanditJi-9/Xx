@@ -259,7 +259,6 @@
     <string name="max_privilege_feat_theme">Þema og tungumál</string>
     <string name="max_privilege_feat_logs">Skrá og viðburðaskoðari</string>
     <string name="max_privilege_feat_density">Sýnaþéttleiki og stærð</string>
-    <string name="max_privilege_feat_dns">Einka DNS</string>
     <string name="max_privilege_feat_freeze">Frystu og slökktu á forritum</string>
     <string name="max_privilege_feat_appops">App heimildir (AppOps)</string>
     <string name="max_privilege_feat_doze">Doze hvíta lista</string>

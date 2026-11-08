@@ -133,7 +133,7 @@ object RootDaemonIo : DaemonIo {
 object RootShellDaemonIo : DaemonIo {
 
     override fun shell(command: String): ShellOutcome = try {
-        val result = com.topjohnwu.superuser.Shell.cmd(command).exec()
+        val result = nd.max.core.privilege.RootCommands.cmd(command).exec()
         ShellOutcome(
             if (result.isSuccess) 0 else 1,
             result.out.joinToString("\n"),

@@ -24,7 +24,6 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.topjohnwu.superuser.Shell
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -198,7 +197,7 @@ class HomeViewModel @Inject constructor(
                 "recovery" -> "/system/bin/input keyevent 26 && svc power reboot $reason || reboot $reason"
                 else -> "svc power reboot $reason || reboot $reason"
             }
-            Shell.cmd(cmd).submit()
+            nd.max.core.privilege.RootCommands.cmd(cmd).submit()
         }
     }
 

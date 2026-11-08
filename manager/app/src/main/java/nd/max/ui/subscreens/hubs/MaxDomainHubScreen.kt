@@ -63,7 +63,8 @@ import nd.max.ui.viewmodel.TweakViewModel
 @Composable
 fun MaxDomainHubScreen(navController: NavHostController, destination: MaxDestination) {
     val actions = MaxNavActions(navController)
-    val rows = maxHubRows(destination)
+    val access = nd.max.ui.navigation.rememberDestinationAccess()
+    val rows = maxHubRows(destination, access)
 
     MaxScreen(
         title = stringResource(destination.titleRes),
@@ -289,4 +290,3 @@ private fun maxHubQuestionDescription(hub: MaxDestination): Int = when (hub) {
     MaxDestination.AudioHub -> R.string.max_hub_audio_question_desc
     else -> R.string.max_hub_generic_question_desc
 }
-

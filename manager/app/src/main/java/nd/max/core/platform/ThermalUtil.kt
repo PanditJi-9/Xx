@@ -13,7 +13,6 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.BatteryManager
 import android.os.SystemClock
-import com.topjohnwu.superuser.Shell
 import java.io.File
 import kotlin.math.abs
 import nd.max.core.hardware.VerifiedControl
@@ -160,7 +159,7 @@ object ThermalUtil {
 
     private fun readThermalServiceTemperaturesUncached(): IntArray {
         return try {
-            val result = Shell.cmd("dumpsys thermalservice 2>/dev/null").exec()
+            val result = nd.max.core.privilege.RootCommands.cmd("dumpsys thermalservice 2>/dev/null").exec()
             if (!result.isSuccess || result.out.isEmpty()) return intArrayOf(0, 0, 0, 0)
 
             var cpu = 0
@@ -339,7 +338,7 @@ object ThermalUtil {
         return result.successful
     }
 
-    fun isThermalPolicySupported(): Boolean = Shell.cmd("[ -f $POLICY_FILE ]").exec().isSuccess
+    fun isThermalPolicySupported(): Boolean = nd.max.core.privilege.RootCommands.cmd("[ -f $POLICY_FILE ]").exec().isSuccess
 
     /**
      * السياسة الحرارية الحالية. والصدفة كانت `cat … || echo default`، والقيمة المطلوبة هي
@@ -350,7 +349,7 @@ object ThermalUtil {
         RootFileAccess.read(POLICY_FILE) ?: "default"
 
     fun writeThermalPolicy(policy: String): Boolean {
-        return Shell.cmd("echo $policy > $POLICY_FILE 2>/dev/null").exec().isSuccess
+        return nd.max.core.privilege.RootCommands.cmd("echo $policy > $POLICY_FILE 2>/dev/null").exec().isSuccess
     }
 
     /** Reads a sysfs node through IPC, direct I/O, then a root shell. */
@@ -376,12 +375,10 @@ object ThermalUtil {
         // only the chmod dance (proven by binutils/binprofiles on the real
         // device) succeeds, so the shell fallback replicates it here too.
         return runCatching {
-            Shell.cmd(
-                "m=\$(stat -c %a '$path' 2>/dev/null)",
-                "chmod 644 '$path' 2>/dev/null",
-                "printf '%s' '$value' > '$path'",
-                "chmod \$m '$path' 2>/dev/null"
-            ).exec().isSuccess
+            nd.max.core.privilege.RootCommands.cmd("m=\$(stat -c %a '$path' 2>/dev/null)",
+            "chmod 644 '$path' 2>/dev/null",
+            "printf '%s' '$value' > '$path'",
+            "chmod \$m '$path' 2>/dev/null").exec().isSuccess
         }.getOrDefault(false)
     }
 

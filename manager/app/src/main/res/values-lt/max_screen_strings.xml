@@ -257,7 +257,6 @@
     <string name="max_privilege_feat_theme">Tema ir kalba</string>
     <string name="max_privilege_feat_logs">Žurnalo ir įvykių peržiūros priemonė</string>
     <string name="max_privilege_feat_density">Ekrano tankis ir dydis</string>
-    <string name="max_privilege_feat_dns">Privatus DNS</string>
     <string name="max_privilege_feat_freeze">Užšaldykite ir išjunkite programas</string>
     <string name="max_privilege_feat_appops">Programos leidimai („AppOps“)</string>
     <string name="max_privilege_feat_doze">„Doze“ baltas sąrašas</string>

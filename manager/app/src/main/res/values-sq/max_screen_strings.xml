@@ -259,7 +259,6 @@
     <string name="max_privilege_feat_theme">Tema dhe gjuha</string>
     <string name="max_privilege_feat_logs">Regjistri dhe shikuesi i ngjarjeve</string>
     <string name="max_privilege_feat_density">Dendësia dhe madhësia e shfaqjes</string>
-    <string name="max_privilege_feat_dns">DNS private</string>
     <string name="max_privilege_feat_freeze">Ngrini dhe çaktivizoni aplikacionet</string>
     <string name="max_privilege_feat_appops">Lejet e aplikacioneve (AppOps)</string>
     <string name="max_privilege_feat_doze">Lista e bardhë Doze</string>

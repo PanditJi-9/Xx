@@ -97,7 +97,7 @@ fun HomeScreen(
     // ترتيبًا يضمّها، ومن فتح ورقة الإعداد يرى الأثر فيه فورًا. و`isVisible` هو مفتاح القراءة.
     // **طبقة الامتياز:** تُقرأ من `PrivilegeManager` الموجود — لا قارئ ثانٍ للصلاحيات. وهي
     // تُعرض كحالة في البطل، فتُجمَع كما تُجمَع حالة Max AI (نفس الأسلوب، نفس المصدر).
-    val privilege by nd.max.core.privilege.PrivilegeManager.snapshot.collectAsStateWithLifecycle()
+    val access = nd.max.ui.navigation.rememberDestinationAccess()
     val boost by dashboardViewModel.memoryBoost.collectAsStateWithLifecycle()
     // **والطبقة تُحدَّث عند ظهور الرئيسية** (`HOME-ACCESS-REFRESH-01`): كانت الرئيسية تقرأ
     // `snapshot` ولا تُحدّثه، و`refresh()` لا يُستدعى إلا من الإعدادات وشاشة البداية — فيبقى
@@ -144,7 +144,7 @@ fun HomeScreen(
     val deckUsage = remember(isVisible, deckMode, deckManual, showDeckSettings) {
         homeDeckUsage(usageStore.counts())
     }
-    val deckEntries = homeDeckSelection(deckMode, deckManual, deckUsage)
+    val deckEntries = homeDeckSelection(deckMode, deckManual, deckUsage, HomeDeckPool.filter { access.visible(it.destination) })
 
     LifecycleStartEffect(dashboardViewModel, homeViewModel, isVisible) {
         if (isVisible && lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
@@ -169,7 +169,7 @@ fun HomeScreen(
             deckEntries = deckEntries,
             onOpenDeck = { entry -> navActions.navigateRoute(entry.destination.route) },
             onConfigureDeck = { showDeckSettings = true },
-            accessLevel = privilege.level,
+            accessLevel = access.level,
             timeLeftMinutes = timeLeftMinutes,
             storageCardVisible = storageVisible,
             onHideStorage = {

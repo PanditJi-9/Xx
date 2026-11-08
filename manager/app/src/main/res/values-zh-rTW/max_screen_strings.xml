@@ -257,7 +257,6 @@
     <string name="max_privilege_feat_theme">主題和語言</string>
     <string name="max_privilege_feat_logs">日誌和事件檢視器</string>
     <string name="max_privilege_feat_density">顯示密度和尺寸</string>
-    <string name="max_privilege_feat_dns">私有DNS</string>
     <string name="max_privilege_feat_freeze">凍結和禁用應用程式</string>
     <string name="max_privilege_feat_appops">應用程式權限 (AppOps)</string>
     <string name="max_privilege_feat_doze">打瞌睡白名單</string>

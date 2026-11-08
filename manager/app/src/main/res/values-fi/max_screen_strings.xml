@@ -258,7 +258,6 @@
     <string name="max_privilege_feat_theme">Teema ja kieli</string>
     <string name="max_privilege_feat_logs">Lokin ja tapahtumien katseluohjelma</string>
     <string name="max_privilege_feat_density">Näytön tiheys ja koko</string>
-    <string name="max_privilege_feat_dns">Yksityinen DNS</string>
     <string name="max_privilege_feat_freeze">Pysäytä ja poista sovellukset käytöstä</string>
     <string name="max_privilege_feat_appops">Sovelluksen käyttöoikeudet (AppOps)</string>
     <string name="max_privilege_feat_doze">Doze whitelist</string>

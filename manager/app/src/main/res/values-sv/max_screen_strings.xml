@@ -259,7 +259,6 @@
     <string name="max_privilege_feat_theme">Tema och språk</string>
     <string name="max_privilege_feat_logs">Logg- och händelsevisare</string>
     <string name="max_privilege_feat_density">Displaydensitet och storlek</string>
-    <string name="max_privilege_feat_dns">Privat DNS</string>
     <string name="max_privilege_feat_freeze">Frys och inaktivera appar</string>
     <string name="max_privilege_feat_appops">Appbehörigheter (AppOps)</string>
     <string name="max_privilege_feat_doze">Slumra vitlista</string>

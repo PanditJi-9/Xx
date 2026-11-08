@@ -22,7 +22,6 @@ import android.content.Context
 import android.content.Intent
 import android.media.MediaScannerConnection
 import androidx.core.content.FileProvider
-import com.topjohnwu.superuser.Shell
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -254,7 +253,7 @@ suspend fun dumpDiagnosticLogs(context: Context, saveToDownloads: Boolean): File
     """.trimIndent()
 
 
-    val result = Shell.cmd(script).exec()
+    val result = nd.max.core.privilege.RootCommands.cmd(script).exec()
 
     val finalFileForApp = File(targetPath)
 

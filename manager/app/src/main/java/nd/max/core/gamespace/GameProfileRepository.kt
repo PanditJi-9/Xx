@@ -2,7 +2,6 @@
 package nd.max.core.gamespace
 
 import android.content.Context
-import com.topjohnwu.superuser.Shell
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,6 +18,7 @@ import nd.max.core.hardware.RootFileAccess
 import nd.max.core.platform.ForegroundAppResolver
 import nd.max.core.privilege.ExecutionMode
 import nd.max.core.privilege.ExecutionModeStore
+import nd.max.core.privilege.PrivilegeManager
 import nd.max.ui.util.AppConfig
 
 /** Process singleton shared even by non-Hilt legacy ViewModels. AppMonitor reads this same file. */
@@ -66,7 +66,7 @@ object GameProfileRepository {
      */
     private fun usesRootDocument(): Boolean = when (ExecutionModeStore.current()) {
         ExecutionMode.ROOT -> true
-        ExecutionMode.AUTO -> runCatching { Shell.isAppGrantedRoot() != false }.getOrDefault(true)
+        ExecutionMode.AUTO -> PrivilegeManager.cachedRootVerdict() != false
         ExecutionMode.SHIZUKU, ExecutionMode.BASIC -> false
     }
 

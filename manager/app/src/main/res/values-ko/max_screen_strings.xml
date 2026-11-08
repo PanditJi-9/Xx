@@ -258,7 +258,6 @@
     <string name="max_privilege_feat_theme">테마 및 언어</string>
     <string name="max_privilege_feat_logs">로그 및 이벤트 뷰어</string>
     <string name="max_privilege_feat_density">디스플레이 밀도 및 크기</string>
-    <string name="max_privilege_feat_dns">프라이빗 DNS</string>
     <string name="max_privilege_feat_freeze">앱 정지 및 비활성화</string>
     <string name="max_privilege_feat_appops">앱 권한(AppOps)</string>
     <string name="max_privilege_feat_doze">잠자기 허용 목록</string>

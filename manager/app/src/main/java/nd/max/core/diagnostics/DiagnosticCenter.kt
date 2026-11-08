@@ -6,7 +6,6 @@
 
 package nd.max.core.diagnostics
 
-import com.topjohnwu.superuser.Shell
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -190,9 +189,7 @@ object DiagnosticCenter {
      * بيئة JVM إطلاق shell حقيقي. الإنتاج يستخدم الافتراضي أدناه.
      */
     internal var forwarder: (String, Level, String) -> Unit = { component, level, message ->
-        Shell.cmd(
-            "'${MaxManagerPaths.serviceBin()}' --log 'diag' '${level.daemonLevel}' '${shellSafe(message)}'"
-        ).submit()
+        nd.max.core.privilege.RootCommands.cmd("'${MaxManagerPaths.serviceBin()}' --log 'diag' '${level.daemonLevel}' '${shellSafe(message)}'").submit()
     }
 
     fun resetForTesting() {

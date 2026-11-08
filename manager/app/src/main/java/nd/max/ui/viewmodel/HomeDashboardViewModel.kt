@@ -694,7 +694,7 @@ class HomeDashboardViewModel(application: Application) : AndroidViewModel(applic
             "echo \"${core.cpu} \$(cat $base/cpufreq/scaling_cur_freq 2>/dev/null || echo -) " +
                 "\$(cat $base/online 2>/dev/null || echo -)\""
         }
-        return Shell.cmd(script).exec().out
+        return nd.max.core.privilege.RootCommands.cmd(script).exec().out
             .mapNotNull { line ->
                 val parts = line.trim().split(Regex("\\s+"))
                 val cpu = parts.getOrNull(0)?.toIntOrNull() ?: return@mapNotNull null
@@ -903,7 +903,7 @@ class HomeDashboardViewModel(application: Application) : AndroidViewModel(applic
                 ?.firstOrNull()
                 ?.lines()
                 ?.takeIf { it.isNotEmpty() }
-                ?: Shell.cmd("grep -E '^Swap(Total|Free):' /proc/meminfo 2>/dev/null").exec().out
+                ?: nd.max.core.privilege.RootCommands.cmd("grep -E '^Swap(Total|Free):' /proc/meminfo 2>/dev/null").exec().out
             val total = info.firstOrNull { it.startsWith("SwapTotal") }
                 ?.let { Regex("\\d+").find(it)?.value?.toLongOrNull() } ?: return null
             if (total <= 0L) return null

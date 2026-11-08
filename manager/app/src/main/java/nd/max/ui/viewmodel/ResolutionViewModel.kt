@@ -23,7 +23,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.topjohnwu.superuser.Shell
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import nd.max.core.platform.PropertyUtils
@@ -80,20 +79,18 @@ class ResolutionViewModel : ViewModel() {
      *
      * `wm size` ثم `wm density` ثم `dumpsys display | grep fps=` — وكلّها في الصدفة الواحدة
      * المُسلسَلة، و`dumpsys display` من أبطأ أوامرها. صارت الأوامر الثلاثة **تنفيذًا واحدًا**
-     * (`Shell.cmd(a,b,c)` تُكتب كلّها في مدخل الصدفة نفسه بترتيبها)، والفصل بعلامتين —
+     * (`PlatformShell.exec(a,b,c)` تُكتب كلّها في مدخل الصدفة نفسه بترتيبها)، والفصل بعلامتين —
      * **ونصّ كل أمر وتحليله لم يُمسّا**: الأنماط الثلاثة أدناه هي هي، والنتيجة نفسها.
      */
     fun loadState() {
         viewModelScope.launch(Dispatchers.IO) {
-            val out = runCatching {
-                Shell.cmd(
-                    "wm size",
-                    "echo $MARK_DENSITY",
-                    "wm density",
-                    "echo $MARK_FPS",
-                    "dumpsys display | grep -m1 'fps=' ",
-                ).exec().out.map { it.trim() }
-            }.getOrDefault(emptyList())
+            val out = nd.max.core.privilege.PlatformShell.exec(
+                "wm size",
+                "echo $MARK_DENSITY",
+                "wm density",
+                "echo $MARK_FPS",
+                "dumpsys display | grep -m1 'fps=' ",
+            )?.lines.orEmpty()
 
             val densityAt = out.indexOf(MARK_DENSITY)
             val fpsAt = out.indexOf(MARK_FPS)
@@ -164,10 +161,8 @@ class ResolutionViewModel : ViewModel() {
         activeHeightPx = height
         activeDpi = dpi
         viewModelScope.launch(Dispatchers.IO) {
-            Shell.cmd(
-                "wm size ${width}x${height}",
-                "wm density $dpi"
-            ).exec()
+            nd.max.core.privilege.PlatformShell.exec("wm size ${width}x${height}",
+            "wm density $dpi")
             PropertyUtils.set(PROP_CUSTOM_W, width.toString())
             PropertyUtils.set(PROP_CUSTOM_H, height.toString())
             PropertyUtils.set(PROP_CUSTOM_DPI, dpi.toString())
@@ -181,7 +176,7 @@ class ResolutionViewModel : ViewModel() {
         activeHeightPx = nativeHeightPx
         activeDpi = nativeDpi
         viewModelScope.launch(Dispatchers.IO) {
-            Shell.cmd("wm size reset", "wm density reset").exec()
+            nd.max.core.privilege.PlatformShell.exec("wm size reset", "wm density reset")
             PropertyUtils.set(PROP_CUSTOM_W, "")
             PropertyUtils.set(PROP_CUSTOM_H, "")
             PropertyUtils.set(PROP_CUSTOM_DPI, "")

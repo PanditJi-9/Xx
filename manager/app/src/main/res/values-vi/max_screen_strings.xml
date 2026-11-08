@@ -258,7 +258,6 @@
     <string name="max_privilege_feat_theme">Chủ đề và ngôn ngữ</string>
     <string name="max_privilege_feat_logs">Trình xem nhật ký và sự kiện</string>
     <string name="max_privilege_feat_density">Mật độ và kích thước hiển thị</string>
-    <string name="max_privilege_feat_dns">DNS riêng</string>
     <string name="max_privilege_feat_freeze">Đóng băng và vô hiệu hóa ứng dụng</string>
     <string name="max_privilege_feat_appops">Quyền ứng dụng (AppOps)</string>
     <string name="max_privilege_feat_doze">Danh sách trắng ngủ gật</string>

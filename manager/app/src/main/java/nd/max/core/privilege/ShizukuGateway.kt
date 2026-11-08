@@ -170,6 +170,7 @@ object ShizukuGateway {
 
     /** يطلب الإذن بفعل صريح من المستخدم فقط. لا يُنادى عند الإقلاع. */
     fun requestPermission() {
+        if (!ExecutionModeRules.mayUseShizuku(ExecutionModeStore.current())) return
         runCatching { Shizuku.requestPermission(PERMISSION_REQUEST_CODE) }
     }
 
@@ -180,6 +181,8 @@ object ShizukuGateway {
      * والفشل بعد المحاولة يُعلن بسببه، والنجاح برمز خروج — ولا نجاح بلا رمز.
      */
     suspend fun exec(command: String): ShizukuExec {
+        if (!ExecutionModeRules.mayUseShizuku(ExecutionModeStore.current())) return ShizukuExec.Refused("mode-shizuku-blocked")
+        val generation = ExecutionModeStore.generation()
         val normalized = command.trim()
         val rejection = ShizukuExecRules.rejectionFor(normalized)
         if (rejection != null) return ShizukuExec.Refused(rejection)
@@ -189,8 +192,18 @@ object ShizukuGateway {
         if (!current.permissionGranted) return ShizukuExec.Refused("no-permission")
 
         val service = connectedService() ?: return ShizukuExec.Failed("service-unavailable")
+        if (!ExecutionModeRules.mayDispatch(ExecutionModeStore.current(), generation,
+                ExecutionModeStore.generation(), PrivilegedShellRules.Lane.SHIZUKU)) {
+            return ShizukuExec.Refused("mode-changed")
+        }
         return runCatching {
-            withContext(Dispatchers.IO) { service.exec(normalized) }
+            withContext(Dispatchers.IO) {
+                if (!ExecutionModeRules.mayDispatch(ExecutionModeStore.current(), generation,
+                        ExecutionModeStore.generation(), PrivilegedShellRules.Lane.SHIZUKU)) {
+                    throw IllegalStateException("mode-changed")
+                }
+                service.exec(normalized)
+            }
         }.fold(
             onSuccess = { ShizukuExecRules.parseReply(it) },
             onFailure = { failure ->
@@ -216,9 +229,11 @@ object ShizukuGateway {
             pendingConnect = waiter
             val bound = runCatching {
                 withContext(Dispatchers.Main) {
+                    if (!ExecutionModeRules.mayUseShizuku(ExecutionModeStore.current())) return@withContext false
                     Shizuku.bindUserService(userServiceArgs(context), shellConnection)
+                    true
                 }
-            }.isSuccess
+            }.getOrDefault(false)
             if (!bound) {
                 if (pendingConnect === waiter) pendingConnect = null
                 return@withLock null
@@ -251,6 +266,7 @@ object ShizukuGateway {
      * يعود بـ`null` إن غاب الامتياز أو فشلت القراءة؛ والمستدعي يعلن الفشل.
      */
     fun getProp(key: String, def: String = ""): String? = runCatching {
+        if (!ExecutionModeRules.mayUseShizuku(ExecutionModeStore.current())) return null
         ShizukuSystemProperties.get(key, def)
     }.getOrNull()
 }

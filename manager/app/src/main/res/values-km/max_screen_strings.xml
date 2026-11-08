@@ -259,7 +259,6 @@
     <string name="max_privilege_feat_theme">ប្រធានបទ និងភាសា</string>
     <string name="max_privilege_feat_logs">កម្មវិធីមើលកំណត់ហេតុ និងព្រឹត្តិការណ៍</string>
     <string name="max_privilege_feat_density">បង្ហាញដង់ស៊ីតេនិងទំហំ</string>
-    <string name="max_privilege_feat_dns">DNS ឯកជន</string>
     <string name="max_privilege_feat_freeze">បង្កក និងបិទកម្មវិធី</string>
     <string name="max_privilege_feat_appops">ការអនុញ្ញាតកម្មវិធី (AppOps)</string>
     <string name="max_privilege_feat_doze">Doze បញ្ជីស</string>

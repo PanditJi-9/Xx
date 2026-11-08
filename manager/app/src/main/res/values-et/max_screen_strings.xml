@@ -246,7 +246,6 @@
     <string name="max_privilege_feat_theme">Teema ja keel</string>
     <string name="max_privilege_feat_logs">Logi ja sündmuste vaataja</string>
     <string name="max_privilege_feat_density">Kuva tihedus ja suurus</string>
-    <string name="max_privilege_feat_dns">Privaatne DNS</string>
     <string name="max_privilege_feat_freeze">Rakenduste külmutamine ja keelamine</string>
     <string name="max_privilege_feat_appops">Rakenduse load (AppOps)</string>
     <string name="max_privilege_feat_doze">Doze valge nimekiri</string>

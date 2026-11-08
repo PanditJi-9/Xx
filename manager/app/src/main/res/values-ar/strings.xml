@@ -4079,7 +4079,7 @@
     <string name="access_mode_section">وضع التنفيذ</string>
     <string name="access_mode_auto_desc">يختار أعلى مسار متاح عند كل أمر.</string>
     <string name="access_mode_root_desc_granted">الجذر ممنوح؛ تُنفَّذ الأوامر عبر su.</string>
-    <string name="access_mode_root_desc_missing">الجذر غير ممنوح؛ يسأل التطبيق عند الحاجة.</string>
+    <string name="access_mode_root_desc_missing">الجذر غير ممنوح. استخدم زر طلب الصلاحية أدناه؛ اختيار الوضع وحده لا يمنح الوصول.</string>
     <string name="access_mode_shizuku_desc_ready">Shizuku متصل ومُصرَّح.</string>
     <string name="access_mode_shizuku_desc_missing">Shizuku غير متصل.</string>
     <string name="access_mode_basic_desc">بلا أوامر مميّزة؛ تبقى الشاشات القرائية تعمل.</string>
@@ -4088,7 +4088,8 @@
     <string name="access_filter_supported_desc">يخفي الميزات التي تحتاج صلاحية أعلى.</string>
     <string name="access_filter_everything">كل شيء</string>
     <string name="access_filter_everything_desc">يعرض كل الميزات موسومة بالمستوى الذي تحتاجه.</string>
-    <string name="access_note">يُطبَّق الفلتر على قائمة القدرات في لوحة الوصول. أما الشاشات التي تكتشف عقدها بنفسها فتبقي مخفيًّا ما لا يعلنه الجهاز.</string>
+    <string name="access_note">يُطبَّق الفلتر على الرئيسية والبحث وقوائم التحكم. تبقى الميزات العامة في الشاشات المختلطة متاحة؛ وتتطلب الإجراءات المميّزة مسار الوصول المختار ودعم الجهاز. SELinux حالة أمنية وليس وضع تنفيذ.</string>
+    <string name="access_requires_level">تتطلب هذه الشاشة %1$s. غيّر وضع الوصول وامنح صلاحيته للمتابعة.</string>
     <string name="access_close">تم</string>
     <string name="access_open">وضع الوصول</string>
 </resources>

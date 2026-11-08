@@ -5,7 +5,6 @@
  */
 package nd.max.ui.util
 
-import com.topjohnwu.superuser.Shell
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -49,9 +48,7 @@ object RebootManager {
     }
 
     private fun persistFlagLocked() {
-        Shell.cmd(
-            if (dirtyKeys.isNotEmpty()) "touch $FLAG_PATH" else "rm -f $FLAG_PATH"
-        ).submit()
+        nd.max.core.privilege.RootCommands.cmd(if (dirtyKeys.isNotEmpty()) "touch $FLAG_PATH" else "rm -f $FLAG_PATH").submit()
     }
 
     private fun recomputeLocked() {
@@ -59,7 +56,7 @@ object RebootManager {
     }
 
     suspend fun refreshModuleFlag() = withContext(Dispatchers.IO) {
-        val result = Shell.cmd("test -f $FLAG_PATH").exec().isSuccess
+        val result = nd.max.core.privilege.RootCommands.cmd("test -f $FLAG_PATH").exec().isSuccess
         synchronized(lock) {
             moduleFlag = result
             recomputeLocked()
@@ -69,7 +66,7 @@ object RebootManager {
     fun resetAll() = synchronized(lock) {
         dirtyKeys.clear()
         baselineValues.clear()
-        Shell.cmd("rm -f $FLAG_PATH").submit()
+        nd.max.core.privilege.RootCommands.cmd("rm -f $FLAG_PATH").submit()
         recomputeLocked()
     }
 }

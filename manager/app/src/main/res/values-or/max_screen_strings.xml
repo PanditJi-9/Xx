@@ -227,7 +227,6 @@
     <string name="max_privilege_feat_theme">ଥିମ୍ ଏବଂ ଭାଷା</string>
     <string name="max_privilege_feat_logs">ଲଗ୍ ଏବଂ ଇଭେଣ୍ଟ ଦର୍ଶକ |</string>
     <string name="max_privilege_feat_density">ଘନତା ଏବଂ ଆକାର ପ୍ରଦର୍ଶନ କରନ୍ତୁ |</string>
-    <string name="max_privilege_feat_dns">ବ୍ୟକ୍ତିଗତ DNS |</string>
     <string name="max_privilege_feat_freeze">ଆପ୍ ଫ୍ରିଜ୍ ଏବଂ ଅକ୍ଷମ କରନ୍ତୁ |</string>
     <string name="max_privilege_feat_appops">ଆପ୍ ଅନୁମତି (AppOps)</string>
     <string name="max_privilege_feat_doze">ଡୋଜ୍ ଶ୍ୱେତପତ୍ର |</string>

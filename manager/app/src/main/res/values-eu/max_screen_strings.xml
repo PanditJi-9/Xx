@@ -258,7 +258,6 @@
     <string name="max_privilege_feat_theme">Gaia eta hizkuntza</string>
     <string name="max_privilege_feat_logs">Erregistroa eta gertaeren ikuslea</string>
     <string name="max_privilege_feat_density">Bistaratzeko dentsitatea eta tamaina</string>
-    <string name="max_privilege_feat_dns">DNS pribatua</string>
     <string name="max_privilege_feat_freeze">Izoztu eta desgaitu aplikazioak</string>
     <string name="max_privilege_feat_appops">Aplikazioen baimenak (AppOps)</string>
     <string name="max_privilege_feat_doze">Doze zerrenda zuria</string>

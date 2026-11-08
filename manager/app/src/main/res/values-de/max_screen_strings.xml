@@ -259,7 +259,6 @@
     <string name="max_privilege_feat_theme">Thema und Sprache</string>
     <string name="max_privilege_feat_logs">Protokoll- und Ereignisanzeige</string>
     <string name="max_privilege_feat_density">Anzeigedichte und -größe</string>
-    <string name="max_privilege_feat_dns">Privates DNS</string>
     <string name="max_privilege_feat_freeze">Apps einfrieren und deaktivieren</string>
     <string name="max_privilege_feat_appops">App-Berechtigungen (AppOps)</string>
     <string name="max_privilege_feat_doze">Doze-Whitelist</string>

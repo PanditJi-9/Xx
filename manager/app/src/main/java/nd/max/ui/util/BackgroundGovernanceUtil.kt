@@ -6,7 +6,6 @@
 package nd.max.ui.util
 
 import androidx.annotation.StringRes
-import com.topjohnwu.superuser.Shell
 import nd.max.R
 
 /**
@@ -86,12 +85,12 @@ object BackgroundGovernanceUtil {
     }
 
     private fun readBucket(pkg: String): Int? = runCatching {
-        val result = Shell.cmd("am get-standby-bucket ${quote(pkg)}").exec()
+        val result = nd.max.core.privilege.RootCommands.cmd("am get-standby-bucket ${quote(pkg)}").exec()
         if (!result.isSuccess) null else parseBucket(result.out.firstOrNull())
     }.getOrNull()
 
     private fun readWhitelist(pkg: String): Boolean? = runCatching {
-        val result = Shell.cmd("dumpsys deviceidle whitelist").exec()
+        val result = nd.max.core.privilege.RootCommands.cmd("dumpsys deviceidle whitelist").exec()
         if (!result.isSuccess) null else whitelistContains(result.out.joinToString("\n"), pkg)
     }.getOrNull()
 

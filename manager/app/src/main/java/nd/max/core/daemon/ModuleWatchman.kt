@@ -6,7 +6,6 @@
 
 package nd.max.core.daemon
 
-import com.topjohnwu.superuser.Shell
 import nd.max.MaxManagerPaths
 
 /**
@@ -229,7 +228,7 @@ class ModuleWatchman(
      * ما يستدعي نافذة الإذن حين يطلب صدفة الجذر.
      */
     fun watchWhenRootAllows(): WatchDecision =
-        if (Shell.isAppGrantedRoot() == false) WatchDecision.Wait else watch()
+        if (nd.max.core.privilege.PrivilegeManager.cachedRootVerdict() == false) WatchDecision.Wait else watch()
 
     /** حضوره يُقاس بالاسم — لا بقفل ولا بحالة محفوظة. */
     fun companionLiveness(io: DaemonIo = cheapIo): CompanionLiveness {

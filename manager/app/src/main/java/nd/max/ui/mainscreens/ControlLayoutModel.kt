@@ -120,12 +120,12 @@ private val ControlBands = listOf(
  * A band with no hubs left is dropped rather than rendered empty, so removing the
  * last hub of a band reads as a layout change and not as a blank section.
  */
-fun controlLayoutModel(): List<ControlGroupSpec> = ControlBands.mapNotNull { band ->
-    val hubs = band.hubs.map { hub ->
+fun controlLayoutModel(access: nd.max.ui.navigation.DestinationAccess? = null): List<ControlGroupSpec> = ControlBands.mapNotNull { band ->
+    val hubs = band.hubs.filter { access == null || access.visible(it) }.map { hub ->
         ControlHubSpec(
             hub = hub,
             hubSubtitleRes = maxHubDescription(hub),
-            features = maxHubRows(hub).map { feature -> ControlEntry(feature, maxDestinationRole(feature)) },
+            features = maxHubRows(hub, access).map { feature -> ControlEntry(feature, maxDestinationRole(feature)) },
         )
     }
     ControlGroupSpec(
@@ -136,8 +136,9 @@ fun controlLayoutModel(): List<ControlGroupSpec> = ControlBands.mapNotNull { ban
 }
 
 /** Rows of the advanced-tools band, from the same role table as everything else. */
-fun controlToolEntries(): List<ControlEntry> =
-    ControlToolDestinations.map { destination -> ControlEntry(destination, maxDestinationRole(destination)) }
+fun controlToolEntries(access: nd.max.ui.navigation.DestinationAccess? = null): List<ControlEntry> =
+    ControlToolDestinations.filter { access == null || access.visible(it) }
+        .map { destination -> ControlEntry(destination, maxDestinationRole(destination)) }
 
 /**
  * Stable list key: the band's own title resource, so reordering bands does not

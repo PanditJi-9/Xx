@@ -31,10 +31,14 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import nd.max.core.privilege.ExecutionModeRules
+import nd.max.core.privilege.ExecutionModeStore
+import nd.max.core.privilege.PrivilegedShellRules
 import nd.max.core.diagnostics.DeviceFacts
 import nd.max.core.diagnostics.LogArea
 import nd.max.core.diagnostics.LogDiagnosticReport
@@ -292,6 +296,7 @@ class LogsViewerViewModel : ViewModel() {
     private var logShell: Shell? = null
     private var flushJob: Job? = null
     private var started = false
+    private var accessJob: Job? = null
 
     private val allUnifiedLogs = Collections.synchronizedList(ArrayList<UnifiedLogEntry>())
 
@@ -302,6 +307,18 @@ class LogsViewerViewModel : ViewModel() {
     fun start() {
         if (started) return
         started = true
+        accessJob = viewModelScope.launch {
+            ExecutionModeStore.state.drop(1).collect {
+                stopStream()
+                stopUnifiedStream()
+                flushJob?.cancel()
+                unifiedFlushJob?.cancel()
+                when (viewerMode) {
+                    ViewerMode.LOGCAT -> restartStream()
+                    ViewerMode.UNIFIED -> restartUnifiedStream()
+                }
+            }
+        }
         readLogSettings()
         restartStream()
     }
@@ -368,10 +385,21 @@ class LogsViewerViewModel : ViewModel() {
         displayedLogs = emptyList()
         totalLineCount = 0
         LogsLineParser.resetLogcatIds()
+        val generation = ExecutionModeStore.generation()
+        if (!rootStreamAllowed(generation)) {
+            isAvailable = false
+            return
+        }
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
+                if (!rootStreamAllowed(generation)) return@launch
                 val shell = Shell.Builder.create().build()
+                if (!rootStreamAllowed(generation) || !shell.isRoot) {
+                    shell.close()
+                    isAvailable = false
+                    return@launch
+                }
                 logShell = shell
 
                 val bufferArgs = selectedBuffers.joinToString(" ") { "-b ${it.arg}" }
@@ -385,7 +413,9 @@ class LogsViewerViewModel : ViewModel() {
                 }
 
                 isAvailable = true
-                shell.newJob().add(command).to(sink).submit { }
+                // لا صفّ غير مراقَب بعد فحص الوضع: هذه الصدفة الخاصة بلا مهام أخرى.
+                if (rootStreamAllowed(generation)) shell.newJob().add(command).to(sink).exec()
+                else shell.close()
             } catch (e: Exception) {
                 isAvailable = false
                 EventLog.error("LogsViewer", "start_logcat_stream", e)
@@ -475,7 +505,7 @@ class LogsViewerViewModel : ViewModel() {
 
     fun clearLogs() {
         viewModelScope.launch(Dispatchers.IO) {
-            Shell.cmd("logcat -c").exec()
+            nd.max.core.privilege.RootCommands.cmd("logcat -c").exec()
             synchronized(allLogs) { allLogs.clear() }
             synchronized(pendingRawLines) { pendingRawLines.clear() }
             totalLineCount = 0
@@ -538,10 +568,21 @@ class LogsViewerViewModel : ViewModel() {
         targetSummaries = emptyList()
         focusedTarget = null
         expandedId = null
+        val generation = ExecutionModeStore.generation()
+        if (!rootStreamAllowed(generation)) {
+            unifiedAvailable = false
+            return
+        }
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
+                if (!rootStreamAllowed(generation)) return@launch
                 val shell = Shell.Builder.create().build()
+                if (!rootStreamAllowed(generation) || !shell.isRoot) {
+                    shell.close()
+                    unifiedAvailable = false
+                    return@launch
+                }
                 unifiedShell = shell
 
                 val sink = object : ArrayList<String>() {
@@ -552,7 +593,9 @@ class LogsViewerViewModel : ViewModel() {
                 }
 
                 unifiedAvailable = true
-                shell.newJob().add("tail -F -n 1000 '${MaxManagerPaths.MAXMANAGER_LOG}'").to(sink).submit { }
+                if (rootStreamAllowed(generation)) {
+                    shell.newJob().add("tail -F -n 1000 '${MaxManagerPaths.MAXMANAGER_LOG}'").to(sink).exec()
+                } else shell.close()
             } catch (e: Exception) {
                 unifiedAvailable = false
                 EventLog.error("LogsViewer", "start_unified_stream", e)
@@ -573,6 +616,11 @@ class LogsViewerViewModel : ViewModel() {
         if (isPaused) return
         pendingRawUnifiedLines.add(line)
     }
+
+    private fun rootStreamAllowed(generation: Long): Boolean = ExecutionModeRules.mayDispatch(
+        ExecutionModeStore.current(), generation, ExecutionModeStore.generation(),
+        PrivilegedShellRules.Lane.ROOT,
+    )
 
     private fun flushPendingUnified() {
         val raw = synchronized(pendingRawUnifiedLines) {
@@ -726,7 +774,7 @@ class LogsViewerViewModel : ViewModel() {
      */
     fun clearUnifiedLogs(context: Context) {
         viewModelScope.launch(Dispatchers.IO) {
-            Shell.cmd("'${MaxManagerPaths.serviceBin()}' --clearlogs").exec()
+            nd.max.core.privilege.RootCommands.cmd("'${MaxManagerPaths.serviceBin()}' --clearlogs").exec()
             synchronized(allUnifiedLogs) { allUnifiedLogs.clear() }
             synchronized(pendingRawUnifiedLines) { pendingRawUnifiedLines.clear() }
             unifiedTotalLineCount = 0
@@ -848,7 +896,7 @@ class LogsViewerViewModel : ViewModel() {
             context.packageManager.getPackageInfo(context.packageName, 0).versionName
         }.getOrNull()
         val moduleVersion = runCatching {
-            Shell.cmd("grep '^version=' '${MaxManagerPaths.MODULE_DIR}/module.prop' 2>/dev/null | head -n1").exec()
+            nd.max.core.privilege.RootCommands.cmd("grep '^version=' '${MaxManagerPaths.MODULE_DIR}/module.prop' 2>/dev/null | head -n1").exec()
                 .out.firstOrNull()
         }.getOrNull()?.substringAfter('=', "")?.trim()?.takeIf(String::isNotEmpty)
         return DeviceFacts(
@@ -868,7 +916,7 @@ class LogsViewerViewModel : ViewModel() {
             hardware = android.os.Build.HARDWARE.ifBlank { null },
             apiLevel = android.os.Build.VERSION.SDK_INT,
             kernel = System.getProperty("os.version"),
-            rooted = runCatching { Shell.isAppGrantedRoot() == true }.getOrDefault(false),
+            rooted = nd.max.core.privilege.PrivilegeManager.cachedRootGranted(),
         )
     }
 

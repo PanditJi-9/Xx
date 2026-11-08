@@ -19,7 +19,6 @@ package nd.max.ui.util
 import android.app.ActivityManager
 import android.content.Context
 import android.os.Debug
-import com.topjohnwu.superuser.Shell
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -211,7 +210,7 @@ object MemoryLedger {
         atMs: Long = System.currentTimeMillis(),
     ): Report? {
         val raw = runCatching {
-            Shell.cmd("dumpsys meminfo $packageName 2>/dev/null").exec().out.joinToString("\n")
+            nd.max.core.privilege.RootCommands.cmd("dumpsys meminfo $packageName 2>/dev/null").exec().out.joinToString("\n")
         }.getOrNull()
         val pss = parseTotalPssKb(raw) ?: return null
         return record(context, MemorySnapshot(packageName, pss, atMs, Method.DUMPSYS))

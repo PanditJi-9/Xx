@@ -194,7 +194,7 @@ class DisplayStudioViewModel : ViewModel() {
         if (direct.isSuccess) {
             return direct.getOrNull()?.takeIf { it.isNotEmpty() && it != "null" }
         }
-        return Shell.cmd("settings get $namespace $key").exec().out.joinToString("").trim()
+        return nd.max.core.privilege.RootCommands.cmd("settings get $namespace $key").exec().out.joinToString("").trim()
             .takeIf { it.isNotEmpty() && it != "null" }
     }
 
@@ -243,11 +243,9 @@ class DisplayStudioViewModel : ViewModel() {
     fun updateAnimationScale(scale: Float) {
         animationScale = scale
         viewModelScope.launch(Dispatchers.IO) {
-            Shell.cmd(
-                "settings put global window_animation_scale $scale",
-                "settings put global transition_animation_scale $scale",
-                "settings put global animator_duration_scale $scale"
-            ).exec()
+            nd.max.core.privilege.RootCommands.cmd("settings put global window_animation_scale $scale",
+            "settings put global transition_animation_scale $scale",
+            "settings put global animator_duration_scale $scale").exec()
         }
     }
 
@@ -309,7 +307,7 @@ class DisplayStudioViewModel : ViewModel() {
     fun applyWindowBlurDisabled(disabled: Boolean) {
         windowBlurDisabled = disabled
         viewModelScope.launch(Dispatchers.IO) {
-            Shell.cmd(*blurWriteCommands(disabled).toTypedArray()).exec()
+            nd.max.core.privilege.RootCommands.cmd(*blurWriteCommands(disabled).toTypedArray()).exec()
         }
     }
 }

@@ -258,7 +258,6 @@
     <string name="max_privilege_feat_theme">विषय र भाषा</string>
     <string name="max_privilege_feat_logs">लग र घटना दर्शक</string>
     <string name="max_privilege_feat_density">प्रदर्शन घनत्व र आकार</string>
-    <string name="max_privilege_feat_dns">निजी DNS</string>
     <string name="max_privilege_feat_freeze">फ्रिज र अनुप्रयोगहरू असक्षम गर्नुहोस्</string>
     <string name="max_privilege_feat_appops">एप अनुमतिहरू (AppOps)</string>
     <string name="max_privilege_feat_doze">डोज श्वेतसूची</string>

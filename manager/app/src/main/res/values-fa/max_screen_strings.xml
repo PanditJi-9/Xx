@@ -258,7 +258,6 @@
     <string name="max_privilege_feat_theme">موضوع و زبان</string>
     <string name="max_privilege_feat_logs">لاگ و نمایشگر رویداد</string>
     <string name="max_privilege_feat_density">تراکم و اندازه نمایشگر</string>
-    <string name="max_privilege_feat_dns">DNS خصوصی</string>
     <string name="max_privilege_feat_freeze">برنامه ها را مسدود و غیرفعال کنید</string>
     <string name="max_privilege_feat_appops">مجوزهای برنامه (AppOps)</string>
     <string name="max_privilege_feat_doze">لیست سفید Doze</string>

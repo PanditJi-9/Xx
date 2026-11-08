@@ -5,7 +5,6 @@
  */
 package nd.max.ui.util
 
-import com.topjohnwu.superuser.Shell
 
 /**
  * `AR-06` — ملخّص الانهيارات وANR، **قراءة فقط**.
@@ -65,13 +64,13 @@ object CrashLogUtil {
     }
 
     private fun listFiles(path: String): List<String>? = runCatching {
-        val result = Shell.cmd("ls -1 ${quote(path)} 2>/dev/null").exec()
+        val result = nd.max.core.privilege.RootCommands.cmd("ls -1 ${quote(path)} 2>/dev/null").exec()
         if (!result.isSuccess) null
         else result.out.map(String::trim).filter(String::isNotEmpty)
     }.getOrNull()
 
     private fun newestName(path: String): String? = runCatching {
-        val result = Shell.cmd("ls -t ${quote(path)} 2>/dev/null | head -n 1").exec()
+        val result = nd.max.core.privilege.RootCommands.cmd("ls -t ${quote(path)} 2>/dev/null | head -n 1").exec()
         if (!result.isSuccess) null else parseNewestFile(result.out.joinToString("\n"))
     }.getOrNull()
 
@@ -79,7 +78,7 @@ object CrashLogUtil {
         if (paths.isEmpty()) return null
         val quoted = paths.joinToString(" ") { quote(it) }
         return runCatching {
-            val result = Shell.cmd("stat -c %Y $quoted 2>/dev/null").exec()
+            val result = nd.max.core.privilege.RootCommands.cmd("stat -c %Y $quoted 2>/dev/null").exec()
             if (!result.isSuccess) return@runCatching null
             val seconds = result.out.mapNotNull { parseNewestFile(it)?.toLongOrNull() }.maxOrNull()
             seconds?.takeIf { it > 0 }?.let { it * 1000 }

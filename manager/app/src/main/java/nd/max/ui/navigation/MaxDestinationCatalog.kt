@@ -32,8 +32,9 @@ import nd.max.R
  * the Control page's expanded layout both read this, which is what keeps
  * "what the hub contains" and "what the expanded page shows" the same list.
  */
-fun maxHubRows(hub: MaxDestination): List<MaxDestination> =
-    MaxDestination.Visible.filter { it.parent == hub } + extraRows(hub)
+fun maxHubRows(hub: MaxDestination, access: DestinationAccess? = null): List<MaxDestination> =
+    (MaxDestination.Visible.filter { it.parent == hub } + extraRows(hub))
+        .filter { access == null || access.visible(it) }
 
 /** Screens that belong to more than one domain (see the KDoc above). */
 private fun extraRows(hub: MaxDestination): List<MaxDestination> = when (hub) {

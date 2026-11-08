@@ -258,7 +258,6 @@
     <string name="max_privilege_feat_theme">Mövzu və dil</string>
     <string name="max_privilege_feat_logs">Qeyd və hadisə görüntüləyicisi</string>
     <string name="max_privilege_feat_density">Ekran sıxlığı və ölçüsü</string>
-    <string name="max_privilege_feat_dns">Şəxsi DNS</string>
     <string name="max_privilege_feat_freeze">Proqramları dondurun və söndürün</string>
     <string name="max_privilege_feat_appops">Tətbiq icazələri (AppOps)</string>
     <string name="max_privilege_feat_doze">Doze ağ siyahı</string>

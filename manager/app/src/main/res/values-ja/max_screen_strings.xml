@@ -258,7 +258,6 @@
     <string name="max_privilege_feat_theme">テーマと言語</string>
     <string name="max_privilege_feat_logs">ログおよびイベントビューア</string>
     <string name="max_privilege_feat_density">表示密度とサイズ</string>
-    <string name="max_privilege_feat_dns">プライベートDNS</string>
     <string name="max_privilege_feat_freeze">アプリをフリーズして無効にする</string>
     <string name="max_privilege_feat_appops">アプリの権限 (AppOps)</string>
     <string name="max_privilege_feat_doze">居眠りホワイトリスト</string>

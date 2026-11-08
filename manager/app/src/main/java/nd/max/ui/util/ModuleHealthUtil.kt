@@ -6,7 +6,6 @@
 package nd.max.ui.util
 
 import nd.max.core.hardware.RootFileAccess
-import com.topjohnwu.superuser.Shell
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.CancellationException
@@ -101,26 +100,24 @@ object ModuleHealthUtil {
     suspend fun readInstalledModules(): ModuleInventory = withContext(Dispatchers.IO) {
         coroutineContext.ensureActive()
         try {
-            val result = Shell.cmd(
-                """
-                root=/data/adb/modules
-                [ -d "${'$'}root" ] && [ -r "${'$'}root" ] && [ -x "${'$'}root" ] || exit 1
-                printf '%s\n' MAX_MODULES_BEGIN
-                for d in "${'$'}root"/*; do
-                    [ -d "${'$'}d" ] || continue
-                    [ ! -L "${'$'}d" ] && [ -r "${'$'}d" ] && [ -x "${'$'}d" ] || exit 1
-                    printf 'MAX_MODULE_BEGIN:%s\n' "${'$'}{d##*/}"
-                    [ -f "${'$'}d/module.prop" ] && [ ! -L "${'$'}d/module.prop" ] || exit 1
-                    cat "${'$'}d/module.prop" || exit 1
-                    a=0; b=0; c=0
-                    [ ! -e "${'$'}d/disable" ] || a=1
-                    [ ! -e "${'$'}d/remove" ] || b=1
-                    [ ! -e "${'$'}d/update" ] || c=1
-                    printf '\nMAX_MODULE_FLAGS:%s:%s:%s\nMAX_MODULE_END\n' "${'$'}a" "${'$'}b" "${'$'}c"
-                done
-                printf '%s\n' MAX_MODULES_END
-                """.trimIndent()
-            ).exec()
+            val result = nd.max.core.privilege.RootCommands.cmd("""
+            root=/data/adb/modules
+            [ -d "${'$'}root" ] && [ -r "${'$'}root" ] && [ -x "${'$'}root" ] || exit 1
+            printf '%s\n' MAX_MODULES_BEGIN
+            for d in "${'$'}root"/*; do
+                [ -d "${'$'}d" ] || continue
+                [ ! -L "${'$'}d" ] && [ -r "${'$'}d" ] && [ -x "${'$'}d" ] || exit 1
+                printf 'MAX_MODULE_BEGIN:%s\n' "${'$'}{d##*/}"
+                [ -f "${'$'}d/module.prop" ] && [ ! -L "${'$'}d/module.prop" ] || exit 1
+                cat "${'$'}d/module.prop" || exit 1
+                a=0; b=0; c=0
+                [ ! -e "${'$'}d/disable" ] || a=1
+                [ ! -e "${'$'}d/remove" ] || b=1
+                [ ! -e "${'$'}d/update" ] || c=1
+                printf '\nMAX_MODULE_FLAGS:%s:%s:%s\nMAX_MODULE_END\n' "${'$'}a" "${'$'}b" "${'$'}c"
+            done
+            printf '%s\n' MAX_MODULES_END
+            """.trimIndent()).exec()
             coroutineContext.ensureActive()
             ModuleInventory.parse(result.out, result.isSuccess)
         } catch (cancelled: CancellationException) {

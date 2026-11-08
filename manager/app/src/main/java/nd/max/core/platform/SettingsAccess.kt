@@ -8,7 +8,6 @@ package nd.max.core.platform
 
 import android.content.Context
 import android.provider.Settings
-import com.topjohnwu.superuser.Shell
 
 /**
  * كتابة/قراءة إعدادات أندرويد **بواجهة المنصّة أوّلًا، وصدفة الجذر احتياطًا**.
@@ -46,7 +45,7 @@ object SettingsAccess {
     /** واجهة المنصّة، ثم `settings put` بالجذر إن رُفضت. ويعيد هل نجحت إحداهما. */
     fun put(namespace: String, key: String, value: String): Boolean {
         if (putDirect(namespace, key, value)) return true
-        return runCatching { Shell.cmd("settings put $namespace $key $value").exec().isSuccess }.getOrDefault(false)
+        return runCatching { nd.max.core.privilege.RootCommands.cmd("settings put $namespace $key $value").exec().isSuccess }.getOrDefault(false)
     }
 
     /** القيمة من واجهة المنصّة، أو `null` إن لم تُضبط/رُفضت (فيسأل المستدعي الصدفة كما كان). */

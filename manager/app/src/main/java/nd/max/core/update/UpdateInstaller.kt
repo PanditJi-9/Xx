@@ -19,7 +19,6 @@ package nd.max.core.update
 import android.content.Context
 import android.content.Intent
 import androidx.core.content.FileProvider
-import com.topjohnwu.superuser.Shell
 import java.io.File
 
 /**
@@ -47,17 +46,15 @@ object UpdateInstaller {
     private const val MIME_APK = "application/vnd.android.package-archive"
 
     /** هل التطبيق يملك جذرًا **مُمنوحًا** الآن؟ سؤالٌ قبل أي صدفة حتى لا تُفتح نافذة SU بلا داع. */
-    fun rootAvailable(): Boolean = runCatching { Shell.isAppGrantedRoot() == true }.getOrDefault(false)
+    fun rootAvailable(): Boolean = nd.max.core.privilege.PrivilegeManager.cachedRootGranted()
 
     /** تثبيت صامت بالجذر. تُعاد رسالة الفشل، أو `null` عند النجاح. */
     fun installWithRoot(apk: File): String? {
         val path = apk.absolutePath
         if (!isSafeForShell(path)) return "unsafe apk path: $path"
-        val result = Shell.cmd(
-            "cp $path $STAGING_PATH",
-            "pm install -r $STAGING_PATH",
-            "rm -f $STAGING_PATH",
-        ).exec()
+        val result = nd.max.core.privilege.RootCommands.cmd("cp $path $STAGING_PATH",
+        "pm install -r $STAGING_PATH",
+        "rm -f $STAGING_PATH",).exec()
         if (result.isSuccess) return null
         return result.out.joinToString("\n").ifBlank { "pm install failed" }
     }

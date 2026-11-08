@@ -358,7 +358,6 @@
     <string name="max_privilege_feat_theme">المظهر واللغة</string>
     <string name="max_privilege_feat_logs">عارض السجلات والأحداث</string>
     <string name="max_privilege_feat_density">كثافة العرض وحجمه</string>
-    <string name="max_privilege_feat_dns">DNS الخاص</string>
     <string name="max_privilege_feat_freeze">تجميد التطبيقات وتعطيلها</string>
     <string name="max_privilege_feat_appops">صلاحيات التطبيقات (AppOps)</string>
     <string name="max_privilege_feat_doze">قائمة Doze المسموح لها</string>

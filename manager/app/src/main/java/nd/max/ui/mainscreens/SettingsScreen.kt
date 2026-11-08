@@ -66,7 +66,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.topjohnwu.superuser.Shell
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -177,7 +176,7 @@ fun SettingsScreen(
     val loadingDialog = rememberLoadingDialog()
     val uninstallDialog = rememberConfirmDialog(
         onConfirm = {
-            Shell.cmd("sh /data/adb/modules/MaxManager/uninstall.sh").submit()
+            nd.max.core.privilege.RootCommands.cmd("sh /data/adb/modules/MaxManager/uninstall.sh").submit()
         },
         onDismiss = {}
     )
@@ -628,7 +627,7 @@ fun SettingsScreen(
                                 {
                                     ExpressiveListItem(
                                         onClick = {
-                                            Shell.cmd(nd.max.core.daemon.DaemonCommands.restart(nd.max.MaxManagerPaths.serviceBin())).submit { result ->
+                                            nd.max.core.privilege.RootCommands.cmd(nd.max.core.daemon.DaemonCommands.restart(nd.max.MaxManagerPaths.serviceBin())).submit { result ->
                                                 if (result.isSuccess) {
                                                     coroutineScope.launch {
                                                         snackbarHostState.showSnackbar(restartToastText)

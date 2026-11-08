@@ -1927,7 +1927,7 @@ class MaxAiEngine @Inject constructor(
             // بعده**: كتابة غير مُتحقَّقة هي بالضبط ما أنتج `current_modes=1` وخاصية `0`
             // في حزمة سنابدراجون (الخادم يرى AI والبوابة لا تراه). والاختلاف يُسجَّل بقيمتيه.
             val modesWritten = runCatching {
-                Shell.cmd("echo $value > $DAEMON_MODES_PATH").exec().isSuccess
+                nd.max.core.privilege.RootCommands.cmd("echo $value > $DAEMON_MODES_PATH").exec().isSuccess
             }.getOrDefault(false)
             val modesLive = readModesFile()
             if (modesWritten && modesLive != null && modesLive != value) {
@@ -2081,7 +2081,7 @@ class MaxAiEngine @Inject constructor(
 
     /** القناة الملفية لحالة AI كما يراها الخادم — `null` حين تعذّرت القراءة (لا «0»). */
     private fun readModesFile(): String? = runCatching {
-        Shell.cmd("cat $DAEMON_MODES_PATH").exec()
+        nd.max.core.privilege.RootCommands.cmd("cat $DAEMON_MODES_PATH").exec()
             .takeIf { it.isSuccess }
             ?.out?.firstOrNull()?.trim()
             ?.takeIf(String::isNotBlank)

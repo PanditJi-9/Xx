@@ -16,8 +16,6 @@
 
 package nd.max.core.hardware
 
-import com.topjohnwu.superuser.Shell
-import com.topjohnwu.superuser.io.SuFile
 import nd.max.MaxManagerPaths
 import nd.max.core.daemon.DaemonIpc
 import nd.max.core.diagnostics.DiagnosticCenter
@@ -82,8 +80,7 @@ object ProfileApplier {
             }
             DaemonIpc.Result.Unreachable -> Unit
         }
-        val serviceBin = SuFile(MaxManagerPaths.serviceBin())
-        if (!serviceBin.exists()) {
+        if (!RootFileAccess.exists(MaxManagerPaths.serviceBin())) {
             // الوحدة مثبتة لكن خدمتها غير موجودة — أثر بالغ الأهمية في
             // التشخيص: كل تبديل ملف من الواجهة يفشل بصمت خلافًا لذلك.
             DiagnosticCenter.record(
@@ -98,7 +95,7 @@ object ProfileApplier {
         } else {
             "${MaxManagerPaths.serviceBin()} -p $profileId"
         }
-        val result = Shell.cmd(cmd).exec()
+        val result = nd.max.core.privilege.RootCommands.cmd(cmd).exec()
         if (!result.isSuccess) {
             DiagnosticCenter.record(
                 "profile",

@@ -482,11 +482,11 @@ class ChargingViewModel : ViewModel() {
             nd.max.core.platform.SettingsAccess.put("global", "low_power", value)
             // القراءة بواجهة المنصّة أوّلًا (بلا جذر)، والصدفة إن لم تُضبط/رُفضت — كما كانت.
             var live = nd.max.core.platform.SettingsAccess.getDirect("global", "low_power")
-                ?: Shell.cmd("settings get global low_power").exec().out.joinToString("").trim()
+                ?: nd.max.core.privilege.RootCommands.cmd("settings get global low_power").exec().out.joinToString("").trim()
             if (live != value) {
-                Shell.cmd("cmd power set-mode ${if (enabled) 1 else 0}").exec()
+                nd.max.core.privilege.RootCommands.cmd("cmd power set-mode ${if (enabled) 1 else 0}").exec()
                 live = nd.max.core.platform.SettingsAccess.getDirect("global", "low_power")
-                    ?: Shell.cmd("settings get global low_power").exec().out.joinToString("").trim()
+                    ?: nd.max.core.privilege.RootCommands.cmd("settings get global low_power").exec().out.joinToString("").trim()
             }
             withContext(Dispatchers.Main) { batterySaverEnabled = live == value }
         }

@@ -259,7 +259,6 @@
     <string name="max_privilege_feat_theme">נושא ושפה</string>
     <string name="max_privilege_feat_logs">יומן ומציג אירועים</string>
     <string name="max_privilege_feat_density">צפיפות וגודל תצוגה</string>
-    <string name="max_privilege_feat_dns">DNS פרטי</string>
     <string name="max_privilege_feat_freeze">הקפאה והשבת אפליקציות</string>
     <string name="max_privilege_feat_appops">הרשאות אפליקציה (AppOps)</string>
     <string name="max_privilege_feat_doze">נמנם ברשימת הלבנים</string>

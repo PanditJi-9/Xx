@@ -258,7 +258,6 @@
     <string name="max_privilege_feat_theme">ธีมและภาษา</string>
     <string name="max_privilege_feat_logs">โปรแกรมดูบันทึกและเหตุการณ์</string>
     <string name="max_privilege_feat_density">แสดงความหนาแน่นและขนาด</string>
-    <string name="max_privilege_feat_dns">DNS ส่วนตัว</string>
     <string name="max_privilege_feat_freeze">หยุดและปิดการใช้งานแอพ</string>
     <string name="max_privilege_feat_appops">สิทธิ์ของแอป (AppOps)</string>
     <string name="max_privilege_feat_doze">รายการที่อนุญาตพิเศษของ Doze</string>

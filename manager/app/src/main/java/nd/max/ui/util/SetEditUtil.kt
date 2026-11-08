@@ -9,7 +9,6 @@
 package nd.max.ui.util
 import nd.max.core.platform.EventLog
 
-import com.topjohnwu.superuser.Shell
 
 /** Which store a [SetEditItem] came from / should be written back to. */
 enum class SetEditCategory(val listCommand: String, val settingsNamespace: String?) {
@@ -102,7 +101,7 @@ object SetEditUtil {
         val result = mutableListOf<SetEditItem>()
         for (cat in categories) {
             try {
-                val output = Shell.cmd(cat.listCommand).exec().out
+                val output = nd.max.core.privilege.RootCommands.cmd(cat.listCommand).exec().out
                 result += parseOutput(cat, output)
             } catch (e: Exception) {
                 // Root shell can legitimately fail (denied, not yet granted, shell
@@ -172,7 +171,7 @@ object SetEditUtil {
         val persistence = setEditPersistenceOf(category, key)
         if (persistence == SetEditPersistence.READ_ONLY) return SetEditWriteOutcome.READ_ONLY
         return try {
-            val ran = Shell.cmd(writeCommand(category, key, value)).exec().isSuccess
+            val ran = nd.max.core.privilege.RootCommands.cmd(writeCommand(category, key, value)).exec().isSuccess
             when {
                 !ran -> SetEditWriteOutcome.REFUSED
                 // رسالة تحكّم: أُرسلت ولا حالة تُقرأ. لا «حُفظت».
@@ -210,7 +209,7 @@ object SetEditUtil {
         val direct = category.settingsNamespace
             ?.takeIf { category != SetEditCategory.ANDROID_PROP }
             ?.let { nd.max.core.platform.SettingsAccess.getDirect(it, key) }
-        direct ?: Shell.cmd(command).exec().out.joinToString("\n").trim()
+        direct ?: nd.max.core.privilege.RootCommands.cmd(command).exec().out.joinToString("\n").trim()
     } catch (e: Exception) {
         null
     }
@@ -220,7 +219,7 @@ object SetEditUtil {
         if (category == SetEditCategory.ANDROID_PROP) return false
         if (!isValidSetEditKey(category, key)) return false
         return try {
-            Shell.cmd("settings delete ${category.settingsNamespace} $key").exec().isSuccess
+            nd.max.core.privilege.RootCommands.cmd("settings delete ${category.settingsNamespace} $key").exec().isSuccess
         } catch (e: Exception) {
             false
         }

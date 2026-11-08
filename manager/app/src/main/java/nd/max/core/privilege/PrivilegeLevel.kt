@@ -48,9 +48,12 @@ data class PrivilegeFeature(
  * فهرس القدرات بحسب طبقة الامتياز.
  *
  * الأساس مُتحقَّق من المستودع نفسه: `AR-20` في `docs/ai/EXTERNAL-RESEARCH-APP.md`
- * يسجّل صراحةً أن الكثافة وDNS وتجميد/تعطيل الحزم عبر `pm` و`AppOps` وقراءة البطارية
+ * يسجّل صراحةً أن الكثافة وتجميد/تعطيل الحزم عبر `pm` و`AppOps` وقراءة البطارية
  * والسجلات **لا تحتاج جذرًا** بل امتياز ADB — لهذا صُنّفت هنا في `SHIZUKU` لا في `ROOT`.
- * وما يكتب sysfs مباشرةً (ترددات/حرارة/ZRAM/تصريف) يبقى في `ROOT` بلا تمويه.
+ * وما يكتب sysfs مباشرةً (ترددات/حرارة/ZRAM/تصريف/مقابس الشبكة) يبقى في `ROOT` بلا تمويه.
+ *
+ * **ولا تُدرَج قدرة بلا شاشة تنفّذها:** `private_dns` كانت تُعلن هنا بلا أيّ مستهلك في
+ * المستودع، فأُزيلت. الفهرس واجهة صدق لا قائمة أمنيات.
  */
 object PrivilegeCatalog {
 
@@ -63,15 +66,14 @@ object PrivilegeCatalog {
 
         // ── تحتاج امتياز ADB (Shizuku) ──
         PrivilegeFeature("display_density", PrivilegeTier.SHIZUKU, R.string.max_privilege_feat_density),
-        PrivilegeFeature("private_dns", PrivilegeTier.SHIZUKU, R.string.max_privilege_feat_dns),
         PrivilegeFeature("freeze_disable", PrivilegeTier.SHIZUKU, R.string.max_privilege_feat_freeze),
         PrivilegeFeature("app_ops", PrivilegeTier.SHIZUKU, R.string.max_privilege_feat_appops),
         PrivilegeFeature("doze_whitelist", PrivilegeTier.SHIZUKU, R.string.max_privilege_feat_doze),
-        PrivilegeFeature("network_policy", PrivilegeTier.SHIZUKU, R.string.max_privilege_feat_netpolicy),
         PrivilegeFeature("frame_stats", PrivilegeTier.SHIZUKU, R.string.max_privilege_feat_framestats),
 
         // ── تحتاج جذرًا ──
         PrivilegeFeature("cpu_gpu_control", PrivilegeTier.ROOT, R.string.max_privilege_feat_cpu),
+        PrivilegeFeature("network_policy", PrivilegeTier.ROOT, R.string.max_privilege_feat_netpolicy),
         PrivilegeFeature("thermal_control", PrivilegeTier.ROOT, R.string.max_privilege_feat_thermal),
         PrivilegeFeature("zram_control", PrivilegeTier.ROOT, R.string.max_privilege_feat_zram),
         PrivilegeFeature("module_health", PrivilegeTier.ROOT, R.string.max_privilege_feat_module),

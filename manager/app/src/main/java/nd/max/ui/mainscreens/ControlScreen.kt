@@ -112,8 +112,9 @@ fun ControlScreen(navController: NavHostController) {
 
     // One model, two presentations. Nothing below decides what the page contains:
     // it only decides how much of it is opened out.
-    val bands = controlLayoutModel()
-    val tools = controlToolEntries()
+    val access = nd.max.ui.navigation.rememberDestinationAccess()
+    val bands = controlLayoutModel(access)
+    val tools = controlToolEntries(access)
 
     val listState = androidx.compose.foundation.lazy.rememberLazyListState()
     HomeTourScrollBinding(listState)

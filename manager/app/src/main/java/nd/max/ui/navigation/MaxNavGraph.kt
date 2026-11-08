@@ -189,7 +189,11 @@ private fun NavGraphBuilder.composable(
     content: @Composable AnimatedContentScope.(NavBackStackEntry) -> Unit,
 ) {
     navComposable(route = route, arguments = arguments) { entry ->
-        OpaqueScreen { content(entry) }
+        OpaqueScreen {
+            nd.max.ui.component.DestinationAccessGate(MaxDestination.All.firstOrNull { it.route == route }) {
+                content(entry)
+            }
+        }
     }
 }
 

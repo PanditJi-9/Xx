@@ -259,7 +259,6 @@
     <string name="max_privilege_feat_theme">थीम आणि भाषा</string>
     <string name="max_privilege_feat_logs">लॉग आणि इव्हेंट दर्शक</string>
     <string name="max_privilege_feat_density">घनता आणि आकार प्रदर्शित करा</string>
-    <string name="max_privilege_feat_dns">खाजगी DNS</string>
     <string name="max_privilege_feat_freeze">ॲप्स फ्रीझ आणि अक्षम करा</string>
     <string name="max_privilege_feat_appops">ॲप परवानग्या (AppOps)</string>
     <string name="max_privilege_feat_doze">डोझ श्वेतसूची</string>

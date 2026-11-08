@@ -68,10 +68,11 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavController
-import com.topjohnwu.superuser.Shell
 import kotlin.system.exitProcess
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import nd.max.R
 import nd.max.core.privilege.PrivilegeLevel
 import nd.max.core.privilege.PrivilegeManager
@@ -369,7 +370,18 @@ fun GetStartedScreen(navController: NavController) {
                                             val prefs = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
                                             prefs.edit().putBoolean("has_completed_get_started", true).commit()
 
-                                            Shell.cmd("su -c pm grant nd.max android.permission.READ_EXTERNAL_STORAGE && su -c pm grant nd.max android.permission.POST_NOTIFICATIONS && su -c pm grant nd.max android.permission.READ_MEDIA_IMAGES && su -c am start -S -n nd.max/.MainActivity").exec()
+                                            // `pm grant`/`am start` أوامر منصّة: تعمل بالجذر وبمستوى ADB عبر
+                                            // Shizuku، فلا تُقيَّد بمسار `su` وحدها في شاشة الإعداد الأولى.
+                                            // وكل أمر في عنصر مستقلّ لا في سلسلة `&&`: قاعدة المنصّة ترفض
+                                            // محارف التحكّم، والصدفة تنفّذ الأسطر كلها بلا `set -e` أصلًا.
+                                            withContext(Dispatchers.IO) {
+                                                nd.max.core.privilege.PlatformShell.exec(
+                                                    "pm grant nd.max android.permission.READ_EXTERNAL_STORAGE",
+                                                    "pm grant nd.max android.permission.POST_NOTIFICATIONS",
+                                                    "pm grant nd.max android.permission.READ_MEDIA_IMAGES",
+                                                    "am start -S -n nd.max/.MainActivity",
+                                                )
+                                            }
                                         }
                                     }
                                 },
@@ -565,7 +577,7 @@ fun GetStartedScreen(navController: NavController) {
                                                 onCheckedChange = { isChecked ->
                                                     haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                                                     stateToast = isChecked
-                                                    Shell.cmd("su -c setprop ${MaxManagerProps.Conf.SHOW_TOAST} ${if (isChecked) "1" else "0"}").submit()
+                                                    nd.max.core.privilege.RootCommands.cmd("su -c setprop ${MaxManagerProps.Conf.SHOW_TOAST} ${if (isChecked) "1" else "0"}").submit()
                                                 }
                                             )
                                         }

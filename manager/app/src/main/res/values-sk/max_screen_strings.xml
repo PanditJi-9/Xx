@@ -259,7 +259,6 @@
     <string name="max_privilege_feat_theme">Téma a jazyk</string>
     <string name="max_privilege_feat_logs">Prehliadač denníkov a udalostí</string>
     <string name="max_privilege_feat_density">Hustota a veľkosť displeja</string>
-    <string name="max_privilege_feat_dns">Súkromné ​​DNS</string>
     <string name="max_privilege_feat_freeze">Zmraziť a zakázať aplikácie</string>
     <string name="max_privilege_feat_appops">Povolenia aplikácie (AppOps)</string>
     <string name="max_privilege_feat_doze">Doze whitelist</string>

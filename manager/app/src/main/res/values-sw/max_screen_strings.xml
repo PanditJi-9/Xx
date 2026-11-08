@@ -258,7 +258,6 @@
     <string name="max_privilege_feat_theme">Mandhari na lugha</string>
     <string name="max_privilege_feat_logs">Kitazamaji cha kumbukumbu na tukio</string>
     <string name="max_privilege_feat_density">Onyesha wiani na ukubwa</string>
-    <string name="max_privilege_feat_dns">DNS ya kibinafsi</string>
     <string name="max_privilege_feat_freeze">Jaza na uzime programu</string>
     <string name="max_privilege_feat_appops">Ruhusa za programu (AppOps)</string>
     <string name="max_privilege_feat_doze">Sinzia orodha iliyoidhinishwa</string>

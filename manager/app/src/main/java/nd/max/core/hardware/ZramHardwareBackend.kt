@@ -5,7 +5,6 @@
  */
 package nd.max.core.hardware
 
-import com.topjohnwu.superuser.Shell
 import nd.max.core.jni.ProbeBridge
 import nd.max.core.platform.VmTunable
 import nd.max.core.platform.VmTuning
@@ -88,7 +87,7 @@ object ZramHardwareBackend {
 
     /** تنفيذ أمر وإرجاع رمز الخروج ونصّ النواة — لا `2>/dev/null` في الخطوات الحاسمة. */
     private fun run(command: String): Step = runCatching {
-        val result = Shell.cmd(command).exec()
+        val result = nd.max.core.privilege.RootCommands.cmd(command).exec()
         val message = (result.err + result.out)
             .map { it.trim() }
             .filter { it.isNotEmpty() }
@@ -99,7 +98,7 @@ object ZramHardwareBackend {
 
     /** هل الجذر ممنوح فعلًا؟ أوّل سؤال، لأنّ كل ما بعده كتابة. */
     fun isRoot(): Boolean = runCatching {
-        val result = Shell.cmd("id -u").exec()
+        val result = nd.max.core.privilege.RootCommands.cmd("id -u").exec()
         result.isSuccess && result.out.joinToString("").trim() == "0"
     }.getOrDefault(false)
 
@@ -377,7 +376,7 @@ object ZramHardwareBackend {
             }
         return runCatching {
             val condition = aliases.joinToString(" || ") { "\$1==\"$it\"" }
-            Shell.cmd("awk '$condition {found=1} END {exit found?0:1}' /proc/swaps 2>/dev/null")
+            nd.max.core.privilege.RootCommands.cmd("awk '$condition {found=1} END {exit found?0:1}' /proc/swaps 2>/dev/null")
                 .exec().isSuccess
         }.getOrDefault(false)
     }

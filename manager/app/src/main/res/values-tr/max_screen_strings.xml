@@ -259,7 +259,6 @@
     <string name="max_privilege_feat_theme">Tema ve dil</string>
     <string name="max_privilege_feat_logs">Günlük ve olay görüntüleyici</string>
     <string name="max_privilege_feat_density">Ekran yoğunluğu ve boyutu</string>
-    <string name="max_privilege_feat_dns">Özel DNS</string>
     <string name="max_privilege_feat_freeze">Uygulamaları dondurun ve devre dışı bırakın</string>
     <string name="max_privilege_feat_appops">Uygulama izinleri (AppOps)</string>
     <string name="max_privilege_feat_doze">Beyaz listeyi uyut</string>

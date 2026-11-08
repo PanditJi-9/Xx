@@ -8,6 +8,8 @@ package nd.max.core.daemon
 
 import android.net.LocalSocket
 import android.net.LocalSocketAddress
+import nd.max.core.privilege.ExecutionModeRules
+import nd.max.core.privilege.ExecutionModeStore
 
 /**
  * عميل قناة الخادم — **بلا جذر**.
@@ -24,6 +26,7 @@ import android.net.LocalSocketAddress
 class DaemonIpc(
     private val transport: IpcTransport = LocalSocketTransport(),
     private val nowNanos: () -> Long = System::nanoTime,
+    private val rootAllowed: () -> Boolean = { ExecutionModeRules.mayUseRoot(ExecutionModeStore.current()) },
 ) {
 
     sealed interface Result {
@@ -32,9 +35,9 @@ class DaemonIpc(
         data object Unreachable : Result
     }
 
-    fun ping(): Boolean = send(DaemonIpcProtocol.PING) is Result.Ok
+    fun ping(): Boolean = send(DaemonIpcProtocol.PING, privileged = false) is Result.Ok
 
-    fun status(): Result = send(DaemonIpcProtocol.STATUS)
+    fun status(): Result = send(DaemonIpcProtocol.STATUS, privileged = false)
 
     fun profile(profileId: String, fromAi: Boolean): Result {
         val request = DaemonIpcProtocol.profileRequest(profileId, fromAi)
@@ -47,6 +50,7 @@ class DaemonIpc(
      * الفعل) فيُكمل المستدعي بطبقته التالية — لا يُفترض أنّ العقدة غائبة.
      */
     fun read(path: String): String? {
+        if (!rootAllowed()) return null
         if (!DaemonIpcProtocol.readable(path) || backingOff()) return null
         val reply = transport.roundTrip("READ $path") ?: return fail()
         return DaemonIpcProtocol.parseBody(reply)?.trim()?.takeIf { it.isNotEmpty() }
@@ -54,6 +58,7 @@ class DaemonIpc(
 
     /** وجود عقدة: `true`/`false` جوابٌ من الخادم نفسه (بالجذر)، و`null` = لا جواب فيُسأل غيره. */
     fun exists(path: String): Boolean? {
+        if (!rootAllowed()) return null
         if (!DaemonIpcProtocol.readable(path) || backingOff()) return null
         val reply = transport.roundTrip("EXISTS $path") ?: return fail()
         val parsed = DaemonIpcProtocol.parseReply(reply)
@@ -65,6 +70,7 @@ class DaemonIpc(
      * الخادم، فمسار خارجها يردّ `ERR invalid` فيعود المستدعي إلى طريقه القديم (الجذر) كما كان.
      */
     fun write(path: String, value: String): Boolean {
+        if (!rootAllowed()) return false
         if (!DaemonIpcProtocol.writeShape(path, value) || backingOff()) return false
         val reply = transport.roundTrip("WRITE $path $value")
         if (reply == null) {
@@ -76,6 +82,7 @@ class DaemonIpc(
 
     /** هل العقدة في قائمة الكتابة وموجودة؟ `null` = لا جواب فيُسأل غيره. */
     fun canWrite(path: String): Boolean? {
+        if (!rootAllowed()) return null
         if (!DaemonIpcProtocol.writeShape(path, "0") || backingOff()) return null
         val reply = transport.roundTrip("CANWRITE $path") ?: return fail()
         val parsed = DaemonIpcProtocol.parseReply(reply)
@@ -84,6 +91,7 @@ class DaemonIpc(
 
     /** كتابة خاصية إعداد (`SETPROP`). `true` فقط إن أكّد الخادم؛ غير ذلك يُكمل المستدعي بطريقه القديم. */
     fun setProperty(key: String, value: String): Boolean {
+        if (!rootAllowed()) return false
         if (!DaemonIpcProtocol.settable(key, value) || backingOff()) return false
         val reply = transport.roundTrip("SETPROP $key $value")
         if (reply == null) {
@@ -93,7 +101,11 @@ class DaemonIpc(
         return DaemonIpcProtocol.parseReply(reply) is Result.Ok
     }
 
-    private fun send(request: String): Result {
+    private fun send(request: String, privileged: Boolean = true): Result {
+        // رفض السياسة ليس تعذّر قناة: لا يجوز أن يفتح مسارًا احتياطيًا للكتابة.
+        // و`PING`/`STATUS` ليسا عملًا مميّزًا: حجبهما يجعل الواجهة تقول «الخادم متوقّف»
+        // عن خادم يعمل، وهو تشخيص كاذب. الحجب على ما ينفّذ أو يقرأ بالجذر وحده.
+        if (privileged && !rootAllowed()) return Result.Refused("mode-root-blocked")
         if (backingOff()) return Result.Unreachable
         val reply = transport.roundTrip(request)
         if (reply == null) {

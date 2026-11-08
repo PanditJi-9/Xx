@@ -8,7 +8,6 @@ package nd.max.core.gamespace
 import android.content.Context
 import android.content.pm.PackageManager
 import android.provider.Settings
-import com.topjohnwu.superuser.Shell
 import nd.max.core.privilege.PrivilegeManager
 import nd.max.ui.util.RootShell
 
@@ -59,8 +58,7 @@ object PanelFloatingLauncher {
      * يمنعه فصل الأوضاع: وضع Shizuku/Basic لا يستدعي `su` أبدًا.
      */
     private fun rootAvailable(): Boolean =
-        GameRootGate.allowed() &&
-            (PrivilegeManager.cachedRootGranted() || runCatching { Shell.isAppGrantedRoot() == true }.getOrDefault(false))
+        GameRootGate.allowed() && PrivilegeManager.cachedRootGranted()
 
     /**
      * يفعّل النوافذ الحرّة بالجذر حين يطلب المستخدم فتح تطبيق عائم والجهاز لا يدعمها.

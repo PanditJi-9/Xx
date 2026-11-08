@@ -258,7 +258,6 @@
     <string name="max_privilege_feat_theme">Тэма і мова</string>
     <string name="max_privilege_feat_logs">Часопіс і прагляд падзей</string>
     <string name="max_privilege_feat_density">Шчыльнасць і памер адлюстравання</string>
-    <string name="max_privilege_feat_dns">Прыватны DNS</string>
     <string name="max_privilege_feat_freeze">Замарожванне і адключэнне прыкладанняў</string>
     <string name="max_privilege_feat_appops">Дазволы праграмы (AppOps)</string>
     <string name="max_privilege_feat_doze">Белы спіс Doze</string>

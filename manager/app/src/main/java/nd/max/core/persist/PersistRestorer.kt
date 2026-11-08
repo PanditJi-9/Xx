@@ -10,7 +10,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.provider.Settings
-import com.topjohnwu.superuser.Shell
 import dagger.hilt.EntryPoint
 import dagger.hilt.InstallIn
 import dagger.hilt.android.EntryPointAccessors
@@ -540,16 +539,16 @@ object PersistRestorer {
         val size = "${width}x$height"
         var ok = true
         if (!readsOverride("wm size", "Override size: $size")) {
-            ok = Shell.cmd("wm size $size").exec().isSuccess && readsOverride("wm size", "Override size: $size") && ok
+            ok = nd.max.core.privilege.RootCommands.cmd("wm size $size").exec().isSuccess && readsOverride("wm size", "Override size: $size") && ok
         }
         if (!readsOverride("wm density", "Override density: $dpi")) {
-            ok = Shell.cmd("wm density $dpi").exec().isSuccess && readsOverride("wm density", "Override density: $dpi") && ok
+            ok = nd.max.core.privilege.RootCommands.cmd("wm density $dpi").exec().isSuccess && readsOverride("wm density", "Override density: $dpi") && ok
         }
         return if (ok) PersistStatus.Applied to "read-back-ok" else PersistStatus.Failed to "display-write-refused"
     }
 
     private fun readsOverride(command: String, needle: String): Boolean = runCatching {
-        Shell.cmd(command).exec().out.joinToString("\n").contains(needle)
+        nd.max.core.privilege.RootCommands.cmd(command).exec().out.joinToString("\n").contains(needle)
     }.getOrDefault(false)
 
     /**

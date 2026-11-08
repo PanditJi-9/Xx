@@ -259,7 +259,6 @@
     <string name="max_privilege_feat_theme">Thema en taal</string>
     <string name="max_privilege_feat_logs">Log- en gebeurtenisviewer</string>
     <string name="max_privilege_feat_density">Geef dichtheid en grootte weer</string>
-    <string name="max_privilege_feat_dns">Privé-DNS</string>
     <string name="max_privilege_feat_freeze">Apps bevriezen en uitschakelen</string>
     <string name="max_privilege_feat_appops">App-machtigingen (AppOps)</string>
     <string name="max_privilege_feat_doze">Doze witte lijst</string>

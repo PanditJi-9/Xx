@@ -289,7 +289,7 @@ object EventLog {
         if (gated && !isEnabled()) return
         if (!shellAvailable) return
         try {
-            Shell.cmd("'${MaxManagerPaths.serviceBin()}' --log '$TAG' '$LEVEL_INFO' '$message'").submit()
+            nd.max.core.privilege.RootCommands.cmd("'${MaxManagerPaths.serviceBin()}' --log '$TAG' '$LEVEL_INFO' '$message'").submit()
         } catch (_: Throwable) {
             shellAvailable = false
             // Never let logging failure surface to the UI interaction that

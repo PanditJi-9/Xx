@@ -259,7 +259,6 @@
     <string name="max_privilege_feat_theme">Tema en taal</string>
     <string name="max_privilege_feat_logs">Logboek en gebeurteniskyker</string>
     <string name="max_privilege_feat_density">Vertoon digtheid en grootte</string>
-    <string name="max_privilege_feat_dns">Privaat DNS</string>
     <string name="max_privilege_feat_freeze">Vries en deaktiveer programme</string>
     <string name="max_privilege_feat_appops">Programtoestemmings (AppOps)</string>
     <string name="max_privilege_feat_doze">Duim witlys</string>

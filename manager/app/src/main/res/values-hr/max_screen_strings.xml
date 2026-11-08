@@ -259,7 +259,6 @@
     <string name="max_privilege_feat_theme">Tema i jezik</string>
     <string name="max_privilege_feat_logs">Dnevnik i preglednik događaja</string>
     <string name="max_privilege_feat_density">Gustoća i veličina prikaza</string>
-    <string name="max_privilege_feat_dns">Privatni DNS</string>
     <string name="max_privilege_feat_freeze">Zamrzni i onemogući aplikacije</string>
     <string name="max_privilege_feat_appops">Dopuštenja aplikacije (AppOps)</string>
     <string name="max_privilege_feat_doze">Doze popis dopuštenih</string>

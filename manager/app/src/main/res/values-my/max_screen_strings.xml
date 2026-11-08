@@ -258,7 +258,6 @@
     <string name="max_privilege_feat_theme">အကြောင်းအရာနှင့် ဘာသာစကား</string>
     <string name="max_privilege_feat_logs">မှတ်တမ်းနှင့် ပွဲကြည့်ရှုသူ</string>
     <string name="max_privilege_feat_density">မျက်နှာပြင်သိပ်သည်းဆနှင့် အရွယ်အစား</string>
-    <string name="max_privilege_feat_dns">ကိုယ်ပိုင် DNS</string>
     <string name="max_privilege_feat_freeze">အက်ပ်များကို အေးခဲပြီး ပိတ်ပါ။</string>
     <string name="max_privilege_feat_appops">အက်ပ်ခွင့်ပြုချက်များ (AppOps)</string>
     <string name="max_privilege_feat_doze">Doze whitelist</string>

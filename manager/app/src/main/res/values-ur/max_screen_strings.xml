@@ -259,7 +259,6 @@
     <string name="max_privilege_feat_theme">تھیم اور زبان</string>
     <string name="max_privilege_feat_logs">لاگ اور ایونٹ دیکھنے والا</string>
     <string name="max_privilege_feat_density">کثافت اور سائز ڈسپلے کریں۔</string>
-    <string name="max_privilege_feat_dns">نجی DNS</string>
     <string name="max_privilege_feat_freeze">ایپس کو منجمد اور غیر فعال کریں۔</string>
     <string name="max_privilege_feat_appops">ایپ کی اجازتیں (AppOps)</string>
     <string name="max_privilege_feat_doze">ڈوز وائٹ لسٹ</string>

@@ -259,7 +259,6 @@
     <string name="max_privilege_feat_theme">Тема и јазик</string>
     <string name="max_privilege_feat_logs">Дневник и прегледувач на настани</string>
     <string name="max_privilege_feat_density">Прикажување густина и големина</string>
-    <string name="max_privilege_feat_dns">Приватен DNS</string>
     <string name="max_privilege_feat_freeze">Замрзнете и оневозможете апликации</string>
     <string name="max_privilege_feat_appops">Дозволи за апликации (AppOps)</string>
     <string name="max_privilege_feat_doze">Белата листа на Doze</string>

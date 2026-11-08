@@ -259,7 +259,6 @@
     <string name="max_privilege_feat_theme">ຫົວຂໍ້ແລະພາສາ</string>
     <string name="max_privilege_feat_logs">ຕົວເບິ່ງບັນທຶກແລະເຫດການ</string>
     <string name="max_privilege_feat_density">ຄວາມຫນາແຫນ້ນຂອງການສະແດງຜົນແລະຂະຫນາດ</string>
-    <string name="max_privilege_feat_dns">DNS ສ່ວນຕົວ</string>
     <string name="max_privilege_feat_freeze">ຈຶ້ງ ແລະ ປິດໃຊ້ງານແອັບ</string>
     <string name="max_privilege_feat_appops">ການອະນຸຍາດແອັບ (AppOps)</string>
     <string name="max_privilege_feat_doze">Doze ບັນຊີຂາວ</string>

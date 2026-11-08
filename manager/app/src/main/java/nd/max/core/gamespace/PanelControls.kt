@@ -1,6 +1,5 @@
 package nd.max.core.gamespace
 
-import com.topjohnwu.superuser.Shell
 import nd.max.MaxManagerProps
 import nd.max.core.hardware.ProfileApplier
 import nd.max.core.hardware.RootFileAccess
@@ -52,7 +51,7 @@ object PanelControls {
         // الحكم من القراءة بعد الكتابة (`setAndConfirm` تتصعّد: انعكاس ← setprop ← resetprop)،
         // والملفّ أفضل جهد لأن مسار القراءة في هذا التطبيق هو الخصيصة لا الملفّ.
         val applied = PropertyUtils.setAndConfirm(MaxManagerProps.Conf.BYPASS_CHARGE, value)
-        Shell.cmd("echo $value > $BYPASS_FILE").exec()
+        nd.max.core.privilege.RootCommands.cmd("echo $value > $BYPASS_FILE").exec()
         return applied
     }
 }

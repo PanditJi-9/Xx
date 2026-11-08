@@ -259,7 +259,6 @@
     <string name="max_privilege_feat_theme">థీమ్ మరియు భాష</string>
     <string name="max_privilege_feat_logs">లాగ్ మరియు ఈవెంట్ వ్యూయర్</string>
     <string name="max_privilege_feat_density">ప్రదర్శన సాంద్రత మరియు పరిమాణం</string>
-    <string name="max_privilege_feat_dns">ప్రైవేట్ DNS</string>
     <string name="max_privilege_feat_freeze">యాప్‌లను స్తంభింపజేయండి మరియు నిలిపివేయండి</string>
     <string name="max_privilege_feat_appops">యాప్ అనుమతులు (AppOps)</string>
     <string name="max_privilege_feat_doze">డోజ్ వైట్‌లిస్ట్</string>

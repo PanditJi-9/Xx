@@ -259,7 +259,6 @@
     <string name="max_privilege_feat_theme">ਥੀਮ ਅਤੇ ਭਾਸ਼ਾ</string>
     <string name="max_privilege_feat_logs">ਲੌਗ ਅਤੇ ਇਵੈਂਟ ਦਰਸ਼ਕ</string>
     <string name="max_privilege_feat_density">ਘਣਤਾ ਅਤੇ ਆਕਾਰ ਦਿਖਾਓ</string>
-    <string name="max_privilege_feat_dns">ਪ੍ਰਾਈਵੇਟ DNS</string>
     <string name="max_privilege_feat_freeze">ਐਪਸ ਨੂੰ ਫ੍ਰੀਜ਼ ਅਤੇ ਅਸਮਰੱਥ ਬਣਾਓ</string>
     <string name="max_privilege_feat_appops">ਐਪ ਅਨੁਮਤੀਆਂ (AppOps)</string>
     <string name="max_privilege_feat_doze">Doze ਵ੍ਹਾਈਟਲਿਸਟ</string>

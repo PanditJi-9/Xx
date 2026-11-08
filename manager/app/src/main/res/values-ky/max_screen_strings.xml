@@ -258,7 +258,6 @@
     <string name="max_privilege_feat_theme">Тема жана тил</string>
     <string name="max_privilege_feat_logs">Журнал жана окуяны көрүүчү</string>
     <string name="max_privilege_feat_density">Дисплейдин тыгыздыгы жана өлчөмү</string>
-    <string name="max_privilege_feat_dns">Жеке DNS</string>
     <string name="max_privilege_feat_freeze">Колдонмолорду тоңдуруу жана өчүрүү</string>
     <string name="max_privilege_feat_appops">Колдонмо уруксаттары (AppOps)</string>
     <string name="max_privilege_feat_doze">Doze ак тизмеси</string>

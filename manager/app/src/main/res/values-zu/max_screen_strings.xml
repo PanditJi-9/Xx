@@ -259,7 +259,6 @@
     <string name="max_privilege_feat_theme">Itimu nolimi</string>
     <string name="max_privilege_feat_logs">Ilogi kanye nesibukeli somcimbi</string>
     <string name="max_privilege_feat_density">Bonisa ukuminyana nosayizi</string>
-    <string name="max_privilege_feat_dns">I-DNS eyimfihlo</string>
     <string name="max_privilege_feat_freeze">Friza futhi ukhubaze izinhlelo zokusebenza</string>
     <string name="max_privilege_feat_appops">Izimvume zohlelo lokusebenza (AppOps)</string>
     <string name="max_privilege_feat_doze">Kozela ohlwini olugunyaziwe</string>

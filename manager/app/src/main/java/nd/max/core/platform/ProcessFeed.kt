@@ -10,7 +10,6 @@ package nd.max.core.platform
 import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
-import com.topjohnwu.superuser.Shell
 import java.text.Collator
 
 /**
@@ -38,7 +37,7 @@ import java.text.Collator
  *
  * ### والأوامر
  *
- * كل أوامر الجذر عبر [Shell] وحدها (libsu) — لا `Runtime.exec("su -c …")` هنا ولا في غيره.
+ * كل أوامر الجذر عبر [nd.max.core.privilege.RootCommands] — اختيار الوضع يُفحص قبل التنفيذ.
  */
 enum class ProcessScope { All, Apps, System }
 
@@ -136,7 +135,7 @@ object ProcessFeed {
      */
     private fun sampleRows(): List<ProcessRow>? {
         val lines = runCatching {
-            Shell.cmd("top -b -n $SAMPLE_COUNT -d $SAMPLE_DELAY_SECONDS -o $COLUMNS").exec().out
+            nd.max.core.privilege.RootCommands.cmd("top -b -n $SAMPLE_COUNT -d $SAMPLE_DELAY_SECONDS -o $COLUMNS").exec().out
         }.getOrNull() ?: return null
 
         val rows = parseSample(lines)
@@ -267,11 +266,11 @@ object ProcessFeed {
 
     /** إشارة قتل مباشرة للـPID. والتطبيق قد يُعيد تشغيل نفسه إن كان حيًّا. */
     fun kill(pid: Int): Boolean = runCatching {
-        Shell.cmd("kill -9 $pid").exec().isSuccess
+        nd.max.core.privilege.RootCommands.cmd("kill -9 $pid").exec().isSuccess
     }.getOrDefault(false)
 
     /** إنهاء كل عمليات حزمة — كما تفعل إعدادات النظام. */
     fun forceStop(packageName: String): Boolean = runCatching {
-        Shell.cmd("am force-stop $packageName").exec().isSuccess
+        nd.max.core.privilege.RootCommands.cmd("am force-stop $packageName").exec().isSuccess
     }.getOrDefault(false)
 }

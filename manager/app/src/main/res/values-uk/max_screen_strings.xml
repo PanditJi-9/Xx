@@ -258,7 +258,6 @@
     <string name="max_privilege_feat_theme">Тема і мова</string>
     <string name="max_privilege_feat_logs">Переглядач журналів і подій</string>
     <string name="max_privilege_feat_density">Щільність і розмір відображення</string>
-    <string name="max_privilege_feat_dns">Приватний DNS</string>
     <string name="max_privilege_feat_freeze">Заморозити та вимкнути програми</string>
     <string name="max_privilege_feat_appops">Дозволи програми (AppOps)</string>
     <string name="max_privilege_feat_doze">Білий список Doze</string>

@@ -13,7 +13,6 @@ import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.provider.Settings
-import com.topjohnwu.superuser.Shell
 import java.text.Collator
 
 /**
@@ -102,8 +101,12 @@ object DebloatFreezeUtil {
             .onFailure { EventLog.error(SCREEN, "open_app_settings:$packageName", it) }
     }
 
+    /**
+     * `pm disable-user`/`pm uninstall --user` أوامر منصّة تعمل بمستوى ADB — فتمرّ من
+     * `PlatformShell` لتعمل في وضعَي الجذر وShizuku معًا، وتُرفض صراحةً في وضع BASIC.
+     */
     private fun shell(command: String): Boolean =
-        runCatching { Shell.cmd(command).exec().isSuccess }.getOrDefault(false)
+        nd.max.core.privilege.PlatformShell.exec(command)?.ok == true
 
     private const val SCREEN = "Debloat"
     private const val UNKNOWN_VERSION = "?"

@@ -30,7 +30,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.topjohnwu.superuser.Shell
 import kotlin.math.roundToInt
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -328,7 +327,7 @@ class TweakViewModel : ViewModel() {
                 }
             }
             
-            Shell.cmd("touch /data/adb/modules/MaxManager/reboot").exec()
+            nd.max.core.privilege.RootCommands.cmd("touch /data/adb/modules/MaxManager/reboot").exec()
             if (restoreTweaks) {
                 loadAllConfiguration(context)
             }
@@ -486,7 +485,7 @@ class TweakViewModel : ViewModel() {
 
     /** الاحتياطي المصرَّح: صدفة `cat` مع glob — و`null` عند فشلها (دلالة `isSuccess` القديمة). */
     private fun legacyMaliGovernors(): List<String>? {
-        val govResult = Shell.cmd("cat /sys/class/devfreq/*.mali/available_governors").exec()
+        val govResult = nd.max.core.privilege.RootCommands.cmd("cat /sys/class/devfreq/*.mali/available_governors").exec()
         if (!govResult.isSuccess) return null
         return govResult.out.firstOrNull()?.trim()?.split("\\s+".toRegex())
             ?.filterNot { it.startsWith("apu", ignoreCase = true) } ?: emptyList()
@@ -494,14 +493,14 @@ class TweakViewModel : ViewModel() {
 
     /** الاحتياطي المصرَّح للحيّ: نفس صدفة القراءة بالمجلدات — و`null` عند أي فشل. */
     private fun legacyMaliLive(): String? {
-        val result = Shell.cmd("cat /sys/class/devfreq/*.mali/governor").exec()
+        val result = nd.max.core.privilege.RootCommands.cmd("cat /sys/class/devfreq/*.mali/governor").exec()
         if (!result.isSuccess) return null
         return result.out.firstOrNull { it.isNotBlank() }?.trim()
     }
 
     private fun loadMaliGovernorsInternal() {
 
-        val checkResult = Shell.cmd("/data/adb/modules/MaxManager/system/bin/sys.maxmanager-utilityconf checkmalipath").exec()
+        val checkResult = nd.max.core.privilege.RootCommands.cmd("/data/adb/modules/MaxManager/system/bin/sys.maxmanager-utilityconf checkmalipath").exec()
         val hasMali = checkResult.out.joinToString("").trim() == "true"
 
         if (hasMali) {
@@ -557,7 +556,7 @@ class TweakViewModel : ViewModel() {
             PropertyUtils.set(MaxManagerProps.Governor.CPU_CUSTOM_DEFAULT, selectedGov)
             PropertyUtils.set(MaxManagerProps.Governor.CPU_CUSTOM_PERFORMANCE, selectedGov)
             PropertyUtils.set(MaxManagerProps.Governor.CPU_CUSTOM_POWERSAVE, selectedGov)
-            Shell.cmd("/data/adb/modules/MaxManager/system/bin/sys.maxmanager-utilityconf setsgov $selectedGov").exec()
+            nd.max.core.privilege.RootCommands.cmd("/data/adb/modules/MaxManager/system/bin/sys.maxmanager-utilityconf setsgov $selectedGov").exec()
         }
     }
 
@@ -579,7 +578,7 @@ class TweakViewModel : ViewModel() {
             PropertyUtils.set(MaxManagerProps.Governor.IO_CUSTOM_DEFAULT, selectedIO)
             PropertyUtils.set(MaxManagerProps.Governor.IO_CUSTOM_PERFORMANCE, selectedIO)
             PropertyUtils.set(MaxManagerProps.Governor.IO_CUSTOM_POWERSAVE, selectedIO)
-            Shell.cmd("/data/adb/modules/MaxManager/system/bin/sys.maxmanager-utilityconf setsIO $selectedIO").exec()
+            nd.max.core.privilege.RootCommands.cmd("/data/adb/modules/MaxManager/system/bin/sys.maxmanager-utilityconf setsIO $selectedIO").exec()
         }
     }
     
@@ -591,7 +590,7 @@ class TweakViewModel : ViewModel() {
             PropertyUtils.set(MaxManagerProps.Governor.MALIGPU_CUSTOM_DEFAULT, selectedGov)
             PropertyUtils.set(MaxManagerProps.Governor.MALIGPU_CUSTOM_PERFORMANCE, selectedGov)
             PropertyUtils.set(MaxManagerProps.Governor.MALIGPU_CUSTOM_POWERSAVE, selectedGov)
-            Shell.cmd("/data/adb/modules/MaxManager/system/bin/sys.maxmanager-utilityconf setsMaliGov $selectedGov").exec()
+            nd.max.core.privilege.RootCommands.cmd("/data/adb/modules/MaxManager/system/bin/sys.maxmanager-utilityconf setsMaliGov $selectedGov").exec()
         }
     }
 
@@ -634,13 +633,13 @@ class TweakViewModel : ViewModel() {
         thermalState = checked
         viewModelScope.launch(Dispatchers.IO) {
             PropertyUtils.set(MaxManagerProps.Conf.THERMAL_CORE, if (checked) "1" else "0")
-            Shell.cmd("/data/adb/modules/MaxManager/system/bin/sys.maxmanager-utilityconf setthermalcore ${if (checked) "1" else "0"}").exec()
+            nd.max.core.privilege.RootCommands.cmd("/data/adb/modules/MaxManager/system/bin/sys.maxmanager-utilityconf setthermalcore ${if (checked) "1" else "0"}").exec()
         }
     }
 
     fun executeSetRenderer(reason: String, context: Context) {
         isRendererLoading = true
-        Shell.cmd("/data/adb/modules/MaxManager/system/bin/sys.maxmanager-utilityconf setrender $reason && setprop ${MaxManagerProps.Conf.RENDERER} $reason").submit {
+        nd.max.core.privilege.RootCommands.cmd("/data/adb/modules/MaxManager/system/bin/sys.maxmanager-utilityconf setrender $reason && setprop ${MaxManagerProps.Conf.RENDERER} $reason").submit {
             viewModelScope.launch {
                 delay(1000)
                 loadAllConfiguration(context)

@@ -66,7 +66,7 @@ object CpuTopologyUtil {
         }.getOrNull()
         if (counted != null && counted > 0) return counted
 
-        return Shell.cmd("ls -d $CPU_ROOT/cpu[0-9]* 2>/dev/null | wc -l")
+        return nd.max.core.privilege.RootCommands.cmd("ls -d $CPU_ROOT/cpu[0-9]* 2>/dev/null | wc -l")
             .exec().out.joinToString("").trim().toIntOrNull() ?: 0
     }
 
@@ -235,7 +235,7 @@ object CpuTopologyUtil {
      */
     fun setCoreOnline(cpu: Int, online: Boolean): Boolean {
         if (cpu == 0) return false
-        Shell.cmd("echo ${if (online) 1 else 0} > /sys/devices/system/cpu/cpu$cpu/online 2>/dev/null").exec()
+        nd.max.core.privilege.RootCommands.cmd("echo ${if (online) 1 else 0} > /sys/devices/system/cpu/cpu$cpu/online 2>/dev/null").exec()
         return true
     }
 
@@ -394,6 +394,6 @@ object CpuTopologyUtil {
     fun writeCpusetGroup(path: String, cores: List<Int>) {
         if (cores.isEmpty()) return
         val value = cores.sorted().joinToString(",")
-        Shell.cmd("echo $value > $path 2>/dev/null").exec()
+        nd.max.core.privilege.RootCommands.cmd("echo $value > $path 2>/dev/null").exec()
     }
 }

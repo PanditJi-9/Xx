@@ -259,7 +259,6 @@
     <string name="max_privilege_feat_theme">Tema at wika</string>
     <string name="max_privilege_feat_logs">Log at viewer ng kaganapan</string>
     <string name="max_privilege_feat_density">Densidad at laki ng display</string>
-    <string name="max_privilege_feat_dns">Pribadong DNS</string>
     <string name="max_privilege_feat_freeze">I-freeze at huwag paganahin ang mga app</string>
     <string name="max_privilege_feat_appops">Mga pahintulot sa app (AppOps)</string>
     <string name="max_privilege_feat_doze">I-doze whitelist</string>

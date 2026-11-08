@@ -74,7 +74,7 @@ class SettingsViewModel : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             val flag = if (enabled) "-sn" else "-hn"
             PropertyUtils.set(MaxManagerProps.General.PROFILE_NOTIFICATIONS, if (enabled) "1" else "0")
-            Shell.cmd("${nd.max.MaxManagerPaths.serviceBin()} $flag").submit()            
+            nd.max.core.privilege.RootCommands.cmd("${nd.max.MaxManagerPaths.serviceBin()} $flag").submit()
         }
     }
     

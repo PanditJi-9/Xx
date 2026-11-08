@@ -29,7 +29,6 @@ package nd.max.ui.util
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.StatFs
-import com.topjohnwu.superuser.Shell
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.coroutineScope
@@ -152,10 +151,10 @@ object StorageUtil {
      */
     private fun readInodeCounts(path: String): Pair<Long, Long>? {
         val stat = runCatching {
-            Shell.cmd("stat -f -c '%c %d' '$path' 2>/dev/null").exec()
+            nd.max.core.privilege.RootCommands.cmd("stat -f -c '%c %d' '$path' 2>/dev/null").exec()
         }.getOrNull()?.out?.firstOrNull()
         val df = runCatching {
-            Shell.cmd("df -i '$path' 2>/dev/null").exec()
+            nd.max.core.privilege.RootCommands.cmd("df -i '$path' 2>/dev/null").exec()
         }.getOrNull()?.out?.joinToString("\n")
         return StorageScanModel.parseInodeCounts(stat, df)
     }

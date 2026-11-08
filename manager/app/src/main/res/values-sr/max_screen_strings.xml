@@ -259,7 +259,6 @@
     <string name="max_privilege_feat_theme">Тема и језик</string>
     <string name="max_privilege_feat_logs">Дневник и прегледник догађаја</string>
     <string name="max_privilege_feat_density">Густина и величина приказа</string>
-    <string name="max_privilege_feat_dns">Приватни ДНС</string>
     <string name="max_privilege_feat_freeze">Замрзните и онемогућите апликације</string>
     <string name="max_privilege_feat_appops">Дозволе за апликације (АппОпс)</string>
     <string name="max_privilege_feat_doze">Дозе вхителист</string>

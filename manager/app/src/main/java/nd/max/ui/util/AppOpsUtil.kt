@@ -16,6 +16,7 @@
 
 package nd.max.ui.util
 import nd.max.core.platform.EventLog
+import nd.max.core.privilege.PlatformShell
 
 import android.content.Context
 import android.content.pm.PackageInfo
@@ -33,9 +34,10 @@ import nd.max.ui.util.PermissionPolicy.OpState
  *
  * - **صلاحيات البيان** — تُقرأ بـ`PackageManager` و**بلا أي امتياز**، بلا حاجة إلى جذر أو
  *   Shizuku. فهي الجزء الذي يعمل دائمًا.
- * - **`AppOps`** — تُقرأ وتُكتب بـ`cmd appops`، وهو **يحتاج امتيازًا** (جذر — أو ADB عبر
- *   الشيزوكو، وهو غير منفَّذ عندنا بعد `I-72`). ولذلك إن كان الجذر غائبًا تُعاد `null`
- *   **يُعلنها الحكم** ولا تُعرَض كأنها «لا أوضاع».
+ * - **`AppOps`** — تُقرأ وتُكتب بـ`cmd appops`، وهو **يحتاج امتيازًا** — جذرًا أو ADB عبر
+ *   Shizuku. ويمرّ الآن من `PlatformShell` فيُختار المسار من وضع التنفيذ المختار، ويُرفض
+ *   صراحةً حين لا طبقة. وإن تعذّرت القراءة تُعاد `null` **يُعلنها الحكم** ولا تُعرَض كأنها
+ *   «لا أوضاع».
  *
  * ونفس انضباط `PEER-8`: **كل كتابة تُقرأ بعدها**، والحكم يُبنى على القيمة التي وجدناها لا على
  * نجاح الأمر — و«الجهاز تجاهل ما كتبناه» نتيجة معلَنة (بعض العمليات محجوزة لنظام).
@@ -113,7 +115,7 @@ object AppOpsUtil {
      * و«لا أوضاع»، وهو فرق يحكم هذا المستودع كله.
      */
     fun readOps(pkg: String): List<OpState>? {
-        val out = RootShell.run("cmd appops get ${RootShell.quote(pkg)} 2>/dev/null")
+        val out = PlatformShell.run("cmd appops get ${RootShell.quote(pkg)} 2>/dev/null")
             ?: return null
         val parsed = PermissionPolicy.parseAppOps(out)
         // مخرج مقروء لكن بلا سطر واحد نفهمه: لا نقول «لا أوضاع»، بل «لم أفهم».
@@ -122,7 +124,7 @@ object AppOpsUtil {
 
     /** عملية واحدة كما هي الآن. `null` = لم تُعلَن. */
     fun readOp(pkg: String, op: String): OpMode? = PermissionPolicy.parseSingleOp(
-        RootShell.run(
+        PlatformShell.run(
             "cmd appops get ${RootShell.quote(pkg)} ${RootShell.quote(op)} 2>/dev/null",
         )
     )
@@ -135,7 +137,7 @@ object AppOpsUtil {
      */
     fun setOp(pkg: String, op: String, mode: OpMode): OpWriteResult {
         val startedAt = SystemClock.elapsedRealtime()
-        val commandOk = RootShell.run(
+        val commandOk = PlatformShell.run(
             "cmd appops set ${RootShell.quote(pkg)} ${RootShell.quote(op)} ${mode.id} 2>/dev/null",
         ) != null
         val readBack = if (commandOk) readOp(pkg, op) else null

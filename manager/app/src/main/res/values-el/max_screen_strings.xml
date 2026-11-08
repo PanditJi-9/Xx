@@ -259,7 +259,6 @@
     <string name="max_privilege_feat_theme">Θέμα και γλώσσα</string>
     <string name="max_privilege_feat_logs">Καταγραφή και προβολή συμβάντων</string>
     <string name="max_privilege_feat_density">Πυκνότητα και μέγεθος εμφάνισης</string>
-    <string name="max_privilege_feat_dns">Ιδιωτικό DNS</string>
     <string name="max_privilege_feat_freeze">Παγώστε και απενεργοποιήστε τις εφαρμογές</string>
     <string name="max_privilege_feat_appops">Δικαιώματα εφαρμογών (AppOps)</string>
     <string name="max_privilege_feat_doze">Doze λευκή λίστα</string>

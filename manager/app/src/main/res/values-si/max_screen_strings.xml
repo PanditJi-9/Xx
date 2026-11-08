@@ -259,7 +259,6 @@
     <string name="max_privilege_feat_theme">තේමාව සහ භාෂාව</string>
     <string name="max_privilege_feat_logs">ලොග් සහ සිදුවීම් නරඹන්නා</string>
     <string name="max_privilege_feat_density">සංදර්ශක ඝනත්වය සහ ප්රමාණය</string>
-    <string name="max_privilege_feat_dns">පුද්ගලික DNS</string>
     <string name="max_privilege_feat_freeze">යෙදුම් කැටි කර අක්‍රිය කරන්න</string>
     <string name="max_privilege_feat_appops">යෙදුම් අවසර (AppOps)</string>
     <string name="max_privilege_feat_doze">Doze සුදු ලැයිස්තුව</string>

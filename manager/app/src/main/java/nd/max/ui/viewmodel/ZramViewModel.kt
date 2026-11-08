@@ -23,7 +23,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.topjohnwu.superuser.Shell
 import nd.max.core.hardware.RootFileAccess
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -151,7 +150,7 @@ class ZramViewModel : ViewModel() {
 
     fun loadState() {
         viewModelScope.launch(Dispatchers.IO) {
-            val exists = Shell.cmd("test -e $ZRAM_DEV/disksize && echo 1 || echo 0")
+            val exists = nd.max.core.privilege.RootCommands.cmd("test -e $ZRAM_DEV/disksize && echo 1 || echo 0")
                 .exec().out.joinToString("").trim() == "1"
 
             if (!exists) {
@@ -178,9 +177,9 @@ class ZramViewModel : ViewModel() {
             val savedPreset = PropertyUtils.get(MaxManagerProps.Storage.ZRAM_PRESET)
             if (savedPreset.isNotEmpty()) selectedPresetId = savedPreset
 
-            blockDeviceNodeExists = Shell.cmd("test -e /dev/block/zram0 && echo 1 || echo 0")
+            blockDeviceNodeExists = nd.max.core.privilege.RootCommands.cmd("test -e /dev/block/zram0 && echo 1 || echo 0")
                 .exec().out.joinToString("").trim() == "1"
-            kernelCompactionSupported = Shell.cmd("test -e /proc/sys/vm/compact_memory && echo 1 || echo 0")
+            kernelCompactionSupported = nd.max.core.privilege.RootCommands.cmd("test -e /proc/sys/vm/compact_memory && echo 1 || echo 0")
                 .exec().out.joinToString("").trim() == "1"
             multiStreamCount = RootFileAccess.read("$ZRAM_DEV/max_comp_streams")?.toIntOrNull()
 

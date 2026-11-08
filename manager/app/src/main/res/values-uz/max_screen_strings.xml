@@ -258,7 +258,6 @@
     <string name="max_privilege_feat_theme">Mavzu va til</string>
     <string name="max_privilege_feat_logs">Jurnal va hodisalarni ko\'rish</string>
     <string name="max_privilege_feat_density">Displey zichligi va o\'lchami</string>
-    <string name="max_privilege_feat_dns">Shaxsiy DNS</string>
     <string name="max_privilege_feat_freeze">Ilovalarni muzlatib qo\'ying va o\'chiring</string>
     <string name="max_privilege_feat_appops">Ilova ruxsatnomalari (AppOps)</string>
     <string name="max_privilege_feat_doze">Oq roʻyxat</string>

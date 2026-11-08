@@ -76,7 +76,6 @@ import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowCompat
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.topjohnwu.superuser.Shell
 import kotlin.math.roundToInt
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -126,11 +125,11 @@ fun ColorSchemeSettings(navController: NavController) {
     }
 
     val applyRGB = { r: Float, g: Float, b: Float ->
-        Shell.cmd("service call SurfaceFlinger 1015 i32 1 f ${r / 1000f} f 0 f 0 f 0 f 0 f ${g / 1000f} f 0 f 0 f 0 f 0 f ${b / 1000f} f 0 f 0 f 0 f 0 f 1").submit()
+        nd.max.core.privilege.RootCommands.cmd("service call SurfaceFlinger 1015 i32 1 f ${r / 1000f} f 0 f 0 f 0 f 0 f ${g / 1000f} f 0 f 0 f 0 f 0 f ${b / 1000f} f 0 f 0 f 0 f 0 f 1").submit()
     }
 
     val applySat = { s: Float ->
-        Shell.cmd("service call SurfaceFlinger 1022 f ${s / 1000f}").submit()
+        nd.max.core.privilege.RootCommands.cmd("service call SurfaceFlinger 1022 f ${s / 1000f}").submit()
     }
 
     val saveToProp = {

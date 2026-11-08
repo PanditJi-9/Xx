@@ -16,7 +16,6 @@
 
 package nd.max.ui.util
 
-import com.topjohnwu.superuser.Shell
 
 /**
  * Some Xiaomi/HyperOS devices don't expose touch or display tuning through the
@@ -46,7 +45,7 @@ object XiaomiVendorHalUtil {
     private const val DISPLAY_FEATURE_SERVICE = "vendor.xiaomi.hardware.displayfeature_aidl.IDisplayFeature"
 
     private val serviceListCache: String by lazy {
-        Shell.cmd("service list 2>/dev/null").exec().out.joinToString("\n")
+        nd.max.core.privilege.RootCommands.cmd("service list 2>/dev/null").exec().out.joinToString("\n")
     }
 
     /** True if this device declares Xiaomi's vendor touch-feature HAL. */

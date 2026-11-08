@@ -243,19 +243,20 @@ fun homeDeckSelection(
     mode: HomeDeckMode,
     manualKeys: List<String>,
     usage: Map<String, Int>,
+    pool: List<HomeDeckEntry> = HomeDeckPool,
 ): List<HomeDeckEntry> = when (mode) {
     HomeDeckMode.Manual -> {
         // **وبترتيب البركة لا بترتيب النقر:** من أطفأ بطاقة ثم أشعلها لا يراها تنتقل إلى الآخر،
         // واختيارٌ يُعاد ترتيبه مع كل لمسة يُقرأ كعطب لا كاختيار. والمفتاح المجهول يُهمَل هنا
         // (فلترة لا خريطة)، فلا ترمي الشاشة بسبب حالة محفوظة من نسخة أقدم.
-        val picked = HomeDeckPool.filter { it.key in manualKeys }
+        val picked = pool.filter { it.key in manualKeys }
         if (picked.size >= HOME_DECK_MIN) {
             picked.take(HOME_DECK_MAX)
         } else {
             // ونقصٌ عن الأدنى (‏٢) يُكمَّل بالافتراضيّ بترتيبه: لا تُعرض منصة ببطاقة واحدة، ولا
             // يُفرض على المستخدم اختيار لم يُحفظ بعد. (ومن اختار الاثنتين حدَّهما يُعرض له
             // اختياره كما هو — `picked.size >= HOME_DECK_MIN` أعلاه.)
-            (picked + HomeDeckDefaultKeys.mapNotNull(::homeDeckEntry))
+            (picked + pool.filter { it.key in HomeDeckDefaultKeys } + pool.take(HOME_DECK_MIN))
                 .distinct()
                 .take(HOME_DECK_MAX)
         }
@@ -266,13 +267,13 @@ fun homeDeckSelection(
         // أوّل تشغيل كما كان)، ومن استعمل واحدًا أو اثنين يرى اثنتين لا أربعًا — لأن الأدنى صار
         // ٢ بأمر المالك — وسقفه ٦. ولو كان `used` صفرًا داخل `coerceIn` لعرض على المستخدم الجديد
         // بطاقتين، وهو عكس «الافتراضي ٤» نصًّا: فالافتراضيّ **حالة الصفر** لا حدّ الحصر.
-        val used = HomeDeckPool.count { (usage[it.key] ?: 0) > 0 }
+        val used = pool.count { (usage[it.key] ?: 0) > 0 }
         val size = if (used == 0) {
             HOME_DECK_DEFAULT
         } else {
             used.coerceIn(HOME_DECK_MIN, HOME_DECK_MAX)
         }
-        HomeDeckPool
+        pool
             .withIndex()
             .sortedWith(
                 compareByDescending<IndexedValue<HomeDeckEntry>> { usage[it.value.key] ?: 0 }

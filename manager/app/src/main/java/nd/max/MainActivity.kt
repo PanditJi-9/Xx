@@ -77,7 +77,6 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.topjohnwu.superuser.Shell
 import dagger.hilt.android.AndroidEntryPoint
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeSource
@@ -487,11 +486,9 @@ fun MainScreen(fromTileType: String? = null, widgetRoute: String? = null, widget
             coroutineScope.launch {
                 installingDialog.withInstalling {
                     val result = withContext(Dispatchers.IO) {
-                        Shell.cmd(
-                            "cp ${MaxManagerPaths.MODULE_APK} /data/local/tmp/MaxManager_tmp.apk",
-                            "sleep 5 && pm install -r /data/local/tmp/MaxManager_tmp.apk",
-                            "rm -f /data/local/tmp/MaxManager_tmp.apk",
-                        ).exec()
+                        nd.max.core.privilege.RootCommands.cmd("cp ${MaxManagerPaths.MODULE_APK} /data/local/tmp/MaxManager_tmp.apk",
+                        "sleep 5 && pm install -r /data/local/tmp/MaxManager_tmp.apk",
+                        "rm -f /data/local/tmp/MaxManager_tmp.apk",).exec()
                     }
                     if (result.isSuccess) {
                         Toast.makeText(context, resources.getString(R.string.toast_update_success), Toast.LENGTH_SHORT).show()
@@ -505,7 +502,7 @@ fun MainScreen(fromTileType: String? = null, widgetRoute: String? = null, widget
     )
     val rebootDialog = rememberConfirmDialog(
         onConfirm = {
-            Shell.cmd("svc power reboot || reboot").submit()
+            nd.max.core.privilege.RootCommands.cmd("svc power reboot || reboot").submit()
         }
     )
     LaunchedEffect(rootStatus) {

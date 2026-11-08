@@ -10,8 +10,9 @@ import android.os.SystemClock
 import android.content.res.Resources
 import android.media.AudioManager
 import android.provider.Settings
-import com.topjohnwu.superuser.Shell
 import nd.max.core.privilege.PrivilegeManager
+import nd.max.core.privilege.ExecutionModeStore
+import nd.max.core.privilege.PrivilegeLevel
 import nd.max.core.privilege.PrivilegedShell
 
 /**
@@ -111,11 +112,9 @@ class PanelDevice(context: Context) {
         // «حُرِّر 0» وكأن شيئًا جرى — وهذا نجاح وهمي ممنوع (§9.4). فالغياب يُعلن صراحةً.
         if (!GameRootGate.allowed() || !PrivilegeManager.cachedRootGranted()) return null
         val before = availMb()
-        val done = Shell.cmd(
-            "sync",
-            "echo 3 > /proc/sys/vm/drop_caches 2>/dev/null",
-            "echo 1 > /proc/sys/vm/compact_memory 2>/dev/null"
-        ).exec()
+        val done = nd.max.core.privilege.RootCommands.cmd("sync",
+        "echo 3 > /proc/sys/vm/drop_caches 2>/dev/null",
+        "echo 1 > /proc/sys/vm/compact_memory 2>/dev/null").exec()
         if (!done.isSuccess) return null
         Thread.sleep(500)
         return (availMb() - before).coerceAtLeast(0)
@@ -137,9 +136,14 @@ class PanelDevice(context: Context) {
         return rate
     }
 
-    /** السطوع قابل للكتابة إن مُنح إذن الإعدادات أو توفّر الجذر؛ وإلا يُفتح طلب الإذن بدل صمتٍ بلا أثر. */
+    /**
+     * السطوع قابل للكتابة إن مُنح إذن الإعدادات أو توفّر مسار مميّز (جذر أو Shizuku)؛
+     * وإلا يُفتح طلب الإذن بدل صمتٍ بلا أثر. والكتابة نفسها تمرّ من `PrivilegedShell`.
+     */
     fun canSetBrightness(): Boolean = runCatching {
-        Settings.System.canWrite(app) || Shell.isAppGrantedRoot() == true
+        Settings.System.canWrite(app) ||
+            PrivilegeManager.snapshot.value.effectiveLevel(ExecutionModeStore.current())
+                .atLeast(PrivilegeLevel.SHIZUKU)
     }.getOrDefault(false)
 
     fun openWriteSettings() {

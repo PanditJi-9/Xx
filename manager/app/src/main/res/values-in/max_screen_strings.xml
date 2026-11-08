@@ -258,7 +258,6 @@
     <string name="max_privilege_feat_theme">Tema dan bahasa</string>
     <string name="max_privilege_feat_logs">Log dan penampil acara</string>
     <string name="max_privilege_feat_density">Kepadatan dan ukuran tampilan</string>
-    <string name="max_privilege_feat_dns">DNS Pribadi</string>
     <string name="max_privilege_feat_freeze">Bekukan dan nonaktifkan aplikasi</string>
     <string name="max_privilege_feat_appops">Izin aplikasi (AppOps)</string>
     <string name="max_privilege_feat_doze">Daftar putih Istirahatkan</string>

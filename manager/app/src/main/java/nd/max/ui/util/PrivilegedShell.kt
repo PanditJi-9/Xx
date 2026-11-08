@@ -16,8 +16,6 @@
 
 package nd.max.ui.util
 
-import com.topjohnwu.superuser.Shell
-
 /**
  * غلاف رقيق على `Shell` — **أصل مشترك لا ملك ميزة**.
  *
@@ -52,13 +50,13 @@ object PrivilegedShell {
 
     /** مخرج الأمر مُشذَّبًا سطرًا سطرًا، أو `null` إن فشل التنفيذ. */
     fun run(vararg commands: String): List<String>? = runCatching {
-        val result = Shell.cmd(*commands).exec()
+        val result = nd.max.core.privilege.RootCommands.cmd(*commands).exec()
         if (result.isSuccess) result.out.map(String::trim) else null
     }.getOrNull()
 
     /** الأمر بمخرجه وخطئه معًا — للمواضع التي يكون فيها الخطأ جزءًا من القياس. */
     fun runDetailed(vararg commands: String): ShellOutcome? = runCatching {
-        val result = Shell.cmd(*commands).exec()
+        val result = nd.max.core.privilege.RootCommands.cmd(*commands).exec()
         ShellOutcome(
             out = result.out.map(String::trim),
             err = result.err.map(String::trim),

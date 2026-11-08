@@ -258,7 +258,6 @@
     <string name="max_privilege_feat_theme">Tema și limbajul</string>
     <string name="max_privilege_feat_logs">Jurnal și vizualizator de evenimente</string>
     <string name="max_privilege_feat_density">Densitatea și dimensiunea afișajului</string>
-    <string name="max_privilege_feat_dns">DNS privat</string>
     <string name="max_privilege_feat_freeze">Înghețați și dezactivați aplicațiile</string>
     <string name="max_privilege_feat_appops">Permisiuni pentru aplicații (AppOps)</string>
     <string name="max_privilege_feat_doze">Doze lista albă</string>

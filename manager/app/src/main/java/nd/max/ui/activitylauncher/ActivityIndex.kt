@@ -14,7 +14,6 @@ import android.content.pm.ApplicationInfo
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.os.Build
-import com.topjohnwu.superuser.Shell
 
 /**
  * An installed package that declares at least one activity.
@@ -194,7 +193,7 @@ object ActivityLauncher {
     fun launchAsRoot(packageName: String, activityName: String): Boolean {
         val component = "$packageName/$activityName"
         return runCatching {
-            Shell.cmd("am start -n $component").exec().isSuccess
+            nd.max.core.privilege.RootCommands.cmd("am start -n $component").exec().isSuccess
         }.getOrDefault(false)
     }
 }

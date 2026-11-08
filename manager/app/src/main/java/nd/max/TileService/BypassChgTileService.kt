@@ -20,7 +20,6 @@ import nd.max.MaxManagerProps
 
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
-import com.topjohnwu.superuser.Shell
 import nd.max.R
 import nd.max.core.gamespace.BypassVerdict
 import nd.max.core.platform.PropertyUtils
@@ -68,7 +67,7 @@ class BypassChgTileService : TileService() {
         // كتابة مُتحقَّقة (ثلاث طرق متصاعدة داخل `setAndConfirm`)، ثم الملفّ **أفضل جهد**: مسار
         // القراءة في هذا التطبيق هو الخصيصة، والملفّ تقرؤه الوحدة. فلا يُبنى الحكم على الملفّ أبدًا.
         PropertyUtils.setAndConfirm(BYPASS_PROP, value)
-        Shell.cmd("echo $value > $BYPASSCHG_FILE").exec()
+        nd.max.core.privilege.RootCommands.cmd("echo $value > $BYPASSCHG_FILE").exec()
     }
 
     private fun updateTileState() {

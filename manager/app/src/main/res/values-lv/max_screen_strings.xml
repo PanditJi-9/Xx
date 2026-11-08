@@ -257,7 +257,6 @@
     <string name="max_privilege_feat_theme">Tēma un valoda</string>
     <string name="max_privilege_feat_logs">Žurnāls un notikumu skatītājs</string>
     <string name="max_privilege_feat_density">Displeja blīvums un izmērs</string>
-    <string name="max_privilege_feat_dns">Privāts DNS</string>
     <string name="max_privilege_feat_freeze">Iesaldējiet un atspējojiet lietotnes</string>
     <string name="max_privilege_feat_appops">Lietotņu atļaujas (AppOps)</string>
     <string name="max_privilege_feat_doze">Doze baltais saraksts</string>

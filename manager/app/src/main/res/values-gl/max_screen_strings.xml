@@ -258,7 +258,6 @@
     <string name="max_privilege_feat_theme">Tema e linguaxe</string>
     <string name="max_privilege_feat_logs">Visor de rexistros e eventos</string>
     <string name="max_privilege_feat_density">Densidade e tamaño de visualización</string>
-    <string name="max_privilege_feat_dns">DNS privado</string>
     <string name="max_privilege_feat_freeze">Conxelar e desactivar aplicacións</string>
     <string name="max_privilege_feat_appops">Permisos da aplicación (AppOps)</string>
     <string name="max_privilege_feat_doze">Doze lista branca</string>

@@ -55,7 +55,6 @@ package nd.max.ui.util
 import android.content.Context
 import android.graphics.drawable.Drawable
 import android.os.PowerManager
-import com.topjohnwu.superuser.Shell
 
 /** A single installed app as shown on the Doze Mode whitelist list. */
 data class DozeAppInfo(
@@ -98,7 +97,7 @@ object DozeModeUtil {
      * (`isSupported` ← `get deep`، ثم `getGmsDozeMode` ← `am get-standby-bucket`، ثم
      * `getDozeState` ← `get deep` **مرة ثانية**، ثم `getLightDozeState` ← `get light`).
      * وكلّها تمرّ بالصدفة الواحدة المُسلسَلة، و`dumpsys` من أبطأ أوامرها — فالأربع تُجمع
-     * زمنًا على أوّل إطار مفيد. وصارت الأوامر **أربعة في تنفيذ واحد** (`Shell.cmd(a,b,c,…)`
+     * زمنًا على أوّل إطار مفيد. وصارت الأوامر **أربعة في تنفيذ واحد** (`PlatformShell.exec(a,b,c,…)`
      * تُكتب كلّها في مدخل الصدفة نفسه، بترتيبها)، والفصل بعلامتين — وكل أمر **لم يُمسّ نصّه**
      * ولا تحليله، فلا يتغيّر معنى شيء.
      *
@@ -113,16 +112,14 @@ object DozeModeUtil {
     )
 
     fun readSnapshot(): DozeSnapshot {
-        val result = runCatching {
-            Shell.cmd(
-                "dumpsys deviceidle get deep",
-                "echo $MARK_LIGHT",
-                "dumpsys deviceidle get light",
-                "echo $MARK_BUCKET",
-                "am get-standby-bucket $GMS_PACKAGE",
-            ).exec()
-        }.getOrNull()
-        val lines = result?.out?.map { it.trim() }.orEmpty()
+        val result = nd.max.core.privilege.PlatformShell.exec(
+            "dumpsys deviceidle get deep",
+            "echo $MARK_LIGHT",
+            "dumpsys deviceidle get light",
+            "echo $MARK_BUCKET",
+            "am get-standby-bucket $GMS_PACKAGE",
+        )
+        val lines = result?.lines.orEmpty()
 
         val lightAt = lines.indexOf(MARK_LIGHT)
         val bucketAt = lines.indexOf(MARK_BUCKET)
@@ -182,7 +179,7 @@ object DozeModeUtil {
      * على جهاز يعمل فيه `get deep`.
      */
     private fun fullDump(): FullDump? {
-        val out = runCatching { Shell.cmd("dumpsys deviceidle").exec().out }.getOrNull() ?: return null
+        val out = nd.max.core.privilege.PlatformShell.exec("dumpsys deviceidle")?.lines ?: return null
         fun after(vararg keys: String): DozeState {
             keys.forEach { key ->
                 val raw = out.firstOrNull { it.trim().startsWith(key) } ?: return@forEach
@@ -200,13 +197,13 @@ object DozeModeUtil {
 
     /** Whether this device's DeviceIdleController responds to `dumpsys deviceidle`. */
     fun isSupported(): Boolean {
-        val result = Shell.cmd("dumpsys deviceidle get deep").exec()
-        return result.isSuccess && result.out.joinToString("").isNotBlank()
+        val result = nd.max.core.privilege.PlatformShell.exec("dumpsys deviceidle get deep")
+        return result?.ok == true && result.lines.joinToString("").isNotBlank()
     }
 
     /** Reads the current deep-doze state via `dumpsys deviceidle get deep`. */
     fun getDozeState(): DozeState {
-        val direct = Shell.cmd("dumpsys deviceidle get deep").exec().out
+        val direct = nd.max.core.privilege.PlatformShell.exec("dumpsys deviceidle get deep")?.lines.orEmpty()
             .joinToString("") { it.trim() }
             .trim()
         return mapState(if (direct.isNotBlank()) direct else fullDumpRaw())
@@ -220,7 +217,7 @@ object DozeModeUtil {
 
     /** Reads the current light-doze state via `dumpsys deviceidle get light`. */
     private fun getLightDozeState(): DozeState {
-        val raw = Shell.cmd("dumpsys deviceidle get light").exec().out
+        val raw = nd.max.core.privilege.PlatformShell.exec("dumpsys deviceidle get light")?.lines.orEmpty()
             .joinToString("") { it.trim() }
             .trim()
         return mapState(raw)
@@ -250,11 +247,11 @@ object DozeModeUtil {
         else -> null
     }
 
-    fun forceIdle(): Boolean = Shell.cmd("dumpsys deviceidle force-idle").exec().isSuccess
+    fun forceIdle(): Boolean = nd.max.core.privilege.PlatformShell.exec("dumpsys deviceidle force-idle")?.ok == true
 
-    fun stepIdleState(): Boolean = Shell.cmd("dumpsys deviceidle step").exec().isSuccess
+    fun stepIdleState(): Boolean = nd.max.core.privilege.PlatformShell.exec("dumpsys deviceidle step")?.ok == true
 
-    fun unforceIdle(): Boolean = Shell.cmd("dumpsys deviceidle unforce").exec().isSuccess
+    fun unforceIdle(): Boolean = nd.max.core.privilege.PlatformShell.exec("dumpsys deviceidle unforce")?.ok == true
 
     /**
      * Reads/updates the local idle-cycle counters. Call after any state
@@ -307,7 +304,7 @@ object DozeModeUtil {
     /** Adds/removes [packageName] from the deep-doze whitelist ("unrestricted battery"). */
     fun setWhitelisted(packageName: String, whitelisted: Boolean): Boolean {
         val op = if (whitelisted) "+" else "-"
-        return Shell.cmd("dumpsys deviceidle whitelist $op$packageName").exec().isSuccess
+        return nd.max.core.privilege.PlatformShell.exec("dumpsys deviceidle whitelist $op$packageName")?.ok == true
     }
 
     fun getInstalledApps(context: Context): List<DozeAppInfo> {
@@ -328,7 +325,7 @@ object DozeModeUtil {
     }
 
     fun getGmsDozeMode(): GmsDozeMode {
-        val raw = Shell.cmd("am get-standby-bucket $GMS_PACKAGE").exec().out
+        val raw = nd.max.core.privilege.PlatformShell.exec("am get-standby-bucket $GMS_PACKAGE")?.lines.orEmpty()
             .joinToString("") { it.trim() }
             .trim()
             .lowercase()
@@ -336,5 +333,5 @@ object DozeModeUtil {
     }
 
     fun setGmsDozeMode(mode: GmsDozeMode): Boolean =
-        Shell.cmd("am set-standby-bucket $GMS_PACKAGE ${mode.bucket}").exec().isSuccess
+        nd.max.core.privilege.PlatformShell.exec("am set-standby-bucket $GMS_PACKAGE ${mode.bucket}")?.ok == true
 }

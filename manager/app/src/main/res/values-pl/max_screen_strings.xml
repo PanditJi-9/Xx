@@ -259,7 +259,6 @@
     <string name="max_privilege_feat_theme">Temat i język</string>
     <string name="max_privilege_feat_logs">Przeglądarka dzienników i zdarzeń</string>
     <string name="max_privilege_feat_density">Gęstość i rozmiar wyświetlacza</string>
-    <string name="max_privilege_feat_dns">Prywatny DNS</string>
     <string name="max_privilege_feat_freeze">Blokuj i wyłączaj aplikacje</string>
     <string name="max_privilege_feat_appops">Uprawnienia aplikacji (AppOps)</string>
     <string name="max_privilege_feat_doze">Uśpij białą listę</string>

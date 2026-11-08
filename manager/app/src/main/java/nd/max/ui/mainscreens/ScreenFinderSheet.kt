@@ -86,7 +86,8 @@ fun ScreenFinderSheet(
     }
     // الفهرس يُبنى مرّة لكل فتحة: نصوصه من موارد لغة الواجهة، وتغيير اللغة يُعيد إنشاء النشاط
     // (`AppLanguage.reload`) فلا حاجة لبناء صافٍ في كل حرف يكتبه المستخدم.
-    val targets = remember(context, usage) { screenFinderTargets(context::getString, usage) }
+    val access = nd.max.ui.navigation.rememberDestinationAccess()
+    val targets = remember(context, usage, access) { screenFinderTargets(context::getString, usage, access) }
     val results = screenFinderResults(query, targets)
     val suggestions = if (query.isBlank()) screenFinderSuggestions(targets) else emptyList()
 

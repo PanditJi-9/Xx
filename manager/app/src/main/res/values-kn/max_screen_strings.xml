@@ -259,7 +259,6 @@
     <string name="max_privilege_feat_theme">ಥೀಮ್ ಮತ್ತು ಭಾಷೆ</string>
     <string name="max_privilege_feat_logs">ಲಾಗ್ ಮತ್ತು ಈವೆಂಟ್ ವೀಕ್ಷಕ</string>
     <string name="max_privilege_feat_density">ಪ್ರದರ್ಶನ ಸಾಂದ್ರತೆ ಮತ್ತು ಗಾತ್ರ</string>
-    <string name="max_privilege_feat_dns">ಖಾಸಗಿ DNS</string>
     <string name="max_privilege_feat_freeze">ಅಪ್ಲಿಕೇಶನ್‌ಗಳನ್ನು ಫ್ರೀಜ್ ಮಾಡಿ ಮತ್ತು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ</string>
     <string name="max_privilege_feat_appops">ಅಪ್ಲಿಕೇಶನ್ ಅನುಮತಿಗಳು (AppOps)</string>
     <string name="max_privilege_feat_doze">ಡೋಜ್ ಶ್ವೇತಪಟ್ಟಿ</string>

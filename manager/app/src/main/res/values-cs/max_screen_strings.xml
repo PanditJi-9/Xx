@@ -258,7 +258,6 @@
     <string name="max_privilege_feat_theme">Téma a jazyk</string>
     <string name="max_privilege_feat_logs">Prohlížeč protokolů a událostí</string>
     <string name="max_privilege_feat_density">Hustota a velikost zobrazení</string>
-    <string name="max_privilege_feat_dns">Soukromé DNS</string>
     <string name="max_privilege_feat_freeze">Zmrazit a deaktivovat aplikace</string>
     <string name="max_privilege_feat_appops">Oprávnění aplikace (AppOps)</string>
     <string name="max_privilege_feat_doze">Doze whitelist</string>

@@ -21,7 +21,6 @@ import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.os.Build
 import android.os.Environment
-import com.topjohnwu.superuser.Shell
 import java.io.File
 import nd.max.ui.util.MaxBackupModel.Availability
 import nd.max.ui.util.MaxBackupModel.ComponentKind
@@ -113,7 +112,7 @@ object MaxBackupEngine {
 
     /** جذر فعلي: نتحقّق بأن UID يساوي 0 ولا نفترضه من وجود الوحدة. */
     fun hasRoot(): Boolean = runCatching {
-        val result = Shell.cmd("id -u").exec()
+        val result = nd.max.core.privilege.RootCommands.cmd("id -u").exec()
         result.isSuccess && result.out.firstOrNull()?.trim() == "0"
     }.getOrDefault(false)
 
@@ -617,13 +616,13 @@ object MaxBackupEngine {
             onStage(STAGE_APK)
             val ok = apkEntries.all { entry ->
                 val apk = File(folder, entry.file)
-                Shell.cmd("pm install -r -d ${quote(apk.absolutePath)} 2>/dev/null").exec().isSuccess
+                nd.max.core.privilege.RootCommands.cmd("pm install -r -d ${quote(apk.absolutePath)} 2>/dev/null").exec().isSuccess
             }
             if (!ok) failedStage = STAGE_APK
         }
 
         // ---- إيقاف قسري: الفكّ فوق تطبيق يعمل يعني ملفات مفتوحة تُكتب فوقها ------------
-        Shell.cmd("am force-stop ${quote(manifest.pkg)}").exec()
+        nd.max.core.privilege.RootCommands.cmd("am force-stop ${quote(manifest.pkg)}").exec()
 
         val dataEntries = manifest.entries.filter { it.kind == ComponentKind.APP_DATA }
         if (dataEntries.isNotEmpty()) {

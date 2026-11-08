@@ -26,6 +26,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,18 +35,21 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import nd.max.R
 import nd.max.core.privilege.AccessFilter
 import nd.max.core.privilege.AccessFilterStore
 import nd.max.core.privilege.ExecutionMode
 import nd.max.core.privilege.ExecutionModeStore
+import nd.max.core.privilege.ExecutionModeRules
 import nd.max.core.privilege.PrivilegeLevel
 import nd.max.core.privilege.PrivilegeManager
 import nd.max.core.privilege.RootManager
 import nd.max.core.privilege.RootManagerDetector
 import nd.max.core.privilege.SelinuxMode
 import nd.max.core.privilege.SelinuxStatus
+import nd.max.core.privilege.ShizukuGateway
 import nd.max.ui.design.MaxSpace
 
 /**
@@ -54,24 +58,26 @@ import nd.max.ui.design.MaxSpace
  * **ولماذا نافذة لا شاشة:** هذا قرار يُتَّخذ من مكانين (الرئيسية والإعدادات) ولا يستحقّ
  * `MaxDestination` جديدة؛ والنافذة تُغلق وتعيد المستخدم حيث كان.
  *
- * **وحدّ الصدق:** «Root» قابل للاختيار ولو لم يُمنح — لأنه نيّةٌ تُطلب عند أوّل أمر؛ والشرح يقول
- * إنه غير ممنوح الآن. ولا نُخفي خيارًا لنجمّل الحالة.
+ * اختيار الوضع ليس منحًا للصلاحية: الطلب زر صريح، والحالة المعروضة هي المسار الفعّال.
  */
 @Composable
 fun AccessModeDialog(onDismiss: () -> Unit) {
     val context = LocalContext.current
     val snapshot by PrivilegeManager.snapshot.collectAsState()
 
-    var mode by remember { mutableStateOf(ExecutionModeStore.current()) }
-    var filter by remember { mutableStateOf(AccessFilterStore.current()) }
-    var rootManager by remember { mutableStateOf(RootManager.NONE) }
+    val selection by ExecutionModeStore.state.collectAsState()
+    val mode = selection.mode
+    val filter by AccessFilterStore.state.collectAsState()
+    val scope = rememberCoroutineScope()
+    var requesting by remember { mutableStateOf(false) }
+    var rootManager by remember { mutableStateOf(RootManager.UNKNOWN) }
     var selinux by remember { mutableStateOf(SelinuxMode.UNKNOWN) }
 
     LaunchedEffect(Unit) {
-        PrivilegeManager.refresh()
+        withContext(Dispatchers.IO) { PrivilegeManager.refresh() }
         selinux = withContext(Dispatchers.IO) { SelinuxStatus.read() }
     }
-    LaunchedEffect(snapshot.rootGranted) {
+    LaunchedEffect(snapshot.rootGranted, selection) {
         rootManager = withContext(Dispatchers.IO) { RootManagerDetector.detect(snapshot.rootGranted) }
     }
 
@@ -83,7 +89,7 @@ fun AccessModeDialog(onDismiss: () -> Unit) {
                 modifier = Modifier.verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(MaxSpace.sm)
             ) {
-                FactRow(stringResource(R.string.access_status_level), stringResource(snapshot.level.labelRes))
+                FactRow(stringResource(R.string.access_status_level), stringResource(snapshot.effectiveLevel(mode).labelRes))
                 FactRow(stringResource(R.string.access_status_root_manager), stringResource(rootManager.labelRes()))
                 FactRow(stringResource(R.string.access_status_selinux), stringResource(selinux.labelRes()))
 
@@ -94,9 +100,8 @@ fun AccessModeDialog(onDismiss: () -> Unit) {
                         subtitle = stringResource(entry.descriptionRes(snapshot.level, snapshot.shizuku.ready)),
                         selected = mode == entry,
                         onSelect = {
-                            mode = entry
                             ExecutionModeStore.save(context, entry)
-                            PrivilegeManager.refresh()
+                            scope.launch { withContext(Dispatchers.IO) { PrivilegeManager.refresh() } }
                         }
                     )
                 }
@@ -108,10 +113,25 @@ fun AccessModeDialog(onDismiss: () -> Unit) {
                         subtitle = stringResource(entry.descriptionRes()),
                         selected = filter == entry,
                         onSelect = {
-                            filter = entry
                             AccessFilterStore.save(context, entry)
                         }
                     )
+                }
+
+                if (ExecutionModeRules.mayUseRoot(mode) && !snapshot.rootGranted) {
+                    TextButton(enabled = !requesting, onClick = {
+                        scope.launch {
+                            requesting = true
+                            try {
+                                withContext(Dispatchers.IO) { PrivilegeManager.requestRoot(); PrivilegeManager.refresh() }
+                            } finally { requesting = false }
+                        }
+                    }) { Text(stringResource(R.string.max_privilege_check_root)) }
+                }
+                if (ExecutionModeRules.mayUseShizuku(mode) && !snapshot.shizuku.ready) {
+                    TextButton(onClick = { ShizukuGateway.requestPermission() }) {
+                        Text(stringResource(R.string.max_privilege_shizuku_connect))
+                    }
                 }
 
                 Text(
@@ -216,6 +236,7 @@ private fun AccessFilter.descriptionRes(): Int = when (this) {
 
 private fun RootManager.labelRes(): Int = when (this) {
     RootManager.NONE -> R.string.access_root_manager_none
+    RootManager.UNKNOWN -> R.string.access_selinux_unknown
     RootManager.MAGISK -> R.string.access_root_manager_magisk
     RootManager.KERNEL_SU -> R.string.access_root_manager_kernel_su
     RootManager.APATCH -> R.string.access_root_manager_apatch

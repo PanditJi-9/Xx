@@ -259,7 +259,6 @@
     <string name="max_privilege_feat_theme">થીમ અને ભાષા</string>
     <string name="max_privilege_feat_logs">લોગ અને ઇવેન્ટ દર્શક</string>
     <string name="max_privilege_feat_density">ઘનતા અને કદ દર્શાવો</string>
-    <string name="max_privilege_feat_dns">ખાનગી DNS</string>
     <string name="max_privilege_feat_freeze">એપ્લિકેશન્સને સ્થિર અને અક્ષમ કરો</string>
     <string name="max_privilege_feat_appops">એપ્લિકેશન પરવાનગીઓ (AppOps)</string>
     <string name="max_privilege_feat_doze">ડોઝ વ્હાઇટલિસ્ટ</string>

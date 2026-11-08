@@ -22,7 +22,10 @@ object PrivilegeManager {
         val level: PrivilegeLevel = PrivilegeLevel.NONE,
         val shizuku: ShizukuState = ShizukuState(),
         val rootGranted: Boolean = false,
-    )
+    ) {
+        fun effectiveLevel(mode: ExecutionMode): PrivilegeLevel =
+            ExecutionModeRules.level(mode, rootGranted, shizuku.ready)
+    }
 
     private val _snapshot = MutableStateFlow(Snapshot())
     val snapshot: StateFlow<Snapshot> = _snapshot.asStateFlow()
@@ -32,11 +35,23 @@ object PrivilegeManager {
         Shell.getCachedShell()?.isRoot == true
     }.getOrDefault(false)
 
+    /**
+     * حكم الجذر **الثلاثيّ** كما يراه libsu: `true` ممنوح، `false` مرفوض صراحةً، `null` لم يُسأل بعد.
+     *
+     * والفرق عن [cachedRootGranted] مقصود: بعض المسارات (الحارس، اختيار مستند اللعبة) تميّز
+     * «مرفوض» من «مجهول»، فطيّ `null` إلى `false` يُغيّر سلوك من لديه جذر لم تُسخَّن صدفته بعد.
+     */
+    fun cachedRootVerdict(): Boolean? = runCatching { Shell.isAppGrantedRoot() }.getOrNull()
+
     /** فعل صريح من المستخدم: يطلب الجذر (قد تُظهر نافذة الصلاحية). */
     fun requestRoot(): Boolean = runCatching {
+        if (!ExecutionModeRules.mayUseRoot(ExecutionModeStore.current())) return false
+        val generation = ExecutionModeStore.generation()
         val cached = Shell.getCachedShell()
         if (cached != null && !cached.isRoot) cached.close()
-        Shell.getShell().isRoot
+        Shell.getShell().isRoot && ExecutionModeRules.mayDispatch(
+            ExecutionModeStore.current(), generation, ExecutionModeStore.generation(), PrivilegedShellRules.Lane.ROOT,
+        )
     }.getOrDefault(false)
 
     fun start() {

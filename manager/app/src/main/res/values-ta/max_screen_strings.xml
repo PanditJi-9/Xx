@@ -259,7 +259,6 @@
     <string name="max_privilege_feat_theme">தீம் மற்றும் மொழி</string>
     <string name="max_privilege_feat_logs">பதிவு மற்றும் நிகழ்வு பார்வையாளர்</string>
     <string name="max_privilege_feat_density">காட்சி அடர்த்தி மற்றும் அளவு</string>
-    <string name="max_privilege_feat_dns">தனியார் டிஎன்எஸ்</string>
     <string name="max_privilege_feat_freeze">பயன்பாடுகளை முடக்கி முடக்கவும்</string>
     <string name="max_privilege_feat_appops">பயன்பாட்டு அனுமதிகள் (AppOps)</string>
     <string name="max_privilege_feat_doze">டோஸ் அனுமதிப்பட்டியல்</string>

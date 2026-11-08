@@ -63,7 +63,7 @@ object PropertyUtils {
             setMethod.invoke(null, key, value)
         } catch (e: Exception) {
             val safeValue = value.replace("'", "'\\''")
-            Shell.cmd("setprop $key '$safeValue'").submit()
+            nd.max.core.privilege.RootCommands.cmd("setprop $key '$safeValue'").submit()
         }
     }
 
@@ -109,12 +109,12 @@ object PropertyUtils {
             if (get(key, "") == value) return true
             // والعودة الصريحة إلى `exec()` لا `submit()`: هذه هي نقطة العطب نفسها.
             val safeValue = value.replace("'", "'\\''")
-            runCatching { Shell.cmd("setprop $key '$safeValue'").exec() }
+            runCatching { nd.max.core.privilege.RootCommands.cmd("setprop $key '$safeValue'").exec() }
             if (get(key, "") == value) return true
             // والباب الأخير: `resetprop` — لسياق تطبيقٍ يرفضه `init` على بعض الـROM/الوحدات
             // (الرفض التساعي المقيس في `pstore` للإقلاع السابق). ويُجرَّب **بعد** أن يفشل
             // المسار العادي، فلا يُغيَّر سلوك ما يعمل أصلًا.
-            runCatching { Shell.cmd(resetPropCommand(key, value)).exec() }
+            runCatching { nd.max.core.privilege.RootCommands.cmd(resetPropCommand(key, value)).exec() }
             if (get(key, "") == value) return true
         }
         return false

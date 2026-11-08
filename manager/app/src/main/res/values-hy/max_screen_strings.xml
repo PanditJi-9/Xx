@@ -258,7 +258,6 @@
     <string name="max_privilege_feat_theme">Թեման և լեզուն</string>
     <string name="max_privilege_feat_logs">Մատյան և իրադարձությունների դիտում</string>
     <string name="max_privilege_feat_density">Ցուցադրման խտությունը և չափը</string>
-    <string name="max_privilege_feat_dns">Անձնական DNS</string>
     <string name="max_privilege_feat_freeze">Սառեցնել և անջատել հավելվածները</string>
     <string name="max_privilege_feat_appops">Հավելվածի թույլտվություններ (AppOps)</string>
     <string name="max_privilege_feat_doze">Doze սպիտակ ցուցակ</string>

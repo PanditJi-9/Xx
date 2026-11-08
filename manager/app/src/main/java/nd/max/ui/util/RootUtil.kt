@@ -24,8 +24,6 @@ import nd.max.MaxManagerProps
 
 
 import android.os.FileObserver
-import com.topjohnwu.superuser.Shell
-import com.topjohnwu.superuser.io.SuFile
 import java.io.File
 import java.io.IOException
 import kotlinx.coroutines.Dispatchers
@@ -198,28 +196,22 @@ object RootUtils {
     }
 
     fun requestRootAccess(): Boolean {
-        val currentShell = Shell.getCachedShell()
-        if (currentShell != null && !currentShell.isRoot) {
-            currentShell.close()
-        }
-        return Shell.getShell().isRoot.also { if (it) RomRuntimeKick.onRootGranted() }
+        return nd.max.core.privilege.PrivilegeManager.requestRoot()
+            .also { if (it) RomRuntimeKick.onRootGranted() }
     }
 
     fun isRootGranted(): Boolean {
-        val currentShell = Shell.getCachedShell()
-        if (currentShell != null && !currentShell.isRoot) {
-            currentShell.close()
-        }
-        return Shell.getShell().isRoot.also { if (it) RomRuntimeKick.onRootGranted() }
+        return nd.max.core.privilege.ExecutionModeRules.mayUseRoot(nd.max.core.privilege.ExecutionModeStore.current()) &&
+            nd.max.core.privilege.PrivilegeManager.cachedRootGranted()
     }
 
     /** موديول مثبّت، **أو** تثبيت مدمج في الروم (ديمون في قسم النظام) — كلاهما «مثبّت» لا «ناقص». */
     fun isModuleInstalled(): Boolean {
-        return SuFile(MODULE_DIR).exists() || MaxManagerPaths.isRomInstall()
+        return nd.max.core.hardware.RootFileAccess.exists(MODULE_DIR) || MaxManagerPaths.isRomInstall()
     }
 
     fun getServiceStatusRes(): Pair<Int, String> {
-        val result = Shell.cmd("pidof sys.maxmanager-service").exec()
+        val result = nd.max.core.privilege.RootCommands.cmd("pidof sys.maxmanager-service").exec()
         return if (result.isSuccess) {
             val pid = result.out.firstOrNull() ?: ""
             R.string.status_alive to pid
@@ -252,10 +244,10 @@ object RootUtils {
     }.flowOn(Dispatchers.IO)
 
     fun isUpdateApkAvailable(): Boolean {
-        return SuFile(MaxManagerPaths.MODULE_APK).exists()
+        return nd.max.core.hardware.RootFileAccess.exists(MaxManagerPaths.MODULE_APK)
     }
 
     fun isModuleUpdatePendingReboot(): Boolean {
-        return SuFile("/data/adb/modules/MaxManager/update").exists()
+        return nd.max.core.hardware.RootFileAccess.exists("/data/adb/modules/MaxManager/update")
     }
 }

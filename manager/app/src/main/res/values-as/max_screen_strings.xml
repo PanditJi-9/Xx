@@ -257,7 +257,6 @@
     <string name="max_privilege_feat_theme">বিষয়বস্তু আৰু ভাষা</string>
     <string name="max_privilege_feat_logs">লগ আৰু ইভেন্ট দৰ্শক</string>
     <string name="max_privilege_feat_density">ঘনত্ব আৰু আকাৰ প্ৰদৰ্শন কৰক</string>
-    <string name="max_privilege_feat_dns">ব্যক্তিগত DNS</string>
     <string name="max_privilege_feat_freeze">এপসমূহ ফ্ৰীজ আৰু নিষ্ক্ৰিয় কৰক</string>
     <string name="max_privilege_feat_appops">এপ অনুমতিসমূহ (AppOps)</string>
     <string name="max_privilege_feat_doze">ড\'জ হোৱাইটলিষ্ট</string>

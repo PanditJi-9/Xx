@@ -72,7 +72,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.fox2code.androidansi.ktx.parseAsAnsiAnnotatedString
 import com.topjohnwu.superuser.CallbackList
-import com.topjohnwu.superuser.Shell
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -130,7 +129,7 @@ fun BypassChargeCheckScreen(navController: NavController) {
         
         scope.launch(Dispatchers.IO) {
             val binary = MaxManagerPaths.serviceBin()
-            val result = Shell.cmd("$binary -bpl 2>&1").exec()
+            val result = nd.max.core.privilege.RootCommands.cmd("$binary -bpl 2>&1").exec()
             val output = result.out
             val ansi = Regex("\u001B\\[[;\\d]*m")
             val parsedList = output.map { it.replace(ansi, "") }
@@ -217,7 +216,7 @@ fun BypassChargeCheckScreen(navController: NavController) {
     
             // المسار من `MaxManagerPaths` لا مكتوبًا هنا ثانيةً: مركزيّ منذ `SERVICE_BIN`،
             // ونسخة ثانية منه تنحرف بأوّل تغيير للمسار.
-            Shell.cmd("${MaxManagerPaths.serviceBin()} -cbc 2>&1").to(callbackList).submit { result ->
+            nd.max.core.privilege.RootCommands.cmd("${MaxManagerPaths.serviceBin()} -cbc 2>&1").to(callbackList).submit { result ->
                 isRunning = false
                 hasRunDiagnosis = true
     

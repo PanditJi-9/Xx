@@ -146,7 +146,7 @@ class StatusBarIcons(
         )
 
         private fun readShell(namespace: String, key: String): String? = runCatching {
-            val out = com.topjohnwu.superuser.Shell.cmd("settings get $namespace $key").exec().out
+            val out = nd.max.core.privilege.RootCommands.cmd("settings get $namespace $key").exec().out
             out.firstOrNull()?.trim()?.takeIf { it.isNotEmpty() && it != "null" }
         }.getOrNull()
 

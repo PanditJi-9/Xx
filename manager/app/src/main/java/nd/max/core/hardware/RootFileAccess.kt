@@ -9,7 +9,6 @@
  */
 package nd.max.core.hardware
 
-import com.topjohnwu.superuser.Shell
 import nd.max.core.daemon.DaemonIpc
 import nd.max.core.jni.ProbeBridge
 import nd.max.core.platform.EventLog
@@ -56,7 +55,7 @@ object RootFileAccess {
     fun writable(path: String): Boolean = runCatching {
         if (File(path).canWrite()) return@runCatching true
         if (DaemonIpc.default.canWrite(path) == true) return@runCatching true
-        Shell.cmd("test -w ${quote(path)}").exec().isSuccess
+        nd.max.core.privilege.RootCommands.cmd("test -w ${quote(path)}").exec().isSuccess
     }.getOrDefault(false)
 
     fun read(path: String): String? =
@@ -260,12 +259,10 @@ object RootFileAccess {
         binder = { RootNodeChannel.service?.writeText(path, value) },
         shell = {
             val p = quote(path)
-            Shell.cmd(
-                "m=\$(stat -c %a $p 2>/dev/null)",
-                "chmod 644 $p 2>/dev/null",
-                "printf '%s\\n' ${quote(value)} > $p",
-                "chmod \$m $p 2>/dev/null"
-            ).exec().isSuccess
+            nd.max.core.privilege.RootCommands.cmd("m=\$(stat -c %a $p 2>/dev/null)",
+            "chmod 644 $p 2>/dev/null",
+            "printf '%s\\n' ${quote(value)} > $p",
+            "chmod \$m $p 2>/dev/null").exec().isSuccess
         },
     )
 
@@ -279,7 +276,7 @@ object RootFileAccess {
             runCatching { service.listNames(path, false).filter(String::isNotBlank) }
                 .getOrNull()?.takeIf { it.isNotEmpty() }?.let { return it.distinct() }
         }
-        val result = Shell.cmd("ls -1A ${quote(path)} 2>/dev/null").exec()
+        val result = nd.max.core.privilege.RootCommands.cmd("ls -1A ${quote(path)} 2>/dev/null").exec()
         if (!result.isSuccess) emptyList()
         else result.out.map(String::trim).filter { it.isNotEmpty() && it != "." && it != ".." }.distinct()
     }.getOrDefault(emptyList())
@@ -293,7 +290,7 @@ object RootFileAccess {
                 .getOrNull()?.takeIf { it.isNotEmpty() }?.let { return it.distinct() }
         }
         runCatching {
-            val result = Shell.cmd("ls -1 ${quote(path)} 2>/dev/null").exec()
+            val result = nd.max.core.privilege.RootCommands.cmd("ls -1 ${quote(path)} 2>/dev/null").exec()
             if (result.isSuccess) {
                 val names = result.out.map(String::trim).filter(String::isNotEmpty)
                 if (names.isNotEmpty()) return names.distinct()
@@ -305,14 +302,12 @@ object RootFileAccess {
     }
 
     fun remove(path: String): Boolean = runCatching {
-        Shell.cmd("rm -f ${quote(path)}").exec().isSuccess
+        nd.max.core.privilege.RootCommands.cmd("rm -f ${quote(path)}").exec().isSuccess
     }.getOrDefault(false)
 
     /** Expand a shell glob into directory paths when direct directory listing is hidden. */
     fun globDirectories(pattern: String): List<String> = runCatching {
-        val result = Shell.cmd(
-            "for d in $pattern; do [ -d \"\$d\" ] && printf '%s\\n' \"\$d\"; done"
-        ).exec()
+        val result = nd.max.core.privilege.RootCommands.cmd("for d in $pattern; do [ -d \"\$d\" ] && printf '%s\\n' \"\$d\"; done").exec()
         if (!result.isSuccess) emptyList() else result.out.map(String::trim).filter(String::isNotBlank).distinct()
     }.getOrDefault(emptyList())
 
@@ -320,12 +315,10 @@ object RootFileAccess {
         val tmp = "$path.tmp"
         val encoded = android.util.Base64.encodeToString(content.toByteArray(Charsets.UTF_8), android.util.Base64.NO_WRAP)
         val parent = File(path).parent
-        if (!parent.isNullOrBlank()) Shell.cmd("mkdir -p ${quote(parent)}").exec()
-        val result = Shell.cmd(
-            "printf '%s' ${quote(encoded)} | base64 -d > ${quote(tmp)}",
-            "chmod 600 ${quote(tmp)} 2>/dev/null || true",
-            "mv -f ${quote(tmp)} ${quote(path)}"
-        ).exec()
+        if (!parent.isNullOrBlank()) nd.max.core.privilege.RootCommands.cmd("mkdir -p ${quote(parent)}").exec()
+        val result = nd.max.core.privilege.RootCommands.cmd("printf '%s' ${quote(encoded)} | base64 -d > ${quote(tmp)}",
+        "chmod 600 ${quote(tmp)} 2>/dev/null || true",
+        "mv -f ${quote(tmp)} ${quote(path)}").exec()
         result.isSuccess
     }.getOrDefault(false)
 
@@ -338,22 +331,20 @@ object RootFileAccess {
         val tmp = "$path.tmp"
         val encoded = android.util.Base64.encodeToString(content.toByteArray(Charsets.UTF_8), android.util.Base64.NO_WRAP)
         val parent = File(path).parent
-        if (!parent.isNullOrBlank()) Shell.cmd("mkdir -p ${quote(parent)}").exec()
-        Shell.cmd(
-            "printf '%s' ${quote(encoded)} | base64 -d > ${quote(tmp)} && cat ${quote(tmp)} > ${quote(path)} && rm -f ${quote(tmp)}"
-        ).exec().isSuccess
+        if (!parent.isNullOrBlank()) nd.max.core.privilege.RootCommands.cmd("mkdir -p ${quote(parent)}").exec()
+        nd.max.core.privilege.RootCommands.cmd("printf '%s' ${quote(encoded)} | base64 -d > ${quote(tmp)} && cat ${quote(tmp)} > ${quote(path)} && rm -f ${quote(tmp)}").exec().isSuccess
     }.getOrDefault(false)
 
-    private fun shellTest(path: String): Boolean = Shell.cmd("test -e ${quote(path)}").exec().isSuccess
+    private fun shellTest(path: String): Boolean = nd.max.core.privilege.RootCommands.cmd("test -e ${quote(path)}").exec().isSuccess
 
     private fun shellRead(path: String): String? = runCatching {
-        val result = Shell.cmd("cat ${quote(path)} 2>/dev/null").exec()
+        val result = nd.max.core.privilege.RootCommands.cmd("cat ${quote(path)} 2>/dev/null").exec()
         if (result.isSuccess) result.out.joinToString("\n").trim().takeIf { it.isNotEmpty() } else null
     }.getOrNull()
 
     /** Execute a root shell command. Callers must construct only allow-listed commands. */
     fun exec(command: String): Int = runCatching {
-        if (Shell.cmd(command).exec().isSuccess) 0 else -1
+        if (nd.max.core.privilege.RootCommands.cmd(command).exec().isSuccess) 0 else -1
     }.getOrDefault(-1)
 
     /**
@@ -364,6 +355,6 @@ object RootFileAccess {
      * الخروج. وبلا نصّ تعود `null`، فيقول المنادي «غير معروف» ولا يخترع قيمة.
      */
     fun readCommand(command: String): String? = runCatching {
-        Shell.cmd(command).exec().out.joinToString("\n").trim().takeIf { it.isNotEmpty() }
+        nd.max.core.privilege.RootCommands.cmd(command).exec().out.joinToString("\n").trim().takeIf { it.isNotEmpty() }
     }.getOrNull()
 }

@@ -258,7 +258,6 @@
     <string name="max_privilege_feat_theme">Téma és nyelv</string>
     <string name="max_privilege_feat_logs">Napló és eseménynézegető</string>
     <string name="max_privilege_feat_density">Kijelző sűrűsége és mérete</string>
-    <string name="max_privilege_feat_dns">Privát DNS</string>
     <string name="max_privilege_feat_freeze">Lefagyasztja és letiltja az alkalmazásokat</string>
     <string name="max_privilege_feat_appops">Alkalmazásengedélyek (AppOps)</string>
     <string name="max_privilege_feat_doze">A szundikálás engedélyezési listája</string>

@@ -76,7 +76,9 @@ fun HomeDeckSettingsSheet(
 ) {
     // ما تعرضه المنصة الآن بالوضع القائم — منه يبدأ الاختيار اليدويّ، وفيه يرى المستخدم
     // أثر «التلقائي» قبل أن يتركه.
-    val current = homeDeckSelection(mode, manualKeys, usage)
+    val access = nd.max.ui.navigation.rememberDestinationAccess()
+    val pool = HomeDeckPool.filter { access.visible(it.destination) }
+    val current = homeDeckSelection(mode, manualKeys, usage, pool)
     val manual = manualKeys.distinct()
 
     CustomBottomSheet(visible = visible, onDismiss = onDismiss) {
@@ -148,6 +150,7 @@ fun HomeDeckSettingsSheet(
                 selected = manual,
                 usage = usage,
                 onManualChange = onManualChange,
+                pool = pool,
             )
         }
     }
@@ -197,9 +200,10 @@ private fun DeckPicker(
     selected: List<String>,
     usage: Map<String, Int>,
     onManualChange: (List<String>) -> Unit,
+    pool: List<HomeDeckEntry>,
 ) {
     val canAdd = selected.size < HOME_DECK_MAX
-    val canRemove = selected.size > HOME_DECK_MIN
+    val canRemove = pool.count { it.key in selected } > HOME_DECK_MIN
 
     LazyColumn(
         modifier = Modifier
@@ -209,7 +213,7 @@ private fun DeckPicker(
     ) {
         item(key = "deck_picker") {
             MaxGroup {
-                HomeDeckPool.forEachIndexed { index, entry ->
+                pool.forEachIndexed { index, entry ->
                     if (index > 0) MaxGroupDivider()
                     val checked = entry.key in selected
                     MaxSwitchRow(

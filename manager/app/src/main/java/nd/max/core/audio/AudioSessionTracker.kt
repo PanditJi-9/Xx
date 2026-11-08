@@ -11,7 +11,6 @@ import android.media.AudioManager.AudioPlaybackCallback
 import android.media.AudioPlaybackConfiguration
 import android.os.Handler
 import android.os.Looper
-import com.topjohnwu.superuser.Shell
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -247,11 +246,10 @@ class AudioSessionTracker @Inject constructor() {
      * يستطلع الجلسات النشطة عبر الروت للتطبيقات التي لا ترسل بث فتح الجلسة (كاليوتيوب والألعاب).
      */
     fun refreshViaRoot(): List<Int> {
-        val hasRoot = runCatching { Shell.isAppGrantedRoot() == true }.getOrDefault(false)
-        if (!hasRoot) return emptyList()
-        val dump = runCatching {
-            Shell.cmd("dumpsys media.audio_flinger 2>/dev/null").exec().out
-        }.getOrNull() ?: return emptyList()
+        // `dumpsys` أمر منصّة: يعمل بالجذر وبمستوى ADB عبر Shizuku. وكان حارس الجذر هنا
+        // يُعطّل الاستطلاع في وضع Shizuku رغم أن المنصّة تسمح به.
+        val dump = nd.max.core.privilege.PlatformShell.exec("dumpsys media.audio_flinger 2>/dev/null")
+            ?.lines ?: return emptyList()
 
         val parsed = parseAudioFlingerDump(dump)
         val added = mutableListOf<Int>()

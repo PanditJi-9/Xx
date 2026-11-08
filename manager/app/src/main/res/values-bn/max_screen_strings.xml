@@ -259,7 +259,6 @@
     <string name="max_privilege_feat_theme">থিম এবং ভাষা</string>
     <string name="max_privilege_feat_logs">লগ এবং ইভেন্ট দর্শক</string>
     <string name="max_privilege_feat_density">প্রদর্শন ঘনত্ব এবং আকার</string>
-    <string name="max_privilege_feat_dns">ব্যক্তিগত DNS</string>
     <string name="max_privilege_feat_freeze">অ্যাপ্লিকেশানগুলিকে নিথর এবং অক্ষম করুন৷</string>
     <string name="max_privilege_feat_appops">অ্যাপের অনুমতি (AppOps)</string>
     <string name="max_privilege_feat_doze">ডোজ হোয়াইটলিস্ট</string>

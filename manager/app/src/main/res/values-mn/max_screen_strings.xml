@@ -258,7 +258,6 @@
     <string name="max_privilege_feat_theme">Сэдэв ба хэл</string>
     <string name="max_privilege_feat_logs">Бүртгэл болон үйл явдал харагч</string>
     <string name="max_privilege_feat_density">Дэлгэцийн нягтрал ба хэмжээ</string>
-    <string name="max_privilege_feat_dns">Хувийн DNS</string>
     <string name="max_privilege_feat_freeze">Програмуудыг царцааж, идэвхгүй болгох</string>
     <string name="max_privilege_feat_appops">Аппликешны зөвшөөрөл (AppOps)</string>
     <string name="max_privilege_feat_doze">Цагаан жагсаалт</string>

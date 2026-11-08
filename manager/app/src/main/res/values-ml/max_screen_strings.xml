@@ -258,7 +258,6 @@
     <string name="max_privilege_feat_theme">പ്രമേയവും ഭാഷയും</string>
     <string name="max_privilege_feat_logs">ലോഗും ഇവൻ്റ് വ്യൂവറും</string>
     <string name="max_privilege_feat_density">ഡിസ്പ്ലേ സാന്ദ്രതയും വലിപ്പവും</string>
-    <string name="max_privilege_feat_dns">സ്വകാര്യ ഡിഎൻഎസ്</string>
     <string name="max_privilege_feat_freeze">ആപ്പുകൾ ഫ്രീസ് ചെയ്ത് പ്രവർത്തനരഹിതമാക്കുക</string>
     <string name="max_privilege_feat_appops">ആപ്പ് അനുമതികൾ (AppOps)</string>
     <string name="max_privilege_feat_doze">ഡോസ് വൈറ്റ്‌ലിസ്റ്റ്</string>

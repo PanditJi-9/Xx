@@ -258,7 +258,6 @@
     <string name="max_privilege_feat_theme">Тақырып және тіл</string>
     <string name="max_privilege_feat_logs">Журнал және оқиғаны қарау құралы</string>
     <string name="max_privilege_feat_density">Дисплейдің тығыздығы мен өлшемі</string>
-    <string name="max_privilege_feat_dns">Жеке DNS</string>
     <string name="max_privilege_feat_freeze">Қолданбаларды тоқтатыңыз және өшіріңіз</string>
     <string name="max_privilege_feat_appops">Қолданба рұқсаттары (AppOps)</string>
     <string name="max_privilege_feat_doze">Ақ тізім</string>

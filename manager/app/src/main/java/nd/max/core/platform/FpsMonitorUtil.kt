@@ -18,7 +18,6 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.graphics.drawable.Drawable
 import android.os.BatteryManager
-import com.topjohnwu.superuser.Shell
 import nd.max.core.hardware.RootFileAccess
 import kotlin.math.abs
 import java.util.regex.Pattern
@@ -28,8 +27,9 @@ enum class FpsReadMode { SURFACEFLINGER, KERNEL_NODE, DUMPSYS_TIMESTATS }
 /**
  * قراءة الإطارات الحيّة ومقاييس الحِمل للوحة التراكب ([nd.max.service.FpsOverlayService]).
  *
- * وكل قراءة صدفة تمرّ بـlibsu [Shell] — طريق الجذر الواحد في التطبيق — أو بـ
- * [nd.max.core.hardware.RootFileAccess] حين تكون العقدة مقروءة من العملية أصلًا.
+ * وكل قراءة صدفة تمرّ بـ[nd.max.core.privilege.PlatformShell] (فتعمل بالجذر وبمستوى ADB
+ * عبر Shizuku)، أو بـ[nd.max.core.hardware.RootFileAccess] حين تكون العقدة مقروءة من
+ * العملية أصلًا — ومسار عقدة النواة يبقى جذريًّا لا يُمرَّر إلى Shizuku.
  */
 object FpsMonitorUtil {
 
@@ -87,8 +87,13 @@ object FpsMonitorUtil {
         if (mode == FpsReadMode.KERNEL_NODE) findKernelFpsNode()
     }
 
+    /**
+     * قراءة منصّة (`dumpsys`/`service call`/`pidof`) — تمرّ من `PlatformShell` فتعمل بمستوى
+     * ADB في وضع Shizuku كما تعمل بالجذر. ومسار عقدة النواة يبقى في `RootFileAccess` ولا يمرّ
+     * من هنا، فالحدّ بين ما تحتاجه المنصّة وما يحتاجه مالك العتاد لم يُخلط.
+     */
     private fun shellOut(cmd: String): String =
-        Shell.cmd(cmd).exec().out.joinToString("\n").trim()
+        nd.max.core.privilege.PlatformShell.exec(cmd)?.output?.trim().orEmpty()
 
     /**
      * مصدر الإطارات — **بالذاكرة والتهدئة لا بالتكرار الأعمى** (جولة الحرارة واللاغ).
@@ -198,10 +203,10 @@ object FpsMonitorUtil {
 
     private fun readDumpsysFps(): Float {
         return try {
-            val out = shellOut(
-                "(dumpsys SurfaceFlinger --timestats -dump && " +
-                    "dumpsys SurfaceFlinger --timestats -clear -enable) | grep averageFPS"
-            )
+            // أمران منفصلان لا سلسلة `&&` ولا أقواس: قاعدة المنصّة تسمح بأمر واحد يُرشَّح
+            // بـ`grep`، والتنظيف بعد القراءة لا قبله حتى لا يمسح ما لم يُقرأ بعد.
+            val out = shellOut("dumpsys SurfaceFlinger --timestats -dump | grep averageFPS")
+            shellOut("dumpsys SurfaceFlinger --timestats -clear -enable")
             val value = Regex("averageFPS\\s*[=:]\\s*([0-9]+(?:\\.[0-9]+)?)", RegexOption.IGNORE_CASE)
                 .find(out)?.groupValues?.getOrNull(1)?.toFloatOrNull() ?: return 0f
             value.takeIf { it in 1f..240f } ?: 0f
@@ -251,7 +256,7 @@ object FpsMonitorUtil {
         if (now - focusedWindowCachedAtMs < FOREGROUND_TTL_MS) return focusedWindowCache
         val resolved = try {
             ForegroundAppResolver.parseResumedPackage(
-                shellOut("dumpsys window 2>/dev/null | grep -E 'mCurrentFocus|mFocusedApp'")
+                shellOut("dumpsys window 2>/dev/null | grep -e mCurrentFocus -e mFocusedApp")
             )
         } catch (e: Exception) { null }
         // الغياب يُخبَّأ أيضًا: العطب المتكرّر (بلا جذر، أو مخرَج بلا نافذة مركّزة) كان يُعاد

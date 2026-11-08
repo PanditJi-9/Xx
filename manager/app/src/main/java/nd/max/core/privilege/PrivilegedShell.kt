@@ -52,8 +52,10 @@ object PrivilegedShell {
      */
     suspend fun exec(command: String): Outcome = withContext(Dispatchers.IO) {
         // الوضع يختاره المستخدم ([ExecutionMode]): AUTO = السلوك السابق، وغيره يحصر المسار ولا يتنازل صامتًا.
-        val mode = ExecutionModeStore.current()
+        val generation = ExecutionModeStore.generation()
         val snapshot = PrivilegeManager.refresh()
+        val mode = ExecutionModeStore.current()
+        if (generation != ExecutionModeStore.generation()) return@withContext Outcome.Refused("mode-changed")
         when (ExecutionModeRules.lane(mode, snapshot.rootGranted, snapshot.shizuku.ready)) {
             PrivilegedShellRules.Lane.ROOT -> root(command)
             PrivilegedShellRules.Lane.SHIZUKU -> shizuku(command)
@@ -63,8 +65,12 @@ object PrivilegedShell {
 
     /** مسار الجذر كما كان (libsu) — والفرق الوحيد أن رمز الخروج يُعلَن ولا يُهمَل. */
     private fun root(command: String): Outcome {
-        val result = runCatching { Shell.cmd(command).exec() }.getOrNull()
+        val result = runCatching { nd.max.core.privilege.RootCommands.cmd(command).exec() }.getOrNull()
             ?: return Outcome.Refused(REASON_ROOT_FAILED)
+        // رفض البوابة بسبب تبديل الوضع ليس فشل أمر: هو «لا طبقة الآن» — نفس تمييز PlatformShell.
+        if (result.code == -1 && result.err.firstOrNull() == "mode-root-blocked") {
+            return Outcome.Refused("mode-changed")
+        }
         val merged = (result.out + result.err).joinToString("\n")
         return Outcome.Ran(
             PrivilegedShellRules.Lane.ROOT,

@@ -259,7 +259,6 @@
     <string name="max_privilege_feat_theme">თემა და ენა</string>
     <string name="max_privilege_feat_logs">ჟურნალი და მოვლენის მაყურებელი</string>
     <string name="max_privilege_feat_density">ჩვენების სიმკვრივე და ზომა</string>
-    <string name="max_privilege_feat_dns">პირადი DNS</string>
     <string name="max_privilege_feat_freeze">გაყინეთ და გამორთეთ აპლიკაციები</string>
     <string name="max_privilege_feat_appops">აპის ნებართვები (AppOps)</string>
     <string name="max_privilege_feat_doze">დოზის თეთრი სია</string>

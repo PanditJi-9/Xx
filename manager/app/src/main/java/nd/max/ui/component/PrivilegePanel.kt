@@ -111,8 +111,9 @@ fun PrivilegePanel(
     var detailsOpen by rememberSaveable { mutableStateOf(false) }
     // وضع الوصول والفلتر: المصدر الواحد نفسه الذي تفتحه شارة الرئيسية.
     var accessOpen by remember { mutableStateOf(false) }
-    var filter by remember { mutableStateOf(AccessFilterStore.current()) }
-    LaunchedEffect(accessOpen) { if (!accessOpen) filter = AccessFilterStore.current() }
+    val filter by AccessFilterStore.state.collectAsState()
+    val selection by nd.max.core.privilege.ExecutionModeStore.state.collectAsState()
+    val level = snapshot.effectiveLevel(selection.mode)
 
     // ── الاكتشاف التلقائي ───────────────────────────────────────────────────────
     // يُسجّل المستمعين على الخيط الرئيسي (كما يشترط جسر Shizuku) ثم يقرأ الطبقتين على
@@ -127,7 +128,7 @@ fun PrivilegePanel(
     val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_RESUME) PrivilegeManager.refresh()
+            if (event == Lifecycle.Event.ON_RESUME) scope.launch { withContext(Dispatchers.IO) { PrivilegeManager.refresh() } }
         }
         lifecycleOwner.lifecycle.addObserver(observer)
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
@@ -143,7 +144,7 @@ fun PrivilegePanel(
         }
     }
 
-    LaunchedEffect(snapshot.level) { onLevelChanged(snapshot.level) }
+    LaunchedEffect(level) { onLevelChanged(level) }
 
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -158,8 +159,8 @@ fun PrivilegePanel(
             Surface(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(maxRadius(MaxRadius.group)),
-                color = levelContainer(snapshot.level),
-                contentColor = levelContent(snapshot.level),
+                color = levelContainer(level),
+                contentColor = levelContent(level),
             ) {
                 Row(
                     modifier = Modifier
@@ -181,7 +182,7 @@ fun PrivilegePanel(
                             style = MaterialTheme.typography.labelMedium,
                         )
                         Text(
-                            text = stringResource(snapshot.level.labelRes),
+                            text = stringResource(level.labelRes),
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.ExtraBold,
                         )
@@ -195,14 +196,14 @@ fun PrivilegePanel(
                             CircularProgressIndicator(
                                 modifier = Modifier.size(MaxSize.iconGlyph),
                                 strokeWidth = MaxSpace.hairline,
-                                color = levelContent(snapshot.level),
+                                color = levelContent(level),
                             )
                         }
                     } else {
                         IconButton(
                             onClick = { rescan() },
                             colors = IconButtonDefaults.iconButtonColors(
-                                contentColor = levelContent(snapshot.level),
+                                contentColor = levelContent(level),
                             ),
                         ) {
                             Icon(
@@ -350,11 +351,11 @@ fun PrivilegePanel(
                     exit = shrinkVertically(tween(MaxDuration.quick)) +
                         fadeOut(tween(MaxDuration.quick)),
                 ) {
-                    FeatureDetails(level = snapshot.level, filter = filter)
+                    FeatureDetails(level = level, filter = filter)
                 }
             } else if (detailsOpen) {
                 // بلا حركة (تفضيل النظام): يظهر المحتوى مباشرة.
-                FeatureDetails(level = snapshot.level, filter = filter)
+                FeatureDetails(level = level, filter = filter)
             }
         }
     }

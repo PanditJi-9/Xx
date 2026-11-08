@@ -259,7 +259,6 @@
     <string name="max_privilege_feat_theme">Тема и език</string>
     <string name="max_privilege_feat_logs">Журнал и преглед на събития</string>
     <string name="max_privilege_feat_density">Плътност и размер на дисплея</string>
-    <string name="max_privilege_feat_dns">Частен DNS</string>
     <string name="max_privilege_feat_freeze">Замразяване и деактивиране на приложения</string>
     <string name="max_privilege_feat_appops">Разрешения за приложения (AppOps)</string>
     <string name="max_privilege_feat_doze">Doze бял списък</string>

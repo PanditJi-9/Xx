@@ -259,7 +259,6 @@
     <string name="max_privilege_feat_theme">ጭብጥ እና ቋንቋ</string>
     <string name="max_privilege_feat_logs">ምዝግብ ማስታወሻ እና ክስተት ተመልካች</string>
     <string name="max_privilege_feat_density">ጥግግት እና መጠን አሳይ</string>
-    <string name="max_privilege_feat_dns">የግል ዲ ኤን ኤስ</string>
     <string name="max_privilege_feat_freeze">መተግበሪያዎችን ያቁሙ እና ያሰናክሉ።</string>
     <string name="max_privilege_feat_appops">የመተግበሪያ ፈቃዶች (AppOps)</string>
     <string name="max_privilege_feat_doze">ዶዝ የተፈቀደላቸው ዝርዝር</string>

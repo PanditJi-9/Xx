@@ -11,7 +11,6 @@ package nd.max.ui.util
 import nd.max.core.platform.EventLog
 
 import android.os.SystemClock
-import com.topjohnwu.superuser.Shell
 
 /**
  * One ART compiler filter option, in the order shown to the user.
@@ -45,24 +44,24 @@ object Dex2oatUtil {
     /** Force-recompiles a single app with the given filter (`-f` = force recompile). */
     fun compileApp(packageName: String, filter: String): Boolean =
         measured("compile:$filter", packageName) {
-            Shell.cmd("cmd package compile -m $filter -f $packageName").exec().isSuccess
+            nd.max.core.privilege.RootCommands.cmd("cmd package compile -m $filter -f $packageName").exec().isSuccess
         }
 
     /** Clears compiled artifacts, reverting the app to its installer-time state. */
     fun resetApp(packageName: String): Boolean =
         measured("reset", packageName) {
-            Shell.cmd("cmd package compile --reset $packageName").exec().isSuccess
+            nd.max.core.privilege.RootCommands.cmd("cmd package compile --reset $packageName").exec().isSuccess
         }
 
     /** Force-recompiles every installed package (`-a` = all packages). Slow; run off the main thread. */
     fun compileAll(filter: String): Boolean =
         measured("compile_all:$filter", null) {
-            Shell.cmd("cmd package compile -m $filter -f -a").exec().isSuccess
+            nd.max.core.privilege.RootCommands.cmd("cmd package compile -m $filter -f -a").exec().isSuccess
         }
 
     /** Resets every installed package's compiled artifacts. Slow; run off the main thread. */
     fun resetAll(): Boolean =
         measured("reset_all", null) {
-            Shell.cmd("cmd package compile --reset -a").exec().isSuccess
+            nd.max.core.privilege.RootCommands.cmd("cmd package compile --reset -a").exec().isSuccess
         }
 }

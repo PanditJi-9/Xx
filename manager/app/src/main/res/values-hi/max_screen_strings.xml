@@ -258,7 +258,6 @@
     <string name="max_privilege_feat_theme">विषय और भाषा</string>
     <string name="max_privilege_feat_logs">लॉग और इवेंट व्यूअर</string>
     <string name="max_privilege_feat_density">घनत्व और आकार प्रदर्शित करें</string>
-    <string name="max_privilege_feat_dns">निजी डीएनएस</string>
     <string name="max_privilege_feat_freeze">ऐप्स को फ़्रीज़ और अक्षम करें</string>
     <string name="max_privilege_feat_appops">ऐप अनुमतियाँ (AppOps)</string>
     <string name="max_privilege_feat_doze">डोज़ श्वेतसूची</string>

@@ -259,7 +259,6 @@
     <string name="max_privilege_feat_theme">Tema og språk</string>
     <string name="max_privilege_feat_logs">Logg og hendelsesvisning</string>
     <string name="max_privilege_feat_density">Displaytetthet og størrelse</string>
-    <string name="max_privilege_feat_dns">Privat DNS</string>
     <string name="max_privilege_feat_freeze">Frys og deaktiver apper</string>
     <string name="max_privilege_feat_appops">Apptillatelser (AppOps)</string>
     <string name="max_privilege_feat_doze">Dum hviteliste</string>

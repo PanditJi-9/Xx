@@ -77,8 +77,9 @@ data class ScreenFinderTarget(
 fun screenFinderTargets(
     resolve: (Int) -> String,
     usage: Map<String, Int> = emptyMap(),
+    access: nd.max.ui.navigation.DestinationAccess? = null,
 ): List<ScreenFinderTarget> =
-    MaxDestination.Visible
+    MaxDestination.Visible.filter { access?.visible(it) != false }
         .filterNot { it.needsLaunchArgument }
         .map { destination ->
             ScreenFinderTarget(

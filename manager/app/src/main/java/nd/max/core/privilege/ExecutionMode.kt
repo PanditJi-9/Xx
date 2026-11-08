@@ -8,15 +8,15 @@
 package nd.max.core.privilege
 
 /**
- * وضع التنفيذ الذي يختاره المستخدم لمساحة الألعاب: **فصل صريح** بين الجذر وShizuku بدل الاختيار الصامت.
+ * وضع التنفيذ للتطبيق: فصل صريح بين الجذر وShizuku بدل الاختيار الصامت.
  *
  * - [AUTO]: السلوك السابق — الجذر إن وُجد، وإلا Shizuku، وإلا رفض.
  * - [ROOT]: الجذر وحده؛ لا يُلجأ إلى Shizuku إن غاب الجذر (يُرفض الأمر ويُقال السبب).
  * - [SHIZUKU]: Shizuku وحده؛ **لا يُستدعى `su` أبدًا** (لا نافذة صلاحية، ولا صدفة جذر تُسخَّن عند الإقلاع).
  * - [BASIC]: بلا امتياز؛ كل ما يحتاج صدفة مميَّزة يُرفض بسبب معلَن، وتبقى ما تسمح به المنصّة للتطبيق العادي.
  *
- * والوضع **يحكم مسار الأوامر المميّزة** (`PrivilegedShell.exec`) وتسخين صدفة الجذر عند الإقلاع؛ وشاشات
- * الجذر الأخرى (الوحدات، الملفات، …) تبقى على صدفتها ولا يمسّها هذا الاختيار.
+ * يحكم الأوامر المميّزة وقنوات الجذر (الصدفة وBinder والخادم). تبقى قراءات التطبيق العادي
+ * متاحة، ولا تتحوّل كتابة عقدة نواة إلى Shizuku لمجرّد اختيار اسمه.
  */
 enum class ExecutionMode(val id: String) {
     AUTO("auto"),
@@ -68,4 +68,14 @@ object ExecutionModeRules {
 
     /** هل يجوز لهذا الوضع أن يُسخِّن صدفة `su` عند الإقلاع؟ [ExecutionMode.SHIZUKU] و[ExecutionMode.BASIC] لا. */
     fun mayUseRoot(mode: ExecutionMode): Boolean = mode == ExecutionMode.AUTO || mode == ExecutionMode.ROOT
+
+    fun mayUseShizuku(mode: ExecutionMode): Boolean = mode == ExecutionMode.AUTO || mode == ExecutionMode.SHIZUKU
+
+    /** مهمة مؤجّلة من اختيار سابق لا تُنفّذ حتى لو عاد المستخدم لاحقًا إلى الوضع نفسه. */
+    fun mayDispatch(mode: ExecutionMode, createdGeneration: Long, currentGeneration: Long,
+                    lane: PrivilegedShellRules.Lane): Boolean =
+        createdGeneration == currentGeneration && when (lane) {
+            PrivilegedShellRules.Lane.ROOT -> mayUseRoot(mode)
+            PrivilegedShellRules.Lane.SHIZUKU -> mayUseShizuku(mode)
+        }
 }
