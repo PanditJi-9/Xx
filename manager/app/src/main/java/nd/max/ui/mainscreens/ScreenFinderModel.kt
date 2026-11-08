@@ -68,6 +68,11 @@ data class ScreenFinderTarget(
     val usage: Int = 0,
     /** وسم الخطورة إن كانت الوجهة موسومة بها، و`null` للوجهة العادية — لا نصّ يُصنَّع لها. */
     val riskNote: String? = null,
+    /**
+     * كلمات القصد التي ينطق بها المستخدم ولا تحملها أسماء الشاشات («شحن» · «سخونة» · «٦٠»).
+     * لا تُعرض أبدًا؛ تُطابَق فقط. والقائمة في [maxDestinationKeywords].
+     */
+    val keywords: List<String> = emptyList(),
 )
 
 /**
@@ -89,6 +94,7 @@ fun screenFinderTargets(
                 where = resolve(screenFinderWhereRes(destination)),
                 usage = usage[destination.route] ?: 0,
                 riskNote = screenFinderRiskRes(destination)?.let(resolve),
+                keywords = maxDestinationKeywords[destination].orEmpty(),
             )
         }
 
@@ -126,14 +132,24 @@ fun screenFinderResults(
     return targets
         .mapNotNull { target ->
             val titleRank = maxSearchRankFolded(target.title, needle)
-            val roleRank = if (titleRank < 0) maxSearchRankFolded(target.role, needle) else -1
-            val whereRank = if (titleRank < 0 && roleRank < 0) {
+            val keywordRank = if (titleRank < 0) {
+                maxSearchRankFolded(target.keywords.joinToString(" "), needle)
+            } else {
+                -1
+            }
+            val roleRank = if (titleRank < 0 && keywordRank < 0) {
+                maxSearchRankFolded(target.role, needle)
+            } else {
+                -1
+            }
+            val whereRank = if (titleRank < 0 && keywordRank < 0 && roleRank < 0) {
                 maxSearchRankFolded(target.where, needle)
             } else {
                 -1
             }
             val score = when {
                 titleRank >= 0 -> titleRank
+                keywordRank >= 0 -> KEYWORD_BASE + keywordRank
                 roleRank >= 0 -> ROLE_BASE + roleRank
                 whereRank >= 0 -> WHERE_BASE + whereRank
                 else -> return@mapNotNull null
@@ -174,5 +190,91 @@ private data class ScreenFinderHit(
 )
 
 /** مطابقةٌ في سطر الوصف تُرتَّب بعد كل مطابقات الاسم، ومطابقةٌ في المكان بعدها. */
+private const val KEYWORD_BASE = 5
 private const val ROLE_BASE = 10
 private const val WHERE_BASE = 20
+
+/**
+ * **كلمات القصد** — الجواب الوحيد المكتوب بيد في الفهرس، لأنه لا يُشتقّ من السجلّ.
+ *
+ * ولماذا لزمت: أسماء الشاشات تحمل الاسم التقنيّ («شحن التجاوز» · `FPSGO` · «ZRAM»)، والمستخدم
+ * يبحث بما يريد أن **يحدث** («شحن سريع» · «سخونة» · «٦٠» · «bypass»). والوسم `role` يشرح
+ * الشاشة ولكن بلسان المنتج، لا بلسان من كتب «بطارية».
+ *
+ * **ولغتان معًا في كل مدخل، لا لغة الواجهة وحدها:** العربية في واجهة إنجليزية تُكتب «شحن»،
+ * والإنجليزية في واجهة عربية تُكتب `bypass`. والكلمات هنا **لا تُعرض أبدًا**؛ تُطابَق فقط، فلا
+ * تحتاج ترجمة ولا تظهر في أيّ صفّ. ولا تفتح وجهةً مخفيّة: الفهرس يبني من `Visible` أولًا،
+ * والمدخل لوجهة غير معروضة يُهمَل.
+ *
+ * **وحدّها:** لا تُغني عن الاسم، وتأتي في الترتيب بعد مطابقة الاسم وقبل الوصف؛ فمن كتب اسم الشاشة
+ * كما هو لا يرى نتيجةً هامشية تسبقها. والاختبار `ScreenFinderTest` يقيس ثلاثتها.
+ */
+internal val maxDestinationKeywords: Map<MaxDestination, List<String>> = mapOf(
+    MaxDestination.Charging to listOf("شحن", "بطارية", "charging", "battery", "power"),
+    MaxDestination.BypassCharging to listOf("تجاوز", "شحن مباشر", "bypass", "fast charge"),
+    MaxDestination.BypassChargingCheck to listOf("فحص التجاوز", "bypass check"),
+    MaxDestination.BatteryHistory to listOf("بطارية", "عمر البطارية", "battery history"),
+    MaxDestination.DozeMode to listOf("سكون", "نوم", "doze", "sleep"),
+    MaxDestination.ThermalDetail to listOf("حرارة", "سخونة", "تليمت", "thermal", "heat", "throttle"),
+    MaxDestination.ZramManager to listOf("رام", "ذاكره", "ضغط", "zram", "ram", "swap"),
+    MaxDestination.MemoryUfs to listOf("تخزين", "ذاكره", "ufs", "storage"),
+    MaxDestination.Dex2oat to listOf("تجميع", "تسريع", "dex2oat", "compile"),
+    MaxDestination.FpsGo to listOf("اطارات", "العاب", "٦٠", "60", "fps", "frames", "game"),
+    MaxDestination.FpsOverlay to listOf("عداد", "اطارات", "hud", "fps", "overlay"),
+    MaxDestination.Resolution to listOf("دقه", "ابعاد", "شاشه", "resolution", "dpi", "display"),
+    MaxDestination.DisplayStudio to listOf("شاشه", "عرض", "سطوع", "display", "screen", "brightness"),
+    MaxDestination.NetworkScheduler to listOf("شبكه", "نت", "بينغ", "network", "ping", "latency"),
+    MaxDestination.StorageCare to listOf("تنظيف", "مساحه", "storage", "clean", "space"),
+    MaxDestination.StorageDetail to listOf("تخزين", "مساحه", "storage", "space"),
+    MaxDestination.DebloatFreeze to listOf("تجميد", "تعطيل", "تطبيقات النظام", "debloat", "freeze"),
+    MaxDestination.GovernorSettings to listOf("حاكم", "اداء", "governor", "performance"),
+    MaxDestination.CpuCoreControl to listOf("تردد", "نواه", "معالج", "cpu", "cores", "frequency"),
+    MaxDestination.GpuStudio to listOf("رسوم", "معالج رسومي", "gpu", "graphics"),
+    MaxDestination.AudioStudio to listOf("صوت", "سماعات", "مكبر", "audio", "sound", "speaker"),
+    MaxDestination.Diagnostics to listOf("تشخيص", "حكام", "ملكيه", "diagnostics", "ownership"),
+    MaxDestination.MaxLive to listOf("مراقبه", "بث", "حي", "live", "monitor", "realtime"),
+    MaxDestination.Logs to listOf("سجلات", "اخطاء", "logs", "errors"),
+    MaxDestination.ModuleHealth to listOf("وحده", "سلامه", "module", "health"),
+    MaxDestination.PreferenceTweaks to listOf("قيم", "محرر", "props", "tweaks"),
+    MaxDestination.ProcessManager to listOf("عمليات", "خلفيه", "process", "background"),
+    MaxDestination.DynamicIsland to listOf("جزيره", "island", "notch"),
+    MaxDestination.MaxAi to listOf("ذكاء", "محرك", "ai", "max ai"),
+    MaxDestination.ColorScheme to listOf("لون", "سمه", "theme", "color"),
+    // ── الباقي (تغطية كاملة): كل وجهة معروضة تُفتح بلا معرّف لها كلمة قصد واحدة على الأقل.
+    //    ولو نقصت واحدة لفشل `ScreenFinderTest` — لا تُترك شاشة «لا يعرفها البحث إلا باسمها».
+    MaxDestination.Now to listOf("الرئيسيه", "الان", "home", "now", "dashboard"),
+    MaxDestination.Apps to listOf("التطبيقات", "تطبيقات", "apps", "installed"),
+    MaxDestination.Control to listOf("التحكم", "تحكم", "control", "tools"),
+    MaxDestination.Settings to listOf("الاعدادات", "اعدادات", "settings", "preferences"),
+    MaxDestination.MaxAiIntro to listOf("الذكاء الاصطناعي", "max ai", "ai intro"),
+    MaxDestination.DeviceInfo to listOf("معلومات الجهاز", "مواصفات", "device info", "specs"),
+    MaxDestination.GetStarted to listOf("البدء", "دليل", "get started", "onboarding", "guide"),
+    MaxDestination.CpuHub to listOf("المعالج", "cpu", "processor"),
+    MaxDestination.GpuHub to listOf("الرسوم", "gpu", "graphics"),
+    MaxDestination.MemoryHub to listOf("الذاكره", "ram", "memory"),
+    MaxDestination.DisplayHub to listOf("الشاشه", "display", "screen"),
+    MaxDestination.ResponsivenessHub to listOf("الاستجابه", "السلاسه", "responsiveness", "smooth"),
+    MaxDestination.ThermalHub to listOf("الحراره", "thermal", "heat", "temperature"),
+    MaxDestination.PowerHub to listOf("الطاقه", "البطاريه", "power", "battery"),
+    MaxDestination.StorageHub to listOf("التخزين", "storage", "disk"),
+    MaxDestination.NetworkHub to listOf("الشبكه", "network", "wifi", "internet"),
+    MaxDestination.AudioHub to listOf("الصوت", "audio", "sound"),
+    MaxDestination.Fas to listOf("جدوله", "الاطارات", "fas", "frame", "scheduling"),
+    MaxDestination.NetworkDetail to listOf("تفاصيل الشبكه", "network detail", "wifi detail"),
+    MaxDestination.DeviceLab to listOf("مختبر", "اختبار الجهاز", "device lab", "test"),
+    MaxDestination.UsageStats to listOf("الاستخدام", "وقت الشاشه", "usage", "screen time"),
+    MaxDestination.License to listOf("الترخيص", "license", "legal"),
+    MaxDestination.ColorPalette to listOf("المظهر", "الالوان", "theme", "palette"),
+    MaxDestination.ConfigBackup to listOf("نسخه احتياطيه", "backup", "restore", "config"),
+    MaxDestination.MaxBackup to listOf("نسخ احتياطي للتطبيق", "app backup", "backup app"),
+    MaxDestination.Permissions to listOf("الصلاحيات", "appops", "permissions"),
+    MaxDestination.Privilege to listOf("روت", "امتياز", "root", "su"),
+    MaxDestination.About to listOf("حول", "عن التطبيق", "about", "version"),
+    MaxDestination.GameLobby to listOf("الالعاب", "لوبي", "games", "game lobby"),
+    MaxDestination.EmulatorHub to listOf("المحاكي", "محاكيات", "emulator", "emulators"),
+    MaxDestination.HmaCompanion to listOf("اخفاء التطبيقات", "hma", "companion", "hide apps"),
+    MaxDestination.SetEdit to listOf("تعديل القيم", "setedit", "properties", "props"),
+    MaxDestination.ActivityLauncher to listOf("الانشطه", "activity", "launcher", "shortcut"),
+    MaxDestination.FileManager to listOf("الملفات", "مدير الملفات", "files", "file manager"),
+)
+

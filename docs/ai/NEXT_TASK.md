@@ -1,3 +1,18 @@
+## UX-REENGINEERING-01 — 2026-11-08 · DONE_WITH_CONCERNS (الحكّام + القصد · الترجمة غير مُتحقَّقة)
+
+**TASK (المالك):** تنفيذ `MAX_MANAGER_UX_UI_PROMPT.md` بمسار §9 (ضيق الوقت).
+**المُنجَز:** ستة ملفات في `docs/ux-reengineering/` (جرد ٦١ وجهة · تشخيص ١٢ بندًا · بنية واحدة · نظام
+واجهة · سجلّ · فجوات) + كود ظاهر: `MaxGovernance.kt` (سلّم · شريط «من يحكم الآن» · بطاقة الحكّام)
+موصولًا في `HomeScreen`/`LegendaryHomeDashboard` و`ControlScreen` و`DiagnosticsScreen`؛ وكلمات القصد
+لـ٦٤ وجهة (كل وجهة معروضة تُفتح بلا معرّف) بلغتين في `ScreenFinderModel`؛ وتعريب نصوص التشخيص المتبقّية (جلسة الصوت · ردّ النسخ ·
+ملخّص وقت التشغيل · أسماء الحالات)؛ و٣ اختبارات JVM جديدة.
+**GATES:** `kt_balance` ٣٢١٦/٠ · `code_health` ✓ · `design_tokens` ✓ · `i18n` ٠ · يتيمة ٠ ·
+`resource_compile` غير مُتحقَّقة (لا aapt2).
+**BUILD:** **الترجمة غير مُتحقَّقة في هذه البيئة** (لا SDK في `/usr/lib/android-sdk`؛ لم يُشغَّل Gradle).
+**NEXT:** (١) CI: `:app:testReleaseUnitTest` + `compileReleaseKotlin` · (٢) علامة «يكتب» على صفوف
+التحكّم من مسار المراجِع · (٣) توسيع كلمات القصد لباقي الوجهات · (٤) تعميم `MaxDataTrust` ·
+(٥) قرار حذف `StoryboardHome`.
+
 ## ROUND-CLOSE-31 — الجذر المتأخر في تثبيت الروم — 2026-11-08 · DONE_WITH_CONCERNS
 
 **TASK:** جعل التطبيق يعمل بثلاثة ملفات روم فقط وبلا SELinux بعد منح الجذر: الشارة ACTIVE، وGPU/المحافظ تعمل.

@@ -25,4 +25,28 @@
     <string name="max_value_unavailable_a11y">لا توجد قيمة متاحة</string>
     <string name="max_expand_section">إظهار التفاصيل</string>
     <string name="max_collapse_section">إخفاء التفاصيل</string>
+
+    <!--
+        مفردات الحكّام (إعادة هندسة التجربة §٥.٤).
+        الأسماء كلام مستخدم لا أسماء تعداد: السلّم نفسه ثابت في ControlOwnership،
+        وهذا الملفّ يقولها بلغة بشرية فقط.
+    -->
+    <string name="max_gov_title">مَن يحكم الآن</string>
+    <string name="max_gov_separator">" › "</string>
+    <string name="max_gov_order_note">ترتيب ثابت: الأعلى يمنع الأدنى، ولا يغيّر من يفوز.</string>
+    <string name="max_gov_open_details">الحكّام النشطون</string>
+    <string name="max_gov_active_title">مَن يملك مفتاحًا</string>
+    <string name="max_gov_none">لا سياسة تملك مفتاحًا على العتاد الآن.</string>
+    <string name="max_gov_count">مفاتيح تحت سياسة نشطة: %1$d</string>
+    <string name="max_gov_requested">المطلوب: %1$s</string>
+    <string name="max_gov_owner_recovery">الاسترداد</string>
+    <string name="max_gov_owner_safety">الحماية الحرارية</string>
+    <string name="max_gov_owner_per_app">ملف التطبيق</string>
+    <string name="max_gov_owner_max_ai">MAX AI</string>
+    <string name="max_gov_owner_global">الملف العام</string>
+    <string name="max_gov_owner_system">النظام</string>
+    <string name="max_gov_owner_a11y">%1$s يملك مفتاحًا على العتاد</string>
+    <string name="max_gov_now_none">لا حاكم آلي الآن — التحكّم يبقى بيدك</string>
+    <string name="max_gov_now_one">%1$s يملك مفتاحًا</string>
+    <string name="max_gov_now_many">%1$s يملك %2$d مفاتيح</string>
 </resources>

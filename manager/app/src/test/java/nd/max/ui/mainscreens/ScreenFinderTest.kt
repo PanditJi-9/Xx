@@ -301,4 +301,53 @@ class ScreenFinderTest {
             !read("ui/mainscreens/ScreenFinderSheet.kt").contains("getSharedPreferences"),
         )
     }
+
+    @Test
+    fun `intent words find the screen that does the job`() {
+        val targets = screenFinderTargets({ "«$it»" })
+
+        fun destinations(query: String) = screenFinderResults(query, targets).map { it.destination }
+
+        assertTrue(
+            "«شحن» ليست اسم شاشة — تُطابَق من كلمات القصد لا من الاسم",
+            MaxDestination.Charging in destinations("شحن"),
+        )
+        assertTrue(
+            "«سخونة» كلمة المستخدم لا اسم الشاشة",
+            MaxDestination.ThermalDetail in destinations("سخونة"),
+        )
+        assertTrue(
+            "والإنجليزية تعمل في الواجهة العربية — من كتب bypass لا يُترك بلا نتيجة",
+            MaxDestination.BypassCharging in destinations("bypass"),
+        )
+        assertTrue(
+            "والرقم ٦٠ يقصد الشاشة التي تضبطه",
+            MaxDestination.FpsGo in destinations("٦٠"),
+        )
+    }
+
+    /**
+     * الكلمات لا تصنع بابًا خلفيًّا: مدخلٌ لوجهة مخفيّة أو لا تُفتح بلا معرّف كان سيُظهرها في
+     * البحث وحدها — وهي حالٌ أسوأ من غيابها (ADR-07: لا وعد بضغطة تفتح شيئًا آخر).
+     */
+    @Test
+    fun `intent words never expose a hidden or bare-unopenable destination`() {
+        val openable = MaxDestination.Visible
+            .filterNot { it.needsLaunchArgument }
+            .toSet()
+
+        val stray = maxDestinationKeywords.keys.filterNot { it in openable }
+        assertTrue("كلمة قصد لوجهة غير معروضة: $stray", stray.isEmpty())
+
+        // والعكس أيضًا: وجهة معروضة بلا كلمة قصد تُترك بلا بحث إلا باسمها — وهي الحال التي
+        // وُلدت منها الكلمات. فالتغطية عقدٌ لا تفضّل: تُقاس كلها أو لا تُقال.
+        val uncovered = openable.filterNot { it in maxDestinationKeywords }
+        assertTrue("وجهة معروضة بلا كلمة قصد: $uncovered", uncovered.isEmpty())
+        assertTrue(
+            "مدخل بلا كلمات أو بكلمة فارغة",
+            maxDestinationKeywords.values.all { words ->
+                words.isNotEmpty() && words.none { it.isBlank() }
+            },
+        )
+    }
 }

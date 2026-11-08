@@ -83,7 +83,7 @@ internal fun AudioActiveSessionsSection(
                     val pkgName = entry.value ?: stringResource(R.string.max_audio_stream_media)
                     MaxRow(
                         title = pkgName,
-                        subtitle = "Audio Session #$sessionId",
+                        subtitle = stringResource(R.string.max_audio_session_label, sessionId),
                         icon = Icons.Rounded.Waves,
                         iconTone = MaxTone.Positive,
                         trailing = {

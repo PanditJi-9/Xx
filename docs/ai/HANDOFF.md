@@ -60,6 +60,54 @@ MaxManager has a strong engine and a fragmented surface. `core/maxai` + `core/ha
 
 ## Executor log
 
+### UX-REENGINEERING-01 — إعادة هندسة التجربة: جردٌ وتشخيصٌ وشريحة حكّام — 2026-11-08 · DONE_WITH_CONCERNS (الترجمة غير مُتحقَّقة)
+
+**TASK (المالك):** «قم بتنفيذ البرومبيت في `MAX_MANAGER_UX_UI_PROMPT.md`» — وسلكتُ مسار §9 عند ضيق
+الوقت: الحقائق، الجرد، التشخيص، النظام مطبقًا على التنقّل وشاشات الأثر، و`gaps.md`، بلا ادّعاء اكتمال.
+
+**FILES (كلها جديدة/مضافة):**
+- `docs/ux-reengineering/inventory.md` (حقائق §0: ٦١ وجهة · ٦١ `*Screen.kt` · ٨٤ لغة · ٣ بلاطات ·
+  ٢٢ ودجة · اختصار · بوابة `HardwareControlArbiter` · سلّم `ControlOwnership` · صفر deep links).
+- `docs/ux-reengineering/diagnosis.md` (١٢ بندًا: ٧ أدلة كود · ٢ فرضية · ١ يحتاج مستخدمين).
+- `docs/ux-reengineering/information-architecture.md` (بنية واحدة + ٥ نقلات، واحدة منفَّذة).
+- `docs/ux-reengineering/ui-system.md` (رموز قائمة موسَّعة · ٨ أنماط · معجم أفعال · أفكار §٣ مقبولة/مرفوضة).
+- `docs/ux-reengineering/changelog.md` · `docs/ux-reengineering/gaps.md`.
+- `ui/design/MaxGovernance.kt` (جديد): `MaxGovernanceLadder` · `MaxGovernanceCard` · `MaxOwnerBadge`.
+- `ui/mainscreens/ControlScreen.kt`: عنصر «الحكّام» أوّل القائمة + رابط إلى التشخيص.
+- `ui/mainscreens/DiagnosticsScreen.kt`: بطاقة الحكّام صارت معرَّبة وبلا `ownerToken`.
+- `res/values(-ar)/max_design_strings.xml`: ١٥ نصًّا في كل لغة.
+- `app/src/test/java/nd/max/ui/design/MaxGovernanceOrderTest.kt`: ٣ اختبارات JVM للسلّم.
+
+**GATES:** `kt_balance` ٣٢١٦/٠ · `code_health` نظيف · `design_tokens` ٠ · `i18n_coverage` ٠ (٨٤+en) ·
+`i18n_coverage --prune all` يتيمة ٠ · `resource_compile` **غير مُتحقَّقة (لا aapt2)**.
+
+**BUILD:** **الترجمة غير مُتحقَّقة في هذه البيئة** — لم يُشغَّل Gradle (لا SDK ظاهر، والذاكرة ١٫١G متاحة).
+الاختبار الجديد لم يُنفَّذ؛ حكمه من CI.
+
+**لم يتغيّر (بالقراءة):** لا استدعاء جديد للـ`HardwareControlArbiter` · لا كتابة من `ui/**` · لا تغيير في
+`ControlOwnership`/`ManualControlLocks` · لا مسار جديد أو محذوف · لا خدمة خلفية ولا حماية حرارية.
+
+**RESIDUAL RISK:** (أ) المخاطرة الوحيدة في المكوّن الجديد محصورة في `stringResource` داخل `map` (نمط
+قائم في الشجرة)، `MaxCardShell(onClick=…)`، ومفاتيح `R.string.max_gov_*` (مضافة في اللغتين) — تحتاج
+مُصرّفًا. (ب) قاعدة صدق القيم لم تُعمَّم (٣/٤٢٨)؛ (ج) `StoryboardHome` ما زال ميتًا بلا قرار حذف؛
+(د) لا لقطات ولا TalkBack ولا تكبير خط — لا جهاز.
+
+**تكملة (الموجة الثانية، بعد ملاحظة المالك «لماذا لم تنفّذ شيئًا ملموسًا؟»):** أُضيف ما يراه
+المستخدم لا ما يُوصف فقط:
+- `LegendaryHomeDashboard` + `HomeScreen`: **شريط «من يحكم الآن»** تحت الرأس مباشرة —
+  `ControlOwnership.snapshot()` تُقرأ مرة لكل إعادة تركيب (لا مؤقّت ولا قراءة عتاد)، والضغط يفتح
+  بطاقة الحكّام النشطين. وفوقه `maxGovernorTop` دالّة نقيّة مقيسة في JVM.
+- `ScreenFinderModel`: **كلمات القصد** لـ٦٤ وجهة (كل وجهة معروضة تُفتح بلا معرّف) بلغتين (شحن · سخونة · ٦٠ · `bypass` …)، بترتيب
+  الاسم ← الكلمة ← الوصف ← المكان؛ ولا تُعرض، ولا تفتح وجهة مخفيّة (`TouchBoost` مستثناة عمدًا).
+- تعريب النصوص الظاهرة المتبقّية: «Audio Session #» · «Hardware report copied» · ملخّص وقت
+  التشغيل (`detected/writable`) · أسماء حالات الأجهزة (`READ_ONLY` ← «قراءة فقط»).
+- الاختبارات: ٣ جديدة (أعلى حاكم · ٤ حالات قصد · تغطية كاملة ٦٤/٦٤ ومنع المخفيّ) فوق سلّم الحكّام
+  القائم — **لم تُشغَّل** هنا.
+
+**NEXT:** (١) CI: `:app:testReleaseUnitTest` + `:app:compileReleaseKotlin`. (٢) شريحة: علامة «يكتب» على
+صفوف التحكّم مشتقة من مسار المراجِع. (٣) شريحة: موجد واحد بالاسم والقصد. (٤) تعميم `MaxDataTrust`
+على كل قيمة غير متدفّقة. (٥) قرار مالك: حذف `StoryboardHome` أو إعادته.
+
 ### ROUND-CLOSE-29 — شارة الوصول تفتح نافذة واحدة صادقة — 2026-11-07 · DONE_WITH_CONCERNS
 
 **TASK:** طلب المالك: محدّد وضع وصول في الرئيسية (Auto/Root/Shizuku/Basic) مثل Scene، مع مدير الجذر وSELinux، وفلتر «ما يدعمه الوضع فقط» أو «كل شيء»، وتغييره من الإعدادات أيضًا.

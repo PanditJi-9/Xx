@@ -566,10 +566,20 @@
 
     <!-- DiagnosticsScreen -->
     <string name="diagnostics_live_hw_health">صحّة العتاد الحيّة</string>
+    <string name="diagnostics_runtime_summary">%1$d سياسة معالج • %2$d جهاز رسوم • ZRAM %3$s</string>
+    <string name="diagnostics_runtime_zram_detected">مكتشَفة</string>
+    <string name="diagnostics_runtime_zram_missing">غير مكتشَفة</string>
+    <string name="diagnostics_runtime_unavailable">فحص وقت التشغيل غير متاح</string>
+    <string name="diagnostics_capabilities_summary">%1$d مكتشَفة • %2$d قابلة للكتابة • %3$d غير مكتشَفة</string>
+    <string name="diagnostics_health_ready">جاهز</string>
+    <string name="diagnostics_health_read_only">قراءة فقط</string>
+    <string name="diagnostics_health_unavailable">غير متاح</string>
+    <string name="diagnostics_health_degraded">متراجع</string>
     <string name="diagnostics_active_ownership">ملكية التحكم النشطة</string>
     <string name="diagnostics_hardware_report">تقرير العتاد</string>
     <string name="diagnostics_hardware_report_desc">أنشئ تقريرًا موجزًا لأغراض الدعم والتوافق.</string>
     <string name="diagnostics_copy">نسخ</string>
+    <string name="diagnostics_report_copied">نُسخ تقرير العتاد</string>
 
     <!-- AboutScreen -->
     <string name="about_project_name">مشروع MaxManager</string>

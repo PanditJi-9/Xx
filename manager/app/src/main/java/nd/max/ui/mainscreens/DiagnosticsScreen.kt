@@ -67,6 +67,7 @@ import nd.max.ui.component.MaxStatusPill
 import nd.max.ui.component.RouteVerdictLabel
 import nd.max.ui.theme.MaxTextRole
 import nd.max.ui.component.MaxSurface
+import nd.max.ui.design.MaxGovernanceCard
 import nd.max.ui.design.MaxSpace
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
@@ -303,8 +304,20 @@ private fun RuntimeHealthCard(snapshot: HardwareRuntime.Snapshot?) {
         Text(stringResource(R.string.diagnostics_live_hw_health), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
         Spacer(Modifier.height(8.dp))
         Text(
-            snapshot?.let { "${it.cpuPolicies.size} CPU policies • ${it.gpuDevices.size} GPU devices • ZRAM ${if (it.zram.exists) "detected" else "not detected"}" }
-                ?: "Runtime inspection unavailable",
+            // الجملة من موارد لا من `+` في الكود: كانت تُبنى بالإنجليزية المثبّتة، فتبقى كذلك في
+            // واجهة عربية — والعدد وحده يتغيّر. والكلمتان (`detected`/`not detected`) موردان
+            // مستقلّان لأن العربية تُصرّف الصيغة لا تلصق «not» قبل الفعل.
+            snapshot?.let {
+                stringResource(
+                    R.string.diagnostics_runtime_summary,
+                    it.cpuPolicies.size,
+                    it.gpuDevices.size,
+                    stringResource(
+                        if (it.zram.exists) R.string.diagnostics_runtime_zram_detected
+                        else R.string.diagnostics_runtime_zram_missing
+                    ),
+                )
+            } ?: stringResource(R.string.diagnostics_runtime_unavailable),
             style = MaxTextRole.description,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -312,19 +325,41 @@ private fun RuntimeHealthCard(snapshot: HardwareRuntime.Snapshot?) {
         snapshot?.health?.forEach { health ->
             Row(Modifier.fillMaxWidth().padding(vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
                 Text(health.name.uppercase(), modifier = Modifier.weight(1f), style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Medium)
-                Text(health.health.name, style = MaterialTheme.typography.labelMedium)
+                // الحالة بلغة بشرية لا باسم التعداد: كانت تُطبع `READ_ONLY` و`UNAVAILABLE` خامّتين.
+                // واسم النظام (`CPU` · `ZRAM`) وسطرُ التفصيل (`policies=4`) يبقيان كما هما: سطح
+                // فحص، وقيمتُهما في أنهما مقيسة لا مُترجَمة.
+                Text(runtimeHealthLabel(health.health), style = MaterialTheme.typography.labelMedium)
             }
             Text(health.detail, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         snapshot?.let {
             Spacer(Modifier.height(8.dp))
             Text(
-                "${it.supportedCount} detected • ${it.writableCount} writable • ${it.unsupportedCount} not detected",
+                stringResource(
+                    R.string.diagnostics_capabilities_summary,
+                    it.supportedCount,
+                    it.writableCount,
+                    it.unsupportedCount,
+                ),
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }
+}
+
+/**
+ * حالة نظام بلغة بشرية — كانت تُطبع باسم التعداد (`READY` · `READ_ONLY` · `UNAVAILABLE`).
+ *
+ * والمصدر واحد: تعداد `HardwareRuntime.Health` نفسه، بلا جدول موازٍ؛ فحالة جديدة لا تُنسى
+ * لأن `when` بلا `else` تُسقط الترجمة إن نقصت.
+ */
+@Composable
+private fun runtimeHealthLabel(health: HardwareRuntime.Health): String = when (health) {
+    HardwareRuntime.Health.READY -> stringResource(R.string.diagnostics_health_ready)
+    HardwareRuntime.Health.READ_ONLY -> stringResource(R.string.diagnostics_health_read_only)
+    HardwareRuntime.Health.UNAVAILABLE -> stringResource(R.string.diagnostics_health_unavailable)
+    HardwareRuntime.Health.DEGRADED -> stringResource(R.string.diagnostics_health_degraded)
 }
 
 
@@ -869,26 +904,11 @@ private fun BootRow(label: String, value: String, ok: Boolean) {
 
 @Composable
 private fun OwnershipDiagnosticsCard() {
+    // **العرض لا يحكم.** المصدر هو نفسه `ControlOwnership.snapshot()` بلا تغيير، ولا كتابة
+    // هنا ولا تغيير مالك أو أولوية. والجديد أن الأسماء بشرية والنص معرَّب، وأن `ownerToken`
+    // لم يبقَ على الشاشة: معرّف داخلي لا يضيف للمستخدم شيئًا (تشخيص UX §٢).
     val leases = nd.max.core.hardware.ControlOwnership.snapshot()
-    MaxSurface(modifier = Modifier.padding(top = 14.dp)) {
-        Text(stringResource(R.string.diagnostics_active_ownership), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
-        Spacer(Modifier.height(6.dp))
-        Text(
-            if (leases.isEmpty()) "No policy currently owns a hardware control."
-            else "${leases.size} active control lease${if (leases.size == 1) "" else "s"}. Higher-priority owners can block lower-priority policies.",
-            style = MaxTextRole.description, color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        Spacer(Modifier.height(8.dp))
-        leases.forEach { lease ->
-            Row(Modifier.fillMaxWidth().padding(vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-                Column(Modifier.weight(1f)) {
-                    Text(lease.key, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium)
-                    Text("${lease.owner} • ${lease.ownerToken}", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                }
-                Text(lease.desired, style = MaterialTheme.typography.labelMedium)
-            }
-        }
-    }
+    MaxGovernanceCard(leases = leases, modifier = Modifier.padding(top = 14.dp))
 }
 
 @Composable
@@ -903,7 +923,7 @@ private fun HardwareReportCard(context: android.content.Context) {
                 val report = HardwareRuntime.compactReport(context)
                 val clipboard = context.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as? android.content.ClipboardManager
                 clipboard?.setPrimaryClip(android.content.ClipData.newPlainText("MaxManager Hardware Report", report))
-                Toast.makeText(context, "Hardware report copied", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, context.getString(R.string.diagnostics_report_copied), Toast.LENGTH_SHORT).show()
             }) { Text(stringResource(R.string.diagnostics_copy)) }
         }
     }

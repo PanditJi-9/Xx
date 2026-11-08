@@ -571,10 +571,20 @@
 
     <!-- DiagnosticsScreen -->
     <string name="diagnostics_live_hw_health">Live hardware health</string>
+    <string name="diagnostics_runtime_summary">%1$d CPU policies • %2$d GPU devices • ZRAM %3$s</string>
+    <string name="diagnostics_runtime_zram_detected">detected</string>
+    <string name="diagnostics_runtime_zram_missing">not detected</string>
+    <string name="diagnostics_runtime_unavailable">Runtime inspection unavailable</string>
+    <string name="diagnostics_capabilities_summary">%1$d detected • %2$d writable • %3$d not detected</string>
+    <string name="diagnostics_health_ready">Ready</string>
+    <string name="diagnostics_health_read_only">Read-only</string>
+    <string name="diagnostics_health_unavailable">Unavailable</string>
+    <string name="diagnostics_health_degraded">Degraded</string>
     <string name="diagnostics_active_ownership">Active control ownership</string>
     <string name="diagnostics_hardware_report">Hardware report</string>
     <string name="diagnostics_hardware_report_desc">Generate a compact report for support and compatibility reports.</string>
     <string name="diagnostics_copy">Copy</string>
+    <string name="diagnostics_report_copied">Hardware report copied</string>
 
     <!-- AboutScreen -->
     <string name="about_project_name">MaxManager Project</string>
