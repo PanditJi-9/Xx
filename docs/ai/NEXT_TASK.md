@@ -4,9 +4,9 @@
 
 **CHANGED:** `core/privilege/{RootCommands,PlatformShell,PlatformCommandRules}.kt` (بوابة جذر واحدة مسيَّجة بالجيل · جسر Shizuku/جذر · قائمة أوامر منصّة ترفض حقن الصدفة ومسارات النواة) · حجب `DaemonIpc`/`RootNodeChannel`/`ShizukuGateway`/تدفّق سجلّ الجذر بالوضع · `ui/navigation/{DestinationAccess,DestinationAccessState}.kt` + `ui/component/DestinationAccessGate.kt` (تصنيف وإخفاء وحارس تنفيذ) · فلترة الرئيسية/البحث/المحاور/قائمة القدرات · حذف `private_dns` من ٨٥ ملفًّا وتصنيف `network_policy` ROOT · اختباران جديدان (8+9) وأداة JVM · إصلاح شكل `RootNodeChannel.service` واستثناء `DestinationAccess.kt` في حارس الوجهات.
 
-**GATES:** ١٣/١٣ exit 0 محليًّا (منها `resource_compile` بـaapt2 حقيقي و`test_platform_commands_jvm` 8/8) · Quick Verify `42437742982` على `c8502100` = success (بوابات العقد + `:app:testReleaseUnitTest`، `BUILD SUCCESSFUL in 2m 28s`). التشغيل الأول `42435072374` كشف اختبارين قديمين فاسدين فأُصلحا في `c8502100`.
+**GATES:** ١٣/١٣ exit 0 محليًّا (منها `resource_compile` بـaapt2 حقيقي و`test_platform_commands_jvm` 8/8) · Quick Verify `42437742982` على `c8502100` = success (بوابات العقد + `:app:testReleaseUnitTest`، `BUILD SUCCESSFUL in 2m 28s`). التشغيلان الأولان (`42435072374` و`42435054568`) كشفا اختبارين قديمين فاسدين فأُصلحا في `c8502100`.
 
-**BUILD:** `:app:compileReleaseKotlin` محليًّا 18m22s · QV ترجم نسخة release واختباراتها. QV لا يبني APK/native/R8.
+**BUILD:** `:app:compileReleaseKotlin` محليًّا 18m22s · Quick Verify `42437742982` نجح · و`MaxManager` **`42437726139`** على `c8502100` = **success**: `:app:testReleaseUnitTest :app:assembleRelease` في 5m44s مع R8 وتوقيع، وAPK `V4 (215-c850210-stable)` بـSHA-256 `92913995…a0a1` وحزمتاه.
 
 **REVIEW:** ستّ محاولات مراجعة مستقلة فشلت لأسباب مزوّد (حد استخدام ×3، حجب محتوى ×2، اعتماد غير صالح ×1) — **لا حكم موجود ولا يُدّعى**. المسار اليدوي: نموذج غير المنفّذ في هذه المحادثة + `REVIEW.md` §2.
 
