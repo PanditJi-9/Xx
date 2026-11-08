@@ -1,4 +1,4 @@
-## UX-REENGINEERING-01 — 2026-11-08 · DONE_WITH_CONCERNS (الحكّام + القصد · الترجمة غير مُتحقَّقة)
+## UX-REENGINEERING-01 — 2026-11-08 · DONE (الحكّام + القصد · مُتحقَّقة في CI)
 
 **TASK (المالك):** تنفيذ `MAX_MANAGER_UX_UI_PROMPT.md` بمسار §9 (ضيق الوقت).
 **المُنجَز:** ستة ملفات في `docs/ux-reengineering/` (جرد ٦١ وجهة · تشخيص ١٢ بندًا · بنية واحدة · نظام
@@ -8,8 +8,8 @@
 ملخّص وقت التشغيل · أسماء الحالات)؛ و٣ اختبارات JVM جديدة.
 **GATES:** `kt_balance` ٣٢١٦/٠ · `code_health` ✓ · `design_tokens` ✓ · `i18n` ٠ · يتيمة ٠ ·
 `resource_compile` غير مُتحقَّقة (لا aapt2).
-**BUILD:** **الترجمة غير مُتحقَّقة في هذه البيئة** (لا SDK في `/usr/lib/android-sdk`؛ لم يُشغَّل Gradle).
-**NEXT:** (١) CI: `:app:testReleaseUnitTest` + `compileReleaseKotlin` · (٢) علامة «يكتب» على صفوف
+**BUILD:** **مُتحقَّقة في CI** — QV 42482275786 success (٤٠٣٦ اختبارًا) · build.yml 42482450852 success (حزم مرفوعة).
+**NEXT:** (١) دمج `ux-reengineering-01` في `main` (بانتظار كلمة المالك) · (٢) علامة «يكتب» على صفوف
 التحكّم من مسار المراجِع · (٣) توسيع كلمات القصد لباقي الوجهات · (٤) تعميم `MaxDataTrust` ·
 (٥) قرار حذف `StoryboardHome`.
 

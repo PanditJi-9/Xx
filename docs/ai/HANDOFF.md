@@ -60,7 +60,7 @@ MaxManager has a strong engine and a fragmented surface. `core/maxai` + `core/ha
 
 ## Executor log
 
-### UX-REENGINEERING-01 — إعادة هندسة التجربة: جردٌ وتشخيصٌ وشريحة حكّام — 2026-11-08 · DONE_WITH_CONCERNS (الترجمة غير مُتحقَّقة)
+### UX-REENGINEERING-01 — إعادة هندسة التجربة: جردٌ وتشخيصٌ وشريحة حكّام — 2026-11-08 · DONE (CI: تصريف Release + ٤٠٣٦ اختبارًا + بناء كامل — مُثبتة)
 
 **TASK (المالك):** «قم بتنفيذ البرومبيت في `MAX_MANAGER_UX_UI_PROMPT.md`» — وسلكتُ مسار §9 عند ضيق
 الوقت: الحقائق، الجرد، التشخيص، النظام مطبقًا على التنقّل وشاشات الأثر، و`gaps.md`، بلا ادّعاء اكتمال.
@@ -81,8 +81,15 @@ MaxManager has a strong engine and a fragmented surface. `core/maxai` + `core/ha
 **GATES:** `kt_balance` ٣٢١٦/٠ · `code_health` نظيف · `design_tokens` ٠ · `i18n_coverage` ٠ (٨٤+en) ·
 `i18n_coverage --prune all` يتيمة ٠ · `resource_compile` **غير مُتحقَّقة (لا aapt2)**.
 
-**BUILD:** **الترجمة غير مُتحقَّقة في هذه البيئة** — لم يُشغَّل Gradle (لا SDK ظاهر، والذاكرة ١٫١G متاحة).
-الاختبار الجديد لم يُنفَّذ؛ حكمه من CI.
+**BUILD (حكم CI — لا ادّعاء):** الفرع `ux-reengineering-01` فوق القاعدة الحيّة `94184a23` (بعد
+١٢٢ التزامًا تأخّرها الفرع المحلي)، والالتزام المُتحقَّق `e0afa9bc`:
+- Quick Verify **42482275786 = success** ← تصريف Release + **٤٠٣٦ اختبارًا، ٠ فشل، ٥ متجاوز**.
+- البناء الكامل `build.yml` **42482450852 = success** ← البوابات + الأصلِي (Rust/NDK) + التصريف + R8 +
+  التوقيع + الحزم، ومخرجات حقيقية: `MaxManager-V4.zip` (٢٤٬٢٠٤٬٧٦٠ بايت) ·
+  `MaxManager-developer-bundle.zip` (٢٢٬٧١٤٬٨٥٨) · `MaxManager-checksums` (٢٬٣٣٧).
+- فشل واحد سبق الإصلاح: `VisualIdentityTest` (سطر ١٧٣) لأن نصّي الجديد كتب `MAX AI`؛ صُحّح إلى
+  `Max AI` في اللغتين (`e0afa9bc`).
+**DEVICE:** لمس/TalkBack/RTL/تكبير خط/عتاد — **يحتاج جهازًا**، ولا يُدّعى.
 
 **لم يتغيّر (بالقراءة):** لا استدعاء جديد للـ`HardwareControlArbiter` · لا كتابة من `ui/**` · لا تغيير في
 `ControlOwnership`/`ManualControlLocks` · لا مسار جديد أو محذوف · لا خدمة خلفية ولا حماية حرارية.
