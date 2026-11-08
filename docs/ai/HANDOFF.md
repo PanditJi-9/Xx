@@ -24741,3 +24741,34 @@ Rounded.Undo` (نفس نمط `FileEditorDialog.kt` و`GamePanelCockpit.kt`). ب�
 **RESIDUAL RISK:** أخضر يعني «يترجم ويجتاز بواباته واختباراته»؛ ولا يعني أنه يعمل على جهاز.
 **AGENTS:** التفويض مرفوض بحدّ الاستخدام المجاني.
 **NEXT:** ما بقى جهازيّ.
+
+## ROUND-CLOSE-30 — فرض وضع الوصول على كل مسار مميَّز، والإجابة عن «هل تُدعم كل الأوضاع؟» — 2026-11-08 · DONE_WITH_CONCERNS
+
+**TASK:** إكمال فرض أوضاع الوصول الأربعة (Auto/Root/Shizuku/Basic) على كل مسار مميَّز، وإظهار «ما يدعمه الوضع فقط» أو «كل شيء» في الرئيسية والإعدادات، ثم الإجابة بصدق: هل تُدعم كل الأوضاع فعلًا؟
+
+**التشخيص:** الأوضاع كانت تُعرض في نافذة الوصول لكنها لا تحكم كل المسارات: مواضع كثيرة تستدعي `Shell.cmd` مباشرةً فتفترض الجذر، وبعض شاشات `wm`/`pm`/`dumpsys` كانت مصنّفة ROOT فتُخفى في وضع Shizuku وهي تعمل فيه، و`private_dns` كان قدرة معلنة بلا شاشة تنفّذها، و`DaemonIpc` كان يحجب `PING`/`STATUS` مع أنهما تشخيص لا عمل مميَّز.
+
+**الإصلاح:**
+- `core/privilege/RootCommands.kt`: بوابة الجذر الوحيدة، محصورة بجيل الوضع (`generation`) قبل التنفيذ وبعد الحصول على الصدفة؛ رفضها المعلن `mode-root-blocked`.
+- `core/privilege/PlatformCommandRules.kt`: قائمة أوامر منصّة مسموحة (wm/pm/am/cmd/dumpsys/settings/service call/pidof/getprop/id/echo/date/ls)، ترفض مسارات `/sys` و`/proc` و`/data/adb` و`/dev/block` وأفعال الترقية (`su`/`mount`/`chmod`…)، وترفض سلسلة الصدفة (`;` `&&` `||` backticks `$(` أسطر جديدة `<`)، وتسمح بأمر واحد يُرشَّح بـ`grep` فقط وبكتم الخطأ `2>/dev/null`.
+- `core/privilege/PlatformShell.kt`: جسر متزامن يختار الجذر أو Shizuku حسب الوضع، ويعيد الرفض بدل التنفيذ الصامت.
+- `DaemonIpc`: `PING`/`STATUS` بلا حجب (تشخيص)، والعمليات المميّزة محجوبة في Shizuku/Basic.
+- `RootNodeChannel`: خدمة Binder محجوبة بـ`mayUseRoot`، و`service` بشكل العقد (`var … private set`) وحارس الوضع في الـgetter، و`binding` متطاير.
+- `ShizukuGateway` و`LogsViewerViewModel`: سياج جيل الوضع قبل وبعد الربط/التدفّق.
+- `ui/navigation/DestinationAccess.kt` + `DestinationAccessGate.kt`: تصنيف الشاشات (Resolution/DebloatFreeze/DozeMode = SHIZUKU، وكتابة sysfs = ROOT)، وإخفاء غير المدعوم، وكتم المحاور الفارغة، وحارس تنفيذ يفتح نافذة الوصول عند محاولة شاشة غير مدعومة.
+- الفلترة موصولة بالرئيسية والبحث والمحاور وقائمة القدرات، والفلتر محفوظ ويُقرأ عند الإقلاع.
+- حذف `private_dns` من ٨٥ ملفًّا، وتصنيف `network_policy` ROOT.
+- نصوص جديدة EN+AR فقط.
+- إصلاح ما كشفه Quick Verify الأول: `RootNodeSemanticsContractTest` يشترط شكل `service` الحرفي، و`SettingsDestinationReachabilityTest` يعدّ `DestinationAccess.kt` جدول أدوار لا مدخل تنقّل.
+
+**GATES:** ١٣/١٣ exit 0 محليًّا — `kt_balance --assert` و`--self-test` · `code_health --assert` · `i18n_coverage --assert` و`--prune all --assert` · `design_tokens --assert` · `gen_control_catalog --assert` · `gen_catalog_schema --assert` · `jni_symbols --assert` (طبقة `.so` غير متحقّقة: لا ثنائيات) · `resource_compile --assert` (aapt2 حقيقي) · `license_audit --assert` · `test_platform_commands_jvm.py` (‏8 اختبارات) · `git diff --check`. السجلّات في `/tmp/opencode/access-round30-gates/`. وأعاد CI خطوة بوابات العقد في Quick Verify أدناه.
+
+**BUILD:** `:app:compileReleaseKotlin` محليًّا **BUILD SUCCESSFUL in 18m22s** (وقبله 20m10s). وQuick Verify **`42437742982`** على `c8502100` = **success**: بوابات العقد ✓ ثم `:app:testReleaseUnitTest` ✓ — `BUILD SUCCESSFUL in 2m 28s` و`35 actionable tasks: 17 executed, 18 from cache`، ومهمة الاختبار نُفِّذت لا من الكاش. التشغيل الأول **`42435072374`** على `1d1d3930` = **failure** بعد ٤٠٣٠ اختبارًا (فشل ٢، تخطّي ٥)؛ أُصلحا في `c8502100`. **QV لا يبني APK ولا native ولا R8** — لا يُدّعى منها شيء.
+
+**REVIEW:** المراجعة المستقلة للسلامة **لم تُنجَز، ولا يُدّعى أنها نُجِزت**. ستّ محاولات فشلت قبل أي حكم، كلها لأسباب مزوّد لا لأسباب كود: حدّ الاستخدام المجاني (مرّتان في جلسة سابقة، ومرّة في المحاولة السادسة `ses_e470ed566ffeu3SSWlKEYnG2wy`)، وحجب محتوى (`agentrouter/claude-opus-5` و`agentrouter/glm-5.3`)، وبيانات اعتماد غير صالحة (`anyapi/anthropic/claude-opus-4-7`). **لا يوجد APPROVE ولا APPROVE_WITH_CONCERNS ولا BLOCK.** المسار اليدوي القائم في `AGENTS.md` §2.1: يبدّل المالك النموذج في هذه المحادثة إلى نموذج **غير المنفّذ** ويلصق `docs/ai/REVIEW.md` §2 وملفّ `docs/ai/team/safety-reviewer.md`، فيرى الـdiff كاملًا ويصدر الحكم.
+
+**RESIDUAL RISK:** تفويض الجذر/Shizuku الحقيقي، وSELinux، وعقد النواة، والشحن، ومعدّل التحديث، وRTL/السلوك الحيّ — كلها **تحتاج جهازًا**. طبقة رموز JNI في `.so` غير متحقّقة (لا ثنائيات في هذه البيئة). AxManager **غير مدعوم وغير متحقّق**: واجهته `axsh` مستقلة (libaxsh.so / AxBroker) وليست Shizuku؛ إضافتها تحتاج ناقلًا خامسًا ووضعًا وتحققًا جهازيًّا. وغياب المراجعة المستقلة نفسها خطرٌ متبقٍّ معلن.
+
+**AGENTS:** المراجعة المستقلة إلزامية لهذا النوع من التغييرات، وقد تعذّرت بحدود المزوّد ستّ مرات؛ سُجّلت المحاولات بأسمائها وأخطائها، ولم تُستبدل بادّعاء. والدفع تمّ بعد اكتمال الحزمة وقراءة CI، لا قبلهما.
+
+**NEXT:** مراجعة سلامة مستقلة يدويًّا (نموذج غير المنفّذ) · تحقّق جهاز للأوضاع الأربعة وحالتها · قرار في دعم AxManager كناقل خامس إن أراده المالك.

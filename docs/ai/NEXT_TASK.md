@@ -1,3 +1,19 @@
+## ROUND-CLOSE-30 — فرض وضع الوصول على كل مسار مميَّز — 2026-11-08 · DONE_WITH_CONCERNS
+
+**TASK:** إكمال فرض الأوضاع الأربعة (Auto/Root/Shizuku/Basic) على كل مسار مميَّز، وإظهار «ما يدعمه الوضع فقط» أو «كل شيء» من الرئيسية والإعدادات، والإجابة بصدق: هل تُدعم كل الأوضاع فعلًا؟
+
+**CHANGED:** `core/privilege/{RootCommands,PlatformShell,PlatformCommandRules}.kt` (بوابة جذر واحدة مسيَّجة بالجيل · جسر Shizuku/جذر · قائمة أوامر منصّة ترفض حقن الصدفة ومسارات النواة) · حجب `DaemonIpc`/`RootNodeChannel`/`ShizukuGateway`/تدفّق سجلّ الجذر بالوضع · `ui/navigation/{DestinationAccess,DestinationAccessState}.kt` + `ui/component/DestinationAccessGate.kt` (تصنيف وإخفاء وحارس تنفيذ) · فلترة الرئيسية/البحث/المحاور/قائمة القدرات · حذف `private_dns` من ٨٥ ملفًّا وتصنيف `network_policy` ROOT · اختباران جديدان (8+9) وأداة JVM · إصلاح شكل `RootNodeChannel.service` واستثناء `DestinationAccess.kt` في حارس الوجهات.
+
+**GATES:** ١٣/١٣ exit 0 محليًّا (منها `resource_compile` بـaapt2 حقيقي و`test_platform_commands_jvm` 8/8) · Quick Verify `42437742982` على `c8502100` = success (بوابات العقد + `:app:testReleaseUnitTest`، `BUILD SUCCESSFUL in 2m 28s`). التشغيل الأول `42435072374` كشف اختبارين قديمين فاسدين فأُصلحا في `c8502100`.
+
+**BUILD:** `:app:compileReleaseKotlin` محليًّا 18m22s · QV ترجم نسخة release واختباراتها. QV لا يبني APK/native/R8.
+
+**REVIEW:** ستّ محاولات مراجعة مستقلة فشلت لأسباب مزوّد (حد استخدام ×3، حجب محتوى ×2، اعتماد غير صالح ×1) — **لا حكم موجود ولا يُدّعى**. المسار اليدوي: نموذج غير المنفّذ في هذه المحادثة + `REVIEW.md` §2.
+
+**RESIDUAL:** تفويض الجذر/Shizuku، SELinux، عقد النواة، الشحن، معدّل التحديث، RTL/السلوك الحيّ — تحتاج جهازًا · طبقة `.so` لرموز JNI غير متحقّقة · AxManager غير مدعوم (واجهة `axsh` مستقلة تحتاج ناقلًا خامسًا) · غياب المراجعة المستقلة خطر معلن.
+
+**NEXT:** مراجعة سلامة يدوية بنموذج غير المنفّذ · جولة جهاز للأوضاع الأربعة · قرار AxManager.
+
 ## ROUND-CLOSE-29 — شارة الوصول تفتح نافذة واحدة صادقة — 2026-11-07 · DONE_WITH_CONCERNS
 
 **TASK:** محدّد وضع وصول في الرئيسية (Auto/Root/Shizuku/Basic) مثل Scene، مع مدير الجذر وSELinux، وفلتر «ما يدعمه الوضع فقط» أو «كل شيء»، وتغييره من الإعدادات أيضًا.
