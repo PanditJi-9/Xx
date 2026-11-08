@@ -128,6 +128,8 @@ fun screenFinderResults(
 ): List<ScreenFinderTarget> {
     val needle = maxSearchFold(query).trim()
     if (needle.isEmpty()) return emptyList()
+    // الكلمات بعد إسقاط النحو: «أوقف الشحن الآن» ⇒ «شحن». ولا تُستعمل إلا حين تعجز العبارة.
+    val sentenceTokens = maxSearchTokens(needle)
 
     return targets
         .mapNotNull { target ->
@@ -152,7 +154,10 @@ fun screenFinderResults(
                 keywordRank >= 0 -> KEYWORD_BASE + keywordRank
                 roleRank >= 0 -> ROLE_BASE + roleRank
                 whereRank >= 0 -> WHERE_BASE + whereRank
-                else -> return@mapNotNull null
+                // **والجملة تعمل كما تعمل الكلمة** (فكرة §٣-٥ «أوامر بالقصد»): ما لم تُطابق
+                // العبارة كاملةً — والمستخدم يكتب «أوقف الشحن الآن» لا «شحن» — تُطابَق كلماتها
+                // بعد إسقاط نحو الكلام وحده. والنتيجة التي وُجدت فيها **كل** الكلمات تتقدّم.
+                else -> maxSentenceRank(target, sentenceTokens) ?: return@mapNotNull null
             }
             ScreenFinderHit(target, score, maxSearchFold(target.title))
         }
@@ -193,6 +198,75 @@ private data class ScreenFinderHit(
 private const val KEYWORD_BASE = 5
 private const val ROLE_BASE = 10
 private const val WHERE_BASE = 20
+
+/** عقوبة «بعض الكلمات وُجدت»: تُبقي الجملة الكاملة قبل الجملة الناقصة، ولا تُسقطها. */
+private const val SENTENCE_PARTIAL_PENALTY = 8
+
+/**
+ * كلمات لا تحمل قصدًا في العربية ولا الإنجليزية — تُسقَط قبل المطابقة كلماتٍ كلمات.
+ *
+ * **ولا تُطبع ولا تُعرض:** لا تظهر في الواجهة ولا تُترجم؛ مكانها هنا لأنها نحْوُ المستخدم
+ * لا محتوى الشاشة. والقائمة محصورة في النحو الخالص: من أسقط كلمةً تحمل معنى («شغل» · «حذف»)
+ * جعل الجملة تعمل على غير قصدها.
+ */
+internal val maxSearchFiller: Set<String> = setOf(
+    // عربية: طلب ونحو
+    "اريد", "ابغى", "ابي", "كيف", "اين", "وين", "هل", "الان", "الان", "من", "في", "عن",
+    "الي", "علي", "على", "لي", "له", "و", "او", "ثم", "افتح", "اذهب", "انتقل", "شاشه",
+    // إنجليزية
+    "open", "go", "to", "the", "a", "an", "how", "do", "does", "i", "can", "please", "show",
+    "me", "now", "for", "of", "and", "or", "screen", "settings", "page",
+)
+
+/**
+ * كلمات الاستعلام بعد الطيّ وإسقاط [maxSearchFiller]، بلا تكرار، وبلا محرف واحد
+ * (الحرف الواحد يطابق كل شيء في العربية).
+ */
+internal fun maxSearchTokens(foldedNeedle: String): List<String> =
+    foldedNeedle
+        .split(' ', '\t', ',', '.', '،', '؛', ';', '؟', '?', '!', '\n')
+        .map { it.trim() }
+        .filter { it.length >= 2 && it !in maxSearchFiller }
+        .distinct()
+
+/**
+ * رتبة الجملة: أفضل مجال تطابقه كلمةٌ منها، وعقوبةٌ إن لم تُوجد كلّها.
+ * تعود `null` إن لم تطابق كلمةٌ واحدة — فلا نتيجة من لا شيء.
+ */
+private fun maxSentenceRank(target: ScreenFinderTarget, tokens: List<String>): Int? {
+    if (tokens.isEmpty()) return null
+    val fields = listOf(
+        0 to target.title,
+        KEYWORD_BASE to target.keywords.joinToString(" "),
+        ROLE_BASE to target.role,
+        WHERE_BASE to target.where,
+    )
+    var best: Int? = null
+    var hits = 0
+    tokens.forEach { token ->
+        var tokenBest: Int? = null
+        // والكلمة العربية تلتصق بها «ال»: «الشحن» في جملة المستخدم هي «شحن» في القاموس.
+        val variants = buildList {
+            add(token)
+            if (token.length >= 4 && token.startsWith("ال")) add(token.removePrefix("ال"))
+        }
+        variants.forEach { word ->
+            fields.forEach { (base, text) ->
+                val rank = maxSearchRankFolded(text, word)
+                if (rank >= 0) {
+                    val score = base + rank
+                    if (tokenBest == null || score < tokenBest!!) tokenBest = score
+                }
+            }
+        }
+        tokenBest?.let {
+            hits++
+            if (best == null || it < best!!) best = it
+        }
+    }
+    val found = best ?: return null
+    return if (hits == tokens.size) found else found + SENTENCE_PARTIAL_PENALTY
+}
 
 /**
  * **كلمات القصد** — الجواب الوحيد المكتوب بيد في الفهرس، لأنه لا يُشتقّ من السجلّ.

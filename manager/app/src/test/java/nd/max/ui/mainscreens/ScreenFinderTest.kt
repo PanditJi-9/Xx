@@ -350,4 +350,40 @@ class ScreenFinderTest {
             },
         )
     }
+
+    /**
+     * الجملة الكاملة: المستخدم يكتب ما يقوله، لا اسم الشاشة (فكرة §٣-٥ «أوامر بالقصد»).
+     * وما يُسقَط نحوٌ خالص فقط — كلمةٌ تحمل معنى لا تُسقَط، وإلا عملت الجملة على غير قصدها.
+     */
+    @Test
+    fun `a whole sentence finds the screen it asks for`() {
+        val targets = screenFinderTargets({ "«$it»" })
+
+        fun destinations(query: String) = screenFinderResults(query, targets).map { it.destination }
+
+        assertTrue(
+            "«أوقف الشحن الآن»: كلمة القصد وحدها تُطابق بعد إسقاط النحو",
+            MaxDestination.Charging in destinations("أوقف الشحن الآن"),
+        )
+        assertTrue(
+            "ونحو الإنجليزية يُسقط أيضًا: how do i open bypass",
+            MaxDestination.BypassCharging in destinations("how do i open bypass"),
+        )
+        assertTrue(
+            "ونحوٌ وحده لا يُرجع شيئًا — لا نتائج من لا شيء",
+            destinations("how do i the").isEmpty(),
+        )
+    }
+
+    /** الاسم المطابق كاملًا يبقى قبل الجملة: الترتيب لا ينقلب لأن الاستعلام طال. */
+    @Test
+    fun `sentences do not outrank exact names`() {
+        val targets = screenFinderTargets({ "«$it»" })
+
+        assertEquals(
+            "الاسم المطابق يبقى أوّلًا مهما طالت الجملة",
+            MaxDestination.BatteryHistory,
+            screenFinderResults("سجل البطارية", targets).firstOrNull()?.destination,
+        )
+    }
 }
