@@ -63,7 +63,9 @@ fun maxIllustrationKind(iconName: String?): MaxIllustrationKind? = when (iconNam
     "Build", "Science", "CleaningServices", "BugReport", "Edit" -> MaxIllustrationKind.Tools
     "Camera", "CameraAlt", "PhotoCamera" -> MaxIllustrationKind.Camera
     "Sensors", "SensorsOff", "Explore" -> MaxIllustrationKind.Sensors
-    "AutoAwesome", "Insights", "Timeline" -> MaxIllustrationKind.Intelligence
+    // ولا تُسجَّل هنا أسماء رموز الذكاء: بوّابة `VisualIdentityTest` تمنع «النجمة» خارج أسطح
+    // Max AI، فمجالُ الذكاء يأتي من خريطة الوجهات وحدها (`MaxDestinationIllustrations`).
+    "Insights", "Timeline" -> MaxIllustrationKind.Intelligence
     else -> null
 }
 

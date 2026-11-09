@@ -24880,7 +24880,7 @@ Rounded.Undo` (نفس نمط `FileEditorDialog.kt` و`GamePanelCockpit.kt`). ب�
 
 **GATES:** `kt_balance --assert` (٣٢٩٧ ملفًا · ٠) · `i18n_coverage --assert` (٠) · `i18n_coverage --prune all --assert` (٠) · `design_tokens --assert` (0) · `hardcoded_ui_text --assert` (٢٤ ≤ ٢٤) · `code_health --assert` (0) · `git diff --check` (نظيف).
 
-**BUILD:** بناء كامل `build.yml` **`42531441569`** على `04aee8e2` = **success**؛ و`42522190605` على `a04ce571` = **success**. والدفعة الأخيرة (`43e4de5d` + حمية الشروح) في بناء `build.yml` على `ux-reengineering-01` — **الحكم يُقرأ ويُكتب هنا عند وصوله؛ لم يُدَّعَ نجاح قبل قراءته**.
+**BUILD:** بناء كامل `build.yml` **`42531441569`** على `04aee8e2` = **success**؛ و`42522190605` على `a04ce571` = **success**؛ و`42534318715` على `43e4de5d` = **success** (قُرئ الحكم من الواجهة، لا من الذاكرة). و`e7d887d7` (حمية الشروح) لم يُغطَّ ببناءٍ مستقلّ: دخل معه في دفعة الموجة ٥ (`3f0e6b98`) — وحكمها في سجلّ الموجة ٥ أدناه.
 
 **REVIEW:** لا مراجعة مستقلة جديدة. محاولات الجولات السابقة فشلت لأسباب مزوّد؛ ولا يُدَّعى حكم غير موجود.
 
