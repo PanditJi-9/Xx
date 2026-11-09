@@ -8,6 +8,8 @@
 
 **BUILD:** الاختبارات المستهدفة (`GameSessionStoreTest` 11 + `HudSessionTest` 15 = 0 فشل) + `:app:compileReleaseKotlin` = BUILD SUCCESSFUL in 16m 3s؛ Quick Verify يُرسل بعد الدفع ويُقرأ حكمه.
 
+**CI:** البناء `42701523830` على `1c4b94d9` سقط في «Contract gates» (68 شاشة في الوثائق والمقيس 69)؛ حُدّث العدد في README وREADME.ar وSVG الإحصاءات وlisting.md، و`readme_assets.py --assert` = RC 0. تُدفع دفعة الإصلاح ويُعاد QV/البناء.
+
 **RESIDUAL:** الجهاز غير متاح — الالتقاط الأمامي، التخزين، الواجهة/اللمس/RTL، `gfxinfo` و`mm_stat`.
 
 **NEXT:** جهاز: جلسة كاملة + تصدير CSV + بقاء السجلّ بعد موت العملية.
