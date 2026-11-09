@@ -126,9 +126,11 @@ MaxManager has a strong engine and a fragmented surface. `core/maxai` + `core/ha
 - **العملية:** `ProcessFeed.details(pid)` بأمر جذري واحد (`/proc/<pid>/status` + `oom_score_adj` + `cgroup`) · `ProcessManagerViewModel.loadDetails/clearDetails` · صفوف OOM/Swapped/Threads/Cgroup في `DetailSheet`.
 - **النصوص:** en/ar فقط (19 مفتاحًا: 2 شحن · 6 ZRAM · 6 عمليات · 4 نشاط · 1 jank) — لا لغة ثالثة.
 
-**MEASURED:** `git diff --stat` 23 ملفًا · +753/−61 · 34 اختبارًا مستهدفًا (ChargeCurve 9 · ForegroundAppResolver 20 · FrameStats 5) **0 فشل** · `:app:compileReleaseKotlin` **BUILD SUCCESSFUL in 7m 57s** · `:app:testReleaseUnitTest` للوحدات الثلاث **BUILD SUCCESSFUL in 11m 57s**.
+**MEASURED:** `git diff --stat origin/main..HEAD` 27 ملفًا · +1002/−61 (بعد الدمج) · 34 اختبارًا مستهدفًا قبل الدمج (ChargeCurve 9 · ForegroundAppResolver 20 · FrameStats 5) **0 فشل** · `:app:compileReleaseKotlin` على الشجرة المدموجة **BUILD SUCCESSFUL in 20m 27s** · `:app:testReleaseUnitTest` للوحدات الثلاث قبل الدمج **BUILD SUCCESSFUL in 11m 57s**.
 
-**GATES:** الثماني `--assert` + `git diff --check` = 0: `kt_balance` 3295/0 · `code_health` 0 والدَّين عند السقف · `i18n_coverage` 84 لغة + en · `--prune all` 0 يتيم · `design_tokens` 251/300 · `jni_symbols` 23 تصريحًا (الطبقة ٢ غير متحقّقة لغياب الثنائيات) · `license_audit` GPL 0 · `resource_compile` aapt2 حقيقي.
+**GATES:** الثماني `--assert` + `git diff --check` = 0 على الشجرة المدموجة: `kt_balance` 3327/0 · `code_health` 0 والدَّين عند السقف · `i18n_coverage` 84 لغة + en · `--prune all` 0 يتيم · `design_tokens` 249/300 · `jni_symbols` 23 تصريحًا (الطبقة ٢ غير متحقّقة لغياب الثنائيات) · `license_audit` GPL 0 · `resource_compile` aapt2 حقيقي.
+
+**CI:** Quick Verify `42674135194` والبناء الكامل `42673992190` على `fbce8f01` فشلا في الخطوة نفسها: `HudSessionTest > fields are ordered by importance...` — القائمة المتوقعة لم تضمّ `Jank` بعد `Stability`. أُصلح الاختبار في `HudSessionTest.kt` (القائمة صارت Frames · Stability · Jank · Cpu · Heat · Ram · Power · Battery · Network · Renderer)، وتُعاد QV/البناء بعد دفعة الإصلاح؛ الحكم يُقرأ ولا يُدّعى.
 
 **REVIEW:** لا حكم مستقل جديد (المحاولات السابقة فشلت لأسباب مزوّد)؛ المسار اليدوي قائم. **لا كود من `scene_n1`** (بلا ترخيص) — الأفكار وحدها.
 

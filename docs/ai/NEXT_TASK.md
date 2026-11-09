@@ -47,11 +47,11 @@ i18n ٠/يتيمة ٠، الكتالوج assert/check/self-test نجحت (٨٨/�
 
 **CHANGED:** `FrameStats.kt` + `FpsMonitorUtil`/`HudSession`/`HudSurface` · `ForegroundAppResolver`/`GameProfileDocument`/`GameProfileRepository`/`AppMonitor`/`CompanionPollPolicy` + محدّد نشاط في `AppSettingsScreen` · `ChargeCurve` energy/charge · `ZramViewModel` `mm_stat[2..6]` · `ProcessFeed.details` + `DetailSheet` · نصوص en/ar.
 
-**MEASURED:** 23 ملفًا · +753/−61 · 34 اختبارًا مستهدفًا 0 فشل · compile 7m57s · test 11m57s.
+**MEASURED:** 27 ملفًا · +1002/−61 بعد الدمج · 34 اختبارًا مستهدفًا قبل الدمج 0 فشل · compile 20m27s على الشجرة المدموجة · test 11m57s قبل الدمج.
 
-**GATES:** الثماني + `git diff --check` = 0.
+**GATES:** الثماني + `git diff --check` = 0 على الشجرة المدموجة.
 
-**BUILD:** `:app:compileReleaseKotlin` نجح محليًّا؛ Quick Verify يُرسل بعد الدفع ويُقرأ حكمه.
+**BUILD:** `:app:compileReleaseKotlin` نجح على الشجرة المدموجة. Quick Verify `42674135194` والبناء الكامل `42673992190` فشلا في `HudSessionTest` (ترتيب الحقول لم يضمّ Jank) — أُصلح الاختبار، وتُعاد QV/البناء بعد دفعة الإصلاح ويُقرأ الحكم.
 
 **RESIDUAL:** الجهاز غير متاح — jank/gfxinfo، dumpsys النشاط، mm_stat، جذر العملية، تكامل الشحن.
 

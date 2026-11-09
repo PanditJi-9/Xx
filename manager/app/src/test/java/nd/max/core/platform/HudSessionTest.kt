@@ -199,7 +199,7 @@ class HudSessionTest {
         assertEquals(
             // البطارية والشبكة بعد القدرة وقبل المُصيِّر: تُقرآن بنظرة لا تُزاحم الإطارات.
             // والثبات بجانب الإطارات لأنه يجيب السؤال نفسه («هل هي سلسة؟») بمدى لا بلحظة.
-            listOf("Frames", "Stability", "Cpu", "Heat", "Ram", "Power", "Battery", "Network", "Renderer"),
+            listOf("Frames", "Stability", "Jank", "Cpu", "Heat", "Ram", "Power", "Battery", "Network", "Renderer"),
             HudField.entries.map { it.name }
         )
     }
