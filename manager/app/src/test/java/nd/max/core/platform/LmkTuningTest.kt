@@ -1,137 +1,221 @@
 /*
- * Copyright (C) 2026-2027 MaxManager contributors
- *
- * Licensed under the Apache License, Version 2.0.
+ * Copyright (C) 2026 Nader Magdy. All rights reserved.
+ * Proprietary and confidential — not licensed for use, copying, or distribution
+ * without prior written permission from the copyright holder.
  */
 package nd.max.core.platform
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
 import org.junit.Test
 
-/**
- * يقيس حساب عتبات LMK ومعنى كل حكم كتابة — بلا جهاز وبلا جذر.
- *
- * **ولماذا فصلُ القراءة والكتابة في `Io`:** هذا الاختبار يمرّر قراءةً وكتابةً مصنوعتين، فيصير
- * كل حكم (`APPLIED` / `NOT_WRITABLE` / `UNVERIFIED`) قابلًا لإعادة الإنتاج بدل أن يُجرَّب على
- * نواةٍ حيّة. والخطأ الذي يُمسك هنا هو أخطر ما في الملف: كتابة متجه أقصر من متجه النواة.
- */
+/** الحساب وبوابة الطلب يُقاسان هنا؛ قبول عقدة حقيقية للكتابة يحتاج جهازًا. */
 class LmkTuningTest {
+    private val original = listOf(10240, 20480, 30720)
+    private val target = listOf(7680, 15360, 23040)
 
     @Test
-    fun `parse accepts a comma separated table`() {
-        assertEquals(listOf(10240, 20480, 30720), LmkTuning.parse("10240,20480,30720"))
+    fun parseAcceptsKernelCommaSeparatedValues() {
+        assertEquals(original, LmkTuning.parse("10240,20480,30720\n"))
     }
 
     @Test
-    fun `parse accepts whitespace and newlines`() {
-        assertEquals(listOf(10240, 20480, 30720), LmkTuning.parse(" 10240 20480\n30720 \n"))
+    fun parseAcceptsWhitespaceWithoutDiscardingTokens() {
+        assertEquals(original, LmkTuning.parse(" 10240\t20480\n30720 \r\n"))
+        assertEquals(original, LmkTuning.parse("10240, 20480,\n30720"))
     }
 
     @Test
-    fun `parse rejects a partial table instead of keeping the valid part`() {
-        assertNull(LmkTuning.parse("10240,20480,abc"))
-        assertNull(LmkTuning.parse("10240,,"))
+    fun parseRejectsEmptyCommaFields() {
+        listOf("10240,,20480", ",10240,20480", "10240,20480,", "10240,20480,,").forEach { raw ->
+            assertNull(raw, LmkTuning.parse(raw))
+        }
     }
 
     @Test
-    fun `parse rejects a single value and an empty node`() {
-        assertNull(LmkTuning.parse("10240"))
+    fun parseRejectsMixedTokensAndPartialNumbers() {
+        listOf("10240,20480abc", "10240,20480 30720", "1,+2", "1,-2", "1,2.0", "1,٢").forEach { raw ->
+            assertNull(raw, LmkTuning.parse(raw))
+        }
+    }
+
+    @Test
+    fun parseRejectsNullEmptyAndSingleValue() {
         assertNull(LmkTuning.parse(null))
         assertNull(LmkTuning.parse(""))
+        assertNull(LmkTuning.parse(" \n"))
+        assertNull(LmkTuning.parse("10240"))
     }
 
     @Test
-    fun `parse rejects zero and values above the ceiling`() {
+    fun parseBoundsLengthCountAndMagnitude() {
+        assertNull(LmkTuning.parse("1," + "2".repeat(LmkTuning.MAX_TEXT_LENGTH)))
+        assertNull(LmkTuning.parse("1,2,3,4,5,6,7"))
         assertNull(LmkTuning.parse("0,20480"))
         assertNull(LmkTuning.parse("10240,${LmkTuning.MAX_PAGE + 1}"))
+        assertNull(LmkTuning.parse("1,99999999999999999999"))
+        assertEquals(listOf(1, 2, 3, 4, 5, 6), LmkTuning.parse("1,2,3,4,5,6"))
     }
 
     @Test
-    fun `format writes the kernel shape without spaces`() {
-        assertEquals("10240,20480", LmkTuning.format(listOf(10240, 20480)))
+    fun parseRejectsDuplicateAndDescendingThresholds() {
+        assertNull(LmkTuning.parse("20480,10240"))
+        assertNull(LmkTuning.parse("10240,10240"))
     }
 
     @Test
-    fun `scale softens and hardens by the requested percent`() {
-        val base = listOf(10000, 20000, 40000)
-        assertEquals(listOf(7500, 15000, 30000), LmkTuning.scale(base, 75))
-        assertEquals(listOf(12500, 25000, 50000), LmkTuning.scale(base, 125))
+    fun formatPreservesCountAndOrder() {
+        assertEquals("10240,20480,30720", LmkTuning.format(original))
+        assertEquals(original, LmkTuning.parse(LmkTuning.format(original)))
     }
 
     @Test
-    fun `scale refuses percents outside the shipped range`() {
-        assertNull(LmkTuning.scale(listOf(10000, 20000), 49))
-        assertNull(LmkTuning.scale(listOf(10000, 20000), 201))
+    fun scaleUsesTheRequestedPercentage() {
+        assertEquals(target, LmkTuning.scale(original, 75))
+        assertEquals(listOf(12800, 25600, 38400), LmkTuning.scale(original, 125))
+        assertEquals(original, LmkTuning.scale(original, 100))
     }
 
     @Test
-    fun `scale keeps the ladder strictly increasing after rounding`() {
-        // ١ و٢ بعد ٧٥٪ يصيران ٠ و١ بلا إصلاح — سلّم مكسور ترفضه النواة.
-        assertEquals(listOf(1, 2), LmkTuning.scale(listOf(1, 2), 75))
-        val scaled = LmkTuning.scale(listOf(3, 3, 3), 75)!!
-        assertEquals(3, scaled.size)
-        assertTrue(scaled[1] > scaled[0])
-        assertTrue(scaled[2] > scaled[1])
+    fun scaleDoesNotMutateItsInput() {
+        val input = original.toMutableList()
+        LmkTuning.scale(input, 75)
+        assertEquals(original, input)
     }
 
     @Test
-    fun `orderAdjusted reports that the exact percent was not kept`() {
-        assertTrue(LmkTuning.orderAdjusted(listOf(1, 2), LmkTuning.scale(listOf(1, 2), 75)!!, 75))
-        assertFalse(LmkTuning.orderAdjusted(listOf(10000, 20000), LmkTuning.scale(listOf(10000, 20000), 75)!!, 75))
+    fun scaleRejectsOutOfRangePercentages() {
+        listOf(Int.MIN_VALUE, 0, 49, 201, Int.MAX_VALUE).forEach { percent ->
+            assertNull(LmkTuning.scale(original, percent))
+        }
     }
 
     @Test
-    fun `pageToMegabytes uses the page size it is given`() {
-        assertEquals(40, LmkTuning.pageToMegabytes(10240))
-        assertEquals(4, LmkTuning.pageToMegabytes(1024))
-        assertEquals(5, LmkTuning.pageToMegabytes(1024, pageKb = 5))
+    fun scaleRejectsMalformedInputs() {
+        listOf(emptyList(), listOf(1), listOf(-1, 2), listOf(3, 3), listOf(4, 2), listOf(1, Int.MAX_VALUE)).forEach { input ->
+            assertNull(LmkTuning.scale(input, 75))
+        }
     }
 
     @Test
-    fun `apply reports applied only when the read-back matches`() {
-        val node = "10240,20480,30720"
-        val io = LmkTuning.Io(read = { node }, write = { _, _ -> true })
-        assertEquals(LmkTuning.Outcome.APPLIED, io.apply(listOf(10240, 20480, 30720)))
+    fun scaleRejectsRoundingCollisionsInsteadOfInventingValues() {
+        assertNull(LmkTuning.scale(listOf(1, 2), 75))
+        assertNull(LmkTuning.scale(listOf(4, 5), 50))
     }
 
     @Test
-    fun `apply reports not present when the kernel has no table`() {
-        val io = LmkTuning.Io(read = { null }, write = { _, _ -> true })
-        assertEquals(LmkTuning.Outcome.NOT_PRESENT, io.apply(listOf(10240, 20480)))
+    fun scaleRejectsCeilingOverflowInsteadOfClamping() {
+        assertNull(LmkTuning.scale(listOf(400000, 500000), 125))
+        assertEquals(listOf(250000, 500000), LmkTuning.scale(listOf(125000, 250000), 200))
     }
 
     @Test
-    fun `apply reports not writable when the write is refused`() {
-        val io = LmkTuning.Io(read = { "10240,20480" }, write = { _, _ -> false })
-        assertEquals(LmkTuning.Outcome.NOT_WRITABLE, io.apply(listOf(10240, 20480)))
+    fun pageConversionUsesMeasuredFourAndSixteenKilobytePages() {
+        assertEquals(40L, LmkTuning.pageToMegabytes(10240, 4096L))
+        assertEquals(160L, LmkTuning.pageToMegabytes(10240, 16384L))
     }
 
     @Test
-    fun `apply reports unverified when the node keeps the old value`() {
-        val io = LmkTuning.Io(read = { "10240,20480" }, write = { _, _ -> true })
-        assertEquals(LmkTuning.Outcome.UNVERIFIED, io.apply(listOf(7680, 15360)))
+    fun pageConversionRejectsUnknownOrInvalidPageSizes() {
+        listOf(-1L, 0L, 2048L, 5000L, Long.MAX_VALUE).forEach { bytes ->
+            assertNull(LmkTuning.pageToMegabytes(10240, bytes))
+        }
+        assertNull(LmkTuning.pageToMegabytes(0, 4096L))
     }
 
     @Test
-    fun `apply refuses a vector of a different length than the kernel vector`() {
-        var wrote = false
-        val io = LmkTuning.Io(read = { "10240,20480,30720" }, write = { _, _ -> wrote = true; true })
-        assertEquals(LmkTuning.Outcome.UNVERIFIED, io.apply(listOf(10240, 20480)))
-        assertFalse("لا تُكتب عقدة أقصر من عقدة النواة", wrote)
+    fun unreadablePageSizeRemainsUnknown() {
+        val io = LmkTuning.Io(read = { null }, submit = { _, _ -> LmkTuning.Outcome.BLOCKED })
+        assertNull(io.pageSizeBytes())
     }
 
     @Test
-    fun `apply writes the formatted ladder and verifies against the parsed read-back`() {
-        val written = StringBuilder()
-        var node = "10240,20480"
+    fun pageSizeAndReadExceptionsDoNotEscape() {
         val io = LmkTuning.Io(
-            read = { node },
-            write = { _, value -> written.append(value); node = value; true },
+            read = { throw IllegalStateException("read") },
+            submit = { _, _ -> LmkTuning.Outcome.BLOCKED },
+            pageBytes = { throw IllegalStateException("page-size") },
         )
-        assertEquals(LmkTuning.Outcome.APPLIED, io.apply(listOf(7680, 15360)))
-        assertEquals("7680,15360", written.toString())
+        assertNull(io.current())
+        assertNull(io.pageSizeBytes())
+    }
+
+    @Test
+    fun invalidTargetNeverReachesTheSubmitGate() {
+        var submitted = false
+        val io = LmkTuning.Io(read = { LmkTuning.format(original) }, submit = { _, _ -> submitted = true; LmkTuning.Outcome.APPLIED })
+        assertEquals(LmkTuning.Outcome.INVALID, io.apply(listOf(0, 1, 2), original))
+        assertFalse(submitted)
+    }
+
+    @Test
+    fun differentVectorLengthNeverReachesTheSubmitGate() {
+        var submitted = false
+        val io = LmkTuning.Io(read = { LmkTuning.format(original) }, submit = { _, _ -> submitted = true; LmkTuning.Outcome.APPLIED })
+        assertEquals(LmkTuning.Outcome.INVALID, io.apply(target.take(2), original))
+        assertFalse(submitted)
+    }
+
+    @Test
+    fun unavailableNodeNeverReachesTheSubmitGate() {
+        var submitted = false
+        val io = LmkTuning.Io(read = { null }, submit = { _, _ -> submitted = true; LmkTuning.Outcome.APPLIED })
+        assertEquals(LmkTuning.Outcome.NOT_PRESENT, io.apply(target, original))
+        assertFalse(submitted)
+    }
+
+    @Test
+    fun staleSnapshotBlocksInsteadOfOverwritingAnotherWriter() {
+        var submitted = false
+        val io = LmkTuning.Io(read = { "12000,24000,48000" }, submit = { _, _ -> submitted = true; LmkTuning.Outcome.APPLIED })
+        assertEquals(LmkTuning.Outcome.BLOCKED, io.apply(target, original))
+        assertFalse(submitted)
+    }
+
+    @Test
+    fun appliedRequiresBothGateApprovalAndMatchingReadback() {
+        var node = LmkTuning.format(original)
+        val io = LmkTuning.Io(read = { node }, submit = { desired, expected ->
+            assertEquals(LmkTuning.format(original), expected)
+            node = desired
+            LmkTuning.Outcome.APPLIED
+        })
+        assertEquals(LmkTuning.Outcome.APPLIED, io.apply(target, original))
+        assertEquals("7680,15360,23040", node)
+    }
+
+    @Test
+    fun acceptedGateCannotFabricateSuccessfulReadback() {
+        val io = LmkTuning.Io(read = { LmkTuning.format(original) }, submit = { _, _ -> LmkTuning.Outcome.APPLIED })
+        assertEquals(LmkTuning.Outcome.UNVERIFIED, io.apply(target, original))
+    }
+
+    @Test
+    fun readbackFormattingIsComparedByFullParsedVector() {
+        var node = LmkTuning.format(original)
+        val io = LmkTuning.Io(read = { node }, submit = { _, _ -> node = "7680, 15360, 23040\n"; LmkTuning.Outcome.APPLIED })
+        assertEquals(LmkTuning.Outcome.APPLIED, io.apply(target, original))
+    }
+
+    @Test
+    fun unavailableReadbackIsUnverified() {
+        var node: String? = LmkTuning.format(original)
+        val io = LmkTuning.Io(read = { node }, submit = { _, _ -> node = null; LmkTuning.Outcome.APPLIED })
+        assertEquals(LmkTuning.Outcome.UNVERIFIED, io.apply(target, original))
+    }
+
+    @Test
+    fun refusedAndBlockedGateOutcomesRemainDistinct() {
+        listOf(LmkTuning.Outcome.NOT_WRITABLE, LmkTuning.Outcome.BLOCKED, LmkTuning.Outcome.UNVERIFIED).forEach { verdict ->
+            val io = LmkTuning.Io(read = { LmkTuning.format(original) }, submit = { _, _ -> verdict })
+            assertEquals(verdict, io.apply(target, original))
+        }
+    }
+
+    @Test
+    fun submitExceptionIsNotReportedAsSuccess() {
+        val io = LmkTuning.Io(read = { LmkTuning.format(original) }, submit = { _, _ -> throw IllegalStateException("write") })
+        assertEquals(LmkTuning.Outcome.UNVERIFIED, io.apply(target, original))
     }
 }

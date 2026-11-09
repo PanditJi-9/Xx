@@ -1037,8 +1037,6 @@
     <string name="diagnostics_step_processes">Proseslər</string>
     <string name="diagnostics_step_logs">Qeydlər</string>
     <string name="diagnostics_step_shell">Kök qabığı</string>
-    <string name="diagnostics_bootimage_title">Yükləmə Şəkil Alətləri</string>
-    <string name="diagnostics_bootimage_desc">Yükləmə/kernel şəkillərinin ehtiyat nüsxəsini çıxarın və flash edin</string>
     <string name="diagnostics_hidden_activities_title">Gizli Fəaliyyətlər</string>
     <string name="diagnostics_hidden_activities_desc">Gizli tətbiq fəaliyyətlərini işə salın</string>
     <string name="tweaks_workspace_title">QLOBAL NƏZARƏT</string>

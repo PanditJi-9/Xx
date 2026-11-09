@@ -980,8 +980,6 @@
     <string name="diagnostics_step_processes">Procesos</string>
     <string name="diagnostics_step_logs">Registros</string>
     <string name="diagnostics_step_shell">Shell con root</string>
-    <string name="diagnostics_bootimage_title">Herramientas de imagen de arranque</string>
-    <string name="diagnostics_bootimage_desc">Haz copias y flashea imágenes de arranque o del núcleo</string>
     <string name="diagnostics_hidden_activities_title">Actividades ocultas</string>
     <string name="diagnostics_hidden_activities_desc">Inicia actividades ocultas de las aplicaciones</string>
     <string name="tweaks_workspace_title">CONTROL GLOBAL</string>

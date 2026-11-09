@@ -1041,8 +1041,6 @@
     <string name="diagnostics_step_processes">فرآیندها</string>
     <string name="diagnostics_step_logs">سیاههها</string>
     <string name="diagnostics_step_shell">پوسته ریشه</string>
-    <string name="diagnostics_bootimage_title">Boot Image Tools</string>
-    <string name="diagnostics_bootimage_desc">بک آپ بگیرید و تصاویر بوت/کرنل را فلش کنید</string>
     <string name="diagnostics_hidden_activities_title">فعالیت های پنهان</string>
     <string name="diagnostics_hidden_activities_desc">فعالیت های برنامه های پنهان را راه اندازی کنید</string>
     <string name="tweaks_workspace_title">کنترل جهانی</string>

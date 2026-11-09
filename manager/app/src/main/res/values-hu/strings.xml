@@ -1044,8 +1044,6 @@
     <string name="diagnostics_step_processes">Folyamatok</string>
     <string name="diagnostics_step_logs">Naplók</string>
     <string name="diagnostics_step_shell">Gyökérhéj</string>
-    <string name="diagnostics_bootimage_title">Boot Image Tools</string>
-    <string name="diagnostics_bootimage_desc">Készítsen biztonsági másolatot és flash boot/kernel képeket</string>
     <string name="diagnostics_hidden_activities_title">Rejtett tevékenységek</string>
     <string name="diagnostics_hidden_activities_desc">Indítsa el a rejtett alkalmazástevékenységeket</string>
     <string name="tweaks_workspace_title">GLOBÁLIS KONTROLL</string>

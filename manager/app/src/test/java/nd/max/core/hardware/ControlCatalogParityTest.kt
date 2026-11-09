@@ -112,9 +112,9 @@ class ControlCatalogParityTest {
 
     @Test
     fun everyHardwareControlKeyPrefixHasAnEntry() {
-        // 23 prefixًا مقيسة في HardwareControlKey (CPU/GPU/ذاكرة/لمس/حرارة/صوت/تزييف/VM/ZRAM/مجدول/ذاكرة/CPU-بائع/بطارية):
+        // 28 prefixًا مقيسة؛ الخمس الجديدة مخصصة لضبط التخزين والحاكم والاهتزاز وألوان الشاشة.
         // كان الرقم 15 قبل إضافة بوادئ الصوت وspoof_engine وvm.، والكتالوج يحملها كلها.
-        assertEquals("البوادئ المقيسة تغيّرت — حدّث المصدر لا الاختبار", 23, prefixes.size)
+        assertEquals("البوادئ المقيسة تغيّرت — حدّث المصدر لا الاختبار", 28, prefixes.size)
         assertEquals(emptyList<String>(), CatalogGaps.missingPrefixes(entries, prefixes))
     }
 

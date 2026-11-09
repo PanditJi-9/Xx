@@ -1044,8 +1044,6 @@
     <string name="diagnostics_step_processes">Procesos</string>
     <string name="diagnostics_step_logs">Rexistros</string>
     <string name="diagnostics_step_shell">Cuncha raíz</string>
-    <string name="diagnostics_bootimage_title">Ferramentas de imaxe de arranque</string>
-    <string name="diagnostics_bootimage_desc">Fai unha copia de seguridade e flashear imaxes de arranque/kernel</string>
     <string name="diagnostics_hidden_activities_title">Actividades ocultas</string>
     <string name="diagnostics_hidden_activities_desc">Inicia actividades de aplicacións ocultas</string>
     <string name="tweaks_workspace_title">CONTROL GLOBAL</string>

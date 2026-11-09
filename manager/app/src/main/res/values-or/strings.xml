@@ -966,8 +966,6 @@
     <string name="diagnostics_step_processes">ପ୍ରକ୍ରିୟା</string>
     <string name="diagnostics_step_logs">ଲଗ୍</string>
     <string name="diagnostics_step_shell">ମୂଳ ଶେଲ୍ |</string>
-    <string name="diagnostics_bootimage_title">ବୁଟ ପ୍ରତିଛବି ଉପକରଣଗୁଡ଼ିକ</string>
-    <string name="diagnostics_bootimage_desc">ବ୍ୟାକଅପ୍ ଏବଂ ଫ୍ଲାସ୍ ବୁଟ୍ / କର୍ଣ୍ଣଲ ପ୍ରତିଛବିଗୁଡ଼ିକ |</string>
     <string name="diagnostics_hidden_activities_title">ଲୁକ୍କାୟିତ କାର୍ଯ୍ୟକଳାପ |</string>
     <string name="diagnostics_hidden_activities_desc">ଲୁକ୍କାୟିତ ଆପ୍ କାର୍ଯ୍ୟକଳାପ ଆରମ୍ଭ କରନ୍ତୁ |</string>
     <string name="tweaks_workspace_title">ଗ୍ଲୋବାଲ୍ ନିୟନ୍ତ୍ରଣ |</string>

@@ -1044,8 +1044,6 @@
     <string name="diagnostics_step_processes">Procesai</string>
     <string name="diagnostics_step_logs">Rąstai</string>
     <string name="diagnostics_step_shell">Šaknies apvalkalas</string>
-    <string name="diagnostics_bootimage_title">Įkrovos vaizdo įrankiai</string>
-    <string name="diagnostics_bootimage_desc">Kurkite atsargines kopijas ir „flash“ įkrovos / branduolio vaizdus</string>
     <string name="diagnostics_hidden_activities_title">Paslėpta veikla</string>
     <string name="diagnostics_hidden_activities_desc">Paleiskite paslėptą programų veiklą</string>
     <string name="tweaks_workspace_title">PASAULINĖ KONTROLĖ</string>

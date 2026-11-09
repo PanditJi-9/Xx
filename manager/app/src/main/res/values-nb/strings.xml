@@ -1046,8 +1046,6 @@
     <string name="diagnostics_step_processes">Prosesser</string>
     <string name="diagnostics_step_logs">Logger</string>
     <string name="diagnostics_step_shell">Rotskall</string>
-    <string name="diagnostics_bootimage_title">Boot Image Tools</string>
-    <string name="diagnostics_bootimage_desc">Sikkerhetskopier og flash oppstarts-/kjernebilder</string>
     <string name="diagnostics_hidden_activities_title">Skjulte aktiviteter</string>
     <string name="diagnostics_hidden_activities_desc">Start skjulte appaktiviteter</string>
     <string name="tweaks_workspace_title">GLOBAL KONTROLL</string>

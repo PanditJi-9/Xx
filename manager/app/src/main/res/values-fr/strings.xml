@@ -979,8 +979,6 @@
     <string name="diagnostics_step_processes">Processus</string>
     <string name="diagnostics_step_logs">Journaux</string>
     <string name="diagnostics_step_shell">Shell root</string>
-    <string name="diagnostics_bootimage_title">Outils d\'image de démarrage</string>
-    <string name="diagnostics_bootimage_desc">Sauvegarder et flasher les images de démarrage et de noyau</string>
     <string name="diagnostics_hidden_activities_title">Activités masquées</string>
     <string name="diagnostics_hidden_activities_desc">Lancer les activités masquées des applications</string>
     <string name="tweaks_workspace_title">CONTRÔLE GLOBAL</string>

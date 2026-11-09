@@ -1040,8 +1040,6 @@
     <string name="diagnostics_step_processes">Izinqubo</string>
     <string name="diagnostics_step_logs">Izingodo</string>
     <string name="diagnostics_step_shell">Igobolondo lempande</string>
-    <string name="diagnostics_bootimage_title">Qalisa Amathuluzi Esithombe</string>
-    <string name="diagnostics_bootimage_desc">Yenza ikhophi yasenqolobaneni kanye ne-flash boot/kernel izithombe</string>
     <string name="diagnostics_hidden_activities_title">Imisebenzi Efihliwe</string>
     <string name="diagnostics_hidden_activities_desc">Qalisa imisebenzi yohlelo lokusebenza efihliwe</string>
     <string name="tweaks_workspace_title">UKULAWULWA KOMHLABA WONKE</string>

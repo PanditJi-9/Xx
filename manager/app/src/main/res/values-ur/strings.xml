@@ -1044,8 +1044,6 @@
     <string name="diagnostics_step_processes">عمل</string>
     <string name="diagnostics_step_logs">نوشتہ جات</string>
     <string name="diagnostics_step_shell">جڑ کا خول</string>
-    <string name="diagnostics_bootimage_title">بوٹ امیج ٹولز</string>
-    <string name="diagnostics_bootimage_desc">بیک اپ اور فلیش بوٹ/کرنل امیجز</string>
     <string name="diagnostics_hidden_activities_title">پوشیدہ سرگرمیاں</string>
     <string name="diagnostics_hidden_activities_desc">پوشیدہ ایپ سرگرمیاں شروع کریں۔</string>
     <string name="tweaks_workspace_title">عالمی کنٹرول</string>

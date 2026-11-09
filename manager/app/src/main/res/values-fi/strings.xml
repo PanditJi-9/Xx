@@ -1044,8 +1044,6 @@
     <string name="diagnostics_step_processes">Prosessit</string>
     <string name="diagnostics_step_logs">Lokit</string>
     <string name="diagnostics_step_shell">Juuren kuori</string>
-    <string name="diagnostics_bootimage_title">Käynnistyskuvatyökalut</string>
-    <string name="diagnostics_bootimage_desc">Varmuuskopioi ja flash-käynnistys/ytimen kuvat</string>
     <string name="diagnostics_hidden_activities_title">Piilotetut toiminnot</string>
     <string name="diagnostics_hidden_activities_desc">Käynnistä piilotetut sovellustoiminnot</string>
     <string name="tweaks_workspace_title">GLOBAALI OHJAUS</string>

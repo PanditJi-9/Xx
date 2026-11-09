@@ -1045,8 +1045,6 @@
     <string name="diagnostics_step_processes">תהליכים</string>
     <string name="diagnostics_step_logs">יומנים</string>
     <string name="diagnostics_step_shell">קליפת שורש</string>
-    <string name="diagnostics_bootimage_title">אתחול כלי תמונה</string>
-    <string name="diagnostics_bootimage_desc">גיבוי והבזק תמונות אתחול/קרנל</string>
     <string name="diagnostics_hidden_activities_title">פעילויות נסתרות</string>
     <string name="diagnostics_hidden_activities_desc">הפעל פעילויות אפליקציה נסתרות</string>
     <string name="tweaks_workspace_title">שליטה גלובלית</string>

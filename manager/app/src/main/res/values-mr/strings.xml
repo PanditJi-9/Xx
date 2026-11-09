@@ -1045,8 +1045,6 @@
     <string name="diagnostics_step_processes">प्रक्रिया</string>
     <string name="diagnostics_step_logs">नोंदी</string>
     <string name="diagnostics_step_shell">रूट शेल</string>
-    <string name="diagnostics_bootimage_title">बूट प्रतिमा साधने</string>
-    <string name="diagnostics_bootimage_desc">बॅक अप आणि फ्लॅश बूट/कर्नल प्रतिमा</string>
     <string name="diagnostics_hidden_activities_title">लपलेले उपक्रम</string>
     <string name="diagnostics_hidden_activities_desc">लपलेले ॲप क्रियाकलाप लाँच करा</string>
     <string name="tweaks_workspace_title">जागतिक नियंत्रण</string>

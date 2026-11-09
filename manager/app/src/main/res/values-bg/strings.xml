@@ -1043,8 +1043,6 @@
     <string name="diagnostics_step_processes">процеси</string>
     <string name="diagnostics_step_logs">трупи</string>
     <string name="diagnostics_step_shell">Коренна черупка</string>
-    <string name="diagnostics_bootimage_title">Инструменти за стартиращо изображение</string>
-    <string name="diagnostics_bootimage_desc">Архивирайте и флашвайте изображения за зареждане/ядро</string>
     <string name="diagnostics_hidden_activities_title">Скрити дейности</string>
     <string name="diagnostics_hidden_activities_desc">Стартирайте скрити дейности на приложението</string>
     <string name="tweaks_workspace_title">ГЛОБАЛЕН КОНТРОЛ</string>

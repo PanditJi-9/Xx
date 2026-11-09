@@ -1038,8 +1038,6 @@
     <string name="diagnostics_step_processes">กระบวนการ</string>
     <string name="diagnostics_step_logs">บันทึก</string>
     <string name="diagnostics_step_shell">เปลือกราก</string>
-    <string name="diagnostics_bootimage_title">เครื่องมือบูตอิมเมจ</string>
-    <string name="diagnostics_bootimage_desc">สำรองและแฟลชบูต/อิมเมจเคอร์เนล</string>
     <string name="diagnostics_hidden_activities_title">กิจกรรมที่ซ่อนอยู่</string>
     <string name="diagnostics_hidden_activities_desc">เปิดตัวกิจกรรมแอพที่ซ่อนอยู่</string>
     <string name="tweaks_workspace_title">การควบคุมทั่วโลก</string>

@@ -1039,8 +1039,6 @@
     <string name="diagnostics_step_processes">Quy trình</string>
     <string name="diagnostics_step_logs">Nhật ký</string>
     <string name="diagnostics_step_shell">Vỏ rễ</string>
-    <string name="diagnostics_bootimage_title">Công cụ hình ảnh khởi động</string>
-    <string name="diagnostics_bootimage_desc">Sao lưu và flash boot/kernel image</string>
     <string name="diagnostics_hidden_activities_title">Hoạt động ẩn</string>
     <string name="diagnostics_hidden_activities_desc">Khởi chạy các hoạt động ứng dụng ẩn</string>
     <string name="tweaks_workspace_title">KIỂM SOÁT TOÀN CẦU</string>

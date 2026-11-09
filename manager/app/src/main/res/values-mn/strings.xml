@@ -1039,8 +1039,6 @@
     <string name="diagnostics_step_processes">Процессууд</string>
     <string name="diagnostics_step_logs">Бүртгэл</string>
     <string name="diagnostics_step_shell">Үндэс бүрхүүл</string>
-    <string name="diagnostics_bootimage_title">Ачаалах зургийн хэрэгслүүд</string>
-    <string name="diagnostics_bootimage_desc">Ачаалах/цөмийн зургийг нөөцөлж, флэш болго</string>
     <string name="diagnostics_hidden_activities_title">Далд үйл ажиллагаа</string>
     <string name="diagnostics_hidden_activities_desc">Нуугдсан програмын үйл ажиллагааг эхлүүлэх</string>
     <string name="tweaks_workspace_title">ДЭЛХИЙН ХЯНАЛТ</string>

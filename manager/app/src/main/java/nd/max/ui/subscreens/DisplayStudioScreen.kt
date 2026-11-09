@@ -27,11 +27,18 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.navigation.NavHostController
 import nd.max.R
 import nd.max.ui.component.*
 import nd.max.ui.design.MaxHelpAction
 import nd.max.ui.design.MaxListScreen
+import nd.max.ui.design.MaxGroup
+import nd.max.ui.design.MaxSection
+import nd.max.ui.design.MaxSwitchRow
+import nd.max.core.hardware.WriteVerification
+import nd.max.core.policy.DangerConsent
 import nd.max.ui.mainscreens.SectionLoadingIndicator
 import nd.max.ui.mainscreens.TweaksSectionTitle
 import nd.max.ui.viewmodel.DisplayStudioViewModel
@@ -52,7 +59,7 @@ private fun formatTimeout(seconds: Int): String = when {
 @Composable
 fun DisplayStudioScreen(
     navController: NavHostController,
-    viewModel: DisplayStudioViewModel = viewModel(),
+    viewModel: DisplayStudioViewModel = hiltViewModel(),
     resolutionViewModel: ResolutionViewModel = viewModel(),
     tweakViewModel: TweakViewModel = viewModel()
 ) {
@@ -61,11 +68,25 @@ fun DisplayStudioScreen(
     val colorScheme = MaterialTheme.colorScheme
     val context = androidx.compose.ui.platform.LocalContext.current
     var showRefreshDialog by remember { mutableStateOf(false) }
+    val sunlightRequest = remember { arrayOfNulls<Boolean>(1) }
+    val sunlightGate = rememberDangerGate(
+        id = DangerConsent.PANEL_SUNLIGHT,
+        title = stringResource(R.string.sunlight_mode),
+        message = stringResource(R.string.panel_sunlight_warning),
+        confirmLabel = stringResource(R.string.node_tuning_apply),
+    ) {
+        val enabled = sunlightRequest[0]
+        sunlightRequest[0] = null
+        enabled?.let(viewModel::setSunlight)
+    }
 
     LaunchedEffect(Unit) {
-        viewModel.loadState(context)
         resolutionViewModel.loadState()
         tweakViewModel.loadAllConfiguration(context)
+    }
+    LifecycleResumeEffect(viewModel) {
+        viewModel.loadState(context)
+        onPauseOrDispose { }
     }
 
     val activeW = resolutionViewModel.activeWidthPx
@@ -220,6 +241,33 @@ fun DisplayStudioScreen(
                     }
 
                     item { TweaksSectionTitle(stringResource(R.string.display_controls_title)) }
+                    if (viewModel.sunlightNode != null) {
+                        item {
+                            MaxSection(title = stringResource(R.string.sunlight_mode)) {
+                                MaxGroup {
+                                    MaxSwitchRow(
+                                        title = stringResource(R.string.sunlight_mode),
+                                        subtitle = stringResource(R.string.panel_sunlight_desc),
+                                        checked = viewModel.sunlightEnabled == true,
+                                        enabled = !viewModel.sunlightBusy && viewModel.sunlightEnabled != null,
+                                        lockedReason = if (viewModel.sunlightEnabled == null) stringResource(R.string.status_unknown) else null,
+                                        onCheckedChange = { enabled ->
+                                            if (enabled) {
+                                                sunlightRequest[0] = true
+                                                sunlightGate()
+                                            } else {
+                                                viewModel.setSunlight(false)
+                                            }
+                                        },
+                                    )
+                                }
+                                viewModel.sunlightOutcome?.let { outcome ->
+                                    Text(stringResource(if (outcome == WriteVerification.Outcome.MATCHED) R.string.node_tuning_applied else R.string.node_tuning_unverified))
+                                }
+                            }
+                        }
+                    }
+                    item { PanelColorTuningSection() }
                     item {
                         ExpressiveList(
                             content = listOf(

@@ -1042,8 +1042,6 @@
     <string name="diagnostics_step_processes">Proceset</string>
     <string name="diagnostics_step_logs">Regjistrat</string>
     <string name="diagnostics_step_shell">Predha e rrënjës</string>
-    <string name="diagnostics_bootimage_title">Boot Image Tools</string>
-    <string name="diagnostics_bootimage_desc">Bëni kopje rezervë dhe flash imazhet e nisjes/kernelit</string>
     <string name="diagnostics_hidden_activities_title">Aktivitetet e Fshehura</string>
     <string name="diagnostics_hidden_activities_desc">Nisni aktivitetet e fshehura të aplikacionit</string>
     <string name="tweaks_workspace_title">KONTROLLI GLOBAL</string>

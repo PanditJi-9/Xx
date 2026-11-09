@@ -90,9 +90,6 @@ class TweakViewModel : ViewModel() {
     val offsetLabels = listOf("Disabled", "90%", "80%", "70%", "60%", "50%", "40%") // These are used as values for PropertyUtils, so we should keep them as is or map them
 
 
-    var availableIOSchedulers by mutableStateOf<List<String>?>(null)
-    var ioSchedulerIndex by mutableStateOf<Int?>(null)
-
     var isMaliGpuAvailable by mutableStateOf<Boolean?>(null)
     var availableMaliGovernors by mutableStateOf<List<String>?>(null)
     var maliGovIndex by mutableStateOf<Int?>(null)
@@ -388,11 +385,9 @@ class TweakViewModel : ViewModel() {
             }
 
             val govJob = async { loadGovernorsInternal() }
-            val ioJob = async { loadIOSchedulersInternal() }
             val maliJob = async { loadMaliGovernorsInternal() }
 
             govJob.await()
-            ioJob.await()
             maliJob.await()
 
             withContext(Dispatchers.Main) {
@@ -420,38 +415,6 @@ class TweakViewModel : ViewModel() {
             cpuGovIndex = HardwareChoice.indexOf(govs, live, saved)
         } else {
             availableGovernors = emptyList()
-        }
-    }
-
-    private fun loadIOSchedulersInternal() {
-        val candidates = listOf("mmcblk0", "mmcblk1", "sda", "sdb", "sdc")
-        var validBlock = ""
-        for (block in candidates) {
-            if (RootFileAccess.exists("/sys/block/$block/queue/scheduler")) {
-                validBlock = block
-                break
-            }
-        }
-        if (validBlock.isNotEmpty()) {
-            val rawOut = RootFileAccess.read("/sys/block/$validBlock/queue/scheduler")
-            if (rawOut != null) {
-                val schedulers = rawOut.replace("[", "").replace("]", "").trim().split("\\s+".toRegex())
-                // السارية هي ما بين قوسين في العقدة نفسها — نفس نصّ النواة لا خصيصة قد تكون قديمة.
-                val live = HardwareChoice.bracketed(rawOut)
-                    .orEmpty()
-                    .ifEmpty { PropertyUtils.get(MaxManagerProps.Governor.IO_CUSTOM_DEFAULT) }
-
-                availableIOSchedulers = schedulers
-                ioSchedulerIndex = HardwareChoice.indexOf(
-                    schedulers,
-                    live,
-                    PropertyUtils.get(MaxManagerProps.Governor.IO_DEFAULT),
-                )
-            } else {
-                availableIOSchedulers = emptyList()
-            }
-        } else {
-            availableIOSchedulers = emptyList()
         }
     }
 
@@ -570,18 +533,6 @@ class TweakViewModel : ViewModel() {
         }
     }
 
-    /** جدولة الإدخال/الإخراج: قيمة واحدة للملامح الثلاثة، وتُكتب على أجهزة الكتل فورًا. */
-    fun updateIoScheduler(index: Int) {
-        val selectedIO = availableIOSchedulers?.getOrNull(index) ?: return
-        ioSchedulerIndex = index
-        viewModelScope.launch(Dispatchers.IO) {
-            PropertyUtils.set(MaxManagerProps.Governor.IO_CUSTOM_DEFAULT, selectedIO)
-            PropertyUtils.set(MaxManagerProps.Governor.IO_CUSTOM_PERFORMANCE, selectedIO)
-            PropertyUtils.set(MaxManagerProps.Governor.IO_CUSTOM_POWERSAVE, selectedIO)
-            nd.max.core.privilege.RootCommands.cmd("/data/adb/modules/MaxManager/system/bin/sys.maxmanager-utilityconf setsIO $selectedIO").exec()
-        }
-    }
-    
     /** حاكم رسوم Mali: قيمة واحدة للملامح الثلاثة، وتُكتب على عقدة devfreq فورًا. */
     fun updateMaliGovernor(index: Int) {
         val selectedGov = availableMaliGovernors?.getOrNull(index) ?: return

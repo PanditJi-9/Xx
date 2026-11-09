@@ -1043,8 +1043,6 @@
     <string name="diagnostics_step_processes">Процессы</string>
     <string name="diagnostics_step_logs">Журналы</string>
     <string name="diagnostics_step_shell">Корневая оболочка</string>
-    <string name="diagnostics_bootimage_title">Инструменты для загрузочного образа</string>
-    <string name="diagnostics_bootimage_desc">Резервное копирование и прошивка загрузочных образов/ядра</string>
     <string name="diagnostics_hidden_activities_title">Скрытые действия</string>
     <string name="diagnostics_hidden_activities_desc">Запуск скрытых действий приложения</string>
     <string name="tweaks_workspace_title">ГЛОБАЛЬНЫЙ КОНТРОЛЬ</string>

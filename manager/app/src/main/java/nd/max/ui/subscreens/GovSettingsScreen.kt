@@ -167,35 +167,8 @@ fun GovSettings(
                 }
             }
 
-            item { TweaksSectionTitle(stringResource(R.string.io_settings)) }
-            item {
-                // خيار واحد يعرض الجدولة السارية (ما بين قوسَي عقدة النواة)، ويكتب للملامح
-                // الثلاثة معًا ثم يطبّق على أجهزة الكتل فورًا. ولا صفّ لملف بعينه بعد اليوم.
-                if (viewModel.availableIOSchedulers == null) {
-                    SectionLoadingIndicator()
-                } else if (viewModel.availableIOSchedulers!!.isNotEmpty()) {
-                    if (viewModel.ioSchedulerIndex != null) {
-                        ExpressiveList(
-                            content = listOf(
-                                {
-                                    ExpressiveDropdownItem(
-                                        icon = Icons.Outlined.Water,
-                                        title = stringResource(R.string.io_scheduler),
-                                        summary = stringResource(R.string.io_scheduler_desc),
-                                        items = viewModel.availableIOSchedulers ?: emptyList(),
-                                        selectedIndex = viewModel.ioSchedulerIndex!!,
-                                        onItemSelected = { viewModel.updateIoScheduler(it) }
-                                    )
-                                }
-                            )
-                        )
-                    } else {
-                        SectionLoadingIndicator()
-                    }
-                } else {
-                    // لا جدولة معلنة على هذا الجهاز: لا صفّ فارغ ولا قائمة وهمية.
-                }
-            }
+            item { GovernorTuningSection() }
+            item { StorageTuningSection() }
 
             if (viewModel.isMaliGpuAvailable == true) {
                 item { TweaksSectionTitle(text = stringResource(R.string.section_mali_gpu)) }
@@ -246,4 +219,3 @@ fun GovSettingsTopAppBar(scrollBehavior: TopAppBarScrollBehavior, onBack: () -> 
         }
     )
 }
-            

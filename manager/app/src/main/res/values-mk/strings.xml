@@ -1045,8 +1045,6 @@
     <string name="diagnostics_step_processes">Процеси</string>
     <string name="diagnostics_step_logs">Дневници</string>
     <string name="diagnostics_step_shell">Корен школка</string>
-    <string name="diagnostics_bootimage_title">Алатки за слика за подигање</string>
-    <string name="diagnostics_bootimage_desc">Направете резервна копија и блицирајте слики од подигање/кернел</string>
     <string name="diagnostics_hidden_activities_title">Скриени активности</string>
     <string name="diagnostics_hidden_activities_desc">Стартувајте активности со скриени апликации</string>
     <string name="tweaks_workspace_title">ГЛОБАЛНА КОНТРОЛА</string>

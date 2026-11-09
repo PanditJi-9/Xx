@@ -1045,8 +1045,6 @@
     <string name="diagnostics_step_processes">પ્રક્રિયાઓ</string>
     <string name="diagnostics_step_logs">લોગ્સ</string>
     <string name="diagnostics_step_shell">રુટ શેલ</string>
-    <string name="diagnostics_bootimage_title">બુટ ઈમેજ ટૂલ્સ</string>
-    <string name="diagnostics_bootimage_desc">બેકઅપ અને ફ્લેશ બુટ/કર્નલ ઈમેજીસ</string>
     <string name="diagnostics_hidden_activities_title">છુપાયેલી પ્રવૃત્તિઓ</string>
     <string name="diagnostics_hidden_activities_desc">છુપાયેલ એપ્લિકેશન પ્રવૃત્તિઓ લોંચ કરો</string>
     <string name="tweaks_workspace_title">વૈશ્વિક નિયંત્રણ</string>

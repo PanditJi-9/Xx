@@ -1044,8 +1044,6 @@
     <string name="diagnostics_step_processes">Procesy</string>
     <string name="diagnostics_step_logs">Dzienniki</string>
     <string name="diagnostics_step_shell">Skorupa korzeniowa</string>
-    <string name="diagnostics_bootimage_title">Narzędzia obrazu rozruchowego</string>
-    <string name="diagnostics_bootimage_desc">Twórz kopie zapasowe i flashuj obrazy rozruchowe/jądra</string>
     <string name="diagnostics_hidden_activities_title">Ukryte aktywności</string>
     <string name="diagnostics_hidden_activities_desc">Uruchom ukryte działania aplikacji</string>
     <string name="tweaks_workspace_title">GLOBALNA KONTROLA</string>

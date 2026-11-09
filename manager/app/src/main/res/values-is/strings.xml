@@ -1046,8 +1046,6 @@
     <string name="diagnostics_step_processes">Ferlar</string>
     <string name="diagnostics_step_logs">Logs</string>
     <string name="diagnostics_step_shell">Rótarskel</string>
-    <string name="diagnostics_bootimage_title">Boot Image Tools</string>
-    <string name="diagnostics_bootimage_desc">Taktu öryggisafrit og flassaðu ræsi-/kjarnamyndir</string>
     <string name="diagnostics_hidden_activities_title">Falin starfsemi</string>
     <string name="diagnostics_hidden_activities_desc">Ræstu falinn forritavirkni</string>
     <string name="tweaks_workspace_title">ALÞJÓÐSTJÓRN</string>

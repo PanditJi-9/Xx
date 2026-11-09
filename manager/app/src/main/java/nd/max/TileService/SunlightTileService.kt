@@ -13,6 +13,16 @@ import nd.max.core.display.DisplayFeatureNode
 import nd.max.core.display.DisplayFeatureNodes
 import nd.max.core.hardware.WriteVerification
 import nd.max.core.platform.PropertyUtils
+import dagger.hilt.android.EntryPointAccessors
+import nd.max.core.persist.PersistArbiterEntryPoint
+import nd.max.core.hardware.NodeTuning
+import nd.max.core.policy.DangerConsent
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  * Quick Settings tile: the panel's outdoor-visibility (sunlight/HBM) mode.
@@ -29,29 +39,46 @@ import nd.max.core.platform.PropertyUtils
 class SunlightTileService : TileService() {
 
     private var cachedNode: DisplayFeatureNode? = null
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+    private var busy = false
 
     override fun onStartListening() {
         super.onStartListening()
-        render()
+        scope.launch { renderSample() }
     }
 
     override fun onClick() {
         super.onClick()
-        val node = node()
-        if (node == null) {
-            render()
-            return
+        if (busy) return
+        busy = true
+        scope.launch {
+            try {
+                val outcome = withContext(Dispatchers.IO) {
+                    val node = node() ?: return@withContext WriteVerification.Outcome.READBACK_UNAVAILABLE
+                    val currentlyOn = DisplayFeatureNodes.isEnabled(node) ?: return@withContext WriteVerification.Outcome.READBACK_UNAVAILABLE
+                    // First enablement is performed from Display Studio, where the warning is visible.
+                    if (!currentlyOn && !DangerConsent.isAcknowledged(this@SunlightTileService, DangerConsent.PANEL_SUNLIGHT)) {
+                        return@withContext WriteVerification.Outcome.WRITE_FAILED
+                    }
+                    val arbiter = runCatching {
+                        EntryPointAccessors.fromApplication(applicationContext, PersistArbiterEntryPoint::class.java).arbiter()
+                    }.getOrNull() ?: return@withContext WriteVerification.Outcome.WRITE_FAILED
+                    val written = DisplayFeatureNodes.writeGuarded(node, !currentlyOn, NodeTuning(arbiter))
+                    if (written == WriteVerification.Outcome.MATCHED) {
+                        PropertyUtils.set(MaxManagerProps.Display.SUNLIGHT_MODE, if (currentlyOn) "0" else "1")
+                    }
+                    written
+                }
+                renderSample(outcome)
+            } finally {
+                busy = false
+            }
         }
-        val live = DisplayFeatureNodes.isEnabled(node)
-        val currentlyOn = live ?: (PropertyUtils.get(MaxManagerProps.Display.SUNLIGHT_MODE) == "1")
-        val outcome = DisplayFeatureNodes.write(node, !currentlyOn)
-        if (outcome == WriteVerification.Outcome.MATCHED) {
-            PropertyUtils.set(
-                MaxManagerProps.Display.SUNLIGHT_MODE,
-                if (currentlyOn) "0" else "1"
-            )
-        }
-        render(outcome)
+    }
+
+    override fun onDestroy() {
+        scope.cancel()
+        super.onDestroy()
     }
 
     /**
@@ -66,10 +93,17 @@ class SunlightTileService : TileService() {
             ?.also { cachedNode = it }
     }
 
-    private fun render(outcome: WriteVerification.Outcome? = null) {
+    private suspend fun renderSample(outcome: WriteVerification.Outcome? = null) {
+        val sample = withContext(Dispatchers.IO) {
+            val node = node()
+            Triple(node, node?.let(DisplayFeatureNodes::isEnabled), DangerConsent.isAcknowledged(this@SunlightTileService, DangerConsent.PANEL_SUNLIGHT))
+        }
+        render(sample.first != null, sample.second, sample.third, outcome)
+    }
+
+    private fun render(present: Boolean, live: Boolean?, acknowledged: Boolean, outcome: WriteVerification.Outcome?) {
         val tile = qsTile ?: return
-        val node = node()
-        if (node == null) {
+        if (!present) {
             tile.state = Tile.STATE_UNAVAILABLE
             tile.label = getString(R.string.sunlight_mode)
             tile.subtitle = getString(R.string.status_not_supported)
@@ -77,7 +111,6 @@ class SunlightTileService : TileService() {
             return
         }
 
-        val live = DisplayFeatureNodes.isEnabled(node)
         tile.state = when {
             live == null -> Tile.STATE_UNAVAILABLE
             live -> Tile.STATE_ACTIVE
@@ -85,6 +118,7 @@ class SunlightTileService : TileService() {
         }
         tile.label = getString(R.string.sunlight_mode)
         tile.subtitle = when {
+            live == false && !acknowledged -> getString(R.string.panel_sunlight_consent_needed)
             outcome == WriteVerification.Outcome.WRITE_FAILED ||
                 outcome == WriteVerification.Outcome.DIFFERS -> getString(R.string.status_not_applied)
             live == null -> getString(R.string.status_not_applied)

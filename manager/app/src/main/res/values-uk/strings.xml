@@ -1045,8 +1045,6 @@
     <string name="diagnostics_step_processes">процеси</string>
     <string name="diagnostics_step_logs">Журнали</string>
     <string name="diagnostics_step_shell">Коренева оболонка</string>
-    <string name="diagnostics_bootimage_title">Інструменти завантажувального образу</string>
-    <string name="diagnostics_bootimage_desc">Резервне копіювання та флеш-завантаження образів/ядра</string>
     <string name="diagnostics_hidden_activities_title">Приховані дії</string>
     <string name="diagnostics_hidden_activities_desc">Запуск прихованих програм</string>
     <string name="tweaks_workspace_title">ГЛОБАЛЬНИЙ КОНТРОЛЬ</string>

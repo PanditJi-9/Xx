@@ -31,6 +31,12 @@ object DangerConsent {
      */
     const val MEMORY_LMK = "memory_lmk"
 
+    const val STORAGE_TUNING = "storage_queue_tuning"
+    const val GOVERNOR_TUNING = "governor_tunables"
+    const val HAPTIC_TUNING = "haptic_tuning"
+    const val PANEL_COLOR_TUNING = "panel_color_tuning"
+    const val PANEL_SUNLIGHT = "panel_sunlight"
+
     /** إعادة تشغيل التطبيق التلقائي للخطير بعد أن أوقفه حارس الإقلاع. */
     const val RESTORE_DANGEROUS = "restore_dangerous_auto"
 

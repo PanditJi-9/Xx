@@ -1046,8 +1046,6 @@
     <string name="diagnostics_step_processes">ప్రక్రియలు</string>
     <string name="diagnostics_step_logs">లాగ్‌లు</string>
     <string name="diagnostics_step_shell">రూట్ షెల్</string>
-    <string name="diagnostics_bootimage_title">చిత్ర సాధనాలను బూట్ చేయండి</string>
-    <string name="diagnostics_bootimage_desc">బూట్/కెర్నల్ చిత్రాలను బ్యాకప్ చేయండి మరియు ఫ్లాష్ చేయండి</string>
     <string name="diagnostics_hidden_activities_title">దాచిన కార్యకలాపాలు</string>
     <string name="diagnostics_hidden_activities_desc">దాచిన యాప్ కార్యకలాపాలను ప్రారంభించండి</string>
     <string name="tweaks_workspace_title">గ్లోబల్ కంట్రోల్</string>

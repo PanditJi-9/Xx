@@ -1046,8 +1046,6 @@
     <string name="diagnostics_step_processes">Processos</string>
     <string name="diagnostics_step_logs">Registros</string>
     <string name="diagnostics_step_shell">Casca de raiz</string>
-    <string name="diagnostics_bootimage_title">Ferramentas de imagem de inicialização</string>
-    <string name="diagnostics_bootimage_desc">Backup e flash de imagens de inicialização/kernel</string>
     <string name="diagnostics_hidden_activities_title">Atividades ocultas</string>
     <string name="diagnostics_hidden_activities_desc">Inicie atividades ocultas de aplicativos</string>
     <string name="tweaks_workspace_title">CONTROLE GLOBAL</string>

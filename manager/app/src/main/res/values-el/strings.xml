@@ -1042,8 +1042,6 @@
     <string name="diagnostics_step_processes">Διαδικασίες</string>
     <string name="diagnostics_step_logs">κούτσουρα</string>
     <string name="diagnostics_step_shell">Κέλυφος ρίζας</string>
-    <string name="diagnostics_bootimage_title">Εργαλεία εικόνας εκκίνησης</string>
-    <string name="diagnostics_bootimage_desc">Δημιουργία αντιγράφων ασφαλείας και αναλαμπή εικόνων εκκίνησης/πυρήνα</string>
     <string name="diagnostics_hidden_activities_title">Κρυφές Δραστηριότητες</string>
     <string name="diagnostics_hidden_activities_desc">Εκκινήστε τις κρυφές δραστηριότητες εφαρμογών</string>
     <string name="tweaks_workspace_title">ΠΑΓΚΟΣΜΙΟΣ ΕΛΕΓΧΟΣ</string>

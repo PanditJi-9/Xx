@@ -1009,8 +1009,6 @@
     <string name="diagnostics_step_processes">Protsessid</string>
     <string name="diagnostics_step_logs">Palgid</string>
     <string name="diagnostics_step_shell">Juurekest</string>
-    <string name="diagnostics_bootimage_title">Alglaadimispildi tööriistad</string>
-    <string name="diagnostics_bootimage_desc">Varundage ja välgatage alglaadimise/kerneli kujutised</string>
     <string name="diagnostics_hidden_activities_title">Varjatud tegevused</string>
     <string name="diagnostics_hidden_activities_desc">Käivitage peidetud rakenduste tegevused</string>
     <string name="tweaks_workspace_title">GLOBAALNE KONTROLL</string>

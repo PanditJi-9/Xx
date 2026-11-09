@@ -1037,8 +1037,6 @@
     <string name="diagnostics_step_processes">প্ৰক্ৰিয়াসমূহ</string>
     <string name="diagnostics_step_logs">লগসমূহ</string>
     <string name="diagnostics_step_shell">শিপাৰ খোলা</string>
-    <string name="diagnostics_bootimage_title">প্ৰতিমুৰ্তি সঁজুলিসমূহ বুট কৰক</string>
-    <string name="diagnostics_bootimage_desc">বেক আপ কৰক আৰু বুট/কাৰনেল প্ৰতিমুৰ্তিসমূহ ফ্লেচ কৰক</string>
     <string name="diagnostics_hidden_activities_title">লুকাই থকা কাৰ্য্যকলাপ</string>
     <string name="diagnostics_hidden_activities_desc">লুকাই থকা এপ কাৰ্য্যকলাপ আৰম্ভ কৰক</string>
     <string name="tweaks_workspace_title">GLOBAL CONTROL</string>

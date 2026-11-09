@@ -1043,8 +1043,6 @@
     <string name="diagnostics_step_processes">ដំណើរការ</string>
     <string name="diagnostics_step_logs">កំណត់ហេតុ</string>
     <string name="diagnostics_step_shell">សំបកឫស</string>
-    <string name="diagnostics_bootimage_title">ឧបករណ៍រូបភាពចាប់ផ្ដើម</string>
-    <string name="diagnostics_bootimage_desc">បម្រុងទុក និង flash boot/kernel រូបភាព</string>
     <string name="diagnostics_hidden_activities_title">សកម្មភាពលាក់</string>
     <string name="diagnostics_hidden_activities_desc">បើកដំណើរការសកម្មភាពកម្មវិធីដែលលាក់</string>
     <string name="tweaks_workspace_title">ការគ្រប់គ្រងសកល</string>

@@ -1044,8 +1044,6 @@
     <string name="diagnostics_step_processes">Proses</string>
     <string name="diagnostics_step_logs">Log</string>
     <string name="diagnostics_step_shell">Cangkang akar</string>
-    <string name="diagnostics_bootimage_title">Alat Gambar Boot</string>
-    <string name="diagnostics_bootimage_desc">Cadangkan dan flash gambar boot/kernel</string>
     <string name="diagnostics_hidden_activities_title">Aktivitas Tersembunyi</string>
     <string name="diagnostics_hidden_activities_desc">Luncurkan aktivitas aplikasi tersembunyi</string>
     <string name="tweaks_workspace_title">KONTROL GLOBAL</string>

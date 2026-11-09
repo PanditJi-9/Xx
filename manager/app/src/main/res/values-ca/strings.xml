@@ -1045,8 +1045,6 @@
     <string name="diagnostics_step_processes">Processos</string>
     <string name="diagnostics_step_logs">Registres</string>
     <string name="diagnostics_step_shell">Closca d\'arrel</string>
-    <string name="diagnostics_bootimage_title">Eines d\'imatge d\'arrencada</string>
-    <string name="diagnostics_bootimage_desc">Feu una còpia de seguretat i flasheu les imatges d\'arrencada/nucli</string>
     <string name="diagnostics_hidden_activities_title">Activitats ocultes</string>
     <string name="diagnostics_hidden_activities_desc">Inicieu activitats d\'aplicacions ocultes</string>
     <string name="tweaks_workspace_title">CONTROL GLOBAL</string>

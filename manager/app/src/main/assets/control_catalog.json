@@ -634,6 +634,32 @@
       "danger": "LOW"
     },
     {
+      "key": "governor_tunable:{policy}:{governor}:{field}",
+      "transport": "NODE",
+      "kind": "INT",
+      "candidates": [
+        {
+          "path": "/sys/devices/system/cpu/cpufreq/{policy}/{governor}/{field}",
+          "origin": "DERIVED"
+        },
+        {
+          "path": "/sys/devices/system/cpu/cpufreq/{governor}/{field}",
+          "origin": "DERIVED"
+        }
+      ],
+      "verify": {
+        "policy": "READ_BACK_EQUAL",
+        "tolerance": 0
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": []
+      },
+      "danger": "HIGH"
+    },
+    {
       "key": "gpu.busy_percentage",
       "transport": "NODE",
       "kind": "PERCENT",
@@ -890,6 +916,36 @@
       "read_only_reason": "EXISTING_WRITER_NOT_ROUTED"
     },
     {
+      "key": "haptic_tuning:{path}",
+      "transport": "NODE",
+      "kind": "INT",
+      "candidates": [
+        {
+          "path": "/sys/class/timed_output/vibrator/{field}",
+          "origin": "DERIVED"
+        },
+        {
+          "path": "/sys/class/leds/vibrator/{field}",
+          "origin": "DERIVED"
+        },
+        {
+          "path": "/sys/class/leds/vibrator/device/{field}",
+          "origin": "DERIVED"
+        }
+      ],
+      "verify": {
+        "policy": "READ_BACK_EQUAL",
+        "tolerance": 0
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": []
+      },
+      "danger": "HIGH"
+    },
+    {
       "key": "mem_frequency:{device}",
       "transport": "NODE",
       "kind": "FREQUENCY_RANGE",
@@ -1069,6 +1125,66 @@
         "write": []
       },
       "danger": "LOW"
+    },
+    {
+      "key": "panel_color:{path}",
+      "transport": "NODE",
+      "kind": "STRING",
+      "candidates": [
+        {
+          "path": "/sys/devices/platform/kcal_ctrl.0/{field}",
+          "origin": "DERIVED"
+        },
+        {
+          "path": "/sys/devices/platform/kcal_ctrl/{field}",
+          "origin": "DERIVED"
+        }
+      ],
+      "verify": {
+        "policy": "READ_BACK_EQUAL",
+        "tolerance": 0
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": []
+      },
+      "danger": "HIGH"
+    },
+    {
+      "key": "panel_feature:{path}",
+      "transport": "NODE",
+      "kind": "BOOL",
+      "candidates": [
+        {
+          "path": "/sys/class/leds/lcd-backlight/hbm",
+          "origin": "DERIVED"
+        },
+        {
+          "path": "/sys/devices/platform/mtk-hbm/hbm_enable",
+          "origin": "DERIVED"
+        },
+        {
+          "path": "/sys/class/backlight/panel0-backlight/hbm_mode",
+          "origin": "DERIVED"
+        },
+        {
+          "path": "/sys/class/drm/card0-DSI-1/hbm",
+          "origin": "DERIVED"
+        }
+      ],
+      "verify": {
+        "policy": "READ_BACK_EQUAL",
+        "tolerance": 0
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": []
+      },
+      "danger": "HIGH"
     },
     {
       "key": "sched.cpu_shares.top",
@@ -1746,6 +1862,32 @@
       "danger": "PROTECTED"
     },
     {
+      "key": "storage_queue:{device}:{field}",
+      "transport": "NODE",
+      "kind": "INT",
+      "candidates": [
+        {
+          "path": "/sys/block/{device}/queue/{field}",
+          "origin": "DERIVED"
+        },
+        {
+          "path": "/sys/block",
+          "origin": "DERIVED"
+        }
+      ],
+      "verify": {
+        "policy": "READ_BACK_EQUAL",
+        "tolerance": 0
+      },
+      "privilege": {
+        "read": [
+          "NONE"
+        ],
+        "write": []
+      },
+      "danger": "HIGH"
+    },
+    {
       "key": "thermal_zone",
       "transport": "NODE",
       "kind": "STRING",
@@ -2382,6 +2524,10 @@
       "note": "AppMonitor يقرأها مباشرة في الرفيق، ولا مقبض تحكّم لها"
     },
     {
+      "path": "/sys/block",
+      "reason": "READ_ONLY_PROBE"
+    },
+    {
       "path": "/sys/block/zram0/mem_used",
       "reason": "READ_ONLY_PROBE",
       "note": "يُقرأ لكتالوج عُقد التشخيص (قراءة فقط)؛ لا مقبض تحكّم ولا كتابة مقصودة"
@@ -2402,6 +2548,14 @@
       "note": "يُقرأ لكتالوج عُقد التشخيص (قراءة فقط)؛ لا مقبض تحكّم ولا كتابة مقصودة"
     },
     {
+      "path": "/sys/class/leds/vibrator",
+      "reason": "READ_ONLY_PROBE"
+    },
+    {
+      "path": "/sys/class/leds/vibrator/device",
+      "reason": "READ_ONLY_PROBE"
+    },
+    {
       "path": "/sys/class/power_supply/battery/capacity",
       "reason": "READ_ONLY_PROBE",
       "note": "يُقرأ لكتالوج عُقد التشخيص (قراءة فقط)؛ لا مقبض تحكّم ولا كتابة مقصودة"
@@ -2417,6 +2571,10 @@
       "note": "يُقرأ لكتالوج عُقد التشخيص (قراءة فقط)؛ لا مقبض تحكّم ولا كتابة مقصودة"
     },
     {
+      "path": "/sys/class/timed_output/vibrator",
+      "reason": "READ_ONLY_PROBE"
+    },
+    {
       "path": "/sys/devices/soc0/machine",
       "reason": "READ_ONLY_PROBE",
       "note": "يُقرأ لكتالوج عُقد التشخيص (قراءة فقط)؛ لا مقبض تحكّم ولا كتابة مقصودة"
@@ -2425,6 +2583,10 @@
       "path": "/sys/devices/soc0/soc_id",
       "reason": "READ_ONLY_PROBE",
       "note": "يُقرأ لكتالوج عُقد التشخيص (قراءة فقط)؛ لا مقبض تحكّم ولا كتابة مقصودة"
+    },
+    {
+      "path": "/sys/devices/system/cpu/cpufreq/$governor",
+      "reason": "READ_ONLY_PROBE"
     },
     {
       "path": "/sys/devices/system/cpu/cpufreq/policy0/scaling_governor",

@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowDownward
 import androidx.compose.material.icons.rounded.ArrowUpward
+import androidx.compose.material.icons.rounded.Memory
+import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.RestartAlt
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -21,6 +23,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -34,6 +37,8 @@ import nd.max.ui.design.MaxRow
 import nd.max.ui.design.MaxSection
 import nd.max.ui.design.MaxSpace
 import nd.max.ui.design.MaxTone
+import nd.max.ui.design.content
+import nd.max.ui.util.LmkPendingAction
 
 /**
  * عتبات قاتل الذاكرة — **ميزة تعمل فعلًا**، لا بطاقة تعريف.
@@ -42,36 +47,44 @@ import nd.max.ui.design.MaxTone
  * **وما لا تفعله:** لا تظهر أصلًا إن لم تنشر النواة الجدول (نوى حديثة كثيرة لا تنشره)، فلا وعد
  * بميزة غير موجودة، ولا مفتاح يُضغط بلا أثر.
  *
- * **والخطورة مقيسة بالرقم لا بالوسم:** عتبة أعلى تقتل تطبيقات في الخلفية، وأدنى تترك الذاكرة
- * تمتلئ؛ فالمعامل محدود ٥٠–٢٠٠٪، وقيمة لحظة الفتح محفوظة في الجلسة للرجوع إليها بضغطة.
+ * الاختيار محسوب من لقطة فتح القسم، لا من آخر كتابة؛ فلا تتضاعف العتبات بتكرار الضغط.
+ * كل كتابة تعيد فحص القيمة الحية قبل التنفيذ، والاسترجاع لقيمة الجلسة نفسها.
  */
 @Composable
-fun LmkSection() {
+fun LmkSection(io: LmkTuning.Io) {
     val scope = rememberCoroutineScope()
-    val io = remember { LmkTuning.Io.system() }
 
-    var table by remember { mutableStateOf<List<Int>?>(null) }
-    var opened by remember { mutableStateOf<List<Int>?>(null) }
-    var loaded by remember { mutableStateOf(false) }
-    var outcome by remember { mutableStateOf<LmkTuning.Outcome?>(null) }
-    var busy by remember { mutableStateOf(false) }
-    var pendingTarget by remember { mutableStateOf<List<Int>?>(null) }
+    var table by remember(io) { mutableStateOf<List<Int>?>(null) }
+    var opened by remember(io) { mutableStateOf<List<Int>?>(null) }
+    var pageSizeBytes by remember(io) { mutableStateOf<Long?>(null) }
+    var outcome by remember(io) { mutableStateOf<LmkTuning.Outcome?>(null) }
+    var busy by remember(io) { mutableStateOf(false) }
+    val pendingAction = remember(io) { LmkPendingAction() }
+    var resumeGeneration by remember(io) { mutableStateOf(0) }
 
-    LaunchedEffect(Unit) {
-        val live = withContext(Dispatchers.IO) { io.current() }
-        table = live
-        opened = live
-        loaded = true
+    LifecycleResumeEffect(io) {
+        resumeGeneration++
+        onPauseOrDispose { }
     }
 
-    fun apply(target: List<Int>) {
+    LaunchedEffect(io, resumeGeneration) {
+        val live = withContext(Dispatchers.IO) { io.current() }
+        table = live
+        if (opened == null && live != null) opened = live
+        pageSizeBytes = withContext(Dispatchers.IO) { io.pageSizeBytes() }
+    }
+
+    fun apply(target: List<Int>, expected: List<Int>) {
         if (busy) return
         busy = true
+        outcome = null
         scope.launch {
-            val result = withContext(Dispatchers.IO) { io.apply(target) }
-            outcome = result
-            table = withContext(Dispatchers.IO) { io.current() }
-            busy = false
+            try {
+                outcome = withContext(Dispatchers.IO) { io.apply(target, expected) }
+                table = withContext(Dispatchers.IO) { io.current() }
+            } finally {
+                busy = false
+            }
         }
     }
 
@@ -82,17 +95,24 @@ fun LmkSection() {
         confirmLabel = stringResource(R.string.lmk_danger_confirm),
         technicalDetail = LmkTuning.MINFREE,
         onAllowed = {
-            pendingTarget?.let { target -> apply(target) }
-            pendingTarget = null
-        }
+            pendingAction.take()?.let { request -> apply(request.target, request.expected) }
+        },
     )
 
     val current = table
-    // النواة لا تنشر الجدول ⇒ لا قسم ولا سطر. الغياب يُعلن بعدم الظهور، لا ببطاقة عن ميزةٍ ليست هنا.
-    if (loaded && current == null) return
+    // لا وميض لقسم عن ميزة غائبة أثناء الاكتشاف. يبقى آخر حكم كتابة ظاهرًا إن تعذرت القراءة بعدها.
+    if (current == null && outcome == null) return
 
-    val megabytes = current?.joinToString(" · ") { LmkTuning.pageToMegabytes(it).toString() }
+    val size = pageSizeBytes
+    val megabyteValues = if (current != null && size != null) {
+        current.map { LmkTuning.pageToMegabytes(it, size) }
+    } else {
+        null
+    }
+    val megabytes = megabyteValues?.takeIf { values -> values.all { it != null } }?.joinToString(" · ")
     val pages = current?.joinToString(",")
+    val softer = opened?.let { LmkTuning.scale(it, 75) }
+    val harder = opened?.let { LmkTuning.scale(it, 125) }
     val canAct = current != null && !busy
 
     MaxSection(
@@ -102,12 +122,12 @@ fun LmkSection() {
         MaxGroup {
             MaxRow(
                 title = stringResource(R.string.lmk_current),
-                subtitle = if (megabytes != null && pages != null) {
-                    stringResource(R.string.lmk_current_value, megabytes, pages)
-                } else {
-                    stringResource(R.string.vm_loading)
+                subtitle = when {
+                    megabytes != null && pages != null -> stringResource(R.string.lmk_current_value, megabytes, pages)
+                    pages != null -> stringResource(R.string.lmk_current_pages, pages)
+                    else -> stringResource(R.string.lmk_outcome_not_present)
                 },
-                icon = Icons.Rounded.ArrowDownward,
+                icon = Icons.Rounded.Memory,
                 iconTone = MaxTone.Neutral,
             )
             MaxGroupDivider()
@@ -116,14 +136,14 @@ fun LmkSection() {
                 subtitle = stringResource(R.string.lmk_soften_desc),
                 icon = Icons.Rounded.ArrowDownward,
                 iconTone = MaxTone.Caution,
-                enabled = canAct,
+                enabled = canAct && softer != null && softer != current,
                 onClick = {
-                    val target = current?.let { LmkTuning.scale(it, 75) }
-                    if (target != null) {
-                        pendingTarget = target
+                    val target = softer
+                    if (target != null && current != null) {
+                        pendingAction.set(target, current)
                         gate()
                     }
-                }
+                },
             )
             MaxGroupDivider()
             MaxRow(
@@ -131,14 +151,14 @@ fun LmkSection() {
                 subtitle = stringResource(R.string.lmk_harden_desc),
                 icon = Icons.Rounded.ArrowUpward,
                 iconTone = MaxTone.Caution,
-                enabled = canAct,
+                enabled = canAct && harder != null && harder != current,
                 onClick = {
-                    val target = current?.let { LmkTuning.scale(it, 125) }
-                    if (target != null) {
-                        pendingTarget = target
+                    val target = harder
+                    if (target != null && current != null) {
+                        pendingAction.set(target, current)
                         gate()
                     }
-                }
+                },
             )
             MaxGroupDivider()
             MaxRow(
@@ -149,11 +169,21 @@ fun LmkSection() {
                 enabled = canAct && opened != null && opened != current,
                 onClick = {
                     val target = opened
-                    if (target != null) {
-                        pendingTarget = target
+                    if (target != null && current != null) {
+                        pendingAction.set(target, current)
                         gate()
                     }
-                }
+                },
+            )
+            MaxGroupDivider()
+            MaxRow(
+                title = stringResource(R.string.max_action_recheck),
+                icon = Icons.Rounded.Refresh,
+                enabled = !busy,
+                onClick = {
+                    outcome = null
+                    resumeGeneration++
+                },
             )
         }
 
@@ -163,6 +193,8 @@ fun LmkSection() {
                     when (result) {
                         LmkTuning.Outcome.APPLIED -> R.string.lmk_outcome_applied
                         LmkTuning.Outcome.NOT_PRESENT -> R.string.lmk_outcome_not_present
+                        LmkTuning.Outcome.INVALID -> R.string.lmk_outcome_invalid
+                        LmkTuning.Outcome.BLOCKED -> R.string.lmk_outcome_blocked
                         LmkTuning.Outcome.NOT_WRITABLE -> R.string.lmk_outcome_not_writable
                         LmkTuning.Outcome.UNVERIFIED -> R.string.lmk_outcome_unverified
                     }

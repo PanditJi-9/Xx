@@ -1042,8 +1042,6 @@
     <string name="diagnostics_step_processes">プロセス</string>
     <string name="diagnostics_step_logs">ログ</string>
     <string name="diagnostics_step_shell">ルートシェル</string>
-    <string name="diagnostics_bootimage_title">ブートイメージツール</string>
-    <string name="diagnostics_bootimage_desc">ブート/カーネル イメージのバックアップとフラッシュ</string>
     <string name="diagnostics_hidden_activities_title">隠されたアクティビティ</string>
     <string name="diagnostics_hidden_activities_desc">非表示のアプリアクティビティを起動する</string>
     <string name="tweaks_workspace_title">グローバルコントロール</string>

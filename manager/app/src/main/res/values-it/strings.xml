@@ -1046,8 +1046,6 @@
     <string name="diagnostics_step_processes">Processi</string>
     <string name="diagnostics_step_logs">Registri</string>
     <string name="diagnostics_step_shell">Guscio della radice</string>
-    <string name="diagnostics_bootimage_title">Strumenti immagine di avvio</string>
-    <string name="diagnostics_bootimage_desc">Eseguire il backup e il flashing delle immagini di avvio/kernel</string>
     <string name="diagnostics_hidden_activities_title">Attività nascoste</string>
     <string name="diagnostics_hidden_activities_desc">Avvia attività app nascoste</string>
     <string name="tweaks_workspace_title">CONTROLLO GLOBALE</string>

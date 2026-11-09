@@ -1044,8 +1044,6 @@
     <string name="diagnostics_step_processes">ሂደቶች</string>
     <string name="diagnostics_step_logs">መዝገቦች</string>
     <string name="diagnostics_step_shell">የስር ሼል</string>
-    <string name="diagnostics_bootimage_title">የማስነሻ የምስል መሣሪያዎች</string>
-    <string name="diagnostics_bootimage_desc">ምትኬ ያስቀምጡ እና የቡት/ የከርነል ምስሎችን ያብሩ</string>
     <string name="diagnostics_hidden_activities_title">የተደበቁ ተግባራት</string>
     <string name="diagnostics_hidden_activities_desc">የተደበቁ መተግበሪያ እንቅስቃሴዎችን አስጀምር</string>
     <string name="tweaks_workspace_title">ዓለም አቀፍ ቁጥጥር</string>

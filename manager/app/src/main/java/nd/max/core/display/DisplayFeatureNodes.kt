@@ -7,6 +7,11 @@ package nd.max.core.display
 
 import nd.max.core.hardware.RootFileAccess
 import nd.max.core.hardware.WriteVerification
+import nd.max.core.hardware.HardwareControlKey
+import nd.max.core.hardware.NodeControl
+import nd.max.core.hardware.NodeTuning
+import nd.max.core.hardware.NodeValueFormat
+import nd.max.core.hardware.NodeTuningOutcome
 
 /**
  * A vendor display feature exposed through a sysfs node.
@@ -38,7 +43,9 @@ object DisplayFeatureNodes {
 
     val SUNLIGHT: List<DisplayFeatureNode> = listOf(
         DisplayFeatureNode("/sys/class/leds/lcd-backlight/hbm", "1", "0"),
-        DisplayFeatureNode("/sys/devices/platform/mtk-hbm/hbm_enable", "1", "0")
+        DisplayFeatureNode("/sys/devices/platform/mtk-hbm/hbm_enable", "1", "0"),
+        DisplayFeatureNode("/sys/class/backlight/panel0-backlight/hbm_mode", "1", "0"),
+        DisplayFeatureNode("/sys/class/drm/card0-DSI-1/hbm", "1", "0"),
     )
 
     val SILKY: List<DisplayFeatureNode> = listOf(
@@ -56,9 +63,9 @@ object DisplayFeatureNodes {
         DisplayFeatureNode("/proc/dolby_vision/enable", "1", "0")
     )
 
-    /** First candidate whose node actually exists, or `null` when none does. */
+    /** First candidate with a readable recognised state; mere file existence is not a working control. */
     fun resolve(candidates: List<DisplayFeatureNode>): DisplayFeatureNode? =
-        RootFileAccess.firstExisting(candidates) { it.path }
+        candidates.firstOrNull { node -> isEnabled(node) != null }
 
     /** Raw node contents, or `null` when the node cannot be read. */
     fun read(node: DisplayFeatureNode): String? = RootFileAccess.read(node.path)
@@ -71,7 +78,7 @@ object DisplayFeatureNodes {
      */
     fun isEnabled(node: DisplayFeatureNode): Boolean? {
         val raw = read(node)?.trim() ?: return null
-        return raw == node.onValue
+        return when (raw) { node.onValue -> true; node.offValue -> false; else -> null }
     }
 
     /**
@@ -85,4 +92,17 @@ object DisplayFeatureNodes {
             node.path,
             if (enabled) node.onValue else node.offValue
         )
+
+    /** Guarded manual variant used by the screen and tile; both share the same canonical identity. */
+    fun writeGuarded(node: DisplayFeatureNode, enabled: Boolean, tuning: NodeTuning): WriteVerification.Outcome {
+        val format = NodeValueFormat.Choice(listOf(node.offValue, node.onValue))
+        val live = format.normalise(read(node)) ?: return WriteVerification.Outcome.READBACK_UNAVAILABLE
+        val control = NodeControl(HardwareControlKey.panelFeature(node.path), node.path, "panel", live, format)
+        return when (tuning.apply(control, if (enabled) node.onValue else node.offValue).outcome) {
+            NodeTuningOutcome.APPLIED -> WriteVerification.Outcome.MATCHED
+            NodeTuningOutcome.UNVERIFIED -> WriteVerification.Outcome.DIFFERS
+            NodeTuningOutcome.UNREADABLE -> WriteVerification.Outcome.READBACK_UNAVAILABLE
+            else -> WriteVerification.Outcome.WRITE_FAILED
+        }
+    }
 }

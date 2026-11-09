@@ -1045,8 +1045,6 @@
     <string name="diagnostics_step_processes">പ്രക്രിയകൾ</string>
     <string name="diagnostics_step_logs">രേഖകൾ</string>
     <string name="diagnostics_step_shell">റൂട്ട് ഷെൽ</string>
-    <string name="diagnostics_bootimage_title">ഇമേജ് ടൂളുകൾ ബൂട്ട് ചെയ്യുക</string>
-    <string name="diagnostics_bootimage_desc">ബൂട്ട്/കേർണൽ ഇമേജുകൾ ബാക്കപ്പ് ചെയ്ത് ഫ്ലാഷ് ചെയ്യുക</string>
     <string name="diagnostics_hidden_activities_title">മറഞ്ഞിരിക്കുന്ന പ്രവർത്തനങ്ങൾ</string>
     <string name="diagnostics_hidden_activities_desc">മറഞ്ഞിരിക്കുന്ന ആപ്പ് പ്രവർത്തനങ്ങൾ സമാരംഭിക്കുക</string>
     <string name="tweaks_workspace_title">ആഗോള നിയന്ത്രണം</string>

@@ -1042,8 +1042,6 @@
     <string name="diagnostics_step_processes">Procesi</string>
     <string name="diagnostics_step_logs">Dnevnici</string>
     <string name="diagnostics_step_shell">Korijenska ljuska</string>
-    <string name="diagnostics_bootimage_title">Alati za pokretanje slike</string>
-    <string name="diagnostics_bootimage_desc">Izradite sigurnosnu kopiju i flash slike pokretanja/jezgre</string>
     <string name="diagnostics_hidden_activities_title">Skrivene aktivnosti</string>
     <string name="diagnostics_hidden_activities_desc">Pokreni skrivene aktivnosti aplikacije</string>
     <string name="tweaks_workspace_title">GLOBALNA KONTROLA</string>

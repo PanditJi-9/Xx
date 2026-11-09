@@ -1046,8 +1046,6 @@
     <string name="diagnostics_step_processes">ಪ್ರಕ್ರಿಯೆಗಳು</string>
     <string name="diagnostics_step_logs">ದಾಖಲೆಗಳು</string>
     <string name="diagnostics_step_shell">ರೂಟ್ ಶೆಲ್</string>
-    <string name="diagnostics_bootimage_title">ಬೂಟ್ ಇಮೇಜ್ ಪರಿಕರಗಳು</string>
-    <string name="diagnostics_bootimage_desc">ಬೂಟ್/ಕರ್ನಲ್ ಚಿತ್ರಗಳನ್ನು ಬ್ಯಾಕಪ್ ಮಾಡಿ ಮತ್ತು ಫ್ಲಾಶ್ ಮಾಡಿ</string>
     <string name="diagnostics_hidden_activities_title">ಗುಪ್ತ ಚಟುವಟಿಕೆಗಳು</string>
     <string name="diagnostics_hidden_activities_desc">ಗುಪ್ತ ಅಪ್ಲಿಕೇಶನ್ ಚಟುವಟಿಕೆಗಳನ್ನು ಪ್ರಾರಂಭಿಸಿ</string>
     <string name="tweaks_workspace_title">ಜಾಗತಿಕ ನಿಯಂತ್ರಣ</string>

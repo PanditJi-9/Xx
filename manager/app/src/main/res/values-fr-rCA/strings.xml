@@ -1038,8 +1038,6 @@
     <string name="diagnostics_step_processes">Processus</string>
     <string name="diagnostics_step_logs">Journaux</string>
     <string name="diagnostics_step_shell">Coquille de racines</string>
-    <string name="diagnostics_bootimage_title">Outils d\'image de démarrage</string>
-    <string name="diagnostics_bootimage_desc">Sauvegarder et flasher les images de démarrage/noyau</string>
     <string name="diagnostics_hidden_activities_title">Activités cachées</string>
     <string name="diagnostics_hidden_activities_desc">Lancer des activités d\'application cachées</string>
     <string name="tweaks_workspace_title">CONTRÔLE GLOBAL</string>

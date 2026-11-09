@@ -980,8 +980,6 @@
     <string name="diagnostics_step_processes">Працэсы</string>
     <string name="diagnostics_step_logs">Лагі</string>
     <string name="diagnostics_step_shell">Каранёвая абалонка</string>
-    <string name="diagnostics_bootimage_title">Інструменты загрузнага вобраза</string>
-    <string name="diagnostics_bootimage_desc">Рэзервовае капіраванне і флэш-загрузка вобразаў/ядра</string>
     <string name="diagnostics_hidden_activities_title">Схаваная дзейнасць</string>
     <string name="diagnostics_hidden_activities_desc">Запуск схаваных дзеянняў праграмы</string>
     <string name="tweaks_workspace_title">ГЛАБАЛЬНЫ КАНТРОЛЬ</string>

@@ -1046,8 +1046,6 @@
     <string name="diagnostics_step_processes">პროცესები</string>
     <string name="diagnostics_step_logs">ჟურნალები</string>
     <string name="diagnostics_step_shell">ფესვის გარსი</string>
-    <string name="diagnostics_bootimage_title">ჩატვირთვის გამოსახულების ინსტრუმენტები</string>
-    <string name="diagnostics_bootimage_desc">სარეზერვო ასლის შექმნა და ჩატვირთვის/კერნელის სურათების ფლეში</string>
     <string name="diagnostics_hidden_activities_title">ფარული აქტივობები</string>
     <string name="diagnostics_hidden_activities_desc">ფარული აპის აქტივობების გაშვება</string>
     <string name="tweaks_workspace_title">გლობალური კონტროლი</string>

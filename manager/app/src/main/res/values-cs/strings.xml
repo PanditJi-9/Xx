@@ -1046,8 +1046,6 @@
     <string name="diagnostics_step_processes">Procesy</string>
     <string name="diagnostics_step_logs">Protokoly</string>
     <string name="diagnostics_step_shell">Kořenová skořápka</string>
-    <string name="diagnostics_bootimage_title">Boot Image Tools</string>
-    <string name="diagnostics_bootimage_desc">Zálohujte a flashujte obrazy boot/kernel</string>
     <string name="diagnostics_hidden_activities_title">Skryté aktivity</string>
     <string name="diagnostics_hidden_activities_desc">Spusťte skryté aktivity aplikace</string>
     <string name="tweaks_workspace_title">GLOBÁLNÍ KONTROLA</string>

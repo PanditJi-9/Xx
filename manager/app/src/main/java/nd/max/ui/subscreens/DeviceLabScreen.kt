@@ -129,8 +129,9 @@ import kotlin.math.sqrt
  * Device lab — the interactive counterpart to Diagnostics.
  *
  * Diagnostics answers "what does this device expose?". This screen answers
- * "does the hardware actually work?" using only public platform APIs: no root,
- * no Shizuku, no system-settings write. Every test is deliberately one tap
+ * "does the hardware actually work?" using public platform APIs. The optional
+ * vibration-strength section is separate: known driver nodes, privilege, consent and verified writes.
+ * Every diagnostic test is deliberately one tap
  * away, and every result is the system's own report rather than a cached
  * estimate.
  *
@@ -208,6 +209,8 @@ fun DeviceLabScreen(navController: NavHostController) {
                 VibrationTestRows()
             }
         }
+
+        HapticTuningSection()
 
         MaxSection(title = stringResource(R.string.device_lab_section_audio)) {
             MaxGroup {

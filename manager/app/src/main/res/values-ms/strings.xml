@@ -1047,8 +1047,6 @@
     <string name="diagnostics_step_processes">Proses</string>
     <string name="diagnostics_step_logs">Log</string>
     <string name="diagnostics_step_shell">Cangkang akar</string>
-    <string name="diagnostics_bootimage_title">Alat Imej But</string>
-    <string name="diagnostics_bootimage_desc">Sandarkan dan kilat but/imej kernel</string>
     <string name="diagnostics_hidden_activities_title">Aktiviti Tersembunyi</string>
     <string name="diagnostics_hidden_activities_desc">Lancarkan aktiviti apl tersembunyi</string>
     <string name="tweaks_workspace_title">KAWALAN GLOBAL</string>

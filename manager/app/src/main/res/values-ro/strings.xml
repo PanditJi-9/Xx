@@ -1045,8 +1045,6 @@
     <string name="diagnostics_step_processes">Procesele</string>
     <string name="diagnostics_step_logs">Bușteni</string>
     <string name="diagnostics_step_shell">Învelișul rădăcinii</string>
-    <string name="diagnostics_bootimage_title">Boot Image Tools</string>
-    <string name="diagnostics_bootimage_desc">Faceți copii de rezervă și flash pentru imagini de boot/kernel</string>
     <string name="diagnostics_hidden_activities_title">Activități ascunse</string>
     <string name="diagnostics_hidden_activities_desc">Lansați activități ascunse ale aplicației</string>
     <string name="tweaks_workspace_title">CONTROL GLOBAL</string>

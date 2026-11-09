@@ -132,6 +132,12 @@ class ControlPlaneArchitectureTest {
             "\"touch_boost:",
             "\"touch_gesture:",
             "\"zram.",
+            "\"memory.lmk.",
+            "\"storage_queue:",
+            "\"governor_tunable:",
+            "\"haptic_tuning:",
+            "\"panel_color:",
+            "\"panel_feature:",
         )
         val offenders = prefixes
             .flatMap { offenders(it, skip = setOf("HardwareControlKey.kt")) }

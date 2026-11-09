@@ -362,7 +362,7 @@ fun MemoryUfsScreen(
         VmTuningSection()
 
         // ── ٨. عتبات قاتل الذاكرة (LMK) — كتابة حقيقية، وتظهر فقط إن نشرتها النواة ──────────────
-        LmkSection()
+        LmkSection(io = viewModel.lmkTuning)
     }
 }
 

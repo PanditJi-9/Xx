@@ -21,6 +21,13 @@ import nd.max.core.display.DisplayFeatureNode
 import nd.max.core.display.NightLightSchedule
 import nd.max.core.display.DisplayFeatureNodes
 import nd.max.core.hardware.RootFileAccess
+import nd.max.core.hardware.HardwareControlArbiter
+import nd.max.core.hardware.NodeTuning
+import nd.max.core.hardware.WriteVerification
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
+import dagger.hilt.android.qualifiers.ApplicationContext
+import nd.max.core.policy.DangerConsent
 
 import android.content.ContentResolver
 import android.content.Context
@@ -47,7 +54,12 @@ private typealias FeatureNode = DisplayFeatureNode
  * The node lists themselves live in [DisplayFeatureNodes] so the Quick Settings
  * tile and this screen probe the same paths.
  */
-class DisplayStudioViewModel : ViewModel() {
+@HiltViewModel
+class DisplayStudioViewModel @Inject constructor(
+    arbiter: HardwareControlArbiter,
+    @ApplicationContext private val appContext: Context,
+) : ViewModel() {
+    private val nodeTuning = NodeTuning(arbiter)
 
     companion object {
         private val SUNLIGHT_CANDIDATES = DisplayFeatureNodes.SUNLIGHT
@@ -127,7 +139,9 @@ class DisplayStudioViewModel : ViewModel() {
     var videoEnhanceNode by mutableStateOf<FeatureNode?>(null); private set
     var hdrNode by mutableStateOf<FeatureNode?>(null); private set
 
-    var sunlightEnabled by mutableStateOf(false); private set
+    var sunlightEnabled by mutableStateOf<Boolean?>(null); private set
+    var sunlightBusy by mutableStateOf(false); private set
+    var sunlightOutcome by mutableStateOf<WriteVerification.Outcome?>(null); private set
     var silkyEnabled by mutableStateOf(false); private set
     var videoEnhanceEnabled by mutableStateOf(false); private set
     var hdrEnabled by mutableStateOf(false); private set
@@ -137,7 +151,7 @@ class DisplayStudioViewModel : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             // أربع قوائم مرشّحين: كانت ثمانية نداءات وجود متتابعة (`test -e` عبر صدفة لكل
             // مرشّح)، وصارت نداءً واحدًا لكل قائمة عبر الدفعة الأصلية.
-            sunlightNode = RootFileAccess.firstExisting(SUNLIGHT_CANDIDATES) { it.path }
+            sunlightNode = DisplayFeatureNodes.resolve(SUNLIGHT_CANDIDATES)
             silkyNode = RootFileAccess.firstExisting(SILKY_CANDIDATES) { it.path }
             videoEnhanceNode = RootFileAccess.firstExisting(VIDEO_ENH_CANDIDATES) { it.path }
             hdrNode = RootFileAccess.firstExisting(HDR_CANDIDATES) { it.path }
@@ -146,12 +160,11 @@ class DisplayStudioViewModel : ViewModel() {
                 vendorHalDetected = XiaomiVendorHalUtil.hasDisplayFeatureHal()
             }
 
-            sunlightEnabled = PropertyUtils.get(PROP_SUNLIGHT) == "1"
+            sunlightEnabled = sunlightNode?.let(DisplayFeatureNodes::isEnabled)
             silkyEnabled = PropertyUtils.get(PROP_SILKY) == "1"
             videoEnhanceEnabled = PropertyUtils.get(PROP_VIDEO) == "1"
             hdrEnabled = PropertyUtils.get(PROP_HDR) == "1"
 
-            if (sunlightEnabled) apply(sunlightNode, true)
             if (silkyEnabled) apply(silkyNode, true)
             if (videoEnhanceEnabled) apply(videoEnhanceNode, true)
             if (hdrEnabled) apply(hdrNode, true)
@@ -209,10 +222,25 @@ class DisplayStudioViewModel : ViewModel() {
     }
 
     fun setSunlight(enabled: Boolean) {
-        sunlightEnabled = enabled
-        viewModelScope.launch(Dispatchers.IO) {
-            apply(sunlightNode, enabled)
-            PropertyUtils.set(PROP_SUNLIGHT, if (enabled) "1" else "0")
+        val node = sunlightNode ?: return
+        if (sunlightBusy || sunlightEnabled == null) return
+        sunlightBusy = true
+        viewModelScope.launch {
+            try {
+                sunlightOutcome = kotlinx.coroutines.withContext(Dispatchers.IO) {
+                    if (enabled && !DangerConsent.isAcknowledged(appContext, DangerConsent.PANEL_SUNLIGHT)) {
+                        WriteVerification.Outcome.WRITE_FAILED
+                    } else {
+                        DisplayFeatureNodes.writeGuarded(node, enabled, nodeTuning)
+                    }
+                }
+                sunlightEnabled = kotlinx.coroutines.withContext(Dispatchers.IO) { DisplayFeatureNodes.isEnabled(node) }
+                if (sunlightOutcome == WriteVerification.Outcome.MATCHED) {
+                    kotlinx.coroutines.withContext(Dispatchers.IO) { PropertyUtils.set(PROP_SUNLIGHT, if (enabled) "1" else "0") }
+                }
+            } finally {
+                sunlightBusy = false
+            }
         }
     }
 

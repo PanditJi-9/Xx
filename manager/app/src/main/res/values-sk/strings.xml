@@ -1046,8 +1046,6 @@
     <string name="diagnostics_step_processes">procesy</string>
     <string name="diagnostics_step_logs">Denníky</string>
     <string name="diagnostics_step_shell">Koreňová škrupina</string>
-    <string name="diagnostics_bootimage_title">Boot Image Tools</string>
-    <string name="diagnostics_bootimage_desc">Zálohujte a flashujte obrazy zavádzania/jadra</string>
     <string name="diagnostics_hidden_activities_title">Skryté aktivity</string>
     <string name="diagnostics_hidden_activities_desc">Spustite skryté aktivity aplikácie</string>
     <string name="tweaks_workspace_title">GLOBÁLNA KONTROLA</string>

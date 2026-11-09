@@ -60,6 +60,22 @@ object HardwareControlKey {
      */
     const val MEMORY_PREFIX = "memory."
 
+    /** جدول عتبات الذاكرة القديم؛ نفس هوية المدخل الموجود في كتالوج التحكّم. */
+    const val MEMORY_LMK_MINFREE = MEMORY_PREFIX + "lmk.minfree"
+
+    const val STORAGE_QUEUE_PREFIX = "storage_queue:"
+    const val GOVERNOR_TUNABLE_PREFIX = "governor_tunable:"
+    const val HAPTIC_TUNING_PREFIX = "haptic_tuning:"
+    const val PANEL_COLOR_PREFIX = "panel_color:"
+    const val PANEL_FEATURE_PREFIX = "panel_feature:"
+
+    fun storageQueue(device: String, field: String): String = STORAGE_QUEUE_PREFIX + device + ":" + field
+    fun governorTunable(policy: String, governor: String, field: String): String =
+        GOVERNOR_TUNABLE_PREFIX + policy + ":" + governor + ":" + field
+    fun hapticTuning(path: String): String = HAPTIC_TUNING_PREFIX + path
+    fun panelColor(path: String): String = PANEL_COLOR_PREFIX + path
+    fun panelFeature(path: String): String = PANEL_FEATURE_PREFIX + path
+
     /**
      * بادئة مفتاح **حدّ معالج بديل** — `cpu.<vendor>.<min|max>` (`cpu.qcom.min` …).
      *

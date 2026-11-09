@@ -1042,8 +1042,6 @@
     <string name="diagnostics_step_processes">ຂະບວນການ</string>
     <string name="diagnostics_step_logs">ບັນທຶກ</string>
     <string name="diagnostics_step_shell">ເປືອກຮາກ</string>
-    <string name="diagnostics_bootimage_title">Boot ເຄື່ອງມືຮູບພາບ</string>
-    <string name="diagnostics_bootimage_desc">ສໍາຮອງຂໍ້ມູນແລະ flash boot / kernel ຮູບພາບ</string>
     <string name="diagnostics_hidden_activities_title">ກິດຈະກໍາທີ່ເຊື່ອງໄວ້</string>
     <string name="diagnostics_hidden_activities_desc">ເປີດໃຊ້ກິດຈະ ກຳ ແອັບທີ່ເຊື່ອງໄວ້</string>
     <string name="tweaks_workspace_title">ການຄວບຄຸມທົ່ວໂລກ</string>

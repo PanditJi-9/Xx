@@ -1045,8 +1045,6 @@
     <string name="diagnostics_step_processes">Processer</string>
     <string name="diagnostics_step_logs">Loggar</string>
     <string name="diagnostics_step_shell">Rotskal</string>
-    <string name="diagnostics_bootimage_title">Boot Image Tools</string>
-    <string name="diagnostics_bootimage_desc">Säkerhetskopiera och flasha boot/kärna-bilder</string>
     <string name="diagnostics_hidden_activities_title">Dolda aktiviteter</string>
     <string name="diagnostics_hidden_activities_desc">Starta dolda appaktiviteter</string>
     <string name="tweaks_workspace_title">GLOBAL KONTROLL</string>

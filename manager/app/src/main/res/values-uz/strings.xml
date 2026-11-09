@@ -1045,8 +1045,6 @@
     <string name="diagnostics_step_processes">Jarayonlar</string>
     <string name="diagnostics_step_logs">Jurnallar</string>
     <string name="diagnostics_step_shell">Ildiz qobig\'i</string>
-    <string name="diagnostics_bootimage_title">Yuklash tasvir vositalari</string>
-    <string name="diagnostics_bootimage_desc">Yuklash/yadro tasvirlarini zaxiralang va flesh qiling</string>
     <string name="diagnostics_hidden_activities_title">Yashirin harakatlar</string>
     <string name="diagnostics_hidden_activities_desc">Yashirin ilova harakatlarini ishga tushiring</string>
     <string name="tweaks_workspace_title">GLOBAL NAZORAT</string>

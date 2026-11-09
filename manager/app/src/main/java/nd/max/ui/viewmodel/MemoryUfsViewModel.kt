@@ -32,6 +32,7 @@ import nd.max.core.hardware.MemoryUfsTuningStore
 import nd.max.core.hardware.SystemDevfreqCeilingAccess
 import nd.max.core.hardware.ThermalGuard
 import nd.max.core.maxai.MemoryStall
+import nd.max.core.platform.LmkTuning
 import nd.max.ui.util.MemoryUfsModel
 
 /**
@@ -92,6 +93,9 @@ class MemoryUfsViewModel @Inject constructor(
     private val arbiter: HardwareControlArbiter,
     @ApplicationContext private val context: Context,
 ) : ViewModel() {
+
+    /** نفس المُحكّم المحقون للشاشة؛ الإنشاء لا يقرأ جهازًا ولا يفتح صلاحية. */
+    val lmkTuning: LmkTuning.Io = LmkTuning.Io.system(arbiter)
 
     var state by mutableStateOf(MemoryUfsUiState())
         private set

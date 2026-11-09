@@ -24933,39 +24933,130 @@ Rounded.Undo` (نفس نمط `FileEditorDialog.kt` و`GamePanelCockpit.kt`). ب�
 
 **NEXT:** قراءة حكم QV وتثبيته أعلاه · جهاز: قياس الحصص على نواة تنشر الجدول، وتجربة بطاقات التحذير في الوضعين · الدمج إلى `main` بانتظار «ادمج».
 
-## ROUND-CLOSE-34 — 2026-11-09 · تصحيح صنف «المستبعَد»: شبه الخطير يشتغل، والخطير لا يُذكر — DONE
+## ROUND-CLOSE-34 — 2026-11-09 · تصحيح صنف «المستبعَد»: شبه الخطير يعمل بتحذير — DONE_WITH_CONCERNS
 
 **TASK** — أمر المالك: «الميزات الشبه خطيرة تضفها في تطبيقي معا تحذير للمستخدم ولكن يعمل بشكل حقيقي أما
 الميزات الخطيرة مثل تفليش Kernel لا تصفها ولا تكتب عنه تحذير لانه غير موجود لدينا.» ⇒ حُذف صنف
-«البطاقة التعريفية» كاملًا (`ADR-93` يُبطل `ADR-92`/1)، وبُنيت قدرة شبه خطيرة **حقيقية** بدلًا منه.
+«البطاقة التعريفية» كاملًا (`ADR-93` يُبطل `ADR-92`/1)، ونُفذ مسار LMK؛ الترجمة والجهاز
+والمراجعة المستقلة لم تُتحقّق على التصحيح المحلي. عنوان DONE السابق كان سابقًا لحكم CI، وأُصلح هنا.
 
 **FILES**
-- حُذف: `ui/design/MaxBlockedFeature.kt` · ١٨ مفتاح `blocked_*` من `values/` و`values-ar/` · ثلاث استدعاءات
+- حُذف: `ui/design/MaxBlockedFeature.kt` · **١٢** مفتاح `blocked_*` لكل لغة (لا ١٨ كما كُتب سابقًا) · ثلاث استدعاءات
   في `CpuCoreControlScreen.kt` · `SetEditScreen.kt` · `ZramManagerScreen.kt` (مع استيراداتها).
 - جديد: `core/platform/LmkTuning.kt` (فكّ/ضرب/تشكيل متجه `minfree` + `Io` بقراءة مرتجعة) ·
-  `ui/subscreens/LmkSection.kt` (قسم حقيقي) · `src/test/java/nd/max/core/platform/LmkTuningTest.kt` (١٢ حالة).
+  `ui/subscreens/LmkSection.kt` (قسم حقيقي) · `src/test/java/nd/max/core/platform/LmkTuningTest.kt`
+  (كانت ١٧ لا ١٢؛ صارت ٢٨ اختبارًا مكتوبًا).
 - `core/policy/DangerConsent.kt`: `MEMORY_LMK = "memory_lmk"` · `ui/subscreens/MemoryUfsScreen.kt`: `LmkSection()` بعد `VmTuningSection()`.
-- `values/strings.xml` + `values-ar/strings.xml`: ١٧ مفتاح `lmk_*` (إنجليزي وعربي فقط).
+- `values/strings.xml` + `values-ar/strings.xml`: **٢٠** مفتاح `lmk_*` (إنجليزي وعربي فقط).
+- حُذفت أيضًا `core/policy/ExcludedCapability.kt` و`ui/component/ExcludedCapabilitiesCard.kt`
+  واستدعاء التشخيص واختبار السياسة القديم؛ لم يبق وصف القدرات الغائبة في موارد اللغات.
+  اللغات الأخرى شهدت **حذف مفتاحَي الوصف المتقاعدين فقط**، لا مزامنة نص جديد.
+- جديد: `ui/util/LmkPendingAction.kt` + اختباره (٤)، `LmkArbiterTest.kt` (٨)،
+  `LiveFeaturePolicyTest.kt` (٤). الإجمالي **٤٤ اختبارًا مكتوبًا، لم تُشغّل محليًّا**.
+- `HardwareControlKey.MEMORY_LMK_MINFREE` يطابق المدخل الموجود؛ `MemoryUfsViewModel.lmkTuning`
+  يمرر المحكّم المحقون نفسه، لا مثيلًا ثانيًا؛ حارس الهوية في `ControlPlaneArchitectureTest` توسّع له.
 - `AGENTS.md` §0.8 · `docs/ai/DECISIONS.md` ADR-93 · `docs/ux-reengineering/gaps.md` (صفّ مُصحَّح).
 
-**ما يعمل فعلًا:** قسم LMK يظهر **فقط** إن نشرت النواة `/sys/module/lowmemorykiller/parameters/minfree`؛
-يعرض العتبات بالصفحات والميجابايت، ويقدّم ثلاثة أفعال (تخفيف ٢٥٪ · تشديد ٢٥٪ · استعادة قيمة الجلسة) كلها
-خلف إقرار `memory_lmk`، والكتابة عبر `RootFileAccess` وحده، والحكم من **القراءة المرتجعة** لا من رمز الأمر
-(`APPLIED` · `NOT_PRESENT` · `NOT_WRITABLE` · `UNVERIFIED`)، ولا تُكتب عقدة أقصر من عقدة النواة.
-**وما لم يُضَف:** الجهد (undervolt) — لا تُنشر جدولًا قابلًا للكتابة على النوى الحديثة ⇒ **لا يُذكر ولا يُحذَّر منه**؛
-و`build.prop` الخام — نظيره الحقيقي قائم (`SetEditUtil.set()` = `setprop` + قراءة + سجلّ) فالمسار الثاني ممنوع (ADR-18).
+**التنفيذ المقيس بالمصدر:** قسم LMK لا يظهر بلا جدول مقروء؛ يعرض صفحات وحجم MiB بحجم صفحة
+مُقاس عبر `Os.sysconf`، لا افتراض ٤KB. التخفيف والتشديد من **لقطة الفتح** فلا تتضاعف بالتكرار؛
+كل فعل خلف إقرار `memory_lmk`. `LmkPendingAction` يحفظ النقرة نفسها للإقرار الفوري والمتأخر:
+تغيير `mutableStateOf` ثم تنفيذ البوابة فورًا كان يستعمل إغلاقًا قديمًا ويضيع النقرة.
 
-**GATES (محليًّا، كلها خضراء):** `kt_balance --assert` (**٣٣٠٩** ملفًا · ٠) · `code_health --assert` (صحّة ٠ ·
+الكتابة تمرّ **بالمحكّم ثم RootFileAccess**، لا RootFileAccess وحده كما في المسودة السابقة.
+جدول ٢–٦ عتبات فقط، نص ≤١٢٨ حرفًا، ترتيب تصاعدي ومدى صفحات محدود؛ لا قبول جزء فارغ
+ولا قص صامت عند السقف ولا ترقيع ترتيب. يُرفض الطلب إن اختلفت لقطة ما قبل الإقرار، ويعاد
+الفحص داخل المعاملة؛ التراجع لا يطغى على قيمة خارجية لا تطابق محاولتنا. يُفرج عن الطلب
+`restore=false` بعد المعاملة لمنع تطبيق مؤجل. NOT_PRESENT هنا = تعذّر القراءة، لا إثبات غياب.
+التحكم يخص جدول النواة القديم لا `lmkd` الحديث، ولا حفظ للإقلاع.
+
+حُسن النظير القائم في الكتالوج (`memory.lmk.minfree`) بإضافة منفذ تحكم محروس؛ لم يُبن مقبض ثانٍ.
+والخصائص قائمة بـ`SetEditUtil.set()` (`setprop` + قراءة + سجلّ) — **ليست** محرّر ملف `build.prop` الخام.
+
+**GATES:** الفحص الأول على الشجرة الحالية: `kt_balance --assert` (**٣٣٠٧** ملفًا وقت القياس · ٠)
+و`--self-test` **١٧/١٧**؛ `code_health --assert` (صحّة ٠ ·
 دَين عند السقف: oversized 10 · wildcard 26 · inline 5 · literals 4) · `i18n_coverage --assert` (٨٤ لغة · ٠ عوائق) ·
-`i18n_coverage --prune all --assert` (٠ يتيم) · `design_tokens --assert` (exit 0) · `hardcoded_ui_text --assert`
+`i18n_coverage --prune all --assert` (٠ يتيم) · `design_tokens --assert` (**٢٤٩ ≤٣٠٠**) · `hardcoded_ui_text --assert`
 (**٢١ ≤ ٢٤**) · `rtl_guard --assert` (٠ مخالفة) · `git diff --check` (نظيف). و`resource_compile.py` **غير مُتحقَّقة**
-لغياب `aapt2` محليًّا — لا يُقال «تمرّ».
+لغياب `aapt2` محليًّا — لا يُقال «تمرّ». `jni_symbols --assert`: ٢٣ تصريحًا، صفر نقص مصدر؛
+الطبقة الثنائية **غير مُتحقّقة** (لا `.so`). فحص موارد/مصدر صريح أثبت ٢٠ مرجع LMK في EN/AR،
+ولا وصف متقاعد في أي لغة، ولا إضافة خارج EN/AR. الفحص النهائي للملفات المتغيّرة:
+`kt_balance --assert <changed paths>` **٩٧ ملفًا · صفر عائق** (يشمل اختبارات الانحدار الجديدة).
+أول صندوق بوابات انتهى بمهلة ١٢٠ث بعد البنية والصحة؛ البقية أُعيدت وحدها وانتهت exit 0.
 
 **BUILD:** الخطّ الكامل **`42608193787`** على `5ca3a11d` (**دمج `main`**) = **success** — أي أن الدمج الذي رُفع
-سليم بكل بواباته. وQV لهذه الدفعة يُقرأ بعد الدفع (المعرّف في رسالة التسليم).
+نجح في CI؛ **ولا يثبت هذه الدفعة**. QV `42612585849` أُلغي بتشغيل ثانٍ مكرر، و
+**`42612724981` على `ee2a8777` = failure**: أول خطأ `LmkSection.kt:174:37 Unresolved reference 'content'`.
+أُضيف الاستيراد `nd.max.ui.design.content`. التصحيح الحالي لم يُترجم: Java فقط محليًّا، لا
+Kotlin/Gradle/SDK/aapt2، ومخزن أدوات اختبارات JVM فارغ. لم تُنزّل أدوات ثقيلة ولم يُشغّل بناء جديد.
 
 **RESIDUAL RISK:** الكتابة الحقيقية على جهاز (قبول النواة للمتجه، وعتبة مناسبة للجهاز) وأي حكم لمس/RTL/TalkBack
-**يحتاج جهاز المالك**؛ وما يُقاس هنا هو الحساب والحكم، لا النواة. والبناء الكامل لهذه الدفعة (تجميع Kotlin)
-لم يُشغَّل محليًّا — QV هو المُصرّف.
+**يحتاج جهاز المالك**. لا نتيجة تشغيل للاختبارات الـ٤٤، ولا مراجعة مستقلة: لا يُغلق مسار كتابة
+العتاد بلا تلك المراجعة. حدود ذرية sysfs مع كتابات خارج التطبيق تبقى جهازية؛ قفل المحكّم لا يقفل النظام كله.
 
-**NEXT:** قراءة حكم QV؛ والدمج إلى `main` **بانتظار «ادمج»**.
+**NEXT:** التصحيح محلي بلا commit أو push جديد؛ إذن دفع دفعة واحدة للفرع ثم QV واحد، وقراءة الحكم.
+مراجعة مستقلة بنموذج يختاره المالك ثم تجربة الجهاز؛ الدمج إلى `main` **بانتظار «ادمج»**.
+
+## ROUND-CLOSE-35 — 2026-11-09 · تحسين خمسة مقابض عتاد داخل الموجود — DONE_WITH_CONCERNS
+
+TASK: KERNEL-TUNING-EXTENSIONS-01 — أمر «نفذ» على الاقتراحات الخمسة. مهمة `large`؛ نطاق
+Kotlin/Compose/res/catalog/tests فقط؛ لا تعديل native/SELinux/إقلاع ولا دفع أو دمج.
+
+FILES:
+- `core/hardware/{NodeTuning,StorageTuning,GovernorTuning,HapticTuning}.kt` و
+  `core/display/PanelColorTuning.kt` (جديدة): discovery مقيّد، نوع/مدى معروف، كتابة عبر
+  `HardwareControlArbiter` المحقون مع baseline/context/readback وراجع لا يطغى على قيمة خارجية.
+- `ui/viewmodel/KernelTuningViewModel.kt` + `NodeTuningControls.kt` + أقسام التخزين والحاكم
+  والاهتزاز واللون: lifecycle resume وإعادة قراءة صريحة، لا timer/watcher جديد؛ الإنشاء لا I/O.
+- `GovSettingsScreen` حسّن I/O القائم، وأُزيل `TweakViewmodel.updateIoScheduler` ومسحه العالمي
+  لأن لا مستدعي بقي؛ `DeviceLabScreen` أضاف القوة قرب اختبار الاهتزاز؛ `DisplayStudioScreen`
+  أضاف معايرة اللوحة ووضع الشمس الحقيقي بدل flags غير ظاهرة. لا route/شاشة جديدة.
+- `ProfilePresetStore`: معاملات الحاكم محفوظة في نفس مخزن/خانات البروفايلات، مصدرها قراءة
+  جديدة؛ تطبيق يدوي فقط. لا نسخة أخرى لكل تطبيق ولا لمس مشاركة schema1 القديمة.
+- `DisplayFeatureNodes`: مرشحا hbm إضافيان؛ `isEnabled` unknown إذا القيمة غير معروفة.
+  الشاشة وبلاطة الشمس عبر `writeGuarded`؛ لا تشغيل الشمس بمجرد فتح الشاشة ولا نجاح مفترض
+  من خصيصة. البلاطة تتحقق من إقرار الشاشة وتنفذ I/O خلفيًا وتغلق coroutine scope عند destroy.
+- `DangerConsent` خمسة IDs جديدة؛ فحص الإقرار أيضًا داخل عمليات ViewModels، لا رسم حوار فقط.
+- `HardwareControlKey` خمس بوادئ جديدة، `control_catalog.json` خمس عائلات مقيدة؛
+  `gen_control_catalog.py` وعدّ التطابق `23→28`؛ guard يمنع إعادة اختراع هوياتها.
+- `values/` + `values-ar/`: ٤٧ مفتاحًا لهذه الجولة (٥٠ مع ٣ LMK من الدفعة السابقة)،
+  لا نص جديد لبقية اللغات. تلك اللغات حافظت على حذف مفتاحَي الوصف السابقين فقط.
+- `KernelTuningDiscoveryTest` ١٤ + `NodeTuningTest` ١٦ + `KernelTuningArchitectureTest` ٥ +
+  `GovernorPresetValidationTest` ٤ = **٣٩ اختبارًا مكتوبًا، لم يُشغّل**.
+
+GATES:
+- آخر دفعة شاملة للمصدر وقت التوقف: `kt_balance` ملفات متغيرة **١٢٢/٠**؛ `code_health`
+  صحة ٠ ودين `10/26/5/4/0`؛ `design_tokens` **249/300**؛ `hardcoded_ui_text` **21/24**؛
+  `rtl_guard` **0**؛ `git diff --check` نظيف.
+- `gen_control_catalog` assert/check/self-test نجحت؛ **88 مدخلًا/162 مرشّحًا/19 unmapped/28 بادئة**،
+  والخمسة readonly القديمة كما هي. العائلات الجديدة readonly **في recipe العام** لأن typed backend
+  هو من يحقق نوعها وحدودها، لا تصريح كتابة نصية عامة. كل المرشحات الجديدة DERIVED.
+- `i18n_coverage --assert` 0 عوائق/85 كودًا؛ prune all 0 يتيم. `license_audit` exit 0:
+  لا كود/نص/شكل خارجي نُقل، ولا credits جديدة. المصدر untracked لا تثبته بوابة الترخيص وحدها؛
+  مراجعته هنا مقابل diff لا إخفاء أصل تحت عنوان ملكية.
+- `jni_symbols`: 23 تصريحًا، صفر ناقص مصدر؛ الثنائيات **غير متحقّقة** (لا `.so`).
+  `resource_compile` **غير متحقّقة** (لا aapt2)، حتى وإن exit 0 — لا تُسمّى ناجحة.
+- مسبار مستقل صريح: كل مراجع الموارد موجودة في EN/AR؛ لا إضافة خارجهما؛ كل مسار literal
+  في hardware مسجل؛ regex validation ليس عقدة اكتشاف (حرس المسارات anchored).
+
+BUILD: **compilation unverified in this environment**. Java17 فقط، لا Kotlin/Gradle/SDK/aapt2.
+محاولة إعداد JVM محدود خارج المشروع في `/tmp/opencode/kernel-tuning-jvm` تعثرت: Maven TLS/read
+timeout ثم استئناف انقطع، ثم endpoint آخر بسرعة ~65KB/s لم يكمل budget محدد ٤٠ث للملف.
+الـcompiler jar جزئي **لا يُعامل cache صالحًا**؛ لا ترجمة ولا JUnit وقعت. لم يُشغل Gradle/APK
+أو CI جديد. هذا يقيّد أيضًا LMK المحلي السابق، ولا نجاح QV قديم يُنسب للتصحيح الحالي.
+
+RESIDUAL RISK:
+- مراجعة سلامة مستقلة لم تقع (المالك يختار نموذجًا مختلفًا؛ لا تفويض ناجح يُدّعى).
+- Hilt/Compose/types والاختبارات الـ٣٩ تحتاج المترجم/CI. جهاز: قبول كل node، boundaries
+  ومطابقة readback، اللمس/RTL/TalkBack، وسلوك قوّة المحرك أو اللوحة.
+- Haptic ليس تخمين mV: `vtg_min/max/level` كواجهة بحدودها، وقنوات split تحتاج min/max mV
+  منفصلين أو `vmax_min/max` وoverride=1. ما لا يعلنها **لا يظهر**. لا switch وهمي.
+- KCAL enabled=1 فقط، RGB floor محافظ لا ضمان جهاز. تغيّر kcal_min أو driver/HAL قد يرفض
+  الكتابة أو يغيّرها؛ الحالة لا تُدّعى applied إلا بعد المطابقة.
+- I/O والمعاملات جلسة يدوية؛ الرفيق الأصلي قد يغير I/O عند تطبيق ملف عام. لم يُعدّل الرفيق
+  ولم تُبْن watcher تفرضه ضده؛ الاسترجاع يرفض إذا لم تعد القيمة أثرنا. قفل arbiter لا يقفل
+  كتّاب النظام خارج التطبيق. تعديل إعدادات الحاكم لا يضمن أداء أفضل أو استهلاكًا أقل.
+
+NEXT: **أمر لاحق ملزم:** «ادفع للبناء اذا» ثم «ادفع دائما الي main» ⇒ دفعة مجمعة إلى `main`
+تجمع هذا وتصحيح LMK؛ البناء الكامل التلقائي يُنتج APK، ولا QV/dispatch مكرر.
+تُقرأ النتيجة وتُصلح العيوب المثبتة. مراجعة مستقلة وجهاز داعم ما زالا منفصلين عن نجاح البناء.
+قاعدة الوجهة سُجلت في AGENTS §0.9؛ لا حذف للعمل السابق ولا force-push ولا reset.

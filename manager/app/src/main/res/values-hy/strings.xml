@@ -1041,8 +1041,6 @@
     <string name="diagnostics_step_processes">Գործընթացներ</string>
     <string name="diagnostics_step_logs">Տեղեկամատյաններ</string>
     <string name="diagnostics_step_shell">Արմատային պատյան</string>
-    <string name="diagnostics_bootimage_title">Boot Image Tools</string>
-    <string name="diagnostics_bootimage_desc">Կրկնօրինակեք և ֆլեշ բեռնման/միջուկի պատկերները</string>
     <string name="diagnostics_hidden_activities_title">Թաքնված գործողություններ</string>
     <string name="diagnostics_hidden_activities_desc">Գործարկեք թաքնված հավելվածների գործողությունները</string>
     <string name="tweaks_workspace_title">ԳԼՈԲԱԼ ՎԵՐԱՀՍԿՈՂՈՒԹՅՈՒՆ</string>

@@ -1045,8 +1045,6 @@
     <string name="diagnostics_step_processes">Processen</string>
     <string name="diagnostics_step_logs">Logboeken</string>
     <string name="diagnostics_step_shell">Wortel schaal</string>
-    <string name="diagnostics_bootimage_title">Hulpmiddelen voor opstartafbeeldingen</string>
-    <string name="diagnostics_bootimage_desc">Maak een back-up en flash opstart-/kernelimages</string>
     <string name="diagnostics_hidden_activities_title">Verborgen activiteiten</string>
     <string name="diagnostics_hidden_activities_desc">Start verborgen app-activiteiten</string>
     <string name="tweaks_workspace_title">WERELDWIJDE CONTROLE</string>

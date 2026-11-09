@@ -1037,8 +1037,6 @@
     <string name="diagnostics_step_processes">प्रक्रियाओं</string>
     <string name="diagnostics_step_logs">लॉग्स</string>
     <string name="diagnostics_step_shell">जड़ का खोल</string>
-    <string name="diagnostics_bootimage_title">बूट छवि उपकरण</string>
-    <string name="diagnostics_bootimage_desc">बूट/कर्नेल छवियों का बैकअप लें और फ़्लैश करें</string>
     <string name="diagnostics_hidden_activities_title">छुपी गतिविधियाँ</string>
     <string name="diagnostics_hidden_activities_desc">छिपी हुई ऐप गतिविधियाँ लॉन्च करें</string>
     <string name="tweaks_workspace_title">वैश्विक नियंत्रण</string>

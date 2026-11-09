@@ -1047,8 +1047,6 @@
     <string name="diagnostics_step_processes">Процеси</string>
     <string name="diagnostics_step_logs">Дневници</string>
     <string name="diagnostics_step_shell">Роот схелл</string>
-    <string name="diagnostics_bootimage_title">Боот Имаге Тоолс</string>
-    <string name="diagnostics_bootimage_desc">Направите резервну копију и флешујте слике за покретање/кернел</string>
     <string name="diagnostics_hidden_activities_title">Скривене активности</string>
     <string name="diagnostics_hidden_activities_desc">Покрените скривене активности апликације</string>
     <string name="tweaks_workspace_title">ГЛОБАЛНА КОНТРОЛА</string>

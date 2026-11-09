@@ -1045,8 +1045,6 @@
     <string name="diagnostics_step_processes">Prozesse</string>
     <string name="diagnostics_step_logs">Protokolle</string>
     <string name="diagnostics_step_shell">Wurzelschale</string>
-    <string name="diagnostics_bootimage_title">Boot-Image-Tools</string>
-    <string name="diagnostics_bootimage_desc">Sichern und Flashen von Boot-/Kernel-Images</string>
     <string name="diagnostics_hidden_activities_title">Versteckte Aktivitäten</string>
     <string name="diagnostics_hidden_activities_desc">Starten Sie versteckte App-Aktivitäten</string>
     <string name="tweaks_workspace_title">GLOBALE KONTROLLE</string>

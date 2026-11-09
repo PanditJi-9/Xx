@@ -1038,8 +1038,6 @@
     <string name="diagnostics_step_processes">프로세스</string>
     <string name="diagnostics_step_logs">로그</string>
     <string name="diagnostics_step_shell">뿌리 껍질</string>
-    <string name="diagnostics_bootimage_title">부팅 이미지 도구</string>
-    <string name="diagnostics_bootimage_desc">부팅/커널 이미지 백업 및 플래시</string>
     <string name="diagnostics_hidden_activities_title">숨겨진 활동</string>
     <string name="diagnostics_hidden_activities_desc">숨겨진 앱 활동 실행</string>
     <string name="tweaks_workspace_title">글로벌 제어</string>

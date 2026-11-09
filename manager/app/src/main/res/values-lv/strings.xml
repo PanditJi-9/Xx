@@ -1044,8 +1044,6 @@
     <string name="diagnostics_step_processes">Procesi</string>
     <string name="diagnostics_step_logs">Baļķi</string>
     <string name="diagnostics_step_shell">Sakņu apvalks</string>
-    <string name="diagnostics_bootimage_title">Sāknēšanas attēla rīki</string>
-    <string name="diagnostics_bootimage_desc">Dublējiet un flash sāknēšanas/kodola attēlus</string>
     <string name="diagnostics_hidden_activities_title">Slēptās darbības</string>
     <string name="diagnostics_hidden_activities_desc">Palaidiet slēptās lietotņu darbības</string>
     <string name="tweaks_workspace_title">GLOBĀLĀ KONTROLE</string>

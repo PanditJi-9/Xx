@@ -1034,8 +1034,6 @@
     <string name="diagnostics_step_processes">လုပ်ငန်းစဉ်များ</string>
     <string name="diagnostics_step_logs">မှတ်တမ်းများ</string>
     <string name="diagnostics_step_shell">အမြစ်ခွံ</string>
-    <string name="diagnostics_bootimage_title">Boot Image Tools</string>
-    <string name="diagnostics_bootimage_desc">အရန်သိမ်းပြီး boot/kernel ပုံများကို flash လုပ်ပါ။</string>
     <string name="diagnostics_hidden_activities_title">ဝှက်ထားသော လုပ်ဆောင်ချက်များ</string>
     <string name="diagnostics_hidden_activities_desc">လျှို့ဝှက်အက်ပ်လုပ်ဆောင်ချက်များကို စတင်ပါ။</string>
     <string name="tweaks_workspace_title">ကမ္ဘာလုံးဆိုင်ရာ ထိန်းချုပ်မှု</string>

@@ -6,6 +6,7 @@
 package nd.max.ui.util
 
 import android.content.Context
+import org.json.JSONObject
 
 /** Persistent per-app thermal/GPU preset tuning. Values are percentages of the
  * device's detected stock GPU maximum; the actual OPP is selected at runtime.
@@ -90,6 +91,36 @@ object ProfilePresetStore {
     fun setPercent(context: Context, profile: String, percent: Int) {
         prefs(context).edit().putInt(profile.lowercase(), percent.coerceIn(20, 100)).apply()
     }
+
+    /** Manual governor snapshots extend the existing preset slots; no second profile store. */
+    fun governorSnapshot(context: Context, profile: String): Map<String, String> {
+        if (profile !in listOf(POWER, BALANCED, GAMING, PERFORMANCE, CUSTOM)) return emptyMap()
+        return runCatching {
+            val raw = prefs(context).getString("governor.$profile", null) ?: return@runCatching emptyMap()
+            if (raw.length > 32768) return@runCatching emptyMap()
+            val json = JSONObject(raw)
+            if (json.length() > 128) return@runCatching emptyMap()
+            val keys = json.keys().asSequence().toList()
+            val values = keys.associateWith { json.getString(it) }
+            if (!validGovernorSnapshot(values)) emptyMap() else values
+        }.getOrDefault(emptyMap())
+    }
+
+    fun setGovernorSnapshot(context: Context, profile: String, values: Map<String, String>): Boolean {
+        if (profile !in listOf(POWER, BALANCED, GAMING, PERFORMANCE, CUSTOM) || values.isEmpty() || values.size > 128) return false
+        if (!validGovernorSnapshot(values)) return false
+        return runCatching {
+            val json = JSONObject()
+            values.toSortedMap().forEach { (key, value) -> json.put(key, value) }
+            prefs(context).edit().putString("governor.$profile", json.toString()).commit()
+        }.getOrDefault(false)
+    }
+
+    internal fun validGovernorSnapshot(values: Map<String, String>): Boolean =
+        values.isNotEmpty() && values.size <= 128 && values.none { (key, value) ->
+            !key.startsWith(nd.max.core.hardware.HardwareControlKey.GOVERNOR_TUNABLE_PREFIX) ||
+                key.length > 160 || value.isEmpty() || value.length > 20 || value.any { it !in '0'..'9' } || value.toLongOrNull() == null
+        }
 
     fun reset(context: Context) {
         prefs(context).edit()

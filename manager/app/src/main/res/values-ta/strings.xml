@@ -1046,8 +1046,6 @@
     <string name="diagnostics_step_processes">செயல்முறைகள்</string>
     <string name="diagnostics_step_logs">பதிவுகள்</string>
     <string name="diagnostics_step_shell">ரூட் ஷெல்</string>
-    <string name="diagnostics_bootimage_title">படக் கருவிகளைத் துவக்கவும்</string>
-    <string name="diagnostics_bootimage_desc">காப்புப்பிரதி மற்றும் ஃபிளாஷ் துவக்க/கர்னல் படங்களை</string>
     <string name="diagnostics_hidden_activities_title">மறைக்கப்பட்ட செயல்பாடுகள்</string>
     <string name="diagnostics_hidden_activities_desc">மறைக்கப்பட்ட பயன்பாட்டு செயல்பாடுகளைத் தொடங்கவும்</string>
     <string name="tweaks_workspace_title">உலகளாவிய கட்டுப்பாடு</string>

@@ -1045,8 +1045,6 @@
     <string name="diagnostics_step_processes">Procesi</string>
     <string name="diagnostics_step_logs">Dnevniki</string>
     <string name="diagnostics_step_shell">Koreninska lupina</string>
-    <string name="diagnostics_bootimage_title">Orodja za zagonsko sliko</string>
-    <string name="diagnostics_bootimage_desc">Varnostno kopirajte in bliskajte slike zagona/jedra</string>
     <string name="diagnostics_hidden_activities_title">Skrite dejavnosti</string>
     <string name="diagnostics_hidden_activities_desc">Zagon dejavnosti skritih aplikacij</string>
     <string name="tweaks_workspace_title">GLOBALNI NADZOR</string>

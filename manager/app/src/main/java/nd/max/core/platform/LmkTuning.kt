@@ -1,118 +1,179 @@
 /*
- * Copyright (C) 2026-2027 MaxManager contributors
- *
- * Licensed under the Apache License, Version 2.0.
+ * Copyright (C) 2026 Nader Magdy. All rights reserved.
+ * Proprietary and confidential — not licensed for use, copying, or distribution
+ * without prior written permission from the copyright holder.
  */
 package nd.max.core.platform
 
+import android.system.Os
+import android.system.OsConstants
+import nd.max.core.hardware.ControlOwnership
+import nd.max.core.hardware.HardwareControlArbiter
+import nd.max.core.hardware.HardwareControlKey
 import nd.max.core.hardware.RootFileAccess
+import nd.max.core.hardware.SharedHardwareOwnershipStore
+import nd.max.core.hardware.WriteVerification
+import java.util.UUID
 
 /**
- * عتبات قاتل الذاكرة في النواة (`lowmemorykiller/minfree`) — **كتابة حقيقية بتحقّق**.
- *
- * **ولماذا ملفٌّ منفصل عن [VmTuning]:** ذاك ليس عقدة عدد صحيح واحدًا بل **متجه ستّ عتبات**
- * بالصفحات، يُكتب سطرًا مفصولًا بفواصل. وقصّه إلى رقم واحد كان سيُنتج واجهة تكتب قيمةً لا
- * معنى لها.
- *
- * **وصدق الحدّ:** العتبات لا تُكتب إن لم تنشرها النواة (`/sys/module/lowmemorykiller` غير موجود
- * على نوى حديثة كثيرة)، ولا يُدَّعى نجاحٌ بلا قراءة مرتجعة. والخطورة ليست في الكتابة نفسها بل في
- * الرقم: عتبة عالية تقتل تطبيقات في الخلفية، ومنخفضة تترك الذاكرة تمتلئ حتى يتباطأ الجهاز.
- *
- * والحساب كلّه ([parse] · [scale] · [pageToMegabytes]) دالّات نقيّة تُقاس على JVM، فالقراءة
- * والكتابة في [Io] وحده.
+ * جدول `minfree` القديم، لا إعدادات `lmkd` الحديثة. لا تُكتب قيمة بلا لقطة قابلة للاسترجاع،
+ * وكل طلب يمرّ بالمحكّم بمفتاح الكتالوج نفسه. الحساب مستقل عن صلاحيات الجهاز.
  */
 object LmkTuning {
 
     const val MINFREE = "/sys/module/lowmemorykiller/parameters/minfree"
 
-    /** أصغر عتبة مقبولة — صفر تعطّل العتبة، فلا يُكتب. */
     const val MIN_PAGE = 1
 
-    /** سقف عمليّ: نصف مليون صفحة (٢ جيجابايت) لكل عتبة — أعلى من ذلك يعني قتل كل شيء. */
+    /** سقف إدخال محافظ بالصفحات؛ ليس تقديرًا للذاكرة ولا ضمانًا لملاءمة الرقم للجهاز. */
     const val MAX_PAGE = 500_000
-
-    /** حدود المعامل الذي تسمح به الواجهة: لا «إضعاف» بنسبة تُفرغ الجدول ولا مضاعفة تُخنقه. */
+    const val MAX_THRESHOLDS = 6
+    const val MAX_TEXT_LENGTH = 128
     const val MIN_PERCENT = 50
     const val MAX_PERCENT = 200
 
-    /**
-     * يفكّ نصّ العقدة إلى قائمة صفحات. `null` لأي شكل لا يُفهم بالكامل.
-     *
-     * ولا يُقبل جزءٌ صالح: عقدة تحمل `10240,20480,abc` ليست جدولًا — وقبول الأجزاء كان سيكتب
-     * متجهًا أقصر من متجه النواة.
-     */
+    /** لا إسقاط لجزء فارغ، ولا إصلاح لجدول غير مرتب؛ كلاهما قد يغيّر معنى المتجه المكتوب. */
     fun parse(raw: String?): List<Int>? {
-        val text = raw?.trim().orEmpty()
+        if (raw == null || raw.length > MAX_TEXT_LENGTH) return null
+        val text = raw.trim()
         if (text.isEmpty()) return null
-        val parts = text.split(',', ' ', '\n', '\t').filter { it.isNotBlank() }
-        if (parts.size < 2) return null
+        val parts = if (',' in text) text.split(',').map(String::trim) else text.split(Regex("\\s+"))
+        if (parts.size !in 2..MAX_THRESHOLDS) return null
         val values = parts.map { part ->
-            if (part.any { it !in '0'..'9' }) return null
-            val value = part.toIntOrNull() ?: return null
-            if (value < MIN_PAGE || value > MAX_PAGE) return null
-            value
+            if (part.isEmpty() || part.any { it !in '0'..'9' }) return null
+            part.toIntOrNull() ?: return null
         }
-        return values
+        return values.takeIf(::valid)
     }
 
-    /** سطر الكتابة كما تنتظره النواة: فواصل بلا مسافات. */
+    private fun valid(values: List<Int>): Boolean =
+        values.size in 2..MAX_THRESHOLDS &&
+            values.all { it in MIN_PAGE..MAX_PAGE } &&
+            values.zipWithNext().all { (previous, next) -> next > previous }
+
     fun format(values: List<Int>): String = values.joinToString(",")
 
-    /**
-     * يضرب كل عتبة في [percent]٪ ويُعيد متجهًا **متزايدًا** يبقى عددُه عددَ الأصل.
-     *
-     * **ولماذا يُصلَح الترتيب:** النواة تقرأ العتبات كسلّم (كل عتبة أعلى من سابقتها)؛ وضرب
-     * قيمٍ صغيرة قد يُسوّي بينها بعد التقريب، فيُرفض السطر أو يُقرأ سلّمًا مكسورًا. فالتساوي
-     * يُرفع بصفحة واحدة، ويُقال ذلك في [OrderAdjusted] ليُعرض للمستخدم لا ليُخفى.
-     */
+    /** لا قصّ صامت ولا رفع مصطنع للترتيب: النسبة التي تنتج سلّمًا غير صالح لا تُكتب. */
     fun scale(values: List<Int>, percent: Int): List<Int>? {
-        if (percent < MIN_PERCENT || percent > MAX_PERCENT) return null
-        if (values.isEmpty()) return null
+        if (percent !in MIN_PERCENT..MAX_PERCENT || !valid(values)) return null
         val scaled = values.map { value ->
-            ((value.toLong() * percent) / 100L).coerceIn(MIN_PAGE.toLong(), MAX_PAGE.toLong()).toInt()
-        }.toMutableList()
-        for (index in 1 until scaled.size) {
-            if (scaled[index] <= scaled[index - 1]) {
-                scaled[index] = (scaled[index - 1] + 1).coerceAtMost(MAX_PAGE)
-            }
+            (value.toLong() * percent / 100L).toInt()
         }
-        return scaled
+        return scaled.takeIf(::valid)
     }
 
-    /** هل عدّل [scale] الترتيب بعد التقريب؟ يُعرض سطرًا واحدًا، فلا يُدَّعى أنها نسبة دقيقة. */
-    fun orderAdjusted(original: List<Int>, scaled: List<Int>, percent: Int): Boolean =
-        scaled != original.map { value ->
-            ((value * percent) / 100).coerceIn(MIN_PAGE, MAX_PAGE)
-        }
+    fun pageToMegabytes(pages: Int, pageBytes: Long): Long? {
+        if (pages !in MIN_PAGE..MAX_PAGE || pageBytes !in 4096L..65536L) return null
+        if ((pageBytes and (pageBytes - 1L)) != 0L) return null
+        return pages.toLong() * pageBytes / (1024L * 1024L)
+    }
 
-    /** الصفحات → ميجابايت بصفحة [pageKb] (٤ كيلوبايت هي الغالبة). */
-    fun pageToMegabytes(page: Int, pageKb: Int = 4): Int = (page.toLong() * pageKb / 1024L).toInt()
+    enum class Outcome { APPLIED, NOT_PRESENT, INVALID, BLOCKED, NOT_WRITABLE, UNVERIFIED }
 
-    /** نتيجة محاولة كتابة — كـ[VmWriteOutcome] لا `Boolean` يخلط الرفض بالفشل. */
-    enum class Outcome { APPLIED, NOT_PRESENT, NOT_WRITABLE, UNVERIFIED }
-
-    /**
-     * المِنفذ الحقيقيّ: قراءة وكتابة عبر [RootFileAccess] وحده (نفس مسار [VmTuning])، والحكم
-     * على **القيمة المقروءة** بعد الكتابة لا على رمز الأمر.
-     */
+    /** الكتابة ليست افتراضية في المُنشئ: الاختبار والإنتاج يحدّدان بوابة الطلب صراحةً. */
     class Io(
-        private val read: (String) -> String? = { RootFileAccess.read(it) },
-        private val write: (String, String) -> Boolean = { path, value -> RootFileAccess.write(path, value) },
+        private val read: (String) -> String?,
+        private val submit: (desired: String, expected: String) -> Outcome,
+        private val pageBytes: () -> Long? = { null },
     ) {
+        fun current(): List<Int>? = runCatching { parse(read(MINFREE)) }.getOrNull()
 
-        fun current(): List<Int>? = parse(read(MINFREE))
+        fun pageSizeBytes(): Long? = runCatching { pageBytes() }.getOrNull()
 
-        fun apply(values: List<Int>): Outcome {
+        fun apply(values: List<Int>, expected: List<Int>): Outcome {
+            if (!valid(values) || !valid(expected) || values.size != expected.size) return Outcome.INVALID
             val before = current() ?: return Outcome.NOT_PRESENT
-            if (values.size != before.size) return Outcome.UNVERIFIED
-            if (values.any { it < MIN_PAGE || it > MAX_PAGE }) return Outcome.NOT_WRITABLE
-            val accepted = runCatching { write(MINFREE, format(values)) }.getOrDefault(false)
-            if (!accepted) return Outcome.NOT_WRITABLE
+            if (before != expected) return Outcome.BLOCKED
+            val result = runCatching { submit(format(values), format(expected)) }
+                .getOrDefault(Outcome.UNVERIFIED)
+            if (result != Outcome.APPLIED) return result
             return if (current() == values) Outcome.APPLIED else Outcome.UNVERIFIED
         }
 
         companion object {
-            fun system(): Io = Io()
+            fun system(arbiter: HardwareControlArbiter): Io = transactionIo(arbiter)
+
+            /** نفس معاملة الإنتاج، بناقل مُمرَّر كي تُقاس الأسبقية والاسترجاع بالمحكّم الحقيقي. */
+            internal fun transactionIo(
+                arbiter: HardwareControlArbiter,
+                read: (String) -> String? = RootFileAccess::read,
+                write: (String, String) -> WriteVerification.Outcome = { path, value ->
+                    RootFileAccess.writeVerifiedWith(path, value) { wrote, readBack ->
+                        when {
+                            readBack == null -> WriteVerification.Outcome.READBACK_UNAVAILABLE
+                            parse(wrote) == parse(readBack) -> WriteVerification.Outcome.MATCHED
+                            else -> WriteVerification.Outcome.DIFFERS
+                        }
+                    }
+                },
+                pageBytes: () -> Long? = { Os.sysconf(OsConstants._SC_PAGESIZE).takeIf { it > 0L } },
+            ): Io = Io(
+                read = read,
+                submit = { desired, expected -> applySystem(arbiter, desired, expected, read, write) },
+                pageBytes = pageBytes,
+            )
+        }
+    }
+
+    private fun applySystem(
+        arbiter: HardwareControlArbiter,
+        desired: String,
+        expected: String,
+        read: (String) -> String?,
+        write: (String, String) -> WriteVerification.Outcome,
+    ): Outcome {
+        if (!SharedHardwareOwnershipStore.isConfigured()) return Outcome.BLOCKED
+        val target = parse(desired) ?: return Outcome.INVALID
+        val key = HardwareControlKey.MEMORY_LMK_MINFREE
+        // طلب عابر، لا مُنتج يعيد التطبيق في الخلفية. يُزال من الدفتر بعد انتهاء المعاملة.
+        val token = "manual-lmk-${UUID.randomUUID()}"
+        var baselineChanged = false
+        var writeOutcome: WriteVerification.Outcome? = null
+        fun readCanonical(): String? = parse(read(MINFREE))?.let(::format)
+        fun writeVerified(value: String, recordAttempt: Boolean = true): Boolean {
+            val outcome = write(MINFREE, value)
+            if (recordAttempt) writeOutcome = outcome
+            return outcome == WriteVerification.Outcome.MATCHED
+        }
+
+        return try {
+            val result = arbiter.submit(
+                key = key,
+                owner = ControlOwnership.Owner.GLOBAL_PROFILE,
+                token = token,
+                desired = desired,
+                read = ::readCanonical,
+                baseline = expected,
+                apply = { value ->
+                    // يعاد القياس داخل قفل المعاملة: لا يُطغى على تغيير أثناء حوار الإقرار.
+                    if (readCanonical() != expected) {
+                        baselineChanged = true
+                        false
+                    } else {
+                        writeVerified(value)
+                    }
+                },
+                restore = { previous ->
+                    // لا تراجع يطغى على كاتب خارجي: تُسترجع فقط قيمة ما زالت أثر محاولتنا.
+                    val live = readCanonical()
+                    live == previous || (parse(live) == target && writeVerified(previous, recordAttempt = false))
+                },
+                // القراءة الأولى للمحكّم ما زالت تُنتج أساسًا؛ لا يتخطى الكتابة إن تغيّر بين القراءتين.
+                realized = { _, _ -> readCanonical() == expected },
+            )
+            when {
+                result.blocked || baselineChanged -> Outcome.BLOCKED
+                result.verified && parse(result.actual) == target -> Outcome.APPLIED
+                result.error?.endsWith("and-rollback-failed") == true -> Outcome.UNVERIFIED
+                writeOutcome == WriteVerification.Outcome.DIFFERS ||
+                    writeOutcome == WriteVerification.Outcome.READBACK_UNAVAILABLE -> Outcome.UNVERIFIED
+                !result.applied -> Outcome.NOT_WRITABLE
+                else -> Outcome.UNVERIFIED
+            }
+        } catch (_: Exception) {
+            Outcome.UNVERIFIED
+        } finally {
+            runCatching { arbiter.release(key, token, restore = false) }
         }
     }
 }

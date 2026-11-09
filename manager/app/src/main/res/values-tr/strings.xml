@@ -1047,8 +1047,6 @@
     <string name="diagnostics_step_processes">Süreçler</string>
     <string name="diagnostics_step_logs">Günlükler</string>
     <string name="diagnostics_step_shell">Kök kabuğu</string>
-    <string name="diagnostics_bootimage_title">Önyükleme Görüntüsü Araçları</string>
-    <string name="diagnostics_bootimage_desc">Önyükleme/çekirdek görüntülerini yedekleme ve flaşlama</string>
     <string name="diagnostics_hidden_activities_title">Gizli Etkinlikler</string>
     <string name="diagnostics_hidden_activities_desc">Gizli uygulama etkinliklerini başlat</string>
     <string name="tweaks_workspace_title">KÜRESEL KONTROL</string>

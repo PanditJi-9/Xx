@@ -1037,8 +1037,6 @@
     <string name="diagnostics_step_processes">Процестер</string>
     <string name="diagnostics_step_logs">Журналдар</string>
     <string name="diagnostics_step_shell">Түбір қабығы</string>
-    <string name="diagnostics_bootimage_title">Жүктеу кескінінің құралдары</string>
-    <string name="diagnostics_bootimage_desc">Жүктеу/ядро кескіндерінің сақтық көшірмесін жасаңыз және жарқылдаңыз</string>
     <string name="diagnostics_hidden_activities_title">Жасырын әрекеттер</string>
     <string name="diagnostics_hidden_activities_desc">Жасырын қолданба әрекеттерін іске қосыңыз</string>
     <string name="tweaks_workspace_title">ЖАҺАНДЫҚ БАҚЫЛАУ</string>

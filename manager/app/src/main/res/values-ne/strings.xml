@@ -1042,8 +1042,6 @@
     <string name="diagnostics_step_processes">प्रक्रियाहरू</string>
     <string name="diagnostics_step_logs">लगहरू</string>
     <string name="diagnostics_step_shell">जरा खोल</string>
-    <string name="diagnostics_bootimage_title">बुट छवि उपकरणहरू</string>
-    <string name="diagnostics_bootimage_desc">ब्याकअप र फ्ल्यास बुट/कर्नेल छविहरू</string>
     <string name="diagnostics_hidden_activities_title">लुकेका गतिविधिहरू</string>
     <string name="diagnostics_hidden_activities_desc">लुकेका एप गतिविधिहरू सुरु गर्नुहोस्</string>
     <string name="tweaks_workspace_title">विश्वव्यापी नियन्त्रण</string>

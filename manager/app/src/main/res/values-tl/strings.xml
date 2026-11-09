@@ -1046,8 +1046,6 @@
     <string name="diagnostics_step_processes">Mga proseso</string>
     <string name="diagnostics_step_logs">Mga log</string>
     <string name="diagnostics_step_shell">Root shell</string>
-    <string name="diagnostics_bootimage_title">Boot Image Tools</string>
-    <string name="diagnostics_bootimage_desc">I-back up at i-flash ang boot/kernel na mga larawan</string>
     <string name="diagnostics_hidden_activities_title">Mga Nakatagong Aktibidad</string>
     <string name="diagnostics_hidden_activities_desc">Ilunsad ang mga nakatagong aktibidad sa app</string>
     <string name="tweaks_workspace_title">GLOBAL CONTROL</string>

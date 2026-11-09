@@ -1039,8 +1039,6 @@
     <string name="diagnostics_step_processes">流程</string>
     <string name="diagnostics_step_logs">紀錄</string>
     <string name="diagnostics_step_shell">根殼</string>
-    <string name="diagnostics_bootimage_title">啟動映像工具</string>
-    <string name="diagnostics_bootimage_desc">備份和刷新啟動/核心映像</string>
     <string name="diagnostics_hidden_activities_title">隱藏活動</string>
     <string name="diagnostics_hidden_activities_desc">啟動隱藏的應用程式活動</string>
     <string name="tweaks_workspace_title">全球控制</string>

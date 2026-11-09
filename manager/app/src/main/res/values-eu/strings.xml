@@ -1035,8 +1035,6 @@
     <string name="diagnostics_step_processes">Prozesuak</string>
     <string name="diagnostics_step_logs">Erregistroak</string>
     <string name="diagnostics_step_shell">Erro oskola</string>
-    <string name="diagnostics_bootimage_title">Boot Image Tools</string>
-    <string name="diagnostics_bootimage_desc">Egin babeskopiak eta flash abio/kernel irudiak</string>
     <string name="diagnostics_hidden_activities_title">Ezkutuko Jarduerak</string>
     <string name="diagnostics_hidden_activities_desc">Abiarazi ezkutuko aplikazio-jarduerak</string>
     <string name="tweaks_workspace_title">KONTROLA GLOBALA</string>

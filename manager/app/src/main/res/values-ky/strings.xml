@@ -1042,8 +1042,6 @@
     <string name="diagnostics_step_processes">Процесстер</string>
     <string name="diagnostics_step_logs">Журналдар</string>
     <string name="diagnostics_step_shell">Тамыр кабыгы</string>
-    <string name="diagnostics_bootimage_title">Жүктөө сүрөт куралдары</string>
-    <string name="diagnostics_bootimage_desc">Жүктөө/ядро сүрөттөрүнүн камдык көчүрмөсүн жана жарк этиңиз</string>
     <string name="diagnostics_hidden_activities_title">Жашырылган аракеттер</string>
     <string name="diagnostics_hidden_activities_desc">Жашыруун колдонмо аракеттерин ишке киргизиңиз</string>
     <string name="tweaks_workspace_title">ГЛОБАЛДЫК КОНТРОЛЬ</string>

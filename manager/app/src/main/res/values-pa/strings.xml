@@ -1043,8 +1043,6 @@
     <string name="diagnostics_step_processes">ਪ੍ਰਕਿਰਿਆਵਾਂ</string>
     <string name="diagnostics_step_logs">ਲਾਗ</string>
     <string name="diagnostics_step_shell">ਰੂਟ ਸ਼ੈੱਲ</string>
-    <string name="diagnostics_bootimage_title">ਬੂਟ ਚਿੱਤਰ ਸੰਦ</string>
-    <string name="diagnostics_bootimage_desc">ਬੈਕਅੱਪ ਅਤੇ ਫਲੈਸ਼ ਬੂਟ/ਕਰਨਲ ਚਿੱਤਰ</string>
     <string name="diagnostics_hidden_activities_title">ਲੁਕੀਆਂ ਹੋਈਆਂ ਗਤੀਵਿਧੀਆਂ</string>
     <string name="diagnostics_hidden_activities_desc">ਲੁਕੀਆਂ ਹੋਈਆਂ ਐਪ ਗਤੀਵਿਧੀਆਂ ਨੂੰ ਲਾਂਚ ਕਰੋ</string>
     <string name="tweaks_workspace_title">ਗਲੋਬਲ ਕੰਟਰੋਲ</string>

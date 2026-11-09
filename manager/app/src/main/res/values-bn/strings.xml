@@ -1045,8 +1045,6 @@
     <string name="diagnostics_step_processes">প্রসেস</string>
     <string name="diagnostics_step_logs">লগ</string>
     <string name="diagnostics_step_shell">রুট শেল</string>
-    <string name="diagnostics_bootimage_title">বুট ইমেজ টুলস</string>
-    <string name="diagnostics_bootimage_desc">ব্যাক আপ এবং ফ্ল্যাশ বুট/কার্নেল ইমেজ</string>
     <string name="diagnostics_hidden_activities_title">লুকানো কার্যকলাপ</string>
     <string name="diagnostics_hidden_activities_desc">লুকানো অ্যাপ কার্যক্রম চালু করুন</string>
     <string name="tweaks_workspace_title">গ্লোবাল কন্ট্রোল</string>

@@ -1039,8 +1039,6 @@
     <string name="diagnostics_step_processes">Michakato</string>
     <string name="diagnostics_step_logs">Kumbukumbu</string>
     <string name="diagnostics_step_shell">Kamba ya mizizi</string>
-    <string name="diagnostics_bootimage_title">Anzisha Vyombo vya Picha</string>
-    <string name="diagnostics_bootimage_desc">Hifadhi nakala rudufu na uwashe picha za boot/kernel</string>
     <string name="diagnostics_hidden_activities_title">Shughuli Zilizofichwa</string>
     <string name="diagnostics_hidden_activities_desc">Zindua shughuli za programu zilizofichwa</string>
     <string name="tweaks_workspace_title">UDHIBITI WA ULIMWENGU</string>
