@@ -303,6 +303,19 @@ enum class MaxCardSize(val metrics: MaxCardMetrics) {
     ),
 }
 
+/** Artwork replaces existing icon/header space; it never reserves a decorative banner above controls. */
+object MaxVisualSpec {
+    val mark: Dp = 40.dp
+    val card: Dp = 56.dp
+    val compact: Dp = 72.dp
+    val hero: Dp = 112.dp
+    val instrument: Dp = 96.dp
+    val capacityHeight: Dp = 14.dp
+    val trackHeight: Dp = 20.dp
+    const val panelFit = 0.82f
+    const val largeFontScale = 1.35f
+}
+
 object MaxSize {
     /** Accessibility floor for anything clickable. Never go below this. */
     val minTouchTarget: Dp = 48.dp

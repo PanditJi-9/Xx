@@ -359,14 +359,15 @@ private fun DeviceInfoPage(section: DeviceInfoSectionModel?, pending: Boolean) {
         // **الرأس أولًا** (تكملة ٢٢٥): المقياس وبلاطات الإحصاء فوق التفاصيل — فيقرأ القارئ
         // «ما جهازي؟» في ثانيةٍ ثم ينزل إلى الحقول إن أراد التفصيل.
         item(key = "devinfo_hero_${section.section.wireKey}") {
-            DeviceInfoHeroView(hero = section.hero, pending = pending)
+            DeviceInfoHeroView(hero = section.hero, pending = pending, section = section.section)
         }
         item(key = "devinfo_card_${section.section.wireKey}") {
             DeviceInfoCardBlock(
-                title = stringResource(section.section.titleRes),
+                title = stringResource(R.string.devinfo_details),
                 facts = section.facts,
                 rows = section.rows,
                 pending = pending,
+                collapsible = true,
             )
         }
         // **ودفتر الذاكرة (`AR-24`) بطاقةً في قسمه — والوضع المتقدّم شرطه (تكملة ٢٦٣):**
@@ -428,9 +429,10 @@ private fun DeviceInfoCardBlock(
     facts: List<DeviceInfoFact>,
     rows: List<DeviceInfoRow>,
     pending: Boolean,
+    collapsible: Boolean = false,
 ) {
     if (facts.isEmpty() && rows.isEmpty()) return
-    MaxSection(title = title) {
+    MaxSection(title = title, collapsible = collapsible) {
         MaxGroup {
             facts.forEachIndexed { position, fact ->
                 if (position > 0) MaxGroupDivider()

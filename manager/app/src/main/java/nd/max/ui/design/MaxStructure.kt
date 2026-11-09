@@ -114,7 +114,8 @@ fun MaxSection(
                 .fillMaxWidth()
                 .then(
                     if (collapsible) {
-                        Modifier.clickable(role = Role.Button) { expanded = !expanded }
+                        Modifier.heightIn(min = MaxSize.minTouchTarget)
+                            .clickable(role = Role.Button) { expanded = !expanded }
                     } else {
                         Modifier
                     },
@@ -299,6 +300,7 @@ fun MaxRow(
     iconTone: MaxTone = MaxTone.Neutral,
     enabled: Boolean = true,
     onClick: (() -> Unit)? = null,
+    illustration: MaxIllustrationKind? = null,
     trailing: (@Composable () -> Unit)? = null
 ) {
     val interaction = remember { MutableInteractionSource() }
@@ -330,18 +332,34 @@ fun MaxRow(
         horizontalArrangement = Arrangement.spacedBy(MaxSpace.md)
     ) {
         if (icon != null) {
-            Surface(
-                shape = RoundedCornerShape(maxRadius(MaxRadius.control)),
-                color = iconTone.container(),
-                modifier = Modifier.size(MaxSize.rowIconContainer)
-            ) {
-                Box(contentAlignment = Alignment.Center) {
-                    Icon(
-                        imageVector = icon,
-                        contentDescription = null,
-                        tint = iconTone.content().copy(alpha = contentAlpha),
-                        modifier = Modifier.size(MaxSize.iconGlyphSmall)
+            // Domain rows keep their own drawn mark; action rows with no domain
+            // (add, delete, warning) keep the tinted glyph, so the two never blur.
+            val artwork = illustration ?: maxIllustrationKind(icon.name)
+            if (artwork != null) {
+                Box(
+                    modifier = Modifier.size(MaxSize.rowIconContainer),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    MaxIllustration(
+                        kind = artwork,
+                        color = iconTone.content().copy(alpha = contentAlpha),
+                        size = MaxSize.rowIconContainer,
                     )
+                }
+            } else {
+                Surface(
+                    shape = RoundedCornerShape(maxRadius(MaxRadius.control)),
+                    color = iconTone.container(),
+                    modifier = Modifier.size(MaxSize.rowIconContainer)
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Icon(
+                            imageVector = icon,
+                            contentDescription = null,
+                            tint = iconTone.content().copy(alpha = contentAlpha),
+                            modifier = Modifier.size(MaxSize.iconGlyphSmall)
+                        )
+                    }
                 }
             }
         }

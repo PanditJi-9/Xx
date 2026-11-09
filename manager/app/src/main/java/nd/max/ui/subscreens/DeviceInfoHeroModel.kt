@@ -84,6 +84,8 @@ internal fun heroOf(section: DeviceInfoSection, s: DeviceInfoSnapshot): DeviceIn
                 tile(R.string.devinfo_refresh, s.displayRefreshHz?.takeIf { it > 0 }?.toString(), "Hz", trust = refreshTrust(s.displayRefreshHz)),
                 tile(R.string.devinfo_screen_size, diagonalInchesLabel(s.displayWidth, s.displayHeight, s.displayDensityDpi), "in", trust = textTrust(diagonalInchesLabel(s.displayWidth, s.displayHeight, s.displayDensityDpi))),
             ),
+            panelWidth = s.displayWidth,
+            panelHeight = s.displayHeight,
         )
         DeviceInfoSection.Thermal -> hero(
             tiles = listOf(
@@ -207,8 +209,14 @@ private fun overviewHero(s: DeviceInfoSnapshot): DeviceInfoHero = DeviceInfoHero
     ),
 )
 
-private fun hero(gauge: DeviceInfoGauge? = null, tiles: List<DeviceInfoTile>): DeviceInfoHero =
-    DeviceInfoHero(gauges = listOfNotNull(gauge), tiles = tiles)
+private fun hero(
+    gauge: DeviceInfoGauge? = null,
+    tiles: List<DeviceInfoTile>,
+    panelWidth: Int? = null,
+    panelHeight: Int? = null,
+): DeviceInfoHero = DeviceInfoHero(
+    gauges = listOfNotNull(gauge), tiles = tiles, panelWidth = panelWidth, panelHeight = panelHeight,
+)
 
 /**
  * بلاطة — **و`value = null` يمرّ** فتحمل الثقة وحدها (زرّ بلا قيمة يُقرأ `—` لا صفرًا)،
@@ -269,6 +277,7 @@ private fun gpuGauge(s: DeviceInfoSnapshot): DeviceInfoGauge? {
         fraction = (freq.toFloat() / ceiling).coerceIn(0f, 1f),
         subtitle = "${formatDouble(freq / 1000.0, 2)} / ${formatDouble(ceiling / 1000.0, 2)} GHz",
         live = true,
+        markerFraction = s.gpuCeilingMhz?.takeIf { it > 0 }?.let { (it.toFloat() / ceiling).coerceIn(0f, 1f) },
     )
 }
 

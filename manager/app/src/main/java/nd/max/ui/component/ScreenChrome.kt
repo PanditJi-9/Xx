@@ -458,7 +458,12 @@ private fun BarGlyphBox(icon: ImageVector, accent: Color) {
             ),
         contentAlignment = Alignment.Center
     ) {
-        Icon(imageVector = icon, contentDescription = null, tint = accent)
+        val artwork = nd.max.ui.design.maxIllustrationKind(icon.name)
+        if (artwork == null) {
+            Icon(imageVector = icon, contentDescription = null, tint = accent)
+        } else {
+            nd.max.ui.design.MaxIllustration(kind = artwork, color = accent)
+        }
     }
 }
 

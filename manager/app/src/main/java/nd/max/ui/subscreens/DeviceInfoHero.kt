@@ -3,285 +3,297 @@
  * Proprietary and confidential — not licensed for use, copying, or distribution
  * without prior written permission from the copyright holder.
  */
-/*
- * Device Info — **رأس القسم**: ملخص الهوية، ومقياس الاستخدام الرشيق، وبلاطات الإحصاء.
- *
- * أُعيد تطوير هذا الرأس ليكون متناسقاً وأنيقاً ضمن لغة التصميم الموحدة (MaxManager):
- * - إزالة اللوحة المظلمة (NeuralPanel) والمقياس الدائري الضخم (RadialGaugeCard) الذي كان يستهلك
- *   معظم مساحة الشاشة ويسبب عدم اتساق بين الأقسام.
- * - استبدالها بقشرة بطاقة موحدة (MaxCardShell) ومقياس استخدام شريطي رشيق (MaxUsageBar).
- * - تصميم بلاطات إحصاء مضغوطة متناسقة وأنيقة تحفظ كثافة المعلومات وسهولة القراءة.
- */
+/** Each domain has its own composition; the existing snapshot remains the only source of values. */
 package nd.max.ui.subscreens
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.PhoneAndroid
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
 import nd.max.R
-import nd.max.ui.component.LivePulseDot
 import nd.max.ui.design.MAX_VALUE_UNAVAILABLE
+import nd.max.ui.design.MaxBatteryLevel
 import nd.max.ui.design.MaxCapsule
 import nd.max.ui.design.MaxCardShell
+import nd.max.ui.design.MaxCardSpec
 import nd.max.ui.design.MaxDataTrust
+import nd.max.ui.design.MaxDisplaySchematic
+import nd.max.ui.design.MaxFrequencyTrack
 import nd.max.ui.design.MaxGroup
 import nd.max.ui.design.MaxGroupDivider
-import nd.max.ui.design.MaxRadius
+import nd.max.ui.design.MaxIllustration
+import nd.max.ui.design.MaxIllustrationKind
 import nd.max.ui.design.MaxRow
 import nd.max.ui.design.MaxSection
-import nd.max.ui.design.MaxSize
 import nd.max.ui.design.MaxSpace
 import nd.max.ui.design.MaxTone
 import nd.max.ui.design.MaxUsageBar
+import nd.max.ui.design.MaxVisualSpec
 import nd.max.ui.design.content
+import nd.max.ui.design.maxDisplayProportion
 import nd.max.ui.design.maxTrustLabel
 import nd.max.ui.design.visual
-import nd.max.ui.design.maxRadius
 
 /**
  * رأس القسم كاملًا — يُبنى من [DeviceInfoHero] الصافي (المقيس في `DeviceInfoFactsTest`).
  */
 @Composable
-internal fun DeviceInfoHeroView(hero: DeviceInfoHero, pending: Boolean) {
+internal fun DeviceInfoHeroView(
+    hero: DeviceInfoHero,
+    pending: Boolean,
+    section: DeviceInfoSection = DeviceInfoSection.Overview,
+) {
     if (hero.title == null && hero.subtitle == null && hero.gauges.isEmpty() && hero.tiles.isEmpty()) return
-
     MaxCardShell(
         modifier = Modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(MaxSpace.sm),
+        verticalArrangement = Arrangement.spacedBy(MaxSpace.lg),
     ) {
-        // هوية الجهاز في قسم النظرة العامة
-        hero.title?.takeIf { it.isNotBlank() }?.let { title ->
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(MaxSpace.md),
-            ) {
-                Surface(
-                    shape = CircleShape,
-                    color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f),
-                    modifier = Modifier.size(38.dp),
-                ) {
-                    Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-                        Icon(
-                            imageVector = Icons.Rounded.PhoneAndroid,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(20.dp),
-                        )
-                    }
-                }
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = title,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                    hero.subtitle?.takeIf { it.isNotBlank() }?.let { subtitle ->
-                        Text(
-                            text = subtitle,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                        )
-                    }
-                }
-            }
-        }
-
-        // مقياس الاستخدام الحي الرشيق (بديل المقياس الدائري الضخم)
-        hero.gauges.forEach { gauge ->
-            DeviceInfoGaugeView(gauge)
-        }
-
-        // شبكة البلاطات الإحصائية المصغرة
-        if (hero.tiles.isNotEmpty()) {
-            DeviceInfoTileGrid(hero.tiles, pending)
+        when (section) {
+            DeviceInfoSection.Overview -> IdentityHero(hero, pending)
+            DeviceInfoSection.Cpu -> InstrumentHero(hero, pending, MaxIllustrationKind.Cpu)
+            DeviceInfoSection.Gpu -> InstrumentHero(hero, pending, MaxIllustrationKind.Gpu)
+            DeviceInfoSection.Memory -> CapacityHero(hero, pending, MaxIllustrationKind.Memory)
+            DeviceInfoSection.Storage -> CapacityHero(hero, pending, MaxIllustrationKind.Storage)
+            DeviceInfoSection.Battery -> BatteryHero(hero, pending)
+            DeviceInfoSection.Display -> PanelHero(hero, pending)
+            DeviceInfoSection.Network -> TrafficHero(hero, pending)
+            DeviceInfoSection.System -> ProfileHero(hero, pending, MaxIllustrationKind.System, R.string.android_version)
+            DeviceInfoSection.Thermal -> ProfileHero(hero, pending, MaxIllustrationKind.Thermal, R.string.devinfo_temp_cpu)
+            DeviceInfoSection.Sensors -> ProfileHero(hero, pending, MaxIllustrationKind.Sensors, R.string.devinfo_sensor_count)
+            DeviceInfoSection.Camera -> ProfileHero(hero, pending, MaxIllustrationKind.Camera, R.string.devinfo_camera_megapixels)
+            DeviceInfoSection.Audio -> ProfileHero(hero, pending, MaxIllustrationKind.Audio, R.string.max_audio_sample_rate_caption)
         }
     }
 }
 
-/**
- * مقياس استخدام رشيق يظهر النسبة والقيمة الحيّة بشريط أفقي متناسق بدلاً من الدائرة الضخمة.
- */
 @Composable
-private fun DeviceInfoGaugeView(gauge: DeviceInfoGauge) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(maxRadius(MaxRadius.chip)))
-            .background(MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.45f))
-            .padding(horizontal = MaxSpace.md, vertical = MaxSpace.sm),
-        verticalArrangement = Arrangement.spacedBy(MaxSpace.sm),
+private fun IdentityHero(hero: DeviceInfoHero, pending: Boolean) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(MaxSpace.md),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                if (gauge.live) {
-                    LivePulseDot(color = MaterialTheme.colorScheme.primary)
-                    Spacer(Modifier.width(MaxSpace.xs))
-                }
+        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(MaxSpace.xs)) {
+            hero.title?.takeIf { it.isNotBlank() }?.let {
                 Text(
-                    text = stringResource(gauge.titleRes),
-                    style = MaterialTheme.typography.labelMedium,
-                    fontWeight = FontWeight.Medium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
-            Row(verticalAlignment = Alignment.Bottom) {
-                Text(
-                    text = gauge.valueText,
-                    style = MaterialTheme.typography.titleSmall,
+                    text = it,
+                    style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary,
+                    color = MaterialTheme.colorScheme.onSurface,
                 )
-                if (gauge.unitText.isNotBlank()) {
-                    Spacer(Modifier.width(MaxSpace.hairline))
-                    Text(
-                        text = gauge.unitText,
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
-                }
+            }
+            hero.subtitle?.takeIf { it.isNotBlank() }?.let {
+                Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
-        MaxUsageBar(
-            fraction = gauge.fraction,
-            modifier = Modifier.fillMaxWidth(),
-            tone = if (gauge.fraction > 0.88f && gauge.live) MaxTone.Caution else MaxTone.Accent,
-            height = 5.dp,
-        )
-        if (!gauge.subtitle.isNullOrBlank()) {
-            Text(
-                text = gauge.subtitle,
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f),
-            )
-        }
+        HeroMark(MaxIllustrationKind.Device)
     }
+    hero.gauges.forEach {
+        GaugeReadout(it, large = false)
+        MaxUsageBar(it.fraction)
+    }
+    HeroStats(hero.tiles, pending)
 }
 
-/**
- * شبكة البلاطات: صفّان في كل صفّ — متوازنة ورشيقة.
- */
 @Composable
-private fun DeviceInfoTileGrid(tiles: List<DeviceInfoTile>, pending: Boolean) {
-    tiles.chunked(2).forEach { rowTiles ->
+private fun InstrumentHero(hero: DeviceInfoHero, pending: Boolean, kind: MaxIllustrationKind) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(MaxSpace.md),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(Modifier.weight(1f)) {
+            hero.gauges.forEach { GaugeReadout(it, large = true) }
+        }
+        HeroMark(kind)
+    }
+    hero.gauges.forEach { MaxFrequencyTrack(it.fraction, limit = it.markerFraction) }
+    HeroStats(hero.tiles, pending)
+}
+
+@Composable
+private fun CapacityHero(hero: DeviceInfoHero, pending: Boolean, kind: MaxIllustrationKind) {
+    hero.gauges.forEach { gauge ->
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(MaxSpace.md),
         ) {
-            rowTiles.forEach { tile ->
-                Box(modifier = Modifier.weight(1f)) {
-                    DeviceInfoTileView(tile, pending)
-                }
+            MaxIllustration(kind, size = MaxVisualSpec.card)
+            Column(Modifier.weight(1f)) { GaugeReadout(gauge, large = true) }
+        }
+        MaxUsageBar(gauge.fraction, height = MaxVisualSpec.capacityHeight)
+    }
+    HeroStats(hero.tiles, pending)
+}
+
+@Composable
+private fun BatteryHero(hero: DeviceInfoHero, pending: Boolean) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(MaxSpace.lg),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        val gauge = hero.gauges.firstOrNull()
+        if (gauge == null) HeroMark(MaxIllustrationKind.Power) else MaxBatteryLevel(gauge.fraction)
+        Column(Modifier.weight(1f)) {
+            if (gauge != null) GaugeReadout(gauge, large = true)
+            else {
+                Text(stringResource(R.string.devinfo_battery_level), style = MaterialTheme.typography.labelMedium)
+                HeroValue(MAX_VALUE_UNAVAILABLE, null, large = true)
             }
-            if (rowTiles.size == 1) Spacer(Modifier.weight(1f))
+        }
+    }
+    HeroStats(hero.tiles, pending)
+}
+
+@Composable
+private fun PanelHero(hero: DeviceInfoHero, pending: Boolean) {
+    val resolution = hero.tiles.firstOrNull { it.captionRes == R.string.devinfo_resolution }
+    val refresh = hero.tiles.firstOrNull { it.captionRes == R.string.devinfo_refresh }
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(MaxSpace.md),
+    ) {
+        val width = hero.panelWidth?.toFloat()
+        val height = hero.panelHeight?.toFloat()
+        if (maxDisplayProportion(width, height) != null) {
+            MaxDisplaySchematic(width, height, size = heroGraphicSize())
+        } else HeroMark(MaxIllustrationKind.Display)
+        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(MaxSpace.md)) {
+            resolution?.let { HeroStat(it, pending, large = true) }
+            refresh?.let { HeroStat(it, pending, large = true) }
+        }
+    }
+    HeroStats(hero.tiles.filterNot { it === resolution || it === refresh }, pending)
+}
+
+@Composable
+private fun TrafficHero(hero: DeviceInfoHero, pending: Boolean) {
+    MaxIllustration(MaxIllustrationKind.Network, size = MaxVisualSpec.card)
+    HeroStats(hero.tiles.take(2), pending, large = true)
+    MaxGroupDivider(inset = false)
+    HeroStats(hero.tiles.drop(2), pending)
+}
+
+@Composable
+private fun ProfileHero(
+    hero: DeviceInfoHero,
+    pending: Boolean,
+    kind: MaxIllustrationKind,
+    primaryCaption: Int,
+) {
+    val primary = hero.tiles.firstOrNull { it.captionRes == primaryCaption }
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(MaxSpace.md),
+    ) {
+        Column(Modifier.weight(1f)) { primary?.let { HeroStat(it, pending, large = true) } }
+        HeroMark(kind)
+    }
+    HeroStats(hero.tiles.filterNot { it === primary }, pending)
+}
+
+@Composable
+private fun heroGraphicSize() = if (LocalDensity.current.fontScale > MaxVisualSpec.largeFontScale) {
+    MaxVisualSpec.mark
+} else MaxVisualSpec.instrument
+
+@Composable
+private fun HeroMark(kind: MaxIllustrationKind) {
+    MaxIllustration(kind, size = heroGraphicSize())
+}
+
+@Composable
+private fun GaugeReadout(gauge: DeviceInfoGauge, large: Boolean) {
+    Column(verticalArrangement = Arrangement.spacedBy(MaxSpace.xs)) {
+        Text(
+            stringResource(gauge.titleRes),
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        HeroValue(gauge.valueText, gauge.unitText, large)
+        gauge.subtitle?.takeIf { it.isNotBlank() }?.let {
+            Text(it, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
 }
 
-/**
- * بلاطة إحصائية مصغرة وأنيقة بتنسيق متناسق وهوامش مريحة.
- */
+/** Plain readouts replace the nested square cards. Width and enlarged text decide the column count. */
 @Composable
-private fun DeviceInfoTileView(tile: DeviceInfoTile, pending: Boolean) {
+private fun HeroStats(tiles: List<DeviceInfoTile>, pending: Boolean, large: Boolean = false) {
+    if (tiles.isEmpty()) return
+    val fontScale = LocalDensity.current.fontScale
+    BoxWithConstraints(Modifier.fillMaxWidth()) {
+        val columns = if (fontScale > MaxVisualSpec.largeFontScale || maxWidth < MaxCardSpec.minColumnWidth * 2) 1 else 2
+        Column(verticalArrangement = Arrangement.spacedBy(MaxSpace.lg)) {
+            tiles.chunked(columns).forEach { row ->
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(MaxSpace.lg),
+                ) {
+                    row.forEach { tile ->
+                        Column(Modifier.weight(1f)) { HeroStat(tile, pending, large) }
+                    }
+                    if (row.size < columns) Spacer(Modifier.weight(1f))
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun HeroStat(tile: DeviceInfoTile, pending: Boolean, large: Boolean = false) {
     val trust = tile.trust.asMaxTrust(pending)
     val showsValue = trust.visual().showsValue && (tile.value != null || tile.valueRes != null)
     val valueText = when {
+        !showsValue -> MAX_VALUE_UNAVAILABLE
         tile.valueRes != null -> stringResource(tile.valueRes)
-        showsValue -> tile.value.orEmpty()
-        else -> MAX_VALUE_UNAVAILABLE
+        else -> tile.value.orEmpty()
     }
-    val accentColor = trust.visual().tone.content()
-
-    Surface(
-        shape = RoundedCornerShape(maxRadius(MaxRadius.chip)),
-        color = MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.5f),
-        border = BorderStroke(MaxSize.hairlineBorder, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.35f)),
-        modifier = Modifier.fillMaxWidth(),
+    Column(
+        modifier = Modifier.fillMaxWidth().semantics(mergeDescendants = true) {},
+        verticalArrangement = Arrangement.spacedBy(MaxSpace.xs),
     ) {
-        Column(
-            modifier = Modifier.padding(horizontal = MaxSpace.sm, vertical = MaxSpace.sm),
-            verticalArrangement = Arrangement.spacedBy(MaxSpace.hairline),
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(
-                    text = stringResource(tile.captionRes),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.weight(1f, fill = false),
-                )
-                if (!showsValue && !pending) {
-                    Box(
-                        modifier = Modifier
-                            .size(MaxSpace.xs)
-                            .clip(CircleShape)
-                            .background(accentColor.copy(alpha = 0.7f)),
-                    )
-                }
-            }
-            Row(
-                verticalAlignment = Alignment.Bottom,
-                horizontalArrangement = Arrangement.spacedBy(MaxSpace.hairline),
-            ) {
-                Text(
-                    text = valueText,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = if (showsValue) MaterialTheme.colorScheme.onSurface else accentColor,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-                val supportText = if (showsValue) tile.unit else maxTrustLabel(trust)
-                if (!supportText.isNullOrBlank()) {
-                    Text(
-                        text = supportText,
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                }
-            }
+        Text(
+            stringResource(tile.captionRes),
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        HeroValue(valueText, if (showsValue) tile.unit else null, large)
+        if (!showsValue) {
+            Text(maxTrustLabel(trust), style = MaterialTheme.typography.bodySmall, color = trust.visual().tone.content())
         }
     }
+}
+
+@Composable
+private fun HeroValue(value: String, unit: String?, large: Boolean) {
+    val text = listOfNotNull(value, unit?.takeIf { it.isNotBlank() }).joinToString(" ")
+    val typography = MaterialTheme.typography
+    val style = when {
+        value.length > 20 -> typography.bodyMedium
+        large -> typography.headlineMedium
+        else -> typography.titleMedium
+    }
+    Text(
+        text = text,
+        style = style.copy(fontFeatureSettings = "tnum"),
+        fontWeight = FontWeight.SemiBold,
+        color = if (large) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface,
+    )
 }
 
 /**

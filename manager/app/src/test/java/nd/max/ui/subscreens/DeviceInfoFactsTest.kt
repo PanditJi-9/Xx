@@ -282,4 +282,51 @@ class DeviceInfoFactsTest {
         assertNull(unknown.valueRes)
         assertEquals(DeviceInfoTrust.Unreadable, unknown.trust)
     }
+
+    // ── شكل الرأس: كل قسم يُرسم من نوع بياناته، والغياب لا يُرسم ────────────
+
+    @Test
+    fun `only the display hero carries the panel dimensions`() {
+        val snapshot = DeviceInfoSnapshot(displayWidth = 1220, displayHeight = 2712)
+        val display = heroOf(DeviceInfoSection.Display, snapshot)
+        assertEquals(1220, display.panelWidth!!)
+        assertEquals(2712, display.panelHeight!!)
+
+        // ولا ينتقل المقاس إلى قسمٍ آخر لمجرّد أن اللقطة تحمله.
+        listOf(DeviceInfoSection.Cpu, DeviceInfoSection.Memory, DeviceInfoSection.Battery)
+            .forEach { section ->
+                val hero = heroOf(section, snapshot)
+                assertNull("${section.name} carries a panel", hero.panelWidth)
+                assertNull("${section.name} carries a panel", hero.panelHeight)
+            }
+    }
+
+    @Test
+    fun `an unread panel gets no dimensions to draw`() {
+        val hero = heroOf(DeviceInfoSection.Display, DeviceInfoSnapshot())
+        assertNull(hero.panelWidth)
+        assertNull(hero.panelHeight)
+    }
+
+    @Test
+    fun `the gpu marker is the node ceiling over the drawn range, and absent when undeclared`() {
+        val declared = heroOf(
+            DeviceInfoSection.Gpu,
+            DeviceInfoSnapshot(gpuFreqMhz = 260, gpuCeilingMhz = 754, gpuMaxSupportedMhz = 1400),
+        ).gauges.single()
+        assertEquals(754f / 1400f, declared.markerFraction!!, 1e-4f)
+        // ولا علامة تتجاوز المدار: سقفٌ أعلى من المرسوم يُقيَّد بواحد.
+        val equal = heroOf(
+            DeviceInfoSection.Gpu,
+            DeviceInfoSnapshot(gpuFreqMhz = 260, gpuCeilingMhz = 1400, gpuMaxSupportedMhz = 1400),
+        ).gauges.single()
+        assertEquals(1f, equal.markerFraction!!, 1e-4f)
+
+        // وتردّد بلا سقف عقدة = مقياس بلا علامة، لا صفر يُرسم كأنه سقف.
+        val nodeFallback = heroOf(
+            DeviceInfoSection.Gpu,
+            DeviceInfoSnapshot(gpuFreqMhz = 260, gpuMaxSupportedMhz = 1400),
+        ).gauges.single()
+        assertNull(nodeFallback.markerFraction)
+    }
 }

@@ -67,6 +67,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextOverflow
 import kotlin.math.floor
 import nd.max.ui.component.maxPressMotion
@@ -90,6 +91,7 @@ data class MaxCardData(
     val description: String? = null,
     val tone: MaxTone = MaxTone.Accent,
     val onClick: (() -> Unit)? = null,
+    val illustration: MaxIllustrationKind? = null,
 )
 
 /**
@@ -109,6 +111,7 @@ fun MaxCard(
     description = data.description,
     tone = data.tone,
     onClick = data.onClick,
+    illustration = data.illustration,
     metrics = size.metrics,
     modifier = modifier,
 )
@@ -123,12 +126,14 @@ fun MaxCard(
     tone: MaxTone = MaxTone.Accent,
     onClick: (() -> Unit)? = null,
     size: MaxCardSize = MaxCardSize.Regular,
+    illustration: MaxIllustrationKind? = null,
 ) = MaxCardSurface(
     title = title,
     icon = icon,
     description = description,
     tone = tone,
     onClick = onClick,
+    illustration = illustration,
     metrics = size.metrics,
     modifier = modifier,
 )
@@ -140,6 +145,7 @@ private fun MaxCardSurface(
     description: String?,
     tone: MaxTone,
     onClick: (() -> Unit)?,
+    illustration: MaxIllustrationKind?,
     metrics: MaxCardMetrics,
     modifier: Modifier,
 ) {
@@ -191,7 +197,14 @@ private fun MaxCardSurface(
         modifier = surface.padding(maxSpace(metrics.padding)),
         verticalArrangement = Arrangement.spacedBy(MaxCardSpec.gap),
     ) {
-        Box(
+        val artwork = illustration ?: maxIllustrationKind(icon.name)
+        if (artwork != null && (tone == MaxTone.Accent || tone == MaxTone.Neutral)) {
+            MaxIllustration(
+                kind = artwork,
+                color = content,
+                size = metrics.iconContainer,
+            )
+        } else Box(
             modifier = Modifier
                 .size(metrics.iconContainer)
                 .clip(RoundedCornerShape(maxRadius(MaxRadius.control)))
@@ -260,15 +273,18 @@ fun MaxCardGrid(
     if (cards.isEmpty()) return
     BoxWithConstraints(modifier.fillMaxWidth()) {
         val spacing = MaxCardSpec.gridSpacing
+        val fontScale = LocalDensity.current.fontScale
         // `.value` explicitly: this must be plain arithmetic on numbers, not an operator whose
         // existence depends on which Compose version defines a `Dp / Dp` overload.
-        val columns = remember(maxWidth, maxColumns, minColumns, spacing, cards.size) {
-            val perColumn = MaxCardSpec.minColumnWidth.value + spacing.value
+        val columns = remember(maxWidth, maxColumns, minColumns, spacing, cards.size, fontScale) {
+            val perColumn = MaxCardSpec.minColumnWidth.value * fontScale.coerceAtLeast(1f) + spacing.value
             val usable = maxWidth.value + spacing.value
             val fits = floor(usable / perColumn).toInt()
             // `minColumns` يُطبَّق بعد القياس لا قبله، ولا يتجاوز عدد البطاقات: صفّ فارغ في النهاية
             // ليس شبكة، بل فراغ يُقرأ كخطأ.
-            val floorColumns = minColumns.coerceAtMost(maxColumns).coerceAtMost(cards.size)
+            // A requested two-column deck must not squeeze enlarged text into half a phone.
+            val requestedFloor = if (fontScale > MaxVisualSpec.largeFontScale) 1 else minColumns
+            val floorColumns = requestedFloor.coerceAtMost(maxColumns).coerceAtMost(cards.size)
             fits.coerceIn(floorColumns, maxColumns)
         }
 

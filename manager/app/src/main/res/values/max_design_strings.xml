@@ -50,4 +50,5 @@
     <string name="max_gov_now_none">No automated owner right now — control stays yours</string>
     <string name="max_gov_now_one">%1$s holds a control</string>
     <string name="max_gov_now_many">%1$s holds %2$d controls</string>
+    <string name="devinfo_details">Details</string>
 </resources>

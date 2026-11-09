@@ -38,6 +38,7 @@ import nd.max.ui.design.MaxSection
 import nd.max.ui.design.MaxSwitchRow
 import nd.max.ui.navigation.MaxDestination
 import nd.max.ui.navigation.MaxNavActions
+import nd.max.ui.navigation.illustrationKind
 import nd.max.ui.navigation.maxDestinationRole
 import nd.max.ui.navigation.maxHubDescription
 import nd.max.ui.navigation.maxHubRows
@@ -90,6 +91,7 @@ fun MaxDomainHubScreen(navController: NavHostController, destination: MaxDestina
                         title = stringResource(row.titleRes),
                         subtitle = stringResource(maxDestinationRole(row)),
                         icon = row.icon,
+                        illustration = row.illustrationKind,
                         onClick = { actions.navigateTo(row) },
                     )
                 }

@@ -170,6 +170,8 @@ data class DeviceInfoGauge(
     val fraction: Float,
     val subtitle: String? = null,
     val live: Boolean = false,
+    /** The allowed ceiling, relative to the same denominator as [fraction], if declared. */
+    val markerFraction: Float? = null,
 )
 
 /**
@@ -190,6 +192,8 @@ data class DeviceInfoHero(
     val subtitle: String? = null,
     val gauges: List<DeviceInfoGauge> = emptyList(),
     val tiles: List<DeviceInfoTile> = emptyList(),
+    val panelWidth: Int? = null,
+    val panelHeight: Int? = null,
 )
 
 // ── الكاميرا ────────────────────────────────────────────────────────────
