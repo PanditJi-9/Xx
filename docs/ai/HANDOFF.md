@@ -136,7 +136,7 @@ MaxManager has a strong engine and a fragmented surface. `core/maxai` + `core/ha
 **CI:** فشلان متتاليان، كلاهما خارج الترجمة:
 - البناء `42701523830` على `1c4b94d9` سقط في «Contract gates»: ستة عوائق ⑪ لأن الوثائق تدّعي **68 شاشة** والمقيس **69** بعد `GameSessions`. حُدّث العدد في `README.md` و`README.ar.md` و`docs/assets/{banner-dark,banner-light,stats,stats-ar}.svg` و`docs/store/listing.md`، و`python3 tools/readme_assets.py --assert` = **RC 0** («69 screens · 84 locales · 4178 tests · 23 gates»).
 - QV `42702844485` على `8da7706b` سقط في `ScreenFinderTest > intent words never expose a hidden or bare-unopenable destination` (السطر 345): `maxDestinationKeywords` بلا مدخل لـ`GameSessions`، والاختبار يفرض تغطية كل وجهة معروضة. أُضيف المدخل في `ScreenFinderModel.kt` بكلمات عربية وإنجليزية، والاختبار المستهدف يُعاد قبل الدفع.
-تُدفع دفعة الإصلاح ويُعاد QV/البناء ويُقرأ الحكمان.
+دُفعت دفعة الإصلاح `80bcaa20` (`fix: intent keywords for game sessions destination` · 3 ملفات · +6/−2)، و**Quick Verify `42712801524` على `80bcaa20` = success** (`BUILD SUCCESSFUL in 4m 18s` · 35 مهمة · 17 منفّذة · 18 من الكاش). والبناء الكامل `390059584` لم يُشغَّل على دفعة الوثائق هذه.
 
 **RESIDUAL:** الجهاز غير متاح — الالتقاط الفعلي للحزمة الأمامية، وكتابة السجلّ على تخزين حقيقي، وواجهة الشاشة واللمس وRTL، وصحة `gfxinfo`/`mm_stat` تبقى **تحتاج جهازًا**.
 
