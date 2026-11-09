@@ -74,6 +74,7 @@ import nd.max.core.platform.HudSampler
 import nd.max.core.platform.HudTally
 import nd.max.core.platform.acceptsArrangement
 import nd.max.service.FpsOverlayService
+import nd.max.ui.navigation.MaxDestination
 import nd.max.ui.component.HudFieldTile
 import nd.max.ui.component.HudRestoreTab
 import nd.max.ui.component.HudSurface
@@ -271,7 +272,7 @@ fun FpsOverlayScreen(navController: NavController) {
                             showGraph = state.showGraph,
                             recording = snapshot.recording,
                             onToggleRecording = {
-                                if (HudRecorder.isLive) HudRecorder.stop() else HudRecorder.start()
+                                if (HudRecorder.isLive) HudRecorder.stop(context) else HudRecorder.start(context)
                             },
                             onHide = { previewHidden = true },
                             // والإغلاق هنا لا يُغلق شيئًا — لا خدمة في هذه الشاشة — ووجوده مقصود:
@@ -512,7 +513,7 @@ fun FpsOverlayScreen(navController: NavController) {
                         subtitle = stringResource(R.string.hud_session_record_note),
                         checked = snapshot.recording,
                         onCheckedChange = { on ->
-                            if (on) HudRecorder.start() else HudRecorder.stop()
+                            if (on) HudRecorder.start(context) else HudRecorder.stop(context)
                         }
                     )
                 }
@@ -542,6 +543,16 @@ fun FpsOverlayScreen(navController: NavController) {
                             onClick = { HudRecorder.clear() }
                         )
                     }
+                }
+
+                // الباب إلى السجلّ الكامل: الشاشة المنفصلة تجمع الحيّ والمحفوظ،
+                // ويبقى هنا الملخّص السريع بلا تكرار قائمة كاملة في قسم إعداد.
+                MaxGroup {
+                    MaxNavigationRow(
+                        title = stringResource(R.string.game_sessions_open),
+                        subtitle = stringResource(R.string.game_sessions_open_note),
+                        onClick = { navController.navigate(MaxDestination.GameSessions.route) }
+                    )
                 }
             }
 

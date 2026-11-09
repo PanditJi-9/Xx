@@ -314,7 +314,7 @@ class FpsOverlayService : LifecycleService() {
             showGraph = hud.showGraph,
             recording = snapshot.recording,
             onToggleRecording = {
-                if (HudRecorder.isLive) HudRecorder.stop() else HudRecorder.start()
+                if (HudRecorder.isLive) HudRecorder.stop(this) else HudRecorder.start(this)
             },
             onHide = { hidden[view.id] = true },
             onClose = { closeMonitor(view) },

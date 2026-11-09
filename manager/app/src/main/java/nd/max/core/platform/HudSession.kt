@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
+import nd.max.AppMonitor
 
 /**
  * لوحة الأداء — الطبقة البيانية. **لا واجهة في هذا الملف**: تُقرأ منه اللوحة العائمة داخل
@@ -336,6 +337,20 @@ class HudJournal(private val capacity: Int = 900) {
         val frames = all.mapNotNull { it.reading.frames?.takeIf { v -> v > 0f } }
         val heats = all.mapNotNull { it.reading.heat?.takeIf { v -> v > 0f } }
         val watts = all.mapNotNull { it.reading.watt?.takeIf { v -> v > 0f } }
+        val points = all.map { sample ->
+            SessionPoint(
+                atMs = sample.atMs,
+                frames = sample.reading.frames,
+                cpu = sample.reading.cpu,
+                ramMb = sample.reading.ramMb,
+                watt = sample.reading.watt,
+                battery = sample.reading.battery,
+                heat = sample.reading.heat,
+                jankPercent = sample.reading.jankPercent,
+                frameP99Ms = sample.reading.frameP99Ms
+            )
+        }
+        val batteries = all.mapNotNull { it.reading.battery }
         return HudTally(
             samples = all.size,
             droppedSamples = dropped,
@@ -344,7 +359,13 @@ class HudJournal(private val capacity: Int = 900) {
             framesLow = frames.minOrNull(),
             framesHigh = frames.maxOrNull(),
             heatPeak = heats.maxOrNull(),
-            powerAverage = watts.takeIf { it.isNotEmpty() }?.average()?.toFloat()
+            powerAverage = watts.takeIf { it.isNotEmpty() }?.average()?.toFloat(),
+            jankAverage = sessionJankAverage(points),
+            frameP99AverageMs = sessionP99Average(points),
+            energyWh = sessionEnergyWh(points),
+            batteryStart = batteries.firstOrNull(),
+            batteryEnd = batteries.lastOrNull(),
+            renderer = all.firstNotNullOfOrNull { it.reading.renderer }
         )
     }
 }
@@ -362,13 +383,19 @@ data class HudTally(
     val framesLow: Float? = null,
     val framesHigh: Float? = null,
     val heatPeak: Float? = null,
-    val powerAverage: Float? = null
+    val powerAverage: Float? = null,
+    val jankAverage: Int? = null,
+    val frameP99AverageMs: Float? = null,
+    val energyWh: Float? = null,
+    val batteryStart: Int? = null,
+    val batteryEnd: Int? = null,
+    val renderer: String? = null
 ) {
     val isEmpty: Boolean get() = samples == 0
 }
 
 /** أعمدة CSV — ترتيب واحد يُكتب في الترويسة ويُقرأ آليًّا. */
-private const val CSV_HEADER = "elapsed_ms,frames,cpu_percent,ram_mb,watt,battery_c,renderer"
+private const val CSV_HEADER = SESSION_CSV_HEADER
 
 /**
  * الجلسة نصًّا. والخلايا الغائبة **فارغة** لا `0`: جدول يُقرأ بجدول بيانات يجب أن يفرّق
@@ -385,6 +412,8 @@ fun hudSessionCsv(samples: List<HudJournal.Sample>): String {
             r.ramMb?.toString() ?: "",
             r.watt?.let { "%.2f".format(it) } ?: "",
             r.heat?.let { "%.1f".format(it) } ?: "",
+            r.jankPercent?.toString() ?: "",
+            r.frameP99Ms?.let { "%.1f".format(it) } ?: "",
             r.renderer?.replace(',', ' ') ?: ""
         ).joinToString(",")
     }
@@ -403,23 +432,99 @@ object HudRecorder {
     private var journal: HudJournal? = null
     private var live = false
 
+    /** حارس الحفظ: `stop()` قد تُنادى مرّتين (خدمة وشاشة) فلا تُكتب الجلسة مرّتين. */
+    @Volatile private var persisted = false
+
+    @Volatile var sessionPackage: String? = null
+        private set
+
+    @Volatile var sessionLabel: String? = null
+        private set
+
+    @Volatile var sessionStartedAtMs: Long = 0L
+        private set
+
+    private val saveScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+
     val isLive: Boolean get() = live
     val hasSession: Boolean get() = journal != null
 
-    fun start() {
+    /**
+     * بدء جلسة. الـ[context] ليس زينة: منه تُقرأ الحزمة الأمامية واسم اللعبة، فيُعرَف
+     * **ما** سُجّل لا فقط **كم**. وغيابه يُبقي السلوك القديم (جلسة بلا بيانات وصفية).
+     */
+    fun start(context: Context? = null) {
         journal = HudJournal(CAPACITY)
         live = true
+        persisted = false
+        sessionPackage = context?.let { AppMonitor.currentForegroundPackage() }
+        sessionLabel = sessionPackage?.let { pkg -> appLabelOf(context, pkg) }
+        sessionStartedAtMs = System.currentTimeMillis()
         HudLive.markRecording(true)
     }
 
-    fun stop() {
+    /**
+     * إيقاف. مع [context] تُحفظ الجلسة في السجلّ الدائم؛ وبدونه يبقى السلوك القديم
+     * (النتيجة في الذاكرة حتى تُصدَّر). والحفظ مرّة واحدة لكل جلسة.
+     */
+    fun stop(context: Context? = null) {
+        val wasLive = live
         live = false
         HudLive.markRecording(false)
+        if (context == null || !wasLive || persisted) return
+        val finished = journal?.takeIf { it.size > 0 } ?: return
+        val app = context.applicationContext
+        val tally = finished.tally()
+        val points = finished.samples().map { sample ->
+            SessionPoint(
+                atMs = sample.atMs,
+                frames = sample.reading.frames,
+                cpu = sample.reading.cpu,
+                ramMb = sample.reading.ramMb,
+                watt = sample.reading.watt,
+                battery = sample.reading.battery,
+                heat = sample.reading.heat,
+                jankPercent = sample.reading.jankPercent,
+                frameP99Ms = sample.reading.frameP99Ms
+            )
+        }
+        val endedAtMs = System.currentTimeMillis()
+        val startedAtMs = sessionStartedAtMs.takeIf { it > 0L } ?: endedAtMs
+        val record = StoredGameSession(
+            id = "$startedAtMs-${sessionPackage ?: "unknown"}",
+            packageName = sessionPackage,
+            appLabel = sessionLabel,
+            startedAtMs = startedAtMs,
+            endedAtMs = endedAtMs,
+            spanMs = tally.spanMs,
+            samples = tally.samples,
+            droppedSamples = tally.droppedSamples,
+            framesAverage = tally.framesAverage,
+            framesLow = tally.framesLow,
+            framesHigh = tally.framesHigh,
+            heatPeak = tally.heatPeak,
+            powerAverage = tally.powerAverage,
+            energyWh = tally.energyWh,
+            jankAverage = tally.jankAverage,
+            frameP99AverageMs = tally.frameP99AverageMs,
+            batteryStart = tally.batteryStart,
+            batteryEnd = tally.batteryEnd,
+            renderer = tally.renderer,
+            series = downsampleSamples(points)
+        )
+        persisted = true
+        saveScope.launch {
+            if (!GameSessionStore.append(app, record)) persisted = false
+        }
     }
 
     fun clear() {
         journal = null
         live = false
+        persisted = false
+        sessionPackage = null
+        sessionLabel = null
+        sessionStartedAtMs = 0L
         HudLive.markRecording(false)
     }
 
@@ -430,6 +535,13 @@ object HudRecorder {
     fun tally(): HudTally? = journal?.takeIf { it.size > 0 }?.tally()
 
     fun csv(): String? = journal?.takeIf { it.size > 0 }?.let { hudSessionCsv(it.samples()) }
+
+    /** اسم التطبيق كما يراه المستخدم؛ وفشل الاستعلام يعني الحزمة نفسها لا اسمًا مخترعًا. */
+    private fun appLabelOf(context: Context?, pkg: String): String? = runCatching {
+        val manager = context?.packageManager ?: return@runCatching null
+        val info = manager.getApplicationInfo(pkg, 0)
+        manager.getApplicationLabel(info).toString().takeIf { it.isNotBlank() }
+    }.getOrNull()
 }
 
 /**

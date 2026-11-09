@@ -28,6 +28,7 @@ import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.History
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material3.OutlinedButton
@@ -124,6 +125,7 @@ import nd.max.ui.component.rememberLobbySounds
 import nd.max.ui.component.rememberLobbyTone
 import nd.max.ui.design.MaxDuration
 import nd.max.ui.design.MaxSpace
+import nd.max.ui.navigation.MaxDestination
 import nd.max.ui.navigation.openAppSettings
 import nd.max.ui.util.AppConfig
 import nd.max.ui.util.GamePanelPrefs
@@ -703,6 +705,13 @@ fun GameLobbyScreen(
                     icon = Icons.Rounded.Refresh,
                     description = stringResource(R.string.gaming_refresh),
                     onClick = { viewModel.refresh() }
+                )
+                // سجلّ الجلسات من سطح اللعب نفسه: اللاعب يخرج من اللعبة ويسأل «كيف كانت؟»
+                // فلا يُطلب منه العودة إلى شاشة التراكب للوصول إلى الجواب.
+                LobbyRoundButton(
+                    icon = Icons.Rounded.History,
+                    description = stringResource(R.string.game_sessions_lobby_open),
+                    onClick = { navController.navigate(MaxDestination.GameSessions.route) }
                 )
                 LobbyRoundButton(
                     icon = Icons.Rounded.Close,

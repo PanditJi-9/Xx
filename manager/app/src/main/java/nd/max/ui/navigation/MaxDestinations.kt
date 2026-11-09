@@ -34,6 +34,7 @@ import androidx.compose.material.icons.rounded.Key
 import androidx.compose.material.icons.automirrored.rounded.Launch
 import androidx.compose.material.icons.automirrored.rounded.ListAlt
 import androidx.compose.material.icons.rounded.GraphicEq
+import androidx.compose.material.icons.rounded.History
 import androidx.compose.material.icons.automirrored.rounded.VolumeUp
 import androidx.compose.material.icons.rounded.Memory
 import androidx.compose.material.icons.rounded.NetworkCheck
@@ -243,6 +244,15 @@ sealed class MaxDestination(
      * ولا نموذج التخطيط أي تعديل آخر سوى إدخالها في `ControlToolDestinations`.
      */
     data object FpsOverlay : MaxDestination("fpsoverlay", R.string.fps_overlay_title, Icons.Rounded.PictureInPicture, Control)
+
+    /**
+     * **جلسات اللعب — سطحٌ منفصل يقرأ ما يسجّله التراكب.**
+     *
+     * وُضع تحت `Control` لا تحت `Apps`: هو امتداد لشاشة الأداء ([FpsOverlay])، ويُفتح
+     * لمعرفة ما جرى لا لتشغيل لعبة. واللوبي يصل إليه بزرّ مباشر، فالقرب من الألعاب
+     * يبقى في الوصول لا في الشجرة.
+     */
+    data object GameSessions : MaxDestination("gamesessions", R.string.game_sessions_title, Icons.Rounded.History, Control)
 
     /**
      * الجزيرة الديناميكية — تراكبٌ حيّ يجمع الإشعارات العابرة والوسائط والشحن والمؤشرات في
@@ -457,6 +467,7 @@ sealed class MaxDestination(
                 AudioStudio,
                 CpuCoreControl, GovernorSettings, PreferenceTweaks, GpuStudio,
                 ZramManager, MemoryUfs, DisplayStudio, Resolution, TouchBoost, FpsGo, Fas, FpsOverlay,
+                GameSessions,
                 DynamicIsland,
                 ThermalDetail, Charging, BypassCharging, BypassChargingCheck, DozeMode,
                 Dex2oat, StorageDetail, StorageCare, NetworkScheduler, NetworkDetail,

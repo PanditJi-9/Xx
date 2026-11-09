@@ -180,6 +180,12 @@ object AppMonitor {
     private var lastForegroundPackage = ""
     private var lastShellProbeAtMs = 0L
     private var cachedShellPackage: String? = null
+
+    /**
+     * آخر حزمة أمامية معروفة — **بلا استطلاع جديد**. من يبدأ جلسة تسجيل لا يفتح صدفةً
+     * ليسمّي اللعبة؛ إن كان المخبأ فارغًا فالجلسة تبقى بلا اسم، وهو أصدق من اسم مخترع.
+     */
+    fun currentForegroundPackage(): String? = cachedShellPackage
     private var cachedShellComponent: ForegroundAppResolver.ForegroundComponent? = null
     private val activityProfileKeyPattern = Regex("\"[^\"]+/[^\"]+\"\\s*:")
 

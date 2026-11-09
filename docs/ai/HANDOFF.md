@@ -114,6 +114,29 @@ MaxManager has a strong engine and a fragmented surface. `core/maxai` + `core/ha
 **NEXT:** (١) CI: `:app:testReleaseUnitTest` + `:app:compileReleaseKotlin`. (٢) شريحة: علامة «يكتب» على
 صفوف التحكّم مشتقة من مسار المراجِع. (٣) شريحة: موجد واحد بالاسم والقصد. (٤) تعميم `MaxDataTrust`
 على كل قيمة غير متدفّقة. (٥) قرار مالك: حذف `StoryboardHome` أو إعادته.
+### ROUND-CLOSE-37 — شاشة «جلسات اللعب»: تسجيل دائم + تقرير كامل + ربط بالتراكب واللوبي — 2026-11-09 · DONE_WITH_CONCERNS
+
+**TASK:** أمر المالك «اجعله افضل حتي من scane معا شاشة منفصله ولكن مرتبطه بباقي الشاشات التي لها علاقة» — تحسين مسجّل الجلسة القائم (`HudRecorder`/`HudJournal`) لا مسار ثانٍ (§0.5)، بشاشة منفصلة وسجلّ دائم وربط بالشاشات ذات العلاقة. صفر كود من `scene_n1` (§0.4).
+
+**CHANGED:**
+- **`core/platform/GameSessionStore.kt` جديد:** `@Serializable StoredGameSession` (id · packageName · appLabel · startedAtMs/endedAtMs · spanMs · samples · droppedSamples · FPS average/low/high · heatPeak · powerAverage · energyWh · jankAverage · frameP99AverageMs · batteryStart/End · renderer · series) و`SessionPoint`؛ `GameSessionStore` (`filesDir/game-sessions.json`، آخر 20 جلسة، كتابة ذرّية tmp+rename، `merge` صافية)؛ دوال صافية: `sessionEnergyWh` شبه منحرف، `sessionJankAverage`، `sessionP99Average`، `downsampleSamples` (180 نقطة)، `storedSessionCsv`.
+- **`HudSession.kt`:** `HudTally` توسّع بـjankAverage/frameP99AverageMs/energyWh/batteryStart/End/renderer؛ `hudSessionCsv` صار 9 أعمدة (jank_percent وframe_p99_ms)؛ `HudRecorder.start(context?)` يلتقط الحزمة الأمامية واسم التطبيق وزمن البداية، و`stop(context?)` يحفظ الجلسة مرّة واحدة في السجلّ الدائم؛ `clear()` يصفّر البيانات الوصفية.
+- **`AppMonitor.currentForegroundPackage()`** عارض للمخبأ بلا استطلاع جديد.
+- **`GameSessionsScreen.kt` + `GameSessionsViewModel.kt` جديدان:** جلسة حيّة (بدء/إيقاف · عدّاد · اسم اللعبة · FPS · حرارة · واط · Wh · jank · p99 · بطارية · renderer) وتصدير CSV، وسجلّ آخر 20 جلسة بتفاصيل قابلة للتوسيع وتصدير/حذف.
+- **الربط:** `MaxDestination.GameSessions` (parent `Control`) في السجلّ والرسم و`ControlToolDestinations`؛ صفّ في قسم جلسة `FpsOverlayScreen`؛ زرّ `History` في شريط `GameLobbyScreen`.
+- **النصوص:** 36 مفتاحًا جديدًا في `values/` و`values-ar/` فقط (§0.2).
+- **الاختبارات:** `GameSessionStoreTest` (11 اختبارًا: merge/downsample/energy/jank/p99/CSV) و`HudSessionTest` محدَّث للترويسة التسعة.
+
+**MEASURED:** 16 ملفًا (12 معدّلة + 4 جديدة) · المتعقَّب +237/−14 · الجديدة 967 سطرًا · الإجمالي ≈ **+1204/−14** · البوابات الثماني + `git diff --check` كلها خضراء.
+
+**GATES:** `kt_balance` 3331/0 · `code_health` 0 · `i18n_coverage` 84 لغة + en · `--prune all` 0 يتيم · `design_tokens` 249/300 · `jni_symbols` 23 تصريحًا (الطبقة ٢ غير متحقّقة لغياب الثنائيات) · `license_audit` GPL 0 · `resource_compile` aapt2 حقيقي.
+
+**BUILD:** `:app:testReleaseUnitTest` (`GameSessionStoreTest` 11 + `HudSessionTest` 15 = **0 فشل**) + `:app:compileReleaseKotlin` = **BUILD SUCCESSFUL in 16m 3s**. وأول تشغيل سقط بـ`Unresolved reference 'History'` في `MaxDestinations.kt`، أُصلح بإضافة الاستيراد. Quick Verify يُرسل بعد الدفع ويُقرأ حكمه.
+
+**RESIDUAL:** الجهاز غير متاح — الالتقاط الفعلي للحزمة الأمامية، وكتابة السجلّ على تخزين حقيقي، وواجهة الشاشة واللمس وRTL، وصحة `gfxinfo`/`mm_stat` تبقى **تحتاج جهازًا**.
+
+**NEXT:** جهاز: جلسة كاملة على لعبة حقيقية ثم تصدير CSV ومقارنة السجلّ بعد إعادة تشغيل العملية.
+
 ### ROUND-CLOSE-36 — خمس ملاحظات من Scene: زمن الإطار · بروفايل النشاط · طاقة الشحن · ZRAM الحيّ · تفاصيل العملية — 2026-11-09 · DONE_WITH_CONCERNS
 
 **TASK:** أمر المالك «حسن نفذ كل شيئ» بعد عرض خمس أفكار من مرجع `scene_n1` (بلا ترخيص ⇒ أفكار فقط، صفر كود): لوحة jank/زمن إطار · per-app بالنشاط لا الحزمة · طاقة جلسة الشحن Wh/mAh · محاسبة ZRAM الحيّة · تفاصيل العملية oom/cgroup/swap.

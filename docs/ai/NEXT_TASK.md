@@ -1,3 +1,17 @@
+## ROUND-CLOSE-37 — شاشة «جلسات اللعب» — 2026-11-09 · DONE_WITH_CONCERNS
+
+**TASK:** «اجعله افضل حتي من scane معا شاشة منفصله ولكن مرتبطه بباقي الشاشات التي لها علاقة» — تحسين `HudRecorder`/`HudJournal` القائم، شاشة منفصلة، سجلّ دائم، ربط بالتراكب واللوبي.
+
+**CHANGED:** `GameSessionStore.kt` + `GameSessionsViewModel.kt` + `GameSessionsScreen.kt` جديدة · `HudSession.kt` (tally موسّع + CSV 9 أعمدة + حفظ عند الإيقاف) · `AppMonitor.currentForegroundPackage()` · `MaxDestination.GameSessions` + الرسم + `ControlToolDestinations` · صفّ في `FpsOverlayScreen` وزرّ في `GameLobbyScreen` · نصوص en/ar · `GameSessionStoreTest` + `HudSessionTest`.
+
+**MEASURED:** 16 ملفًا · +237/−14 متعقَّب + 967 سطرًا جديدًا ≈ +1204/−14 · البوابات الثماني + diffcheck خضراء.
+
+**BUILD:** الاختبارات المستهدفة (`GameSessionStoreTest` 11 + `HudSessionTest` 15 = 0 فشل) + `:app:compileReleaseKotlin` = BUILD SUCCESSFUL in 16m 3s؛ Quick Verify يُرسل بعد الدفع ويُقرأ حكمه.
+
+**RESIDUAL:** الجهاز غير متاح — الالتقاط الأمامي، التخزين، الواجهة/اللمس/RTL، `gfxinfo` و`mm_stat`.
+
+**NEXT:** جهاز: جلسة كاملة + تصدير CSV + بقاء السجلّ بعد موت العملية.
+
 ## KERNEL-TUNING-EXTENSIONS-01 — 2026-11-09 · DONE_WITH_CONCERNS (دُفع إلى main؛ البناء الكامل ناجح)
 
 **TASK:** تنفيذ التحسينات الخمسة المقترحة: I/O لكل جهاز، معاملات الحاكم، حفظ بروفايلات الحاكم،

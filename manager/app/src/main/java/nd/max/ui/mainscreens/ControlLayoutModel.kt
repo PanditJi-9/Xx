@@ -75,6 +75,7 @@ val ControlToolDestinations: List<MaxDestination> = listOf(
     MaxDestination.ProcessManager,
     MaxDestination.Logs,
     MaxDestination.FpsOverlay,
+    MaxDestination.GameSessions,
     MaxDestination.DynamicIsland,
     MaxDestination.ColorScheme,
     MaxDestination.SetEdit,
