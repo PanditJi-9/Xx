@@ -7,9 +7,9 @@
 ## الخلاصة
 
 - إصدار الكتالوج: **1**
-- المداخل: **83**
-- المرشّحون: **149**
-- غير المُخطَّط: **14**
+- المداخل: **88**
+- المرشّحون: **162**
+- غير المُخطَّط: **19**
 
 ## المداخل
 
@@ -39,11 +39,13 @@
 | `cpu_core_online:{n}` | BOOL | NODE | — | HIGH | `/sys/devices/system/cpu/cpu$cpu/online` |
 | `cpu_limits:{policy}` | FREQUENCY_RANGE | NODE | MAGISK، KSU، APATCH، SU_BARE، DAEMON | MEDIUM | `/sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq` |
 | `cpu_topology` | STRING | NODE | — | LOW | `/sys/devices/system/cpu` |
+| `governor_tunable:{policy}:{governor}:{field}` | INT | NODE | — | HIGH | `/sys/devices/system/cpu/cpufreq/{policy}/{governor}/{field}` |
 | `gpu.busy_percentage` | PERCENT | NODE | — | LOW | `/sys/class/kgsl/kgsl-3d0/gpu_busy_percentage` |
 | `gpu.clock.current` | FREQUENCY_RANGE | NODE | — | LOW | `/sys/class/kgsl/kgsl-3d0/gpuclk` |
 | `gpu.opp_table.{family}` | STRING | PROC | — | LOW | `/proc/gpufreq/gpufreq_opp_dump` |
 | `gpu_frequency:{device}` | FREQUENCY_RANGE | NODE | MAGISK، KSU، APATCH، SU_BARE | MEDIUM | `/sys/class/kgsl/kgsl-3d0` |
 | `gpu_governor_policy:{device}` | ENUM | NODE | — | MEDIUM | `/sys/module/ged/parameters/gpu_dvfs_enable` |
+| `haptic_tuning:{path}` | INT | NODE | — | HIGH | `/sys/class/timed_output/vibrator/{field}` |
 | `mem_frequency:{device}` | FREQUENCY_RANGE | NODE | MAGISK، KSU، APATCH، SU_BARE | MEDIUM | `/sys/class/devfreq` |
 | `memory.compression` | STRING | NODE | — | LOW | `/sys/kernel/mm/memcompress/stat` |
 | `memory.force_reclaim_zram` | INT | NODE | MAGISK، KSU، APATCH، SU_BARE، DAEMON | HIGH | `/dev/memcg/memory.force_reclaim_zram` |
@@ -51,6 +53,8 @@
 | `memory.lmk.adaptive` | BOOL | NODE | MAGISK، KSU، APATCH، SU_BARE، DAEMON | HIGH | `/sys/module/lowmemorykiller/parameters/enable_adaptive_lmk` |
 | `memory.lmk.minfree` | STRING | NODE | MAGISK، KSU، APATCH، SU_BARE، DAEMON | HIGH | `/sys/module/lowmemorykiller/parameters/minfree` |
 | `memory.meminfo` | STRING | PROC | — | LOW | `/proc/meminfo` |
+| `panel_color:{path}` | STRING | NODE | — | HIGH | `/sys/devices/platform/kcal_ctrl.0/{field}` |
+| `panel_feature:{path}` | BOOL | NODE | — | HIGH | `/sys/class/leds/lcd-backlight/hbm` |
 | `sched.cpu_shares.top` | INT | NODE | MAGISK، KSU، APATCH، SU_BARE، DAEMON | HIGH | `/dev/cpuctl/top-app/cpu.shares` |
 | `sched.downmigrate` | INT | NODE | MAGISK، KSU، APATCH، SU_BARE، DAEMON | HIGH | `/proc/sys/kernel/sched_downmigrate` |
 | `sched.force_lb_enable` | BOOL | NODE | MAGISK، KSU، APATCH، SU_BARE، DAEMON | HIGH | `/proc/sys/kernel/sched_force_lb_enable` |
@@ -77,6 +81,7 @@
 | `thermal.ttj` | INT | NODE | — | LOW | `/sys/kernel/thermal/ttj` |
 | `thermal_message.cpu_limits` | STRING | NODE | — | PROTECTED | `/sys/devices/virtual/thermal/thermal_message/cpu_limits` |
 | `thermal_message.sconfig` | STRING | NODE | — | PROTECTED | `/sys/devices/virtual/thermal/thermal_message/sconfig` |
+| `storage_queue:{device}:{field}` | INT | NODE | — | HIGH | `/sys/block/{device}/queue/{field}` |
 | `thermal_zone` | STRING | NODE | — | LOW | `/sys/class/thermal` |
 | `touch_boost:{path}` | BOOL | NODE | MAGISK، KSU، APATCH، SU_BARE | LOW | `/sys/android_touch/game_switch_enable` |
 | `touch_device_index` | STRING | NODE | — | LOW | `/sys/android_touch` |
@@ -352,6 +357,17 @@
   - `/sys/devices/system/cpu` — `MEASURED`
   - `/sys/devices/system/cpu/cpufreq` — `MEASURED`
 
+### `governor_tunable:{policy}:{governor}:{field}`
+
+- النوع: `INT` · النقل: `NODE`
+- القراءة: NONE
+- الكتابة: —
+- التحقّق: `READ_BACK_EQUAL` · تفاوت 0
+- الخطر: **HIGH**
+- المرشّحون:
+  - `/sys/devices/system/cpu/cpufreq/{policy}/{governor}/{field}` — `DERIVED`
+  - `/sys/devices/system/cpu/cpufreq/{governor}/{field}` — `DERIVED`
+
 ### `gpu.busy_percentage`
 
 - النوع: `PERCENT` · النقل: `NODE`
@@ -437,6 +453,18 @@
   - `/sys/module/ged/parameters/gpu_dvfs_enable` — `MEASURED`
   - `/sys/module/ged/parameters/gpu_idle` — `MEASURED`
 
+### `haptic_tuning:{path}`
+
+- النوع: `INT` · النقل: `NODE`
+- القراءة: NONE
+- الكتابة: —
+- التحقّق: `READ_BACK_EQUAL` · تفاوت 0
+- الخطر: **HIGH**
+- المرشّحون:
+  - `/sys/class/timed_output/vibrator/{field}` — `DERIVED`
+  - `/sys/class/leds/vibrator/{field}` — `DERIVED`
+  - `/sys/class/leds/vibrator/device/{field}` — `DERIVED`
+
 ### `mem_frequency:{device}`
 
 - النوع: `FREQUENCY_RANGE` · النقل: `NODE`
@@ -506,6 +534,30 @@
 - الخطر: **LOW**
 - المرشّحون:
   - `/proc/meminfo` — `DERIVED`
+
+### `panel_color:{path}`
+
+- النوع: `STRING` · النقل: `NODE`
+- القراءة: NONE
+- الكتابة: —
+- التحقّق: `READ_BACK_EQUAL` · تفاوت 0
+- الخطر: **HIGH**
+- المرشّحون:
+  - `/sys/devices/platform/kcal_ctrl.0/{field}` — `DERIVED`
+  - `/sys/devices/platform/kcal_ctrl/{field}` — `DERIVED`
+
+### `panel_feature:{path}`
+
+- النوع: `BOOL` · النقل: `NODE`
+- القراءة: NONE
+- الكتابة: —
+- التحقّق: `READ_BACK_EQUAL` · تفاوت 0
+- الخطر: **HIGH**
+- المرشّحون:
+  - `/sys/class/leds/lcd-backlight/hbm` — `DERIVED`
+  - `/sys/devices/platform/mtk-hbm/hbm_enable` — `DERIVED`
+  - `/sys/class/backlight/panel0-backlight/hbm_mode` — `DERIVED`
+  - `/sys/class/drm/card0-DSI-1/hbm` — `DERIVED`
 
 ### `sched.cpu_shares.top`
 
@@ -766,6 +818,17 @@
 - المرشّحون:
   - `/sys/devices/virtual/thermal/thermal_message/sconfig` — `MEASURED`
 
+### `storage_queue:{device}:{field}`
+
+- النوع: `INT` · النقل: `NODE`
+- القراءة: NONE
+- الكتابة: —
+- التحقّق: `READ_BACK_EQUAL` · تفاوت 0
+- الخطر: **HIGH**
+- المرشّحون:
+  - `/sys/block/{device}/queue/{field}` — `DERIVED`
+  - `/sys/block` — `DERIVED`
+
 ### `thermal_zone`
 
 - النوع: `STRING` · النقل: `NODE`
@@ -1002,15 +1065,20 @@
 | المسار | السبب | ملاحظة |
 | --- | --- | --- |
 | `/proc/$pid/stat` | ROOT_ONLY | AppMonitor يقرأها مباشرة في الرفيق، ولا مقبض تحكّم لها |
+| `/sys/block` | READ_ONLY_PROBE | — |
 | `/sys/block/zram0/mem_used` | READ_ONLY_PROBE | يُقرأ لكتالوج عُقد التشخيص (قراءة فقط)؛ لا مقبض تحكّم ولا كتابة مقصودة |
 | `/sys/class/kgsl/kgsl-3d0/gpu_model` | READ_ONLY_PROBE | يُقرأ لكتالوج عُقد التشخيص (قراءة فقط)؛ لا مقبض تحكّم ولا كتابة مقصودة |
 | `/sys/class/kgsl/kgsl-3d0/max_clock_mhz` | READ_ONLY_PROBE | يُقرأ لكتالوج عُقد التشخيص (قراءة فقط)؛ لا مقبض تحكّم ولا كتابة مقصودة |
 | `/sys/class/kgsl/kgsl-3d0/min_clock_mhz` | READ_ONLY_PROBE | يُقرأ لكتالوج عُقد التشخيص (قراءة فقط)؛ لا مقبض تحكّم ولا كتابة مقصودة |
+| `/sys/class/leds/vibrator` | READ_ONLY_PROBE | — |
+| `/sys/class/leds/vibrator/device` | READ_ONLY_PROBE | — |
 | `/sys/class/power_supply/battery/capacity` | READ_ONLY_PROBE | يُقرأ لكتالوج عُقد التشخيص (قراءة فقط)؛ لا مقبض تحكّم ولا كتابة مقصودة |
 | `/sys/class/power_supply/battery/status` | READ_ONLY_PROBE | يُقرأ لكتالوج عُقد التشخيص (قراءة فقط)؛ لا مقبض تحكّم ولا كتابة مقصودة |
 | `/sys/class/thermal/thermal_zone0/temp` | READ_ONLY_PROBE | يُقرأ لكتالوج عُقد التشخيص (قراءة فقط)؛ لا مقبض تحكّم ولا كتابة مقصودة |
+| `/sys/class/timed_output/vibrator` | READ_ONLY_PROBE | — |
 | `/sys/devices/soc0/machine` | READ_ONLY_PROBE | يُقرأ لكتالوج عُقد التشخيص (قراءة فقط)؛ لا مقبض تحكّم ولا كتابة مقصودة |
 | `/sys/devices/soc0/soc_id` | READ_ONLY_PROBE | يُقرأ لكتالوج عُقد التشخيص (قراءة فقط)؛ لا مقبض تحكّم ولا كتابة مقصودة |
+| `/sys/devices/system/cpu/cpufreq/$governor` | READ_ONLY_PROBE | — |
 | `/sys/devices/system/cpu/cpufreq/policy0/scaling_governor` | READ_ONLY_PROBE | يُقرأ لكتالوج عُقد التشخيص (قراءة فقط)؛ لا مقبض تحكّم ولا كتابة مقصودة |
 | `/sys/devices/system/cpu/cpufreq/policy0/scaling_max_freq` | READ_ONLY_PROBE | يُقرأ لكتالوج عُقد التشخيص (قراءة فقط)؛ لا مقبض تحكّم ولا كتابة مقصودة |
 | `/sys/devices/system/cpu/cpufreq/policy0/scaling_min_freq` | READ_ONLY_PROBE | يُقرأ لكتالوج عُقد التشخيص (قراءة فقط)؛ لا مقبض تحكّم ولا كتابة مقصودة |
