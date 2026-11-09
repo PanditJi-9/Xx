@@ -90,7 +90,8 @@ class BatteryUidPowerTest {
               UID 1002: 9.00
         """.trimIndent()
 
-        assertEquals(listOf(1000, 1001), BatteryUidPower.parse(text)!!.entries.map { it.uid })
+        // مرتّبة بالاستهلاك لا بالUID: 1001 أغزر.
+        assertEquals(listOf(1001, 1000), BatteryUidPower.parse(text)!!.entries.map { it.uid })
     }
 
     @Test
