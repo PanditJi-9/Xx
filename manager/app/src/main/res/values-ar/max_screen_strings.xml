@@ -174,6 +174,12 @@
     <string name="max_zram_metric_used">المستخدم من الـswap</string>
     <string name="max_zram_metric_ratio">نسبة الضغط</string>
     <string name="max_zram_metric_saved">ذاكرة موفَّرة</string>
+    <string name="max_zram_metric_mem_used">المحتجَز في الذاكرة</string>
+    <string name="max_zram_metric_mem_limit">حدّ التجمع</string>
+    <string name="max_zram_metric_mem_peak">أعلى احتجاز</string>
+    <string name="max_zram_metric_same_pages">صفحات متطابقة</string>
+    <string name="max_zram_metric_compacted">صفحات مضغوطة</string>
+    <string name="max_zram_limit_none">بلا حدّ</string>
     <string name="max_zram_metric_algo">المُرمِّز</string>
     <string name="max_zram_metric_swappiness">ميل التبديل</string>
     <string name="max_zram_metric_priority">أولوية الـswap</string>

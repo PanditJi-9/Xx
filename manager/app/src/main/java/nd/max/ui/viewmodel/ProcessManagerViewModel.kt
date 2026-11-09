@@ -13,9 +13,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import nd.max.core.platform.ProcessDetails
 import nd.max.core.platform.ProcessFeed
 import nd.max.core.platform.ProcessReadGuard
 import nd.max.core.platform.ProcessReadState
@@ -97,6 +100,19 @@ class ProcessManagerViewModel : ViewModel() {
     var result by mutableStateOf<ProcessActionResult?>(null)
         private set
 
+    /** تفاصيل الصفّ المفتوح؛ `null` قبل القراءة أو بعد فشلها. */
+    var details by mutableStateOf<ProcessDetails?>(null)
+        private set
+
+    var detailsLoading by mutableStateOf(false)
+        private set
+
+    /** قرأت الطبقة ولم تجد شيئًا — فشل معلن، لا صفّ فارغ. */
+    var detailsFailed by mutableStateOf(false)
+        private set
+
+    private var detailsPid: Int? = null
+
     /** ما سيُعرض: تصفية النطاق والبحث، ثم الترتيب، ثم القَصّ — كلّها على عيّنة واحدة. */
     val visible: List<ProcessReading>
         get() = ProcessFeed.arrange(sample.readings, scope, query, sort, limit)
@@ -174,6 +190,36 @@ class ProcessManagerViewModel : ViewModel() {
     fun restart(context: Context) {
         ProcessWatch.stop(WATCH_OWNER)
         start(context)
+    }
+
+    /**
+     * يقرأ تفاصيل صفّ واحد عند فتحه — لا لكل صفّ في كل دورة.
+     *
+     * والردّ المتأخّر لصفّ سابق يُهمَل بمقارنة [detailsPid]، فلا تُعرض تفاصيل عملية أخرى تحت
+     * اسم العملية المفتوحة الآن.
+     */
+    fun loadDetails(pid: Int) {
+        detailsPid = pid
+        details = null
+        detailsFailed = false
+        detailsLoading = true
+        viewModelScope.launch(Dispatchers.IO) {
+            val loaded = ProcessFeed.details(pid)
+            withContext(Dispatchers.Main) {
+                if (detailsPid == pid) {
+                    details = loaded
+                    detailsFailed = loaded == null
+                    detailsLoading = false
+                }
+            }
+        }
+    }
+
+    fun clearDetails() {
+        detailsPid = null
+        details = null
+        detailsFailed = false
+        detailsLoading = false
     }
 
     fun kill(reading: ProcessReading) = applyResult(

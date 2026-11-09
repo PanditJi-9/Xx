@@ -100,6 +100,17 @@ class AppSettingsViewModel : ViewModel() {
         change(packageName) { if (isEnabled) it ?: AppConfig() else null }
     }
 
+    /**
+     * ينشئ بروفايل النشاط من بروفايل الحزمة إن لم يكن له إدخال بعد — ولا يمسّ إدخالًا موجودًا.
+     * النسخ يقع مرة عند الاختيار، فلا يبقى النشاط تابعًا للحزمة بعدها.
+     */
+    fun ensureActivityProfile(packageKey: String, activityKey: String) {
+        viewModelScope.launch {
+            val source = GameProfileRepository.state.value.profiles[packageKey] ?: AppConfig()
+            GameProfileRepository.update(activityKey) { current -> current ?: source }
+        }
+    }
+
     fun loadKernelCapabilities(packageName: String? = null) {
         viewModelScope.launch(Dispatchers.IO) {
             val cpu = PerAppKernelUtil.readCpuGovernors()

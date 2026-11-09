@@ -215,4 +215,63 @@ class ForegroundAppResolverTest {
             }
         }
     }
+
+    // ── مفتاح النشاط: الحزمة والنشاط معًا ───────────────────────────────
+
+    @Test
+    fun `a resumed component keeps the activity qualified against its package`() {
+        val dumpsys = """
+            mResumedActivity: ActivityRecord{1a2b3c u0 com.franco.kernel/.MainActivity t42}
+        """.trimIndent()
+        val component = ForegroundAppResolver.parseResumedComponent(dumpsys)
+        assertEquals("com.franco.kernel", component?.packageName)
+        assertEquals("com.franco.kernel.MainActivity", component?.activityName)
+        // والغلاف القديم لا يتغيّر سلوكه.
+        assertEquals("com.franco.kernel", ForegroundAppResolver.parseResumedPackage(dumpsys))
+    }
+
+    @Test
+    fun `a fully qualified component is preserved`() {
+        val dumpsys = """
+            mFocusedApp=ActivityRecord{9 u0 com.example.app/com.example.app.ui.MainActivity t7}
+        """.trimIndent()
+        assertEquals(
+            "com.example.app/com.example.app.ui.MainActivity",
+            ForegroundAppResolver.parseResumedComponent(dumpsys)
+                ?.let { ForegroundAppResolver.activityKey(it.packageName, it.activityName) },
+        )
+    }
+
+    @Test
+    fun `a component key is accepted only when the activity is fully qualified`() {
+        assertTrue(ForegroundAppResolver.isProfileKey("com.franco.kernel"))
+        assertTrue(
+            ForegroundAppResolver.isProfileKey(
+                "com.franco.kernel/com.franco.kernel.MainActivity",
+            ),
+        )
+        assertFalse(ForegroundAppResolver.isProfileKey("com.franco.kernel/"))
+        assertFalse(ForegroundAppResolver.isProfileKey("com.franco.kernel/MainActivity"))
+        assertFalse(ForegroundAppResolver.isProfileKey("com.franco.kernel/.MainActivity"))
+        assertFalse(ForegroundAppResolver.isProfileKey("com.franco.kernel/com.franco.kernel.a/b"))
+        assertFalse(ForegroundAppResolver.isProfileKey("/com.franco.kernel.MainActivity"))
+    }
+
+    @Test
+    fun `activity keys normalize dotted and bare names`() {
+        assertEquals(
+            "com.franco.kernel/com.franco.kernel.MainActivity",
+            ForegroundAppResolver.activityKey("com.franco.kernel", ".MainActivity"),
+        )
+        assertEquals(
+            "com.franco.kernel/com.franco.kernel.MainActivity",
+            ForegroundAppResolver.activityKey("com.franco.kernel", "MainActivity"),
+        )
+        assertEquals(
+            "com.franco.kernel/com.franco.kernel.ui.MainActivity",
+            ForegroundAppResolver.activityKey("com.franco.kernel", "com.franco.kernel.ui.MainActivity"),
+        )
+        assertNull(ForegroundAppResolver.activityKey("com.franco.kernel", ""))
+        assertNull(ForegroundAppResolver.activityKey("not a package", ".MainActivity"))
+    }
 }

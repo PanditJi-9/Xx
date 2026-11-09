@@ -114,6 +114,28 @@ MaxManager has a strong engine and a fragmented surface. `core/maxai` + `core/ha
 **NEXT:** (١) CI: `:app:testReleaseUnitTest` + `:app:compileReleaseKotlin`. (٢) شريحة: علامة «يكتب» على
 صفوف التحكّم مشتقة من مسار المراجِع. (٣) شريحة: موجد واحد بالاسم والقصد. (٤) تعميم `MaxDataTrust`
 على كل قيمة غير متدفّقة. (٥) قرار مالك: حذف `StoryboardHome` أو إعادته.
+### ROUND-CLOSE-36 — خمس ملاحظات من Scene: زمن الإطار · بروفايل النشاط · طاقة الشحن · ZRAM الحيّ · تفاصيل العملية — 2026-11-09 · DONE_WITH_CONCERNS
+
+**TASK:** أمر المالك «حسن نفذ كل شيئ» بعد عرض خمس أفكار من مرجع `scene_n1` (بلا ترخيص ⇒ أفكار فقط، صفر كود): لوحة jank/زمن إطار · per-app بالنشاط لا الحزمة · طاقة جلسة الشحن Wh/mAh · محاسبة ZRAM الحيّة · تفاصيل العملية oom/cgroup/swap.
+
+**CHANGED:**
+- **زمن الإطار:** `core/platform/FrameStats.kt` جديد (محلّل `dumpsys gfxinfo <pkg> framestats` → p50/p90/p99 + jank% + slowFrames، و`null` عند غياب البيانات) · `FpsMonitorUtil.getFrameStats` بمخبأ 3s · `HudField.Jank` و`HudReading.jankPercent/frameP99Ms` في `HudSession` · سطر Jank في `HudSurface` · `FrameStatsTest` (5 اختبارات).
+- **بروفايل النشاط:** `ForegroundAppResolver` يضيف `ForegroundComponent` و`parseResumedComponent` و`normalizeActivity`/`activityKey`/`isProfileKey` ويُبقي `parseResumedPackage` غلافًا · `GameProfileDocument`/`GameProfileRepository` يقبلان مفتاح `pkg/activity` · `AppMonitor` يفضّل مفتاح النشاط إن وُجد ثم الحزمة، و`CompanionPollPolicy` يبقي الإيقاع السريع · `AppSettingsViewModel.ensureActivityProfile` · محدّد نشاط في `AppSettingsScreen` · 4 اختبارات في `ForegroundAppResolverTest`.
+- **الشحن:** `ChargeCurve.Window.energyWh/chargeMah` بتكامل شبه منحرف على كل العيّنات الموصولة، وتخطّي الفواصل مجهولة الطرف (`null` لا صفر) · صفّان في `BatteryHistoryScreen` · اختباران في `ChargeCurveTest`.
+- **ZRAM:** `ZramViewModel` يقرأ `mm_stat[2..6]` (`mem_used_total` · `mem_limit` · `mem_used_max` · `same_pages` · `pages_compacted`) · خمسة صفوف في `ZramManagerScreen` · `mem_limit=0` يُعرض «بلا حدّ».
+- **العملية:** `ProcessFeed.details(pid)` بأمر جذري واحد (`/proc/<pid>/status` + `oom_score_adj` + `cgroup`) · `ProcessManagerViewModel.loadDetails/clearDetails` · صفوف OOM/Swapped/Threads/Cgroup في `DetailSheet`.
+- **النصوص:** en/ar فقط (19 مفتاحًا: 2 شحن · 6 ZRAM · 6 عمليات · 4 نشاط · 1 jank) — لا لغة ثالثة.
+
+**MEASURED:** `git diff --stat` 23 ملفًا · +753/−61 · 34 اختبارًا مستهدفًا (ChargeCurve 9 · ForegroundAppResolver 20 · FrameStats 5) **0 فشل** · `:app:compileReleaseKotlin` **BUILD SUCCESSFUL in 7m 57s** · `:app:testReleaseUnitTest` للوحدات الثلاث **BUILD SUCCESSFUL in 11m 57s**.
+
+**GATES:** الثماني `--assert` + `git diff --check` = 0: `kt_balance` 3295/0 · `code_health` 0 والدَّين عند السقف · `i18n_coverage` 84 لغة + en · `--prune all` 0 يتيم · `design_tokens` 251/300 · `jni_symbols` 23 تصريحًا (الطبقة ٢ غير متحقّقة لغياب الثنائيات) · `license_audit` GPL 0 · `resource_compile` aapt2 حقيقي.
+
+**REVIEW:** لا حكم مستقل جديد (المحاولات السابقة فشلت لأسباب مزوّد)؛ المسار اليدوي قائم. **لا كود من `scene_n1`** (بلا ترخيص) — الأفكار وحدها.
+
+**RESIDUAL:** كل ما يلمس الجهاز غير متحقّق: `gfxinfo framestats` قد يكون فارغًا/محجوبًا على بعض الروم، ووجود نشاط في `dumpsys` يعتمد على الروم؛ قائمة الأنشطة من `MAIN/LAUNCHER` فقط؛ `mm_stat[2..6]` تعتمد على النواة؛ تفاصيل العملية تحتاج جذرًا؛ تكامل الشحن يعتمد على تباعد العيّنات (15 دقيقة) و`null` عند الجهل. البناء الكامل على `main` هو مسار APK.
+
+**NEXT:** جهاز: لعبة في المقدمة → سطر Jank · إنشاء بروفايل نشاط ثم التبديل بين نشاطين · شحن 10 دقائق → Wh/mAh · ZRAM → الصفوف الخمسة · عملية → OOM/Swap/Cgroup. ثم مراجعة يدوية بنموذج غير المنفّذ.
+
 ### ROUND-CLOSE-32 — وثيقة الألعاب تُبذر بالجذر، فلا تبقى رسالة «تعذّرت قراءة الإعداد» — 2026-11-08 · DONE_WITH_CONCERNS
 
 **TASK:** طلب المالك: بعد تثبيت الروم بثلاثة ملفات (`privapp-permissions-nd.max.xml` · `MaxManager.apk` · `sys.maxmanager-service`) ومنح الجذر، لماذا تبقى رسالة per-app «Configuration could not be read or saved. No successful profile change is confirmed»؟

@@ -180,6 +180,8 @@ object AppMonitor {
     private var lastForegroundPackage = ""
     private var lastShellProbeAtMs = 0L
     private var cachedShellPackage: String? = null
+    private var cachedShellComponent: ForegroundAppResolver.ForegroundComponent? = null
+    private val activityProfileKeyPattern = Regex("\"[^\"]+/[^\"]+\"\\s*:")
 
     // ── بوابة ملفّ الحالة (FOOTPRINT-01) ──────────────────────────────────
     //
@@ -890,7 +892,7 @@ object AppMonitor {
      * تغطّي حالة بقاء تعديلات حيّة).
      */
     private fun hasPerAppOwnership(pkg: String): Boolean =
-        perAppOverridesActive || cachedGameListText?.contains("\"$pkg\":") == true
+        perAppOverridesActive || hasProfileEntry(pkg)
 
     private fun armGraceRevert(pkg: String) {
         if (gracePkg == pkg) return
@@ -1387,14 +1389,13 @@ object AppMonitor {
                 // السريع فلا تنشط مهلة السماح إلا من التبديل الثاني.
                 refreshConfigCacheIfChanged()
                 val prevPkg = lastAppliedPkg
-                val prevManaged = prevPkg.isNotBlank() &&
-                    cachedGameListText?.contains("\"$prevPkg\":") == true
+                val prevManaged = prevPkg.isNotBlank() && hasProfileEntry(prevPkg)
                 // و«مُدار» تشترط عملية في المقدّمة: تطبيق بلا عملية لا جلسة له، فتطبيق إعداده في
                 // قائمة الإعدادات لا يُشغّل عليه شيء لأنه ما زال مكتوبًا في المهمة العليا بعد
                 // موته. وهذا هو مسار التسريب المقيس: التردد يبقى والبطاقة تكتب تطبيقًا مُغلقًا.
                 val newManaged = foregroundConfirmed && pkgName.isNotBlank() &&
                     pkgName != "unknown" && pkgName != "none" &&
-                    cachedGameListText?.contains("\"$pkgName\":") == true
+                    hasProfileEntry(pkgName)
 
                 if (newManaged || !prevManaged) {
                     // مسار سريع: تطبيق مُدار جديد (يأخذ الملكية فورًا)،
@@ -1450,7 +1451,7 @@ object AppMonitor {
             // لا جلسة له: كتابة اسمه في بطاقة النشاط وإشعار «Per-App active» حينها تصف حالة
             // غير موجودة، وهي الشكوى الحرفية: «التطبيق ما زال مكتوبًا في بطاقة النشاط وأنا
             // متأكد أنه مغلق».
-            val managed = foregroundConfirmed && cachedGameListText?.contains("\"$pkgName\":") == true
+            val managed = foregroundConfirmed && hasProfileEntry(pkgName)
             if (managed) {
                 writeAppGameInfo(pkgName, focusedPid, focusedUid)
                 updateActiveAppNotification(pkgName, focusedApp)
@@ -1744,7 +1745,8 @@ object AppMonitor {
     }
 
     private fun readAppConfigField(pkgName: String, field: String): String {
-        val pkgBlock = appConfigEntry(pkgName) ?: return ""
+        val key = profileKeyFor(pkgName)
+        val pkgBlock = appConfigEntry(key) ?: appConfigEntry(pkgName) ?: return ""
         return try {
             val fieldPattern = Regex(""""$field"\s*:\s*"([^"]*)"|\b$field\b\s*:\s*([^,}\n]+)""")
             fieldPattern.find(pkgBlock)?.groupValues?.let { it[1].ifEmpty { it[2].trim() } } ?: ""
@@ -1767,6 +1769,33 @@ object AppMonitor {
         } catch (_: Exception) { null }
     }
 
+    /**
+     * مفتاح البروفايل الذي يُطبَّق على [pkgName] **الآن**: مكوّن النشاط الأمامي إن كان له إدخال
+     * صريح في الوثيقة، وإلا الحزمة. لا يُخترع مفتاح ولا يُطبَّق بروفايل نشاط على نشاط آخر.
+     */
+    private fun profileKeyFor(pkgName: String): String {
+        val component = cachedShellComponent
+        if (component != null && component.packageName == pkgName) {
+            val key = ForegroundAppResolver.activityKey(pkgName, component.activityName)
+            if (key != null && appConfigEntry(key) != null) return key
+        }
+        return pkgName
+    }
+
+    /** هل للبروفايل إدخال — بمفتاح النشاط أو الحزمة؟ والفحص واحد لكل مسارات الملكية. */
+    private fun hasProfileEntry(pkgName: String): Boolean {
+        refreshConfigCacheIfChanged()
+        val json = cachedGameListText ?: return false
+        val key = profileKeyFor(pkgName)
+        return json.contains("\"$key\":") || (key != pkgName && json.contains("\"$pkgName\":"))
+    }
+
+    /** هل في الوثيقة أيّ مفتاح نشاط؟ يُستعمل لتشغيل فحص المكوّن فقط عند الحاجة. */
+    private fun hasAnyActivityProfile(): Boolean {
+        refreshConfigCacheIfChanged()
+        return cachedGameListText?.contains(activityProfileKeyPattern) == true
+    }
+
     // ─────────────────────────────────────────────────────────────────────
     // المسار السريع لبروفايل الـGPU (تبديل من لوحة اللعبة أو من شاشة التطبيق)
     // ─────────────────────────────────────────────────────────────────────
@@ -1785,7 +1814,7 @@ object AppMonitor {
 
     private fun nonGpuFingerprint(pkgName: String): String? {
         refreshConfigCacheIfChanged()
-        return PerAppConfigFingerprint.withoutGpuCeiling(cachedGameListText, pkgName)
+        return PerAppConfigFingerprint.withoutGpuCeiling(cachedGameListText, profileKeyFor(pkgName))
     }
 
     /**
@@ -2255,7 +2284,8 @@ object AppMonitor {
         hardwareControlRegistry.beginApp(pkgName)
         // Refresh cache and verify this package has an enabled Per-App entry.
         refreshConfigCacheIfChanged()
-        val entry = appConfigEntry(pkgName) ?: return
+        val profileKey = profileKeyFor(pkgName)
+        val entry = appConfigEntry(profileKey) ?: return
         // **وإدخال بلا حقل صريح لا يفتح جلسة عتاد.** القياس من حزمة المستخدم: `com.termux` أنتج
         // ٢٩٠ جلسة و٢٩٠ تراجعًا، وكل مقابضه `profile-is-default` — أي التقاطُ خط أساس (عشرات
         // أوامر shell)، وسجل استعادة، وإعلان `perapp_active`، ثم إعادةُ الملف العام كاملًا عند
@@ -3385,8 +3415,21 @@ object AppMonitor {
     /** المصدر الأوّل: ما تُعطيه دوالّ `ActivityTaskManager` — بشرط أن يكون **اسم حزمة صالحًا**. */
     private fun reflectedForegroundPackage(): String? {
         val primary = foregroundMethod?.let { tryInvokeForegroundMethod(it) }
-        resolvePackageFromObject(primary)?.let { return it }
-        return bruteForceForegroundPackage()
+        resolvePackageFromObject(primary)?.let { pkg ->
+            refreshComponentIfNeeded(pkg)
+            return pkg
+        }
+        return bruteForceForegroundPackage()?.also { refreshComponentIfNeeded(it) }
+    }
+
+    /**
+     * فحص المكوّن ليس مجّانيًّا: يُشغَّل فقط إن كان في الوثيقة مفتاح نشاط، وإن اختلف المكوّن
+     * المخبّأ عن الحزمة الأمامية. وبلا نشاط صريح يبقى المسار القديم بلا صدفة إضافية.
+     */
+    private fun refreshComponentIfNeeded(pkg: String) {
+        if (cachedShellComponent?.packageName == pkg) return
+        if (!hasAnyActivityProfile()) return
+        shellForegroundPackage()
     }
 
     /**
@@ -3401,9 +3444,10 @@ object AppMonitor {
         val now = System.currentTimeMillis()
         if (now - lastShellProbeAtMs < SHELL_PROBE_INTERVAL_MS) return cachedShellPackage
         lastShellProbeAtMs = now
-        cachedShellPackage = ForegroundAppResolver.parseResumedPackage(
+        cachedShellComponent = ForegroundAppResolver.parseResumedComponent(
             RootFileAccess.readCommand(FOREGROUND_PROBE_COMMAND)
         )
+        cachedShellPackage = cachedShellComponent?.packageName
         return cachedShellPackage
     }
 
@@ -3702,7 +3746,7 @@ object AppMonitor {
             cachedGameListText = runCatching { File(path).readText() }.getOrNull()
             cachedGameListPath = path
         }
-        return cachedGameListText?.contains("\"$pkgName\":") == true
+        return hasProfileEntry(pkgName)
     }
 
     /** Mirrors AmbientDisplayConfiguration.alwaysOnEnabled() used by ColorService.kt. */

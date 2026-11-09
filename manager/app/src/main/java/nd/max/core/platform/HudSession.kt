@@ -98,6 +98,16 @@ enum class HudField {
      */
     Stability,
 
+    /**
+     * تقطيع الإطارات المقيس من `gfxinfo framestats`: نسبة الإطارات التي تجاوزت ميزانية
+     * إطار واحد، ومعها المئين ٩٩ لزمن الإطار.
+     *
+     * **وحدّه:** يخصّ الحزمة الأمامية ومسار HWUI؛ وغياب `---PROFILEDATA---` يعني `null`
+     * لا صفرًا. وهو مختلف عن [Stability] عمدًا: ذاك حصة عيّنات معدّل الإطارات، وهذا زمن
+     * إطار من حلقة الرسم نفسها.
+     */
+    Jank,
+
     /** حِمل المعالج %. */
     Cpu,
 
@@ -163,7 +173,11 @@ data class HudReading(
     val txBps: Float? = null,
     val renderer: String? = null,
     /** ثبات الإطارات ٠..١٠٠ من نافذة متدحرجة؛ `null` قبل أن تكتمل عيّنات كافية. */
-    val stability: Int? = null
+    val stability: Int? = null,
+    /** نسبة الإطارات المتقطّعة من `gfxinfo`؛ `null` حين لا يُعيد المصدر توزيعًا. */
+    val jankPercent: Int? = null,
+    /** المئين ٩٩ لزمن الإطار بالميلي ثانية؛ `null` مع غياب المصدر نفسه. */
+    val frameP99Ms: Float? = null
 ) {
     /** هل أجاب مصدر الإطارات؟ هو المصدر الوحيد الذي يفشل بحسب الوضع المُختار. */
     val framesAnswered: Boolean get() = frames != null
@@ -180,6 +194,7 @@ data class HudReading(
         HudField.Network -> rxBps
         HudField.Renderer -> renderer
         HudField.Stability -> stability
+        HudField.Jank -> jankPercent
     }
 }
 
@@ -615,9 +630,24 @@ object HudSampler {
             null
         }
         if (wantsSamples) frameWindow.record(framesNow)
-        val renderer = if (HudField.Renderer in fields) {
-            runCatching { FpsMonitorUtil.getCurrentRenderer(FpsMonitorUtil.getForegroundPackage()) }
+        val foreground = if (HudField.Renderer in fields || HudField.Jank in fields) {
+            runCatching { FpsMonitorUtil.getForegroundPackage() }.getOrNull().orEmpty()
+        } else {
+            ""
+        }
+        val renderer = if (HudField.Renderer in fields && foreground.isNotEmpty()) {
+            runCatching { FpsMonitorUtil.getCurrentRenderer(foreground) }
                 .getOrNull()?.takeIf { it.isNotBlank() && it != "FPS" }
+        } else {
+            null
+        }
+        val refreshHz = if (HudField.Jank in fields || HudField.Stability in fields) {
+            refreshRateHz(context)
+        } else {
+            null
+        }
+        val frameStats = if (HudField.Jank in fields && foreground.isNotEmpty() && refreshHz != null) {
+            runCatching { FpsMonitorUtil.getFrameStats(foreground, refreshHz) }.getOrNull()
         } else {
             null
         }
@@ -655,9 +685,19 @@ object HudSampler {
             rxBps = if (HudField.Network in fields) rxBps else null,
             txBps = if (HudField.Network in fields) txBps else null,
             renderer = renderer,
-            stability = if (HudField.Stability in fields) stabilityPercent(context) else null
+            stability = if (HudField.Stability in fields) stabilityPercent(refreshHz) else null,
+            jankPercent = frameStats?.jankPercent,
+            frameP99Ms = frameStats?.p99Ms
         )
     }
+
+    /**
+     * معدّل تحديث الشاشة الفعلي، أو `null` حين لا يعلنه النظام — والهدف يُقرأ ولا يُفترض.
+     */
+    private fun refreshRateHz(context: Context): Float? = runCatching {
+        context.getSystemService(DisplayManager::class.java)
+            ?.getDisplay(Display.DEFAULT_DISPLAY)?.refreshRate
+    }.getOrNull()?.takeIf { it.isFinite() && it > 0f }
 
     /**
      * نسبة الثبات ٠..١٠٠ أو `null`.
@@ -666,11 +706,8 @@ object HudSampler {
      * وافتراض ١٢٠ على شاشة ٦٠ يجعل الرقم مستحيلًا. وحين لا يُعلن النظام معدّله يبقى `null` — لا
      * رقمٌ مبنيّ على تخمين.
      */
-    private fun stabilityPercent(context: Context): Int? {
-        val hz = runCatching {
-            context.getSystemService(DisplayManager::class.java)
-                ?.getDisplay(Display.DEFAULT_DISPLAY)?.refreshRate
-        }.getOrNull()?.takeIf { it.isFinite() && it > 0f } ?: return null
+    private fun stabilityPercent(refreshHz: Float?): Int? {
+        val hz = refreshHz ?: return null
         return frameWindow.stableShare(hz)?.let { (it * 100f).roundToInt() }
     }
 }

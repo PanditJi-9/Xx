@@ -96,7 +96,8 @@ object CompanionPollPolicy {
     ): Boolean {
         if (lastAppliedPkg.isBlank()) return false
         if (hardwareOverridesActive) return true
-        return appListText?.contains("\"$lastAppliedPkg\":") == true
+        val text = appListText ?: return false
+        return text.contains("\"$lastAppliedPkg\":") || text.contains("\"$lastAppliedPkg/")
     }
 
     /** مراقب ملف قائمة التطبيقات: فحص metadata دوري؛ ليس كل موعد مجدول استيقاظًا فعليًّا للجهاز. */

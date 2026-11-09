@@ -785,6 +785,12 @@
     <string name="processmgr_limit_more">Show more rows</string>
     <string name="processmgr_limit_less">Show fewer rows</string>
     <string name="processmgr_copy_package">Copy package name</string>
+    <string name="processmgr_detail_oom">OOM score</string>
+    <string name="processmgr_detail_swap">Swapped</string>
+    <string name="processmgr_detail_threads">Threads</string>
+    <string name="processmgr_detail_cgroup">Cgroup</string>
+    <string name="processmgr_details_loading">Reading kernel details…</string>
+    <string name="processmgr_details_failed">Kernel details could not be read</string>
     <string name="processmgr_overlay_rows">Processes shown</string>
     <string name="processmgr_overlay_interval">Refresh every %1$d s</string>
     <string name="processmgr_overlay_sort">Sort by</string>
@@ -4095,7 +4101,12 @@
     <string name="app_game_library_add_cd">Add to the game library</string>
     <string name="app_game_library_remove_cd">Remove from the game library</string>
     <string name="app_game_library_summary">Makes this app reachable in the game panel, so its per-app profile (DND, refresh rate, haptics) applies while it runs. Detection alone covers only apps the system marks as a game.</string>
+    <string name="app_activity_profile_title">Activity profile</string>
+    <string name="app_activity_profile_all">All activities</string>
+    <string name="app_activity_profile_summary">Apply these settings to one activity inside this app</string>
+    <string name="app_activity_profile_selected">Activity: %1$s</string>
     <string name="hud_field_stability">Stability</string>
+    <string name="hud_field_jank">Jank</string>
     <!-- منحنى الشحن: من العيّنات المسجّلة، نافذة لا لحظة -->
     <string name="charge_curve_title">Charge curve</string>
     <string name="charge_curve_desc">Measured from the recorded samples while the charger was connected: power is voltage times current, and the estimate is the measured rate extended, not a promise.</string>
@@ -4103,6 +4114,8 @@
     <string name="charge_curve_window_value">%1$d%% → %2$d%% in %3$d min</string>
     <string name="charge_curve_peak">Peak power</string>
     <string name="charge_curve_mean">Average power</string>
+    <string name="charge_curve_energy">Energy delivered</string>
+    <string name="charge_curve_charge">Charge delivered</string>
     <string name="charge_curve_eta">Estimated to full</string>
     <string name="charge_curve_minutes">%1$d min</string>
     <!-- عائلة المجدول والشاحن: عقد تُقاس عند الفتح، والفارغ ليس صفرًا -->

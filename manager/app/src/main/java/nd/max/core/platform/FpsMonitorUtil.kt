@@ -52,6 +52,12 @@ object FpsMonitorUtil {
     /** عمر مخبأ المُصيِّر — الخاصية **للحزمة** لا للحظة: لعبة بمُصيِّر واحد لا يتغيّر إلا بإعادة تشغيل. */
     private const val RENDERER_TTL_MS = 20_000L
 
+    /**
+     * عمر مخبأ إحصاء الإطارات — `dumpsys gfxinfo … framestats` أثقل من قراءة معدّل، وحكمه
+     * لا يتغيّر جوهريًّا في ثانية. فالسؤال كل ٣ ثوانٍ يكفي للوحة التي تُحدَّث كل ثانية.
+     */
+    private const val FRAME_STATS_TTL_MS = 3_000L
+
     var currentMode: FpsReadMode = FpsReadMode.SURFACEFLINGER
         private set
 
@@ -309,6 +315,34 @@ object FpsMonitorUtil {
     private var rendererCachePkg = ""
     private var rendererCacheValue = "FPS"
     private var rendererCachedAtMs = 0L
+
+    // ── إحصاء زمن الإطار الحقيقي ─────────────────────────────────────
+    private var frameStatsPkg = ""
+    private var frameStatsHz = 0f
+    private var frameStatsAtMs = 0L
+    private var frameStatsValue: FrameStats? = null
+
+    /**
+     * توزيع زمن الإطار الحقيقي للحزمة الأمامية، أو `null` إن لم يُقرأ.
+     *
+     * **ولماذا يُخبَّأ:** `gfxinfo … framestats` يمرّ على حلقة الرسم كلها ويطبع مئات الأسطر،
+     * ونداؤه كل ثانية في لوحة تعمل أثناء اللعب كلفةٌ بلا خبر جديد. والعمر ٣ ثوانٍ، والحزمة
+     * أو معدّل الشاشة المتغيّر يُبطلان المخبأ فورًا — فلا يُعرض توزيع لعبة أخرى.
+     */
+    fun getFrameStats(pkg: String, refreshHz: Float): FrameStats? {
+        if (!ForegroundAppResolver.isPackageName(pkg)) return null
+        val now = System.currentTimeMillis()
+        if (pkg == frameStatsPkg && refreshHz == frameStatsHz && now - frameStatsAtMs < FRAME_STATS_TTL_MS) {
+            return frameStatsValue
+        }
+        val raw = runCatching { shellOut("dumpsys gfxinfo $pkg framestats") }.getOrNull()
+        val parsed = FrameStatsParser.parse(raw, refreshHz)
+        frameStatsPkg = pkg
+        frameStatsHz = refreshHz
+        frameStatsAtMs = now
+        frameStatsValue = parsed
+        return parsed
+    }
 
     /**
      * حمل المعالج كنسبة مئوية من دلتا /proc/stat بين استدعاءين.

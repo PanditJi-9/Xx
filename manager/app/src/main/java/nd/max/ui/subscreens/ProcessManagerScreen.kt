@@ -65,6 +65,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import nd.max.R
+import nd.max.core.platform.ProcessDetails
 import nd.max.core.platform.ProcessFeed
 import nd.max.core.platform.ProcessReadState
 import nd.max.core.platform.ProcessReading
@@ -137,6 +138,12 @@ fun ProcessManagerScreen(
     var overlayPrefs by remember { mutableStateOf(ProcessOverlayPrefs.load(context)) }
     var canDrawOverlays by remember { mutableStateOf(Settings.canDrawOverlays(context)) }
     var overlayRunning by remember { mutableStateOf(ProcessOverlayService.isRunning) }
+
+    // التفاصيل تُقرأ عند فتح الصفّ فقط، وتُلغى عند إغلاقه — لا نداء جذر لكل صفّ في كل دورة.
+    LaunchedEffect(selected?.pid) {
+        val pid = selected?.pid
+        if (pid == null) viewModel.clearDetails() else viewModel.loadDetails(pid)
+    }
 
     val forceStopDialog = rememberConfirmDialog(
         onConfirm = { selected?.let { viewModel.forceStop(it) }; selected = null },
@@ -303,6 +310,9 @@ fun ProcessManagerScreen(
         selected?.let { reading ->
             DetailSheet(
                 reading = reading,
+                details = viewModel.details,
+                detailsLoading = viewModel.detailsLoading,
+                detailsFailed = viewModel.detailsFailed,
                 onForceStop = {
                     forceStopDialog.showConfirm(
                         title = resources.getString(R.string.processmgr_force_stop_confirm_title, reading.label),
@@ -649,6 +659,9 @@ private const val ICON_PIXELS = 96
 @Composable
 private fun DetailSheet(
     reading: ProcessReading,
+    details: ProcessDetails?,
+    detailsLoading: Boolean,
+    detailsFailed: Boolean,
     onForceStop: () -> Unit,
     onKill: () -> Unit,
     onAppInfo: () -> Unit,
@@ -670,6 +683,41 @@ private fun DetailSheet(
             DetailBadge(stringResource(R.string.cpu), reading.cpuText)
             DetailBadge(stringResource(R.string.ram), reading.residentText)
             DetailBadge(stringResource(R.string.pid), reading.pid.toString())
+        }
+        Spacer(Modifier.height(MaxSpace.lg))
+
+        when {
+            detailsLoading -> Text(
+                stringResource(R.string.processmgr_details_loading),
+                style = MaterialTheme.typography.bodySmall,
+                color = colors.onSurfaceVariant
+            )
+            detailsFailed -> Text(
+                stringResource(R.string.processmgr_details_failed),
+                style = MaterialTheme.typography.bodySmall,
+                color = colors.error
+            )
+            details != null -> Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(MaxSpace.xs)
+            ) {
+                DetailLine(
+                    stringResource(R.string.processmgr_detail_oom),
+                    details.oomScoreAdj?.toString() ?: "—"
+                )
+                DetailLine(
+                    stringResource(R.string.processmgr_detail_swap),
+                    details.vmSwapKb?.let(::swapText) ?: "—"
+                )
+                DetailLine(
+                    stringResource(R.string.processmgr_detail_threads),
+                    details.threads?.toString() ?: "—"
+                )
+                DetailLine(
+                    stringResource(R.string.processmgr_detail_cgroup),
+                    details.cgroup ?: "—"
+                )
+            }
         }
         Spacer(Modifier.height(MaxSpace.lg))
 
@@ -719,6 +767,30 @@ private fun DetailBadge(label: String, value: String) {
         Text(value, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold)
     }
 }
+
+/** سطر تفاصيل واحد: التسمية ثابتة والقيمة تنتهي عند الحافة، والطويلة تُقصّ بسطرين. */
+@Composable
+private fun DetailLine(label: String, value: String) {
+    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm)) {
+        Text(
+            label,
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.weight(1f)
+        )
+        Text(
+            value,
+            style = MaterialTheme.typography.bodySmall,
+            fontWeight = FontWeight.Medium,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.weight(1.4f)
+        )
+    }
+}
+
+private fun swapText(kb: Long): String =
+    if (kb >= 1024L) "%.1f MB".format(kb / 1024f) else "$kb KB"
 
 /**
  * ورقة إعداد التراكب — وفيها **معاينة حيّة** تُرسم بـ[ProcessSurface] نفسها التي ترسم النافذة.

@@ -1692,6 +1692,12 @@
     <string name="processmgr_limit_more">صفوف أكثر</string>
     <string name="processmgr_limit_less">صفوف أقل</string>
     <string name="processmgr_copy_package">نسخ اسم الحزمة</string>
+    <string name="processmgr_detail_oom">درجة OOM</string>
+    <string name="processmgr_detail_swap">المبادَل</string>
+    <string name="processmgr_detail_threads">الخيوط</string>
+    <string name="processmgr_detail_cgroup">المجموعة</string>
+    <string name="processmgr_details_loading">جارٍ قراءة تفاصيل النواة…</string>
+    <string name="processmgr_details_failed">تعذّرت قراءة تفاصيل النواة</string>
     <string name="processmgr_overlay_rows">العمليات المعروضة</string>
     <string name="processmgr_overlay_interval">تحديث كل %1$d ثانية</string>
     <string name="processmgr_overlay_sort">الترتيب بحسب</string>
@@ -4037,7 +4043,12 @@
     <string name="app_game_library_add_cd">إضافة إلى مكتبة الألعاب</string>
     <string name="app_game_library_remove_cd">إزالة من مكتبة الألعاب</string>
     <string name="app_game_library_summary">يجعل التطبيق ظاهرًا في لوحة اللعب، فيُطبَّق بروفايله (عدم الإزعاج · معدّل التحديث · الاهتزاز) أثناء عمله. والكشف التلقائي لا يغطّي إلا ما يعلنه النظام لعبة.</string>
+    <string name="app_activity_profile_title">بروفايل النشاط</string>
+    <string name="app_activity_profile_all">كل الأنشطة</string>
+    <string name="app_activity_profile_summary">طبّق هذه الإعدادات على نشاط واحد داخل التطبيق</string>
+    <string name="app_activity_profile_selected">النشاط: %1$s</string>
     <string name="hud_field_stability">الثبات</string>
+    <string name="hud_field_jank">التقطيع</string>
     <!-- منحنى الشحن: من العيّنات المسجّلة، نافذة لا لحظة -->
     <string name="charge_curve_title">منحنى الشحن</string>
     <string name="charge_curve_desc">مقيس من العيّنات المسجّلة أثناء وصل الشاحن: القدرة = الجهد × التيار، والتوقّع هو المعدّل المقيس ممتدًّا، لا وعد.</string>
@@ -4045,6 +4056,8 @@
     <string name="charge_curve_window_value">من %1$d%% إلى %2$d%% في %3$d دقيقة</string>
     <string name="charge_curve_peak">أعلى قدرة</string>
     <string name="charge_curve_mean">متوسط القدرة</string>
+    <string name="charge_curve_energy">الطاقة المُسلَّمة</string>
+    <string name="charge_curve_charge">الشحنة المُسلَّمة</string>
     <string name="charge_curve_eta">المتوقّع حتى الامتلاء</string>
     <string name="charge_curve_minutes">%1$d دقيقة</string>
     <!-- عائلة المجدول والشاحن: عقد تُقاس عند الفتح، والفارغ ليس صفرًا -->

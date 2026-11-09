@@ -41,6 +41,22 @@ i18n ٠/يتيمة ٠، الكتالوج assert/check/self-test نجحت (٨٨/�
 **NEXT:** (١) **دُمج في `main`** بأمر المالك (2026-11-09) · (٢) علامة «يكتب» على صفوف
 التحكّم من مسار المراجِع · (٣) توسيع كلمات القصد لباقي الوجهات · (٤) تعميم `MaxDataTrust` ·
 (٥) قرار حذف `StoryboardHome`.
+## ROUND-CLOSE-36 — خمس ملاحظات من Scene — 2026-11-09 · DONE_WITH_CONCERNS
+
+**TASK:** «حسن نفذ كل شيئ» — خمس أفكار من `scene_n1` بلا كود: jank/زمن الإطار · per-app بالنشاط · طاقة الشحن Wh/mAh · ZRAM الحيّ · تفاصيل العملية.
+
+**CHANGED:** `FrameStats.kt` + `FpsMonitorUtil`/`HudSession`/`HudSurface` · `ForegroundAppResolver`/`GameProfileDocument`/`GameProfileRepository`/`AppMonitor`/`CompanionPollPolicy` + محدّد نشاط في `AppSettingsScreen` · `ChargeCurve` energy/charge · `ZramViewModel` `mm_stat[2..6]` · `ProcessFeed.details` + `DetailSheet` · نصوص en/ar.
+
+**MEASURED:** 23 ملفًا · +753/−61 · 34 اختبارًا مستهدفًا 0 فشل · compile 7m57s · test 11m57s.
+
+**GATES:** الثماني + `git diff --check` = 0.
+
+**BUILD:** `:app:compileReleaseKotlin` نجح محليًّا؛ Quick Verify يُرسل بعد الدفع ويُقرأ حكمه.
+
+**RESIDUAL:** الجهاز غير متاح — jank/gfxinfo، dumpsys النشاط، mm_stat، جذر العملية، تكامل الشحن.
+
+**NEXT:** جهاز: السيناريوهات الخمسة أعلاه.
+
 ## ROUND-CLOSE-32 — وثيقة الألعاب تُبذر بالجذر — 2026-11-08 · DONE_WITH_CONCERNS
 
 **TASK:** إصلاح رسالة per-app «Configuration could not be read or saved. No successful profile change is confirmed» في تثبيت الروم بثلاثة ملفات + جذر ممنوح.

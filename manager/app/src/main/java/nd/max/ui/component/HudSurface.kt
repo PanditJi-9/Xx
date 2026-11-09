@@ -111,6 +111,9 @@ fun hudFieldText(reading: HudReading?, field: HudField): String = when (field) {
     } ?: MAX_VALUE_UNAVAILABLE
     HudField.Renderer -> reading?.renderer ?: MAX_VALUE_UNAVAILABLE
     HudField.Stability -> reading?.stability?.let { "$it%" } ?: MAX_VALUE_UNAVAILABLE
+    HudField.Jank -> reading?.jankPercent?.let { percent ->
+        reading.frameP99Ms?.let { p99 -> "$percent% · p99 %.0f ms".format(p99) } ?: "$percent%"
+    } ?: MAX_VALUE_UNAVAILABLE
 }
 
 /**
@@ -155,6 +158,7 @@ fun hudFieldLabel(field: HudField): String = stringResource(
         HudField.Network -> R.string.hud_field_network
         HudField.Renderer -> R.string.hud_field_renderer
         HudField.Stability -> R.string.hud_field_stability
+        HudField.Jank -> R.string.hud_field_jank
     }
 )
 

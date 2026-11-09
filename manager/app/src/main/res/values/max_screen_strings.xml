@@ -171,6 +171,12 @@
     <string name="max_zram_metric_used">Swap in use</string>
     <string name="max_zram_metric_ratio">Compression ratio</string>
     <string name="max_zram_metric_saved">RAM saved</string>
+    <string name="max_zram_metric_mem_used">Held in RAM</string>
+    <string name="max_zram_metric_mem_limit">Pool limit</string>
+    <string name="max_zram_metric_mem_peak">Peak held</string>
+    <string name="max_zram_metric_same_pages">Same-filled pages</string>
+    <string name="max_zram_metric_compacted">Compacted pages</string>
+    <string name="max_zram_limit_none">No limit</string>
     <string name="max_zram_metric_algo">Codec</string>
     <string name="max_zram_metric_swappiness">Swappiness</string>
     <string name="max_zram_metric_priority">Swap priority</string>
