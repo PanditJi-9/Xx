@@ -24910,7 +24910,7 @@ Rounded.Undo` (نفس نمط `FileEditorDialog.kt` و`GamePanelCockpit.kt`). ب�
 
 **GATES:** `kt_balance --assert` (**٣٣٠٧** ملفًا · ٠) · `i18n_coverage --assert` (٠ عوائق) · `i18n_coverage --prune all --assert` (٠ يتيم) · `design_tokens --assert` (exit 0) · `hardcoded_ui_text --assert` (**٢١ ≤ ٢٤**) · `code_health --assert` (exit 0). و`resource_compile.py` أعلنت «غير مُتحقَّقة» لغياب `aapt2` محليًّا — **لا يُقال تمرّ**.
 
-**BUILD:** بناء الموجة ٥ الكامل `build.yml` **`42546475951`** على `cc2b7d84` = **success**، وQV `42545910737` = success. **وهذه الدفعة (الرموز الجديدة) لم تُصرَّف محليًّا** — SDK غير متاح هنا؛ الحكم من QV بعد الدفع، ولا يُكتب «تترجم» قبل قراءته.
+**BUILD:** بناء الموجة ٥ الكامل `build.yml` **`42546475951`** على `cc2b7d84` = **success**، وQV `42545910737` = success. **وهذه الدفعة:** QV **`42584088081`** على `06068811` = **success** (٤ د ٣٣ ث) — الخطوات كلها خضراء: «Contract gates» ثم «Release compile + release unit tests» ثم «Unit test count evidence»؛ أي أن **الرموز الجديدة تُصرَّف** واختبارَي `CpuStateDistributionTest` و`BatteryUidPowerTest` يمرّان على نسخة release. ولم يُشغَّل بناء أصليّ/حزم، ولا lintVital — تلك في الخطّ الكامل.
 
 **RESIDUAL RISK:** الشكل والتباين واللمس وTalkBack وRTL على جهاز المالك **يحتاج جهازًا** · قراءة `time_in_state` و`dumpsys` تتغيّر بصيغة كل نواة، والمحلّل يُسقط ما لا يفهم بدل أن يخمّن · اللغات الـ٨٤ الأخرى بقيت بلا المفاتيح الجديدة بقصد (§0.2).
 
