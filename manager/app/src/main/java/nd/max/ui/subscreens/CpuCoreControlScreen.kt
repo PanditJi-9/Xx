@@ -49,7 +49,6 @@ import nd.max.core.hardware.CpuStateDistribution
 import nd.max.core.policy.DangerConsent
 import nd.max.ui.component.*
 import nd.max.ui.design.MaxAlpha
-import nd.max.ui.design.MaxBlockedFeatureCard
 import nd.max.ui.design.MaxBullets
 import nd.max.ui.design.MaxCardShell
 import nd.max.ui.design.MaxChoiceRow
@@ -306,15 +305,6 @@ fun CpuCoreControlScreen(
                 }
             }
 
-            item {
-                // قدرة يطلبها كثيرون وليست هنا: تُعرض بسببها لا تُخفى، وبلا مفتاح.
-                MaxBlockedFeatureCard(
-                    title = stringResource(R.string.blocked_voltage_title),
-                    danger = stringResource(R.string.blocked_voltage_danger),
-                    reason = stringResource(R.string.blocked_voltage_reason),
-                    responsibility = stringResource(R.string.blocked_voltage_owner),
-                )
-            }
         }
     }
 }

@@ -434,18 +434,6 @@
     <string name="cpu_state_share_percent">%1$d%%</string>
     <string name="detail_thermal_value_celsius" translatable="false">%1$d°C</string>
     <string name="detail_thermal_device_meta" translatable="false">%1$s · %2$s</string>
-    <string name="blocked_voltage_title">Voltage control (undervolt)</string>
-    <string name="blocked_voltage_danger">Risky: a wrong value can lock the device until it reboots.</string>
-    <string name="blocked_voltage_reason">Modern kernels expose no writable voltage table, and a writer would bypass the control arbiter.</string>
-    <string name="blocked_voltage_owner">Not implemented here. Using an external tool is your choice and your responsibility.</string>
-    <string name="blocked_lmk_title">LMK and zram tuning</string>
-    <string name="blocked_lmk_danger">Risky: wrong limits cause app kills and visible stalls.</string>
-    <string name="blocked_lmk_reason">This app measures memory pressure and exposes the zram tools it owns; kernel tunables stay read-only.</string>
-    <string name="blocked_lmk_owner">Read-only by design — any change you make elsewhere is your responsibility.</string>
-    <string name="blocked_prop_title">Raw build.prop editing</string>
-    <string name="blocked_prop_danger">Risky: one bad property can stop the device from booting.</string>
-    <string name="blocked_prop_reason">Properties are written through the guarded SetEdit path, not by editing the file in place.</string>
-    <string name="blocked_prop_owner">Raw file editing stays out of this app; what you change outside it is your responsibility.</string>
     <string name="cpu_affinity_title">Task Affinity Groups</string>
     <string name="cpu_affinity_subtitle">Choose which cores each scheduling group is allowed to run threads on \u2014 e.g. pin \"Top App\" to the performance cluster only.</string>
     <string name="cpu_affinity_cores_summary">Cores: %1$s</string>
@@ -4190,4 +4178,23 @@
     <string name="access_requires_level">This screen requires %1$s. Change the access mode and grant its permission to continue.</string>
     <string name="access_close">Done</string>
     <string name="access_open">Access mode</string>
+
+    <!-- LMK: كتابة حقيقية لعتبات قاتل الذاكرة، تظهر فقط إن نشرتها النواة -->
+    <string name="lmk_title">Low-memory killer thresholds</string>
+    <string name="lmk_desc">Six page thresholds the kernel uses to kill background apps. Higher kills sooner; lower lets memory fill.</string>
+    <string name="lmk_current">Current thresholds</string>
+    <string name="lmk_current_value">%1$s MB · %2$s pages</string>
+    <string name="lmk_soften">Soften 25%</string>
+    <string name="lmk_soften_desc">Kills later: more apps stay alive, more memory pressure.</string>
+    <string name="lmk_harden">Harden 25%</string>
+    <string name="lmk_harden_desc">Kills sooner: fewer apps stay alive, more free memory.</string>
+    <string name="lmk_restore">Restore session value</string>
+    <string name="lmk_restore_desc">Back to the thresholds read when this screen opened.</string>
+    <string name="lmk_danger_title">Write LMK thresholds?</string>
+    <string name="lmk_danger_body">These are the kernel\'s memory-killer thresholds. Too high kills background apps early; too low lets memory fill and the device slow down.</string>
+    <string name="lmk_danger_confirm">Write</string>
+    <string name="lmk_outcome_applied">Written and verified by read-back.</string>
+    <string name="lmk_outcome_not_present">This kernel does not publish the LMK table.</string>
+    <string name="lmk_outcome_not_writable">The kernel refused the write.</string>
+    <string name="lmk_outcome_unverified">The write returned success but the read-back did not match.</string>
 </resources>

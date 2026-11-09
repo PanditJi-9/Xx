@@ -1394,18 +1394,6 @@
     <string name="cpu_state_share_flat">الوقت موزّع بالتساوي على الترددات.</string>
     <string name="cpu_state_share_dominant">أطول وقت عند %1$s (%2$d٪)</string>
     <string name="cpu_state_share_percent">%1$d٪</string>
-    <string name="blocked_voltage_title">ضبط الجهد (undervolt)</string>
-    <string name="blocked_voltage_danger">خطر: قيمة خاطئة قد تُقفل الجهاز حتى إعادة التشغيل.</string>
-    <string name="blocked_voltage_reason">النوى الحديثة لا تُعلن جدول جهد قابلًا للكتابة، وأي كاتب له يتجاوز محكّم التحكّم.</string>
-    <string name="blocked_voltage_owner">غير منفّذ هنا. استخدام أداة خارجية اختيارك ومسؤوليتك.</string>
-    <string name="blocked_lmk_title">ضبط LMK وzram</string>
-    <string name="blocked_lmk_danger">خطر: حدود خاطئة تسبّب قتل تطبيقات وتوقّفًا ظاهرًا.</string>
-    <string name="blocked_lmk_reason">هذا التطبيق يقيس ضغط الذاكرة ويعرض أدوات zram التي يملكها؛ أما معاملات النواة فتبقى قراءة فقط.</string>
-    <string name="blocked_lmk_owner">قراءة فقط بالمبدأ — وأي تغيير تجريه في مكان آخر مسؤوليتك.</string>
-    <string name="blocked_prop_title">تحرير build.prop الخام</string>
-    <string name="blocked_prop_danger">خطر: خاصية واحدة خاطئة قد تمنع الإقلاع.</string>
-    <string name="blocked_prop_reason">تُكتب الخصائص عبر مسار SetEdit المحروس، لا بتحرير الملف مباشرة.</string>
-    <string name="blocked_prop_owner">تحرير الملف الخام خارج هذا التطبيق؛ وما تغيّره خارجه مسؤوليتك.</string>
     <string name="cpu_affinity_title">مجموعات ارتباط المهام</string>
     <string name="cpu_affinity_subtitle">اختر الأنوية التي يُسمح لكل مجموعة جدولة بتشغيل خيوطها عليها — مثلًا ثبّت «التطبيق الأعلى» على عنقود الأداء فقط.</string>
     <string name="cpu_affinity_cores_summary">الأنوية: %1$s</string>
@@ -4132,4 +4120,23 @@
     <string name="access_requires_level">تتطلب هذه الشاشة %1$s. غيّر وضع الوصول وامنح صلاحيته للمتابعة.</string>
     <string name="access_close">تم</string>
     <string name="access_open">وضع الوصول</string>
+
+    <!-- LMK: كتابة حقيقية لعتبات قاتل الذاكرة، تظهر فقط إن نشرتها النواة -->
+    <string name="lmk_title">عتبات قاتل الذاكرة</string>
+    <string name="lmk_desc">ستّ عتبات بالصفحات تقتل بها النواة تطبيقات الخلفية. الأعلى تقتل أبكر، والأدنى تترك الذاكرة تمتلئ.</string>
+    <string name="lmk_current">العتبات الحالية</string>
+    <string name="lmk_current_value">%1$s م.ب · %2$s صفحة</string>
+    <string name="lmk_soften">تخفيف ٢٥٪</string>
+    <string name="lmk_soften_desc">قتل متأخّر: تطبيقات أكثر تبقى، وضغط أعلى على الذاكرة.</string>
+    <string name="lmk_harden">تشديد ٢٥٪</string>
+    <string name="lmk_harden_desc">قتل أبكر: تطبيقات أقل تبقى، وذاكرة حرّة أكثر.</string>
+    <string name="lmk_restore">استعادة قيمة الجلسة</string>
+    <string name="lmk_restore_desc">رجوع إلى العتبات التي قُرئت لحظة فتح الشاشة.</string>
+    <string name="lmk_danger_title">كتابة عتبات قاتل الذاكرة؟</string>
+    <string name="lmk_danger_body">هذه عتبات قتل الذاكرة في النواة. الأعلى تقتل تطبيقات الخلفية مبكرًا، والأدنى تترك الذاكرة تمتلئ فيتباطأ الجهاز.</string>
+    <string name="lmk_danger_confirm">اكتب</string>
+    <string name="lmk_outcome_applied">كُتبت وتُحقّقت بالقراءة المرتجعة.</string>
+    <string name="lmk_outcome_not_present">هذه النواة لا تنشر جدول LMK.</string>
+    <string name="lmk_outcome_not_writable">رفضت النواة الكتابة.</string>
+    <string name="lmk_outcome_unverified">أعادت الكتابة نجاحًا لكن القراءة المرتجعة لم تطابق.</string>
 </resources>

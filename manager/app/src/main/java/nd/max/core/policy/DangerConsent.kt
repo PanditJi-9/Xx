@@ -23,6 +23,14 @@ import android.content.Context
  */
 object DangerConsent {
 
+    /**
+     * كتابة عتبات قاتل الذاكرة (`lowmemorykiller/minfree`).
+     *
+     * **ولماذا إقرارٌ مستقلّ:** عتبة عالية تقتل تطبيقات في الخلفية، ومنخفضة تترك الذاكرة تمتلئ؛
+     * وهو أثر يختلف عن كتابة `swappiness` فلا يُخفى تحت إقرار غيره.
+     */
+    const val MEMORY_LMK = "memory_lmk"
+
     /** إعادة تشغيل التطبيق التلقائي للخطير بعد أن أوقفه حارس الإقلاع. */
     const val RESTORE_DANGEROUS = "restore_dangerous_auto"
 
