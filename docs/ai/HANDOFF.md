@@ -133,7 +133,10 @@ MaxManager has a strong engine and a fragmented surface. `core/maxai` + `core/ha
 
 **BUILD:** `:app:testReleaseUnitTest` (`GameSessionStoreTest` 11 + `HudSessionTest` 15 = **0 فشل**) + `:app:compileReleaseKotlin` = **BUILD SUCCESSFUL in 16m 3s**. وأول تشغيل سقط بـ`Unresolved reference 'History'` في `MaxDestinations.kt`، أُصلح بإضافة الاستيراد. Quick Verify يُرسل بعد الدفع ويُقرأ حكمه.
 
-**CI:** البناء `42701523830` على `1c4b94d9` سقط في «Contract gates» لا في الترجمة: ستة عوائق ⑪ لأن الوثائق تدّعي **68 شاشة** والمقيس **69** بعد `GameSessions`. حُدّث العدد في `README.md` و`README.ar.md` و`docs/assets/{banner-dark,banner-light,stats,stats-ar}.svg` و`docs/store/listing.md`، و`python3 tools/readme_assets.py --assert` = **RC 0** («69 screens · 84 locales · 4178 tests · 23 gates»). دفعة الإصلاح تُدفع ويُعاد QV/البناء ويُقرأ الحكمان.
+**CI:** فشلان متتاليان، كلاهما خارج الترجمة:
+- البناء `42701523830` على `1c4b94d9` سقط في «Contract gates»: ستة عوائق ⑪ لأن الوثائق تدّعي **68 شاشة** والمقيس **69** بعد `GameSessions`. حُدّث العدد في `README.md` و`README.ar.md` و`docs/assets/{banner-dark,banner-light,stats,stats-ar}.svg` و`docs/store/listing.md`، و`python3 tools/readme_assets.py --assert` = **RC 0** («69 screens · 84 locales · 4178 tests · 23 gates»).
+- QV `42702844485` على `8da7706b` سقط في `ScreenFinderTest > intent words never expose a hidden or bare-unopenable destination` (السطر 345): `maxDestinationKeywords` بلا مدخل لـ`GameSessions`، والاختبار يفرض تغطية كل وجهة معروضة. أُضيف المدخل في `ScreenFinderModel.kt` بكلمات عربية وإنجليزية، والاختبار المستهدف يُعاد قبل الدفع.
+تُدفع دفعة الإصلاح ويُعاد QV/البناء ويُقرأ الحكمان.
 
 **RESIDUAL:** الجهاز غير متاح — الالتقاط الفعلي للحزمة الأمامية، وكتابة السجلّ على تخزين حقيقي، وواجهة الشاشة واللمس وRTL، وصحة `gfxinfo`/`mm_stat` تبقى **تحتاج جهازًا**.
 
