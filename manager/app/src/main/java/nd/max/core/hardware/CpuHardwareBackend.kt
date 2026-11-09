@@ -166,6 +166,29 @@ object CpuHardwareBackend {
         return available.lastOrNull { it <= kHz } ?: kHz
     }
 
+    /** سطر من `stats/time_in_state`: تردد أعلنته النواة، وعدّاد نبضات (وحدته 10ms على ARM). */
+    data class StateTime(val frequencyKHz: Long, val ticks: Long)
+
+    /**
+     * جدول الوقت في الحالة **كما نشرته النواة** — قراءة لا كتابة، بلا تخمين.
+     *
+     * `null` عند غياب الملف أو خلوّه من سطر صالح: التمييز مقصود، فقائمة فارغة كانت ستُقرأ
+     * «صفر وقت عند كل تردد» وهي حالة لا وجود لها. والحصص تُحسب من مجموع العدادات نفسه لا من
+     * سقف نظري، فجهاز يعلن أربع حالات فقط يُعرض بأربع، لا بجدول OPP كامل منسوخ.
+     */
+    fun timeInState(policyPath: String, io: DiscoveryIo = SystemDiscoveryIo): List<StateTime>? {
+        val raw = io.read("$policyPath/stats/time_in_state") ?: return null
+        val states = raw.lineSequence().mapNotNull { line ->
+            val parts = line.trim().split(Regex("\\s+"))
+            if (parts.size < 2) return@mapNotNull null
+            val khz = parts[0].toLongOrNull() ?: return@mapNotNull null
+            val ticks = parts[1].toLongOrNull() ?: return@mapNotNull null
+            // بعض النوى تضيف عمودًا ثالثًا (وقت ثانٍ) — نأخذ الأول وحده ولا نجمعه.
+            if (khz > 0L && ticks >= 0L) StateTime(khz, ticks) else null
+        }.toList()
+        return states.ifEmpty { null }
+    }
+
     /** Reads a policy's live clock, which may differ from its configured limits. */
     fun readCurrentFrequencyKHz(policyPath: String, io: DiscoveryIo = SystemDiscoveryIo): Long? =
         io.read("$policyPath/scaling_cur_freq")?.toLongOrNull()

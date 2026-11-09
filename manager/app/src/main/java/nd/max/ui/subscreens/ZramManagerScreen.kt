@@ -41,6 +41,7 @@ import androidx.navigation.NavController
 import kotlin.math.roundToInt
 import nd.max.R
 import nd.max.ui.design.MAX_VALUE_UNAVAILABLE
+import nd.max.ui.design.MaxBlockedFeatureCard
 import nd.max.ui.design.MaxBullets
 import nd.max.ui.design.MaxChoiceRow
 import nd.max.ui.design.MaxCondition
@@ -436,6 +437,16 @@ fun ZramManagerScreen(
                 tone = MaxTone.Caution
             )
         }
+
+        // ---- قدرة مستبعدة: ضبط LMK/zram كتابةً ---------------------------------
+        // الشاشة تكتب ما تملكه فعلًا (ضغط/تصفير) عبر المحكّم؛ أمّا تعديل عتبات LMK أو
+        // معاملات zram فليس مسارًا نملكه — يُقال بسببه ولا يُترك مفتاحًا وهميًّا.
+        MaxBlockedFeatureCard(
+            title = stringResource(R.string.blocked_lmk_title),
+            danger = stringResource(R.string.blocked_lmk_danger),
+            reason = stringResource(R.string.blocked_lmk_reason),
+            responsibility = stringResource(R.string.blocked_lmk_owner),
+        )
 
         // ---- Kernel facts: secondary, folded until asked for --------------------
         MaxGroup {

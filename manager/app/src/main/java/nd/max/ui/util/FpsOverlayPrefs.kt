@@ -43,6 +43,7 @@ object FpsOverlayPrefs {
     private const val KEY_WIDTH_SCALE = "hud_width_scale"
     private const val KEY_GRAPH = "hud_graph"
     private const val KEY_GRAPH_SPAN = "hud_graph_span"
+    private const val KEY_INTERVAL = "hud_interval_ms"
     private const val KEY_SNAP = "hud_snap_edges"
     private const val KEY_POS_X = "hud_pos_x"
     private const val KEY_POS_Y = "hud_pos_y"
@@ -52,6 +53,18 @@ object FpsOverlayPrefs {
 
     /** مدد المنحنى المسموحة — ثلاثة لا حقل حرّ، فمدّة عشوائية تعني رسمًا لا يُقارَن. */
     val GRAPH_SPANS: List<Int> = listOf(10, 20, 40)
+
+    /**
+     * إيقاع القراءة، بالملّي ثانية — خيارات لا رقم حرّ.
+     *
+     * **ولماذا لا شريط متّصل:** كل عيّنة تمرّ بصدفة المصدر وقراءات عقود؛ فاصل ٧٠٠ms ليس
+     * «أدقّ» من ٥٠٠ بل يستهلك بقدره. الاختيار من أربع قيم يقول الكلفة بالضبط، ويُطبَّق فورًا
+     * لأن الحلقة تقرأ الإيقاع كل دورة.
+     */
+    val INTERVAL_CHOICES: List<Int> = listOf(500, 1000, 2000, 3000)
+
+    /** القيمة الافتراضية هي إيقاع الحلقة القديم نفسه — لا تبديل سلوك بلا اختيار. */
+    const val DEFAULT_INTERVAL_MS: Int = 1000
 
     data class State(
         val enabled: Boolean = false,
@@ -64,7 +77,8 @@ object FpsOverlayPrefs {
         val widthScale: Float = 1f,
         val showGraph: Boolean = false,
         val graphSpan: Int = 20,
-        val snapEdges: Boolean = true
+        val snapEdges: Boolean = true,
+        val intervalMs: Int = DEFAULT_INTERVAL_MS,
     ) {
         /** الحقول بترتيب العرض: ترتيب النوع نفسه، فلا صفّ يُعاد ترتيبه بالتخزين. */
         val orderedFields: List<HudField> get() = HudField.entries.filter { it in fields }
@@ -91,7 +105,9 @@ object FpsOverlayPrefs {
             widthScale = p.getFloat(KEY_WIDTH_SCALE, 1f),
             showGraph = p.getBoolean(KEY_GRAPH, false),
             graphSpan = p.getInt(KEY_GRAPH_SPAN, 20).takeIf { it in GRAPH_SPANS } ?: 20,
-            snapEdges = p.getBoolean(KEY_SNAP, true)
+            snapEdges = p.getBoolean(KEY_SNAP, true),
+            intervalMs = p.getInt(KEY_INTERVAL, DEFAULT_INTERVAL_MS)
+                .takeIf { it in INTERVAL_CHOICES } ?: DEFAULT_INTERVAL_MS,
         )
     }
 
@@ -108,6 +124,7 @@ object FpsOverlayPrefs {
             putBoolean(KEY_GRAPH, state.showGraph)
             putInt(KEY_GRAPH_SPAN, state.graphSpan)
             putBoolean(KEY_SNAP, state.snapEdges)
+            putInt(KEY_INTERVAL, state.intervalMs)
             apply()
         }
     }

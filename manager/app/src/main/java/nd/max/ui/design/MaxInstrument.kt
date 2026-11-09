@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -56,6 +57,39 @@ fun MaxFrequencyTrack(
         }
         drawLine(primary, Offset(x(0f), y), Offset(x(value), y), MaxSize.activeRing.toPx(), StrokeCap.Round)
         drawCircle(primary, radius, Offset(x(value), y))
+    }
+}
+
+/**
+ * حصة من كلّ (وقت، طاقة) كشريط يمتلئ من الصفر — عكس [MaxFrequencyTrack].
+ *
+ * والفرق بين الشكلين هو نوع البيانات: التردد **موضع** على سلّم، والحصة **مقدار** من مجموع.
+ * فرسمُ حصةٍ كمؤشّر على خطّ يقول «٠٫٣ من سقف» وهو ليس سقفًا، ورسمُ ترددٍ كشريط يمتلئ يوهم
+ * بأن الحالة الأعلى «ممتلئة» — فلا يُخلط الشكلان.
+ */
+@Composable
+fun MaxShareTrack(
+    fraction: Float?,
+    modifier: Modifier = Modifier,
+    accent: Color = MaterialTheme.colorScheme.primary,
+) {
+    val share = maxMeasuredFraction(fraction, 1f) ?: return
+    val track = MaterialTheme.colorScheme.outlineVariant
+    val rtl = LocalLayoutDirection.current == LayoutDirection.Rtl
+    Canvas(
+        modifier = modifier.fillMaxWidth().height(MaxVisualSpec.capacityHeight)
+            .semantics { progressBarRangeInfo = ProgressBarRangeInfo(share, 0f..1f) },
+    ) {
+        val radius = CornerRadius(size.height / 2f)
+        drawRoundRect(track.copy(alpha = MaxAlpha.toneContainerStrong), size = size, cornerRadius = radius)
+        val filled = (size.width * share).coerceAtLeast(if (share > 0f) size.height else 0f)
+        if (filled <= 0f) return@Canvas
+        drawRoundRect(
+            accent,
+            topLeft = Offset(if (rtl) size.width - filled else 0f, 0f),
+            size = Size(filled, size.height),
+            cornerRadius = radius,
+        )
     }
 }
 

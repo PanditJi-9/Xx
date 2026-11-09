@@ -159,7 +159,8 @@ fun FpsOverlayScreen(navController: NavController) {
         HudSampler.start(
             context = context,
             owner = HUD_OWNER_SCREEN,
-            fields = { FpsOverlayPrefs.load(context).fields }
+            fields = { FpsOverlayPrefs.load(context).fields },
+            intervalMs = FpsOverlayPrefs.load(context).intervalMs.toLong(),
         )
         onPauseOrDispose { HudSampler.stop(HUD_OWNER_SCREEN) }
     }
@@ -427,6 +428,31 @@ fun FpsOverlayScreen(navController: NavController) {
                         onCheckedChange = { persist(state.copy(snapEdges = it)) }
                     )
                 }
+            }
+
+            // ── ٣·٥. الإيقاع: كم مرّة تُقرأ الأرقام ──────────────────────────
+            MaxSection(
+                title = stringResource(R.string.hud_interval_title),
+                description = stringResource(R.string.hud_interval_desc)
+            ) {
+                MaxSegmented(
+                    options = FpsOverlayPrefs.INTERVAL_CHOICES.map {
+                        stringResource(R.string.hud_interval_ms, it)
+                    },
+                    selectedIndex = FpsOverlayPrefs.INTERVAL_CHOICES.indexOf(state.intervalMs)
+                        .coerceAtLeast(0),
+                    onSelect = { index ->
+                        val chosen = FpsOverlayPrefs.INTERVAL_CHOICES[index]
+                        persist(state.copy(intervalMs = chosen))
+                        // الإيقاع يسري على الحلقة القائمة الآن — لا انتظار إعادة تشغيل الخدمة.
+                        HudSampler.start(
+                            context = context,
+                            owner = HUD_OWNER_SCREEN,
+                            fields = { FpsOverlayPrefs.load(context).fields },
+                            intervalMs = chosen.toLong(),
+                        )
+                    }
+                )
             }
 
             // ── ٤. المصدر: لماذا لا أرى رقمًا؟ ──────────────────────────────

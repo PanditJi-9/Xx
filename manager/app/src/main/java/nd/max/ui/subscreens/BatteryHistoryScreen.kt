@@ -14,10 +14,14 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import android.content.Context
 import android.content.Intent
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.BatteryFull
 import androidx.compose.material.icons.rounded.DeleteOutline
+import androidx.compose.material.icons.rounded.ErrorOutline
+import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.MoreHoriz
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material3.Icon
@@ -44,6 +48,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
@@ -57,7 +62,9 @@ import nd.max.R
 import nd.max.core.battery.BatteryDrain
 import nd.max.core.battery.BatteryHistoryStore
 import nd.max.core.battery.BatterySample
+import nd.max.core.battery.BatteryUidPower
 import nd.max.core.battery.ChargeCurve
+import nd.max.core.privilege.PlatformShell
 import nd.max.ui.design.MaxCondition
 import nd.max.ui.design.MaxConditionKind
 import nd.max.ui.design.MaxConditionNotice
@@ -68,7 +75,9 @@ import nd.max.ui.design.MaxRow
 import nd.max.ui.design.MaxScreen
 import nd.max.ui.design.MaxSection
 import nd.max.ui.design.MaxSegmented
+import nd.max.ui.design.MaxShareTrack
 import nd.max.ui.design.MaxSpace
+import nd.max.ui.design.MaxTone
 import nd.max.ui.design.MaxSwitchRow
 import nd.max.ui.theme.MonoValueStyleSmall
 import java.util.Date
@@ -105,6 +114,12 @@ fun BatteryHistoryScreen(navController: NavHostController) {
     var showClear by remember { mutableStateOf(false) }
     var exportFailed by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
+
+    // ── الطاقة لكل تطبيق (تفريغ المنصّة عند الطلب) ──────────────────────────
+    // لا يُقرأ في الخلفية: التفريغ ثقيل، ويُطلب بضغطة صريحة كما تُطلب أي قراءة مكلّفة.
+    var uidStatus by remember { mutableStateOf(UidPowerStatus.Idle) }
+    var uidReading by remember { mutableStateOf<BatteryUidPower.Reading?>(null) }
+    var uidLabels by remember { mutableStateOf<Map<Int, String>>(emptyMap()) }
 
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
         enabled = BatteryHistoryStore.isEnabled(context)
@@ -331,6 +346,127 @@ fun BatteryHistoryScreen(navController: NavHostController) {
                             )
                         }
                     }
+                }
+            }
+        }
+
+        MaxSection(
+            title = stringResource(R.string.battery_uid_title),
+            description = stringResource(R.string.battery_uid_desc)
+        ) {
+            val readUidPower: () -> Unit = {
+                if (uidStatus != UidPowerStatus.Loading) {
+                    scope.launch {
+                        uidStatus = UidPowerStatus.Loading
+                        // `grep` وحده مسموح بعد الأنبوب في قواعد أوامر المنصّة، ويقصّ التفريغ
+                        // إلى قسمه قبل أن يصل إلى الذاكرة — لا نطلب ميغابايتات لنقرأ عشرين سطرًا.
+                        val outcome = withContext(Dispatchers.IO) {
+                            PlatformShell.exec(
+                                "dumpsys batterystats --charged 2>/dev/null | grep -A 120 \"Estimated power use\""
+                            )
+                        }
+                        if (outcome == null || !outcome.ok) {
+                            uidReading = null
+                            uidLabels = emptyMap()
+                            uidStatus = UidPowerStatus.Unavailable
+                            return@launch
+                        }
+                        val reading = withContext(Dispatchers.Default) {
+                            BatteryUidPower.parse(outcome.output)
+                        }
+                        if (reading == null) {
+                            uidReading = null
+                            uidLabels = emptyMap()
+                            uidStatus = UidPowerStatus.Empty
+                            return@launch
+                        }
+                        val labels = withContext(Dispatchers.IO) {
+                            reading.entries.take(8).associate { entry ->
+                                entry.uid to uidAppLabel(context, entry.uid)
+                            }
+                        }
+                        uidReading = reading
+                        uidLabels = labels
+                        uidStatus = UidPowerStatus.Ready
+                    }
+                }
+            }
+            MaxGroup {
+                MaxRow(
+                    title = stringResource(R.string.battery_uid_action),
+                    subtitle = if (uidStatus == UidPowerStatus.Loading) {
+                        stringResource(R.string.battery_uid_running)
+                    } else {
+                        stringResource(R.string.battery_uid_cost)
+                    },
+                    icon = Icons.Rounded.BatteryFull,
+                    enabled = uidStatus != UidPowerStatus.Loading,
+                    onClick = readUidPower
+                )
+                when (uidStatus) {
+                    UidPowerStatus.Unavailable -> {
+                        MaxGroupDivider()
+                        MaxRow(
+                            title = stringResource(R.string.battery_uid_unavailable),
+                            icon = Icons.Rounded.ErrorOutline,
+                            iconTone = MaxTone.Caution
+                        )
+                    }
+
+                    UidPowerStatus.Empty -> {
+                        MaxGroupDivider()
+                        MaxRow(
+                            title = stringResource(R.string.battery_uid_empty),
+                            icon = Icons.Rounded.Info,
+                            iconTone = MaxTone.Neutral
+                        )
+                    }
+
+                    UidPowerStatus.Ready -> {
+                        val reading = uidReading
+                        if (reading != null) {
+                            reading.entries.take(UID_POWER_ROWS).forEach { entry ->
+                                MaxGroupDivider()
+                                UidPowerRow(
+                                    // معرّف تقنيّ لا جملة: يبقى `UID` كما هو، والرقم من المورد.
+                                    label = uidLabels[entry.uid]
+                                        ?: stringResource(R.string.battery_uid_row_label, entry.uid),
+                                    entry = entry,
+                                    total = reading.totalMilliampHours,
+                                )
+                            }
+                            if (reading.entries.size > UID_POWER_ROWS) {
+                                MaxGroupDivider()
+                                MaxRow(
+                                    title = stringResource(
+                                        R.string.battery_uid_more,
+                                        reading.entries.size - UID_POWER_ROWS,
+                                    ),
+                                    icon = Icons.Rounded.MoreHoriz,
+                                    iconTone = MaxTone.Neutral
+                                )
+                            }
+                            MaxGroupDivider()
+                            MaxRow(
+                                title = stringResource(R.string.battery_uid_total),
+                                subtitle = stringResource(R.string.battery_uid_others),
+                                trailing = {
+                                    Text(
+                                        // الوحدة مورد لا حرفيّ: `mAh` رمز عالميّ، لكن صياغة الرقم
+                                        // وسياقه تختلفان، فلا تُضرب في الكود.
+                                        text = stringResource(
+                                            R.string.battery_uid_mah,
+                                            reading.totalMilliampHours.roundToInt()
+                                        ),
+                                        style = MonoValueStyleSmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                            )
+                        }
+                    }
+
+                    UidPowerStatus.Idle, UidPowerStatus.Loading -> Unit
                 }
             }
         }
@@ -698,4 +834,44 @@ private fun SeriesChart(
             )
         )
     }
+}
+
+/** صفوف الطاقة المعروضة قبل سطر «+N»: ستّة تكفي لقراءة القرار، والباقي يُعدّ لا يُخفي. */
+private const val UID_POWER_ROWS = 6
+
+/** حالة قراءة الطاقة لكل تطبيق — `Empty` و`Unavailable` سببان مختلفان لا يُخلطان. */
+private enum class UidPowerStatus { Idle, Loading, Ready, Empty, Unavailable }
+
+@Composable
+private fun UidPowerRow(label: String, entry: BatteryUidPower.Entry, total: Float) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = MaxSpace.md, vertical = MaxSpace.sm),
+        verticalArrangement = Arrangement.spacedBy(MaxSpace.xs),
+    ) {
+        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = label,
+                style = MaterialTheme.typography.bodyMedium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f),
+            )
+            Text(
+                text = stringResource(R.string.battery_uid_mah, entry.milliampHours.roundToInt()),
+                style = MonoValueStyleSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        MaxShareTrack(fraction = if (total > 0f) entry.milliampHours / total else null)
+    }
+}
+
+/** اسم التطبيق من UID — والغياب يُعلن بمعرّفه، لا باسم مخترع. */
+private fun uidAppLabel(context: Context, uid: Int): String {
+    val pm = context.packageManager
+    val pkg = pm.getPackagesForUid(uid)?.firstOrNull() ?: return "UID $uid"
+    return runCatching { pm.getApplicationLabel(pm.getApplicationInfo(pkg, 0)).toString() }
+        .getOrDefault(pkg)
 }

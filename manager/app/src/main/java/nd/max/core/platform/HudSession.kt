@@ -456,6 +456,15 @@ object HudSampler {
     private val lock = Any()
 
     /**
+     * إيقاع الحلقة الحاليّ — يُقرأ في كل دورة، فيسري تغييره على حلقة تعمل بالفعل.
+     *
+     * وكان الإيقاع يُقرأ مرّة عند الإطلاق من أوّل مالك: تغييره من الشاشة لا يظهر حتى تُطفأ
+     * اللوحة وتُعاد. والقراءة كل دورة تُغيّر ذلك بلا إعادة تشغيل خدمة ولا فقدان عيّنة.
+     */
+    @Volatile
+    private var cadenceMs: Long = HudSnapshot.DEFAULT_INTERVAL_MS
+
+    /**
      * نطاق الحلقة يملكه القارئ لا مُشغّله.
      *
      * **وهذا شرط صحّة التعدّد:** لو كانت الحلقة في `lifecycleScope` لخدمةٍ ما لماتت بموت تلك
@@ -495,6 +504,7 @@ object HudSampler {
         FpsMonitorUtil.init(context)
         synchronized(lock) {
             owners[owner] = fields
+            cadenceMs = intervalMs
             if (job?.isActive != true) {
                 val ctx = appContext!!
                 val power = ctx.getSystemService(Context.POWER_SERVICE) as? PowerManager
@@ -545,11 +555,13 @@ object HudSampler {
                             lastTrafficAt = began
                         }
                         val reading = read(ctx, fields, rxBps, txBps)
+                        // الإيقاع يُقرأ هنا لا عند الإطلاق: تغييره من الشاشة يسري على الدورة التالية.
+                        val interval = cadenceMs
                         if (isActive) {
-                            HudLive.publish(reading, joinedOwner(), intervalMs)
+                            HudLive.publish(reading, joinedOwner(), interval)
                             HudRecorder.feed(reading, System.currentTimeMillis())
                         }
-                        val cadence = if (powerSave) maxOf(intervalMs, POWER_SAVE_SAMPLE_MS) else intervalMs
+                        val cadence = if (powerSave) maxOf(interval, POWER_SAVE_SAMPLE_MS) else interval
                         delay((cadence - (System.currentTimeMillis() - began)).coerceAtLeast(150L))
                     }
                 }

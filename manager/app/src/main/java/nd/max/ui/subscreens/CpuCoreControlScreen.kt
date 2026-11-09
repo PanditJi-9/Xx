@@ -45,9 +45,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.delay
 import nd.max.R
+import nd.max.core.hardware.CpuStateDistribution
 import nd.max.core.policy.DangerConsent
 import nd.max.ui.component.*
 import nd.max.ui.design.MaxAlpha
+import nd.max.ui.design.MaxBlockedFeatureCard
 import nd.max.ui.design.MaxBullets
 import nd.max.ui.design.MaxCardShell
 import nd.max.ui.design.MaxChoiceRow
@@ -63,6 +65,7 @@ import nd.max.ui.design.MaxMetricLine
 import nd.max.ui.design.MaxRadius
 import nd.max.ui.design.MaxRow
 import nd.max.ui.design.MaxSection
+import nd.max.ui.design.MaxShareTrack
 import nd.max.ui.design.MaxSize
 import nd.max.ui.design.MaxSliderRow
 import nd.max.ui.design.MaxSpace
@@ -80,6 +83,7 @@ import nd.max.ui.viewmodel.CpuCoreRow
 import nd.max.ui.theme.MonoValueStyleFrequency
 import nd.max.ui.viewmodel.CpuFrequencyControlState
 import nd.max.ui.design.maxRadius
+import kotlin.math.roundToInt
 
 /** Keeps core counters left-to-right inside an RTL layout. */
 private const val LTR_MARK = "\u200E"
@@ -221,6 +225,13 @@ fun CpuCoreControlScreen(
             }
 
             item {
+                CpuStateShareSection(
+                    clusters = viewModel.clusters,
+                    shares = viewModel.cpuStateShares,
+                )
+            }
+
+            item {
                 MaxSection(title = stringResource(R.string.cpu_core_quick_title)) {
                     // خيارات متبادلة في مجموعة واحدة بصفّ الاختيار المشترك (`MaxChoiceRow`)، كما في
                     // اختيار المحرّك والوضع في بقية الشاشات. البلاطات الثلاث كانت تقصّ الوصف
@@ -293,6 +304,16 @@ fun CpuCoreControlScreen(
                         )
                     }
                 }
+            }
+
+            item {
+                // قدرة يطلبها كثيرون وليست هنا: تُعرض بسببها لا تُخفى، وبلا مفتاح.
+                MaxBlockedFeatureCard(
+                    title = stringResource(R.string.blocked_voltage_title),
+                    danger = stringResource(R.string.blocked_voltage_danger),
+                    reason = stringResource(R.string.blocked_voltage_reason),
+                    responsibility = stringResource(R.string.blocked_voltage_owner),
+                )
             }
         }
     }
@@ -980,6 +1001,125 @@ private fun formatCpuFrequency(kHz: Long): String = when {
     kHz <= 0L -> "—"
     kHz >= 1_000_000L -> String.format(java.util.Locale.US, "%.2f GHz", kHz / 1_000_000f)
     else -> "${kHz / 1000} MHz"
+}
+
+/**
+ * توزيع الوقت على الترددات — الشكل الذي يجيب «أين عاش المعالج فعلًا؟».
+ *
+ * والاختيار بين العناقيد **داخل هذا القسم** لا في أعلى الشاشة: بطاقات الأنوية تحتاج عرضًا
+ * كاملًا لكل عنقود (اسمه وتردّده وحالته)، وقسم التوزيع يحتاج عنقودًا واحدًا في المرّة —
+ * فمُرشّح هنا يخدم البيانات ولا يضيّق ما فوقه. ولا يظهر إلا لمجموعة تنشر جدولها فعلًا.
+ */
+@Composable
+private fun CpuStateShareSection(
+    clusters: List<CpuTopologyUtil.CpuCluster>,
+    shares: Map<String, List<CpuStateDistribution.Share>?>,
+) {
+    val available = clusters.filter { !shares[it.policyPath].isNullOrEmpty() }
+    if (available.isEmpty()) return
+    var selectedPath by remember(available.map { it.policyPath }) {
+        mutableStateOf(available.first().policyPath)
+    }
+    val chosen = available.firstOrNull { it.policyPath == selectedPath } ?: available.first()
+    val distribution = shares[chosen.policyPath].orEmpty()
+    val split = CpuStateDistribution.split(distribution)
+    val dominant = CpuStateDistribution.dominant(distribution)
+    val accent = clusterAccent(chosen)
+    MaxSection(
+        title = stringResource(R.string.cpu_state_share_title),
+        description = stringResource(R.string.cpu_state_share_desc),
+    ) {
+        if (available.size > 1) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = MaxSpace.groupPadding),
+                horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs),
+            ) {
+                available.forEach { cluster ->
+                    FilterChip(
+                        selected = cluster.policyPath == chosen.policyPath,
+                        onClick = { selectedPath = cluster.policyPath },
+                        label = { Text(clusterShortName(cluster)) },
+                    )
+                }
+            }
+        }
+        if (split.visible.isEmpty()) {
+            // كل الحصص دون الحدّ: الحقيقة أن التوزيع مسطّح، لا أن الجدول غائب.
+            Text(
+                text = stringResource(R.string.cpu_state_share_flat),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(horizontal = MaxSpace.groupPadding, vertical = MaxSpace.xs),
+            )
+        } else {
+            MaxGroup {
+                split.visible.forEachIndexed { index, share ->
+                    if (index > 0) MaxGroupDivider()
+                    CpuStateShareRow(share = share, accent = accent)
+                }
+            }
+        }
+        if (split.hiddenCount > 0) {
+            Text(
+                text = stringResource(
+                    R.string.cpu_state_share_hidden,
+                    split.hiddenCount,
+                    (CpuStateDistribution.NOISE_SHARE * 100f).roundToInt(),
+                ),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(horizontal = MaxSpace.groupPadding, vertical = MaxSpace.xs),
+            )
+        }
+        dominant?.let { share ->
+            Text(
+                text = stringResource(
+                    R.string.cpu_state_share_dominant,
+                    formatCpuFrequency(share.frequencyKHz),
+                    (share.share * 100f).roundToInt(),
+                ),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(horizontal = MaxSpace.groupPadding, vertical = MaxSpace.xs),
+            )
+        }
+    }
+}
+
+/** صفّ حصة واحدة: التردد، النسبة، ثم الشريط — القراءة قبل الرسم. */
+@Composable
+private fun CpuStateShareRow(
+    share: CpuStateDistribution.Share,
+    accent: Color,
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = MaxSpace.md, vertical = MaxSpace.sm),
+        verticalArrangement = Arrangement.spacedBy(MaxSpace.xs),
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = formatCpuFrequency(share.frequencyKHz),
+                style = MonoValueStyleFrequency,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+            Spacer(Modifier.weight(1f))
+            Text(
+                // النسبة من المورد لا من قالب داخل الواجهة: علامة النسبة تختلف بين
+                // الإنجليزية `%` والعربية `٪`، وتُحلّ في المورد لا في الكود.
+                text = stringResource(
+                    R.string.cpu_state_share_percent,
+                    (share.share * 100f).roundToInt()
+                ),
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        MaxShareTrack(fraction = share.share, accent = accent)
+    }
 }
 
 @Composable

@@ -33,6 +33,7 @@ import nd.max.MaxManagerProps
 import nd.max.R
 import nd.max.core.hardware.ControlOwnership
 import nd.max.core.hardware.CpuHardwareBackend
+import nd.max.core.hardware.CpuStateDistribution
 import nd.max.core.hardware.HardwareControlArbiter
 import nd.max.core.hardware.HardwareControlKey
 import nd.max.core.hardware.ManualControlLocks
@@ -254,6 +255,16 @@ class CpuCoreControlViewModel @Inject constructor(
      */
     var coreFreqHistory by mutableStateOf<Map<Int, List<Int>>>(emptyMap())
         private set
+
+    /**
+     * حصص الوقت لكل مجموعة تردد — `policyPath -> shares`، و`null` للمجموعة التي لا تنشر نواتها
+     * جدول `stats/time_in_state`.
+     *
+     * **و`null` ليست قائمة فارغة:** «النواة لا تنشر الجدول» تُخفي القسم كلّه، بينما قائمة فارغة
+     * كانت سترسم صندوقًا بلا صفوف. والقراءة تمرّ بـ[RootFileAccess] نفسه، فلا مسار قراءة ثانٍ.
+     */
+    var cpuStateShares by mutableStateOf<Map<String, List<CpuStateDistribution.Share>?>>(emptyMap())
+        private set
     var manualControlEnabled by mutableStateOf(false)
         @JvmName("setManualControlEnabledState") private set
 
@@ -346,6 +357,7 @@ class CpuCoreControlViewModel @Inject constructor(
             isAvailable = true
             refreshRows()
             refreshFrequencyControls(captureBaseline = true)
+            refreshStateShares()
             cpusetGroups = CpuTopologyUtil.readCpusetGroups()
             startPolling()
         }
@@ -404,6 +416,20 @@ class CpuCoreControlViewModel @Inject constructor(
             } else {
                 (previous + sample).takeLast(CORE_HISTORY_LIMIT)
             }
+        }
+    }
+
+    /**
+     * حصص الوقت — ملفّ صغير لكل مجموعة في كل دورة.
+     *
+     * والجدول عدّاد تراكمي يتغيّر ببطء، فلا حاجة لطلب يدويّ: دورة الثلاث ثوانٍ القائمة تُظهر
+     * تحرّك الحصص، والقراءة تمرّ برحلة الصدفة نفسها التي تُقرأ بها الحدود أصلًا.
+     */
+    private fun refreshStateShares() {
+        cpuStateShares = clusters.associate { cluster ->
+            cluster.policyPath to CpuStateDistribution.shares(
+                CpuHardwareBackend.timeInState(cluster.policyPath).orEmpty()
+            )
         }
     }
 
@@ -499,6 +525,7 @@ class CpuCoreControlViewModel @Inject constructor(
             while (isActive) {
                 delay(3000)
                 refreshRows()
+                refreshStateShares()
                 reassertDriftedLimits()
                 refreshFrequencyControls()
             }

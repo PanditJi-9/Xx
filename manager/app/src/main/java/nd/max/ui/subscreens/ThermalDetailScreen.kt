@@ -50,6 +50,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material.icons.rounded.Thermostat
+import androidx.compose.material.icons.rounded.WarningAmber
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -133,6 +134,19 @@ private class ThermalSample(
     val serviceTemps: IntArray?,
 )
 
+/** خنق واحد رصدته هذه الشاشة: أيّ منطقة، عند أي درجة، ومتى. */
+private data class ThrottleRecord(
+    val zone: String,
+    val temperatureC: Int,
+    val tripC: Int,
+    val atMs: Long,
+) {
+    /** ساعة الجدار لا زمنًا نسبيًّا: النصّ لا يحتاج إعادة حساب مع كل نبضة. */
+    val timeText: String
+        get() = java.text.SimpleDateFormat("HH:mm:ss", java.util.Locale.US)
+            .format(java.util.Date(atMs))
+}
+
 /** سلّم شريط الحرارة: ١٠٠° هو سقف العرض، كما في الشاشة السابقة. */
 private const val BAR_SCALE_C = 100f
 
@@ -151,6 +165,13 @@ fun ThermalDetailScreen(navController: NavHostController) {
 
     // تاريخ الجلسة: أعلى درجة في كل عيّنة، مع زمنها ومنطقتها. في الذاكرة فقط، ولا يُحفظ.
     var history by remember { mutableStateOf<List<ThermalSessionSample>>(emptyList()) }
+
+    // آخر منطقة بلغت نقطة خنقها **منذ فتح الشاشة**. ولا يُدَّعى أنه سجلّ نظام: الشاشة لا تعمل
+    // دائمًا، وما قبل فتحها لا تعرفه — ولذلك يُقال «منذ فتح الشاشة» في النصّ نفسه.
+    var lastThrottle by remember { mutableStateOf<ThrottleRecord?>(null) }
+    // المنطقة المخنوقة في العيّنة السابقة: السجلّ يُكتب عند **بداية** الخنق لا مع كل نبضة،
+    // وإلا تحرّك وقتُه كل ثلاث ثوانٍ وصار «آخر خنق» بمعنى «الآن» — وهذا كذب في تسمية السطر.
+    var throttledZone by remember { mutableStateOf<String?>(null) }
 
     // نقاط التخفيف تُقرأ **مرة واحدة**: ثابتة في النواة، وقراءتها لكل منطقة مع كل عيّنة
     // (كل ٣ ثوان) كانت مئات قراءات sysfs لعرض رقم لا يتغيّر.
@@ -186,6 +207,30 @@ fun ThermalDetailScreen(navController: NavHostController) {
                 )
             }
             zones = sample.zones
+            // أيّ منطقة **بلغت** نقطة خنقها في هذه العيّنة؟ يُختار أبعدها تجاوزًا، فالشاشة تقول
+            // مَن خنق الجهاز لا مَن اقترب فقط.
+            val crossed = sample.zones
+                .filter { it.isEnabled && it.temperatureC > 0 }
+                .mapNotNull { zone ->
+                    val start = ThermalModel.throttleStart(trips[zone.sysfsPath].orEmpty())
+                        ?: return@mapNotNull null
+                    if (zone.temperatureC >= start) Triple(zone, zone.temperatureC - start, start) else null
+                }
+                .maxByOrNull { it.second }
+            if (crossed != null) {
+                // عند الانتقال فقط: نفس المنطقة مخنوقة في نبضتين لا تُعيد كتابة الوقت.
+                if (crossed.first.label != throttledZone) {
+                    lastThrottle = ThrottleRecord(
+                        zone = crossed.first.label,
+                        temperatureC = crossed.first.temperatureC,
+                        tripC = crossed.third,
+                        atMs = sample.atMs,
+                    )
+                }
+                throttledZone = crossed.first.label
+            } else {
+                throttledZone = null
+            }
             sample.zones
                 .filter { it.isEnabled && it.temperatureC > 0 }
                 .maxByOrNull { it.temperatureC }
@@ -319,7 +364,10 @@ fun ThermalDetailScreen(navController: NavHostController) {
                             title = stringResource(R.string.detail_thermal_history_peak),
                             trailing = {
                                 Text(
-                                    text = "${history.maxOf { it.celsius }}°C",
+                                    text = stringResource(
+                                        R.string.detail_thermal_value_celsius,
+                                        history.maxOf { it.celsius }
+                                    ),
                                     style = MonoValueStyleSmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -330,7 +378,10 @@ fun ThermalDetailScreen(navController: NavHostController) {
                             title = stringResource(R.string.detail_thermal_history_low),
                             trailing = {
                                 Text(
-                                    text = "${history.minOf { it.celsius }}°C",
+                                    text = stringResource(
+                                        R.string.detail_thermal_value_celsius,
+                                        history.minOf { it.celsius }
+                                    ),
                                     style = MonoValueStyleSmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -437,6 +488,24 @@ fun ThermalDetailScreen(navController: NavHostController) {
                             )
                         )
                     }
+                    MaxGroupDivider()
+                    val throttled = lastThrottle
+                    MaxRow(
+                        title = stringResource(R.string.detail_thermal_last_throttle),
+                        subtitle = if (throttled != null) {
+                            stringResource(
+                                R.string.detail_thermal_last_throttle_value,
+                                throttled.zone,
+                                throttled.temperatureC,
+                                throttled.tripC,
+                                throttled.timeText,
+                            )
+                        } else {
+                            stringResource(R.string.detail_thermal_last_throttle_none)
+                        },
+                        icon = Icons.Rounded.WarningAmber,
+                        iconTone = if (throttled != null) MaxTone.Caution else MaxTone.Neutral,
+                    )
                     MaxGroupDivider()
                     MaxDeviceInfoShortcut(navController, MaxDestination.ThermalDetail)
                 }
@@ -629,6 +698,23 @@ private fun ZoneBlock(zone: ThermalZoneInfo, trips: List<TripReading>) {
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
+            if (live) {
+                // «كم بقي» لا الدرجة وحدها: ٦٤° بلا نقطة خنق لا تقول للمستخدم شيئًا.
+                val headroom = it - zone.temperatureC
+                Text(
+                    text = if (headroom > 0) {
+                        stringResource(R.string.detail_thermal_zone_headroom, headroom)
+                    } else {
+                        stringResource(R.string.detail_thermal_zone_throttled)
+                    },
+                    style = MaterialTheme.typography.bodySmall,
+                    color = if (headroom > 0) {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    } else {
+                        MaxTone.Caution.content()
+                    }
+                )
+            }
         }
     }
 }
@@ -657,7 +743,13 @@ private fun CoolingBlock(device: CoolingDeviceInfo) {
             ) {
                 Text(device.label, style = MaterialTheme.typography.bodyLarge)
                 Text(
-                    text = "${coolingCategoryLabel(device.category)} · $LTR${device.sysfsPath}$LTR",
+                    // الفاصل من المورد لا من قالب: `·` بين نصّ عربيّ ومسار لاتينيّ يتغيّر
+                    // موضعه مع اتجاه الواجهة.
+                    text = stringResource(
+                        R.string.detail_thermal_device_meta,
+                        coolingCategoryLabel(device.category),
+                        "$LTR${device.sysfsPath}$LTR"
+                    ),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

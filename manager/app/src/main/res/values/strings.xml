@@ -426,6 +426,26 @@
     <string name="cpu_core_row_offline">Off</string>
     <string name="cpu_core_safety_note">Turning cores off reduces power draw but lowers multi-threaded performance. The master core (CPU0) can\'t be turned off from here \u2014 most kernels refuse it anyway since interrupts are pinned to it.</string>
     <string name="cpu_core_technical_source">Technical detail: /sys/devices/system/cpu</string>
+    <string name="cpu_state_share_title">Time at each frequency</string>
+    <string name="cpu_state_share_desc">Where this cluster spent its time since boot, from the kernel counter.</string>
+    <string name="cpu_state_share_hidden">%1$d states under %2$d%% hidden</string>
+    <string name="cpu_state_share_flat">Time is spread evenly across frequencies.</string>
+    <string name="cpu_state_share_dominant">Longest time at %1$s (%2$d%%)</string>
+    <string name="cpu_state_share_percent">%1$d%%</string>
+    <string name="detail_thermal_value_celsius" translatable="false">%1$d°C</string>
+    <string name="detail_thermal_device_meta" translatable="false">%1$s · %2$s</string>
+    <string name="blocked_voltage_title">Voltage control (undervolt)</string>
+    <string name="blocked_voltage_danger">Risky: a wrong value can lock the device until it reboots.</string>
+    <string name="blocked_voltage_reason">Modern kernels expose no writable voltage table, and a writer would bypass the control arbiter.</string>
+    <string name="blocked_voltage_owner">Not implemented here. Using an external tool is your choice and your responsibility.</string>
+    <string name="blocked_lmk_title">LMK and zram tuning</string>
+    <string name="blocked_lmk_danger">Risky: wrong limits cause app kills and visible stalls.</string>
+    <string name="blocked_lmk_reason">This app measures memory pressure and exposes the zram tools it owns; kernel tunables stay read-only.</string>
+    <string name="blocked_lmk_owner">Read-only by design — any change you make elsewhere is your responsibility.</string>
+    <string name="blocked_prop_title">Raw build.prop editing</string>
+    <string name="blocked_prop_danger">Risky: one bad property can stop the device from booting.</string>
+    <string name="blocked_prop_reason">Properties are written through the guarded SetEdit path, not by editing the file in place.</string>
+    <string name="blocked_prop_owner">Raw file editing stays out of this app; what you change outside it is your responsibility.</string>
     <string name="cpu_affinity_title">Task Affinity Groups</string>
     <string name="cpu_affinity_subtitle">Choose which cores each scheduling group is allowed to run threads on \u2014 e.g. pin \"Top App\" to the performance cluster only.</string>
     <string name="cpu_affinity_cores_summary">Cores: %1$s</string>
@@ -663,6 +683,9 @@
     <string name="hud_graph_title">Frame graph</string>
     <string name="hud_graph_desc">A moving line under the numbers. Off by default: it takes height from a window sitting over a game.</string>
     <string name="hud_graph_span">%1$d samples</string>
+    <string name="hud_interval_title">Read interval</string>
+    <string name="hud_interval_desc">How often the HUD samples — every sample costs one source read.</string>
+    <string name="hud_interval_ms">%1$d ms</string>
     <string name="hud_snap_title">Snap to the edge</string>
     <string name="hud_snap_desc">On release the window jumps to the nearest side instead of staying where it blocks the view.</string>
     <string name="hud_section_monitors">Extra monitors</string>
@@ -1587,6 +1610,11 @@
     <string name="detail_thermal_trip_shutdown">Shutdown point %1$d°C</string>
     <string name="detail_thermal_throttling">Throttle point reached — the system is limiting now</string>
     <string name="detail_thermal_headroom">%1$d°C of headroom before throttling</string>
+    <string name="detail_thermal_zone_headroom">%1$d°C below its throttle point</string>
+    <string name="detail_thermal_zone_throttled">At its throttle point now</string>
+    <string name="detail_thermal_last_throttle">Last throttle seen</string>
+    <string name="detail_thermal_last_throttle_value">%1$s reached %2$d°C against a %3$d°C trip at %4$s</string>
+    <string name="detail_thermal_last_throttle_none">None since this screen opened — earlier system history is not readable here.</string>
     <string name="detail_thermal_cooling">Cooling devices</string>
     <string name="detail_thermal_cooling_desc">What actually reduces heat, and how much of it is in use right now.</string>
     <string name="detail_thermal_cooling_state">%1$d of %2$d</string>
@@ -4016,6 +4044,18 @@
     <string name="battery_history_temp_chart_desc">Battery temperature at each stored sample. A gap stays a gap: samples without a reading break the line instead of drawing a false value.</string>
     <string name="battery_history_temp_chart_low">Cooler</string>
     <string name="battery_history_temp_chart_high">Hotter</string>
+    <string name="battery_uid_title">Power per app</string>
+    <string name="battery_uid_desc">The platform\'s own estimate, read only when you ask — the dump is heavy.</string>
+    <string name="battery_uid_action">Read per-app power</string>
+    <string name="battery_uid_running">Reading the platform dump…</string>
+    <string name="battery_uid_cost">One extra platform dump; nothing on the device is changed.</string>
+    <string name="battery_uid_unavailable">Needs root or Shizuku — the platform refused the dump.</string>
+    <string name="battery_uid_empty">The platform published no power estimate.</string>
+    <string name="battery_uid_more">+%1$d more apps not shown</string>
+    <string name="battery_uid_total">Measured total</string>
+    <string name="battery_uid_mah" translatable="false">%1$d mAh</string>
+    <string name="battery_uid_row_label" translatable="false">UID %1$d</string>
+    <string name="battery_uid_others">Components not attributed to an app are excluded.</string>
     <string name="battery_history_summary_title">Summary</string>
     <string name="battery_history_summary_desc">Computed from the stored points in this period.</string>
     <string name="battery_history_current">Current level</string>

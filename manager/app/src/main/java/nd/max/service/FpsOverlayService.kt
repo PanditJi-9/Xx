@@ -210,7 +210,10 @@ class FpsOverlayService : LifecycleService() {
             HudSampler.start(
                 context = applicationContext,
                 owner = view.owner,
-                fields = { loadView(view).fields.toSet() }
+                fields = { loadView(view).fields.toSet() },
+                // الإيقاع من التفضيلات المشتركة: حلقة واحدة تخدم كل المراقبات، فلا معنى
+                // لإيقاعين متزامنين — والقيمة تُقرأ كل دورة فتُطبَّق بلا إعادة تشغيل.
+                intervalMs = FpsOverlayPrefs.load(applicationContext).intervalMs.toLong(),
             )
         }
     }

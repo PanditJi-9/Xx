@@ -66,6 +66,7 @@ import nd.max.ui.component.StudioOutlinedButton
 import nd.max.ui.component.StudioTextButton
 import nd.max.ui.component.StudioTonalButton
 import nd.max.ui.component.rememberConfirmDialog
+import nd.max.ui.design.MaxBlockedFeatureCard
 import nd.max.ui.design.MaxListScreen
 import nd.max.ui.design.MaxRadius
 import nd.max.ui.design.MaxSearchField
@@ -200,6 +201,15 @@ fun SetEditScreen(
                 )
                 Spacer(Modifier.height(MaxSpace.sm))
                 SortStrip(sort = viewModel.sort, onSort = viewModel::chooseSort)
+                Spacer(Modifier.height(MaxSpace.sm))
+                // محرّر الملفّ الخام ليس هنا: هذه الشاشة تكتب عبر المحكّم، وسطر الملفّ المباشر
+                // يُقال بسببه لا يُترك للتخمين.
+                MaxBlockedFeatureCard(
+                    title = stringResource(R.string.blocked_prop_title),
+                    danger = stringResource(R.string.blocked_prop_danger),
+                    reason = stringResource(R.string.blocked_prop_reason),
+                    responsibility = stringResource(R.string.blocked_prop_owner),
+                )
                 Spacer(Modifier.height(MaxSpace.sm))
             }
 
