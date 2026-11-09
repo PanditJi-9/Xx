@@ -381,9 +381,9 @@ fun BatteryHistoryScreen(navController: NavHostController) {
                             return@launch
                         }
                         val labels = withContext(Dispatchers.IO) {
-                            reading.entries.take(8).associate { entry ->
-                                entry.uid to uidAppLabel(context, entry.uid)
-                            }
+                            reading.entries.take(8).mapNotNull { entry ->
+                                uidAppLabel(context, entry.uid)?.let { entry.uid to it }
+                            }.toMap()
                         }
                         uidReading = reading
                         uidLabels = labels
@@ -869,9 +869,18 @@ private fun UidPowerRow(label: String, entry: BatteryUidPower.Entry, total: Floa
 }
 
 /** اسم التطبيق من UID — والغياب يُعلن بمعرّفه، لا باسم مخترع. */
-private fun uidAppLabel(context: Context, uid: Int): String {
+/**
+ * اسم الحزمة الذي يملكه هذا UID، أو `null` حين لا يكون الاسم حقيقةً.
+ *
+ * **و`null` ليست عطلًا:** UID مشترك بين حزمتين (نظير `android.uid.system`) لا اسمَ واحدًا له،
+ * وعرض أول اسم من القائمة كان سيسمّي تطبيقًا آخر بذنب غيره — فيُعاد `null` وتُعرض `UID n` الصحيحة.
+ * وما لا يُقرأ من الحزم يُعاد `null` بالطريقة نفسها، لا باسم حزمةٍ خام يُقرأ كأنه اسم تطبيق.
+ */
+private fun uidAppLabel(context: Context, uid: Int): String? {
     val pm = context.packageManager
-    val pkg = pm.getPackagesForUid(uid)?.firstOrNull() ?: return "UID $uid"
+    val packages = pm.getPackagesForUid(uid) ?: return null
+    if (packages.size != 1) return null
+    val pkg = packages.first()
     return runCatching { pm.getApplicationLabel(pm.getApplicationInfo(pkg, 0)).toString() }
-        .getOrDefault(pkg)
+        .getOrNull()
 }

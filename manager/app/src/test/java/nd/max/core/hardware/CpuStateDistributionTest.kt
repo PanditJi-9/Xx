@@ -97,4 +97,35 @@ class CpuStateDistributionTest {
 
         assertEquals(1_200_000L, CpuStateDistribution.dominant(shares)!!.frequencyKHz)
     }
+
+    @Test
+    fun a_state_never_visited_is_not_a_row_at_all() {
+        // جدول OPP قد يُعلن ترددًا لم يُستخدم: صفّه بصفر ليس حالة، وإدخاله يضخّم «المخفيّ».
+        val shares = CpuStateDistribution.shares(
+            listOf(state(2_400_000, 0), state(1_200_000, 30), state(600_000, 10)),
+        )!!
+
+        assertEquals(listOf(1_200_000L, 600_000L), shares.map { it.frequencyKHz })
+        assertEquals(1f, shares.sumOf { it.share.toDouble() }.toFloat(), 0.0001f)
+    }
+
+    @Test
+    fun a_share_exactly_at_the_threshold_stays_visible() {
+        val shares = CpuStateDistribution.shares(
+            listOf(state(2_000_000, 99), state(1_000_000, 1)),
+        )!!
+        val split = CpuStateDistribution.split(shares)
+
+        assertEquals(2, split.visible.size)
+        assertEquals(0, split.hiddenCount)
+    }
+
+    @Test
+    fun splitting_nothing_reports_nothing_rather_than_dividing() {
+        val split = CpuStateDistribution.split(emptyList())
+
+        assertEquals(0, split.visible.size)
+        assertEquals(0, split.hiddenCount)
+        assertEquals(0f, split.hiddenShare, 0f)
+    }
 }

@@ -28,11 +28,15 @@ object CpuStateDistribution {
 
     /** الحصص مرتّبة من أعلى تردد إلى أدناه؛ `null` حين لا عدّاد موجب أصلًا. */
     fun shares(states: List<CpuHardwareBackend.StateTime>): List<Share>? {
-        val total = states.sumOf { it.ticks }
+        // صفٌّ بعدّاده صفر ليس حالة سكنها المعالج: النواة تنشر جدول OPP كاملًا وقد لا تُستخدم
+        // بعض الترددات أبدًا. إدخاله يجعل «٠٪ مخفيّة» صفوفًا وهمية في العدّ، ويوهم بأن الخفاء
+        // أكبر مما هو — فيُسقَط قبل الجمع لا بعد القسمة.
+        val used = states.filter { it.ticks > 0L }
+        val total = used.sumOf { it.ticks }
         if (total <= 0L) return null
         // النواة قد تكرّر التردد (سطران لنفس القيمة على بعض الإصدارات): يُجمع قبل القسمة،
         // وإلا ظهرت حالتان متطابقتان بلا معنى.
-        return states
+        return used
             .groupBy { it.frequencyKHz }
             .map { (khz, rows) -> Share(khz, rows.sumOf { it.ticks }.toFloat() / total) }
             .sortedByDescending { it.frequencyKHz }

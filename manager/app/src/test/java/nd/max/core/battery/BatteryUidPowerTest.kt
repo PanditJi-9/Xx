@@ -78,4 +78,34 @@ class BatteryUidPowerTest {
         assertNull(BatteryUidPower.parse("Battery Stats:\n  nothing here\n"))
         assertNull(BatteryUidPower.parse("Estimated power use (mAh):\n  Screen: 120.0\n"))
     }
+
+    @Test
+    fun a_blank_line_inside_the_section_does_not_end_it() {
+        val text = """
+            Estimated power use (mAh):
+              UID 1000: 1.50 ( cpu=1.5 )
+
+              UID 1001: 2.50 ( cpu=2.5 )
+            Next section:
+              UID 1002: 9.00
+        """.trimIndent()
+
+        assertEquals(listOf(1000, 1001), BatteryUidPower.parse(text)!!.entries.map { it.uid })
+    }
+
+    @Test
+    fun a_zero_or_negative_estimate_is_dropped_not_shown_as_a_row() {
+        val text = "Estimated power use (mAh):\n  UID 1000: 0.00\n  UID 1001: 4.00\n"
+
+        assertEquals(listOf(1001), BatteryUidPower.parse(text)!!.entries.map { it.uid })
+    }
+
+    @Test
+    fun isolated_uids_keep_their_own_range_and_garbage_is_dropped() {
+        assertEquals(99_005, BatteryUidPower.decodeUid("u0i5"))
+        assertNull(BatteryUidPower.decodeUid("u0a"))
+        assertNull(BatteryUidPower.decodeUid("u0i"))
+        assertNull(BatteryUidPower.decodeUid("-1"))
+        assertNull(BatteryUidPower.decodeUid("com.example"))
+    }
 }
