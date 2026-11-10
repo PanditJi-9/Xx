@@ -548,6 +548,7 @@ python3 tools/i18n_coverage.py --prune all --assert  # مفاتيح يتيمة =
 python3 tools/design_tokens.py --assert           # سقوف حرفيّات التصميم (داخل «Contract gates» في CI — تكملة ٢٩١)
 python3 tools/jni_symbols.py --assert             # عقود JNI: Kotlin/Java ↔ Rust، وما وُجد من ثنائيات (ADR-48)
 python3 tools/resource_compile.py --assert        # aapt2 على كل مجلّدات res — الحكم الذي يُسقط البناء
+python3 tools/provenance_guard.py --assert        # الأصل: لا مسار مرجعي ولا بصمة صنف من مرجع في مصدرنا
 ```
 
 وهذه الخمس تعمل اليوم في CI أيضًا: خطوة **«Contract gates»** في `.github/workflows/build.yml`
