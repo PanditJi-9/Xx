@@ -48,7 +48,9 @@ import androidx.compose.material.icons.rounded.CleaningServices
 import androidx.compose.material.icons.rounded.DataUsage
 import androidx.compose.material.icons.rounded.DeveloperBoard
 import androidx.compose.material.icons.rounded.DisplaySettings
+import androidx.compose.material.icons.rounded.History
 import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.PictureInPicture
 import androidx.compose.material.icons.rounded.Speed
 import androidx.compose.material.icons.rounded.Storage
 import androidx.compose.material.icons.rounded.Thermostat
@@ -210,6 +212,29 @@ val HomeDeckPool: List<HomeDeckEntry> = listOf(
         descriptionRes = R.string.max_role_max_live,
         icon = Icons.Rounded.Timeline,
         tone = MaxTone.Accent,
+    ),
+    /**
+     * **الزوج الحيّ** — التراكب وسجلّ الجلسات، بطلب المالك حين قال إن العمل على تسجيل الجلسة
+     * «لا يُشعر بفرق»: كان الاثنان مدفونين في قائمة أدوات التحكّم (`ControlToolDestinations`)
+     * بعد خمس لمسات، فلم يكن لهما سطح على الشاشة الأولى. ودخولهما البركة **لا الأربعة الأولى**
+     * كـ`max_live`: هما مقصد من يقصد القياس، لا أوّل ما يفتحه المستخدم الجديد — والوضع
+     * التلقائي يرفعهما حين يُستعملان فعلًا (`homeDeckUsage` يقيس الفتح بالمسار).
+     */
+    HomeDeckEntry(
+        key = "fps_overlay",
+        destination = MaxDestination.FpsOverlay,
+        titleRes = R.string.fps_overlay_title,
+        descriptionRes = R.string.fps_overlay_subtitle,
+        icon = Icons.Rounded.PictureInPicture,
+        tone = MaxTone.Accent,
+    ),
+    HomeDeckEntry(
+        key = "game_sessions",
+        destination = MaxDestination.GameSessions,
+        titleRes = R.string.game_sessions_title,
+        descriptionRes = R.string.game_sessions_subtitle,
+        icon = Icons.Rounded.History,
+        tone = MaxTone.Positive,
     ),
 )
 
