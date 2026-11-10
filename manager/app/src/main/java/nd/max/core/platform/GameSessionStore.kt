@@ -47,6 +47,11 @@ data class SessionPoint(
 @Serializable
 data class StoredGameSession(
     val id: String,
+    /**
+     * إصدار مخطط الصفّ. الغائب من ملفّ قديم يُقرأ ١، فالسجلّ القديم يبقى مقروءًا
+     * ولا يُعاد تفسيره بمخططٍ أحدث ممّا كُتب به.
+     */
+    val schemaVersion: Int = 1,
     val packageName: String? = null,
     val appLabel: String? = null,
     val startedAtMs: Long,
@@ -94,6 +99,15 @@ data class StoredGameSession(
 
 /** سقف النقاط المحفوظة لكل جلسة: ١٨٠ نقطة تغطّي ساعة بفاصل ٢٠ ثانية. */
 const val MAX_SERIES_POINTS = 180
+
+/**
+ * إصدار مخطط الجلسة المحفوظة.
+ *
+ * ١ = الصفّ الأصليّ (تسع أعمدة CSV). ٢ = القراءات العميقة: حرارة الشريحة، انشغال
+ * الرسّام، تردّد المعالج، أدنى جهد، إصدار اللعبة، دقّة العرض، سبب الإيقاف، القصّ،
+ * والملاحظة. والقارئ لا يرفض ١ — يقرؤه بحقوله الغائبة فارغة، وهذا كل الغرض من الرقم.
+ */
+const val SESSION_SCHEMA_VERSION = 2
 
 /** أعمدة CSV الواحدة للجلسة الحيّة والمحفوظة — مصدر واحد، فلا ينفصل التصديران. */
 const val SESSION_CSV_HEADER =

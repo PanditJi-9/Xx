@@ -758,6 +758,7 @@ object HudRecorder {
         val startedAtMs = sessionStartedAtMs.takeIf { it > 0L } ?: endedAtMs
         val record = StoredGameSession(
             id = "$startedAtMs-${sessionPackage ?: "unknown"}",
+            schemaVersion = SESSION_SCHEMA_VERSION,
             packageName = sessionPackage,
             appLabel = sessionLabel,
             appVersion = sessionAppVersion,

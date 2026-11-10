@@ -55,6 +55,9 @@ import nd.max.core.platform.HudArrangement
 import nd.max.core.platform.HudField
 import nd.max.core.platform.HudForm
 import nd.max.core.platform.HudReading
+import nd.max.ui.util.HudFilter
+import nd.max.ui.util.hudChartVisible
+import nd.max.ui.util.hudTextVisible
 import nd.max.ui.design.MaxRadius
 import nd.max.ui.design.MaxSize
 import nd.max.ui.design.MaxSpace
@@ -210,9 +213,13 @@ fun HudSurface(
     onToggleRecording: (() -> Unit)? = null,
     onHide: (() -> Unit)? = null,
     onClose: (() -> Unit)? = null,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    filter: HudFilter = HudFilter.All
 ) {
     val ceiling = framesCeiling()
+    val chartPossible = HudField.Frames in fields
+    val textVisible = hudTextVisible(filter, chartPossible)
+    val chartVisible = hudChartVisible(filter, showGraph, chartPossible)
     // وزرّ التسجيل جزء من **نفس الصفّ** بأمر المالك: كان صفًّا مستقلًّا بارتفاع ٤٨dp وفاصل ثابت
     // حتى وهو لا يسجّل — أي ثلث ارتفاع اللوحة مقابل إجراء لا يُستعمل في كل جلسة (تكملة ١٨٢).
     val hasActions = onHide != null || onClose != null || onToggleRecording != null
@@ -222,7 +229,7 @@ fun HudSurface(
      * العربية والأيسر في الإنجليزية، فالترتيب يقلبه مع النصّ). وما عداهما طويل أصلًا فيحملها
      * في آخر صفّ — وهو أقرب موضع للحاشية في لوحة بلا إطار.
      */
-    val inlineActions = hasActions && !showGraph &&
+    val inlineActions = hasActions && !chartVisible &&
         arrangement == HudArrangement.Line &&
         (form == HudForm.Strip || form == HudForm.Badge)
     val actions: (@Composable () -> Unit)? = if (hasActions) {
@@ -248,20 +255,22 @@ fun HudSurface(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(MaxSpace.xs)
         ) {
-            when (form) {
-                HudForm.Strip ->
-                    HudStrip(reading, fields, accent, textSizeSp, arrangement, if (inlineActions) actions else null)
+            if (textVisible) {
+                when (form) {
+                    HudForm.Strip ->
+                        HudStrip(reading, fields, accent, textSizeSp, arrangement, if (inlineActions) actions else null)
 
-                HudForm.Pane ->
-                    HudPane(reading, fields, accent, textSizeSp, arrangement)
+                    HudForm.Pane ->
+                        HudPane(reading, fields, accent, textSizeSp, arrangement)
 
-                HudForm.Ring ->
-                    HudRing(reading, fields, accent, textSizeSp, ceiling)
-                HudForm.Badge ->
-                    HudBadge(reading, fields, accent, textSizeSp, arrangement, if (inlineActions) actions else null)
+                    HudForm.Ring ->
+                        HudRing(reading, fields, accent, textSizeSp, ceiling)
+                    HudForm.Badge ->
+                        HudBadge(reading, fields, accent, textSizeSp, arrangement, if (inlineActions) actions else null)
+                }
             }
 
-            if (showGraph && HudField.Frames in fields) {
+            if (chartVisible) {
                 HudFramesGraph(framesHistory, accent, ceiling)
             }
 

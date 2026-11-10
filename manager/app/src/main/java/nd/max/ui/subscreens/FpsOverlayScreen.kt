@@ -48,6 +48,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.annotation.StringRes
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.core.content.ContextCompat
@@ -64,6 +65,9 @@ import nd.max.core.platform.FpsMonitorUtil
 import nd.max.core.platform.FpsReadMode
 import nd.max.core.platform.HUD_OWNER_SCREEN
 import nd.max.core.platform.HudArrangement
+import nd.max.core.platform.HudChannel
+import nd.max.core.platform.HudChannelProbe
+import nd.max.core.platform.HudChannelStatus
 import nd.max.core.platform.HudField
 import nd.max.core.platform.HudForm
 import nd.max.core.platform.HudLive
@@ -99,6 +103,7 @@ import nd.max.ui.component.AccentSwatches
 import nd.max.ui.component.ScreenAccentProvider
 import nd.max.ui.component.parseAccentHex
 import nd.max.ui.util.FpsOverlayPrefs
+import nd.max.ui.util.HudFilter
 import nd.max.ui.util.MonitorPrefs
 import nd.max.ui.util.MonitorSpec
 import nd.max.ui.util.presetOrNull
@@ -211,6 +216,8 @@ fun FpsOverlayScreen(navController: NavController) {
         stringResource(R.string.fps_overlay_mode_kernel),
         stringResource(R.string.fps_overlay_mode_dumpsys)
     )
+    // المسبار يُقرأ مرّة عند فتح الشاشة: العقد لا تظهر وتختفي بين رسمتين.
+    val channels = remember(context) { HudChannelProbe.probe(context) }
     val sourceNotes = listOf(
         stringResource(R.string.hud_source_surfaceflinger_note),
         stringResource(R.string.hud_source_kernel_note),
@@ -347,6 +354,30 @@ fun FpsOverlayScreen(navController: NavController) {
                 )
             }
 
+            // ── ٢·٥. ما يقرؤه هذا الجهاز فعلًا ─────────────────────────────
+            MaxSection(
+                title = stringResource(R.string.hud_channels_title),
+                description = stringResource(R.string.hud_channels_desc)
+            ) {
+                MaxGroup {
+                    channels.forEachIndexed { index, channel ->
+                        if (index > 0) MaxGroupDivider()
+                        MaxMetricLine(
+                            MaxMetric(
+                                label = stringResource(channelLabel(channel.channel)),
+                                value = stringResource(channelStatus(channel.status)),
+                                trust = when (channel.status) {
+                                    HudChannelStatus.Readable -> MaxDataTrust.Live
+                                    HudChannelStatus.Denied -> MaxDataTrust.Unreadable
+                                    HudChannelStatus.Missing -> MaxDataTrust.Unsupported
+                                },
+                                source = channel.source
+                            )
+                        )
+                    }
+                }
+            }
+
             // ── ٣. الشكل ───────────────────────────────────────────────────
             MaxSection(title = stringResource(R.string.hud_section_shape)) {
                 MaxSegmented(
@@ -421,6 +452,20 @@ fun FpsOverlayScreen(navController: NavController) {
                             onSelect = { persist(state.copy(graphSpan = FpsOverlayPrefs.GRAPH_SPANS[it])) }
                         )
                     }
+                    MaxGroupDivider()
+                    MaxSegmented(
+                        options = HudFilter.entries.map { filter ->
+                            stringResource(
+                                when (filter) {
+                                    HudFilter.Text -> R.string.hud_filter_text
+                                    HudFilter.Chart -> R.string.hud_filter_chart
+                                    HudFilter.All -> R.string.hud_filter_all
+                                }
+                            )
+                        },
+                        selectedIndex = HudFilter.entries.indexOf(state.filter).coerceAtLeast(0),
+                        onSelect = { persist(state.copy(filter = HudFilter.entries[it])) }
+                    )
                     MaxGroupDivider()
                     MaxSwitchRow(
                         title = stringResource(R.string.hud_snap_title),
@@ -854,6 +899,31 @@ private fun HudMonitorsSection(onChanged: () -> Unit) {
                 )
             }
             MaxGroupDivider()
+            MaxSegmented(
+                options = HudFilter.entries.map { filter ->
+                    stringResource(
+                        when (filter) {
+                            HudFilter.Text -> R.string.hud_filter_text
+                            HudFilter.Chart -> R.string.hud_filter_chart
+                            HudFilter.All -> R.string.hud_filter_all
+                        }
+                    )
+                },
+                selectedIndex = HudFilter.entries.indexOf(spec.filter).coerceAtLeast(0),
+                onSelect = { update(spec.copy(filter = HudFilter.entries[it])) }
+            )
+            MaxGroupDivider()
+            MaxSegmented(
+                options = FpsOverlayPrefs.INTERVAL_CHOICES.map {
+                    stringResource(R.string.hud_interval_ms, it)
+                },
+                selectedIndex = FpsOverlayPrefs.INTERVAL_CHOICES.indexOf(spec.intervalMs)
+                    .coerceAtLeast(0),
+                onSelect = {
+                    update(spec.copy(intervalMs = FpsOverlayPrefs.INTERVAL_CHOICES[it]))
+                }
+            )
+            MaxGroupDivider()
             MaxSwitchRow(
                 title = stringResource(R.string.hud_snap_title),
                 subtitle = stringResource(R.string.hud_snap_desc),
@@ -944,3 +1014,23 @@ private fun MonitorTuning(spec: MonitorSpec, onCommit: (MonitorSpec) -> Unit) {
     }
 }
 
+
+/** اسم قناة القراءة — مفتاح نصّ واحد لكل قناة، فلا تُبنى الأسماء من `name`. */
+@StringRes
+private fun channelLabel(channel: HudChannel): Int = when (channel) {
+    HudChannel.CpuFreq -> R.string.hud_channel_cpu_freq
+    HudChannel.SocTemp -> R.string.hud_channel_soc_temp
+    HudChannel.GpuFreq -> R.string.hud_channel_gpu_freq
+    HudChannel.GpuLoad -> R.string.hud_channel_gpu_load
+    HudChannel.DdrFreq -> R.string.hud_channel_ddr_freq
+    HudChannel.DiskIo -> R.string.hud_channel_disk_io
+    HudChannel.BatteryVoltage -> R.string.hud_channel_battery_voltage
+}
+
+/** حالة القناة بكلمة صريحة: تُقرأ · غير موجودة · موجودة والقراءة مرفوضة. */
+@StringRes
+private fun channelStatus(status: HudChannelStatus): Int = when (status) {
+    HudChannelStatus.Readable -> R.string.hud_channel_readable
+    HudChannelStatus.Missing -> R.string.hud_channel_missing
+    HudChannelStatus.Denied -> R.string.hud_channel_denied
+}

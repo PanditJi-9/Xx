@@ -41,10 +41,10 @@ object HudDeepReaders {
     /** تردّد الذاكرة المشتركة يتحرّك ببطء. */
     private const val DDR_CACHE_MS = 10_000L
 
-    private const val CPU_ROOT = "/sys/devices/system/cpu"
+    internal const val CPU_ROOT = "/sys/devices/system/cpu"
 
     /** عقد تردّد الرسّام المعروفة: كوالكوم ثم عامّ ثم Mali. */
-    private val GPU_CLOCK_NODES = listOf(
+    internal val GPU_CLOCK_NODES = listOf(
         "/sys/class/kgsl/kgsl-3d0/gpuclk",
         "/sys/class/kgsl/kgsl-3d0/devfreq/cur_freq",
         "/sys/kernel/gpu/gpu_clock",
@@ -53,7 +53,7 @@ object HudDeepReaders {
     )
 
     /** عقد انشغال الرسّام: زوج (busy total) عند كوالكوم، ونسبة جاهزة عند Mali. */
-    private val GPU_BUSY_NODES = listOf(
+    internal val GPU_BUSY_NODES = listOf(
         "/sys/class/kgsl/kgsl-3d0/gpubusy",
         "/sys/class/misc/mali0/device/utilization",
         "/sys/kernel/gpu/gpu_busy"
@@ -268,3 +268,112 @@ fun hzToMhz(raw: Long): Int? = when {
 
 /** كيلوهرتز ← ميغاهرتز (عقود `cpufreq` تُعلن بالكيلوهرتز). */
 fun khzToMhz(raw: Long): Int? = if (raw <= 0L) null else (raw / 1_000L).toInt()
+
+/**
+ * القنوات السبع التي تقرأها الجلسة من عتاد الجهاز.
+ *
+ * وليست أهداف تحكّم (`AtlasControlTarget`) ولا تُضاف إليها: تلك خريطة **كتابة**،
+ * وهذه خريطة **قراءة**. خلطهما يجعل خريطة القدرات تجيب سؤالين بأرقام مختلفة.
+ */
+enum class HudChannel { CpuFreq, SocTemp, GpuFreq, GpuLoad, DdrFreq, DiskIo, BatteryVoltage }
+
+/** حالة قناة: تُقرأ · لا عقدة لها على هذا الجهاز · لها عقدة ترفض القراءة. */
+enum class HudChannelStatus { Readable, Missing, Denied }
+
+/** نتيجة مسبار قناة واحدة، مع العقدة التي حُكم منها — لا حكم بلا موضع. */
+data class HudChannelCapability(
+    val channel: HudChannel,
+    val status: HudChannelStatus,
+    val source: String
+) {
+    val supported: Boolean get() = status == HudChannelStatus.Readable
+}
+
+/**
+ * مسبار قدرات القراءة: يجيب «هل هذه القناة موجودة هنا؟» بقياس لا بجدول أجهزة.
+ *
+ * الحكم من ثلاث حالات فقط، وكلّها مقيسة: عقدة موجودة تُقرأ ⇒ `Readable`، لا عقدة ⇒
+ * `Missing`، عقدة موجودة ترفض ⇒ `Denied`. وهذا ما يجعل الشاشة تقول «غير مدعوم على هذا
+ * الجهاز» بسببه بدل شرطة صامتة تُقرأ عيبًا في التطبيق.
+ */
+object HudChannelProbe {
+
+    private val CPU_NODES = (0..7).map { "${HudDeepReaders.CPU_ROOT}/cpu$it/cpufreq/scaling_cur_freq" }
+
+    /** الحكم الصافي: مدخلان، مخرج واحد — يُختبر بلا جهاز. */
+    fun classify(exists: Boolean, readable: Boolean): HudChannelStatus = when {
+        !exists -> HudChannelStatus.Missing
+        readable -> HudChannelStatus.Readable
+        else -> HudChannelStatus.Denied
+    }
+
+    /** مسح كامل للقنوات السبع. `context` غائب ⇒ قناة الجهد `Missing` لا مخمّنة. */
+    fun probe(context: Context? = null): List<HudChannelCapability> = listOf(
+        files(HudChannel.CpuFreq, CPU_NODES),
+        thermal(),
+        files(HudChannel.GpuFreq, HudDeepReaders.GPU_CLOCK_NODES),
+        files(HudChannel.GpuLoad, HudDeepReaders.GPU_BUSY_NODES),
+        ddr(),
+        files(HudChannel.DiskIo, listOf("/proc/diskstats")),
+        battery(context)
+    )
+
+    private fun files(channel: HudChannel, paths: List<String>): HudChannelCapability {
+        val existing = paths.map { File(it) }.filter { runCatching { it.exists() }.getOrDefault(false) }
+        if (existing.isEmpty()) {
+            return HudChannelCapability(channel, HudChannelStatus.Missing, paths.firstOrNull().orEmpty())
+        }
+        val readable = existing.firstOrNull { file ->
+            runCatching { file.isFile && file.readText().isNotBlank() }.getOrDefault(false)
+        }
+        return HudChannelCapability(
+            channel = channel,
+            status = if (readable != null) HudChannelStatus.Readable else HudChannelStatus.Denied,
+            source = (readable ?: existing.first()).path
+        )
+    }
+
+    private fun thermal(): HudChannelCapability {
+        val zones = runCatching { ThermalUtil.readThermalZones() }.getOrNull().orEmpty()
+        val value = if (zones.isEmpty()) null else HudDeepReaders.socTempC()
+        return HudChannelCapability(
+            channel = HudChannel.SocTemp,
+            status = if (value == null) HudChannelStatus.Missing else HudChannelStatus.Readable,
+            source = "thermal_zones(${zones.size})"
+        )
+    }
+
+    private fun ddr(): HudChannelCapability {
+        val root = File("/sys/class/devfreq")
+        val dirs = runCatching { root.listFiles()?.toList() }.getOrNull().orEmpty()
+        val matching = dirs.filter { device ->
+            val declared = runCatching {
+                File(device, "name").takeIf { it.isFile }?.readText()?.trim()?.lowercase()
+            }.getOrNull()
+            val name = declared ?: device.name.lowercase()
+            DDR_HINTS.any { it in name }
+        }
+        if (matching.isEmpty()) {
+            return HudChannelCapability(HudChannel.DdrFreq, HudChannelStatus.Missing, root.path)
+        }
+        val readable = matching.firstOrNull { device ->
+            runCatching { File(device, "cur_freq").readText().isNotBlank() }.getOrDefault(false)
+        }
+        return HudChannelCapability(
+            channel = HudChannel.DdrFreq,
+            status = if (readable != null) HudChannelStatus.Readable else HudChannelStatus.Denied,
+            source = (readable ?: matching.first()).path
+        )
+    }
+
+    private fun battery(context: Context?): HudChannelCapability {
+        val mv = context?.let { HudDeepReaders.batteryVoltageMv(it) }
+        return HudChannelCapability(
+            channel = HudChannel.BatteryVoltage,
+            status = if (mv == null) HudChannelStatus.Missing else HudChannelStatus.Readable,
+            source = if (context == null) "no_context" else "ACTION_BATTERY_CHANGED"
+        )
+    }
+
+    private val DDR_HINTS = listOf("ddr", "dmc", "mem", "ebi")
+}

@@ -33,7 +33,11 @@ data class MonitorSpec(
     val graphSpan: Int = 20,
     val snapEdges: Boolean = true,
     val posX: Int? = null,
-    val posY: Int? = null
+    val posY: Int? = null,
+    /** إيقاع إعادة الرسم — قد يبطؤ عن إيقاع القراءة، ولا يسرّعه. */
+    val intervalMs: Int = FpsOverlayPrefs.DEFAULT_INTERVAL_MS,
+    /** نصّ · منحنى · كل — لكل مراقب لا للشاشة كلها. */
+    val filter: HudFilter = HudFilter.All
 ) {
     /** ترتيب العرض من ترتيب النوع — لا يُرتَّب حقل هنا على خلاف بقية الأسطح. */
     val orderedFields: List<HudField> get() = HudField.entries.filter { it in fields }
@@ -71,6 +75,8 @@ object MonitorPrefs {
     private const val K_SNAP = "snap_edges"
     private const val K_POS_X = "pos_x"
     private const val K_POS_Y = "pos_y"
+    private const val K_INTERVAL = "interval_ms"
+    private const val K_FILTER = "filter"
 
     /** معرّف جديد — الوقت بالستّ عشريّ يكفي لمراقب يُضاف بيد إنسان. */
     fun newId(): String = "m" + System.currentTimeMillis().toString(36)
@@ -159,6 +165,8 @@ object MonitorPrefs {
         put(K_GRAPH, spec.showGraph)
         put(K_GRAPH_SPAN, spec.graphSpan)
         put(K_SNAP, spec.snapEdges)
+        put(K_INTERVAL, spec.intervalMs)
+        put(K_FILTER, spec.filter.name)
         spec.posX?.let { put(K_POS_X, it) }
         spec.posY?.let { put(K_POS_Y, it) }
     }
@@ -198,7 +206,11 @@ object MonitorPrefs {
             },
             snapEdges = row.optBoolean(K_SNAP, true),
             posX = if (row.has(K_POS_X)) row.optInt(K_POS_X) else null,
-            posY = if (row.has(K_POS_Y)) row.optInt(K_POS_Y) else null
+            posY = if (row.has(K_POS_Y)) row.optInt(K_POS_Y) else null,
+            intervalMs = row.optInt(K_INTERVAL, FpsOverlayPrefs.DEFAULT_INTERVAL_MS)
+                .takeIf { it in FpsOverlayPrefs.INTERVAL_CHOICES }
+                ?: FpsOverlayPrefs.DEFAULT_INTERVAL_MS,
+            filter = enumOr(row.optString(K_FILTER), HudFilter.entries, HudFilter.All)
         )
     }
 

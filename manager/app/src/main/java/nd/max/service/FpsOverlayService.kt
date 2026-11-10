@@ -16,10 +16,13 @@ import android.content.Intent
 import androidx.core.content.ContextCompat
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -36,6 +39,8 @@ import nd.max.ui.component.HudRestoreTab
 import nd.max.ui.component.HudSurface
 import nd.max.ui.overlay.OverlayWindow
 import nd.max.ui.util.FpsOverlayPrefs
+import nd.max.ui.util.HudFilter
+import nd.max.ui.util.MonitorGate
 import nd.max.ui.util.MonitorPrefs
 import nd.max.ui.util.MonitorSpec
 
@@ -254,7 +259,9 @@ class FpsOverlayService : LifecycleService() {
                 widthScale = state.widthScale,
                 showGraph = state.showGraph,
                 graphSpan = state.graphSpan,
-                snapEdges = state.snapEdges
+                snapEdges = state.snapEdges,
+                intervalMs = state.intervalMs,
+                filter = state.filter
             )
         }
 
@@ -270,7 +277,9 @@ class FpsOverlayService : LifecycleService() {
             widthScale = spec.widthScale,
             showGraph = spec.showGraph,
             graphSpan = spec.graphSpan,
-            snapEdges = spec.snapEdges
+            snapEdges = spec.snapEdges,
+            intervalMs = spec.intervalMs,
+            filter = spec.filter
         )
     }
 
@@ -292,6 +301,16 @@ class FpsOverlayService : LifecycleService() {
         val snapshot by HudLive.snapshot.collectAsState()
         // التفضيلات تُقرأ كل دورة: تغيير الحقول أو الشكل يظهر خلال ثانية بلا إعادة تشغيل.
         val hud = remember(view.id, snapshot.sampledAtMs) { loadView(view) }
+        /*
+         * بوّابة الإيقاع: العيّنة تصل كل ثانية، والمراقب قد يطلب ثلاثًا. واللقطة المعروضة
+         * تُثبَّت بين القبولين — فبدون التثبيت يُعاد الرسم لكل عيّنة ويصير الفاصل زينة.
+         */
+        val gate = remember(view.id) { MonitorGate() }
+        var shown by remember(view.id) { mutableStateOf(snapshot) }
+        LaunchedEffect(snapshot.sampledAtMs, hud.intervalMs) {
+            gate.updateInterval(hud.intervalMs)
+            if (gate.accept(snapshot.sampledAtMs)) shown = snapshot
+        }
         val accent = remember(hud.colorHex) {
             runCatching { Color(android.graphics.Color.parseColor(hud.colorHex)) }
                 .getOrDefault(Color(0xFF00E676))
@@ -305,20 +324,21 @@ class FpsOverlayService : LifecycleService() {
         HudSurface(
             form = hud.form,
             arrangement = hud.arrangement,
-            reading = snapshot.reading,
+            reading = shown.reading,
             fields = hud.fields,
             accent = accent,
             textSizeSp = hud.textSizeSp,
             backgroundAlpha = hud.backgroundAlpha,
-            framesHistory = snapshot.framesHistory.takeLast(hud.graphSpan),
+            framesHistory = shown.framesHistory.takeLast(hud.graphSpan),
             showGraph = hud.showGraph,
-            recording = snapshot.recording,
+            recording = shown.recording,
             onToggleRecording = {
                 if (HudRecorder.isLive) HudRecorder.stop(this) else HudRecorder.start(this)
             },
             onHide = { hidden[view.id] = true },
             onClose = { closeMonitor(view) },
-            modifier = Modifier.widthIn(min = (PANEL_MIN_WIDTH_DP * hud.widthScale).dp)
+            modifier = Modifier.widthIn(min = (PANEL_MIN_WIDTH_DP * hud.widthScale).dp),
+            filter = hud.filter
         )
     }
 }
@@ -341,5 +361,7 @@ private data class HudView(
     val widthScale: Float,
     val showGraph: Boolean,
     val graphSpan: Int,
-    val snapEdges: Boolean
+    val snapEdges: Boolean,
+    val intervalMs: Int,
+    val filter: HudFilter
 )
