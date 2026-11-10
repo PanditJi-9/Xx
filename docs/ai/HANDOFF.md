@@ -114,6 +114,31 @@ MaxManager has a strong engine and a fragmented surface. `core/maxai` + `core/ha
 **NEXT:** (١) CI: `:app:testReleaseUnitTest` + `:app:compileReleaseKotlin`. (٢) شريحة: علامة «يكتب» على
 صفوف التحكّم مشتقة من مسار المراجِع. (٣) شريحة: موجد واحد بالاسم والقصد. (٤) تعميم `MaxDataTrust`
 على كل قيمة غير متدفّقة. (٥) قرار مالك: حذف `StoryboardHome` أو إعادته.
+### ROUND-CLOSE-41 — تعميق جلسات اللعب: حكم مقابل أساس، سبب وفعل، بدء تلقائي، إشعار — 2026-11-10 · DONE_WITH_CONCERNS
+
+**TASK:** «الميزات التي ننسخها ليست جيده مثل الاصليه وليست عمليه … اصلح هذا الامر وتعمق» ثم «اكبر مشكله انك مقيد بتوحيد التصميم … عدل .md الخاص بالتصميم».
+
+**CHANGED — الشاشة تُجيب لا تعرض:**
+- `core/platform/GameSessionInsight.kt` (جديد · Kotlin صافٍ): `SessionVerdict {FirstRun, Better, Similar, Worse, Unusable}` · `SessionCause {Thermal, Jank, Energy, PowerSave, Refresh, Renderer, None}` · `SessionAction` · `sessionBaseline(history, package, excludeId, max=5)` = **وسيط** آخر ٥ جلسات لنفس الحزمة (≥٢٠ عيّنة، والجلسة تُستثنى من أساسها) · `sessionInsight` يقارن الإطارات وjank والحرارة والطاقة والتردّد والمُصيّر ويسمّي السبب بترتيبه · `worstPointOf(points)` = أدنى إطار.
+- `ui/subscreens/GameSessionsScreen.kt`: قسم «آخر جلسة» = وسم حكم + فرق الإطارات عن المعتاد بإشارة + أسوأ لحظة (إطار/توقيت) + سطر أول جلسة/جلسة قصيرة/سبب + صفّ فعل ينقلك إلى `hub_thermal`/`hub_display`/`hub_power`؛ وكل صفّ سجلّ يحمل وسم حكمه؛ والمنحنى يرسم علامة أسوأ لحظة (خط + دائرة) وتحتها قيمتها.
+- `core/platform/GameWatch.kt` (جديد) + `HudSessionRules.autoStart` + مفتاح في الشاشة: عند فتح لعبة من مكتبة الألعاب يبدأ التسجيل وحده (كاش ٦٠ث؛ ومصدر الحقيقة `GameLibraryAccess` نفسه لا قائمة ثانية).
+- `service/SessionSummaryNotifier.kt` (جديد): عند الإيقاف إشعار «FPS · jank · الحكم» والضغط يفتح `gamesessions` عبر `WidgetIntents.ROUTE_GAME_SESSIONS` (أُضيف) ومسار `MainActivity` القائم.
+- `HudRecorder.start(context, packageOverride)` + `lastSaved`؛ و`HudSampler` يقرأ الحزمة الأمامية عند `autoStart` ويبدأ من الحزمة المرصودة لا من كاش قديم.
+- النصوص: ٣٢ سلسلة في `values/` و`values-ar/` فقط.
+
+**CHANGED — وثيقة التصميم (السبب الجذري):**
+- `docs/ai/DESIGN_VISION.md` §4: «one shape, every screen» ← **«one language, many shapes»** + جدول ٧ أنواع (Instrument · Ledger · Console · Matrix · Studio · Flow · Library).
+- `DESIGN.md`: قسم `## Screen Composition` (فصل الثابت من الحرّ · جدول الأنواع · `The screen charter` · ما يبقى ممنوعًا · كيف يُطبَّق) + بندان في Do's + بندان في Don'ts + خطوة أولى في Iteration Guide + بند ٧ في Known Gaps.
+- `GameSessionsScreen` KDoc يحمل بطاقة الشاشة (Ledger · تسلسل الجلسات في الزمن · المنحنى والحكم).
+
+**BUILD:** `a58cc921` (١١ ملفًا · ٤ جديدة) ← `1160b4cd` (إصلاح نوعين) ← `1baa224a` (فكّ nullability في الاختبار). فشل مقيس: `42813222389` على `a58cc921` في «Compile main sources» — `GameSessionInsight.kt:89/93 Argument type mismatch: List<Int> but List<Float> expected` لأن `jankAverage`/`refreshHz` في `StoredGameSession` من نوع `Int?` والوسيط يأخذ `List<Float>`؛ أُصلح بـ`toFloat()` ثم `roundToInt()`. **`42814657771` على `1160b4cd` = success**: تصريف `BUILD SUCCESSFUL in 5m 17s` (١١ مهمة) · «Tests + assemble + package» `BUILD SUCCESSFUL in 6m 39s` (٦٤ مهمة) · `MaxManager-V4.zip` artifact **13764792189** مُتحقَّق ضد checksums (٢٧ مدخلًا). تشغيل `1baa224a` = `42815004425` كان قيد التشغيل عند كتابة السجل — لا يُدَّعى حكمه.
+
+**GATES:** kt_balance 3341/0 · code_health · i18n 84+en · prune 0 · design_tokens · **design_doc --assert «85 رمزًا · 107 اسمًا · 34 لونًا · مطابقة»** · resource_compile · jni_symbols · license_audit · readme_assets · provenance_guard «4112 ملفًا · 0 مسار · 0 بصمة» · diff OK.
+
+**RESIDUAL:** الجهاز غير متاح — الإشعار الفعلي وطلبه، والتقاط الحزمة الأمامية، واللمس/RTL لم تُختبر. والبدء التلقائي يعمل فقط ما دامت حلقة العيّنات حيّة (التراكب/المراقبة نشطة) لأنه ليس خدمة دائمة. والحكم يحتاج جلستين سابقتين على الأقل لنفس الحزمة وإلا `FirstRun`، والأساس يقرأ ٥ جلسات فقط.
+
+**NEXT:** (١) طلب إذن الإشعارات من الشاشة عند أول جلسة (اليوم يظهر صامتًا بلا إذن). (٢) إبطال كاش `GameWatch` عند تعديل مكتبة الألعاب. (٣) إعادة تركيب الشاشات الأولى حسب الأنواع السبعة (Known Gaps بند ٧). (٤) مراجعة مستقلة على `a58cc921`.
+
 ### ROUND-CLOSE-40 — إثبات الأصل بالقياس وحارس البصمات — 2026-11-10 · DONE_WITH_CONCERNS
 
 **TASK:** «كل شيئ اضفته من المشاريع الاخري ليس بعملي حقا» — إثبات الأصل أو الإزالة، لا وعدًا.
