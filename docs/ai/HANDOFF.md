@@ -114,6 +114,30 @@ MaxManager has a strong engine and a fragmented surface. `core/maxai` + `core/ha
 **NEXT:** (١) CI: `:app:testReleaseUnitTest` + `:app:compileReleaseKotlin`. (٢) شريحة: علامة «يكتب» على
 صفوف التحكّم مشتقة من مسار المراجِع. (٣) شريحة: موجد واحد بالاسم والقصد. (٤) تعميم `MaxDataTrust`
 على كل قيمة غير متدفّقة. (٥) قرار مالك: حذف `StoryboardHome` أو إعادته.
+### ROUND-CLOSE-47 — الحارس الذي أسقط البناء: `parent = null` ليس اسم أب — 2026-11-10 · DONE
+
+**TASK:** قراءة حكم البناء على `f8dd38f7` بدل ادّعائه.
+
+**MEASURED:** `MaxManager` `42879753566` = **failure** · «4225 tests completed, 2 failed, 3 skipped» ·
+`AssertionError` في `DestinationDoorTest.kt:161` و`:187`.
+
+**DIAGNOSIS:** `HmaCompanion : MaxDestination(…, parent = null)` — الوسيط الرابع نصّه `null`، فطابقه
+`Regex("\\w+")` وصار «أبًا» اسمه `null`، فسقط الاختباران على «أب غير مسجَّل» و«وجهة بلا باب».
+الوجهات كلها لها أبواب فعلية: `MaxAi` (٢ في `MaxAiScreen`) · `Apps` (٤ في `ApplistScreen`) ·
+`Settings` (٧) · المحاور تُولّد من السجلّ · `Control` في `ControlLayoutModel`.
+
+**SHIPPED:** استثناء `null` من استخراج الأب + تعليق يسمّي العطب. تحقّق مسبق بنفس القاعدة على الشجرة:
+**orphans = [] · مسارات مكرّرة = {} · آباء غير مسجّلين = []**.
+
+**GATES:** `kt_balance` ٣٣٤٤/٠ · `git diff --check` OK.
+
+**BUILD:** الدفعة التالية هي الحكم؛ لا يُدّعى قبل قراءته.
+
+**RESIDUAL RISK:** الحارس يقرأ النصّ لا السلوك، ويستثني `hidden` بأمر المالك؛ وشكل الصفحة يبقى
+**يحتاج جهازًا**.
+
+**NEXT:** قراءة حكم البناء على دفعة الإصلاح قبل أي شريحة جديدة.
+
 ### ROUND-CLOSE-46 — المختبر يقيس الشحن بدل أن يسمّي حالته — 2026-11-10 · DONE_WITH_CONCERNS
 
 **TASK:** «اكمل» — بعد أن ثبت أن `DeviceLab` اختبارُ عتاد، والفرق بيننا وبين اختبار حقيقي هو
@@ -141,7 +165,11 @@ MaxManager has a strong engine and a fragmented surface. `core/maxai` + `core/ha
 «صحّة نظيفة» · `license_audit` لا GPL · `readme_assets` أصول سليمة · `provenance_guard` ٠/٠ ·
 `git diff --check` OK.
 
-**BUILD:** `15f12a79` = **success** (`42877724414`). **الدفعة الحالية غير مُتحقّقة في هذه البيئة**
+**BUILD:** **تصحيح قراءة:** `42877724414` هو `MaxManager docs` لا `MaxManager`. الحكم الحقيقي:
+`5f459ea5` = **failure** (`42876178202`) · `15f12a79` = **cancelled** (`42877724314`) ·
+`f8dd38f7` = **failure** (`42879753566`، ٤٢٢٥ اختبارًا منها ٢ فاشلان في `DestinationDoorTest`).
+السبب عيب في الحارس نفسه لا في الكود: `HmaCompanion` يعلن `parent = null` صريحًا، وكان
+المُفكِّك يعدّ `null` اسم أب ⇒ «أب غير مسجَّل». أُصلح في الدفعة التالية.
 حتى يُقرأ تشغيلها؛ لا يُكتب «يمرّ».
 
 **RESIDUAL RISK:** (١) عدّاد الشحنة قد لا تعلنه بعض الأجهزة ⇒ يرجع إلى `CURRENT_NOW` المُعلَن

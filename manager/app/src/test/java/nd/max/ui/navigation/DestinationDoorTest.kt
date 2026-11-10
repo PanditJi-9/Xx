@@ -82,7 +82,10 @@ class DestinationDoorTest {
             val body = src.substring(open, i - 1)
             val args = splitTopLevel(body)
             val route = args.firstOrNull()?.trim()?.trim('"').orEmpty()
-            val parent = args.getOrNull(3)?.trim()?.takeIf { it.matches(Regex("\\w+")) }
+            // `parent = null` صريح في بعض التسجيلات (جذرٌ بلا أب) — وهو ليس اسم أب،
+            // وعدّه اسمًا يسقط الحارس على آبٍ غير مسجَّل اسمه «null».
+            val parent = args.getOrNull(3)?.trim()
+                ?.takeIf { it.matches(Regex("\\w+")) && it != "null" }
             out += Dest(
                 name = name,
                 route = route,
