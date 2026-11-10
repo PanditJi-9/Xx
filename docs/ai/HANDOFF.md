@@ -114,6 +114,30 @@ MaxManager has a strong engine and a fragmented surface. `core/maxai` + `core/ha
 **NEXT:** (١) CI: `:app:testReleaseUnitTest` + `:app:compileReleaseKotlin`. (٢) شريحة: علامة «يكتب» على
 صفوف التحكّم مشتقة من مسار المراجِع. (٣) شريحة: موجد واحد بالاسم والقصد. (٤) تعميم `MaxDataTrust`
 على كل قيمة غير متدفّقة. (٥) قرار مالك: حذف `StoryboardHome` أو إعادته.
+### ROUND-CLOSE-48 — ملفات التسليم الستّة مكتملة، وبناء أخضر مُثبت — 2026-11-10 · DONE
+
+**TASK:** إكمال مخرجات إعادة الهندسة المطلوبة (تحليل · بنية جديدة · هجرة · سلامة · أداء · اختبار · تغييرات)
+دون تكرار مصدر حقيقة، ودون ذكر أي مرجع لم يُنقل منه كود (§0.4).
+
+**MEASURED:** `main` عند `c4e83217`: **٩٤٥** ملف Kotlin · **٢٣٣٤٩٢** سطرًا · **٤٤٠** ملف اختبار ·
+**٤٢٢٥** دالة `@Test` · **٦٩** وجهة · **٨٤** لغة + en. وحكم `MaxManager` **`42892510611` = success**.
+
+**SHIPPED:** ستة ملفات تحت `docs/`: `NEW_ARCHITECTURE.md` · `MIGRATION_PLAN.md` ·
+`SECURITY_AND_SAFETY.md` · `PERFORMANCE_REPORT.md` · `TEST_REPORT.md` · `CHANGELOG.md`. وكلّها تُحيل إلى
+`docs/ai/PRODUCT-MAP.md` و`docs/ai/HANDOFF.md` كمصدرين وحيدين — لا أرقام تُكتب مرتين بلا إحالة.
+
+**GATES:** `kt_balance` ٣٣٤٤/٠ · `code_health` نظيف · `i18n_coverage` ٠ عائق · `--prune all` ٠ يتيم ·
+`design_tokens` ٢٤٩/٣٠٠ · `design_doc` مطابقة · `jni_symbols` ٢٣/٠ · `resource_compile` aapt2 ✓ ·
+`license_audit` GPL ٠ · `readme_assets` سليمة · `provenance_guard` ٤١١٨/٠/٠ · `git diff --check` OK.
+
+**BUILD:** `c4e83217` = **success** (`42892510611`) — وهو آخر حكم مقروء. الدفعة التوثيقية الحالية تُبنى
+لاحقًا؛ لا يُدّعى حكمها.
+
+**RESIDUAL RISK:** الملفات وصفٌ لما هو مقيس، لا وعد؛ والتدقيق البصري واللمسي وRTL على الشاشة يبقى
+**يحتاج جهازًا**؛ وستّة نقلات في `Control` محجوبة بقرارات مالك مكتوبة.
+
+**NEXT:** M2 (إعادة تركيب الشاشات الخمس حسب نوعها) ثم M3 (تكييف وإتاحة) ثم M4 (قياس استهلاك بجهاز).
+
 ### ROUND-CLOSE-47 — الحارس الذي أسقط البناء: `parent = null` ليس اسم أب — 2026-11-10 · DONE
 
 **TASK:** قراءة حكم البناء على `f8dd38f7` بدل ادّعائه.

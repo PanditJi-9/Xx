@@ -1,3 +1,22 @@
+## ROUND-CLOSE-48 — ملفات التسليم الستّة — 2026-11-10 · DONE
+
+**TASK:** إكمال مخرجات إعادة الهندسة المطلوبة، بلا مصدر حقيقة ثانٍ.
+
+**SHIPPED:** `docs/NEW_ARCHITECTURE.md` · `docs/MIGRATION_PLAN.md` · `docs/SECURITY_AND_SAFETY.md` ·
+`docs/PERFORMANCE_REPORT.md` · `docs/TEST_REPORT.md` · `docs/CHANGELOG.md` — كلّها تُحيل إلى
+`docs/ai/PRODUCT-MAP.md` و`docs/ai/HANDOFF.md`.
+
+**NEXT:** M2 — بطاقة نوع + عنصر حامل لكل شاشة من الخمس المستهدفة، ثم M3 ثم M4.
+
+## ROUND-CLOSE-47 — الحارس الذي أسقط البناء — 2026-11-10 · DONE
+
+**TASK:** تشخيص فشل `MaxManager` على `f8dd38f7` وإصلاح سببه لا عَرَضه.
+
+**SHIPPED:** `DestinationDoorTest` صار يستثني `parent = null` من استخراج الأب (كان `null` يُقرأ اسمًا)،
+فتحقّق: orphans = [] · مسارات مكرّرة = {} · آباء غير مسجّلين = [].
+
+**NEXT:** قراءة حكم البناء قبل أي شريحة جديدة.
+
 ## ROUND-CLOSE-46 — المختبر يقيس الشحن بدل أن يسمّي حالته — 2026-11-10 · DONE_WITH_CONCERNS
 
 **TASK:** تحويل «الحالة: جارٍ الشحن» إلى قياس: هل تدخل الطاقة فعلًا؟
