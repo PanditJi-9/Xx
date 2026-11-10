@@ -1,3 +1,15 @@
+## ROUND-CLOSE-42 — إعادة هندسة نظامية: الحصر المقيس + M0 + M1a — 2026-11-10 · DONE_WITH_CONCERNS
+
+**TASK:** «إعادة هندسة نظامية كاملة … لا توصيات بل تنفيذ».
+
+**SHIPPED:** `docs/ai/PRODUCT-MAP.md` (١٧٢ سطرًا: ٦٩ وجهة · ٨ جذور · ٣٩/٢٢ عمق · ٢٤←٢٢ ابنًا لـ`Control` · ٥ عيوب بعدد · M0→M4) · `MaxDestinations.kt` (`ProcessManager→MemoryHub` · `BatteryHistory→PowerHub`) · `ControlLayoutModel.kt` (قائمتا التحكّم ١١←١٠ و٣←٢) · `OwnerDecisionsGuardTest.kt` (قرار سابق مُعدَّل صراحةً: البطارية مع عائلتها، ولا تعود إلى `Settings`).
+
+**GATES:** kt_balance 3341/0 · code_health نظيف · i18n 84+en · prune 0 · design_tokens 249/300 · design_doc مطابق · jni_symbols 23/0 (ثنائيات غير مُتحقّقة) · resource_compile aapt2 ✓ · license_audit GPL 0 · readme_assets 69 · provenance 4117/0 · diff OK.
+
+**BUILD:** غير مُتحقّقة محليًّا؛ الحكم من `MaxManager` على هذه الدفعة — يُقرأ ولا يُدّعى.
+
+**NEXT:** M1b — قائمة أبناء عامة من السجلّ في `Settings`/`Diagnostics`/`DeviceLab` (الشرط المقيس للنقل)، ثم نقل `Logs`/`UsageStats`/`ColorScheme`/`MaxBackup`/`Permissions`/`DeviceLab`/`SetEdit`/`ActivityLauncher`/`FileManager`. ثم M2 (إعادة تركيب أعلى خمس شاشات). الهدف: أبناء `Control` ≤ ١٣.
+
 ## ROUND-CLOSE-41 — تعميق جلسات اللعب + أنواع الشاشات — 2026-11-10 · DONE_WITH_CONCERNS
 
 **TASK:** «الميزات التي ننسخها ليست جيده مثل الاصليه وليست عمليه … تعمق» ثم «انت مقيد بتوحيد التصميم … عدل .md الخاص بالتصميم».

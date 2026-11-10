@@ -74,15 +74,25 @@ class OwnerDecisionsGuardTest {
         )
     }
 
-    /** أدوات الجهاز تحت التحكّم، ولا مدخل لها في الإعدادات. */
+    /** أدوات الجهاز تحت التحكّم، ولا مدخل لها في الإعدادات — وسجلّ البطارية مع عائلته في محور الطاقة. */
     @Test
     fun `device tools are parented by Control and absent from Settings`() {
         val registry = read("ui/navigation/MaxDestinations.kt")
-        listOf("DeviceLab", "UsageStats", "BatteryHistory").forEach { name ->
+        // قرار المالك الأصلي: هذه الثلاثة تحت التحكّم لا الإعدادات.
+        listOf("DeviceLab", "UsageStats").forEach { name ->
             val line = registry.lines().first { it.contains("data object $name :") }
             assertTrue(
                 "$name عادت تحت Settings — نقلها المالك إلى التحكّم",
                 line.trimEnd().endsWith(", Control)"),
+            )
+        }
+        // وقرار إعادة هندسة المعلومات (M1a): سجلّ البطارية يقرأ عائلة الطاقة، فصار تحت `PowerHub`
+        // بدل أن يبقى شاذًّا في `Control` — والباب لا يُكسر: `maxHubRows` تُولّد أبناء المحور من السجلّ.
+        run {
+            val line = registry.lines().first { it.contains("data object BatteryHistory :") }
+            assertTrue(
+                "BatteryHistory خرجت من عائلة الطاقة — نُقلت إلى ${line.trim()}",
+                line.trimEnd().endsWith(", PowerHub)"),
             )
         }
         val settings = read("ui/mainscreens/SettingsScreen.kt")

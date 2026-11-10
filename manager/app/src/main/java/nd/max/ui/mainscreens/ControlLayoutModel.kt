@@ -72,7 +72,6 @@ val ControlToolDestinations: List<MaxDestination> = listOf(
     MaxDestination.MaxBackup,
     MaxDestination.Permissions,
     MaxDestination.FileManager,
-    MaxDestination.ProcessManager,
     MaxDestination.Logs,
     MaxDestination.FpsOverlay,
     MaxDestination.GameSessions,
@@ -85,14 +84,12 @@ val ControlToolDestinations: List<MaxDestination> = listOf(
 
 /**
  * **فحص الجهاز — شريطٌ ثانٍ لا صفوفٌ في صندوق الأدوات** (أمر المالك نقلها إلى التحكّم):
- * مختبر الجهاز واستخدام التطبيقات وسجلّ البطارية **تقرأ** حالة الجهاز ولا تكتب سقفًا ولا
- * سياسة. فلمّا انتقلت من الإعدادات إلى هنا، جُعلت مجموعةً بعنوانها بدل أن تُكدَّس في قائمة
+ * مختبر الجهاز واستخدام التطبيقات **يقرآن** حالة الجهاز ولا يكتبان سقفًا ولا سياسة. فلمّا انتقلت من الإعدادات إلى هنا، جُعلت مجموعةً بعنوانها بدل أن تُكدَّس في قائمة
  * «الأدوات» الطويلة: القارئ يفرّق بالعنوان بين «أداة أفتحها لتفعل» و«صفحة أفتحها لأعرف».
  */
 val ControlInspectDestinations: List<MaxDestination> = listOf(
     MaxDestination.DeviceLab,
     MaxDestination.UsageStats,
-    MaxDestination.BatteryHistory,
 )
 
 /** Which hubs belong to which band, and in what order. Editorial, nothing more. */

@@ -316,7 +316,7 @@ sealed class MaxDestination(
     //
     // مراقب المهام انتقل إلى `Control → Tools` بقرار المالك: هو **أداة** تُفتح على الجهاز لا
     // شاشة تخصّ تطبيقًا بعينه، ومكان الأدوات في شاشة التحكّم لا في مسار التشخيص داخل الإعدادات.
-    data object ProcessManager : MaxDestination("processmanager", R.string.processmgr_title, Icons.Rounded.Timeline, Control)
+    data object ProcessManager : MaxDestination("processmanager", R.string.processmgr_title, Icons.Rounded.Timeline, MemoryHub)
     data object DebloatFreeze : MaxDestination("debloatfreeze", R.string.debloat_freeze_title, Icons.Rounded.CleaningServices, Apps)
     data object AppSettings : MaxDestination("app_settings/{pkg}", R.string.max_title_app_settings, Icons.Rounded.AppSettingsAlt, Apps)
 
@@ -341,7 +341,7 @@ sealed class MaxDestination(
      * ومنحنى مستوى ومعدّل تصريف من القياس لا من التقدير. **تحت التحكّم بأمر المالك**،
      * والكتابة الوحيدة فيها ملفّها في `filesDir`.
      */
-    data object BatteryHistory : MaxDestination("battery_history", R.string.battery_history_title, Icons.Rounded.BatteryFull, Control)
+    data object BatteryHistory : MaxDestination("battery_history", R.string.battery_history_title, Icons.Rounded.BatteryFull, PowerHub)
 
     /**
      * `LICENSE-KEYS-01` — شاشة الترخيص: مفتاحٌ يُكتب مرّة، وشهادة موقّعة تعمل بعدها بلا إنترنت.

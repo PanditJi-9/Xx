@@ -114,6 +114,30 @@ MaxManager has a strong engine and a fragmented surface. `core/maxai` + `core/ha
 **NEXT:** (١) CI: `:app:testReleaseUnitTest` + `:app:compileReleaseKotlin`. (٢) شريحة: علامة «يكتب» على
 صفوف التحكّم مشتقة من مسار المراجِع. (٣) شريحة: موجد واحد بالاسم والقصد. (٤) تعميم `MaxDataTrust`
 على كل قيمة غير متدفّقة. (٥) قرار مالك: حذف `StoryboardHome` أو إعادته.
+### ROUND-CLOSE-42 — إعادة هندسة نظامية: حصر ٦٩ وجهة، خريطة منتج مقيسة، وأول نقل مُتحقَّق — 2026-11-10 · DONE_WITH_CONCERNS
+
+**TASK:** «إعادة هندسة نظامية كاملة … افحص كل الشاشات والتنقّل … لا توصيات بل تنفيذ» — مع «لا تُبنَ الشاشة المعدلة إلا لحاجة حقيقية» و«لا تبني محليًّا».
+
+**MEASURED — الحصر (لم يُكتب من الذاكرة):**
+- `manager/app/src/main/java/nd/max/ui/navigation/MaxDestinations.kt`: **٦٩** `data object … : MaxDestination` (يطابق `readme_assets.py`)، **٨ جذور**، **٤ أساسية** (`Now` · `Apps` · `Control` · `Settings`)، **٣٩** في العمق ١ و**٢٢** في العمق ٢ وصفر في ٣، **٢٤ ابنًا** لـ`Control`، **٣** مخفية، **٧** `MaxRisk.Advanced`، **٤** بوسيط مسار.
+- سكربت الحصر `/tmp/opencode/inv.py` يوازن الأقواس ويفكّ الوسائط على المستوى الصفري (لا regex سطري) — لأن بعض التعريفات تحمل تعليقات داخلها.
+
+**SHIPPED — M0:** `docs/ai/PRODUCT-MAP.md` (**١٧٢ سطرًا**): جدول الـ٦٩ وجهة بترتيب التطبيق (الشاشة · المسار · الأب · العمق · النوع · ملاحظة) · خمسة عيوب كلٌّ بعدد (ع١ `Control` ٢٤ = ٣٥٪ · ع٢ أربع عائلات على أبين · ع٣ نصف الجذور بلا باب · ع٤ عمق يتوقّف عند ٢ · ع٥ ١٤ وجهة = ٢٠٪ بحالة خاصة بلا موضع مراجعة) · هجرة M0→M4 بمعايير قبول رقمية · ما لا يُلمس · حدود.
+
+**SHIPPED — M1a (نقل مُتحقَّق فقط):**
+- `MaxDestinations.kt`: `ProcessManager` → `MemoryHub` · `BatteryHistory` → `PowerHub`.
+- `ControlLayoutModel.kt`: حُذف الاثنان من `ControlToolDestinations` (١١←١٠) و`ControlInspectDestinations` (٣←٢) — وإلا ظهرا مرّتين (شريط التحكّم + قسم المحور الموسّع).
+- `OwnerDecisionsGuardTest.kt`: **تعديل مُعلَن** لقرار مالك سابق يثبّت `BatteryHistory` تحت `Control`؛ القرار الأحدث (إعادة هندسة المعلومات) ينقلها إلى عائلة الطاقة، والحارس أُبقي على شطره الثاني (لا تعود إلى `SettingsScreen`) وعلى `DeviceLab`/`UsageStats` تحت `Control`. سبب التعديل مكتوب في الاختبار نفسه.
+- القياس بعد النقل: أبناء `Control` **٢٤ ← ٢٢** · العمق **٣٩/٢٢ ← ٣٧/٢٤** · صفر تكرار · `maxHubRows` تُولّد أبناء المحور من السجلّ ⇒ الباب لم يُكسر.
+
+**GATES (مقيسة في هذه الجولة):** `kt_balance` 3341/0 · `code_health` «صحّة نظيفة» (13 oversized · 26 wildcard · 5 inline · 4 hardcoded · 0 hw writes) · `i18n_coverage` 84+en · `--prune all` يتيمة 0 · `design_tokens` 249/300 · `design_doc` مطابقة · `jni_symbols` 23 تصريحًا/0 نواقص (الثنائيات **غير مُتحقّقة**) · `resource_compile` aapt2 ✓ · `license_audit` GPL 0 · `readme_assets` 69/84/4216/24 · `provenance_guard` 4117 ملفًا/0 بصمة · `git diff --check` OK.
+
+**BUILD:** **الترجمة غير مُتحقّقة في هذه البيئة** حتى يُقرأ حكم `MaxManager` على هذه الدفعة؛ لا `assembleDebug` محليًّا (§0.1).
+
+**RESIDUAL RISK:** (أ) الحصر **بنَيَوي**: يقرأ السجلّ لا ما يظهر على الشاشة؛ شاشة قد تكون مسجّلة ولا يصلها زرّ — يحتاج جهازًا. (ب) الأنواع السبعة إسناد تصميمي بيد لا قياس آلي. (ج) **M1b معلَّقة بشرط مقيس**: `SettingsScreen` · `DiagnosticsScreen` · `DeviceLabScreen` لا تعرض أبناءها من السجلّ (`grep "parent =="` يعطي ثلاثة مواضع فقط)، فنقل `Logs`/`UsageStats`/`ColorScheme`/`MaxBackup`/`Permissions`/`DeviceLab` كان سيصنع وجهات بلا باب. (د) هدف M1 (≤١٣ ابنًا) **لم يُبلَغ** بعد: ٢٢. (هـ) مراجعة سلامة مستقلة لم تقع.
+
+**NEXT:** (١) قراءة حكم البناء. (٢) M1b: قائمة أبناء عامة تُولَّد من السجلّ في `Settings`/`Diagnostics`/`DeviceLab`، ثم نقل العائلات الباقية. (٣) M2: إعادة تركيب أعلى خمس شاشات حسب أنواعها.
+
 ### ROUND-CLOSE-41 — تعميق جلسات اللعب: حكم مقابل أساس، سبب وفعل، بدء تلقائي، إشعار — 2026-11-10 · DONE_WITH_CONCERNS
 
 **TASK:** «الميزات التي ننسخها ليست جيده مثل الاصليه وليست عمليه … اصلح هذا الامر وتعمق» ثم «اكبر مشكله انك مقيد بتوحيد التصميم … عدل .md الخاص بالتصميم».
