@@ -2,6 +2,17 @@
 
 > الجولات مرتّبة من الأحدث. كل سطر يقابل التزامًا على `main`، والتفصيل في `docs/ai/HANDOFF.md`.
 
+## ROUND-CLOSE-50 — الستّة إلى مواضعها الحقيقية (M1c/M1d)
+- `feat(nav): move the six destinations to their real homes`: `Logs` · `UsageStats` · `DeviceLab`
+  → `Diagnostics`، و`ColorScheme` · `MaxBackup` · `Permissions` → `Settings`، وقسم «أدوات
+  التشخيص» يقرأ أبناءه من السجلّ. أبناء `Control` **٢٢ ← ١٦**، والعمق ٣٧/٢٤ ← **٣٤/٢٧**،
+  وصفر عائلة مفصولة على أبين. حرّاس محدَّثون: `DestinationDoorTest` · `LaunchRouteTest` ·
+  `OwnerDecisionsGuardTest` · `ControlLayoutModelTest`.
+
+## ROUND-CLOSE-49 — المختبر: بطاقة لكل اختبار
+- `2615360f` — `feat(lab): give every device test a card and a result`: ١٣ بطاقة، ونتيجة
+  يضعها من جرّب (`Not tried` · `Works` · `Faulty`)، وحوار يشغّل الاختبار أو يسجّل النتيجة.
+
 ## ROUND-CLOSE-47 — الحارس الذي أسقط البناء
 - `c4e83217` — `fix(test): treat parent = null as no parent in the door guard`: `HmaCompanion`
   يعلن `parent = null`، وكان الحارس يعدّه اسم أب. البناء صار **success** (`42892510611`).

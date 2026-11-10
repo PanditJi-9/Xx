@@ -114,6 +114,45 @@ MaxManager has a strong engine and a fragmented surface. `core/maxai` + `core/ha
 **NEXT:** (١) CI: `:app:testReleaseUnitTest` + `:app:compileReleaseKotlin`. (٢) شريحة: علامة «يكتب» على
 صفوف التحكّم مشتقة من مسار المراجِع. (٣) شريحة: موجد واحد بالاسم والقصد. (٤) تعميم `MaxDataTrust`
 على كل قيمة غير متدفّقة. (٥) قرار مالك: حذف `StoryboardHome` أو إعادته.
+### ROUND-CLOSE-50 — الستّة إلى مواضعها الحقيقية: صفر عائلة مفصولة — 2026-11-10 · DONE_WITH_CONCERNS
+
+**TASK:** بأمر المالك «نعم افعل الافضل»: نقل الوجهات الستّ التي كانت محجوبة بقرارات مكتوبة إلى
+مواضعها المنطقية، مع تحديث الحرّاس التي تثبّتها.
+
+**MEASURED قبل:** أبناء `Control` **٢٢** · `Settings` ٩ · `Diagnostics` **صفر** · العمق ٣٧/٢٤ ·
+صندوق الأدوات ١٠ · أربع عائلات مفصولة على أبين. و`SettingsScreen`/`DiagnosticsScreen` لا تعرضان
+أبناءهما من السجلّ (`grep "parent =="` = ٣ مواضع فقط).
+
+**SHIPPED:**
+- `Logs` · `UsageStats` · `DeviceLab` → `Diagnostics`؛ `ColorScheme` → `Settings` بجوار
+  `ColorPalette`؛ `MaxBackup` بجوار `ConfigBackup`؛ `Permissions` بجوار `Privilege`.
+- `DiagnosticsScreen`: قسم «أدوات التشخيص» يقرأ `maxHubRows(MaxDestination.Diagnostics)` من
+  السجلّ — لا صفّ مكتوب بيد، فلا يُنسى ابن جديد.
+- `ControlLayoutModel`: حُذف `ControlInspectDestinations` ودالته؛ صندوق الأدوات **٦**.
+- حرّاس محدَّثون: `DestinationDoorTest` (يقبل بابًا مولَّدًا من السجلّ) · `LaunchRouteTest`
+  (شرط المالك الجديد: ٦ أسطح بلا محور) · `OwnerDecisionsGuardTest` (خريطة الأبواب الجديدة) ·
+  `ControlLayoutModelTest` (بلا `controlInspectEntries`).
+
+**MEASURED بعد:** `Control` **٢٢ ← ١٦** · `Settings` ٩ ← **١٢** · `Diagnostics` ٠ ← **٣** ·
+العمق ٣٧/٢٤ ← **٣٤/٢٧** · صندوق الأدوات ١٠ ← **٦** · **صفر عائلة مفصولة** (معيار قبول M1).
+والهدف ≤ ١٣ لم يُبلَغ: الستّة الباقية ثلاثة أسطح حيّة (`FpsOverlay` · `GameSessions` ·
+`DynamicIsland`) وثلاثة أدوات بلا محور (`SetEdit` · `ActivityLauncher` · `FileManager`) —
+يُعلَن ولا يُخفى.
+
+**GATES:** `kt_balance` ٣٣٤٦/٠ · `code_health` نظيفة · `i18n_coverage` ٨٥/٠ و`--prune all` ٠ يتيم ·
+`design_tokens` ٢٤٩/٣٠٠ · `design_doc` مطابقة · `jni_symbols` ٢٣/٠ (الطبقة ٢ غير مُتحقّقة) ·
+`resource_compile` aapt2 ✓ · `license_audit` GPL ٠ · `readme_assets` سليمة · `provenance_guard`
+٤١٢٨/٠/٠ · `git diff --check` OK.
+
+**BUILD:** غير مُتحقّقة على هذه الدفعة في هذه البيئة. آخر حكم مقروء: `c4e83217` = success
+(`42892510611`). وحكم `2615360f` (بطاقات المختبر) لم يُقرأ بعد.
+
+**RESIDUAL RISK:** الحارس يقرأ النصّ لا السلوك · `DeviceLab` بقي اختبار عتاد ولم يُحوَّل إلى
+صندوق أدوات (قرار مالك) · `MaxBackup`/`Permissions` يحملان وسيط `{pkg}` اختياريًا و`launchRoute`
+ينزع الاستعلام فالنقل آمن بلا وسيط · الشكل النهائي للشاشتين **يحتاج جهازًا** · لا مراجعة مستقلة.
+
+**NEXT:** قراءة حكم البناء، ثم M2 (إعادة تركيب أعلى خمس شاشات) وM3 (إتاحة وأحجام) وM4 (قياس).
+
 ### ROUND-CLOSE-49 — المختبر: بطاقة لكل اختبار، والنتيجة يضعها من جرّب — 2026-11-10 · DONE_WITH_CONCERNS
 
 **TASK:** أن يكون المختبر قائمة اختبارات عتاد كما في المرجع الذي أشار إليه المالك (بطاقات + وسم نتيجة)،

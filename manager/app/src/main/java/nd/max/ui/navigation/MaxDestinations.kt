@@ -328,13 +328,13 @@ sealed class MaxDestination(
      * وفلاش ومستشعرات وبطارية. **تحت التحكّم بأمر المالك** (كانت في الإعدادات): أدوات
      * الجهاز تُطلب من مكان واحد. وتستعمل واجهات النظام العامة وحدها: لا جذر ولا كتابة في sysfs.
      */
-    data object DeviceLab : MaxDestination("device_lab", R.string.device_lab_title, Icons.Rounded.Science, Control)
+    data object DeviceLab : MaxDestination("device_lab", R.string.device_lab_title, Icons.Rounded.Science, Diagnostics)
 
     /**
      * `USAGE-STATS-01` — زمن المقدّمة لكل تطبيق من قاعدة استخدام أندرويد نفسها.
      * **تحت التحكّم بأمر المالك.** سطح قراءة لحالة الجهاز، ويحتاج إذن الوصول إلى الاستخدام وحده.
      */
-    data object UsageStats : MaxDestination("usage_stats", R.string.usage_stats_title, Icons.Rounded.DataUsage, Control)
+    data object UsageStats : MaxDestination("usage_stats", R.string.usage_stats_title, Icons.Rounded.DataUsage, Diagnostics)
 
     /**
      * `BATTERY-HISTORY-01` — سجلّ البطارية الطويل: عيّنات دورية كل ١٥ دقيقة،
@@ -366,8 +366,8 @@ sealed class MaxDestination(
     // والمخاطرة تبقى `Normal`: التصنيف يخصّ ما قد يُربك الجهاز، وهذه الثلاثة تقرأ وتُظهر
     // ولا تكتب عتادًا. رفعها إلى `Advanced` كان سيصنّفها في بوّابة المخاطرة بلا سبب.
     data object ColorPalette : MaxDestination("color_palette", R.string.theme, Icons.Rounded.Palette, Settings)
-    data object ColorScheme : MaxDestination("colorscheme", R.string.color_scheme, Icons.Rounded.ColorLens, Control)
-    data object Logs : MaxDestination("logsviewer", R.string.logsviewer_title, Icons.AutoMirrored.Rounded.ListAlt, Control)
+    data object ColorScheme : MaxDestination("colorscheme", R.string.color_scheme, Icons.Rounded.ColorLens, Settings)
+    data object Logs : MaxDestination("logsviewer", R.string.logsviewer_title, Icons.AutoMirrored.Rounded.ListAlt, Diagnostics)
     data object ConfigBackup : MaxDestination("config_backup", R.string.max_nav_config_backup, Icons.Rounded.Backup, Settings)
 
     /**
@@ -394,14 +394,14 @@ sealed class MaxDestination(
      * `pkg` **اختياري**: بلا معرّف تفتح الشاشة على منتقي التطبيقات (فهي شاشة قائمة بذاتها)،
      * وبه تُفتح على تطبيق واحد — وهو المدخل الموجود في شاشة إعدادات كل تطبيق.
      */
-    data object MaxBackup : MaxDestination("max_backup?pkg={pkg}", R.string.max_backup_title, Icons.Rounded.Backup, Control, MaxRisk.Advanced)
+    data object MaxBackup : MaxDestination("max_backup?pkg={pkg}", R.string.max_backup_title, Icons.Rounded.Backup, Settings, MaxRisk.Advanced)
 
     /**
      * `GAP-07` — الصلاحيات و`AppOps`: ما يُعلنه البيان، وما تسمح به المنصّة فعلًا، ومرجع مدوَّن
      * تعود إليه. `pkg` **اختياري**: بلا معرّف تفتح الشاشة على منتقي التطبيقات (فهي شاشة رئيسية
      * مستقلة بذاتها)، وبه تُفتح على تطبيق واحد — وهو مدخل شاشة إعدادات كل تطبيق.
      */
-    data object Permissions : MaxDestination("max_perms?pkg={pkg}", R.string.max_perms_title, Icons.Rounded.Shield, Control, MaxRisk.Advanced)
+    data object Permissions : MaxDestination("max_perms?pkg={pkg}", R.string.max_perms_title, Icons.Rounded.Shield, Settings, MaxRisk.Advanced)
     data object About : MaxDestination("aboutscreen", R.string.section_about, Icons.Rounded.Info, Settings)
     data object Privilege : MaxDestination("privilege", R.string.max_privilege_title, Icons.Rounded.Shield, Settings)
     data object ModuleHealth : MaxDestination("module_health", R.string.max_module_title, Icons.Rounded.Build, Settings)

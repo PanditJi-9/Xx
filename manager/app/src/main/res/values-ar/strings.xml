@@ -3894,6 +3894,7 @@
 <string name="device_lab_state_off">مغلق</string>
 <string name="device_lab_state_present">موجود</string>
 <string name="device_lab_state_absent">غير موجود</string>
+<string name="diagnostics_tools_section">أدوات التشخيص</string>
 <string name="device_lab_tests_title">اختبارات الجهاز</string>
 <string name="device_lab_tests_desc">بطاقة لكل قطعة. سجّل ما رأيته — التطبيق لا يسمع السماعة ولا يرى الشاشة عنك.</string>
 <string name="device_lab_outcome_not_run">لم يُجرَّب</string>

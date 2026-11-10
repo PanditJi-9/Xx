@@ -74,16 +74,28 @@ class OwnerDecisionsGuardTest {
         )
     }
 
-    /** أدوات الجهاز تحت التحكّم، ولا مدخل لها في الإعدادات — وسجلّ البطارية مع عائلته في محور الطاقة. */
+    /**
+     * **أدوات التشخيص تحت التشخيص، وأدوات النسخ والصلاحيات تحت الإعدادات** — وهذا قرار
+     * مالك محدَّث (M1c): كان الأصل «هذه الثلاثة تحت التحكّم لا الإعدادات»، ثم أمر المالك
+     * بنقلها إلى مواضعها المنطقية بعد أن صار لكلٍّ من `Settings` و`Diagnostics` بابٌ
+     * يقرأ أبنائه من السجلّ. وسجلّ البطارية بقي مع عائلته في محور الطاقة (M1a).
+     */
     @Test
-    fun `device tools are parented by Control and absent from Settings`() {
+    fun `device and data tools sit with the screen that owns them`() {
         val registry = read("ui/navigation/MaxDestinations.kt")
-        // قرار المالك الأصلي: هذه الثلاثة تحت التحكّم لا الإعدادات.
-        listOf("DeviceLab", "UsageStats").forEach { name ->
+        val expected = mapOf(
+            "DeviceLab" to ", Diagnostics)",
+            "UsageStats" to ", Diagnostics)",
+            "Logs" to ", Diagnostics)",
+            "ColorScheme" to ", Settings)",
+            "MaxBackup" to ", Settings,",
+            "Permissions" to ", Settings,",
+        )
+        expected.forEach { (name, suffix) ->
             val line = registry.lines().first { it.contains("data object $name :") }
             assertTrue(
-                "$name عادت تحت Settings — نقلها المالك إلى التحكّم",
-                line.trimEnd().endsWith(", Control)"),
+                "$name ليست في موضعها: ${line.trim()}",
+                line.trimEnd().endsWith(suffix),
             )
         }
         // وقرار إعادة هندسة المعلومات (M1a): سجلّ البطارية يقرأ عائلة الطاقة، فصار تحت `PowerHub`
@@ -95,10 +107,15 @@ class OwnerDecisionsGuardTest {
                 line.trimEnd().endsWith(", PowerHub)"),
             )
         }
+        // ولا مدخل ثانٍ: صفحة التحكّم لم تعد تذكر الستّة، والإعدادات لا تفتح أدوات التشخيص بصفٍّ خاص.
+        val control = read("ui/mainscreens/ControlLayoutModel.kt")
+        expected.keys.forEach { name ->
+            assertFalse("ControlLayoutModel ما زال يذكر $name — مدخلان لشيء واحد", control.contains("MaxDestination.$name"))
+        }
         val settings = read("ui/mainscreens/SettingsScreen.kt")
-        listOf("MaxDestination.DeviceLab", "MaxDestination.UsageStats", "MaxDestination.BatteryHistory")
+        listOf("MaxDestination.DeviceLab", "MaxDestination.UsageStats", "MaxDestination.Logs")
             .forEach { needle ->
-                assertFalse("SettingsScreen ما زال يفتح $needle بصفٍّ خاص", settings.contains(needle))
+                assertFalse("SettingsScreen يفتح $needle بصفٍّ خاص — بابها في Diagnostics", settings.contains(needle))
             }
     }
 }

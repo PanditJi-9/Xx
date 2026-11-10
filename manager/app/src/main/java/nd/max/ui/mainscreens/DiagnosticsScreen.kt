@@ -57,6 +57,9 @@ import androidx.navigation.NavHostController
 import nd.max.ui.component.CapabilityMatrixCard
 import nd.max.ui.component.MaxDeviceInfoShortcut
 import nd.max.ui.navigation.MaxDestination
+import nd.max.ui.navigation.MaxNavActions
+import nd.max.ui.navigation.maxDestinationRole
+import nd.max.ui.navigation.maxHubRows
 import nd.max.ui.component.maxAdaptiveContentWidth
 import nd.max.R
 import nd.max.ui.component.ExpressiveList
@@ -67,7 +70,11 @@ import nd.max.ui.component.MaxStatusPill
 import nd.max.ui.component.RouteVerdictLabel
 import nd.max.ui.theme.MaxTextRole
 import nd.max.ui.component.MaxSurface
+import nd.max.ui.design.MaxGroup
+import nd.max.ui.design.MaxGroupDivider
 import nd.max.ui.design.MaxGovernanceCard
+import nd.max.ui.design.MaxNavigationRow
+import nd.max.ui.design.MaxSection
 import nd.max.ui.design.MaxSpace
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
@@ -114,6 +121,10 @@ import android.widget.Toast
 fun DiagnosticsScreen(navController: NavHostController) {
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
     val listState = rememberLazyListState()
+    // **أدوات التشخيص تُقرأ من السجلّ لا من قائمة ثانية.** صارت هذه الشاشة بيت
+    // وحدة السجل وإحصاء الاستخدام ومختبر الجهاز بعد M1c، والقائمة تُشتقّ من `parent`
+    // في `MaxDestinations.kt` — فإضافة وجهة تحت التشخيص تُظهرها هنا بلا سطر آخر.
+    val tools = maxHubRows(MaxDestination.Diagnostics)
     val context = LocalContext.current
     var capabilities by remember { mutableStateOf<HardwareCapabilitySnapshot?>(null) }
     // Route verdicts are computed from the same snapshot the matrix renders, so the matrix can say
@@ -201,6 +212,23 @@ fun DiagnosticsScreen(navController: NavHostController) {
                     )
                 )
             }
+            if (tools.isNotEmpty()) {
+                item {
+                    MaxSection(title = stringResource(R.string.diagnostics_tools_section)) {
+                        MaxGroup {
+                            tools.forEachIndexed { index, tool ->
+                                if (index > 0) MaxGroupDivider()
+                                MaxNavigationRow(
+                                    title = stringResource(tool.titleRes),
+                                    subtitle = stringResource(maxDestinationRole(tool)),
+                                    icon = tool.icon,
+                                    onClick = { MaxNavActions(navController).navigateTo(tool) },
+                                )
+                            }
+                        }
+                    }
+                }
+            }
             item {
                 // وزرّ قسم **المستشعرات** في «معلومات الجهاز» على جانب عنوان هذه البطاقة — وهي
                 // البطاقة الأولى ذات العنوان في شاشة التشخيص (`SensorInventoryCard` بطاقة
@@ -277,9 +305,10 @@ fun DiagnosticsScreen(navController: NavHostController) {
                 }
             }
             //
-            // ولا تُكرَّر هنا روابط مراقب المهام ووحدة السجل وطرفية الأوامر: مكانها
-            // `Control → Tools` وحده. وكان في هذه الشاشة صفّان لثلاث أدوات، فصار للشيء الواحد
-            // مدخلان يفترقان في الوصف — وهو ما تمنعه قائمة الوجهات المفردة (ADR-02).
+            // **وتكرارُ المدخل ما زال ممنوعًا (ADR-02).** كان في هذه الشاشة صفّان لثلاث أدوات
+            // ومكانها `Control → Tools`، فصار للشيء الواحد مدخلان يفترقان في الوصف. ثمّ ردّت
+            // **M1c** وحدة السجل وإحصاء الاستخدام ومختبر الجهاز إلى هنا — لا بالصفّ المكتوب،
+            // بل بالقسم الذي يقرأ أبناء التشخيص من السجلّ؛ فالمصدر واحد والمدخل واحد.
         }
     }
 

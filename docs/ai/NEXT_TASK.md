@@ -1,3 +1,16 @@
+## ROUND-CLOSE-50 — الستّة إلى مواضعها الحقيقية (M1c/M1d) — 2026-11-10 · DONE_WITH_CONCERNS
+
+**TASK:** نقل `Logs` · `UsageStats` · `DeviceLab` إلى `Diagnostics`، و`ColorScheme` · `MaxBackup` ·
+`Permissions` إلى `Settings` — بأمر المالك، مع تحديث الحرّاس.
+
+**SHIPPED:** ستّة أبوّة جديدة · قسم «أدوات التشخيص» يقرأ من السجلّ · حذف `ControlInspectDestinations` ·
+صندوق الأدوات ٦ · أربعة حرّاس محدَّثون · نصّ `diagnostics_tools_section` en/ar.
+
+**MEASURED:** `Control` ٢٢←١٦ · `Settings` ٩←١٢ · `Diagnostics` ٠←٣ · العمق ٣٧/٢٤←٣٤/٢٧ ·
+صفر عائلة مفصولة.
+
+**NEXT:** حكم البناء، ثم M2.
+
 ## ROUND-CLOSE-49 — بطاقات اختبار الجهاز ونتيجتها — 2026-11-10 · DONE_WITH_CONCERNS
 
 **TASK:** تحويل المختبر إلى قائمة اختبارات موحّدة: بطاقة لكل قطعة ووسم نتيجة.

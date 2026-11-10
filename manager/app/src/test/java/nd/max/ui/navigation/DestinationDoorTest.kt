@@ -156,7 +156,11 @@ class DestinationDoorTest {
             when {
                 file == null -> Unit // المحور يُولّد أبناءه من السجلّ
                 file.isEmpty() -> orphans += "${child.name} → ${parent.name} (لا سطح معروف يعرض أبناءه)"
-                !read(file).contains("MaxDestination.${child.name}") ->
+                // وبابان مقبولان: الصفّ المكتوب بالاسم، أو القسم الذي يقرأ أبناء الأب من
+                // السجلّ (`maxHubRows`). الثاني هو ما استُعمل في `Settings`/`Diagnostics`
+                // بعد M1c، وفيه لا يظهر اسم الابن في الملف أصلًا — والمصدر واحد.
+                !read(file).contains("MaxDestination.${child.name}") &&
+                    !read(file).contains("maxHubRows(MaxDestination.${parent.name})") ->
                     orphans += "${child.name} → ${parent.name} ($file لا يذكره)"
             }
         }

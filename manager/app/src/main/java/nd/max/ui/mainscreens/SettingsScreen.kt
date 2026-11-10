@@ -20,6 +20,7 @@ package nd.max.ui.mainscreens
 import nd.max.core.privilege.PrivilegeManager
 import nd.max.ui.navigation.MaxDestination
 import nd.max.ui.navigation.MaxNavActions
+import nd.max.ui.navigation.maxDestinationRole
 import nd.max.ui.navigation.MaxRisk
 
 
@@ -318,6 +319,15 @@ fun SettingsScreen(
                             },
                             {
                                 ExpressiveListItem(
+                                    onClick = { MaxNavActions(navController).navigateTo(MaxDestination.ColorScheme) },
+                                    headlineContent = { Text(stringResource(MaxDestination.ColorScheme.titleRes)) },
+                                    supportingContent = { Text(stringResource(maxDestinationRole(MaxDestination.ColorScheme))) },
+                                    leadingContent = { LeadingIcon(icon = MaxDestination.ColorScheme.icon) },
+                                    trailingContent = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null) }
+                                )
+                            },
+                            {
+                                ExpressiveListItem(
                                     onClick = { showLanguageSheet = true },
                                     headlineContent = { Text(stringResource(R.string.max_language_title)) },
                                     // الوصف أُزيل بأمر المالك (٢٠٢٦-٠٩-٢٤): «لغة عرض التطبيق،
@@ -397,12 +407,30 @@ fun SettingsScreen(
                                     trailingContent = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null) }
                                 )
                             },
+                            {
+                                ExpressiveListItem(
+                                    onClick = { MaxNavActions(navController).navigateTo(MaxDestination.MaxBackup) },
+                                    headlineContent = { Text(stringResource(MaxDestination.MaxBackup.titleRes)) },
+                                    supportingContent = { Text(stringResource(maxDestinationRole(MaxDestination.MaxBackup))) },
+                                    leadingContent = { LeadingIcon(icon = MaxDestination.MaxBackup.icon) },
+                                    trailingContent = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null) }
+                                )
+                            },
                             // **إحصاءات المجتمع وإضافات الطرف الثالث: مخفيّان بأمر المالك
                             // (2026-10-21).** كانا صفّين هنا؛ والآن يحمل السجل نفسه علامة
                             // `hidden = true` على الوجهتين، فيُخفيهما فهرس الشاشات أيضًا —
                             // لا موضعان لقرار واحد. الشاشتان والمساران والنصوص باقية كما هي:
                             // الإرجاع بضغطة على العلامة وحدها. ولا يوقف هذا قناة الإحصاءات:
                             // إرسالها يبقى خاضعًا للموافقة المحفوظة (والافتراضي بلا موافقة).
+                            {
+                                ExpressiveListItem(
+                                    onClick = { MaxNavActions(navController).navigateTo(MaxDestination.Permissions) },
+                                    headlineContent = { Text(stringResource(MaxDestination.Permissions.titleRes)) },
+                                    supportingContent = { Text(stringResource(maxDestinationRole(MaxDestination.Permissions))) },
+                                    leadingContent = { LeadingIcon(icon = MaxDestination.Permissions.icon) },
+                                    trailingContent = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null) }
+                                )
+                            },
                             {
                                 // السطح الموحّد للامتياز (AR-20): الجذر وShizuku في شاشة
                                 // واحدة، وهي نفسها المستخدمة في شاشة البداية. وهذا الصفّ

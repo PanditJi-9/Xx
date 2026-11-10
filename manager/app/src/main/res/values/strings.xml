@@ -3949,6 +3949,7 @@
 <string name="device_lab_state_off">Off</string>
 <string name="device_lab_state_present">Present</string>
 <string name="device_lab_state_absent">Not present</string>
+<string name="diagnostics_tools_section">Diagnostic tools</string>
 <string name="device_lab_tests_title">Device tests</string>
 <string name="device_lab_tests_desc">One card per part. Mark what you saw — the app cannot hear a speaker or see a screen for you.</string>
 <string name="device_lab_outcome_not_run">Not tried</string>

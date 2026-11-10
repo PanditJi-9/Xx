@@ -56,14 +56,14 @@ data class ControlGroupSpec(
  * إلى هنا لأن الأدوات تُطلب من مكان واحد، والتنقّل إليها كان يشترط أن يُعرف أنها تحت الإعدادات
  * أو تحت التشخيص — شرط لا معنى له من جهة المستخدم.
  *
- * ثمّ ردّت **M1a** مراقب المهام إلى محور الذاكرة (عائلته). وأما محرّر الإعدادات ومشغّل الأنشطة
- * ومدير الملفات فبقيت هنا بعد أن جُرِّبت إحالتها إلى **مختبر الجهاز** ورُفضت: المختبر
- * **اختبارُ عتاد** لا صندوق أدوات، ووجهته أن يقيس ما إذا كانت القطع تعمل — لا أن يفتح محرّرًا
- * يكتب إعدادات. فمن يفتح المختبر ليجرب اللمس والسماعة لا يُعرض عليه مدير ملفات.
+ * ثمّ فرّقت ثلاث دفعات ما جُمع: **M1a** ردّت مراقب المهام إلى محور الذاكرة، و**M1b** رُفضت
+ * لأنها كانت ستجعل المختبر صندوق أدوات وهو **اختبارُ عتاد** لا غير، و**M1c** ردّت وحدة السجل
+ * إلى التشخيص بعد أن صار يعرض أبناءه من السجلّ، وردّت النسخ الاحتياطي والصلاحيات ومخطّط الألوان
+ * إلى الإعدادات للسبب نفسه. وما بقي هنا ستّة لا سبعة عشر: ثلاثة أسطح حيّة
+ * (`FpsOverlay` · `GameSessions` · `DynamicIsland`) وثلاث أدوات متقدّمة لا محور لها.
  *
- * وأما **السمة** فقد عادت إلى الإعدادات بأمر مالك: صارت صفًّا فوق بطاقة اللغة، لأن من يغيّر
- * السمة يبحث عنها في الإعدادات لا في صندوق الأدوات. ومخطّط الألوان بقي هنا — مختلف عنه:
- * ذاك يسأل «أي ألوان تُشتقّ من بذرة»، وهذا يسأل «ما السمة نفسها».
+ * وأما محرّر الإعدادات ومشغّل الأنشطة ومدير الملفات فبقيت هنا بعد أن جُرِّبت إحالتها إلى
+ * **مختبر الجهاز** ورُفضت: فمن يفتح المختبر ليجرب اللمس والسماعة لا يُعرض عليه مدير ملفات.
  *
  * و**شاشة الأداء** (`MaxDestination.FpsOverlay`) دخلت هنا بأمر مالك: كانت في `ResponsivenessHub`
  * فتُقرأ على أنها «ضبط معدل الإطارات» وهو `FpsGo` نفسه. وموضعها هنا بعد أدوات النظام: هي طبقة
@@ -73,27 +73,13 @@ data class ControlGroupSpec(
  * تراكبٌ فوق التطبيقات يُفتح لتُرى حالته، لا ضبطٌ داخل مجال.
  */
 val ControlToolDestinations: List<MaxDestination> = listOf(
-    MaxDestination.MaxBackup,
-    MaxDestination.Permissions,
     MaxDestination.FileManager,
-    MaxDestination.Logs,
     MaxDestination.FpsOverlay,
     MaxDestination.GameSessions,
     MaxDestination.DynamicIsland,
-    MaxDestination.ColorScheme,
     MaxDestination.SetEdit,
     MaxDestination.ActivityLauncher,
     // الأخطف آخرًا: لا يُفتح بلمسة عابرة.
-)
-
-/**
- * **فحص الجهاز — شريطٌ ثانٍ لا صفوفٌ في صندوق الأدوات** (أمر المالك نقلها إلى التحكّم):
- * مختبر الجهاز واستخدام التطبيقات **يقرآن** حالة الجهاز ولا يكتبان سقفًا ولا سياسة. فلمّا انتقلت من الإعدادات إلى هنا، جُعلت مجموعةً بعنوانها بدل أن تُكدَّس في قائمة
- * «الأدوات» الطويلة: القارئ يفرّق بالعنوان بين «أداة أفتحها لتفعل» و«صفحة أفتحها لأعرف».
- */
-val ControlInspectDestinations: List<MaxDestination> = listOf(
-    MaxDestination.DeviceLab,
-    MaxDestination.UsageStats,
 )
 
 /** Which hubs belong to which band, and in what order. Editorial, nothing more. */
@@ -203,11 +189,6 @@ fun controlToolGroups(access: nd.max.ui.navigation.DestinationAccess? = null): L
         ).takeIf { rows.isNotEmpty() }
     }
 }
-
-/** Rows of the device-check band — same table, same visibility gate. */
-fun controlInspectEntries(access: nd.max.ui.navigation.DestinationAccess? = null): List<ControlEntry> =
-    ControlInspectDestinations.filter { access == null || access.visible(it) }
-        .map { destination -> ControlEntry(destination, maxDestinationRole(destination)) }
 
 /**
  * Stable list key: the band's own title resource, so reordering bands does not
