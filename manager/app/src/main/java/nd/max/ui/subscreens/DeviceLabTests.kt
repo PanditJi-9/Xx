@@ -1,0 +1,65 @@
+/*
+ * Copyright (C) 2026 Nader Magdy. All rights reserved.
+ * Proprietary and confidential — not licensed for use, copying, or distribution
+ * without prior written permission from the copyright holder.
+ */
+package nd.max.ui.subscreens
+
+import androidx.annotation.StringRes
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.VolumeUp
+import androidx.compose.material.icons.rounded.BatteryChargingFull
+import androidx.compose.material.icons.rounded.CameraAlt
+import androidx.compose.material.icons.rounded.FlashOn
+import androidx.compose.material.icons.rounded.Keyboard
+import androidx.compose.material.icons.rounded.Mic
+import androidx.compose.material.icons.rounded.Science
+import androidx.compose.material.icons.rounded.Sensors
+import androidx.compose.material.icons.rounded.TouchApp
+import androidx.compose.material.icons.rounded.Vibration
+import androidx.compose.material.icons.rounded.Wifi
+import androidx.compose.ui.graphics.vector.ImageVector
+import nd.max.R
+import nd.max.ui.design.MaxTone
+
+/**
+ * **كل اختبار يعرضه المختبر، في مكان واحد.**
+ *
+ * الشاشة كانت تعرض الاختبارات بأربع طرق مختلفة: حوارات تُفتح من صفوف، وأقسامًا تُقرأ بالتمرير،
+ * وبطاقات بلا نتيجة. فمن يفتح المختبر ليعرف «هل جهازي سليم؟» لا يجد جوابًا: يرى قائمة قراءات
+ * وأزرارًا، ولا يرى **ما جُرِّب وما لم يُجرَّب**.
+ *
+ * وهذا الجدول يجعل السؤال واحدًا: لكل قطعة بطاقة، وللبطاقة نتيجة. والنتيجة **يضعها المستخدم**
+ * لأنه الوحيد الذي يسمع السماعة ويرى الشاشة — والتطبيق لا يدّعي أنه يعرف. وما يقيسه التطبيق
+ * فعلًا (الشحن · الميكروفون · المستشعرات · الشبكة) يعرض قراءته في قسمه، ولا يمنح نفسه وسم نجاح.
+ */
+enum class LabTestId(
+    @StringRes val titleRes: Int,
+    val icon: ImageVector,
+) {
+    SCREEN(R.string.device_lab_screen_title, Icons.Rounded.Science),
+    TOUCH(R.string.device_lab_touch_title, Icons.Rounded.TouchApp),
+    BUTTONS(R.string.device_lab_buttons_title, Icons.Rounded.Keyboard),
+    VIBRATION(R.string.device_lab_vibration_title, Icons.Rounded.Vibration),
+    SPEAKER(R.string.device_lab_speaker_title, Icons.AutoMirrored.Rounded.VolumeUp),
+    MICROPHONE(R.string.device_lab_mic_title, Icons.Rounded.Mic),
+    TORCH(R.string.device_lab_torch_title, Icons.Rounded.FlashOn),
+    SENSORS(R.string.device_lab_sensors_title, Icons.Rounded.Sensors),
+    BATTERY(R.string.device_lab_battery_title, Icons.Rounded.BatteryChargingFull),
+    CHARGING(R.string.device_lab_section_charge, Icons.Rounded.BatteryChargingFull),
+    CAMERAS(R.string.device_lab_section_cameras, Icons.Rounded.CameraAlt),
+    RADIOS(R.string.device_lab_section_radios, Icons.Rounded.Wifi),
+    WIFI(R.string.device_lab_section_wifi, Icons.Rounded.Wifi),
+}
+
+/**
+ * **نتيجةٌ يضعها من جرّب، لا استنتاجًا من التطبيق.**
+ *
+ * ثلاث حالات لا رابعة: لم يُجرَّب · يعمل · معطوب. ولا «نجاح» تلقائي عند فتح الحوار، لأن فتح
+ * الشاشة الحمراء ليس دليلًا على سلامة الشاشة. واللون يخدم الكلمة ولا يغني عنها (ADR-07).
+ */
+enum class LabOutcome(@StringRes val labelRes: Int, val tone: MaxTone) {
+    NOT_RUN(R.string.device_lab_outcome_not_run, MaxTone.Inactive),
+    PASSED(R.string.device_lab_outcome_passed, MaxTone.Positive),
+    FAILED(R.string.device_lab_outcome_failed, MaxTone.Caution),
+}

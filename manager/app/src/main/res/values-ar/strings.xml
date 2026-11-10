@@ -3894,6 +3894,13 @@
 <string name="device_lab_state_off">مغلق</string>
 <string name="device_lab_state_present">موجود</string>
 <string name="device_lab_state_absent">غير موجود</string>
+<string name="device_lab_tests_title">اختبارات الجهاز</string>
+<string name="device_lab_tests_desc">بطاقة لكل قطعة. سجّل ما رأيته — التطبيق لا يسمع السماعة ولا يرى الشاشة عنك.</string>
+<string name="device_lab_outcome_not_run">لم يُجرَّب</string>
+<string name="device_lab_outcome_passed">يعمل</string>
+<string name="device_lab_outcome_failed">معطوب</string>
+<string name="device_lab_result_run">شغّل الاختبار</string>
+<string name="device_lab_result_clear">امسح النتيجة</string>
 <string name="device_lab_section_charge">اختبار الشحن</string>
 <string name="device_lab_charge_desc">ستّ ثوانٍ من القياس: ما تكسبه البطارية فعلًا أو تفقده. والاتجاه من عدّاد الشحنة لا من إشارة المقياس.</string>
 <string name="device_lab_charge_flow">التدفّق</string>

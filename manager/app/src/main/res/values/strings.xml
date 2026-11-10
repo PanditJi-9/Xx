@@ -3949,6 +3949,13 @@
 <string name="device_lab_state_off">Off</string>
 <string name="device_lab_state_present">Present</string>
 <string name="device_lab_state_absent">Not present</string>
+<string name="device_lab_tests_title">Device tests</string>
+<string name="device_lab_tests_desc">One card per part. Mark what you saw — the app cannot hear a speaker or see a screen for you.</string>
+<string name="device_lab_outcome_not_run">Not tried</string>
+<string name="device_lab_outcome_passed">Works</string>
+<string name="device_lab_outcome_failed">Faulty</string>
+<string name="device_lab_result_run">Run the test</string>
+<string name="device_lab_result_clear">Clear result</string>
 <string name="device_lab_section_charge">Charging test</string>
 <string name="device_lab_charge_desc">Six seconds of measurement: what the battery actually gains or loses. Direction comes from the charge counter, not from the gauge\'s sign.</string>
 <string name="device_lab_charge_flow">Flow</string>

@@ -52,6 +52,7 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.VolumeUp
 import androidx.compose.material.icons.rounded.BatteryChargingFull
+import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.FlashOn
 import androidx.compose.material.icons.rounded.Keyboard
@@ -114,6 +115,9 @@ import kotlin.math.abs
 import nd.max.R
 import nd.max.core.net.WifiChannel
 import nd.max.ui.util.WifiChannelReader
+import nd.max.ui.design.MaxCardData
+import nd.max.ui.design.MaxCardGrid
+import nd.max.ui.design.MaxCardSize
 import nd.max.ui.design.MaxGroup
 import nd.max.ui.design.MaxGroupDivider
 import nd.max.ui.design.MaxNavigationRow
@@ -152,6 +156,9 @@ fun DeviceLabScreen(navController: NavHostController) {
     val scope = rememberCoroutineScope()
     var chargeAttempt by remember { mutableIntStateOf(0) }
     var openTest by remember { mutableStateOf<LabTest?>(null) }
+    // نتيجة كل اختبار يضعها من جرّبه؛ الحوار يفتحها، والبطاقة تعرضها.
+    var labResults by remember { mutableStateOf<Map<LabTestId, LabOutcome>>(emptyMap()) }
+    var labTarget by remember { mutableStateOf<LabTestId?>(null) }
 
     val speakerError = stringResource(R.string.device_lab_speaker_error)
     val torchError = stringResource(R.string.device_lab_torch_error)
@@ -169,6 +176,25 @@ fun DeviceLabScreen(navController: NavHostController) {
         accentIcon = Icons.Rounded.Science,
         snackbarHostState = snackbar,
     ) {
+        MaxSection(
+            title = stringResource(R.string.device_lab_tests_title),
+            description = stringResource(R.string.device_lab_tests_desc),
+        ) {
+            MaxCardGrid(
+                cards = LabTestId.entries.map { test ->
+                    val outcome = labResults[test] ?: LabOutcome.NOT_RUN
+                    MaxCardData(
+                        title = stringResource(test.titleRes),
+                        icon = test.icon,
+                        description = stringResource(outcome.labelRes),
+                        tone = outcome.tone,
+                        onClick = { labTarget = test },
+                    )
+                },
+                size = MaxCardSize.Medium,
+            )
+        }
+
         MaxSection(title = stringResource(R.string.device_lab_section_screen)) {
             MaxGroup {
                 MaxNavigationRow(
@@ -330,6 +356,26 @@ fun DeviceLabScreen(navController: NavHostController) {
             SensorTest()
             BatteryTest()
         }
+    }
+
+    labTarget?.let { test ->
+        LabResultDialog(
+            test = test,
+            outcome = labResults[test],
+            onRun = {
+                labTarget = null
+                openTest = test.dialog()
+            },
+            onPick = { outcome ->
+                labResults = labResults + (test to outcome)
+                labTarget = null
+            },
+            onClear = {
+                labResults = labResults - test
+                labTarget = null
+            },
+            onDismiss = { labTarget = null },
+        )
     }
 
     when (openTest) {
@@ -1879,4 +1925,68 @@ private fun blockerLabel(blocker: WifiChannelReader.Blocker?): Int = when (block
     WifiChannelReader.Blocker.WifiOff -> R.string.device_lab_wifi_off
     WifiChannelReader.Blocker.Unreadable -> R.string.device_lab_wifi_unreadable
     WifiChannelReader.Blocker.NoPermission, null -> R.string.device_lab_wifi_unreadable
+}
+
+// ---------------------------------------------------------------------------
+// Test result — the one thing the app cannot measure for the user
+// ---------------------------------------------------------------------------
+
+/** أي اختبار يُفتح حوارًا حقيقيًّا، وأي اختبار يُقرأ من قسمه. */
+private fun LabTestId.dialog(): LabTest? = when (this) {
+    LabTestId.SCREEN -> LabTest.SCREEN
+    LabTestId.TOUCH -> LabTest.TOUCH
+    LabTestId.BUTTONS -> LabTest.BUTTONS
+    else -> null
+}
+
+/**
+ * **حوار النتيجة.** لا يمنح نجاحًا بنفسه: يعرض «شغّل الاختبار» إن كان له حوار، ثم «يعمل» أو
+ * «معطوب» أو «امسح النتيجة». والغرض أن يُعرف في لمحة ما لم يُجرَّب بعد — لا أن يُقال للمستخدم
+ * إن جهازه سليم وهو لم يسمع صوتًا ولا رأى لونًا.
+ */
+@Composable
+private fun LabResultDialog(
+    test: LabTestId,
+    outcome: LabOutcome?,
+    onRun: () -> Unit,
+    onPick: (LabOutcome) -> Unit,
+    onClear: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    Dialog(onDismissRequest = onDismiss) {
+        MaxSection(title = stringResource(test.titleRes)) {
+            MaxGroup {
+            if (test.dialog() != null) {
+                MaxNavigationRow(
+                    title = stringResource(R.string.device_lab_result_run),
+                    icon = test.icon,
+                    iconTone = MaxTone.Accent,
+                    onClick = onRun,
+                )
+                MaxGroupDivider()
+            }
+            MaxNavigationRow(
+                title = stringResource(LabOutcome.PASSED.labelRes),
+                icon = Icons.Rounded.Check,
+                iconTone = MaxTone.Positive,
+                onClick = { onPick(LabOutcome.PASSED) },
+            )
+            MaxGroupDivider()
+            MaxNavigationRow(
+                title = stringResource(LabOutcome.FAILED.labelRes),
+                icon = Icons.Rounded.Close,
+                iconTone = MaxTone.Caution,
+                onClick = { onPick(LabOutcome.FAILED) },
+            )
+            if (outcome != null) {
+                MaxGroupDivider()
+                MaxNavigationRow(
+                    title = stringResource(R.string.device_lab_result_clear),
+                    icon = Icons.Rounded.RestartAlt,
+                    onClick = onClear,
+                )
+            }
+            }
+        }
+    }
 }
