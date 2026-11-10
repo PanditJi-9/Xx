@@ -371,6 +371,57 @@ recognised by the air around it before anyone notices its container. This is why
 carries both a padding (16dp) and a height floor (92dp): the floor exists so a one-word card does not
 collapse next to a wordy neighbour and break the rhythm of a row.
 
+## Screen Composition
+
+The token layer is a language, not a template. A screen inherits colour, tone meaning, type scale,
+radii, spacing, the touch floor, RTL behaviour and the motion ceiling — it does **not** inherit a
+layout. Two screens that answer different questions must not be forced into the same stack of
+sections.
+
+### The split
+
+| Layer | Fixed for every screen | Free per screen |
+| --- | --- | --- |
+| Language | colour, tone meaning, type scale, radii, spacing, touch floor, RTL, motion ceiling | — |
+| Composition | — | order, density, and whether the page is a stack, a plot, a grid, a timeline or a canvas |
+
+The test is the screen's **primary object**: the one thing the person came to read or change. If the
+primary object is a number, the screen is an instrument. If it is a sequence in time, it is a ledger.
+If it is a set of mutually exclusive states, it is a console. Forcing a timeline into rows is the same
+defect as forcing a knob into a chart: the layout stops describing the object.
+
+### Archetypes
+
+| Archetype | Primary object | Signature surface | What stays subordinate |
+| --- | --- | --- | --- |
+| Instrument | one live number that moves | a dominant readout, with its recent history directly beside it | every control, in a rail below or beside |
+| Ledger | a sequence in time | a timeline or session list, one entry expanded, with a baseline comparison | export and deletion, at the edges |
+| Console | mutually exclusive states of one subsystem | a state strip first, then the controls that change it, then the evidence | explanations, in an expandable note |
+| Matrix | many items judged by the same few axes | a grid or table with one shared legend | per-item detail, on demand |
+| Studio | a thing being shaped | a preview or canvas at the centre | parameters, on the rails |
+| Flow | a procedure with steps and consequences | a step list, current step expanded, consequence named | history, collapsed |
+| Library | a browsable collection | search and filters first, dense rows | detail, on demand |
+
+### The screen charter
+
+Every screen states three lines in its KDoc before the first composable: its archetype, its primary
+object, and the element that carries it. A screen that cannot name its archetype is not designed yet —
+it is a stack that happened.
+
+### What is still forbidden
+
+Composition freedom is not permission to invent the language. A screen may not introduce a colour, a
+radius, a shadow, a typeface or a motion loop that the token layer does not name. It may not use
+monospace for labels, a pill for a primary action, or colour as the only difference between states.
+Freedom is in the arrangement, never in the vocabulary.
+
+### Applying it
+
+Start from the object, not from the last screen. If the object is a timeline, the chart may be the
+hero and the rows become its footnotes. If the object is a live number, one value dominates and the
+rest is a rail. If the object is a set of states, the state strip comes before the controls. When a
+screen genuinely holds two objects, split it into two surfaces or name the one that leads.
+
 ## Elevation & Depth
 
 | Level | Treatment | Use |
@@ -533,7 +584,10 @@ an unwritten one.
 
 - Read the token, don't type the number. Every spacing, radius, size and opacity a component needs
   already has a name in `MaxTokens.kt`.
-- Keep one card contract: `MaxCardSpec` radius, border, padding, icon container and title budget.
+- When cards are used, keep one card contract: `MaxCardSpec` radius, border, padding, icon
+  container and title budget. Cards are a choice, not the default composition.
+- Choose the archetype before the layout (see Screen Composition). The object decides the shape.
+- Let one element carry the screen. If everything is equally loud, nothing is read.
 - Write a section title as `titleMedium` SemiBold, and put exactly one rank between it and a card title.
 - Render an unknown value as `—` and a failed read as a failure with a rollback attempted.
 - Reserve two title lines in a card so a row of cards aligns.
@@ -557,10 +611,14 @@ an unwritten one.
 - Don't let colour be the only difference between two states.
 - Don't add a drop shadow. Depth is a gradient plus a hairline.
 - Don't animate anything forever in the app.
+- Don't stack sections because the last screen did. Copy the object's shape, not the neighbour's.
+- Don't make a chart a row decoration, or a knob a table cell. The surface has to describe the object.
 
 ## Iteration Guide
 
-The order that has produced every improvement in this layer so far:
+Before the first step, name the archetype and the primary object (see Screen Composition).
+The order below starts once the shape is chosen, and it has produced every improvement in
+this layer so far:
 
 1. **Measure first.** `python3 tools/design_tokens.py --assert` reports the literal radii, paddings,
    gaps and borders still in the tree, and `python3 tools/code_health.py --assert` reports the debt
@@ -600,3 +658,9 @@ Measured, and stated rather than implied.
 6. **Colour contrast is measured for the design tokens, not for every rendered combination.** The six
    tone values are checked against both surfaces; arbitrary `alpha` compositions over gradients are not,
    and a new tone-derived surface should be measured before it ships.
+
+7. **One shape still dominates the tree.** Most screens are a stack of sections, because that was
+   the only anatomy this document described until now. The archetypes above are prose, not a
+   gate: nothing measures whether a ledger was built as a ledger. The first screens to be
+   recomposed should be the ones whose object is least like a list — starting with the live
+   monitoring and session surfaces.

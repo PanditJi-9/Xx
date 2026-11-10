@@ -4334,4 +4334,39 @@
     <string name="panel_sunlight_desc">Live high-brightness panel mode, where supported</string>
     <string name="panel_sunlight_warning">High-brightness mode increases panel power, heat and wear. Do not leave it enabled unnecessarily. The kernel can refuse or limit it; success is confirmed only by read-back.</string>
     <string name="panel_sunlight_consent_needed">Enable once from Display Studio to read the warning</string>
+
+    <!-- حكم الجلسة: ما يعنيه الرقم، لا الرقم وحده -->
+    <string name="game_sessions_insight_title">Last session</string>
+    <string name="game_sessions_insight_note">Compared with %1$d earlier sessions of the same game.</string>
+    <string name="game_sessions_insight_first">First sessions — no baseline yet. Play once more to compare.</string>
+    <string name="game_sessions_insight_unusable">Too short to judge. Keep it above %1$d samples.</string>
+    <string name="game_sessions_verdict_better">Better</string>
+    <string name="game_sessions_verdict_similar">Same as usual</string>
+    <string name="game_sessions_verdict_worse">Worse</string>
+    <string name="game_sessions_verdict_first">First run</string>
+    <string name="game_sessions_verdict_unusable">Unusable</string>
+    <string name="game_sessions_vs_baseline">%1$s%% vs usual</string>
+    <string name="game_sessions_worst_moment">Worst moment</string>
+    <string name="game_sessions_worst_value">%1$d FPS at %2$s</string>
+    <string name="game_sessions_action_thermal">Open thermal</string>
+    <string name="game_sessions_action_display">Open display</string>
+    <string name="game_sessions_action_power">Open power</string>
+    <string name="game_sessions_action_renderer">Open renderer</string>
+    <string name="game_sessions_auto_start">Auto-start for games</string>
+    <string name="game_sessions_auto_start_note">Starts by itself when a game from your library comes to the front.</string>
+    <string name="session_cause_thermal">heat is the likely cause</string>
+    <string name="session_cause_jank">frame pacing dropped</string>
+    <string name="session_cause_energy">energy draw rose</string>
+    <string name="session_cause_power_save">power saver was on</string>
+    <string name="session_cause_refresh">refresh rate dropped</string>
+    <string name="session_cause_renderer">renderer changed</string>
+    <string name="session_notify_channel">Game session results</string>
+    <string name="session_notify_title">%1$s — session saved</string>
+    <string name="session_notify_fps">%1$d FPS</string>
+    <string name="session_notify_jank">%1$d%% jank</string>
+    <string name="session_notify_worse">worse than usual</string>
+    <string name="session_notify_better">better than usual</string>
+    <string name="session_notify_similar">about the same</string>
+    <string name="session_notify_first">first sessions — no baseline yet</string>
+    <string name="session_notify_unusable">too short to compare</string>
 </resources>

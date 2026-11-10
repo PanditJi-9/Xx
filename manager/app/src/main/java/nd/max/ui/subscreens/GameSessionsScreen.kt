@@ -38,6 +38,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
+import androidx.annotation.StringRes
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
@@ -48,6 +49,7 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import kotlin.math.roundToInt
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -61,6 +63,12 @@ import nd.max.core.platform.HudRecorder
 import nd.max.core.platform.HudSessionRules
 import nd.max.core.platform.HudSessionSettings
 import nd.max.core.platform.HudTally
+import nd.max.core.platform.InsightRules
+import nd.max.core.platform.SessionAction
+import nd.max.core.platform.SessionCause
+import nd.max.core.platform.SessionVerdict
+import nd.max.core.platform.sessionInsight
+import nd.max.core.platform.worstPointOf
 import nd.max.core.platform.SessionPoint
 import nd.max.core.platform.SessionStopReason
 import nd.max.core.platform.StoredGameSession
@@ -79,6 +87,7 @@ import nd.max.ui.design.MaxSpace
 import nd.max.ui.design.MaxSwitchRow
 import nd.max.ui.design.MaxTone
 import nd.max.ui.component.hudFieldLabel
+import nd.max.ui.navigation.MaxDestination
 
 /**
  * جلسات اللعب — سطحٌ واحد يجمع ما كان مبعثرًا: تسجيل حيّ، وقواعد إيقاف وتحذير، وسجلّ
@@ -87,6 +96,9 @@ import nd.max.ui.component.hudFieldLabel
  * والمسجّل هو [HudRecorder] نفسه الذي يعمل فوق اللعبة؛ فلا يوجد مسار تسجيل ثانٍ يختلف
  * في الأرقام أو في معنى الجلسة. الفرق الوحيد أن هذه الشاشة تسمّي الجلسة وتقرأ السجلّ
  * وتضبط قواعدها.
+ *
+ * الشكل: Ledger — الكائن: تسلسل الجلسات في الزمن — العنصر الحامل: منحنى الجلسة المفتوحة
+ * وحكمها مقابل أساسها. الأرقام الأخرى سطور تابعة له، لا أنداد له.
  */
 @Composable
 fun GameSessionsScreen(
@@ -294,6 +306,97 @@ fun GameSessionsScreen(
             }
         }
 
+        // ── حكم آخر جلسة: الرقم وحده لا يقول «جيد أم سيئ» ──
+        val lastSession = sessions.firstOrNull()
+        if (lastSession != null) {
+            val insight = remember(lastSession.id, sessions.size) {
+                sessionInsight(lastSession, sessions)
+            }
+            MaxSection(
+                title = stringResource(R.string.game_sessions_insight_title),
+                description = if (insight.baselineCount >= 2) {
+                    stringResource(R.string.game_sessions_insight_note, insight.baselineCount)
+                } else {
+                    null
+                }
+            ) {
+                MaxGroup {
+                    MaxMetricLine(
+                        MaxMetric(
+                            label = lastSession.displayName,
+                            value = stringResource(verdictText(insight.verdict)),
+                            trust = MaxDataTrust.Snapshot
+                        )
+                    )
+                    insight.framesDeltaPercent?.let { delta ->
+                        val signed = if (delta > 0) "+$delta" else delta.toString()
+                        MaxMetricLine(
+                            MaxMetric(
+                                label = stringResource(R.string.game_sessions_fps_avg),
+                                value = stringResource(R.string.game_sessions_vs_baseline, signed),
+                                trust = MaxDataTrust.Snapshot
+                            )
+                        )
+                    }
+                    insight.worstPoint?.let { point ->
+                        val frames = point.frames
+                        if (frames != null) {
+                            MaxMetricLine(
+                                MaxMetric(
+                                    label = stringResource(R.string.game_sessions_worst_moment),
+                                    value = stringResource(
+                                        R.string.game_sessions_worst_value,
+                                        frames.roundToInt(),
+                                        sessionClock(point.atMs)
+                                    ),
+                                    trust = MaxDataTrust.Snapshot
+                                )
+                            )
+                        }
+                    }
+                }
+                when (insight.verdict) {
+                    SessionVerdict.FirstRun -> Text(
+                        text = stringResource(R.string.game_sessions_insight_first),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = scheme.onSurfaceVariant,
+                        modifier = Modifier.padding(horizontal = MaxSpace.groupPadding)
+                    )
+                    SessionVerdict.Unusable -> Text(
+                        text = stringResource(
+                            R.string.game_sessions_insight_unusable,
+                            InsightRules().minSamples
+                        ),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = scheme.onSurfaceVariant,
+                        modifier = Modifier.padding(horizontal = MaxSpace.groupPadding)
+                    )
+                    else -> if (insight.cause != SessionCause.None) {
+                        Text(
+                            text = stringResource(causeText(insight.cause)),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = scheme.onSurfaceVariant,
+                            modifier = Modifier.padding(horizontal = MaxSpace.groupPadding)
+                        )
+                    }
+                }
+                val actionRoute = when (insight.action) {
+                    SessionAction.Thermal -> MaxDestination.ThermalHub.route
+                    SessionAction.Display -> MaxDestination.DisplayHub.route
+                    SessionAction.Power -> MaxDestination.PowerHub.route
+                    SessionAction.Renderer -> MaxDestination.DisplayHub.route
+                    SessionAction.None -> null
+                }
+                if (actionRoute != null) {
+                    MaxGroupDivider()
+                    MaxNavigationRow(
+                        title = stringResource(actionText(insight.action)),
+                        onClick = { navController.navigate(actionRoute) }
+                    )
+                }
+            }
+        }
+
         MaxSection(
             title = stringResource(R.string.game_sessions_settings_title),
             description = stringResource(R.string.game_sessions_settings_desc)
@@ -335,6 +438,16 @@ fun GameSessionsScreen(
                     checked = rules.clipTransitions,
                     onCheckedChange = { on ->
                         rules = rules.copy(clipTransitions = on)
+                        HudSessionSettings.save(context, rules)
+                    }
+                )
+                MaxGroupDivider()
+                MaxSwitchRow(
+                    title = stringResource(R.string.game_sessions_auto_start),
+                    subtitle = stringResource(R.string.game_sessions_auto_start_note),
+                    checked = rules.autoStart,
+                    onCheckedChange = { on ->
+                        rules = rules.copy(autoStart = on)
                         HudSessionSettings.save(context, rules)
                     }
                 )
@@ -406,10 +519,14 @@ fun GameSessionsScreen(
 
                 else -> {
                     sessions.forEach { session ->
+                        val rowInsight = remember(session.id, sessions.size) {
+                            sessionInsight(session, sessions)
+                        }
                         MaxGroup {
                             MaxNavigationRow(
                                 title = session.displayName,
-                                subtitle = sessionSubtitle(session),
+                                subtitle = sessionSubtitle(session) + " · " +
+                                    stringResource(verdictText(rowInsight.verdict)),
                                 valueText = session.framesAverage?.let { "%.1f FPS".format(it) },
                                 onClick = {
                                     expandedId = if (expandedId == session.id) null else session.id
@@ -566,6 +683,9 @@ private fun SessionChartSection(points: List<SessionPoint>, emptyText: String) {
     val bounds = sessionFrameBounds(points)
     val lineColor = MaterialTheme.colorScheme.tertiary
     val gridColor = MaterialTheme.colorScheme.outlineVariant
+    val markerColor = MaterialTheme.colorScheme.error
+    val worst = remember(points) { worstPointOf(points) }
+    val worstFrames = worst?.frames
     MaxGroup {
         Text(
             text = stringResource(R.string.game_sessions_chart),
@@ -614,6 +734,31 @@ private fun SessionChartSection(points: List<SessionPoint>, emptyText: String) {
                     drawing = true
                 }
                 drawPath(path = path, color = lineColor, style = Stroke(width = 3f))
+                if (worst != null && worstFrames != null) {
+                    val x = HudChartRenderer.horizontalFraction(worst.atMs, firstAt, lastAt) * size.width
+                    val fraction = HudChartRenderer.verticalFraction(worstFrames, low, high)
+                    val y = size.height - fraction * size.height
+                    drawLine(
+                        color = markerColor.copy(alpha = 0.45f),
+                        start = Offset(x, 0f),
+                        end = Offset(x, size.height),
+                        strokeWidth = 1.5f
+                    )
+                    drawCircle(color = markerColor, radius = 5f, center = Offset(x, y))
+                }
+            }
+            if (worst != null && worstFrames != null) {
+                Text(
+                    text = stringResource(R.string.game_sessions_worst_moment) + " · " +
+                        stringResource(
+                            R.string.game_sessions_worst_value,
+                            worstFrames.roundToInt(),
+                            sessionClock(worst.atMs)
+                        ),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = markerColor,
+                    modifier = Modifier.padding(horizontal = MaxSpace.groupPadding)
+                )
             }
         }
     }
@@ -1102,4 +1247,33 @@ private fun shareFile(
             context.startActivity(share)
         }
     }
+}
+
+@StringRes
+private fun verdictText(verdict: SessionVerdict): Int = when (verdict) {
+    SessionVerdict.Better -> R.string.game_sessions_verdict_better
+    SessionVerdict.Similar -> R.string.game_sessions_verdict_similar
+    SessionVerdict.Worse -> R.string.game_sessions_verdict_worse
+    SessionVerdict.FirstRun -> R.string.game_sessions_verdict_first
+    SessionVerdict.Unusable -> R.string.game_sessions_verdict_unusable
+}
+
+@StringRes
+private fun causeText(cause: SessionCause): Int = when (cause) {
+    SessionCause.Thermal -> R.string.session_cause_thermal
+    SessionCause.Jank -> R.string.session_cause_jank
+    SessionCause.Energy -> R.string.session_cause_energy
+    SessionCause.PowerSave -> R.string.session_cause_power_save
+    SessionCause.Refresh -> R.string.session_cause_refresh
+    SessionCause.Renderer -> R.string.session_cause_renderer
+    SessionCause.None -> 0
+}
+
+@StringRes
+private fun actionText(action: SessionAction): Int = when (action) {
+    SessionAction.Thermal -> R.string.game_sessions_action_thermal
+    SessionAction.Display -> R.string.game_sessions_action_display
+    SessionAction.Power -> R.string.game_sessions_action_power
+    SessionAction.Renderer -> R.string.game_sessions_action_renderer
+    SessionAction.None -> 0
 }

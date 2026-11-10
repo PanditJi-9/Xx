@@ -68,15 +68,29 @@ Each hub is one `MaxScreen` whose sections are today's screen bodies, reused not
 4. **Device truth sheet** (Diagnostics rebuilt): per-knob capability proof — readable / writable / ladder-proved / unsupported, straight from `HardwareCapabilityResolver`. Replaces feature-level "supported?" guessing.
 5. **Session bar**: when a manual session or an AI action is active, a persistent one-line bar with "applied / verifying / rolled back" and an undo affordance.
 
-## 4. Screen anatomy (one shape, every screen)
+## 4. Screen composition — one language, many shapes
 
-```
-top bar: title · subtitle(provider/path) · [search] [refresh] [actions]
-[session bar]            ← only while a write/AI action is in flight
-[condition]  OR  [banner + sections]
-section: title + why-line
-  group (hairline): rows (48dp min) — control rows | metric lines | destinations
-```
+An earlier version of this section prescribed a single anatomy — top bar, then sections of groups —
+for every screen. That was the wrong constraint: it made a live instrument, a session ledger and a
+state console read the same, and it forced each of them to carry rows that did not belong to its
+object. What is shared is the **language**: colour, tone meaning, type scale, spacing, touch floor,
+RTL behaviour, motion ceiling. The **composition** belongs to the screen.
+
+The test is the screen's primary object — the one thing a person came to read or change.
+
+| Archetype | Primary object | Signature surface |
+| --- | --- | --- |
+| Instrument | one live number that moves | a dominant readout, its history beside it, controls subordinate |
+| Ledger | a sequence in time | timeline or session list, one entry expanded, comparison against a baseline |
+| Console | mutually exclusive states of one subsystem | state strip first, then the controls that change it, then the evidence |
+| Matrix | many items judged by the same few axes | grid or table with one shared legend, never a wall of cards |
+| Studio | a thing being shaped | preview or canvas at the centre, parameters on the rails |
+| Flow | a procedure with steps and consequences | step list with the current step expanded and the consequence named |
+| Library | a browsable collection | search and filters first, dense rows, detail on demand |
+
+A screen that cannot name its archetype has not been designed yet. Mixed screens are allowed when the
+object is genuinely mixed — but one element must carry the screen, and the rest must be visibly
+subordinate to it. A chart is not a row decoration, and a knob is not a table.
 
 Rules (already encoded in `ui/design/`, to be enforced repo-wide):
 - Screens never build their own `Scaffold`, gutters, or section spacing.

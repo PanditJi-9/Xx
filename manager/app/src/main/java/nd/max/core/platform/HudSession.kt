@@ -25,6 +25,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 import nd.max.AppMonitor
+import nd.max.service.SessionSummaryNotifier
 
 /**
  * لوحة الأداء — الطبقة البيانية. **لا واجهة في هذا الملف**: تُقرأ منه اللوحة العائمة داخل
@@ -302,6 +303,13 @@ data class HudSessionRules(
     val stopOnPowerChange: Boolean = true,
     val stopOnScreenOff: Boolean = true,
     val clipTransitions: Boolean = true,
+    /**
+     * يبدأ التسجيل وحده حين تصير لعبةٌ من مكتبة الألعاب في المقدّمة.
+     *
+     * **السبب:** التسجيل اليدوي يُنسى. ومن لا يضغط «تسجيل» لا يملك جلسةً واحدة، فيبقى
+     * السجلّ فارغًا والمقارنة بلا أساس — الميزة كلها بلا مستخدم.
+     */
+    val autoStart: Boolean = false,
     val socTempThresholdC: Float = 80f,
     val batteryTempThresholdC: Float = 42f,
     val gpuLoadThresholdPercent: Float = 90f,
@@ -315,6 +323,7 @@ object HudSessionSettings {
     private const val KEY_STOP_POWER = "hud_session_stop_power"
     private const val KEY_STOP_SCREEN = "hud_session_stop_screen"
     private const val KEY_CLIP = "hud_session_clip"
+    private const val KEY_AUTO_START = "hud_session_auto_start"
     private const val KEY_SOC = "hud_session_warn_soc"
     private const val KEY_BATTERY = "hud_session_warn_battery"
     private const val KEY_GPU = "hud_session_warn_gpu"
@@ -328,6 +337,7 @@ object HudSessionSettings {
             stopOnPowerChange = prefs.getBoolean(KEY_STOP_POWER, defaults.stopOnPowerChange),
             stopOnScreenOff = prefs.getBoolean(KEY_STOP_SCREEN, defaults.stopOnScreenOff),
             clipTransitions = prefs.getBoolean(KEY_CLIP, defaults.clipTransitions),
+            autoStart = prefs.getBoolean(KEY_AUTO_START, defaults.autoStart),
             socTempThresholdC = prefs.getFloat(KEY_SOC, defaults.socTempThresholdC),
             batteryTempThresholdC = prefs.getFloat(KEY_BATTERY, defaults.batteryTempThresholdC),
             gpuLoadThresholdPercent = prefs.getFloat(KEY_GPU, defaults.gpuLoadThresholdPercent),
@@ -341,6 +351,7 @@ object HudSessionSettings {
             .putBoolean(KEY_STOP_POWER, rules.stopOnPowerChange)
             .putBoolean(KEY_STOP_SCREEN, rules.stopOnScreenOff)
             .putBoolean(KEY_CLIP, rules.clipTransitions)
+            .putBoolean(KEY_AUTO_START, rules.autoStart)
             .putFloat(KEY_SOC, rules.socTempThresholdC)
             .putFloat(KEY_BATTERY, rules.batteryTempThresholdC)
             .putFloat(KEY_GPU, rules.gpuLoadThresholdPercent)
@@ -703,6 +714,13 @@ object HudRecorder {
     @Volatile var lastStopReason: SessionStopReason? = null
         private set
 
+    /**
+     * آخر جلسة حُفظت — للشاشة والإشعار بلا قراءة الملفّ من جديد.
+     * تُضبط قبل الحفظ، فمن رآها ثم قرأ السجلّ وجدها فيه.
+     */
+    @Volatile var lastSaved: StoredGameSession? = null
+        private set
+
     private val saveScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     val isLive: Boolean get() = live
@@ -713,11 +731,19 @@ object HudRecorder {
      * ودقّة العرض، فيُعرَف **ما** سُجّل لا فقط **كم**. وغيابه يُبقي السلوك القديم
      * (جلسة بلا بيانات وصفية).
      */
-    fun start(context: Context? = null) {
+    fun start(context: Context? = null) = start(context, null)
+
+    /**
+     * بدء جلسة بحزمة معلومة — يستدعيه البدء التلقائي لأن الحزمة جاءت من العيّنة نفسها،
+     * و`AppMonitor` قد يكون متأخّرًا عنها بدورة.
+     */
+    fun start(context: Context?, packageOverride: String?) {
         journal = HudJournal(CAPACITY)
         live = true
         persisted = false
-        sessionPackage = context?.let { AppMonitor.currentForegroundPackage() }
+        lastSaved = null
+        sessionPackage = packageOverride?.takeIf { it.isNotBlank() }
+            ?: context?.let { AppMonitor.currentForegroundPackage() }
         sessionLabel = sessionPackage?.let { pkg -> appLabelOf(context, pkg) }
         sessionStartedAtMs = System.currentTimeMillis()
         sessionAppVersion = context?.let { ctx ->
@@ -792,8 +818,14 @@ object HudRecorder {
             series = downsampleSamples(clip.points)
         )
         persisted = true
+        lastSaved = record
         saveScope.launch {
             if (!GameSessionStore.append(app, record)) persisted = false
+            // الإشعار بعد الحفظ لا قبله: من ضغطه وجد الجلسة في السجلّ، ولم يفتح شاشةً فارغة.
+            runCatching {
+                val history = GameSessionStore.load(app)
+                SessionSummaryNotifier.notify(app, record, sessionInsight(record, history))
+            }
         }
     }
 
@@ -810,6 +842,7 @@ object HudRecorder {
         sessionPowerSave = false
         remark = null
         lastStopReason = null
+        lastSaved = null
         HudLive.markRecording(false)
     }
 
@@ -988,6 +1021,9 @@ object HudSampler {
                             continue
                         }
                         val fields = unionFields()
+                        // القواعد تُقرأ كل دورة وقبل القراءة: البدء التلقائي يحتاجها ليعرف
+                        // أن عليه قراءة الحزمة الأمامية حتى وهو خامل.
+                        val rules = HudSessionSettings.load(ctx)
                         var rxBps: Float? = null
                         var txBps: Float? = null
                         val rx = TrafficStats.getTotalRxBytes()
@@ -1011,9 +1047,7 @@ object HudSampler {
                             lastTx = tx
                             lastTrafficAt = began
                         }
-                        val reading = read(ctx, fields, rxBps, txBps)
-                        // القواعد تُقرأ كل دورة: تبديل مفتاح في الشاشة يسري بلا إعادة تشغيل.
-                        val rules = HudSessionSettings.load(ctx)
+                        val reading = read(ctx, fields, rxBps, txBps, watchForeground = rules.autoStart)
                         val plugged = pluggedIn(ctx)
                         if (HudRecorder.isLive) {
                             val previousPlug = lastPlugged
@@ -1038,6 +1072,17 @@ object HudSampler {
                             }
                         } else {
                             foregroundMisses = 0
+                            // البدء التلقائي: لعبة من مكتبتنا صارت في المقدّمة ولم يكن هناك تسجيل.
+                            // وحزمتنا مستثناة كي لا تُسجَّل الشاشة نفسها لحظة فتحها.
+                            val foreground = reading.foregroundPackage
+                            if (rules.autoStart &&
+                                foreground != null &&
+                                foreground !in IGNORED_FOREGROUND &&
+                                foreground != ctx.packageName &&
+                                GameWatch.isGame(ctx, foreground)
+                            ) {
+                                HudRecorder.start(ctx, foreground)
+                            }
                         }
                         lastPlugged = plugged
                         val warnings = warningTracker.update(reading, rules, System.currentTimeMillis())
@@ -1101,7 +1146,8 @@ object HudSampler {
         context: Context,
         fields: Set<HudField>,
         rxBps: Float? = null,
-        txBps: Float? = null
+        txBps: Float? = null,
+        watchForeground: Boolean = false
     ): HudReading {
         if (fields.isEmpty()) return HudReading()
         val wantsFrames = HudField.Frames in fields
@@ -1114,7 +1160,7 @@ object HudSampler {
             null
         }
         if (wantsSamples) frameWindow.record(framesNow)
-        val foreground = if (HudField.Renderer in fields || HudField.Jank in fields || HudRecorder.isLive) {
+        val foreground = if (HudField.Renderer in fields || HudField.Jank in fields || HudRecorder.isLive || watchForeground) {
             runCatching { FpsMonitorUtil.getForegroundPackage() }.getOrNull().orEmpty()
         } else {
             ""
@@ -1185,7 +1231,11 @@ object HudSampler {
             } else {
                 null
             },
-            foregroundPackage = if (HudRecorder.isLive) foreground.takeIf { it.isNotBlank() } else null
+            foregroundPackage = if (HudRecorder.isLive || watchForeground) {
+                foreground.takeIf { it.isNotBlank() }
+            } else {
+                null
+            }
         )
     }
 

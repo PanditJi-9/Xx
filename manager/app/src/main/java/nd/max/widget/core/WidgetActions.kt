@@ -48,6 +48,7 @@ object WidgetIntents {
     const val ROUTE_GPU_STUDIO = "gpustudio"
     const val ROUTE_FPS_OVERLAY = "fpsoverlay"
     const val ROUTE_FPS_GO = "fpsgoscreen"
+    const val ROUTE_GAME_SESSIONS = "gamesessions"
     const val ROUTE_CPU_CONTROL = "cpucorecontrol"
     const val ROUTE_THERMAL = "thermal_detail"
     const val ROUTE_BATTERY = "hub_power"

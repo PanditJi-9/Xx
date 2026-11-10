@@ -4276,4 +4276,39 @@
     <string name="panel_sunlight_desc">سطوع الشاشة العالي من الحالة الحية، حيث يُدعم</string>
     <string name="panel_sunlight_warning">السطوع العالي يزيد استهلاك الشاشة وحرارتها وتآكلها. لا تتركه مفعّلًا دون حاجة. قد ترفضه النواة أو تقيّده؛ لا يُثبت النجاح إلا بالقراءة المرتجعة.</string>
     <string name="panel_sunlight_consent_needed">فعّله أول مرة من استوديو الشاشة لقراءة التحذير</string>
+
+    <!-- حكم الجلسة: ما يعنيه الرقم، لا الرقم وحده -->
+    <string name="game_sessions_insight_title">آخر جلسة</string>
+    <string name="game_sessions_insight_note">مقارنة بـ%1$d جلسة سابقة لنفس اللعبة.</string>
+    <string name="game_sessions_insight_first">من أوّل الجلسات — لا أساس للمقارنة بعد. العب مرة أخرى لتُقارن.</string>
+    <string name="game_sessions_insight_unusable">أقصر من أن تُحكم. أبقها فوق %1$d عيّنة.</string>
+    <string name="game_sessions_verdict_better">أفضل</string>
+    <string name="game_sessions_verdict_similar">مثل المعتاد</string>
+    <string name="game_sessions_verdict_worse">أسوأ</string>
+    <string name="game_sessions_verdict_first">أول جلسة</string>
+    <string name="game_sessions_verdict_unusable">غير صالحة</string>
+    <string name="game_sessions_vs_baseline">%1$s٪ عن المعتاد</string>
+    <string name="game_sessions_worst_moment">أسوأ لحظة</string>
+    <string name="game_sessions_worst_value">%1$d إطار عند %2$s</string>
+    <string name="game_sessions_action_thermal">افتح الحرارة</string>
+    <string name="game_sessions_action_display">افتح الشاشة</string>
+    <string name="game_sessions_action_power">افتح الطاقة</string>
+    <string name="game_sessions_action_renderer">افتح المُصيّر</string>
+    <string name="game_sessions_auto_start">بدء تلقائي للألعاب</string>
+    <string name="game_sessions_auto_start_note">يبدأ وحده حين تصير لعبة من مكتبتك في المقدّمة.</string>
+    <string name="session_cause_thermal">الحرارة هي السبب المرجَّح</string>
+    <string name="session_cause_jank">إيقاع الإطارات تراجع</string>
+    <string name="session_cause_energy">استهلاك الطاقة ارتفع</string>
+    <string name="session_cause_power_save">توفير البطارية كان مفعّلًا</string>
+    <string name="session_cause_refresh">معدّل التحديث انخفض</string>
+    <string name="session_cause_renderer">مُصيّر الرسم تغيّر</string>
+    <string name="session_notify_channel">نتائج جلسات اللعب</string>
+    <string name="session_notify_title">%1$s — حُفظت الجلسة</string>
+    <string name="session_notify_fps">%1$d إطار/ث</string>
+    <string name="session_notify_jank">%1$d٪ تقطّع</string>
+    <string name="session_notify_worse">أسوأ من المعتاد</string>
+    <string name="session_notify_better">أفضل من المعتاد</string>
+    <string name="session_notify_similar">قريبة من المعتاد</string>
+    <string name="session_notify_first">من أوّل الجلسات — لا أساس بعد</string>
+    <string name="session_notify_unusable">أقصر من أن تُقارن</string>
 </resources>
