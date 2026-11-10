@@ -1,7 +1,7 @@
 {
   "_": "بيان الصور المصغّرة — بصمات تُقاس في CI. تغيير أيّ مدخل يوجب إعادة التوليد.",
   "tool": "tools/store_thumbnails.py",
-  "spec_sha256": "8d7d01701852ae3557a08fb2a5c0d0074c07f5a5bf3dcceb1bb4b00124d204f7",
+  "spec_sha256": "a6b923d10fdd199e974015013e59319da82f36eecaba6db5cf6ec8d798029c94",
   "palette": {
     "board_dark_sha256": "432f6c8e662e606d0dcb81cddddb5ed2dc6909caa5bcbbd07da68ae6e052952a",
     "mark_dark": "#5FD9AC",
@@ -40,7 +40,7 @@
     }
   },
   "measured": {
-    "screens": 68,
+    "screens": 69,
     "locales": 84
   },
   "images": [
