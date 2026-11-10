@@ -428,15 +428,15 @@ sealed class MaxDestination(
     data object HmaCompanion : MaxDestination("hma_companion", R.string.hma_companion_title, Icons.Rounded.Shield, null)
 
     // Control - Advanced tools (gated, not preferences)
-    data object SetEdit : MaxDestination("setedit", R.string.max_title_setedit, Icons.Rounded.Edit, DeviceLab, MaxRisk.Advanced)
-    data object ActivityLauncher : MaxDestination("activitylauncher", R.string.max_title_activity_launcher, Icons.AutoMirrored.Rounded.Launch, DeviceLab, MaxRisk.Advanced)
+    data object SetEdit : MaxDestination("setedit", R.string.max_title_setedit, Icons.Rounded.Edit, Control, MaxRisk.Advanced)
+    data object ActivityLauncher : MaxDestination("activitylauncher", R.string.max_title_activity_launcher, Icons.AutoMirrored.Rounded.Launch, Control, MaxRisk.Advanced)
 
     /**
      * `GAP-09` — مدير الملفات بالجذر. أداة متقدّمة لا تفضيل: كل عملية تكتب على القرص
      * خارج نطاق إعداداتنا، فمكانها تحت `Control → Tools` مع تعليم المخاطرة لا في قائمة
      * تفضيلات تُقلَّب بلا انتباه.
      */
-    data object FileManager : MaxDestination("filemanager", R.string.max_files_title, Icons.Rounded.Folder, DeviceLab, MaxRisk.Advanced)
+    data object FileManager : MaxDestination("filemanager", R.string.max_files_title, Icons.Rounded.Folder, Control, MaxRisk.Advanced)
 
     companion object {
         /**

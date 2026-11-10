@@ -2,6 +2,12 @@
  * Copyright (C) 2026-2027 Zexshia
  * Licensed under the Apache License, Version 2.0 (see LICENSE).
  */
+/*
+ * **Screen card — archetype: Ledger · object: one session ·
+ * carrying element: the session's curve.** Rows are entries in a record —
+ * newest first, each with its verdict — and exactly one session opens into its
+ * curve. A ledger that plots every row at once is read as noise.
+ */
 
 package nd.max.ui.subscreens
 

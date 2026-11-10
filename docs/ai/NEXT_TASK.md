@@ -1,3 +1,13 @@
+## ROUND-CLOSE-44 — المختبر اختبارُ عتاد لا صندوق أدوات + بطاقات أنواع الشاشات — 2026-11-10 · DONE_WITH_CONCERNS
+
+**TASK:** «ولا اريد device lab هكذا اريده فقط لي اختبار الجهاز انت فهمت وظيفته خطئ» (مع لقطة من تطبيق اختبار عتاد).
+
+**CORRECTED (تراجع مُعلَن):** `SetEdit` · `ActivityLauncher` · `FileManager` عادت إلى `Control` (M1b **مرفوضة بأمر المالك**) · `ControlToolDestinations` ٧←١٠ · أبناء `Control` ١٩←٢٢ · العمق ٣٤/٢٧←٣٧/٢٤ · حُذف `DeviceLabToolsTest` ومفتاح `device_lab_section_tools` · `PRODUCT-MAP` و`inventory` أُعيدا إلى أرقام ما قبل M1b.
+
+**SHIPPED:** قسمان حقيقيان في `DeviceLabScreen` بقراءة فقط وبلا أذونات — **الكاميرات** (معرّف · جهة · ميغابكسل من `SENSOR_INFO_PIXEL_ARRAY_SIZE` · مشعل، بلا فتح كاميرا) و**الاتصالات والمقاييس الحيوية** (NFC وحالته · Bluetooth · GPS · مشعّل تحت أحمر · بصمة · وجه) · ٢٠ مفتاحًا في `values/`+`values-ar/` · بطاقات نوع الشاشة في KDoc لخمس شاشات (`ControlScreen` Matrix · `HomeScreen` Matrix · `FpsOverlayScreen` Instrument · `GameSessionsScreen` Ledger · `ThermalDetailScreen` Instrument).
+
+**NEXT:** M1b-باقٍ محجوب بقرارات مالك مكتوبة (`Logs` ADR-02 · `ColorScheme` تعليق الموديل · `UsageStats` حارس مالك · `MaxBackup`/`Permissions` `LaunchRouteTest`) ⇒ لا نقل بلا كلمة المالك. ثم M3 (RTL/إتاحة — مُقاسة نظيفة) وM4 (إعادات التركيب تحتاج جهازًا).
+
 ## ROUND-CLOSE-43 — المختبر بيت أدواته + إصلاح عطب Shizuku — 2026-11-10 · DONE_WITH_CONCERNS
 
 **TASK:** «اكمل».

@@ -21,7 +21,7 @@
 | بوابة الكتابة الحسّاسة | `HardwareControlArbiter.submit(...)` — عقد واحد: قراءة خط أساس ← كتابة `apply` ← تحقق `verify`/`realized` ← استرجاع `restore` عند الفشل | `core/hardware/HardwareControlArbiter.kt` |
 | مَن يحكم | `ControlOwnership` بسلّم `RECOVERY(100) > SAFETY(80) > PER_APP(60) > MAX_AI(40) > GLOBAL_PROFILE(20) > SYSTEM(0)`، و`ManualControlLocks` تمنع الآلي عن مقبض لمسه المستخدم | `core/hardware/ControlOwnership.kt` |
 | المداخل الخارجية | ٣ بلاطات إعدادات سريعة · ٢٢ ودجة · اختصار واحد (Game Lobby) · خدمة استماع إشعارات · خدمة إتاحة · `nd.max.ACTION_MANAGE` · `OPEN_ROUTE` extras | `AndroidManifest.xml` · `res/xml/shortcuts.xml` |
-| العدد الكلي | ٨٦٨ ملف Kotlin · ٤٢٨ منها في `ui/` · ٦١ ملف `*Screen.kt` · **٦٩ وجهة مسجّلة في `MaxDestination.All`** = ٦٩ كائن `data object` (صفر فرق، مُقاس بعد M1a/M1b) | `find` · `grep data object` · موازنة أقواس `All` |
+| العدد الكلي | ٨٦٨ ملف Kotlin · ٤٢٨ منها في `ui/` · ٦١ ملف `*Screen.kt` · **٦٩ وجهة مسجّلة في `MaxDestination.All`** = ٦٩ كائن `data object` (صفر فرق، مُقاس بعد M1a) | `find` · `grep data object` · موازنة أقواس `All` |
 
 **ما ليس موجودًا صراحةً:** لا deep links من نوع `VIEW`/`BROWSABLE` (صفر تطابق في المانيفست)، لا خادم معاينة، لا قياس استخدام حقيقي، لا اختبارات مستخدمين في الشجرة.
 
@@ -44,7 +44,7 @@
 
 - **عشرة نطاقات تحكّم** (`MaxDomainHubScreen`): CPU · GPU · الذاكرة · العرض · الاستجابة · الحرارة · الطاقة · التخزين · الشبكة · الصوت.
 - **شاشات النطاقات**: `CpuCoreControl` · `GovernorSettings` · `PreferenceTweaks` · `GpuStudio` · `ZramManager` · `MemoryUfs` · `DisplayStudio` · `Resolution` · `TouchBoost` · `FpsGo` · `Fas` · `FpsOverlay` · `DynamicIsland` · `ThermalDetail` · `Charging` · `BypassCharging` · `BypassChargingCheck` · `DozeMode` · `Dex2oat` · `StorageDetail` · `StorageCare` · `NetworkScheduler` · `NetworkDetail` · `AudioStudio`.
-- **التطبيقات والنظام**: `ProcessManager` (تحت `MemoryHub` بعد M1a) · `DebloatFreeze` · `AppSettings` · `ActivityLauncher` · `UsageStats` · `Permissions` · `HmaCompanion` · `Plugins` · `FileManager` · `SetEdit` (تحت `DeviceLab` بعد M1b) · `DeviceInfo` · `DeviceLab` · `MaxLive` · `Diagnostics` · `Logs` · `ConfigBackup` · `MaxBackup` · `BatteryHistory` (تحت `PowerHub` بعد M1a) · `CommunityStats` · `ModuleHealth` · `Privilege` · `License` · `About`.
+- **التطبيقات والنظام**: `ProcessManager` (تحت `MemoryHub` بعد M1a) · `DebloatFreeze` · `AppSettings` · `ActivityLauncher` · `UsageStats` · `Permissions` · `HmaCompanion` · `Plugins` · `FileManager` · `SetEdit` (تحت `Control`: رُفض إحالتهما إلى المختبر لأنه اختبار عتاد لا صندوق أدوات) · `DeviceInfo` · `DeviceLab` · `MaxLive` · `Diagnostics` · `Logs` · `ConfigBackup` · `MaxBackup` · `BatteryHistory` (تحت `PowerHub` بعد M1a) · `CommunityStats` · `ModuleHealth` · `Privilege` · `License` · `About`.
 - **الأسطح الخاصة**: `GetStarted` (أول تشغيل) · `MaxAi` · `MaxAiIntro` · `GameLobby` · `EmulatorHub` · `ColorPalette` · `ColorScheme`.
 
 ### 1.3 ما هو ميّت فعلًا (لا يُحسب ضمن الجرد الحيّ)

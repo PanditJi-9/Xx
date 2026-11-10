@@ -11,10 +11,10 @@
 | جذور بلا أب | **٨** |
 | جذور أساسية (لها تبويب) | **٤** — `Now` · `Apps` · `Control` · `Settings` |
 | جذور غير أساسية | **٤** — `MaxAi` · `DeviceInfo` · `GetStarted` · `HmaCompanion` |
-| شاشات في العمق ١ | **٣٤** |
-| شاشات في العمق ٢ | **٢٧** |
+| شاشات في العمق ١ | **٣٧** |
+| شاشات في العمق ٢ | **٢٤** |
 | أعمق مسار | **٢** (لا شاشة في العمق ٣) |
-| أبناء `Control` المباشرون | **١٩** |
+| أبناء `Control` المباشرون | **٢٢** |
 | مخفية بأمر المالك | **٣** — `TouchBoost` · `CommunityStats` · `Plugins` |
 | مصنّفة `MaxRisk.Advanced` | **٧** |
 | وجهات بوسيط مسار | **٤** — `DeviceInfo` · `AppSettings` · `MaxBackup` · `Permissions` |
@@ -43,7 +43,7 @@
 | 4 | AppSettings | `app_settings/{pkg}` | Apps | 1 | Console |  |
 | 5 | GameLobby | `gamelobby` | Apps | 1 | Library |  |
 | 6 | EmulatorHub | `emulatorhub` | Apps | 1 | Library |  |
-| 7 | Control | `control` | — | 0 | Matrix | **١٩ ابنًا مباشرًا** — ١٠ محاور و٩ شاشات متفرّقة لا تنتمي إلى محور |
+| 7 | Control | `control` | — | 0 | Matrix | **٢٢ ابنًا مباشرًا** — ١٠ محاور و١٢ شاشة متفرّقة لا تنتمي إلى محور |
 | 8 | CpuHub | `hub_cpu` | Control | 1 | Console |  |
 | 9 | CpuCoreControl | `cpucorecontrol` | CpuHub | 2 | Matrix |  |
 | 10 | GovernorSettings | `governorsettings` | CpuHub | 2 | Console |  |
@@ -80,16 +80,16 @@
 | 41 | GameSessions | `gamesessions` | Control | 1 | Ledger |  |
 | 42 | DynamicIsland | `dynamic_island` | Control | 1 | Studio |  |
 | 43 | ProcessManager | `processmanager` | MemoryHub | 2 | Library | قائمة عمليات حيّة — **نُقلت في M1a** إلى محور الذاكرة |
-| 44 | DeviceLab | `device_lab` | Control | 1 | Matrix | مختبر الجهاز — **صار بيت أدواته الثلاث في M1b** ويعرضها من السجلّ |
+| 44 | DeviceLab | `device_lab` | Control | 1 | Matrix | مختبر الجهاز — **اختبار عتاد خالص**: شاشة · لمس · أزرار · صوت · مستشعرات · بطارية · شبكة |
 | 45 | UsageStats | `usage_stats` | Control | 1 | Ledger | إحصاء الاستخدام يخصّ التطبيقات لكنه تحت `Control` |
 | 46 | BatteryHistory | `battery_history` | PowerHub | 2 | Ledger | تاريخ الطاقة — **نُقلت في M1a** إلى محور الطاقة |
 | 47 | ColorScheme | `colorscheme` | Control | 1 | Console | مخطّط الألوان تحت `Control` بينما `ColorPalette` تحت `Settings` |
 | 48 | Logs | `logsviewer` | Control | 1 | Ledger | السجلّات تحت `Control` بينما `Diagnostics` تحت `Settings` |
 | 49 | MaxBackup | `max_backup?pkg={pkg}` | Control | 1 | Flow | نسخ احتياطي عامّ — أقرب إلى `ConfigBackup` · `MaxRisk.Advanced` |
 | 50 | Permissions | `max_perms?pkg={pkg}` | Control | 1 | Library | أذونات الحزم — أقرب إلى `Apps` · `MaxRisk.Advanced` |
-| 51 | SetEdit | `setedit` | DeviceLab | 2 | Console | محرّر إعدادات — **نُقلت في M1b** إلى المختبر · `MaxRisk.Advanced` |
-| 52 | ActivityLauncher | `activitylauncher` | DeviceLab | 2 | Library | مشغّل أنشطة — **نُقلت في M1b** إلى المختبر · `MaxRisk.Advanced` |
-| 53 | FileManager | `filemanager` | DeviceLab | 2 | Library | مدير ملفات — **نُقلت في M1b** إلى المختبر · `MaxRisk.Advanced` |
+| 51 | SetEdit | `setedit` | Control | 1 | Console | محرّر إعدادات — أداة متقدّمة بلا محور · `MaxRisk.Advanced` |
+| 52 | ActivityLauncher | `activitylauncher` | Control | 1 | Library | مشغّل أنشطة — أداة متقدّمة بلا محور · `MaxRisk.Advanced` |
+| 53 | FileManager | `filemanager` | Control | 1 | Library | مدير ملفات — أداة متقدّمة بلا محور · `MaxRisk.Advanced` |
 | 54 | Settings | `settings` | — | 0 | Library |  |
 | 55 | Diagnostics | `diagnostics` | Settings | 1 | Matrix |  |
 | 56 | License | `license` | Settings | 1 | Flow |  |
@@ -110,18 +110,18 @@
 ## ٤. العيوب النظامية — خمسة، كلٌّ بعدد
 
 ### ع١ — `Control` صار مخزنًا لا محورًا
-**١٩ ابنًا مباشرًا** من ٦٩ وجهة (٢٨٪) بعد M1a وM1b. عشرة منها محاور (`CpuHub` … `AudioHub`) وتسع
-شاشات متفرّقة: `DeviceLab` · `UsageStats` · `ColorScheme` · `Logs` · `MaxBackup` · `Permissions` ·
-`FpsOverlay` · `GameSessions` · `DynamicIsland`.
-**الأثر:** كانت ٢٤ قبل الجولتين. وما بقي أقصر، لكن **٩ شاشات ما زالت بلا عنوان جامع**:
-`DeviceLab` و`UsageStats` شريط فحص، والسبع الأخرى صندوق أدوات مسطّح. أي أن العيب **انخفض لا انتهى**.
+**٢٢ ابنًا مباشرًا** من ٦٩ وجهة (٣٢٪) بعد M1a. عشرة منها محاور (`CpuHub` … `AudioHub`) واثنتا عشرة
+شاشة متفرّقة: `DeviceLab` · `UsageStats` · `ColorScheme` · `Logs` · `MaxBackup` · `Permissions` ·
+`SetEdit` · `ActivityLauncher` · `FileManager` · `FpsOverlay` · `GameSessions` · `DynamicIsland`.
+**الأثر:** صفحة واحدة تحمل عشرة محاور واثنتي عشرة قرارًا مختلفًا. ومحاولة تفريغها بإحالة أدواتها
+المتقدّمة إلى `DeviceLab` **رُفضت بأمر المالك**: المختبر اختبار عتاد لا صندوق أدوات.
 
 ### ع٢ — العائلة الواحدة مفصولة على أبين
 - ~~الطاقة~~: أُعيدت في **M1a** — `BatteryHistory` صارت تحت `PowerHub` مع `Charging` · `BypassCharging` · `BypassChargingCheck` · `DozeMode`.
 - ~~العمليات~~: أُعيدت في **M1a** — `ProcessManager` صارت تحت `MemoryHub` مع `ZramManager`/`MemoryUfs`.
 - السجلّات والتشخيص: `Logs` تحت `Control`، و`Diagnostics` تحت `Settings` — **ما زالت مفصولة**.
 - اللون: `ColorScheme` تحت `Control`، و`ColorPalette` تحت `Settings` — **ما زالت مفصولة**.
-**الأثر بعد M1a:** عائلتان من أربع أُعيدتا بلا كسر باب؛ وبقيت اثنتان تحتاجان أن تعرض `Diagnostics` و`Settings` أبناءهما من السجلّ (M1b).
+**الأثر بعد M1a:** عائلتان من أربع أُعيدتا بلا كسر باب؛ وبقيت اثنتان تحتاجان أن تعرض `Diagnostics` و`Settings` أبناءهما من السجلّ (M1b-باقٍ).
 
 ### ع٣ — أربعة جذور بلا باب
 `MaxAi` · `DeviceInfo` · `GetStarted` · `HmaCompanion` جذور كاملة (parent = null) لكن الشريط
@@ -147,8 +147,8 @@
 | **M0** (هذه) | هذه الخريطة + أنواع الشاشات في `DESIGN.md` | ٦٩ وجهة في الجدول · صفر وجهة بلا نوع · صفر وجهة بلا أب معروف |
 | **M1** | تفكيك `Control`: يبقى فيه المحاور العشرة + الأسطح الحيّة (`FpsOverlay` · `GameSessions` · `DynamicIsland`)، وتُنقل العائلات إلى محاورها (ع٢)، وتُنشأ مجموعة أدوات متقدّمة واحدة للـ`Advanced` | أبناء `Control` ≤ ١٣ · صفر عائلة مفصولة على أبين · عدد الشاشات يبقى ٦٩ أو يُعلن الزيادة |
 | **M1a** (منجزة) | نقل العائلتين اللتين أثبت القياس أن بابها الجديد يعرض أبناءه من السجلّ: `BatteryHistory→PowerHub` · `ProcessManager→MemoryHub` | أبناء `Control` **٢٤ ← ٢٢** · العمق ٣٩/٢٢ ← **٣٧/٢٤** · صفر تكرار في صفحة التحكّم (حُذف الاثنان من قائمتيها) |
-| **M1b** (منجزة جزئيًّا) | `SetEdit` · `ActivityLauncher` · `FileManager` → `DeviceLab`، وقسم في `DeviceLabScreen` يقرأ أبناءه من السجلّ عبر `maxHubRows(DeviceLab)` | أبناء `Control` **٢٢ ← ١٩** · العمق ٣٧/٢٤ ← **٣٤/٢٧** · صندوق الأدوات ١٠ ← **٧** · `DeviceLabToolsTest` (٣ اختبارات) |
-| **M1b-باقٍ** (معلَّقة) | `Logs` · `UsageStats` → `Diagnostics`، و`ColorScheme` · `MaxBackup` · `Permissions` → `Settings` | **شرط مسبق مقيس:** `SettingsScreen` و`DiagnosticsScreen` لا تعرضان أبناءهما من السجلّ (`grep "parent =="` يعطي ثلاثة مواضع فقط: المحاور · صفحة التحكّم · قائمة التطبيقات) ⇒ تُضاف قائمة أبناء عامة أولًا، وإلا صارت الوجهة بلا باب. **و`MaxBackup`/`Permissions` مثبَّتان في صفحة التحكّم باختبار مالك** (`LaunchRouteTest`) فلا يُنقلان بلا تعديل ذلك الشرط |
+| **M1b** (**مرفوضة بأمر المالك**) | كانت: `SetEdit` · `ActivityLauncher` · `FileManager` → `DeviceLab` وقسم «أدوات المختبر» يقرأها من السجلّ | **السبب المقيس:** `DeviceLabScreen` اختبار عتاد (شاشة · لمس · أزرار · اهتزاز · صوت · مشعل · ميكروفون · مستشعرات · بطارية · ترميز · Wi-Fi)، لا صندوق أدوات. أُعيدت الثلاثة إلى `Control` وحُذف القسم والاختبار والنصوص |
+| **M1b-باقٍ** (معلَّقة) | `Logs` · `UsageStats` → `Diagnostics`، و`ColorScheme` → `Settings` | **شرط مسبق مقيس:** `SettingsScreen` و`DiagnosticsScreen` لا تعرضان أبناءهما من السجلّ ⇒ تُضاف قائمة أبناء عامة أولًا. **و`MaxBackup`/`Permissions` مثبَّتان في صفحة التحكّم باختبار مالك** فلا يُنقلان بلا تعديل ذلك الشرط |
 | **M2** | إعادة تركيب أعلى خمس شاشات حسب نوعها: `Now` (Matrix) · `Control` (Matrix) · `FpsOverlay` (Instrument) · `GameSessions` (Ledger) · `ThermalDetail` (Instrument) | كل شاشة تحمل بطاقة الشاشة في KDoc · عنصر حامل واحد لكل شاشة · لا صفّ يحمل منحنى |
 | **M3** | سلوك تكيّفي وإتاحة: عمق اللمس · RTL · أحجام الشاشات · حالات الفراغ والخطأ | فحص `rtl_guard` + قائمة حالات لكل شاشة جديدة · لا نصّ يُقتطع في ٣٦٠dp |
 | **M4** | تقليل الاستهلاك: عدد إعادات التركيب في الأسطح الحيّة · فواصل التحديث | قياس قبل/بعد لعدد إعادات التركيب في `FpsOverlay` و`GameSessions`، يُسجَّل في `HANDOFF` |

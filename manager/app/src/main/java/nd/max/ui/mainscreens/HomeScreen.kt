@@ -3,6 +3,14 @@
  * Proprietary and confidential — not licensed for use, copying, or distribution
  * without prior written permission from the copyright holder.
  */
+/*
+ * **Screen card — archetype: Matrix · object: the device's state right now ·
+ * carrying element: the deck of live cards.** The person arrives with no task
+ * and leaves with one; so the page answers "what is true now" in cards, and
+ * every card names the screen that can change it. It is the only place where
+ * several domains are read side by side — which is why it carries a summary,
+ * never a control.
+ */
 @file:OptIn(ExperimentalMaterial3Api::class)
 
 package nd.max.ui.mainscreens

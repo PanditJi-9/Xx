@@ -6,6 +6,13 @@
 /*
  * The Control primary destination.
  *
+ * **Screen card — archetype: Matrix · object: the machine's ten domains ·
+ * carrying element: the band list.** The person arrives with one question
+ * ("where do I change X?") and leaves by a row; so the screen is a grid of
+ * domains, not a dashboard of numbers. Nothing on this page plots a series —
+ * a plot belongs to the screen that owns that series, and a row that carries a
+ * chart is read as decoration.
+ *
  * Product shape: this is the old tuning workspace, kept in the new design
  * system. Grouped bands of destinations, one row per screen, a short line under
  * each title.

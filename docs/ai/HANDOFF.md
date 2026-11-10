@@ -114,6 +114,51 @@ MaxManager has a strong engine and a fragmented surface. `core/maxai` + `core/ha
 **NEXT:** (١) CI: `:app:testReleaseUnitTest` + `:app:compileReleaseKotlin`. (٢) شريحة: علامة «يكتب» على
 صفوف التحكّم مشتقة من مسار المراجِع. (٣) شريحة: موجد واحد بالاسم والقصد. (٤) تعميم `MaxDataTrust`
 على كل قيمة غير متدفّقة. (٥) قرار مالك: حذف `StoryboardHome` أو إعادته.
+### ROUND-CLOSE-44 — المختبر اختبارُ عتاد لا صندوق أدوات: تراجعٌ مُعلَن وإضافة قراءتين حقيقيتين — 2026-11-10 · DONE_WITH_CONCERNS
+
+**TASK:** «ولا اريد device lab هكذا اريده فقط لي اختبار الجهاز انت فهمت وظيفته خطئ» — مع لقطة من
+تطبيق اختبار عتاد. والحكم: وظيفة `DeviceLab` أن **تقيس** القطع، لا أن تحتوي أدوات تحرّر إعدادات.
+
+**CORRECTED (تراجع مُعلَن، لا صامت):** `SetEdit` · `ActivityLauncher` · `FileManager` عادت أبوّتها إلى
+`Control` (كانت `DeviceLab` في M1b) · `ControlToolDestinations` **٧ ← ١٠** بترتيبها الأصلي ·
+`ControlInspectDestinations` كما هي (٢) · أبناء `Control` **١٩ ← ٢٢** · العمق `{0:8, 1:34, 2:27}` ←
+**`{0:8, 1:37, 2:24}`** · حُذف `DeviceLabToolsTest.kt` (٣ اختبارات) ومفتاح `device_lab_section_tools`
+من اللغتين. وتعليق `ControlLayoutModel.kt` صار يوثّق **سبب الرفض** لا سبب النقل.
+
+**MEASURED (ما بقي بعد التراجع):** ٦٩ وجهة · ٨ جذور · ٣٧ في العمق ١ · ٢٤ في العمق ٢ · `Control` ٢٢ ·
+`kt_balance` ٣٣٤١ ملفًا · `MaxDestination.All` = ٦٩.
+
+**SHIPPED (اختبارا عتاد حقيقيان، بقراءة فقط وبلا أذونات):**
+1. **الكاميرات** — `CameraManager.cameraIdList` + `getCameraCharacteristics`: الجهة (أمامية/خلفية/خارجية)
+   والدقّة من `SENSOR_INFO_PIXEL_ARRAY_SIZE` (ميغابكسل) ووجود مشعل. **لا تُفتح كاميرا** — السؤال «ماذا
+   تعلن المنصّة»، وفتحها يستهلك طاقة ويحتاج إذنًا. وإن لم تُعلن، صفّ واحد «غير متاح» لا صفوف مخترعة.
+2. **الاتصالات والمقاييس الحيوية** — NFC (وجود + مفتوح/مغلق) · Bluetooth · GPS · مشعّل تحت أحمر ·
+   بصمة · وجه. وما لا يوجد يُقال «غير موجود» لا صفًّا صامتًا.
+   و٢٠ مفتاحًا في `values/`+`values-ar/` وحدهما (§0.2).
+
+**SHIPPED (M2 — بطاقات أنواع الشاشات):** خمس بطاقات KDoc بصيغة `DESIGN.md §Screen Composition`
+(النوع · الكائن · العنصر الحامل · ولماذا يخصّ الشكل هذه الشاشة): `ControlScreen` (Matrix) ·
+`HomeScreen` (Matrix، وهو مسار `Now`) · `FpsOverlayScreen` (Instrument) · `GameSessionsScreen` (Ledger) ·
+`ThermalDetailScreen` (Instrument). تعليقات فقط، صفر سلوك.
+
+**GATES (مقيسة):** `kt_balance` ٣٣٤١/٠ · `code_health` «صحّة نظيفة» · `i18n_coverage` ٨٤+en عوائق ٠ ·
+`--prune all` يتيمة ٠ · `design_tokens` ٢٤٩/٣٠٠ · `design_doc` مطابقة · `resource_compile` aapt2 ✓
+(«كل مجلّدات الموارد تُترجم») · `license_audit` GPL ٠ · `readme_assets` أصول سليمة · `provenance_guard`
+٤١١٨/٠ · `git diff --check` OK.
+
+**BUILD:** غير مُتحقّقة على هذه الدفعة — الحكم من `MaxManager` بعد الدفع **يُقرأ ولا يُدّعى**.
+آخر حكم مقروء: `c54ffdec` = success (`42846738723`) — لكنه لا يشمل تراجع هذه الجولة.
+
+**RESIDUAL RISK:** (١) الكاميرا والاتصالات **قراءة إعلان** لا اختبار تشغيل: لا صورة ولا مسح NFC حقيقي —
+وهذا مقصود (بلا إذن وبلا ادّعاء نجاح)، ويبقى «هل تعمل القطعة فعلًا» **يحتاج جهازًا**. (٢) بصمة/وجه
+وجودٌ لا مصادقة (`BiometricPrompt` يحتاج مضيف `FragmentActivity`). (٣) هدف أبناء `Control` ≤ ١٣ محجوب
+بقرارات مالك مكتوبة: `Logs` (ADR-02 وتعليق `DiagnosticsScreen`) · `ColorScheme` (تعليق الموديل) ·
+`UsageStats`/`DeviceLab` (`OwnerDecisionsGuardTest`) · `MaxBackup`/`Permissions` (`LaunchRouteTest`).
+(٤) لا مراجعة مستقلة على الـdiff.
+
+**NEXT:** لا نقل وجهات بلا كلمة المالك · M3 (RTL/إتاحة) مُقاس نظيفًا (`rtl_guard` صفر مخالفات · أهداف
+لمس < ٤٨dp = ٠ · `HudActionSize` ٣٢dp استثناء موثَّق لسطح التراكب) · M4 (إعادات التركيب **يحتاج جهازًا**).
+
 ### ROUND-CLOSE-43 — المختبر يصير بيت أدواته، وإصلاح العطب الذي كشفه البناء — 2026-11-10 · DONE_WITH_CONCERNS
 
 **TASK:** «اكمل» — متابعة إعادة الهندسة النظامية بعد M1a، وإصلاح ما يسقطه القياس.
@@ -142,8 +187,10 @@ MaxManager has a strong engine and a fragmented surface. `core/maxai` + `core/ha
 غير مُتحقّقة) · `resource_compile` aapt2 ✓ · `license_audit` GPL ٠ · `readme_assets` ٦٩ شاشة ·
 `provenance_guard` ٤١١٧/٠ · `git diff --check` OK.
 
-**BUILD:** `MaxManager docs` `42843267365` على `3eec9e95` = **success**. و`MaxManager` = failure كما
-أعلاه. بناء هذه الدفعة (M1b + إصلاح الاختبار) **غير مُتحقّقة في هذه البيئة** حتى يُقرأ حكمه.
+**BUILD (مقروء):** على `c54ffdec` — `MaxManager` `42846738723` = **success**، و`MaxManager docs`
+`42846738282` = **success**. وعلى `3eec9e95` كان `MaxManager` `42843267294` = failure بسبب
+`DestinationAccessTest` (أُصلح في هذه الدفعة)، و`MaxManager docs` `42843267365` = success.
+فالمستودع على `main` يترجم ويمرّ اختباراته كاملة (٤٣٩ ملف اختبار · ٤٢١٩ دالة `@Test`).
 
 **RESIDUAL RISK:** (١) الحصر بنيوي لا بصري — ما يظهر على الجهاز **يحتاج جهازًا**. (٢) الأنواع السبعة
 إسناد تصميمي بيد. (٣) `UsageStats` مثبَّتة تحت `Control` باختبار مالك؛ نقلها إلى `Diagnostics` يلزمه

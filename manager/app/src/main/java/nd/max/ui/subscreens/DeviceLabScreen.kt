@@ -15,8 +15,10 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.location.LocationManager
 import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraManager
+import android.hardware.ConsumerIrManager
 import android.media.AudioAttributes
 import android.media.AudioDeviceCallback
 import android.media.AudioDeviceInfo
@@ -26,6 +28,7 @@ import android.media.AudioRecord
 import android.media.AudioTrack
 import android.media.MediaCodecList
 import android.media.MediaRecorder
+import android.nfc.NfcAdapter
 import android.os.BatteryManager
 import android.os.Build
 import android.os.VibrationEffect
@@ -111,11 +114,6 @@ import nd.max.core.net.WifiChannel
 import nd.max.ui.util.WifiChannelReader
 import nd.max.ui.design.MaxGroup
 import nd.max.ui.design.MaxGroupDivider
-import nd.max.ui.navigation.MaxDestination
-import nd.max.ui.navigation.MaxNavActions
-import nd.max.ui.navigation.maxDestinationRole
-import nd.max.ui.navigation.maxHubRows
-import nd.max.ui.navigation.MaxRisk
 import nd.max.ui.design.MaxNavigationRow
 import nd.max.ui.design.MaxRow
 import nd.max.ui.design.MaxScreen
@@ -185,29 +183,6 @@ fun DeviceLabScreen(navController: NavHostController) {
                     iconTone = MaxTone.Accent,
                     onClick = { openTest = LabTest.TOUCH },
                 )
-            }
-        }
-
-        // **أدوات المختبر تُقرأ من السجلّ لا من قائمة ثانية.** مختبر الجهاز هو بيت أدوات
-        // الفحص والتعديل المتقدّمة (`SetEdit` · `ActivityLauncher` · `FileManager`)، وأبوّتها
-        // في `MaxDestinations` نفسها — فإضافة أداة إلى المختبر تحدث في السجلّ وحده، وهذه
-        // الشاشة تعرضها بلا سطر جديد. وكانت الثلاثة صفوفًا سائبة في صندوق أدوات التحكّم
-        // (اثنا عشر صفًّا لا عنوان يجمعها)، وهو ما جعل صفحة التحكّم تُقرأ مخزنًا لا محورًا.
-        val labTools = maxHubRows(MaxDestination.DeviceLab)
-        if (labTools.isNotEmpty()) {
-            MaxSection(title = stringResource(R.string.device_lab_section_tools)) {
-                MaxGroup {
-                    labTools.forEachIndexed { index, tool ->
-                        if (index > 0) MaxGroupDivider()
-                        MaxNavigationRow(
-                            title = stringResource(tool.titleRes),
-                            subtitle = stringResource(maxDestinationRole(tool)),
-                            icon = tool.icon,
-                            iconTone = if (tool.risk == MaxRisk.Normal) MaxTone.Neutral else MaxTone.Caution,
-                            onClick = { MaxNavActions(navController).navigateTo(tool) },
-                        )
-                    }
-                }
             }
         }
 
@@ -312,6 +287,20 @@ fun DeviceLabScreen(navController: NavHostController) {
             description = stringResource(R.string.device_lab_wifi_desc),
         ) {
             WifiChannels()
+        }
+
+        MaxSection(
+            title = stringResource(R.string.device_lab_section_cameras),
+            description = stringResource(R.string.device_lab_cameras_desc),
+        ) {
+            CameraTest()
+        }
+
+        MaxSection(
+            title = stringResource(R.string.device_lab_section_radios),
+            description = stringResource(R.string.device_lab_radios_desc),
+        ) {
+            RadiosTest()
         }
 
         MaxSection(title = stringResource(R.string.device_lab_section_hardware)) {
@@ -1259,6 +1248,130 @@ private fun BatteryTest() {
             title = stringResource(R.string.device_lab_battery_health),
             value = stringResource(healthRes),
         )
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Cameras and radios — what the platform declares, read without permission
+// ---------------------------------------------------------------------------
+
+/** ما تعلنه المنصّة عن كاميرا واحدة. لا تُفتح الكاميرا هنا، فالسؤال اختبارٌ لا تصوير. */
+private data class CameraFacts(
+    val id: String,
+    val facingRes: Int,
+    val megapixels: Double?,
+    val flash: Boolean,
+)
+
+/** ما تعلنه المنصّة عن اتصال أو مستشعر حيوي: موجود؟ ومفتوح إن كان له مفتاح. */
+private data class RadioFacts(
+    val titleRes: Int,
+    val present: Boolean,
+    val enabled: Boolean?,
+)
+
+/**
+ * **الكاميرات — قراءةٌ لا معاينة.** يعلن النظام معرّفات الكاميرات، ولكلٍّ اتجاهها ودقّتها
+ * ووجود مشعل. وفتح الكاميرا هنا يستهلك طاقة ويحتاج إذنًا، بينما سؤال الاختبار هو «هل
+ * تعلنها المنصّة أصلًا وبأي مواصفات» — وهذا لا إذن له. فإن لم تُعلن، فالصفّ يقول غير متاح
+ * ولا يُخترع صفّ.
+ */
+@Composable
+private fun CameraTest() {
+    val context = LocalContext.current
+    val unavailable = stringResource(R.string.device_lab_unavailable)
+    val cameras = remember(context) {
+        runCatching {
+            val manager = context.getSystemService(CameraManager::class.java)
+            manager.cameraIdList.map { id ->
+                val c = manager.getCameraCharacteristics(id)
+                val facing = when (c.get(CameraCharacteristics.LENS_FACING)) {
+                    CameraCharacteristics.LENS_FACING_FRONT -> R.string.device_lab_camera_front
+                    CameraCharacteristics.LENS_FACING_BACK -> R.string.device_lab_camera_back
+                    CameraCharacteristics.LENS_FACING_EXTERNAL -> R.string.device_lab_camera_external
+                    else -> R.string.device_lab_camera_unknown
+                }
+                val size = c.get(CameraCharacteristics.SENSOR_INFO_PIXEL_ARRAY_SIZE)
+                CameraFacts(
+                    id = id,
+                    facingRes = facing,
+                    megapixels = size?.let { it.width.toLong() * it.height / 1_000_000.0 },
+                    flash = c.get(CameraCharacteristics.FLASH_INFO_AVAILABLE) == true,
+                )
+            }
+        }.getOrNull()
+    }
+
+    MaxGroup {
+        if (cameras.isNullOrEmpty()) {
+            LabValueRow(title = stringResource(R.string.device_lab_section_cameras), value = unavailable)
+        } else {
+            cameras.forEachIndexed { index, camera ->
+                if (index > 0) MaxGroupDivider()
+                val resolution = camera.megapixels?.let {
+                    String.format(Locale.getDefault(), "%.1f MP", it)
+                }
+                val flash = stringResource(
+                    if (camera.flash) R.string.device_lab_camera_flash else R.string.device_lab_camera_no_flash,
+                )
+                LabValueRow(
+                    title = stringResource(
+                        R.string.device_lab_camera_row,
+                        camera.id,
+                        stringResource(camera.facingRes),
+                    ),
+                    value = listOfNotNull(resolution, flash).joinToString(" · "),
+                )
+            }
+        }
+    }
+}
+
+/**
+ * **الاتصالات والمقاييس الحيوية — وجودٌ وحالة، بلا طلب إذن.** كل ما هنا تقرؤه المنصّة
+ * بلا صلاحية: وجود NFC وحالته، ووجود Bluetooth، وحالة GPS، ومشعّل تحت أحمر، وبصمة ووجه.
+ * وما لا يوجد يُعرض «غير موجود» لا صفًّا صامتًا — لأن الصمت يُقرأ عيبًا في التطبيق.
+ */
+@Composable
+private fun RadiosTest() {
+    val context = LocalContext.current
+    val on = stringResource(R.string.device_lab_state_on)
+    val off = stringResource(R.string.device_lab_state_off)
+    val present = stringResource(R.string.device_lab_state_present)
+    val absent = stringResource(R.string.device_lab_state_absent)
+    val facts = remember(context) {
+        val pm = context.packageManager
+        val nfc = runCatching { NfcAdapter.getDefaultAdapter(context) }.getOrNull()
+        val gps = runCatching {
+            context.getSystemService(LocationManager::class.java)
+                .isProviderEnabled(LocationManager.GPS_PROVIDER)
+        }.getOrDefault(false)
+        val infrared = runCatching {
+            context.getSystemService(ConsumerIrManager::class.java)?.hasIrEmitter() == true
+        }.getOrDefault(false)
+        listOf(
+            RadioFacts(R.string.device_lab_radio_nfc, nfc != null, nfc?.isEnabled),
+            RadioFacts(R.string.device_lab_radio_bluetooth, pm.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH), null),
+            RadioFacts(R.string.device_lab_radio_gps, gps, gps),
+            RadioFacts(R.string.device_lab_radio_ir, infrared, null),
+            RadioFacts(R.string.device_lab_radio_fingerprint, pm.hasSystemFeature(PackageManager.FEATURE_FINGERPRINT), null),
+            RadioFacts(R.string.device_lab_radio_face, pm.hasSystemFeature(PackageManager.FEATURE_FACE), null),
+        )
+    }
+
+    MaxGroup {
+        facts.forEachIndexed { index, fact ->
+            if (index > 0) MaxGroupDivider()
+            LabValueRow(
+                title = stringResource(fact.titleRes),
+                value = when {
+                    !fact.present -> absent
+                    fact.enabled == null -> present
+                    fact.enabled -> on
+                    else -> off
+                },
+            )
+        }
     }
 }
 

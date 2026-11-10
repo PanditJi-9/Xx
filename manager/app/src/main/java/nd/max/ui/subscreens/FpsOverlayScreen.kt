@@ -13,6 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/*
+ * **Screen card — archetype: Instrument · object: the frame timeline ·
+ * carrying element: the plot.** One series, one axis, one reading: the person
+ * came to watch frames fall, not to browse settings. Controls sit under the
+ * plot as a short legend of what is measured, never above it.
+ */
 
 package nd.max.ui.subscreens
 

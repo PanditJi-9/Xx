@@ -13,6 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/*
+ * **Screen card — archetype: Instrument · object: the thermal journey ·
+ * carrying element: the temperature plot.** The curve is the page; zones,
+ * mitigation steps and cooling devices are annotations on it, in the order the
+ * device passed through them.
+ */
 
 /**
  * شاشة الحرارة.
