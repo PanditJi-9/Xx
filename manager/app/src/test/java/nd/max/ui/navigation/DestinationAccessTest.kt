@@ -89,8 +89,11 @@ class DestinationAccessTest {
         val access = shizuku()
         // CPU: كل أبنائه كتابة sysfs → لا يبقى صفّ فارغ.
         assertFalse(access.visible(MaxDestination.CpuHub))
-        // الذاكرة: zram وUFS وpreference كلها جذر.
-        assertFalse(access.visible(MaxDestination.MemoryHub))
+        // الذاكرة: zram وUFS وpreference كلها جذر — وكانت تُحجب كاملةً لهذا السبب. وبعد **M1a**
+        // صار `ProcessManager` ابنًا لها، وهو شاشة قراءة لا تحتاج صلاحية؛ فصار للمحور صفٌّ يُفتح
+        // فعلًا بـShizuku. الظهور هنا هو **تصحيح** لا عطب: الحارس على «لا محور فارغ» ما زال قائمًا
+        // على CPU أدناه، والذاكرة لم تعد فارغة.
+        assertTrue(access.visible(MaxDestination.MemoryHub))
         // العرض: Resolution يعمل بـShizuku فيبقى الحوز ظاهرًا.
         assertTrue(access.visible(MaxDestination.DisplayHub))
     }

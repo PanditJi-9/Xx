@@ -3907,6 +3907,7 @@
 <string name="device_lab_title">Device lab</string>
 <string name="device_lab_subtitle">Test the hardware with your own eyes and hands. Nothing here writes to system settings.</string>
 <string name="device_lab_section_screen">Screen and touch</string>
+<string name="device_lab_section_tools">Lab tools</string>
 <string name="device_lab_screen_title">Screen test</string>
 <string name="device_lab_screen_desc">Cycle solid colours to check for dead pixels, tint and uniformity.</string>
 <string name="device_lab_touch_title">Touch and multi-touch</string>

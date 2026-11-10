@@ -1,3 +1,13 @@
+## ROUND-CLOSE-43 — المختبر بيت أدواته + إصلاح عطب Shizuku — 2026-11-10 · DONE_WITH_CONCERNS
+
+**TASK:** «اكمل».
+
+**SHIPPED:** `SetEdit`/`ActivityLauncher`/`FileManager` → `DeviceLab` (M1b) · قسم في `DeviceLabScreen` يقرأ الأبناء من السجلّ · `ControlToolDestinations` ١٠←٧ · أبناء `Control` ٢٢←١٩ · العمق ٣٧/٢٤←٣٤/٢٧ · `DeviceLabToolsTest` (٣) · تصحيح `inventory.md` ٦١←٦٩ · إصلاح `DestinationAccessTest` (MemoryHub صار مرئيًّا بـShizuku بعد M1a — تصحيح حقيقة قديمة لا عطب).
+
+**BUILD:** `MaxManager` 42843267294 على `3eec9e95` = failure (`DestinationAccessTest:93`) وأُصلح؛ وبناء هذه الدفعة غير مُتحقّقة حتى يُقرأ. `MaxManager docs` = success.
+
+**NEXT:** M1b-باقٍ: قائمة أبناء عامة في `Diagnostics` و`Settings`، ثم `Logs`→`Diagnostics` و`ColorScheme`→`Settings` (`UsageStats` تحتاج قرار مالك، و`MaxBackup`/`Permissions` مثبَّتان باختبار). ثم M2.
+
 ## ROUND-CLOSE-42 — إعادة هندسة نظامية: الحصر المقيس + M0 + M1a — 2026-11-10 · DONE_WITH_CONCERNS
 
 **TASK:** «إعادة هندسة نظامية كاملة … لا توصيات بل تنفيذ».

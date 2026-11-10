@@ -114,6 +114,46 @@ MaxManager has a strong engine and a fragmented surface. `core/maxai` + `core/ha
 **NEXT:** (١) CI: `:app:testReleaseUnitTest` + `:app:compileReleaseKotlin`. (٢) شريحة: علامة «يكتب» على
 صفوف التحكّم مشتقة من مسار المراجِع. (٣) شريحة: موجد واحد بالاسم والقصد. (٤) تعميم `MaxDataTrust`
 على كل قيمة غير متدفّقة. (٥) قرار مالك: حذف `StoryboardHome` أو إعادته.
+### ROUND-CLOSE-43 — المختبر يصير بيت أدواته، وإصلاح العطب الذي كشفه البناء — 2026-11-10 · DONE_WITH_CONCERNS
+
+**TASK:** «اكمل» — متابعة إعادة الهندسة النظامية بعد M1a، وإصلاح ما يسقطه القياس.
+
+**MEASURED (قبل/بعد):** أبناء `Control` **٢٢ ← ١٩** · العمق `{0:8, 1:34, 2:27}` (كان ٨/٣٧/٢٤) ·
+`ControlToolDestinations` **١٠ ← ٧** · الوجهات ٦٩ كما هي · `MaxDestination.All` = ٦٩ (صفر فرق عن
+عدد `data object`، صُحّح رقم قديم في `docs/ux-reengineering/inventory.md` كان ٦١).
+
+**SHIPPED (M1b — شريحة أدوات المختبر):** `SetEdit` · `ActivityLauncher` · `FileManager` صارت أبوّتها
+`DeviceLab` (وكانت `Control`، `MaxRisk.Advanced` كما هي) · `ControlLayoutModel.kt` حُذفت الثلاثة من
+صندوق الأدوات وقصُرت القائمة من ١٢ إلى ٧ مع تعليق يشرح مصير كل صفّ · `DeviceLabScreen.kt` قسم جديد
+`device_lab_section_tools` يقرأ الأبناء من السجلّ عبر `maxHubRows(MaxDestination.DeviceLab)` (لا قائمة
+ثانية) ويُلوّن المتقدّم بـ`MaxTone.Caution` · نصّان `values/`+`values-ar/` · اختبار
+`DeviceLabToolsTest.kt` (٣ اختبارات: الأبوّة، العرض من السجلّ، لا باب ثانٍ).
+
+**العطب الذي كشفه البناء (مُقاس، لا مُخمَّن):** تشغيل `MaxManager` `42843267294` على `3eec9e95`
+(M1a) = **failure** — `DestinationAccessTest > empty hubs are suppressed at shizuku level` عند
+السطر ٩٣: كان يفرض `assertFalse(visible(MemoryHub))` لأن أبناءها كلهم جذر. وM1a جعلت
+`ProcessManager` (شاشة قراءة بلا صلاحية) ابنًا لها ⇒ صار للمحور صفّ يُفتح فعلًا بـShizuku.
+**الحكم:** الظهور هو الصواب، والاختبار كان يحمل حقيقةً قديمة. أُبدل السطر بـ`assertTrue` مع تعليق
+يسمّي السبب، وبقي حارس «لا محور فارغ» على `CpuHub` (ما زال فارغًا بـShizuku). **ولم يُدَّعَ نجاح:**
+الإصلاح لم يُشغَّل بعد في هذه الجولة.
+
+**GATES:** `kt_balance` ٣٣٤٢/٠ · `code_health` «صحّة نظيفة» · `i18n_coverage` ٨٤+en عوائق ٠ ·
+`--prune all` يتيمة ٠ · `design_tokens` ٢٤٩/٣٠٠ · `design_doc` مطابقة · `jni_symbols` ٢٣/٠ (ثنائيات
+غير مُتحقّقة) · `resource_compile` aapt2 ✓ · `license_audit` GPL ٠ · `readme_assets` ٦٩ شاشة ·
+`provenance_guard` ٤١١٧/٠ · `git diff --check` OK.
+
+**BUILD:** `MaxManager docs` `42843267365` على `3eec9e95` = **success**. و`MaxManager` = failure كما
+أعلاه. بناء هذه الدفعة (M1b + إصلاح الاختبار) **غير مُتحقّقة في هذه البيئة** حتى يُقرأ حكمه.
+
+**RESIDUAL RISK:** (١) الحصر بنيوي لا بصري — ما يظهر على الجهاز **يحتاج جهازًا**. (٢) الأنواع السبعة
+إسناد تصميمي بيد. (٣) `UsageStats` مثبَّتة تحت `Control` باختبار مالك؛ نقلها إلى `Diagnostics` يلزمه
+قرار مالك صريح. (٤) `MaxBackup`/`Permissions` مثبَّتان في صفحة التحكّم بـ`LaunchRouteTest`. (٥) هدف
+أبناء `Control` ≤ ١٣ لم يُبلَغ (١٩) — يحتاج M1b-باقٍ: `Logs`→`Diagnostics` و`ColorScheme`→`Settings`
+بعد إضافة قائمة أبناء عامة للشاشتين. (٦) لا مراجعة مستقلة على الـdiff.
+
+**NEXT:** M1b-باقٍ (قائمة أبناء عامة في `Diagnostics`/`Settings` ثم النقلان الآمنان) · ثم M2 (إعادة
+تركيب أعلى خمس شاشات حسب نوعها) · ثم M3 (RTL/إتاحة/أحجام) · ثم M4 (قياس إعادات التركيب قبل/بعد).
+
 ### ROUND-CLOSE-42 — إعادة هندسة نظامية: حصر ٦٩ وجهة، خريطة منتج مقيسة، وأول نقل مُتحقَّق — 2026-11-10 · DONE_WITH_CONCERNS
 
 **TASK:** «إعادة هندسة نظامية كاملة … افحص كل الشاشات والتنقّل … لا توصيات بل تنفيذ» — مع «لا تُبنَ الشاشة المعدلة إلا لحاجة حقيقية» و«لا تبني محليًّا».

@@ -111,6 +111,11 @@ import nd.max.core.net.WifiChannel
 import nd.max.ui.util.WifiChannelReader
 import nd.max.ui.design.MaxGroup
 import nd.max.ui.design.MaxGroupDivider
+import nd.max.ui.navigation.MaxDestination
+import nd.max.ui.navigation.MaxNavActions
+import nd.max.ui.navigation.maxDestinationRole
+import nd.max.ui.navigation.maxHubRows
+import nd.max.ui.navigation.MaxRisk
 import nd.max.ui.design.MaxNavigationRow
 import nd.max.ui.design.MaxRow
 import nd.max.ui.design.MaxScreen
@@ -180,6 +185,29 @@ fun DeviceLabScreen(navController: NavHostController) {
                     iconTone = MaxTone.Accent,
                     onClick = { openTest = LabTest.TOUCH },
                 )
+            }
+        }
+
+        // **أدوات المختبر تُقرأ من السجلّ لا من قائمة ثانية.** مختبر الجهاز هو بيت أدوات
+        // الفحص والتعديل المتقدّمة (`SetEdit` · `ActivityLauncher` · `FileManager`)، وأبوّتها
+        // في `MaxDestinations` نفسها — فإضافة أداة إلى المختبر تحدث في السجلّ وحده، وهذه
+        // الشاشة تعرضها بلا سطر جديد. وكانت الثلاثة صفوفًا سائبة في صندوق أدوات التحكّم
+        // (اثنا عشر صفًّا لا عنوان يجمعها)، وهو ما جعل صفحة التحكّم تُقرأ مخزنًا لا محورًا.
+        val labTools = maxHubRows(MaxDestination.DeviceLab)
+        if (labTools.isNotEmpty()) {
+            MaxSection(title = stringResource(R.string.device_lab_section_tools)) {
+                MaxGroup {
+                    labTools.forEachIndexed { index, tool ->
+                        if (index > 0) MaxGroupDivider()
+                        MaxNavigationRow(
+                            title = stringResource(tool.titleRes),
+                            subtitle = stringResource(maxDestinationRole(tool)),
+                            icon = tool.icon,
+                            iconTone = if (tool.risk == MaxRisk.Normal) MaxTone.Neutral else MaxTone.Caution,
+                            onClick = { MaxNavActions(navController).navigateTo(tool) },
+                        )
+                    }
+                }
             }
         }
 

@@ -3852,6 +3852,7 @@
 <string name="device_lab_title">مختبر الجهاز</string>
 <string name="device_lab_subtitle">اختبر العتاد بعينك ويدك. لا شيء هنا يكتب في إعدادات النظام.</string>
 <string name="device_lab_section_screen">الشاشة واللمس</string>
+<string name="device_lab_section_tools">أدوات المختبر</string>
 <string name="device_lab_screen_title">اختبار الشاشة</string>
 <string name="device_lab_screen_desc">بدّل الألوان الصلبة لتكشف البكسلات الميتة والصبغة وعدم التجانس.</string>
 <string name="device_lab_touch_title">اللمس وتعدد اللمسات</string>
