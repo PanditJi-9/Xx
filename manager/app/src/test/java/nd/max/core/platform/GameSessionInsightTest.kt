@@ -53,7 +53,7 @@ class GameSessionInsightTest {
             packageName = "com.example.game"
         )
         assertEquals(50f, base?.frames ?: 0f, 0.01f)
-        assertEquals(3, base?.count)
+        assertEquals(3, base?.count ?: -1)
     }
 
     @Test
@@ -69,7 +69,7 @@ class GameSessionInsightTest {
             excludeId = "self"
         )
         assertEquals(55f, base?.frames ?: 0f, 0.01f)
-        assertEquals(1, base?.count)
+        assertEquals(1, base?.count ?: -1)
     }
 
     @Test
@@ -166,9 +166,9 @@ class GameSessionInsightTest {
             SessionPoint(atMs = 2_000L, frames = 55f)
         )
         val worst = worstPointOf(points)
-        assertEquals(1_000L, worst?.atMs)
+        assertEquals(1_000L, worst?.atMs ?: -1L)
         assertEquals(31f, worst?.frames ?: 0f, 0.01f)
-        assertEquals(1_000L, worstMoment(session("now", series = points))?.atMs)
+        assertEquals(1_000L, worstMoment(session("now", series = points))?.atMs ?: -1L)
     }
 
     @Test
