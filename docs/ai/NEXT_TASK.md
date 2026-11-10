@@ -1,3 +1,19 @@
+## ROUND-CLOSE-40 — إثبات الأصل بالقياس وحارس البصمات — 2026-11-10 · DONE_WITH_CONCERNS
+
+**TASK:** «كل شيئ اضفته من المشاريع الاخري ليس بعملي حقا» — إثبات الأصل أو الإزالة، لا وعدًا.
+
+**MEASURED:** تقاطع الرموز (9-grams، احتواء `|A∩B|/min`) بين كل ملفاتنا والمرجع: الاثنا عشر ملفًا التي أُضيفت في جولاته ⇒ أعلى قيمة **٠٫٠٥٨** (`HudDeepReaders.kt`) و**٠٫٠٣٩** (`GameSessionsScreen.kt`)، والباقي **٠٫٠٠٠**، وحرفيات مشتركة **صفر**. الشجرة كاملة (١٣٨١ ملفًا مصدريًا × ٢٧٧١) ⇒ أعلى **٠٫١١٧٦** · **٠** ملف بلغ ٠٫٣٠ · **٠** تجاوز ٠٫١٥. `license_audit --provenance`: ٣٦٩٠ ملفًا متعقّبًا · GPL **٠** · مجهول **٠** · مملوك ٣١٨٧ · طرف ثالث ٥٠٣ (كلها بإشعار في `THIRD_PARTY_NOTICES.md`).
+
+**SHIPPED:** `tools/provenance_guard.py` (٢٤٣ سطرًا · ٨ بصمات أسماء · ٥ أسماء أشجار مرجعية · `--assert` · `--self-test` ٦ حالات · `--list`) · `docs/ai/ORIGIN.md` (٩٨ سطرًا: الجداول والقاعدة الخمس والحدود) · خطوتان في «Contract gates» داخل `build.yml` · سطر في `AGENTS.md` §5.
+
+**BUILD:** `df20c913` — `feat: provenance guard — no reference tree, no reference fingerprints` — ٤ ملفات · **+٣٥٠** · مدفوع إلى `main`. **`MaxManager` `42765864305` على `df20c913` = success** · و`MaxManager docs` `42765864361` = completed. QV `42761536805` على `bef4d85b` = success (قبل الدفعة).
+
+**GATES:** kt_balance 3337/0 · code_health نظيف · i18n 84+en · prune 0 · design_tokens 249/300 · resource_compile aapt2 · jni_symbols 23 · license_audit GPL 0 · readme_assets RC 0 · `provenance_guard --assert` «٤١١٠ ملفًا · ٠ مسار مرجعي · ٠ بصمة» · `--self-test` ٦/٦ · diff check OK.
+
+**RESIDUAL:** الحارس **اسمي/رمزي** — يُثبت غياب أسماء المرجع وأشجاره، ولا يُثبت غياب اقتباس مفهومي (وهذا ما يقرّره `docs/AUTHENTICITY.md` بالتشابه لا بالاسم). والقياس مقابل مرجع واحد. وأصول `build/audit/zkm-raw` غير موجودة في هذه الشجرة ⇒ بقايا `AUTHENTICITY` الأربع معلنة ومفسَّرة لا مُعاد قياسها الآن. والجهاز غير متاح.
+
+**NEXT:** (١) عند توفر أصول `zkm-raw`: `python3 tools/upstream_similarity.py --assert` لإعادة قياس البقايا الأربع. (٢) توسيع `FINGERPRINTS` عند إضافة أي مرجع جديد للقراءة. (٣) مراجعة مستقلة على `df20c913`.
+
 ## ROUND-CLOSE-39 — عقد الصور المصغّرة · إصدار المخطط · مسبار القنوات · فلتر وفاصل — 2026-11-10 · DONE_WITH_CONCERNS
 
 **TASK:** «اصلح مشكلة البناء اولا وبعدها نفذ مقترحاتك» ثم «لا تبني او تختبر من الهاتف دائما استخدم github action».
