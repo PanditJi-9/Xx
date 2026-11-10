@@ -1,3 +1,19 @@
+## ROUND-CLOSE-39 — عقد الصور المصغّرة · إصدار المخطط · مسبار القنوات · فلتر وفاصل — 2026-11-10 · DONE_WITH_CONCERNS
+
+**TASK:** «اصلح مشكلة البناء اولا وبعدها نفذ مقترحاتك» ثم «لا تبني او تختبر من الهاتف دائما استخدم github action».
+
+**BUILD:** `e344d800` (`docs/store/spec.json` 68→69 + إعادة توليد 8 صور و`manifest` و`listing`) ← `fe1e5fd4` (15 ملفًا · +532/−39). **QV `42753712921` على `fe1e5fd4` = success** (`BUILD SUCCESSFUL in 3m 15s` · 35 مهمة · 24 منفّذة · 11 من الكاش · `:app:testReleaseUnitTest` مرّ بلا `FAILED`).
+
+**SHIPPED:** `SESSION_SCHEMA_VERSION=2` + `schemaVersion` في `StoredGameSession` · `HudChannelProbe` (7 قنوات: Readable/Missing/Denied بمصدرها؛ ولم تُضف إلى Atlas لأنها أهداف تحكّم لا قراءة) · `HudFilter` (Text/Chart/All) في `HudSurface` · `MonitorGate` للفاصل في `FpsOverlayService.Panel` · `FpsOverlayPrefs.State.filter` و`MonitorSpec.intervalMs/filter` بتوافق خلفي (1000/All) · قسم القنوات وشرائح الفلتر/الفاصل في `FpsOverlayScreen` · نصوص en/ar · `MonitorGateTest` (9) و`MonitorPrefsTest` موسّع.
+
+**RULE:** `AGENTS.md` §0.10 — لا `gradlew` محليًّا إطلاقًا؛ الحكم من `gh run view` وحده، والبوابات الخفيفة فقط محليًّا، و§5 أُرشِف.
+
+**GATES:** kt_balance 3337/0 · code_health نظيف · i18n 84+en · prune 0 · design_tokens 249/300 · resource_compile aapt2 · jni_symbols 23 · license_audit GPL 0 · readme_assets RC 0 · diff check OK.
+
+**RESIDUAL:** الجهاز غير متاح — المسبار يقيس هذا الجهاز لا هاتف المالك، والفلتر/الفاصل مُقاسان منطقيًّا لا بصريًّا، وRTL/اللمس/أداء الرسم يحتاج جهازًا.
+
+**NEXT:** جهاز: تجربة الفلتر والفاصل على لعبة تعمل، وقراءة قسم القنوات على عتاد آخر لمعرفة ما يسقط إلى `Missing`.
+
 ## ROUND-CLOSE-38 — تسجيل الجلسة العميق — 2026-11-10 · DONE_WITH_CONCERNS
 
 **TASK:** «نفذ كل شيئ» بعد جرد Scene — تعميق المسجّل القائم (`HudRecorder`/`HudSampler`) بلا مسار ثانٍ، en/ar فقط، صفر كود من المرجع.

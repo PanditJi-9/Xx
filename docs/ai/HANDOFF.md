@@ -114,6 +114,32 @@ MaxManager has a strong engine and a fragmented surface. `core/maxai` + `core/ha
 **NEXT:** (١) CI: `:app:testReleaseUnitTest` + `:app:compileReleaseKotlin`. (٢) شريحة: علامة «يكتب» على
 صفوف التحكّم مشتقة من مسار المراجِع. (٣) شريحة: موجد واحد بالاسم والقصد. (٤) تعميم `MaxDataTrust`
 على كل قيمة غير متدفّقة. (٥) قرار مالك: حذف `StoryboardHome` أو إعادته.
+### ROUND-CLOSE-39 — عقد الصور المصغّرة · إصدار مخطط الجلسة · مسبار القنوات · فلتر وفاصل لكل مراقب — 2026-11-10 · DONE_WITH_CONCERNS
+
+**TASK:** أمر المالك «اصلح مشكلة البناء اولا وبعدها نفذ مقترحاتك» — إصلاح فشل CI، ثم دفعة المقترحات الثلاثة، ثم أمر جديد: **لا بناء ولا اختبار على الهاتف، Actions دائمًا** (§0.10 المُضاف في هذه الدفعة).
+
+**CHANGED:**
+- **إصلاح البناء (`e344d800`):** `docs/store/spec.json` كان يعلن `measured.screens = 68` والمقيس 69 ⇒ `store_thumbnails.py --assert` يسقط قبل البناء الثقيل. صُحّح إلى 69 وأُعيد التوليد (`--generate`: 8 صور + `manifest.json` + `listing.md`). `--assert` 0 عوائق · `--self-test` 11/11.
+- **`AGENTS.md` §0.10 جديد:** «لا تبني او تختبر من الهاتف دائما استخدم github action» — لا `gradlew` محليًّا إطلاقًا، والحكم من `gh run view` وحده؛ والبوابات الخفيفة (ثوانٍ) تبقى محليّة؛ وما لا يُثبته Actions يبقى غير مُتحقَّق. وقسم §5 أُرشِف بوسم «لا يُشغَّل».
+- **مخطط الجلسة:** `SESSION_SCHEMA_VERSION = 2` في `GameSessionStore.kt` و`val schemaVersion: Int = 1` في `StoredGameSession` (الغائب من ملف قديم = 1)، والكتابة الجديدة تحمل 2 — فالتصدير المستقبلي يميّز الصفّ القديم من الجديد بلا تخمين.
+- **مسبار القنوات السبع (`HudDeepReaders.kt`):** `HudChannel` · `HudChannelStatus { Readable, Missing, Denied }` · `HudChannelCapability(channel,status,source)` · `HudChannelProbe.probe(context)` يقرأ عقد CPU/thermal/GPU clock/GPU busy/devfreq/DiskIo/بطارية ويسمّي المصدر؛ `classify(exists, readable)` صافية. **قرار صريح:** لم تُضف إلى Atlas — `AtlasControlTarget` أهداف تحكّم كتابة لا قنوات قراءة، وإضافتها هناك كانت ستخلق مصدر حقيقة ثانيًا.
+- **فلتر العرض:** `ui/util/HudFilter.kt` — `Text · Chart · All` و`hudTextVisible`/`hudChartVisible`؛ و`HudSurface` يلفّ `when(form)` بـ`textVisible` ويستبدل شرط المنحنى بـ`chartVisible`، و`inlineActions` يستعمل `!chartVisible`.
+- **فاصل التحديث:** `ui/util/MonitorGate.kt` — أوّل عيّنة تمرّ، وما بعدها بعد الفاصل، والفاصل ≤0 لا يحجب، وتغيير الفاصل يسري على الفجوة التالية. مطبَّق في `FpsOverlayService.Panel` عبر `LaunchedEffect(snapshot.sampledAtMs, hud.intervalMs)` و`shown` محليّ، فلا تُعاد رسمة قبل موعدها.
+- **التفضيلات:** `FpsOverlayPrefs.State.filter` + `KEY_FILTER`؛ `MonitorSpec.intervalMs/filter` + `K_INTERVAL/K_FILTER`؛ وكلاهما يقرأ الغائب افتراضيًا (1000/All) فالتفضيلات القديمة لا تُكسَر.
+- **`FpsOverlayScreen`:** قسم «قنوات القراءة» يعرض السبع بحالتها ومصدرها (Live/Unreadable/Unsupported)؛ وشرائح فلتر للمراقب الأوّل، وفلتر + فاصل للمراقب الإضافي.
+- **النصوص:** `hud_filter_*` · `hud_channels_*` · `hud_channel_*` في `values/` و`values-ar/` فقط.
+- **الاختبارات:** `MonitorGateTest.kt` جديد (5 gate + 3 filter + 1 classify)؛ `MonitorPrefsTest` round-trip للفاصل والفلتر + صفّ قديم بلا المفتاحين ⇒ الافتراضي + فاصل 137 وفلتر مجهول ⇒ الافتراضي.
+
+**MEASURED:** 15 ملفًا (11 معدّلة + 3 جديدة) · **+532/−39** · التزام `fe1e5fd4` مدفوع إلى `main`.
+
+**GATES (محليًّا، خفيفة):** `kt_balance` 3337/0 · `code_health` صحّة نظيفة · `i18n_coverage` 84+en · `--prune all` 0 يتيم · `design_tokens` 249/300 · `resource_compile` aapt2 RC 0 · `jni_symbols` 23 · `license_audit` GPL 0 · `readme_assets` RC 0 · `git diff --check` DIFF_OK.
+
+**BUILD:** `:app:compileReleaseKotlin` المحلي **قبل** الأمر الجديد = `BUILD SUCCESSFUL in 12m 32s` (آخر بناء على الجهاز؛ بعده صار §0.10 نافذًا). ثم **Quick Verify `42753712921` على `fe1e5fd4` = success** — `BUILD SUCCESSFUL in 3m 15s` · 35 مهمة · 24 منفّذة · 11 من الكاش · و`:app:testReleaseUnitTest` ظهر في السجل ومرّ بلا `FAILED`.
+
+**RESIDUAL:** الجهاز غير متاح — المسبار يقيس عقد الملفات على **هذا** الجهاز لا على هاتف المالك؛ و`Readable` هنا لا يعني `Readable` هناك. والفلتر والفاصل يُقاسان منطقيًّا (`MonitorGateTest`) لا بصريًّا على تراكب حقيقي. وRTL/اللمس وأداء الرسم تحتاج جهازًا.
+
+**NEXT:** جهاز: فتح التراكب وتغيير الفلتر إلى «منحنى» ثم «نص» على لعبة تعمل، وقياس أن الفاصل 3000ms يُقلّل الرسم فعلًا، ثم قراءة قسم القنوات على عتاد مختلف لمعرفة ما يسقط إلى `Missing`.
+
 ### ROUND-CLOSE-38 — تسجيل الجلسة العميق: إيقاف تلقائي · قصّ الانتقال · تحذيرات عتبات · منحنى وصورة — 2026-11-10 · DONE_WITH_CONCERNS
 
 **TASK:** أمر المالك «نفذ كل شيئ» بعد جرد Scene المقيس — تحسين مسار التسجيل القائم نفسه (`HudRecorder`/`HudSampler`) بلا مسار ثانٍ (§0.5)، ونصوص en/ar فقط (§0.2)، وصفر كود من `scene_n1` (بلا ترخيص، §0.4).
