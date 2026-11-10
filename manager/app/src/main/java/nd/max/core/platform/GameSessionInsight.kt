@@ -86,11 +86,11 @@ fun sessionBaseline(
         ?.key
     return SessionBaseline(
         frames = median(pool.mapNotNull { it.framesAverage }),
-        jank = median(pool.mapNotNull { it.jankAverage })?.roundToInt(),
+        jank = median(pool.mapNotNull { it.jankAverage?.toFloat() })?.roundToInt(),
         socTemp = median(pool.mapNotNull { it.socTempPeak }),
         energyWh = median(pool.mapNotNull { it.energyWh }),
         p99 = median(pool.mapNotNull { it.frameP99AverageMs }),
-        refreshHz = median(pool.mapNotNull { it.refreshHz }),
+        refreshHz = median(pool.mapNotNull { it.refreshHz?.toFloat() }),
         renderer = renderer,
         count = pool.size
     )
