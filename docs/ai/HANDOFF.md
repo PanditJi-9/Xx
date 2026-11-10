@@ -114,6 +114,30 @@ MaxManager has a strong engine and a fragmented surface. `core/maxai` + `core/ha
 **NEXT:** (١) CI: `:app:testReleaseUnitTest` + `:app:compileReleaseKotlin`. (٢) شريحة: علامة «يكتب» على
 صفوف التحكّم مشتقة من مسار المراجِع. (٣) شريحة: موجد واحد بالاسم والقصد. (٤) تعميم `MaxDataTrust`
 على كل قيمة غير متدفّقة. (٥) قرار مالك: حذف `StoryboardHome` أو إعادته.
+### ROUND-CLOSE-38 — تسجيل الجلسة العميق: إيقاف تلقائي · قصّ الانتقال · تحذيرات عتبات · منحنى وصورة — 2026-11-10 · DONE_WITH_CONCERNS
+
+**TASK:** أمر المالك «نفذ كل شيئ» بعد جرد Scene المقيس — تحسين مسار التسجيل القائم نفسه (`HudRecorder`/`HudSampler`) بلا مسار ثانٍ (§0.5)، ونصوص en/ar فقط (§0.2)، وصفر كود من `scene_n1` (بلا ترخيص، §0.4).
+
+**CHANGED:**
+- **`core/platform/HudDeepReaders.kt` جديد:** `HudDeepReaders` — `cpuFreqMhz()` (أعلى `scaling_cur_freq`، كاش ١ث) · `socTempC()` (أعلى منطقة حرارية cpu/soc، كاش ٢ث، تستثني batt/gpu) · `gpuFreqMhz()`/`gpuLoadPercent()` (kgsl/Mali/devfreq) · `ddrFreqMhz()` · `batteryVoltageMv()` · `DiskIoSampler` من `/proc/diskstats` بفروق (`parseDiskSectors` fields 5/9، `BASE_DEVICE` يستثني loop/الأقسام) · `parseGpuBusyPercent` (زوج counters أو نسبة) · `hzToMhz`/`khzToMhz`.
+- **`HudSession.kt`:** سبعة حقول جديدة في `HudField` (CpuFreq · SocTemp · GpuFreq · GpuLoad · DdrFreq · DiskIo · BatteryVoltage) وتسع قراءات في `HudReading`؛ `HudWarning` + `HudWarningTracker` (نافذة لكل حقل تُفتح عند التجاوز ولا تُعلن قبل `warningSeconds`)؛ `HudSessionRules` (٣ إيقافات + قصّ + ٤ عتبات) و`HudSessionSettings` في `getSharedPreferences("settings")`؛ `SessionStopReason`؛ `HudRecorder.stop(context, reason)` يقصّ قبل الإحصاء ويحفظ `stopReason/clipRemoved/clipRejected/remark/appVersion/viewSize/refreshHz/powerSave`؛ `setRemark` · `series()`؛ `tallyPoints()` مصدر واحد للإحصاء الحيّ والمقصوص؛ `HudTally` + socTempPeak/gpuLoadAverage/cpuFreqAverageMhz/batteryVoltageMinMv؛ CSV الحيّ **١٣ عمودًا**.
+- **`HudSampler`:** إيقاف ScreenOff، وتغيّر الشاحن ⇒ PowerChanged، ومغادرة الحزمة بعيّنتين ⇒ ForegroundChanged (مع تجاهل systemui/permissioncontroller/android)، وتغذية القنوات العميقة والتحذيرات.
+- **`GameSessionStore.kt`:** `clipTransitions` بحرّاس صريحة (`CLIP_MIN_SAMPLES=20` · `CLIP_MIN_SHARE=0.5` · غياب الحزمة ⇒ رفض) و`ClipResult(points, removed, rejected)`؛ حقول محفوظة جديدة بقيم افتراضية (توافق خلفي)؛ `GameSessionStore.update(context, id, transform)`؛ `SESSION_CSV_HEADER` ١٣ عمودًا.
+- **`core/platform/HudChart.kt` جديد:** `HudChartRenderer.render(...)` صورة 1080×540 (شبكة، منحنى، avg/low/high) و`verticalFraction`/`horizontalFraction` صافيتان.
+- **`GameSessionsScreen.kt` أُعيدت كتابته:** قسم «قواعد التسجيل» (٣ مفاتيح + قصّ + ٤ منزلقات `MaxSliderRow` تُحفظ عند `onValueChangeFinished`)، تحذيرات العتبات، ملاحظة عبر `AlertDialog`، منحنى Canvas، تصدير CSV **وPNG**، وسبب الإيقاف/المحذوف/رفض القصّ في السجلّ.
+- **النصوص:** ~٣٥ مفتاح `game_sessions_*` + ٧ `hud_field_*` في `values/` و`values-ar/` فقط؛ ومفاتيح المفاتيح سُمّيت `game_sessions_autostop_*` لتفادي تعارض أسباب الإيقاف.
+- **الاختبارات:** `HudSessionDepthTest.kt` جديد (١٤: clip نجاح/رفض/قلة عيّنات/غياب حزمة · tracker مهلة/إغلاق/عتبة معطّلة · diskstats · gpu busy · وحدات التردد · `tallyPoints` · `SessionStopReason.of`)؛ وتحديث تأكيدات CSV والترتيب في `HudSessionTest` و`GameSessionStoreTest`.
+
+**MEASURED:** 12 ملفًا (9 معدّلة + 3 جديدة) · **+1879/−93** · الاختبارات المستهدفة **٤٠ اختبارًا · ٠ فشل** (`HudSessionTest` 15 + `GameSessionStoreTest` 11 + `HudSessionDepthTest` 14) · `BUILD SUCCESSFUL in 18m 47s` · `:app:compileReleaseKotlin` مرّ سابقًا في 11m.
+
+**GATES:** `kt_balance` 3334/0 · `code_health` صحّة نظيفة · `i18n_coverage` 84+en · `--prune all` 0 يتيم · `design_tokens` 249/300 · `resource_compile` aapt2 · `jni_symbols` 23 · `license_audit` GPL 0 · `readme_assets` RC 0 · `git diff --check` DIFF_OK.
+
+**BUILD:** أول تشغيل للاختبارات سقط بأربعة تأكيدات قديمة بعد توسيع CSV والترتيب، وأُصلحت في الاختبار نفسه (لا في الكود إلا `hzToMhz`: فوق ١٠٠ مليون هرتز، وما دونها كيلوهرتز): `assertEquals(9, …)` ⇒ عدد أعمدة الترويسة · `endsWith("Adreno  Vulkan")` ⇒ العمود الثامن · ترتيب `HudField` أُلحقت به السبعة · و`hzToMhz(1_800_000)` صار ١٨٠٠ لا ١. ثم **Quick Verify `42740538187` على `079786d1` = success** (`BUILD SUCCESSFUL in 2m 57s` · 35 مهمة · 24 منفّذة · 11 من الكاش).
+
+**RESIDUAL:** الجهاز غير متاح — الحزمة الأمامية الفعلية، و`/proc/diskstats` و`kgsl` و`thermal_zone` على عتاد حقيقي، وكتابة السجلّ على تخزين فعلي، والواجهة/اللمس/RTL، وصحة `gfxinfo`/`mm_stat` تبقى **تحتاج جهازًا**. وإحصاء الخيوط وعدّادات `perf` (stall/cache-misses/instructions) لم تُبنَ — تحتاج جهازًا وصلاحية، وتُركت `Unsupported` لا تخمينًا.
+
+**NEXT:** جهاز: جلسة كاملة على لعبة حقيقية، فتح الشاشة أثناءها (التحذيرات + المنحنى)، ثم تصدير CSV وPNG، ثم تغيير الحزمة الأمامية للتحقق من الإيقاف التلقائي والقصّ، ثم إعادة تشغيل العملية للتأكد من بقاء السجلّ.
+
 ### ROUND-CLOSE-37 — شاشة «جلسات اللعب»: تسجيل دائم + تقرير كامل + ربط بالتراكب واللوبي — 2026-11-09 · DONE_WITH_CONCERNS
 
 **TASK:** أمر المالك «اجعله افضل حتي من scane معا شاشة منفصله ولكن مرتبطه بباقي الشاشات التي لها علاقة» — تحسين مسجّل الجلسة القائم (`HudRecorder`/`HudJournal`) لا مسار ثانٍ (§0.5)، بشاشة منفصلة وسجلّ دائم وربط بالشاشات ذات العلاقة. صفر كود من `scene_n1` (§0.4).

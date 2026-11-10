@@ -1,3 +1,17 @@
+## ROUND-CLOSE-38 — تسجيل الجلسة العميق — 2026-11-10 · DONE_WITH_CONCERNS
+
+**TASK:** «نفذ كل شيئ» بعد جرد Scene — تعميق المسجّل القائم (`HudRecorder`/`HudSampler`) بلا مسار ثانٍ، en/ar فقط، صفر كود من المرجع.
+
+**CHANGED:** `HudDeepReaders.kt` جديد (CPU MHz · SoC temp · GPU freq/load · DDR · disk IO · battery mV) · `HudChart.kt` جديد (PNG 1080×540) · `HudSession.kt` (٧ حقول + `HudWarningTracker` + `HudSessionRules`/`Settings` + `SessionStopReason` + `stop(reason)` بالقّص + `tallyPoints` + CSV ١٣) · `HudSampler` (إيقاف ScreenOff/Power/Foreground) · `GameSessionStore` (`clipTransitions` + حقول محفوظة + `update`) · `GameSessionsScreen` (قواعد بمنزلقات · تحذيرات · ملاحظة · منحنى · CSV+PNG) · `HudSessionDepthTest` ١٤ اختبارًا.
+
+**MEASURED:** 12 ملفًا · +1879/−93 · **٤٠ اختبارًا · ٠ فشل** · `BUILD SUCCESSFUL in 18m 47s` · البوابات التسع + diffcheck خضراء.
+
+**CI:** **Quick Verify `42740538187` على `079786d1` = success** (`BUILD SUCCESSFUL in 2m 57s` · 35 مهمة).
+
+**RESIDUAL:** الجهاز غير متاح — القنوات الفعلية على عتاد حقيقي، الالتقاط الأمامي، التخزين، الواجهة/اللمس/RTL، `gfxinfo`/`mm_stat`. وإحصاء الخيوط/`perf` لم يُبنَ.
+
+**NEXT:** جهاز: جلسة كاملة + تحذيرات + تصدير CSV/PNG + تغيير الحزمة للتحقق من الإيقاف والقصّ + بقاء السجلّ بعد موت العملية.
+
 ## ROUND-CLOSE-37 — شاشة «جلسات اللعب» — 2026-11-09 · DONE_WITH_CONCERNS
 
 **TASK:** «اجعله افضل حتي من scane معا شاشة منفصله ولكن مرتبطه بباقي الشاشات التي لها علاقة» — تحسين `HudRecorder`/`HudJournal` القائم، شاشة منفصلة، سجلّ دائم، ربط بالتراكب واللوبي.
