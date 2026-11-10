@@ -106,9 +106,11 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.math.abs
 import nd.max.R
 import nd.max.core.net.WifiChannel
 import nd.max.ui.util.WifiChannelReader
@@ -148,6 +150,7 @@ fun DeviceLabScreen(navController: NavHostController) {
     val context = LocalContext.current
     val snackbar = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+    var chargeAttempt by remember { mutableIntStateOf(0) }
     var openTest by remember { mutableStateOf<LabTest?>(null) }
 
     val speakerError = stringResource(R.string.device_lab_speaker_error)
@@ -301,6 +304,22 @@ fun DeviceLabScreen(navController: NavHostController) {
             description = stringResource(R.string.device_lab_radios_desc),
         ) {
             RadiosTest()
+        }
+
+        MaxSection(
+            title = stringResource(R.string.device_lab_section_charge),
+            description = stringResource(R.string.device_lab_charge_desc),
+            trailing = {
+                // القياس لحظةٌ لا حكم دائم: من وصل الشاحن بعد فتح الشاشة يعيده بلمسة.
+                IconButton(onClick = { chargeAttempt++ }) {
+                    Icon(
+                        imageVector = Icons.Rounded.RestartAlt,
+                        contentDescription = stringResource(R.string.device_lab_charge_again),
+                    )
+                }
+            },
+        ) {
+            ChargeTest(attempt = chargeAttempt)
         }
 
         MaxSection(title = stringResource(R.string.device_lab_section_hardware)) {
@@ -1247,6 +1266,140 @@ private fun BatteryTest() {
         LabValueRow(
             title = stringResource(R.string.device_lab_battery_health),
             value = stringResource(healthRes),
+        )
+    }
+}
+
+// ---------------------------------------------------------------------------
+// The charging test — six seconds of measurement, not a status label
+// ---------------------------------------------------------------------------
+
+/** قراءة واحدة من مقياس الوقود: العدّاد التراكمي والتيار اللحظي والمستوى. */
+private data class ChargeReading(
+    val chargeUah: Int,
+    val currentUa: Int,
+    val level: Int,
+    val status: Int,
+)
+
+private fun readCharge(context: Context): ChargeReading {
+    val intent = context.registerReceiver(null, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
+    val manager = context.getSystemService(BatteryManager::class.java)
+    val level = intent?.getIntExtra(BatteryManager.EXTRA_LEVEL, -1) ?: -1
+    val scale = intent?.getIntExtra(BatteryManager.EXTRA_SCALE, -1) ?: -1
+    return ChargeReading(
+        chargeUah = manager?.getIntProperty(BatteryManager.BATTERY_PROPERTY_CHARGE_COUNTER)
+            ?: Int.MIN_VALUE,
+        currentUa = manager?.getIntProperty(BatteryManager.BATTERY_PROPERTY_CURRENT_NOW)
+            ?: Int.MIN_VALUE,
+        level = if (level >= 0 && scale > 0) level * 100 / scale else -1,
+        status = intent?.getIntExtra(BatteryManager.EXTRA_STATUS, -1) ?: -1,
+    )
+}
+
+/**
+ * **اختبار الشحن — قياسٌ لا وسم.** «الحالة: جارٍ الشحن» تقول ما يظنّه النظام، ولا تقول هل
+ * تدخل الطاقة فعلًا. فالقياس هنا يأخذ عدّاد الشحنة التراكمي مرّتين بفاصل ستّ ثوانٍ ويهبط
+ * بالفرق إلى ملّيأمبير: `1 µAh/s = 3.6 mA`. والاتجاه من إشارة الفرق — لا من إشارة
+ * `CURRENT_NOW`، لأن اتجاهها يختلف بين الأجهزة. وإن غاب العدّاد رجعنا إلى التيار المُعلَن
+ * والاتجاه من حالة الشحن، ونقول ذلك بدل أن نُخفي المصدر.
+ */
+@Composable
+private fun ChargeTest(attempt: Int) {
+    val context = LocalContext.current
+    val windowSeconds = 6
+    var elapsed by remember { mutableIntStateOf(0) }
+    var first by remember { mutableStateOf<ChargeReading?>(null) }
+    var last by remember { mutableStateOf<ChargeReading?>(null) }
+
+    LaunchedEffect(attempt) {
+        elapsed = 0
+        last = null
+        first = readCharge(context)
+        repeat(windowSeconds) { step ->
+            delay(1_000)
+            last = readCharge(context)
+            elapsed = step + 1
+        }
+    }
+
+    val unavailable = stringResource(R.string.device_lab_value_unavailable)
+    val start = first
+    val end = last
+    val measuredMa = if (
+        start != null && end != null &&
+        start.chargeUah != Int.MIN_VALUE && end.chargeUah != Int.MIN_VALUE
+    ) {
+        chargeMilliamps(end.chargeUah - start.chargeUah, windowSeconds)
+    } else {
+        null
+    }
+    val reportedMa = end?.currentUa?.takeIf { it != 0 && it != Int.MIN_VALUE }?.let { it / 1000.0 }
+    val level = if (start != null && end != null && start.level >= 0 && end.level >= 0) {
+        start.level to end.level
+    } else {
+        null
+    }
+
+    val flow = when {
+        end == null -> stringResource(
+            R.string.device_lab_charge_measuring,
+            (windowSeconds - elapsed).coerceAtLeast(1),
+        )
+        measuredMa != null && abs(measuredMa) < 3.0 -> stringResource(R.string.device_lab_charge_held)
+        measuredMa != null && measuredMa > 0 -> stringResource(
+            R.string.device_lab_charge_in,
+            String.format(Locale.getDefault(), "%.0f", measuredMa),
+        )
+        measuredMa != null -> stringResource(
+            R.string.device_lab_charge_out,
+            String.format(Locale.getDefault(), "%.0f", abs(measuredMa)),
+        )
+        reportedMa != null && end.status == BatteryManager.BATTERY_STATUS_DISCHARGING ->
+            stringResource(R.string.device_lab_charge_out, String.format(Locale.getDefault(), "%.0f", reportedMa))
+        reportedMa != null && end.status == BatteryManager.BATTERY_STATUS_CHARGING ->
+            stringResource(R.string.device_lab_charge_in, String.format(Locale.getDefault(), "%.0f", reportedMa))
+        reportedMa != null && end.status == BatteryManager.BATTERY_STATUS_FULL ->
+            stringResource(R.string.device_lab_charge_held)
+        else -> unavailable
+    }
+
+    MaxGroup {
+        LabValueRow(title = stringResource(R.string.device_lab_charge_flow), value = flow)
+        MaxGroupDivider()
+        LabValueRow(
+            title = stringResource(R.string.device_lab_charge_counter),
+            value = if (start != null && end != null &&
+                start.chargeUah != Int.MIN_VALUE && end.chargeUah != Int.MIN_VALUE
+            ) {
+                stringResource(
+                    R.string.device_lab_charge_counter_delta,
+                    String.format(Locale.getDefault(), "%+d", end.chargeUah - start.chargeUah),
+                    windowSeconds,
+                )
+            } else {
+                unavailable
+            },
+        )
+        MaxGroupDivider()
+        LabValueRow(
+            title = stringResource(R.string.device_lab_charge_level),
+            value = when {
+                level == null -> unavailable
+                level.first == level.second -> stringResource(R.string.device_lab_charge_unchanged)
+                else -> stringResource(
+                    R.string.device_lab_charge_level_delta,
+                    level.first,
+                    level.second,
+                )
+            },
+        )
+        MaxGroupDivider()
+        LabValueRow(
+            title = stringResource(R.string.device_lab_charge_reported),
+            value = reportedMa?.let {
+                String.format(Locale.getDefault(), "%.0f mA", abs(it))
+            } ?: unavailable,
         )
     }
 }
