@@ -7,12 +7,12 @@ version: alpha
 name: MaxManager Design Language
 description: >
   MaxManager is a performance and power control panel for rooted Android. Its design language is a
-  measuring instrument, not a marketing site: a dark-first surface built from one 4dp spacing scale
-  and one card contract, a single accent that belongs to the user's own theme while every status
-  colour is fixed and contrast-checked, numbers set in a monospace face so live values never reflow,
-  and a standing rule that a value the app does not know is rendered as an em dash — never as a
-  plausible zero. Motion exists to explain a change; anything longer than 360ms is decoration and is
-  not allowed.
+  measuring instrument, not a marketing site: a dark-first surface built from a 4dp spacing scale
+  (one named exception, 14dp row padding) and one card contract, a single accent that belongs to the
+  user's own theme while every status colour is fixed and contrast-checked, numbers set in a
+  monospace face so live values never reflow, and a standing rule that a value the app does not know
+  is rendered as an em dash — never as a plausible zero. Motion exists to explain a change; anything
+  longer than 360ms is decoration and is not allowed.
 
 # Every value below is measured from the app's own source, not invented. The source of truth is
 # `MaxTokens.kt` (spacing, radii, sizes, alphas, motion, tone) and `theme/Type.kt` (the type scale).
@@ -165,6 +165,7 @@ token, change it in `MaxTokens.kt` first and regenerate the numbers here.
 | `AGENTS.md` | Coding agents | How to build the project |
 | `DESIGN.md` (this file) | Design agents and reviewers | How the project should look and feel |
 | [`MAX_TOKENS`](manager/app/src/main/java/nd/max/ui/design/MaxTokens.kt) | The app | The tokens themselves, as code |
+| Agent procedure (end of this file) | The agent about to change UI | How to use [ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) without replacing this language |
 
 The language at a glance — every bar in this drawing is a value measured further down this page, and
 nothing here is drawn from a screenshot:
@@ -176,6 +177,10 @@ nothing here is drawn from a screenshot:
        alt="The MaxManager look: one accent that follows the theme, two fixed warning colours, three typefaces with one job each, five meaningful corner radii, and motion between 90 and 360 ms">
 </picture>
 </p>
+
+The figure says "five radii". That is not the radius scale: the scale below names eight tokens, and
+the UI tree currently measures five distinct literals. Shapes says which number to obey. They are not
+two ways of saying the same thing.
 
 ## Overview
 
@@ -189,11 +194,13 @@ phone it runs on. Positive, Caution and Critical are the opposite: fixed hues, c
 against both surfaces, because a **thermal alert that looks decorative is a correctness bug in a
 performance tool** — Material You's dynamic palette can turn `tertiary` into a pastel.
 
-**Hierarchy by role, never by size alone.** There are exactly four ranks and no two share a size:
-page title (`headlineSmall` and up) › **section title** (`titleMedium`, SemiBold) › card title
-(`titleSmall`) › supporting copy (`bodySmall`). Before this contract the app drew three different
-"section header" components — one in the design layer, one in the panel, one in app settings — and a
-reader could not tell which rank they were looking at.
+**Hierarchy by role, never by size alone.** Four content ranks, and no two of *those ranks* share a
+size: page title (`headlineSmall`, 24sp) › **section title** (`titleMedium`, 16sp, SemiBold) › card
+title (`titleSmall`, 14sp) › metadata (`bodySmall`, 12sp). `bodyMedium` is also 14sp, so a card title
+and a description are separated by weight, family and placement — that is what "not by size alone"
+means. Display sizes are for hero and onboarding moments, not a second way to title a page. Before
+this contract the app drew three different "section header" components — one in the design layer, one
+in the panel, one in app settings — and a reader could not tell which rank they were looking at.
 
 **A number the app does not have is an em dash.** `MAX_VALUE_UNAVAILABLE` is `—`. Not `0`, not `--%`,
 not an empty cell. A zero is a claim, and this product does not make claims it cannot measure. The
@@ -203,8 +210,8 @@ same instinct produced `status_unknown` at the data layer and the five-state tru
 
 - A dark-first instrument surface: charcoal panels with 1dp hairline borders and a gradient that
   gives them depth without a drop shadow.
-- One 4dp spacing scale. `gutter` (20dp), `section` (28dp) and `row` (8dp) are the only values a
-  screen body should need.
+- A 4dp spacing scale, with one documented exception (`rowPaddingHorizontal`, 14dp). `gutter`
+  (20dp), `section` (28dp) and `row` (8dp) are the only values a screen body should need.
 - One card contract, in one object (`MaxCardSpec`): radius, border, padding, icon container, the two
   reserved title lines that keep neighbours aligned, and the 148dp floor below which a grid drops a
   column instead of squeezing words.
@@ -237,12 +244,14 @@ Tone is a semantic role, not a colour picker. Six exist: `Neutral`, `Accent`, `P
 | Caution | `#FFB86B` | 10.50 | `#8A5200` | 6.39 |
 | Critical | `#FF9A90` | 8.76 | `#9A1B1B` | 8.25 |
 
-Contrast is measured against `#101820` (dark) and `#FFFFFF` (light). All six clear WCAG AA for normal
-text; the lowest is 6.39.
+Contrast is measured against `#101820` (dark) and `#FFFFFF` (light). The table holds six ratios —
+three fixed tones, each against its own surface — not a contrast figure for all six tones. Neutral,
+Accent and Inactive have no fixed hex. All six ratios clear WCAG AA for normal text; the lowest is
+6.39:1, Caution on light.
 
-Three of these are **not taken from the dynamic scheme**, and the source says why: "Material You can
-turn `tertiary` into a pastel that reads as decoration, and a thermal alert that looks decorative is a
-correctness bug in a performance tool."
+Positive, Caution and Critical are **not taken from the dynamic scheme**, and the source says why:
+"Material You can turn `tertiary` into a pastel that reads as decoration, and a thermal alert that
+looks decorative is a correctness bug in a performance tool."
 
 ### Surface
 
@@ -261,8 +270,7 @@ and `MaxAlpha.disabledContent` (0.38f) are the only opacity steps allowed on tex
 
 ### Data trust
 
-The signature colour decision of the product, and the reason the palette has five more roles than a
-normal app. Every reading carries how trustworthy it is:
+The signature colour decision of the product. Every reading carries how trustworthy it is:
 
 | Trust | Tone | Shows the number? |
 | --- | --- | --- |
@@ -273,6 +281,8 @@ normal app. Every reading carries how trustworthy it is:
 | `Unsupported` | Inactive | **no** |
 
 Formatting a stale or missing value as if it were live is treated as a bug, not as a cosmetic issue.
+`Stale` and `Unreadable` share Caution on purpose: the icon, the word, and whether the number is
+shown are what separate them. Tone is not that signal.
 
 ## Typography
 
@@ -297,7 +307,7 @@ Three faces, each with one job:
 | `titleMedium` | 16sp | SemiBold | 24sp | 0.1sp | **Section titles** (the anchor rank) |
 | `titleSmall` | 14sp | SemiBold | 20sp | 0.1sp | Card titles |
 | `bodyLarge` | 16sp | Normal | 24sp | 0.3sp | Lead paragraphs |
-| `bodyMedium` | 14sp | Normal | 20sp | 0.25sp | Descriptions, supporting copy |
+| `bodyMedium` | 14sp | Normal | 20sp | 0.25sp | Descriptions. Same size as a card title; not a content rank |
 | `bodySmall` | 12sp | Normal | 16sp | 0.2sp | Metadata, fine print |
 | `labelLarge` | 14sp | SemiBold | 20sp | 0.4sp | Buttons and prominent chips |
 | `labelMedium` | 12sp | SemiBold | 16sp | 0.5sp | Badges |
@@ -308,6 +318,12 @@ Three faces, each with one job:
 
 Sizes and line heights follow the standard Material 3 scale — those numbers are already tuned for
 Android reading distances. What this project changes is **family, weight and tracking**.
+
+The frontmatter above repeats only the roles its generator emits. Where the two overlap, the numbers
+agree. `bodyLarge`, `labelLarge`, `labelMedium`, and the live-value weights are in this table because
+`theme/Type.kt` defines them; their absence from the header is not a deletion. Do not drop them, and
+do not invent a second metric scale to fill the hole — `MaxMetricType` is already that mistake
+(Known gaps).
 
 ### Principles
 
@@ -320,15 +336,17 @@ Android reading distances. What this project changes is **family, weight and tra
 
 ### Note on font substitutes
 
-Both faces are fetched through Google Fonts at runtime (`theme/Fonts.kt`). A build without network
-falls back to the platform sans and mono; nothing in the layout depends on metrics that only those two
-faces have, because every card reserves its lines and every metric uses tabular figures.
+Space Grotesk and Manrope are the two faces fetched through Google Fonts at runtime
+(`theme/Fonts.kt`). Monospace is the platform face. A build without network falls back to the
+platform sans and mono; nothing in the layout depends on metrics that only the two downloaded faces
+have, because every card reserves its lines and every metric uses tabular figures.
 
 ## Layout
 
 ### Spacing System
 
-- **Base unit**: 4dp. Highest-contrast multiples only.
+- **Base unit**: 4dp. The named scale is 2, 4, 8, 12, 16, 20, 28. `rowPaddingHorizontal` (14dp) is
+  the only spacing token off that grid — see Known gaps. Do not treat it as permission to add another.
 
 | Token | Value | Meaning |
 | --- | --- | --- |
@@ -352,6 +370,12 @@ faces have, because every card reserves its lines and every metric uses tabular 
 it is smaller than `MaxSpace.section` (28dp) because the list that hosts it already inserts
 `MaxSpace.row` (8dp) between children: 8 + 20 = 28. The named token for "the gap between two sections"
 therefore describes what a reader actually sees, instead of double-counting.
+
+The Kotlin name is what a call site uses. The frontmatter spells some of the same values differently:
+`spacing.*` is `hairline` through `xxl`; `components.page` uses `section-gap` for `MaxSpace.section`,
+`row-gap` for `MaxSpace.row`, `group-padding`, `row-padding-horizontal`, `row-padding-vertical`,
+`page-bottom` and `bottom-bar-reserve`. Same numbers. When they disagree, the source wins and this
+file is regenerated — it is not a second system.
 
 ### Grid & Container
 
@@ -399,8 +423,10 @@ active ring is deliberately not colour-only: on a split screen the owning pane i
 | `MaxRadius.sheet` | 28dp | Sheets and dialogs — the softest |
 | `MaxRadius.pill` | 100dp | **Status only.** Never a primary action |
 
-The tree previously carried 20 distinct literal corner radii and 14 padding values; the measured count
-is now **5 distinct radii** across the whole UI layer, held by `tools/design_tokens.py`.
+The named scale above has eight radii. Separately, the UI tree previously carried 20 distinct literal
+corner radii and 14 padding values; `tools/design_tokens.py` now measures **5 distinct radius
+literals** in that tree. Eight is the contract: do not add a ninth token. Five is the audit: do not
+add a new literal at the call site. Neither number replaces the other.
 
 ## Components
 
@@ -429,7 +455,8 @@ One component defines what a section is; a second, competing shape is not allowe
 
 The two bars are two tokens, not one value used twice: a bar *beside* a name reads as a vertical rule
 that props the title, a bar *above* it reads as a horizontal rule that introduces it. The numbers
-cannot serve both, so each direction keeps its own named contract.
+cannot serve both, so each direction keeps its own named contract. The side bar's 2dp corner is not
+an entry on the radius scale; do not promote it to a new `MaxRadius`.
 
 ### Rows and list items
 
@@ -534,7 +561,8 @@ an unwritten one.
 - Read the token, don't type the number. Every spacing, radius, size and opacity a component needs
   already has a name in `MaxTokens.kt`.
 - Keep one card contract: `MaxCardSpec` radius, border, padding, icon container and title budget.
-- Write a section title as `titleMedium` SemiBold, and put exactly one rank between it and a card title.
+- Write a section title as `titleMedium` SemiBold — exactly one rank above the card title
+  (`titleSmall`), with no style inserted between them.
 - Render an unknown value as `—` and a failed read as a failure with a rollback attempted.
 - Reserve two title lines in a card so a row of cards aligns.
 - Pair every tone with an icon and a word.
@@ -597,6 +625,208 @@ Measured, and stated rather than implied.
 5. **Hairline borders are below 3:1** (the 1dp edge measures 1.33:1 against the panel). That is
    deliberate and bounded: the border is never the only carrier of grouping — spacing and the gradient
    are the primary ones — so the low contrast does not hide an affordance.
-6. **Colour contrast is measured for the design tokens, not for every rendered combination.** The six
-   tone values are checked against both surfaces; arbitrary `alpha` compositions over gradients are not,
-   and a new tone-derived surface should be measured before it ships.
+6. **Colour contrast is measured for the fixed status hexes, not for every rendered combination.**
+   The six ratios in the tone table are each hex against its own surface. Neutral, Accent and Inactive
+   have no fixed hex. Arbitrary `alpha` compositions over gradients are not checked, and a new
+   tone-derived surface should be measured before it ships.
+7. **`MaxSpace.rowPaddingHorizontal` is 14dp**, the only spacing token off the 4dp grid. The scale
+   claim does not cover it. Not rounded here: changing it would move every row, and that is a visual
+   change for its own reviewed task.
+
+---
+
+# Agent procedure
+
+This part is **not measured** and is not input to `tools/design_doc.py`. A generator that rewrites
+the token half of this file must keep this part, or the agent loses the only instructions that say
+how to use an external skill without overwriting the language.
+
+The skill is [ui-ux-pro-max-skill](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) (MIT).
+It is a search index: 80 styles, 192 product profiles, 74 font pairings, 120 UX guidelines, 25 chart
+types, 22 stacks including `jetpack-compose`. It is **not** a second design system for MaxManager.
+Treat every search result as a recommendation. This file wins wherever they disagree.
+
+## Authority
+
+Apply in this order. Stop at the first one that answers the question.
+
+1. The user's instruction for this change.
+2. The measured half of this file, then `MaxTokens.kt` and `theme/Type.kt`. A missing token is named
+   at its current value before it is changed (Iteration Guide). It is not invented from a palette.
+3. A skill result about interaction, accessibility, feedback, charts, or Compose structure, after the
+   verdicts in the table below.
+4. A skill result about style, palette, type, landing pattern, or GSAP. Almost never, on this product.
+
+Do not `--persist` a `design-system/maxmanager/MASTER.md`, and do not pass `--force`. This file is
+already the master. A generated master would replace Space Grotesk, the theme accent, and the em
+dash rule with whatever the index ranked that day.
+
+## What one real search tried to do
+
+Ran against the skill at the time this section was written:
+
+```bash
+python3 src/ui-ux-pro-max/scripts/search.py \
+  "android rooted performance power developer tool dark instrument dashboard" \
+  --design-system --variance 2 --motion 2 --density 9 -p "MaxManager" -f markdown
+```
+
+| Skill returned | Verdict | Why |
+| --- | --- | --- |
+| Pattern: FAQ / documentation landing, search bar, contact CTA | Reject | This is a control panel. It reports, asks before it writes, and refuses to guess. |
+| Style: Minimalism & Swiss, "spacious" | Take the restraint only | Density stays the 4dp scale. Do not open the spacing up to look more Swiss. |
+| Primary `#1E293B`, CTA `#22C55E`, destructive `#EF4444`, card `#1B2336` | Reject | Accent is `colorScheme.primary`. Green is `Positive` and means healthy. Critical is `#FF9A90` / `#9A1B1B`, not Tailwind red. |
+| Headings in JetBrains Mono, body in IBM Plex Sans | Reject | Space Grotesk for titles, Manrope for body, monospace for live values only. A mono heading is the coder costume this file forbids. |
+| GSAP scroll-reveal, 300–400ms, `y: 12` | Reject | No GSAP in the app. Motion ≤ `MaxDuration.deliberate` (360ms). Nothing loops unless the loop is the reading. |
+| "Sharp shadows if any" | Reject | No drop shadows. Depth is a gradient plus a 1dp hairline. |
+| Anti-pattern "light mode default" | Take | The app is dark-first. Light still has to be correct; do not ship dark-only screens to "match" this hint. |
+| Checklist item "hover 150–300ms" and breakpoints 375 / 768 / 1024 / 1440 | README only | The app has no hover. Pressed feedback uses `MaxDuration.quick` (160ms). Breakpoints are 600dp and 840dp. |
+| Product row "Developer Tool / IDE", `rtl_level: caveats` | Do not obey the caveat | Arabic, Farsi, Hebrew, and Urdu ship. `tools/rtl_guard.py` is the gate. The caveat means "this catalog row encodes LTR", not "drop RTL". |
+
+If a later version of the index returns different hexes, the verdicts still hold: catalog colour,
+catalog type, and catalog motion do not enter the app.
+
+## When to search, and when not to
+
+Search when the change alters how something looks, moves, or is operated: a new screen, a component,
+a state, a chart, a form, an empty state, a confirmation, a focus order, a TalkBack label.
+
+Do not search for sysfs paths, governor math, or a parser. Do not paste kernel paths or user data
+into the query.
+
+One query, one intent, two to five words. Retry once if the domain is wrong. If the second try is
+empty, say so and fall back to this file. Never invent a row the index did not return.
+
+```bash
+python3 "<skill>/src/ui-ux-pro-max/scripts/search.py" "<query>" --domain <domain>
+python3 "<skill>/src/ui-ux-pro-max/scripts/search.py" "<query>" --stack jetpack-compose
+```
+
+`--stack` is ignored inside `--design-system`. Run it as its own command. For a new screen, pass
+`--variance 2 --motion 2 --density 9` so the index stays quiet and dense — then still apply the verdicts above.
+
+## Search menu
+
+Run the row that matches the job. Not all of them.
+
+| Job | Query | Where |
+| --- | --- | --- |
+| New screen | `performance control panel instrument dark dense` | `--design-system --variance 2 --motion 2 --density 9`, then throw away palette, type, and pattern |
+| Confirmation before a write | `destructive confirmation undo` | `--domain ux` |
+| A value that updates on its own | `live region status update` | `--domain ux` |
+| Sparkline, bar, thermal zone | `real-time sparkline dashboard` | `--domain chart` |
+| Form, picker, governor list | `inline error focus validation` | `--domain ux` |
+| Motion feels wrong | `reduced motion duration` | `--domain ux` |
+| RTL layout bug | `dashboard` | `--domain style --rtl` — then mirror with `rtl_guard`, do not switch style |
+| Icon with no name | `icon button accessible label` | `--domain icons` |
+| Compose structure | the specific concern, e.g. `semantics content description` | `--stack jetpack-compose` |
+
+## Priority, translated
+
+The skill ranks ten categories. Here is what each one means **in this app**. The skill's web wording
+(aria, 44pt, 16px, `prefers-reduced-motion`) is the web shape of a rule the app already has a
+stronger form of.
+
+| # | Skill category | Obey this instead |
+| --- | --- | --- |
+| 1 | Accessibility | 4.5:1 for text where a hex exists; the six status ratios already clear it. Tone never alone: icon + word. TalkBack order follows visual order. Decorative icons beside a visible label get a null content description; icon-only controls get a name and the state (selected, expanded, disabled). |
+| 2 | Touch | `MaxSize.minTouchTarget` is 48dp, including the scroll-to-top control. The skill's 44pt is iOS. Pressed feedback inside `MaxDuration.quick` (160ms) without moving layout bounds. No hover-only affordance. |
+| 3 | Performance | Reserve the value slot. A live number uses tabular monospace so digits do not reflow. Do not insert a badge, error, or skeleton that pushes the row. Lazy lists use stable keys. Heavy work stays in the ViewModel. |
+| 4 | Style | Instrument, not marketing. No emoji icons. No mixed filled/outline icons at one rank. Glyph matches the verb: a broom for freeing memory, not a rocket. No glass, no glow behind Max AI, no skeuomorphism beside flat rows. |
+| 5 | Layout | Phone < 600dp, large phone 600–839dp, tablet ≥ 840dp. Reading width 560dp. Card column floor 148dp. Bottom bar reserve 112dp. Do not size a label on one English line. |
+| 6 | Type and colour | The hierarchy and the fixed tones in this file. No raw hex in a composable. No body text under 12sp except `labelSmall` (11sp), which is already the eyebrow. |
+| 7 | Motion | `instant` 90, `quick` 160, `standard` 240, `deliberate` 360. The skill says not to treat 150–300ms as universal; agreed, and these four tokens are the universal set here. Exit is not longer than enter. If the animator duration scale is 0, snap to the end state. A sparkline freshness loop is the only infinite motion, and only when its KDoc says the loop is the reading. |
+| 8 | Forms and feedback | See **Writes** below. Label visible, error at the field, helper text for a dangerous control. No placeholder-only label. |
+| 9 | Navigation | Predictable back. The bottom bar does not grow a sixth destination to fit a new screen. Deep link a screen that a confirmation returns to. |
+| 10 | Charts | See **Readings**. The chart catalog's `#00FF00` pulse and `#FF0000` anomaly marker are rejected. |
+
+## Writes
+
+A control that can change the device is not a button with a toast.
+
+1. **Ask before the write.** The label is the operation ("Free memory"), not a promise ("Optimize").
+2. **Irreversible or surprising writes get a confirmation** that names the consequence. "Are you sure?"
+   is not a consequence. The confirm action uses `MaxRadius.control` (12dp). It is not a pill.
+3. **While the write is in flight**, the control shows that, keeps its size, and does not accept a
+   second tap.
+4. **Failure** is a failure. Say that a rollback was attempted. Do not paint the previous hope as the
+   new value, and do not paint `0`.
+5. **Success** is one short line that names what changed. Silence is a bug. A modal for a trivial
+   success is also a bug.
+6. **Disabled** uses `MaxAlpha.disabledContent` (0.38f), semantics disabled, and no ripple.
+
+## Readings
+
+Every number on screen is one of `Live`, `Stale`, `Snapshot`, `Unreadable`, `Unsupported`.
+
+| Trust | Draw the number? | Tone | What else |
+| --- | --- | --- | --- |
+| `Live` | yes | Accent | The only reading that may look current |
+| `Stale` | yes | Caution | Word + icon. Same hue as Unreadable, so the word does the work |
+| `Snapshot` | yes | Neutral | Say that it is not live |
+| `Unreadable` | no, `—` | Caution | Failure, not a zero |
+| `Unsupported` | no, `—` | Inactive | Absence of a sensor is not a broken sensor |
+
+TalkBack does not hear every tick. Announce a trust change and a threshold crossing (stale, critical
+thermal), as one sentence ("Thermal, critical, 92 degrees"), not the bare number. Competing live
+regions on one screen are a bug.
+
+A fraction bar is `MaxSize.barHeight` (8dp). A sparkline is `MaxSize.sparklineHeight` (28dp). Both
+are secondary to the text value. If the chart is the kind the catalog calls "streaming", also give a
+way to pause it, and a text fallback that does not depend on the trace. Do not import D3, CanvasJS,
+or a web chart library into the app because a search named them.
+
+## Copy
+
+- The assistant is **Max AI**. Never `MAX AI`. Never transliterated.
+- No `/sys` or `/proc` path in a title, subtitle, loading line, or empty state. Those belong in help
+  or an opened technical detail.
+- An empty state says what is missing and what the person can do. It does not say "No data" and stop.
+- No marketing adjective. `VisualIdentityTest` already requires every AI-labelled string to have a
+  call site.
+
+## Compose
+
+From the skill's `jetpack-compose` stack (1.11.x guidelines). Use these; ignore any snippet that
+hardcodes a colour or a radius.
+
+- A composable accepts state and callbacks. It does not call a repository.
+- State is hoisted. One `UiState` per screen, not a handful of booleans. Business state is not
+  `remember`. UI-only state (scroll, a confirmation open) may be.
+- Events flow one way. Navigation is an event, not a side effect hidden in the composable.
+- Collect in a lifecycle-aware way. `LaunchedEffect` keys on the id that should restart it, and
+  `DisposableEffect` cleans up.
+- `LazyColumn`, stable `key`, no nested vertical scroll, no wrapper `Box` whose only job is padding.
+- Theme from `MaterialTheme` and `MaxTokens`. The skill's "use Material3 tokens" does **not** mean
+  `tertiary` for Critical.
+- `Modifier.semantics` exposes selected, expanded, disabled, and the trust state when the row's text
+  does not already say it.
+- Tests pass state in. They do not poke hidden mutable state.
+
+## README surface
+
+The public page is the second register already defined above. The skill's web checklist applies
+there and only there: pointer cursor, keyboard focus, `prefers-reduced-motion`, and the page's own
+breakpoints. The 2–11s ambient loops stay inside the three bounds already stated (static state is
+complete without them, no loop-only information, each panel under 200KB). Do not copy those loops
+back into the app.
+
+## Before you call the change done
+
+- [ ] Searches were few and on-intent, and each accepted or rejected result is named in the change summary
+- [ ] No new radius, padding, gap, opacity, duration, or hex literal
+- [ ] Ranks stayed adjacent: `headlineSmall` → `titleMedium` → `titleSmall` → `bodySmall`
+- [ ] Unknown is `—`. Failure names the rollback. Success names the change
+- [ ] Tone has an icon and a word. Stale and Unreadable are not distinguished by colour alone
+- [ ] Mono is only on live values. Card titles still reserve two lines
+- [ ] Touch targets are ≥ 48dp. Pressed feedback does not shift layout. Bottom content clears 112dp
+- [ ] Reduced motion snaps. Nothing new loops
+- [ ] Light and dark both carry the state, not only the theme you had open
+- [ ] RTL: mirrored, labels allowed to wrap, no English-width assumption
+- [ ] TalkBack: decorative icons silent, icon buttons named, live ticks not spammed
+- [ ] No emoji, no rocket-for-a-broom, no glow on Max AI, no kernel path in primary copy
+- [ ] Pill is a status. Confirm is a control radius
+- [ ] Compose stays stateless at the leaves. `LazyColumn` items have keys
+
+A screen you could not open on a device stays "not verified in this environment". It does not
+"pass".
