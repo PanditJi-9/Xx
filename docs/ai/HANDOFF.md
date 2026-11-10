@@ -114,6 +114,33 @@ MaxManager has a strong engine and a fragmented surface. `core/maxai` + `core/ha
 **NEXT:** (١) CI: `:app:testReleaseUnitTest` + `:app:compileReleaseKotlin`. (٢) شريحة: علامة «يكتب» على
 صفوف التحكّم مشتقة من مسار المراجِع. (٣) شريحة: موجد واحد بالاسم والقصد. (٤) تعميم `MaxDataTrust`
 على كل قيمة غير متدفّقة. (٥) قرار مالك: حذف `StoryboardHome` أو إعادته.
+### ROUND-CLOSE-51 — الحارس الذي أسقط M1c: نهاية السطر ونطاقٌ أُفرغ — 2026-11-10 · DONE
+
+**TASK:** قراءة حكم `f693ef18` وإصلاح ما أسقطه.
+
+**MEASURED:** `MaxManager` `42905470074` = **failure** · «4229 tests completed, 1 failed, 3 skipped» ·
+`OwnerDecisionsGuardTest.kt:96`.
+
+**DIAGNOSIS:** سببان، كلاهما في ملفّات M1c لا في نقل الوجهات:
+1. الحارس قارن `, Settings,` بينما سطر `MaxBackup`/`Permissions` ينتهي بـ`, Settings, MaxRisk.Advanced)`.
+2. `ControlToolBands` كانت ما زالت تسمّي الأربعة المنقولة (`control_tools_data` بأكمله، و`ColorScheme`
+   في `control_tools_advanced`) ⇒ سقط شرط «النموذج لا يذكر الستّة».
+
+**SHIPPED:** خريطة الحارس صارت تطابق النهايات الفعلية · حُذف نطاق `control_tools_data` (وفارغًا كان
+سيُسقطه `takeIf` لكن اسمه بقي في الملف) · حُذف `ColorScheme` من نطاق الأدوات المتقدّمة · حُذف المفتاح
+`control_tools_data` من `values/` و`values-ar/` بعد أن صار غير مُشار إليه.
+
+**MEASURED بعد:** النطاقان الباقيان `control_tools_live` (٣) و`control_tools_advanced` (٣) ·
+أبناء `Control` **١٦** كما هي · `i18n_coverage --prune all` **يتيمة ٠**.
+
+**GATES:** `kt_balance` ٣٣٤٦/٠ · `i18n_coverage --prune all` ٨٤ لغة/٠ يتيم · `git diff --check` OK.
+
+**BUILD:** الدفعة التالية هي الحكم؛ لا يُدّعى قبل قراءته.
+
+**RESIDUAL RISK:** الحارس يقارن نصّ السجلّ لا سلوك الشاشة؛ وشكل الصفحة يبقى **يحتاج جهازًا**.
+
+**NEXT:** قراءة حكم دفعة الإصلاح قبل أي شريحة جديدة.
+
 ### ROUND-CLOSE-50 — الستّة إلى مواضعها الحقيقية: صفر عائلة مفصولة — 2026-11-10 · DONE_WITH_CONCERNS
 
 **TASK:** بأمر المالك «نعم افعل الافضل»: نقل الوجهات الستّ التي كانت محجوبة بقرارات مكتوبة إلى

@@ -1,3 +1,8 @@
+## ROUND-CLOSE-51 — إصلاح حارس M1c — 2026-11-10 · DONE
+**TASK:** إصلاح `OwnerDecisionsGuardTest` ونطاقات صندوق الأدوات بعد فشل `f693ef18`.
+**SHIPPED:** نهايات الأب الصحيحة (`Settings, MaxRisk.Advanced)`) · حذف `control_tools_data` ومفتاحه.
+**NEXT:** قراءة حكم البناء ثم M2.
+
 ## ROUND-CLOSE-50 — الستّة إلى مواضعها الحقيقية (M1c/M1d) — 2026-11-10 · DONE_WITH_CONCERNS
 
 **TASK:** نقل `Logs` · `UsageStats` · `DeviceLab` إلى `Diagnostics`، و`ColorScheme` · `MaxBackup` ·

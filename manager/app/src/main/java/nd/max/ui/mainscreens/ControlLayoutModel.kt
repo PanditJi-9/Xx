@@ -159,11 +159,6 @@ data class ControlToolGroup(
  * الوجهة مرتين لتظهر في الصفحة.
  */
 private val ControlToolBands: List<Pair<Int, List<MaxDestination>>> = listOf(
-    R.string.control_tools_data to listOf(
-        MaxDestination.MaxBackup,
-        MaxDestination.Permissions,
-        MaxDestination.Logs,
-    ),
     R.string.control_tools_live to listOf(
         MaxDestination.FpsOverlay,
         MaxDestination.GameSessions,
@@ -171,13 +166,12 @@ private val ControlToolBands: List<Pair<Int, List<MaxDestination>>> = listOf(
     ),
     R.string.control_tools_advanced to listOf(
         MaxDestination.FileManager,
-        MaxDestination.ColorScheme,
         MaxDestination.SetEdit,
         MaxDestination.ActivityLauncher,
     ),
 )
 
-/** النطاقات الثلاثة، مرشَّحة بنفس بوابة الصفحة، ونطاقٌ فرغ من صفوفه يُسقَط لا يُعرض فارغًا. */
+/** النطاقان الباقيان، مرشَّحان بنفس بوابة الصفحة، ونطاقٌ فرغ من صفوفه يُسقَط لا يُعرض فارغًا. */
 fun controlToolGroups(access: nd.max.ui.navigation.DestinationAccess? = null): List<ControlToolGroup> {
     val entries = controlToolEntries(access)
     return ControlToolBands.mapNotNull { (titleRes, destinations) ->

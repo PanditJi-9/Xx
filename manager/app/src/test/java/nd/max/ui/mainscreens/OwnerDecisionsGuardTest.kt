@@ -88,8 +88,10 @@ class OwnerDecisionsGuardTest {
             "UsageStats" to ", Diagnostics)",
             "Logs" to ", Diagnostics)",
             "ColorScheme" to ", Settings)",
-            "MaxBackup" to ", Settings,",
-            "Permissions" to ", Settings,",
+            // والاثنان يحملان `MaxRisk.Advanced` بعدهما، فالسطر ينتهي بالتصنيف لا بالأب — وهو
+            // سبب سقوط هذا الحارس في `f693ef18`: كان الشرط يقارن `", Settings,"` بنهاية السطر.
+            "MaxBackup" to ", Settings, MaxRisk.Advanced)",
+            "Permissions" to ", Settings, MaxRisk.Advanced)",
         )
         expected.forEach { (name, suffix) ->
             val line = registry.lines().first { it.contains("data object $name :") }
