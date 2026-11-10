@@ -6,6 +6,8 @@
 
 **SHIPPED:** قسمان حقيقيان في `DeviceLabScreen` بقراءة فقط وبلا أذونات — **الكاميرات** (معرّف · جهة · ميغابكسل من `SENSOR_INFO_PIXEL_ARRAY_SIZE` · مشعل، بلا فتح كاميرا) و**الاتصالات والمقاييس الحيوية** (NFC وحالته · Bluetooth · GPS · مشعّل تحت أحمر · بصمة · وجه) · ٢٠ مفتاحًا في `values/`+`values-ar/` · بطاقات نوع الشاشة في KDoc لخمس شاشات (`ControlScreen` Matrix · `HomeScreen` Matrix · `FpsOverlayScreen` Instrument · `GameSessionsScreen` Ledger · `ThermalDetailScreen` Instrument).
 
+**SHIPPED (حارس):** `DestinationDoorTest` — كل وجهة مرئية يذكرها سطحٌ يفتحها، ومسارات فريدة، وآباء مسجَّلون؛ يمنع تكرار عطب «وجهة بلا باب» الذي وقع في M1b.
+
 **NEXT:** M1b-باقٍ محجوب بقرارات مالك مكتوبة (`Logs` ADR-02 · `ColorScheme` تعليق الموديل · `UsageStats` حارس مالك · `MaxBackup`/`Permissions` `LaunchRouteTest`) ⇒ لا نقل بلا كلمة المالك. ثم M3 (RTL/إتاحة — مُقاسة نظيفة) وM4 (إعادات التركيب تحتاج جهازًا).
 
 ## ROUND-CLOSE-43 — المختبر بيت أدواته + إصلاح عطب Shizuku — 2026-11-10 · DONE_WITH_CONCERNS

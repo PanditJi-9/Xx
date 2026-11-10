@@ -141,6 +141,13 @@ MaxManager has a strong engine and a fragmented surface. `core/maxai` + `core/ha
 `HomeScreen` (Matrix، وهو مسار `Now`) · `FpsOverlayScreen` (Instrument) · `GameSessionsScreen` (Ledger) ·
 `ThermalDetailScreen` (Instrument). تعليقات فقط، صفر سلوك.
 
+**SHIPPED (حارس الأبواب — يمنع تكرار العطب الذي كشفه المالك):** `DestinationDoorTest.kt` (٣ اختبارات) يقرأ
+السجلّ بتفكيك وسائط متوازن ثم يفرض: كل وجهة **مرئية** يذكرها سطحٌ يفتحها — المحور يُولّدها من السجلّ،
+أو `ControlLayoutModel`/`SettingsScreen`/`DiagnosticsScreen`/`DeviceLabScreen`/`ApplistScreen`/`MaxAiScreen`
+تذكرها باسمها. ويسقط أيضًا على مسار مكرّر وعلى أب غير مسجَّل. المخفية بأمر المالك مستثناة بقصد.
+وقد تحقّقتُ بقاعدة الاختبار نفسها على الشجرة قبل كتابته: **صفر وجهة بلا باب** الآن — والعطب الذي وقع
+في M1b كان سيسقطه فورًا (ثلاث وجهات تحت `DeviceLab` لا يذكرها).
+
 **GATES (مقيسة):** `kt_balance` ٣٣٤١/٠ · `code_health` «صحّة نظيفة» · `i18n_coverage` ٨٤+en عوائق ٠ ·
 `--prune all` يتيمة ٠ · `design_tokens` ٢٤٩/٣٠٠ · `design_doc` مطابقة · `resource_compile` aapt2 ✓
 («كل مجلّدات الموارد تُترجم») · `license_audit` GPL ٠ · `readme_assets` أصول سليمة · `provenance_guard`
