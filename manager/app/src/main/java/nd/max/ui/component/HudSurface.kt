@@ -114,6 +114,20 @@ fun hudFieldText(reading: HudReading?, field: HudField): String = when (field) {
     HudField.Jank -> reading?.jankPercent?.let { percent ->
         reading.frameP99Ms?.let { p99 -> "$percent% · p99 %.0f ms".format(p99) } ?: "$percent%"
     } ?: MAX_VALUE_UNAVAILABLE
+    HudField.CpuFreq -> reading?.cpuFreqMhz?.let { "$it MHz" } ?: MAX_VALUE_UNAVAILABLE
+    HudField.SocTemp -> reading?.socTempC?.let { "%.0f°C".format(it) } ?: MAX_VALUE_UNAVAILABLE
+    HudField.GpuFreq -> reading?.gpuFreqMhz?.let { "$it MHz" } ?: MAX_VALUE_UNAVAILABLE
+    HudField.GpuLoad -> reading?.gpuLoadPercent?.let { "$it%" } ?: MAX_VALUE_UNAVAILABLE
+    HudField.DdrFreq -> reading?.ddrFreqMhz?.let { "$it MHz" } ?: MAX_VALUE_UNAVAILABLE
+    HudField.DiskIo -> reading?.let {
+        if (it.diskReadBps == null && it.diskWriteBps == null) {
+            MAX_VALUE_UNAVAILABLE
+        } else {
+            "↓${hudRateText(it.diskReadBps)} ↑${hudRateText(it.diskWriteBps)}"
+        }
+    } ?: MAX_VALUE_UNAVAILABLE
+    HudField.BatteryVoltage -> reading?.batteryVoltageMv?.let { "%.2f V".format(it / 1000f) }
+        ?: MAX_VALUE_UNAVAILABLE
 }
 
 /**
@@ -159,6 +173,13 @@ fun hudFieldLabel(field: HudField): String = stringResource(
         HudField.Renderer -> R.string.hud_field_renderer
         HudField.Stability -> R.string.hud_field_stability
         HudField.Jank -> R.string.hud_field_jank
+        HudField.CpuFreq -> R.string.hud_field_cpu_freq
+        HudField.SocTemp -> R.string.hud_field_soc_temp
+        HudField.GpuFreq -> R.string.hud_field_gpu_freq
+        HudField.GpuLoad -> R.string.hud_field_gpu_load
+        HudField.DdrFreq -> R.string.hud_field_ddr_freq
+        HudField.DiskIo -> R.string.hud_field_disk_io
+        HudField.BatteryVoltage -> R.string.hud_field_battery_voltage
     }
 )
 

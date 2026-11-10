@@ -29,7 +29,13 @@ data class SessionPoint(
     val battery: Int? = null,
     val heat: Float? = null,
     val jankPercent: Int? = null,
-    val frameP99Ms: Float? = null
+    val frameP99Ms: Float? = null,
+    val cpuFreqMhz: Int? = null,
+    val socTempC: Float? = null,
+    val gpuLoadPercent: Int? = null,
+    val batteryVoltageMv: Int? = null,
+    /** الحزمة الأمامية في هذه اللحظة — بها يُقصّ الانتقال. */
+    val foreground: String? = null
 )
 
 /**
@@ -59,6 +65,24 @@ data class StoredGameSession(
     val batteryStart: Int? = null,
     val batteryEnd: Int? = null,
     val renderer: String? = null,
+    val socTempPeak: Float? = null,
+    val gpuLoadAverage: Float? = null,
+    val cpuFreqAverageMhz: Int? = null,
+    val batteryVoltageMinMv: Int? = null,
+    /** إصدار اللعبة وقت التسجيل — يفسّر تغيّر الأداء بعد تحديث. */
+    val appVersion: String? = null,
+    /** دقّة العرض وتردّدها وقت البدء. */
+    val viewSize: String? = null,
+    val refreshHz: Int? = null,
+    /** هل كان توفير البطارية مفعّلًا. */
+    val powerSave: Boolean = false,
+    /** سبب الإيقاف (`manual` · `foreground` · `power` · `screen`). */
+    val stopReason: String? = null,
+    /** كم عيّنة حُذفت من أطراف الجلسة لأنها ليست لعبًا. */
+    val clipRemoved: Int = 0,
+    /** رُفض القصّ لأن الانتقالات تغلب الجلسة — تُحفظ كما هي ويُقال ذلك. */
+    val clipRejected: Boolean = false,
+    val remark: String? = null,
     val series: List<SessionPoint> = emptyList()
 ) {
     /** ما يُعرض في السطر: اسم اللعبة، ثم الحزمة، ثم «جلسة بلا اسم» — لا سطر فارغ. */
@@ -73,7 +97,8 @@ const val MAX_SERIES_POINTS = 180
 
 /** أعمدة CSV الواحدة للجلسة الحيّة والمحفوظة — مصدر واحد، فلا ينفصل التصديران. */
 const val SESSION_CSV_HEADER =
-    "elapsed_ms,frames,cpu_percent,ram_mb,watt,battery_c,jank_percent,frame_p99_ms,renderer"
+    "elapsed_ms,frames,cpu_percent,ram_mb,watt,battery_c,jank_percent,frame_p99_ms," +
+        "renderer,cpu_mhz,soc_temp_c,gpu_load_percent,battery_voltage_mv"
 
 /**
  * تخزين جلسات اللعب في `filesDir/game-sessions.json`.
@@ -112,6 +137,18 @@ object GameSessionStore {
     fun clear(context: Context): Boolean = synchronized(lock) {
         val target = file(context)
         runCatching { target.delete() }.getOrDefault(false) || !target.exists()
+    }
+
+    /** يعدّل جلسة قائمة (ملاحظة، مثلًا) ويعيد كتابة الملفّ ذرّيًّا. */
+    fun update(
+        context: Context,
+        id: String,
+        transform: (StoredGameSession) -> StoredGameSession
+    ): Boolean = synchronized(lock) {
+        val target = file(context)
+        val current = read(target)
+        if (current.none { it.id == id }) return@synchronized false
+        write(target, current.map { if (it.id == id) transform(it) else it })
     }
 
     private fun read(target: File): List<StoredGameSession> {
@@ -211,7 +248,11 @@ fun storedSessionCsv(session: StoredGameSession): String {
         out.append(point.battery.orEmpty()).append(',')
         out.append(point.jankPercent.orEmpty()).append(',')
         out.append(point.frameP99Ms.orEmpty()).append(',')
-        out.append(session.renderer.orEmpty())
+        out.append(session.renderer.orEmpty()).append(',')
+        out.append(point.cpuFreqMhz.orEmpty()).append(',')
+        out.append(point.socTempC.orEmpty()).append(',')
+        out.append(point.gpuLoadPercent.orEmpty()).append(',')
+        out.append(point.batteryVoltageMv.orEmpty())
         out.append('\n')
     }
     return out.toString()
@@ -219,3 +260,57 @@ fun storedSessionCsv(session: StoredGameSession): String {
 
 private fun Float?.orEmpty(): String = this?.toString() ?: ""
 private fun Int?.orEmpty(): String = this?.toString() ?: ""
+
+/**
+ * نتيجة قصّ الانتقالات: النقاط الباقية، وكم حُذف، وهل رُفض القصّ.
+ *
+ * **ولماذا يُرفض القصّ أحيانًا:** جلسة كلها تحميل وقوائم ليست جلسة لعب مقصوصة — هي جلسة
+ * لا لعب فيها. وقصّها إلى الجزء الأطول يعطي رقمًا لمدّة لا تمثّل ما اختاره المستخدم.
+ * فالحرّاس صريحة: عيّنات قليلة، أو جزء مهيمن أقل من نصف الجلسة ⇒ تُترك كما هي ويُعلن.
+ */
+data class ClipResult(
+    val points: List<SessionPoint>,
+    val removed: Int,
+    val rejected: Boolean
+)
+
+/** أقلّ عدد عيّنات يقبل القصّ — تحته لا يوجد «جزء أطول» يُعتمد. */
+const val CLIP_MIN_SAMPLES = 20
+
+/** أقلّ حصة للجزء المهيمن: نصف الجلسة. تحته الجلسة متنقّلة لا لعبة. */
+const val CLIP_MIN_SHARE = 0.5
+
+/**
+ * قصّ أطراف الجلسة التي قُضيت خارج اللعبة.
+ *
+ * المجموعة تُبنى بالحزمة الأمامية المتتالية، ويُختار أطول جزء. فإن غابت الحزمة من كل
+ * النقاط (جهاز لا يُعلنها) رُفض القصّ بدل أن يُخترع تقسيم. والنقاط التي في المنتصف
+ * خارج اللعبة لا تُحذف — القصّ أطراف لا خرمجة، فمن عاد إلى اللعبة يبقى محسوبًا.
+ */
+fun clipTransitions(
+    points: List<SessionPoint>,
+    minSamples: Int = CLIP_MIN_SAMPLES,
+    minShare: Double = CLIP_MIN_SHARE
+): ClipResult {
+    if (points.size < minSamples) return ClipResult(points, 0, true)
+    if (points.any { it.foreground.isNullOrBlank() }) return ClipResult(points, 0, true)
+
+    var bestStart = 0
+    var bestEnd = -1
+    var index = 0
+    while (index < points.size) {
+        var end = index
+        val pkg = points[index].foreground
+        while (end + 1 < points.size && points[end + 1].foreground == pkg) end++
+        if (end - index > bestEnd - bestStart) {
+            bestStart = index
+            bestEnd = end
+        }
+        index = end + 1
+    }
+    val bestSize = bestEnd - bestStart + 1
+    val share = bestSize.toDouble() / points.size
+    if (share < minShare) return ClipResult(points, 0, true)
+    val kept = points.subList(bestStart, bestEnd + 1).toList()
+    return ClipResult(kept, points.size - kept.size, false)
+}

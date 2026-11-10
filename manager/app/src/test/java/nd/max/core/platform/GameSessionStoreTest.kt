@@ -117,7 +117,7 @@ class GameSessionStoreTest {
     }
 
     @Test
-    fun `stored csv writes the header, nine columns, and empty absent cells`() {
+    fun `stored csv writes the header, every column, and empty absent cells`() {
         val session = StoredGameSession(
             id = "x",
             packageName = "com.example.game",
@@ -135,8 +135,8 @@ class GameSessionStoreTest {
 
         assertEquals(SESSION_CSV_HEADER, lines.first())
         assertEquals(3, lines.size)
-        lines.drop(1).forEach { assertEquals(9, it.split(',').size) }
-        assertEquals("0,59.5,,,,,,,Vulkan", lines[1])
-        assertEquals("2000,61.0,,,3.25,,4,,Vulkan", lines[2])
+        lines.drop(1).forEach { assertEquals(SESSION_CSV_HEADER.split(",").size, it.split(',').size) }
+        assertEquals("0,59.5,,,,,,,Vulkan,,,,", lines[1])
+        assertEquals("2000,61.0,,,3.25,,4,,Vulkan,,,,", lines[2])
     }
 }

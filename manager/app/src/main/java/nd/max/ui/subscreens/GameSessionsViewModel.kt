@@ -45,6 +45,18 @@ class GameSessionsViewModel : ViewModel() {
         }
     }
 
+    /** ملاحظة الجلسة تُحفظ في السجلّ نفسه، لا في ملفّ منفصل. */
+    fun updateRemark(context: Context, id: String, remark: String) {
+        val app = context.applicationContext
+        viewModelScope.launch {
+            val value = remark.trim().takeIf { it.isNotEmpty() }
+            withContext(Dispatchers.IO) {
+                GameSessionStore.update(app, id) { it.copy(remark = value) }
+            }
+            mutable.value = withContext(Dispatchers.IO) { GameSessionStore.load(app) }
+        }
+    }
+
     fun clear(context: Context) {
         val app = context.applicationContext
         viewModelScope.launch {
