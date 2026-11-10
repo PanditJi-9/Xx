@@ -154,6 +154,56 @@ fun controlToolEntries(access: nd.max.ui.navigation.DestinationAccess? = null): 
     ControlToolDestinations.filter { access == null || access.visible(it) }
         .map { destination -> ControlEntry(destination, maxDestinationRole(destination)) }
 
+/**
+ * **نطاقٌ في صندوق الأدوات — عنوانٌ يجمع صفوفًا تجمعها وظيفة واحدة.**
+ *
+ * الصندوق كان عشرة صفوف متتالية بلا جامع: من يفتح الصفحة ليرى أسطحها الحيّة يمرّ على
+ * محرّر إعدادات ومدير ملفات قبل أن يجدها. وهذه النطاقات **لا تنقل وجهةً من موضعها** —
+ * بل تقطع القائمة الطويلة إلى ثلاث قراءات: ما يُشاهد، وما يُحفظ ويُفتح، وما يُعدَّل.
+ */
+data class ControlToolGroup(
+    val key: String,
+    @StringRes val titleRes: Int,
+    val entries: List<ControlEntry>,
+)
+
+/**
+ * ترتيب النطاقات وأعضاؤها. والأعضاء **أسماء من السجل**، والصفوف نفسها تُشتقّ من
+ * [controlToolEntries] — فبوابة الرؤية وجدول الأدوار يبقيان مصدرًا واحدًا، ولا تُكتب
+ * الوجهة مرتين لتظهر في الصفحة.
+ */
+private val ControlToolBands: List<Pair<Int, List<MaxDestination>>> = listOf(
+    R.string.control_tools_data to listOf(
+        MaxDestination.MaxBackup,
+        MaxDestination.Permissions,
+        MaxDestination.Logs,
+    ),
+    R.string.control_tools_live to listOf(
+        MaxDestination.FpsOverlay,
+        MaxDestination.GameSessions,
+        MaxDestination.DynamicIsland,
+    ),
+    R.string.control_tools_advanced to listOf(
+        MaxDestination.FileManager,
+        MaxDestination.ColorScheme,
+        MaxDestination.SetEdit,
+        MaxDestination.ActivityLauncher,
+    ),
+)
+
+/** النطاقات الثلاثة، مرشَّحة بنفس بوابة الصفحة، ونطاقٌ فرغ من صفوفه يُسقَط لا يُعرض فارغًا. */
+fun controlToolGroups(access: nd.max.ui.navigation.DestinationAccess? = null): List<ControlToolGroup> {
+    val entries = controlToolEntries(access)
+    return ControlToolBands.mapNotNull { (titleRes, destinations) ->
+        val rows = entries.filter { entry -> entry.destination in destinations }
+        ControlToolGroup(
+            key = "control_tools_$titleRes",
+            titleRes = titleRes,
+            entries = rows,
+        ).takeIf { rows.isNotEmpty() }
+    }
+}
+
 /** Rows of the device-check band — same table, same visibility gate. */
 fun controlInspectEntries(access: nd.max.ui.navigation.DestinationAccess? = null): List<ControlEntry> =
     ControlInspectDestinations.filter { access == null || access.visible(it) }

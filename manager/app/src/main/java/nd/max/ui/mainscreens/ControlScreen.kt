@@ -123,7 +123,7 @@ fun ControlScreen(navController: NavHostController) {
     // it only decides how much of it is opened out.
     val access = nd.max.ui.navigation.rememberDestinationAccess()
     val bands = controlLayoutModel(access)
-    val tools = controlToolEntries(access)
+    val toolGroups = controlToolGroups(access)
     val inspect = controlInspectEntries(access)
 
     val listState = androidx.compose.foundation.lazy.rememberLazyListState()
@@ -188,13 +188,15 @@ fun ControlScreen(navController: NavHostController) {
 
         // **ولا مرساة جولة هنا:** هذه آخر مجموعة في الصفحة (تحت الطيّة)، والجولة لا تمرّر غير
         // الرئيسية — فمرساةٌ لا تُرى تعني خطوةً بلا عنصر مُضاء. خطوات التبويبات في أعلى صفحتها.
-        item(key = "control_tools") {
-            ControlBand(
-                titleRes = R.string.max_nav_advanced_tools,
-                entries = tools,
-                expanded = expandedLayout,
-                onOpen = actions::navigateTo,
-            )
+        toolGroups.forEach { group ->
+            item(key = group.key) {
+                ControlBand(
+                    titleRes = group.titleRes,
+                    entries = group.entries,
+                    expanded = expandedLayout,
+                    onOpen = actions::navigateTo,
+                )
+            }
         }
 
         // **وعنوانٌ يفصل «أداة» عن «فحص»:** الثلاث كانت صفوفًا في الإعدادات (أمر المالك)،

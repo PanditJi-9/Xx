@@ -38,6 +38,28 @@ class ControlLayoutModelTest {
     }
 
     @Test
+    fun `the tool box is split into named groups without losing a row`() {
+        // العقد: النطاقات **تقسّم** صفوف الصندوق، لا تنسخها ولا تُسقط منها. فلو أُضيفت أداة
+        // إلى `ControlToolDestinations` ونُسيت من نطاق، سقط هذا الاختبار بدل أن تختفي بصمت.
+        val entries = controlToolEntries()
+        val groups = controlToolGroups()
+        val listed = groups.flatMap { group -> group.entries }
+
+        assertEquals(entries.size, listed.size)
+        assertEquals(
+            entries.map { it.destination }.toSet(),
+            listed.map { it.destination }.toSet(),
+        )
+        assertEquals(
+            "a tool is listed in more than one group: $listed",
+            listed.size,
+            listed.map { it.destination }.toSet().size,
+        )
+        assertTrue("a group renders empty", groups.all { it.entries.isNotEmpty() })
+        assertTrue("the box must read as more than one band", groups.size >= 2)
+    }
+
+    @Test
     fun `each hub lists every screen the registry gives it`() {
         hubs.forEach { spec ->
             // `Visible` لا `All`: وجهةٌ أخفاها المالك (`hidden`) تبقى في السجلّ ومسارها صالح،
