@@ -112,7 +112,9 @@ class ScreenFinderTest {
 
     @Test
     fun `a screen that needs an app is still findable, and it says where to start`() {
-        val targets = screenFinderTargets({ "«$it»" })
+        val targets = screenFinderTargets(resolve = { resource ->
+            if (resource == R.string.max_title_app_settings) "App settings" else "«$resource»"
+        })
 
         val settings = targets.single { it.destination == MaxDestination.AppSettings }
         assertEquals(
@@ -122,10 +124,12 @@ class ScreenFinderTest {
         )
         assertEquals(MaxDestination.Apps, screenFinderOpenTarget(settings))
 
-        // والبحث يجدها — وهذا هو العطب الذي جاء الإصلاح لمنعه: «لا نتيجة» لشاشة موجودة.
-        assertEquals(
-            listOf(MaxDestination.AppSettings),
-            screenFinderResults("app settings", targets).map { it.destination },
+        // والبحث بعنوانها المحلول يجدها. لا نفرض أنها النتيجة الوحيدة: قد تطابق العبارة
+        // وصف شاشة أخرى، وعقد المُوجِّد هو إمكان الوصول لا احتكار عبارة البحث.
+        assertTrue(
+            "إعدادات التطبيق موجودة في نتائج البحث بعنوانها",
+            screenFinderResults("app settings", targets)
+                .any { it.destination == MaxDestination.AppSettings },
         )
 
         // ووجهة عادية لا تُعاد توجيهًا: فعلها هو وجهتها.

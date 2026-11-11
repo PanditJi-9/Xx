@@ -16,16 +16,19 @@
 | **M3** | تكيّفي وإتاحة: أحجام · RTL · حالات فراغ/خطأ | `rtl_guard` + لا نصّ يُقتطع في ٣٦٠dp | **مقيس جزئيًّا**: صفر هدف < ٤٨dp · صفر أيقونة بلا وصف |
 | **M4** | تقليل الاستهلاك: إعادات التركيب والفواصل | قياس قبل/بعد مسجَّل | **الفواصل مُهندَسة**؛ العدّ يحتاج جهازًا |
 
-## ٢. المحجوب — ولماذا لا أتجاوزه
+## ٢. ما ثُبّت في قبول M1 — ولماذا لا يتحرك تلقائيًّا
 
-| الوجهة | ما يثبّتها |
+| القرار المقبول | ما يثبّته |
 | --- | --- |
-| `Logs` | تعليق `DiagnosticsScreen` + `ADR-02`: مكانها `Control → Tools` وحده |
-| `ColorScheme` | تعليق `ControlLayoutModel`: سؤال مختلف عن `ColorPalette` |
-| `UsageStats` · `DeviceLab` | `OwnerDecisionsGuardTest` يفرض أبوّة `Control` |
-| `MaxBackup` · `Permissions` | `LaunchRouteTest` يفرض وجودهما في صفحة التحكّم |
+| `ProcessManager → MemoryHub` · `BatteryHistory → PowerHub` | `DestinationDoorTest` + `OwnerDecisionsGuardTest` |
+| `Logs` · `UsageStats` · `DeviceLab → Diagnostics` | `DestinationDoorTest` + `OwnerDecisionsGuardTest`، والصفوف مشتقة من السجلّ |
+| `ColorScheme` · `MaxBackup` · `Permissions → Settings` | الحارسان نفسيهما، بلا باب مكرر في `Control` |
+| `SetEdit` · `ActivityLauncher` · `FileManager → Control` | رفض المالك M1b: `DeviceLab` مختبر عتاد لا صندوق أدوات |
 
-نقل أيٍّ منها يحتاج كلمة المالك، ثم تحديث الحارس الذي يثبّتها في الدفعة نفسها — لا حذف الحارس.
+أُغلقت M1 عند **٦٩ وجهة** و**١٦ ابنًا مباشرًا لـ`Control`** و**صفر عائلة مفصولة**. والهدف
+التاريخي `≤ ١٣` لم يُبلغ لأن الأدوات المتقدمة الثلاث لا محور منطقيًّا لها بعد رفض M1b؛ لذلك لا
+يُعدّ نقلها شرط قبول متبقّيًا. أي نقل لاحق يحتاج قرار مالك جديدًا، ثم تحديث الحارس الذي يثبّته في
+الدفعة نفسها — لا حذف الحارس ولا بناء مصدر حقيقة ثانٍ.
 
 ## ٣. التراجع
 

@@ -198,6 +198,54 @@ class DestinationDoorTest {
         assertTrue("آباء غير مسجَّلين: $missing", missing.isEmpty())
     }
 
+    /** لقطة قبول M1: لا نقل جديدًا، بل حراسة العدد والعائلات ورفض تحويل المختبر إلى صندوق أدوات. */
+    @Test
+    fun `M1 keeps all destinations and their families in the accepted homes`() {
+        val all = destinations()
+        assertEquals("عدد وجهات M1 لا ينقص عند إعادة ترتيبها", 69, all.size)
+        assertEquals(
+            "Control يحتفظ بالمحاور والأسطح والأدوات المقبولة",
+            16,
+            all.count { !it.hidden && it.parent == "Control" },
+        )
+
+        val families = mapOf(
+            "MemoryHub" to listOf("ProcessManager", "ZramManager", "MemoryUfs"),
+            "PowerHub" to listOf(
+                "Charging",
+                "BypassCharging",
+                "BypassChargingCheck",
+                "DozeMode",
+                "BatteryHistory",
+            ),
+            "Diagnostics" to listOf("Logs", "UsageStats", "DeviceLab"),
+            "Settings" to listOf(
+                "ColorScheme",
+                "ColorPalette",
+                "ConfigBackup",
+                "MaxBackup",
+                "Permissions",
+                "Privilege",
+            ),
+        )
+        families.forEach { (parent, children) ->
+            children.forEach { name ->
+                assertEquals(
+                    "$name خرجت من عائلتها في $parent",
+                    parent,
+                    all.single { it.name == name }.parent,
+                )
+            }
+        }
+        listOf("SetEdit", "ActivityLauncher", "FileManager").forEach { name ->
+            assertEquals(
+                "M1b مرفوضة: $name أداة تحكّم لا اختبار عتاد",
+                "Control",
+                all.single { it.name == name }.parent,
+            )
+        }
+    }
+
     /**
      * **الجذور غير الأساسية — الثغرة التي كانت تُمرّر وجهةً بلا باب.**
      *
@@ -256,19 +304,19 @@ class DestinationDoorTest {
      *
      * الباب الحقيقي هو صفّ في شاشة؛ والمُوجِّد بحثٌ يجد الوجهة بكتابتها. ومنعُ الاعتماد عليه كبابٍ
      * هو ما فعله الحارس أعلاه. لكنه إن فقد وجهةً، صار المستخدم يكتب اسمها فلا يجدها — فتُقاس تغطيته
-     * على كل وجهة مرئية **قابلة للفتح بلا وسيط**.
+     * على كل وجهة مرئية يستطيع أن يقود إليها: مباشرةً، أو عبر أبٍ يختار المستخدم منه الوسيط.
      *
-     * **والاستثناء ليس تساهلًا بل شرط وجود:** `AppSettings` مسارها `app_settings/{pkg}` — لا تُفتح
-     * بلا حزمة، فإدراجها في المُوجِّد يعني نتيجةً لا تُنفَّذ. وهذا الاستثناء يُقاس لا يُدَّعى:
-     * كل اسم فيه يجب أن يكون وجهةً مرئية **ومسارها يحمل وسيط مسار فعليًّا** (`/{`)، وإلا فشل الاختبار.
-     * فلو صار لـ`AppSettings` مسار بلا وسيط، صار الاستثناء كذبًا يُسقط الحارس.
+     * `AppSettings` مثلًا لا تُفتح بلا حزمة، لكن إسقاطها يجعل شاشةً موجودة تبدو غائبة. لذلك يعرضها
+     * المُوجِّد ويفتح `Apps` أولًا؛ والحارس يقيس أن كل وجهة ذات وسيط تملك بداية رحلة صالحة.
      */
     @Test
-    fun `the finder returns every visible destination that opens without an argument`() {
-        val found = screenFinderTargets(resolve = { "" })
-            .mapNotNull { it.destination::class.simpleName }
+    fun `the finder returns every visible destination it can lead to`() {
+        val targets = screenFinderTargets(resolve = { "" })
+        val found = targets
+            .mapNotNull { target -> target.destination::class.simpleName }
             .toSet()
         val visible = destinations().filter { !it.hidden }
+        val visibleByName = visible.associateBy { it.name }
         // الأبواب ذات الابن الواحد تُسقَط من الفهرس عن قصد: صفحتها سطرٌ واحد يقود إلى الابن،
         // فعرضها يعطي نقرةً مقابل صفر معلومة. والابن نفسه في الفهرس فلا تُفقد وجهة.
         val childrenByParent = visible.filter { it.parent != null }.groupBy { it.parent!! }
@@ -280,7 +328,12 @@ class DestinationDoorTest {
             .keys
 
         val expected = visible
-            .filter { it.name !in finderExclusions }
+            .filter { destination ->
+                !launchRouteNeedsArgument(destination.route) ||
+                    destination.parent?.let { parent ->
+                        visibleByName[parent]?.let { !launchRouteNeedsArgument(it.route) }
+                    } == true
+            }
             .filter { it.name !in passThrough }
             .map { it.name }
         val missing = (expected - found).sorted()
@@ -290,6 +343,7 @@ class DestinationDoorTest {
             emptyList<String>(),
             missing,
         )
+        assertEquals("الفهرس لا يضيف وجهةً مخفيّة أو بلا بداية رحلة", expected.toSet(), found)
 
         // **ولا يُسقَط بابٌ إلا إذا كان ابنه الوحيد معروضًا.** الإسقاط بلا تعويض = فقدان وجهة.
         val lost = passThrough.filter { hub ->
@@ -301,22 +355,18 @@ class DestinationDoorTest {
             lost.isEmpty(),
         )
 
-        val stale = finderExclusions.keys.filter { name ->
-            val dest = visible.firstOrNull { it.name == name }
-            dest == null || !dest.route.contains("/{")
+        val wrongStarts = targets.mapNotNull { target ->
+            val name = target.destination::class.simpleName ?: return@mapNotNull null
+            val destination = visibleByName[name] ?: return@mapNotNull "$name (ليس في السجلّ المرئيّ)"
+            if (!launchRouteNeedsArgument(destination.route)) return@mapNotNull null
+            val actual = target.opensFrom?.let { it::class.simpleName }
+            if (actual == destination.parent) null else "$name: ${destination.parent} متوقّع، $actual فعليّ"
         }
-        assertTrue(
-            "استثناءات مُعلَنة لم تعد تحمل وسيط مسار — أزل الاستثناء وأدرج الوجهة في المُوجِّد: $stale",
-            stale.isEmpty(),
+        assertEquals(
+            "وجهات ذات وسيط لا تقود إلى الأب الذي يختار منه المستخدم الوسيط:\n" +
+                wrongStarts.joinToString("\n"),
+            emptyList<String>(),
+            wrongStarts,
         )
     }
 }
-
-/**
- * الوجهات المستثناة من حارس المُوجِّد، **بسببها**.
- *
- * ولا تُضاف إليها وجهة لأنها «صعبة»: السبب الوحيد المقبول أنّ فتحها بلا وسيط غير ممكن.
- */
-private val finderExclusions = mapOf(
-    "AppSettings" to "مسارها app_settings/{pkg} — لا تُفتح بلا حزمة",
-)

@@ -2,6 +2,13 @@
 
 > الجولات مرتّبة من الأحدث. كل سطر يقابل التزامًا على `main`، والتفصيل في `docs/ai/HANDOFF.md`.
 
+## ROUND-CLOSE-74 — إغلاق قبول M1
+- `fix(nav): close M1 navigation acceptance`: أُصلح اختبار `AppSettings` كي يبحث بعنوان مورد محلول
+  بدل رقم مورد اصطناعي، ويقيس إمكان العثور لا احتكار عبارة البحث. وحارس الأبواب صار يثبت مجموعة
+  وجهات المُوجِّد وبدايات الرحلات ذات الوسيط، ولقطة قبول M1: **٦٩ وجهة · ١٦ ابنًا لـ`Control` ·
+  صفر عائلة مفصولة**، مع بقاء أدوات M1b الثلاث في `Control` بقرار المالك. وصُحّحت وثيقتا الهجرة
+  والبنية اللتان كانتا تصفان حالة ما قبل M1d.
+
 ## ROUND-CLOSE-50 — الستّة إلى مواضعها الحقيقية (M1c/M1d)
 - `feat(nav): move the six destinations to their real homes`: `Logs` · `UsageStats` · `DeviceLab`
   → `Diagnostics`، و`ColorScheme` · `MaxBackup` · `Permissions` → `Settings`، وقسم «أدوات

@@ -149,6 +149,45 @@ NeuralDashboardKit.kt:673:12 Syntax error: Expecting a top level declaration.
 **ما لم يُفقد:** `ui/component/PulseArt.kt` و`AmbientGlowCycle.kt` (حذف الملفّين الكاملين من ROUND-CLOSE-63)
 يبقيان محذوفين، وحارس مستوى الملفّ يبقى، وإصلاح استثناء `AppSettings` في `DestinationDoorTest` يبقى.
 
+### ROUND-CLOSE-74 — إغلاق قبول M1 — 2026-11-11 · DONE_WITH_CONCERNS
+
+**TASK:** «اكمل m1 دفعة واحدة وفي جوله واحدة»؛ دفعة إلى `main`، بلا بناء محلي ولا M2.
+
+**FILES:** `ScreenFinderTest.kt` · `DestinationDoorTest.kt` · `docs/MIGRATION_PLAN.md` ·
+`docs/NEW_ARCHITECTURE.md` · `docs/CHANGELOG.md` · هذا السجل و`NEXT_TASK.md`.
+
+**SEARCH FIRST (§0.5):** حسّنا حارس M1 وScreen Finder القائم بفارق عقد صحيح؛ لم نبنِ مسارًا ثانيًا.
+`ScreenFinderModel.kt` بقي دون تعديل: الاختبار كان يحلّ المورد إلى `«رقم»` ثم يبحث بعنوان إنجليزي
+لم تنتجه الـfixture. أول سطر خالف التوقّع: `ScreenFinderTest.kt:126` في تشغيل `43079430040`
+على `fd07c649` (٤٣٣٥ اختبارًا، فشل واحد، ثلاثة متخطّاة).
+
+**SHIPPED:**
+- `ScreenFinderTest`: حلّ عنوان `AppSettings` الفعلي في الـfixture، وقياس وجودها في النتائج لا
+  احتكار العبارة؛ إبقاء التحقق من أن الفتح يبدأ من `Apps` بدل مسار بحزمة فارغة.
+- `DestinationDoorTest`: استبدال استثناء الفهرس القديم بتغطية دقيقة للوجهات القابلة للوصول وبداية
+  صحيحة لكل مسار ذي وسيط؛ حراسة ٦٩ وجهة و١٦ ابنًا مباشرًا لـ`Control` وعائلات الذاكرة والطاقة
+  والتشخيص والإعدادات. تبقى `SetEdit` و`ActivityLauncher` و`FileManager` في `Control`: M1b مرفوضة.
+- تصحيح وثائق ما قبل M1d؛ هدف `Control ≤13` التاريخي ليس شرطًا متبقيًا بعد قرار المالك.
+
+**GATES (مقيس):** ١٤/١٤ exit 0، والسجلات في `/tmp/opencode/gates-74/`: `kt_balance --assert`
+(٣٣٦٢·٠) و`--self-test` (١٧·٠) · `code_health --assert` (الصحة صفر والدين عند السقف) ·
+`i18n_coverage --assert` و`--prune all --assert` (صفر عائق/يتيم) · `design_tokens --assert`
+(٢٤٩/٣٠٠) · `jni_symbols --assert` (٢٣ تصريحًا، صفر نواقص) · `resource_compile --assert`
+(`aapt2` الحقيقي، مجلّدا موارد) · `license_audit --assert` · `rtl_guard --assert` (٤٦٢·٠) ·
+`gen_control_catalog --assert` · `gen_catalog_schema --assert` · `repo_audit` (PROBLEMS: 0) ·
+`git diff --check`. التدقيق البنيوي الخارجي: ٦٩ مسجّلة · ٦٦ مرئية · ١٦ ابنًا لـ`Control` ·
+صفر عائلة مفصولة · صفر باب يتيم · صفر مسار مكرر.
+
+**BUILD:** لا Gradle ولا بناء محلي. الترجمة غير مُتحقّقة في هذه البيئة؛ حكم Actions على الدفعة
+الجديدة معلّق عند كتابة السجل. اختبارات Kotlin المعدّلة لم تُشغّل محليًا.
+
+**RESIDUAL RISK:** محاولة مراجعة مستقلة واحدة حُجبت بـ`Free usage limit reached`؛ لا مراجعة
+مستقلة مزعومة. طبقة رموز JNI في الثنائيات غير مُتحقّقة هنا؛ اللمس وRTL والشكل تحتاج جهازًا.
+
+**NEXT:** دفع الجولة مرة واحدة إلى `main` ومراقبة Actions خلفيًا؛ لا قبول نهائي من نجاح بوابات
+المصادر وحدها، ولا M2 قبل قبول M1. ما لا يُعاد: تشخيص الـfixture والفحوص المنجزة بلا تغيّر كود.
+تصحيح المالك: منع البناء المحلي غايته السرعة؛ لا تُستبدل كلفته بتحليل متكرر أطول منه.
+
 ### ROUND-CLOSE-73 — الخطأ الذي أوقف البناء، وعدٌّ لا يُدَّعى — 2026-11-11 · DONE_WITH_CONCERNS
 
 **TASK:** أوقف البناء المدفوع `98152542` (`43048246184`) عند الترجمة لا عند الاختبار: السجلّ يقول
