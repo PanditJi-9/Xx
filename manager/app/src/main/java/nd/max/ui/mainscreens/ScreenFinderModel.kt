@@ -83,9 +83,24 @@ fun screenFinderTargets(
     resolve: (Int) -> String,
     usage: Map<String, Int> = emptyMap(),
     access: nd.max.ui.navigation.DestinationAccess? = null,
-): List<ScreenFinderTarget> =
-    MaxDestination.Visible.filter { access?.visible(it) != false }
+): List<ScreenFinderTarget> {
+    val visible = MaxDestination.Visible.filter { access?.visible(it) != false }
+    // **المحور ذو الابن الواحد بابٌ لا شاشة.** `GpuHub` · `ThermalHub` · `AudioHub` لكلٍّ ابنٌ
+    // واحد، فصفحتها سطرٌ واحد يقود إلى الشاشة الحقيقية. وعرضها في نتائج البحث يعطي نقرةً كاملة
+    // مقابل صفر معلومة: تكتب «GPU» فتصل إلى «GPU» ثم إلى «GPU Studio». فيُسقَط الباب ويُعرض ما
+    // خلفه مباشرةً — والابن نفسه في الفهرس أصلًا فلا تُفقد وجهة.
+    //
+    // والشرط ليس «ابن واحد» وحده: لو كان الابن الوحيد يحتاج وسيط مسار (لا يُفتح من الفهرس) لَما
+    // جاز إسقاط الأب، وإلّا لاختفى الفرع كلّه من البحث. ولذلك يُشترط أن يكون الابن صالحًا للفهرس.
+    val passThrough = visible
+        .groupBy { it.parent }
+        .filterValues { children -> children.size == 1 && !children.single().needsLaunchArgument }
+        .keys
+        .filterNotNull()
+        .toSet()
+    return visible
         .filterNot { it.needsLaunchArgument }
+        .filterNot { it in passThrough }
         .map { destination ->
             ScreenFinderTarget(
                 destination = destination,
@@ -97,6 +112,7 @@ fun screenFinderTargets(
                 keywords = maxDestinationKeywords[destination].orEmpty(),
             )
         }
+}
 
 /** «أين تسكن هذه الشاشة» — من الشجرة في السجلّ لا من جدول ثانٍ. */
 @StringRes

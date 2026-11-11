@@ -5,6 +5,7 @@
  */
 package nd.max.ui.navigation
 
+import nd.max.ui.mainscreens.screenFinderTargets
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Assume.assumeTrue
@@ -263,20 +264,41 @@ class DestinationDoorTest {
      * فلو صار لـ`AppSettings` مسار بلا وسيط، صار الاستثناء كذبًا يُسقط الحارس.
      */
     @Test
-    fun `the finder reaches every visible destination`() {
-        val all = destinations()
-        val visible = all.filter { !it.hidden }
-        val finder = read("ui/mainscreens/ScreenFinderModel.kt")
-        val missing = visible
+    fun `the finder returns every visible destination that opens without an argument`() {
+        val found = screenFinderTargets(resolve = { "" })
+            .mapNotNull { it.destination::class.simpleName }
+            .toSet()
+        val visible = destinations().filter { !it.hidden }
+        // الأبواب ذات الابن الواحد تُسقَط من الفهرس عن قصد: صفحتها سطرٌ واحد يقود إلى الابن،
+        // فعرضها يعطي نقرةً مقابل صفر معلومة. والابن نفسه في الفهرس فلا تُفقد وجهة.
+        val childrenByParent = visible.filter { it.parent != null }.groupBy { it.parent!! }
+        // **بنفس شرط الإنتاج حرفًا:** الإسقاط لا يجوز إن كان الابن الوحيد يحتاج وسيط مسار،
+        // وإلا اختفى الفرع كلّه من البحث. والشرط يُقرأ من `launchRouteNeedsArgument` نفسها
+        // لا يُعاد كتابته، فلا يفترق الحارس عن الدالّة التي يحرسها.
+        val passThrough = childrenByParent
+            .filterValues { kids -> kids.size == 1 && !launchRouteNeedsArgument(kids.single().route) }
+            .keys
+
+        val expected = visible
             .filter { it.name !in finderExclusions }
-            .filter { !finder.contains("MaxDestination.${it.name}") }
+            .filter { it.name !in passThrough }
             .map { it.name }
-            .sorted()
+        val missing = (expected - found).sorted()
 
         assertEquals(
-            "وجهات مرئية لا يجدها المُوجِّد بكتابتها:\n" + missing.joinToString("\n"),
+            "وجهات مرئية لا يعيدها المُوجِّد بكتابتها:\n" + missing.joinToString("\n"),
             emptyList<String>(),
             missing,
+        )
+
+        // **ولا يُسقَط بابٌ إلا إذا كان ابنه الوحيد معروضًا.** الإسقاط بلا تعويض = فقدان وجهة.
+        val lost = passThrough.filter { hub ->
+            val child = childrenByParent.getValue(hub).single().name
+            child !in found || hub in found
+        }
+        assertTrue(
+            "أبواب أُسقطت من الفهرس دون أن يُعرض ابنها الوحيد: $lost",
+            lost.isEmpty(),
         )
 
         val stale = finderExclusions.keys.filter { name ->

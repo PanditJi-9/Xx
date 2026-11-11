@@ -149,6 +149,56 @@ NeuralDashboardKit.kt:673:12 Syntax error: Expecting a top level declaration.
 **ما لم يُفقد:** `ui/component/PulseArt.kt` و`AmbientGlowCycle.kt` (حذف الملفّين الكاملين من ROUND-CLOSE-63)
 يبقيان محذوفين، وحارس مستوى الملفّ يبقى، وإصلاح استثناء `AppSettings` في `DestinationDoorTest` يبقى.
 
+### ROUND-CLOSE-65 — ثلاثة أبواب بابنٍ واحد تُسقَط من المُوجِّد — 2026-11-11 · DONE_WITH_CONCERNS
+
+**TASK:** `GpuHub` · `ThermalHub` · `AudioHub` تظهر في نتائج البحث فتُعطي نقرةً كاملة مقابل صفر
+معلومة: تكتب «GPU» فتصل إلى صفحة فيها سطر واحد ثم تضغطه. وهي لا تُرى إلا من المُوجِّد (رأس المحور
+في `ControlScreen` غير مربوط أصلًا).
+
+**SEARCH FIRST (§0.5):** وُجد `screenFinderTargets` في `ScreenFinderModel.kt` هي مصدر الفهرس
+الوحيد، و`MaxDestination.Visible` + `access.visible()` يحكمان الظهور. لم يوجد شيء يُسقط «بابًا
+بلا محتوى» ⇒ أُضيف شرط واحد داخل الدالّة نفسها، لا قائمة استثناءات ثانية (وهي التي تتقادم).
+**ورُفض بـ§0.5 قبل البناء:** إنشاء `ToolsHub` للأدوات الثلاث — النظير قائم في
+`ControlLayoutModel.kt:167` (`control_tools_advanced` يضمّ `SetEdit`·`ActivityLauncher`·`FileManager`)،
+فمحور ثانٍ = ازدواج مسار.
+
+**SHIPPED:**
+- `ui/mainscreens/ScreenFinderModel.kt`: `screenFinderTargets` صارت جسمًا بدلالة. تُحسب
+  `passThrough` = الآباء الذين لهم ابن واحد **لا يحتاج وسيط مسار**، ثم تُرشَّح من النتائج.
+  والشرط ليس «ابن واحد» وحده: لو احتاج الابن الوحيد وسيط مسار لَما جاز إسقاط الأب (يُفقد الباب
+  ولا يُعرض ما خلفه).
+- `test/.../navigation/DestinationDoorTest.kt`: **الحارس القديم كان يقيس النصّ لا السلوك** — كان
+  يفحص `finder.contains("MaxDestination.X")` على ملفّ المُوجِّد، وخريطة `maxDestinationKeywords`
+  تذكر ٦٥ وجهة نصًّا، فكان يمرّ حتى لو لم تُعرض الوجهة فعلًا. استُبدل بحارس سلوكيّ يستدعي
+  `screenFinderTargets(resolve = { "" })` ويقارن مجموع الأسماء المتوقّعة بالمُعادة، **ويؤكّد أنّ
+  كل باب مُسقَط ابنُه الوحيد معروض**، وأنّ كل استثناء معلَن ما زال يحمل وسيط مسار (وإلا فسد الاستثناء
+  بصمت). `@Test` في الملفّ = ٦ (حارس بحارس).
+- `test/.../mainscreens/ScreenFinderTest.kt`: تأكيدان كانا يقيسان **«الفهرس = السجلّ كاملًا»**
+  (`MaxDestination.Visible.count { !it.needsLaunchArgument }`) — وهو ما لم يعد صحيحًا بعد الإسقاط،
+  فكانا يسقطان في CI. أُضيف `expectedFinderSize()` يحسب المتوقّع بنفس شرط الإنتاج حرفًا (بما فيه
+  «الابن يحتاج معاملًا ⇒ لا إسقاط»)، واستُبدل به التأكيدان. فلا يفترق الحارس عن الدالّة.
+
+**MEASURED:** `kt_balance --assert` = **٣٣٥٠ ملفًا · عوائق ٠** · صفر استيراد جديد في ملفّ الإنتاج ·
+`@Test` في `DestinationDoorTest` = **٦**.
+
+**GATES:** تُشغَّل في هذه الجولة — تُقرأ قبل الالتزام.
+
+**BUILD (مقيس محليًّا — حالة §0.1-ب «توقّع اختبار»):**
+`sh ./gradlew :app:testReleaseUnitTest --tests "nd.max.ui.navigation.DestinationDoorTest"` ⇒
+**BUILD SUCCESSFUL in 23m 38s** (`compileReleaseKotlin` + `compileReleaseUnitTestKotlin` + `testReleaseUnitTest`
+كلّها executed). ⇒ الحارس السلوكيّ **يُترجم ويمرّ فعلًا**، لا «يُرجَّح».
+آخر حكم CI مقروء قبل هذه الجولة: `39f6d209` **success** `43010884721` · docs `43010884690`.
+
+**RESIDUAL RISK:** الإسقاط يخفي المحور من **البحث** لا من الشجرة، فمن يعرف مساره يصل إليه من
+`Control` (ورأس المحور هناك غير مربوط أصلًا — عيب قائم لا يعنيه هذا التغيير) · الترتيب في الشبكة
+لم يتغيّر، فالمستخدم يرى `GpuHub` في «التحكّم» ولا يراه في البحث — وهذا **مقصود** لكنه قد يُقرأ
+تناقضًا · الحارس يثبت السلوك في JVM لا الشكل ولا RTL على الشاشة (**يحتاج جهازًا**) · لا مراجعة
+مستقلة.
+
+**درس مُطبَّق من ROUND-CLOSE-64:** الحارس الجديد **بُني وشُغّل** قبل الالتزام، لا دُفع على الثقة.
+
+**NEXT:** قراءة حكم البناء — إن سقط الحارس فالإصلاح فيه لا في الدالّة.
+
 ### ROUND-CLOSE-64 — تصريحٌ لا يذكره أحدٌ ليس كودًا: ٢٣ تصريحًا و٤٦٩ سطرًا — 2026-11-11 · DONE_WITH_CONCERNS
 
 **TASK:** بعد ROUND-CLOSE-63 (الذي حذف ملفّين ميتين كاملين)، بقي الميت **داخل** ملفّات حيّة:

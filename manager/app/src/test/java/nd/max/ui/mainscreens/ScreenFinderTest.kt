@@ -23,8 +23,9 @@ import java.io.File
  * وثلاثة عقود تُقفل هنا:
  *
  * 1. **الفهرس هو السجلّ المرئيّ**: `MaxDestination.Visible` (كل السجلّ إلا ما أخفاه المالك)
- *    ناقصًا ما لا يُفتح بلا معرّف. فلا وجهة جديدة تُنسى، ولا وجهة محذوفة تبقى، ولا ضغطة تفتح
- *    تفصيل حزمة اسمها فارغ.
+ *    ناقصًا ما لا يُفتح بلا معرّف، **وناقصًا الأبواب ذات الابن الواحد** (صفحتها سطرٌ واحد يقود
+ *    إلى الابن، والابن نفسه في الفهرس). فلا وجهة جديدة تُنسى، ولا وجهة محذوفة تبقى، ولا ضغطة
+ *    تفتح تفصيل حزمة اسمها فارغ.
  * 2. **والترتيب موقعٌ لا وجود**: اسمُ الشاشة قبل سطر وصفها، وسطرُ الوصف قبل اسم مجالها —
  *    وإلا تصدّرت نتيجةٌ هامشية الشاشةَ التي اسمها هو نفسه ما كتبه المستخدم.
  * 3. **و«أين تسكن» من الشجرة**: أبُ الوجهة في السجلّ، بلا جدول ثانٍ ينحرف.
@@ -59,6 +60,22 @@ class ScreenFinderTest {
         riskNote: String? = null,
     ) = ScreenFinderTarget(destination, title, role, where, usage, riskNote)
 
+    /**
+     * **ما يجب أن يعرضه الفهرس بالحساب، لا بالعدد المكتوب.**
+     *
+     * الفهرس = كلّ مرئيّ يُفتح بلا معامل، **إلّا الأبواب ذات الابن الواحد**: صفحتها سطرٌ واحد
+     * يقود إلى الابن، فعرضها يعطي نقرةً مقابل صفر معلومة. والشرط يُنسخ من الإنتاج حرفًا
+     * (بما فيه «الابن يحتاج معاملًا ⇒ لا إسقاط»)، فلا يفترق الحارس عن الدالّة التي يحرسها.
+     */
+    private fun expectedFinderSize(): Int {
+        val visible = MaxDestination.Visible
+        val passThrough = visible.filter { it.parent != null }
+            .groupBy { it.parent!! }
+            .filterValues { kids -> kids.size == 1 && !kids.single().needsLaunchArgument }
+            .keys
+        return visible.count { !it.needsLaunchArgument && it !in passThrough }
+    }
+
     // ── (١) الفهرس من السجلّ ──────────────────────────────────────────────────
 
     @Test
@@ -76,7 +93,7 @@ class ScreenFinderTest {
         )
         assertEquals(
             "الفهرس ليس السجلّ المرئيّ (وجهة نُسيت أو زيدت بيد)",
-            MaxDestination.Visible.count { !it.needsLaunchArgument },
+            expectedFinderSize(),
             targets.size,
         )
         assertTrue(
@@ -240,7 +257,7 @@ class ScreenFinderTest {
         )
         assertEquals(
             "الفهرس كله لا يسقط إذا كان في السجلّ مسار خارج السجلّ",
-            MaxDestination.Visible.count { !it.needsLaunchArgument },
+            expectedFinderSize(),
             targets.size,
         )
     }
