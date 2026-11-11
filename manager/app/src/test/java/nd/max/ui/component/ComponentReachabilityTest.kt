@@ -56,6 +56,29 @@ class ComponentReachabilityTest {
     }
 
     @Test
+    fun `no declaration in ui component is dead inside a live file`() {
+        val root = sourceRoot() ?: return
+        val sources = mainSources(root)
+        val stripped = sources.mapValues { stripComments(it.value) }
+        val corpus = stripped.values.joinToString("\n")
+        val dead = sources.keys
+            .filter { it.path.contains("/ui/component/") }
+            .flatMap { file ->
+                declarationsOf(stripped.getValue(file))
+                    .filter { name -> Regex("\\b${Regex.escape(name)}\\b").findAll(corpus).count() == 1 }
+                    .map { "${file.path.substringAfter("/ui/component/")} :: $it" }
+            }
+            .sorted()
+
+        assertEquals(
+            "تصريحات في ui/component لا يذكرها أحدٌ غير سطر تعريفها — إمّا تُوصَل وإمّا تُحذف:\n" +
+                dead.joinToString("\n"),
+            emptyList<String>(),
+            dead,
+        )
+    }
+
+    @Test
     fun `the two decoration files removed for being unreachable stay removed`() {
         val root = sourceRoot() ?: return
         listOf("PulseArt.kt", "AmbientGlowCycle.kt").forEach { name ->
