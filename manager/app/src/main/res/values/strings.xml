@@ -3961,6 +3961,7 @@
 <string name="device_lab_tally">%1$d work · %2$d faulty · %3$d not tried</string>
     <string name="device_lab_result_go">Go to the test</string>
     <string name="device_lab_record">Record the result: %1$s</string>
+<string name="device_lab_next">Next untested: %1$s</string>
 <string name="device_lab_section_charge">Charging test</string>
 <string name="device_lab_charge_desc">Six seconds of measurement: what the battery actually gains or loses. Direction comes from the charge counter, not from the gauge\'s sign.</string>
 <string name="device_lab_charge_flow">Flow</string>

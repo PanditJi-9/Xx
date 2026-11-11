@@ -136,3 +136,16 @@ internal fun LabTestId.toolSection(): LabToolSection = when (this) {
     LabTestId.MICROPHONE, LabTestId.TORCH, LabTestId.SENSORS, LabTestId.BATTERY ->
         LabToolSection.Hardware
 }
+
+/**
+ * **الاختبار التالي الذي لم يُجرَّب — أو `null` إن جُرِّبت القائمة كلها.**
+ *
+ * والعدّاد يقول «كم بقي» ولا يقول «أيّها». فمن يفتح المختبر بعد أسبوع يرى «٩ لم تُجرَّب»
+ * ويبدأ من أعلى الشبكة كل مرّة، فيعيد ما جرّبه أو يتوقّف. وهذه الدالّة تُسمّي التالي بترتيب
+ * الجدول نفسه: ترتيب ثابت لا يتغيّر بين فتحتين، فالمستخدم يكمل من حيث انتهى.
+ *
+ * والحدّ المُعلَن: الترتيب هو ترتيب `LabTestId.entries` لا «الأهمّ أولًا» — لأن ترتيب أهمية
+ * يخضع لرأي، وترتيب الجدول حقيقة واحدة يراها المستخدم في الشبكة نفسها.
+ */
+fun nextUntried(outcomes: Map<LabTestId, LabOutcome>): LabTestId? =
+    LabTestId.entries.firstOrNull { (outcomes[it] ?: LabOutcome.NOT_RUN) == LabOutcome.NOT_RUN }

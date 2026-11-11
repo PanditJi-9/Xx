@@ -8,6 +8,7 @@ package nd.max.ui.subscreens
 import java.io.File
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Assume.assumeTrue
 import org.junit.Test
@@ -139,6 +140,26 @@ class DeviceLabTestsTest {
             "إغلاق الأداة لا يعيد حوار الحكم",
             source.contains("labTarget = pendingVerdict"),
         )
+    }
+
+    @Test
+    fun `an untouched lab starts at the first card of the table`() {
+        assertEquals(LabTestId.entries.first(), nextUntried(emptyMap()))
+    }
+
+    @Test
+    fun `a judged card is skipped, whatever the verdict`() {
+        val outcomes = mapOf(
+            LabTestId.SCREEN to LabOutcome.PASSED,
+            LabTestId.TOUCH to LabOutcome.FAILED,
+        )
+        assertEquals(LabTestId.entries[2], nextUntried(outcomes))
+    }
+
+    @Test
+    fun `a finished lab has no next test at all`() {
+        val all = LabTestId.entries.associateWith { LabOutcome.PASSED }
+        assertNull(nextUntried(all))
     }
 
     /** يقرأ ملف الشاشة من شجرة المصادر، ويُعلن التخطّي حين لا تُوجد (تشغيل من حزمة APK). */

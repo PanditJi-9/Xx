@@ -171,6 +171,10 @@ fun DeviceLabScreen(navController: NavHostController) {
         labOutcomes(labRecords.mapValues { it.value.outcome })
     }
     val tally = remember(labResults) { labTally(labResults) }
+    // **والعدّاد يقول «كم» وهذه تقول «أيّها»:** من يفتح المختبر بعد أسبوع يرى «٩ لم تُجرَّب»
+    // ويبدأ من أعلى الشبكة فيعيد ما جرّبه. والصفّ التالي يُسمّي التالي بترتيب الجدول نفسه،
+    // فيكمل المستخدم من حيث انتهى — ويختفي وحده حين تُجرَّب القائمة كلها.
+    val next = remember(labResults) { nextUntried(labResults) }
     var labTarget by remember { mutableStateOf<LabTestId?>(null) }
     // **ومراسي الأقسام:** من ضغط بطاقةً بلا نافذة ينزل إلى أداتها في الصفحة نفسها،
     // فيحتاج موضعًا يُطلب إظهاره. مرساةٌ لكل قسم من الثمانية، والحارس النصّي يمنع قسمًا بلا مرساة.
@@ -216,6 +220,21 @@ fun DeviceLabScreen(navController: NavHostController) {
                     ),
                     icon = Icons.Rounded.Check,
                     iconTone = if (tally.faulty > 0) MaxTone.Caution else MaxTone.Positive,
+                )
+            }
+            // **والاختبار التالي بضغطة:** لا يظهر إلّا إن بقي اختبار بلا تجربة، فوجوده نفسه
+            // يقول «بقي شيء»، وغيابه يقول «انتهيت» بلا نصّ إضافي.
+            if (next != null) {
+                MaxNavigationRow(
+                    title = stringResource(R.string.device_lab_next, stringResource(next.titleRes)),
+                    icon = next.icon,
+                    iconTone = MaxTone.Accent,
+                    onClick = {
+                        // ولا بطاقة معلّقة تُحمل مع فتحة من الشبكة: الصفّ يفتح حوار الحكم
+                        // مباشرةً، فلا زرّ تسجيل يبقى في قسم بعد إغلاقه.
+                        pendingCard = null
+                        labTarget = next
+                    },
                 )
             }
             MaxCardGrid(

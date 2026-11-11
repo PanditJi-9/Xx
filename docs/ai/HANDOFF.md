@@ -114,6 +114,41 @@ MaxManager has a strong engine and a fragmented surface. `core/maxai` + `core/ha
 **NEXT:** (١) CI: `:app:testReleaseUnitTest` + `:app:compileReleaseKotlin`. (٢) شريحة: علامة «يكتب» على
 صفوف التحكّم مشتقة من مسار المراجِع. (٣) شريحة: موجد واحد بالاسم والقصد. (٤) تعميم `MaxDataTrust`
 على كل قيمة غير متدفّقة. (٥) قرار مالك: حذف `StoryboardHome` أو إعادته.
+### ROUND-CLOSE-59 — العدّاد يقول «كم»، والصفّ يقول «أيّها» — 2026-11-11 · DONE_WITH_CONCERNS
+
+**TASK:** ROUND-CLOSE-55 أعطت المختبر حصيلة («٣ يعمل · ١ معطوب · ٩ لم يُجرَّب»)، لكن الحصيلة
+لا تُسمّي الباقي. فمن فتح المختبر بعد أسبوع يبدأ من أعلى الشبكة كل مرّة، فيعيد ما جرّبه أو يتوقّف.
+
+**SEARCH FIRST (§0.5):** وُجد `labTally` تحسب الأعداد، و`LabTestId.entries` هو ترتيب الشبكة
+نفسها. لم يوجد شيء يُسمّي التالي ⇒ أُضيفت دالّة واحدة فوق الجدول نفسه، لا قائمة ثانية ولا
+«قائمة موصى بها» تُصان يدويًّا.
+
+**SHIPPED:**
+- `ui/subscreens/DeviceLabTests.kt`: `fun nextUntried(outcomes: Map<LabTestId, LabOutcome>): LabTestId?`
+  = `LabTestId.entries.firstOrNull { (outcomes[it] ?: NOT_RUN) == NOT_RUN }`. والحدّ مُعلَن في
+  KDoc: الترتيب ترتيب الجدول لا «الأهمّ أولًا» — ترتيب الأهمية رأي، وترتيب الجدول حقيقة يراها
+  المستخدم في الشبكة.
+- `DeviceLabScreen.kt`: `val next = remember(labResults) { nextUntried(labResults) }` بجوار
+  `tally`، وصفّ `MaxNavigationRow` **تحت صفّ العدّاد** يظهر فقط إن `next != null`، بأيقونة
+  البطاقة نفسها (`next.icon`) ونصّها (`next.titleRes`)، وفتحه `pendingCard = null; labTarget = next`.
+  ⇒ وجود الصفّ يقول «بقي شيء»، وغيابه يقول «انتهيت» بلا نصّ إضافي.
+- نصّ `device_lab_next` en («Next untested: %1$s») / ar («التالي بلا تجربة: %1$s»).
+- ٣ اختبارات في `DeviceLabTestsTest`: مختبر بكر ⇒ أول الجدول · المحكوم يُتخطّى (PASSED وFAILED
+  معًا) ⇒ الثالث · كلّها محكومة ⇒ `null`.
+
+**MEASURED:** `kt_balance --assert` = **٣٣٥٠ ملفًا · عوائق ٠** · `@Test` في الملفّ **١٨ ← ٢١**.
+
+**GATES:** تُشغَّل في هذه الجولة (shell `sh_1c9e6aa7b0017DC7zRs71Y9rhR`) — تُقرأ قبل الالتزام.
+
+**BUILD:** لا يُدّعى. آخر حكم مقروء: `9145f2b0` (ROUND-CLOSE-58) **success** `42991277850` ·
+docs `42991277866` success.
+
+**RESIDUAL RISK:** «التالي» يعني «لم يُحكَم عليه» لا «لم يُقرأ» — فمن جرّب ولم يسجّل يراه أوّلًا
+(وهذا مقصود: الحكم إقراره لا استنتاجنا) · الترتيب ثابت لا يراعي خطورة العطب · الشكل وRTL
+**يحتاجان جهازًا** · الحارس نقيّ لا يراه الجهاز · لا مراجعة مستقلة.
+
+**NEXT:** قراءة حكم البناء، ثم شريحة تالية بقياس JVM.
+
 ### ROUND-CLOSE-58 — الحلقة تُغلق في طرفها الثاني: من الأداة إلى الحكم — 2026-11-11 · DONE_WITH_CONCERNS
 
 **TASK:** `ROUND-CLOSE-57` فتحت طريقًا من البطاقة إلى أداتها (نزول إلى القسم)، لكنها تركت
