@@ -156,7 +156,7 @@ fun ScreenFinderSheet(
             onSearch = {
                 screenFinderTopHit(query, targets)?.let { hit ->
                     query = ""
-                    onOpen(hit.destination)
+                    onOpen(screenFinderOpenTarget(hit))
                 }
             },
             modifier = Modifier
@@ -187,7 +187,7 @@ fun ScreenFinderSheet(
                                 target = target,
                                 onOpen = {
                                     query = ""
-                                    onOpen(target.destination)
+                                    onOpen(screenFinderOpenTarget(target))
                                 },
                             )
                         }
@@ -218,7 +218,7 @@ fun ScreenFinderSheet(
                                 target = target,
                                 onOpen = {
                                     query = ""
-                                    onOpen(target.destination)
+                                    onOpen(screenFinderOpenTarget(target))
                                 },
                             )
                         }
@@ -260,7 +260,15 @@ private fun FinderRow(
     } else {
         null
     }
-    val facts = if (opens == null) target.role else target.role + FACT_SEPARATOR + opens
+    // **وسطرٌ لا يُفتح من هنا يقول من أين يبدأ** — قبل عدّاد الفتحات، لأن الشرط الذي يسبق
+    // الفتح أهمّ من عدده: «اختر التطبيق أوّلًا» تفسّر لماذا يقود الضغط إلى القائمة لا إلى
+    // الشاشة. وترتيب الوقائع هو ترتيب قراءتها: ما هي · من أين تُفتح · كم مرّة فتحتها.
+    val startsAt = if (target.opensFrom != null) {
+        stringResource(R.string.screen_finder_opens_from)
+    } else {
+        null
+    }
+    val facts = listOfNotNull(target.role, startsAt, opens).joinToString(FACT_SEPARATOR)
 
     MaxRow(
         title = target.title,

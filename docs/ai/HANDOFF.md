@@ -149,6 +149,64 @@ NeuralDashboardKit.kt:673:12 Syntax error: Expecting a top level declaration.
 **ما لم يُفقد:** `ui/component/PulseArt.kt` و`AmbientGlowCycle.kt` (حذف الملفّين الكاملين من ROUND-CLOSE-63)
 يبقيان محذوفين، وحارس مستوى الملفّ يبقى، وإصلاح استثناء `AppSettings` في `DestinationDoorTest` يبقى.
 
+### ROUND-CLOSE-71 — شاشة تحتاج تطبيقًا تُوجد ولا تُسقَط — 2026-11-11 · DONE_WITH_CONCERNS
+
+**TASK:** `screenFinderTargets` كانت تنتهي بـ`.filterNot { it.needsLaunchArgument }` — وهو حارس
+صحيح في أصله (لا صفّ يفتح تفصيل حزمة اسمها فارغ، ADR-07)، لكنه **أسقط ثلاث وجهات موجودة
+صامتةً**: `AppSettings` (`app_settings/{pkg}` · أبوها `Apps`) و`MaxBackup`
+(`max_backup?pkg={pkg}` · أبوها `Settings`) و`Permissions` (`max_perms?pkg={pkg}` · أبوها
+`Settings`). فمن كتب «إعدادات التطبيق» في المُوجِّد قرأ «لا نتيجة» وخرج بأنّ الشاشة **غير
+موجودة** — وهي من أكثر ما يُطلب. والعطب ليس في البحث بل في **الفهرس**: وجهة حقيقيّة غائبة عن
+الفهرس لا يمكن أن يجدها أي بحث.
+
+**SEARCH FIRST (§0.5):** النظير القائم هو الحارس نفسه (`needsLaunchArgument` + `launchRouteOf`)
+وشجرة السجلّ (`destination.parent`) — لم يُضَف جدول ثانٍ ولا قائمة أسماء. والقرار المعماريّ
+القائم «الأب الظاهر هو المكان الذي يُختار فيه الابن» هو نفسه ما يعتمد عليه `screenFinderWhereRes`
+(«أين تسكن»). فالسطر الجديد **يقول من أين يبدأ** بدل أن يُخفى: `opensFrom` = الأب، و
+`screenFinderOpenTarget` = دالّة واحدة تحكم ضغط الصفّ ومفتاح Enter معًا.
+
+**SHIPPED:**
+- `ui/mainscreens/ScreenFinderModel.kt`: حقل `opensFrom: MaxDestination? = null` في
+  `ScreenFinderTarget`؛ والفلترة صارت «تُسقَط فقط إذا كان المسار يحتاج معاملًا **وليس له أبٌ
+  ظاهر لا يحتاج معاملًا**»؛ و`screenFinderSuggestions` تستثني `opensFrom != null` (اقتراحٌ
+  يفتح قائمة التطبيقات بدلًا من الشاشة يُقرأ عطبًا)؛ ودالّة صافية
+  `screenFinderOpenTarget(target) = target.opensFrom ?: target.destination`.
+- `ui/mainscreens/ScreenFinderSheet.kt`: المواضع الثلاثة (Enter · صفّ الاقتراح · صفّ النتيجة)
+  تمرّ عبر `screenFinderOpenTarget`، وسطر الصفّ يضيف «اختر التطبيق أولًا» بين «ما تضبطه» و«كم
+  مرّة فتحتها».
+- نصوص **`values/` و`values-ar/` فقط** (§0.2): `screen_finder_opens_from` = «Pick the app
+  first» / «اختر التطبيق أولًا».
+- `test/.../ScreenFinderTest.kt`: `expectedFinderSize()` تتبع القاعدة الجديدة، واختبار
+  «الفهرس هو السجلّ» يؤكّد أن كل هدف يحتاج معاملًا له أبٌ لا يحتاج معاملًا، واختباران جديدان:
+  وجهة تحتاج تطبيقًا تُوجد ويُقال من أين تبدأ · ولا تُقترح كأنها تفتح نفسها.
+- KDoc رأس `ScreenFinderModel.kt` صُحّح: القرار ٢ كان يعلن الإسقاط، والسلوك صار الإبقاء مع
+  قيادة إلى البداية — وتركُ الوثيقة على حالها كان سيجعلها تكذب على قارئها.
+
+**MEASURED:** `kt_balance --assert` = **٣٣٥٦ ملفًا · عوائق ٠** · `i18n_coverage --assert` =
+**٨٤ + en · ٨٥ كودًا · تطابق الأكواد الثلاثة OK · عوائق ٠** · `design_tokens --assert` =
+**المجموع ٢٤٩ / السقف ٣٠٠** · `rtl_guard --assert` = **٤٦٠ ملفًا · ٠ مخالفة**.
+
+**GATES:** **١٤/١٤ exit 0 + DIFF_OK** — `kt_balance --assert` (٣٣٥٦/٠) و`--self-test` (١٧ حالة ·
+٠ إخفاق) · `code_health --assert` · `i18n_coverage --assert` و`--prune all --assert` ·
+`design_tokens --assert` · `gen_control_catalog --assert` (٨٨ مدخلًا · ١٦٢ مرشّحًا · ١٩ غير
+مُخطَّط) · `gen_catalog_schema --assert` · `jni_symbols --assert` (٢٣ تصريحًا · ٠ نواقص ·
+ثنائيات ٠ ⇒ طبقة `.so` غير مُتحقّقة) · `resource_compile --assert` (aapt2 حقيقي: كل مجلّدات
+الموارد تُترجم) · `license_audit --assert` · `test_platform_commands_jvm.py` (٢ ملفّان ·
+مجموعة ناجحة) · `rtl_guard --assert` · `git diff --check`. السجلّات في `/tmp/opencode/gates-71/`.
+
+**BUILD:** **الترجمة غير مُتحقّقة في هذه البيئة — الحكم من CI وحده.** لا بناء محليّ (§0.1 بأمر
+المالك)، والدفعة تُدفع إلى `main` ثم يُقرأ `conclusion`، وإن كان أحمر يُقرأ `--log-failed`.
+
+**RESIDUAL RISK:** ضغط صفّ «إعدادات التطبيق» يفتح **قائمة التطبيقات** لا الشاشة نفسها — وهو
+المقصود والمعلن في السطر، لكنّه **يحتاج جهازًا** ليُقرأ كما يُقصد (RTL · طول السطر · هل يلاحظ
+المستخدم أن عليه اختيار تطبيق). والاستبعاد من الاقتراحات يعني أن من يفتح هذه الشاشات كثيرًا لن
+يراها في «أكثر ما تفتحه» — لأنها لا تُفتح بضغطة واحدة أصلًا. وأبٌ يحتاج معاملًا بنفسه لا يُمرَّر
+ابنه (الحارس في الاختبار يمنع عودته صامتًا).
+
+**NEXT:** ع٥ في `PRODUCT-MAP` (١٤ وجهة بحالة استثنائية) صار أقلّها حدّة بعد هذه الجولة، وما بقي
+منها هو `hidden` (بأمر المالك) و`Advanced` (موسوم في السطر). والمرشّح التالي: تعميق سطحٍ
+وظيفيّ لا يُقاس بالبحث — والمفضّل ما لا يحتاج جهازًا لتأكيد منطقه.
+
 ### ROUND-CLOSE-70 — المضيف لا يُقترح لنفسه، والسقف لا يُقرأ نهاية — 2026-11-11 · DONE_WITH_CONCERNS
 
 **TASK:** ثلاثة عيوب مقيسة، كلّها في «قدرة تعمل لكنها لا تُصدَّق»:

@@ -16,10 +16,12 @@
  * 1. **المصدر هو السجلّ نفسه** (`MaxDestination.Visible`، وهي `All` ناقصَ ما أخفاه المالك) لا
  *    قائمة مكتوبة بيد: وجهة جديدة تُضاف في السجلّ تظهر في الفهرس بلا سطرٍ هنا، ولا يمكن أن يبقى
  *    في الفهرس وجهة محذوفة — ولا أن يعود سطحٌ مخفيٌّ من باب البحث.
- * 2. **والوجهة التي لا تُفتح بلا معرّف لا تُعرض.** `AppSettings` مسارها `app_settings/{pkg}`
- *    فلا قيمة افتراضية لمعرّفها، وعرضُها يعني ضغطة تفتح تفصيل حزمة اسمها فارغ — وهو الوعد
- *    الكاذب نفسه الذي يمنعه ADR-07 في الأرقام. تُستثنى بـ`needsLaunchArgument` (وهو الفحص
- *    الذي يفرضه `MaxNavActions.navigateTo` بحارس وقت التشغيل أيضًا).
+ * 2. **والوجهة التي لا تُفتح بلا معرّف تبقى في الفهرس، لكن فعلها يقود إلى بدايتها.**
+ *    `AppSettings` مسارها `app_settings/{pkg}` فلا قيمة افتراضية لمعرّفها — وكانت تُسقَط،
+ *    فيقرأ من كتب «إعدادات التطبيق» «لا نتيجة» ويخرج بأنّ الشاشة غير موجودة. والصواب: السطر
+ *    يبقى ويقول «اختر التطبيق أولًا»، وضغطه يفتح الأب الظاهر (قائمة التطبيقات) حيث يُختار —
+ *    لا تفصيل حزمة اسمها فارغ (وهو الوعد الكاذب الذي يمنعه ADR-07)، ولا صفٌّ بلا فعل.
+ *    ([ScreenFinderTarget.opensFrom] يحمل الأب، و[screenFinderOpenTarget] تحكم الفعل).
  * 3. **و«أين تسكن» من الشجرة لا من جدول ثانٍ:** أبُ الوجهة في السجلّ هو جواب «أين» (مجالها أو
  *    الإعدادات)، والتبويبات الأربعة تُعلن نفسها، ومن لا أب له يُفتح من الرئيسية. فلا خريطة
  *    موازية تنحرف عن السجلّ يومًا.
@@ -73,6 +75,16 @@ data class ScreenFinderTarget(
      * لا تُعرض أبدًا؛ تُطابَق فقط. والقائمة في [maxDestinationKeywords].
      */
     val keywords: List<String> = emptyList(),
+    /**
+     * الوجهة التي **تُفتح فعلًا** حين لا يُفتح هذا السطر نفسه.
+     *
+     * `app_settings/{pkg}` و`max_perms?pkg={pkg}` و`max_backup?pkg={pkg}` لا تُفتح بلا اسم
+     * حزمة، فكانت تُسقَط من الفهرس صامتةً: من كتب «إعدادات التطبيق» قرأ «لا نتيجة» وخرج
+     * بأنّ الشاشة غير موجودة. والصواب أن يُقال له من أين يبدأ: صفحة التطبيقات (أو الإعدادات)
+     * هي المكان الذي يُختار فيه التطبيق. فالسطر يبقى في الفهرس، **وفعله يقود إلى البداية**
+     * لا إلى الشاشة نفسها — ولا صفّ بلا فعل، ولا وعد بضغطة تفتح شيئًا آخر.
+     */
+    val opensFrom: MaxDestination? = null,
 )
 
 /**
@@ -99,11 +111,17 @@ fun screenFinderTargets(
         .filterNotNull()
         .toSet()
     return visible
-        .filterNot { it.needsLaunchArgument }
+        // **وما يحتاج معاملًا لا يُسقَط، بل يُذكر من أين يبدأ.** الشرط أن يكون له أبٌ ظاهر
+        // يُفتح بلا معامل — وإلا فلا مسار صادقًا، ويبقى الإسقاط أصدق من صفٍّ لا يقود إلى شيء.
+        .filter { destination ->
+            !destination.needsLaunchArgument ||
+                destination.parent?.let { it in visible && !it.needsLaunchArgument } == true
+        }
         .filterNot { it in passThrough }
         .map { destination ->
             ScreenFinderTarget(
                 destination = destination,
+                opensFrom = destination.parent?.takeIf { destination.needsLaunchArgument },
                 title = resolve(destination.titleRes),
                 role = resolve(maxDestinationRole(destination)),
                 where = resolve(screenFinderWhereRes(destination)),
@@ -204,6 +222,14 @@ fun screenFinderMatchCount(query: String, targets: List<ScreenFinderTarget>): In
 fun screenFinderTopHit(query: String, targets: List<ScreenFinderTarget>): ScreenFinderTarget? =
     screenFinderResults(query, targets, limit = 1).firstOrNull()
 
+/**
+ * **ما يفتحه السطر فعلًا.** سطرٌ لوجهة تحتاج معاملًا يقود إلى أبيه الظاهر (قائمة التطبيقات أو
+ * الإعدادات) حيث يُختار التطبيق؛ وما عدا ذلك يقود إلى وجهته. ودالّة واحدة تحكم هذا القرار
+ * كي لا يختلف سلوك مفتاح Enter عن سلوك الضغط على الصفّ.
+ */
+fun screenFinderOpenTarget(target: ScreenFinderTarget): MaxDestination =
+    target.opensFrom ?: target.destination
+
 /** كم صفًّا يُقترح قبل أن يكتب المستخدم حرفًا — صفٌّ يُقرأ لا قائمةً تُمرَّر. */
 const val SCREEN_FINDER_SUGGESTIONS = 4
 
@@ -224,7 +250,9 @@ fun screenFinderSuggestions(
     limit: Int = SCREEN_FINDER_SUGGESTIONS,
     exclude: Set<String> = emptySet(),
 ): List<ScreenFinderTarget> = targets
-    .filter { it.usage > 0 && it.destination.route !in exclude }
+    // **وما لا يُفتح من هنا لا يُقترح:** «أكثر ما تفتحه» يعني الضغط عليه يفتحه. وصفٌّ يفتح
+    // قائمة التطبيقات بدلًا منه يُقرأ عطبًا لا اقتراحًا — فيُبقى للبحث وحده، حيث يُشرح سببه.
+    .filter { it.usage > 0 && it.opensFrom == null && it.destination.route !in exclude }
     .sortedWith(
         compareByDescending<ScreenFinderTarget> { it.usage }.thenBy { maxSearchFold(it.title) }
     )
