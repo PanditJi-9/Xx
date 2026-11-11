@@ -122,6 +122,9 @@ fun FasScreen(navController: NavController) {
                             // **والفشل لا يُقرأ صفرًا:** «لا شيء بعد» معلومة، و«تعذّرت القراءة»
                             // أخرى — وخلطهما يجعل المستخدم يظنّ سجلّه فارغًا وهو غير مقروء.
                             library.failed -> stringResource(R.string.fas_custom_rates_failed)
+                            // **و`null` ليس صفرًا:** تصل هنا فقط إن أعلن المصدر «غير معروف» بلا
+                            // `loading`/`failed` (حالة لا تُختلق). فتُقال الحقيقة نفسها: العدد مجهول.
+                            customCount == null -> stringResource(R.string.fas_custom_rates_failed)
                             customCount == 0 -> stringResource(R.string.fas_custom_rates_none)
                             else -> stringResource(R.string.fas_custom_rates_count, customCount)
                         },

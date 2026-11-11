@@ -50,7 +50,6 @@ import nd.max.core.policy.DangerConsent
 import nd.max.ui.component.*
 import nd.max.ui.design.MaxAlpha
 import nd.max.ui.design.MaxBullets
-import nd.max.ui.design.MaxCardShell
 import nd.max.ui.design.MaxChoiceRow
 import nd.max.ui.design.MaxCondition
 import nd.max.ui.design.MaxConditionKind
