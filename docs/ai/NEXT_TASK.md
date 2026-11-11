@@ -1,3 +1,14 @@
+## ROUND-CLOSE-64 — ٢٣ تصريحًا ميتًا و٤٦٩ سطرًا — 2026-11-11 · DONE_WITH_CONCERNS
+
+**TASK:** الميت داخل الملفّات الحيّة، والحارس كان على مستوى الملفّ فقط.
+
+**SHIPPED:** حذف ١٣+٦+٤ تصريحًا من `GamePanelSurface`/`NeuralDashboardKit`/`CubeParts` · اختبار رابع
+`no declaration in ui component is dead inside a live file`.
+
+**MEASURED:** ٤٦٩ حذفًا · صفر مرجع مكسور · محاكاة الحارس = 0 ميت.
+
+**NEXT:** بقية تصريحات المسح (٩٧ اسمًا) خارج `ui/component`.
+
 ## ROUND-CLOSE-63 — نظافة الكود — 2026-11-11 · DONE_WITH_CONCERNS
 
 **TASK:** حذف ملفّين ميتين بكاملهما · تصحيح ادّعاءين كاذبين في `ContextBridge` · حارس يمنع عودة الميت.

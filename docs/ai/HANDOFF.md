@@ -114,6 +114,41 @@ MaxManager has a strong engine and a fragmented surface. `core/maxai` + `core/ha
 **NEXT:** (١) CI: `:app:testReleaseUnitTest` + `:app:compileReleaseKotlin`. (٢) شريحة: علامة «يكتب» على
 صفوف التحكّم مشتقة من مسار المراجِع. (٣) شريحة: موجد واحد بالاسم والقصد. (٤) تعميم `MaxDataTrust`
 على كل قيمة غير متدفّقة. (٥) قرار مالك: حذف `StoryboardHome` أو إعادته.
+### ROUND-CLOSE-64 — تصريحٌ لا يذكره أحدٌ ليس كودًا: ٢٣ تصريحًا و٤٦٩ سطرًا — 2026-11-11 · DONE_WITH_CONCERNS
+
+**TASK:** بعد ROUND-CLOSE-63 (الذي حذف ملفّين ميتين كاملين)، بقي الميت **داخل** ملفّات حيّة:
+`GamePanelSurface.kt` ١٣ تصريحًا · `NeuralDashboardKit.kt` ٦ · `CubeParts.kt` ٤. والحارس القائم
+يعمل على مستوى الملفّ فقط، فمرّت بصمت.
+
+**SEARCH FIRST (§0.5):** النظير هو `ComponentReachabilityTest` نفسه — وُسِّع باختبار واحد بدل بناء
+فاحص كود ميت ثانٍ. ولم يُستعمل أي أداة خارجية.
+
+**SHIPPED:**
+- `ui/component/GamePanelSurface.kt`: حذف `PANEL_MAX_WIDTH` · `PANEL_MAX_HEIGHT` · `TOOLS_WIDTH` ·
+  `TILE_HEIGHT` · `PanelEdge` · `RING_MIN` · `RING_MAX` · `FIXED_CHROME` · `PanelTop` · `PanelBottom` ·
+  `panelShape` · `PanelHeader` · `ProfileStrip` (٩٤ سطرًا).
+- `ui/component/NeuralDashboardKit.kt`: حذف `NeuralAreaPlot` · `NeuralLoadRibbon` · `NeuralFrequencyMeter` ·
+  `NeuralKpiTile` · `NeuralActionTile` · `NeuralExpandable` (٢٩١ سطرًا).
+- `ui/component/CubeParts.kt`: حذف `PillShape` · `StatusBit` · `CubeGauge` · `ViewToggle` (٨٤ سطرًا).
+- `test/.../ComponentReachabilityTest.kt`: اختبار رابع `no declaration in ui component is dead inside a
+  live file` — كل تصريح اسمه يظهر مرّة واحدة في `main` (أي سطر تعريفه وحده) يُسقط الحارس.
+
+**MEASURED:** `git diff --stat` = **٣ ملفّات · ٤٦٩ حذفًا · صفر إضافة** · `kt_balance` **٣٣٥٠/٠** ·
+`grep` على كل اسم محذوف في `manager/app/src` = **صفر** (لا مرجع مكسور) · محاكاة الحارس الجديد على
+الشجرة (عدّاد رموز واحد، O(n)) = **DEAD: 0** ⇒ يمرّ على الوضع الحالي · `design_tokens` ٢٤٩←**٢٤٦**
+(ثلاثة حرفيّات تصميم كانت داخل التصريحات المحذوفة) · `provenance_guard` ٤١٣٢/٠/٠.
+
+**GATES:** الإحدى عشرة كلّها exit 0 + `DIFF_OK` (shell `sh_1ca4244af001XRJVh8P639O3zj`).
+
+**BUILD:** `66d45399` success (MaxManager + docs). و`d242674c` دُفعت والبناء يعمل — **لا يُدّعى حكمه**.
+
+**RESIDUAL RISK:** الحارس عدّاد رموز نصّيّ لا يعرف الأنواع ولا الاستدعاء الانعكاسي ولا مراجع XML — فدالّة
+تُستدعى من XML أو بالانعكاس ستظهر «ميتة» وتُسقط الحارس، وهذا **مقصود**: يُلزم استثناءً صريحًا بدل صمت.
+والحذف شمل مكوّنات تصميم كانت تُرسم في نسخة سابقة من الشاشات — أعادتها ADR-18 ممنوعة، والحذف جائز
+لأنّ لا ذكر لها في الشجرة كلّها (main+test+debug) · الشكل النهائي **يحتاج جهازًا** · لا مراجعة مستقلة.
+
+**NEXT:** تصريحات ميتة خارج `ui/component` (المسح الأول أعطى ٩٧ اسمًا في الشجرة) — أو تعميق محور.
+
 ### ROUND-CLOSE-63 — نظافة الكود: ما لا يفتحه أحد، وما يكذب في تعليقه — 2026-11-11 · DONE_WITH_CONCERNS
 
 **TASK:** أربعة إصلاحات مترابطة في النظام نفسه (بقاعدة المالك: ٢–٣، وتُرفع إلى ٤–٥ إذا كانت في نظام
