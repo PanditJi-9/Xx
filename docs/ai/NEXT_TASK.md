@@ -1,3 +1,12 @@
+## ROUND-CLOSE-52 — نتائج المختبر تبقى — 2026-11-11 · DONE_WITH_CONCERNS
+
+**TASK:** حفظ حكم كل اختبار عتاد بعد إغلاق الشاشة، مع زمنه.
+
+**SHIPPED:** `LabRecord` + `LabResultStore` (SharedPreferences) · `labOutcomes` · وصل الشاشة ·
+`device_lab_result_last` en/ar · ١٠ اختبارات.
+
+**NEXT:** حكم البناء ثم M2.
+
 ## ROUND-CLOSE-51 — إصلاح حارس M1c — 2026-11-10 · DONE
 **TASK:** إصلاح `OwnerDecisionsGuardTest` ونطاقات صندوق الأدوات بعد فشل `f693ef18`.
 **SHIPPED:** نهايات الأب الصحيحة (`Settings, MaxRisk.Advanced)`) · حذف `control_tools_data` ومفتاحه.

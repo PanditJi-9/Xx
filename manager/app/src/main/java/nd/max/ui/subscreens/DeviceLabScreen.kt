@@ -53,6 +53,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.VolumeUp
 import androidx.compose.material.icons.rounded.BatteryChargingFull
 import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.History
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.FlashOn
 import androidx.compose.material.icons.rounded.Keyboard
@@ -113,6 +114,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.math.abs
 import nd.max.R
+import nd.max.core.lab.LabResultStore
 import nd.max.core.net.WifiChannel
 import nd.max.ui.util.WifiChannelReader
 import nd.max.ui.design.MaxCardData
@@ -128,6 +130,8 @@ import nd.max.ui.design.MaxSpace
 import nd.max.ui.design.MaxSwitchRow
 import nd.max.ui.design.MaxTone
 import nd.max.ui.theme.MonoValueStyleSmall
+import java.text.DateFormat
+import java.util.Date
 import java.util.Locale
 import kotlin.math.PI
 import kotlin.math.log10
@@ -157,7 +161,13 @@ fun DeviceLabScreen(navController: NavHostController) {
     var chargeAttempt by remember { mutableIntStateOf(0) }
     var openTest by remember { mutableStateOf<LabTest?>(null) }
     // نتيجة كل اختبار يضعها من جرّبه؛ الحوار يفتحها، والبطاقة تعرضها.
-    var labResults by remember { mutableStateOf<Map<LabTestId, LabOutcome>>(emptyMap()) }
+    // **وتُقرأ من المخزن لا من `remember`:** الحكم يبقى بعد إغلاق الشاشة وبعد إعادة
+    // التشغيل، فيعود المستخدم إلى ما جرّبه بدل أن يعيد كل اختبار ليعرف حكمه.
+    // والمخزن يحفظ ما كتبه هو، لا قياسًا آليًّا: التطبيق لا يسمع السماعة ولا يرى الشاشة.
+    var labRecords by remember { mutableStateOf(LabResultStore.load(context)) }
+    val labResults = remember(labRecords) {
+        labOutcomes(labRecords.mapValues { it.value.outcome })
+    }
     var labTarget by remember { mutableStateOf<LabTestId?>(null) }
 
     val speakerError = stringResource(R.string.device_lab_speaker_error)
@@ -362,16 +372,19 @@ fun DeviceLabScreen(navController: NavHostController) {
         LabResultDialog(
             test = test,
             outcome = labResults[test],
+            checkedAt = labRecords[test.name]?.atMs,
             onRun = {
                 labTarget = null
                 openTest = test.dialog()
             },
             onPick = { outcome ->
-                labResults = labResults + (test to outcome)
+                LabResultStore.set(context, test.name, outcome.name, System.currentTimeMillis())
+                labRecords = LabResultStore.load(context)
                 labTarget = null
             },
             onClear = {
-                labResults = labResults - test
+                LabResultStore.clear(context, test.name)
+                labRecords = LabResultStore.load(context)
                 labTarget = null
             },
             onDismiss = { labTarget = null },
@@ -1948,6 +1961,7 @@ private fun LabTestId.dialog(): LabTest? = when (this) {
 private fun LabResultDialog(
     test: LabTestId,
     outcome: LabOutcome?,
+    checkedAt: Long?,
     onRun: () -> Unit,
     onPick: (LabOutcome) -> Unit,
     onClear: () -> Unit,
@@ -1984,6 +1998,19 @@ private fun LabResultDialog(
                     title = stringResource(R.string.device_lab_result_clear),
                     icon = Icons.Rounded.RestartAlt,
                     onClick = onClear,
+                )
+            }
+            // **ومتى كان الحكم:** التاريخ يجعل النتيجة قابلة للتصديق — «يعمل» منذ شهر
+            // ليست «يعمل» الآن. والصفّ للقراءة فقط، فلا يُفتح بشيء.
+            if (checkedAt != null) {
+                MaxGroupDivider()
+                MaxRow(
+                    title = stringResource(
+                        R.string.device_lab_result_last,
+                        DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT)
+                            .format(Date(checkedAt)),
+                    ),
+                    icon = Icons.Rounded.History,
                 )
             }
             }

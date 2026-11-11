@@ -114,6 +114,37 @@ MaxManager has a strong engine and a fragmented surface. `core/maxai` + `core/ha
 **NEXT:** (١) CI: `:app:testReleaseUnitTest` + `:app:compileReleaseKotlin`. (٢) شريحة: علامة «يكتب» على
 صفوف التحكّم مشتقة من مسار المراجِع. (٣) شريحة: موجد واحد بالاسم والقصد. (٤) تعميم `MaxDataTrust`
 على كل قيمة غير متدفّقة. (٥) قرار مالك: حذف `StoryboardHome` أو إعادته.
+### ROUND-CLOSE-52 — نتائج المختبر تبقى بعد إغلاق الشاشة — 2026-11-11 · DONE_WITH_CONCERNS
+
+**TASK:** كان حكم كل اختبار عتاد يعيش في `remember` فيضيع بمجرّد الخروج من `DeviceLabScreen`،
+فيعيد المستخدم كل اختبار ليعرف ما جرّبه — والمختبر يصير عرضًا لا أداة.
+
+**MEASURED قبل:** `labResults` في `remember { mutableStateOf(emptyMap()) }` · صفر تخزين · صفر
+اختبار للتحويل · لا يظهر متى كان الحكم.
+
+**SHIPPED:**
+- `core/lab/LabRecord.kt`: `data class LabRecord(outcome: String, atMs: Long)` + `encodeLabRecord`
+  (`"outcome|atMs"`) + `decodeLabRecord` الذي **يرفض** المقطوع والمكتوب بيد (null · أجزاء ≠ ٢ ·
+  نتيجة فارغة · زمن غير رقمي · زمن ≤ ٠). بلا Android ⇒ يُقاس في JVM.
+- `core/lab/LabResultStore.kt`: `object` على `SharedPreferences("device_lab_results")`، مفتاح
+  `"test_" + testId`، ودواله `load` · `set` · `clear`. يحفظ **قرار من جرّب** لا قياسًا آليًّا
+  (ADR-07)، ولا يحفظ قراءات حيّة.
+- `DeviceLabScreen`: الحالة تُقرأ من المخزن، و`labOutcomes` تحوّلها إلى `Map<LabTestId, LabOutcome>`؛
+  `onPick`/`onClear` يكتبان ويعيدان التحميل؛ والحوار يعرض `checkedAt` بتاريخه.
+- `labOutcomes` في `DeviceLabTests.kt`: تُسقط المفتاح المجهول والرمز المجهول فتعود البطاقة «لم يُجرَّب».
+- نصوص en+ar فقط: `device_lab_result_last` («Last checked: %1$s» / «آخر فحص: %1$s»).
+- اختبارات: `LabRecordTest` (٧) + ٣ لـ`labOutcomes` في `DeviceLabTestsTest`.
+
+**MEASURED بعد:** `kt_balance` **٣٣٤٩/٠** · `i18n_coverage` ٨٥ كودًا/٠ عائق · بقية البوابات في
+سجلّ الجولة.
+
+**BUILD:** لا ادّعاء قبل قراءة الحكم.
+
+**RESIDUAL RISK:** بقاء القيمة بعد إعادة التشغيل يحتاج جهازًا (SharedPreferences الحقيقية) · الحكم
+إقرار مستخدم لا قياس آلي · صيغة التاريخ تتبع لغة الجهاز · لا مراجعة مستقلة.
+
+**NEXT:** قراءة حكم البناء، ثم M2.
+
 ### ROUND-CLOSE-51 — الحارس الذي أسقط M1c: نهاية السطر ونطاقٌ أُفرغ — 2026-11-10 · DONE
 
 **TASK:** قراءة حكم `f693ef18` وإصلاح ما أسقطه.

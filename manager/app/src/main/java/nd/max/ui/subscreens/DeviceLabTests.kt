@@ -63,3 +63,20 @@ enum class LabOutcome(@StringRes val labelRes: Int, val tone: MaxTone) {
     PASSED(R.string.device_lab_outcome_passed, MaxTone.Positive),
     FAILED(R.string.device_lab_outcome_failed, MaxTone.Caution),
 }
+
+/**
+ * يحوّل ما حُفظ إلى ما تعرضه البطاقة — **ومن لا يُعرف يُسقَط**.
+ *
+ * مفتاح مجهول (اختبار حُذف من الجدول) أو رمز نتيجة مجهول (نسخة أقدم كتبت رمزًا آخر)
+ * لا يُعرضان كحكم: يسقطان، فتعود البطاقة «لم يُجرَّب». وهذا أسلم من عرض كلمة لا معنى لها.
+ */
+internal fun labOutcomes(records: Map<String, String>): Map<LabTestId, LabOutcome> {
+    val byName = LabTestId.entries.associateBy { it.name }
+    val out = LinkedHashMap<LabTestId, LabOutcome>(records.size)
+    records.forEach { (testId, outcome) ->
+        val test = byName[testId] ?: return@forEach
+        val verdict = LabOutcome.entries.firstOrNull { it.name == outcome } ?: return@forEach
+        out[test] = verdict
+    }
+    return out
+}

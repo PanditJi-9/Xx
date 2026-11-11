@@ -54,6 +54,25 @@ class DeviceLabTestsTest {
         )
     }
 
+    @Test
+    fun `a saved record becomes a card verdict when both names are known`() {
+        val mapped = labOutcomes(mapOf("TOUCH" to "PASSED", "SCREEN" to "FAILED"))
+        assertEquals(LabOutcome.PASSED, mapped[LabTestId.TOUCH])
+        assertEquals(LabOutcome.FAILED, mapped[LabTestId.SCREEN])
+    }
+
+    @Test
+    fun `a test this build no longer has is dropped, not shown as a verdict`() {
+        val mapped = labOutcomes(mapOf("TELEPORT" to "PASSED", "TOUCH" to "PASSED"))
+        assertEquals(setOf(LabTestId.TOUCH), mapped.keys)
+    }
+
+    @Test
+    fun `an outcome this build does not know is dropped, not guessed`() {
+        val mapped = labOutcomes(mapOf("TOUCH" to "MAYBE", "SCREEN" to "PASSED"))
+        assertEquals(setOf(LabTestId.SCREEN), mapped.keys)
+    }
+
     /** يقرأ ملف الشاشة من شجرة المصادر، ويُعلن التخطّي حين لا تُوجد (تشغيل من حزمة APK). */
     private fun labScreenSource(): String {
         val root = listOf(

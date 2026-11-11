@@ -3957,6 +3957,7 @@
 <string name="device_lab_outcome_failed">Faulty</string>
 <string name="device_lab_result_run">Run the test</string>
 <string name="device_lab_result_clear">Clear result</string>
+<string name="device_lab_result_last">Last checked: %1$s</string>
 <string name="device_lab_section_charge">Charging test</string>
 <string name="device_lab_charge_desc">Six seconds of measurement: what the battery actually gains or loses. Direction comes from the charge counter, not from the gauge\'s sign.</string>
 <string name="device_lab_charge_flow">Flow</string>
