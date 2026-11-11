@@ -149,6 +149,72 @@ NeuralDashboardKit.kt:673:12 Syntax error: Expecting a top level declaration.
 **ما لم يُفقد:** `ui/component/PulseArt.kt` و`AmbientGlowCycle.kt` (حذف الملفّين الكاملين من ROUND-CLOSE-63)
 يبقيان محذوفين، وحارس مستوى الملفّ يبقى، وإصلاح استثناء `AppSettings` في `DestinationDoorTest` يبقى.
 
+### ROUND-CLOSE-69 — ما يُسجَّل يُمكن نسيانه — 2026-11-11 · DONE_WITH_CONCERNS
+
+**TASK:** ورقة المُوجِّد تعرض «أكثر ما تفتحه» من عدّاد حقيقي، وتكتب بجانب كل صفّ «opened N×» —
+**ولا طريق إلى نسيانه**. و`ScreenUsageStore.clear()` كانت مكتوبة وموثّقة (`يعيد كل الأعداد إلى
+الصفر`) و`grep` على مستهلكيها = **صفر** ⇒ دالّة مستحيلة الوصول، وسجلٌّ يُقرأ كأنه قدرٌ لا يُردّ.
+والعطب أسوأ من غياب الزرّ: المستخدم يرى التطبيق «يعرف عنه» ولا يملك تصحيح ذلك.
+
+**SEARCH FIRST (§0.5):** النظير القائم هو `max_files_history_clear` («Clear the history» /
+«مسح السجل») في درج الملفّات — فعل تدميريّ يجاور السجلّ الذي يمسحه، بتأكيد قبل التنفيذ. والنمط
+التقنيّ نفسه قائم في `LogsViewerScreen.kt` (`rememberConfirmDialog` في `:94` ← `showConfirm`
+في `:154` ← `ConfirmDialogHost` في `:529`). ⇒ **لم يُخترع نمط ثانٍ**، ولم تُنشأ حالة موازية:
+العدّاد واحد (`ScreenUsageStore`)، والاقتراح يُبنى منه في `screenFinderTargets`.
+
+**SHIPPED:**
+- `ui/util/ScreenUsageStore.kt`: الفلترة أُخرجت إلى `internal fun countsFrom(all: Map<String, Any?>)`
+  في الـ`companion object`، و`counts()` صارت `countsFrom(prefs.all)` سطرًا واحدًا. والفصل ليس
+  ترفًا: الملفّ `"settings"` يحمل **كل** مفاتيح الإعدادات (وضع MAX AI، الثيم، الاختيار اليدوي…)،
+  فالبادئة `screen_uses_` هي الحاجز الوحيد بين «ما فتحتَه» و«ما ضبطتَه» — ولو انزلق لظهر إعدادٌ
+  كأنه شاشة، ثم لم يُفتح. والقيمة غير `Int` تُهمَل: قراءتها عددًا اختراع.
+- `ui/mainscreens/ScreenFinderSheet.kt`: `var usageVersion by remember { mutableIntStateOf(0) }`
+  أُضيف إلى مفتاح `remember(context, visible, usageVersion)` — لأن `remember` لا يعيد القراءة بعد
+  المسح، فيبقى «أكثر ما تفتحه» معروضًا بعد أن مُسح (وهو أسوأ من ألّا يوجد زرّ: زرٌّ يقول «مُسح»
+  وقائمةٌ لا تفرغ). و`rememberConfirmDialog(onConfirm = { clear(); usageVersion++ })`.
+- `FinderLabel(text, action: String? = null, onAction: (() -> Unit)? = null)` صارت
+  `Row(SpaceBetween, CenterVertically)` والعنوان على اليمين والفعل على الطرف. **وهدف اللمس ٤٨dp**
+  بـ`minimumInteractiveComponentSize()` (نمط `LobbyChrome.kt:312` و`MaxAiEntryButton.kt`) والدائرة
+  المرئيّة تبقى نصًّا — لا حبّة ولا ظلّ (ADR-07).
+- الإجراء مُرَّر في **الموضعين** اللذين يظهر فيهما العنوان: فرع «لا نتيجة» (حيث تُعرض الاقتراحات
+  تحته) و`item(key = "screen_finder_recent")` في `LazyColumn`. وهو لا يظهر إلّا حين يوجد ما يُمسح:
+  الحالة `list.isEmpty() && query.isBlank()` تسبق `LazyColumn`، فبلوغه ببحث فارغ يعني اقتراحات
+  غير فارغة.
+- `ConfirmDialogHost(handle = forgetConfirm)` في نهاية `CustomBottomSheet` — **وبدونه لا يظهر
+  الحوار أبدًا** (`rememberConfirmDialog` يُنشئ الحالة، والمُضيف يرسمها)، فيصير الزرّ بلا فعل.
+- نصوص **في `values/` و`values-ar/` فقط** (§0.2): `screen_finder_forget` («Forget»/«انسَ») ·
+  `screen_finder_forget_confirm_title` («Forget what you open?»/«أنسى ما تفتحه؟») ·
+  `screen_finder_forget_confirm_body` — ومتن التأكيد **يسمّي ما لا يُمسّ**: «Nothing else is
+  touched — your settings and your choices stay» / «لا يُمسّ شيء آخر — إعداداتك واختياراتك تبقى»،
+  لأن المستخدم يخشى أن يمسح زرٌّ واحد إعداداته.
+
+**MEASURED:** `kt_balance --assert` = **٣٣٥٥ ملفًا · عوائق ٠** · `i18n_coverage --assert` =
+**٨٤ + en · ٨٥ كودًا · تطابق الأكواد الثلاثة OK · عوائق ٠** · `ScreenUsageStoreTest` = **٦ `@Test`**
+على `countsFrom` (البادئة وحدها تصير مسارات · `max_ai_mode`/`theme_mode` لا تظهر أبدًا · بادئة بلا
+مسار تُهمَل · `"12"`/`true`/`null` تُهمَل · `12_345` تُقرأ كما هي والسقف للكتابة فقط · مخزن فارغ
+أو غير ذي صلة لا يعطي شيئًا).
+
+**GATES:** **١٢/١٢ exit 0 + DIFF_OK** — `kt_balance --assert` (٣٣٥٥/٠) و`--self-test` (١٧ حالة · ٠ إخفاق) ·
+`code_health --assert` · `i18n_coverage --assert` (٠ عوائق · ٨٥ كودًا) و`--prune all --assert` ·
+`design_tokens --assert` · `gen_control_catalog --assert` (٨٨ مدخلًا) · `gen_catalog_schema --assert` ·
+`jni_symbols --assert` (٢٣ تصريحًا · ٠ نواقص · ثنائيات ٠ ⇒ طبقة `.so` غير مُتحقّقة) ·
+`resource_compile --assert` (aapt2 حقيقي: كل مجلّدات الموارد تُترجم) · `license_audit --assert`
+(لا GPL في مسار الإصدار) · `test_platform_commands_jvm.py` (صُرّف ٢ ملفًّا · مجموعة ناجحة) ·
+`rtl_guard --assert` · `git diff --check` = DIFF_OK. السجلّات في `/tmp/opencode/gates-69/`.
+
+**BUILD:** **الترجمة غير مُتحقّقة في هذه البيئة — الحكم من CI وحده.** لا بناء محليّ (§0.1 بأمر
+المالك: «لماذا تبني محليا ومن المفترض من خلال action github فقط؟»)، والدفعة تُدفع إلى `main` ثم
+يُقرأ `conclusion` من `gh run list`، وإن كان أحمر يُقرأ `--log-failed` ويُصلح في الدفعة نفسها.
+
+**RESIDUAL RISK:** شكل الصفّ (العنوان والفعل على طرف واحد) وموضع الحوار **يحتاج جهازًا** — RTL
+يقلب `SpaceBetween` تلقائيًّا لكنّه لم يُرَ على شاشة · `usageVersion` يعيد بناء الفهرس كلّه عند
+المسح (مرّة واحدة لكل مسح، لا في كل حرف) · المسح لا يمسّ `HomeDeckStore` ولا أي عدّاد آخر —
+مقصود ومُعلَن في متن التأكيد · `countsFrom` صارت `internal` فتُقاس في JVM، لكن `clear()` نفسها
+تظلّ غير مقيسة بلا جهاز (تعتمد `SharedPreferences.edit().apply()`) · لا مراجعة مستقلة.
+
+**NEXT:** قراءة البناء، ثم الشريحة التالية من `PRODUCT-MAP` (لا تُبنى شاشة جديدة: النظير القائم
+يُحسَّن، §0.5).
+
 ### ROUND-CLOSE-68 — ما يُقطع يُقال، والتقرير يعرّف جهازه ويؤرّخ أحكامه — 2026-11-11 · DONE_WITH_CONCERNS
 
 **TASK:** أربعة مواضع كانت **تقطع بلا إعلان** أو **تحكي بلا فاعل**، وكلّها في النظام نفسه:

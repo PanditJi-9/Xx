@@ -156,6 +156,9 @@
     <string name="screen_finder_more">%1$d more match — keep typing to narrow it.</string>
     <string name="screen_finder_where_bar">Bottom bar</string>
     <string name="screen_finder_recent">What you open most</string>
+    <string name="screen_finder_forget">Forget</string>
+    <string name="screen_finder_forget_confirm_title">Forget what you open?</string>
+    <string name="screen_finder_forget_confirm_body">The list of screens you open most is cleared. Nothing else is touched — your settings and your choices stay.</string>
     <string name="logs_visible_count">%1$d shown</string>
     <!-- العدّاد الواحد: يقرؤه المُوجِّد ومنصة التحكم معًا، فلا يقول أحدهما غير ما يقوله الآخر. -->
     <string name="screen_opens_count">opened %1$d×</string>

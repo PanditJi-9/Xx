@@ -113,6 +113,9 @@
     <string name="screen_finder_more">%1$d نتيجة أخرى — أكمل الكتابة لتضييقها.</string>
     <string name="screen_finder_where_bar">الشريط السفلي</string>
     <string name="screen_finder_recent">أكثر ما تفتحه</string>
+    <string name="screen_finder_forget">انسَ</string>
+    <string name="screen_finder_forget_confirm_title">أنسى ما تفتحه؟</string>
+    <string name="screen_finder_forget_confirm_body">تُمسح قائمة الشاشات التي تفتحها أكثر. لا يُمسّ شيء آخر — إعداداتك واختياراتك تبقى.</string>
     <string name="logs_visible_count">%1$d معروض</string>
     <!-- العدّاد الواحد: يقرؤه المُوجِّد ومنصة التحكم معًا، فلا يقول أحدهما غير ما يقوله الآخر. -->
     <string name="screen_opens_count">فُتحت %1$d مرة</string>
