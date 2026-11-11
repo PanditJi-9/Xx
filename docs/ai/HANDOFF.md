@@ -114,6 +114,38 @@ MaxManager has a strong engine and a fragmented surface. `core/maxai` + `core/ha
 **NEXT:** (١) CI: `:app:testReleaseUnitTest` + `:app:compileReleaseKotlin`. (٢) شريحة: علامة «يكتب» على
 صفوف التحكّم مشتقة من مسار المراجِع. (٣) شريحة: موجد واحد بالاسم والقصد. (٤) تعميم `MaxDataTrust`
 على كل قيمة غير متدفّقة. (٥) قرار مالك: حذف `StoryboardHome` أو إعادته.
+### ROUND-CLOSE-53 — كل شاشة رئيسية تسمّي نوعها، والحارس يمنع الاسم المجهول — 2026-11-11 · DONE
+
+**TASK:** `DESIGN.md` §Screen Composition يفرض «اختر النوع قبل التخطيط»، وكانت شاشتان فقط من الستّ
+الكبرى تسمّي نوعها في KDoc. فالباقي يُرسم بلا كائن معلن، ويُضاف حارس يمنع نسيان النوع أو اختراع اسم.
+
+**MEASURED قبل:** `HomeScreen` و`ControlScreen` فقط فيهما `**Screen card — archetype: …**`.
+`SettingsScreen` · `ApplistScreen` · `DiagnosticsScreen` · `MaxAiScreen` بلا بطاقة (والأنواع التي
+عُثر عليها فيها كانت أسماء مكوّنات: `ThemeStudio` · `CapabilityMatrixCard` · `ChargeLedger`).
+
+**SHIPPED:**
+- بطاقة نوع بعد ترويسة الترخيص في الأربعة، بنمط القائم:
+  `Settings` **Library** (كل تفضيل يملكه التطبيق · حاملها مجموعات الصفوف المعنونة) ·
+  `Applist` **Library** (الحزم المثبَّتة · حاملها القائمة المرشَّحة) ·
+  `Diagnostics` **Matrix** (ما يكشفه الجهاز وما يقوله الدليل · حاملها مصفوفة القدرات) ·
+  `MaxAi` **Console** (حالة المستشار · حاملها لوحة التحكّم فوق سجلّ الاقتراحات).
+- حارس جديد `ScreenArchetypeTest`: كل شاشة من الستّ تسمّي نوعًا من السبعة، والبطاقة تسبق
+  `fun <Screen>(` الذي تصفه. `assumeTrue` عند تعذّر العثور على المصادر (تشغيل من حزمة APK).
+
+**MEASURED بعد:** الستّة كلها بنوع مسمّى: `Home` Matrix · `Control` Matrix · `Settings` Library ·
+`Applist` Library · `MaxAi` Console · `Diagnostics` Matrix — وكلّها من السبعة في `DESIGN.md`.
+
+**GATES:** `kt_balance` **٣٣٥٠/٠** · `code_health` نظيفة · `i18n_coverage` عوائق ٠ و`--prune all`
+٨٤ لغة/٠ يتيم · والباقي يُقرأ قبل الدفع.
+
+**BUILD:** غير مُتحقّقة على هذه الدفعة؛ حكم `0ba31545` (نتائج المختبر) قيد التشغيل ولم يُقرأ.
+
+**RESIDUAL RISK:** الحارس نصّيّ لا بصريّ · التصنيف قرار تحريريّ قابل للنقض · الشكل النهائي
+وRTL والأحجام **تحتاج جهازًا** · لا مراجعة مستقلة.
+
+**NEXT:** بحث يرشّح صفوف الإعدادات — نوع Library يفرض «search and filters first»، والإعدادات
+اليوم قائمة طويلة بلا مرشّح.
+
 ### ROUND-CLOSE-52 — نتائج المختبر تبقى بعد إغلاق الشاشة — 2026-11-11 · DONE_WITH_CONCERNS
 
 **TASK:** كان حكم كل اختبار عتاد يعيش في `remember` فيضيع بمجرّد الخروج من `DeviceLabScreen`،

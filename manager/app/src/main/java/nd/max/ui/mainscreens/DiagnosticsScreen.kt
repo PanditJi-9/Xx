@@ -13,6 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/*
+ * **Screen card — archetype: Matrix · object: what this device exposes and what
+ * the evidence says · carrying element: the capability matrix.** Many items are
+ * judged by the same few axes, so one shared legend governs the grid and the
+ * detail opens per item. The tools section below it is navigation, not evidence:
+ * a row there opens the screen that owns the reading.
+ */
 
 @file:OptIn(ExperimentalMaterial3Api::class)
 

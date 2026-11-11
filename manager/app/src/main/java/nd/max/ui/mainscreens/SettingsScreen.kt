@@ -13,6 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/*
+ * **Screen card — archetype: Library · object: every preference this app owns ·
+ * carrying element: the titled groups of rows.** The person arrives looking for
+ * one switch among many, so the page is a browsable collection, not a form: rows
+ * are dense, every group title is an index entry, and the detail lives on the
+ * screen a row opens. Nothing here reports live state — a reading belongs to the
+ * screen that owns it, and a preference is not a measurement.
+ */
 
 @file:OptIn(ExperimentalMaterial3Api::class)
 

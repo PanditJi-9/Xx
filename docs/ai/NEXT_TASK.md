@@ -1,3 +1,12 @@
+## ROUND-CLOSE-53 — نوع الشاشة مسمّى ومحروس — 2026-11-11 · DONE
+
+**TASK:** تسمية نوع كل شاشة رئيسية في KDoc + حارس يمنع الغياب والاسم المجهول.
+
+**SHIPPED:** بطاقات `Library`/`Library`/`Matrix`/`Console` في `Settings` · `Applist` · `Diagnostics` ·
+`MaxAi` · `ScreenArchetypeTest` (نوع من السبعة + البطاقة قبل الـcomposable).
+
+**NEXT:** بحث يرشّح صفوف الإعدادات (Library: search and filters first).
+
 ## ROUND-CLOSE-52 — نتائج المختبر تبقى — 2026-11-11 · DONE_WITH_CONCERNS
 
 **TASK:** حفظ حكم كل اختبار عتاد بعد إغلاق الشاشة، مع زمنه.
