@@ -1,3 +1,23 @@
+## ROUND-CLOSE-73 — الخطأ الذي أوقف البناء، وعدٌّ لا يُدَّعى — 2026-11-11 · DONE_WITH_CONCERNS
+
+**TASK:** `98152542` فشل في `compileReleaseKotlin` بثلاثة مراجع `MaxTone.Warning` غير موجودة (1918 · 1930 ·
+1937)؛ ولم تُشغَّل اختبارات. ومعه: `FasScreen` لا تقول كم تطبيقًا له معدّل محفوظ.
+
+**SEARCH FIRST (§0.5):** `MaxTone` ستّ قيم فقط و`Caution` هو التحذير القائم — لا قيمة جديدة ولا توكنز.
+والعدّ من `GameProfileRepository` نفسه، لا مصدر ثانٍ.
+
+**SHIPPED:** `Warning ⇒ Caution` ×٣ · `FasRates.kt` (قراءة مطابقة للمطبّق، عدّ، `null` عند loading/failed) ·
+صفّ العدد قبل رابط التطبيقات · ٥ نصوص en/ar · `FasRatesTest` ١٠ `@Test`.
+
+**MEASURED:** `kt_balance` ٣٣٦٢·٠ · `i18n` ٨٤+en·٠ يتيم · `design_tokens` ٢٤٩/٣٠٠ · `code_health` نظيف ·
+`rtl_guard` ٤٦٢·٠ · تدقيق الألوان: صفر مخالف.
+
+**GATES:** ١٤/١٤ exit 0 + DIFF_OK (`/tmp/opencode/gates-73-final/`)؛ `repo_audit` PROBLEMS 1 سابق للدفعة.
+
+**BUILD:** الترجمة غير مُتحقّقة في هذه البيئة — الحكم من CI وحده.
+
+**NEXT:** قراءة حكم `main`؛ ثم عود نظامية (M2/M3) لا تلميع شاشة.
+
 ## ROUND-CLOSE-72 — ما لم يُطبَّق يُقال، والتاريخ لا يُختلق — 2026-11-11 · DONE_WITH_CONCERNS
 
 **TASK:** `InAppPlan.skipped` يحمل سبب كل مفتاح لم يُطبَّق، وكان يذهب إلى السجلّ وحده — فالواجهة تقول

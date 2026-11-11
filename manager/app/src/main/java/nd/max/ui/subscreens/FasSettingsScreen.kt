@@ -16,8 +16,12 @@
 
 package nd.max.ui.subscreens
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Speed
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
@@ -27,6 +31,7 @@ import androidx.navigation.NavController
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import nd.max.PerAppRefreshRateController
+import nd.max.core.gamespace.GameProfileRepository
 import nd.max.R
 import nd.max.ui.component.ScreenAccentProvider
 import nd.max.ui.design.MaxBullets
@@ -53,6 +58,14 @@ import nd.max.ui.navigation.MaxDestination
 @Composable
 fun FasScreen(navController: NavController) {
     val context = LocalContext.current
+    // مصدر الإعدادات المحفوظة نفسه؛ العدد ليس شهادة تطبيق أو تحقّق قراءة مرتجعة.
+    val library by GameProfileRepository.state.collectAsState()
+    LaunchedEffect(library.loading) {
+        if (library.loading) GameProfileRepository.load()
+    }
+    val customCount = remember(library.profiles, library.loading, library.failed) {
+        customRefreshCount(library.profiles, library.loading, library.failed)
+    }
     // القراءة تمرّ بمسار الصدفة على بعض الأنظمة؛ فتُنفَّذ مرة عند الدخول لا في كل إعادة تركيب.
     val state by produceState<FasState?>(initialValue = null, key1 = context) {
         value = withContext(Dispatchers.IO) {
@@ -99,6 +112,23 @@ fun FasScreen(navController: NavController) {
                 description = stringResource(R.string.fas_per_app_desc),
             ) {
                 MaxGroup {
+                    // **العدد قبل الرابط:** من رأى «اختر تطبيقًا» وحدها لم يعرف إن كان في
+                    // السجلّ شيء أصلًا. والعدد يقول الحقيقة من المصدر مباشرة — وصفرًا يعني
+                    // «لا شيء بعد» لا «لا يعمل».
+                    MaxRow(
+                        title = stringResource(R.string.fas_custom_rates_title),
+                        subtitle = when {
+                            library.loading -> stringResource(R.string.fas_custom_rates_reading)
+                            // **والفشل لا يُقرأ صفرًا:** «لا شيء بعد» معلومة، و«تعذّرت القراءة»
+                            // أخرى — وخلطهما يجعل المستخدم يظنّ سجلّه فارغًا وهو غير مقروء.
+                            library.failed -> stringResource(R.string.fas_custom_rates_failed)
+                            customCount == 0 -> stringResource(R.string.fas_custom_rates_none)
+                            else -> stringResource(R.string.fas_custom_rates_count, customCount)
+                        },
+                        icon = Icons.Rounded.Speed,
+                        iconTone = if ((customCount ?: 0) > 0) MaxTone.Accent else MaxTone.Neutral,
+                    )
+                    MaxGroupDivider()
                     MaxNavigationRow(
                         title = stringResource(R.string.fas_open_apps),
                         subtitle = stringResource(R.string.fas_open_apps_desc),

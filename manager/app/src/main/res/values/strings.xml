@@ -4289,6 +4289,11 @@
     <string name="fas_per_app_title">Per-app override</string>
     <string name="fas_per_app_desc">Each app profile pins its rate, restored on leave.</string>
     <string name="fas_open_apps">Choose an app</string>
+    <string name="fas_custom_rates_title">Apps with a saved rate</string>
+    <string name="fas_custom_rates_reading">Reading the app list…</string>
+    <string name="fas_custom_rates_none">None yet — set one from the Display tab of an app</string>
+    <string name="fas_custom_rates_failed">The app list could not be read — the count is unknown</string>
+    <string name="fas_custom_rates_count">%1$d apps have a saved refresh rate — not proof it is applied</string>
     <string name="fas_open_apps_desc">Open the app list, then the settings of an app, to set its rate.</string>
     <string name="fas_limits_title">What this screen can and cannot promise</string>
     <string name="fas_limits_body">A rate is written only through a privileged lane (root or Shizuku). Without one the choice stays stored and is not reported as applied; the value above is what the system reports now, not what was requested.</string>

@@ -4231,6 +4231,11 @@
     <string name="fas_per_app_title">تجاوز لكل تطبيق</string>
     <string name="fas_per_app_desc">كل ملف تطبيق يثبّت معدّله، ويُعاد عند المغادرة.</string>
     <string name="fas_open_apps">اختر تطبيقًا</string>
+    <string name="fas_custom_rates_title">تطبيقات لها معدّل محفوظ</string>
+    <string name="fas_custom_rates_reading">يُقرأ سجلّ التطبيقات…</string>
+    <string name="fas_custom_rates_none">لا شيء بعد — اضبطه من تبويب «العرض» في أي تطبيق</string>
+    <string name="fas_custom_rates_failed">تعذّرت قراءة سجلّ التطبيقات — العدد غير معروف</string>
+    <string name="fas_custom_rates_count">%1$d تطبيقًا له معدّل تحديث محفوظ — ليس دليلًا على تطبيقه</string>
     <string name="fas_open_apps_desc">افتح قائمة التطبيقات ثم إعدادات التطبيق لتحديد معدّله.</string>
     <string name="fas_limits_title">ما يمكن لهذه الشاشة أن تَعِد به وما لا يمكن</string>
     <string name="fas_limits_body">لا يُكتب المعدّل إلا عبر مسار مُميَّز (جذر أو Shizuku). بلا مسار يبقى الاختيار محفوظًا ولا يُعلن مطبَّقًا؛ والقيمة أعلاه ما يعلنه النظام الآن، لا ما طُلب.</string>

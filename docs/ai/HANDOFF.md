@@ -149,6 +149,61 @@ NeuralDashboardKit.kt:673:12 Syntax error: Expecting a top level declaration.
 **ما لم يُفقد:** `ui/component/PulseArt.kt` و`AmbientGlowCycle.kt` (حذف الملفّين الكاملين من ROUND-CLOSE-63)
 يبقيان محذوفين، وحارس مستوى الملفّ يبقى، وإصلاح استثناء `AppSettings` في `DestinationDoorTest` يبقى.
 
+### ROUND-CLOSE-73 — الخطأ الذي أوقف البناء، وعدٌّ لا يُدَّعى — 2026-11-11 · DONE_WITH_CONCERNS
+
+**TASK:** أوقف البناء المدفوع `98152542` (`43048246184`) عند الترجمة لا عند الاختبار: السجلّ يقول
+`compileReleaseKotlin FAILED` وثلاثة مراجع غير محلولة `MaxTone.Warning` في `AppSettingsScreen.kt`
+(1918 · 1930 · 1937) داخل البطاقة المضافة في الجولة ٧٢. فلم تُشغَّل اختبارات تلك الدفعة أصلًا. ومع الإصلاح،
+عُولج عطب الشاشة نفسه: `FasScreen` كانت تعرض المعدّل الحالي والمدعوم ورابطًا، ولا تجيب سؤالها —
+«هل تعمل FAS لأجلي؟» — لأنها لا تقول كم تطبيقًا له معدّل محفوظ.
+
+**SEARCH FIRST (§0.5):** `MaxTone` في `MaxTokens.kt:435–453` ستّ قيم فقط: `Neutral · Accent · Positive ·
+Caution · Critical · Inactive` — لا `Warning`. فلم تُضَف قيمة جديدة (تغيير توكنز خارج النطاق، والتوهجات
+ثابتة بأمر `DESIGN.md`)، بل استُخدم `Caution` القائم للتحذير. والعدّ لم يُبنَ من قراءة ملفّ ثانٍ: مصدره
+`GameProfileRepository.state.profiles` نفسه الذي يقرأه `InAppProfileApplier`، فلا مصدر حقيقة ثانٍ (ADR-11/18).
+
+**SHIPPED:**
+- **`AppSettingsScreen.kt`** — المواضع الثلاثة `MaxTone.Warning` ⇒ `MaxTone.Caution`. **هذا وحده ما كان
+  يمنع الترجمة**، وهو أول ما يحكم عليه CI في هذه الدفعة.
+- **`ui/subscreens/FasRates.kt` (جديد)** — `customRefreshHz(raw)` تقرأ القيمة كما يقرأها المطبّق الداخلي
+  (`toFloatOrNull()` ثم `toInt()`، مع رفض اللانهائي و`NaN` و`<= 0` و`"default"` والفراغ)، و
+  `customRefreshPackages(profiles)` تُرجع المفاتيح ذات المعدّل المحفوظ مرتّبة، و
+  `customRefreshCount(profiles, loading, failed): Int?` تُعيد `null` أثناء التحميل أو بعد الفشل.
+- **`FasSettingsScreen.kt`** — `collectAsState` على `GameProfileRepository` + `LaunchedEffect` يستدعي
+  `load()` مرّة عند الحاجة، وصفّ جديد **قبل** رابط «اختر تطبيقًا» يقول: يُقرأ… / تعذّرت القراءة فالعدد
+  غير معروف / لا شيء بعد / «%1$d تطبيقًا له معدّل محفوظ — ليس دليلًا على تطبيقه». الأيقونة `Speed`
+  واللون `Accent` عند وجود عدد، `Neutral` خلاف ذلك.
+- **٥ نصوص en/ar فقط (§0.2):** `fas_custom_rates_title` · `_reading` · `_none` · `_failed` · `_count`.
+  ونصّ العدد يعلن حدّه بنفسه: **محفوظ ≠ مطبَّق**.
+- **`FasRatesTest.kt` (جديد)** — ١٠ `@Test`: `default`/`null`/الفراغ · الأعداد الصحيحة · العشري كما
+  يقرأه المطبّق · الصفر والسالب · `90fps`/`NaN`/`Infinity`/`-Infinity`/`1e100` · خريطة مختلطة مرتّبة ·
+  خريطة فارغة · `loading` مع ملفات قديمة ⇒ `null` · `failed` مع خريطة قديمة ⇒ `null` · قراءة ناجحة.
+
+**MEASURED:** `kt_balance` = **٣٣٦٢ ملفًا · ٠ عوائق** (و`--self-test` ١٧ حالة · ٠ إخفاق) · `i18n_coverage`
+= ٨٤ + en · ٨٥ كودًا · تطابق OK · ٠ يتيم · `design_tokens` = **٢٤٩/٣٠٠** · `code_health` = صحّة نظيفة،
+و`presentation_hw_writes = 0` · `gen_control_catalog` = ٨٨ مدخلًا · `gen_catalog_schema` = ٨٨·١٩ ·
+`jni_symbols` = ٢٣ تصريحًا · ٠ نواقص (الطبقة ٢ بلا ثنائيات ⇒ غير مُتحقَّقة) · `resource_compile` = aapt2
+حقيقي وكل المجلّدات تُترجم · `license_audit` = ٤١٤٢ ملفًا · GPL 0 · `rtl_guard` = ٤٦٢ ملفًا · ٠ مخالفة ·
+**تدقيق ألوان مستقل**: المسموح `Accent,Caution,Critical,Inactive,Neutral,Positive`، والمراجع في الملفّين
+`Caution/Neutral/Positive` و`Accent/Caution/Neutral`، والمخالف **صفر**.
+
+**GATES:** ١٤/١٤ exit 0 + `git diff --check` = 0 — السجلّات في `/tmp/opencode/gates-73-final/`.
+و`repo_audit.py` أعطى **PROBLEMS: 1**: استيراد غير مستعمل `MaxCardShell` في `CpuCoreControlScreen.kt`؛
+**مُثبت أنه سابق للدفعة** (الملفّ مطابق حرفيًّا لـ`HEAD`)، فلم يُلمس احترامًا لـADR-18، ويُسجَّل دَينًا.
+
+**BUILD:** **الترجمة غير مُتحقّقة في هذه البيئة — الحكم من CI وحده.** لا بناء محليّ ولا `gradlew` بأمر
+المالك («لماذا تبني محليا ومن المفترض من خلال action github فقط؟»). والاختبارات العشرة **مكتوبة ولم تُشغَّل**
+هنا؛ فأول تشغيل لها هو CI. والفرق عن `98152542` أن سبب فشله (**مرجع غير محلول**) أُزيل، لا أن نجاحه مُدَّعى.
+
+**RESIDUAL RISK:** العدد يعدّ **إعدادًا محفوظًا** لا تطبيقًا مُثبتًا، وهذا مقصود ومكتوب في النصّ نفسه ·
+و`AppMonitor` في مسار الجذر يقرأ `refresh_rate` بـ`toIntOrNull()` فيتجاهل `"90.0"` بينما المطبّق الداخلي
+يقبله — فالعدّ يطابق المسار الداخلي لا مسار الجذر، ولم يُمسّ أيّهما في هذه الدفعة · و`failed` يُبقي الخريطة
+القديمة في الذاكرة لكن العدّ يعود `null` فلا يُعرض رقم قديم · والقراءة عند الدخول إلى الشاشة فقط ·
+وشكل الصفّ وترتيبه في RTL **يحتاج جهازًا**.
+
+**NEXT:** قراءة حكم `main` بعد الدفع؛ فإن اخضرّ فاختبار `FasRatesTest` و`InAppRunLogTest`/`InAppRunRowsTest`
+صارا مُتحقَّقين، ويُنتقل إلى عود نظامية من `PRODUCT-MAP.md` (M2/M3) لا إلى تلميع شاشة أخرى.
+
 ### ROUND-CLOSE-72 — ما لم يُطبَّق يُقال، والتاريخ لا يُختلق — 2026-11-11 · DONE_WITH_CONCERNS
 
 **TASK:** البروفايل الداخليّ لكل تطبيق يحسب `InAppPlan.skipped: Map<InAppKnob, String>` — **سبب كل

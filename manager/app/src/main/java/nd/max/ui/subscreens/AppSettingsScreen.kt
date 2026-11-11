@@ -1915,7 +1915,7 @@ private fun InAppRunCard(packageName: String?) {
                         title = stringResource(R.string.profile_run_blocked),
                         subtitle = stringResource(reasonTextRes(row.reason)),
                         icon = Icons.Rounded.HourglassEmpty,
-                        iconTone = MaxTone.Warning,
+                        iconTone = MaxTone.Caution,
                     )
 
                     is InAppRunRow.Applied -> MaxRow(
@@ -1927,14 +1927,14 @@ private fun InAppRunCard(packageName: String?) {
                         ),
                         subtitle = if (row.complete) stringResource(R.string.profile_run_complete) else null,
                         icon = if (row.complete) Icons.Rounded.CheckCircle else Icons.Rounded.WarningAmber,
-                        iconTone = if (row.complete) MaxTone.Positive else MaxTone.Warning,
+                        iconTone = if (row.complete) MaxTone.Positive else MaxTone.Caution,
                     )
 
                     is InAppRunRow.Skipped -> MaxRow(
                         title = stringResource(knobLabelRes(row.knob)),
                         subtitle = stringResource(reasonTextRes(row.reason)),
                         icon = Icons.Rounded.WarningAmber,
-                        iconTone = MaxTone.Warning,
+                        iconTone = MaxTone.Caution,
                     )
 
                     InAppRunRow.NothingAsked -> MaxRow(
