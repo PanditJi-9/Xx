@@ -1,3 +1,16 @@
+## ROUND-CLOSE-68 — ما يُقطع يُقال، والتقرير يعرّف جهازه ويؤرّخ أحكامه — 2026-11-11 · DONE_WITH_CONCERNS
+
+**TASK:** أربعة مواضع تقطع بلا إعلان أو تحكي بلا فاعل: تقرير المختبر بلا هويّة جهاز ولا تاريخ ·
+أدلّة `CapabilityMatrixCard` تُقطع بـ`take(3)` صامتة · سجلّ مجلدات درج الملفّات يُخفى بلا إعلان
+بجوار زرّ «مسح السجل».
+
+**SHIPPED:** `DeviceFactsReader` (قارئ هويّة مشترك) + `manufacturer`/`model` + سطر `device=` ·
+`labReport(stamp)` + `labDeviceLine` + ترويسة الجهاز/الإصدار في التقرير · `capabilityEvidenceSplit`
++ `+%1$d more` · `fileHistorySplit` + `%1$d older folders not shown` · ٤ نصوص en/ar · ٣ حرّاس
+(٦+٦+٤ اختبارًا جديدًا؛ DeviceLabTests ٢٨).
+
+**NEXT:** البوابات الإحدى عشرة + بناء محليّ (`testReleaseUnitTest` لأربعة أصناف) ثم دفعة واحدة.
+
 ## ROUND-CLOSE-67 — نتائج المختبر تخرج من الجهاز — 2026-11-11 · DONE_WITH_CONCERNS
 
 **TASK:** نتائج المختبر محفوظة على الجهاز وحده، فلا تُرى ولا تُشارك.

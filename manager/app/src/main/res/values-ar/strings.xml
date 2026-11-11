@@ -421,6 +421,7 @@
     <string name="str_hide_unavailable_features">إخفاء الميزات غير المتاحة على جهازي</string>
     <string name="str_hide_unavailable_features_summary">إخفاء غير المتاح بدل إظهاره رماديًّا.</string>
     <string name="unavailable_hidden_count">مخفي بحسب إعدادك: %1$d من العناصر غير المتاحة</string>
+    <string name="diagnostics_capability_evidence_more">+%1$d أخرى</string>
     <string name="str_fas_is_a_user_space_implementa">جدولة معدّل التحديث لكل تطبيق، دون فحص الإطارات.</string>
     <string name="str_fpsgo_desc">إعدادات FPSGO من MediaTek</string>
     <string name="str_fpsgo_frame_per_second_go_is_a">FPSGO (تعديل ديناميكي لمعدل الإطارات) هو وحدة نواة من MediaTek تضبط تردد CPU/GPU ديناميكيًا بناءً على معدل الإطارات الفعلي؛ يخفض التردد تلقائيًا لتوفير الطاقة عندما يكون معدل الإطارات مستقرًا، ويرفعه بسرعة لضمان السلاسة عندما يكون معدل الإطارات منخفضًا</string>
@@ -3909,6 +3910,8 @@
     <string name="device_lab_record">سجّل النتيجة: %1$s</string>
 <string name="device_lab_next">التالي بلا تجربة: %1$s</string>
     <string name="device_lab_share">شارك النتائج</string>
+    <string name="device_lab_report_device">الجهاز: %1$s</string>
+    <string name="device_lab_report_build">التطبيق %1$s · الوحدة %2$s</string>
 <string name="device_lab_section_charge">اختبار الشحن</string>
 <string name="device_lab_charge_desc">ستّ ثوانٍ من القياس: ما تكسبه البطارية فعلًا أو تفقده. والاتجاه من عدّاد الشحنة لا من إشارة المقياس.</string>
 <string name="device_lab_charge_flow">التدفّق</string>

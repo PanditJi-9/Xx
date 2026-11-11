@@ -6,6 +6,7 @@
 package nd.max.ui.subscreens
 
 import java.io.File
+import nd.max.core.diagnostics.DeviceFacts
 import nd.max.core.lab.LabRecord
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -263,6 +264,74 @@ class DeviceLabTestsTest {
             "opening a card from the grid does not clear the stale pending card",
             Regex("pendingCard = null\\s*\\n\\s*labTarget = test").containsMatchIn(source),
         )
+    }
+
+    @Test
+    fun `a judged test carries the moment it was judged, when the caller can format it`() {
+        val records = mapOf(LabTestId.TOUCH to LabRecord("PASSED", 1_700_000_000_000L))
+        val report = labReport(records, { it.name }, { "T:${it.name}" }, stamp = { "AT:${it.atMs}" })
+        assertTrue(
+            "الحكم مذكور بلا زمنه — والتقرير يُشارَك خارج الجهاز، فقارئه لا يعرف عمر الحكم",
+            report.contains("T:TOUCH — AT:1700000000000"),
+        )
+    }
+
+    @Test
+    fun `no date is invented when there is none to print`() {
+        val records = mapOf(LabTestId.TOUCH to LabRecord("PASSED", 1_700_000_000_000L))
+        // (١) مستدعٍ لا يملك منسّقًا: التقرير يبقى كما كان، بلا شرطة معلّقة ولا زمن مخترع.
+        val plain = labReport(records, { it.name }, { "T:${it.name}" })
+        assertFalse("التقرير اخترع فاصلًا لزمنٍ لم يُمرَّر", plain.contains("—"))
+        assertFalse("التقرير اخترع زمنًا لم يُمرَّر", plain.contains("AT:"))
+        // (٢) سجلّ بزمن صفر (كتبه مخزن قديم أو مقطوع): لا يُطبع 1970.
+        val zero = labReport(
+            mapOf(LabTestId.TOUCH to LabRecord("PASSED", 0L)),
+            { it.name },
+            { "T:${it.name}" },
+            stamp = { "AT:${it.atMs}" },
+        )
+        assertFalse("زمن صفر طُبع كأنه تاريخ حقيقي", zero.contains("AT:"))
+    }
+
+    @Test
+    fun `the device line names the device, the chip, the API and the kernel in that order`() {
+        val line = labDeviceLine(
+            DeviceFacts(
+                appVersion = "3.1.0",
+                moduleVersion = "v42",
+                socModel = "MT6789",
+                socManufacturer = "MediaTek",
+                hardware = "rodin",
+                apiLevel = 34,
+                kernel = "5.10.136-android13",
+                rooted = true,
+                manufacturer = "Xiaomi",
+                model = "Redmi Note 10",
+            ),
+        )
+        // من الأعمّ إلى الأخصّ: الجهاز الذي يمسكه القارئ، ثم الشريحة، ثم النظام، ثم النواة.
+        assertEquals(
+            "Xiaomi Redmi Note 10 · MediaTek/MT6789 · API 34 · kernel 5.10.136-android13",
+            line,
+        )
+    }
+
+    @Test
+    fun `the device line says a dash for what it does not know`() {
+        val line = labDeviceLine(
+            DeviceFacts(
+                appVersion = null,
+                moduleVersion = null,
+                socModel = null,
+                socManufacturer = null,
+                hardware = null,
+                apiLevel = 34,
+                kernel = null,
+                rooted = false,
+            ),
+        )
+        // والمجهول يبقى مجهولًا: شرطة، لا "unknown" ولا صفر يُقرأ قيمةً.
+        assertEquals("- · -/- · API 34 · kernel -", line)
     }
 
     private fun labScreenSource(): String {

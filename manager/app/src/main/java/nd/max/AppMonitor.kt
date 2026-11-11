@@ -55,6 +55,7 @@ import nd.max.core.gamespace.DndControl
 import nd.max.core.gamespace.PerAppSessionRules
 import nd.max.core.gamespace.SidePanelArmed
 import nd.max.core.diagnostics.DeviceFacts
+import nd.max.core.diagnostics.DeviceFactsReader
 import nd.max.core.diagnostics.LogHeader
 import nd.max.core.diagnostics.LogSettingsDigest
 import nd.max.ui.util.PerAppKernelUtil
@@ -562,27 +563,15 @@ object AppMonitor {
      * و`SOC_MODEL`/`SOC_MANUFACTURER` محميّان بـ API 31 (كما في `DataModule` و`LogsViewerViewModel`):
      * قراءتهما على 29/30 ترمي `NoSuchFieldError`، والمجهول يبقى `null` لا نصًّا يشبه اسم جهاز.
      */
-    private fun logDeviceFacts(): DeviceFacts {
-        val appVersion = runCatching {
-            systemContext?.packageManager?.getPackageInfo("nd.max", 0)?.versionName
-        }.getOrNull()
-        val moduleVersion = runCatching {
-            shellRead("grep '^version=' '${MaxManagerPaths.MODULE_PROP}' 2>/dev/null | head -n1")
-        }.getOrNull()?.substringAfter('=', "")?.trim()?.takeIf(String::isNotEmpty)
-        return DeviceFacts(
-            appVersion = appVersion,
-            moduleVersion = moduleVersion,
-            socManufacturer = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) Build.SOC_MANUFACTURER.ifBlank { null } else null,
-            socModel = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) Build.SOC_MODEL.ifBlank { null } else null,
-            hardware = Build.HARDWARE.ifBlank { null },
-            apiLevel = Build.VERSION.SDK_INT,
-            kernel = System.getProperty("os.version"),
-            // قياس لا ادّعاء: هذه العملية يبدأها `service.sh` بجذر، و"جذر" هنا هو هويّة العملية.
-            rooted = runCatching { android.os.Process.myUid() == 0 }.getOrDefault(false),
-            board = Build.BOARD.ifBlank { null },
-            abi = Build.SUPPORTED_ABIS.firstOrNull(),
-        )
-    }
+    private fun logDeviceFacts(): DeviceFacts =
+        // **والقراءة من موضع واحد** ([DeviceFactsReader]): تقرير المختبر يُشارَك خارج الجهاز
+        // فيحتاج الهويّة نفسها، ونسخُ الحقول هنا كان سيُباعد الحقلين بصمت. وهذا المستدعي يمرّر
+        // قراءةً واحدة تخصّه: `grep` على ملفّ الوحدة، وهو ما يملكه الخادم ولا يملكه التطبيق.
+        DeviceFactsReader.read(systemContext) {
+            runCatching {
+                shellRead("grep '^version=' '${MaxManagerPaths.MODULE_PROP}' 2>/dev/null | head -n1")
+            }.getOrNull()?.substringAfter('=', "")?.trim()?.takeIf(String::isNotEmpty)
+        }
 
     /**
      * الإعداد الذي كان قائمًا وقت التشغيل — هو ما يجيب سؤال «عطل جهاز أم عطل إعداد؟».

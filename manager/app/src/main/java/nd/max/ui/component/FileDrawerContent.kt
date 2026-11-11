@@ -155,13 +155,20 @@ fun FileDrawerContent(
             if (history.isEmpty()) {
                 EmptyLine(text = stringResource(R.string.max_files_history_empty))
             } else {
-                history.take(HISTORY_VISIBLE).forEach { entry ->
+                val (shown, older) = fileHistorySplit(history)
+                shown.forEach { entry ->
                     DrawerRow(
                         title = FileDisplayName(entry.path),
                         subtitle = entry.path,
                         icon = Icons.Rounded.History,
                         onClick = { onNavigate(entry.path) },
                     )
+                }
+                // **وما لم يُعرض يُقال:** القائمة تُختصر لتبقى قائمةً لا جدولًا، لكن السكوت عن
+                // الباقي يجعل «آخر اثني عشر مجلدًا» يُقرأ كأنه السجلّ كلّه — والزرّ المجاور هو
+                // «مسح السجل»، فيُفهم الإخفاء كأنه الحقيقة ويُمسح ما لم يُرَ.
+                if (older > 0) {
+                    EmptyLine(text = stringResource(R.string.max_files_history_more, older))
                 }
             }
         }
@@ -306,3 +313,19 @@ private fun FileDisplayName(path: String): String {
 }
 
 private const val HISTORY_VISIBLE = 12
+
+/**
+ * يفصل ما يُعرض من سجلّ المجلدات عن عدده الأقدم الذي لم يُعرض — **دالّة صافية تُقاس في JVM**.
+ *
+ * والاختصار نفسه مشروع: درج الملفّات ليس صفحة سجلّ، وعرض ثلاثين صفًّا فيه يدفن الأدوات
+ * تحته. غير أنّ الاختصار بلا عدد يُقرأ نفورًا من الشاشة لا اختصارًا: من زار ثلاثين مجلّدًا
+ * يرى آخرها فقط، ويظنّ أنّ ما قبلها لا سبيل إليه — وأقرب زرّ إلى القسم هو «مسح السجل»،
+ * فيمسح ما لم يُرَ. فالعدد هنا ليس تزيينًا: هو الفرق بين «هذا السجل» و«هذا آخره».
+ */
+internal fun <T> fileHistorySplit(
+    history: List<T>,
+    limit: Int = HISTORY_VISIBLE,
+): Pair<List<T>, Int> {
+    val shown = history.take(limit)
+    return shown to (history.size - shown.size)
+}

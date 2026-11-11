@@ -152,10 +152,35 @@ internal fun LabTestId.toolSection(): LabToolSection = when (this) {
  *
  * والدالّة صافية: النصوص تُمرَّر دوالًّا، فيُقاس الترتيب والتغطية في JVM بلا منصّة.
  */
+/**
+ * **سطر الهويّة في تقرير المختبر: عن أي جهاز يتحدّث.**
+ *
+ * تقرير بلا فاعل حكاية لا تُقارَن: من يستلم «الصوت معطوب» لا يعرف على أي هاتف، ولا يستطيع أن
+ * يقول «هذا يخصّ نسخة سبقت الإصلاح». والحقول كلها من [DeviceFacts] القائم — لا هويّة ثانية.
+ *
+ * **والمجهول `-` لا يُحذف:** حقلٌ ناقص من السطر يجعل السطر يبدو جهازًا آخر أقصر، بينما `-`
+ * يقول «لم نقرأه». والترتيب ثابت (الجهاز ← الشريحة ← الإصدار ← النواة) فيبقى قابلًا للمقارنة.
+ */
+fun labDeviceLine(facts: nd.max.core.diagnostics.DeviceFacts): String {
+    fun render(value: String?) = nd.max.core.diagnostics.DeviceFacts.render(value)
+    val device = listOfNotNull(facts.manufacturer, facts.model).joinToString(" ").trim()
+    return listOf(
+        device.ifEmpty { render(null) },
+        "${render(facts.socManufacturer)}/${render(facts.socModel)}",
+        "API ${facts.apiLevel}",
+        "kernel ${render(facts.kernel)}",
+    ).joinToString(" · ")
+}
+
 fun labReport(
     records: Map<LabTestId, LabRecord>,
     groupTitle: (LabOutcome) -> String,
     testTitle: (LabTestId) -> String,
+    /**
+     * تاريخ الحكم كما يُكتب بجانبه. يُمرَّر من الشاشة لأن التنسيق يعتمد على المنصّة واللغة،
+     * فيبقى هذا الملفّ صافيًا يُقاس في JVM. و`null` يعني «لا تاريخ» — لا يُخترع تاريخ.
+     */
+    stamp: ((LabRecord) -> String?)? = null,
 ): String {
     val groups = LabTestId.entries.groupBy { test ->
         records[test]?.let { record -> LabOutcome.entries.firstOrNull { it.name == record.outcome } }
@@ -167,7 +192,12 @@ fun labReport(
             groups[outcome]?.takeIf { it.isNotEmpty() }?.let { tests ->
                 buildString {
                     append(groupTitle(outcome))
-                    tests.forEach { append('\n').append("- ").append(testTitle(it)) }
+                    tests.forEach { test ->
+                        append('\n').append("- ").append(testTitle(test))
+                        // **والزمن مع الحكم:** تقرير يقول «يعمل» بلا تاريخ لا يُعرف أصالحٌ هو
+                        // لنواة اليوم أم لنواة سبقت تحديثًا — فيُقرأ حكمًا راهنًا وهو قديم.
+                        records[test]?.let { record -> stamp?.invoke(record)?.let { append(" — ").append(it) } }
+                    }
                 }
             }
         }

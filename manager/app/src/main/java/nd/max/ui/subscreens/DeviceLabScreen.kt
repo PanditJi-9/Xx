@@ -117,6 +117,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.math.abs
 import nd.max.R
+import nd.max.core.diagnostics.DeviceFactsReader
 import nd.max.core.lab.LabResultStore
 import nd.max.core.net.WifiChannel
 import nd.max.ui.util.WifiChannelReader
@@ -135,6 +136,7 @@ import nd.max.ui.design.MaxSwitchRow
 import nd.max.ui.design.MaxTone
 import nd.max.ui.theme.MonoValueStyleSmall
 import java.text.DateFormat
+import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import kotlin.math.PI
@@ -252,8 +254,23 @@ fun DeviceLabScreen(navController: NavHostController) {
                         val judged = labRecords.mapNotNull { (name, record) ->
                             LabTestId.entries.firstOrNull { it.name == name }?.let { it to record }
                         }.toMap()
+                        // **وعن أي جهاز، ومتى:** التقرير يخرج من الجهاز، فمن يستلمه يجب أن
+                        // يعرف على أي هاتف حُكم، وأن يعرف أن الحكم قديم إن كان كذلك. والهويّة
+                        // من `DeviceFactsReader` — لا حقول منسوخة في الشاشة.
+                        val facts = DeviceFactsReader.read(context)
+                        // وصيغة ثابتة الترتيب (`yyyy-MM-dd HH:mm`) لأن التقرير يُقارَن بين
+                        // أجهزة: تاريخٌ بصيغة محلّية يُقرأ مختلفًا عند كل قارئ.
+                        val stampFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.US)
                         val text = buildString {
                             appendLine(context.getString(R.string.device_lab_title))
+                            appendLine(context.getString(R.string.device_lab_report_device, labDeviceLine(facts)))
+                            appendLine(
+                                context.getString(
+                                    R.string.device_lab_report_build,
+                                    nd.max.core.diagnostics.DeviceFacts.render(facts.appVersion),
+                                    nd.max.core.diagnostics.DeviceFacts.render(facts.moduleVersion),
+                                ),
+                            )
                             appendLine(
                                 context.getString(
                                     R.string.device_lab_tally,
@@ -268,6 +285,12 @@ fun DeviceLabScreen(navController: NavHostController) {
                                     judged,
                                     groupTitle = { context.getString(it.labelRes) },
                                     testTitle = { context.getString(it.titleRes) },
+                                    // ولا تاريخ لسجلٍّ بلا زمن (`0` من نسخة قديمة): يُترك بلا
+                                    // تاريخ بدل أن يُكتب «1970».
+                                    stamp = { record ->
+                                        record.atMs.takeIf { it > 0L }
+                                            ?.let { stampFormat.format(java.util.Date(it)) }
+                                    },
                                 ),
                             )
                         }

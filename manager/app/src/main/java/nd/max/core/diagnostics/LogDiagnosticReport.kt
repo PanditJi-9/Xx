@@ -45,6 +45,13 @@ data class DeviceFacts(
     val rooted: Boolean,
     val board: String? = null,
     val abi: String? = null,
+    /**
+     * الشركة والطراز كما يعلنهما النظام — **وهما ليسا `socModel`**: ذاك شريحة، وهذا الجهاز.
+     * ولذلك يلزمهما حقلان: تقريرٌ يقول «SM8650» لا يقول «أيّ هاتف»، ومن يقارن جهازين يحتاج
+     * الطراز. وهما `null` حين لا يُقرآن كبقية الحقول، لا نصًّا بديلًا.
+     */
+    val manufacturer: String? = null,
+    val model: String? = null,
 ) {
     companion object {
         /** حدّ كل حقل في الترويسة: بصمة نظام طويلة لا يجوز أن تُغرِق التقرير. */
@@ -151,6 +158,7 @@ object LogDiagnosticReport {
             appendLine("generated_at=$generatedAt")
             appendLine("app_version=${DeviceFacts.render(facts.appVersion)}")
             appendLine("module_version=${DeviceFacts.render(facts.moduleVersion)}")
+            appendLine("device=${DeviceFacts.render(facts.manufacturer)}/${DeviceFacts.render(facts.model)}")
             appendLine("soc=${DeviceFacts.render(facts.socManufacturer)}/${DeviceFacts.render(facts.socModel)}")
             appendLine("hardware=${DeviceFacts.render(facts.hardware)}")
             appendLine("board=${DeviceFacts.render(facts.board)}")

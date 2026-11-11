@@ -1390,6 +1390,7 @@
     <string name="str_hide_unavailable_features">Hide features unavailable on my device</string>
     <string name="str_hide_unavailable_features_summary">Hide unavailable features instead of graying them out.</string>
     <string name="unavailable_hidden_count">Hidden by your setting: %1$d unavailable items</string>
+    <string name="diagnostics_capability_evidence_more">+%1$d more</string>
     <string name="str_fas_is_a_user_space_implementa">Per-app refresh-rate scheduling; no frame inspection.</string>
     <string name="str_fpsgo_desc">MediaTek FPSGO related settings</string>
     <string name="str_fpsgo_frame_per_second_go_is_a">FPSGO (Frames Per Second Go) is a MediaTek kernel module that dynamically adjusts CPU/GPU frequency based on real-time frame rate. It actively lowers frequency to save power when frame rate is stable, and quickly boosts frequency to ensure smoothness when frame rate is strained.</string>
@@ -3964,6 +3965,8 @@
     <string name="device_lab_record">Record the result: %1$s</string>
 <string name="device_lab_next">Next untested: %1$s</string>
     <string name="device_lab_share">Share the results</string>
+    <string name="device_lab_report_device">Device: %1$s</string>
+    <string name="device_lab_report_build">App %1$s · module %2$s</string>
 <string name="device_lab_section_charge">Charging test</string>
 <string name="device_lab_charge_desc">Six seconds of measurement: what the battery actually gains or loses. Direction comes from the charge counter, not from the gauge\'s sign.</string>
 <string name="device_lab_charge_flow">Flow</string>

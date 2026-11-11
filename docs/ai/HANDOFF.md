@@ -149,6 +149,62 @@ NeuralDashboardKit.kt:673:12 Syntax error: Expecting a top level declaration.
 **ما لم يُفقد:** `ui/component/PulseArt.kt` و`AmbientGlowCycle.kt` (حذف الملفّين الكاملين من ROUND-CLOSE-63)
 يبقيان محذوفين، وحارس مستوى الملفّ يبقى، وإصلاح استثناء `AppSettings` في `DestinationDoorTest` يبقى.
 
+### ROUND-CLOSE-68 — ما يُقطع يُقال، والتقرير يعرّف جهازه ويؤرّخ أحكامه — 2026-11-11 · DONE_WITH_CONCERNS
+
+**TASK:** أربعة مواضع كانت **تقطع بلا إعلان** أو **تحكي بلا فاعل**، وكلّها في النظام نفسه:
+(١) تقرير المختبر يُشارَك خارج الجهاز ولا يقول عن أيّ جهاز ولا متى حُكم — فلا يُربط بجهاز، ولا يُعرف
+أقدمُه من أحدثه. (٢) `CapabilityMatrixCard` يعرض `evidence.take(3)` بلا سطر «وN أخرى» — والنمط الصحيح
+موجود في الملفّ نفسه أسفله (`unavailable_hidden_count`). (٣) سجلّ المجلدات في درج الملفّات
+(`history.take(12)`) يُخفى بلا إعلان، والزرّ المجاور هو **«مسح السجل»** — فيُقرأ الإخفاء كأنه الحقيقة
+ويُمسح ما لم يُرَ.
+
+**SEARCH FIRST (§0.5):** النمط «ما لم يُعرض يُقال» قائم في أربعة مواضع: `ConfigBackupFlow.kt:410`
+(`max_cfg_diff_more`) · `FilePropertiesDialog.kt:275` (`max_files_apk_permissions_more`) ·
+`AtlasDiagnosticsSection.kt:398` (`max_atlas_domain_more`) · `SensorInventoryCard.kt:~140`
+(`SENSOR_PREVIEW_LIMIT` + إعلان). ⇒ التعديلات **أتت على النمط القائم**، ولم يُخترع نمط ثانٍ.
+وهويّة الجهاز **موجودة** في `DeviceFacts` (`core/diagnostics/LogDiagnosticReport.kt:36`) لكنها كانت
+مُولَّدة داخل `private fun logDeviceFacts()` في `AppMonitor` — فأُخرجت إلى قارئ مشترك بدل نسخ الحقول.
+
+**SHIPPED:**
+- `core/diagnostics/DeviceFactsReader.kt` (جديد): `read(context, moduleVersion)` — مصدر واحد لهويّة
+  الجهاز. `DeviceFacts` اكتسب `manufacturer`/`model` **بقيم افتراضية في آخر القائمة** (فلا ينكسر
+  مُنشئ قديم)، وسطر ترويسة جديد `device=` قبل `soc=` في `LogDiagnosticReport`.
+  و`AppMonitor.logDeviceFacts()` صارت تفويضًا سطرًا واحدًا — لا نسخة ثانية تتباعد صامتة.
+- `DeviceLabTests.kt`: `labReport(..., stamp: ((LabRecord) -> String?)? = null)` — التنسيق من المنصّة
+  فيبقى الملفّ صافيًا؛ `null` = لا تاريخ يُخترع. ودالّة `labDeviceLine(facts)` ترتّب
+  الجهاز ← الشريحة ← API ← kernel وتُعلن `-` للمجهول (من `DeviceFacts.render` نفسه).
+- `DeviceLabScreen.kt`: ترويسة التقرير تحمل `device_lab_report_device` و`device_lab_report_build`،
+  وكل سطر حُكم عليه يحمل تاريخه `yyyy-MM-dd HH:mm` من `LabRecord.atMs` (وزمن صفر لا يُطبع 1970).
+- `CapabilityMatrixCard.kt`: `EVIDENCE_PREVIEW = 3` + `capabilityEvidenceSplit(evidence, limit)`
+  (دالّة صافية) + `diagnostics_capability_evidence_more` («+%1$d more» / «+%1$d أخرى»).
+- `FileDrawerContent.kt`: `fileHistorySplit<T>(history, limit = HISTORY_VISIBLE)` + `EmptyLine`
+  بإعلان `max_files_history_more` («%1$d older folders not shown» / «%1$d مجلدات أقدم غير معروضة»).
+- نصوص جديدة **في `values/` و`values-ar/` فقط** (§0.2): `device_lab_report_device` ·
+  `device_lab_report_build` · `diagnostics_capability_evidence_more` · `max_files_history_more`.
+- حرّاس: `CapabilityMatrixEvidenceTest` (٦) · `FileDrawerHistoryTest` (٦) · `DeviceLabTestsTest`
+  ٢٤ ← **٢٨** (تاريخ يُطبع · لا تاريخ حين `null` أو `atMs = 0` · `labDeviceLine` ترتيبها و`-` للمجهول).
+
+**MEASURED:** `kt_balance --assert` = **٣٣٥٤ ملفًا · عوائق ٠** · `git diff --check` = DIFF_OK ·
+`@Test`: DeviceLabTests ٢٨ · CapabilityMatrixEvidence ٦ · FileDrawerHistory ٦.
+
+**GATES:** تُقرأ قبل الالتزام — ١١ بوابة + diff.
+
+**BUILD (غير مُتحقّقة في هذه البيئة — بأمر المالك):** شُغّل بناء محليّ بحجّة §0.1-ب (تغيير توقيع
+`labReport` وحقول `DeviceFacts`) ثم **أُوقف بأمر المالك**: «لماذا تبني محليا ومن المفترض من خلال
+action github فقط؟». والحجّة لا تصحّ: CI يبني ويختبر على `main` في الدفعة نفسها، فالتشغيل المحلي
+كان **تشغيلًا مزدوجًا** يستهلك ~٢٠ دقيقة بلا قرار جديد. ⇒ **لا رقم ترجمة ولا رقم اختبار يُدّعى هنا؛
+الحكم من Actions وحده** (`gh run list` ثم قراءة `conclusion`). وإن كان أحمر يُقرأ `--log-failed`
+ويُصلح في الدفعة نفسها. **هذا تغيير قاعدة مُعلَن، لا استثناء.**
+
+**RESIDUAL RISK:** `DeviceFacts` صار له مُنتِج مشترك لكن `CommunityStats` و`AtlasDeviceIdentity`
+يبقيان هويّتين أُخريين لم تُوحَّدا (خارج نطاق هذه الدفعة، ولا تُدّعى الوحدة) · صيغة التاريخ
+`yyyy-MM-dd HH:mm` بـ`Locale.US` **مقصودة** (تقرير يُقرأ آليًّا) لكنها تخالف صيغ الواجهة المحلية ·
+تقرير المختبر ما زال **بلا ترتيب زمني** بل ترتيب حكم · سطر `device=` يضيف سطرًا لترويسة السجلّ ولم
+تُقس سقف `MAX_LINES` بعده · شكل الصفوف والإعلانات و`FileProvider` على الجهاز **يحتاج جهازًا** ·
+لا مراجعة مستقلة.
+
+**NEXT:** قراءة البناء والبوابات، ثم دفعة واحدة إلى `main`.
+
 ### ROUND-CLOSE-67 — نتائج المختبر تخرج من الجهاز — 2026-11-11 · DONE_WITH_CONCERNS
 
 **TASK:** المختبر يسأل ثلاث عشرة قطعة ويحفظ الحكم… على الجهاز وحده. فمن جرّب هاتفه لا يستطيع أن

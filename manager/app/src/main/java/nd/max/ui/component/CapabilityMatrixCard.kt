@@ -32,6 +32,31 @@ import nd.max.ui.mainscreens.IconBadge
 import nd.max.ui.theme.MaxTextRole
 
 /**
+ * كم دليلًا يُعرض في سطر القدرة قبل أن يُختصر.
+ *
+ * **والسقف يُعلَن ولا يُسكت عنه:** كان `evidence.take(3)` يقطع بلا كلمة، فيقرأ المستخدم
+ * ثلاثة أدلّة ويظنّها كلّ ما عُرف عن القدرة — وهو نفس العطب الذي عالجه
+ * `unavailable_hidden_count` أسفل البطاقة: الإخفاء يُقال. والسقف هنا رقم مسمّى لأن
+ * «ثلاثة» في موضعين تتباعد صامتة.
+ */
+private const val EVIDENCE_PREVIEW = 3
+
+/**
+ * يفصل ما يُعرض من الأدلّة عن عدده الباقي — **دالّة صافية تُقاس في JVM**.
+ *
+ * ولماذا خرجت من `Text`: القرار «كم أُخفي» يجب أن يُقاس باختبار لا أن يُقرأ بالعين في
+ * شاشة. والعدّ هنا لا يمكن أن يكون سالبًا، ولا أن يعرض السطر أكثر من [limit] عنصرًا —
+ * وهما الشرطان الوحيدان اللذان يحتاجهما السطر.
+ */
+internal fun capabilityEvidenceSplit(
+    evidence: List<String>,
+    limit: Int = EVIDENCE_PREVIEW,
+): Pair<List<String>, Int> {
+    val shown = evidence.take(limit)
+    return shown to (evidence.size - shown.size)
+}
+
+/**
  * The capability matrix, with each control's **activation verdict** under it.
  *
  * The access level answers "is this interface readable or writable"; the verdict answers the different
@@ -105,8 +130,17 @@ fun CapabilityMatrixCard(
                     )
                     RouteVerdictLabel(routes, capability.feature)
                     if (capability.evidence.isNotEmpty()) {
+                        val (shown, more) = capabilityEvidenceSplit(capability.evidence)
+                        // **وما قُطع يُقال بعددِه:** «+2» في آخر السطر يُعلن أنّ هناك دليلًا
+                        // آخر لم يُقرأ، بدل سطر يبدو كاملًا وهو ناقص.
+                        val text = if (more > 0) {
+                            shown.joinToString("  ·  ") + "  ·  " +
+                                stringResource(R.string.diagnostics_capability_evidence_more, more)
+                        } else {
+                            shown.joinToString("  ·  ")
+                        }
                         Text(
-                            capability.evidence.take(3).joinToString("  ·  "),
+                            text,
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.72f),
                         )
