@@ -114,6 +114,41 @@ MaxManager has a strong engine and a fragmented surface. `core/maxai` + `core/ha
 **NEXT:** (١) CI: `:app:testReleaseUnitTest` + `:app:compileReleaseKotlin`. (٢) شريحة: علامة «يكتب» على
 صفوف التحكّم مشتقة من مسار المراجِع. (٣) شريحة: موجد واحد بالاسم والقصد. (٤) تعميم `MaxDataTrust`
 على كل قيمة غير متدفّقة. (٥) قرار مالك: حذف `StoryboardHome` أو إعادته.
+### تصحيح ROUND-CLOSE-64 — الحذف الآليّ كسر الترجمة، والملفّات استُعيدت — 2026-11-11
+
+**التصحيح:** ادّعى ROUND-CLOSE-64 أعلاه «٤٦٩ سطرًا حُذفت · صفر مرجع مكسور · الحذف نظيف». **هذا خاطئ،
+وقد كذّبه المصرّف.** `MaxManager` `43008569959` على `d242674c` ⇒ **failure** بعد ٣م٤٧ث:
+
+```
+CubeParts.kt:253:1        This annotation is not repeatable.
+CubeParts.kt:489:9        @Composable invocations can only happen from the context of a @Composable function
+CubeParts.kt:495:1        This annotation is not repeatable.
+GamePanelSurface.kt:133:52 Unresolved reference 'HEAT_WARN_C'.
+GamePanelSurface.kt:190:1  This annotation is not repeatable.
+GamePanelSurface.kt:273:19 Unresolved reference 'PanelTouch'.
+GamePanelSurface.kt:285:1  This annotation is not repeatable.
+NeuralDashboardKit.kt:488:1 This annotation is not repeatable.
+NeuralDashboardKit.kt:548:1 This annotation is not repeatable.
+NeuralDashboardKit.kt:553:1 This annotation is not repeatable.
+NeuralDashboardKit.kt:673:12 Syntax error: Expecting a top level declaration.
+```
+
+**سبب العطب:** `kt_balance` قال ٣٣٥٠/٠ لأنّ **الأقواس متوازنة**، وهذا لا يعني أنّ الحذف صحيح. السكربت
+توقّف عند `opened and db <= 0` فأخذ أوّل `{`…`}` فقط وترك بقية جسم الدالة المتعدّد الكتل (فبقي
+`NeuralDashboardKit.kt:673` «Expecting a top level declaration»)، وابتلع تصريحات **بين** تصريحين محذوفين
+(`HEAT_WARN_C` · `PanelTouch`)، وترك أسطر `@Composable` يتيمة فوق تصريح تالٍ.
+
+**الإصلاح:** `git checkout 66d45399 -- GamePanelSurface.kt NeuralDashboardKit.kt CubeParts.kt` ⇒ الملفّات
+الثلاثة عادت إلى نسختها الخضراء، و`kt_balance` = ٣٣٥٠/٠. وأُزيل الحارس الرابع
+`no declaration in ui component is dead inside a live file` من `ComponentReachabilityTest.kt` (بقي **٣**
+اختبارات) لأنّه كان سيُسقط البناء حتمًا بعد عودة التصريحات الميتة. ويبقى حارس **مستوى الملفّ** وحده.
+
+**الدرس الملزم:** التوازن البنيوي **لا يُغني عن المصرّف** عند الحذف الآليّ. وأي حذف آليّ قادم يُلزمه
+`:app:compileReleaseKotlin` محليًّا قبل الدفع — وهذا من حالة §0.1-ب: سؤالٌ لا يُجيبه إلا مُصرّف.
+
+**ما لم يُفقد:** `ui/component/PulseArt.kt` و`AmbientGlowCycle.kt` (حذف الملفّين الكاملين من ROUND-CLOSE-63)
+يبقيان محذوفين، وحارس مستوى الملفّ يبقى، وإصلاح استثناء `AppSettings` في `DestinationDoorTest` يبقى.
+
 ### ROUND-CLOSE-64 — تصريحٌ لا يذكره أحدٌ ليس كودًا: ٢٣ تصريحًا و٤٦٩ سطرًا — 2026-11-11 · DONE_WITH_CONCERNS
 
 **TASK:** بعد ROUND-CLOSE-63 (الذي حذف ملفّين ميتين كاملين)، بقي الميت **داخل** ملفّات حيّة:

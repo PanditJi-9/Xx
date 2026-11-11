@@ -80,12 +80,27 @@ import nd.max.ui.design.MaxRadius
 import nd.max.ui.design.MaxSpace
 import nd.max.ui.design.maxRadius
 
+private val PANEL_MAX_WIDTH = 640.dp
+private val PANEL_MAX_HEIGHT = 420.dp
+private val TOOLS_WIDTH = 108.dp
+private val TILE_HEIGHT = 64.dp
+internal val PanelEdge = 1.dp
+private val PanelTouch = 48.dp
+private val RING_MIN = 64.dp
+private val PanelSegment = 40.dp
 private val PanelGraph = 40.dp
+private val FIXED_CHROME = 250.dp
+private const val HEAT_WARN_C = 42f
+private val RING_MAX = 136.dp
+private const val RING_TICKS = 28
 private const val RING_SPAN = 270f
 private const val FPS_REFERENCE_HZ = 120
 
 internal val PanelInk = Color(0xFFF1F3F5)
 internal val PanelMuted = Color(0xFF98A2AA)
+private val PanelTop = Color(0xF2171A1F)
+private val PanelBottom = Color(0xF20B0D10)
+private val PanelTrack = Color(0x33FFFFFF)
 internal val PanelTile = Color(0x14FFFFFF)
 internal val PanelDanger = Color(0xFFFF4D5E)
 
@@ -172,6 +187,13 @@ fun GamePanelSurface(
     }
 }
 
+/** زوايا مستديرة من جهة الداخل فقط؛ الحافّة الملاصقة للشاشة مستقيمة. */
+private fun panelShape(side: PanelSide, radius: Dp) = if (side == PanelSide.End) {
+    AbsoluteRoundedCornerShape(topLeft = radius, bottomLeft = radius, topRight = 0.dp, bottomRight = 0.dp)
+} else {
+    AbsoluteRoundedCornerShape(topLeft = 0.dp, bottomLeft = 0.dp, topRight = radius, bottomRight = radius)
+}
+
 /** اسم اللعبة المقروء بدل اسم الحزمة؛ إن لم يُقرأ يبقى اسم الحزمة. */
 @Composable
 internal fun rememberGameTitle(packageName: String): String {
@@ -186,6 +208,37 @@ internal fun rememberGameTitle(packageName: String): String {
 }
 
 @Composable
+internal fun PanelHeader(title: String, accent: Color, side: PanelSide, onCollapse: () -> Unit, onClose: () -> Unit) {
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm)) {
+        Icon(
+            imageVector = Icons.Rounded.Gamepad,
+            contentDescription = null,
+            tint = accent,
+            modifier = Modifier.size(MaxSpace.xl)
+        )
+        Text(
+            text = title,
+            color = PanelInk,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.weight(1f)
+        )
+        PanelButton(
+            icon = if (side == PanelSide.End) Icons.Rounded.ChevronRight else Icons.Rounded.ChevronLeft,
+            description = stringResource(R.string.game_panel_collapse_cd),
+            onClick = onCollapse
+        )
+        PanelButton(
+            icon = Icons.Rounded.Close,
+            description = stringResource(R.string.game_panel_close_cd),
+            tint = PanelDanger,
+            onClick = onClose
+        )
+    }
+}
+
 /** قياسات ثانوية بحسب الحقول التي اختارها المستخدم في طبقة FPS؛ كل واحدة من قراءة فعلية. */
 @Composable
 internal fun PanelReadings(reading: HudReading?, fields: List<HudField>) {
@@ -281,6 +334,47 @@ internal fun PanelButton(icon: ImageVector, description: String, onClick: () -> 
 
 /** ثلاثة أوضاع أداء بنقرة؛ في وضع الذكاء تُعرض الشارة فقط لأن الذكاء هو المالك. */
 @Composable
+internal fun ProfileStrip(selected: String?, auto: Boolean, accent: Color, onSelect: (String) -> Unit) {
+    val shape = RoundedCornerShape(maxRadius(MaxRadius.control))
+    val modes = listOf(
+        "1" to R.string.profile_performance,
+        "2" to R.string.profile_balanced,
+        "3" to R.string.profile_powersave
+    )
+    Row(
+        modifier = Modifier.fillMaxWidth().background(PanelTile, shape).padding(MaxSpace.hairline),
+        horizontalArrangement = Arrangement.spacedBy(MaxSpace.hairline)
+    ) {
+        if (auto) {
+            Box(Modifier.weight(1f).height(PanelSegment), contentAlignment = Alignment.Center) {
+                Text(text = stringResource(R.string.str_auto_mode), color = accent, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+            }
+            return@Row
+        }
+        modes.forEach { (id, label) ->
+            val on = id == selected
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .height(PanelSegment)
+                    .clip(shape)
+                    .background(if (on) accent.copy(alpha = 0.28f) else Color.Transparent, shape)
+                    .clickable(role = Role.RadioButton, enabled = !on) { onSelect(id) },
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = stringResource(label),
+                    color = if (on) PanelInk else PanelMuted,
+                    fontSize = 11.sp,
+                    fontWeight = if (on) FontWeight.Bold else FontWeight.Normal,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+        }
+    }
+}
+
 /** منحنى الإطارات الحيّ من تاريخ `HudSampler`؛ أقل من نقطتين ⇒ انتظار، لا خط مرسوم من العدم. */
 @Composable
 internal fun FrameGraph(history: List<Float>, accent: Color) {

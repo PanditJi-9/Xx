@@ -125,6 +125,9 @@ internal val ModeAmber = Color(0xFFFFC53D)
 internal val ModeGreen = Color(0xFF3DDC97)
 internal val ModeAuto = Color(0xFF4DD0FF)
 
+/** حبّة كبسولية ناعمة بدل السداسية القديمة — أنظف وأحدث كما في المراجع. */
+internal val PillShape = RoundedCornerShape(50)
+
 /** حبّة سداسية الطرفين («‹ نص ›») كما في المرجع: الطرفان يُشطبان بزاوية بدل نصف دائرة. */
 internal val HexPillShape = GenericShape { size, _ ->
     val c = size.height / 2f
@@ -249,6 +252,13 @@ internal fun CubeLogo(modifier: Modifier) {
 }
 
 @Composable
+internal fun StatusBit(icon: ImageVector?, text: String) {
+    Row(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = Alignment.CenterVertically) {
+        if (icon != null) Icon(icon, null, tint = CubeDim, modifier = Modifier.size(13.dp))
+        Text(text, color = CubeInk, fontSize = 12.sp, maxLines = 1)
+    }
+}
+
 /** قرص متوهّج مبسّط: حلقة واحدة مع قوس حمل ونبضة خفيفة — أقل ضجيجًا بصريًّا. */
 @Composable
 internal fun CubeOrb(tint: Color, loadPct: Int? = null, modifier: Modifier = Modifier) {
@@ -422,6 +432,64 @@ internal const val METER_BARS = 14
  * (الوسط ضيّق فلا مكان للشريط العموديّ الطويل). كل المقاسات من [CubeLayout].
  */
 @Composable
+internal fun CubeGauge(
+    value: String, unit: String, label: String, tint: Color,
+    pill: String, pillBusy: Boolean, pillOpen: Boolean,
+    onPill: () -> Unit, onPillBounds: (Rect) -> Unit,
+    meter: Float, meterIcon: ImageVector, meterAlpha: Float, onMeter: (Float) -> Unit,
+    outerLeft: Boolean, layout: CubeLayout, modifier: Modifier,
+    loadPct: Int? = null,
+    maxCeiling: String? = null,
+    level: Float? = null,
+    freqBar: Boolean = false
+) {
+    Column(modifier.width(layout.gaugeW.dp).swallowTaps(), horizontalAlignment = Alignment.CenterHorizontally) {
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.Bottom) {
+            FitText(
+                value, CubeInk, maxSp = layout.numberSp, minSp = 14f, weight = FontWeight.Black,
+                style = FontStyle.Italic, modifier = Modifier.weight(1f, fill = false)
+            )
+            Spacer(Modifier.width(MaxSpace.xs))
+            Text(
+                unit, color = CubeDim, fontSize = layout.unitSp.sp, maxLines = 1,
+                modifier = Modifier.padding(bottom = MaxSpace.xs)
+            )
+        }
+        Box(Modifier.fillMaxWidth().height(layout.orbH.dp), contentAlignment = Alignment.Center) {
+            CubeOrb(tint, loadPct, Modifier.size((layout.gaugeW * 0.82f).dp, (layout.orbH * 0.9f).dp))
+            if (loadPct != null) {
+                Text("$loadPct%", color = CubeInk, fontSize = 10.sp, fontWeight = FontWeight.Black, maxLines = 1)
+            }
+        }
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs)
+        ) {
+            Text(label, color = tint, fontSize = layout.labelSp.sp, fontWeight = FontWeight.Black, fontStyle = FontStyle.Italic)
+            if (maxCeiling != null) {
+                FitText(
+                    maxCeiling, CubeDim, maxSp = 9f, minSp = 8f, weight = FontWeight.Bold,
+                    modifier = Modifier.weight(1f, fill = false)
+                )
+            }
+        }
+        if (freqBar) {
+            Spacer(Modifier.height(MaxSpace.xs))
+            FrequencyBar(
+                level, tint,
+                Modifier.fillMaxWidth().padding(horizontal = (layout.gaugeW * 0.08f).dp).height(CubeLayoutMath.FREQ_BAR_H.dp)
+            )
+        }
+        Spacer(Modifier.height((layout.u * 1.2f).dp))
+        CubePill(pill, tint, layout.pillW.dp, layout.pillH.dp, pillBusy, onPillBounds, onPill)
+        Spacer(Modifier.height((layout.u * 1f).dp))
+        Box(
+            Modifier.fillMaxWidth().padding(horizontal = (layout.gaugeW * 0.15f).dp).graphicsLayer { alpha = meterAlpha },
+            contentAlignment = if (outerLeft) Alignment.CenterStart else Alignment.CenterEnd
+        ) { CubeMeter(meter, meterIcon, outerLeft, onMeter, layout.meterW.dp, layout.meterH.dp) }
+    }
+}
+
 /**
  * مقاطع الشريط من الأدنى إلى الأعلى: المضاء بتدرّج لون الوضع من الأعمق إلى الأفتح، والمقطع الجزئيّ
  * يمتزج بقدر كسره فلا يقفز الشريط مقطعًا كاملًا. [vertical] ⇒ الأدنى عند القاع، وإلا عند اليسار.
@@ -491,6 +559,22 @@ internal fun FrequencyBar(level: Float?, tint: Color, modifier: Modifier = Modif
 }
 
 @Composable
+internal fun ViewToggle(
+    listView: Boolean, tint: Color, height: Dp, cdList: String, cdGrid: String, onList: () -> Unit, onGrid: () -> Unit
+) {
+    Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(maxRadius(MaxRadius.chip))).background(CubeTile)) {
+        listOf(true to Icons.Rounded.Menu, false to Icons.Rounded.Apps).forEach { (isList, icon) ->
+            Box(
+                Modifier.weight(1f).height(height)
+                    .background(if (listView == isList) lerp(tint, Color.Black, 0.5f) else Color.Transparent)
+                    .clickable(role = Role.RadioButton) { if (isList) onList() else onGrid() }
+                    .semantics { contentDescription = if (isList) cdList else cdGrid },
+                contentAlignment = Alignment.Center
+            ) { Icon(icon, null, tint = CubeInk, modifier = Modifier.size(20.dp)) }
+        }
+    }
+}
+
 /** عنوان قسم صغير فوق قائمة البطاقات: يسمّي ما تفعله القائمة بدل أن تُترك بلا اسم. */
 @Composable
 internal fun SectionCaption(icon: ImageVector, text: String, modifier: Modifier = Modifier) {
