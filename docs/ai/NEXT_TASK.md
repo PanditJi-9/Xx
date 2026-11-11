@@ -1,3 +1,12 @@
+## ROUND-CLOSE-62 — ثلاثة أبواب في نظام التنقّل — 2026-11-11 · DONE_WITH_CONCERNS
+
+**TASK:** `HmaCompanion` بلا باب إلا المُوجِّد، والحارس الذي بُني لمنع ذلك يستثني الجذور.
+
+**SHIPPED:** `HmaCompanion` صار ابنًا لـ`Settings` + صفّه في `SettingsScreen` · `seated` في `Dest` ·
+٣ حرّاس جدد (أبواب الجذور · الخريطة لا تكذب · تغطية المُوجِّد ٦٦/٦٦) · صفر نصّ جديد.
+
+**NEXT:** تعميق صفحات المحاور التي لها ابن واحد بمحتوى حيّ من `core/hardware`.
+
 ## ROUND-CLOSE-61 — فعلٌ واحد بمسار كتابة واحد في استوديو الصوت — 2026-11-11 · DONE_WITH_CONCERNS
 
 **TASK:** شرائح الأنماط داخل `CyberCurveEqualizer` كانت تكتب `AudioEffectService` مباشرةً — مسار ثانٍ

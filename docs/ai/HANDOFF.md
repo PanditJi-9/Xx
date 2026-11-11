@@ -114,6 +114,43 @@ MaxManager has a strong engine and a fragmented surface. `core/maxai` + `core/ha
 **NEXT:** (١) CI: `:app:testReleaseUnitTest` + `:app:compileReleaseKotlin`. (٢) شريحة: علامة «يكتب» على
 صفوف التحكّم مشتقة من مسار المراجِع. (٣) شريحة: موجد واحد بالاسم والقصد. (٤) تعميم `MaxDataTrust`
 على كل قيمة غير متدفّقة. (٥) قرار مالك: حذف `StoryboardHome` أو إعادته.
+### ROUND-CLOSE-62 — ثلاثة أبواب في نظام التنقّل نفسه، لا عطبٌ واحد — 2026-11-11 · DONE_WITH_CONCERNS
+
+**TASK:** `HmaCompanion` وجهةٌ حقيقية (تقيس ما يخفيه مُكمِّل التطبيقات فعلًا وتقارنه بأساس محفوظ) وبابها
+الوحيد في الشجرة كلّها هو **المُوجِّد**: لا صفّ في شاشة ولا اختصار. والعطب الأكبر أنه مرّ من الحارس الذي
+بُني لمنع هذا بالضبط.
+
+**SEARCH FIRST (§0.5):** النظير القائم هو `DestinationDoorTest` نفسه — فلم يُبنَ حارس ثانٍ. القياس كشف
+أنّ شرطه `it.parent != null` يستثني **كل الجذور**، فالثغرة في الحارس لا في الوجهة. وأُغلقت بثلاثة معًا:
+بابٌ للوجهة، وخريطةُ أبوابٍ للجذور، وحارسُ تغطيةٍ للمُوجِّد.
+
+**SHIPPED:**
+1. `ui/navigation/MaxDestinations.kt`: `HmaCompanion` صار `MaxDestination(..., Settings)` بدل جذر — تجاور
+   `ModuleHealth` و`Permissions`: الثلاث «ما الذي يراه غيري من جهازي». ودورها (`hma_companion_scope`)
+   موجود أصلًا في `MaxDestinationCatalog`, فصفر نصّ جديد.
+2. `ui/mainscreens/SettingsScreen.kt`: صفّ `ExpressiveListItem` لها بعد صفّ `ModuleHealth` — بنفس الشكل
+   والرموز، بلا نصّ جديد (يستعمل `titleRes` و`maxDestinationRole`).
+3. `test/.../navigation/DestinationDoorTest.kt`: `Dest` صار يحمل `seated` (`isPrimary = true`)، وأُضيفت
+   **ثلاثة حرّاس**: `every visible root without a bottom bar seat declares its door` (خريطة مُعلَنة بالاسم
+   والملفّ: `MaxAi → LegendaryHomeDashboard.kt` · `DeviceInfo → HomeDeckModel.kt` · `GetStarted →
+   MainActivity.kt`) · `the declared root doors are all still roots` (الخريطة لا تَكذِب بعد اليوم) ·
+   `the finder reaches every visible destination` (٦٦ = ٦٦).
+
+**MEASURED:** `kt_balance --assert` = ٣٣٥١ ملفًا · عوائق ٠ · `@Test` في الحارس **٣ ← ٦** · صفر نصّ جديد ·
+تغطية المُوجِّد **٦٦/٦٦** (مقيسة بـ`sort -u` على ٦٧ سطرًا) · الجذور غير الأساسية **٣** فقط.
+
+**GATES:** تُشغَّل في هذه الجولة (shell `sh_1ca1a642e001M6ntbl8NaFCBIa`) — تُقرأ قبل الالتزام.
+
+**BUILD:** لا يُدّعى. آخر حكم مقروء: `9702313d` success `42996957142` · `014ecdfb` success `42994738935` ·
+`8febbf00` `43000024859` **لم يُقرأ**.
+
+**RESIDUAL RISK:** `MaxAi` بابه بطاقةٌ في السطح لا مقعدٌ دائم — يبقى «بابًا هشًّا» حتى يُقرَّر له مقعد ·
+`DeviceInfo` جذرٌ بسبب وسيط مسار (`?section={section}`) فلا يصلح ابنًا بلا تغيير توقيع · الحرّاس نصّية
+(تقرأ الملفّ لا الشاشة) · الشكل وRTL **يحتاجان جهازًا** · لا مراجعة مستقلة.
+
+**NEXT:** الجذور الثلاثة صارت محروسة؛ الباقي من ع٤ أن صفحات المحاور فهرسُ أبواب — و`GpuHub`/`ThermalHub`/
+`AudioHub` لكلٍّ ابن واحد. تعميقها بمحتوى حيّ من `core/hardware` هو الشريحة التالية.
+
 ### ROUND-CLOSE-61 — فعلٌ واحد بمسار كتابة واحد في استوديو الصوت — 2026-11-11 · DONE_WITH_CONCERNS
 
 **TASK:** `AudioEngineTab` كان يحمل مسارَي كتابة لنفس الفعل: `AudioSoundPresetsSection` يكتب عبر

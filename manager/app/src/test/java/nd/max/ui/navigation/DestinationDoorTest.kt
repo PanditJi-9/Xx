@@ -52,6 +52,8 @@ class DestinationDoorTest {
         val route: String,
         val parent: String?,
         val hidden: Boolean,
+        /** له مقعد دائم في الشريط السفلي ⇒ الشريط نفسه بابه، فلا يُطلب له باب آخر. */
+        val seated: Boolean,
     )
 
     /** كل تسجيل في السجلّ: الاسم والمسار والأب — بتفكيك وسائط متوازن لا بتعبير سطري. */
@@ -91,6 +93,7 @@ class DestinationDoorTest {
                 route = route,
                 parent = parent,
                 hidden = body.contains("hidden = true"),
+                seated = body.contains("isPrimary = true"),
             )
             index = i
         }
@@ -192,5 +195,78 @@ class DestinationDoorTest {
             .filter { it !in names }
 
         assertTrue("آباء غير مسجَّلين: $missing", missing.isEmpty())
+    }
+
+    /**
+     * **الجذور غير الأساسية — الثغرة التي كانت تُمرّر وجهةً بلا باب.**
+     *
+     * الحارس الأوّل يفحص `parent != null` وحده، فكل جذر مرئيّ يمرّ بلا فحص — وهذا بالضبط كيف عاشت
+     * `HmaCompanion` بلا بابٍ إلا المُوجِّد. والجذر لا أبَ له في السجلّ، فلا يوجد ملفّ «أبناء أبيه»
+     * يُفحص؛ فبابه يُعلَن هنا **بالاسم والملفّ**، ومن لا يجد له سطرًا في هذه الخريطة يسقط.
+     *
+     * والمقاعد الدائمة (`isPrimary`) مستثناة: الشريط السفلي هو بابها، ولا يُطلب لها باب ثانٍ.
+     * ومدخل مُعلَن لجذرٍ لم يبقَ جذرًا (أو لم يبقَ) يسقط أيضًا — فالخريطة تُصان بالقانون نفسه.
+     */
+    private val rootDoors = mapOf(
+        // بطاقة المحرّك في السطح الرئيسي — أعلى أولوية في التطبيق بعد السلامة.
+        "MaxAi" to "ui/mainscreens/LegendaryHomeDashboard.kt",
+        // بطاقة معلومات الجهاز في رفّ السطح الرئيسي.
+        "DeviceInfo" to "ui/mainscreens/HomeDeckModel.kt",
+        // شاشة البداية: يفتحها `MainActivity` حين لا يكون التهيئة الأولى قد تمّت.
+        "GetStarted" to "MainActivity.kt",
+    )
+
+    @Test
+    fun `every visible root without a bottom bar seat declares its door`() {
+        val roots = destinations().filter { it.parent == null && !it.hidden && !it.seated }
+        val broken = roots.mapNotNull { root ->
+            val file = rootDoors[root.name]
+            when {
+                file == null -> "${root.name} (جذر بلا باب مُعلَن)"
+                !File(sourceRoot, file).isFile -> "${root.name} → $file (الملف غير موجود)"
+                !read(file).contains("MaxDestination.${root.name}") -> "${root.name} → $file (لا يذكره)"
+                else -> null
+            }
+        }
+
+        assertEquals(
+            "جذور مرئية بلا مقعد في الشريط وبلا باب مُعلَن:\n" + broken.joinToString("\n"),
+            emptyList<String>(),
+            broken,
+        )
+    }
+
+    @Test
+    fun `the declared root doors are all still roots`() {
+        val roots = destinations()
+            .filter { it.parent == null && !it.hidden && !it.seated }
+            .map { it.name }
+            .toSet()
+        val stale = rootDoors.keys - roots
+
+        assertTrue(
+            "أبواب مُعلَنة لجذور لم تعد جذورًا (أو لم تعد) — الخريطة تَكذِب: $stale",
+            stale.isEmpty(),
+        )
+    }
+
+    /**
+     * **المُوجِّد ليس بابًا — لكنه آخر شبكة أمان، فيُحرَس.**
+     *
+     * الباب الحقيقي هو صفّ في شاشة؛ والمُوجِّد بحثٌ يجد الوجهة بكتابتها. ومنعُ الاعتماد عليه كبابٍ
+     * هو ما فعله الحارس أعلاه. لكنه إن فقد وجهةً، صار المستخدم يكتب اسمها فلا يجدها — فتُقاس تغطيته
+     * كاملةً على كل وجهة مرئية، بلا استثناء.
+     */
+    @Test
+    fun `the finder reaches every visible destination`() {
+        val visible = destinations().filter { !it.hidden }.map { it.name }.toSet()
+        val finder = read("ui/mainscreens/ScreenFinderModel.kt")
+        val missing = visible.filter { !finder.contains("MaxDestination.$it") }.sorted()
+
+        assertEquals(
+            "وجهات مرئية لا يجدها المُوجِّد بكتابتها:\n" + missing.joinToString("\n"),
+            emptyList<String>(),
+            missing,
+        )
     }
 }

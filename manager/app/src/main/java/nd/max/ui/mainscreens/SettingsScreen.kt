@@ -483,6 +483,18 @@ fun SettingsScreen(
                                     trailingContent = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null) }
                                 )
                             },
+                            {
+                                // التطبيقات المخفيّة (HMA): قياسُ ما يخفيه المُكمِّل فعلًا ومقارنته بأساس
+                                // محفوظ. كانت جذرًا لا يفتحه إلا المُوجِّد — فصارت صفًّا بجوار صحة الوحدة
+                                // والصلاحيات: الثلاث كلّها «ما الذي يراه غيري من جهازي».
+                                ExpressiveListItem(
+                                    onClick = { MaxNavActions(navController).navigateTo(MaxDestination.HmaCompanion) },
+                                    headlineContent = { Text(stringResource(MaxDestination.HmaCompanion.titleRes)) },
+                                    supportingContent = { Text(stringResource(maxDestinationRole(MaxDestination.HmaCompanion))) },
+                                    leadingContent = { LeadingIcon(icon = MaxDestination.HmaCompanion.icon) },
+                                    trailingContent = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null) }
+                                )
+                            },
                         )
                     )
                 }

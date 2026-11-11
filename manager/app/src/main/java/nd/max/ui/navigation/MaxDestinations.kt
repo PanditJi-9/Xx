@@ -425,7 +425,20 @@ sealed class MaxDestination(
      * تهمّ في الصفّ الأول» (`ApplistScreen.GameLobbyDoor`).
      */
     data object EmulatorHub : MaxDestination("emulatorhub", R.string.emu_hub_title, Icons.Rounded.Apps, Apps)
-    data object HmaCompanion : MaxDestination("hma_companion", R.string.hma_companion_title, Icons.Rounded.Shield, null)
+    /**
+     * **`HMA Companion` — قياسُ ما يخفيه المُكمِّل فعلًا، لا ما يَعِد به.**
+     *
+     * وكانت جذرًا (`parent = null`) وبابها الوحيد في الشجرة كلّها هو **المُوجِّد** — تُكتب في البحث
+     * فتظهر، ولا صفّ لها في أي شاشة ولا اختصار. وهو العطب نفسه الذي بُني `DestinationDoorTest` لمنعه،
+     * لكن الحارس كان يفحص الأبناء وحدهم: كل وجهة `parent != null`. فالجذور كانت **ثغرة الحارس**،
+     * وهذه الوجهة هي الدليل الحيّ عليها.
+     *
+     * وُضعت تحت `Settings` لا تحت `Control`: هي قراءةٌ ومقارنةٌ بأساس محفوظ (عدد التطبيقات المخفيّة
+     * والصلاحيات العريضة وإصدار الوحدة) لا تحكّمٌ في العتاد. وتجاور `ModuleHealth` و`Permissions`
+     * — الثلاث كلّها «ما الذي يراه غيري من جهازي». وكونها ابنًا يجعل الحارس القائم يغطّيها من الآن
+     * بلا قاعدة جديدة.
+     */
+    data object HmaCompanion : MaxDestination("hma_companion", R.string.hma_companion_title, Icons.Rounded.Shield, Settings)
 
     // Control - Advanced tools (gated, not preferences)
     data object SetEdit : MaxDestination("setedit", R.string.max_title_setedit, Icons.Rounded.Edit, Control, MaxRisk.Advanced)
