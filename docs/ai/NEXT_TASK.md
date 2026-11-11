@@ -1,3 +1,22 @@
+## ROUND-CLOSE-72 — ما لم يُطبَّق يُقال، والتاريخ لا يُختلق — 2026-11-11 · DONE_WITH_CONCERNS
+
+**TASK:** `InAppPlan.skipped` يحمل سبب كل مفتاح لم يُطبَّق، وكان يذهب إلى السجلّ وحده — فالواجهة تقول
+«البروفايل يعمل» ولا تقول إن معدّل التحديث سُقط أو إن «عدم الإزعاج» تُرك كما اختاره المستخدم. ومعه:
+`labReport` كانت تطبع 1970 لسجلٍّ `atMs = 0` (سبب فشل `ce777f11` الحقيقيّ).
+
+**SEARCH FIRST (§0.5):** لقطة البروفايل نفسها (`KEY_SAVED` في تفضيلات `"inapp_profile"` بترميز صارم) —
+فأُضيف `last_run` في المخزن نفسه، و`MaxGroup`/`MaxRow`/`MaxTone` في الواجهة. لا مصدر حالة ثانٍ.
+
+**SHIPPED:** `atMs > 0` قبل سؤال التاريخ · `InAppRun`+`InAppRunLog` (ترميز صارم يُقاس في JVM) ·
+`recordRun` في كل مسار خروج من `enter()` · `inAppRunRows`+`knobLabelRes`+`reasonTextRes` ·
+`InAppRunCard` في `AppSettingsScreen` · ١٦ نصًّا en/ar · اختباران (١١ + ٨ `@Test`).
+
+**GATES:** ١٣/١٣ exit 0 + DIFF_OK (`/tmp/opencode/gates-72/`).
+
+**BUILD:** الترجمة غير مُتحقّقة في هذه البيئة — الحكم من CI وحده.
+
+**NEXT:** إعلان الباقي المقطوع في `FasSettingsScreen`/`ConfigBackupScreen`، أو توحيد هويّة الجهاز في «حول».
+
 ## ROUND-CLOSE-71 — شاشة تحتاج تطبيقًا تُوجد ولا تُسقَط — 2026-11-11 · DONE_WITH_CONCERNS
 
 **TASK:** المُوجِّد كان يُسقط ثلاث وجهات حقيقيّة من الفهرس لأنها تحتاج اسم حزمة: `AppSettings`

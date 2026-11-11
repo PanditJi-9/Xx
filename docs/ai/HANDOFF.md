@@ -149,6 +149,65 @@ NeuralDashboardKit.kt:673:12 Syntax error: Expecting a top level declaration.
 **ما لم يُفقد:** `ui/component/PulseArt.kt` و`AmbientGlowCycle.kt` (حذف الملفّين الكاملين من ROUND-CLOSE-63)
 يبقيان محذوفين، وحارس مستوى الملفّ يبقى، وإصلاح استثناء `AppSettings` في `DestinationDoorTest` يبقى.
 
+### ROUND-CLOSE-72 — ما لم يُطبَّق يُقال، والتاريخ لا يُختلق — 2026-11-11 · DONE_WITH_CONCERNS
+
+**TASK:** البروفايل الداخليّ لكل تطبيق يحسب `InAppPlan.skipped: Map<InAppKnob, String>` — **سبب كل
+مفتاح لم يُطبَّق** — ثم يكتبه إلى `AppMonitorLogger.w` وحده، وصفر مستهلك له في `ui/**`. فالمستخدم يرى
+لافتة «البروفايل يعمل» ولا يعلم أن معدّل التحديث سُقط أو أن «عدم الإزعاج» لم يُخفَّض لأن نمطًا أقوى كان
+مفعّلًا. وشكوى المالك «الميزات ليست عملية ولا منطقية» هي هذا بالضبط: عملٌ جرى ولم يُقَل.
+وفي الطريق ظهر العطب الثاني: `labReport` كانت تطبع تاريخًا لسجلٍّ `atMs = 0` — أي **1970** لاختبار لم
+يُجرَّب قط، وهو عين ما منعه اختبار `no date is invented when there is none to print`.
+
+**SEARCH FIRST (§0.5):** النمط القائم هو لقطة البروفايل نفسها: `KEY_SAVED` في تفضيلات `"inapp_profile"`
+بترميز صارم `encodeSaved`/`decodeSaved`. فلم يُنشأ مصدر حالة ثانٍ ولا ملفّ جديد — أُضيف مفتاح `last_run`
+في **المخزن نفسه**، بترميز صارم يُقاس في JVM. وفي الواجهة: `MaxGroup`/`MaxRow`/`MaxTone` القائمة، لا
+صندوق نصّ ثالث.
+
+**SHIPPED:**
+- **`ui/subscreens/DeviceLabTests.kt`** — `labReport` صارت لا تسأل عن تاريخ سجلٍّ `atMs <= 0`:
+  `?.takeIf { record -> record.atMs > 0L }`. **والصفر غيابٌ لا لحظة**، وطبعه يعطي «1970-01-01» — تاريخٌ
+  لم يُجرَّب فيه شيء. وقيل ذلك في تعليق الموضع وفي KDoc الخاص بـ`stamp`.
+- **`core/gamespace/InAppRun.kt` (جديد)** — `InAppRun` (`pkg` · `writes` · `written` · `verified` ·
+  `skipped` · `blocked` · `allVerified` · `refused`) و`InAppRunReason` (`of(token)` لكل رمز حقيقيّ) و
+  `InAppRunLog` (`encode`/`decode` صارم: نسخة `v1` · `SAFE_PKG` · `SAFE_REASON` · أعداد غير سالبة ·
+  `written ≤ writes` · `verified ≤ writes` · knob معروف غير مكرّر · ≤٨ أسطر · أي فساد ⇒ `null`).
+- **`core/gamespace/InAppProfileApplier.kt`** — `recordRun` في **كل** مسار خروج من `enter()`: لا بروفايل ·
+  لا مفاتيح مطلوبة · مسار الأوامر غير جاهز (`blocked = "lane-unavailable"`) · خطة بلا كتابة (التخطّي فقط) ·
+  وبعد التحقّق. والحفظ في `"inapp_profile"` نفسها، وفشله لا يُفشل التطبيق لأن اللقطة هي الحرجة.
+- **`ui/subscreens/InAppRunRows.kt` (جديد)** — `inAppRunRows(run)` دالّة صافية: `null ⇒ [Never]` ·
+  `blocked` أوّلًا ثم التخطّي · `writes > 0 ⇒ [Applied(complete = allVerified)]` ثم التخطّي بترتيب
+  `InAppKnob.entries` · لا شيء ⇒ `[NothingAsked]`. ومعها `knobLabelRes`/`reasonTextRes` كي لا يُترجَم
+  الرمز في الواجهة.
+- **`ui/subscreens/AppSettingsScreen.kt`** — `InAppRunCard(packageName)` داخل `if (inAppProfile)` بعد
+  اللافتة: تقرأ آخر تشغيل **لهذا التطبيق وحده** (`takeIf { it.pkg == pkg }`) وترسم صفوفًا: محجوب ·
+  «كُتب X من Y وتأكّد Z» (+«كل مفتاح كُتب وقُرئ مرتجًعًا» عند الاكتمال) · وتحت كل مقبض متخطًّى **سببه**.
+- **١٦ نصًّا في `values/max_gaming_strings.xml` و`values-ar/max_gaming_strings.xml` فقط** (§0.2):
+  `profile_run_title` · `profile_run_counts` · `profile_run_complete` · `profile_run_blocked` ·
+  `profile_run_none` · `profile_run_never` · `profile_knob_dnd` · `profile_knob_refresh` ·
+  `profile_knob_haptics` · وسبعة `profile_run_reason_*` — وسبب «نمط أقوى مفعّل» يقول صراحةً إنه
+  **تُرك كما اخترته**، لا أنه فشل.
+
+**MEASURED:** `kt_balance --assert` = **٣٣٦٠ ملفًا · عوائق ٠** · `i18n_coverage --assert` = ٨٤ لغة + en ·
+٨٥ كودًا · تطابق OK · ٠ عوائق · `design_tokens --assert` = المجموع ٢٤٩/٣٠٠ · `gen_control_catalog` و
+`gen_catalog_schema` = ٨٨ مدخلًا · ١٩ غير مُخطَّط · `jni_symbols` = ٢٣ تصريحًا · ٠ نواقص · بلا ثنائيات
+⇒ الطبقة ٢ غير مُتحقَّقة · `InAppRunLogTest` = **١١ `@Test`** · `InAppRunRowsTest` = **٨ `@Test`**.
+
+**GATES:** ١٣/١٣ exit 0 + DIFF_OK — السجلّات في `/tmp/opencode/gates-72/`.
+
+**BUILD:** **الترجمة غير مُتحقّقة في هذه البيئة — الحكم من CI وحده.** لا بناء محليّ (§0.1 بأمر المالك:
+«لماذا تبني محليا ومن المفترض من خلال action github فقط؟»). وسبب فشل `ce777f11` كان **اختبارًا حقيقيًّا**
+(`DeviceLabTestsTest` عند ٤٣٠٤ اختبارًا: ١ فشل) لا شبكةً — وقد أُصلح في هذه الدفعة، فأوّل ما يحكم عليه
+CI هو هو.
+
+**RESIDUAL RISK:** البطاقة تقرأ آخر تشغيل فقط، لا سجلًّا زمنيًّا — وهذا مقصود: المستخدم يسأل «ماذا حدث
+الآن؟» لا «ما تاريخ هذا المفتاح» · والقراءة عند تركيب الشاشة (`remember(packageName)`) فلا تتحدّث قبل
+مغادرتها والعودة إليها، والبروفايل يُطبَّق عند الدخول إلى التطبيق لا والشاشة مفتوحة · وشكل البطاقة
+وسط `LazyColumn` **يحتاج جهازًا** · و`blocked` يبقى معروضًا بعد نجاح لاحق حتى يُكتب تشغيل جديد (وهو ما
+يحدث عند أوّل دخول تالٍ) · والمسح لا يمسّ شيئًا آخر: `KEY_SAVED` والعدّادات كما هي.
+
+**NEXT:** إعلان الباقي المقطوع في `FasSettingsScreen`/`ConfigBackupScreen` (المرشّحان الوحيدان المتبقيان
+من مسح الشاشات الضحلة)، أو توحيد هويّة الجهاز في شاشة «حول» إن ثبت أنها تعيد بناء ما يبنيه `DeviceFacts`.
+
 ### ROUND-CLOSE-71 — شاشة تحتاج تطبيقًا تُوجد ولا تُسقَط — 2026-11-11 · DONE_WITH_CONCERNS
 
 **TASK:** `screenFinderTargets` كانت تنتهي بـ`.filterNot { it.needsLaunchArgument }` — وهو حارس

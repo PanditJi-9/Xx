@@ -18,6 +18,7 @@
 
 package nd.max.ui.subscreens
 
+import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.net.Uri
@@ -39,6 +40,8 @@ import androidx.compose.material.icons.outlined.*
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import nd.max.core.gamespace.InAppRun
+import nd.max.core.gamespace.InAppRunLog
 import nd.max.core.gamespace.InAppProfileRules
 import nd.max.core.privilege.ExecutionModeStore
 import nd.max.core.privilege.PrivilegeManager
@@ -66,6 +69,8 @@ import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import kotlin.math.roundToInt
+import nd.max.ui.design.MaxGroup
+import nd.max.ui.design.MaxGroupDivider
 import nd.max.ui.design.MaxCardSpec
 import nd.max.ui.design.MaxCommand
 import nd.max.ui.design.MaxCommandMenu
@@ -74,6 +79,8 @@ import nd.max.R
 import nd.max.ui.component.*
 import nd.max.ui.design.MaxListScreen
 import nd.max.ui.design.MaxAlpha
+import nd.max.ui.design.MaxRow
+import nd.max.ui.design.MaxTone
 import nd.max.ui.design.MaxSectionSpec
 import nd.max.ui.design.MaxSize
 import nd.max.ui.design.MaxSpace
@@ -402,6 +409,9 @@ fun AppSettingsScreen(
                         modifier = Modifier.padding(horizontal = MaxSpace.md)
                     )
                 }
+                // **واللافتة وحدها لا تكفي:** «البروفايل يعمل» جملة صحيحة حتى حين لم يُكتب
+                // مفتاح واحد. فالسطر الذي يقول ما جرى لكل مفتاح يُعرض تحتها، من السجلّ نفسه.
+                if (inAppProfile) item { InAppRunCard(packageName = packageName) }
 
                 // ── مُزالة: الخلفية والبطارية (AR-14) ────────────────────────────
                 // أُزيلت هاتان البطاقتان من هذه الشاشة **بقرار مالك** لا لخطأ فيهما.
@@ -1865,5 +1875,81 @@ fun getAppDetails(context: android.content.Context, packageName: String?): Tripl
         Triple(pm.getApplicationLabel(info).toString(), info, pkgInfo.versionName ?: context.getString(R.string.status_unknown))
     } catch (_: Exception) {
         Triple(context.getString(R.string.unknown_app), null, "0.0.0")
+    }
+}
+
+/**
+ * **آخر تطبيق لبروفايل هذا التطبيق — ما جرى فعلًا.**
+ *
+ * `InAppProfileRules.plan` يحسب `skipped` لكل مفتاح لم يُطبَّق **بسببه** (`zen-mode-already-on`
+ * أي أن نمطًا أقوى اختاره المستخدم تُرك كما هو · `snapshot-unsafe` أي أن القيمة السابقة لا
+ * تُستعاد بأمان فلم يُكتب شيء). وقد كان هذا يُكتب في السجلّ وحده، فلا يراه إلا من يقرأ
+ * `logcat`. والنتيجة أن المستخدم يرى «البروفايل يعمل» ثم لا يفهم لماذا لم يتغيّر معدّل التحديث.
+ *
+ * ولا يُعرض شيء لم يُقرأ: السجلّ يُقرأ من `SharedPreferences("inapp_profile")` وينتمي إلى
+ * الحزمة المعروضة، وإن غاب أو فسد (`InAppRunLog.decode` صارم) يُقال «لم يُنفَّذ بعد» بدل
+ * تخمين نتيجة لم تُسجَّل.
+ */
+@Composable
+private fun InAppRunCard(packageName: String?) {
+    val context = LocalContext.current
+    val run = remember(packageName) {
+        val pkg = packageName ?: return@remember null
+        val prefs = context.getSharedPreferences(InAppRunLog.PREFS, Context.MODE_PRIVATE)
+        InAppRunLog.decode(prefs.getString(InAppRunLog.KEY, null))?.takeIf { it.pkg == pkg }
+    }
+    val rows = remember(run) { inAppRunRows(run) }
+
+    Column(modifier = Modifier.padding(horizontal = MaxSpace.md, vertical = MaxSpace.xs)) {
+        Text(
+            text = stringResource(R.string.profile_run_title),
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(horizontal = MaxSpace.xs, vertical = MaxSpace.sm),
+        )
+        MaxGroup {
+            rows.forEachIndexed { index, row ->
+                if (index > 0) MaxGroupDivider()
+                when (row) {
+                    is InAppRunRow.Blocked -> MaxRow(
+                        title = stringResource(R.string.profile_run_blocked),
+                        subtitle = stringResource(reasonTextRes(row.reason)),
+                        icon = Icons.Rounded.HourglassEmpty,
+                        iconTone = MaxTone.Warning,
+                    )
+
+                    is InAppRunRow.Applied -> MaxRow(
+                        title = stringResource(
+                            R.string.profile_run_counts,
+                            row.written,
+                            row.total,
+                            row.verified,
+                        ),
+                        subtitle = if (row.complete) stringResource(R.string.profile_run_complete) else null,
+                        icon = if (row.complete) Icons.Rounded.CheckCircle else Icons.Rounded.WarningAmber,
+                        iconTone = if (row.complete) MaxTone.Positive else MaxTone.Warning,
+                    )
+
+                    is InAppRunRow.Skipped -> MaxRow(
+                        title = stringResource(knobLabelRes(row.knob)),
+                        subtitle = stringResource(reasonTextRes(row.reason)),
+                        icon = Icons.Rounded.WarningAmber,
+                        iconTone = MaxTone.Warning,
+                    )
+
+                    InAppRunRow.NothingAsked -> MaxRow(
+                        title = stringResource(R.string.profile_run_none),
+                        icon = Icons.Rounded.Info,
+                        iconTone = MaxTone.Neutral,
+                    )
+
+                    InAppRunRow.Never -> MaxRow(
+                        title = stringResource(R.string.profile_run_never),
+                        icon = Icons.Rounded.Info,
+                        iconTone = MaxTone.Neutral,
+                    )
+                }
+            }
+        }
     }
 }

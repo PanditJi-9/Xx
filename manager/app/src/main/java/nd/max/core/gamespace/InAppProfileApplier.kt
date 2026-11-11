@@ -72,15 +72,34 @@ object InAppProfileApplier {
     private suspend fun enter(context: Context, pkg: String): Boolean {
         if (!restoreLeftovers(context)) return false
         if (GameProfileRepository.state.value.loading) GameProfileRepository.load()
-        val config = GameProfileRepository.state.value.profiles[pkg] ?: return true
+        val config = GameProfileRepository.state.value.profiles[pkg]
+        if (config == null) {
+            // **ولا بروفايل ≠ بروفايل فاشل:** يُسجَّل «لا شيء مطلوب» صراحةً، وإلا عرضت الشاشة
+            // نتيجة تشغيل سابق لتطبيق آخر أو لتطبيق كان له بروفايل ثم حُذف.
+            recordRun(context, InAppRun(pkg = pkg, writes = 0, written = 0, verified = 0))
+            return true
+        }
         val wants = InAppProfileRules.wants(config, PerAppRefreshRateController.supportedRates(context))
-        if (!wants.any) return true
+        if (!wants.any) {
+            recordRun(context, InAppRun(pkg = pkg, writes = 0, written = 0, verified = 0))
+            return true
+        }
 
         val before = LinkedHashMap<SettingRef, String?>()
         for (ref in InAppProfileRules.refsFor(wants)) {
             val read = readSetting(ref)
             if (!read.ok) {
                 AppMonitorLogger.w("EVENT=INAPP_PROFILE_SKIPPED pkg=$pkg reason=lane-unavailable")
+                recordRun(
+                    context,
+                    InAppRun(
+                        pkg = pkg,
+                        writes = 0,
+                        written = 0,
+                        verified = 0,
+                        blocked = "lane-unavailable",
+                    ),
+                )
                 return false
             }
             before[ref] = read.value
@@ -89,7 +108,19 @@ object InAppProfileApplier {
         plan.skipped.forEach { (knob, reason) ->
             AppMonitorLogger.w("EVENT=INAPP_PROFILE_SKIPPED knob=$knob pkg=$pkg reason=$reason")
         }
-        if (plan.writes.isEmpty()) return true
+        if (plan.writes.isEmpty()) {
+            recordRun(
+                context,
+                InAppRun(
+                    pkg = pkg,
+                    writes = 0,
+                    written = 0,
+                    verified = 0,
+                    skipped = plan.skipped,
+                ),
+            )
+            return true
+        }
 
         // اللقطة قبل أول كتابة: لو ماتت العملية بعدها وجد الإقلاع التالي ما يُعيده.
         prefs(context).edit().putString(KEY_SAVED, InAppProfileRules.encodeSaved(pkg, plan.saved)).commit()
@@ -103,7 +134,26 @@ object InAppProfileApplier {
         AppMonitorLogger.w(
             "EVENT=INAPP_PROFILE_APPLIED pkg=$pkg writes=${plan.writes.size} written=$written verified=$verified"
         )
+        // **والنتيجة تُكتب للشاشة لا للسجلّ وحده:** عدد ما كُتب وما تأكّد، وما رُفض وسببه.
+        recordRun(
+            context,
+            InAppRun(
+                pkg = pkg,
+                writes = plan.writes.size,
+                written = written,
+                verified = verified,
+                skipped = plan.skipped,
+            ),
+        )
         return true
+    }
+
+    /**
+     * يحفظ ملخّص المحاولة في التفضيلات نفسها التي تحمل اللقطة — لا ملفّ جديد ولا حالة موازية.
+     * فشل الحفظ لا يُفشل التطبيق: اللقطة هي الحرجة، وهذا سجلّ عرض.
+     */
+    private fun recordRun(context: Context, run: InAppRun) {
+        prefs(context).edit().putString(InAppRunLog.KEY, InAppRunLog.encode(run)).commit()
     }
 
     private suspend fun leave(context: Context) {
