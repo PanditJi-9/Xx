@@ -353,6 +353,22 @@ private fun AudioEngineTab(
         },
     )
 
+    // **أنماط الصوت — الطريق الذي كان مبنيًّا بالكامل ولا باب له:** `AudioSoundPresetsSection` (٢٨٠ سطرًا)
+    // و`AudioPresetController` و`applySoundPreset`/`compareSound`/`diagnoseSound` في الـViewModel،
+    // و`AudioSoundPreset` في النواة — كلّها مُصرَّفة، ولا نداء واحد لها من الشاشة. فالمستخدم لا يستطيع
+    // تطبيق نمط صوت واحد. وهي تُوضع **قبل** المقابض اليدويّة: نمط بضغطة واحدة أوّلًا، ثم من أراد ضبطًا
+    // دقيقًا ينزل إلى المعادل. والكتابة تمرّ بالمحكِّم ثمّ تُقرأ بعده، والحكم يُعرض في `KnobVerdictNotice`.
+    //
+    // **والحدّ المُعلَن:** شرائح الأنماط الصغيرة داخل `CyberCurveEqualizer` أدناه ما زالت تكتب عبر
+    // `AudioEffectService` مباشرةً — مسار ثانٍ لنفس الفعل، مكتشَف بالقياس في هذه الجولة. توحيدهما على
+    // المحكِّم شريحة تالية مستقلّة، لأنّ تغييره يمسّ مسار الكتابة ولا يُتحقَّق منه إلّا على جهاز.
+    AudioSoundPresetsSection(
+        state = state,
+        onPreset = { preset, intensity -> viewModel.applySoundPreset(context, preset, intensity) },
+        onCompare = { original -> viewModel.compareSound(context, original) },
+        onDiagnose = { viewModel.diagnoseSound() },
+    )
+
     // معادل الترددات بالمنحنى الانسيابي (Cyber Curve Equalizer)
     CyberCurveEqualizer(
         bands = eqBands,

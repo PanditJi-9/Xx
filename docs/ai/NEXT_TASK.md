@@ -1,3 +1,12 @@
+## ROUND-CLOSE-60 — قدرة صوت كاملة كانت بلا باب — 2026-11-11 · DONE_WITH_CONCERNS
+
+**TASK:** `AudioSoundPresetsSection` + `AudioPresetController` + `applySoundPreset`/`compareSound`/
+`diagnoseSound` مبنيّة بالكامل ولا نداء لها من أيّ شاشة ⇒ وُصلت بتبويب المحرّك.
+
+**SHIPPED:** النداء قبل `CyberCurveEqualizer` · ثلاثة أفعال على الـViewModel · ٣ اختبارات تحرس الباب.
+
+**NEXT:** توحيد مسار الأنماط على المحكِّم (مسار ثانٍ داخل المعادل) · ثم `MaxFxSection`.
+
 ## ROUND-CLOSE-59 — «التالي بلا تجربة» في المختبر — 2026-11-11 · DONE_WITH_CONCERNS
 
 **TASK:** الحصيلة تقول «كم بقي» ولا تقول «أيّها» ⇒ صفّ يُسمّي التالي بترتيب الجدول.

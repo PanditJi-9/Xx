@@ -114,6 +114,41 @@ MaxManager has a strong engine and a fragmented surface. `core/maxai` + `core/ha
 **NEXT:** (١) CI: `:app:testReleaseUnitTest` + `:app:compileReleaseKotlin`. (٢) شريحة: علامة «يكتب» على
 صفوف التحكّم مشتقة من مسار المراجِع. (٣) شريحة: موجد واحد بالاسم والقصد. (٤) تعميم `MaxDataTrust`
 على كل قيمة غير متدفّقة. (٥) قرار مالك: حذف `StoryboardHome` أو إعادته.
+### ROUND-CLOSE-60 — قدرة صوت كاملة كانت بلا باب — 2026-11-11 · DONE_WITH_CONCERNS
+
+**TASK:** العطب ليس تصميميًّا: ميزةٌ بُنيت بالكامل ولا تُرى. `AudioSoundPresetsSection` (٢٨٠ سطرًا) و
+`AudioPresetController` و`applySoundPreset`/`compareSound`/`diagnoseSound` و`AudioSoundPreset` (٦ أنماط)
+كانت كلّها مُصرَّفة في الشجرة، ولا نداء واحد لها من أيّ شاشة — فالمستخدم لا يستطيع تطبيق نمط صوت واحد.
+والبناء يمرّ والاختبارات تمرّ، وهذا بالضبط «ميزة ليست عملية» التي شكا منها المالك.
+
+**SEARCH FIRST (§0.5):** القياس هو الذي وجدها: مسحُ «اسمٌ يظهر مرّة واحدة في الشجرة» على
+`core/**` و`ui/**` أعطى ٩٧ تصريحًا ميتًا (منها مستقبِلات الأدوات التي يسجّلها XML فلا تُحذف، ومعاينات
+`debug/`). ومنها ثلاثة أسطح صوت: `AudioSoundPresetsSection` · `MaxFxSection` · `AudioEffectsSection`.
+**النظير القائم** هو `AudioEngineTab` نفسه: يكتب الأنماط عبر `AudioEffectService.setPreset` مباشرةً.
+فلم يُبنَ سطح ثانٍ — بل وُصل السطح المبنيّ إلى الباب الموجود.
+
+**SHIPPED:**
+- `ui/subscreens/audio/AudioStudioScreen.kt`: نداء `AudioSoundPresetsSection(state, onPreset, onCompare,
+  onDiagnose)` داخل `AudioEngineTab` **قبل** `CyberCurveEqualizer` — نمطٌ بضغطة أوّلًا ثم الضبط اليدويّ —
+  بثلاثة نداءات إلى الـViewModel: `applySoundPreset(context, preset, intensity)` · `compareSound(context,
+  original)` · `diagnoseSound()`. والكتابة تمرّ بالمحكِّم ثم تُقرأ بعده، والحكم يظهر في `KnobVerdictNotice`.
+- `test/.../audio/AudioStudioWiringTest.kt`: ٣ اختبارات تحرس الباب لا الشكل — السطح يُنادى فعلًا · الأفعال
+  الثلاثة موصولة · الأنماط قبل المقابض.
+- **صفر نصّ جديد** (كل نصوص السطح كانت موجودة في en/ar)، وصفر تغيير في مسار الكتابة.
+
+**MEASURED:** `kt_balance --assert` = ٣٣٥٠ ملفًا · عوائق ٠ · `@Test` الجديدة = ٣.
+
+**GATES:** تُشغَّل في هذه الجولة (shell `sh_1c9f5afc800154VydSo5eUYMRx`) — تُقرأ قبل الالتزام.
+
+**BUILD:** لا يُدّعى. آخر حكم مقروء: `9145f2b0` success `42991277850` · `014ecdfb` **لم يُقرأ بعد**.
+
+**RESIDUAL RISK:** شرائح الأنماط الصغيرة **داخل** `CyberCurveEqualizer` ما زالت تكتب عبر
+`AudioEffectService` مباشرةً — مسار ثانٍ لنفس الفعل، مكتشَف بالقياس ولم يُوحَّد (يمسّ مسار كتابة ولا
+يُتحقَّق إلّا على جهاز) · وجود سطحَي أنماط في تبويب واحد يُقرأ تكرارًا حتى يُوحَّد المسار · `presetBusy`
+و`comparingOriginal` وتشغيل الصوت الفعلي **تحتاج جهازًا** · الحارس نصّيّ لا يراه الجهاز · لا مراجعة مستقلة.
+
+**NEXT:** توحيد مسار الأنماط على المحكِّم وحده، ثم `MaxFxSection` (يحتاج `installMaxFx` في الـVM).
+
 ### ROUND-CLOSE-59 — العدّاد يقول «كم»، والصفّ يقول «أيّها» — 2026-11-11 · DONE_WITH_CONCERNS
 
 **TASK:** ROUND-CLOSE-55 أعطت المختبر حصيلة («٣ يعمل · ١ معطوب · ٩ لم يُجرَّب»)، لكن الحصيلة
