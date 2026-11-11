@@ -114,6 +114,34 @@ MaxManager has a strong engine and a fragmented surface. `core/maxai` + `core/ha
 **NEXT:** (١) CI: `:app:testReleaseUnitTest` + `:app:compileReleaseKotlin`. (٢) شريحة: علامة «يكتب» على
 صفوف التحكّم مشتقة من مسار المراجِع. (٣) شريحة: موجد واحد بالاسم والقصد. (٤) تعميم `MaxDataTrust`
 على كل قيمة غير متدفّقة. (٥) قرار مالك: حذف `StoryboardHome` أو إعادته.
+### ROUND-CLOSE-54 — المُوجِّد يُفتح من الإعدادات أيضًا: بحثٌ واحد لا اثنان — 2026-11-11 · DONE_WITH_CONCERNS
+
+**TASK:** صفحة الإعدادات نوعها **Library** («search and filters first» في `DESIGN.md` §Screen
+Composition)، وكانت أطول قائمة في التطبيق بلا مدخل بحث — بينما المُوجِّد موجود ويعمل.
+
+**SEARCH FIRST (§0.5):** وُجد النظير كاملًا: `ScreenFinderModel` يفهرس كل الوجهات بكلمات عربية
+وإنجليزية، و`MaxSearch.kt` دالّة نقية محروسة بـ`ScreenFinderTest`، و`ScreenFinderSheet` تُفتح من
+`ControlScreen` وحده. ⇒ **لم يُبنَ مرشّح ثانٍ ولم يُنشأ مصدر حقيقة ثانٍ**؛ أُتيح المدخل نفسه من
+الإعدادات.
+
+**SHIPPED:** `SettingsScreenTopAppBar` صار يقبل `onSearchClick` ويعرض زرّ بحث قبل زرّ المساعدة
+(النمط نفسه في «منصة التحكم») · `SettingsScreen` تحتفظ بـ`showFinder` وتُركّب `ScreenFinderSheet`
+داخل `RootAppDialog` الجذريّ القائم · فتحُ التبويبات بمسارها (`navigateToPrimary`) كي لا تنشأ نسخة
+ثانية في الرجوع · اختبار جديد في `ScreenFinderTest` يثبت أن الورقة نفسها تُستدعى من الشاشتين.
+
+**MEASURED:** `kt_balance --assert` = **٣٣٥٠ ملفًا · عوائق ٠**. لا نصّ جديد (المفتاح
+`screen_finder_title` مستعمل كما هو) ⇒ صفر أثر على i18n.
+
+**GATES:** تعمل في هذه الجولة؛ النتيجة تُقرأ لا تُدّعى.
+
+**BUILD:** غير مُتحقّقة على هذه الدفعة. حكم `0d5bd41c` (نوع الشاشة) قيد التشغيل.
+
+**RESIDUAL RISK:** الحارس يقرأ النصّ لا السلوك · ظهور الزرّ ومحاذاته في RTL **يحتاج جهازًا** ·
+`ScreenFinderSheet` تُصفّي الوجهات لا صفوف الإعدادات نفسها (صفوف التفضيلات ليست وجهات) — وهذا حدّ
+مُعلَن لا عيب مخفيّ.
+
+**NEXT:** قراءة حكم البناء، ثم M3 (إتاحة/أحجام) وM4 (قياس).
+
 ### ROUND-CLOSE-53 — كل شاشة رئيسية تسمّي نوعها، والحارس يمنع الاسم المجهول — 2026-11-11 · DONE
 
 **TASK:** `DESIGN.md` §Screen Composition يفرض «اختر النوع قبل التخطيط»، وكانت شاشتان فقط من الستّ

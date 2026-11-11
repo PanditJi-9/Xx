@@ -1,3 +1,14 @@
+## ROUND-CLOSE-54 — المُوجِّد من الإعدادات — 2026-11-11 · DONE_WITH_CONCERNS
+
+**TASK:** إتاحة مُوجِّد الشاشات القائم من صفحة الإعدادات (Library: البحث أوّلًا) بلا مرشّح ثانٍ.
+
+**SHIPPED:** زرّ بحث في `SettingsScreenTopAppBar` · `showFinder` + `ScreenFinderSheet` داخل
+`RootAppDialog` · `navigateToPrimary` للتبويبات · اختبار في `ScreenFinderTest`.
+
+**MEASURED:** `kt_balance` ٣٣٥٠/٠ · صفر نصّ جديد.
+
+**NEXT:** حكم البناء، ثم M3/M4.
+
 ## ROUND-CLOSE-53 — نوع الشاشة مسمّى ومحروس — 2026-11-11 · DONE
 
 **TASK:** تسمية نوع كل شاشة رئيسية في KDoc + حارس يمنع الغياب والاسم المجهول.

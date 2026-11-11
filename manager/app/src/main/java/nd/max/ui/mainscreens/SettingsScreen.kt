@@ -136,6 +136,12 @@ fun SettingsScreen(
 
     var showLogBottomSheet by remember { mutableStateOf(false) }
 
+    // **ومُوجِّد الشاشات يُفتح من هنا أيضًا (Library: البحث أوّلًا).** الورقة نفسها التي
+    // تفتحها «منصة التحكم» — لا مرشّح ثانٍ ولا فهرس ثانٍ: `ScreenFinderModel` يغطّي كل
+    // الوجهات بكلماتها العربية والإنجليزية، فمن يبحث عن «النسخ الاحتياطي» يجده من أيّ
+    // صفحة. وكان مدخلها في التحكّم وحده، فيُضطرّ من هو في الإعدادات إلى مغادرتها ليبحث.
+    var showFinder by rememberSaveable { mutableStateOf(false) }
+
     val restartToastText = stringResource(R.string.toast_restarting_service)
 
     val uiState by settingsViewModel.uiState.collectAsStateWithLifecycle()
@@ -275,6 +281,7 @@ fun SettingsScreen(
             topBar = {
                 SettingsScreenTopAppBar(
                     scrollBehavior = scrollBehavior,
+                    onSearchClick = { showFinder = true },
                     onHelpClick = { showScreenHelp = true }
                 )
             },
@@ -744,6 +751,24 @@ fun SettingsScreen(
         ConfirmDialogHost(handle = rebootDialog)
 
         RootAppDialog {
+            // الورقة في جذر التطبيق: نتائجها تعرض شاشات من كل مكان، فيجب أن ترتفع فوق
+            // الشريط السفلي — وهو ما يضمنه تركيبها في مضيف الحوارات الجذريّ.
+            ScreenFinderSheet(
+                visible = showFinder,
+                onDismiss = { showFinder = false },
+                onOpen = { destination ->
+                    showFinder = false
+                    // والتبويبات الأربعة بمسارها الخاصّ: فتحُها بـ`navigateTo` ينشئ نسخةً
+                    // ثانية في الرجوع، فتصير «رجوع» من الإعدادات تُرجع إلى الإعدادات نفسها.
+                    val actions = MaxNavActions(navController)
+                    if (destination.isPrimary) {
+                        actions.navigateToPrimary(destination)
+                    } else {
+                        actions.navigateTo(destination)
+                    }
+                },
+            )
+
             LanguagePickerSheet(
                 visible = showLanguageSheet,
                 selected = currentLanguage,
@@ -852,6 +877,7 @@ fun SettingsSectionTitle(text: String) {
 @Composable
 fun SettingsScreenTopAppBar(
     scrollBehavior: TopAppBarScrollBehavior,
+    onSearchClick: () -> Unit,
     onHelpClick: () -> Unit
 ) {
     val accentIconAlpha by animateFloatAsState(
@@ -883,6 +909,15 @@ fun SettingsScreenTopAppBar(
                 )
             },
             actions = {
+                // **زرّ البحث في الشريط لا في الجسم:** صفحة الإعدادات قائمة طويلة، وحقلٌ
+                // داخل الصفحة كان يُزيح أوّل صفّ إلى أسفل الطيّة. وزرٌّ في الشريط لا يأخذ
+                // من القراءة شيئًا حتى يُستدعى — وهو النمط نفسه في «منصة التحكم».
+                IconButton(onClick = onSearchClick) {
+                    Icon(
+                        imageVector = Icons.Rounded.Search,
+                        contentDescription = stringResource(R.string.screen_finder_title)
+                    )
+                }
                 IconButton(onClick = onHelpClick) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Rounded.HelpOutline,

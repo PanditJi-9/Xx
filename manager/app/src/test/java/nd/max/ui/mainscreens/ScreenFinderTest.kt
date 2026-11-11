@@ -386,4 +386,23 @@ class ScreenFinderTest {
             screenFinderResults("سجل البطارية", targets).firstOrNull()?.destination,
         )
     }
+
+    @Test
+    fun `the finder opens from the settings page too, not only from control`() {
+        // العطب المقصود: الفهرس يغطّي كل الوجهات، لكن مدخله الوحيد كان شريط «التحكّم» — فمن
+        // هو في الإعدادات (وهي أطول قائمة في التطبيق) كان يغادرها ليبحث. والورقة واحدة.
+        val settings = read("ui/mainscreens/SettingsScreen.kt")
+        assertTrue(
+            "SettingsScreen does not host the shared ScreenFinderSheet",
+            settings.contains("ScreenFinderSheet("),
+        )
+        assertTrue(
+            "SettingsScreen has no state that opens the finder",
+            settings.contains("showFinder"),
+        )
+        assertTrue(
+            "ControlScreen no longer hosts the same sheet — two finders would be two truths",
+            read("ui/mainscreens/ControlScreen.kt").contains("ScreenFinderSheet("),
+        )
+    }
 }
