@@ -110,6 +110,7 @@
     <string name="screen_finder_clear">أفرِغ البحث</string>
     <string name="screen_finder_hint">%1$d شاشة في التطبيق — اكتب حرفين من الاسم، أو ممّا تضبطه الشاشة.</string>
     <string name="screen_finder_no_results">لا شيء يطابق «%1$s». جرّب كلمة من اسم الشاشة.</string>
+    <string name="screen_finder_more">%1$d نتيجة أخرى — أكمل الكتابة لتضييقها.</string>
     <string name="screen_finder_where_bar">الشريط السفلي</string>
     <string name="screen_finder_recent">أكثر ما تفتحه</string>
     <string name="logs_visible_count">%1$d معروض</string>

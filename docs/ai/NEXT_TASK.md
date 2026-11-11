@@ -1,3 +1,13 @@
+## ROUND-CLOSE-66 — ما لم يُعرض يُقال، ومفتاح Enter يفتح ما يُرى — 2026-11-11 · DONE_WITH_CONCERNS
+
+**TASK:** المُوجِّد يحدّ النتائج بـ٢٤ **بلا إعلان**، فمن كتب «ال» ظنّ أن لا نتيجة غيرها.
+
+**SHIPPED:** `screenFinderMatchCount` + `screenFinderTopHit` · `FinderNote` يعلن الفرق ·
+`MaxSearchField(onSearch)` بـ`ImeAction.Search` عند وجود فعل فقط · `screen_finder_more` en/ar ·
+٥ اختبارات (٢٤ إجمالًا).
+
+**NEXT:** حكم البناء.
+
 ## ROUND-CLOSE-65 — ثلاثة أبواب بابنٍ واحد تُسقَط من المُوجِّد — 2026-11-11 · DONE_WITH_CONCERNS
 
 **TASK:** `GpuHub`/`ThermalHub`/`AudioHub` تعطي في البحث نقرةً مقابل صفحة فيها سطر واحد.

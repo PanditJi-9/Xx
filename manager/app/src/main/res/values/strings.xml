@@ -153,6 +153,7 @@
     <string name="screen_finder_clear">Clear the search</string>
     <string name="screen_finder_hint">%1$d screens in the app — write two letters from a name, or from what that screen controls.</string>
     <string name="screen_finder_no_results">Nothing matches “%1$s”. Try a word from the screen\'s name.</string>
+    <string name="screen_finder_more">%1$d more match — keep typing to narrow it.</string>
     <string name="screen_finder_where_bar">Bottom bar</string>
     <string name="screen_finder_recent">What you open most</string>
     <string name="logs_visible_count">%1$d shown</string>

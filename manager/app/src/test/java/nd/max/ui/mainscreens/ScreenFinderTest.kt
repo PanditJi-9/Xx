@@ -168,6 +168,63 @@ class ScreenFinderTest {
     }
 
     @Test
+    fun `the count of matches is not the count of rows, and the difference is what is hidden`() {
+        // ثلاثون وجهة تُطابق العبارة نفسها، والسقف أربع وعشرون: الفرق ستٌّ تُعلَن لا تُخفى.
+        val many = (1..30).map { target(MaxDestination.ZramManager, "إدارة الذاكرة $it") }
+        val shown = screenFinderResults("الذاكرة", many)
+        assertEquals(24, shown.size)
+        assertEquals(30, screenFinderMatchCount("الذاكرة", many))
+        assertEquals(30 - shown.size, screenFinderMatchCount("الذاكرة", many) - shown.size)
+    }
+
+    @Test
+    fun `the count is never smaller than what the sheet shows`() {
+        val targets = screenFinderTargets({ "«$it»" })
+        // الخاصيّة التي تحرس الورقة: ما يُعرض لا يزيد على ما يُعلَن. ولو انعكس لقالت
+        // الورقة «لا شيء آخر» وهي تعرض أكثر مما عدّت — وهو العطب الذي جاءت هذه الدالّة لمنعه.
+        listOf("الصوت", "شحن", "gpu", "سجل", "شاشة", "ال").forEach { query ->
+            val shown = screenFinderResults(query, targets)
+            assertTrue("سقف العرض تجاوز ٢٤ لـ«$query»", shown.size <= 24)
+            assertTrue(
+                "المعروض أكثر من المعدود لـ«$query»: ${shown.size} > ${screenFinderMatchCount(query, targets)}",
+                shown.size <= screenFinderMatchCount(query, targets),
+            )
+        }
+    }
+
+    @Test
+    fun `the enter key opens the row that is already at the top of the list`() {
+        val targets = screenFinderTargets({ "«$it»" })
+        // المفتاح لا يفتح نتيجةً ثانية: هو أوّل ما تعرضه الورقة، بالترتيب نفسه.
+        listOf("الصوت", "شحن", "gpu").forEach { query ->
+            assertEquals(
+                "مفتاح Enter لا يفتح أعلى نتيجة لـ«$query»",
+                screenFinderResults(query, targets).first(),
+                screenFinderTopHit(query, targets),
+            )
+        }
+    }
+
+    @Test
+    fun `the enter key does nothing on an empty field or a query that matches nothing`() {
+        // **ولا يُعتمد على السجلّ الحقيقيّ في «لا شيء»:** العبارة التي تبدو بلا معنى قد تُطابق
+        // بعد إسقاط نحو الكلام، فيسقط الاختبار على افتراضٍ لا على عطب (وقع فعلًا: «zzz لا شيء
+        // بهذا الاسم» أعادت نتيجةً لأنّ «الاسم» كلمة في الفهرس). فالفهرس هنا اصطناعيّ ومحدَّد.
+        val only = listOf(target(MaxDestination.ZramManager, "إدارة الذاكرة"))
+        assertNull(screenFinderTopHit("", only))
+        assertNull(screenFinderTopHit("   ", only))
+        assertNull(screenFinderTopHit("qwxzvbn", only))
+    }
+
+    @Test
+    fun `an empty query claims no matches at all`() {
+        val targets = screenFinderTargets({ "«$it»" })
+        // لا «٠ نتيجة» تُكتب في الورقة: الفراغ ليس بحثًا فاشلًا، بل حقلًا لم يُكتب فيه بعد.
+        assertEquals(0, screenFinderMatchCount("", targets))
+        assertEquals(0, screenFinderMatchCount("   ", targets))
+    }
+
+    @Test
     fun `an empty query returns nothing instead of the whole app`() {
         val targets = screenFinderTargets({ "«$it»" })
         assertTrue(screenFinderResults("", targets).isEmpty())

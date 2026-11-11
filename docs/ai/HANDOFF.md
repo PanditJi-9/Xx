@@ -149,6 +149,55 @@ NeuralDashboardKit.kt:673:12 Syntax error: Expecting a top level declaration.
 **ما لم يُفقد:** `ui/component/PulseArt.kt` و`AmbientGlowCycle.kt` (حذف الملفّين الكاملين من ROUND-CLOSE-63)
 يبقيان محذوفين، وحارس مستوى الملفّ يبقى، وإصلاح استثناء `AppSettings` في `DestinationDoorTest` يبقى.
 
+### ROUND-CLOSE-66 — ما لم يُعرض يُقال، ومفتاح Enter يفتح ما يُرى — 2026-11-11 · DONE_WITH_CONCERNS
+
+**TASK:** المُوجِّد يعرض ٢٤ صفًّا **بسقف صامت**. فمن يكتب «ال» يرى أربعة وعشرين ويظنّ أن لا
+نتيجة غيرها، فيتوقّف — لا لأنّ شاشته غير موجودة بل لأنّ الورقة لم تقل إنّها لم تعرضها.
+
+**SEARCH FIRST (§0.5):** وُجد `screenFinderResults(query, targets, limit = 24)` — السقف موجود
+والعدّ **غير مكشوف**. و`grep` على `KeyboardActions|ImeAction` في `ui/design/MaxSearchField.kt`
+⇒ **صفر**، فالحقل لا يملك فعل Enter أصلًا. فلم يُبنَ بحث ثانٍ ولم يُضَف حقل ثانٍ: أُضيف عدّاد
+فوق الدالّة نفسها، ووسيط واحد اختياريّ في الحقل المشترك.
+
+**SHIPPED:**
+- `ScreenFinderModel.kt`: `screenFinderMatchCount(query, targets)` = طول النتائج بلا سقف
+  (`limit = Int.MAX_VALUE`)، و`screenFinderTopHit(query, targets)` = أوّل نتيجة (`limit = 1`).
+  والفراغ ⇒ صفر/`null`: لا «٠ نتيجة» تُكتب على حقلٍ لم يُكتب فيه.
+- `ScreenFinderSheet.kt`: `matchCount` يُحسب بـ`remember(query, targets)`، ويُعرض تحت الصفوف
+  `FinderNote(screen_finder_more, matchCount - list.size)` **فقط** حين يكون الفرق موجبًا.
+  و`onSearch` يفتح `screenFinderTopHit` ثم يُفرغ الحقل.
+- `ui/design/MaxSearchField.kt`: وسيط `onSearch: (() -> Unit)? = null` + `KeyboardOptions`/
+  `KeyboardActions`. **و`ImeAction.Search` يُطلب فقط حين يُمرَّر فعل** — مفتاح بحث لا يفعل شيئًا
+  وعدٌ لا يُوفى، وبقيّة الشاشات العشر تبقى على المفتاح العادي (الوسيط افتراضيّ).
+- نصّ `screen_finder_more` en («%1$d more match — keep typing to narrow it.») / ar
+  («%1$d نتيجة أخرى — أكمل الكتابة لتضييقها.»).
+- `ScreenFinderTest`: ٥ اختبارات — ٣٠ مطابقة تُعرض ٢٤ ويُعلَن ٦ · «المعروض لا يزيد على المعدود»
+  لكل عبارة (وهو العطب نفسه) · الفراغ لا يدّعي مطابقات · Enter يفتح أعلى صفّ حرفيًّا · Enter
+  لا يفعل شيئًا على حقل فارغ أو عبارة بلا نتيجة. **`@Test` = ١٩ ← ٢٤**.
+
+**MEASURED:** `kt_balance --assert` = **٣٣٥٠ ملفًا · عوائق ٠** بعد كل خطوة · `@Test` في
+`ScreenFinderTest` = **٢٤**.
+
+**GATES:** ١١/١١ exit 0 + `DIFF_OK` (مقروءة حرفيًّا).
+
+**BUILD (مقيس محليًّا — §0.1-ب):** التشغيل الأوّل ⇒ **`24 tests completed, 1 failed`**:
+`the enter key does nothing on an empty field or a query that matches nothing` عند
+`ScreenFinderTest.kt:213`. **والسقوط كان في افتراض الاختبار لا في الدالّة:** العبارة
+«zzz لا شيء بهذا الاسم» لا تعني «لا تطابق شيئًا» — فالمُوجِّد يُسقط نحو الكلام ويطابق الكلمات
+الباقية، و«الاسم» كلمة موجودة في الفهرس، فعادت نتيجة. أُصلح الاختبار بفهرس اصطناعيّ محدَّد
+(`target(ZramManager, "إدارة الذاكرة")` + `qwxzvbn`) فلا يعتمد «لا شيء» على محتوى السجلّ.
+**الدرس:** «لا نتيجة» في اختبار هي نفسها افتراض يجب أن يُقاس، لا أن يُكتب.
+**والحكم النهائي مقروء من تقارير JUnit:** `ScreenFinderTest` **tests=24 failures=0 errors=0
+skipped=0** · `DestinationDoorTest` **tests=6 failures=0 errors=0 skipped=0** · **BUILD SUCCESSFUL
+in 7m 26s**.
+
+**RESIDUAL RISK:** «العدد الحقيقي» يُحسب بمكالمة ثانية على الفهرس (بضع عشرات من الصفوف) —
+مقبول لأنّه رخيص، لكنه **حساب مكرَّر** يُعاد في كل حرف يكتبه المستخدم · موضع `FinderNote`
+وشكل مفتاح Enter على لوحة المفاتيح **يحتاجان جهازًا** · الحارس يثبت النموذج لا الرسم · لا
+مراجعة مستقلة.
+
+**NEXT:** قراءة البناء، ثم شريحة تالية.
+
 ### ROUND-CLOSE-65 — ثلاثة أبواب بابنٍ واحد تُسقَط من المُوجِّد — 2026-11-11 · DONE_WITH_CONCERNS
 
 **TASK:** `GpuHub` · `ThermalHub` · `AudioHub` تظهر في نتائج البحث فتُعطي نقرةً كاملة مقابل صفر

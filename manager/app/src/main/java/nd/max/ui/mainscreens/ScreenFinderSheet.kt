@@ -89,6 +89,11 @@ fun ScreenFinderSheet(
     val access = nd.max.ui.navigation.rememberDestinationAccess()
     val targets = remember(context, usage, access) { screenFinderTargets(context::getString, usage, access) }
     val results = screenFinderResults(query, targets)
+    // **وما لم يُعرض يُقال:** النتائج مسقوفة كي تبقى الورقة ورقة، والسقف بلا إعلان يُقرأ
+    // «لا نتيجة غيرها». فيُقاس العدد الحقيقي ويُعلن الفرق تحت الصفوف.
+    val matchCount = remember(query, targets) {
+        if (query.isBlank()) 0 else screenFinderMatchCount(query, targets)
+    }
     val suggestions = if (query.isBlank()) screenFinderSuggestions(targets) else emptyList()
 
     LaunchedEffect(visible) {
@@ -114,6 +119,14 @@ fun ScreenFinderSheet(
             onValueChange = { query = it },
             placeholder = stringResource(R.string.screen_finder_placeholder),
             clearContentDescription = stringResource(R.string.screen_finder_clear),
+            // **ومفتاح Enter يفتح أعلى نتيجة** — لا صفًّا يختاره الحقل بنفسه: هو نفسه أوّل
+            // صفّ في القائمة، فما يفتحه المفتاح يراه المستخدم قبل أن يضغطه.
+            onSearch = {
+                screenFinderTopHit(query, targets)?.let { hit ->
+                    query = ""
+                    onOpen(hit.destination)
+                }
+            },
             modifier = Modifier
                 .padding(horizontal = MaxSpace.gutter, vertical = MaxSpace.sm)
                 .focusRequester(focusRequester),
@@ -169,6 +182,13 @@ fun ScreenFinderSheet(
                                 },
                             )
                         }
+                    }
+                }
+                if (query.isNotBlank() && matchCount > list.size) {
+                    item(key = "screen_finder_more") {
+                        FinderNote(
+                            stringResource(R.string.screen_finder_more, matchCount - list.size),
+                        )
                     }
                 }
                 if (query.isBlank()) {

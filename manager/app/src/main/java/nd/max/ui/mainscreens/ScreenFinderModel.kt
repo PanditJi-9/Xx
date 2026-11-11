@@ -184,6 +184,26 @@ fun screenFinderResults(
         .map { it.target }
 }
 
+/**
+ * **عدد كل المطابقات، بلا سقف — ليُعلَن ما لم يُعرض بدل أن يُقطع صامتًا.**
+ *
+ * `screenFinderResults` تسقُف ما تعرضه (`limit = 24`) كي تبقى الورقة ورقة. لكن السقف بلا
+ * إعلان يعني أن من يكتب «ال» يرى أربعة وعشرين صفًّا ويظنّ أن لا نتيجة غيرها فيتوقّف. فتُقاس
+ * المطابقات كلها هنا (الفهرس بضع عشرات، فالحساب رخيص) وتُعلن الورقة الفرق.
+ *
+ * ولا تُعاد النتائج نفسها مرّتين في الذاكرة: الورقة تعرض المسقوف وتقرأ العدد وحده.
+ */
+fun screenFinderMatchCount(query: String, targets: List<ScreenFinderTarget>): Int =
+    screenFinderResults(query, targets, limit = Int.MAX_VALUE).size
+
+/**
+ * **أوّل نتيجة — أي ما يفتحه مفتاح Enter.** لا ترتيب ثانٍ: هي أوّل ما تعرضه الورقة نفسها،
+ * فالمفتاح لا يفتح شيئًا لا يراه المستخدم في أعلى القائمة. والفراغ ⇒ `null`، فلا فعل لمفتاح
+ * على حقلٍ لم يُكتب فيه.
+ */
+fun screenFinderTopHit(query: String, targets: List<ScreenFinderTarget>): ScreenFinderTarget? =
+    screenFinderResults(query, targets, limit = 1).firstOrNull()
+
 /** كم صفًّا يُقترح قبل أن يكتب المستخدم حرفًا — صفٌّ يُقرأ لا قائمةً تُمرَّر. */
 const val SCREEN_FINDER_SUGGESTIONS = 4
 

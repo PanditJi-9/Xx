@@ -37,8 +37,11 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.input.ImeAction
 
 /**
  * Single-line filter box for a list on the page.
@@ -48,6 +51,10 @@ import androidx.compose.ui.graphics.vector.ImageVector
  *        "Search…" on its own.
  * @param clearContentDescription localized label for the clear button. Pass
  *        null only when the caller renders its own clear affordance.
+ * @param onSearch what the keyboard's **Enter** does. Pass it only when there is a
+ *        single obvious next step (the finder opens the top hit); leaving it null
+ *        keeps the plain return key, because a Search key that does nothing is a
+ *        promise the field cannot keep.
  */
 @Composable
 fun MaxSearchField(
@@ -57,12 +64,19 @@ fun MaxSearchField(
     modifier: Modifier = Modifier,
     icon: ImageVector = Icons.Rounded.Search,
     clearContentDescription: String? = null,
+    onSearch: (() -> Unit)? = null,
 ) {
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
         modifier = modifier.fillMaxWidth(),
         singleLine = true,
+        // **ومفتاح Enter لا يُزيَّن بلا فعل:** `ImeAction.Search` يُطلب فقط حين يمرّر
+        // المستدعي فعلًا، وإلا بقي المفتاح عائدًا عاديًّا. ومفتاح بحث لا يفعل شيئًا وعدٌ لا يُوفى.
+        keyboardOptions = KeyboardOptions(
+            imeAction = if (onSearch != null) ImeAction.Search else ImeAction.Default,
+        ),
+        keyboardActions = KeyboardActions(onSearch = { onSearch?.invoke() }),
         shape = RoundedCornerShape(maxRadius(MaxRadius.row)),
         placeholder = {
             Text(
