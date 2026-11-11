@@ -73,6 +73,37 @@ class DeviceLabTestsTest {
         assertEquals(setOf(LabTestId.SCREEN), mapped.keys)
     }
 
+    @Test
+    fun `an untouched lab counts every test as untried`() {
+        val tally = labTally(emptyMap())
+        assertEquals(0, tally.works)
+        assertEquals(0, tally.faulty)
+        assertEquals(LabTestId.entries.size, tally.untried)
+    }
+
+    @Test
+    fun `the tally adds up to the table and never beyond it`() {
+        val tally = labTally(
+            mapOf(
+                LabTestId.SCREEN to LabOutcome.PASSED,
+                LabTestId.TOUCH to LabOutcome.FAILED,
+            ),
+        )
+        assertEquals(1, tally.works)
+        assertEquals(1, tally.faulty)
+        assertEquals(LabTestId.entries.size - 2, tally.untried)
+        // والعقد: المجموع = عدد البطاقات، فلا بطاقة تُعدّ مرّتين ولا تُسقَط.
+        assertEquals(LabTestId.entries.size, tally.works + tally.faulty + tally.untried)
+    }
+
+    @Test
+    fun `an explicit not-tried verdict counts as untried, not as a result`() {
+        val tally = labTally(mapOf(LabTestId.WIFI to LabOutcome.NOT_RUN))
+        assertEquals(0, tally.works)
+        assertEquals(0, tally.faulty)
+        assertEquals(LabTestId.entries.size, tally.untried)
+    }
+
     /** يقرأ ملف الشاشة من شجرة المصادر، ويُعلن التخطّي حين لا تُوجد (تشغيل من حزمة APK). */
     private fun labScreenSource(): String {
         val root = listOf(

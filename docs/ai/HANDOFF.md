@@ -114,6 +114,41 @@ MaxManager has a strong engine and a fragmented surface. `core/maxai` + `core/ha
 **NEXT:** (١) CI: `:app:testReleaseUnitTest` + `:app:compileReleaseKotlin`. (٢) شريحة: علامة «يكتب» على
 صفوف التحكّم مشتقة من مسار المراجِع. (٣) شريحة: موجد واحد بالاسم والقصد. (٤) تعميم `MaxDataTrust`
 على كل قيمة غير متدفّقة. (٥) قرار مالك: حذف `StoryboardHome` أو إعادته.
+### ROUND-CLOSE-55 — المختبر يقول من نظرة واحدة: كم بقي بلا تجربة — 2026-11-11 · DONE_WITH_CONCERNS
+
+**TASK:** إكمال ما بدأه ROUND-CLOSE-52: النتائج تبقى، لكن الشاشة كانت تعرض ثلاث عشرة بطاقة
+بلا حصيلة، فلا يعرف من يفتحها هل انتهى أم بقي شيء.
+
+**SEARCH FIRST (§0.5):** بحثت عن نظير لعدّاد حالة في الشاشة. الموجود: `LabOutcome.tone`
+(لون البطاقة) و`labOutcomes` (تحويل المحفوظ)، ولا عدّ. فبُنِي العدّ **فوق الجدول نفسه**
+(`LabTestId.entries`) لا فوق قائمة ثانية.
+
+**SHIPPED:**
+- `LabTally(works, faulty, untried)` + `labTally(outcomes: Map<LabTestId, LabOutcome>)` في
+  `ui/subscreens/DeviceLabTests.kt` — جمعٌ نقيّ بلا Android، والغائب عن الخريطة `NOT_RUN`.
+- `DeviceLabScreen`: `val tally = remember(labResults) { labTally(labResults) }`، وصفّ `MaxRow`
+  قبل الشبكة يظهر **فقط** بعد أوّل حكم (`tally.untried < LabTestId.entries.size`) فلا يعلن
+  صفرًا في وجه من لم يبدأ. النبرة `Caution` إن وُجد معطوب، وإلا `Positive`.
+- نصّ `device_lab_tally` en («%1$d work · %2$d faulty · %3$d not tried») وar
+  («%1$d يعمل · %2$d معطوب · %3$d لم يُجرَّب»).
+- ثلاثة اختبارات في `DeviceLabTestsTest`: مختبر بكر ⇒ الكل `untried` · المجموع = عدد البطاقات
+  لا أكثر · `NOT_RUN` صريح يُحتسب بلا تجربة.
+
+**MEASURED:** `kt_balance --assert` = **٣٣٥٠ ملفًا · عوائق ٠** · `i18n_coverage --assert` =
+٨٤+en · ٨٥ كودًا · **عوائق ٠**.
+
+**GATES:** تُشغَّل في هذه الجولة (shell `sh_1c82702fa001oEOpqgnBg4C6Up`) — والنتيجة تُقرأ
+قبل الالتزام، لا تُدّعى.
+
+**BUILD:** لا يُدّعى حكم. تشغيلات `6faeac34` (`42936386747` pending) و`0d5bd41c`
+(`42934856037` in_progress) **عالقة في طابور GitHub** عند آخر قراءة، فلا حكم لأيّهما.
+
+**RESIDUAL RISK:** العدّ يحصي ما كتبه المستخدم لا ما قاسته الأجهزة (ADR-07) · صياغة العدّ
+بلا صيغ جمع عربية (`plurals`) — تُقرأ «١ يعمل» و«٣ يعمل» بالصيغة نفسها · الشكل وRTL على
+الشاشة **يحتاج جهازًا** · الحارس نصّي/نقيّ لا يراه الجهاز.
+
+**NEXT:** قراءة حكم البناء، ثم شريحة تالية بقياس JVM لا بشكل.
+
 ### ROUND-CLOSE-54 — المُوجِّد يُفتح من الإعدادات أيضًا: بحثٌ واحد لا اثنان — 2026-11-11 · DONE_WITH_CONCERNS
 
 **TASK:** صفحة الإعدادات نوعها **Library** («search and filters first» في `DESIGN.md` §Screen

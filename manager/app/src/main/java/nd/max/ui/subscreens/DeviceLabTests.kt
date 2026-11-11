@@ -80,3 +80,30 @@ internal fun labOutcomes(records: Map<String, String>): Map<LabTestId, LabOutcom
     }
     return out
 }
+
+/**
+ * **ملخّص المختبر: كم يعمل، وكم معطوب، وكم لم يُجرَّب بعد.**
+ *
+ * والشاشة كانت تعرض ثلاث عشرة بطاقة، ومن يفتحها لا يعرف من نظرة واحدة هل انتهى أم بقي
+ * شيء. والعدّ لا يُقاس من التطبيق: هو حصيلة أحكام المستخدم، فحسابه جمعٌ لا استنتاج.
+ */
+data class LabTally(val works: Int, val faulty: Int, val untried: Int)
+
+/**
+ * يجمع أحكام البطاقات — وكل اختبار في الجدول يُحتسب مرّة واحدة.
+ *
+ * والغائب عن الخريطة `NOT_RUN` لا صفرًا ولا خطأً: لم يُجرَّب بعد، وهذا ما يقوله العدّ.
+ */
+fun labTally(outcomes: Map<LabTestId, LabOutcome>): LabTally {
+    var works = 0
+    var faulty = 0
+    var untried = 0
+    LabTestId.entries.forEach { test ->
+        when (outcomes[test] ?: LabOutcome.NOT_RUN) {
+            LabOutcome.PASSED -> works++
+            LabOutcome.FAILED -> faulty++
+            LabOutcome.NOT_RUN -> untried++
+        }
+    }
+    return LabTally(works = works, faulty = faulty, untried = untried)
+}

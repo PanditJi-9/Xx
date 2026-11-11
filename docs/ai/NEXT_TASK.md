@@ -1,3 +1,12 @@
+## ROUND-CLOSE-55 — حصيلة المختبر من نظرة واحدة — 2026-11-11 · DONE_WITH_CONCERNS
+
+**TASK:** عدّاد «يعمل · معطوب · لم يُجرَّب» فوق بطاقات المختبر، يظهر بعد أوّل حكم فقط.
+
+**SHIPPED:** `LabTally` + `labTally()` في `DeviceLabTests.kt` · صفّ `MaxRow` في
+`DeviceLabScreen` · نصّ `device_lab_tally` en/ar · ٣ اختبارات.
+
+**NEXT:** حكم البناء، ثم الشريحة التالية.
+
 ## ROUND-CLOSE-54 — المُوجِّد من الإعدادات — 2026-11-11 · DONE_WITH_CONCERNS
 
 **TASK:** إتاحة مُوجِّد الشاشات القائم من صفحة الإعدادات (Library: البحث أوّلًا) بلا مرشّح ثانٍ.

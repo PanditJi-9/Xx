@@ -168,6 +168,7 @@ fun DeviceLabScreen(navController: NavHostController) {
     val labResults = remember(labRecords) {
         labOutcomes(labRecords.mapValues { it.value.outcome })
     }
+    val tally = remember(labResults) { labTally(labResults) }
     var labTarget by remember { mutableStateOf<LabTestId?>(null) }
 
     val speakerError = stringResource(R.string.device_lab_speaker_error)
@@ -190,6 +191,20 @@ fun DeviceLabScreen(navController: NavHostController) {
             title = stringResource(R.string.device_lab_tests_title),
             description = stringResource(R.string.device_lab_tests_desc),
         ) {
+            // **ملخّص الحال قبل البطاقات:** من يفتح المختبر يريد جوابًا واحدًا — كم بقي
+            // بلا تجربة. والصفّ لا يظهر قبل أوّل حكم، فلا يعلن «صفر» في وجه من لم يبدأ.
+            if (tally.untried < LabTestId.entries.size) {
+                MaxRow(
+                    title = stringResource(
+                        R.string.device_lab_tally,
+                        tally.works,
+                        tally.faulty,
+                        tally.untried,
+                    ),
+                    icon = Icons.Rounded.Check,
+                    iconTone = if (tally.faulty > 0) MaxTone.Caution else MaxTone.Positive,
+                )
+            }
             MaxCardGrid(
                 cards = LabTestId.entries.map { test ->
                     val outcome = labResults[test] ?: LabOutcome.NOT_RUN
