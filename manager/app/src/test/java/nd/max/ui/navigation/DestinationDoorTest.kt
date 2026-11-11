@@ -255,18 +255,46 @@ class DestinationDoorTest {
      *
      * الباب الحقيقي هو صفّ في شاشة؛ والمُوجِّد بحثٌ يجد الوجهة بكتابتها. ومنعُ الاعتماد عليه كبابٍ
      * هو ما فعله الحارس أعلاه. لكنه إن فقد وجهةً، صار المستخدم يكتب اسمها فلا يجدها — فتُقاس تغطيته
-     * كاملةً على كل وجهة مرئية، بلا استثناء.
+     * على كل وجهة مرئية **قابلة للفتح بلا وسيط**.
+     *
+     * **والاستثناء ليس تساهلًا بل شرط وجود:** `AppSettings` مسارها `app_settings/{pkg}` — لا تُفتح
+     * بلا حزمة، فإدراجها في المُوجِّد يعني نتيجةً لا تُنفَّذ. وهذا الاستثناء يُقاس لا يُدَّعى:
+     * كل اسم فيه يجب أن يكون وجهةً مرئية **ومسارها يحمل وسيط مسار فعليًّا** (`/{`)، وإلا فشل الاختبار.
+     * فلو صار لـ`AppSettings` مسار بلا وسيط، صار الاستثناء كذبًا يُسقط الحارس.
      */
     @Test
     fun `the finder reaches every visible destination`() {
-        val visible = destinations().filter { !it.hidden }.map { it.name }.toSet()
+        val all = destinations()
+        val visible = all.filter { !it.hidden }
         val finder = read("ui/mainscreens/ScreenFinderModel.kt")
-        val missing = visible.filter { !finder.contains("MaxDestination.$it") }.sorted()
+        val missing = visible
+            .filter { it.name !in finderExclusions }
+            .filter { !finder.contains("MaxDestination.${it.name}") }
+            .map { it.name }
+            .sorted()
 
         assertEquals(
             "وجهات مرئية لا يجدها المُوجِّد بكتابتها:\n" + missing.joinToString("\n"),
             emptyList<String>(),
             missing,
         )
+
+        val stale = finderExclusions.keys.filter { name ->
+            val dest = visible.firstOrNull { it.name == name }
+            dest == null || !dest.route.contains("/{")
+        }
+        assertTrue(
+            "استثناءات مُعلَنة لم تعد تحمل وسيط مسار — أزل الاستثناء وأدرج الوجهة في المُوجِّد: $stale",
+            stale.isEmpty(),
+        )
     }
 }
+
+/**
+ * الوجهات المستثناة من حارس المُوجِّد، **بسببها**.
+ *
+ * ولا تُضاف إليها وجهة لأنها «صعبة»: السبب الوحيد المقبول أنّ فتحها بلا وسيط غير ممكن.
+ */
+private val finderExclusions = mapOf(
+    "AppSettings" to "مسارها app_settings/{pkg} — لا تُفتح بلا حزمة",
+)

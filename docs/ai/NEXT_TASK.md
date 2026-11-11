@@ -1,3 +1,12 @@
+## ROUND-CLOSE-63 — نظافة الكود — 2026-11-11 · DONE_WITH_CONCERNS
+
+**TASK:** حذف ملفّين ميتين بكاملهما · تصحيح ادّعاءين كاذبين في `ContextBridge` · حارس يمنع عودة الميت.
+
+**SHIPPED:** `PulseArt.kt` و`AmbientGlowCycle.kt` محذوفان · تصحيح سطرَي ٢٣ و٨٩ · `ComponentReachabilityTest`
+(٣ اختبارات). `kt_balance` ٣٣٥٠/٠.
+
+**NEXT:** حكم البناء، ثم منظومة التوصيات (وصل أو حذف).
+
 ## ROUND-CLOSE-62 — ثلاثة أبواب في نظام التنقّل — 2026-11-11 · DONE_WITH_CONCERNS
 
 **TASK:** `HmaCompanion` بلا باب إلا المُوجِّد، والحارس الذي بُني لمنع ذلك يستثني الجذور.
