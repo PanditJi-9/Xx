@@ -171,6 +171,39 @@ class DeviceLabTestsTest {
         }
     }
 
+    @Test
+    fun `every tool section offers to record the verdict it sent the user to`() {
+        // الحلقة كانت مقطوعة في طرفها الثاني: البطاقة تُنزل إلى القسم، ثم لا طريق للحكم من
+        // هناك إلا بالتمرير عائدًا إلى أعلى الصفحة. الحارس يمنع عودة القطع: لكل قسم زرّه.
+        val source = labScreenSource()
+        LabToolSection.entries.forEach { section ->
+            assertTrue(
+                "section $section has no LabSectionTrailing, so its card cannot be judged from it",
+                source.contains("LabSectionTrailing(LabToolSection.$section, pendingCard)"),
+            )
+        }
+        assertEquals(
+            "a section is wired twice — one card, one record button",
+            LabToolSection.entries.size,
+            Regex("LabSectionTrailing\\(LabToolSection\\.").findAll(source).count(),
+        )
+    }
+
+    @Test
+    fun `recording from a section consumes the pending card`() {
+        // بعد أن يُفتح الحوار من رأس القسم تُفرَّغ البطاقة، فلا يبقى الزرّ يفتح حوارًا ثانيًا
+        // بعد تسجيل الحكم أو إغلاقه.
+        val source = labScreenSource()
+        assertTrue(
+            "the section record callback does not clear pendingCard",
+            source.contains("pendingCard = null"),
+        )
+        assertTrue(
+            "opening a card from the grid does not clear the stale pending card",
+            Regex("pendingCard = null\\s*\\n\\s*labTarget = test").containsMatchIn(source),
+        )
+    }
+
     private fun labScreenSource(): String {
         val root = listOf(
             File("src/main/java/nd/max"),

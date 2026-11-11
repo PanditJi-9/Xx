@@ -114,6 +114,45 @@ MaxManager has a strong engine and a fragmented surface. `core/maxai` + `core/ha
 **NEXT:** (١) CI: `:app:testReleaseUnitTest` + `:app:compileReleaseKotlin`. (٢) شريحة: علامة «يكتب» على
 صفوف التحكّم مشتقة من مسار المراجِع. (٣) شريحة: موجد واحد بالاسم والقصد. (٤) تعميم `MaxDataTrust`
 على كل قيمة غير متدفّقة. (٥) قرار مالك: حذف `StoryboardHome` أو إعادته.
+### ROUND-CLOSE-58 — الحلقة تُغلق في طرفها الثاني: من الأداة إلى الحكم — 2026-11-11 · DONE_WITH_CONCERNS
+
+**TASK:** `ROUND-CLOSE-57` فتحت طريقًا من البطاقة إلى أداتها (نزول إلى القسم)، لكنها تركت
+الطريق الآخر مقطوعًا: بعد أن يُجرَّب العتاد في القسم، لا سبيل لتسجيل الحكم من هناك إلا بالتمرير
+عائدًا إلى شبكة البطاقات في أعلى الصفحة. أي أن «اذهب إلى الاختبار» تُنزل المستخدم ثم تتركه.
+
+**SEARCH FIRST (§0.5):** لا نظير لزرّ تسجيل في رأس قسم. الموجود `MaxSection.trailing`
+(`ui/design/MaxStructure.kt:85`) يُستدعى دائمًا داخل `Row` الرأس — فاستُعمل بدل بناء شريط
+عائم ثانٍ أو تكرار الحوار. والحوار نفسه (`LabResultDialog`) هو الوحيد الذي يكتب الحكم.
+
+**SHIPPED:**
+- `DeviceLabScreen`: `var pendingCard by remember { mutableStateOf<LabTestId?>(null) }` —
+  البطاقة التي نزلنا منها. `onGoToTest` تُثبتها قبل النزول، والنقر من الشبكة يُفرّغها
+  (`pendingCard = null` قبل `labTarget = test`) فلا يبقى زرّ يخصّ بطاقة قديمة.
+- `@Composable private fun LabSectionTrailing(section, pending, onRecord)` — تُرجع بلا رسم
+  إن لم تكن البطاقة المعلّقة تنتمي إلى القسم، وإلا `IconButton` بأيقونة `Icons.Rounded.Check`
+  و`contentDescription = «سجّل النتيجة: <اسم الاختبار>»`. **قسم واحد يحمل الزرّ، لا ثمانية.**
+- `trailing = { LabSectionTrailing(LabToolSection.X, pendingCard) { test -> labTarget = test; pendingCard = null } }`
+  على الأقسام الثمانية. **مقيس: `grep -c 'LabSectionTrailing(LabToolSection.'` = ٨.**
+  وقسم `Charge` جمع الزرّين في `trailing` واحد: إعادة القياس (`RestartAlt`) والتسجيل فعلان
+  مختلفان، ولم يُستبدل أحدهما بالآخر.
+- نصّ `device_lab_record` = «Record the result: %1$s» / «سجّل النتيجة: %1$s» — en/ar فقط (§0.2).
+- اختباران في `DeviceLabTestsTest`: كل قسم من الثمانية يحمل زرّه والعدد ٨ بالضبط (لا قسم
+  مرّتين) · والتسجيل يُفرّغ البطاقة، وفتح بطاقة من الشبكة يُفرّغ المعلّقة. **١٨ `@Test`.**
+
+**MEASURED:** `kt_balance --assert` = **٣٣٥٠ ملفًا · عوائق ٠** · `i18n_coverage --assert` =
+تطابق الأكواد الثلاثة OK · **عوائق ٠** · `grep -c 'LabSectionTrailing(LabToolSection.'` = **٨**.
+
+**GATES:** تُشغَّل في هذه الجولة (shell `sh_1c848d7c30013Sue8EPJudObUQ`) — تُقرأ قبل الالتزام.
+
+**BUILD:** لا يُدّعى حكم. `d61a2635` (ROUND-CLOSE-57) مدفوعة والمراقبة تعمل، و`16867004` كان
+`in_progress` عند آخر قراءة. `cancelled` ليست نجاحًا ولا فشلًا.
+
+**RESIDUAL RISK:** زرّ التسجيل يبقى في رأس القسم حتى يُسجَّل الحكم أو تُفتح بطاقة أخرى —
+لا يختفي بالمغادرة، وهذا مقصود لكنه قد يُقرأ أثرًا قديمًا · `bringIntoView` والزرّ في RTL
+يحتاجان جهازًا · الحارس نصّي يقيس وجود الزرّ لا وقوع النزول · لا مراجعة مستقلة.
+
+**NEXT:** قراءة حكم البناء، ثم شريحة تالية بقياس JVM.
+
 ### ROUND-CLOSE-57 — من البطاقة إلى الأداة: الزرّ ينزل إلى ما يُجرَّب — 2026-11-11 · DONE_WITH_CONCERNS
 
 **TASK:** إغلاق الحدّ المُعلَن في ROUND-CLOSE-56: عشرة من ثلاثة عشر اختبارًا في المختبر لا طريق من

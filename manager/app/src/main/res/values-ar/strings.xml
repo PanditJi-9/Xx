@@ -3905,6 +3905,7 @@
 <string name="device_lab_result_last">آخر فحص: %1$s</string>
 <string name="device_lab_tally">%1$d يعمل · %2$d معطوب · %3$d لم يُجرَّب</string>
     <string name="device_lab_result_go">اذهب إلى الاختبار</string>
+    <string name="device_lab_record">سجّل النتيجة: %1$s</string>
 <string name="device_lab_section_charge">اختبار الشحن</string>
 <string name="device_lab_charge_desc">ستّ ثوانٍ من القياس: ما تكسبه البطارية فعلًا أو تفقده. والاتجاه من عدّاد الشحنة لا من إشارة المقياس.</string>
 <string name="device_lab_charge_flow">التدفّق</string>

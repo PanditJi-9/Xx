@@ -179,6 +179,10 @@ fun DeviceLabScreen(navController: NavHostController) {
     }
     // البطاقة التي جاء منها التشغيل: يُعاد حوار نتيجتها بعد إغلاق الأداة، فلا يضيع الحكم.
     var pendingVerdict by remember { mutableStateOf<LabTestId?>(null) }
+    // **والبطاقة التي نزلنا منها إلى القسم:** بعد أن يُجرَّب العتاد هناك، لا يُعاد المستخدم
+    // إلى أعلى الصفحة ليبحث عن بطاقته — زرّ التسجيل في رأس القسم نفسه يفتح حوارها. والحلقة
+    // تُغلق في الطرفين: من البطاقة إلى الأداة، ومن الأداة إلى الحكم.
+    var pendingCard by remember { mutableStateOf<LabTestId?>(null) }
 
     val speakerError = stringResource(R.string.device_lab_speaker_error)
     val torchError = stringResource(R.string.device_lab_torch_error)
@@ -222,7 +226,12 @@ fun DeviceLabScreen(navController: NavHostController) {
                         icon = test.icon,
                         description = stringResource(outcome.labelRes),
                         tone = outcome.tone,
-                        onClick = { labTarget = test },
+                        onClick = {
+                            // فتح الحوار من الشبكة يُلغي أي بطاقة معلّقة: زرّ التسجيل في رأس
+                            // قسمٍ ما يخصّ البطاقة التي نزلنا منها، لا البطاقة التي فُتحت الآن.
+                            pendingCard = null
+                            labTarget = test
+                        },
                     )
                 },
                 size = MaxCardSize.Medium,
@@ -233,7 +242,14 @@ fun DeviceLabScreen(navController: NavHostController) {
             modifier = Modifier.bringIntoViewRequester(
                 toolAnchors.getValue(LabToolSection.Screen),
             ),
-            title = stringResource(R.string.device_lab_section_screen)) {
+            title = stringResource(R.string.device_lab_section_screen),
+            trailing = {
+                LabSectionTrailing(LabToolSection.Screen, pendingCard) { test ->
+                    labTarget = test
+                    pendingCard = null
+                }
+            },
+        ) {
             MaxGroup {
                 MaxNavigationRow(
                     title = stringResource(R.string.device_lab_screen_title),
@@ -271,7 +287,14 @@ fun DeviceLabScreen(navController: NavHostController) {
             modifier = Modifier.bringIntoViewRequester(
                 toolAnchors.getValue(LabToolSection.Controls),
             ),
-            title = stringResource(R.string.device_lab_section_controls)) {
+            title = stringResource(R.string.device_lab_section_controls),
+            trailing = {
+                LabSectionTrailing(LabToolSection.Controls, pendingCard) { test ->
+                    labTarget = test
+                    pendingCard = null
+                }
+            },
+        ) {
             MaxGroup {
                 MaxNavigationRow(
                     title = stringResource(R.string.device_lab_buttons_title),
@@ -290,7 +313,14 @@ fun DeviceLabScreen(navController: NavHostController) {
             modifier = Modifier.bringIntoViewRequester(
                 toolAnchors.getValue(LabToolSection.Audio),
             ),
-            title = stringResource(R.string.device_lab_section_audio)) {
+            title = stringResource(R.string.device_lab_section_audio),
+            trailing = {
+                LabSectionTrailing(LabToolSection.Audio, pendingCard) { test ->
+                    labTarget = test
+                    pendingCard = null
+                }
+            },
+        ) {
             MaxGroup {
                 MaxRow(
                     title = stringResource(R.string.device_lab_speaker_title),
@@ -363,6 +393,12 @@ fun DeviceLabScreen(navController: NavHostController) {
             ),
             title = stringResource(R.string.device_lab_section_wifi),
             description = stringResource(R.string.device_lab_wifi_desc),
+            trailing = {
+                LabSectionTrailing(LabToolSection.Wifi, pendingCard) { test ->
+                    labTarget = test
+                    pendingCard = null
+                }
+            },
         ) {
             WifiChannels()
         }
@@ -373,6 +409,12 @@ fun DeviceLabScreen(navController: NavHostController) {
             ),
             title = stringResource(R.string.device_lab_section_cameras),
             description = stringResource(R.string.device_lab_cameras_desc),
+            trailing = {
+                LabSectionTrailing(LabToolSection.Cameras, pendingCard) { test ->
+                    labTarget = test
+                    pendingCard = null
+                }
+            },
         ) {
             CameraTest()
         }
@@ -383,6 +425,12 @@ fun DeviceLabScreen(navController: NavHostController) {
             ),
             title = stringResource(R.string.device_lab_section_radios),
             description = stringResource(R.string.device_lab_radios_desc),
+            trailing = {
+                LabSectionTrailing(LabToolSection.Radios, pendingCard) { test ->
+                    labTarget = test
+                    pendingCard = null
+                }
+            },
         ) {
             RadiosTest()
         }
@@ -401,6 +449,11 @@ fun DeviceLabScreen(navController: NavHostController) {
                         contentDescription = stringResource(R.string.device_lab_charge_again),
                     )
                 }
+                // وزرّ التسجيل بجانبه لا مكانه: إعادة القياس والحكم على النتيجة فعلان مختلفان.
+                LabSectionTrailing(LabToolSection.Charge, pendingCard) { test ->
+                    labTarget = test
+                    pendingCard = null
+                }
             },
         ) {
             ChargeTest(attempt = chargeAttempt)
@@ -410,7 +463,14 @@ fun DeviceLabScreen(navController: NavHostController) {
             modifier = Modifier.bringIntoViewRequester(
                 toolAnchors.getValue(LabToolSection.Hardware),
             ),
-            title = stringResource(R.string.device_lab_section_hardware)) {
+            title = stringResource(R.string.device_lab_section_hardware),
+            trailing = {
+                LabSectionTrailing(LabToolSection.Hardware, pendingCard) { test ->
+                    labTarget = test
+                    pendingCard = null
+                }
+            },
+        ) {
             TorchTest(
                 onError = { scope.launch { snackbar.showSnackbar(torchError) } },
             )
@@ -433,6 +493,8 @@ fun DeviceLabScreen(navController: NavHostController) {
             // **وإلى الأداة مباشرةً:** البطاقات التي لا نافذة لها تُنزل إلى قسمها بدل أن
             // تُترك للحوار وحده، فيصير في الحوار طريقٌ إلى ما يُجرَّب لا إلى الحكم فقط.
             onGoToTest = {
+                // البطاقة تبقى معلّقة حتى يصل المستخدم إلى القسم: زرّ التسجيل هناك يخصّها.
+                pendingCard = test
                 labTarget = null
                 scope.launch {
                     toolAnchors.getValue(test.toolSection()).bringIntoView()
@@ -2032,6 +2094,33 @@ internal fun LabTestId.dialog(): LabTest? = when (this) {
     LabTestId.TOUCH -> LabTest.TOUCH
     LabTestId.BUTTONS -> LabTest.BUTTONS
     else -> null
+}
+
+/**
+ * **زرّ «سجّل النتيجة» في رأس القسم.**
+ *
+ * الحلقة كانت مقطوعة في طرفها الثاني: «اذهب إلى الاختبار» تُنزل إلى القسم، فإذا جُرِّب العتاد
+ * هناك لم يبقَ إلا أن يعود المستخدم بالتمرير إلى أعلى الصفحة ليجد بطاقته ويكتب حكمه. فالزرّ
+ * يظهر في رأس القسم **الذي أمامه** لحظةَ وجود بطاقة معلّقة تنتمي إليه، ويفتح حوارها.
+ *
+ * ولا يُرسم لبطاقة لا تنتمي إلى هذا القسم: قسمٌ واحد يحمل الزرّ، لا ثمانية أزرار متشابهة.
+ */
+@Composable
+private fun LabSectionTrailing(
+    section: LabToolSection,
+    pending: LabTestId?,
+    onRecord: (LabTestId) -> Unit,
+) {
+    val test = pending?.takeIf { it.toolSection() == section } ?: return
+    IconButton(onClick = { onRecord(test) }) {
+        Icon(
+            imageVector = Icons.Rounded.Check,
+            contentDescription = stringResource(
+                R.string.device_lab_record,
+                stringResource(test.titleRes),
+            ),
+        )
+    }
 }
 
 /**
