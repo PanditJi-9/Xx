@@ -149,6 +149,77 @@ NeuralDashboardKit.kt:673:12 Syntax error: Expecting a top level declaration.
 **ما لم يُفقد:** `ui/component/PulseArt.kt` و`AmbientGlowCycle.kt` (حذف الملفّين الكاملين من ROUND-CLOSE-63)
 يبقيان محذوفين، وحارس مستوى الملفّ يبقى، وإصلاح استثناء `AppSettings` في `DestinationDoorTest` يبقى.
 
+### ROUND-CLOSE-70 — المضيف لا يُقترح لنفسه، والسقف لا يُقرأ نهاية — 2026-11-11 · DONE_WITH_CONCERNS
+
+**TASK:** ثلاثة عيوب مقيسة، كلّها في «قدرة تعمل لكنها لا تُصدَّق»:
+1. **ورقة المُوجِّد تقترح الشاشة التي أنت واقف عليها.** الورقة تُفتح من `ControlScreen.kt:210`
+   و`SettingsScreen.kt:768` — وهما أكثر شاشتين تُفتحان — و`screenFinderSuggestions` ترتّب كل ما
+   `usage > 0` وتأخذ أربعة. ⇒ أوّل اقتراح صفٌّ لا يفعل شيئًا عند الضغط، **ويأكل مقعدًا من أربعة**،
+   فيظهر ثلاثة ويُقرأ السقف كأنه السجلّ كلّه.
+2. **سقف بلا عدد يُقرأ نهاية.** `MemoryUfsScreen.kt:318` كان `overlayRejections.take(6)` بلا إعلان
+   الباقي — **وهو الوحيد من ستّ قوائم مقطوعة في `ui/` بلا إعلان** (`DeviceLabScreen` · `BatteryHistory`
+   · `FilePropertiesDialog` ×٢ · `CapabilityMatrixCard` · `FileDrawerContent` كلها تُعلن). ومن رأى
+   ستة أسطر رفض ظنّ ملفّه نظيفًا، والملفّ يُقرأ سطرًا سطرًا ويُرفض كل سطر خاطئ.
+3. **مُسرِّع اختياريّ يسقط حكم الكود كلّه.** بناء `17109558` ثم `a50ff060` فشلا **بنفس الخطوة
+   وحدها**: `Setup ccache for native (NDK) builds` عند `apt-get install ccache` بعطب DNS
+   (`Temporary failure resolving 'security.ubuntu.com'`) — **قبل أن تُترجم سطرًا**. مرّتين متتاليتين.
+
+**SEARCH FIRST (§0.5):** للعيوب الثلاثة نظير قائم، فلم يُبنَ نمط ثانٍ:
+- الاقتراح: `screenFinderResults` نفسها (البحث) — **والاستبعاد للاقتراح وحده**، فمن كتب «الإعدادات»
+  يجدها في النتائج. البحث سؤال صريح، والاقتراح تخمين.
+- الإعلان: `device_lab_codec_more` («+%1$d more formats») و`battery_uid_more` («+%1$d more apps not
+  shown») و`max_files_conflict_more` — النمط نفسه: صفٌّ أخير بالعدد والباقي، لا حذف صامت.
+- CI: `Restore Gradle project state` أعلاه في الملفّ نفسه يعمل بنفس المنطق (تحسين لا شرط).
+
+**SHIPPED:**
+- `ui/mainscreens/ScreenFinderModel.kt`: `screenFinderSuggestions(targets, limit, exclude: Set<String> = emptySet())`
+  — الفلترة صارت `it.usage > 0 && it.destination.route !in exclude`. والـKDoc يقول لماذا الاستبعاد
+  للاقتراح وحده.
+- `ui/mainscreens/ScreenFinderSheet.kt`: وسيط جديد `currentRoute: String? = null`، و
+  `val excludedRoutes = remember(currentRoute) { currentRoute?.let(::setOf) ?: emptySet() }`،
+  و`screenFinderSuggestions(targets, exclude = excludedRoutes)`.
+- `ControlScreen.kt` و`SettingsScreen.kt`: `currentRoute = MaxDestination.Control.route` /
+  `…Settings.route` عند استدعاء الورقة — **المصدر يُعلن موضعه**، لا الورقة تخمّنه.
+- `ui/subscreens/MemoryUfsScreen.kt`: `internal fun <T> overlayRejectionSplit(rejections, limit = 6): Pair<List<T>, Int>`
+  صافية بجوار `OVERLAY_REJECTION_ROWS`، والشاشة تعرض `shownRejections` ثم صفًّا بالباقي
+  (`Icons.Rounded.MoreHoriz` · `MaxTone.Neutral`) عند `hiddenRejections > 0`.
+- نصوص **`values/` و`values-ar/` فقط** (§0.2): `memufs_overlay_rejected_more` =
+  «+%1$d more refused lines» / «+%1$d أسطر أخرى مرفوضة» في `max_screen_strings.xml`.
+- `.github/workflows/build.yml`: `continue-on-error: true` + `id: ccache` على خطوة
+  `hendrikmuhs/ccache-action@v1.2`، و`export NDK_CCACHE="$(command -v ccache || true)"` في خطوة
+  البناء الخلفي (كان `set -e` يُسقطها إن غاب ccache). و`ndk-build` يتجاهل المتغيّر الفارغ.
+
+**MEASURED:** `kt_balance --assert` = **٣٣٥٦ ملفًا · عوائق ٠** (ملفّ الاختبار الجديد) ·
+`ScreenFinderTest` اكتسب اختبارين: `the screen you are standing on is not suggested to you`
+(Control usage 40 مستبعَدًا ⇒ `[Settings, ZramManager]`، و`screenFinderResults("control")` لا يزال
+يعيد `[Control]`) و`excluding the host frees a seat instead of shrinking the list` (٥ أهداف ⇒
+٤ نتائج، والخامس `ZramManager` يدخل لأن المستبعَد حرّر مقعدًا) · `OverlayRejectionSplitTest` = **٦
+`@Test`** (سقف ٦ بالضبط · ١٠ أسطر ⇒ ٦ + ٤ · سقف صفر · سقف سالب لا ينهار · فراغ) ·
+`build.yml` يُحلَّل بـ`yaml.safe_load` = **٥٥ خطوة** والخطوة `continue-on-error: True`.
+
+**GATES:** **١٣/١٣ exit 0 + DIFF_OK** — `kt_balance --assert` (٣٣٥٦/٠) و`--self-test` (١٧ حالة · ٠
+إخفاق) · `code_health --assert` · `i18n_coverage --assert` (٠ عوائق · ٨٥ كودًا) و`--prune all --assert`
+· `design_tokens --assert` · `gen_control_catalog --assert` (٨٨ مدخلًا · ١٦٢ مرشّحًا · ١٩ غير مُخطَّط) ·
+`gen_catalog_schema --assert` · `jni_symbols --assert` (٢٣ تصريحًا · ٠ نواقص · ثنائيات ٠ ⇒ طبقة `.so`
+غير مُتحقّقة) · `resource_compile --assert` (aapt2 حقيقي: كل مجلّدات الموارد تُترجم) ·
+`license_audit --assert` · `test_platform_commands_jvm.py` (صُرّف ٢ ملفًّا · مجموعة ناجحة) ·
+`rtl_guard --assert` · `git diff --check` = DIFF_OK. السجلّات في `/tmp/opencode/gates-70/`.
+
+**BUILD:** **الترجمة غير مُتحقّقة في هذه البيئة — الحكم من CI وحده.** لا بناء محليّ (§0.1 بأمر
+المالك: «لماذا تبني محليا ومن المفترض من خلال action github فقط؟»). وهذه الدفعة **تحمل إصلاح
+المُسرِّع**، فإن نجحت فالفضل لديمومة البناء لا للكود وحده — وإن فشلت قرأتُ `--log-failed` وأصلحتُ في
+الدفعة نفسها.
+
+**RESIDUAL RISK:** شكل الصفّ الأخير (أيقونة `MoreHoriz` بلا وصف) **يحتاج جهازًا** — RTL يقلب
+`SpaceBetween` في العنوان تلقائيًّا ولم يُرَ على شاشة · استبعاد المضيف يخصّ ورقتين فقط: أي مستدعٍ
+جديد ينسى `currentRoute` يعود إلى العطب نفسه (لا حارس يمنعه) · `continue-on-error` على ccache يعني
+أن فشل تثبيته يمرّ صامتًا، فتباطؤ البناء لن يظهر كخطأ (مقصود) · سقف `OVERLAY_REJECTION_ROWS = 6`
+لم يُقدَّر بصريًّا على شاشة صغيرة.
+
+**NEXT:** مرشّح ROUND-CLOSE-71 — `PRODUCT-MAP` ع٥: ١٤ وجهة من ٦٩ بحالة استثنائية (`hidden` ٣ ·
+`MaxRisk.Advanced` ٧ · وسائط مسار ٤) بلا شاشة مراجعة واحدة؛ أو توحيد هويّة الجهاز
+(`CommunityStats` و`AtlasDeviceIdentity` لم تُوحَّدا مع `DeviceFacts`).
+
 ### ROUND-CLOSE-69 — ما يُسجَّل يُمكن نسيانه — 2026-11-11 · DONE_WITH_CONCERNS
 
 **TASK:** ورقة المُوجِّد تعرض «أكثر ما تفتحه» من عدّاد حقيقي، وتكتب بجانب كل صفّ «opened N×» —

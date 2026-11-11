@@ -768,6 +768,9 @@ fun SettingsScreen(
             ScreenFinderSheet(
                 visible = showFinder,
                 onDismiss = { showFinder = false },
+                // **ولا تقترح الورقة الشاشة التي فُتحت منها:** «الإعدادات» ثاني أكثر ما يُفتح،
+                // فكانت تُقترح لنفسها — صفٌّ لا يفعل شيئًا ويأكل مقعدًا من أربعة.
+                currentRoute = MaxDestination.Settings.route,
                 onOpen = { destination ->
                     showFinder = false
                     // والتبويبات الأربعة بمسارها الخاصّ: فتحُها بـ`navigateTo` ينشئ نسخةً

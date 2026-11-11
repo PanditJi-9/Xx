@@ -82,6 +82,9 @@ fun ScreenFinderSheet(
     visible: Boolean,
     onDismiss: () -> Unit,
     onOpen: (MaxDestination) -> Unit,
+    // **الشاشة التي فُتحت منها الورقة** — تُستبعد من الاقتراح وحدها، لأن المضيف أكثر ما
+    // يُفتح فيُزاحم الاقتراحات بمقعدٍ لا يفعل شيئًا. والبحث الصريح يجدها كما يجد غيرها.
+    currentRoute: String? = null,
 ) {
     val context = LocalContext.current
     var query by rememberSaveable { mutableStateOf("") }
@@ -118,7 +121,12 @@ fun ScreenFinderSheet(
     val matchCount = remember(query, targets) {
         if (query.isBlank()) 0 else screenFinderMatchCount(query, targets)
     }
-    val suggestions = if (query.isBlank()) screenFinderSuggestions(targets) else emptyList()
+    val excludedRoutes = remember(currentRoute) { currentRoute?.let(::setOf) ?: emptySet() }
+    val suggestions = if (query.isBlank()) {
+        screenFinderSuggestions(targets, exclude = excludedRoutes)
+    } else {
+        emptyList()
+    }
 
     LaunchedEffect(visible) {
         if (visible) {

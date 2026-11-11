@@ -824,6 +824,7 @@
     <string name="memufs_overlay_rejected_title">أسطر لم تُقبل</string>
     <string name="memufs_overlay_rejected_desc">يُقرأ الملفّ سطرًا سطرًا؛ والسطر الخاطئ يُرفض بسببه ولا يُسقِط بقية الملفّ.</string>
     <string name="memufs_overlay_rejected_line">السطر %1$d: %2$s</string>
+    <string name="memufs_overlay_rejected_more">+%1$d أسطر أخرى مرفوضة</string>
     <string name="memufs_overlay_reason_shape">يجب أن يكون السطر: اسم-الجهاز ثم الصنف فقط</string>
     <string name="memufs_overlay_reason_name">اسم الجهاز ليس مقطعًا واحدًا</string>
     <string name="memufs_overlay_reason_kind">صنف غير معروف — استعمل memory أو storage</string>

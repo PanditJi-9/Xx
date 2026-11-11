@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.DeveloperBoard
 import androidx.compose.material.icons.rounded.Memory
+import androidx.compose.material.icons.rounded.MoreHoriz
 import androidx.compose.material.icons.rounded.Storage
 import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.material3.MaterialTheme
@@ -315,7 +316,9 @@ fun MemoryUfsScreen(
                             icon = Icons.Rounded.DeveloperBoard,
                             iconTone = MaxTone.Caution,
                         )
-                        state.overlayRejections.take(OVERLAY_REJECTION_ROWS).forEach { rejection ->
+                        val (shownRejections, hiddenRejections) =
+                            overlayRejectionSplit(state.overlayRejections)
+                        shownRejections.forEach { rejection ->
                             MaxRow(
                                 title = stringResource(
                                     R.string.memufs_overlay_rejected_line,
@@ -323,6 +326,20 @@ fun MemoryUfsScreen(
                                     rejection.text,
                                 ),
                                 subtitle = overlayReasonText(rejection.reason),
+                            )
+                        }
+                        // **وما لم يُعرض يُقال:** ستة أسطر سقفًا كي لا يدفن قسمُ الرفض بقية
+                        // الشاشة، لكن السقف بلا عدد يُقرأ «هذا كل ما رُفض» — فيظنّ المستخدم أن
+                        // ملفّه نظيف بعد أوّل ستة، والملفّ يُقرأ كاملًا أصلًا (الوصف فوق يقول
+                        // ذلك). العدد هنا هو الفرق بين «هذا القسم» و«هذا أوّله».
+                        if (hiddenRejections > 0) {
+                            MaxRow(
+                                title = stringResource(
+                                    R.string.memufs_overlay_rejected_more,
+                                    hiddenRejections,
+                                ),
+                                icon = Icons.Rounded.MoreHoriz,
+                                iconTone = MaxTone.Neutral,
                             )
                         }
                     }
@@ -692,6 +709,22 @@ private fun overlayReasonText(reason: String): String = stringResource(
 
 /** أقصى عدد أسطر مرفوضة تُعرض: الملفّ القصير يكفي، وقائمة لا تنتهي تُخفي المهمّ. */
 private const val OVERLAY_REJECTION_ROWS = 6
+
+/**
+ * يفصل أسطر الرفض المعروضة عن عدد الباقي — **دالّة صافية تُقاس في JVM**.
+ *
+ * والاختصار مشروع: ملفّ تجاوزات طويل يدفن قسم التراجع تحته، والغاية أن يرى المستخدم **أن**
+ * هناك أسطرًا مرفوضة **ولماذا**، لا أن يقرأ الملفّ كلّه داخل الشاشة. لكنّ الاختصار بلا عدد
+ * يُقرأ «هذا كل ما رُفض» — والملفّ يُقرأ كاملًا ويُحكم عليه سطرًا سطرًا. فمن رأى ستة أسطر
+ * وظنّها النهاية يظنّ ملفّه سليمًا وهو ليس كذلك. والعدد يُغلق هذا الفهم الخاطئ بلا كشف السطور.
+ */
+internal fun <T> overlayRejectionSplit(
+    rejections: List<T>,
+    limit: Int = OVERLAY_REJECTION_ROWS,
+): Pair<List<T>, Int> {
+    val shown = rejections.take(limit.coerceAtLeast(0))
+    return shown to (rejections.size - shown.size)
+}
 
 /**
  * موضع الأرضية على الشريط: صفر = «بلا أرضيّة»، و`i+1` = الدرجة `i` من السلّم المُعلن.

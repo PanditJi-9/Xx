@@ -341,6 +341,54 @@ class ScreenFinderTest {
     }
 
     @Test
+    fun `the screen you are standing on is not suggested to you`() {
+        val targets = listOf(
+            target(MaxDestination.Control, "Control", usage = 40),
+            target(MaxDestination.Settings, "Settings", usage = 12),
+            target(MaxDestination.ZramManager, "ZRAM", usage = 3),
+        )
+        assertEquals(
+            "المضيف لا يُقترح لنفسه: صفٌّ لا يفعل شيئًا عند الضغط ويأكل مقعدًا من أربعة",
+            listOf(MaxDestination.Settings, MaxDestination.ZramManager),
+            screenFinderSuggestions(
+                targets,
+                exclude = setOf(MaxDestination.Control.route),
+            ).map { it.destination },
+        )
+        assertEquals(
+            "والاستبعاد للاقتراح وحده: من كتب اسم المضيف يجده في النتائج",
+            listOf(MaxDestination.Control),
+            screenFinderResults("control", targets).map { it.destination },
+        )
+    }
+
+    @Test
+    fun `excluding the host frees a seat instead of shrinking the list`() {
+        val targets = listOf(
+            target(MaxDestination.Control, "Control", usage = 50),
+            target(MaxDestination.Settings, "Settings", usage = 40),
+            target(MaxDestination.Logs, "Logs", usage = 30),
+            target(MaxDestination.MemoryHub, "Memory", usage = 20),
+            target(MaxDestination.ZramManager, "ZRAM", usage = 10),
+        )
+        val withoutHost = screenFinderSuggestions(
+            targets,
+            exclude = setOf(MaxDestination.Control.route),
+        )
+        assertEquals(
+            "السقف أربعة، والمستبعَد يُحرّر مقعده للخامس ولا يُنقص القائمة",
+            listOf(
+                MaxDestination.Settings,
+                MaxDestination.Logs,
+                MaxDestination.MemoryHub,
+                MaxDestination.ZramManager,
+            ),
+            withoutHost.map { it.destination },
+        )
+        assertEquals(SCREEN_FINDER_SUGGESTIONS, withoutHost.size)
+    }
+
+    @Test
     fun `a screen that carries risk says so, and an ordinary one says nothing`() {
         assertEquals(
             R.string.max_risk_advanced,
@@ -373,6 +421,11 @@ class ScreenFinderTest {
         assertTrue(
             "والمُوجِّد لا يخترع عدّادًا ثانيًا",
             !read("ui/mainscreens/ScreenFinderSheet.kt").contains("getSharedPreferences"),
+        )
+        assertTrue(
+            "والمضيف لا يُقترح لنفسه: كل مستدعٍ يمرّر مسار شاشته",
+            read("ui/mainscreens/ControlScreen.kt").contains("currentRoute = MaxDestination.Control.route") &&
+                read("ui/mainscreens/SettingsScreen.kt").contains("currentRoute = MaxDestination.Settings.route"),
         )
     }
 

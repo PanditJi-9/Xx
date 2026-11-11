@@ -210,6 +210,9 @@ fun ControlScreen(navController: NavHostController) {
         ScreenFinderSheet(
             visible = showFinder,
             onDismiss = { showFinder = false },
+            // **ولا تقترح الورقة الشاشة التي فُتحت منها:** «التحكّم» أكثر ما يُفتح، فكان أوّل
+            // اقتراح فيها هو هي — صفٌّ لا يفعل شيئًا ويأكل مقعدًا من أربعة.
+            currentRoute = MaxDestination.Control.route,
             onOpen = { destination ->
                 showFinder = false
                 // **والتبويبات الأربعة بمسارها الخاصّ:** فتحُها بـ`navigateTo` ينشئ نسخةً ثانية

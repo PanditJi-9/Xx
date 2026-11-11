@@ -578,7 +578,16 @@ jobs:
           fi
           echo "✅ NDK toolchain OK: $(command -v clang) · $(command -v ndk-build)"
 
+      # ⚠️ **ccache تحسينٌ لا شرط** (تكملة ٢٩٢): فشلت هذه الخطوة **مرّتين متتاليتين** بعطب DNS
+      # داخل الـrunner (`Temporary failure resolving 'security.ubuntu.com'`) أثناء
+      # `apt-get install ccache` — **قبل أن تُترجم سطرًا واحدًا**. فسقط حكم الكود كلّه بسبب
+      # مُسرِّعٍ اختياريّ: `ccache` لا يغيّر مخرَجًا، بل يعيد استعمال ما بُني. والبناء الأصلي
+      # يعمل بلا `ccache` (`NDK_CCACHE` صار اختياريًّا في الخطوتين أدناه، و`ndk-build` يتجاهل
+      # الفراغ). ⇒ فشلُ التهيئة يُعلَن تحذيرًا ويُكمل، ويبقى الحكم على الكود مقروءًا. وما يُفقد
+      # عند الفشل: سرعة إعادة البناء وحدها. وهذا نظير `Restore Gradle project state` أعلاه.
       - name: Setup ccache for native (NDK) builds
+        id: ccache
+        continue-on-error: true
         uses: hendrikmuhs/ccache-action@v1.2
         with:
           key: ndk-build-${{ runner.os }}
@@ -862,7 +871,7 @@ jobs:
           (
             (
               set -e
-              export NDK_CCACHE="$(command -v ccache)"
+              export NDK_CCACHE="$(command -v ccache || true)"
               if [ "$V_TYPE" == "experimental" ]; then
                 rust_profile=""
                 ndk_debug="NDK_DEBUG=1"

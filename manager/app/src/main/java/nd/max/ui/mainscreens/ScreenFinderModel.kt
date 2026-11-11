@@ -212,12 +212,19 @@ const val SCREEN_FINDER_SUGGESTIONS = 4
  *
  * **ولا اقتراح بلا سجلّ:** من لم يفتح شيئًا (أو أوّل تشغيل) تُعاد قائمة فارغة، ويُعرض سطر الشرح
  * وحده — ولا تُعرض «اقتراحات» من الصفر هي أعلى الصفر، فهذا ترتيب لا مقياس خلفه.
+ *
+ * **ولا تُقترح الشاشة التي أنت واقف عليها** (`exclude`): الورقة تُفتح من «التحكّم» ومن
+ * «الإعدادات»، وهما أكثر شاشتين تُفتحان في التطبيق أصلًا — فأوّل ما كان يُقترح هو المضيف نفسه،
+ * والصفّ لا يفعل شيئًا عند الضغط لأنك فيه. والأسوأ أنه يأكل مقعدًا من أربعة، فيظهر ثلاثة
+ * اقتراحات ويُقرأ السقف كأنه كل ما في السجلّ. والاستبعاد **للاقتراح وحده**: من كتب «الإعدادات»
+ * يجدها في النتائج، لأن البحث سؤال صريح والاقتراح تخمين.
  */
 fun screenFinderSuggestions(
     targets: List<ScreenFinderTarget>,
     limit: Int = SCREEN_FINDER_SUGGESTIONS,
+    exclude: Set<String> = emptySet(),
 ): List<ScreenFinderTarget> = targets
-    .filter { it.usage > 0 }
+    .filter { it.usage > 0 && it.destination.route !in exclude }
     .sortedWith(
         compareByDescending<ScreenFinderTarget> { it.usage }.thenBy { maxSearchFold(it.title) }
     )
