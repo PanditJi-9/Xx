@@ -114,6 +114,42 @@ MaxManager has a strong engine and a fragmented surface. `core/maxai` + `core/ha
 **NEXT:** (١) CI: `:app:testReleaseUnitTest` + `:app:compileReleaseKotlin`. (٢) شريحة: علامة «يكتب» على
 صفوف التحكّم مشتقة من مسار المراجِع. (٣) شريحة: موجد واحد بالاسم والقصد. (٤) تعميم `MaxDataTrust`
 على كل قيمة غير متدفّقة. (٥) قرار مالك: حذف `StoryboardHome` أو إعادته.
+### ROUND-CLOSE-56 — جرّبتَ الآن، فقل ما رأيت الآن: الحكم يعود بعد الأداة — 2026-11-11 · DONE_WITH_CONCERNS
+
+**TASK:** كان مسار الاختبار في المختبر ينقطع في منتصفه: تُفتح بطاقة ← «شغّل الاختبار» ← تُفتح
+الأداة ← تُغلق الأداة ← **لا شيء**. حوار النتيجة أُغلق قبل التشغيل، فمن أراد أن يكتب حكمه عاد
+إلى الشبكة يبحث عن البطاقة نفسها. والمنطق أن يُعاد الحوار فور إغلاق الأداة: ما جرى الآن هو ما
+يُحكم عليه الآن.
+
+**MEASURED قبل:** `onRun = { labTarget = null; openTest = test.dialog() }` — يُفرغ البطاقة قبل
+التشغيل ولا يحتفظ بها · `onDismiss` للأدوات الثلاث = `{ openTest = null }` فقط · لا دالّة معكوسة
+من `LabTest` إلى `LabTestId`.
+
+**SHIPPED:**
+- `LabTest.verdictId(): LabTestId` — معكوس `LabTestId.dialog()`، مكتوب صراحةً لا مُستنتَجًا.
+- `LabTestId.dialog()` و`LabTest` صارا `internal` ليقيسهما الاختبار (كانا `private`).
+- `pendingVerdict` في الشاشة: `onRun` يحفظ البطاقة ثم يفتح الأداة · و`closeTest` (واحد للأدوات
+  الثلاث لا ثلاثة متكرّرة) يُغلق الأداة ويعيد `labTarget = pendingVerdict` ثم يُفرغه.
+- **ولا يُكتب حكم بالإغلاق:** `onPick` وحده يكتب في `LabResultStore` — الإغلاق بلا قرار لا يغيّر
+  شيئًا (ADR-07).
+
+**MEASURED بعد:** ثلاثة اختبارات في `DeviceLabTestsTest`:
+`every tool dialog knows which card it belongs to` (دورة ذهاب وعودة لكل أدوات `LabTest.entries`) ·
+`only the three full-screen tests claim a tool` (القائمة = SCREEN · TOUCH · BUTTONS، فلا يُدّعى
+حوارٌ لعشرة) · `closing a test returns to the verdict it came from` (الحارس النصّي على الوصل).
+`kt_balance --assert` = **٣٣٥٠ ملفًا · عوائق ٠**.
+
+**GATES:** تُقرأ قبل الالتزام (shell `sh_1c83f39e20013C7O8aM0DBg8R8`) — لا ادّعاء.
+
+**BUILD:** لا يُدّعى حكم لهذه الدفعة. آخر حكم `MaxManager` **success** = `8c76e479`
+(`42937045520`)، و`6faeac34`/`0d5bd41c` **cancelled** بسبب تشغيل عالق حجب الطابور (لا عطب كود).
+
+**RESIDUAL RISK:** العشرة الأخرى أدواتها صفوف في الشاشة لا حوارات، فالحوار لا ينقل إليها — حدّ
+مُعلَن مثبَّت بالاختبار الثاني، وحلّه إمّا تمرير إلى قسم أو دمج البطاقة بأداتها (إعادة تركيب، لا
+تُبنى بلا قرار) · الشكل وRTL واللمس **يحتاج جهازًا** · لا مراجعة مستقلة.
+
+**NEXT:** الحدّ المتبقّي: وصل العشرة الباقية بأدواتها، أو شريحة أخرى بقياس JVM.
+
 ### ROUND-CLOSE-55 — المختبر يقول من نظرة واحدة: كم بقي بلا تجربة — 2026-11-11 · DONE_WITH_CONCERNS
 
 **TASK:** إكمال ما بدأه ROUND-CLOSE-52: النتائج تبقى، لكن الشاشة كانت تعرض ثلاث عشرة بطاقة

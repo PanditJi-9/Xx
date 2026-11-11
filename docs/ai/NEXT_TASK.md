@@ -1,3 +1,14 @@
+## ROUND-CLOSE-56 — الحكم يعود بعد الأداة — 2026-11-11 · DONE_WITH_CONCERNS
+
+**TASK:** إعادة حوار النتيجة بعد إغلاق أداة الاختبار، فلا يضيع الحكم بين الشبكة والأداة.
+
+**SHIPPED:** `LabTest.verdictId()` (معكوس `LabTestId.dialog`) · `pendingVerdict` + `closeTest`
+واحد · `LabTest`/`dialog()` صارا `internal` · ٣ اختبارات.
+
+**MEASURED:** `kt_balance` ٣٣٥٠/٠ · صفر نصّ جديد.
+
+**NEXT:** وصل العشرة الباقية بأدواتها، أو شريحة بقياس JVM.
+
 ## ROUND-CLOSE-55 — حصيلة المختبر من نظرة واحدة — 2026-11-11 · DONE_WITH_CONCERNS
 
 **TASK:** عدّاد «يعمل · معطوب · لم يُجرَّب» فوق بطاقات المختبر، يظهر بعد أوّل حكم فقط.

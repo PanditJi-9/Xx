@@ -104,6 +104,43 @@ class DeviceLabTestsTest {
         assertEquals(LabTestId.entries.size, tally.untried)
     }
 
+    @Test
+    fun `every tool dialog knows which card it belongs to`() {
+        // العطب الذي يمنعه: أداة تُفتح من بطاقة ثم لا يُعرف إلى أيّ بطاقة تعود، فيضيع الحكم
+        // أو يُكتب على اختبار آخر. والدالّتان معكوستان إحداهما للأخرى — وهذا ما يُقاس هنا.
+        LabTest.entries.forEach { tool ->
+            assertEquals(
+                "أداة بلا بطاقة تعود إليها: $tool",
+                tool,
+                tool.verdictId().dialog(),
+            )
+        }
+    }
+
+    @Test
+    fun `only the three full-screen tests claim a tool`() {
+        // الحدّ المُعلَن: عشرة اختبارات أدواتها صفوف في الشاشة لا حوارات كاملة، فلا يُدّعى
+        // أن لكلّ الثلاثة عشر حوارًا. وهذا الاختبار يثبّت القائمة فلا تزيد صامتة ولا تنقص.
+        val withTool = LabTestId.entries.filter { it.dialog() != null }
+        assertEquals(
+            listOf(LabTestId.SCREEN, LabTestId.TOUCH, LabTestId.BUTTONS),
+            withTool,
+        )
+    }
+
+    @Test
+    fun `closing a test returns to the verdict it came from`() {
+        val source = labScreenSource()
+        assertTrue(
+            "الشاشة لا تحتفظ بالبطاقة التي جاء منها التشغيل",
+            source.contains("pendingVerdict"),
+        )
+        assertTrue(
+            "إغلاق الأداة لا يعيد حوار الحكم",
+            source.contains("labTarget = pendingVerdict"),
+        )
+    }
+
     /** يقرأ ملف الشاشة من شجرة المصادر، ويُعلن التخطّي حين لا تُوجد (تشغيل من حزمة APK). */
     private fun labScreenSource(): String {
         val root = listOf(

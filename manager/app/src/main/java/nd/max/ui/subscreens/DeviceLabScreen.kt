@@ -170,6 +170,8 @@ fun DeviceLabScreen(navController: NavHostController) {
     }
     val tally = remember(labResults) { labTally(labResults) }
     var labTarget by remember { mutableStateOf<LabTestId?>(null) }
+    // البطاقة التي جاء منها التشغيل: يُعاد حوار نتيجتها بعد إغلاق الأداة، فلا يضيع الحكم.
+    var pendingVerdict by remember { mutableStateOf<LabTestId?>(null) }
 
     val speakerError = stringResource(R.string.device_lab_speaker_error)
     val torchError = stringResource(R.string.device_lab_torch_error)
@@ -390,6 +392,7 @@ fun DeviceLabScreen(navController: NavHostController) {
             checkedAt = labRecords[test.name]?.atMs,
             onRun = {
                 labTarget = null
+                pendingVerdict = test
                 openTest = test.dialog()
             },
             onPick = { outcome ->
@@ -406,15 +409,36 @@ fun DeviceLabScreen(navController: NavHostController) {
         )
     }
 
+    // **والعودة إلى الحكم بعد الأداة:** يُغلق الاختبار فيُعاد حوار بطاقته، لأن ما جرى الآن
+    // هو ما يُحكم عليه الآن. والإغلاق بلا حكم لا يكتب شيئًا — `onPick` وحده هو من يكتب.
+    val closeTest: () -> Unit = {
+        openTest = null
+        labTarget = pendingVerdict
+        pendingVerdict = null
+    }
     when (openTest) {
-        LabTest.SCREEN -> ScreenTestDialog(onDismiss = { openTest = null })
-        LabTest.TOUCH -> TouchTestDialog(onDismiss = { openTest = null })
-        LabTest.BUTTONS -> ButtonTestDialog(onDismiss = { openTest = null })
+        LabTest.SCREEN -> ScreenTestDialog(onDismiss = closeTest)
+        LabTest.TOUCH -> TouchTestDialog(onDismiss = closeTest)
+        LabTest.BUTTONS -> ButtonTestDialog(onDismiss = closeTest)
         null -> Unit
     }
 }
 
-private enum class LabTest { SCREEN, TOUCH, BUTTONS }
+internal enum class LabTest { SCREEN, TOUCH, BUTTONS }
+
+/**
+ * **الرجوع من الأداة إلى بطاقتها** — معكوس [LabTestId.dialog].
+ *
+ * ولماذا يلزم: كان من يضغط «شغّل الاختبار» في حوار النتيجة يُفتح له الاختبار، ثم يُغلق
+ * الاختبار فيجد نفسه على الصفحة بلا شيء — حوار النتيجة أُغلق قبل التشغيل، فلا يبقى إلا أن
+ * يعود إلى الشبكة ويضغط البطاقة مرّة ثانية ليكتب حكمه. والمنطق أن يُعاد الحوار بعد الأداة:
+ * جرّبتَ الآن، فقل ما رأيت الآن.
+ */
+internal fun LabTest.verdictId(): LabTestId = when (this) {
+    LabTest.SCREEN -> LabTestId.SCREEN
+    LabTest.TOUCH -> LabTestId.TOUCH
+    LabTest.BUTTONS -> LabTestId.BUTTONS
+}
 
 // ---------------------------------------------------------------------------
 // Screen
@@ -1960,7 +1984,7 @@ private fun blockerLabel(blocker: WifiChannelReader.Blocker?): Int = when (block
 // ---------------------------------------------------------------------------
 
 /** أي اختبار يُفتح حوارًا حقيقيًّا، وأي اختبار يُقرأ من قسمه. */
-private fun LabTestId.dialog(): LabTest? = when (this) {
+internal fun LabTestId.dialog(): LabTest? = when (this) {
     LabTestId.SCREEN -> LabTest.SCREEN
     LabTestId.TOUCH -> LabTest.TOUCH
     LabTestId.BUTTONS -> LabTest.BUTTONS
