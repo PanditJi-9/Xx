@@ -1,3 +1,14 @@
+## ROUND-CLOSE-61 — فعلٌ واحد بمسار كتابة واحد في استوديو الصوت — 2026-11-11 · DONE_WITH_CONCERNS
+
+**TASK:** شرائح الأنماط داخل `CyberCurveEqualizer` كانت تكتب `AudioEffectService` مباشرةً — مسار ثانٍ
+لنفس الفعل الذي يكتبه `AudioSoundPresetsSection` عبر المحكِّم.
+
+**SHIPPED:** `onPresetSelect` → `viewModel.applySoundPreset(context, preset, state.presetIntensity)` ·
+ثلاث مزامنات عرض من الحالة (`state.eq` · `state.strengths` · `state.soundPreset`) · اختبار رابع يحرس
+المسار الواحد.
+
+**NEXT:** حكم البناء، ثم محور لم يُفحص.
+
 ## ROUND-CLOSE-60 — قدرة صوت كاملة كانت بلا باب — 2026-11-11 · DONE_WITH_CONCERNS
 
 **TASK:** `AudioSoundPresetsSection` + `AudioPresetController` + `applySoundPreset`/`compareSound`/

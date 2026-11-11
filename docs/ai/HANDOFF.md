@@ -114,6 +114,41 @@ MaxManager has a strong engine and a fragmented surface. `core/maxai` + `core/ha
 **NEXT:** (١) CI: `:app:testReleaseUnitTest` + `:app:compileReleaseKotlin`. (٢) شريحة: علامة «يكتب» على
 صفوف التحكّم مشتقة من مسار المراجِع. (٣) شريحة: موجد واحد بالاسم والقصد. (٤) تعميم `MaxDataTrust`
 على كل قيمة غير متدفّقة. (٥) قرار مالك: حذف `StoryboardHome` أو إعادته.
+### ROUND-CLOSE-61 — فعلٌ واحد بمسار كتابة واحد في استوديو الصوت — 2026-11-11 · DONE_WITH_CONCERNS
+
+**TASK:** `AudioEngineTab` كان يحمل مسارَي كتابة لنفس الفعل: `AudioSoundPresetsSection` يكتب عبر
+الـViewModel ثم المحكِّم ثم يعيد القراءة، وشرائح الأنماط داخل `CyberCurveEqualizer` تكتب
+`AudioEffectService.setPreset(context, preset)` **مباشرةً** ثم تقرأ أربعة حقول منه متزامنًا. ملكية مزدوجة
+على عقدة صوت واحدة (ADR-11)، والقراءة المتزامنة قد تسبق الكتابة فتعرض قيمة قديمة.
+
+**SEARCH FIRST (§0.5):** النظير القائم هو مسار `AudioPresetController` نفسه — `applySoundPreset` يمرّ
+بالمحكِّم ثم `updatePresetReadings`. فلم يُبنَ مسار ثالث: حُوِّلت الشرائح إلى المسار القائم.
+
+**SHIPPED (`ui/subscreens/audio/AudioStudioScreen.kt`):**
+- `onPresetSelect` صار `viewModel.applySoundPreset(context, preset, state.presetIntensity)` — لا كتابة
+  مباشرة، ولا قراءة متزامنة.
+- ثلاث مزامنات عرض من الحالة: `LaunchedEffect(state.eq)` تبني `eqBands` من `AudioEqBand.levelMb`؛
+  و`LaunchedEffect(state.strengths)` تسحب `BASS_BOOST`/`VIRTUALIZER`/`LOUDNESS` من
+  `AudioStrengthSnapshot.value`؛ و`LaunchedEffect(state.soundPreset)` تتبع `activePreset`.
+  و`?:` هنا **لا تخترع صفرًا**: النطاق غير المُبلَّغ يبقى على آخر قراءة معروفة، لأنّ الصفر في المعادل
+  يعني «وسط المدى» لا «مجهول».
+- تعليق الحدّ في `AudioSoundPresetsSection` صُحّح ليصف التوحيد لا التأجيل.
+- `AudioStudioWiringTest`: اختبار رابع يحرس المسار الواحد — كتلة `onPresetSelect` تحتوي
+  `applySoundPreset(` و**لا تحتوي** `AudioEffectService.setPreset(`.
+
+**MEASURED:** `kt_balance --assert` أخضر · `@Test` في الملفّ ٣ ⇒ **٤** · صفر نصّ جديد.
+
+**GATES:** تُشغَّل في هذه الجولة (shell `sh_1ca0b245f001dds3nqhP3XaIV5`) — تُقرأ قبل الالتزام.
+
+**BUILD:** لا يُدّعى. آخر حكم مقروء: `014ecdfb` success · `9702313d` **لم يُقرأ**.
+
+**RESIDUAL RISK:** `AudioEffectService.setPreset` قد تصير بلا مستدعٍ من الواجهة — لم يُحذف لأنّه واجهة
+الخدمة نفسها وقد يستدعيها غير الواجهة · الفعل الحقيقي (هل يسمع المستخدم الفرق؟) **يحتاج جهازًا** ·
+`presetIntensity` يُمرَّر من الحالة لا من الشريحة، فمن غيّر الشدّة ثمّ ضغط شريحة يأخذ الشدّة المحفوظة
+(مقصود: مصدر حقيقة واحد) · الحارس نصّيّ · لا مراجعة مستقلة.
+
+**NEXT:** قراءة حكم البناء، ثم محورٌ جديد من المحاور الستّة عشر التي لم تُفحص.
+
 ### ROUND-CLOSE-60 — قدرة صوت كاملة كانت بلا باب — 2026-11-11 · DONE_WITH_CONCERNS
 
 **TASK:** العطب ليس تصميميًّا: ميزةٌ بُنيت بالكامل ولا تُرى. `AudioSoundPresetsSection` (٢٨٠ سطرًا) و

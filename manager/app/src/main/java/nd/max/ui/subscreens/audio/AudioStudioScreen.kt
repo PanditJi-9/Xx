@@ -336,6 +336,21 @@ private fun AudioEngineTab(
     var vocalClarity by remember { mutableIntStateOf(0) }
     var activePreset by remember { mutableStateOf(AudioEffectService.activePreset) }
 
+    // **والعرض يتبع الحالة لا قراءةً متزامنة:** بعد أن صار الفعل واحدًا عبر المحكِّم (انظر `onPresetSelect`
+    // أدناه)، تصل النتائج من `state` بعد إعادة القراءة، لا من قراءة قد تسبق الكتابة.
+    // و`?:` هنا **لا تخترع صفرًا**: النطاق الذي لم تُبلّغه المنصّة يبقى على آخر قراءة معروفة، لأنّ الصفر
+    // في المعادل يعني «وسط المدى» لا «مجهول» — وخلطُهما يجعل الشاشة تكذب على المستخدم.
+    LaunchedEffect(state.eq) {
+        val bands = state.eq?.bands ?: return@LaunchedEffect
+        eqBands = bands.mapIndexed { index, band -> band.levelMb ?: eqBands.getOrElse(index) { 0 } }
+    }
+    LaunchedEffect(state.strengths) {
+        state.strengths[AudioEffectKind.BASS_BOOST]?.value?.let { bassBoost = it }
+        state.strengths[AudioEffectKind.VIRTUALIZER]?.value?.let { virtualizer = it }
+        state.strengths[AudioEffectKind.LOUDNESS]?.value?.let { loudnessMb = it }
+    }
+    LaunchedEffect(state.soundPreset) { activePreset = state.soundPreset }
+
     // لوحة القيادة الصوتية السيبرانية (HUD Vortex Reactor) — زرّ التشغيل الرئيسيّ
     CyberAudioVortex(
         enabled = masterEnabled,
@@ -359,9 +374,9 @@ private fun AudioEngineTab(
     // تطبيق نمط صوت واحد. وهي تُوضع **قبل** المقابض اليدويّة: نمط بضغطة واحدة أوّلًا، ثم من أراد ضبطًا
     // دقيقًا ينزل إلى المعادل. والكتابة تمرّ بالمحكِّم ثمّ تُقرأ بعده، والحكم يُعرض في `KnobVerdictNotice`.
     //
-    // **والحدّ المُعلَن:** شرائح الأنماط الصغيرة داخل `CyberCurveEqualizer` أدناه ما زالت تكتب عبر
-    // `AudioEffectService` مباشرةً — مسار ثانٍ لنفس الفعل، مكتشَف بالقياس في هذه الجولة. توحيدهما على
-    // المحكِّم شريحة تالية مستقلّة، لأنّ تغييره يمسّ مسار الكتابة ولا يُتحقَّق منه إلّا على جهاز.
+    // **وصار للفعل الواحد مسار واحد:** شرائح الأنماط الصغيرة داخل `CyberCurveEqualizer` أدناه كانت تكتب
+    // `AudioEffectService.setPreset` مباشرةً — مسارًا ثانيًا لنفس الفعل، مكتشَفًا بالقياس. وقد وُحِّد على
+    // الـViewModel في هذه الجولة (انظر `onPresetSelect`)، فصار كل كتابة صوت من هذه الشاشة تمرّ بالمحكِّم.
     AudioSoundPresetsSection(
         state = state,
         onPreset = { preset, intensity -> viewModel.applySoundPreset(context, preset, intensity) },
@@ -384,12 +399,11 @@ private fun AudioEngineTab(
             }
         },
         onPresetSelect = { preset ->
-            activePreset = preset
-            AudioEffectService.setPreset(context, preset)
-            eqBands = AudioEffectService.manualEqBands
-            bassBoost = AudioEffectService.bassBoostPercent
-            virtualizer = AudioEffectService.virtualizerPercent
-            loudnessMb = AudioEffectService.loudnessGainMb
+            // **مسار واحد لا اثنان (ADR-11):** كانت هذه الشرائح تكتب `AudioEffectService.setPreset`
+            // مباشرةً وتقرأ أربعة حقول منه متزامنًا — مسارٌ ثانٍ للكتابة، بينما `AudioSoundPresetsSection`
+            // أعلاه يمرّ بالمحكِّم. فالفعل الواحد صار له مسار واحد: الـViewModel يكتب عبر المحكِّم ثم
+            // يعيد القراءة، والعرض يتزامن من الحالة أعلاه.
+            viewModel.applySoundPreset(context, preset, state.presetIntensity)
         },
         // أسماء الأنماط من موارد المنصّة المترجمة — لا نصوصٌ إنجليزيّة ثابتة في الواجهة
         presetLabel = { preset -> stringResource(audioPresetLabelRes(preset)) },

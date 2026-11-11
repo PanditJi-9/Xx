@@ -51,6 +51,22 @@ class AudioStudioWiringTest {
         assertTrue("one tap to a sound profile comes before manual tuning", presets < knobs)
     }
 
+    @Test
+    fun `the preset chips write through the arbiter like the preset section does`() {
+        val source = screenSource() ?: return
+        val start = source.indexOf("onPresetSelect = {")
+        assertTrue("the equalizer must still offer preset chips", start >= 0)
+        val block = source.substring(start, minOf(source.length, start + 700))
+        assertTrue(
+            "the chips must go through the view model, not AudioEffectService directly",
+            block.contains("applySoundPreset("),
+        )
+        assertTrue(
+            "a second write path for the same action is a duplicate owner (ADR-11)",
+            !block.contains("AudioEffectService.setPreset("),
+        )
+    }
+
     /** يقرأ ملف الشاشة من شجرة المصادر، ويُعلن التخطّي حين لا تُوجد (تشغيل من حزمة APK). */
     private fun screenSource(): String? {
         val file = File("src/main/java/nd/max/ui/subscreens/audio/AudioStudioScreen.kt")
