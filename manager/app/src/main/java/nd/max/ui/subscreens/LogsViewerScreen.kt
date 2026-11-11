@@ -12,7 +12,6 @@
 package nd.max.ui.subscreens
 
 import nd.max.ui.design.MaxScrollRow
-import android.content.Intent
 import java.io.File
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -41,7 +40,6 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.core.content.FileProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
@@ -110,13 +108,7 @@ fun LogsViewerScreen(
     // اسم المعامل `mimeType` لا `type`: داخل `apply` يكون `this` هو الـIntent، ولو سُمّي `type`
     // لقُرئ `this.type = type` كإسناد الخاصيّة إلى نفسها (أي `null`).
     val shareFileNow: (File, String) -> Unit = { file, mimeType ->
-        val uri = FileProvider.getUriForFile(context, "${context.packageName}.provider", file)
-        val intent = Intent(Intent.ACTION_SEND).apply {
-            setType(mimeType)
-            putExtra(Intent.EXTRA_STREAM, uri)
-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        }
-        context.startActivity(Intent.createChooser(intent, file.name))
+        nd.max.ui.util.shareFile(context, file, mimeType)
     }
     val announceExport: (File?) -> Unit = { file ->
         // العدد من التبويب المفتوح لا من تبويب logcat دائمًا: كانت الرسالة تقول «حفظت N سطرًا»

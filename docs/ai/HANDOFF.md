@@ -149,6 +149,51 @@ NeuralDashboardKit.kt:673:12 Syntax error: Expecting a top level declaration.
 **ما لم يُفقد:** `ui/component/PulseArt.kt` و`AmbientGlowCycle.kt` (حذف الملفّين الكاملين من ROUND-CLOSE-63)
 يبقيان محذوفين، وحارس مستوى الملفّ يبقى، وإصلاح استثناء `AppSettings` في `DestinationDoorTest` يبقى.
 
+### ROUND-CLOSE-67 — نتائج المختبر تخرج من الجهاز — 2026-11-11 · DONE_WITH_CONCERNS
+
+**TASK:** المختبر يسأل ثلاث عشرة قطعة ويحفظ الحكم… على الجهاز وحده. فمن جرّب هاتفه لا يستطيع أن
+يُظهر ما وجده لمطوّر ولا أن يُرفقه بتقرير عطب — فيبقى الاختبار حبيس شاشته ويُعاد من الصفر عند كل
+سؤال. وهذا بالضبط ما يحتاجه هذا المشروع: **دليل عتاد يُقرأ** بدل «يحتاج جهازًا» بلا بيانات.
+
+**SEARCH FIRST (§0.5):** وُجد مساران للمشاركة: `LogsViewerScreen.shareFileNow` (ملفّ ← `FileProvider`
+← chooser، مكتوبًا داخل الشاشة) و`GameSessionsScreen.shareFile` (بایت ← ملفّ باسم فريد ← chooser،
+داخل `withContext(IO)`). فلم يُبنَ مسار ثالث: أُخرج **الأوّل** إلى `ui/util/ShareFile.kt`
+(`shareFile(context, file, mime)` + `shareText(context, name, text)`) وانتقل إليه `LogsViewerScreen`
+(حُذف استيرادا `Intent`/`FileProvider` منه). و`GameSessions` **لم يُنقل** لأن عقده مختلف (يكتب بايتات
+باسم فريد ويعيد chooser ليُطلق على الخيط الرئيسي) — ويُعلَن ذلك هنا لا يُسكت عنه.
+
+**SHIPPED:**
+- `ui/util/ShareFile.kt` (جديد): مسار مشاركة واحد + `shareText` يكتب نصًّا في `cacheDir` باسم ثابت
+  (ملفّ واحد يُستبدل، فلا تتراكم نسخ في ذاكرة الجهاز).
+- `ui/subscreens/DeviceLabTests.kt`: `fun labReport(records, groupTitle, testTitle): String` — ترتيب
+  **الحكم لا الجدول** (يعمل ← معطوب ← لم يُجرَّب)، وداخل كل مجموعة ترتيب الجدول (فيبقى قابلًا
+  للمقارنة بين جهازين)، و**ما لم يُجرَّب مذكور** لأن قائمته نتيجة أيضًا. والرمز المجهول يُقرأ
+  «لم يُجرَّب» كما في `labOutcomes`.
+- `DeviceLabScreen.kt`: صفّ `device_lab_share` بأيقونة `Icons.Outlined.IosShare` يظهر **فقط** إن كان
+  هناك سجلّ (زرّ يشارك تقريرًا فارغًا وعدٌ لا يُوفى). والتقرير يُبنى **عند الضغط** لا في كل إعادة رسم.
+- نصّ `device_lab_share` en («Share the results») / ar («شارك النتائج»).
+- `DeviceLabTestsTest`: ٣ اختبارات — الترتيب بالحكم لا بالإدخال · كل اختبار مذكور **مرّة واحدة**
+  (محكومًا أو لا) · مختبر بكر: مجموعة واحدة «لم يُجرَّب» بلا عنوان فارغ. **`@Test` = ٢١ ← ٢٤**.
+
+**MEASURED:** `kt_balance --assert` = **٣٣٥١ ملفًا · عوائق ٠** (الملفّ الجديد يرفع العدّ) ·
+`@Test` في `DeviceLabTestsTest` = **٢٤**.
+
+**GATES:** تُقرأ قبل الالتزام.
+
+**BUILD (مقيس محليًّا — §0.1-ب):** `sh ./gradlew :app:testReleaseUnitTest --tests DeviceLabTestsTest
+--tests ScreenFinderTest` ⇒ **BUILD SUCCESSFUL in 20m 21s**. ومن تقارير JUnit حرفيًّا:
+`DeviceLabTestsTest` **tests=24 failures=0 errors=0 skipped=0** · `ScreenFinderTest`
+**tests=24 failures=0 errors=0 skipped=0**. ⇒ `labReport` و`ShareFile` و`LogsViewer` تُترجم
+وتمرّ، لا «يُرجَّح».
+
+**RESIDUAL RISK:** ملفّ التقرير باسم ثابت `lab-report.txt` في `cacheDir` — مشاركتان متتاليتان
+تستبدل إحداهما الأخرى، وهذا مقصود (لا تراكم) لكنه يعني أن مشاركة قديمة قد تشير إلى محتوى محدَّث ·
+التقرير **بلا زمن لكل اختبار** (`LabRecord.atMs` محفوظ ولا يُطبع) — يُقرأ كحالةٍ الآن لا كسجلّ زمني ·
+`GameSessions` بقي على مساره · شكل الصفّ ومشاركة `FileProvider` على الجهاز **يحتاجان جهازًا** ·
+لا مراجعة مستقلة.
+
+**NEXT:** قراءة البناء، ثم شريحة تالية.
+
 ### ROUND-CLOSE-66 — ما لم يُعرض يُقال، ومفتاح Enter يفتح ما يُرى — 2026-11-11 · DONE_WITH_CONCERNS
 
 **TASK:** المُوجِّد يعرض ٢٤ صفًّا **بسقف صامت**. فمن يكتب «ال» يرى أربعة وعشرين ويظنّ أن لا

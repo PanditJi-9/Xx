@@ -55,6 +55,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.VolumeUp
 import androidx.compose.material.icons.rounded.BatteryChargingFull
 import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.outlined.IosShare
 import androidx.compose.material.icons.rounded.History
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.FlashOn
@@ -119,6 +120,7 @@ import nd.max.R
 import nd.max.core.lab.LabResultStore
 import nd.max.core.net.WifiChannel
 import nd.max.ui.util.WifiChannelReader
+import nd.max.ui.util.shareText
 import nd.max.ui.design.MaxCardData
 import nd.max.ui.design.MaxCardGrid
 import nd.max.ui.design.MaxCardSize
@@ -234,6 +236,42 @@ fun DeviceLabScreen(navController: NavHostController) {
                         // مباشرةً، فلا زرّ تسجيل يبقى في قسم بعد إغلاقه.
                         pendingCard = null
                         labTarget = next
+                    },
+                )
+            }
+            // **وتقرير يخرج من الجهاز:** بلا هذا يبقى ما جرّبه المستخدم حبيس شاشته — لا
+            // يُريه لمطوّر ولا يُرفقه بتقرير عطب، فيُعاد الاختبار من الصفر عند كل سؤال.
+            // ولا يظهر إلّا إن كان هناك ما يُقال: زرّ يشارك تقريرًا فارغًا وعدٌ لا يُوفى.
+            if (labRecords.isNotEmpty()) {
+                MaxNavigationRow(
+                    title = stringResource(R.string.device_lab_share),
+                    icon = Icons.Outlined.IosShare,
+                    onClick = {
+                        // **ويُبنى عند الضغط لا عند كل إعادة رسم:** التقرير يُقرأ مرّة واحدة
+                        // حين يُطلب، لا في كل حرف يكتبه المستخدم في حقل آخر من الصفحة.
+                        val judged = labRecords.mapNotNull { (name, record) ->
+                            LabTestId.entries.firstOrNull { it.name == name }?.let { it to record }
+                        }.toMap()
+                        val text = buildString {
+                            appendLine(context.getString(R.string.device_lab_title))
+                            appendLine(
+                                context.getString(
+                                    R.string.device_lab_tally,
+                                    tally.works,
+                                    tally.faulty,
+                                    tally.untried,
+                                ),
+                            )
+                            appendLine()
+                            append(
+                                labReport(
+                                    judged,
+                                    groupTitle = { context.getString(it.labelRes) },
+                                    testTitle = { context.getString(it.titleRes) },
+                                ),
+                            )
+                        }
+                        shareText(context, "lab-report.txt", text)
                     },
                 )
             }

@@ -20,6 +20,7 @@ import androidx.compose.material.icons.rounded.Vibration
 import androidx.compose.material.icons.rounded.Wifi
 import androidx.compose.ui.graphics.vector.ImageVector
 import nd.max.R
+import nd.max.core.lab.LabRecord
 import nd.max.ui.design.MaxTone
 
 /**
@@ -135,6 +136,42 @@ internal fun LabTestId.toolSection(): LabToolSection = when (this) {
     LabTestId.CHARGING -> LabToolSection.Charge
     LabTestId.MICROPHONE, LabTestId.TORCH, LabTestId.SENSORS, LabTestId.BATTERY ->
         LabToolSection.Hardware
+}
+
+/**
+ * **تقرير المختبر كنصّ واحد — ليخرج من الجهاز.**
+ *
+ * العطب الذي وُلد منه: النتائج تُحفظ على الجهاز وحده. فمن جرّب ثلاث عشرة قطعة على هاتفه
+ * لا يستطيع أن يُظهر ما وجده لأحد — لا لمطوّر، ولا في تقرير عطب. فيبقى الاختبار حبيس
+ * شاشته، ويُعاد من الصفر عند كل سؤال.
+ *
+ * **والترتيب هو الحكم لا الجدول:** المحكوم أولًا (يعمل ثم معطوب) لأن القارئ يريد أن يعرف
+ * ما فشل قبل أن يقرأ ما لم يُجرَّب، وداخل كل مجموعة ترتيب الجدول نفسه فيبقى التقرير
+ * قابلًا للمقارنة بين جهازين. وما لم يُجرَّب يبقى مذكورًا — لا يُحذف من التقرير: قائمة
+ * «لم يُجرَّب» هي أيضًا نتيجة، ومن يقرأ التقرير يجب أن يعرف ما لم يُقل.
+ *
+ * والدالّة صافية: النصوص تُمرَّر دوالًّا، فيُقاس الترتيب والتغطية في JVM بلا منصّة.
+ */
+fun labReport(
+    records: Map<LabTestId, LabRecord>,
+    groupTitle: (LabOutcome) -> String,
+    testTitle: (LabTestId) -> String,
+): String {
+    val groups = LabTestId.entries.groupBy { test ->
+        records[test]?.let { record -> LabOutcome.entries.firstOrNull { it.name == record.outcome } }
+            ?: LabOutcome.NOT_RUN
+    }
+    // ويعمل ثم معطوب ثم ما لم يُجرَّب: الفشل يُقرأ قبل الفراغ.
+    return listOf(LabOutcome.PASSED, LabOutcome.FAILED, LabOutcome.NOT_RUN)
+        .mapNotNull { outcome ->
+            groups[outcome]?.takeIf { it.isNotEmpty() }?.let { tests ->
+                buildString {
+                    append(groupTitle(outcome))
+                    tests.forEach { append('\n').append("- ").append(testTitle(it)) }
+                }
+            }
+        }
+        .joinToString("\n\n")
 }
 
 /**

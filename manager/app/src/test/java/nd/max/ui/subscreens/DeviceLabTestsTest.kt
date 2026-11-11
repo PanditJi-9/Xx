@@ -6,7 +6,9 @@
 package nd.max.ui.subscreens
 
 import java.io.File
+import nd.max.core.lab.LabRecord
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -160,6 +162,44 @@ class DeviceLabTestsTest {
     fun `a finished lab has no next test at all`() {
         val all = LabTestId.entries.associateWith { LabOutcome.PASSED }
         assertNull(nextUntried(all))
+    }
+
+    @Test
+    fun `the report reads the verdicts before the ones that were never tried`() {
+        // والمدخل مُرتَّب بالعكس عن قصد: التقرير لا يتبع ترتيب الإدخال بل ترتيب الحكم.
+        val records = mapOf(
+            LabTestId.WIFI to LabRecord("FAILED", 1L),
+            LabTestId.SCREEN to LabRecord("PASSED", 1L),
+        )
+        val report = labReport(records, { "G:${it.name}" }, { it.name })
+        val passed = report.indexOf("G:PASSED")
+        val failed = report.indexOf("G:FAILED")
+        val untried = report.indexOf("G:NOT_RUN")
+        assertTrue("لا مجموعة «يعمل»", passed >= 0)
+        assertTrue("«يعمل» ليس قبل «معطوب»", passed < failed)
+        assertTrue("«لم يُجرَّب» ليس آخرًا", failed < untried)
+    }
+
+    @Test
+    fun `every test is named exactly once, judged or not`() {
+        val records = mapOf(LabTestId.TOUCH to LabRecord("FAILED", 1L))
+        val report = labReport(records, { it.name }, { "T:${it.name}" })
+        LabTestId.entries.forEach { test ->
+            val hits = Regex(Regex.escape("T:${test.name}")).findAll(report).count()
+            assertEquals("${test.name} مذكور $hits مرّة في التقرير", 1, hits)
+        }
+    }
+
+    @Test
+    fun `an untouched lab reports everything as untested, with no empty headers`() {
+        val report = labReport(emptyMap(), { "G:${it.name}" }, { "T:${it.name}" })
+        // ولا عنوان لمجموعة فارغة: «يعمل» بلا شيء تحته يُقرأ نتيجةً لم تُقل.
+        assertFalse(report.contains("G:PASSED"))
+        assertFalse(report.contains("G:FAILED"))
+        assertEquals(1, report.split("G:NOT_RUN").size - 1)
+        LabTestId.entries.forEach { test ->
+            assertTrue("${test.name} غائب عن تقرير مختبر بكر", report.contains("T:${test.name}"))
+        }
     }
 
     /** يقرأ ملف الشاشة من شجرة المصادر، ويُعلن التخطّي حين لا تُوجد (تشغيل من حزمة APK). */
