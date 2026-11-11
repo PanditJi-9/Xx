@@ -107,3 +107,32 @@ fun labTally(outcomes: Map<LabTestId, LabOutcome>): LabTally {
     }
     return LabTally(works = works, faulty = faulty, untried = untried)
 }
+
+/**
+ * **أين تعيش أداة كل اختبار في الصفحة.**
+ *
+ * ثلاث بطاقات لها نافذة كاملة ([LabTestId.dialog])، والعشر الباقية أدواتها صفوفٌ في هذه
+ * الصفحة نفسها (اهتزاز · نغمات · مصباح · ميكروفون · مستشعرات · بطارية · قنوات واي فاي …).
+ * فمن ضغط بطاقةً ثم أراد أن يجري اختبارها لم يكن أمامه إلا أن يغلق الحوار ويبحث عنها
+ * بالتمرير — وهو عطب «أضغط فلا يحدث شيء» نفسه.
+ *
+ * والقسم عنوانٌ لا مؤشّر رسم: الخريطة تُقاس في `DeviceLabTestsTest`، فإن نُقلت أداة من قسم
+ * إلى آخر فشل الاختبار بدل أن ينزل الزرّ إلى عنوانٍ لا أداة تحته.
+ */
+internal enum class LabToolSection { Screen, Controls, Audio, Wifi, Cameras, Radios, Charge, Hardware }
+
+/**
+ * الاختبار ← القسم الذي فيه أداته. والغائب عن الخريطة لا يُترك بلا جواب: كل `LabTestId`
+ * مذكور، والحارس يفشل إن أُضيف اختبار ولم يُسند.
+ */
+internal fun LabTestId.toolSection(): LabToolSection = when (this) {
+    LabTestId.SCREEN, LabTestId.TOUCH -> LabToolSection.Screen
+    LabTestId.BUTTONS, LabTestId.VIBRATION -> LabToolSection.Controls
+    LabTestId.SPEAKER -> LabToolSection.Audio
+    LabTestId.WIFI -> LabToolSection.Wifi
+    LabTestId.CAMERAS -> LabToolSection.Cameras
+    LabTestId.RADIOS -> LabToolSection.Radios
+    LabTestId.CHARGING -> LabToolSection.Charge
+    LabTestId.MICROPHONE, LabTestId.TORCH, LabTestId.SENSORS, LabTestId.BATTERY ->
+        LabToolSection.Hardware
+}

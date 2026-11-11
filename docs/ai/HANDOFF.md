@@ -114,6 +114,48 @@ MaxManager has a strong engine and a fragmented surface. `core/maxai` + `core/ha
 **NEXT:** (١) CI: `:app:testReleaseUnitTest` + `:app:compileReleaseKotlin`. (٢) شريحة: علامة «يكتب» على
 صفوف التحكّم مشتقة من مسار المراجِع. (٣) شريحة: موجد واحد بالاسم والقصد. (٤) تعميم `MaxDataTrust`
 على كل قيمة غير متدفّقة. (٥) قرار مالك: حذف `StoryboardHome` أو إعادته.
+### ROUND-CLOSE-57 — من البطاقة إلى الأداة: الزرّ ينزل إلى ما يُجرَّب — 2026-11-11 · DONE_WITH_CONCERNS
+
+**TASK:** إغلاق الحدّ المُعلَن في ROUND-CLOSE-56: عشرة من ثلاثة عشر اختبارًا في المختبر لا طريق من
+بطاقتها إلى أداتها. فمن ضغط «المصباح» أو «الاهتزاز» أو «السماعة» وجد حوار حكمٍ فقط، وعليه أن يغلق
+الحوار ويبحث عن الصفّ بالتمرير — وهو عطب «أضغط فلا يحدث شيء» نفسه.
+
+**MEASURED قبل:** `LabTestId.dialog()` تُرجع أداة لثلاثة فقط (`SCREEN` · `TOUCH` · `BUTTONS`)،
+وصفّ `device_lab_result_run` يظهر لهؤلاء الثلاثة وحدهم. والعشرة الأخرى أدواتها صفوفٌ في الصفحة
+(`VibrationTestRows` · `SpeakerActionRow` ×٤ · `TorchTest` · `MicrophoneTest` · `SensorTest` ·
+`BatteryTest` · `WifiChannels` · `CameraTest` · `RadiosTest` · `ChargeTest`)، و`MaxScreen` تستعمل
+`ScrollState` + `verticalScroll` لا `LazyColumn`، فلا `scrollToItem`.
+
+**SEARCH FIRST (§0.5):** لم يُبنَ مسار ثانٍ ولم تُكرَّر أداة. الأدوات القائمة هي المقصد، وأُضيف
+**مرساة إظهار** (`BringIntoViewRequester`) على أقسامها الثمانية القائمة.
+
+**SHIPPED:**
+- `ui/subscreens/DeviceLabTests.kt`: `internal enum class LabToolSection { Screen, Controls, Audio,
+  Wifi, Cameras, Radios, Charge, Hardware }` + `internal fun LabTestId.toolSection(): LabToolSection`
+  — خريطة ١٣ → ٨ مكتوبة صريحة (لا `else`)، فإضافة اختبار بلا قسم تُسقط المُصرّف.
+- `ui/subscreens/DeviceLabScreen.kt`: `toolAnchors = remember { LabToolSection.entries.associateWith
+  { BringIntoViewRequester() } }` بجوار `labTarget` · `modifier = Modifier.bringIntoViewRequester(
+  toolAnchors.getValue(LabToolSection.X))` على الأقسام الثمانية (screen · controls · audio · wifi ·
+  cameras · radios · charge · hardware) · `LabResultDialog` يقبل `onGoToTest` ويعرض صفًّا **فقط**
+  عندما `test.dialog() == null` (أي العشرة التي لا نافذة لها) · عند الضغط: `labTarget = null` ثم
+  `scope.launch { toolAnchors.getValue(test.toolSection()).bringIntoView() }`.
+- أيقونة الصفّ هي `test.icon` نفسها — لا أيقونة تُخترع، ولا استيراد جديد.
+- نصّ `device_lab_result_go` en («Go to the test») / ar («اذهب إلى الاختبار»).
+- ثلاثة اختبارات في `DeviceLabTestsTest`: كل قسم من الثمانية تشير إليه بطاقة على الأقل ·
+  الأدوات الثلاثة تشير إلى أقسامها · كل قسم يحمل مرساة في نصّ الشاشة (بعد تجريد التعليقات).
+
+**MEASURED بعد:** `kt_balance --assert` = **٣٣٥٠ ملفًا · عوائق ٠** · `DeviceLabTestsTest` = ١٦ `@Test`.
+
+**GATES:** تُشغَّل في هذه الجولة؛ النتيجة تُقرأ قبل الالتزام لا تُدّعى.
+
+**BUILD:** لا يُدّعى حكم. `16867004` (ROUND-CLOSE-56) قيد التشغيل عند آخر قراءة.
+
+**RESIDUAL RISK:** `bringIntoView` يحتاج جهازًا ليُرى موضعه على الشاشة · الأقسام الثمانية أُضيف
+إليها `modifier` كأوّل وسيط مسمّى، فترتيب الوسائط تغيّر في النصّ لا في الدلالة · الحارس النصّي
+يقيس وجود المرساة لا وقوع النزول · الشكل وRTL على الشاشة يحتاج جهازًا · لا مراجعة مستقلة.
+
+**NEXT:** قراءة حكم البناء، ثم M3 (إتاحة) وM4 (قياس).
+
 ### ROUND-CLOSE-56 — جرّبتَ الآن، فقل ما رأيت الآن: الحكم يعود بعد الأداة — 2026-11-11 · DONE_WITH_CONCERNS
 
 **TASK:** كان مسار الاختبار في المختبر ينقطع في منتصفه: تُفتح بطاقة ← «شغّل الاختبار» ← تُفتح

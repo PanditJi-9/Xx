@@ -40,6 +40,8 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -170,6 +172,11 @@ fun DeviceLabScreen(navController: NavHostController) {
     }
     val tally = remember(labResults) { labTally(labResults) }
     var labTarget by remember { mutableStateOf<LabTestId?>(null) }
+    // **ومراسي الأقسام:** من ضغط بطاقةً بلا نافذة ينزل إلى أداتها في الصفحة نفسها،
+    // فيحتاج موضعًا يُطلب إظهاره. مرساةٌ لكل قسم من الثمانية، والحارس النصّي يمنع قسمًا بلا مرساة.
+    val toolAnchors = remember {
+        LabToolSection.entries.associateWith { BringIntoViewRequester() }
+    }
     // البطاقة التي جاء منها التشغيل: يُعاد حوار نتيجتها بعد إغلاق الأداة، فلا يضيع الحكم.
     var pendingVerdict by remember { mutableStateOf<LabTestId?>(null) }
 
@@ -222,7 +229,11 @@ fun DeviceLabScreen(navController: NavHostController) {
             )
         }
 
-        MaxSection(title = stringResource(R.string.device_lab_section_screen)) {
+        MaxSection(
+            modifier = Modifier.bringIntoViewRequester(
+                toolAnchors.getValue(LabToolSection.Screen),
+            ),
+            title = stringResource(R.string.device_lab_section_screen)) {
             MaxGroup {
                 MaxNavigationRow(
                     title = stringResource(R.string.device_lab_screen_title),
@@ -256,7 +267,11 @@ fun DeviceLabScreen(navController: NavHostController) {
             CodecCapabilities()
         }
 
-        MaxSection(title = stringResource(R.string.device_lab_section_controls)) {
+        MaxSection(
+            modifier = Modifier.bringIntoViewRequester(
+                toolAnchors.getValue(LabToolSection.Controls),
+            ),
+            title = stringResource(R.string.device_lab_section_controls)) {
             MaxGroup {
                 MaxNavigationRow(
                     title = stringResource(R.string.device_lab_buttons_title),
@@ -271,7 +286,11 @@ fun DeviceLabScreen(navController: NavHostController) {
 
         HapticTuningSection()
 
-        MaxSection(title = stringResource(R.string.device_lab_section_audio)) {
+        MaxSection(
+            modifier = Modifier.bringIntoViewRequester(
+                toolAnchors.getValue(LabToolSection.Audio),
+            ),
+            title = stringResource(R.string.device_lab_section_audio)) {
             MaxGroup {
                 MaxRow(
                     title = stringResource(R.string.device_lab_speaker_title),
@@ -339,6 +358,9 @@ fun DeviceLabScreen(navController: NavHostController) {
         }
 
         MaxSection(
+            modifier = Modifier.bringIntoViewRequester(
+                toolAnchors.getValue(LabToolSection.Wifi),
+            ),
             title = stringResource(R.string.device_lab_section_wifi),
             description = stringResource(R.string.device_lab_wifi_desc),
         ) {
@@ -346,6 +368,9 @@ fun DeviceLabScreen(navController: NavHostController) {
         }
 
         MaxSection(
+            modifier = Modifier.bringIntoViewRequester(
+                toolAnchors.getValue(LabToolSection.Cameras),
+            ),
             title = stringResource(R.string.device_lab_section_cameras),
             description = stringResource(R.string.device_lab_cameras_desc),
         ) {
@@ -353,6 +378,9 @@ fun DeviceLabScreen(navController: NavHostController) {
         }
 
         MaxSection(
+            modifier = Modifier.bringIntoViewRequester(
+                toolAnchors.getValue(LabToolSection.Radios),
+            ),
             title = stringResource(R.string.device_lab_section_radios),
             description = stringResource(R.string.device_lab_radios_desc),
         ) {
@@ -360,6 +388,9 @@ fun DeviceLabScreen(navController: NavHostController) {
         }
 
         MaxSection(
+            modifier = Modifier.bringIntoViewRequester(
+                toolAnchors.getValue(LabToolSection.Charge),
+            ),
             title = stringResource(R.string.device_lab_section_charge),
             description = stringResource(R.string.device_lab_charge_desc),
             trailing = {
@@ -375,7 +406,11 @@ fun DeviceLabScreen(navController: NavHostController) {
             ChargeTest(attempt = chargeAttempt)
         }
 
-        MaxSection(title = stringResource(R.string.device_lab_section_hardware)) {
+        MaxSection(
+            modifier = Modifier.bringIntoViewRequester(
+                toolAnchors.getValue(LabToolSection.Hardware),
+            ),
+            title = stringResource(R.string.device_lab_section_hardware)) {
             TorchTest(
                 onError = { scope.launch { snackbar.showSnackbar(torchError) } },
             )
@@ -394,6 +429,14 @@ fun DeviceLabScreen(navController: NavHostController) {
                 labTarget = null
                 pendingVerdict = test
                 openTest = test.dialog()
+            },
+            // **وإلى الأداة مباشرةً:** البطاقات التي لا نافذة لها تُنزل إلى قسمها بدل أن
+            // تُترك للحوار وحده، فيصير في الحوار طريقٌ إلى ما يُجرَّب لا إلى الحكم فقط.
+            onGoToTest = {
+                labTarget = null
+                scope.launch {
+                    toolAnchors.getValue(test.toolSection()).bringIntoView()
+                }
             },
             onPick = { outcome ->
                 LabResultStore.set(context, test.name, outcome.name, System.currentTimeMillis())
@@ -2002,6 +2045,7 @@ private fun LabResultDialog(
     outcome: LabOutcome?,
     checkedAt: Long?,
     onRun: () -> Unit,
+    onGoToTest: () -> Unit,
     onPick: (LabOutcome) -> Unit,
     onClear: () -> Unit,
     onDismiss: () -> Unit,
@@ -2015,6 +2059,17 @@ private fun LabResultDialog(
                     icon = test.icon,
                     iconTone = MaxTone.Accent,
                     onClick = onRun,
+                )
+                MaxGroupDivider()
+            }
+            // **والطريق إلى الأداة:** العشر التي لا نافذة لها أدواتها صفوفٌ في هذه الصفحة،
+            // فالزرّ ينزل إليها. وأيقونته أيقونة الاختبار نفسه، فلا أيقونة جديدة تُخترع.
+            if (test.dialog() == null) {
+                MaxNavigationRow(
+                    title = stringResource(R.string.device_lab_result_go),
+                    icon = test.icon,
+                    iconTone = MaxTone.Accent,
+                    onClick = onGoToTest,
                 )
                 MaxGroupDivider()
             }

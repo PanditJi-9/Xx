@@ -1,3 +1,13 @@
+## ROUND-CLOSE-57 — من البطاقة إلى الأداة — 2026-11-11 · DONE_WITH_CONCERNS
+
+**TASK:** طريق من كل بطاقة اختبار إلى أداتها في الصفحة (١٠ من ١٣ كانت بلا طريق).
+
+**SHIPPED:** `LabToolSection` + `LabTestId.toolSection()` (١٣→٨) · `toolAnchors` +
+`bringIntoViewRequester` على الأقسام الثمانية · صفّ `device_lab_result_go` في `LabResultDialog`
+للاختبارات التي لا نافذة لها · نصّ en/ar · ٣ اختبارات.
+
+**NEXT:** حكم البناء، ثم M3/M4.
+
 ## ROUND-CLOSE-56 — الحكم يعود بعد الأداة — 2026-11-11 · DONE_WITH_CONCERNS
 
 **TASK:** إعادة حوار النتيجة بعد إغلاق أداة الاختبار، فلا يضيع الحكم بين الشبكة والأداة.

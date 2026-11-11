@@ -142,6 +142,35 @@ class DeviceLabTestsTest {
     }
 
     /** يقرأ ملف الشاشة من شجرة المصادر، ويُعلن التخطّي حين لا تُوجد (تشغيل من حزمة APK). */
+    @Test
+    fun `every tool section has at least one card pointing at it`() {
+        // العطب المقصود: زرّ «اذهب إلى الاختبار» ينزل إلى قسم. فقسمٌ لا بطاقة تشير إليه
+        // نزولٌ إلى عنوانٍ لا أداة تحته — وهو وعدٌ كاذب في واجهة.
+        assertEquals(
+            "أقسام أدوات لا تشير إليها أيّ بطاقة",
+            LabToolSection.entries.toSet(),
+            LabTestId.entries.map { it.toolSection() }.toSet(),
+        )
+    }
+
+    @Test
+    fun `the three dialog tests point at the sections that hold them`() {
+        assertEquals(LabToolSection.Screen, LabTestId.SCREEN.toolSection())
+        assertEquals(LabToolSection.Screen, LabTestId.TOUCH.toolSection())
+        assertEquals(LabToolSection.Controls, LabTestId.BUTTONS.toolSection())
+    }
+
+    @Test
+    fun `every tool section is anchored in the page`() {
+        val source = labScreenSource()
+        LabToolSection.entries.forEach { section ->
+            assertTrue(
+                "$section بلا مرساة — الزرّ لا ينزل إلى شيء",
+                source.contains("toolAnchors.getValue(LabToolSection.$section)"),
+            )
+        }
+    }
+
     private fun labScreenSource(): String {
         val root = listOf(
             File("src/main/java/nd/max"),
