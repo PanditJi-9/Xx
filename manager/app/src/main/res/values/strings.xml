@@ -1321,11 +1321,6 @@
     -->
     <string name="diagnostics_capability_matrix">Hardware capability matrix</string>
     <!-- سجلّ المستبعَد: قرارنا لا حالة الجهاز (ADR-91). بلا مفتاح واحد. -->
-    <string name="diagnostics_nodes_title">Kernel node catalog</string>
-    <string name="diagnostics_nodes_desc">The device nodes this app knows about. Read only: presence does not grant a write, does not bypass the arbiter, and does not prove the node accepts a value.</string>
-    <string name="diagnostics_nodes_present">Readable now: %1$d of %2$d</string>
-    <string name="diagnostics_nodes_absent">Not present on this device: %1$d</string>
-    <string name="diagnostics_nodes_unreadable">Present but refused by the system: %1$d</string>
 
     <string name="diagnostics_detecting_interfaces">Detecting hardware interfaces…</string>
     <string name="diagnostics_refresh">Refresh</string>

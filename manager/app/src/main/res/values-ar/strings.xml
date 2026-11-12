@@ -2096,11 +2096,6 @@
     <string name="diagnostics_inspection_only">فحص فقط</string>
     <string name="diagnostics_capability_matrix">مصفوفة قدرات العتاد</string>
     <!-- سجلّ المستبعَد: قرارنا لا حالة الجهاز (ADR-91). بلا مفتاح واحد. -->
-    <string name="diagnostics_nodes_title">كتالوج عُقد النواة</string>
-    <string name="diagnostics_nodes_desc">عُقد الجهاز التي يعرفها التطبيق. قراءة فقط: الوجود لا يمنح كتابة، ولا يتجاوز الـarbiter، ولا يثبت أن العقدة تقبل قيمة.</string>
-    <string name="diagnostics_nodes_present">مقروءة الآن: %1$d من %2$d</string>
-    <string name="diagnostics_nodes_absent">غير موجودة على هذا الجهاز: %1$d</string>
-    <string name="diagnostics_nodes_unreadable">موجودة لكن النظام يمنع قراءتها: %1$d</string>
 
     <string name="diagnostics_detecting_interfaces">جارٍ الكشف عن واجهات العتاد…</string>
     <string name="diagnostics_refresh">تحديث</string>

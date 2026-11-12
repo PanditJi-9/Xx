@@ -85,8 +85,6 @@ val ControlToolDestinations: List<MaxDestination> = listOf(
     MaxDestination.MaxBackup,
     MaxDestination.Permissions,
     MaxDestination.DebloatFreeze,
-    MaxDestination.BypassCharging,
-    MaxDestination.BypassChargingCheck,
     MaxDestination.ColorPalette,
     MaxDestination.ColorScheme,
     // الأخطف آخرًا: لا يُفتح بلمسة عابرة.
@@ -186,8 +184,6 @@ private val ControlToolBands: List<Pair<Int, List<MaxDestination>>> = listOf(
         MaxDestination.Permissions,
         MaxDestination.MaxBackup,
         MaxDestination.DebloatFreeze,
-        MaxDestination.BypassCharging,
-        MaxDestination.BypassChargingCheck,
     ),
     R.string.control_tools_appearance to listOf(
         MaxDestination.ColorPalette,

@@ -75,8 +75,9 @@ class LaunchRouteTest {
 
     @Test
     fun `the control toolbox keeps the surfaces that belong to no domain`() {
-        // **حُدّث بأمر المالك (M1c):** كان هذا الاختبار يفرض أن `MaxBackup` و`Permissions`
-        // على صفحة التحكّم، وقد نُقلا إلى الإعدادات بجوار `ConfigBackup` و`Privilege`.
+        // **حُدّث بأمر المالك (تكملة ٨٥):** كان يفرض ألّا يكون `MaxBackup` و`Permissions` على
+        // صفحة التحكّم (كانا في الإعدادات)، وأمر المالك الآن «إلى شاشة التحكم» — فعادا،
+        // وصار الشرط أن يكونا **معروضين** لا مخفيّين.
         // وما يبقى هنا هو ما لا ينتمي إلى محور ولا إلى شاشة أب: سطحان حيّان يُفتحان
         // ليُرى حالهما، وأدوات متقدّمة بلا محور. والشرط الباقي هو الأهمّ: كل صفّ يفتح
         // شاشته فعلًا — لا زرًّا لا يفعل شيئًا.
@@ -84,8 +85,8 @@ class LaunchRouteTest {
         assertTrue("Control tools band could not be parsed: $names", names.size >= 6)
         assertTrue("The FPS surface is not on the Control page: $names", names.contains("FpsOverlay"))
         assertTrue("Game sessions are not on the Control page: $names", names.contains("GameSessions"))
-        assertTrue("Max Backup still has a second door: $names", !names.contains("MaxBackup"))
-        assertTrue("AppOps still has a second door: $names", !names.contains("Permissions"))
+        assertTrue("Max Backup is not on the Control page: $names", names.contains("MaxBackup"))
+        assertTrue("AppOps is not on the Control page: $names", names.contains("Permissions"))
     }
 
     @Test

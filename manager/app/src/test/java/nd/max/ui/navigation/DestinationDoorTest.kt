@@ -201,10 +201,13 @@ class DestinationDoorTest {
     @Test
     fun `M1 keeps all destinations and their families in the accepted homes`() {
         val all = destinations()
-        assertEquals("عدد وجهات M1 لا ينقص عند إعادة ترتيبها", 69, all.size)
+        // ٦٦ = ٦٩ − الثلاث التي حُذفت بأمر المالك (التشخيص · صحة الوحدة · HMA).
+        assertEquals("عدد وجهات M1 لا ينقص عند إعادة ترتيبها", 66, all.size)
+        // ٢٣ = المحاور العشرة + ثلاثة عشر أداة بلا محور (كانت ١٦ قبل أن يستقبل التحكّم
+        // أدوات التشخيص والألوان والنسخ والصلاحيات والتنظيف بأمر المالك).
         assertEquals(
             "Control يحتفظ بالمحاور والأسطح والأدوات المقبولة",
-            16,
+            23,
             all.count { !it.hidden && it.parent == "Control" },
         )
 
@@ -217,15 +220,9 @@ class DestinationDoorTest {
                 "DozeMode",
                 "BatteryHistory",
             ),
-            "Diagnostics" to listOf("Logs", "UsageStats", "DeviceLab"),
-            "Settings" to listOf(
-                "ColorScheme",
-                "ColorPalette",
-                "ConfigBackup",
-                "MaxBackup",
-                "Permissions",
-                "Privilege",
-            ),
+            // شاشة التشخيص حُذفت بأمر المالك، وأدواتها صارت أدوات تحكّم مباشرة.
+            "Control" to listOf("Logs", "UsageStats", "DeviceLab", "MaxBackup", "Permissions"),
+            "Settings" to listOf("ConfigBackup", "Privilege"),
         )
         families.forEach { (parent, children) ->
             children.forEach { name ->
@@ -236,13 +233,19 @@ class DestinationDoorTest {
                 )
             }
         }
-        listOf("SetEdit", "ActivityLauncher", "FileManager").forEach { name ->
+        listOf("SetEdit", "ActivityLauncher").forEach { name ->
             assertEquals(
                 "M1b مرفوضة: $name أداة تحكّم لا اختبار عتاد",
                 "Control",
                 all.single { it.name == name }.parent,
             )
         }
+        // ومدير الملفات نُقل إلى محور التخزين بأمر المالك: مكانه حيث تُدار المساحة.
+        assertEquals(
+            "FileManager غادر محور التخزين",
+            "StorageHub",
+            all.single { it.name == "FileManager" }.parent,
+        )
     }
 
     /**
