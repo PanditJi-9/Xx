@@ -18,6 +18,10 @@
  * carrying element: the plot.** One series, one axis, one reading: the person
  * came to watch frames fall, not to browse settings. Controls sit under the
  * plot as a short legend of what is measured, never above it.
+ *
+ * States: overlay permission missing → the enable row says so · no frame
+ * samples → the graph is absent while readings stay · preview hidden → the
+ * restore tab, which is the window's own collapsed state.
  */
 
 package nd.max.ui.subscreens

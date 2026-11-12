@@ -9,6 +9,9 @@
  * curve stands above the ledger and takes its source from the row opened, or
  * from the live session when nothing is open. A ledger that plots every row at
  * once is read as noise.
+ *
+ * States: live idle · no stored sessions → the history empty line · a session
+ * without samples → the chart empty text under the one carrier.
  */
 
 package nd.max.ui.subscreens

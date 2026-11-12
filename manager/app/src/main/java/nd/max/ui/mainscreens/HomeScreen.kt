@@ -10,6 +10,9 @@
  * every card names the screen that can change it. It is the only place where
  * several domains are read side by side — which is why it carries a summary,
  * never a control.
+ *
+ * States: deck populated · deck empty (one line names the deck settings) ·
+ * a reading the device does not report is an em dash, never zero · no series.
  */
 @file:OptIn(ExperimentalMaterial3Api::class)
 

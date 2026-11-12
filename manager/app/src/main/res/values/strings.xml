@@ -1942,6 +1942,8 @@
     <string name="home_performance_monitor_desc">Resource load over the last 72 seconds</string>
     <string name="home_quick_actions">Command deck</string>
     <string name="home_quick_actions_desc">Direct access to the controls that matter</string>
+    <!-- الحالة الفارغة للمنصة: تُقال بجملة واحدة ومسار الإصلاح (الترس في الرأس) بدل صندوق صامت. -->
+    <string name="home_deck_empty">No cards to show — add one from the deck settings.</string>
     <!-- منصة التحكم: ٢ إلى ٦ عناصر (والافتراضيّ ٤)، والوضع التلقائي يتبع الأكثر استعمالًا (محليًّا على الجهاز). -->
     <string name="home_deck_settings_title">What the deck shows</string>
     <string name="home_deck_settings_desc">Between 2 and 6 elements: the deck fills itself with what you open most, or you choose them yourself.</string>

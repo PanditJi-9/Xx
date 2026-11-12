@@ -992,6 +992,7 @@
     <string name="home_performance_monitor_desc">حمل الموارد خلال آخر 72 ثانية</string>
     <string name="home_quick_actions">منصة التحكم</string>
     <string name="home_quick_actions_desc">وصول مباشر إلى أهم عناصر التحكم</string>
+    <string name="home_deck_empty">لا بطاقات تُعرض — أضف واحدة من إعدادات المنصة.</string>
     <!-- منصة التحكم: ٢ إلى ٦ عناصر (والافتراضيّ ٤)، والوضع التلقائي يتبع الأكثر استعمالًا (محليًّا على الجهاز). -->
     <string name="home_deck_settings_title">ما تعرضه المنصة</string>
     <string name="home_deck_settings_desc">من ٢ إلى ٦ عناصر: تملؤها المنصة بما تفتحه أكثر، أو تختارها بنفسك.</string>

@@ -1,3 +1,19 @@
+## ROUND-CLOSE-77 — M3: لكل شاشة قائمة حالاتها، والمنصة الفارغة تتكلّم — 2026-11-12 · DONE_WITH_CONCERNS
+
+**TASK:** «اكمل» — M3: تكيّفي وإتاحة (لمس · RTL · أحجام · حالات فراغ/خطأ)، بلا بناء محلي، دفعة واحدة إلى `main`.
+
+**SEARCH FIRST:** `rtl_guard` أخضر، و`ThermalDetail` يقول «يُجمع» تحت عيّنتين، و`FpsOverlay` يشرح غياب الصلاحية. الفارق الحقيقي: `CommandDeck` بلا فرع فراغ، وبطاقات الخمس بلا قائمة حالات.
+
+**SHIPPED:** `home_deck_empty` (en/ar فقط) + سطر الحالة الفارغة في `HomeCommandDeck.kt` · سطر `States:` في بطاقات `Now`/`Control`/`FpsOverlay`/`GameSessions`/`ThermalDetail` · حارس M3 في `ScreenArchetypeTest.kt` (قائمة الحالات · صفر عرض > ٣٢٠dp · وجود الحالة الفارغة).
+
+**MEASURED (exit 0):** `kt_balance` ٣٣٦٢/٠ · `code_health` نظيف · `i18n_coverage` ٨٤+en/٨٥ كودًا/٠ عوائق · `design_tokens` ٢٤٩/٣٠٠ · `resource_compile` aapt2 حقيقي · `rtl_guard` ٠ مخالفة · `git diff --check` نظيف.
+
+**BUILD:** لا بناء محلي — **الترجمة غير مُتحقّقة في هذه البيئة** حتى CI؛ قصّ النصّ في ٣٦٠dp **يحتاج جهازًا**.
+
+**RESIDUAL:** مراجعة مستقلة محجوبة (`Free usage limit reached`) · `NeuralPanel` حشوة مكتوبة سابقة لم تُلمس · JUnit total غير معلوم.
+
+**NEXT:** حكم بناء الدفعة، ثم M4.
+
 ## ROUND-CLOSE-75 — M2: حامل واحد لكل شاشة، والمنحنى خرج من الصفّ — 2026-11-12 · DONE_WITH_CONCERNS
 
 **TASK:** «اكمل» — M2 بعد قبول M1: `Now` · `Control` · `FpsOverlay` · `GameSessions` · `ThermalDetail`

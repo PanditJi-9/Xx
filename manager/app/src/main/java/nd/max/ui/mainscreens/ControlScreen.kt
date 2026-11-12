@@ -13,6 +13,9 @@
  * a plot belongs to the screen that owns that series, and a row that carries a
  * chart is read as decoration.
  *
+ * States: bands are always present — a destination the current access cannot
+ * reach is filtered out of the band, never shown disabled or promised.
+ *
  * Product shape: this is the old tuning workspace, kept in the new design
  * system. Grouped bands of destinations, one row per screen, a short line under
  * each title.

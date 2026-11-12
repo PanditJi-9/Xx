@@ -75,6 +75,15 @@ internal fun CommandDeck(
                 }
             },
         )
+        // الحالة الفارغة تُقال: منصة بلا بطاقة (كل الوجهات محجوبة بالوصول أو لم تُختر) كانت
+        // تُرسم رأسًا ثم فراغًا، فيُقرأ عطلًا. والسطر يسمّي المسار — الترس في الرأس نفسه.
+        if (entries.isEmpty()) {
+            Text(
+                text = stringResource(R.string.home_deck_empty),
+                color = palette.muted,
+                style = MaterialTheme.typography.bodySmall,
+            )
+        }
         // صفوف من بلاطتين بارتفاع واحد: `IntrinsicSize.Min` يعطي الصفّ ارتفاع أطوله، و`fillMaxHeight`
         // يمدّ البلاطة إليه. والصفّ المنفرد يترك خانة فارغة بالعرض نفسه فلا تتمدّد بلاطته.
         entries.chunked(2).forEach { pair ->

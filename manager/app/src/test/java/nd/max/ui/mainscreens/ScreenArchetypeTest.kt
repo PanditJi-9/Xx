@@ -163,6 +163,34 @@ class ScreenArchetypeTest {
         )
     }
 
+    /**
+     * **M3: لكل شاشة قائمة حالاتها، ولا عرض ثابت يكسر شاشة ٣٦٠dp.**
+     *
+     * البطاقة تسمّي الحالات (فراغ · مجهول · صلاحية) كما يطلب `PRODUCT_MAP` M3، فيُقرأ
+     * السلوك من الشاشة نفسها لا من ذاكرة أحد. والحدّ المُعلَن: هذا فحص نصّي — القصّ الفعلي
+     * للخطوط في ٣٦٠dp يحتاج جهازًا.
+     */
+    @Test
+    fun `M3 screens list their states and hardcode no width wider than a small phone`() {
+        val root = sourceRoot()
+        assumeTrue("Cannot locate nd.max sources; guard not evaluated", root != null)
+
+        m2Screens.forEach { screen ->
+            val text = File(root, screen.path).readText()
+            assertTrue("${screen.path}: بطاقة الشاشة بلا قائمة حالات (States:)", text.contains("\n * States: "))
+            val tooWide = Regex("""\.(?:required)?[Ww]idth\((\d+)\.dp\)""")
+                .findAll(text)
+                .mapNotNull { it.groupValues[1].toIntOrNull() }
+                .filter { it > 320 }
+                .toList()
+            assertTrue("${screen.path}: عرض ثابت يتجاوز ٣٢٠dp = $tooWide", tooWide.isEmpty())
+        }
+
+        // المنصة كانت تُرسم رأسًا وفراغًا حين لا بطاقة؛ فالحالة الفارغة صارت سطرًا يسمّي المسار.
+        val deck = File(root, "ui/mainscreens/HomeCommandDeck.kt").readText()
+        assertTrue("Now: المنصة الفارغة بلا سطر", deck.contains("R.string.home_deck_empty"))
+    }
+
     private fun callIndex(source: String, call: String): Int =
         Regex("(?m)^\\s*${Regex.escape(call)}\\(").find(source)?.range?.first ?: Int.MAX_VALUE
 }
