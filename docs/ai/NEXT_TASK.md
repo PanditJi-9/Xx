@@ -1,3 +1,27 @@
+## ROUND-CLOSE-75 — M2: حامل واحد لكل شاشة، والمنحنى خرج من الصفّ — 2026-11-12 · DONE_WITH_CONCERNS
+
+**TASK:** «اكمل» — M2 بعد قبول M1: `Now` · `Control` · `FpsOverlay` · `GameSessions` · `ThermalDetail`
+وفق نوعها، بلا بناء محلي، دفعة واحدة إلى `main`.
+
+**SEARCH FIRST (§0.5):** البطاقات الخمس كانت قائمة؛ قيس الفارق فقط. `Control` و`ThermalDetail`
+و`FpsOverlay` مطابقة أصلًا، والفارقان: `Now` (حامله `CommandDeck` كان في الذيل) و`GameSessions`
+(منحنيان: الحيّة + داخل صفّ محفوظ موسَّع). حُسّن القائم بلا مسار ثانٍ.
+
+**SHIPPED:** تقديم `CommandDeck` بعد الرأس وقبل البطل + إعادة ترتيب قراءة KDoc ·
+`selectedStoredSession` وحامل واحد يتبدّل مصدره (٣١٤) بدل منحنيين، وسطر `label` يسمّي الجلسة
+المرسومة · حارسان في `ScreenArchetypeTest` (نوع + حامل واحد · الحامل يسبق الصفوف).
+
+**MEASURED:** ٩ بوابات exit 0 (`kt_balance` · `code_health` · `i18n_coverage` · `prune` ·
+`design_tokens` · `jni_symbols` · `resource_compile` · `rtl_guard` · `git diff --check`). التفصيل
+في `HANDOFF` ROUND-CLOSE-75.
+
+**BUILD:** لا بناء محلي؛ **الترجمة غير مُتحقّقة في هذه البيئة** ويُقرأ حكمها من Actions على الدفعة.
+اللمس/RTL/الشكل **يحتاج جهازًا**.
+
+**NEXT:** قراءة حكم Actions؛ إصلاح أي فشل مثبت بدفعة واحدة. ثم M3. وعطب `HudSurface` بلا `filter`
+في معاينة `FpsOverlay` مسجَّل في `HANDOFF` ولم يُلمس (خارج M2). مراجعة مستقلة ما زالت محجوبة
+بحدّ الاستخدام المجاني.
+
 ## ROUND-CLOSE-74 — إغلاق قبول M1 — 2026-11-11 · DONE_WITH_CONCERNS
 
 **TASK:** إكمال M1 دفعة واحدة؛ لا M2 قبل قبولها. التشغيل `43079430040` على `fd07c649` أعطى

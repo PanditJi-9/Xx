@@ -153,6 +153,9 @@ fun GameSessionsScreen(
         recording && startedAtMs > 0L -> (clockNowMs - startedAtMs).coerceAtLeast(0L)
         else -> tally?.spanMs ?: 0L
     }
+    // منحنى واحد فقط يحمل الـLedger. فتح جلسة محفوظة يبدّل مصدر الحامل نفسه بدل أن
+    // يضيف منحنى ثانيًا داخل صفّها، وإغلاقها يعيده إلى الجلسة الحيّة.
+    val selectedStoredSession = sessions.firstOrNull { it.id == expandedId }
 
     MaxScreen(
         title = stringResource(R.string.game_sessions_title),
@@ -270,11 +273,6 @@ fun GameSessionsScreen(
                     )
                 }
 
-                SessionChartSection(
-                    points = series,
-                    emptyText = stringResource(R.string.game_sessions_chart_empty)
-                )
-
                 MaxGroup {
                     MaxNavigationRow(
                         title = stringResource(R.string.game_sessions_export),
@@ -311,6 +309,14 @@ fun GameSessionsScreen(
                 }
             }
         }
+
+        // حامل الـLedger: منحنى واحد يسبق الحكم والسجلّ، ويتبدّل مصدره بفتح جلسة محفوظة.
+        SessionChartSection(
+            points = selectedStoredSession?.series ?: series,
+            label = selectedStoredSession?.displayName
+                ?: stringResource(R.string.game_sessions_live_title),
+            emptyText = stringResource(R.string.game_sessions_chart_empty)
+        )
 
         // ── حكم آخر جلسة: الرقم وحده لا يقول «جيد أم سيئ» ──
         val lastSession = sessions.firstOrNull()
@@ -574,10 +580,6 @@ fun GameSessionsScreen(
                                         )
                                     )
                                 }
-                                SessionChartSection(
-                                    points = session.series,
-                                    emptyText = stringResource(R.string.game_sessions_chart_empty)
-                                )
                                 MaxGroupDivider()
                                 MaxNavigationRow(
                                     title = stringResource(R.string.game_sessions_remark),
@@ -683,9 +685,9 @@ private fun warningUnit(field: nd.max.core.platform.HudField): String = when (fi
     else -> ""
 }
 
-/** منحنى الإطارات: رسم بسيط بلا مكتبة، والغائب يكسر الخطّ لا يُوصل بصفر. */
+/** منحنى الإطارات الحامل: موضع واحد يتبدّل مصدره، والغائب يكسر الخطّ لا يُوصل بصفر. */
 @Composable
-private fun SessionChartSection(points: List<SessionPoint>, emptyText: String) {
+private fun SessionChartSection(points: List<SessionPoint>, label: String, emptyText: String) {
     val bounds = sessionFrameBounds(points)
     val lineColor = MaterialTheme.colorScheme.tertiary
     val gridColor = MaterialTheme.colorScheme.outlineVariant
@@ -696,6 +698,12 @@ private fun SessionChartSection(points: List<SessionPoint>, emptyText: String) {
         Text(
             text = stringResource(R.string.game_sessions_chart),
             style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(horizontal = MaxSpace.groupPadding)
+        )
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(horizontal = MaxSpace.groupPadding)
         )

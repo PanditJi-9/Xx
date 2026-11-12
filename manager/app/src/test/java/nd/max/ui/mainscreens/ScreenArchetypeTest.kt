@@ -22,6 +22,14 @@ import java.io.File
  */
 class ScreenArchetypeTest {
 
+    /** شاشة M2: النوع المقصود، وحاملها الواحد، والملفّ الذي يستدعيه. */
+    private data class M2Screen(
+        val path: String,
+        val archetype: String,
+        val carrierCall: String,
+        val carrierPath: String = path,
+    )
+
     /** الأنواع السبعة كما في `DESIGN.md` §Screen Composition. */
     private val archetypes = setOf(
         "Instrument", "Ledger", "Console", "Matrix", "Studio", "Flow", "Library",
@@ -34,6 +42,20 @@ class ScreenArchetypeTest {
         "ApplistScreen.kt",
         "MaxAiScreen.kt",
         "DiagnosticsScreen.kt",
+    )
+
+    /** شاشات M2 الخمس كما في `PRODUCT-MAP.md` §٥ — النوع والحامل الواحد. */
+    private val m2Screens = listOf(
+        M2Screen(
+            path = "ui/mainscreens/HomeScreen.kt",
+            archetype = "Matrix",
+            carrierCall = "CommandDeck",
+            carrierPath = "ui/mainscreens/LegendaryHomeDashboard.kt",
+        ),
+        M2Screen("ui/mainscreens/ControlScreen.kt", "Matrix", "MaxListScreen"),
+        M2Screen("ui/subscreens/FpsOverlayScreen.kt", "Instrument", "HudSurface"),
+        M2Screen("ui/subscreens/GameSessionsScreen.kt", "Ledger", "SessionChartSection"),
+        M2Screen("ui/subscreens/ThermalDetailScreen.kt", "Instrument", "ThermalTrend"),
     )
 
     private fun sourceRoot(): File? = listOf(
@@ -80,4 +102,59 @@ class ScreenArchetypeTest {
             )
         }
     }
+
+    @Test
+    fun `M2 screens name their intended archetype and render one carrier`() {
+        val root = sourceRoot()
+        assumeTrue("Cannot locate nd.max sources; guard not evaluated", root != null)
+
+        m2Screens.forEach { screen ->
+            val screenText = File(root, screen.path).readText()
+            val archetype = Regex("archetype: (\\w+)").find(screenText)?.groupValues?.get(1)
+            assertEquals("${screen.path}: نوع M2 تغيّر", screen.archetype, archetype)
+
+            val carrierText = File(root, screen.carrierPath).readText()
+            val calls = Regex("(?m)^\\s*${Regex.escape(screen.carrierCall)}\\(")
+                .findAll(carrierText)
+                .count()
+            assertEquals(
+                "${screen.path}: الحامل ${screen.carrierCall} يجب أن يُستدعى مرة واحدة",
+                1,
+                calls,
+            )
+        }
+    }
+
+    @Test
+    fun `M2 carriers lead their dependent rows and static blocks`() {
+        val root = sourceRoot()
+        assumeTrue("Cannot locate nd.max sources; guard not evaluated", root != null)
+
+        val now = File(root, "ui/mainscreens/LegendaryHomeDashboard.kt").readText()
+        assertTrue(
+            "Now: منصة Matrix ما زالت بعد الكتل الثابتة",
+            callIndex(now, "CommandDeck") < callIndex(now, "HomeHeroCard"),
+        )
+
+        val fps = File(root, "ui/subscreens/FpsOverlayScreen.kt").readText()
+        assertTrue(
+            "FpsOverlay: أدوات الضبط تسبق الآلة",
+            callIndex(fps, "HudSurface") < callIndex(fps, "MaxSwitchRow"),
+        )
+
+        val sessions = File(root, "ui/subscreens/GameSessionsScreen.kt").readText()
+        assertTrue(
+            "GameSessions: المنحنى عاد داخل صفّ جلسة",
+            callIndex(sessions, "SessionChartSection") < sessions.indexOf("sessions.forEach"),
+        )
+
+        val thermal = File(root, "ui/subscreens/ThermalDetailScreen.kt").readText()
+        assertTrue(
+            "ThermalDetail: الصفوف تسبق منحنى الآلة",
+            callIndex(thermal, "ThermalTrend") < callIndex(thermal, "MaxRow"),
+        )
+    }
+
+    private fun callIndex(source: String, call: String): Int =
+        Regex("(?m)^\\s*${Regex.escape(call)}\\(").find(source)?.range?.first ?: Int.MAX_VALUE
 }

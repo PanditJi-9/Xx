@@ -149,6 +149,67 @@ NeuralDashboardKit.kt:673:12 Syntax error: Expecting a top level declaration.
 **ما لم يُفقد:** `ui/component/PulseArt.kt` و`AmbientGlowCycle.kt` (حذف الملفّين الكاملين من ROUND-CLOSE-63)
 يبقيان محذوفين، وحارس مستوى الملفّ يبقى، وإصلاح استثناء `AppSettings` في `DestinationDoorTest` يبقى.
 
+### ROUND-CLOSE-75 — M2: الحامل الواحد، والصفّ الذي كان يحمل منحنى — 2026-11-12 · DONE_WITH_CONCERNS
+
+**TASK:** «اكمل» — تنفيذ M2 بعد قبول M1: `Now` · `Control` · `FpsOverlay` · `GameSessions` ·
+`ThermalDetail` وفق `PRODUCT-MAP.md` §٥، بلا بناء محلي، وجولة واحدة مجمعة إلى `main`.
+
+**FILES:** `LegendaryHomeDashboard.kt` · `GameSessionsScreen.kt` ·
+`ScreenArchetypeTest.kt` (+ هذا السجل و`NEXT_TASK.md` و`PRODUCT-MAP.md`). لا `core/**`، لا عتاد،
+لا نصوص جديدة (استُعمل `game_sessions_live_title` و`game_sessions_chart_empty` القائمان في EN/AR).
+
+**SEARCH FIRST (§0.5):** وُجدت **البطاقات الخمس وبطاقات الأنواع في KDoc أصلًا**، فلم تُبنَ شاشة
+ثانية: قيس الفارق المتبقّي فقط — «حامل واحد» و«لا صفّ يحمل منحنى». والنتيجة: `Control`
+(`MaxListScreen` واحد · `ControlBand` بلا رسم) و`ThermalDetail` (`ThermalTrend` عند ٣٥١ قبل أول
+`MaxRow` عند ٣٦٩) و`FpsOverlay` (`HudSurface` عند ٢٧٦ قبل أول `MaxSwitchRow` عند ٣٠٦) كانت
+مطابقة؛ والفارقان الحقيقيان: **`Now`** كان حامله (`CommandDeck`) في الذيل بعد `MemoryMatrixCard`،
+و**`GameSessions`** كان يستدعي `SessionChartSection` مرتين (الجلسة الحيّة + داخل صفّ محفوظ
+موسَّع) ⇒ صفّ يحمل منحنى ومنحنيان معًا. حسّنا القائم بفارق واحد لكلٍّ، ولم يُنشأ مسار موازٍ.
+
+**SHIPPED:**
+- `LegendaryHomeDashboard.kt`: `HomeTourAnchor(Deck){ CommandDeck }` انتقل إلى ما بعد `HomeHeader`
+  مباشرة (١٤٨) قبل `HomeHeroCard` (١٥٣)، وحُذف موضعه القديم بعد الذاكرة؛ وترتيب القراءة في KDoc
+  أُعيد كتابته (deck = ١).
+- `GameSessionsScreen.kt`: `selectedStoredSession = sessions.firstOrNull { it.id == expandedId }`؛
+  وحامل واحد خارج المقطع الحيّ (٣١٤): `SessionChartSection(points = selectedStoredSession?.series
+  ?: series, label = selectedStoredSession?.displayName ?: live_title, ...)`؛ وحُذف المنحنى من
+  داخل صفّ الجلسة المحفوظة ومن داخل المقطع الحيّ. فالتوسيع يبدّل **مصدر** الحامل لا يضيف ثانيًا.
+  وأُضيف سطر `label` تحت عنوان الرسم ليُعرف أيّ جلسة تُرسم.
+- `ScreenArchetypeTest.kt`: حارسان جديدان — `M2 screens name their intended archetype and render
+  one carrier` (النوع + استدعاء واحد للحامل، عبر `M2Screen` لخمس شاشات) و`M2 carriers lead their
+  dependent rows and static blocks` (Now: `CommandDeck` < `HomeHeroCard` · Fps: `HudSurface` <
+  `MaxSwitchRow` · Sessions: `SessionChartSection` < `sessions.forEach` · Thermal: `ThermalTrend`
+  < `MaxRow`).
+
+**MEASURED (هذه الجولة، exit 0 لكلها):** `kt_balance --assert` (٣٣٦٢ ملفًا · عوائق ٠) ·
+`code_health --assert` (صحّة ٠ · الدَّين عند سقفه: oversized 13 · wildcard 26 · inline_ui_copy 5 ·
+hardcoded 4 · presentation_hw_writes 0) · `i18n_coverage --assert` (٨٤ + en · عوائق ٠) ·
+`i18n_coverage --prune all --assert` (يتيمة ٠) · `design_tokens --assert` (٢٤٩/٣٠٠) ·
+`jni_symbols --assert` (٢٣ تصريحًا · صفر ناقص · الثنائيات **غير متحقّقة**: لا `.so`) ·
+`resource_compile --assert` (aapt2 حقيقي · مجلّدان · ✓) · `rtl_guard --assert` (٤٦٢ ملفًا · صفر
+مخالفة) · `git diff --check` (نظيف). ولم يُعد فحص ما قيس في M1.
+
+**BUILD:** **الترجمة غير مُتحقّقة في هذه البيئة** — لا Gradle محلي بأمر المالك (§0.1)؛ الحكم
+يُقرأ من Actions على الالتزام المدفوع. واللمس/RTL/الشكل **يحتاج جهازًا**، وحكم النوع إسناد
+تصميمي لا يقيسه إلا مراجعة بشرية/مختلفة.
+
+**RESIDUAL RISK:**
+- `FpsOverlayScreen` لا يمرّر `filter` إلى `HudSurface` في المعاينة، فيرسم الافتراضي
+  `HudFilter.All` لا ما اختاره المستخدم — عطب أمانة **مثبت بالقراءة**، خارج نطاق M2، لم يُلمس.
+- مراجعة مستقلة لم تقع: كل محاولات التفويض ترجع `Free usage limit reached`؛ لا يُدّعى نجاحها.
+- العدد الكلي لاختبارات JUnit لا يُستنتج من فرق الاختبارات؛ يُقرأ من خطوة العدّ في CI إن طُبعت.
+
+**ذاكرة للتالي (§7.6):**
+العَرَض: `GameSessions` يعرض منحنيين (الحيّة + المحفوظة الموسَّعة)، و`Now` حامله في الذيل.
+أول سطر خالف: `SessionChartSection(points = session.series, …)` داخل فرع الصفّ الموسَّع.
+الفرضية التي ثبتت: الحامل الواحد يقتضي **تبديل مصدر** الرسم لا تعدّد مواضعه.
+الأمر الذي أُعيد: البوابات التسع أعلاه (مقيس) · الترجمة (غير مُتحقّقة) · الشكل واللمس (يحتاج جهازًا).
+ما لا يُعاد اختباره الجولة القادمة: بطاقات الأنواع الخمس ومواضع الحوامل — يحرسها
+`ScreenArchetypeTest` الآن؛ وأرقام البوابات أعلاه ما لم يتغيّر ملف.
+
+**NEXT:** قراءة حكم Actions على الالتزام المدفوع؛ عطب مثبت يُصلح في الجولة نفسها بدفعة واحدة.
+ثم M3 (تكيّفي/إتاحة) لا تلميع شاشة. ومراجعة النوع البصري تبقى بيد مراجع مختلف.
+
 ### ROUND-CLOSE-74 — إغلاق قبول M1 — 2026-11-11 · DONE_WITH_CONCERNS
 
 **TASK:** «اكمل m1 دفعة واحدة وفي جوله واحدة»؛ دفعة إلى `main`، بلا بناء محلي ولا M2.
