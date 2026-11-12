@@ -77,7 +77,7 @@ internal fun orderGamePicker(apps: List<GameApp>): List<GamePickerItem> = apps
     .map { GamePickerItem(it.packageName, it.label, it.detectedGame) }
 
 @Composable
-fun GamePickerSheet(
+internal fun GamePickerSheet(
     visible: Boolean,
     onDismiss: () -> Unit,
     onPick: (GamePickerItem) -> Unit,

@@ -30,7 +30,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.History
+import androidx.compose.material.icons.rounded.FiberManualRecord
 import androidx.compose.material.icons.rounded.Image
+import androidx.compose.material.icons.rounded.Stop
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -72,6 +74,7 @@ import nd.max.core.platform.HudChartRenderer
 import nd.max.core.platform.HudLive
 import nd.max.core.platform.HudRecorder
 import nd.max.core.platform.HudSessionSettings
+import nd.max.core.platform.SessionPoint
 import nd.max.core.platform.InsightRules
 import nd.max.core.platform.SessionAction
 import nd.max.core.platform.SessionCause
