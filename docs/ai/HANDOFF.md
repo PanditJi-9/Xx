@@ -27214,3 +27214,65 @@ RESIDUAL RISK: **DONE_WITH_CONCERNS** يبقى لمراجعة سلامة مست�
 سائق أو جودة قيم الحاكم/التخزين/الاهتزاز/اللوحة على هاتف المالك.
 NEXT: تثبيت APK وتجربة الأقسام الداعمة؛ مراجعة مستقلة بنموذج يختاره المالك. لا بناء جديد
 لهذا السجل، ولا دفع للكود بعد النتيجة؛ دفع توثيق النهاية إلى main لا يشغل APK.
+
+## ROUND-CLOSE-36 — 2026-11-12 · اللوبي: سجلّ لعب تلقائي + تحميل سريع — DONE_WITH_CONCERNS
+
+TASK: GAME-SPACE-P0.1-P0.2 — أمر «نفذ» على سجلّ جلسات اللعب و«الأكثر لعبًا»، وعلى قسم
+«التحميل السريع» في مركز التحكم. نطاق Kotlin/Compose/res وتوثيق اللعب؛ لا native/SELinux/إقلاع
+ولا مخزن بروفايل ثانٍ.
+
+FILES:
+- `core/gamespace/PlaySessionLedger.kt` + `PlaySessionStore.kt` (جديدان): سجلّ وقت جدار محلي
+  محدود (٤٠٠ جلسة، ٥ ثوانٍ–١٢ ساعة)، ملفّ TSV واحد في `filesDir`، كتابة ذرّية ونسخة `.corrupt`.
+  **ليس** `GameSessionStore`: ذلك أرشيف تقارير FPS يبدأه المستخدم (٢٠ جلسة غنيّة)؛ هذا وقت لعب
+  تلقائي يقرأه اللوبي. الحدّ مكتوب في الملفين وفي `docs/gaming/README.md`.
+- `service/GamePanelService.kt`: كاتب واحد للسجلّ؛ الإغلاق عند تبدّل اللعبة/مغادرتها/إطفاء
+  الشاشة/الإيقاف/التدمير. قراءة `Unknown` لا تُغلق جلسة.
+- `ui/subscreens/GameLobbyScreen.kt` + `ui/component/LobbyChrome.kt`: قراءة السجلّ على IO عند
+  `ON_RESUME` وتغيير المكتبة، `LobbySort.MostPlayed`، وسطر «آخر لعب · لُعبت …» بلا صفر مُختلق.
+- `core/gamespace/LobbyDeckMath.kt` + `LobbyPrefsModel.kt`: الفرز الجديد؛ التعداد يُحفظ بالاسم.
+- `ui/subscreens/LobbyControlCenter.kt`: `LobbySection.Loadout` خامسًا، وخيار الترتيب.
+- `res/values/` و`values-ar/`: ١٣ مفتاحًا؛ حُدّث نصّ الحدّ في `values-en-rCA/AU/GB/IN` بلا
+  مفاتيح جديدة خارج EN/AR. لا لغة ثالثة.
+- `test/.../PlaySessionLedgerTest.kt` و`LobbyOrderPlayStatsTest.kt` (جديدان): ٩ اختبارات نقيّة
+  مكتوبة، **لم تُشغَّل محليًّا** بأمر المالك (الاختبار على GitHub Actions).
+- دمج `origin/main` في `e87dbcec`: حُلّ تعارض `AGENTS.md` و`DESIGN.md` بأخذ دليل main الحقيقي
+  وإزالة المقدمة غير المتعلقة، وDESIGN من main. لا كود main حُذف.
+
+GATES (شجرة الدمج، كلها مقياسة هنا):
+- `kt_balance --assert`: **٣٣٦٩ ملفًا · ٠ عائق**.
+- `code_health --assert`: صحّة **٠**؛ الدَّين **11/26/5/4/0** (oversized/wildcard/inline/literals/
+  presentation_hw_writes).
+- `i18n_coverage --assert`: **٠ عائق · ٨٥ كودًا**؛ `--prune all`: **٠ يتيم**.
+- `design_tokens --assert`: **233 ≤ 300**. `resource_compile --assert`: **مرّ** بـ`/usr/bin/aapt2`
+  على مجلدات `res`.
+- `rtl_guard`: **٠ مخالفة**. `hardcoded_ui_text`: **21 ≤ 24**.
+- `jni_symbols`: ٢٣ تصريحًا، ٠ ناقص مصدر؛ **الطبقة الثنائية غير مُتحقّقة** (لا `.so`).
+- `git diff --check` و`git diff --cached --check`: **نظيفان**. لا تعارضات باقية.
+
+BUILD: **الترجمة المحلية قبل الدمج** `:app:compileReleaseKotlin` = **EXIT 0** في **28m27s**
+(بيئة الجهاز، JDK 17، SDK محلي). **هذا لا يُنسب إلى شجرة الدمج**؛ لم يُشغَّل Gradle بعد الدمج
+بأمر المالك. الاختبارات لم تُشغَّل محليًّا، ولم يُبنَ APK على الهاتف. الحكم بعد الدمج هو تشغيل
+GitHub Actions على `main`، لا QV موازٍ مكرر. **الترجمة بعد الدمج غير مُتحقّقة في هذه البيئة.**
+
+RESIDUAL RISK:
+- السجلّ لا يقيس إلا ما دامت خدمة اللوحة حيّة؛ الجلسات <٥ ثوانٍ، وما قبل بدء الخدمة، والقراءات
+  غير المقروءة لا تُسجَّل. ساعة الجدار قد تنحرف؛ لا قياس FPS لكل لعبة ولا ادّعاء أداء.
+- لا مراجعة سلامة مستقلة، ولا اختبار جهاز/لمس/RTL/TalkBack. نجاح CI لا يثبت سلوك الهاتف.
+- حدود `GameSessionStore` (تقارير FPS) و`PlaySessionLedger` (وقت اللعب) معلنة، لكنهما ملفّان
+  منفصلان؛ لا شاشة تخلط الرقمين.
+
+NEXT: اقرأ نتيجة Build على `main` بعد الدفع، وأصلح أول خطأ مثبت في الجولة نفسها. ثم جهاز المالك
+(جلسة >٥ ثوانٍ، تبديل لعبة/خروج، عودة اللوبي، RTL) ثم مراجعة مستقلة. لا QV/dispatch مكرر.
+
+### §7.6 — ذاكرة تُترك للتالي
+
+العَرَض: اللوبي لا يعرف «آخر لعب» ولا «الأكثر لعبًا»؛ ومركز التحكم لا يجمع قرارات ما قبل الجولة.
+أول سطر خالف: لا سطر عطب في البوابات؛ البوابات الخمس كلها خضراء. الترجمة المحلية نجحت قبل الدمج.
+الفرضية التي ثبتت: كاتب واحد في `GamePanelService` + مخزن TSV محدود + قراءة عند `ON_RESUME`
+تعطي سجلًّا صادقًا بلا مخزن بروفايل ثانٍ. الفرضية التي لم تُختبر: السلوك على جهاز حقيقي.
+الأمر الذي أُعيد: `python3 tools/kt_balance.py --assert` (3369/0) و`code_health --assert` (0)
+و`i18n_coverage --assert` (0/85) و`design_tokens --assert` (233) و`resource_compile --assert`
+(مرّ بـaapt2) و`rtl_guard` (0) و`git diff --check` (0) — **مقيس** على شجرة الدمج.
+ما لا يُعاد اختباره الجولة القادمة: لا تُضف مخزن جلسات ثالثًا؛ حدّ `PlaySessionLedger` مقابل
+`GameSessionStore` مثبت في الكود والتوثيق. لا تُشغّل Gradle محليًّا للتحقق من شاشة.
