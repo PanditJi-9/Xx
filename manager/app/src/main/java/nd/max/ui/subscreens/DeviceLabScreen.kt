@@ -15,8 +15,10 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.location.LocationManager
 import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraManager
+import android.hardware.ConsumerIrManager
 import android.media.AudioAttributes
 import android.media.AudioDeviceCallback
 import android.media.AudioDeviceInfo
@@ -26,6 +28,7 @@ import android.media.AudioRecord
 import android.media.AudioTrack
 import android.media.MediaCodecList
 import android.media.MediaRecorder
+import android.nfc.NfcAdapter
 import android.os.BatteryManager
 import android.os.Build
 import android.os.VibrationEffect
@@ -37,6 +40,8 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -49,6 +54,9 @@ import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.VolumeUp
 import androidx.compose.material.icons.rounded.BatteryChargingFull
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.outlined.IosShare
+import androidx.compose.material.icons.rounded.History
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.FlashOn
 import androidx.compose.material.icons.rounded.Keyboard
@@ -103,12 +111,20 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.math.abs
 import nd.max.R
+import nd.max.core.diagnostics.DeviceFactsReader
+import nd.max.core.lab.LabResultStore
 import nd.max.core.net.WifiChannel
 import nd.max.ui.util.WifiChannelReader
+import nd.max.ui.util.shareText
+import nd.max.ui.design.MaxCardData
+import nd.max.ui.design.MaxCardGrid
+import nd.max.ui.design.MaxCardSize
 import nd.max.ui.design.MaxGroup
 import nd.max.ui.design.MaxGroupDivider
 import nd.max.ui.design.MaxNavigationRow
@@ -119,6 +135,9 @@ import nd.max.ui.design.MaxSpace
 import nd.max.ui.design.MaxSwitchRow
 import nd.max.ui.design.MaxTone
 import nd.max.ui.theme.MonoValueStyleSmall
+import java.text.DateFormat
+import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.Locale
 import kotlin.math.PI
 import kotlin.math.log10
@@ -145,7 +164,33 @@ fun DeviceLabScreen(navController: NavHostController) {
     val context = LocalContext.current
     val snackbar = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+    var chargeAttempt by remember { mutableIntStateOf(0) }
     var openTest by remember { mutableStateOf<LabTest?>(null) }
+    // نتيجة كل اختبار يضعها من جرّبه؛ الحوار يفتحها، والبطاقة تعرضها.
+    // **وتُقرأ من المخزن لا من `remember`:** الحكم يبقى بعد إغلاق الشاشة وبعد إعادة
+    // التشغيل، فيعود المستخدم إلى ما جرّبه بدل أن يعيد كل اختبار ليعرف حكمه.
+    // والمخزن يحفظ ما كتبه هو، لا قياسًا آليًّا: التطبيق لا يسمع السماعة ولا يرى الشاشة.
+    var labRecords by remember { mutableStateOf(LabResultStore.load(context)) }
+    val labResults = remember(labRecords) {
+        labOutcomes(labRecords.mapValues { it.value.outcome })
+    }
+    val tally = remember(labResults) { labTally(labResults) }
+    // **والعدّاد يقول «كم» وهذه تقول «أيّها»:** من يفتح المختبر بعد أسبوع يرى «٩ لم تُجرَّب»
+    // ويبدأ من أعلى الشبكة فيعيد ما جرّبه. والصفّ التالي يُسمّي التالي بترتيب الجدول نفسه،
+    // فيكمل المستخدم من حيث انتهى — ويختفي وحده حين تُجرَّب القائمة كلها.
+    val next = remember(labResults) { nextUntried(labResults) }
+    var labTarget by remember { mutableStateOf<LabTestId?>(null) }
+    // **ومراسي الأقسام:** من ضغط بطاقةً بلا نافذة ينزل إلى أداتها في الصفحة نفسها،
+    // فيحتاج موضعًا يُطلب إظهاره. مرساةٌ لكل قسم من الثمانية، والحارس النصّي يمنع قسمًا بلا مرساة.
+    val toolAnchors = remember {
+        LabToolSection.entries.associateWith { BringIntoViewRequester() }
+    }
+    // البطاقة التي جاء منها التشغيل: يُعاد حوار نتيجتها بعد إغلاق الأداة، فلا يضيع الحكم.
+    var pendingVerdict by remember { mutableStateOf<LabTestId?>(null) }
+    // **والبطاقة التي نزلنا منها إلى القسم:** بعد أن يُجرَّب العتاد هناك، لا يُعاد المستخدم
+    // إلى أعلى الصفحة ليبحث عن بطاقته — زرّ التسجيل في رأس القسم نفسه يفتح حوارها. والحلقة
+    // تُغلق في الطرفين: من البطاقة إلى الأداة، ومن الأداة إلى الحكم.
+    var pendingCard by remember { mutableStateOf<LabTestId?>(null) }
 
     val speakerError = stringResource(R.string.device_lab_speaker_error)
     val torchError = stringResource(R.string.device_lab_torch_error)
@@ -163,7 +208,128 @@ fun DeviceLabScreen(navController: NavHostController) {
         accentIcon = Icons.Rounded.Science,
         snackbarHostState = snackbar,
     ) {
-        MaxSection(title = stringResource(R.string.device_lab_section_screen)) {
+        MaxSection(
+            title = stringResource(R.string.device_lab_tests_title),
+            description = stringResource(R.string.device_lab_tests_desc),
+        ) {
+            // **ملخّص الحال قبل البطاقات:** من يفتح المختبر يريد جوابًا واحدًا — كم بقي
+            // بلا تجربة. والصفّ لا يظهر قبل أوّل حكم، فلا يعلن «صفر» في وجه من لم يبدأ.
+            if (tally.untried < LabTestId.entries.size) {
+                MaxRow(
+                    title = stringResource(
+                        R.string.device_lab_tally,
+                        tally.works,
+                        tally.faulty,
+                        tally.untried,
+                    ),
+                    icon = Icons.Rounded.Check,
+                    iconTone = if (tally.faulty > 0) MaxTone.Caution else MaxTone.Positive,
+                )
+            }
+            // **والاختبار التالي بضغطة:** لا يظهر إلّا إن بقي اختبار بلا تجربة، فوجوده نفسه
+            // يقول «بقي شيء»، وغيابه يقول «انتهيت» بلا نصّ إضافي.
+            if (next != null) {
+                MaxNavigationRow(
+                    title = stringResource(R.string.device_lab_next, stringResource(next.titleRes)),
+                    icon = next.icon,
+                    iconTone = MaxTone.Accent,
+                    onClick = {
+                        // ولا بطاقة معلّقة تُحمل مع فتحة من الشبكة: الصفّ يفتح حوار الحكم
+                        // مباشرةً، فلا زرّ تسجيل يبقى في قسم بعد إغلاقه.
+                        pendingCard = null
+                        labTarget = next
+                    },
+                )
+            }
+            // **وتقرير يخرج من الجهاز:** بلا هذا يبقى ما جرّبه المستخدم حبيس شاشته — لا
+            // يُريه لمطوّر ولا يُرفقه بتقرير عطب، فيُعاد الاختبار من الصفر عند كل سؤال.
+            // ولا يظهر إلّا إن كان هناك ما يُقال: زرّ يشارك تقريرًا فارغًا وعدٌ لا يُوفى.
+            if (labRecords.isNotEmpty()) {
+                MaxNavigationRow(
+                    title = stringResource(R.string.device_lab_share),
+                    icon = Icons.Outlined.IosShare,
+                    onClick = {
+                        // **ويُبنى عند الضغط لا عند كل إعادة رسم:** التقرير يُقرأ مرّة واحدة
+                        // حين يُطلب، لا في كل حرف يكتبه المستخدم في حقل آخر من الصفحة.
+                        val judged = labRecords.mapNotNull { (name, record) ->
+                            LabTestId.entries.firstOrNull { it.name == name }?.let { it to record }
+                        }.toMap()
+                        // **وعن أي جهاز، ومتى:** التقرير يخرج من الجهاز، فمن يستلمه يجب أن
+                        // يعرف على أي هاتف حُكم، وأن يعرف أن الحكم قديم إن كان كذلك. والهويّة
+                        // من `DeviceFactsReader` — لا حقول منسوخة في الشاشة.
+                        val facts = DeviceFactsReader.read(context)
+                        // وصيغة ثابتة الترتيب (`yyyy-MM-dd HH:mm`) لأن التقرير يُقارَن بين
+                        // أجهزة: تاريخٌ بصيغة محلّية يُقرأ مختلفًا عند كل قارئ.
+                        val stampFormat = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.US)
+                        val text = buildString {
+                            appendLine(context.getString(R.string.device_lab_title))
+                            appendLine(context.getString(R.string.device_lab_report_device, labDeviceLine(facts)))
+                            appendLine(
+                                context.getString(
+                                    R.string.device_lab_report_build,
+                                    nd.max.core.diagnostics.DeviceFacts.render(facts.appVersion),
+                                    nd.max.core.diagnostics.DeviceFacts.render(facts.moduleVersion),
+                                ),
+                            )
+                            appendLine(
+                                context.getString(
+                                    R.string.device_lab_tally,
+                                    tally.works,
+                                    tally.faulty,
+                                    tally.untried,
+                                ),
+                            )
+                            appendLine()
+                            append(
+                                labReport(
+                                    judged,
+                                    groupTitle = { context.getString(it.labelRes) },
+                                    testTitle = { context.getString(it.titleRes) },
+                                    // ولا تاريخ لسجلٍّ بلا زمن (`0` من نسخة قديمة): يُترك بلا
+                                    // تاريخ بدل أن يُكتب «1970».
+                                    stamp = { record ->
+                                        record.atMs.takeIf { it > 0L }
+                                            ?.let { stampFormat.format(java.util.Date(it)) }
+                                    },
+                                ),
+                            )
+                        }
+                        shareText(context, "lab-report.txt", text)
+                    },
+                )
+            }
+            MaxCardGrid(
+                cards = LabTestId.entries.map { test ->
+                    val outcome = labResults[test] ?: LabOutcome.NOT_RUN
+                    MaxCardData(
+                        title = stringResource(test.titleRes),
+                        icon = test.icon,
+                        description = stringResource(outcome.labelRes),
+                        tone = outcome.tone,
+                        onClick = {
+                            // فتح الحوار من الشبكة يُلغي أي بطاقة معلّقة: زرّ التسجيل في رأس
+                            // قسمٍ ما يخصّ البطاقة التي نزلنا منها، لا البطاقة التي فُتحت الآن.
+                            pendingCard = null
+                            labTarget = test
+                        },
+                    )
+                },
+                size = MaxCardSize.Medium,
+            )
+        }
+
+        MaxSection(
+            modifier = Modifier.bringIntoViewRequester(
+                toolAnchors.getValue(LabToolSection.Screen),
+            ),
+            title = stringResource(R.string.device_lab_section_screen),
+            trailing = {
+                LabSectionTrailing(LabToolSection.Screen, pendingCard) { test ->
+                    labTarget = test
+                    pendingCard = null
+                }
+            },
+        ) {
             MaxGroup {
                 MaxNavigationRow(
                     title = stringResource(R.string.device_lab_screen_title),
@@ -197,7 +363,18 @@ fun DeviceLabScreen(navController: NavHostController) {
             CodecCapabilities()
         }
 
-        MaxSection(title = stringResource(R.string.device_lab_section_controls)) {
+        MaxSection(
+            modifier = Modifier.bringIntoViewRequester(
+                toolAnchors.getValue(LabToolSection.Controls),
+            ),
+            title = stringResource(R.string.device_lab_section_controls),
+            trailing = {
+                LabSectionTrailing(LabToolSection.Controls, pendingCard) { test ->
+                    labTarget = test
+                    pendingCard = null
+                }
+            },
+        ) {
             MaxGroup {
                 MaxNavigationRow(
                     title = stringResource(R.string.device_lab_buttons_title),
@@ -212,7 +389,18 @@ fun DeviceLabScreen(navController: NavHostController) {
 
         HapticTuningSection()
 
-        MaxSection(title = stringResource(R.string.device_lab_section_audio)) {
+        MaxSection(
+            modifier = Modifier.bringIntoViewRequester(
+                toolAnchors.getValue(LabToolSection.Audio),
+            ),
+            title = stringResource(R.string.device_lab_section_audio),
+            trailing = {
+                LabSectionTrailing(LabToolSection.Audio, pendingCard) { test ->
+                    labTarget = test
+                    pendingCard = null
+                }
+            },
+        ) {
             MaxGroup {
                 MaxRow(
                     title = stringResource(R.string.device_lab_speaker_title),
@@ -280,13 +468,89 @@ fun DeviceLabScreen(navController: NavHostController) {
         }
 
         MaxSection(
+            modifier = Modifier.bringIntoViewRequester(
+                toolAnchors.getValue(LabToolSection.Wifi),
+            ),
             title = stringResource(R.string.device_lab_section_wifi),
             description = stringResource(R.string.device_lab_wifi_desc),
+            trailing = {
+                LabSectionTrailing(LabToolSection.Wifi, pendingCard) { test ->
+                    labTarget = test
+                    pendingCard = null
+                }
+            },
         ) {
             WifiChannels()
         }
 
-        MaxSection(title = stringResource(R.string.device_lab_section_hardware)) {
+        MaxSection(
+            modifier = Modifier.bringIntoViewRequester(
+                toolAnchors.getValue(LabToolSection.Cameras),
+            ),
+            title = stringResource(R.string.device_lab_section_cameras),
+            description = stringResource(R.string.device_lab_cameras_desc),
+            trailing = {
+                LabSectionTrailing(LabToolSection.Cameras, pendingCard) { test ->
+                    labTarget = test
+                    pendingCard = null
+                }
+            },
+        ) {
+            CameraTest()
+        }
+
+        MaxSection(
+            modifier = Modifier.bringIntoViewRequester(
+                toolAnchors.getValue(LabToolSection.Radios),
+            ),
+            title = stringResource(R.string.device_lab_section_radios),
+            description = stringResource(R.string.device_lab_radios_desc),
+            trailing = {
+                LabSectionTrailing(LabToolSection.Radios, pendingCard) { test ->
+                    labTarget = test
+                    pendingCard = null
+                }
+            },
+        ) {
+            RadiosTest()
+        }
+
+        MaxSection(
+            modifier = Modifier.bringIntoViewRequester(
+                toolAnchors.getValue(LabToolSection.Charge),
+            ),
+            title = stringResource(R.string.device_lab_section_charge),
+            description = stringResource(R.string.device_lab_charge_desc),
+            trailing = {
+                // القياس لحظةٌ لا حكم دائم: من وصل الشاحن بعد فتح الشاشة يعيده بلمسة.
+                IconButton(onClick = { chargeAttempt++ }) {
+                    Icon(
+                        imageVector = Icons.Rounded.RestartAlt,
+                        contentDescription = stringResource(R.string.device_lab_charge_again),
+                    )
+                }
+                // وزرّ التسجيل بجانبه لا مكانه: إعادة القياس والحكم على النتيجة فعلان مختلفان.
+                LabSectionTrailing(LabToolSection.Charge, pendingCard) { test ->
+                    labTarget = test
+                    pendingCard = null
+                }
+            },
+        ) {
+            ChargeTest(attempt = chargeAttempt)
+        }
+
+        MaxSection(
+            modifier = Modifier.bringIntoViewRequester(
+                toolAnchors.getValue(LabToolSection.Hardware),
+            ),
+            title = stringResource(R.string.device_lab_section_hardware),
+            trailing = {
+                LabSectionTrailing(LabToolSection.Hardware, pendingCard) { test ->
+                    labTarget = test
+                    pendingCard = null
+                }
+            },
+        ) {
             TorchTest(
                 onError = { scope.launch { snackbar.showSnackbar(torchError) } },
             )
@@ -296,15 +560,70 @@ fun DeviceLabScreen(navController: NavHostController) {
         }
     }
 
+    labTarget?.let { test ->
+        LabResultDialog(
+            test = test,
+            outcome = labResults[test],
+            checkedAt = labRecords[test.name]?.atMs,
+            onRun = {
+                labTarget = null
+                pendingVerdict = test
+                openTest = test.dialog()
+            },
+            // **وإلى الأداة مباشرةً:** البطاقات التي لا نافذة لها تُنزل إلى قسمها بدل أن
+            // تُترك للحوار وحده، فيصير في الحوار طريقٌ إلى ما يُجرَّب لا إلى الحكم فقط.
+            onGoToTest = {
+                // البطاقة تبقى معلّقة حتى يصل المستخدم إلى القسم: زرّ التسجيل هناك يخصّها.
+                pendingCard = test
+                labTarget = null
+                scope.launch {
+                    toolAnchors.getValue(test.toolSection()).bringIntoView()
+                }
+            },
+            onPick = { outcome ->
+                LabResultStore.set(context, test.name, outcome.name, System.currentTimeMillis())
+                labRecords = LabResultStore.load(context)
+                labTarget = null
+            },
+            onClear = {
+                LabResultStore.clear(context, test.name)
+                labRecords = LabResultStore.load(context)
+                labTarget = null
+            },
+            onDismiss = { labTarget = null },
+        )
+    }
+
+    // **والعودة إلى الحكم بعد الأداة:** يُغلق الاختبار فيُعاد حوار بطاقته، لأن ما جرى الآن
+    // هو ما يُحكم عليه الآن. والإغلاق بلا حكم لا يكتب شيئًا — `onPick` وحده هو من يكتب.
+    val closeTest: () -> Unit = {
+        openTest = null
+        labTarget = pendingVerdict
+        pendingVerdict = null
+    }
     when (openTest) {
-        LabTest.SCREEN -> ScreenTestDialog(onDismiss = { openTest = null })
-        LabTest.TOUCH -> TouchTestDialog(onDismiss = { openTest = null })
-        LabTest.BUTTONS -> ButtonTestDialog(onDismiss = { openTest = null })
+        LabTest.SCREEN -> ScreenTestDialog(onDismiss = closeTest)
+        LabTest.TOUCH -> TouchTestDialog(onDismiss = closeTest)
+        LabTest.BUTTONS -> ButtonTestDialog(onDismiss = closeTest)
         null -> Unit
     }
 }
 
-private enum class LabTest { SCREEN, TOUCH, BUTTONS }
+internal enum class LabTest { SCREEN, TOUCH, BUTTONS }
+
+/**
+ * **الرجوع من الأداة إلى بطاقتها** — معكوس [LabTestId.dialog].
+ *
+ * ولماذا يلزم: كان من يضغط «شغّل الاختبار» في حوار النتيجة يُفتح له الاختبار، ثم يُغلق
+ * الاختبار فيجد نفسه على الصفحة بلا شيء — حوار النتيجة أُغلق قبل التشغيل، فلا يبقى إلا أن
+ * يعود إلى الشبكة ويضغط البطاقة مرّة ثانية ليكتب حكمه. والمنطق أن يُعاد الحوار بعد الأداة:
+ * جرّبتَ الآن، فقل ما رأيت الآن.
+ */
+internal fun LabTest.verdictId(): LabTestId = when (this) {
+    LabTest.SCREEN -> LabTestId.SCREEN
+    LabTest.TOUCH -> LabTestId.TOUCH
+    LabTest.BUTTONS -> LabTestId.BUTTONS
+}
 
 // ---------------------------------------------------------------------------
 // Screen
@@ -1235,6 +1554,264 @@ private fun BatteryTest() {
 }
 
 // ---------------------------------------------------------------------------
+// The charging test — six seconds of measurement, not a status label
+// ---------------------------------------------------------------------------
+
+/** قراءة واحدة من مقياس الوقود: العدّاد التراكمي والتيار اللحظي والمستوى. */
+private data class ChargeReading(
+    val chargeUah: Int,
+    val currentUa: Int,
+    val level: Int,
+    val status: Int,
+)
+
+private fun readCharge(context: Context): ChargeReading {
+    val intent = context.registerReceiver(null, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
+    val manager = context.getSystemService(BatteryManager::class.java)
+    val level = intent?.getIntExtra(BatteryManager.EXTRA_LEVEL, -1) ?: -1
+    val scale = intent?.getIntExtra(BatteryManager.EXTRA_SCALE, -1) ?: -1
+    return ChargeReading(
+        chargeUah = manager?.getIntProperty(BatteryManager.BATTERY_PROPERTY_CHARGE_COUNTER)
+            ?: Int.MIN_VALUE,
+        currentUa = manager?.getIntProperty(BatteryManager.BATTERY_PROPERTY_CURRENT_NOW)
+            ?: Int.MIN_VALUE,
+        level = if (level >= 0 && scale > 0) level * 100 / scale else -1,
+        status = intent?.getIntExtra(BatteryManager.EXTRA_STATUS, -1) ?: -1,
+    )
+}
+
+/**
+ * **اختبار الشحن — قياسٌ لا وسم.** «الحالة: جارٍ الشحن» تقول ما يظنّه النظام، ولا تقول هل
+ * تدخل الطاقة فعلًا. فالقياس هنا يأخذ عدّاد الشحنة التراكمي مرّتين بفاصل ستّ ثوانٍ ويهبط
+ * بالفرق إلى ملّيأمبير: `1 µAh/s = 3.6 mA`. والاتجاه من إشارة الفرق — لا من إشارة
+ * `CURRENT_NOW`، لأن اتجاهها يختلف بين الأجهزة. وإن غاب العدّاد رجعنا إلى التيار المُعلَن
+ * والاتجاه من حالة الشحن، ونقول ذلك بدل أن نُخفي المصدر.
+ */
+@Composable
+private fun ChargeTest(attempt: Int) {
+    val context = LocalContext.current
+    val windowSeconds = 6
+    var elapsed by remember { mutableIntStateOf(0) }
+    var first by remember { mutableStateOf<ChargeReading?>(null) }
+    var last by remember { mutableStateOf<ChargeReading?>(null) }
+
+    LaunchedEffect(attempt) {
+        elapsed = 0
+        last = null
+        first = readCharge(context)
+        repeat(windowSeconds) { step ->
+            delay(1_000)
+            last = readCharge(context)
+            elapsed = step + 1
+        }
+    }
+
+    val unavailable = stringResource(R.string.device_lab_value_unavailable)
+    val start = first
+    val end = last
+    val measuredMa = if (
+        start != null && end != null &&
+        start.chargeUah != Int.MIN_VALUE && end.chargeUah != Int.MIN_VALUE
+    ) {
+        chargeMilliamps(end.chargeUah - start.chargeUah, windowSeconds)
+    } else {
+        null
+    }
+    val reportedMa = end?.currentUa?.takeIf { it != 0 && it != Int.MIN_VALUE }?.let { it / 1000.0 }
+    val level = if (start != null && end != null && start.level >= 0 && end.level >= 0) {
+        start.level to end.level
+    } else {
+        null
+    }
+
+    val flow = when {
+        end == null -> stringResource(
+            R.string.device_lab_charge_measuring,
+            (windowSeconds - elapsed).coerceAtLeast(1),
+        )
+        measuredMa != null && abs(measuredMa) < 3.0 -> stringResource(R.string.device_lab_charge_held)
+        measuredMa != null && measuredMa > 0 -> stringResource(
+            R.string.device_lab_charge_in,
+            String.format(Locale.getDefault(), "%.0f", measuredMa),
+        )
+        measuredMa != null -> stringResource(
+            R.string.device_lab_charge_out,
+            String.format(Locale.getDefault(), "%.0f", abs(measuredMa)),
+        )
+        reportedMa != null && end.status == BatteryManager.BATTERY_STATUS_DISCHARGING ->
+            stringResource(R.string.device_lab_charge_out, String.format(Locale.getDefault(), "%.0f", reportedMa))
+        reportedMa != null && end.status == BatteryManager.BATTERY_STATUS_CHARGING ->
+            stringResource(R.string.device_lab_charge_in, String.format(Locale.getDefault(), "%.0f", reportedMa))
+        reportedMa != null && end.status == BatteryManager.BATTERY_STATUS_FULL ->
+            stringResource(R.string.device_lab_charge_held)
+        else -> unavailable
+    }
+
+    MaxGroup {
+        LabValueRow(title = stringResource(R.string.device_lab_charge_flow), value = flow)
+        MaxGroupDivider()
+        LabValueRow(
+            title = stringResource(R.string.device_lab_charge_counter),
+            value = if (start != null && end != null &&
+                start.chargeUah != Int.MIN_VALUE && end.chargeUah != Int.MIN_VALUE
+            ) {
+                stringResource(
+                    R.string.device_lab_charge_counter_delta,
+                    String.format(Locale.getDefault(), "%+d", end.chargeUah - start.chargeUah),
+                    windowSeconds,
+                )
+            } else {
+                unavailable
+            },
+        )
+        MaxGroupDivider()
+        LabValueRow(
+            title = stringResource(R.string.device_lab_charge_level),
+            value = when {
+                level == null -> unavailable
+                level.first == level.second -> stringResource(R.string.device_lab_charge_unchanged)
+                else -> stringResource(
+                    R.string.device_lab_charge_level_delta,
+                    level.first,
+                    level.second,
+                )
+            },
+        )
+        MaxGroupDivider()
+        LabValueRow(
+            title = stringResource(R.string.device_lab_charge_reported),
+            value = reportedMa?.let {
+                String.format(Locale.getDefault(), "%.0f mA", abs(it))
+            } ?: unavailable,
+        )
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Cameras and radios — what the platform declares, read without permission
+// ---------------------------------------------------------------------------
+
+/** ما تعلنه المنصّة عن كاميرا واحدة. لا تُفتح الكاميرا هنا، فالسؤال اختبارٌ لا تصوير. */
+private data class CameraFacts(
+    val id: String,
+    val facingRes: Int,
+    val megapixels: Double?,
+    val flash: Boolean,
+)
+
+/** ما تعلنه المنصّة عن اتصال أو مستشعر حيوي: موجود؟ ومفتوح إن كان له مفتاح. */
+private data class RadioFacts(
+    val titleRes: Int,
+    val present: Boolean,
+    val enabled: Boolean?,
+)
+
+/**
+ * **الكاميرات — قراءةٌ لا معاينة.** يعلن النظام معرّفات الكاميرات، ولكلٍّ اتجاهها ودقّتها
+ * ووجود مشعل. وفتح الكاميرا هنا يستهلك طاقة ويحتاج إذنًا، بينما سؤال الاختبار هو «هل
+ * تعلنها المنصّة أصلًا وبأي مواصفات» — وهذا لا إذن له. فإن لم تُعلن، فالصفّ يقول غير متاح
+ * ولا يُخترع صفّ.
+ */
+@Composable
+private fun CameraTest() {
+    val context = LocalContext.current
+    val unavailable = stringResource(R.string.device_lab_unavailable)
+    val cameras = remember(context) {
+        runCatching {
+            val manager = context.getSystemService(CameraManager::class.java)
+            manager.cameraIdList.map { id ->
+                val c = manager.getCameraCharacteristics(id)
+                val facing = when (c.get(CameraCharacteristics.LENS_FACING)) {
+                    CameraCharacteristics.LENS_FACING_FRONT -> R.string.device_lab_camera_front
+                    CameraCharacteristics.LENS_FACING_BACK -> R.string.device_lab_camera_back
+                    CameraCharacteristics.LENS_FACING_EXTERNAL -> R.string.device_lab_camera_external
+                    else -> R.string.device_lab_camera_unknown
+                }
+                val size = c.get(CameraCharacteristics.SENSOR_INFO_PIXEL_ARRAY_SIZE)
+                CameraFacts(
+                    id = id,
+                    facingRes = facing,
+                    megapixels = size?.let { it.width.toLong() * it.height / 1_000_000.0 },
+                    flash = c.get(CameraCharacteristics.FLASH_INFO_AVAILABLE) == true,
+                )
+            }
+        }.getOrNull()
+    }
+
+    MaxGroup {
+        if (cameras.isNullOrEmpty()) {
+            LabValueRow(title = stringResource(R.string.device_lab_section_cameras), value = unavailable)
+        } else {
+            cameras.forEachIndexed { index, camera ->
+                if (index > 0) MaxGroupDivider()
+                val resolution = camera.megapixels?.let {
+                    String.format(Locale.getDefault(), "%.1f MP", it)
+                }
+                val flash = stringResource(
+                    if (camera.flash) R.string.device_lab_camera_flash else R.string.device_lab_camera_no_flash,
+                )
+                LabValueRow(
+                    title = stringResource(
+                        R.string.device_lab_camera_row,
+                        camera.id,
+                        stringResource(camera.facingRes),
+                    ),
+                    value = listOfNotNull(resolution, flash).joinToString(" · "),
+                )
+            }
+        }
+    }
+}
+
+/**
+ * **الاتصالات والمقاييس الحيوية — وجودٌ وحالة، بلا طلب إذن.** كل ما هنا تقرؤه المنصّة
+ * بلا صلاحية: وجود NFC وحالته، ووجود Bluetooth، وحالة GPS، ومشعّل تحت أحمر، وبصمة ووجه.
+ * وما لا يوجد يُعرض «غير موجود» لا صفًّا صامتًا — لأن الصمت يُقرأ عيبًا في التطبيق.
+ */
+@Composable
+private fun RadiosTest() {
+    val context = LocalContext.current
+    val on = stringResource(R.string.device_lab_state_on)
+    val off = stringResource(R.string.device_lab_state_off)
+    val present = stringResource(R.string.device_lab_state_present)
+    val absent = stringResource(R.string.device_lab_state_absent)
+    val facts = remember(context) {
+        val pm = context.packageManager
+        val nfc = runCatching { NfcAdapter.getDefaultAdapter(context) }.getOrNull()
+        val gps = runCatching {
+            context.getSystemService(LocationManager::class.java)
+                .isProviderEnabled(LocationManager.GPS_PROVIDER)
+        }.getOrDefault(false)
+        val infrared = runCatching {
+            context.getSystemService(ConsumerIrManager::class.java)?.hasIrEmitter() == true
+        }.getOrDefault(false)
+        listOf(
+            RadioFacts(R.string.device_lab_radio_nfc, nfc != null, nfc?.isEnabled),
+            RadioFacts(R.string.device_lab_radio_bluetooth, pm.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH), null),
+            RadioFacts(R.string.device_lab_radio_gps, gps, gps),
+            RadioFacts(R.string.device_lab_radio_ir, infrared, null),
+            RadioFacts(R.string.device_lab_radio_fingerprint, pm.hasSystemFeature(PackageManager.FEATURE_FINGERPRINT), null),
+            RadioFacts(R.string.device_lab_radio_face, pm.hasSystemFeature(PackageManager.FEATURE_FACE), null),
+        )
+    }
+
+    MaxGroup {
+        facts.forEachIndexed { index, fact ->
+            if (index > 0) MaxGroupDivider()
+            LabValueRow(
+                title = stringResource(fact.titleRes),
+                value = when {
+                    !fact.present -> absent
+                    fact.enabled == null -> present
+                    fact.enabled -> on
+                    else -> off
+                },
+            )
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------
 // Small shared pieces
 // ---------------------------------------------------------------------------
 
@@ -1585,4 +2162,123 @@ private fun blockerLabel(blocker: WifiChannelReader.Blocker?): Int = when (block
     WifiChannelReader.Blocker.WifiOff -> R.string.device_lab_wifi_off
     WifiChannelReader.Blocker.Unreadable -> R.string.device_lab_wifi_unreadable
     WifiChannelReader.Blocker.NoPermission, null -> R.string.device_lab_wifi_unreadable
+}
+
+// ---------------------------------------------------------------------------
+// Test result — the one thing the app cannot measure for the user
+// ---------------------------------------------------------------------------
+
+/** أي اختبار يُفتح حوارًا حقيقيًّا، وأي اختبار يُقرأ من قسمه. */
+internal fun LabTestId.dialog(): LabTest? = when (this) {
+    LabTestId.SCREEN -> LabTest.SCREEN
+    LabTestId.TOUCH -> LabTest.TOUCH
+    LabTestId.BUTTONS -> LabTest.BUTTONS
+    else -> null
+}
+
+/**
+ * **زرّ «سجّل النتيجة» في رأس القسم.**
+ *
+ * الحلقة كانت مقطوعة في طرفها الثاني: «اذهب إلى الاختبار» تُنزل إلى القسم، فإذا جُرِّب العتاد
+ * هناك لم يبقَ إلا أن يعود المستخدم بالتمرير إلى أعلى الصفحة ليجد بطاقته ويكتب حكمه. فالزرّ
+ * يظهر في رأس القسم **الذي أمامه** لحظةَ وجود بطاقة معلّقة تنتمي إليه، ويفتح حوارها.
+ *
+ * ولا يُرسم لبطاقة لا تنتمي إلى هذا القسم: قسمٌ واحد يحمل الزرّ، لا ثمانية أزرار متشابهة.
+ */
+@Composable
+private fun LabSectionTrailing(
+    section: LabToolSection,
+    pending: LabTestId?,
+    onRecord: (LabTestId) -> Unit,
+) {
+    val test = pending?.takeIf { it.toolSection() == section } ?: return
+    IconButton(onClick = { onRecord(test) }) {
+        Icon(
+            imageVector = Icons.Rounded.Check,
+            contentDescription = stringResource(
+                R.string.device_lab_record,
+                stringResource(test.titleRes),
+            ),
+        )
+    }
+}
+
+/**
+ * **حوار النتيجة.** لا يمنح نجاحًا بنفسه: يعرض «شغّل الاختبار» إن كان له حوار، ثم «يعمل» أو
+ * «معطوب» أو «امسح النتيجة». والغرض أن يُعرف في لمحة ما لم يُجرَّب بعد — لا أن يُقال للمستخدم
+ * إن جهازه سليم وهو لم يسمع صوتًا ولا رأى لونًا.
+ */
+@Composable
+private fun LabResultDialog(
+    test: LabTestId,
+    outcome: LabOutcome?,
+    checkedAt: Long?,
+    onRun: () -> Unit,
+    onGoToTest: () -> Unit,
+    onPick: (LabOutcome) -> Unit,
+    onClear: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    Dialog(onDismissRequest = onDismiss) {
+        MaxSection(title = stringResource(test.titleRes)) {
+            MaxGroup {
+            if (test.dialog() != null) {
+                MaxNavigationRow(
+                    title = stringResource(R.string.device_lab_result_run),
+                    icon = test.icon,
+                    iconTone = MaxTone.Accent,
+                    onClick = onRun,
+                )
+                MaxGroupDivider()
+            }
+            // **والطريق إلى الأداة:** العشر التي لا نافذة لها أدواتها صفوفٌ في هذه الصفحة،
+            // فالزرّ ينزل إليها. وأيقونته أيقونة الاختبار نفسه، فلا أيقونة جديدة تُخترع.
+            if (test.dialog() == null) {
+                MaxNavigationRow(
+                    title = stringResource(R.string.device_lab_result_go),
+                    icon = test.icon,
+                    iconTone = MaxTone.Accent,
+                    onClick = onGoToTest,
+                )
+                MaxGroupDivider()
+            }
+            MaxNavigationRow(
+                title = stringResource(LabOutcome.PASSED.labelRes),
+                icon = Icons.Rounded.Check,
+                iconTone = MaxTone.Positive,
+                onClick = { onPick(LabOutcome.PASSED) },
+            )
+            MaxGroupDivider()
+            MaxNavigationRow(
+                title = stringResource(LabOutcome.FAILED.labelRes),
+                icon = Icons.Rounded.Close,
+                iconTone = MaxTone.Caution,
+                onClick = { onPick(LabOutcome.FAILED) },
+            )
+            if (outcome != null) {
+                MaxGroupDivider()
+                MaxNavigationRow(
+                    title = stringResource(R.string.device_lab_result_clear),
+                    icon = Icons.Rounded.RestartAlt,
+                    // يُفرّغ النتيجة فورًا؛ سهم بابٍ هنا يُقرأ انتقالًا لا محوًا.
+                    showChevron = false,
+                    onClick = onClear,
+                )
+            }
+            // **ومتى كان الحكم:** التاريخ يجعل النتيجة قابلة للتصديق — «يعمل» منذ شهر
+            // ليست «يعمل» الآن. والصفّ للقراءة فقط، فلا يُفتح بشيء.
+            if (checkedAt != null) {
+                MaxGroupDivider()
+                MaxRow(
+                    title = stringResource(
+                        R.string.device_lab_result_last,
+                        DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT)
+                            .format(Date(checkedAt)),
+                    ),
+                    icon = Icons.Rounded.History,
+                )
+            }
+            }
+        }
+    }
 }

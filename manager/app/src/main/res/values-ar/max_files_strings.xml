@@ -193,6 +193,7 @@
     <string name="max_files_bookmarks_empty">لا مفضّلة بعد — أضف المجلدات التي تعود إليها.</string>
     <string name="max_files_history_empty">لم تُزر مجلدات بعد في هذه الجلسة.</string>
     <string name="max_files_history_clear">مسح السجل</string>
+    <string name="max_files_history_more">%1$d مجلدات أقدم غير معروضة</string>
     <string name="max_files_drawer_hidden_shown">الملفات المخفيّة ظاهرة الآن</string>
     <string name="max_files_drawer_hidden_hidden">الملفات المخفيّة مخفيّة، وعددها باقٍ في سطر الحالة</string>
     <string name="max_files_root_access">وضع القراءة والكتابة</string>

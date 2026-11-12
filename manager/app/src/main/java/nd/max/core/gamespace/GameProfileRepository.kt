@@ -113,7 +113,7 @@ object GameProfileRepository {
 
     /** Resolve against disk under the common lock, not a caller's stale Map snapshot. */
     suspend fun update(pkg: String, transform: (AppConfig?) -> AppConfig?): Boolean = withContext(Dispatchers.IO) {
-        if (!ForegroundAppResolver.isPackageName(pkg)) return@withContext false
+        if (!ForegroundAppResolver.isProfileKey(pkg)) return@withContext false
         mutex.withLock {
             try {
                 val result = persistence.update(pkg) { fields ->

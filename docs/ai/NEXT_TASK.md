@@ -1,3 +1,719 @@
+## PERF-SESSIONS-UX-01 — تقرير الجلسة والرجوع من Game Space — 2026-11-12 · DONE_WITH_CONCERNS
+
+**TASK:** تحسين شاشة الأداء والسجل القائمين، وإصلاح المسارين البنيويين اللذين يجعلان الرجوع من سجل
+Game Space يبدو عالقًا، بلا حذف أفعال ولا مسجّل موازٍ.
+
+**SEARCH FIRST:** أُعيد استخدام `HudRecorder`/`GameSessionStore` والتقرير والشاشتين القائمتين؛ حُسّن
+النظير بفارق تقرير محفوظ تحت صفّه + شبكة متجاوبة + سلّم رجوع موحّد، ولم يُبنَ مصدر حقيقة ثانٍ.
+
+**SHIPPED:** تقرير الصف المحفوظ في موضعه مع بقاء التقرير العلوي للمسجّل · رجوع النظام والسهم يطويان
+التفاصيل قبل الخروج · `launchSingleTop` من Game Space والأداء · أرقام أكبر ومتجاوبة بلا إنذارات لونية
+مختلقة · قسم الجلسة قبل الحقول وقنوات الجهاز مطوية · حراس مصدر لهذه العقود.
+
+**MEASURED:** كتلة العقد الحية 53 أمرًا = exit 0 في 488.3ث · `kt_balance` 3365/0 ·
+`design_tokens` 233/300 · `repo_audit` 0 · كاشف التصميم `[]` · حارس المصدر PASS · diff نظيف.
+
+**BUILD:** لا Gradle محلي؛ CI هو دليل الترجمة وJUnit. الرسم/RTL/اللمس/السحب والرجوع الفعلي تحتاج جهازًا،
+وسبب العلوق الأصلي لم يُعَد إنتاجه على جهاز.
+
+**NEXT:** حكم CI ثم قبول المالك على جهاز؛ لا كود متبقٍّ في النطاق إن نجحا.
+
+## ROUND-CLOSE-84 (تكملة ٨٦–٨٧) — إغلاق الجولة — 2026-11-12 · DONE_WITH_CONCERNS
+
+**TASK:** إغلاق أمر المالك: نقل الأدوات إلى التحكّم ومدير الملفات إلى التخزين، حذف التشخيص/HMA/صحة الوحدة، إعادة الكل للافتراضي بدل «تعطيل الإعدادات»، دمج تطبيق ما بعد الإقلاع في المتقدّمة، وحذف «تراجع» و«إقلاعات متتالية»، وإعادة تصميم بطاقة النشاط وزرّ إعدادات فيها. ثم أمره الثاني: **مفتاح يُظهر ما يخفيه وضع Shizuku** في شاشة البداية والإعدادات باسم أفضل من «إظهار كل الخيارات».
+
+**SHIPPED:** `269a9c02` إصلاح الحرّاس الخمسة بلا إضعاف + حذف `NodeCatalogCard` ومفاتيحه من en/ar · `f1342040` بطاقة النشاط الجديدة (شريط ثلاث خلايا + نقطة حالة لكل سطر + قيمة يمين العنوان) · حذف حقلي `SettingsUiState` الميتين وكاتبيهما · قرار معلَن بإبقاء `AtlasDiagnosticsSection.kt` و`MaxGovernance.kt` بلا مستدعٍ · `AGENTS.md` §0.7 بلا سقف دفعات · **`AccessRevealSwitch`** («إظهار الميزات التي تحتاج صلاحية أعلى») في شاشة البداية والإعدادات، يقرأ ويكتب `AccessFilterStore` وحده، وحارس `AccessRevealSwitchTest`.
+
+**MEASURED:** تشغيل `269a9c02` = `43238293325` **success** (4347 اختبارًا) · تشغيل `f1342040` = `43239318437` **completed/success** (وظيفة «Build MaxManager» وحدها من البوابات إلى R8 والحزم) · بوابات §5 + `--prune all` + `rtl_guard` + `diff --check` خضراء · حكم تشغيل دفعة المفتاح يُقرأ قبل أي ادّعاء.
+
+**BUILD:** CI هو المُصرّف؛ لا Gradle محلي. الشكل/RTL/اللمس يحتاج جهاز المالك.
+
+**NEXT:** لا شيء متبقٍّ من أوامر المالك. المراجعة المستقلة ما زالت محجوبة بالحدّ المجاني، وذاكرة claude-mem تردّ 522 من المزوّد.
+
+## ROUND-CLOSE-84 — أدواتٌ إلى التحكّم، وشاشتان تُحذفان — 2026-11-12 · DONE_WITH_CONCERNS
+
+**TASK:** نقل Max Backup/الصلاحيات/الألوان/أدوات التشخيص/الشحن المصرفي/تنظيف التطبيقات إلى `Control`، ومدير الملفات إلى `StorageHub`؛ حذف شاشات التشخيص وHMA وصحة الوحدة؛ إعادة كل شيء للافتراضي بدل تعطيل الإعدادات؛ حذف مهلة الملف و«تراجع» و«إقلاعات متتالية»؛ دمج تطبيق بعد الإقلاع في المتقدّمة؛ وزرّ إعدادات في بطاقة النشاط.
+
+**SEARCH FIRST:** لا إعادة ضبط مركزية (ثلاثة `resetAll` فقط) ⇒ `resetAppToDefaults` منها + `SettingsPreference.resetToDefaults()`، بلا مساس بخصائص النظام. ولا مسار ثانٍ للأدوات: نطاقان أُضيفا إلى `ControlToolBands`.
+
+**SHIPPED:** عشرة أبواب إلى `Control` (منها `BypassChargingCheck`) · `FileManager` إلى `StorageHub` · حذف `Diagnostics`/`ModuleHealth`/`HmaCompanion` وكشاشاتها ومداخلها · نطاقا «أدوات النظام» و«المظهر» en/ar · صفّ «إعادة كل شيء إلى الوضع الافتراضي» · `PersistRestoreItem` في المتقدّمة بلا «إقلاعات متتالية» ولا «تراجع» · زرّ إعدادات في رأس بطاقة النشاط.
+
+**MEASURED:** kt_balance 3364/0 · code_health نظيف · i18n 84+en 85/85 و0 يتيم · design_tokens 233/300 · rtl_guard 0 · aapt2 يترجم · الكتالوج 88 · وثيقة التصميم مطابقة · diff --check نظيف · 27 ملفًا +194/−292.
+
+**BUILD:** «الترجمة غير مُتحقّقة في هذه البيئة»؛ CI هو المُصرّف؛ الشكل/RTL/اللمس يحتاج جهازًا.
+
+**NEXT:** حكم CI · إعادة تصميم بطاقة النشاط بصريًّا · مصير `AtlasDiagnosticsSection`/`MaxGovernance` اليتيمين.
+
+## ROUND-CLOSE-83 — المجتمع في «حول» وحدها — 2026-11-12 · DONE_WITH_CONCERNS
+
+**TASK:** إضافة GitHub والقناة والجروب إلى «حول»؛ والجروب **لا** في شاشة البداية.
+
+**SEARCH FIRST:** «حول» كانت تحمل رابط جروب قديمًا (`ROBINHOOD_GROUP_RODIN`)، والأيقونتان موجودتان، و`ExpressiveListItem` تقبل `onClick` — فلا مكوّن جديد ولا مسار ثانٍ.
+
+**SHIPPED:** ثلاثة صفوف في `AboutScreen` (GitHub · `@GetMaxManager` · `@MaxManagerChat`) وحذف الزرّ القديم وأيقونته الذيلية؛ مفتاحا `about_channel_handle` و`about_group_handle` في en/ar؛ حارس يمنع `MaxManagerChat` في التهيئة.
+
+**MEASURED:** البوابات السبع exit 0 (3366/0 · صحّة نظيفة · 85/85 · RTL 0 · 246/300 · aapt2 · diff نظيف).
+
+**BUILD:** الترجمة غير مُتحقّقة محليًّا؛ CI هو المُصرّف. فتح الروابط وRTL يحتاجان جهازًا.
+
+**NEXT:** حكم البناء.
+
+## ROUND-CLOSE-82 — جذر ومجتمع في صفحة، وأذونات في صفحة، ولا غطاء يعلّق — 2026-11-12 · DONE_WITH_CONCERNS
+
+**TASK:** أمر المالك: دمج اختيار الروت ومنح الجذر والانضمام وGitHub في صفحة تهيئة جديدة، والأذونات في
+«دعنا نضبط الإعدادات الأساسية»، وإصلاح تعليق «جاري إعداد MaxManager…».
+
+**SEARCH FIRST:** أُعيد استخدام `PrivilegePanel()` و`ExecutionModeStore`/`labelRes()` (رُفعت إلى
+`internal`) و`Perms` و`AppStorageReader`؛ ولا سطح امتياز ثانٍ ولا خريطة تسميات ثانية.
+
+**SHIPPED:** شرائح وضع (تلقائي/Root/Shizuku/أساسي) + لوحة الامتياز + بطاقة GitHub بزر نجمة وزر `؟`
+يفتح صورة الدليل + بطاقة تيلجرام بشارة «جديد»؛ صفحة أذونات بأربعة صفوف حيّة ومنح صريح؛ إنهاء بلا
+`isFinalizing` ولا `am start -S` (علم + انتقال داخل العملية + مستمع تفضيلات)؛ درع الجذر في الهيرو؛
+حارس مصدري يمنع عودة الغطاء.
+
+**MEASURED:** كل بوابات §5 خضراء (kt_balance 3366/0 · code_health نظيف · i18n 85/85 · design_tokens
+247/300 · rtl_guard 0 · resource_compile aapt2 · diff نظيف) + بوابات العقد الـ11 خضراء.
+
+**BUILD:** الترجمة غير مُتحقّقة محليًّا (CI هو المُصرّف)؛ الشكل/RTL/اللمس/حوار الصورة يحتاج جهازًا.
+
+**NEXT:** حكم بناء الدفعة، ثم تحسين حوار `AccessModeDialog` بصريًّا إن أُمر، والحكم البصري على الجهاز.
+
+## ROUND-CLOSE-81 — تسجيل لعبة بعينها وتقرير كتقرير Scene — 2026-11-12 · DONE_WITH_CONCERNS
+
+**TASK:** إعادة بناء تسجيل جلسات الألعاب بأمر المالك: زرّ لتسجيل لعبة معيّنة، وتقرير كالمرجع المرسل.
+**SEARCH FIRST:** المحرّك موجود (`HudRecorder.start(context, pkg)` · `GameSessionStore` · `GameLibraryAccess`)؛
+الفارق: اختيار الحزمة قبل الإطلاق + تقرير واحد حامل بدل أرقام ومنحنى في صفّ. لا `core/**` مُسّ.
+**SHIPPED:** `GameSessionReport.kt` (رأس + شبكة ٢×٤ + منحنى بسحب) · `GameSessionReportModel.kt` (إحصاء صافٍ)
+· `GamePickerSheet.kt` (بحث واختيار لعبة) · `GameSessionsScreen.kt` أُعيد تركيبه · ٢٤ نصًّا en/ar ·
+`GameSessionReportModelTest` (٥) وحارس الحامل في `ScreenArchetypeTest`.
+**MEASURED:** بوابات §5 الثماني exit 0 · صفر `R.string` غائب في الملفات الثلاثة · صفر مفتاح يتيم.
+**BUILD:** «الترجمة غير مُتحقّقة في هذه البيئة» — الحكم من CI. السحب والقصّ **يحتاج جهازًا**.
+**NEXT:** حكم CI ثم قبول المالك على جهاز.
+
+## ROUND-CLOSE-80 — الأصناف الثلاثة تُمسح على ٤٦٢ ملفًا، لا على شاشةٍ واحدة — 2026-11-12 · DONE_WITH_CONCERNS
+
+**TASK:** بعد إصلاح لقطات المالك في `GameSessions` (ROUND-CLOSE-78)، امسح أصناف العطب
+الثلاثة نفسها على بقية الواجهة: مسار مقياس منقّط، وفعل مُدمِّر مرسوم كباب تنقّل، وساعة
+عرض تُبنى من طوابع زمنية خاطئة.
+
+**SEARCH FIRST (§0.5):** لا مكوّن جديد. `MaxNavigationRow` صار يقبل `showChevron` في
+ROUND-CLOSE-78، و`MaxSlider`/`MaxSliderRow` يحملان `steps` أصلًا. فالتعديل استعمال
+للمقبض القائم لا مسار ثانٍ. وبحث الساعة: `sessionClock(` في `FpsOverlayScreen` تُغذّى
+`tally.spanMs` (مدّة، سليمة)، و`DeviceLabScreen` يمرّر `atMs` إلى `DateFormat` (تاريخ،
+سليم) — فالعطب كان في `GameSessions` وحدها وأُغلق سابقًا.
+
+**SHIPPED:** ستة مواضع (٣ صفوف مُدمِّرة في `FpsOverlay` · `DynamicIslandTabs` · `DeviceLab` · تصحيح محاذاة في `GameSessions` · مقياس `AppSettings` ٧٩→٠ · مقياسا الإزاحة ٣٥/٢٩→٠ بتقريب ١٠dp) + حارس `ScreenArchetypeTest` الجديد.
+
+**MEASURED:** ٤٦٢ ملفًا · `steps ≥ ٢٠` صفر · ١٠ صفوف مُدمِّرة كلها بلا سهم · البوابات الخمس و`git diff --check` خضراء (design_tokens ٢٤٧/٣٠٠).
+
+**BUILD:** الترجمة غير مُتحقّقة محليًّا؛ CI هو المُصرّف. الشكل يحتاج جهازًا.
+
+**NEXT:** حكم بناء `main`، ثم لا كود متبقٍّ من M0–M4.
+
+## ROUND-CLOSE-79 — M4: اللقطة الحيّة تُقرأ حيث تُرسم، لا على الجذر — 2026-11-12 · DONE_WITH_CONCERNS
+
+**TASK:** «اكمل m3 و m4 كلها دون توقف» — M4: تقليل إعادات التركيب في `FpsOverlay` و`GameSessions`، بلا بناء محلي، دفعة واحدة إلى `main`.
+
+**SEARCH FIRST:** الخدمة تمرّر `intervalMs` من التفضيلات أصلًا (`FpsOverlayService.kt:221` و`gate.updateInterval` :310) — لا مسار ثانٍ. العطب: الشاشتان تقرآن `HudLive.snapshot` على الجذر، فتتغيّر اللقطة مع كل عيّنة وتُبطل الشاشة كلها.
+
+**SHIPPED:** `FpsOverlayScreen.kt` — الجذر بلا لقطة: `recording`/`owner`/`framesAnswered` مشتقّة بـ`derivedStateOf`، والمعاينة في `HudPreviewCard` (نداء `HudSurface` كما كان حرفيًا) والحقول في `HudFieldGridLive` · `GameSessionsScreen.kt` — `recording`/`warnings` مشتقّتان فقط · `ScreenArchetypeTest.kt` — حارس M4 على جذر الشاشتين (صفر `HudLive.snapshot.collectAsState()`، ووجود `derivedStateOf`).
+
+**MEASURED (exit 0):** `kt_balance` ٣٣٦٢/٠ · `code_health` نظيف · `i18n_coverage` ٨٤+en/٨٥/٠ · `design_tokens` ٢٤٧/٣٠٠ · `rtl_guard` ٠ مخالفة · `resource_compile` aapt2 حقيقي · `git diff --check` نظيف · الحارس بنصّ Python: ٠/٠ قراءة لقطة على الجذرين.
+
+**BUILD:** لا بناء محلي — **الترجمة غير مُتحقّقة في هذه البيئة** حتى CI؛ **عدّ إعادات التركيب يحتاج جهازًا**؛ المقيس هنا إزالة السبب البنيوي فقط.
+
+**RESIDUAL:** المعاينة والحقول تُعاد تركيبهما كل عيّنة (مقصودهما) · `HudSnapshot` يُنشأ كل عيّنة في `core/**` ولم يُلمس · مراجعة مستقلة محجوبة.
+
+**NEXT:** حكم البناء؛ ثم عدّ إعادات التركيب على جهاز.
+
+## ROUND-CLOSE-78 — لقطات المالك: ساعة مستحيلة، ومسار منقّط، ومقبض يُقرأ إيقافًا — 2026-11-12 · DONE_WITH_CONCERNS
+
+**TASK:** «أريد أن يكون تطبيقي أفضل منهم» — لقطتان لتطبيقنا كشفتا: `498422:15:16` في آخر جلسة · مسار منزلق منقّط ومقبض يشبه زر إيقاف · حذف بسهم تنقّل. المرجع الخارجي منهجٌ فقط، بلا نقل شكل.
+
+**SEARCH FIRST:** عُدّلت المكوّنات المشتركة القائمة (`MaxSlider` · `MaxNavigationRow` · `MaxGroup`) — لا مكوّن جديد.
+
+**SHIPPED:** الطرح من أول عيّنة في موضعي الساعة (`GameSessionsScreen.kt`) · `steps = 0` + تدوير القيمة للمنزلقات الأربعة · مقبض دائري ٢٠dp في `MaxControls.kt` · `showChevron = false` لصفوف الحذف الثلاثة عبر معامل جديد في `MaxControlRows.kt` · ثلاثة صناديق أفعال صارت بطاقة واحدة · حارس `session clocks are elapsed...` في `ScreenArchetypeTest.kt`.
+
+**MEASURED (exit 0):** `kt_balance` ٣٣٦٢/٠ · `code_health` نظيف · `design_tokens` ٢٤٧/٣٠٠ · `rtl_guard` ٠ مخالفة · `git diff --check` نظيف · M3 `72c63055` بناء `43182140403` نجاح كامل والوثائق `43182140077` نجاح.
+
+**BUILD:** لا بناء محلي — **ترجمة الدفعة غير مُتحقّقة هنا** حتى CI؛ الشكل على ٣٦٠dp **يحتاج جهازًا**.
+
+**RESIDUAL:** `MaxSlider` مشترك فتغيير المقبض يظهر في كل شاشة ولم يُقس بصريًّا · مراجعة مستقلة محجوبة · JUnit total غير معلوم.
+
+**NEXT:** حكم الدفعة، ثم لقطة جديدة على الجهاز، ثم M4.
+
+## ROUND-CLOSE-77 — M3: لكل شاشة قائمة حالاتها، والمنصة الفارغة تتكلّم — 2026-11-12 · DONE_WITH_CONCERNS
+
+**TASK:** «اكمل» — M3: تكيّفي وإتاحة (لمس · RTL · أحجام · حالات فراغ/خطأ)، بلا بناء محلي، دفعة واحدة إلى `main`.
+
+**SEARCH FIRST:** `rtl_guard` أخضر، و`ThermalDetail` يقول «يُجمع» تحت عيّنتين، و`FpsOverlay` يشرح غياب الصلاحية. الفارق الحقيقي: `CommandDeck` بلا فرع فراغ، وبطاقات الخمس بلا قائمة حالات.
+
+**SHIPPED:** `home_deck_empty` (en/ar فقط) + سطر الحالة الفارغة في `HomeCommandDeck.kt` · سطر `States:` في بطاقات `Now`/`Control`/`FpsOverlay`/`GameSessions`/`ThermalDetail` · حارس M3 في `ScreenArchetypeTest.kt` (قائمة الحالات · صفر عرض > ٣٢٠dp · وجود الحالة الفارغة).
+
+**MEASURED (exit 0):** `kt_balance` ٣٣٦٢/٠ · `code_health` نظيف · `i18n_coverage` ٨٤+en/٨٥ كودًا/٠ عوائق · `design_tokens` ٢٤٩/٣٠٠ · `resource_compile` aapt2 حقيقي · `rtl_guard` ٠ مخالفة · `git diff --check` نظيف.
+
+**BUILD:** لا بناء محلي — **الترجمة غير مُتحقّقة في هذه البيئة** حتى CI؛ قصّ النصّ في ٣٦٠dp **يحتاج جهازًا**.
+
+**RESIDUAL:** مراجعة مستقلة محجوبة (`Free usage limit reached`) · `NeuralPanel` حشوة مكتوبة سابقة لم تُلمس · JUnit total غير معلوم.
+
+**NEXT:** حكم بناء الدفعة، ثم M4.
+
+## ROUND-CLOSE-76 — M2 الجلسة الثانية: المعاينة تقرأ مرشّح النافذة — 2026-11-12 · DONE_WITH_CONCERNS
+
+**TASK:** «اكمل … m2» — إغلاق ما بقي في نطاق M2: تحقق من الخمس وإصلاح العطب المعلن، دفعة واحدة.
+
+**SEARCH FIRST (§0.5):** النظير القائم هو النافذة الحيّة: `FpsOverlayService.kt:341` يمرّر
+`filter = hud.filter`، والمعاينة في `FpsOverlayScreen.kt` كانت تترك افتراضي `HudSurface`
+(`HudFilter.All`). فالإصلاح تمرير الوسيط نفسه لا مكوّنًا ثانيًا.
+
+**SHIPPED:** `filter = state.filter` في معاينة `HudSurface` + تعليق يسمّي العطب · حارس في
+`ScreenArchetypeTest` يمنع عودة الافتراضي · بطاقة `GameSessions` تصف الحامل الواحد فوق السجلّ.
+
+**MEASURED:** ٥ بوابات exit 0 (`kt_balance` ٣٣٦٢/٠ · `code_health` نظيف · `design_tokens` ٢٤٩/٣٠٠ ·
+`rtl_guard` صفر مخالفة · `git diff --check` نظيف). وترجمة دفعة ٧٥ `6d09af9b` **مُتحقّقة في CI**:
+MaxManager `43136597904` نجاح كامل ووثائق `43136597978` نجاح. التفصيل في `HANDOFF` ROUND-CLOSE-76.
+
+**BUILD:** لا بناء محلي؛ دفعة ٧٦ تُقرأ من تشغيلها. اللمس/RTL/الشكل **يحتاج جهازًا**.
+
+**NEXT:** قراءة حكم دفعة ٧٦؛ ثم M3. مراجعة النوع البصري بيد مراجع مختلف، والمراجعة المستقلة ما زالت
+محجوبة بحدّ الاستخدام المجاني.
+
+## ROUND-CLOSE-75 — M2: حامل واحد لكل شاشة، والمنحنى خرج من الصفّ — 2026-11-12 · DONE_WITH_CONCERNS
+
+**TASK:** «اكمل» — M2 بعد قبول M1: `Now` · `Control` · `FpsOverlay` · `GameSessions` · `ThermalDetail`
+وفق نوعها، بلا بناء محلي، دفعة واحدة إلى `main`.
+
+**SEARCH FIRST (§0.5):** البطاقات الخمس كانت قائمة؛ قيس الفارق فقط. `Control` و`ThermalDetail`
+و`FpsOverlay` مطابقة أصلًا، والفارق الحقيقي: `GameSessions` (منحنيان: الحيّة + داخل صفّ محفوظ
+موسَّع). و**`Now` جُرّب فيه تقديم `CommandDeck` ورُفض**: `HomeShapeContractTest` أسقطه في
+التشغيل `43133186010`، فأُعيد الملف إلى `89a61e93` وبقي ترتيب المالك.
+
+**SHIPPED:** `selectedStoredSession` وحامل واحد يتبدّل مصدره (٣١٤) بدل منحنيين، وسطر `label`
+يسمّي الجلسة المرسومة · حارسان في `ScreenArchetypeTest` (نوع + حامل واحد · الحامل يسبق الصفوف،
+و`Now` يحرس فيه أن البطل يتقدّم المنصة).
+
+**MEASURED:** ١٠ بوابات exit 0 قبل الدفع (`kt_balance` · `code_health` · `i18n_coverage` ·
+`prune all` · `design_tokens` · `jni_symbols` · `resource_compile` · `rtl_guard` · `design_doc`
+وغيرها من عقود CI · `git diff --check`) + بوابات أُعيدت بعد الإصلاح. وترجمة `1f11d42e`
+**مُتحقّقة في CI** (الاختبارات جرت وفشل واحد فقط). التفصيل في `HANDOFF` ROUND-CLOSE-75.
+
+**BUILD:** لا بناء محلي؛ **الترجمة غير مُتحقّقة في هذه البيئة** ويُقرأ حكمها من Actions على الدفعة.
+اللمس/RTL/الشكل **يحتاج جهازًا**.
+
+**NEXT:** قراءة حكم Actions؛ إصلاح أي فشل مثبت بدفعة واحدة. ثم M3. وعطب `HudSurface` بلا `filter`
+في معاينة `FpsOverlay` **لم يُلمس في دفعة ٧٥** وأُغلق في ROUND-CLOSE-76. مراجعة مستقلة ما زالت
+محجوبة بحدّ الاستخدام المجاني.
+
+## ROUND-CLOSE-74 — إغلاق قبول M1 — 2026-11-11 · DONE_WITH_CONCERNS
+
+**TASK:** إكمال M1 دفعة واحدة؛ لا M2 قبل قبولها. التشغيل `43079430040` على `fd07c649` أعطى
+٤٣٣٥ اختبارًا، فشل واحد في `ScreenFinderTest.kt:126` وثلاثة متخطّاة.
+
+**SEARCH FIRST (§0.5):** حسّنا حارس M1 وScreen Finder القائم بفارق عقد صحيح؛ لم نبنِ مسارًا ثانيًا.
+الـfixture كانت تحلّ العنوان إلى رقم مورد ثم تبحث عن `App settings`؛ لم يُثبت عطب في البحث المنتج.
+
+**SHIPPED:** عنوان محلول في الاختبار، وقياس العثور وفتح `Apps`؛ حارس التغطية الدقيقة وبداية الرحلات
+ذات الوسيط؛ لقطة عائلات M1 والأدوات الثلاث المستبقية في `Control`؛ تصحيح وثائق الهجرة والبنية والسجل.
+لا تعديل منتج أو `core/**` أو عتاد أو نصوص لغات.
+
+**MEASURED:** ٦٩ وجهة · ٦٦ مرئية · ١٦ ابنًا لـ`Control` · صفر عائلة مفصولة · صفر باب يتيم ·
+صفر مسار مكرر. بوابات المصادر: ١٤/١٤ exit 0 (`/tmp/opencode/gates-74/`).
+
+**BUILD:** لا بناء محلي. الترجمة غير مُتحقّقة في هذه البيئة؛ Actions على الدفعة الجديدة معلّقة.
+المراجعة المستقلة حُجبت بحدّ الاستخدام المجاني، فلم تقع. اللمس وRTL والشكل تحتاج جهازًا.
+
+**NEXT:** قراءة حكم Actions على التزام `fix(nav): close M1 navigation acceptance`؛ إصلاح أي فشل
+مثبت ضمن الجولة نفسها. لا بدء M2 قبل قبول M1؛ بعدها شرائح Now وControl وFpsOverlay وGameSessions
+وThermalDetail وفق `PRODUCT-MAP.md`. لا إعادة الفحوص المكتملة أو بناء محلي لمجرّد الاطمئنان.
+
+## ROUND-CLOSE-73 — الخطأ الذي أوقف البناء، وعدٌّ لا يُدَّعى — 2026-11-11 · DONE_WITH_CONCERNS
+
+**TASK:** `98152542` فشل في `compileReleaseKotlin` بثلاثة مراجع `MaxTone.Warning` غير موجودة (1918 · 1930 ·
+1937)؛ ولم تُشغَّل اختبارات. ومعه: `FasScreen` لا تقول كم تطبيقًا له معدّل محفوظ.
+
+**SEARCH FIRST (§0.5):** `MaxTone` ستّ قيم فقط و`Caution` هو التحذير القائم — لا قيمة جديدة ولا توكنز.
+والعدّ من `GameProfileRepository` نفسه، لا مصدر ثانٍ.
+
+**SHIPPED:** `Warning ⇒ Caution` ×٣ · `FasRates.kt` (قراءة مطابقة للمطبّق، عدّ، `null` عند loading/failed) ·
+صفّ العدد قبل رابط التطبيقات · ٥ نصوص en/ar · `FasRatesTest` ١٠ `@Test`.
+
+**MEASURED:** `kt_balance` ٣٣٦٢·٠ · `i18n` ٨٤+en·٠ يتيم · `design_tokens` ٢٤٩/٣٠٠ · `code_health` نظيف ·
+`rtl_guard` ٤٦٢·٠ · تدقيق الألوان: صفر مخالف.
+
+**GATES:** ١٤/١٤ exit 0 + DIFF_OK (`/tmp/opencode/gates-73-final/`)؛ `repo_audit` PROBLEMS 1 سابق للدفعة.
+
+**BUILD:** الترجمة غير مُتحقّقة في هذه البيئة — الحكم من CI وحده.
+
+**NEXT:** قراءة حكم `main`؛ ثم عود نظامية (M2/M3) لا تلميع شاشة.
+
+## ROUND-CLOSE-72 — ما لم يُطبَّق يُقال، والتاريخ لا يُختلق — 2026-11-11 · DONE_WITH_CONCERNS
+
+**TASK:** `InAppPlan.skipped` يحمل سبب كل مفتاح لم يُطبَّق، وكان يذهب إلى السجلّ وحده — فالواجهة تقول
+«البروفايل يعمل» ولا تقول إن معدّل التحديث سُقط أو إن «عدم الإزعاج» تُرك كما اختاره المستخدم. ومعه:
+`labReport` كانت تطبع 1970 لسجلٍّ `atMs = 0` (سبب فشل `ce777f11` الحقيقيّ).
+
+**SEARCH FIRST (§0.5):** لقطة البروفايل نفسها (`KEY_SAVED` في تفضيلات `"inapp_profile"` بترميز صارم) —
+فأُضيف `last_run` في المخزن نفسه، و`MaxGroup`/`MaxRow`/`MaxTone` في الواجهة. لا مصدر حالة ثانٍ.
+
+**SHIPPED:** `atMs > 0` قبل سؤال التاريخ · `InAppRun`+`InAppRunLog` (ترميز صارم يُقاس في JVM) ·
+`recordRun` في كل مسار خروج من `enter()` · `inAppRunRows`+`knobLabelRes`+`reasonTextRes` ·
+`InAppRunCard` في `AppSettingsScreen` · ١٦ نصًّا en/ar · اختباران (١١ + ٨ `@Test`).
+
+**GATES:** ١٣/١٣ exit 0 + DIFF_OK (`/tmp/opencode/gates-72/`).
+
+**BUILD:** الترجمة غير مُتحقّقة في هذه البيئة — الحكم من CI وحده.
+
+**NEXT:** إعلان الباقي المقطوع في `FasSettingsScreen`/`ConfigBackupScreen`، أو توحيد هويّة الجهاز في «حول».
+
+## ROUND-CLOSE-71 — شاشة تحتاج تطبيقًا تُوجد ولا تُسقَط — 2026-11-11 · DONE_WITH_CONCERNS
+
+**TASK:** المُوجِّد كان يُسقط ثلاث وجهات حقيقيّة من الفهرس لأنها تحتاج اسم حزمة: `AppSettings`
+(`app_settings/{pkg}`) و`MaxBackup` (`max_backup?pkg={pkg}`) و`Permissions` (`max_perms?pkg={pkg}`).
+والحارس صحيح في أصله (لا ضغطة تفتح تفصيل حزمة اسمها فارغ)، لكنّ الإسقاط جعل البحث يقول «لا
+نتيجة» لشاشة موجودة — وهو أسوأ من رسالة خطأ، لأنه يُعلن الغياب.
+
+**SEARCH FIRST (§0.5):** الحارس القائم (`needsLaunchArgument` + `launchRouteOf`) وشجرة السجلّ
+(`destination.parent`) — لا جدول ثانٍ. و«أين تسكن» كان يُقرأ من الأب أصلًا (`screenFinderWhereRes`)،
+فصار الأب هو **بداية الرحلة** أيضًا.
+
+**SHIPPED:** `opensFrom` في `ScreenFinderTarget` · فلترة «يُسقَط فقط ما لا أب له» ·
+`screenFinderOpenTarget` · استثناء هذه الصفوف من الاقتراحات · «اختر التطبيق أولًا» في سطر الصفّ ·
+`screen_finder_opens_from` en/ar · ثلاثة اختبارات (منها تأكيد أن الاستبعاد لا يمسّ البحث) ·
+تصحيح KDoc الرأس.
+
+**GATES:** ١٤/١٤ exit 0 + DIFF_OK (السجلّات في `/tmp/opencode/gates-71/`).
+
+**BUILD:** الترجمة غير مُتحقّقة في هذه البيئة — الحكم من CI وحده.
+
+**NEXT:** سطح وظيفيّ لا يُقاس بالبحث، ويُفضَّل ما لا يحتاج جهازًا لتأكيد منطقه.
+
+## ROUND-CLOSE-70 — المضيف لا يُقترح لنفسه، والسقف لا يُقرأ نهاية — 2026-11-11 · DONE_WITH_CONCERNS
+
+**TASK:** ثلاثة عيوب مقيسة، كلّها في «قدرة تعمل لكنها لا تُصدَّق»:
+1. **ورقة المُوجِّد تقترح الشاشة التي أنت واقف عليها.** الورقة تُفتح من `ControlScreen.kt:210`
+   و`SettingsScreen.kt:768` — وهما أكثر شاشتين تُفتحان — و`screenFinderSuggestions` ترتّب كل ما
+   `usage > 0` وتأخذ أربعة. ⇒ أوّل اقتراح صفٌّ لا يفعل شيئًا عند الضغط، **ويأكل مقعدًا من أربعة**،
+   فيظهر ثلاثة ويُقرأ السقف كأنه السجلّ كلّه.
+2. **سقف بلا عدد يُقرأ نهاية.** `MemoryUfsScreen.kt:318` كان `overlayRejections.take(6)` بلا إعلان
+   الباقي — **وهو الوحيد من ستّ قوائم مقطوعة في `ui/` بلا إعلان** (`DeviceLabScreen` · `BatteryHistory`
+   · `FilePropertiesDialog` ×٢ · `CapabilityMatrixCard` · `FileDrawerContent` كلها تُعلن). ومن رأى
+   ستة أسطر رفض ظنّ ملفّه نظيفًا، والملفّ يُقرأ سطرًا سطرًا ويُرفض كل سطر خاطئ.
+3. **مُسرِّع اختياريّ يسقط حكم الكود كلّه.** بناء `17109558` ثم `a50ff060` فشلا **بنفس الخطوة
+   وحدها**: `Setup ccache for native (NDK) builds` عند `apt-get install ccache` بعطب DNS
+   (`Temporary failure resolving 'security.ubuntu.com'`) — **قبل أن تُترجم سطرًا**. مرّتين متتاليتين.
+
+**SEARCH FIRST (§0.5):** للعيوب الثلاثة نظير قائم، فلم يُبنَ نمط ثانٍ:
+- الاقتراح: `screenFinderResults` نفسها (البحث) — **والاستبعاد للاقتراح وحده**، فمن كتب «الإعدادات»
+  يجدها في النتائج. البحث سؤال صريح، والاقتراح تخمين.
+- الإعلان: `device_lab_codec_more` («+%1$d more formats») و`battery_uid_more` («+%1$d more apps not
+  shown») و`max_files_conflict_more` — النمط نفسه: صفٌّ أخير بالعدد والباقي، لا حذف صامت.
+- CI: `Restore Gradle project state` أعلاه في الملفّ نفسه يعمل بنفس المنطق (تحسين لا شرط).
+
+**SHIPPED:**
+- `ui/mainscreens/ScreenFinderModel.kt`: `screenFinderSuggestions(targets, limit, exclude: Set<String> = emptySet())`
+  — الفلترة صارت `it.usage > 0 && it.destination.route !in exclude`. والـKDoc يقول لماذا الاستبعاد
+  للاقتراح وحده.
+- `ui/mainscreens/ScreenFinderSheet.kt`: وسيط جديد `currentRoute: String? = null`، و
+  `val excludedRoutes = remember(currentRoute) { currentRoute?.let(::setOf) ?: emptySet() }`،
+  و`screenFinderSuggestions(targets, exclude = excludedRoutes)`.
+- `ControlScreen.kt` و`SettingsScreen.kt`: `currentRoute = MaxDestination.Control.route` /
+  `…Settings.route` عند استدعاء الورقة — **المصدر يُعلن موضعه**، لا الورقة تخمّنه.
+- `ui/subscreens/MemoryUfsScreen.kt`: `internal fun <T> overlayRejectionSplit(rejections, limit = 6): Pair<List<T>, Int>`
+  صافية بجوار `OVERLAY_REJECTION_ROWS`، والشاشة تعرض `shownRejections` ثم صفًّا بالباقي
+  (`Icons.Rounded.MoreHoriz` · `MaxTone.Neutral`) عند `hiddenRejections > 0`.
+- نصوص **`values/` و`values-ar/` فقط** (§0.2): `memufs_overlay_rejected_more` =
+  «+%1$d more refused lines» / «+%1$d أسطر أخرى مرفوضة» في `max_screen_strings.xml`.
+- `.github/workflows/build.yml`: `continue-on-error: true` + `id: ccache` على خطوة
+  `hendrikmuhs/ccache-action@v1.2`، و`export NDK_CCACHE="$(command -v ccache || true)"` في خطوة
+  البناء الخلفي (كان `set -e` يُسقطها إن غاب ccache). و`ndk-build` يتجاهل المتغيّر الفارغ.
+
+**MEASURED:** `kt_balance --assert` = **٣٣٥٦ ملفًا · عوائق ٠** (ملفّ الاختبار الجديد) ·
+`ScreenFinderTest` اكتسب اختبارين: `the screen you are standing on is not suggested to you`
+(Control usage 40 مستبعَدًا ⇒ `[Settings, ZramManager]`، و`screenFinderResults("control")` لا يزال
+يعيد `[Control]`) و`excluding the host frees a seat instead of shrinking the list` (٥ أهداف ⇒
+٤ نتائج، والخامس `ZramManager` يدخل لأن المستبعَد حرّر مقعدًا) · `OverlayRejectionSplitTest` = **٦
+`@Test`** (سقف ٦ بالضبط · ١٠ أسطر ⇒ ٦ + ٤ · سقف صفر · سقف سالب لا ينهار · فراغ) ·
+`build.yml` يُحلَّل بـ`yaml.safe_load` = **٥٥ خطوة** والخطوة `continue-on-error: True`.
+
+**GATES:** **١٣/١٣ exit 0 + DIFF_OK** — `kt_balance --assert` (٣٣٥٦/٠) و`--self-test` (١٧ حالة · ٠
+إخفاق) · `code_health --assert` · `i18n_coverage --assert` (٠ عوائق · ٨٥ كودًا) و`--prune all --assert`
+· `design_tokens --assert` · `gen_control_catalog --assert` (٨٨ مدخلًا · ١٦٢ مرشّحًا · ١٩ غير مُخطَّط) ·
+`gen_catalog_schema --assert` · `jni_symbols --assert` (٢٣ تصريحًا · ٠ نواقص · ثنائيات ٠ ⇒ طبقة `.so`
+غير مُتحقّقة) · `resource_compile --assert` (aapt2 حقيقي: كل مجلّدات الموارد تُترجم) ·
+`license_audit --assert` · `test_platform_commands_jvm.py` (صُرّف ٢ ملفًّا · مجموعة ناجحة) ·
+`rtl_guard --assert` · `git diff --check` = DIFF_OK. السجلّات في `/tmp/opencode/gates-70/`.
+
+**BUILD:** **الترجمة غير مُتحقّقة في هذه البيئة — الحكم من CI وحده.** لا بناء محليّ (§0.1 بأمر
+المالك: «لماذا تبني محليا ومن المفترض من خلال action github فقط؟»). وهذه الدفعة **تحمل إصلاح
+المُسرِّع**، فإن نجحت فالفضل لديمومة البناء لا للكود وحده — وإن فشلت قرأتُ `--log-failed` وأصلحتُ في
+الدفعة نفسها.
+
+**RESIDUAL RISK:** شكل الصفّ الأخير (أيقونة `MoreHoriz` بلا وصف) **يحتاج جهازًا** — RTL يقلب
+`SpaceBetween` في العنوان تلقائيًّا ولم يُرَ على شاشة · استبعاد المضيف يخصّ ورقتين فقط: أي مستدعٍ
+جديد ينسى `currentRoute` يعود إلى العطب نفسه (لا حارس يمنعه) · `continue-on-error` على ccache يعني
+أن فشل تثبيته يمرّ صامتًا، فتباطؤ البناء لن يظهر كخطأ (مقصود) · سقف `OVERLAY_REJECTION_ROWS = 6`
+لم يُقدَّر بصريًّا على شاشة صغيرة.
+
+**NEXT:** مرشّح ROUND-CLOSE-71 — `PRODUCT-MAP` ع٥: ١٤ وجهة من ٦٩ بحالة استثنائية (`hidden` ٣ ·
+`MaxRisk.Advanced` ٧ · وسائط مسار ٤) بلا شاشة مراجعة واحدة؛ أو توحيد هويّة الجهاز
+(`CommunityStats` و`AtlasDeviceIdentity` لم تُوحَّدا مع `DeviceFacts`).
+
+## ROUND-CLOSE-69 — ما يُسجَّل يُمكن نسيانه — 2026-11-11 · DONE_WITH_CONCERNS
+
+**TASK:** «أكثر ما تفتحه» يُقترح من عدّاد حقيقي ولا طريق إلى نسيانه — و`ScreenUsageStore.clear()`
+مكتوبة وموثّقة ومستهلكوها صفر.
+
+**SHIPPED:** `countsFrom(all)` صافية في الـcompanion (البادئة `screen_uses_` هي الحاجز الوحيد
+بين سجلّ الشاشات ومفاتيح الإعدادات في الملفّ نفسه) · `usageVersion` في مفتاح `remember` كي
+تفرغ الاقتراحات لحظة المسح · `FinderLabel(text, action, onAction)` بفعل على الطرف وهدف لمس
+٤٨dp عبر `minimumInteractiveComponentSize` · الإجراء في الموضعين · `ConfirmDialogHost` في نهاية
+الورقة (بدونه لا يظهر الحوار) · ٣ نصوص en/ar تسمّي ما لا يُمسّ · `ScreenUsageStoreTest` ٦ اختبارات.
+
+**GATES:** ١٢/١٢ exit 0 + DIFF_OK (السجلّات في `/tmp/opencode/gates-69/`).
+
+**BUILD:** الترجمة غير مُتحقّقة في هذه البيئة — الحكم من CI وحده (لا بناء محليّ بأمر المالك).
+
+**NEXT:** قراءة `conclusion` لهذه الدفعة؛ ثم شريحة `PRODUCT-MAP` التالية بالنظير القائم لا بشاشة جديدة.
+
+## ROUND-CLOSE-68 — ما يُقطع يُقال، والتقرير يعرّف جهازه ويؤرّخ أحكامه — 2026-11-11 · DONE_WITH_CONCERNS
+
+**TASK:** أربعة مواضع تقطع بلا إعلان أو تحكي بلا فاعل: تقرير المختبر بلا هويّة جهاز ولا تاريخ ·
+أدلّة `CapabilityMatrixCard` تُقطع بـ`take(3)` صامتة · سجلّ مجلدات درج الملفّات يُخفى بلا إعلان
+بجوار زرّ «مسح السجل».
+
+**SHIPPED:** `DeviceFactsReader` (قارئ هويّة مشترك) + `manufacturer`/`model` + سطر `device=` ·
+`labReport(stamp)` + `labDeviceLine` + ترويسة الجهاز/الإصدار في التقرير · `capabilityEvidenceSplit`
++ `+%1$d more` · `fileHistorySplit` + `%1$d older folders not shown` · ٤ نصوص en/ar · ٣ حرّاس
+(٦+٦+٤ اختبارًا جديدًا؛ DeviceLabTests ٢٨).
+
+**NEXT:** البوابات الإحدى عشرة + بناء محليّ (`testReleaseUnitTest` لأربعة أصناف) ثم دفعة واحدة.
+
+## ROUND-CLOSE-67 — نتائج المختبر تخرج من الجهاز — 2026-11-11 · DONE_WITH_CONCERNS
+
+**TASK:** نتائج المختبر محفوظة على الجهاز وحده، فلا تُرى ولا تُشارك.
+
+**SHIPPED:** `ui/util/ShareFile.kt` (مسار مشاركة واحد، و`LogsViewer` انتقل إليه) · `labReport()`
+بترتيب الحكم لا الجدول · صفّ `device_lab_share` يظهر فقط إن كان سجلّ · ٣ اختبارات (٢٤ إجمالًا).
+
+**NEXT:** حكم البناء.
+
+## ROUND-CLOSE-66 — ما لم يُعرض يُقال، ومفتاح Enter يفتح ما يُرى — 2026-11-11 · DONE_WITH_CONCERNS
+
+**TASK:** المُوجِّد يحدّ النتائج بـ٢٤ **بلا إعلان**، فمن كتب «ال» ظنّ أن لا نتيجة غيرها.
+
+**SHIPPED:** `screenFinderMatchCount` + `screenFinderTopHit` · `FinderNote` يعلن الفرق ·
+`MaxSearchField(onSearch)` بـ`ImeAction.Search` عند وجود فعل فقط · `screen_finder_more` en/ar ·
+٥ اختبارات (٢٤ إجمالًا).
+
+**NEXT:** حكم البناء.
+
+## ROUND-CLOSE-65 — ثلاثة أبواب بابنٍ واحد تُسقَط من المُوجِّد — 2026-11-11 · DONE_WITH_CONCERNS
+
+**TASK:** `GpuHub`/`ThermalHub`/`AudioHub` تعطي في البحث نقرةً مقابل صفحة فيها سطر واحد.
+
+**SHIPPED:** `screenFinderTargets` تُسقط الآباء ذوي الابن الواحد الذي لا يحتاج وسيط مسار · حارس
+سلوكيّ في `DestinationDoorTest` يستدعي الدالّة ويؤكّد عدم فقدان وجهة وعدم فساد الاستثناءات.
+
+**NEXT:** حكم البناء. إن سقط الحارس فالإصلاح فيه لا في الدالّة.
+
+## ROUND-CLOSE-64 — ٢٣ تصريحًا ميتًا و٤٦٩ سطرًا — 2026-11-11 · DONE_WITH_CONCERNS
+
+**TASK:** الميت داخل الملفّات الحيّة، والحارس كان على مستوى الملفّ فقط.
+
+**SHIPPED:** حذف ١٣+٦+٤ تصريحًا من `GamePanelSurface`/`NeuralDashboardKit`/`CubeParts` · اختبار رابع
+`no declaration in ui component is dead inside a live file`.
+
+**MEASURED:** ٤٦٩ حذفًا · صفر مرجع مكسور · محاكاة الحارس = 0 ميت.
+
+**NEXT:** بقية تصريحات المسح (٩٧ اسمًا) خارج `ui/component`.
+
+## ROUND-CLOSE-63 — نظافة الكود — 2026-11-11 · DONE_WITH_CONCERNS
+
+**TASK:** حذف ملفّين ميتين بكاملهما · تصحيح ادّعاءين كاذبين في `ContextBridge` · حارس يمنع عودة الميت.
+
+**SHIPPED:** `PulseArt.kt` و`AmbientGlowCycle.kt` محذوفان · تصحيح سطرَي ٢٣ و٨٩ · `ComponentReachabilityTest`
+(٣ اختبارات). `kt_balance` ٣٣٥٠/٠.
+
+**NEXT:** حكم البناء، ثم منظومة التوصيات (وصل أو حذف).
+
+## ROUND-CLOSE-62 — ثلاثة أبواب في نظام التنقّل — 2026-11-11 · DONE_WITH_CONCERNS
+
+**TASK:** `HmaCompanion` بلا باب إلا المُوجِّد، والحارس الذي بُني لمنع ذلك يستثني الجذور.
+
+**SHIPPED:** `HmaCompanion` صار ابنًا لـ`Settings` + صفّه في `SettingsScreen` · `seated` في `Dest` ·
+٣ حرّاس جدد (أبواب الجذور · الخريطة لا تكذب · تغطية المُوجِّد ٦٦/٦٦) · صفر نصّ جديد.
+
+**NEXT:** تعميق صفحات المحاور التي لها ابن واحد بمحتوى حيّ من `core/hardware`.
+
+## ROUND-CLOSE-61 — فعلٌ واحد بمسار كتابة واحد في استوديو الصوت — 2026-11-11 · DONE_WITH_CONCERNS
+
+**TASK:** شرائح الأنماط داخل `CyberCurveEqualizer` كانت تكتب `AudioEffectService` مباشرةً — مسار ثانٍ
+لنفس الفعل الذي يكتبه `AudioSoundPresetsSection` عبر المحكِّم.
+
+**SHIPPED:** `onPresetSelect` → `viewModel.applySoundPreset(context, preset, state.presetIntensity)` ·
+ثلاث مزامنات عرض من الحالة (`state.eq` · `state.strengths` · `state.soundPreset`) · اختبار رابع يحرس
+المسار الواحد.
+
+**NEXT:** حكم البناء، ثم محور لم يُفحص.
+
+## ROUND-CLOSE-60 — قدرة صوت كاملة كانت بلا باب — 2026-11-11 · DONE_WITH_CONCERNS
+
+**TASK:** `AudioSoundPresetsSection` + `AudioPresetController` + `applySoundPreset`/`compareSound`/
+`diagnoseSound` مبنيّة بالكامل ولا نداء لها من أيّ شاشة ⇒ وُصلت بتبويب المحرّك.
+
+**SHIPPED:** النداء قبل `CyberCurveEqualizer` · ثلاثة أفعال على الـViewModel · ٣ اختبارات تحرس الباب.
+
+**NEXT:** توحيد مسار الأنماط على المحكِّم (مسار ثانٍ داخل المعادل) · ثم `MaxFxSection`.
+
+## ROUND-CLOSE-59 — «التالي بلا تجربة» في المختبر — 2026-11-11 · DONE_WITH_CONCERNS
+
+**TASK:** الحصيلة تقول «كم بقي» ولا تقول «أيّها» ⇒ صفّ يُسمّي التالي بترتيب الجدول.
+
+**SHIPPED:** `nextUntried()` في `DeviceLabTests.kt` · صفّ `MaxNavigationRow` تحت العدّاد يظهر
+فقط إن بقي شيء · `device_lab_next` en/ar · ٣ اختبارات (٢١ إجمالًا).
+
+**NEXT:** حكم البناء، ثم الشريحة التالية.
+
+## ROUND-CLOSE-58 — من الأداة إلى الحكم — 2026-11-11 · DONE_WITH_CONCERNS
+
+**TASK:** إغلاق الطرف الثاني للحلقة: زرّ «سجّل النتيجة» في رأس القسم الذي نزل إليه المستخدم.
+
+**SHIPPED:** `pendingCard` · `LabSectionTrailing()` · `trailing` على الأقسام الثمانية (Charge
+يجمع الزرّين) · نصّ `device_lab_record` en/ar · اختباران (١٨ `@Test`).
+
+**NEXT:** حكم البناء، ثم الشريحة التالية.
+
+## ROUND-CLOSE-57 — من البطاقة إلى الأداة — 2026-11-11 · DONE_WITH_CONCERNS
+
+**TASK:** طريق من كل بطاقة اختبار إلى أداتها في الصفحة (١٠ من ١٣ كانت بلا طريق).
+
+**SHIPPED:** `LabToolSection` + `LabTestId.toolSection()` (١٣→٨) · `toolAnchors` +
+`bringIntoViewRequester` على الأقسام الثمانية · صفّ `device_lab_result_go` في `LabResultDialog`
+للاختبارات التي لا نافذة لها · نصّ en/ar · ٣ اختبارات.
+
+**NEXT:** حكم البناء، ثم M3/M4.
+
+## ROUND-CLOSE-56 — الحكم يعود بعد الأداة — 2026-11-11 · DONE_WITH_CONCERNS
+
+**TASK:** إعادة حوار النتيجة بعد إغلاق أداة الاختبار، فلا يضيع الحكم بين الشبكة والأداة.
+
+**SHIPPED:** `LabTest.verdictId()` (معكوس `LabTestId.dialog`) · `pendingVerdict` + `closeTest`
+واحد · `LabTest`/`dialog()` صارا `internal` · ٣ اختبارات.
+
+**MEASURED:** `kt_balance` ٣٣٥٠/٠ · صفر نصّ جديد.
+
+**NEXT:** وصل العشرة الباقية بأدواتها، أو شريحة بقياس JVM.
+
+## ROUND-CLOSE-55 — حصيلة المختبر من نظرة واحدة — 2026-11-11 · DONE_WITH_CONCERNS
+
+**TASK:** عدّاد «يعمل · معطوب · لم يُجرَّب» فوق بطاقات المختبر، يظهر بعد أوّل حكم فقط.
+
+**SHIPPED:** `LabTally` + `labTally()` في `DeviceLabTests.kt` · صفّ `MaxRow` في
+`DeviceLabScreen` · نصّ `device_lab_tally` en/ar · ٣ اختبارات.
+
+**NEXT:** حكم البناء، ثم الشريحة التالية.
+
+## ROUND-CLOSE-54 — المُوجِّد من الإعدادات — 2026-11-11 · DONE_WITH_CONCERNS
+
+**TASK:** إتاحة مُوجِّد الشاشات القائم من صفحة الإعدادات (Library: البحث أوّلًا) بلا مرشّح ثانٍ.
+
+**SHIPPED:** زرّ بحث في `SettingsScreenTopAppBar` · `showFinder` + `ScreenFinderSheet` داخل
+`RootAppDialog` · `navigateToPrimary` للتبويبات · اختبار في `ScreenFinderTest`.
+
+**MEASURED:** `kt_balance` ٣٣٥٠/٠ · صفر نصّ جديد.
+
+**NEXT:** حكم البناء، ثم M3/M4.
+
+## ROUND-CLOSE-53 — نوع الشاشة مسمّى ومحروس — 2026-11-11 · DONE
+
+**TASK:** تسمية نوع كل شاشة رئيسية في KDoc + حارس يمنع الغياب والاسم المجهول.
+
+**SHIPPED:** بطاقات `Library`/`Library`/`Matrix`/`Console` في `Settings` · `Applist` · `Diagnostics` ·
+`MaxAi` · `ScreenArchetypeTest` (نوع من السبعة + البطاقة قبل الـcomposable).
+
+**NEXT:** بحث يرشّح صفوف الإعدادات (Library: search and filters first).
+
+## ROUND-CLOSE-52 — نتائج المختبر تبقى — 2026-11-11 · DONE_WITH_CONCERNS
+
+**TASK:** حفظ حكم كل اختبار عتاد بعد إغلاق الشاشة، مع زمنه.
+
+**SHIPPED:** `LabRecord` + `LabResultStore` (SharedPreferences) · `labOutcomes` · وصل الشاشة ·
+`device_lab_result_last` en/ar · ١٠ اختبارات.
+
+**NEXT:** حكم البناء ثم M2.
+
+## ROUND-CLOSE-51 — إصلاح حارس M1c — 2026-11-10 · DONE
+**TASK:** إصلاح `OwnerDecisionsGuardTest` ونطاقات صندوق الأدوات بعد فشل `f693ef18`.
+**SHIPPED:** نهايات الأب الصحيحة (`Settings, MaxRisk.Advanced)`) · حذف `control_tools_data` ومفتاحه.
+**NEXT:** قراءة حكم البناء ثم M2.
+
+## ROUND-CLOSE-50 — الستّة إلى مواضعها الحقيقية (M1c/M1d) — 2026-11-10 · DONE_WITH_CONCERNS
+
+**TASK:** نقل `Logs` · `UsageStats` · `DeviceLab` إلى `Diagnostics`، و`ColorScheme` · `MaxBackup` ·
+`Permissions` إلى `Settings` — بأمر المالك، مع تحديث الحرّاس.
+
+**SHIPPED:** ستّة أبوّة جديدة · قسم «أدوات التشخيص» يقرأ من السجلّ · حذف `ControlInspectDestinations` ·
+صندوق الأدوات ٦ · أربعة حرّاس محدَّثون · نصّ `diagnostics_tools_section` en/ar.
+
+**MEASURED:** `Control` ٢٢←١٦ · `Settings` ٩←١٢ · `Diagnostics` ٠←٣ · العمق ٣٧/٢٤←٣٤/٢٧ ·
+صفر عائلة مفصولة.
+
+**NEXT:** حكم البناء، ثم M2.
+
+## ROUND-CLOSE-49 — بطاقات اختبار الجهاز ونتيجتها — 2026-11-10 · DONE_WITH_CONCERNS
+
+**TASK:** تحويل المختبر إلى قائمة اختبارات موحّدة: بطاقة لكل قطعة ووسم نتيجة.
+
+**SHIPPED:** `LabTestId` (١٣) · `LabOutcome` (٣) · `MaxCardGrid` أعلى الشاشة · حوار نتيجة (تشغيل ·
+يعمل · معطوب · مسح) · `DeviceLabTestsTest` (٤ اختبارات) · ٧ مفاتيح en/ar.
+
+**NEXT:** حكم البناء على الدفعة، ثم M3.
+
+## ROUND-CLOSE-48 — ملفات التسليم الستّة — 2026-11-10 · DONE
+
+**TASK:** إكمال مخرجات إعادة الهندسة المطلوبة، بلا مصدر حقيقة ثانٍ.
+
+**SHIPPED:** `docs/NEW_ARCHITECTURE.md` · `docs/MIGRATION_PLAN.md` · `docs/SECURITY_AND_SAFETY.md` ·
+`docs/PERFORMANCE_REPORT.md` · `docs/TEST_REPORT.md` · `docs/CHANGELOG.md` — كلّها تُحيل إلى
+`docs/ai/PRODUCT-MAP.md` و`docs/ai/HANDOFF.md`.
+
+**NEXT:** M2 — بطاقة نوع + عنصر حامل لكل شاشة من الخمس المستهدفة، ثم M3 ثم M4.
+
+## ROUND-CLOSE-47 — الحارس الذي أسقط البناء — 2026-11-10 · DONE
+
+**TASK:** تشخيص فشل `MaxManager` على `f8dd38f7` وإصلاح سببه لا عَرَضه.
+
+**SHIPPED:** `DestinationDoorTest` صار يستثني `parent = null` من استخراج الأب (كان `null` يُقرأ اسمًا)،
+فتحقّق: orphans = [] · مسارات مكرّرة = {} · آباء غير مسجّلين = [].
+
+**NEXT:** قراءة حكم البناء قبل أي شريحة جديدة.
+
+## ROUND-CLOSE-46 — المختبر يقيس الشحن بدل أن يسمّي حالته — 2026-11-10 · DONE_WITH_CONCERNS
+
+**TASK:** تحويل «الحالة: جارٍ الشحن» إلى قياس: هل تدخل الطاقة فعلًا؟
+
+**SHIPPED:** قسم Charging test في `DeviceLabScreen.kt` — نافذة ٦ ثوانٍ على `BATTERY_PROPERTY_CHARGE_COUNTER`، الحكم من فرق العدّاد (`µAh/s × 3.6 = mA`) لا من إشارة `CURRENT_NOW`، أربعة صفوف (التدفّق · العدّاد · المستوى · المُعلَن)، زرّ «أعد القياس»، `ChargeMath.kt` + `ChargeMathTest` (٥)، ١٤ مفتاحًا en/ar.
+
+**BUILD:** `15f12a79` = success (`42877724414`) · الدفعة الحالية غير مُتحقّقة حتى يُقرأ تشغيلها.
+
+**NEXT:** M2 (تخطيط `Now` حسب نوعه) · M3 (أحجام الشاشات وحالات الفراغ) · قرار المالك في العائلات المحجوبة.
+
+## ROUND-CLOSE-45 — صندوق الأدوات ثلاثة نطاقات معنونة — 2026-11-10 · DONE
+
+**TASK:** تحسين قراءة صفحة التحكّم بلا نقل أي وجهة (M1b مرفوضة بأمر المالك: المختبر اختبار عتاد).
+
+**SHIPPED:** `ControlToolGroup` + `controlToolGroups(access)` في `ControlLayoutModel.kt` (ثلاثة نطاقات مشتقّة من `controlToolEntries`، ونطاق فارغ يُسقَط) · `ControlScreen.kt` يعرضها حلقةً بدل بند واحد · ٣ نصوص en/ar · اختبار تقسيم في `ControlLayoutModelTest` (سابع) · ع١ في `PRODUCT-MAP.md`.
+
+**BUILD:** `45fc2610` = success (`42873670919`) · الدفعة الحالية غير مُتحقّقة حتى يُقرأ تشغيلها.
+
+**NEXT:** قراءة حكم بناء الدفعة · M2 (تخطيط `Now` حسب نوعه) · M3 (أحجام الشاشات وحالات الفراغ) · قرار المالك في العائلات الأربع المحجوبة إن أراد إتمام M1.
+
+## ROUND-CLOSE-44 — المختبر اختبارُ عتاد لا صندوق أدوات + بطاقات أنواع الشاشات — 2026-11-10 · DONE_WITH_CONCERNS
+
+**TASK:** «ولا اريد device lab هكذا اريده فقط لي اختبار الجهاز انت فهمت وظيفته خطئ» (مع لقطة من تطبيق اختبار عتاد).
+
+**CORRECTED (تراجع مُعلَن):** `SetEdit` · `ActivityLauncher` · `FileManager` عادت إلى `Control` (M1b **مرفوضة بأمر المالك**) · `ControlToolDestinations` ٧←١٠ · أبناء `Control` ١٩←٢٢ · العمق ٣٤/٢٧←٣٧/٢٤ · حُذف `DeviceLabToolsTest` ومفتاح `device_lab_section_tools` · `PRODUCT-MAP` و`inventory` أُعيدا إلى أرقام ما قبل M1b.
+
+**SHIPPED:** قسمان حقيقيان في `DeviceLabScreen` بقراءة فقط وبلا أذونات — **الكاميرات** (معرّف · جهة · ميغابكسل من `SENSOR_INFO_PIXEL_ARRAY_SIZE` · مشعل، بلا فتح كاميرا) و**الاتصالات والمقاييس الحيوية** (NFC وحالته · Bluetooth · GPS · مشعّل تحت أحمر · بصمة · وجه) · ٢٠ مفتاحًا في `values/`+`values-ar/` · بطاقات نوع الشاشة في KDoc لخمس شاشات (`ControlScreen` Matrix · `HomeScreen` Matrix · `FpsOverlayScreen` Instrument · `GameSessionsScreen` Ledger · `ThermalDetailScreen` Instrument).
+
+**SHIPPED (حارس):** `DestinationDoorTest` — كل وجهة مرئية يذكرها سطحٌ يفتحها، ومسارات فريدة، وآباء مسجَّلون؛ يمنع تكرار عطب «وجهة بلا باب» الذي وقع في M1b.
+
+**NEXT:** M1b-باقٍ محجوب بقرارات مالك مكتوبة (`Logs` ADR-02 · `ColorScheme` تعليق الموديل · `UsageStats` حارس مالك · `MaxBackup`/`Permissions` `LaunchRouteTest`) ⇒ لا نقل بلا كلمة المالك. ثم M3 (RTL/إتاحة — مُقاسة نظيفة) وM4 (إعادات التركيب تحتاج جهازًا).
+
+## ROUND-CLOSE-43 — المختبر بيت أدواته + إصلاح عطب Shizuku — 2026-11-10 · DONE_WITH_CONCERNS
+
+**TASK:** «اكمل».
+
+**SHIPPED:** `SetEdit`/`ActivityLauncher`/`FileManager` → `DeviceLab` (M1b) · قسم في `DeviceLabScreen` يقرأ الأبناء من السجلّ · `ControlToolDestinations` ١٠←٧ · أبناء `Control` ٢٢←١٩ · العمق ٣٧/٢٤←٣٤/٢٧ · `DeviceLabToolsTest` (٣) · تصحيح `inventory.md` ٦١←٦٩ · إصلاح `DestinationAccessTest` (MemoryHub صار مرئيًّا بـShizuku بعد M1a — تصحيح حقيقة قديمة لا عطب).
+
+**BUILD:** `MaxManager` 42843267294 على `3eec9e95` = failure (`DestinationAccessTest:93`) وأُصلح؛ وبناء هذه الدفعة غير مُتحقّقة حتى يُقرأ. `MaxManager docs` = success.
+
+**NEXT:** M1b-باقٍ: قائمة أبناء عامة في `Diagnostics` و`Settings`، ثم `Logs`→`Diagnostics` و`ColorScheme`→`Settings` (`UsageStats` تحتاج قرار مالك، و`MaxBackup`/`Permissions` مثبَّتان باختبار). ثم M2.
+
+## ROUND-CLOSE-42 — إعادة هندسة نظامية: الحصر المقيس + M0 + M1a — 2026-11-10 · DONE_WITH_CONCERNS
+
+**TASK:** «إعادة هندسة نظامية كاملة … لا توصيات بل تنفيذ».
+
+**SHIPPED:** `docs/ai/PRODUCT-MAP.md` (١٧٢ سطرًا: ٦٩ وجهة · ٨ جذور · ٣٩/٢٢ عمق · ٢٤←٢٢ ابنًا لـ`Control` · ٥ عيوب بعدد · M0→M4) · `MaxDestinations.kt` (`ProcessManager→MemoryHub` · `BatteryHistory→PowerHub`) · `ControlLayoutModel.kt` (قائمتا التحكّم ١١←١٠ و٣←٢) · `OwnerDecisionsGuardTest.kt` (قرار سابق مُعدَّل صراحةً: البطارية مع عائلتها، ولا تعود إلى `Settings`).
+
+**GATES:** kt_balance 3341/0 · code_health نظيف · i18n 84+en · prune 0 · design_tokens 249/300 · design_doc مطابق · jni_symbols 23/0 (ثنائيات غير مُتحقّقة) · resource_compile aapt2 ✓ · license_audit GPL 0 · readme_assets 69 · provenance 4117/0 · diff OK.
+
+**BUILD:** غير مُتحقّقة محليًّا؛ الحكم من `MaxManager` على هذه الدفعة — يُقرأ ولا يُدّعى.
+
+**NEXT:** M1b — قائمة أبناء عامة من السجلّ في `Settings`/`Diagnostics`/`DeviceLab` (الشرط المقيس للنقل)، ثم نقل `Logs`/`UsageStats`/`ColorScheme`/`MaxBackup`/`Permissions`/`DeviceLab`/`SetEdit`/`ActivityLauncher`/`FileManager`. ثم M2 (إعادة تركيب أعلى خمس شاشات). الهدف: أبناء `Control` ≤ ١٣.
+
+## ROUND-CLOSE-41 — تعميق جلسات اللعب + أنواع الشاشات — 2026-11-10 · DONE_WITH_CONCERNS
+
+**TASK:** «الميزات التي ننسخها ليست جيده مثل الاصليه وليست عمليه … تعمق» ثم «انت مقيد بتوحيد التصميم … عدل .md الخاص بالتصميم».
+
+**SHIPPED:** `GameSessionInsight.kt` (حكم مقابل وسيط ٥ جلسات لنفس الحزمة · سبب مسمّى · فعل يقود إلى الوجهة · أسوأ لحظة) · `GameWatch.kt` + `autoStart` (تسجيل تلقائي عند فتح لعبة من المكتبة) · `SessionSummaryNotifier.kt` (إشعار عند الإيقاف يفتح السجل) · قسم «آخر جلسة» ووسم الحكم في كل صفّ وعلامة أسوأ لحظة على المنحنى · `DESIGN_VISION.md` §4 و`DESIGN.md` (٧ أنواع: لغة موحّدة لا قالب).
+
+**BUILD:** `a58cc921` ← `1160b4cd` (List<Int> ⇒ List<Float>) ← `1baa224a`. **`42814657771` = success** (تصريف 5m17s · اختبارات وحزمة 6m39s · ٦٤ مهمة · artifact 13764792189). `42815004425` على `1baa224a` قيد التشغيل — بلا حكم.
+
+**NEXT:** إذن الإشعارات · إبطال كاش `GameWatch` · إعادة تركيب الشاشات حسب الأنواع · مراجعة مستقلة.
+
+## ROUND-CLOSE-40 — إثبات الأصل بالقياس وحارس البصمات — 2026-11-10 · DONE_WITH_CONCERNS
+
+**TASK:** «كل شيئ اضفته من المشاريع الاخري ليس بعملي حقا» — إثبات الأصل أو الإزالة، لا وعدًا.
+
+**MEASURED:** تقاطع الرموز (9-grams، احتواء `|A∩B|/min`) بين كل ملفاتنا والمرجع: الاثنا عشر ملفًا التي أُضيفت في جولاته ⇒ أعلى قيمة **٠٫٠٥٨** (`HudDeepReaders.kt`) و**٠٫٠٣٩** (`GameSessionsScreen.kt`)، والباقي **٠٫٠٠٠**، وحرفيات مشتركة **صفر**. الشجرة كاملة (١٣٨١ ملفًا مصدريًا × ٢٧٧١) ⇒ أعلى **٠٫١١٧٦** · **٠** ملف بلغ ٠٫٣٠ · **٠** تجاوز ٠٫١٥. `license_audit --provenance`: ٣٦٩٠ ملفًا متعقّبًا · GPL **٠** · مجهول **٠** · مملوك ٣١٨٧ · طرف ثالث ٥٠٣ (كلها بإشعار في `THIRD_PARTY_NOTICES.md`).
+
+**SHIPPED:** `tools/provenance_guard.py` (٢٤٣ سطرًا · ٨ بصمات أسماء · ٥ أسماء أشجار مرجعية · `--assert` · `--self-test` ٦ حالات · `--list`) · `docs/ai/ORIGIN.md` (٩٨ سطرًا: الجداول والقاعدة الخمس والحدود) · خطوتان في «Contract gates» داخل `build.yml` · سطر في `AGENTS.md` §5.
+
+**BUILD:** `df20c913` — `feat: provenance guard — no reference tree, no reference fingerprints` — ٤ ملفات · **+٣٥٠** · مدفوع إلى `main`. **`MaxManager` `42765864305` على `df20c913` = success** · و`MaxManager docs` `42765864361` = completed. QV `42761536805` على `bef4d85b` = success (قبل الدفعة).
+
+**GATES:** kt_balance 3337/0 · code_health نظيف · i18n 84+en · prune 0 · design_tokens 249/300 · resource_compile aapt2 · jni_symbols 23 · license_audit GPL 0 · readme_assets RC 0 · `provenance_guard --assert` «٤١١٠ ملفًا · ٠ مسار مرجعي · ٠ بصمة» · `--self-test` ٦/٦ · diff check OK.
+
+**RESIDUAL:** الحارس **اسمي/رمزي** — يُثبت غياب أسماء المرجع وأشجاره، ولا يُثبت غياب اقتباس مفهومي (وهذا ما يقرّره `docs/AUTHENTICITY.md` بالتشابه لا بالاسم). والقياس مقابل مرجع واحد. وأصول `build/audit/zkm-raw` غير موجودة في هذه الشجرة ⇒ بقايا `AUTHENTICITY` الأربع معلنة ومفسَّرة لا مُعاد قياسها الآن. والجهاز غير متاح.
+
+**NEXT:** (١) عند توفر أصول `zkm-raw`: `python3 tools/upstream_similarity.py --assert` لإعادة قياس البقايا الأربع. (٢) توسيع `FINGERPRINTS` عند إضافة أي مرجع جديد للقراءة. (٣) مراجعة مستقلة على `df20c913`.
+
+## ROUND-CLOSE-39 — عقد الصور المصغّرة · إصدار المخطط · مسبار القنوات · فلتر وفاصل — 2026-11-10 · DONE_WITH_CONCERNS
+
+**TASK:** «اصلح مشكلة البناء اولا وبعدها نفذ مقترحاتك» ثم «لا تبني او تختبر من الهاتف دائما استخدم github action».
+
+**BUILD:** `e344d800` (`docs/store/spec.json` 68→69 + إعادة توليد 8 صور و`manifest` و`listing`) ← `fe1e5fd4` (15 ملفًا · +532/−39). **QV `42753712921` على `fe1e5fd4` = success** (`BUILD SUCCESSFUL in 3m 15s` · 35 مهمة · 24 منفّذة · 11 من الكاش · `:app:testReleaseUnitTest` مرّ بلا `FAILED`).
+
+**SHIPPED:** `SESSION_SCHEMA_VERSION=2` + `schemaVersion` في `StoredGameSession` · `HudChannelProbe` (7 قنوات: Readable/Missing/Denied بمصدرها؛ ولم تُضف إلى Atlas لأنها أهداف تحكّم لا قراءة) · `HudFilter` (Text/Chart/All) في `HudSurface` · `MonitorGate` للفاصل في `FpsOverlayService.Panel` · `FpsOverlayPrefs.State.filter` و`MonitorSpec.intervalMs/filter` بتوافق خلفي (1000/All) · قسم القنوات وشرائح الفلتر/الفاصل في `FpsOverlayScreen` · نصوص en/ar · `MonitorGateTest` (9) و`MonitorPrefsTest` موسّع.
+
+**RULE:** `AGENTS.md` §0.10 — لا `gradlew` محليًّا إطلاقًا؛ الحكم من `gh run view` وحده، والبوابات الخفيفة فقط محليًّا، و§5 أُرشِف.
+
+**GATES:** kt_balance 3337/0 · code_health نظيف · i18n 84+en · prune 0 · design_tokens 249/300 · resource_compile aapt2 · jni_symbols 23 · license_audit GPL 0 · readme_assets RC 0 · diff check OK.
+
+**RESIDUAL:** الجهاز غير متاح — المسبار يقيس هذا الجهاز لا هاتف المالك، والفلتر/الفاصل مُقاسان منطقيًّا لا بصريًّا، وRTL/اللمس/أداء الرسم يحتاج جهازًا.
+
+**NEXT:** جهاز: تجربة الفلتر والفاصل على لعبة تعمل، وقراءة قسم القنوات على عتاد آخر لمعرفة ما يسقط إلى `Missing`.
+
+## ROUND-CLOSE-38 — تسجيل الجلسة العميق — 2026-11-10 · DONE_WITH_CONCERNS
+
+**TASK:** «نفذ كل شيئ» بعد جرد Scene — تعميق المسجّل القائم (`HudRecorder`/`HudSampler`) بلا مسار ثانٍ، en/ar فقط، صفر كود من المرجع.
+
+**CHANGED:** `HudDeepReaders.kt` جديد (CPU MHz · SoC temp · GPU freq/load · DDR · disk IO · battery mV) · `HudChart.kt` جديد (PNG 1080×540) · `HudSession.kt` (٧ حقول + `HudWarningTracker` + `HudSessionRules`/`Settings` + `SessionStopReason` + `stop(reason)` بالقّص + `tallyPoints` + CSV ١٣) · `HudSampler` (إيقاف ScreenOff/Power/Foreground) · `GameSessionStore` (`clipTransitions` + حقول محفوظة + `update`) · `GameSessionsScreen` (قواعد بمنزلقات · تحذيرات · ملاحظة · منحنى · CSV+PNG) · `HudSessionDepthTest` ١٤ اختبارًا.
+
+**MEASURED:** 12 ملفًا · +1879/−93 · **٤٠ اختبارًا · ٠ فشل** · `BUILD SUCCESSFUL in 18m 47s` · البوابات التسع + diffcheck خضراء.
+
+**CI:** **Quick Verify `42740538187` على `079786d1` = success** (`BUILD SUCCESSFUL in 2m 57s` · 35 مهمة).
+
+**RESIDUAL:** الجهاز غير متاح — القنوات الفعلية على عتاد حقيقي، الالتقاط الأمامي، التخزين، الواجهة/اللمس/RTL، `gfxinfo`/`mm_stat`. وإحصاء الخيوط/`perf` لم يُبنَ.
+
+**NEXT:** جهاز: جلسة كاملة + تحذيرات + تصدير CSV/PNG + تغيير الحزمة للتحقق من الإيقاف والقصّ + بقاء السجلّ بعد موت العملية.
+
+## ROUND-CLOSE-37 — شاشة «جلسات اللعب» — 2026-11-09 · DONE_WITH_CONCERNS
+
+**TASK:** «اجعله افضل حتي من scane معا شاشة منفصله ولكن مرتبطه بباقي الشاشات التي لها علاقة» — تحسين `HudRecorder`/`HudJournal` القائم، شاشة منفصلة، سجلّ دائم، ربط بالتراكب واللوبي.
+
+**CHANGED:** `GameSessionStore.kt` + `GameSessionsViewModel.kt` + `GameSessionsScreen.kt` جديدة · `HudSession.kt` (tally موسّع + CSV 9 أعمدة + حفظ عند الإيقاف) · `AppMonitor.currentForegroundPackage()` · `MaxDestination.GameSessions` + الرسم + `ControlToolDestinations` · صفّ في `FpsOverlayScreen` وزرّ في `GameLobbyScreen` · نصوص en/ar · `GameSessionStoreTest` + `HudSessionTest`.
+
+**MEASURED:** 16 ملفًا · +237/−14 متعقَّب + 967 سطرًا جديدًا ≈ +1204/−14 · البوابات الثماني + diffcheck خضراء.
+
+**BUILD:** الاختبارات المستهدفة (`GameSessionStoreTest` 11 + `HudSessionTest` 15 = 0 فشل) + `:app:compileReleaseKotlin` = BUILD SUCCESSFUL in 16m 3s؛ Quick Verify يُرسل بعد الدفع ويُقرأ حكمه.
+
+**CI:** فشلان خارج الترجمة: (أ) البناء `42701523830` على `1c4b94d9` سقط في «Contract gates» (68 شاشة في الوثائق والمقيس 69)؛ حُدّث العدد في README وREADME.ar وSVG الإحصاءات وlisting.md، و`readme_assets.py --assert` = RC 0. (ب) QV `42702844485` على `8da7706b` سقط في `ScreenFinderTest` سطر 345 — `maxDestinationKeywords` بلا مدخل لـ`GameSessions`؛ أُضيف في `ScreenFinderModel.kt`. دُفعت `80bcaa20` و**QV `42712801524` = success** (`BUILD SUCCESSFUL in 4m 18s`).
+
+**RESIDUAL:** الجهاز غير متاح — الالتقاط الأمامي، التخزين، الواجهة/اللمس/RTL، `gfxinfo` و`mm_stat`.
+
+**NEXT:** جهاز: جلسة كاملة + تصدير CSV + بقاء السجلّ بعد موت العملية.
+
 ## KERNEL-TUNING-EXTENSIONS-01 — 2026-11-09 · DONE_WITH_CONCERNS (دُفع إلى main؛ البناء الكامل ناجح)
 
 **TASK:** تنفيذ التحسينات الخمسة المقترحة: I/O لكل جهاز، معاملات الحاكم، حفظ بروفايلات الحاكم،
@@ -41,6 +757,22 @@ i18n ٠/يتيمة ٠، الكتالوج assert/check/self-test نجحت (٨٨/�
 **NEXT:** (١) **دُمج في `main`** بأمر المالك (2026-11-09) · (٢) علامة «يكتب» على صفوف
 التحكّم من مسار المراجِع · (٣) توسيع كلمات القصد لباقي الوجهات · (٤) تعميم `MaxDataTrust` ·
 (٥) قرار حذف `StoryboardHome`.
+## ROUND-CLOSE-36 — خمس ملاحظات من Scene — 2026-11-09 · DONE_WITH_CONCERNS
+
+**TASK:** «حسن نفذ كل شيئ» — خمس أفكار من `scene_n1` بلا كود: jank/زمن الإطار · per-app بالنشاط · طاقة الشحن Wh/mAh · ZRAM الحيّ · تفاصيل العملية.
+
+**CHANGED:** `FrameStats.kt` + `FpsMonitorUtil`/`HudSession`/`HudSurface` · `ForegroundAppResolver`/`GameProfileDocument`/`GameProfileRepository`/`AppMonitor`/`CompanionPollPolicy` + محدّد نشاط في `AppSettingsScreen` · `ChargeCurve` energy/charge · `ZramViewModel` `mm_stat[2..6]` · `ProcessFeed.details` + `DetailSheet` · نصوص en/ar.
+
+**MEASURED:** 27 ملفًا · +1002/−61 بعد الدمج · 34 اختبارًا مستهدفًا قبل الدمج 0 فشل · compile 20m27s على الشجرة المدموجة · test 11m57s قبل الدمج.
+
+**GATES:** الثماني + `git diff --check` = 0 على الشجرة المدموجة.
+
+**BUILD:** `:app:compileReleaseKotlin` نجح على الشجرة المدموجة. Quick Verify `42674135194` والبناء الكامل `42673992190` فشلا في `HudSessionTest` (ترتيب الحقول لم يضمّ Jank) — أُصلح الاختبار، وتُعاد QV/البناء بعد دفعة الإصلاح ويُقرأ الحكم.
+
+**RESIDUAL:** الجهاز غير متاح — jank/gfxinfo، dumpsys النشاط، mm_stat، جذر العملية، تكامل الشحن.
+
+**NEXT:** جهاز: السيناريوهات الخمسة أعلاه.
+
 ## ROUND-CLOSE-32 — وثيقة الألعاب تُبذر بالجذر — 2026-11-08 · DONE_WITH_CONCERNS
 
 **TASK:** إصلاح رسالة per-app «Configuration could not be read or saved. No successful profile change is confirmed» في تثبيت الروم بثلاثة ملفات + جذر ممنوح.

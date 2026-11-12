@@ -206,6 +206,7 @@
     <string name="max_files_bookmarks_empty">No bookmarks yet — add the folders you keep returning to.</string>
     <string name="max_files_history_empty">Nothing visited yet in this session.</string>
     <string name="max_files_history_clear">Clear the history</string>
+    <string name="max_files_history_more">%1$d older folders not shown</string>
     <string name="max_files_drawer_hidden_shown">Hidden files are shown right now</string>
     <string name="max_files_drawer_hidden_hidden">Hidden files are hidden, and their count stays in the status line</string>
     <string name="max_files_root_access">Read/write mode</string>

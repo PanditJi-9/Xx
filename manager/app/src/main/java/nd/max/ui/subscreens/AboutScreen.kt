@@ -30,7 +30,6 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
@@ -137,24 +136,6 @@ fun AboutScreen(navController: NavController) {
                         color = MaterialTheme.colorScheme.primary
                     )
                     
-                    Spacer(modifier = Modifier.height(24.dp))
-
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(16.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        nd.max.ui.component.StudioTonalButton(
-                            onClick = { openLink("https://t.me/ROBINHOOD_GROUP_RODIN") }
-                        ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.ic_telegram), 
-                                contentDescription = null,
-                                modifier = Modifier.size(18.dp)
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(stringResource(R.string.telegram_group))
-                        }
-                    }
                 }
             }
 
@@ -173,17 +154,51 @@ fun AboutScreen(navController: NavController) {
                                         contentScale = ContentScale.Crop,
                                         modifier = Modifier.size(48.dp).clip(CircleShape)
                                     )
-                                },
-                                trailingContent = {
-                                    IconButton(onClick = { openLink("https://t.me/ROBINHOOD_GROUP_RODIN") }) {
-                                        Icon(
-                                            painter = painterResource(id = R.drawable.ic_telegram),
-                                            contentDescription = stringResource(R.string.cd_telegram),
-                                            modifier = Modifier.size(26.dp),
-                                            tint = MaterialTheme.colorScheme.primary
-                                        )
-                                    }
                                 }
+                            )
+                        },
+                        {
+                            // المجتمع كله في «حول» وحدها: المستودع والقناة والجروب، بلا تكرار
+                            // في التهيئة — وقناة التهيئة تبقى قناةً واحدة، والجروب هنا فقط.
+                            ExpressiveListItem(
+                                headlineContent = { Text(text = stringResource(R.string.onboarding_github_platform), fontWeight = FontWeight.SemiBold) },
+                                supportingContent = { Text(stringResource(R.string.onboarding_github_repo)) },
+                                leadingContent = {
+                                    Image(
+                                        painter = painterResource(R.drawable.ic_github),
+                                        contentDescription = stringResource(R.string.cd_github),
+                                        modifier = Modifier.size(26.dp)
+                                    )
+                                },
+                                onClick = { openLink("https://github.com/nader295/MaxManager") }
+                            )
+                        },
+                        {
+                            ExpressiveListItem(
+                                headlineContent = { Text(text = stringResource(R.string.onboarding_telegram_title), fontWeight = FontWeight.SemiBold) },
+                                supportingContent = { Text(stringResource(R.string.about_channel_handle)) },
+                                leadingContent = {
+                                    Image(
+                                        painter = painterResource(R.drawable.ic_telegram),
+                                        contentDescription = stringResource(R.string.cd_telegram),
+                                        modifier = Modifier.size(26.dp)
+                                    )
+                                },
+                                onClick = { openLink("https://t.me/GetMaxManager") }
+                            )
+                        },
+                        {
+                            ExpressiveListItem(
+                                headlineContent = { Text(text = stringResource(R.string.telegram_group), fontWeight = FontWeight.SemiBold) },
+                                supportingContent = { Text(stringResource(R.string.about_group_handle)) },
+                                leadingContent = {
+                                    Image(
+                                        painter = painterResource(R.drawable.ic_telegram),
+                                        contentDescription = stringResource(R.string.cd_telegram),
+                                        modifier = Modifier.size(26.dp)
+                                    )
+                                },
+                                onClick = { openLink("https://t.me/MaxManagerChat") }
                             )
                         }
                     )

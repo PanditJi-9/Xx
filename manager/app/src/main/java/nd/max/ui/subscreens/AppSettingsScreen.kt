@@ -18,6 +18,7 @@
 
 package nd.max.ui.subscreens
 
+import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.net.Uri
@@ -39,6 +40,8 @@ import androidx.compose.material.icons.outlined.*
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import nd.max.core.gamespace.InAppRun
+import nd.max.core.gamespace.InAppRunLog
 import nd.max.core.gamespace.InAppProfileRules
 import nd.max.core.privilege.ExecutionModeStore
 import nd.max.core.privilege.PrivilegeManager
@@ -66,6 +69,8 @@ import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import kotlin.math.roundToInt
+import nd.max.ui.design.MaxGroup
+import nd.max.ui.design.MaxGroupDivider
 import nd.max.ui.design.MaxCardSpec
 import nd.max.ui.design.MaxCommand
 import nd.max.ui.design.MaxCommandMenu
@@ -74,6 +79,8 @@ import nd.max.R
 import nd.max.ui.component.*
 import nd.max.ui.design.MaxListScreen
 import nd.max.ui.design.MaxAlpha
+import nd.max.ui.design.MaxRow
+import nd.max.ui.design.MaxTone
 import nd.max.ui.design.MaxSectionSpec
 import nd.max.ui.design.MaxSize
 import nd.max.ui.design.MaxSpace
@@ -124,6 +131,16 @@ fun AppSettingsScreen(
     // تغيّر التكوين (لغة/كثافة/اتجاه)، والثانية تُبقي النصّ بلغته القديمة حتى يُعاد إنشاء الشاشة.
     val resources = LocalResources.current
     val appDetails = remember(packageName) { getAppDetails(context, packageName) }
+    val activityChoices = remember(packageName) {
+        val pkg = packageName ?: return@remember emptyList<String>()
+        runCatching {
+            context.packageManager.queryIntentActivities(
+                Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER).setPackage(pkg), 0
+            ).mapNotNull { it.activityInfo?.name }.distinct()
+        }.getOrDefault(emptyList())
+    }
+    var activityName by remember(packageName) { mutableStateOf<String?>(null) }
+    val settingsKey = packageName?.let { pkg -> activityName?.let { "$pkg/$it" } ?: pkg }
     val isGameApp = remember(packageName) { isGameCategory(context, packageName) }
     // **مكتبة الألعاب: مفتاح في شريط العنوان لا بطاقة داخل الصفحة** (أمر المالك: البطاقة الضخمة
     // لا تشبه صفوف الشاشة وتزاحم المحتوى). والحكم من نفس `StateFlow` الذي يقرؤه مدير المكتبة،
@@ -151,7 +168,7 @@ fun AppSettingsScreen(
         if (viewModel.configFailed) viewModel.loadConfig()
     }
 
-    val config = viewModel.fullConfig[packageName]
+    val config = settingsKey?.let { viewModel.fullConfig[it] }
     // Verified repository state, not an optimistic switch that stays on after a failed save.
     val localMasterOn = config != null
     // خيارات الحوكمة الجذرية في الوضعين غير الجذريين: تُعطَّل (كانت تُحفظ وتبدو فعّالة ولا يطبّقها أحد). والثلاثة
@@ -343,7 +360,7 @@ fun AppSettingsScreen(
                             checked = localMasterOn,
                             modifier = Modifier.semantics { contentDescription = masterLabel },
                             onCheckedChange = { checked ->
-                                packageName?.let { viewModel.toggleMasterSwitch(it, checked) }
+                                settingsKey?.let { viewModel.toggleMasterSwitch(it, checked) }
                             },
                             colors = SwitchDefaults.colors(
                                 checkedThumbColor = colorScheme.primary,
@@ -357,6 +374,33 @@ fun AppSettingsScreen(
                 if (viewModel.configFailed) item {
                     Text(stringResource(R.string.gaming_config_failed), color = MaterialTheme.colorScheme.error)
                 }
+                if (packageName != null) item {
+                    ExpressiveList(
+                        modifier = Modifier,
+                        content = buildList {
+                            add {
+                                ExpressiveDropdownItem(
+                                    icon = Icons.Rounded.Apps,
+                                    title = stringResource(R.string.app_activity_profile_title),
+                                    summary = activityName?.let {
+                                        stringResource(R.string.app_activity_profile_selected, it.substringAfterLast('.'))
+                                    } ?: stringResource(R.string.app_activity_profile_summary),
+                                    items = listOf(stringResource(R.string.app_activity_profile_all)) +
+                                        activityChoices.map { it.substringAfterLast('.') },
+                                    selectedIndex = activityName?.let { activityChoices.indexOf(it) + 1 } ?: 0,
+                                    enabled = activityChoices.isNotEmpty(),
+                                    onItemSelected = { index ->
+                                        val chosen = if (index == 0) null else activityChoices.getOrNull(index - 1)
+                                        activityName = chosen
+                                        if (chosen != null) packageName?.let { pkg ->
+                                            viewModel.ensureActivityProfile(pkg, "$pkg/$chosen")
+                                        }
+                                    }
+                                )
+                            }
+                        }
+                    )
+                }
                 if (inAppProfile) item {
                     Text(
                         text = stringResource(R.string.profile_mode_banner),
@@ -365,6 +409,9 @@ fun AppSettingsScreen(
                         modifier = Modifier.padding(horizontal = MaxSpace.md)
                     )
                 }
+                // **واللافتة وحدها لا تكفي:** «البروفايل يعمل» جملة صحيحة حتى حين لم يُكتب
+                // مفتاح واحد. فالسطر الذي يقول ما جرى لكل مفتاح يُعرض تحتها، من السجلّ نفسه.
+                if (inAppProfile) item { InAppRunCard(packageName = packageName) }
 
                 // ── مُزالة: الخلفية والبطارية (AR-14) ────────────────────────────
                 // أُزيلت هاتان البطاقتان من هذه الشاشة **بقرار مالك** لا لخطأ فيهما.
@@ -419,7 +466,7 @@ fun AppSettingsScreen(
                                             summary = stringResource(R.string.perf_lite_mode_desc_short),
                                             items = listOf(defaultLabel, stringResource(R.string.on_label), stringResource(R.string.off_label)),
                                             selectedIndex = getBoolIndex(cfg.perf_lite_mode),
-                                            onItemSelected = { i -> packageName?.let { viewModel.updateSetting(it, "perf_lite_mode", listOf("default","true","false")[i]) } }
+                                            onItemSelected = { i -> settingsKey?.let { viewModel.updateSetting(it, "perf_lite_mode", listOf("default","true","false")[i]) } }
                                         )
                                     }
                                     add {
@@ -430,7 +477,7 @@ fun AppSettingsScreen(
                                             summary = stringResource(R.string.appfeature_cpu_boost_summary),
                                             items = listOf(defaultLabel, stringResource(R.string.on_label), stringResource(R.string.off_label)),
                                             selectedIndex = getBoolIndex(cfg.cpu_boost),
-                                            onItemSelected = { i -> packageName?.let { viewModel.updateSetting(it, "cpu_boost", listOf("default","true","false")[i]) } }
+                                            onItemSelected = { i -> settingsKey?.let { viewModel.updateSetting(it, "cpu_boost", listOf("default","true","false")[i]) } }
                                         )
                                     }
                                     add {
@@ -443,7 +490,7 @@ fun AppSettingsScreen(
                                             summary = stringResource(R.string.game_preload_desc),
                                             items = listOf(defaultLabel, stringResource(R.string.on_label), stringResource(R.string.off_label)),
                                             selectedIndex = getBoolIndex(cfg.game_preload),
-                                            onItemSelected = { i -> packageName?.let { viewModel.updateSetting(it, "game_preload", listOf("default","true","false")[i]) } }
+                                            onItemSelected = { i -> settingsKey?.let { viewModel.updateSetting(it, "game_preload", listOf("default","true","false")[i]) } }
                                         )
                                     }
                                     add {
@@ -454,7 +501,7 @@ fun AppSettingsScreen(
                                             summary = stringResource(R.string.app_priority_desc),
                                             items = listOf(defaultLabel, stringResource(R.string.on_label), stringResource(R.string.off_label)),
                                             selectedIndex = getBoolIndex(cfg.app_priority),
-                                            onItemSelected = { i -> packageName?.let { viewModel.updateSetting(it, "app_priority", listOf("default","true","false")[i]) } }
+                                            onItemSelected = { i -> settingsKey?.let { viewModel.updateSetting(it, "app_priority", listOf("default","true","false")[i]) } }
                                         )
                                     }
                                     add {
@@ -465,7 +512,7 @@ fun AppSettingsScreen(
                                             summary = stringResource(R.string.appfeature_kill_bg_summary),
                                             items = listOf(defaultLabel, stringResource(R.string.on_label), stringResource(R.string.off_label)),
                                             selectedIndex = getBoolIndex(cfg.kill_bg_apps),
-                                            onItemSelected = { i -> packageName?.let { viewModel.updateSetting(it, "kill_bg_apps", listOf("default","true","false")[i]) } }
+                                            onItemSelected = { i -> settingsKey?.let { viewModel.updateSetting(it, "kill_bg_apps", listOf("default","true","false")[i]) } }
                                         )
                                     }
                                 }
@@ -513,7 +560,7 @@ fun AppSettingsScreen(
                                 labels = gpuProfileLabels,
                                 values = gpuProfileValues,
                                 enabled = localMasterOn && rootKnobs,
-                                onSelectProfile = { profile -> packageName?.let { viewModel.updateSetting(it, "gpu_profile", profile) } }
+                                onSelectProfile = { profile -> settingsKey?.let { viewModel.updateSetting(it, "gpu_profile", profile) } }
                             )
                             ExpressiveList(
                                 modifier = Modifier,
@@ -529,7 +576,7 @@ fun AppSettingsScreen(
                                             summary = if (viewModel.availableCpuGovernors.isEmpty()) stringResource(R.string.app_settings_cpu_governors_none) else stringResource(R.string.app_settings_cpu_governors_note),
                                             items = cpuGovernorLabels,
                                             selectedIndex = selected,
-                                            onItemSelected = { i -> packageName?.let { viewModel.updateSetting(it, "cpu_governor", cpuGovernorValues[i]) } }
+                                            onItemSelected = { i -> settingsKey?.let { viewModel.updateSetting(it, "cpu_governor", cpuGovernorValues[i]) } }
                                         )
                                     }
                                     add {
@@ -543,7 +590,7 @@ fun AppSettingsScreen(
                                             summary = if (viewModel.availableGpuGovernors.isEmpty()) stringResource(R.string.app_settings_gpu_governors_none) else stringResource(R.string.app_settings_gpu_governors_note),
                                             items = gpuGovernorLabels,
                                             selectedIndex = selected,
-                                            onItemSelected = { i -> packageName?.let { viewModel.updateSetting(it, "gpu_governor", gpuGovernorValues[i]) } }
+                                            onItemSelected = { i -> settingsKey?.let { viewModel.updateSetting(it, "gpu_governor", gpuGovernorValues[i]) } }
                                         )
                                     }
                                     add {
@@ -572,7 +619,7 @@ fun AppSettingsScreen(
                                             summary = freqSummary,
                                             items = freqLabels,
                                             selectedIndex = selected,
-                                            onItemSelected = { i -> packageName?.let { viewModel.updateSetting(it, "gpu_max_freq", freqItems[i]) } }
+                                            onItemSelected = { i -> settingsKey?.let { viewModel.updateSetting(it, "gpu_max_freq", freqItems[i]) } }
                                         )
                                     }
                                 }
@@ -585,7 +632,7 @@ fun AppSettingsScreen(
                                 policies = viewModel.cpuPolicies,
                                 runtimeStatus = viewModel.cpuRuntimeStatus,
                                 enabled = localMasterOn && rootKnobs,
-                                onSave = { encoded -> packageName?.let { viewModel.updateSetting(it, "cpu_policy_controls", encoded) } },
+                                onSave = { encoded -> settingsKey?.let { viewModel.updateSetting(it, "cpu_policy_controls", encoded) } },
                                 onRefreshStatus = { viewModel.refreshCpuRuntimeStatus(packageName) }
                             )
                             // ── محجوب بأمر المالك ───────────────────────────────────────
@@ -637,7 +684,7 @@ fun AppSettingsScreen(
                                             summary = stringResource(R.string.refreshrates_desc),
                                             items = refreshLabels,
                                             selectedIndex = rawRefreshModes.indexOfFirst { it.equals(cfg.refresh_rate, true) }.coerceAtLeast(0),
-                                            onItemSelected = { i -> packageName?.let { viewModel.updateSetting(it, "refresh_rate", rawRefreshModes[i]) } }
+                                            onItemSelected = { i -> settingsKey?.let { viewModel.updateSetting(it, "refresh_rate", rawRefreshModes[i]) } }
                                         )
                                     }
                                     // Render Engine
@@ -651,7 +698,7 @@ fun AppSettingsScreen(
                                             summary = stringResource(R.string.renderengine_desc),
                                             items = rendererLabels,
                                             selectedIndex = rendererValues.indexOfFirst { it.equals(cfg.renderer, true) }.coerceAtLeast(0),
-                                            onItemSelected = { i -> packageName?.let { viewModel.updateSetting(it, "renderer", rendererValues[i]) } }
+                                            onItemSelected = { i -> settingsKey?.let { viewModel.updateSetting(it, "renderer", rendererValues[i]) } }
                                         )
                                     }
                                     add {
@@ -662,7 +709,7 @@ fun AppSettingsScreen(
                                             summary = stringResource(R.string.appfeature_hw_ui_summary),
                                             items = listOf(defaultLabel, stringResource(R.string.on_label), stringResource(R.string.off_label)),
                                             selectedIndex = getBoolIndex(cfg.force_hw_ui),
-                                            onItemSelected = { i -> packageName?.let { viewModel.updateSetting(it, "force_hw_ui", listOf("default","true","false")[i]) } }
+                                            onItemSelected = { i -> settingsKey?.let { viewModel.updateSetting(it, "force_hw_ui", listOf("default","true","false")[i]) } }
                                         )
                                     }
                                 }
@@ -705,7 +752,7 @@ fun AppSettingsScreen(
                                                     .indexOfFirst { it.stored == cfg.resolution_downscale }
                                                     .coerceAtLeast(0),
                                                 onItemSelected = { index ->
-                                                    packageName?.let {
+                                                    settingsKey?.let {
                                                         viewModel.updateSetting(it, "resolution_downscale", shownScales[index].stored)
                                                     }
                                                 }
@@ -731,7 +778,7 @@ fun AppSettingsScreen(
                                                 steps = (rawDownscaleSteps.size - 2).coerceAtLeast(0),
                                                 onValueChange = { downPos = it },
                                                 onValueChangeFinished = {
-                                                    packageName?.let { viewModel.updateSetting(it, "resolution_downscale", rawDownscaleSteps[downPos.toInt()]) }
+                                                    settingsKey?.let { viewModel.updateSetting(it, "resolution_downscale", rawDownscaleSteps[downPos.toInt()]) }
                                                 }
                                             )
                                         }
@@ -808,7 +855,7 @@ fun AppSettingsScreen(
                                                 summary = stringResource(R.string.appfeature_touch_summary),
                                                 items = touchProfiles.map { it.second },
                                                 selectedIndex = touchProfiles.indexOfFirst { it.first == cfg.touch_boost }.coerceAtLeast(0),
-                                                onItemSelected = { i -> packageName?.let { viewModel.updateSetting(it, "touch_boost", touchProfiles[i].first) } }
+                                                onItemSelected = { i -> settingsKey?.let { viewModel.updateSetting(it, "touch_boost", touchProfiles[i].first) } }
                                             )
                                         }
                                     }
@@ -820,7 +867,7 @@ fun AppSettingsScreen(
                                             summary = stringResource(R.string.appfeature_haptic_summary),
                                             items = listOf(defaultLabel, stringResource(R.string.on_label), stringResource(R.string.off_label)),
                                             selectedIndex = getBoolIndex(cfg.haptic_feedback),
-                                            onItemSelected = { i -> packageName?.let { viewModel.updateSetting(it, "haptic_feedback", listOf("default","true","false")[i]) } }
+                                            onItemSelected = { i -> settingsKey?.let { viewModel.updateSetting(it, "haptic_feedback", listOf("default","true","false")[i]) } }
                                         )
                                     }
                                     add {
@@ -831,7 +878,7 @@ fun AppSettingsScreen(
                                             summary = stringResource(R.string.dnd_mode_desc),
                                             items = listOf(defaultLabel, stringResource(R.string.on_label), stringResource(R.string.off_label)),
                                             selectedIndex = getBoolIndex(cfg.dnd_on_gaming),
-                                            onItemSelected = { i -> packageName?.let { viewModel.updateSetting(it, "dnd_on_gaming", listOf("default","true","false")[i]) } }
+                                            onItemSelected = { i -> settingsKey?.let { viewModel.updateSetting(it, "dnd_on_gaming", listOf("default","true","false")[i]) } }
                                         )
                                     }
                                     add {
@@ -842,7 +889,7 @@ fun AppSettingsScreen(
                                             summary = stringResource(R.string.appfeature_notif_summary),
                                             items = listOf(defaultLabel, stringResource(R.string.on_label), stringResource(R.string.off_label)),
                                             selectedIndex = getBoolIndex(cfg.disable_notifs),
-                                            onItemSelected = { i -> packageName?.let { viewModel.updateSetting(it, "disable_notifs", listOf("default","true","false")[i]) } }
+                                            onItemSelected = { i -> settingsKey?.let { viewModel.updateSetting(it, "disable_notifs", listOf("default","true","false")[i]) } }
                                         )
                                     }
                                 }
@@ -862,7 +909,7 @@ fun AppSettingsScreen(
                                             summary = stringResource(R.string.enable_bypass_charge_desc),
                                             items = listOf(defaultLabel, stringResource(R.string.on_label), stringResource(R.string.off_label)),
                                             selectedIndex = getBoolIndex(cfg.bypass_charging),
-                                            onItemSelected = { i -> packageName?.let { viewModel.updateSetting(it, "bypass_charging", listOf("default","true","false")[i]) } }
+                                            onItemSelected = { i -> settingsKey?.let { viewModel.updateSetting(it, "bypass_charging", listOf("default","true","false")[i]) } }
                                         )
                                     }
                                     add {
@@ -873,7 +920,7 @@ fun AppSettingsScreen(
                                             summary = stringResource(R.string.appfeature_wifi_summary),
                                             items = listOf(defaultLabel, stringResource(R.string.on_label), stringResource(R.string.off_label)),
                                             selectedIndex = getBoolIndex(cfg.wifi_no_sleep),
-                                            onItemSelected = { i -> packageName?.let { viewModel.updateSetting(it, "wifi_no_sleep", listOf("default","true","false")[i]) } }
+                                            onItemSelected = { i -> settingsKey?.let { viewModel.updateSetting(it, "wifi_no_sleep", listOf("default","true","false")[i]) } }
                                         )
                                     }
                                 }
@@ -909,7 +956,7 @@ fun AppSettingsScreen(
             text = { Text(stringResource(R.string.app_reset_confirm_message)) },
             confirmButton = {
                 nd.max.ui.component.StudioTextButton(onClick = {
-                    packageName?.let { viewModel.resetAppSettings(it) }
+                    settingsKey?.let { viewModel.resetAppSettings(it) }
                     showResetConfirmation = false
                 }) { Text(stringResource(R.string.reset_label)) }
             },
@@ -1264,9 +1311,13 @@ private fun ProfilePresetEditor(
                         }
                         MaxSlider(
                             value = value.toFloat(),
-                            onValueChange = { v -> values = values + (name to v.toInt().coerceIn(20, 100)) },
+                            onValueChange = { v ->
+                                values = values + (name to v.roundToInt().coerceIn(20, 100))
+                            },
                             valueRange = 20f..100f,
-                            steps = 79
+                            // بلا علامات: ٧٩ خطوة ترسم خطًّا منقّطًا لا مقياسًا،
+                            // والقيمة تُقرَّب داخل التغيير فتبقى ١٪.
+                            steps = 0
                         )
                     }
                 }
@@ -1828,5 +1879,81 @@ fun getAppDetails(context: android.content.Context, packageName: String?): Tripl
         Triple(pm.getApplicationLabel(info).toString(), info, pkgInfo.versionName ?: context.getString(R.string.status_unknown))
     } catch (_: Exception) {
         Triple(context.getString(R.string.unknown_app), null, "0.0.0")
+    }
+}
+
+/**
+ * **آخر تطبيق لبروفايل هذا التطبيق — ما جرى فعلًا.**
+ *
+ * `InAppProfileRules.plan` يحسب `skipped` لكل مفتاح لم يُطبَّق **بسببه** (`zen-mode-already-on`
+ * أي أن نمطًا أقوى اختاره المستخدم تُرك كما هو · `snapshot-unsafe` أي أن القيمة السابقة لا
+ * تُستعاد بأمان فلم يُكتب شيء). وقد كان هذا يُكتب في السجلّ وحده، فلا يراه إلا من يقرأ
+ * `logcat`. والنتيجة أن المستخدم يرى «البروفايل يعمل» ثم لا يفهم لماذا لم يتغيّر معدّل التحديث.
+ *
+ * ولا يُعرض شيء لم يُقرأ: السجلّ يُقرأ من `SharedPreferences("inapp_profile")` وينتمي إلى
+ * الحزمة المعروضة، وإن غاب أو فسد (`InAppRunLog.decode` صارم) يُقال «لم يُنفَّذ بعد» بدل
+ * تخمين نتيجة لم تُسجَّل.
+ */
+@Composable
+private fun InAppRunCard(packageName: String?) {
+    val context = LocalContext.current
+    val run = remember(packageName) {
+        val pkg = packageName ?: return@remember null
+        val prefs = context.getSharedPreferences(InAppRunLog.PREFS, Context.MODE_PRIVATE)
+        InAppRunLog.decode(prefs.getString(InAppRunLog.KEY, null))?.takeIf { it.pkg == pkg }
+    }
+    val rows = remember(run) { inAppRunRows(run) }
+
+    Column(modifier = Modifier.padding(horizontal = MaxSpace.md, vertical = MaxSpace.xs)) {
+        Text(
+            text = stringResource(R.string.profile_run_title),
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(horizontal = MaxSpace.xs, vertical = MaxSpace.sm),
+        )
+        MaxGroup {
+            rows.forEachIndexed { index, row ->
+                if (index > 0) MaxGroupDivider()
+                when (row) {
+                    is InAppRunRow.Blocked -> MaxRow(
+                        title = stringResource(R.string.profile_run_blocked),
+                        subtitle = stringResource(reasonTextRes(row.reason)),
+                        icon = Icons.Rounded.HourglassEmpty,
+                        iconTone = MaxTone.Caution,
+                    )
+
+                    is InAppRunRow.Applied -> MaxRow(
+                        title = stringResource(
+                            R.string.profile_run_counts,
+                            row.written,
+                            row.total,
+                            row.verified,
+                        ),
+                        subtitle = if (row.complete) stringResource(R.string.profile_run_complete) else null,
+                        icon = if (row.complete) Icons.Rounded.CheckCircle else Icons.Rounded.WarningAmber,
+                        iconTone = if (row.complete) MaxTone.Positive else MaxTone.Caution,
+                    )
+
+                    is InAppRunRow.Skipped -> MaxRow(
+                        title = stringResource(knobLabelRes(row.knob)),
+                        subtitle = stringResource(reasonTextRes(row.reason)),
+                        icon = Icons.Rounded.WarningAmber,
+                        iconTone = MaxTone.Caution,
+                    )
+
+                    InAppRunRow.NothingAsked -> MaxRow(
+                        title = stringResource(R.string.profile_run_none),
+                        icon = Icons.Rounded.Info,
+                        iconTone = MaxTone.Neutral,
+                    )
+
+                    InAppRunRow.Never -> MaxRow(
+                        title = stringResource(R.string.profile_run_never),
+                        icon = Icons.Rounded.Info,
+                        iconTone = MaxTone.Neutral,
+                    )
+                }
+            }
+        }
     }
 }

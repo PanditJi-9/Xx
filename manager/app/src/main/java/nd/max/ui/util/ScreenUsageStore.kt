@@ -36,12 +36,7 @@ class ScreenUsageStore(private val prefs: SharedPreferences) {
     }
 
     /** كل ما سُجّل: المسار ⇒ عدد الفتحات. والفراغ يعني: لا استعمال بعد، لا صفرًا مُصنَّعًا. */
-    fun counts(): Map<String, Int> = prefs.all.entries
-        .mapNotNull { (key, value) ->
-            val route = key.takeIf { it.startsWith(USAGE_PREFIX) }?.removePrefix(USAGE_PREFIX)
-            if (route.isNullOrEmpty() || value !is Int) null else route to value
-        }
-        .toMap()
+    fun counts(): Map<String, Int> = countsFrom(prefs.all)
 
     /** يعيد كل الأعداد إلى الصفر (ويُترك الوضع والاختيار اليدوي لمنصة التحكم كما هما). */
     fun clear() {
@@ -58,6 +53,24 @@ class ScreenUsageStore(private val prefs: SharedPreferences) {
         private const val CEILING = 10_000
 
         private fun usageKey(route: String) = USAGE_PREFIX + route
+
+        /**
+         * **الفلترة وحدها، بلا `SharedPreferences`** — لتُقاس في JVM.
+         *
+         * وهذا الفصل ليس ترفًا: الملفّ `"settings"` يحمل **كل** مفاتيح الإعدادات (وضع MAX AI،
+         * الثيم، الاختيار اليدوي…)، فالبادئة `screen_uses_` هي الحاجز الوحيد بين «ما فتحتَه»
+         * و«ما ضبطتَه». ولو تسرّب مفتاح إعداد إلى الاقتراحات لعُرض إعدادٌ كأنه شاشة، ثم
+         * لم يُفتح — وهذا عطب لا يظهر إلّا عند مستخدمٍ عنده المفتاح.
+         *
+         * والقيمة غير `Int` تُهمَل أيضًا: المخزن قد يحمل نصًّا أو منطقيًّا تحت بادئتنا بعد
+         * تعديل يدويّ أو نسخة قديمة، وقراءته عددًا ستكون اختراعًا.
+         */
+        internal fun countsFrom(all: Map<String, Any?>): Map<String, Int> = all.entries
+            .mapNotNull { (key, value) ->
+                val route = key.takeIf { it.startsWith(USAGE_PREFIX) }?.removePrefix(USAGE_PREFIX)
+                if (route.isNullOrEmpty() || value !is Int) null else route to value
+            }
+            .toMap()
 
         fun of(context: Context): ScreenUsageStore =
             ScreenUsageStore(context.getSharedPreferences(PREFS, Context.MODE_PRIVATE))

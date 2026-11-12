@@ -31,17 +31,22 @@
  */
 package nd.max.ui.mainscreens
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -51,9 +56,12 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import nd.max.R
+import nd.max.ui.component.ConfirmDialogHost
+import nd.max.ui.component.rememberConfirmDialog
 import nd.max.ui.component.CustomBottomSheet
 import nd.max.ui.design.MaxGroup
 import nd.max.ui.design.MaxGroupDivider
@@ -74,6 +82,9 @@ fun ScreenFinderSheet(
     visible: Boolean,
     onDismiss: () -> Unit,
     onOpen: (MaxDestination) -> Unit,
+    // **الشاشة التي فُتحت منها الورقة** — تُستبعد من الاقتراح وحدها، لأن المضيف أكثر ما
+    // يُفتح فيُزاحم الاقتراحات بمقعدٍ لا يفعل شيئًا. والبحث الصريح يجدها كما يجد غيرها.
+    currentRoute: String? = null,
 ) {
     val context = LocalContext.current
     var query by rememberSaveable { mutableStateOf("") }
@@ -81,15 +92,41 @@ fun ScreenFinderSheet(
 
     // **السجلّ الواحد** (`ScreenUsageStore`): العدّاد الذي تقرأ منه «منصة التحكم» هو نفسه هنا،
     // فلا يقول المُوجِّد «الأكثر استعمالًا» ومنصةٌ في الرئيسية تقول غيره.
-    val usage = remember(context, visible) {
+    // **والعدّاد يُقرأ من جديد بعد المسح:** `remember` لا يعيد القراءة عند تغيّر المخزن، فالمفتاح
+    // هنا إصدارٌ يزيده المسح — وإلا بقي «أكثر ما تفتحه» معروضًا بعد أن مُسح، وهو أسوأ من ألّا
+    // يكون هناك زرّ أصلًا: زرٌّ يقول «مُسح» وقائمةٌ لا تفرغ.
+    var usageVersion by remember { mutableIntStateOf(0) }
+    val usage = remember(context, visible, usageVersion) {
         if (visible) ScreenUsageStore.of(context).counts() else emptyMap()
     }
+    // **وما يُعرض يُمكن نسيانه:** العدّاد يُقرأ ويُقترح منه، و`clear()` كانت مكتوبة بلا قائل —
+    // فيُقرأ السجلّ كأنه قدرٌ لا يُردّ. والإجراء يجاور العنوان الذي يفسّره، ويظهر فقط حين يوجد
+    // ما يُمسح. والنصوص تُقرأ هنا لا داخل اللمبدا: `stringResource` ليست @Composable في لامبدا.
+    val forgetAction = stringResource(R.string.screen_finder_forget)
+    val forgetTitle = stringResource(R.string.screen_finder_forget_confirm_title)
+    val forgetBody = stringResource(R.string.screen_finder_forget_confirm_body)
+    val forgetConfirm = rememberConfirmDialog(
+        onConfirm = {
+            ScreenUsageStore.of(context).clear()
+            usageVersion++
+        },
+    )
     // الفهرس يُبنى مرّة لكل فتحة: نصوصه من موارد لغة الواجهة، وتغيير اللغة يُعيد إنشاء النشاط
     // (`AppLanguage.reload`) فلا حاجة لبناء صافٍ في كل حرف يكتبه المستخدم.
     val access = nd.max.ui.navigation.rememberDestinationAccess()
     val targets = remember(context, usage, access) { screenFinderTargets(context::getString, usage, access) }
     val results = screenFinderResults(query, targets)
-    val suggestions = if (query.isBlank()) screenFinderSuggestions(targets) else emptyList()
+    // **وما لم يُعرض يُقال:** النتائج مسقوفة كي تبقى الورقة ورقة، والسقف بلا إعلان يُقرأ
+    // «لا نتيجة غيرها». فيُقاس العدد الحقيقي ويُعلن الفرق تحت الصفوف.
+    val matchCount = remember(query, targets) {
+        if (query.isBlank()) 0 else screenFinderMatchCount(query, targets)
+    }
+    val excludedRoutes = remember(currentRoute) { currentRoute?.let(::setOf) ?: emptySet() }
+    val suggestions = if (query.isBlank()) {
+        screenFinderSuggestions(targets, exclude = excludedRoutes)
+    } else {
+        emptyList()
+    }
 
     LaunchedEffect(visible) {
         if (visible) {
@@ -114,6 +151,14 @@ fun ScreenFinderSheet(
             onValueChange = { query = it },
             placeholder = stringResource(R.string.screen_finder_placeholder),
             clearContentDescription = stringResource(R.string.screen_finder_clear),
+            // **ومفتاح Enter يفتح أعلى نتيجة** — لا صفًّا يختاره الحقل بنفسه: هو نفسه أوّل
+            // صفّ في القائمة، فما يفتحه المفتاح يراه المستخدم قبل أن يضغطه.
+            onSearch = {
+                screenFinderTopHit(query, targets)?.let { hit ->
+                    query = ""
+                    onOpen(screenFinderOpenTarget(hit))
+                }
+            },
             modifier = Modifier
                 .padding(horizontal = MaxSpace.gutter, vertical = MaxSpace.sm)
                 .focusRequester(focusRequester),
@@ -130,7 +175,11 @@ fun ScreenFinderSheet(
             list.isEmpty() -> Column(modifier = Modifier.fillMaxWidth()) {
                 FinderNote(stringResource(R.string.screen_finder_no_results, query))
                 if (suggestions.isNotEmpty()) {
-                    FinderLabel(stringResource(R.string.screen_finder_recent))
+                    FinderLabel(
+                        text = stringResource(R.string.screen_finder_recent),
+                        action = forgetAction,
+                        onAction = { forgetConfirm.showConfirm(title = forgetTitle, content = forgetBody) },
+                    )
                     MaxGroup(modifier = Modifier.padding(horizontal = MaxSpace.gutter)) {
                         suggestions.forEachIndexed { index, target ->
                             if (index > 0) MaxGroupDivider()
@@ -138,7 +187,7 @@ fun ScreenFinderSheet(
                                 target = target,
                                 onOpen = {
                                     query = ""
-                                    onOpen(target.destination)
+                                    onOpen(screenFinderOpenTarget(target))
                                 },
                             )
                         }
@@ -154,7 +203,11 @@ fun ScreenFinderSheet(
             ) {
                 if (query.isBlank()) {
                     item(key = "screen_finder_recent") {
-                        FinderLabel(stringResource(R.string.screen_finder_recent))
+                        FinderLabel(
+                            text = stringResource(R.string.screen_finder_recent),
+                            action = forgetAction,
+                            onAction = { forgetConfirm.showConfirm(title = forgetTitle, content = forgetBody) },
+                        )
                     }
                 }
                 item(key = "screen_finder_rows") {
@@ -165,10 +218,17 @@ fun ScreenFinderSheet(
                                 target = target,
                                 onOpen = {
                                     query = ""
-                                    onOpen(target.destination)
+                                    onOpen(screenFinderOpenTarget(target))
                                 },
                             )
                         }
+                    }
+                }
+                if (query.isNotBlank() && matchCount > list.size) {
+                    item(key = "screen_finder_more") {
+                        FinderNote(
+                            stringResource(R.string.screen_finder_more, matchCount - list.size),
+                        )
                     }
                 }
                 if (query.isBlank()) {
@@ -178,6 +238,10 @@ fun ScreenFinderSheet(
                 }
             }
         }
+        // **وبلا هذا لا يظهر الحوار أبدًا:** `rememberConfirmDialog` يُنشئ الحالة وحدها،
+        // والمُضيف هو ما يرسمها. ونسيانُه يعطي زرًّا لا يفعل شيئًا — وهو العطب نفسه الذي
+        // جاء هذا الإجراء لمنعه.
+        ConfirmDialogHost(handle = forgetConfirm)
     }
 }
 
@@ -196,7 +260,15 @@ private fun FinderRow(
     } else {
         null
     }
-    val facts = if (opens == null) target.role else target.role + FACT_SEPARATOR + opens
+    // **وسطرٌ لا يُفتح من هنا يقول من أين يبدأ** — قبل عدّاد الفتحات، لأن الشرط الذي يسبق
+    // الفتح أهمّ من عدده: «اختر التطبيق أوّلًا» تفسّر لماذا يقود الضغط إلى القائمة لا إلى
+    // الشاشة. وترتيب الوقائع هو ترتيب قراءتها: ما هي · من أين تُفتح · كم مرّة فتحتها.
+    val startsAt = if (target.opensFrom != null) {
+        stringResource(R.string.screen_finder_opens_from)
+    } else {
+        null
+    }
+    val facts = listOfNotNull(target.role, startsAt, opens).joinToString(FACT_SEPARATOR)
 
     MaxRow(
         title = target.title,
@@ -224,15 +296,45 @@ private fun FinderRow(
     )
 }
 
-/** عنوان القائمة التي لم يطلبها المستخدم: يقول لماذا هذه الصفوف بعينها. */
+/**
+ * عنوان القائمة التي لم يطلبها المستخدم: يقول لماذا هذه الصفوف بعينها — **ومعه فعله**.
+ *
+ * ولماذا الفعل هنا لا في صفٍّ منفصل: «أكثر ما تفتحه» سجلٌّ، ومسحُ السجلّ يخصّه وحده. ووضعه
+ * بجوار العنوان يجعله يُقرأ كإجراءٍ على هذه القائمة لا على الشاشة كلّها.
+ *
+ * وهدف اللمس يُمدّ بـ[minimumInteractiveComponentSize] لأن النصّ وحده أقصر من ٤٨dp، والدائرة
+ * المرئيّة تبقى نصًّا — لا حبّة ولا ظلّ.
+ */
 @Composable
-private fun FinderLabel(text: String) {
-    Text(
-        text = text,
-        style = MaterialTheme.typography.labelLarge,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = Modifier.padding(horizontal = MaxSpace.xs, vertical = MaxSpace.sm),
-    )
+private fun FinderLabel(
+    text: String,
+    action: String? = null,
+    onAction: (() -> Unit)? = null,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = MaxSpace.xs, vertical = MaxSpace.sm),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        if (action != null && onAction != null) {
+            Text(
+                text = action,
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.primary,
+                modifier = Modifier
+                    .minimumInteractiveComponentSize()
+                    .clickable(role = Role.Button, onClick = onAction)
+                    .padding(horizontal = MaxSpace.xs),
+            )
+        }
+    }
 }
 
 /** سطرٌ واحد يقول ما الذي ينتظره الحقل — لا قائمة فارغة تُقرأ كعطب عرض. */

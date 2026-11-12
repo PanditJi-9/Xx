@@ -77,7 +77,6 @@ class DeviceInfoShortcutOrdersTest {
         "ui/subscreens/DisplayStudioScreen.kt" to MaxDestination.DisplayStudio,
         "ui/subscreens/ThermalDetailScreen.kt" to MaxDestination.ThermalDetail,
         "ui/subscreens/NetworkDetailScreen.kt" to MaxDestination.NetworkDetail,
-        "ui/mainscreens/DiagnosticsScreen.kt" to MaxDestination.Diagnostics,
         // وسطح التحكّم الصوتيّ (`AS-02`): بابُه يعود إلى موضوعه، ولمّا كان يحمله فحقه أن يُعدّ هنا.
         "ui/subscreens/audio/AudioStudioScreen.kt" to MaxDestination.AudioStudio,
     )

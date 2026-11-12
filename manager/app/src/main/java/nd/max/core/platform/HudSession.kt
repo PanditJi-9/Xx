@@ -6,6 +6,8 @@
 package nd.max.core.platform
 
 import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.hardware.display.DisplayManager
 import android.net.TrafficStats
 import android.os.BatteryManager
@@ -22,6 +24,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
+import nd.max.AppMonitor
+import nd.max.service.SessionSummaryNotifier
 
 /**
  * لوحة الأداء — الطبقة البيانية. **لا واجهة في هذا الملف**: تُقرأ منه اللوحة العائمة داخل
@@ -98,6 +102,16 @@ enum class HudField {
      */
     Stability,
 
+    /**
+     * تقطيع الإطارات المقيس من `gfxinfo framestats`: نسبة الإطارات التي تجاوزت ميزانية
+     * إطار واحد، ومعها المئين ٩٩ لزمن الإطار.
+     *
+     * **وحدّه:** يخصّ الحزمة الأمامية ومسار HWUI؛ وغياب `---PROFILEDATA---` يعني `null`
+     * لا صفرًا. وهو مختلف عن [Stability] عمدًا: ذاك حصة عيّنات معدّل الإطارات، وهذا زمن
+     * إطار من حلقة الرسم نفسها.
+     */
+    Jank,
+
     /** حِمل المعالج %. */
     Cpu,
 
@@ -123,6 +137,27 @@ enum class HudField {
 
     /** مُصيّر الرسوم للتطبيق الأمامي (GL/Vulkan). */
     Renderer,
+
+    /** أعلى تردّد جارٍ بين عناقيد المعالج، من `scaling_cur_freq`. */
+    CpuFreq,
+
+    /** حرارة الشريحة من المناطق الحراريّة — لا حرارة البطارية ([Heat]). */
+    SocTemp,
+
+    /** تردّد الرسّام الجاري من عقدة `kgsl`/`devfreq`/Mali. */
+    GpuFreq,
+
+    /** انشغال الرسّام % من عقدة الانشغال. */
+    GpuLoad,
+
+    /** تردّد الذاكرة المشتركة من `devfreq` بالاسم. */
+    DdrFreq,
+
+    /** حركة القرص: قراءة وكتابة بالبايت/ثانية من `/proc/diskstats`. */
+    DiskIo,
+
+    /** جهد البطارية بالميلي فولت. */
+    BatteryVoltage,
 }
 
 /**
@@ -163,7 +198,32 @@ data class HudReading(
     val txBps: Float? = null,
     val renderer: String? = null,
     /** ثبات الإطارات ٠..١٠٠ من نافذة متدحرجة؛ `null` قبل أن تكتمل عيّنات كافية. */
-    val stability: Int? = null
+    val stability: Int? = null,
+    /** نسبة الإطارات المتقطّعة من `gfxinfo`؛ `null` حين لا يُعيد المصدر توزيعًا. */
+    val jankPercent: Int? = null,
+    /** المئين ٩٩ لزمن الإطار بالميلي ثانية؛ `null` مع غياب المصدر نفسه. */
+    val frameP99Ms: Float? = null,
+    /** أعلى تردّد جارٍ بين عناقيد المعالج. */
+    val cpuFreqMhz: Int? = null,
+    /** حرارة الشريحة — مستشعر مستقلّ عن حرارة البطارية. */
+    val socTempC: Float? = null,
+    /** تردّد الرسّام. */
+    val gpuFreqMhz: Int? = null,
+    /** انشغال الرسّام %. */
+    val gpuLoadPercent: Int? = null,
+    /** تردّد الذاكرة المشتركة. */
+    val ddrFreqMhz: Int? = null,
+    /** قراءة القرص بالبايت/ثانية. */
+    val diskReadBps: Float? = null,
+    /** كتابة القرص بالبايت/ثانية. */
+    val diskWriteBps: Float? = null,
+    /** جهد البطارية بالميلي فولت. */
+    val batteryVoltageMv: Int? = null,
+    /**
+     * الحزمة الأمامية في لحظة العيّنة. تُقرأ أثناء التسجيل فقط، وهي ما يقصّ الانتقالات
+     * في نهاية الجلسة: فترة تحميلٍ أو قائمةٍ ليست لعبًا، وإحصاؤها يخفض المتوسّط كذبًا.
+     */
+    val foregroundPackage: String? = null
 ) {
     /** هل أجاب مصدر الإطارات؟ هو المصدر الوحيد الذي يفشل بحسب الوضع المُختار. */
     val framesAnswered: Boolean get() = frames != null
@@ -180,6 +240,14 @@ data class HudReading(
         HudField.Network -> rxBps
         HudField.Renderer -> renderer
         HudField.Stability -> stability
+        HudField.Jank -> jankPercent
+        HudField.CpuFreq -> cpuFreqMhz
+        HudField.SocTemp -> socTempC
+        HudField.GpuFreq -> gpuFreqMhz
+        HudField.GpuLoad -> gpuLoadPercent
+        HudField.DdrFreq -> ddrFreqMhz
+        HudField.DiskIo -> diskReadBps
+        HudField.BatteryVoltage -> batteryVoltageMv
     }
 }
 
@@ -198,11 +266,135 @@ data class HudSnapshot(
     val samples: Int = 0,
     val intervalMs: Long = DEFAULT_INTERVAL_MS,
     /** آخر الإطارات بترتيب الزمن — منحنى اللوحة يُقصّ منها على المدى المُختار. */
-    val framesHistory: List<Float> = emptyList()
+    val framesHistory: List<Float> = emptyList(),
+    /** تحذيرات تجاوزت عتبتها ومدّتها — تُعرض في اللوحة، وتُصفَّر عند زوال السبب. */
+    val warnings: List<HudWarning> = emptyList()
 ) {
     companion object {
         const val DEFAULT_INTERVAL_MS = 1000L
         val Idle = HudSnapshot()
+    }
+}
+
+/**
+ * تحذير عتبة: الحقل، والقيمة التي تجاوزت، والعتبة، ومنذ متى.
+ *
+ * **ولماذا المدّة جزء من التحذير لا زينة:** عتبة تُلمس لحظةً ليست عتبة؛ الحرارة تعلو
+ * وتهبط مع نبضة واحدة، والتحذير يجب أن يعني «هذه الحالة مستمرّة» لا «رأيت رقمًا».
+ */
+data class HudWarning(
+    val field: HudField,
+    val value: Float,
+    val threshold: Float,
+    val sinceMs: Long,
+    val nowMs: Long
+) {
+    val durationMs: Long get() = (nowMs - sinceMs).coerceAtLeast(0L)
+}
+
+/**
+ * قواعد جلسة اللعب: متى تُوقف نفسها، ومتى تُحذّر.
+ *
+ * وهي **تفضيلات مستخدم** لا ثوابت: جهاز يبلغ ٨٠°C على SoC آخر قد يكون طبيعيًّا، ومن
+ * يلعب على شاحن يريد عتبة بطارية مختلفة. القيم الافتراضيّة محافظة، وكل واحدة قابلة للضبط.
+ */
+data class HudSessionRules(
+    val stopOnForegroundChange: Boolean = true,
+    val stopOnPowerChange: Boolean = true,
+    val stopOnScreenOff: Boolean = true,
+    val clipTransitions: Boolean = true,
+    /**
+     * يبدأ التسجيل وحده حين تصير لعبةٌ من مكتبة الألعاب في المقدّمة.
+     *
+     * **السبب:** التسجيل اليدوي يُنسى. ومن لا يضغط «تسجيل» لا يملك جلسةً واحدة، فيبقى
+     * السجلّ فارغًا والمقارنة بلا أساس — الميزة كلها بلا مستخدم.
+     */
+    val autoStart: Boolean = false,
+    val socTempThresholdC: Float = 80f,
+    val batteryTempThresholdC: Float = 42f,
+    val gpuLoadThresholdPercent: Float = 90f,
+    val warningSeconds: Int = 10
+)
+
+/** مخزن القواعد في تفضيلات التطبيق نفسها — لا ملفّ ثانٍ ولا مصدر حقيقة مزدوج. */
+object HudSessionSettings {
+    private const val PREFS = "settings"
+    private const val KEY_STOP_FOREGROUND = "hud_session_stop_foreground"
+    private const val KEY_STOP_POWER = "hud_session_stop_power"
+    private const val KEY_STOP_SCREEN = "hud_session_stop_screen"
+    private const val KEY_CLIP = "hud_session_clip"
+    private const val KEY_AUTO_START = "hud_session_auto_start"
+    private const val KEY_SOC = "hud_session_warn_soc"
+    private const val KEY_BATTERY = "hud_session_warn_battery"
+    private const val KEY_GPU = "hud_session_warn_gpu"
+    private const val KEY_SECONDS = "hud_session_warn_seconds"
+
+    fun load(context: Context): HudSessionRules {
+        val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+        val defaults = HudSessionRules()
+        return HudSessionRules(
+            stopOnForegroundChange = prefs.getBoolean(KEY_STOP_FOREGROUND, defaults.stopOnForegroundChange),
+            stopOnPowerChange = prefs.getBoolean(KEY_STOP_POWER, defaults.stopOnPowerChange),
+            stopOnScreenOff = prefs.getBoolean(KEY_STOP_SCREEN, defaults.stopOnScreenOff),
+            clipTransitions = prefs.getBoolean(KEY_CLIP, defaults.clipTransitions),
+            autoStart = prefs.getBoolean(KEY_AUTO_START, defaults.autoStart),
+            socTempThresholdC = prefs.getFloat(KEY_SOC, defaults.socTempThresholdC),
+            batteryTempThresholdC = prefs.getFloat(KEY_BATTERY, defaults.batteryTempThresholdC),
+            gpuLoadThresholdPercent = prefs.getFloat(KEY_GPU, defaults.gpuLoadThresholdPercent),
+            warningSeconds = prefs.getInt(KEY_SECONDS, defaults.warningSeconds)
+        )
+    }
+
+    fun save(context: Context, rules: HudSessionRules) {
+        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
+            .putBoolean(KEY_STOP_FOREGROUND, rules.stopOnForegroundChange)
+            .putBoolean(KEY_STOP_POWER, rules.stopOnPowerChange)
+            .putBoolean(KEY_STOP_SCREEN, rules.stopOnScreenOff)
+            .putBoolean(KEY_CLIP, rules.clipTransitions)
+            .putBoolean(KEY_AUTO_START, rules.autoStart)
+            .putFloat(KEY_SOC, rules.socTempThresholdC)
+            .putFloat(KEY_BATTERY, rules.batteryTempThresholdC)
+            .putFloat(KEY_GPU, rules.gpuLoadThresholdPercent)
+            .putInt(KEY_SECONDS, rules.warningSeconds)
+            .apply()
+    }
+}
+
+/**
+ * متتبّع العتبات: يفتح نافذة لكل حقل عند أوّل تجاوز، ويغلقها عند العودة، ولا يُطلق
+ * تحذيرًا قبل انقضاء المدّة المطلوبة.
+ *
+ * والفصل عن المُشغِّل مقصود: هذه سياسة قابلة للاختبار بلا أندرويد ولا مؤقّتات.
+ */
+class HudWarningTracker {
+
+    private val since = HashMap<HudField, Long>()
+
+    fun update(reading: HudReading, rules: HudSessionRules, nowMs: Long): List<HudWarning> {
+        val breaches = buildList {
+            reading.socTempC?.let { add(Triple(HudField.SocTemp, it, rules.socTempThresholdC)) }
+            reading.heat?.let { add(Triple(HudField.Heat, it, rules.batteryTempThresholdC)) }
+            reading.gpuLoadPercent?.let { add(Triple(HudField.GpuLoad, it.toFloat(), rules.gpuLoadThresholdPercent)) }
+        }
+        val minDuration = (rules.warningSeconds.coerceAtLeast(0) * 1000L)
+        val active = HashSet<HudField>()
+        val warnings = ArrayList<HudWarning>(breaches.size)
+        for ((field, value, threshold) in breaches) {
+            if (threshold <= 0f) continue
+            if (value >= threshold) {
+                active += field
+                val started = since.getOrPut(field) { nowMs }
+                if (nowMs - started >= minDuration) {
+                    warnings += HudWarning(field, value, threshold, started, nowMs)
+                }
+            }
+        }
+        since.keys.retainAll(active)
+        return warnings
+    }
+
+    fun reset() {
+        since.clear()
     }
 }
 
@@ -240,7 +432,12 @@ object HudLive {
     private val history = ArrayDeque<Float>()
     val snapshot: StateFlow<HudSnapshot> = mutable.asStateFlow()
 
-    internal fun publish(reading: HudReading, owner: String, intervalMs: Long) {
+    internal fun publish(
+        reading: HudReading,
+        owner: String,
+        intervalMs: Long,
+        warnings: List<HudWarning> = emptyList()
+    ) {
         reading.frames?.let { value ->
             history.addLast(value)
             while (history.size > HISTORY_CAPACITY) history.removeFirst()
@@ -253,7 +450,8 @@ object HudLive {
             recording = HudRecorder.isLive,
             samples = previous.samples + 1,
             intervalMs = intervalMs,
-            framesHistory = history.toList()
+            framesHistory = history.toList(),
+            warnings = warnings
         )
     }
 
@@ -316,22 +514,83 @@ class HudJournal(private val capacity: Int = 900) {
      *
      * والمدى يُحسب من **العيّنات الباقية** لا من زمن الجلسة، فما سقط لم يُحسب.
      */
-    fun tally(): HudTally {
-        val all = ring.toList()
-        val frames = all.mapNotNull { it.reading.frames?.takeIf { v -> v > 0f } }
-        val heats = all.mapNotNull { it.reading.heat?.takeIf { v -> v > 0f } }
-        val watts = all.mapNotNull { it.reading.watt?.takeIf { v -> v > 0f } }
-        return HudTally(
-            samples = all.size,
-            droppedSamples = dropped,
-            spanMs = if (all.size > 1) lastAtMs - firstAtMs else 0L,
-            framesAverage = frames.takeIf { it.isNotEmpty() }?.average()?.toFloat(),
-            framesLow = frames.minOrNull(),
-            framesHigh = frames.maxOrNull(),
-            heatPeak = heats.maxOrNull(),
-            powerAverage = watts.takeIf { it.isNotEmpty() }?.average()?.toFloat()
-        )
-    }
+    fun tally(): HudTally = tallyPoints(
+        points = points(),
+        droppedSamples = dropped,
+        renderer = ring.firstNotNullOfOrNull { it.reading.renderer }
+    )
+
+    /** نقاط الجلسة بصيغة التخزين — تُستخدم للإحصاء وللرسم وللتصدير. */
+    fun points(): List<SessionPoint> = ring.map { it.toPoint() }
+
+    /** أوّل مُصيّر أُعلن في الجلسة — يُحفظ مرّة في الترويسة لا في كل نقطة. */
+    fun renderer(): String? = ring.firstNotNullOfOrNull { it.reading.renderer }
+}
+
+/** عيّنة الذاكرة ← نقطة التخزين: تحويل واحد، فلا تختلف أعمدة CSV عن المنحنى. */
+fun HudJournal.Sample.toPoint(): SessionPoint = SessionPoint(
+    atMs = atMs,
+    frames = reading.frames,
+    cpu = reading.cpu,
+    ramMb = reading.ramMb,
+    watt = reading.watt,
+    battery = reading.battery,
+    heat = reading.heat,
+    jankPercent = reading.jankPercent,
+    frameP99Ms = reading.frameP99Ms,
+    cpuFreqMhz = reading.cpuFreqMhz,
+    socTempC = reading.socTempC,
+    gpuLoadPercent = reading.gpuLoadPercent,
+    batteryVoltageMv = reading.batteryVoltageMv,
+    foreground = reading.foregroundPackage
+)
+
+/**
+ * إحصاء مجموعة نقاط — الدالّة الواحدة التي تُغذّي العرض الحيّ والسجلّ المقصوص.
+ *
+ * **وكان الإحصاء يُحسب داخل الحلقة وحدها، فلمّا احتاج القصّ إحصاءً بعد حذف الانتقالات
+ * كان سيُكرَّر حسابُه.** والتكرار هنا ليس جمالًا: نسختان تعنيان أن الجلسة الحيّة
+ * والمحفوظة قد تعطيان رقمين مختلفين لنفس العيّنات.
+ */
+fun tallyPoints(
+    points: List<SessionPoint>,
+    droppedSamples: Int = 0,
+    renderer: String? = null
+): HudTally {
+    val frames = points.mapNotNull { it.frames?.takeIf { v -> v > 0f } }
+    val heats = points.mapNotNull { it.heat?.takeIf { v -> v > 0f } }
+    val watts = points.mapNotNull { it.watt?.takeIf { v -> v > 0f } }
+    val batteries = points.mapNotNull { it.battery }
+    val socTemps = points.mapNotNull { it.socTempC?.takeIf { v -> v > 0f } }
+    val gpuLoads = points.mapNotNull { it.gpuLoadPercent }
+    val cpuFreqs = points.mapNotNull { it.cpuFreqMhz?.takeIf { v -> v > 0 } }
+    val voltages = points.mapNotNull { it.batteryVoltageMv?.takeIf { v -> v > 0 } }
+    val first = points.firstOrNull()
+    val last = points.lastOrNull()
+    return HudTally(
+        samples = points.size,
+        droppedSamples = droppedSamples,
+        spanMs = if (points.size > 1 && first != null && last != null) {
+            (last.atMs - first.atMs).coerceAtLeast(0L)
+        } else {
+            0L
+        },
+        framesAverage = frames.takeIf { it.isNotEmpty() }?.average()?.toFloat(),
+        framesLow = frames.minOrNull(),
+        framesHigh = frames.maxOrNull(),
+        heatPeak = heats.maxOrNull(),
+        powerAverage = watts.takeIf { it.isNotEmpty() }?.average()?.toFloat(),
+        jankAverage = sessionJankAverage(points),
+        frameP99AverageMs = sessionP99Average(points),
+        energyWh = sessionEnergyWh(points),
+        batteryStart = batteries.firstOrNull(),
+        batteryEnd = batteries.lastOrNull(),
+        renderer = renderer,
+        socTempPeak = socTemps.maxOrNull(),
+        gpuLoadAverage = gpuLoads.takeIf { it.isNotEmpty() }?.average()?.toFloat(),
+        cpuFreqAverageMhz = cpuFreqs.takeIf { it.isNotEmpty() }?.average()?.toInt(),
+        batteryVoltageMinMv = voltages.minOrNull()
+    )
 }
 
 /**
@@ -347,13 +606,27 @@ data class HudTally(
     val framesLow: Float? = null,
     val framesHigh: Float? = null,
     val heatPeak: Float? = null,
-    val powerAverage: Float? = null
+    val powerAverage: Float? = null,
+    val jankAverage: Int? = null,
+    val frameP99AverageMs: Float? = null,
+    val energyWh: Float? = null,
+    val batteryStart: Int? = null,
+    val batteryEnd: Int? = null,
+    val renderer: String? = null,
+    /** أعلى حرارة شريحة في الجلسة. */
+    val socTempPeak: Float? = null,
+    /** متوسّط انشغال الرسّام %. */
+    val gpuLoadAverage: Float? = null,
+    /** متوسّط تردّد المعالج — «على أي سرعة جرى هذا اللعب». */
+    val cpuFreqAverageMhz: Int? = null,
+    /** أدنى جهد بطارية مقيس — يقيس الهبوط تحت الحمل لا النسبة وحدها. */
+    val batteryVoltageMinMv: Int? = null
 ) {
     val isEmpty: Boolean get() = samples == 0
 }
 
 /** أعمدة CSV — ترتيب واحد يُكتب في الترويسة ويُقرأ آليًّا. */
-private const val CSV_HEADER = "elapsed_ms,frames,cpu_percent,ram_mb,watt,battery_c,renderer"
+private const val CSV_HEADER = SESSION_CSV_HEADER
 
 /**
  * الجلسة نصًّا. والخلايا الغائبة **فارغة** لا `0`: جدول يُقرأ بجدول بيانات يجب أن يفرّق
@@ -370,7 +643,13 @@ fun hudSessionCsv(samples: List<HudJournal.Sample>): String {
             r.ramMb?.toString() ?: "",
             r.watt?.let { "%.2f".format(it) } ?: "",
             r.heat?.let { "%.1f".format(it) } ?: "",
-            r.renderer?.replace(',', ' ') ?: ""
+            r.jankPercent?.toString() ?: "",
+            r.frameP99Ms?.let { "%.1f".format(it) } ?: "",
+            r.renderer?.replace(',', ' ') ?: "",
+            r.cpuFreqMhz?.toString() ?: "",
+            r.socTempC?.let { "%.1f".format(it) } ?: "",
+            r.gpuLoadPercent?.toString() ?: "",
+            r.batteryVoltageMv?.toString() ?: ""
         ).joinToString(",")
     }
     return CSV_HEADER + "\n" + body + "\n"
@@ -382,30 +661,194 @@ fun hudSessionCsv(samples: List<HudJournal.Sample>): String {
  * و`stop()` **لا يُفرغ**: الجلسة تنتهي ونتيجتها تبقى حتى تُصدَّر أو تُحذف. وإفراغها عند
  * الإيقاف كان يُتلف ما سُجّل من أجل قراءته.
  */
+/** سبب انتهاء الجلسة — يُحفظ معها، فتُقرأ «لماذا توقّفت» لا «توقّفت» فقط. */
+enum class SessionStopReason(val id: String) {
+    Manual("manual"),
+    ForegroundChanged("foreground"),
+    PowerChanged("power"),
+    ScreenOff("screen"),
+    Cleared("cleared");
+
+    companion object {
+        fun of(id: String?): SessionStopReason = entries.firstOrNull { it.id == id } ?: Manual
+    }
+}
+
 object HudRecorder {
     private const val CAPACITY = 900
 
     private var journal: HudJournal? = null
     private var live = false
 
+    /** حارس الحفظ: `stop()` قد تُنادى مرّتين (خدمة وشاشة) فلا تُكتب الجلسة مرّتين. */
+    @Volatile private var persisted = false
+
+    @Volatile var sessionPackage: String? = null
+        private set
+
+    @Volatile var sessionLabel: String? = null
+        private set
+
+    @Volatile var sessionStartedAtMs: Long = 0L
+        private set
+
+    /** إصدار التطبيق المسجَّل — يجعل الجلسة القديمة قابلة للتفسير بعد تحديث اللعبة. */
+    @Volatile var sessionAppVersion: String? = null
+        private set
+
+    /** دقّة العرض وتردّدها في لحظة البدء: «1080x2400@120». */
+    @Volatile var sessionViewSize: String? = null
+        private set
+
+    @Volatile var sessionRefreshHz: Int? = null
+        private set
+
+    /** هل كان توفير البطارية مفعّلًا؟ وضعٌ حقيقي يُقاس لا نمطٌ يُدَّعى. */
+    @Volatile var sessionPowerSave: Boolean = false
+        private set
+
+    /** ملاحظة المستخدم على الجلسة — تُحفظ معها لا في ملفّ منفصل. */
+    @Volatile var remark: String? = null
+        private set
+
+    @Volatile var lastStopReason: SessionStopReason? = null
+        private set
+
+    /**
+     * آخر جلسة حُفظت — للشاشة والإشعار بلا قراءة الملفّ من جديد.
+     * تُضبط قبل الحفظ، فمن رآها ثم قرأ السجلّ وجدها فيه.
+     */
+    @Volatile var lastSaved: StoredGameSession? = null
+        private set
+
+    private val saveScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+
     val isLive: Boolean get() = live
     val hasSession: Boolean get() = journal != null
 
-    fun start() {
+    /**
+     * بدء جلسة. الـ[context] ليس زينة: منه تُقرأ الحزمة الأمامية واسم اللعبة وإصدارها
+     * ودقّة العرض، فيُعرَف **ما** سُجّل لا فقط **كم**. وغيابه يُبقي السلوك القديم
+     * (جلسة بلا بيانات وصفية).
+     */
+    fun start(context: Context? = null) = start(context, null)
+
+    /**
+     * بدء جلسة بحزمة معلومة — يستدعيه البدء التلقائي لأن الحزمة جاءت من العيّنة نفسها،
+     * و`AppMonitor` قد يكون متأخّرًا عنها بدورة.
+     */
+    fun start(context: Context?, packageOverride: String?) {
         journal = HudJournal(CAPACITY)
         live = true
+        persisted = false
+        lastSaved = null
+        sessionPackage = packageOverride?.takeIf { it.isNotBlank() }
+            ?: context?.let { AppMonitor.currentForegroundPackage() }
+        sessionLabel = sessionPackage?.let { pkg -> appLabelOf(context, pkg) }
+        sessionStartedAtMs = System.currentTimeMillis()
+        sessionAppVersion = context?.let { ctx ->
+            sessionPackage?.let { pkg -> versionOf(ctx, pkg) }
+        }
+        sessionViewSize = context?.let { viewSizeOf(it) }
+        sessionRefreshHz = context?.let { refreshOf(it) }
+        sessionPowerSave = context?.let { powerSaveOf(it) } ?: false
+        remark = null
+        lastStopReason = null
         HudLive.markRecording(true)
     }
 
-    fun stop() {
+    /** إيقاف يدوي — الغلاف القديم، ويُسجّل السبب صريحًا في السجلّ. */
+    fun stop(context: Context? = null) = stop(context, SessionStopReason.Manual)
+
+    /**
+     * إيقاف بسبب مسمّى. مع [context] تُحفظ الجلسة في السجلّ الدائم؛ وبدونه يبقى السلوك
+     * القديم (النتيجة في الذاكرة حتى تُصدَّر). والحفظ مرّة واحدة لكل جلسة.
+     *
+     * **والقصّ يقع هنا لا في العرض:** الانتقالات تُحذف قبل الإحصاء، فالمتوسّط المحفوظ
+     * هو متوسط اللعب لا متوسط اللعب والتحميل معًا.
+     */
+    fun stop(context: Context?, reason: SessionStopReason) {
+        val wasLive = live
         live = false
         HudLive.markRecording(false)
+        if (!wasLive) return
+        lastStopReason = reason
+        if (context == null || persisted) return
+        val finished = journal?.takeIf { it.size > 0 } ?: return
+        val app = context.applicationContext
+        val rules = HudSessionSettings.load(app)
+        val allPoints = finished.points()
+        val clip = if (rules.clipTransitions) clipTransitions(allPoints) else ClipResult(allPoints, 0, false)
+        val tally = tallyPoints(clip.points, finished.droppedSamples, renderer = finished.renderer())
+        val endedAtMs = System.currentTimeMillis()
+        val startedAtMs = sessionStartedAtMs.takeIf { it > 0L } ?: endedAtMs
+        val record = StoredGameSession(
+            id = "$startedAtMs-${sessionPackage ?: "unknown"}",
+            schemaVersion = SESSION_SCHEMA_VERSION,
+            packageName = sessionPackage,
+            appLabel = sessionLabel,
+            appVersion = sessionAppVersion,
+            startedAtMs = startedAtMs,
+            endedAtMs = endedAtMs,
+            spanMs = tally.spanMs,
+            samples = tally.samples,
+            droppedSamples = tally.droppedSamples,
+            framesAverage = tally.framesAverage,
+            framesLow = tally.framesLow,
+            framesHigh = tally.framesHigh,
+            heatPeak = tally.heatPeak,
+            powerAverage = tally.powerAverage,
+            energyWh = tally.energyWh,
+            jankAverage = tally.jankAverage,
+            frameP99AverageMs = tally.frameP99AverageMs,
+            batteryStart = tally.batteryStart,
+            batteryEnd = tally.batteryEnd,
+            renderer = tally.renderer,
+            socTempPeak = tally.socTempPeak,
+            gpuLoadAverage = tally.gpuLoadAverage,
+            cpuFreqAverageMhz = tally.cpuFreqAverageMhz,
+            batteryVoltageMinMv = tally.batteryVoltageMinMv,
+            viewSize = sessionViewSize,
+            refreshHz = sessionRefreshHz,
+            powerSave = sessionPowerSave,
+            stopReason = reason.id,
+            clipRemoved = clip.removed,
+            clipRejected = clip.rejected,
+            remark = remark,
+            series = downsampleSamples(clip.points)
+        )
+        persisted = true
+        lastSaved = record
+        saveScope.launch {
+            if (!GameSessionStore.append(app, record)) persisted = false
+            // الإشعار بعد الحفظ لا قبله: من ضغطه وجد الجلسة في السجلّ، ولم يفتح شاشةً فارغة.
+            runCatching {
+                val history = GameSessionStore.load(app)
+                SessionSummaryNotifier.notify(app, record, sessionInsight(record, history))
+            }
+        }
     }
 
     fun clear() {
         journal = null
         live = false
+        persisted = false
+        sessionPackage = null
+        sessionLabel = null
+        sessionStartedAtMs = 0L
+        sessionAppVersion = null
+        sessionViewSize = null
+        sessionRefreshHz = null
+        sessionPowerSave = false
+        remark = null
+        lastStopReason = null
+        lastSaved = null
         HudLive.markRecording(false)
+    }
+
+    /** ملاحظة الجلسة الحيّة؛ `null` أو فراغ يمسحها. */
+    fun setRemark(value: String?) {
+        remark = value?.trim()?.takeIf { it.isNotEmpty() }
     }
 
     fun feed(reading: HudReading, atMs: Long) {
@@ -414,7 +857,39 @@ object HudRecorder {
 
     fun tally(): HudTally? = journal?.takeIf { it.size > 0 }?.tally()
 
+    /** نقاط الجلسة الحيّة مصغّرة — لمنحنى الشاشة. */
+    fun series(): List<SessionPoint> = journal?.takeIf { it.size > 0 }
+        ?.let { downsampleSamples(it.points()) }
+        ?: emptyList()
+
     fun csv(): String? = journal?.takeIf { it.size > 0 }?.let { hudSessionCsv(it.samples()) }
+
+    /** اسم التطبيق كما يراه المستخدم؛ وفشل الاستعلام يعني الحزمة نفسها لا اسمًا مخترعًا. */
+    private fun appLabelOf(context: Context?, pkg: String): String? = runCatching {
+        val manager = context?.packageManager ?: return@runCatching null
+        val info = manager.getApplicationInfo(pkg, 0)
+        manager.getApplicationLabel(info).toString().takeIf { it.isNotBlank() }
+    }.getOrNull()
+
+    private fun versionOf(context: Context, pkg: String): String? = runCatching {
+        context.packageManager.getPackageInfo(pkg, 0).versionName?.takeIf { it.isNotBlank() }
+    }.getOrNull()
+
+    private fun viewSizeOf(context: Context): String? = runCatching {
+        val metrics = context.resources.displayMetrics
+        val hz = refreshOf(context)
+        val size = "${metrics.widthPixels}x${metrics.heightPixels}"
+        if (hz != null) "$size@$hz" else size
+    }.getOrNull()
+
+    private fun refreshOf(context: Context): Int? = runCatching {
+        context.getSystemService(DisplayManager::class.java)
+            ?.getDisplay(Display.DEFAULT_DISPLAY)?.refreshRate?.roundToInt()?.takeIf { it > 0 }
+    }.getOrNull()
+
+    private fun powerSaveOf(context: Context): Boolean = runCatching {
+        (context.getSystemService(Context.POWER_SERVICE) as? PowerManager)?.isPowerSaveMode ?: false
+    }.getOrDefault(false)
 }
 
 /**
@@ -482,6 +957,18 @@ object HudSampler {
      */
     private val frameWindow = FrameWindow()
 
+    /** عدّاد القرص: حالة سابقة بين عيّنتين، لا قراءة معزولة. */
+    private val diskIo = DiskIoSampler()
+
+    /** نافذة كل عتبة: التحذير يُطلق بعد استمرار لا بعد لمسة. */
+    private val warningTracker = HudWarningTracker()
+
+    /** حالة الشاحن السابقة: التغيّر هو الحدث، لا الحالة. */
+    private var lastPlugged: Boolean? = null
+
+    /** تأكيد مغادرة اللعبة بعيّنتين: تبديل عابر (لوحة إشعارات) ليس خروجًا. */
+    private var foregroundMisses = 0
+
     /**
      * أوّل مالك أو `null`.
      *
@@ -527,10 +1014,16 @@ object HudSampler {
                         // والشاشة) لا يُعرض أحدهما والشاشة مطفأة. فالنوم يطول (`SCREEN_OFF_SAMPLE_MS`) بدل
                         // أن يُوقَف الطلب (فيفقد من يعود من الإطفاء أوّل قراءة) أو يُترك بلا حدّ.
                         if (power?.isInteractive == false) {
+                            if (HudRecorder.isLive && HudSessionSettings.load(ctx).stopOnScreenOff) {
+                                HudRecorder.stop(ctx, SessionStopReason.ScreenOff)
+                            }
                             delay(SCREEN_OFF_SAMPLE_MS)
                             continue
                         }
                         val fields = unionFields()
+                        // القواعد تُقرأ كل دورة وقبل القراءة: البدء التلقائي يحتاجها ليعرف
+                        // أن عليه قراءة الحزمة الأمامية حتى وهو خامل.
+                        val rules = HudSessionSettings.load(ctx)
                         var rxBps: Float? = null
                         var txBps: Float? = null
                         val rx = TrafficStats.getTotalRxBytes()
@@ -554,11 +1047,49 @@ object HudSampler {
                             lastTx = tx
                             lastTrafficAt = began
                         }
-                        val reading = read(ctx, fields, rxBps, txBps)
+                        val reading = read(ctx, fields, rxBps, txBps, watchForeground = rules.autoStart)
+                        val plugged = pluggedIn(ctx)
+                        if (HudRecorder.isLive) {
+                            val previousPlug = lastPlugged
+                            if (rules.stopOnPowerChange && previousPlug != null && plugged != previousPlug) {
+                                HudRecorder.stop(ctx, SessionStopReason.PowerChanged)
+                            }
+                            val sessionPkg = HudRecorder.sessionPackage
+                            val foreground = reading.foregroundPackage
+                            val leftGame = rules.stopOnForegroundChange &&
+                                sessionPkg != null &&
+                                foreground != null &&
+                                foreground != sessionPkg &&
+                                foreground !in IGNORED_FOREGROUND
+                            if (leftGame) {
+                                // عيّنتان متتاليتان: لوحة إشعارات أو نافذة نظام عابرة ليست خروجًا.
+                                foregroundMisses++
+                                if (foregroundMisses >= 2) {
+                                    HudRecorder.stop(ctx, SessionStopReason.ForegroundChanged)
+                                }
+                            } else {
+                                foregroundMisses = 0
+                            }
+                        } else {
+                            foregroundMisses = 0
+                            // البدء التلقائي: لعبة من مكتبتنا صارت في المقدّمة ولم يكن هناك تسجيل.
+                            // وحزمتنا مستثناة كي لا تُسجَّل الشاشة نفسها لحظة فتحها.
+                            val foreground = reading.foregroundPackage
+                            if (rules.autoStart &&
+                                foreground != null &&
+                                foreground !in IGNORED_FOREGROUND &&
+                                foreground != ctx.packageName &&
+                                GameWatch.isGame(ctx, foreground)
+                            ) {
+                                HudRecorder.start(ctx, foreground)
+                            }
+                        }
+                        lastPlugged = plugged
+                        val warnings = warningTracker.update(reading, rules, System.currentTimeMillis())
                         // الإيقاع يُقرأ هنا لا عند الإطلاق: تغييره من الشاشة يسري على الدورة التالية.
                         val interval = cadenceMs
                         if (isActive) {
-                            HudLive.publish(reading, joinedOwner(), interval)
+                            HudLive.publish(reading, joinedOwner(), interval, warnings)
                             HudRecorder.feed(reading, System.currentTimeMillis())
                         }
                         val cadence = if (powerSave) maxOf(interval, POWER_SAVE_SAMPLE_MS) else interval
@@ -598,11 +1129,25 @@ object HudSampler {
         owners.keys.joinToString("+")
     }
 
+    /** أسماء حزم نظامية عابرة لا تُعدّ خروجًا من اللعبة. */
+    private val IGNORED_FOREGROUND = setOf(
+        "com.android.systemui",
+        "com.android.permissioncontroller",
+        "android"
+    )
+
+    /** هل الشاحن موصول؟ الحالة تُقرأ من البثّ اللاصق لا من تفضيل محفوظ. */
+    private fun pluggedIn(context: Context): Boolean = runCatching {
+        context.registerReceiver(null, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
+            ?.getIntExtra(BatteryManager.EXTRA_PLUGGED, 0) != 0
+    }.getOrDefault(false)
+
     private fun read(
         context: Context,
         fields: Set<HudField>,
         rxBps: Float? = null,
-        txBps: Float? = null
+        txBps: Float? = null,
+        watchForeground: Boolean = false
     ): HudReading {
         if (fields.isEmpty()) return HudReading()
         val wantsFrames = HudField.Frames in fields
@@ -615,12 +1160,28 @@ object HudSampler {
             null
         }
         if (wantsSamples) frameWindow.record(framesNow)
-        val renderer = if (HudField.Renderer in fields) {
-            runCatching { FpsMonitorUtil.getCurrentRenderer(FpsMonitorUtil.getForegroundPackage()) }
+        val foreground = if (HudField.Renderer in fields || HudField.Jank in fields || HudRecorder.isLive || watchForeground) {
+            runCatching { FpsMonitorUtil.getForegroundPackage() }.getOrNull().orEmpty()
+        } else {
+            ""
+        }
+        val renderer = if (HudField.Renderer in fields && foreground.isNotEmpty()) {
+            runCatching { FpsMonitorUtil.getCurrentRenderer(foreground) }
                 .getOrNull()?.takeIf { it.isNotBlank() && it != "FPS" }
         } else {
             null
         }
+        val refreshHz = if (HudField.Jank in fields || HudField.Stability in fields) {
+            refreshRateHz(context)
+        } else {
+            null
+        }
+        val frameStats = if (HudField.Jank in fields && foreground.isNotEmpty() && refreshHz != null) {
+            runCatching { FpsMonitorUtil.getFrameStats(foreground, refreshHz) }.getOrNull()
+        } else {
+            null
+        }
+        val disk = if (HudField.DiskIo in fields) diskIo.sample() else null
         return HudReading(
             // `0` من القارئ تعني «لم يُجِب» لا «صفر إطار» — فتُترجم غيابًا.
             frames = if (wantsFrames) framesNow else null,
@@ -655,9 +1216,36 @@ object HudSampler {
             rxBps = if (HudField.Network in fields) rxBps else null,
             txBps = if (HudField.Network in fields) txBps else null,
             renderer = renderer,
-            stability = if (HudField.Stability in fields) stabilityPercent(context) else null
+            stability = if (HudField.Stability in fields) stabilityPercent(refreshHz) else null,
+            jankPercent = frameStats?.jankPercent,
+            frameP99Ms = frameStats?.p99Ms,
+            cpuFreqMhz = if (HudField.CpuFreq in fields) HudDeepReaders.cpuFreqMhz() else null,
+            socTempC = if (HudField.SocTemp in fields) HudDeepReaders.socTempC() else null,
+            gpuFreqMhz = if (HudField.GpuFreq in fields) HudDeepReaders.gpuFreqMhz() else null,
+            gpuLoadPercent = if (HudField.GpuLoad in fields) HudDeepReaders.gpuLoadPercent() else null,
+            ddrFreqMhz = if (HudField.DdrFreq in fields) HudDeepReaders.ddrFreqMhz() else null,
+            diskReadBps = disk?.first,
+            diskWriteBps = disk?.second,
+            batteryVoltageMv = if (HudField.BatteryVoltage in fields) {
+                HudDeepReaders.batteryVoltageMv(context)
+            } else {
+                null
+            },
+            foregroundPackage = if (HudRecorder.isLive || watchForeground) {
+                foreground.takeIf { it.isNotBlank() }
+            } else {
+                null
+            }
         )
     }
+
+    /**
+     * معدّل تحديث الشاشة الفعلي، أو `null` حين لا يعلنه النظام — والهدف يُقرأ ولا يُفترض.
+     */
+    private fun refreshRateHz(context: Context): Float? = runCatching {
+        context.getSystemService(DisplayManager::class.java)
+            ?.getDisplay(Display.DEFAULT_DISPLAY)?.refreshRate
+    }.getOrNull()?.takeIf { it.isFinite() && it > 0f }
 
     /**
      * نسبة الثبات ٠..١٠٠ أو `null`.
@@ -666,11 +1254,8 @@ object HudSampler {
      * وافتراض ١٢٠ على شاشة ٦٠ يجعل الرقم مستحيلًا. وحين لا يُعلن النظام معدّله يبقى `null` — لا
      * رقمٌ مبنيّ على تخمين.
      */
-    private fun stabilityPercent(context: Context): Int? {
-        val hz = runCatching {
-            context.getSystemService(DisplayManager::class.java)
-                ?.getDisplay(Display.DEFAULT_DISPLAY)?.refreshRate
-        }.getOrNull()?.takeIf { it.isFinite() && it > 0f } ?: return null
+    private fun stabilityPercent(refreshHz: Float?): Int? {
+        val hz = refreshHz ?: return null
         return frameWindow.stableShare(hz)?.let { (it * 100f).roundToInt() }
     }
 }

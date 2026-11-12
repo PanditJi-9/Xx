@@ -15,13 +15,13 @@ object GameProfileDocument {
         require(raw.toByteArray(Charsets.UTF_8).size <= MAX_BYTES)
         val document = json.parseToJsonElement(raw) as? JsonObject ?: error("profile-document-not-object")
         require(document.size <= MAX_APPS)
-        require(document.all { (pkg, value) -> ForegroundAppResolver.isPackageName(pkg) && value is JsonObject })
+        require(document.all { (pkg, value) -> ForegroundAppResolver.isProfileKey(pkg) && value is JsonObject })
         return document
     }
 
     /** An update replaces known fields only; future/foreign per-app fields survive. */
     fun patch(document: JsonObject, pkg: String, knownFields: JsonObject?): JsonObject {
-        require(ForegroundAppResolver.isPackageName(pkg))
+        require(ForegroundAppResolver.isProfileKey(pkg))
         val next = document.toMutableMap()
         if (knownFields == null) next.remove(pkg)
         else next[pkg] = JsonObject((document[pkg] as? JsonObject).orEmpty() + knownFields)

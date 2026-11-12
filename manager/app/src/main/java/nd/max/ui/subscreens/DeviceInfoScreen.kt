@@ -493,13 +493,13 @@ internal fun DeviceInfoTrust.asMaxTrust(pending: Boolean): MaxDataTrust = when (
  * والدالة **غير قابلة للعدم** (`MaxDestination` لا `MaxDestination?`) لأن الحدّ الذي مُنع هو
  * نفسه «بابٌ إلى لا شيء»: قسمٌ بلا شاشة تُعرَض بياناته فيها = قسم لا يجب أن يوجد.
  *
- * وأقسام ثلاثة تفتح `Diagnostics` (النظرة العامة والنظام والمستشعرات) لأنها **بيت الثلاثة**
- * حقيقةً: فيه تقرير الجهاز وجرد المستشعرات (`SensorInventoryCard`) وجرد الأطلس — وهو أفضل
- * شاشة موجودة منطقيًّا لهذه الفكرة، وليس شاشة مُكرّرة تُبنى لتحقيق شرط.
+ * وأقسام أربعة تفتح `DeviceLab` (النظرة العامة والنظام والمستشعرات والكاميرا): شاشة التشخيص
+ * حُذفت بأمر المالك، وبقي مختبر الجهاز هو السطح الذي يقرأ العتاد فعلًا (`SensorInventoryCard`).
+ * فلا تُبنى شاشة رابعة تحمل البطاقة نفسها.
  */
 internal fun maxDeviceInfoSource(section: DeviceInfoSection): MaxDestination = when (section) {
-    // النظرة العامة = الجهاز كله في سطور؛ وتقريره الكامل في `Diagnostics`.
-    DeviceInfoSection.Overview -> MaxDestination.Diagnostics
+    // النظرة العامة = الجهاز كله في سطور؛ وتقريره الكامل في مختبر الجهاز.
+    DeviceInfoSection.Overview -> MaxDestination.DeviceLab
     DeviceInfoSection.Cpu -> MaxDestination.CpuCoreControl
     DeviceInfoSection.Gpu -> MaxDestination.GpuStudio
     DeviceInfoSection.Memory -> MaxDestination.ZramManager
@@ -507,15 +507,15 @@ internal fun maxDeviceInfoSource(section: DeviceInfoSection): MaxDestination = w
     DeviceInfoSection.Battery -> MaxDestination.Charging
     DeviceInfoSection.Display -> MaxDestination.DisplayStudio
     DeviceInfoSection.Thermal -> MaxDestination.ThermalDetail
-    // والمستشعرات شاشتها هي `Diagnostics` — **وفيها بطاقة الجرد فعلًا**
+    // والمستشعرات شاشتها مختبر الجهاز — **وفيها بطاقة الجرد فعلًا**
     // (`SensorInventoryCard`)؛ فلا تُبنى شاشة مستشعرات ثانية لها البطاقة نفسها.
-    DeviceInfoSection.Sensors -> MaxDestination.Diagnostics
-    DeviceInfoSection.System -> MaxDestination.Diagnostics
+    DeviceInfoSection.Sensors -> MaxDestination.DeviceLab
+    DeviceInfoSection.System -> MaxDestination.DeviceLab
     DeviceInfoSection.Network -> MaxDestination.NetworkDetail
     // والكاميرا **قسمٌ بلا شاشة تحكّم مالكة** (استثناءٌ مُعلَن، كُتب في التعداد نفسه):
     // أُضيفت بأمر المالك «معلومات أكثر من الصور في كل قسم» بعد أن كانت لا تُقرأ عتادها
-    // أصلًا، وبُيتها `Diagnostics` — بيت الجرد والتقارير، وأقرب بيتٍ موجود لا بيتٌ مُختلَق.
-    DeviceInfoSection.Camera -> MaxDestination.Diagnostics
+    // أصلًا، وبُيتها `DeviceLab` بعد حذف شاشة التشخيص — أقرب بيتٍ موجود لا بيتٌ مُختلَق.
+    DeviceInfoSection.Camera -> MaxDestination.DeviceLab
     // والصوت (`AS-01`): له شاشة تحكّم مالكة فعلًا — سطح الصوت `AudioStudio` الذي يُقرأ فيه ويُكتب
     // (مستويات الدفقات). فلا استثناء هنا، بل الحالة العاديّة: قسمٌ يشير إلى الشاشة التي تعمل على
     // موضوعه، وهي صفّ الحوز نفسه (`maxHubRows`) — وهو ما يقيسه `DeviceInfoControlConvergenceTest`.

@@ -29,12 +29,34 @@ class ControlLayoutModelTest {
         // ولا يجوز أن يُطالب النموذج بعرضه.
         val fromRegistry = MaxDestination.Visible.filter { it.parent == MaxDestination.Control }.toSet()
         val hubsInModel = hubs.map { it.hub }.toSet()
-        // وشريطان للأدوات: «الأدوات» و«فحص الجهاز» — كلاهما من الجدول نفسه، والمجموع يغطّي
-        // كل وجهة أبوّتها `Control`؛ ولا صفّ يُعدّ مرّتين.
-        val toolsInModel = (controlToolEntries() + controlInspectEntries()).map { it.destination }.toSet()
+        // شريط واحد للأدوات بعد M1c: «فحص الجهاز» أُفرغ ونُقلت أدواته إلى شاشة التشخيص،
+        // فالمجموع = المحاور + صفوف الصندوق، ويغطّي كل وجهة أبوّتها `Control` بلا تكرار.
+        val toolsInModel = controlToolEntries().map { it.destination }.toSet()
 
         assertEquals(fromRegistry, hubsInModel + toolsInModel)
         assertEquals(hubsInModel.size + toolsInModel.size, (hubsInModel + toolsInModel).size)
+    }
+
+    @Test
+    fun `the tool box is split into named groups without losing a row`() {
+        // العقد: النطاقات **تقسّم** صفوف الصندوق، لا تنسخها ولا تُسقط منها. فلو أُضيفت أداة
+        // إلى `ControlToolDestinations` ونُسيت من نطاق، سقط هذا الاختبار بدل أن تختفي بصمت.
+        val entries = controlToolEntries()
+        val groups = controlToolGroups()
+        val listed = groups.flatMap { group -> group.entries }
+
+        assertEquals(entries.size, listed.size)
+        assertEquals(
+            entries.map { it.destination }.toSet(),
+            listed.map { it.destination }.toSet(),
+        )
+        assertEquals(
+            "a tool is listed in more than one group: $listed",
+            listed.size,
+            listed.map { it.destination }.toSet().size,
+        )
+        assertTrue("a group renders empty", groups.all { it.entries.isNotEmpty() })
+        assertTrue("the box must read as more than one band", groups.size >= 2)
     }
 
     @Test

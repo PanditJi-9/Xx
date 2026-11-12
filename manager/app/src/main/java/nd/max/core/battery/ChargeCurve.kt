@@ -50,6 +50,10 @@ object ChargeCurve {
         val endLevel: Int,
         val spanMinutes: Float,
         val minutesToFull: Float?,
+        /** Energy moved into the battery across the measured window, in watt-hours. */
+        val energyWh: Float?,
+        /** Charge moved into the battery across the measured window, in milliamp-hours. */
+        val chargeMah: Float?,
     )
 
     /**
@@ -61,6 +65,42 @@ object ChargeCurve {
         val millivolts = sample.voltageMv?.takeIf { it > 0 } ?: return null
         val microAmps = sample.currentUa?.let { abs(it) }?.takeIf { it > 0L } ?: return null
         return (millivolts / 1000f) * (microAmps / 1_000_000f)
+    }
+
+    /**
+     * تكامل شبه منحرف على العيّنات **كلها** لا على نقاط الرسم المقتطعة.
+     *
+     * **ولماذا لا نجمع `watts × الفاصل` بالكامل:** القدرة تتغيّر بين طرفَي العيّنة، فنصف
+     * المجموع هو أفضل تقدير خطّي متاح. والفاصل يُحسب بالساعات لأن الوحدة المطلوبة Wh.
+     *
+     * **وحدوده:** فاصل بطرف مجهول يُتخطّى ولا يُحسب صفرًا — وهذا هو الفرق بين «لم يُقرأ»
+     * و«لم يُستهلك». فإذا لم يبقَ فاصل صالح واحد كان الناتج `null` لا `0.0`.
+     */
+    private fun energyAndCharge(plugged: List<BatterySample>): Pair<Float?, Float?> {
+        var energyWh = 0.0
+        var energyIntervals = 0
+        var chargeMah = 0.0
+        var chargeIntervals = 0
+        for (index in 0 until plugged.size - 1) {
+            val first = plugged[index]
+            val second = plugged[index + 1]
+            val dtHours = (second.atMillis - first.atMillis).coerceAtLeast(0L) / 3_600_000.0
+            if (dtHours <= 0.0) continue
+            val firstWatts = watts(first)
+            val secondWatts = watts(second)
+            if (firstWatts != null && secondWatts != null) {
+                energyWh += (firstWatts + secondWatts) / 2.0 * dtHours
+                energyIntervals++
+            }
+            val firstMicroAmps = first.currentUa?.let { abs(it) }?.takeIf { it > 0L }
+            val secondMicroAmps = second.currentUa?.let { abs(it) }?.takeIf { it > 0L }
+            if (firstMicroAmps != null && secondMicroAmps != null) {
+                chargeMah += (firstMicroAmps + secondMicroAmps) / 2.0 / 1000.0 * dtHours
+                chargeIntervals++
+            }
+        }
+        return (energyWh.takeIf { energyIntervals > 0 }?.toFloat()) to
+            (chargeMah.takeIf { chargeIntervals > 0 }?.toFloat())
     }
 
     /**
@@ -79,6 +119,7 @@ object ChargeCurve {
         val points = plugged.takeLast(MAX_POINTS).map {
             Point(atMillis = it.atMillis, levelPercent = it.levelPercent, watts = watts(it))
         }
+        val (energyWh, chargeMah) = energyAndCharge(plugged)
         val known = points.mapNotNull { it.watts }
         val spanMinutes = spanMs / 60_000f
         val levelDelta = last.levelPercent - first.levelPercent
@@ -97,6 +138,8 @@ object ChargeCurve {
             endLevel = last.levelPercent,
             spanMinutes = spanMinutes,
             minutesToFull = minutesToFull,
+            energyWh = energyWh,
+            chargeMah = chargeMah,
         )
     }
 }

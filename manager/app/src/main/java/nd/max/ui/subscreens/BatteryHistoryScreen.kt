@@ -275,6 +275,34 @@ fun BatteryHistoryScreen(navController: NavHostController) {
                             }
                         )
                     }
+                    val energyWh = chargeWindow.energyWh
+                    if (energyWh != null) {
+                        MaxGroupDivider()
+                        MaxRow(
+                            title = stringResource(R.string.charge_curve_energy),
+                            trailing = {
+                                Text(
+                                    text = String.format(Locale.US, "%.2f Wh", energyWh),
+                                    style = MonoValueStyleSmall,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                            }
+                        )
+                    }
+                    val chargeMah = chargeWindow.chargeMah
+                    if (chargeMah != null) {
+                        MaxGroupDivider()
+                        MaxRow(
+                            title = stringResource(R.string.charge_curve_charge),
+                            trailing = {
+                                Text(
+                                    text = String.format(Locale.US, "%.0f mAh", chargeMah),
+                                    style = MonoValueStyleSmall,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                            }
+                        )
+                    }
                     val minutesToFull = chargeWindow.minutesToFull
                     if (minutesToFull != null) {
                         MaxGroupDivider()

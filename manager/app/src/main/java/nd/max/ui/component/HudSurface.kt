@@ -55,6 +55,9 @@ import nd.max.core.platform.HudArrangement
 import nd.max.core.platform.HudField
 import nd.max.core.platform.HudForm
 import nd.max.core.platform.HudReading
+import nd.max.ui.util.HudFilter
+import nd.max.ui.util.hudChartVisible
+import nd.max.ui.util.hudTextVisible
 import nd.max.ui.design.MaxRadius
 import nd.max.ui.design.MaxSize
 import nd.max.ui.design.MaxSpace
@@ -111,6 +114,23 @@ fun hudFieldText(reading: HudReading?, field: HudField): String = when (field) {
     } ?: MAX_VALUE_UNAVAILABLE
     HudField.Renderer -> reading?.renderer ?: MAX_VALUE_UNAVAILABLE
     HudField.Stability -> reading?.stability?.let { "$it%" } ?: MAX_VALUE_UNAVAILABLE
+    HudField.Jank -> reading?.jankPercent?.let { percent ->
+        reading.frameP99Ms?.let { p99 -> "$percent% · p99 %.0f ms".format(p99) } ?: "$percent%"
+    } ?: MAX_VALUE_UNAVAILABLE
+    HudField.CpuFreq -> reading?.cpuFreqMhz?.let { "$it MHz" } ?: MAX_VALUE_UNAVAILABLE
+    HudField.SocTemp -> reading?.socTempC?.let { "%.0f°C".format(it) } ?: MAX_VALUE_UNAVAILABLE
+    HudField.GpuFreq -> reading?.gpuFreqMhz?.let { "$it MHz" } ?: MAX_VALUE_UNAVAILABLE
+    HudField.GpuLoad -> reading?.gpuLoadPercent?.let { "$it%" } ?: MAX_VALUE_UNAVAILABLE
+    HudField.DdrFreq -> reading?.ddrFreqMhz?.let { "$it MHz" } ?: MAX_VALUE_UNAVAILABLE
+    HudField.DiskIo -> reading?.let {
+        if (it.diskReadBps == null && it.diskWriteBps == null) {
+            MAX_VALUE_UNAVAILABLE
+        } else {
+            "↓${hudRateText(it.diskReadBps)} ↑${hudRateText(it.diskWriteBps)}"
+        }
+    } ?: MAX_VALUE_UNAVAILABLE
+    HudField.BatteryVoltage -> reading?.batteryVoltageMv?.let { "%.2f V".format(it / 1000f) }
+        ?: MAX_VALUE_UNAVAILABLE
 }
 
 /**
@@ -155,6 +175,14 @@ fun hudFieldLabel(field: HudField): String = stringResource(
         HudField.Network -> R.string.hud_field_network
         HudField.Renderer -> R.string.hud_field_renderer
         HudField.Stability -> R.string.hud_field_stability
+        HudField.Jank -> R.string.hud_field_jank
+        HudField.CpuFreq -> R.string.hud_field_cpu_freq
+        HudField.SocTemp -> R.string.hud_field_soc_temp
+        HudField.GpuFreq -> R.string.hud_field_gpu_freq
+        HudField.GpuLoad -> R.string.hud_field_gpu_load
+        HudField.DdrFreq -> R.string.hud_field_ddr_freq
+        HudField.DiskIo -> R.string.hud_field_disk_io
+        HudField.BatteryVoltage -> R.string.hud_field_battery_voltage
     }
 )
 
@@ -185,9 +213,13 @@ fun HudSurface(
     onToggleRecording: (() -> Unit)? = null,
     onHide: (() -> Unit)? = null,
     onClose: (() -> Unit)? = null,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    filter: HudFilter = HudFilter.All
 ) {
     val ceiling = framesCeiling()
+    val chartPossible = HudField.Frames in fields
+    val textVisible = hudTextVisible(filter, chartPossible)
+    val chartVisible = hudChartVisible(filter, showGraph, chartPossible)
     // وزرّ التسجيل جزء من **نفس الصفّ** بأمر المالك: كان صفًّا مستقلًّا بارتفاع ٤٨dp وفاصل ثابت
     // حتى وهو لا يسجّل — أي ثلث ارتفاع اللوحة مقابل إجراء لا يُستعمل في كل جلسة (تكملة ١٨٢).
     val hasActions = onHide != null || onClose != null || onToggleRecording != null
@@ -197,7 +229,7 @@ fun HudSurface(
      * العربية والأيسر في الإنجليزية، فالترتيب يقلبه مع النصّ). وما عداهما طويل أصلًا فيحملها
      * في آخر صفّ — وهو أقرب موضع للحاشية في لوحة بلا إطار.
      */
-    val inlineActions = hasActions && !showGraph &&
+    val inlineActions = hasActions && !chartVisible &&
         arrangement == HudArrangement.Line &&
         (form == HudForm.Strip || form == HudForm.Badge)
     val actions: (@Composable () -> Unit)? = if (hasActions) {
@@ -223,20 +255,22 @@ fun HudSurface(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(MaxSpace.xs)
         ) {
-            when (form) {
-                HudForm.Strip ->
-                    HudStrip(reading, fields, accent, textSizeSp, arrangement, if (inlineActions) actions else null)
+            if (textVisible) {
+                when (form) {
+                    HudForm.Strip ->
+                        HudStrip(reading, fields, accent, textSizeSp, arrangement, if (inlineActions) actions else null)
 
-                HudForm.Pane ->
-                    HudPane(reading, fields, accent, textSizeSp, arrangement)
+                    HudForm.Pane ->
+                        HudPane(reading, fields, accent, textSizeSp, arrangement)
 
-                HudForm.Ring ->
-                    HudRing(reading, fields, accent, textSizeSp, ceiling)
-                HudForm.Badge ->
-                    HudBadge(reading, fields, accent, textSizeSp, arrangement, if (inlineActions) actions else null)
+                    HudForm.Ring ->
+                        HudRing(reading, fields, accent, textSizeSp, ceiling)
+                    HudForm.Badge ->
+                        HudBadge(reading, fields, accent, textSizeSp, arrangement, if (inlineActions) actions else null)
+                }
             }
 
-            if (showGraph && HudField.Frames in fields) {
+            if (chartVisible) {
                 HudFramesGraph(framesHistory, accent, ceiling)
             }
 

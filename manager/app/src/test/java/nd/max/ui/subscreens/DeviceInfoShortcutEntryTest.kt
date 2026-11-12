@@ -66,7 +66,6 @@ class DeviceInfoShortcutEntryTest {
         "ui/subscreens/DisplayStudioScreen.kt" to MaxDestination.DisplayStudio,
         "ui/subscreens/ThermalDetailScreen.kt" to MaxDestination.ThermalDetail,
         "ui/subscreens/NetworkDetailScreen.kt" to MaxDestination.NetworkDetail,
-        "ui/mainscreens/DiagnosticsScreen.kt" to MaxDestination.Diagnostics,
         // وسطح التحكّم الصوتيّ (`AS-02`): يعمل على الصوت، فبابه هنا لا في شاشةٍ لا تحمل موضوعه.
         "ui/subscreens/audio/AudioStudioScreen.kt" to MaxDestination.AudioStudio,
     )
@@ -107,7 +106,7 @@ class DeviceInfoShortcutEntryTest {
         // كل شاشة تملك قسمًا **واحدًا** يفتحها هي: فمن ضغط زرّ القسم في شاشة الحرارة يصل
         // إلى قسم الحرارة، ومن ضغط باب قسم الحرارة هناك يعود إلى شاشة الحرارة. وهذا هو
         // ما يجعل الاتجاهين خريطةً واحدة لا خريطتين تختلفان يومًا.
-        val owners = shortcutOwners.filterNot { it.second == MaxDestination.Diagnostics }
+        val owners = shortcutOwners.filterNot { it.second == MaxDestination.DeviceLab }
         owners.forEach { (_, destination) ->
             val section = deviceInfoShortcutSection(destination)!!
             assertEquals(
@@ -130,17 +129,17 @@ class DeviceInfoShortcutEntryTest {
     }
 
     @Test
-    fun `diagnostics opens the sensors section, not the system one`() {
-        // **والاستثناء مُعلَن بالاسم:** `Diagnostics` تملك أربعة أقسام (النظرة العامة والنظام
-        // والمستشعرات والكاميرا) فلا يمكن أن يكون المعكوس عليها إلا واحدًا. والمقصود المستشعرات — وهي
-        // بطاقتها فعلًا (`SensorInventoryCard`) — وطلب المالك صريحًا.
-        assertEquals(DeviceInfoSection.Sensors, deviceInfoShortcutSection(MaxDestination.Diagnostics))
+    fun `the device lab opens the sensors section, not the system one`() {
+        // **والاستثناء مُعلَن بالاسم:** `DeviceLab` تملك أربعة أقسام (النظرة العامة والنظام
+        // والمستشعرات والكاميرا) بعد حذف شاشة التشخيص بأمر المالك، فلا يكون المعكوس عليها إلا
+        // واحدًا. والمقصود المستشعرات — وهي بطاقتها فعلًا (`SensorInventoryCard`).
+        assertEquals(DeviceInfoSection.Sensors, deviceInfoShortcutSection(MaxDestination.DeviceLab))
         // **والتشخيص هي الوجهة الوحيدة التي تملك أكثر من قسم** — فلو صارت شاشة أخرى كذلك
         // لَما كان معكوسها واحدًا بلا اختيار، وهو ما يجب أن يُقال في هذا الاختبار لا أن يُسكت
         // عنه (وإلا صار معكوسًا مُخمَّنًا ينحرف بصمت حين ينتقل قسم من شاشة إلى أخرى).
         assertEquals(
-            "الاستثناء الوحيد في الخريطة يجب أن يكون التشخيص",
-            listOf("Diagnostics"),
+            "الاستثناء الوحيد في الخريطة يجب أن يكون مختبر الجهاز",
+            listOf("DeviceLab"),
             MaxDestination.All
                 .filter { owner -> DeviceInfoSection.entries.count { maxDeviceInfoSource(it) == owner } > 1 }
                 .map { it::class.simpleName },

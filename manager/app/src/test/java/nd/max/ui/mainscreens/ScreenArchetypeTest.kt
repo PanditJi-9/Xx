@@ -1,0 +1,493 @@
+/*
+ * Copyright (C) 2026 Nader Magdy. All rights reserved.
+ * Proprietary and confidential — not licensed for use, copying, or distribution
+ * without prior written permission from the copyright holder.
+ */
+package nd.max.ui.mainscreens
+
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
+import org.junit.Assume.assumeTrue
+import org.junit.Test
+import java.io.File
+
+/**
+ * **كل شاشة رئيسية تسمّي نوعها قبل أن تُخطَّط.**
+ *
+ * `DESIGN.md` §Screen Composition يقرّر أن الكائن يقرّر الشكل، ويشترط تسمية النوع
+ * قبل أول خطوة. وهذا الحارس يمنع أن يعود التخطيط إلى «قالب واحد لكل شيء»: شاشة بلا
+ * نوع مسمّى هي شاشة تُنسخ من جارتها لا من كائنها.
+ *
+ * وحدّه المُعلَن: فحص نصّي على البطاقة، لا حكمًا على الشكل المعروض — الشكل يحتاج جهازًا.
+ */
+class ScreenArchetypeTest {
+
+    /** شاشة M2: النوع المقصود، وحاملها، وعدد استدعاءاته المقصود. */
+    private data class M2Screen(
+        val path: String,
+        val archetype: String,
+        val carrierCall: String,
+        val carrierPath: String = path,
+        /** العدد المقصود من استدعاءات الحامل في ملفّ الشاشة (السجلّ صار اثنين — تكملة ٨٨). */
+        val carrierCalls: Int = 1,
+    )
+
+    /** الأنواع السبعة كما في `DESIGN.md` §Screen Composition. */
+    private val archetypes = setOf(
+        "Instrument", "Ledger", "Console", "Matrix", "Studio", "Flow", "Library",
+    )
+
+    private val screens = listOf(
+        "HomeScreen.kt",
+        "ControlScreen.kt",
+        "SettingsScreen.kt",
+        "ApplistScreen.kt",
+        "MaxAiScreen.kt",
+    )
+
+    /** شاشات M2 الخمس كما في `PRODUCT-MAP.md` §٥ — النوع والحامل المقصود. */
+    private val m2Screens = listOf(
+        M2Screen(
+            path = "ui/mainscreens/HomeScreen.kt",
+            archetype = "Matrix",
+            carrierCall = "CommandDeck",
+            carrierPath = "ui/mainscreens/LegendaryHomeDashboard.kt",
+        ),
+        M2Screen("ui/mainscreens/ControlScreen.kt", "Matrix", "MaxListScreen"),
+        M2Screen("ui/subscreens/FpsOverlayScreen.kt", "Instrument", "HudSurface"),
+        M2Screen(
+            path = "ui/subscreens/GameSessionsScreen.kt",
+            archetype = "Ledger",
+            // **استدعاءان مقصودان (أمر المالك، تكملة ٨٨):** التقرير العلوي لبيانات المسجّل،
+            // وتقرير الصفّ المفتوح ينزل تحت صفّه. وملفّ التقرير يُعرِّف الدالة ولا يستدعيها،
+            // فعدّ الاستدعاءات فيه صفر.
+            carrierCall = "GameSessionReport",
+            carrierCalls = 2,
+        ),
+        M2Screen("ui/subscreens/ThermalDetailScreen.kt", "Instrument", "ThermalTrend"),
+    )
+
+    private fun sourceRoot(): File? = listOf(
+        File("src/main/java/nd/max"),
+        File("app/src/main/java/nd/max"),
+        File("../app/src/main/java/nd/max"),
+        File("manager/app/src/main/java/nd/max"),
+    ).firstOrNull { it.isDirectory }
+
+    @Test
+    fun `every primary screen names one of the seven archetypes`() {
+        val root = sourceRoot()
+        assumeTrue("Cannot locate nd.max sources; guard not evaluated", root != null)
+        val missing = mutableListOf<String>()
+        val unknown = mutableListOf<String>()
+        screens.forEach { name ->
+            val file = File(root, "ui/mainscreens/$name")
+            if (!file.isFile) {
+                missing += "$name (الملف غير موجود)"
+                return@forEach
+            }
+            val text = file.readText()
+            val archetype = Regex("archetype: (\\w+)").find(text)?.groupValues?.get(1)
+            when {
+                archetype == null -> missing += "$name (بلا بطاقة نوع)"
+                archetype !in archetypes -> unknown += "$name → $archetype"
+            }
+        }
+        assertEquals("شاشات بلا نوع مسمّى: $missing", emptyList<String>(), missing)
+        assertEquals("أنواع ليست من السبعة في DESIGN.md: $unknown", emptyList<String>(), unknown)
+    }
+
+    @Test
+    fun `the archetype is declared before the composable it describes`() {
+        val root = sourceRoot()
+        assumeTrue("Cannot locate nd.max sources; guard not evaluated", root != null)
+        screens.forEach { name ->
+            val text = File(root, "ui/mainscreens/$name").readText()
+            val card = text.indexOf("archetype:")
+            val screen = text.indexOf("fun ${name.removeSuffix(".kt")}(")
+            assertTrue(
+                "$name: البطاقة بعد الشاشة أو غائبة",
+                card >= 0 && screen > card,
+            )
+        }
+    }
+
+    @Test
+    fun `M2 screens name their intended archetype and render their intended carriers`() {
+        val root = sourceRoot()
+        assumeTrue("Cannot locate nd.max sources; guard not evaluated", root != null)
+
+        m2Screens.forEach { screen ->
+            val screenText = File(root, screen.path).readText()
+            val archetype = Regex("archetype: (\\w+)").find(screenText)?.groupValues?.get(1)
+            assertEquals("${screen.path}: نوع M2 تغيّر", screen.archetype, archetype)
+
+            val carrierText = File(root, screen.carrierPath).readText()
+            val calls = Regex("(?m)^\\s*${Regex.escape(screen.carrierCall)}\\(")
+                .findAll(carrierText)
+                .count()
+            assertEquals(
+                "${screen.path}: عدد استدعاءات الحامل ${screen.carrierCall} تغيّر",
+                screen.carrierCalls,
+                calls,
+            )
+        }
+    }
+
+    @Test
+    fun `M2 carriers lead their dependent rows and static blocks`() {
+        val root = sourceRoot()
+        assumeTrue("Cannot locate nd.max sources; guard not evaluated", root != null)
+
+        // ترتيب `Now` محفوظ كما اعتمده المالك (`HomeShapeContractTest`): الهوية أولًا،
+        // فمنصة Matrix لا تتقدّم البطل. وهذا الحارس يمنع أن «تُقدَّم» المنصة لاحقًا باسم M2.
+        val now = File(root, "ui/mainscreens/LegendaryHomeDashboard.kt").readText()
+        assertTrue(
+            "Now: منصة Matrix تقدّمت بطاقة الهوية المعتمدة",
+            callIndex(now, "HomeHeroCard") < callIndex(now, "CommandDeck"),
+        )
+
+        val fps = File(root, "ui/subscreens/FpsOverlayScreen.kt").readText()
+        // الحامل صار بطاقة المعاينة نفسها (`HudPreviewCard`) بعد M4: قراءة اللقطة الحيّة
+        // انتقلت إلى داخل تركيبها، فموضع `HudSurface(` في الملف تابع للتعريف لا للترتيب.
+        assertTrue(
+            "FpsOverlay: أدوات الضبط تسبق الآلة",
+            callIndex(fps, "HudPreviewCard") < callIndex(fps, "MaxSwitchRow"),
+        )
+        // المعاينة والنافذة الحيّة تقرآن مرشّحًا واحدًا: كانت المعاينة تفترض `All`
+        // فتعرض ما أخفاه المستخدم في اللعبة (عطب فِدْيَة قيس وأُصلح في M2).
+        assertTrue(
+            "FpsOverlay: المعاينة لا تمرّر مرشّح النافذة",
+            fps.substringAfter("HudSurface(").take(1600).contains("filter = state.filter"),
+        )
+
+        val sessions = File(root, "ui/subscreens/GameSessionsScreen.kt").readText()
+        val rowsAt = sessions.indexOf("sessions.forEach")
+        assertTrue(
+            "GameSessions: تقرير المسجّل غاب عن مقدّمة الشاشة",
+            // التقرير الحامل يسبق السجلّ: الأرقام والمنحنى في موضع واحد، والصفوف بعده.
+            callIndex(sessions, "GameSessionReport") < rowsAt,
+        )
+        val expandedAt = sessions.indexOf("if (expandedId == session.id) {")
+        val storedReportAt = sessions.indexOf("GameSessionReport(", rowsAt + 1)
+        val storedActionsAt = sessions.indexOf("MaxGroup {", storedReportAt + 1)
+        assertTrue(
+            "GameSessions: تقرير الصفّ المفتوح لم ينزل تحت صفّه",
+            // الاستدعاء الثاني داخل فرع الفتح، وبعد الصفّ وقبل مجموعة أفعاله.
+            expandedAt > rowsAt &&
+                storedReportAt > expandedAt &&
+                storedActionsAt > storedReportAt,
+        )
+
+        // زرّ «سجّل لعبة» (طلب المالك): الجلسة تبدأ بالحزمة المختارة، لا بما يظهر في المقدمة.
+        assertTrue(
+            "GameSessions: زرّ تسجيل لعبة بعينها غاب",
+            sessions.contains("R.string.game_sessions_record_game") &&
+                sessions.contains("GamePickerSheet(") &&
+                sessions.contains("HudRecorder.start(context, app.packageName)"),
+        )
+
+        val thermal = File(root, "ui/subscreens/ThermalDetailScreen.kt").readText()
+        assertTrue(
+            "ThermalDetail: الصفوف تسبق منحنى الآلة",
+            callIndex(thermal, "ThermalTrend") < callIndex(thermal, "MaxRow"),
+        )
+    }
+
+    /**
+     * **M3: لكل شاشة قائمة حالاتها، ولا عرض ثابت يكسر شاشة ٣٦٠dp.**
+     *
+     * البطاقة تسمّي الحالات (فراغ · مجهول · صلاحية) كما يطلب `PRODUCT_MAP` M3، فيُقرأ
+     * السلوك من الشاشة نفسها لا من ذاكرة أحد. والحدّ المُعلَن: هذا فحص نصّي — القصّ الفعلي
+     * للخطوط في ٣٦٠dp يحتاج جهازًا.
+     */
+    /**
+     * **الزمن في السجلّ مدةٌ من بدء الجلسة، لا طابعٌ مطلق.**
+     *
+     * `HudRecorder.feed` يختم العيّنة بـ`System.currentTimeMillis()`، فمن يعرض `atMs` كما هو
+     * يكتب «عند 498422:15:16» — وقد حدث فعلًا (لقطة المالك، ٢٠٢٦-١١-١٢). الحارس يمنع عودة
+     * الاستدعاء المطلق ويثبّت الطرح من أول عيّنة. حدّه: فحص نصّي، والحكم على الشكل يحتاج جهازًا.
+     */
+    @Test
+    fun `session clocks are elapsed from the first sample, never epoch`() {
+        val root = sourceRoot()
+        assumeTrue("Cannot locate nd.max sources; guard not evaluated", root != null)
+        val sessions = File(root, "ui/subscreens/GameSessionsScreen.kt").readText()
+        // المنحنى انتقل في إعادة البناء إلى تقرير الجلسة، فالطرح يُفحص حيث يعيش الآن:
+        // محور القراءة يطرح أول عيّنة، وقارئ السحب يطرحها صراحةً قبل التنسيق.
+        val report = File(root, "ui/subscreens/GameSessionReport.kt").readText()
+        assertFalse(
+            "ساعة التقرير عادت تعرض الطابع المطلق",
+            sessions.contains("reportClock(point.atMs") || report.contains("reportClock(point.atMs")
+        )
+        assertTrue(
+            "الطرح من أول عيّنة غاب عن محور المنحنى",
+            report.contains("(atMs - origin)") && report.contains("points.firstOrNull()?.atMs ?: 0L")
+        )
+        assertTrue(
+            "قارئ السحب صار ينسّق الطابع المطلق",
+            report.contains("- (points.firstOrNull()?.atMs ?: 0L)")
+        )
+    }
+
+    @Test
+    fun `M4 live screens scope their snapshot reads to the part that draws them`() {
+        val root = sourceRoot()
+        assumeTrue("Cannot locate nd.max sources; guard not evaluated", root != null)
+
+        // الجذر كان يقرأ `HudLive.snapshot` كاملًا، فتغيّر `reading` مع كل عيّنة يُبطل الشاشة كلها.
+        // الحدّ المُعلن: فحص نصّي على منطقة الجذر، لا عدّ إعادات تركيب — العدّ يحتاج جهازًا.
+        val fps = File(root, "ui/subscreens/FpsOverlayScreen.kt").readText()
+        val fpsRoot = fps.substringAfter("fun FpsOverlayScreen(")
+            .substringBefore("\n@Composable\nprivate fun ")
+        assertFalse(
+            "FpsOverlay: جذر الشاشة عاد يقرأ اللقطة الحيّة",
+            fpsRoot.contains("HudLive.snapshot.collectAsState()"),
+        )
+        assertTrue(
+            "FpsOverlay: القراءة المقصوصة بـderivedStateOf غابت",
+            fpsRoot.contains("derivedStateOf { HudLive.snapshot.value"),
+        )
+
+        val sessions = File(root, "ui/subscreens/GameSessionsScreen.kt").readText()
+        val sessionsRoot = sessions.substringAfter("fun GameSessionsScreen(")
+            .substringBefore("\n@Composable\nprivate fun ")
+        assertFalse(
+            "GameSessions: جذر الشاشة عاد يقرأ اللقطة الحيّة",
+            sessionsRoot.contains("HudLive.snapshot.collectAsState()"),
+        )
+        assertTrue(
+            "GameSessions: القراءة المقصوصة بـderivedStateOf غابت",
+            sessionsRoot.contains("derivedStateOf { HudLive.snapshot.value"),
+        )
+        assertFalse(
+            "GameSessions: النبضة عادت تدور بلا تسجيل فتُبطل السجلّ كل ثانية",
+            sessionsRoot.contains("while (true)"),
+        )
+    }
+
+    @Test
+    fun `M3 screens list their states and hardcode no width wider than a small phone`() {
+        val root = sourceRoot()
+        assumeTrue("Cannot locate nd.max sources; guard not evaluated", root != null)
+
+        m2Screens.forEach { screen ->
+            val text = File(root, screen.path).readText()
+            assertTrue("${screen.path}: بطاقة الشاشة بلا قائمة حالات (States:)", text.contains("\n * States: "))
+            val tooWide = Regex("""\.(?:required)?[Ww]idth\((\d+)\.dp\)""")
+                .findAll(text)
+                .mapNotNull { it.groupValues[1].toIntOrNull() }
+                .filter { it > 320 }
+                .toList()
+            assertTrue("${screen.path}: عرض ثابت يتجاوز ٣٢٠dp = $tooWide", tooWide.isEmpty())
+        }
+
+        // المنصة كانت تُرسم رأسًا وفراغًا حين لا بطاقة؛ فالحالة الفارغة صارت سطرًا يسمّي المسار.
+        val deck = File(root, "ui/mainscreens/HomeCommandDeck.kt").readText()
+        assertTrue("Now: المنصة الفارغة بلا سطر", deck.contains("R.string.home_deck_empty"))
+    }
+
+    /**
+     * **صنفان من العطب يُمسحان على كل الشاشات، لا على شاشةٍ واحدة.**
+     *
+     * الأوّل: `steps` كبيرة على مسار قصير تحوّل مقياس Material3 إلى خطّ منقّط — قرأه
+     * المالك «مسارًا منقّطًا» في `GameSessions`. والثاني: فعلٌ يُنفَّذ فورًا (حذف/محو/
+     * إعادة ضبط) مرسومٌ كصفّ تنقّل بسهم، فيُقرأ بابًا ويُضغط مرتين قبل أن يُفهم.
+     *
+     * والحدّ المُعلَن: فحص نصّي — السلوك نفسه يُرى على الجهاز.
+     */
+    @Test
+    fun `destructive rows carry no chevron and no slider draws a dotted track`() {
+        val root = sourceRoot()
+        assumeTrue("Cannot locate nd.max sources; guard not evaluated", root != null)
+
+        val kotlinFiles = File(root!!, "ui").walkTopDown()
+            .filter { it.isFile && it.extension == "kt" }
+            .toList()
+        assertTrue("لم تُقرأ ملفات ui", kotlinFiles.size > 100)
+
+        // ١) لا خطوة ≥ ٢٠: فوقها تصير العلامات نقاطًا متلاصقة.
+        val stepPattern = Regex("""steps\s*=\s*(\d+)""")
+        val dense = kotlinFiles.flatMap { file ->
+            file.readLines().mapNotNull { line ->
+                if (line.contains("val steps")) return@mapNotNull null
+                stepPattern.find(line)?.groupValues?.get(1)?.toIntOrNull()
+                    ?.takeIf { it >= 20 }
+                    ?.let { "${file.name}:$it" }
+            }
+        }
+        assertTrue("مسار منقّط: خطوات ≥ ٢٠ = $dense", dense.isEmpty())
+
+        // ٢) الفعل المُدمِّر لا يُلبَس سهم باب — يُفحص داخل صفوف التنقّل وحدها،
+        //    فلا تُحسب عناوين حوارات التأكيد صفوفًا.
+        val destructive = listOf(
+            "hud_session_clear",
+            "hud_monitor_delete",
+            "game_sessions_delete",
+            "game_sessions_clear_history",
+            "device_lab_result_clear",
+            "ify_cust_reset",
+        ).map { "R.string.$it" }
+        var destructiveRows = 0
+        kotlinFiles.forEach { file ->
+            val text = file.readText()
+            destructive.forEach { token ->
+                var at = text.indexOf(token)
+                while (at >= 0) {
+                    // الصفّ الذي يملك هذا العنوان هو أقرب `MaxNavigationRow(` قبله.
+                    val rowStart = text.lastIndexOf("MaxNavigationRow(", at)
+                    if (rowStart >= 0 && at - rowStart < 700) {
+                        destructiveRows++
+                        val block = text.substring(rowStart, (at + 400).coerceAtMost(text.length))
+                        assertTrue(
+                            "${file.name}: $token صفّ مُدمِّر بسهم تنقّل",
+                            block.contains("showChevron = false"),
+                        )
+                    }
+                    at = text.indexOf(token, at + 1)
+                }
+            }
+        }
+        assertTrue("لم يُفحص أي صفّ مُدمِّر", destructiveRows >= 6)
+    }
+
+    /**
+     * **التهيئة تنتهي داخل العملية، ولا تُترك شاشة «جاري الإعداد» معلّقة.**
+     *
+     * كان الإنهاء يكتب العلم ثم يستدعي `am start -S` عبر `su`/Shizuku لإعادة تشغيل
+     * العملية، فإن تأخّر الصدفة أو رُفض الأمر بقي الغطاء الدوّار أبدًا. الآن يُكتب العلم
+     * ويُنقل داخل `NavHost` نفسه، و`MainActivity` تسمع تغيّر التفضيل فتُظهر المنصة Tour
+     * بلا إعادة تشغيل — والحارس يمنع عودة الاستدعاء المعلّق أو الغطاء.
+     *
+     * وحدّه المُعلَن: فحص نصّي على المصدر؛ السلوك على الجهاز يحتاج جهازًا.
+     */
+    @Test
+    fun `onboarding completes in-process and never strands the finalizing scrim`() {
+        val root = sourceRoot()
+        assumeTrue("جذر المصادر غير متاح", root != null)
+        val started = File(root, "ui/mainscreens/GetStartedScreen.kt").readText()
+
+        assertTrue(
+            "التهيئة لا تكتب علم الإكمال",
+            started.contains("has_completed_get_started"),
+        )
+        assertTrue(
+            "التهيئة لا تنقل داخل الرسم البياني",
+            started.contains("popUpTo(nd.max.ui.navigation.MaxDestination.GetStarted.route)"),
+        )
+        assertFalse(
+            "عاد غطاء «جاري الإعداد» المعلّق",
+            started.contains("isFinalizing"),
+        )
+        assertFalse(
+            "عاد إعادة التشغيل عبر am start",
+            started.contains("am start -S"),
+        )
+
+        val activity = File(root, "MainActivity.kt").readText()
+        assertTrue(
+            "علم الإكمال لا يتحدّث داخل العملية",
+            activity.contains("OnSharedPreferenceChangeListener"),
+        )
+    }
+
+    /**
+     * **المجتمع في «حول» وحدها، والقناة وحدها في التهيئة.**
+     *
+     * طلب المالك: يُضاف المستودع والقناة والجروب إلى «حول»؛ والجروب **لا** يظهر في شاشة
+     * البداية. والحدّ المُعلَن: فحص نصّي على الروابط، لا حكم على الشكل أو على فتح الرابط.
+     */
+    @Test
+    fun `about carries the community links and onboarding keeps only the channel`() {
+        val root = sourceRoot() ?: return
+        val about = File(root, "ui/subscreens/AboutScreen.kt").readText()
+        val onboarding = File(root, "ui/mainscreens/GetStartedScreen.kt").readText()
+
+        assertTrue("حول: المستودع غائب", about.contains("https://github.com/nader295/MaxManager"))
+        assertTrue("حول: القناة غائبة", about.contains("https://t.me/GetMaxManager"))
+        assertTrue("حول: الجروب غائب", about.contains("https://t.me/MaxManagerChat"))
+        assertTrue("حول: صفّ GitHub بلا أيقونته", about.contains("R.drawable.ic_github"))
+
+        assertTrue("التهيئة: القناة غائبة", onboarding.contains("https://t.me/GetMaxManager"))
+        assertFalse(
+            "الجروب يجب أن يبقى في «حول» وحدها",
+            onboarding.contains("MaxManagerChat")
+        )
+    }
+
+    /**
+     * **باب السجلّ يُفتح نسخةً واحدة، وسلّم الرجوع يطوي المفتوح قبل الخروج.**
+     *
+     * شكوى المالك (تكملة ٨٨): «السجلّ في Game Space… عندما أرجع لا يرجع، أظنّني عالق على
+     * الشاشة». المسار البنيوي الذي نمنعه هنا هو تكديس نسختين عند النقر السريع، مع سلّم
+     * رجوع واحد ومتّسق لسهم الشريط ورجوع النظام حين يكون تقرير محلي مفتوحًا.
+     *
+     * وحدّه المُعلَن: فحص نصّي على المصدر؛ السلوك واللمس على الجهاز.
+     */
+    @Test
+    fun `the sessions log opens single-top and back folds one opened row before exit`() {
+        val root = sourceRoot()
+        assumeTrue("Cannot locate nd.max sources; guard not evaluated", root != null)
+
+        val entries = listOf(
+            "GameLobbyScreen.kt" to File(root, "ui/subscreens/GameLobbyScreen.kt").readText(),
+            "FpsOverlayScreen.kt" to File(root, "ui/subscreens/FpsOverlayScreen.kt").readText(),
+        )
+        entries.forEach { (name, text) ->
+            val at = text.indexOf("MaxDestination.GameSessions.route")
+            assertTrue("$name: باب السجلّ غاب", at >= 0)
+            assertTrue(
+                "$name: باب السجلّ بلا launchSingleTop — التكديس يجعل الرجوع يبدو معطّلًا",
+                text.substring(at, (at + 320).coerceAtMost(text.length))
+                    .contains("launchSingleTop = true"),
+            )
+        }
+
+        val sessions = File(root, "ui/subscreens/GameSessionsScreen.kt").readText()
+        assertTrue(
+            "GameSessions: سلّم الرجوع غاب — أول ضغطة يجب أن تطوي الجلسة المفتوحة",
+            sessions.contains("BackHandler(enabled = expandedId != null) { expandedId = null }"),
+        )
+        val topBack = sessions.substringAfter("onBack = {").take(220)
+        assertTrue(
+            "GameSessions: سهم الشريط لا يتبع سلّم رجوع النظام",
+            topBack.contains("expandedId = null") &&
+                topBack.contains("navController.popBackStack()"),
+        )
+    }
+
+    @Test
+    fun `session report numbers adapt to narrow width and large font without false alarms`() {
+        val root = sourceRoot()
+        assumeTrue("Cannot locate nd.max sources; guard not evaluated", root != null)
+        val report = File(root, "ui/subscreens/GameSessionReport.kt").readText()
+        val grid = report.substringAfter("private fun ReportStatGrid(")
+            .substringBefore("private fun heatSpan(")
+        assertTrue("التقرير: الشبكة لا تقيس العرض والخط", grid.contains("BoxWithConstraints(") &&
+            grid.contains("MaxCardSpec.minColumnWidth") && grid.contains("MaxVisualSpec.largeFontScale"))
+        assertEquals("التقرير: بعض أزواج القيم لا تتكيّف", 4,
+            Regex("stacked = stacked").findAll(grid).count())
+        val cell = grid.substringAfter("private fun StatCell(")
+        assertTrue("التقرير: الوحدة لا تلتف عند ضيق الخانة", cell.contains("FlowRow("))
+        assertFalse("التقرير: تسمية المقياس تُقصّ في العربية", cell.contains("maxLines = 1"))
+        assertTrue("التقرير: القيمة المجهولة لم تعد محايدة", cell.contains("if (text.value == null) variant"))
+        assertFalse("التقرير: الحرارة والتقطيع يُعلنان خطأ بلا حكم", grid.contains("scheme.error"))
+    }
+
+    @Test
+    fun `performance session actions precede field settings and device channels are folded`() {
+        val root = sourceRoot()
+        assumeTrue("Cannot locate nd.max sources; guard not evaluated", root != null)
+        val fps = File(root, "ui/subscreens/FpsOverlayScreen.kt").readText()
+        val sessionAt = fps.indexOf("title = stringResource(R.string.hud_section_session)")
+        val fieldsAt = fps.indexOf("title = stringResource(R.string.hud_section_fields)")
+        assertTrue("الأداء: الجلسة مدفونة بعد ضبط الحقول", sessionAt >= 0 && fieldsAt > sessionAt)
+        val channels = fps.substringAfter("title = stringResource(R.string.hud_channels_title)")
+            .substringBefore("MaxGroup {")
+        assertTrue("الأداء: تشخيص القنوات لا يُطوى", channels.contains("collapsible = true"))
+    }
+
+    private fun callIndex(source: String, call: String): Int =
+        Regex("(?m)^\\s*${Regex.escape(call)}\\(").find(source)?.range?.first ?: Int.MAX_VALUE
+}

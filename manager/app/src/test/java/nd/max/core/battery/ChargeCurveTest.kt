@@ -129,4 +129,34 @@ class ChargeCurveTest {
         // القطع من البداية: آخر عيّنة تبقى، وأول عيّنة لا.
         assertEquals(300L * 60_000L, window.points.last().atMillis)
     }
+
+    @Test
+    fun energy_and_charge_integrate_the_whole_window_with_trapezoids() {
+        // 4 V × 1 A = 4 W ثابتة لعشر دقائق ⇒ 4 × (10/60) = 0.6667 Wh، و1000 mA × (10/60) = 166.67 mAh.
+        val window = ChargeCurve.window(
+            listOf(
+                sample(atMillis = 0L, level = 20, voltageMv = 4000, currentUa = 1_000_000L),
+                sample(atMillis = 300_000L, level = 25, voltageMv = 4000, currentUa = 1_000_000L),
+                sample(atMillis = 600_000L, level = 30, voltageMv = 4000, currentUa = 1_000_000L),
+            )
+        )!!
+
+        assertEquals(0.6667f, window.energyWh!!, 0.001f)
+        assertEquals(166.67f, window.chargeMah!!, 0.01f)
+    }
+
+    @Test
+    fun an_unknown_endpoint_skips_its_interval_and_does_not_become_zero() {
+        // الجهد مجهول في الوسط: لا فاصل طاقة صالحًا ⇒ null، لكن التيار معروف ⇒ الشحنة تُحسب.
+        val window = ChargeCurve.window(
+            listOf(
+                sample(atMillis = 0L, level = 20, voltageMv = 4000, currentUa = 1_000_000L),
+                sample(atMillis = 300_000L, level = 25, voltageMv = null, currentUa = 1_000_000L),
+                sample(atMillis = 600_000L, level = 30, voltageMv = 4000, currentUa = 1_000_000L),
+            )
+        )!!
+
+        assertNull(window.energyWh)
+        assertEquals(166.67f, window.chargeMah!!, 0.01f)
+    }
 }

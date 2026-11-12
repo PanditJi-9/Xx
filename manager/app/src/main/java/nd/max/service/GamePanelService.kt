@@ -855,7 +855,7 @@ class GamePanelService : LifecycleService() {
     }
 
     private fun toggleRecording() {
-        if (HudRecorder.isLive) HudRecorder.stop() else HudRecorder.start()
+        if (HudRecorder.isLive) HudRecorder.stop(this) else HudRecorder.start(this)
     }
 
     /**

@@ -44,6 +44,7 @@ object FpsOverlayPrefs {
     private const val KEY_GRAPH = "hud_graph"
     private const val KEY_GRAPH_SPAN = "hud_graph_span"
     private const val KEY_INTERVAL = "hud_interval_ms"
+    private const val KEY_FILTER = "hud_filter"
     private const val KEY_SNAP = "hud_snap_edges"
     private const val KEY_POS_X = "hud_pos_x"
     private const val KEY_POS_Y = "hud_pos_y"
@@ -79,6 +80,7 @@ object FpsOverlayPrefs {
         val graphSpan: Int = 20,
         val snapEdges: Boolean = true,
         val intervalMs: Int = DEFAULT_INTERVAL_MS,
+        val filter: HudFilter = HudFilter.All,
     ) {
         /** الحقول بترتيب العرض: ترتيب النوع نفسه، فلا صفّ يُعاد ترتيبه بالتخزين. */
         val orderedFields: List<HudField> get() = HudField.entries.filter { it in fields }
@@ -108,6 +110,7 @@ object FpsOverlayPrefs {
             snapEdges = p.getBoolean(KEY_SNAP, true),
             intervalMs = p.getInt(KEY_INTERVAL, DEFAULT_INTERVAL_MS)
                 .takeIf { it in INTERVAL_CHOICES } ?: DEFAULT_INTERVAL_MS,
+            filter = enumOr(p.getString(KEY_FILTER, null), HudFilter.entries, HudFilter.All),
         )
     }
 
@@ -125,6 +128,7 @@ object FpsOverlayPrefs {
             putInt(KEY_GRAPH_SPAN, state.graphSpan)
             putBoolean(KEY_SNAP, state.snapEdges)
             putInt(KEY_INTERVAL, state.intervalMs)
+            putString(KEY_FILTER, state.filter.name)
             apply()
         }
     }

@@ -86,7 +86,6 @@ fun NavGraphBuilder.maxNavGraph(navController: NavHostController) {
 
     composable(MaxDestination.GameLobby.route) { FeatureGate(RemoteFlags.GAMESPACE, navController) { GameLobbyScreen(navController) } }
     composable(MaxDestination.EmulatorHub.route) { FeatureGate(RemoteFlags.EMUHUB, navController) { EmulatorHubScreen(navController) } }
-    composable(MaxDestination.HmaCompanion.route) { HmaCompanionScreen(navController) }
 
     // Feature screens
     composable(MaxDestination.CpuCoreControl.route) { CpuCoreControlScreen(navController) }
@@ -101,6 +100,7 @@ fun NavGraphBuilder.maxNavGraph(navController: NavHostController) {
     composable(MaxDestination.FpsGo.route) { FpsGoSettings(navController) }
     composable(MaxDestination.Fas.route) { FasScreen(navController) }
     composable(MaxDestination.FpsOverlay.route) { FpsOverlayScreen(navController) }
+    composable(MaxDestination.GameSessions.route) { GameSessionsScreen(navController) }
     composable(MaxDestination.DynamicIsland.route) { DynamicIslandScreen(navController) }
     composable(MaxDestination.ThermalDetail.route) { ThermalDetailScreen(navController) }
     composable(MaxDestination.Charging.route) { ChargingScreen(navController) }
@@ -122,7 +122,6 @@ fun NavGraphBuilder.maxNavGraph(navController: NavHostController) {
     }
 
     // Settings children
-    composable(MaxDestination.Diagnostics.route) { DiagnosticsScreen(navController) }
     composable(MaxDestination.DeviceLab.route) { DeviceLabScreen(navController) }
     composable(MaxDestination.UsageStats.route) { UsageStatsScreen(navController) }
     composable(MaxDestination.BatteryHistory.route) { BatteryHistoryScreen(navController) }
@@ -163,7 +162,6 @@ fun NavGraphBuilder.maxNavGraph(navController: NavHostController) {
     }
     composable(MaxDestination.About.route) { AboutScreen(navController) }
     composable(MaxDestination.Privilege.route) { PrivilegeScreen(navController) }
-    composable(MaxDestination.ModuleHealth.route) { ModuleHealthScreen(navController) }
 
     // Control → Tools — advanced tools, gated by risk where they can wedge the device.
     composable(MaxDestination.SetEdit.route) { SetEditScreen(navController) }

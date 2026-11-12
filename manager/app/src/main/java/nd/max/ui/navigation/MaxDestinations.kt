@@ -34,6 +34,7 @@ import androidx.compose.material.icons.rounded.Key
 import androidx.compose.material.icons.automirrored.rounded.Launch
 import androidx.compose.material.icons.automirrored.rounded.ListAlt
 import androidx.compose.material.icons.rounded.GraphicEq
+import androidx.compose.material.icons.rounded.History
 import androidx.compose.material.icons.automirrored.rounded.VolumeUp
 import androidx.compose.material.icons.rounded.Memory
 import androidx.compose.material.icons.rounded.NetworkCheck
@@ -245,6 +246,15 @@ sealed class MaxDestination(
     data object FpsOverlay : MaxDestination("fpsoverlay", R.string.fps_overlay_title, Icons.Rounded.PictureInPicture, Control)
 
     /**
+     * **جلسات اللعب — سطحٌ منفصل يقرأ ما يسجّله التراكب.**
+     *
+     * وُضع تحت `Control` لا تحت `Apps`: هو امتداد لشاشة الأداء ([FpsOverlay])، ويُفتح
+     * لمعرفة ما جرى لا لتشغيل لعبة. واللوبي يصل إليه بزرّ مباشر، فالقرب من الألعاب
+     * يبقى في الوصول لا في الشجرة.
+     */
+    data object GameSessions : MaxDestination("gamesessions", R.string.game_sessions_title, Icons.Rounded.History, Control)
+
+    /**
      * الجزيرة الديناميكية — تراكبٌ حيّ يجمع الإشعارات العابرة والوسائط والشحن والمؤشرات في
      * كبسولة واحدة (`DYNAMIC-ISLAND-01`).
      *
@@ -306,12 +316,33 @@ sealed class MaxDestination(
     //
     // مراقب المهام انتقل إلى `Control → Tools` بقرار المالك: هو **أداة** تُفتح على الجهاز لا
     // شاشة تخصّ تطبيقًا بعينه، ومكان الأدوات في شاشة التحكّم لا في مسار التشخيص داخل الإعدادات.
-    data object ProcessManager : MaxDestination("processmanager", R.string.processmgr_title, Icons.Rounded.Timeline, Control)
-    data object DebloatFreeze : MaxDestination("debloatfreeze", R.string.debloat_freeze_title, Icons.Rounded.CleaningServices, Apps)
+    data object ProcessManager : MaxDestination("processmanager", R.string.processmgr_title, Icons.Rounded.Timeline, MemoryHub)
+    data object DebloatFreeze : MaxDestination("debloatfreeze", R.string.debloat_freeze_title, Icons.Rounded.CleaningServices, Control)
     data object AppSettings : MaxDestination("app_settings/{pkg}", R.string.max_title_app_settings, Icons.Rounded.AppSettingsAlt, Apps)
 
-    // Settings children
-    data object Diagnostics : MaxDestination("diagnostics", R.string.section_diagnostics, Icons.Rounded.BugReport, Settings)
+    /**
+     * لوبي الألعاب بالعرضيّ — **سطح اللعب لا قائمة إعدادات**.
+     *
+     * كانت إلى جانبها شاشة مكتبة عمودية (`GameSpace`) أُزيلت بأمر المالك؛ فهذه الوجهة هي السطح
+     * الوحيد للألعاب: لوحة عرضية تُفتح من قائمة `Apps`، وتقود إلى التشغيل وملف اللعبة واللوحة
+     * الجانبية وإدارة المكتبة. **والوسم الافتراضي ([MaxRisk.Normal]) مقصود:** هذه الشاشة لا تكتب عتادًا
+     * (ADR-11)، و[MaxRisk.Advanced] محفوظ لأدوات الكتابة المحجوبة — فلا تُحجب لوحةُ اختيار لعبة.
+     *
+     * **واستُرجعت في تكملة ٨٥:** سقطت سهوًا مع كتلة `HmaCompanion` حين حُذفت شاشة HMA بأمر
+     * المالك، فكشفها عقد المعرض (`gallery.json` يطلب `gamelobby` ثلاث مرّات) قبل أن يكسر
+     * الرسمُ الترجمةَ. والحادثة نفسها هي سبب بقاء العقد: عقدٌ يطلب وجهةً يجعل حذفها غير صامت.
+     */
+    data object GameLobby : MaxDestination("gamelobby", R.string.game_lobby_title, Icons.Rounded.Gamepad, Apps)
+
+    /**
+     * **باب اللوبي في قائمة `Apps`** — كان سطحًا لا يُوصل إليه إلا من شاشة المكتبة وحدها.
+     *
+     * وليس هذا تنظيمًا شكليًّا: قائمة `Apps` تسرد كل وجهة أبوها `Apps`، ولو دخل اللوبي بها لظهر
+     * صفًّا عاديًّا إلى جانب أدوات مثل `SetEdit`. واللوبي **سطح لعب** لا أداة، فيُستثنى من السرد
+     * ويُوضع له **صفّ بارز في رأس القائمة** (`ApplistScreen.LobbyBanner`) — نفس مبدأ «الأبواب التي
+     * تهمّ في الصفّ الأول» (`ApplistScreen.GameLobbyDoor`).
+     */
+    data object EmulatorHub : MaxDestination("emulatorhub", R.string.emu_hub_title, Icons.Rounded.Apps, Apps)
 
     /**
      * `DEVICE-LAB-01` — الاختبار التفاعليّ للعتاد: شاشة ولمس وأزرار واهتزاز وصوت
@@ -331,7 +362,7 @@ sealed class MaxDestination(
      * ومنحنى مستوى ومعدّل تصريف من القياس لا من التقدير. **تحت التحكّم بأمر المالك**،
      * والكتابة الوحيدة فيها ملفّها في `filesDir`.
      */
-    data object BatteryHistory : MaxDestination("battery_history", R.string.battery_history_title, Icons.Rounded.BatteryFull, Control)
+    data object BatteryHistory : MaxDestination("battery_history", R.string.battery_history_title, Icons.Rounded.BatteryFull, PowerHub)
 
     /**
      * `LICENSE-KEYS-01` — شاشة الترخيص: مفتاحٌ يُكتب مرّة، وشهادة موقّعة تعمل بعدها بلا إنترنت.
@@ -355,7 +386,7 @@ sealed class MaxDestination(
      */
     // والمخاطرة تبقى `Normal`: التصنيف يخصّ ما قد يُربك الجهاز، وهذه الثلاثة تقرأ وتُظهر
     // ولا تكتب عتادًا. رفعها إلى `Advanced` كان سيصنّفها في بوّابة المخاطرة بلا سبب.
-    data object ColorPalette : MaxDestination("color_palette", R.string.theme, Icons.Rounded.Palette, Settings)
+    data object ColorPalette : MaxDestination("color_palette", R.string.theme, Icons.Rounded.Palette, Control)
     data object ColorScheme : MaxDestination("colorscheme", R.string.color_scheme, Icons.Rounded.ColorLens, Control)
     data object Logs : MaxDestination("logsviewer", R.string.logsviewer_title, Icons.AutoMirrored.Rounded.ListAlt, Control)
     data object ConfigBackup : MaxDestination("config_backup", R.string.max_nav_config_backup, Icons.Rounded.Backup, Settings)
@@ -394,28 +425,6 @@ sealed class MaxDestination(
     data object Permissions : MaxDestination("max_perms?pkg={pkg}", R.string.max_perms_title, Icons.Rounded.Shield, Control, MaxRisk.Advanced)
     data object About : MaxDestination("aboutscreen", R.string.section_about, Icons.Rounded.Info, Settings)
     data object Privilege : MaxDestination("privilege", R.string.max_privilege_title, Icons.Rounded.Shield, Settings)
-    data object ModuleHealth : MaxDestination("module_health", R.string.max_module_title, Icons.Rounded.Build, Settings)
-
-    /**
-     * لوبي الألعاب بالعرضيّ — **سطح اللعب لا قائمة إعدادات**.
-     *
-     * كانت إلى جانبها شاشة مكتبة عمودية (`GameSpace`) أُزيلت بأمر المالك؛ فهذه الوجهة هي السطح
-     * الوحيد للألعاب: لوحة عرضية تُفتح من قائمة `Apps`، وتقود إلى التشغيل وملف اللعبة واللوحة
-     * الجانبية وإدارة المكتبة. **والوسم الافتراضي ([MaxRisk.Normal]) مقصود:** هذه الشاشة لا تكتب عتادًا
-     * (ADR-11)، و[MaxRisk.Advanced] محفوظ لأدوات الكتابة المحجوبة — فلا تُحجب لوحةُ اختيار لعبة.
-     */
-    data object GameLobby : MaxDestination("gamelobby", R.string.game_lobby_title, Icons.Rounded.Gamepad, Apps)
-
-    /**
-     * **باب اللوبي في قائمة `Apps`** — كان سطحًا لا يُوصل إليه إلا من شاشة المكتبة وحدها.
-     *
-     * وليس هذا تنظيمًا شكليًّا: قائمة `Apps` تسرد كل وجهة أبوها `Apps`، ولو دخل اللوبي بها لظهر
-     * صفًّا عاديًّا إلى جانب أدوات مثل `SetEdit`. واللوبي **سطح لعب** لا أداة، فيُستثنى من السرد
-     * ويُوضع له **صفّ بارز في رأس القائمة** (`ApplistScreen.LobbyBanner`) — نفس مبدأ «الأبواب التي
-     * تهمّ في الصفّ الأول» (`ApplistScreen.GameLobbyDoor`).
-     */
-    data object EmulatorHub : MaxDestination("emulatorhub", R.string.emu_hub_title, Icons.Rounded.Apps, Apps)
-    data object HmaCompanion : MaxDestination("hma_companion", R.string.hma_companion_title, Icons.Rounded.Shield, null)
 
     // Control - Advanced tools (gated, not preferences)
     data object SetEdit : MaxDestination("setedit", R.string.max_title_setedit, Icons.Rounded.Edit, Control, MaxRisk.Advanced)
@@ -423,10 +432,10 @@ sealed class MaxDestination(
 
     /**
      * `GAP-09` — مدير الملفات بالجذر. أداة متقدّمة لا تفضيل: كل عملية تكتب على القرص
-     * خارج نطاق إعداداتنا، فمكانها تحت `Control → Tools` مع تعليم المخاطرة لا في قائمة
-     * تفضيلات تُقلَّب بلا انتباه.
+     * خارج نطاق إعداداتنا. **ونُقل إلى `StorageHub` بأمر المالك** (تكملة ٨٥): مدير الملفات
+     * شأنه شأن التخزين، ووجهته من السجلّ تتبع أبيها فلا قائمة ثانية تصطفّ بيد.
      */
-    data object FileManager : MaxDestination("filemanager", R.string.max_files_title, Icons.Rounded.Folder, Control, MaxRisk.Advanced)
+    data object FileManager : MaxDestination("filemanager", R.string.max_files_title, Icons.Rounded.Folder, StorageHub, MaxRisk.Advanced)
 
     companion object {
         /**
@@ -457,12 +466,13 @@ sealed class MaxDestination(
                 AudioStudio,
                 CpuCoreControl, GovernorSettings, PreferenceTweaks, GpuStudio,
                 ZramManager, MemoryUfs, DisplayStudio, Resolution, TouchBoost, FpsGo, Fas, FpsOverlay,
+                GameSessions,
                 DynamicIsland,
                 ThermalDetail, Charging, BypassCharging, BypassChargingCheck, DozeMode,
                 Dex2oat, StorageDetail, StorageCare, NetworkScheduler, NetworkDetail,
-                ProcessManager, DebloatFreeze, AppSettings, GameLobby, EmulatorHub, HmaCompanion,
-                ColorPalette, ColorScheme, Diagnostics, DeviceLab, UsageStats, BatteryHistory, License, Logs, ConfigBackup, CommunityStats, Plugins, MaxBackup, Permissions, About,
-                Privilege, ModuleHealth,
+                ProcessManager, DebloatFreeze, AppSettings, GameLobby, EmulatorHub,
+                ColorPalette, ColorScheme, DeviceLab, UsageStats, BatteryHistory, License, Logs, ConfigBackup, CommunityStats, Plugins, MaxBackup, Permissions, About,
+                Privilege,
                 SetEdit, ActivityLauncher, FileManager,
             )
         }

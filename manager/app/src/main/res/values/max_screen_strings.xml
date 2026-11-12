@@ -171,6 +171,12 @@
     <string name="max_zram_metric_used">Swap in use</string>
     <string name="max_zram_metric_ratio">Compression ratio</string>
     <string name="max_zram_metric_saved">RAM saved</string>
+    <string name="max_zram_metric_mem_used">Held in RAM</string>
+    <string name="max_zram_metric_mem_limit">Pool limit</string>
+    <string name="max_zram_metric_mem_peak">Peak held</string>
+    <string name="max_zram_metric_same_pages">Same-filled pages</string>
+    <string name="max_zram_metric_compacted">Compacted pages</string>
+    <string name="max_zram_limit_none">No limit</string>
     <string name="max_zram_metric_algo">Codec</string>
     <string name="max_zram_metric_swappiness">Swappiness</string>
     <string name="max_zram_metric_priority">Swap priority</string>
@@ -827,6 +833,7 @@
     <string name="memufs_overlay_rejected_title">Lines that were not accepted</string>
     <string name="memufs_overlay_rejected_desc">The file is read line by line; a bad line is refused with its reason and never drops the rest.</string>
     <string name="memufs_overlay_rejected_line">Line %1$d: %2$s</string>
+    <string name="memufs_overlay_rejected_more">+%1$d more refused lines</string>
     <string name="memufs_overlay_reason_shape">the line must be exactly: device kind</string>
     <string name="memufs_overlay_reason_name">the device name is not one path segment</string>
     <string name="memufs_overlay_reason_kind">unknown kind — use memory or storage</string>

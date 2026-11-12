@@ -3,6 +3,13 @@
  * Proprietary and confidential — not licensed for use, copying, or distribution
  * without prior written permission from the copyright holder.
  */
+/*
+ * **Screen card — archetype: Console · object: the advisor's current state ·
+ * carrying element: the control deck above the suggestion ledger.** The states
+ * are mutually exclusive (available, gated, learning, off), so the state strip
+ * comes first, then the controls that change it, then the evidence it reasons
+ * from. Nothing here claims a verdict the engine did not produce.
+ */
 package nd.max.ui.mainscreens
 
 import androidx.compose.foundation.layout.Arrangement

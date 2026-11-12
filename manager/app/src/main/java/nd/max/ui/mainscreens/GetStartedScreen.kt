@@ -77,6 +77,7 @@ import nd.max.R
 import nd.max.core.privilege.PrivilegeLevel
 import nd.max.core.privilege.PrivilegeManager
 import nd.max.ui.component.ExpressiveList
+import nd.max.ui.component.AccessRevealSwitch
 import nd.max.ui.component.PrivilegePanel
 import nd.max.ui.component.ExpressiveSwitchItem
 import nd.max.ui.component.ScreenAccentGlyph
@@ -84,6 +85,30 @@ import nd.max.ui.component.ScreenAccentProvider
 import nd.max.core.platform.PropertyUtils
 import nd.max.ui.util.RootUtils
 import nd.max.ui.design.maxRadius
+import android.Manifest
+import android.net.Uri
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
+import androidx.compose.material.icons.rounded.HelpOutline
+import androidx.compose.material.icons.automirrored.rounded.Send
+import androidx.compose.material.icons.rounded.Star
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import nd.max.core.privilege.ExecutionMode
+import nd.max.core.privilege.ExecutionModeStore
+import nd.max.island.core.Perms
+import nd.max.ui.component.labelRes
+import nd.max.ui.design.MaxCardShell
+import nd.max.ui.design.MaxGroup
+import nd.max.ui.design.MaxGroupDivider
+import nd.max.ui.design.MaxRadius
+import nd.max.ui.design.MaxSize
+import nd.max.ui.design.MaxSpace
+import nd.max.ui.util.AppStorageReader
 
 /**
  * Background dinamis yang posisinya pindah dengan mulus antar halaman.
@@ -247,19 +272,15 @@ fun GetStartedScreen(navController: NavController) {
         if (toastOut == "0") stateToast = false
     }
 
-    var isFinalizing by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
     val totalPages = 4
 
     // صفحة الامتياز الموحّدة (الجذر + Shizuku): تُقرأ هنا لتحديد إمكانية التقدّم.
     val privilegeSnapshot by PrivilegeManager.snapshot.collectAsState()
 
-    val canGoNext = when (currentPage) {
-        // مستخدم الشيزوكو بلا جذر له الحق في إكمال التثبيت، فلا تُحبَسه بوابتنا
-        // الجذرية وحدها — والقراءة سلبية فلا تُفتح نافذة صلاحية لمجرّد التقدّم.
-        1 -> rootAccessGranted == true || privilegeSnapshot.level != PrivilegeLevel.NONE
-        else -> true
-    }
+    // لا حجب: الصفحة تجمع اختيار الوضع ومنح الصلاحية، ومن اختار «أساسي» يتابع بلا جذر.
+    // الزرّان يبقيان بلونين مختلفين للدلالة على الجاهزية لا للسماح.
+    val canGoNext = true
 
     // الكشف تلقائي: عند الوصول إلى صفحة الامتياز يُطلب الجذر مرّة (طلب واحد صريح لا
     // يتكرّر)، ثم تُحدَّث اللوحة من المدير نفسه — فلا يحتاج المستخدم إلى زرّ ليعرف وضعه.
@@ -290,17 +311,11 @@ fun GetStartedScreen(navController: NavController) {
         }
     }
 
-    val contentAlpha by animateFloatAsState(
-        targetValue = if (isFinalizing) 0f else 1f,
-        animationSpec = tween(300),
-        label = "contentAlpha"
-    )
-
     Scaffold(
         bottomBar = {
             Box(modifier = Modifier.fillMaxWidth().navigationBarsPadding().padding(vertical = 24.dp)) {
                 AnimatedVisibility(
-                    visible = !isFinalizing,
+                    visible = true,
                     enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
                     exit = slideOutVertically(targetOffsetY = { it }) + fadeOut(tween(300)),
                     modifier = Modifier.fillMaxWidth()
@@ -362,24 +377,24 @@ fun GetStartedScreen(navController: NavController) {
                                     if (currentPage < totalPages - 1) {
                                         currentPage++
                                     } else {
-                                        isFinalizing = true
+                                        // **لا انتظار لعملية منصّة في زرّ «لنبدأ».** كان الانتقال
+                                        // يكتب العلم ثم يطلب من الصدفة إعادة تشغيل التطبيق بعد منح
+                                        // الأذونات، فإن تأخّر `su` أو رُفض الأمر بقي الغطاء «جاري
+                                        // الإعداد» إلى الأبد. الآن يُكتب العلم ثم يُنتقل داخل العملية
+                                        // فورًا، وتمنح الأذونات في الخلفية بلا حجب الواجهة.
+                                        val prefs = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+                                        prefs.edit().putBoolean("has_completed_get_started", true).commit()
+                                        navController.navigate(nd.max.ui.navigation.MaxDestination.Now.route) {
+                                            popUpTo(nd.max.ui.navigation.MaxDestination.GetStarted.route) { inclusive = true }
+                                            launchSingleTop = true
+                                        }
                                         coroutineScope.launch {
-                                            RootUtils.isModuleInstalled()
-                                            delay(2000)
-
-                                            val prefs = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
-                                            prefs.edit().putBoolean("has_completed_get_started", true).commit()
-
-                                            // `pm grant`/`am start` أوامر منصّة: تعمل بالجذر وبمستوى ADB عبر
-                                            // Shizuku، فلا تُقيَّد بمسار `su` وحدها في شاشة الإعداد الأولى.
-                                            // وكل أمر في عنصر مستقلّ لا في سلسلة `&&`: قاعدة المنصّة ترفض
-                                            // محارف التحكّم، والصدفة تنفّذ الأسطر كلها بلا `set -e` أصلًا.
                                             withContext(Dispatchers.IO) {
+                                                // طلب واحد قصير الأجل: لا شيء في الواجهة ينتظره.
                                                 nd.max.core.privilege.PlatformShell.exec(
                                                     "pm grant nd.max android.permission.READ_EXTERNAL_STORAGE",
                                                     "pm grant nd.max android.permission.POST_NOTIFICATIONS",
                                                     "pm grant nd.max android.permission.READ_MEDIA_IMAGES",
-                                                    "am start -S -n nd.max/.MainActivity",
                                                 )
                                             }
                                         }
@@ -419,7 +434,7 @@ fun GetStartedScreen(navController: NavController) {
                     .fillMaxSize()
                     .padding(innerPadding)
                     .padding(bottom = 20.dp)
-                    .alpha(contentAlpha),
+                    ,
                 transitionSpec = {
                     val motion = spring<Float>(dampingRatio = 0.82f, stiffness = 260f)
                     val contentTransform =
@@ -499,17 +514,16 @@ fun GetStartedScreen(navController: NavController) {
                             }
                         }
                         1 -> {
-                            // الصفحتان كانتا منفصلتين (طلب جذر · لوحة امتياز)، ووُحّدتا في
-                            // صفحة واحدة: الجذر وShizuku في السطح نفسه، والفحص تلقائي عند
-                            // الفتح مع أزرار طلب صريحة لمن أراد أن يطلب بنفسه.
+                            // صفحة واحدة مكان ثلاث: اختيار وضع التشغيل، ومنح الصلاحية،
+                            // والانتماء (GitHub/Telegram). تُقرأ من أعلى إلى أسفل: «كيف يعمل؟»
+                            // ثم «هل مُنح؟» ثم «أين أتابع؟» — بلا تنقّل بين شاشات إعداد.
                             Column(
                                 modifier = Modifier
                                     .fillMaxSize()
                                     .verticalScroll(rememberScrollState()),
                                 horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.Center
                             ) {
-                                // بلا أيقونة كبيرة هنا: الدرع صار داخل بطاقة الحالة، فتتّسع الصفحة للطبقات دون قصّ.
+                                Spacer(modifier = Modifier.height(MaxSpace.sm))
                                 Text(
                                     text = stringResource(R.string.str_let_s_grant_maxmanager_a_root_acc),
                                     style = MaterialTheme.typography.headlineMedium,
@@ -521,72 +535,77 @@ fun GetStartedScreen(navController: NavController) {
                                         translationY = 40f * (1f - enterTransition.value)
                                     }
                                 )
-                                Spacer(modifier = Modifier.height(8.dp))
+                                Spacer(modifier = Modifier.height(MaxSpace.sm))
                                 Text(
                                     text = stringResource(R.string.str_privilege_intro),
                                     style = MaterialTheme.typography.bodyMedium,
                                     textAlign = TextAlign.Center,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 )
-                                Spacer(modifier = Modifier.height(20.dp))
-
+                                Spacer(modifier = Modifier.height(MaxSpace.lg))
+                                OnboardingModeChoice()
+                                Spacer(modifier = Modifier.height(MaxSpace.md))
+                                Text(
+                                    text = stringResource(R.string.onboarding_access_soft_note),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    textAlign = TextAlign.Center,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                                Spacer(modifier = Modifier.height(MaxSpace.md))
+                                // **مفتاح الكشف بأمر المالك (تكملة ٨٧):** يُقرأ هنا وفي
+                                // الإعدادات، ويقلب فلتر الوصول نفسه — فيرى من اختار Shizuku
+                                // الأدوات التي تحتاج جذرًا بدل أن يظنّها غير موجودة.
+                                ExpressiveList(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    content = listOf({ AccessRevealSwitch() }),
+                                )
+                                Spacer(modifier = Modifier.height(MaxSpace.lg))
                                 PrivilegePanel()
+                                Spacer(modifier = Modifier.height(MaxSpace.xl))
+                                OnboardingCommunity()
+                                Spacer(modifier = Modifier.height(MaxSpace.xl))
                             }
                         }
                         2 -> {
-                            ScreenAccentGlyph(
-                                icon = Icons.Rounded.Tune,
-                                accent = MaterialTheme.colorScheme.secondary,
-                                size = 44.dp,
-                                modifier = Modifier.graphicsLayer {
-                                    alpha = enterTransition.value
-                                    translationY = 30f * (1f - enterTransition.value)
-                                }
-                            )
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Text(
-                                text = stringResource(R.string.str_let_s_adjust_a_few_basic_setti),
-                                style = MaterialTheme.typography.headlineMedium,
-                                fontWeight = FontWeight.ExtraBold,
-                                textAlign = TextAlign.Center,
-                                color = MaterialTheme.colorScheme.onSurface,
-                                modifier = Modifier.graphicsLayer {
-                                    alpha = enterTransition.value
-                                    translationY = 40f * (1f - enterTransition.value)
-                                }
-                            )
-                            Spacer(modifier = Modifier.height(32.dp))
-
-                            Box(modifier = Modifier.graphicsLayer {
-                                val listProgress = (enterTransition.value - 0.2f).coerceAtLeast(0f) / 0.8f
-                                alpha = listProgress
-                                translationY = 50f * (1f - listProgress)
-                            }) {
-                                ScreenAccentProvider(MaterialTheme.colorScheme.secondary) {
-                                ExpressiveList(
-                                    content = listOf(
-                                        // ولا مفتاح إخفاء للأيقونة: الأيقونة تبقى ظاهرة دائمًا —
-                                        // تطبيق الوحدة هو الطريق إلى مدير الروت بعد التفليش، وإخفاؤه
-                                        // يجعل من أراد منحه الإذن يرى «تطبيقي لا يظهر».
-                                        // (التفصيل في تحويل الأيقونة إلى alias مُفعَّل دائمًا.)
-                                        {
-                                            ExpressiveSwitchItem(
-                                                icon = Icons.Filled.Notifications,
-                                                title = stringResource(R.string.show_toast),
-                                                checked = stateToast,
-                                                onCheckedChange = { isChecked ->
-                                                    haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                                                    stateToast = isChecked
-                                                    nd.max.core.privilege.RootCommands.cmd("su -c setprop ${MaxManagerProps.Conf.SHOW_TOAST} ${if (isChecked) "1" else "0"}").submit()
-                                                }
-                                            )
-                                        }
-                                        // مفتاح Max AI لا يظهر هنا — التثبيت
-                                        // الجديد يتركه مطفأ (تحكم يدوي)،
-                                        // وتفعيله قرار المستخدم من شاشة Max AI.
-                                    )
+                            // الإعدادات والأذونات في صفحة واحدة: كل صفّ يقول حالته الحقيقية
+                            // ويأخذ إلى شاشة المنح، فلم يبقَ إذن يُطلب من مكان آخر.
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .verticalScroll(rememberScrollState()),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                            ) {
+                                ScreenAccentGlyph(
+                                    icon = Icons.Rounded.Tune,
+                                    accent = MaterialTheme.colorScheme.secondary,
+                                    size = 44.dp,
+                                    modifier = Modifier.graphicsLayer {
+                                        alpha = enterTransition.value
+                                        translationY = 30f * (1f - enterTransition.value)
+                                    }
                                 )
-                                }
+                                Spacer(modifier = Modifier.height(MaxSpace.lg))
+                                Text(
+                                    text = stringResource(R.string.str_let_s_adjust_a_few_basic_setti),
+                                    style = MaterialTheme.typography.headlineMedium,
+                                    fontWeight = FontWeight.ExtraBold,
+                                    textAlign = TextAlign.Center,
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    modifier = Modifier.graphicsLayer {
+                                        alpha = enterTransition.value
+                                        translationY = 40f * (1f - enterTransition.value)
+                                    }
+                                )
+                                Spacer(modifier = Modifier.height(MaxSpace.xl))
+                                PermissionsSetup(
+                                    stateToast = stateToast,
+                                    onToastChange = { isChecked ->
+                                        haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                        stateToast = isChecked
+                                        nd.max.core.privilege.RootCommands.cmd("su -c setprop ${MaxManagerProps.Conf.SHOW_TOAST} ${if (isChecked) "1" else "0"}").submit()
+                                    }
+                                )
+                                Spacer(modifier = Modifier.height(MaxSpace.xl))
                             }
                         }
                         3 -> {
@@ -634,33 +653,413 @@ fun GetStartedScreen(navController: NavController) {
                 }
             }
 
-            AnimatedVisibility(
-                visible = isFinalizing,
-                enter = fadeIn(tween(MaxDuration.deliberate)) + scaleIn(initialScale = 0.9f),
-                exit = fadeOut(),
-                modifier = Modifier.fillMaxSize()
-            ) {
+        }
+    }
+}
+
+
+/* ─────────────────────── صفحة الوصول الموحّدة ─────────────────────── */
+
+/** اختيار وضع التشغيل في الإعداد الأول — يكتب في المخزن نفسه الذي تقرأه لوحة الامتياز. */
+@Composable
+private fun OnboardingModeChoice() {
+    val context = LocalContext.current
+    val selection by ExecutionModeStore.state.collectAsState()
+    LaunchedEffect(Unit) { ExecutionModeStore.load(context) }
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Text(
+            text = stringResource(R.string.onboarding_run_as),
+            style = MaterialTheme.typography.titleSmall,
+            color = MaterialTheme.colorScheme.onSurface,
+        )
+        Spacer(modifier = Modifier.height(MaxSpace.sm))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm)
+        ) {
+            ModeChip(
+                mode = ExecutionMode.AUTO,
+                selected = selection.mode == ExecutionMode.AUTO,
+                modifier = Modifier.weight(1f),
+            ) { ExecutionModeStore.save(context, ExecutionMode.AUTO) }
+            ModeChip(
+                mode = ExecutionMode.ROOT,
+                selected = selection.mode == ExecutionMode.ROOT,
+                modifier = Modifier.weight(1f),
+            ) { ExecutionModeStore.save(context, ExecutionMode.ROOT) }
+        }
+        Spacer(modifier = Modifier.height(MaxSpace.sm))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm)
+        ) {
+            ModeChip(
+                mode = ExecutionMode.SHIZUKU,
+                selected = selection.mode == ExecutionMode.SHIZUKU,
+                modifier = Modifier.weight(1f),
+            ) { ExecutionModeStore.save(context, ExecutionMode.SHIZUKU) }
+            ModeChip(
+                mode = ExecutionMode.BASIC,
+                selected = selection.mode == ExecutionMode.BASIC,
+                modifier = Modifier.weight(1f),
+            ) { ExecutionModeStore.save(context, ExecutionMode.BASIC) }
+        }
+        Spacer(modifier = Modifier.height(MaxSpace.sm))
+        Text(
+            text = stringResource(R.string.onboarding_run_as_note),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+}
+
+@Composable
+private fun ModeChip(
+    mode: ExecutionMode,
+    selected: Boolean,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+) {
+    val scheme = MaterialTheme.colorScheme
+    Surface(
+        onClick = onClick,
+        modifier = modifier.heightIn(min = MaxSize.minTouchTarget),
+        shape = RoundedCornerShape(maxRadius(MaxRadius.control)),
+        color = if (selected) scheme.primary.copy(alpha = 0.12f) else Color.Transparent,
+        border = BorderStroke(
+            MaxSize.hairlineBorder,
+            if (selected) scheme.primary else scheme.outlineVariant
+        ),
+    ) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = MaxSpace.sm, vertical = MaxSpace.md)
+        ) {
+            Text(
+                text = stringResource(mode.labelRes()),
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
+                color = if (selected) scheme.primary else scheme.onSurface,
+                maxLines = 1,
+            )
+        }
+    }
+}
+
+/** GitHub وTelegram في بطاقتين: المستودع كما يُقرأ، والقناة كما تُتبع. */
+@Composable
+private fun OnboardingCommunity() {
+    val context = LocalContext.current
+    val scheme = MaterialTheme.colorScheme
+    var guideOpen by remember { mutableStateOf(false) }
+
+    Column(modifier = Modifier.fillMaxWidth()) {
+        MaxCardShell(
+            container = scheme.surfaceContainerHigh,
+            borderColor = scheme.outlineVariant,
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier
-                        .fillMaxSize()
-                        .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.8f))
+                        .size(MaxSize.iconContainer)
+                        .clip(RoundedCornerShape(maxRadius(MaxRadius.chip)))
+                        .background(scheme.onSurface)
                 ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        CircularProgressIndicator(
-                            color = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(56.dp)
-                        )
-                        Spacer(modifier = Modifier.height(24.dp))
-                        Text(
-                            stringResource(R.string.setting_up),
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                    }
+                    Text(
+                        text = stringResource(R.string.onboarding_github_mark),
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = scheme.surface,
+                    )
+                }
+                Spacer(modifier = Modifier.width(MaxSpace.md))
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = stringResource(R.string.onboarding_github_repo),
+                        style = MaterialTheme.typography.titleSmall,
+                        color = scheme.onSurface,
+                    )
+                    Text(
+                        text = stringResource(R.string.onboarding_github_platform),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = scheme.onSurfaceVariant,
+                    )
+                }
+                Surface(
+                    shape = RoundedCornerShape(maxRadius(MaxRadius.pill)),
+                    color = Color.Transparent,
+                    border = BorderStroke(MaxSize.hairlineBorder, scheme.outlineVariant),
+                ) {
+                    Text(
+                        text = stringResource(R.string.onboarding_github_public),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = scheme.onSurfaceVariant,
+                        modifier = Modifier.padding(horizontal = MaxSpace.sm, vertical = MaxSpace.xs),
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(MaxSpace.md))
+            Text(
+                text = stringResource(R.string.onboarding_github_desc),
+                style = MaterialTheme.typography.bodySmall,
+                color = scheme.onSurfaceVariant,
+            )
+            Spacer(modifier = Modifier.height(MaxSpace.lg))
+            Row(horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm)) {
+                Button(
+                    onClick = { openExternal(context, MAXMANAGER_GITHUB_URL) },
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(maxRadius(MaxRadius.control)),
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Star,
+                        contentDescription = null,
+                        modifier = Modifier.size(MaxSize.iconGlyphSmall)
+                    )
+                    Spacer(modifier = Modifier.width(MaxSpace.sm))
+                    Text(stringResource(R.string.onboarding_github_star))
+                }
+                OutlinedButton(
+                    onClick = { guideOpen = true },
+                    modifier = Modifier.size(MaxSize.minTouchTarget),
+                    shape = CircleShape,
+                    contentPadding = PaddingValues(0.dp),
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.HelpOutline,
+                        contentDescription = stringResource(R.string.onboarding_github_help),
+                        modifier = Modifier.size(MaxSize.iconGlyph)
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(MaxSpace.sm))
+            Text(
+                text = stringResource(R.string.onboarding_github_star_desc),
+                style = MaterialTheme.typography.bodySmall,
+                color = scheme.onSurfaceVariant,
+            )
+        }
+
+        Spacer(modifier = Modifier.height(MaxSpace.md))
+
+        MaxCardShell(
+            container = scheme.surfaceContainerHigh,
+            borderColor = scheme.outlineVariant,
+            onClick = { openExternal(context, MAXMANAGER_TELEGRAM_URL) },
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .size(MaxSize.iconContainer)
+                        .clip(RoundedCornerShape(maxRadius(MaxRadius.chip)))
+                        .background(scheme.tertiary.copy(alpha = 0.14f))
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Rounded.Send,
+                        contentDescription = null,
+                        tint = scheme.tertiary,
+                        modifier = Modifier.size(MaxSize.iconGlyph)
+                    )
+                }
+                Spacer(modifier = Modifier.width(MaxSpace.md))
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = stringResource(R.string.onboarding_telegram_title),
+                        style = MaterialTheme.typography.titleSmall,
+                        color = scheme.onSurface,
+                    )
+                    Text(
+                        text = stringResource(R.string.onboarding_telegram_desc),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = scheme.onSurfaceVariant,
+                    )
+                }
+                Surface(
+                    shape = RoundedCornerShape(maxRadius(MaxRadius.pill)),
+                    color = scheme.tertiary.copy(alpha = 0.16f),
+                ) {
+                    Text(
+                        text = stringResource(R.string.onboarding_badge_new),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = scheme.tertiary,
+                        modifier = Modifier.padding(horizontal = MaxSpace.sm, vertical = MaxSpace.xs),
+                    )
                 }
             }
         }
     }
+
+    if (guideOpen) {
+        AlertDialog(
+            onDismissRequest = { guideOpen = false },
+            title = { Text(stringResource(R.string.onboarding_github_help_title)) },
+            text = {
+                Column {
+                    Image(
+                        painter = painterResource(R.drawable.onboarding_star_guide),
+                        contentDescription = stringResource(R.string.onboarding_github_help_caption),
+                        contentScale = ContentScale.FillWidth,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(maxRadius(MaxRadius.chip)))
+                            .aspectRatio(1398f / 480f)
+                    )
+                    Spacer(modifier = Modifier.height(MaxSpace.sm))
+                    Text(
+                        text = stringResource(R.string.onboarding_github_help_caption),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { guideOpen = false }) {
+                    Text(stringResource(R.string.done))
+                }
+            },
+        )
+    }
 }
+
+/** الأذونات الأربعة التي يحتاجها التطبيق فعلًا، كل واحدة بحالتها وزرّها. */
+@Composable
+private fun PermissionsSetup(
+    stateToast: Boolean,
+    onToastChange: (Boolean) -> Unit,
+) {
+    val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
+    var overlayGranted by remember { mutableStateOf(Perms.overlay(context)) }
+    var notifGranted by remember { mutableStateOf(Perms.post(context)) }
+    var usageGranted by remember { mutableStateOf(AppStorageReader.hasUsageAccess(context)) }
+    var batteryGranted by remember { mutableStateOf(Perms.battery(context)) }
+
+    val notificationLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted -> notifGranted = granted || Perms.post(context) }
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                overlayGranted = Perms.overlay(context)
+                notifGranted = Perms.post(context)
+                usageGranted = AppStorageReader.hasUsageAccess(context)
+                batteryGranted = Perms.battery(context)
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
+
+    Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+        MaxGroup {
+            PermissionRow(
+                title = stringResource(R.string.onboarding_perm_overlay_title),
+                description = stringResource(R.string.onboarding_perm_overlay_desc),
+                granted = overlayGranted,
+                onGrant = { Perms.openOverlaySettings(context) },
+            )
+            MaxGroupDivider()
+            PermissionRow(
+                title = stringResource(R.string.onboarding_perm_notif_title),
+                description = stringResource(R.string.onboarding_perm_notif_desc),
+                granted = notifGranted,
+                onGrant = {
+                    if (Build.VERSION.SDK_INT >= 33) {
+                        notificationLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                    }
+                },
+            )
+            MaxGroupDivider()
+            PermissionRow(
+                title = stringResource(R.string.onboarding_perm_usage_title),
+                description = stringResource(R.string.onboarding_perm_usage_desc),
+                granted = usageGranted,
+                onGrant = {
+                    runCatching { context.startActivity(AppStorageReader.usageAccessIntent()) }
+                },
+            )
+            MaxGroupDivider()
+            PermissionRow(
+                title = stringResource(R.string.onboarding_perm_battery_title),
+                description = stringResource(R.string.onboarding_perm_battery_desc),
+                granted = batteryGranted,
+                onGrant = { Perms.openBatterySettings(context) },
+            )
+        }
+        Spacer(modifier = Modifier.height(MaxSpace.md))
+        Text(
+            text = stringResource(R.string.onboarding_perm_note),
+            style = MaterialTheme.typography.bodySmall,
+            textAlign = TextAlign.Center,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Spacer(modifier = Modifier.height(MaxSpace.lg))
+        ScreenAccentProvider(MaterialTheme.colorScheme.secondary) {
+            ExpressiveList(
+                content = listOf(
+                    {
+                        ExpressiveSwitchItem(
+                            icon = Icons.Filled.Notifications,
+                            title = stringResource(R.string.show_toast),
+                            checked = stateToast,
+                            onCheckedChange = onToastChange,
+                        )
+                    }
+                )
+            )
+        }
+    }
+}
+
+@Composable
+private fun PermissionRow(
+    title: String,
+    description: String,
+    granted: Boolean,
+    onGrant: () -> Unit,
+) {
+    val scheme = MaterialTheme.colorScheme
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(
+                horizontal = MaxSpace.rowPaddingHorizontal,
+                vertical = MaxSpace.rowPaddingVertical,
+            ),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(text = title, style = MaterialTheme.typography.titleSmall, color = scheme.onSurface)
+            Spacer(modifier = Modifier.height(MaxSpace.xs))
+            Text(text = description, style = MaterialTheme.typography.bodySmall, color = scheme.onSurfaceVariant)
+        }
+        Spacer(modifier = Modifier.width(MaxSpace.md))
+        if (granted) {
+            Text(
+                text = stringResource(R.string.onboarding_perm_granted),
+                style = MaterialTheme.typography.labelLarge,
+                color = scheme.primary,
+            )
+        } else {
+            TextButton(onClick = onGrant, modifier = Modifier.heightIn(min = MaxSize.minTouchTarget)) {
+                Text(stringResource(R.string.onboarding_perm_grant))
+            }
+        }
+    }
+}
+
+private fun openExternal(context: Context, url: String) {
+    runCatching {
+        context.startActivity(
+            Intent(Intent.ACTION_VIEW, Uri.parse(url)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        )
+    }
+}
+
+private const val MAXMANAGER_GITHUB_URL = "https://github.com/nader295/MaxManager"
+private const val MAXMANAGER_TELEGRAM_URL = "https://t.me/GetMaxManager"

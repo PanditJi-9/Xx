@@ -124,22 +124,22 @@ class HudSessionTest {
         )
         val lines = hudSessionCsv(rows).trim().split("\n")
         assertEquals(3, lines.size)
-        assertEquals("elapsed_ms,frames,cpu_percent,ram_mb,watt,battery_c,renderer", lines[0])
-        assertEquals("0,59.5,24,,,38.4,", lines[1])
-        assertEquals("1000,61.0,,,,39.0,", lines[2])
+        assertEquals(SESSION_CSV_HEADER, lines[0])
+        assertEquals("0,59.5,24,,,38.4,,,,,,,", lines[1])
+        assertEquals("1000,61.0,,,,39.0,,,,,,,", lines[2])
     }
 
     @Test
     fun `csv of an empty session is a header alone, not a broken file`() {
-        assertEquals("elapsed_ms,frames,cpu_percent,ram_mb,watt,battery_c,renderer\n", hudSessionCsv(emptyList()))
+        assertEquals(SESSION_CSV_HEADER + "\n", hudSessionCsv(emptyList()))
     }
 
     @Test
     fun `csv never lets a renderer name break the column count`() {
         val rows = listOf(HudJournal.Sample(1_000, HudReading(frames = 30f, renderer = "Adreno, Vulkan")))
         val body = hudSessionCsv(rows).trim().split("\n")[1]
-        assertEquals(7, body.split(",").size)
-        assertTrue(body.endsWith("Adreno  Vulkan"))
+        assertEquals(SESSION_CSV_HEADER.split(",").size, body.split(",").size)
+        assertEquals("Adreno  Vulkan", body.split(",")[8])
     }
 
     @Test
@@ -199,7 +199,11 @@ class HudSessionTest {
         assertEquals(
             // البطارية والشبكة بعد القدرة وقبل المُصيِّر: تُقرآن بنظرة لا تُزاحم الإطارات.
             // والثبات بجانب الإطارات لأنه يجيب السؤال نفسه («هل هي سلسة؟») بمدى لا بلحظة.
-            listOf("Frames", "Stability", "Cpu", "Heat", "Ram", "Power", "Battery", "Network", "Renderer"),
+            listOf(
+                "Frames", "Stability", "Jank", "Cpu", "Heat", "Ram", "Power", "Battery", "Network", "Renderer",
+                // القنوات العميقة في الذيل: تُقاس وتُعرض، ولا تُزاحم صفّ القراءة السريعة.
+                "CpuFreq", "SocTemp", "GpuFreq", "GpuLoad", "DdrFreq", "DiskIo", "BatteryVoltage"
+            ),
             HudField.entries.map { it.name }
         )
     }

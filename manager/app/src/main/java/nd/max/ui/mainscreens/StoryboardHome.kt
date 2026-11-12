@@ -37,16 +37,17 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.ErrorOutline
-import androidx.compose.material.icons.rounded.CheckCircle
-import androidx.compose.material.icons.rounded.Lock
-import androidx.compose.material.icons.rounded.RadioButtonUnchecked
+import androidx.compose.material.icons.rounded.Tune
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -283,17 +284,28 @@ internal fun UnifiedActivityCard(
 
     val palette = neuralPalette()
     val scheme = MaterialTheme.colorScheme
+    // زرّ الإعدادات يعيش في البطاقة نفسها: من قرأ الحدث وأراد تغيير شكله لا يترك الرئيسية.
+    var settingsOpen by remember { mutableStateOf(false) }
     CompositionLocalProvider(LocalActivityNavigate provides onNavigate) {
         NeuralPanel(modifier = modifier.fillMaxWidth(), accent = palette.accent) {
             NeuralSectionHeader(
                 title = stringResource(R.string.home_activity_title),
                 caption = stringResource(R.string.home_activity_caption),
                 accent = palette.accent,
+                trailing = {
+                    IconButton(onClick = { settingsOpen = true }) {
+                        Icon(
+                            Icons.Rounded.Tune,
+                            contentDescription = stringResource(R.string.settings_activity_card_title),
+                            tint = palette.muted,
+                        )
+                    }
+                },
             )
             if (model.isEmpty) {
                 ActivityEmpty(palette)
             } else {
-                ActivitySummary(model.scenes.flatMap { it.lines }, palette)
+                ActivityStatStrip(model.scenes.flatMap { it.lines }, palette, scheme)
                 SceneBody(model, model.scenes.first(), scheme, palette)
                 // ما تبقّى: مُرشَّح سلفًا (لا تكرار مع المشهد الأول)، ومحدود برصيد البطاقة، وبشكله.
                 val rest = model.scenes.drop(1)
@@ -326,25 +338,59 @@ internal fun UnifiedActivityCard(
             }
         }
     }
+    if (settingsOpen) ActivityCardSettingsDialog(onDismiss = { settingsOpen = false })
 }
 
 /** مسار الفتح يصل إلى كل سطر دون أن يمرّ وسيطًا في كل دالة. الافتراضي لا يفعل شيئًا. */
 private val LocalActivityNavigate = compositionLocalOf<(String) -> Unit> { { _ -> } }
 
-/** الملخّص من سطر: مُطبَّق · محجوز · فشل. ولا يظهر حين لا حدث أصلًا. */
+/**
+ * رأسٌ رقميّ لا جملة: ثلاث خلايا (مُطبَّق · محجوز · فشل) يفصلها خطّ رقيق.
+ *
+ * السبب: الجملة الواحدة تُقرأ مرّة ثم تُنسى، وهذه البطاقة تُفتح لتُقاس بنظرة. والخلايا
+ * تكشف الفشل باللون قبل أن يُقرأ الرقم، ولا تكرّر النصّ الذي في الأسطر تحتها.
+ * والتسمية تأتي من [stateWord] نفسه، فلا كلمة حالة ثانية تُكتب بيد هنا.
+ */
 @Composable
-private fun ActivitySummary(lines: List<StoryLine>, palette: NeuralPalette) {
-    val applied = lines.count { it.tone == LineTone.DONE }
-    val held = lines.count { it.tone == LineTone.HELD }
-    val failed = lines.count { it.tone == LineTone.FAILED }
-    if (applied + held + failed == 0) return
-    Text(
-        stringResource(R.string.activity_summary, applied, held, failed),
-        color = palette.muted,
-        style = MaterialTheme.typography.labelMedium,
-        maxLines = 2,
-        overflow = TextOverflow.Ellipsis,
+private fun ActivityStatStrip(lines: List<StoryLine>, palette: NeuralPalette, scheme: ColorScheme) {
+    val cells = listOf(
+        Triple(LineTone.DONE, lines.count { it.tone == LineTone.DONE }, scheme.primary),
+        Triple(LineTone.HELD, lines.count { it.tone == LineTone.HELD }, scheme.onSurfaceVariant),
+        Triple(LineTone.FAILED, lines.count { it.tone == LineTone.FAILED }, scheme.error),
     )
+    if (cells.all { it.second == 0 }) return
+    Row(
+        Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm),
+    ) {
+        cells.forEachIndexed { index, (tone, count, toneColor) ->
+            if (index > 0) {
+                // فاصل رقيق: يقرأ الخلايا ثلاثة ولا يقرؤها عمودًا واحدًا.
+                Box(
+                    Modifier
+                        .width(MaxSize.hairlineBorder)
+                        .height(MaxSize.iconGlyphSmall)
+                        .background(palette.border)
+                )
+            }
+            Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(MaxSpace.hairline)) {
+                Text(
+                    if (count > 0) count.toString() else "—",
+                    color = if (count > 0) toneColor else palette.muted,
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.SemiBold,
+                )
+                Text(
+                    stateWord(tone),
+                    color = palette.muted,
+                    style = MaterialTheme.typography.labelSmall,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+        }
+    }
 }
 
 /** الحالة الفارغة تقول الحقيقة: كل شيء على الافتراضي، وMax يراقب فقط. */
@@ -392,32 +438,41 @@ private fun SceneLine(line: StoryLine, scheme: ColorScheme, showReason: Boolean 
             .padding(vertical = MaxSpace.xs),
         verticalAlignment = Alignment.Top,
     ) {
-        Icon(
-            imageVector = when (line.tone) {
-                LineTone.FAILED -> Icons.Outlined.ErrorOutline
-                LineTone.HELD -> Icons.Rounded.Lock
-                LineTone.DONE -> Icons.Rounded.CheckCircle
-                LineTone.OFF -> Icons.Rounded.RadioButtonUnchecked
-            },
-            contentDescription = null,
-            tint = accent,
-            modifier = Modifier.size(MaxSize.iconGlyphSmall),
-        )
+        // نقطة الحالة على عمود واحد: تُقرأ الألوان أوّلًا، ثم الأسماء. وأيقونة كاملة لكل
+        // سطر كانت تجعل من القائمة عشرة رموز متضاربة بدل خطّ نشاط واحد.
+        Box(
+            Modifier
+                .padding(top = MaxSpace.hairline)
+                .size(MaxSize.iconGlyphSmall),
+            contentAlignment = Alignment.Center,
+        ) {
+            Box(
+                Modifier
+                    .size(MaxSpace.sm)
+                    .clip(CircleShape)
+                    .background(accent)
+            )
+        }
         Spacer(Modifier.width(MaxSpace.sm))
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(MaxSpace.hairline)) {
-            Text(
-                title,
-                color = scheme.onSurface,
-                style = MaterialTheme.typography.bodyMedium,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-            )
-            Text(
-                value,
-                color = accent,
-                style = MaterialTheme.typography.bodySmall,
-                fontWeight = FontWeight.Medium,
-            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    title,
+                    color = scheme.onSurface,
+                    style = MaterialTheme.typography.bodyMedium,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f),
+                )
+                Spacer(Modifier.width(MaxSpace.xs))
+                Text(
+                    value,
+                    color = accent,
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.Medium,
+                    maxLines = 1,
+                )
+            }
             if (reason != null) {
                 Text(
                     reason,

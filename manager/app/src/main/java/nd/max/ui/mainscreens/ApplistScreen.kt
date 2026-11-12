@@ -3,6 +3,13 @@
  * Proprietary and confidential — not licensed for use, copying, or distribution
  * without prior written permission from the copyright holder.
  */
+/*
+ * **Screen card — archetype: Library · object: the packages installed on this
+ * device · carrying element: the filtered list of apps.** The person arrives with
+ * a target in mind and leaves through a row, so search and filters come before
+ * the list, rows stay dense, and per-app detail opens on demand. Nothing on this
+ * page is a dashboard: a number about one app belongs beside that app.
+ */
 @file:OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 
 package nd.max.ui.mainscreens

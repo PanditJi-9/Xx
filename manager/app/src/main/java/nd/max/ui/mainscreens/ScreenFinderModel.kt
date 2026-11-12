@@ -16,10 +16,12 @@
  * 1. **المصدر هو السجلّ نفسه** (`MaxDestination.Visible`، وهي `All` ناقصَ ما أخفاه المالك) لا
  *    قائمة مكتوبة بيد: وجهة جديدة تُضاف في السجلّ تظهر في الفهرس بلا سطرٍ هنا، ولا يمكن أن يبقى
  *    في الفهرس وجهة محذوفة — ولا أن يعود سطحٌ مخفيٌّ من باب البحث.
- * 2. **والوجهة التي لا تُفتح بلا معرّف لا تُعرض.** `AppSettings` مسارها `app_settings/{pkg}`
- *    فلا قيمة افتراضية لمعرّفها، وعرضُها يعني ضغطة تفتح تفصيل حزمة اسمها فارغ — وهو الوعد
- *    الكاذب نفسه الذي يمنعه ADR-07 في الأرقام. تُستثنى بـ`needsLaunchArgument` (وهو الفحص
- *    الذي يفرضه `MaxNavActions.navigateTo` بحارس وقت التشغيل أيضًا).
+ * 2. **والوجهة التي لا تُفتح بلا معرّف تبقى في الفهرس، لكن فعلها يقود إلى بدايتها.**
+ *    `AppSettings` مسارها `app_settings/{pkg}` فلا قيمة افتراضية لمعرّفها — وكانت تُسقَط،
+ *    فيقرأ من كتب «إعدادات التطبيق» «لا نتيجة» ويخرج بأنّ الشاشة غير موجودة. والصواب: السطر
+ *    يبقى ويقول «اختر التطبيق أولًا»، وضغطه يفتح الأب الظاهر (قائمة التطبيقات) حيث يُختار —
+ *    لا تفصيل حزمة اسمها فارغ (وهو الوعد الكاذب الذي يمنعه ADR-07)، ولا صفٌّ بلا فعل.
+ *    ([ScreenFinderTarget.opensFrom] يحمل الأب، و[screenFinderOpenTarget] تحكم الفعل).
  * 3. **و«أين تسكن» من الشجرة لا من جدول ثانٍ:** أبُ الوجهة في السجلّ هو جواب «أين» (مجالها أو
  *    الإعدادات)، والتبويبات الأربعة تُعلن نفسها، ومن لا أب له يُفتح من الرئيسية. فلا خريطة
  *    موازية تنحرف عن السجلّ يومًا.
@@ -73,6 +75,16 @@ data class ScreenFinderTarget(
      * لا تُعرض أبدًا؛ تُطابَق فقط. والقائمة في [maxDestinationKeywords].
      */
     val keywords: List<String> = emptyList(),
+    /**
+     * الوجهة التي **تُفتح فعلًا** حين لا يُفتح هذا السطر نفسه.
+     *
+     * `app_settings/{pkg}` و`max_perms?pkg={pkg}` و`max_backup?pkg={pkg}` لا تُفتح بلا اسم
+     * حزمة، فكانت تُسقَط من الفهرس صامتةً: من كتب «إعدادات التطبيق» قرأ «لا نتيجة» وخرج
+     * بأنّ الشاشة غير موجودة. والصواب أن يُقال له من أين يبدأ: صفحة التطبيقات (أو الإعدادات)
+     * هي المكان الذي يُختار فيه التطبيق. فالسطر يبقى في الفهرس، **وفعله يقود إلى البداية**
+     * لا إلى الشاشة نفسها — ولا صفّ بلا فعل، ولا وعد بضغطة تفتح شيئًا آخر.
+     */
+    val opensFrom: MaxDestination? = null,
 )
 
 /**
@@ -83,12 +95,33 @@ fun screenFinderTargets(
     resolve: (Int) -> String,
     usage: Map<String, Int> = emptyMap(),
     access: nd.max.ui.navigation.DestinationAccess? = null,
-): List<ScreenFinderTarget> =
-    MaxDestination.Visible.filter { access?.visible(it) != false }
-        .filterNot { it.needsLaunchArgument }
+): List<ScreenFinderTarget> {
+    val visible = MaxDestination.Visible.filter { access?.visible(it) != false }
+    // **المحور ذو الابن الواحد بابٌ لا شاشة.** `GpuHub` · `ThermalHub` · `AudioHub` لكلٍّ ابنٌ
+    // واحد، فصفحتها سطرٌ واحد يقود إلى الشاشة الحقيقية. وعرضها في نتائج البحث يعطي نقرةً كاملة
+    // مقابل صفر معلومة: تكتب «GPU» فتصل إلى «GPU» ثم إلى «GPU Studio». فيُسقَط الباب ويُعرض ما
+    // خلفه مباشرةً — والابن نفسه في الفهرس أصلًا فلا تُفقد وجهة.
+    //
+    // والشرط ليس «ابن واحد» وحده: لو كان الابن الوحيد يحتاج وسيط مسار (لا يُفتح من الفهرس) لَما
+    // جاز إسقاط الأب، وإلّا لاختفى الفرع كلّه من البحث. ولذلك يُشترط أن يكون الابن صالحًا للفهرس.
+    val passThrough = visible
+        .groupBy { it.parent }
+        .filterValues { children -> children.size == 1 && !children.single().needsLaunchArgument }
+        .keys
+        .filterNotNull()
+        .toSet()
+    return visible
+        // **وما يحتاج معاملًا لا يُسقَط، بل يُذكر من أين يبدأ.** الشرط أن يكون له أبٌ ظاهر
+        // يُفتح بلا معامل — وإلا فلا مسار صادقًا، ويبقى الإسقاط أصدق من صفٍّ لا يقود إلى شيء.
+        .filter { destination ->
+            !destination.needsLaunchArgument ||
+                destination.parent?.let { it in visible && !it.needsLaunchArgument } == true
+        }
+        .filterNot { it in passThrough }
         .map { destination ->
             ScreenFinderTarget(
                 destination = destination,
+                opensFrom = destination.parent?.takeIf { destination.needsLaunchArgument },
                 title = resolve(destination.titleRes),
                 role = resolve(maxDestinationRole(destination)),
                 where = resolve(screenFinderWhereRes(destination)),
@@ -97,6 +130,7 @@ fun screenFinderTargets(
                 keywords = maxDestinationKeywords[destination].orEmpty(),
             )
         }
+}
 
 /** «أين تسكن هذه الشاشة» — من الشجرة في السجلّ لا من جدول ثانٍ. */
 @StringRes
@@ -168,6 +202,34 @@ fun screenFinderResults(
         .map { it.target }
 }
 
+/**
+ * **عدد كل المطابقات، بلا سقف — ليُعلَن ما لم يُعرض بدل أن يُقطع صامتًا.**
+ *
+ * `screenFinderResults` تسقُف ما تعرضه (`limit = 24`) كي تبقى الورقة ورقة. لكن السقف بلا
+ * إعلان يعني أن من يكتب «ال» يرى أربعة وعشرين صفًّا ويظنّ أن لا نتيجة غيرها فيتوقّف. فتُقاس
+ * المطابقات كلها هنا (الفهرس بضع عشرات، فالحساب رخيص) وتُعلن الورقة الفرق.
+ *
+ * ولا تُعاد النتائج نفسها مرّتين في الذاكرة: الورقة تعرض المسقوف وتقرأ العدد وحده.
+ */
+fun screenFinderMatchCount(query: String, targets: List<ScreenFinderTarget>): Int =
+    screenFinderResults(query, targets, limit = Int.MAX_VALUE).size
+
+/**
+ * **أوّل نتيجة — أي ما يفتحه مفتاح Enter.** لا ترتيب ثانٍ: هي أوّل ما تعرضه الورقة نفسها،
+ * فالمفتاح لا يفتح شيئًا لا يراه المستخدم في أعلى القائمة. والفراغ ⇒ `null`، فلا فعل لمفتاح
+ * على حقلٍ لم يُكتب فيه.
+ */
+fun screenFinderTopHit(query: String, targets: List<ScreenFinderTarget>): ScreenFinderTarget? =
+    screenFinderResults(query, targets, limit = 1).firstOrNull()
+
+/**
+ * **ما يفتحه السطر فعلًا.** سطرٌ لوجهة تحتاج معاملًا يقود إلى أبيه الظاهر (قائمة التطبيقات أو
+ * الإعدادات) حيث يُختار التطبيق؛ وما عدا ذلك يقود إلى وجهته. ودالّة واحدة تحكم هذا القرار
+ * كي لا يختلف سلوك مفتاح Enter عن سلوك الضغط على الصفّ.
+ */
+fun screenFinderOpenTarget(target: ScreenFinderTarget): MaxDestination =
+    target.opensFrom ?: target.destination
+
 /** كم صفًّا يُقترح قبل أن يكتب المستخدم حرفًا — صفٌّ يُقرأ لا قائمةً تُمرَّر. */
 const val SCREEN_FINDER_SUGGESTIONS = 4
 
@@ -176,12 +238,21 @@ const val SCREEN_FINDER_SUGGESTIONS = 4
  *
  * **ولا اقتراح بلا سجلّ:** من لم يفتح شيئًا (أو أوّل تشغيل) تُعاد قائمة فارغة، ويُعرض سطر الشرح
  * وحده — ولا تُعرض «اقتراحات» من الصفر هي أعلى الصفر، فهذا ترتيب لا مقياس خلفه.
+ *
+ * **ولا تُقترح الشاشة التي أنت واقف عليها** (`exclude`): الورقة تُفتح من «التحكّم» ومن
+ * «الإعدادات»، وهما أكثر شاشتين تُفتحان في التطبيق أصلًا — فأوّل ما كان يُقترح هو المضيف نفسه،
+ * والصفّ لا يفعل شيئًا عند الضغط لأنك فيه. والأسوأ أنه يأكل مقعدًا من أربعة، فيظهر ثلاثة
+ * اقتراحات ويُقرأ السقف كأنه كل ما في السجلّ. والاستبعاد **للاقتراح وحده**: من كتب «الإعدادات»
+ * يجدها في النتائج، لأن البحث سؤال صريح والاقتراح تخمين.
  */
 fun screenFinderSuggestions(
     targets: List<ScreenFinderTarget>,
     limit: Int = SCREEN_FINDER_SUGGESTIONS,
+    exclude: Set<String> = emptySet(),
 ): List<ScreenFinderTarget> = targets
-    .filter { it.usage > 0 }
+    // **وما لا يُفتح من هنا لا يُقترح:** «أكثر ما تفتحه» يعني الضغط عليه يفتحه. وصفٌّ يفتح
+    // قائمة التطبيقات بدلًا منه يُقرأ عطبًا لا اقتراحًا — فيُبقى للبحث وحده، حيث يُشرح سببه.
+    .filter { it.usage > 0 && it.opensFrom == null && it.destination.route !in exclude }
     .sortedWith(
         compareByDescending<ScreenFinderTarget> { it.usage }.thenBy { maxSearchFold(it.title) }
     )
@@ -295,6 +366,7 @@ internal val maxDestinationKeywords: Map<MaxDestination, List<String>> = mapOf(
     MaxDestination.Dex2oat to listOf("تجميع", "تسريع", "dex2oat", "compile"),
     MaxDestination.FpsGo to listOf("اطارات", "العاب", "٦٠", "60", "fps", "frames", "game"),
     MaxDestination.FpsOverlay to listOf("عداد", "اطارات", "hud", "fps", "overlay"),
+    MaxDestination.GameSessions to listOf("جلسات", "جلسه", "العاب", "تسجيل", "sessions", "session", "record", "game"),
     MaxDestination.Resolution to listOf("دقه", "ابعاد", "شاشه", "resolution", "dpi", "display"),
     MaxDestination.DisplayStudio to listOf("شاشه", "عرض", "سطوع", "display", "screen", "brightness"),
     MaxDestination.NetworkScheduler to listOf("شبكه", "نت", "بينغ", "network", "ping", "latency"),
@@ -305,10 +377,8 @@ internal val maxDestinationKeywords: Map<MaxDestination, List<String>> = mapOf(
     MaxDestination.CpuCoreControl to listOf("تردد", "نواه", "معالج", "cpu", "cores", "frequency"),
     MaxDestination.GpuStudio to listOf("رسوم", "معالج رسومي", "gpu", "graphics"),
     MaxDestination.AudioStudio to listOf("صوت", "سماعات", "مكبر", "audio", "sound", "speaker"),
-    MaxDestination.Diagnostics to listOf("تشخيص", "حكام", "ملكيه", "diagnostics", "ownership"),
     MaxDestination.MaxLive to listOf("مراقبه", "بث", "حي", "live", "monitor", "realtime"),
     MaxDestination.Logs to listOf("سجلات", "اخطاء", "logs", "errors"),
-    MaxDestination.ModuleHealth to listOf("وحده", "سلامه", "module", "health"),
     MaxDestination.PreferenceTweaks to listOf("قيم", "محرر", "props", "tweaks"),
     MaxDestination.ProcessManager to listOf("عمليات", "خلفيه", "process", "background"),
     MaxDestination.DynamicIsland to listOf("جزيره", "island", "notch"),
@@ -346,7 +416,6 @@ internal val maxDestinationKeywords: Map<MaxDestination, List<String>> = mapOf(
     MaxDestination.About to listOf("حول", "عن التطبيق", "about", "version"),
     MaxDestination.GameLobby to listOf("الالعاب", "لوبي", "games", "game lobby"),
     MaxDestination.EmulatorHub to listOf("المحاكي", "محاكيات", "emulator", "emulators"),
-    MaxDestination.HmaCompanion to listOf("اخفاء التطبيقات", "hma", "companion", "hide apps"),
     MaxDestination.SetEdit to listOf("تعديل القيم", "setedit", "properties", "props"),
     MaxDestination.ActivityLauncher to listOf("الانشطه", "activity", "launcher", "shortcut"),
     MaxDestination.FileManager to listOf("الملفات", "مدير الملفات", "files", "file manager"),

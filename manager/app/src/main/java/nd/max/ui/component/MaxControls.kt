@@ -9,12 +9,12 @@ package nd.max.ui.component
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsDraggedAsState
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -23,13 +23,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import nd.max.ui.design.MaxRadius
 import nd.max.ui.design.MaxSpace
-import nd.max.ui.design.maxRadius
 
 /** Native gestures and semantics are retained; only the thumb responds to drag. */
 @Composable
@@ -89,21 +88,15 @@ fun MaxSlider(
             interactionSource = interactionSource,
             colors = studioColors,
             thumb = {
-                Surface(
-                    modifier = Modifier.size(width = 28.dp, height = 36.dp).scale(scale),
-                    shape = RoundedCornerShape(maxRadius(MaxRadius.chip)),
-                    color = scheme.surface,
-                    border = BorderStroke(2.dp, active),
-                    shadowElevation = if (dragged && enabled) 4.dp else 1.dp
-                ) {
-                    Row(horizontalArrangement = Arrangement.spacedBy(3.dp, Alignment.CenterHorizontally), verticalAlignment = Alignment.CenterVertically) {
-                        repeat(2) {
-                            // مقبض بعرض 2dp: نصف قطر 1dp لم يكن على أي سلّم، والقصّ الكامل (هيرلاين)
-                            // هو ما يجعله يُقرأ مقبضًا مستديرًا لا مستطيلًا. صفر تغيير في المقاس.
-                            Box(Modifier.width(MaxSpace.hairline).height(12.dp).clip(RoundedCornerShape(MaxSpace.hairline)).background(active))
-                        }
-                    }
-                }
+                // مقبض دائريّ واحد: الشكل الذي تعرفه كل يد. كان مستطيلًا فيه عمودان متوازيان،
+                // فقُرئ زرّ إيقاف مؤقت لا مقبض سحب (لقطة المالك، ٢٠٢٦-١١-١٢).
+                Box(
+                    modifier = Modifier
+                        .size(20.dp)
+                        .scale(scale)
+                        .shadow(if (dragged && enabled) 4.dp else 1.dp, CircleShape, clip = false)
+                        .background(active, CircleShape)
+                )
             },
             track = { state ->
                 SliderDefaults.Track(sliderState = state, enabled = enabled, colors = studioColors, modifier = Modifier.height(10.dp))

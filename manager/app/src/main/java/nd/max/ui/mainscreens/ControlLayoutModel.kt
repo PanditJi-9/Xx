@@ -52,14 +52,19 @@ data class ControlGroupSpec(
  * على **كل** التطبيقات ولها شاشة رئيسية مستقلة، فلا معنى لعرضها داخل شاشة تطبيق واحد.
  * والترتيب مقصود: الأدوات التي تُفتح بلا نيّة سابقة (نسخ · صلاحيات) قبل أدوات النظام.
  *
- * ومراقب المهام ووحدة السجل وطرفية الأوامر انتقلت إلى هنا من **مسار التشخيص في الإعدادات**:
- * الأدوات تُطلب من مكان واحد هو شاشة التحكّم، والتنقل إليها كان يشترط أن يُعرف أنها تحت الإعدادات
- * أو تحت التشخيص — وهذا شرط لا معنى له من جهة المستخدم (الأربع كلها تقرأ وتُظهر، ولا تكتب سقفًا
- * ولا سياسة عتاد).
+ * وكانت مراقب المهام ووحدة السجل وطرفية الأوامر تُطلب من **مسار التشخيص في الإعدادات**، فنُقلت
+ * إلى هنا لأن الأدوات تُطلب من مكان واحد، والتنقّل إليها كان يشترط أن يُعرف أنها تحت الإعدادات
+ * أو تحت التشخيص — شرط لا معنى له من جهة المستخدم.
  *
- * وأما **السمة** فقد عادت إلى الإعدادات بأمر مالك: صارت صفًّا فوق بطاقة اللغة، لأن من يغيّر
- * السمة يبحث عنها في الإعدادات لا في صندوق الأدوات. ومخطّط الألوان بقي هنا — مختلف عنه:
- * ذاك يسأل «أي ألوان تُشتقّ من بذرة»، وهذا يسأل «ما السمة نفسها».
+ * ثمّ فرّقت ثلاث دفعات صغيرة ما جُمع (M1a ردّت مراقب المهام إلى محور الذاكرة، وM1b رُفضت لأنها
+ * كانت ستجعل المختبر صندوق أدوات وهو **اختبارُ عتاد**، وM1c ردّت وحدة السجل والنسخ والصلاحيات
+ * والألوان إلى التشخيص والإعدادات) — **ثم نسخها أمر المالك في تكملة ٨٥:** «انقل … إلى شاشة
+ * التحكم»، فعادت هذه الأدوات إلى هنا، وصار الباب واحدًا بعد أن حُذفت شاشة التشخيص نفسها.
+ * وما بقي خارج الصفحة أداةٌ لها محورها: مدير الملفات في `StorageHub`، ومراقب المهام في
+ * `MemoryHub`، وسجلّ البطارية وشحن البايباس في `PowerHub`.
+ *
+ * وأما محرّر الإعدادات ومشغّل الأنشطة فبقيا هنا بعد أن جُرِّبت إحالتهما إلى **مختبر الجهاز**
+ * ورُفضت: فمن يفتح المختبر ليجرب اللمس والسماعة لا يُعرض عليه محرّر إعدادات.
  *
  * و**شاشة الأداء** (`MaxDestination.FpsOverlay`) دخلت هنا بأمر مالك: كانت في `ResponsivenessHub`
  * فتُقرأ على أنها «ضبط معدل الإطارات» وهو `FpsGo` نفسه. وموضعها هنا بعد أدوات النظام: هي طبقة
@@ -69,29 +74,21 @@ data class ControlGroupSpec(
  * تراكبٌ فوق التطبيقات يُفتح لتُرى حالته، لا ضبطٌ داخل مجال.
  */
 val ControlToolDestinations: List<MaxDestination> = listOf(
-    MaxDestination.MaxBackup,
-    MaxDestination.Permissions,
-    MaxDestination.FileManager,
-    MaxDestination.ProcessManager,
-    MaxDestination.Logs,
     MaxDestination.FpsOverlay,
+    MaxDestination.GameSessions,
     MaxDestination.DynamicIsland,
-    MaxDestination.ColorScheme,
     MaxDestination.SetEdit,
     MaxDestination.ActivityLauncher,
-    // الأخطف آخرًا: لا يُفتح بلمسة عابرة.
-)
-
-/**
- * **فحص الجهاز — شريطٌ ثانٍ لا صفوفٌ في صندوق الأدوات** (أمر المالك نقلها إلى التحكّم):
- * مختبر الجهاز واستخدام التطبيقات وسجلّ البطارية **تقرأ** حالة الجهاز ولا تكتب سقفًا ولا
- * سياسة. فلمّا انتقلت من الإعدادات إلى هنا، جُعلت مجموعةً بعنوانها بدل أن تُكدَّس في قائمة
- * «الأدوات» الطويلة: القارئ يفرّق بالعنوان بين «أداة أفتحها لتفعل» و«صفحة أفتحها لأعرف».
- */
-val ControlInspectDestinations: List<MaxDestination> = listOf(
+    // أدوات التشخيص بقيّة: شاشة التشخيص حُذفت بأمر المالك، فبقيت أدواتها هنا.
     MaxDestination.DeviceLab,
     MaxDestination.UsageStats,
-    MaxDestination.BatteryHistory,
+    MaxDestination.Logs,
+    MaxDestination.MaxBackup,
+    MaxDestination.Permissions,
+    MaxDestination.DebloatFreeze,
+    MaxDestination.ColorPalette,
+    MaxDestination.ColorScheme,
+    // الأخطف آخرًا: لا يُفتح بلمسة عابرة.
 )
 
 /** Which hubs belong to which band, and in what order. Editorial, nothing more. */
@@ -152,10 +149,61 @@ fun controlToolEntries(access: nd.max.ui.navigation.DestinationAccess? = null): 
     ControlToolDestinations.filter { access == null || access.visible(it) }
         .map { destination -> ControlEntry(destination, maxDestinationRole(destination)) }
 
-/** Rows of the device-check band — same table, same visibility gate. */
-fun controlInspectEntries(access: nd.max.ui.navigation.DestinationAccess? = null): List<ControlEntry> =
-    ControlInspectDestinations.filter { access == null || access.visible(it) }
-        .map { destination -> ControlEntry(destination, maxDestinationRole(destination)) }
+/**
+ * **نطاقٌ في صندوق الأدوات — عنوانٌ يجمع صفوفًا تجمعها وظيفة واحدة.**
+ *
+ * الصندوق كان عشرة صفوف متتالية بلا جامع: من يفتح الصفحة ليرى أسطحها الحيّة يمرّ على
+ * محرّر إعدادات ومدير ملفات قبل أن يجدها. وهذه النطاقات **لا تنقل وجهةً من موضعها** —
+ * بل تقطع القائمة الطويلة إلى ثلاث قراءات: ما يُشاهد، وما يُحفظ ويُفتح، وما يُعدَّل.
+ */
+data class ControlToolGroup(
+    val key: String,
+    @StringRes val titleRes: Int,
+    val entries: List<ControlEntry>,
+)
+
+/**
+ * ترتيب النطاقات وأعضاؤها. والأعضاء **أسماء من السجل**، والصفوف نفسها تُشتقّ من
+ * [controlToolEntries] — فبوابة الرؤية وجدول الأدوار يبقيان مصدرًا واحدًا، ولا تُكتب
+ * الوجهة مرتين لتظهر في الصفحة.
+ */
+private val ControlToolBands: List<Pair<Int, List<MaxDestination>>> = listOf(
+    R.string.control_tools_live to listOf(
+        MaxDestination.FpsOverlay,
+        MaxDestination.GameSessions,
+        MaxDestination.DynamicIsland,
+    ),
+    R.string.control_tools_advanced to listOf(
+        MaxDestination.SetEdit,
+        MaxDestination.ActivityLauncher,
+    ),
+    // أدوات النظام: ما يقرأ الجهاز ويُدير تطبيقاته وشحنه — لا يُخفى خلف «متقدّم».
+    R.string.control_tools_system to listOf(
+        MaxDestination.DeviceLab,
+        MaxDestination.UsageStats,
+        MaxDestination.Logs,
+        MaxDestination.Permissions,
+        MaxDestination.MaxBackup,
+        MaxDestination.DebloatFreeze,
+    ),
+    R.string.control_tools_appearance to listOf(
+        MaxDestination.ColorPalette,
+        MaxDestination.ColorScheme,
+    ),
+)
+
+/** النطاقان الباقيان، مرشَّحان بنفس بوابة الصفحة، ونطاقٌ فرغ من صفوفه يُسقَط لا يُعرض فارغًا. */
+fun controlToolGroups(access: nd.max.ui.navigation.DestinationAccess? = null): List<ControlToolGroup> {
+    val entries = controlToolEntries(access)
+    return ControlToolBands.mapNotNull { (titleRes, destinations) ->
+        val rows = entries.filter { entry -> entry.destination in destinations }
+        ControlToolGroup(
+            key = "control_tools_$titleRes",
+            titleRes = titleRes,
+            entries = rows,
+        ).takeIf { rows.isNotEmpty() }
+    }
+}
 
 /**
  * Stable list key: the band's own title resource, so reordering bands does not

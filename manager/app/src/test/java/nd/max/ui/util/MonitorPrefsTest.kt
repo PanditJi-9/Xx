@@ -37,7 +37,9 @@ class MonitorPrefsTest {
         graphSpan: Int = 40,
         snapEdges: Boolean = false,
         posX: Int? = 120,
-        posY: Int? = 640
+        posY: Int? = 640,
+        intervalMs: Int = 2000,
+        filter: HudFilter = HudFilter.Chart
     ) = MonitorSpec(
         id = id,
         fields = fields,
@@ -51,7 +53,9 @@ class MonitorPrefsTest {
         graphSpan = graphSpan,
         snapEdges = snapEdges,
         posX = posX,
-        posY = posY
+        posY = posY,
+        intervalMs = intervalMs,
+        filter = filter
     )
 
     @Test
@@ -85,6 +89,23 @@ class MonitorPrefsTest {
         assertEquals(original.snapEdges, decoded.snapEdges)
         assertEquals(original.posX, decoded.posX)
         assertEquals(original.posY, decoded.posY)
+        assertEquals(original.intervalMs, decoded.intervalMs)
+        assertEquals(original.filter, decoded.filter)
+    }
+
+    @Test
+    fun `a row written before the filter existed keeps both and shows everything`() {
+        val decoded = MonitorPrefs.decode("""[{"id":"m1","graph":true}]""").single()
+        assertEquals(FpsOverlayPrefs.DEFAULT_INTERVAL_MS, decoded.intervalMs)
+        assertEquals(HudFilter.All, decoded.filter)
+    }
+
+    @Test
+    fun `an interval outside the offered list falls back, an unknown filter too`() {
+        val raw = """[{"id":"m1","interval_ms":137,"filter":"Vaporwave"}]"""
+        val decoded = MonitorPrefs.decode(raw).single()
+        assertEquals(FpsOverlayPrefs.DEFAULT_INTERVAL_MS, decoded.intervalMs)
+        assertEquals(HudFilter.All, decoded.filter)
     }
 
     @Test

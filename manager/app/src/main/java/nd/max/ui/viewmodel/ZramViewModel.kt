@@ -103,6 +103,21 @@ class ZramViewModel : ViewModel() {
         private set
     var compDataMb by mutableStateOf(0)
         private set
+    /** Bytes currently held by the compressed pool, or null when mm_stat has no such field. */
+    var memUsedMb by mutableStateOf<Int?>(null)
+        private set
+    /** Pool limit in MiB; 0 means the kernel reports no limit, null means unreadable. */
+    var memLimitMb by mutableStateOf<Int?>(null)
+        private set
+    /** Highest mem_used_total seen by the kernel since the pool was created. */
+    var memUsedMaxMb by mutableStateOf<Int?>(null)
+        private set
+    /** Pages shared between compressed objects (same_pages). */
+    var samePages by mutableStateOf<Long?>(null)
+        private set
+    /** Pages the kernel has compacted (pages_compacted). */
+    var pagesCompacted by mutableStateOf<Long?>(null)
+        private set
     var swappiness by mutableStateOf(60)
         private set
     var selectedPresetId by mutableStateOf("stock")
@@ -192,10 +207,22 @@ class ZramViewModel : ViewModel() {
         val disksizeBytes = RootFileAccess.read("$ZRAM_DEV/disksize")?.toLongOrNull() ?: 0L
         currentDiskSizeMb = (disksizeBytes / (1024 * 1024)).toInt()
 
-        // mm_stat: orig_data_size compr_data_size mem_used_total ...
+        // mm_stat: orig_data_size compr_data_size mem_used_total mem_limit mem_used_max same_pages pages_compacted ...
         val mmStat = RootFileAccess.read("$ZRAM_DEV/mm_stat").orEmpty().split(Regex("\\s+"))
         origDataMb = (mmStat.getOrNull(0)?.toLongOrNull() ?: 0L).let { it / (1024 * 1024) }.toInt()
         compDataMb = (mmStat.getOrNull(1)?.toLongOrNull() ?: 0L).let { it / (1024 * 1024) }.toInt()
+        memUsedMb = mmStat.getOrNull(2)?.toLongOrNull()?.let { (it / (1024 * 1024)).toInt() }
+        // القيمة الضخمة (2^64-1 أو ما يقاربها) تعني «بلا حدّ» في نوى كثيرة؛ ولا تُعرض كرقم.
+        memLimitMb = mmStat.getOrNull(3)?.toLongOrNull()?.let { raw ->
+            when {
+                raw <= 0L -> 0
+                raw > (1L shl 40) -> 0
+                else -> (raw / (1024 * 1024)).toInt()
+            }
+        }
+        memUsedMaxMb = mmStat.getOrNull(4)?.toLongOrNull()?.let { (it / (1024 * 1024)).toInt() }
+        samePages = mmStat.getOrNull(5)?.toLongOrNull()
+        pagesCompacted = mmStat.getOrNull(6)?.toLongOrNull()
 
         // /proc/swaps: Filename Type Size Used Priority (Size/Used are in KB)
         val swapsOut = RootFileAccess.read("/proc/swaps")?.lines().orEmpty()

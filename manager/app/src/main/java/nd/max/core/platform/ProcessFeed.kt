@@ -73,6 +73,21 @@ data class ProcessReading(
 data class ProcessTally(val running: Int, val apps: Int, val system: Int)
 
 /**
+ * تفاصيل عملية واحدة تُقرأ عند الطلب لا في كل دورة.
+ *
+ * `top` يعطي PID/الذاكرة/المعالج فقط؛ أما سبب بقاء العملية أو قتلها في `oom_score_adj`، ومقدار
+ * ما بادلته في `VmSwap`، وموضعها في `cgroup`، وعدد خيوطها — كلها في `/proc/<pid>` ولا تُقرأ
+ * لمئات الصفوف كل ثانية. فتُطلب لصفّ واحد حين يفتح المستخدم تفاصيله.
+ */
+data class ProcessDetails(
+    val pid: Int,
+    val oomScoreAdj: Int?,
+    val vmSwapKb: Long?,
+    val cgroup: String?,
+    val threads: Int?,
+)
+
+/**
  * نتيجة دورة قراءة واحدة.
  *
  * @param readings ما سيُعرض (بعد التصفية والترتيب والقَصّ).
@@ -124,6 +139,48 @@ object ProcessFeed {
             readings = arrange(readings, scope, query, sort, limit),
             tally = tally(readings),
             failed = false
+        )
+    }
+
+    /**
+     * تفاصيل عملية واحدة — نداء جذر واحد، ولا يُنادى في دورة القراءة.
+     *
+     * @return `null` حين لم يُقرأ شيء أصلًا (لا جذر، أو العملية ماتت بين الضغط والقراءة)،
+     *         و[ProcessDetails] بحقول `null` جزئيًّا حين قرئ بعض `/proc` فقط.
+     */
+    fun details(pid: Int): ProcessDetails? {
+        if (pid <= 0) return null
+        val result = runCatching {
+            nd.max.core.privilege.RootCommands.cmd(
+                "cat /proc/$pid/status 2>/dev/null; echo '__MAX_OOM__'; " +
+                    "cat /proc/$pid/oom_score_adj 2>/dev/null; echo '__MAX_CGROUP__'; " +
+                    "cat /proc/$pid/cgroup 2>/dev/null"
+            ).exec()
+        }.getOrNull() ?: return null
+        val text = result.out.joinToString("\n")
+        if (text.isBlank()) return null
+
+        val status = text.substringBefore("__MAX_OOM__")
+        val oom = text.substringAfter("__MAX_OOM__", "").substringBefore("__MAX_CGROUP__")
+        val cgroup = text.substringAfter("__MAX_CGROUP__", "")
+
+        fun statusValue(key: String): String? = status.lineSequence()
+            .map { it.trim() }
+            .firstOrNull { it.startsWith("$key:") }
+            ?.substringAfter(':')
+            ?.trim()
+            ?.takeIf { it.isNotEmpty() }
+
+        return ProcessDetails(
+            pid = pid,
+            oomScoreAdj = oom.trim().toIntOrNull(),
+            vmSwapKb = statusValue("VmSwap")?.substringBefore(' ')?.toLongOrNull(),
+            cgroup = cgroup.lineSequence()
+                .map { it.trim() }
+                .filter { it.isNotEmpty() }
+                .joinToString(" | ")
+                .takeIf { it.isNotEmpty() },
+            threads = statusValue("Threads")?.toIntOrNull(),
         )
     }
 

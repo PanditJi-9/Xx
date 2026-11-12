@@ -6,6 +6,16 @@
 /*
  * The Control primary destination.
  *
+ * **Screen card — archetype: Matrix · object: the machine's ten domains ·
+ * carrying element: the band list.** The person arrives with one question
+ * ("where do I change X?") and leaves by a row; so the screen is a grid of
+ * domains, not a dashboard of numbers. Nothing on this page plots a series —
+ * a plot belongs to the screen that owns that series, and a row that carries a
+ * chart is read as decoration.
+ *
+ * States: bands are always present — a destination the current access cannot
+ * reach is filtered out of the band, never shown disabled or promised.
+ *
  * Product shape: this is the old tuning workspace, kept in the new design
  * system. Grouped bands of destinations, one row per screen, a short line under
  * each title.
@@ -116,8 +126,7 @@ fun ControlScreen(navController: NavHostController) {
     // it only decides how much of it is opened out.
     val access = nd.max.ui.navigation.rememberDestinationAccess()
     val bands = controlLayoutModel(access)
-    val tools = controlToolEntries(access)
-    val inspect = controlInspectEntries(access)
+    val toolGroups = controlToolGroups(access)
 
     val listState = androidx.compose.foundation.lazy.rememberLazyListState()
     HomeTourScrollBinding(listState)
@@ -181,22 +190,11 @@ fun ControlScreen(navController: NavHostController) {
 
         // **ولا مرساة جولة هنا:** هذه آخر مجموعة في الصفحة (تحت الطيّة)، والجولة لا تمرّر غير
         // الرئيسية — فمرساةٌ لا تُرى تعني خطوةً بلا عنصر مُضاء. خطوات التبويبات في أعلى صفحتها.
-        item(key = "control_tools") {
-            ControlBand(
-                titleRes = R.string.max_nav_advanced_tools,
-                entries = tools,
-                expanded = expandedLayout,
-                onOpen = actions::navigateTo,
-            )
-        }
-
-        // **وعنوانٌ يفصل «أداة» عن «فحص»:** الثلاث كانت صفوفًا في الإعدادات (أمر المالك)،
-        // وصار لها شريطها هنا بدل أن تُكدَّس في قائمة الأدوات — تقرأ حالةً ولا تكتب سقفًا.
-        if (inspect.isNotEmpty()) {
-            item(key = "control_inspect") {
+        toolGroups.forEach { group ->
+            item(key = group.key) {
                 ControlBand(
-                    titleRes = R.string.control_group_inspect,
-                    entries = inspect,
+                    titleRes = group.titleRes,
+                    entries = group.entries,
                     expanded = expandedLayout,
                     onOpen = actions::navigateTo,
                 )
@@ -215,6 +213,9 @@ fun ControlScreen(navController: NavHostController) {
         ScreenFinderSheet(
             visible = showFinder,
             onDismiss = { showFinder = false },
+            // **ولا تقترح الورقة الشاشة التي فُتحت منها:** «التحكّم» أكثر ما يُفتح، فكان أوّل
+            // اقتراح فيها هو هي — صفٌّ لا يفعل شيئًا ويأكل مقعدًا من أربعة.
+            currentRoute = MaxDestination.Control.route,
             onOpen = { destination ->
                 showFinder = false
                 // **والتبويبات الأربعة بمسارها الخاصّ:** فتحُها بـ`navigateTo` ينشئ نسخةً ثانية

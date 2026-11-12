@@ -23,7 +23,9 @@ import java.io.File
  * وثلاثة عقود تُقفل هنا:
  *
  * 1. **الفهرس هو السجلّ المرئيّ**: `MaxDestination.Visible` (كل السجلّ إلا ما أخفاه المالك)
- *    ناقصًا ما لا يُفتح بلا معرّف. فلا وجهة جديدة تُنسى، ولا وجهة محذوفة تبقى، ولا ضغطة تفتح
+ *    ناقصًا **الأبواب ذات الابن الواحد** (صفحتها سطرٌ واحد يقود إلى الابن، والابن نفسه في
+ *    الفهرس). وما يحتاج معاملًا لا يُسقَط إن كان له أبٌ ظاهر: يبقى للبحث، ويقول «اختر التطبيق
+ *    أولًا»، وضغطه يقود إلى الأب. فلا وجهة جديدة تُنسى، ولا وجهة محذوفة تبقى، ولا ضغطة تفتح
  *    تفصيل حزمة اسمها فارغ.
  * 2. **والترتيب موقعٌ لا وجود**: اسمُ الشاشة قبل سطر وصفها، وسطرُ الوصف قبل اسم مجالها —
  *    وإلا تصدّرت نتيجةٌ هامشية الشاشةَ التي اسمها هو نفسه ما كتبه المستخدم.
@@ -59,6 +61,29 @@ class ScreenFinderTest {
         riskNote: String? = null,
     ) = ScreenFinderTarget(destination, title, role, where, usage, riskNote)
 
+    /**
+     * **ما يجب أن يعرضه الفهرس بالحساب، لا بالعدد المكتوب.**
+     *
+     * الفهرس = كلّ مرئيّ، **إلّا الأبواب ذات الابن الواحد**: صفحتها سطرٌ واحد يقود إلى الابن،
+     * فعرضها يعطي نقرةً مقابل صفر معلومة. والشرط يُنسخ من الإنتاج حرفًا (بما فيه «الابن يحتاج
+     * معاملًا ⇒ لا إسقاط»)، فلا يفترق الحارس عن الدالّة التي يحرسها.
+     *
+     * **وما يحتاج معاملًا يبقى إن كان له أبٌ ظاهر يُفتح بلا معامل** — يُعرض للبحث وحده، وفعله
+     * يقود إلى الأب. وما لا أب له (أو أبوه يحتاج معاملًا) يُسقَط: لا مسار صادقًا إليه.
+     */
+    private fun expectedFinderSize(): Int {
+        val visible = MaxDestination.Visible
+        val passThrough = visible.filter { it.parent != null }
+            .groupBy { it.parent!! }
+            .filterValues { kids -> kids.size == 1 && !kids.single().needsLaunchArgument }
+            .keys
+        return visible.count { destination ->
+            destination !in passThrough &&
+                (!destination.needsLaunchArgument ||
+                    destination.parent?.let { it in visible && !it.needsLaunchArgument } == true)
+        }
+    }
+
     // ── (١) الفهرس من السجلّ ──────────────────────────────────────────────────
 
     @Test
@@ -66,22 +91,62 @@ class ScreenFinderTest {
         val targets = screenFinderTargets({ "«$it»" })
 
         assertTrue("فهرس فارغ — الفحص نفسه معطوب", targets.size >= 40)
-        assertFalse(
-            "وجهة بمعرّف في مسارها لا تُفتح بلا قيمة، فعرضها وعدٌ بضغطة تفتح شيئًا آخر",
-            targets.any { it.destination.needsLaunchArgument },
-        )
-        assertFalse(
-            "AppSettings مسارها app_settings/{pkg} — لا قيمة افتراضية لمعرّفها",
-            targets.any { it.destination == MaxDestination.AppSettings },
+        // **وما يحتاج معاملًا يبقى، لكن بمسار صادق:** إمّا بلا معامل، أو بأبٍ ظاهر يُفتح.
+        assertTrue(
+            "وجهة بمعرّف في مسارها بلا أبٍ ظاهر: عرضها وعدٌ بضغطة تفتح شيئًا آخر",
+            targets.all { target ->
+                !target.destination.needsLaunchArgument ||
+                    target.opensFrom?.let { !it.needsLaunchArgument } == true
+            },
         )
         assertEquals(
             "الفهرس ليس السجلّ المرئيّ (وجهة نُسيت أو زيدت بيد)",
-            MaxDestination.Visible.count { !it.needsLaunchArgument },
+            expectedFinderSize(),
             targets.size,
         )
         assertTrue(
             "ووجهة لا معرّف لها تُعرض فعلًا (الفحص ليس سالبًا فقط)",
             targets.any { it.destination == MaxDestination.ZramManager },
+        )
+    }
+
+    @Test
+    fun `a screen that needs an app is still findable, and it says where to start`() {
+        val targets = screenFinderTargets(resolve = { resource ->
+            if (resource == R.string.max_title_app_settings) "App settings" else "«$resource»"
+        })
+
+        val settings = targets.single { it.destination == MaxDestination.AppSettings }
+        assertEquals(
+            "إعدادات التطبيق تُفتح من قائمة التطبيقات، فالسطر يقود إلى هناك",
+            MaxDestination.Apps,
+            settings.opensFrom,
+        )
+        assertEquals(MaxDestination.Apps, screenFinderOpenTarget(settings))
+
+        // والبحث بعنوانها المحلول يجدها. لا نفرض أنها النتيجة الوحيدة: قد تطابق العبارة
+        // وصف شاشة أخرى، وعقد المُوجِّد هو إمكان الوصول لا احتكار عبارة البحث.
+        assertTrue(
+            "إعدادات التطبيق موجودة في نتائج البحث بعنوانها",
+            screenFinderResults("app settings", targets)
+                .any { it.destination == MaxDestination.AppSettings },
+        )
+
+        // ووجهة عادية لا تُعاد توجيهًا: فعلها هو وجهتها.
+        val zram = targets.single { it.destination == MaxDestination.ZramManager }
+        assertNull(zram.opensFrom)
+        assertEquals(MaxDestination.ZramManager, screenFinderOpenTarget(zram))
+    }
+
+    @Test
+    fun `a screen that needs an app is never suggested as if it opened itself`() {
+        val targets = screenFinderTargets({ "«$it»" })
+        val withUsage = targets.map {
+            if (it.destination == MaxDestination.AppSettings) it.copy(usage = 99) else it
+        }
+        assertFalse(
+            "اقتراحٌ يفتح قائمة التطبيقات بدلًا من الشاشة يُقرأ عطبًا لا اقتراحًا",
+            screenFinderSuggestions(withUsage).any { it.opensFrom != null },
         )
     }
 
@@ -107,7 +172,7 @@ class ScreenFinderTest {
         )
         assertEquals(
             MaxDestination.Settings.titleRes,
-            screenFinderWhereRes(MaxDestination.Diagnostics),
+            screenFinderWhereRes(MaxDestination.ConfigBackup),
         )
         assertEquals(
             R.string.screen_finder_where_bar,
@@ -148,6 +213,63 @@ class ScreenFinderTest {
         assertEquals(1, screenFinderResults("الحراره", targets).size)
         assertEquals(1, screenFinderResults("الحرارة", targets).size)
         assertEquals(1, screenFinderResults("  الحرارة  ", targets).size)
+    }
+
+    @Test
+    fun `the count of matches is not the count of rows, and the difference is what is hidden`() {
+        // ثلاثون وجهة تُطابق العبارة نفسها، والسقف أربع وعشرون: الفرق ستٌّ تُعلَن لا تُخفى.
+        val many = (1..30).map { target(MaxDestination.ZramManager, "إدارة الذاكرة $it") }
+        val shown = screenFinderResults("الذاكرة", many)
+        assertEquals(24, shown.size)
+        assertEquals(30, screenFinderMatchCount("الذاكرة", many))
+        assertEquals(30 - shown.size, screenFinderMatchCount("الذاكرة", many) - shown.size)
+    }
+
+    @Test
+    fun `the count is never smaller than what the sheet shows`() {
+        val targets = screenFinderTargets({ "«$it»" })
+        // الخاصيّة التي تحرس الورقة: ما يُعرض لا يزيد على ما يُعلَن. ولو انعكس لقالت
+        // الورقة «لا شيء آخر» وهي تعرض أكثر مما عدّت — وهو العطب الذي جاءت هذه الدالّة لمنعه.
+        listOf("الصوت", "شحن", "gpu", "سجل", "شاشة", "ال").forEach { query ->
+            val shown = screenFinderResults(query, targets)
+            assertTrue("سقف العرض تجاوز ٢٤ لـ«$query»", shown.size <= 24)
+            assertTrue(
+                "المعروض أكثر من المعدود لـ«$query»: ${shown.size} > ${screenFinderMatchCount(query, targets)}",
+                shown.size <= screenFinderMatchCount(query, targets),
+            )
+        }
+    }
+
+    @Test
+    fun `the enter key opens the row that is already at the top of the list`() {
+        val targets = screenFinderTargets({ "«$it»" })
+        // المفتاح لا يفتح نتيجةً ثانية: هو أوّل ما تعرضه الورقة، بالترتيب نفسه.
+        listOf("الصوت", "شحن", "gpu").forEach { query ->
+            assertEquals(
+                "مفتاح Enter لا يفتح أعلى نتيجة لـ«$query»",
+                screenFinderResults(query, targets).first(),
+                screenFinderTopHit(query, targets),
+            )
+        }
+    }
+
+    @Test
+    fun `the enter key does nothing on an empty field or a query that matches nothing`() {
+        // **ولا يُعتمد على السجلّ الحقيقيّ في «لا شيء»:** العبارة التي تبدو بلا معنى قد تُطابق
+        // بعد إسقاط نحو الكلام، فيسقط الاختبار على افتراضٍ لا على عطب (وقع فعلًا: «zzz لا شيء
+        // بهذا الاسم» أعادت نتيجةً لأنّ «الاسم» كلمة في الفهرس). فالفهرس هنا اصطناعيّ ومحدَّد.
+        val only = listOf(target(MaxDestination.ZramManager, "إدارة الذاكرة"))
+        assertNull(screenFinderTopHit("", only))
+        assertNull(screenFinderTopHit("   ", only))
+        assertNull(screenFinderTopHit("qwxzvbn", only))
+    }
+
+    @Test
+    fun `an empty query claims no matches at all`() {
+        val targets = screenFinderTargets({ "«$it»" })
+        // لا «٠ نتيجة» تُكتب في الورقة: الفراغ ليس بحثًا فاشلًا، بل حقلًا لم يُكتب فيه بعد.
+        assertEquals(0, screenFinderMatchCount("", targets))
+        assertEquals(0, screenFinderMatchCount("   ", targets))
     }
 
     @Test
@@ -240,7 +362,7 @@ class ScreenFinderTest {
         )
         assertEquals(
             "الفهرس كله لا يسقط إذا كان في السجلّ مسار خارج السجلّ",
-            MaxDestination.Visible.count { !it.needsLaunchArgument },
+            expectedFinderSize(),
             targets.size,
         )
     }
@@ -264,6 +386,54 @@ class ScreenFinderTest {
         assertEquals(1, screenFinderSuggestions(targets, limit = 1).size)
         assertEquals(0, screenFinderSuggestions(targets, limit = 0).size)
         assertEquals(4, SCREEN_FINDER_SUGGESTIONS)
+    }
+
+    @Test
+    fun `the screen you are standing on is not suggested to you`() {
+        val targets = listOf(
+            target(MaxDestination.Control, "Control", usage = 40),
+            target(MaxDestination.Settings, "Settings", usage = 12),
+            target(MaxDestination.ZramManager, "ZRAM", usage = 3),
+        )
+        assertEquals(
+            "المضيف لا يُقترح لنفسه: صفٌّ لا يفعل شيئًا عند الضغط ويأكل مقعدًا من أربعة",
+            listOf(MaxDestination.Settings, MaxDestination.ZramManager),
+            screenFinderSuggestions(
+                targets,
+                exclude = setOf(MaxDestination.Control.route),
+            ).map { it.destination },
+        )
+        assertEquals(
+            "والاستبعاد للاقتراح وحده: من كتب اسم المضيف يجده في النتائج",
+            listOf(MaxDestination.Control),
+            screenFinderResults("control", targets).map { it.destination },
+        )
+    }
+
+    @Test
+    fun `excluding the host frees a seat instead of shrinking the list`() {
+        val targets = listOf(
+            target(MaxDestination.Control, "Control", usage = 50),
+            target(MaxDestination.Settings, "Settings", usage = 40),
+            target(MaxDestination.Logs, "Logs", usage = 30),
+            target(MaxDestination.MemoryHub, "Memory", usage = 20),
+            target(MaxDestination.ZramManager, "ZRAM", usage = 10),
+        )
+        val withoutHost = screenFinderSuggestions(
+            targets,
+            exclude = setOf(MaxDestination.Control.route),
+        )
+        assertEquals(
+            "السقف أربعة، والمستبعَد يُحرّر مقعده للخامس ولا يُنقص القائمة",
+            listOf(
+                MaxDestination.Settings,
+                MaxDestination.Logs,
+                MaxDestination.MemoryHub,
+                MaxDestination.ZramManager,
+            ),
+            withoutHost.map { it.destination },
+        )
+        assertEquals(SCREEN_FINDER_SUGGESTIONS, withoutHost.size)
     }
 
     @Test
@@ -299,6 +469,11 @@ class ScreenFinderTest {
         assertTrue(
             "والمُوجِّد لا يخترع عدّادًا ثانيًا",
             !read("ui/mainscreens/ScreenFinderSheet.kt").contains("getSharedPreferences"),
+        )
+        assertTrue(
+            "والمضيف لا يُقترح لنفسه: كل مستدعٍ يمرّر مسار شاشته",
+            read("ui/mainscreens/ControlScreen.kt").contains("currentRoute = MaxDestination.Control.route") &&
+                read("ui/mainscreens/SettingsScreen.kt").contains("currentRoute = MaxDestination.Settings.route"),
         )
     }
 
@@ -384,6 +559,25 @@ class ScreenFinderTest {
             "الاسم المطابق يبقى أوّلًا مهما طالت الجملة",
             MaxDestination.BatteryHistory,
             screenFinderResults("سجل البطارية", targets).firstOrNull()?.destination,
+        )
+    }
+
+    @Test
+    fun `the finder opens from the settings page too, not only from control`() {
+        // العطب المقصود: الفهرس يغطّي كل الوجهات، لكن مدخله الوحيد كان شريط «التحكّم» — فمن
+        // هو في الإعدادات (وهي أطول قائمة في التطبيق) كان يغادرها ليبحث. والورقة واحدة.
+        val settings = read("ui/mainscreens/SettingsScreen.kt")
+        assertTrue(
+            "SettingsScreen does not host the shared ScreenFinderSheet",
+            settings.contains("ScreenFinderSheet("),
+        )
+        assertTrue(
+            "SettingsScreen has no state that opens the finder",
+            settings.contains("showFinder"),
+        )
+        assertTrue(
+            "ControlScreen no longer hosts the same sheet — two finders would be two truths",
+            read("ui/mainscreens/ControlScreen.kt").contains("ScreenFinderSheet("),
         )
     }
 }

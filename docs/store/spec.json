@@ -9,8 +9,14 @@
     "منشورة فعلًا في README، وأن الأرقام في النصّ مطابقة لما في الشجرة."
   ],
   "canvas": {
-    "phone": [1080, 1920],
-    "feature": [1024, 500]
+    "phone": [
+      1080,
+      1920
+    ],
+    "feature": [
+      1024,
+      500
+    ]
   },
   "palette": {
     "_": "لوحة العرض = DARK في tools/gen_readme_assets.py حرفيًّا (وهي مقيسة بدورها على MaxTokens.kt)، ووسم الصانع يأخذ لونَي الإيجابي من MaxTokens.kt.",
@@ -92,7 +98,10 @@
     {
       "id": "01-now",
       "source": "docs/screenshots/02-now-home.png",
-      "source_size": [1162, 2480],
+      "source_size": [
+        1162,
+        2480
+      ],
       "headline": {
         "en": "Every number shows its source and age",
         "ar": "كل رقم يُظهر مصدره ووقت قراءته"
@@ -105,7 +114,10 @@
     {
       "id": "02-max-ai",
       "source": "docs/screenshots/03-max-ai.png",
-      "source_size": [1162, 2480],
+      "source_size": [
+        1162,
+        2480
+      ],
       "headline": {
         "en": "Decisions you can read, not a black box",
         "ar": "قرارات تُقرأ، لا صندوق أسود"
@@ -118,7 +130,10 @@
     {
       "id": "03-control",
       "source": "docs/screenshots/07-control-hub.png",
-      "source_size": [1162, 2480],
+      "source_size": [
+        1162,
+        2480
+      ],
       "headline": {
         "en": "Hardware control with a visible owner",
         "ar": "تحكّم بالعتاد، ومالكه ظاهر"
@@ -132,7 +147,10 @@
   "feature": {
     "id": "feature",
     "source": "docs/screenshots/02-now-home.png",
-    "source_size": [1162, 2480],
+    "source_size": [
+      1162,
+      2480
+    ],
     "headline": {
       "en": "Reads this device. Explains every number.",
       "ar": "يقرأ جهازك، ويفسّر أرقامه"
@@ -163,7 +181,7 @@
   },
   "measured": {
     "_": "الأرقام التي يجوز أن تظهر في النصّ — تُقاس على الشجرة عند كل تشغيل، فلا يبقى ادّعاء رقميّ بلا مقياس.",
-    "screens": 68,
+    "screens": 66,
     "locales": 84
   }
 }

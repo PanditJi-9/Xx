@@ -290,6 +290,65 @@ fun ZramManagerScreen(
                         source = sysfsSource
                     )
                 )
+                // mm_stat fields beyond the two sizes: held bytes, limit, peak, same-filled and
+                // compacted pages. Each stays unreadable rather than zero when the node lacks it.
+                val memUsedMb = viewModel.memUsedMb
+                MaxGroupDivider()
+                MaxMetricLine(
+                    metric = MaxMetric(
+                        label = stringResource(R.string.max_zram_metric_mem_used),
+                        value = memUsedMb?.toString(),
+                        unit = if (memUsedMb != null) unitMb else null,
+                        trust = if (memUsedMb == null) MaxDataTrust.Unreadable else MaxDataTrust.Live,
+                        source = sysfsSource
+                    )
+                )
+                val memLimitMb = viewModel.memLimitMb
+                MaxGroupDivider()
+                MaxMetricLine(
+                    metric = MaxMetric(
+                        label = stringResource(R.string.max_zram_metric_mem_limit),
+                        value = when {
+                            memLimitMb == null -> null
+                            memLimitMb == 0 -> stringResource(R.string.max_zram_limit_none)
+                            else -> memLimitMb.toString()
+                        },
+                        unit = if (memLimitMb != null && memLimitMb > 0) unitMb else null,
+                        trust = if (memLimitMb == null) MaxDataTrust.Unreadable else MaxDataTrust.Live,
+                        source = sysfsSource
+                    )
+                )
+                val memUsedMaxMb = viewModel.memUsedMaxMb
+                MaxGroupDivider()
+                MaxMetricLine(
+                    metric = MaxMetric(
+                        label = stringResource(R.string.max_zram_metric_mem_peak),
+                        value = memUsedMaxMb?.toString(),
+                        unit = if (memUsedMaxMb != null) unitMb else null,
+                        trust = if (memUsedMaxMb == null) MaxDataTrust.Unreadable else MaxDataTrust.Live,
+                        source = sysfsSource
+                    )
+                )
+                val samePages = viewModel.samePages
+                MaxGroupDivider()
+                MaxMetricLine(
+                    metric = MaxMetric(
+                        label = stringResource(R.string.max_zram_metric_same_pages),
+                        value = samePages?.toString(),
+                        trust = if (samePages == null) MaxDataTrust.Unreadable else MaxDataTrust.Live,
+                        source = sysfsSource
+                    )
+                )
+                val pagesCompacted = viewModel.pagesCompacted
+                MaxGroupDivider()
+                MaxMetricLine(
+                    metric = MaxMetric(
+                        label = stringResource(R.string.max_zram_metric_compacted),
+                        value = pagesCompacted?.toString(),
+                        trust = if (pagesCompacted == null) MaxDataTrust.Unreadable else MaxDataTrust.Live,
+                        source = sysfsSource
+                    )
+                )
                 // والباب آخر البطاقة، مفصولًا بخطّ داخلي: إجراء عليها لا صفّ بيانات بينها.
                 MaxGroupDivider()
                 MaxDeviceInfoShortcut(navController, MaxDestination.ZramManager)

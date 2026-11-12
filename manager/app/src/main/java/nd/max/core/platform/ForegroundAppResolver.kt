@@ -24,14 +24,24 @@ package nd.max.core.platform
  */
 object ForegroundAppResolver {
 
+    /** التطبيق في المقدّمة مع النشاط إن عُرف — مفتاح بروفايل النشاط يُبنى منه. */
+    data class ForegroundComponent(val packageName: String, val activityName: String?)
+
     /** حدّ أندرويد لطول اسم الحزمة. */
     private const val MAX_PACKAGE_LENGTH = 255
 
     /** اسم حزمة: حرف في أوّل المقطع، ونقطة بين مقطع ومقطع، ومقطعان على الأقلّ. */
     private val PACKAGE_NAME = Regex("[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)+")
 
+    /** اسم نشاط مؤهَّل بالكامل: حروف وأرقام و`_` و`$` ونقاط، ولا يبدأ بنقطة. */
+    private val ACTIVITY_NAME = Regex("[A-Za-z_$][A-Za-z0-9_$.]*")
+
     /** قدرٌ يكفي للتعرّف على `pkg/activity` داخل نصّ `dumpsys`. */
     private val SLASHED_PACKAGE = Regex("([A-Za-z][A-Za-z0-9_]*(?:\\.[A-Za-z0-9_]+)*)/")
+
+    /** المكوّن كاملًا: الحزمة ثم نشاطها بعد الشرطة المائلة. */
+    private val COMPONENT = Regex("([A-Za-z][A-Za-z0-9_]*(?:\\.[A-Za-z0-9_]+)*)/([A-Za-z0-9_.$]+)")
+
 
     /**
      * وسوم السطور التي **يسمّي فيها النظام** التطبيق المقيم. والترتيب مقصود: أوّل ما يُقرأ من
@@ -93,6 +103,71 @@ object ForegroundAppResolver {
     }
 
     /**
+     * اسم النشاط مؤهَّلًا بالكامل — `.MainActivity` تُصبح `pkg.MainActivity`، والاسم المجرّد
+     * يُلحق بالحزمة. `null` إن كانت الصيغة غير صالحة.
+     */
+    fun normalizeActivity(packageName: String?, activityName: String?): String? {
+        val pkg = packageName?.trim().orEmpty()
+        if (!isPackageName(pkg)) return null
+        val candidate = activityName?.trim().orEmpty()
+        if (candidate.isEmpty() || candidate.length > MAX_PACKAGE_LENGTH) return null
+        val full = when {
+            candidate.startsWith(".") -> pkg + candidate
+            '.' !in candidate -> "$pkg.$candidate"
+            else -> candidate
+        }
+        return full.takeIf { ACTIVITY_NAME.matches(it) }
+    }
+
+    /** مفتاح بروفايل النشاط: `pkg/activity` مؤهَّلًا، أو `null` إن كانت الصيغة غير صالحة. */
+    fun activityKey(packageName: String?, activityName: String?): String? {
+        val pkg = packageName?.trim().orEmpty()
+        if (!isPackageName(pkg)) return null
+        val activity = normalizeActivity(pkg, activityName) ?: return null
+        return "$pkg/$activity"
+    }
+
+    /**
+     * هل هذا مفتاح بروفايل صالح؟ إمّا اسم حزمة، وإمّا `pkg/activity` بنشاط مؤهَّل بالكامل
+     * (لا يبدأ بنقطة، ولا اسم مجرّد — المفاتيح تُخزَّن مؤهَّلة دائمًا).
+     */
+    fun isProfileKey(value: String?): Boolean {
+        val candidate = value?.trim().orEmpty()
+        if (candidate.isEmpty() || candidate.length > MAX_PACKAGE_LENGTH * 2) return false
+        val slash = candidate.indexOf('/')
+        if (slash < 0) return isPackageName(candidate)
+        if (slash == 0 || slash == candidate.lastIndex) return false
+        if (candidate.indexOf('/', slash + 1) >= 0) return false
+        val pkg = candidate.substring(0, slash)
+        val activity = candidate.substring(slash + 1)
+        if (!isPackageName(pkg)) return false
+        if (activity.startsWith(".") || '.' !in activity) return false
+        return ACTIVITY_NAME.matches(activity)
+    }
+
+    /**
+     * التطبيق والنشاط من نصّ `dumpsys` — نفس مصدر [parseResumedPackage]، لكنه يحتفظ باسم
+     * النشاط ليكون مفتاح بروفايل أدقّ. وإن عُرفت الحزمة وحدها يعود النشاط `null`.
+     */
+    fun parseResumedComponent(dumpsys: String?): ForegroundComponent? {
+        if (dumpsys.isNullOrBlank()) return null
+        for (line in dumpsys.lineSequence()) {
+            if (MARKERS.none { line.contains(it) }) continue
+            for (match in COMPONENT.findAll(line)) {
+                val candidate = match.groupValues[1]
+                if (!isPackageName(candidate)) continue
+                val activity = normalizeActivity(candidate, match.groupValues[2])
+                if (activity != null) return ForegroundComponent(candidate, activity)
+            }
+            for (match in SLASHED_PACKAGE.findAll(line)) {
+                val candidate = match.groupValues[1]
+                if (isPackageName(candidate)) return ForegroundComponent(candidate, null)
+            }
+        }
+        return null
+    }
+
+    /**
      * اسم الحزمة من نصّ `dumpsys` (‏`activity activities` أو `window`).
      *
      * **ولماذا هذا المصدر:** على Android 14 صارت `getTasks`/`getRunningTasks` مقيَّدة على
@@ -103,15 +178,5 @@ object ForegroundAppResolver {
      * **وحدّها:** تقرأ `pkg/activity`، وتقبل ما يجتاز [isPackageName] فقط؛ ونصّ لا يحمل
      * وسمًا منها يُعيد `null` (ولا يُخترع تطبيق).
      */
-    fun parseResumedPackage(dumpsys: String?): String? {
-        if (dumpsys.isNullOrBlank()) return null
-        for (line in dumpsys.lineSequence()) {
-            if (MARKERS.none { line.contains(it) }) continue
-            for (match in SLASHED_PACKAGE.findAll(line)) {
-                val candidate = match.groupValues[1]
-                if (isPackageName(candidate)) return candidate
-            }
-        }
-        return null
-    }
+    fun parseResumedPackage(dumpsys: String?): String? = parseResumedComponent(dumpsys)?.packageName
 }
