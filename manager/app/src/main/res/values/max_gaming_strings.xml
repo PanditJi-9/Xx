@@ -16,7 +16,7 @@
     <string name="gaming_mode_performance">Performance</string>
     <string name="gaming_mode_max">Max performance</string>
     <string name="gaming_mode_custom">Custom</string>
-    <string name="gaming_runtime_boundary">The existing per-app monitor applies supported controls and reports their results in App Settings. Launching a game does not certify that its profile was applied. Session history and per-game FPS measurement are not available yet.</string>
+    <string name="gaming_runtime_boundary">The existing per-app monitor applies supported controls and reports their results in App Settings. Launching a game does not certify that its profile was applied. Session history is recorded only while the side panel service is active; per-game FPS measurement is not available yet.</string>
     <string name="game_space_manage_on">Done managing</string>
     <string name="game_space_footer_count">Showing %1$d of %2$d installed apps</string>
     <string name="game_space_detected">Detected as a game</string>
@@ -152,6 +152,17 @@
     <string name="lobby_sort_favorites">Favorites first</string>
     <string name="lobby_sort_name">A to Z</string>
     <string name="lobby_sort_newest">Newest</string>
+    <string name="lobby_sort_most_played">Most played</string>
+    <string name="lobby_cc_loadout">Loadout</string>
+    <string name="lobby_loadout_title">Quick loadout · %1$s</string>
+    <string name="lobby_loadout_quick">Ready to play</string>
+    <string name="lobby_loadout_note">Changes are saved to the same game profile and applied when the game is next in front; the panel switch takes effect immediately. Full controls remain in Game profile.</string>
+    <string name="lobby_stats_last_minutes">Last played %1$d min ago</string>
+    <string name="lobby_stats_last_hours">Last played %1$d h ago</string>
+    <string name="lobby_stats_last_yesterday">Last played yesterday</string>
+    <string name="lobby_stats_last_days">Last played %1$d days ago</string>
+    <string name="lobby_stats_play_minutes">Played %1$d min</string>
+    <string name="lobby_stats_play_hours">Played %1$d h %2$d min</string>
     <string name="lobby_row_flash">Launch flash</string>
     <string name="lobby_row_flash_desc">A brief colour burst when a game starts. Decorative, so it is off by default.</string>
     <string name="lobby_row_lobby_haptics">Lobby haptics</string>

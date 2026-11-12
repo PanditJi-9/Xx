@@ -65,10 +65,17 @@ object LobbyOrder {
         games: List<GameApp>,
         favorites: Set<String>,
         order: LobbySort,
-        installedDays: Map<String, Int>
+        installedDays: Map<String, Int>,
+        playStats: Map<String, GamePlayStats> = emptyMap()
     ): List<GameApp> = when (order) {
         LobbySort.Favorites -> games.sortedWith(
             compareByDescending<GameApp> { it.packageName in favorites }
+                .thenBy { it.label.lowercase() }
+                .thenBy { it.packageName }
+        )
+        LobbySort.MostPlayed -> games.sortedWith(
+            compareByDescending<GameApp> { playStats[it.packageName]?.totalMs ?: 0L }
+                .thenByDescending { it.packageName in favorites }
                 .thenBy { it.label.lowercase() }
                 .thenBy { it.packageName }
         )

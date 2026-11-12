@@ -36,6 +36,8 @@ import nd.max.core.gamespace.InAppProfileApplier
 import nd.max.core.gamespace.UsageStatsForeground
 import nd.max.core.gamespace.GameProfileRepository
 import nd.max.core.gamespace.GameThermalProfiles
+import nd.max.core.gamespace.PlaySessionStore
+import nd.max.core.gamespace.PlaySessionTracker
 import nd.max.core.gamespace.GamePanelMode
 import nd.max.core.gamespace.BypassState
 import nd.max.core.gamespace.PanelClockHold
@@ -187,6 +189,9 @@ class GamePanelService : LifecycleService() {
     private val mainHandler = android.os.Handler(android.os.Looper.getMainLooper())
     private var library: Set<String> = emptySet()
 
+    /** كاتب سجلّ اللعب الوحيد: جلسة تُفتح مع متابعة لعبة وتُغلق بانتقالها. */
+    private val playSessions = PlaySessionTracker()
+
     /** المجموعة المُفعَّلة التي قُرئت معها المكتبة، ومتى قُرئت — تُعاد القراءة عند تغيّرها أو بعد [nd.max.core.gamespace.PANEL_LIBRARY_TTL_MS]. */
     private var libraryFor: Set<String> = emptySet()
     private var libraryLoadedAt = 0L
@@ -307,7 +312,11 @@ class GamePanelService : LifecycleService() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
         if (intent?.action == ACTION_STOP) {
-            stopSelf()
+            // لا نُسقط جلسة مفتوحة عند الإيقاف اليدويّ: تُغلق وتُحفظ ثم تُوقف الخدمة.
+            lifecycleScope.launch {
+                finishPlaySession()
+                stopSelf()
+            }
             return START_NOT_STICKY
         }
         // كل بدء عبر `startForegroundService` يُلزم الخدمة باستدعاء `startForeground` خلال خمس ثوانٍ، حتى لو
@@ -459,6 +468,7 @@ class GamePanelService : LifecycleService() {
         window.unmount()
         crosshairOverlay?.destroy()
         crosshairOverlay = null
+        recordOpenSessionOnDestroy()
         isRunning = false
         super.onDestroy()
     }
@@ -481,6 +491,7 @@ class GamePanelService : LifecycleService() {
             if (panelServiceLifetime(prefs.enabledPackages) == PanelLifetime.Stop &&
                 !crosshairNow.enabled
             ) {
+                finishPlaySession()
                 stopSelf()
                 return
             }
@@ -546,6 +557,8 @@ class GamePanelService : LifecycleService() {
                 fadeOutCockpit()
             }
             state = step.state
+            // سجلّ اللعب: انتقال اللعبة يُغلق جلسة ويفتح أخرى؛ وقراءة مجهولة لا تُغلق جلسة قائمة.
+            trackPlaySession(step.state.subject, interactive)
             // العلامة تتبع اللعبة الأمامية: تظهر مع `Tracked` وتختفي مع غيرها، وتُخفى
             // واللوحة مفتوحة حتى لا تُرسم فوق أزرارها.
             syncCrosshair(crosshairNow)
@@ -571,6 +584,38 @@ class GamePanelService : LifecycleService() {
             if (state.visible) window.hostView()?.alpha = 1f
             placeWindow()
             delay(step.nextDelayMs)
+        }
+    }
+
+    /**
+     * سجلّ اللعب — **كاتب واحد**: هذه الخدمة. تُغلق الجلسة عند تبدّل اللعبة أو مغادرتها أو إطفاء
+     * الشاشة، ولا تُغلقها عند قراءة مجهولة (فشل قراءة ليس دليل خروج).
+     *
+     * والحدّ المعلن: الجلسة تبدأ من أوّل استطلاع ترى فيه الخدمة اللعبة، فلا تُحسب الفترة السابقة
+     * لبدء الخدمة. والكتابة على IO لا على خيط الرسم.
+     */
+    private suspend fun trackPlaySession(subject: PanelSubject, interactive: Boolean) {
+        val now = System.currentTimeMillis()
+        val finished = when {
+            !interactive -> playSessions.close(now)
+            subject is PanelSubject.Unknown -> null
+            else -> playSessions.onForeground((subject as? PanelSubject.Tracked)?.packageName, now)
+        }
+        if (finished != null) {
+            withContext(Dispatchers.IO) { PlaySessionStore.record(applicationContext, finished) }
+        }
+    }
+
+    private suspend fun finishPlaySession() {
+        val finished = playSessions.close(System.currentTimeMillis()) ?: return
+        withContext(Dispatchers.IO) { PlaySessionStore.record(applicationContext, finished) }
+    }
+
+    /** عند تدمير الخدمة بلا مرور من مسار الإيقاف: محاولة أخيرة لا تُعطّل الخيط الرئيسيّ. */
+    private fun recordOpenSessionOnDestroy() {
+        val finished = playSessions.close(System.currentTimeMillis()) ?: return
+        kotlinx.coroutines.CoroutineScope(Dispatchers.IO).launch {
+            PlaySessionStore.record(applicationContext, finished)
         }
     }
 

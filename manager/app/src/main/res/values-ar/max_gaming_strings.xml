@@ -16,7 +16,7 @@
     <string name="gaming_mode_performance">أداء</string>
     <string name="gaming_mode_max">أقصى أداء</string>
     <string name="gaming_mode_custom">مخصص</string>
-    <string name="gaming_runtime_boundary">مراقب التطبيقات القائم يطبّق المقابض المدعومة ويعرض نتائجها في إعدادات التطبيق. تشغيل اللعبة لا يثبت تطبيق ملفها. سجلّ الجلسات وقياس الإطارات لكل لعبة غير متاحين بعد.</string>
+    <string name="gaming_runtime_boundary">مراقب التطبيقات القائم يطبّق المقابض المدعومة ويعرض نتائجها في إعدادات التطبيق. تشغيل اللعبة لا يثبت تطبيق ملفها. يُسجَّل سجلّ الجلسات فقط ما دامت خدمة اللوحة الجانبية حيّة؛ وقياس الإطارات لكل لعبة غير متاح بعد.</string>
     <string name="game_space_manage_on">تمّ التحرير</string>
     <string name="game_space_footer_count">يُعرض %1$d من %2$d تطبيقًا مثبّتًا</string>
     <string name="game_space_detected">مكتشَفة كلعبة</string>
@@ -152,6 +152,17 @@
     <string name="lobby_sort_favorites">المفضلة أولًا</string>
     <string name="lobby_sort_name">أبجدي</string>
     <string name="lobby_sort_newest">الأحدث</string>
+    <string name="lobby_sort_most_played">الأكثر لعبًا</string>
+    <string name="lobby_cc_loadout">التحميل السريع</string>
+    <string name="lobby_loadout_title">تحميل سريع · %1$s</string>
+    <string name="lobby_loadout_quick">جاهز للعب</string>
+    <string name="lobby_loadout_note">تُحفظ التغييرات في ملف اللعبة نفسه وتُطبَّق عند عودة اللعبة إلى المقدمة؛ ومفتاح اللوحة يسري فورًا. التحكم الكامل يبقى في قسم ملف اللعبة.</string>
+    <string name="lobby_stats_last_minutes">آخر لعب منذ %1$d دقيقة</string>
+    <string name="lobby_stats_last_hours">آخر لعب منذ %1$d ساعة</string>
+    <string name="lobby_stats_last_yesterday">آخر لعب أمس</string>
+    <string name="lobby_stats_last_days">آخر لعب منذ %1$d يوم</string>
+    <string name="lobby_stats_play_minutes">لُعبت %1$d دقيقة</string>
+    <string name="lobby_stats_play_hours">لُعبت %1$d ساعة و%2$d دقيقة</string>
     <string name="lobby_row_flash">وميض الإطلاق</string>
     <string name="lobby_row_flash_desc">وميض لحظيّ بلون اللعبة عند بدء التشغيل. زينة، ولذلك فهو مُطفأ افتراضيًّا.</string>
     <string name="lobby_row_lobby_haptics">اهتزاز اللوبي</string>

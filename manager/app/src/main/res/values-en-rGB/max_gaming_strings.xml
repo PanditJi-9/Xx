@@ -17,7 +17,7 @@
     <string name="gaming_mode_performance">Performance</string>
     <string name="gaming_mode_max">Max performance</string>
     <string name="gaming_mode_custom">Custom</string>
-    <string name="gaming_runtime_boundary">The existing per-app monitor applies supported controls and reports their results in App Settings. Launching a game does not certify that its profile was applied. Session history and per-game FPS measurement are not available yet.</string>
+    <string name="gaming_runtime_boundary">The existing per-app monitor applies supported controls and reports their results in App Settings. Launching a game does not certify that its profile was applied. Session history is recorded only while the side panel service is active; per-game FPS measurement is not available yet.</string>
     <string name="game_space_manage_on">Done managing</string>
     <string name="game_space_footer_count">Showing %1$d of %2$d installed apps</string>
     <string name="game_space_detected">Detected as a game</string>

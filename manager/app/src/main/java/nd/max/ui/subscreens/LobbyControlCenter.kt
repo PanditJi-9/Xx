@@ -34,6 +34,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AddToHomeScreen
+import androidx.compose.material.icons.rounded.Bolt
 import androidx.compose.material.icons.rounded.Layers
 import androidx.compose.material.icons.rounded.RestartAlt
 import androidx.compose.material.icons.rounded.Tune
@@ -111,13 +112,14 @@ import nd.max.ui.util.GamePanelPrefs
 import nd.max.ui.util.GameLobbyIcon
 import nd.max.ui.util.GameSpaceShortcutPinner
 import nd.max.ui.util.PinOutcome
+import nd.max.ui.util.customizedFieldCount
 import nd.max.ui.util.canvasScaleOptions
 import nd.max.ui.util.getSupportedRefreshRates
 
 /*
  * مركز التحكم: **سطح واحد** يضمّ ما كان موزّعًا على أربع نوافذ (ملف اللعبة، ومقبض اللوحة الجانبية،
- * وإدارة الألعاب، والمجموعات المحذوفة) مضافًا إليه خيارات اللوبي الجديدة. شريط جانبيّ بأربعة أقسام
- * ومحتوى يتبدّل بتلاشٍ ناعم؛ لا نوافذ منبثقة ولا تنقّل داخليّ.
+ * وإدارة الألعاب، والمجموعات المحذوفة) مضافًا إليه خيارات اللوبي الجديدة. شريط جانبيّ بخمسة أقسام
+ * (التحميل السريع ثم الأربعة السابقة) ومحتوى يتبدّل بتلاشٍ ناعم؛ لا نوافذ منبثقة ولا تنقّل داخليّ.
  *
  * المسؤوليّات كما كانت (لم تُغيَّر):
  *  - قيم ملف اللعبة تكتب عبر `onUpdate` إلى `AppSettingsViewModel` وحده (ADR-11: لا عتاد من هنا).
@@ -128,6 +130,7 @@ import nd.max.ui.util.getSupportedRefreshRates
 
 /** أقسام مركز التحكم. الترتيب هو ترتيب الشريط الجانبي. */
 internal enum class LobbySection(val titleRes: Int, val icon: ImageVector) {
+    Loadout(R.string.lobby_cc_loadout, Icons.Rounded.Bolt),
     Game(R.string.lobby_tile_profile, Icons.Rounded.Tune),
     Panel(R.string.lobby_tile_panel, Icons.Rounded.ViewSidebar),
     Lobby(R.string.lobby_cc_lobby, Icons.Rounded.Layers),
@@ -194,6 +197,7 @@ internal fun LobbyControlCenter(
                     .fillMaxSize()
             ) { current ->
                 when (current) {
+                    LobbySection.Loadout -> LoadoutBody(app, config, panelEnabled, onPanelEnabled, onUpdate, onOpenFull)
                     LobbySection.Game -> GameBody(app, config, onUpdate, onOpenFull)
                     LobbySection.Panel -> PanelBody(app, panelEnabled, onPanelEnabled)
                     LobbySection.Lobby -> LobbyOptionsBody(prefs, onPrefs)
@@ -279,6 +283,95 @@ private fun ControlSidebar(
                     overflow = TextOverflow.Ellipsis
                 )
             }
+        }
+    }
+}
+
+// ─────────────────────────────── قسم التحميل السريع ───────────────────────────────
+
+/**
+ * «جاهز للعب»: المقابض الأربعة التي تُقرَّر قبل الجولة، من `AppConfig` نفسه الذي يقرؤه المراقب.
+ * ليست مخزنًا ثانيًا: كل صفّ يمرّ بـ`onUpdate`، والتفصيل الكامل يبقى في قسم ملف اللعبة.
+ */
+@Composable
+private fun LoadoutBody(
+    app: GameApp?,
+    config: AppConfig,
+    panelEnabled: Boolean,
+    onPanelEnabled: (Boolean) -> Unit,
+    onUpdate: (String, String) -> Unit,
+    onOpenFull: () -> Unit,
+) {
+    if (app == null) {
+        EmptyBody()
+        return
+    }
+    val context = LocalContext.current
+    val defaultLabel = stringResource(R.string.default_label)
+    val refreshModes = remember { getSupportedRefreshRates(context) }
+    val tweaks = remember(config) { config.customizedFieldCount() }
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = MaxSpace.xl, vertical = MaxSpace.lg),
+        verticalArrangement = Arrangement.spacedBy(MaxSpace.lg)
+    ) {
+        Text(
+            text = stringResource(R.string.lobby_loadout_title, app.label),
+            color = LobbyPalette.Ink,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.SemiBold,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+        LobbySectionCard(stringResource(R.string.lobby_loadout_quick)) {
+            LobbyTriStateRow(stringResource(R.string.lobby_row_dnd), config.dnd_on_gaming) {
+                onUpdate("dnd_on_gaming", it)
+            }
+            LobbyOptionRow(
+                title = stringResource(R.string.lobby_row_refresh),
+                options = refreshModes.map {
+                    it to if (it.equals("default", ignoreCase = true)) defaultLabel else "${it}Hz"
+                },
+                selected = config.refresh_rate,
+                onSelect = { onUpdate("refresh_rate", it) }
+            )
+            LobbyOptionRow(
+                title = stringResource(R.string.lobby_row_gpu),
+                options = listOf(
+                    "default" to defaultLabel,
+                    "power" to stringResource(R.string.lobby_gpu_power),
+                    "balanced" to stringResource(R.string.lobby_gpu_balanced),
+                    "gaming" to stringResource(R.string.lobby_gpu_gaming),
+                    "performance" to stringResource(R.string.lobby_gpu_performance)
+                ),
+                selected = config.gpu_profile,
+                onSelect = { onUpdate("gpu_profile", it) }
+            )
+            LobbyTriStateRow(stringResource(R.string.lobby_row_bypass), config.bypass_charging) {
+                onUpdate("bypass_charging", it)
+            }
+        }
+        LobbySectionCard(stringResource(R.string.lobby_tile_panel)) {
+            LobbySwitchRow(stringResource(R.string.lobby_row_panel), panelEnabled, onPanelEnabled)
+        }
+        Text(
+            text = stringResource(R.string.lobby_loadout_note),
+            color = LobbyPalette.Steel,
+            fontSize = 12.sp
+        )
+        Text(
+            text = stringResource(R.string.lobby_tile_profile_value, tweaks),
+            color = LobbyPalette.Muted,
+            fontSize = 12.sp
+        )
+        OutlinedButton(
+            onClick = onOpenFull,
+            border = BorderStroke(MaxSize.hairlineBorder, LobbyPalette.Hairline),
+            modifier = Modifier.heightIn(min = MaxSize.minTouchTarget)
+        ) {
+            Text(text = stringResource(R.string.lobby_open_full), color = LobbyPalette.Ink)
         }
     }
 }
@@ -608,6 +701,7 @@ private fun LobbyOptionsBody(
                 title = stringResource(R.string.lobby_row_sort),
                 options = listOf(
                     LobbySort.Favorites.name to stringResource(R.string.lobby_sort_favorites),
+                    LobbySort.MostPlayed.name to stringResource(R.string.lobby_sort_most_played),
                     LobbySort.Name.name to stringResource(R.string.lobby_sort_name),
                     LobbySort.Newest.name to stringResource(R.string.lobby_sort_newest)
                 ),

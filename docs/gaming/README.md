@@ -24,7 +24,7 @@ AppSettingsViewModel no longer writes whole stale per-ViewModel maps or executes
 
 (Removed in GAME-LOBBY-REDMAGIC-STYLE-02; the lobby replaced it.) Former GameSpaceScreen used the `MaxSplitScreen` shell: a game list and selected-game console side by side at ≥600 dp, vertically split below that width. Search and selection survive configuration recreation; favorites persist, launcher candidates and manual games remain supported; one navigation entry opens the existing profile editor. No external artwork, layouts or icons copied. This is an adaptive first layout, **not a completed premium visual/motion pass**. Device accessibility/RTL/thumb reach and short-landscape height are unverified.
 
-The displayed GPU policy is the saved **GPU ceiling policy**, not a comprehensive verified performance mode. Refresh target is not measured FPS. No target FPS or runtime success is fabricated. The UI explicitly states that the full gaming session system/side panel is not available yet.
+The displayed GPU policy is the saved **GPU ceiling policy**, not a comprehensive verified performance mode. Refresh target is not measured FPS. No target FPS or runtime success is fabricated. The UI states the available boundary instead of promising a full session system: per-app controls through the existing monitor, the side panel, and a local play-session ledger. Per-game FPS is not measured.
 
 ## Reused runtime and audited blockers
 
@@ -41,8 +41,8 @@ The displayed GPU policy is the saved **GPU ceiling policy**, not a comprehensiv
 | --- | --- |
 | Research | Partial source review recorded in REFERENCES; full ProfileApplier/GamingCoordinator/overlay/capture study outstanding |
 | Profile source | Shared repository implemented; no second DB; global defaults/custom resolution and all editor writers/importers still need comprehensive integration tests |
-| Library | Search/manual/favorites/selected profile implemented; icons/covers, actual recents and recorded last-session summaries outstanding |
-| Session lifecycle | Existing per-app runtime available, no new complete GameSessionManager/durable game history/verified restore integration yet |
+| Library | Search/manual/favorites/selected profile and most-played/last-played from the local ledger implemented; icons/covers and cross-device history outstanding |
+| Session lifecycle | Existing per-app runtime; a bounded local ledger records sessions the side-panel service actually observed (game change, screen-off, stop, destroy). No new GameSessionManager; verified restore integration still outstanding |
 | Detection | Existing AppMonitor reused by plan; no game-specific observer/lifecycle tests implemented yet |
 | Telemetry/graphs | Existing infrastructure audited, no complete game telemetry adapter; null/freshness/source requirements mandatory |
 | FPS | Package/layer-scoped adapter + fixture/device measurement outstanding; never use overlay Choreographer as game FPS |
@@ -85,7 +85,8 @@ Gates after the follow-up: pure harness **437/0**; type harness **557 inputs / 3
 
 - Foreground-game identity comes from `FpsMonitorUtil.getForegroundPackage()` — a **once-per-poll shell read**, not an instant signal; the poll is 1500 ms for that reason. It is not a per-game FPS measurement and is never labelled as one.
 - `HudSampler` is a **single-owner** reader (`HUD_OWNER_OVERLAY`): the Game Space panel and the existing FPS overlay cannot both run. Starting one takes the reader from the other. This is an existing declared constraint, not a new defect.
-- No session history is written to disk; the panel shows only the in-memory `HudRecorder` tally, and says so when there is none. Dropped samples are reported, not hidden.
+- A local play-session ledger now records sessions the side-panel service actually observed: wall-clock start/end in one bounded file under `filesDir` (400 sessions), no network, no new permission. Sessions shorter than 5 s, unreadable samples, and time before the service starts are not recorded. The panel's in-memory `HudRecorder` tally is separate; dropped samples are reported, not hidden.
+- This automatic play-time ledger (`game_play_sessions.tsv`) is **not** the user-started FPS report archive (`game-sessions.json`, 20 rich reports). The archive records measured performance for sessions the user starts; the ledger records only when the side-panel service saw a library game in front. Neither feeds the other, and the lobby never presents play time as measured FPS.
 - The panel's refresh-rate cycle is not persisted: after the service stops, the last forced rate stays in the system until `RefreshRateReceiver` is asked to reset (the library/lobby offers no reset button yet). That is a known gap, not a claimed feature.
 - Do-Not-Disturb is **not** written from the panel. `AppMonitor` already owns `zen_mode` for the per-app session; writing it from a second place would be a second writer for a global setting.
 - The auto-start depends on `MaxManagerApplication.onCreate`, so a device that never launches MaxManager after a reboot gets no panel until it does. A boot receiver was **not** added.

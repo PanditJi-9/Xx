@@ -18,7 +18,7 @@ enum class LobbyDepth(val strength: Float) {
 }
 
 /** ترتيب بطاقات الألعاب في اللوبي. */
-enum class LobbySort { Favorites, Name, Newest }
+enum class LobbySort { Favorites, MostPlayed, Name, Newest }
 
 /**
  * خيارات اللوبي المحفوظة (مظهر وسلوك). كلها تفضيلات عرض محلّية: لا واحد منها يكتب في العتاد

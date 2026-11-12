@@ -86,6 +86,7 @@ import nd.max.core.gamespace.GameApp
 import nd.max.core.gamespace.GameLibraryAccess
 import nd.max.core.gamespace.GameLobbyMeta
 import nd.max.core.gamespace.GameLobbyMetaReader
+import nd.max.core.gamespace.GamePlayStats
 import nd.max.core.gamespace.LobbyCue
 import nd.max.core.gamespace.LobbyModel
 import nd.max.core.gamespace.LobbyOrder
@@ -93,6 +94,9 @@ import nd.max.core.gamespace.LobbyPrefs
 import nd.max.core.gamespace.LobbyPrefsState
 import nd.max.core.gamespace.LobbySort
 import nd.max.core.gamespace.PanelOverlayGate
+import nd.max.core.gamespace.PlayAge
+import nd.max.core.gamespace.PlaySessionLedger
+import nd.max.core.gamespace.PlaySessionStore
 import nd.max.core.gamespace.SidePanelArmedStore
 import nd.max.core.gamespace.gameLibrary
 import nd.max.core.platform.ForegroundAppResolver
@@ -221,12 +225,15 @@ fun GameLobbyScreen(
     // صلاحية التراكب تُقرأ عند كل عودة إلى الشاشة لا مرة واحدة: المنح يقع في إعدادات النظام
     // خارج التطبيق، وقراءة واحدة كانت تُبقي البند ظاهرًا بعد المنح أو تُخفيه قبل تحقّقه.
     var overlayGranted by remember { mutableStateOf(OverlayPermission.granted(context)) }
+    // سجلّ اللعب يُعاد قراءته عند كل عودة إلى الشاشة، لا مرة واحدة: الجلسة تُكتب واللوبي في الخلفية.
+    var statsRevision by remember { mutableIntStateOf(0) }
     val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
                 val granted = OverlayPermission.granted(context)
                 overlayGranted = granted
+                statsRevision += 1
                 // بعد المنح لا ننتظر إعادة الإقلاع: تُطابَق الخدمة فتُثبّت اللوحة إن كانت لعبة مفعّلة.
                 if (granted && GamePanelPrefs.load(context).enabledPackages.isNotEmpty()) {
                     GamePanelService.reconcile(context)
@@ -249,6 +256,10 @@ fun GameLobbyScreen(
     val sounds = rememberLobbySounds(lobbyPrefs.sounds)
 
     val library by viewModel.library.collectAsStateWithLifecycle()
+    var playStats by remember { mutableStateOf<Map<String, GamePlayStats>>(emptyMap()) }
+    LaunchedEffect(library, statsRevision) {
+        playStats = withContext(Dispatchers.IO) { PlaySessionLedger.stats(PlaySessionStore.read(context)) }
+    }
     var selected by rememberSaveable {
         mutableStateOf<String?>(lobbyPrefs.lastPackage.takeIf { lobbyPrefs.resumeLast })
     }
@@ -262,12 +273,13 @@ fun GameLobbyScreen(
 
     val allGames = remember(library) { gameLibrary(library.apps, library.manual, library.excluded) }
     val installedDays by rememberInstalledDays(allGames, lobbyPrefs.sort == LobbySort.Newest)
-    val games = remember(library, favoritesOnly, lobbyPrefs.sort, installedDays) {
+    val games = remember(library, favoritesOnly, lobbyPrefs.sort, installedDays, playStats) {
         LobbyOrder.sort(
             games = allGames.filter { !favoritesOnly || it.packageName in library.favorites },
             favorites = library.favorites,
             order = lobbyPrefs.sort,
-            installedDays = installedDays
+            installedDays = installedDays,
+            playStats = playStats
         )
     }
     val packages = remember(games) { games.map { it.packageName } }
@@ -517,6 +529,7 @@ fun GameLobbyScreen(
                                     LobbyInfoPanel(
                                         title = active.label,
                                         meta = rememberLobbyMetaText(active.packageName),
+                                        stats = playHistoryText(playStats[active.packageName]),
                                         favorite = favorite,
                                         onFavorite = {
                                             tick()
@@ -771,6 +784,30 @@ fun GameLobbyScreen(
 /** يحمل آخر قائمة أُعيد إليها موضع الحلقة؛ مرجعٌ لا حالة، فلا يسبّب إعادة تركيب. */
 private class LobbyRestoreGate {
     var games: List<GameApp>? = null
+}
+
+/**
+ * سطر سجلّ اللعب للعبة المحدَّدة: «آخر لعب … · لُعبت …» من الجلسات المحفوظة محليًّا. غياب الجلسة
+ * يُعرض غيابًا لا صفرًا (ADR-07)، ولا يُدَّعى وقتٌ لم يُسجَّل.
+ */
+@Composable
+private fun playHistoryText(stats: GamePlayStats?): String? {
+    if (stats == null) return null
+    val age = PlaySessionLedger.playAge(System.currentTimeMillis(), stats.lastPlayedAtMs)
+    val lastPlayed = when (age) {
+        PlayAge.None -> null
+        is PlayAge.Minutes -> stringResource(R.string.lobby_stats_last_minutes, age.minutes)
+        is PlayAge.Hours -> stringResource(R.string.lobby_stats_last_hours, age.hours)
+        PlayAge.Yesterday -> stringResource(R.string.lobby_stats_last_yesterday)
+        is PlayAge.Days -> stringResource(R.string.lobby_stats_last_days, age.days)
+    }
+    val minutes = PlaySessionLedger.playMinutes(stats.totalMs)
+    val played = when {
+        minutes == null -> null
+        minutes < 60 -> stringResource(R.string.lobby_stats_play_minutes, minutes)
+        else -> stringResource(R.string.lobby_stats_play_hours, minutes / 60, minutes % 60)
+    }
+    return listOfNotNull(lastPlayed, played).takeIf { it.isNotEmpty() }?.joinToString(" · ")
 }
 
 /**

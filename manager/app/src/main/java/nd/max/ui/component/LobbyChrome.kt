@@ -475,13 +475,14 @@ internal fun LobbyInfoTile(
 // ─────────────────────────────── عمود معلومات اللعبة ───────────────────────────────
 
 /**
- * عمود معلومات اللعبة المحدَّدة (بداية الاتّجاه): الاسم والمعلومات تتلاشى بين الألعاب، يليهما زرّ
- * «ابدأ» ثم بلاطتا «ملف اللعبة» و«اللوحة الجانبية». نقر ملف اللعبة يفتح مركز التحكّم، ونقر اللوحة يبدّلها.
+ * عمود معلومات اللعبة المحدَّدة (بداية الاتّجاه): الاسم والمعلومات وسطر سجلّ اللعب تتلاشى بين الألعاب،
+ * يليهما زرّ «ابدأ» ثم بلاطتا «ملف اللعبة» و«اللوحة الجانبية». نقر ملف اللعبة يفتح مركز التحكّم، ونقر اللوحة يبدّلها.
  */
 @Composable
 internal fun LobbyInfoPanel(
     title: String,
     meta: String,
+    stats: String? = null,
     favorite: Boolean,
     onFavorite: () -> Unit,
     profileValue: String,
@@ -499,11 +500,11 @@ internal fun LobbyInfoPanel(
     Column(modifier = modifier, verticalArrangement = Arrangement.Center) {
         Row(verticalAlignment = Alignment.Top) {
             Crossfade(
-                targetState = title to meta,
+                targetState = Triple(title, meta, stats),
                 animationSpec = tween(MaxDuration.quick),
                 label = "lobbyInfoTitle",
                 modifier = Modifier.weight(1f)
-            ) { (name, detail) ->
+            ) { (name, detail, history) ->
                 Column {
                     Text(
                         text = name,
@@ -519,6 +520,15 @@ internal fun LobbyInfoPanel(
                             text = detail,
                             color = LobbyPalette.Muted,
                             fontSize = 13.sp,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                    if (!history.isNullOrBlank()) {
+                        Text(
+                            text = history,
+                            color = LobbyPalette.Steel,
+                            fontSize = 12.sp,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
