@@ -55,7 +55,13 @@ class ScreenArchetypeTest {
         ),
         M2Screen("ui/mainscreens/ControlScreen.kt", "Matrix", "MaxListScreen"),
         M2Screen("ui/subscreens/FpsOverlayScreen.kt", "Instrument", "HudSurface"),
-        M2Screen("ui/subscreens/GameSessionsScreen.kt", "Ledger", "SessionChartSection"),
+        M2Screen(
+            path = "ui/subscreens/GameSessionsScreen.kt",
+            archetype = "Ledger",
+            // الحامل يُستدعى في الشاشة نفسها مرّة واحدة؛ وملفّه ملف التقرير يُعرِّف الدالة
+            // ولا يستدعيها، فعدّ الاستدعاءات فيه يعطي صفرًا لا واحدًا.
+            carrierCall = "GameSessionReport",
+        ),
         M2Screen("ui/subscreens/ThermalDetailScreen.kt", "Instrument", "ThermalTrend"),
     )
 
@@ -156,7 +162,16 @@ class ScreenArchetypeTest {
         val sessions = File(root, "ui/subscreens/GameSessionsScreen.kt").readText()
         assertTrue(
             "GameSessions: المنحنى عاد داخل صفّ جلسة",
-            callIndex(sessions, "SessionChartSection") < sessions.indexOf("sessions.forEach"),
+            // التقرير الحامل يسبق السجلّ: الأرقام والمنحنى في موضع واحد، والصفوف بعده.
+            callIndex(sessions, "GameSessionReport") < sessions.indexOf("sessions.forEach"),
+        )
+
+        // زرّ «سجّل لعبة» (طلب المالك): الجلسة تبدأ بالحزمة المختارة، لا بما يظهر في المقدمة.
+        assertTrue(
+            "GameSessions: زرّ تسجيل لعبة بعينها غاب",
+            sessions.contains("R.string.game_sessions_record_game") &&
+                sessions.contains("GamePickerSheet(") &&
+                sessions.contains("HudRecorder.start(context, app.packageName)"),
         )
 
         val thermal = File(root, "ui/subscreens/ThermalDetailScreen.kt").readText()

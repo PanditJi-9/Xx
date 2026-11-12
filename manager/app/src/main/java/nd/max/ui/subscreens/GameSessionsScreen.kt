@@ -4,14 +4,17 @@
  */
 /*
  * **Screen card — archetype: Ledger · object: one session ·
- * carrying element: the session's curve.** Rows are entries in a record —
- * newest first, each with its verdict — and no row carries a curve: the one
- * curve stands above the ledger and takes its source from the row opened, or
- * from the live session when nothing is open. A ledger that plots every row at
- * once is read as noise.
+ * carrying element: the session report.** The page opens on a record action —
+ * pick the game, then record — and the report below it is the page: name, date,
+ * package, duration line, eight measured numbers and one frame curve that can
+ * be dragged. Rows are entries in a record, newest first, and no row carries a
+ * curve: opening a row swaps the report's source, and closing it returns to the
+ * live session. A ledger that plots every row at once is read as noise.
  *
- * States: live idle · no stored sessions → the history empty line · a session
- * without samples → the chart empty text under the one carrier.
+ * States: nothing recorded → the record action plus the report's empty text ·
+ * live → the report shows the running session with its elapsed clock · stored
+ * row open → the same report, sourced from that row · a session without samples
+ * → the chart empty text under the one carrier.
  */
 
 package nd.max.ui.subscreens
@@ -20,7 +23,6 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.widget.Toast
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -46,9 +48,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
 import androidx.annotation.StringRes
 import androidx.compose.ui.res.stringResource
@@ -68,23 +67,18 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import nd.max.R
-import nd.max.core.platform.GameSessionStore
+import nd.max.core.gamespace.GameLibraryAccess
 import nd.max.core.platform.HudChartRenderer
 import nd.max.core.platform.HudLive
 import nd.max.core.platform.HudRecorder
-import nd.max.core.platform.HudSessionRules
 import nd.max.core.platform.HudSessionSettings
-import nd.max.core.platform.HudTally
 import nd.max.core.platform.InsightRules
 import nd.max.core.platform.SessionAction
 import nd.max.core.platform.SessionCause
 import nd.max.core.platform.SessionVerdict
 import nd.max.core.platform.sessionInsight
-import nd.max.core.platform.worstPointOf
-import nd.max.core.platform.SessionPoint
 import nd.max.core.platform.SessionStopReason
 import nd.max.core.platform.StoredGameSession
-import nd.max.core.platform.sessionFrameBounds
 import nd.max.core.platform.storedSessionCsv
 import nd.max.ui.design.MaxDataTrust
 import nd.max.ui.design.MaxGroup
@@ -109,8 +103,9 @@ import nd.max.ui.navigation.MaxDestination
  * في الأرقام أو في معنى الجلسة. الفرق الوحيد أن هذه الشاشة تسمّي الجلسة وتقرأ السجلّ
  * وتضبط قواعدها.
  *
- * الشكل: Ledger — الكائن: تسلسل الجلسات في الزمن — العنصر الحامل: منحنى الجلسة المفتوحة
- * وحكمها مقابل أساسها. الأرقام الأخرى سطور تابعة له، لا أنداد له.
+ * الشكل: Ledger — الكائن: جلسة واحدة — العنصر الحامل: تقرير الجلسة (رأس، ثمانية أرقام،
+ * منحنى يُسحب). والزرّ الأعلى يسجّل **لعبة بعينها**: تختارها فتبدأ الجلسة بحزمتها.
+ * والأرقام كلها في التقرير؛ والصفّ في السجلّ يحمل حكمه وأفعاله، لا نسخة ثانية من أرقامه.
  */
 @Composable
 fun GameSessionsScreen(
@@ -137,6 +132,7 @@ fun GameSessionsScreen(
     var remarkOpen by remember { mutableStateOf(false) }
     var remarkSessionId by remember { mutableStateOf<String?>(null) }
     var remarkDraft by remember { mutableStateOf("") }
+    var pickerOpen by remember { mutableStateOf(false) }
 
     // السجلّ يُقرأ عند فتح الشاشة، ثم يُعاد بعد كل إيقاف: الحفظ يقع على IO بعد `stop`،
     // فقراءة فورية قد تسبقه. والمهلة القصيرة تُعطي الكتابة الذرّية وقتها بلا انتظار المستخدم.
@@ -181,108 +177,70 @@ fun GameSessionsScreen(
         accentIcon = Icons.Rounded.History,
         accent = scheme.tertiary
     ) {
-        MaxSection(
-            title = stringResource(R.string.game_sessions_live_title),
-            description = stringResource(R.string.game_sessions_live_desc)
-        ) {
+        // ── ١. سجّل لعبة بعينها ────────────────────────────────────────────────
+        // طلب المالك: زرّ يسجّل **لعبة معيّنة**. فالاختيار يسبق الجلسة، ويبدأ التسجيل
+        // بحزمة اللعبة المختارة (`HudRecorder.start(context, pkg)`) ثم تُفتح — لا «بما
+        // يصادف أنه في المقدمة». والتقرير يحمل الجلسة الجارية وحدها بعد ذلك.
+        MaxSection(title = stringResource(R.string.game_sessions_live_title)) {
             MaxGroup {
-                MaxSwitchRow(
-                    title = if (recording) {
-                        stringResource(R.string.hud_session_stop)
-                    } else {
-                        stringResource(R.string.hud_session_start)
-                    },
-                    subtitle = stringResource(R.string.hud_session_record_note),
-                    checked = recording,
-                    onCheckedChange = { on ->
-                        if (on) {
-                            HudRecorder.start(context)
-                        } else {
+                if (recording) {
+                    MaxNavigationRow(
+                        title = HudRecorder.sessionLabel
+                            ?: HudRecorder.sessionPackage
+                            ?: stringResource(R.string.game_sessions_unknown_game),
+                        subtitle = stringResource(
+                            R.string.game_sessions_record_elapsed,
+                            reportClock(elapsedMs)
+                        ),
+                        icon = Icons.Rounded.Stop,
+                        iconTone = MaxTone.Caution,
+                        showChevron = false,
+                        onClick = {
                             HudRecorder.stop(context)
+                            tally = HudRecorder.tally()
+                            series = HudRecorder.series()
                         }
-                        tally = HudRecorder.tally()
-                        series = HudRecorder.series()
-                    }
-                )
+                    )
+                } else {
+                    MaxNavigationRow(
+                        title = stringResource(R.string.game_sessions_record_game),
+                        subtitle = stringResource(R.string.game_sessions_record_game_desc),
+                        icon = Icons.Rounded.FiberManualRecord,
+                        onClick = { pickerOpen = true }
+                    )
+                }
             }
 
-            val live = tally
-            if (live == null) {
-                Text(
-                    text = stringResource(R.string.game_sessions_empty),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = scheme.onSurfaceVariant,
-                    modifier = Modifier.padding(horizontal = MaxSpace.groupPadding)
-                )
-            } else {
+            // تحذيرات العتبات: حالة الجلسة لا بطاقة إعداد.
+            if (warnings.isNotEmpty()) {
                 MaxGroup {
-                    MaxMetricLine(
-                        MaxMetric(
-                            label = stringResource(R.string.game_sessions_game),
-                            value = HudRecorder.sessionLabel
-                                ?: HudRecorder.sessionPackage
-                                ?: stringResource(R.string.game_sessions_unknown_game),
-                            trust = if (recording) MaxDataTrust.Live else MaxDataTrust.Snapshot
-                        )
-                    )
-                    HudRecorder.sessionAppVersion?.let { version ->
+                    warnings.forEach { warning ->
                         MaxMetricLine(
                             MaxMetric(
-                                label = stringResource(R.string.game_sessions_app_version),
-                                value = version,
-                                trust = MaxDataTrust.Snapshot
-                            )
-                        )
-                    }
-                    HudRecorder.sessionViewSize?.let { size ->
-                        MaxMetricLine(
-                            MaxMetric(
-                                label = stringResource(R.string.game_sessions_view_size),
-                                value = size,
-                                trust = MaxDataTrust.Snapshot
-                            )
-                        )
-                    }
-                    MaxMetricLine(
-                        MaxMetric(
-                            label = stringResource(R.string.game_sessions_mode),
-                            value = if (HudRecorder.sessionPowerSave) {
-                                stringResource(R.string.game_sessions_mode_saver)
-                            } else {
-                                stringResource(R.string.game_sessions_mode_normal)
-                            },
-                            trust = MaxDataTrust.Snapshot
-                        )
-                    )
-                    LiveSessionMetrics(live, elapsedMs, recording)
-                }
-
-                // تحذيرات العتبات: تُعرض هنا لأنها حالة الجلسة، ولونها تحذيريّ لا حياديّ.
-                if (warnings.isNotEmpty()) {
-                    MaxGroup {
-                        warnings.forEach { warning ->
-                            MaxMetricLine(
-                                MaxMetric(
-                                    label = stringResource(R.string.game_sessions_warning_active, hudFieldLabel(warning.field)),
-                                    value = "%.1f".format(warning.value),
-                                    unit = warningUnit(warning.field),
-                                    trust = MaxDataTrust.Live,
-                                    note = "≥ %.1f · %d s".format(
-                                        warning.threshold,
-                                        warning.durationMs / 1000
-                                    )
+                                label = stringResource(
+                                    R.string.game_sessions_warning_active,
+                                    hudFieldLabel(warning.field)
+                                ),
+                                value = "%.1f".format(warning.value),
+                                unit = warningUnit(warning.field),
+                                trust = MaxDataTrust.Live,
+                                note = "≥ %.1f · %d s".format(
+                                    warning.threshold,
+                                    warning.durationMs / 1000
                                 )
                             )
-                        }
+                        )
                     }
                 }
+            }
 
-                // بطاقةٌ واحدة لأفعال الجلسة: كانت ثلاثة صناديق كل واحد بصفٍّ، فتُقرأ الصفحة
-                // فراغًا بينما هي ثلاثة أزرار (لقطة المالك، ٢٠٢٦-١١-١٢).
+            // أفعال الجلسة الحيّة في بطاقة واحدة: صفّ لكلٍّ كان يُقرأ فراغًا.
+            if (tally != null) {
                 MaxGroup {
                     MaxNavigationRow(
                         title = stringResource(R.string.game_sessions_remark),
-                        subtitle = HudRecorder.remark ?: stringResource(R.string.game_sessions_remark_empty),
+                        subtitle = HudRecorder.remark
+                            ?: stringResource(R.string.game_sessions_remark_empty),
                         icon = Icons.Rounded.Edit,
                         onClick = {
                             remarkSessionId = null
@@ -328,17 +286,57 @@ fun GameSessionsScreen(
             }
         }
 
-        // حامل الـLedger: منحنى واحد يسبق الحكم والسجلّ، ويتبدّل مصدره بفتح جلسة محفوظة.
-        SessionChartSection(
-            points = selectedStoredSession?.series ?: series,
-            label = selectedStoredSession?.displayName
-                ?: stringResource(R.string.game_sessions_live_title),
-            emptyText = stringResource(R.string.game_sessions_chart_empty)
+        // ── ٢. التقرير: العنصر الحامل الوحيد ─────────────────────────────────
+        // مصدر واحد يتبدّل: الجلسة الجارية حين يجري تسجيل، أو الجلسة المفتوحة من السجلّ.
+        // ولا صفّ في السجلّ يرسم منحناه: التقرير هو المنحنى.
+        val liveStats = remember(tally, series, elapsedMs) {
+            liveReportStats(tally, series, elapsedMs)
+        }
+        val reportSession = selectedStoredSession
+        val reportStats = remember(reportSession, liveStats) {
+            reportSession?.let { storedReportStats(it) } ?: liveStats
+        }
+        val reportPoints = reportSession?.series ?: series
+        val reportLive = reportSession == null && recording
+        val reportTitle = reportSession?.displayName
+            ?: HudRecorder.sessionLabel
+            ?: HudRecorder.sessionPackage
+            ?: stringResource(R.string.game_sessions_unknown_game)
+        val reportPackage = reportSession?.packageName ?: HudRecorder.sessionPackage
+        val reportDate = reportSession?.startedAtMs ?: HudRecorder.sessionStartedAtMs
+        val reportMode = if (reportStats.powerSave) {
+            stringResource(R.string.game_sessions_mode_saver)
+        } else {
+            stringResource(R.string.game_sessions_mode_normal)
+        }
+        val reportMeta = buildList {
+            add(stringResource(R.string.game_sessions_report_meta_duration, reportClock(reportStats.durationMs)))
+            add(stringResource(R.string.game_sessions_report_meta_profile, reportMode))
+            reportStats.refreshHz?.let { add(stringResource(R.string.game_sessions_report_meta_refresh, it)) }
+            if (!reportLive) {
+                reportStats.stopReasonId?.let {
+                    add(stringResource(R.string.game_sessions_report_meta_stopped, stopReasonText(it)))
+                }
+            }
+        }.joinToString(" · ")
+
+        GameSessionReport(
+            title = reportTitle,
+            packageName = reportPackage,
+            dateMs = reportDate,
+            meta = reportMeta,
+            stats = reportStats,
+            points = reportPoints,
+            live = reportLive,
+            accent = scheme.tertiary,
+            emptyText = stringResource(R.string.game_sessions_empty)
         )
 
-        // ── حكم آخر جلسة: الرقم وحده لا يقول «جيد أم سيئ» ──
-        val lastSession = sessions.firstOrNull()
-        if (lastSession != null) {
+        // ── حكم الجلسة المعروضة: الرقم وحده لا يقول «جيد أم سيئ» ──
+        // الحكم يتبع ما يعرضه التقرير (المفتوحة أو الأخيرة)، ولا يظهر فوق جلسة جارية
+        // لم تُحفظ بعد — فمقارنة جارية بأرشيف سابق تُقرأ حكمًا على ما لم ينتهِ.
+        val lastSession = reportSession ?: sessions.firstOrNull()
+        if (lastSession != null && !reportLive) {
             val insight = remember(lastSession.id, sessions.size) {
                 sessionInsight(lastSession, sessions)
             }
@@ -431,8 +429,117 @@ fun GameSessionsScreen(
         }
 
         MaxSection(
+            title = stringResource(R.string.game_sessions_history_title),
+            description = stringResource(R.string.game_sessions_history_desc)
+        ) {
+            when {
+                loading -> Text(
+                    text = stringResource(R.string.game_sessions_loading),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = scheme.onSurfaceVariant,
+                    modifier = Modifier.padding(horizontal = MaxSpace.groupPadding)
+                )
+
+                sessions.isEmpty() -> Text(
+                    text = stringResource(R.string.game_sessions_history_empty),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = scheme.onSurfaceVariant,
+                    modifier = Modifier.padding(horizontal = MaxSpace.groupPadding)
+                )
+
+                else -> {
+                    sessions.forEach { session ->
+                        val rowInsight = remember(session.id, sessions.size) {
+                            sessionInsight(session, sessions)
+                        }
+                        MaxGroup {
+                            MaxNavigationRow(
+                                title = session.displayName,
+                                subtitle = sessionSubtitle(session) + " · " +
+                                    stringResource(verdictText(rowInsight.verdict)),
+                                valueText = session.framesAverage?.let { "%.1f FPS".format(it) },
+                                onClick = {
+                                    expandedId = if (expandedId == session.id) null else session.id
+                                }
+                            )
+                            if (expandedId == session.id) {
+                                // الأرقام في التقرير الحامل أعلاه، والصفّ يحمل أفعاله فقط:
+                                // فلا تُقرأ الجلسة مرّتين برقمين قد يختلف ترتيبهما.
+                                session.remark?.let { note ->
+                                    MaxMetricLine(
+                                        MaxMetric(
+                                            label = stringResource(R.string.game_sessions_remark),
+                                            value = note,
+                                            trust = MaxDataTrust.Snapshot
+                                        )
+                                    )
+                                }
+                                MaxGroupDivider()
+                                MaxNavigationRow(
+                                    title = stringResource(R.string.game_sessions_remark),
+                                    subtitle = session.remark
+                                        ?: stringResource(R.string.game_sessions_remark_empty),
+                                    icon = Icons.Rounded.Edit,
+                                    onClick = {
+                                        remarkSessionId = session.id
+                                        remarkDraft = session.remark.orEmpty()
+                                        remarkOpen = true
+                                    }
+                                )
+                                MaxGroupDivider()
+                                MaxNavigationRow(
+                                    title = stringResource(R.string.game_sessions_export),
+                                    subtitle = stringResource(R.string.game_sessions_export_note),
+                                    onClick = { exportStored(context, scope, session) }
+                                )
+                                MaxGroupDivider()
+                                MaxNavigationRow(
+                                    title = stringResource(R.string.game_sessions_export_image),
+                                    subtitle = stringResource(R.string.game_sessions_export_image_note),
+                                    icon = Icons.Rounded.Image,
+                                    onClick = {
+                                        exportChart(
+                                            context = context,
+                                            scope = scope,
+                                            points = session.series,
+                                            title = session.displayName,
+                                            subtitle = sessionSubtitle(session)
+                                        )
+                                    }
+                                )
+                                MaxGroupDivider()
+                                MaxNavigationRow(
+                                    title = stringResource(R.string.game_sessions_delete),
+                                    icon = Icons.Rounded.Delete,
+                                    iconTone = MaxTone.Caution,
+                                    showChevron = false,
+                                    onClick = {
+                                        viewModel.delete(context, session.id)
+                                        expandedId = null
+                                    }
+                                )
+                            }
+                        }
+                    }
+                    MaxGroup {
+                        MaxNavigationRow(
+                            title = stringResource(R.string.game_sessions_clear_history),
+                            subtitle = stringResource(R.string.game_sessions_clear_history_note),
+                            icon = Icons.Rounded.Delete,
+                            iconTone = MaxTone.Caution,
+                            showChevron = false,
+                            onClick = { viewModel.clear(context) }
+                        )
+                    }
+                }
+            }
+        }
+
+        // الإعدادات آخر الصفحة ومطويّة: تقرير اللعبة هو السؤال، والقواعد تُضبط مرّة.
+        MaxSection(
             title = stringResource(R.string.game_sessions_settings_title),
-            description = stringResource(R.string.game_sessions_settings_desc)
+            description = stringResource(R.string.game_sessions_settings_desc),
+            collapsible = true
         ) {
             MaxGroup {
                 MaxSwitchRow(
@@ -532,137 +639,22 @@ fun GameSessionsScreen(
                 )
             }
         }
+    }
 
-        MaxSection(
-            title = stringResource(R.string.game_sessions_history_title),
-            description = stringResource(R.string.game_sessions_history_desc)
-        ) {
-            when {
-                loading -> Text(
-                    text = stringResource(R.string.game_sessions_loading),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = scheme.onSurfaceVariant,
-                    modifier = Modifier.padding(horizontal = MaxSpace.groupPadding)
-                )
-
-                sessions.isEmpty() -> Text(
-                    text = stringResource(R.string.game_sessions_history_empty),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = scheme.onSurfaceVariant,
-                    modifier = Modifier.padding(horizontal = MaxSpace.groupPadding)
-                )
-
-                else -> {
-                    sessions.forEach { session ->
-                        val rowInsight = remember(session.id, sessions.size) {
-                            sessionInsight(session, sessions)
-                        }
-                        MaxGroup {
-                            MaxNavigationRow(
-                                title = session.displayName,
-                                subtitle = sessionSubtitle(session) + " · " +
-                                    stringResource(verdictText(rowInsight.verdict)),
-                                valueText = session.framesAverage?.let { "%.1f FPS".format(it) },
-                                onClick = {
-                                    expandedId = if (expandedId == session.id) null else session.id
-                                }
-                            )
-                            if (expandedId == session.id) {
-                                MaxMetricLine(
-                                    MaxMetric(
-                                        label = stringResource(R.string.game_sessions_package),
-                                        value = session.packageName,
-                                        trust = MaxDataTrust.Snapshot
-                                    )
-                                )
-                                session.appVersion?.let { version ->
-                                    MaxMetricLine(
-                                        MaxMetric(
-                                            label = stringResource(R.string.game_sessions_app_version),
-                                            value = version,
-                                            trust = MaxDataTrust.Snapshot
-                                        )
-                                    )
-                                }
-                                session.viewSize?.let { size ->
-                                    MaxMetricLine(
-                                        MaxMetric(
-                                            label = stringResource(R.string.game_sessions_view_size),
-                                            value = size,
-                                            trust = MaxDataTrust.Snapshot
-                                        )
-                                    )
-                                }
-                                StoredSessionMetrics(session)
-                                session.remark?.let { note ->
-                                    MaxMetricLine(
-                                        MaxMetric(
-                                            label = stringResource(R.string.game_sessions_remark),
-                                            value = note,
-                                            trust = MaxDataTrust.Snapshot
-                                        )
-                                    )
-                                }
-                                MaxGroupDivider()
-                                MaxNavigationRow(
-                                    title = stringResource(R.string.game_sessions_remark),
-                                    subtitle = session.remark
-                                        ?: stringResource(R.string.game_sessions_remark_empty),
-                                    icon = Icons.Rounded.Edit,
-                                    onClick = {
-                                        remarkSessionId = session.id
-                                        remarkDraft = session.remark.orEmpty()
-                                        remarkOpen = true
-                                    }
-                                )
-                                MaxGroupDivider()
-                                MaxNavigationRow(
-                                    title = stringResource(R.string.game_sessions_export),
-                                    subtitle = stringResource(R.string.game_sessions_export_note),
-                                    onClick = { exportStored(context, scope, session) }
-                                )
-                                MaxGroupDivider()
-                                MaxNavigationRow(
-                                    title = stringResource(R.string.game_sessions_export_image),
-                                    subtitle = stringResource(R.string.game_sessions_export_image_note),
-                                    icon = Icons.Rounded.Image,
-                                    onClick = {
-                                        exportChart(
-                                            context = context,
-                                            scope = scope,
-                                            points = session.series,
-                                            title = session.displayName,
-                                            subtitle = sessionSubtitle(session)
-                                        )
-                                    }
-                                )
-                                MaxGroupDivider()
-                                MaxNavigationRow(
-                                    title = stringResource(R.string.game_sessions_delete),
-                                    icon = Icons.Rounded.Delete,
-                                    iconTone = MaxTone.Caution,
-                        showChevron = false,
-                                    onClick = {
-                                        viewModel.delete(context, session.id)
-                                        expandedId = null
-                                    }
-                                )
-                            }
-                        }
-                    }
-                    MaxGroup {
-                        MaxNavigationRow(
-                            title = stringResource(R.string.game_sessions_clear_history),
-                            subtitle = stringResource(R.string.game_sessions_clear_history_note),
-                            icon = Icons.Rounded.Delete,
-                            iconTone = MaxTone.Caution,
-                            showChevron = false,
-                            onClick = { viewModel.clear(context) }
-                        )
-                    }
-                }
+    if (pickerOpen) {
+        GamePickerSheet(
+            visible = true,
+            onDismiss = { pickerOpen = false },
+            onPick = { app ->
+                pickerOpen = false
+                // الترتيب مقصود: التسجيل بالحزمة أولًا ثم فتح اللعبة، فلا تضيع أول ثانية
+                // من الجلسة قبل أن يعرف المسجّل صاحبها.
+                HudRecorder.start(context, app.packageName)
+                tally = HudRecorder.tally()
+                series = HudRecorder.series()
+                GameLibraryAccess.launch(context, app.packageName)
             }
-        }
+        )
     }
 
     if (remarkOpen) {
@@ -710,432 +702,6 @@ private fun warningUnit(field: nd.max.core.platform.HudField): String = when (fi
     else -> ""
 }
 
-/** منحنى الإطارات الحامل: موضع واحد يتبدّل مصدره، والغائب يكسر الخطّ لا يُوصل بصفر. */
-@Composable
-private fun SessionChartSection(points: List<SessionPoint>, label: String, emptyText: String) {
-    val bounds = sessionFrameBounds(points)
-    val lineColor = MaterialTheme.colorScheme.tertiary
-    val gridColor = MaterialTheme.colorScheme.outlineVariant
-    val markerColor = MaterialTheme.colorScheme.error
-    val worst = remember(points) { worstPointOf(points) }
-    val worstFrames = worst?.frames
-    MaxGroup {
-        Text(
-            text = stringResource(R.string.game_sessions_chart),
-            style = MaterialTheme.typography.labelLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(horizontal = MaxSpace.groupPadding)
-        )
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(horizontal = MaxSpace.groupPadding)
-        )
-        if (bounds == null) {
-            Text(
-                text = emptyText,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(horizontal = MaxSpace.groupPadding)
-            )
-        } else {
-            val (low, high) = bounds
-            val firstAt = points.first().atMs
-            val lastAt = points.last().atMs
-            Canvas(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(132.dp)
-                    .padding(horizontal = MaxSpace.groupPadding)
-            ) {
-                repeat(3) { step ->
-                    val y = size.height * step / 2f
-                    drawLine(
-                        color = gridColor,
-                        start = Offset(0f, y),
-                        end = Offset(size.width, y),
-                        strokeWidth = 1f
-                    )
-                }
-                val path = Path()
-                var drawing = false
-                points.forEach { point ->
-                    val frames = point.frames
-                    if (frames == null || !frames.isFinite() || frames <= 0f) {
-                        drawing = false
-                        return@forEach
-                    }
-                    val x = HudChartRenderer.horizontalFraction(point.atMs, firstAt, lastAt) * size.width
-                    val fraction = HudChartRenderer.verticalFraction(frames, low, high)
-                    val y = size.height - fraction * size.height
-                    if (drawing) path.lineTo(x, y) else path.moveTo(x, y)
-                    drawing = true
-                }
-                drawPath(path = path, color = lineColor, style = Stroke(width = 3f))
-                if (worst != null && worstFrames != null) {
-                    val x = HudChartRenderer.horizontalFraction(worst.atMs, firstAt, lastAt) * size.width
-                    val fraction = HudChartRenderer.verticalFraction(worstFrames, low, high)
-                    val y = size.height - fraction * size.height
-                    drawLine(
-                        color = markerColor.copy(alpha = 0.45f),
-                        start = Offset(x, 0f),
-                        end = Offset(x, size.height),
-                        strokeWidth = 1.5f
-                    )
-                    drawCircle(color = markerColor, radius = 5f, center = Offset(x, y))
-                }
-            }
-            if (worst != null && worstFrames != null) {
-                // نفس أصل الجلسة: العيّنة تحمل epoch، والسطر يقول «منذ بدء الجلسة».
-                val origin = points.firstOrNull()?.atMs ?: worst.atMs
-                Text(
-                    text = stringResource(R.string.game_sessions_worst_moment) + " · " +
-                        stringResource(
-                            R.string.game_sessions_worst_value,
-                            worstFrames.roundToInt(),
-                            sessionClock(worst.atMs - origin)
-                        ),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = markerColor,
-                    modifier = Modifier.padding(horizontal = MaxSpace.groupPadding)
-                )
-            }
-        }
-    }
-}
-
-/** مقاييس الجلسة الحيّة — كل صفّ يبقى شرطةً حتى تصل قراءته. */
-@Composable
-private fun LiveSessionMetrics(tally: HudTally, elapsedMs: Long, recording: Boolean) {
-    val trust = if (recording) MaxDataTrust.Live else MaxDataTrust.Snapshot
-    MaxMetricLine(
-        MaxMetric(
-            label = stringResource(R.string.game_sessions_duration),
-            value = sessionClock(elapsedMs),
-            trust = trust
-        )
-    )
-    MaxMetricLine(
-        MaxMetric(
-            label = stringResource(R.string.game_sessions_samples),
-            value = tally.samples.toString(),
-            trust = trust
-        )
-    )
-    MaxMetricLine(
-        MaxMetric(
-            label = stringResource(R.string.game_sessions_fps_avg),
-            value = tally.framesAverage?.let { "%.1f".format(it) },
-            unit = "FPS",
-            trust = trust
-        )
-    )
-    MaxMetricLine(
-        MaxMetric(
-            label = stringResource(R.string.game_sessions_fps_range),
-            value = if (tally.framesLow != null && tally.framesHigh != null) {
-                "%.0f – %.0f".format(tally.framesLow, tally.framesHigh)
-            } else {
-                null
-            },
-            unit = "FPS",
-            trust = trust
-        )
-    )
-    MaxMetricLine(
-        MaxMetric(
-            label = stringResource(R.string.game_sessions_heat_peak),
-            value = tally.heatPeak?.let { "%.1f".format(it) },
-            unit = "°C",
-            trust = trust
-        )
-    )
-    tally.socTempPeak?.let { peak ->
-        MaxMetricLine(
-            MaxMetric(
-                label = stringResource(R.string.game_sessions_soc_peak),
-                value = "%.1f".format(peak),
-                unit = "°C",
-                trust = trust
-            )
-        )
-    }
-    MaxMetricLine(
-        MaxMetric(
-            label = stringResource(R.string.game_sessions_power_avg),
-            value = tally.powerAverage?.let { "%.2f".format(it) },
-            unit = "W",
-            trust = trust
-        )
-    )
-    MaxMetricLine(
-        MaxMetric(
-            label = stringResource(R.string.game_sessions_energy),
-            value = tally.energyWh?.let { "%.2f".format(it) },
-            unit = "Wh",
-            trust = trust,
-            note = stringResource(R.string.game_sessions_energy_note)
-        )
-    )
-    MaxMetricLine(
-        MaxMetric(
-            label = stringResource(R.string.game_sessions_jank_avg),
-            value = tally.jankAverage?.toString(),
-            unit = "%",
-            trust = trust
-        )
-    )
-    MaxMetricLine(
-        MaxMetric(
-            label = stringResource(R.string.game_sessions_p99),
-            value = tally.frameP99AverageMs?.let { "%.1f".format(it) },
-            unit = "ms",
-            trust = trust
-        )
-    )
-    tally.gpuLoadAverage?.let { load ->
-        MaxMetricLine(
-            MaxMetric(
-                label = stringResource(R.string.game_sessions_gpu_load_avg),
-                value = "%.0f".format(load),
-                unit = "%",
-                trust = trust
-            )
-        )
-    }
-    tally.cpuFreqAverageMhz?.let { mhz ->
-        MaxMetricLine(
-            MaxMetric(
-                label = stringResource(R.string.game_sessions_cpu_freq_avg),
-                value = mhz.toString(),
-                unit = "MHz",
-                trust = trust
-            )
-        )
-    }
-    MaxMetricLine(
-        MaxMetric(
-            label = stringResource(R.string.game_sessions_battery),
-            value = batterySpan(tally.batteryStart, tally.batteryEnd),
-            trust = trust
-        )
-    )
-    tally.batteryVoltageMinMv?.let { mv ->
-        MaxMetricLine(
-            MaxMetric(
-                label = stringResource(R.string.game_sessions_voltage_min),
-                value = "%.2f".format(mv / 1000f),
-                unit = "V",
-                trust = trust
-            )
-        )
-    }
-    tally.renderer?.let { renderer ->
-        MaxMetricLine(
-            MaxMetric(
-                label = stringResource(R.string.game_sessions_renderer),
-                value = renderer,
-                trust = trust
-            )
-        )
-    }
-    if (tally.droppedSamples > 0) {
-        MaxMetricLine(
-            MaxMetric(
-                label = stringResource(R.string.game_sessions_dropped),
-                value = tally.droppedSamples.toString(),
-                trust = MaxDataTrust.Snapshot,
-                note = stringResource(R.string.hud_session_dropped_note)
-            )
-        )
-    }
-}
-
-/** مقاييس جلسة محفوظة — نفس ترتيب الحيّة، والمصدر لقطة لا بثّ. */
-@Composable
-private fun StoredSessionMetrics(session: StoredGameSession) {
-    val trust = MaxDataTrust.Snapshot
-    MaxMetricLine(
-        MaxMetric(
-            label = stringResource(R.string.game_sessions_duration),
-            value = sessionClock(session.spanMs),
-            trust = trust
-        )
-    )
-    MaxMetricLine(
-        MaxMetric(
-            label = stringResource(R.string.game_sessions_samples),
-            value = session.samples.toString(),
-            trust = trust
-        )
-    )
-    MaxMetricLine(
-        MaxMetric(
-            label = stringResource(R.string.game_sessions_fps_avg),
-            value = session.framesAverage?.let { "%.1f".format(it) },
-            unit = "FPS",
-            trust = trust
-        )
-    )
-    MaxMetricLine(
-        MaxMetric(
-            label = stringResource(R.string.game_sessions_fps_range),
-            value = if (session.framesLow != null && session.framesHigh != null) {
-                "%.0f – %.0f".format(session.framesLow, session.framesHigh)
-            } else {
-                null
-            },
-            unit = "FPS",
-            trust = trust
-        )
-    )
-    MaxMetricLine(
-        MaxMetric(
-            label = stringResource(R.string.game_sessions_heat_peak),
-            value = session.heatPeak?.let { "%.1f".format(it) },
-            unit = "°C",
-            trust = trust
-        )
-    )
-    session.socTempPeak?.let { peak ->
-        MaxMetricLine(
-            MaxMetric(
-                label = stringResource(R.string.game_sessions_soc_peak),
-                value = "%.1f".format(peak),
-                unit = "°C",
-                trust = trust
-            )
-        )
-    }
-    MaxMetricLine(
-        MaxMetric(
-            label = stringResource(R.string.game_sessions_power_avg),
-            value = session.powerAverage?.let { "%.2f".format(it) },
-            unit = "W",
-            trust = trust
-        )
-    )
-    MaxMetricLine(
-        MaxMetric(
-            label = stringResource(R.string.game_sessions_energy),
-            value = session.energyWh?.let { "%.2f".format(it) },
-            unit = "Wh",
-            trust = trust
-        )
-    )
-    MaxMetricLine(
-        MaxMetric(
-            label = stringResource(R.string.game_sessions_jank_avg),
-            value = session.jankAverage?.toString(),
-            unit = "%",
-            trust = trust
-        )
-    )
-    MaxMetricLine(
-        MaxMetric(
-            label = stringResource(R.string.game_sessions_p99),
-            value = session.frameP99AverageMs?.let { "%.1f".format(it) },
-            unit = "ms",
-            trust = trust
-        )
-    )
-    session.gpuLoadAverage?.let { load ->
-        MaxMetricLine(
-            MaxMetric(
-                label = stringResource(R.string.game_sessions_gpu_load_avg),
-                value = "%.0f".format(load),
-                unit = "%",
-                trust = trust
-            )
-        )
-    }
-    session.cpuFreqAverageMhz?.let { mhz ->
-        MaxMetricLine(
-            MaxMetric(
-                label = stringResource(R.string.game_sessions_cpu_freq_avg),
-                value = mhz.toString(),
-                unit = "MHz",
-                trust = trust
-            )
-        )
-    }
-    MaxMetricLine(
-        MaxMetric(
-            label = stringResource(R.string.game_sessions_battery),
-            value = batterySpan(session.batteryStart, session.batteryEnd),
-            trust = trust
-        )
-    )
-    session.batteryVoltageMinMv?.let { mv ->
-        MaxMetricLine(
-            MaxMetric(
-                label = stringResource(R.string.game_sessions_voltage_min),
-                value = "%.2f".format(mv / 1000f),
-                unit = "V",
-                trust = trust
-            )
-        )
-    }
-    session.renderer?.let { renderer ->
-        MaxMetricLine(
-            MaxMetric(
-                label = stringResource(R.string.game_sessions_renderer),
-                value = renderer,
-                trust = trust
-            )
-        )
-    }
-    MaxMetricLine(
-        MaxMetric(
-            label = stringResource(R.string.game_sessions_mode),
-            value = if (session.powerSave) {
-                stringResource(R.string.game_sessions_mode_saver)
-            } else {
-                stringResource(R.string.game_sessions_mode_normal)
-            },
-            trust = trust
-        )
-    )
-    session.stopReason?.let { reason ->
-        MaxMetricLine(
-            MaxMetric(
-                label = stringResource(R.string.game_sessions_stop_reason),
-                value = stopReasonText(reason),
-                trust = trust
-            )
-        )
-    }
-    if (session.clipRemoved > 0) {
-        MaxMetricLine(
-            MaxMetric(
-                label = stringResource(R.string.game_sessions_clipped),
-                value = session.clipRemoved.toString(),
-                trust = trust
-            )
-        )
-    }
-    if (session.clipRejected) {
-        MaxMetricLine(
-            MaxMetric(
-                label = stringResource(R.string.game_sessions_clip_rejected),
-                value = null,
-                trust = MaxDataTrust.Unreadable
-            )
-        )
-    }
-    if (session.droppedSamples > 0) {
-        MaxMetricLine(
-            MaxMetric(
-                label = stringResource(R.string.game_sessions_dropped),
-                value = session.droppedSamples.toString(),
-                trust = MaxDataTrust.Snapshot,
-                note = stringResource(R.string.hud_session_dropped_note)
-            )
-        )
-    }
-}
-
 @Composable
 private fun stopReasonText(id: String): String = when (SessionStopReason.of(id)) {
     SessionStopReason.Manual -> stringResource(R.string.game_sessions_stop_manual)
@@ -1165,13 +731,6 @@ private fun sessionClock(ms: Long): String {
     } else {
         "%d:%02d".format(minutes, seconds)
     }
-}
-
-private fun batterySpan(start: Int?, end: Int?): String? = when {
-    start != null && end != null -> "$start% → $end%"
-    start != null -> "$start%"
-    end != null -> "$end%"
-    else -> null
 }
 
 private fun exportLive(context: Context, scope: CoroutineScope) {

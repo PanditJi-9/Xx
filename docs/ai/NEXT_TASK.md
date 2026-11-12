@@ -1,3 +1,15 @@
+## ROUND-CLOSE-81 — تسجيل لعبة بعينها وتقرير كتقرير Scene — 2026-11-12 · DONE_WITH_CONCERNS
+
+**TASK:** إعادة بناء تسجيل جلسات الألعاب بأمر المالك: زرّ لتسجيل لعبة معيّنة، وتقرير كالمرجع المرسل.
+**SEARCH FIRST:** المحرّك موجود (`HudRecorder.start(context, pkg)` · `GameSessionStore` · `GameLibraryAccess`)؛
+الفارق: اختيار الحزمة قبل الإطلاق + تقرير واحد حامل بدل أرقام ومنحنى في صفّ. لا `core/**` مُسّ.
+**SHIPPED:** `GameSessionReport.kt` (رأس + شبكة ٢×٤ + منحنى بسحب) · `GameSessionReportModel.kt` (إحصاء صافٍ)
+· `GamePickerSheet.kt` (بحث واختيار لعبة) · `GameSessionsScreen.kt` أُعيد تركيبه · ٢٤ نصًّا en/ar ·
+`GameSessionReportModelTest` (٥) وحارس الحامل في `ScreenArchetypeTest`.
+**MEASURED:** بوابات §5 الثماني exit 0 · صفر `R.string` غائب في الملفات الثلاثة · صفر مفتاح يتيم.
+**BUILD:** «الترجمة غير مُتحقّقة في هذه البيئة» — الحكم من CI. السحب والقصّ **يحتاج جهازًا**.
+**NEXT:** حكم CI ثم قبول المالك على جهاز.
+
 ## ROUND-CLOSE-80 — الأصناف الثلاثة تُمسح على ٤٦٢ ملفًا، لا على شاشةٍ واحدة — 2026-11-12 · DONE_WITH_CONCERNS
 
 **TASK:** بعد إصلاح لقطات المالك في `GameSessions` (ROUND-CLOSE-78)، امسح أصناف العطب
