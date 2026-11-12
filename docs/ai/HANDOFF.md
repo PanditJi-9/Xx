@@ -154,22 +154,26 @@ NeuralDashboardKit.kt:673:12 Syntax error: Expecting a top level declaration.
 **TASK:** «اكمل» — تنفيذ M2 بعد قبول M1: `Now` · `Control` · `FpsOverlay` · `GameSessions` ·
 `ThermalDetail` وفق `PRODUCT-MAP.md` §٥، بلا بناء محلي، وجولة واحدة مجمعة إلى `main`.
 
-**FILES:** `LegendaryHomeDashboard.kt` · `GameSessionsScreen.kt` ·
-`ScreenArchetypeTest.kt` (+ هذا السجل و`NEXT_TASK.md` و`PRODUCT-MAP.md`). لا `core/**`، لا عتاد،
-لا نصوص جديدة (استُعمل `game_sessions_live_title` و`game_sessions_chart_empty` القائمان في EN/AR).
+**FILES:** `GameSessionsScreen.kt` · `ScreenArchetypeTest.kt` (+ هذا السجل و`NEXT_TASK.md`
+و`PRODUCT-MAP.md`). و`LegendaryHomeDashboard.kt` **أُعيد إلى `89a61e93`** بعد عطب CI (أدناه).
+لا `core/**`، لا عتاد، لا نصوص جديدة (استُعمل `game_sessions_live_title` و
+`game_sessions_chart_empty` القائمان في EN/AR).
 
 **SEARCH FIRST (§0.5):** وُجدت **البطاقات الخمس وبطاقات الأنواع في KDoc أصلًا**، فلم تُبنَ شاشة
 ثانية: قيس الفارق المتبقّي فقط — «حامل واحد» و«لا صفّ يحمل منحنى». والنتيجة: `Control`
 (`MaxListScreen` واحد · `ControlBand` بلا رسم) و`ThermalDetail` (`ThermalTrend` عند ٣٥١ قبل أول
 `MaxRow` عند ٣٦٩) و`FpsOverlay` (`HudSurface` عند ٢٧٦ قبل أول `MaxSwitchRow` عند ٣٠٦) كانت
-مطابقة؛ والفارقان الحقيقيان: **`Now`** كان حامله (`CommandDeck`) في الذيل بعد `MemoryMatrixCard`،
-و**`GameSessions`** كان يستدعي `SessionChartSection` مرتين (الجلسة الحيّة + داخل صفّ محفوظ
-موسَّع) ⇒ صفّ يحمل منحنى ومنحنيان معًا. حسّنا القائم بفارق واحد لكلٍّ، ولم يُنشأ مسار موازٍ.
+مطابقة؛ والفارق الحقيقي: **`GameSessions`** كان يستدعي `SessionChartSection` مرتين (الجلسة الحيّة +
+داخل صفّ محفوظ موسَّع) ⇒ صفّ يحمل منحنى ومنحنيان معًا.
+
+**جُرّب ورُفض (ثبت في CI):** نُقل `CommandDeck` في `Now` إلى ما بعد `HomeHeader` مباشرة بوصفه حامل
+Matrix، فأسقط ذلك `HomeShapeContractTest › the dashboard order puts identity banners vitals and
+actions first` في التشغيل `43133186010` (الترتيب المعتمد: هوية ← بطل ← نبض ← نشاط ← أفعال ← حيوية
+← ذاكرة ← منصة). فالتغيير **أُعيد بالكامل** إلى `89a61e93`، والحارس الجديد يقيّد الآن أن البطل
+يتقدّم المنصة بدل العكس. أي أن `Now` **لم يتغيّر** في هذه الجولة: حامله موجود أصلًا، وموضعه قرار
+مالك لا يُزحزح باسم النوع.
 
 **SHIPPED:**
-- `LegendaryHomeDashboard.kt`: `HomeTourAnchor(Deck){ CommandDeck }` انتقل إلى ما بعد `HomeHeader`
-  مباشرة (١٤٨) قبل `HomeHeroCard` (١٥٣)، وحُذف موضعه القديم بعد الذاكرة؛ وترتيب القراءة في KDoc
-  أُعيد كتابته (deck = ١).
 - `GameSessionsScreen.kt`: `selectedStoredSession = sessions.firstOrNull { it.id == expandedId }`؛
   وحامل واحد خارج المقطع الحيّ (٣١٤): `SessionChartSection(points = selectedStoredSession?.series
   ?: series, label = selectedStoredSession?.displayName ?: live_title, ...)`؛ وحُذف المنحنى من
@@ -177,9 +181,9 @@ NeuralDashboardKit.kt:673:12 Syntax error: Expecting a top level declaration.
   وأُضيف سطر `label` تحت عنوان الرسم ليُعرف أيّ جلسة تُرسم.
 - `ScreenArchetypeTest.kt`: حارسان جديدان — `M2 screens name their intended archetype and render
   one carrier` (النوع + استدعاء واحد للحامل، عبر `M2Screen` لخمس شاشات) و`M2 carriers lead their
-  dependent rows and static blocks` (Now: `CommandDeck` < `HomeHeroCard` · Fps: `HudSurface` <
-  `MaxSwitchRow` · Sessions: `SessionChartSection` < `sessions.forEach` · Thermal: `ThermalTrend`
-  < `MaxRow`).
+  dependent rows and static blocks` (Now: `HomeHeroCard` < `CommandDeck` — ترتيب المالك محفوظ ·
+  Fps: `HudSurface` < `MaxSwitchRow` · Sessions: `SessionChartSection` < `sessions.forEach` ·
+  Thermal: `ThermalTrend` < `MaxRow`).
 
 **MEASURED (هذه الجولة، exit 0 لكلها):** `kt_balance --assert` (٣٣٦٢ ملفًا · عوائق ٠) ·
 `code_health --assert` (صحّة ٠ · الدَّين عند سقفه: oversized 13 · wildcard 26 · inline_ui_copy 5 ·
@@ -189,9 +193,14 @@ hardcoded 4 · presentation_hw_writes 0) · `i18n_coverage --assert` (٨٤ + en 
 `resource_compile --assert` (aapt2 حقيقي · مجلّدان · ✓) · `rtl_guard --assert` (٤٦٢ ملفًا · صفر
 مخالفة) · `git diff --check` (نظيف). ولم يُعد فحص ما قيس في M1.
 
-**BUILD:** **الترجمة غير مُتحقّقة في هذه البيئة** — لا Gradle محلي بأمر المالك (§0.1)؛ الحكم
-يُقرأ من Actions على الالتزام المدفوع. واللمس/RTL/الشكل **يحتاج جهازًا**، وحكم النوع إسناد
-تصميمي لا يقيسه إلا مراجعة بشرية/مختلفة.
+**CI (مقيس):** التشغيل `43133186010` على `1f11d42e` **فشل** في `:app:testReleaseUnitTest`:
+`HomeShapeContractTest › the dashboard order puts identity banners vitals and actions first FAILED`
+(سبب حقيقي واحد، لا أكثر). وهذا يُثبت في الوقت نفسه أن **الترجمة نجحت** ووصلت الاختبارات.
+والوثائق `43133186217` نجحت. والإصلاح أعلاه + التعديلين يُدفعان دفعة إصلاح واحدة، ويُقرأ حكمهما.
+
+**BUILD:** لا Gradle محلي بأمر المالك (§0.1). ترجمة `1f11d42e` **مُتحقّقة في CI** (الاختبارات
+جرت)؛ وترجمة دفعة الإصلاح تُقرأ من تشغيلها لا تُدّعى. واللمس/RTL/الشكل **يحتاج جهازًا**، وحكم
+النوع إسناد تصميمي لا يقيسه إلا مراجعة بشرية/مختلفة.
 
 **RESIDUAL RISK:**
 - `FpsOverlayScreen` لا يمرّر `filter` إلى `HudSurface` في المعاينة، فيرسم الافتراضي
@@ -200,15 +209,18 @@ hardcoded 4 · presentation_hw_writes 0) · `i18n_coverage --assert` (٨٤ + en 
 - العدد الكلي لاختبارات JUnit لا يُستنتج من فرق الاختبارات؛ يُقرأ من خطوة العدّ في CI إن طُبعت.
 
 **ذاكرة للتالي (§7.6):**
-العَرَض: `GameSessions` يعرض منحنيين (الحيّة + المحفوظة الموسَّعة)، و`Now` حامله في الذيل.
+العَرَض: `GameSessions` يعرض منحنيين (الحيّة + المحفوظة الموسَّعة).
 أول سطر خالف: `SessionChartSection(points = session.series, …)` داخل فرع الصفّ الموسَّع.
 الفرضية التي ثبتت: الحامل الواحد يقتضي **تبديل مصدر** الرسم لا تعدّد مواضعه.
-الأمر الذي أُعيد: البوابات التسع أعلاه (مقيس) · الترجمة (غير مُتحقّقة) · الشكل واللمس (يحتاج جهازًا).
+الفرضية التي سقطت: «حامل Matrix يجب أن يتصدّر `Now`» — أسقطها `HomeShapeContractTest`، وترتيب
+المالك يبقى مقدَّمًا على اجتهاد النوع.
+الأمر الذي أُعيد: البوابات العشر أعلاه (مقيس) · ترجمة واختبارات CI (مقيسة على `1f11d42e`) ·
+الشكل واللمس (يحتاج جهازًا).
 ما لا يُعاد اختباره الجولة القادمة: بطاقات الأنواع الخمس ومواضع الحوامل — يحرسها
-`ScreenArchetypeTest` الآن؛ وأرقام البوابات أعلاه ما لم يتغيّر ملف.
+`ScreenArchetypeTest`؛ وترتيب `Now` — يحرسه `HomeShapeContractTest`؛ وأرقام البوابات ما لم يتغيّر ملف.
 
-**NEXT:** قراءة حكم Actions على الالتزام المدفوع؛ عطب مثبت يُصلح في الجولة نفسها بدفعة واحدة.
-ثم M3 (تكيّفي/إتاحة) لا تلميع شاشة. ومراجعة النوع البصري تبقى بيد مراجع مختلف.
+**NEXT:** قراءة حكم دفعة الإصلاح؛ ثم M3 (تكيّفي/إتاحة) لا تلميع شاشة. ومراجعة النوع البصري تبقى
+بيد مراجع مختلف.
 
 ### ROUND-CLOSE-74 — إغلاق قبول M1 — 2026-11-11 · DONE_WITH_CONCERNS
 

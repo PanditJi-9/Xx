@@ -130,10 +130,12 @@ class ScreenArchetypeTest {
         val root = sourceRoot()
         assumeTrue("Cannot locate nd.max sources; guard not evaluated", root != null)
 
+        // ترتيب `Now` محفوظ كما اعتمده المالك (`HomeShapeContractTest`): الهوية أولًا،
+        // فمنصة Matrix لا تتقدّم البطل. وهذا الحارس يمنع أن «تُقدَّم» المنصة لاحقًا باسم M2.
         val now = File(root, "ui/mainscreens/LegendaryHomeDashboard.kt").readText()
         assertTrue(
-            "Now: منصة Matrix ما زالت بعد الكتل الثابتة",
-            callIndex(now, "CommandDeck") < callIndex(now, "HomeHeroCard"),
+            "Now: منصة Matrix تقدّمت بطاقة الهوية المعتمدة",
+            callIndex(now, "HomeHeroCard") < callIndex(now, "CommandDeck"),
         )
 
         val fps = File(root, "ui/subscreens/FpsOverlayScreen.kt").readText()

@@ -90,15 +90,15 @@ import nd.max.ui.design.maxRadius
  * Reading order (طلب المالك): every block earns its place once, and nothing repeats another block.
  *
  *  0. header   — brand, engine state, guide, power and settings.
- *  1. deck     — the Matrix carrier: the destinations picked from one measured pool.
- *  2. hero     — the first card, compact: device, access row, temperature, three one-line tiles, device overview.
- *  3. pulse    — CPU and GPU: load, clock and the frequency history beneath them.
- *  4. actions  — Boost (measured before/after) and Control, side by side.
- *  5. vitals   — the readings no other block shows: CPU, GPU and surface temperature, and network speed.
- *  6. focus    — storage almost full (hideable), or heat / memory when those are the real problem.
- *  7. memory   — RAM, ZRAM and storage capacity, each row a door.
- *  8. cleaner  — storage fullness and the Ultra Cleaner action.
- *  3b. activity — what your settings are doing now, right under CPU and GPU: a plain summary, the changes,
+ *  1. hero     — the first card, compact: device, access row, temperature, three one-line tiles, device overview.
+ *  2. pulse    — CPU and GPU: load, clock and the frequency history beneath them.
+ *  3. actions  — Boost (measured before/after) and Control, side by side.
+ *  4. vitals   — the readings no other block shows: CPU, GPU and surface temperature, and network speed.
+ *  5. focus    — storage almost full (hideable), or heat / memory when those are the real problem.
+ *  6. memory   — RAM, ZRAM and storage capacity, each row a door.
+ *  7. cleaner  — storage fullness and the Ultra Cleaner action.
+ *  8. deck     — the control platform: the destinations people reach for, in compact rows.
+ *  2b. activity — what your settings are doing now, right under CPU and GPU: a plain summary, the changes,
  *      and one door per row. It always shows something: an empty state says the device runs on defaults.
  *
  * **بلا حركة على البطاقات:** لا بانرات متحركة ولا دخول متتابع ولا تبديل مشهد بانزلاق.
@@ -142,11 +142,6 @@ internal fun LegendaryHomeDashboard(
     ) != null
     Column(modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(MaxSpace.lg)) {
         HomeHeader(online, onReboot, onShowGuide)
-        // حامل الـMatrix يتقدّم الكتل الثابتة: اختياره من بركة واحدة ويتكيّف مع الاستعمال،
-        // فلا يعود ذيلًا بعد لوحة طويلة ولا تنشأ له قائمة موازية.
-        HomeTourAnchor(HomeTourTarget.Deck) {
-            CommandDeck(entries = deckEntries, onOpen = onOpenDeck, onConfigure = onConfigureDeck)
-        }
         // المرساة تُعلَّق من الجذر (`LocalHomeTourTargets`) لا من وسيط في التوقيع: نفس المرساة
         // تعيش في أربع شاشات، وتوقيعٌ يحملها كان يجعل كل شاشة تعرف بجولة تعرضها أخرى.
         HomeTourAnchor(HomeTourTarget.Hero) {
@@ -212,6 +207,9 @@ internal fun LegendaryHomeDashboard(
         }
         HomeTourAnchor(HomeTourTarget.Memory) {
             MemoryMatrixCard(dashboard = dashboard, onNavigate = onNavigate)
+        }
+        HomeTourAnchor(HomeTourTarget.Deck) {
+            CommandDeck(entries = deckEntries, onOpen = onOpenDeck, onConfigure = onConfigureDeck)
         }
     }
 }
