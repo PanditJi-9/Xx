@@ -129,13 +129,15 @@ import nd.max.ui.util.withPreset
  * الشاشة السابقة قسّمت نفسها إلى «تراكب · مصدر · عرض · مقاييس» وقدّمت لكل خيار صفًّا: مفتاحًا
  * لمقياس، ومقطعًا لشكل، ومقطعًا لاتجاه. والعطب ليس في الألوان بل في **حلقة التغذية الراجعة**:
  * لا شيء في الشاشة كان يقول ما ستراه، فالمستخدم يختار شكلًا ثم يخرج إلى لعبة ليرى أثره — ثم
- * يعود ليعدّل. فصار المحور هنا ثلاثة أسئلة مرتّبة كما يسألها المستخدم:
+ * يعود ليعدّل. فصار المحور هنا أربعة أسئلة مرتّبة كما يسألها المستخدم:
  *
  * 1. **الحالة** — ما تعرضه اللوحة **الآن** (معاينة حيّة، نفس المُصيِّر الذي يُرسم فوق اللعبة).
- * 2. **الحقول** — ماذا يُعرض، وكل حقل يرتدي قيمته الحيّة في بلاطته.
- * 3. **الشكل** — كيف يُعرض.
+ * 2. **الجلسة** — ما قِسته: التسجيل وإحصاؤه، وأين يخرج (CSV/صورة) وباب السجلّ الكامل.
+ * 3. **الحقول** — ماذا يُعرض، وكل حقل يرتدي قيمته الحيّة في بلاطته.
+ * 4. **الشكل** — كيف يُعرض.
  *
- * ثم فصلان للأسباب لا للشكل: **المصدر** (لماذا لا أرى رقمًا؟) و**الجلسة** (ما قِسته، وأين يخرج).
+ * ثم ثلاثة فصول للأسباب لا للشكل: **ما يقرؤه هذا الجهاز** (تشخيص يُطوى ما لم يُسأل)،
+ * و**المصدر** (لماذا لا أرى رقمًا؟)، و**المراقبات** (نوافذ مستقلّة إضافية).
  *
  * ### ورأس المال الفعليّ: زرّ التسجيل صار يسجّل
  *
@@ -293,7 +295,76 @@ fun FpsOverlayScreen(navController: NavController) {
                 }
             }
 
-            // ── ٢. الحقول: ماذا يُعرض ───────────────────────────────────────
+            // ── ٢. الجلسة: ما قِسته، وأين يخرج ─────────────────────────────
+            MaxSection(
+                title = stringResource(R.string.hud_section_session),
+                description = stringResource(R.string.hud_section_session_desc)
+            ) {
+                MaxGroup {
+                    MaxSwitchRow(
+                        title = if (recording) {
+                            stringResource(R.string.hud_session_stop)
+                        } else {
+                            stringResource(R.string.hud_session_start)
+                        },
+                        subtitle = stringResource(R.string.hud_session_record_note),
+                        checked = recording,
+                        onCheckedChange = { on ->
+                            if (on) HudRecorder.start(context) else HudRecorder.stop(context)
+                        }
+                    )
+                }
+
+                val tally = HudRecorder.tally()
+                if (tally == null) {
+                    Text(
+                        text = stringResource(R.string.hud_session_empty),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = scheme.onSurfaceVariant,
+                        modifier = Modifier.padding(horizontal = MaxSpace.groupPadding)
+                    )
+                } else {
+                    SessionStats(
+                        tally = tally,
+                        trust = if (recording) MaxDataTrust.Live else MaxDataTrust.Snapshot
+                    )
+                    MaxGroup {
+                        MaxNavigationRow(
+                            title = stringResource(R.string.hud_session_export),
+                            subtitle = stringResource(R.string.hud_session_export_note),
+                            onClick = { exportSession(context, scope) }
+                        )
+                        MaxGroupDivider()
+                        // الحذف ليس بابًا يُفتح: صفٌّ بسهمٍ يُقرأ انتقالًا، فيُضغط مرتين
+                        // قبل أن يُفهم أنه أزال الجلسة (عطب اللقطات نفسه).
+                        MaxNavigationRow(
+                            title = stringResource(R.string.hud_session_clear),
+                            icon = Icons.Rounded.Delete,
+                            iconTone = MaxTone.Caution,
+                            showChevron = false,
+                            onClick = { HudRecorder.clear() }
+                        )
+                    }
+                }
+
+                // الباب إلى السجلّ الكامل: الشاشة المنفصلة تجمع الحيّ والمحفوظ،
+                // ويبقى هنا الملخّص السريع بلا تكرار قائمة كاملة في قسم إعداد.
+                MaxGroup {
+                    MaxNavigationRow(
+                        title = stringResource(R.string.game_sessions_open),
+                        subtitle = stringResource(R.string.game_sessions_open_note),
+                        // launchSingleTop: ضغطتان على الباب لا تكدّسان نسخًا من الشاشة —
+                        // النسخ المتكدّسة تعرض أوّل رجوع الشاشة نفسها فيُقرأ «لا يرجع».
+                        onClick = {
+                            navController.navigate(MaxDestination.GameSessions.route) {
+                                launchSingleTop = true
+                            }
+                        }
+                    )
+                }
+            }
+
+            // ── ٣. الحقول: ماذا يُعرض ───────────────────────────────────────
             MaxSection(
                 title = stringResource(R.string.hud_section_fields),
                 description = stringResource(R.string.hud_section_fields_desc)
@@ -332,10 +403,12 @@ fun FpsOverlayScreen(navController: NavController) {
                 )
             }
 
-            // ── ٢·٥. ما يقرؤه هذا الجهاز فعلًا ─────────────────────────────
+            // ── ٤. ما يقرؤه هذا الجهاز فعلًا ─────────────────────────────
             MaxSection(
                 title = stringResource(R.string.hud_channels_title),
-                description = stringResource(R.string.hud_channels_desc)
+                description = stringResource(R.string.hud_channels_desc),
+                // تشخيص لا ضبط: يُطوى ما لم يُسأل — قراءات العقد ليست أدوات يُعدّلها اللاعب.
+                collapsible = true
             ) {
                 MaxGroup {
                     channels.forEachIndexed { index, channel ->
@@ -356,7 +429,7 @@ fun FpsOverlayScreen(navController: NavController) {
                 }
             }
 
-            // ── ٣. الشكل ───────────────────────────────────────────────────
+            // ── ٥. الشكل ───────────────────────────────────────────────────
             MaxSection(title = stringResource(R.string.hud_section_shape)) {
                 MaxSegmented(
                     options = formOptions,
@@ -454,7 +527,7 @@ fun FpsOverlayScreen(navController: NavController) {
                 }
             }
 
-            // ── ٣·٥. الإيقاع: كم مرّة تُقرأ الأرقام ──────────────────────────
+            // ── ٦. الإيقاع: كم مرّة تُقرأ الأرقام ──────────────────────────
             MaxSection(
                 title = stringResource(R.string.hud_interval_title),
                 description = stringResource(R.string.hud_interval_desc)
@@ -479,7 +552,7 @@ fun FpsOverlayScreen(navController: NavController) {
                 )
             }
 
-            // ── ٤. المصدر: لماذا لا أرى رقمًا؟ ──────────────────────────────
+            // ── ٧. المصدر: لماذا لا أرى رقمًا؟ ──────────────────────────────
             MaxSection(
                 title = stringResource(R.string.max_fps_section_source),
                 description = stringResource(R.string.fps_overlay_read_mode_desc)
@@ -521,70 +594,7 @@ fun FpsOverlayScreen(navController: NavController) {
                 )
             }
 
-            // ── ٥. الجلسة: ما قِسته، وأين يخرج ─────────────────────────────
-            MaxSection(
-                title = stringResource(R.string.hud_section_session),
-                description = stringResource(R.string.hud_section_session_desc)
-            ) {
-                MaxGroup {
-                    MaxSwitchRow(
-                        title = if (recording) {
-                            stringResource(R.string.hud_session_stop)
-                        } else {
-                            stringResource(R.string.hud_session_start)
-                        },
-                        subtitle = stringResource(R.string.hud_session_record_note),
-                        checked = recording,
-                        onCheckedChange = { on ->
-                            if (on) HudRecorder.start(context) else HudRecorder.stop(context)
-                        }
-                    )
-                }
-
-                val tally = HudRecorder.tally()
-                if (tally == null) {
-                    Text(
-                        text = stringResource(R.string.hud_session_empty),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = scheme.onSurfaceVariant,
-                        modifier = Modifier.padding(horizontal = MaxSpace.groupPadding)
-                    )
-                } else {
-                    SessionStats(
-                        tally = tally,
-                        trust = if (recording) MaxDataTrust.Live else MaxDataTrust.Snapshot
-                    )
-                    MaxGroup {
-                        MaxNavigationRow(
-                            title = stringResource(R.string.hud_session_export),
-                            subtitle = stringResource(R.string.hud_session_export_note),
-                            onClick = { exportSession(context, scope) }
-                        )
-                        MaxGroupDivider()
-                        // الحذف ليس بابًا يُفتح: صفٌّ بسهمٍ يُقرأ انتقالًا، فيُضغط مرتين
-                        // قبل أن يُفهم أنه أزال الجلسة (عطب اللقطات نفسه).
-                        MaxNavigationRow(
-                            title = stringResource(R.string.hud_session_clear),
-                            icon = Icons.Rounded.Delete,
-                            iconTone = MaxTone.Caution,
-                            showChevron = false,
-                            onClick = { HudRecorder.clear() }
-                        )
-                    }
-                }
-
-                // الباب إلى السجلّ الكامل: الشاشة المنفصلة تجمع الحيّ والمحفوظ،
-                // ويبقى هنا الملخّص السريع بلا تكرار قائمة كاملة في قسم إعداد.
-                MaxGroup {
-                    MaxNavigationRow(
-                        title = stringResource(R.string.game_sessions_open),
-                        subtitle = stringResource(R.string.game_sessions_open_note),
-                        onClick = { navController.navigate(MaxDestination.GameSessions.route) }
-                    )
-                }
-            }
-
-            // ── ٦. المراقبات الإضافية: نوافذ مستقلّة، خدمة واحدة ───────────
+            // ── ٨. المراقبات الإضافية: نوافذ مستقلّة، خدمة واحدة ───────────
             MaxSection(
                 title = stringResource(R.string.hud_section_monitors),
                 description = stringResource(R.string.hud_section_monitors_desc)

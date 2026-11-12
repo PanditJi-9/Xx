@@ -10,7 +10,10 @@ import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -34,16 +37,19 @@ import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import nd.max.R
 import nd.max.core.platform.SessionPoint
 import nd.max.ui.design.MAX_VALUE_UNAVAILABLE
+import nd.max.ui.design.MaxCardSpec
 import nd.max.ui.design.MaxGroup
 import nd.max.ui.design.MaxGroupDivider
 import nd.max.ui.design.MaxSpace
-import nd.max.ui.theme.MonoValueStyleMedium
+import nd.max.ui.design.MaxVisualSpec
+import nd.max.ui.theme.MonoValueStyleLarge
 import nd.max.ui.theme.MonoValueStyleSmall
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -60,8 +66,9 @@ import kotlin.math.roundToInt
  * **ولا يُنسخ شكل المرجع**: الخطوط والألوان والمسافات من `MaxTokens.kt` و`MonoValueStyle`،
  * والحاوية `MaxGroup` من نظام التصميم، والسحب والرسم داخل هذه الشاشة لا في مكتبة خارجية.
  *
- * حامل واحد: هذا التقرير يظهر مرّة واحدة، ويتبدّل مصدره — الجلسة الجارية حين يجري تسجيل،
- * أو الجلسة المختارة من السجلّ. ولا صفّ في السجلّ يرسم منحناه بنفسه.
+ * يظهر التقرير العلوي لبيانات المسجّل الحالية، وتستعمل الجلسة المحفوظة التركيب نفسه حين يفتح
+ * المستخدم صفّها. لا تُرسم إلا جلسة محفوظة واحدة في الوقت نفسه، ولا يتبدّل مصدر التقرير
+ * العلوي بصمت.
  */
 @Composable
 fun GameSessionReport(
@@ -133,7 +140,7 @@ fun GameSessionReport(
             }
 
             MaxGroupDivider()
-            ReportStatGrid(stats = stats)
+            ReportStatGrid(stats = stats, accent = accent)
             MaxGroupDivider()
             ReportChartSection(stats = stats, points = points, accent = accent)
         }
@@ -159,87 +166,126 @@ private fun LiveBadge(accent: Color) {
 }
 
 /**
- * ثمانية أرقام في عمودين — ترتيب المرجع نفسه: الإطارات أولًا، ثم التقطيع والحرارة،
- * ثم الطاقة. والقيمة الغائبة تُطبع `—` لا `0`، والوحدة تُكتب بعد الرقم بحجم أصغر.
+ * ثمانية أرقام: الإطارات أولًا، ثم التقطيع والحرارة، ثم الطاقة. الشبكة تتكيّف مع
+ * العرض وتكبير الخط؛ والقيمة الغائبة تُطبع `—` لا `0`. المتوسط بلون منحناه، والقراءات
+ * المساندة بلونها الثالث؛ الحرارة والتقطيع ليسا خطأً لمجرّد وجود قراءة بلا حكم خطر.
  */
 @Composable
-private fun ReportStatGrid(stats: GameReportStats) {
+private fun ReportStatGrid(stats: GameReportStats, accent: Color) {
     val variant = MaterialTheme.colorScheme.onSurfaceVariant
-    Column(verticalArrangement = Arrangement.spacedBy(MaxSpace.md)) {
-        StatPair(
-            first = StatText(
-                label = stringResource(R.string.game_sessions_fps_avg),
-                value = stats.averageFps?.let { "%.0f".format(it) },
-                unit = "FPS"
-            ),
-            second = StatText(
-                label = stringResource(R.string.game_sessions_report_min),
-                value = stats.minFps?.let { "%.0f".format(it) },
-                unit = "FPS"
-            )
+    val scheme = MaterialTheme.colorScheme
+    val fontScale = LocalDensity.current.fontScale
+    BoxWithConstraints(
+        modifier = Modifier.fillMaxWidth().padding(
+            horizontal = MaxSpace.rowPaddingHorizontal,
+            vertical = MaxSpace.md,
         )
-        StatPair(
-            first = StatText(
-                label = stringResource(R.string.game_sessions_report_low1),
-                value = stats.onePercentLowFps?.let { "%.0f".format(it) },
-                unit = "FPS"
-            ),
-            second = StatText(
-                label = stringResource(R.string.game_sessions_p99),
-                value = stats.frameP99Ms?.let { "%.1f".format(it) },
-                unit = "ms"
-            )
-        )
-        StatPair(
-            first = StatText(
-                label = stringResource(R.string.game_sessions_jank_avg),
-                value = stats.jankPercent?.let { "%.0f".format(it) },
-                unit = "%"
-            ),
-            second = StatText(
-                label = stringResource(R.string.game_sessions_soc_peak),
-                value = stats.maxSocTempC?.let { "%.0f".format(it) },
-                unit = "°C"
-            )
-        )
-        StatPair(
-            first = StatText(
-                label = batteryLabel(stats.batteryTempDeltaC),
-                value = heatSpan(stats.batteryTempStartC, stats.batteryTempEndC),
-                unit = if (stats.batteryTempStartC != null) "°C" else null
-            ),
-            second = StatText(
-                label = stringResource(R.string.game_sessions_power_avg),
-                value = stats.averagePowerMw?.toString(),
-                unit = "mW"
-            )
-        )
-        if (stats.samples > 0 || stats.droppedSamples > 0) {
-            Text(
-                text = stringResource(
-                    R.string.game_sessions_report_samples,
-                    stats.samples,
-                    stats.droppedSamples
+    ) {
+        val stacked = fontScale > MaxVisualSpec.largeFontScale ||
+            maxWidth.value < MaxCardSpec.minColumnWidth.value * 2 * fontScale.coerceAtLeast(1f) +
+                MaxSpace.md.value
+        Column(verticalArrangement = Arrangement.spacedBy(MaxSpace.md)) {
+            StatPair(
+                stacked = stacked,
+                first = StatText(
+                    label = stringResource(R.string.game_sessions_fps_avg),
+                    value = stats.averageFps?.let { "%.0f".format(it) },
+                    unit = "FPS",
+                    tone = accent
                 ),
-                style = MaterialTheme.typography.labelSmall,
-                color = variant
+                second = StatText(
+                    label = stringResource(R.string.game_sessions_report_min),
+                    value = stats.minFps?.let { "%.0f".format(it) },
+                    unit = "FPS"
+                )
             )
+            StatPair(
+                stacked = stacked,
+                first = StatText(
+                    label = stringResource(R.string.game_sessions_report_low1),
+                    value = stats.onePercentLowFps?.let { "%.0f".format(it) },
+                    unit = "FPS",
+                    tone = scheme.tertiary
+                ),
+                second = StatText(
+                    label = stringResource(R.string.game_sessions_p99),
+                    value = stats.frameP99Ms?.let { "%.1f".format(it) },
+                    unit = "ms"
+                )
+            )
+            StatPair(
+                stacked = stacked,
+                first = StatText(
+                    label = stringResource(R.string.game_sessions_jank_avg),
+                    value = stats.jankPercent?.let { "%.0f".format(it) },
+                    unit = "%"
+                ),
+                second = StatText(
+                    label = stringResource(R.string.game_sessions_soc_peak),
+                    value = stats.maxSocTempC?.let { "%.0f".format(it) },
+                    unit = "°C"
+                )
+            )
+            StatPair(
+                stacked = stacked,
+                first = StatText(
+                    label = batteryLabel(stats.batteryTempDeltaC),
+                    value = heatSpan(stats.batteryTempStartC, stats.batteryTempEndC),
+                    unit = if (stats.batteryTempStartC != null || stats.batteryTempEndC != null) "°C" else null
+                ),
+                second = StatText(
+                    label = stringResource(R.string.game_sessions_power_avg),
+                    value = stats.averagePowerMw?.toString(),
+                    unit = "mW",
+                    tone = scheme.tertiary
+                )
+            )
+            if (stats.samples > 0 || stats.droppedSamples > 0) {
+                Text(
+                    text = stringResource(
+                        R.string.game_sessions_report_samples,
+                        stats.samples,
+                        stats.droppedSamples
+                    ),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = variant
+                )
+            }
         }
     }
 }
 
 /** بطاقة رقم واحدة داخل الشبكة: تسمية صغيرة فوق قيمة أحادية. */
-private data class StatText(val label: String, val value: String?, val unit: String?)
+private data class StatText(
+    val label: String,
+    val value: String?,
+    val unit: String?,
+    /** لون التركيز أو القراءة المساندة، لا حكم سلامة يُستنتج من اللون وحده. */
+    val tone: Color? = null,
+)
 
 @Composable
-private fun StatPair(first: StatText, second: StatText) {
-    Row(modifier = Modifier.fillMaxWidth()) {
-        StatCell(text = first, modifier = Modifier.weight(1f))
-        Spacer(modifier = Modifier.width(MaxSpace.md))
-        StatCell(text = second, modifier = Modifier.weight(1f))
+private fun StatPair(first: StatText, second: StatText, stacked: Boolean) {
+    if (stacked) {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(MaxSpace.md),
+        ) {
+            StatCell(text = first, modifier = Modifier.fillMaxWidth())
+            StatCell(text = second, modifier = Modifier.fillMaxWidth())
+        }
+    } else {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(MaxSpace.md),
+        ) {
+            StatCell(text = first, modifier = Modifier.weight(1f))
+            StatCell(text = second, modifier = Modifier.weight(1f))
+        }
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun StatCell(text: StatText, modifier: Modifier = Modifier) {
     val variant = MaterialTheme.colorScheme.onSurfaceVariant
@@ -247,23 +293,24 @@ private fun StatCell(text: StatText, modifier: Modifier = Modifier) {
         Text(
             text = text.label,
             style = MaterialTheme.typography.labelMedium,
-            color = variant,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
+            color = variant
         )
-        Row(verticalAlignment = Alignment.Bottom) {
+        FlowRow(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs),
+        ) {
             Text(
                 text = text.value ?: MAX_VALUE_UNAVAILABLE,
-                style = MonoValueStyleMedium,
-                color = MaterialTheme.colorScheme.onSurface
+                style = MonoValueStyleLarge,
+                color = if (text.value == null) variant else text.tone ?: MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.align(Alignment.Bottom),
             )
             text.unit?.let { unit ->
-                Spacer(modifier = Modifier.width(4.dp))
                 Text(
                     text = unit,
                     style = MaterialTheme.typography.labelMedium,
                     color = variant,
-                    modifier = Modifier.padding(bottom = 2.dp)
+                    modifier = Modifier.align(Alignment.Bottom)
                 )
             }
         }

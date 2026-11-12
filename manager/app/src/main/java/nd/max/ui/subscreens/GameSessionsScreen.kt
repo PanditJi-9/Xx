@@ -7,14 +7,14 @@
  * carrying element: the session report.** The page opens on a record action —
  * pick the game, then record — and the report below it is the page: name, date,
  * package, duration line, eight measured numbers and one frame curve that can
- * be dragged. Rows are entries in a record, newest first, and no row carries a
- * curve: opening a row swaps the report's source, and closing it returns to the
- * live session. A ledger that plots every row at once is read as noise.
+ * be dragged. Rows are entries in a record, newest first: opening a row unfolds
+ * that session's own report directly underneath it, so the numbers appear where
+ * the finger is. The live report at the top never changes source under the reader.
  *
  * States: nothing recorded → the record action plus the report's empty text ·
- * live → the report shows the running session with its elapsed clock · stored
- * row open → the same report, sourced from that row · a session without samples
- * → the chart empty text under the one carrier.
+ * current recorder data → the report shows its running or last stopped session · row open →
+ * that session's own report under the row, folded again by the first Back · a
+ * session without samples → the chart empty text inside its own report.
  */
 
 package nd.max.ui.subscreens
@@ -23,6 +23,8 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -51,7 +53,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.annotation.StringRes
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
@@ -108,7 +109,8 @@ import nd.max.ui.navigation.MaxDestination
  *
  * الشكل: Ledger — الكائن: جلسة واحدة — العنصر الحامل: تقرير الجلسة (رأس، ثمانية أرقام،
  * منحنى يُسحب). والزرّ الأعلى يسجّل **لعبة بعينها**: تختارها فتبدأ الجلسة بحزمتها.
- * والأرقام كلها في التقرير؛ والصفّ في السجلّ يحمل حكمه وأفعاله، لا نسخة ثانية من أرقامه.
+ * والتقرير العلوي لبيانات المسجّل الحالية؛ وصفّ السجلّ يحمل حكمه، وفَتْحُه يُنزل **تقريره هو**
+ * تحته (تكملة ٨٨) — فلا يُقرأ الرقم في غير موضع إصبعه، ولا يُفتح تقريرا صفّين معًا.
  */
 @Composable
 fun GameSessionsScreen(
@@ -128,6 +130,8 @@ fun GameSessionsScreen(
     val scheme = MaterialTheme.colorScheme
 
     var expandedId by rememberSaveable { mutableStateOf<String?>(null) }
+    // الرجوع يطوي التقرير المحلي أولًا ويحفظ موضع القارئ في السجلّ؛ والرجوع التالي يخرج.
+    BackHandler(enabled = expandedId != null) { expandedId = null }
     var tally by remember { mutableStateOf(HudRecorder.tally()) }
     var series by remember { mutableStateOf(HudRecorder.series()) }
     var clockNowMs by remember { mutableLongStateOf(System.currentTimeMillis()) }
@@ -169,13 +173,13 @@ fun GameSessionsScreen(
         recording && startedAtMs > 0L -> (clockNowMs - startedAtMs).coerceAtLeast(0L)
         else -> tally?.spanMs ?: 0L
     }
-    // منحنى واحد فقط يحمل الـLedger. فتح جلسة محفوظة يبدّل مصدر الحامل نفسه بدل أن
-    // يضيف منحنى ثانيًا داخل صفّها، وإغلاقها يعيده إلى الجلسة الحيّة.
-    val selectedStoredSession = sessions.firstOrNull { it.id == expandedId }
-
+    // الحامل العلوي لبيانات المسجّل الحالية؛ وتقرير الجلسة المحفوظة ينزل تحت صفّها —
+    // تقرير محفوظ واحد مفتوح: صفٌّ مغلق لا يرسم، والتقرير العلوي لا يتبدّل مصدره.
     MaxScreen(
         title = stringResource(R.string.game_sessions_title),
-        onBack = { navController.popBackStack() },
+        onBack = {
+            if (expandedId != null) expandedId = null else navController.popBackStack()
+        },
         subtitle = stringResource(R.string.game_sessions_subtitle),
         accentIcon = Icons.Rounded.History,
         accent = scheme.tertiary
@@ -289,24 +293,23 @@ fun GameSessionsScreen(
             }
         }
 
-        // ── ٢. التقرير: العنصر الحامل الوحيد ─────────────────────────────────
-        // مصدر واحد يتبدّل: الجلسة الجارية حين يجري تسجيل، أو الجلسة المفتوحة من السجلّ.
-        // ولا صفّ في السجلّ يرسم منحناه: التقرير هو المنحنى.
+        // ── ٢. تقرير بيانات المسجّل الحالية: الحامل الأول ────────────────────
+        // الجلسة المفتوحة من السجلّ لا تبدّله: تقريرها ينزل تحت صفّها في قسم السجلّ،
+        // فما يقرأه القارئ هنا لا يتغيّر تحت إصبعه.
         val liveStats = remember(tally, series, elapsedMs) {
             liveReportStats(tally, series, elapsedMs)
         }
-        val reportSession = selectedStoredSession
-        val reportStats = remember(reportSession, liveStats) {
-            reportSession?.let { storedReportStats(it) } ?: liveStats
-        }
-        val reportPoints = reportSession?.series ?: series
-        val reportLive = reportSession == null && recording
-        val reportTitle = reportSession?.displayName
-            ?: HudRecorder.sessionLabel
+        // **التقرير العلوي للمسجّل وحده (تكملة ٨٨):** كان يتغيّر بلا إعلان
+        // حين يُفتح صفّ في السجلّ — فيقرأ المستخدم أرقامًا لا يعرف من أين جاءت.
+        // والصفّ الآن يفتح تقريره تحته، فلم يبقَ للتقرير العلويّ مصدر ثانٍ.
+        val reportStats = liveStats
+        val reportPoints = series
+        val reportLive = recording
+        val reportTitle = HudRecorder.sessionLabel
             ?: HudRecorder.sessionPackage
             ?: stringResource(R.string.game_sessions_unknown_game)
-        val reportPackage = reportSession?.packageName ?: HudRecorder.sessionPackage
-        val reportDate = reportSession?.startedAtMs ?: HudRecorder.sessionStartedAtMs
+        val reportPackage = HudRecorder.sessionPackage
+        val reportDate = HudRecorder.sessionStartedAtMs
         val reportMode = if (reportStats.powerSave) {
             stringResource(R.string.game_sessions_mode_saver)
         } else {
@@ -335,10 +338,10 @@ fun GameSessionsScreen(
             emptyText = stringResource(R.string.game_sessions_empty)
         )
 
-        // ── حكم الجلسة المعروضة: الرقم وحده لا يقول «جيد أم سيئ» ──
-        // الحكم يتبع ما يعرضه التقرير (المفتوحة أو الأخيرة)، ولا يظهر فوق جلسة جارية
-        // لم تُحفظ بعد — فمقارنة جارية بأرشيف سابق تُقرأ حكمًا على ما لم ينتهِ.
-        val lastSession = reportSession ?: sessions.firstOrNull()
+        // ── حكم أحدث جلسة محفوظة: الرقم وحده لا يقول «جيد أم سيئ» ──
+        // ويُسمّى باسمها في أول سطر، ولا يظهر فوق جلسة جارية لم تُحفظ بعد — فمقارنة
+        // جارية بأرشيف سابق تُقرأ حكمًا على ما لم ينتهِ.
+        val lastSession = sessions.firstOrNull()
         if (lastSession != null && !reportLive) {
             val insight = remember(lastSession.id, sessions.size) {
                 sessionInsight(lastSession, sessions)
@@ -461,23 +464,55 @@ fun GameSessionsScreen(
                                 subtitle = sessionSubtitle(session) + " · " +
                                     stringResource(verdictText(rowInsight.verdict)),
                                 valueText = session.framesAverage?.let { "%.1f FPS".format(it) },
+                                icon = Icons.Rounded.History,
+                                iconTone = when (rowInsight.verdict) {
+                                    SessionVerdict.Better -> MaxTone.Positive
+                                    SessionVerdict.Worse, SessionVerdict.Unusable -> MaxTone.Caution
+                                    else -> MaxTone.Neutral
+                                },
                                 onClick = {
                                     expandedId = if (expandedId == session.id) null else session.id
                                 }
                             )
-                            if (expandedId == session.id) {
-                                // الأرقام في التقرير الحامل أعلاه، والصفّ يحمل أفعاله فقط:
-                                // فلا تُقرأ الجلسة مرّتين برقمين قد يختلف ترتيبهما.
-                                session.remark?.let { note ->
-                                    MaxMetricLine(
-                                        MaxMetric(
-                                            label = stringResource(R.string.game_sessions_remark),
-                                            value = note,
-                                            trust = MaxDataTrust.Snapshot
-                                        )
-                                    )
+                        }
+                        if (expandedId == session.id) {
+                            // التقرير بطاقة مستقلة مباشرة تحت صفّه؛ لا بطاقة داخل بطاقة، ولا
+                            // تغيير صامت لتقرير الجلسة الجارية في أعلى الصفحة.
+                            val stored = remember(session) { storedReportStats(session) }
+                            val storedMeta = buildList {
+                                add(stringResource(
+                                    R.string.game_sessions_report_meta_duration,
+                                    reportClock(stored.durationMs),
+                                ))
+                                add(stringResource(
+                                    R.string.game_sessions_report_meta_profile,
+                                    stringResource(
+                                        if (stored.powerSave) R.string.game_sessions_mode_saver
+                                        else R.string.game_sessions_mode_normal
+                                    ),
+                                ))
+                                stored.refreshHz?.let {
+                                    add(stringResource(R.string.game_sessions_report_meta_refresh, it))
                                 }
-                                MaxGroupDivider()
+                                stored.stopReasonId?.let {
+                                    add(stringResource(
+                                        R.string.game_sessions_report_meta_stopped,
+                                        stopReasonText(it),
+                                    ))
+                                }
+                            }.joinToString(" · ")
+                            GameSessionReport(
+                                title = session.displayName,
+                                packageName = session.packageName,
+                                dateMs = session.startedAtMs,
+                                meta = storedMeta,
+                                stats = stored,
+                                points = session.series,
+                                live = false,
+                                accent = scheme.tertiary,
+                                emptyText = stringResource(R.string.game_sessions_empty),
+                            )
+                            MaxGroup {
                                 MaxNavigationRow(
                                     title = stringResource(R.string.game_sessions_remark),
                                     subtitle = session.remark
@@ -531,7 +566,10 @@ fun GameSessionsScreen(
                             icon = Icons.Rounded.Delete,
                             iconTone = MaxTone.Caution,
                             showChevron = false,
-                            onClick = { viewModel.clear(context) }
+                            onClick = {
+                                expandedId = null
+                                viewModel.clear(context)
+                            }
                         )
                     }
                 }

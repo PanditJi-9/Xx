@@ -23,12 +23,14 @@ import java.io.File
  */
 class ScreenArchetypeTest {
 
-    /** شاشة M2: النوع المقصود، وحاملها الواحد، والملفّ الذي يستدعيه. */
+    /** شاشة M2: النوع المقصود، وحاملها، وعدد استدعاءاته المقصود. */
     private data class M2Screen(
         val path: String,
         val archetype: String,
         val carrierCall: String,
         val carrierPath: String = path,
+        /** العدد المقصود من استدعاءات الحامل في ملفّ الشاشة (السجلّ صار اثنين — تكملة ٨٨). */
+        val carrierCalls: Int = 1,
     )
 
     /** الأنواع السبعة كما في `DESIGN.md` §Screen Composition. */
@@ -44,7 +46,7 @@ class ScreenArchetypeTest {
         "MaxAiScreen.kt",
     )
 
-    /** شاشات M2 الخمس كما في `PRODUCT-MAP.md` §٥ — النوع والحامل الواحد. */
+    /** شاشات M2 الخمس كما في `PRODUCT-MAP.md` §٥ — النوع والحامل المقصود. */
     private val m2Screens = listOf(
         M2Screen(
             path = "ui/mainscreens/HomeScreen.kt",
@@ -57,9 +59,11 @@ class ScreenArchetypeTest {
         M2Screen(
             path = "ui/subscreens/GameSessionsScreen.kt",
             archetype = "Ledger",
-            // الحامل يُستدعى في الشاشة نفسها مرّة واحدة؛ وملفّه ملف التقرير يُعرِّف الدالة
-            // ولا يستدعيها، فعدّ الاستدعاءات فيه يعطي صفرًا لا واحدًا.
+            // **استدعاءان مقصودان (أمر المالك، تكملة ٨٨):** التقرير العلوي لبيانات المسجّل،
+            // وتقرير الصفّ المفتوح ينزل تحت صفّه. وملفّ التقرير يُعرِّف الدالة ولا يستدعيها،
+            // فعدّ الاستدعاءات فيه صفر.
             carrierCall = "GameSessionReport",
+            carrierCalls = 2,
         ),
         M2Screen("ui/subscreens/ThermalDetailScreen.kt", "Instrument", "ThermalTrend"),
     )
@@ -110,7 +114,7 @@ class ScreenArchetypeTest {
     }
 
     @Test
-    fun `M2 screens name their intended archetype and render one carrier`() {
+    fun `M2 screens name their intended archetype and render their intended carriers`() {
         val root = sourceRoot()
         assumeTrue("Cannot locate nd.max sources; guard not evaluated", root != null)
 
@@ -124,8 +128,8 @@ class ScreenArchetypeTest {
                 .findAll(carrierText)
                 .count()
             assertEquals(
-                "${screen.path}: الحامل ${screen.carrierCall} يجب أن يُستدعى مرة واحدة",
-                1,
+                "${screen.path}: عدد استدعاءات الحامل ${screen.carrierCall} تغيّر",
+                screen.carrierCalls,
                 calls,
             )
         }
@@ -159,10 +163,21 @@ class ScreenArchetypeTest {
         )
 
         val sessions = File(root, "ui/subscreens/GameSessionsScreen.kt").readText()
+        val rowsAt = sessions.indexOf("sessions.forEach")
         assertTrue(
-            "GameSessions: المنحنى عاد داخل صفّ جلسة",
+            "GameSessions: تقرير المسجّل غاب عن مقدّمة الشاشة",
             // التقرير الحامل يسبق السجلّ: الأرقام والمنحنى في موضع واحد، والصفوف بعده.
-            callIndex(sessions, "GameSessionReport") < sessions.indexOf("sessions.forEach"),
+            callIndex(sessions, "GameSessionReport") < rowsAt,
+        )
+        val expandedAt = sessions.indexOf("if (expandedId == session.id) {")
+        val storedReportAt = sessions.indexOf("GameSessionReport(", rowsAt + 1)
+        val storedActionsAt = sessions.indexOf("MaxGroup {", storedReportAt + 1)
+        assertTrue(
+            "GameSessions: تقرير الصفّ المفتوح لم ينزل تحت صفّه",
+            // الاستدعاء الثاني داخل فرع الفتح، وبعد الصفّ وقبل مجموعة أفعاله.
+            expandedAt > rowsAt &&
+                storedReportAt > expandedAt &&
+                storedActionsAt > storedReportAt,
         )
 
         // زرّ «سجّل لعبة» (طلب المالك): الجلسة تبدأ بالحزمة المختارة، لا بما يظهر في المقدمة.
@@ -399,6 +414,78 @@ class ScreenArchetypeTest {
             "الجروب يجب أن يبقى في «حول» وحدها",
             onboarding.contains("MaxManagerChat")
         )
+    }
+
+    /**
+     * **باب السجلّ يُفتح نسخةً واحدة، وسلّم الرجوع يطوي المفتوح قبل الخروج.**
+     *
+     * شكوى المالك (تكملة ٨٨): «السجلّ في Game Space… عندما أرجع لا يرجع، أظنّني عالق على
+     * الشاشة». المسار البنيوي الذي نمنعه هنا هو تكديس نسختين عند النقر السريع، مع سلّم
+     * رجوع واحد ومتّسق لسهم الشريط ورجوع النظام حين يكون تقرير محلي مفتوحًا.
+     *
+     * وحدّه المُعلَن: فحص نصّي على المصدر؛ السلوك واللمس على الجهاز.
+     */
+    @Test
+    fun `the sessions log opens single-top and back folds one opened row before exit`() {
+        val root = sourceRoot()
+        assumeTrue("Cannot locate nd.max sources; guard not evaluated", root != null)
+
+        val entries = listOf(
+            "GameLobbyScreen.kt" to File(root, "ui/subscreens/GameLobbyScreen.kt").readText(),
+            "FpsOverlayScreen.kt" to File(root, "ui/subscreens/FpsOverlayScreen.kt").readText(),
+        )
+        entries.forEach { (name, text) ->
+            val at = text.indexOf("MaxDestination.GameSessions.route")
+            assertTrue("$name: باب السجلّ غاب", at >= 0)
+            assertTrue(
+                "$name: باب السجلّ بلا launchSingleTop — التكديس يجعل الرجوع يبدو معطّلًا",
+                text.substring(at, (at + 320).coerceAtMost(text.length))
+                    .contains("launchSingleTop = true"),
+            )
+        }
+
+        val sessions = File(root, "ui/subscreens/GameSessionsScreen.kt").readText()
+        assertTrue(
+            "GameSessions: سلّم الرجوع غاب — أول ضغطة يجب أن تطوي الجلسة المفتوحة",
+            sessions.contains("BackHandler(enabled = expandedId != null) { expandedId = null }"),
+        )
+        val topBack = sessions.substringAfter("onBack = {").take(220)
+        assertTrue(
+            "GameSessions: سهم الشريط لا يتبع سلّم رجوع النظام",
+            topBack.contains("expandedId = null") &&
+                topBack.contains("navController.popBackStack()"),
+        )
+    }
+
+    @Test
+    fun `session report numbers adapt to narrow width and large font without false alarms`() {
+        val root = sourceRoot()
+        assumeTrue("Cannot locate nd.max sources; guard not evaluated", root != null)
+        val report = File(root, "ui/subscreens/GameSessionReport.kt").readText()
+        val grid = report.substringAfter("private fun ReportStatGrid(")
+            .substringBefore("private fun heatSpan(")
+        assertTrue("التقرير: الشبكة لا تقيس العرض والخط", grid.contains("BoxWithConstraints(") &&
+            grid.contains("MaxCardSpec.minColumnWidth") && grid.contains("MaxVisualSpec.largeFontScale"))
+        assertEquals("التقرير: بعض أزواج القيم لا تتكيّف", 4,
+            Regex("stacked = stacked").findAll(grid).count())
+        val cell = grid.substringAfter("private fun StatCell(")
+        assertTrue("التقرير: الوحدة لا تلتف عند ضيق الخانة", cell.contains("FlowRow("))
+        assertFalse("التقرير: تسمية المقياس تُقصّ في العربية", cell.contains("maxLines = 1"))
+        assertTrue("التقرير: القيمة المجهولة لم تعد محايدة", cell.contains("if (text.value == null) variant"))
+        assertFalse("التقرير: الحرارة والتقطيع يُعلنان خطأ بلا حكم", grid.contains("scheme.error"))
+    }
+
+    @Test
+    fun `performance session actions precede field settings and device channels are folded`() {
+        val root = sourceRoot()
+        assumeTrue("Cannot locate nd.max sources; guard not evaluated", root != null)
+        val fps = File(root, "ui/subscreens/FpsOverlayScreen.kt").readText()
+        val sessionAt = fps.indexOf("title = stringResource(R.string.hud_section_session)")
+        val fieldsAt = fps.indexOf("title = stringResource(R.string.hud_section_fields)")
+        assertTrue("الأداء: الجلسة مدفونة بعد ضبط الحقول", sessionAt >= 0 && fieldsAt > sessionAt)
+        val channels = fps.substringAfter("title = stringResource(R.string.hud_channels_title)")
+            .substringBefore("MaxGroup {")
+        assertTrue("الأداء: تشخيص القنوات لا يُطوى", channels.contains("collapsible = true"))
     }
 
     private fun callIndex(source: String, call: String): Int =

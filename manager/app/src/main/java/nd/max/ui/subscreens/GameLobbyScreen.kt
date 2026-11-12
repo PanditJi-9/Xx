@@ -711,7 +711,13 @@ fun GameLobbyScreen(
                 LobbyRoundButton(
                     icon = Icons.Rounded.History,
                     description = stringResource(R.string.game_sessions_lobby_open),
-                    onClick = { navController.navigate(MaxDestination.GameSessions.route) }
+                    // launchSingleTop: ضغطتان على الباب لا تكدّسان نسخًا من الشاشة —
+                    // النسخ المتكدّسة تعرض أوّل رجوع الشاشة نفسها فيُقرأ «لا يرجع».
+                    onClick = {
+                        navController.navigate(MaxDestination.GameSessions.route) {
+                            launchSingleTop = true
+                        }
+                    }
                 )
                 LobbyRoundButton(
                     icon = Icons.Rounded.Close,
