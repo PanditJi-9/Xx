@@ -324,7 +324,12 @@ fun MaxNavigationRow(
     icon: ImageVector? = null,
     iconTone: MaxTone = MaxTone.Neutral,
     enabled: Boolean = true,
-    lockedReason: String? = null
+    lockedReason: String? = null,
+    /**
+     * السهم يعني «هنا بابٌ يُفتح». الفعل الذي لا يفتح شيئًا (حذف، مسح) يقف دونه:
+     * سهمُ تنقّلٍ فوق سطل قمامة يُقرأ «ادخل» لا «احذف» (لقطة المالك، ٢٠٢٦-١١-١٢).
+     */
+    showChevron: Boolean = true
 ) {
     val interaction = remember { MutableInteractionSource() }
     val animationsEnabled = rememberAnimationsEnabled()
@@ -363,12 +368,14 @@ fun MaxNavigationRow(
                     )
                     Spacer(Modifier.width(MaxSpace.sm))
                 }
-                Icon(
-                    imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.size(MaxSize.iconGlyph)
-                )
+                if (showChevron) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(MaxSize.iconGlyph)
+                    )
+                }
             }
         }
     )

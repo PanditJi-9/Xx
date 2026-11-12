@@ -265,6 +265,8 @@ fun GameSessionsScreen(
                     }
                 }
 
+                // بطاقةٌ واحدة لأفعال الجلسة: كانت ثلاثة صناديق كل واحد بصفٍّ، فتُقرأ الصفحة
+                // فراغًا بينما هي ثلاثة أزرار (لقطة المالك، ٢٠٢٦-١١-١٢).
                 MaxGroup {
                     MaxNavigationRow(
                         title = stringResource(R.string.game_sessions_remark),
@@ -276,9 +278,7 @@ fun GameSessionsScreen(
                             remarkOpen = true
                         }
                     )
-                }
-
-                MaxGroup {
+                    MaxGroupDivider()
                     MaxNavigationRow(
                         title = stringResource(R.string.game_sessions_export),
                         subtitle = stringResource(R.string.game_sessions_export_note),
@@ -305,6 +305,7 @@ fun GameSessionsScreen(
                         title = stringResource(R.string.hud_session_clear),
                         icon = Icons.Rounded.Delete,
                         iconTone = MaxTone.Caution,
+                        showChevron = false,
                         onClick = {
                             HudRecorder.clear()
                             tally = null
@@ -358,13 +359,16 @@ fun GameSessionsScreen(
                     insight.worstPoint?.let { point ->
                         val frames = point.frames
                         if (frames != null) {
+                            // `atMs` طابع زمني مطلق (epoch) من المسجّل، والقراءة هنا مدة من بدء الجلسة:
+                            // طرح أول عيّنة هو ما يجعل «عند 0:07» صحيحًا بدل «عند 498422:15:16».
+                            val origin = lastSession.series.firstOrNull()?.atMs ?: point.atMs
                             MaxMetricLine(
                                 MaxMetric(
                                     label = stringResource(R.string.game_sessions_worst_moment),
                                     value = stringResource(
                                         R.string.game_sessions_worst_value,
                                         frames.roundToInt(),
-                                        sessionClock(point.atMs)
+                                        sessionClock(point.atMs - origin)
                                     ),
                                     trust = MaxDataTrust.Snapshot
                                 )
@@ -475,8 +479,10 @@ fun GameSessionsScreen(
                     value = rules.socTempThresholdC,
                     valueText = "%.0f°C".format(rules.socTempThresholdC),
                     valueRange = 50f..100f,
-                    steps = 49,
-                    onValueChange = { rules = rules.copy(socTempThresholdC = it) },
+                    // بلا `steps`: مئات النقاط على المسار تُقرأ خطًّا منقّطًا لا مقياسًا.
+                    // الصحيح يبقى صحيحًا لأن القيمة العائدة تُدوَّر قبل الحفظ.
+                    steps = 0,
+                    onValueChange = { rules = rules.copy(socTempThresholdC = it.roundToInt().toFloat()) },
                     onValueChangeFinished = { HudSessionSettings.save(context, rules) }
                 )
                 MaxGroupDivider()
@@ -485,8 +491,8 @@ fun GameSessionsScreen(
                     value = rules.batteryTempThresholdC,
                     valueText = "%.0f°C".format(rules.batteryTempThresholdC),
                     valueRange = 30f..60f,
-                    steps = 29,
-                    onValueChange = { rules = rules.copy(batteryTempThresholdC = it) },
+                    steps = 0,
+                    onValueChange = { rules = rules.copy(batteryTempThresholdC = it.roundToInt().toFloat()) },
                     onValueChangeFinished = { HudSessionSettings.save(context, rules) }
                 )
                 MaxGroupDivider()
@@ -495,8 +501,8 @@ fun GameSessionsScreen(
                     value = rules.gpuLoadThresholdPercent,
                     valueText = "%.0f%%".format(rules.gpuLoadThresholdPercent),
                     valueRange = 40f..100f,
-                    steps = 59,
-                    onValueChange = { rules = rules.copy(gpuLoadThresholdPercent = it) },
+                    steps = 0,
+                    onValueChange = { rules = rules.copy(gpuLoadThresholdPercent = it.roundToInt().toFloat()) },
                     onValueChangeFinished = { HudSessionSettings.save(context, rules) }
                 )
                 MaxGroupDivider()
@@ -508,8 +514,8 @@ fun GameSessionsScreen(
                         rules.warningSeconds
                     ),
                     valueRange = 0f..30f,
-                    steps = 29,
-                    onValueChange = { rules = rules.copy(warningSeconds = it.toInt()) },
+                    steps = 0,
+                    onValueChange = { rules = rules.copy(warningSeconds = it.roundToInt()) },
                     onValueChangeFinished = { HudSessionSettings.save(context, rules) }
                 )
             }
@@ -623,6 +629,7 @@ fun GameSessionsScreen(
                                     title = stringResource(R.string.game_sessions_delete),
                                     icon = Icons.Rounded.Delete,
                                     iconTone = MaxTone.Caution,
+                        showChevron = false,
                                     onClick = {
                                         viewModel.delete(context, session.id)
                                         expandedId = null
@@ -637,6 +644,7 @@ fun GameSessionsScreen(
                             subtitle = stringResource(R.string.game_sessions_clear_history_note),
                             icon = Icons.Rounded.Delete,
                             iconTone = MaxTone.Caution,
+                        showChevron = false,
                             onClick = { viewModel.clear(context) }
                         )
                     }
@@ -767,12 +775,14 @@ private fun SessionChartSection(points: List<SessionPoint>, label: String, empty
                 }
             }
             if (worst != null && worstFrames != null) {
+                // نفس أصل الجلسة: العيّنة تحمل epoch، والسطر يقول «منذ بدء الجلسة».
+                val origin = points.firstOrNull()?.atMs ?: worst.atMs
                 Text(
                     text = stringResource(R.string.game_sessions_worst_moment) + " · " +
                         stringResource(
                             R.string.game_sessions_worst_value,
                             worstFrames.roundToInt(),
-                            sessionClock(worst.atMs)
+                            sessionClock(worst.atMs - origin)
                         ),
                     style = MaterialTheme.typography.bodySmall,
                     color = markerColor,

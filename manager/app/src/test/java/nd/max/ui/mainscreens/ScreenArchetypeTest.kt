@@ -6,6 +6,7 @@
 package nd.max.ui.mainscreens
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Assume.assumeTrue
 import org.junit.Test
@@ -170,6 +171,28 @@ class ScreenArchetypeTest {
      * السلوك من الشاشة نفسها لا من ذاكرة أحد. والحدّ المُعلَن: هذا فحص نصّي — القصّ الفعلي
      * للخطوط في ٣٦٠dp يحتاج جهازًا.
      */
+    /**
+     * **الزمن في السجلّ مدةٌ من بدء الجلسة، لا طابعٌ مطلق.**
+     *
+     * `HudRecorder.feed` يختم العيّنة بـ`System.currentTimeMillis()`، فمن يعرض `atMs` كما هو
+     * يكتب «عند 498422:15:16» — وقد حدث فعلًا (لقطة المالك، ٢٠٢٦-١١-١٢). الحارس يمنع عودة
+     * الاستدعاء المطلق ويثبّت الطرح من أول عيّنة. حدّه: فحص نصّي، والحكم على الشكل يحتاج جهازًا.
+     */
+    @Test
+    fun `session clocks are elapsed from the first sample, never epoch`() {
+        val root = sourceRoot()
+        assumeTrue("Cannot locate nd.max sources; guard not evaluated", root != null)
+        val sessions = File(root, "ui/subscreens/GameSessionsScreen.kt").readText()
+        assertFalse(
+            "ساعة الجلسة عادت تعرض الطابع المطلق",
+            sessions.contains("sessionClock(point.atMs)") || sessions.contains("sessionClock(worst.atMs)")
+        )
+        assertTrue(
+            "الطرح من أول عيّنة غاب",
+            sessions.contains("point.atMs - origin") && sessions.contains("worst.atMs - origin")
+        )
+    }
+
     @Test
     fun `M3 screens list their states and hardcode no width wider than a small phone`() {
         val root = sourceRoot()
