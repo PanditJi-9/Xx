@@ -9,14 +9,14 @@ import android.content.Context
 import nd.max.island.core.IslandSettings
 import nd.max.core.persist.PersistStore
 import nd.max.ui.util.Dex2oatUtil
-import nd.max.ui.util.RebootUtil
+import nd.max.ui.util.RebootManager
 
 /**
  * «إعادة كل شيء إلى الوضع الافتراضي» — **اختيارات التطبيق**، لا بيانات المستخدم ولا خصائص النظام.
  *
  * النطاق مقصود ومكتوب: اختيارات الواجهة ([SettingsPreference]) · تطبيق التعديلات بعد الإقلاع
  * وإقراره الخطير ([PersistStore]) · شكل الجُزُر ([IslandSettings.resetAll]) · اختيارات
- * dex2oat والإقلاع ([Dex2oatUtil] · [RebootUtil]). وما كان ملكًا لنظام التشغيل (خصائص
+ * dex2oat والإقلاع ([Dex2oatUtil] · [RebootManager]). وما كان ملكًا لنظام التشغيل (خصائص
  * `persist.sys.*`) أو لملفّات المستخدم لا يُمسّ: تصفيره من هنا كان سيمحو إعدادًا لا نملكه.
  */
 fun resetAppToDefaults(context: Context) {
@@ -25,5 +25,5 @@ fun resetAppToDefaults(context: Context) {
     PersistStore.setDangerousAutoEnabled(context, false)
     IslandSettings.resetAll()
     Dex2oatUtil.resetAll()
-    RebootUtil.resetAll()
+    RebootManager.resetAll()
 }
