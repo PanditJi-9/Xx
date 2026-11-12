@@ -1,3 +1,19 @@
+## ROUND-CLOSE-79 — M4: اللقطة الحيّة تُقرأ حيث تُرسم، لا على الجذر — 2026-11-12 · DONE_WITH_CONCERNS
+
+**TASK:** «اكمل m3 و m4 كلها دون توقف» — M4: تقليل إعادات التركيب في `FpsOverlay` و`GameSessions`، بلا بناء محلي، دفعة واحدة إلى `main`.
+
+**SEARCH FIRST:** الخدمة تمرّر `intervalMs` من التفضيلات أصلًا (`FpsOverlayService.kt:221` و`gate.updateInterval` :310) — لا مسار ثانٍ. العطب: الشاشتان تقرآن `HudLive.snapshot` على الجذر، فتتغيّر اللقطة مع كل عيّنة وتُبطل الشاشة كلها.
+
+**SHIPPED:** `FpsOverlayScreen.kt` — الجذر بلا لقطة: `recording`/`owner`/`framesAnswered` مشتقّة بـ`derivedStateOf`، والمعاينة في `HudPreviewCard` (نداء `HudSurface` كما كان حرفيًا) والحقول في `HudFieldGridLive` · `GameSessionsScreen.kt` — `recording`/`warnings` مشتقّتان فقط · `ScreenArchetypeTest.kt` — حارس M4 على جذر الشاشتين (صفر `HudLive.snapshot.collectAsState()`، ووجود `derivedStateOf`).
+
+**MEASURED (exit 0):** `kt_balance` ٣٣٦٢/٠ · `code_health` نظيف · `i18n_coverage` ٨٤+en/٨٥/٠ · `design_tokens` ٢٤٧/٣٠٠ · `rtl_guard` ٠ مخالفة · `resource_compile` aapt2 حقيقي · `git diff --check` نظيف · الحارس بنصّ Python: ٠/٠ قراءة لقطة على الجذرين.
+
+**BUILD:** لا بناء محلي — **الترجمة غير مُتحقّقة في هذه البيئة** حتى CI؛ **عدّ إعادات التركيب يحتاج جهازًا**؛ المقيس هنا إزالة السبب البنيوي فقط.
+
+**RESIDUAL:** المعاينة والحقول تُعاد تركيبهما كل عيّنة (مقصودهما) · `HudSnapshot` يُنشأ كل عيّنة في `core/**` ولم يُلمس · مراجعة مستقلة محجوبة.
+
+**NEXT:** حكم البناء؛ ثم عدّ إعادات التركيب على جهاز.
+
 ## ROUND-CLOSE-78 — لقطات المالك: ساعة مستحيلة، ومسار منقّط، ومقبض يُقرأ إيقافًا — 2026-11-12 · DONE_WITH_CONCERNS
 
 **TASK:** «أريد أن يكون تطبيقي أفضل منهم» — لقطتان لتطبيقنا كشفتا: `498422:15:16` في آخر جلسة · مسار منزلق منقّط ومقبض يشبه زر إيقاف · حذف بسهم تنقّل. المرجع الخارجي منهجٌ فقط، بلا نقل شكل.

@@ -50,6 +50,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -159,7 +160,14 @@ fun FpsOverlayScreen(navController: NavController) {
         FpsMonitorUtil.init(context)
         mutableIntStateOf(FpsMonitorUtil.currentMode.ordinal)
     }
-    val snapshot by HudLive.snapshot.collectAsState()
+    // M4: الجذر لا يقرأ اللقطة الحيّة. `HudLive.snapshot` يتغيّر مع كل عيّنة (كل ثانية بحدّها
+    // الأدنى)، فكانت الشاشة كلها — صفوف الضبط، ومنتقي الحقول، وثلاثة أقسام لا تعرض رقمًا حيًّا —
+    // تُعاد تركيبها مع كل عيّنة لأن الجذر قرأ اللقطة. هنا تُشتقّ القيم الثلاث التي تحتاجها
+    // الأقسام الثابتة وحدها، فلا تُعاد تركيبتها إلا حين تتغيّر فعلًا؛ والمعاينة وحدها تقرأ
+    // اللقطة داخل تركيبها (`HudPreviewCard`). وهذا ما يُقاس على الجهاز بعدد إعادات التركيب.
+    val recording by remember { derivedStateOf { HudLive.snapshot.value.recording } }
+    val samplerOwner by remember { derivedStateOf { HudLive.snapshot.value.owner } }
+    val framesAnswered by remember { derivedStateOf { HudLive.snapshot.value.reading?.framesAnswered } }
 
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -257,58 +265,14 @@ fun FpsOverlayScreen(navController: NavController) {
                 title = stringResource(R.string.hud_section_state),
                 description = stringResource(R.string.hud_section_state_desc)
             ) {
-                // المعاينة تحمل أدوات النافذة الثلاث نفسها. والإخفاء فيها **ليس تمثيلًا**: يطوي
-                // المعاينة إلى الكبسولة ذاتها التي تبقى فوق اللعبة — فيعرف المستخدم ما سيتبقّى على
-                // شاشته قبل أن يُطفئ التراكب ويجرّب في لعبة. والتسجيل هنا حقيقيّ كالإخفاء: يشغّل
-                // `HudRecorder` نفسه الذي يعمل فوق اللعبة.
-                //
-                // و**العرض بمقاس المحتوى لا بعرض الشاشة** (أمر المالك: «النافذة كبيرة دون داعي
-                // مما يؤثر على الرؤية واللعب»): كانت المعاينة تُمدّ (`fillMaxWidth`) فتبدو شريطًا
-                // أسودَ بعرض الشاشة بينما نافذة اللعب بعرض أرقامها — معاينة تكذب في المقاس الذي
-                // جاءت لتصفه. و`IntrinsicSize.Max` تعني «بعرض محتواها، وإذا لم يتّسع في المعروض
-                // يُقصّ عليه» فتطابق النافذة في الحالتين.
-                var previewHidden by remember { mutableStateOf(false) }
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = MaxSpace.groupPadding),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    if (previewHidden) {
-                        HudRestoreTab(onShow = { previewHidden = false })
-                    } else {
-                        HudSurface(
-                            form = state.form,
-                            arrangement = state.arrangement,
-                            reading = snapshot.reading,
-                            fields = state.orderedFields,
-                            accent = remember(state.colorHex) { parseAccentHex(state.colorHex) },
-                            textSizeSp = state.textSizeSp,
-                            backgroundAlpha = state.backgroundAlpha,
-                            framesHistory = snapshot.framesHistory.takeLast(state.graphSpan),
-                            showGraph = state.showGraph,
-                            // المعاينة تقرأ المرشّح نفسه الذي تقرؤه النافذة فوق اللعبة
-                            // (`FpsOverlayService` يمرّر `hud.filter`): كانت تفترض `All` فتعرض
-                            // نصًّا أو رسمًا أخفاه المستخدم، فتكذب في الشيء الذي جاءت لتصفه.
-                            filter = state.filter,
-                            recording = snapshot.recording,
-                            onToggleRecording = {
-                                if (HudRecorder.isLive) HudRecorder.stop(context) else HudRecorder.start(context)
-                            },
-                            onHide = { previewHidden = true },
-                            // والإغلاق هنا لا يُغلق شيئًا — لا خدمة في هذه الشاشة — ووجوده مقصود:
-                            // من رأى الزرّ في موضعه هنا لا يبحث عنه فوق اللعبة.
-                            onClose = {},
-                            modifier = Modifier.width(IntrinsicSize.Max)
-                        )
+                // المعاينة تحمل أدوات النافذة الثلاث نفسها، وتقرأ اللقطة الحيّة وحدها داخل
+                // تركيبها (`HudPreviewCard`) فلا تسحب الشاشة كلها مع كل عيّنة (M4).
+                HudPreviewCard(
+                    state = state,
+                    onToggleRecording = {
+                        if (HudRecorder.isLive) HudRecorder.stop(context) else HudRecorder.start(context)
                     }
-                    Spacer(Modifier.size(MaxSpace.xs))
-                    Text(
-                        text = stringResource(R.string.hud_preview_note),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = scheme.onSurfaceVariant
-                    )
-                }
+                )
 
                 MaxGroup {
                     MaxSwitchRow(
@@ -357,8 +321,7 @@ fun FpsOverlayScreen(navController: NavController) {
                     color = scheme.onSurfaceVariant,
                     modifier = Modifier.padding(horizontal = MaxSpace.groupPadding)
                 )
-                HudFieldGrid(
-                    reading = snapshot.reading,
+                HudFieldGridLive(
                     selected = state.fields,
                     onToggle = { field ->
                         val next = state.fields.toMutableSet()
@@ -535,8 +498,8 @@ fun FpsOverlayScreen(navController: NavController) {
                     }
                 }
                 val health = when {
-                    snapshot.owner == null -> null
-                    snapshot.reading?.framesAnswered == true ->
+                    samplerOwner == null -> null
+                    framesAnswered == true ->
                         stringResource(R.string.hud_source_answered, sourceOptions[modeIndex])
 
                     else -> stringResource(R.string.hud_source_silent)
@@ -564,13 +527,13 @@ fun FpsOverlayScreen(navController: NavController) {
             ) {
                 MaxGroup {
                     MaxSwitchRow(
-                        title = if (snapshot.recording) {
+                        title = if (recording) {
                             stringResource(R.string.hud_session_stop)
                         } else {
                             stringResource(R.string.hud_session_start)
                         },
                         subtitle = stringResource(R.string.hud_session_record_note),
-                        checked = snapshot.recording,
+                        checked = recording,
                         onCheckedChange = { on ->
                             if (on) HudRecorder.start(context) else HudRecorder.stop(context)
                         }
@@ -588,7 +551,7 @@ fun FpsOverlayScreen(navController: NavController) {
                 } else {
                     SessionStats(
                         tally = tally,
-                        trust = if (snapshot.recording) MaxDataTrust.Live else MaxDataTrust.Snapshot
+                        trust = if (recording) MaxDataTrust.Live else MaxDataTrust.Snapshot
                     )
                     MaxGroup {
                         MaxNavigationRow(
@@ -628,6 +591,75 @@ fun FpsOverlayScreen(navController: NavController) {
             }
         }
     }
+}
+
+/**
+ * معاينة النافذة — **وحدها تقرأ اللقطة الحيّة** (M4).
+ *
+ * كانت الشاشة تقرأ `HudLive.snapshot` على جذرها، فكل عيّنة إطارات تُنتج لقطة جديدة فتُعيد تركيب
+ * أقسام الضبط كلها — ومنتقي الحقول وثلاثة أقسام لا تحمل رقمًا حيًّا. هنا انتقلت القراءة إلى هذا
+ * التركيب وحده، فما يُعاد تركيبه مع العيّنة هو اللوحة وسطرها، لا الشاشة.
+ *
+ * والإخفاء هنا **ليس تمثيلًا**: يطوي المعاينة إلى الكبسولة ذاتها التي تبقى فوق اللعبة. والتسجيل
+ * حقيقيّ كذلك: يشغّل `HudRecorder` نفسه. والعرض بمقاس المحتوى لا بعرض الشاشة (أمر المالك: النافذة
+ * كانت كبيرة دون داعي)، و`IntrinsicSize.Max` تعني «بعرض محتواها ويُقصّ إن لم يتّسع».
+ */
+@Composable
+private fun HudPreviewCard(
+    state: FpsOverlayPrefs.State,
+    onToggleRecording: () -> Unit,
+) {
+    val snapshot by HudLive.snapshot.collectAsState()
+    var previewHidden by remember { mutableStateOf(false) }
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = MaxSpace.groupPadding),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        if (previewHidden) {
+            HudRestoreTab(onShow = { previewHidden = false })
+        } else {
+            HudSurface(
+                form = state.form,
+                arrangement = state.arrangement,
+                reading = snapshot.reading,
+                fields = state.orderedFields,
+                accent = remember(state.colorHex) { parseAccentHex(state.colorHex) },
+                textSizeSp = state.textSizeSp,
+                backgroundAlpha = state.backgroundAlpha,
+                framesHistory = snapshot.framesHistory.takeLast(state.graphSpan),
+                showGraph = state.showGraph,
+                // المعاينة تقرأ المرشّح نفسه الذي تقرؤه النافذة فوق اللعبة
+                // (`FpsOverlayService` يمرّر `hud.filter`): كانت تفترض `All` فتعرض
+                // نصًّا أو رسمًا أخفاه المستخدم، فتكذب في الشيء الذي جاءت لتصفه.
+                filter = state.filter,
+                recording = snapshot.recording,
+                onToggleRecording = onToggleRecording,
+                onHide = { previewHidden = true },
+                // والإغلاق هنا لا يُغلق شيئًا — لا خدمة في هذه الشاشة — ووجوده مقصود:
+                // من رأى الزرّ في موضعه هنا لا يبحث عنه فوق اللعبة.
+                onClose = {},
+                modifier = Modifier.width(IntrinsicSize.Max)
+            )
+        }
+        Spacer(Modifier.size(MaxSpace.xs))
+        Text(
+            text = stringResource(R.string.hud_preview_note),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
+}
+
+/** شبكة الحقول تقرأ اللقطة داخل تركيبها بدل جذر الشاشة (M4). */
+@Composable
+private fun HudFieldGridLive(
+    selected: Set<HudField>,
+    onToggle: (HudField) -> Unit,
+) {
+    val snapshot by HudLive.snapshot.collectAsState()
+    HudFieldGrid(reading = snapshot.reading, selected = selected, onToggle = onToggle)
 }
 
 /**

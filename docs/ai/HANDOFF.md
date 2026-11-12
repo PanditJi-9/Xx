@@ -149,6 +149,53 @@ NeuralDashboardKit.kt:673:12 Syntax error: Expecting a top level declaration.
 **ما لم يُفقد:** `ui/component/PulseArt.kt` و`AmbientGlowCycle.kt` (حذف الملفّين الكاملين من ROUND-CLOSE-63)
 يبقيان محذوفين، وحارس مستوى الملفّ يبقى، وإصلاح استثناء `AppSettings` في `DestinationDoorTest` يبقى.
 
+### ROUND-CLOSE-79 — M4: اللقطة الحيّة تُقرأ حيث تُرسم، لا على الجذر — 2026-11-12 · DONE_WITH_CONCERNS
+
+**TASK:** «اكمل m3 و m4 كلها دون توقف» — M4: تقليل إعادات التركيب في الأسطح الحيّة
+(`FpsOverlay` · `GameSessions`) بلا تغيير سلوك، بلا بناء محلي، دفعة واحدة إلى `main`.
+
+**SEARCH FIRST (§0.5):** `FpsOverlayService` كان يمرّر الفاصل من التفضيلات أصلًا
+(`intervalMs = FpsOverlayPrefs.load(ctx).intervalMs`, :221 · `gate.updateInterval(hud.intervalMs)`
+:310-311)، فلم يُبنَ مسار ثانٍ. والعطب المقيس في الواجهة: الشاشتان كانتا تقرآن
+`HudLive.snapshot` (وهو `MutableStateFlow<HudSnapshot>`) **على الجذر**، وكل عيّنة تُنتج
+`HudSnapshot` جديدًا لاحتوائه `reading` ⇒ إعادة تركيب الشاشة كلها كل فاصل عيّنة، ومنها أقسام
+لا تعرض رقمًا حيًّا (صفوف الضبط، ومنتقي الحقول، وقسم الجلسة).
+
+**SHIPPED:**
+- `FpsOverlayScreen.kt` — الجذر لم يبقَ يقرأ اللقطة: ثلاث قيم مشتقّة فقط
+  (`recording` · `owner` · `reading?.framesAnswered`) عبر `derivedStateOf`. والمعاينة انتقلت إلى
+  تركيبها `HudPreviewCard` (تقرأ اللقطة وحدها وتحمل نداء `HudSurface` كما كان حرفيًا، بلا تغيير
+  في المقاس أو المرشّح أو الإخفاء)، وشبكة الحقول إلى `HudFieldGridLive`. فما يُعاد تركيبه مع
+  العيّنة هو اللوحة وسطرها، لا الشاشة.
+- `GameSessionsScreen.kt` — الجذر لم يبقَ يقرأ اللقطة: `recording` و`warnings` مشتقّتان فقط،
+  و`LaunchedEffect` والشارات تعتمد عليهما بدل اللقطة.
+- `ScreenArchetypeTest.kt` — حارس M4: جذر كلتا الشاشتين (حتى أول `@Composable private fun`)
+  لا يحتوي `HudLive.snapshot.collectAsState()`، ويحتوي `derivedStateOf { HudLive.snapshot.value`.
+  حُدَّ أولًا إلى `collectAsState` المجرّد فسقط زورًا على `collectAsStateWithLifecycle` في السجلّ،
+  فَضُبط على النداء الكامل.
+
+**MEASURED (كلها exit 0):** `kt_balance` ٣٣٦٢/٠ · `code_health` صحّة نظيفة · `i18n_coverage`
+٨٤+en و٨٥/٨٥ وصفر عوائق · `design_tokens` ٢٤٧/٣٠٠ · `rtl_guard` صفر مخالفة (هدفا مراجعة رمزيّان
+كما هما) · `resource_compile` aapt2 حقيقي وكل res تُترجم · `git diff --check` نظيف ·
+فحص الحارس بنصّ Python: جذر الشاشتين = ٠ قراءة لقطة، و٣/٢ قراءة مشتقّة.
+
+**BUILD:** لا بناء محلي (أمر المالك). **الترجمة غير مُتحقّقة في هذه البيئة** حتى تُقرأ من تشغيل CI.
+و**عدّ إعادات التركيب نفسه لا يُقاس إلا على جهاز** (`Compose` runtime)؛ ما قيس هنا هو إزالة
+سببها البنيوي: صفر قراءة لقطة على الجذرين.
+
+**RESIDUAL RISK:** المعاينة وشبكة الحقول تُعاد تركيبهما مع كل عيّنة — وهو مقصودهما (تعرضان
+الرقم الحيّ) · `HudSnapshot` نفسه ما زال يُنشأ كل عيّنة في `HudSession`، ولم يُلمس (`core/**` خارج
+النطاق) · المراجعة المستقلة محجوبة (`Free usage limit reached`) · إجمالي JUnit غير معلوم.
+
+**§7.6 — ذاكرة للتالي:**
+- العَرَض: شاشتان تُعاد تركيبهما كل فاصل عيّنة، ومنها أقسام ثابتة.
+- أول سطر خالف: `val snapshot by HudLive.snapshot.collectAsState()` على جذر `FpsOverlayScreen`.
+- الفرضية التي ثبتت: القراءة على الجذر تُبطل الشاشة كلها؛ ونقلها إلى التركيب الذي يرسمها يتركّز الأثر.
+- الأمر الذي أُعيد: البوابات الست (مقيس) · الترجمة والعدّ (جهاز/CI).
+- ما لا يُعاد اختباره الجولة القادمة: أنَّ الخدمة تمرّر الفاصل من التفضيلات أصلًا؛ لا تُعَد.
+
+**NEXT:** حكم بناء الدفعة؛ ثم قياس إعادات التركيب على جهاز عند أول فرصة، وتسجيله هنا.
+
 ### ROUND-CLOSE-78 — لقطات المالك: ساعة مستحيلة، ومسار منقّط، ومقبض يُقرأ إيقافًا — 2026-11-12 · DONE_WITH_CONCERNS
 
 **TASK:** «أريد أن يكون تطبيقي أفضل منهم» — ومع لقطتين لتطبيقنا كشفتا ثلاثة عطب مرئي:

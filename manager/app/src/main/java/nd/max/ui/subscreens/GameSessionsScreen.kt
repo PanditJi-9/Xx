@@ -37,6 +37,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -118,7 +119,12 @@ fun GameSessionsScreen(
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val snapshot by HudLive.snapshot.collectAsState()
+    // M4: السجلّ لا يقرأ اللقطة الحيّة كاملةً. `HudLive.snapshot` يتغيّر مع كل عيّنة إطارات
+    // (كل ثانية)، وكانت الشاشة — بصفوف عتباتها وسجلّها المفتوح — تُعاد تركيبها مع كل عيّنة وهي
+    // لا تحتاج من اللقطة إلا حالتين: أيجري تسجيل؟ وهل هناك تحذير؟ فاشتُقّتا هنا، ولا تُعاد
+    // التركيبة إلا عند تغيّرهما فعلًا.
+    val recording by remember { derivedStateOf { HudLive.snapshot.value.recording } }
+    val warnings by remember { derivedStateOf { HudLive.snapshot.value.warnings } }
     val sessions by viewModel.sessions.collectAsStateWithLifecycle()
     val loading by viewModel.loading.collectAsStateWithLifecycle()
     val scheme = MaterialTheme.colorScheme
@@ -135,24 +141,30 @@ fun GameSessionsScreen(
     // السجلّ يُقرأ عند فتح الشاشة، ثم يُعاد بعد كل إيقاف: الحفظ يقع على IO بعد `stop`،
     // فقراءة فورية قد تسبقه. والمهلة القصيرة تُعطي الكتابة الذرّية وقتها بلا انتظار المستخدم.
     LaunchedEffect(Unit) { viewModel.refresh(context) }
-    LaunchedEffect(snapshot.recording) {
-        if (!snapshot.recording) {
+    LaunchedEffect(recording) {
+        if (!recording) {
             delay(350)
             viewModel.refresh(context)
         }
     }
     // نبضة العرض الحيّة: الإحصاء والمنحنى يُقرآن من الحائز كل ثانية، والمدّة من ساعة الجلسة
     // لا من `spanMs` وحده — فالجلسة التي تعمل الآن مدّتها تكبر أمام العين.
-    LaunchedEffect(snapshot.recording) {
-        while (true) {
+    //
+    // M4: **لا نبضة بلا تسجيل.** كانت الحلقة تدور دائمًا فتكتب `clockNowMs` كل ثانية، فيُعاد
+    // تركيب السجلّ كله — صفوفه المحفوظة وقواعد التسجيل وشرائح العتبات — ولا رقم منها يتغيّر.
+    // الآن تُقرأ القيم مرة عند الفتح، وتنبض أثناء التسجيل وحده، فتسكن الشاشة حين لا شيء يجري.
+    LaunchedEffect(recording) {
+        clockNowMs = System.currentTimeMillis()
+        tally = HudRecorder.tally()
+        series = HudRecorder.series()
+        while (recording) {
+            delay(1_000L)
             clockNowMs = System.currentTimeMillis()
             tally = HudRecorder.tally()
             series = HudRecorder.series()
-            delay(1_000L)
         }
     }
 
-    val recording = snapshot.recording
     val startedAtMs = HudRecorder.sessionStartedAtMs
     val elapsedMs = when {
         recording && startedAtMs > 0L -> (clockNowMs - startedAtMs).coerceAtLeast(0L)
@@ -246,9 +258,9 @@ fun GameSessionsScreen(
                 }
 
                 // تحذيرات العتبات: تُعرض هنا لأنها حالة الجلسة، ولونها تحذيريّ لا حياديّ.
-                if (snapshot.warnings.isNotEmpty()) {
+                if (warnings.isNotEmpty()) {
                     MaxGroup {
-                        snapshot.warnings.forEach { warning ->
+                        warnings.forEach { warning ->
                             MaxMetricLine(
                                 MaxMetric(
                                     label = stringResource(R.string.game_sessions_warning_active, hudFieldLabel(warning.field)),

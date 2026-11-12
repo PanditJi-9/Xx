@@ -194,6 +194,42 @@ class ScreenArchetypeTest {
     }
 
     @Test
+    fun `M4 live screens scope their snapshot reads to the part that draws them`() {
+        val root = sourceRoot()
+        assumeTrue("Cannot locate nd.max sources; guard not evaluated", root != null)
+
+        // الجذر كان يقرأ `HudLive.snapshot` كاملًا، فتغيّر `reading` مع كل عيّنة يُبطل الشاشة كلها.
+        // الحدّ المُعلن: فحص نصّي على منطقة الجذر، لا عدّ إعادات تركيب — العدّ يحتاج جهازًا.
+        val fps = File(root, "ui/subscreens/FpsOverlayScreen.kt").readText()
+        val fpsRoot = fps.substringAfter("fun FpsOverlayScreen(")
+            .substringBefore("\n@Composable\nprivate fun ")
+        assertFalse(
+            "FpsOverlay: جذر الشاشة عاد يقرأ اللقطة الحيّة",
+            fpsRoot.contains("HudLive.snapshot.collectAsState()"),
+        )
+        assertTrue(
+            "FpsOverlay: القراءة المقصوصة بـderivedStateOf غابت",
+            fpsRoot.contains("derivedStateOf { HudLive.snapshot.value"),
+        )
+
+        val sessions = File(root, "ui/subscreens/GameSessionsScreen.kt").readText()
+        val sessionsRoot = sessions.substringAfter("fun GameSessionsScreen(")
+            .substringBefore("\n@Composable\nprivate fun ")
+        assertFalse(
+            "GameSessions: جذر الشاشة عاد يقرأ اللقطة الحيّة",
+            sessionsRoot.contains("HudLive.snapshot.collectAsState()"),
+        )
+        assertTrue(
+            "GameSessions: القراءة المقصوصة بـderivedStateOf غابت",
+            sessionsRoot.contains("derivedStateOf { HudLive.snapshot.value"),
+        )
+        assertFalse(
+            "GameSessions: النبضة عادت تدور بلا تسجيل فتُبطل السجلّ كل ثانية",
+            sessionsRoot.contains("while (true)"),
+        )
+    }
+
+    @Test
     fun `M3 screens list their states and hardcode no width wider than a small phone`() {
         val root = sourceRoot()
         assumeTrue("Cannot locate nd.max sources; guard not evaluated", root != null)
