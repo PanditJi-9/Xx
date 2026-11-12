@@ -4317,6 +4317,8 @@
     <string name="access_filter_supported_desc">يخفي الميزات التي تحتاج صلاحية أعلى.</string>
     <string name="access_filter_everything">كل شيء</string>
     <string name="access_filter_everything_desc">يعرض كل الميزات موسومة بالمستوى الذي تحتاجه.</string>
+    <string name="access_reveal_title">إظهار الميزات التي تحتاج صلاحية أعلى</string>
+    <string name="access_reveal_desc">يُظهر الأدوات والبطاقات والشاشات التي يخفيها وضعك الحالي. يُبيّن وجودها فقط، ولا يمنح صلاحية.</string>
     <string name="access_note">يُطبَّق الفلتر على الرئيسية والبحث وقوائم التحكم. تبقى الميزات العامة في الشاشات المختلطة متاحة؛ وتتطلب الإجراءات المميّزة مسار الوصول المختار ودعم الجهاز. SELinux حالة أمنية وليس وضع تنفيذ.</string>
     <string name="access_requires_level">تتطلب هذه الشاشة %1$s. غيّر وضع الوصول وامنح صلاحيته للمتابعة.</string>
     <string name="access_close">تم</string>

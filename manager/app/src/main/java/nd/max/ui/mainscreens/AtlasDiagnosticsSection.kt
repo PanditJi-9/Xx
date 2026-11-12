@@ -94,6 +94,12 @@ import nd.max.ui.viewmodel.AtlasViewModel
  *    words, and it offers no report at all.
  *
  * The screen does no reading of its own: it collects the view model's state and sends events.
+ *
+ * **بلا مستدعٍ منذ تكملة ٨٥ — قرار معلَن لا سهو:** سطحها الوحيد كان `DiagnosticsScreen`، وقد حُذفت
+ * بأمر المالك. والملفّ باقٍ لأن أمر الحذف سمّى **الشاشة** لا قارئ Atlas: فالقراءة بلا جذر تبقى عقدًا
+ * محروسًا في `core/atlas` و`AtlasReadOnlyEntryTest`، وهذه الواجهة سطحها الجاهز متى أُعطي Atlas بابًا.
+ * ولا تُوصَل بـ`Control` بلا قرار جديد، ولا تُحذف بلا أمر — و`AtlasReadOnlyEntryTest` نفسه يمنع
+ * إعادتها إلى الشاشة المحذوفة، ويقرأ هذا الملفّ ليثبت أنه لا يسمّي ناقلًا ولا سلطة.
  */
 @Composable
 fun AtlasDiagnosticsSection(

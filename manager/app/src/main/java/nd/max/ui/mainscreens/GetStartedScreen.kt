@@ -77,6 +77,7 @@ import nd.max.R
 import nd.max.core.privilege.PrivilegeLevel
 import nd.max.core.privilege.PrivilegeManager
 import nd.max.ui.component.ExpressiveList
+import nd.max.ui.component.AccessRevealSwitch
 import nd.max.ui.component.PrivilegePanel
 import nd.max.ui.component.ExpressiveSwitchItem
 import nd.max.ui.component.ScreenAccentGlyph
@@ -549,6 +550,14 @@ fun GetStartedScreen(navController: NavController) {
                                     style = MaterialTheme.typography.bodySmall,
                                     textAlign = TextAlign.Center,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                                Spacer(modifier = Modifier.height(MaxSpace.md))
+                                // **مفتاح الكشف بأمر المالك (تكملة ٨٧):** يُقرأ هنا وفي
+                                // الإعدادات، ويقلب فلتر الوصول نفسه — فيرى من اختار Shizuku
+                                // الأدوات التي تحتاج جذرًا بدل أن يظنّها غير موجودة.
+                                ExpressiveList(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    content = listOf({ AccessRevealSwitch() }),
                                 )
                                 Spacer(modifier = Modifier.height(MaxSpace.lg))
                                 PrivilegePanel()

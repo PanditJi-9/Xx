@@ -29,12 +29,18 @@ import kotlinx.coroutines.launch
 import nd.max.core.platform.EventLog
 import nd.max.core.platform.PropertyUtils
 
+/**
+ * حالة مفاتيح شاشة الإعدادات.
+ *
+ * **وحُذف منها حقلان (تكملة ٨٦):** `disableTweak` و`profileTimeout` — مفتاحهما أُزيل من الشاشة
+ * بأمر المالك، فبقي حقلٌ يُقرأ من الخاصية ولا يُعرض ولا يُكتب. والحقل الذي لا سطح له يُوهم
+ * القارئ أنّ المفتاح قائم؛ والخاصيتان (`DISABLE_TWEAK` · `DROP_FOREGROUND`) باقيتان في
+ * `MaxManagerProps` لأن الخدمة تقرؤهما، والحذف كان للحقل لا للعقد.
+ */
 data class SettingsUiState(
-    val disableTweak: Boolean = false,
     val stateToast: Boolean = false,
     val debugMode: Boolean = false,
     val detailedLog: Boolean = false,
-    val profileTimeout: Boolean = false,
     val profileNotifications: Boolean = false,
     val isLoaded: Boolean = false
 )
@@ -50,19 +56,15 @@ class SettingsViewModel : ViewModel() {
 
     private fun loadProps() {
         viewModelScope.launch(Dispatchers.IO) {
-            val disableTweak = PropertyUtils.get(MaxManagerProps.General.DISABLE_TWEAK) == "1"
             val stateToast = PropertyUtils.get(MaxManagerProps.Conf.SHOW_TOAST) == "1"
             val debugMode = PropertyUtils.get(MaxManagerProps.General.DEBUG_MODE) == "true"
             val detailedLog = PropertyUtils.get(MaxManagerProps.Conf.DETAILED_LOG) == "1"
-            val profileTimeout = PropertyUtils.get(MaxManagerProps.General.DROP_FOREGROUND) == "1"
             val profileNotifications = PropertyUtils.get(MaxManagerProps.General.PROFILE_NOTIFICATIONS) == "1"
     
             _uiState.value = SettingsUiState(
-                disableTweak = disableTweak,
                 stateToast = stateToast,
                 debugMode = debugMode,
                 detailedLog = detailedLog,
-                profileTimeout = profileTimeout,
                 profileNotifications = profileNotifications,
                 isLoaded = true
             )
@@ -111,17 +113,4 @@ class SettingsViewModel : ViewModel() {
         }
     }
 
-    fun setDisableTweak(enabled: Boolean) {
-        _uiState.value = _uiState.value.copy(disableTweak = enabled)
-        viewModelScope.launch(Dispatchers.IO) {
-            PropertyUtils.set(MaxManagerProps.General.DISABLE_TWEAK, if (enabled) "1" else "0")
-        }
-    }
-
-    fun setProfileTimeout(enabled: Boolean) {
-        _uiState.value = _uiState.value.copy(profileTimeout = enabled)
-        viewModelScope.launch(Dispatchers.IO) {
-            PropertyUtils.set(MaxManagerProps.General.DROP_FOREGROUND, if (enabled) "1" else "0")
-        }
-    }
 }

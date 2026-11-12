@@ -433,6 +433,13 @@ fun SettingsScreen(
                     )
                 }
 
+                // **مفتاح الكشف بأمر المالك (تكملة ٨٧):** من اختار Shizuku لا يرى الأدوات
+                // التي تحتاج جذرًا، فيظنّها غير موجودة. المفتاح هنا وفي شاشة البداية،
+                // ويقرأ ويكتب `AccessFilterStore` نفسه — لا تفضيل ثانٍ.
+                item {
+                    ExpressiveList(content = listOf({ AccessRevealSwitch() }))
+                }
+
                 item {
                     if (uiState.isLoaded) {
                         ExpressiveList(

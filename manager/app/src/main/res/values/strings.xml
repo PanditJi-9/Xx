@@ -4376,6 +4376,8 @@
     <string name="access_filter_supported_desc">Hides features that need a higher privilege level.</string>
     <string name="access_filter_everything">Everything</string>
     <string name="access_filter_everything_desc">Shows every feature, marked with the level it needs.</string>
+    <string name="access_reveal_title">Show features that need more access</string>
+    <string name="access_reveal_desc">Reveals the tools, cards and screens your current mode hides. It shows they exist; it grants no access.</string>
     <string name="access_note">The filter applies to Home, search and control lists. Mixed screens keep public features available; privileged actions still require the selected access path and device support. SELinux is a security status, not an execution mode.</string>
     <string name="access_requires_level">This screen requires %1$s. Change the access mode and grant its permission to continue.</string>
     <string name="access_close">Done</string>
