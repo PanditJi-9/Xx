@@ -98,6 +98,7 @@ import nd.max.ui.viewmodel.*
 import nd.max.ui.settings.AppLanguage
 import nd.max.ui.settings.LanguagePickerSheet
 import nd.max.ui.settings.SettingsViewModel as PreferenceSettingsViewModel
+import nd.max.ui.settings.resetAppToDefaults
 import nd.max.ui.subscreens.persistFlag
 import nd.max.ui.theme.ThemeKeys
 import nd.max.ui.theme.ThemeStudio
@@ -184,7 +185,27 @@ fun SettingsScreen(
     var showScreenHelp by remember { mutableStateOf(false) }
     var showLanguageSheet by remember { mutableStateOf(false) }
 
+    // «إعادة كل شيء إلى الوضع الافتراضي» تُسأل مرة واحدة، ثم تُنفّذ ما يقول نصّها.
+    var resetConfirm by remember { mutableStateOf(false) }
+
     val snackbarHostState = remember { SnackbarHostState() }
+
+    if (resetConfirm) {
+        MaxConfirmDialog(
+            visible = true,
+            title = stringResource(R.string.settings_reset_title),
+            message = stringResource(R.string.settings_reset_confirm_body),
+            confirmLabel = stringResource(R.string.settings_reset_confirm_action),
+            onConfirm = {
+                resetConfirm = false
+                resetAppToDefaults(context)
+                Toast.makeText(context, R.string.toast_settings_reset, Toast.LENGTH_SHORT).show()
+            },
+            onDismiss = { resetConfirm = false },
+            icon = Icons.Filled.Restore,
+            destructive = true
+        )
+    }
     val coroutineScope = rememberCoroutineScope()
 
 
@@ -223,7 +244,6 @@ fun SettingsScreen(
 
     LaunchedEffect(uiState.isLoaded) {
         if (uiState.isLoaded) {
-            RebootManager.captureBaselineOnce("disable_tweak", uiState.disableTweak)
         }
     }
 
@@ -312,36 +332,6 @@ fun SettingsScreen(
                             // مرساة خطوة الإعدادات (جولة أول فتح): أوّل عنصر معروض في الصفحة،
                             // فتُضاء هوية التطبيق بلا تمرير — والباقي يُذكر في نصّ الخطوة.
                             { HomeTourAnchor(HomeTourTarget.SettingsTop) { AppInfoHeaderContent() } },
-                            //
-                            // **السمة عادت إلى هنا (طلب المالك)** — وهي الصفّ الأول فوق بطاقة
-                            // اللغة: تفضيلان يخصّان الواجهة نفسها، فمظهرها ولغتها في مكان واحد.
-                            // وكانت نُقلت إلى `Control → Tools` بحجّة أنها أداة لا تفضيل، والحجّة
-                            // كانت عن التصنيف لا عن الوصول: من يريد تغيير السمة يفتح الإعدادات
-                            // أولًا. وأما **مخطّط الألوان** فجاء جاره في **M1c** بأمر المالك: هو
-                            // السؤال نفسه بعمق آخر — «أي ألوان تُشتقّ من البذرة» — فمن يغيّر
-                            // السمة يجد مخطّطها في المكان نفسه، لا في صفحة أخرى.
-                            {
-                                ExpressiveListItem(
-                                    onClick = {
-                                        MaxNavActions(navController).navigateTo(MaxDestination.ColorPalette)
-                                    },
-                                    headlineContent = { Text(stringResource(R.string.theme)) },
-                                    supportingContent = { Text(stringResource(R.string.theme_desc)) },
-                                    leadingContent = { LeadingIcon(icon = Icons.Rounded.Palette) },
-                                    trailingContent = {
-                                        Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null)
-                                    }
-                                )
-                            },
-                            {
-                                ExpressiveListItem(
-                                    onClick = { MaxNavActions(navController).navigateTo(MaxDestination.ColorScheme) },
-                                    headlineContent = { Text(stringResource(MaxDestination.ColorScheme.titleRes)) },
-                                    supportingContent = { Text(stringResource(maxDestinationRole(MaxDestination.ColorScheme))) },
-                                    leadingContent = { LeadingIcon(icon = MaxDestination.ColorScheme.icon) },
-                                    trailingContent = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null) }
-                                )
-                            },
                             {
                                 ExpressiveListItem(
                                     onClick = { showLanguageSheet = true },
@@ -377,15 +367,6 @@ fun SettingsScreen(
                 item { SettingsSectionTitle(stringResource(R.string.section_features)) }
 
                 item {
-                    // The log viewer stays out of Settings: it is a developer surface, not a preference.
-                    // Diagnostics came back for a narrower reason — Max Atlas reports what this device
-                    // exposes, and a device fact belongs next to the other device facts, reachable without
-                    // the native module and without root. Backup/restore moved here earlier from the
-                    // retired flat tweaks workspace.
-                    //
-                    // It is deliberately outside every `isLoaded` gate: a gate on the settings profile
-                    // would have made the one screen that explains an unreadable device unreachable
-                    // exactly when reading is already failing.
                     val licenseEntry: (@Composable () -> Unit)? = if (licenseVisible) {
                         {
                             // `LICENSE-KEYS-01` — باب المفتاح يظهر **فقط** عندما يفعّله المالك من
@@ -402,15 +383,6 @@ fun SettingsScreen(
                     ExpressiveList(
                         content = listOfNotNull(
                             licenseEntry,
-                            {
-                                ExpressiveListItem(
-                                    onClick = { MaxNavActions(navController).navigateTo(MaxDestination.Diagnostics) },
-                                    headlineContent = { Text(stringResource(R.string.section_diagnostics)) },
-                                    supportingContent = { Text(stringResource(R.string.diagnostics_intro)) },
-                                    leadingContent = { LeadingIcon(icon = Icons.Rounded.Memory) },
-                                    trailingContent = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null) }
-                                )
-                            },
                             // **مختبر الجهاز واستخدام التطبيقات وسجلّ البطارية انتقلت إلى التحكّم**
                             // بأمر المالك: أدوات تُقرأ من مكان التحكّم لا من مسار الإعدادات،
                             // والوجهات الثلاث تغيّرت أبوّتها في `MaxDestinations` نفسها.
@@ -423,30 +395,12 @@ fun SettingsScreen(
                                     trailingContent = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null) }
                                 )
                             },
-                            {
-                                ExpressiveListItem(
-                                    onClick = { MaxNavActions(navController).navigateTo(MaxDestination.MaxBackup) },
-                                    headlineContent = { Text(stringResource(MaxDestination.MaxBackup.titleRes)) },
-                                    supportingContent = { Text(stringResource(maxDestinationRole(MaxDestination.MaxBackup))) },
-                                    leadingContent = { LeadingIcon(icon = MaxDestination.MaxBackup.icon) },
-                                    trailingContent = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null) }
-                                )
-                            },
                             // **إحصاءات المجتمع وإضافات الطرف الثالث: مخفيّان بأمر المالك
                             // (2026-10-21).** كانا صفّين هنا؛ والآن يحمل السجل نفسه علامة
                             // `hidden = true` على الوجهتين، فيُخفيهما فهرس الشاشات أيضًا —
                             // لا موضعان لقرار واحد. الشاشتان والمساران والنصوص باقية كما هي:
                             // الإرجاع بضغطة على العلامة وحدها. ولا يوقف هذا قناة الإحصاءات:
                             // إرسالها يبقى خاضعًا للموافقة المحفوظة (والافتراضي بلا موافقة).
-                            {
-                                ExpressiveListItem(
-                                    onClick = { MaxNavActions(navController).navigateTo(MaxDestination.Permissions) },
-                                    headlineContent = { Text(stringResource(MaxDestination.Permissions.titleRes)) },
-                                    supportingContent = { Text(stringResource(maxDestinationRole(MaxDestination.Permissions))) },
-                                    leadingContent = { LeadingIcon(icon = MaxDestination.Permissions.icon) },
-                                    trailingContent = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null) }
-                                )
-                            },
                             {
                                 // السطح الموحّد للامتياز (AR-20): الجذر وShizuku في شاشة
                                 // واحدة، وهي نفسها المستخدمة في شاشة البداية. وهذا الصفّ
@@ -471,28 +425,6 @@ fun SettingsScreen(
                                             Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null)
                                         }
                                     }
-                                )
-                            },
-                            {
-                                // صحة الوحدة والإنقاذ (AR-05 + AR-18): قراءة فقط وبلا شبكة.
-                                ExpressiveListItem(
-                                    onClick = { MaxNavActions(navController).navigateTo(MaxDestination.ModuleHealth) },
-                                    headlineContent = { Text(stringResource(R.string.max_module_title)) },
-                                    supportingContent = { Text(stringResource(R.string.max_module_health_desc)) },
-                                    leadingContent = { LeadingIcon(icon = Icons.Rounded.Build) },
-                                    trailingContent = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null) }
-                                )
-                            },
-                            {
-                                // التطبيقات المخفيّة (HMA): قياسُ ما يخفيه المُكمِّل فعلًا ومقارنته بأساس
-                                // محفوظ. كانت جذرًا لا يفتحه إلا المُوجِّد — فصارت صفًّا بجوار صحة الوحدة
-                                // والصلاحيات: الثلاث كلّها «ما الذي يراه غيري من جهازي».
-                                ExpressiveListItem(
-                                    onClick = { MaxNavActions(navController).navigateTo(MaxDestination.HmaCompanion) },
-                                    headlineContent = { Text(stringResource(MaxDestination.HmaCompanion.titleRes)) },
-                                    supportingContent = { Text(stringResource(maxDestinationRole(MaxDestination.HmaCompanion))) },
-                                    leadingContent = { LeadingIcon(icon = MaxDestination.HmaCompanion.icon) },
-                                    trailingContent = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null) }
                                 )
                             },
                         )
@@ -529,26 +461,18 @@ fun SettingsScreen(
                                     )
                                 },
                                 {
-                                    ExpressiveSwitchItem(
-                                        icon = Icons.Filled.DeveloperBoardOff,
-                                        title = stringResource(R.string.disable_tweak),
-                                        summary = stringResource(R.string.disable_tweak_desc),
-                                        checked = uiState.disableTweak,
-                                        onCheckedChange = { isChecked ->
-                                            toggleWithRebootCheck("disable_tweak", isChecked) {
-                                                settingsViewModel.setDisableTweak(isChecked)
-                                                RebootManager.checkAgainstBaseline("disable_tweak", isChecked)
-                                            }
+                                    // أمر المالك: مفتاح «تعطيل التعديلات» صار **إعادة كل شيء إلى
+                                    // الوضع الافتراضي** — فعلًا يُقال ويُنفّذ، لا مفتاحًا يخفي آخر.
+                                    ExpressiveListItem(
+                                        onClick = { resetConfirm = true },
+                                        headlineContent = { Text(stringResource(R.string.settings_reset_title)) },
+                                        supportingContent = { Text(stringResource(R.string.settings_reset_desc)) },
+                                        leadingContent = {
+                                            LeadingIcon(
+                                                icon = Icons.Filled.Restore,
+                                                contentDescription = null
+                                            )
                                         }
-                                    )
-                                },
-                                {
-                                    ExpressiveSwitchItem(
-                                        icon = Icons.Filled.Timer,
-                                        title = stringResource(R.string.profile_timeout),
-                                        summary = stringResource(R.string.profile_timeout_desc),
-                                        checked = uiState.profileTimeout,
-                                        onCheckedChange = settingsViewModel::setProfileTimeout
                                     )
                                 }
                             )
@@ -621,8 +545,6 @@ fun SettingsScreen(
                 //
                 // قسم مستقل بعد «الميزات» وقبل «الشاشة الرئيسية»: يخصّ **كل** ما سبقه من
                 // تفضيلات، فلا يُقرأ خاصًّا بميزة واحدة ولا يُدفن في «أخرى».
-                item { SettingsSectionTitle(stringResource(R.string.persist_section)) }
-                item { PersistRestoreItem() }
 
                 // بطاقة النشاط: التخصيص الوحيد الذي يملكه المستخدم على ما تعرضه الرئيسية.
                 //

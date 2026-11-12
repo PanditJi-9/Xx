@@ -73,12 +73,22 @@ data class ControlGroupSpec(
  * تراكبٌ فوق التطبيقات يُفتح لتُرى حالته، لا ضبطٌ داخل مجال.
  */
 val ControlToolDestinations: List<MaxDestination> = listOf(
-    MaxDestination.FileManager,
     MaxDestination.FpsOverlay,
     MaxDestination.GameSessions,
     MaxDestination.DynamicIsland,
     MaxDestination.SetEdit,
     MaxDestination.ActivityLauncher,
+    // أدوات التشخيص بقيّة: شاشة التشخيص حُذفت بأمر المالك، فبقيت أدواتها هنا.
+    MaxDestination.DeviceLab,
+    MaxDestination.UsageStats,
+    MaxDestination.Logs,
+    MaxDestination.MaxBackup,
+    MaxDestination.Permissions,
+    MaxDestination.DebloatFreeze,
+    MaxDestination.BypassCharging,
+    MaxDestination.BypassChargingCheck,
+    MaxDestination.ColorPalette,
+    MaxDestination.ColorScheme,
     // الأخطف آخرًا: لا يُفتح بلمسة عابرة.
 )
 
@@ -165,9 +175,23 @@ private val ControlToolBands: List<Pair<Int, List<MaxDestination>>> = listOf(
         MaxDestination.DynamicIsland,
     ),
     R.string.control_tools_advanced to listOf(
-        MaxDestination.FileManager,
         MaxDestination.SetEdit,
         MaxDestination.ActivityLauncher,
+    ),
+    // أدوات النظام: ما يقرأ الجهاز ويُدير تطبيقاته وشحنه — لا يُخفى خلف «متقدّم».
+    R.string.control_tools_system to listOf(
+        MaxDestination.DeviceLab,
+        MaxDestination.UsageStats,
+        MaxDestination.Logs,
+        MaxDestination.Permissions,
+        MaxDestination.MaxBackup,
+        MaxDestination.DebloatFreeze,
+        MaxDestination.BypassCharging,
+        MaxDestination.BypassChargingCheck,
+    ),
+    R.string.control_tools_appearance to listOf(
+        MaxDestination.ColorPalette,
+        MaxDestination.ColorScheme,
     ),
 )
 

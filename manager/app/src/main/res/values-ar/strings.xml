@@ -599,6 +599,10 @@
     <string name="toast_log_save_success">تم حفظ السجل بنجاح!</string>
     <string name="toast_log_saved">تم حفظ السجل إلى /sdcard/Max Manager.log</string>
     <string name="toast_restarting_service">جاري إعادة تشغيل الخدمة</string>
+    <string name="settings_reset_title">إعادة كل شيء إلى الوضع الافتراضي</string>
+    <string name="settings_reset_desc">تعود اختيارات التطبيق إلى قيم أول تثبيت: الواجهة وشكل الجزر والتعديلات بعد الإقلاع وdex2oat والإقلاع. بياناتك وخصائص النظام لا تُمسّ.</string>
+    <string name="settings_reset_confirm_body">ستعود اختيارات التطبيق كلها إلى قيم أول تثبيت. لا يمكن التراجع، وبياناتك (الجلسات والنسخ) تبقى.</string>
+    <string name="settings_reset_confirm_action">أعِد الافتراضي</string>
     <string name="toast_settings_reset">تمت إعادة تعيين الإعدادات</string>
     <string name="toast_update_success">تم تثبيت التحديث بنجاح!</string>
     <string name="trim_filesystem">تحسين Trim لنظام الملفات</string>

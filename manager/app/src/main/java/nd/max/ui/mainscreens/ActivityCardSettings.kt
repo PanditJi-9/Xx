@@ -118,6 +118,27 @@ private fun activityCardSummary(options: CardOptions): String = if (options.isDe
     stringResource(R.string.activity_card_summary_custom)
 }
 
+/**
+ * الحوار نفسه **بلا صفّ إعدادات**: بطاقة النشاط في الرئيسية تفتحه من زرّ الإعدادات الذي في
+ * رأسها، فيصل المستخدم إلى الخيارات من مكان الحدث نفسه لا من صفحة الإعدادات.
+ *
+ * والحالة تُقرأ وتُكتب هنا لا عند المستدعي: مصدرها `ActivityCardPreferences` وحده، فلا نسخة
+ * ثانية من الخيارات تعيش في الذاكرة وتنحرف عن الملف.
+ */
+@Composable
+internal fun ActivityCardSettingsDialog(onDismiss: () -> Unit) {
+    val context = LocalContext.current
+    var options by remember { mutableStateOf(ActivityCardPreferences.read(context)) }
+    ActivityCardDialog(
+        options = options,
+        onChange = { updated ->
+            options = updated
+            ActivityCardPreferences.write(context, updated)
+        },
+        onDismiss = onDismiss,
+    )
+}
+
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun ActivityCardDialog(

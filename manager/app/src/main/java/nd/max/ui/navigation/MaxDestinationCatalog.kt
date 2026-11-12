@@ -110,16 +110,9 @@ fun maxDestinationRole(destination: MaxDestination): Int = when (destination) {
     MaxDestination.FileManager -> R.string.max_role_file_manager
     MaxDestination.GameLobby -> R.string.game_lobby_scope
     MaxDestination.EmulatorHub -> R.string.emu_hub_scope
-    MaxDestination.HmaCompanion -> R.string.hma_companion_scope
     MaxDestination.Plugins -> R.string.max_role_plugins
     // ومعلومات الجهاز: شاشة قراءة لا تحكّم — والوصف يقول ذلك صراحةً («قراءةً فقط»).
     MaxDestination.DeviceInfo -> R.string.max_role_device_info
-    //
-    // والتشخيص: كان يسقط على العبارة العامة (`max_role_open_screen` = «افتح واجهة التحكم
-    // المركّزة هذه»)، وهي **وصف خاطئ لشاشة قراءة**: التشخيص لا يضبط شيئًا. والقسم الذي يفتحه
-    // ثلاثة أقسام في `Device Info` (النظرة العامة والنظام والمستشعرات) يحتاج سطرًا يقول ما
-    // يجده هناك — وإلا قرأ المستخدم «واجهة تحكّم» على باب لا يضبط شيئًا.
-    MaxDestination.Diagnostics -> R.string.max_role_diagnostics
     // ومختبر الجهاز: دورٌ يقول إنه **يفحص** العتاد تفاعليًّا، لا أنه يعرض أرقامًا فقط.
     MaxDestination.DeviceLab -> R.string.max_role_device_lab
     MaxDestination.UsageStats -> R.string.max_role_usage_stats

@@ -26,9 +26,16 @@ class LiveFeaturePolicyTest {
 
     @Test
     fun absentFeatureCardsAreNotReachable() {
-        val diagnostics = source("manager/app/src/main/java/nd/max/ui/mainscreens/DiagnosticsScreen.kt")
+        // شاشة التشخيص حُذفت بأمر المالك، فالبحث صار على الشجرة كلها لا على ملفّ واحد:
+        // البطاقات المتقاعدة لا تعود في أي شاشة، ولو أعادها أحد في ملفّ جديد.
         val removed = listOf("ExcludedCapabilitiesCard", "MaxBlockedFeatureCard")
-        removed.forEach { name -> assertFalse("Retired card: $name", diagnostics.contains(name)) }
+        File(repoRoot(), "manager/app/src/main/java/nd/max").walkTopDown()
+            .filter { it.isFile && it.extension == "kt" }.forEach { file ->
+                val text = file.readText()
+                removed.forEach { name ->
+                    assertFalse("Retired card: $name in ${file.name}", text.contains("$name("))
+                }
+            }
         assertFalse(File(repoRoot(), "manager/app/src/main/java/nd/max/ui/component/ExcludedCapabilitiesCard.kt").exists())
         assertFalse(File(repoRoot(), "manager/app/src/main/java/nd/max/ui/design/MaxBlockedFeature.kt").exists())
     }

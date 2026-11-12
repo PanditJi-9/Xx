@@ -172,7 +172,7 @@ class ScreenFinderTest {
         )
         assertEquals(
             MaxDestination.Settings.titleRes,
-            screenFinderWhereRes(MaxDestination.Diagnostics),
+            screenFinderWhereRes(MaxDestination.ConfigBackup),
         )
         assertEquals(
             R.string.screen_finder_where_bar,

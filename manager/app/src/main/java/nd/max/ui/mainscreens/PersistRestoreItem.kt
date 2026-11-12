@@ -30,13 +30,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import android.text.format.DateUtils
-import androidx.compose.material.icons.rounded.RestartAlt
 import androidx.compose.material.icons.rounded.History
-import androidx.compose.material.icons.automirrored.rounded.Undo
 import kotlinx.coroutines.launch
 import nd.max.R
 import nd.max.core.persist.PersistRestorer
-import nd.max.core.persist.PersistSnapshot
 import nd.max.core.persist.PersistStore
 import nd.max.core.policy.DangerConsent
 import nd.max.ui.component.ExpressiveList
@@ -58,9 +55,7 @@ fun PersistRestoreItem() {
     var dangerousAuto by remember { mutableStateOf(PersistStore.dangerousAutoEnabled(context)) }
     var dangerousReason by remember { mutableStateOf(PersistStore.dangerousAutoOffReason(context)) }
     var lastRunAtMs by remember { mutableStateOf(PersistStore.lastRunAtMs(context)) }
-    var fastBoots by remember { mutableStateOf(PersistStore.fastBootStreak(context)) }
     var pendingDangerConfirm by remember { mutableStateOf(false) }
-    var snapshotCount by remember { mutableStateOf(PersistSnapshot.load(context)?.values?.size ?: 0) }
 
     Column(verticalArrangement = Arrangement.spacedBy(MaxSpace.sm)) {
         ExpressiveList(
@@ -104,8 +99,6 @@ fun PersistRestoreItem() {
                                 scope.launch {
                                     PersistRestorer.restoreNow(context)
                                     lastRunAtMs = PersistStore.lastRunAtMs(context)
-                                    fastBoots = PersistStore.fastBootStreak(context)
-                                    snapshotCount = PersistSnapshot.load(context)?.values?.size ?: 0
                                     busy = false
                                 }
                             }
@@ -134,8 +127,7 @@ fun PersistRestoreItem() {
             )
         )
 
-        // وقائع الحارس: آخر جولة، وكم إقلاعًا سريعًا رآه. قراءة فقط — لا زرّ يصفّر
-        // عدّادًا، لأن الصفر الكاذب يُخفي إقلاعًا وقع.
+        // آخر جولة: قراءة فقط، فلا زرّ يصفّر سجلًّا وقع.
         ExpressiveList(
             content = listOf(
                 {
@@ -159,58 +151,8 @@ fun PersistRestoreItem() {
                         }
                     )
                 },
-                {
-                    ExpressiveListItem(
-                        headlineContent = { Text(stringResource(R.string.persist_fast_boots_title)) },
-                        supportingContent = {
-                            Text(stringResource(R.string.persist_fast_boots_desc, fastBoots))
-                        },
-                        leadingContent = {
-                            LeadingIcon(icon = Icons.Rounded.RestartAlt, contentDescription = null)
-                        }
-                    )
-                }
             )
         )
-
-        // تراجع عن آخر قيم كُتبت: فعل لا سجلّ. يظهر فقط إن كانت هناك لقطة،
-        // لأن زرًّا لا يفعل شيئًا أسوأ من غيابه.
-        if (snapshotCount > 0) {
-            ExpressiveList(
-                content = listOf(
-                    {
-                        ExpressiveListItem(
-                            onClick = {
-                                if (!busy) {
-                                    busy = true
-                                    scope.launch {
-                                        PersistRestorer.restoreSnapshot(context)
-                                        snapshotCount = PersistSnapshot.load(context)?.values?.size ?: 0
-                                        lastRunAtMs = PersistStore.lastRunAtMs(context)
-                                        busy = false
-                                    }
-                                }
-                            },
-                            headlineContent = { Text(stringResource(R.string.persist_snapshot_title)) },
-                            supportingContent = {
-                                Text(stringResource(R.string.persist_snapshot_desc, snapshotCount))
-                            },
-                            leadingContent = {
-                                LeadingIcon(icon = Icons.AutoMirrored.Rounded.Undo, contentDescription = null)
-                            }
-                        )
-                    }
-                )
-            )
-        }
-
-        if (fastBoots >= 2) {
-            Text(
-                text = stringResource(R.string.persist_fast_boots_tripped),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.error
-            )
-        }
 
         // إقرار المخاطر مرة واحدة لكل ميزة: يُعرض مرة، ويُسجَّل بزمنه، ولا يُلغى تلقائيًّا.
         // والرسالة تقول المسؤولية صريحةً — لا «هل أنت متأكد؟» التي لا تقول شيئًا.

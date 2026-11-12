@@ -317,24 +317,21 @@ sealed class MaxDestination(
     // مراقب المهام انتقل إلى `Control → Tools` بقرار المالك: هو **أداة** تُفتح على الجهاز لا
     // شاشة تخصّ تطبيقًا بعينه، ومكان الأدوات في شاشة التحكّم لا في مسار التشخيص داخل الإعدادات.
     data object ProcessManager : MaxDestination("processmanager", R.string.processmgr_title, Icons.Rounded.Timeline, MemoryHub)
-    data object DebloatFreeze : MaxDestination("debloatfreeze", R.string.debloat_freeze_title, Icons.Rounded.CleaningServices, Apps)
+    data object DebloatFreeze : MaxDestination("debloatfreeze", R.string.debloat_freeze_title, Icons.Rounded.CleaningServices, Control)
     data object AppSettings : MaxDestination("app_settings/{pkg}", R.string.max_title_app_settings, Icons.Rounded.AppSettingsAlt, Apps)
-
-    // Settings children
-    data object Diagnostics : MaxDestination("diagnostics", R.string.section_diagnostics, Icons.Rounded.BugReport, Settings)
 
     /**
      * `DEVICE-LAB-01` — الاختبار التفاعليّ للعتاد: شاشة ولمس وأزرار واهتزاز وصوت
      * وفلاش ومستشعرات وبطارية. **تحت التحكّم بأمر المالك** (كانت في الإعدادات): أدوات
      * الجهاز تُطلب من مكان واحد. وتستعمل واجهات النظام العامة وحدها: لا جذر ولا كتابة في sysfs.
      */
-    data object DeviceLab : MaxDestination("device_lab", R.string.device_lab_title, Icons.Rounded.Science, Diagnostics)
+    data object DeviceLab : MaxDestination("device_lab", R.string.device_lab_title, Icons.Rounded.Science, Control)
 
     /**
      * `USAGE-STATS-01` — زمن المقدّمة لكل تطبيق من قاعدة استخدام أندرويد نفسها.
      * **تحت التحكّم بأمر المالك.** سطح قراءة لحالة الجهاز، ويحتاج إذن الوصول إلى الاستخدام وحده.
      */
-    data object UsageStats : MaxDestination("usage_stats", R.string.usage_stats_title, Icons.Rounded.DataUsage, Diagnostics)
+    data object UsageStats : MaxDestination("usage_stats", R.string.usage_stats_title, Icons.Rounded.DataUsage, Control)
 
     /**
      * `BATTERY-HISTORY-01` — سجلّ البطارية الطويل: عيّنات دورية كل ١٥ دقيقة،
@@ -365,9 +362,9 @@ sealed class MaxDestination(
      */
     // والمخاطرة تبقى `Normal`: التصنيف يخصّ ما قد يُربك الجهاز، وهذه الثلاثة تقرأ وتُظهر
     // ولا تكتب عتادًا. رفعها إلى `Advanced` كان سيصنّفها في بوّابة المخاطرة بلا سبب.
-    data object ColorPalette : MaxDestination("color_palette", R.string.theme, Icons.Rounded.Palette, Settings)
-    data object ColorScheme : MaxDestination("colorscheme", R.string.color_scheme, Icons.Rounded.ColorLens, Settings)
-    data object Logs : MaxDestination("logsviewer", R.string.logsviewer_title, Icons.AutoMirrored.Rounded.ListAlt, Diagnostics)
+    data object ColorPalette : MaxDestination("color_palette", R.string.theme, Icons.Rounded.Palette, Control)
+    data object ColorScheme : MaxDestination("colorscheme", R.string.color_scheme, Icons.Rounded.ColorLens, Control)
+    data object Logs : MaxDestination("logsviewer", R.string.logsviewer_title, Icons.AutoMirrored.Rounded.ListAlt, Control)
     data object ConfigBackup : MaxDestination("config_backup", R.string.max_nav_config_backup, Icons.Rounded.Backup, Settings)
 
     /**
@@ -394,51 +391,17 @@ sealed class MaxDestination(
      * `pkg` **اختياري**: بلا معرّف تفتح الشاشة على منتقي التطبيقات (فهي شاشة قائمة بذاتها)،
      * وبه تُفتح على تطبيق واحد — وهو المدخل الموجود في شاشة إعدادات كل تطبيق.
      */
-    data object MaxBackup : MaxDestination("max_backup?pkg={pkg}", R.string.max_backup_title, Icons.Rounded.Backup, Settings, MaxRisk.Advanced)
+    data object MaxBackup : MaxDestination("max_backup?pkg={pkg}", R.string.max_backup_title, Icons.Rounded.Backup, Control, MaxRisk.Advanced)
 
     /**
      * `GAP-07` — الصلاحيات و`AppOps`: ما يُعلنه البيان، وما تسمح به المنصّة فعلًا، ومرجع مدوَّن
      * تعود إليه. `pkg` **اختياري**: بلا معرّف تفتح الشاشة على منتقي التطبيقات (فهي شاشة رئيسية
      * مستقلة بذاتها)، وبه تُفتح على تطبيق واحد — وهو مدخل شاشة إعدادات كل تطبيق.
      */
-    data object Permissions : MaxDestination("max_perms?pkg={pkg}", R.string.max_perms_title, Icons.Rounded.Shield, Settings, MaxRisk.Advanced)
+    data object Permissions : MaxDestination("max_perms?pkg={pkg}", R.string.max_perms_title, Icons.Rounded.Shield, Control, MaxRisk.Advanced)
     data object About : MaxDestination("aboutscreen", R.string.section_about, Icons.Rounded.Info, Settings)
     data object Privilege : MaxDestination("privilege", R.string.max_privilege_title, Icons.Rounded.Shield, Settings)
-    data object ModuleHealth : MaxDestination("module_health", R.string.max_module_title, Icons.Rounded.Build, Settings)
 
-    /**
-     * لوبي الألعاب بالعرضيّ — **سطح اللعب لا قائمة إعدادات**.
-     *
-     * كانت إلى جانبها شاشة مكتبة عمودية (`GameSpace`) أُزيلت بأمر المالك؛ فهذه الوجهة هي السطح
-     * الوحيد للألعاب: لوحة عرضية تُفتح من قائمة `Apps`، وتقود إلى التشغيل وملف اللعبة واللوحة
-     * الجانبية وإدارة المكتبة. **والوسم الافتراضي ([MaxRisk.Normal]) مقصود:** هذه الشاشة لا تكتب عتادًا
-     * (ADR-11)، و[MaxRisk.Advanced] محفوظ لأدوات الكتابة المحجوبة — فلا تُحجب لوحةُ اختيار لعبة.
-     */
-    data object GameLobby : MaxDestination("gamelobby", R.string.game_lobby_title, Icons.Rounded.Gamepad, Apps)
-
-    /**
-     * **باب اللوبي في قائمة `Apps`** — كان سطحًا لا يُوصل إليه إلا من شاشة المكتبة وحدها.
-     *
-     * وليس هذا تنظيمًا شكليًّا: قائمة `Apps` تسرد كل وجهة أبوها `Apps`، ولو دخل اللوبي بها لظهر
-     * صفًّا عاديًّا إلى جانب أدوات مثل `SetEdit`. واللوبي **سطح لعب** لا أداة، فيُستثنى من السرد
-     * ويُوضع له **صفّ بارز في رأس القائمة** (`ApplistScreen.LobbyBanner`) — نفس مبدأ «الأبواب التي
-     * تهمّ في الصفّ الأول» (`ApplistScreen.GameLobbyDoor`).
-     */
-    data object EmulatorHub : MaxDestination("emulatorhub", R.string.emu_hub_title, Icons.Rounded.Apps, Apps)
-    /**
-     * **`HMA Companion` — قياسُ ما يخفيه المُكمِّل فعلًا، لا ما يَعِد به.**
-     *
-     * وكانت جذرًا (`parent = null`) وبابها الوحيد في الشجرة كلّها هو **المُوجِّد** — تُكتب في البحث
-     * فتظهر، ولا صفّ لها في أي شاشة ولا اختصار. وهو العطب نفسه الذي بُني `DestinationDoorTest` لمنعه،
-     * لكن الحارس كان يفحص الأبناء وحدهم: كل وجهة `parent != null`. فالجذور كانت **ثغرة الحارس**،
-     * وهذه الوجهة هي الدليل الحيّ عليها.
-     *
-     * وُضعت تحت `Settings` لا تحت `Control`: هي قراءةٌ ومقارنةٌ بأساس محفوظ (عدد التطبيقات المخفيّة
-     * والصلاحيات العريضة وإصدار الوحدة) لا تحكّمٌ في العتاد. وتجاور `ModuleHealth` و`Permissions`
-     * — الثلاث كلّها «ما الذي يراه غيري من جهازي». وكونها ابنًا يجعل الحارس القائم يغطّيها من الآن
-     * بلا قاعدة جديدة.
-     */
-    data object HmaCompanion : MaxDestination("hma_companion", R.string.hma_companion_title, Icons.Rounded.Shield, Settings)
 
     // Control - Advanced tools (gated, not preferences)
     data object SetEdit : MaxDestination("setedit", R.string.max_title_setedit, Icons.Rounded.Edit, Control, MaxRisk.Advanced)
@@ -449,7 +412,7 @@ sealed class MaxDestination(
      * خارج نطاق إعداداتنا، فمكانها تحت `Control → Tools` مع تعليم المخاطرة لا في قائمة
      * تفضيلات تُقلَّب بلا انتباه.
      */
-    data object FileManager : MaxDestination("filemanager", R.string.max_files_title, Icons.Rounded.Folder, Control, MaxRisk.Advanced)
+    data object FileManager : MaxDestination("filemanager", R.string.max_files_title, Icons.Rounded.Folder, StorageHub, MaxRisk.Advanced)
 
     companion object {
         /**
@@ -484,9 +447,9 @@ sealed class MaxDestination(
                 DynamicIsland,
                 ThermalDetail, Charging, BypassCharging, BypassChargingCheck, DozeMode,
                 Dex2oat, StorageDetail, StorageCare, NetworkScheduler, NetworkDetail,
-                ProcessManager, DebloatFreeze, AppSettings, GameLobby, EmulatorHub, HmaCompanion,
-                ColorPalette, ColorScheme, Diagnostics, DeviceLab, UsageStats, BatteryHistory, License, Logs, ConfigBackup, CommunityStats, Plugins, MaxBackup, Permissions, About,
-                Privilege, ModuleHealth,
+                ProcessManager, DebloatFreeze, AppSettings, GameLobby, EmulatorHub,
+                ColorPalette, ColorScheme, DeviceLab, UsageStats, BatteryHistory, License, Logs, ConfigBackup, CommunityStats, Plugins, MaxBackup, Permissions, About,
+                Privilege,
                 SetEdit, ActivityLauncher, FileManager,
             )
         }

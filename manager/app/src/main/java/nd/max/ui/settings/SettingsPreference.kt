@@ -58,6 +58,22 @@ class SettingsPreference private constructor(context: Context) {
         swipeNavigation.value = enabled
     }
 
+    /**
+     * يعيد اختيارات الواجهة الثلاثة إلى افتراضياتها: اللغة تتبع النظام، والوضع المتقدّم
+     * مطفأ، والتمرير الأفقي مفعّل. **ولا يمسّ** ملفات أخرى (السمة والإعدادات والعتاد)
+     * لأن لكل منها مالكها — وهذا حدّ الإعادة المعلن في شاشة الإعدادات.
+     */
+    fun resetToDefaults() {
+        prefs.edit {
+            remove(KEY_LANGUAGE)
+            remove(KEY_ADVANCED_MODE)
+            remove(KEY_SWIPE_NAVIGATION)
+        }
+        language.value = AppLanguage.AUTO
+        advanced.value = false
+        swipeNavigation.value = true
+    }
+
     private fun readLanguage(): String =
         prefs.getString(KEY_LANGUAGE, AppLanguage.AUTO)?.takeIf { it.isNotEmpty() } ?: AppLanguage.AUTO
 

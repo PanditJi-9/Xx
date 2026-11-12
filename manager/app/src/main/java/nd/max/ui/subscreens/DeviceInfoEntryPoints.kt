@@ -11,12 +11,12 @@
  * الجهاز؟» (من القسم إلى الشاشة) — فيدخل المستخدم المتقدّم من الشاشة التي يعمل فيها إلى
  * القسم الذي يشرحها، بضغطة واحدة وبلا تنقّل في أحد عشر تبويبًا.
  *
- * **والتعاكس ليس تلقائيًّا، والدليل أنّه لا يمكن أن يكون:** `Diagnostics` **وحدها تملك
+ * **والتعاكس ليس تلقائيًّا، والدليل أنّه لا يمكن أن يكون:** `DeviceLab` **وحدها تملك
  * ثلاثة أقسام** (النظرة العامة والنظام والمستشعرات)، فالمعكوس عليها واحد والمالكون ثلاثة.
  * ولذلك تُكتب الخريطة صراحةً هنا، ويقول الاختبار أين تتقارب مع الأصل وأين تفترق — بدل
  * أن تُستنتج انعكاسًا فينحرف المعنى بصمت.
  *
- * **والاختيار الوحيد الذي ليس ١:١ مُعلَن بالاسم:** شاشة التشخيص تفتح **المستشعرات** —
+ * **والاختيار الوحيد الذي ليس ١:١ مُعلَن بالاسم:** مختبر الجهاز يفتح **المستشعرات** —
  * لأنها البطاقة التي فيها (`SensorInventoryCard`) وهي أقرب ما في الشاشة إلى «معلومات
  * الجهاز»، وهو نصّ طلب المالك («في شاشة التشخيص يكون هناك زر يدخلك على قسم المستشعرات»).
  *
@@ -45,7 +45,6 @@ fun deviceInfoShortcutSection(destination: MaxDestination): DeviceInfoSection? =
     MaxDestination.ThermalDetail -> DeviceInfoSection.Thermal
     MaxDestination.NetworkDetail -> DeviceInfoSection.Network
     // ── التشخيص: تملك ثلاثة أقسام، والمقصود منها هنا المستشعرات (أعلاه) ──
-    MaxDestination.Diagnostics -> DeviceInfoSection.Sensors
     // ── صفحات المجالات: الباب إلى قسم المجال نفسه ──
     MaxDestination.CpuHub -> DeviceInfoSection.Cpu
     MaxDestination.GpuHub -> DeviceInfoSection.Gpu
@@ -60,6 +59,9 @@ fun deviceInfoShortcutSection(destination: MaxDestination): DeviceInfoSection? =
     // فالباب يُرسم في `AudioStudio` ويقود إلى قسم الصوت — وذهابًا وعودةً يقيسه `DeviceInfoControlConvergenceTest`.
     MaxDestination.AudioHub -> DeviceInfoSection.Audio
     MaxDestination.AudioStudio -> DeviceInfoSection.Audio
+    // شاشة التشخيص حُذفت بأمر المالك، فأربعة أقسام صارت بيتها مختبر الجهاز؛ والمعكوس
+    // عليها واحد بالاختيار المعلن: المستشعرات — بطاقة الجرد الحقيقية فيه.
+    MaxDestination.DeviceLab -> DeviceInfoSection.Sensors
     // ولا قسم لـ`ResponsivenessHub` (أعلاه)، ولا لوجهة لا موضوع لها في الشاشة.
     else -> null
 }

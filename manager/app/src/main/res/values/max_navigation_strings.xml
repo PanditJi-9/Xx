@@ -9,6 +9,8 @@
     <string name="max_nav_advanced_tools">Tools</string>
     <string name="control_tools_live">Live surfaces</string>
     <string name="control_tools_advanced">Advanced tools</string>
+    <string name="control_tools_system">System tools</string>
+    <string name="control_tools_appearance">Appearance</string>
     <string name="max_nav_config_backup">Backup &amp; restore</string>
 
     <!-- Domain hub titles (ADR-04) -->

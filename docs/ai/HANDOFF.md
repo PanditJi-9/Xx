@@ -149,6 +149,42 @@ NeuralDashboardKit.kt:673:12 Syntax error: Expecting a top level declaration.
 **ما لم يُفقد:** `ui/component/PulseArt.kt` و`AmbientGlowCycle.kt` (حذف الملفّين الكاملين من ROUND-CLOSE-63)
 يبقيان محذوفين، وحارس مستوى الملفّ يبقى، وإصلاح استثناء `AppSettings` في `DestinationDoorTest` يبقى.
 
+### ROUND-CLOSE-84 — أدواتٌ إلى التحكّم، وشاشتان تُحذفان، ولا غطاء ولا تراجع — 2026-11-12 · DONE_WITH_CONCERNS
+
+**TASK:** أمر المالك: نقل Max Backup والصلاحيات/AppOps ونظام الألوان وأدوات التشخيص إلى التحكّم، ومدير الملفات إلى التخزين، ووضع الشحن المصرفي وتنظيف التطبيقات إلى التحكّم؛ حذف شاشات التشخيص وHMA وصحة الوحدة؛ تحويل «تعطيل الإعدادات» إلى إعادة كل شيء للوضع الافتراضي؛ حذف مهلة ملف تعريف الأداء، و«تراجع عن آخر قيم طبقت»، و«إقلاعات سريعة متتالية»؛ دمج تطبيق التعديلات بعد الإقلاع في الإعدادات المتقدّمة؛ وحذف الميزات غير المتاحة **التي يسمّيها هو فقط** (أجاب: «احذف فقط ما اخبرتك ان تحذفه»). وطلب إعادة تصميم بطاقة النشاط من الصفر وزرّ إعدادات داخل بطاقة النشاط الحالي في الرئيسية.
+
+**FILES:** `ui/navigation/MaxDestinations.kt` · `MaxNavGraph.kt` · `MaxDestinationCatalog.kt` · `ScreenFinderModel.kt` · `ControlLayoutModel.kt` · `SettingsScreen.kt` · `PersistRestoreItem.kt` · `PreferencedTweakScreen.kt` · `ui/settings/SettingsPreference.kt` · **جديد** `ui/settings/AppDefaults.kt` · `DeviceInfoScreen.kt` · `DeviceInfoEntryPoints.kt` · `ActivityCardSettings.kt` · `StoryboardHome.kt` · `res/values*/strings.xml` · `res/values*/max_navigation_strings.xml` · عشرة اختبارات · وحُذفت `DiagnosticsScreen.kt` · `ModuleHealthScreen.kt` · `HmaCompanionScreen.kt`.
+
+**SEARCH FIRST (§0.5):** بحثٌ عن إعادة ضبط مركزية فلم توجد: الموجود `IslandSettings.resetAll()` و`Dex2oatUtil.resetAll()` و`RebootUtil.resetAll()` فقط. فبُنيت `resetAppToDefaults` من هذه الثلاثة + `SettingsPreference.resetToDefaults()` (مفاتيحها الثلاثة وحدها) + إطفاء `PersistStore` — **لا كتابة في `persist.sys.*` ولا مساس ببيانات المستخدم**، والحدّ مكتوب في وصف الصفّ. ونقلُ الأدوات لم يبنِ مسارًا ثانيًا: `ControlLayoutModel` كان يملك `ControlToolBands` فأُضيف إليه نطاقان، و`FileManager` صار ابنًا لـ`StorageHub` من السجلّ نفسه. وزرّ إعدادات البطاقة أعاد استعمال `ActivityCardDialog` القائم (صار `ActivityCardSettingsDialog`) بدل حوار موازٍ.
+
+**SHIPPED:**
+1. **الأبواب:** `MaxBackup` · `Permissions` · `ColorPalette` · `ColorScheme` · `DeviceLab` · `UsageStats` · `Logs` · `BypassCharging` · `BypassChargingCheck` · `DebloatFreeze` أبوها **`Control`**؛ `FileManager` أبوه **`StorageHub`**. ونطاقات التحكّم صارت أربعة: حيّ · متقدّم · **أدوات النظام** · **المظهر**، بمفتاحين جديدين في en/ar.
+2. **الحذف:** `Diagnostics` و`ModuleHealth` و`HmaCompanion` حُذفت كوجهات وكشاشات ومداخل في الإعدادات والكتالوج ومُنتقي البحث. وأدوات التشخيص بقيت في التحكّم، ومالك أقسام معلومات الجهاز صار `DeviceLab` (أقرب بيت قائم) بانعكاس `DeviceLab → Sensors`.
+3. **الإعدادات:** حُذفت صفوف التشخيص وMax Backup والصلاحيات وصحة الوحدة وHMA والسمة (انتقلت)، وحُذف مفتاح «تعطيل الإعدادات» ومهلته؛ وحلّ محلّهما صفّ **«إعادة كل شيء إلى الوضع الافتراضي»** بتأكيد صريح ونطاق معلن.
+4. **بعد الإقلاع:** `PersistRestoreItem` صار داخل **الإعدادات المتقدّمة**، وحُذف منه «إقلاعات سريعة متتالية» و«تراجع عن آخر قيم طبقت» وتحذير التتابع.
+5. **بطاقة النشاط:** زرّ إعدادات في رأسها يفتح حوارها مباشرةً من الرئيسية.
+
+**MEASURED:** `kt_balance` 3364 ملفًا · 0 عوائق · `code_health` «صحّة نظيفة» · `i18n_coverage` 84+en · 85/85 كودًا · 0 عوائق · `--prune all` 0 مفاتيح يتيمة · `design_tokens` **233/300** (نزلت 14 لأن الصفوف المحذوفة كانت تحمل حرفيّات) · `rtl_guard` 0 مخالفة · `resource_compile` aapt2 حقيقي يترجم كل الموارد · `gen_control_catalog` 88 مدخلًا · `design_doc` 85 رمزًا/107 اسمًا/34 لونًا مطابقة · `git diff --check` نظيف. الحصيلة 27 ملفًا: +194/−292، وثلاثة ملفات محذوفة.
+
+**BUILD:** «الترجمة غير مُتحقّقة في هذه البيئة» — CI هو المُصرّف. والشكل وRTL واللمس **يحتاج جهازًا**.
+
+**RESIDUAL RISK:**
+- **إعادة تصميم بطاقة النشاط البصري لم تكتمل:** نُفِّذ الزرّ والحوار، وبقي الشكل نفسه على تركيبته — يُعلن ولا يُدّعى.
+- «إعادة كل شيء» تعيد اختيارات التطبيق (اللغة/المتقدم/السحب، الجزيرة، تطبيق بعد الإقلاع، dex2oat، خيارات الإقلاع) ولا تمسّ خصائص النظام (`persist.sys.*`) لأنها تحتاج جذرًا؛ الحدّ مكتوب للمستخدم في الوصف.
+- `SettingsUiState` ما زال يحمل `disableTweak`/`profileTimeout` و`SettingViewmodel` كاتبهما — صارا بلا مستدعٍ (تحذيرات فقط).
+- `AtlasDiagnosticsSection` و`MaxGovernance.kt` بقيا بلا مستدعٍ بعد حذف شاشة التشخيص؛ يُحدَّد مصيرهما في جولة تالية.
+- المراجعة المستقلة ما زالت محجوبة بالحدّ المجاني، وذاكرة claude-mem تردّ 522.
+
+**الذاكرة (§7.6):**
+- العَرَض: أدوات مبعثرة بين الإعدادات والتشخيص، وغطاء إعداد لا يُغلق، وصفوف تراجع لا يستعملها المالك.
+- أول سطر خالف: `MaxDestinations.kt` كان يضع `MaxBackup`/`Permissions` تحت `Settings` بينما أمر المالك «إلى التحكم».
+- الفرضية التي ثبتت: نقل الأب في السجلّ يكفي لعرض الأدوات في `Control` بلا قائمة ثانية.
+- الفرضية التي سقطت: «توجد إعادة ضبط مركزية» — لا توجد؛ بُنيت من الثلاثة القائمة.
+- الأمر: بوابات §5 + `gen_control_catalog` + `design_doc` → كلها صفر.
+- ما لا يُعاد اختباره: أعداد الكتالوج (88) ووثيقة التصميم؛ والحكم البصري يبقى على الجهاز.
+
+**NEXT:** قراءة حكم CI لهذه الدفعة · ثم إعادة تصميم بطاقة النشاط بصريًّا (وهي المتبقّي الوحيد من الأمر) · ثم تحديد مصير ملفَّي التشخيص اليتيمين.
+
 ### ROUND-CLOSE-83 — المجتمع في «حول» وحدها: المستودع والقناة والجروب — 2026-11-12 · DONE_WITH_CONCERNS
 
 **TASK:** «اضف ايضا github والقناة الجديدة في شاشة حول في الاعدادات وgroup الجديد https://t.me/MaxManagerChat والجروب فقط في حول وليس في شاشة البداية».

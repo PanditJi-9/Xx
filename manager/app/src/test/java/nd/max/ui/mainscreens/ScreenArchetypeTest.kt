@@ -42,7 +42,6 @@ class ScreenArchetypeTest {
         "SettingsScreen.kt",
         "ApplistScreen.kt",
         "MaxAiScreen.kt",
-        "DiagnosticsScreen.kt",
     )
 
     /** شاشات M2 الخمس كما في `PRODUCT-MAP.md` §٥ — النوع والحامل الواحد. */

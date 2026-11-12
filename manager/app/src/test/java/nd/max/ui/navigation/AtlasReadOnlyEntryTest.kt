@@ -17,6 +17,7 @@
 package nd.max.ui.navigation
 
 import nd.max.core.atlas.support.AtlasSourceGuard
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -39,34 +40,18 @@ import org.junit.Test
 class AtlasReadOnlyEntryTest {
 
     @Test
-    fun `the diagnostics destination is still a registered destination under settings`() {
+    fun `the diagnostics destination is gone by owner order`() {
         val destinations = AtlasSourceGuard.read("src/main/java/nd/max/ui/navigation/MaxDestinations.kt")
         val graph = AtlasSourceGuard.read("src/main/java/nd/max/ui/navigation/MaxNavGraph.kt")
 
-        assertTrue("Diagnostics stays under Settings, not in a separate hub", destinations.contains("Settings"))
-        assertTrue(
-            "the Atlas surface lives on an existing destination; P7 adds no route",
-            graph.contains("composable(MaxDestination.Diagnostics.route)"),
-        )
-    }
-
-    @Test
-    fun `settings links to diagnostics from a screen, not only from its own definition`() {
-        val settings = AtlasSourceGuard.read("src/main/java/nd/max/ui/mainscreens/SettingsScreen.kt")
-
-        assertTrue(
-            "Settings must navigate to Diagnostics; a destination nothing links to is a screen nobody opens",
-            settings.contains("MaxDestination.Diagnostics"),
-        )
-    }
-
-    @Test
-    fun `the atlas surface is on the diagnostics screen`() {
-        val diagnostics = AtlasSourceGuard.read("src/main/java/nd/max/ui/mainscreens/DiagnosticsScreen.kt")
-
-        assertTrue(
-            "the diagnostics screen must render the Atlas section",
-            diagnostics.contains("AtlasDiagnosticsSection()"),
+        // أمر المالك: تُحذف شاشة التشخيص وتنتقل أدواتها إلى التحكّم. فالوجهة لا تبقى
+        // في السجلّ ولا في الرسم — وحارسها لا يحرس بابًا مفتوحًا على غرفة مهدومة.
+        assertFalse("Diagnostics must not stay registered", destinations.contains("data object Diagnostics"))
+        assertFalse("Diagnostics must not stay routed", graph.contains("MaxDestination.Diagnostics.route"))
+        assertFalse(
+            "the deleted surface must not be rendered by a leftover screen",
+            AtlasSourceGuard.read("src/main/java/nd/max/ui/mainscreens/ControlScreen.kt")
+                .contains("AtlasDiagnosticsSection()"),
         )
     }
 

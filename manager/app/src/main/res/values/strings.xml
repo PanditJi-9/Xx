@@ -1594,6 +1594,10 @@
     <string name="toast_log_save_success">Logs saved successfully!</string>
     <string name="toast_log_saved">Logs saved to /sdcard/Max Manager.log</string>
     <string name="toast_restarting_service">Restarting service</string>
+    <string name="settings_reset_title">Reset everything to default</string>
+    <string name="settings_reset_desc">App choices return to their first-install values: interface, island look, apply after boot, dex2oat and reboot options. Your data and system properties are untouched.</string>
+    <string name="settings_reset_confirm_body">Every app choice returns to its first-install value. This cannot be undone, and your data (sessions, backups) stays.</string>
+    <string name="settings_reset_confirm_action">Reset</string>
     <string name="toast_settings_reset">Settings reset</string>
     <string name="toast_update_success">Update installed successfully!</string>
     <string name="trim_filesystem">Storage Trim</string>

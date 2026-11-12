@@ -40,13 +40,18 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ErrorOutline
 import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.Lock
+import androidx.compose.material.icons.rounded.Tune
 import androidx.compose.material.icons.rounded.RadioButtonUnchecked
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -283,12 +288,23 @@ internal fun UnifiedActivityCard(
 
     val palette = neuralPalette()
     val scheme = MaterialTheme.colorScheme
+    // زرّ الإعدادات يعيش في البطاقة نفسها: من قرأ الحدث وأراد تغيير شكله لا يترك الرئيسية.
+    var settingsOpen by remember { mutableStateOf(false) }
     CompositionLocalProvider(LocalActivityNavigate provides onNavigate) {
         NeuralPanel(modifier = modifier.fillMaxWidth(), accent = palette.accent) {
             NeuralSectionHeader(
                 title = stringResource(R.string.home_activity_title),
                 caption = stringResource(R.string.home_activity_caption),
                 accent = palette.accent,
+                trailing = {
+                    IconButton(onClick = { settingsOpen = true }) {
+                        Icon(
+                            Icons.Rounded.Tune,
+                            contentDescription = stringResource(R.string.settings_activity_card_title),
+                            tint = palette.muted,
+                        )
+                    }
+                },
             )
             if (model.isEmpty) {
                 ActivityEmpty(palette)
@@ -326,6 +342,7 @@ internal fun UnifiedActivityCard(
             }
         }
     }
+    if (settingsOpen) ActivityCardSettingsDialog(onDismiss = { settingsOpen = false })
 }
 
 /** مسار الفتح يصل إلى كل سطر دون أن يمرّ وسيطًا في كل دالة. الافتراضي لا يفعل شيئًا. */

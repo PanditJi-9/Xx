@@ -54,9 +54,11 @@ class OwnerDecisionsGuardTest {
                 body.contains("MaxGovernorStrip") || body.contains("MaxGovernanceLadder"),
             )
         }
-        assertTrue(
-            "وبطاقة الحكّام تبقى حيث تُقرأ بالضغط: التشخيص",
-            read("ui/mainscreens/DiagnosticsScreen.kt").contains("MaxGovernanceCard"),
+        // شاشة التشخيص حُذفت بأمر المالك، فبطاقة الحكّام لم يبقَ لها سطح يُعرض فيه.
+        assertFalse(
+            "بطاقة الحكّام لا تعود إلى شاشة حيّة بعد حذف التشخيص",
+            read("ui/mainscreens/SettingsScreen.kt").contains("MaxGovernanceCard") ||
+                read("ui/mainscreens/ControlScreen.kt").contains("MaxGovernanceCard"),
         )
     }
 

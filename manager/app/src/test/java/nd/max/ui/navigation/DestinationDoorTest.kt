@@ -137,7 +137,6 @@ class DestinationDoorTest {
         parent.route.startsWith("hub_") -> null
         parent.name == "Control" -> "ui/mainscreens/ControlLayoutModel.kt"
         parent.name == "Settings" -> "ui/mainscreens/SettingsScreen.kt"
-        parent.name == "Diagnostics" -> "ui/mainscreens/DiagnosticsScreen.kt"
         parent.name == "DeviceLab" -> "ui/subscreens/DeviceLabScreen.kt"
         parent.name == "Apps" -> "ui/mainscreens/ApplistScreen.kt"
         parent.name == "MaxAi" -> "ui/mainscreens/MaxAiScreen.kt"
