@@ -338,6 +338,46 @@ class ScreenArchetypeTest {
         assertTrue("لم يُفحص أي صفّ مُدمِّر", destructiveRows >= 6)
     }
 
+    /**
+     * **التهيئة تنتهي داخل العملية، ولا تُترك شاشة «جاري الإعداد» معلّقة.**
+     *
+     * كان الإنهاء يكتب العلم ثم يستدعي `am start -S` عبر `su`/Shizuku لإعادة تشغيل
+     * العملية، فإن تأخّر الصدفة أو رُفض الأمر بقي الغطاء الدوّار أبدًا. الآن يُكتب العلم
+     * ويُنقل داخل `NavHost` نفسه، و`MainActivity` تسمع تغيّر التفضيل فتُظهر المنصة Tour
+     * بلا إعادة تشغيل — والحارس يمنع عودة الاستدعاء المعلّق أو الغطاء.
+     *
+     * وحدّه المُعلَن: فحص نصّي على المصدر؛ السلوك على الجهاز يحتاج جهازًا.
+     */
+    @Test
+    fun `onboarding completes in-process and never strands the finalizing scrim`() {
+        val root = sourceRoot()
+        assumeTrue("جذر المصادر غير متاح", root != null)
+        val started = File(root, "ui/mainscreens/GetStartedScreen.kt").readText()
+
+        assertTrue(
+            "التهيئة لا تكتب علم الإكمال",
+            started.contains("has_completed_get_started"),
+        )
+        assertTrue(
+            "التهيئة لا تنقل داخل الرسم البياني",
+            started.contains("popUpTo(nd.max.ui.navigation.MaxDestination.GetStarted.route)"),
+        )
+        assertFalse(
+            "عاد غطاء «جاري الإعداد» المعلّق",
+            started.contains("isFinalizing"),
+        )
+        assertFalse(
+            "عاد إعادة التشغيل عبر am start",
+            started.contains("am start -S"),
+        )
+
+        val activity = File(root, "MainActivity.kt").readText()
+        assertTrue(
+            "علم الإكمال لا يتحدّث داخل العملية",
+            activity.contains("OnSharedPreferenceChangeListener"),
+        )
+    }
+
     private fun callIndex(source: String, call: String): Int =
         Regex("(?m)^\\s*${Regex.escape(call)}\\(").find(source)?.range?.first ?: Int.MAX_VALUE
 }

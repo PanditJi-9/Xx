@@ -149,6 +149,73 @@ NeuralDashboardKit.kt:673:12 Syntax error: Expecting a top level declaration.
 **ما لم يُفقد:** `ui/component/PulseArt.kt` و`AmbientGlowCycle.kt` (حذف الملفّين الكاملين من ROUND-CLOSE-63)
 يبقيان محذوفين، وحارس مستوى الملفّ يبقى، وإصلاح استثناء `AppSettings` في `DestinationDoorTest` يبقى.
 
+### ROUND-CLOSE-82 — جذر ومجتمع في صفحة، وأذونات في صفحة، ولا غطاء يعلّق — 2026-11-12 · DONE_WITH_CONCERNS
+
+**TASK:** «حسن تصميم زر جذر وشاشة الوصول المنبثقة … اريد في شاشة البداية خيار لاختيار الروت …
+وصفحة github … وزر ? تعرض صورة لمكان زر النجمة … وزر قناة تيلجرام … لذا ستدمج فكرة شاشة اختيار
+الروت مع شاشة صلاحية الجذر وشاشة الانظمام وgithub في شاشة جديدة وشاشة الاذونات في دعنا نضبط
+الاعدادات الاساسية واصلاح مشكلة جاري اعداد max manager حيث بعض الاحيان يظل عالق».
+
+**FILES:** `ui/mainscreens/GetStartedScreen.kt` · `MainActivity.kt` · `ui/component/AccessModeDialog.kt`
+(كلمة واحدة: `labelRes` صار `internal`) · `ui/subscreens/HomeHeroCard.kt` · `res/values/strings.xml` ·
+`res/values-ar/strings.xml` · `res/drawable-nodpi/onboarding_star_guide.jpg` (جديد) ·
+`test/.../ScreenArchetypeTest.kt` · ملفّات السجل هذه.
+
+**SEARCH FIRST (§0.5):** لم يُبنَ سطح امتياز ثانٍ. الصفحة الأولى تركّب `PrivilegePanel()` القائم
+(بطاقة الحالة + صفّا Root وShizuku + تفاصيل الطبقات)، وشرائح الوضع تكتب في `ExecutionModeStore` نفسه
+وتقرأ تسمياته من `ExecutionMode.labelRes()` بعد رفعها من `private` إلى `internal` (خريطة واحدة لا
+نسختان). والأذونات تقرأ `Perms.overlay/post/battery` و`AppStorageReader.hasUsageAccess` القائمة، ولا
+تمنح صامتة: كل صفّ يفتح شاشة النظام أو يطلب الإذن. و`MainActivity` لم تُضف إليها حالة ثانية: العلم
+الموجود `has_completed_get_started` صار يُراقَب بمستمع تفضيلات بدل `remember` ساكن.
+
+**SHIPPED:**
+1. **صفحة واحدة للوصول والمجتمع:** الشرائح أربع (تلقائي · Root · Shizuku · أساسي) بحالة اختيار
+   مقروءة من المتجر، ثم `PrivilegePanel()`، ثم بطاقة GitHub بأسلوب الصفحة (علامة `N`، المسار، شارة
+   Public، الوصف) وزر النجمة يفتح `https://github.com/nader295/MaxManager`، وزر `؟` يفتح حوارًا
+   بصورة `onboarding_star_guide` (1398×480، مقصوصة من لقطة المالك بسهمها إلى Starred) وشرح أسفلها.
+2. **بطاقة تيلجرام** بنبرة tertiary وشارة `جديد` تفتح `https://t.me/GetMaxManager`.
+3. **صفحة الأذونات:** أربعة صفوف (الظهور فوق التطبيقات · الإشعارات · الوصول للاستخدام · تحسين
+   البطارية) بحالة حيّة تُقرأ عند `ON_RESUME`، وزر منح لكل غير ممنوح، والإشعارات عبر
+   `rememberLauncherForActivityResult`، ثم مفتاح «إظهار الرسائل» القائم وملاحظة الخصوصية.
+4. **الإنهاء لم يعد يعلّق:** حُذف `isFinalizing` والغطاء الدوّار و`am start -S` و`delay(2000)`؛
+   يُكتب العلم بـ`commit()` ثم `navController.navigate(Now)` مع `popUpTo(GetStarted){inclusive}`،
+   وتمنح الأذونات في الخلفية fire-and-forget. و`MainActivity` تسمع
+   `OnSharedPreferenceChangeListener` فتُظهر المنصة وTour فورًا بلا إعادة تشغيل.
+5. **زر الجذر في الهيرو:** درع `Icons.Rounded.Shield` يظهر فقط حين يكون المستوى ROOT فعلًا، ولا
+   يظهر على «أساسي».
+6. **حارس مصدري:** اختبار `onboarding completes in-process and never strands the finalizing scrim`
+   يقرأ الشاشة والنشاط ويمنع عودة `isFinalizing` و`am start -S`، ويشترط كتابة العلم والانتقال داخل
+   العملية ومستمع التفضيل.
+
+**MEASURED (هذه الجولة):** `kt_balance` 3366 ملفًا/0 · `code_health` «صحّة نظيفة» بعد إصلاح
+`hardcoded_ui_literals` (نصّا `N` و`GitHub` صارا مفتاحين في اللغتين) · `i18n_coverage` 84+en و85/85
+رمزًا و0 عوائق · `design_tokens` 247/300 · `rtl_guard` 0 مخالفات بعد تحويل `Send` إلى
+`AutoMirrored` (هدفا مقاس رمزي للمراجعة كما هما) · `resource_compile` aapt2 حقيقي وكل الموارد تُترجم ·
+`git diff --check` نظيف · بوابات العقد: `gen_control_catalog` 88/162 · `gen_capabilities_doc` 88 ·
+`gen_catalog_schema` 88 · `dead_modules` وحده المُعلَن · `maxfx_contract` 8/0 · `license_audit` بلا GPL ·
+`provenance_guard` 4148/0 · `design_doc` 85/107/34 مطابقة · `readme_assets` سليمة · `bundle_contract` 16/16.
+
+**BUILD:** «الترجمة غير مُتحقّقة في هذه البيئة» — لا Gradle محلي بأمر المالك، والحكم من تشغيل CI على
+الدفعة. الشكل وRTL واللمس وحوار الصورة **يحتاجون جهازًا**.
+
+**RESIDUAL RISK:** المنح يفتح شاشات النظام (لا منح صامت بلا صلاحية، وهذا مقصود) · مسار «أساسي» يكمل
+بلا جذر بالتصميم · `AccessModeDialog` لم يُعد تصميمه بصريًّا بعد (بقي كما هو، والتغيير الوحيد رفع
+`labelRes`) · المراجعة المستقلة ما زالت محجوبة بـ`Free usage limit reached` · ذاكرة claude-mem
+تردّ 522 من المزوّد فلا شيء يُسجَّل.
+
+**§7.6 — ذاكرة للتالي:**
+`العَرَض:` «جاري إعداد MaxManager…» يبقى أحيانًا بلا نهاية بعد «لنبدأ».
+`أول سطر خالف:` آخر صفحة تُطلق coroutine ينتظر `PlatformShell.exec("… am start -S …")` ولا يمسح
+`isFinalizing` في أي مسار فشل.
+`الفرضية التي ثبتت:` الانتقال داخل `NavHost` + مستمع تفضيلات يُغنيان عن إعادة تشغيل العملية؛ أسقط
+الغطاء كليًّا فذهب التعليق.
+`الأمر الذي أُعيد ونتيجته:` بوابات §5 كاملة → 0 عوائق (مقيس). الترجمة والسلوك على الجهاز → غير
+مُتحقّق/يحتاج جهازًا.
+`ما لا يُعاد اختباره الجولة القادمة:` أن `am start -S` ليس شرطًا لإظهار المنصة — الحارس يمنع رجوعه.
+
+**NEXT:** قراءة حكم بناء الدفعة على `main`؛ ثم تحسين بصري لحوار `AccessModeDialog` إن أمر المالك؛
+والحكم البصري للصفحتين على جهازه.
+
 ### ROUND-CLOSE-81 — تسجيل لعبة بعينها وتقرير كتقرير Scene — 2026-11-12 · DONE_WITH_CONCERNS
 
 **TASK:** «ميزة تسجيل جلسات الالعاب سيئه اصنعها من الصفر واجعل هناك زر لتسجيل لعبه معينه وتكون مثل

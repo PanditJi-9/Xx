@@ -9,6 +9,7 @@ import nd.max.core.update.UpdateGate
 import nd.max.core.security.IntegrityCheckpoint
 import nd.max.core.platform.EventLog
 import android.content.Context
+import android.content.SharedPreferences
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
@@ -331,8 +332,20 @@ fun MainScreen(fromTileType: String? = null, widgetRoute: String? = null, widget
     val configuration = LocalConfiguration.current
     val useNavigationRail = configuration.screenWidthDp >= 840
     val appPrefs = remember { context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE) }
-    val hasCompletedGetStarted = remember {
-        appPrefs.getBoolean("has_completed_get_started", false)
+    // علم الإنهاء يُقرأ تفاعليًّا: شاشة البداية تُكمِل الآن داخل العملية نفسها (بلا
+    // `am start -S`)، فبدون مستمع يبقى العلم ثابتًا حتى إعادة التشغيل فلا يظهر سطح المكتب
+    // خلف الشاشات ولا يبدأ الجولة. المستمع يجعله يتبع التخزين لحظة كتابته.
+    var hasCompletedGetStarted by remember {
+        mutableStateOf(appPrefs.getBoolean("has_completed_get_started", false))
+    }
+    DisposableEffect(appPrefs) {
+        val listener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+            if (key == "has_completed_get_started") {
+                hasCompletedGetStarted = appPrefs.getBoolean(key, false)
+            }
+        }
+        appPrefs.registerOnSharedPreferenceChangeListener(listener)
+        onDispose { appPrefs.unregisterOnSharedPreferenceChangeListener(listener) }
     }
     val isPrimaryRoute = currentRoute != null && currentRoute in primaryRoutes
     // يظهر السطح على الأقسام الأربعة، وقبل استقرار أول مسار (`currentRoute == null`) كي لا

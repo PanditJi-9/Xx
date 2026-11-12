@@ -202,7 +202,7 @@ private fun ChoiceRow(
     }
 }
 
-private fun ExecutionMode.labelRes(): Int = when (this) {
+internal fun ExecutionMode.labelRes(): Int = when (this) {
     ExecutionMode.AUTO -> R.string.lobby_mode_auto
     ExecutionMode.ROOT -> R.string.lobby_mode_root
     ExecutionMode.SHIZUKU -> R.string.lobby_mode_shizuku

@@ -39,6 +39,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.rounded.PhoneAndroid
+import androidx.compose.material.icons.rounded.Shield
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -132,11 +133,14 @@ internal fun HomeHeroCard(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(MaxSpace.md),
         ) {
+            // الشارة تحمل درعًا حين يكون الجذر فعلًا؛ فلا يُقرأ «جذر» بلا علامة سلطة،
+            // ولا يُرسم الدرع على «أساسي» فيوهم بسلطة ليست هناك.
             NeuralPill(
                 text = stringResource(accessLabelRes(accessLevel)),
                 accent = access,
                 filled = true,
                 dot = true,
+                icon = if (accessLevel == PrivilegeLevel.ROOT) Icons.Rounded.Shield else null,
                 navigates = true,
                 onClick = onAccess,
             )
