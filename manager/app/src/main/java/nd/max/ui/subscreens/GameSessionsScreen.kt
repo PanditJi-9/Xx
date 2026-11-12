@@ -5,8 +5,10 @@
 /*
  * **Screen card — archetype: Ledger · object: one session ·
  * carrying element: the session's curve.** Rows are entries in a record —
- * newest first, each with its verdict — and exactly one session opens into its
- * curve. A ledger that plots every row at once is read as noise.
+ * newest first, each with its verdict — and no row carries a curve: the one
+ * curve stands above the ledger and takes its source from the row opened, or
+ * from the live session when nothing is open. A ledger that plots every row at
+ * once is read as noise.
  */
 
 package nd.max.ui.subscreens

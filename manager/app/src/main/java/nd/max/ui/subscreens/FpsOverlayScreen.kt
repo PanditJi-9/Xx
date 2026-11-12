@@ -283,6 +283,10 @@ fun FpsOverlayScreen(navController: NavController) {
                             backgroundAlpha = state.backgroundAlpha,
                             framesHistory = snapshot.framesHistory.takeLast(state.graphSpan),
                             showGraph = state.showGraph,
+                            // المعاينة تقرأ المرشّح نفسه الذي تقرؤه النافذة فوق اللعبة
+                            // (`FpsOverlayService` يمرّر `hud.filter`): كانت تفترض `All` فتعرض
+                            // نصًّا أو رسمًا أخفاه المستخدم، فتكذب في الشيء الذي جاءت لتصفه.
+                            filter = state.filter,
                             recording = snapshot.recording,
                             onToggleRecording = {
                                 if (HudRecorder.isLive) HudRecorder.stop(context) else HudRecorder.start(context)

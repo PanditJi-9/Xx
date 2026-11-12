@@ -143,6 +143,12 @@ class ScreenArchetypeTest {
             "FpsOverlay: أدوات الضبط تسبق الآلة",
             callIndex(fps, "HudSurface") < callIndex(fps, "MaxSwitchRow"),
         )
+        // المعاينة والنافذة الحيّة تقرآن مرشّحًا واحدًا: كانت المعاينة تفترض `All`
+        // فتعرض ما أخفاه المستخدم في اللعبة (عطب فِدْيَة قيس وأُصلح في M2).
+        assertTrue(
+            "FpsOverlay: المعاينة لا تمرّر مرشّح النافذة",
+            fps.substringAfter("HudSurface(").take(1600).contains("filter = state.filter"),
+        )
 
         val sessions = File(root, "ui/subscreens/GameSessionsScreen.kt").readText()
         assertTrue(
