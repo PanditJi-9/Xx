@@ -200,13 +200,20 @@ class ScreenArchetypeTest {
         val root = sourceRoot()
         assumeTrue("Cannot locate nd.max sources; guard not evaluated", root != null)
         val sessions = File(root, "ui/subscreens/GameSessionsScreen.kt").readText()
+        // المنحنى انتقل في إعادة البناء إلى تقرير الجلسة، فالطرح يُفحص حيث يعيش الآن:
+        // محور القراءة يطرح أول عيّنة، وقارئ السحب يطرحها صراحةً قبل التنسيق.
+        val report = File(root, "ui/subscreens/GameSessionReport.kt").readText()
         assertFalse(
-            "ساعة الجلسة عادت تعرض الطابع المطلق",
-            sessions.contains("sessionClock(point.atMs)") || sessions.contains("sessionClock(worst.atMs)")
+            "ساعة التقرير عادت تعرض الطابع المطلق",
+            sessions.contains("reportClock(point.atMs") || report.contains("reportClock(point.atMs")
         )
         assertTrue(
-            "الطرح من أول عيّنة غاب",
-            sessions.contains("point.atMs - origin") && sessions.contains("worst.atMs - origin")
+            "الطرح من أول عيّنة غاب عن محور المنحنى",
+            report.contains("(atMs - origin)") && report.contains("points.firstOrNull()?.atMs ?: 0L")
+        )
+        assertTrue(
+            "قارئ السحب صار ينسّق الطابع المطلق",
+            report.contains("- (points.firstOrNull()?.atMs ?: 0L)")
         )
     }
 
