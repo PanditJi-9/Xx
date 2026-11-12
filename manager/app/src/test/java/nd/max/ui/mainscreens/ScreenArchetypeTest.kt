@@ -252,6 +252,70 @@ class ScreenArchetypeTest {
         assertTrue("Now: المنصة الفارغة بلا سطر", deck.contains("R.string.home_deck_empty"))
     }
 
+    /**
+     * **صنفان من العطب يُمسحان على كل الشاشات، لا على شاشةٍ واحدة.**
+     *
+     * الأوّل: `steps` كبيرة على مسار قصير تحوّل مقياس Material3 إلى خطّ منقّط — قرأه
+     * المالك «مسارًا منقّطًا» في `GameSessions`. والثاني: فعلٌ يُنفَّذ فورًا (حذف/محو/
+     * إعادة ضبط) مرسومٌ كصفّ تنقّل بسهم، فيُقرأ بابًا ويُضغط مرتين قبل أن يُفهم.
+     *
+     * والحدّ المُعلَن: فحص نصّي — السلوك نفسه يُرى على الجهاز.
+     */
+    @Test
+    fun `destructive rows carry no chevron and no slider draws a dotted track`() {
+        val root = sourceRoot()
+        assumeTrue("Cannot locate nd.max sources; guard not evaluated", root != null)
+
+        val kotlinFiles = File(root!!, "ui").walkTopDown()
+            .filter { it.isFile && it.extension == "kt" }
+            .toList()
+        assertTrue("لم تُقرأ ملفات ui", kotlinFiles.size > 100)
+
+        // ١) لا خطوة ≥ ٢٠: فوقها تصير العلامات نقاطًا متلاصقة.
+        val stepPattern = Regex("""steps\s*=\s*(\d+)""")
+        val dense = kotlinFiles.flatMap { file ->
+            file.readLines().mapNotNull { line ->
+                if (line.contains("val steps")) return@mapNotNull null
+                stepPattern.find(line)?.groupValues?.get(1)?.toIntOrNull()
+                    ?.takeIf { it >= 20 }
+                    ?.let { "${file.name}:$it" }
+            }
+        }
+        assertTrue("مسار منقّط: خطوات ≥ ٢٠ = $dense", dense.isEmpty())
+
+        // ٢) الفعل المُدمِّر لا يُلبَس سهم باب — يُفحص داخل صفوف التنقّل وحدها،
+        //    فلا تُحسب عناوين حوارات التأكيد صفوفًا.
+        val destructive = listOf(
+            "hud_session_clear",
+            "hud_monitor_delete",
+            "game_sessions_delete",
+            "game_sessions_clear_history",
+            "device_lab_result_clear",
+            "ify_cust_reset",
+        ).map { "R.string.$it" }
+        var destructiveRows = 0
+        kotlinFiles.forEach { file ->
+            val text = file.readText()
+            destructive.forEach { token ->
+                var at = text.indexOf(token)
+                while (at >= 0) {
+                    // الصفّ الذي يملك هذا العنوان هو أقرب `MaxNavigationRow(` قبله.
+                    val rowStart = text.lastIndexOf("MaxNavigationRow(", at)
+                    if (rowStart >= 0 && at - rowStart < 700) {
+                        destructiveRows++
+                        val block = text.substring(rowStart, (at + 400).coerceAtMost(text.length))
+                        assertTrue(
+                            "${file.name}: $token صفّ مُدمِّر بسهم تنقّل",
+                            block.contains("showChevron = false"),
+                        )
+                    }
+                    at = text.indexOf(token, at + 1)
+                }
+            }
+        }
+        assertTrue("لم يُفحص أي صفّ مُدمِّر", destructiveRows >= 6)
+    }
+
     private fun callIndex(source: String, call: String): Int =
         Regex("(?m)^\\s*${Regex.escape(call)}\\(").find(source)?.range?.first ?: Int.MAX_VALUE
 }

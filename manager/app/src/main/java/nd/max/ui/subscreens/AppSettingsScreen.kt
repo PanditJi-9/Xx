@@ -1311,9 +1311,13 @@ private fun ProfilePresetEditor(
                         }
                         MaxSlider(
                             value = value.toFloat(),
-                            onValueChange = { v -> values = values + (name to v.toInt().coerceIn(20, 100)) },
+                            onValueChange = { v ->
+                                values = values + (name to v.roundToInt().coerceIn(20, 100))
+                            },
                             valueRange = 20f..100f,
-                            steps = 79
+                            // بلا علامات: ٧٩ خطوة ترسم خطًّا منقّطًا لا مقياسًا،
+                            // والقيمة تُقرَّب داخل التغيير فتبقى ١٪.
+                            steps = 0
                         )
                     }
                 }

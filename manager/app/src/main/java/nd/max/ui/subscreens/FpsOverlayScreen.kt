@@ -44,6 +44,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.PictureInPicture
 import androidx.compose.material.icons.rounded.Speed
 import androidx.compose.material3.MaterialTheme
@@ -560,8 +561,13 @@ fun FpsOverlayScreen(navController: NavController) {
                             onClick = { exportSession(context, scope) }
                         )
                         MaxGroupDivider()
+                        // الحذف ليس بابًا يُفتح: صفٌّ بسهمٍ يُقرأ انتقالًا، فيُضغط مرتين
+                        // قبل أن يُفهم أنه أزال الجلسة (عطب اللقطات نفسه).
                         MaxNavigationRow(
                             title = stringResource(R.string.hud_session_clear),
+                            icon = Icons.Rounded.Delete,
+                            iconTone = MaxTone.Caution,
+                            showChevron = false,
                             onClick = { HudRecorder.clear() }
                         )
                     }
@@ -889,6 +895,9 @@ private fun HudMonitorsSection(onChanged: () -> Unit) {
             MaxNavigationRow(
                 title = stringResource(R.string.hud_monitor_delete),
                 subtitle = stringResource(R.string.hud_monitor_delete_desc),
+                icon = Icons.Rounded.Delete,
+                iconTone = MaxTone.Caution,
+                showChevron = false,
                 onClick = {
                     MonitorPrefs.remove(context, spec.id)
                     refresh()

@@ -1,3 +1,23 @@
+## ROUND-CLOSE-80 — الأصناف الثلاثة تُمسح على ٤٦٢ ملفًا، لا على شاشةٍ واحدة — 2026-11-12 · DONE_WITH_CONCERNS
+
+**TASK:** بعد إصلاح لقطات المالك في `GameSessions` (ROUND-CLOSE-78)، امسح أصناف العطب
+الثلاثة نفسها على بقية الواجهة: مسار مقياس منقّط، وفعل مُدمِّر مرسوم كباب تنقّل، وساعة
+عرض تُبنى من طوابع زمنية خاطئة.
+
+**SEARCH FIRST (§0.5):** لا مكوّن جديد. `MaxNavigationRow` صار يقبل `showChevron` في
+ROUND-CLOSE-78، و`MaxSlider`/`MaxSliderRow` يحملان `steps` أصلًا. فالتعديل استعمال
+للمقبض القائم لا مسار ثانٍ. وبحث الساعة: `sessionClock(` في `FpsOverlayScreen` تُغذّى
+`tally.spanMs` (مدّة، سليمة)، و`DeviceLabScreen` يمرّر `atMs` إلى `DateFormat` (تاريخ،
+سليم) — فالعطب كان في `GameSessions` وحدها وأُغلق سابقًا.
+
+**SHIPPED:** ستة مواضع (٣ صفوف مُدمِّرة في `FpsOverlay` · `DynamicIslandTabs` · `DeviceLab` · تصحيح محاذاة في `GameSessions` · مقياس `AppSettings` ٧٩→٠ · مقياسا الإزاحة ٣٥/٢٩→٠ بتقريب ١٠dp) + حارس `ScreenArchetypeTest` الجديد.
+
+**MEASURED:** ٤٦٢ ملفًا · `steps ≥ ٢٠` صفر · ١٠ صفوف مُدمِّرة كلها بلا سهم · البوابات الخمس و`git diff --check` خضراء (design_tokens ٢٤٧/٣٠٠).
+
+**BUILD:** الترجمة غير مُتحقّقة محليًّا؛ CI هو المُصرّف. الشكل يحتاج جهازًا.
+
+**NEXT:** حكم بناء `main`، ثم لا كود متبقٍّ من M0–M4.
+
 ## ROUND-CLOSE-79 — M4: اللقطة الحيّة تُقرأ حيث تُرسم، لا على الجذر — 2026-11-12 · DONE_WITH_CONCERNS
 
 **TASK:** «اكمل m3 و m4 كلها دون توقف» — M4: تقليل إعادات التركيب في `FpsOverlay` و`GameSessions`، بلا بناء محلي، دفعة واحدة إلى `main`.

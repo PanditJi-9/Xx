@@ -446,10 +446,12 @@ internal fun DesignTabContent(
                 MaxSliderRow(
                     title = stringResource(R.string.ify_cust_left_right),
                     value = x,
-                    onValueChange = { IslandSettings.offsetX.value = it },
+                    onValueChange = { IslandSettings.offsetX.value = (it / 10f).roundToInt() * 10f },
                     valueText = "${x.roundToInt()} dp",
                     valueRange = -180f..180f,
-                    steps = 35,
+                    // العلامات كانت ٣٥ فوق مسار قصير فتقرأ خطًّا منقّطًا؛ التقريب
+                    // بقيمة ١٠dp هنا يحفظ الخطوة نفسها بلا نقاط.
+                    steps = 0,
                     onValueChangeFinished = { IslandSettings.save() },
                     mirrorsInRtl = false
                 )
@@ -457,10 +459,10 @@ internal fun DesignTabContent(
                 MaxSliderRow(
                     title = stringResource(R.string.ify_cust_up_down),
                     value = y,
-                    onValueChange = { IslandSettings.offsetY.value = it },
+                    onValueChange = { IslandSettings.offsetY.value = (it / 10f).roundToInt() * 10f },
                     valueText = "${y.roundToInt()} dp",
                     valueRange = 0f..300f,
-                    steps = 29,
+                    steps = 0,
                     onValueChangeFinished = { IslandSettings.save() }
                 )
                 MaxGroupDivider()
@@ -766,6 +768,8 @@ internal fun DesignTabContent(
                 subtitle = stringResource(R.string.ify_cust_reset_sub),
                 icon = Icons.Rounded.RestartAlt,
                 iconTone = MaxTone.Critical,
+                // يُعيد الضبط بعد تأكيد، لا يفتح شاشة: السهم كان يوعد ببابٍ ليس هنا.
+                showChevron = false,
                 onClick = { resetConfirmSetter(true) }
             )
         }

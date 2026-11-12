@@ -2260,6 +2260,8 @@ private fun LabResultDialog(
                 MaxNavigationRow(
                     title = stringResource(R.string.device_lab_result_clear),
                     icon = Icons.Rounded.RestartAlt,
+                    // يُفرّغ النتيجة فورًا؛ سهم بابٍ هنا يُقرأ انتقالًا لا محوًا.
+                    showChevron = false,
                     onClick = onClear,
                 )
             }

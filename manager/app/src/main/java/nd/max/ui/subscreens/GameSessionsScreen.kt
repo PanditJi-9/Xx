@@ -656,7 +656,7 @@ fun GameSessionsScreen(
                             subtitle = stringResource(R.string.game_sessions_clear_history_note),
                             icon = Icons.Rounded.Delete,
                             iconTone = MaxTone.Caution,
-                        showChevron = false,
+                            showChevron = false,
                             onClick = { viewModel.clear(context) }
                         )
                     }

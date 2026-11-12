@@ -149,6 +149,73 @@ NeuralDashboardKit.kt:673:12 Syntax error: Expecting a top level declaration.
 **ما لم يُفقد:** `ui/component/PulseArt.kt` و`AmbientGlowCycle.kt` (حذف الملفّين الكاملين من ROUND-CLOSE-63)
 يبقيان محذوفين، وحارس مستوى الملفّ يبقى، وإصلاح استثناء `AppSettings` في `DestinationDoorTest` يبقى.
 
+### ROUND-CLOSE-80 — الأصناف الثلاثة تُمسح على ٤٦٢ ملفًا، لا على شاشةٍ واحدة — 2026-11-12 · DONE_WITH_CONCERNS
+
+**TASK:** بعد إصلاح لقطات المالك في `GameSessions` (ROUND-CLOSE-78)، امسح أصناف العطب
+الثلاثة نفسها على بقية الواجهة: مسار مقياس منقّط، وفعل مُدمِّر مرسوم كباب تنقّل، وساعة
+عرض تُبنى من طوابع زمنية خاطئة.
+
+**SEARCH FIRST (§0.5):** لا مكوّن جديد. `MaxNavigationRow` صار يقبل `showChevron` في
+ROUND-CLOSE-78، و`MaxSlider`/`MaxSliderRow` يحملان `steps` أصلًا. فالتعديل استعمال
+للمقبض القائم لا مسار ثانٍ. وبحث الساعة: `sessionClock(` في `FpsOverlayScreen` تُغذّى
+`tally.spanMs` (مدّة، سليمة)، و`DeviceLabScreen` يمرّر `atMs` إلى `DateFormat` (تاريخ،
+سليم) — فالعطب كان في `GameSessions` وحدها وأُغلق سابقًا.
+
+**SHIPPED**
+
+1. `ui/subscreens/FpsOverlayScreen.kt` — `hud_session_clear` و`hud_monitor_delete`:
+   أيقونة حذف بنغمة تحذير و`showChevron = false` (كانا صفَّي تنقّل بلا أيقونة).
+2. `ui/subscreens/DynamicIslandTabs.kt` — صفّ `ify_cust_reset`: `showChevron = false`
+   (يُعيد الضبط بعد تأكيد، لا يفتح شاشة).
+3. `ui/subscreens/DeviceLabScreen.kt` — صفّ `device_lab_result_clear`: `showChevron = false`.
+4. `ui/subscreens/GameSessionsScreen.kt` — تصحيح محاذاة `showChevron = false` الذي
+   أُضيف في الجولة السابقة (كان خارج ترتيب الوسائط).
+5. `ui/subscreens/AppSettingsScreen.kt` — مقياس النسبة: `steps = 79 ← 0` والتقريب
+   `roundToInt().coerceIn(20, 100)` داخل `onValueChange` (كان `toInt()` يقتطع).
+6. `ui/subscreens/DynamicIslandTabs.kt` — مقياسا الإزاحة: `steps = 35/29 ← 0` مع تقريب
+   ١٠dp داخل `onValueChange`، فبقيت الخطوة نفسها بلا نقاط.
+7. `ui/mainscreens/ScreenArchetypeTest.kt` — حارس جديد
+   `destructive rows carry no chevron and no slider draws a dotted track`: لا سطر
+   `steps = N` بقيمة ≥ ٢٠ في `ui/**` (يتجاهل `val steps` المحلي في `CubeCanvas`)، وكل
+   عنوان مُدمِّر يُفحص في الصفّ الذي يملكه (أقرب `MaxNavigationRow(` قبله، وبمسافة
+   < ٧٠٠ حرف) فيجب أن يحمل `showChevron = false`. فحص أول جرّب نافذة ٥٠٠ حرف فسقط
+   زائفًا على `DeviceLab` لأن نافذة صفٍّ سابق التقطت عنوان الصفّ التالي؛ فاستُبدل
+   بمنطق «أقرب صفّ قبل العنوان».
+
+**MEASURED (أوامر هذه الجولة)**
+
+- مسح `ui/**`: **٤٦٢ ملف Kotlin**؛ `steps ≥ 20` = **صفر** (كانت `AppSettings: 79`
+  و`DynamicIslandTabs: 35` و`29`). و`CubeCanvas.val steps = 40` ليس وسيط مقياس.
+- صفوف مُدمِّرة بلغت **١٠** عبر الملفات؛ منها **٠** بلا `showChevron = false`.
+- `kt_balance.py --assert` → ٣٣٦٢ ملفًا · عوائق ٠
+- `code_health.py --assert` → صحّة نظيفة (exit 0)
+- `design_tokens.py --assert` → ٢٤٧/٣٠٠
+- `rtl_guard.py --assert` → صفر مخالفة (هدفا مقاس رمزي كما هما: `GamePanelSurface`
+  و`HudSurface`)
+- `i18n_coverage.py --assert` → ٨٤ + en · ٨٥/٨٥ كودًا · عوائق ٠
+- `git diff --check` → نظيف
+
+**BUILD:** لا بناء محلي (أمر المالك). **الترجمة غير مُتحقّقة في هذه البيئة**؛ CI هو
+المُصرّف. والحكم البصري على شكل المسار والمقبض وموضع الأيقونة **يحتاج جهازًا**.
+
+**RESIDUAL RISK**
+
+- المقاييس ذات `steps ≤ 15` (مثل `CrosshairSettingsCard` و`FpsOverlay`) تُبقي علامات
+  متباعدة؛ لم تُمس لأنها تُقرأ مقياسًا لا خطًّا منقّطًا — والحكم البصري يحتاج جهازًا.
+- `AppSettings` صار يقرّب بدل أن يقتطع: نفس الدقة (١٪) لكن القيمة قد تعلو بجزء عند
+  السحب من اليسار إلى اليمين — سلوك مقصود ومُعلَن.
+- المراجعة المستقلة ما زالت محجوبة (`Free usage limit reached`)، فلا حكم سلامة خارجي
+  في هذه الجولة. وذاكرة claude-mem: الاعتماد أُصلح لكن المزوّد يردّ 522.
+
+**ذاكرة §7.6:** العَرْض: صنف العطب المصلوح في شاشة واحدة. أول سطر خالف: `steps = 79`
+في `AppSettingsScreen.kt:1316`. الفرضية التي ثبتت: الأصناف الثلاثة مشتركة في المكوّنات
+لا في الشاشة. الأمر الذي أُعيد ونتيجته: المسح البنيوي + بوابات §5 (**مقيس**)، والحكم
+البصري (**يحتاج جهازًا**). ما لا يُعاد اختباره: غياب الخطوات الكثيفة وغياب السهم عن
+الصفوف المُدمِّرة — يحرسهما `ScreenArchetypeTest`.
+
+**NEXT:** قراءة حكم بناء الدفعة على `main`، ثم لا عمل كودي متبقٍّ من M0–M4؛ المتبقي
+جهازي (عدّ إعادات التركيب، ٣٦٠dp، اللمس، RTL) وقرار المالك في أدوات `Control` الثلاث.
+
 ### ROUND-CLOSE-79 — M4: اللقطة الحيّة تُقرأ حيث تُرسم، لا على الجذر — 2026-11-12 · DONE_WITH_CONCERNS
 
 **TASK:** «اكمل m3 و m4 كلها دون توقف» — M4: تقليل إعادات التركيب في الأسطح الحيّة
