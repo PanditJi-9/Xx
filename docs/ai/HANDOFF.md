@@ -149,6 +149,30 @@ NeuralDashboardKit.kt:673:12 Syntax error: Expecting a top level declaration.
 **ما لم يُفقد:** `ui/component/PulseArt.kt` و`AmbientGlowCycle.kt` (حذف الملفّين الكاملين من ROUND-CLOSE-63)
 يبقيان محذوفين، وحارس مستوى الملفّ يبقى، وإصلاح استثناء `AppSettings` في `DestinationDoorTest` يبقى.
 
+### ROUND-CLOSE-83 — المجتمع في «حول» وحدها: المستودع والقناة والجروب — 2026-11-12 · DONE_WITH_CONCERNS
+
+**TASK:** «اضف ايضا github والقناة الجديدة في شاشة حول في الاعدادات وgroup الجديد https://t.me/MaxManagerChat والجروب فقط في حول وليس في شاشة البداية».
+
+**FILES:** `ui/subscreens/AboutScreen.kt` · `ui/mainscreens/ScreenArchetypeTest.kt` · `res/values/strings.xml` · `res/values-ar/strings.xml` · سجلّات الجولة.
+
+**SEARCH FIRST (§0.5):** «حول» كانت تحمل رابطًا واحدًا قديمًا لـ«Telegram Group» يشير إلى `https://t.me/ROBINHOOD_GROUP_RODIN` — أي أن الجروب كان موجودًا **بالخطأ** وبرابطٍ غير الذي أمر به المالك. وأيقونتا `ic_github` و`ic_telegram` موجودتان في `res/drawable`، و`ExpressiveListItem` تقبل `onClick` أصلًا. فلم يُضَف مكوّن ولا مسار ثانٍ: الرابط القديم أُزيل، والصفوف الثلاثة بُنيت بالمكوّن القائم (`ExpressiveList`)، والتهيئة **لم تُلمس** فبقيت القناة وحدها فيها.
+
+**SHIPPED:**
+1. `AboutScreen` — تحت بطاقة المشروع ثلاثة صفوف قابلة للنقر: **GitHub** (`nader295 / MaxManager` · `ic_github` · الرابط `https://github.com/nader295/MaxManager`)، و**قناة MaxManager** (`@GetMaxManager` · `ic_telegram`)، و**Telegram Group** (`@MaxManagerChat` · `https://t.me/MaxManagerChat`).
+2. حُذف زرّ Telegram القديم من رأس الصفحة وأيقونته الذيلية من صفّ المشروع — لا بابين للمجتمع نفسه، ولا رابط ميت.
+3. مفتاحان جديدان في `values/` و`values-ar/` فقط: `about_channel_handle` و`about_group_handle` (المعرّفان نفساهما في اللغتين).
+4. حارس `ScreenArchetypeTest.test` باسم `about carries the community links and onboarding keeps only the channel`: يقرأ `AboutScreen.kt` فيشترط المستودع والقناة والجروب وأيقونة GitHub، ويقرأ `GetStartedScreen.kt` فيشترط القناة **ويمنع** `MaxManagerChat` — أمر المالك «الجروب فقط في حول».
+
+**MEASURED:** `kt_balance` 3366 ملفًا · عوائق 0 · `code_health` «صحّة نظيفة» exit 0 · `i18n_coverage` 84+en · 85/85 كودًا · عوائق 0 · `rtl_guard` 0 مخالفات (هدفا مقاس رمزي كما هما) · `design_tokens` 246/300 · `resource_compile` aapt2 حقيقي وكل الموارد تُترجم · `git diff --check` نظيف. الفرق: ٤ ملفات · +72/−29.
+
+**BUILD:** الترجمة غير مُتحقّقة في هذه البيئة — CI هو المُصرّف. وفتح الروابط والشكل وRTL على الشاشة **يحتاج جهازًا**.
+
+**RESIDUAL RISK:** الروابط تُفتح بـ`ACTION_VIEW` بلا تحقّق من وجود تطبيق تيليجرام أو متصفّح (سلوك `AboutScreen` القائم، لم يتغيّر) · الجروب مقصود في «حول» وحدها، ومَن أراده في التهيئة لاحقًا يغيّر حارسًا واحدًا · المراجعة المستقلة ما زالت محجوبة بالحدّ المجاني، وذاكرة claude-mem تردّ 522 من المزوّد.
+
+**ذاكرة §7.6:** العَرَض: مجتمع مبعثر ورابط جروب قديم في «حول» · أول سطر خالف: رابط `ROBINHOOD_GROUP_RODIN` مكان `MaxManagerChat` · الفرضية التي ثبتت: البطاقة القائمة تكفي، والحذف قبل الإضافة يمنع بابين · الأمر: البوابات أعلاه (مقيس) · ما لا يُعاد اختباره: وجود `ic_github`/`ic_telegram`، وقبول `ExpressiveListItem` لـ`onClick`.
+
+**NEXT:** حكم بناء هذه الدفعة، ثم ما يثبته جهاز المالك (فتح الروابط الثلاثة، وRTL في «حول»).
+
 ### ROUND-CLOSE-82 — جذر ومجتمع في صفحة، وأذونات في صفحة، ولا غطاء يعلّق — 2026-11-12 · DONE_WITH_CONCERNS
 
 **TASK:** «حسن تصميم زر جذر وشاشة الوصول المنبثقة … اريد في شاشة البداية خيار لاختيار الروت …

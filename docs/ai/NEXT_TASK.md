@@ -1,3 +1,17 @@
+## ROUND-CLOSE-83 — المجتمع في «حول» وحدها — 2026-11-12 · DONE_WITH_CONCERNS
+
+**TASK:** إضافة GitHub والقناة والجروب إلى «حول»؛ والجروب **لا** في شاشة البداية.
+
+**SEARCH FIRST:** «حول» كانت تحمل رابط جروب قديمًا (`ROBINHOOD_GROUP_RODIN`)، والأيقونتان موجودتان، و`ExpressiveListItem` تقبل `onClick` — فلا مكوّن جديد ولا مسار ثانٍ.
+
+**SHIPPED:** ثلاثة صفوف في `AboutScreen` (GitHub · `@GetMaxManager` · `@MaxManagerChat`) وحذف الزرّ القديم وأيقونته الذيلية؛ مفتاحا `about_channel_handle` و`about_group_handle` في en/ar؛ حارس يمنع `MaxManagerChat` في التهيئة.
+
+**MEASURED:** البوابات السبع exit 0 (3366/0 · صحّة نظيفة · 85/85 · RTL 0 · 246/300 · aapt2 · diff نظيف).
+
+**BUILD:** الترجمة غير مُتحقّقة محليًّا؛ CI هو المُصرّف. فتح الروابط وRTL يحتاجان جهازًا.
+
+**NEXT:** حكم البناء.
+
 ## ROUND-CLOSE-82 — جذر ومجتمع في صفحة، وأذونات في صفحة، ولا غطاء يعلّق — 2026-11-12 · DONE_WITH_CONCERNS
 
 **TASK:** أمر المالك: دمج اختيار الروت ومنح الجذر والانضمام وGitHub في صفحة تهيئة جديدة، والأذونات في

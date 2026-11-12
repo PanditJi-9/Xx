@@ -378,6 +378,30 @@ class ScreenArchetypeTest {
         )
     }
 
+    /**
+     * **المجتمع في «حول» وحدها، والقناة وحدها في التهيئة.**
+     *
+     * طلب المالك: يُضاف المستودع والقناة والجروب إلى «حول»؛ والجروب **لا** يظهر في شاشة
+     * البداية. والحدّ المُعلَن: فحص نصّي على الروابط، لا حكم على الشكل أو على فتح الرابط.
+     */
+    @Test
+    fun `about carries the community links and onboarding keeps only the channel`() {
+        val root = sourceRoot() ?: return
+        val about = File(root, "ui/subscreens/AboutScreen.kt").readText()
+        val onboarding = File(root, "ui/mainscreens/GetStartedScreen.kt").readText()
+
+        assertTrue("حول: المستودع غائب", about.contains("https://github.com/nader295/MaxManager"))
+        assertTrue("حول: القناة غائبة", about.contains("https://t.me/GetMaxManager"))
+        assertTrue("حول: الجروب غائب", about.contains("https://t.me/MaxManagerChat"))
+        assertTrue("حول: صفّ GitHub بلا أيقونته", about.contains("R.drawable.ic_github"))
+
+        assertTrue("التهيئة: القناة غائبة", onboarding.contains("https://t.me/GetMaxManager"))
+        assertFalse(
+            "الجروب يجب أن يبقى في «حول» وحدها",
+            onboarding.contains("MaxManagerChat")
+        )
+    }
+
     private fun callIndex(source: String, call: String): Int =
         Regex("(?m)^\\s*${Regex.escape(call)}\\(").find(source)?.range?.first ?: Int.MAX_VALUE
 }

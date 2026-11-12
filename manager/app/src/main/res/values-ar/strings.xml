@@ -1222,6 +1222,8 @@
     <string name="home_focus_memory_desc">الذاكرة تكاد تمتلئ. أوقف تطبيقات الخلفية أو فعّل ZRAM.</string>
 
     <string name="telegram_group">مجموعة تيليجرام</string>
+    <string name="about_channel_handle">@GetMaxManager</string>
+    <string name="about_group_handle">@MaxManagerChat</string>
     <string name="telegram_group_desc">انضم إلى مجتمعنا على تيليجرام</string>
     <string name="app_tab_performance">أداء</string>
     <string name="app_tab_display">العرض</string>

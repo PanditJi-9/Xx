@@ -2,6 +2,8 @@
 <resources>
     <string name="about_maxmanager">About Max Manager</string>
     <string name="telegram_group">Telegram Group</string>
+    <string name="about_channel_handle">@GetMaxManager</string>
+    <string name="about_group_handle">@MaxManagerChat</string>
     <string name="telegram_group_desc">Join our community on Telegram</string>
     <string name="about_source_code">Join our %1$s group</string>
     <string name="accent_color">Accent Color</string>
