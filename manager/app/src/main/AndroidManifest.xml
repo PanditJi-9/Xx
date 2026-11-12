@@ -316,6 +316,20 @@
             </intent-filter>
         </service>
 
+        <!--
+          لوبي الألعاب: باب إلى الوجهة القائمة، لا مفتاح حالة ولا اختيار لعبة ولا كتابة عتاد.
+          والنيّة هي عقد الاختصار نفسه (`WidgetIntents.ROUTE_GAME_LOBBY`).
+        -->
+        <service
+            android:name=".TileService.GameLobbyTileService"
+            android:icon="@drawable/widget_ic_game" android:label="@string/game_lobby_title"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+
         <!-- إدارة التجميد: تفتح الشاشة القائمة لاختيار الحزمة؛ لا تجميد ولا حذف من البلاطة. -->
         <service
             android:name=".TileService.FreezeManagerTileService"

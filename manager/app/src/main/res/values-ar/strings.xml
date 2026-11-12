@@ -78,6 +78,8 @@
     <string name="tile_freeze_manager">إدارة التجميد</string>
     <string name="tile_freeze_choose_app">اختر تطبيقًا</string>
     <string name="tile_freeze_open_failed">تعذّر فتح إدارة التجميد</string>
+    <string name="tile_game_lobby_open">افتح مساحة الألعاب</string>
+    <string name="tile_game_lobby_failed">تعذّر فتح اللوبي</string>
     <string name="vm_section_title">مقابض نواة VM</string>
     <string name="vm_section_desc">الكتابة عبر مسار الكتابة الواحد، وكل قيمة تُقرأ مرتجعة قبل أن تُعدّ ناجحة.</string>
     <string name="vm_loading">جارٍ قراءة قيم النواة…</string>

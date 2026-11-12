@@ -121,6 +121,8 @@
     <string name="tile_freeze_manager">Freeze manager</string>
     <string name="tile_freeze_choose_app">Choose an app</string>
     <string name="tile_freeze_open_failed">Could not open the manager</string>
+    <string name="tile_game_lobby_open">Open Game Space</string>
+    <string name="tile_game_lobby_failed">Could not open the lobby</string>
     <string name="vm_section_title">Kernel VM knobs</string>
     <string name="vm_section_desc">Written through the single write path; every value is read back before it counts.</string>
     <string name="vm_loading">Reading kernel values…</string>
