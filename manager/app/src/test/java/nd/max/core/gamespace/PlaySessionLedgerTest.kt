@@ -86,7 +86,9 @@ class PlaySessionLedgerTest {
 
     @Test
     fun `relative age never invents a session and buckets the known ones`() {
-        val now = 10 * hour
+        // Base must stay above every subtracted age: 10h − 23h was negative, and the
+        // production guard correctly read that future/invalid timestamp as None.
+        val now = 100 * hour
         assertEquals(PlayAge.None, PlaySessionLedger.playAge(now, null))
         assertEquals(PlayAge.None, PlaySessionLedger.playAge(now, now + 1L))
         assertEquals(PlayAge.Minutes(1), PlaySessionLedger.playAge(now, now - 1_000L))
