@@ -321,6 +321,30 @@ sealed class MaxDestination(
     data object AppSettings : MaxDestination("app_settings/{pkg}", R.string.max_title_app_settings, Icons.Rounded.AppSettingsAlt, Apps)
 
     /**
+     * لوبي الألعاب بالعرضيّ — **سطح اللعب لا قائمة إعدادات**.
+     *
+     * كانت إلى جانبها شاشة مكتبة عمودية (`GameSpace`) أُزيلت بأمر المالك؛ فهذه الوجهة هي السطح
+     * الوحيد للألعاب: لوحة عرضية تُفتح من قائمة `Apps`، وتقود إلى التشغيل وملف اللعبة واللوحة
+     * الجانبية وإدارة المكتبة. **والوسم الافتراضي ([MaxRisk.Normal]) مقصود:** هذه الشاشة لا تكتب عتادًا
+     * (ADR-11)، و[MaxRisk.Advanced] محفوظ لأدوات الكتابة المحجوبة — فلا تُحجب لوحةُ اختيار لعبة.
+     *
+     * **واستُرجعت في تكملة ٨٥:** سقطت سهوًا مع كتلة `HmaCompanion` حين حُذفت شاشة HMA بأمر
+     * المالك، فكشفها عقد المعرض (`gallery.json` يطلب `gamelobby` ثلاث مرّات) قبل أن يكسر
+     * الرسمُ الترجمةَ. والحادثة نفسها هي سبب بقاء العقد: عقدٌ يطلب وجهةً يجعل حذفها غير صامت.
+     */
+    data object GameLobby : MaxDestination("gamelobby", R.string.game_lobby_title, Icons.Rounded.Gamepad, Apps)
+
+    /**
+     * **باب اللوبي في قائمة `Apps`** — كان سطحًا لا يُوصل إليه إلا من شاشة المكتبة وحدها.
+     *
+     * وليس هذا تنظيمًا شكليًّا: قائمة `Apps` تسرد كل وجهة أبوها `Apps`، ولو دخل اللوبي بها لظهر
+     * صفًّا عاديًّا إلى جانب أدوات مثل `SetEdit`. واللوبي **سطح لعب** لا أداة، فيُستثنى من السرد
+     * ويُوضع له **صفّ بارز في رأس القائمة** (`ApplistScreen.LobbyBanner`) — نفس مبدأ «الأبواب التي
+     * تهمّ في الصفّ الأول» (`ApplistScreen.GameLobbyDoor`).
+     */
+    data object EmulatorHub : MaxDestination("emulatorhub", R.string.emu_hub_title, Icons.Rounded.Apps, Apps)
+
+    /**
      * `DEVICE-LAB-01` — الاختبار التفاعليّ للعتاد: شاشة ولمس وأزرار واهتزاز وصوت
      * وفلاش ومستشعرات وبطارية. **تحت التحكّم بأمر المالك** (كانت في الإعدادات): أدوات
      * الجهاز تُطلب من مكان واحد. وتستعمل واجهات النظام العامة وحدها: لا جذر ولا كتابة في sysfs.
@@ -402,15 +426,14 @@ sealed class MaxDestination(
     data object About : MaxDestination("aboutscreen", R.string.section_about, Icons.Rounded.Info, Settings)
     data object Privilege : MaxDestination("privilege", R.string.max_privilege_title, Icons.Rounded.Shield, Settings)
 
-
     // Control - Advanced tools (gated, not preferences)
     data object SetEdit : MaxDestination("setedit", R.string.max_title_setedit, Icons.Rounded.Edit, Control, MaxRisk.Advanced)
     data object ActivityLauncher : MaxDestination("activitylauncher", R.string.max_title_activity_launcher, Icons.AutoMirrored.Rounded.Launch, Control, MaxRisk.Advanced)
 
     /**
      * `GAP-09` — مدير الملفات بالجذر. أداة متقدّمة لا تفضيل: كل عملية تكتب على القرص
-     * خارج نطاق إعداداتنا، فمكانها تحت `Control → Tools` مع تعليم المخاطرة لا في قائمة
-     * تفضيلات تُقلَّب بلا انتباه.
+     * خارج نطاق إعداداتنا. **ونُقل إلى `StorageHub` بأمر المالك** (تكملة ٨٥): مدير الملفات
+     * شأنه شأن التخزين، ووجهته من السجلّ تتبع أبيها فلا قائمة ثانية تصطفّ بيد.
      */
     data object FileManager : MaxDestination("filemanager", R.string.max_files_title, Icons.Rounded.Folder, StorageHub, MaxRisk.Advanced)
 
