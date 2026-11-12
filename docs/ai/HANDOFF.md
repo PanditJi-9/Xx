@@ -183,6 +183,13 @@ NeuralDashboardKit.kt:673:12 Syntax error: Expecting a top level declaration.
 و**عدّ إعادات التركيب نفسه لا يُقاس إلا على جهاز** (`Compose` runtime)؛ ما قيس هنا هو إزالة
 سببها البنيوي: صفر قراءة لقطة على الجذرين.
 
+**CI (مقيس):** دُفعت الدفعة `d66734cb` فسقط `ScreenArchetypeTest > M2 carriers lead their dependent
+rows and static blocks` عند السطر ١٤٣ (`43188198930`، خطوة «Tests + assemble + package»): الحارس
+كان يقارن `HudSurface(` بـ`MaxSwitchRow(` في الملف كله، ونداء `HudSurface` انتقل مع M4 إلى تعريف
+`HudPreviewCard` (سطر ٦٢٣) بعد المفاتيح، فصار يقيس موضع التعريف لا موضع التركيب. الترجمة نجحت
+والاختبارات جرت (لم يكن خطأ مُصرّف). أُصلح الحارس إلى `HudPreviewCard(` < `MaxSwitchRow(` — الحامل
+هو البطاقة التي تُستدعى في الشاشة — ورُتّب `NEXT_TASK` (٧٦ كان أسفل ٧٥) في دفعة الإصلاح نفسها.
+
 **RESIDUAL RISK:** المعاينة وشبكة الحقول تُعاد تركيبهما مع كل عيّنة — وهو مقصودهما (تعرضان
 الرقم الحيّ) · `HudSnapshot` نفسه ما زال يُنشأ كل عيّنة في `HudSession`، ولم يُلمس (`core/**` خارج
 النطاق) · المراجعة المستقلة محجوبة (`Free usage limit reached`) · إجمالي JUnit غير معلوم.

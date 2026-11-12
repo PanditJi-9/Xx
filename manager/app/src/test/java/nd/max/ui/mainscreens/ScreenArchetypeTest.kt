@@ -140,9 +140,11 @@ class ScreenArchetypeTest {
         )
 
         val fps = File(root, "ui/subscreens/FpsOverlayScreen.kt").readText()
+        // الحامل صار بطاقة المعاينة نفسها (`HudPreviewCard`) بعد M4: قراءة اللقطة الحيّة
+        // انتقلت إلى داخل تركيبها، فموضع `HudSurface(` في الملف تابع للتعريف لا للترتيب.
         assertTrue(
             "FpsOverlay: أدوات الضبط تسبق الآلة",
-            callIndex(fps, "HudSurface") < callIndex(fps, "MaxSwitchRow"),
+            callIndex(fps, "HudPreviewCard") < callIndex(fps, "MaxSwitchRow"),
         )
         // المعاينة والنافذة الحيّة تقرآن مرشّحًا واحدًا: كانت المعاينة تفترض `All`
         // فتعرض ما أخفاه المستخدم في اللعبة (عطب فِدْيَة قيس وأُصلح في M2).
