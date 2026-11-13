@@ -8,8 +8,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -105,19 +103,18 @@ import nd.max.ui.component.LobbyNotice
 import nd.max.ui.component.LobbyPalette
 import nd.max.ui.component.LobbyRoundButton
 import nd.max.ui.component.LobbySnapSpring
-import nd.max.ui.component.LobbyStageBackdrop3D
 import nd.max.ui.component.LobbyStatusCapsule
 import nd.max.ui.component.LobbyTopTabs
 import nd.max.ui.component.LobbyWindowEffect
 import nd.max.ui.component.LocalLobbySounds
 import nd.max.ui.component.lobbyIntro
-import nd.max.ui.component.lobbyLoop
 import nd.max.ui.component.rememberLobbyAnimationsEnabled
 import nd.max.ui.component.rememberLobbyIntro
 import nd.max.ui.component.rememberLobbySounds
 import nd.max.ui.component.rememberLobbyTone
 import nd.max.ui.design.MaxDuration
 import nd.max.ui.design.MaxSpace
+import nd.max.ui.gamespace.MonolithField
 import nd.max.ui.gamespace.NexusPage
 import nd.max.ui.navigation.MaxDestination
 import nd.max.ui.navigation.openAppSettings
@@ -131,42 +128,28 @@ import nd.max.ui.viewmodel.GameSpaceViewModel
 private val TopBarHeight = 56.dp
 
 /** عمود المعلومات والحلقة القديمة يوجّهان إضاءة الخلفية؛ المركز بينهما. */
-private const val INFO_WEIGHT = 0.34f
-private const val DECK_WEIGHT = 0.66f
-private const val DECK_CENTER_SHARE = INFO_WEIGHT + DECK_WEIGHT / 2f
 
 /** وميض الإطلاق: شدّة اللون، وتكبير الشاشة وتلاشيها أثناء الغوص. */
 private const val LAUNCH_ALPHA = 0.60f
 private const val DIVE_ZOOM = 0.05f
 private const val DIVE_FADE = 0.35f
 
-/** انتقال المسرح ⇄ مركز التحكم: انكماش وتلاشٍ وميل رأسيّ للصفحة التي تغادر أو تدخل. */
-private const val ROOT_SHRINK = 0.07f
+/** انتقال المسرح ⇄ مركز التحكم: تلاشٍ فقط. لا ميل ولا تصغير — حركة الصفحة ليست زخرفة. */
 private const val ROOT_FADE = 0.85f
-private const val ROOT_TILT_DEGREES = 9f
-private const val ROOT_CAMERA = 20f
-private const val ROOT_BACKDROP_DIM = 0.55f
 
 /** سرعة مسحة الانتقال بين الصفحتين: أسرع صعودًا إلى مركز التحكّم، وأبطأ نزولًا إلى المسرح. */
 private const val SWISH_UP_RATE = 1.15f
 private const val SWISH_DOWN_RATE = 0.85f
 
-/** دورة انجراف الجسيمات بطيئة عمدًا (ms). */
-private const val DRIFT_MS = 40_000
-
 private val metaCache = LruCache<String, GameLobbyMeta>(64)
 
 /**
- * لوبي الألعاب ثلاثيّ الأبعاد. صفحتان رأسيّتان تُسحبان كأنهما واحدة:
+ * مساحة الألعاب: صفحتان رأسيّتان — **Nexus** (لعبة واحدة كبيرة، جاهزيتها، والإطلاق) و**مركز التحكّم**
+ * (ملف اللعبة، اللوحة، خيارات اللوبي، الرؤى، وإدارة المكتبة).
  *
- *  - **المسرح:** عمود معلومات اللعبة + «ابدأ» + بلاطتا الملف واللوحة (بداية الاتّجاه)، وحلقة شرائح
- *    بعمق حقيقيّ (نهاية الاتّجاه) فوق خلفيّة من أيقونة اللعبة نفسها وجسيمات ضوء.
- *  - **مركز التحكّم:** سطح واحد يضمّ ملف اللعبة ومقبض اللوحة الجانبية وخيارات اللوبي وإدارة الألعاب؛
- *    ما كان أربع نوافذ منفصلة. حُذفت «المجموعات» (Combos) بالكامل بطلب المالك.
- *
- * الانتقال بين الصفحتين يتبع الإصبع لحظةً بلحظة (VerticalPager): المسرح ينكمش ويميل ويخفت بينما
- * يرتفع المركز ويستقيم، والتبويبات العلويّة تنزلق مع الموضع نفسه. من الريموت: ↑ أو R1 يفتح المركز،
- * L1 أو الرجوع يعيد المسرح.
+ *  - الخلفية حقل بازلتيّ ساكن واحد؛ لا مسرح متحرّك ولا جسيمات خلف واجهة ساكنة.
+ *  - الانتقال بين الصفحتين تلاشٍ بسيط يتبع الإصبع (VerticalPager)، والتبويبات العلويّة تنزلق معه.
+ *  - من الريموت: ↑ أو R1 يفتح المركز، L1 أو الرجوع يعيد Nexus، و←/→ يبدّلان اللعبة.
  *
  * ### الدخول السينمائيّ والأصوات (بطلب المالك ٢٠٢٦-١٠-٢١)
  *
@@ -266,7 +249,6 @@ fun GameLobbyScreen(
             playStats = playStats
         )
     }
-    val packages = remember(games) { games.map { it.packageName } }
     val rootState = rememberPagerState(initialPage = 0) { 2 }
 
     // انتقال المسرح ⇄ مركز التحكّم: مسحة هواء حين تعبر الصفحة منتصفها (سحبًا أو بلمس التبويب).
@@ -331,14 +313,12 @@ fun GameLobbyScreen(
     }
 
     val animations = rememberLobbyAnimationsEnabled()
-    val ambient = animations && lobbyPrefs.ambient
     // الدخول السينمائيّ: مرّة لكل فتح للشاشة (`rememberSaveable` فلا يُعاد عند تدوير الجهاز). ويُحجَز معه
     // انسياب عناصر اللوبي (`hold`) ليبدأ حين يتلاشى الغطاء لا خلفه.
     var entranceDone by rememberSaveable { mutableStateOf(false) }
     var entranceSkip by remember { mutableIntStateOf(0) }
     val entranceOn = animations && lobbyPrefs.entrance && !entranceDone
     val intro = rememberLobbyIntro(animations, hold = entranceOn)
-    val drift = lobbyLoop(ambient, DRIFT_MS, RepeatMode.Restart, LinearEasing, rest = 0f)
 
     val tick = {
         if (lobbyPrefs.haptics) haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
@@ -398,8 +378,6 @@ fun GameLobbyScreen(
         state = rootState,
         snapAnimationSpec = LobbySnapSpring
     )
-    val depthStrength = lobbyPrefs.depth.strength
-    val focusX = if (rtl) 1f - DECK_CENTER_SHARE else DECK_CENTER_SHARE
     val manageApps = remember(library) {
         library.apps.filter { ForegroundAppResolver.isPackageName(it.packageName) }
             .distinctBy { it.packageName }
@@ -438,18 +416,9 @@ fun GameLobbyScreen(
                 .focusRequester(focus)
                 .focusable()
         ) {
-            LobbyStageBackdrop3D(
-                tone = { toneState.value },
-                position = { activeIndex.toFloat() },
-                packages = packages,
-                drift = drift,
-                motes = ambient,
-                focusX = focusX,
-                modifier = Modifier.graphicsLayer {
-                    val progress = (rootState.currentPage + rootState.currentPageOffsetFraction).coerceIn(0f, 1f)
-                    alpha = 1f - ROOT_BACKDROP_DIM * progress
-                }
-            )
+            // خلفية واحدة ساكنة للشاشتين. لا مسرح متحرّك خلف واجهة ساكنة: كان يستهلك إطارًا كاملًا
+            // ثم يُغطّى بلون معتم، والحركة الدائمة ليست بيانات.
+            MonolithField(modifier = Modifier.fillMaxSize())
 
             VerticalPager(
                 state = rootState,
@@ -471,12 +440,7 @@ fun GameLobbyScreen(
                         .graphicsLayer {
                             val slot = page - (rootState.currentPage + rootState.currentPageOffsetFraction)
                             val a = abs(slot).coerceIn(0f, 1f)
-                            val shrink = 1f - ROOT_SHRINK * a
-                            scaleX = shrink
-                            scaleY = shrink
                             alpha = 1f - ROOT_FADE * a
-                            rotationX = ROOT_TILT_DEGREES * depthStrength * a
-                            cameraDistance = ROOT_CAMERA * density
                         }
                 ) {
                     if (page == 0) {

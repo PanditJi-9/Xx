@@ -111,8 +111,7 @@ fun NexusScreen(
 ) {
     val selected = model.games.getOrNull(model.selectedIndex) ?: model.games.firstOrNull()
     val accent = monolithAccent(selected?.accent)
-    Box(modifier = modifier.fillMaxSize().background(Monolith.Obsidian)) {
-        MonolithField(modifier = Modifier.fillMaxSize())
+    Box(modifier = modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
