@@ -70,7 +70,6 @@ data class NexusGame(
     val label: String,
     val accent: Color,
     val icon: ImageBitmap? = null,
-    val playtime: String? = null,
     val lastPlayed: String? = null,
     val installedDays: String? = null,
     val monogram: String = label.take(1).uppercase()

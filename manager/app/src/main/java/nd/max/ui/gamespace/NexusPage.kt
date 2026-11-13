@@ -75,7 +75,6 @@ internal fun NexusPage(
             label = game.label,
             accent = if (isSelected) accent else Monolith.Faint,
             icon = if (isSelected) icon else null,
-            playtime = lobbyPlayTimeText(stats[game.packageName]?.totalMs ?: 0L),
             lastPlayed = if (isSelected) recentLine else null,
             installedDays = if (isSelected) installedAge else null,
             monogram = game.label.take(1).uppercase()
