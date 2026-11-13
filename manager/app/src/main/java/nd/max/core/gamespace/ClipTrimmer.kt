@@ -64,7 +64,6 @@ object ClipTrimmer {
         val startUs = startMs.coerceAtLeast(0L) * 1_000L
         val endUs = endMs.coerceAtLeast(startMs) * 1_000L
         val extractor = MediaExtractor()
-        var muxer: MediaMuxer? = null
         var pending: Uri? = null
         var stage = ClipTrimFailure.Unreadable
         return try {
@@ -83,23 +82,24 @@ object ClipTrimmer {
                 ?: return ClipTrimResult.Failed(ClipTrimFailure.Unwritable)
             pending = target
             val descriptor = resolver.openFileDescriptor(target, "rw")
-                ?: return ClipTrimResult.Failed(ClipTrimFailure.Unwritable)
+                ?: throw IllegalStateException("trim output could not be opened")
 
             stage = ClipTrimFailure.Muxing
+            // **الإغلاق قبل `stop()` خطأ:** `stop` يكتب فهرس الملفّ عبر الواصف، فإغلاق
+            // `use` قبله كان يترك المقطع بلا ذيل صالح. ولذلك يبدأ المازج ويُغلق داخل النطاق نفسه.
             descriptor.use { file ->
                 val built = MediaMuxer(file.fileDescriptor, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4)
-                muxer = built
-                val muxTracks = tracks.associate { (index, format) -> index to built.addTrack(format) }
-                built.start()
-                tracks.forEach { (index, format) ->
-                    copyTrack(extractor, built, index, muxTracks.getValue(index), format, startUs, endUs)
+                try {
+                    val muxTracks = tracks.associate { (index, format) -> index to built.addTrack(format) }
+                    built.start()
+                    tracks.forEach { (index, format) ->
+                        copyTrack(extractor, built, muxTracks.getValue(index), format, startUs, endUs)
+                    }
+                    built.stop()
+                } finally {
+                    runCatching { built.release() }
                 }
             }
-            muxer?.let { used ->
-                runCatching { used.stop() }
-                runCatching { used.release() }
-            }
-            muxer = null
 
             resolver.update(
                 target,
@@ -121,10 +121,6 @@ object ClipTrimmer {
             ClipTrimResult.Failed(stage)
         } finally {
             runCatching { extractor.release() }
-            muxer?.let { leftover ->
-                runCatching { leftover.stop() }
-                runCatching { leftover.release() }
-            }
         }
     }
 
