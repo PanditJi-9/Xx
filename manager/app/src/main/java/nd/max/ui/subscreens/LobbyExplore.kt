@@ -92,6 +92,12 @@ import nd.max.ui.design.maxRadius
 private val ExploreColumnMin = MaxVisualSpec.hero * 2f
 
 /**
+ * تحت هذا الارتفاع (هاتف أفقي قصير) يُضغط الرأس: عنوان أصغر، وبلا سطر عدّ، وحشو رأسيّ أقلّ —
+ * فتبقى بطاقة كاملة في المرأى بدل أن يأكل الرأس نصف الشاشة.
+ */
+private val ExploreCompactHeight = 420.dp
+
+/**
  * «استكشف»: مكتبة كاملة فوق المسرح بلا مغادرة اللوبي.
  *
  * لماذا طبقة لا شاشة: المسرح يحمل الاختيار والتشغيل، والبحث في عشرات الألعاب كان يعني سحب الحلقة
@@ -163,8 +169,8 @@ internal fun LobbyExplore(
                 translationY = (1f - entrance) * 24.dp.toPx()
             }
             .displayCutoutPadding()
-            .padding(top = MaxSpace.xxl)
     ) {
+        val compact = maxHeight < ExploreCompactHeight
         // عدد الأعمدة كما تحسبه الشبكة نفسها (المساحة ناقص الحافتين، والفجوة بين عمودين).
         val columns = ((maxWidth - MaxSpace.xl * 2 + MaxSpace.md) / (ExploreColumnMin + MaxSpace.md))
             .toInt()
@@ -216,11 +222,18 @@ internal fun LobbyExplore(
                 .focusRequester(focus)
                 .focusable()
         ) {
-            Column(modifier = Modifier.fillMaxSize()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = if (compact) MaxSpace.sm else MaxSpace.xxl)
+            ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = MaxSpace.xl, vertical = MaxSpace.md),
+                .padding(
+                    horizontal = MaxSpace.xl,
+                    vertical = if (compact) MaxSpace.sm else MaxSpace.md
+                ),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(MaxSpace.md)
         ) {
@@ -228,16 +241,19 @@ internal fun LobbyExplore(
                 Text(
                     text = stringResource(R.string.lobby_explore_title),
                     color = LobbyPalette.Ink,
-                    fontSize = 22.sp,
+                    fontSize = if (compact) 18.sp else 22.sp,
                     fontWeight = FontWeight.Bold,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                Text(
-                    text = stringResource(R.string.lobby_explore_count, games.size, visible.size),
-                    color = LobbyPalette.Muted,
-                    fontSize = 12.sp
-                )
+                // سطر العدّ زينة في العرض القصير: البطاقات نفسها تحمل أرقامها، والعنوان يكفي.
+                if (!compact) {
+                    Text(
+                        text = stringResource(R.string.lobby_explore_count, games.size, visible.size),
+                        color = LobbyPalette.Muted,
+                        fontSize = 12.sp
+                    )
+                }
             }
             LobbyRoundButton(
                 icon = Icons.Rounded.Close,
@@ -325,7 +341,10 @@ internal fun LobbyExplore(
             modifier = Modifier
                 .fillMaxWidth()
                 .horizontalScroll(rememberScrollState())
-                .padding(horizontal = MaxSpace.xl, vertical = MaxSpace.md),
+                .padding(
+                    horizontal = MaxSpace.xl,
+                    vertical = if (compact) MaxSpace.sm else MaxSpace.md
+                ),
             horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm)
         ) {
             LobbyFilter.entries.forEach { item ->
@@ -399,7 +418,10 @@ internal fun LobbyExplore(
                 columns = GridCells.Adaptive(minSize = ExploreColumnMin),
                 modifier = Modifier.fillMaxSize(),
                 state = gridState,
-                contentPadding = PaddingValues(horizontal = MaxSpace.xl, vertical = MaxSpace.md),
+                contentPadding = PaddingValues(
+                    horizontal = MaxSpace.xl,
+                    vertical = if (compact) MaxSpace.sm else MaxSpace.md
+                ),
                 verticalArrangement = Arrangement.spacedBy(MaxSpace.md),
                 horizontalArrangement = Arrangement.spacedBy(MaxSpace.md)
             ) {
@@ -411,6 +433,7 @@ internal fun LobbyExplore(
                         panelArmed = game.packageName in armed,
                         selected = game.packageName == currentPackage,
                         focused = cursorActive && index == cursor,
+                        compact = compact,
                         accent = accent,
                         nowMs = nowMs,
                         onClick = {
@@ -484,6 +507,7 @@ private fun ExploreCard(
     panelArmed: Boolean,
     selected: Boolean,
     focused: Boolean,
+    compact: Boolean,
     accent: Color,
     nowMs: Long,
     onClick: () -> Unit,
@@ -526,7 +550,7 @@ private fun ExploreCard(
                 shape
             )
             .clickable(interactionSource = interaction, indication = null, onClick = onClick)
-            .padding(MaxSpace.lg),
+            .padding(if (compact) MaxSpace.md else MaxSpace.lg),
         verticalArrangement = Arrangement.spacedBy(MaxSpace.sm)
     ) {
         Row(
@@ -581,14 +605,17 @@ private fun ExploreCard(
                 }
             )
         }
-        Row(horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs)) {
-            repeat(LobbyInsights.SETUP_TOTAL) { index ->
-                Box(
-                    modifier = Modifier
-                        .size(8.dp)
-                        .clip(CircleShape)
-                        .background(if (index < ready) accent else LobbyPalette.PanelRaised)
-                )
+        // النقاط الأربع تلخّص الجاهزية نفسها التي تحملها الشريحة؛ في العرض القصير تكفي الشريحة.
+        if (!compact) {
+            Row(horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs)) {
+                repeat(LobbyInsights.SETUP_TOTAL) { index ->
+                    Box(
+                        modifier = Modifier
+                            .size(8.dp)
+                            .clip(CircleShape)
+                            .background(if (index < ready) accent else LobbyPalette.PanelRaised)
+                    )
+                }
             }
         }
     }

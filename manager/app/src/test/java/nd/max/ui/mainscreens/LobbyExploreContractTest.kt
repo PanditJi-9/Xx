@@ -202,4 +202,27 @@ class LobbyExploreContractTest {
             insights().contains("internal fun lobbyPlayLine(")
         )
     }
+
+    @Test
+    fun `a short landscape screen compresses the header instead of the cards`() {
+        val root = sourceRoot()
+        assumeTrue("Cannot locate nd.max sources; guard not evaluated", root != null)
+        val text = explore()
+
+        assertTrue(
+            "Explore must measure its height before laying the header out",
+            text.contains("val compact = maxHeight < ExploreCompactHeight") &&
+                text.contains("private val ExploreCompactHeight")
+        )
+        assertTrue(
+            "The compact header must drop the count line and shrink the title",
+            text.contains("if (!compact)") && text.contains("fontSize = if (compact) 18.sp else 22.sp")
+        )
+        assertTrue(
+            "The compact card must shrink its padding and skip the redundant dots",
+            text.contains("compact = compact") &&
+                text.contains("padding(if (compact) MaxSpace.md else MaxSpace.lg)") &&
+                text.contains("if (!compact) {")
+        )
+    }
 }
