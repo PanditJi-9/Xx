@@ -28,13 +28,13 @@
   <a href="docs/README.md"><b>Read the docs</b></a>
 </p>
 
-<p align="center"><img src="docs/assets/stats.svg?v=5" width="100%" alt="66 screens, 84 languages, ten control domains, zero telemetry"></p>
+<p align="center"><img src="docs/assets/stats.svg?v=5" width="100%" alt="67 screens, 84 languages, ten control domains, zero telemetry"></p>
 
 | | |
 | --- | --- |
 | **Platform** | Android 10 or newer (API 29) · `arm64-v8a` and `armeabi-v7a` |
 | **Root** | Magisk · KernelSU · KernelSU Next — or Shizuku for part of it |
-| **Screens** | 66 screens across ten control domains, plus a tools shelf |
+| **Screens** | 67 screens across ten control domains, plus a tools shelf |
 | **Languages** | 84 locales plus English, right-to-left enforced by a gate |
 | **Licence** | Proprietary — the copyright holder's written permission is required |
 
