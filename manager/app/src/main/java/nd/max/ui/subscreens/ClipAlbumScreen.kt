@@ -92,8 +92,8 @@ import nd.max.ui.component.MaxErrorState
 import nd.max.ui.component.MaxLoadingState
 import nd.max.ui.design.MaxListScreen
 import nd.max.ui.design.MaxRadius
-import nd.max.ui.design.MaxSize
 import nd.max.ui.design.MaxSpace
+import nd.max.ui.design.MaxVisualSpec
 import nd.max.ui.design.maxRadius
 
 /**
@@ -578,7 +578,7 @@ private fun ClipThumbnail(clip: ClipEntry) {
     }
     Box(
         modifier = Modifier
-            .width(MaxSize.instrument)
+            .width(MaxVisualSpec.instrument)
             .aspectRatio(16f / 9f)
             .clip(RoundedCornerShape(maxRadius(MaxRadius.control)))
             .background(MaterialTheme.colorScheme.surfaceContainerHighest),

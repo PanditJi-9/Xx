@@ -52,6 +52,7 @@ import androidx.compose.material.icons.rounded.Thermostat
 import androidx.compose.material.icons.rounded.Timeline
 import androidx.compose.material.icons.rounded.TouchApp
 import androidx.compose.material.icons.rounded.Tune
+import androidx.compose.material.icons.rounded.VideoLibrary
 import androidx.compose.material.icons.rounded.Wifi
 import androidx.compose.ui.graphics.vector.ImageVector
 import nd.max.R
