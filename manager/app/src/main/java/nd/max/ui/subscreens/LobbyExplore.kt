@@ -262,8 +262,9 @@ internal fun LobbyExplore(
                 Text(
                     text = stringResource(R.string.lobby_explore_title),
                     color = LobbyPalette.Ink,
-                    fontSize = if (compact) 18.sp else 22.sp,
-                    fontWeight = FontWeight.Bold,
+                    // عنوان الشاشة، لا عنوان بطاقة: كبير وخفيف كما تفعل العناوين الأولى.
+                    fontSize = if (compact) 20.sp else 30.sp,
+                    fontWeight = FontWeight.Light,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )

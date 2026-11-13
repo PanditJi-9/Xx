@@ -458,8 +458,9 @@ private fun LoadoutBody(
         Text(
             text = stringResource(R.string.lobby_loadout_title, app.label),
             color = LobbyPalette.Ink,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.SemiBold,
+            // عنوان الصفحة لا عنوان بطاقة: الحجم الكبير الخفيف نفسه المستعمل في المسرح.
+            fontSize = 28.sp,
+            fontWeight = FontWeight.Light,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
@@ -645,8 +646,8 @@ private fun GameProfileColumn(
         Text(
             text = stringResource(R.string.lobby_settings_title, app.label),
             color = LobbyPalette.Ink,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.SemiBold,
+            fontSize = 28.sp,
+            fontWeight = FontWeight.Light,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
@@ -1211,8 +1212,8 @@ private fun LibraryBody(
             Text(
                 text = stringResource(R.string.lobby_manage_title),
                 color = LobbyPalette.Ink,
-                fontSize = 20.sp,
-                fontWeight = FontWeight.SemiBold,
+                fontSize = 26.sp,
+                fontWeight = FontWeight.Light,
                 modifier = Modifier.weight(1f)
             )
             Text(
