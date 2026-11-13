@@ -58,6 +58,9 @@ data class CareerStats(
         const val TEN_SESSIONS = 10
         const val FIVE_GAMES = 5
         const val WEEK_STREAK = 7
+
+        /** نافذة الرؤى الطويلة: ثلاثة أشهر، لا أكثر. */
+        const val NINETY_DAYS = 90
     }
 }
 
@@ -221,4 +224,63 @@ object CareerLedger {
         }
         return count
     }
+
+    /**
+     * نافذة أطول من خريطة الأسبوع: كم يومًا لعب فيها فعلًا خلال آخر [days] يومًا، ومتوسّط اليوم
+     * النشط، وأكثر يوم ازدحامًا، والفترةُ السابقة للمقارنة.
+     *
+     * **وحدّها المُعلن:** تُبنى من السجلّ المحفوظ لا من عدّاد خارجي، فإن كان السجلّ قد بلغ سقفه
+     * فالفترة ليست كاملة — ولذلك يعود [oldestAtMs] ليقول من أين تبدأ البيانات فعلًا، بدل أن
+     * تُدَّعى تسعون يومًا كاملة.
+     */
+    fun span(
+        sessions: List<PlaySession>,
+        library: Set<String>,
+        nowMs: Long,
+        days: Int = NINETY_DAYS,
+        zone: ZoneId = ZoneId.systemDefault()
+    ): CareerSpan {
+        val today = Instant.ofEpochMilli(nowMs).atZone(zone).toLocalDate()
+        val start = today.minusDays((days - 1).toLong())
+        val previousStart = start.minusDays(days.toLong())
+        var totalMs = 0L
+        var previousMs = 0L
+        var oldest: Long? = null
+        val perDay = HashMap<LocalDate, Long>()
+        sessions.forEach { session ->
+            if (session.packageName !in library) return@forEach
+            if (!PlaySessionLedger.valid(session)) return@forEach
+            if (session.endedAtMs > nowMs) return@forEach
+            val day = Instant.ofEpochMilli(session.endedAtMs).atZone(zone).toLocalDate()
+            val seen = oldest
+            oldest = if (seen == null) session.endedAtMs else minOf(seen, session.endedAtMs)
+            when {
+                !day.isBefore(start) -> {
+                    totalMs += session.durationMs
+                    perDay[day] = (perDay[day] ?: 0L) + session.durationMs
+                }
+                !day.isBefore(previousStart) -> previousMs += session.durationMs
+            }
+        }
+        return CareerSpan(
+            days = days,
+            totalMs = totalMs,
+            activeDays = perDay.size,
+            averageActiveDayMs = if (perDay.isEmpty()) 0L else totalMs / perDay.size,
+            busiest = perDay.entries.maxByOrNull { it.value }?.let { CareerDay(it.key, it.value) },
+            previousMs = previousMs,
+            oldestAtMs = oldest
+        )
+    }
 }
+
+/** نتيجة [CareerLedger.span]: فترة طويلة بمقاييسها الصادقة وحدودها. */
+data class CareerSpan(
+    val days: Int,
+    val totalMs: Long,
+    val activeDays: Int,
+    val averageActiveDayMs: Long,
+    val busiest: CareerDay?,
+    val previousMs: Long,
+    val oldestAtMs: Long?
+)
