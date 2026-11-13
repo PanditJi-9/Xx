@@ -56,6 +56,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.isCtrlPressed
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
@@ -447,6 +448,14 @@ fun GameLobbyScreen(
                         when (event.key) {
                             Key.ButtonL1 -> { closeControl(); true }
                             Key.ButtonY -> { paletteOpen = true; true }
+                            Key.K -> {
+                                if (event.isCtrlPressed) {
+                                    paletteOpen = true
+                                    true
+                                } else {
+                                    false
+                                }
+                            }
                             else -> false
                         }
                     } else {
@@ -456,6 +465,14 @@ fun GameLobbyScreen(
                             Key.DirectionUp -> { openControl(LobbySection.Game); true }
                             Key.ButtonR1 -> { openControl(section); true }
                             Key.ButtonY -> { paletteOpen = true; true }
+                            Key.K -> {
+                                if (event.isCtrlPressed) {
+                                    paletteOpen = true
+                                    true
+                                } else {
+                                    false
+                                }
+                            }
                             Key.Enter, Key.NumPadEnter, Key.ButtonA -> { start(); true }
                             Key.ButtonX -> { if (active != null) openControl(LobbySection.Game); true }
                             else -> false
