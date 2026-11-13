@@ -85,6 +85,7 @@ data class NexusCopy(
     val career: String,
     val search: String,
     val playtimeLabel: String,
+    val gamesLabel: String,
     val sessionsLabel: String,
     val streakLabel: String,
     val readyLabel: String,
@@ -128,7 +129,7 @@ fun NexusScreen(
                 .fillMaxSize()
                 .padding(horizontal = MaxSpace.gutter, vertical = MaxSpace.lg)
         ) {
-            NexusHeader(copy = copy, totalPlaytime = model.totalPlaytime)
+            NexusHeader(copy = copy, gameCount = model.games.size)
             Spacer(Modifier.height(MaxSpace.xl))
             if (selected == null) {
                 NexusEmpty(
@@ -167,7 +168,7 @@ fun NexusScreen(
 }
 
 @Composable
-private fun NexusHeader(copy: NexusCopy, totalPlaytime: String) {
+private fun NexusHeader(copy: NexusCopy, gameCount: Int) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
@@ -183,7 +184,7 @@ private fun NexusHeader(copy: NexusCopy, totalPlaytime: String) {
             modifier = Modifier.weight(1f)
         )
         Text(
-            text = "${copy.playtimeLabel} · $totalPlaytime",
+            text = "${copy.gamesLabel} · $gameCount",
             style = Monolith.label,
             color = Monolith.Muted,
             maxLines = 1

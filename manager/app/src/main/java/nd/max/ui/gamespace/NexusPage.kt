@@ -107,6 +107,7 @@ internal fun NexusPage(
             career = stringResource(R.string.lobby_insights_career),
             search = stringResource(R.string.lobby_nexus_search),
             playtimeLabel = stringResource(R.string.lobby_insights_total_time),
+            gamesLabel = stringResource(R.string.lobby_nexus_games),
             sessionsLabel = stringResource(R.string.lobby_insights_sessions),
             streakLabel = stringResource(R.string.lobby_nexus_streak),
             readyLabel = stringResource(R.string.lobby_nexus_ready),

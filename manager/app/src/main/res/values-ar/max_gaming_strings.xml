@@ -430,6 +430,7 @@
     <string name="lobby_insights_scope">وقت اللعب يُبنى فقط من الجلسات التي رصدتها خدمة اللوحة الجانبية، وليس تقرير وقت شاشة من النظام.</string>
     <string name="lobby_insights_unknown">—</string>
     <string name="lobby_nexus_now">اللعبة المختارة</string>
+    <string name="lobby_nexus_games">الألعاب</string>
     <string name="lobby_nexus_streak">أيام متتالية</string>
     <string name="lobby_nexus_ready">جاهزية الإطلاق</string>
     <string name="lobby_nexus_review">راجع التهيئة</string>
