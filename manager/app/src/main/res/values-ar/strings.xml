@@ -4000,6 +4000,7 @@
 <string name="device_lab_torch_desc">شغّل فلاش الكاميرا الخلفي وأطفئه مباشرة.</string>
 <string name="device_lab_sensors_title">المستشعرات الحية</string>
 <string name="device_lab_sensors_desc">التسارع والدوران والضوء والتقارب كما يبلغها النظام.</string>
+<string name="device_lab_sensor_cadence">%1$.1f هرتز مقيسة · أطول فاصل %2$d مللي ثانية</string>
 <string name="device_lab_battery_title">الشحن والبطارية</string>
 <string name="device_lab_battery_desc">الحالة والحرارة والجهد والتيار مباشرة.</string>
 <string name="device_lab_vibrate_short">نبضة قصيرة</string>

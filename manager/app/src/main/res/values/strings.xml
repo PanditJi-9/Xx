@@ -4056,6 +4056,7 @@
 <string name="device_lab_torch_desc">Toggle the rear flash directly.</string>
 <string name="device_lab_sensors_title">Live sensors</string>
 <string name="device_lab_sensors_desc">Accelerometer, gyroscope, light and proximity, as the system reports them.</string>
+<string name="device_lab_sensor_cadence">%1$.1f Hz measured · longest gap %2$d ms</string>
 <string name="device_lab_battery_title">Charging and battery</string>
 <string name="device_lab_battery_desc">Live status, temperature, voltage and current.</string>
 <string name="device_lab_vibrate_short">Short pulse</string>
