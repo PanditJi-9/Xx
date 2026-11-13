@@ -27605,3 +27605,44 @@ NEXT: يُدفع هذا السطح وحده إلى `main`، ثم يُقرأ تش
 (0) — **مقيس**؛ و`:app:compileReleaseKotlin` **BUILD SUCCESSFUL 16m18s** — **مقيس**.
 ما لا يُعاد اختباره الجولة القادمة: لا تُضف بطاقة جديدة فوق المقياس؛ لا تُعِد مسار بطاقتي
 CPU/GPU المنفصلتين؛ ولا تعتبر نجاح التصريف إثباتًا بصريًّا.
+
+### GAME-SPACE-CAPABILITIES-02 — أربع قدرات فوق أسطح قائمة، وإصلاح أحمرٍ مسمّى — 2026-11-13 · DONE_WITH_CONCERNS
+
+**الطلب:** «اكمل التالي في الطابور لا تنتظر» — تنفيذ بقية قدرات مرجع `com.zkmnext.gamespace`
+تباعًا بلا انتظار حكم CI. **المرجع أفكار فقط: صفر كود وصفر أصول.**
+
+**ما أُنجز، ولماذا كلٌّ منها تحسين لنظير قائم لا مسار ثانٍ (§0.5):**
+
+| الدفعة | السطح القائم | الفارق المقيس |
+| --- | --- | --- |
+| `aec4e669` | `GamePanelSession` في `ui/component/GamePanelSurface.kt` | المدة المنقضية أول صفّ الجلسة، تُقرأ من `HudRecorder.isLive`/`sessionStartedAtMs` مباشرة (لا معامل جديد ولا مصدر ثالث)، وتظهر قبل أول عيّنة FPS. `elapsedText(ms)` → `h:mm:ss` بعد الساعة وإلا `mm:ss` |
+| `8b9eb663` | `widget/core/WidgetData.kt` + `BatteryTurboWidget` | `fpsValue()`/`powerWatt()` كانتا تُرجعان `0f` عند فشل القراءة، فتُطبع `0.0W` كأنها قياس. صارتا `Float?` والودجة تطبع `WidgetFormat.DASH` (ADR-07) |
+| `b7b80b3c` | حلقة الجاهزية في `ui/gamespace/NexusState.kt` + `NexusScreen` | `ReadyGap {Profile, Panel, Overlay}` و`firstGap(...)`؛ **العدّ والنقص من دالة `readiness(...)` واحدة** فلا يمكن أن تكتمل الحلقة ويبقى السطر يشتكي. ملف بصفر مقابض = ناقص، وبلا لعبة = لا نقص يُسمّى |
+| `0a923a3a` | `service/SessionSummaryNotifier.kt` (Return Briefing القائم) | المدة أول سطر الإشعار من `endedAtMs - startedAtMs` فقط حين تكون موجبة؛ الفجوة غير المقيسة تصمت لا تطبع «٠ دقيقة» |
+| `251486ff` | `SensorTest()` في `DeviceLabScreen` فوق `SensorMonitorUtil` | `core/platform/SensorCadence.kt` نموذج نقي: تواتر مقيس من `SensorEvent.timestamp` وأطول فاصل داخل نافذة متحركة (٦٤ عيّنة، ٣ حدًّا أدنى). `SENSOR_DELAY_UI` طلبٌ لا وعد |
+| `90e4f612` | تصدير جلسة واحدة في `GameSessionsScreen` | `storedLedgerJson(...)`: مغلّف JSON محدود بـ`MAX_EXPORT_SESSIONS=20` مع `schema` و`exportedAtMs` و`truncated`، يعيد استعمال `shareFile`/`FileProvider` القائمين — لا Intent ولا مزوّد جديد |
+| `54ad96d0` | `crosshairGeometry` المشتركة بين التراكب والمعاينة | حلقات مدى اختيارية 0..3 تُقاس من المركز إلى **أقرب حافة** فتُقصّ داخل النافذة عند أقصى إزاحة؛ المفتاح `game_crosshair_rings` يحمل بادئة `game_crosshair_` التي تراقبها الخدمة |
+
+**الأحمر المسمّى وأُصلح:** `4da79590`=`43435970413` — ليس التصريف، بل `CareerLedgerTest.kt:59`
+`assertEquals(5, career.milestones.size)` كُتب حين كانت الشارات خمسًا فصارت تسعًا بعد معالم
+الساعات. صار `assertEquals(CareerBadge.entries.size, …)` ⇒ **ثابتٌ** لا رقم سحري، فانحراف
+التعداد يُسقط الاختبار بدل أن ينزلق. (`4d175ce7`/`e3b6e627` كانا أحمر تصريف فعلًا: `NINETY_DAYS`
+غير مؤهَّل — أُصلح في `4da79590`.)
+
+**GATES (مقيسة على الشجرة النهائية):** `kt_balance --assert` **3389 ملفًا · 0** ·
+`design_tokens --assert` exit 0 · `i18n_coverage --assert` تطابق الأكواد الثلاثة و0 عوائق ·
+`git diff --check` نظيف. **BUILD:** لا بناء محلي (§0.10) — CI هو المُصرّف الوحيد.
+
+**CI TRUTH (لا يُدَّعى أكثر):** أخضر مؤكَّد `4aa25521` = **`43440345313`**، وهو يثبت
+`aec4e669` و`8b9eb663` و`b7b80b3c` و`4aa25521` معًا. وقبله `467bb675`=`43426994885`،
+`9304aa12`=`43424168446`، `0bec2fb4`=`43421067574`، `7ed7dfbc`=`43419089538`.
+**غير مُتحقَّق:** `0a923a3a` (`43441467215` cancelled لاحقًا)، `90e4f612` (`43443719951`
+cancelled)، و`251486ff` و`54ad96d0` لم يُقرأ حكمهما بعد. أصحابها ينتظرون تشغيل `main` القادم.
+
+**RESIDUAL RISK:** الشكل على 320/360dp، واللمس، وRTL، وTalkBack **تحتاج جهازًا**؛ وحلقات
+المدى رُسمت حسابيًّا واختُبرت في JVM، لكن هل تُقرأ على شاشة لعبة فاتحة اللون لم يُقس.
+ولا مراجعة سلامة مستقلة في هذه الجولة.
+
+**الباقي في الطابور:** عمود «مدعوم وخطر» في مصفوفة القدرات (يقرأ ADR-90→92→93 أولًا؛ العمودان
+الآخران يعملان في `LobbyControlCenter` ~1050) · تسجيل الشاشة والألبوم بـ`MediaProjection`
+(كبير: خدمة وإذن) · Launch Receipt · سطر سبب غياب FPS · صحّة المكتبة.
