@@ -56,7 +56,7 @@ class CareerLedgerTest {
         assertEquals(0, career.nightSessions)
         assertTrue(career.recent.isEmpty())
         assertTrue(career.top.isEmpty())
-        assertEquals(5, career.milestones.size)
+        assertEquals(CareerBadge.entries.size, career.milestones.size)
         assertTrue(career.milestones.none { it.unlocked })
     }
 
