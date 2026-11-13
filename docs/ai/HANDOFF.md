@@ -60,6 +60,50 @@ MaxManager has a strong engine and a fragmented surface. `core/maxai` + `core/ha
 
 ## Executor log
 
+### HOME-RESTORE-01 — إعادة سطح «الآن» إلى شكل التشغيل 43331973823 — 2026-11-13 · DONE_WITH_CONCERNS
+
+**TASK (المالك):** «ارجع شكل الشاشة الرئسيسة لما كان عليه في
+https://github.com/PanditJi-9/Xx/actions/runs/43331973823».
+
+**SEARCH FIRST (§0.5):** قُرئ `headSha` للتشغيل = `4eee1065`، ثم قُورنت الشجرة عنده وعند `HEAD`.
+فتبيّن أن `HomeScreen.kt` و`LegendaryHomeDashboard.kt` **لم يتغيّرا** بين `e83cb488` وهذا الالتزام،
+وأن السطح الوحيد الذي غيّر شكل «الآن» بعده هو `39e209a5` («replace the card feed with a live command
+center») الذي أضاف `CommandCenterHome.kt` (1189 سطرًا) واستبدل استدعاء `LegendaryHomeDashboard(`
+به. فالإرجاع = إزالة أثر ذلك الالتزام وحده، لا إعادة كتابة السطح القديم.
+
+**FILES:** حُذف `manager/app/src/main/java/nd/max/ui/mainscreens/CommandCenterHome.kt` (لا مستدعي
+له بعد الإرجاع) · أُعيد في `HomeScreen.kt` استدعاء `LegendaryHomeDashboard(` بحججه كما كانت، والملف
+الآن **مطابق بايتًا** لنسخة `4eee1065` (`git diff 4eee1065 -- …/HomeScreen.kt` فارغ) · حُذف مفتاح
+`max_wordmark` من `values/strings.xml` و`values-ar/strings.xml` لأن مستهلكه الوحيد كان الملف المحذوف ·
+أُبقيت أعمال اللوبي/البلاطة السريعة اللاحقة (`f004a0ab`, `5af4159d`) كاملة. لا `core/**` ولا عتاد.
+
+**GATES (مقيس في هذه الجولة، كلها exit 0):** `kt_balance` **3370/0** (كان 3371 قبل الحذف) ·
+`code_health` صحّة 0 ودَين 14 oversized / 26 wildcard / 5 inline / 4 hardcoded / 0 hw writes ·
+`i18n_coverage` 0 عوائق و`--prune all` **0 مفتاح يتيم** · `design_tokens` **233/300** ·
+`resource_compile` على aapt2 الحقيقي مرّ لكل مجلّدات res · `rtl_guard` 0 مخالفة على 463 ملف واجهة ·
+`hardcoded_ui_text` **21 ≤ 24** · `dead_modules` 0 وحدات ميتة · `repo_audit` **0 مشكلة** على 955 ملف
+Kotlin · `license_audit` 0 GPL في مسار الإصدار · `provenance_guard` 4154 ملفًا و0 مسار/بصمة مرجعية،
+ولم يعدّل `PROVENANCE.md` · `git diff --check` نظيف. ولا أثر متبقٍّ لـ`CommandCenterHome` أو
+`max_wordmark` في `manager/app/src`.
+
+**BUILD:** لا Gradle محليًا (§0.10)؛ تصريف `main` واختباراته **غير مُتحقَّقين هنا** حتى يُقرأ حكم CI
+على الالتزام المدفوع.
+
+**DEVICE:** الشكل الفعلي على 320/360dp، والتمرير، وRTL، واللمس، وTalkBack **تحتاج جهازًا**؛ نجاح
+CI يعني «يترجم وتمرّ الاختبارات» لا «يعمل على هاتف المالك».
+
+**RESIDUAL RISK:** الحذف يعني أن `CommandCenterHome.kt` خرج من الشجرة؛ إن أراد المالك استعادته لاحقًا
+فهو في تاريخ `39e209a5` ويُستعاد بمراجعة، لا بنسخ أعمى. وحرّاس الأسطح (`HomeShapeContractTest`,
+`ScreenArchetypeTest`، `OwnerDecisionsGuardTest`) تقرأ `LegendaryHomeDashboard` لا `HomeScreen`، فلا
+حارس أُضعف ولا حارس جديد لزم.
+
+**الذاكرة (§7.6):** العَرَض: سطح «الآن» تغيّر بعد التشغيل المطلوب · أول سطر خالف: استدعاء
+`CommandCenterHome(` بدل `LegendaryHomeDashboard(` في `HomeScreen.kt` (التزام `39e209a5`) · الإرجاع
+المقيس: ملف الرئيسية مطابق بايتًا لـ`4eee1065` والملف الزائد محذوف بلا مستدعٍ · ما لا يُعاد اختباره:
+البوابات الخفيفة والشجرة النظيفة؛ الشكل يبقى للجهاز.
+
+**NEXT:** قراءة حكم CI ثم قبول المالك البصري على جهاز؛ لا كود متبقٍّ في النطاق إن نجحا.
+
 ### PERF-SESSIONS-UX-01 — تقريرٌ في موضعه، وأرقامٌ صادقة، ورجوعٌ لا يكدّس السجل — 2026-11-12 · DONE_WITH_CONCERNS
 
 **TASK:** إكمال تحسين شاشة الأداء وسجل جلسات الألعاب بالبيانات الحقيقية القائمة، وإزالة شعور العلوق عند
