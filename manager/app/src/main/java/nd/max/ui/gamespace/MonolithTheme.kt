@@ -37,7 +37,7 @@ object Monolith {
     val Bone: Color = Color(0xFFF4F1EA)
     val BoneDim: Color = Color(0xFFC9C6BE)
     val Muted: Color = Color(0xFF9AA1AE)
-    val Faint: Color = Color(0xFF6C7380)
+    val Faint: Color = Color(0xFF7C8492)
 
     /* الشعرات — الحدود لا تُرى إلا حين يجب. */
     val Hairline: Color = Color(0x1FFFFFFF)

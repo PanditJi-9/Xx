@@ -136,6 +136,14 @@ private fun CommandPaletteBody(
                 .clip(shape)
                 .background(Monolith.Slate)
                 .border(MaxSpace.hairline, Monolith.HairlineStrong, shape)
+                .onPreviewKeyEvent { event ->
+                    if (event.type == KeyEventType.KeyDown && event.key == Key.Escape) {
+                        onDismiss()
+                        true
+                    } else {
+                        false
+                    }
+                }
         ) {
             Row(
                 modifier = Modifier
