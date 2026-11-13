@@ -229,6 +229,17 @@
     <string name="game_panel_reminder_done">Play-time reminder: time for a break</string>
     <string name="game_panel_msg_saved">Screen recording saved to Movies/MaxManager</string>
     <string name="game_panel_msg_rec_failed">Recording could not start (root is required)</string>
+    <string name="game_panel_rec_consent_title">Record the screen?</string>
+    <string name="game_panel_rec_consent_body">The whole screen is recorded, clips are saved in Movies/MaxManager, and the panel button stops it. This acknowledgement is shown once.</string>
+    <string name="game_panel_rec_consent_go">Start recording</string>
+    <string name="game_panel_tool_memo">Memo</string>
+    <string name="game_panel_memo_title">Pin a note</string>
+    <string name="game_panel_memo_hint">e.g. Stage 4 — left door</string>
+    <string name="game_panel_memo_note">Stays over the game until you hide it.</string>
+    <string name="game_panel_memo_save">Show over game</string>
+    <string name="game_panel_memo_hide">Hide</string>
+    <string name="game_panel_memo_saved">Memo shown over the game</string>
+    <string name="game_panel_memo_off">Memo hidden</string>
     <string name="game_panel_msg_shot_saved">Screenshot saved to Pictures/MaxManager</string>
     <string name="game_panel_msg_shot_failed">Screenshot failed</string>
     <string name="game_panel_msg_freed_none">Nothing to free right now</string>

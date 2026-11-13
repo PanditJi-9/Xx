@@ -40,6 +40,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ContentCut
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material.icons.rounded.VideoLibrary
@@ -49,6 +50,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -81,6 +83,10 @@ import nd.max.R
 import nd.max.core.gamespace.ClipAlbumMath
 import nd.max.core.gamespace.ClipAlbumState
 import nd.max.core.gamespace.ClipEntry
+import nd.max.core.gamespace.ClipTrimFailure
+import nd.max.core.gamespace.ClipTrimMath
+import nd.max.core.gamespace.ClipTrimResult
+import nd.max.core.gamespace.ClipTrimmer
 import nd.max.ui.component.MaxEmptyState
 import nd.max.ui.component.MaxErrorState
 import nd.max.ui.component.MaxLoadingState
@@ -130,6 +136,9 @@ fun ClipAlbumScreen(navController: NavController) {
     var clips by remember { mutableStateOf(emptyList<ClipEntry>()) }
     // الحذف يمرّ بسؤال: التسجيل لا رجعة فيه بعد تأكيد النظام، ومسار ما قبل ٣٠ كان يحذف فورًا.
     var pendingDelete by remember { mutableStateOf<ClipEntry?>(null) }
+    // القصّ يفتح حواره أولًا: لا يُكتب ملفّ بمجرّد لمس أيقونة.
+    var pendingTrim by remember { mutableStateOf<ClipEntry?>(null) }
+    var trimming by remember { mutableStateOf(false) }
 
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -212,6 +221,35 @@ fun ClipAlbumScreen(navController: NavController) {
         }
     }
 
+    /**
+     * القصّ يكتب **نسخة** لا يمسّ الأصل: الأصل يبقى قابلًا للمقارنة، والحذف قرار المستخدم.
+     * والحوار يبقى مفتوحًا عند الفشل كي يرى السبب ويعيد المحاولة بحدود أخرى.
+     */
+    fun trim(clip: ClipEntry, startMs: Long, endMs: Long) {
+        trimming = true
+        scope.launch {
+            val result = withContext(Dispatchers.IO) {
+                runCatching { ClipTrimmer.trim(context, uriOf(clip), startMs, endMs) }
+                    .getOrElse { ClipTrimResult.Failed(ClipTrimFailure.Muxing) }
+            }
+            trimming = false
+            when (result) {
+                is ClipTrimResult.Saved -> {
+                    pendingTrim = null
+                    announce(R.string.clip_album_trim_saved)
+                    refresh++
+                }
+                is ClipTrimResult.Failed -> announce(
+                    when (result.reason) {
+                        ClipTrimFailure.Unreadable -> R.string.clip_album_trim_fail_read
+                        ClipTrimFailure.Unwritable -> R.string.clip_album_trim_fail_write
+                        ClipTrimFailure.Muxing -> R.string.clip_album_trim_fail_mux
+                    }
+                )
+            }
+        }
+    }
+
     MaxListScreen(
         title = stringResource(R.string.clip_album_title),
         onBack = { navController.popBackStack() },
@@ -269,6 +307,14 @@ fun ClipAlbumScreen(navController: NavController) {
                     clip = clip,
                     onPlay = { play(clip) },
                     onShare = { share(clip) },
+                    onTrim = {
+                        if (ClipTrimMath.canTrim(clip.durationMs)) {
+                            pendingTrim = clip
+                        } else {
+                            // المدة المجهولة ليست صفرًا: تُقال كما هي بدل قصٍّ أعمى من الصفر.
+                            announce(R.string.clip_album_trim_unavailable)
+                        }
+                    },
                     onDelete = { pendingDelete = clip }
                 )
             }
@@ -295,6 +341,106 @@ fun ClipAlbumScreen(navController: NavController) {
             }
         )
     }
+
+    pendingTrim?.let { clip ->
+        ClipTrimDialog(
+            clip = clip,
+            busy = trimming,
+            onDismiss = { if (!trimming) pendingTrim = null },
+            onConfirm = { startMs, endMs -> trim(clip, startMs, endMs) }
+        )
+    }
+}
+
+/**
+ * حوار القصّ: مقابض بنصف ثانية وحدود تُصحَّح فورًا عبر [ClipTrimMath]، فلا يمكن اختيار
+ * مقطع أقصر من ثانية ولا نهاية قبل البداية. الشاشة وجهة عادية داخل Activity، فـ`AlertDialog`
+ * هنا آمن (خلاف لوحة اللعب التي تعيش في نافذة خدمة).
+ */
+@Composable
+private fun ClipTrimDialog(
+    clip: ClipEntry,
+    busy: Boolean,
+    onDismiss: () -> Unit,
+    onConfirm: (startMs: Long, endMs: Long) -> Unit
+) {
+    val duration = clip.durationMs ?: return
+    val colors = MaterialTheme.colorScheme
+    var startMs by remember(clip.id) { mutableStateOf(0L) }
+    var endMs by remember(clip.id) { mutableStateOf(duration) }
+
+    AlertDialog(
+        onDismissRequest = { if (!busy) onDismiss() },
+        title = { Text(stringResource(R.string.clip_album_trim_title)) },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(MaxSpace.xs)) {
+                Text(
+                    text = clip.name,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = colors.onSurfaceVariant
+                )
+                Text(
+                    text = stringResource(
+                        R.string.clip_album_trim_kept,
+                        ClipAlbumMath.durationText(ClipTrimMath.keptMs(startMs, endMs))
+                    ),
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Text(
+                    text = stringResource(R.string.clip_album_trim_start, ClipAlbumMath.durationText(startMs)),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = colors.onSurfaceVariant
+                )
+                Slider(
+                    value = ClipTrimMath.fraction(startMs, duration),
+                    onValueChange = { fraction ->
+                        startMs = ClipTrimMath.clampStart(
+                            ClipTrimMath.fromFraction(fraction, duration), duration
+                        )
+                        // النهاية تتبع البداية إن صار الفارق أقل من ثانية — تُدفع لا تُرفض.
+                        if (endMs < startMs + ClipTrimMath.MIN_KEEP_MS) {
+                            endMs = ClipTrimMath.clampEnd(startMs + ClipTrimMath.MIN_KEEP_MS, startMs, duration)
+                        }
+                    },
+                    enabled = !busy
+                )
+                Text(
+                    text = stringResource(R.string.clip_album_trim_end, ClipAlbumMath.durationText(endMs)),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = colors.onSurfaceVariant
+                )
+                Slider(
+                    value = ClipTrimMath.fraction(endMs, duration),
+                    onValueChange = { fraction ->
+                        endMs = ClipTrimMath.clampEnd(
+                            ClipTrimMath.fromFraction(fraction, duration), startMs, duration
+                        )
+                    },
+                    enabled = !busy
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = { onConfirm(startMs, endMs) },
+                enabled = !busy
+            ) {
+                Text(
+                    stringResource(
+                        if (busy) R.string.clip_album_trim_working else R.string.clip_album_trim_confirm
+                    )
+                )
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss, enabled = !busy) {
+                Text(stringResource(R.string.cancel))
+            }
+        }
+    )
 }
 
 /** الإذن المطلوب: الفيديو على ٣٣+، والتخزين على ما قبله (minSdk 29). */
@@ -358,6 +504,7 @@ private fun ClipRow(
     clip: ClipEntry,
     onPlay: () -> Unit,
     onShare: () -> Unit,
+    onTrim: () -> Unit,
     onDelete: () -> Unit
 ) {
     val colors = MaterialTheme.colorScheme
@@ -389,6 +536,13 @@ private fun ClipRow(
                     ),
                     style = MaterialTheme.typography.bodySmall,
                     color = colors.onSurfaceVariant
+                )
+            }
+            IconButton(onClick = onTrim) {
+                Icon(
+                    imageVector = Icons.Rounded.ContentCut,
+                    contentDescription = stringResource(R.string.clip_album_trim_cd),
+                    tint = colors.onSurfaceVariant
                 )
             }
             IconButton(onClick = onShare) {

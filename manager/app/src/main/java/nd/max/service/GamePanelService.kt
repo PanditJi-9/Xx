@@ -60,6 +60,7 @@ import nd.max.core.gamespace.PanelSessionClock
 import nd.max.core.gamespace.PanelLifetime
 import nd.max.core.gamespace.CrosshairState
 import nd.max.core.gamespace.DisplayVeilState
+import nd.max.core.gamespace.GameMemo
 import nd.max.core.gamespace.gameLibrary
 import nd.max.core.gamespace.nextRefreshRate
 import nd.max.core.gamespace.panelPlacement
@@ -90,6 +91,7 @@ import nd.max.ui.util.CrosshairPrefs
 import nd.max.ui.util.DisplayVeilPrefs
 import nd.max.ui.util.FpsOverlayPrefs
 import nd.max.ui.util.GamePanelPrefs
+import nd.max.ui.util.GameMemoPrefs
 
 /**
  * لوحة مساحة الألعاب الجانبية — **قيادة فقط، والقراءة والكتابة ليست هنا**.
@@ -201,6 +203,8 @@ class GamePanelService : LifecycleService() {
     /** ستارة العرض المقروءة الآن — لون واحد شفّاف فوق اللعبة، لا معالجة صورة. */
     private var veil by mutableStateOf(DisplayVeilState())
     private var veilOverlay: DisplayVeilOverlay? = null
+    /** المذكّرة المثبّتة: سطر واحد يبقى فوق اللعبة المتتبَّعة، لا ينبّه ولا يعدّ وقتًا. */
+    private var memoOverlay: GameMemoOverlay? = null
     private val mainHandler = android.os.Handler(android.os.Looper.getMainLooper())
     private var library: Set<String> = emptySet()
 
@@ -490,6 +494,8 @@ class GamePanelService : LifecycleService() {
         crosshairOverlay = null
         veilOverlay?.destroy()
         veilOverlay = null
+        memoOverlay?.destroy()
+        memoOverlay = null
         recordOpenSessionOnDestroy()
         isRunning = false
         super.onDestroy()
@@ -592,6 +598,7 @@ class GamePanelService : LifecycleService() {
             // واللوحة مفتوحة حتى لا تُرسم فوق أزرارها.
             syncCrosshair(crosshairNow)
             syncVeil(veilNow)
+            syncMemo(GameMemoPrefs.load(applicationContext))
             // ساعة الجلسة تُلمس لكل لعبة ترى الخدمة في المقدّمة، مُفعَّلةً كانت أم لا، كما كانت قبل التقسيم.
             (state.subject as? PanelSubject.Tracked)?.let { PanelSessionClock.touch(it.packageName) }
             // بروفايل اللعبة بلا رفيق الجذر: يدخل مع اللعبة المتتبَّعة ويخرج بخروجها. المطبِّق نفسه يقرّر هل هو
@@ -749,10 +756,33 @@ class GamePanelService : LifecycleService() {
         overlay.show(prefs)
     }
 
+    /**
+     * المذكّرة المثبّتة: تُرسم فوق **لعبة متتبَّعة** وحدها، وبلا نصّ لا نافذة إطلاقًا.
+     *
+     * والشرط ليس تشدّدًا: مذكّرة «المرحلة ٤» بلا لعبة أمامها كلامٌ في الفراغ، وإظهارها فوق
+     * الشاشة الرئيسية يجعلها إشعارًا مزعجًا لا مذكّرة. وقراءة الإذن هنا كالستارة: بلا
+     * `SYSTEM_ALERT_WINDOW` لا نحاول أصلًا، فلا سجلّ فشل في كل دورة.
+     */
+    private fun syncMemo(memo: GameMemo) {
+        if (android.os.Looper.myLooper() != android.os.Looper.getMainLooper()) {
+            mainHandler.post { syncMemo(memo) }
+            return
+        }
+        val wanted = memo.visible &&
+            memo.shownText.isNotEmpty() &&
+            state.subject is PanelSubject.Tracked &&
+            Settings.canDrawOverlays(this)
+        if (!wanted) {
+            memoOverlay?.hide()
+            return
+        }
+        val overlay = memoOverlay ?: GameMemoOverlay(this).also { memoOverlay = it }
+        overlay.show(memo)
+    }
+
     /** دورة اللمس من البلاطة: دافئة ← ليلية ← تعتيم ← إطفاء. */
     private fun cycleVeil() {
         val next = veil.cycle()
-        veil = next
         DisplayVeilPrefs.save(applicationContext, next)
         syncVeil(next)
     }
@@ -1062,10 +1092,11 @@ class GamePanelService : LifecycleService() {
                 syncClockLoop(false)
                 window.setFullScreen(false, dockAt?.first, dockAt?.second)
                 window.setTouchHandler(silk)
+                window.setFocusable(false)
                 // بعد قياس المقبض الجديد لا القديم، فيُوضع على الحافة فورًا لا بعد الاستطلاع التالي.
                 android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({ placeWindow() }, 80L)
             },
-            onClose = { dismissPanel() },
+            onClose = { window.setFocusable(false); dismissPanel() },
             onCycleRefresh = { cycleRefreshRate() },
             refreshChoices = refreshChoices,
             onSelectRefresh = { hz -> selectRefreshRate(hz) },
@@ -1078,6 +1109,9 @@ class GamePanelService : LifecycleService() {
             veilEnabled = veil.enabled,
             veilTone = veil.tone,
             onCycleVeil = { cycleVeil() },
+            // المذكّرة تحتاج لوحة مفاتيح: النافذة تُرفع للحظة الكتابة وتُعاد عند الإغلاق،
+            // فلا تبقى سارقةً للمس بعد أن ينتهي الحقل.
+            onTyping = { typing -> window.setFocusable(typing) },
             thermal = thermal,
             onSelectThermal = { id -> selectThermal(id) },
             handleFx = silk.fx,

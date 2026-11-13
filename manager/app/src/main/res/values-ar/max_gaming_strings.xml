@@ -228,6 +228,17 @@
     <string name="game_panel_reminder_done">منبّه وقت اللعب: حان وقت استراحة</string>
     <string name="game_panel_msg_saved">حُفظ تسجيل الشاشة في Movies/MaxManager</string>
     <string name="game_panel_msg_rec_failed">تعذّر بدء التسجيل (يحتاج جذرًا)</string>
+    <string name="game_panel_rec_consent_title">أتسجّل الشاشة؟</string>
+    <string name="game_panel_rec_consent_body">يُسجَّل كامل الشاشة، وتُحفظ المقاطع في Movies/MaxManager، ويوقفها زرّ اللوحة. يُعرض هذا الإقرار مرة واحدة.</string>
+    <string name="game_panel_rec_consent_go">ابدأ التسجيل</string>
+    <string name="game_panel_tool_memo">مذكّرة</string>
+    <string name="game_panel_memo_title">ثبّت مذكّرة</string>
+    <string name="game_panel_memo_hint">مثال: المرحلة ٤ — الباب الأيسر</string>
+    <string name="game_panel_memo_note">تبقى فوق اللعبة حتى تخفيها.</string>
+    <string name="game_panel_memo_save">أظهرها فوق اللعبة</string>
+    <string name="game_panel_memo_hide">أخفِها</string>
+    <string name="game_panel_memo_saved">المذكّرة معروضة فوق اللعبة</string>
+    <string name="game_panel_memo_off">المذكّرة مخفيّة</string>
     <string name="game_panel_msg_shot_saved">حُفظت اللقطة في Pictures/MaxManager</string>
     <string name="game_panel_msg_shot_failed">تعذّر التقاط اللقطة</string>
     <string name="game_panel_msg_freed_none">لا شيء يُحرَّر الآن</string>

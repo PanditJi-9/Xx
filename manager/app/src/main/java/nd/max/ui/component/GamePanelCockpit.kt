@@ -19,6 +19,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -28,6 +29,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -43,6 +45,7 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.VolumeUp
 import androidx.compose.material.icons.rounded.BatteryChargingFull
@@ -77,6 +80,7 @@ import androidx.compose.material.icons.rounded.Waves
 import androidx.compose.material.icons.rounded.WbSunny
 import androidx.compose.material.icons.rounded.Wifi
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -91,9 +95,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -102,11 +109,14 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -118,6 +128,7 @@ import nd.max.core.gamespace.CubeLayoutMath
 import nd.max.core.gamespace.DisplayVeilTone
 import nd.max.core.gamespace.PortraitLayoutMath
 import nd.max.core.gamespace.GameThermalProfiles
+import nd.max.core.gamespace.GameMemo
 import nd.max.core.gamespace.PanelClockMath
 import nd.max.core.gamespace.PanelClocks
 import nd.max.core.gamespace.PanelControlState
@@ -139,12 +150,15 @@ import nd.max.core.hardware.GpuHardwareBackend
 import nd.max.core.platform.HudField
 import nd.max.core.platform.HudReading
 import nd.max.core.platform.HudTally
+import nd.max.ui.util.CaptureConsentPrefs
 import nd.max.ui.design.MAX_VALUE_UNAVAILABLE
 import nd.max.ui.design.MaxDuration
 import nd.max.ui.design.MaxRadius
 import nd.max.ui.design.MaxSize
 import nd.max.ui.design.MaxSpace
+import nd.max.ui.design.maxRadius
 import nd.max.ui.util.GamePanelPrefs
+import nd.max.ui.util.GameMemoPrefs
 import nd.max.service.FpsOverlayService
 
 /*
@@ -237,6 +251,8 @@ fun GamePanelCockpit(
     veilEnabled: Boolean = false,
     veilTone: DisplayVeilTone = DisplayVeilTone.WARM,
     onCycleVeil: () -> Unit = {},
+    /** رفع/إعادة تركيز نافذة اللوحة: الحقل النصّي لا يظهر له لوحة مفاتيح في نافذة غير قابلة للتركيز. */
+    onTyping: (Boolean) -> Unit = {},
     thermal: ThermalPanelState = ThermalPanelState(),
     onSelectThermal: (String) -> Unit = {},
     refreshChoices: List<Int> = emptyList(),
@@ -267,8 +283,14 @@ fun GamePanelCockpit(
     var dnd by remember { mutableStateOf(false) }
     var touch by remember { mutableStateOf(false) }
     var screenRec by remember { mutableStateOf(false) }
+    // الإقرار لا يُسأل في كل مرة: يُفتح الحوار قبل **أول** تسجيل فقط، ثم يُسجَّل في المتجر نفسه.
+    var consentOpen by remember { mutableStateOf(false) }
     var fpsOverlay by remember { mutableStateOf(FpsOverlayService.isRunning) }
     var reminderMin by remember { mutableStateOf(0) }
+    // المذكّرة المثبّتة: النموذج المخزَّن هو مصدر الحقيقة الوحيد، والبلاطة تعرض حالته لا نسخة ثانية.
+    var memo by remember { mutableStateOf(GameMemoPrefs.load(context)) }
+    var memoOpen by remember { mutableStateOf(false) }
+    var memoDraft by remember { mutableStateOf("") }
     var optimizing by remember { mutableStateOf(false) }
     var listView by remember { mutableStateOf(true) }
     var details by remember { mutableStateOf(false) }
@@ -337,6 +359,31 @@ fun GamePanelCockpit(
     val msgDone = stringResource(R.string.game_panel_reminder_done)
     val msgSaved = stringResource(R.string.game_panel_msg_saved)
     val msgRecFailed = stringResource(R.string.game_panel_msg_rec_failed)
+    val recConsentTitle = stringResource(R.string.game_panel_rec_consent_title)
+    val recConsentBody = stringResource(R.string.game_panel_rec_consent_body)
+    val recConsentGo = stringResource(R.string.game_panel_rec_consent_go)
+    val lMemo = stringResource(R.string.game_panel_tool_memo)
+    val memoTitle = stringResource(R.string.game_panel_memo_title)
+    val memoHint = stringResource(R.string.game_panel_memo_hint)
+    val memoNote = stringResource(R.string.game_panel_memo_note)
+    val memoSave = stringResource(R.string.game_panel_memo_save)
+    val memoHide = stringResource(R.string.game_panel_memo_hide)
+    val msgMemoSaved = stringResource(R.string.game_panel_memo_saved)
+    val msgMemoOff = stringResource(R.string.game_panel_memo_off)
+    val keyboard = LocalSoftwareKeyboardController.current
+    val memoFocus = remember { FocusRequester() }
+    // نافذة اللوحة غير قابلة للتركيز، فلا تظهر لوحة مفاتيح. تُرفع مع الحقل وتُعاد مع إغلاقه،
+    // وإبقاؤها مرفوعة بعد الإغلاق يسلب اللمس من اللعبة تحتها (نفس عقد `ProcessOverlayService`).
+    LaunchedEffect(memoOpen) {
+        onTyping(memoOpen)
+        if (memoOpen) {
+            delay(180)
+            runCatching { memoFocus.requestFocus() }
+            keyboard?.show()
+        } else {
+            keyboard?.hide()
+        }
+    }
     val msgShotSaved = stringResource(R.string.game_panel_msg_shot_saved)
     val msgShotFailed = stringResource(R.string.game_panel_msg_shot_failed)
     val msgFreedNone = stringResource(R.string.game_panel_msg_freed_none)
@@ -627,7 +674,30 @@ fun GamePanelCockpit(
         }
         val onVolume: (Float) -> Unit = { value -> slide(volume, value) { device.setVolume(it) }; volume = value }
 
-        // ── بلاطات التحكّم (كلها تكتب فعلًا): قائمة واحدة للتخطيطين العرضي والطولي
+        /**
+     * بدء التسجيل بعد الإقرار — مسار واحد يستدعيه زرّ اللوحة وحوار الإقرار معًا،
+     * فلا يعرف أحدهما تحقّقًا لا يعرفه الآخر. الواجهة أولًا ثم يُقرأ ملفّ العلم فعلًا.
+     */
+    fun beginCapture() {
+        screenRec = true
+        say(String.format(fmtOn, lScreen))
+        PanelToggles.async { PanelScreenRecorder.start() }
+        scope.launch {
+            // ملفّ العلم لم يظهر بعد المهلة ⇒ `screenrecord` لم يبدأ (لا جذر أو رفض):
+            // تُصحّح البلاطة ويُعلن الفشل — بدل «بدأ التسجيل» وهو لم يبدأ (§9.2).
+            delay(1400)
+            val live = withContext(Dispatchers.IO) { PanelScreenRecorder.isRecording() }
+            if (!live) {
+                screenRec = false
+                hold()
+                say(msgRecFailed)
+            } else {
+                leave(onCollapse)
+            }
+        }
+    }
+
+    // ── بلاطات التحكّم (كلها تكتب فعلًا): قائمة واحدة للتخطيطين العرضي والطولي
         val bypassOn = controls.bypass == BypassState.On
         val tiles = buildList {
             add(CubeTileSpec(Icons.Rounded.Wifi, null, lWifi, wifi, onClick = { flip(lWifi, wifi, { wifi = it }) { PanelToggles.setWifi(context, it) } }))
@@ -697,23 +767,11 @@ fun GamePanelCockpit(
                     screenRec = false
                     say(msgSaved)
                     PanelToggles.async { PanelScreenRecorder.stop() }
+                } else if (!CaptureConsentPrefs.acknowledged(context)) {
+                    // أول مرة: يُسأل قبل أن يُسجَّل بكسل واحد. ومن أغلق الحوار لم يُسجَّل له شيء.
+                    consentOpen = true
                 } else {
-                    screenRec = true
-                    say(String.format(fmtOn, lScreen))
-                    PanelToggles.async { PanelScreenRecorder.start() }
-                    scope.launch {
-                        // ملفّ العلم لم يظهر بعد المهلة ⇒ `screenrecord` لم يبدأ (لا جذر أو رفض):
-                        // تُصحّح البلاطة ويُعلن الفشل — بدل «بدأ التسجيل» وهو لم يبدأ (§9.2).
-                        delay(1400)
-                        val live = withContext(Dispatchers.IO) { PanelScreenRecorder.isRecording() }
-                        if (!live) {
-                            screenRec = false
-                            hold()
-                            say(msgRecFailed)
-                        } else {
-                            leave(onCollapse)
-                        }
-                    }
+                    beginCapture()
                 }
             }))
             add(CubeTileSpec(Icons.Rounded.PhotoCamera, null, lShot, false, onClick = {
@@ -772,6 +830,12 @@ fun GamePanelCockpit(
                 val minutes = PanelReminder.cycle(context, msgDone)
                 reminderMin = minutes
                 say(if (minutes > 0) String.format(fmtReminder, minutes) else String.format(fmtOff, lReminder))
+            }))
+            // المذكّرة سطرٌ يبقى فوق اللعبة، لا منبّه: البلاطة تعرض حالتها وتفتح محرّرها.
+            add(CubeTileSpec(Icons.Rounded.Edit, null, lMemo, memo.visible, onClick = {
+                hold()
+                memoDraft = memo.text
+                memoOpen = true
             }))
             add(CubeTileSpec(Icons.Rounded.PowerSettingsNew, null, lClose, false, onClick = { leave(onClose) }))
         }
@@ -948,5 +1012,111 @@ fun GamePanelCockpit(
             )
             CubeMenu.None -> Unit
         }
+
+        // حوارات اللوحة تُرسم **داخل شجرتها**: حوار `Dialog` منفصل يحتاج Activity token،
+        // والنافذة هنا نافذة خدمة — فيسقط بـ`BadTokenException` (‏ADR-07: لا مسار يفشل صامتًا).
+        if (consentOpen) {
+            CubeModal(title = recConsentTitle, tint = tint, onDismiss = { consentOpen = false }) {
+                Text(recConsentBody, color = CubeDim, fontSize = 13.sp)
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs, Alignment.End)) {
+                    CubeModalAction(stringResource(R.string.cancel), CubeDim, onClick = { consentOpen = false })
+                    CubeModalAction(recConsentGo, ModeGreen, onClick = {
+                        CaptureConsentPrefs.acknowledge(context)
+                        consentOpen = false
+                        beginCapture()
+                    })
+                }
+            }
+        }
+
+        if (memoOpen) {
+            val memoShape = RoundedCornerShape(maxRadius(MaxRadius.control))
+            CubeModal(title = memoTitle, tint = tint, onDismiss = { memoOpen = false }) {
+                Text(memoNote, color = CubeDim, fontSize = 12.sp)
+                Box(
+                    Modifier.fillMaxWidth().clip(memoShape).background(CubeTile)
+                        .border(MaxSize.hairlineBorder, tint.copy(alpha = 0.55f), memoShape)
+                        .padding(horizontal = MaxSpace.sm, vertical = MaxSpace.xs)
+                ) {
+                    if (memoDraft.isEmpty()) Text(memoHint, color = CubeDim, fontSize = 14.sp)
+                    BasicTextField(
+                        value = memoDraft,
+                        onValueChange = { raw ->
+                            // سطر واحد مقروء فوق اللعبة؛ والحدّ نفسه في النموذج لا في الواجهة وحدها.
+                            memoDraft = raw.replace('\n', ' ').replace('\r', ' ').take(GameMemo.MAX_LENGTH)
+                        },
+                        singleLine = true,
+                        textStyle = TextStyle(color = CubeInk, fontSize = 14.sp),
+                        cursorBrush = SolidColor(tint),
+                        modifier = Modifier.fillMaxWidth().focusRequester(memoFocus)
+                    )
+                }
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs, Alignment.End)) {
+                    CubeModalAction(stringResource(R.string.cancel), CubeDim, onClick = { memoOpen = false })
+                    if (memo.visible) {
+                        CubeModalAction(memoHide, ModeAmber, onClick = {
+                            GameMemoPrefs.save(context, GameMemo.of(memoDraft, false))
+                            memo = GameMemoPrefs.load(context)
+                            say(msgMemoOff)
+                            memoOpen = false
+                        })
+                    }
+                    CubeModalAction(memoSave, ModeGreen, onClick = {
+                        GameMemoPrefs.save(context, GameMemo.of(memoDraft, true))
+                        memo = GameMemoPrefs.load(context)
+                        // نصّ فارغ بعد التنظيف = لا مذكّرة، فلا يُقال «عُرضت» وهناك شاشة فارغة.
+                        say(if (memo.visible) msgMemoSaved else msgMemoOff)
+                        memoOpen = false
+                    })
+                }
+            }
+        }
+    }
+}
+
+/**
+ * حوار داخل شجرة اللوحة.
+ *
+ * **ولماذا لا `AlertDialog`:** اللوحة تعيش في نافذة خدمة (`TYPE_APPLICATION_OVERLAY`) بلا
+ * Activity token؛ وحوار Compose يفتح نافذة `Dialog` ثانية فيسقط بـ`BadTokenException`.
+ * `CubeDropdown` سبق أن اتّخذ القرار نفسه: يُرسم داخل الشجرة لا في `Popup`.
+ */
+@Composable
+private fun CubeModal(
+    title: String,
+    tint: Color,
+    onDismiss: () -> Unit,
+    content: @Composable ColumnScope.() -> Unit
+) {
+    val shape = RoundedCornerShape(maxRadius(MaxRadius.control))
+    Box(
+        Modifier.fillMaxSize().background(Color(0xB3000000))
+            .pointerInput(Unit) { detectTapGestures { onDismiss() } },
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            Modifier.padding(MaxSpace.gutter).widthIn(max = 320.dp)
+                .clip(shape).background(CubeMenuBg)
+                .border(MaxSize.hairlineBorder, tint.copy(alpha = 0.55f), shape)
+                .swallowTaps().padding(MaxSpace.md),
+            verticalArrangement = Arrangement.spacedBy(MaxSpace.sm)
+        ) {
+            Text(title, color = CubeInk, fontSize = 15.sp, fontWeight = FontWeight.Bold)
+            content()
+        }
+    }
+}
+
+/** زرّ نصّي داخل الحوار: ارتفاع هدف اللمس القائم (‏`MaxSize.minTouchTarget`) لا مساحة أيقونة. */
+@Composable
+private fun CubeModalAction(text: String, color: Color, onClick: () -> Unit) {
+    Box(
+        Modifier.height(MaxSize.minTouchTarget)
+            .clip(RoundedCornerShape(maxRadius(MaxRadius.chip)))
+            .clickable(onClick = onClick)
+            .padding(horizontal = MaxSpace.sm),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(text, color = color, fontSize = 13.sp, fontWeight = FontWeight.Bold)
     }
 }
