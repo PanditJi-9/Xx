@@ -261,7 +261,7 @@ object CareerLedger {
         sessions: List<PlaySession>,
         library: Set<String>,
         nowMs: Long,
-        days: Int = NINETY_DAYS,
+        days: Int = CareerStats.NINETY_DAYS,
         zone: ZoneId = ZoneId.systemDefault()
     ): CareerSpan {
         val today = Instant.ofEpochMilli(nowMs).atZone(zone).toLocalDate()
