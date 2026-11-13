@@ -36,6 +36,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.sp
@@ -283,7 +285,10 @@ private fun MostPlayedRow(
             .clip(RoundedCornerShape(maxRadius(MaxRadius.chip)))
             .then(
                 if (onClick != null) {
-                    Modifier.clickable(onClick = onClick)
+                    // صفّ واحد في القارئ: الاسم والوقت يُقرآن معًا، والإجراء معلن زرًّا صريحًا.
+                    Modifier
+                        .semantics(mergeDescendants = true) { }
+                        .clickable(role = Role.Button, onClick = onClick)
                 } else {
                     Modifier
                 }
@@ -360,7 +365,16 @@ private fun SetupRow(
             .fillMaxWidth()
             .heightIn(min = MaxSize.minTouchTarget)
             .clip(RoundedCornerShape(maxRadius(MaxRadius.row)))
-            .then(if (actionable) Modifier.clickable(onClick = onCreate) else Modifier)
+            .then(
+                if (actionable) {
+                    // بند التهيئة عقدة واحدة: العنوان وحالته يُسمعان معًا، والإجراء زرّ معلن.
+                    Modifier
+                        .semantics(mergeDescendants = true) { }
+                        .clickable(role = Role.Button, onClick = onCreate)
+                } else {
+                    Modifier
+                }
+            )
             .padding(horizontal = MaxSpace.sm),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(MaxSpace.md)

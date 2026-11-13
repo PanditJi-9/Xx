@@ -313,4 +313,20 @@ class LobbyExploreContractTest {
             text.contains("role = Role.Button")
         )
     }
+
+    @Test
+    fun `insights rows are single buttons too`() {
+        val root = sourceRoot()
+        assumeTrue("Cannot locate nd.max sources; guard not evaluated", root != null)
+        val text = insights()
+
+        assertTrue(
+            "Most-played and setup rows must merge their text for the screen reader",
+            text.contains("mergeDescendants = true")
+        )
+        assertTrue(
+            "Clickable insights rows must declare the button role",
+            text.contains("role = Role.Button")
+        )
+    }
 }
