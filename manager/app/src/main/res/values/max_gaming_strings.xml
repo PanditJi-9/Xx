@@ -451,4 +451,10 @@
     <string name="lobby_career_progress">%1$d of %2$d</string>
     <string name="lobby_career_progress_min">%1$d of %2$d min</string>
     <string name="lobby_career_unlocked">Reached</string>
+    <string name="lobby_vault_view">Show</string>
+    <string name="lobby_vault_included">In Game Space</string>
+    <string name="lobby_vault_all">All apps</string>
+    <string name="lobby_vault_hidden">Hidden</string>
+    <string name="lobby_vault_count">%1$d of %2$d in Game Space</string>
+    <string name="lobby_vault_empty">No app matches this view</string>
 </resources>

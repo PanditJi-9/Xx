@@ -239,7 +239,7 @@ internal fun LobbyControlCenter(
                     LobbySection.Game -> GameBody(app, config, onUpdate, onOpenFull)
                     LobbySection.Panel -> PanelBody(app, panelEnabled, onPanelEnabled)
                     LobbySection.Lobby -> LobbyOptionsBody(prefs, onPrefs)
-                    LobbySection.Library -> LibraryBody(apps, manual, excluded, onToggleGame, accent)
+                    LobbySection.Library -> LibraryBody(apps, stats, manual, excluded, onToggleGame, accent)
                 }
             }
         }
@@ -1040,19 +1040,34 @@ private fun PinOutcome.messageRes(): Int = when (this) {
  * يقيم الآن داخل المركز. الكتابة تمرّ بـ`GameSpaceRepository.membership` وحدها — لا مخزن ثانٍ.
  */
 @Composable
+private enum class LibraryView { Included, All, Hidden }
+
 private fun LibraryBody(
     apps: List<GameApp>,
+    stats: Map<String, GamePlayStats>,
     manual: Set<String>,
     excluded: Set<String>,
     onToggle: (pkg: String, include: Boolean) -> Unit,
     accent: Color
 ) {
     var query by rememberSaveable { mutableStateOf("") }
-    val rows = remember(apps, manual, excluded, query) {
-        apps.filter {
-            query.isBlank() ||
-                it.label.contains(query, ignoreCase = true) ||
-                it.packageName.contains(query, ignoreCase = true)
+    var view by rememberSaveable { mutableStateOf(LibraryView.Included) }
+    val includedCount = remember(apps, manual, excluded) {
+        apps.count { isInLobby(it, manual, excluded) }
+    }
+    val rows = remember(apps, manual, excluded, query, view) {
+        apps.filter { app ->
+            val inLobby = isInLobby(app, manual, excluded)
+            val visible = when (view) {
+                LibraryView.Included -> inLobby
+                LibraryView.All -> true
+                LibraryView.Hidden -> !inLobby
+            }
+            visible && (
+                query.isBlank() ||
+                    app.label.contains(query, ignoreCase = true) ||
+                    app.packageName.contains(query, ignoreCase = true)
+                )
         }.sortedWith(
             compareByDescending<GameApp> { isInLobby(it, manual, excluded) }
                 .thenBy { it.label.lowercase() }
@@ -1064,11 +1079,33 @@ private fun LibraryBody(
             .padding(horizontal = MaxSpace.xl, vertical = MaxSpace.lg),
         verticalArrangement = Arrangement.spacedBy(MaxSpace.md)
     ) {
-        Text(
-            text = stringResource(R.string.lobby_manage_title),
-            color = LobbyPalette.Ink,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.SemiBold
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.Bottom,
+            horizontalArrangement = Arrangement.spacedBy(MaxSpace.md)
+        ) {
+            Text(
+                text = stringResource(R.string.lobby_manage_title),
+                color = LobbyPalette.Ink,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.weight(1f)
+            )
+            Text(
+                text = stringResource(R.string.lobby_vault_count, includedCount, apps.size),
+                color = LobbyPalette.Muted,
+                fontSize = 12.sp
+            )
+        }
+        LobbyChoiceRow(
+            title = stringResource(R.string.lobby_vault_view),
+            options = listOf(
+                LibraryView.Included to stringResource(R.string.lobby_vault_included),
+                LibraryView.All to stringResource(R.string.lobby_vault_all),
+                LibraryView.Hidden to stringResource(R.string.lobby_vault_hidden)
+            ),
+            selected = view,
+            onSelect = { view = it }
         )
         Box(
             modifier = Modifier
@@ -1091,47 +1128,61 @@ private fun LibraryBody(
                 modifier = Modifier.fillMaxWidth()
             )
         }
-        LazyColumn(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(MaxSpace.xs)
-        ) {
-            items(rows, key = { it.packageName }) { app ->
-                val included = isInLobby(app, manual, excluded)
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .heightIn(min = MaxSize.minTouchTarget)
-                        .padding(vertical = MaxSpace.xs),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(MaxSpace.md)
-                ) {
-                    AppIconImage(packageName = app.packageName, size = LibraryIcon, contentDescription = null)
-                    Column(Modifier.weight(1f)) {
-                        Text(
-                            text = app.label,
-                            color = LobbyPalette.Ink,
-                            fontSize = 16.sp,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                        Text(
-                            text = app.packageName,
-                            color = LobbyPalette.Muted,
-                            fontSize = 11.sp,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
+        if (rows.isEmpty()) {
+            Text(
+                text = stringResource(R.string.lobby_vault_empty),
+                color = LobbyPalette.Muted,
+                fontSize = 13.sp,
+                modifier = Modifier.padding(top = MaxSpace.sm)
+            )
+        } else {
+            LazyColumn(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(MaxSpace.xs)
+            ) {
+                items(rows, key = { it.packageName }) { app ->
+                    val included = isInLobby(app, manual, excluded)
+                    val played = stats[app.packageName]?.totalMs ?: 0L
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(min = MaxSize.minTouchTarget)
+                            .padding(vertical = MaxSpace.xs),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(MaxSpace.md)
+                    ) {
+                        AppIconImage(packageName = app.packageName, size = LibraryIcon, contentDescription = null)
+                        Column(
+                            modifier = Modifier.weight(1f),
+                            verticalArrangement = Arrangement.spacedBy(MaxSpace.xs)
+                        ) {
+                            Text(
+                                text = app.label,
+                                color = LobbyPalette.Ink,
+                                fontSize = 16.sp,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                            Text(
+                                text = lobbyPlayTimeText(played)
+                                    ?: stringResource(R.string.lobby_insights_no_stats),
+                                color = LobbyPalette.Muted,
+                                fontSize = 11.sp,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                        Switch(
+                            checked = included,
+                            onCheckedChange = { onToggle(app.packageName, it) },
+                            colors = SwitchDefaults.colors(
+                                checkedTrackColor = LobbyPalette.Red,
+                                checkedThumbColor = LobbyPalette.Ink,
+                                uncheckedTrackColor = LobbyPalette.PanelRaised,
+                                uncheckedThumbColor = LobbyPalette.Muted
+                            )
                         )
                     }
-                    Switch(
-                        checked = included,
-                        onCheckedChange = { onToggle(app.packageName, it) },
-                        colors = SwitchDefaults.colors(
-                            checkedTrackColor = LobbyPalette.Red,
-                            checkedThumbColor = LobbyPalette.Ink,
-                            uncheckedTrackColor = LobbyPalette.PanelRaised,
-                            uncheckedThumbColor = LobbyPalette.Muted
-                        )
-                    )
                 }
             }
         }

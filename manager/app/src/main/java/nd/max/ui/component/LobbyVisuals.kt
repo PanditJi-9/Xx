@@ -43,27 +43,31 @@ import kotlinx.coroutines.delay
  * رأسية تنقل المسرح إلى «مركز التحكم» الذي يضمّ كل الإعدادات في سطح واحد. التخطيط والأشكال والألوان
  * مرسومة هنا بالكود، **ولم يُنقل أيّ أصل** — والصور هي أيقونات التطبيقات المثبَّتة على الجهاز.
  *
- * ### أحمر العلامة ثابت هنا عن قصد
+ * ### هوية واحدة: بازلت وعاج وجمرة
  *
  * `DESIGN.md` يجعل الـaccent مستعارًا من ثيم المستخدم. اللوبي سطح لعب بهوية ثابتة، فيُثبَّت
- * أحمره (استثناء معلن لهذه الشاشة وللّوحة الجانبية). وبما أنّ الأحمر هو العلامة فهو **لا يعني
- * خطرًا أبدًا**: حالات التحذير تأخذ [Caution]/[Positive] الثابتتين مع أيقونة، لا أحمرًا وحده.
+ * accentه (استثناء معلن لهذه الشاشة وللّوحة الجانبية). الجمرة هنا **ليست تحذيرًا**: حالات
+ * التحذير تأخذ [Caution]/[Positive] الثابتتين مع أيقونة، لا لونًا وحده.
+ *
+ * قيم هذه اللوحة هي نفس سلّم `Monolith` (بازلت/سليت/عاج/جمرة) حتى لا ينقسم التطبيق إلى
+ * هويتين: مسرحٌ فاتح هادئ ومركزُ تحكّم أحمر نيون. الأسماء القديمة بقيت لأن كل الشاشات
+ * تناديها، وتغيير القيمة في مكان واحد يوحّدها بلا لمس كل ملف.
  */
 object LobbyPalette {
-    val Black = Color(0xFF050608)
-    val Surface = Color(0xFF0E1015)
-    val Panel = Color(0xFF1B1E2C)
-    val PanelRaised = Color(0xFF282D44)
-    val PanelSelected = Color(0xFF454B78)
-    val Red = Color(0xFFE5262B)
-    val RedBright = Color(0xFFFF5257)
-    val RedDeep = Color(0xFF5A0A10)
-    val Ink = Color(0xFFF2F3F8)
-    val Muted = Color(0xFF8F96AB)
-    val Hairline = Color(0x33FFFFFF)
+    val Black = Color(0xFF07080A)
+    val Surface = Color(0xFF0C0E12)
+    val Panel = Color(0xFF14171D)
+    val PanelRaised = Color(0xFF1B1F26)
+    val PanelSelected = Color(0xFF2A3038)
+    val Red = Color(0xFFFF6A45)
+    val RedBright = Color(0xFFFF8A6B)
+    val RedDeep = Color(0xFF3A1A12)
+    val Ink = Color(0xFFF4F1EA)
+    val Muted = Color(0xFF9A9A96)
+    val Hairline = Color(0x1FFFFFFF)
 
     /** سيان — للبيانات الحيّة فقط (حافة البطاقة، قراءات الجاهزية)، ولا يُستعمل لزرّ إجراء. */
-    val Cyan = Color(0xFF3DD9FF)
+    val Cyan = Color(0xFF8FD8E8)
 
     /**
      * ألوان مسرح اللوبي (الشكل العرضيّ ذو الأجنحة): كحليّ داكن للأرضية، ووردي-أحمر نيون وأزرق ملكيّ

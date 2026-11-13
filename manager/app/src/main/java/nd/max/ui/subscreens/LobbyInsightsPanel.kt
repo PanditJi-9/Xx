@@ -409,6 +409,7 @@ internal fun lobbyPlayAgeText(stats: GamePlayStats?): String? {
     }
 }
 
+@Composable
 internal fun lobbyPlayLine(stats: GamePlayStats?): String? {
     if (stats == null) return null
     val lastPlayed = lobbyPlayAgeText(stats)

@@ -449,5 +449,11 @@
     <string name="lobby_career_badge_games">خمس ألعاب</string>
     <string name="lobby_career_progress">%1$d من %2$d</string>
     <string name="lobby_career_progress_min">%1$d من %2$d دقيقة</string>
-    <string name="lobby_career_unlocked">بلغتها</string>
+    <string name="lobby_career_unlocked">مكتملة</string>
+    <string name="lobby_vault_view">اعرض</string>
+    <string name="lobby_vault_included">داخل مساحة اللعب</string>
+    <string name="lobby_vault_all">كل التطبيقات</string>
+    <string name="lobby_vault_hidden">المخفية</string>
+    <string name="lobby_vault_count">%1$d من %2$d داخل مساحة اللعب</string>
+    <string name="lobby_vault_empty">لا تطبيق يطابق هذا العرض</string>
 </resources>
