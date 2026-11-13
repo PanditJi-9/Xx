@@ -193,6 +193,13 @@ internal fun LobbyExplore(
                         cursorActive = true
                         val last = visible.lastIndex
                         when (event.key) {
+                            // المرشّحات من الريموت: R1 تالٍ وL1 سابق، فلا تبقى حبيسة اللمس.
+                            Key.ButtonR1, Key.ButtonL1 -> {
+                                val filters = LobbyFilter.entries
+                                val step = if (event.key == Key.ButtonR1) 1 else -1
+                                filter = filters[(filters.indexOf(filter) + step + filters.size) % filters.size]
+                                true
+                            }
                             Key.DirectionRight -> if (last >= 0) {
                                 cursor = (cursor + if (rtl) -1 else 1).coerceIn(0, last)
                                 true

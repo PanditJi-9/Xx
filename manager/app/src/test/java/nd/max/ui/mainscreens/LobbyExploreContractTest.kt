@@ -280,4 +280,21 @@ class LobbyExploreContractTest {
             text.contains("if (!onScreen) gridState.animateScrollToItem(cursor)")
         )
     }
+
+    @Test
+    fun `the bumpers cycle the filters so the remote can reach them`() {
+        val root = sourceRoot()
+        assumeTrue("Cannot locate nd.max sources; guard not evaluated", root != null)
+        val text = explore()
+
+        assertTrue(
+            "L1/R1 must cycle the filter row",
+            text.contains("Key.ButtonR1, Key.ButtonL1 ->") &&
+                text.contains("if (event.key == Key.ButtonR1) 1 else -1")
+        )
+        assertTrue(
+            "The filter cycle must wrap around the five filters",
+            text.contains("filters.indexOf(filter) + step + filters.size")
+        )
+    }
 }
