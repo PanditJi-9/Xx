@@ -30,6 +30,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.selection.selectable
@@ -134,9 +135,18 @@ internal fun LobbyExplore(
     // النمط نفسه، فتبقى الأسهم وEnter تعمل هنا كما تعمل هناك.
     val focus = remember { FocusRequester() }
     LaunchedEffect(Unit) { runCatching { focus.requestFocus() } }
-    var cursor by remember { mutableStateOf(0) }
-    LaunchedEffect(visible.size) {
+    val gridState = rememberLazyGridState()
+    // الحلقة البصرية تخصّ الريموت وحده: مستخدم اللمس لا يرى مؤشّرًا اختاره غيره.
+    var cursorActive by remember { mutableStateOf(false) }
+    // يبدأ المؤشّر على اللعبة المعروضة، ويعود إلى أول نتيجة عند تغيير البحث أو المرشّح.
+    var cursor by remember(filter, query) {
+        val target = visible.indexOfFirst { it.packageName == currentPackage }
+        mutableStateOf(if (target >= 0) target else 0)
+    }
+    // المؤشّر يقود الشبكة: كل حركة تُمرّر البطاقة إلى المرأى، فلا يضيع التركيز خارج الشاشة.
+    LaunchedEffect(cursor, visible.size) {
         if (cursor > visible.lastIndex) cursor = visible.lastIndex.coerceAtLeast(0)
+        if (cursor in visible.indices) gridState.animateScrollToItem(cursor)
     }
 
     BoxWithConstraints(
@@ -167,6 +177,7 @@ internal fun LobbyExplore(
                     if (event.type != KeyEventType.KeyDown) {
                         false
                     } else {
+                        cursorActive = true
                         val last = visible.lastIndex
                         when (event.key) {
                             Key.DirectionRight -> if (last >= 0) {
@@ -375,6 +386,7 @@ internal fun LobbyExplore(
             LazyVerticalGrid(
                 columns = GridCells.Adaptive(minSize = ExploreColumnMin),
                 modifier = Modifier.fillMaxSize(),
+                state = gridState,
                 contentPadding = PaddingValues(horizontal = MaxSpace.xl, vertical = MaxSpace.md),
                 verticalArrangement = Arrangement.spacedBy(MaxSpace.md),
                 horizontalArrangement = Arrangement.spacedBy(MaxSpace.md)
@@ -386,7 +398,7 @@ internal fun LobbyExplore(
                         tweaks = tweaks[game.packageName] ?: 0,
                         panelArmed = game.packageName in armed,
                         selected = game.packageName == currentPackage,
-                        focused = index == cursor,
+                        focused = cursorActive && index == cursor,
                         accent = accent,
                         nowMs = nowMs,
                         onClick = {

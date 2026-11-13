@@ -110,6 +110,20 @@ class LobbyExploreContractTest {
         )
         assertTrue("Escape does not close Explore", exploreText.contains("Key.Escape"))
         assertTrue(
+            "The grid must follow the remote cursor or the focused card leaves the viewport",
+            exploreText.contains("rememberLazyGridState()") &&
+                exploreText.contains("state = gridState") &&
+                exploreText.contains("gridState.animateScrollToItem(cursor)")
+        )
+        assertTrue(
+            "The focus ring must appear only after the remote moved, not for touch users",
+            exploreText.contains("focused = cursorActive && index == cursor")
+        )
+        assertTrue(
+            "Explore must open on the game the stage already shows",
+            exploreText.contains("visible.indexOfFirst { it.packageName == currentPackage }")
+        )
+        assertTrue(
             "Closing Explore must restore stage focus",
             lobby().contains("LaunchedEffect(exploreOpen)")
         )
