@@ -433,6 +433,7 @@
     <string name="lobby_nexus_now">Selected game</string>
     <string name="lobby_nexus_streak">Day streak</string>
     <string name="lobby_nexus_ready">Launch setup</string>
+    <string name="lobby_nexus_review">Review setup</string>
     <string name="lobby_nexus_last_played">Last played</string>
     <string name="lobby_nexus_installed">Installed</string>
     <string name="lobby_nexus_empty_title">No games in this view</string>

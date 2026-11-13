@@ -107,6 +107,7 @@ internal fun NexusPage(
             sessionsLabel = stringResource(R.string.lobby_insights_sessions),
             streakLabel = stringResource(R.string.lobby_nexus_streak),
             readyLabel = stringResource(R.string.lobby_nexus_ready),
+            reviewSetup = stringResource(R.string.lobby_nexus_review),
             lastPlayedLabel = stringResource(R.string.lobby_nexus_last_played),
             installedLabel = stringResource(R.string.lobby_nexus_installed),
             emptyTitle = stringResource(R.string.lobby_nexus_empty_title),

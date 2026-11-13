@@ -432,6 +432,7 @@
     <string name="lobby_nexus_now">اللعبة المختارة</string>
     <string name="lobby_nexus_streak">أيام متتالية</string>
     <string name="lobby_nexus_ready">جاهزية الإطلاق</string>
+    <string name="lobby_nexus_review">راجع التهيئة</string>
     <string name="lobby_nexus_last_played">آخر لعب</string>
     <string name="lobby_nexus_installed">مثبّتة</string>
     <string name="lobby_nexus_empty_title">لا ألعاب في هذا العرض</string>

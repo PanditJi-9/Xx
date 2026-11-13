@@ -9,6 +9,7 @@ package nd.max.ui.gamespace
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -79,6 +80,7 @@ data class NexusCopy(
     val sessionsLabel: String,
     val streakLabel: String,
     val readyLabel: String,
+    val reviewSetup: String,
     val lastPlayedLabel: String,
     val installedLabel: String,
     val emptyTitle: String,
@@ -132,6 +134,7 @@ fun NexusScreen(
                     model = model,
                     accent = accent,
                     onLaunch = onLaunch,
+                    onOpenSetup = onOpenLoadout,
                     modifier = Modifier
                         .weight(1f)
                         .verticalScroll(rememberScrollState())
@@ -188,6 +191,7 @@ private fun NexusHero(
     model: NexusModel,
     accent: MonolithAccent,
     onLaunch: () -> Unit,
+    onOpenSetup: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -238,12 +242,31 @@ private fun NexusHero(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(MaxSpace.lg)
         ) {
-            MonolithReadinessRing(
-                progress = model.readiness,
-                accent = accent.base,
-                valueText = model.readinessValue,
-                label = copy.readyLabel
-            )
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(MaxSpace.xs),
+                modifier = Modifier
+                    .clip(RoundedCornerShape(MaxRadius.control))
+                    .semantics(mergeDescendants = true) {
+                        contentDescription =
+                            "${copy.readyLabel} ${model.readinessValue}. ${copy.reviewSetup}"
+                    }
+                    .clickable(role = Role.Button, onClick = onOpenSetup)
+                    .padding(horizontal = MaxSpace.xs, vertical = MaxSpace.sm)
+            ) {
+                MonolithReadinessRing(
+                    progress = model.readiness,
+                    accent = accent.base,
+                    valueText = model.readinessValue,
+                    label = copy.readyLabel
+                )
+                Text(
+                    text = copy.reviewSetup,
+                    style = Monolith.label,
+                    color = accent.base,
+                    maxLines = 1
+                )
+            }
             MonolithPrimaryButton(
                 text = copy.launch,
                 onClick = onLaunch,
