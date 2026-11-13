@@ -457,6 +457,9 @@
     <string name="lobby_vault_hidden">المخفية</string>
     <string name="lobby_vault_count">%1$d من %2$d داخل مساحة اللعب</string>
     <string name="lobby_vault_empty">لا تطبيق يطابق هذا العرض</string>
+    <string name="lobby_vault_sort">ترتيب حسب</string>
+    <string name="lobby_vault_sort_recent">الأحدث</string>
+    <string name="lobby_vault_sort_playtime">وقت اللعب</string>
     <string name="lobby_loadout_ready">قبل الإطلاق</string>
     <string name="lobby_loadout_ready_count">%1$d من %2$d جاهزة</string>
     <string name="lobby_loadout_check_profile">ملف اللعبة</string>

@@ -1143,9 +1143,11 @@ private fun PinOutcome.messageRes(): Int = when (this) {
  * إدارة الألعاب: كل تطبيق قابل للتشغيل مع مفتاح إدراج/إزالة، وبحث. هذا ما كان «إدارة الألعاب» نافذةً؛
  * يقيم الآن داخل المركز. الكتابة تمرّ بـ`GameSpaceRepository.membership` وحدها — لا مخزن ثانٍ.
  */
-@Composable
 private enum class LibraryView { Included, All, Hidden }
 
+private enum class LibrarySort { Recent, Playtime, Name }
+
+@Composable
 private fun LibraryBody(
     apps: List<GameApp>,
     stats: Map<String, GamePlayStats>,
@@ -1156,26 +1158,39 @@ private fun LibraryBody(
 ) {
     var query by rememberSaveable { mutableStateOf("") }
     var view by rememberSaveable { mutableStateOf(LibraryView.Included) }
+    var sort by rememberSaveable { mutableStateOf(LibrarySort.Recent) }
     val includedCount = remember(apps, manual, excluded) {
         apps.count { isInLobby(it, manual, excluded) }
     }
-    val rows = remember(apps, manual, excluded, query, view) {
-        apps.filter { app ->
+    val rows = remember(apps, manual, excluded, query, view, sort, stats) {
+        val visible = apps.filter { app ->
             val inLobby = isInLobby(app, manual, excluded)
-            val visible = when (view) {
+            val shown = when (view) {
                 LibraryView.Included -> inLobby
                 LibraryView.All -> true
                 LibraryView.Hidden -> !inLobby
             }
-            visible && (
+            shown && (
                 query.isBlank() ||
                     app.label.contains(query, ignoreCase = true) ||
                     app.packageName.contains(query, ignoreCase = true)
                 )
-        }.sortedWith(
-            compareByDescending<GameApp> { isInLobby(it, manual, excluded) }
-                .thenBy { it.label.lowercase() }
-        )
+        }
+        val includedFirst = compareByDescending<GameApp> { isInLobby(it, manual, excluded) }
+        val alphabetical = compareBy<GameApp> { it.label.lowercase() }
+        when (sort) {
+            LibrarySort.Recent -> visible.sortedWith(
+                includedFirst
+                    .thenByDescending { stats[it.packageName]?.lastPlayedAtMs ?: 0L }
+                    .then(alphabetical)
+            )
+            LibrarySort.Playtime -> visible.sortedWith(
+                includedFirst
+                    .thenByDescending { stats[it.packageName]?.totalMs ?: 0L }
+                    .then(alphabetical)
+            )
+            LibrarySort.Name -> visible.sortedWith(includedFirst.then(alphabetical))
+        }
     }
     Column(
         modifier = Modifier
@@ -1210,6 +1225,16 @@ private fun LibraryBody(
             ),
             selected = view,
             onSelect = { view = it }
+        )
+        LobbyChoiceRow(
+            title = stringResource(R.string.lobby_vault_sort),
+            options = listOf(
+                LibrarySort.Recent to stringResource(R.string.lobby_vault_sort_recent),
+                LibrarySort.Playtime to stringResource(R.string.lobby_vault_sort_playtime),
+                LibrarySort.Name to stringResource(R.string.lobby_sort_name)
+            ),
+            selected = sort,
+            onSelect = { sort = it }
         )
         Box(
             modifier = Modifier

@@ -458,6 +458,9 @@
     <string name="lobby_vault_hidden">Hidden</string>
     <string name="lobby_vault_count">%1$d of %2$d in Game Space</string>
     <string name="lobby_vault_empty">No app matches this view</string>
+    <string name="lobby_vault_sort">Sort by</string>
+    <string name="lobby_vault_sort_recent">Recent</string>
+    <string name="lobby_vault_sort_playtime">Playtime</string>
     <string name="lobby_loadout_ready">Before you launch</string>
     <string name="lobby_loadout_ready_count">%1$d of %2$d ready</string>
     <string name="lobby_loadout_check_profile">Game profile</string>
