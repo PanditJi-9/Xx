@@ -43,9 +43,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material.icons.rounded.VideoLibrary
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -57,6 +59,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -121,10 +124,12 @@ fun ClipAlbumScreen(navController: NavController) {
             ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED
         )
     }
-    var deniedOnce by remember { mutableStateOf(false) }
+    var deniedOnce by rememberSaveable { mutableStateOf(false) }
     var refresh by remember { mutableIntStateOf(0) }
     var state by remember { mutableStateOf(ClipAlbumState.Loading) }
     var clips by remember { mutableStateOf(emptyList<ClipEntry>()) }
+    // الحذف يمرّ بسؤال: التسجيل لا رجعة فيه بعد تأكيد النظام، ومسار ما قبل ٣٠ كان يحذف فورًا.
+    var pendingDelete by remember { mutableStateOf<ClipEntry?>(null) }
 
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -133,13 +138,12 @@ fun ClipAlbumScreen(navController: NavController) {
         if (granted) refresh++ else deniedOnce = true
     }
 
-    // العودة من إعدادات النظام قد تمنح الإذن؛ ولا يُعاد السؤال في كل إطار — يُعاد عند العودة.
+    // العودة تعني أحد أمرين: إذن مُنح من الإعدادات، أو تسجيل جديد تمّ والمسجّل بثّ مسحه. في الحالتين
+    // القراءة من جديد أرخص من انتظار خروج ودخول — والألبوم الذي لا يُظهر ما سُجّل للتوّ ألبوم كاذب.
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
         val now = ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED
-        if (now != permitted) {
-            permitted = now
-            if (now) refresh++
-        }
+        if (now != permitted) permitted = now
+        refresh++
     }
 
     LaunchedEffect(permitted, refresh) {
@@ -265,10 +269,31 @@ fun ClipAlbumScreen(navController: NavController) {
                     clip = clip,
                     onPlay = { play(clip) },
                     onShare = { share(clip) },
-                    onDelete = { delete(clip) }
+                    onDelete = { pendingDelete = clip }
                 )
             }
         }
+    }
+
+    pendingDelete?.let { clip ->
+        AlertDialog(
+            onDismissRequest = { pendingDelete = null },
+            title = { Text(stringResource(R.string.clip_album_delete_title)) },
+            text = { Text(stringResource(R.string.clip_album_delete_message)) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        pendingDelete = null
+                        delete(clip)
+                    }
+                ) { Text(stringResource(R.string.clip_album_delete_confirm)) }
+            },
+            dismissButton = {
+                TextButton(onClick = { pendingDelete = null }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            }
+        )
     }
 }
 

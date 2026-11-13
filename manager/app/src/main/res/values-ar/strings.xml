@@ -1698,6 +1698,9 @@
     <string name="clip_album_share_cd">شارك المقطع</string>
     <string name="clip_album_delete_cd">احذف المقطع</string>
     <string name="clip_album_delete_failed">تعذّر حذف المقطع</string>
+    <string name="clip_album_delete_title">أتحذف هذا المقطع؟</string>
+    <string name="clip_album_delete_message">سيُحذف التسجيل نهائيًّا من مجلّد المقاطع.</string>
+    <string name="clip_album_delete_confirm">احذف</string>
     <string name="game_sessions_subtitle">معدّل الإطارات والطاقة والحرارة والتقطيع والمدّة — تُسجَّل حيًّا وتبقى بعد إغلاق اللوحة.</string>
     <string name="game_sessions_live_title">الجلسة الحيّة</string>
     <string name="game_sessions_live_desc">المسجّل نفسه الذي يعمل فوق اللعبة. البدء من هنا يسمّي الجلسة من التطبيق الأمامي.</string>

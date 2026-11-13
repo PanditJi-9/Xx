@@ -754,6 +754,9 @@
     <string name="clip_album_share_cd">Share clip</string>
     <string name="clip_album_delete_cd">Delete clip</string>
     <string name="clip_album_delete_failed">Could not delete the clip</string>
+    <string name="clip_album_delete_title">Delete this clip?</string>
+    <string name="clip_album_delete_message">The recording is removed from the clip folder for good.</string>
+    <string name="clip_album_delete_confirm">Delete</string>
     <string name="game_sessions_subtitle">Frame rate, power, heat, jank, and duration — recorded live and kept after the panel closes.</string>
     <string name="game_sessions_live_title">Live session</string>
     <string name="game_sessions_live_desc">The same recorder the overlay uses. Starting here names the session from the foreground app.</string>
