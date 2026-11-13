@@ -98,7 +98,6 @@ import nd.max.core.gamespace.LobbyPrefs
 import nd.max.core.gamespace.LobbyPrefsState
 import nd.max.core.gamespace.LobbySort
 import nd.max.core.gamespace.PanelOverlayGate
-import nd.max.core.gamespace.PlayAge
 import nd.max.core.gamespace.PlaySessionLedger
 import nd.max.core.gamespace.PlaySessionStore
 import nd.max.core.gamespace.SidePanelArmedStore
@@ -555,7 +554,7 @@ fun GameLobbyScreen(
                                     LobbyInfoPanel(
                                         title = active.label,
                                         meta = rememberLobbyMetaText(active.packageName),
-                                        stats = playHistoryText(playStats[active.packageName]),
+                                        stats = lobbyPlayLine(playStats[active.packageName]),
                                         favorite = favorite,
                                         onFavorite = {
                                             tick()
@@ -873,30 +872,6 @@ fun GameLobbyScreen(
 /** يحمل آخر قائمة أُعيد إليها موضع الحلقة؛ مرجعٌ لا حالة، فلا يسبّب إعادة تركيب. */
 private class LobbyRestoreGate {
     var games: List<GameApp>? = null
-}
-
-/**
- * سطر سجلّ اللعب للعبة المحدَّدة: «آخر لعب … · لُعبت …» من الجلسات المحفوظة محليًّا. غياب الجلسة
- * يُعرض غيابًا لا صفرًا (ADR-07)، ولا يُدَّعى وقتٌ لم يُسجَّل.
- */
-@Composable
-private fun playHistoryText(stats: GamePlayStats?): String? {
-    if (stats == null) return null
-    val age = PlaySessionLedger.playAge(System.currentTimeMillis(), stats.lastPlayedAtMs)
-    val lastPlayed = when (age) {
-        PlayAge.None -> null
-        is PlayAge.Minutes -> stringResource(R.string.lobby_stats_last_minutes, age.minutes)
-        is PlayAge.Hours -> stringResource(R.string.lobby_stats_last_hours, age.hours)
-        PlayAge.Yesterday -> stringResource(R.string.lobby_stats_last_yesterday)
-        is PlayAge.Days -> stringResource(R.string.lobby_stats_last_days, age.days)
-    }
-    val minutes = PlaySessionLedger.playMinutes(stats.totalMs)
-    val played = when {
-        minutes == null -> null
-        minutes < 60 -> stringResource(R.string.lobby_stats_play_minutes, minutes)
-        else -> stringResource(R.string.lobby_stats_play_hours, minutes / 60, minutes % 60)
-    }
-    return listOfNotNull(lastPlayed, played).takeIf { it.isNotEmpty() }?.joinToString(" · ")
 }
 
 /**

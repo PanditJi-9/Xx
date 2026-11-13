@@ -506,8 +506,7 @@ private fun ExploreCard(
         )
     }
     val shape = RoundedCornerShape(maxRadius(MaxRadius.tile))
-    val playLine = stats?.let { lobbyPlayTimeText(it.totalMs) }
-        ?: stringResource(R.string.lobby_explore_never)
+    val playLine = lobbyPlayLine(stats) ?: stringResource(R.string.lobby_explore_never)
     Column(
         modifier = Modifier
             .fillMaxWidth()

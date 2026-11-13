@@ -43,6 +43,7 @@ import nd.max.R
 import nd.max.core.gamespace.GameApp
 import nd.max.core.gamespace.GamePlayStats
 import nd.max.core.gamespace.LobbyInsights
+import nd.max.core.gamespace.PlayAge
 import nd.max.core.gamespace.PlaySessionLedger
 import nd.max.core.gamespace.SetupKind
 import nd.max.core.gamespace.SetupStep
@@ -213,6 +214,27 @@ internal fun LobbyInsightsBody(
             fontSize = 12.sp
         )
     }
+}
+
+/**
+ * سطر سجلّ اللعب للعبة واحدة: «آخر لعب … · لُعبت …» من الجلسات المحفوظة محليًّا. غياب الجلسة
+ * يُعرض غيابًا لا صفرًا (ADR-07)، ولا يُدَّعى وقتٌ لم يُسجَّل.
+ *
+ * مصدر واحد للمعنى نفسه: المسرح وبطاقة «استكشف» يقرآن هذا السطر، فلا يظهر الرقم بصيغتين.
+ */
+@Composable
+internal fun lobbyPlayLine(stats: GamePlayStats?): String? {
+    if (stats == null) return null
+    val age = PlaySessionLedger.playAge(System.currentTimeMillis(), stats.lastPlayedAtMs)
+    val lastPlayed = when (age) {
+        PlayAge.None -> null
+        is PlayAge.Minutes -> stringResource(R.string.lobby_stats_last_minutes, age.minutes)
+        is PlayAge.Hours -> stringResource(R.string.lobby_stats_last_hours, age.hours)
+        PlayAge.Yesterday -> stringResource(R.string.lobby_stats_last_yesterday)
+        is PlayAge.Days -> stringResource(R.string.lobby_stats_last_days, age.days)
+    }
+    val played = lobbyPlayTimeText(stats.totalMs)
+    return listOfNotNull(lastPlayed, played).takeIf { it.isNotEmpty() }?.joinToString(" · ")
 }
 
 /** الدقائق/الساعات من المدة نفسها التي تعرضها بطاقة المسرح؛ `null` لما دون خمس ثوانٍ. */

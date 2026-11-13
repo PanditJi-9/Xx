@@ -182,4 +182,24 @@ class LobbyExploreContractTest {
             exploreText.contains("if (query.isNotBlank())")
         )
     }
+
+    @Test
+    fun `one play line serves the stage and the explore card`() {
+        val root = sourceRoot()
+        assumeTrue("Cannot locate nd.max sources; guard not evaluated", root != null)
+
+        assertTrue(
+            "The stage must read the shared play line, not its own copy",
+            lobby().contains("lobbyPlayLine(") &&
+                !lobby().contains("private fun playHistoryText")
+        )
+        assertTrue(
+            "The explore card must read the same play line",
+            explore().contains("lobbyPlayLine(stats)")
+        )
+        assertTrue(
+            "The shared play line must live with the insights panel",
+            insights().contains("internal fun lobbyPlayLine(")
+        )
+    }
 }
