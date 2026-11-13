@@ -487,6 +487,7 @@
     <string name="lobby_vault_all">All games</string>
     <string name="lobby_vault_hidden">Hidden</string>
     <string name="lobby_vault_count">%1$d of %2$d in Game Space</string>
+    <string name="lobby_vault_orphans">%1$d saved games are no longer installed</string>
     <string name="lobby_vault_empty">No app matches this view</string>
     <string name="lobby_vault_sort">Sort by</string>
     <string name="lobby_vault_sort_recent">Recent</string>

@@ -30,8 +30,14 @@ class GameLibraryTest {
     @Test fun exclusionWinsEvenOverAnOldManualEntry() {
         assertTrue(gameLibrary(listOf(GameApp("com.a", "A", false)), setOf("com.a"), setOf("com.a")).isEmpty())
     }
-    @Test fun invisibleMembershipSurvivesWhileInvalidPackagesAreRejected() {
-        assertEquals(setOf("com.missing"), validGamePackages(setOf("com.missing")))
+    @Test fun rememberedGamesThatVanishedAreNamedNotSilentlyDropped() {
+        val apps = listOf(GameApp("com.here", "Here", true))
+        assertEquals(listOf("com.gone"), orphanedPackages(apps, setOf("com.gone", "com.here")))
+        assertEquals(listOf("com.here"), orphanedPackages(emptyList(), emptySet(), setOf("com.here")))
+        assertTrue(orphanedPackages(apps, setOf("com.here"), emptySet()).isEmpty())
+    }
+
+    @Test fun invisibleMembershipSurvivesWhileInvalidPackagesAreRejected() {        assertEquals(setOf("com.missing"), validGamePackages(setOf("com.missing")))
         for (pkg in listOf("", "com.game;id", "com.game:clone", "com..game")) {
             assertTrue(runCatching { GameLibraryMembership(emptySet(), emptySet()).change(pkg, true) }.isFailure)
             assertTrue(runCatching { validGamePackages(setOf(pkg)) }.isFailure)

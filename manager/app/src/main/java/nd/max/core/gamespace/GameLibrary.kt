@@ -11,6 +11,16 @@ fun gameLibrary(apps: List<GameApp>, manual: Set<String>, excluded: Set<String> 
     .filter { it.packageName !in excluded && (it.detectedGame || it.packageName in manual) }
     .sortedWith(compareBy<GameApp> { it.label.lowercase() }.thenBy { it.packageName })
 
+/**
+ * حزم ما زالت في ذاكرة المكتبة (أُضيفت يدويًّا أو استُبعدت) ولم تعد على الجهاز.
+ * `apps` تأتي من `PackageManager`، فغيابها منه إزالةٌ فعلية لا خلل قراءة — والملفّ المضبوط
+ * يبقى محفوظًا عن قصد، لكن صمته كان يوهم أن كل شيء على ما كان.
+ */
+fun orphanedPackages(apps: List<GameApp>, manual: Set<String>, excluded: Set<String> = emptySet()): List<String> {
+    val installed = apps.mapTo(HashSet()) { it.packageName }
+    return (manual + excluded).filterNot { it in installed }.sorted()
+}
+
 /** Exclusion is explicit user intent and wins over automatic detection. No hardware profile is removed. */
 data class GameLibraryMembership(val manual: Set<String>, val excluded: Set<String>) {
     fun change(pkg: String, include: Boolean): GameLibraryMembership {

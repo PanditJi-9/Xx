@@ -99,6 +99,7 @@ import nd.max.core.gamespace.LobbyPrefsState
 import nd.max.core.gamespace.LobbySort
 import nd.max.core.gamespace.PanelSensitivity
 import nd.max.core.gamespace.PanelSide
+import nd.max.core.gamespace.orphanedPackages
 import nd.max.core.privilege.ExecutionMode
 import nd.max.core.privilege.ExecutionModeStore
 import nd.max.core.privilege.ExecutionModeRules
@@ -1162,6 +1163,10 @@ private fun LibraryBody(
     val includedCount = remember(apps, manual, excluded) {
         apps.count { isInLobby(it, manual, excluded) }
     }
+    // لعبة أُزيلت من الجهاز لا تظهر في القائمة (مصدرها `PackageManager`)، فتُعدّ وتُقال بدل الصمت.
+    val vanished = remember(apps, manual, excluded) {
+        orphanedPackages(apps, manual, excluded).size
+    }
     val rows = remember(apps, manual, excluded, query, view, sort, stats) {
         val visible = apps.filter { app ->
             val inLobby = isInLobby(app, manual, excluded)
@@ -1213,6 +1218,13 @@ private fun LibraryBody(
             Text(
                 text = stringResource(R.string.lobby_vault_count, includedCount, apps.size),
                 color = LobbyPalette.Muted,
+                fontSize = 12.sp
+            )
+        }
+        if (vanished > 0) {
+            Text(
+                text = stringResource(R.string.lobby_vault_orphans, vanished),
+                color = LobbyPalette.Steel,
                 fontSize = 12.sp
             )
         }

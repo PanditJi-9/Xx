@@ -486,6 +486,7 @@
     <string name="lobby_vault_all">كل الألعاب</string>
     <string name="lobby_vault_hidden">المخفية</string>
     <string name="lobby_vault_count">%1$d من %2$d داخل مساحة اللعب</string>
+    <string name="lobby_vault_orphans">%1$d لعبة محفوظة لم تعد مثبَّتة</string>
     <string name="lobby_vault_empty">لا تطبيق يطابق هذا العرض</string>
     <string name="lobby_vault_sort">ترتيب حسب</string>
     <string name="lobby_vault_sort_recent">الأحدث</string>
