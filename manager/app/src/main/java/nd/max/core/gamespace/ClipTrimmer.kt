@@ -93,7 +93,7 @@ object ClipTrimmer {
                     val muxTracks = tracks.associate { (index, format) -> index to built.addTrack(format) }
                     built.start()
                     tracks.forEach { (index, format) ->
-                        copyTrack(extractor, built, muxTracks.getValue(index), format, startUs, endUs)
+                        copyTrack(extractor, built, index, muxTracks.getValue(index), format, startUs, endUs)
                     }
                     built.stop()
                 } finally {
