@@ -217,8 +217,10 @@ class LobbyExploreContractTest {
                 text.contains("private val ExploreCompactHeight")
         )
         assertTrue(
-            "The compact header must drop the count line and shrink the title",
-            text.contains("if (!compact)") && text.contains("fontSize = if (compact) 18.sp else 22.sp")
+            "The compact header must drop the count line and keep the light page title",
+            text.contains("if (!compact)") &&
+                text.contains("fontSize = if (compact)") &&
+                text.contains("fontWeight = FontWeight.Light")
         )
         assertTrue(
             "The compact card must shrink its padding and skip the redundant dots",
