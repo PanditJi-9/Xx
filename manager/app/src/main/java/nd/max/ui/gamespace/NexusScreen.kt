@@ -7,6 +7,7 @@
 
 package nd.max.ui.gamespace
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -37,6 +38,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
@@ -45,6 +47,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import nd.max.ui.design.MaxRadius
 import nd.max.ui.design.MaxSpace
+import nd.max.ui.component.rememberLobbyIcon
 
 /*
  * NEXUS — أوّل فضاءات MONOLITH: منصّة الإطلاق.
@@ -338,6 +341,7 @@ private fun NexusRail(
         itemsIndexed(games, key = { _, game -> game.packageName }) { index, game ->
             val active = index == selectedIndex
             val accent = monolithAccent(game.accent)
+            val icon = rememberLobbyIcon(game.packageName).value
             Box(
                 modifier = Modifier
                     .size(48.dp)
@@ -352,11 +356,22 @@ private fun NexusRail(
                     .semantics { contentDescription = game.label },
                 contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = game.monogram,
-                    style = Monolith.label,
-                    color = if (active) Monolith.Bone else Monolith.BoneDim
-                )
+                if (icon != null) {
+                    Image(
+                        bitmap = icon,
+                        contentDescription = null,
+                        contentScale = ContentScale.Fit,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(MaxSpace.xs)
+                    )
+                } else {
+                    Text(
+                        text = game.monogram,
+                        style = Monolith.label,
+                        color = if (active) Monolith.Bone else Monolith.BoneDim
+                    )
+                }
             }
         }
     }
