@@ -413,6 +413,16 @@ fun GameLobbyScreen(
     // «استكشف» يعلو الصفحتين: أوّل رجوع يغلق الطبقة وحدها قبل أي انتقال أو خروج من اللوبي.
     BackHandler(enabled = exploreOpen) { exploreOpen = false }
 
+    // اختيار لعبة من أي سطح (استكشف أو قائمة «الأكثر لعبًا») يمرّ من هنا: يُطفئ «المفضّلة فقط»
+    // إن كانت تخفيها، يثبّت الاختيار، ويمرّر الحلقة إليها. وحين تتغيّر القائمة يُصحّح `LaunchedEffect`
+    // الموضع بعد إعادة التركيب، فلا يفشل الانتقال لأن الهدف لم يكن في القائمة المصفّاة بعد.
+    val selectGame: (String) -> Unit = { pkg ->
+        if (favoritesOnly && pkg !in library.favorites) favoritesOnly = false
+        selected = pkg
+        val target = gamesState.value.indexOfFirst { it.packageName == pkg }
+        if (target >= 0) scope.launch { deckState.animateScrollToPage(target) }
+    }
+
     // وميض الإطلاق ثم التشغيل؛ `launching` يمنع نقرتين، وتُستدعى من الزرّ ومن الريموت/الكيبورد.
     val start: () -> Unit = start@{
         val pkg = active?.packageName ?: return@start
@@ -686,6 +696,10 @@ fun GameLobbyScreen(
                                     launchSingleTop = true
                                 }
                             },
+                            onOpenGame = { pkg ->
+                                closeControl()
+                                selectGame(pkg)
+                            },
                             prefs = lobbyPrefs,
                             onPrefs = updatePrefs,
                             apps = manageApps,
@@ -813,11 +827,8 @@ fun GameLobbyScreen(
                     accent = toneState.value,
                     animations = animations,
                     onSelect = { game ->
-                        if (favoritesOnly && game.packageName !in library.favorites) favoritesOnly = false
-                        selected = game.packageName
                         exploreOpen = false
-                        val target = gamesState.value.indexOfFirst { it.packageName == game.packageName }
-                        if (target >= 0) scope.launch { deckState.animateScrollToPage(target) }
+                        selectGame(game.packageName)
                     },
                     onClose = { exploreOpen = false }
                 )

@@ -70,6 +70,7 @@ internal fun LobbyInsightsBody(
     onSection: (LobbySection) -> Unit,
     onPanelEnabled: (Boolean) -> Unit,
     onOpenHistory: () -> Unit,
+    onOpenGame: (String) -> Unit,
 ) {
     val nowMs = remember { System.currentTimeMillis() }
     val library = remember(games) { games.map { it.packageName }.toSet() }
@@ -136,13 +137,18 @@ internal fun LobbyInsightsBody(
                 )
             } else {
                 summary.top.forEach { stat ->
+                    val ranked = games.firstOrNull { it.packageName == stat.packageName }
                     MostPlayedRow(
-                        label = games.firstOrNull { it.packageName == stat.packageName }?.label
-                            ?: stat.packageName,
+                        label = ranked?.label ?: stat.packageName,
                         packageName = stat.packageName,
                         value = lobbyPlayTimeText(stat.totalMs)
                             ?: stringResource(R.string.lobby_insights_unknown),
-                        accent = LobbyPalette.Red
+                        accent = LobbyPalette.Red,
+                        onClick = if (ranked != null) {
+                            { onOpenGame(stat.packageName) }
+                        } else {
+                            null
+                        }
                     )
                 }
             }
@@ -243,11 +249,21 @@ private fun MostPlayedRow(
     packageName: String,
     value: String,
     accent: Color,
+    onClick: (() -> Unit)?,
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .heightIn(min = MaxSize.minTouchTarget),
+            .heightIn(min = MaxSize.minTouchTarget)
+            .clip(RoundedCornerShape(maxRadius(MaxRadius.chip)))
+            .then(
+                if (onClick != null) {
+                    Modifier.clickable(onClick = onClick)
+                } else {
+                    Modifier
+                }
+            )
+            .padding(horizontal = MaxSpace.sm),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(MaxSpace.md)
     ) {

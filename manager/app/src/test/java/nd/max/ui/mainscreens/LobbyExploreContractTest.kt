@@ -123,9 +123,29 @@ class LobbyExploreContractTest {
             "Explore must open on the game the stage already shows",
             exploreText.contains("visible.indexOfFirst { it.packageName == currentPackage }")
         )
+    }
+
+    @Test
+    fun `most played rows open their game through one shared selector`() {
+        val root = sourceRoot()
+        assumeTrue("Cannot locate nd.max sources; guard not evaluated", root != null)
+        val panel = insights()
+
         assertTrue(
-            "Closing Explore must restore stage focus",
-            lobby().contains("LaunchedEffect(exploreOpen)")
+            "A most-played row must be clickable",
+            panel.contains(".clickable(onClick = onClick)")
+        )
+        assertTrue(
+            "A most-played row must open its game, not just display it",
+            panel.contains("onOpenGame(stat.packageName)")
+        )
+        assertTrue(
+            "The control center must pass the opener down to Insights",
+            control().contains("onOpenGame = onOpenGame")
+        )
+        assertTrue(
+            "The lobby must route Insights through the shared game selector",
+            lobby().contains("onOpenGame = { pkg ->")
         )
     }
 }
