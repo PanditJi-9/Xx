@@ -12,6 +12,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -42,6 +44,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
@@ -231,12 +234,27 @@ private fun CommandPaletteBody(
 @Composable
 private fun PaletteGameRow(game: PaletteGame, onClick: () -> Unit) {
     val icon = rememberLobbyIcon(game.packageName).value
+    val interaction = remember { MutableInteractionSource() }
+    val focused by interaction.collectIsFocusedAsState()
+    val shape = RoundedCornerShape(MaxRadius.chip)
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .heightIn(min = MaxSize.minTouchTarget)
+            .clip(shape)
+            .background(if (focused) Monolith.GlassRaised else Color.Transparent)
+            .border(
+                MaxSpace.hairline,
+                if (focused) Monolith.BoneDim else Color.Transparent,
+                shape
+            )
             .semantics(mergeDescendants = true) { }
-            .clickable(role = Role.Button, onClick = onClick)
+            .clickable(
+                interactionSource = interaction,
+                indication = null,
+                role = Role.Button,
+                onClick = onClick
+            )
             .padding(horizontal = MaxSpace.lg, vertical = MaxSpace.sm),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(MaxSpace.md)
@@ -276,12 +294,27 @@ private fun PaletteGameRow(game: PaletteGame, onClick: () -> Unit) {
 
 @Composable
 private fun PaletteActionRow(action: PaletteAction, onClick: () -> Unit) {
+    val interaction = remember { MutableInteractionSource() }
+    val focused by interaction.collectIsFocusedAsState()
+    val shape = RoundedCornerShape(MaxRadius.chip)
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .heightIn(min = MaxSize.minTouchTarget)
+            .clip(shape)
+            .background(if (focused) Monolith.GlassRaised else Color.Transparent)
+            .border(
+                MaxSpace.hairline,
+                if (focused) Monolith.BoneDim else Color.Transparent,
+                shape
+            )
             .semantics(mergeDescendants = true) { }
-            .clickable(role = Role.Button, onClick = onClick)
+            .clickable(
+                interactionSource = interaction,
+                indication = null,
+                role = Role.Button,
+                onClick = onClick
+            )
             .padding(horizontal = MaxSpace.lg, vertical = MaxSpace.sm),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(MaxSpace.md)
