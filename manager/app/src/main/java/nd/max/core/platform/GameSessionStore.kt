@@ -9,6 +9,10 @@ import android.content.Context
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 import java.io.File
 import kotlin.math.roundToInt
 
@@ -274,6 +278,42 @@ fun storedSessionCsv(session: StoredGameSession): String {
 
 private fun Float?.orEmpty(): String = this?.toString() ?: ""
 private fun Int?.orEmpty(): String = this?.toString() ?: ""
+
+/**
+ * سقف التصدير: سقف السجلّ نفسه. التصدير مرآة لما حُفظ لا أرشيف ثانٍ يُبنى بجانبه.
+ */
+const val MAX_EXPORT_SESSIONS = GameSessionStore.MAX_SESSIONS
+
+/**
+ * السجلّ كاملًا كـJSON محليّ — ظرفٌ يقول ما فيه، لا مصفوفة عارية.
+ *
+ * **ولماذا ظرف:** من يفتح الملفّ بعد شهر يحتاج أن يعرف بمخطط أيّ إصدار كُتب وبأي ساعة،
+ * وإلا حكم على الأرقام بمخططٍ أحدث ممّا كُتبت به. و`truncated` يقول إن كان في القائمة
+ * أكثر مما خرج، فلا يُقصّ بصمت.
+ *
+ * **والحدّ:** أحدث [max] جلسة فقط، الأحدث أوّلًا؛ وكل جلسة تحمل نقاطها المصغّرة
+ * (≤ [MAX_SERIES_POINTS])، فالحجم محدود بالمخطط لا بما صادف أن تجمّع. والملفّ مضغوط
+ * لا مُزخرَف: يُقرأ بأداة لا بالعين.
+ */
+fun storedLedgerJson(
+    sessions: List<StoredGameSession>,
+    exportedAtMs: Long,
+    max: Int = MAX_EXPORT_SESSIONS
+): String {
+    val kept = sessions.sortedByDescending { it.startedAtMs }.take(max.coerceAtLeast(0))
+    val body = kept.map { exportJson.encodeToJsonElement(StoredGameSession.serializer(), it) }
+    val root = buildJsonObject {
+        put("app", "MaxManager")
+        put("schema", SESSION_SCHEMA_VERSION)
+        put("exportedAtMs", exportedAtMs)
+        put("sessionCount", kept.size)
+        put("truncated", sessions.size > kept.size)
+        put("sessions", JsonArray(body))
+    }
+    return exportJson.encodeToString(JsonObject.serializer(), root)
+}
+
+private val exportJson = Json { encodeDefaults = true }
 
 /**
  * نتيجة قصّ الانتقالات: النقاط الباقية، وكم حُذف، وهل رُفض القصّ.

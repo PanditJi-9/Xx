@@ -763,6 +763,8 @@
     <string name="game_sessions_export">Export as CSV</string>
     <string name="game_sessions_export_note">The recorded series, with empty cells where a reading was missing.</string>
     <string name="game_sessions_export_failed">Could not write the file</string>
+    <string name="game_sessions_export_all">Export all sessions</string>
+    <string name="game_sessions_export_all_note">JSON · %1$d sessions, newest first</string>
     <string name="game_sessions_delete">Delete session</string>
     <string name="game_sessions_clear_history">Delete all sessions</string>
     <string name="game_sessions_clear_history_note">The stored file is removed; this cannot be undone.</string>

@@ -5,10 +5,26 @@
 
 package nd.max.core.platform
 
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
+
+/**
+ * ظرف التصدير كما يُقرأ: أداة تفتح الملفّ تحتاج أسماءً لا مواضع.
+ */
+@Serializable
+private data class LedgerEnvelope(
+    val app: String,
+    val schema: Int,
+    val exportedAtMs: Long,
+    val sessionCount: Int,
+    val truncated: Boolean,
+    val sessions: List<StoredGameSession>,
+)
 
 /**
  * مخزن جلسات اللعب — الدوال الصافية وحدها.
@@ -138,5 +154,42 @@ class GameSessionStoreTest {
         lines.drop(1).forEach { assertEquals(SESSION_CSV_HEADER.split(",").size, it.split(',').size) }
         assertEquals("0,59.5,,,,,,,Vulkan,,,,", lines[1])
         assertEquals("2000,61.0,,,3.25,,4,,Vulkan,,,,", lines[2])
+    }
+
+    private fun decodeLedger(json: String): LedgerEnvelope =
+        Json { ignoreUnknownKeys = true }.decodeFromString(LedgerEnvelope.serializer(), json)
+
+    @Test
+    fun `the ledger envelope names itself and decodes back to its sessions`() {
+        val sessions = listOf(session("a", 100L), session("b", 300L))
+
+        val envelope = decodeLedger(storedLedgerJson(sessions, exportedAtMs = 1_000L))
+
+        assertEquals("MaxManager", envelope.app)
+        assertEquals(SESSION_SCHEMA_VERSION, envelope.schema)
+        assertEquals(1_000L, envelope.exportedAtMs)
+        assertEquals(2, envelope.sessionCount)
+        assertFalse(envelope.truncated)
+        assertEquals(listOf("b", "a"), envelope.sessions.map { it.id })
+    }
+
+    @Test
+    fun `the export keeps the newest window and admits what it cut`() {
+        val sessions = (1..5).map { session("s$it", it.toLong()) }
+
+        val envelope = decodeLedger(storedLedgerJson(sessions, exportedAtMs = 9L, max = 3))
+
+        assertEquals(listOf("s5", "s4", "s3"), envelope.sessions.map { it.id })
+        assertEquals(3, envelope.sessionCount)
+        assertTrue(envelope.truncated)
+    }
+
+    @Test
+    fun `an empty ledger exports an honest empty list, not a failure`() {
+        val envelope = decodeLedger(storedLedgerJson(emptyList(), exportedAtMs = 5L))
+
+        assertEquals(0, envelope.sessionCount)
+        assertFalse(envelope.truncated)
+        assertTrue(envelope.sessions.isEmpty())
     }
 }

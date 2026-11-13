@@ -1704,6 +1704,8 @@
     <string name="game_sessions_export">صدّر CSV</string>
     <string name="game_sessions_export_note">السلسلة المسجَّلة، وخلايا فارغة حيث لم تتوفّر القراءة.</string>
     <string name="game_sessions_export_failed">تعسّر كتابة الملفّ</string>
+    <string name="game_sessions_export_all">صدّر كل الجلسات</string>
+    <string name="game_sessions_export_all_note">JSON · %1$d جلسة، الأحدث أولًا</string>
     <string name="game_sessions_delete">احذف الجلسة</string>
     <string name="game_sessions_clear_history">احذف كل الجلسات</string>
     <string name="game_sessions_clear_history_note">يُحذف الملفّ المخزَّن؛ ولا رجوع بعد ذلك.</string>
