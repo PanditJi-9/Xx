@@ -77,8 +77,9 @@ fun MonolithPanel(
     Column(
         modifier = modifier
             .clip(shape)
-            .background(Monolith.Slate)
-            .border(MaxSpace.hairline, Monolith.Hairline, shape)
+            // شبه شفاف: خلفية اللعبة تتنفّس من تحت البطاقة بدل أن يغطّيها لون مصمت.
+            .background(Monolith.Slate.copy(alpha = 0.72f))
+            .border(MaxSpace.hairline, Color.White.copy(alpha = 0.06f), shape)
             .padding(MaxSpace.lg),
         content = content
     )

@@ -226,8 +226,9 @@ private fun NexusHero(
                 MonolithEyebrow(text = copy.nowLabel)
                 Spacer(Modifier.height(MaxSpace.xs))
                 Text(
+                    // اسم اللعبة هو العنوان الأول في الشاشة، فيأخذ الحجم الكبير لا حجم بطاقة.
                     text = game.label,
-                    style = Monolith.title,
+                    style = Monolith.display,
                     color = Monolith.Bone,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,

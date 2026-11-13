@@ -98,6 +98,7 @@ import nd.max.core.gamespace.SidePanelArmedStore
 import nd.max.core.gamespace.gameLibrary
 import nd.max.core.platform.ForegroundAppResolver
 import nd.max.service.GamePanelService
+import nd.max.ui.component.rememberLobbyIcon
 import nd.max.ui.component.LobbyEntrance
 import nd.max.ui.component.LobbyKeepScreenOn
 import nd.max.ui.component.LobbyNotice
@@ -116,7 +117,7 @@ import nd.max.ui.component.rememberLobbyTone
 import nd.max.ui.design.MaxDuration
 import nd.max.ui.design.MaxSpace
 import nd.max.ui.gamespace.CommandPalette
-import nd.max.ui.gamespace.MonolithField
+import nd.max.ui.gamespace.LobbyBackdrop
 import nd.max.ui.gamespace.NexusPage
 import nd.max.ui.gamespace.PaletteAction
 import nd.max.ui.gamespace.PaletteActionId
@@ -482,9 +483,14 @@ fun GameLobbyScreen(
                 .focusRequester(focus)
                 .focusable()
         ) {
-            // خلفية واحدة ساكنة للشاشتين. لا مسرح متحرّك خلف واجهة ساكنة: كان يستهلك إطارًا كاملًا
-            // ثم يُغطّى بلون معتم، والحركة الدائمة ليست بيانات.
-            MonolithField(modifier = Modifier.fillMaxSize())
+            // فنّ اللعبة نفسها خلف الشاشتين، مموّهًا حتى يصير ضوءًا؛ ولونه يضيء من زاويتين.
+            // لا مسرح متحرّك: الخلفية ساكنة، والحركة تُشرح بانتقال.
+            val backdropIcon by rememberLobbyIcon(active?.packageName)
+            LobbyBackdrop(
+                accent = toneState.value,
+                icon = backdropIcon,
+                modifier = Modifier.fillMaxSize()
+            )
 
             VerticalPager(
                 state = rootState,
