@@ -464,8 +464,13 @@
     <string name="lobby_career_badge_marathon">Two-hour session</string>
     <string name="lobby_career_badge_streak">Seven-day streak</string>
     <string name="lobby_career_badge_games">Five games played</string>
+    <string name="lobby_career_badge_hour1">An hour played</string>
+    <string name="lobby_career_badge_hour10">Ten hours played</string>
+    <string name="lobby_career_badge_hour50">Fifty hours played</string>
+    <string name="lobby_career_badge_hour100">A hundred hours played</string>
     <string name="lobby_career_progress">%1$d of %2$d</string>
     <string name="lobby_career_progress_min">%1$d of %2$d min</string>
+    <string name="lobby_career_progress_hours">%1$d of %2$d h</string>
     <string name="lobby_career_unlocked">Reached</string>
     <string name="lobby_vault_view">Show</string>
     <string name="lobby_vault_included">In Game Space</string>

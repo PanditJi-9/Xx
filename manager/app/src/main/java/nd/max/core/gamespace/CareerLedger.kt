@@ -18,7 +18,19 @@ data class CareerDay(val date: LocalDate, val totalMs: Long)
 data class CareerGame(val packageName: String, val totalMs: Long)
 
 /** محطّة تُشتقّ من السجلّ وحده. لا مكافآت ولا نقاط ولا عملة. */
-enum class CareerBadge { FirstSession, TenSessions, Marathon, WeekStreak, FiveGames }
+enum class CareerBadge {
+    FirstSession,
+    TenSessions,
+    Marathon,
+    WeekStreak,
+    FiveGames,
+
+    /** معالم وقت اللعب: ساعات متراكمة من السجلّ نفسه، لا عملة ولا تذاكر. */
+    HourOne,
+    HourTen,
+    HourFifty,
+    HourHundred,
+}
 
 /**
  * محطّة مع تقدّمها. `progress` لا يتجاوز `target`، فلا يُعرض «١٢ من ١٠».
@@ -58,6 +70,12 @@ data class CareerStats(
         const val TEN_SESSIONS = 10
         const val FIVE_GAMES = 5
         const val WEEK_STREAK = 7
+
+        /** عتبات معالم وقت اللعب بالساعات؛ تُقاس من الإجمالي المخزَّن وحده. */
+        const val HOURS_ONE = 1
+        const val HOURS_TEN = 10
+        const val HOURS_FIFTY = 50
+        const val HOURS_HUNDRED = 100
 
         /** نافذة الرؤى الطويلة: ثلاثة أشهر، لا أكثر. */
         const val NINETY_DAYS = 90
@@ -130,6 +148,8 @@ object CareerLedger {
         val sessionCount = played.sumOf { it.sessionCount }
         val streak = streak(sessions, library, nowMs, zone)
         val gamesPlayed = played.size
+        // الساعات الكاملة المتراكمة؛ الكسر لا يُقرَّب لأعلى كي لا يُفتح معلم قبل وقته.
+        val hours = (totalMs / 3_600_000L).toInt()
 
         return CareerStats(
             totalMs = totalMs,
@@ -167,6 +187,10 @@ object CareerLedger {
                     gamesPlayed.coerceAtMost(CareerStats.FIVE_GAMES),
                     CareerStats.FIVE_GAMES,
                 ),
+                hourMilestone(CareerBadge.HourOne, hours, CareerStats.HOURS_ONE),
+                hourMilestone(CareerBadge.HourTen, hours, CareerStats.HOURS_TEN),
+                hourMilestone(CareerBadge.HourFifty, hours, CareerStats.HOURS_FIFTY),
+                hourMilestone(CareerBadge.HourHundred, hours, CareerStats.HOURS_HUNDRED),
             ),
         )
     }
@@ -273,6 +297,13 @@ object CareerLedger {
         )
     }
 }
+
+/**
+ * معلم ساعات: التقدّم ساعات كاملة متراكمة، ولا يُقرَّب للأعلى — فالساعة لا تُفتح
+ * قبل أن تكتمل. لا تذاكر ولا مكافأة مادية، فقط قياس ما جرى.
+ */
+private fun hourMilestone(badge: CareerBadge, hours: Int, target: Int): CareerMilestone =
+    CareerMilestone(badge, hours.coerceAtMost(target), target)
 
 /** نتيجة [CareerLedger.span]: فترة طويلة بمقاييسها الصادقة وحدودها. */
 data class CareerSpan(

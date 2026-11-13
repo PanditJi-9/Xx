@@ -503,16 +503,19 @@ internal fun LobbyInsightsBody(
                         modifier = Modifier.weight(1f)
                     )
                     Text(
-                        text = if (milestone.unlocked) {
-                            stringResource(R.string.lobby_career_unlocked)
-                        } else if (milestone.badge == CareerBadge.Marathon) {
-                            stringResource(
+                        text = when {
+                            milestone.unlocked -> stringResource(R.string.lobby_career_unlocked)
+                            milestone.badge == CareerBadge.Marathon -> stringResource(
                                 R.string.lobby_career_progress_min,
                                 milestone.progress,
                                 milestone.target
                             )
-                        } else {
-                            stringResource(
+                            milestone.badge.isHourTier() -> stringResource(
+                                R.string.lobby_career_progress_hours,
+                                milestone.progress,
+                                milestone.target
+                            )
+                            else -> stringResource(
                                 R.string.lobby_career_progress,
                                 milestone.progress,
                                 milestone.target
@@ -533,12 +536,7 @@ internal fun LobbyInsightsBody(
     }
 }
 
-/**
- * سطر سجلّ اللعب للعبة واحدة: «آخر لعب … · لُعبت …» من الجلسات المحفوظة محليًّا. غياب الجلسة
- * يُعرض غيابًا لا صفرًا (ADR-07)، ولا يُدَّعى وقتٌ لم يُسجَّل.
- *
- * مصدر واحد للمعنى نفسه: المسرح وبطاقة «استكشف» يقرآن هذا السطر، فلا يظهر الرقم بصيغتين.
- */
+/** اسم العلامة وحده؛ التقدّم يُصاغ في صفّه لأن وحدته تختلف بين الساعات والدقائق والعدد. */
 @Composable
 private fun careerBadgeLabel(badge: CareerBadge): String = stringResource(
     when (badge) {
@@ -547,10 +545,29 @@ private fun careerBadgeLabel(badge: CareerBadge): String = stringResource(
         CareerBadge.Marathon -> R.string.lobby_career_badge_marathon
         CareerBadge.WeekStreak -> R.string.lobby_career_badge_streak
         CareerBadge.FiveGames -> R.string.lobby_career_badge_games
+        CareerBadge.HourOne -> R.string.lobby_career_badge_hour1
+        CareerBadge.HourTen -> R.string.lobby_career_badge_hour10
+        CareerBadge.HourFifty -> R.string.lobby_career_badge_hour50
+        CareerBadge.HourHundred -> R.string.lobby_career_badge_hour100
     }
 )
 
-/** عمر آخر جلسة كنصّ مترجم؛ `null` يعني «لا جلسة مسجّلة» فلا تُعرض «الآن». */
+/** معالم تُقاس بالساعات المتراكمة، فتُقرأ تقدّمها بالساعة لا بـ«٣٧ من ٦٠». */
+private fun CareerBadge.isHourTier(): Boolean = when (this) {
+    CareerBadge.HourOne,
+    CareerBadge.HourTen,
+    CareerBadge.HourFifty,
+    CareerBadge.HourHundred -> true
+
+    else -> false
+}
+
+/**
+ * سطر سجلّ اللعب للعبة واحدة: «آخر لعب … · لُعبت …» من الجلسات المحفوظة محليًّا. غياب الجلسة
+ * يُعرض غيابًا لا صفرًا (ADR-07)، ولا يُدَّعى وقتٌ لم يُسجَّل.
+ *
+ * مصدر واحد للمعنى نفسه: المسرح وبطاقة «استكشف» يقرآن هذا السطر، فلا يظهر الرقم بصيغتين.
+ */
 @Composable
 internal fun lobbyPlayAgeText(stats: GamePlayStats?): String? {
     if (stats == null) return null
