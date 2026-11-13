@@ -260,13 +260,14 @@ internal fun LobbyExplore(
                     fontWeight = FontWeight.Medium,
                     modifier = Modifier.padding(top = MaxSpace.md)
                 )
-                Text(
-                    text = stringResource(R.string.lobby_explore_no_match_hint),
-                    color = LobbyPalette.Muted,
-                    fontSize = 13.sp,
-                    modifier = Modifier.padding(top = MaxSpace.xs)
-                )
+                // التلميح وزرّ المسح يخصّان بحثًا لم يطابق؛ مكتبة فارغة تمامًا لا تُقرأ كأنها بحث خاطئ.
                 if (query.isNotEmpty() || filter != LobbyFilter.All) {
+                    Text(
+                        text = stringResource(R.string.lobby_explore_no_match_hint),
+                        color = LobbyPalette.Muted,
+                        fontSize = 13.sp,
+                        modifier = Modifier.padding(top = MaxSpace.xs)
+                    )
                     OutlinedButton(
                         onClick = {
                             query = ""
