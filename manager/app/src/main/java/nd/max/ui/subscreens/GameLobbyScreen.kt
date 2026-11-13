@@ -433,7 +433,8 @@ fun GameLobbyScreen(
     // L1 أو الرجوع للمسرح، Enter/A تشغيل، X ملف اللعبة. الأزرار المركَّزة تستهلك Enter بنفسها قبل هنا.
     val rtl = LocalLayoutDirection.current == LayoutDirection.Rtl
     val focus = remember { FocusRequester() }
-    LaunchedEffect(Unit) { runCatching { focus.requestFocus() } }
+    // إغلاق «استكشف» يُعيد التركيز إلى المسرح، وإلا بقيت الأسهم بلا هدف بعد الطبقة.
+    LaunchedEffect(exploreOpen) { if (!exploreOpen) runCatching { focus.requestFocus() } }
     val step: (Int) -> Unit = { delta ->
         val target = (deckState.currentPage + delta).coerceIn(0, (gamesState.value.size - 1).coerceAtLeast(0))
         if (target != deckState.currentPage) scope.launch { deckState.animateScrollToPage(target) }

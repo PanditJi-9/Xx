@@ -12,10 +12,12 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -27,7 +29,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.selection.selectable
@@ -51,14 +53,23 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.input.key.type
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import nd.max.R
@@ -119,8 +130,16 @@ internal fun LobbyExplore(
         animationSpec = tween(MaxDuration.standard),
         label = "exploreEntrance"
     )
+    // الريموت/الكيبورد: تركيز واحد على الطبقة، ومؤشّر يتنقّل الشبكة بلا لمس. المسرح يستعمل
+    // النمط نفسه، فتبقى الأسهم وEnter تعمل هنا كما تعمل هناك.
+    val focus = remember { FocusRequester() }
+    LaunchedEffect(Unit) { runCatching { focus.requestFocus() } }
+    var cursor by remember { mutableStateOf(0) }
+    LaunchedEffect(visible.size) {
+        if (cursor > visible.lastIndex) cursor = visible.lastIndex.coerceAtLeast(0)
+    }
 
-    Column(
+    BoxWithConstraints(
         modifier = modifier
             .fillMaxSize()
             .background(LobbyPalette.Black.copy(alpha = 0.92f))
@@ -136,6 +155,57 @@ internal fun LobbyExplore(
             .displayCutoutPadding()
             .padding(top = MaxSpace.xxl)
     ) {
+        // عدد الأعمدة كما تحسبه الشبكة نفسها (المساحة ناقص الحافتين، والفجوة بين عمودين).
+        val columns = ((maxWidth - MaxSpace.xl * 2 + MaxSpace.md) / (ExploreColumnMin + MaxSpace.md))
+            .toInt()
+            .coerceAtLeast(1)
+        val rtl = LocalLayoutDirection.current == LayoutDirection.Rtl
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .onKeyEvent { event ->
+                    if (event.type != KeyEventType.KeyDown) {
+                        false
+                    } else {
+                        val last = visible.lastIndex
+                        when (event.key) {
+                            Key.DirectionRight -> if (last >= 0) {
+                                cursor = (cursor + if (rtl) -1 else 1).coerceIn(0, last)
+                                true
+                            } else false
+                            Key.DirectionLeft -> if (last >= 0) {
+                                cursor = (cursor + if (rtl) 1 else -1).coerceIn(0, last)
+                                true
+                            } else false
+                            Key.DirectionDown -> if (last >= 0) {
+                                cursor = (cursor + columns).coerceAtMost(last)
+                                true
+                            } else false
+                            Key.DirectionUp -> if (last >= 0) {
+                                cursor = (cursor - columns).coerceAtLeast(0)
+                                true
+                            } else false
+                            Key.DirectionCenter, Key.Enter, Key.ButtonA -> {
+                                val choice = visible.getOrNull(cursor)
+                                if (choice == null) {
+                                    false
+                                } else {
+                                    onSelect(choice)
+                                    true
+                                }
+                            }
+                            Key.Escape -> {
+                                onClose()
+                                true
+                            }
+                            else -> false
+                        }
+                    }
+                }
+                .focusRequester(focus)
+                .focusable()
+        ) {
+            Column(modifier = Modifier.fillMaxSize()) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -198,7 +268,29 @@ internal fun LobbyExplore(
                     singleLine = true,
                     textStyle = TextStyle(color = LobbyPalette.Ink, fontSize = 15.sp),
                     cursorBrush = SolidColor(accent),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        // الأسهم داخل الحقل للكتابة؛ والنزول منه يعيد التحكّم للشبكة بلا لمس.
+                        .onKeyEvent { event ->
+                            if (event.type != KeyEventType.KeyDown) {
+                                false
+                            } else when (event.key) {
+                                Key.DirectionDown, Key.DirectionUp -> {
+                                    focus.requestFocus()
+                                    true
+                                }
+                                Key.Enter -> {
+                                    val first = visible.firstOrNull()
+                                    if (first == null) {
+                                        false
+                                    } else {
+                                        onSelect(first)
+                                        true
+                                    }
+                                }
+                                else -> false
+                            }
+                        }
                 )
             }
             if (query.isNotEmpty()) {
@@ -287,18 +379,24 @@ internal fun LobbyExplore(
                 verticalArrangement = Arrangement.spacedBy(MaxSpace.md),
                 horizontalArrangement = Arrangement.spacedBy(MaxSpace.md)
             ) {
-                items(visible, key = { it.packageName }) { game ->
+                itemsIndexed(visible, key = { _, game -> game.packageName }) { index, game ->
                     ExploreCard(
                         game = game,
                         stats = stats[game.packageName],
                         tweaks = tweaks[game.packageName] ?: 0,
                         panelArmed = game.packageName in armed,
                         selected = game.packageName == currentPackage,
+                        focused = index == cursor,
                         accent = accent,
                         nowMs = nowMs,
-                        onClick = { onSelect(game) }
+                        onClick = {
+                            cursor = index
+                            onSelect(game)
+                        }
                     )
                 }
+            }
+        }
             }
         }
     }
@@ -360,6 +458,7 @@ private fun ExploreCard(
     tweaks: Int,
     panelArmed: Boolean,
     selected: Boolean,
+    focused: Boolean,
     accent: Color,
     nowMs: Long,
     onClick: () -> Unit,
@@ -392,10 +491,14 @@ private fun ExploreCard(
                 scaleY = scale
             }
             .clip(shape)
-            .background(LobbyPalette.Panel)
+            .background(if (focused) LobbyPalette.PanelRaised.copy(alpha = 0.72f) else LobbyPalette.Panel)
             .border(
-                if (selected) MaxSize.activeRing else MaxSize.hairlineBorder,
-                if (selected) accent else LobbyPalette.Hairline,
+                if (focused || selected) MaxSize.activeRing else MaxSize.hairlineBorder,
+                when {
+                    focused -> accent
+                    selected -> accent.copy(alpha = 0.55f)
+                    else -> LobbyPalette.Hairline
+                },
                 shape
             )
             .clickable(interactionSource = interaction, indication = null, onClick = onClick)

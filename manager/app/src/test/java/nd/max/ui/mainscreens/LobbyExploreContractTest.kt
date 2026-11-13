@@ -93,4 +93,25 @@ class LobbyExploreContractTest {
             Regex("launchSingleTop = true").findAll(text).count()
         )
     }
+
+    @Test
+    fun `explore answers the remote and gives the stage its focus back`() {
+        val root = sourceRoot()
+        assumeTrue("Cannot locate nd.max sources; guard not evaluated", root != null)
+        val exploreText = explore()
+
+        assertTrue("Explore does not listen to keys", exploreText.contains("onKeyEvent"))
+        assertTrue("Explore does not own a focus requester", exploreText.contains("focusRequester(focus)"))
+        assertTrue("Arrow navigation is missing", exploreText.contains("Key.DirectionRight"))
+        assertTrue("Grid row movement is missing", exploreText.contains("Key.DirectionDown"))
+        assertTrue(
+            "Selecting from the pad is missing",
+            exploreText.contains("Key.DirectionCenter, Key.Enter, Key.ButtonA")
+        )
+        assertTrue("Escape does not close Explore", exploreText.contains("Key.Escape"))
+        assertTrue(
+            "Closing Explore must restore stage focus",
+            lobby().contains("LaunchedEffect(exploreOpen)")
+        )
+    }
 }
