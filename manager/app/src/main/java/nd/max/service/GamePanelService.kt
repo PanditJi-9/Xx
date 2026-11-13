@@ -511,9 +511,13 @@ class GamePanelService : LifecycleService() {
             val veilNow = DisplayVeilPrefs.load(applicationContext)
             // التصويب سببٌ مستقلّ لبقاء الخدمة: من أطفأ لوحات الألعاب كلها وأبقى العلامة
             // لا يُوقف خدمته فجأة. وإن لم يبقَ أيّ سبب — لا لوحة ولا تصويب — تُوقف.
+            // أمّا الستارة فلا تُرسم إلّا فوق لعبة متتبَّعة، فبقاء الخدمة من أجلها بلا لعبة
+            // مُفعَّلة استقصاءٌ لشيء لا يمكن أن يُرسم. والتصويب يبقى فوق هذا كلّه لأنه يظهر
+            // فوق أي تطبيق لا داخل لعبة وحدها.
+            val veilKeepsService = veilNow.enabled && prefs.enabledPackages.isNotEmpty()
             if (panelServiceLifetime(prefs.enabledPackages) == PanelLifetime.Stop &&
                 !crosshairNow.enabled &&
-                !veilNow.enabled
+                !veilKeepsService
             ) {
                 finishPlaySession()
                 stopSelf()
