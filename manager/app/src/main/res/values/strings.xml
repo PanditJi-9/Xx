@@ -1461,6 +1461,9 @@
     <string name="onboarding_perm_usage_desc">Knows which app is in front, so a game session starts and stops with the game.</string>
     <string name="onboarding_perm_battery_title">Battery optimization</string>
     <string name="onboarding_perm_battery_desc">Keeps a long session from being frozen in the background.</string>
+    <string name="onboarding_perm_required">Required</string>
+    <string name="onboarding_perm_recommended">Recommended</string>
+    <string name="onboarding_perm_progress">%1$d of %2$d granted</string>
     <string name="onboarding_perm_granted">Granted</string>
     <string name="onboarding_perm_grant">Grant</string>
     <string name="onboarding_perm_note">Only the first two are needed for the panel; the rest make sessions and stats reliable.</string>

@@ -469,6 +469,9 @@
     <string name="onboarding_perm_usage_desc">يعرف التطبيق في المقدمة، فتبدأ جلسة اللعبة وتنتهي معها.</string>
     <string name="onboarding_perm_battery_title">تحسين البطارية</string>
     <string name="onboarding_perm_battery_desc">يمنع تجميد الجلسة الطويلة في الخلفية.</string>
+    <string name="onboarding_perm_required">مطلوبة</string>
+    <string name="onboarding_perm_recommended">مُستحسَنة</string>
+    <string name="onboarding_perm_progress">%1$d من %2$d ممنوحة</string>
     <string name="onboarding_perm_granted">ممنوحة</string>
     <string name="onboarding_perm_grant">منح</string>
     <string name="onboarding_perm_note">أول صلاحيتين تكفيان للوحة؛ والبقية تجعل الجلسات والإحصاءات موثوقة.</string>

@@ -955,12 +955,24 @@ private fun PermissionsSetup(
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
 
+    // العدّاد يقول كم بقي؛ والنصّ وحده كان يشرح أيّها مطلوب وأيّها تحسين.
+    // والعدد يُشتقّ من القائمة نفسها، فلا ينحرف عن الصفوف إن أُضيف صفّ خامس.
+    val flags = listOf(overlayGranted, notifGranted, usageGranted, batteryGranted)
+    val done = flags.count { it }
+
     Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(
+            text = stringResource(R.string.onboarding_perm_progress, done, flags.size),
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Spacer(modifier = Modifier.height(MaxSpace.sm))
         MaxGroup {
             PermissionRow(
                 title = stringResource(R.string.onboarding_perm_overlay_title),
                 description = stringResource(R.string.onboarding_perm_overlay_desc),
                 granted = overlayGranted,
+                required = true,
                 onGrant = { Perms.openOverlaySettings(context) },
             )
             MaxGroupDivider()
@@ -968,6 +980,7 @@ private fun PermissionsSetup(
                 title = stringResource(R.string.onboarding_perm_notif_title),
                 description = stringResource(R.string.onboarding_perm_notif_desc),
                 granted = notifGranted,
+                required = true,
                 onGrant = {
                     if (Build.VERSION.SDK_INT >= 33) {
                         notificationLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
@@ -979,6 +992,7 @@ private fun PermissionsSetup(
                 title = stringResource(R.string.onboarding_perm_usage_title),
                 description = stringResource(R.string.onboarding_perm_usage_desc),
                 granted = usageGranted,
+                required = false,
                 onGrant = {
                     runCatching { context.startActivity(AppStorageReader.usageAccessIntent()) }
                 },
@@ -988,6 +1002,7 @@ private fun PermissionsSetup(
                 title = stringResource(R.string.onboarding_perm_battery_title),
                 description = stringResource(R.string.onboarding_perm_battery_desc),
                 granted = batteryGranted,
+                required = false,
                 onGrant = { Perms.openBatterySettings(context) },
             )
         }
@@ -1021,6 +1036,7 @@ private fun PermissionRow(
     title: String,
     description: String,
     granted: Boolean,
+    required: Boolean,
     onGrant: () -> Unit,
 ) {
     val scheme = MaterialTheme.colorScheme
@@ -1034,6 +1050,14 @@ private fun PermissionRow(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = stringResource(
+                    if (required) R.string.onboarding_perm_required else R.string.onboarding_perm_recommended
+                ),
+                style = MaterialTheme.typography.labelSmall,
+                color = if (required) scheme.primary else scheme.onSurfaceVariant,
+            )
+            Spacer(modifier = Modifier.height(MaxSpace.xs))
             Text(text = title, style = MaterialTheme.typography.titleSmall, color = scheme.onSurface)
             Spacer(modifier = Modifier.height(MaxSpace.xs))
             Text(text = description, style = MaterialTheme.typography.bodySmall, color = scheme.onSurfaceVariant)
