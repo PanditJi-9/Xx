@@ -41,6 +41,7 @@ internal fun NexusPage(
     onOpenVault: () -> Unit,
     onOpenLoadout: () -> Unit,
     onOpenCareer: () -> Unit,
+    onOpenSearch: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     // اللقطة تُعاد حين يتغيّر السجلّ أو المكتبة أو المقابض؛ الوقت وحده لا يحرّكها.
@@ -105,6 +106,7 @@ internal fun NexusPage(
             vault = stringResource(R.string.lobby_cc_library),
             loadout = stringResource(R.string.lobby_cc_loadout),
             career = stringResource(R.string.lobby_insights_career),
+            search = stringResource(R.string.lobby_nexus_search),
             playtimeLabel = stringResource(R.string.lobby_insights_total_time),
             sessionsLabel = stringResource(R.string.lobby_insights_sessions),
             streakLabel = stringResource(R.string.lobby_nexus_streak),
@@ -123,6 +125,7 @@ internal fun NexusPage(
         onOpenVault = onOpenVault,
         onOpenLoadout = onOpenLoadout,
         onOpenCareer = onOpenCareer,
+        onOpenSearch = onOpenSearch,
         modifier = modifier
     )
 }

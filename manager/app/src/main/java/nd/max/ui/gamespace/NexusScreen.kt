@@ -13,6 +13,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -79,6 +80,7 @@ data class NexusCopy(
     val vault: String,
     val loadout: String,
     val career: String,
+    val search: String,
     val playtimeLabel: String,
     val sessionsLabel: String,
     val streakLabel: String,
@@ -112,6 +114,7 @@ fun NexusScreen(
     onOpenVault: () -> Unit,
     onOpenLoadout: () -> Unit,
     onOpenCareer: () -> Unit,
+    onOpenSearch: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val selected = model.games.getOrNull(model.selectedIndex) ?: model.games.firstOrNull()
@@ -153,7 +156,8 @@ fun NexusScreen(
                 copy = copy,
                 onOpenVault = onOpenVault,
                 onOpenLoadout = onOpenLoadout,
-                onOpenCareer = onOpenCareer
+                onOpenCareer = onOpenCareer,
+                onOpenSearch = onOpenSearch
             )
         }
     }
@@ -382,17 +386,74 @@ private fun NexusFooter(
     copy: NexusCopy,
     onOpenVault: () -> Unit,
     onOpenLoadout: () -> Unit,
-    onOpenCareer: () -> Unit
+    onOpenCareer: () -> Unit,
+    onOpenSearch: () -> Unit
 ) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm)
-    ) {
-        MonolithGhostButton(text = copy.vault, onClick = onOpenVault, modifier = Modifier.weight(1f))
-        MonolithGhostButton(text = copy.loadout, onClick = onOpenLoadout, modifier = Modifier.weight(1f))
-        MonolithGhostButton(text = copy.career, onClick = onOpenCareer, modifier = Modifier.weight(1f))
+    BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+        if (maxWidth < FooterCompactWidth) {
+            Column(verticalArrangement = Arrangement.spacedBy(MaxSpace.sm)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm)
+                ) {
+                    MonolithGhostButton(
+                        text = copy.vault,
+                        onClick = onOpenVault,
+                        modifier = Modifier.weight(1f)
+                    )
+                    MonolithGhostButton(
+                        text = copy.loadout,
+                        onClick = onOpenLoadout,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm)
+                ) {
+                    MonolithGhostButton(
+                        text = copy.career,
+                        onClick = onOpenCareer,
+                        modifier = Modifier.weight(1f)
+                    )
+                    MonolithGhostButton(
+                        text = copy.search,
+                        onClick = onOpenSearch,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            }
+        } else {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm)
+            ) {
+                MonolithGhostButton(
+                    text = copy.vault,
+                    onClick = onOpenVault,
+                    modifier = Modifier.weight(1f)
+                )
+                MonolithGhostButton(
+                    text = copy.loadout,
+                    onClick = onOpenLoadout,
+                    modifier = Modifier.weight(1f)
+                )
+                MonolithGhostButton(
+                    text = copy.career,
+                    onClick = onOpenCareer,
+                    modifier = Modifier.weight(1f)
+                )
+                MonolithGhostButton(
+                    text = copy.search,
+                    onClick = onOpenSearch,
+                    modifier = Modifier.weight(1f)
+                )
+            }
+        }
     }
 }
+
+private val FooterCompactWidth = 420.dp
 
 @Composable
 private fun NexusEmpty(

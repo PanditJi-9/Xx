@@ -472,4 +472,14 @@
     <string name="lobby_loadout_action_panel">شغّل</string>
     <string name="lobby_loadout_action_overlay">امنح</string>
     <string name="lobby_loadout_check_done">جاهز</string>
+    <string name="lobby_nexus_search">بحث</string>
+    <string name="palette_search">ابحث في الألعاب والإجراءات</string>
+    <string name="palette_hint">Esc للإغلاق</string>
+    <string name="palette_empty">لا شيء يطابق</string>
+    <string name="palette_launch_detail">شغّل %1$s</string>
+    <string name="palette_vault_detail">تصفّح كل الألعاب</string>
+    <string name="palette_loadout_detail">ما يُشغَّل مع اللعبة</string>
+    <string name="palette_career_detail">وقت اللعب والجلسات والإنجازات</string>
+    <string name="palette_sessions_detail">كل جلسة مسجّلة</string>
+    <string name="palette_close_detail">اخرج من مساحة اللعب</string>
 </resources>

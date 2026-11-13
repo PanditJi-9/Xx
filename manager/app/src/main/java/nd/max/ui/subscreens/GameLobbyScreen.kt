@@ -114,8 +114,13 @@ import nd.max.ui.component.rememberLobbySounds
 import nd.max.ui.component.rememberLobbyTone
 import nd.max.ui.design.MaxDuration
 import nd.max.ui.design.MaxSpace
+import nd.max.ui.gamespace.CommandPalette
 import nd.max.ui.gamespace.MonolithField
 import nd.max.ui.gamespace.NexusPage
+import nd.max.ui.gamespace.PaletteAction
+import nd.max.ui.gamespace.PaletteActionId
+import nd.max.ui.gamespace.PaletteCopy
+import nd.max.ui.gamespace.PaletteGame
 import nd.max.ui.navigation.MaxDestination
 import nd.max.ui.navigation.openAppSettings
 import nd.max.ui.util.AppConfig
@@ -231,6 +236,7 @@ fun GameLobbyScreen(
     }
     var favoritesOnly by rememberSaveable { mutableStateOf(false) }
     var exploreOpen by rememberSaveable { mutableStateOf(false) }
+    var paletteOpen by rememberSaveable { mutableStateOf(false) }
     var section by rememberSaveable { mutableStateOf(LobbySection.Game) }
     var launchFailed by remember { mutableStateOf(false) }
     /** فشل تثبيت قائمة اللوحة الجانبية (المخزن أو ملفّ الرفيق الجذري) — يُعرض ولا يُخفى. */
@@ -382,6 +388,44 @@ fun GameLobbyScreen(
         library.apps.filter { ForegroundAppResolver.isPackageName(it.packageName) }
             .distinctBy { it.packageName }
     }
+    // لوحة الأوامر تقرأ نفس المكتبة ونفس الأبواب؛ لا إجراء فيها بلا وجهة قائمة.
+    val paletteGames = remember(games) {
+        games.map { PaletteGame(it.packageName, it.label) }
+    }
+    val paletteActions = listOfNotNull(
+        active?.let {
+            PaletteAction(
+                id = PaletteActionId.Launch,
+                label = stringResource(R.string.lobby_start),
+                detail = stringResource(R.string.palette_launch_detail, it.label)
+            )
+        },
+        PaletteAction(
+            id = PaletteActionId.Vault,
+            label = stringResource(R.string.lobby_cc_library),
+            detail = stringResource(R.string.palette_vault_detail)
+        ),
+        PaletteAction(
+            id = PaletteActionId.Loadout,
+            label = stringResource(R.string.lobby_cc_loadout),
+            detail = stringResource(R.string.palette_loadout_detail)
+        ),
+        PaletteAction(
+            id = PaletteActionId.Career,
+            label = stringResource(R.string.lobby_insights_career),
+            detail = stringResource(R.string.palette_career_detail)
+        ),
+        PaletteAction(
+            id = PaletteActionId.Sessions,
+            label = stringResource(R.string.game_sessions_lobby_open),
+            detail = stringResource(R.string.palette_sessions_detail)
+        ),
+        PaletteAction(
+            id = PaletteActionId.Close,
+            label = stringResource(R.string.lobby_close),
+            detail = stringResource(R.string.palette_close_detail)
+        )
+    )
 
     CompositionLocalProvider(LocalLobbySounds provides sounds) {
         Box(
@@ -396,9 +440,13 @@ fun GameLobbyScreen(
                     } else if (exploreOpen) {
                         // الطبقة مفتوحة: لا أسهم ولا Enter تُحرّك المسرح خلفها؛ الرجوع وحده يغلقها.
                         false
+                    } else if (paletteOpen) {
+                        // الحوار يملك لوحة المفاتيح؛ لا يختطف المسرح حرفًا يُكتب في البحث.
+                        false
                     } else if (rootState.currentPage != 0) {
                         when (event.key) {
                             Key.ButtonL1 -> { closeControl(); true }
+                            Key.ButtonY -> { paletteOpen = true; true }
                             else -> false
                         }
                     } else {
@@ -407,6 +455,7 @@ fun GameLobbyScreen(
                             Key.DirectionRight -> { step(if (rtl) -1 else 1); true }
                             Key.DirectionUp -> { openControl(LobbySection.Game); true }
                             Key.ButtonR1 -> { openControl(section); true }
+                            Key.ButtonY -> { paletteOpen = true; true }
                             Key.Enter, Key.NumPadEnter, Key.ButtonA -> { start(); true }
                             Key.ButtonX -> { if (active != null) openControl(LobbySection.Game); true }
                             else -> false
@@ -458,6 +507,7 @@ fun GameLobbyScreen(
                             onOpenVault = { tick(); exploreOpen = true },
                             onOpenLoadout = { openControl(LobbySection.Loadout) },
                             onOpenCareer = { openControl(LobbySection.Insights) },
+                            onOpenSearch = { tick(); paletteOpen = true },
                             modifier = Modifier
                                 .fillMaxSize()
                                 .displayCutoutPadding()
@@ -625,6 +675,39 @@ fun GameLobbyScreen(
                     onClose = { exploreOpen = false }
                 )
             }
+
+            // لوحة الأوامر: بحث واحد للألعاب والإجراءات، بلا طبقة ثالثة ولا مخزن ثانٍ.
+            CommandPalette(
+                visible = paletteOpen,
+                games = paletteGames,
+                actions = paletteActions,
+                copy = PaletteCopy(
+                    search = stringResource(R.string.palette_search),
+                    hint = stringResource(R.string.palette_hint),
+                    empty = stringResource(R.string.palette_empty)
+                ),
+                onDismiss = { paletteOpen = false },
+                onGame = { pkg ->
+                    paletteOpen = false
+                    selectGame(pkg)
+                },
+                onAction = { id ->
+                    paletteOpen = false
+                    when (id) {
+                        PaletteActionId.Launch -> start()
+                        PaletteActionId.Vault -> {
+                            tick()
+                            exploreOpen = true
+                        }
+                        PaletteActionId.Loadout -> openControl(LobbySection.Loadout)
+                        PaletteActionId.Career -> openControl(LobbySection.Insights)
+                        PaletteActionId.Sessions -> navController.navigate(MaxDestination.GameSessions.route) {
+                            launchSingleTop = true
+                        }
+                        PaletteActionId.Close -> navController.navigateUp()
+                    }
+                }
+            )
 
             // طبقة الإطلاق: رسم فقط (لا مدخلات)، تُقرأ فيها `burst` في مرحلة الرسم فلا إعادة تركيب أثناء الحركة.
             Box(

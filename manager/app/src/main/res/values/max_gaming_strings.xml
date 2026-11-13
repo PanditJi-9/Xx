@@ -473,4 +473,14 @@
     <string name="lobby_loadout_action_panel">Turn on</string>
     <string name="lobby_loadout_action_overlay">Grant</string>
     <string name="lobby_loadout_check_done">Ready</string>
+    <string name="lobby_nexus_search">Search</string>
+    <string name="palette_search">Search games and actions</string>
+    <string name="palette_hint">Esc to close</string>
+    <string name="palette_empty">Nothing matches</string>
+    <string name="palette_launch_detail">Launch %1$s</string>
+    <string name="palette_vault_detail">Browse every game</string>
+    <string name="palette_loadout_detail">What launches with the game</string>
+    <string name="palette_career_detail">Playtime, sessions, milestones</string>
+    <string name="palette_sessions_detail">Every recorded session</string>
+    <string name="palette_close_detail">Leave Game Space</string>
 </resources>
