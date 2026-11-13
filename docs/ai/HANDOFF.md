@@ -60,6 +60,58 @@ MaxManager has a strong engine and a fragmented surface. `core/maxai` + `core/ha
 
 ## Executor log
 
+### GAME-SPACE-REDESIGN-01 — إعادة هندسة Game Space: «استكشف» و«الرؤى» فوق المصادر القائمة — 2026-11-13 · DONE_WITH_CONCERNS
+
+**TASK (المالك):** «أريد أن يكون Game Space أفضل وأكثر تطورًا من المشروع الموجود في:
+"/storage/emulated/0/MT2/ref-decompiled/app-release-4-rea.zip" … المطلوب هو إعادة هندسة التجربة
+بالكامل، وليس مجرد نسخ التصميم … يجب أن يتفوق عليه في جميع الجوانب: UI… UX… Content… Functionality…
+Interactions… دون نسخ الكود أو الأصول الأصلية.»
+
+**SEARCH FIRST (§0.5):** حُلِّل المرجع `com.zkmnext.gamespace` 1.2.9 (6,014 ملف Java مفكوكًا و752
+موردًا، غير قابل لإعادة البناء، و`NOTICE.md` يمنع إعادة الاستخدام) ⇒ **أفكار ومبادئ فقط، صفر كود
+وصفر أصول**. وفي شجرتنا وُجد النظير القائم: مسرح اللوبي والحلقة (`LobbyDeck`/`LobbyOrder`)، ومصدر وقت
+اللعب (`PlaySessionLedger`)، ومصدر التهيئة (`AppConfig.customizedFieldCount`)، ومصدر تفعيل اللوحة
+(`GamePanelPrefs.enabledPackages`)، ومركز تحكّم بخمسة أقسام، وشاشة سجل جلسات. فحُسّن القائم بفارقين
+مقيسين — طبقة استكشاف فوق المسرح، وقسم رؤى سادس — ولم يُبنَ مصدر حقيقة ثانٍ ولا قدرة عتاد جديدة.
+
+**FILES:** جديد `core/gamespace/LobbyInsights.kt` (نموذج نقي: `LobbyFilter` · `LibrarySummary` ·
+`SetupKind/SetupStep` · `summary/setup/readyCount/filter/counts/isRecent`، نافذة 7 أيام شاملة وترفض
+المستقبل) · جديد `ui/subscreens/LobbyExplore.kt` (بحث فوري، أربعة مرشّحات بعدّاداتها، شبكة بطاقات
+متجاوبة، حالة اختيار، حركة ضغط، فراغات صادقة) · جديد `ui/subscreens/LobbyInsightsPanel.kt` (مسيرة،
+أكثر ثلاث لعبًا، تهيئة اللعبة الحالية بأربعة بنود قابلة للفعل، وملاحظة نطاق صريحة) · رُبط
+`GameLobbyScreen.kt` (زرّ استكشاف، `exploreOpen`، `BackHandler` بعد معالج مركز التحكّم فيغلق الطبقة
+أولًا، `tweaksByGame` من `fullConfig`، تمرير `stats/armed/onOpenHistory` مع بقاء `launchSingleTop`) ·
+توسّع `LobbyControlCenter.kt` (قسم `Insights` سادسًا، وشريط يتحوّل شبكة بلاطات بعمودين تحت 420dp) ·
+41 مفتاحًا في `values/max_gaming_strings.xml` و`values-ar/max_gaming_strings.xml` (en/ar فقط) ·
+اختبارات `LobbyInsightsTest.kt` (7 حالات) و`LobbyExploreContractTest.kt` (4 عقود مصدرية: الطبقة
+مركّبة، الرجوع يغلقها أولًا، الرؤى سادس، وباب السجل single-top من مدخلين). لا `core/**` عتاد ولا حذف ميزة.
+
+**GATES (مقيس في هذه الجولة، كلها exit 0):** `kt_balance` **3375/0** · `code_health` صحّة 0 ودَين
+14 oversized / 26 wildcard / 5 inline / 4 hardcoded / 0 hw writes · `i18n_coverage` 0 عوائق و`--prune all`
+**0 مفتاح يتيم** · `design_tokens` **233/300** · `rtl_guard` 0 مخالفة (465 ملف واجهة) ·
+`hardcoded_ui_text` **21 ≤ 24** · `resource_compile` على aapt2 الحقيقي مرّ · `repo_audit` **0 مشكلة**
+على 958 ملف Kotlin · `license_audit` 0 GPL في مسار الإصدار · `provenance_guard` 0 مسار/بصمة مرجعية ·
+`jni_symbols` 23 تصريحًا و0 مفقود (الطبقة الثانية غير مُتحقَّقة بلا ثنائيات، معلنة) · `dead_modules` 0 ·
+`git diff --check` نظيف.
+
+**BUILD:** لا Gradle محليًا (§0.10)؛ تصريف `main` واختباراته (ومنها 11 حالة جديدة) **غير مُتحقَّقين هنا**
+حتى يُقرأ حكم CI على الالتزام المدفوع.
+
+**DEVICE:** الشكل الفعلي على 320/360dp، وشبكة الاستكشاف، وRTL، واللمس، وTalkBack، وأداء الشبكة
+**تحتاج جهازًا**؛ نجاح CI يعني «يترجم وتمرّ الاختبارات» لا «يعمل على هاتف المالك».
+
+**RESIDUAL RISK:** الطبقة `AnimatedVisibility` ملء الشاشة وتحته المسرح ومركز التحكّم؛ ترتيب
+`BackHandler` يحرسه اختبار مصدري، لكن سلوك رجوع الجهاز الفعلي يبقى للجهاز. و`LobbyControlCenter.kt`
+تجاوز 1300 سطر (كان فوق 1000 أصلًا؛ عدّ الملفات المتضخّمة بقي 14). و«هذا الأسبوع» يقرأ ساعة الجهاز:
+ساعة منحرفة إلى المستقبل تُعرض «لم تُلعب حديثًا» لا نجاحًا كاذبًا.
+
+**الذاكرة (§7.6):** العَرَض: المرجع يعرض اكتشافًا ورؤى لا نظير لهما عندنا · أول سطر خالف: غياب
+مشتقّات من `PlaySessionLedger` و`AppConfig` في سطح اللوبي · القرار المقيس: نموذج نقي واحد
+`LobbyInsights` يغذّي الطبقة والقسم، فلا رقمان لمعنى واحد · ما لا يُعاد اختباره: البوابات الخفيفة
+والشجرة النظيفة؛ الشكل والأداء يبقيان للجهاز.
+
+**NEXT:** قراءة حكم CI ثم قبول المالك البصري على جهاز؛ لا كود متبقٍّ في النطاق إن نجحا.
+
 ### HOME-RESTORE-01 — إعادة سطح «الآن» إلى شكل التشغيل 43331973823 — 2026-11-13 · DONE_WITH_CONCERNS
 
 **TASK (المالك):** «ارجع شكل الشاشة الرئسيسة لما كان عليه في

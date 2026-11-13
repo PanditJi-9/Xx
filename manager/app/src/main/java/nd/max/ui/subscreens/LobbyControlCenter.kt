@@ -14,14 +14,17 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -35,6 +38,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AddToHomeScreen
 import androidx.compose.material.icons.rounded.Bolt
+import androidx.compose.material.icons.rounded.Insights
 import androidx.compose.material.icons.rounded.Layers
 import androidx.compose.material.icons.rounded.RestartAlt
 import androidx.compose.material.icons.rounded.Tune
@@ -67,6 +71,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
@@ -83,6 +88,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import nd.max.core.gamespace.UsageAccess
 import nd.max.core.gamespace.GameApp
+import nd.max.core.gamespace.GamePlayStats
 import nd.max.core.gamespace.HandleSize
 import nd.max.core.gamespace.LobbyCue
 import nd.max.core.gamespace.LobbyDepth
@@ -118,8 +124,9 @@ import nd.max.ui.util.getSupportedRefreshRates
 
 /*
  * مركز التحكم: **سطح واحد** يضمّ ما كان موزّعًا على أربع نوافذ (ملف اللعبة، ومقبض اللوحة الجانبية،
- * وإدارة الألعاب، والمجموعات المحذوفة) مضافًا إليه خيارات اللوبي الجديدة. شريط جانبيّ بخمسة أقسام
- * (التحميل السريع ثم الأربعة السابقة) ومحتوى يتبدّل بتلاشٍ ناعم؛ لا نوافذ منبثقة ولا تنقّل داخليّ.
+ * وإدارة الألعاب، والمجموعات المحذوفة) مضافًا إليه خيارات اللوبي الجديدة. شريط جانبيّ بستّة أقسام
+ * (التحميل السريع، ثم الرؤى، ثم الأربعة السابقة) ومحتوى يتبدّل بتلاشٍ ناعم؛ لا نوافذ منبثقة ولا تنقّل
+ * داخليّ. وعلى الشاشات القصيرة يتحوّل الشريط إلى شبكة بلاطات عمودين كي تبقى الأقسام الستّة في المتناول.
  *
  * المسؤوليّات كما كانت (لم تُغيَّر):
  *  - قيم ملف اللعبة تكتب عبر `onUpdate` إلى `AppSettingsViewModel` وحده (ADR-11: لا عتاد من هنا).
@@ -131,6 +138,7 @@ import nd.max.ui.util.getSupportedRefreshRates
 /** أقسام مركز التحكم. الترتيب هو ترتيب الشريط الجانبي. */
 internal enum class LobbySection(val titleRes: Int, val icon: ImageVector) {
     Loadout(R.string.lobby_cc_loadout, Icons.Rounded.Bolt),
+    Insights(R.string.lobby_insights_title, Icons.Rounded.Insights),
     Game(R.string.lobby_tile_profile, Icons.Rounded.Tune),
     Panel(R.string.lobby_tile_panel, Icons.Rounded.ViewSidebar),
     Lobby(R.string.lobby_cc_lobby, Icons.Rounded.Layers),
@@ -147,9 +155,17 @@ private val SidebarIcon = 40.dp
 private val ChipHeight = 48.dp
 private val LibraryIcon = 40.dp
 
+/** تحت هذا الارتفاع يتحوّل الشريط إلى شبكة بلاطات، فلا يضيع قسم خلف تمرير طويل في الوضع الأفقي. */
+private val SidebarCompactHeight = 420.dp
+
 /**
  * @param section القسم الظاهر؛ يتحكّم به الأب ليفتح اللوبي على قسم بعينه (نقر بلاطة ملف اللعبة مثلًا).
  * @param app اللعبة المحدَّدة في الحلقة (`null` حين لا ألعاب).
+ * @param games كل ألعاب المكتبة (لا المصفّاة) لتُحسب مسيرة الرؤى كاملة.
+ * @param stats سجلّ وقت اللعب القائم — لا مخزن ثانٍ.
+ * @param tweaks عدد مقابض الملفّ المضبوطة لكل حزمة، من `AppConfig` نفسه.
+ * @param armed الحزم التي فُعّلت لها اللوحة الجانبية.
+ * @param onOpenHistory يفتح سجلّ الجلسات من بند التهيئة.
  * @param onPrefs يستلم دالّة تحوّل الخيارات الحاليّة إلى الجديدة فلا تضيع تغييرات متتابعة.
  * @param accent لون اللعبة (أو العلامة) لتمييز القسم المختار.
  */
@@ -159,10 +175,15 @@ internal fun LobbyControlCenter(
     onSection: (LobbySection) -> Unit,
     app: GameApp?,
     config: AppConfig,
+    games: List<GameApp>,
+    stats: Map<String, GamePlayStats>,
+    tweaks: Map<String, Int>,
+    armed: Set<String>,
     panelEnabled: Boolean,
     onPanelEnabled: (Boolean) -> Unit,
     onUpdate: (String, String) -> Unit,
     onOpenFull: () -> Unit,
+    onOpenHistory: () -> Unit,
     prefs: LobbyPrefsState,
     onPrefs: ((LobbyPrefsState) -> LobbyPrefsState) -> Unit,
     apps: List<GameApp>,
@@ -198,6 +219,16 @@ internal fun LobbyControlCenter(
             ) { current ->
                 when (current) {
                     LobbySection.Loadout -> LoadoutBody(app, config, panelEnabled, onPanelEnabled, onUpdate, onOpenFull)
+                    LobbySection.Insights -> LobbyInsightsBody(
+                        app = app,
+                        games = games,
+                        stats = stats,
+                        tweaks = tweaks,
+                        armed = armed,
+                        onSection = onSection,
+                        onPanelEnabled = onPanelEnabled,
+                        onOpenHistory = onOpenHistory
+                    )
                     LobbySection.Game -> GameBody(app, config, onUpdate, onOpenFull)
                     LobbySection.Panel -> PanelBody(app, panelEnabled, onPanelEnabled)
                     LobbySection.Lobby -> LobbyOptionsBody(prefs, onPrefs)
@@ -218,72 +249,154 @@ private fun ControlSidebar(
     accent: Color,
     modifier: Modifier = Modifier
 ) {
-    val shape = RoundedCornerShape(maxRadius(MaxRadius.control))
-    Column(
-        modifier = modifier
-            .background(LobbyPalette.Black.copy(alpha = 0.40f))
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = MaxSpace.md, vertical = MaxSpace.md),
-        verticalArrangement = Arrangement.spacedBy(MaxSpace.xs)
+    val sounds = LocalLobbySounds.current
+    BoxWithConstraints(
+        modifier = modifier.background(LobbyPalette.Black.copy(alpha = 0.40f))
     ) {
-        if (app != null) {
-            Row(
-                modifier = Modifier.padding(bottom = MaxSpace.md),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(MaxSpace.md)
-            ) {
-                AppIconImage(packageName = app.packageName, size = SidebarIcon, contentDescription = null)
-                Text(
-                    text = app.label,
-                    color = LobbyPalette.Ink,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
-        }
-        val sounds = LocalLobbySounds.current
-        LobbySection.entries.forEach { item ->
-            val isSelected = item == selected
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(min = SidebarItemHeight)
-                    .clip(shape)
-                    .background(if (isSelected) accent.copy(alpha = 0.26f) else Color.Transparent)
-                    .border(
-                        MaxSize.hairlineBorder,
-                        if (isSelected) accent.copy(alpha = 0.60f) else Color.Transparent,
-                        shape
+        val compact = maxHeight < SidebarCompactHeight
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = MaxSpace.md, vertical = MaxSpace.md),
+            verticalArrangement = Arrangement.spacedBy(MaxSpace.xs)
+        ) {
+            if (app != null) {
+                Row(
+                    modifier = Modifier.padding(bottom = MaxSpace.md),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(MaxSpace.md)
+                ) {
+                    AppIconImage(packageName = app.packageName, size = SidebarIcon, contentDescription = null)
+                    Text(
+                        text = app.label,
+                        color = LobbyPalette.Ink,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
                     )
-                    .selectable(
-                        selected = isSelected,
-                        role = Role.Tab,
+                }
+            }
+            if (compact) {
+                LobbySection.entries.chunked(2).forEach { pair ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs)
+                    ) {
+                        pair.forEach { item ->
+                            SidebarTile(
+                                item = item,
+                                selected = item == selected,
+                                accent = accent,
+                                onClick = {
+                                    if (item != selected) sounds.play(LobbyCue.Tap)
+                                    onSelect(item)
+                                },
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                        if (pair.size == 1) Spacer(Modifier.weight(1f))
+                    }
+                }
+            } else {
+                LobbySection.entries.forEach { item ->
+                    SidebarRow(
+                        item = item,
+                        selected = item == selected,
+                        accent = accent,
                         onClick = {
-                            if (!isSelected) sounds.play(LobbyCue.Tap)
+                            if (item != selected) sounds.play(LobbyCue.Tap)
                             onSelect(item)
                         }
                     )
-                    .padding(horizontal = MaxSpace.md),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(MaxSpace.md)
-            ) {
-                Icon(
-                    imageVector = item.icon,
-                    contentDescription = null,
-                    tint = if (isSelected) LobbyPalette.Ink else LobbyPalette.Muted
-                )
-                Text(
-                    text = stringResource(item.titleRes),
-                    color = if (isSelected) LobbyPalette.Ink else LobbyPalette.Muted,
-                    fontSize = 15.sp,
-                    fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
+                }
             }
         }
+    }
+}
+
+/** صفّ الشريط الكامل: أيقونة ونصّ في سطر واحد، وارتفاع لمس ٥٢dp. */
+@Composable
+private fun SidebarRow(
+    item: LobbySection,
+    selected: Boolean,
+    accent: Color,
+    onClick: () -> Unit,
+) {
+    val shape = RoundedCornerShape(maxRadius(MaxRadius.control))
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(min = SidebarItemHeight)
+            .clip(shape)
+            .background(if (selected) accent.copy(alpha = 0.26f) else Color.Transparent)
+            .border(
+                MaxSize.hairlineBorder,
+                if (selected) accent.copy(alpha = 0.60f) else Color.Transparent,
+                shape
+            )
+            .selectable(selected = selected, role = Role.Tab, onClick = onClick)
+            .padding(horizontal = MaxSpace.md),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(MaxSpace.md)
+    ) {
+        Icon(
+            imageVector = item.icon,
+            contentDescription = null,
+            tint = if (selected) LobbyPalette.Ink else LobbyPalette.Muted
+        )
+        Text(
+            text = stringResource(item.titleRes),
+            color = if (selected) LobbyPalette.Ink else LobbyPalette.Muted,
+            fontSize = 15.sp,
+            fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis
+        )
+    }
+}
+
+/** بلاطة الوضع القصير: أيقونة فوق نصّ صغير؛ عمودان في كل صفّ. */
+@Composable
+private fun SidebarTile(
+    item: LobbySection,
+    selected: Boolean,
+    accent: Color,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val shape = RoundedCornerShape(maxRadius(MaxRadius.control))
+    Column(
+        modifier = modifier
+            .heightIn(min = SidebarItemHeight)
+            .clip(shape)
+            .background(if (selected) accent.copy(alpha = 0.26f) else Color.Transparent)
+            .border(
+                MaxSize.hairlineBorder,
+                if (selected) accent.copy(alpha = 0.60f) else Color.Transparent,
+                shape
+            )
+            .selectable(selected = selected, role = Role.Tab, onClick = onClick)
+            .padding(horizontal = MaxSpace.sm, vertical = MaxSpace.sm),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(MaxSpace.xs)
+    ) {
+        Icon(
+            imageVector = item.icon,
+            contentDescription = null,
+            tint = if (selected) LobbyPalette.Ink else LobbyPalette.Muted,
+            modifier = Modifier.size(MaxSize.iconGlyph)
+        )
+        Text(
+            text = stringResource(item.titleRes),
+            color = if (selected) LobbyPalette.Ink else LobbyPalette.Muted,
+            fontSize = 11.sp,
+            fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+            textAlign = TextAlign.Center
+        )
     }
 }
 

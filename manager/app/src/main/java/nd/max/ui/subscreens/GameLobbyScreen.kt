@@ -4,12 +4,15 @@ package nd.max.ui.subscreens
 import android.text.format.Formatter
 import android.util.LruCache
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,6 +30,7 @@ import androidx.compose.foundation.pager.PagerDefaults
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Apps
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.History
 import androidx.compose.material.icons.rounded.Refresh
@@ -266,6 +270,7 @@ fun GameLobbyScreen(
         mutableStateOf<String?>(lobbyPrefs.lastPackage.takeIf { lobbyPrefs.resumeLast })
     }
     var favoritesOnly by rememberSaveable { mutableStateOf(false) }
+    var exploreOpen by rememberSaveable { mutableStateOf(false) }
     var section by rememberSaveable { mutableStateOf(LobbySection.Game) }
     var launchFailed by remember { mutableStateOf(false) }
     /** فشل تثبيت قائمة اللوحة الجانبية (المخزن أو ملفّ الرفيق الجذري) — يُعرض ولا يُخفى. */
@@ -334,6 +339,10 @@ fun GameLobbyScreen(
     val active = games.getOrNull(deckState.currentPage)
     val activeConfig: AppConfig? = active?.let { settingsViewModel.fullConfig[it.packageName] }
     val panelEnabled = active?.packageName in panelPrefs.enabledPackages
+    // عدد مقابض الملفّ المضبوطة لكل لعبة، من `AppConfig` نفسه الذي يقرؤه المراقب — لا عدّاد ثانٍ.
+    val tweaksByGame = remember(settingsViewModel.fullConfig) {
+        settingsViewModel.fullConfig.mapValues { entry -> entry.value.customizedFieldCount() }
+    }
 
     // لون المسرح يتبع اللعبة المحدَّدة (أو لون العلامة إن أُوقف «ألوان من اللعبة») وينتقل بنعومة؛
     // يُقرأ في مرحلة الرسم عبر `toneState.value` حيث أمكن.
@@ -402,6 +411,8 @@ fun GameLobbyScreen(
         }
     }
     BackHandler(enabled = rootState.currentPage == 1) { closeControl() }
+    // «استكشف» يعلو الصفحتين: أوّل رجوع يغلق الطبقة وحدها قبل أي انتقال أو خروج من اللوبي.
+    BackHandler(enabled = exploreOpen) { exploreOpen = false }
 
     // وميض الإطلاق ثم التشغيل؛ `launching` يمنع نقرتين، وتُستدعى من الزرّ ومن الريموت/الكيبورد.
     val start: () -> Unit = start@{
@@ -449,6 +460,9 @@ fun GameLobbyScreen(
                     } else if (entranceOn) {
                         entranceSkip += 1
                         true
+                    } else if (exploreOpen) {
+                        // الطبقة مفتوحة: لا أسهم ولا Enter تُحرّك المسرح خلفها؛ الرجوع وحده يغلقها.
+                        false
                     } else if (rootState.currentPage != 0) {
                         when (event.key) {
                             Key.ButtonL1 -> { closeControl(); true }
@@ -657,12 +671,21 @@ fun GameLobbyScreen(
                             onSection = { section = it },
                             app = active,
                             config = activeConfig ?: AppConfig(),
+                            games = allGames,
+                            stats = playStats,
+                            tweaks = tweaksByGame,
+                            armed = panelPrefs.enabledPackages,
                             panelEnabled = panelEnabled,
                             onPanelEnabled = setPanel,
                             onUpdate = { key, value ->
                                 active?.let { settingsViewModel.updateSetting(it.packageName, key, value) }
                             },
                             onOpenFull = { active?.let { navController.openAppSettings(it.packageName) } },
+                            onOpenHistory = {
+                                navController.navigate(MaxDestination.GameSessions.route) {
+                                    launchSingleTop = true
+                                }
+                            },
                             prefs = lobbyPrefs,
                             onPrefs = updatePrefs,
                             apps = manageApps,
@@ -703,6 +726,16 @@ fun GameLobbyScreen(
                 )
                 Spacer(Modifier.weight(1f))
                 if (lobbyPrefs.showStatus) LobbyStatusCapsule()
+                // استكشاف المكتبة من المسرح: بحث فوري ومرشّحات وبطاقات غنية، بلا مغادرة اللوبي.
+                LobbyRoundButton(
+                    icon = Icons.Rounded.Apps,
+                    description = stringResource(R.string.lobby_explore_open),
+                    onClick = {
+                        tick()
+                        exploreOpen = true
+                    },
+                    tone = toneState.value
+                )
                 LobbyRoundButton(
                     icon = Icons.Rounded.Star,
                     description = stringResource(R.string.lobby_favorites_filter),
@@ -758,6 +791,33 @@ fun GameLobbyScreen(
                         onAction = { OverlayPermission.openSettings(context) }
                     )
                 }
+            }
+
+            // «استكشف»: طبقة كاملة فوق المسرح ومركز التحكّم، تُغلق بالرجوع أو بالزرّ قبل أي تنقّل.
+            AnimatedVisibility(
+                visible = exploreOpen,
+                enter = fadeIn(tween(MaxDuration.quick)),
+                exit = fadeOut(tween(MaxDuration.quick)),
+                modifier = Modifier.fillMaxSize()
+            ) {
+                LobbyExplore(
+                    games = allGames,
+                    favorites = library.favorites,
+                    stats = playStats,
+                    tweaks = tweaksByGame,
+                    armed = panelPrefs.enabledPackages,
+                    currentPackage = active?.packageName,
+                    accent = toneState.value,
+                    animations = animations,
+                    onSelect = { game ->
+                        if (favoritesOnly && game.packageName !in library.favorites) favoritesOnly = false
+                        selected = game.packageName
+                        exploreOpen = false
+                        val target = gamesState.value.indexOfFirst { it.packageName == game.packageName }
+                        if (target >= 0) scope.launch { deckState.animateScrollToPage(target) }
+                    },
+                    onClose = { exploreOpen = false }
+                )
             }
 
             // طبقة الإطلاق: رسم فقط (لا مدخلات)، تُقرأ فيها `burst` في مرحلة الرسم فلا إعادة تركيب أثناء الحركة.
