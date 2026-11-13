@@ -352,19 +352,24 @@ internal fun LobbyExplore(
                     contentDescription = null,
                     tint = LobbyPalette.Muted
                 )
+                val emptyTitle = when {
+                    query.isNotBlank() -> stringResource(R.string.lobby_explore_no_match, query.trim())
+                    filter == LobbyFilter.Favorites -> stringResource(R.string.lobby_empty_favorites)
+                    filter == LobbyFilter.Recent -> stringResource(R.string.lobby_explore_empty_recent)
+                    filter == LobbyFilter.Played -> stringResource(R.string.lobby_explore_empty_played)
+                    filter == LobbyFilter.Unplayed -> stringResource(R.string.lobby_explore_empty_unplayed)
+                    else -> stringResource(R.string.lobby_empty)
+                }
                 Text(
-                    text = if (query.isNotBlank()) {
-                        stringResource(R.string.lobby_explore_no_match, query.trim())
-                    } else {
-                        stringResource(R.string.lobby_empty)
-                    },
+                    text = emptyTitle,
                     color = LobbyPalette.Ink,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium,
                     modifier = Modifier.padding(top = MaxSpace.md)
                 )
                 // التلميح وزرّ المسح يخصّان بحثًا لم يطابق؛ مكتبة فارغة تمامًا لا تُقرأ كأنها بحث خاطئ.
-                if (query.isNotEmpty() || filter != LobbyFilter.All) {
+                // وحين يكون البحث فارغًا والمرشّح وحده يُخفي النتائج، يُقال ذلك بالمرشّح لا بنصّ البحث.
+                if (query.isNotBlank()) {
                     Text(
                         text = stringResource(R.string.lobby_explore_no_match_hint),
                         color = LobbyPalette.Muted,
@@ -379,6 +384,13 @@ internal fun LobbyExplore(
                         modifier = Modifier.padding(top = MaxSpace.lg)
                     ) {
                         Text(text = stringResource(R.string.lobby_explore_clear), color = LobbyPalette.Ink)
+                    }
+                } else if (filter != LobbyFilter.All) {
+                    OutlinedButton(
+                        onClick = { filter = LobbyFilter.All },
+                        modifier = Modifier.padding(top = MaxSpace.lg)
+                    ) {
+                        Text(text = stringResource(R.string.lobby_explore_show_all), color = LobbyPalette.Ink)
                     }
                 }
             }

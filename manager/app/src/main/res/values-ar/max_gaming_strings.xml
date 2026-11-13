@@ -393,6 +393,10 @@
     <string name="lobby_explore_filter_recent">الأحدث</string>
     <string name="lobby_explore_filter_played">المُلعوبة</string>
     <string name="lobby_explore_filter_unplayed">لم تُلعب</string>
+    <string name="lobby_explore_empty_recent">لا لعبة لُعبت في آخر 7 أيام.</string>
+    <string name="lobby_explore_empty_played">لا جلسات مسجّلة بعد.</string>
+    <string name="lobby_explore_empty_unplayed">كل لعبة هنا لها جلسة مسجّلة.</string>
+    <string name="lobby_explore_show_all">اعرض كل الألعاب</string>
     <string name="lobby_explore_no_match">لا لعبة تطابق \"%1$s\".</string>
     <string name="lobby_explore_no_match_hint">جرّب اسمًا آخر، أو امسح البحث.</string>
     <string name="lobby_explore_never">لم تُلعب بعد</string>

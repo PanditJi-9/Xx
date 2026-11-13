@@ -394,6 +394,10 @@
     <string name="lobby_explore_filter_recent">Recent</string>
     <string name="lobby_explore_filter_played">Played</string>
     <string name="lobby_explore_filter_unplayed">Not played</string>
+    <string name="lobby_explore_empty_recent">No game played in the last 7 days.</string>
+    <string name="lobby_explore_empty_played">No recorded sessions yet.</string>
+    <string name="lobby_explore_empty_unplayed">Every game here has a recorded session.</string>
+    <string name="lobby_explore_show_all">Show all games</string>
     <string name="lobby_explore_no_match">No game matches \"%1$s\".</string>
     <string name="lobby_explore_no_match_hint">Try another name, or clear the search.</string>
     <string name="lobby_explore_never">Not played yet</string>

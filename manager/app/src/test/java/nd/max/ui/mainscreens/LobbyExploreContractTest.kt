@@ -159,4 +159,27 @@ class LobbyExploreContractTest {
                 !panel.contains("accent = LobbyPalette.Red")
         )
     }
+
+    @Test
+    fun `an empty result names its filter instead of claiming an empty library`() {
+        val root = sourceRoot()
+        assumeTrue("Cannot locate nd.max sources; guard not evaluated", root != null)
+        val exploreText = explore()
+
+        assertTrue(
+            "A filtered empty result must name its own filter",
+            exploreText.contains("R.string.lobby_explore_empty_recent") &&
+                exploreText.contains("R.string.lobby_explore_empty_played") &&
+                exploreText.contains("R.string.lobby_explore_empty_unplayed")
+        )
+        assertTrue(
+            "A filter-only empty result must offer a filter reset",
+            exploreText.contains("R.string.lobby_explore_show_all") &&
+                exploreText.contains("onClick = { filter = LobbyFilter.All }")
+        )
+        assertTrue(
+            "The search hint must stay bound to a real query",
+            exploreText.contains("if (query.isNotBlank())")
+        )
+    }
 }
