@@ -5,6 +5,8 @@
  * MaxManager-owned and carries no third-party licence obligations.
  */
 
+@file:OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
+
 package nd.max.ui.subscreens
 
 import androidx.compose.animation.core.animateFloatAsState
@@ -13,12 +15,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.focusable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.displayCutoutPadding
@@ -64,6 +68,7 @@ import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -161,11 +166,9 @@ internal fun LobbyExplore(
         modifier = modifier
             .fillMaxSize()
             .background(LobbyPalette.Black.copy(alpha = 0.92f))
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = null,
-                onClick = {}
-            )
+            // التقاط اللمسات الفارغة بـpointerInput لا بـclickable: الجذر لا زرّ، وإعلانه زرًّا
+            // بلا نصّ يجعل TalkBack يقف على «زرّ» فارغ قبل كل بطاقة.
+            .pointerInput(Unit) { detectTapGestures { } }
             .graphicsLayer {
                 alpha = entrance
                 translationY = (1f - entrance) * 24.dp.toPx()
@@ -597,7 +600,11 @@ private fun ExploreCard(
                 )
             }
         }
-        Row(horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs)) {
+        // شرائح البيانات تتلفّ بدل أن تُقتطع: عند تكبير الخط أو العمود الواحد قد لا يتّسع سطر واحد.
+        FlowRow(
+            horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs),
+            verticalArrangement = Arrangement.spacedBy(MaxSpace.xs)
+        ) {
             MetaChip(text = stringResource(R.string.lobby_explore_ready, ready))
             MetaChip(
                 text = if (tweaks > 0) {

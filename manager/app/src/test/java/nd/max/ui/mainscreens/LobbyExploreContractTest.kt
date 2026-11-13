@@ -6,6 +6,7 @@
 package nd.max.ui.mainscreens
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Assume.assumeTrue
 import org.junit.Test
@@ -241,6 +242,26 @@ class LobbyExploreContractTest {
             "Up from the top row must hand focus to search instead of clamping",
             text.contains("if (cursor < columns) {") &&
                 text.contains("searchFocus.requestFocus()")
+        )
+    }
+
+    @Test
+    fun `the overlay root is not a phantom button and the chips can wrap`() {
+        val root = sourceRoot()
+        assumeTrue("Cannot locate nd.max sources; guard not evaluated", root != null)
+        val text = explore()
+
+        assertTrue(
+            "Empty taps must be swallowed without publishing button semantics",
+            text.contains("detectTapGestures") && text.contains(".pointerInput(Unit)")
+        )
+        assertFalse(
+            "The overlay root must not declare an unlabeled empty click",
+            text.contains("onClick = {}")
+        )
+        assertTrue(
+            "Meta chips must wrap instead of clipping at large font scale",
+            text.contains("FlowRow(") && text.contains("verticalArrangement = Arrangement.spacedBy(MaxSpace.xs)")
         )
     }
 }
