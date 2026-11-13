@@ -82,7 +82,7 @@ Interactions… دون نسخ الكود أو الأصول الأصلية.»
 `GameLobbyScreen.kt` (زرّ استكشاف، `exploreOpen`، `BackHandler` بعد معالج مركز التحكّم فيغلق الطبقة
 أولًا، `tweaksByGame` من `fullConfig`، تمرير `stats/armed/onOpenHistory` مع بقاء `launchSingleTop`) ·
 توسّع `LobbyControlCenter.kt` (قسم `Insights` سادسًا، وشريط يتحوّل شبكة بلاطات بعمودين تحت 420dp) ·
-41 مفتاحًا في `values/max_gaming_strings.xml` و`values-ar/max_gaming_strings.xml` (en/ar فقط) ·
+46 مفتاحًا في `values/max_gaming_strings.xml` و`values-ar/max_gaming_strings.xml` (en/ar فقط) ·
 اختبارات `LobbyInsightsTest.kt` (7 حالات) و`LobbyExploreContractTest.kt` (4 عقود مصدرية: الطبقة
 مركّبة، الرجوع يغلقها أولًا، الرؤى سادس، وباب السجل single-top من مدخلين). لا `core/**` عتاد ولا حذف ميزة.
 
