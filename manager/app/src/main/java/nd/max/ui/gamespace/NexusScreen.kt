@@ -173,16 +173,14 @@ private fun NexusHeader(copy: NexusCopy, totalPlaytime: String) {
         Spacer(Modifier.width(MaxSpace.sm))
         Text(
             text = copy.wordmark,
-            style = Monolith.eyebrow,
+            style = Monolith.heading,
             color = Monolith.BoneDim,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            modifier = Modifier
-                .weight(1f)
-                .semantics { heading() }
+            modifier = Modifier.weight(1f)
         )
         Text(
-            text = totalPlaytime,
+            text = "${copy.playtimeLabel} · $totalPlaytime",
             style = Monolith.label,
             color = Monolith.Muted,
             maxLines = 1
@@ -233,12 +231,11 @@ private fun NexusHero(
             horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm),
             verticalArrangement = Arrangement.spacedBy(MaxSpace.xs)
         ) {
-            game.playtime?.let { MonolithChip(text = it, accent = accent.base, filled = true) }
             game.installedDays?.let {
                 MonolithChip(text = "${copy.installedLabel} · $it", accent = accent.base, filled = false)
             }
             game.lastPlayed?.let {
-                MonolithChip(text = "${copy.lastPlayedLabel} · $it", accent = accent.base, filled = false)
+                MonolithChip(text = "${copy.lastPlayedLabel} · $it", accent = accent.base, filled = true)
             }
         }
         Spacer(Modifier.height(MaxSpace.xxl))
