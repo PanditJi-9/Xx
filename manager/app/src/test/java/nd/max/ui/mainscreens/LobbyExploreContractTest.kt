@@ -133,8 +133,9 @@ class LobbyExploreContractTest {
         val panel = insights()
 
         assertTrue(
-            "A most-played row must be clickable",
-            panel.contains(".clickable(onClick = onClick)")
+            "A most-played row must be one button node, not a clickable with unlabeled children",
+            panel.contains(".semantics(mergeDescendants = true)") &&
+                panel.contains(".clickable(role = Role.Button, onClick = onClick)")
         )
         assertTrue(
             "A most-played row must open its game, not just display it",
