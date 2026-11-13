@@ -823,6 +823,15 @@ fun GamePanelCockpit(
                 onPickThermal = { pickThermal(it) }, leftScroll = leftScroll, gridScroll = gridScroll,
                 tiles = tiles,
                 extra = {
+                    // `ProfileStrip` كان مكتوبًا في هذه الحزمة وغير موصول بأي تخطيط، فكان الوضع
+                    // الحالي يُرى لونًا فقط. وصله هنا يجعل الاسم والمالك (أنت أو الذكاء) مقروءين
+                    // من `PanelControlState` نفسه، بلا enum ثانٍ ولا مصدر حالة موازٍ.
+                    DeckCard {
+                        ProfileStrip(
+                            selected = controls.profile, auto = controls.auto, accent = tint,
+                            onSelect = onSelectProfile
+                        )
+                    }
                     DeckCard { FrameGraph(history = frames, accent = tint) }
                     if (details) {
                         DeckCard { PanelReadings(reading = reading, fields = fields) }
@@ -870,6 +879,12 @@ fun GamePanelCockpit(
                 tiles = tiles,
                 note = notes.lastOrNull() ?: fpsGap ?: lHint, noteIsMessage = notes.lastOrNull() != null,
                 extra = {
+                    InfoCard {
+                        ProfileStrip(
+                            selected = controls.profile, auto = controls.auto, accent = tint,
+                            onSelect = onSelectProfile
+                        )
+                    }
                     InfoCard { FrameGraph(history = frames, accent = tint) }
                     if (details) {
                         InfoCard { PanelReadings(reading = reading, fields = fields) }
