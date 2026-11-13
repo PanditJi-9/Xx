@@ -14,6 +14,12 @@ import nd.max.core.gamespace.PlaySession
 import java.time.ZoneId
 
 /**
+ * الشرط الأول الناقص في الجاهزية. الرقم وحده يقول «٢/٣» ولا يقول أيّها؛ وهذا يقول.
+ * الترتيب مقصود: الملف أولًا لأنه الأثرى، ثم اللوحة، ثم الإذن الذي يحتاج شاشة نظام.
+ */
+enum class ReadyGap { Profile, Panel, Overlay }
+
+/**
  * لقطة Nexus: كل رقم فيها مشتقٌّ من سجلّ الجلسات والمكتبة القائمين، ولا مخزن ثالث.
  *
  * `readyTotal` ثلاثة مقابض يملكها المستخدم فعلًا: ملفّ اللعبة، ولوحة الجانب، وصلاحية التراكب.
@@ -27,6 +33,8 @@ data class NexusSnapshot(
     val readyDone: Int = 0,
     val readyTotal: Int = READY_TOTAL,
     val recent: GamePlayStats? = null,
+    /** الشرط الأول الناقص، أو `null` إن كانت التهيئة كاملة. */
+    val gap: ReadyGap? = null,
 ) {
     companion object {
         const val READY_TOTAL = 3
@@ -54,11 +62,7 @@ object NexusState {
         val readyDone = if (selected == null) {
             0
         } else {
-            listOf(
-                (tweaks[selected.packageName] ?: 0) > 0,
-                selected.packageName in armed,
-                overlayGranted,
-            ).count { it }
+            readiness(selected, armed, overlayGranted, tweaks).count { it }
         }
         return NexusSnapshot(
             totalMs = played.sumOf { it.totalMs },
@@ -68,7 +72,39 @@ object NexusState {
             readyDone = readyDone,
             readyTotal = NexusSnapshot.READY_TOTAL,
             recent = played.maxByOrNull { it.lastPlayedAtMs },
+            gap = firstGap(selected, armed, overlayGranted, tweaks),
         )
+    }
+
+    private fun readiness(
+        selected: GameApp,
+        armed: Set<String>,
+        overlayGranted: Boolean,
+        tweaks: Map<String, Int>,
+    ): List<Boolean> = listOf(
+        (tweaks[selected.packageName] ?: 0) > 0,
+        selected.packageName in armed,
+        overlayGranted,
+    )
+
+    /**
+     * الشرط الأول الناقص، بالترتيب نفسه الذي تُعدّ به الحلقة. الشرط والعدد من دالة واحدة،
+     * فلا يمكن أن يقول الرقم «٣/٣» بينما السطر يشتكي من نقص.
+     */
+    fun firstGap(
+        selected: GameApp?,
+        armed: Set<String>,
+        overlayGranted: Boolean,
+        tweaks: Map<String, Int>,
+    ): ReadyGap? {
+        if (selected == null) return null
+        val done = readiness(selected, armed, overlayGranted, tweaks)
+        return when {
+            !done[0] -> ReadyGap.Profile
+            !done[1] -> ReadyGap.Panel
+            !done[2] -> ReadyGap.Overlay
+            else -> null
+        }
     }
 
     /**

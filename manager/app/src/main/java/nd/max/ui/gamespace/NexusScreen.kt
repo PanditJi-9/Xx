@@ -108,6 +108,8 @@ data class NexusModel(
     val streak: String,
     val readiness: Float = 0f,
     val readinessValue: String,
+    /** جملة الشرط الناقص؛ `null` حين تكتمل التهيئة فيبقى رابط «راجع التهيئة». */
+    val readinessGap: String? = null,
     val recentLine: String? = null
 )
 
@@ -248,6 +250,16 @@ private fun NexusHero(
         Spacer(Modifier.height(MaxSpace.xxl))
         NexusStats(copy = copy, model = model)
         Spacer(Modifier.height(MaxSpace.xxl))
+        // الشرط الناقص يُسمّى قبل الزرّ، فيعرف اللاعب ما الذي سيدفع الرقم إلى ٣/٣.
+        model.readinessGap?.let { gap ->
+            Text(
+                text = gap,
+                style = Monolith.label,
+                color = Monolith.BoneDim,
+                maxLines = 2
+            )
+            Spacer(Modifier.height(MaxSpace.sm))
+        }
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,

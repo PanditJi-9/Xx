@@ -436,6 +436,9 @@
     <string name="lobby_nexus_streak">Day streak</string>
     <string name="lobby_nexus_ready">Launch setup</string>
     <string name="lobby_nexus_review">Review setup</string>
+    <string name="lobby_nexus_gap_profile">No profile saved for this game</string>
+    <string name="lobby_nexus_gap_panel">Game panel is not armed</string>
+    <string name="lobby_nexus_gap_overlay">Overlay permission is missing</string>
     <string name="lobby_nexus_last_played">Last played</string>
     <string name="lobby_nexus_installed">Installed</string>
     <string name="lobby_nexus_empty_title">No games in this view</string>

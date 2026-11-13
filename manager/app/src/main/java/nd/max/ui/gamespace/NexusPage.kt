@@ -95,6 +95,15 @@ internal fun NexusPage(
             0f
         },
         readinessValue = "${snapshot.readyDone}/${snapshot.readyTotal}",
+        readinessGap = snapshot.gap?.let { gap ->
+            stringResource(
+                when (gap) {
+                    ReadyGap.Profile -> R.string.lobby_nexus_gap_profile
+                    ReadyGap.Panel -> R.string.lobby_nexus_gap_panel
+                    ReadyGap.Overlay -> R.string.lobby_nexus_gap_overlay
+                }
+            )
+        },
         recentLine = recentLine
     )
 

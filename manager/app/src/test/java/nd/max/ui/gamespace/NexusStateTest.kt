@@ -118,6 +118,65 @@ class NexusStateTest {
     }
 
     @Test
+    fun `the ring names the first missing handle in order`() {
+        val selected = game("a.game")
+
+        fun gapOf(armed: Set<String>, overlay: Boolean, tweaks: Map<String, Int>) = NexusState.snapshot(
+            games = listOf(selected),
+            stats = emptyMap(),
+            sessions = emptyList(),
+            armed = armed,
+            overlayGranted = overlay,
+            tweaks = tweaks,
+            selected = selected,
+            nowMs = now,
+            zone = zone,
+        ).gap
+
+        assertEquals(ReadyGap.Profile, gapOf(emptySet(), false, emptyMap()))
+        assertEquals(ReadyGap.Panel, gapOf(emptySet(), true, mapOf("a.game" to 3)))
+        assertEquals(ReadyGap.Overlay, gapOf(setOf("a.game"), false, mapOf("a.game" to 3)))
+        assertNull(gapOf(setOf("a.game"), true, mapOf("a.game" to 3)))
+    }
+
+    @Test
+    fun `a game whose profile is empty counts as missing, not saved`() {
+        val selected = game("a.game")
+        val snapshot = NexusState.snapshot(
+            games = listOf(selected),
+            stats = emptyMap(),
+            sessions = emptyList(),
+            armed = setOf("a.game"),
+            overlayGranted = true,
+            tweaks = mapOf("a.game" to 0),
+            selected = selected,
+            nowMs = now,
+            zone = zone,
+        )
+
+        assertEquals(ReadyGap.Profile, snapshot.gap)
+        assertEquals(2, snapshot.readyDone)
+    }
+
+    @Test
+    fun `no selected game has no gap to name`() {
+        val snapshot = NexusState.snapshot(
+            games = emptyList(),
+            stats = emptyMap(),
+            sessions = emptyList(),
+            armed = emptySet(),
+            overlayGranted = false,
+            tweaks = emptyMap(),
+            selected = null,
+            nowMs = now,
+            zone = zone,
+        )
+
+        assertNull(snapshot.gap)
+        assertEquals(0, snapshot.readyDone)
+    }
+
+    @Test
     fun `streak counts consecutive local days ending today`() {
         val sessions = listOf(
             PlaySession("a.game", ago(2, 2), ago(2)),
