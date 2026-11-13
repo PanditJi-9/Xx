@@ -10,12 +10,17 @@ package nd.max.ui.subscreens
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -37,14 +42,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.sp
 import nd.max.R
+import nd.max.core.gamespace.CareerBadge
+import nd.max.core.gamespace.CareerLedger
+import nd.max.core.gamespace.CareerStats
 import nd.max.core.gamespace.GameApp
 import nd.max.core.gamespace.GamePlayStats
 import nd.max.core.gamespace.LobbyInsights
+import nd.max.core.gamespace.PlaySession
 import nd.max.core.gamespace.PlayAge
 import nd.max.core.gamespace.PlaySessionLedger
 import nd.max.core.gamespace.SetupKind
@@ -68,6 +79,7 @@ internal fun LobbyInsightsBody(
     app: GameApp?,
     games: List<GameApp>,
     stats: Map<String, GamePlayStats>,
+    sessions: List<PlaySession>,
     tweaks: Map<String, Int>,
     armed: Set<String>,
     accent: Color,
@@ -81,6 +93,9 @@ internal fun LobbyInsightsBody(
     // حزمة أُزيلت من المكتبة قد تبقى في تفضيلات اللوحة؛ العدّاد يحسب ما يُعرض هنا فقط.
     val libraryArmed = remember(armed, library) { armed intersect library }
     val summary = remember(stats, library) { LobbyInsights.summary(stats, library) }
+    val career = remember(stats, sessions, library, nowMs) {
+        CareerLedger.build(stats, sessions, library, nowMs)
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -132,6 +147,102 @@ internal fun LobbyInsightsBody(
                 color = LobbyPalette.Muted,
                 fontSize = 12.sp
             )
+        }
+
+        LobbySectionCard(title = stringResource(R.string.lobby_career_week)) {
+            Text(
+                text = stringResource(R.string.lobby_career_week_note),
+                color = LobbyPalette.Muted,
+                fontSize = 12.sp
+            )
+            val peak = career.week.maxOfOrNull { it.totalMs } ?: 0L
+            val today = career.week.lastOrNull()?.date
+            val labels = career.week.map { day ->
+                stringResource(
+                    R.string.lobby_career_bar,
+                    day.date.dayOfMonth,
+                    lobbyPlayTimeText(day.totalMs)
+                        ?: stringResource(R.string.lobby_insights_unknown)
+                )
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(96.dp)
+                    .clearAndSetSemantics { contentDescription = labels.joinToString(", ") },
+                horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs),
+                verticalAlignment = Alignment.Bottom
+            ) {
+                career.week.forEach { day ->
+                    val ratio = if (peak > 0L) {
+                        (day.totalMs.toFloat() / peak).coerceIn(0f, 1f)
+                    } else {
+                        0f
+                    }
+                    Column(
+                        modifier = Modifier.weight(1f),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(72.dp)
+                                .clip(RoundedCornerShape(maxRadius(MaxRadius.chip)))
+                                .background(LobbyPalette.PanelRaised.copy(alpha = 0.35f)),
+                            contentAlignment = Alignment.BottomCenter
+                        ) {
+                            if (ratio > 0f) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .fillMaxHeight(ratio)
+                                        .background(
+                                            if (day.date == today) {
+                                                accent
+                                            } else {
+                                                LobbyPalette.Muted.copy(alpha = 0.55f)
+                                            }
+                                        )
+                                )
+                            }
+                        }
+                        Spacer(Modifier.height(MaxSpace.xs))
+                        Text(
+                            text = day.date.dayOfMonth.toString(),
+                            color = if (day.date == today) LobbyPalette.Ink else LobbyPalette.Muted,
+                            fontSize = 11.sp
+                        )
+                    }
+                }
+            }
+            val bestLabel = career.bestSessionPackage?.let { pkg ->
+                games.firstOrNull { it.packageName == pkg }?.label ?: pkg
+            }
+            Row(horizontalArrangement = Arrangement.spacedBy(MaxSpace.md)) {
+                InsightTile(
+                    label = stringResource(R.string.lobby_career_best),
+                    value = if (career.bestSessionMs > 0L && bestLabel != null) {
+                        stringResource(
+                            R.string.lobby_career_best_value,
+                            lobbyPlayTimeText(career.bestSessionMs)
+                                ?: stringResource(R.string.lobby_insights_unknown),
+                            bestLabel
+                        )
+                    } else {
+                        stringResource(R.string.lobby_insights_no_sessions)
+                    },
+                    modifier = Modifier.weight(1f)
+                )
+                InsightTile(
+                    label = stringResource(R.string.lobby_career_night),
+                    value = if (career.nightSessions > 0) {
+                        stringResource(R.string.lobby_insights_sessions_count, career.nightSessions)
+                    } else {
+                        stringResource(R.string.lobby_insights_no_sessions)
+                    },
+                    modifier = Modifier.weight(1f)
+                )
+            }
         }
 
         LobbySectionCard(title = stringResource(R.string.lobby_insights_most_played)) {
@@ -210,6 +321,56 @@ internal fun LobbyInsightsBody(
             }
         }
 
+        LobbySectionCard(title = stringResource(R.string.lobby_career_milestones)) {
+            career.milestones.forEach { milestone ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(min = MaxSize.minTouchTarget)
+                        .semantics(mergeDescendants = true) { }
+                        .padding(vertical = MaxSpace.xs),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(MaxSpace.md)
+                ) {
+                    Icon(
+                        imageVector = if (milestone.unlocked) {
+                            Icons.Rounded.CheckCircle
+                        } else {
+                            Icons.Rounded.RadioButtonUnchecked
+                        },
+                        contentDescription = null,
+                        tint = if (milestone.unlocked) accent else LobbyPalette.Muted,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Text(
+                        text = careerBadgeLabel(milestone.badge),
+                        color = LobbyPalette.Ink,
+                        fontSize = 14.sp,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Text(
+                        text = if (milestone.unlocked) {
+                            stringResource(R.string.lobby_career_unlocked)
+                        } else if (milestone.badge == CareerBadge.Marathon) {
+                            stringResource(
+                                R.string.lobby_career_progress_min,
+                                milestone.progress,
+                                milestone.target
+                            )
+                        } else {
+                            stringResource(
+                                R.string.lobby_career_progress,
+                                milestone.progress,
+                                milestone.target
+                            )
+                        },
+                        color = if (milestone.unlocked) accent else LobbyPalette.Muted,
+                        fontSize = 12.sp
+                    )
+                }
+            }
+        }
+
         Text(
             text = stringResource(R.string.lobby_insights_scope),
             color = LobbyPalette.Muted,
@@ -224,6 +385,17 @@ internal fun LobbyInsightsBody(
  *
  * مصدر واحد للمعنى نفسه: المسرح وبطاقة «استكشف» يقرآن هذا السطر، فلا يظهر الرقم بصيغتين.
  */
+@Composable
+private fun careerBadgeLabel(badge: CareerBadge): String = stringResource(
+    when (badge) {
+        CareerBadge.FirstSession -> R.string.lobby_career_badge_first
+        CareerBadge.TenSessions -> R.string.lobby_career_badge_ten
+        CareerBadge.Marathon -> R.string.lobby_career_badge_marathon
+        CareerBadge.WeekStreak -> R.string.lobby_career_badge_streak
+        CareerBadge.FiveGames -> R.string.lobby_career_badge_games
+    }
+)
+
 /** عمر آخر جلسة كنصّ مترجم؛ `null` يعني «لا جلسة مسجّلة» فلا تُعرض «الآن». */
 @Composable
 internal fun lobbyPlayAgeText(stats: GamePlayStats?): String? {

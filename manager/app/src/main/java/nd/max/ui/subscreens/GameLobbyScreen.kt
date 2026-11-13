@@ -508,6 +508,7 @@ fun GameLobbyScreen(
                             config = activeConfig ?: AppConfig(),
                             games = allGames,
                             stats = playStats,
+                            sessions = sessions,
                             tweaks = tweaksByGame,
                             armed = panelPrefs.enabledPackages,
                             panelEnabled = panelEnabled,

@@ -21,12 +21,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
@@ -132,7 +133,9 @@ fun NexusScreen(
                     model = model,
                     accent = accent,
                     onLaunch = onLaunch,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier
+                        .weight(1f)
+                        .verticalScroll(rememberScrollState())
                 )
             }
             NexusRail(
@@ -203,7 +206,7 @@ private fun NexusHero(
                 accent = accent.base
             )
             Column(modifier = Modifier.weight(1f)) {
-                MonolithEyebrow(text = copy.nowLabel, meta = model.recentLine)
+                MonolithEyebrow(text = copy.nowLabel)
                 Spacer(Modifier.height(MaxSpace.xs))
                 Text(
                     text = game.label,

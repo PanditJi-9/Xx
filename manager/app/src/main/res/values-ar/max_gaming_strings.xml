@@ -435,4 +435,19 @@
     <string name="lobby_nexus_last_played">آخر لعب</string>
     <string name="lobby_nexus_installed">مثبّتة</string>
     <string name="lobby_nexus_empty_title">لا ألعاب في هذا العرض</string>
+    <string name="lobby_career_week">هذا الأسبوع</string>
+    <string name="lobby_career_week_note">وقت اللعب المسجّل يومًا بيوم، حتى اليوم</string>
+    <string name="lobby_career_bar">اليوم %1$d، %2$s</string>
+    <string name="lobby_career_best">أطول جلسة</string>
+    <string name="lobby_career_best_value">%1$s في %2$s</string>
+    <string name="lobby_career_night">بدأت بعد ٢٢:٠٠</string>
+    <string name="lobby_career_milestones">محطات</string>
+    <string name="lobby_career_badge_first">أول جلسة</string>
+    <string name="lobby_career_badge_ten">عشر جلسات</string>
+    <string name="lobby_career_badge_marathon">جلسة ساعتين</string>
+    <string name="lobby_career_badge_streak">سبعة أيام متتالية</string>
+    <string name="lobby_career_badge_games">خمس ألعاب</string>
+    <string name="lobby_career_progress">%1$d من %2$d</string>
+    <string name="lobby_career_progress_min">%1$d من %2$d دقيقة</string>
+    <string name="lobby_career_unlocked">بلغتها</string>
 </resources>

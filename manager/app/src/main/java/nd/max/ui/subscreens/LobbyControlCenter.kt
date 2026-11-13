@@ -89,6 +89,7 @@ import kotlinx.coroutines.withContext
 import nd.max.core.gamespace.UsageAccess
 import nd.max.core.gamespace.GameApp
 import nd.max.core.gamespace.GamePlayStats
+import nd.max.core.gamespace.PlaySession
 import nd.max.core.gamespace.HandleSize
 import nd.max.core.gamespace.LobbyCue
 import nd.max.core.gamespace.LobbyDepth
@@ -178,6 +179,7 @@ internal fun LobbyControlCenter(
     config: AppConfig,
     games: List<GameApp>,
     stats: Map<String, GamePlayStats>,
+    sessions: List<PlaySession>,
     tweaks: Map<String, Int>,
     armed: Set<String>,
     panelEnabled: Boolean,
@@ -225,6 +227,7 @@ internal fun LobbyControlCenter(
                         app = app,
                         games = games,
                         stats = stats,
+                        sessions = sessions,
                         tweaks = tweaks,
                         armed = armed,
                         accent = accent,

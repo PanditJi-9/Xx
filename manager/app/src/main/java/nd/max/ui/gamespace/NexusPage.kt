@@ -43,8 +43,10 @@ internal fun NexusPage(
     modifier: Modifier = Modifier
 ) {
     // اللقطة تُعاد حين يتغيّر السجلّ أو المكتبة أو المقابض؛ الوقت وحده لا يحرّكها.
+    // أول فتح بلا اختيار محفوظ: الأولى هي البطلة، لا هيكل بلا أيقونة أو لون.
+    val focus = selected ?: games.firstOrNull()
     val nowMs = remember(stats, sessions) { System.currentTimeMillis() }
-    val snapshot = remember(games, stats, sessions, armed, overlayGranted, tweaks, selected, nowMs) {
+    val snapshot = remember(games, stats, sessions, armed, overlayGranted, tweaks, focus, nowMs) {
         NexusState.snapshot(
             games = games,
             stats = stats,
@@ -52,19 +54,19 @@ internal fun NexusPage(
             armed = armed,
             overlayGranted = overlayGranted,
             tweaks = tweaks,
-            selected = selected,
+            selected = focus,
             nowMs = nowMs
         )
     }
 
-    val accent = rememberLobbyTone(selected?.packageName)
-    val icon by rememberLobbyIcon(selected?.packageName)
-    val selectedStats = selected?.let { stats[it.packageName] }
+    val accent = rememberLobbyTone(focus?.packageName)
+    val icon by rememberLobbyIcon(focus?.packageName)
+    val selectedStats = focus?.let { stats[it.packageName] }
     val recentLine = lobbyPlayAgeText(selectedStats)
     val unknown = stringResource(R.string.lobby_insights_unknown)
 
     val entries = games.map { game ->
-        val isSelected = game.packageName == selected?.packageName
+        val isSelected = game.packageName == focus?.packageName
         NexusGame(
             packageName = game.packageName,
             label = game.label,
@@ -76,7 +78,7 @@ internal fun NexusPage(
             monogram = game.label.take(1).uppercase()
         )
     }
-    val selectedIndex = entries.indexOfFirst { it.packageName == selected?.packageName }
+    val selectedIndex = entries.indexOfFirst { it.packageName == focus?.packageName }
     val model = NexusModel(
         games = entries,
         selectedIndex = selectedIndex.coerceAtLeast(0),
@@ -95,7 +97,7 @@ internal fun NexusPage(
     NexusScreen(
         model = model,
         copy = NexusCopy(
-            wordmark = stringResource(R.string.lobby_tab_lobby),
+            wordmark = stringResource(R.string.game_space_title),
             nowLabel = stringResource(R.string.lobby_nexus_now),
             launch = stringResource(R.string.lobby_start),
             vault = stringResource(R.string.lobby_cc_library),

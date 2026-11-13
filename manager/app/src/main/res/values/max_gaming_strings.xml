@@ -436,4 +436,19 @@
     <string name="lobby_nexus_last_played">Last played</string>
     <string name="lobby_nexus_installed">Installed</string>
     <string name="lobby_nexus_empty_title">No games in this view</string>
+    <string name="lobby_career_week">This week</string>
+    <string name="lobby_career_week_note">Recorded playtime by day, ending today</string>
+    <string name="lobby_career_bar">Day %1$d, %2$s</string>
+    <string name="lobby_career_best">Longest session</string>
+    <string name="lobby_career_best_value">%1$s in %2$s</string>
+    <string name="lobby_career_night">Started after 22:00</string>
+    <string name="lobby_career_milestones">Milestones</string>
+    <string name="lobby_career_badge_first">First session</string>
+    <string name="lobby_career_badge_ten">Ten sessions</string>
+    <string name="lobby_career_badge_marathon">Two-hour session</string>
+    <string name="lobby_career_badge_streak">Seven-day streak</string>
+    <string name="lobby_career_badge_games">Five games played</string>
+    <string name="lobby_career_progress">%1$d of %2$d</string>
+    <string name="lobby_career_progress_min">%1$d of %2$d min</string>
+    <string name="lobby_career_unlocked">Reached</string>
 </resources>

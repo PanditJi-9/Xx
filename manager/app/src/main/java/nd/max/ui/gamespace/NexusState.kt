@@ -7,11 +7,10 @@
 
 package nd.max.ui.gamespace
 
+import nd.max.core.gamespace.CareerLedger
 import nd.max.core.gamespace.GameApp
 import nd.max.core.gamespace.GamePlayStats
 import nd.max.core.gamespace.PlaySession
-import java.time.Instant
-import java.time.LocalDate
 import java.time.ZoneId
 
 /**
@@ -81,26 +80,5 @@ object NexusState {
         library: Set<String>,
         nowMs: Long,
         zone: ZoneId = ZoneId.systemDefault(),
-    ): Int {
-        if (sessions.isEmpty() || library.isEmpty() || nowMs <= 0L) return 0
-        val days = HashSet<LocalDate>()
-        for (session in sessions) {
-            if (session.packageName !in library) continue
-            if (session.endedAtMs <= 0L || session.endedAtMs > nowMs) continue
-            days += Instant.ofEpochMilli(session.endedAtMs).atZone(zone).toLocalDate()
-        }
-        if (days.isEmpty()) return 0
-        val today = Instant.ofEpochMilli(nowMs).atZone(zone).toLocalDate()
-        var cursor = when {
-            today in days -> today
-            today.minusDays(1) in days -> today.minusDays(1)
-            else -> return 0
-        }
-        var count = 0
-        while (cursor in days) {
-            count += 1
-            cursor = cursor.minusDays(1)
-        }
-        return count
-    }
+    ): Int = CareerLedger.streak(sessions, library, nowMs, zone)
 }
