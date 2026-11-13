@@ -9,7 +9,6 @@ package nd.max.ui.gamespace
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
@@ -49,7 +49,9 @@ import nd.max.ui.design.MaxSpace
  *
  * الشاشة **بلا حالة ملكية**: تستقبل نموذجًا جاهزًا ودوالّ. كل رقم معروض جاء من
  * `NexusModel`، وما لا قيمة له يُمرَّر `null` فيُحجب — لا صفر ولا شرطة مزخرفة.
- * وهذا ما يجعلها تُقاس على JVM وتُربط بأي مصدر حقيقي لاحقًا بلا إعادة كتابة.
+ *
+ * الشيء الغنيّ الواحد هنا أيقونة اللعبة الحقيقية على بلاطة واحدة. كل ما حولها
+ * هادئ: لا توهّج، لا تدرّج لوني، لا حركة مستمرّة، ولا زخرفة تنافسها.
  */
 
 @Immutable
@@ -57,6 +59,7 @@ data class NexusGame(
     val packageName: String,
     val label: String,
     val accent: Color,
+    val icon: ImageBitmap? = null,
     val playtime: String? = null,
     val lastPlayed: String? = null,
     val installedDays: String? = null,
@@ -66,6 +69,7 @@ data class NexusGame(
 @Immutable
 data class NexusCopy(
     val wordmark: String,
+    val nowLabel: String,
     val launch: String,
     val vault: String,
     val loadout: String,
@@ -103,13 +107,12 @@ fun NexusScreen(
     onOpenVault: () -> Unit,
     onOpenLoadout: () -> Unit,
     onOpenCareer: () -> Unit,
-    animate: Boolean,
     modifier: Modifier = Modifier
 ) {
     val selected = model.games.getOrNull(model.selectedIndex) ?: model.games.firstOrNull()
     val accent = monolithAccent(selected?.accent)
     Box(modifier = modifier.fillMaxSize().background(Monolith.Obsidian)) {
-        AuroraBackdrop(accent = accent.base, animate = animate, modifier = Modifier.fillMaxSize())
+        MonolithField(modifier = Modifier.fillMaxSize())
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -139,7 +142,7 @@ fun NexusScreen(
                 selectedIndex = model.selectedIndex,
                 onSelect = onSelect
             )
-            Spacer(Modifier.height(MaxSpace.lg))
+            Spacer(Modifier.height(MaxSpace.md))
             NexusFooter(
                 copy = copy,
                 onOpenVault = onOpenVault,
@@ -156,6 +159,8 @@ private fun NexusHeader(copy: NexusCopy, totalPlaytime: String) {
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
+        MonolithNotch()
+        Spacer(Modifier.width(MaxSpace.sm))
         Text(
             text = copy.wordmark,
             style = Monolith.eyebrow,
@@ -189,17 +194,30 @@ private fun NexusHero(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.Center
     ) {
-        MonolithEyebrow(text = copy.wordmark, meta = model.recentLine)
-        Spacer(Modifier.height(MaxSpace.md))
-        Text(
-            text = game.label,
-            style = Monolith.display,
-            color = Monolith.Bone,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.semantics { heading() }
-        )
-        Spacer(Modifier.height(MaxSpace.md))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(MaxSpace.lg)
+        ) {
+            MonolithGameSlab(
+                icon = game.icon,
+                label = game.label,
+                accent = accent.base
+            )
+            Column(modifier = Modifier.weight(1f)) {
+                MonolithEyebrow(text = copy.nowLabel, meta = model.recentLine)
+                Spacer(Modifier.height(MaxSpace.xs))
+                Text(
+                    text = game.label,
+                    style = Monolith.title,
+                    color = Monolith.Bone,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.semantics { heading() }
+                )
+            }
+        }
+        Spacer(Modifier.height(MaxSpace.lg))
         FlowRow(
             horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm),
             verticalArrangement = Arrangement.spacedBy(MaxSpace.xs)
@@ -213,10 +231,12 @@ private fun NexusHero(
             }
         }
         Spacer(Modifier.height(MaxSpace.xxl))
+        NexusStats(copy = copy, model = model)
+        Spacer(Modifier.height(MaxSpace.xxl))
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(MaxSpace.xl)
+            horizontalArrangement = Arrangement.spacedBy(MaxSpace.lg)
         ) {
             MonolithReadinessRing(
                 progress = model.readiness,
@@ -224,44 +244,58 @@ private fun NexusHero(
                 valueText = model.readinessValue,
                 label = copy.readyLabel
             )
-            Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(MaxSpace.sm)
-            ) {
-                NexusStat(value = model.totalPlaytime, label = copy.playtimeLabel)
-                NexusStat(value = model.sessionCount, label = copy.sessionsLabel)
-                NexusStat(value = model.streak, label = copy.streakLabel)
-            }
+            MonolithPrimaryButton(
+                text = copy.launch,
+                onClick = onLaunch,
+                modifier = Modifier.weight(1f)
+            )
         }
-        Spacer(Modifier.height(MaxSpace.xxl))
-        MonolithPrimaryButton(
-            text = copy.launch,
-            accent = accent.base,
-            onClick = onLaunch,
-            modifier = Modifier.fillMaxWidth()
+    }
+}
+
+@Composable
+private fun NexusStats(copy: NexusCopy, model: NexusModel) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(MaxSpace.lg)
+    ) {
+        NexusStat(
+            value = model.totalPlaytime,
+            label = copy.playtimeLabel,
+            modifier = Modifier.weight(1f)
+        )
+        NexusStat(
+            value = model.sessionCount,
+            label = copy.sessionsLabel,
+            modifier = Modifier.weight(1f)
+        )
+        NexusStat(
+            value = model.streak,
+            label = copy.streakLabel,
+            modifier = Modifier.weight(1f)
         )
     }
 }
 
 @Composable
-private fun NexusStat(value: String, label: String) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.Bottom
+private fun NexusStat(value: String, label: String, modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(MaxSpace.xs)
     ) {
         Text(
             text = value,
             style = Monolith.numeral,
             color = Monolith.Bone,
-            maxLines = 1
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
         )
-        Spacer(Modifier.width(MaxSpace.sm))
         Text(
             text = label,
             style = Monolith.label,
             color = Monolith.Muted,
             maxLines = 1,
-            modifier = Modifier.padding(bottom = MaxSpace.xs)
+            overflow = TextOverflow.Ellipsis
         )
     }
 }
@@ -283,12 +317,12 @@ private fun NexusRail(
             val accent = monolithAccent(game.accent)
             Box(
                 modifier = Modifier
-                    .size(52.dp)
+                    .size(48.dp)
                     .clip(shape)
-                    .background(if (active) accent.soft else Color.White.copy(alpha = 0.03f))
+                    .background(if (active) accent.soft else Monolith.Slate)
                     .border(
                         MaxSpace.hairline,
-                        if (active) accent.base.copy(alpha = 0.8f) else Monolith.Hairline,
+                        if (active) accent.base.copy(alpha = 0.7f) else Monolith.Hairline,
                         shape
                     )
                     .selectable(selected = active, role = Role.Tab) { onSelect(index) }
@@ -297,7 +331,7 @@ private fun NexusRail(
             ) {
                 Text(
                     text = game.monogram,
-                    style = Monolith.heading,
+                    style = Monolith.label,
                     color = if (active) Monolith.Bone else Monolith.BoneDim
                 )
             }
