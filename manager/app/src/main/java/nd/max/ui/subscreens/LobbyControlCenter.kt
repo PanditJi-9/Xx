@@ -227,6 +227,7 @@ internal fun LobbyControlCenter(
                         stats = stats,
                         tweaks = tweaks,
                         armed = armed,
+                        accent = accent,
                         onSection = onSection,
                         onPanelEnabled = onPanelEnabled,
                         onOpenHistory = onOpenHistory,

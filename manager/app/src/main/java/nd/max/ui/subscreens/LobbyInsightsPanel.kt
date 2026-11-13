@@ -67,6 +67,7 @@ internal fun LobbyInsightsBody(
     stats: Map<String, GamePlayStats>,
     tweaks: Map<String, Int>,
     armed: Set<String>,
+    accent: Color,
     onSection: (LobbySection) -> Unit,
     onPanelEnabled: (Boolean) -> Unit,
     onOpenHistory: () -> Unit,
@@ -74,6 +75,8 @@ internal fun LobbyInsightsBody(
 ) {
     val nowMs = remember { System.currentTimeMillis() }
     val library = remember(games) { games.map { it.packageName }.toSet() }
+    // حزمة أُزيلت من المكتبة قد تبقى في تفضيلات اللوحة؛ العدّاد يحسب ما يُعرض هنا فقط.
+    val libraryArmed = remember(armed, library) { armed intersect library }
     val summary = remember(stats, library) { LobbyInsights.summary(stats, library) }
     Column(
         modifier = Modifier
@@ -118,10 +121,10 @@ internal fun LobbyInsightsBody(
                 )
             }
             Text(
-                text = if (armed.isEmpty()) {
+                text = if (libraryArmed.isEmpty()) {
                     stringResource(R.string.lobby_insights_armed_none)
                 } else {
-                    stringResource(R.string.lobby_insights_armed_count, armed.size)
+                    stringResource(R.string.lobby_insights_armed_count, libraryArmed.size)
                 },
                 color = LobbyPalette.Muted,
                 fontSize = 12.sp
@@ -143,7 +146,7 @@ internal fun LobbyInsightsBody(
                         packageName = stat.packageName,
                         value = lobbyPlayTimeText(stat.totalMs)
                             ?: stringResource(R.string.lobby_insights_unknown),
-                        accent = LobbyPalette.Red,
+                        accent = accent,
                         onClick = if (ranked != null) {
                             { onOpenGame(stat.packageName) }
                         } else {
@@ -169,7 +172,7 @@ internal fun LobbyInsightsBody(
                 )
             } else {
                 val tweakCount = tweaks[app.packageName] ?: 0
-                val panelArmed = app.packageName in armed
+                val panelArmed = app.packageName in libraryArmed
                 val steps = remember(stats, app.packageName, tweakCount, panelArmed, nowMs) {
                     LobbyInsights.setup(
                         stats = stats[app.packageName],

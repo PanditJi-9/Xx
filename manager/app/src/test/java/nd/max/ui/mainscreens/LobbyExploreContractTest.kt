@@ -147,5 +147,16 @@ class LobbyExploreContractTest {
             "The lobby must route Insights through the shared game selector",
             lobby().contains("onOpenGame = { pkg ->")
         )
+        assertTrue(
+            "The armed counter must intersect the library, or removed games overcount",
+            panel.contains("armed intersect library") &&
+                panel.contains("libraryArmed.size") &&
+                panel.contains("app.packageName in libraryArmed")
+        )
+        assertTrue(
+            "The most-played value must follow the stage tone, not a fixed red",
+            panel.contains("accent = accent") &&
+                !panel.contains("accent = LobbyPalette.Red")
+        )
     }
 }
