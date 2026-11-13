@@ -29,6 +29,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -36,6 +37,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -364,7 +366,12 @@ private fun NexusRail(
 ) {
     if (games.isEmpty()) return
     val shape = RoundedCornerShape(MaxRadius.control)
+    val state = rememberLazyListState()
+    LaunchedEffect(selectedIndex) {
+        if (selectedIndex in games.indices) state.animateScrollToItem(selectedIndex)
+    }
     LazyRow(
+        state = state,
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm)
     ) {
