@@ -710,6 +710,14 @@ private fun DetailSheet(
                     details.vmSwapKb?.let(::swapText) ?: "—"
                 )
                 DetailLine(
+                    stringResource(R.string.processmgr_detail_disk_read),
+                    diskText(details.ioReadBytes)
+                )
+                DetailLine(
+                    stringResource(R.string.processmgr_detail_disk_written),
+                    diskText(details.ioWrittenBytes)
+                )
+                DetailLine(
                     stringResource(R.string.processmgr_detail_threads),
                     details.threads?.toString() ?: "—"
                 )
@@ -791,6 +799,17 @@ private fun DetailLine(label: String, value: String) {
 
 private fun swapText(kb: Long): String =
     if (kb >= 1024L) "%.1f MB".format(kb / 1024f) else "$kb KB"
+
+/**
+ * القرص يُقرأ لصفّ واحد لا لكل صفّ: `top` لا يعطي `io`، وقراءته لمئات العمليات تعني نداء جذر
+ * لكل `pid` في كل دورة — ثمّ يمنع أندرويد `/proc/<pid>/io` عن عمليات التطبيقات الأخرى أصلًا.
+ * فالسطر هنا عند الطلب، و`null` تعني «مُنع أو غاب» لا «صفر بايت».
+ */
+private fun diskText(bytes: Long?): String {
+    if (bytes == null) return "—"
+    val kb = bytes / 1024L
+    return if (kb >= 1024L) "%.1f MB".format(kb / 1024f) else "$kb KB"
+}
 
 /**
  * ورقة إعداد التراكب — وفيها **معاينة حيّة** تُرسم بـ[ProcessSurface] نفسها التي ترسم النافذة.

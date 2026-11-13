@@ -892,7 +892,9 @@
     <string name="processmgr_notif_channel">Process Monitor</string>
     <string name="processmgr_notif_title">Max Manager process monitor is running</string>
     <string name="processmgr_notif_stop">Stop</string>
-    <string name="processmgr_search_hint">Search running processes</string>
+    <string name="processmgr_search_hint">Search name, package or PID</string>
+    <string name="processmgr_search_cd">Search processes</string>
+    <string name="processmgr_search_close_cd">Close search</string>
     <string name="processmgr_no_processes">No processes match your search</string>
     <string name="processmgr_dialog_close">Close</string>
     <string name="processmgr_result_killed">Killed %1$s</string>
@@ -915,6 +917,8 @@
     <string name="processmgr_copy_package">Copy package name</string>
     <string name="processmgr_detail_oom">OOM score</string>
     <string name="processmgr_detail_swap">Swapped</string>
+    <string name="processmgr_detail_disk_read">Disk read</string>
+    <string name="processmgr_detail_disk_written">Disk written</string>
     <string name="processmgr_detail_threads">Threads</string>
     <string name="processmgr_detail_cgroup">Cgroup</string>
     <string name="processmgr_details_loading">Reading kernel details…</string>

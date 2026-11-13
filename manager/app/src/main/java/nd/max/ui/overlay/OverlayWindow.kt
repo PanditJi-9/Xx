@@ -195,6 +195,29 @@ class OverlayWindow(
     }
 
     /**
+     * يجعل النافذة قابلة للتركيز حين تحتاج حقلًا يُكتب فيه، ويُعيدها إلى حالها العابرة.
+     *
+     * **ولماذا هذا الخيار أصلًا:** نافذة التراكب تُبنى بـ`FLAG_NOT_FOCUSABLE` عمدًا — اللعبة
+     * تحتها تبقى هي المتلقّي، ولو أخذت النافذة التركيز لانقطع اللمس عن اللعبة. لكن لوحة
+     * المفاتيح لا تظهر إلا لنافذة قابلة للتركيز، فيُرفع العلم **لحظة فتح البحث** ويُعاد فورًا
+     * عند إغلاقه. والسحب لا يتأثّر: مقبضه يستهلك `DOWN` قبل الأبناء، والحقل يستهلك لمساته.
+     *
+     * والطريق نفسه سالك في شريط الجزيرة (`IslandOverlay`): يرفع العلم عند الكتابة ويعيده بعدها.
+     */
+    fun setFocusable(on: Boolean) {
+        val notFocusable = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+        val watchOutside = WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH
+        val was = params.flags and notFocusable == 0
+        if (was == on) return
+        params.flags = if (on) {
+            (params.flags and notFocusable.inv()) or watchOutside
+        } else {
+            (params.flags or notFocusable) and watchOutside.inv()
+        }
+        refresh()
+    }
+
+    /**
      * يضع النافذة عند إحداثيّات محسوبة مسبقًا (بلا سحب).
      *
      * **ولماذا لا تُحسب هنا:** موضع اللوحة الجانبية يحتاج شرائح النظام وحافة الشاشة، وحسابه

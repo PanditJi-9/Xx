@@ -1835,7 +1835,9 @@
     <string name="processmgr_notif_channel">مراقب العمليات</string>
     <string name="processmgr_notif_title">مراقب عمليات Max Manager يعمل</string>
     <string name="processmgr_notif_stop">إيقاف</string>
-    <string name="processmgr_search_hint">ابحث في العمليات الجارية</string>
+    <string name="processmgr_search_hint">ابحث بالاسم أو الحزمة أو المعرّف</string>
+    <string name="processmgr_search_cd">ابحث في العمليات</string>
+    <string name="processmgr_search_close_cd">أغلق البحث</string>
     <string name="processmgr_no_processes">لا عمليات تطابق بحثك</string>
     <string name="processmgr_dialog_close">إغلاق</string>
     <string name="processmgr_result_killed">قُتلت %1$s</string>
@@ -1858,6 +1860,8 @@
     <string name="processmgr_copy_package">نسخ اسم الحزمة</string>
     <string name="processmgr_detail_oom">درجة OOM</string>
     <string name="processmgr_detail_swap">المبادَل</string>
+    <string name="processmgr_detail_disk_read">قراءة القرص</string>
+    <string name="processmgr_detail_disk_written">كتابة القرص</string>
     <string name="processmgr_detail_threads">الخيوط</string>
     <string name="processmgr_detail_cgroup">المجموعة</string>
     <string name="processmgr_details_loading">جارٍ قراءة تفاصيل النواة…</string>
