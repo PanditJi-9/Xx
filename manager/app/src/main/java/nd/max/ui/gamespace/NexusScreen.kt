@@ -11,6 +11,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -34,6 +36,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -246,16 +250,29 @@ private fun NexusHero(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(MaxSpace.lg)
         ) {
+            val setupInteraction = remember { MutableInteractionSource() }
+            val setupFocused by setupInteraction.collectIsFocusedAsState()
+            val setupShape = RoundedCornerShape(MaxRadius.control)
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(MaxSpace.xs),
                 modifier = Modifier
-                    .clip(RoundedCornerShape(MaxRadius.control))
+                    .clip(setupShape)
+                    .border(
+                        MaxSpace.hairline,
+                        if (setupFocused) accent.base else Color.Transparent,
+                        setupShape
+                    )
                     .semantics(mergeDescendants = true) {
                         contentDescription =
                             "${copy.readyLabel} ${model.readinessValue}. ${copy.reviewSetup}"
                     }
-                    .clickable(role = Role.Button, onClick = onOpenSetup)
+                    .clickable(
+                        interactionSource = setupInteraction,
+                        indication = null,
+                        role = Role.Button,
+                        onClick = onOpenSetup
+                    )
                     .padding(horizontal = MaxSpace.xs, vertical = MaxSpace.sm)
             ) {
                 MonolithReadinessRing(
@@ -343,6 +360,8 @@ private fun NexusRail(
             val active = index == selectedIndex
             val accent = monolithAccent(game.accent)
             val icon = rememberLobbyIcon(game.packageName).value
+            val interaction = remember { MutableInteractionSource() }
+            val focused by interaction.collectIsFocusedAsState()
             Box(
                 modifier = Modifier
                     .size(48.dp)
@@ -350,10 +369,19 @@ private fun NexusRail(
                     .background(if (active) accent.soft else Monolith.Slate)
                     .border(
                         MaxSpace.hairline,
-                        if (active) accent.base.copy(alpha = 0.7f) else Monolith.Hairline,
+                        when {
+                            focused -> Monolith.Bone
+                            active -> accent.base.copy(alpha = 0.7f)
+                            else -> Monolith.Hairline
+                        },
                         shape
                     )
-                    .selectable(selected = active, role = Role.Tab) { onSelect(index) }
+                    .selectable(
+                        interactionSource = interaction,
+                        indication = null,
+                        selected = active,
+                        role = Role.Tab
+                    ) { onSelect(index) }
                     .semantics { contentDescription = game.label },
                 contentAlignment = Alignment.Center
             ) {

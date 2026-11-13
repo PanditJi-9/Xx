@@ -12,6 +12,8 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,11 +29,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
@@ -189,6 +194,21 @@ fun MonolithGameSlab(
     }
 }
 
+/** حلقة تركيز مرئية للريموت ولوحة المفاتيح: حدّ رفيع يظهر فقط حين يملك العنصر التركيز. */
+@Composable
+private fun Modifier.focusOutline(
+    interaction: MutableInteractionSource,
+    shape: Shape,
+    color: Color
+): Modifier {
+    val focused by interaction.collectIsFocusedAsState()
+    return border(
+        MaxSpace.hairline,
+        if (focused) color else Color.Transparent,
+        shape
+    )
+}
+
 @Composable
 fun MonolithPrimaryButton(
     text: String,
@@ -197,12 +217,21 @@ fun MonolithPrimaryButton(
     enabled: Boolean = true
 ) {
     val shape = RoundedCornerShape(MaxRadius.control)
+    val interaction = remember { MutableInteractionSource() }
     Box(
         modifier = modifier
             .height(56.dp)
             .clip(shape)
             .background(if (enabled) Monolith.Bone else Monolith.Glass)
-            .clickable(enabled = enabled, role = Role.Button, onClick = onClick)
+            .focusOutline(interaction, shape, Monolith.Obsidian)
+            .semantics(mergeDescendants = true) { }
+            .clickable(
+                interactionSource = interaction,
+                indication = null,
+                enabled = enabled,
+                role = Role.Button,
+                onClick = onClick
+            )
             .padding(horizontal = MaxSpace.xl),
         contentAlignment = Alignment.Center
     ) {
@@ -224,12 +253,21 @@ fun MonolithGhostButton(
     enabled: Boolean = true
 ) {
     val shape = RoundedCornerShape(MaxRadius.control)
+    val interaction = remember { MutableInteractionSource() }
     Box(
         modifier = modifier
             .height(48.dp)
             .clip(shape)
             .border(MaxSpace.hairline, Monolith.HairlineStrong, shape)
-            .clickable(enabled = enabled, role = Role.Button, onClick = onClick)
+            .focusOutline(interaction, shape, Monolith.Bone)
+            .semantics(mergeDescendants = true) { }
+            .clickable(
+                interactionSource = interaction,
+                indication = null,
+                enabled = enabled,
+                role = Role.Button,
+                onClick = onClick
+            )
             .padding(horizontal = MaxSpace.lg),
         contentAlignment = Alignment.Center
     ) {
