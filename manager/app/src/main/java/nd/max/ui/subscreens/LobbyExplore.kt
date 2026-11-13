@@ -72,6 +72,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -570,7 +571,15 @@ private fun ExploreCard(
                 },
                 shape
             )
-            .clickable(interactionSource = interaction, indication = null, onClick = onClick)
+            // بطاقة واحدة في TalkBack لا خمس عُقد: الأيقونة والاسم وسطر اللعب والشرائح تُقرأ معًا،
+            // والإجراء معلن زرًّا صريحًا لأن النقر يفتح اللعبة في المسرح.
+            .semantics(mergeDescendants = true) { }
+            .clickable(
+                interactionSource = interaction,
+                indication = null,
+                role = Role.Button,
+                onClick = onClick
+            )
             .padding(if (compact) MaxSpace.md else MaxSpace.lg),
         verticalArrangement = Arrangement.spacedBy(MaxSpace.sm)
     ) {

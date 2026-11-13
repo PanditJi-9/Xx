@@ -297,4 +297,20 @@ class LobbyExploreContractTest {
             text.contains("filters.indexOf(filter) + step + filters.size")
         )
     }
+
+    @Test
+    fun `each card is one button for the screen reader`() {
+        val root = sourceRoot()
+        assumeTrue("Cannot locate nd.max sources; guard not evaluated", root != null)
+        val text = explore()
+
+        assertTrue(
+            "The card must merge its icon, name, play line and chips into one node",
+            text.contains("mergeDescendants = true")
+        )
+        assertTrue(
+            "Opening a game from the card must be announced as a button",
+            text.contains("role = Role.Button")
+        )
+    }
 }
