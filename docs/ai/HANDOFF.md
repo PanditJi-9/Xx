@@ -27698,3 +27698,60 @@ exit 0 · `i18n_coverage --assert` تطابق الأكواد الثلاثة و0 
 **وما وُجد قائمًا فلم يُلمس:** شرائح تصفية المكتبة تحمل أعدادها فعلًا (`LobbyExplore.kt:372-380`
 `count = counts[item]`)، وبطاقة اللعبة تحمل أربع شرائح (جاهزية، ملفّ، لوحة، ونقاط الجاهزية) —
 أي أن `Enabled`/`Disabled` عند المرجع موجود عندنا بأدقّ منه. فلا إعادة بناء.
+
+### PROCESS-PARITY-AND-VEIL-01 — تكافؤ مراقب المهام ثم ستارة العرض — 2026-11-13 · DONE_WITH_CONCERNS
+
+**TASK (أمر المالك):** «تحقق ايضا من المشروع نفسه وليس من لقطات الشاشة … وقارن مقارنة شاملة وكانك حكم
+وعرف كل ما ينقصنا في كل المجالات» ⇒ نُفِّذ البندان الأرخص والأصدق من قائمة النقص: **تكافؤ مراقب المهام**
+ثم **فلتر العرض** (الاسم عندنا «ستارة العرض»، لا اسم المرجع).
+
+**SEARCH FIRST (§0.5) — القائم كان أكثر مما قيل في التقرير:** `ui/subscreens/ProcessManagerScreen.kt`
+(٩٣٩ سطرًا) فيه أصلًا `MaxSearchField` بحثٌ حيّ، و`ControlStrip` بنطاق وترتيب وعدّاد صفوف، و`ShownCount`،
+و`ReadingHeader` بثلاث بطاقات (running/apps/system — أي فصل تطبيق/نظام) ووسم حالة (`Live reading` /
+`Last reading`)، وشريط `MaxUsageBar` تحت كل صفّ (أشرطة أعلى استهلاك)، و`DetailSheet` بتفاصيل النواة
+وقتل/إيقاف. **فالفجوتان الحقيقيتان فقط:** البحث **داخل النافذة العائمة** (كان يمرّر استعلامًا فارغًا)،
+وقراءة **القرص** (لا وجود لها في الشجرة). و`TileService/NightLightTileService.kt` مفتاحٌ لنظام
+«الإضاءة الليلية» لا فلتر لكل لعبة، و`grep` لـ`colorMatrix/tint` لم يجد طبقة تلوين قائمة ⇒ لا نظير
+لبند الفلتر. وأُصلحت صياغة التقرير السابقة بدل بناء مسار ثانٍ.
+
+**SHIPPED — ثلاث دفعات:**
+- **`4f234a24`** `feat(process): search the floating monitor by name, package or PID and read its disk`:
+  `ProcessFeed.parseDetails` دالّة نقيّة تقرأ `status`/`oom_score_adj`/`cgroup`/`io` بأقسامها،
+  و`ProcessDetails.ioReadBytes/ioWrittenBytes` (`/proc/<pid>/io`؛ الممنوع `null` لا صفرًا)، والبحث صار
+  يطابق الاسم والحزمة ورقم العملية. وفي النافذة العائمة: `OverlayWindow.setFocusable` يبدّل
+  `FLAG_NOT_FOCUSABLE` (+`FLAG_WATCH_OUTSIDE_TOUCH`) — النافذة تبقى غير قابلة للتركيز افتراضيًا فلا
+  تسرق اللعبة، وتُركَّز لحظة الكتابة فقط (نفس مسار ردّ الجزيرة القائم)؛ و`ProcessSurface` اكتسب
+  `headerAction` و`searchRow` اختياريَّين؛ والخدمة تملك `typing`/`query` وتطلب `ProcessWatch.MAX_ROWS`
+  أثناء البحث فيُصفّى ٦٠ صفًّا لا ٣–٨. النصوص: `processmgr_search_cd` · `processmgr_search_close_cd` ·
+  `processmgr_detail_disk_read` · `processmgr_detail_disk_written` + تحديث `processmgr_search_hint`
+  إلى «بالاسم أو الحزمة أو المعرّف» (en/ar فقط)، وأربعة اختبارات JVM (بحث PID، بحث غير رقمي، أقسام
+  `proc`، قسم `io` الفارغ = منع لا صفر).
+- **`edd7679b`** `fix(process): match a typed PID whole, not as a substring`: الأحمر `43485512209` كان
+  `ProcessFeedTest.kt:195` — مطابقة PID بالاحتواء فطابق `com.example.app1234`؛ صار `==` على الرقم كاملًا.
+- **`be479caa`** `feat(panel): put a display veil on the game panel`: `core/gamespace/DisplayVeil.kt`
+  (`WARM`/`NIGHT`/`DIM` بدورة تُطفئ نفسها، و`argb=0` عند الإطفاء) + `ui/util/DisplayVeilPrefs.kt`
+  (مفاتيح `game_veil_*`) + `service/DisplayVeilOverlay.kt` (View خام، `MATCH_PARENT`،
+  `NOT_TOUCHABLE|NOT_FOCUSABLE`، فشل `addView` يُسجَّل بالاسم) + ربطها في `GamePanelService` بدورة حياة
+  التصويب نفسها (ensureRunning/reconcile/الحقول/مستمع `game_veil_`/onCreate/onDestroy/poll/
+  `syncVeil`/`cycleVeil`، وبلا شرط `mode != Open` لأنها طبقة محيطة لا تُومض عند فتح اللوحة) +
+  مربّع في `GamePanelCockpit` (أيقونة `DarkMode`، نصّ النمط الحالي، وإعلان يطابق الدورة) + أربعة
+  نصوص en/ar + أربعة اختبارات JVM للدورة والشفافية والتمييز.
+
+**GATES (على الشجرة النهائية):** `kt_balance --assert` **3394 ملفًا · 0** · `code_health --assert`
+«صحّة نظيفة» · `i18n_coverage --assert` تطابق الأكواد الثلاثة و0 عوائق · `design_tokens --assert` 0 ·
+`resource_compile --assert` «كل مجلّدات الموارد تُترجم» · `git diff --check` نظيف. **BUILD:** لا بناء
+محلي (§0.10) — CI هو المُصرّف الوحيد.
+
+**CI TRUTH:** `4f234a24` = **`43485512209` فشل** (اختبار PID، أُصلح في `edd7679b`) · `be479caa` و
+`edd7679b` **غير مقروءَي الحكم عند كتابة هذا السطر** · آخر أخضر مقروء يبقى `b1bd970e` = `43461026684`.
+
+**RESIDUAL RISK:** سلوك التركيز ولوحة المفاتيح في نافذة `TYPE_APPLICATION_OVERLAY` **يحتاج جهازًا**؛
+ولون الستارة على مشهد ساطع لم يُقس؛ و`/proc/<pid>/io` ممنوع على عمليات الغير فيُعرض `—` لا صفرًا؛
+و320/360dp واللمس وRTL وTalkBack تبقى بحاجة جهاز المالك.
+
+**تصحيح مكتوب (ناسخ لسطر في تقرير المقارنة):** **تسجيل الشاشة موجود فعلًا** —
+`core/gamespace/PanelToggles.kt:315 object PanelScreenRecorder` يبدأ `screenrecord --time-limit 180`
+إلى `/sdcard/Movies/MaxManager/Max_*.mp4` بعلم `/data/local/tmp/.max_screenrec`، ويوقفه بـ`pkill -2`
++ مسح وسائط، وله مربّع في اللوحة يتحقّق بعد ١٤٠٠ مللي. **الناقص هو الألبوم** (عارض المقاطع داخل
+التطبيق) لا التسجيل. و`MediaProjection` ما يزال غير مستعمل. وحُذف من التقرير اسم «Hunt Mode» ومن معه:
+البند صار **ستارة عرض** (لون واحد شفّاف: دافئ/ليلي/تعتيم) ولا تدّعي مقابض تباين أو حِدّة لا تقدّمها.
