@@ -446,6 +446,14 @@
     <string name="lobby_career_delta_new">First week with recorded play</string>
     <string name="lobby_career_sessions">Recent sessions</string>
     <string name="lobby_career_sessions_note">Last three sessions from the ledger</string>
+    <string name="lobby_span_title">Ninety days</string>
+    <string name="lobby_span_note">Play recorded over the last %1$d days, from the stored ledger</string>
+    <string name="lobby_span_active">Active days</string>
+    <string name="lobby_span_active_value">%1$d of %2$d</string>
+    <string name="lobby_span_average">Average active day</string>
+    <string name="lobby_span_busiest">Busiest day</string>
+    <string name="lobby_span_busiest_value">%1$s · %2$s</string>
+    <string name="lobby_span_oldest">Ledger starts %1$s</string>
     <string name="lobby_career_bar">Day %1$d, %2$s</string>
     <string name="lobby_career_best">Longest session</string>
     <string name="lobby_career_best_value">%1$s in %2$s</string>

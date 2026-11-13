@@ -102,6 +102,10 @@ internal fun LobbyInsightsBody(
     val career = remember(stats, sessions, library, nowMs) {
         CareerLedger.build(stats, sessions, library, nowMs)
     }
+    // النافذة الطويلة تُحسب من السجلّ نفسه؛ فإن بلغ السجلّ سقفه قال البطاقة من أين يبدأ.
+    val span = remember(sessions, library, nowMs) {
+        CareerLedger.span(sessions, library, nowMs)
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -272,6 +276,70 @@ internal fun LobbyInsightsBody(
                     },
                     modifier = Modifier.weight(1f)
                 )
+            }
+        }
+
+        LobbySectionCard(title = stringResource(R.string.lobby_span_title)) {
+            Text(
+                text = stringResource(R.string.lobby_span_note, span.days),
+                color = LobbyPalette.Muted,
+                fontSize = 12.sp
+            )
+            if (span.totalMs <= 0L) {
+                Text(
+                    text = stringResource(R.string.lobby_insights_no_sessions),
+                    color = LobbyPalette.Muted,
+                    fontSize = 13.sp
+                )
+            } else {
+                Row(horizontalArrangement = Arrangement.spacedBy(MaxSpace.md)) {
+                    InsightTile(
+                        label = stringResource(R.string.lobby_span_active),
+                        value = stringResource(
+                            R.string.lobby_span_active_value,
+                            span.activeDays,
+                            span.days
+                        ),
+                        modifier = Modifier.weight(1f)
+                    )
+                    InsightTile(
+                        label = stringResource(R.string.lobby_span_average),
+                        value = lobbyPlayTimeText(span.averageActiveDayMs)
+                            ?: stringResource(R.string.lobby_insights_unknown),
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+                val locale = LocalConfiguration.current.locales[0]
+                val dayFormat = remember(locale) {
+                    DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(locale)
+                }
+                InsightTile(
+                    label = stringResource(R.string.lobby_span_busiest),
+                    value = span.busiest?.let { day ->
+                        stringResource(
+                            R.string.lobby_span_busiest_value,
+                            dayFormat.format(day.date),
+                            lobbyPlayTimeText(day.totalMs)
+                                ?: stringResource(R.string.lobby_insights_unknown)
+                        )
+                    } ?: stringResource(R.string.lobby_insights_unknown),
+                    modifier = Modifier.fillMaxWidth()
+                )
+                // السجلّ يحتفظ بآخر ٤٠٠ جلسة؛ فإن لم يغطِّ النافذة كلها يُقال من أين يبدأ لا أكثر.
+                span.oldestAtMs?.let { oldest ->
+                    Text(
+                        text = stringResource(
+                            R.string.lobby_span_oldest,
+                            dayFormat.format(
+                                Instant.ofEpochMilli(oldest)
+                                    .atZone(ZoneId.systemDefault())
+                                    .toLocalDate()
+                            )
+                        ),
+                        color = LobbyPalette.Muted,
+                        fontSize = 11.sp
+                    )
+                }
             }
         }
 
