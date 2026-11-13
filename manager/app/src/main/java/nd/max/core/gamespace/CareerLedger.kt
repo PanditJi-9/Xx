@@ -42,6 +42,8 @@ data class CareerStats(
     val gamesPlayed: Int,
     val streakDays: Int,
     val week: List<CareerDay>,
+    /** وقت اللعب في الأيام السبعة السابقة للأسبوع الحالي؛ مرجع المقارنة الصادق. */
+    val lastWeekMs: Long,
     val bestSessionMs: Long,
     val bestSessionPackage: String?,
     val nightSessions: Int,
@@ -92,6 +94,8 @@ object CareerLedger {
             }
         }.toMutableList()
         val weekIndex = week.withIndex().associate { it.value.date to it.index }
+        val todayEpoch = today?.toEpochDay()
+        var lastWeekMs = 0L
 
         var bestMs = 0L
         var bestPackage: String? = null
@@ -107,6 +111,12 @@ object CareerLedger {
             val start = Instant.ofEpochMilli(session.startedAtMs).atZone(zone)
             if (start.hour >= 22 || start.hour < 5) night += 1
             val day = Instant.ofEpochMilli(session.endedAtMs).atZone(zone).toLocalDate()
+            if (todayEpoch != null) {
+                val dayEpoch = day.toEpochDay()
+                if (dayEpoch in (todayEpoch - 13L)..(todayEpoch - 7L)) {
+                    lastWeekMs += session.durationMs
+                }
+            }
             val index = weekIndex[day] ?: continue
             week[index] = week[index].copy(totalMs = week[index].totalMs + session.durationMs)
         }
@@ -122,6 +132,7 @@ object CareerLedger {
             gamesPlayed = gamesPlayed,
             streakDays = streak,
             week = week,
+            lastWeekMs = lastWeekMs,
             bestSessionMs = bestMs,
             bestSessionPackage = bestPackage,
             nightSessions = night,

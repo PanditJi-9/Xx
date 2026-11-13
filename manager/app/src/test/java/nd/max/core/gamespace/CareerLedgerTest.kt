@@ -50,6 +50,7 @@ class CareerLedgerTest {
         assertEquals(LocalDate.parse("2026-11-07"), career.week.first().date)
         assertEquals(LocalDate.parse("2026-11-13"), career.week.last().date)
         assertTrue(career.week.all { it.totalMs == 0L })
+        assertEquals(0L, career.lastWeekMs)
         assertEquals(0L, career.bestSessionMs)
         assertNull(career.bestSessionPackage)
         assertEquals(0, career.nightSessions)
@@ -92,6 +93,22 @@ class CareerLedgerTest {
         assertEquals(0L, career.week.first { it.date == LocalDate.parse("2026-11-08") }.totalMs)
         assertEquals(2, career.week.count { it.totalMs > 0L })
         assertEquals(3_600_000L, career.bestSessionMs)
+    }
+
+    @Test
+    fun `previous week is the seven days before the current window`() {
+        val sessions = listOf(
+            session(alpha, "2026-11-06T10:00:00Z", "2026-11-06T11:00:00Z"),
+            session(alpha, "2026-10-31T10:00:00Z", "2026-10-31T11:00:00Z"),
+            session(alpha, "2026-10-30T10:00:00Z", "2026-10-30T11:00:00Z"),
+            session(alpha, "2026-11-07T10:00:00Z", "2026-11-07T11:00:00Z"),
+            session(alpha, "2026-11-13T10:00:00Z", "2026-11-13T11:00:00Z"),
+        )
+        val career = CareerLedger.build(emptyMap(), sessions, setOf(alpha), now, zone)
+
+        // ٦ و٣١ أكتوبر داخل الأسبوع السابق؛ ٣٠ أكتوبر خارجه؛ ٧ و١٣ نوفمبر في الحالي.
+        assertEquals(7_200_000L, career.lastWeekMs)
+        assertEquals(7_200_000L, career.week.sumOf { it.totalMs })
     }
 
     @Test

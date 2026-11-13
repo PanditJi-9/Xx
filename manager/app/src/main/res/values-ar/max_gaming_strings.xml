@@ -438,6 +438,10 @@
     <string name="lobby_nexus_empty_title">لا ألعاب في هذا العرض</string>
     <string name="lobby_career_week">هذا الأسبوع</string>
     <string name="lobby_career_week_note">وقت اللعب المسجّل يومًا بيوم، حتى اليوم</string>
+    <string name="lobby_career_delta_up">‎+%1$d٪ عن الأسبوع الماضي</string>
+    <string name="lobby_career_delta_down">‎-%1$d٪ عن الأسبوع الماضي</string>
+    <string name="lobby_career_delta_same">مثل الأسبوع الماضي</string>
+    <string name="lobby_career_delta_new">أول أسبوع فيه لعب مسجّل</string>
     <string name="lobby_career_bar">اليوم %1$d، %2$s</string>
     <string name="lobby_career_best">أطول جلسة</string>
     <string name="lobby_career_best_value">%1$s في %2$s</string>

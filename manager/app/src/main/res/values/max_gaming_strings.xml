@@ -439,6 +439,10 @@
     <string name="lobby_nexus_empty_title">No games in this view</string>
     <string name="lobby_career_week">This week</string>
     <string name="lobby_career_week_note">Recorded playtime by day, ending today</string>
+    <string name="lobby_career_delta_up">+%1$d%% vs last week</string>
+    <string name="lobby_career_delta_down">-%1$d%% vs last week</string>
+    <string name="lobby_career_delta_same">Same as last week</string>
+    <string name="lobby_career_delta_new">First week with recorded play</string>
     <string name="lobby_career_bar">Day %1$d, %2$s</string>
     <string name="lobby_career_best">Longest session</string>
     <string name="lobby_career_best_value">%1$s in %2$s</string>

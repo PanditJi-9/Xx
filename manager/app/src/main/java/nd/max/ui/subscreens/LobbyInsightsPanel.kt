@@ -156,6 +156,30 @@ internal fun LobbyInsightsBody(
                 color = LobbyPalette.Muted,
                 fontSize = 12.sp
             )
+            val weekMs = career.week.sumOf { it.totalMs }
+            if (weekMs > 0L || career.lastWeekMs > 0L) {
+                val delta = when {
+                    career.lastWeekMs <= 0L ->
+                        stringResource(R.string.lobby_career_delta_new) to LobbyPalette.Positive
+                    else -> {
+                        val pct = ((weekMs - career.lastWeekMs) * 100L / career.lastWeekMs).toInt()
+                        when {
+                            pct > 0 -> stringResource(R.string.lobby_career_delta_up, pct) to
+                                LobbyPalette.Positive
+                            pct < 0 -> stringResource(R.string.lobby_career_delta_down, -pct) to
+                                LobbyPalette.Muted
+                            else -> stringResource(R.string.lobby_career_delta_same) to
+                                LobbyPalette.Muted
+                        }
+                    }
+                }
+                Text(
+                    text = delta.first,
+                    color = delta.second,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Medium
+                )
+            }
             val peak = career.week.maxOfOrNull { it.totalMs } ?: 0L
             val today = career.week.lastOrNull()?.date
             val labels = career.week.map { day ->
