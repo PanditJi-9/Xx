@@ -224,17 +224,22 @@ internal fun LobbyInsightsBody(
  *
  * مصدر واحد للمعنى نفسه: المسرح وبطاقة «استكشف» يقرآن هذا السطر، فلا يظهر الرقم بصيغتين.
  */
+/** عمر آخر جلسة كنصّ مترجم؛ `null` يعني «لا جلسة مسجّلة» فلا تُعرض «الآن». */
 @Composable
-internal fun lobbyPlayLine(stats: GamePlayStats?): String? {
+internal fun lobbyPlayAgeText(stats: GamePlayStats?): String? {
     if (stats == null) return null
-    val age = PlaySessionLedger.playAge(System.currentTimeMillis(), stats.lastPlayedAtMs)
-    val lastPlayed = when (age) {
+    return when (val age = PlaySessionLedger.playAge(System.currentTimeMillis(), stats.lastPlayedAtMs)) {
         PlayAge.None -> null
         is PlayAge.Minutes -> stringResource(R.string.lobby_stats_last_minutes, age.minutes)
         is PlayAge.Hours -> stringResource(R.string.lobby_stats_last_hours, age.hours)
         PlayAge.Yesterday -> stringResource(R.string.lobby_stats_last_yesterday)
         is PlayAge.Days -> stringResource(R.string.lobby_stats_last_days, age.days)
     }
+}
+
+internal fun lobbyPlayLine(stats: GamePlayStats?): String? {
+    if (stats == null) return null
+    val lastPlayed = lobbyPlayAgeText(stats)
     val played = lobbyPlayTimeText(stats.totalMs)
     return listOfNotNull(lastPlayed, played).takeIf { it.isNotEmpty() }?.joinToString(" · ")
 }

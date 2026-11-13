@@ -430,4 +430,10 @@
     <string name="lobby_insights_recent_todo">Not played in 7 days</string>
     <string name="lobby_insights_scope">Playtime is built only from sessions the side panel service saw. It is not a system screen-time report.</string>
     <string name="lobby_insights_unknown">—</string>
+    <string name="lobby_nexus_now">Selected game</string>
+    <string name="lobby_nexus_streak">Day streak</string>
+    <string name="lobby_nexus_ready">Launch setup</string>
+    <string name="lobby_nexus_last_played">Last played</string>
+    <string name="lobby_nexus_installed">Installed</string>
+    <string name="lobby_nexus_empty_title">No games in this view</string>
 </resources>

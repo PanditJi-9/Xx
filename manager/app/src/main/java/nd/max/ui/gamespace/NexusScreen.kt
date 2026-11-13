@@ -82,8 +82,7 @@ data class NexusCopy(
     val installedLabel: String,
     val emptyTitle: String,
     val emptyBody: String,
-    val emptyAction: String,
-    val libraryLabel: String
+    val emptyAction: String
 )
 
 @Immutable
@@ -116,7 +115,6 @@ fun NexusScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .statusBarsPadding()
                 .padding(horizontal = MaxSpace.gutter, vertical = MaxSpace.lg)
         ) {
             NexusHeader(copy = copy, totalPlaytime = model.totalPlaytime)
