@@ -563,6 +563,11 @@ fun GameLobbyScreen(
                                     launchSingleTop = true
                                 }
                             },
+                            onOpenClips = {
+                                navController.navigate(MaxDestination.ClipAlbum.route) {
+                                    launchSingleTop = true
+                                }
+                            },
                             onOpenGame = { pkg ->
                                 closeControl()
                                 selectGame(pkg)

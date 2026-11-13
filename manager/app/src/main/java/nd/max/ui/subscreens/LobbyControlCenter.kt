@@ -170,6 +170,7 @@ private val SidebarCompactHeight = 420.dp
  * @param tweaks عدد مقابض الملفّ المضبوطة لكل حزمة، من `AppConfig` نفسه.
  * @param armed الحزم التي فُعّلت لها اللوحة الجانبية.
  * @param onOpenHistory يفتح سجلّ الجلسات من بند التهيئة.
+ * @param onOpenClips يفتح ألبوم المقاطع التي سجّلها المسجّل.
  * @param onOpenGame يختار لعبة من قائمة «الأكثر لعبًا» ويُعيد المسرح إليها.
  * @param onPrefs يستلم دالّة تحوّل الخيارات الحاليّة إلى الجديدة فلا تضيع تغييرات متتابعة.
  * @param accent لون اللعبة (أو العلامة) لتمييز القسم المختار.
@@ -192,6 +193,7 @@ internal fun LobbyControlCenter(
     onUpdate: (String, String) -> Unit,
     onOpenFull: () -> Unit,
     onOpenHistory: () -> Unit,
+    onOpenClips: () -> Unit,
     onOpenGame: (String) -> Unit,
     prefs: LobbyPrefsState,
     onPrefs: ((LobbyPrefsState) -> LobbyPrefsState) -> Unit,
@@ -249,6 +251,7 @@ internal fun LobbyControlCenter(
                         onSection = onSection,
                         onPanelEnabled = onPanelEnabled,
                         onOpenHistory = onOpenHistory,
+                        onOpenClips = onOpenClips,
                         onOpenGame = onOpenGame
                     )
                     LobbySection.Game -> GameBody(app, config, onUpdate, onOpenFull)

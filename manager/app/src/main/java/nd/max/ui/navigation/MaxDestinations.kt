@@ -255,6 +255,13 @@ sealed class MaxDestination(
     data object GameSessions : MaxDestination("gamesessions", R.string.game_sessions_title, Icons.Rounded.History, Control)
 
     /**
+     * **ألبوم المقاطع — مرآة ما سجّله المسجّل.**
+     *
+     * وجاره `GameSessions` في المكان نفسه ولنفس السبب: سطحٌ يقرأ ما كتبه تراكب، لا لعبة تُشغَّل.
+     */
+    data object ClipAlbum : MaxDestination("clipalbum", R.string.clip_album_title, Icons.Rounded.VideoLibrary, Control)
+
+    /**
      * الجزيرة الديناميكية — تراكبٌ حيّ يجمع الإشعارات العابرة والوسائط والشحن والمؤشرات في
      * كبسولة واحدة (`DYNAMIC-ISLAND-01`).
      *
@@ -467,6 +474,7 @@ sealed class MaxDestination(
                 CpuCoreControl, GovernorSettings, PreferenceTweaks, GpuStudio,
                 ZramManager, MemoryUfs, DisplayStudio, Resolution, TouchBoost, FpsGo, Fas, FpsOverlay,
                 GameSessions,
+                ClipAlbum,
                 DynamicIsland,
                 ThermalDetail, Charging, BypassCharging, BypassChargingCheck, DozeMode,
                 Dex2oat, StorageDetail, StorageCare, NetworkScheduler, NetworkDetail,

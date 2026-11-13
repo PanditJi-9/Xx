@@ -1680,6 +1680,24 @@
 
     <!-- جلسات اللعب: سطح التسجيل والسجلّ -->
     <string name="game_sessions_title">جلسات اللعب</string>
+    <string name="clip_album_title">ألبوم المقاطع</string>
+    <string name="clip_album_lobby_hint">تظهر هنا المقاطع التي تسجّلها من لوحة اللعب.</string>
+    <string name="clip_album_lobby_open">افتح ألبوم المقاطع</string>
+    <string name="clip_album_loading_title">جارٍ قراءة المقاطع</string>
+    <string name="clip_album_loading_hint">يُبحث الآن عن المقاطع في مجلّد المسجّل.</string>
+    <string name="clip_album_permission_title">الألبوم يحتاج إذن الفيديو</string>
+    <string name="clip_album_permission_hint">بدونه لا يستطيع التطبيق عرض ما سجّلته. يُقرأ مجلّد المسجّل وحده.</string>
+    <string name="clip_album_permission_grant">اسمح بالوصول</string>
+    <string name="clip_album_unreadable_title">المعرّض لم يجب</string>
+    <string name="clip_album_unreadable_hint">قد تكون المقاطع موجودة؛ القراءة وحدها فشلت. إعادة المحاولة تسأل معرّض الوسائط مرّة أخرى.</string>
+    <string name="clip_album_empty_title">لا مقاطع بعد</string>
+    <string name="clip_album_empty_hint">ابدأ تسجيلًا من لوحة اللعب وسيظهر هنا.</string>
+    <string name="clip_album_meta">%1$s · %2$s</string>
+    <string name="clip_album_play_failed">لا تطبيق يشغّل هذا المقطع</string>
+    <string name="clip_album_share_title">شارك المقطع</string>
+    <string name="clip_album_share_cd">شارك المقطع</string>
+    <string name="clip_album_delete_cd">احذف المقطع</string>
+    <string name="clip_album_delete_failed">تعذّر حذف المقطع</string>
     <string name="game_sessions_subtitle">معدّل الإطارات والطاقة والحرارة والتقطيع والمدّة — تُسجَّل حيًّا وتبقى بعد إغلاق اللوحة.</string>
     <string name="game_sessions_live_title">الجلسة الحيّة</string>
     <string name="game_sessions_live_desc">المسجّل نفسه الذي يعمل فوق اللعبة. البدء من هنا يسمّي الجلسة من التطبيق الأمامي.</string>

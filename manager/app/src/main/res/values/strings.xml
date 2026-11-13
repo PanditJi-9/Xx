@@ -736,6 +736,24 @@
 
     <!-- جلسات اللعب: سطح التسجيل والسجلّ -->
     <string name="game_sessions_title">Game sessions</string>
+    <string name="clip_album_title">Clip album</string>
+    <string name="clip_album_lobby_hint">The clips you record from the game panel appear here.</string>
+    <string name="clip_album_lobby_open">Open the clip album</string>
+    <string name="clip_album_loading_title">Reading clips</string>
+    <string name="clip_album_loading_hint">Looking for the clips in the recorder folder now.</string>
+    <string name="clip_album_permission_title">The album needs video access</string>
+    <string name="clip_album_permission_hint">Without it the app cannot list what you recorded. Only the recorder folder is read.</string>
+    <string name="clip_album_permission_grant">Allow access</string>
+    <string name="clip_album_unreadable_title">The gallery did not answer</string>
+    <string name="clip_album_unreadable_hint">The clips may still exist; only the listing failed. Retry asks the media store again.</string>
+    <string name="clip_album_empty_title">No clips yet</string>
+    <string name="clip_album_empty_hint">Start a recording from the game panel and it will appear here.</string>
+    <string name="clip_album_meta">%1$s · %2$s</string>
+    <string name="clip_album_play_failed">No app could play this clip</string>
+    <string name="clip_album_share_title">Share clip</string>
+    <string name="clip_album_share_cd">Share clip</string>
+    <string name="clip_album_delete_cd">Delete clip</string>
+    <string name="clip_album_delete_failed">Could not delete the clip</string>
     <string name="game_sessions_subtitle">Frame rate, power, heat, jank, and duration — recorded live and kept after the panel closes.</string>
     <string name="game_sessions_live_title">Live session</string>
     <string name="game_sessions_live_desc">The same recorder the overlay uses. Starting here names the session from the foreground app.</string>

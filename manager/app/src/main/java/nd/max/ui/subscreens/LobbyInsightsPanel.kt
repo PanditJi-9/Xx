@@ -92,6 +92,7 @@ internal fun LobbyInsightsBody(
     onSection: (LobbySection) -> Unit,
     onPanelEnabled: (Boolean) -> Unit,
     onOpenHistory: () -> Unit,
+    onOpenClips: () -> Unit,
     onOpenGame: (String) -> Unit,
 ) {
     val nowMs = remember { System.currentTimeMillis() }
@@ -396,6 +397,29 @@ internal fun LobbyInsightsBody(
                         )
                     }
                 }
+            }
+        }
+
+        LobbySectionCard(title = stringResource(R.string.clip_album_title)) {
+            Text(
+                text = stringResource(R.string.clip_album_lobby_hint),
+                color = LobbyPalette.Muted,
+                fontSize = 12.sp
+            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = MaxSize.minTouchTarget)
+                    .clickable(onClick = onOpenClips)
+                    .padding(vertical = MaxSpace.xs),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = stringResource(R.string.clip_album_lobby_open),
+                    color = accent,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium
+                )
             }
         }
 

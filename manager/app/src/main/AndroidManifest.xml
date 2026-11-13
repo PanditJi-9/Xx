@@ -17,6 +17,8 @@
         tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <!-- ألبوم المقاطع يقرأ فيديوهات مجلّد المسجّل وحده؛ على ٣٣+ لا يغطّي إذن الصور الفيديو. -->
+    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
     <!--
       قراءة حالة Wi-Fi وبيانات الجوال **حيّةً** في لوحة Game Turbo (`PanelToggles`):
