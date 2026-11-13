@@ -10,6 +10,7 @@ import android.os.SystemClock
 import android.content.res.Resources
 import android.media.AudioManager
 import android.provider.Settings
+import nd.max.core.platform.ThermalUtil
 import nd.max.core.privilege.PrivilegeManager
 import nd.max.core.privilege.ExecutionModeStore
 import nd.max.core.privilege.PrivilegeLevel
@@ -79,7 +80,10 @@ class PanelDevice(context: Context) {
         val status = intent?.getIntExtra(BatteryManager.EXTRA_STATUS, -1) ?: -1
         val charging = status == BatteryManager.BATTERY_STATUS_CHARGING || status == BatteryManager.BATTERY_STATUS_FULL
         val pct = if (level >= 0 && scale > 0) "${level * 100 / scale}%" else "--"
-        return "$time · $pct" + (if (charging) " ⚡" else "") + " · " + CockpitModel.speedText(netBytesPerSecond())
+        val temp = batteryTempC()
+        return "$time · $pct" + (if (charging) " ⚡" else "") +
+            (if (temp != null) " · $temp°" else "") +
+            " · " + CockpitModel.speedText(netBytesPerSecond())
     }
     /** الحالة مفكّكة الحقول لكبسولات اللوحة (الوقت/البطارية/سرعة الشبكة). */
     fun status(): PanelStatus {
@@ -90,9 +94,19 @@ class PanelDevice(context: Context) {
         val state = intent?.getIntExtra(BatteryManager.EXTRA_STATUS, -1) ?: -1
         val charging = state == BatteryManager.BATTERY_STATUS_CHARGING || state == BatteryManager.BATTERY_STATUS_FULL
         val pct = if (level >= 0 && scale > 0) level * 100 / scale else null
-        return PanelStatus(time, pct, charging, netBytesPerSecond())
+        return PanelStatus(time, pct, charging, netBytesPerSecond(), batteryTempC())
     }
 
+
+
+    /**
+     * حرارة البطارية بالدرجات، أو `null` إن لم تُقرأ. لا صفر ولا تقدير: بعض الشركات تحجب
+     * القيمة، والمقياس المشكوك فيه يُترك فارغًا بدل أن يُعرض رقم كاذب.
+     */
+    private fun batteryTempC(): Int? {
+        val c = runCatching { ThermalUtil.readBatteryTemperatureC(app) }.getOrNull() ?: return null
+        return if (c.isFinite() && c > 0f && c < 120f) c.toInt() else null
+    }
 
     /** الذاكرة المتاحة (MB) من `MemAvailable` — قراءة بلا جذر. */
     fun availMb(): Int = runCatching {
@@ -162,4 +176,11 @@ class PanelDevice(context: Context) {
 }
 
 /** لقطة الحالة العامة: `batteryPct` غائب = غير معروف، و`netBytes < 0` = العدّاد غير مدعوم. */
-data class PanelStatus(val time: String, val batteryPct: Int?, val charging: Boolean, val netBytes: Long)
+data class PanelStatus(
+    val time: String,
+    val batteryPct: Int?,
+    val charging: Boolean,
+    val netBytes: Long,
+    /** حرارة البطارية بالدرجات؛ `null` = غير مقروءة على هذا الجهاز. */
+    val batteryTempC: Int? = null
+)
