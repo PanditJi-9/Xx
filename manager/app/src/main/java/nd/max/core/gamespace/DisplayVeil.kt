@@ -68,7 +68,9 @@ data class DisplayVeilState(
      */
     fun cycle(): DisplayVeilState = when {
         !enabled -> copy(enabled = true, tone = DisplayVeilTone.WARM)
-        tone.next() == DisplayVeilTone.WARM -> copy(enabled = false)
+        // الإطفاء يعيد اللون إلى نقطة البداية: بقاؤه `DIM` يجعل اللمسة التالية تبدأ من
+        // «التعتيم» لا من «الدافئة»، والدورة المنشورة في الواجهة تصير كذبًا.
+        tone.next() == DisplayVeilTone.WARM -> copy(enabled = false, tone = DisplayVeilTone.WARM)
         else -> copy(tone = tone.next())
     }
 }

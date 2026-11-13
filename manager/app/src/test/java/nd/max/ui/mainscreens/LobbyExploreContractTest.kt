@@ -88,10 +88,13 @@ class LobbyExploreContractTest {
         assumeTrue("Cannot locate nd.max sources; guard not evaluated", root != null)
         val text = lobby()
 
+        // بوابة على **باب الجلسات** وحده، لا على كل باب single-top في الملف: ألبوم المقاطع
+        // صار له باب رابع مشروع، وعدّه هنا كان يجعل إضافة شاشةٍ جديدة تُسقط عقد الجلسات.
         assertEquals(
             "The lobby must open the sessions log single-top from the top bar, Insights and the palette",
             3,
-            Regex("launchSingleTop = true").findAll(text).count()
+            Regex("navigate\\(MaxDestination\\.GameSessions\\.route\\)\\s*\\{\\s*launchSingleTop = true")
+                .findAll(text).count()
         )
     }
 

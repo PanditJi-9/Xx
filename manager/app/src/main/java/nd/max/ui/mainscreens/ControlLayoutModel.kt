@@ -76,6 +76,9 @@ data class ControlGroupSpec(
 val ControlToolDestinations: List<MaxDestination> = listOf(
     MaxDestination.FpsOverlay,
     MaxDestination.GameSessions,
+    // ألبوم المقاطع جارة سجلّ الجلسات: كلاهما يقرأ ما أنتجه تسجيل اللعبة، وطلب القارئ
+    // «أين المقاطع؟» يأتي من الشاشة نفسها التي يرى فيها الجلسات.
+    MaxDestination.ClipAlbum,
     MaxDestination.DynamicIsland,
     MaxDestination.SetEdit,
     MaxDestination.ActivityLauncher,
@@ -171,6 +174,7 @@ private val ControlToolBands: List<Pair<Int, List<MaxDestination>>> = listOf(
     R.string.control_tools_live to listOf(
         MaxDestination.FpsOverlay,
         MaxDestination.GameSessions,
+        MaxDestination.ClipAlbum,
         MaxDestination.DynamicIsland,
     ),
     R.string.control_tools_advanced to listOf(

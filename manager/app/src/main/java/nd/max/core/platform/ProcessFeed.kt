@@ -330,13 +330,18 @@ object ProcessFeed {
                 }
             }
             .filter { reading ->
-                needle.isEmpty() ||
+                // رقم خالص يُقرأ **معرّف عملية**: يُطابق المعرّف كاملًا، والاسم كجزء.
+                // ولا يُطابق حزمةً جزئيًّا، وإلّا فبحث «123» عن العملية 123 يجلب كل حزمة
+                // تحمل `123` في اسمها (`com.example.app1234`)، وهو عكس قصد من كتب الرقم.
+                if (needle.isEmpty()) {
+                    true
+                } else if (needle.all { it.isDigit() }) {
+                    reading.pid.toString() == needle ||
+                        reading.label.contains(needle, ignoreCase = true)
+                } else {
                     reading.label.contains(needle, ignoreCase = true) ||
-                    reading.packageName.contains(needle, ignoreCase = true) ||
-                    // رقم خالص يُطابق المعرّف أيضًا، فلا يبحث القارئ في اسمٍ لا يعرفه.
-                    // المعرّف يُطابق **كاملًا** لا جزئيًّا: البحث بـ`1` عن `1234` يجعل كل
-                    // صفّ نتيجة، وهو عكس ما يريده من كتب رقم عملية بعينها.
-                    (needle.all { it.isDigit() } && reading.pid.toString() == needle)
+                        reading.packageName.contains(needle, ignoreCase = true)
+                }
             }
             .sortedWith(ordered)
             .take(limit.coerceAtLeast(0))

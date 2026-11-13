@@ -7,6 +7,11 @@
 
 package nd.max.ui.component
 
+import android.content.Context
+import android.content.Intent
+import android.hardware.Sensor
+import android.hardware.SensorManager
+import android.provider.Settings
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
@@ -151,6 +156,11 @@ import nd.max.core.platform.HudField
 import nd.max.core.platform.HudReading
 import nd.max.core.platform.HudTally
 import nd.max.ui.util.CaptureConsentPrefs
+import nd.max.ui.util.GyroAimPrefs
+import nd.max.ui.util.InjectionConsentPrefs
+import nd.max.ui.util.ShoulderPadPrefs
+import nd.max.core.input.A11yGestureInjector
+import nd.max.core.input.GyroAimMath
 import nd.max.ui.design.MAX_VALUE_UNAVAILABLE
 import nd.max.ui.design.MaxDuration
 import nd.max.ui.design.MaxRadius
@@ -291,6 +301,17 @@ fun GamePanelCockpit(
     var memo by remember { mutableStateOf(GameMemoPrefs.load(context)) }
     var memoOpen by remember { mutableStateOf(false) }
     var memoDraft by remember { mutableStateOf("") }
+    // حقن اللمس: الحالة تعرض المخزَّن نفسه؛ والإقرار يُقرأ من متجره لا يُخمَّن.
+    var injectionAck by remember { mutableStateOf(InjectionConsentPrefs.acknowledged(context)) }
+    var laneReady by remember { mutableStateOf(A11yGestureInjector.available) }
+    var padsOpen by remember { mutableStateOf(false) }
+    var shoulderOn by remember { mutableStateOf(ShoulderPadPrefs.load(context).enabled) }
+    var gyroOpen by remember { mutableStateOf(false) }
+    var gyro by remember { mutableStateOf(GyroAimPrefs.load(context)) }
+    val gyroPresent = remember {
+        val manager = context.getSystemService(Context.SENSOR_SERVICE) as? SensorManager
+        manager?.getDefaultSensor(Sensor.TYPE_GYROSCOPE) != null
+    }
     var optimizing by remember { mutableStateOf(false) }
     var listView by remember { mutableStateOf(true) }
     var details by remember { mutableStateOf(false) }
@@ -370,6 +391,32 @@ fun GamePanelCockpit(
     val memoHide = stringResource(R.string.game_panel_memo_hide)
     val msgMemoSaved = stringResource(R.string.game_panel_memo_saved)
     val msgMemoOff = stringResource(R.string.game_panel_memo_off)
+    val lShoulder = stringResource(R.string.game_panel_tool_shoulder)
+    val shoulderTitle = stringResource(R.string.game_panel_shoulder_title)
+    val shoulderHint = stringResource(R.string.game_panel_shoulder_hint)
+    val shoulderEnable = stringResource(R.string.game_panel_shoulder_enable)
+    val lGyro = stringResource(R.string.game_panel_tool_gyro)
+    val gyroTitle = stringResource(R.string.game_panel_gyro_title)
+    val gyroHint = stringResource(R.string.game_panel_gyro_hint)
+    val gyroEnable = stringResource(R.string.game_panel_gyro_enable)
+    val gyroSensitivityFmt = stringResource(R.string.game_panel_gyro_sensitivity)
+    val gyroDeadZoneFmt = stringResource(R.string.game_panel_gyro_deadzone)
+    val gyroPlus = stringResource(R.string.game_panel_gyro_plus)
+    val gyroMinus = stringResource(R.string.game_panel_gyro_minus)
+    val gyroUnavailable = stringResource(R.string.game_panel_gyro_unavailable)
+    val injectionWarning = stringResource(R.string.game_panel_injection_warning)
+    val injectionAckLabel = stringResource(R.string.game_panel_injection_ack)
+    val laneReadyText = stringResource(R.string.game_panel_injection_lane_ready)
+    val laneMissingText = stringResource(R.string.game_panel_injection_lane_missing)
+    val openAccessibility = stringResource(R.string.game_panel_injection_open_settings)
+    val guardUnknownText = stringResource(R.string.game_panel_injection_guard_unknown)
+    val injectionDisable = stringResource(R.string.game_panel_injection_disable)
+    // availability يحتاج استدعاء صلاحية: يُقاس عند فتح الحوار فقط، لا مع كل إعادة رسم.
+    LaunchedEffect(padsOpen, gyroOpen) {
+        if (padsOpen || gyroOpen) {
+            laneReady = withContext(Dispatchers.IO) { InjectionConsentPrefs.laneAvailable(context) }
+        }
+    }
     val keyboard = LocalSoftwareKeyboardController.current
     val memoFocus = remember { FocusRequester() }
     // نافذة اللوحة غير قابلة للتركيز، فلا تظهر لوحة مفاتيح. تُرفع مع الحقل وتُعاد مع إغلاقه،
@@ -837,6 +884,21 @@ fun GamePanelCockpit(
                 memoDraft = memo.text
                 memoOpen = true
             }))
+            // زرّا الكتف: يفتحان الحوار ولا يظهران بلا إقرار ومسار حقن (يُقال ذلك في الحوار نفسه).
+            add(CubeTileSpec(Icons.Rounded.SportsEsports, null, lShoulder, shoulderOn, onClick = {
+                hold()
+                injectionAck = InjectionConsentPrefs.acknowledged(context)
+                shoulderOn = ShoulderPadPrefs.load(context).enabled
+                laneReady = A11yGestureInjector.available
+                padsOpen = true
+            }))
+            add(CubeTileSpec(Icons.Rounded.ScreenRotation, null, lGyro, gyro.enabled, onClick = {
+                hold()
+                injectionAck = InjectionConsentPrefs.acknowledged(context)
+                gyro = GyroAimPrefs.load(context)
+                laneReady = A11yGestureInjector.available
+                gyroOpen = true
+            }))
             add(CubeTileSpec(Icons.Rounded.PowerSettingsNew, null, lClose, false, onClick = { leave(onClose) }))
         }
 
@@ -1068,6 +1130,111 @@ fun GamePanelCockpit(
                         say(if (memo.visible) msgMemoSaved else msgMemoOff)
                         memoOpen = false
                     })
+                }
+            }
+        }
+
+        // زرّا الكتف: إقرار مرة واحدة، ثم شرط مسار فعليّ، ثم تشغيل. والموضع يُسحب على اللعبة نفسها.
+        if (padsOpen) {
+            CubeModal(title = shoulderTitle, tint = tint, onDismiss = { padsOpen = false }) {
+                Text(injectionWarning, color = CubeDim, fontSize = 12.sp)
+                if (!injectionAck) {
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs, Alignment.End)) {
+                        CubeModalAction(stringResource(R.string.cancel), CubeDim, onClick = { padsOpen = false })
+                        CubeModalAction(injectionAckLabel, ModeGreen, onClick = {
+                            InjectionConsentPrefs.acknowledge(context)
+                            injectionAck = true
+                        })
+                    }
+                } else {
+                    Text(shoulderHint, color = CubeDim, fontSize = 12.sp)
+                    Text(
+                        if (laneReady) laneReadyText else laneMissingText,
+                        color = if (laneReady) ModeGreen else ModeAmber,
+                        fontSize = 12.sp,
+                    )
+                    Text(guardUnknownText, color = CubeDim, fontSize = 11.sp)
+                    if (!laneReady) {
+                        CubeModalAction(openAccessibility, ModeAuto, onClick = {
+                            runCatching {
+                                context.startActivity(
+                                    Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+                                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                )
+                            }
+                        })
+                    }
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs, Alignment.End)) {
+                        CubeModalAction(stringResource(R.string.cancel), CubeDim, onClick = { padsOpen = false })
+                        CubeModalAction(
+                            if (shoulderOn) injectionDisable else shoulderEnable,
+                            if (shoulderOn) ModeAmber else ModeGreen,
+                        ) {
+                            shoulderOn = !shoulderOn
+                            ShoulderPadPrefs.setEnabled(context, shoulderOn)
+                            padsOpen = false
+                        }
+                    }
+                }
+            }
+        }
+
+        // التصويب الجيروسكوبيّ: نفس الإقرار ونفس شرط المسار؛ والمعايرة خطوتان صريحتان.
+        if (gyroOpen) {
+            CubeModal(title = gyroTitle, tint = tint, onDismiss = { gyroOpen = false }) {
+                Text(injectionWarning, color = CubeDim, fontSize = 12.sp)
+                if (!injectionAck) {
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs, Alignment.End)) {
+                        CubeModalAction(stringResource(R.string.cancel), CubeDim, onClick = { gyroOpen = false })
+                        CubeModalAction(injectionAckLabel, ModeGreen, onClick = {
+                            InjectionConsentPrefs.acknowledge(context)
+                            injectionAck = true
+                        })
+                    }
+                } else {
+                    Text(gyroHint, color = CubeDim, fontSize = 12.sp)
+                    Text(
+                        if (laneReady) laneReadyText else laneMissingText,
+                        color = if (laneReady) ModeGreen else ModeAmber,
+                        fontSize = 12.sp,
+                    )
+                    if (!gyroPresent) {
+                        Text(gyroUnavailable, color = ModeAmber, fontSize = 12.sp)
+                    } else {
+                        Text(String.format(gyroSensitivityFmt, gyro.sensitivity), color = CubeInk, fontSize = 13.sp)
+                        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs)) {
+                            CubeModalAction(gyroMinus, CubeDim, onClick = {
+                                gyro = gyro.copy(sensitivity = GyroAimMath.sensitivityAfter(gyro.sensitivity, -0.25f))
+                                GyroAimPrefs.save(context, gyro)
+                            })
+                            CubeModalAction(gyroPlus, CubeDim, onClick = {
+                                gyro = gyro.copy(sensitivity = GyroAimMath.sensitivityAfter(gyro.sensitivity, 0.25f))
+                                GyroAimPrefs.save(context, gyro)
+                            })
+                        }
+                        Text(String.format(gyroDeadZoneFmt, gyro.deadZone), color = CubeInk, fontSize = 13.sp)
+                        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs)) {
+                            CubeModalAction(gyroMinus, CubeDim, onClick = {
+                                gyro = gyro.copy(deadZone = GyroAimMath.deadZoneAfter(gyro.deadZone, -0.5f))
+                                GyroAimPrefs.save(context, gyro)
+                            })
+                            CubeModalAction(gyroPlus, CubeDim, onClick = {
+                                gyro = gyro.copy(deadZone = GyroAimMath.deadZoneAfter(gyro.deadZone, 0.5f))
+                                GyroAimPrefs.save(context, gyro)
+                            })
+                        }
+                    }
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs, Alignment.End)) {
+                        CubeModalAction(stringResource(R.string.cancel), CubeDim, onClick = { gyroOpen = false })
+                        CubeModalAction(
+                            if (gyro.enabled) injectionDisable else gyroEnable,
+                            if (gyro.enabled) ModeAmber else ModeGreen,
+                        ) {
+                            gyro = gyro.copy(enabled = !gyro.enabled)
+                            GyroAimPrefs.save(context, gyro)
+                            gyroOpen = false
+                        }
+                    }
                 }
             }
         }

@@ -3514,7 +3514,7 @@
     <string name="home_note_counter">%1$d / %2$d</string>
     <string name="fps_overlay_intro">نافذة صغيرة قابلة للسحب تعرض إحصاءات الأداء المباشرة فوق أي تطبيق. اسحبها إلى أي مكان على الشاشة بعد تفعيلها.</string>
     <!-- ==== Islandify port (MIT, (c) 2026 bughunter11) — keys prefixed ify_ ==== -->
-    <string name="ify_a11y_description">تتيح رسم الجزيرة فوق شريط الحالة كي تستقبل اللمس هناك. لا يقرأ التطبيق محتوى شاشتك ولا يسجّله.</string>
+    <string name="ify_a11y_description">تتيح رسم الجزيرة فوق شريط الحالة وإرسال لمسات لوحة الألعاب التي تفعّلها (أزرار الكتف، التصويب الجيروسكوبيّ). لا يقرأ التطبيق محتوى شاشتك ولا يسجّله.</string>
     <string name="ify_tab_home">الرئيسية</string>
     <string name="ify_tab_activities">الأنشطة</string>
     <string name="ify_tab_customize">التخصيص</string>

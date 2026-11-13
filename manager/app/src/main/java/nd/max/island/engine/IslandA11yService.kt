@@ -6,6 +6,7 @@
 package nd.max.island.engine
 
 import nd.max.island.core.IslandSettings
+import nd.max.core.input.A11yGestureInjector
 import android.accessibilityservice.AccessibilityService
 import android.content.Intent
 import android.view.WindowManager
@@ -35,6 +36,7 @@ class IslandA11yService : AccessibilityService() {
         super.onServiceConnected()
         IslandSettings.init(this)
         IslandController.attach(this)
+        A11yGestureInjector.attach(this)
 
         val o = IslandOverlay(this, WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY)
         val s = CoroutineScope(SupervisorJob() + Dispatchers.Main)
@@ -64,6 +66,7 @@ class IslandA11yService : AccessibilityService() {
 
     private fun teardown() {
         connected.value = false
+        A11yGestureInjector.detach(this)
         scope?.cancel()
         scope = null
         overlay?.hide()

@@ -13,6 +13,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.provider.Settings
+import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -61,6 +62,11 @@ import nd.max.core.gamespace.PanelLifetime
 import nd.max.core.gamespace.CrosshairState
 import nd.max.core.gamespace.DisplayVeilState
 import nd.max.core.gamespace.GameMemo
+import nd.max.core.input.GyroAimController
+import nd.max.core.input.InjectionOutcome
+import nd.max.core.input.InjectionRefusal
+import nd.max.core.input.PadSide
+import nd.max.core.input.TouchInjector
 import nd.max.core.gamespace.gameLibrary
 import nd.max.core.gamespace.nextRefreshRate
 import nd.max.core.gamespace.panelPlacement
@@ -92,6 +98,9 @@ import nd.max.ui.util.DisplayVeilPrefs
 import nd.max.ui.util.FpsOverlayPrefs
 import nd.max.ui.util.GamePanelPrefs
 import nd.max.ui.util.GameMemoPrefs
+import nd.max.ui.util.GyroAimPrefs
+import nd.max.ui.util.InjectionConsentPrefs
+import nd.max.ui.util.ShoulderPadPrefs
 
 /**
  * لوحة مساحة الألعاب الجانبية — **قيادة فقط، والقراءة والكتابة ليست هنا**.
@@ -205,6 +214,11 @@ class GamePanelService : LifecycleService() {
     private var veilOverlay: DisplayVeilOverlay? = null
     /** المذكّرة المثبّتة: سطر واحد يبقى فوق اللعبة المتتبَّعة، لا ينبّه ولا يعدّ وقتًا. */
     private var memoOverlay: GameMemoOverlay? = null
+    /** زرّا الكتف: نافذتان صغيرتان تحقنان اللمسة في مركزهما على اللعبة تحتهما. */
+    private var padsOverlay: ShoulderPadOverlay? = null
+    /** مساعد التصويب الجيروسكوبيّ — يعمل فقط واللعبة متتبَّعة والميزة مفعّلة ومُقرّة. */
+    private var gyroController: GyroAimController? = null
+    private var gyroRunning = false
     private val mainHandler = android.os.Handler(android.os.Looper.getMainLooper())
     private var library: Set<String> = emptySet()
 
@@ -496,6 +510,10 @@ class GamePanelService : LifecycleService() {
         veilOverlay = null
         memoOverlay?.destroy()
         memoOverlay = null
+        padsOverlay?.destroy()
+        padsOverlay = null
+        gyroController?.destroy()
+        gyroController = null
         recordOpenSessionOnDestroy()
         isRunning = false
         super.onDestroy()
@@ -599,6 +617,9 @@ class GamePanelService : LifecycleService() {
             syncCrosshair(crosshairNow)
             syncVeil(veilNow)
             syncMemo(GameMemoPrefs.load(applicationContext))
+            // حقن اللمس لا يُبنى إلا بلعبة متتبَّعة: زرّا الكتف والجيروسكوب بلا لعبة أمامية
+            // يكتبان على شاشة الإعدادات نفسها — وهذا خطر لا ميزة.
+            syncInjection(state.subject is PanelSubject.Tracked)
             // ساعة الجلسة تُلمس لكل لعبة ترى الخدمة في المقدّمة، مُفعَّلةً كانت أم لا، كما كانت قبل التقسيم.
             (state.subject as? PanelSubject.Tracked)?.let { PanelSessionClock.touch(it.packageName) }
             // بروفايل اللعبة بلا رفيق الجذر: يدخل مع اللعبة المتتبَّعة ويخرج بخروجها. المطبِّق نفسه يقرّر هل هو
@@ -778,6 +799,84 @@ class GamePanelService : LifecycleService() {
         }
         val overlay = memoOverlay ?: GameMemoOverlay(this).also { memoOverlay = it }
         overlay.show(memo)
+    }
+
+    /**
+     * حقن اللمس: زرّا الكتف والجيروسكوب — **لا يعملان بلا لعبة متتبَّعة ولا بلا إقرار**.
+     *
+     * والخدمة هي المالك الوحيد لهذين السطحين (كالستارة والمذكّرة): تُنشئهما وتُخفيهما
+     * وتُدمّرهما. واختيار «متتبَّعة فقط» ليس تحفّظًا زائدًا: الحقن بلا لعبة يكتب على شاشة
+     * الإعدادات أو متجر التطبيقات، وهو خطر بلا مقابل.
+     */
+    private fun syncInjection(tracked: Boolean) {
+        if (android.os.Looper.myLooper() != android.os.Looper.getMainLooper()) {
+            mainHandler.post { syncInjection(tracked) }
+            return
+        }
+        val context = applicationContext
+        val consented = InjectionConsentPrefs.acknowledged(context)
+
+        val pads = ShoulderPadPrefs.load(context)
+        val padsWanted = tracked && pads.enabled && consented && Settings.canDrawOverlays(this)
+        if (padsWanted) {
+            val overlay = padsOverlay ?: ShoulderPadOverlay(
+                context = this,
+                initial = pads.layout,
+                onTap = { side, x, y -> injectPadTap(side, x, y) },
+                onMoved = { side, xFraction, yFraction ->
+                    ShoulderPadPrefs.savePosition(applicationContext, side, xFraction, yFraction)
+                },
+            ).also { padsOverlay = it }
+            // يُعاد الحساب كل دورة: الدوران يغيّر أبعاد الشاشة والنسبة تبقى، فلا يبقى الزرّ
+            // في موضع وضعٍ سابق.
+            overlay.updateLayout(pads.layout)
+            overlay.show()
+        } else {
+            padsOverlay?.hide()
+        }
+
+        val gyro = GyroAimPrefs.load(context)
+        val gyroWanted = tracked && gyro.enabled && consented
+        val controller = gyroController ?: if (gyroWanted) {
+            GyroAimController(this).also { gyroController = it }
+        } else {
+            null
+        }
+        if (gyroWanted && controller != null && controller.available) {
+            if (!gyroRunning) {
+                controller.start(gyro)
+                gyroRunning = true
+            } else {
+                controller.update(gyro)
+            }
+        } else if (gyroRunning) {
+            controller?.stop()
+            gyroRunning = false
+        }
+    }
+
+    /** نقرة الزرّ: الحقن في مركزه — والعطب يُقال، أما التقييد بالزمن فصامت عن قصد. */
+    private fun injectPadTap(side: PadSide, x: Float, y: Float) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            val outcome = runCatching { TouchInjector.tap(applicationContext, x, y) }
+                .getOrElse { InjectionOutcome.Failed(nd.max.core.input.InjectionLane.PRIVILEGED_SHELL, "exception") }
+            if (outcome is InjectionOutcome.Delivered) return@launch
+            val message = when (outcome) {
+                is InjectionOutcome.Refused -> when (outcome.reason) {
+                    InjectionRefusal.RATE_LIMITED -> return@launch
+                    InjectionRefusal.FINGER_DOWN -> getString(R.string.game_panel_inject_finger)
+                    InjectionRefusal.NO_LANE -> getString(R.string.game_panel_inject_no_lane)
+                    InjectionRefusal.OUT_OF_BOUNDS -> getString(R.string.game_panel_inject_bounds)
+                }
+
+                is InjectionOutcome.Failed -> getString(R.string.game_panel_inject_failed, outcome.detail)
+                is InjectionOutcome.Delivered -> return@launch
+            }
+            withContext(Dispatchers.Main) {
+                runCatching { Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT).show() }
+            }
+            AppMonitorLogger.persist("EVENT=SHOULDER_PAD_TAP side=${side.name.lowercase()} outcome=${outcome::class.simpleName}")
+        }
     }
 
     /** دورة اللمس من البلاطة: دافئة ← ليلية ← تعتيم ← إطفاء. */
