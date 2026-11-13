@@ -89,8 +89,8 @@ class LobbyExploreContractTest {
         val text = lobby()
 
         assertEquals(
-            "The lobby must open the sessions log single-top from the top bar and Insights",
-            2,
+            "The lobby must open the sessions log single-top from the top bar, Insights and the palette",
+            3,
             Regex("launchSingleTop = true").findAll(text).count()
         )
     }
@@ -191,8 +191,8 @@ class LobbyExploreContractTest {
         assumeTrue("Cannot locate nd.max sources; guard not evaluated", root != null)
 
         assertTrue(
-            "The stage must read the shared play line, not its own copy",
-            lobby().contains("lobbyPlayLine(") &&
+            "The explore card must read the shared play line, and the lobby must not grow a copy",
+            explore().contains("lobbyPlayLine(stats)") &&
                 !lobby().contains("private fun playHistoryText")
         )
         assertTrue(
