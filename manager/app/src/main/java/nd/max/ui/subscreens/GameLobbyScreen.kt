@@ -525,6 +525,8 @@ fun GameLobbyScreen(
                             onOpenLoadout = { openControl(LobbySection.Loadout) },
                             onOpenCareer = { openControl(LobbySection.Insights) },
                             onOpenSearch = { tick(); paletteOpen = true },
+                            onClearFavorites = { favoritesOnly = false },
+                            onOpenLibrary = { openControl(LobbySection.Library) },
                             modifier = Modifier
                                 .fillMaxSize()
                                 .displayCutoutPadding()

@@ -42,6 +42,8 @@ internal fun NexusPage(
     onOpenLoadout: () -> Unit,
     onOpenCareer: () -> Unit,
     onOpenSearch: () -> Unit,
+    onClearFavorites: () -> Unit,
+    onOpenLibrary: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     // اللقطة تُعاد حين يتغيّر السجلّ أو المكتبة أو المقابض؛ الوقت وحده لا يحرّكها.
@@ -118,7 +120,9 @@ internal fun NexusPage(
             emptyBody = stringResource(
                 if (favoritesOnly) R.string.lobby_empty_favorites else R.string.lobby_empty
             ),
-            emptyAction = stringResource(R.string.lobby_explore_open)
+            emptyAction = stringResource(
+                if (favoritesOnly) R.string.lobby_vault_all else R.string.lobby_manage_title
+            )
         ),
         onSelect = { index -> entries.getOrNull(index)?.let { onSelect(it.packageName) } },
         onLaunch = onLaunch,
@@ -126,6 +130,7 @@ internal fun NexusPage(
         onOpenLoadout = onOpenLoadout,
         onOpenCareer = onOpenCareer,
         onOpenSearch = onOpenSearch,
+        onEmptyAction = if (favoritesOnly) onClearFavorites else onOpenLibrary,
         modifier = modifier
     )
 }

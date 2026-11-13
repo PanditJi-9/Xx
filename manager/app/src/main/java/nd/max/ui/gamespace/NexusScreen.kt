@@ -119,6 +119,7 @@ fun NexusScreen(
     onOpenLoadout: () -> Unit,
     onOpenCareer: () -> Unit,
     onOpenSearch: () -> Unit,
+    onEmptyAction: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val selected = model.games.getOrNull(model.selectedIndex) ?: model.games.firstOrNull()
@@ -134,7 +135,7 @@ fun NexusScreen(
             if (selected == null) {
                 NexusEmpty(
                     copy = copy,
-                    onOpenVault = onOpenVault,
+                    onAction = onEmptyAction,
                     modifier = Modifier.weight(1f)
                 )
             } else {
@@ -494,7 +495,7 @@ private val FooterCompactWidth = 420.dp
 @Composable
 private fun NexusEmpty(
     copy: NexusCopy,
-    onOpenVault: () -> Unit,
+    onAction: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
@@ -508,7 +509,7 @@ private fun NexusEmpty(
             Spacer(Modifier.height(MaxSpace.sm))
             Text(text = copy.emptyBody, style = Monolith.body, color = Monolith.Muted)
             Spacer(Modifier.height(MaxSpace.lg))
-            MonolithGhostButton(text = copy.emptyAction, onClick = onOpenVault)
+            MonolithGhostButton(text = copy.emptyAction, onClick = onAction)
         }
     }
 }
