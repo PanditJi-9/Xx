@@ -142,6 +142,8 @@ internal fun LobbyExplore(
     val focus = remember { FocusRequester() }
     LaunchedEffect(Unit) { runCatching { focus.requestFocus() } }
     val gridState = rememberLazyGridState()
+    // حقل البحث هدف تركيز صريح: الأسهم تصل إليه من الصفّ الأعلى وتعود منه إلى الشبكة.
+    val searchFocus = remember { FocusRequester() }
     // الحلقة البصرية تخصّ الريموت وحده: مستخدم اللمس لا يرى مؤشّرًا اختاره غيره.
     var cursorActive by remember { mutableStateOf(false) }
     // يبدأ المؤشّر على اللعبة المعروضة، ويعود إلى أول نتيجة عند تغيير البحث أو المرشّح.
@@ -198,10 +200,16 @@ internal fun LobbyExplore(
                                 cursor = (cursor + columns).coerceAtMost(last)
                                 true
                             } else false
-                            Key.DirectionUp -> if (last >= 0) {
+                            // الصفّ الأعلى: «أعلى» ينتقل إلى حقل البحث، فيصل إليه الريموت بلا لمس.
+                            Key.DirectionUp -> if (last < 0) {
+                                false
+                            } else if (cursor < columns) {
+                                searchFocus.requestFocus()
+                                true
+                            } else {
                                 cursor = (cursor - columns).coerceAtLeast(0)
                                 true
-                            } else false
+                            }
                             Key.DirectionCenter, Key.Enter, Key.ButtonA -> {
                                 val choice = visible.getOrNull(cursor)
                                 if (choice == null) {
@@ -297,6 +305,7 @@ internal fun LobbyExplore(
                     cursorBrush = SolidColor(accent),
                     modifier = Modifier
                         .fillMaxWidth()
+                        .focusRequester(searchFocus)
                         // الأسهم داخل الحقل للكتابة؛ والنزول منه يعيد التحكّم للشبكة بلا لمس.
                         .onKeyEvent { event ->
                             if (event.type != KeyEventType.KeyDown) {

@@ -225,4 +225,22 @@ class LobbyExploreContractTest {
                 text.contains("if (!compact) {")
         )
     }
+
+    @Test
+    fun `the remote can reach the search field and come back to the grid`() {
+        val root = sourceRoot()
+        assumeTrue("Cannot locate nd.max sources; guard not evaluated", root != null)
+        val text = explore()
+
+        assertTrue(
+            "The search field must own a focus requester",
+            text.contains("val searchFocus = remember { FocusRequester() }") &&
+                text.contains(".focusRequester(searchFocus)")
+        )
+        assertTrue(
+            "Up from the top row must hand focus to search instead of clamping",
+            text.contains("if (cursor < columns) {") &&
+                text.contains("searchFocus.requestFocus()")
+        )
+    }
 }
