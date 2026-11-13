@@ -55,7 +55,8 @@ object A11yGestureInjector {
 
     suspend fun swipe(x1: Float, y1: Float, x2: Float, y2: Float, durationMs: Int): InjectionOutcome = dispatch(
         fromX = x1, fromY = y1, toX = x2, toY = y2,
-        durationMs = durationMs.coerceIn(TouchInjectionRules.MIN_SWIPE_MS.toLong(), MAX_DURATION_MS)
+        durationMs = durationMs.toLong()
+            .coerceIn(TouchInjectionRules.MIN_SWIPE_MS.toLong(), MAX_DURATION_MS)
     )
 
     private suspend fun dispatch(
