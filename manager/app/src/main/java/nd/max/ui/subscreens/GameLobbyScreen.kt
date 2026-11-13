@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -724,8 +723,11 @@ fun GameLobbyScreen(
                     description = stringResource(R.string.lobby_tab_lobby),
                     onSelect = { index -> scope.launch { rootState.animateScrollToPage(index) } }
                 )
-                Spacer(Modifier.weight(1f))
-                if (lobbyPrefs.showStatus) LobbyStatusCapsule()
+                // كبسولة الحالة هي العنصر المرن: تُقاس بالعرض المتبقّي وتُقصّ عند الضيق، ولا تدفع
+                // أزرار النهاية (السجل/الإغلاق) خارج الشاشة بعد إضافة زرّ الاستكشاف الخامس.
+                Box(Modifier.weight(1f), contentAlignment = Alignment.CenterEnd) {
+                    if (lobbyPrefs.showStatus) LobbyStatusCapsule()
+                }
                 // استكشاف المكتبة من المسرح: بحث فوري ومرشّحات وبطاقات غنية، بلا مغادرة اللوبي.
                 LobbyRoundButton(
                     icon = Icons.Rounded.Apps,
