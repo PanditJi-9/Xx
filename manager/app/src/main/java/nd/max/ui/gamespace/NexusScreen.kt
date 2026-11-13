@@ -298,37 +298,48 @@ private fun NexusHero(
 
 @Composable
 private fun NexusStats(copy: NexusCopy, model: NexusModel) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(MaxSpace.lg)
-    ) {
-        NexusStat(
-            value = model.totalPlaytime,
-            label = copy.playtimeLabel,
-            modifier = Modifier.weight(1f)
-        )
-        NexusStat(
-            value = model.sessionCount,
-            label = copy.sessionsLabel,
-            modifier = Modifier.weight(1f)
-        )
-        NexusStat(
-            value = model.streak,
-            label = copy.streakLabel,
-            modifier = Modifier.weight(1f)
-        )
+    BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
+        val compact = maxWidth < 360.dp
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(MaxSpace.lg)
+        ) {
+            NexusStat(
+                value = model.totalPlaytime,
+                label = copy.playtimeLabel,
+                compact = compact,
+                modifier = Modifier.weight(1f)
+            )
+            NexusStat(
+                value = model.sessionCount,
+                label = copy.sessionsLabel,
+                compact = compact,
+                modifier = Modifier.weight(1f)
+            )
+            NexusStat(
+                value = model.streak,
+                label = copy.streakLabel,
+                compact = compact,
+                modifier = Modifier.weight(1f)
+            )
+        }
     }
 }
 
 @Composable
-private fun NexusStat(value: String, label: String, modifier: Modifier = Modifier) {
+private fun NexusStat(
+    value: String,
+    label: String,
+    compact: Boolean,
+    modifier: Modifier = Modifier
+) {
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(MaxSpace.xs)
     ) {
         Text(
             text = value,
-            style = Monolith.numeral,
+            style = if (compact) Monolith.heading else Monolith.numeral,
             color = Monolith.Bone,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
