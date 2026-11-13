@@ -4424,6 +4424,8 @@
     <string name="session_notify_channel">نتائج جلسات اللعب</string>
     <string name="session_notify_title">%1$s — حُفظت الجلسة</string>
     <string name="session_notify_fps">%1$d إطار/ث</string>
+    <string name="session_notify_duration_min">%1$d دقيقة</string>
+    <string name="session_notify_duration_hm">%1$d ساعة و%2$d دقيقة</string>
     <string name="session_notify_jank">%1$d٪ تقطّع</string>
     <string name="session_notify_worse">أسوأ من المعتاد</string>
     <string name="session_notify_better">أفضل من المعتاد</string>

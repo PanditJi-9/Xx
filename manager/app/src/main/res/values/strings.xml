@@ -4483,6 +4483,8 @@
     <string name="session_notify_channel">Game session results</string>
     <string name="session_notify_title">%1$s — session saved</string>
     <string name="session_notify_fps">%1$d FPS</string>
+    <string name="session_notify_duration_min">%1$d min</string>
+    <string name="session_notify_duration_hm">%1$d h %2$d min</string>
     <string name="session_notify_jank">%1$d%% jank</string>
     <string name="session_notify_worse">worse than usual</string>
     <string name="session_notify_better">better than usual</string>
