@@ -108,6 +108,17 @@ internal fun CrosshairSettingsCard() {
             onSelect = { update(state.copy(style = CrosshairStyle.fromKey(it))) }
         )
 
+        // الحلقات امتدادٌ للشكل نفسه، فمنتقيها بجوار منتقي الشكل لا في قسم آخر.
+        val ringsOff = stringResource(R.string.crosshair_rings_off)
+        LobbyOptionRow(
+            title = stringResource(R.string.crosshair_rings),
+            options = (CrosshairState.MIN_RINGS..CrosshairState.MAX_RINGS).map { count ->
+                count.toString() to if (count == 0) ringsOff else count.toString()
+            },
+            selected = state.rings.toString(),
+            onSelect = { update(state.copy(rings = it.toIntOrNull() ?: CrosshairState.DEFAULT_RINGS)) }
+        )
+
         CrosshairColorRow(
             selected = state.color,
             onSelect = { update(state.copy(color = it)) }

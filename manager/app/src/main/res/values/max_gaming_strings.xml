@@ -315,6 +315,8 @@
     <string name="crosshair_opacity">Opacity</string>
     <string name="crosshair_outline">Dark outline</string>
     <string name="crosshair_outline_desc">Keeps the crosshair readable on bright scenes.</string>
+    <string name="crosshair_rings">Range rings</string>
+    <string name="crosshair_rings_off">Off</string>
     <string name="crosshair_position">Position</string>
     <string name="crosshair_horizontal">Horizontal</string>
     <string name="crosshair_vertical">Vertical</string>

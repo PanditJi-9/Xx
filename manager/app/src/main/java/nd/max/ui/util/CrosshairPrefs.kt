@@ -32,6 +32,7 @@ object CrosshairPrefs {
     private const val KEY_OFFSET_X = "game_crosshair_offset_x"
     private const val KEY_OFFSET_Y = "game_crosshair_offset_y"
     private const val KEY_OUTLINE = "game_crosshair_outline"
+    private const val KEY_RINGS = "game_crosshair_rings"
 
     fun load(context: Context): CrosshairState = runCatching {
         val p = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -45,7 +46,8 @@ object CrosshairPrefs {
             opacity = p.getFloat(KEY_OPACITY, CrosshairState.DEFAULT_OPACITY),
             offsetX = p.getFloat(KEY_OFFSET_X, 0f),
             offsetY = p.getFloat(KEY_OFFSET_Y, 0f),
-            outline = p.getBoolean(KEY_OUTLINE, true)
+            outline = p.getBoolean(KEY_OUTLINE, true),
+            rings = p.getInt(KEY_RINGS, CrosshairState.DEFAULT_RINGS)
         ).sanitized()
     }.getOrDefault(CrosshairState())
 
@@ -62,6 +64,7 @@ object CrosshairPrefs {
             .putFloat(KEY_OFFSET_X, clean.offsetX)
             .putFloat(KEY_OFFSET_Y, clean.offsetY)
             .putBoolean(KEY_OUTLINE, clean.outline)
+            .putInt(KEY_RINGS, clean.rings)
             .apply()
     }
 
@@ -85,6 +88,7 @@ object CrosshairPrefs {
             .remove(KEY_OFFSET_X)
             .remove(KEY_OFFSET_Y)
             .remove(KEY_OUTLINE)
+            .remove(KEY_RINGS)
             .apply()
     }
 }

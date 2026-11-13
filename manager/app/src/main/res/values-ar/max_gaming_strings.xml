@@ -314,6 +314,8 @@
     <string name="crosshair_opacity">الشفافية</string>
     <string name="crosshair_outline">حدود داكنة</string>
     <string name="crosshair_outline_desc">تُبقي التصويب مقروءًا على المشاهد الفاتحة.</string>
+    <string name="crosshair_rings">حلقات المدى</string>
+    <string name="crosshair_rings_off">بلا</string>
     <string name="crosshair_position">الموضع</string>
     <string name="crosshair_horizontal">أفقي</string>
     <string name="crosshair_vertical">عمودي</string>
