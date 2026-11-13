@@ -1,3 +1,30 @@
+## GAME-SPACE-MONOLITH-01 — «نصب» Nexus ومسيرة صادقة ولوحة أوامر فوق المصادر القائمة — 2026-11-13 · DONE_WITH_CONCERNS
+
+**TASK:** «gamespace جديد من الصفر اسطوري كشكل وميزات افضل منهم» من مرجع `com.zkmnext.gamespace`
+(لقطات وفيديوهان)، ثم تثبيت مهارة Unslop وتنفيذ الخطة: «اكمل ابداعك وتطويرك لي gamespace ليكون شيئ
+متقدم جدا».
+
+**SEARCH FIRST:** المرجع = أفكار فقط (صفر كود/أصول، لا ترخيص نقل). النظير القائم: `PlaySessionLedger`،
+`GameLibrary`، `AppConfig`، `GamePanelPrefs`، `PanelOverlayGate`، `LobbyControlCenter`/`LobbyExplore`.
+فبُني سطح جديد فوقها، بلا مصدر حقيقة ثانٍ ولا كتابة عتاد/جذر.
+
+**SHIPPED:** `ui/gamespace/` ثمانية ملفات (MonolithTheme/Field/Surfaces + NexusScreen/Page/State + CommandPalette/Model) ·
+Nexus فوق المكتبة الحقيقية (أيقونة ولون ووقت وآخر جلسة وعمر تثبيت، ثلاث إحصاءات، حلقة جاهزية تفتح
+التهيئة، شريط أيقونات) · `CareerLedger` نقي (أسبوع، مقارنة، أطول/ليلي، آخر ثلاث جلسات، خمسة إنجازات) ·
+مكتبة بعروض وترتيب ووقت لعب · فحص تهيئة بثلاثة شروط وفعل لكل شرط · لوحة أوامر (Y/Ctrl+K، تركيز مرئي،
+Esc/Enter) · هوية Monolith واحدة وحقل ساكن بدل الخلف المتحرّك · TalkBack/Role.Button وحلقات تركيز
+وتباين ٥٫٢:١ · ٦٠ مفتاحًا en/ar · ٢٣ اختبارًا جديدًا · إصلاح `@Composable` على enum و`dp` ناقص
+وسmart-cast واختبارين قديمين.
+
+**MEASURED:** `kt_balance` 3387/0 · `design_tokens` 233/300 · `i18n` 0 عوائق وprune 0 يتيم (٨٤ لغة) ·
+`code_health` 0 والدَّين 14/26/5/4/0 · `rtl_guard` 0 · aapt2 مرّ · diff نظيف · **CI `7ed7dfbc` =
+`43419089538` success** و`0bec2fb4` = `43421067574` **success**.
+
+**BUILD:** لا Gradle محلي؛ CI هو المُصرّف، والتشغيلان الأخضران دليله. الشكل/RTL/اللمس/TalkBack/الريموت على
+الجهاز تحتاج جهاز المالك.
+
+**NEXT:** قبول على الجهاز؛ «Studio» بقي سطح التحكّم القائم بلا إعدادات جماعية جديدة.
+
 ## GAME-SPACE-REDESIGN-01 — «استكشف» و«الرؤى» فوق المصادر القائمة — 2026-11-13 · DONE_WITH_CONCERNS
 
 **TASK:** «أريد أن يكون Game Space أفضل وأكثر تطورًا من المشروع الموجود في:
