@@ -392,6 +392,7 @@
     <string name="lobby_explore_filter_favorites">المفضّلة</string>
     <string name="lobby_explore_filter_recent">الأحدث</string>
     <string name="lobby_explore_filter_played">المُلعوبة</string>
+    <string name="lobby_explore_filter_unplayed">لم تُلعب</string>
     <string name="lobby_explore_no_match">لا لعبة تطابق \"%1$s\".</string>
     <string name="lobby_explore_no_match_hint">جرّب اسمًا آخر، أو امسح البحث.</string>
     <string name="lobby_explore_never">لم تُلعب بعد</string>

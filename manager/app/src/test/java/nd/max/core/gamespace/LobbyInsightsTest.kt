@@ -136,6 +136,7 @@ class LobbyInsightsTest {
         assertEquals(listOf("com.a", "com.c"), packages(LobbyFilter.Favorites))
         assertEquals(listOf("com.a", "com.b"), packages(LobbyFilter.Played))
         assertEquals(listOf("com.a"), packages(LobbyFilter.Recent))
+        assertEquals(listOf("com.c"), packages(LobbyFilter.Unplayed))
     }
 
     @Test
@@ -148,5 +149,6 @@ class LobbyInsightsTest {
         assertEquals(1, counts[LobbyFilter.Favorites])
         assertEquals(1, counts[LobbyFilter.Played])
         assertEquals(1, counts[LobbyFilter.Recent])
+        assertEquals(1, counts[LobbyFilter.Unplayed])
     }
 }

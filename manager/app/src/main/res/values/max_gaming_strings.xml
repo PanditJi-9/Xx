@@ -393,6 +393,7 @@
     <string name="lobby_explore_filter_favorites">Favorites</string>
     <string name="lobby_explore_filter_recent">Recent</string>
     <string name="lobby_explore_filter_played">Played</string>
+    <string name="lobby_explore_filter_unplayed">Not played</string>
     <string name="lobby_explore_no_match">No game matches \"%1$s\".</string>
     <string name="lobby_explore_no_match_hint">Try another name, or clear the search.</string>
     <string name="lobby_explore_never">Not played yet</string>

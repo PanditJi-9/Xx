@@ -420,6 +420,7 @@ private fun filterLabel(filter: LobbyFilter): String = when (filter) {
     LobbyFilter.Favorites -> stringResource(R.string.lobby_explore_filter_favorites)
     LobbyFilter.Recent -> stringResource(R.string.lobby_explore_filter_recent)
     LobbyFilter.Played -> stringResource(R.string.lobby_explore_filter_played)
+    LobbyFilter.Unplayed -> stringResource(R.string.lobby_explore_filter_unplayed)
 }
 
 @Composable

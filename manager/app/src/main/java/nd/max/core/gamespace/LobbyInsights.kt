@@ -13,7 +13,7 @@ package nd.max.core.gamespace
  * المرشِّح **عرضٌ لا ملكية**: لا يكتب شيئًا ولا يخفي لعبة من الحلقة؛ الحلقة تبقى مرتّبة بحسب
  * `LobbyOrder`، وهذا يقصر نتائج البحث فقط.
  */
-enum class LobbyFilter { All, Favorites, Recent, Played }
+enum class LobbyFilter { All, Favorites, Recent, Played, Unplayed }
 
 /** ملخّص مسيرة المكتبة، مشتقٌّ من سجلّ الجلسات القائم لا من مخزن ثانٍ. */
 data class LibrarySummary(
@@ -97,6 +97,7 @@ object LobbyInsights {
                 LobbyFilter.All -> true
                 LobbyFilter.Favorites -> game.packageName in favorites
                 LobbyFilter.Played -> (stats[game.packageName]?.sessionCount ?: 0) > 0
+                LobbyFilter.Unplayed -> (stats[game.packageName]?.sessionCount ?: 0) <= 0
                 LobbyFilter.Recent -> isRecent(stats[game.packageName], nowMs)
             }
         }
