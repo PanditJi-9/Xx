@@ -80,9 +80,17 @@ object WidgetData {
 
     fun isFpsServiceRunning(): Boolean = nd.max.service.FpsOverlayService.isRunning
 
-    fun fpsValue(): Float = runCatching { FpsMonitorUtil.getFps() }.getOrDefault(0f)
+    /**
+     * معدّل الإطارات، أو `null` إن لم يجب أيّ مصدر. الصفر ليس «مجهولًا» بل رقمٌ يبدو حقيقيًّا،
+     * فلا يُخترع هنا؛ من يعرض القيمة يستعمل [WidgetFormat.DASH] عند الغياب.
+     */
+    fun fpsValue(): Float? = runCatching { FpsMonitorUtil.getFps() }.getOrNull()?.takeIf { it > 0f }
 
-    fun powerWatt(): Float = runCatching { FpsMonitorUtil.getPowerWatt() }.getOrDefault(0f)
+    /**
+     * قدرة الشحن بالواط، أو `null` إن حجبها النظام. بعض الأجهزة لا تُعلن القيمة،
+     * و«0.0W» في تلك اللحظة ادّعاء قياسٍ لم يقع.
+     */
+    fun powerWatt(): Float? = runCatching { FpsMonitorUtil.getPowerWatt() }.getOrNull()?.takeIf { it > 0f }
 
     fun gpuLoad(): Int? = runCatching {
         val kgsl = java.io.File("/sys/class/kgsl/kgsl-3d0/gpu_busy_percentage")

@@ -84,13 +84,17 @@ class BatteryTurboWidget : MaxGlanceWidget() {
 @Composable
 private fun BatteryTurboContent(
     vitals: WidgetData.BatteryVitals,
-    watt: Float,
+    watt: Float?,
     palette: WidgetPalette,
 ) {
     val context = LocalContext.current
     val refresh = actionRunCallback<RefreshWidgetsAction>()
     val openPower = openRouteAction(context, WidgetIntents.ROUTE_BATTERY)
-    val chargingStr = if (vitals.charging) String.format("%.1fW", watt) else context.getString(R.string.widget_stat_battery)
+    val chargingStr = when {
+        !vitals.charging -> context.getString(R.string.widget_stat_battery)
+        watt == null -> WidgetFormat.DASH
+        else -> String.format("%.1fW", watt)
+    }
 
     WidgetRoot(palette = palette, onClick = refresh) {
         Column(
