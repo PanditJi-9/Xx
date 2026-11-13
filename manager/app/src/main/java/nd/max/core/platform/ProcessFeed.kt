@@ -128,7 +128,7 @@ object ProcessFeed {
     /**
      * دورة قراءة واحدة: اقرأ ← ميّز ← صفِّ ← رتّب ← اقصر.
      *
-     * @param query نصّ بحث في الاسم المعروض أو الحزمة؛ الفراغ يعني لا تصفية.
+     * @param query نصّ بحث في الاسم المعروض أو الحزمة أو رقم العملية (كاملًا)؛ الفراغ يعني لا تصفية.
      */
     fun read(
         context: Context,
@@ -334,7 +334,9 @@ object ProcessFeed {
                     reading.label.contains(needle, ignoreCase = true) ||
                     reading.packageName.contains(needle, ignoreCase = true) ||
                     // رقم خالص يُطابق المعرّف أيضًا، فلا يبحث القارئ في اسمٍ لا يعرفه.
-                    (needle.all { it.isDigit() } && reading.pid.toString().contains(needle))
+                    // المعرّف يُطابق **كاملًا** لا جزئيًّا: البحث بـ`1` عن `1234` يجعل كل
+                    // صفّ نتيجة، وهو عكس ما يريده من كتب رقم عملية بعينها.
+                    (needle.all { it.isDigit() } && reading.pid.toString() == needle)
             }
             .sortedWith(ordered)
             .take(limit.coerceAtLeast(0))
