@@ -270,6 +270,7 @@
     <string name="game_panel_title_tail">Cube</string>
     <string name="game_panel_status_game">Game</string>
     <string name="game_panel_fps_unit">FPS</string>
+    <string name="game_panel_fps_gap">No frame sample yet</string>
     <string name="game_panel_shelf_more">More quick apps</string>
     <string name="panel_handle_menu">Side panel handle</string>
     <string name="panel_handle_title">Side panel handle</string>

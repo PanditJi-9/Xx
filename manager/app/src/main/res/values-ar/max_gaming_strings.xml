@@ -269,6 +269,7 @@
     <string name="game_panel_title_tail">الطاقة</string>
     <string name="game_panel_status_game">اللعبة</string>
     <string name="game_panel_fps_unit">فريم/ث</string>
+    <string name="game_panel_fps_gap">لا عيّنة إطارات بعد</string>
     <string name="game_panel_shelf_more">تطبيقات سريعة أخرى</string>
     <string name="panel_handle_menu">مقبض اللوحة الجانبية</string>
     <string name="panel_handle_title">مقبض اللوحة الجانبية</string>

@@ -727,6 +727,10 @@ fun GamePanelCockpit(
             add(CubeTileSpec(Icons.Rounded.PowerSettingsNew, null, lClose, false, onClick = { leave(onClose) }))
         }
 
+        // شرطة عدّاد الإطارات (—) كانت تسكت عن السبب؛ تُقال الحقيقة «لا عيّنة بعد» في شريط
+        // الحالة، وتفسح لرسالة المستخدم إن وُجدت بدل أن تنافسها.
+        val fpsGap = if (frames.isEmpty()) stringResource(R.string.game_panel_fps_gap) else null
+
         if (!portrait) {
             Canvas(Modifier.fillMaxSize()) { cubeWave(origin, wave.value, tint) }
             CockpitDeck(
@@ -735,7 +739,7 @@ fun GamePanelCockpit(
                 batteryText = batteryText(status.batteryPct, status.charging),
                 charging = status.charging,
                 batteryLow = !status.charging && (status.batteryPct ?: 100) <= 15,
-                note = notes.lastOrNull(), hint = lHint,
+                note = notes.lastOrNull() ?: fpsGap, hint = lHint,
                 apps = quickApps, launching = launching, onApp = { launchFloating(it) },
                 appsOpen = menu == CubeMenu.Apps, appsEditLabel = lShelfEdit,
                 onAppsEdit = { menu = if (menu == CubeMenu.Apps) CubeMenu.None else CubeMenu.Apps },
@@ -815,7 +819,7 @@ fun GamePanelCockpit(
                 thermalTitle = lThermalTitle, thermalOptions = thermalOptions,
                 thermalSelected = thermal.selected, thermalBusy = thermalBusy, onPickThermal = { pickThermal(it) },
                 tiles = tiles,
-                note = notes.lastOrNull() ?: lHint, noteIsMessage = notes.lastOrNull() != null,
+                note = notes.lastOrNull() ?: fpsGap ?: lHint, noteIsMessage = notes.lastOrNull() != null,
                 extra = {
                     InfoCard { FrameGraph(history = frames, accent = tint) }
                     if (details) {
