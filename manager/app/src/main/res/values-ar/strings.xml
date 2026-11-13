@@ -11,6 +11,7 @@
     <string name="detailed_activity_log_desc">سجلّ لكل تغيير وتبديل تطبيق، بمعرّف ربط.</string>
     <string name="android_version">إصدار Android</string>
     <string name="app_name">MaxManager</string>
+    <string name="max_wordmark">MAX</string>
     <string name="app_name_settings">اسم التطبيق</string>
     <string name="app_priority">أولوية التطبيق</string>
     <string name="app_priority_control">التحكم في أولوية التطبيق</string>

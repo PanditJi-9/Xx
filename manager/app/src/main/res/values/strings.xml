@@ -13,6 +13,7 @@
     <string name="allow_verbose_log_desc">Log the module internals</string>
     <string name="android_version">Android Version</string>
     <string name="app_name">MaxManager</string>
+    <string name="max_wordmark">MAX</string>
     <string name="app_name_settings">App Name</string>
     <string name="app_priority">App Priority</string>
     <string name="app_priority_control">Foreground Priority Lock</string>
