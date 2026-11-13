@@ -27755,3 +27755,37 @@ exit 0 · `i18n_coverage --assert` تطابق الأكواد الثلاثة و0 
 + مسح وسائط، وله مربّع في اللوحة يتحقّق بعد ١٤٠٠ مللي. **الناقص هو الألبوم** (عارض المقاطع داخل
 التطبيق) لا التسجيل. و`MediaProjection` ما يزال غير مستعمل. وحُذف من التقرير اسم «Hunt Mode» ومن معه:
 البند صار **ستارة عرض** (لون واحد شفّاف: دافئ/ليلي/تعتيم) ولا تدّعي مقابض تباين أو حِدّة لا تقدّمها.
+
+### CLIP-ALBUM-01 — ألبوم المقاطع: مرآة ما يُسجَّل فعلًا — 2026-11-13 · DONE_WITH_CONCERNS
+
+**TASK:** إغلاق فجوة «تسجيل الشاشة والألبوم» في تقرير المقارنة. **SEARCH FIRST (§0.5) صحّح التقرير:**
+التسجيل **موجود** (`core/gamespace/PanelToggles.kt:315 object PanelScreenRecorder` يكتب
+`/sdcard/Movies/MaxManager/Max_*.mp4` بعلم `/data/local/tmp/.max_screenrec` ويوقفه بـ`pkill -2` +
+مسح وسائط، وله مربّع في اللوحة). والناقص فعلًا **مرآة**: لا شيء في التطبيق يعرض ما سُجّل.
+و`ui/subscreens/FileManagerScreen.kt` متصفّح ملفّات لا ألبوم وسائط، و`ui/util/FileHomeModel.kt`
+نموذج بلا مستهلك لكنه يحمل القاعدة الملزمة: «غياب الجواب ليس صفرًا».
+
+**SHIPPED (`eea9bc6c`):**
+- `core/gamespace/ClipAlbum.kt` — `ClipEntry(id, name, sizeBytes?, durationMs?, addedAtMs?)`،
+  `ClipAlbumState` خمس حالات، و`ClipAlbumMath`: ترتيب الأحدث أولًا (المجهول الوقت في الذيل لا في
+  الصدر)، `sizeText`/`durationText` (المجهول `—` لا `0`)، و`stateOf(permitted, read, count)` —
+  فـ«لا إذن» و«لم يُقرأ» و«لا مقاطع» ثلاثة أخبار لا خبر واحد. ٦ اختبارات JVM.
+- `ui/subscreens/ClipAlbumScreen.kt` — يقرأ `MediaStore.Video` بشرط `RELATIVE_PATH LIKE 'Movies/MaxManager%'`
+  وحده؛ مؤشّر `null` **يُرمى** فيُعرض «المعرّض لم يجب» بدل قائمة فارغة كاذبة؛ صور مصغّرة
+  (`loadThumbnail`) وتشغيل/مشاركة/حذف؛ الحذف على ٣٠+ عبر `MediaStore.createDeleteRequest`
+  (موافقة النظام) وعلى ٢٩ حذف مباشر بفشل معلن؛ وإذن `READ_MEDIA_VIDEO` على ٣٣+.
+- وجهة `ClipAlbum` (route `clipalbum`) تحت `Control` — ومُدرجة في `MaxDestination.All` المكتوبة يدويًّا
+  وإلا ما ظهرت؛ ومدخل من قسم الرؤى في اللوبي (`onOpenClips`) بنصّ en/ar (١٩ مفتاحًا).
+
+**GATES:** `kt_balance` **3397 ملفًا · 0** · `code_health` 0 · `i18n_coverage` 0 عوائق ·
+`design_tokens` 0 · `resource_compile` «كل مجلّدات الموارد تُترجم» · `readme_assets` سليم ·
+`repo_audit` `PROBLEMS: 0` · `git diff --check` نظيف.
+
+**CI TRUTH:** `eea9bc6c` = `43494532672` **فشل** في البوّابة السريعة لا في المُصرّف: ستة مواضع في
+`README.md` و`README.ar.md` و`banner-dark.svg`/`banner-light.svg` تدّعي **٦٦ شاشة** والمقيس **٦٧**.
+أُصلحت في `cb330b5b` (`docs: count the screens the tree actually ships`) — **وحكمه غير مقروء بعد**،
+وكذلك كل ما تحته من ترجمة الألبوم واختباراته.
+
+**RESIDUAL RISK:** التشغيل والمشاركة والحذف والصور المصغّرة ومسار الإذن **تحتاج جهازًا**؛ وظهور مقطع
+جديد يعتمد على مسح الوسائط الذي يبثّه المسجّل عند الإيقاف؛ و320/360dp وRTL وTalkBack لم تُقس.
+
