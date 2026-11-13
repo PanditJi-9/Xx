@@ -54,6 +54,7 @@ class CareerLedgerTest {
         assertEquals(0L, career.bestSessionMs)
         assertNull(career.bestSessionPackage)
         assertEquals(0, career.nightSessions)
+        assertTrue(career.recent.isEmpty())
         assertTrue(career.top.isEmpty())
         assertEquals(5, career.milestones.size)
         assertTrue(career.milestones.none { it.unlocked })
@@ -109,6 +110,31 @@ class CareerLedgerTest {
         // ٦ و٣١ أكتوبر داخل الأسبوع السابق؛ ٣٠ أكتوبر خارجه؛ ٧ و١٣ نوفمبر في الحالي.
         assertEquals(7_200_000L, career.lastWeekMs)
         assertEquals(7_200_000L, career.week.sumOf { it.totalMs })
+    }
+
+    @Test
+    fun `recent sessions are the newest valid library sessions only`() {
+        val sessions = listOf(
+            session(alpha, "2026-11-13T08:00:00Z", "2026-11-13T09:00:00Z"),
+            session(beta, "2026-11-12T08:00:00Z", "2026-11-12T09:00:00Z"),
+            session(alpha, "2026-11-11T08:00:00Z", "2026-11-11T09:00:00Z"),
+            session(alpha, "2026-11-10T08:00:00Z", "2026-11-10T09:00:00Z"),
+            session("com.removed.game", "2026-11-12T10:00:00Z", "2026-11-12T11:00:00Z"),
+            session(alpha, "2026-11-14T10:00:00Z", "2026-11-14T11:00:00Z"),
+            session(alpha, "2026-11-12T10:00:00Z", "2026-11-12T10:00:02Z"),
+        )
+        val career = CareerLedger.build(emptyMap(), sessions, setOf(alpha, beta), now, zone)
+
+        assertEquals(3, career.recent.size)
+        assertEquals(listOf(alpha, beta, alpha), career.recent.map { it.packageName })
+        assertEquals(
+            listOf(
+                Instant.parse("2026-11-13T09:00:00Z").toEpochMilli(),
+                Instant.parse("2026-11-12T09:00:00Z").toEpochMilli(),
+                Instant.parse("2026-11-11T09:00:00Z").toEpochMilli()
+            ),
+            career.recent.map { it.endedAtMs }
+        )
     }
 
     @Test

@@ -47,6 +47,8 @@ data class CareerStats(
     val bestSessionMs: Long,
     val bestSessionPackage: String?,
     val nightSessions: Int,
+    /** أحدث ثلاث جلسات صالحة من المكتبة؛ تُعرض كما رُصدت بلا إعادة كتابة. */
+    val recent: List<PlaySession>,
     val top: List<CareerGame>,
     val milestones: List<CareerMilestone>,
 ) {
@@ -136,6 +138,7 @@ object CareerLedger {
             bestSessionMs = bestMs,
             bestSessionPackage = bestPackage,
             nightSessions = night,
+            recent = recent(sessions, library, nowMs),
             top = played
                 .sortedWith(compareByDescending<GamePlayStats> { it.totalMs }.thenBy { it.packageName })
                 .map { CareerGame(it.packageName, it.totalMs) },
@@ -163,6 +166,28 @@ object CareerLedger {
                 ),
             ),
         )
+    }
+
+    /**
+     * أحدث الجلسات الصالحة، بترتيب النهاية تنازليًا. نفس شروط المسيرة:
+     * لعبة باقية في المكتبة، وجلسة صالحة، ولا نهاية في المستقبل.
+     */
+    fun recent(
+        sessions: List<PlaySession>,
+        library: Set<String>,
+        nowMs: Long,
+        limit: Int = 3,
+    ): List<PlaySession> {
+        if (limit <= 0) return emptyList()
+        return sessions.asSequence()
+            .filter {
+                it.packageName in library &&
+                    PlaySessionLedger.valid(it) &&
+                    it.endedAtMs <= nowMs
+            }
+            .sortedByDescending { it.endedAtMs }
+            .take(limit)
+            .toList()
     }
 
     /**

@@ -40,6 +40,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -49,6 +50,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 import nd.max.R
 import nd.max.core.gamespace.CareerBadge
 import nd.max.core.gamespace.CareerLedger
@@ -267,6 +272,62 @@ internal fun LobbyInsightsBody(
                     },
                     modifier = Modifier.weight(1f)
                 )
+            }
+        }
+
+        LobbySectionCard(title = stringResource(R.string.lobby_career_sessions)) {
+            Text(
+                text = stringResource(R.string.lobby_career_sessions_note),
+                color = LobbyPalette.Muted,
+                fontSize = 12.sp
+            )
+            if (career.recent.isEmpty()) {
+                Text(
+                    text = stringResource(R.string.lobby_insights_no_sessions),
+                    color = LobbyPalette.Muted,
+                    fontSize = 13.sp
+                )
+            } else {
+                val locale = LocalConfiguration.current.locales[0]
+                val time = remember(locale) {
+                    DateTimeFormatter
+                        .ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT)
+                        .withLocale(locale)
+                        .withZone(ZoneId.systemDefault())
+                }
+                career.recent.forEach { session ->
+                    val label = games.firstOrNull { it.packageName == session.packageName }?.label
+                        ?: session.packageName
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(min = MaxSize.minTouchTarget)
+                            .semantics(mergeDescendants = true) { },
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = label,
+                                color = LobbyPalette.Ink,
+                                fontSize = 14.sp,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                            Text(
+                                text = time.format(Instant.ofEpochMilli(session.endedAtMs)),
+                                color = LobbyPalette.Muted,
+                                fontSize = 12.sp
+                            )
+                        }
+                        Text(
+                            text = lobbyPlayTimeText(session.durationMs)
+                                ?: stringResource(R.string.lobby_insights_unknown),
+                            color = accent,
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+                }
             }
         }
 

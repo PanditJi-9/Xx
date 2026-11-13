@@ -442,6 +442,8 @@
     <string name="lobby_career_delta_down">‎-%1$d٪ عن الأسبوع الماضي</string>
     <string name="lobby_career_delta_same">مثل الأسبوع الماضي</string>
     <string name="lobby_career_delta_new">أول أسبوع فيه لعب مسجّل</string>
+    <string name="lobby_career_sessions">الجلسات الأخيرة</string>
+    <string name="lobby_career_sessions_note">آخر ثلاث جلسات من السجلّ</string>
     <string name="lobby_career_bar">اليوم %1$d، %2$s</string>
     <string name="lobby_career_best">أطول جلسة</string>
     <string name="lobby_career_best_value">%1$s في %2$s</string>
