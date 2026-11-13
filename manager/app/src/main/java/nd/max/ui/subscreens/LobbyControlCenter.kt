@@ -38,8 +38,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AddToHomeScreen
 import androidx.compose.material.icons.rounded.Bolt
+import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.Insights
 import androidx.compose.material.icons.rounded.Layers
+import androidx.compose.material.icons.rounded.RadioButtonUnchecked
 import androidx.compose.material.icons.rounded.RestartAlt
 import androidx.compose.material.icons.rounded.Tune
 import androidx.compose.material.icons.rounded.VideogameAsset
@@ -184,6 +186,8 @@ internal fun LobbyControlCenter(
     armed: Set<String>,
     panelEnabled: Boolean,
     onPanelEnabled: (Boolean) -> Unit,
+    overlayGranted: Boolean,
+    onGrantOverlay: () -> Unit,
     onUpdate: (String, String) -> Unit,
     onOpenFull: () -> Unit,
     onOpenHistory: () -> Unit,
@@ -222,7 +226,17 @@ internal fun LobbyControlCenter(
                     .fillMaxSize()
             ) { current ->
                 when (current) {
-                    LobbySection.Loadout -> LoadoutBody(app, config, panelEnabled, onPanelEnabled, onUpdate, onOpenFull)
+                    LobbySection.Loadout -> LoadoutBody(
+                        app = app,
+                        config = config,
+                        panelEnabled = panelEnabled,
+                        onPanelEnabled = onPanelEnabled,
+                        overlayGranted = overlayGranted,
+                        onGrantOverlay = onGrantOverlay,
+                        onUpdate = onUpdate,
+                        onOpenFull = onOpenFull,
+                        onOpenProfile = { onSection(LobbySection.Game) }
+                    )
                     LobbySection.Insights -> LobbyInsightsBody(
                         app = app,
                         games = games,
@@ -419,8 +433,11 @@ private fun LoadoutBody(
     config: AppConfig,
     panelEnabled: Boolean,
     onPanelEnabled: (Boolean) -> Unit,
+    overlayGranted: Boolean,
+    onGrantOverlay: () -> Unit,
     onUpdate: (String, String) -> Unit,
     onOpenFull: () -> Unit,
+    onOpenProfile: () -> Unit,
 ) {
     if (app == null) {
         EmptyBody()
@@ -445,6 +462,38 @@ private fun LoadoutBody(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
+        LobbySectionCard(stringResource(R.string.lobby_loadout_ready)) {
+            Text(
+                text = stringResource(
+                    R.string.lobby_loadout_ready_count,
+                    listOf(tweaks > 0, panelEnabled, overlayGranted).count { it },
+                    3
+                ),
+                color = LobbyPalette.Muted,
+                fontSize = 12.sp
+            )
+            LoadoutCheck(
+                done = tweaks > 0,
+                title = stringResource(R.string.lobby_loadout_check_profile),
+                detail = stringResource(R.string.lobby_loadout_check_profile_detail),
+                action = stringResource(R.string.lobby_loadout_action_profile),
+                onAction = onOpenProfile
+            )
+            LoadoutCheck(
+                done = panelEnabled,
+                title = stringResource(R.string.lobby_loadout_check_panel),
+                detail = stringResource(R.string.lobby_loadout_check_panel_detail),
+                action = stringResource(R.string.lobby_loadout_action_panel),
+                onAction = { onPanelEnabled(true) }
+            )
+            LoadoutCheck(
+                done = overlayGranted,
+                title = stringResource(R.string.lobby_loadout_check_overlay),
+                detail = stringResource(R.string.lobby_loadout_check_overlay_detail),
+                action = stringResource(R.string.lobby_loadout_action_overlay),
+                onAction = onGrantOverlay
+            )
+        }
         LobbySectionCard(stringResource(R.string.lobby_loadout_quick)) {
             LobbyTriStateRow(stringResource(R.string.lobby_row_dnd), config.dnd_on_gaming) {
                 onUpdate("dnd_on_gaming", it)
@@ -492,6 +541,61 @@ private fun LoadoutBody(
             modifier = Modifier.heightIn(min = MaxSize.minTouchTarget)
         ) {
             Text(text = stringResource(R.string.lobby_open_full), color = LobbyPalette.Ink)
+        }
+    }
+}
+
+/**
+ * فحص واحد من فحوص الإطلاق: حالته مقروءة، وسببه مكتوب، والإصلاح زرّ حقيقي لا وعد.
+ * الصفّ لا يدمج الدلالات لأن الزرّ داخله يجب أن يبقى هدفًا مستقلًّا في TalkBack.
+ */
+@Composable
+private fun LoadoutCheck(
+    done: Boolean,
+    title: String,
+    detail: String,
+    action: String,
+    onAction: () -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(min = MaxSize.minTouchTarget),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(MaxSpace.md)
+    ) {
+        Icon(
+            imageVector = if (done) Icons.Rounded.CheckCircle else Icons.Rounded.RadioButtonUnchecked,
+            contentDescription = null,
+            tint = if (done) LobbyPalette.Positive else LobbyPalette.Muted,
+            modifier = Modifier.size(MaxSize.iconGlyph)
+        )
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(MaxSpace.xs)
+        ) {
+            Text(
+                text = title,
+                color = LobbyPalette.Ink,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Medium
+            )
+            Text(text = detail, color = LobbyPalette.Muted, fontSize = 12.sp)
+        }
+        if (done) {
+            Text(
+                text = stringResource(R.string.lobby_loadout_check_done),
+                color = LobbyPalette.Positive,
+                fontSize = 12.sp
+            )
+        } else {
+            OutlinedButton(
+                onClick = onAction,
+                border = BorderStroke(MaxSize.hairlineBorder, LobbyPalette.Hairline),
+                modifier = Modifier.heightIn(min = MaxSize.minTouchTarget)
+            ) {
+                Text(text = action, color = LobbyPalette.Ink, fontSize = 13.sp)
+            }
         }
     }
 }

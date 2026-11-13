@@ -458,4 +458,16 @@
     <string name="lobby_vault_hidden">Hidden</string>
     <string name="lobby_vault_count">%1$d of %2$d in Game Space</string>
     <string name="lobby_vault_empty">No app matches this view</string>
+    <string name="lobby_loadout_ready">Before you launch</string>
+    <string name="lobby_loadout_ready_count">%1$d of %2$d ready</string>
+    <string name="lobby_loadout_check_profile">Game profile</string>
+    <string name="lobby_loadout_check_profile_detail">At least one setting is tuned for this game</string>
+    <string name="lobby_loadout_check_panel">Side panel</string>
+    <string name="lobby_loadout_check_panel_detail">Appears over the game while it runs</string>
+    <string name="lobby_loadout_check_overlay">Overlay permission</string>
+    <string name="lobby_loadout_check_overlay_detail">Required before the panel can appear over a game</string>
+    <string name="lobby_loadout_action_profile">Tune</string>
+    <string name="lobby_loadout_action_panel">Turn on</string>
+    <string name="lobby_loadout_action_overlay">Grant</string>
+    <string name="lobby_loadout_check_done">Ready</string>
 </resources>

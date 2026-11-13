@@ -457,4 +457,16 @@
     <string name="lobby_vault_hidden">المخفية</string>
     <string name="lobby_vault_count">%1$d من %2$d داخل مساحة اللعب</string>
     <string name="lobby_vault_empty">لا تطبيق يطابق هذا العرض</string>
+    <string name="lobby_loadout_ready">قبل الإطلاق</string>
+    <string name="lobby_loadout_ready_count">%1$d من %2$d جاهزة</string>
+    <string name="lobby_loadout_check_profile">ملف اللعبة</string>
+    <string name="lobby_loadout_check_profile_detail">إعداد واحد على الأقل مضبوط لهذه اللعبة</string>
+    <string name="lobby_loadout_check_panel">اللوحة الجانبية</string>
+    <string name="lobby_loadout_check_panel_detail">تظهر فوق اللعبة أثناء تشغيلها</string>
+    <string name="lobby_loadout_check_overlay">إذن العرض فوق التطبيقات</string>
+    <string name="lobby_loadout_check_overlay_detail">مطلوب قبل أن تتمكن اللوحة من الظهور فوق اللعبة</string>
+    <string name="lobby_loadout_action_profile">اضبط</string>
+    <string name="lobby_loadout_action_panel">شغّل</string>
+    <string name="lobby_loadout_action_overlay">امنح</string>
+    <string name="lobby_loadout_check_done">جاهز</string>
 </resources>

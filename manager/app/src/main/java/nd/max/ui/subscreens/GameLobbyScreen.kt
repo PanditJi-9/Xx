@@ -477,6 +477,8 @@ fun GameLobbyScreen(
                             armed = panelPrefs.enabledPackages,
                             panelEnabled = panelEnabled,
                             onPanelEnabled = setPanel,
+                            overlayGranted = overlayGranted,
+                            onGrantOverlay = { OverlayPermission.openSettings(context) },
                             onUpdate = { key, value ->
                                 active?.let { settingsViewModel.updateSetting(it.packageName, key, value) }
                             },
