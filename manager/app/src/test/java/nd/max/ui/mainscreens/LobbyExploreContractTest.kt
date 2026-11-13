@@ -264,4 +264,20 @@ class LobbyExploreContractTest {
             text.contains("FlowRow(") && text.contains("verticalArrangement = Arrangement.spacedBy(MaxSpace.xs)")
         )
     }
+
+    @Test
+    fun `the grid scrolls only when the cursor leaves the viewport`() {
+        val root = sourceRoot()
+        assumeTrue("Cannot locate nd.max sources; guard not evaluated", root != null)
+        val text = explore()
+
+        assertTrue(
+            "The grid must know whether the cursor is already visible",
+            text.contains("visibleItemsInfo.any { it.index == cursor }")
+        )
+        assertTrue(
+            "A visible cursor must not force a scroll on a horizontal step",
+            text.contains("if (!onScreen) gridState.animateScrollToItem(cursor)")
+        )
+    }
 }

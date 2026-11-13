@@ -156,10 +156,12 @@ internal fun LobbyExplore(
         val target = visible.indexOfFirst { it.packageName == currentPackage }
         mutableStateOf(if (target >= 0) target else 0)
     }
-    // المؤشّر يقود الشبكة: كل حركة تُمرّر البطاقة إلى المرأى، فلا يضيع التركيز خارج الشاشة.
+    // المؤشّر يقود الشبكة: تُمرَّر البطاقة فقط حين تخرج من المرأى، فلا تقفز الشبكة لخطوة أفقية.
     LaunchedEffect(cursor, visible.size) {
         if (cursor > visible.lastIndex) cursor = visible.lastIndex.coerceAtLeast(0)
-        if (cursor in visible.indices) gridState.animateScrollToItem(cursor)
+        if (cursor !in visible.indices) return@LaunchedEffect
+        val onScreen = gridState.layoutInfo.visibleItemsInfo.any { it.index == cursor }
+        if (!onScreen) gridState.animateScrollToItem(cursor)
     }
 
     BoxWithConstraints(
