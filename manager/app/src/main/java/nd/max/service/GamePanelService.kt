@@ -59,6 +59,7 @@ import nd.max.core.gamespace.PANEL_REFRESH_CHOICES
 import nd.max.core.gamespace.PanelSessionClock
 import nd.max.core.gamespace.PanelLifetime
 import nd.max.core.gamespace.CrosshairState
+import nd.max.core.gamespace.DisplayVeilState
 import nd.max.core.gamespace.gameLibrary
 import nd.max.core.gamespace.nextRefreshRate
 import nd.max.core.gamespace.panelPlacement
@@ -86,6 +87,7 @@ import nd.max.ui.overlay.SilkDragController
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.res.stringResource
 import nd.max.ui.util.CrosshairPrefs
+import nd.max.ui.util.DisplayVeilPrefs
 import nd.max.ui.util.FpsOverlayPrefs
 import nd.max.ui.util.GamePanelPrefs
 
@@ -149,7 +151,9 @@ class GamePanelService : LifecycleService() {
             // التصويب سطحٌ مستقلّ داخل Game Turbo: يُشغّل الخدمة ولو لم تُفعَّل لوحة لعبة،
             // لأن العلامة تعمل فوق أي لعبة في المكتبة. والشرط يبقى: لا خدمة أمامية بلا سبب.
             val crosshair = CrosshairPrefs.load(context).enabled
-            if ((panel.isEmpty() && !crosshair) || isRunning) return
+            // وستارة العرض سطحٌ مستقلّ كذلك: تُشغّل الخدمة ولو لم تُفعَّل لوحة لعبة.
+            val veil = DisplayVeilPrefs.load(context).enabled
+            if ((panel.isEmpty() && !crosshair && !veil) || isRunning) return
             // تطبيق المستخدم لا يرسم تراكبًا بلا صلاحية التراكب: بدء الخدمة كان يُنشر إشعارًا
             // أماميًّا ثم يُزال بعد فشل `addView`، ويُترك المستخدم يظنّ أن اللوحة لا تعمل. البند
             // الإرشادي في Game Space هو الإشارة الصادقة، و`service.sh` يمنح العملية عند الإقلاع.
@@ -176,7 +180,8 @@ class GamePanelService : LifecycleService() {
         fun reconcile(context: Context) {
             val panel = GamePanelPrefs.load(context).enabledPackages
             val crosshair = CrosshairPrefs.load(context).enabled
-            if ((panel.isEmpty() && !crosshair) || !Settings.canDrawOverlays(context)) {
+            val veil = DisplayVeilPrefs.load(context).enabled
+            if ((panel.isEmpty() && !crosshair && !veil) || !Settings.canDrawOverlays(context)) {
                 if (isRunning) {
                     context.startService(Intent(context, GamePanelService::class.java).setAction(ACTION_STOP))
                 }
@@ -193,6 +198,9 @@ class GamePanelService : LifecycleService() {
     /** حالة التصويب المقروءة الآن — يستهلكها الرسم والتراكب من المخزن الواحد. */
     private var crosshair by mutableStateOf(CrosshairState())
     private var crosshairOverlay: CrosshairOverlay? = null
+    /** ستارة العرض المقروءة الآن — لون واحد شفّاف فوق اللعبة، لا معالجة صورة. */
+    private var veil by mutableStateOf(DisplayVeilState())
+    private var veilOverlay: DisplayVeilOverlay? = null
     private val mainHandler = android.os.Handler(android.os.Looper.getMainLooper())
     private var library: Set<String> = emptySet()
 
@@ -272,6 +280,10 @@ class GamePanelService : LifecycleService() {
                 crosshair = CrosshairPrefs.load(applicationContext)
                 syncCrosshair(crosshair)
             }
+            key.startsWith("game_veil_") -> {
+                veil = DisplayVeilPrefs.load(applicationContext)
+                syncVeil(veil)
+            }
             key.startsWith("game_panel_") && key != "game_panel_handle_y" -> applyPrefsNow()
         }
     }
@@ -299,6 +311,7 @@ class GamePanelService : LifecycleService() {
         overlayLanguage = AppLanguage.savedTag(this)
         panelPrefs = saved
         crosshair = CrosshairPrefs.load(this)
+        veil = DisplayVeilPrefs.load(this)
         handleScale = saved.handleSize.scale
         // الإزاحة صفر نحو الداخل من الحافة المختارة: لا حساب بمقاس شاشة (قد يكون قديمًا ساعة الإقلاع).
         buildOverlay(
@@ -475,6 +488,8 @@ class GamePanelService : LifecycleService() {
         window.unmount()
         crosshairOverlay?.destroy()
         crosshairOverlay = null
+        veilOverlay?.destroy()
+        veilOverlay = null
         recordOpenSessionOnDestroy()
         isRunning = false
         super.onDestroy()
@@ -493,16 +508,19 @@ class GamePanelService : LifecycleService() {
         while (lifecycleScope.isActive) {
             val prefs = GamePanelPrefs.load(applicationContext)
             val crosshairNow = CrosshairPrefs.load(applicationContext)
+            val veilNow = DisplayVeilPrefs.load(applicationContext)
             // التصويب سببٌ مستقلّ لبقاء الخدمة: من أطفأ لوحات الألعاب كلها وأبقى العلامة
             // لا يُوقف خدمته فجأة. وإن لم يبقَ أيّ سبب — لا لوحة ولا تصويب — تُوقف.
             if (panelServiceLifetime(prefs.enabledPackages) == PanelLifetime.Stop &&
-                !crosshairNow.enabled
+                !crosshairNow.enabled &&
+                !veilNow.enabled
             ) {
                 finishPlaySession()
                 stopSelf()
                 return
             }
             crosshair = crosshairNow
+            veil = veilNow
             panelPrefs = prefs
             handleScale = prefs.handleSize.scale
             refreshLibraryIfNeeded(prefs.enabledPackages)
@@ -569,6 +587,7 @@ class GamePanelService : LifecycleService() {
             // العلامة تتبع اللعبة الأمامية: تظهر مع `Tracked` وتختفي مع غيرها، وتُخفى
             // واللوحة مفتوحة حتى لا تُرسم فوق أزرارها.
             syncCrosshair(crosshairNow)
+            syncVeil(veilNow)
             // ساعة الجلسة تُلمس لكل لعبة ترى الخدمة في المقدّمة، مُفعَّلةً كانت أم لا، كما كانت قبل التقسيم.
             (state.subject as? PanelSubject.Tracked)?.let { PanelSessionClock.touch(it.packageName) }
             // بروفايل اللعبة بلا رفيق الجذر: يدخل مع اللعبة المتتبَّعة ويخرج بخروجها. المطبِّق نفسه يقرّر هل هو
@@ -694,6 +713,44 @@ class GamePanelService : LifecycleService() {
         crosshair = next
         CrosshairPrefs.save(applicationContext, next)
         syncCrosshair(next)
+    }
+
+    /**
+     * ستارة العرض — لون واحد شفّاف فوق اللعبة، **ولا تُحجب اللمس**.
+     *
+     * ### ولماذا لا شرط `state.mode != GamePanelMode.Open` كما في التصويب
+     *
+     * العلامة تُخفى واللوحة مفتوحة لأنها تُرسم فوق أزرارها. أمّا الستارة فطبقة محيطة: لو أُخفيت
+     * عند كل فتح لوحة لارتجف لون الشاشة في كل تعديل، وهو أسوأ من عدم وجودها. فتبقى ما دامت لعبة
+     * متتبَّعة، وتنزاح معها.
+     *
+     * ### والحدّ المعلن
+     *
+     * لون لا معالجة: لا تباين ولا حدّة ولا تشبّع. ومن أراد تغيير الصورة نفسها فذاك مسار آخر لا
+     * يُدّعى هنا.
+     */
+    private fun syncVeil(prefs: DisplayVeilState = veil) {
+        if (android.os.Looper.myLooper() != android.os.Looper.getMainLooper()) {
+            mainHandler.post { syncVeil(prefs) }
+            return
+        }
+        val wanted = prefs.enabled &&
+            state.subject is PanelSubject.Tracked &&
+            Settings.canDrawOverlays(this)
+        if (!wanted) {
+            veilOverlay?.hide()
+            return
+        }
+        val overlay = veilOverlay ?: DisplayVeilOverlay(this).also { veilOverlay = it }
+        overlay.show(prefs)
+    }
+
+    /** دورة اللمس من البلاطة: دافئة ← ليلية ← تعتيم ← إطفاء. */
+    private fun cycleVeil() {
+        val next = veil.cycle()
+        veil = next
+        DisplayVeilPrefs.save(applicationContext, next)
+        syncVeil(next)
     }
 
     /**
@@ -1014,6 +1071,9 @@ class GamePanelService : LifecycleService() {
             onToggleBypass = { toggleBypass() },
             crosshairEnabled = crosshair.enabled,
             onToggleCrosshair = { toggleCrosshair() },
+            veilEnabled = veil.enabled,
+            veilTone = veil.tone,
+            onCycleVeil = { cycleVeil() },
             thermal = thermal,
             onSelectThermal = { id -> selectThermal(id) },
             handleFx = silk.fx,

@@ -295,6 +295,10 @@
 
     <!-- التصويب (تراكب Game Turbo) -->
     <string name="crosshair_title">التصويب</string>
+    <string name="game_panel_veil">ستارة العرض</string>
+    <string name="game_panel_veil_warm">دافئة</string>
+    <string name="game_panel_veil_night">ليلية</string>
+    <string name="game_panel_veil_dim">تعتيم</string>
     <string name="crosshair_switch">إظهار التصويب</string>
     <string name="crosshair_switch_desc">علامة تصويب دقيقة فوق اللعبة. تظهر أثناء تشغيل Game Turbo ولا تستهلك اللمس.</string>
     <string name="crosshair_style">الشكل</string>

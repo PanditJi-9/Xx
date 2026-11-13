@@ -53,7 +53,7 @@ import androidx.compose.material.icons.rounded.DoNotDisturbOn
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.FiberManualRecord
-import androidx.compose.material.icons.rounded.GpsFixed
+import androidx.compose.material.icons.rounded.DarkMode
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.Language
@@ -114,6 +114,7 @@ import nd.max.R
 import nd.max.core.gamespace.BypassState
 import nd.max.core.gamespace.CockpitModel
 import nd.max.core.gamespace.CubeLayoutMath
+import nd.max.core.gamespace.DisplayVeilTone
 import nd.max.core.gamespace.PortraitLayoutMath
 import nd.max.core.gamespace.GameThermalProfiles
 import nd.max.core.gamespace.PanelClockMath
@@ -231,6 +232,10 @@ fun GamePanelCockpit(
     onToggleBypass: () -> Unit,
     crosshairEnabled: Boolean = false,
     onToggleCrosshair: () -> Unit = {},
+    /** ستارة العرض: لون شفّاف فوق اللعبة — لا معالجة صورة. */
+    veilEnabled: Boolean = false,
+    veilTone: DisplayVeilTone = DisplayVeilTone.WARM,
+    onCycleVeil: () -> Unit = {},
     thermal: ThermalPanelState = ThermalPanelState(),
     onSelectThermal: (String) -> Unit = {},
     refreshChoices: List<Int> = emptyList(),
@@ -305,6 +310,16 @@ fun GamePanelCockpit(
     val lFps = stringResource(R.string.game_panel_tool_fps)
     val lFpsOn = stringResource(R.string.game_panel_tool_fps_on)
     val lCrosshair = stringResource(R.string.crosshair_title)
+    val lVeil = stringResource(R.string.game_panel_veil)
+    val veilWarm = stringResource(R.string.game_panel_veil_warm)
+    val veilNight = stringResource(R.string.game_panel_veil_night)
+    val veilDim = stringResource(R.string.game_panel_veil_dim)
+    // الاسم المعروض للون الحالي — يُقرأ في البلاطة وفي الإعلان، فلا يختلفان.
+    fun veilToneLabel(tone: DisplayVeilTone): String = when (tone) {
+        DisplayVeilTone.WARM -> veilWarm
+        DisplayVeilTone.NIGHT -> veilNight
+        DisplayVeilTone.DIM -> veilDim
+    }
     val lRotation = stringResource(R.string.game_panel_tool_rotation)
     val lOptimize = stringResource(R.string.game_panel_tool_optimize)
     val lTouch = stringResource(R.string.game_panel_tool_touch)
@@ -656,6 +671,25 @@ fun GamePanelCockpit(
                 say(String.format(if (crosshairEnabled) fmtOff else fmtOn, lCrosshair))
                 onToggleCrosshair()
             }))
+            // ستارة عرض بلمسة: لون واحد شفّاف، والدورة تُعلن ما سيحدث قبل حدوثه.
+            add(CubeTileSpec(
+                Icons.Rounded.DarkMode,
+                if (veilEnabled) veilToneLabel(veilTone) else null,
+                lVeil,
+                veilEnabled,
+                onClick = {
+                    val next = if (!veilEnabled) DisplayVeilTone.WARM else veilTone.next()
+                    val off = veilEnabled && next == DisplayVeilTone.WARM
+                    hold()
+                    say(
+                        String.format(
+                            if (off) fmtOff else fmtOn,
+                            if (off) lVeil else "$lVeil · ${veilToneLabel(next)}"
+                        )
+                    )
+                    onCycleVeil()
+                }
+            ))
             add(CubeTileSpec(Icons.Rounded.Videocam, null, if (screenRec) lScreenOn else lScreen, screenRec, onClick = {
                 hold()
                 if (screenRec) {

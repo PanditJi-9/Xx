@@ -70,6 +70,7 @@ import nd.max.R
 import nd.max.ui.overlay.HandleFx
 import nd.max.core.gamespace.GamePanelMode
 import nd.max.core.gamespace.BypassState
+import nd.max.core.gamespace.DisplayVeilTone
 import nd.max.core.gamespace.PanelClocks
 import nd.max.core.gamespace.PanelControlState
 import nd.max.core.gamespace.PanelSide
@@ -143,6 +144,9 @@ fun GamePanelSurface(
     handleScale: Float = 1f,
     crosshairEnabled: Boolean = false,
     onToggleCrosshair: () -> Unit = {},
+    veilEnabled: Boolean = false,
+    veilTone: DisplayVeilTone = DisplayVeilTone.WARM,
+    onCycleVeil: () -> Unit = {},
     origin: Offset = Offset(1f, 0.5f),
     /** إيصال الإطلاق كما يُعرض: جملة واحدة، أو `null` حين لا خبر. */
     launchReceipt: String? = null
@@ -183,6 +187,9 @@ fun GamePanelSurface(
                 onToggleBypass = onToggleBypass,
                 crosshairEnabled = crosshairEnabled,
                 onToggleCrosshair = onToggleCrosshair,
+                veilEnabled = veilEnabled,
+                veilTone = veilTone,
+                onCycleVeil = onCycleVeil,
                 thermal = thermal,
                 onSelectThermal = onSelectThermal,
                 refreshChoices = refreshChoices,

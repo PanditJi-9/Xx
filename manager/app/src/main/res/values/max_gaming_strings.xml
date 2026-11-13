@@ -296,6 +296,10 @@
 
     <!-- Crosshair (Game Turbo overlay) -->
     <string name="crosshair_title">Crosshair</string>
+    <string name="game_panel_veil">Display veil</string>
+    <string name="game_panel_veil_warm">Warm</string>
+    <string name="game_panel_veil_night">Night</string>
+    <string name="game_panel_veil_dim">Dim</string>
     <string name="crosshair_switch">Show crosshair</string>
     <string name="crosshair_switch_desc">A precise aim marker over the game. It appears while Game Turbo is running and never takes touches.</string>
     <string name="crosshair_style">Shape</string>
