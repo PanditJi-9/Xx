@@ -230,7 +230,7 @@ private fun CommandPaletteBody(
 
 @Composable
 private fun PaletteGameRow(game: PaletteGame, onClick: () -> Unit) {
-    val icon by rememberLobbyIcon(game.packageName)
+    val icon = rememberLobbyIcon(game.packageName).value
     Row(
         modifier = Modifier
             .fillMaxWidth()
