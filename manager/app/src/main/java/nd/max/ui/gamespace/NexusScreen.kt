@@ -284,7 +284,7 @@ private fun NexusHero(
                 Text(
                     text = copy.reviewSetup,
                     style = Monolith.label,
-                    color = accent.base,
+                    color = Monolith.BoneDim,
                     maxLines = 1
                 )
             }
