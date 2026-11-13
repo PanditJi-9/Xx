@@ -370,6 +370,9 @@
     <string name="profile_run_title">آخر تطبيق</string>
     <string name="profile_run_counts">كُتب %1$d من %2$d · وتأكّد %3$d</string>
     <string name="profile_run_complete">كل مفتاح كُتب وقُرئ مرتجًعًا</string>
+    <string name="game_panel_receipt_blocked">البروفايل محجوب — %1$s</string>
+    <string name="game_panel_receipt_applied">البروفايل: كُتب %1$d من %2$d · وتأكّد %3$d</string>
+    <string name="game_panel_receipt_skipped">%1$s لم يُطبَّق — %2$s</string>
     <string name="profile_run_blocked">مسار الأوامر غير جاهز — ستُعاد المحاولة بعد لحظات</string>
     <string name="profile_run_none">لا مفاتيح داخلية مضبوطة لهذا التطبيق</string>
     <string name="profile_run_never">لم يُنفَّذ تطبيق لهذا التطبيق بعد</string>

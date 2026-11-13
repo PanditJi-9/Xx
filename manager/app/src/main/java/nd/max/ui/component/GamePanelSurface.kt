@@ -143,7 +143,9 @@ fun GamePanelSurface(
     handleScale: Float = 1f,
     crosshairEnabled: Boolean = false,
     onToggleCrosshair: () -> Unit = {},
-    origin: Offset = Offset(1f, 0.5f)
+    origin: Offset = Offset(1f, 0.5f),
+    /** إيصال الإطلاق كما يُعرض: جملة واحدة، أو `null` حين لا خبر. */
+    launchReceipt: String? = null
 ) {
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
         when (mode) {
@@ -185,7 +187,8 @@ fun GamePanelSurface(
                 onSelectThermal = onSelectThermal,
                 refreshChoices = refreshChoices,
                 onSelectRefresh = onSelectRefresh,
-                origin = origin
+                origin = origin,
+                launchReceipt = launchReceipt
             )
         }
     }

@@ -11,6 +11,7 @@ import nd.max.core.gamespace.InAppRun
 import nd.max.core.gamespace.InAppRunReason
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -92,6 +93,44 @@ class InAppRunRowsTest {
         )
         val skipped = rows.single() as InAppRunRow.Skipped
         assertEquals(InAppRunReason.UNKNOWN, skipped.reason)
+    }
+
+    @Test
+    fun `a launch with no record and nothing asked says nothing`() {
+        assertNull(inAppReceipt(null))
+        assertNull(inAppReceipt(InAppRun(pkg = "a.b", writes = 0, written = 0, verified = 0)))
+    }
+
+    @Test
+    fun `a blocked launch is the receipt, not a silent panel`() {
+        val receipt = inAppReceipt(
+            InAppRun(pkg = "a.b", writes = 0, written = 0, verified = 0, blocked = "lane-unavailable"),
+        )
+        assertEquals(InAppRunRow.Blocked(InAppRunReason.LANE_UNAVAILABLE), receipt)
+    }
+
+    @Test
+    fun `an applied launch carries the real counters`() {
+        val receipt = inAppReceipt(InAppRun(pkg = "a.b", writes = 4, written = 3, verified = 2))
+        val applied = receipt as InAppRunRow.Applied
+        assertEquals(3, applied.written)
+        assertEquals(4, applied.total)
+        assertEquals(2, applied.verified)
+        assertFalse("إيصال ناقص عُرض مكتملًا", applied.complete)
+    }
+
+    @Test
+    fun `a refused knob is news even when nothing was written`() {
+        val receipt = inAppReceipt(
+            InAppRun(
+                pkg = "a.b",
+                writes = 0,
+                written = 0,
+                verified = 0,
+                skipped = mapOf(InAppKnob.DND to "zen-mode-already-on"),
+            ),
+        )
+        assertEquals(InAppRunRow.Skipped(InAppKnob.DND, InAppRunReason.ZEN_ALREADY_ON), receipt)
     }
 
     @Test

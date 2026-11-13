@@ -371,6 +371,9 @@
     <string name="profile_run_title">Last apply</string>
     <string name="profile_run_counts">%1$d of %2$d written · %3$d read back</string>
     <string name="profile_run_complete">Every knob was written and read back</string>
+    <string name="game_panel_receipt_blocked">Profile blocked — %1$s</string>
+    <string name="game_panel_receipt_applied">Profile %1$d of %2$d written · %3$d read back</string>
+    <string name="game_panel_receipt_skipped">%1$s not applied — %2$s</string>
     <string name="profile_run_blocked">The command path is not ready — it will retry in a moment</string>
     <string name="profile_run_none">No in-app knobs are set for this app</string>
     <string name="profile_run_never">No apply has run for this app yet</string>

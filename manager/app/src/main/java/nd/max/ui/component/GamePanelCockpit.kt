@@ -163,6 +163,12 @@ import nd.max.service.FpsOverlayService
  */
 private const val LEAVE_MS = 240
 
+/** عمر الرسالة العابرة في شريط الملاحظات. */
+private const val NOTE_MS = 4_200L
+
+/** عمر إيصال الإطلاق: أطول لأن قراءته عددٌ وسبب، لا كلمة تأكيد. */
+private const val RECEIPT_MS = 9_000L
+
 private typealias Enter = Animatable<Float, AnimationVector1D>
 
 private enum class CubeMenu { None, Refresh, Notify, Thermal, Apps }
@@ -229,7 +235,9 @@ fun GamePanelCockpit(
     onSelectThermal: (String) -> Unit = {},
     refreshChoices: List<Int> = emptyList(),
     onSelectRefresh: (Int?) -> Unit = {},
-    origin: Offset = Offset(1f, 0.5f)
+    origin: Offset = Offset(1f, 0.5f),
+    /** إيصال الإطلاق: ماذا فُعل بملفّ اللعبة فعلًا. `null` تعني «لا خبر يُقال»، لا «نجاح». */
+    launchReceipt: String? = null
 ) {
     val context = LocalContext.current
     val density = LocalDensity.current.density
@@ -423,13 +431,19 @@ fun GamePanelCockpit(
         }
     }
 
-    fun say(text: String) {
+    fun say(text: String, ttlMs: Long = NOTE_MS) {
         notes.add(text)
         while (notes.size > 3) notes.removeAt(0)
-        scope.launch { delay(4200); notes.remove(text) }
+        scope.launch { delay(ttlMs); notes.remove(text) }
     }
 
     fun hold() { holdUntil = android.os.SystemClock.uptimeMillis() + 1600 }
+
+    // إيصال الإطلاق يُقال مرة واحدة عند فتح اللوحة، ويبقى أطول من رسالة عابرة لأن قراءته
+    // تحتاج وقفة. وهو في شريط الملاحظات القائم، فلا صفّ جديد ولا مساحة محجوزة على الشاشة.
+    LaunchedEffect(launchReceipt) {
+        if (launchReceipt != null) say(launchReceipt, RECEIPT_MS)
+    }
 
     /**
      * تطبيق من الشريط: نافذة عائمة فوق اللعبة، لا شاشة كاملة. تنطوي اللوحة بعد الفتح فقط (وإلا بقيت

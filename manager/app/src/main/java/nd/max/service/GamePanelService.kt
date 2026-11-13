@@ -17,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
@@ -33,6 +34,7 @@ import nd.max.core.gamespace.ForegroundSource
 import nd.max.core.gamespace.GameForeground
 import nd.max.core.gamespace.GameLibraryAccess
 import nd.max.core.gamespace.InAppProfileApplier
+import nd.max.core.gamespace.InAppRunLog
 import nd.max.core.gamespace.UsageStatsForeground
 import nd.max.core.gamespace.GameProfileRepository
 import nd.max.core.gamespace.GameThermalProfiles
@@ -73,11 +75,16 @@ import nd.max.core.platform.HudLive
 import nd.max.core.platform.HudRecorder
 import nd.max.core.platform.HudSampler
 import nd.max.ui.component.GamePanelSurface
+import nd.max.ui.subscreens.InAppRunRow
+import nd.max.ui.subscreens.inAppReceipt
+import nd.max.ui.subscreens.knobLabelRes
+import nd.max.ui.subscreens.reasonTextRes
 import nd.max.ui.design.MaxDuration
 import nd.max.ui.overlay.OverlayWindow
 import nd.max.ui.settings.AppLanguage
 import nd.max.ui.overlay.SilkDragController
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.res.stringResource
 import nd.max.ui.util.CrosshairPrefs
 import nd.max.ui.util.FpsOverlayPrefs
 import nd.max.ui.util.GamePanelPrefs
@@ -944,6 +951,36 @@ class GamePanelService : LifecycleService() {
             is PanelSubject.Other -> subject.packageName
             PanelSubject.Unknown -> ""
         }
+        // إيصال الإطلاق: نتيجة آخر تطبيق لملفّ اللعبة، مقروءة من السجلّ الذي كتبه
+        // `InAppProfileApplier` نفسه — لا من نيّة الإطلاق، ولا من صفر مخترع.
+        val trackedPkg = (state.subject as? PanelSubject.Tracked)?.packageName
+        val receiptRow = remember(trackedPkg) {
+            val run = trackedPkg?.let { pkg ->
+                InAppRunLog.decode(
+                    applicationContext.getSharedPreferences(InAppRunLog.PREFS, MODE_PRIVATE)
+                        .getString(InAppRunLog.KEY, null)
+                )?.takeIf { it.pkg == pkg }
+            }
+            inAppReceipt(run)
+        }
+        val launchReceipt = when (receiptRow) {
+            is InAppRunRow.Blocked -> stringResource(
+                R.string.game_panel_receipt_blocked,
+                stringResource(reasonTextRes(receiptRow.reason))
+            )
+            is InAppRunRow.Applied -> stringResource(
+                R.string.game_panel_receipt_applied,
+                receiptRow.written,
+                receiptRow.total,
+                receiptRow.verified
+            )
+            is InAppRunRow.Skipped -> stringResource(
+                R.string.game_panel_receipt_skipped,
+                stringResource(knobLabelRes(receiptRow.knob)),
+                stringResource(reasonTextRes(receiptRow.reason))
+            )
+            else -> null
+        }
         GamePanelSurface(
             mode = state.mode,
             gameLabel = label,
@@ -981,7 +1018,8 @@ class GamePanelService : LifecycleService() {
             onSelectThermal = { id -> selectThermal(id) },
             handleFx = silk.fx,
             handleScale = handleScale,
-            origin = openOrigin
+            origin = openOrigin,
+            launchReceipt = launchReceipt
         )
     }
 }
