@@ -43,6 +43,7 @@
     <string name="game_panel_collapse_cd">طيّ اللوحة إلى مقبضها</string>
     <string name="game_panel_close_cd">إغلاق اللوحة حتى تُفتح اللعبة مرة أخرى</string>
     <string name="game_panel_no_session">لا جلسة قياس مسجّلة.</string>
+    <string name="game_panel_stat_elapsed">المدة</string>
     <string name="game_panel_stat_samples">العيّنات</string>
     <string name="game_panel_stat_average">المتوسط</string>
     <string name="game_panel_stat_low">الأدنى</string>

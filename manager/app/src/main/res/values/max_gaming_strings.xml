@@ -43,6 +43,7 @@
     <string name="game_panel_collapse_cd">Collapse the panel to its handle</string>
     <string name="game_panel_close_cd">Close the panel until this game starts again</string>
     <string name="game_panel_no_session">No measurement session recorded.</string>
+    <string name="game_panel_stat_elapsed">Elapsed</string>
     <string name="game_panel_stat_samples">Samples</string>
     <string name="game_panel_stat_average">Avg</string>
     <string name="game_panel_stat_low">Low</string>
