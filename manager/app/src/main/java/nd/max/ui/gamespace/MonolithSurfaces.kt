@@ -89,18 +89,19 @@ fun MonolithPanel(
 fun MonolithEyebrow(
     text: String,
     modifier: Modifier = Modifier,
-    meta: String? = null
+    meta: String? = null,
+    accent: Color? = null
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        MonolithNotch()
+        MonolithNotch(color = accent ?: Monolith.Ember)
         Spacer(Modifier.width(MaxSpace.sm))
         Text(
             text = text,
             style = Monolith.eyebrow,
-            color = Monolith.BoneDim,
+            color = accent ?: Monolith.BoneDim,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1f)

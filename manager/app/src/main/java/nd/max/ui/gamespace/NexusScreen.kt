@@ -223,7 +223,7 @@ private fun NexusHero(
                 accent = accent.base
             )
             Column(modifier = Modifier.weight(1f)) {
-                MonolithEyebrow(text = copy.nowLabel)
+                MonolithEyebrow(text = copy.nowLabel, accent = accent.base)
                 Spacer(Modifier.height(MaxSpace.xs))
                 Text(
                     // اسم اللعبة هو العنوان الأول في الشاشة، فيأخذ الحجم الكبير لا حجم بطاقة.
