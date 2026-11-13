@@ -20,6 +20,7 @@ import nd.max.ui.component.rememberLobbyIcon
 import nd.max.ui.component.rememberLobbyTone
 import nd.max.ui.subscreens.lobbyPlayAgeText
 import nd.max.ui.subscreens.lobbyPlayTimeText
+import nd.max.ui.subscreens.rememberLobbyInstalledAge
 
 /**
  * يربط Nexus بالمصادر القائمة وحدها: المكتبة، سجلّ الجلسات، ملفّات `AppConfig`،
@@ -63,6 +64,7 @@ internal fun NexusPage(
     val icon by rememberLobbyIcon(focus?.packageName)
     val selectedStats = focus?.let { stats[it.packageName] }
     val recentLine = lobbyPlayAgeText(selectedStats)
+    val installedAge = if (focus != null) rememberLobbyInstalledAge(focus.packageName) else null
     val unknown = stringResource(R.string.lobby_insights_unknown)
 
     val entries = games.map { game ->
@@ -74,7 +76,7 @@ internal fun NexusPage(
             icon = if (isSelected) icon else null,
             playtime = lobbyPlayTimeText(stats[game.packageName]?.totalMs ?: 0L),
             lastPlayed = if (isSelected) recentLine else null,
-            installedDays = null,
+            installedDays = if (isSelected) installedAge else null,
             monogram = game.label.take(1).uppercase()
         )
     }

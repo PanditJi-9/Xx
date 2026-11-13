@@ -666,7 +666,7 @@ fun GameLobbyScreen(
  * العرض). أرقام مقروءة فعلًا من النظام (ADR-07)، وما لم يُقرأ لا يُكتب. يقرأ على IO مرّة ويحفظ في [metaCache].
  */
 @Composable
-private fun rememberLobbyMetaText(packageName: String): String {
+private fun rememberLobbyMeta(packageName: String): GameLobbyMeta? {
     val context = LocalContext.current
     val meta by produceState<GameLobbyMeta?>(metaCache.get(packageName), packageName) {
         if (value == null) {
@@ -675,6 +675,24 @@ private fun rememberLobbyMetaText(packageName: String): String {
             value = read
         }
     }
+    return meta
+}
+
+/** عمر التثبيت وحده، بصياغة معرّبة/إنجليزية جاهزة للشريحة. لا يُخترع عمرٌ لم يُقرأ. */
+@Composable
+internal fun rememberLobbyInstalledAge(packageName: String): String? {
+    val days = rememberLobbyMeta(packageName)?.installedDays ?: return null
+    return if (days < 1) {
+        stringResource(R.string.lobby_meta_age_today)
+    } else {
+        stringResource(R.string.lobby_meta_age_days, days)
+    }
+}
+
+@Composable
+private fun rememberLobbyMetaText(packageName: String): String {
+    val context = LocalContext.current
+    val meta = rememberLobbyMeta(packageName)
     val today = stringResource(R.string.lobby_meta_age_today)
     val ageText = meta?.installedDays?.let { days ->
         if (days < 1) today else stringResource(R.string.lobby_meta_age_days, days)
