@@ -630,4 +630,10 @@
     <string name="gs_empty_title">No games yet</string>
     <string name="gs_empty_body">Install a game and it appears here, ready to tune.</string>
     <string name="gs_empty_action">Open game library</string>
+    <string name="gs_play_now">Play Now</string>
+    <string name="gs_hero_tagline">Your next victory starts here</string>
+    <string name="gs_popular_games">Popular Games</string>
+    <string name="gs_realtime">Real-time</string>
+    <string name="gs_hz_value">%1$d Hz</string>
+    <string name="gs_more_games">More</string>
 </resources>

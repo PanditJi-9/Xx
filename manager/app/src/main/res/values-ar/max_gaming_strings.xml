@@ -629,4 +629,10 @@
     <string name="gs_empty_title">لا توجد ألعاب بعد</string>
     <string name="gs_empty_body">ثبّت لعبة وستظهر هنا جاهزة للضبط.</string>
     <string name="gs_empty_action">فتح مكتبة الألعاب</string>
+    <string name="gs_play_now">العب الآن</string>
+    <string name="gs_hero_tagline">انتصارك القادم يبدأ من هنا</string>
+    <string name="gs_popular_games">الألعاب الشائعة</string>
+    <string name="gs_realtime">لحظيّ</string>
+    <string name="gs_hz_value">%1$d هرتز</string>
+    <string name="gs_more_games">المزيد</string>
 </resources>
