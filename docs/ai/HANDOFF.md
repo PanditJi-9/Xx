@@ -60,6 +60,42 @@ MaxManager has a strong engine and a fragmented surface. `core/maxai` + `core/ha
 
 ## Executor log
 
+### DESIGN-TOOLS-01 — تركيب أدوات تصميم في OpenCode والتحقق منها فعليًّا — 2026-11-14 · DONE_WITH_CONCERNS
+
+**TASK (المالك):** تثبيت Figma UI MCP · OpenPencil MCP · ComfyUI MCP · OpenStitch · Impeccable ·
+ADB MCP، والتحقق من توافقها مع OpenCode وDeepSeek V4.1، وتجربة كل أداة فعليًّا لا إضافتها فقط،
+مع عدم ادّعاء نجاح بلا اختبار، وعدم استبدال أداة بأخرى بصمت.
+
+**SHIPPED:** `docs/ai/DESIGN-TOOLS.md` (مصفوفة الأدوات الست، الأوامر الرسمية، القيود المقيسة،
+ودورة التصميم الست) · `.opencode/skills/maxmanager-design-cycle/SKILL.md` · أدوات UI UX Pro Max
+الثماني و`impeccable` داخل `.opencode/` · إدخالات MCP عامة في `~/.config/opencode/opencode.json`:
+`figma-ui` و`openpencil` و`comfyui` و`adb` (و`figma` البعيد يبقى بانتظار OAuth). الالتزام
+`bfd5a65c` ودُفع إلى `main`؛ `MaxManager docs` run `43605900784` = **success**.
+
+**MEASURED (كلها هنا، بلا ادّعاء):**
+- **ADB MCP** `0.25.0`: ٨١ أداة، و`doctor` عمل عبر OpenCode وDeepSeek في جلسة جديدة
+  (`ses_e25bb7477ffexnJHo6UXwwFB3D`). لا جهاز ولا AVD ⇒ `screenshot`/`describe_ui` غير قابلين للتنفيذ.
+- **Figma UI MCP** `2.5.30`: الخادم يعمل (٥ أدوات)، و`figma_status` أعاد `pluginConnected:false`
+  وbridge على 38451. الكتابة/القراءة تحتاج Figma Desktop + Plugin Bridge؛ لا API key ولا OAuth.
+- **Figma MCP البعيد**: `needs authentication`؛ أصدر رابط OAuth ثم أُلغي بلا بيانات دخول.
+- **OpenPencil MCP** `0.16.0`: ١٣٢ أداة في tools/list، لكن `list_pages` أعاد
+  «OpenPencil app is not connected» — استدعاءات المستند تحتاج التطبيق العامل.
+- **ComfyUI MCP** `0.52.206`: ٤١ أداة، و`list_packs` أعاد ٥٦ حزمة محلية/مجانية بلا API مدفوع.
+  لا ComfyUI على 8188/8000 ولا GPU models ⇒ التوليد غير ممكن هنا، ولا يُدّعى.
+- **Pencil CLI** `0.3.16`: `pen status` غير مصادَق، و`pen interactive --out` أعاد
+  «Authentication required». لا يوجد خادم MCP مستقل في الحزمة؛ الـMCP من تطبيق pen.dev المكتبي.
+- **OpenStitch**: ليس خادم MCP؛ Docker Compose + Ollama مطلوبان، وDocker غير موجود وOllama لا يعمل.
+- **Impeccable** v4.9.1: مثبّت كskill وcommand، وكاشف الأنماط أعاد ٥ مخالفات في صفحة اختبار.
+- **UI UX Pro Max** `2.15.0`: `uipro init --ai opencode` نجح، و`search.py` يعمل؛ v2.15.0 لا يعرف
+  `--dry-run` ولا `--rtl` (مُقاس).
+
+**RISKS:** لا Tool Call لمستند Figma/OpenPencil، ولا صورة ComfyUI، ولا لقطة ADB، ولا تصميم Pencil؛
+هذه تحتاج مضيفًا/مصادقة/جهازًا/خادمًا. الأدوات العاملة الآن بلا قيود: Impeccable وUI UX Pro Max
+وقواعد Compose/design tokens.
+
+**NEXT:** إعادة بناء GameSpace من المرجع `3d1c0d86-1af8-4de0-a35c-9c92fcec280d.png` (1680×944):
+تحليل بصري أولًا، ثم تنفيذ Compose، ثم مقارنة بلقطة حقيقية؛ لا Gradle محليًّا (§0.10).
+
 ### GAME-SPACE-SPINE-01 — صفحة واحدة وشريط جانبيّ سباعيّ: إلغاء تمرير الإعدادات، وتتبّع التمرير، وLTR للشاشة كلها — 2026-11-14 · DONE_WITH_CONCERNS
 
 **TASK (المالك):** «اريد ان يكون gamespace خاصتي نفس الشكل لي الصورة خاصتي يطابق التفاصيل وايضا بعد

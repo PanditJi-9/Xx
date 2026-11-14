@@ -1,3 +1,25 @@
+## DESIGN-TOOLS-01 — أدوات التصميم الست في OpenCode: مختبرة وموثّقة — 2026-11-14
+
+**أمر المالك:** تثبيت Figma UI MCP · OpenPencil MCP · ComfyUI MCP · OpenStitch · Impeccable ·
+ADB MCP، والتحقق من توافقها مع OpenCode وDeepSeek V4.1، واختبار كل أداة فعليًّا، بلا ادّعاء
+نجاح وبلا استبدال صامت. **المرجع البصري الجديد:** `3d1c0d86-1af8-4de0-a35c-9c92fcec280d.png`
+(1680×944) — سينمائي REDMAGIC: شريط يمين/يسار، Hero ملء الشاشة، لوحة أداء عائمة، رفّ ألعاب،
+Neon/Glass/HUD — وليس لقطة 13:13 القديمة.
+
+**المُنجَز:** `docs/ai/DESIGN-TOOLS.md` (المصفوفة والقيود) · `.opencode/skills/maxmanager-design-cycle`
+· مهارات UI UX Pro Max الثماني و`impeccable` · إدخالات MCP عامة: `figma-ui` · `openpencil` ·
+`comfyui` · `adb` (و`figma` البعيد بانتظار OAuth). الالتزام `bfd5a65c` مدفوع، و`MaxManager docs`
+run `43605900784` ناجح.
+
+**القيود المقيسة:** Figma UI يعمل لكن `figma_status` → `pluginConnected:false` (يحتاج Figma Desktop
++ Plugin Bridge) · OpenPencil ١٣٢ أداة لكن استدعاء المستند يحتاج التطبيق العامل · ComfyUI ٤١ أداة
+و٥٦ حزمة مجانية لكن لا خادم ComfyUI/GPU ⇒ لا توليد · ADB ٨١ أداة و`doctor` يعمل لكن لا جهاز/AVD ·
+Pencil CLI ٠٫٣٫١٦ يحتاج مصادقة ولا يوفّر خادم MCP · OpenStitch ليس MCP ويحتاج Docker+Ollama ·
+Impeccable وUI UX Pro Max يعملان بلا مصادقة.
+
+**NEXT:** تصميم GameSpace من المرجع الجديد بصريًّا أولًا (D-xx بمسارات `file:line`)، ثم Compose،
+ثم لقطة حقيقية ومقارنة، ثم إصلاح P0/P1. لا Gradle محليًّا (§0.10).
+
 ## GAME-SPACE-SPINE-01 — صفحة واحدة وشريط جانبيّ سباعيّ وتتبّع تمرير — 2026-11-14
 
 **أمر المالك:** «…يكون gamespace خاصتي نفس الشكل لي الصورة خاصتي… قم بالغاء التمرير للاسفل لاظهار
