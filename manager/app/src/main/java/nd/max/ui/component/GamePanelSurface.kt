@@ -34,7 +34,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -68,12 +70,15 @@ import nd.max.R
 import nd.max.ui.overlay.HandleFx
 import nd.max.core.gamespace.GamePanelMode
 import nd.max.core.gamespace.BypassState
+import nd.max.core.gamespace.DisplayVeilTone
 import nd.max.core.gamespace.PanelClocks
 import nd.max.core.gamespace.PanelControlState
 import nd.max.core.gamespace.PanelSide
 import nd.max.core.gamespace.ThermalPanelState
+import kotlinx.coroutines.delay
 import nd.max.core.platform.HudField
 import nd.max.core.platform.HudReading
+import nd.max.core.platform.HudRecorder
 import nd.max.core.platform.HudTally
 import nd.max.ui.design.MAX_VALUE_UNAVAILABLE
 import nd.max.ui.design.MaxRadius
@@ -139,7 +144,16 @@ fun GamePanelSurface(
     handleScale: Float = 1f,
     crosshairEnabled: Boolean = false,
     onToggleCrosshair: () -> Unit = {},
-    origin: Offset = Offset(1f, 0.5f)
+    veilEnabled: Boolean = false,
+    veilTone: DisplayVeilTone = DisplayVeilTone.WARM,
+    onCycleVeil: () -> Unit = {},
+    /** الحزمة المتتبَّعة: إضافات اللعبة تُخزَّن لكل لعبة، فتصل هذه إلى اللوحة لا تُخمَّن. */
+    trackedPackage: String? = null,
+    /** رفع تركيز النافذة لحظة الكتابة في حقل المذكّرة ثم إعادته (نافذة غير قابلة للتركيز لا تُظهر لوحة مفاتيح). */
+    onTyping: (Boolean) -> Unit = {},
+    origin: Offset = Offset(1f, 0.5f),
+    /** إيصال الإطلاق كما يُعرض: جملة واحدة، أو `null` حين لا خبر. */
+    launchReceipt: String? = null
 ) {
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
         when (mode) {
@@ -177,11 +191,17 @@ fun GamePanelSurface(
                 onToggleBypass = onToggleBypass,
                 crosshairEnabled = crosshairEnabled,
                 onToggleCrosshair = onToggleCrosshair,
+                veilEnabled = veilEnabled,
+                veilTone = veilTone,
+                onCycleVeil = onCycleVeil,
+                onTyping = onTyping,
+                trackedPackage = trackedPackage,
                 thermal = thermal,
                 onSelectThermal = onSelectThermal,
                 refreshChoices = refreshChoices,
                 onSelectRefresh = onSelectRefresh,
-                origin = origin
+                origin = origin,
+                launchReceipt = launchReceipt
             )
         }
     }
@@ -287,13 +307,43 @@ internal fun PanelReadings(reading: HudReading?, fields: List<HudField>) {
 
 private fun ramText(mb: Int): String = if (mb >= 1024) "%.1f GB".format(mb / 1024f) else "$mb MB"
 
+/** مدة الجلسة الجارية: `m:ss`، أو `h:mm:ss` بعد الساعة الأولى. */
+private fun elapsedText(ms: Long): String {
+    val total = (ms / 1000L).coerceAtLeast(0L)
+    return if (total >= 3_600L) {
+        "%d:%02d:%02d".format(total / 3_600L, (total % 3_600L) / 60L, total % 60L)
+    } else {
+        "%02d:%02d".format(total / 60L, total % 60L)
+    }
+}
+
 @Composable
 internal fun GamePanelSession(tally: HudTally?) {
+    // الساعة تقرأ مالك الجلسة نفسه الذي يكتبه `HudRecorder` عند الإطلاق؛ لا عدّاد ثانٍ.
+    val live = HudRecorder.isLive
+    val startedAt = HudRecorder.sessionStartedAtMs
+    val now = remember { mutableStateOf(System.currentTimeMillis()) }
+    LaunchedEffect(live, startedAt) {
+        while (live) {
+            now.value = System.currentTimeMillis()
+            delay(1_000L)
+        }
+    }
+    val elapsed = if (live && startedAt > 0L) elapsedText(now.value - startedAt) else null
+
     if (tally == null || tally.isEmpty) {
+        if (elapsed != null) {
+            Row(horizontalArrangement = Arrangement.spacedBy(MaxSpace.md)) {
+                PanelStat(stringResource(R.string.game_panel_stat_elapsed), elapsed)
+            }
+        }
         Text(text = stringResource(R.string.game_panel_no_session), color = PanelMuted, fontSize = 10.sp)
         return
     }
     Row(horizontalArrangement = Arrangement.spacedBy(MaxSpace.md)) {
+        if (elapsed != null) {
+            PanelStat(stringResource(R.string.game_panel_stat_elapsed), elapsed)
+        }
         PanelStat(stringResource(R.string.game_panel_stat_samples), tally.samples.toString())
         PanelStat(stringResource(R.string.game_panel_stat_average), tally.framesAverage?.let { "%.0f".format(it) } ?: MAX_VALUE_UNAVAILABLE)
         PanelStat(stringResource(R.string.game_panel_stat_low), tally.framesLow?.let { "%.0f".format(it) } ?: MAX_VALUE_UNAVAILABLE)

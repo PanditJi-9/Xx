@@ -292,13 +292,14 @@ fun HomeDashboardContent(
             )
         ) {
             item {
-                // **سطح «الآن» الجديد (SER):** نواة حيّة واحدة بدل تدفّق البطاقات. والقيادة
-                // التفصيلية القديمة تبقى في `LegendaryHomeDashboard` كمرجع وحرّاس، لا كسطح أوّل.
-                CommandCenterHome(
+                LegendaryHomeDashboard(
                     ui = ui,
                     dashboard = dashboard,
                     maxAi = maxAi,
                     deviceName = deviceName,
+                    // ولا مسار GPU هنا: صفّ «الرسوم/المعالج» نُقل إلى شاشاته المالكة (خطة storyboard-home
+                    // المرحلة 4)، والوصول إلى GPU من الـdeck ← Control ← محور الرسوم. وحقل المسار كان
+                    // يُمرَّر إلى صفّ محذوف فلم يبقَ له مستهلك — وحقل بلا مستهلك يبدو كأنه يُوصّل شيئًا.
                     onNavigate = onNavigate,
                     onReboot = onReboot,
                     onSettings = onSettings,

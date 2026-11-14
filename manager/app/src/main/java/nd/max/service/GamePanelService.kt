@@ -12,11 +12,14 @@ import nd.max.core.security.IntegrityCheckpoint
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.os.Looper
 import android.provider.Settings
+import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.lifecycleScope
@@ -33,6 +36,7 @@ import nd.max.core.gamespace.ForegroundSource
 import nd.max.core.gamespace.GameForeground
 import nd.max.core.gamespace.GameLibraryAccess
 import nd.max.core.gamespace.InAppProfileApplier
+import nd.max.core.gamespace.InAppRunLog
 import nd.max.core.gamespace.UsageStatsForeground
 import nd.max.core.gamespace.GameProfileRepository
 import nd.max.core.gamespace.GameThermalProfiles
@@ -55,8 +59,24 @@ import nd.max.core.gamespace.ThermalSave
 import nd.max.core.gamespace.ThermalVerdict
 import nd.max.core.gamespace.PANEL_REFRESH_CHOICES
 import nd.max.core.gamespace.PanelSessionClock
+import nd.max.core.gamespace.PanelScreenshot
+import nd.max.core.gamespace.PanelScreenRecorder
 import nd.max.core.gamespace.PanelLifetime
 import nd.max.core.gamespace.CrosshairState
+import nd.max.core.gamespace.DisplayVeilState
+import nd.max.core.gamespace.GameMemo
+import nd.max.core.input.A11yGestureInjector
+import nd.max.core.input.ExtraPoint
+import nd.max.core.input.GameExtrasMath
+import nd.max.core.input.GyroAimController
+import nd.max.core.input.HandTouchController
+import nd.max.core.input.InjectionOutcome
+import nd.max.core.input.InjectionRefusal
+import nd.max.core.input.MacroMath
+import nd.max.core.input.MacroRunner
+import nd.max.core.input.MacroStep
+import nd.max.core.input.PadSide
+import nd.max.core.input.TouchInjector
 import nd.max.core.gamespace.gameLibrary
 import nd.max.core.gamespace.nextRefreshRate
 import nd.max.core.gamespace.panelPlacement
@@ -73,14 +93,26 @@ import nd.max.core.platform.HudLive
 import nd.max.core.platform.HudRecorder
 import nd.max.core.platform.HudSampler
 import nd.max.ui.component.GamePanelSurface
+import nd.max.ui.subscreens.InAppRunRow
+import nd.max.ui.subscreens.inAppReceipt
+import nd.max.ui.subscreens.knobLabelRes
+import nd.max.ui.subscreens.reasonTextRes
 import nd.max.ui.design.MaxDuration
 import nd.max.ui.overlay.OverlayWindow
 import nd.max.ui.settings.AppLanguage
 import nd.max.ui.overlay.SilkDragController
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.res.stringResource
+import nd.max.ui.util.CaptureConsentPrefs
 import nd.max.ui.util.CrosshairPrefs
+import nd.max.ui.util.DisplayVeilPrefs
 import nd.max.ui.util.FpsOverlayPrefs
 import nd.max.ui.util.GamePanelPrefs
+import nd.max.ui.util.GameExtrasPrefs
+import nd.max.ui.util.GameMemoPrefs
+import nd.max.ui.util.GyroAimPrefs
+import nd.max.ui.util.InjectionConsentPrefs
+import nd.max.ui.util.ShoulderPadPrefs
 
 /**
  * لوحة مساحة الألعاب الجانبية — **قيادة فقط، والقراءة والكتابة ليست هنا**.
@@ -118,6 +150,19 @@ class GamePanelService : LifecycleService() {
         const val NOTIF_ID = 9023
         const val ACTION_STOP = "nd.max.service.GamePanelService.STOP"
 
+        /** أوامر الماكرو من لوحة الألعاب: بدء التسجيل، إيقافه وحفظه، تشغيله. */
+        const val ACTION_MACRO_RECORD = "nd.max.service.GamePanelService.MACRO_RECORD"
+        const val ACTION_MACRO_STOP = "nd.max.service.GamePanelService.MACRO_STOP"
+        const val ACTION_MACRO_PLAY = "nd.max.service.GamePanelService.MACRO_PLAY"
+
+        /** يُرسل أمرًا للخدمة إن كانت معروضة؛ لا يبدأ خدمة من العدم لأمر ماكرو. */
+        fun sendAction(context: Context, action: String) {
+            if (!isRunning) return
+            runCatching {
+                context.startService(Intent(context, GamePanelService::class.java).setAction(action))
+            }
+        }
+
         /** أقصى ما يُحتفظ فيه بوضع النظام المختار قبل أن يُعاد الحكم للقراءة الحقيقية. */
         private const val PROFILE_HOLD_MS = 6_000L
 
@@ -142,7 +187,9 @@ class GamePanelService : LifecycleService() {
             // التصويب سطحٌ مستقلّ داخل Game Turbo: يُشغّل الخدمة ولو لم تُفعَّل لوحة لعبة،
             // لأن العلامة تعمل فوق أي لعبة في المكتبة. والشرط يبقى: لا خدمة أمامية بلا سبب.
             val crosshair = CrosshairPrefs.load(context).enabled
-            if ((panel.isEmpty() && !crosshair) || isRunning) return
+            // وستارة العرض سطحٌ مستقلّ كذلك: تُشغّل الخدمة ولو لم تُفعَّل لوحة لعبة.
+            val veil = DisplayVeilPrefs.load(context).enabled
+            if ((panel.isEmpty() && !crosshair && !veil) || isRunning) return
             // تطبيق المستخدم لا يرسم تراكبًا بلا صلاحية التراكب: بدء الخدمة كان يُنشر إشعارًا
             // أماميًّا ثم يُزال بعد فشل `addView`، ويُترك المستخدم يظنّ أن اللوحة لا تعمل. البند
             // الإرشادي في Game Space هو الإشارة الصادقة، و`service.sh` يمنح العملية عند الإقلاع.
@@ -169,7 +216,8 @@ class GamePanelService : LifecycleService() {
         fun reconcile(context: Context) {
             val panel = GamePanelPrefs.load(context).enabledPackages
             val crosshair = CrosshairPrefs.load(context).enabled
-            if ((panel.isEmpty() && !crosshair) || !Settings.canDrawOverlays(context)) {
+            val veil = DisplayVeilPrefs.load(context).enabled
+            if ((panel.isEmpty() && !crosshair && !veil) || !Settings.canDrawOverlays(context)) {
                 if (isRunning) {
                     context.startService(Intent(context, GamePanelService::class.java).setAction(ACTION_STOP))
                 }
@@ -186,6 +234,31 @@ class GamePanelService : LifecycleService() {
     /** حالة التصويب المقروءة الآن — يستهلكها الرسم والتراكب من المخزن الواحد. */
     private var crosshair by mutableStateOf(CrosshairState())
     private var crosshairOverlay: CrosshairOverlay? = null
+    /** ستارة العرض المقروءة الآن — لون واحد شفّاف فوق اللعبة، لا معالجة صورة. */
+    private var veil by mutableStateOf(DisplayVeilState())
+    private var veilOverlay: DisplayVeilOverlay? = null
+    /** المذكّرة المثبّتة: سطر واحد يبقى فوق اللعبة المتتبَّعة، لا ينبّه ولا يعدّ وقتًا. */
+    private var memoOverlay: GameMemoOverlay? = null
+    /** زرّا الكتف: نافذتان صغيرتان تحقنان اللمسة في مركزهما على اللعبة تحتهما. */
+    private var padsOverlay: ShoulderPadOverlay? = null
+    /** مساعد التصويب الجيروسكوبيّ — يعمل فقط واللعبة متتبَّعة والميزة مفعّلة ومُقرّة. */
+    private var gyroController: GyroAimController? = null
+    private var gyroRunning = false
+    /** نقاط الإضافات (تكبير/نقر مزدوج/سحب…) — نوافذ صغيرة تُحقن عند لمسها، فوق اللعبة وحدها. */
+    private var extrasOverlay: GameExtrasOverlay? = null
+    /** شريط التحكم العائم بنمط Game Turbo: FPS · لقطة · تسجيل · تكبير · إغلاق. */
+    private var turboStrip: GameTurboStrip? = null
+    /** عدسة التكبير: تقرأ صورة الشاشة عبر خدمة الوصول (الميزة الوحيدة التي تقرأ الشاشة). */
+    private var scoutOverlay: ScoutZoomOverlay? = null
+    private var scoutJob: Job? = null
+    /** مسطرة تسجيل الماكرو: تلتقط اللمسات وتمرّرها للعبة في الوقت نفسه. */
+    private var macroPad: MacroPadOverlay? = null
+    private var macroRecording = false
+    private val macroSteps = mutableListOf<MacroStep>()
+    private var lastMacroAtMs = 0L
+    /** يد ← لمس: عبور اليد فوق الحسّاس القريب ينقر مركز الشاشة. */
+    private var handController: HandTouchController? = null
+    private var handRunning = false
     private val mainHandler = android.os.Handler(android.os.Looper.getMainLooper())
     private var library: Set<String> = emptySet()
 
@@ -265,6 +338,10 @@ class GamePanelService : LifecycleService() {
                 crosshair = CrosshairPrefs.load(applicationContext)
                 syncCrosshair(crosshair)
             }
+            key.startsWith("game_veil_") -> {
+                veil = DisplayVeilPrefs.load(applicationContext)
+                syncVeil(veil)
+            }
             key.startsWith("game_panel_") && key != "game_panel_handle_y" -> applyPrefsNow()
         }
     }
@@ -292,6 +369,7 @@ class GamePanelService : LifecycleService() {
         overlayLanguage = AppLanguage.savedTag(this)
         panelPrefs = saved
         crosshair = CrosshairPrefs.load(this)
+        veil = DisplayVeilPrefs.load(this)
         handleScale = saved.handleSize.scale
         // الإزاحة صفر نحو الداخل من الحافة المختارة: لا حساب بمقاس شاشة (قد يكون قديمًا ساعة الإقلاع).
         buildOverlay(
@@ -340,6 +418,13 @@ class GamePanelService : LifecycleService() {
                 stopSelf()
                 return START_NOT_STICKY
             }
+        }
+        // أوامر الماكرو تصل بعد تركيب النافذة: التسجيل يفتح مسطرة فوق اللعبة، والتشغيل يعيد
+        // الخطوات المخزَّنة لنفس الحزمة. وكلها تمرّ بالحقن المحروس نفسه.
+        when (intent?.action) {
+            ACTION_MACRO_RECORD -> startMacroRecording()
+            ACTION_MACRO_STOP -> stopMacroRecording(save = true)
+            ACTION_MACRO_PLAY -> playMacro()
         }
         return START_STICKY
     }
@@ -468,6 +553,28 @@ class GamePanelService : LifecycleService() {
         window.unmount()
         crosshairOverlay?.destroy()
         crosshairOverlay = null
+        veilOverlay?.destroy()
+        veilOverlay = null
+        memoOverlay?.destroy()
+        memoOverlay = null
+        padsOverlay?.destroy()
+        padsOverlay = null
+        gyroController?.destroy()
+        gyroController = null
+        extrasOverlay?.destroy()
+        extrasOverlay = null
+        turboStrip?.destroy()
+        turboStrip = null
+        scoutJob?.cancel()
+        scoutJob = null
+        scoutOverlay?.destroy()
+        scoutOverlay = null
+        macroPad?.destroy()
+        macroPad = null
+        macroRecording = false
+        handController?.destroy()
+        handController = null
+        handRunning = false
         recordOpenSessionOnDestroy()
         isRunning = false
         super.onDestroy()
@@ -486,16 +593,23 @@ class GamePanelService : LifecycleService() {
         while (lifecycleScope.isActive) {
             val prefs = GamePanelPrefs.load(applicationContext)
             val crosshairNow = CrosshairPrefs.load(applicationContext)
+            val veilNow = DisplayVeilPrefs.load(applicationContext)
             // التصويب سببٌ مستقلّ لبقاء الخدمة: من أطفأ لوحات الألعاب كلها وأبقى العلامة
             // لا يُوقف خدمته فجأة. وإن لم يبقَ أيّ سبب — لا لوحة ولا تصويب — تُوقف.
+            // أمّا الستارة فلا تُرسم إلّا فوق لعبة متتبَّعة، فبقاء الخدمة من أجلها بلا لعبة
+            // مُفعَّلة استقصاءٌ لشيء لا يمكن أن يُرسم. والتصويب يبقى فوق هذا كلّه لأنه يظهر
+            // فوق أي تطبيق لا داخل لعبة وحدها.
+            val veilKeepsService = veilNow.enabled && prefs.enabledPackages.isNotEmpty()
             if (panelServiceLifetime(prefs.enabledPackages) == PanelLifetime.Stop &&
-                !crosshairNow.enabled
+                !crosshairNow.enabled &&
+                !veilKeepsService
             ) {
                 finishPlaySession()
                 stopSelf()
                 return
             }
             crosshair = crosshairNow
+            veil = veilNow
             panelPrefs = prefs
             handleScale = prefs.handleSize.scale
             refreshLibraryIfNeeded(prefs.enabledPackages)
@@ -562,6 +676,13 @@ class GamePanelService : LifecycleService() {
             // العلامة تتبع اللعبة الأمامية: تظهر مع `Tracked` وتختفي مع غيرها، وتُخفى
             // واللوحة مفتوحة حتى لا تُرسم فوق أزرارها.
             syncCrosshair(crosshairNow)
+            syncVeil(veilNow)
+            syncMemo(GameMemoPrefs.load(applicationContext))
+            // حقن اللمس لا يُبنى إلا بلعبة متتبَّعة: زرّا الكتف والجيروسكوب بلا لعبة أمامية
+            // يكتبان على شاشة الإعدادات نفسها — وهذا خطر لا ميزة.
+            syncInjection(state.subject is PanelSubject.Tracked)
+            // إضافات اللعبة (نقاط، شريط Turbo، تكبير، يد→لمس) على الطبقة نفسها وبالشروط نفسها.
+            syncExtras(state.subject)
             // ساعة الجلسة تُلمس لكل لعبة ترى الخدمة في المقدّمة، مُفعَّلةً كانت أم لا، كما كانت قبل التقسيم.
             (state.subject as? PanelSubject.Tracked)?.let { PanelSessionClock.touch(it.packageName) }
             // بروفايل اللعبة بلا رفيق الجذر: يدخل مع اللعبة المتتبَّعة ويخرج بخروجها. المطبِّق نفسه يقرّر هل هو
@@ -687,6 +808,408 @@ class GamePanelService : LifecycleService() {
         crosshair = next
         CrosshairPrefs.save(applicationContext, next)
         syncCrosshair(next)
+    }
+
+    /**
+     * ستارة العرض — لون واحد شفّاف فوق اللعبة، **ولا تُحجب اللمس**.
+     *
+     * ### ولماذا لا شرط `state.mode != GamePanelMode.Open` كما في التصويب
+     *
+     * العلامة تُخفى واللوحة مفتوحة لأنها تُرسم فوق أزرارها. أمّا الستارة فطبقة محيطة: لو أُخفيت
+     * عند كل فتح لوحة لارتجف لون الشاشة في كل تعديل، وهو أسوأ من عدم وجودها. فتبقى ما دامت لعبة
+     * متتبَّعة، وتنزاح معها.
+     *
+     * ### والحدّ المعلن
+     *
+     * لون لا معالجة: لا تباين ولا حدّة ولا تشبّع. ومن أراد تغيير الصورة نفسها فذاك مسار آخر لا
+     * يُدّعى هنا.
+     */
+    private fun syncVeil(prefs: DisplayVeilState = veil) {
+        if (android.os.Looper.myLooper() != android.os.Looper.getMainLooper()) {
+            mainHandler.post { syncVeil(prefs) }
+            return
+        }
+        val wanted = prefs.enabled &&
+            state.subject is PanelSubject.Tracked &&
+            Settings.canDrawOverlays(this)
+        if (!wanted) {
+            veilOverlay?.hide()
+            return
+        }
+        val overlay = veilOverlay ?: DisplayVeilOverlay(this).also { veilOverlay = it }
+        overlay.show(prefs)
+    }
+
+    /**
+     * المذكّرة المثبّتة: تُرسم فوق **لعبة متتبَّعة** وحدها، وبلا نصّ لا نافذة إطلاقًا.
+     *
+     * والشرط ليس تشدّدًا: مذكّرة «المرحلة ٤» بلا لعبة أمامها كلامٌ في الفراغ، وإظهارها فوق
+     * الشاشة الرئيسية يجعلها إشعارًا مزعجًا لا مذكّرة. وقراءة الإذن هنا كالستارة: بلا
+     * `SYSTEM_ALERT_WINDOW` لا نحاول أصلًا، فلا سجلّ فشل في كل دورة.
+     */
+    /**
+     * إضافات اللعبة على طبقة الحقن نفسها — **لا تعمل إلا للعبة متتبَّعة، وبإقرار، وبصلاحية تراكب**.
+     *
+     * وهذه هي الميزة الوحيدة التي تقرأ الشاشة (`ScoutZoomOverlay` عبر لقطة خدمة الوصول)؛ تُعلن
+     * في وصف الخدمة وفي الإقرار، ولا تُخزَّن ولا تُرسَل. والماكرو يمرّر لمساته عبر
+     * `TouchInjector.passThrough` لأن الإصبع الذي يسجّل هو نفسه الذي يولّد، فالحارس العاديّ
+     * كان سيرفض كل خطوة — وهذا الاستثناء الوحيد، ومكتوب في مكانه.
+     */
+    private fun syncExtras(subject: PanelSubject) {
+        if (Looper.myLooper() != Looper.getMainLooper()) {
+            mainHandler.post { syncExtras(subject) }
+            return
+        }
+        val pkg = (subject as? PanelSubject.Tracked)?.packageName
+        val canDraw = Settings.canDrawOverlays(this)
+        val consented = InjectionConsentPrefs.acknowledged(applicationContext)
+        val active = pkg != null && consented && canDraw
+        val extras = if (pkg != null) GameExtrasPrefs.load(applicationContext, pkg) else GameExtrasPrefs.State()
+
+        // نقاط الإضافات: كل نقطة نافذة صغيرة؛ لمسها يحقن إيماءتها في موضعها على اللعبة.
+        if (active && pkg != null && extras.enabled && extras.points.isNotEmpty()) {
+            val overlay = extrasOverlay ?: GameExtrasOverlay(
+                context = this,
+                initial = extras.points,
+                onPress = { point -> injectExtraPoint(point) },
+                onMoved = { point -> persistExtraPoint(pkg, point) },
+            ).also { extrasOverlay = it }
+            overlay.show(extras.points)
+        } else {
+            extrasOverlay?.hide()
+        }
+
+        // شريط Game Turbo: خمس أدوات حقيقية فوق اللعبة، وموضعه الرأسي يُحفظ كنسبة.
+        if (active && extras.turbo) {
+            val strip = turboStrip ?: GameTurboStrip(
+                context = this,
+                initialY = extras.turboY,
+                onFps = { toggleFpsOverlay() },
+                onScreenshot = { captureScreenshot() },
+                onRecord = { toggleTurboRecording() },
+                onScout = { GameExtrasPrefs.setScout(applicationContext, !GameExtrasPrefs.load(applicationContext, pkg.orEmpty()).scout) },
+                onClose = { GameExtrasPrefs.setTurbo(applicationContext, false) },
+                onMoved = { y -> GameExtrasPrefs.saveTurboY(applicationContext, y) },
+            ).also { turboStrip = it }
+            strip.setScout(extras.scout)
+            strip.show()
+        } else {
+            turboStrip?.hide()
+        }
+
+        // عدسة التكبير: لقطة من خدمة الوصول كل ٧٠٠ ملّي ثانية؛ بلا خدمة أو دون Android 11 تُقال
+        // الحال صريحةً (`screenshotAvailable=false`) ولا تُفتح نافذة فارغة.
+        val scoutWanted = active && extras.scout && A11yGestureInjector.screenshotAvailable
+        if (scoutWanted && scoutJob == null) {
+            val overlay = scoutOverlay ?: ScoutZoomOverlay(this).also { scoutOverlay = it }
+            overlay.show()
+            scoutJob = lifecycleScope.launch(Dispatchers.Default) {
+                while (isActive) {
+                    val bitmap = A11yGestureInjector.screenshot()
+                    withContext(Dispatchers.Main) { overlay.update(bitmap) }
+                    delay(if (bitmap == null) 1_500L else 700L)
+                }
+            }
+        } else if (!scoutWanted) {
+            scoutJob?.cancel()
+            scoutJob = null
+            scoutOverlay?.hide()
+        }
+
+        // يد ← لمس: عبور اليد أمام الحسّاس القريب ينقر مركز الشاشة، بتهدئة ٧٠٠ ملّي ثانية.
+        val handWanted = active && extras.hand
+        if (handWanted) {
+            val controller = handController ?: HandTouchController(this).also { handController = it }
+            if (controller.available && !handRunning) {
+                controller.start()
+                handRunning = true
+            }
+        } else if (handRunning) {
+            handController?.stop()
+            handRunning = false
+        }
+    }
+
+    /** حفظ موضع نقطة بعد سحبها — الإيماءة تبقى كما اختارها المستخدم. */
+    private fun persistExtraPoint(pkg: String, point: ExtraPoint) {
+        val now = GameExtrasPrefs.load(applicationContext, pkg)
+        GameExtrasPrefs.savePoints(
+            applicationContext,
+            pkg,
+            now.points.map { if (it.id == point.id) it.copy(x = point.x, y = point.y) else it },
+        )
+    }
+
+    /** لمسة نقطة إضافية: تحسب إيماءتها النقيّة ثم تنفّذها، والنقر المزدوج خطوتان بفاصل. */
+    private fun injectExtraPoint(point: ExtraPoint) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            val metrics = resources.displayMetrics
+            val action = GameExtrasMath.actionFor(point, metrics.widthPixels, metrics.heightPixels)
+            repeat(action.repeatCount.coerceAtLeast(1)) { index ->
+                if (index > 0 && action.repeatGapMs > 0L) delay(action.repeatGapMs)
+                val outcome = runCatching {
+                    TouchInjector.swipe(
+                        applicationContext,
+                        action.startX, action.startY,
+                        action.endX, action.endY,
+                        action.durationMs,
+                    )
+                }.getOrElse {
+                    InjectionOutcome.Failed(nd.max.core.input.InjectionLane.ACCESSIBILITY, "exception")
+                }
+                if (outcome !is InjectionOutcome.Delivered) {
+                    reportInjection("EVENT=GAME_EXTRA_OUTCOME id=${point.id}", outcome)
+                    return@launch
+                }
+            }
+        }
+    }
+
+    /** تبديل تراكب FPS من الشريط — الخدمة القائمة هي المالك، فلا نسخة ثانية من الحالة. */
+    private fun toggleFpsOverlay() {
+        if (FpsOverlayService.isRunning) {
+            FpsOverlayService.stop(applicationContext)
+        } else {
+            FpsOverlayService.start(applicationContext)
+        }
+    }
+
+    /** لقطة من الشريط: تُحفظ في `Pictures/MaxManager` وتُعلن النتيجة، أو الفشل بصدق. */
+    private fun captureScreenshot() {
+        lifecycleScope.launch(Dispatchers.IO) {
+            val path = runCatching { PanelScreenshot.capture() }.getOrNull()
+            withContext(Dispatchers.Main) {
+                val message = if (path != null) {
+                    getString(R.string.game_turbo_screenshot_saved)
+                } else {
+                    getString(R.string.game_turbo_screenshot_failed)
+                }
+                runCatching { Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT).show() }
+            }
+        }
+    }
+
+    /** تسجيل الشاشة من الشريط — بإقرار التسجيل نفسه، لا بإقرار الحقن وحده. */
+    private fun toggleTurboRecording() {
+        if (!CaptureConsentPrefs.acknowledged(applicationContext)) {
+            Toast.makeText(applicationContext, R.string.game_turbo_record_needs_consent, Toast.LENGTH_SHORT).show()
+            return
+        }
+        lifecycleScope.launch(Dispatchers.IO) {
+            val wasRecording = runCatching { PanelScreenRecorder.isRecording() }.getOrDefault(false)
+            val text = if (wasRecording) {
+                runCatching { PanelScreenRecorder.stop() }
+                R.string.game_turbo_record_stopped
+            } else {
+                runCatching { PanelScreenRecorder.start() }
+                R.string.game_turbo_record_started
+            }
+            withContext(Dispatchers.Main) {
+                turboStrip?.setRecording(!wasRecording)
+                runCatching { Toast.makeText(applicationContext, text, Toast.LENGTH_SHORT).show() }
+            }
+        }
+    }
+
+    /** بدء تسجيل الماكرو: تُفتح مسطرة شفافة تلتقط كل سحبة وتمرّرها للعبة في الحين نفسه. */
+    private fun startMacroRecording() {
+        if (macroRecording) return
+        val pkg = (state.subject as? PanelSubject.Tracked)?.packageName ?: return
+        if (!InjectionConsentPrefs.acknowledged(applicationContext) || !Settings.canDrawOverlays(this)) return
+        macroSteps.clear()
+        lastMacroAtMs = 0L
+        macroRecording = true
+        val pad = macroPad ?: MacroPadOverlay(
+            context = this,
+            onStroke = { x1, y1, x2, y2, duration -> recordMacroStroke(x1, y1, x2, y2, duration) },
+            onStop = { stopMacroRecording(save = true) },
+        ).also { macroPad = it }
+        pad.show()
+        Toast.makeText(applicationContext, R.string.game_extra_macro_started, Toast.LENGTH_SHORT).show()
+        AppMonitorLogger.persist("EVENT=MACRO_RECORD_START pkg=$pkg")
+    }
+
+    /** خطوة مسجَّلة: تُخزَّن بفاصلها الحقيقي وتُمرَّر إلى اللعبة بالحقن المباشر (بلا حارس). */
+    private fun recordMacroStroke(x1: Float, y1: Float, x2: Float, y2: Float, durationMs: Int) {
+        if (!macroRecording) return
+        if (macroSteps.size >= MacroMath.MAX_STEPS) return
+        val now = android.os.SystemClock.elapsedRealtime()
+        val gap = if (lastMacroAtMs == 0L) MacroMath.DEFAULT_DELAY_MS else now - lastMacroAtMs
+        lastMacroAtMs = now
+        macroSteps += MacroMath.recorded(x1, y1, x2, y2, gap)
+        lifecycleScope.launch(Dispatchers.IO) {
+            val metrics = resources.displayMetrics
+            runCatching {
+                TouchInjector.passThrough(
+                    applicationContext,
+                    x1 * metrics.widthPixels, y1 * metrics.heightPixels,
+                    x2 * metrics.widthPixels, y2 * metrics.heightPixels,
+                    durationMs,
+                )
+            }
+        }
+    }
+
+    /** إيقاف التسجيل: يُحفظ للعبة المتتبَّعة وحدها، والعدد يُقال لا يُقدَّر. */
+    private fun stopMacroRecording(save: Boolean) {
+        if (!macroRecording) return
+        macroRecording = false
+        macroPad?.hide()
+        macroPad = null
+        val pkg = (state.subject as? PanelSubject.Tracked)?.packageName
+        val count = macroSteps.size
+        if (save && pkg != null && count > 0) {
+            GameExtrasPrefs.saveMacro(applicationContext, pkg, macroSteps.toList())
+        }
+        val message = if (save && count > 0) {
+            getString(R.string.game_extra_macro_saved, count)
+        } else {
+            getString(R.string.game_extra_macro_stopped, count)
+        }
+        Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT).show()
+    }
+
+    /** تشغيل الماكرو المخزَّن للعبة المتتبَّعة — النتيجة عدد الخطوات التي وصلت فعلًا. */
+    private fun playMacro() {
+        val pkg = (state.subject as? PanelSubject.Tracked)?.packageName ?: return
+        val steps = GameExtrasPrefs.load(applicationContext, pkg).macro
+        if (steps.isEmpty()) {
+            Toast.makeText(applicationContext, R.string.game_extra_macro_empty, Toast.LENGTH_SHORT).show()
+            return
+        }
+        lifecycleScope.launch(Dispatchers.IO) {
+            val result = MacroRunner.play(applicationContext, steps)
+            withContext(Dispatchers.Main) {
+                val message = if (result.detail == null) {
+                    getString(R.string.game_extra_macro_played, result.stepsRun)
+                } else {
+                    getString(R.string.game_extra_macro_blocked, result.stepsRun, result.detail)
+                }
+                runCatching { Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT).show() }
+            }
+        }
+    }
+
+    /** إعلان نتيجة حقنة فاشلة/مرفوضة — والتقييد بالزمن صامت لأنه ليس عطبًا. */
+    private suspend fun reportInjection(event: String, outcome: InjectionOutcome) {
+        if (outcome is InjectionOutcome.Delivered) return
+        val message = when (outcome) {
+            is InjectionOutcome.Refused -> when (outcome.reason) {
+                InjectionRefusal.RATE_LIMITED -> return
+                InjectionRefusal.FINGER_DOWN -> getString(R.string.game_panel_inject_finger)
+                InjectionRefusal.NO_LANE -> getString(R.string.game_panel_inject_no_lane)
+                InjectionRefusal.OUT_OF_BOUNDS -> getString(R.string.game_panel_inject_bounds)
+            }
+
+            is InjectionOutcome.Failed -> getString(R.string.game_panel_inject_failed, outcome.detail)
+            is InjectionOutcome.Delivered -> return
+        }
+        withContext(Dispatchers.Main) {
+            runCatching { Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT).show() }
+        }
+        AppMonitorLogger.persist("$event outcome=${outcome::class.simpleName}")
+    }
+
+    private fun syncMemo(memo: GameMemo) {
+        if (android.os.Looper.myLooper() != android.os.Looper.getMainLooper()) {
+            mainHandler.post { syncMemo(memo) }
+            return
+        }
+        val wanted = memo.visible &&
+            memo.shownText.isNotEmpty() &&
+            state.subject is PanelSubject.Tracked &&
+            Settings.canDrawOverlays(this)
+        if (!wanted) {
+            memoOverlay?.hide()
+            return
+        }
+        val overlay = memoOverlay ?: GameMemoOverlay(this).also { memoOverlay = it }
+        overlay.show(memo)
+    }
+
+    /**
+     * حقن اللمس: زرّا الكتف والجيروسكوب — **لا يعملان بلا لعبة متتبَّعة ولا بلا إقرار**.
+     *
+     * والخدمة هي المالك الوحيد لهذين السطحين (كالستارة والمذكّرة): تُنشئهما وتُخفيهما
+     * وتُدمّرهما. واختيار «متتبَّعة فقط» ليس تحفّظًا زائدًا: الحقن بلا لعبة يكتب على شاشة
+     * الإعدادات أو متجر التطبيقات، وهو خطر بلا مقابل.
+     */
+    private fun syncInjection(tracked: Boolean) {
+        if (android.os.Looper.myLooper() != android.os.Looper.getMainLooper()) {
+            mainHandler.post { syncInjection(tracked) }
+            return
+        }
+        val context = applicationContext
+        val consented = InjectionConsentPrefs.acknowledged(context)
+
+        val pads = ShoulderPadPrefs.load(context)
+        val padsWanted = tracked && pads.enabled && consented && Settings.canDrawOverlays(this)
+        if (padsWanted) {
+            val overlay = padsOverlay ?: ShoulderPadOverlay(
+                context = this,
+                initial = pads.layout,
+                onTap = { side, x, y -> injectPadTap(side, x, y) },
+                onMoved = { side, xFraction, yFraction ->
+                    ShoulderPadPrefs.savePosition(applicationContext, side, xFraction, yFraction)
+                },
+            ).also { padsOverlay = it }
+            // يُعاد الحساب كل دورة: الدوران يغيّر أبعاد الشاشة والنسبة تبقى، فلا يبقى الزرّ
+            // في موضع وضعٍ سابق.
+            overlay.updateLayout(pads.layout)
+            overlay.show()
+        } else {
+            padsOverlay?.hide()
+        }
+
+        val gyro = GyroAimPrefs.load(context)
+        val gyroWanted = tracked && gyro.enabled && consented
+        val controller = gyroController ?: if (gyroWanted) {
+            GyroAimController(this).also { gyroController = it }
+        } else {
+            null
+        }
+        if (gyroWanted && controller != null && controller.available) {
+            if (!gyroRunning) {
+                controller.start(gyro)
+                gyroRunning = true
+            } else {
+                controller.update(gyro)
+            }
+        } else if (gyroRunning) {
+            controller?.stop()
+            gyroRunning = false
+        }
+    }
+
+    /** نقرة الزرّ: الحقن في مركزه — والعطب يُقال، أما التقييد بالزمن فصامت عن قصد. */
+    private fun injectPadTap(side: PadSide, x: Float, y: Float) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            val outcome = runCatching { TouchInjector.tap(applicationContext, x, y) }
+                .getOrElse { InjectionOutcome.Failed(nd.max.core.input.InjectionLane.PRIVILEGED_SHELL, "exception") }
+            if (outcome is InjectionOutcome.Delivered) return@launch
+            val message = when (outcome) {
+                is InjectionOutcome.Refused -> when (outcome.reason) {
+                    InjectionRefusal.RATE_LIMITED -> return@launch
+                    InjectionRefusal.FINGER_DOWN -> getString(R.string.game_panel_inject_finger)
+                    InjectionRefusal.NO_LANE -> getString(R.string.game_panel_inject_no_lane)
+                    InjectionRefusal.OUT_OF_BOUNDS -> getString(R.string.game_panel_inject_bounds)
+                }
+
+                is InjectionOutcome.Failed -> getString(R.string.game_panel_inject_failed, outcome.detail)
+                is InjectionOutcome.Delivered -> return@launch
+            }
+            withContext(Dispatchers.Main) {
+                runCatching { Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT).show() }
+            }
+            AppMonitorLogger.persist("EVENT=SHOULDER_PAD_TAP side=${side.name.lowercase()} outcome=${outcome::class.simpleName}")
+        }
+    }
+
+    /** دورة اللمس من البلاطة: دافئة ← ليلية ← تعتيم ← إطفاء. */
+    private fun cycleVeil() {
+        val next = veil.cycle()
+        DisplayVeilPrefs.save(applicationContext, next)
+        syncVeil(next)
     }
 
     /**
@@ -944,6 +1467,36 @@ class GamePanelService : LifecycleService() {
             is PanelSubject.Other -> subject.packageName
             PanelSubject.Unknown -> ""
         }
+        // إيصال الإطلاق: نتيجة آخر تطبيق لملفّ اللعبة، مقروءة من السجلّ الذي كتبه
+        // `InAppProfileApplier` نفسه — لا من نيّة الإطلاق، ولا من صفر مخترع.
+        val trackedPkg = (state.subject as? PanelSubject.Tracked)?.packageName
+        val receiptRow = remember(trackedPkg) {
+            val run = trackedPkg?.let { pkg ->
+                InAppRunLog.decode(
+                    applicationContext.getSharedPreferences(InAppRunLog.PREFS, MODE_PRIVATE)
+                        .getString(InAppRunLog.KEY, null)
+                )?.takeIf { it.pkg == pkg }
+            }
+            inAppReceipt(run)
+        }
+        val launchReceipt = when (receiptRow) {
+            is InAppRunRow.Blocked -> stringResource(
+                R.string.game_panel_receipt_blocked,
+                stringResource(reasonTextRes(receiptRow.reason))
+            )
+            is InAppRunRow.Applied -> stringResource(
+                R.string.game_panel_receipt_applied,
+                receiptRow.written,
+                receiptRow.total,
+                receiptRow.verified
+            )
+            is InAppRunRow.Skipped -> stringResource(
+                R.string.game_panel_receipt_skipped,
+                stringResource(knobLabelRes(receiptRow.knob)),
+                stringResource(reasonTextRes(receiptRow.reason))
+            )
+            else -> null
+        }
         GamePanelSurface(
             mode = state.mode,
             gameLabel = label,
@@ -964,10 +1517,11 @@ class GamePanelService : LifecycleService() {
                 syncClockLoop(false)
                 window.setFullScreen(false, dockAt?.first, dockAt?.second)
                 window.setTouchHandler(silk)
+                window.setFocusable(false)
                 // بعد قياس المقبض الجديد لا القديم، فيُوضع على الحافة فورًا لا بعد الاستطلاع التالي.
                 android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({ placeWindow() }, 80L)
             },
-            onClose = { dismissPanel() },
+            onClose = { window.setFocusable(false); dismissPanel() },
             onCycleRefresh = { cycleRefreshRate() },
             refreshChoices = refreshChoices,
             onSelectRefresh = { hz -> selectRefreshRate(hz) },
@@ -977,11 +1531,19 @@ class GamePanelService : LifecycleService() {
             onToggleBypass = { toggleBypass() },
             crosshairEnabled = crosshair.enabled,
             onToggleCrosshair = { toggleCrosshair() },
+            veilEnabled = veil.enabled,
+            veilTone = veil.tone,
+            onCycleVeil = { cycleVeil() },
+            // المذكّرة تحتاج لوحة مفاتيح: النافذة تُرفع للحظة الكتابة وتُعاد عند الإغلاق،
+            // فلا تبقى سارقةً للمس بعد أن ينتهي الحقل.
+            onTyping = { typing -> window.setFocusable(typing) },
+            trackedPackage = (state.subject as? PanelSubject.Tracked)?.packageName,
             thermal = thermal,
             onSelectThermal = { id -> selectThermal(id) },
             handleFx = silk.fx,
             handleScale = handleScale,
-            origin = openOrigin
+            origin = openOrigin,
+            launchReceipt = launchReceipt
         )
     }
 }

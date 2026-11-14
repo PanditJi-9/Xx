@@ -85,6 +85,10 @@ data class ProcessDetails(
     val vmSwapKb: Long?,
     val cgroup: String?,
     val threads: Int?,
+    /** بايتات قُرئت من القرص — `null` حين منع النظام `io` لا حين كانت صفرًا. */
+    val ioReadBytes: Long? = null,
+    /** بايتات كُتبت إلى القرص — نفس التفريق بين الغياب والصفر. */
+    val ioWrittenBytes: Long? = null,
 )
 
 /**
@@ -124,7 +128,7 @@ object ProcessFeed {
     /**
      * دورة قراءة واحدة: اقرأ ← ميّز ← صفِّ ← رتّب ← اقصر.
      *
-     * @param query نصّ بحث في الاسم المعروض أو الحزمة؛ الفراغ يعني لا تصفية.
+     * @param query نصّ بحث في الاسم المعروض أو الحزمة أو رقم العملية (كاملًا)؛ الفراغ يعني لا تصفية.
      */
     fun read(
         context: Context,
@@ -154,15 +158,28 @@ object ProcessFeed {
             nd.max.core.privilege.RootCommands.cmd(
                 "cat /proc/$pid/status 2>/dev/null; echo '__MAX_OOM__'; " +
                     "cat /proc/$pid/oom_score_adj 2>/dev/null; echo '__MAX_CGROUP__'; " +
-                    "cat /proc/$pid/cgroup 2>/dev/null"
+                    "cat /proc/$pid/cgroup 2>/dev/null; echo '__MAX_IO__'; " +
+                    "cat /proc/$pid/io 2>/dev/null"
             ).exec()
         }.getOrNull() ?: return null
         val text = result.out.joinToString("\n")
         if (text.isBlank()) return null
+        return parseDetails(pid, text)
+    }
 
+    /**
+     * يقرأ تفريغ `/proc/<pid>` إلى [ProcessDetails] — دالّة خالصة، فتُقاس بلا جهاز.
+     *
+     * الأقسام مفصولة بعلامات نكتبها نحن، فلا يلتبس نصّ `/proc` بعلامة. و**الغياب ليس صفرًا**:
+     * نواة تمنع `io` عن عملية غيرنا تُعيد قسمًا فارغًا، فتبقى البايتات `null` ويُعرض `—`
+     * بدل «٠ بايت» الكاذبة.
+     */
+    internal fun parseDetails(pid: Int, text: String): ProcessDetails {
         val status = text.substringBefore("__MAX_OOM__")
         val oom = text.substringAfter("__MAX_OOM__", "").substringBefore("__MAX_CGROUP__")
-        val cgroup = text.substringAfter("__MAX_CGROUP__", "")
+        val rest = text.substringAfter("__MAX_CGROUP__", "")
+        val cgroup = rest.substringBefore("__MAX_IO__")
+        val io = rest.substringAfter("__MAX_IO__", "")
 
         fun statusValue(key: String): String? = status.lineSequence()
             .map { it.trim() }
@@ -170,6 +187,13 @@ object ProcessFeed {
             ?.substringAfter(':')
             ?.trim()
             ?.takeIf { it.isNotEmpty() }
+
+        fun ioValue(key: String): Long? = io.lineSequence()
+            .map { it.trim() }
+            .firstOrNull { it.startsWith("$key:") }
+            ?.substringAfter(':')
+            ?.trim()
+            ?.toLongOrNull()
 
         return ProcessDetails(
             pid = pid,
@@ -181,6 +205,8 @@ object ProcessFeed {
                 .joinToString(" | ")
                 .takeIf { it.isNotEmpty() },
             threads = statusValue("Threads")?.toIntOrNull(),
+            ioReadBytes = ioValue("read_bytes"),
+            ioWrittenBytes = ioValue("write_bytes"),
         )
     }
 
@@ -304,9 +330,18 @@ object ProcessFeed {
                 }
             }
             .filter { reading ->
-                needle.isEmpty() ||
+                // رقم خالص يُقرأ **معرّف عملية**: يُطابق المعرّف كاملًا، والاسم كجزء.
+                // ولا يُطابق حزمةً جزئيًّا، وإلّا فبحث «123» عن العملية 123 يجلب كل حزمة
+                // تحمل `123` في اسمها (`com.example.app1234`)، وهو عكس قصد من كتب الرقم.
+                if (needle.isEmpty()) {
+                    true
+                } else if (needle.all { it.isDigit() }) {
+                    reading.pid.toString() == needle ||
+                        reading.label.contains(needle, ignoreCase = true)
+                } else {
                     reading.label.contains(needle, ignoreCase = true) ||
-                    reading.packageName.contains(needle, ignoreCase = true)
+                        reading.packageName.contains(needle, ignoreCase = true)
+                }
             }
             .sortedWith(ordered)
             .take(limit.coerceAtLeast(0))

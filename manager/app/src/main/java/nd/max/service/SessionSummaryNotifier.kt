@@ -91,7 +91,17 @@ object SessionSummaryNotifier {
      * والأجزاء تُبنى بالترتيب، وما لا يُقاس يُحذف بدل أن يُكتب صفرًا (ADR-07).
      */
     private fun body(context: Context, session: StoredGameSession, insight: SessionInsight): String {
-        val parts = ArrayList<String>(4)
+        val parts = ArrayList<String>(5)
+        // المدة أولًا لأنها السؤال الأول بعد الجلسة، وتُذكر فقط حين تكون مقيسة (نهاية بعد بداية).
+        val durationMs = (session.endedAtMs - session.startedAtMs).takeIf { it > 0L }
+        if (durationMs != null) {
+            val minutes = durationMs / 60_000L
+            parts += if (minutes >= 60L) {
+                context.getString(R.string.session_notify_duration_hm, minutes / 60L, minutes % 60L)
+            } else {
+                context.getString(R.string.session_notify_duration_min, minutes)
+            }
+        }
         session.framesAverage?.let { parts += context.getString(R.string.session_notify_fps, it.toInt()) }
         session.jankAverage?.let { parts += context.getString(R.string.session_notify_jank, it) }
         val verdict = when (insight.verdict) {

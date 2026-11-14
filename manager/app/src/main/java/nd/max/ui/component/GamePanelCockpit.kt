@@ -7,6 +7,11 @@
 
 package nd.max.ui.component
 
+import android.content.Context
+import android.content.Intent
+import android.hardware.Sensor
+import android.hardware.SensorManager
+import android.provider.Settings
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
@@ -19,6 +24,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -28,6 +34,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -43,6 +50,7 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.VolumeUp
 import androidx.compose.material.icons.rounded.BatteryChargingFull
@@ -53,6 +61,7 @@ import androidx.compose.material.icons.rounded.DoNotDisturbOn
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.FiberManualRecord
+import androidx.compose.material.icons.rounded.DarkMode
 import androidx.compose.material.icons.rounded.GpsFixed
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Info
@@ -76,6 +85,7 @@ import androidx.compose.material.icons.rounded.Waves
 import androidx.compose.material.icons.rounded.WbSunny
 import androidx.compose.material.icons.rounded.Wifi
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -90,9 +100,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -101,11 +114,14 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -114,8 +130,10 @@ import nd.max.R
 import nd.max.core.gamespace.BypassState
 import nd.max.core.gamespace.CockpitModel
 import nd.max.core.gamespace.CubeLayoutMath
+import nd.max.core.gamespace.DisplayVeilTone
 import nd.max.core.gamespace.PortraitLayoutMath
 import nd.max.core.gamespace.GameThermalProfiles
+import nd.max.core.gamespace.GameMemo
 import nd.max.core.gamespace.PanelClockMath
 import nd.max.core.gamespace.PanelClocks
 import nd.max.core.gamespace.PanelControlState
@@ -137,13 +155,26 @@ import nd.max.core.hardware.GpuHardwareBackend
 import nd.max.core.platform.HudField
 import nd.max.core.platform.HudReading
 import nd.max.core.platform.HudTally
+import nd.max.ui.util.CaptureConsentPrefs
+import nd.max.ui.util.GyroAimPrefs
+import nd.max.ui.util.InjectionConsentPrefs
+import nd.max.ui.util.ShoulderPadPrefs
+import nd.max.core.input.A11yGestureInjector
+import nd.max.core.input.ExtraGesture
+import nd.max.core.input.ExtraPoint
+import nd.max.core.input.GameExtrasMath
+import nd.max.core.input.GyroAimMath
 import nd.max.ui.design.MAX_VALUE_UNAVAILABLE
 import nd.max.ui.design.MaxDuration
 import nd.max.ui.design.MaxRadius
 import nd.max.ui.design.MaxSize
 import nd.max.ui.design.MaxSpace
+import nd.max.ui.design.maxRadius
 import nd.max.ui.util.GamePanelPrefs
+import nd.max.ui.util.GameExtrasPrefs
+import nd.max.ui.util.GameMemoPrefs
 import nd.max.service.FpsOverlayService
+import nd.max.service.GamePanelService
 
 /*
  * لوحة اللعبة المفتوحة بتصميم «Energy Cube»، على هيئة المرجع:
@@ -162,6 +193,12 @@ import nd.max.service.FpsOverlayService
  * وكل مقاس من [CubeLayoutMath] فلا تتراكب الأعمدة ولا تُقطع النصوص (انظر `CubeLayoutTest`).
  */
 private const val LEAVE_MS = 240
+
+/** عمر الرسالة العابرة في شريط الملاحظات. */
+private const val NOTE_MS = 4_200L
+
+/** عمر إيصال الإطلاق: أطول لأن قراءته عددٌ وسبب، لا كلمة تأكيد. */
+private const val RECEIPT_MS = 9_000L
 
 private typealias Enter = Animatable<Float, AnimationVector1D>
 
@@ -225,11 +262,21 @@ fun GamePanelCockpit(
     onToggleBypass: () -> Unit,
     crosshairEnabled: Boolean = false,
     onToggleCrosshair: () -> Unit = {},
+    /** ستارة العرض: لون شفّاف فوق اللعبة — لا معالجة صورة. */
+    veilEnabled: Boolean = false,
+    veilTone: DisplayVeilTone = DisplayVeilTone.WARM,
+    onCycleVeil: () -> Unit = {},
+    /** رفع/إعادة تركيز نافذة اللوحة: الحقل النصّي لا يظهر له لوحة مفاتيح في نافذة غير قابلة للتركيز. */
+    onTyping: (Boolean) -> Unit = {},
+    /** الحزمة المتتبَّعة: إضافات اللعبة تُخزَّن لكل لعبة. */
+    trackedPackage: String? = null,
     thermal: ThermalPanelState = ThermalPanelState(),
     onSelectThermal: (String) -> Unit = {},
     refreshChoices: List<Int> = emptyList(),
     onSelectRefresh: (Int?) -> Unit = {},
-    origin: Offset = Offset(1f, 0.5f)
+    origin: Offset = Offset(1f, 0.5f),
+    /** إيصال الإطلاق: ماذا فُعل بملفّ اللعبة فعلًا. `null` تعني «لا خبر يُقال»، لا «نجاح». */
+    launchReceipt: String? = null
 ) {
     val context = LocalContext.current
     val density = LocalDensity.current.density
@@ -253,8 +300,36 @@ fun GamePanelCockpit(
     var dnd by remember { mutableStateOf(false) }
     var touch by remember { mutableStateOf(false) }
     var screenRec by remember { mutableStateOf(false) }
+    // الإقرار لا يُسأل في كل مرة: يُفتح الحوار قبل **أول** تسجيل فقط، ثم يُسجَّل في المتجر نفسه.
+    var consentOpen by remember { mutableStateOf(false) }
     var fpsOverlay by remember { mutableStateOf(FpsOverlayService.isRunning) }
     var reminderMin by remember { mutableStateOf(0) }
+    // المذكّرة المثبّتة: النموذج المخزَّن هو مصدر الحقيقة الوحيد، والبلاطة تعرض حالته لا نسخة ثانية.
+    var memo by remember { mutableStateOf(GameMemoPrefs.load(context)) }
+    var memoOpen by remember { mutableStateOf(false) }
+    var memoDraft by remember { mutableStateOf("") }
+    // حقن اللمس: الحالة تعرض المخزَّن نفسه؛ والإقرار يُقرأ من متجره لا يُخمَّن.
+    var injectionAck by remember { mutableStateOf(InjectionConsentPrefs.acknowledged(context)) }
+    var laneReady by remember { mutableStateOf(A11yGestureInjector.available) }
+    var padsOpen by remember { mutableStateOf(false) }
+    var shoulderOn by remember { mutableStateOf(ShoulderPadPrefs.load(context).enabled) }
+    var gyroOpen by remember { mutableStateOf(false) }
+    var gyro by remember { mutableStateOf(GyroAimPrefs.load(context)) }
+    val gyroPresent = remember {
+        val manager = context.getSystemService(Context.SENSOR_SERVICE) as? SensorManager
+        manager?.getDefaultSensor(Sensor.TYPE_GYROSCOPE) != null
+    }
+    // إضافات اللعبة: تُقرأ للحزمة المتتبَّعة وحدها؛ وبلا لعبة لا تُفتح أصلًا.
+    var extrasOpen by remember { mutableStateOf(false) }
+    var extras by remember(trackedPackage) {
+        mutableStateOf(
+            if (trackedPackage != null) GameExtrasPrefs.load(context, trackedPackage) else GameExtrasPrefs.State()
+        )
+    }
+    val handPresent = remember {
+        val manager = context.getSystemService(Context.SENSOR_SERVICE) as? SensorManager
+        manager?.getDefaultSensor(Sensor.TYPE_PROXIMITY) != null
+    }
     var optimizing by remember { mutableStateOf(false) }
     var listView by remember { mutableStateOf(true) }
     var details by remember { mutableStateOf(false) }
@@ -297,6 +372,16 @@ fun GamePanelCockpit(
     val lFps = stringResource(R.string.game_panel_tool_fps)
     val lFpsOn = stringResource(R.string.game_panel_tool_fps_on)
     val lCrosshair = stringResource(R.string.crosshair_title)
+    val lVeil = stringResource(R.string.game_panel_veil)
+    val veilWarm = stringResource(R.string.game_panel_veil_warm)
+    val veilNight = stringResource(R.string.game_panel_veil_night)
+    val veilDim = stringResource(R.string.game_panel_veil_dim)
+    // الاسم المعروض للون الحالي — يُقرأ في البلاطة وفي الإعلان، فلا يختلفان.
+    fun veilToneLabel(tone: DisplayVeilTone): String = when (tone) {
+        DisplayVeilTone.WARM -> veilWarm
+        DisplayVeilTone.NIGHT -> veilNight
+        DisplayVeilTone.DIM -> veilDim
+    }
     val lRotation = stringResource(R.string.game_panel_tool_rotation)
     val lOptimize = stringResource(R.string.game_panel_tool_optimize)
     val lTouch = stringResource(R.string.game_panel_tool_touch)
@@ -313,6 +398,71 @@ fun GamePanelCockpit(
     val msgDone = stringResource(R.string.game_panel_reminder_done)
     val msgSaved = stringResource(R.string.game_panel_msg_saved)
     val msgRecFailed = stringResource(R.string.game_panel_msg_rec_failed)
+    val recConsentTitle = stringResource(R.string.game_panel_rec_consent_title)
+    val recConsentBody = stringResource(R.string.game_panel_rec_consent_body)
+    val recConsentGo = stringResource(R.string.game_panel_rec_consent_go)
+    val lMemo = stringResource(R.string.game_panel_tool_memo)
+    val memoTitle = stringResource(R.string.game_panel_memo_title)
+    val memoHint = stringResource(R.string.game_panel_memo_hint)
+    val memoNote = stringResource(R.string.game_panel_memo_note)
+    val memoSave = stringResource(R.string.game_panel_memo_save)
+    val memoHide = stringResource(R.string.game_panel_memo_hide)
+    val msgMemoSaved = stringResource(R.string.game_panel_memo_saved)
+    val msgMemoOff = stringResource(R.string.game_panel_memo_off)
+    val lShoulder = stringResource(R.string.game_panel_tool_shoulder)
+    val shoulderTitle = stringResource(R.string.game_panel_shoulder_title)
+    val shoulderHint = stringResource(R.string.game_panel_shoulder_hint)
+    val shoulderEnable = stringResource(R.string.game_panel_shoulder_enable)
+    val lGyro = stringResource(R.string.game_panel_tool_gyro)
+    val gyroTitle = stringResource(R.string.game_panel_gyro_title)
+    val gyroHint = stringResource(R.string.game_panel_gyro_hint)
+    val gyroEnable = stringResource(R.string.game_panel_gyro_enable)
+    val gyroSensitivityFmt = stringResource(R.string.game_panel_gyro_sensitivity)
+    val gyroDeadZoneFmt = stringResource(R.string.game_panel_gyro_deadzone)
+    val gyroPlus = stringResource(R.string.game_panel_gyro_plus)
+    val gyroMinus = stringResource(R.string.game_panel_gyro_minus)
+    val gyroUnavailable = stringResource(R.string.game_panel_gyro_unavailable)
+    val injectionWarning = stringResource(R.string.game_panel_injection_warning)
+    val injectionAckLabel = stringResource(R.string.game_panel_injection_ack)
+    val laneReadyText = stringResource(R.string.game_panel_injection_lane_ready)
+    val laneMissingText = stringResource(R.string.game_panel_injection_lane_missing)
+    val openAccessibility = stringResource(R.string.game_panel_injection_open_settings)
+    val guardUnknownText = stringResource(R.string.game_panel_injection_guard_unknown)
+    val injectionDisable = stringResource(R.string.game_panel_injection_disable)
+    val lExtras = stringResource(R.string.game_panel_tool_extras)
+    val extrasTitle = stringResource(R.string.game_panel_tool_extras)
+    val extrasHint = stringResource(R.string.game_extra_hint)
+    val extrasPointsLabel = stringResource(R.string.game_extra_points)
+    val extrasAddPoint = stringResource(R.string.game_extra_add_point)
+    val extrasClearPoints = stringResource(R.string.game_extra_clear_points)
+    val extrasScout = stringResource(R.string.game_extra_scout)
+    val extrasHand = stringResource(R.string.game_extra_hand)
+    val extrasTurbo = stringResource(R.string.game_extra_turbo)
+    val extrasRecord = stringResource(R.string.game_extra_record)
+    val extrasPlay = stringResource(R.string.game_extra_play)
+    val extrasCountFmt = stringResource(R.string.game_extra_count)
+    val extrasScoutUnavailable = stringResource(R.string.game_extra_scout_unavailable)
+    val extrasHandUnavailable = stringResource(R.string.game_extra_hand_unavailable)
+    // availability يحتاج استدعاء صلاحية: يُقاس عند فتح الحوار فقط، لا مع كل إعادة رسم.
+    LaunchedEffect(padsOpen, gyroOpen) {
+        if (padsOpen || gyroOpen) {
+            laneReady = withContext(Dispatchers.IO) { InjectionConsentPrefs.laneAvailable(context) }
+        }
+    }
+    val keyboard = LocalSoftwareKeyboardController.current
+    val memoFocus = remember { FocusRequester() }
+    // نافذة اللوحة غير قابلة للتركيز، فلا تظهر لوحة مفاتيح. تُرفع مع الحقل وتُعاد مع إغلاقه،
+    // وإبقاؤها مرفوعة بعد الإغلاق يسلب اللمس من اللعبة تحتها (نفس عقد `ProcessOverlayService`).
+    LaunchedEffect(memoOpen) {
+        onTyping(memoOpen)
+        if (memoOpen) {
+            delay(180)
+            runCatching { memoFocus.requestFocus() }
+            keyboard?.show()
+        } else {
+            keyboard?.hide()
+        }
+    }
     val msgShotSaved = stringResource(R.string.game_panel_msg_shot_saved)
     val msgShotFailed = stringResource(R.string.game_panel_msg_shot_failed)
     val msgFreedNone = stringResource(R.string.game_panel_msg_freed_none)
@@ -423,13 +573,19 @@ fun GamePanelCockpit(
         }
     }
 
-    fun say(text: String) {
+    fun say(text: String, ttlMs: Long = NOTE_MS) {
         notes.add(text)
         while (notes.size > 3) notes.removeAt(0)
-        scope.launch { delay(4200); notes.remove(text) }
+        scope.launch { delay(ttlMs); notes.remove(text) }
     }
 
     fun hold() { holdUntil = android.os.SystemClock.uptimeMillis() + 1600 }
+
+    // إيصال الإطلاق يُقال مرة واحدة عند فتح اللوحة، ويبقى أطول من رسالة عابرة لأن قراءته
+    // تحتاج وقفة. وهو في شريط الملاحظات القائم، فلا صفّ جديد ولا مساحة محجوزة على الشاشة.
+    LaunchedEffect(launchReceipt) {
+        if (launchReceipt != null) say(launchReceipt, RECEIPT_MS)
+    }
 
     /**
      * تطبيق من الشريط: نافذة عائمة فوق اللعبة، لا شاشة كاملة. تنطوي اللوحة بعد الفتح فقط (وإلا بقيت
@@ -597,7 +753,30 @@ fun GamePanelCockpit(
         }
         val onVolume: (Float) -> Unit = { value -> slide(volume, value) { device.setVolume(it) }; volume = value }
 
-        // ── بلاطات التحكّم (كلها تكتب فعلًا): قائمة واحدة للتخطيطين العرضي والطولي
+        /**
+     * بدء التسجيل بعد الإقرار — مسار واحد يستدعيه زرّ اللوحة وحوار الإقرار معًا،
+     * فلا يعرف أحدهما تحقّقًا لا يعرفه الآخر. الواجهة أولًا ثم يُقرأ ملفّ العلم فعلًا.
+     */
+    fun beginCapture() {
+        screenRec = true
+        say(String.format(fmtOn, lScreen))
+        PanelToggles.async { PanelScreenRecorder.start() }
+        scope.launch {
+            // ملفّ العلم لم يظهر بعد المهلة ⇒ `screenrecord` لم يبدأ (لا جذر أو رفض):
+            // تُصحّح البلاطة ويُعلن الفشل — بدل «بدأ التسجيل» وهو لم يبدأ (§9.2).
+            delay(1400)
+            val live = withContext(Dispatchers.IO) { PanelScreenRecorder.isRecording() }
+            if (!live) {
+                screenRec = false
+                hold()
+                say(msgRecFailed)
+            } else {
+                leave(onCollapse)
+            }
+        }
+    }
+
+    // ── بلاطات التحكّم (كلها تكتب فعلًا): قائمة واحدة للتخطيطين العرضي والطولي
         val bypassOn = controls.bypass == BypassState.On
         val tiles = buildList {
             add(CubeTileSpec(Icons.Rounded.Wifi, null, lWifi, wifi, onClick = { flip(lWifi, wifi, { wifi = it }) { PanelToggles.setWifi(context, it) } }))
@@ -642,29 +821,36 @@ fun GamePanelCockpit(
                 say(String.format(if (crosshairEnabled) fmtOff else fmtOn, lCrosshair))
                 onToggleCrosshair()
             }))
+            // ستارة عرض بلمسة: لون واحد شفّاف، والدورة تُعلن ما سيحدث قبل حدوثه.
+            add(CubeTileSpec(
+                Icons.Rounded.DarkMode,
+                if (veilEnabled) veilToneLabel(veilTone) else null,
+                lVeil,
+                veilEnabled,
+                onClick = {
+                    val next = if (!veilEnabled) DisplayVeilTone.WARM else veilTone.next()
+                    val off = veilEnabled && next == DisplayVeilTone.WARM
+                    hold()
+                    say(
+                        String.format(
+                            if (off) fmtOff else fmtOn,
+                            if (off) lVeil else "$lVeil · ${veilToneLabel(next)}"
+                        )
+                    )
+                    onCycleVeil()
+                }
+            ))
             add(CubeTileSpec(Icons.Rounded.Videocam, null, if (screenRec) lScreenOn else lScreen, screenRec, onClick = {
                 hold()
                 if (screenRec) {
                     screenRec = false
                     say(msgSaved)
                     PanelToggles.async { PanelScreenRecorder.stop() }
+                } else if (!CaptureConsentPrefs.acknowledged(context)) {
+                    // أول مرة: يُسأل قبل أن يُسجَّل بكسل واحد. ومن أغلق الحوار لم يُسجَّل له شيء.
+                    consentOpen = true
                 } else {
-                    screenRec = true
-                    say(String.format(fmtOn, lScreen))
-                    PanelToggles.async { PanelScreenRecorder.start() }
-                    scope.launch {
-                        // ملفّ العلم لم يظهر بعد المهلة ⇒ `screenrecord` لم يبدأ (لا جذر أو رفض):
-                        // تُصحّح البلاطة ويُعلن الفشل — بدل «بدأ التسجيل» وهو لم يبدأ (§9.2).
-                        delay(1400)
-                        val live = withContext(Dispatchers.IO) { PanelScreenRecorder.isRecording() }
-                        if (!live) {
-                            screenRec = false
-                            hold()
-                            say(msgRecFailed)
-                        } else {
-                            leave(onCollapse)
-                        }
-                    }
+                    beginCapture()
                 }
             }))
             add(CubeTileSpec(Icons.Rounded.PhotoCamera, null, lShot, false, onClick = {
@@ -724,8 +910,42 @@ fun GamePanelCockpit(
                 reminderMin = minutes
                 say(if (minutes > 0) String.format(fmtReminder, minutes) else String.format(fmtOff, lReminder))
             }))
+            // المذكّرة سطرٌ يبقى فوق اللعبة، لا منبّه: البلاطة تعرض حالتها وتفتح محرّرها.
+            add(CubeTileSpec(Icons.Rounded.Edit, null, lMemo, memo.visible, onClick = {
+                hold()
+                memoDraft = memo.text
+                memoOpen = true
+            }))
+            // زرّا الكتف: يفتحان الحوار ولا يظهران بلا إقرار ومسار حقن (يُقال ذلك في الحوار نفسه).
+            add(CubeTileSpec(Icons.Rounded.SportsEsports, null, lShoulder, shoulderOn, onClick = {
+                hold()
+                injectionAck = InjectionConsentPrefs.acknowledged(context)
+                shoulderOn = ShoulderPadPrefs.load(context).enabled
+                laneReady = A11yGestureInjector.available
+                padsOpen = true
+            }))
+            add(CubeTileSpec(Icons.Rounded.ScreenRotation, null, lGyro, gyro.enabled, onClick = {
+                hold()
+                injectionAck = InjectionConsentPrefs.acknowledged(context)
+                gyro = GyroAimPrefs.load(context)
+                laneReady = A11yGestureInjector.available
+                gyroOpen = true
+            }))
+            if (trackedPackage != null) {
+                add(CubeTileSpec(Icons.Rounded.SportsEsports, null, lExtras, extras.enabled || extras.turbo, onClick = {
+                    hold()
+                    injectionAck = InjectionConsentPrefs.acknowledged(context)
+                    laneReady = A11yGestureInjector.available
+                    extras = GameExtrasPrefs.load(context, trackedPackage)
+                    extrasOpen = true
+                }))
+            }
             add(CubeTileSpec(Icons.Rounded.PowerSettingsNew, null, lClose, false, onClick = { leave(onClose) }))
         }
+
+        // شرطة عدّاد الإطارات (—) كانت تسكت عن السبب؛ تُقال الحقيقة «لا عيّنة بعد» في شريط
+        // الحالة، وتفسح لرسالة المستخدم إن وُجدت بدل أن تنافسها.
+        val fpsGap = if (frames.isEmpty()) stringResource(R.string.game_panel_fps_gap) else null
 
         if (!portrait) {
             Canvas(Modifier.fillMaxSize()) { cubeWave(origin, wave.value, tint) }
@@ -735,7 +955,7 @@ fun GamePanelCockpit(
                 batteryText = batteryText(status.batteryPct, status.charging),
                 charging = status.charging,
                 batteryLow = !status.charging && (status.batteryPct ?: 100) <= 15,
-                note = notes.lastOrNull(), hint = lHint,
+                note = notes.lastOrNull() ?: fpsGap, hint = lHint,
                 apps = quickApps, launching = launching, onApp = { launchFloating(it) },
                 appsOpen = menu == CubeMenu.Apps, appsEditLabel = lShelfEdit,
                 onAppsEdit = { menu = if (menu == CubeMenu.Apps) CubeMenu.None else CubeMenu.Apps },
@@ -770,6 +990,15 @@ fun GamePanelCockpit(
                 onPickThermal = { pickThermal(it) }, leftScroll = leftScroll, gridScroll = gridScroll,
                 tiles = tiles,
                 extra = {
+                    // `ProfileStrip` كان مكتوبًا في هذه الحزمة وغير موصول بأي تخطيط، فكان الوضع
+                    // الحالي يُرى لونًا فقط. وصله هنا يجعل الاسم والمالك (أنت أو الذكاء) مقروءين
+                    // من `PanelControlState` نفسه، بلا enum ثانٍ ولا مصدر حالة موازٍ.
+                    DeckCard {
+                        ProfileStrip(
+                            selected = controls.profile, auto = controls.auto, accent = tint,
+                            onSelect = onSelectProfile
+                        )
+                    }
                     DeckCard { FrameGraph(history = frames, accent = tint) }
                     if (details) {
                         DeckCard { PanelReadings(reading = reading, fields = fields) }
@@ -815,8 +1044,14 @@ fun GamePanelCockpit(
                 thermalTitle = lThermalTitle, thermalOptions = thermalOptions,
                 thermalSelected = thermal.selected, thermalBusy = thermalBusy, onPickThermal = { pickThermal(it) },
                 tiles = tiles,
-                note = notes.lastOrNull() ?: lHint, noteIsMessage = notes.lastOrNull() != null,
+                note = notes.lastOrNull() ?: fpsGap ?: lHint, noteIsMessage = notes.lastOrNull() != null,
                 extra = {
+                    InfoCard {
+                        ProfileStrip(
+                            selected = controls.profile, auto = controls.auto, accent = tint,
+                            onSelect = onSelectProfile
+                        )
+                    }
                     InfoCard { FrameGraph(history = frames, accent = tint) }
                     if (details) {
                         InfoCard { PanelReadings(reading = reading, fields = fields) }
@@ -880,5 +1115,339 @@ fun GamePanelCockpit(
             )
             CubeMenu.None -> Unit
         }
+
+        // حوارات اللوحة تُرسم **داخل شجرتها**: حوار `Dialog` منفصل يحتاج Activity token،
+        // والنافذة هنا نافذة خدمة — فيسقط بـ`BadTokenException` (‏ADR-07: لا مسار يفشل صامتًا).
+        if (consentOpen) {
+            CubeModal(title = recConsentTitle, tint = tint, onDismiss = { consentOpen = false }) {
+                Text(recConsentBody, color = CubeDim, fontSize = 13.sp)
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs, Alignment.End)) {
+                    CubeModalAction(stringResource(R.string.cancel), CubeDim, onClick = { consentOpen = false })
+                    CubeModalAction(recConsentGo, ModeGreen, onClick = {
+                        CaptureConsentPrefs.acknowledge(context)
+                        consentOpen = false
+                        beginCapture()
+                    })
+                }
+            }
+        }
+
+        if (memoOpen) {
+            val memoShape = RoundedCornerShape(maxRadius(MaxRadius.control))
+            CubeModal(title = memoTitle, tint = tint, onDismiss = { memoOpen = false }) {
+                Text(memoNote, color = CubeDim, fontSize = 12.sp)
+                Box(
+                    Modifier.fillMaxWidth().clip(memoShape).background(CubeTile)
+                        .border(MaxSize.hairlineBorder, tint.copy(alpha = 0.55f), memoShape)
+                        .padding(horizontal = MaxSpace.sm, vertical = MaxSpace.xs)
+                ) {
+                    if (memoDraft.isEmpty()) Text(memoHint, color = CubeDim, fontSize = 14.sp)
+                    BasicTextField(
+                        value = memoDraft,
+                        onValueChange = { raw ->
+                            // سطر واحد مقروء فوق اللعبة؛ والحدّ نفسه في النموذج لا في الواجهة وحدها.
+                            memoDraft = raw.replace('\n', ' ').replace('\r', ' ').take(GameMemo.MAX_LENGTH)
+                        },
+                        singleLine = true,
+                        textStyle = TextStyle(color = CubeInk, fontSize = 14.sp),
+                        cursorBrush = SolidColor(tint),
+                        modifier = Modifier.fillMaxWidth().focusRequester(memoFocus)
+                    )
+                }
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs, Alignment.End)) {
+                    CubeModalAction(stringResource(R.string.cancel), CubeDim, onClick = { memoOpen = false })
+                    if (memo.visible) {
+                        CubeModalAction(memoHide, ModeAmber, onClick = {
+                            GameMemoPrefs.save(context, GameMemo.of(memoDraft, false))
+                            memo = GameMemoPrefs.load(context)
+                            say(msgMemoOff)
+                            memoOpen = false
+                        })
+                    }
+                    CubeModalAction(memoSave, ModeGreen, onClick = {
+                        GameMemoPrefs.save(context, GameMemo.of(memoDraft, true))
+                        memo = GameMemoPrefs.load(context)
+                        // نصّ فارغ بعد التنظيف = لا مذكّرة، فلا يُقال «عُرضت» وهناك شاشة فارغة.
+                        say(if (memo.visible) msgMemoSaved else msgMemoOff)
+                        memoOpen = false
+                    })
+                }
+            }
+        }
+
+        // زرّا الكتف: إقرار مرة واحدة، ثم شرط مسار فعليّ، ثم تشغيل. والموضع يُسحب على اللعبة نفسها.
+        if (padsOpen) {
+            CubeModal(title = shoulderTitle, tint = tint, onDismiss = { padsOpen = false }) {
+                Text(injectionWarning, color = CubeDim, fontSize = 12.sp)
+                if (!injectionAck) {
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs, Alignment.End)) {
+                        CubeModalAction(stringResource(R.string.cancel), CubeDim, onClick = { padsOpen = false })
+                        CubeModalAction(injectionAckLabel, ModeGreen, onClick = {
+                            InjectionConsentPrefs.acknowledge(context)
+                            injectionAck = true
+                        })
+                    }
+                } else {
+                    Text(shoulderHint, color = CubeDim, fontSize = 12.sp)
+                    Text(
+                        if (laneReady) laneReadyText else laneMissingText,
+                        color = if (laneReady) ModeGreen else ModeAmber,
+                        fontSize = 12.sp,
+                    )
+                    Text(guardUnknownText, color = CubeDim, fontSize = 11.sp)
+                    if (!laneReady) {
+                        CubeModalAction(openAccessibility, ModeAuto, onClick = {
+                            runCatching {
+                                context.startActivity(
+                                    Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+                                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                )
+                            }
+                        })
+                    }
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs, Alignment.End)) {
+                        CubeModalAction(stringResource(R.string.cancel), CubeDim, onClick = { padsOpen = false })
+                        CubeModalAction(
+                            if (shoulderOn) injectionDisable else shoulderEnable,
+                            if (shoulderOn) ModeAmber else ModeGreen,
+                        ) {
+                            shoulderOn = !shoulderOn
+                            ShoulderPadPrefs.setEnabled(context, shoulderOn)
+                            padsOpen = false
+                        }
+                    }
+                }
+            }
+        }
+
+        // التصويب الجيروسكوبيّ: نفس الإقرار ونفس شرط المسار؛ والمعايرة خطوتان صريحتان.
+        if (gyroOpen) {
+            CubeModal(title = gyroTitle, tint = tint, onDismiss = { gyroOpen = false }) {
+                Text(injectionWarning, color = CubeDim, fontSize = 12.sp)
+                if (!injectionAck) {
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs, Alignment.End)) {
+                        CubeModalAction(stringResource(R.string.cancel), CubeDim, onClick = { gyroOpen = false })
+                        CubeModalAction(injectionAckLabel, ModeGreen, onClick = {
+                            InjectionConsentPrefs.acknowledge(context)
+                            injectionAck = true
+                        })
+                    }
+                } else {
+                    Text(gyroHint, color = CubeDim, fontSize = 12.sp)
+                    Text(
+                        if (laneReady) laneReadyText else laneMissingText,
+                        color = if (laneReady) ModeGreen else ModeAmber,
+                        fontSize = 12.sp,
+                    )
+                    if (!gyroPresent) {
+                        Text(gyroUnavailable, color = ModeAmber, fontSize = 12.sp)
+                    } else {
+                        Text(String.format(gyroSensitivityFmt, gyro.sensitivity), color = CubeInk, fontSize = 13.sp)
+                        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs)) {
+                            CubeModalAction(gyroMinus, CubeDim, onClick = {
+                                gyro = gyro.copy(sensitivity = GyroAimMath.sensitivityAfter(gyro.sensitivity, -0.25f))
+                                GyroAimPrefs.save(context, gyro)
+                            })
+                            CubeModalAction(gyroPlus, CubeDim, onClick = {
+                                gyro = gyro.copy(sensitivity = GyroAimMath.sensitivityAfter(gyro.sensitivity, 0.25f))
+                                GyroAimPrefs.save(context, gyro)
+                            })
+                        }
+                        Text(String.format(gyroDeadZoneFmt, gyro.deadZone), color = CubeInk, fontSize = 13.sp)
+                        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs)) {
+                            CubeModalAction(gyroMinus, CubeDim, onClick = {
+                                gyro = gyro.copy(deadZone = GyroAimMath.deadZoneAfter(gyro.deadZone, -0.5f))
+                                GyroAimPrefs.save(context, gyro)
+                            })
+                            CubeModalAction(gyroPlus, CubeDim, onClick = {
+                                gyro = gyro.copy(deadZone = GyroAimMath.deadZoneAfter(gyro.deadZone, 0.5f))
+                                GyroAimPrefs.save(context, gyro)
+                            })
+                        }
+                    }
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs, Alignment.End)) {
+                        CubeModalAction(stringResource(R.string.cancel), CubeDim, onClick = { gyroOpen = false })
+                        CubeModalAction(
+                            if (gyro.enabled) injectionDisable else gyroEnable,
+                            if (gyro.enabled) ModeAmber else ModeGreen,
+                        ) {
+                            gyro = gyro.copy(enabled = !gyro.enabled)
+                            GyroAimPrefs.save(context, gyro)
+                            gyroOpen = false
+                        }
+                    }
+                }
+            }
+        }
+
+        // إضافات اللعبة: النقاط والماكرو والتكبير وشريط Turbo — كلها على طبقة الحقن الموصوفة فوق.
+        val extrasPkg = trackedPackage
+        if (extrasOpen && extrasPkg != null) {
+            CubeModal(title = extrasTitle, tint = tint, onDismiss = { extrasOpen = false }) {
+                Text(injectionWarning, color = CubeDim, fontSize = 12.sp)
+                if (!injectionAck) {
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs, Alignment.End)) {
+                        CubeModalAction(stringResource(R.string.cancel), CubeDim, onClick = { extrasOpen = false })
+                        CubeModalAction(injectionAckLabel, ModeGreen, onClick = {
+                            InjectionConsentPrefs.acknowledge(context)
+                            injectionAck = true
+                        })
+                    }
+                } else {
+                    Text(extrasHint, color = CubeDim, fontSize = 12.sp)
+                    Text(
+                        if (laneReady) laneReadyText else laneMissingText,
+                        color = if (laneReady) ModeGreen else ModeAmber,
+                        fontSize = 12.sp,
+                    )
+                    // النقاط: العنصر الأساسيّ في الفكرة ٤ — كل نقطة إيماءة مختارة تُحقن في موضعها.
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs), verticalAlignment = Alignment.CenterVertically) {
+                        Text("$extrasPointsLabel  ${String.format(extrasCountFmt, extras.points.size)}", color = CubeInk, fontSize = 13.sp)
+                        CubeModalAction(
+                            if (extras.enabled) injectionDisable else extrasAddPoint,
+                            if (extras.enabled) ModeAmber else ModeGreen,
+                        ) {
+                            val next = if (!extras.enabled && extras.points.isEmpty()) {
+                                listOf(ExtraPoint(id = 0, gesture = ExtraGesture.TAP, x = 0.5f, y = 0.62f))
+                            } else {
+                                extras.points
+                            }
+                            extras = extras.copy(enabled = !extras.enabled, points = next)
+                            GameExtrasPrefs.setEnabled(context, extrasPkg, extras.enabled)
+                            GameExtrasPrefs.savePoints(context, extrasPkg, next)
+                        }
+                    }
+                    if (extras.enabled) {
+                        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs)) {
+                            CubeModalAction(extrasAddPoint, CubeDim, onClick = {
+                                val id = GameExtrasMath.nextId(extras.points)
+                                if (id >= 0) {
+                                    val added = extras.points + ExtraPoint(id = id, x = 0.5f, y = 0.5f)
+                                    extras = extras.copy(points = GameExtrasMath.sanitize(added))
+                                    GameExtrasPrefs.savePoints(context, extrasPkg, extras.points)
+                                }
+                            })
+                            CubeModalAction(extrasClearPoints, CubeDim, onClick = {
+                                extras = extras.copy(points = emptyList())
+                                GameExtrasPrefs.savePoints(context, extrasPkg, emptyList())
+                            })
+                        }
+                        // صفّ لكل نقطة: لمسة تُدوّر إيماءتها — سبع إيماءات تدور.
+                        extras.points.forEach { point ->
+                            CubeModalAction("${glyphOf(point.gesture)}  #${point.id}", CubeInk, onClick = {
+                                val cycled = extras.points.map {
+                                    if (it.id == point.id) it.copy(gesture = it.gesture.next()) else it
+                                }
+                                extras = extras.copy(points = cycled)
+                                GameExtrasPrefs.savePoints(context, extrasPkg, cycled)
+                            })
+                        }
+                    }
+                    // الماكرو: تسجيل وإعادة — والعدد المخزَّن يُقال لا يُقدَّر.
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs)) {
+                        CubeModalAction(extrasRecord, ModeAuto, onClick = {
+                            extrasOpen = false
+                            GamePanelService.sendAction(context, GamePanelService.ACTION_MACRO_RECORD)
+                        })
+                        CubeModalAction(
+                            "$extrasPlay ${String.format(extrasCountFmt, extras.macro.size)}",
+                            CubeDim,
+                            onClick = {
+                                extrasOpen = false
+                                GamePanelService.sendAction(context, GamePanelService.ACTION_MACRO_PLAY)
+                            },
+                        )
+                    }
+                    // التكبير واليد وشريط Turbo: ثلاثة مفاتيح مستقلة.
+                    ToggleRow(extrasScout, extras.scout, if (!A11yGestureInjector.screenshotAvailable) extrasScoutUnavailable else null) {
+                        extras = extras.copy(scout = !extras.scout)
+                        GameExtrasPrefs.setScout(context, extras.scout)
+                    }
+                    ToggleRow(extrasHand, extras.hand, if (!handPresent) extrasHandUnavailable else null) {
+                        extras = extras.copy(hand = !extras.hand)
+                        GameExtrasPrefs.setHand(context, extras.hand)
+                    }
+                    ToggleRow(extrasTurbo, extras.turbo, null) {
+                        extras = extras.copy(turbo = !extras.turbo)
+                        GameExtrasPrefs.setTurbo(context, extras.turbo)
+                    }
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs, Alignment.End)) {
+                        CubeModalAction(stringResource(R.string.cancel), CubeDim, onClick = { extrasOpen = false })
+                    }
+                }
+            }
+        }
+    }
+}
+
+/** حرف الإيماءة كما يُعرض على النقطة وفي القائمة — رمز واحد لا يُترجم. */
+private fun glyphOf(gesture: ExtraGesture): String = when (gesture) {
+    ExtraGesture.TAP -> "•"
+    ExtraGesture.DOUBLE_TAP -> "2"
+    ExtraGesture.LONG_PRESS -> "L"
+    ExtraGesture.SWIPE_UP -> "↑"
+    ExtraGesture.SWIPE_DOWN -> "↓"
+    ExtraGesture.SWIPE_LEFT -> "←"
+    ExtraGesture.SWIPE_RIGHT -> "→"
+}
+
+/** صفّ مفتاح ثنائيّ بملاحظة اختياريّة تشرح غياب الشرط (حسّاس/خدمة) بدل تعطيل صامت. */
+@Composable
+private fun ToggleRow(
+    label: String,
+    on: Boolean,
+    note: String?,
+    onToggle: () -> Unit,
+) {
+    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs), verticalAlignment = Alignment.CenterVertically) {
+        Text(label, color = CubeInk, fontSize = 13.sp, modifier = Modifier.weight(1f))
+        if (note != null) Text(note, color = ModeAmber, fontSize = 11.sp, modifier = Modifier.weight(1f))
+        CubeModalAction(if (on) "ON" else "OFF", if (on) ModeGreen else CubeDim, onClick = onToggle)
+    }
+}
+/**
+ * حوار داخل شجرة اللوحة.
+ *
+ * **ولماذا لا `AlertDialog`:** اللوحة تعيش في نافذة خدمة (`TYPE_APPLICATION_OVERLAY`) بلا
+ * Activity token؛ وحوار Compose يفتح نافذة `Dialog` ثانية فيسقط بـ`BadTokenException`.
+ * `CubeDropdown` سبق أن اتّخذ القرار نفسه: يُرسم داخل الشجرة لا في `Popup`.
+ */
+@Composable
+private fun CubeModal(
+    title: String,
+    tint: Color,
+    onDismiss: () -> Unit,
+    content: @Composable ColumnScope.() -> Unit
+) {
+    val shape = RoundedCornerShape(maxRadius(MaxRadius.control))
+    Box(
+        Modifier.fillMaxSize().background(Color(0xB3000000))
+            .pointerInput(Unit) { detectTapGestures { onDismiss() } },
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            Modifier.padding(MaxSpace.gutter).widthIn(max = 320.dp)
+                .clip(shape).background(CubeMenuBg)
+                .border(MaxSize.hairlineBorder, tint.copy(alpha = 0.55f), shape)
+                .swallowTaps().padding(MaxSpace.md),
+            verticalArrangement = Arrangement.spacedBy(MaxSpace.sm)
+        ) {
+            Text(title, color = CubeInk, fontSize = 15.sp, fontWeight = FontWeight.Bold)
+            content()
+        }
+    }
+}
+
+/** زرّ نصّي داخل الحوار: ارتفاع هدف اللمس القائم (‏`MaxSize.minTouchTarget`) لا مساحة أيقونة. */
+@Composable
+private fun CubeModalAction(text: String, color: Color, onClick: () -> Unit) {
+    Box(
+        Modifier.height(MaxSize.minTouchTarget)
+            .clip(RoundedCornerShape(maxRadius(MaxRadius.chip)))
+            .clickable(onClick = onClick)
+            .padding(horizontal = MaxSpace.sm),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(text, color = color, fontSize = 13.sp, fontWeight = FontWeight.Bold)
     }
 }

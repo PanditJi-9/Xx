@@ -188,4 +188,56 @@ class ProcessFeedTest {
         assertEquals("1.5 MB", reading(1, "A", kb = 1536).residentText)
         assertEquals("12.3%", reading(1, "A", cpu = 12.345f).cpuText)
     }
+
+    @Test
+    fun `رقم خالص يبحث في المعرّف أيضًا`() {
+        val readings = listOf(reading(1, "init"), reading(123, "Chrome"), reading(1234, "Camera"))
+        assertEquals(
+            listOf("Chrome"),
+            ProcessFeed.arrange(readings, ProcessScope.All, "123", ProcessSort.Name, 10).map { it.label }
+        )
+        // ومعرّف غير موجود لا يُعيد «كل شيء»: البحث يعني التصفية لا التبديل.
+        assertTrue(ProcessFeed.arrange(readings, ProcessScope.All, "999", ProcessSort.Name, 10).isEmpty())
+    }
+
+    @Test
+    fun `البحث غير الرقمي لا يطابق المعرّف`() {
+        val readings = listOf(reading(123, "init"))
+        assertTrue(ProcessFeed.arrange(readings, ProcessScope.All, "x123", ProcessSort.Cpu, 10).isEmpty())
+    }
+
+    @Test
+    fun `تفاصيل proc تُقرأ بأقسامها والغياب ليس صفرًا`() {
+        val text = listOf(
+            "Name:\tcom.example",
+            "VmSwap:\t    2048 kB",
+            "Threads:\t9",
+            "__MAX_OOM__",
+            "-900",
+            "__MAX_CGROUP__",
+            "0::/uid_10123",
+            "__MAX_IO__",
+            "rchar: 100",
+            "read_bytes: 4096",
+            "write_bytes: 8192"
+        ).joinToString("\n")
+
+        val details = ProcessFeed.parseDetails(123, text)
+        assertEquals(123, details.pid)
+        assertEquals(-900, details.oomScoreAdj)
+        assertEquals(2048L, details.vmSwapKb)
+        assertEquals(9, details.threads)
+        assertEquals("0::/uid_10123", details.cgroup)
+        assertEquals(4096L, details.ioReadBytes)
+        assertEquals(8192L, details.ioWrittenBytes)
+    }
+
+    @Test
+    fun `قسم io الفارغ يعني منعًا لا صفر بايت`() {
+        val text = "Threads:\t9\n__MAX_OOM__\n0\n__MAX_CGROUP__\n0::/x\n__MAX_IO__\n"
+        val details = ProcessFeed.parseDetails(7, text)
+        assertEquals(9, details.threads)
+        assertEquals(null, details.ioReadBytes)
+        assertEquals(null, details.ioWrittenBytes)
+    }
 }

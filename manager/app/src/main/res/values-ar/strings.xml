@@ -11,7 +11,6 @@
     <string name="detailed_activity_log_desc">سجلّ لكل تغيير وتبديل تطبيق، بمعرّف ربط.</string>
     <string name="android_version">إصدار Android</string>
     <string name="app_name">MaxManager</string>
-    <string name="max_wordmark">MAX</string>
     <string name="app_name_settings">اسم التطبيق</string>
     <string name="app_priority">أولوية التطبيق</string>
     <string name="app_priority_control">التحكم في أولوية التطبيق</string>
@@ -470,6 +469,9 @@
     <string name="onboarding_perm_usage_desc">يعرف التطبيق في المقدمة، فتبدأ جلسة اللعبة وتنتهي معها.</string>
     <string name="onboarding_perm_battery_title">تحسين البطارية</string>
     <string name="onboarding_perm_battery_desc">يمنع تجميد الجلسة الطويلة في الخلفية.</string>
+    <string name="onboarding_perm_required">مطلوبة</string>
+    <string name="onboarding_perm_recommended">مُستحسَنة</string>
+    <string name="onboarding_perm_progress">%1$d من %2$d ممنوحة</string>
     <string name="onboarding_perm_granted">ممنوحة</string>
     <string name="onboarding_perm_grant">منح</string>
     <string name="onboarding_perm_note">أول صلاحيتين تكفيان للوحة؛ والبقية تجعل الجلسات والإحصاءات موثوقة.</string>
@@ -1678,6 +1680,45 @@
 
     <!-- جلسات اللعب: سطح التسجيل والسجلّ -->
     <string name="game_sessions_title">جلسات اللعب</string>
+    <string name="clip_album_title">ألبوم المقاطع</string>
+    <string name="clip_album_lobby_hint">تظهر هنا المقاطع التي تسجّلها من لوحة اللعب.</string>
+    <string name="clip_album_lobby_open">افتح ألبوم المقاطع</string>
+    <string name="clip_album_loading_title">جارٍ قراءة المقاطع</string>
+    <string name="clip_album_loading_hint">يُبحث الآن عن المقاطع في مجلّد المسجّل.</string>
+    <string name="clip_album_permission_title">الألبوم يحتاج إذن الفيديو</string>
+    <string name="clip_album_permission_hint">بدونه لا يستطيع التطبيق عرض ما سجّلته. يُقرأ مجلّد المسجّل وحده.</string>
+    <string name="clip_album_permission_grant">اسمح بالوصول</string>
+    <string name="clip_album_unreadable_title">المعرّض لم يجب</string>
+    <string name="clip_album_unreadable_hint">قد تكون المقاطع موجودة؛ القراءة وحدها فشلت. إعادة المحاولة تسأل معرّض الوسائط مرّة أخرى.</string>
+    <string name="clip_album_empty_title">لا مقاطع بعد</string>
+    <string name="clip_album_empty_hint">ابدأ تسجيلًا من لوحة اللعب وسيظهر هنا.</string>
+    <string name="clip_album_meta">%1$s · %2$s</string>
+    <string name="clip_album_play_failed">لا تطبيق يشغّل هذا المقطع</string>
+    <string name="clip_album_share_title">شارك المقطع</string>
+    <string name="clip_album_share_cd">شارك المقطع</string>
+    <string name="clip_album_delete_cd">احذف المقطع</string>
+    <string name="clip_album_delete_failed">تعذّر حذف المقطع</string>
+    <string name="clip_album_delete_title">أتحذف هذا المقطع؟</string>
+    <string name="clip_album_delete_message">سيُحذف التسجيل نهائيًّا من مجلّد المقاطع.</string>
+    <string name="clip_album_delete_confirm">احذف</string>
+    <string name="clip_album_trim_cd">اقصص المقطع</string>
+    <string name="clip_album_trim_title">قصّ المقطع</string>
+    <string name="clip_album_trim_start">البداية: %1$s</string>
+    <string name="clip_album_trim_end">النهاية: %1$s</string>
+    <string name="clip_album_trim_kept">المحفوظ: %1$s</string>
+    <string name="clip_album_trim_confirm">احفظ نسخة</string>
+    <string name="clip_album_trim_working">يُقصّ…</string>
+    <string name="clip_album_trim_saved">حُفظت النسخة المقصوصة</string>
+    <string name="clip_album_trim_unavailable">مدة المقطع غير معروفة بعد؛ أعد المحاولة بعد فهرسته.</string>
+    <string name="clip_album_shots_title">اللقطات</string>
+    <string name="clip_album_shots_empty">اللقطات المحفوظة من لوحة اللعب تظهر هنا.</string>
+    <string name="clip_album_shots_grant">اسمح بالصور</string>
+    <string name="clip_album_shots_permission_hint">إذن الصور يعرض اللقطات التي حفظتها اللوحة. المقاطع تبقى متاحة بدونه.</string>
+    <string name="clip_album_shots_share_cd">شارك اللقطة</string>
+    <string name="clip_album_shots_open_failed">لا تطبيق يفتح هذه اللقطة</string>
+    <string name="clip_album_trim_fail_read">تعذّرت قراءة المقطع</string>
+    <string name="clip_album_trim_fail_write">تعذّر إنشاء النسخة المقصوصة</string>
+    <string name="clip_album_trim_fail_mux">توقّف القصّ قبل اكتمال النسخة</string>
     <string name="game_sessions_subtitle">معدّل الإطارات والطاقة والحرارة والتقطيع والمدّة — تُسجَّل حيًّا وتبقى بعد إغلاق اللوحة.</string>
     <string name="game_sessions_live_title">الجلسة الحيّة</string>
     <string name="game_sessions_live_desc">المسجّل نفسه الذي يعمل فوق اللعبة. البدء من هنا يسمّي الجلسة من التطبيق الأمامي.</string>
@@ -1705,6 +1746,8 @@
     <string name="game_sessions_export">صدّر CSV</string>
     <string name="game_sessions_export_note">السلسلة المسجَّلة، وخلايا فارغة حيث لم تتوفّر القراءة.</string>
     <string name="game_sessions_export_failed">تعسّر كتابة الملفّ</string>
+    <string name="game_sessions_export_all">صدّر كل الجلسات</string>
+    <string name="game_sessions_export_all_note">JSON · %1$d جلسة، الأحدث أولًا</string>
     <string name="game_sessions_delete">احذف الجلسة</string>
     <string name="game_sessions_clear_history">احذف كل الجلسات</string>
     <string name="game_sessions_clear_history_note">يُحذف الملفّ المخزَّن؛ ولا رجوع بعد ذلك.</string>
@@ -1831,7 +1874,9 @@
     <string name="processmgr_notif_channel">مراقب العمليات</string>
     <string name="processmgr_notif_title">مراقب عمليات Max Manager يعمل</string>
     <string name="processmgr_notif_stop">إيقاف</string>
-    <string name="processmgr_search_hint">ابحث في العمليات الجارية</string>
+    <string name="processmgr_search_hint">ابحث بالاسم أو الحزمة أو المعرّف</string>
+    <string name="processmgr_search_cd">ابحث في العمليات</string>
+    <string name="processmgr_search_close_cd">أغلق البحث</string>
     <string name="processmgr_no_processes">لا عمليات تطابق بحثك</string>
     <string name="processmgr_dialog_close">إغلاق</string>
     <string name="processmgr_result_killed">قُتلت %1$s</string>
@@ -1854,6 +1899,8 @@
     <string name="processmgr_copy_package">نسخ اسم الحزمة</string>
     <string name="processmgr_detail_oom">درجة OOM</string>
     <string name="processmgr_detail_swap">المبادَل</string>
+    <string name="processmgr_detail_disk_read">قراءة القرص</string>
+    <string name="processmgr_detail_disk_written">كتابة القرص</string>
     <string name="processmgr_detail_threads">الخيوط</string>
     <string name="processmgr_detail_cgroup">المجموعة</string>
     <string name="processmgr_details_loading">جارٍ قراءة تفاصيل النواة…</string>
@@ -3473,7 +3520,7 @@
     <string name="home_note_counter">%1$d / %2$d</string>
     <string name="fps_overlay_intro">نافذة صغيرة قابلة للسحب تعرض إحصاءات الأداء المباشرة فوق أي تطبيق. اسحبها إلى أي مكان على الشاشة بعد تفعيلها.</string>
     <!-- ==== Islandify port (MIT, (c) 2026 bughunter11) — keys prefixed ify_ ==== -->
-    <string name="ify_a11y_description">تتيح رسم الجزيرة فوق شريط الحالة كي تستقبل اللمس هناك. لا يقرأ التطبيق محتوى شاشتك ولا يسجّله.</string>
+    <string name="ify_a11y_description">تتيح رسم الجزيرة فوق شريط الحالة وإرسال لمسات لوحة الألعاب التي تفعّلها (أزرار الكتف، التصويب الجيروسكوبيّ، النقاط المربوطة)، وعرض معاينة التكبير الاستطلاعيّ. التكبير يأخذ لقطة عند الطلب ولا يخزّنها ولا يرسلها؛ ولا يقرأ التطبيق محتوى شاشتك ولا يسجّله سوى ذلك.</string>
     <string name="ify_tab_home">الرئيسية</string>
     <string name="ify_tab_activities">الأنشطة</string>
     <string name="ify_tab_customize">التخصيص</string>
@@ -4001,6 +4048,7 @@
 <string name="device_lab_torch_desc">شغّل فلاش الكاميرا الخلفي وأطفئه مباشرة.</string>
 <string name="device_lab_sensors_title">المستشعرات الحية</string>
 <string name="device_lab_sensors_desc">التسارع والدوران والضوء والتقارب كما يبلغها النظام.</string>
+<string name="device_lab_sensor_cadence">%1$.1f هرتز مقيسة · أطول فاصل %2$d مللي ثانية</string>
 <string name="device_lab_battery_title">الشحن والبطارية</string>
 <string name="device_lab_battery_desc">الحالة والحرارة والجهد والتيار مباشرة.</string>
 <string name="device_lab_vibrate_short">نبضة قصيرة</string>
@@ -4425,6 +4473,8 @@
     <string name="session_notify_channel">نتائج جلسات اللعب</string>
     <string name="session_notify_title">%1$s — حُفظت الجلسة</string>
     <string name="session_notify_fps">%1$d إطار/ث</string>
+    <string name="session_notify_duration_min">%1$d دقيقة</string>
+    <string name="session_notify_duration_hm">%1$d ساعة و%2$d دقيقة</string>
     <string name="session_notify_jank">%1$d٪ تقطّع</string>
     <string name="session_notify_worse">أسوأ من المعتاد</string>
     <string name="session_notify_better">أفضل من المعتاد</string>

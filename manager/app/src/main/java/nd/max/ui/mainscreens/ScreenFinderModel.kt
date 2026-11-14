@@ -367,6 +367,7 @@ internal val maxDestinationKeywords: Map<MaxDestination, List<String>> = mapOf(
     MaxDestination.FpsGo to listOf("اطارات", "العاب", "٦٠", "60", "fps", "frames", "game"),
     MaxDestination.FpsOverlay to listOf("عداد", "اطارات", "hud", "fps", "overlay"),
     MaxDestination.GameSessions to listOf("جلسات", "جلسه", "العاب", "تسجيل", "sessions", "session", "record", "game"),
+    MaxDestination.ClipAlbum to listOf("مقاطع", "كليبات", "مقطع", "قص", "clips", "clip", "video", "album", "recording", "trim"),
     MaxDestination.Resolution to listOf("دقه", "ابعاد", "شاشه", "resolution", "dpi", "display"),
     MaxDestination.DisplayStudio to listOf("شاشه", "عرض", "سطوع", "display", "screen", "brightness"),
     MaxDestination.NetworkScheduler to listOf("شبكه", "نت", "بينغ", "network", "ping", "latency"),

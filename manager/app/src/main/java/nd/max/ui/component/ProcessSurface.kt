@@ -75,7 +75,17 @@ fun ProcessSurface(
     markHeavy: Boolean,
     showTally: Boolean,
     modifier: Modifier = Modifier,
-    onClose: (() -> Unit)? = null
+    onClose: (() -> Unit)? = null,
+    /**
+     * زرّ إضافي في الترويسة قبل زرّ الإغلاق — الشاشة لا تحتاجه (فيها حقل بحثها)، والتراكب
+     * يضع فيه مفتاح البحث لأنه لا يملك صفًّا آخر.
+     */
+    headerAction: (@Composable () -> Unit)? = null,
+    /**
+     * صفّ تحت الترويسة وقبل النتائج — يُرسم فقط عندما يمرّره المُستدعي، فلا يتغيّر شكل
+     * شاشة مدير المهام التي تبني حقلها بنفسها.
+     */
+    searchRow: (@Composable () -> Unit)? = null
 ) {
     val colors = MaterialTheme.colorScheme
     Surface(
@@ -109,6 +119,7 @@ fun ProcessSurface(
                     )
                 }
                 Spacer(Modifier.weight(1f))
+                headerAction?.invoke()
                 if (onClose != null) {
                     IconButton(onClick = onClose, modifier = Modifier.size(MaxSize.iconGlyph)) {
                         Icon(
@@ -119,6 +130,8 @@ fun ProcessSurface(
                     }
                 }
             }
+
+            searchRow?.invoke()
 
             when {
                 // «لا جواب» ليست «لا شيء»: العمليات موجودة والقراءة هي التي لم تصل.

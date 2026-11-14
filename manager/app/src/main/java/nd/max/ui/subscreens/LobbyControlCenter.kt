@@ -14,14 +14,17 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -34,9 +37,11 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AddToHomeScreen
-import androidx.compose.material.icons.rounded.SportsEsports
 import androidx.compose.material.icons.rounded.Bolt
+import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material.icons.rounded.Insights
 import androidx.compose.material.icons.rounded.Layers
+import androidx.compose.material.icons.rounded.RadioButtonUnchecked
 import androidx.compose.material.icons.rounded.RestartAlt
 import androidx.compose.material.icons.rounded.Tune
 import androidx.compose.material.icons.rounded.VideogameAsset
@@ -68,6 +73,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
@@ -77,8 +83,6 @@ import nd.max.core.gamespace.GameCapabilities
 import nd.max.core.gamespace.GameFeature
 import nd.max.core.gamespace.GameModeStatus
 import nd.max.core.gamespace.GameProfileRepository
-import nd.max.core.platform.SessionInsight
-import nd.max.core.platform.StoredGameSession
 import nd.max.core.gamespace.InAppProfileRules
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -86,6 +90,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import nd.max.core.gamespace.UsageAccess
 import nd.max.core.gamespace.GameApp
+import nd.max.core.gamespace.GamePlayStats
+import nd.max.core.gamespace.PlaySession
 import nd.max.core.gamespace.HandleSize
 import nd.max.core.gamespace.LobbyCue
 import nd.max.core.gamespace.LobbyDepth
@@ -93,6 +99,7 @@ import nd.max.core.gamespace.LobbyPrefsState
 import nd.max.core.gamespace.LobbySort
 import nd.max.core.gamespace.PanelSensitivity
 import nd.max.core.gamespace.PanelSide
+import nd.max.core.gamespace.orphanedPackages
 import nd.max.core.privilege.ExecutionMode
 import nd.max.core.privilege.ExecutionModeStore
 import nd.max.core.privilege.ExecutionModeRules
@@ -121,8 +128,9 @@ import nd.max.ui.util.getSupportedRefreshRates
 
 /*
  * مركز التحكم: **سطح واحد** يضمّ ما كان موزّعًا على أربع نوافذ (ملف اللعبة، ومقبض اللوحة الجانبية،
- * وإدارة الألعاب، والمجموعات المحذوفة) مضافًا إليه خيارات اللوبي الجديدة. شريط جانبيّ بخمسة أقسام
- * (التحميل السريع ثم الأربعة السابقة) ومحتوى يتبدّل بتلاشٍ ناعم؛ لا نوافذ منبثقة ولا تنقّل داخليّ.
+ * وإدارة الألعاب، والمجموعات المحذوفة) مضافًا إليه خيارات اللوبي الجديدة. شريط جانبيّ بستّة أقسام
+ * (التحميل السريع، ثم الرؤى، ثم الأربعة السابقة) ومحتوى يتبدّل بتلاشٍ ناعم؛ لا نوافذ منبثقة ولا تنقّل
+ * داخليّ. وعلى الشاشات القصيرة يتحوّل الشريط إلى شبكة بلاطات عمودين كي تبقى الأقسام الستّة في المتناول.
  *
  * المسؤوليّات كما كانت (لم تُغيَّر):
  *  - قيم ملف اللعبة تكتب عبر `onUpdate` إلى `AppSettingsViewModel` وحده (ADR-11: لا عتاد من هنا).
@@ -133,8 +141,8 @@ import nd.max.ui.util.getSupportedRefreshRates
 
 /** أقسام مركز التحكم. الترتيب هو ترتيب الشريط الجانبي. */
 internal enum class LobbySection(val titleRes: Int, val icon: ImageVector) {
-    Arena(R.string.lobby_cc_arena, Icons.Rounded.SportsEsports),
     Loadout(R.string.lobby_cc_loadout, Icons.Rounded.Bolt),
+    Insights(R.string.lobby_insights_title, Icons.Rounded.Insights),
     Game(R.string.lobby_tile_profile, Icons.Rounded.Tune),
     Panel(R.string.lobby_tile_panel, Icons.Rounded.ViewSidebar),
     Lobby(R.string.lobby_cc_lobby, Icons.Rounded.Layers),
@@ -151,9 +159,19 @@ private val SidebarIcon = 40.dp
 private val ChipHeight = 48.dp
 private val LibraryIcon = 40.dp
 
+/** تحت هذا الارتفاع يتحوّل الشريط إلى شبكة بلاطات، فلا يضيع قسم خلف تمرير طويل في الوضع الأفقي. */
+private val SidebarCompactHeight = 420.dp
+
 /**
  * @param section القسم الظاهر؛ يتحكّم به الأب ليفتح اللوبي على قسم بعينه (نقر بلاطة ملف اللعبة مثلًا).
  * @param app اللعبة المحدَّدة في الحلقة (`null` حين لا ألعاب).
+ * @param games كل ألعاب المكتبة (لا المصفّاة) لتُحسب مسيرة الرؤى كاملة.
+ * @param stats سجلّ وقت اللعب القائم — لا مخزن ثانٍ.
+ * @param tweaks عدد مقابض الملفّ المضبوطة لكل حزمة، من `AppConfig` نفسه.
+ * @param armed الحزم التي فُعّلت لها اللوحة الجانبية.
+ * @param onOpenHistory يفتح سجلّ الجلسات من بند التهيئة.
+ * @param onOpenClips يفتح ألبوم المقاطع التي سجّلها المسجّل.
+ * @param onOpenGame يختار لعبة من قائمة «الأكثر لعبًا» ويُعيد المسرح إليها.
  * @param onPrefs يستلم دالّة تحوّل الخيارات الحاليّة إلى الجديدة فلا تضيع تغييرات متتابعة.
  * @param accent لون اللعبة (أو العلامة) لتمييز القسم المختار.
  */
@@ -163,10 +181,20 @@ internal fun LobbyControlCenter(
     onSection: (LobbySection) -> Unit,
     app: GameApp?,
     config: AppConfig,
+    games: List<GameApp>,
+    stats: Map<String, GamePlayStats>,
+    sessions: List<PlaySession>,
+    tweaks: Map<String, Int>,
+    armed: Set<String>,
     panelEnabled: Boolean,
     onPanelEnabled: (Boolean) -> Unit,
+    overlayGranted: Boolean,
+    onGrantOverlay: () -> Unit,
     onUpdate: (String, String) -> Unit,
     onOpenFull: () -> Unit,
+    onOpenHistory: () -> Unit,
+    onOpenClips: () -> Unit,
+    onOpenGame: (String) -> Unit,
     prefs: LobbyPrefsState,
     onPrefs: ((LobbyPrefsState) -> LobbyPrefsState) -> Unit,
     apps: List<GameApp>,
@@ -174,13 +202,6 @@ internal fun LobbyControlCenter(
     excluded: Set<String>,
     onToggleGame: (String, Boolean) -> Unit,
     accent: Color,
-    sessions: List<StoredGameSession>,
-    insight: SessionInsight?,
-    onSessions: () -> Unit,
-    onHud: () -> Unit,
-    onThermal: () -> Unit,
-    onDisplay: () -> Unit,
-    onGameProfile: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(modifier = modifier.fillMaxSize()) {
@@ -208,25 +229,35 @@ internal fun LobbyControlCenter(
                     .fillMaxSize()
             ) { current ->
                 when (current) {
-                    LobbySection.Arena -> LobbyArena(
+                    LobbySection.Loadout -> LoadoutBody(
                         app = app,
                         config = config,
                         panelEnabled = panelEnabled,
                         onPanelEnabled = onPanelEnabled,
-                        sessions = sessions,
-                        insight = insight,
-                        accent = accent,
-                        onSessions = onSessions,
-                        onHud = onHud,
-                        onThermal = onThermal,
-                        onDisplay = onDisplay,
-                        onGameProfile = onGameProfile
+                        overlayGranted = overlayGranted,
+                        onGrantOverlay = onGrantOverlay,
+                        onUpdate = onUpdate,
+                        onOpenFull = onOpenFull,
+                        onOpenProfile = { onSection(LobbySection.Game) }
                     )
-                    LobbySection.Loadout -> LoadoutBody(app, config, panelEnabled, onPanelEnabled, onUpdate, onOpenFull)
+                    LobbySection.Insights -> LobbyInsightsBody(
+                        app = app,
+                        games = games,
+                        stats = stats,
+                        sessions = sessions,
+                        tweaks = tweaks,
+                        armed = armed,
+                        accent = accent,
+                        onSection = onSection,
+                        onPanelEnabled = onPanelEnabled,
+                        onOpenHistory = onOpenHistory,
+                        onOpenClips = onOpenClips,
+                        onOpenGame = onOpenGame
+                    )
                     LobbySection.Game -> GameBody(app, config, onUpdate, onOpenFull)
                     LobbySection.Panel -> PanelBody(app, panelEnabled, onPanelEnabled)
                     LobbySection.Lobby -> LobbyOptionsBody(prefs, onPrefs)
-                    LobbySection.Library -> LibraryBody(apps, manual, excluded, onToggleGame, accent)
+                    LobbySection.Library -> LibraryBody(apps, stats, manual, excluded, onToggleGame, accent)
                 }
             }
         }
@@ -243,72 +274,154 @@ private fun ControlSidebar(
     accent: Color,
     modifier: Modifier = Modifier
 ) {
-    val shape = RoundedCornerShape(maxRadius(MaxRadius.control))
-    Column(
-        modifier = modifier
-            .background(LobbyPalette.Black.copy(alpha = 0.40f))
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = MaxSpace.md, vertical = MaxSpace.md),
-        verticalArrangement = Arrangement.spacedBy(MaxSpace.xs)
+    val sounds = LocalLobbySounds.current
+    BoxWithConstraints(
+        modifier = modifier.background(LobbyPalette.Black.copy(alpha = 0.40f))
     ) {
-        if (app != null) {
-            Row(
-                modifier = Modifier.padding(bottom = MaxSpace.md),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(MaxSpace.md)
-            ) {
-                AppIconImage(packageName = app.packageName, size = SidebarIcon, contentDescription = null)
-                Text(
-                    text = app.label,
-                    color = LobbyPalette.Ink,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
-        }
-        val sounds = LocalLobbySounds.current
-        LobbySection.entries.forEach { item ->
-            val isSelected = item == selected
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(min = SidebarItemHeight)
-                    .clip(shape)
-                    .background(if (isSelected) accent.copy(alpha = 0.26f) else Color.Transparent)
-                    .border(
-                        MaxSize.hairlineBorder,
-                        if (isSelected) accent.copy(alpha = 0.60f) else Color.Transparent,
-                        shape
+        val compact = maxHeight < SidebarCompactHeight
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = MaxSpace.md, vertical = MaxSpace.md),
+            verticalArrangement = Arrangement.spacedBy(MaxSpace.xs)
+        ) {
+            if (app != null) {
+                Row(
+                    modifier = Modifier.padding(bottom = MaxSpace.md),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(MaxSpace.md)
+                ) {
+                    AppIconImage(packageName = app.packageName, size = SidebarIcon, contentDescription = null)
+                    Text(
+                        text = app.label,
+                        color = LobbyPalette.Ink,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
                     )
-                    .selectable(
-                        selected = isSelected,
-                        role = Role.Tab,
+                }
+            }
+            if (compact) {
+                LobbySection.entries.chunked(2).forEach { pair ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs)
+                    ) {
+                        pair.forEach { item ->
+                            SidebarTile(
+                                item = item,
+                                selected = item == selected,
+                                accent = accent,
+                                onClick = {
+                                    if (item != selected) sounds.play(LobbyCue.Tap)
+                                    onSelect(item)
+                                },
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                        if (pair.size == 1) Spacer(Modifier.weight(1f))
+                    }
+                }
+            } else {
+                LobbySection.entries.forEach { item ->
+                    SidebarRow(
+                        item = item,
+                        selected = item == selected,
+                        accent = accent,
                         onClick = {
-                            if (!isSelected) sounds.play(LobbyCue.Tap)
+                            if (item != selected) sounds.play(LobbyCue.Tap)
                             onSelect(item)
                         }
                     )
-                    .padding(horizontal = MaxSpace.md),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(MaxSpace.md)
-            ) {
-                Icon(
-                    imageVector = item.icon,
-                    contentDescription = null,
-                    tint = if (isSelected) LobbyPalette.Ink else LobbyPalette.Muted
-                )
-                Text(
-                    text = stringResource(item.titleRes),
-                    color = if (isSelected) LobbyPalette.Ink else LobbyPalette.Muted,
-                    fontSize = 15.sp,
-                    fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
+                }
             }
         }
+    }
+}
+
+/** صفّ الشريط الكامل: أيقونة ونصّ في سطر واحد، وارتفاع لمس ٥٢dp. */
+@Composable
+private fun SidebarRow(
+    item: LobbySection,
+    selected: Boolean,
+    accent: Color,
+    onClick: () -> Unit,
+) {
+    val shape = RoundedCornerShape(maxRadius(MaxRadius.control))
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(min = SidebarItemHeight)
+            .clip(shape)
+            .background(if (selected) accent.copy(alpha = 0.26f) else Color.Transparent)
+            .border(
+                MaxSize.hairlineBorder,
+                if (selected) accent.copy(alpha = 0.60f) else Color.Transparent,
+                shape
+            )
+            .selectable(selected = selected, role = Role.Tab, onClick = onClick)
+            .padding(horizontal = MaxSpace.md),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(MaxSpace.md)
+    ) {
+        Icon(
+            imageVector = item.icon,
+            contentDescription = null,
+            tint = if (selected) LobbyPalette.Ink else LobbyPalette.Muted
+        )
+        Text(
+            text = stringResource(item.titleRes),
+            color = if (selected) LobbyPalette.Ink else LobbyPalette.Muted,
+            fontSize = 15.sp,
+            fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis
+        )
+    }
+}
+
+/** بلاطة الوضع القصير: أيقونة فوق نصّ صغير؛ عمودان في كل صفّ. */
+@Composable
+private fun SidebarTile(
+    item: LobbySection,
+    selected: Boolean,
+    accent: Color,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val shape = RoundedCornerShape(maxRadius(MaxRadius.control))
+    Column(
+        modifier = modifier
+            .heightIn(min = SidebarItemHeight)
+            .clip(shape)
+            .background(if (selected) accent.copy(alpha = 0.26f) else Color.Transparent)
+            .border(
+                MaxSize.hairlineBorder,
+                if (selected) accent.copy(alpha = 0.60f) else Color.Transparent,
+                shape
+            )
+            .selectable(selected = selected, role = Role.Tab, onClick = onClick)
+            .padding(horizontal = MaxSpace.sm, vertical = MaxSpace.sm),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(MaxSpace.xs)
+    ) {
+        Icon(
+            imageVector = item.icon,
+            contentDescription = null,
+            tint = if (selected) LobbyPalette.Ink else LobbyPalette.Muted,
+            modifier = Modifier.size(MaxSize.iconGlyph)
+        )
+        Text(
+            text = stringResource(item.titleRes),
+            color = if (selected) LobbyPalette.Ink else LobbyPalette.Muted,
+            fontSize = 11.sp,
+            fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+            textAlign = TextAlign.Center
+        )
     }
 }
 
@@ -324,8 +437,11 @@ private fun LoadoutBody(
     config: AppConfig,
     panelEnabled: Boolean,
     onPanelEnabled: (Boolean) -> Unit,
+    overlayGranted: Boolean,
+    onGrantOverlay: () -> Unit,
     onUpdate: (String, String) -> Unit,
     onOpenFull: () -> Unit,
+    onOpenProfile: () -> Unit,
 ) {
     if (app == null) {
         EmptyBody()
@@ -345,11 +461,44 @@ private fun LoadoutBody(
         Text(
             text = stringResource(R.string.lobby_loadout_title, app.label),
             color = LobbyPalette.Ink,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.SemiBold,
+            // عنوان الصفحة لا عنوان بطاقة: الحجم الكبير الخفيف نفسه المستعمل في المسرح.
+            fontSize = 28.sp,
+            fontWeight = FontWeight.Light,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
+        LobbySectionCard(stringResource(R.string.lobby_loadout_ready)) {
+            Text(
+                text = stringResource(
+                    R.string.lobby_loadout_ready_count,
+                    listOf(tweaks > 0, panelEnabled, overlayGranted).count { it },
+                    3
+                ),
+                color = LobbyPalette.Muted,
+                fontSize = 12.sp
+            )
+            LoadoutCheck(
+                done = tweaks > 0,
+                title = stringResource(R.string.lobby_loadout_check_profile),
+                detail = stringResource(R.string.lobby_loadout_check_profile_detail),
+                action = stringResource(R.string.lobby_loadout_action_profile),
+                onAction = onOpenProfile
+            )
+            LoadoutCheck(
+                done = panelEnabled,
+                title = stringResource(R.string.lobby_loadout_check_panel),
+                detail = stringResource(R.string.lobby_loadout_check_panel_detail),
+                action = stringResource(R.string.lobby_loadout_action_panel),
+                onAction = { onPanelEnabled(true) }
+            )
+            LoadoutCheck(
+                done = overlayGranted,
+                title = stringResource(R.string.lobby_loadout_check_overlay),
+                detail = stringResource(R.string.lobby_loadout_check_overlay_detail),
+                action = stringResource(R.string.lobby_loadout_action_overlay),
+                onAction = onGrantOverlay
+            )
+        }
         LobbySectionCard(stringResource(R.string.lobby_loadout_quick)) {
             LobbyTriStateRow(stringResource(R.string.lobby_row_dnd), config.dnd_on_gaming) {
                 onUpdate("dnd_on_gaming", it)
@@ -401,6 +550,61 @@ private fun LoadoutBody(
     }
 }
 
+/**
+ * فحص واحد من فحوص الإطلاق: حالته مقروءة، وسببه مكتوب، والإصلاح زرّ حقيقي لا وعد.
+ * الصفّ لا يدمج الدلالات لأن الزرّ داخله يجب أن يبقى هدفًا مستقلًّا في TalkBack.
+ */
+@Composable
+private fun LoadoutCheck(
+    done: Boolean,
+    title: String,
+    detail: String,
+    action: String,
+    onAction: () -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(min = MaxSize.minTouchTarget),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(MaxSpace.md)
+    ) {
+        Icon(
+            imageVector = if (done) Icons.Rounded.CheckCircle else Icons.Rounded.RadioButtonUnchecked,
+            contentDescription = null,
+            tint = if (done) LobbyPalette.Positive else LobbyPalette.Muted,
+            modifier = Modifier.size(MaxSize.iconGlyph)
+        )
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(MaxSpace.xs)
+        ) {
+            Text(
+                text = title,
+                color = LobbyPalette.Ink,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Medium
+            )
+            Text(text = detail, color = LobbyPalette.Muted, fontSize = 12.sp)
+        }
+        if (done) {
+            Text(
+                text = stringResource(R.string.lobby_loadout_check_done),
+                color = LobbyPalette.Positive,
+                fontSize = 12.sp
+            )
+        } else {
+            OutlinedButton(
+                onClick = onAction,
+                border = BorderStroke(MaxSize.hairlineBorder, LobbyPalette.Hairline),
+                modifier = Modifier.heightIn(min = MaxSize.minTouchTarget)
+            ) {
+                Text(text = action, color = LobbyPalette.Ink, fontSize = 13.sp)
+            }
+        }
+    }
+}
+
 // ─────────────────────────────── قسم ملف اللعبة ───────────────────────────────
 
 @Composable
@@ -445,8 +649,8 @@ private fun GameProfileColumn(
         Text(
             text = stringResource(R.string.lobby_settings_title, app.label),
             color = LobbyPalette.Ink,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.SemiBold,
+            fontSize = 28.sp,
+            fontWeight = FontWeight.Light,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
@@ -944,24 +1148,58 @@ private fun PinOutcome.messageRes(): Int = when (this) {
  * إدارة الألعاب: كل تطبيق قابل للتشغيل مع مفتاح إدراج/إزالة، وبحث. هذا ما كان «إدارة الألعاب» نافذةً؛
  * يقيم الآن داخل المركز. الكتابة تمرّ بـ`GameSpaceRepository.membership` وحدها — لا مخزن ثانٍ.
  */
+private enum class LibraryView { Included, All, Hidden }
+
+private enum class LibrarySort { Recent, Playtime, Name }
+
 @Composable
 private fun LibraryBody(
     apps: List<GameApp>,
+    stats: Map<String, GamePlayStats>,
     manual: Set<String>,
     excluded: Set<String>,
     onToggle: (pkg: String, include: Boolean) -> Unit,
     accent: Color
 ) {
     var query by rememberSaveable { mutableStateOf("") }
-    val rows = remember(apps, manual, excluded, query) {
-        apps.filter {
-            query.isBlank() ||
-                it.label.contains(query, ignoreCase = true) ||
-                it.packageName.contains(query, ignoreCase = true)
-        }.sortedWith(
-            compareByDescending<GameApp> { isInLobby(it, manual, excluded) }
-                .thenBy { it.label.lowercase() }
-        )
+    var view by rememberSaveable { mutableStateOf(LibraryView.Included) }
+    var sort by rememberSaveable { mutableStateOf(LibrarySort.Recent) }
+    val includedCount = remember(apps, manual, excluded) {
+        apps.count { isInLobby(it, manual, excluded) }
+    }
+    // لعبة أُزيلت من الجهاز لا تظهر في القائمة (مصدرها `PackageManager`)، فتُعدّ وتُقال بدل الصمت.
+    val vanished = remember(apps, manual, excluded) {
+        orphanedPackages(apps, manual, excluded).size
+    }
+    val rows = remember(apps, manual, excluded, query, view, sort, stats) {
+        val visible = apps.filter { app ->
+            val inLobby = isInLobby(app, manual, excluded)
+            val shown = when (view) {
+                LibraryView.Included -> inLobby
+                LibraryView.All -> true
+                LibraryView.Hidden -> !inLobby
+            }
+            shown && (
+                query.isBlank() ||
+                    app.label.contains(query, ignoreCase = true) ||
+                    app.packageName.contains(query, ignoreCase = true)
+                )
+        }
+        val includedFirst = compareByDescending<GameApp> { isInLobby(it, manual, excluded) }
+        val alphabetical = compareBy<GameApp> { it.label.lowercase() }
+        when (sort) {
+            LibrarySort.Recent -> visible.sortedWith(
+                includedFirst
+                    .thenByDescending { stats[it.packageName]?.lastPlayedAtMs ?: 0L }
+                    .then(alphabetical)
+            )
+            LibrarySort.Playtime -> visible.sortedWith(
+                includedFirst
+                    .thenByDescending { stats[it.packageName]?.totalMs ?: 0L }
+                    .then(alphabetical)
+            )
+            LibrarySort.Name -> visible.sortedWith(includedFirst.then(alphabetical))
+        }
     }
     Column(
         modifier = Modifier
@@ -969,11 +1207,50 @@ private fun LibraryBody(
             .padding(horizontal = MaxSpace.xl, vertical = MaxSpace.lg),
         verticalArrangement = Arrangement.spacedBy(MaxSpace.md)
     ) {
-        Text(
-            text = stringResource(R.string.lobby_manage_title),
-            color = LobbyPalette.Ink,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.SemiBold
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.Bottom,
+            horizontalArrangement = Arrangement.spacedBy(MaxSpace.md)
+        ) {
+            Text(
+                text = stringResource(R.string.lobby_manage_title),
+                color = LobbyPalette.Ink,
+                fontSize = 26.sp,
+                fontWeight = FontWeight.Light,
+                modifier = Modifier.weight(1f)
+            )
+            Text(
+                text = stringResource(R.string.lobby_vault_count, includedCount, apps.size),
+                color = LobbyPalette.Muted,
+                fontSize = 12.sp
+            )
+        }
+        if (vanished > 0) {
+            Text(
+                text = stringResource(R.string.lobby_vault_orphans, vanished),
+                color = LobbyPalette.Steel,
+                fontSize = 12.sp
+            )
+        }
+        LobbyChoiceRow(
+            title = stringResource(R.string.lobby_vault_view),
+            options = listOf(
+                LibraryView.Included to stringResource(R.string.lobby_vault_included),
+                LibraryView.All to stringResource(R.string.lobby_vault_all),
+                LibraryView.Hidden to stringResource(R.string.lobby_vault_hidden)
+            ),
+            selected = view,
+            onSelect = { view = it }
+        )
+        LobbyChoiceRow(
+            title = stringResource(R.string.lobby_vault_sort),
+            options = listOf(
+                LibrarySort.Recent to stringResource(R.string.lobby_vault_sort_recent),
+                LibrarySort.Playtime to stringResource(R.string.lobby_vault_sort_playtime),
+                LibrarySort.Name to stringResource(R.string.lobby_sort_name)
+            ),
+            selected = sort,
+            onSelect = { sort = it }
         )
         Box(
             modifier = Modifier
@@ -996,47 +1273,61 @@ private fun LibraryBody(
                 modifier = Modifier.fillMaxWidth()
             )
         }
-        LazyColumn(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(MaxSpace.xs)
-        ) {
-            items(rows, key = { it.packageName }) { app ->
-                val included = isInLobby(app, manual, excluded)
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .heightIn(min = MaxSize.minTouchTarget)
-                        .padding(vertical = MaxSpace.xs),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(MaxSpace.md)
-                ) {
-                    AppIconImage(packageName = app.packageName, size = LibraryIcon, contentDescription = null)
-                    Column(Modifier.weight(1f)) {
-                        Text(
-                            text = app.label,
-                            color = LobbyPalette.Ink,
-                            fontSize = 16.sp,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                        Text(
-                            text = app.packageName,
-                            color = LobbyPalette.Muted,
-                            fontSize = 11.sp,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
+        if (rows.isEmpty()) {
+            Text(
+                text = stringResource(R.string.lobby_vault_empty),
+                color = LobbyPalette.Muted,
+                fontSize = 13.sp,
+                modifier = Modifier.padding(top = MaxSpace.sm)
+            )
+        } else {
+            LazyColumn(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(MaxSpace.xs)
+            ) {
+                items(rows, key = { it.packageName }) { app ->
+                    val included = isInLobby(app, manual, excluded)
+                    val played = stats[app.packageName]?.totalMs ?: 0L
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(min = MaxSize.minTouchTarget)
+                            .padding(vertical = MaxSpace.xs),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(MaxSpace.md)
+                    ) {
+                        AppIconImage(packageName = app.packageName, size = LibraryIcon, contentDescription = null)
+                        Column(
+                            modifier = Modifier.weight(1f),
+                            verticalArrangement = Arrangement.spacedBy(MaxSpace.xs)
+                        ) {
+                            Text(
+                                text = app.label,
+                                color = LobbyPalette.Ink,
+                                fontSize = 16.sp,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                            Text(
+                                text = lobbyPlayTimeText(played)
+                                    ?: stringResource(R.string.lobby_insights_no_stats),
+                                color = LobbyPalette.Muted,
+                                fontSize = 11.sp,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                        Switch(
+                            checked = included,
+                            onCheckedChange = { onToggle(app.packageName, it) },
+                            colors = SwitchDefaults.colors(
+                                checkedTrackColor = LobbyPalette.Red,
+                                checkedThumbColor = LobbyPalette.Ink,
+                                uncheckedTrackColor = LobbyPalette.PanelRaised,
+                                uncheckedThumbColor = LobbyPalette.Muted
+                            )
                         )
                     }
-                    Switch(
-                        checked = included,
-                        onCheckedChange = { onToggle(app.packageName, it) },
-                        colors = SwitchDefaults.colors(
-                            checkedTrackColor = LobbyPalette.Red,
-                            checkedThumbColor = LobbyPalette.Ink,
-                            uncheckedTrackColor = LobbyPalette.PanelRaised,
-                            uncheckedThumbColor = LobbyPalette.Muted
-                        )
-                    )
                 }
             }
         }

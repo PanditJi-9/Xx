@@ -173,4 +173,61 @@ class CrosshairTest {
             CrosshairState.COLORS.toSet().size
         )
     }
+
+    @Test
+    fun `no rings leaves the shape exactly as it was`() {
+        val plain = CrosshairState(style = CrosshairStyle.CROSS)
+        val geometry = crosshairGeometry(plain, width = 1_000f, height = 1_000f, density = 1f)
+
+        assertEquals(0, plain.rings)
+        assertTrue("الصليب بلا حلقات لا يرسم دوائر", geometry.circles.isEmpty())
+    }
+
+    @Test
+    fun `rings sit outside the shape and grow outwards`() {
+        val one = crosshairGeometry(
+            CrosshairState(style = CrosshairStyle.CROSS, rings = 1),
+            width = 1_000f, height = 1_000f, density = 1f
+        )
+        val two = crosshairGeometry(
+            CrosshairState(style = CrosshairStyle.CROSS, rings = 2),
+            width = 1_000f, height = 1_000f, density = 1f
+        )
+
+        assertEquals(1, one.circles.size)
+        assertEquals(2, two.circles.size)
+        val half = CrosshairState().sizeDp / 2f
+        two.circles.forEach { ring ->
+            assertFalse("الحلقة مجرَّدة لا معبَّأة", ring.filled)
+            assertTrue("الحلقة خارج نصف الحجم", ring.radius > half)
+            assertEquals(two.centerX, ring.centerX, 0f)
+            assertEquals(two.centerY, ring.centerY, 0f)
+        }
+        assertTrue("الحلقة الثانية أبعد", two.circles[1].radius > two.circles[0].radius)
+    }
+
+    @Test
+    fun `rings stay inside the window even at the farthest offset`() {
+        val geometry = crosshairGeometry(
+            CrosshairState(style = CrosshairStyle.CROSS, rings = CrosshairState.MAX_RINGS, offsetX = 1f, offsetY = 1f),
+            width = 400f, height = 320f, density = 1f
+        )
+        val nearestEdge = minOf(
+            geometry.centerX,
+            geometry.centerY,
+            400f - geometry.centerX,
+            320f - geometry.centerY
+        )
+
+        assertTrue("الحلقات موجودة عند أقصى إزاحة", geometry.circles.isNotEmpty())
+        geometry.circles.forEach { ring ->
+            assertTrue("الحلقة داخل النافذة: ${ring.radius} <= $nearestEdge", ring.radius <= nearestEdge)
+        }
+    }
+
+    @Test
+    fun `ring count is clamped into its published range`() {
+        assertEquals(CrosshairState.MAX_RINGS, CrosshairState(rings = 9).sanitized().rings)
+        assertEquals(CrosshairState.MIN_RINGS, CrosshairState(rings = -4).sanitized().rings)
+    }
 }

@@ -52,6 +52,7 @@ import androidx.compose.material.icons.rounded.Thermostat
 import androidx.compose.material.icons.rounded.Timeline
 import androidx.compose.material.icons.rounded.TouchApp
 import androidx.compose.material.icons.rounded.Tune
+import androidx.compose.material.icons.rounded.VideoLibrary
 import androidx.compose.material.icons.rounded.Wifi
 import androidx.compose.ui.graphics.vector.ImageVector
 import nd.max.R
@@ -253,6 +254,13 @@ sealed class MaxDestination(
      * يبقى في الوصول لا في الشجرة.
      */
     data object GameSessions : MaxDestination("gamesessions", R.string.game_sessions_title, Icons.Rounded.History, Control)
+
+    /**
+     * **ألبوم المقاطع — مرآة ما سجّله المسجّل.**
+     *
+     * وجاره `GameSessions` في المكان نفسه ولنفس السبب: سطحٌ يقرأ ما كتبه تراكب، لا لعبة تُشغَّل.
+     */
+    data object ClipAlbum : MaxDestination("clipalbum", R.string.clip_album_title, Icons.Rounded.VideoLibrary, Control)
 
     /**
      * الجزيرة الديناميكية — تراكبٌ حيّ يجمع الإشعارات العابرة والوسائط والشحن والمؤشرات في
@@ -467,6 +475,7 @@ sealed class MaxDestination(
                 CpuCoreControl, GovernorSettings, PreferenceTweaks, GpuStudio,
                 ZramManager, MemoryUfs, DisplayStudio, Resolution, TouchBoost, FpsGo, Fas, FpsOverlay,
                 GameSessions,
+                ClipAlbum,
                 DynamicIsland,
                 ThermalDetail, Charging, BypassCharging, BypassChargingCheck, DozeMode,
                 Dex2oat, StorageDetail, StorageCare, NetworkScheduler, NetworkDetail,

@@ -69,6 +69,18 @@ fun inAppRunRows(run: InAppRun?): List<InAppRunRow> {
     return rows
 }
 
+/**
+ * **إيصال الإطلاق:** الخبر الواحد الذي يستحقّ القول لحظة فتح اللوحة، أو `null` حين لا خبر.
+ *
+ * والسلام هو الجواب الافتراضي: تطبيق بلا ملفّ محفوظ (`NothingAsked`) أو بلا سجلّ بعد (`Never`)
+ * لا يُقال عنه شيء عند الإطلاق — لا «لم يُطبَّق» ولا «طُبِّق صفر». وما عدا ذلك فهو أوّل صفّ
+ * في ترتيب [inAppRunRows] نفسه (المحجوب، ثم المنفَّذ، ثم المرفوض)، فلا يوجد ترتيب ثانٍ يخالفه.
+ */
+fun inAppReceipt(run: InAppRun?): InAppRunRow? = when (val row = inAppRunRows(run).firstOrNull()) {
+    null, InAppRunRow.Never, InAppRunRow.NothingAsked -> null
+    else -> row
+}
+
 /** اسم المقبض كما يراه المستخدم، لا كما تسمّيه الشيفرة. */
 @StringRes
 fun knobLabelRes(knob: InAppKnob): Int = when (knob) {

@@ -120,6 +120,7 @@ import nd.max.R
 import nd.max.core.diagnostics.DeviceFactsReader
 import nd.max.core.lab.LabResultStore
 import nd.max.core.net.WifiChannel
+import nd.max.core.platform.SensorCadence
 import nd.max.ui.util.WifiChannelReader
 import nd.max.ui.util.shareText
 import nd.max.ui.design.MaxCardData
@@ -1334,28 +1335,32 @@ private fun MicLevelBar(level: Float) {
 @Composable
 private fun SensorTest() {
     val context = LocalContext.current
-    var accel by remember { mutableStateOf<String?>(null) }
-    var gyro by remember { mutableStateOf<String?>(null) }
-    var light by remember { mutableStateOf<String?>(null) }
-    var proximity by remember { mutableStateOf<String?>(null) }
+    var accel by remember { mutableStateOf(SensorReading()) }
+    var gyro by remember { mutableStateOf(SensorReading()) }
+    var light by remember { mutableStateOf(SensorReading()) }
+    var proximity by remember { mutableStateOf(SensorReading()) }
 
     DisposableEffect(Unit) {
         val manager = context.getSystemService(SensorManager::class.java)
+        // معدّل التسليم يُقاس للمستشعرين المتواصلين وحدهما؛ الضوء والتقارب يُرسلان عند التغيّر فقط،
+        // فهرتز عليهما رقم بلا معنى.
+        val accelCadence = SensorCadence()
+        val gyroCadence = SensorCadence()
         val listener = object : SensorEventListener {
             override fun onSensorChanged(event: SensorEvent) {
                 val values = event.values
                 when (event.sensor.type) {
                     Sensor.TYPE_ACCELEROMETER -> if (values.size >= 3) {
-                        accel = formatVector(values, "m/s²")
+                        accel = SensorReading(formatVector(values, "m/s²"), accelCadence.record(event.timestamp))
                     }
                     Sensor.TYPE_GYROSCOPE -> if (values.size >= 3) {
-                        gyro = formatVector(values, "rad/s")
+                        gyro = SensorReading(formatVector(values, "rad/s"), gyroCadence.record(event.timestamp))
                     }
                     Sensor.TYPE_LIGHT -> if (values.isNotEmpty()) {
-                        light = String.format(Locale.getDefault(), "%.1f lx", values[0])
+                        light = SensorReading(String.format(Locale.getDefault(), "%.1f lx", values[0]))
                     }
                     Sensor.TYPE_PROXIMITY -> if (values.isNotEmpty()) {
-                        proximity = String.format(Locale.getDefault(), "%.1f cm", values[0])
+                        proximity = SensorReading(String.format(Locale.getDefault(), "%.1f cm", values[0]))
                     }
                 }
             }
@@ -1393,6 +1398,12 @@ private fun SensorTest() {
     }
 }
 
+/** قيمة مستشعر كما وصلت، ومعها إيقاعها إن كان لها إيقاع يُقاس (`null` قبل أن يكفي العدد). */
+private data class SensorReading(
+    val value: String? = null,
+    val cadence: SensorCadence.Snapshot? = null,
+)
+
 private fun formatVector(values: FloatArray, unit: String): String =
     String.format(
         Locale.getDefault(),
@@ -1404,12 +1415,20 @@ private fun formatVector(values: FloatArray, unit: String): String =
     )
 
 @Composable
-private fun SensorValueRow(titleRes: Int, value: String?) {
+private fun SensorValueRow(titleRes: Int, reading: SensorReading) {
+    val hz = reading.cadence?.hz
+    val gapMs = reading.cadence?.longestGapMs
+    val subtitle = if (hz != null && gapMs != null) {
+        stringResource(R.string.device_lab_sensor_cadence, hz, gapMs)
+    } else {
+        null
+    }
     MaxRow(
         title = stringResource(titleRes),
+        subtitle = subtitle,
         trailing = {
             Text(
-                text = value ?: stringResource(R.string.device_lab_value_unavailable),
+                text = reading.value ?: stringResource(R.string.device_lab_value_unavailable),
                 style = MonoValueStyleSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )

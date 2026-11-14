@@ -83,6 +83,7 @@ import nd.max.core.platform.SessionVerdict
 import nd.max.core.platform.sessionInsight
 import nd.max.core.platform.SessionStopReason
 import nd.max.core.platform.StoredGameSession
+import nd.max.core.platform.storedLedgerJson
 import nd.max.core.platform.storedSessionCsv
 import nd.max.ui.design.MaxDataTrust
 import nd.max.ui.design.MaxGroup
@@ -454,6 +455,13 @@ fun GameSessionsScreen(
                 )
 
                 else -> {
+                    MaxGroup {
+                        MaxNavigationRow(
+                            title = stringResource(R.string.game_sessions_export_all),
+                            subtitle = stringResource(R.string.game_sessions_export_all_note, sessions.size),
+                            onClick = { exportLedger(context, scope, sessions) }
+                        )
+                    }
                     sessions.forEach { session ->
                         val rowInsight = remember(session.id, sessions.size) {
                             sessionInsight(session, sessions)
@@ -782,6 +790,21 @@ private fun exportLive(context: Context, scope: CoroutineScope) {
         return
     }
     shareFile(context, scope, body.toByteArray(), "maxmanager-session", "text/csv", "csv")
+}
+
+/**
+ * السجلّ كاملًا ملفًّا واحدًا: لمشاركة ما عندك أو قراءته بأداة، لا لرسم اللوحة.
+ *
+ * والحدّ نفسه الذي في [storedLedgerJson]: أحدث جلسات السقف فقط، والظرف يقول إن كان قد قُصّ.
+ */
+private fun exportLedger(context: Context, scope: CoroutineScope, sessions: List<StoredGameSession>) {
+    if (sessions.isEmpty()) {
+        Toast.makeText(context, context.getString(R.string.game_sessions_history_empty), Toast.LENGTH_SHORT)
+            .show()
+        return
+    }
+    val body = storedLedgerJson(sessions, System.currentTimeMillis())
+    shareFile(context, scope, body.toByteArray(), "max-sessions", "application/json", "json")
 }
 
 private fun exportStored(context: Context, scope: CoroutineScope, session: StoredGameSession) {

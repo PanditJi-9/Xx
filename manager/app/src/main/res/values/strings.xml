@@ -13,7 +13,6 @@
     <string name="allow_verbose_log_desc">Log the module internals</string>
     <string name="android_version">Android Version</string>
     <string name="app_name">MaxManager</string>
-    <string name="max_wordmark">MAX</string>
     <string name="app_name_settings">App Name</string>
     <string name="app_priority">App Priority</string>
     <string name="app_priority_control">Foreground Priority Lock</string>
@@ -737,6 +736,45 @@
 
     <!-- جلسات اللعب: سطح التسجيل والسجلّ -->
     <string name="game_sessions_title">Game sessions</string>
+    <string name="clip_album_title">Clip album</string>
+    <string name="clip_album_lobby_hint">The clips you record from the game panel appear here.</string>
+    <string name="clip_album_lobby_open">Open the clip album</string>
+    <string name="clip_album_loading_title">Reading clips</string>
+    <string name="clip_album_loading_hint">Looking for the clips in the recorder folder now.</string>
+    <string name="clip_album_permission_title">The album needs video access</string>
+    <string name="clip_album_permission_hint">Without it the app cannot list what you recorded. Only the recorder folder is read.</string>
+    <string name="clip_album_permission_grant">Allow access</string>
+    <string name="clip_album_unreadable_title">The gallery did not answer</string>
+    <string name="clip_album_unreadable_hint">The clips may still exist; only the listing failed. Retry asks the media store again.</string>
+    <string name="clip_album_empty_title">No clips yet</string>
+    <string name="clip_album_empty_hint">Start a recording from the game panel and it will appear here.</string>
+    <string name="clip_album_meta">%1$s · %2$s</string>
+    <string name="clip_album_play_failed">No app could play this clip</string>
+    <string name="clip_album_share_title">Share clip</string>
+    <string name="clip_album_share_cd">Share clip</string>
+    <string name="clip_album_delete_cd">Delete clip</string>
+    <string name="clip_album_delete_failed">Could not delete the clip</string>
+    <string name="clip_album_delete_title">Delete this clip?</string>
+    <string name="clip_album_delete_message">The recording is removed from the clip folder for good.</string>
+    <string name="clip_album_delete_confirm">Delete</string>
+    <string name="clip_album_trim_cd">Trim clip</string>
+    <string name="clip_album_trim_title">Trim clip</string>
+    <string name="clip_album_trim_start">Start: %1$s</string>
+    <string name="clip_album_trim_end">End: %1$s</string>
+    <string name="clip_album_trim_kept">Kept: %1$s</string>
+    <string name="clip_album_trim_confirm">Save copy</string>
+    <string name="clip_album_trim_working">Trimming…</string>
+    <string name="clip_album_trim_saved">Trimmed copy saved</string>
+    <string name="clip_album_trim_unavailable">The clip duration is not known yet; try again after it is indexed.</string>
+    <string name="clip_album_shots_title">Screenshots</string>
+    <string name="clip_album_shots_empty">Screenshots saved from the game panel appear here.</string>
+    <string name="clip_album_shots_grant">Allow photo access</string>
+    <string name="clip_album_shots_permission_hint">Photo access shows the screenshots the panel saved. Clips stay available without it.</string>
+    <string name="clip_album_shots_share_cd">Share screenshot</string>
+    <string name="clip_album_shots_open_failed">No app could open this screenshot</string>
+    <string name="clip_album_trim_fail_read">The clip could not be read</string>
+    <string name="clip_album_trim_fail_write">Could not create the trimmed copy</string>
+    <string name="clip_album_trim_fail_mux">Trimming stopped before the copy was complete</string>
     <string name="game_sessions_subtitle">Frame rate, power, heat, jank, and duration — recorded live and kept after the panel closes.</string>
     <string name="game_sessions_live_title">Live session</string>
     <string name="game_sessions_live_desc">The same recorder the overlay uses. Starting here names the session from the foreground app.</string>
@@ -764,6 +802,8 @@
     <string name="game_sessions_export">Export as CSV</string>
     <string name="game_sessions_export_note">The recorded series, with empty cells where a reading was missing.</string>
     <string name="game_sessions_export_failed">Could not write the file</string>
+    <string name="game_sessions_export_all">Export all sessions</string>
+    <string name="game_sessions_export_all_note">JSON · %1$d sessions, newest first</string>
     <string name="game_sessions_delete">Delete session</string>
     <string name="game_sessions_clear_history">Delete all sessions</string>
     <string name="game_sessions_clear_history_note">The stored file is removed; this cannot be undone.</string>
@@ -891,7 +931,9 @@
     <string name="processmgr_notif_channel">Process Monitor</string>
     <string name="processmgr_notif_title">Max Manager process monitor is running</string>
     <string name="processmgr_notif_stop">Stop</string>
-    <string name="processmgr_search_hint">Search running processes</string>
+    <string name="processmgr_search_hint">Search name, package or PID</string>
+    <string name="processmgr_search_cd">Search processes</string>
+    <string name="processmgr_search_close_cd">Close search</string>
     <string name="processmgr_no_processes">No processes match your search</string>
     <string name="processmgr_dialog_close">Close</string>
     <string name="processmgr_result_killed">Killed %1$s</string>
@@ -914,6 +956,8 @@
     <string name="processmgr_copy_package">Copy package name</string>
     <string name="processmgr_detail_oom">OOM score</string>
     <string name="processmgr_detail_swap">Swapped</string>
+    <string name="processmgr_detail_disk_read">Disk read</string>
+    <string name="processmgr_detail_disk_written">Disk written</string>
     <string name="processmgr_detail_threads">Threads</string>
     <string name="processmgr_detail_cgroup">Cgroup</string>
     <string name="processmgr_details_loading">Reading kernel details…</string>
@@ -1460,6 +1504,9 @@
     <string name="onboarding_perm_usage_desc">Knows which app is in front, so a game session starts and stops with the game.</string>
     <string name="onboarding_perm_battery_title">Battery optimization</string>
     <string name="onboarding_perm_battery_desc">Keeps a long session from being frozen in the background.</string>
+    <string name="onboarding_perm_required">Required</string>
+    <string name="onboarding_perm_recommended">Recommended</string>
+    <string name="onboarding_perm_progress">%1$d of %2$d granted</string>
     <string name="onboarding_perm_granted">Granted</string>
     <string name="onboarding_perm_grant">Grant</string>
     <string name="onboarding_perm_note">Only the first two are needed for the panel; the rest make sessions and stats reliable.</string>
@@ -3528,7 +3575,7 @@
     <string name="home_note_saved_hint">Saved when you close</string>
     <string name="home_note_counter">%1$d / %2$d</string>
     <!-- ==== Islandify port (MIT, (c) 2026 bughunter11) — keys prefixed ify_ ==== -->
-    <string name="ify_a11y_description">Lets MaxManager draw the island above the status bar so it can receive taps there. MaxManager does not read or record anything on your screen.</string>
+    <string name="ify_a11y_description">Lets MaxManager draw the island above the status bar, send the game-panel taps you enable (shoulder buttons, gyro aim, mapped points), and show the Scout zoom preview. Scout takes a screenshot on demand and never stores or sends it; MaxManager does not read or record anything else on your screen.</string>
     <string name="ify_tab_home">Home</string>
     <string name="ify_tab_activities">Activities</string>
     <string name="ify_tab_customize">Customize</string>
@@ -4057,6 +4104,7 @@
 <string name="device_lab_torch_desc">Toggle the rear flash directly.</string>
 <string name="device_lab_sensors_title">Live sensors</string>
 <string name="device_lab_sensors_desc">Accelerometer, gyroscope, light and proximity, as the system reports them.</string>
+<string name="device_lab_sensor_cadence">%1$.1f Hz measured · longest gap %2$d ms</string>
 <string name="device_lab_battery_title">Charging and battery</string>
 <string name="device_lab_battery_desc">Live status, temperature, voltage and current.</string>
 <string name="device_lab_vibrate_short">Short pulse</string>
@@ -4484,6 +4532,8 @@
     <string name="session_notify_channel">Game session results</string>
     <string name="session_notify_title">%1$s — session saved</string>
     <string name="session_notify_fps">%1$d FPS</string>
+    <string name="session_notify_duration_min">%1$d min</string>
+    <string name="session_notify_duration_hm">%1$d h %2$d min</string>
     <string name="session_notify_jank">%1$d%% jank</string>
     <string name="session_notify_worse">worse than usual</string>
     <string name="session_notify_better">better than usual</string>

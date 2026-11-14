@@ -200,7 +200,7 @@ internal const val LOBBY_SLAB_ASPECT = 1.0f
 
 /** أيقونة التطبيق من نفس `AppIconCache` الذي تستعمله بقية الشاشات؛ `null` إلى أن تُقرأ. */
 @Composable
-private fun rememberLobbyIcon(packageName: String?): State<ImageBitmap?> {
+internal fun rememberLobbyIcon(packageName: String?): State<ImageBitmap?> {
     val context = LocalContext.current
     val density = LocalDensity.current
     val px = remember(density) { with(density) { IconRaster.roundToPx() } }

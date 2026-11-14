@@ -101,6 +101,7 @@ fun NavGraphBuilder.maxNavGraph(navController: NavHostController) {
     composable(MaxDestination.Fas.route) { FasScreen(navController) }
     composable(MaxDestination.FpsOverlay.route) { FpsOverlayScreen(navController) }
     composable(MaxDestination.GameSessions.route) { GameSessionsScreen(navController) }
+    composable(MaxDestination.ClipAlbum.route) { ClipAlbumScreen(navController) }
     composable(MaxDestination.DynamicIsland.route) { DynamicIslandScreen(navController) }
     composable(MaxDestination.ThermalDetail.route) { ThermalDetailScreen(navController) }
     composable(MaxDestination.Charging.route) { ChargingScreen(navController) }

@@ -57,7 +57,9 @@ data class CrosshairState(
     val opacity: Float = DEFAULT_OPACITY,
     val offsetX: Float = 0f,
     val offsetY: Float = 0f,
-    val outline: Boolean = true
+    val outline: Boolean = true,
+    /** حلقات المدى حول الشكل: صفر تعني «بلا حلقات»، وهو الافتراضي فلا يتغيّر شكل قائم. */
+    val rings: Int = DEFAULT_RINGS
 ) {
     /** نسخة صالحة للرسم والحفظ: كل قيمة داخل مداها المعلَن. */
     fun sanitized(): CrosshairState {
@@ -71,7 +73,8 @@ data class CrosshairState(
             gapDp = gapDp.coerceIn(MIN_GAP_DP, maxGap),
             opacity = opacity.coerceIn(MIN_OPACITY, MAX_OPACITY),
             offsetX = offsetX.coerceIn(-MAX_OFFSET, MAX_OFFSET),
-            offsetY = offsetY.coerceIn(-MAX_OFFSET, MAX_OFFSET)
+            offsetY = offsetY.coerceIn(-MAX_OFFSET, MAX_OFFSET),
+            rings = rings.coerceIn(MIN_RINGS, MAX_RINGS)
         )
     }
 
@@ -86,6 +89,11 @@ data class CrosshairState(
 
         const val MIN_GAP_DP = 0
         const val DEFAULT_GAP_DP = 6
+
+        /** حلقات المدى: ثلاث كحدّ أقصى، فما زاد حجب المشهد بدل أن يعين عليه. */
+        const val MIN_RINGS = 0
+        const val MAX_RINGS = 3
+        const val DEFAULT_RINGS = 0
 
         const val MIN_OPACITY = 0.3f
         const val MAX_OPACITY = 1f
@@ -214,6 +222,21 @@ fun crosshairGeometry(
                 )
             }
             CrosshairStyle.CROSS, CrosshairStyle.TEE -> Unit
+        }
+        // حلقات المدى خارج الشكل دائمًا، فلا تختلط أذرع الصليب بحلقة تحيط بها.
+        // والمدى المتاح يُقاس من مركز العلامة إلى أقرب حافة، فتُقصّ الحلقات داخل النافذة
+        // بدل أن تخرج منها عند أقصى إزاحة.
+        if (clean.rings > 0) {
+            val reach = (minOf(cx, cy, width - cx, height - cy) - half - stroke).coerceAtLeast(0f)
+            val desired = max(half * 0.6f, stroke * 3.5f)
+            val step = minOf(desired, reach / clean.rings)
+            for (index in 1..clean.rings) {
+                val radius = half + step * index
+                // حلقة ملتصقة بالشكل لا تُرى: تُترك بدل أن تُرسم خطًّا مضاعفًا.
+                if (radius > half + stroke * 0.5f) {
+                    add(CrosshairCircle(centerX = cx, centerY = cy, radius = radius, filled = false))
+                }
+            }
         }
     }
 
