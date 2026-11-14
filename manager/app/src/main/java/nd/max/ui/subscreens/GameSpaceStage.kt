@@ -56,6 +56,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -717,42 +718,70 @@ private fun HeroPanel(
 }
 
 /**
- * ضوء فنّ اللعبة: أيقونتها الحقيقيّة مكبَّرةً إلى يمين المسرح بشفافية، ثم ستارة تدرّج تُذيبها في
- * الخلفيّة. لا صورة منقولة ولا رسم بديل — ما لم تُقرأ الأيقونة لا يُرسم شيء.
+ * ضوء فنّ اللعبة: أيقونتها الحقيقيّة تملأ المسرح كلّه كما تملأ اللقطة خلفية البطل، ثم تُذاب في
+ * الخلفيّة بستارتَي تدرّج وهالة بنفسجيّة. لا صورة منقولة ولا رسم بديل — ما لم تُقرأ الأيقونة لا
+ * يُرسم شيء.
+ *
+ * والتكبير ٢٫٢× مقصود: يُقرأ لون اللعبة وملمسها خلفيّةً، ولا تتكرّر أيقونتها العملاقة شعارًا
+ * ثانيًا بجوار شعار الغلاف.
  */
 @Composable
 private fun HeroArtWash(game: GameApp) {
     val icon by rememberLobbyIcon(game.packageName)
     val bitmap = icon ?: return
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .clipToBounds()
+    ) {
         Image(
             bitmap = bitmap,
             contentDescription = null,
             contentScale = ContentScale.Crop,
-            alpha = 0.34f,
+            alpha = 0.42f,
             modifier = Modifier
-                .align(Alignment.CenterEnd)
-                .fillMaxHeight()
-                .fillMaxWidth(0.62f)
+                .fillMaxSize()
+                .graphicsLayer {
+                    scaleX = 2.2f
+                    scaleY = 2.2f
+                }
         )
+        // ظلامٌ تامّ تحت النصّ، وانكشافٌ تدريجيّ إلى اليمين حيث يقف الغلاف.
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(
                     Brush.horizontalGradient(
                         0f to GameSpacePalette.Void,
-                        0.42f to GameSpacePalette.Void.copy(alpha = 0.82f),
-                        0.74f to GameSpacePalette.Void.copy(alpha = 0.30f),
+                        0.34f to GameSpacePalette.Void,
+                        0.62f to GameSpacePalette.Void.copy(alpha = 0.72f),
                         1f to Color.Transparent
                     )
                 )
         )
+        // أعلى الفنّ يُذاب في الخلفيّة، وأسفله في رفّ الألعاب — فلا حدّ فاصل بين المنطقتين.
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(
                     Brush.verticalGradient(
-                        listOf(Color.Transparent, GameSpacePalette.Void.copy(alpha = 0.55f))
+                        0f to GameSpacePalette.Void.copy(alpha = 0.72f),
+                        0.30f to Color.Transparent,
+                        0.62f to Color.Transparent,
+                        1f to GameSpacePalette.Void.copy(alpha = 0.96f)
+                    )
+                )
+        )
+        // هالة بنفسجيّة تُوحّد لون الفنّ مع لوحة الشاشة.
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    Brush.radialGradient(
+                        listOf(
+                            GameSpacePalette.Violet.copy(alpha = 0.20f),
+                            Color.Transparent
+                        )
                     )
                 )
         )
@@ -1447,12 +1476,42 @@ private fun GameCard(
     ) {
         val bitmap = icon
         if (bitmap != null) {
+            // ملمس الغلاف: الأيقونة مكبَّرةً وقاتمةً خلف الشعار، فيحمل الغلاف لون اللعبة.
             Image(
                 bitmap = bitmap,
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
-                alpha = if (selected) 1f else 0.86f,
-                modifier = Modifier.fillMaxSize()
+                alpha = if (selected) 0.52f else 0.40f,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .graphicsLayer {
+                        scaleX = 1.7f
+                        scaleY = 1.7f
+                    }
+            )
+            // لمعان قطريّ بنفسجيّ يربط الغلاف بلوحة الشاشة.
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        Brush.linearGradient(
+                            listOf(
+                                GameSpacePalette.Violet.copy(alpha = 0.30f),
+                                Color.Transparent,
+                                GameSpacePalette.Magenta.copy(alpha = 0.22f)
+                            )
+                        )
+                    )
+            )
+            // الشعار: الأيقونة كاملةً في وسط الغلاف، لا مقصوصةً كما في الرقاقة المسطّحة.
+            Image(
+                bitmap = bitmap,
+                contentDescription = null,
+                contentScale = ContentScale.Fit,
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .fillMaxHeight(0.62f)
+                    .fillMaxWidth(0.62f)
             )
         } else {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
