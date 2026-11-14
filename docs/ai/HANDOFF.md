@@ -28127,3 +28127,40 @@ RESIDUAL RISK: الشكل واللمس وRTL على ٣٦٠dp **تحتاج جها
 المالك وحده**.
 
 **NEXT:** `main` أخضر على `f3db1280`. لا يُعاد فتح إصلاح؛ وأي أحمر جديد يُسمّى من السجل أولًا.
+
+### §7.10 — بناء أحمر بعد تمريرة UI/UX على Game Space: صنف `RailSection` محذوف
+
+**TASK:** أمر المالك «اصلح مشكاة البناء» بعد أن صار `main` أحمر على `0f67ea20`.
+
+**العطب المقيس:** `43554495701` على `0f67ea20` = فشل في خطوة `Compile main sources (checkpoint 1/2)`،
+لا في الاختبارات. الأخطاء الأربعة نصًّا من السجل:
+`GameSpaceStage.kt:540:9 Unresolved reference 'RailSection'` ·
+`:540:39 Cannot infer type for value parameter 'entry'` ·
+`:543:30` و`:546:45 Unresolved reference 'section'` · ثم `:app:compileReleaseKotlin FAILED`.
+وتشغيل الوثائق `43554495736` على الرأس نفسه = نجاح، فالعطب في الكود لا في القشرة.
+
+**السبب:** تمريرة UI/UX `446d4056` حذفت `private enum class RailSection` (كان عند `da933232` في
+`GameSpaceStage.kt:327-333` بخمسة مداخل: Library · Performance · Tools · Features · Settings،
+كلٌّ يربط `LobbySection`)، وأبقت استعماله في `GameSpaceRail`. وموارده الخمسة ما زالت موجودة في
+`res/values/max_gaming_strings.xml:610-614`، فالمحذوف هو الصنف وحده.
+
+**الإصلاح:** `82e5d4e3` — أُعيد الصنف نفسه بتعليقه العربيّ قبل `GameSpaceRailItem` (+١٢ سطرًا،
+ملف واحد). لم يُغيَّر أي كود منتج آخر.
+
+**CI TRUTH:** `43580938206` على `82e5d4e3` = **نجاح** (`conclusion: success` بعد `completed`،
+مقروءًا من JSON التشغيل): الترجمة، اختبارات release، `assembleRelease` بالتوقيع وR8، التحقّق من
+APK، حزمة الفلاش، والمخرجات. والحكم مقروء لا متوقَّع. (المراقب الأول سقط بـ`TLS handshake timeout`،
+والثاني هو الذي قرأ الحكم.)
+
+**GATES:** `kt_balance` ٣٤٣٥ · ٠ · `design_tokens` ٢٣٣ ≤ ٣٠٠ · `i18n_coverage` ✓ ·
+`git diff --check` نظيف. و`hardcoded_ui_text` = ٢٦ > ٢٤ في ١٧ ملفًا، كلها من تمريرة UI/UX
+(`ZramViewModel` ٤ · `NexusScreen` ٣ · `RecipeCard` ٢ · `StudioComponents` ٢ · والباقي ١)،
+**وليست في بوابات CI** (`grep hardcoded_ui_text .github/workflows/*.yml` = صفر) فلا تُسقط البناء،
+ولم تُوسَّع المهمة لإصلاحها.
+
+**BUILD:** لا بناء محليًّا (§0.10)؛ الحكم من Actions وحده.
+
+**RESIDUAL RISK:** لا شيء سلوكي في هذا التغيير (استعادة صنف فقط)؛ الشكل واللمس وRTL تبقى **جهاز
+المالك وحده**.
+
+**NEXT:** `main` أخضر على `82e5d4e3`. وأي أحمر جديد يُسمّى من السجل أولًا، لا من التوقّع.
