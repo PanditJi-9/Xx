@@ -28008,8 +28008,11 @@ exit 0 · `i18n_coverage --assert` تطابق الأكواد الثلاثة و0 
 بين تسجيل HUD وشريط Turbo، فأُعيد تسمية الجديد `toggleTurboRecording` قبل الدفع.
 ثم `43534057436` على `4c140a67` = **أحمر في الترجمة** بثلاثة أخطاء في `GamePanelCockpit.kt`: أيقونة
 `AutoAwesome` بلا استيراد (استُبدلت بـ`SportsEsports` المستوردة)، و`Arrangement.spacedBy(xs, Alignment.CenterVertically)`
-في `horizontalArrangement` مرّتين (صُحّح إلى `spacedBy(xs)` + `verticalAlignment`). أُصلحت كلها،
-**والرأس الجديد لم يُشغَّل بعد؛ لا يُقال أخضر قبل قراءة `conclusion`.**
+في `horizontalArrangement` مرّتين (صُحّح إلى `spacedBy(xs)` + `verticalAlignment`). أُصلحت كلها.
+ثم `43535009664` على `ed874cef` = **أحمر في اختبار واحد فقط** بعد نجاح الترجمة: `GameExtrasMathTest.kt:18`
+كان يتوقّع `MAX_FRACTION` لنسبة سالبة، والصواب `MIN_FRACTION` لأن التقييد `coerceIn` يردّ السالب إلى الحدّ
+الأدنى؛ **العيب في الاختبار لا في النموذج**، وصُحّح. **والرأس الجديد لم يُشغَّل بعد؛ لا يُقال أخضر قبل
+قراءة `conclusion`.**
 
 **BUILD:** لا بناء محليًّا (§0.10). الاختبارات الثلاثة الجديدة لم تُشغَّل محليًّا؛ CI وحده يحكمها.
 

@@ -15,7 +15,7 @@ class GameExtrasMathTest {
 
     @Test
     fun `النسبة تُقيَّد ولا تخرج عن الشاشة`() {
-        assertEquals(GameExtrasMath.MAX_FRACTION, GameExtrasMath.clampFraction(-1f), 0f)
+        assertEquals(GameExtrasMath.MIN_FRACTION, GameExtrasMath.clampFraction(-1f), 0f)
         assertEquals(GameExtrasMath.MAX_FRACTION, GameExtrasMath.clampFraction(3f), 0f)
         assertEquals(GameExtrasMath.MIN_FRACTION, GameExtrasMath.clampFraction(0f), 0f)
         assertEquals(0.5f, GameExtrasMath.clampFraction(Float.NaN), 0f)
