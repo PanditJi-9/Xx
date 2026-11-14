@@ -67,7 +67,6 @@ import nd.max.core.gamespace.PlaySessionLedger
 import nd.max.core.gamespace.SetupKind
 import nd.max.core.gamespace.SetupStep
 import nd.max.ui.component.AppIconImage
-import nd.max.ui.component.LobbyPalette
 import nd.max.ui.design.MaxRadius
 import nd.max.ui.design.MaxSize
 import nd.max.ui.design.MaxSpace
@@ -116,7 +115,7 @@ internal fun LobbyInsightsBody(
     ) {
         Text(
             text = stringResource(R.string.lobby_insights_head),
-            color = LobbyPalette.Ink,
+            color = GameSpacePalette.Ink,
             fontSize = 20.sp,
             fontWeight = FontWeight.SemiBold,
             maxLines = 1,
@@ -155,7 +154,7 @@ internal fun LobbyInsightsBody(
                 } else {
                     stringResource(R.string.lobby_insights_armed_count, libraryArmed.size)
                 },
-                color = LobbyPalette.Muted,
+                color = GameSpacePalette.Muted,
                 fontSize = 12.sp
             )
         }
@@ -163,23 +162,23 @@ internal fun LobbyInsightsBody(
         LobbySectionCard(title = stringResource(R.string.lobby_career_week)) {
             Text(
                 text = stringResource(R.string.lobby_career_week_note),
-                color = LobbyPalette.Muted,
+                color = GameSpacePalette.Muted,
                 fontSize = 12.sp
             )
             val weekMs = career.week.sumOf { it.totalMs }
             if (weekMs > 0L || career.lastWeekMs > 0L) {
                 val delta = when {
                     career.lastWeekMs <= 0L ->
-                        stringResource(R.string.lobby_career_delta_new) to LobbyPalette.Positive
+                        stringResource(R.string.lobby_career_delta_new) to GameSpacePalette.Positive
                     else -> {
                         val pct = ((weekMs - career.lastWeekMs) * 100L / career.lastWeekMs).toInt()
                         when {
                             pct > 0 -> stringResource(R.string.lobby_career_delta_up, pct) to
-                                LobbyPalette.Positive
+                                GameSpacePalette.Positive
                             pct < 0 -> stringResource(R.string.lobby_career_delta_down, -pct) to
-                                LobbyPalette.Muted
+                                GameSpacePalette.Muted
                             else -> stringResource(R.string.lobby_career_delta_same) to
-                                LobbyPalette.Muted
+                                GameSpacePalette.Muted
                         }
                     }
                 }
@@ -223,7 +222,7 @@ internal fun LobbyInsightsBody(
                                 .fillMaxWidth()
                                 .height(72.dp)
                                 .clip(RoundedCornerShape(maxRadius(MaxRadius.chip)))
-                                .background(LobbyPalette.PanelRaised.copy(alpha = 0.35f)),
+                                .background(GameSpacePalette.PanelRaised.copy(alpha = 0.35f)),
                             contentAlignment = Alignment.BottomCenter
                         ) {
                             if (ratio > 0f) {
@@ -235,7 +234,7 @@ internal fun LobbyInsightsBody(
                                             if (day.date == today) {
                                                 accent
                                             } else {
-                                                LobbyPalette.Muted.copy(alpha = 0.55f)
+                                                GameSpacePalette.Muted.copy(alpha = 0.55f)
                                             }
                                         )
                                 )
@@ -244,7 +243,7 @@ internal fun LobbyInsightsBody(
                         Spacer(Modifier.height(MaxSpace.xs))
                         Text(
                             text = day.date.dayOfMonth.toString(),
-                            color = if (day.date == today) LobbyPalette.Ink else LobbyPalette.Muted,
+                            color = if (day.date == today) GameSpacePalette.Ink else GameSpacePalette.Muted,
                             fontSize = 11.sp
                         )
                     }
@@ -283,13 +282,13 @@ internal fun LobbyInsightsBody(
         LobbySectionCard(title = stringResource(R.string.lobby_span_title)) {
             Text(
                 text = stringResource(R.string.lobby_span_note, span.days),
-                color = LobbyPalette.Muted,
+                color = GameSpacePalette.Muted,
                 fontSize = 12.sp
             )
             if (span.totalMs <= 0L) {
                 Text(
                     text = stringResource(R.string.lobby_insights_no_sessions),
-                    color = LobbyPalette.Muted,
+                    color = GameSpacePalette.Muted,
                     fontSize = 13.sp
                 )
             } else {
@@ -337,7 +336,7 @@ internal fun LobbyInsightsBody(
                                     .toLocalDate()
                             )
                         ),
-                        color = LobbyPalette.Muted,
+                        color = GameSpacePalette.Muted,
                         fontSize = 11.sp
                     )
                 }
@@ -347,13 +346,13 @@ internal fun LobbyInsightsBody(
         LobbySectionCard(title = stringResource(R.string.lobby_career_sessions)) {
             Text(
                 text = stringResource(R.string.lobby_career_sessions_note),
-                color = LobbyPalette.Muted,
+                color = GameSpacePalette.Muted,
                 fontSize = 12.sp
             )
             if (career.recent.isEmpty()) {
                 Text(
                     text = stringResource(R.string.lobby_insights_no_sessions),
-                    color = LobbyPalette.Muted,
+                    color = GameSpacePalette.Muted,
                     fontSize = 13.sp
                 )
             } else {
@@ -377,14 +376,14 @@ internal fun LobbyInsightsBody(
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
                                 text = label,
-                                color = LobbyPalette.Ink,
+                                color = GameSpacePalette.Ink,
                                 fontSize = 14.sp,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
                             )
                             Text(
                                 text = time.format(Instant.ofEpochMilli(session.endedAtMs)),
-                                color = LobbyPalette.Muted,
+                                color = GameSpacePalette.Muted,
                                 fontSize = 12.sp
                             )
                         }
@@ -403,7 +402,7 @@ internal fun LobbyInsightsBody(
         LobbySectionCard(title = stringResource(R.string.clip_album_title)) {
             Text(
                 text = stringResource(R.string.clip_album_lobby_hint),
-                color = LobbyPalette.Muted,
+                color = GameSpacePalette.Muted,
                 fontSize = 12.sp
             )
             Row(
@@ -427,7 +426,7 @@ internal fun LobbyInsightsBody(
             if (summary.top.isEmpty()) {
                 Text(
                     text = stringResource(R.string.lobby_insights_no_stats),
-                    color = LobbyPalette.Muted,
+                    color = GameSpacePalette.Muted,
                     fontSize = 13.sp
                 )
             } else {
@@ -459,7 +458,7 @@ internal fun LobbyInsightsBody(
             if (app == null) {
                 Text(
                     text = stringResource(R.string.lobby_insights_pick_game),
-                    color = LobbyPalette.Muted,
+                    color = GameSpacePalette.Muted,
                     fontSize = 13.sp
                 )
             } else {
@@ -478,7 +477,7 @@ internal fun LobbyInsightsBody(
                         R.string.lobby_explore_ready,
                         LobbyInsights.readyCount(steps)
                     ),
-                    color = LobbyPalette.Muted,
+                    color = GameSpacePalette.Muted,
                     fontSize = 12.sp
                 )
                 steps.forEach { step ->
@@ -517,12 +516,12 @@ internal fun LobbyInsightsBody(
                             Icons.Rounded.RadioButtonUnchecked
                         },
                         contentDescription = null,
-                        tint = if (milestone.unlocked) accent else LobbyPalette.Muted,
+                        tint = if (milestone.unlocked) accent else GameSpacePalette.Muted,
                         modifier = Modifier.size(18.dp)
                     )
                     Text(
                         text = careerBadgeLabel(milestone.badge),
-                        color = LobbyPalette.Ink,
+                        color = GameSpacePalette.Ink,
                         fontSize = 14.sp,
                         modifier = Modifier.weight(1f)
                     )
@@ -545,7 +544,7 @@ internal fun LobbyInsightsBody(
                                 milestone.target
                             )
                         },
-                        color = if (milestone.unlocked) accent else LobbyPalette.Muted,
+                        color = if (milestone.unlocked) accent else GameSpacePalette.Muted,
                         fontSize = 12.sp
                     )
                 }
@@ -554,7 +553,7 @@ internal fun LobbyInsightsBody(
 
         Text(
             text = stringResource(R.string.lobby_insights_scope),
-            color = LobbyPalette.Muted,
+            color = GameSpacePalette.Muted,
             fontSize = 12.sp
         )
     }
@@ -628,14 +627,14 @@ private fun InsightTile(label: String, value: String, modifier: Modifier = Modif
     Column(
         modifier = modifier
             .clip(RoundedCornerShape(maxRadius(MaxRadius.tile)))
-            .background(LobbyPalette.PanelRaised.copy(alpha = 0.45f))
+            .background(GameSpacePalette.PanelRaised.copy(alpha = 0.45f))
             .padding(MaxSpace.lg),
         verticalArrangement = Arrangement.spacedBy(MaxSpace.xs)
     ) {
-        Text(text = label, color = LobbyPalette.Muted, fontSize = 11.sp, maxLines = 1)
+        Text(text = label, color = GameSpacePalette.Muted, fontSize = 11.sp, maxLines = 1)
         Text(
             text = value,
-            color = LobbyPalette.Ink,
+            color = GameSpacePalette.Ink,
             fontSize = 20.sp,
             fontWeight = FontWeight.SemiBold,
             maxLines = 1
@@ -677,7 +676,7 @@ private fun MostPlayedRow(
         )
         Text(
             text = label,
-            color = LobbyPalette.Ink,
+            color = GameSpacePalette.Ink,
             fontSize = 14.sp,
             fontWeight = FontWeight.Medium,
             maxLines = 1,
@@ -755,16 +754,16 @@ private fun SetupRow(
         Icon(
             imageVector = icon,
             contentDescription = null,
-            tint = if (step.done) LobbyPalette.Positive else LobbyPalette.Muted
+            tint = if (step.done) GameSpacePalette.Positive else GameSpacePalette.Muted
         )
         Column(modifier = Modifier.weight(1f)) {
-            Text(text = title, color = LobbyPalette.Ink, fontSize = 14.sp, maxLines = 1)
-            Text(text = detail, color = LobbyPalette.Muted, fontSize = 12.sp, maxLines = 1)
+            Text(text = title, color = GameSpacePalette.Ink, fontSize = 14.sp, maxLines = 1)
+            Text(text = detail, color = GameSpacePalette.Muted, fontSize = 12.sp, maxLines = 1)
         }
         Icon(
             imageVector = if (step.done) Icons.Rounded.CheckCircle else Icons.Rounded.RadioButtonUnchecked,
             contentDescription = null,
-            tint = if (step.done) LobbyPalette.Positive else LobbyPalette.Muted
+            tint = if (step.done) GameSpacePalette.Positive else GameSpacePalette.Muted
         )
     }
 }

@@ -12,11 +12,8 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.focusable
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.Column
@@ -27,6 +24,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.PagerDefaults
+import androidx.compose.foundation.pager.PagerSnapDistance
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
@@ -38,9 +36,7 @@ import androidx.compose.material.icons.rounded.Star
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
@@ -69,7 +65,6 @@ import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -115,7 +110,6 @@ import nd.max.ui.component.rememberLobbyIcon
 import nd.max.ui.component.LobbyEntrance
 import nd.max.ui.component.LobbyKeepScreenOn
 import nd.max.ui.component.LobbyNotice
-import nd.max.ui.component.LobbyPalette
 import nd.max.ui.component.LobbyRoundButton
 import nd.max.ui.component.LobbySnapSpring
 import nd.max.ui.component.LobbyStatusCapsule
@@ -184,12 +178,11 @@ private const val SWISH_DOWN_RATE = 0.85f
 private val metaCache = LruCache<String, GameLobbyMeta>(64)
 
 /**
- * مساحة الألعاب: **صفحة واحدة طويلة** — المسرح أولًا (البطل، لوحة الأداء، المكتبة، القاعدة)،
- * ثم الأقسام الستّة التي كانت في مركز التحكّم، في عمود تمرير واحد.
+ * مساحة الألعاب: مسرح رئيسي كامل يتبعه Pager رأسيّ لأقسام اللوبي الستّة.
  *
  *  - الخلفية حقل بازلتيّ ساكن واحد؛ لا مسرح متحرّك ولا جسيمات خلف واجهة ساكنة.
- *  - الشريط الجانبيّ ثابت خارج التمرير: النقر يمرّر إلى القسم، والتمرير يضيء العنصر المقابل.
- *    لا صفحة إعدادات مخفيّة تُكشف بالسحب، ولا تبويبات علويّة.
+ *  - الشريط الجانبيّ ثابت خارج الـPager: النقر ينتقل إلى صفحة كاملة، والسحب يستقرّ على قسم واحد.
+ *    لا توقّف بين قسمين ولا تمرير لإكمال عناصر الشاشة الرئيسية.
  *  - من الريموت: ↑ أو R1 يفتح ملف اللعبة، L1 أو الرجوع يعيد الرئيسية، و←/→ يبدّلان اللعبة.
  *
  * ### الدخول السينمائيّ والأصوات (بطلب المالك ٢٠٢٦-١٠-٢١)
@@ -297,20 +290,16 @@ fun GameLobbyScreen(
             playStats = playStats
         )
     }
-    // صفحة واحدة طويلة: الشريط الجانبيّ ثابت، والتمرير ينتقل من قسم إلى قسم.
-    val density = LocalDensity.current
-    val homeScroll = rememberScrollState()
-    var viewportPx by remember { mutableFloatStateOf(0f) }
+    // كل قسم صفحة مستقلة: الـPager يثبت الحركة على قسم كامل، والشريط الجانبي يقرأ الصفحة نفسها.
+    // هذا يمنع الوقوف بين قسمين ويُبقي المسرح الرئيسي صفحة كاملة بلا تمرير لإكمال محتواه.
+    val lobbyPager = rememberPagerState(initialPage = 0) { LobbySection.entries.size + 1 }
     val spineIndex by remember {
-        derivedStateOf {
-            if (viewportPx <= 0f) {
-                0
-            } else {
-                (homeScroll.value / viewportPx).toInt().coerceIn(0, LobbySection.entries.size)
-            }
-        }
+        derivedStateOf { lobbyPager.currentPage.coerceIn(0, LobbySection.entries.size) }
     }
     val activeSpine = LobbySection.entries.getOrNull(spineIndex - 1)
+    LaunchedEffect(lobbyPager.currentPage) {
+        LobbySection.entries.getOrNull(lobbyPager.currentPage - 1)?.let { section = it }
+    }
 
     // الاختيار هو المصدر: المركز يعرض اللعبة المختارة نفسها من أي سطح (المسرح أو استكشف أو الرؤى)،
     // ولا يعتمد على صفحة حلقة لم تعد مركّبة. و`coerceAtLeast(0)` تعني «الأولى» حين لا اختيار بعد.
@@ -359,7 +348,7 @@ fun GameLobbyScreen(
     // يُقرأ في مرحلة الرسم عبر `toneState.value` حيث أمكن.
     val gameTone = rememberLobbyTone(active?.packageName)
     val toneState = animateColorAsState(
-        targetValue = if (lobbyPrefs.gameColors) gameTone else LobbyPalette.Red,
+        targetValue = if (lobbyPrefs.gameColors) gameTone else GameSpacePalette.Violet,
         animationSpec = tween(MaxDuration.deliberate),
         label = "lobbyStageTone"
     )
@@ -407,19 +396,28 @@ fun GameLobbyScreen(
     val tick = {
         if (lobbyPrefs.haptics) haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
     }
+    // Gesture navigation and rail navigation share the same settled-page feedback.
+    LaunchedEffect(lobbyPager) {
+        var lastPage = lobbyPager.settledPage
+        snapshotFlow { lobbyPager.settledPage }.drop(1).collect { page ->
+            if (page != lastPage) {
+                tick()
+                sounds.play(LobbyCue.Swish)
+                lastPage = page
+            }
+        }
+    }
     val openControl: (LobbySection) -> Unit = { target ->
         section = target
         scope.launch {
-            homeScroll.animateScrollTo(
-                value = ((LobbySection.entries.indexOf(target) + 1) * viewportPx).toInt(),
-                animationSpec = tween(MaxDuration.deliberate, easing = FastOutSlowInEasing)
+            lobbyPager.animateScrollToPage(
+                page = LobbySection.entries.indexOf(target) + 1,
+                animationSpec = LobbySnapSpring
             )
         }
     }
     val openHome: () -> Unit = {
-        scope.launch {
-            homeScroll.animateScrollTo(0, animationSpec = tween(MaxDuration.deliberate, easing = FastOutSlowInEasing))
-        }
+        scope.launch { lobbyPager.animateScrollToPage(0, animationSpec = LobbySnapSpring) }
     }
     BackHandler(enabled = spineIndex > 0) { openHome() }
     // «استكشف» يعلو الصفحتين: أوّل رجوع يغلق الطبقة وحدها قبل أي انتقال أو خروج من اللوبي.
@@ -646,7 +644,7 @@ fun GameLobbyScreen(
                 lobbyHeader()
             }
 
-            // صفحة واحدة: الشريط الجانبيّ ثابت، والعمود يتمرّر ويتبدّل قسمه مع موضع التمرير.
+            // المسرح والأقسام داخل Pager رأسيّ؛ الشريط الجانبيّ ثابت ويطابق الصفحة المستقرّة.
             Row(
                 modifier = Modifier
                     .fillMaxSize()
@@ -660,13 +658,11 @@ fun GameLobbyScreen(
                         if (target == null) openHome() else openControl(target)
                     }
                 )
-                BoxWithConstraints(
+                Box(
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxHeight()
                 ) {
-                    val viewport = maxHeight
-                    SideEffect { viewportPx = with(density) { viewport.toPx() } }
                     val readyPercent = if (readinessSnapshot.readyTotal > 0) {
                         readinessSnapshot.readyDone * 100 / readinessSnapshot.readyTotal
                     } else {
@@ -681,82 +677,83 @@ fun GameLobbyScreen(
                             }
                         )
                     }
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .verticalScroll(homeScroll)
-                    ) {
-                        GameSpaceStage(
-                            games = games,
-                            selected = active,
-                            readinessPercent = readyPercent,
-                            statusTitle = insight?.let { gameSpaceVerdictLabel(it.verdict) }
-                                ?: stringResource(R.string.gs_ready_title),
-                            statusDetail = gapText ?: stringResource(R.string.gs_ready_body),
-                            panelEnabled = panelEnabled,
-                            batteryPercent = lobbyBattery?.percent,
-                            batteryTempC = lobbyBattery?.tempTenthsC?.let { it / 10f },
-                            charging = lobbyBattery?.charging == true,
-                            onSelect = selectGame,
-                            onLaunch = start,
-                            onOptions = { openControl(LobbySection.Game) },
-                            onOpenLibrary = { openControl(LobbySection.Library) },
-                            onOpenSessions = {
-                                navController.navigate(MaxDestination.GameSessions.route) {
-                                    launchSingleTop = true
-                                }
-                            },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(viewport)
+                    VerticalPager(
+                        state = lobbyPager,
+                        modifier = Modifier.fillMaxSize(),
+                        pageSpacing = 0.dp,
+                        beyondViewportPageCount = 0,
+                        key = { page -> page },
+                        flingBehavior = PagerDefaults.flingBehavior(
+                            state = lobbyPager,
+                            pagerSnapDistance = PagerSnapDistance.atMost(1),
+                            snapAnimationSpec = LobbySnapSpring
                         )
-                        LobbySection.entries.forEach { target ->
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(viewport)
-                            ) {
-                                LobbySectionContent(
-                                    section = target,
-                                    app = active,
-                                    config = activeConfig ?: AppConfig(),
-                                    games = allGames,
-                                    stats = playStats,
-                                    sessions = sessions,
-                                    tweaks = tweaksByGame,
-                                    armed = panelPrefs.enabledPackages,
-                                    panelEnabled = panelEnabled,
-                                    onPanelEnabled = setPanel,
-                                    overlayGranted = overlayGranted,
-                                    onGrantOverlay = { OverlayPermission.openSettings(context) },
-                                    onUpdate = { key, value ->
-                                        active?.let { settingsViewModel.updateSetting(it.packageName, key, value) }
-                                    },
-                                    onOpenFull = { active?.let { navController.openAppSettings(it.packageName) } },
-                                    onSection = openControl,
-                                    onOpenHistory = {
-                                        navController.navigate(MaxDestination.GameSessions.route) {
-                                            launchSingleTop = true
-                                        }
-                                    },
-                                    onOpenClips = {
-                                        navController.navigate(MaxDestination.ClipAlbum.route) {
-                                            launchSingleTop = true
-                                        }
-                                    },
-                                    onOpenGame = { pkg ->
-                                        selectGame(pkg)
-                                        openHome()
-                                    },
-                                    prefs = lobbyPrefs,
-                                    onPrefs = updatePrefs,
-                                    apps = manageApps,
-                                    manual = library.manual,
-                                    excluded = library.excluded,
-                                    onToggleGame = viewModel::membership,
-                                    accent = toneState.value
-                                )
-                            }
+                    ) { page ->
+                        if (page == 0) {
+                            GameSpaceStage(
+                                games = games,
+                                selected = active,
+                                readinessPercent = readyPercent,
+                                statusTitle = insight?.let { gameSpaceVerdictLabel(it.verdict) }
+                                    ?: stringResource(R.string.gs_ready_title),
+                                statusDetail = gapText ?: stringResource(R.string.gs_ready_body),
+                                panelEnabled = panelEnabled,
+                                batteryPercent = lobbyBattery?.percent,
+                                batteryTempC = lobbyBattery?.tempTenthsC?.let { it / 10f },
+                                charging = lobbyBattery?.charging == true,
+                                onSelect = selectGame,
+                                onLaunch = start,
+                                onOptions = { openControl(LobbySection.Game) },
+                                onOpenLibrary = { openControl(LobbySection.Library) },
+                                onOpenSessions = {
+                                    navController.navigate(MaxDestination.GameSessions.route) {
+                                        launchSingleTop = true
+                                    }
+                                },
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        } else {
+                            val target = LobbySection.entries[page - 1]
+                            LobbySectionContent(
+                                section = target,
+                                app = active,
+                                config = activeConfig ?: AppConfig(),
+                                games = allGames,
+                                stats = playStats,
+                                sessions = sessions,
+                                tweaks = tweaksByGame,
+                                armed = panelPrefs.enabledPackages,
+                                panelEnabled = panelEnabled,
+                                onPanelEnabled = setPanel,
+                                overlayGranted = overlayGranted,
+                                onGrantOverlay = { OverlayPermission.openSettings(context) },
+                                onUpdate = { key, value ->
+                                    active?.let { settingsViewModel.updateSetting(it.packageName, key, value) }
+                                },
+                                onOpenFull = { active?.let { navController.openAppSettings(it.packageName) } },
+                                onSection = openControl,
+                                onOpenHistory = {
+                                    navController.navigate(MaxDestination.GameSessions.route) {
+                                        launchSingleTop = true
+                                    }
+                                },
+                                onOpenClips = {
+                                    navController.navigate(MaxDestination.ClipAlbum.route) {
+                                        launchSingleTop = true
+                                    }
+                                },
+                                onOpenGame = { pkg ->
+                                    selectGame(pkg)
+                                    openHome()
+                                },
+                                prefs = lobbyPrefs,
+                                onPrefs = updatePrefs,
+                                apps = manageApps,
+                                manual = library.manual,
+                                excluded = library.excluded,
+                                onToggleGame = viewModel::membership,
+                                accent = toneState.value
+                            )
                         }
                     }
                 }

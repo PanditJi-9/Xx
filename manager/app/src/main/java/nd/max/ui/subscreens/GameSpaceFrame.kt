@@ -78,34 +78,42 @@ import nd.max.ui.design.maxRadius
  * يُقرآن في اللوبي، فيُعرض ما يُقرأ فعلًا (البطارية والذاكرة وحرارتها) و«—» لما لا يُقرأ — ADR-07.
  * وشريط «100%» ليس قراءة لشيء، فمكانه حكمُ آخر جلسة وعددُها.
  *
- * ### مرجع الأبعاد
+ * ### الأبعاد من اللقطة (١٦٧٢×٩٤١ ⇒ ١٦:٩)
  *
- * تُضبط الأبعاد في المسرح بحسب مساحة العرض المتاحة، مع إبقاء أحجام اللمس مقروءة على الأجهزة المختلفة.
+ * شريط جانبيّ ٢٢٨px (١٣٫٦٪) · لوحة ٣٨٤×٣٤٠px (٢٣٪ × ٣٦٪) · حلقات ٩٠px · قاعدة ٧١px. والقيم
+ * أدناه محوّلة إلى رموز المشروع (‏٩٠px ÷ ١٫٣٠٦ ≈ ٦٩ ⇒ حلقة ٧٢dp، و٧١px ⇒ ٥٦dp).
  */
 
 /**
- * لوحة Game Space فحمية ومحايدة؛ البنفسجي لمسات تفاعلية محدودة، والسياني للقراءات الحيّة.
+ * لوحة Game Space: فحميّ وأسود بدرجات متقاربة، مع بنفسجيّ مطفأ للتحديد فقط، وسيان ونعناع للقراءات.
  *
- * **محصورة في هذه الشاشة** ولا تحلّ محلّ رموز التطبيق العامّة: `MaxTone` و`LobbyPalette` تبقى
- * مرجع بقيّة الشاشات، فلا يتفرّع للتطبيق لوحتان.
+ * **محصورة في اللوبي**؛ لا تغيّر ثيم التطبيق العام أو ألوان شاشاته الأخرى.
  */
 internal object GameSpacePalette {
-    // لوحة فحمية محايدة؛ البنفسجي لمسات تفاعلية لا لونٌ يملأ الواجهة.
-    val Void = Color(0xFF070A0F)
-    val Deep = Color(0xFF0B1017)
-    val Panel = Color(0xFF121923)
-    val PanelRaised = Color(0xFF1A2430)
-    val Violet = Color(0xFF62558B)
-    val VioletDeep = Color(0xFF39364D)
-    val VioletSoft = Color(0xFF9A8BC4)
-    val Magenta = Color(0xFFB86D83)
-    val Cyan = Color(0xFF35B9E8)
-    val Mint = Color(0xFF4ADE80)
-    val Track = Color(0xFF28323D)
-    val Ink = Color(0xFFF1F3F6)
-    val Muted = Color(0xFF929BA7)
-    val Hairline = Color(0x334F5968)
-    val Edge = Color(0x665F6875)
+    // A restrained graphite system: violet is an interaction accent, never a page background.
+    val Void = Color(0xFF080A0D)
+    val Black = Void
+    val Deep = Color(0xFF0D1015)
+    val Panel = Color(0xFF151A21)
+    val PanelRaised = Color(0xFF1D242D)
+    val PanelSelected = Color(0xFF29313B)
+    val Violet = Color(0xFF62527F)
+    val VioletDeep = Color(0xFF383044)
+    val VioletSoft = Color(0xFF9886B8)
+    val Magenta = Color(0xFFD47791)
+    val Cyan = Color(0xFF55B8D1)
+    val Mint = Color(0xFF63C9A4)
+    val Track = Color(0xFF303741)
+    val Ink = Color(0xFFF2F3F5)
+    val Muted = Color(0xFF9AA2AC)
+    val Hairline = Color(0x26FFFFFF)
+    val Edge = Color(0x4A9886B8)
+
+    // Semantic aliases keep the control-center components on the same palette.
+    val Steel = Muted
+    val Positive = Mint
+    val Red = Violet
+    val RedBright = VioletSoft
 }
 
 /** عرض شريط الأقسام — ٩٦dp، محصور بين الهدف اللمسي ونصف عرض اللقطة. */
@@ -267,7 +275,7 @@ internal fun GameSpaceRail(
                     .heightIn(min = MaxSize.minTouchTarget)
                     .clip(itemShape)
                     .background(
-                        if (isSelected) GameSpacePalette.Violet.copy(alpha = 0.34f) else Color.Transparent
+                        if (isSelected) GameSpacePalette.Violet.copy(alpha = 0.18f) else Color.Transparent
                     )
                     .border(
                         MaxSize.hairlineBorder,

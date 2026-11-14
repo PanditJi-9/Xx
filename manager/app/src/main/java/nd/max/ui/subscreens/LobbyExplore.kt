@@ -85,7 +85,6 @@ import nd.max.core.gamespace.GamePlayStats
 import nd.max.core.gamespace.LobbyFilter
 import nd.max.core.gamespace.LobbyInsights
 import nd.max.ui.component.AppIconImage
-import nd.max.ui.component.LobbyPalette
 import nd.max.ui.component.LobbyRoundButton
 import nd.max.ui.design.MaxDuration
 import nd.max.ui.design.MaxRadius
@@ -168,7 +167,7 @@ internal fun LobbyExplore(
     BoxWithConstraints(
         modifier = modifier
             .fillMaxSize()
-            .background(LobbyPalette.Black.copy(alpha = 0.92f))
+            .background(GameSpacePalette.Black.copy(alpha = 0.92f))
             // التقاط اللمسات الفارغة بـpointerInput لا بـclickable: الجذر لا زرّ، وإعلانه زرًّا
             // بلا نصّ يجعل TalkBack يقف على «زرّ» فارغ قبل كل بطاقة.
             .pointerInput(Unit) { detectTapGestures { } }
@@ -261,7 +260,7 @@ internal fun LobbyExplore(
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = stringResource(R.string.lobby_explore_title),
-                    color = LobbyPalette.Ink,
+                    color = GameSpacePalette.Ink,
                     // عنوان الشاشة، لا عنوان بطاقة: كبير وخفيف كما تفعل العناوين الأولى.
                     fontSize = if (compact) 20.sp else 30.sp,
                     fontWeight = FontWeight.Light,
@@ -272,7 +271,7 @@ internal fun LobbyExplore(
                 if (!compact) {
                     Text(
                         text = stringResource(R.string.lobby_explore_count, games.size, visible.size),
-                        color = LobbyPalette.Muted,
+                        color = GameSpacePalette.Muted,
                         fontSize = 12.sp
                     )
                 }
@@ -292,7 +291,7 @@ internal fun LobbyExplore(
                 .padding(horizontal = MaxSpace.xl)
                 .heightIn(min = MaxSize.minTouchTarget)
                 .clip(searchShape)
-                .background(LobbyPalette.Panel)
+                .background(GameSpacePalette.Panel)
                 .border(MaxSize.hairlineBorder, accent.copy(alpha = 0.35f), searchShape)
                 .padding(horizontal = MaxSpace.md),
             verticalAlignment = Alignment.CenterVertically,
@@ -301,13 +300,13 @@ internal fun LobbyExplore(
             Icon(
                 imageVector = Icons.Rounded.Search,
                 contentDescription = null,
-                tint = LobbyPalette.Muted
+                tint = GameSpacePalette.Muted
             )
             Box(modifier = Modifier.weight(1f)) {
                 if (query.isEmpty()) {
                     Text(
                         text = stringResource(R.string.lobby_explore_search),
-                        color = LobbyPalette.Muted,
+                        color = GameSpacePalette.Muted,
                         fontSize = 15.sp
                     )
                 }
@@ -315,7 +314,7 @@ internal fun LobbyExplore(
                     value = query,
                     onValueChange = { query = it },
                     singleLine = true,
-                    textStyle = TextStyle(color = LobbyPalette.Ink, fontSize = 15.sp),
+                    textStyle = TextStyle(color = GameSpacePalette.Ink, fontSize = 15.sp),
                     cursorBrush = SolidColor(accent),
                     modifier = Modifier
                         .fillMaxWidth()
@@ -354,7 +353,7 @@ internal fun LobbyExplore(
                     Icon(
                         imageVector = Icons.Rounded.Close,
                         contentDescription = stringResource(R.string.lobby_explore_clear),
-                        tint = LobbyPalette.Muted
+                        tint = GameSpacePalette.Muted
                     )
                 }
             }
@@ -392,7 +391,7 @@ internal fun LobbyExplore(
                 Icon(
                     imageVector = Icons.Rounded.SearchOff,
                     contentDescription = null,
-                    tint = LobbyPalette.Muted
+                    tint = GameSpacePalette.Muted
                 )
                 val emptyTitle = when {
                     query.isNotBlank() -> stringResource(R.string.lobby_explore_no_match, query.trim())
@@ -404,7 +403,7 @@ internal fun LobbyExplore(
                 }
                 Text(
                     text = emptyTitle,
-                    color = LobbyPalette.Ink,
+                    color = GameSpacePalette.Ink,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium,
                     modifier = Modifier.padding(top = MaxSpace.md)
@@ -414,7 +413,7 @@ internal fun LobbyExplore(
                 if (query.isNotBlank()) {
                     Text(
                         text = stringResource(R.string.lobby_explore_no_match_hint),
-                        color = LobbyPalette.Muted,
+                        color = GameSpacePalette.Muted,
                         fontSize = 13.sp,
                         modifier = Modifier.padding(top = MaxSpace.xs)
                     )
@@ -425,14 +424,14 @@ internal fun LobbyExplore(
                         },
                         modifier = Modifier.padding(top = MaxSpace.lg)
                     ) {
-                        Text(text = stringResource(R.string.lobby_explore_clear), color = LobbyPalette.Ink)
+                        Text(text = stringResource(R.string.lobby_explore_clear), color = GameSpacePalette.Ink)
                     }
                 } else if (filter != LobbyFilter.All) {
                     OutlinedButton(
                         onClick = { filter = LobbyFilter.All },
                         modifier = Modifier.padding(top = MaxSpace.lg)
                     ) {
-                        Text(text = stringResource(R.string.lobby_explore_show_all), color = LobbyPalette.Ink)
+                        Text(text = stringResource(R.string.lobby_explore_show_all), color = GameSpacePalette.Ink)
                     }
                 }
             }
@@ -494,10 +493,10 @@ private fun FilterChip(
         modifier = Modifier
             .heightIn(min = MaxSize.minTouchTarget)
             .clip(shape)
-            .background(if (selected) accent.copy(alpha = 0.22f) else LobbyPalette.PanelRaised.copy(alpha = 0.55f))
+            .background(if (selected) accent.copy(alpha = 0.22f) else GameSpacePalette.PanelRaised.copy(alpha = 0.55f))
             .border(
                 MaxSize.hairlineBorder,
-                if (selected) accent.copy(alpha = 0.55f) else LobbyPalette.Hairline,
+                if (selected) accent.copy(alpha = 0.55f) else GameSpacePalette.Hairline,
                 shape
             )
             .selectable(selected = selected, role = Role.Tab, onClick = onClick)
@@ -507,14 +506,14 @@ private fun FilterChip(
     ) {
         Text(
             text = label,
-            color = if (selected) LobbyPalette.Ink else LobbyPalette.Muted,
+            color = if (selected) GameSpacePalette.Ink else GameSpacePalette.Muted,
             fontSize = 13.sp,
             fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
             maxLines = 1
         )
         Text(
             text = count.toString(),
-            color = if (selected) accent else LobbyPalette.Muted,
+            color = if (selected) accent else GameSpacePalette.Muted,
             fontSize = 11.sp,
             fontWeight = FontWeight.SemiBold,
             maxLines = 1
@@ -562,13 +561,13 @@ private fun ExploreCard(
                 scaleY = scale
             }
             .clip(shape)
-            .background(if (focused) LobbyPalette.PanelRaised.copy(alpha = 0.72f) else LobbyPalette.Panel)
+            .background(if (focused) GameSpacePalette.PanelRaised.copy(alpha = 0.72f) else GameSpacePalette.Panel)
             .border(
                 if (focused || selected) MaxSize.activeRing else MaxSize.hairlineBorder,
                 when {
                     focused -> accent
                     selected -> accent.copy(alpha = 0.55f)
-                    else -> LobbyPalette.Hairline
+                    else -> GameSpacePalette.Hairline
                 },
                 shape
             )
@@ -596,7 +595,7 @@ private fun ExploreCard(
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = game.label,
-                    color = LobbyPalette.Ink,
+                    color = GameSpacePalette.Ink,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.SemiBold,
                     maxLines = 2,
@@ -604,7 +603,7 @@ private fun ExploreCard(
                 )
                 Text(
                     text = playLine,
-                    color = LobbyPalette.Muted,
+                    color = GameSpacePalette.Muted,
                     fontSize = 12.sp,
                     maxLines = 1
                 )
@@ -648,7 +647,7 @@ private fun ExploreCard(
                         modifier = Modifier
                             .size(8.dp)
                             .clip(CircleShape)
-                            .background(if (index < ready) accent else LobbyPalette.PanelRaised)
+                            .background(if (index < ready) accent else GameSpacePalette.PanelRaised)
                     )
                 }
             }
@@ -660,12 +659,12 @@ private fun ExploreCard(
 private fun MetaChip(text: String) {
     Text(
         text = text,
-        color = LobbyPalette.Muted,
+        color = GameSpacePalette.Muted,
         fontSize = 11.sp,
         maxLines = 1,
         modifier = Modifier
             .clip(RoundedCornerShape(maxRadius(MaxRadius.pill)))
-            .background(LobbyPalette.PanelRaised.copy(alpha = 0.55f))
+            .background(GameSpacePalette.PanelRaised.copy(alpha = 0.55f))
             .padding(horizontal = MaxSpace.sm, vertical = MaxSpace.hairline)
     )
 }

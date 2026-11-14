@@ -57,12 +57,16 @@ class LobbyExploreContractTest {
         assumeTrue("Cannot locate nd.max sources; guard not evaluated", root != null)
         val text = lobby()
 
-        assertFalse("The hidden vertical pager must not return", text.contains("VerticalPager("))
-        assertFalse("The settings page state must not return", text.contains("rememberPagerState("))
+        // أُعيد الـPager بأمر المالك (2026-11-14): صفحة كاملة لكل قسم، والسحب مثبَّت على قسم
+        // واحد (`PagerSnapDistance.atMost(1)`) بلا فراغ بين الصفحات — لا شريط تمرير مخفيّ ولا
+        // أقسام متكدّسة، والشريط الجانبيّ يظلّ ثابتًا ومرتبطًا بالصفحة الحالية.
+        assertTrue("The page-locked pager is missing", text.contains("VerticalPager("))
+        assertTrue("The pager state is missing", text.contains("rememberPagerState("))
+        assertTrue("The pager must snap to one section per swipe", text.contains("PagerSnapDistance.atMost(1)"))
+        assertTrue("The pager must not leave gaps between sections", text.contains("pageSpacing = 0.dp"))
         assertTrue("The fixed spine is missing", text.contains("GameSpaceRail("))
         assertTrue("The section bodies are not composed in the spine", text.contains("LobbySectionContent("))
-        assertTrue("The spine is not scroll-spied", text.contains("verticalScroll(homeScroll)"))
-        assertTrue("The active section is not derived from the scroll", text.contains("spineIndex by remember"))
+        assertTrue("The active section is not derived from the pager", text.contains("spineIndex by remember"))
     }
 
     @Test

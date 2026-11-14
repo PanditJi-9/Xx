@@ -27,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -35,7 +36,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import nd.max.R
 import nd.max.core.gamespace.LobbyCue
-import nd.max.ui.component.LobbyPalette
 import nd.max.ui.component.LocalLobbySounds
 import nd.max.ui.design.MaxRadius
 import nd.max.ui.design.MaxSize
@@ -59,11 +59,16 @@ internal fun LobbySectionCard(title: String, content: @Composable () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(maxRadius(MaxRadius.group)))
-            .background(LobbyPalette.Panel)
+            .background(
+                Brush.verticalGradient(
+                    listOf(GameSpacePalette.PanelRaised.copy(alpha = 0.82f), GameSpacePalette.Panel.copy(alpha = 0.96f))
+                )
+            )
+            .border(MaxSize.hairlineBorder, GameSpacePalette.Hairline, RoundedCornerShape(maxRadius(MaxRadius.group)))
             .padding(MaxSpace.lg),
-        verticalArrangement = Arrangement.spacedBy(MaxSpace.lg)
+        verticalArrangement = Arrangement.spacedBy(MaxSpace.md)
     ) {
-        Text(text = title, color = LobbyPalette.Ink, fontSize = 19.sp, fontWeight = FontWeight.Medium)
+        Text(text = title, color = GameSpacePalette.Ink, fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
         content()
     }
 }
@@ -83,13 +88,15 @@ internal fun LobbyOptionRow(
     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(MaxSpace.lg)) {
         Text(
             text = title,
-            color = LobbyPalette.Ink,
-            fontSize = 16.sp,
-            modifier = Modifier.weight(0.38f)
+            color = GameSpacePalette.Ink,
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Medium,
+            maxLines = 2,
+            modifier = Modifier.weight(0.34f)
         )
         Row(
             modifier = Modifier
-                .weight(0.62f)
+                .weight(0.66f)
                 .horizontalScroll(rememberScrollState()),
             horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm)
         ) {
@@ -99,10 +106,10 @@ internal fun LobbyOptionRow(
                     modifier = Modifier
                         .heightIn(min = MaxSize.minTouchTarget)
                         .clip(RoundedCornerShape(LobbyChipRadius))
-                        .background(if (isSelected) LobbyPalette.PanelSelected else LobbyPalette.PanelRaised.copy(alpha = 0.55f))
+                        .background(if (isSelected) GameSpacePalette.PanelSelected else GameSpacePalette.PanelRaised.copy(alpha = 0.55f))
                         .border(
                             MaxSize.hairlineBorder,
-                            if (isSelected) LobbyPalette.Hairline else Color.Transparent,
+                            if (isSelected) GameSpacePalette.Hairline else Color.Transparent,
                             RoundedCornerShape(LobbyChipRadius)
                         )
                         .selectable(
@@ -118,8 +125,9 @@ internal fun LobbyOptionRow(
                 ) {
                     Text(
                         text = label,
-                        color = if (isSelected) LobbyPalette.Ink else LobbyPalette.Muted,
-                        fontSize = 15.sp,
+                        color = if (isSelected) GameSpacePalette.Ink else GameSpacePalette.Muted,
+                        fontSize = 13.sp,
+                        fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
                         maxLines = 1
                     )
                 }
@@ -147,16 +155,16 @@ internal fun LobbyTriStateRow(title: String, current: String, onSelect: (String)
 @Composable
 internal fun LobbySwitchRow(title: String, checked: Boolean, onChecked: (Boolean) -> Unit) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Text(text = title, color = LobbyPalette.Ink, fontSize = 16.sp, modifier = Modifier.weight(1f))
+        Text(text = title, color = GameSpacePalette.Ink, fontSize = 16.sp, modifier = Modifier.weight(1f))
         Spacer(Modifier.width(MaxSpace.md))
         Switch(
             checked = checked,
             onCheckedChange = onChecked,
             colors = SwitchDefaults.colors(
-                checkedTrackColor = LobbyPalette.Red,
-                checkedThumbColor = LobbyPalette.Ink,
-                uncheckedTrackColor = LobbyPalette.PanelRaised,
-                uncheckedThumbColor = LobbyPalette.Muted
+                checkedTrackColor = GameSpacePalette.Red,
+                checkedThumbColor = GameSpacePalette.Ink,
+                uncheckedTrackColor = GameSpacePalette.PanelRaised,
+                uncheckedThumbColor = GameSpacePalette.Muted
             )
         )
     }

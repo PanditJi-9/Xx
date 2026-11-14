@@ -109,7 +109,6 @@ import nd.max.core.privilege.PrivilegeManager
 import nd.max.core.gamespace.lobbyEnumOr
 import nd.max.ui.component.AppIconImage
 import nd.max.ui.component.LobbyNotice
-import nd.max.ui.component.LobbyPalette
 import nd.max.ui.gamespace.GameSpaceSchemeRow
 import nd.max.ui.gamespace.GameSpaceSkin
 import nd.max.ui.component.LocalLobbySounds
@@ -155,14 +154,14 @@ internal enum class LobbySection(val titleRes: Int, val icon: ImageVector) {
 internal fun isInLobby(app: GameApp, manual: Set<String>, excluded: Set<String>): Boolean =
     app.packageName !in excluded && (app.detectedGame || app.packageName in manual)
 
-private val SidebarWidth = 208.dp
-private val SidebarItemHeight = 52.dp
-private val SidebarIcon = 40.dp
+private val SidebarWidth = 184.dp
+private val SidebarItemHeight = 54.dp
+private val SidebarIcon = 36.dp
 private val ChipHeight = 48.dp
 private val LibraryIcon = 40.dp
 
 /** تحت هذا الارتفاع يتحوّل الشريط إلى شبكة بلاطات، فلا يضيع قسم خلف تمرير طويل في الوضع الأفقي. */
-private val SidebarCompactHeight = 420.dp
+private val SidebarCompactHeight = 440.dp
 
 /**
  * @param section القسم الظاهر؛ يتحكّم به الأب ليفتح اللوبي على قسم بعينه (نقر بلاطة ملف اللعبة مثلًا).
@@ -339,7 +338,7 @@ private fun ControlSidebar(
 ) {
     val sounds = LocalLobbySounds.current
     BoxWithConstraints(
-        modifier = modifier.background(LobbyPalette.Black.copy(alpha = 0.40f))
+        modifier = modifier.background(GameSpacePalette.Void.copy(alpha = 0.72f))
     ) {
         val compact = maxHeight < SidebarCompactHeight
         Column(
@@ -358,7 +357,7 @@ private fun ControlSidebar(
                     AppIconImage(packageName = app.packageName, size = SidebarIcon, contentDescription = null)
                     Text(
                         text = app.label,
-                        color = LobbyPalette.Ink,
+                        color = GameSpacePalette.Ink,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.SemiBold,
                         maxLines = 2,
@@ -418,10 +417,10 @@ private fun SidebarRow(
             .fillMaxWidth()
             .heightIn(min = SidebarItemHeight)
             .clip(shape)
-            .background(if (selected) accent.copy(alpha = 0.26f) else Color.Transparent)
+            .background(if (selected) accent.copy(alpha = 0.16f) else Color.Transparent)
             .border(
                 MaxSize.hairlineBorder,
-                if (selected) accent.copy(alpha = 0.60f) else Color.Transparent,
+                if (selected) accent.copy(alpha = 0.42f) else Color.Transparent,
                 shape
             )
             .selectable(selected = selected, role = Role.Tab, onClick = onClick)
@@ -432,11 +431,11 @@ private fun SidebarRow(
         Icon(
             imageVector = item.icon,
             contentDescription = null,
-            tint = if (selected) LobbyPalette.Ink else LobbyPalette.Muted
+            tint = if (selected) GameSpacePalette.Ink else GameSpacePalette.Muted
         )
         Text(
             text = stringResource(item.titleRes),
-            color = if (selected) LobbyPalette.Ink else LobbyPalette.Muted,
+            color = if (selected) GameSpacePalette.Ink else GameSpacePalette.Muted,
             fontSize = 15.sp,
             fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
             maxLines = 2,
@@ -459,10 +458,10 @@ private fun SidebarTile(
         modifier = modifier
             .heightIn(min = SidebarItemHeight)
             .clip(shape)
-            .background(if (selected) accent.copy(alpha = 0.26f) else Color.Transparent)
+            .background(if (selected) accent.copy(alpha = 0.16f) else Color.Transparent)
             .border(
                 MaxSize.hairlineBorder,
-                if (selected) accent.copy(alpha = 0.60f) else Color.Transparent,
+                if (selected) accent.copy(alpha = 0.42f) else Color.Transparent,
                 shape
             )
             .selectable(selected = selected, role = Role.Tab, onClick = onClick)
@@ -473,12 +472,12 @@ private fun SidebarTile(
         Icon(
             imageVector = item.icon,
             contentDescription = null,
-            tint = if (selected) LobbyPalette.Ink else LobbyPalette.Muted,
+            tint = if (selected) GameSpacePalette.Ink else GameSpacePalette.Muted,
             modifier = Modifier.size(MaxSize.iconGlyph)
         )
         Text(
             text = stringResource(item.titleRes),
-            color = if (selected) LobbyPalette.Ink else LobbyPalette.Muted,
+            color = if (selected) GameSpacePalette.Ink else GameSpacePalette.Muted,
             fontSize = 11.sp,
             fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
             maxLines = 2,
@@ -523,7 +522,7 @@ private fun LoadoutBody(
     ) {
         Text(
             text = stringResource(R.string.lobby_loadout_title, app.label),
-            color = LobbyPalette.Ink,
+            color = GameSpacePalette.Ink,
             // عنوان الصفحة لا عنوان بطاقة: الحجم الكبير الخفيف نفسه المستعمل في المسرح.
             fontSize = 28.sp,
             fontWeight = FontWeight.Light,
@@ -537,7 +536,7 @@ private fun LoadoutBody(
                     listOf(tweaks > 0, panelEnabled, overlayGranted).count { it },
                     3
                 ),
-                color = LobbyPalette.Muted,
+                color = GameSpacePalette.Muted,
                 fontSize = 12.sp
             )
             LoadoutCheck(
@@ -595,20 +594,20 @@ private fun LoadoutBody(
         }
         Text(
             text = stringResource(R.string.lobby_loadout_note),
-            color = LobbyPalette.Steel,
+            color = GameSpacePalette.Steel,
             fontSize = 12.sp
         )
         Text(
             text = stringResource(R.string.lobby_tile_profile_value, tweaks),
-            color = LobbyPalette.Muted,
+            color = GameSpacePalette.Muted,
             fontSize = 12.sp
         )
         OutlinedButton(
             onClick = onOpenFull,
-            border = BorderStroke(MaxSize.hairlineBorder, LobbyPalette.Hairline),
+            border = BorderStroke(MaxSize.hairlineBorder, GameSpacePalette.Hairline),
             modifier = Modifier.heightIn(min = MaxSize.minTouchTarget)
         ) {
-            Text(text = stringResource(R.string.lobby_open_full), color = LobbyPalette.Ink)
+            Text(text = stringResource(R.string.lobby_open_full), color = GameSpacePalette.Ink)
         }
     }
 }
@@ -635,7 +634,7 @@ private fun LoadoutCheck(
         Icon(
             imageVector = if (done) Icons.Rounded.CheckCircle else Icons.Rounded.RadioButtonUnchecked,
             contentDescription = null,
-            tint = if (done) LobbyPalette.Positive else LobbyPalette.Muted,
+            tint = if (done) GameSpacePalette.Positive else GameSpacePalette.Muted,
             modifier = Modifier.size(MaxSize.iconGlyph)
         )
         Column(
@@ -644,25 +643,25 @@ private fun LoadoutCheck(
         ) {
             Text(
                 text = title,
-                color = LobbyPalette.Ink,
+                color = GameSpacePalette.Ink,
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Medium
             )
-            Text(text = detail, color = LobbyPalette.Muted, fontSize = 12.sp)
+            Text(text = detail, color = GameSpacePalette.Muted, fontSize = 12.sp)
         }
         if (done) {
             Text(
                 text = stringResource(R.string.lobby_loadout_check_done),
-                color = LobbyPalette.Positive,
+                color = GameSpacePalette.Positive,
                 fontSize = 12.sp
             )
         } else {
             OutlinedButton(
                 onClick = onAction,
-                border = BorderStroke(MaxSize.hairlineBorder, LobbyPalette.Hairline),
+                border = BorderStroke(MaxSize.hairlineBorder, GameSpacePalette.Hairline),
                 modifier = Modifier.heightIn(min = MaxSize.minTouchTarget)
             ) {
-                Text(text = action, color = LobbyPalette.Ink, fontSize = 13.sp)
+                Text(text = action, color = GameSpacePalette.Ink, fontSize = 13.sp)
             }
         }
     }
@@ -711,7 +710,7 @@ private fun GameProfileColumn(
     ) {
         Text(
             text = stringResource(R.string.lobby_settings_title, app.label),
-            color = LobbyPalette.Ink,
+            color = GameSpacePalette.Ink,
             fontSize = 28.sp,
             fontWeight = FontWeight.Light,
             maxLines = 1,
@@ -796,15 +795,15 @@ private fun GameProfileColumn(
             }
             OutlinedButton(
                 onClick = onOpenFull,
-                border = BorderStroke(MaxSize.hairlineBorder, LobbyPalette.Hairline),
+                border = BorderStroke(MaxSize.hairlineBorder, GameSpacePalette.Hairline),
                 modifier = Modifier.heightIn(min = MaxSize.minTouchTarget)
             ) {
-                Text(text = stringResource(R.string.lobby_open_full), color = LobbyPalette.Ink)
+                Text(text = stringResource(R.string.lobby_open_full), color = GameSpacePalette.Ink)
             }
         }
         Text(
             text = stringResource(R.string.gaming_runtime_boundary),
-            color = LobbyPalette.Steel,
+            color = GameSpacePalette.Steel,
             fontSize = 12.sp
         )
     }
@@ -899,12 +898,12 @@ private fun PanelBody(
             )
             Text(
                 text = stringResource(R.string.panel_handle_hint),
-                color = LobbyPalette.Steel,
+                color = GameSpacePalette.Steel,
                 fontSize = 12.sp
             )
             Text(
                 text = stringResource(R.string.lobby_panel_handle_scope),
-                color = LobbyPalette.Steel,
+                color = GameSpacePalette.Steel,
                 fontSize = 12.sp
             )
             OutlinedButton(
@@ -914,7 +913,7 @@ private fun PanelBody(
                 },
                 modifier = Modifier.heightIn(min = MaxSize.minTouchTarget)
             ) {
-                Text(text = stringResource(R.string.panel_handle_reset), color = LobbyPalette.Ink)
+                Text(text = stringResource(R.string.panel_handle_reset), color = GameSpacePalette.Ink)
             }
         }
         CrosshairSettingsCard()
@@ -959,7 +958,7 @@ private fun LobbyOptionsBody(
         LobbySectionCard(stringResource(R.string.gs_scheme_title)) {
             Text(
                 text = stringResource(R.string.gs_scheme_scope),
-                color = LobbyPalette.Steel,
+                color = GameSpacePalette.Steel,
                 fontSize = 12.sp
             )
             var scheme by remember { mutableStateOf(GameSpaceSkin.read(context)) }
@@ -1080,7 +1079,7 @@ private fun LobbyOptionsBody(
             if (!rootLane) {
                 Text(
                     text = stringResource(R.string.lobby_mode_usage_title),
-                    color = LobbyPalette.Ink,
+                    color = GameSpacePalette.Ink,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold
                 )
@@ -1101,12 +1100,12 @@ private fun LobbyOptionsBody(
                                     usageManual = !granted
                                 }
                             },
-                            border = BorderStroke(MaxSize.hairlineBorder, LobbyPalette.Hairline),
+                            border = BorderStroke(MaxSize.hairlineBorder, GameSpacePalette.Hairline),
                             modifier = Modifier.heightIn(min = MaxSize.minTouchTarget)
                         ) {
                             Text(
                                 text = stringResource(R.string.lobby_mode_usage_grant),
-                                color = LobbyPalette.Ink,
+                                color = GameSpacePalette.Ink,
                                 fontSize = 13.sp
                             )
                         }
@@ -1115,12 +1114,12 @@ private fun LobbyOptionsBody(
                                 sounds.play(LobbyCue.Tap)
                                 runCatching { context.startActivity(UsageAccess.settingsIntent(context)) }
                             },
-                            border = BorderStroke(MaxSize.hairlineBorder, LobbyPalette.Hairline),
+                            border = BorderStroke(MaxSize.hairlineBorder, GameSpacePalette.Hairline),
                             modifier = Modifier.heightIn(min = MaxSize.minTouchTarget)
                         ) {
                             Text(
                                 text = stringResource(R.string.lobby_mode_usage_open),
-                                color = LobbyPalette.Ink,
+                                color = GameSpacePalette.Ink,
                                 fontSize = 13.sp
                             )
                         }
@@ -1137,14 +1136,14 @@ private fun LobbyOptionsBody(
             if (blocked.isNotEmpty()) {
                 Text(
                     text = stringResource(R.string.lobby_mode_blocked_head),
-                    color = LobbyPalette.Ink,
+                    color = GameSpacePalette.Ink,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold
                 )
                 blocked.forEach { (feature, why) ->
                     Text(
                         text = stringResource(feature.titleRes()) + " — " + stringResource(why.reasonRes()),
-                        color = LobbyPalette.Steel,
+                        color = GameSpacePalette.Steel,
                         fontSize = 12.sp
                     )
                 }
@@ -1153,7 +1152,7 @@ private fun LobbyOptionsBody(
         LobbySectionCard(stringResource(R.string.lobby_head_shortcut)) {
             Text(
                 text = stringResource(R.string.lobby_shortcut_desc),
-                color = LobbyPalette.Steel,
+                color = GameSpacePalette.Steel,
                 fontSize = 12.sp
             )
             OutlinedButton(
@@ -1161,13 +1160,13 @@ private fun LobbyOptionsBody(
                     sounds.play(LobbyCue.Tap)
                     shortcutOutcome = GameSpaceShortcutPinner.requestPin(context, shortcutLabel)
                 },
-                border = BorderStroke(MaxSize.hairlineBorder, LobbyPalette.Hairline),
+                border = BorderStroke(MaxSize.hairlineBorder, GameSpacePalette.Hairline),
                 modifier = Modifier.heightIn(min = MaxSize.minTouchTarget)
             ) {
-                Icon(imageVector = Icons.Rounded.AddToHomeScreen, contentDescription = null, tint = LobbyPalette.Ink)
+                Icon(imageVector = Icons.Rounded.AddToHomeScreen, contentDescription = null, tint = GameSpacePalette.Ink)
                 Text(
                     text = stringResource(R.string.lobby_shortcut_add),
-                    color = LobbyPalette.Ink,
+                    color = GameSpacePalette.Ink,
                     modifier = Modifier.padding(start = MaxSpace.sm)
                 )
             }
@@ -1196,17 +1195,17 @@ private fun LobbyOptionsBody(
         }
         Text(
             text = stringResource(R.string.lobby_scope_note),
-            color = LobbyPalette.Steel,
+            color = GameSpacePalette.Steel,
             fontSize = 12.sp
         )
         OutlinedButton(
             onClick = { onPrefs { LobbyPrefsState(lastPackage = it.lastPackage) } },
             modifier = Modifier.heightIn(min = MaxSize.minTouchTarget)
         ) {
-            Icon(imageVector = Icons.Rounded.RestartAlt, contentDescription = null, tint = LobbyPalette.Ink)
+            Icon(imageVector = Icons.Rounded.RestartAlt, contentDescription = null, tint = GameSpacePalette.Ink)
             Text(
                 text = stringResource(R.string.lobby_reset),
-                color = LobbyPalette.Ink,
+                color = GameSpacePalette.Ink,
                 modifier = Modifier.padding(start = MaxSpace.sm)
             )
         }
@@ -1293,21 +1292,21 @@ private fun LibraryBody(
         ) {
             Text(
                 text = stringResource(R.string.lobby_manage_title),
-                color = LobbyPalette.Ink,
+                color = GameSpacePalette.Ink,
                 fontSize = 26.sp,
                 fontWeight = FontWeight.Light,
                 modifier = Modifier.weight(1f)
             )
             Text(
                 text = stringResource(R.string.lobby_vault_count, includedCount, apps.size),
-                color = LobbyPalette.Muted,
+                color = GameSpacePalette.Muted,
                 fontSize = 12.sp
             )
         }
         if (vanished > 0) {
             Text(
                 text = stringResource(R.string.lobby_vault_orphans, vanished),
-                color = LobbyPalette.Steel,
+                color = GameSpacePalette.Steel,
                 fontSize = 12.sp
             )
         }
@@ -1336,18 +1335,18 @@ private fun LibraryBody(
                 .fillMaxWidth()
                 .heightIn(min = MaxSize.minTouchTarget)
                 .clip(RoundedCornerShape(maxRadius(MaxRadius.control)))
-                .background(LobbyPalette.Panel)
+                .background(GameSpacePalette.Panel)
                 .padding(horizontal = MaxSpace.md),
             contentAlignment = Alignment.CenterStart
         ) {
             if (query.isEmpty()) {
-                Text(text = stringResource(R.string.spoof_search), color = LobbyPalette.Muted, fontSize = 15.sp)
+                Text(text = stringResource(R.string.spoof_search), color = GameSpacePalette.Muted, fontSize = 15.sp)
             }
             BasicTextField(
                 value = query,
                 onValueChange = { query = it },
                 singleLine = true,
-                textStyle = TextStyle(color = LobbyPalette.Ink, fontSize = 15.sp),
+                textStyle = TextStyle(color = GameSpacePalette.Ink, fontSize = 15.sp),
                 cursorBrush = SolidColor(accent),
                 modifier = Modifier.fillMaxWidth()
             )
@@ -1355,7 +1354,7 @@ private fun LibraryBody(
         if (rows.isEmpty()) {
             Text(
                 text = stringResource(R.string.lobby_vault_empty),
-                color = LobbyPalette.Muted,
+                color = GameSpacePalette.Muted,
                 fontSize = 13.sp,
                 modifier = Modifier.padding(top = MaxSpace.sm)
             )
@@ -1382,7 +1381,7 @@ private fun LibraryBody(
                         ) {
                             Text(
                                 text = app.label,
-                                color = LobbyPalette.Ink,
+                                color = GameSpacePalette.Ink,
                                 fontSize = 16.sp,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
@@ -1390,7 +1389,7 @@ private fun LibraryBody(
                             Text(
                                 text = lobbyPlayTimeText(played)
                                     ?: stringResource(R.string.lobby_insights_no_stats),
-                                color = LobbyPalette.Muted,
+                                color = GameSpacePalette.Muted,
                                 fontSize = 11.sp,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis
@@ -1400,10 +1399,10 @@ private fun LibraryBody(
                             checked = included,
                             onCheckedChange = { onToggle(app.packageName, it) },
                             colors = SwitchDefaults.colors(
-                                checkedTrackColor = LobbyPalette.Red,
-                                checkedThumbColor = LobbyPalette.Ink,
-                                uncheckedTrackColor = LobbyPalette.PanelRaised,
-                                uncheckedThumbColor = LobbyPalette.Muted
+                                checkedTrackColor = GameSpacePalette.Red,
+                                checkedThumbColor = GameSpacePalette.Ink,
+                                uncheckedTrackColor = GameSpacePalette.PanelRaised,
+                                uncheckedThumbColor = GameSpacePalette.Muted
                             )
                         )
                     }
@@ -1438,7 +1437,7 @@ private fun <T> LobbyChoiceRow(
     val shape = remember { RoundedCornerShape(MaxRadius.control) }
     val sounds = LocalLobbySounds.current
     Column(verticalArrangement = Arrangement.spacedBy(MaxSpace.sm)) {
-        Text(text = title, color = LobbyPalette.Ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
+        Text(text = title, color = GameSpacePalette.Ink, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm)) {
             options.forEach { (value, label) ->
                 val on = value == selected
@@ -1448,12 +1447,12 @@ private fun <T> LobbyChoiceRow(
                         .height(ChipHeight)
                         .clip(shape)
                         .background(
-                            if (on) LobbyPalette.Red.copy(alpha = 0.28f)
-                            else LobbyPalette.PanelRaised.copy(alpha = 0.45f)
+                            if (on) GameSpacePalette.Red.copy(alpha = 0.28f)
+                            else GameSpacePalette.PanelRaised.copy(alpha = 0.45f)
                         )
                         .border(
                             MaxSize.hairlineBorder,
-                            if (on) LobbyPalette.RedBright else LobbyPalette.Hairline,
+                            if (on) GameSpacePalette.RedBright else GameSpacePalette.Hairline,
                             shape
                         )
                         .selectable(
@@ -1468,7 +1467,7 @@ private fun <T> LobbyChoiceRow(
                 ) {
                     Text(
                         text = label,
-                        color = if (on) LobbyPalette.RedBright else LobbyPalette.Ink,
+                        color = if (on) GameSpacePalette.RedBright else GameSpacePalette.Ink,
                         fontSize = 13.sp,
                         fontWeight = if (on) FontWeight.SemiBold else FontWeight.Normal,
                         maxLines = 1
@@ -1499,17 +1498,17 @@ private fun LobbyToggleRow(title: String, detail: String?, checked: Boolean, onC
         horizontalArrangement = Arrangement.spacedBy(MaxSpace.md)
     ) {
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(MaxSpace.xs)) {
-            Text(text = title, color = LobbyPalette.Ink, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
-            if (detail != null) Text(text = detail, color = LobbyPalette.Steel, fontSize = 12.sp)
+            Text(text = title, color = GameSpacePalette.Ink, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
+            if (detail != null) Text(text = detail, color = GameSpacePalette.Steel, fontSize = 12.sp)
         }
         Switch(
             checked = checked,
             onCheckedChange = null,
             colors = SwitchDefaults.colors(
                 checkedThumbColor = Color.White,
-                checkedTrackColor = LobbyPalette.Red,
-                uncheckedTrackColor = LobbyPalette.PanelRaised,
-                uncheckedThumbColor = LobbyPalette.Muted
+                checkedTrackColor = GameSpacePalette.Red,
+                uncheckedTrackColor = GameSpacePalette.PanelRaised,
+                uncheckedThumbColor = GameSpacePalette.Muted
             )
         )
     }
