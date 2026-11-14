@@ -1455,7 +1455,7 @@ private fun GameSpaceBase(
                         1f to Color.White.copy(alpha = 0.22f),
                         start = Offset.Zero,
                         end = Offset(size.height, size.height),
-                        tileMode = TileMode.Repeat
+                        tileMode = TileMode.Repeated
                     ),
                     size = Size(filled, size.height),
                     cornerRadius = corner
