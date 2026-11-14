@@ -1,0 +1,612 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Game Space — cinematic design board (1680x944), authored as SVG and rasterized
+  with resvg. Original composition and procedural art: no third-party assets,
+  no copied layout. Sample telemetry numbers are design-board mock data only;
+  the in-product screen keeps reading live values (ADR-07).
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="1680" height="944" viewBox="0 0 1680 944">
+  <defs>
+    <!-- base -->
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#050318"/>
+      <stop offset="0.55" stop-color="#0A0420"/>
+      <stop offset="1" stop-color="#050318"/>
+    </linearGradient>
+    <linearGradient id="heroBase" x1="0" y1="0" x2="0.6" y2="1">
+      <stop offset="0" stop-color="#0B0526"/>
+      <stop offset="0.45" stop-color="#120733"/>
+      <stop offset="1" stop-color="#050318"/>
+    </linearGradient>
+    <radialGradient id="violetHalo" cx="0.52" cy="0.42" r="0.62">
+      <stop offset="0" stop-color="#7C3AED" stop-opacity="0.55"/>
+      <stop offset="0.45" stop-color="#5B21B6" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#050318" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="magentaHalo" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#FF2D6B" stop-opacity="0.38"/>
+      <stop offset="1" stop-color="#FF2D6B" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="cyanHalo" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#38BDF8" stop-opacity="0.30"/>
+      <stop offset="1" stop-color="#38BDF8" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="planet" cx="0.38" cy="0.32" r="0.75">
+      <stop offset="0" stop-color="#C4B5FD"/>
+      <stop offset="0.28" stop-color="#8B5CF6"/>
+      <stop offset="0.62" stop-color="#4C1D95"/>
+      <stop offset="1" stop-color="#14082E"/>
+    </radialGradient>
+    <linearGradient id="ring" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#38BDF8" stop-opacity="0.05"/>
+      <stop offset="0.25" stop-color="#A855F7" stop-opacity="0.85"/>
+      <stop offset="0.62" stop-color="#FF2D6B" stop-opacity="0.75"/>
+      <stop offset="1" stop-color="#FF2D6B" stop-opacity="0.04"/>
+    </linearGradient>
+    <linearGradient id="beam" x1="0" y1="0" x2="0.4" y2="1">
+      <stop offset="0" stop-color="#E9D5FF" stop-opacity="0.16"/>
+      <stop offset="1" stop-color="#E9D5FF" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="textGrad" x1="0" y1="0" x2="1" y2="0.4">
+      <stop offset="0" stop-color="#F5F3FF"/>
+      <stop offset="0.45" stop-color="#C084FC"/>
+      <stop offset="1" stop-color="#FF2D6B"/>
+    </linearGradient>
+    <linearGradient id="railBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1B1136" stop-opacity="0.96"/>
+      <stop offset="0.5" stop-color="#0D0624" stop-opacity="0.96"/>
+      <stop offset="1" stop-color="#070318" stop-opacity="0.98"/>
+    </linearGradient>
+    <linearGradient id="pill" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#7C3AED" stop-opacity="0.85"/>
+      <stop offset="1" stop-color="#3B0F7A" stop-opacity="0.85"/>
+    </linearGradient>
+    <linearGradient id="playPill" x1="0" y1="0" x2="1" y2="0.6">
+      <stop offset="0" stop-color="#7C3AED" stop-opacity="0.38"/>
+      <stop offset="1" stop-color="#0A0420" stop-opacity="0.72"/>
+    </linearGradient>
+    <linearGradient id="glass" x1="0" y1="0" x2="0.25" y2="1">
+      <stop offset="0" stop-color="#1E1740" stop-opacity="0.92"/>
+      <stop offset="0.55" stop-color="#120B2E" stop-opacity="0.90"/>
+      <stop offset="1" stop-color="#0A0420" stop-opacity="0.94"/>
+    </linearGradient>
+    <linearGradient id="glassSoft" x1="0" y1="0" x2="0.2" y2="1">
+      <stop offset="0" stop-color="#241B4A" stop-opacity="0.80"/>
+      <stop offset="1" stop-color="#0A0420" stop-opacity="0.86"/>
+    </linearGradient>
+    <linearGradient id="strip" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#7C3AED"/>
+      <stop offset="0.55" stop-color="#A855F7"/>
+      <stop offset="1" stop-color="#FF2D6B"/>
+    </linearGradient>
+    <linearGradient id="divider" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#A855F7" stop-opacity="0"/>
+      <stop offset="0.5" stop-color="#A855F7" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#A855F7" stop-opacity="0"/>
+    </linearGradient>
+
+    <!-- per-tile washes -->
+    <linearGradient id="tileViolet" x1="0" y1="0" x2="0.7" y2="1">
+      <stop offset="0" stop-color="#3B1D74"/>
+      <stop offset="0.55" stop-color="#1B0F45"/>
+      <stop offset="1" stop-color="#08031C"/>
+    </linearGradient>
+    <linearGradient id="tileEmber" x1="0" y1="0" x2="0.7" y2="1">
+      <stop offset="0" stop-color="#7C2D12"/>
+      <stop offset="0.5" stop-color="#3A1208"/>
+      <stop offset="1" stop-color="#0B0402"/>
+    </linearGradient>
+    <linearGradient id="tileCyan" x1="0" y1="0" x2="0.7" y2="1">
+      <stop offset="0" stop-color="#0E4A6B"/>
+      <stop offset="0.55" stop-color="#08243B"/>
+      <stop offset="1" stop-color="#02080F"/>
+    </linearGradient>
+    <linearGradient id="tileRose" x1="0" y1="0" x2="0.7" y2="1">
+      <stop offset="0" stop-color="#6B1035"/>
+      <stop offset="0.55" stop-color="#2E0819"/>
+      <stop offset="1" stop-color="#0A0208"/>
+    </linearGradient>
+    <linearGradient id="tileAmber" x1="0" y1="0" x2="0.7" y2="1">
+      <stop offset="0" stop-color="#6B4A10"/>
+      <stop offset="0.55" stop-color="#2E1F06"/>
+      <stop offset="1" stop-color="#0B0701"/>
+    </linearGradient>
+    <linearGradient id="tileEmerald" x1="0" y1="0" x2="0.7" y2="1">
+      <stop offset="0" stop-color="#0F5132"/>
+      <stop offset="0.55" stop-color="#062617"/>
+      <stop offset="1" stop-color="#010B07"/>
+    </linearGradient>
+    <linearGradient id="tileSlate" x1="0" y1="0" x2="0.7" y2="1">
+      <stop offset="0" stop-color="#273244"/>
+      <stop offset="0.55" stop-color="#131A26"/>
+      <stop offset="1" stop-color="#04070C"/>
+    </linearGradient>
+    <linearGradient id="tileScrim" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0.45" stop-color="#050318" stop-opacity="0"/>
+      <stop offset="1" stop-color="#050318" stop-opacity="0.96"/>
+    </linearGradient>
+    <linearGradient id="tileShine" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.10"/>
+      <stop offset="0.35" stop-color="#FFFFFF" stop-opacity="0.02"/>
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+    </linearGradient>
+
+    <!-- filters -->
+    <filter id="softShadow" x="-40%" y="-40%" width="180%" height="200%">
+      <feDropShadow dx="0" dy="10" stdDeviation="14" flood-color="#000000" flood-opacity="0.55"/>
+    </filter>
+    <filter id="panelShadow" x="-40%" y="-40%" width="180%" height="200%">
+      <feDropShadow dx="0" dy="12" stdDeviation="18" flood-color="#000000" flood-opacity="0.60"/>
+      <feDropShadow dx="0" dy="0" stdDeviation="22" flood-color="#7C3AED" flood-opacity="0.18"/>
+    </filter>
+    <filter id="glowSoft" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="18"/>
+    </filter>
+    <filter id="glowTight" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur stdDeviation="5"/>
+    </filter>
+    <filter id="grain">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2"/>
+    </filter>
+
+    <clipPath id="heroClip">
+      <rect x="190" y="0" width="1490" height="560" rx="0"/>
+    </clipPath>
+    <clipPath id="ringBack">
+      <rect x="700" y="0" width="900" height="300"/>
+    </clipPath>
+    <clipPath id="ringFront">
+      <rect x="700" y="300" width="900" height="300"/>
+    </clipPath>
+    <clipPath id="playClip">
+      <rect x="230" y="474" width="250" height="56" rx="28"/>
+    </clipPath>
+  </defs>
+
+  <!-- ======================= background ======================= -->
+  <rect width="1680" height="944" fill="url(#bg)"/>
+
+  <!-- ======================= hero (full bleed, clipped right of the rail) ======================= -->
+  <g clip-path="url(#heroClip)">
+    <rect x="190" y="0" width="1490" height="560" fill="url(#heroBase)"/>
+    <rect x="190" y="0" width="1490" height="560" fill="url(#violetHalo)"/>
+    <rect x="190" y="0" width="1490" height="560" fill="url(#magentaHalo)" opacity="0.9"/>
+    <ellipse cx="1420" cy="120" rx="320" ry="200" fill="url(#cyanHalo)" opacity="0.5"/>
+
+    <!-- light beams -->
+    <polygon points="980,0 1120,0 780,560 640,560" fill="url(#beam)" opacity="0.55"/>
+    <polygon points="1220,0 1270,0 960,560 900,560" fill="url(#beam)" opacity="0.35"/>
+
+    <!-- stars -->
+    <g fill="#E9D5FF">
+      <circle cx="300" cy="90" r="1.6" opacity="0.55"/><circle cx="420" cy="150" r="1.1" opacity="0.35"/>
+      <circle cx="520" cy="60" r="1.9" opacity="0.65"/><circle cx="610" cy="210" r="1.2" opacity="0.40"/>
+      <circle cx="700" cy="120" r="1.5" opacity="0.50"/><circle cx="820" cy="70" r="1.0" opacity="0.30"/>
+      <circle cx="900" cy="180" r="1.8" opacity="0.55"/><circle cx="1010" cy="120" r="1.2" opacity="0.35"/>
+      <circle cx="1090" cy="70" r="2.0" opacity="0.60"/><circle cx="1180" cy="180" r="1.0" opacity="0.30"/>
+      <circle cx="1290" cy="90" r="1.6" opacity="0.45"/><circle cx="1380" cy="200" r="1.2" opacity="0.30"/>
+      <circle cx="1470" cy="60" r="1.9" opacity="0.50"/><circle cx="1560" cy="150" r="1.1" opacity="0.30"/>
+      <circle cx="1620" cy="80" r="1.5" opacity="0.40"/><circle cx="360" cy="260" r="1.3" opacity="0.35"/>
+      <circle cx="470" cy="330" r="1.7" opacity="0.40"/><circle cx="580" cy="290" r="1.0" opacity="0.25"/>
+      <circle cx="760" cy="300" r="1.2" opacity="0.30"/><circle cx="860" cy="380" r="1.6" opacity="0.25"/>
+      <circle cx="980" cy="340" r="1.1" opacity="0.25"/><circle cx="1520" cy="300" r="1.4" opacity="0.30"/>
+      <circle cx="1600" cy="380" r="1.2" opacity="0.25"/><circle cx="1440" cy="420" r="1.6" opacity="0.20"/>
+    </g>
+
+    <!-- distant moon -->
+    <circle cx="905" cy="150" r="46" fill="#1C1140"/>
+    <circle cx="905" cy="150" r="46" fill="url(#cyanHalo)" opacity="0.5"/>
+    <circle cx="922" cy="138" r="40" fill="#0B0526"/>
+
+    <!-- ringed planet -->
+    <g transform="rotate(-16 1140 300)">
+      <ellipse cx="1140" cy="300" rx="330" ry="78" fill="none" stroke="url(#ring)" stroke-width="14" opacity="0.55" filter="url(#glowTight)"/>
+      <ellipse cx="1140" cy="300" rx="330" ry="78" fill="none" stroke="url(#ring)" stroke-width="6"/>
+      <circle cx="1140" cy="300" r="158" fill="url(#planet)"/>
+      <circle cx="1140" cy="300" r="158" fill="#050318" opacity="0.18"/>
+      <ellipse cx="1140" cy="300" rx="330" ry="78" fill="none" stroke="url(#ring)" stroke-width="10" clip-path="url(#ringFront)"/>
+    </g>
+    <circle cx="1140" cy="300" r="170" fill="none" stroke="#A855F7" stroke-opacity="0.18" stroke-width="28" filter="url(#glowSoft)"/>
+
+    <!-- horizon lines -->
+    <g stroke="#A855F7" stroke-opacity="0.10" stroke-width="1">
+      <line x1="190" y1="470" x2="1680" y2="470"/>
+      <line x1="190" y1="496" x2="1680" y2="496"/>
+      <line x1="190" y1="522" x2="1680" y2="522"/>
+      <line x1="190" y1="548" x2="1680" y2="548"/>
+    </g>
+    <g stroke="#A855F7" stroke-opacity="0.07" stroke-width="1">
+      <line x1="330" y1="560" x2="600" y2="470"/>
+      <line x1="520" y1="560" x2="760" y2="470"/>
+      <line x1="1420" y1="560" x2="1290" y2="470"/>
+      <line x1="1600" y1="560" x2="1420" y2="470"/>
+    </g>
+
+    <!-- oversized brand watermark -->
+    <text x="1480" y="470" font-family="Lato" font-weight="900" font-size="420" fill="#E9D5FF" opacity="0.045" text-anchor="middle">M</text>
+
+    <!-- vignette + floor fade -->
+    <rect x="190" y="0" width="1490" height="560" fill="url(#heroBase)" opacity="0.18"/>
+    <rect x="190" y="392" width="1490" height="168" fill="url(#tileScrim)" opacity="0.55"/>
+  </g>
+
+  <!-- grain -->
+  <rect width="1680" height="944" filter="url(#grain)" opacity="0.035" style="mix-blend-mode:overlay"/>
+
+  <!-- ======================= floating rail ======================= -->
+  <g filter="url(#softShadow)">
+    <rect x="14" y="24" width="156" height="896" rx="32" fill="url(#railBg)" stroke="#A855F7" stroke-opacity="0.45" stroke-width="1"/>
+  </g>
+  <rect x="20" y="30" width="144" height="884" rx="27" fill="none" stroke="#FFFFFF" stroke-opacity="0.04"/>
+
+  <text x="92" y="112" font-family="Lato" font-weight="900" font-size="58" fill="url(#textGrad)" text-anchor="middle">M</text>
+
+  <!-- Home (selected) -->
+  <g>
+    <rect x="26" y="146" width="132" height="54" rx="16" fill="url(#pill)" stroke="#C4B5FD" stroke-opacity="0.85" stroke-width="1.2"/>
+    <rect x="26" y="146" width="132" height="54" rx="16" fill="#7C3AED" opacity="0.25" filter="url(#glowTight)"/>
+    <g stroke="#FFFFFF" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M42 174 L51 164 L60 174"/>
+      <path d="M45 172 L45 181 L57 181 L57 172"/>
+    </g>
+    <text x="72" y="180" font-family="Lato" font-weight="700" font-size="16" fill="#FFFFFF">Home</text>
+  </g>
+
+  <!-- sections -->
+  <g fill="#9A93B8" font-family="Lato" font-weight="600" font-size="15">
+    <g stroke="#9A93B8" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M45 218 L40 222 L45 226 L50 222 Z"/>
+      <path d="M50 216 L54 206 L46 214 L44 220"/>
+    </g>
+    <text x="72" y="226">Loadout</text>
+
+    <g stroke="#9A93B8" stroke-width="2" fill="none" stroke-linecap="round">
+      <path d="M40 276 L40 288"/><path d="M47 270 L47 288"/><path d="M54 280 L54 288"/>
+    </g>
+    <text x="72" y="284">Insights</text>
+
+    <g stroke="#9A93B8" stroke-width="2" fill="none" stroke-linecap="round">
+      <path d="M39 336 L57 336"/><path d="M39 342 L57 342"/>
+      <circle cx="44" cy="336" r="2.4" fill="#0A0420"/><circle cx="52" cy="342" r="2.4" fill="#0A0420"/>
+    </g>
+    <text x="72" y="342">Game</text>
+
+    <g stroke="#9A93B8" stroke-width="2" fill="none" stroke-linejoin="round">
+      <path d="M40 390 L48 386 L56 390 L56 398 L48 402 L40 394 Z"/><path d="M40 394 L48 398 L56 394"/>
+    </g>
+    <text x="72" y="400">Panel</text>
+
+    <g stroke="#9A93B8" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="39" y="452" width="18" height="11" rx="4"/><path d="M57 456 L61 454 L61 462 L57 460"/>
+    </g>
+    <text x="72" y="462">Library</text>
+  </g>
+
+  <line x1="30" y1="824" x2="154" y2="824" stroke="#A855F7" stroke-opacity="0.20"/>
+
+  <!-- gear -->
+  <g transform="translate(92 872)" fill="none" stroke="#9A93B8" stroke-linecap="round">
+    <circle r="10" stroke-width="2.6"/>
+    <circle r="3.4" stroke-width="2"/>
+    <g stroke-width="4">
+      <path d="M0 -16 L0 -12"/><path d="M0 12 L0 16"/>
+      <path d="M-16 0 L-12 0"/><path d="M12 0 L16 0"/>
+      <path d="M-11.3 -11.3 L-8.5 -8.5"/><path d="M8.5 8.5 L11.3 11.3"/>
+      <path d="M-11.3 11.3 L-8.5 8.5"/><path d="M8.5 -8.5 L11.3 -11.3"/>
+    </g>
+  </g>
+
+  <!-- ======================= top chrome ======================= -->
+  <text x="230" y="72" font-family="Lato" font-weight="800" font-size="27" fill="#F2F3F8">21:40</text>
+  <text x="338" y="70" font-family="Lato" font-weight="500" font-size="16" fill="#9A93B8">Fri, Nov 14</text>
+
+  <!-- wifi -->
+  <g stroke="#F2F3F8" stroke-width="2.2" fill="none" stroke-linecap="round">
+    <path d="M1478 60 A22 22 0 0 1 1506 60"/>
+    <path d="M1484 68 A14 14 0 0 1 1500 68"/>
+    <circle cx="1492" cy="77" r="2.6" fill="#F2F3F8" stroke="none"/>
+  </g>
+  <!-- battery -->
+  <rect x="1540" y="54" width="40" height="20" rx="6" fill="none" stroke="#F2F3F8" stroke-opacity="0.7" stroke-width="1.6"/>
+  <rect x="1544" y="58" width="31" height="12" rx="3" fill="#A855F7"/>
+  <rect x="1582" y="60" width="3" height="8" rx="1.5" fill="#F2F3F8" fill-opacity="0.7"/>
+  <text x="1594" y="71" font-family="Lato" font-weight="700" font-size="15" fill="#F2F3F8">87%</text>
+  <!-- avatar -->
+  <circle cx="1650" cy="64" r="21" fill="#2A1C55" stroke="#A855F7" stroke-opacity="0.6"/>
+  <text x="1650" y="71" font-family="Lato" font-weight="900" font-size="17" fill="#C4B5FD" text-anchor="middle">M</text>
+
+  <!-- ======================= hero copy ======================= -->
+  <text x="230" y="238" font-family="Lato" font-weight="700" font-size="14" letter-spacing="5" fill="#C084FC">GAME SPACE · SEASON 04</text>
+  <text x="228" y="332" font-family="Lato" font-weight="900" font-size="98" letter-spacing="-2" fill="#FFFFFF">NEBULA</text>
+  <text x="228" y="424" font-family="Lato" font-weight="900" font-size="98" letter-spacing="-2" fill="url(#textGrad)">STRIKE</text>
+  <text x="232" y="462" font-family="Noto Naskh Arabic" font-weight="700" font-size="30" fill="#D8D3EC">انتصارك القادم يبدأ من هنا</text>
+
+  <!-- play pill -->
+  <g filter="url(#panelShadow)">
+    <rect x="230" y="478" width="250" height="56" rx="28" fill="url(#playPill)" stroke="#C4B5FD" stroke-opacity="0.85" stroke-width="1.4"/>
+  </g>
+  <rect x="230" y="478" width="250" height="56" rx="28" fill="none" stroke="#FFFFFF" stroke-opacity="0.06"/>
+  <g clip-path="url(#playClip)">
+    <rect x="230" y="478" width="120" height="56" fill="#A855F7" opacity="0.10"/>
+  </g>
+  <polygon points="264,494 264,518 284,506" fill="#FFFFFF"/>
+  <text x="298" y="513" font-family="Lato" font-weight="800" font-size="17" letter-spacing="2" fill="#FFFFFF">PLAY NOW</text>
+
+  <!-- more options -->
+  <circle cx="520" cy="506" r="28" fill="#0A0420" fill-opacity="0.66" stroke="#A855F7" stroke-opacity="0.55"/>
+  <g fill="#F2F3F8">
+    <circle cx="510" cy="506" r="2.6"/><circle cx="520" cy="506" r="2.6"/><circle cx="530" cy="506" r="2.6"/>
+  </g>
+
+  <!-- dots -->
+  <g>
+    <rect x="548" y="543" width="26" height="7" rx="3.5" fill="#C084FC"/>
+    <circle cx="590" cy="546.5" r="3.4" fill="#4B3F73"/>
+    <circle cx="606" cy="546.5" r="3.4" fill="#4B3F73"/>
+    <circle cx="622" cy="546.5" r="3.4" fill="#4B3F73"/>
+    <circle cx="638" cy="546.5" r="3.4" fill="#4B3F73"/>
+  </g>
+
+  <!-- ======================= floating performance panel ======================= -->
+  <!-- card 1: rings -->
+  <g filter="url(#panelShadow)">
+    <rect x="1230" y="72" width="422" height="256" rx="26" fill="url(#glass)" stroke="#A855F7" stroke-opacity="0.32" stroke-width="1"/>
+  </g>
+  <rect x="1230" y="72" width="422" height="1" fill="#FFFFFF" opacity="0.10"/>
+
+  <g transform="translate(1260 106)" fill="none" stroke="#A855F7" stroke-width="2" stroke-linecap="round">
+    <path d="M0 6 L5 6 L8 0 L12 12 L15 6 L20 6"/>
+  </g>
+  <text x="1290" y="113" font-family="Lato" font-weight="700" font-size="17" fill="#F2F3F8">Performance</text>
+
+  <!-- CPU ring 38% -->
+  <g transform="translate(1310 180)">
+    <circle r="46" fill="#0D0824" stroke="#2D2250" stroke-width="6" stroke-dasharray="6 5" opacity="0.9"/>
+    <circle r="46" fill="none" stroke="#A855F7" stroke-opacity="0.20" stroke-width="14" stroke-dasharray="110 999" stroke-linecap="round" transform="rotate(-90)" filter="url(#glowTight)"/>
+    <circle r="46" fill="none" stroke="#A855F7" stroke-width="6" stroke-dasharray="110 999" stroke-linecap="round" transform="rotate(-90)"/>
+    <text y="9" text-anchor="middle" font-family="Lato" font-weight="900" font-size="26" fill="#F2F3F8">38%</text>
+  </g>
+  <text x="1310" y="258" text-anchor="middle" font-family="Lato" font-weight="600" font-size="14" fill="#9A93B8">CPU</text>
+
+  <!-- GPU ring 52% -->
+  <g transform="translate(1441 180)">
+    <circle r="46" fill="#0D0824" stroke="#2D2250" stroke-width="6" stroke-dasharray="6 5" opacity="0.9"/>
+    <circle r="46" fill="none" stroke="#38BDF8" stroke-opacity="0.20" stroke-width="14" stroke-dasharray="150 999" stroke-linecap="round" transform="rotate(-90)" filter="url(#glowTight)"/>
+    <circle r="46" fill="none" stroke="#38BDF8" stroke-width="6" stroke-dasharray="150 999" stroke-linecap="round" transform="rotate(-90)"/>
+    <text y="9" text-anchor="middle" font-family="Lato" font-weight="900" font-size="26" fill="#F2F3F8">52%</text>
+  </g>
+  <text x="1441" y="258" text-anchor="middle" font-family="Lato" font-weight="600" font-size="14" fill="#9A93B8">GPU</text>
+
+  <!-- Temp ring 41° -->
+  <g transform="translate(1572 180)">
+    <circle r="46" fill="#0D0824" stroke="#2D2250" stroke-width="6" stroke-dasharray="6 5" opacity="0.9"/>
+    <circle r="46" fill="none" stroke="#FF2D6B" stroke-opacity="0.20" stroke-width="14" stroke-dasharray="120 999" stroke-linecap="round" transform="rotate(-90)" filter="url(#glowTight)"/>
+    <circle r="46" fill="none" stroke="#FF2D6B" stroke-width="6" stroke-dasharray="120 999" stroke-linecap="round" transform="rotate(-90)"/>
+    <text y="9" text-anchor="middle" font-family="Lato" font-weight="900" font-size="24" fill="#F2F3F8">41°</text>
+  </g>
+  <text x="1572" y="258" text-anchor="middle" font-family="Lato" font-weight="600" font-size="14" fill="#9A93B8">TEMP</text>
+
+  <rect x="1254" y="286" width="374" height="1" fill="url(#divider)" opacity="0.5"/>
+
+  <!-- card 2: battery + mode -->
+  <g filter="url(#panelShadow)">
+    <rect x="1230" y="340" width="422" height="88" rx="22" fill="url(#glassSoft)" stroke="#A855F7" stroke-opacity="0.26"/>
+  </g>
+  <rect x="1230" y="340" width="422" height="1" fill="#FFFFFF" opacity="0.08"/>
+
+  <g transform="translate(1256 366)" stroke="#4ADE80" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="0" y="0" width="26" height="14" rx="4"/>
+    <rect x="4" y="4" width="18" height="6" rx="1.5" fill="#4ADE80" stroke="none"/>
+    <path d="M28 4 L28 10"/>
+  </g>
+  <text x="1298" y="380" font-family="Lato" font-weight="900" font-size="24" fill="#F2F3F8">87%</text>
+  <text x="1298" y="400" font-family="Lato" font-weight="600" font-size="12" fill="#9A93B8">BATTERY</text>
+
+  <rect x="1441" y="356" width="1" height="56" fill="#A855F7" opacity="0.22"/>
+
+  <text x="1466" y="366" font-family="Lato" font-weight="600" font-size="11" fill="#9A93B8" letter-spacing="1">PERFORMANCE MODE</text>
+  <g transform="translate(1468 386)" fill="#C084FC">
+    <polygon points="8,0 0,12 6,12 4,20 13,8 7,8"/>
+  </g>
+  <text x="1492" y="400" font-family="Lato" font-weight="800" font-size="20" fill="#F2F3F8">Gaming</text>
+  <g transform="translate(1614 392)" stroke="#9A93B8" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M0 0 L7 7 L0 14"/>
+  </g>
+
+  <!-- card 3: waveform + refresh -->
+  <g filter="url(#panelShadow)">
+    <rect x="1230" y="440" width="422" height="88" rx="22" fill="url(#glassSoft)" stroke="#A855F7" stroke-opacity="0.26"/>
+  </g>
+  <rect x="1230" y="440" width="422" height="1" fill="#FFFFFF" opacity="0.08"/>
+
+  <polyline points="1252,502 1266,492 1280,498 1294,474 1308,486 1322,460 1336,478 1350,470 1364,492 1378,486 1392,498 1402,494"
+            fill="none" stroke="#A855F7" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" filter="url(#glowTight)"/>
+  <polyline points="1252,502 1266,492 1280,498 1294,474 1308,486 1322,460 1336,478 1350,470 1364,492 1378,486 1392,498 1402,494"
+            fill="none" stroke="#C084FC" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <text x="1420" y="470" font-family="Lato" font-weight="600" font-size="10" fill="#9A93B8" letter-spacing="1.5">REAL-TIME</text>
+  <text x="1420" y="500" font-family="Lato" font-weight="900" font-size="26" fill="#F2F3F8">144 Hz</text>
+  <text x="1508" y="500" font-family="Lato" font-weight="600" font-size="12" fill="#9A93B8">display</text>
+
+  <g transform="translate(1596 466)" fill="#C084FC">
+    <rect x="0" y="10" width="4" height="10" rx="1"/>
+    <rect x="7" y="5" width="4" height="15" rx="1"/>
+    <rect x="14" y="0" width="4" height="20" rx="1"/>
+  </g>
+
+  <!-- ======================= popular games shelf ======================= -->
+  <g filter="url(#softShadow)">
+    <rect x="200" y="560" width="1450" height="310" rx="28" fill="url(#glass)" stroke="#A855F7" stroke-opacity="0.28"/>
+  </g>
+  <rect x="200" y="560" width="1450" height="1" fill="#FFFFFF" opacity="0.08"/>
+
+  <rect x="228" y="590" width="5" height="22" rx="2.5" fill="url(#strip)"/>
+  <text x="248" y="610" font-family="Lato" font-weight="800" font-size="24" fill="#F2F3F8">Popular Games</text>
+  <text x="1592" y="608" font-family="Lato" font-weight="600" font-size="15" fill="#C084FC" text-anchor="end">See All</text>
+  <path d="M1602 598 L1610 605 L1602 612" fill="none" stroke="#C084FC" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- tile 1: NEBULA (selected) -->
+  <g>
+    <rect x="228" y="632" width="150" height="222" rx="18" fill="url(#tileViolet)"/>
+    <circle cx="303" cy="706" r="58" fill="#7C3AED" opacity="0.30" filter="url(#glowSoft)"/>
+    <circle cx="303" cy="706" r="34" fill="#C4B5FD" opacity="0.85"/>
+    <circle cx="290" cy="694" r="30" fill="url(#tileViolet)"/>
+    <ellipse cx="303" cy="706" rx="72" ry="18" fill="none" stroke="#C4B5FD" stroke-opacity="0.7" stroke-width="2" transform="rotate(-18 303 706)"/>
+    <rect x="228" y="632" width="150" height="222" rx="18" fill="url(#tileShine)"/>
+    <rect x="228" y="632" width="150" height="222" rx="18" fill="url(#tileScrim)"/>
+    <text x="243" y="800" font-family="Lato" font-weight="900" font-size="16" fill="#FFFFFF">NEBULA</text>
+    <text x="243" y="820" font-family="Lato" font-weight="700" font-size="12" letter-spacing="2" fill="#C084FC">STRIKE</text>
+    <rect x="228" y="632" width="150" height="222" rx="18" fill="none" stroke="#C4B5FD" stroke-width="2"/>
+    <rect x="242" y="846" width="122" height="4" rx="2" fill="#C084FC" opacity="0.95"/>
+    <rect x="228" y="632" width="150" height="222" rx="18" fill="#7C3AED" opacity="0.10" filter="url(#glowTight)"/>
+  </g>
+
+  <!-- tile 2: IRONFALL -->
+  <g>
+    <rect x="406" y="632" width="150" height="222" rx="18" fill="url(#tileEmber)"/>
+    <g transform="translate(481 720)">
+      <polygon points="0,-52 42,30 -42,30" fill="none" stroke="#FDBA74" stroke-width="3" opacity="0.8"/>
+      <polygon points="0,-26 22,16 -22,16" fill="#F97316" opacity="0.55"/>
+      <circle cx="0" cy="4" r="9" fill="#FFEDD5" opacity="0.9"/>
+    </g>
+    <rect x="406" y="632" width="150" height="222" rx="18" fill="url(#tileShine)"/>
+    <rect x="406" y="632" width="150" height="222" rx="18" fill="url(#tileScrim)"/>
+    <text x="421" y="806" font-family="Lato" font-weight="900" font-size="15" fill="#FFFFFF">IRONFALL</text>
+    <text x="421" y="824" font-family="Lato" font-weight="600" font-size="10" letter-spacing="1.5" fill="#FDBA74">SIEGE</text>
+  </g>
+
+  <!-- tile 3: AETHER -->
+  <g>
+    <rect x="584" y="632" width="150" height="222" rx="18" fill="url(#tileCyan)"/>
+    <g transform="translate(659 712)">
+      <circle r="40" fill="none" stroke="#7DD3FC" stroke-width="2" opacity="0.8"/>
+      <circle r="26" fill="none" stroke="#BAE6FD" stroke-width="1.4" opacity="0.6"/>
+      <path d="M0 -46 L12 -10 L0 26 L-12 -10 Z" fill="#E0F2FE" opacity="0.85"/>
+    </g>
+    <rect x="584" y="632" width="150" height="222" rx="18" fill="url(#tileShine)"/>
+    <rect x="584" y="632" width="150" height="222" rx="18" fill="url(#tileScrim)"/>
+    <text x="599" y="806" font-family="Lato" font-weight="900" font-size="15" fill="#FFFFFF">AETHER</text>
+    <text x="599" y="824" font-family="Lato" font-weight="600" font-size="10" letter-spacing="1.5" fill="#7DD3FC">DRIFT</text>
+  </g>
+
+  <!-- tile 4: VOIDRUN -->
+  <g>
+    <rect x="762" y="632" width="150" height="222" rx="18" fill="url(#tileRose)"/>
+    <g transform="translate(837 718)">
+      <circle r="42" fill="none" stroke="#FB7185" stroke-width="2" opacity="0.75"/>
+      <path d="M-42 0 A42 42 0 0 1 42 0" fill="none" stroke="#FDA4AF" stroke-width="6" opacity="0.8"/>
+      <path d="M0 -20 L14 12 L-14 12 Z" fill="#FFE4E6" opacity="0.85"/>
+    </g>
+    <rect x="762" y="632" width="150" height="222" rx="18" fill="url(#tileShine)"/>
+    <rect x="762" y="632" width="150" height="222" rx="18" fill="url(#tileScrim)"/>
+    <text x="777" y="806" font-family="Lato" font-weight="900" font-size="15" fill="#FFFFFF">VOIDRUN</text>
+    <text x="777" y="824" font-family="Lato" font-weight="600" font-size="10" letter-spacing="1.5" fill="#FB7185">NEON</text>
+  </g>
+
+  <!-- tile 5: KRAKEN -->
+  <g>
+    <rect x="940" y="632" width="150" height="222" rx="18" fill="url(#tileAmber)"/>
+    <g transform="translate(1015 716)">
+      <path d="M-40 18 Q-20 -34 0 0 Q20 34 40 -18" fill="none" stroke="#FCD34D" stroke-width="4" stroke-linecap="round" opacity="0.9"/>
+      <circle cx="-40" cy="18" r="5" fill="#FDE68A"/><circle cx="40" cy="-18" r="5" fill="#FDE68A"/>
+    </g>
+    <rect x="940" y="632" width="150" height="222" rx="18" fill="url(#tileShine)"/>
+    <rect x="940" y="632" width="150" height="222" rx="18" fill="url(#tileScrim)"/>
+    <text x="955" y="806" font-family="Lato" font-weight="900" font-size="15" fill="#FFFFFF">KRAKEN</text>
+    <text x="955" y="824" font-family="Lato" font-weight="600" font-size="10" letter-spacing="1.5" fill="#FCD34D">DEEP</text>
+  </g>
+
+  <!-- tile 6: PULSE -->
+  <g>
+    <rect x="1118" y="632" width="150" height="222" rx="18" fill="url(#tileEmerald)"/>
+    <polyline points="1138,730 1158,730 1170,700 1184,752 1196,722 1210,722 1224,736 1248,736"
+              fill="none" stroke="#6EE7B7" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="1118" y="632" width="150" height="222" rx="18" fill="url(#tileShine)"/>
+    <rect x="1118" y="632" width="150" height="222" rx="18" fill="url(#tileScrim)"/>
+    <text x="1133" y="806" font-family="Lato" font-weight="900" font-size="15" fill="#FFFFFF">PULSE</text>
+    <text x="1133" y="824" font-family="Lato" font-weight="600" font-size="10" letter-spacing="1.5" fill="#6EE7B7">RACER</text>
+  </g>
+
+  <!-- tile 7: ONYX -->
+  <g>
+    <rect x="1296" y="632" width="150" height="222" rx="18" fill="url(#tileSlate)"/>
+    <g transform="translate(1371 714)">
+      <polygon points="0,-46 40,-23 40,23 0,46 -40,23 -40,-23" fill="none" stroke="#CBD5E1" stroke-width="2" opacity="0.8"/>
+      <polygon points="0,-28 24,-14 24,14 0,28 -24,14 -24,-14" fill="#94A3B8" opacity="0.25"/>
+      <circle r="6" fill="#E2E8F0"/>
+    </g>
+    <rect x="1296" y="632" width="150" height="222" rx="18" fill="url(#tileShine)"/>
+    <rect x="1296" y="632" width="150" height="222" rx="18" fill="url(#tileScrim)"/>
+    <text x="1311" y="806" font-family="Lato" font-weight="900" font-size="15" fill="#FFFFFF">ONYX</text>
+    <text x="1311" y="824" font-family="Lato" font-weight="600" font-size="10" letter-spacing="1.5" fill="#CBD5E1">PROTOCOL</text>
+  </g>
+
+  <!-- More tile -->
+  <g>
+    <rect x="1474" y="632" width="150" height="222" rx="18" fill="#1A1435" fill-opacity="0.55" stroke="#A855F7" stroke-opacity="0.30"/>
+    <g transform="translate(1535 716)" fill="#C084FC">
+      <rect x="0" y="0" width="16" height="16" rx="4"/>
+      <rect x="22" y="0" width="16" height="16" rx="4"/>
+      <rect x="0" y="22" width="16" height="16" rx="4"/>
+      <rect x="22" y="22" width="16" height="16" rx="4"/>
+    </g>
+    <text x="1549" y="790" text-anchor="middle" font-family="Lato" font-weight="700" font-size="14" fill="#C9C3DE">More</text>
+  </g>
+
+  <!-- shelf arrows -->
+  <circle cx="204" cy="744" r="22" fill="#0A0420" fill-opacity="0.92" stroke="#A855F7" stroke-opacity="0.45"/>
+  <path d="M208 734 L199 744 L208 754" fill="none" stroke="#F2F3F8" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="1646" cy="744" r="22" fill="#0A0420" fill-opacity="0.92" stroke="#A855F7" stroke-opacity="0.45"/>
+  <path d="M1642 734 L1651 744 L1642 754" fill="none" stroke="#F2F3F8" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- ======================= status slab ======================= -->
+  <g filter="url(#softShadow)">
+    <rect x="200" y="884" width="1450" height="50" rx="25" fill="url(#glass)" stroke="#A855F7" stroke-opacity="0.35"/>
+  </g>
+  <rect x="200" y="884" width="1450" height="1" fill="#FFFFFF" opacity="0.08"/>
+
+  <g transform="translate(232 896)" fill="#C084FC">
+    <polygon points="9,0 0,14 7,14 5,22 15,9 8,9"/>
+  </g>
+  <text x="264" y="917" font-family="Noto Naskh Arabic" font-weight="700" font-size="19" fill="#F2F3F8">تم تحسين الأداء بنجاح</text>
+
+  <!-- 32 slanted segments, all filled at 100% -->
+  <g>
+    <g fill="url(#strip)">
+      <polygon points="782,896 796,896 790,922 776,922"/>
+      <polygon points="800,896 814,896 808,922 794,922"/>
+      <polygon points="818,896 832,896 826,922 812,922"/>
+      <polygon points="836,896 850,896 844,922 830,922"/>
+      <polygon points="854,896 868,896 862,922 848,922"/>
+      <polygon points="872,896 886,896 880,922 866,922"/>
+      <polygon points="890,896 904,896 898,922 884,922"/>
+      <polygon points="908,896 922,896 916,922 902,922"/>
+      <polygon points="926,896 940,896 934,922 920,922"/>
+      <polygon points="944,896 958,896 952,922 938,922"/>
+      <polygon points="962,896 976,896 970,922 956,922"/>
+      <polygon points="980,896 994,896 988,922 974,922"/>
+      <polygon points="998,896 1012,896 1006,922 992,922"/>
+      <polygon points="1016,896 1030,896 1024,922 1010,922"/>
+      <polygon points="1034,896 1048,896 1042,922 1028,922"/>
+      <polygon points="1052,896 1066,896 1060,922 1046,922"/>
+      <polygon points="1070,896 1084,896 1078,922 1064,922"/>
+      <polygon points="1088,896 1102,896 1096,922 1082,922"/>
+      <polygon points="1106,896 1120,896 1114,922 1100,922"/>
+      <polygon points="1124,896 1138,896 1132,922 1118,922"/>
+      <polygon points="1142,896 1156,896 1150,922 1136,922"/>
+      <polygon points="1160,896 1174,896 1168,922 1154,922"/>
+      <polygon points="1178,896 1192,896 1186,922 1172,922"/>
+      <polygon points="1196,896 1210,896 1204,922 1190,922"/>
+      <polygon points="1214,896 1228,896 1222,922 1208,922"/>
+      <polygon points="1232,896 1246,896 1240,922 1226,922"/>
+      <polygon points="1250,896 1264,896 1258,922 1244,922"/>
+      <polygon points="1268,896 1282,896 1276,922 1262,922"/>
+      <polygon points="1286,896 1300,896 1294,922 1280,922"/>
+      <polygon points="1304,896 1318,896 1312,922 1298,922"/>
+      <polygon points="1322,896 1336,896 1330,922 1316,922"/>
+      <polygon points="1340,896 1354,896 1348,922 1334,922"/>
+    </g>
+  </g>
+
+  <text x="1620" y="918" text-anchor="end" font-family="Lato" font-weight="900" font-size="26" fill="#F2F3F8">100%</text>
+</svg>

@@ -60,6 +60,63 @@ MaxManager has a strong engine and a fragmented surface. `core/maxai` + `core/ha
 
 ## Executor log
 
+### DESIGN-PIPELINE-01 — مسار تصميمٍ يُنتج صورةً فعلًا: SVG ← resvg ← PNG بلا حساب ولا مفتاح — 2026-11-14 · DONE
+
+**TASK (المالك):** أوقف تجميل Game Space مؤقّتًا، وأعد تقييم بيئة التصميم كلها: المشكلة ليست في كتابة
+Compose بل في غياب أدوات تُنتج تصميمًا وأصولًا بصريّة. المطلوب حلول مطوّرين تُمكّن DeepSeek V4.1 عبر
+OpenCode من إنشاء تصميمات ورسوم متجهيّة وخلفيات سينمائية وتأثيرات HUD فعلًا — **بلا حسابات مدفوعة ولا
+مفاتيح API ولا OAuth**، دون تكرار الأدوات السابقة لمجرّد كونها MCP، مع **تجربة تصميم بصريّة مستقلّة
+كاملة لـGame Space قبل تحويلها إلى Compose**، وإبقاء وظائف المشروع كما هي. وكتابة Compose أو XML
+ليست دليلًا على أن أداة التصميم تعمل: المطلوب **صورة تصميم يمكن معاينتها**.
+
+**MEASURED FIRST (لا افتراض):** `command -v` لكلٍّ من chromium/chrome/firefox/headless_shell/
+playwright/puppeteer/inkscape/rsvg-convert/resvg/convert/magick/cairo/weasyprint/ffmpeg/blender/
+gimp/krita/xvfb-run/Xvfb ⇒ **كلها غائبة**. Python فيه **Pillow 12.1.1 وnumpy 2.3.5 فقط** (raqm و
+freetype2 مفعّلان). Node 22.22.1 · npm 9.2.0 · bun 1.4.4. فلم يبقَ مسار HTML→PNG بمتصفّح.
+
+**THE WORKING TOOL (المُحوِّل الوحيد المُثبَت):** `@resvg/resvg-js` — `require()` يُرجع `Resvg`،
+والثنائي الأصلي `resvgjs.linux-arm64-gnu.node` موجود. نُقل إلى مسار دائم خارج المستودع:
+`~/.local/share/design-tools/node_modules` (٩٫٩MB). و`@napi-rs/canvas` **لا يعمل** (`Cannot find
+module`) ولا حاجة إليه. **ملاحظة مُقاسة:** `npm i` قد يطبع `ERR_SOCKET_TIMEOUT` ويترك مع ذلك تثبيتًا
+صالحًا؛ الحكم بـ`require()` لا برسالة npm.
+
+**PIPELINE (أداة في المستودع):** `tools/design/svg_render.cjs` — `node tools/design/svg_render.cjs
+<input.svg> <output.png> [width]`. يبحث عن الحزمة بـ`$DESIGN_NODE_MODULES` ← `~/.local/share/design-tools`
+← `./node_modules` ← `/tmp/opencode/designtest/node_modules`، ويخرج بـ2 مع تعليمة تثبيت إن لم يجد.
+الخطوط من ملفات موجودة فقط: `Lato-Black` · `Lato-Bold` · `/system/fonts/NotoNaskhArabic-Bold.ttf` ·
+`DejaVuSans`، مع `loadSystemFonts:true`. **صفر تنزيل خطوط.**
+
+**ARTIFACT (قابل للمعاينة الآن):** `docs/design/gamespace/gamespace-cinematic.svg` (34٬451 بايت) ←
+`docs/design/gamespace/gamespace-cinematic.png` **1680×944** · **944٬150 بايت** · 4850ms · 4 ملفات خطوط.
+الأمر المُنفَّذ:
+`node tools/design/svg_render.cjs docs/design/gamespace/gamespace-cinematic.svg docs/design/gamespace/gamespace-cinematic.png 1680`
+→ `resvg from /root/.local/share/design-tools/node_modules`. اللوحة أصلٌ بصريّ كامل: شريط عائم بأربع
+زوايا وعلامة M ونقشة الترس، بطلٌ سينمائيّ بخلفية سديم/كوكب محاط بحلقة/أشعّة/نجوم/حُبيبات، عنوان
+«NEBULA STRIKE» بتدرّج، وسمٌ عربيّ، كبسولة Play Now و«…» ونقاط، لوحة أداء عائمة بثلاث حلقات مجزّأة
+وبطاقتَي البطارية/الوضع والموجة، رفّ «Popular Games» بسبع بطاقات أصلية + «المزيد» + أسهم، وقاعدة حالة
+بشريط مائل و«100%».
+
+**VERIFIED BY EYE (لا بالادّعاء):** قُرئ الـPNG ثلاث مرّات: اللوحة كاملة، ثم قصّ 880×560 لبطاقة
+الحلقات (الأقواس 38% · 52% · 41° والتتبّع المتقطّع والهالة والوسوم سليمة)، ثم قصّ 720×210 لشريط
+العلوي (Wi-Fi والبطارية 87% والصورة الرمزية M). وأُعيد الرسم بعد تلميع: الأسهم أُبعدت عن البطاقات،
+وشريط القدم السميك صار خطّ توهّج 4px، والترس رُسم ترسًا ميكانيكيًّا لا شمسًا.
+
+**§0.4:** الفنّ كلّه إجرائيّ أصلًا (تدرّجات/مسارات/فلاتر SVG) — لا صورة PUBG ولا أصول طرف ثالث، ولا
+تقليد شكل تطبيق. **§0.2:** لوحة التصميم بالإنجليزية والعربية فقط. **الأرقام في اللوحة تجريبية
+للعرض فقط**، والشاشة في التطبيق تقرأ الحيّ (ADR-07) — واللوحة ليست الشاشة. **الترخيص:** resvg
+**MPL-2.0** أداةَ بناءٍ وقت التطوير، لا تدخل APK ولا يُنسخ منها كود.
+
+**BUILD:** لا تغيير في كود المنتج إطلاقًا (لا `.kt` ولا `res/**`) — لذلك لا Quick Verify لهذا الالتزام،
+والحكم هو تشغيل التوثيق بعد الدفع (يُقرأ ويُكتب هنا، لا يُدّعى).
+
+**GATES:** `kt_balance` · `code_health` · `i18n_coverage` (±`--prune all`) · `design_tokens` ·
+`resource_compile` · `provenance_guard` · `jni_symbols` · `git diff --check` — تُقرأ قبل الالتزام.
+
+**RESIDUAL RISK:** resvg يرسم SVG فقط؛ لا يقرأ لقطة تطبيق ولا يقارن لقطة بلقطة آليًّا. والمقارنة مع
+اللقطة الحقيقية للجهاز تبقى **تحتاج جهازًا**. واللوحة تصميمٌ مرجعيّ لا وعدًا بأن الشاشة الحالية
+مطابقة له — تحويلها إلى Compose قرار المالك التالي.
+
+
 ### GAME-SPACE-CINEMATIC-01 — إعادة بناء مسرح Game Space على اللقطة السينمائية: بطلٌ يملأ المسرح، ولوحة تعوم فوقه، ورفّ ملصقاتٍ حقيقيّ — 2026-11-14 · DONE_WITH_CONCERNS
 
 **TASK (المالك):** «قم الان ياعادة تصميم gamespace» — بعد أن وصف الشاشة السابقة بأنها «مخيبة للآمال
@@ -93,7 +150,8 @@ MaxManager has a strong engine and a fragmented surface. `core/maxai` + `core/ha
 `780de8fa` (سطر واحد) ودُفع، ثم Quick Verify `43610583834` — الحكم المقروء من السجل: **نجاح**
 (`conclusion=success`، والمهمّة الوحيدة «Release Kotlin + release unit tests» ناجحة، انتهت
 15:35:43Z). و`build.yml` `43609752489` على `ae5c6ecc` سقط بالخطأ نفسه؛ و`build.yml` `43610552244`
-على `780de8fa` كان قيد التشغيل عند كتابة هذا السطر — لا يُدّعى حكمه.
+على `780de8fa` **نجح** (`conclusion=success`، وSHA `780de8fa` نفسه) — فالشيفرة المُصلَحة تمرّ في
+Quick Verify وفي البناء الكامل معًا، والحكمان مقروءان لا مفترضان.
 
 **GATES (مقيسة هنا بعد آخر تعديل):** `kt_balance` **3435 · 0** · `code_health` **صحة 0** (والدَّين
 مجمّد: 16 oversized · 26 wildcard · 5 inline copy · 4 literals) · `i18n_coverage` **0/85** ·

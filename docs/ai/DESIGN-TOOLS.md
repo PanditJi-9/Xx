@@ -200,3 +200,45 @@ uipro init --ai opencode          # v2.15.0 لا يعرف --dry-run (مُقاس:
 المضيف/الجهاز/الخلفية، ويُقال ذلك في كل تسليم. الخطوة التالية بعد التوثيق: إعادة بناء GameSpace من
 المرجع السينمائي `3d1c0d86-1af8-4de0-a35c-9c92fcec280d.png` (1680×944) بصريًّا أولًا، ثم Compose،
 ثم مقارنة بلقطة حقيقية — لا ادّعاء تطابق بلا لقطة.
+
+## 7. مسار الرسم المُثبَت — SVG ← resvg ← PNG (قياس ٢٠٢٦-١١-١٤)
+
+**المشكلة المقيسة:** كل أدوات التصميم أعلاه تحتاج مضيفًا/مصادقة/خلفية، فلم تُنتج صورةً واحدة. والوكيل
+لا يفتقر إلى كتابة Compose بل إلى **مخرج بصريّ يُفتح ويُرى**. فقِيست البدائل المحلية بلا حساب ولا مفتاح:
+
+| المكوّن | القياس | النتيجة |
+| --- | --- | --- |
+| متصفّحات (chromium/chrome/firefox/headless_shell) | `command -v` لكلٍّ | **غائبة كلها** — لا HTML→PNG |
+| Playwright / Puppeteer | غير مثبتين، وتنزيل المتصفّح يحتاج شبكة مستقرة | **غير متاح** |
+| Inkscape · rsvg-convert · resvg CLI · ImageMagick (`convert`/`magick`) · Cairo · WeasyPrint · ffmpeg · Blender · GIMP · Krita · Xvfb | `command -v` | **غائبة كلها** |
+| Python | Pillow **12.1.1** + numpy **2.3.5** فقط (`raqm` و`freetype2` مفعّلان ⇒ تشكيل عربي ممكن) | بديل مضمون لكنه رسمٌ يدويّ بالبكسل |
+| Node | 22.22.1 · npm 9.2.0 · bun 1.4.4 | — |
+| **`@resvg/resvg-js`** | `npm i` ثم `require()`: تصدير `Resvg`/`render`/`renderAsync`، والثنائي الأصلي `resvgjs.linux-arm64-gnu.node` موجود | **يعمل — المُحوِّل الوحيد المُثبَت** |
+| `@napi-rs/canvas` | `require` → `Cannot find module` (نزلت الحزمة المنصّية وحدها) | **لا يعمل — ولا حاجة إليه** |
+
+**المسار المعتمد (بلا متصفّح، بلا حساب، بلا مفتاح):**
+
+```sh
+# مرة واحدة: التثبيت الدائم خارج المستودع
+npm i --prefix ~/.local/share/design-tools @resvg/resvg-js
+# ⚠ npm قد يطبع ERR_SOCKET_TIMEOUT ويترك تثبيتًا صالحًا؛ تحقّق بـ require() لا برسالة npm.
+#   عند الفشل: --fetch-retries=5 --fetch-timeout=120000
+
+# كل تصميم: كتابة SVG بيد ← تحويله إلى PNG ← قراءة PNG بالعين ← إصلاح ← إعادة
+node tools/design/svg_render.cjs docs/design/gamespace/gamespace-cinematic.svg \
+     docs/design/gamespace/gamespace-cinematic.png 1680
+# → rendered … · 944150 bytes · 4850 ms · 4 font files · resvg from /root/.local/share/design-tools/node_modules
+```
+
+`tools/design/svg_render.cjs` يبحث عن الحزمة بالترتيب: `$DESIGN_NODE_MODULES` ← `~/.local/share/design-tools/node_modules`
+← `./node_modules` ← `/tmp/opencode/designtest/node_modules`، ويخرج بـ2 مع تعليمة تثبيت إن لم يجد. ويحمّل
+الخطوط من ملفات موجودة فقط: `Lato-Black` · `Lato-Bold` · `/system/fonts/NotoNaskhArabic-Bold.ttf` ·
+`DejaVuSans`، مع `loadSystemFonts:true`. **الخطوط محلية بالكامل — لا تنزيل.**
+
+**الترخيص:** `resvg` بترخيص **MPL-2.0**، ويُستخدم **أداةَ بناء وقت التطوير فقط** — لا يدخل في APK ولا
+يُنسخ منه كود إلى المشروع (AGENTS §0.4). والتصميم المُنتَج (أشكال وتدرّجات ونصوص) أصلٌ لنا، لا أصول طرف ثالث.
+
+**الحدّ الذي لا يُتجاوز بالادّعاء:** resvg يرسم SVG؛ ولا يقرأ لقطة شاشة تطبيق، ولا يقارن لقطة تنفيذ
+بلقطة مرجعية تلقائيًّا. فالمقارنة البصرية تبقى بقراءة الصور بالعين (`⑤` أعلاه)، ولقطة التطبيق الحقيقية
+تبقى **تحتاج جهازًا**. و**الأرقام في لوحة التصميم تجريبية للعرض فقط** — الشاشة في التطبيق تقرأ الحيّ
+(ADR-07)، وهذا مكتوب على اللوحة نفسها في `HANDOFF`.
