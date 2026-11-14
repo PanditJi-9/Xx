@@ -28005,8 +28005,11 @@ exit 0 · `i18n_coverage --assert` تطابق الأكواد الثلاثة و0 
 **CI TRUTH:** `43529340801` على `67fb358e` = أحمر في اختبار واحد فقط `ShoulderPadMathTest.kt:24`
 (الترجمة نجحت). أُصلح `ShoulderPadMath.MIN_FRACTION/MAX_FRACTION` إلى `0f/1f` لأن النسبة على المساحة
 `screen - pad` فالصفر والواحد يُبقيان الزرّ كاملًا. وكُشف أثناء المراجعة تصادم اسم `toggleRecording`
-بين تسجيل HUD وشريط Turbo، فأُعيد تسمية الجديد `toggleTurboRecording` قبل الدفع. **رأس هذه الدفعة
-لم يُشغَّل بعد؛ لا يُقال أخضر قبل قراءة `conclusion`.**
+بين تسجيل HUD وشريط Turbo، فأُعيد تسمية الجديد `toggleTurboRecording` قبل الدفع.
+ثم `43534057436` على `4c140a67` = **أحمر في الترجمة** بثلاثة أخطاء في `GamePanelCockpit.kt`: أيقونة
+`AutoAwesome` بلا استيراد (استُبدلت بـ`SportsEsports` المستوردة)، و`Arrangement.spacedBy(xs, Alignment.CenterVertically)`
+في `horizontalArrangement` مرّتين (صُحّح إلى `spacedBy(xs)` + `verticalAlignment`). أُصلحت كلها،
+**والرأس الجديد لم يُشغَّل بعد؛ لا يُقال أخضر قبل قراءة `conclusion`.**
 
 **BUILD:** لا بناء محليًّا (§0.10). الاختبارات الثلاثة الجديدة لم تُشغَّل محليًّا؛ CI وحده يحكمها.
 

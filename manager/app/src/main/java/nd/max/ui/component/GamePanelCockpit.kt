@@ -932,7 +932,7 @@ fun GamePanelCockpit(
                 gyroOpen = true
             }))
             if (trackedPackage != null) {
-                add(CubeTileSpec(Icons.Rounded.AutoAwesome, null, lExtras, extras.enabled || extras.turbo, onClick = {
+                add(CubeTileSpec(Icons.Rounded.SportsEsports, null, lExtras, extras.enabled || extras.turbo, onClick = {
                     hold()
                     injectionAck = InjectionConsentPrefs.acknowledged(context)
                     laneReady = A11yGestureInjector.available
@@ -1301,7 +1301,7 @@ fun GamePanelCockpit(
                         fontSize = 12.sp,
                     )
                     // النقاط: العنصر الأساسيّ في الفكرة ٤ — كل نقطة إيماءة مختارة تُحقن في موضعها.
-                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs, Alignment.CenterVertically)) {
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs), verticalAlignment = Alignment.CenterVertically) {
                         Text("$extrasPointsLabel  ${String.format(extrasCountFmt, extras.points.size)}", color = CubeInk, fontSize = 13.sp)
                         CubeModalAction(
                             if (extras.enabled) injectionDisable else extrasAddPoint,
@@ -1399,7 +1399,7 @@ private fun ToggleRow(
     note: String?,
     onToggle: () -> Unit,
 ) {
-    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs, Alignment.CenterVertically)) {
+    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs), verticalAlignment = Alignment.CenterVertically) {
         Text(label, color = CubeInk, fontSize = 13.sp, modifier = Modifier.weight(1f))
         if (note != null) Text(note, color = ModeAmber, fontSize = 11.sp, modifier = Modifier.weight(1f))
         CubeModalAction(if (on) "ON" else "OFF", if (on) ModeGreen else CubeDim, onClick = onToggle)
