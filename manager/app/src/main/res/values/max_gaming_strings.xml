@@ -627,4 +627,7 @@
     <string name="gs_next">Next</string>
     <string name="gs_ready_title">Performance tuned</string>
     <string name="gs_ready_body">Smoother play ahead</string>
+    <string name="gs_empty_title">No games yet</string>
+    <string name="gs_empty_body">Install a game and it appears here, ready to tune.</string>
+    <string name="gs_empty_action">Open game library</string>
 </resources>

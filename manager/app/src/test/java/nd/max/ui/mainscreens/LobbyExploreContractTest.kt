@@ -83,19 +83,20 @@ class LobbyExploreContractTest {
     }
 
     @Test
-    fun `the sessions door stays single top from both lobby entries`() {
+    fun `every sessions door in the lobby opens a single top copy`() {
         val root = sourceRoot()
         assumeTrue("Cannot locate nd.max sources; guard not evaluated", root != null)
         val text = lobby()
 
-        // بوابة على **باب الجلسات** وحده، لا على كل باب single-top في الملف: ألبوم المقاطع
-        // صار له باب رابع مشروع، وعدّه هنا كان يجعل إضافة شاشةٍ جديدة تُسقط عقد الجلسات.
-        assertEquals(
-            "The lobby must open the sessions log single-top from the top bar, Insights and the palette",
-            3,
-            Regex("navigate\\(MaxDestination\\.GameSessions\\.route\\)\\s*\\{\\s*launchSingleTop = true")
-                .findAll(text).count()
-        )
+        // الباب صار أربعة لا ثلاثة: الشريط العلوي، والرؤى، ولوحة الألوان، وقاعدة المسرح.
+        // والبوابة لا تعدّها بعددها — تعدّ **كل** نداء تنقّل إلى سجلّ الجلسات وتشترط أن يحمل
+        // launchSingleTop في الكتلة نفسها، فلا يُضاف باب خامس بلا هذا الحارس.
+        val doors = Regex("navigate\\(MaxDestination\\.GameSessions\\.route\\)").findAll(text).count()
+        val guarded = Regex(
+            "navigate\\(MaxDestination\\.GameSessions\\.route\\)\\s*\\{\\s*launchSingleTop = true"
+        ).findAll(text).count()
+        assertTrue("The lobby must keep at least four sessions doors", doors >= 4)
+        assertEquals("A sessions door opens a stacked copy", doors, guarded)
     }
 
     @Test

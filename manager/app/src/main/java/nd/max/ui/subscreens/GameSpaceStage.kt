@@ -1,6 +1,7 @@
 /* Copyright (C) 2026 Nader Magdy. All rights reserved. */
 package nd.max.ui.subscreens
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -25,6 +26,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -40,13 +42,19 @@ import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.VideogameAsset
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -55,13 +63,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.ProgressBarRangeInfo
+import androidx.compose.ui.semantics.progressBarRangeInfo
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -133,25 +146,20 @@ internal fun GameSpaceStage(
     modifier: Modifier = Modifier,
 ) {
     // القراءات الحيّة: نفس القارئين اللذين يغذّيان مراقب الجهاز، فلا مقياس ثانٍ.
-    val cpu by produceState<Int?>(null) {
+    // مؤقّت واحد للثلاثة معًا: حلقة واحدة تُقاس مرّة كل ثانيتين، لا ثلاث حلقات تتصارع.
+    val readings by produceState(initialValue = LiveReadings()) {
         while (true) {
-            value = PanelCpuLoad.sample()
+            value = LiveReadings(
+                cpu = PanelCpuLoad.sample(),
+                gpu = HudDeepReaders.gpuLoadPercent(),
+                tempC = HudDeepReaders.socTempC()
+            )
             delay(2_000L)
         }
     }
-    val gpu by produceState<Int?>(null) {
-        while (true) {
-            value = HudDeepReaders.gpuLoadPercent()
-            delay(2_000L)
-        }
-    }
-    val socTemp by produceState<Float?>(null) {
-        while (true) {
-            value = HudDeepReaders.socTempC()
-            delay(2_000L)
-        }
-    }
-    val heat = socTemp ?: batteryTempC
+    val cpu = readings.cpu
+    val gpu = readings.gpu
+    val heat = readings.tempC ?: batteryTempC
 
     val selectedIndex = remember(games, selected) {
         games.indexOfFirst { it.packageName == selected?.packageName }.coerceAtLeast(0)
@@ -160,6 +168,8 @@ internal fun GameSpaceStage(
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
         BoxWithConstraints(modifier.fillMaxSize()) {
             val wide = maxWidth >= 720.dp
+            val sideBoard = maxWidth >= 1000.dp
+            val compactInset = MaxSpace.gutter
             Row(
                 modifier = Modifier
                     .fillMaxSize()
@@ -167,54 +177,27 @@ internal fun GameSpaceStage(
                     .padding(top = TopBarHeight),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                GameSpaceRail(
-                    wide = wide,
-                    selected = selected,
-                    onHome = onHome,
-                    onSection = onOpenSection
-                )
-                Column(modifier = Modifier.weight(1f).fillMaxHeight()) {
-                    Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
-                        // بطل اللعبة: الاسم الكبير، ثم زرّ التشغيل وخياراته، ثم نقاط الاختيار.
-                        Column(
-                            modifier = Modifier
-                                .align(Alignment.CenterStart)
-                                .padding(start = MaxSpace.xxl)
-                                .widthIn(max = 420.dp)
-                                .verticalScroll(rememberScrollState()),
-                            verticalArrangement = Arrangement.spacedBy(MaxSpace.md)
-                        ) {
-                            Text(
-                                text = selected?.label.orEmpty(),
-                                color = GameSpacePalette.Ink,
-                                fontSize = if (wide) 44.sp else 32.sp,
-                                fontWeight = FontWeight.Black,
-                                maxLines = 2,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                            LaunchRow(
-                                enabled = selected != null,
-                                onLaunch = onLaunch,
-                                onOptions = onOptions
-                            )
-                            GameSpaceDots(count = games.size.coerceAtMost(9), index = selectedIndex)
-                        }
-                        if (wide) {
-                            PerformanceBoard(
-                                cpu = cpu,
-                                gpu = gpu,
-                                heat = heat,
-                                batteryPercent = batteryPercent,
-                                charging = charging,
-                                panelEnabled = panelEnabled,
-                                onOpen = onOptions,
-                                modifier = Modifier
-                                    .align(Alignment.TopEnd)
-                                    .padding(top = MaxSpace.md, end = MaxSpace.xxl)
-                            )
-                        }
-                    }
-                    if (!wide) {
+                GameSpaceRail(wide = wide, onHome = onHome, onSection = onOpenSection)
+                if (!wide) {
+                    // الهاتف: عمود واحد يتمرّر رأسيًّا. اللوحة والرفّ والقاعدة تحت البطل، لا حوله.
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxHeight()
+                            .verticalScroll(rememberScrollState())
+                            .padding(vertical = MaxSpace.sm),
+                        verticalArrangement = Arrangement.spacedBy(MaxSpace.md)
+                    ) {
+                        HeroBlock(
+                            games = games,
+                            selected = selected,
+                            selectedIndex = selectedIndex,
+                            wide = false,
+                            onLaunch = onLaunch,
+                            onOptions = onOptions,
+                            onOpenLibrary = onOpenLibrary,
+                            modifier = Modifier.padding(horizontal = compactInset)
+                        )
                         PerformanceBoard(
                             cpu = cpu,
                             gpu = gpu,
@@ -223,25 +206,290 @@ internal fun GameSpaceStage(
                             charging = charging,
                             panelEnabled = panelEnabled,
                             onOpen = onOptions,
-                            modifier = Modifier.padding(horizontal = MaxSpace.gutter)
+                            fullWidth = true,
+                            modifier = Modifier.padding(horizontal = compactInset)
+                        )
+                        if (games.isNotEmpty()) {
+                            GameSpaceShelf(
+                                games = games,
+                                selected = selected,
+                                selectedIndex = selectedIndex,
+                                arrows = false,
+                                onSelect = onSelect,
+                                onNext = { games.getOrNull(selectedIndex + 1)?.let { onSelect(it.packageName) } },
+                                onPrev = { games.getOrNull(selectedIndex - 1)?.let { onSelect(it.packageName) } },
+                                onViewAll = onOpenLibrary
+                            )
+                        }
+                        GameSpaceBase(
+                            title = statusTitle,
+                            detail = statusDetail,
+                            percent = readinessPercent,
+                            onOpen = onOpenSessions,
+                            inset = compactInset
                         )
                     }
-                    GameSpaceShelf(
-                        games = games,
-                        selected = selected,
-                        onSelect = onSelect,
-                        onNext = { games.getOrNull(selectedIndex + 1)?.let { onSelect(it.packageName) } },
-                        onPrev = { games.getOrNull(selectedIndex - 1)?.let { onSelect(it.packageName) } },
-                        onViewAll = onOpenLibrary
-                    )
-                    GameSpaceBase(
-                        title = statusTitle,
-                        detail = statusDetail,
-                        percent = readinessPercent,
-                        onOpen = onOpenSessions
-                    )
+                } else {
+                    // الجهاز الواسع: الهندسة كما في اللقطة — البطل يسارًا واللوحة يمينًا، والقاعدة ملتصقة.
+                    Column(modifier = Modifier.weight(1f).fillMaxHeight()) {
+                        Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
+                            HeroGlow(
+                                letter = selected?.label?.trim()?.take(1).orEmpty(),
+                                wide = true
+                            )
+                            HeroBlock(
+                                games = games,
+                                selected = selected,
+                                selectedIndex = selectedIndex,
+                                wide = true,
+                                onLaunch = onLaunch,
+                                onOptions = onOptions,
+                                onOpenLibrary = onOpenLibrary,
+                                modifier = Modifier
+                                    .align(Alignment.CenterStart)
+                                    .padding(start = MaxSpace.xxl)
+                            )
+                            if (sideBoard) {
+                                PerformanceBoard(
+                                    cpu = cpu,
+                                    gpu = gpu,
+                                    heat = heat,
+                                    batteryPercent = batteryPercent,
+                                    charging = charging,
+                                    panelEnabled = panelEnabled,
+                                    onOpen = onOptions,
+                                    fullWidth = false,
+                                    modifier = Modifier
+                                        .align(Alignment.TopEnd)
+                                        .padding(top = MaxSpace.md, end = MaxSpace.xxl)
+                                )
+                            }
+                        }
+                        if (!sideBoard) {
+                            PerformanceBoard(
+                                cpu = cpu,
+                                gpu = gpu,
+                                heat = heat,
+                                batteryPercent = batteryPercent,
+                                charging = charging,
+                                panelEnabled = panelEnabled,
+                                onOpen = onOptions,
+                                fullWidth = true,
+                                modifier = Modifier.padding(horizontal = MaxSpace.xxl)
+                            )
+                        }
+                        if (games.isNotEmpty()) {
+                            GameSpaceShelf(
+                                games = games,
+                                selected = selected,
+                                selectedIndex = selectedIndex,
+                                arrows = true,
+                                onSelect = onSelect,
+                                onNext = { games.getOrNull(selectedIndex + 1)?.let { onSelect(it.packageName) } },
+                                onPrev = { games.getOrNull(selectedIndex - 1)?.let { onSelect(it.packageName) } },
+                                onViewAll = onOpenLibrary
+                            )
+                        }
+                        GameSpaceBase(
+                            title = statusTitle,
+                            detail = statusDetail,
+                            percent = readinessPercent,
+                            onOpen = onOpenSessions,
+                            inset = MaxSpace.xxl
+                        )
+                    }
                 }
             }
+        }
+    }
+}
+
+/** القراءات الثلاث في قراءة واحدة، فالمؤقّت واحد. */
+private data class LiveReadings(
+    val cpu: Int? = null,
+    val gpu: Int? = null,
+    val tempC: Float? = null,
+)
+
+/**
+ * البطل: اسم اللعبة الكبير أو — إن لم تكن هناك لعبة — بطاقة فراغ تقود إلى المكتبة.
+ * الفراغ هنا ليس «٠٪» ولا زرًّا معطّلًا: جملة تقول ما يحدث وخطوة واحدة تفعله.
+ */
+@Composable
+private fun HeroBlock(
+    games: List<GameApp>,
+    selected: GameApp?,
+    selectedIndex: Int,
+    wide: Boolean,
+    onLaunch: () -> Unit,
+    onOptions: () -> Unit,
+    onOpenLibrary: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    if (games.isEmpty()) {
+        EmptyHero(onOpenLibrary = onOpenLibrary, modifier = modifier)
+    } else {
+        HeroCopy(
+            games = games,
+            selected = selected,
+            selectedIndex = selectedIndex,
+            wide = wide,
+            onLaunch = onLaunch,
+            onOptions = onOptions,
+            modifier = modifier
+        )
+    }
+}
+
+@Composable
+private fun HeroCopy(
+    games: List<GameApp>,
+    selected: GameApp?,
+    selectedIndex: Int,
+    wide: Boolean,
+    onLaunch: () -> Unit,
+    onOptions: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .widthIn(max = 420.dp),
+        verticalArrangement = Arrangement.spacedBy(MaxSpace.md)
+    ) {
+        Crossfade(
+            targetState = selected?.label.orEmpty(),
+            animationSpec = tween(durationMillis = 260)
+        ) { label ->
+            Text(
+                text = label,
+                color = GameSpacePalette.Ink,
+                fontSize = if (wide) 44.sp else 32.sp,
+                fontWeight = FontWeight.Black,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+        LaunchRow(
+            enabled = selected != null,
+            onLaunch = onLaunch,
+            onOptions = onOptions
+        )
+        GameSpaceDots(
+            count = games.size,
+            index = if (selected == null) -1 else selectedIndex
+        )
+    }
+}
+
+@Composable
+private fun EmptyHero(onOpenLibrary: () -> Unit, modifier: Modifier = Modifier) {
+    val shape = RoundedCornerShape(maxRadius(MaxRadius.group))
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .widthIn(max = 420.dp),
+        verticalArrangement = Arrangement.spacedBy(MaxSpace.md)
+    ) {
+        Box(
+            modifier = Modifier
+                .size(64.dp)
+                .clip(shape)
+                .background(GameSpacePalette.Panel.copy(alpha = 0.9f))
+                .border(MaxSize.hairlineBorder, GameSpacePalette.Hairline, shape),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = Icons.Rounded.VideogameAsset,
+                contentDescription = null,
+                tint = GameSpacePalette.VioletSoft,
+                modifier = Modifier.size(MaxSize.iconGlyph)
+            )
+        }
+        Text(
+            text = stringResource(R.string.gs_empty_title),
+            color = GameSpacePalette.Ink,
+            fontSize = 28.sp,
+            fontWeight = FontWeight.Black,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis
+        )
+        Text(
+            text = stringResource(R.string.gs_empty_body),
+            color = GameSpacePalette.Muted,
+            fontSize = 13.sp
+        )
+        val cta = RoundedCornerShape(maxRadius(MaxRadius.pill))
+        Row(
+            modifier = Modifier
+                .heightIn(min = MaxSize.minTouchTarget)
+                .shadow(
+                    elevation = 8.dp,
+                    shape = cta,
+                    ambientColor = GameSpacePalette.Violet.copy(alpha = 0.30f),
+                    spotColor = GameSpacePalette.Violet.copy(alpha = 0.40f)
+                )
+                .clip(cta)
+                .background(
+                    Brush.horizontalGradient(
+                        listOf(GameSpacePalette.Violet, GameSpacePalette.VioletDeep)
+                    )
+                )
+                .border(MaxSize.hairlineBorder, GameSpacePalette.VioletSoft, cta)
+                .clickable(role = Role.Button, onClick = onOpenLibrary)
+                .padding(horizontal = MaxSpace.lg),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs)
+        ) {
+            Icon(
+                imageVector = Icons.Rounded.VideogameAsset,
+                contentDescription = null,
+                tint = Color.White,
+                modifier = Modifier.size(MaxSize.iconGlyphSmall)
+            )
+            Text(
+                text = stringResource(R.string.gs_empty_action),
+                color = Color.White,
+                fontSize = 13.sp,
+                fontWeight = FontWeight.SemiBold,
+                maxLines = 1
+            )
+        }
+    }
+}
+
+/** هالة خلفيّة وحرف اللعبة شبه شفّاف: يملأ مكان الفنّ الذي لا نملكه بلا ادّعاء أنه فنّها. */
+@Composable
+private fun HeroGlow(letter: String, wide: Boolean) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .drawBehind {
+                drawCircle(
+                    brush = Brush.radialGradient(
+                        colors = listOf(
+                            GameSpacePalette.Violet.copy(alpha = 0.16f),
+                            Color.Transparent
+                        ),
+                        center = Offset(size.width * 0.22f, size.height * 0.5f),
+                        radius = size.minDimension * 0.95f
+                    ),
+                    radius = size.minDimension * 0.95f,
+                    center = Offset(size.width * 0.22f, size.height * 0.5f)
+                )
+            }
+    ) {
+        if (letter.isNotEmpty()) {
+            Text(
+                text = letter,
+                color = GameSpacePalette.VioletSoft.copy(alpha = 0.06f),
+                fontSize = if (wide) 240.sp else 150.sp,
+                fontWeight = FontWeight.Black,
+                maxLines = 1,
+                modifier = Modifier
+                    .align(Alignment.CenterStart)
+                    .padding(start = MaxSpace.md)
+            )
         }
     }
 }
@@ -250,7 +498,6 @@ internal fun GameSpaceStage(
 @Composable
 private fun GameSpaceRail(
     wide: Boolean,
-    selected: GameApp?,
     onHome: () -> Unit,
     onSection: (LobbySection) -> Unit,
 ) {
@@ -320,18 +567,6 @@ private fun GameSpaceRail(
     }
 }
 
-/**
- * الأقسام الخمسة كما سمّاها التصميم. 「المزايا」 هو ملفّ اللعبة (التعديلات)، و「الأدوات」 هو لوحة
- * الجانب، و「الإعدادات」 هو إعدادات اللوبي — لا أقسام جديدة، بل أسماء الشاشة نفسها.
- */
-private enum class RailSection(val labelRes: Int, val section: LobbySection) {
-    Library(R.string.gs_nav_games, LobbySection.Library),
-    Performance(R.string.gs_nav_perf, LobbySection.Insights),
-    Tools(R.string.gs_nav_tools, LobbySection.Panel),
-    Features(R.string.gs_nav_features, LobbySection.Loadout),
-    Settings(R.string.gs_nav_settings, LobbySection.Lobby)
-}
-
 @Composable
 private fun GameSpaceRailItem(
     labelRes: Int,
@@ -375,7 +610,7 @@ private fun GameSpaceRailItem(
             Text(
                 text = stringResource(labelRes),
                 color = if (active) Color.White else GameSpacePalette.Muted,
-                fontSize = 11.sp,
+                fontSize = 12.sp,
                 fontWeight = if (active) FontWeight.SemiBold else FontWeight.Normal,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
@@ -388,14 +623,21 @@ private fun GameSpaceRailItem(
 @Composable
 private fun LaunchRow(enabled: Boolean, onLaunch: () -> Unit, onOptions: () -> Unit) {
     Row(
+        modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(MaxSpace.md)
     ) {
         val shape = RoundedCornerShape(maxRadius(MaxRadius.pill))
         Row(
             modifier = Modifier
+                .weight(1f)
                 .heightIn(min = 56.dp)
-                .widthIn(min = 220.dp)
+                .shadow(
+                    elevation = 10.dp,
+                    shape = shape,
+                    ambientColor = GameSpacePalette.Violet.copy(alpha = 0.35f),
+                    spotColor = GameSpacePalette.Violet.copy(alpha = 0.45f)
+                )
                 .clip(shape)
                 .background(
                     Brush.horizontalGradient(
@@ -404,7 +646,7 @@ private fun LaunchRow(enabled: Boolean, onLaunch: () -> Unit, onOptions: () -> U
                 )
                 .border(MaxSize.hairlineBorder, GameSpacePalette.VioletSoft, shape)
                 .clickable(enabled = enabled, role = Role.Button, onClick = onLaunch)
-                .padding(horizontal = MaxSpace.xl),
+                .padding(horizontal = MaxSpace.md),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm)
         ) {
@@ -417,9 +659,10 @@ private fun LaunchRow(enabled: Boolean, onLaunch: () -> Unit, onOptions: () -> U
             Text(
                 text = stringResource(R.string.gs_launch),
                 color = Color.White,
-                fontSize = 16.sp,
+                fontSize = 15.sp,
                 fontWeight = FontWeight.Bold,
-                maxLines = 1
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
         }
         Box(
@@ -443,8 +686,15 @@ private fun LaunchRow(enabled: Boolean, onLaunch: () -> Unit, onOptions: () -> U
 
 @Composable
 private fun GameSpaceDots(count: Int, index: Int) {
-    Row(horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs)) {
-        repeat(count) { i ->
+    if (count <= 1) return
+    val window = 7
+    val start = (index - window / 2).coerceIn(0, (count - window).coerceAtLeast(0))
+    val end = (start + window).coerceAtMost(count)
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs)
+    ) {
+        for (i in start until end) {
             val active = i == index
             Box(
                 modifier = Modifier
@@ -452,6 +702,14 @@ private fun GameSpaceDots(count: Int, index: Int) {
                     .width(if (active) MaxSpace.lg else MaxSpace.xs)
                     .clip(RoundedCornerShape(maxRadius(MaxRadius.pill)))
                     .background(if (active) GameSpacePalette.VioletSoft else GameSpacePalette.Track)
+            )
+        }
+        if (count > window) {
+            Text(
+                text = "${(index + 1).coerceAtLeast(1)}/$count",
+                color = GameSpacePalette.Muted,
+                fontSize = 10.sp,
+                maxLines = 1
             )
         }
     }
@@ -467,13 +725,19 @@ private fun PerformanceBoard(
     charging: Boolean,
     panelEnabled: Boolean,
     onOpen: () -> Unit,
+    fullWidth: Boolean,
     modifier: Modifier = Modifier,
 ) {
     val shape = RoundedCornerShape(maxRadius(MaxRadius.group))
     Column(
         modifier = modifier
-            .widthIn(max = BoardWidth)
-            .width(BoardWidth)
+            .then(if (fullWidth) Modifier.fillMaxWidth() else Modifier.width(BoardWidth))
+            .shadow(
+                elevation = 8.dp,
+                shape = shape,
+                ambientColor = GameSpacePalette.Violet.copy(alpha = 0.25f),
+                spotColor = GameSpacePalette.Violet.copy(alpha = 0.35f)
+            )
             .clip(shape)
             .background(GameSpacePalette.Panel.copy(alpha = 0.88f))
             .border(MaxSize.hairlineBorder, GameSpacePalette.Hairline, shape)
@@ -483,7 +747,9 @@ private fun PerformanceBoard(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable(role = Role.Button, onClick = onOpen),
+                .clip(RoundedCornerShape(maxRadius(MaxRadius.control)))
+                .clickable(role = Role.Button, onClick = onOpen)
+                .padding(vertical = MaxSpace.xs),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs)
         ) {
@@ -508,7 +774,10 @@ private fun PerformanceBoard(
                 modifier = Modifier.size(MaxSize.iconGlyphSmall)
             )
         }
-        Row(horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs)) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm)
+        ) {
             PerformanceRing(
                 progress = cpu?.let { it / 100f },
                 value = cpu?.let { "$it%" } ?: MAX_VALUE_UNAVAILABLE,
@@ -535,11 +804,11 @@ private fun PerformanceBoard(
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm)
+            horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs)
         ) {
             Icon(
                 imageVector = Icons.Rounded.BatteryFull,
-                contentDescription = null,
+                contentDescription = stringResource(R.string.gs_battery),
                 tint = if (charging) GameSpacePalette.Cyan else GameSpacePalette.Muted,
                 modifier = Modifier.size(MaxSize.iconGlyphSmall)
             )
@@ -550,24 +819,12 @@ private fun PerformanceBoard(
                 fontWeight = FontWeight.SemiBold,
                 maxLines = 1
             )
-            Text(
-                text = stringResource(R.string.gs_battery),
-                color = GameSpacePalette.Muted,
-                fontSize = 11.sp,
-                maxLines = 1,
-                modifier = Modifier.weight(1f)
-            )
+            Spacer(Modifier.weight(1f))
             Icon(
                 imageVector = Icons.Rounded.Bolt,
-                contentDescription = null,
-                tint = GameSpacePalette.Magenta,
+                contentDescription = stringResource(R.string.gs_perf_mode),
+                tint = if (panelEnabled) GameSpacePalette.Cyan else GameSpacePalette.Muted,
                 modifier = Modifier.size(MaxSize.iconGlyphSmall)
-            )
-            Text(
-                text = stringResource(R.string.gs_perf_mode),
-                color = GameSpacePalette.Muted,
-                fontSize = 11.sp,
-                maxLines = 1
             )
             Text(
                 text = if (panelEnabled) stringResource(R.string.gs_perf_mode_on) else MAX_VALUE_UNAVAILABLE,
@@ -588,8 +845,12 @@ private fun PerformanceRing(
     tone: Color,
     modifier: Modifier = Modifier,
 ) {
+    val animated by animateFloatAsState(
+        targetValue = (progress ?: 0f).coerceIn(0f, 1f),
+        animationSpec = tween(durationMillis = 700)
+    )
     Column(
-        modifier = modifier,
+        modifier = modifier.semantics(mergeDescendants = true) {},
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(MaxSpace.xs)
     ) {
@@ -610,7 +871,7 @@ private fun PerformanceRing(
                     drawArc(
                         color = tone,
                         startAngle = -90f,
-                        sweepAngle = 360f * progress.coerceIn(0f, 1f),
+                        sweepAngle = 360f * animated,
                         useCenter = false,
                         style = stroke
                     )
@@ -627,7 +888,7 @@ private fun PerformanceRing(
         Text(
             text = label,
             color = GameSpacePalette.Muted,
-            fontSize = 10.sp,
+            fontSize = 11.sp,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
@@ -639,11 +900,18 @@ private fun PerformanceRing(
 private fun GameSpaceShelf(
     games: List<GameApp>,
     selected: GameApp?,
+    selectedIndex: Int,
+    arrows: Boolean,
     onSelect: (String) -> Unit,
     onNext: () -> Unit,
     onPrev: () -> Unit,
     onViewAll: () -> Unit,
 ) {
+    val listState = rememberLazyListState()
+    // اختيارٌ بالأسهم أو النقاط يجب أن يُظهر بطاقته، لا أن يتركها خارج الشاشة.
+    LaunchedEffect(selectedIndex) {
+        if (selectedIndex in games.indices) listState.animateScrollToItem(selectedIndex)
+    }
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -653,7 +921,7 @@ private fun GameSpaceShelf(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = MaxSpace.xxl),
+                .padding(horizontal = if (arrows) MaxSpace.xxl else MaxSpace.md),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs)
         ) {
@@ -673,9 +941,10 @@ private fun GameSpaceShelf(
             )
             Row(
                 modifier = Modifier
+                    .heightIn(min = MaxSize.minTouchTarget)
                     .clip(RoundedCornerShape(maxRadius(MaxRadius.pill)))
                     .clickable(role = Role.Button, onClick = onViewAll)
-                    .padding(horizontal = MaxSpace.xs, vertical = MaxSpace.xs),
+                    .padding(horizontal = MaxSpace.xs),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs)
             ) {
@@ -697,13 +966,17 @@ private fun GameSpaceShelf(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            ShelfArrow(
-                icon = Icons.AutoMirrored.Rounded.KeyboardArrowLeft,
-                description = stringResource(R.string.gs_prev),
-                onClick = onPrev
-            )
+            if (arrows) {
+                ShelfArrow(
+                    icon = Icons.AutoMirrored.Rounded.KeyboardArrowLeft,
+                    description = stringResource(R.string.gs_prev),
+                    enabled = selectedIndex > 0,
+                    onClick = onPrev
+                )
+            }
             LazyRow(
                 modifier = Modifier.weight(1f),
+                state = listState,
                 horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm),
                 contentPadding = PaddingValues(vertical = MaxSpace.xs)
             ) {
@@ -715,11 +988,14 @@ private fun GameSpaceShelf(
                     )
                 }
             }
-            ShelfArrow(
-                icon = Icons.AutoMirrored.Rounded.KeyboardArrowRight,
-                description = stringResource(R.string.gs_next),
-                onClick = onNext
-            )
+            if (arrows) {
+                ShelfArrow(
+                    icon = Icons.AutoMirrored.Rounded.KeyboardArrowRight,
+                    description = stringResource(R.string.gs_next),
+                    enabled = selectedIndex < games.lastIndex,
+                    onClick = onNext
+                )
+            }
         }
     }
 }
@@ -728,15 +1004,17 @@ private fun GameSpaceShelf(
 private fun ShelfArrow(
     icon: androidx.compose.ui.graphics.vector.ImageVector,
     description: String,
+    enabled: Boolean,
     onClick: () -> Unit,
 ) {
     Box(
         modifier = Modifier
             .size(MaxSize.minTouchTarget)
+            .alpha(if (enabled) 1f else 0.4f)
             .clip(CircleShape)
             .background(GameSpacePalette.Panel.copy(alpha = 0.85f))
             .border(MaxSize.hairlineBorder, GameSpacePalette.Hairline, CircleShape)
-            .clickable(role = Role.Button, onClick = onClick),
+            .clickable(enabled = enabled, role = Role.Button, onClick = onClick),
         contentAlignment = Alignment.Center
     ) {
         Icon(
@@ -752,8 +1030,16 @@ private fun ShelfArrow(
 private fun ShelfCard(game: GameApp, selected: Boolean, onClick: () -> Unit) {
     val icon by rememberLobbyIcon(game.packageName)
     val shape = RoundedCornerShape(maxRadius(MaxRadius.group))
+    val lift by animateFloatAsState(
+        targetValue = if (selected) 1f else 0.96f,
+        animationSpec = tween(durationMillis = 220)
+    )
     Column(
         modifier = Modifier
+            .graphicsLayer {
+                scaleX = lift
+                scaleY = lift
+            }
             .width(ShelfCard)
             .clip(shape)
             .background(GameSpacePalette.Panel.copy(alpha = 0.75f))
@@ -797,7 +1083,7 @@ private fun ShelfCard(game: GameApp, selected: Boolean, onClick: () -> Unit) {
         Text(
             text = game.label,
             color = if (selected) GameSpacePalette.Ink else GameSpacePalette.Muted,
-            fontSize = 10.sp,
+            fontSize = 11.sp,
             fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
@@ -814,12 +1100,18 @@ private fun GameSpaceBase(
     detail: String,
     percent: Int,
     onOpen: () -> Unit,
+    inset: Dp = MaxSpace.md,
 ) {
     val shape = RoundedCornerShape(maxRadius(MaxRadius.control))
+    val target = percent.coerceIn(0, 100)
+    val animated by animateFloatAsState(
+        targetValue = target.toFloat(),
+        animationSpec = tween(durationMillis = 700)
+    )
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = MaxSpace.xxl, vertical = MaxSpace.sm)
+            .padding(horizontal = inset, vertical = MaxSpace.sm)
             .heightIn(min = GameSpaceStatusHeight)
             .clip(shape)
             .background(GameSpacePalette.Deep.copy(alpha = 0.92f))
@@ -850,32 +1142,49 @@ private fun GameSpaceBase(
             Text(
                 text = detail,
                 color = GameSpacePalette.Muted,
-                fontSize = 10.sp,
+                fontSize = 11.sp,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
         }
         Canvas(
             modifier = Modifier
+                .weight(1f)
                 .widthIn(max = 260.dp)
-                .width(220.dp)
                 .height(MaxSpace.sm)
+                .semantics {
+                    progressBarRangeInfo = ProgressBarRangeInfo(target / 100f, 0f..1f)
+                }
         ) {
             val count = 28
             val gap = size.width * 0.006f
             val segW = (size.width - gap * (count - 1)) / count
-            val filled = (count * percent / 100f).roundToInt()
+            val filled = (count * animated / 100f).roundToInt()
+            val fill = Brush.horizontalGradient(
+                listOf(GameSpacePalette.VioletSoft, GameSpacePalette.Cyan)
+            )
             for (i in 0 until count) {
-                drawRoundRect(
-                    color = if (i < filled) GameSpacePalette.VioletSoft else GameSpacePalette.Track,
-                    topLeft = Offset(i * (segW + gap), 0f),
-                    size = Size(segW, size.height),
-                    cornerRadius = CornerRadius(size.height / 2f)
-                )
+                val corner = CornerRadius(size.height / 2f)
+                val topLeft = Offset(i * (segW + gap), 0f)
+                if (i < filled) {
+                    drawRoundRect(
+                        brush = fill,
+                        topLeft = topLeft,
+                        size = Size(segW, size.height),
+                        cornerRadius = corner
+                    )
+                } else {
+                    drawRoundRect(
+                        color = GameSpacePalette.Track,
+                        topLeft = topLeft,
+                        size = Size(segW, size.height),
+                        cornerRadius = corner
+                    )
+                }
             }
         }
         Text(
-            text = "$percent%",
+            text = "$target%",
             color = GameSpacePalette.Ink,
             fontSize = 12.sp,
             fontWeight = FontWeight.SemiBold,

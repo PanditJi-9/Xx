@@ -626,4 +626,7 @@
     <string name="gs_next">التالي</string>
     <string name="gs_ready_title">تم تحسين الأداء بنجاح</string>
     <string name="gs_ready_body">تجربة لعب أكثر سلاسة</string>
+    <string name="gs_empty_title">لا توجد ألعاب بعد</string>
+    <string name="gs_empty_body">ثبّت لعبة وستظهر هنا جاهزة للضبط.</string>
+    <string name="gs_empty_action">فتح مكتبة الألعاب</string>
 </resources>
