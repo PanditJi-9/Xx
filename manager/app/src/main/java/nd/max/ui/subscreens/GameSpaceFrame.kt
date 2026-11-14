@@ -2,6 +2,9 @@
 package nd.max.ui.subscreens
 
 import android.text.format.DateFormat
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -24,10 +27,12 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.rounded.BatteryFull
+import androidx.compose.material.icons.rounded.Wifi
 import androidx.compose.material.icons.rounded.Bolt
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.State
 import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
@@ -63,8 +68,8 @@ import nd.max.ui.design.maxRadius
 /*
  * إطار «Game Space»: أربعة أجزاء تحيط بالمسرح —
  *
- *  (١) **شعار اللعب** في مطلع الشريط العلوي (‏Game بيضاء + Space بنفسجيّة + سطر PLAY · BOOST · ENJOY).
- *  (٢) **ساعة الجهاز وتاريخه وبطاريته** قبل أزرار الشريط (كما في التصميم).
+ *  (١) **أزرار التحكم** على أقصى اليسار، بالترتيب: إغلاق، سجلّ، تحديث، مفضّلة، استكشاف.
+ *  (٢) **ساعة الجهاز وتاريخه وWi-Fi والبطارية** في يمين الشريط، يليها شعار Space Game وصورة الحساب على أقصى اليمين.
  *  (٣) **شريط الأقسام** الرأسي على الحافة، بهدف لمس ≥ ٤٨dp لكل صفّ.
  *  (٤) **لوحة قراءات** أعلى اليمين بثلاث حلقات مجزّأة، و**قاعدة حالة** أسفل الشاشة.
  *
@@ -130,7 +135,7 @@ private val GaugeDiameter = 72.dp
 
 /**
  * شعار اللعب: «Game» بيضاء و«Space» بنفسجيّة، تحته سطر الشعار المتباعد.
- *
+ * يُوضع في نهاية البار إلى يسار صورة الحساب ليطابق ترتيب المرجع.
  * [compact] يُسقط السطر وحده على الشاشات الضيّقة، ولا يُسقط الاسم: الاسم هوية الشاشة.
  */
 @Composable
@@ -177,8 +182,8 @@ internal fun GameSpaceBrand(
  * ساعة الجهاز وتاريخه وبطاريته — قراءات حقيقيّة من النظام ([rememberLobbyClock] و[rememberLobbyDate]
  * و`rememberLobbyBattery`)، وما لم يُقرأ يُعلن «—».
  *
- * لا أيقونة Wi-Fi: قراءة حالة الاتّصال تحتاج `ACCESS_WIFI_STATE` من طبقة الواجهة، وأيقونة تعرض حالة
- * غير مقروءة زينةٌ لا خبر — فتُركت، ويُقال ذلك بدل رسمها.
+ * حالة Wi-Fi تُقرأ من شبكة النظام النشطة عبر `ConnectivityManager`، وتُحدّث دوريًّا؛ لا تُرسم
+ * الأيقونة على أنها متصلة إذا لم تكن الشبكة النشطة Wi-Fi.
  */
 @Composable
 internal fun GameSpaceClockCluster(
@@ -188,6 +193,17 @@ internal fun GameSpaceClockCluster(
     charging: Boolean,
     modifier: Modifier = Modifier,
 ) {
+    val context = LocalContext.current
+    val wifiConnected by produceState(initialValue = false, context) {
+        while (true) {
+            value = runCatching {
+                val manager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+                val network = manager.activeNetwork
+                manager.getNetworkCapabilities(network)?.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) == true
+            }.getOrDefault(false)
+            delay(5_000L)
+        }
+    }
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
@@ -209,6 +225,12 @@ internal fun GameSpaceClockCluster(
                 overflow = TextOverflow.Ellipsis
             )
         }
+        Icon(
+            imageVector = Icons.Rounded.Wifi,
+            contentDescription = stringResource(R.string.gs_wifi_status),
+            tint = if (wifiConnected) GameSpacePalette.Ink else GameSpacePalette.Muted,
+            modifier = Modifier.size(MaxSize.iconGlyph)
+        )
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs)) {
             Icon(
                 imageVector = Icons.Rounded.BatteryFull,
@@ -229,6 +251,21 @@ internal fun GameSpaceClockCluster(
                 maxLines = 1
             )
         }
+    }
+}
+
+/** صورة الحساب المنفصلة عن مجموعة حالة النظام؛ تقع في أقصى يمين البار كما في المرجع. */
+@Composable
+internal fun GameSpaceProfileBadge(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier
+            .size(30.dp)
+            .clip(androidx.compose.foundation.shape.CircleShape)
+            .background(GameSpacePalette.Violet.copy(alpha = 0.72f))
+            .border(MaxSize.hairlineBorder, GameSpacePalette.VioletSoft.copy(alpha = 0.55f), androidx.compose.foundation.shape.CircleShape),
+        contentAlignment = Alignment.Center
+    ) {
+        Text("M", color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Bold)
     }
 }
 

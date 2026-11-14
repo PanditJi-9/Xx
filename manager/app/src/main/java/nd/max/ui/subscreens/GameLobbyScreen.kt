@@ -4,6 +4,8 @@ package nd.max.ui.subscreens
 import android.text.format.Formatter
 import android.util.LruCache
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
@@ -145,7 +147,7 @@ import nd.max.ui.util.customizedFieldCount
 import nd.max.ui.viewmodel.AppSettingsViewModel
 import nd.max.ui.viewmodel.GameSpaceViewModel
 
-internal val TopBarHeight = 44.dp
+internal val TopBarHeight = 56.dp
 
 /** تحت هذا الارتفاع (هاتف عرضيّ) تُعرض لوحة القراءات بلا هامش توضيحيّ. */
 private val StageCompactHeight = 420.dp
@@ -157,7 +159,8 @@ private val GameSpaceWideStage = 720.dp
 private val GameSpaceBoardWidth = 300.dp
 
 /* عتبات الشريط العلويّ: الساعة والتبويبات تظهران حين يُوجد لهما مكان حقيقيّ، والشعار في كل عرض. */
-private const val GameSpaceClockWidthDp = 720
+private const val GameSpaceBrandCompactDp = 760
+private const val GameSpaceClockWidthDp = 900
 private const val GameSpaceTabsWidthDp = 1100
 
 /** عمود المعلومات والحلقة القديمة يوجّهان إضاءة الخلفية؛ المركز بينهما. */
@@ -200,7 +203,7 @@ private val metaCache = LruCache<String, GameLobbyMeta>(64)
  * - لا أرقام مختلقة (ADR-07): كبسولة الحالة تعرض قراءات النظام وما لم يُقرأ «—»، والبطاقة تعرض حجم
  *   الحزمة وعمر التثبيت المقروءين فعلًا.
  * - خيارات اللوبي الجديدة تفضيلات عرض محلّية (`LobbyPrefs`) لا تلمس الجهاز.
- * - لا أصول منقولة: كل رسم بالكود، والصور أيقونات التطبيقات المثبَّتة.
+ * - Artwork لكل لعبة: اختيار محليّ محفوظ أو بانر الحزمة، ثم أيقونة التطبيق كبديل أخير.
  *
  * **غير مُتحقَّق على جهاز:** القفل العرضي وإخفاء الأشرطة وقصّ الكاميرا، وإشارة ميل الشرائح ورفع
  * الصفحة في RTL، وسلاسة ٦٠fps أثناء السحب، وعتبة الانتقال الرأسيّ، وتزامن صوت الدخول مع الوميض،
@@ -215,6 +218,23 @@ fun GameLobbyScreen(
     val context = LocalContext.current
     val haptic = LocalHapticFeedback.current
     val scope = rememberCoroutineScope()
+    var artworkUris by remember { mutableStateOf(GameArtworkStore.loadAll(context)) }
+    var artworkTargetPackage by remember { mutableStateOf<String?>(null) }
+    val artworkPicker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+        val pkg = artworkTargetPackage
+        if (uri != null && pkg != null) {
+            runCatching {
+                context.contentResolver.takePersistableUriPermission(
+                    uri,
+                    android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
+                )
+            }
+            if (GameArtworkStore.save(context, pkg, uri)) {
+                artworkUris = artworkUris + (pkg to uri.toString())
+            }
+        }
+        artworkTargetPackage = null
+    }
 
     // صلاحية التراكب تُقرأ عند كل عودة إلى الشاشة لا مرة واحدة: المنح يقع في إعدادات النظام
     // خارج التطبيق، وقراءة واحدة كانت تُبقي البند ظاهرًا بعد المنح أو تُخفيه قبل تحقّقه.
@@ -566,7 +586,8 @@ fun GameLobbyScreen(
 
             // رأس اللوبي: يُرسم مرّة واحدة ثابتًا فوق الشريط الجانبيّ والمحتوى.
             val lobbyHeader: @Composable () -> Unit = {
-                Row(
+                CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+                    Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(TopBarHeight)
@@ -575,26 +596,25 @@ fun GameLobbyScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm)
                 ) {
-                    // شريط علويّ خفيف على مرجع الصورة: ساعة النظام والتاريخ والبطارية فقط؛
-                    // العلامة M موجودة في الشريط الجانبيّ، فلا نكرّر عنوانًا كبيرًا يستهلك ارتفاع المسرح.
-                    if (screenWidthDp >= GameSpaceClockWidthDp) {
-                        GameSpaceClockCluster(
-                            clock = lobbyClock,
-                            date = lobbyDate,
-                            batteryPercent = lobbyBattery?.percent,
-                            charging = lobbyBattery?.charging == true
-                        )
-                    }
-                    Box(Modifier.weight(1f))
-                    // استكشاف المكتبة من المسرح: بحث فوري ومرشّحات وبطاقات غنية، بلا مغادرة اللوبي.
+                    // مجموعة التحكم على أقصى اليسار كما في المرجع: إغلاق، سجلّ، تحديث، مفضّلة، استكشاف.
                     LobbyRoundButton(
-                        icon = Icons.Rounded.Apps,
-                        description = stringResource(R.string.lobby_explore_open),
+                        icon = Icons.Rounded.Close,
+                        description = stringResource(R.string.lobby_close),
+                        onClick = { navController.navigateUp() }
+                    )
+                    LobbyRoundButton(
+                        icon = Icons.Rounded.History,
+                        description = stringResource(R.string.game_sessions_lobby_open),
                         onClick = {
-                            tick()
-                            exploreOpen = true
-                        },
-                        tone = toneState.value
+                            navController.navigate(MaxDestination.GameSessions.route) {
+                                launchSingleTop = true
+                            }
+                        }
+                    )
+                    LobbyRoundButton(
+                        icon = Icons.Rounded.Refresh,
+                        description = stringResource(R.string.gaming_refresh),
+                        onClick = { viewModel.refresh() }
                     )
                     LobbyRoundButton(
                         icon = Icons.Rounded.Star,
@@ -608,32 +628,31 @@ fun GameLobbyScreen(
                         cue = if (favoritesOnly) LobbyCue.Off else LobbyCue.On
                     )
                     LobbyRoundButton(
-                        icon = Icons.Rounded.Refresh,
-                        description = stringResource(R.string.gaming_refresh),
-                        onClick = { viewModel.refresh() }
-                    )
-                    // سجلّ الجلسات من سطح اللعب نفسه: اللاعب يخرج من اللعبة ويسأل «كيف كانت؟»
-                    // فلا يُطلب منه العودة إلى شاشة التراكب للوصول إلى الجواب.
-                    LobbyRoundButton(
-                        icon = Icons.Rounded.History,
-                        description = stringResource(R.string.game_sessions_lobby_open),
-                        // launchSingleTop: ضغطتان على الباب لا تكدّسان نسخًا من الشاشة —
-                        // النسخ المتكدّسة تعرض أوّل رجوع الشاشة نفسها فيُقرأ «لا يرجع».
+                        icon = Icons.Rounded.Apps,
+                        description = stringResource(R.string.lobby_explore_open),
                         onClick = {
-                            navController.navigate(MaxDestination.GameSessions.route) {
-                                launchSingleTop = true
-                            }
-                        }
+                            tick()
+                            exploreOpen = true
+                        },
+                        tone = toneState.value
                     )
-                    LobbyRoundButton(
-                        icon = Icons.Rounded.Close,
-                        description = stringResource(R.string.lobby_close),
-                        onClick = { navController.navigateUp() }
-                    )
+                    // مساحة مرنة تفصل أدوات التحكم عن معلومات النظام وهوية Game Space.
+                    Box(Modifier.weight(1f))
+                    if (screenWidthDp >= GameSpaceClockWidthDp) {
+                        GameSpaceClockCluster(
+                            clock = lobbyClock,
+                            date = lobbyDate,
+                            batteryPercent = lobbyBattery?.percent,
+                            charging = lobbyBattery?.charging == true
+                        )
+                    }
+                    GameSpaceBrand(compact = screenWidthDp < GameSpaceBrandCompactDp)
+                    GameSpaceProfileBadge()
+                    }
                 }
             }
 
-            // رأس واحد ثابت: الشعار أوّلًا (LTR)، ثم الساعة، ثم الأزرار في الطرف المقابل.
+            // رأس واحد ثابت: أدوات التحكم يسارًا، ومعلومات النظام ثم هوية Space Game يمينًا (LTR).
             Box(
                 modifier = Modifier
                     .align(Alignment.TopCenter)
@@ -644,12 +663,13 @@ fun GameLobbyScreen(
             }
 
             // المسرح والأقسام داخل Pager رأسيّ؛ الشريط الجانبيّ ثابت ويطابق الصفحة المستقرّة.
-            Row(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .displayCutoutPadding()
-                    .padding(top = TopBarHeight)
-            ) {
+            CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .displayCutoutPadding()
+                        .padding(top = TopBarHeight)
+                ) {
                 GameSpaceRail(
                     wide = screenWidthDp >= 720,
                     active = activeSpine,
@@ -692,6 +712,7 @@ fun GameLobbyScreen(
                             GameSpaceStage(
                                 games = games,
                                 selected = active,
+                                artworkUris = artworkUris,
                                 readinessPercent = readyPercent,
                                 statusTitle = insight?.let { gameSpaceVerdictLabel(it.verdict) }
                                     ?: stringResource(R.string.gs_ready_title),
@@ -702,13 +723,14 @@ fun GameLobbyScreen(
                                 charging = lobbyBattery?.charging == true,
                                 onSelect = selectGame,
                                 onLaunch = start,
-                                onOptions = { openControl(LobbySection.Game) },
-                                onOpenLibrary = { openControl(LobbySection.Library) },
-                                onOpenSessions = {
-                                    navController.navigate(MaxDestination.GameSessions.route) {
-                                        launchSingleTop = true
+                                onChooseArtwork = {
+                                    active?.packageName?.let { pkg ->
+                                        artworkTargetPackage = pkg
+                                        artworkPicker.launch(arrayOf("image/*"))
                                     }
                                 },
+                                onOptions = { openControl(LobbySection.Game) },
+                                onOpenLibrary = { openControl(LobbySection.Library) },
                                 modifier = Modifier.fillMaxSize()
                             )
                         } else {
@@ -755,6 +777,7 @@ fun GameLobbyScreen(
                             )
                         }
                     }
+                }
                 }
             }
 
