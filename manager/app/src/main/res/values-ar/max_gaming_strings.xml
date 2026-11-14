@@ -592,4 +592,17 @@
     <string name="gs_tele_live">حيّ</string>
     <string name="gs_tele_stale">آخر قراءة</string>
     <string name="gs_fix_now">أصلح الآن</string>
+    <string name="gs_brand_mark">G</string>
+    <string name="gs_brand_game">Game</string>
+    <string name="gs_brand_space">Space</string>
+    <string name="gs_brand_tagline">PLAY · BOOST · ENJOY</string>
+    <string name="gs_board_title">قراءات حيّة</string>
+    <string name="gs_battery_heat">حرارة البطارية</string>
+    <string name="gs_heat_value">%1$.1f°</string>
+    <string name="gs_percent_value">%1$d٪</string>
+    <string name="gs_status_ready">جاهز</string>
+    <string name="lobby_arena_sessions_detail">%1$d جلسة</string>
+    <string name="lobby_arena_no_session">لا جلسة بعد</string>
+    <string name="lobby_arena_panel_armed">اللوحة مفعّلة</string>
+    <string name="lobby_arena_panel_off">اللوحة متوقفة</string>
 </resources>

@@ -593,4 +593,17 @@
     <string name="gs_tele_live">Live</string>
     <string name="gs_tele_stale">Last reading</string>
     <string name="gs_fix_now">Fix now</string>
+    <string name="gs_brand_mark">G</string>
+    <string name="gs_brand_game">Game</string>
+    <string name="gs_brand_space">Space</string>
+    <string name="gs_brand_tagline">PLAY · BOOST · ENJOY</string>
+    <string name="gs_board_title">Live readings</string>
+    <string name="gs_battery_heat">Battery heat</string>
+    <string name="gs_heat_value">%1$.1f°</string>
+    <string name="gs_percent_value">%1$d%%</string>
+    <string name="gs_status_ready">Ready</string>
+    <string name="lobby_arena_sessions_detail">%1$d sessions</string>
+    <string name="lobby_arena_no_session">No session yet</string>
+    <string name="lobby_arena_panel_armed">Panel armed</string>
+    <string name="lobby_arena_panel_off">Panel off</string>
 </resources>

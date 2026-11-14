@@ -14,6 +14,9 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.displayCutoutPadding
@@ -60,6 +63,7 @@ import androidx.compose.ui.input.key.isCtrlPressed
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -96,6 +100,7 @@ import nd.max.core.gamespace.PlaySessionLedger
 import nd.max.core.gamespace.PlaySessionStore
 import nd.max.core.platform.GameSessionStore
 import nd.max.core.platform.StoredGameSession
+import nd.max.core.platform.sessionInsight
 import nd.max.core.gamespace.SidePanelArmedStore
 import nd.max.core.gamespace.gameLibrary
 import nd.max.core.platform.ForegroundAppResolver
@@ -113,7 +118,10 @@ import nd.max.ui.component.LobbyWindowEffect
 import nd.max.ui.component.LocalLobbySounds
 import nd.max.ui.component.lobbyIntro
 import nd.max.ui.component.rememberLobbyAnimationsEnabled
+import nd.max.ui.component.rememberLobbyBattery
+import nd.max.ui.component.rememberLobbyClock
 import nd.max.ui.component.rememberLobbyIntro
+import nd.max.ui.component.rememberLobbyMemory
 import nd.max.ui.component.rememberLobbySounds
 import nd.max.ui.component.rememberLobbyTone
 import nd.max.ui.design.MaxDuration
@@ -137,6 +145,20 @@ import nd.max.ui.viewmodel.AppSettingsViewModel
 import nd.max.ui.viewmodel.GameSpaceViewModel
 
 private val TopBarHeight = 56.dp
+
+/** تحت هذا الارتفاع (هاتف عرضيّ) تُعرض لوحة القراءات بلا هامش توضيحيّ. */
+private val StageCompactHeight = 420.dp
+
+/** من هذا العرض تُثبَّت أعمدة الإطار (شريط الأقسام + لوحة القراءات) حول المسرح. */
+private val GameSpaceWideStage = 720.dp
+
+/** عرض عمود اللوحة — ٣٠٠dp ≈ ٢٣٪ من ١٢٨٠dp كما في اللقطة. */
+private val GameSpaceBoardWidth = 300.dp
+
+/* عتبات الشريط العلويّ: الساعة والتبويبات تظهران حين يُوجد لهما مكان حقيقيّ، والشعار في كل عرض. */
+private const val GameSpaceBrandCompactDp = 760
+private const val GameSpaceClockWidthDp = 900
+private const val GameSpaceTabsWidthDp = 1100
 
 /** عمود المعلومات والحلقة القديمة يوجّهان إضاءة الخلفية؛ المركز بينهما. */
 
@@ -284,6 +306,21 @@ fun GameLobbyScreen(
     val active = games.getOrNull(activeIndex)
     val activeConfig: AppConfig? = active?.let { settingsViewModel.fullConfig[it.packageName] }
     val panelEnabled = active?.packageName in panelPrefs.enabledPackages
+
+    // قاعدة الحالة تحكم على اللعبة المحدَّدة وحدها: الأساس لا يخلط لعبة ثقيلة بأخرى خفيفة.
+    val activeSessions = remember(storedSessions, active) {
+        storedSessions
+            .filter { it.packageName == active?.packageName }
+            .sortedByDescending { it.endedAtMs }
+    }
+    val insight = remember(activeSessions, storedSessions) {
+        activeSessions.firstOrNull()?.let { sessionInsight(it, storedSessions) }
+    }
+    val lobbyBattery by rememberLobbyBattery()
+    val lobbyMemory by rememberLobbyMemory()
+    val lobbyClock by rememberLobbyClock()
+    val lobbyDate by rememberLobbyDate()
+    val screenWidthDp = LocalConfiguration.current.screenWidthDp
     // عدد مقابض الملفّ المضبوطة لكل لعبة، من `AppConfig` نفسه الذي يقرؤه المراقب — لا عدّاد ثانٍ.
     val tweaksByGame = remember(settingsViewModel.fullConfig) {
         settingsViewModel.fullConfig.mapValues { entry -> entry.value.customizedFieldCount() }
@@ -526,7 +563,41 @@ fun GameLobbyScreen(
                         }
                 ) {
                     if (page == 0) {
-                        NexusPage(
+                        // ─────────────── المسرح بإطار Game Space ───────────────
+                        // الحافة اليسرى أقسام، واليمنى قراءات، وأسفل الشاشة حكم آخر جلسة — كما في
+                        // تصميم المالك؛ والوسط يبقى مسرح Nexus. على الهاتف تنزل اللوحة فوق المسرح
+                        // بدل عمودها، لأن عمود ٣٠٠dp على ٣٦٠dp يترك خبرًا بلا مسرح.
+                        BoxWithConstraints(Modifier.fillMaxSize()) {
+                            val wide = maxWidth >= GameSpaceWideStage
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .displayCutoutPadding()
+                                    .padding(top = TopBarHeight, bottom = GameSpaceStatusHeight),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                if (wide) {
+                                    GameSpaceRail(selected = section, onSection = openControl)
+                                }
+                                Column(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .fillMaxHeight()
+                                ) {
+                                    if (!wide) {
+                                        GameSpaceBoard(
+                                            battery = lobbyBattery,
+                                            memory = lobbyMemory,
+                                            tweaks = active?.let { tweaksByGame[it.packageName] } ?: 0,
+                                            panelEnabled = panelEnabled,
+                                            onProfile = { openControl(LobbySection.Game) },
+                                            compact = maxHeight < StageCompactHeight,
+                                            modifier = Modifier
+                                                .align(Alignment.CenterHorizontally)
+                                                .padding(horizontal = MaxSpace.gutter, vertical = MaxSpace.sm)
+                                        )
+                                    }
+                                    NexusPage(
                             games = games,
                             selected = active,
                             stats = playStats,
@@ -555,11 +626,43 @@ fun GameLobbyScreen(
                             },
                             // يُقرأ عند كل تركيب: الاختيار يقع في مركز التحكم، والعودة تُعيد القراءة.
                             chromeAccent = GameSpaceSkin.read(context).accent,
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .displayCutoutPadding()
-                                .padding(top = TopBarHeight)
-                        )
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                    )
+                                }
+                                if (wide) {
+                                    Box(
+                                        modifier = Modifier
+                                            .width(GameSpaceBoardWidth)
+                                            .padding(end = MaxSpace.xxl)
+                                    ) {
+                                        GameSpaceBoard(
+                                            battery = lobbyBattery,
+                                            memory = lobbyMemory,
+                                            tweaks = active?.let { tweaksByGame[it.packageName] } ?: 0,
+                                            panelEnabled = panelEnabled,
+                                            onProfile = { openControl(LobbySection.Game) }
+                                        )
+                                    }
+                                }
+                            }
+                            GameSpaceStatusBar(
+                                label = insight?.let { gameSpaceVerdictLabel(it.verdict) }
+                                    ?: stringResource(R.string.gs_status_ready),
+                                detail = insight?.let {
+                                    stringResource(R.string.lobby_arena_sessions_detail, activeSessions.size)
+                                } ?: stringResource(R.string.lobby_arena_no_session),
+                                tone = insight?.let { gameSpaceVerdictTone(it.verdict) } ?: GameSpacePalette.Muted,
+                                onSessions = {
+                                    navController.navigate(MaxDestination.GameSessions.route) {
+                                        launchSingleTop = true
+                                    }
+                                },
+                                modifier = Modifier
+                                    .align(Alignment.BottomCenter)
+                                    .padding(horizontal = MaxSpace.xxl)
+                            )
+                        }
                     } else {
                         // ─────────────── مركز التحكم ───────────────
                         LobbyControlCenter(
@@ -621,21 +724,32 @@ fun GameLobbyScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm)
             ) {
-                LobbyTopTabs(
-                    labels = listOf(
-                        stringResource(R.string.lobby_tab_games),
-                        stringResource(R.string.lobby_tab_control)
-                    ),
-                    selected = rootState.currentPage,
-                    position = { rootState.currentPage + rootState.currentPageOffsetFraction },
-                    tone = { toneState.value },
-                    description = stringResource(R.string.lobby_tab_lobby),
-                    onSelect = { index -> scope.launch { rootState.animateScrollToPage(index) } }
-                )
+                GameSpaceBrand(compact = screenWidthDp < GameSpaceBrandCompactDp)
+                if (screenWidthDp >= GameSpaceTabsWidthDp) {
+                    LobbyTopTabs(
+                        labels = listOf(
+                            stringResource(R.string.lobby_tab_games),
+                            stringResource(R.string.lobby_tab_control)
+                        ),
+                        selected = rootState.currentPage,
+                        position = { rootState.currentPage + rootState.currentPageOffsetFraction },
+                        tone = { toneState.value },
+                        description = stringResource(R.string.lobby_tab_lobby),
+                        onSelect = { index -> scope.launch { rootState.animateScrollToPage(index) } }
+                    )
+                }
                 // كبسولة الحالة هي العنصر المرن: تُقاس بالعرض المتبقّي وتُقصّ عند الضيق، ولا تدفع
                 // أزرار النهاية (السجل/الإغلاق) خارج الشاشة بعد إضافة زرّ الاستكشاف الخامس.
                 Box(Modifier.weight(1f), contentAlignment = Alignment.CenterEnd) {
                     if (lobbyPrefs.showStatus) LobbyStatusCapsule()
+                }
+                if (screenWidthDp >= GameSpaceClockWidthDp) {
+                    GameSpaceClockCluster(
+                        clock = lobbyClock,
+                        date = lobbyDate,
+                        batteryPercent = lobbyBattery?.percent,
+                        charging = lobbyBattery?.charging == true
+                    )
                 }
                 // استكشاف المكتبة من المسرح: بحث فوري ومرشّحات وبطاقات غنية، بلا مغادرة اللوبي.
                 LobbyRoundButton(
