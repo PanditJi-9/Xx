@@ -567,6 +567,18 @@ private fun GameSpaceRail(
     }
 }
 
+/**
+ * الأقسام الخمسة كما سمّاها التصميم. 「المزايا」 هو ملفّ اللعبة (التعديلات)، و「الأدوات」 هو لوحة
+ * الجانب، و「الإعدادات」 هو إعدادات اللوبي — لا أقسام جديدة، بل أسماء الشاشة نفسها.
+ */
+private enum class RailSection(val labelRes: Int, val section: LobbySection) {
+    Library(R.string.gs_nav_games, LobbySection.Library),
+    Performance(R.string.gs_nav_perf, LobbySection.Insights),
+    Tools(R.string.gs_nav_tools, LobbySection.Panel),
+    Features(R.string.gs_nav_features, LobbySection.Loadout),
+    Settings(R.string.gs_nav_settings, LobbySection.Lobby)
+}
+
 @Composable
 private fun GameSpaceRailItem(
     labelRes: Int,
