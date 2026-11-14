@@ -642,4 +642,17 @@
     <string name="gs_wifi_status">حالة Wi-Fi</string>
     <string name="gs_game_panel">لوحة اللعب</string>
     <string name="gs_panel_enabled">مفعّلة</string>
+    <string name="gs_nav_library">المكتبة</string>
+    <string name="gs_nav_console">الكونسول</string>
+    <string name="gs_nav_connect">المجتمع</string>
+    <string name="gs_nav_featured">المميزة</string>
+    <string name="gs_nav_my_profile">حسابي</string>
+    <string name="gs_card_performance">أداء الجهاز</string>
+    <string name="gs_temp">الحرارة</string>
+    <string name="gs_mode_gaming">وضع الأداء</string>
+    <string name="gs_realtime_fps">معدل الإطارات اللحظي</string>
+    <string name="gs_fps_unit">إطار/ث</string>
+    <string name="gs_see_all">عرض الكل</string>
+    <string name="gs_boost_success">تم تحسين الأداء بنجاح</string>
+    <string name="gs_hero_pubg_tagline">معركة البقاء الأسطورية</string>
 </resources>

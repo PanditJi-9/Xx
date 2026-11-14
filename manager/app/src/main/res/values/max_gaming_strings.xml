@@ -643,4 +643,17 @@
     <string name="gs_wifi_status">Wi-Fi status</string>
     <string name="gs_game_panel">Game panel</string>
     <string name="gs_panel_enabled">Enabled</string>
+    <string name="gs_nav_library">Library</string>
+    <string name="gs_nav_console">Console</string>
+    <string name="gs_nav_connect">Connect</string>
+    <string name="gs_nav_featured">Featured</string>
+    <string name="gs_nav_my_profile">My Profile</string>
+    <string name="gs_card_performance">Performance</string>
+    <string name="gs_temp">Temp</string>
+    <string name="gs_mode_gaming">Gaming</string>
+    <string name="gs_realtime_fps">Real-time FPS</string>
+    <string name="gs_fps_unit">FPS</string>
+    <string name="gs_see_all">See All</string>
+    <string name="gs_boost_success">Performance boosted successfully</string>
+    <string name="gs_hero_pubg_tagline">The legendary battle for survival</string>
 </resources>

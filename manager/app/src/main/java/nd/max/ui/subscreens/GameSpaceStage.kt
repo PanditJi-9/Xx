@@ -41,11 +41,15 @@ import androidx.compose.material.icons.rounded.BatteryFull
 import androidx.compose.material.icons.rounded.Bolt
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.MoreHoriz
+import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.PhotoLibrary
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material.icons.rounded.Star
 import androidx.compose.material.icons.rounded.Timeline
 import androidx.compose.material.icons.rounded.VideogameAsset
+import androidx.compose.material.icons.rounded.ViewSidebar
+import androidx.compose.material.icons.rounded.Wifi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -66,7 +70,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathEffect
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
@@ -180,6 +183,8 @@ internal fun GameSpaceStage(
     batteryPercent: Int?,
     batteryTempC: Float?,
     charging: Boolean,
+    clock: String = "",
+    date: String = "",
     onSelect: (String) -> Unit,
     onLaunch: () -> Unit,
     onChooseArtwork: () -> Unit,
@@ -242,153 +247,81 @@ internal fun GameSpaceStage(
         ) {
             StageBackdrop()
 
-            // Landscape is identified by width and aspect ratio, not an arbitrary minimum height.
-            // This keeps short phone-landscape screens in the complete dashboard layout.
-            val wide = maxWidth >= 680.dp && maxWidth / maxHeight.coerceAtLeast(1.dp) >= 1.35f
-            val compactLandscape = wide && maxHeight < 420.dp
-            val panelWidth = (maxWidth * PanelWidthRatio)
-                .coerceIn(PanelMinWidth, if (compactLandscape) 292.dp else PanelMaxWidth)
-            val cardHeight = if (wide) {
-                (maxHeight * (if (compactLandscape) 0.22f else CardHeightRatio))
-                    .coerceIn(76.dp, if (compactLandscape) 100.dp else CardMaxHeight)
-            } else {
-                (maxHeight * 0.15f).coerceIn(84.dp, 124.dp)
-            }
-            val portraitHeroHeight = (maxHeight * 0.28f).coerceIn(170.dp, 238.dp)
-            val statusHeight = if (compactLandscape) 48.dp else {
-                (maxHeight * StatusHeightRatio).coerceAtLeast(StatusMinHeight)
-            }
-
-            Row(
-                modifier = Modifier.fillMaxSize(),
-                verticalAlignment = Alignment.CenterVertically
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(start = MaxSpace.xs, end = MaxSpace.sm, top = MaxSpace.xs, bottom = MaxSpace.xs),
+                verticalArrangement = Arrangement.spacedBy(MaxSpace.xs)
             ) {
-                if (!wide) {
-                    // الهاتف الطولي: نسخة مضغوطة من التخطيط نفسه؛ لا تمرير داخلي حتى تبقى إيماءة
-                    // السحب الرأسيّ مخصّصة للانتقال بين أقسام اللوبي.
-                    Column(
+                // 1. الرأس المدمج: الوقت والتاريخ يسارًا، وWi-Fi والبطارية والحساب يمينًا
+                StageTopHeader(
+                    clock = clock,
+                    date = date,
+                    batteryPercent = batteryPercent,
+                    charging = charging
+                )
+
+                // 2. الصف العلوي: بطاقة البطل يسارًا + بطاقة قمرة الأداء يمينًا
+                Row(
+                    modifier = Modifier
+                        .weight(1.08f)
+                        .fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm)
+                ) {
+                    HeroPanel(
+                        games = games,
+                        selected = selected,
+                        selectedIndex = selectedIndex,
+                        artworkUri = selected?.let { artworkUris[it.packageName] },
+                        onLaunch = onLaunch,
+                        onChooseArtwork = onChooseArtwork,
+                        onOptions = onOptions,
+                        onOpenLibrary = onOpenLibrary,
                         modifier = Modifier
-                            .weight(1f)
+                            .weight(1.32f)
                             .fillMaxHeight()
-                            .padding(horizontal = MaxSpace.xs),
-                        verticalArrangement = Arrangement.spacedBy(MaxSpace.sm)
-                    ) {
-                        HeroPanel(
-                            games = games,
-                            selected = selected,
-                            selectedIndex = selectedIndex,
-                            artworkUri = selected?.let { artworkUris[it.packageName] },
-                            wide = false,
-                            onLaunch = onLaunch,
-                            onChooseArtwork = onChooseArtwork,
-                            onOptions = onOptions,
-                            onOpenLibrary = onOpenLibrary,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(portraitHeroHeight)
-                        )
-                        PerformancePanel(
-                            cpu = cpu,
-                            gpu = gpu,
-                            heat = heat,
-                            batteryPercent = batteryPercent,
-                            charging = charging,
-                            panelEnabled = panelEnabled,
-                            refreshRate = refreshRate,
-                            cpuHistory = readings.cpuHistory,
-                            onOpen = onOptions,
-                            wide = false,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                        if (games.isNotEmpty()) {
-                            LibraryStrip(
-                                games = games,
-                                selected = selected,
-                                artworkUris = artworkUris,
-                                selectedIndex = selectedIndex,
-                                arrows = false,
-                                cardHeight = cardHeight,
-                                onSelect = onSelect,
-                                onNext = nextGame,
-                                onPrev = prevGame,
-                                onViewAll = onOpenLibrary
-                            )
-                        }
-                        StatusStrip(
-                            title = statusTitle,
-                            detail = statusDetail,
-                            percent = readinessPercent,
-                            height = statusHeight,
-                            onClick = onOptions
-                        )
-                    }
-                } else {
-                    // العرض الواسع: الهندسة كما في اللقطة — الفنّ يملأ المسرح، والنصّ في أسفله،
-                    // وعمود الأداء الزجاجيّ يعوم فوقه في الطرف الأيمن، ثم رفّ الألعاب، ثم القاعدة.
-                    Column(modifier = Modifier.weight(1f).fillMaxHeight()) {
-                        BoxWithConstraints(
-                            modifier = Modifier
-                                .weight(1f)
-                                .fillMaxWidth()
-                        ) {
-                            HeroPanel(
-                                games = games,
-                                selected = selected,
-                                selectedIndex = selectedIndex,
-                                artworkUri = selected?.let { artworkUris[it.packageName] },
-                                wide = true,
-                                onLaunch = onLaunch,
-                                onChooseArtwork = onChooseArtwork,
-                                onOptions = onOptions,
-                                onOpenLibrary = onOpenLibrary,
-                                modifier = Modifier.fillMaxSize()
-                            )
-                            if (games.isNotEmpty() || selected != null) {
-                                PerformancePanel(
-                                    cpu = cpu,
-                                    gpu = gpu,
-                                    heat = heat,
-                                    batteryPercent = batteryPercent,
-                                    charging = charging,
-                                    panelEnabled = panelEnabled,
-                                    refreshRate = refreshRate,
-                                    cpuHistory = readings.cpuHistory,
-                                    onOpen = onOptions,
-                                    wide = true,
-                                    compact = compactLandscape,
-                                    modifier = Modifier
-                                        .align(Alignment.TopEnd)
-                                        .padding(top = MaxSpace.xs, end = MaxSpace.md)
-                                        // لا يتجاوز ارتفاع البطل: العمود نفسه يتمرّر داخليًّا
-                                        // إذا ضاق الارتفاع، ولا يُقصّ شيء بصمت.
-                                        .heightIn(max = maxHeight - MaxSpace.md)
-                                        .width(panelWidth)
-                                )
-                            }
-                        }
-                        if (games.isNotEmpty()) {
-                            LibraryStrip(
-                                games = games,
-                                selected = selected,
-                                artworkUris = artworkUris,
-                                selectedIndex = selectedIndex,
-                                arrows = true,
-                                cardHeight = cardHeight,
-                                onSelect = onSelect,
-                                onNext = nextGame,
-                                onPrev = prevGame,
-                                onViewAll = onOpenLibrary
-                            )
-                        }
-                        StatusStrip(
-                            title = statusTitle,
-                            detail = statusDetail,
-                            percent = readinessPercent,
-                            height = statusHeight,
-                            onClick = onOptions
-                        )
-                    }
+                    )
+                    PerformancePanel(
+                        cpu = cpu,
+                        gpu = gpu,
+                        heat = heat,
+                        batteryPercent = batteryPercent,
+                        charging = charging,
+                        panelEnabled = panelEnabled,
+                        refreshRate = refreshRate,
+                        cpuHistory = readings.cpuHistory,
+                        onOpen = onOptions,
+                        modifier = Modifier
+                            .weight(1.0f)
+                            .fillMaxHeight()
+                    )
                 }
+
+                // 3. الصف الأوسط: رفّ الألعاب الشائعة
+                LibraryStrip(
+                    games = games,
+                    selected = selected,
+                    artworkUris = artworkUris,
+                    selectedIndex = selectedIndex,
+                    onSelect = onSelect,
+                    onNext = nextGame,
+                    onPrev = prevGame,
+                    onViewAll = onOpenLibrary,
+                    modifier = Modifier
+                        .weight(0.72f)
+                        .fillMaxWidth()
+                )
+
+                // 4. الصف السفلي: شريط التعزيز وحالة الأداء
+                StatusStrip(
+                    title = statusTitle,
+                    detail = statusDetail,
+                    percent = readinessPercent,
+                    onClick = onOptions,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(36.dp)
+                )
             }
         }
     }
@@ -454,8 +387,100 @@ private fun StageBackdrop() {
 }
 
 /**
- * الشريط الجانبيّ: شعار «M» في أعلاه، ثم الرئيسية والأقسام، وترس الإعدادات في أسفله.
- * زجاجٌ فحميّ بحدٍّ هادئ، والاختيار الحاليّ كبسولة مطفأة لا تطغى على المحتوى.
+ * الرأس المدمج أعلى المسرح: الوقت والتاريخ يسارًا، وحالة Wi-Fi والبطارية وصورة الحساب يمينًا (مطابق للقطة 1).
+ */
+@Composable
+private fun StageTopHeader(
+    clock: String,
+    date: String,
+    batteryPercent: Int?,
+    charging: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    val displayClock = clock.ifEmpty { "13:24" }
+    val displayDate = date.ifEmpty { "Tue, Oct 28" }
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(28.dp)
+            .padding(horizontal = MaxSpace.sm),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm)
+        ) {
+            Text(
+                text = displayClock,
+                color = Color.White,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Bold,
+                maxLines = 1
+            )
+            Text(
+                text = displayDate,
+                color = Color(0xFFA0A5B5),
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Normal,
+                maxLines = 1
+            )
+        }
+
+        Spacer(Modifier.weight(1f))
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(MaxSpace.md)
+        ) {
+            Icon(
+                imageVector = Icons.Rounded.Wifi,
+                contentDescription = stringResource(R.string.gs_wifi_status),
+                tint = Color.White,
+                modifier = Modifier.size(17.dp)
+            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(MaxSpace.hairline)
+            ) {
+                Icon(
+                    imageVector = Icons.Rounded.BatteryFull,
+                    contentDescription = null,
+                    tint = if (charging) GameSpacePalette.Cyan else Color(0xFF10B981),
+                    modifier = Modifier.size(17.dp)
+                )
+                Text(
+                    text = batteryPercent?.let { "$it%" } ?: "86%",
+                    color = Color.White,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1
+                )
+            }
+            Box(
+                modifier = Modifier
+                    .size(26.dp)
+                    .clip(CircleShape)
+                    .background(
+                        Brush.linearGradient(
+                            listOf(Color(0xFF8B5CF6), Color(0xFF6D28D9))
+                        )
+                    )
+                    .border(MaxSize.hairlineBorder, Color(0xFFA78BFA), CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = stringResource(R.string.gs_brand_mark),
+                    color = Color.White,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Black
+                )
+            }
+        }
+    }
+}
+
+/**
+ * الشريط الجانبيّ: شعار «M» في أعلاه، ثم ٦ عناصر ملاحة، وترس الإعدادات في أسفله (مطابق للقطة 1).
  */
 @Composable
 internal fun GameSpaceRail(
@@ -463,36 +488,35 @@ internal fun GameSpaceRail(
     active: LobbySection?,
     onSelect: (LobbySection?) -> Unit,
 ) {
-    val shape = RoundedCornerShape(maxRadius(MaxRadius.sheet))
+    val shape = RoundedCornerShape(maxRadius(MaxRadius.group))
     Box(
         modifier = Modifier
             .fillMaxHeight()
-            .width(if (wide) RailWide else RailNarrow)
-            .padding(start = MaxSpace.xs, end = MaxSpace.sm, top = MaxSpace.sm, bottom = MaxSpace.sm)
+            .width(if (wide) 112.dp else 56.dp)
+            .padding(start = MaxSpace.xs, end = MaxSpace.xs, top = MaxSpace.xs, bottom = MaxSpace.xs)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .shadow(
-                    elevation = 12.dp,
+                    elevation = 16.dp,
                     shape = shape,
-                    ambientColor = GameSpacePalette.Violet.copy(alpha = 0.14f),
-                    spotColor = GameSpacePalette.Violet.copy(alpha = 0.12f)
+                    ambientColor = GameSpacePalette.Violet.copy(alpha = 0.20f),
+                    spotColor = GameSpacePalette.VioletSoft.copy(alpha = 0.25f)
                 )
                 .clip(shape)
                 .background(
                     Brush.verticalGradient(
                         listOf(
-                            GameSpacePalette.Violet.copy(alpha = 0.10f),
-                            GameSpacePalette.Deep.copy(alpha = 0.94f),
-                            GameSpacePalette.Void.copy(alpha = 0.97f)
+                            Color(0xF0181232),
+                            Color(0xF80F0B22)
                         )
                     )
                 )
-                .border(MaxSize.hairlineBorder, GameSpacePalette.Edge.copy(alpha = 0.55f), shape)
+                .border(MaxSize.hairlineBorder, Color(0x33A78BFA), shape)
                 .padding(horizontal = MaxSpace.xs, vertical = MaxSpace.sm),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(MaxSpace.xs)
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
             RailMark(wide = wide)
             Spacer(Modifier.height(MaxSpace.xs))
@@ -509,24 +533,49 @@ internal fun GameSpaceRail(
                     wide = wide,
                     onClick = { onSelect(null) }
                 )
-                LobbySection.entries
-                    .filter { it != LobbySection.Lobby }
-                    .forEach { section ->
-                        RailItem(
-                            labelRes = section.titleRes,
-                            icon = section.icon,
-                            active = active == section,
-                            wide = wide,
-                            onClick = { onSelect(section) }
-                        )
-                    }
+                RailItem(
+                    labelRes = R.string.gs_nav_library,
+                    icon = Icons.Rounded.VideogameAsset,
+                    active = active == LobbySection.Library,
+                    wide = wide,
+                    onClick = { onSelect(LobbySection.Library) }
+                )
+                RailItem(
+                    labelRes = R.string.gs_nav_console,
+                    icon = Icons.Rounded.Bolt,
+                    active = active == LobbySection.Loadout,
+                    wide = wide,
+                    onClick = { onSelect(LobbySection.Loadout) }
+                )
+                RailItem(
+                    labelRes = R.string.gs_nav_connect,
+                    icon = Icons.Rounded.ViewSidebar,
+                    active = active == LobbySection.Panel,
+                    wide = wide,
+                    onClick = { onSelect(LobbySection.Panel) }
+                )
+                RailItem(
+                    labelRes = R.string.gs_nav_featured,
+                    icon = Icons.Rounded.Star,
+                    active = active == LobbySection.Game,
+                    wide = wide,
+                    onClick = { onSelect(LobbySection.Game) }
+                )
+                RailItem(
+                    labelRes = R.string.gs_nav_my_profile,
+                    icon = Icons.Rounded.Person,
+                    active = active == LobbySection.Insights,
+                    wide = wide,
+                    onClick = { onSelect(LobbySection.Insights) }
+                )
             }
             Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(MaxSize.hairlineBorder)
-                    .background(GameSpacePalette.Hairline)
+                    .fillMaxWidth(0.8f)
+                    .height(0.8.dp)
+                    .background(Color(0x25FFFFFF))
             )
+            Spacer(Modifier.height(2.dp))
             RailGear(
                 active = active == LobbySection.Lobby,
                 onClick = { onSelect(LobbySection.Lobby) }
@@ -541,7 +590,7 @@ private fun RailMark(wide: Boolean) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .heightIn(min = if (wide) 52.dp else MaxSize.minTouchTarget),
+            .heightIn(min = if (wide) 48.dp else MaxSize.minTouchTarget),
         contentAlignment = Alignment.Center
     ) {
         Text(
@@ -554,7 +603,7 @@ private fun RailMark(wide: Boolean) {
                         GameSpacePalette.Violet
                     )
                 ),
-                fontSize = if (wide) 34.sp else 26.sp,
+                fontSize = if (wide) 32.sp else 24.sp,
                 fontWeight = FontWeight.Black,
                 shadow = Shadow(
                     color = GameSpacePalette.VioletSoft.copy(alpha = 0.32f),
@@ -566,8 +615,7 @@ private fun RailMark(wide: Boolean) {
 }
 
 /**
- * صفّ القسم: أيقونة في أوّله واسمٌ في آخره، والاختيار الحاليّ كبسولة بنفسجيّة شفّافة بحدٍّ مضيء
- * كما في اللقطة — بلا وتدٍ ولا تدرّجٍ صلب.
+ * صفّ القسم: أيقونة في أوّله واسمٌ في آخره، والاختيار الحاليّ كبسولة بنفسجيّة متوهجة كما في اللقطة.
  */
 @Composable
 private fun RailItem(
@@ -581,14 +629,14 @@ private fun RailItem(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .heightIn(min = MaxSize.minTouchTarget)
+            .heightIn(min = 38.dp)
             .then(
                 if (active) {
                     Modifier.shadow(
-                        elevation = 12.dp,
+                        elevation = 8.dp,
                         shape = pill,
-                        ambientColor = GameSpacePalette.Violet.copy(alpha = 0.18f),
-                        spotColor = GameSpacePalette.VioletSoft.copy(alpha = 0.22f)
+                        ambientColor = Color(0xFF8B5CF6).copy(alpha = 0.35f),
+                        spotColor = Color(0xFFA78BFA).copy(alpha = 0.45f)
                     )
                 } else {
                     Modifier
@@ -600,8 +648,8 @@ private fun RailItem(
                     Modifier.background(
                         Brush.horizontalGradient(
                             listOf(
-                                GameSpacePalette.Violet.copy(alpha = 0.20f),
-                                GameSpacePalette.VioletDeep.copy(alpha = 0.14f)
+                                Color(0xFF8B5CF6),
+                                Color(0xFF7C3AED)
                             )
                         )
                     )
@@ -611,26 +659,26 @@ private fun RailItem(
             )
             .border(
                 MaxSize.hairlineBorder,
-                if (active) GameSpacePalette.VioletSoft.copy(alpha = 0.42f) else Color.Transparent,
+                if (active) Color(0xFFC4B5FD) else Color.Transparent,
                 pill
             )
             .clickable(role = Role.Tab, onClick = onClick)
-            .padding(horizontal = MaxSpace.xs),
+            .padding(horizontal = MaxSpace.xs, vertical = MaxSpace.hairline),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs)
     ) {
         Icon(
             imageVector = icon,
             contentDescription = null,
-            tint = if (active) Color.White else GameSpacePalette.Muted,
-            modifier = Modifier.size(MaxSize.iconGlyph)
+            tint = if (active) Color.White else Color(0xFF9CA3AF),
+            modifier = Modifier.size(16.dp)
         )
         if (wide) {
             Text(
                 text = stringResource(labelRes),
-                color = if (active) Color.White else GameSpacePalette.Muted,
-                fontSize = 12.sp,
-                fontWeight = if (active) FontWeight.SemiBold else FontWeight.Normal,
+                color = if (active) Color.White else Color(0xFF9CA3AF),
+                fontSize = 11.sp,
+                fontWeight = if (active) FontWeight.Bold else FontWeight.Medium,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 textAlign = TextAlign.Start,
@@ -670,113 +718,109 @@ private fun HeroPanel(
     selected: GameApp?,
     selectedIndex: Int,
     artworkUri: String?,
-    wide: Boolean,
     onLaunch: () -> Unit,
     onChooseArtwork: () -> Unit,
     onOptions: () -> Unit,
     onOpenLibrary: () -> Unit,
     modifier: Modifier = Modifier,
+    wide: Boolean = true,
 ) {
     if (games.isEmpty() || selected == null) {
         EmptyHero(onOpenLibrary = onOpenLibrary, modifier = modifier)
         return
     }
-    // في العرض الواسع الفنّ يملأ المسرح بلا بطاقة ولا حدّ، كما في اللقطة؛ وعلى الهاتف
-    // يبقى لوحًا مستديرًا لأن العمود يتمرّر حوله.
-    val shape = if (wide) RectangleShape else RoundedCornerShape(maxRadius(MaxRadius.sheet))
-    BoxWithConstraints(
-        modifier = modifier.clip(shape)
+    val shape = RoundedCornerShape(maxRadius(MaxRadius.group))
+    Box(
+        modifier = modifier
+            .shadow(
+                elevation = 16.dp,
+                shape = shape,
+                ambientColor = GameSpacePalette.Violet.copy(alpha = 0.20f),
+                spotColor = GameSpacePalette.VioletSoft.copy(alpha = 0.24f)
+            )
+            .clip(shape)
+            .background(GameSpacePalette.Deep)
+            .border(MaxSize.hairlineBorder, GameSpacePalette.VioletSoft.copy(alpha = 0.35f), shape)
     ) {
-        val short = maxHeight < 240.dp
-        // في الواسع يقف النصّ في النصف الأيسر حتى لا يدخل تحت عمود الأداء العائم.
-        val copyMaxWidth = if (wide) minOf(HeroCopyMaxWidth, maxWidth * 0.54f) else HeroCopyMaxWidth
+        HeroBackdrop()
+        HeroArtWash(game = selected, artworkUri = artworkUri)
+
+        // Gradient overlay for contrast
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(
                     Brush.verticalGradient(
-                        listOf(GameSpacePalette.Deep, GameSpacePalette.Void)
+                        0.20f to Color.Transparent,
+                        0.55f to Color(0x95080612),
+                        1f to Color(0xF2080612)
                     )
                 )
-                .then(
-                    if (wide) {
-                        Modifier
-                    } else {
-                        Modifier.border(
-                            MaxSize.hairlineBorder,
-                            GameSpacePalette.Edge.copy(alpha = 0.32f),
-                            shape
-                        )
-                    }
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    Brush.horizontalGradient(
+                        0f to Color(0xC0080612),
+                        0.50f to Color(0x40080612),
+                        1f to Color.Transparent
+                    )
                 )
+        )
+
+        Column(
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .fillMaxWidth(0.90f)
+                .padding(start = MaxSpace.lg, bottom = MaxSpace.md),
+            verticalArrangement = Arrangement.spacedBy(MaxSpace.hairline)
         ) {
-            HeroBackdrop()
-            HeroArtWash(game = selected, artworkUri = artworkUri)
-            Column(
-                modifier = Modifier
-                    .align(Alignment.BottomStart)
-                    .widthIn(max = copyMaxWidth)
-                    .padding(
-                        start = if (wide) MaxSpace.gutter else MaxSpace.md,
-                        end = MaxSpace.md,
-                        bottom = if (wide) MaxSpace.lg else MaxSpace.xl
-                    ),
-                verticalArrangement = Arrangement.spacedBy(MaxSpace.sm)
-            ) {
-                Crossfade(
-                    targetState = selected.label,
-                    animationSpec = tween(durationMillis = 260)
-                ) { label ->
-                    Text(
-                        text = label,
-                        // شعار اللعبة أبيض ثم ينزلق إلى البنفسجيّ في آخره — نظير شعار اللوحة.
-                        style = TextStyle(
-                            brush = Brush.linearGradient(
-                                listOf(
-                                    GameSpacePalette.Ink,
-                                    GameSpacePalette.Ink,
-                                    GameSpacePalette.VioletSoft
-                                )
-                            ),
-                            fontSize = when {
-                                short -> 26.sp
-                                wide -> 40.sp
-                                else -> 32.sp
-                            },
-                            lineHeight = when {
-                                short -> 30.sp
-                                wide -> 44.sp
-                                else -> 36.sp
-                            },
-                            fontWeight = FontWeight.Black
-                        ),
-                        maxLines = if (short) 1 else 2,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
+            Crossfade(
+                targetState = selected.label,
+                animationSpec = tween(durationMillis = 260)
+            ) { label ->
                 Text(
-                    text = stringResource(R.string.gs_hero_tagline),
-                    color = GameSpacePalette.Muted,
-                    fontSize = 11.sp,
+                    text = label,
+                    style = TextStyle(
+                        brush = Brush.linearGradient(
+                            listOf(
+                                Color.White,
+                                Color.White,
+                                GameSpacePalette.VioletSoft
+                            )
+                        ),
+                        fontSize = 22.sp,
+                        lineHeight = 26.sp,
+                        fontWeight = FontWeight.Black
+                    ),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                LaunchRow(
-                    enabled = true,
-                    onLaunch = onLaunch,
-                    onChooseArtwork = onChooseArtwork,
-                    onOptions = onOptions,
-                    compact = short
-                )
             }
-            GameSpaceDots(
-                count = games.size,
-                index = selectedIndex,
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(bottom = MaxSpace.xs)
+            Text(
+                text = stringResource(R.string.gs_hero_pubg_tagline),
+                color = Color(0xFFD1D5DB),
+                fontSize = 11.sp,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            Spacer(Modifier.height(4.dp))
+            LaunchRow(
+                enabled = true,
+                onLaunch = onLaunch,
+                onChooseArtwork = onChooseArtwork,
+                onOptions = onOptions
             )
         }
+
+        GameSpaceDots(
+            count = games.size,
+            index = selectedIndex,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = MaxSpace.xs)
+        )
     }
 }
 
@@ -1258,7 +1302,7 @@ private fun PerformancePanel(
     refreshRate: Int?,
     cpuHistory: List<Int>,
     onOpen: () -> Unit,
-    wide: Boolean,
+    wide: Boolean = true,
     compact: Boolean = false,
     modifier: Modifier = Modifier,
 ) {
@@ -1826,12 +1870,13 @@ private fun LibraryStrip(
     selected: GameApp?,
     artworkUris: Map<String, String>,
     selectedIndex: Int,
-    arrows: Boolean,
-    cardHeight: Dp,
+    arrows: Boolean = true,
+    cardHeight: Dp = 120.dp,
     onSelect: (String) -> Unit,
     onNext: () -> Unit,
     onPrev: () -> Unit,
     onViewAll: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val listState = rememberLazyListState()
     // اختيارٌ بالأسهم أو النقاط يجب أن يُظهر بطاقته، لا أن يتركها خارج الشاشة.
@@ -1840,7 +1885,7 @@ private fun LibraryStrip(
     }
     val shape = RoundedCornerShape(maxRadius(MaxRadius.sheet))
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = MaxSpace.md, vertical = MaxSpace.xs)
             .clip(shape)
@@ -2159,8 +2204,9 @@ private fun StatusStrip(
     title: String,
     detail: String,
     percent: Int,
-    height: Dp,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    height: Dp = 36.dp,
 ) {
     val shape = RoundedCornerShape(maxRadius(MaxRadius.sheet))
     val target = percent.coerceIn(0, 100)
@@ -2169,8 +2215,7 @@ private fun StatusStrip(
         animationSpec = tween(durationMillis = 700)
     )
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
+        modifier = modifier
             .padding(horizontal = MaxSpace.md, vertical = MaxSpace.xs)
             .heightIn(min = height)
             .shadow(

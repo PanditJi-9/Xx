@@ -652,14 +652,16 @@ fun GameLobbyScreen(
                 }
             }
 
-            // رأس واحد ثابت: أدوات التحكم يسارًا، ومعلومات النظام ثم هوية Space Game يمينًا (LTR).
-            Box(
-                modifier = Modifier
-                    .align(Alignment.TopCenter)
-                    .fillMaxWidth()
-                    .displayCutoutPadding()
-            ) {
-                lobbyHeader()
+            // رأس اللوبي يُعرض عند الانتقال إلى الأقسام الأخرى (spineIndex > 0)، بينما يملك المسرح في الصفحة 0 رأسه المدمج.
+            if (spineIndex > 0) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                        .fillMaxWidth()
+                        .displayCutoutPadding()
+                ) {
+                    lobbyHeader()
+                }
             }
 
             // المسرح والأقسام داخل Pager رأسيّ؛ الشريط الجانبيّ ثابت ويطابق الصفحة المستقرّة.
@@ -668,7 +670,7 @@ fun GameLobbyScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .displayCutoutPadding()
-                        .padding(top = TopBarHeight)
+                        .padding(top = if (spineIndex > 0) TopBarHeight else 0.dp)
                 ) {
                 GameSpaceRail(
                     wide = screenWidthDp >= 720,
@@ -721,6 +723,8 @@ fun GameLobbyScreen(
                                 batteryPercent = lobbyBattery?.percent,
                                 batteryTempC = lobbyBattery?.tempTenthsC?.let { it / 10f },
                                 charging = lobbyBattery?.charging == true,
+                                clock = lobbyClock,
+                                date = lobbyDate,
                                 onSelect = selectGame,
                                 onLaunch = start,
                                 onChooseArtwork = {
