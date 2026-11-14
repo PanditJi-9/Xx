@@ -44,7 +44,11 @@ class LobbyExploreContractTest {
         assertTrue("Explore overlay is not composed", text.contains("LobbyExplore("))
         assertTrue("Explore overlay is not animated", text.contains("AnimatedVisibility("))
 
-        val controlBack = text.indexOf("BackHandler(enabled = spineIndex > 0)")
+        // غيّر المالك شكل الهيكل في `4ff3dff1`/`03562a31`: صار الجذر صفحتين (المسرح ⇄ مركز
+        // التحكّم) بدل شريط أقسام متعدّد، فشارك الضغط صار `rootState.currentPage == 1` بدل
+        // `spineIndex > 0`. الشرط الذي يحرسه هذا الاختبار هو **الترتيب** لا التسمية: رجوع
+        // استكشف لا يزال يُركَّب بعد رجوع الهيكل فيفوز عليه.
+        val controlBack = text.indexOf("BackHandler(enabled = rootState.currentPage == 1)")
         val exploreBack = text.indexOf("BackHandler(enabled = exploreOpen)")
         assertTrue("Spine back handler is missing", controlBack >= 0)
         assertTrue("Explore back handler is missing", exploreBack >= 0)
@@ -57,16 +61,26 @@ class LobbyExploreContractTest {
         assumeTrue("Cannot locate nd.max sources; guard not evaluated", root != null)
         val text = lobby()
 
-        // أُعيد الـPager بأمر المالك (2026-11-14): صفحة كاملة لكل قسم، والسحب مثبَّت على قسم
-        // واحد (`PagerSnapDistance.atMost(1)`) بلا فراغ بين الصفحات — لا شريط تمرير مخفيّ ولا
-        // أقسام متكدّسة، والشريط الجانبيّ يظلّ ثابتًا ومرتبطًا بالصفحة الحالية.
+        // صار الجذر في تصميم المالك (كوكبيت الألعاب) صفحتين ثابتتين: المسرح ومركز التحكّم،
+        // فذهبت الحاجة إلى `spineIndex`/`GameSpaceRail`/`LobbySectionContent` (انتقلت أجسام
+        // الأقسام إلى `LobbyControlCenter`) وإلى `pageSpacing` الصريح (الافتراضي `0.dp`).
+        // ويبقى القفل المقصود: سحبٌ واحد = صفحة واحدة — وهو سلوك Compose الافتراضي
+        // (`PagerSnapDistance.atMost(1)`) ما دام الملف لا يتجاوز مسافة الالتقاط.
         assertTrue("The page-locked pager is missing", text.contains("VerticalPager("))
         assertTrue("The pager state is missing", text.contains("rememberPagerState("))
-        assertTrue("The pager must snap to one section per swipe", text.contains("PagerSnapDistance.atMost(1)"))
-        assertTrue("The pager must not leave gaps between sections", text.contains("pageSpacing = 0.dp"))
-        assertTrue("The fixed spine is missing", text.contains("GameSpaceRail("))
-        assertTrue("The section bodies are not composed in the spine", text.contains("LobbySectionContent("))
-        assertTrue("The active section is not derived from the pager", text.contains("spineIndex by remember"))
+        assertTrue(
+            "The lobby root must stay a two-page pager (stage and control centre)",
+            text.contains("rememberPagerState(initialPage = 0) { 2 }")
+        )
+        assertTrue("The pager must use the shared fling behaviour", text.contains("flingBehavior = rootFling"))
+        assertTrue(
+            "The shared fling behaviour must come from PagerDefaults",
+            text.contains("PagerDefaults.flingBehavior(")
+        )
+        assertFalse(
+            "The lobby must not widen the snap distance past one page per swipe",
+            text.contains("pagerSnapDistance")
+        )
     }
 
     @Test
