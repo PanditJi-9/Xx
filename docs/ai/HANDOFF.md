@@ -150,6 +150,14 @@ module`) ولا حاجة إليه. **ملاحظة مُقاسة:** `npm i` قد �
 0.72w/0.36h — وعنوان البطل بتدرّج `Ink→Ink→VioletSoft` بدل اللون الواحد. صفر أصول خارجيّة وصفر صور
 منقولة (§0.4)، ولا نصوص جديدة (لا مفاتيح إضافيّة).
 
+**تعديل المالك على اللوحة (`f418b5dd`):** `GameSpacePalette` صارت فحميّة محايدة (Void `#070A0F` ·
+Deep `#0B1017` · Panel `#121923` · Violet `#62558B` · VioletSoft `#9A8BC4` · Magenta `#B86D83`)،
+وخُفِّضت شفافيات البنفسج/الوردي إلى نحو النصف في الخلفيّة والشريط والبطل والرفّ والقاعدة، وضُيّقت لوحة
+الأداء (`0.27` من العرض · 252–340dp) وحلقاتها (62dp)، وصار الرفّ أقصر وبغطاءٍ أقرب إلى المربّع
+(`CardAspect 0.82` · 82–150dp)، وقاعدة الحالة `6.5٪`/42dp، وبوابة العرض الواسع
+`maxWidth ≥ 720dp && maxHeight ≥ 340dp && (w/h) ≥ 1.35`. Quick Verify `43617638845` على `f418b5dd`
+— **نجاح** (`conclusion=success`، والمهمّة الوحيدة «Release Kotlin + release unit tests» ناجحة).
+
 **BUILD:** لا بناء محليًّا (§0.10). Quick Verify `43609841025` على `ae5c6ecc` **فشل**:
 `Unresolved reference 'RectangleShape'` في `GameSpaceStage.kt` (السطر ٣٤ والسطر ٦٥٥) — الاستيراد
 كُتب من `androidx.compose.foundation.shape` والصحيح `androidx.compose.ui.graphics`. أُصلح في

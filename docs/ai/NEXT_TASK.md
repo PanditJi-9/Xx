@@ -44,6 +44,12 @@ resvg MPL-2.0 أداة بناء لا تدخل APK · لا لقطة جهاز فل
 مائلتين وحدٍّ مضيء عند 0.72w/0.36h)، وعنوان البطل بتدرّج `Ink→Ink→VioletSoft`. صفر أصول خارجيّة
 وصفر نصوص جديدة (§0.4/§0.2).
 
+**تعديل المالك (`f418b5dd`):** لوحة فحميّة محايدة (`Void #070A0F` · `Panel #121923` · `Violet #62558B`
+· `VioletSoft #9A8BC4` · `Magenta #B86D83`) وشفافيات بنفسج/وردي بنصف القيمة، لوحة أداء `0.27`
+و252–340dp وحلقة 62dp، رفٌّ `CardAspect 0.82` و82–150dp، قاعدة `6.5٪`/42dp، وبوابة الواسع
+`maxWidth ≥ 720dp && maxHeight ≥ 340dp && (w/h) ≥ 1.35`. QV `43617638845` — **نجاح**
+(`conclusion=success`).
+
 **GATES:** kt_balance 3435/0 · code_health صحة 0 · i18n 0/85 · prune 0 · design_tokens 233/300 ·
 resource_compile مرّ · provenance 0 · diff نظيف.
 
