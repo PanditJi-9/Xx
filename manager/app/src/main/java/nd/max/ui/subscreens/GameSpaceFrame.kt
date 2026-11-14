@@ -93,17 +93,19 @@ import nd.max.ui.design.maxRadius
 internal object GameSpacePalette {
     val Void = Color(0xFF050318)
     val Deep = Color(0xFF0A0420)
-    val Panel = Color(0xFF171A2E)
-    val PanelRaised = Color(0xFF1E2736)
+    val Panel = Color(0xFF15122E)
+    val PanelRaised = Color(0xFF1E1A3C)
     val Violet = Color(0xFF7C3AED)
     val VioletDeep = Color(0xFF55309F)
     val VioletSoft = Color(0xFFA855F7)
     val Magenta = Color(0xFFFF2D6B)
     val Cyan = Color(0xFF38BDF8)
+    val Mint = Color(0xFF4ADE80)
     val Track = Color(0xFF2D2250)
     val Ink = Color(0xFFF2F3F8)
     val Muted = Color(0xFF8B86A8)
     val Hairline = Color(0x33A855F7)
+    val Edge = Color(0x73A855F7)
 }
 
 /** عرض شريط الأقسام — ٩٦dp، محصور بين الهدف اللمسي ونصف عرض اللقطة. */
@@ -128,58 +130,37 @@ internal fun GameSpaceBrand(
     compact: Boolean,
     modifier: Modifier = Modifier,
 ) {
-    Row(
+    // الكلمة وحدها: العلامة «M» تسكن شريط الأقسام، فلا تتكرّر هنا.
+    Column(
         modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm)
+        verticalArrangement = Arrangement.spacedBy(MaxSpace.hairline)
     ) {
-        Box(
-            modifier = Modifier
-                .size(MaxSize.iconContainer)
-                .clip(RoundedCornerShape(maxRadius(MaxRadius.control)))
-                .background(GameSpacePalette.Violet)
-                .border(
-                    MaxSize.hairlineBorder,
-                    GameSpacePalette.VioletSoft.copy(alpha = MaxAlpha.borderStrong),
-                    RoundedCornerShape(maxRadius(MaxRadius.control))
-                ),
-            contentAlignment = Alignment.Center
-        ) {
+        Row(horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs)) {
             Text(
-                text = stringResource(R.string.gs_brand_mark),
-                color = Color.White,
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold
+                text = stringResource(R.string.gs_brand_game),
+                color = GameSpacePalette.Ink,
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Black,
+                maxLines = 1
+            )
+            Text(
+                text = stringResource(R.string.gs_brand_space),
+                color = GameSpacePalette.VioletSoft,
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Black,
+                maxLines = 1
             )
         }
-        Column(verticalArrangement = Arrangement.spacedBy(MaxSpace.hairline)) {
-            Row(horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs)) {
-                Text(
-                    text = stringResource(R.string.gs_brand_game),
-                    color = GameSpacePalette.Ink,
-                    fontSize = 22.sp,
-                    fontWeight = FontWeight.Bold,
-                    maxLines = 1
-                )
-                Text(
-                    text = stringResource(R.string.gs_brand_space),
-                    color = GameSpacePalette.VioletSoft,
-                    fontSize = 22.sp,
-                    fontWeight = FontWeight.Bold,
-                    maxLines = 1
-                )
-            }
-            if (!compact) {
-                Text(
-                    text = stringResource(R.string.gs_brand_tagline),
-                    color = GameSpacePalette.Muted,
-                    fontSize = 9.sp,
-                    fontWeight = FontWeight.Medium,
-                    letterSpacing = 2.sp,
-                    maxLines = 1,
-                    overflow = TextOverflow.Clip
-                )
-            }
+        if (!compact) {
+            Text(
+                text = stringResource(R.string.gs_brand_tagline),
+                color = GameSpacePalette.Muted,
+                fontSize = 10.sp,
+                fontWeight = FontWeight.Medium,
+                letterSpacing = 3.sp,
+                maxLines = 1,
+                overflow = TextOverflow.Clip
+            )
         }
     }
 }
@@ -208,14 +189,14 @@ internal fun GameSpaceClockCluster(
             Text(
                 text = clock,
                 color = GameSpacePalette.Ink,
-                fontSize = 15.sp,
-                fontWeight = FontWeight.SemiBold,
+                fontSize = 17.sp,
+                fontWeight = FontWeight.Bold,
                 maxLines = 1
             )
             Text(
                 text = date,
                 color = GameSpacePalette.Muted,
-                fontSize = 11.sp,
+                fontSize = 12.sp,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -224,14 +205,18 @@ internal fun GameSpaceClockCluster(
             Icon(
                 imageVector = Icons.Rounded.BatteryFull,
                 contentDescription = null,
-                tint = if (charging) GameSpacePalette.Cyan else GameSpacePalette.Muted,
+                tint = when {
+                    batteryPercent == null -> GameSpacePalette.Muted
+                    charging -> GameSpacePalette.Cyan
+                    else -> GameSpacePalette.Mint
+                },
                 modifier = Modifier.size(MaxSize.iconGlyphSmall)
             )
             Text(
                 text = batteryPercent?.let { stringResource(R.string.gs_percent_value, it) }
                     ?: MAX_VALUE_UNAVAILABLE,
                 color = GameSpacePalette.Ink,
-                fontSize = 12.sp,
+                fontSize = 13.sp,
                 fontWeight = FontWeight.SemiBold,
                 maxLines = 1
             )

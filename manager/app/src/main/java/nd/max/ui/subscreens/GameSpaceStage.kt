@@ -39,6 +39,7 @@ import androidx.compose.material.icons.rounded.Bolt
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.MoreHoriz
 import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material.icons.rounded.Timeline
 import androidx.compose.material.icons.rounded.VideogameAsset
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -54,7 +55,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -62,6 +62,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
@@ -96,24 +97,24 @@ import nd.max.ui.design.maxRadius
 /*
  * المسرح — تصميم المالك نفسه، لا محاكاةً لشكل تطبيق آخر.
  *
- * اللقطة (١٦٧٢×٩٤١) تقرأ هكذا: شريط أقسام على الحافة اليسرى بشعار في أعلاه، وشعار الكلمة وساعة
- * الجهاز في الشريط العلويّ، وبطل اللعبة في الوسط مع زرّ تشغيل كبير ونقاط تنقّل، ولوحة أداء على
- * اليمين بثلاث حلقات (معالج · رسوميات · حرارة) وصفّي بطارية ووضع أداء، ورفّ ألعاب أفقيّ، وقاعدة
- * حالة في الأسفل بشريط نسبة مجزّأ.
+ * اللقطة (١٦٧٢×٩٤١) تقرأ هكذا: شريط أقسام على الحافة اليسرى بشعار «M» في أعلاه، وشعار الكلمة وساعة
+ * الجهاز في الشريط العلويّ، وبطل في الوسط مع زرّ تشغيل كبير ونقاط تنقّل، ولوحة أداء على اليمين
+ * بثلاث حلقات وبطاقتين (بطارية ووضع أداء)، ورفّ ألعاب أفقيّ، وقاعدة حالة في الأسفل بشريط نسبة
+ * مخطّط بخطوط مائلة.
  *
  * **والاتجاه مثبّت LTR لهذه الشاشة وحدها** لأن اللقطة تُظهر الشريط يسارًا والشعار يسارًا والبطاقة
  * يمينًا مع نصوص عربيّة. وقلب الاتجاه في العربية يبدّل الهندسة كلها فتخرج الشاشة غير المرسومة.
  *
  * ### ما لا يُدّعى (ADR-07)
  *
- * لا شعار لعبة ولا فنّ لها: اللقطة تحمل فنّ PUBG وهو ليس ملكنا ولا يأتي مع `PackageManager`؛
- * فالمكان يأخذ اسم اللعبة ونقشة التطبيق المموّهة القائمة. والأرقام تُقرأ فعلًا: حمل المعالج من
- * `PanelCpuLoad`، وحمل الرسوميات من `HudDeepReaders.gpuLoadPercent`، والحرارة من `socTempC`
+ * لا فنّ منقول: البطل أيقونة اللعبة الحقيقية من `PackageManager`، لا صورة من اللقطة. والأرقام التي
+ * تظهر في اللقطة (المعالج ٣٨٪ والرسوميات ٥٢٪ والحرارة ٤١°) قيمٌ ثابتة في الصورة، فلا تُكتب هنا لأن الشاشة تقرأ الجهاز مباشرة:
+ * المعالج من `PanelCpuLoad`، والرسوميات من `HudDeepReaders.gpuLoadPercent`، والحرارة من `socTempC`
  * (أو حرارة البطارية عند غيابها). وما لم يُقرأ يبقى «—» وحلقةً بلا قوس، لا صفرًا.
  */
 
-/** عرض الشريط: ٩٢dp على العرض الواسع (≈ ٢٢٨px في اللقطة)، و٦٨dp على الهاتف فلا يأكل المسرح. */
-private val RailWide = 92.dp
+/** عرض الشريط: ١٠٤dp على العرض الواسع، و٦٨dp على الهاتف فلا يأكل المسرح. */
+private val RailWide = 104.dp
 private val RailNarrow = 68.dp
 
 /** لوحة الأداء: ٣٢٠dp ≈ ٣٨٤px في اللقطة. */
@@ -123,7 +124,32 @@ private val BoardWidth = 320.dp
 private val RingSize = 88.dp
 
 /** بطاقة الرفّ: ١٢٤dp × ١٢٤dp للنقشة. */
-private val ShelfCard = 124.dp
+private val ShelfTile = 124.dp
+
+/** بطاقة الرفّ على المسرح الواسع: أكبر كي تقارب بطاقات اللقطة. */
+private val ShelfTileWide = 152.dp
+
+/** أيقونة البطل: ٢٤٠dp حدًّا أقصى، وتتقلّص حين يضيق الارتفاع المتاح. */
+private val HeroArtSize = 240.dp
+
+/** أدنى عرض لمنطقة البطل تتّسع فيه الأيقونة وسطها دون أن تلامس العنوان أو اللوحة. */
+private val HeroArtMinWidth = 1170.dp
+
+/** نسبة ارتفاع البطل من منطقته، فيبقى هامش فوقه وتحته. */
+private const val HeroArtFill = 0.86f
+
+/** زرّ التشغيل: أدنى عرض وأقصاه وارتفاعه. */
+private val LaunchMinWidth = 220.dp
+private val LaunchMaxWidth = 300.dp
+private val LaunchHeight = 60.dp
+
+/** الشعار في الشريط الجانبيّ، وظلّ اللوحة المتوهّج. */
+private val RailMarkWide = 56.dp
+private val RailMarkNarrow = 44.dp
+private val RailGlow = 10.dp
+
+/** أقصى عرض لشريط التقدّم في قاعدة الحالة. */
+private val BaseBarMaxWidth = 300.dp
 
 @Composable
 internal fun GameSpaceStage(
@@ -215,6 +241,7 @@ internal fun GameSpaceStage(
                                 selected = selected,
                                 selectedIndex = selectedIndex,
                                 arrows = false,
+                                tile = ShelfTile,
                                 onSelect = onSelect,
                                 onNext = { games.getOrNull(selectedIndex + 1)?.let { onSelect(it.packageName) } },
                                 onPrev = { games.getOrNull(selectedIndex - 1)?.let { onSelect(it.packageName) } },
@@ -232,11 +259,8 @@ internal fun GameSpaceStage(
                 } else {
                     // الجهاز الواسع: الهندسة كما في اللقطة — البطل يسارًا واللوحة يمينًا، والقاعدة ملتصقة.
                     Column(modifier = Modifier.weight(1f).fillMaxHeight()) {
-                        Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
-                            HeroGlow(
-                                letter = selected?.label?.trim()?.take(1).orEmpty(),
-                                wide = true
-                            )
+                        BoxWithConstraints(modifier = Modifier.weight(1f).fillMaxWidth()) {
+                            HeroGlow()
                             HeroBlock(
                                 games = games,
                                 selected = selected,
@@ -249,6 +273,14 @@ internal fun GameSpaceStage(
                                     .align(Alignment.CenterStart)
                                     .padding(start = MaxSpace.xxl)
                             )
+                            // أيقونة اللعبة الحقيقية في مكان بطل اللقطة، حين يتّسع المسرح لها وسطه.
+                            if (selected != null && maxWidth >= HeroArtMinWidth) {
+                                HeroArt(
+                                    game = selected,
+                                    tile = minOf(HeroArtSize, maxHeight * HeroArtFill),
+                                    modifier = Modifier.align(Alignment.Center)
+                                )
+                            }
                             if (sideBoard) {
                                 PerformanceBoard(
                                     cpu = cpu,
@@ -284,6 +316,7 @@ internal fun GameSpaceStage(
                                 selected = selected,
                                 selectedIndex = selectedIndex,
                                 arrows = true,
+                                tile = if (sideBoard) ShelfTileWide else ShelfTile,
                                 onSelect = onSelect,
                                 onNext = { games.getOrNull(selectedIndex + 1)?.let { onSelect(it.packageName) } },
                                 onPrev = { games.getOrNull(selectedIndex - 1)?.let { onSelect(it.packageName) } },
@@ -458,37 +491,73 @@ private fun EmptyHero(onOpenLibrary: () -> Unit, modifier: Modifier = Modifier) 
     }
 }
 
-/** هالة خلفيّة وحرف اللعبة شبه شفّاف: يملأ مكان الفنّ الذي لا نملكه بلا ادّعاء أنه فنّها. */
+/** هالتان خلف البطل: بنفسجيّة في الوسط وورديّة أعلى اليمين، كضوء الدخان في اللقطة. */
 @Composable
-private fun HeroGlow(letter: String, wide: Boolean) {
+private fun HeroGlow() {
+    Canvas(modifier = Modifier.fillMaxSize()) {
+        val mid = Offset(size.width * 0.5f, size.height * 0.5f)
+        val halo = size.minDimension * 0.62f
+        drawCircle(
+            brush = Brush.radialGradient(
+                colors = listOf(GameSpacePalette.Violet.copy(alpha = 0.24f), Color.Transparent),
+                center = mid,
+                radius = halo
+            ),
+            radius = halo,
+            center = mid
+        )
+        val smoke = Offset(size.width * 0.82f, size.height * 0.18f)
+        val smokeRadius = size.minDimension * 0.5f
+        drawCircle(
+            brush = Brush.radialGradient(
+                colors = listOf(GameSpacePalette.Magenta.copy(alpha = 0.12f), Color.Transparent),
+                center = smoke,
+                radius = smokeRadius
+            ),
+            radius = smokeRadius,
+            center = smoke
+        )
+    }
+}
+
+/**
+ * أيقونة اللعبة الحقيقية في مكان بطل اللقطة: تُقرأ من `PackageManager` عبر ذاكرة الأيقونات نفسها،
+ * ولا تُنقل صورة من اللقطة. تُرسم بطاقةً بحدٍّ بنفسجيّ متوهّج، وما لم تُقرأ الأيقونة لا يُرسم داخلها
+ * شيء (لا بديل رماديّ).
+ */
+@Composable
+private fun HeroArt(
+    game: GameApp?,
+    tile: Dp,
+    modifier: Modifier = Modifier,
+) {
+    val icon by rememberLobbyIcon(game?.packageName)
+    val bitmap = icon
+    val shape = RoundedCornerShape(maxRadius(MaxRadius.group))
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .drawBehind {
-                drawCircle(
-                    brush = Brush.radialGradient(
-                        colors = listOf(
-                            GameSpacePalette.Violet.copy(alpha = 0.16f),
-                            Color.Transparent
-                        ),
-                        center = Offset(size.width * 0.22f, size.height * 0.5f),
-                        radius = size.minDimension * 0.95f
-                    ),
-                    radius = size.minDimension * 0.95f,
-                    center = Offset(size.width * 0.22f, size.height * 0.5f)
-                )
-            }
+        modifier = modifier
+            .size(tile)
+            .shadow(
+                elevation = 24.dp,
+                shape = shape,
+                ambientColor = GameSpacePalette.Violet.copy(alpha = 0.55f),
+                spotColor = GameSpacePalette.Violet.copy(alpha = 0.7f)
+            )
+            .clip(shape)
+            .background(GameSpacePalette.Deep)
+            .border(
+                MaxSize.activeRing,
+                GameSpacePalette.VioletSoft.copy(alpha = MaxAlpha.borderStrong),
+                shape
+            ),
+        contentAlignment = Alignment.Center
     ) {
-        if (letter.isNotEmpty()) {
-            Text(
-                text = letter,
-                color = GameSpacePalette.VioletSoft.copy(alpha = 0.06f),
-                fontSize = if (wide) 240.sp else 150.sp,
-                fontWeight = FontWeight.Black,
-                maxLines = 1,
-                modifier = Modifier
-                    .align(Alignment.CenterStart)
-                    .padding(start = MaxSpace.md)
+        if (bitmap != null) {
+            Image(
+                bitmap = bitmap,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
             )
         }
     }
@@ -501,68 +570,104 @@ private fun GameSpaceRail(
     onHome: () -> Unit,
     onSection: (LobbySection) -> Unit,
 ) {
-    val shape = RoundedCornerShape(maxRadius(MaxRadius.group))
-    Column(
+    val panel = RoundedCornerShape(maxRadius(MaxRadius.group))
+    val mark = RoundedCornerShape(maxRadius(MaxRadius.control))
+    val pill = RoundedCornerShape(maxRadius(MaxRadius.pill))
+    Box(
         modifier = Modifier
             .fillMaxHeight()
             .width(if (wide) RailWide else RailNarrow)
-            .padding(horizontal = MaxSpace.xs, vertical = MaxSpace.sm),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(MaxSpace.xs)
+            .padding(horizontal = MaxSpace.xs, vertical = MaxSpace.sm)
     ) {
-        Box(
+        Column(
             modifier = Modifier
-                .size(if (wide) 56.dp else 44.dp)
-                .clip(shape)
-                .background(
-                    Brush.verticalGradient(
-                        listOf(GameSpacePalette.Violet, GameSpacePalette.VioletDeep)
-                    )
+                .fillMaxSize()
+                .shadow(
+                    elevation = RailGlow,
+                    shape = panel,
+                    ambientColor = GameSpacePalette.Violet.copy(alpha = 0.45f),
+                    spotColor = GameSpacePalette.Violet.copy(alpha = 0.55f)
                 )
-                .border(MaxSize.hairlineBorder, GameSpacePalette.VioletSoft.copy(alpha = MaxAlpha.borderStrong), shape),
-            contentAlignment = Alignment.Center
+                .clip(panel)
+                .background(GameSpacePalette.Deep.copy(alpha = 0.8f))
+                .border(MaxSize.hairlineBorder, GameSpacePalette.Edge, panel)
+                .padding(horizontal = MaxSpace.xs, vertical = MaxSpace.sm),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(MaxSpace.xs)
         ) {
-            Text(
-                text = stringResource(R.string.gs_brand_mark),
-                color = Color.White,
-                fontSize = 22.sp,
-                fontWeight = FontWeight.Black
-            )
-        }
-        Spacer(Modifier.height(MaxSpace.xs))
-        GameSpaceRailItem(
-            labelRes = R.string.gs_nav_home,
-            icon = Icons.Rounded.Home,
-            active = true,
-            wide = wide,
-            onClick = onHome
-        )
-        RailSection.entries.forEach { entry ->
-            GameSpaceRailItem(
-                labelRes = entry.labelRes,
-                icon = entry.section.icon,
-                active = false,
-                wide = wide,
-                onClick = { onSection(entry.section) }
-            )
-        }
-        Spacer(Modifier.weight(1f))
-        // السهم في اللقطة يفتح مركز التحكّم؛ وهو الفعل نفسه هنا، لا زخرفة.
-        Box(
-            modifier = Modifier
-                .heightIn(min = MaxSize.minTouchTarget)
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(maxRadius(MaxRadius.pill)))
-                .clickable(role = Role.Button) { onSection(LobbySection.Lobby) }
-                .padding(vertical = MaxSpace.xs),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowLeft,
-                contentDescription = stringResource(R.string.lobby_tab_control),
-                tint = GameSpacePalette.Muted,
-                modifier = Modifier.size(MaxSize.iconGlyph)
-            )
+            // الشعار «M» في أعلى اللوحة، كما في اللقطة.
+            Box(
+                modifier = Modifier
+                    .size(if (wide) RailMarkWide else RailMarkNarrow)
+                    .shadow(
+                        elevation = 8.dp,
+                        shape = mark,
+                        ambientColor = GameSpacePalette.Violet.copy(alpha = 0.6f),
+                        spotColor = GameSpacePalette.Violet.copy(alpha = 0.7f)
+                    )
+                    .clip(mark)
+                    .background(
+                        Brush.verticalGradient(
+                            listOf(GameSpacePalette.Violet, GameSpacePalette.VioletDeep)
+                        )
+                    )
+                    .border(
+                        MaxSize.hairlineBorder,
+                        GameSpacePalette.VioletSoft.copy(alpha = MaxAlpha.borderStrong),
+                        mark
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = stringResource(R.string.gs_brand_mark),
+                    color = Color.White,
+                    fontSize = 22.sp,
+                    fontWeight = FontWeight.Black
+                )
+            }
+            // الأقسام تتمرّر وحدها، والزرّ السفليّ يبقى ثابتًا مهما ضاق الارتفاع.
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .verticalScroll(rememberScrollState()),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(MaxSpace.xs)
+            ) {
+                GameSpaceRailItem(
+                    labelRes = R.string.gs_nav_home,
+                    icon = Icons.Rounded.Home,
+                    active = true,
+                    wide = wide,
+                    onClick = onHome
+                )
+                RailSection.entries.forEach { entry ->
+                    GameSpaceRailItem(
+                        labelRes = entry.labelRes,
+                        icon = entry.section.icon,
+                        active = false,
+                        wide = wide,
+                        onClick = { onSection(entry.section) }
+                    )
+                }
+            }
+            // زرّ مركز التحكّم في أسفل اللوحة، كالسهم «<<» في اللقطة.
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = MaxSize.minTouchTarget)
+                    .clip(pill)
+                    .background(GameSpacePalette.Panel.copy(alpha = 0.85f))
+                    .border(MaxSize.hairlineBorder, GameSpacePalette.Hairline, pill)
+                    .clickable(role = Role.Button) { onSection(LobbySection.Lobby) },
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowLeft,
+                    contentDescription = stringResource(R.string.lobby_tab_control),
+                    tint = GameSpacePalette.Ink,
+                    modifier = Modifier.size(MaxSize.iconGlyph)
+                )
+            }
         }
     }
 }
@@ -588,18 +693,33 @@ private fun GameSpaceRailItem(
     onClick: () -> Unit,
 ) {
     val shape = RoundedCornerShape(maxRadius(MaxRadius.control))
-    Row(
+    val tint = if (active) Color.White else GameSpacePalette.Muted
+    Column(
         modifier = Modifier
             .fillMaxWidth()
             .heightIn(min = MaxSize.minTouchTarget)
-            .clip(shape)
-            .background(
+            .then(
                 if (active) {
-                    Brush.horizontalGradient(
-                        listOf(GameSpacePalette.Violet, GameSpacePalette.VioletDeep)
+                    Modifier.shadow(
+                        elevation = 8.dp,
+                        shape = shape,
+                        ambientColor = GameSpacePalette.Violet.copy(alpha = 0.45f),
+                        spotColor = GameSpacePalette.Violet.copy(alpha = 0.55f)
                     )
                 } else {
-                    Brush.horizontalGradient(listOf(Color.Transparent, Color.Transparent))
+                    Modifier
+                }
+            )
+            .clip(shape)
+            .then(
+                if (active) {
+                    Modifier.background(
+                        Brush.verticalGradient(
+                            listOf(GameSpacePalette.Violet, GameSpacePalette.VioletDeep)
+                        )
+                    )
+                } else {
+                    Modifier
                 }
             )
             .border(
@@ -608,22 +728,25 @@ private fun GameSpaceRailItem(
                 shape
             )
             .clickable(role = Role.Tab, onClick = onClick)
-            .padding(horizontal = if (wide) MaxSpace.sm else MaxSpace.xs, vertical = MaxSpace.xs),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs)
+            .padding(horizontal = MaxSpace.xs, vertical = MaxSpace.sm),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
+        // الاسم يقوله النصّ تحت الأيقونة؛ والأيقونة زخرفة لا تُقرأ وحدها.
         Icon(
             imageVector = icon,
             contentDescription = null,
-            tint = if (active) Color.White else GameSpacePalette.Muted,
-            modifier = Modifier.size(MaxSize.iconGlyphSmall)
+            tint = tint,
+            modifier = Modifier.size(MaxSize.iconGlyph)
         )
         if (wide) {
+            Spacer(Modifier.height(MaxSpace.xs))
             Text(
                 text = stringResource(labelRes),
-                color = if (active) Color.White else GameSpacePalette.Muted,
-                fontSize = 12.sp,
+                color = tint,
+                fontSize = 11.sp,
                 fontWeight = if (active) FontWeight.SemiBold else FontWeight.Normal,
+                textAlign = TextAlign.Center,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
@@ -631,36 +754,40 @@ private fun GameSpaceRailItem(
     }
 }
 
-/** زرّ التشغيل الكبير + «...» كما في اللقطة. */
+/** زرّ التشغيل: كبسولة بتدرّج بنفسجيّ وهالة كما في اللقطة، و«...» دائريّ بجانبها. */
 @Composable
 private fun LaunchRow(enabled: Boolean, onLaunch: () -> Unit, onOptions: () -> Unit) {
+    val shape = RoundedCornerShape(maxRadius(MaxRadius.pill))
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(MaxSpace.md)
     ) {
-        val shape = RoundedCornerShape(maxRadius(MaxRadius.pill))
         Row(
             modifier = Modifier
-                .weight(1f)
-                .heightIn(min = 56.dp)
+                .widthIn(min = LaunchMinWidth, max = LaunchMaxWidth)
+                .heightIn(min = LaunchHeight)
                 .shadow(
-                    elevation = 10.dp,
+                    elevation = 14.dp,
                     shape = shape,
-                    ambientColor = GameSpacePalette.Violet.copy(alpha = 0.35f),
-                    spotColor = GameSpacePalette.Violet.copy(alpha = 0.45f)
+                    ambientColor = GameSpacePalette.Violet.copy(alpha = 0.5f),
+                    spotColor = GameSpacePalette.Violet.copy(alpha = 0.6f)
                 )
                 .clip(shape)
                 .background(
                     Brush.horizontalGradient(
-                        listOf(GameSpacePalette.Violet, GameSpacePalette.VioletDeep)
+                        listOf(
+                            GameSpacePalette.VioletSoft,
+                            GameSpacePalette.Violet,
+                            GameSpacePalette.VioletDeep
+                        )
                     )
                 )
                 .border(MaxSize.hairlineBorder, GameSpacePalette.VioletSoft, shape)
                 .clickable(enabled = enabled, role = Role.Button, onClick = onLaunch)
-                .padding(horizontal = MaxSpace.md),
+                .padding(horizontal = MaxSpace.lg),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm)
+            horizontalArrangement = Arrangement.Center
         ) {
             Icon(
                 imageVector = Icons.Rounded.PlayArrow,
@@ -668,10 +795,11 @@ private fun LaunchRow(enabled: Boolean, onLaunch: () -> Unit, onOptions: () -> U
                 tint = Color.White,
                 modifier = Modifier.size(MaxSize.iconGlyph)
             )
+            Spacer(Modifier.width(MaxSpace.sm))
             Text(
                 text = stringResource(R.string.gs_launch),
                 color = Color.White,
-                fontSize = 15.sp,
+                fontSize = 16.sp,
                 fontWeight = FontWeight.Bold,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
@@ -727,7 +855,10 @@ private fun GameSpaceDots(count: Int, index: Int) {
     }
 }
 
-/** لوحة الأداء: ثلاث حلقات، ثم بطارية ووضع الأداء. */
+/**
+ * لوحة الأداء كما في اللقطة: صفّ عنوان قابل للنقر، وثلاث حلقات، ثم بطاقتان: البطارية ووضع الأداء.
+ * كل قراءة تأتي من مصدرها الحقيقيّ، وما لم يُقرأ يبقى «—».
+ */
 @Composable
 private fun PerformanceBoard(
     cpu: Int?,
@@ -745,14 +876,14 @@ private fun PerformanceBoard(
         modifier = modifier
             .then(if (fullWidth) Modifier.fillMaxWidth() else Modifier.width(BoardWidth))
             .shadow(
-                elevation = 8.dp,
+                elevation = 12.dp,
                 shape = shape,
-                ambientColor = GameSpacePalette.Violet.copy(alpha = 0.25f),
-                spotColor = GameSpacePalette.Violet.copy(alpha = 0.35f)
+                ambientColor = GameSpacePalette.Violet.copy(alpha = 0.35f),
+                spotColor = GameSpacePalette.Violet.copy(alpha = 0.5f)
             )
             .clip(shape)
-            .background(GameSpacePalette.Panel.copy(alpha = 0.88f))
-            .border(MaxSize.hairlineBorder, GameSpacePalette.Hairline, shape)
+            .background(GameSpacePalette.Panel.copy(alpha = 0.92f))
+            .border(MaxSize.hairlineBorder, GameSpacePalette.Edge, shape)
             .padding(MaxSpace.md),
         verticalArrangement = Arrangement.spacedBy(MaxSpace.sm)
     ) {
@@ -766,7 +897,7 @@ private fun PerformanceBoard(
             horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs)
         ) {
             Icon(
-                imageVector = Icons.Rounded.Bolt,
+                imageVector = Icons.Rounded.Timeline,
                 contentDescription = null,
                 tint = GameSpacePalette.VioletSoft,
                 modifier = Modifier.size(MaxSize.iconGlyphSmall)
@@ -774,7 +905,7 @@ private fun PerformanceBoard(
             Text(
                 text = stringResource(R.string.gs_device_perf),
                 color = GameSpacePalette.Ink,
-                fontSize = 13.sp,
+                fontSize = 14.sp,
                 fontWeight = FontWeight.SemiBold,
                 maxLines = 1,
                 modifier = Modifier.weight(1f)
@@ -815,37 +946,116 @@ private fun PerformanceBoard(
         }
         Row(
             modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs)
+            horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm)
         ) {
-            Icon(
-                imageVector = Icons.Rounded.BatteryFull,
-                contentDescription = stringResource(R.string.gs_battery),
-                tint = if (charging) GameSpacePalette.Cyan else GameSpacePalette.Muted,
-                modifier = Modifier.size(MaxSize.iconGlyphSmall)
+            BatteryCard(
+                percent = batteryPercent,
+                charging = charging,
+                modifier = Modifier.weight(1f)
             )
-            Text(
-                text = batteryPercent?.let { "$it%" } ?: MAX_VALUE_UNAVAILABLE,
-                color = GameSpacePalette.Ink,
-                fontSize = 13.sp,
-                fontWeight = FontWeight.SemiBold,
-                maxLines = 1
-            )
-            Spacer(Modifier.weight(1f))
-            Icon(
-                imageVector = Icons.Rounded.Bolt,
-                contentDescription = stringResource(R.string.gs_perf_mode),
-                tint = if (panelEnabled) GameSpacePalette.Cyan else GameSpacePalette.Muted,
-                modifier = Modifier.size(MaxSize.iconGlyphSmall)
-            )
-            Text(
-                text = if (panelEnabled) stringResource(R.string.gs_perf_mode_on) else MAX_VALUE_UNAVAILABLE,
-                color = if (panelEnabled) GameSpacePalette.Cyan else GameSpacePalette.Muted,
-                fontSize = 11.sp,
-                fontWeight = FontWeight.SemiBold,
-                maxLines = 1
+            ModeCard(
+                enabled = panelEnabled,
+                onOpen = onOpen,
+                modifier = Modifier.weight(1f)
             )
         }
+    }
+}
+
+/** بطاقة البطارية: الرقم واسمه، وأيقونتها خضراء ما دامت مقروءة، وسماويّة عند الشحن. */
+@Composable
+private fun BatteryCard(
+    percent: Int?,
+    charging: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    val shape = RoundedCornerShape(maxRadius(MaxRadius.control))
+    Row(
+        modifier = modifier
+            .clip(shape)
+            .background(GameSpacePalette.PanelRaised.copy(alpha = 0.6f))
+            .border(MaxSize.hairlineBorder, GameSpacePalette.Hairline, shape)
+            .padding(horizontal = MaxSpace.sm, vertical = MaxSpace.xs),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs)
+    ) {
+        Icon(
+            imageVector = Icons.Rounded.BatteryFull,
+            contentDescription = null,
+            tint = when {
+                percent == null -> GameSpacePalette.Muted
+                charging -> GameSpacePalette.Cyan
+                else -> GameSpacePalette.Mint
+            },
+            modifier = Modifier.size(MaxSize.iconGlyph)
+        )
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = percent?.let { stringResource(R.string.gs_percent_value, it) }
+                    ?: MAX_VALUE_UNAVAILABLE,
+                color = if (percent == null) GameSpacePalette.Muted else GameSpacePalette.Ink,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.SemiBold,
+                maxLines = 1
+            )
+            Text(
+                text = stringResource(R.string.gs_battery),
+                color = GameSpacePalette.Muted,
+                fontSize = 11.sp,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+    }
+}
+
+/** بطاقة وضع الأداء: «Gaming» حين تكون اللوحة مفعّلة، و«—» حين لا تكون، ونقرها يفتح الإعدادات. */
+@Composable
+private fun ModeCard(
+    enabled: Boolean,
+    onOpen: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val shape = RoundedCornerShape(maxRadius(MaxRadius.control))
+    Row(
+        modifier = modifier
+            .clip(shape)
+            .background(GameSpacePalette.PanelRaised.copy(alpha = 0.6f))
+            .border(MaxSize.hairlineBorder, GameSpacePalette.Hairline, shape)
+            .clickable(role = Role.Button, onClick = onOpen)
+            .padding(horizontal = MaxSpace.sm, vertical = MaxSpace.xs),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs)
+    ) {
+        Icon(
+            imageVector = Icons.Rounded.Bolt,
+            contentDescription = null,
+            tint = if (enabled) GameSpacePalette.Cyan else GameSpacePalette.Muted,
+            modifier = Modifier.size(MaxSize.iconGlyph)
+        )
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = stringResource(R.string.gs_perf_mode),
+                color = GameSpacePalette.Muted,
+                fontSize = 11.sp,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            Text(
+                text = if (enabled) stringResource(R.string.gs_perf_mode_on) else MAX_VALUE_UNAVAILABLE,
+                color = if (enabled) GameSpacePalette.Cyan else GameSpacePalette.Muted,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.SemiBold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+        Icon(
+            imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight,
+            contentDescription = null,
+            tint = GameSpacePalette.Muted,
+            modifier = Modifier.size(MaxSize.iconGlyphSmall)
+        )
     }
 }
 
@@ -868,24 +1078,47 @@ private fun PerformanceRing(
     ) {
         Box(modifier = Modifier.size(RingSize), contentAlignment = Alignment.Center) {
             Canvas(Modifier.size(RingSize)) {
+                // مسار مجزّأ، وقوس بلونه فوقه، وهالة خفيفة خلف القوس كما في اللقطة.
+                val glowWidth = size.minDimension * 0.17f
+                val arcWidth = size.minDimension * 0.085f
+                val inset = glowWidth / 2f
+                val arcSize = Size(size.minDimension - inset * 2f, size.minDimension - inset * 2f)
+                val arcOffset = Offset(
+                    (size.width - arcSize.width) / 2f,
+                    (size.height - arcSize.height) / 2f
+                )
                 val dash = PathEffect.dashPathEffect(
                     floatArrayOf(size.minDimension * 0.080f, size.minDimension * 0.050f)
                 )
-                val stroke = Stroke(width = size.minDimension * 0.085f, cap = StrokeCap.Round, pathEffect = dash)
+                val arcStroke = Stroke(width = arcWidth, cap = StrokeCap.Round, pathEffect = dash)
+                val haloStroke = Stroke(width = glowWidth, cap = StrokeCap.Round, pathEffect = dash)
                 drawArc(
                     color = GameSpacePalette.Track,
                     startAngle = -90f,
                     sweepAngle = 360f,
                     useCenter = false,
-                    style = stroke
+                    topLeft = arcOffset,
+                    size = arcSize,
+                    style = arcStroke
                 )
                 if (progress != null) {
+                    drawArc(
+                        color = tone.copy(alpha = 0.28f),
+                        startAngle = -90f,
+                        sweepAngle = 360f * animated,
+                        useCenter = false,
+                        topLeft = arcOffset,
+                        size = arcSize,
+                        style = haloStroke
+                    )
                     drawArc(
                         color = tone,
                         startAngle = -90f,
                         sweepAngle = 360f * animated,
                         useCenter = false,
-                        style = stroke
+                        topLeft = arcOffset,
+                        size = arcSize,
+                        style = arcStroke
                     )
                 }
             }
@@ -914,6 +1147,7 @@ private fun GameSpaceShelf(
     selected: GameApp?,
     selectedIndex: Int,
     arrows: Boolean,
+    tile: Dp,
     onSelect: (String) -> Unit,
     onNext: () -> Unit,
     onPrev: () -> Unit,
@@ -946,7 +1180,7 @@ private fun GameSpaceShelf(
             Text(
                 text = stringResource(R.string.gs_shelf),
                 color = GameSpacePalette.Ink,
-                fontSize = 13.sp,
+                fontSize = 14.sp,
                 fontWeight = FontWeight.SemiBold,
                 maxLines = 1,
                 modifier = Modifier.weight(1f)
@@ -995,6 +1229,7 @@ private fun GameSpaceShelf(
                 items(games, key = { it.packageName }) { game ->
                     ShelfCard(
                         game = game,
+                        tile = tile,
                         selected = game.packageName == selected?.packageName,
                         onClick = { onSelect(game.packageName) }
                     )
@@ -1039,9 +1274,10 @@ private fun ShelfArrow(
 }
 
 @Composable
-private fun ShelfCard(game: GameApp, selected: Boolean, onClick: () -> Unit) {
+private fun ShelfCard(game: GameApp, tile: Dp, selected: Boolean, onClick: () -> Unit) {
     val icon by rememberLobbyIcon(game.packageName)
     val shape = RoundedCornerShape(maxRadius(MaxRadius.group))
+    val tileShape = RoundedCornerShape(maxRadius(MaxRadius.control))
     val lift by animateFloatAsState(
         targetValue = if (selected) 1f else 0.96f,
         animationSpec = tween(durationMillis = 220)
@@ -1052,11 +1288,23 @@ private fun ShelfCard(game: GameApp, selected: Boolean, onClick: () -> Unit) {
                 scaleX = lift
                 scaleY = lift
             }
-            .width(ShelfCard)
+            .width(tile)
+            .then(
+                if (selected) {
+                    Modifier.shadow(
+                        elevation = 14.dp,
+                        shape = shape,
+                        ambientColor = GameSpacePalette.Violet.copy(alpha = 0.5f),
+                        spotColor = GameSpacePalette.Violet.copy(alpha = 0.6f)
+                    )
+                } else {
+                    Modifier
+                }
+            )
             .clip(shape)
-            .background(GameSpacePalette.Panel.copy(alpha = 0.75f))
+            .background(GameSpacePalette.Panel.copy(alpha = 0.8f))
             .border(
-                if (selected) 2.dp else MaxSize.hairlineBorder,
+                if (selected) MaxSize.activeRing else MaxSize.hairlineBorder,
                 if (selected) GameSpacePalette.VioletSoft else GameSpacePalette.Hairline,
                 shape
             )
@@ -1068,21 +1316,21 @@ private fun ShelfCard(game: GameApp, selected: Boolean, onClick: () -> Unit) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(ShelfCard)
-                .clip(RoundedCornerShape(maxRadius(MaxRadius.control)))
+                .height(tile)
+                .clip(tileShape)
                 .background(GameSpacePalette.Deep),
             contentAlignment = Alignment.Center
         ) {
-            if (icon != null) {
-                val bitmap = icon
-                if (bitmap != null) {
-                    Image(
-                        bitmap = bitmap,
-                        contentDescription = null,
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.fillMaxSize()
-                    )
-                }
+            val bitmap = icon
+            if (bitmap != null) {
+                Image(
+                    bitmap = bitmap,
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .alpha(if (selected) 1f else 0.7f)
+                )
             } else {
                 Text(
                     text = game.label.take(1),
@@ -1091,11 +1339,21 @@ private fun ShelfCard(game: GameApp, selected: Boolean, onClick: () -> Unit) {
                     fontWeight = FontWeight.Bold
                 )
             }
+            if (selected) {
+                // شريط الضوء أسفل البطاقة المختارة، كما في اللقطة.
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .fillMaxWidth(0.6f)
+                        .height(MaxSize.activeRing)
+                        .background(GameSpacePalette.VioletSoft)
+                )
+            }
         }
         Text(
             text = game.label,
             color = if (selected) GameSpacePalette.Ink else GameSpacePalette.Muted,
-            fontSize = 11.sp,
+            fontSize = 12.sp,
             fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Normal,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
@@ -1105,7 +1363,10 @@ private fun ShelfCard(game: GameApp, selected: Boolean, onClick: () -> Unit) {
     }
 }
 
-/** قاعدة الحالة: حكم آخر جلسة أو الجاهزية، وشريط نسبة مجزّأ — النسبة هي الجاهزية الحقيقيّة. */
+/**
+ * قاعدة الحالة أسفل المسرح: حكم آخر جلسة أو الجاهزية، وشريط نسبة بخطوط مائلة كما في اللقطة.
+ * النسبة هي الجاهزية الحقيقيّة، والضغط على القاعدة يفتح سجلّ الجلسات.
+ */
 @Composable
 private fun GameSpaceBase(
     title: String,
@@ -1125,9 +1386,15 @@ private fun GameSpaceBase(
             .fillMaxWidth()
             .padding(horizontal = inset, vertical = MaxSpace.sm)
             .heightIn(min = GameSpaceStatusHeight)
+            .shadow(
+                elevation = 10.dp,
+                shape = shape,
+                ambientColor = GameSpacePalette.Violet.copy(alpha = 0.3f),
+                spotColor = GameSpacePalette.Violet.copy(alpha = 0.4f)
+            )
             .clip(shape)
             .background(GameSpacePalette.Deep.copy(alpha = 0.92f))
-            .border(MaxSize.hairlineBorder, GameSpacePalette.Hairline, shape)
+            .border(MaxSize.hairlineBorder, GameSpacePalette.Edge, shape)
             .clickable(role = Role.Button, onClick = onOpen)
             .padding(horizontal = MaxSpace.md, vertical = MaxSpace.xs),
         verticalAlignment = Alignment.CenterVertically,
@@ -1146,15 +1413,15 @@ private fun GameSpaceBase(
             Text(
                 text = title,
                 color = GameSpacePalette.Ink,
-                fontSize = 13.sp,
+                fontSize = 14.sp,
                 fontWeight = FontWeight.SemiBold,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
             Text(
                 text = detail,
-                color = GameSpacePalette.Muted,
-                fontSize = 11.sp,
+                color = GameSpacePalette.VioletSoft,
+                fontSize = 12.sp,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -1162,43 +1429,43 @@ private fun GameSpaceBase(
         Canvas(
             modifier = Modifier
                 .weight(1f)
-                .widthIn(max = 260.dp)
-                .height(MaxSpace.sm)
+                .widthIn(max = BaseBarMaxWidth)
+                .height(MaxSize.barHeight)
                 .semantics {
                     progressBarRangeInfo = ProgressBarRangeInfo(target / 100f, 0f..1f)
                 }
         ) {
-            val count = 28
-            val gap = size.width * 0.006f
-            val segW = (size.width - gap * (count - 1)) / count
-            val filled = (count * animated / 100f).roundToInt()
-            val fill = Brush.horizontalGradient(
-                listOf(GameSpacePalette.VioletSoft, GameSpacePalette.Cyan)
-            )
-            for (i in 0 until count) {
-                val corner = CornerRadius(size.height / 2f)
-                val topLeft = Offset(i * (segW + gap), 0f)
-                if (i < filled) {
-                    drawRoundRect(
-                        brush = fill,
-                        topLeft = topLeft,
-                        size = Size(segW, size.height),
-                        cornerRadius = corner
-                    )
-                } else {
-                    drawRoundRect(
-                        color = GameSpacePalette.Track,
-                        topLeft = topLeft,
-                        size = Size(segW, size.height),
-                        cornerRadius = corner
-                    )
-                }
+            val corner = CornerRadius(size.height / 2f)
+            val filled = size.width * animated / 100f
+            drawRoundRect(color = GameSpacePalette.Track, size = size, cornerRadius = corner)
+            if (filled > 0f) {
+                drawRoundRect(
+                    brush = Brush.horizontalGradient(
+                        listOf(GameSpacePalette.VioletSoft, GameSpacePalette.Cyan)
+                    ),
+                    size = Size(filled, size.height),
+                    cornerRadius = corner
+                )
+                // خطوط مائلة فوق التعبئة: نمطٌ متكرّر بتدرّج صلب، يُقصّ بحدود التعبئة نفسها.
+                drawRoundRect(
+                    brush = Brush.linearGradient(
+                        0f to Color.Transparent,
+                        0.5f to Color.Transparent,
+                        0.5f to Color.White.copy(alpha = 0.22f),
+                        1f to Color.White.copy(alpha = 0.22f),
+                        start = Offset.Zero,
+                        end = Offset(size.height, size.height),
+                        tileMode = TileMode.Repeat
+                    ),
+                    size = Size(filled, size.height),
+                    cornerRadius = corner
+                )
             }
         }
         Text(
-            text = "$target%",
+            text = stringResource(R.string.gs_percent_value, target),
             color = GameSpacePalette.Ink,
-            fontSize = 12.sp,
+            fontSize = 13.sp,
             fontWeight = FontWeight.SemiBold,
             maxLines = 1
         )
