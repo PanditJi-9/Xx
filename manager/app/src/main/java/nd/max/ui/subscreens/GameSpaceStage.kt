@@ -1,6 +1,9 @@
 /* Copyright (C) 2026 Nader Magdy. All rights reserved. */
 package nd.max.ui.subscreens
 
+import android.graphics.Bitmap
+import android.graphics.Canvas as AndroidCanvas
+import android.graphics.drawable.Drawable
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -62,6 +65,8 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathEffect
@@ -72,6 +77,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
@@ -118,8 +124,8 @@ import nd.max.ui.design.maxRadius
  * والموجة من تاريخ عيّنات المعالج الحقيقيّة. وما لم يُقرأ يبقى «—» وحلقةً بلا قوس — ولا تُكتب
  * أرقام اللقطة (٣٨٪ · ٥٢٪ · ٤١° · ١٢٠) لأنها ثابتة في الصورة لا في الجهاز (ADR-07).
  *
- * **والفنّ ليس منقولًا:** البطل أيقونة اللعبة الحقيقيّة من `PackageManager` مكبَّرةً ومذابةً في
- * خلفية مبنيّة من تدرّجات وأضواء، لا صورة من اللقطة ولا شعار لعبةٍ آخر.
+ * **صورة البطل تتبع الاختيار:** تُستخدم صورة `android:banner` التي يعلنها التطبيق المثبّت إن
+ * وُجدت؛ وإلا تُستخدم أيقونة الحزمة نفسها كبديل آمن. لا تُعرض صورة لعبة أخرى أو أرقام ثابتة.
  *
  * **والاتجاه مثبّت LTR لهذه الشاشة وحدها** لأن اللقطة تُظهر الشريط يسارًا؛ فالمحاذاة صريحة لا
  * موروثة من العربية.
@@ -139,13 +145,13 @@ private val RingWide = 66.dp
 private val RingCompact = 86.dp
 
 /** بطاقة الرفّ ملصقٌ رأسيّ؛ تضيق تلقائيًّا في الهاتف الأفقيّ القصير لتُبقي المسرح كاملًا. */
-private val CardHeightRatio = 0.24f
+private val CardHeightRatio = 0.215f
 private val CardMinHeight = 84.dp
 private val CardMaxHeight = 168.dp
 private const val CardAspect = 0.68f
 
 /** قاعدة الحالة: ٨٪ من الارتفاع ولا تنزل عن ٥٢dp. */
-private val StatusHeightRatio = 0.08f
+private val StatusHeightRatio = 0.072f
 private val StatusMinHeight = 52.dp
 
 /** أقصى عرض لكتلة نصّ البطل، فلا يمتدّ السطر على عرض المسرح. */
@@ -234,12 +240,12 @@ internal fun GameSpaceStage(
 
             // Landscape is identified by width and aspect ratio, not an arbitrary minimum height.
             // This keeps short phone-landscape screens in the complete dashboard layout.
-            val wide = maxWidth >= 680.dp && maxWidth / maxHeight.coerceAtLeast(1.dp) >= 1.35f
+            val wide = maxWidth >= 560.dp && maxWidth / maxHeight.coerceAtLeast(1.dp) >= 1.25f
             val compactLandscape = wide && maxHeight < 420.dp
             val panelWidth = (maxWidth * PanelWidthRatio)
                 .coerceIn(PanelMinWidth, if (compactLandscape) 292.dp else PanelMaxWidth)
             val cardHeight = if (wide) {
-                (maxHeight * (if (compactLandscape) 0.22f else CardHeightRatio))
+                (maxHeight * (if (compactLandscape) 0.205f else CardHeightRatio))
                     .coerceIn(76.dp, if (compactLandscape) 100.dp else CardMaxHeight)
             } else {
                 (maxHeight * 0.20f).coerceIn(CardMinHeight + MaxSpace.xxl, CardMaxHeight)
@@ -339,7 +345,7 @@ internal fun GameSpaceStage(
                                     cpuHistory = readings.cpuHistory,
                                     onOpen = onOptions,
                                     wide = true,
-                                    compact = maxHeight < 235.dp,
+                                    compact = maxHeight < 340.dp,
                                     modifier = Modifier
                                         .align(Alignment.TopEnd)
                                         .padding(top = MaxSpace.xs, end = MaxSpace.md)
@@ -644,6 +650,35 @@ private fun RailGear(active: Boolean, onClick: () -> Unit) {
 }
 
 /**
+ * يطلب صورة Banner التي يعلنها التطبيق المثبّت في Manifest (إن وجدت). كثير من الألعاب لا
+ * تعلن android:banner؛ لذلك يكون البديل أيقونة الحزمة نفسها، لا صورة لعبة أخرى أو صورة ثابتة.
+ * التحميل والتحويل إلى Bitmap يجريان على IO، مع سقف أبعاد يمنع تخصيص ذاكرة ضخمة.
+ */
+@Composable
+private fun rememberInstalledGameBanner(packageName: String): ImageBitmap? {
+    val context = LocalContext.current
+    val banner by produceState<ImageBitmap?>(initialValue = null, key1 = packageName) {
+        value = withContext(Dispatchers.IO) {
+            runCatching {
+                val drawable: Drawable = context.packageManager.getApplicationBanner(packageName)
+                    ?: return@runCatching null
+                val sourceWidth = drawable.intrinsicWidth.takeIf { it > 0 } ?: 1280
+                val sourceHeight = drawable.intrinsicHeight.takeIf { it > 0 } ?: 720
+                val scale = minOf(1f, 1920f / sourceWidth, 1080f / sourceHeight)
+                val width = (sourceWidth * scale).roundToInt().coerceAtLeast(1)
+                val height = (sourceHeight * scale).roundToInt().coerceAtLeast(1)
+                val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+                val canvas = AndroidCanvas(bitmap)
+                drawable.setBounds(0, 0, width, height)
+                drawable.draw(canvas)
+                bitmap.asImageBitmap()
+            }.getOrNull()
+        }
+    }
+    return banner
+}
+
+/**
  * البطل: فنّ اللعبة الحقيقيّ يملأ المسرح، والنسخ في أسفله — اسم اللعبة، ثم سطرٌ سينمائيّ، ثم
  * كبسولة «العب الآن» و«…»، ثم نقاط التنقّل. والنقر على الكبسولة يفتح اللعبة.
  */
@@ -670,7 +705,7 @@ private fun HeroPanel(
     ) {
         val short = maxHeight < 240.dp
         // في الواسع يقف النصّ في النصف الأيسر حتى لا يدخل تحت عمود الأداء العائم.
-        val copyMaxWidth = if (wide) minOf(HeroCopyMaxWidth, maxWidth * 0.54f) else HeroCopyMaxWidth
+        val copyMaxWidth = if (wide) minOf(HeroCopyMaxWidth, maxWidth * 0.40f) else HeroCopyMaxWidth
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -695,12 +730,13 @@ private fun HeroPanel(
             HeroArtWash(game = selected)
             Column(
                 modifier = Modifier
-                    .align(Alignment.BottomStart)
+                    .align(if (wide) Alignment.CenterStart else Alignment.BottomStart)
                     .widthIn(max = copyMaxWidth)
                     .padding(
-                        start = if (wide) MaxSpace.gutter else MaxSpace.md,
+                        start = if (wide) MaxSpace.xxl else MaxSpace.md,
                         end = MaxSpace.md,
-                        bottom = if (wide) MaxSpace.lg else MaxSpace.xl
+                        top = if (wide) MaxSpace.sm else 0.dp,
+                        bottom = if (wide) 0.dp else MaxSpace.xl
                     ),
                 verticalArrangement = Arrangement.spacedBy(MaxSpace.sm)
             ) {
@@ -766,61 +802,82 @@ private fun HeroPanel(
  */
 @Composable
 private fun HeroArtWash(game: GameApp) {
+    // الأولوية لبانر اللعبة الحقيقيّ الذي يوفّره التطبيق المثبّت. إن لم يوفّره، نستخدم
+    // أيقونة اللعبة المحدّدة نفسها كصورة بديلة؛ تتغيّر الصورة فور اختيار لعبة أخرى.
+    val banner = rememberInstalledGameBanner(game.packageName)
     val icon by rememberLobbyIcon(game.packageName)
-    val bitmap = icon ?: return
-    Box(
+    val artwork = banner ?: icon ?: return
+    val hasWideBanner = banner != null
+
+    BoxWithConstraints(
         modifier = Modifier
             .fillMaxSize()
             .clipToBounds()
     ) {
+        // بانر أفقي: يملأ منطقة البطل كاملةً. الأيقونة: تُحوَّل إلى خلفية ممتدة مع نسخة
+        // كبيرة مقصوصة على اليمين حتى لا تبدو كأيقونة صغيرة عائمة في منتصف الشاشة.
         Image(
-            bitmap = bitmap,
+            bitmap = artwork,
             contentDescription = null,
             contentScale = ContentScale.Crop,
-            alpha = 0.50f,
+            alpha = if (hasWideBanner) 0.92f else 0.38f,
             modifier = Modifier
                 .fillMaxSize()
                 .graphicsLayer {
-                    scaleX = 2.2f
-                    scaleY = 2.2f
+                    scaleX = if (hasWideBanner) 1.025f else 1.45f
+                    scaleY = if (hasWideBanner) 1.025f else 1.45f
                 }
         )
-        // ظلامٌ تامّ تحت النصّ، وانكشافٌ تدريجيّ إلى اليمين حيث يقف الفنّ.
+        if (!hasWideBanner) {
+            val artWidth = (maxHeight * 1.48f).coerceAtMost(maxWidth * 0.58f)
+            Image(
+                bitmap = artwork,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                alpha = 0.88f,
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .width(artWidth)
+                    .fillMaxHeight(0.96f)
+                    .graphicsLayer {
+                        scaleX = 1.06f
+                        scaleY = 1.06f
+                    }
+            )
+        }
+        // منطقة آمنة للنصّ يسارًا، وتعتيم تدريجيّ تحت لوحة الأداء يمينًا، مع قاعدة داكنة
+        // تدمج الصورة في رفّ الألعاب كما في المرجع بدل إطار مستقل حول الصورة.
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(
                     Brush.horizontalGradient(
-                        0f to GameSpacePalette.Void,
-                        0.30f to GameSpacePalette.Void.copy(alpha = 0.92f),
-                        0.60f to GameSpacePalette.Void.copy(alpha = 0.52f),
-                        1f to Color.Transparent
+                        0f to GameSpacePalette.Void.copy(alpha = 0.98f),
+                        0.24f to GameSpacePalette.Void.copy(alpha = 0.82f),
+                        0.46f to GameSpacePalette.Void.copy(alpha = 0.36f),
+                        0.74f to GameSpacePalette.Void.copy(alpha = 0.12f),
+                        1f to GameSpacePalette.Void.copy(alpha = 0.42f)
                     )
                 )
         )
-        // أعلى الفنّ يُذاب في الخلفيّة، وأسفله في رفّ الألعاب — فلا حدّ فاصل بين المنطقتين.
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(
                     Brush.verticalGradient(
-                        0f to GameSpacePalette.Void.copy(alpha = 0.78f),
-                        0.32f to Color.Transparent,
-                        0.58f to Color.Transparent,
-                        1f to GameSpacePalette.Void.copy(alpha = 0.96f)
+                        0f to GameSpacePalette.Void.copy(alpha = 0.12f),
+                        0.68f to Color.Transparent,
+                        1f to GameSpacePalette.Void.copy(alpha = 0.92f)
                     )
                 )
         )
-        // هالة بنفسجيّة تُوحّد لون الفنّ مع لوحة الشاشة.
+        // لمسة باردة خفيفة فقط؛ لا طبقة أرجوانية كثيفة فوق صورة اللعبة.
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(
                     Brush.radialGradient(
-                        listOf(
-                            GameSpacePalette.Violet.copy(alpha = 0.10f),
-                            Color.Transparent
-                        )
+                        listOf(GameSpacePalette.Violet.copy(alpha = 0.035f), Color.Transparent)
                     )
                 )
         )
@@ -1289,8 +1346,7 @@ private fun PerformancePanel(
         return
     }
     Column(
-        modifier = modifier
-            .then(if (wide) Modifier.verticalScroll(rememberScrollState()) else Modifier),
+        modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(if (compact) MaxSpace.xs else MaxSpace.sm)
     ) {
         PerfSlab(compact = compact) {

@@ -145,7 +145,7 @@ import nd.max.ui.util.customizedFieldCount
 import nd.max.ui.viewmodel.AppSettingsViewModel
 import nd.max.ui.viewmodel.GameSpaceViewModel
 
-internal val TopBarHeight = 56.dp
+internal val TopBarHeight = 44.dp
 
 /** تحت هذا الارتفاع (هاتف عرضيّ) تُعرض لوحة القراءات بلا هامش توضيحيّ. */
 private val StageCompactHeight = 420.dp
@@ -157,7 +157,6 @@ private val GameSpaceWideStage = 720.dp
 private val GameSpaceBoardWidth = 300.dp
 
 /* عتبات الشريط العلويّ: الساعة والتبويبات تظهران حين يُوجد لهما مكان حقيقيّ، والشعار في كل عرض. */
-private const val GameSpaceBrandCompactDp = 760
 private const val GameSpaceClockWidthDp = 720
 private const val GameSpaceTabsWidthDp = 1100
 
@@ -576,7 +575,8 @@ fun GameLobbyScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm)
                 ) {
-                    GameSpaceBrand(compact = screenWidthDp < GameSpaceBrandCompactDp)
+                    // شريط علويّ خفيف على مرجع الصورة: ساعة النظام والتاريخ والبطارية فقط؛
+                    // العلامة M موجودة في الشريط الجانبيّ، فلا نكرّر عنوانًا كبيرًا يستهلك ارتفاع المسرح.
                     if (screenWidthDp >= GameSpaceClockWidthDp) {
                         GameSpaceClockCluster(
                             clock = lobbyClock,
@@ -585,7 +585,6 @@ fun GameLobbyScreen(
                             charging = lobbyBattery?.charging == true
                         )
                     }
-                    // الفراغ المرن يدفع الأزرار إلى الطرف المقابل، والساعة تبقى قرب الشعار كما في اللقطة.
                     Box(Modifier.weight(1f))
                     // استكشاف المكتبة من المسرح: بحث فوري ومرشّحات وبطاقات غنية، بلا مغادرة اللوبي.
                     LobbyRoundButton(
