@@ -1,10 +1,9 @@
 /* Copyright (C) 2026 Nader Magdy. All rights reserved. */
 package nd.max.ui.subscreens
 
-import android.text.format.DateFormat
-import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import android.text.format.DateFormat
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -27,13 +26,15 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.rounded.BatteryFull
-import androidx.compose.material.icons.rounded.Wifi
 import androidx.compose.material.icons.rounded.Bolt
+import androidx.compose.material.icons.rounded.SignalCellularAlt
+import androidx.compose.material.icons.rounded.Wifi
+import androidx.compose.material.icons.rounded.WifiOff
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,6 +48,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import java.text.SimpleDateFormat
@@ -68,8 +70,8 @@ import nd.max.ui.design.maxRadius
 /*
  * إطار «Game Space»: أربعة أجزاء تحيط بالمسرح —
  *
- *  (١) **أزرار التحكم** على أقصى اليسار، بالترتيب: إغلاق، سجلّ، تحديث، مفضّلة، استكشاف.
- *  (٢) **ساعة الجهاز وتاريخه وWi-Fi والبطارية** في يمين الشريط، يليها شعار Space Game وصورة الحساب على أقصى اليمين.
+ *  (١) **شعار اللعب** في مطلع الشريط العلوي (‏Game بيضاء + Space بنفسجيّة + سطر PLAY · BOOST · ENJOY).
+ *  (٢) **ساعة الجهاز وتاريخه وبطاريته** قبل أزرار الشريط (كما في التصميم).
  *  (٣) **شريط الأقسام** الرأسي على الحافة، بهدف لمس ≥ ٤٨dp لكل صفّ.
  *  (٤) **لوحة قراءات** أعلى اليمين بثلاث حلقات مجزّأة، و**قاعدة حالة** أسفل الشاشة.
  *
@@ -90,35 +92,35 @@ import nd.max.ui.design.maxRadius
  */
 
 /**
- * لوحة Game Space: فحميّ وأسود بدرجات متقاربة، مع بنفسجيّ مطفأ للتحديد فقط، وسيان ونعناع للقراءات.
+ * لوحة Game Space كما في تصميم المالك: نيليّ عميق + بنفسجيّ + ورديّ، والسماء سيانيّة للقراءات.
  *
- * **محصورة في اللوبي**؛ لا تغيّر ثيم التطبيق العام أو ألوان شاشاته الأخرى.
+ * **محصورة في هذه الشاشة** ولا تحلّ محلّ رموز التطبيق العامّة: `MaxTone` و`LobbyPalette` تبقى
+ * مرجع بقيّة الشاشات، فلا يتفرّع للتطبيق لوحتان.
  */
 internal object GameSpacePalette {
-    // A restrained graphite system: violet is an interaction accent, never a page background.
-    val Void = Color(0xFF080A0D)
-    val Black = Void
-    val Deep = Color(0xFF0D1015)
-    val Panel = Color(0xFF151A21)
-    val PanelRaised = Color(0xFF1D242D)
-    val PanelSelected = Color(0xFF29313B)
-    val Violet = Color(0xFF62527F)
-    val VioletDeep = Color(0xFF383044)
-    val VioletSoft = Color(0xFF9886B8)
-    val Magenta = Color(0xFFD47791)
-    val Cyan = Color(0xFF55B8D1)
-    val Mint = Color(0xFF63C9A4)
-    val Track = Color(0xFF303741)
-    val Ink = Color(0xFFF2F3F5)
-    val Muted = Color(0xFF9AA2AC)
-    val Hairline = Color(0x26FFFFFF)
-    val Edge = Color(0x4A9886B8)
+    val Void = Color(0xFF050318)
+    val Deep = Color(0xFF0A0420)
+    val Panel = Color(0xFF171A2E)
+    val PanelRaised = Color(0xFF1E2736)
+    val Violet = Color(0xFF7C3AED)
+    val VioletDeep = Color(0xFF55309F)
+    val VioletSoft = Color(0xFFA855F7)
+    val Magenta = Color(0xFFFF2D6B)
+    val Cyan = Color(0xFF38BDF8)
+    val Track = Color(0xFF2D2250)
+    val Ink = Color(0xFFF2F3F8)
+    val Muted = Color(0xFF8B86A8)
+    val Hairline = Color(0x33A855F7)
+    val Glass = Color(0xFF14142B)
+    val GlassDeep = Color(0xFF0A0A16)
 
-    // Semantic aliases keep the control-center components on the same palette.
-    val Steel = Muted
-    val Positive = Mint
-    val Red = Violet
-    val RedBright = VioletSoft
+    /* درجات لوحة التصميم: لافندر للنصّ الثانويّ، وبنفسجيّ داكن للألواح، وأخضر البطارية، وأطراف تدرّج الحلقات. */
+    val Lavender = Color(0xFFD8B4FE)
+    val Plum = Color(0xFF1A1140)
+    val Night = Color(0xFF0E0A26)
+    val Mint = Color(0xFF34D399)
+    val Blue = Color(0xFF3B6CF6)
+    val Orange = Color(0xFFFF8A3D)
 }
 
 /** عرض شريط الأقسام — ٩٦dp، محصور بين الهدف اللمسي ونصف عرض اللقطة. */
@@ -135,45 +137,68 @@ private val GaugeDiameter = 72.dp
 
 /**
  * شعار اللعب: «Game» بيضاء و«Space» بنفسجيّة، تحته سطر الشعار المتباعد.
- * يُوضع في نهاية البار إلى يسار صورة الحساب ليطابق ترتيب المرجع.
+ *
  * [compact] يُسقط السطر وحده على الشاشات الضيّقة، ولا يُسقط الاسم: الاسم هوية الشاشة.
  */
 @Composable
 internal fun GameSpaceBrand(
     compact: Boolean,
     modifier: Modifier = Modifier,
+    /** الشعار الحرفيّ يحمله الشريط الجانبيّ في المسرح؛ فيُسقط هنا حين يكون الشريط ظاهرًا. */
+    showMark: Boolean = true,
 ) {
-    // الكلمة وحدها: العلامة «M» تسكن شريط الأقسام، فلا تتكرّر هنا.
-    Column(
+    Row(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(MaxSpace.hairline)
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm)
     ) {
-        Row(horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs)) {
+        if (showMark) Box(
+            modifier = Modifier
+                .size(MaxSize.iconContainer)
+                .clip(RoundedCornerShape(maxRadius(MaxRadius.control)))
+                .background(GameSpacePalette.Violet)
+                .border(
+                    MaxSize.hairlineBorder,
+                    GameSpacePalette.VioletSoft.copy(alpha = MaxAlpha.borderStrong),
+                    RoundedCornerShape(maxRadius(MaxRadius.control))
+                ),
+            contentAlignment = Alignment.Center
+        ) {
             Text(
-                text = stringResource(R.string.gs_brand_game),
-                color = GameSpacePalette.Ink,
-                fontSize = 28.sp,
-                fontWeight = FontWeight.Black,
-                maxLines = 1
-            )
-            Text(
-                text = stringResource(R.string.gs_brand_space),
-                color = GameSpacePalette.VioletSoft,
-                fontSize = 28.sp,
-                fontWeight = FontWeight.Black,
-                maxLines = 1
+                text = stringResource(R.string.gs_brand_mark),
+                color = Color.White,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold
             )
         }
-        if (!compact) {
-            Text(
-                text = stringResource(R.string.gs_brand_tagline),
-                color = GameSpacePalette.Muted,
-                fontSize = 10.sp,
-                fontWeight = FontWeight.Medium,
-                letterSpacing = 3.sp,
-                maxLines = 1,
-                overflow = TextOverflow.Clip
-            )
+        Column(verticalArrangement = Arrangement.spacedBy(MaxSpace.hairline)) {
+            Row(horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs)) {
+                Text(
+                    text = stringResource(R.string.gs_brand_game),
+                    color = GameSpacePalette.Ink,
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1
+                )
+                Text(
+                    text = stringResource(R.string.gs_brand_space),
+                    color = GameSpacePalette.VioletSoft,
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1
+                )
+            }
+            if (!compact) {
+                Text(
+                    text = stringResource(R.string.gs_brand_tagline),
+                    color = GameSpacePalette.Muted,
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.Medium,
+                    letterSpacing = 3.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Clip
+                )
+            }
         }
     }
 }
@@ -182,8 +207,11 @@ internal fun GameSpaceBrand(
  * ساعة الجهاز وتاريخه وبطاريته — قراءات حقيقيّة من النظام ([rememberLobbyClock] و[rememberLobbyDate]
  * و`rememberLobbyBattery`)، وما لم يُقرأ يُعلن «—».
  *
- * حالة Wi-Fi تُقرأ من شبكة النظام النشطة عبر `ConnectivityManager`، وتُحدّث دوريًّا؛ لا تُرسم
- * الأيقونة على أنها متصلة إذا لم تكن الشبكة النشطة Wi-Fi.
+ * أيقونة الاتّصال **قراءة حقيقيّة** من `ConnectivityManager` (إذن `ACCESS_NETWORK_STATE` العاديّ المصرَّح به
+ * أصلًا): Wi-Fi أو بيانات الجوال أو «لا اتّصال». لا تُرسم أيقونة لحالة لم تُقرأ.
+ *
+ * مقسومة نصفين كما في التصميم: [GameSpaceClock] يسارًا بعد الشريط الجانبيّ، و[GameSpaceLinkBattery] يمينًا.
+ * و[GameSpaceClockCluster] يجمعهما لصفحة مركز التحكّم التي لا شريط فيها.
  */
 @Composable
 internal fun GameSpaceClockCluster(
@@ -193,54 +221,74 @@ internal fun GameSpaceClockCluster(
     charging: Boolean,
     modifier: Modifier = Modifier,
 ) {
-    val context = LocalContext.current
-    val wifiConnected by produceState(initialValue = false, context) {
-        while (true) {
-            value = runCatching {
-                val manager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-                val network = manager.activeNetwork
-                manager.getNetworkCapabilities(network)?.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) == true
-            }.getOrDefault(false)
-            delay(5_000L)
-        }
-    }
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(MaxSpace.md)
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm)) {
-            Text(
-                text = clock,
-                color = GameSpacePalette.Ink,
-                fontSize = 17.sp,
-                fontWeight = FontWeight.Bold,
-                maxLines = 1
-            )
-            Text(
-                text = date,
-                color = GameSpacePalette.Muted,
-                fontSize = 12.sp,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-        }
+        GameSpaceClock(clock = clock, date = date)
+        GameSpaceLinkBattery(batteryPercent = batteryPercent, charging = charging)
+    }
+}
+
+/** الساعة والتاريخ: الساعة بخطّ عريض والتاريخ خافت بجوارها. */
+@Composable
+internal fun GameSpaceClock(
+    clock: String,
+    date: String,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm)
+    ) {
+        Text(
+            text = clock,
+            color = GameSpacePalette.Ink,
+            fontSize = 18.sp,
+            fontWeight = FontWeight.SemiBold,
+            maxLines = 1
+        )
+        Text(
+            text = date,
+            color = GameSpacePalette.Muted,
+            fontSize = 13.sp,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+    }
+}
+
+/** الاتّصال والبطارية: أيقونة الشبكة، ثم البطارية ونسبتها. */
+@Composable
+internal fun GameSpaceLinkBattery(
+    batteryPercent: Int?,
+    charging: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    val link by rememberLobbyLink()
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(MaxSpace.md)
+    ) {
         Icon(
-            imageVector = Icons.Rounded.Wifi,
-            contentDescription = stringResource(R.string.gs_wifi_status),
-            tint = if (wifiConnected) GameSpacePalette.Ink else GameSpacePalette.Muted,
+            imageVector = when (link) {
+                LobbyLink.Wifi -> Icons.Rounded.Wifi
+                LobbyLink.Cellular -> Icons.Rounded.SignalCellularAlt
+                LobbyLink.Offline -> Icons.Rounded.WifiOff
+            },
+            contentDescription = null,
+            tint = if (link == LobbyLink.Offline) GameSpacePalette.Muted else GameSpacePalette.Ink,
             modifier = Modifier.size(MaxSize.iconGlyph)
         )
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs)) {
             Icon(
                 imageVector = Icons.Rounded.BatteryFull,
                 contentDescription = null,
-                tint = when {
-                    batteryPercent == null -> GameSpacePalette.Muted
-                    charging -> GameSpacePalette.Cyan
-                    else -> GameSpacePalette.Mint
-                },
-                modifier = Modifier.size(MaxSize.iconGlyphSmall)
+                tint = if (charging) GameSpacePalette.Cyan else GameSpacePalette.Ink,
+                modifier = Modifier.size(MaxSize.iconGlyph)
             )
             Text(
                 text = batteryPercent?.let { stringResource(R.string.gs_percent_value, it) }
@@ -254,18 +302,30 @@ internal fun GameSpaceClockCluster(
     }
 }
 
-/** صورة الحساب المنفصلة عن مجموعة حالة النظام؛ تقع في أقصى يمين البار كما في المرجع. */
+/** نوع الاتّصال الحاليّ كما يعلنه النظام؛ أيّ شبكة غير الجوال تُعدّ Wi-Fi في العرض (إيثرنت/VPN نادران على هاتف). */
+internal enum class LobbyLink { Wifi, Cellular, Offline }
+
+/** يقرأ الشبكة الفعّالة كل أربع ثوانٍ — استعلام خفيف بلا مستمع يجب إلغاء تسجيله. */
 @Composable
-internal fun GameSpaceProfileBadge(modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier
-            .size(30.dp)
-            .clip(androidx.compose.foundation.shape.CircleShape)
-            .background(GameSpacePalette.Violet.copy(alpha = 0.72f))
-            .border(MaxSize.hairlineBorder, GameSpacePalette.VioletSoft.copy(alpha = 0.55f), androidx.compose.foundation.shape.CircleShape),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(stringResource(R.string.gs_brand_mark), color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+internal fun rememberLobbyLink(): State<LobbyLink> {
+    val context = LocalContext.current
+    return produceState(LobbyLink.Offline, context) {
+        val manager = context.getSystemService(ConnectivityManager::class.java)
+        while (true) {
+            value = readLobbyLink(manager)
+            delay(4_000L)
+        }
+    }
+}
+
+private fun readLobbyLink(manager: ConnectivityManager?): LobbyLink {
+    if (manager == null) return LobbyLink.Offline
+    val caps = runCatching { manager.getNetworkCapabilities(manager.activeNetwork) }.getOrNull()
+        ?: return LobbyLink.Offline
+    return when {
+        caps.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> LobbyLink.Wifi
+        caps.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> LobbyLink.Cellular
+        else -> LobbyLink.Wifi
     }
 }
 
@@ -312,7 +372,7 @@ internal fun GameSpaceRail(
                     .heightIn(min = MaxSize.minTouchTarget)
                     .clip(itemShape)
                     .background(
-                        if (isSelected) GameSpacePalette.Violet.copy(alpha = 0.18f) else Color.Transparent
+                        if (isSelected) GameSpacePalette.Violet.copy(alpha = 0.34f) else Color.Transparent
                     )
                     .border(
                         MaxSize.hairlineBorder,
