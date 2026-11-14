@@ -90,15 +90,17 @@ MaxManager has a strong engine and a fragmented surface. `core/maxai` + `core/ha
 **MEASURED (هنا، بلا Gradle — §0.10):** `kt_balance --assert` ٣٤٣٥ ملفًا/٠ عائق · `code_health --assert`
 صحّة نظيفة · `i18n_coverage --assert` و`--prune all --assert` عوائق/يتيم ٠ · `design_tokens --assert`
 ٢٣٣/٣٠٠ (−٦٧) · `resource_compile --assert` مجلّدان يترجمان · `provenance_guard --assert` ٤٢٢٠ ملفًا/
-٠ مسار · `git diff --check` نظيف. **BUILD:** لا Gradle محليًّا؛ دُفع `d63ab080` إلى `main` وشُغِّل
-Quick Verify `43597909674` على `d63ab080` — **الحكم لم يُقرأ بعد، والترجمة غير مُتحقَّقة حتى يُقرأ**.
+٠ مسار · `git diff --check` نظيف. **BUILD:** لا Gradle محليًّا. أول Quick Verify `43597909674` على `d63ab080`
+فشل في اختبار حرسٍ قديم (`LobbyExploreContractTest` ما زال يطلب `BackHandler` الخاص بالـpager) — لا في
+التصريف؛ أُصلح الاختبار وحُرس المسار الجديد في `7566c334`، ثم **Quick Verify `43598943102` على `7566c334`
+= success** (تصريف Release + اختبارات Release). الشكل/اللمس يبقيان غير مُتحقَّقين هنا.
 
 **مخاطر:** الشكل واللمس على ١٩٩٠×٩٣٠ يحتاجان جهاز المالك؛ الأجسام الستّة تُركَّب كلها في العمود
 الواحد (لا تظليلَ كسول) وقد تزيد كلفة التركيب؛ بقيت رموز/دوالّ غير مستعملة (`RailSection`,
 `RailCollapse`, `LaunchRow`, واستيرادات pager) تحذيرات لا أخطاء؛ شريط السبع عناصر يُحسب ٣٨٤dp داخل
 ٤٠٩dp لكن لم يُقَس باللمس. `LobbyControlCenter` لم يعد يُستدعى من اللوبي لكنه باقٍ بلا حذف.
 
-**NEXT:** قراءة حكم Quick Verify؛ ثم لقطة المالك للمقارنة؛ ثم تنظيف الرموز الميتة في دفعة منفصلة.
+**NEXT:** لقطة من جهاز المالك على ١٩٩٠×٩٣٠ للمقارنة السباعية؛ ثم تنظيف الرموز الميتة في دفعة منفصلة.
 
 ### GAME-SPACE-MONOLITH-01 — إعادة بناء Game Space على «نصب» واحد: طبقة Nexus، مسيرة صادقة، مكتبة مرتّبة، تهيئة مفسّرة، ولوحة أوامر — 2026-11-13 · DONE_WITH_CONCERNS
 
