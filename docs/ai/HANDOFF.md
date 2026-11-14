@@ -90,8 +90,8 @@ MaxManager has a strong engine and a fragmented surface. `core/maxai` + `core/ha
 **MEASURED (هنا، بلا Gradle — §0.10):** `kt_balance --assert` ٣٤٣٥ ملفًا/٠ عائق · `code_health --assert`
 صحّة نظيفة · `i18n_coverage --assert` و`--prune all --assert` عوائق/يتيم ٠ · `design_tokens --assert`
 ٢٣٣/٣٠٠ (−٦٧) · `resource_compile --assert` مجلّدان يترجمان · `provenance_guard --assert` ٤٢٢٠ ملفًا/
-٠ مسار · `git diff --check` نظيف. **BUILD:** لا Gradle محليًّا؛ Quick Verify `390059589` بعد الدفع هو
-المُصرّف الوحيد — **الترجمة غير مُتحقَّقة في هذه البيئة** حتى يُقرأ حكمه.
+٠ مسار · `git diff --check` نظيف. **BUILD:** لا Gradle محليًّا؛ دُفع `d63ab080` إلى `main` وشُغِّل
+Quick Verify `43597909674` على `d63ab080` — **الحكم لم يُقرأ بعد، والترجمة غير مُتحقَّقة حتى يُقرأ**.
 
 **مخاطر:** الشكل واللمس على ١٩٩٠×٩٣٠ يحتاجان جهاز المالك؛ الأجسام الستّة تُركَّب كلها في العمود
 الواحد (لا تظليلَ كسول) وقد تزيد كلفة التركيب؛ بقيت رموز/دوالّ غير مستعملة (`RailSection`,

@@ -44,11 +44,25 @@ class LobbyExploreContractTest {
         assertTrue("Explore overlay is not composed", text.contains("LobbyExplore("))
         assertTrue("Explore overlay is not animated", text.contains("AnimatedVisibility("))
 
-        val controlBack = text.indexOf("BackHandler(enabled = rootState.currentPage == 1)")
+        val controlBack = text.indexOf("BackHandler(enabled = spineIndex > 0)")
         val exploreBack = text.indexOf("BackHandler(enabled = exploreOpen)")
-        assertTrue("Control back handler is missing", controlBack >= 0)
+        assertTrue("Spine back handler is missing", controlBack >= 0)
         assertTrue("Explore back handler is missing", exploreBack >= 0)
         assertTrue("Explore back handler must be composed last so it wins", exploreBack > controlBack)
+    }
+
+    @Test
+    fun `the lobby is one spine, not a hidden settings page`() {
+        val root = sourceRoot()
+        assumeTrue("Cannot locate nd.max sources; guard not evaluated", root != null)
+        val text = lobby()
+
+        assertFalse("The hidden vertical pager must not return", text.contains("VerticalPager("))
+        assertFalse("The settings page state must not return", text.contains("rememberPagerState("))
+        assertTrue("The fixed spine is missing", text.contains("GameSpaceRail("))
+        assertTrue("The section bodies are not composed in the spine", text.contains("LobbySectionContent("))
+        assertTrue("The spine is not scroll-spied", text.contains("verticalScroll(homeScroll)"))
+        assertTrue("The active section is not derived from the scroll", text.contains("spineIndex by remember"))
     }
 
     @Test
