@@ -130,6 +130,7 @@ import nd.max.ui.gamespace.CommandPalette
 import nd.max.ui.gamespace.GameSpaceSkin
 import nd.max.ui.gamespace.LobbyBackdrop
 import nd.max.ui.gamespace.NexusPage
+import nd.max.ui.gamespace.NexusState
 import nd.max.ui.gamespace.ReadyGap
 import nd.max.ui.gamespace.PaletteAction
 import nd.max.ui.gamespace.PaletteActionId
@@ -144,7 +145,7 @@ import nd.max.ui.util.customizedFieldCount
 import nd.max.ui.viewmodel.AppSettingsViewModel
 import nd.max.ui.viewmodel.GameSpaceViewModel
 
-private val TopBarHeight = 56.dp
+internal val TopBarHeight = 56.dp
 
 /** تحت هذا الارتفاع (هاتف عرضيّ) تُعرض لوحة القراءات بلا هامش توضيحيّ. */
 private val StageCompactHeight = 420.dp
@@ -324,6 +325,21 @@ fun GameLobbyScreen(
     // عدد مقابض الملفّ المضبوطة لكل لعبة، من `AppConfig` نفسه الذي يقرؤه المراقب — لا عدّاد ثانٍ.
     val tweaksByGame = remember(settingsViewModel.fullConfig) {
         settingsViewModel.fullConfig.mapValues { entry -> entry.value.customizedFieldCount() }
+    }
+    // جاهزية المسرح من الدالة النقيّة نفسها التي تغذّي Nexus — رقم واحد لا رقمين.
+    val readinessSnapshot = remember(
+        allGames, playStats, sessions, panelPrefs.enabledPackages, overlayGranted, tweaksByGame, active
+    ) {
+        NexusState.snapshot(
+            games = allGames,
+            stats = playStats,
+            sessions = sessions,
+            armed = panelPrefs.enabledPackages,
+            overlayGranted = overlayGranted,
+            tweaks = tweaksByGame,
+            selected = active,
+            nowMs = System.currentTimeMillis()
+        )
     }
 
     // لون المسرح يتبع اللعبة المحدَّدة (أو لون العلامة إن أُوقف «ألوان من اللعبة») وينتقل بنعومة؛
@@ -563,106 +579,46 @@ fun GameLobbyScreen(
                         }
                 ) {
                     if (page == 0) {
-                        // ─────────────── المسرح بإطار Game Space ───────────────
-                        // الحافة اليسرى أقسام، واليمنى قراءات، وأسفل الشاشة حكم آخر جلسة — كما في
-                        // تصميم المالك؛ والوسط يبقى مسرح Nexus. على الهاتف تنزل اللوحة فوق المسرح
-                        // بدل عمودها، لأن عمود ٣٠٠dp على ٣٦٠dp يترك خبرًا بلا مسرح.
-                        BoxWithConstraints(Modifier.fillMaxSize()) {
-                            val wide = maxWidth >= GameSpaceWideStage
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .displayCutoutPadding()
-                                    .padding(top = TopBarHeight, bottom = GameSpaceStatusHeight),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                if (wide) {
-                                    GameSpaceRail(selected = section, onSection = openControl)
-                                }
-                                Column(
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .fillMaxHeight()
-                                ) {
-                                    if (!wide) {
-                                        GameSpaceBoard(
-                                            battery = lobbyBattery,
-                                            memory = lobbyMemory,
-                                            tweaks = active?.let { tweaksByGame[it.packageName] } ?: 0,
-                                            panelEnabled = panelEnabled,
-                                            onProfile = { openControl(LobbySection.Game) },
-                                            compact = maxHeight < StageCompactHeight,
-                                            modifier = Modifier
-                                                .align(Alignment.CenterHorizontally)
-                                                .padding(horizontal = MaxSpace.gutter, vertical = MaxSpace.sm)
-                                        )
-                                    }
-                                    NexusPage(
-                            games = games,
-                            selected = active,
-                            stats = playStats,
-                            sessions = sessions,
-                            tweaks = tweaksByGame,
-                            armed = panelPrefs.enabledPackages,
-                            overlayGranted = overlayGranted,
-                            favoritesOnly = favoritesOnly,
-                            gameSessions = storedSessions,
-                            onSelect = selectGame,
-                            onLaunch = start,
-                            onOpenVault = { tick(); exploreOpen = true },
-                            onOpenLoadout = { openControl(LobbySection.Loadout) },
-                            onOpenCareer = { openControl(LobbySection.Insights) },
-                            onOpenSearch = { tick(); paletteOpen = true },
-                            onClearFavorites = { favoritesOnly = false },
-                            onOpenLibrary = { openControl(LobbySection.Library) },
-                            // كل شرط يُكمل بفعله لا برحلة إلى قسم آخر: الملفّ يُفتح، واللوحة تُفعَّل
-                            // (وتفتح منح التراكب إن لزم داخل setPanel)، والإذن يذهب إلى شاشة النظام.
-                            onFixGap = { gap ->
+                        val readyPercent = if (readinessSnapshot.readyTotal > 0) {
+                            readinessSnapshot.readyDone * 100 / readinessSnapshot.readyTotal
+                        } else {
+                            0
+                        }
+                        val gapText = readinessSnapshot.gap?.let { gap ->
+                            stringResource(
                                 when (gap) {
-                                    ReadyGap.Profile -> openControl(LobbySection.Game)
-                                    ReadyGap.Panel -> setPanel(true)
-                                    ReadyGap.Overlay -> OverlayPermission.openSettings(context)
+                                    ReadyGap.Profile -> R.string.lobby_nexus_gap_profile
+                                    ReadyGap.Panel -> R.string.lobby_nexus_gap_panel
+                                    ReadyGap.Overlay -> R.string.lobby_nexus_gap_overlay
                                 }
-                            },
-                            // يُقرأ عند كل تركيب: الاختيار يقع في مركز التحكم، والعودة تُعيد القراءة.
-                            chromeAccent = GameSpaceSkin.read(context).accent,
-                                        modifier = Modifier
-                                            .fillMaxSize()
-                                    )
-                                }
-                                if (wide) {
-                                    Box(
-                                        modifier = Modifier
-                                            .width(GameSpaceBoardWidth)
-                                            .padding(end = MaxSpace.xxl)
-                                    ) {
-                                        GameSpaceBoard(
-                                            battery = lobbyBattery,
-                                            memory = lobbyMemory,
-                                            tweaks = active?.let { tweaksByGame[it.packageName] } ?: 0,
-                                            panelEnabled = panelEnabled,
-                                            onProfile = { openControl(LobbySection.Game) }
-                                        )
-                                    }
-                                }
-                            }
-                            GameSpaceStatusBar(
-                                label = insight?.let { gameSpaceVerdictLabel(it.verdict) }
-                                    ?: stringResource(R.string.gs_status_ready),
-                                detail = insight?.let {
-                                    stringResource(R.string.lobby_arena_sessions_detail, activeSessions.size)
-                                } ?: stringResource(R.string.lobby_arena_no_session),
-                                tone = insight?.let { gameSpaceVerdictTone(it.verdict) } ?: GameSpacePalette.Muted,
-                                onSessions = {
-                                    navController.navigate(MaxDestination.GameSessions.route) {
-                                        launchSingleTop = true
-                                    }
-                                },
-                                modifier = Modifier
-                                    .align(Alignment.BottomCenter)
-                                    .padding(horizontal = MaxSpace.xxl)
                             )
                         }
+                        // الشاشة كما في تصميم المالك: شريط أقسام، بطل، لوحة أداء، رفّ ألعاب، قاعدة.
+                        GameSpaceStage(
+                            games = games,
+                            selected = active,
+                            readinessPercent = readyPercent,
+                            statusTitle = insight?.let { gameSpaceVerdictLabel(it.verdict) }
+                                ?: stringResource(R.string.gs_ready_title),
+                            statusDetail = gapText ?: stringResource(R.string.gs_ready_body),
+                            panelEnabled = panelEnabled,
+                            batteryPercent = lobbyBattery?.percent,
+                            batteryTempC = lobbyBattery?.tempTenthsC?.let { it / 10f },
+                            charging = lobbyBattery?.charging == true,
+                            onSelect = selectGame,
+                            onLaunch = start,
+                            onOptions = { openControl(LobbySection.Game) },
+                            onHome = {},
+                            onOpenSection = openControl,
+                            onOpenLibrary = { openControl(LobbySection.Library) },
+                            onOpenSessions = {
+                                navController.navigate(MaxDestination.GameSessions.route) {
+                                    launchSingleTop = true
+                                }
+                            },
+                            modifier = Modifier.fillMaxSize()
+                        )
+
                     } else {
                         // ─────────────── مركز التحكم ───────────────
                         LobbyControlCenter(

@@ -606,4 +606,25 @@
     <string name="lobby_arena_no_session">No session yet</string>
     <string name="lobby_arena_panel_armed">Panel armed</string>
     <string name="lobby_arena_panel_off">Panel off</string>
+    <string name="gs_nav_home">Home</string>
+    <string name="gs_nav_games">Games</string>
+    <string name="gs_nav_perf">Performance</string>
+    <string name="gs_nav_tools">Tools</string>
+    <string name="gs_nav_features">Features</string>
+    <string name="gs_nav_settings">Settings</string>
+    <string name="gs_launch">Launch game</string>
+    <string name="gs_more">More options</string>
+    <string name="gs_device_perf">Device performance</string>
+    <string name="gs_cpu">CPU</string>
+    <string name="gs_gpu">GPU</string>
+    <string name="gs_heat">Heat</string>
+    <string name="gs_battery">Battery</string>
+    <string name="gs_perf_mode">Performance mode</string>
+    <string name="gs_perf_mode_on">Gaming</string>
+    <string name="gs_shelf">Games</string>
+    <string name="gs_view_all">View all</string>
+    <string name="gs_prev">Previous</string>
+    <string name="gs_next">Next</string>
+    <string name="gs_ready_title">Performance tuned</string>
+    <string name="gs_ready_body">Smoother play ahead</string>
 </resources>

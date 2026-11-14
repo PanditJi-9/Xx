@@ -605,4 +605,25 @@
     <string name="lobby_arena_no_session">لا جلسة بعد</string>
     <string name="lobby_arena_panel_armed">اللوحة مفعّلة</string>
     <string name="lobby_arena_panel_off">اللوحة متوقفة</string>
+    <string name="gs_nav_home">الرئيسية</string>
+    <string name="gs_nav_games">مكتبة الألعاب</string>
+    <string name="gs_nav_perf">الأداء</string>
+    <string name="gs_nav_tools">الأدوات</string>
+    <string name="gs_nav_features">المزايا</string>
+    <string name="gs_nav_settings">الإعدادات</string>
+    <string name="gs_launch">تشغيل اللعبة</string>
+    <string name="gs_more">خيارات أخرى</string>
+    <string name="gs_device_perf">أداء الجهاز</string>
+    <string name="gs_cpu">المعالج</string>
+    <string name="gs_gpu">الرسوميات</string>
+    <string name="gs_heat">الحرارة</string>
+    <string name="gs_battery">البطارية</string>
+    <string name="gs_perf_mode">وضع الأداء</string>
+    <string name="gs_perf_mode_on">Gaming</string>
+    <string name="gs_shelf">مكتبة الألعاب</string>
+    <string name="gs_view_all">عرض الكل</string>
+    <string name="gs_prev">السابق</string>
+    <string name="gs_next">التالي</string>
+    <string name="gs_ready_title">تم تحسين الأداء بنجاح</string>
+    <string name="gs_ready_body">تجربة لعب أكثر سلاسة</string>
 </resources>
