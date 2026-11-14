@@ -144,6 +144,12 @@ module`) ولا حاجة إليه. **ملاحظة مُقاسة:** `npm i` قد �
 و`HudDeepReaders.gpuLoadPercent()` و`socTempC()`، وما لا يُقرأ يبقى «—». والموجة ترسم تاريخ
 المعالج الحقيقيّ (٤٨ عيّنة) لا موجةً زخرفيّة. معدّل التحديث لا يُقرأ ⇒ «—» لا «120».
 
+**FOLLOW-UP — فنّ لوحة `DESIGN-PIPELINE-01` انتقل إلى البطل المُصدَّر (`1a2c858a`):** بعد إثبات مسار
+الرسم (SVG ← resvg ← PNG)، صار `HeroBackdrop` خلفيةً سينمائيّة إجرائيّة: ٩٠ نجمة ببذرة ثابتة (LCG)
+فلا ترتجف عند كل إعادة تركيب، وحزاما سُدُم بنفسجيّ/ورديّ، وكوكبٌ ذو حلقتين مائلتين وحدٍّ مضيء عند
+0.72w/0.36h — وعنوان البطل بتدرّج `Ink→Ink→VioletSoft` بدل اللون الواحد. صفر أصول خارجيّة وصفر صور
+منقولة (§0.4)، ولا نصوص جديدة (لا مفاتيح إضافيّة).
+
 **BUILD:** لا بناء محليًّا (§0.10). Quick Verify `43609841025` على `ae5c6ecc` **فشل**:
 `Unresolved reference 'RectangleShape'` في `GameSpaceStage.kt` (السطر ٣٤ والسطر ٦٥٥) — الاستيراد
 كُتب من `androidx.compose.foundation.shape` والصحيح `androidx.compose.ui.graphics`. أُصلح في
@@ -151,7 +157,9 @@ module`) ولا حاجة إليه. **ملاحظة مُقاسة:** `npm i` قد �
 (`conclusion=success`، والمهمّة الوحيدة «Release Kotlin + release unit tests» ناجحة، انتهت
 15:35:43Z). و`build.yml` `43609752489` على `ae5c6ecc` سقط بالخطأ نفسه؛ و`build.yml` `43610552244`
 على `780de8fa` **نجح** (`conclusion=success`، وSHA `780de8fa` نفسه) — فالشيفرة المُصلَحة تمرّ في
-Quick Verify وفي البناء الكامل معًا، والحكمان مقروءان لا مفترضان.
+Quick Verify وفي البناء الكامل معًا، والحكمان مقروءان لا مفترضان. وبعد `1a2c858a` (فنّ المسرح) شُغّل
+Quick Verify `43614428625` — **نجاح** (`conclusion=success`، وخطوة «Release compile + release unit
+tests» ناجحة وانتهت 16:18:05Z): أي أن الخلفية الإجرائيّة والعنوان المتدرّج يُترجمان ويجتازان الاختبارات.
 
 **GATES (مقيسة هنا بعد آخر تعديل):** `kt_balance` **3435 · 0** · `code_health` **صحة 0** (والدَّين
 مجمّد: 16 oversized · 26 wildcard · 5 inline copy · 4 literals) · `i18n_coverage` **0/85** ·
