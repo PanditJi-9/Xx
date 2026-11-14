@@ -265,7 +265,7 @@ internal fun GameSpaceProfileBadge(modifier: Modifier = Modifier) {
             .border(MaxSize.hairlineBorder, GameSpacePalette.VioletSoft.copy(alpha = 0.55f), androidx.compose.foundation.shape.CircleShape),
         contentAlignment = Alignment.Center
     ) {
-        Text("M", color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+        Text(stringResource(R.string.gs_brand_mark), color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Bold)
     }
 }
 
