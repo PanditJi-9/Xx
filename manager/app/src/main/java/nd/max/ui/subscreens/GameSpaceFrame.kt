@@ -121,6 +121,19 @@ internal object GameSpacePalette {
     val Mint = Color(0xFF34D399)
     val Blue = Color(0xFF3B6CF6)
     val Orange = Color(0xFFFF8A3D)
+
+    /*
+     * الرموز التي تعلنها شاشات اللوبي الجديدة: نصّ فولاذيّ ثانويّ، وحالة «تمّ» الخضراء، وأحمر
+     * الخطر بدرجتَيه (مسار المفتاح وحدّه)، وسطح البطاقة المختارة، وحجاب أسود. وُجدت في الواجهات
+     * قبل أن تُعرَّف هنا فسقط التصريف بـ`Unresolved reference`؛ فمكانها اللوحة وحدها، لا لونٌ
+     * حرفيّ مكرّر في كل موضع استخدام.
+     */
+    val Steel = Color(0xFF94A3B8)
+    val Positive = Color(0xFF4ADE80)
+    val Red = Color(0xFFEF4444)
+    val RedBright = Color(0xFFF87171)
+    val PanelSelected = Color(0xFF262046)
+    val Black = Color(0xFF000000)
 }
 
 /** عرض شريط الأقسام — ٩٦dp، محصور بين الهدف اللمسي ونصف عرض اللقطة. */
