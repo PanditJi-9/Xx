@@ -72,6 +72,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.progressBarRangeInfo
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -118,13 +119,13 @@ import nd.max.ui.design.maxRadius
  * والحرارة من `socTempC` (أو حرارة البطارية عند غيابها). وما لم يُقرأ يبقى «—» وحلقةً بلا قوس.
  */
 
-/** عرض الشريط: ١٣٫٥٪ من العرض كما في اللقطة، وحدوده من الهدف اللمسي وحتى ١٢٨dp. */
-private val RailWide = 112.dp
-private val RailNarrow = 60.dp
+/** عرض الشريط: ١٥٠dp على العرض الواسع (صفوف أيقونة + اسم كما في اللقطة)، و٦٤dp على الهاتف. */
+private val RailWide = 150.dp
+private val RailNarrow = 64.dp
 
-/** لوحة الأداء: ٢٤٪ من عرض المسرح، لا تزيد على ٣٢٠dp ولا تنقص عن ٢٣٢dp. */
-private val PanelWidthRatio = 0.24f
-private val PanelMinWidth = 232.dp
+/** لوحة الأداء: ٣٤٪ من عرض المسرح، لا تزيد على ٣٢٠dp ولا تنقص عن ٢٨٠dp. */
+private val PanelWidthRatio = 0.34f
+private val PanelMinWidth = 280.dp
 private val PanelMaxWidth = 320.dp
 
 /** قطر الحلقة وحلقة التدريج تحتها. */
@@ -152,7 +153,7 @@ private val LaunchMaxWidth = 280.dp
 private val LaunchHeight = MaxSize.minTouchTarget
 
 /** شعار «M» في أعلى الشريط. */
-private val RailMarkSize = 46.dp
+private val RailMarkSize = 40.dp
 
 @Composable
 internal fun GameSpaceStage(
@@ -168,11 +169,8 @@ internal fun GameSpaceStage(
     onSelect: (String) -> Unit,
     onLaunch: () -> Unit,
     onOptions: () -> Unit,
-    onHome: () -> Unit,
-    onOpenSection: (LobbySection) -> Unit,
     onOpenLibrary: () -> Unit,
     onOpenSessions: () -> Unit,
-    header: @Composable () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     // القراءات الحيّة: نفس القارئين اللذين يغذّيان مراقب الجهاز، فلا مقياس ثانٍ.
@@ -251,16 +249,9 @@ internal fun GameSpaceStage(
                 .coerceAtLeast(StatusMinHeight)
 
             Row(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .displayCutoutPadding(),
+                modifier = Modifier.fillMaxSize(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                GameSpaceRail(
-                    wide = wide,
-                    onHome = onHome,
-                    onSection = onOpenSection
-                )
                 if (!wide) {
                     // الهاتف الطولي: عمود واحد يتمرّر رأسيًّا — نفس العناصر، لا نسخة ثانية منها.
                     Column(
@@ -271,7 +262,6 @@ internal fun GameSpaceStage(
                             .padding(horizontal = MaxSpace.xs),
                         verticalArrangement = Arrangement.spacedBy(MaxSpace.sm)
                     ) {
-                        header()
                         HeroPanel(
                             games = games,
                             selected = selected,
@@ -318,7 +308,6 @@ internal fun GameSpaceStage(
                     // الهاتف الأفقيّ والجهاز الواسع: الهندسة كما في اللقطة — بطل ولوحة يمينه،
                     // ثم الرفّ بعرض المسرح، ثم القاعدة ملتصقة بالأسفل.
                     Column(modifier = Modifier.weight(1f).fillMaxHeight()) {
-                        header()
                         Row(
                             modifier = Modifier
                                 .weight(1f)
@@ -355,6 +344,7 @@ internal fun GameSpaceStage(
                                     charging = charging,
                                     panelEnabled = panelEnabled,
                                     onOpen = onOptions,
+                                    bare = true,
                                     modifier = Modifier
                                         .width(panelWidth)
                                 )
@@ -395,14 +385,14 @@ private data class LiveReadings(
 )
 
 /**
- * الشريط الجانبيّ: شعار «M» في أعلاه، ثم الأقسام الستّة، ثم زرّ مركز التحكّم مثبّتًا في أسفله.
- * الاختيار الحاليّ هو «الرئيسية» لأن المسرح هو الشاشة المعروضة، ولا صفّ يُظنّ زرًّا وهو لا يفعل شيئًا.
+ * الشريط الجانبيّ: شعار «M» في أعلاه، ثم الأقسام السبعة (الرئيسية + الأقسام الستّة).
+ * لا زرّ سفليّ ولا تمرير داخليّ: كل العناصر ظاهرة في ٤٦٥dp، والاختيار الحاليّ يُضاء.
  */
 @Composable
-private fun GameSpaceRail(
+internal fun GameSpaceRail(
     wide: Boolean,
-    onHome: () -> Unit,
-    onSection: (LobbySection) -> Unit,
+    active: LobbySection?,
+    onSelect: (LobbySection?) -> Unit,
 ) {
     val shape = CutCornerShape(topEnd = MaxSpace.xl, bottomEnd = MaxSpace.xl)
     Box(
@@ -423,35 +413,34 @@ private fun GameSpaceRail(
                 .clip(shape)
                 .background(GameSpacePalette.Deep.copy(alpha = 0.94f))
                 .border(MaxSize.hairlineBorder, GameSpacePalette.Edge.copy(alpha = 0.55f), shape)
-                .padding(horizontal = MaxSpace.xs, vertical = MaxSpace.sm),
+                .padding(horizontal = MaxSpace.xs, vertical = 2.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(MaxSpace.xs)
+            verticalArrangement = Arrangement.spacedBy(2.dp)
         ) {
             RailMark(wide = wide)
             Column(
                 modifier = Modifier
                     .weight(1f)
                     .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(MaxSpace.xs)
+                verticalArrangement = Arrangement.spacedBy(2.dp)
             ) {
                 RailItem(
                     labelRes = R.string.gs_nav_home,
                     icon = Icons.Rounded.Home,
-                    active = true,
+                    active = active == null,
                     wide = wide,
-                    onClick = onHome
+                    onClick = { onSelect(null) }
                 )
-                RailSection.entries.forEach { entry ->
+                LobbySection.entries.forEach { section ->
                     RailItem(
-                        labelRes = entry.labelRes,
-                        icon = entry.section.icon,
-                        active = false,
+                        labelRes = section.titleRes,
+                        icon = section.icon,
+                        active = active == section,
                         wide = wide,
-                        onClick = { onSection(entry.section) }
+                        onClick = { onSelect(section) }
                     )
                 }
             }
-            RailCollapse(wide = wide, onClick = { onSection(LobbySection.Lobby) })
         }
     }
 }
@@ -650,7 +639,8 @@ private fun HeroPanel(
     BoxWithConstraints(modifier = modifier.heightIn(min = 200.dp)) {
         // الغلاف لا يُرسم إلا حين يتّسع له عرض المسرح؛ وإلا بقي الفنّ ضوءًا خلف النصّ وحده.
         val cover = minOf(maxHeight * 0.82f, maxWidth * 0.30f, 230.dp)
-        val showCover = wide && maxWidth >= HeroCoverMinWidth && cover >= 96.dp
+        // اللقطة بلا ملصق منفصل: فنّ اللعبة خلفيةٌ كاملة، فلا نضيف بطاقةً فوقها.
+        val showCover = false
         Box(modifier = Modifier.fillMaxSize()) {
             HeroArtWash(game = selected)
             Row(
@@ -665,7 +655,8 @@ private fun HeroPanel(
                 Column(
                     modifier = Modifier
                         .weight(1f)
-                        .widthIn(max = HeroCopyMaxWidth),
+                        .widthIn(max = HeroCopyMaxWidth)
+                        .clickable(role = Role.Button, onClick = onLaunch),
                     verticalArrangement = Arrangement.spacedBy(MaxSpace.xs)
                 ) {
                     Crossfade(
@@ -691,12 +682,7 @@ private fun HeroPanel(
                             overflow = TextOverflow.Ellipsis
                         )
                     }
-                    Spacer(Modifier.height(MaxSpace.xs))
-                    LaunchRow(
-                        enabled = true,
-                        onLaunch = onLaunch,
-                        onOptions = onOptions
-                    )
+                    // لا زرّ تشغيل ظاهر في لقطة المالك: البطل نفسه يفتح اللعبة.
                 }
                 if (showCover) {
                     HeroCover(
@@ -1024,6 +1010,7 @@ private fun PerformancePanel(
     charging: Boolean,
     panelEnabled: Boolean,
     onOpen: () -> Unit,
+    bare: Boolean = false,
     modifier: Modifier = Modifier,
 ) {
     val shape = CutCornerShape(topStart = MaxSpace.md, bottomEnd = MaxSpace.xl)
@@ -1090,14 +1077,16 @@ private fun PerformancePanel(
                 value = cpu?.let { "$it%" } ?: MAX_VALUE_UNAVAILABLE,
                 label = stringResource(R.string.gs_cpu),
                 tone = GameSpacePalette.VioletSoft,
-                toneEnd = GameSpacePalette.Magenta
+                toneEnd = GameSpacePalette.Magenta,
+                showLabel = !bare
             )
             PerformanceRing(
                 progress = gpu?.let { it / 100f },
                 value = gpu?.let { "$it%" } ?: MAX_VALUE_UNAVAILABLE,
                 label = stringResource(R.string.gs_gpu),
                 tone = GameSpacePalette.Cyan,
-                toneEnd = GameSpacePalette.Cyan
+                toneEnd = GameSpacePalette.Cyan,
+                showLabel = !bare
             )
             PerformanceRing(
                 // ميزان الحرارة ٣٠–١٠٠°م: القوس مقياس، والرقم هو الخبر.
@@ -1105,23 +1094,26 @@ private fun PerformancePanel(
                 value = heat?.let { "${it.roundToInt()}°" } ?: MAX_VALUE_UNAVAILABLE,
                 label = stringResource(R.string.gs_heat),
                 tone = GameSpacePalette.Magenta,
-                toneEnd = Color(0xFFFF6B81)
+                toneEnd = Color(0xFFFF6B81),
+                showLabel = !bare
             )
         }
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs)
-        ) {
-            BatteryCard(
-                percent = batteryPercent,
-                charging = charging,
-                modifier = Modifier.weight(1f)
-            )
-            ModeCard(
-                enabled = panelEnabled,
-                onOpen = onOpen,
-                modifier = Modifier.weight(1f)
-            )
+        if (!bare) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs)
+            ) {
+                BatteryCard(
+                    percent = batteryPercent,
+                    charging = charging,
+                    modifier = Modifier.weight(1f)
+                )
+                ModeCard(
+                    enabled = panelEnabled,
+                    onOpen = onOpen,
+                    modifier = Modifier.weight(1f)
+                )
+            }
         }
     }
 }
@@ -1226,13 +1218,17 @@ private fun PerformanceRing(
     tone: Color,
     toneEnd: Color,
     modifier: Modifier = Modifier,
+    showLabel: Boolean = true,
 ) {
     val animated by animateFloatAsState(
         targetValue = (progress ?: 0f).coerceIn(0f, 1f),
         animationSpec = tween(durationMillis = 700)
     )
     Column(
-        modifier = modifier.semantics(mergeDescendants = true) {},
+        modifier = modifier.semantics(mergeDescendants = true) {
+            // اللقطة بلا أسماء حلقات؛ الاسم يبقى لقارئ الشاشة لا للعين.
+            if (!showLabel) contentDescription = label
+        },
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(MaxSpace.hairline)
     ) {
@@ -1294,13 +1290,15 @@ private fun PerformanceRing(
                 maxLines = 1
             )
         }
-        Text(
-            text = label,
-            color = GameSpacePalette.Muted,
-            fontSize = 9.sp,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
+        if (showLabel) {
+            Text(
+                text = label,
+                color = GameSpacePalette.Muted,
+                fontSize = 9.sp,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
     }
 }
 

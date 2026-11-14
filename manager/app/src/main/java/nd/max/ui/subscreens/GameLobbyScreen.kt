@@ -12,6 +12,8 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.focusable
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -36,6 +38,9 @@ import androidx.compose.material.icons.rounded.Star
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
@@ -64,6 +69,7 @@ import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -178,12 +184,13 @@ private const val SWISH_DOWN_RATE = 0.85f
 private val metaCache = LruCache<String, GameLobbyMeta>(64)
 
 /**
- * مساحة الألعاب: صفحتان رأسيّتان — **Nexus** (لعبة واحدة كبيرة، جاهزيتها، والإطلاق) و**مركز التحكّم**
- * (ملف اللعبة، اللوحة، خيارات اللوبي، الرؤى، وإدارة المكتبة).
+ * مساحة الألعاب: **صفحة واحدة طويلة** — المسرح أولًا (البطل، لوحة الأداء، المكتبة، القاعدة)،
+ * ثم الأقسام الستّة التي كانت في مركز التحكّم، في عمود تمرير واحد.
  *
  *  - الخلفية حقل بازلتيّ ساكن واحد؛ لا مسرح متحرّك ولا جسيمات خلف واجهة ساكنة.
- *  - الانتقال بين الصفحتين تلاشٍ بسيط يتبع الإصبع (VerticalPager)، والتبويبات العلويّة تنزلق معه.
- *  - من الريموت: ↑ أو R1 يفتح المركز، L1 أو الرجوع يعيد Nexus، و←/→ يبدّلان اللعبة.
+ *  - الشريط الجانبيّ ثابت خارج التمرير: النقر يمرّر إلى القسم، والتمرير يضيء العنصر المقابل.
+ *    لا صفحة إعدادات مخفيّة تُكشف بالسحب، ولا تبويبات علويّة.
+ *  - من الريموت: ↑ أو R1 يفتح ملف اللعبة، L1 أو الرجوع يعيد الرئيسية، و←/→ يبدّلان اللعبة.
  *
  * ### الدخول السينمائيّ والأصوات (بطلب المالك ٢٠٢٦-١٠-٢١)
  *
@@ -290,14 +297,20 @@ fun GameLobbyScreen(
             playStats = playStats
         )
     }
-    val rootState = rememberPagerState(initialPage = 0) { 2 }
-
-    // انتقال المسرح ⇄ مركز التحكّم: مسحة هواء حين تعبر الصفحة منتصفها (سحبًا أو بلمس التبويب).
-    LaunchedEffect(rootState) {
-        snapshotFlow { rootState.currentPage }.drop(1).collect { page ->
-            sounds.play(LobbyCue.Swish, rate = if (page == 1) SWISH_UP_RATE else SWISH_DOWN_RATE)
+    // صفحة واحدة طويلة: الشريط الجانبيّ ثابت، والتمرير ينتقل من قسم إلى قسم.
+    val density = LocalDensity.current
+    val homeScroll = rememberScrollState()
+    var viewportPx by remember { mutableFloatStateOf(0f) }
+    val spineIndex by remember {
+        derivedStateOf {
+            if (viewportPx <= 0f) {
+                0
+            } else {
+                (homeScroll.value / viewportPx).toInt().coerceIn(0, LobbySection.entries.size)
+            }
         }
     }
+    val activeSpine = LobbySection.entries.getOrNull(spineIndex - 1)
 
     // الاختيار هو المصدر: المركز يعرض اللعبة المختارة نفسها من أي سطح (المسرح أو استكشف أو الرؤى)،
     // ولا يعتمد على صفحة حلقة لم تعد مركّبة. و`coerceAtLeast(0)` تعني «الأولى» حين لا اختيار بعد.
@@ -397,15 +410,18 @@ fun GameLobbyScreen(
     val openControl: (LobbySection) -> Unit = { target ->
         section = target
         scope.launch {
-            rootState.animateScrollToPage(1, animationSpec = tween(MaxDuration.deliberate, easing = FastOutSlowInEasing))
+            homeScroll.animateScrollTo(
+                value = ((LobbySection.entries.indexOf(target) + 1) * viewportPx).toInt(),
+                animationSpec = tween(MaxDuration.deliberate, easing = FastOutSlowInEasing)
+            )
         }
     }
-    val closeControl: () -> Unit = {
+    val openHome: () -> Unit = {
         scope.launch {
-            rootState.animateScrollToPage(0, animationSpec = tween(MaxDuration.deliberate, easing = FastOutSlowInEasing))
+            homeScroll.animateScrollTo(0, animationSpec = tween(MaxDuration.deliberate, easing = FastOutSlowInEasing))
         }
     }
-    BackHandler(enabled = rootState.currentPage == 1) { closeControl() }
+    BackHandler(enabled = spineIndex > 0) { openHome() }
     // «استكشف» يعلو الصفحتين: أوّل رجوع يغلق الطبقة وحدها قبل أي انتقال أو خروج من اللوبي.
     BackHandler(enabled = exploreOpen) { exploreOpen = false }
 
@@ -445,10 +461,6 @@ fun GameLobbyScreen(
         val target = (activeIndex + delta).coerceIn(0, (games.size - 1).coerceAtLeast(0))
         games.getOrNull(target)?.let { selectGame(it.packageName) }
     }
-    val rootFling = PagerDefaults.flingBehavior(
-        state = rootState,
-        snapAnimationSpec = LobbySnapSpring
-    )
     val manageApps = remember(library) {
         library.apps.filter { ForegroundAppResolver.isPackageName(it.packageName) }
             .distinctBy { it.packageName }
@@ -508,9 +520,9 @@ fun GameLobbyScreen(
                     } else if (paletteOpen) {
                         // الحوار يملك لوحة المفاتيح؛ لا يختطف المسرح حرفًا يُكتب في البحث.
                         false
-                    } else if (rootState.currentPage != 0) {
+                    } else if (spineIndex > 0) {
                         when (event.key) {
-                            Key.ButtonL1 -> { closeControl(); true }
+                            Key.ButtonL1 -> { openHome(); true }
                             Key.ButtonY -> { paletteOpen = true; true }
                             Key.K -> {
                                 if (event.isCtrlPressed) {
@@ -555,8 +567,7 @@ fun GameLobbyScreen(
                 modifier = Modifier.fillMaxSize()
             )
 
-            // رأس اللوبي: يُرسم مرّة واحدة ويُستهلك في موضعين — داخل عمود المسرح (فيمتدّ الشريط
-            // الجانبيّ إلى أعلى الشاشة كما في تصميم المالك) أو فوق مركز التحكّم.
+            // رأس اللوبي: يُرسم مرّة واحدة ثابتًا فوق الشريط الجانبيّ والمحتوى.
             val lobbyHeader: @Composable () -> Unit = {
                 Row(
                     modifier = Modifier
@@ -568,24 +579,6 @@ fun GameLobbyScreen(
                     horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm)
                 ) {
                     GameSpaceBrand(compact = screenWidthDp < GameSpaceBrandCompactDp)
-                    if (screenWidthDp >= GameSpaceTabsWidthDp) {
-                        LobbyTopTabs(
-                            labels = listOf(
-                                stringResource(R.string.lobby_tab_games),
-                                stringResource(R.string.lobby_tab_control)
-                            ),
-                            selected = rootState.currentPage,
-                            position = { rootState.currentPage + rootState.currentPageOffsetFraction },
-                            tone = { toneState.value },
-                            description = stringResource(R.string.lobby_tab_lobby),
-                            onSelect = { index -> scope.launch { rootState.animateScrollToPage(index) } }
-                        )
-                    }
-                    // كبسولة الحالة هي العنصر المرن: تُقاس بالعرض المتبقّي وتُقصّ عند الضيق، ولا تدفع
-                    // أزرار النهاية (السجل/الإغلاق) خارج الشاشة بعد إضافة زرّ الاستكشاف الخامس.
-                    Box(Modifier.weight(1f), contentAlignment = Alignment.CenterEnd) {
-                        if (lobbyPrefs.showStatus) LobbyStatusCapsule()
-                    }
                     if (screenWidthDp >= GameSpaceClockWidthDp) {
                         GameSpaceClockCluster(
                             clock = lobbyClock,
@@ -594,6 +587,8 @@ fun GameLobbyScreen(
                             charging = lobbyBattery?.charging == true
                         )
                     }
+                    // الفراغ المرن يدفع الأزرار إلى الطرف المقابل، والساعة تبقى قرب الشعار كما في اللقطة.
+                    Box(Modifier.weight(1f))
                     // استكشاف المكتبة من المسرح: بحث فوري ومرشّحات وبطاقات غنية، بلا مغادرة اللوبي.
                     LobbyRoundButton(
                         icon = Icons.Rounded.Apps,
@@ -641,45 +636,56 @@ fun GameLobbyScreen(
                 }
             }
 
-            VerticalPager(
-                state = rootState,
+            // رأس واحد ثابت: الشعار أوّلًا (LTR)، ثم الساعة، ثم الأزرار في الطرف المقابل.
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .fillMaxWidth()
+                    .displayCutoutPadding()
+            ) {
+                lobbyHeader()
+            }
+
+            // صفحة واحدة: الشريط الجانبيّ ثابت، والعمود يتمرّر ويتبدّل قسمه مع موضع التمرير.
+            Row(
                 modifier = Modifier
                     .fillMaxSize()
-                    .graphicsLayer {
-                        val p = burst.value
-                        alpha = 1f - DIVE_FADE * p
-                        scaleX = 1f + DIVE_ZOOM * p
-                        scaleY = scaleX
-                    },
-                beyondViewportPageCount = 1,
-                flingBehavior = rootFling,
-                key = { it }
-            ) { page ->
-                Box(
-                    Modifier
-                        .fillMaxSize()
-                        .graphicsLayer {
-                            val slot = page - (rootState.currentPage + rootState.currentPageOffsetFraction)
-                            val a = abs(slot).coerceIn(0f, 1f)
-                            alpha = 1f - ROOT_FADE * a
-                        }
+                    .displayCutoutPadding()
+                    .padding(top = TopBarHeight)
+            ) {
+                GameSpaceRail(
+                    wide = screenWidthDp >= 720,
+                    active = activeSpine,
+                    onSelect = { target ->
+                        if (target == null) openHome() else openControl(target)
+                    }
+                )
+                BoxWithConstraints(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
                 ) {
-                    if (page == 0) {
-                        val readyPercent = if (readinessSnapshot.readyTotal > 0) {
-                            readinessSnapshot.readyDone * 100 / readinessSnapshot.readyTotal
-                        } else {
-                            0
-                        }
-                        val gapText = readinessSnapshot.gap?.let { gap ->
-                            stringResource(
-                                when (gap) {
-                                    ReadyGap.Profile -> R.string.lobby_nexus_gap_profile
-                                    ReadyGap.Panel -> R.string.lobby_nexus_gap_panel
-                                    ReadyGap.Overlay -> R.string.lobby_nexus_gap_overlay
-                                }
-                            )
-                        }
-                        // الشاشة كما في تصميم المالك: شريط أقسام، بطل، لوحة أداء، رفّ ألعاب، قاعدة.
+                    val viewport = maxHeight
+                    SideEffect { viewportPx = with(density) { viewport.toPx() } }
+                    val readyPercent = if (readinessSnapshot.readyTotal > 0) {
+                        readinessSnapshot.readyDone * 100 / readinessSnapshot.readyTotal
+                    } else {
+                        0
+                    }
+                    val gapText = readinessSnapshot.gap?.let { gap ->
+                        stringResource(
+                            when (gap) {
+                                ReadyGap.Profile -> R.string.lobby_nexus_gap_profile
+                                ReadyGap.Panel -> R.string.lobby_nexus_gap_panel
+                                ReadyGap.Overlay -> R.string.lobby_nexus_gap_overlay
+                            }
+                        )
+                    }
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(homeScroll)
+                    ) {
                         GameSpaceStage(
                             games = games,
                             selected = active,
@@ -694,77 +700,65 @@ fun GameLobbyScreen(
                             onSelect = selectGame,
                             onLaunch = start,
                             onOptions = { openControl(LobbySection.Game) },
-                            onHome = {},
-                            onOpenSection = openControl,
                             onOpenLibrary = { openControl(LobbySection.Library) },
                             onOpenSessions = {
                                 navController.navigate(MaxDestination.GameSessions.route) {
                                     launchSingleTop = true
                                 }
                             },
-                            header = lobbyHeader,
-                            modifier = Modifier.fillMaxSize()
-                        )
-
-                    } else {
-                        // ─────────────── مركز التحكم ───────────────
-                        LobbyControlCenter(
-                            section = section,
-                            onSection = { section = it },
-                            app = active,
-                            config = activeConfig ?: AppConfig(),
-                            games = allGames,
-                            stats = playStats,
-                            sessions = sessions,
-                            tweaks = tweaksByGame,
-                            armed = panelPrefs.enabledPackages,
-                            panelEnabled = panelEnabled,
-                            onPanelEnabled = setPanel,
-                            overlayGranted = overlayGranted,
-                            onGrantOverlay = { OverlayPermission.openSettings(context) },
-                            onUpdate = { key, value ->
-                                active?.let { settingsViewModel.updateSetting(it.packageName, key, value) }
-                            },
-                            onOpenFull = { active?.let { navController.openAppSettings(it.packageName) } },
-                            onOpenHistory = {
-                                navController.navigate(MaxDestination.GameSessions.route) {
-                                    launchSingleTop = true
-                                }
-                            },
-                            onOpenClips = {
-                                navController.navigate(MaxDestination.ClipAlbum.route) {
-                                    launchSingleTop = true
-                                }
-                            },
-                            onOpenGame = { pkg ->
-                                closeControl()
-                                selectGame(pkg)
-                            },
-                            prefs = lobbyPrefs,
-                            onPrefs = updatePrefs,
-                            apps = manageApps,
-                            manual = library.manual,
-                            excluded = library.excluded,
-                            onToggleGame = viewModel::membership,
-                            accent = toneState.value,
                             modifier = Modifier
-                                .displayCutoutPadding()
-                                .padding(top = TopBarHeight)
+                                .fillMaxWidth()
+                                .height(viewport)
                         )
+                        LobbySection.entries.forEach { target ->
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(viewport)
+                            ) {
+                                LobbySectionContent(
+                                    section = target,
+                                    app = active,
+                                    config = activeConfig ?: AppConfig(),
+                                    games = allGames,
+                                    stats = playStats,
+                                    sessions = sessions,
+                                    tweaks = tweaksByGame,
+                                    armed = panelPrefs.enabledPackages,
+                                    panelEnabled = panelEnabled,
+                                    onPanelEnabled = setPanel,
+                                    overlayGranted = overlayGranted,
+                                    onGrantOverlay = { OverlayPermission.openSettings(context) },
+                                    onUpdate = { key, value ->
+                                        active?.let { settingsViewModel.updateSetting(it.packageName, key, value) }
+                                    },
+                                    onOpenFull = { active?.let { navController.openAppSettings(it.packageName) } },
+                                    onSection = openControl,
+                                    onOpenHistory = {
+                                        navController.navigate(MaxDestination.GameSessions.route) {
+                                            launchSingleTop = true
+                                        }
+                                    },
+                                    onOpenClips = {
+                                        navController.navigate(MaxDestination.ClipAlbum.route) {
+                                            launchSingleTop = true
+                                        }
+                                    },
+                                    onOpenGame = { pkg ->
+                                        selectGame(pkg)
+                                        openHome()
+                                    },
+                                    prefs = lobbyPrefs,
+                                    onPrefs = updatePrefs,
+                                    apps = manageApps,
+                                    manual = library.manual,
+                                    excluded = library.excluded,
+                                    onToggleGame = viewModel::membership,
+                                    accent = toneState.value
+                                )
+                            }
+                        }
                     }
-                }
-            }
-
-            // الشريط العلويّ فوق مركز التحكّم وحده: المسرح يرسم رأسه داخل عموده، فيمتدّ الشريط
-            // الجانبيّ إلى أعلى الشاشة كما في تصميم المالك — رأسٌ واحد لا رأسان.
-            if (rootState.currentPage != 0) {
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.TopCenter)
-                        .fillMaxWidth()
-                        .displayCutoutPadding()
-                ) {
-                    lobbyHeader()
                 }
             }
 

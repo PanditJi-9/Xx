@@ -230,39 +230,100 @@ internal fun LobbyControlCenter(
                     .widthIn(max = MaxSize.readingMaxWidth)
                     .fillMaxSize()
             ) { current ->
-                when (current) {
-                    LobbySection.Loadout -> LoadoutBody(
-                        app = app,
-                        config = config,
-                        panelEnabled = panelEnabled,
-                        onPanelEnabled = onPanelEnabled,
-                        overlayGranted = overlayGranted,
-                        onGrantOverlay = onGrantOverlay,
-                        onUpdate = onUpdate,
-                        onOpenFull = onOpenFull,
-                        onOpenProfile = { onSection(LobbySection.Game) }
-                    )
-                    LobbySection.Insights -> LobbyInsightsBody(
-                        app = app,
-                        games = games,
-                        stats = stats,
-                        sessions = sessions,
-                        tweaks = tweaks,
-                        armed = armed,
-                        accent = accent,
-                        onSection = onSection,
-                        onPanelEnabled = onPanelEnabled,
-                        onOpenHistory = onOpenHistory,
-                        onOpenClips = onOpenClips,
-                        onOpenGame = onOpenGame
-                    )
-                    LobbySection.Game -> GameBody(app, config, onUpdate, onOpenFull)
-                    LobbySection.Panel -> PanelBody(app, panelEnabled, onPanelEnabled)
-                    LobbySection.Lobby -> LobbyOptionsBody(prefs, onPrefs)
-                    LobbySection.Library -> LibraryBody(apps, stats, manual, excluded, onToggleGame, accent)
-                }
+                LobbySectionContent(
+                    section = current,
+                    app = app,
+                    config = config,
+                    games = games,
+                    stats = stats,
+                    sessions = sessions,
+                    tweaks = tweaks,
+                    armed = armed,
+                    panelEnabled = panelEnabled,
+                    onPanelEnabled = onPanelEnabled,
+                    overlayGranted = overlayGranted,
+                    onGrantOverlay = onGrantOverlay,
+                    onUpdate = onUpdate,
+                    onOpenFull = onOpenFull,
+                    onSection = onSection,
+                    onOpenHistory = onOpenHistory,
+                    onOpenClips = onOpenClips,
+                    onOpenGame = onOpenGame,
+                    prefs = prefs,
+                    onPrefs = onPrefs,
+                    apps = apps,
+                    manual = manual,
+                    excluded = excluded,
+                    onToggleGame = onToggleGame,
+                    accent = accent
+                )
             }
         }
+    }
+}
+
+/**
+ * جسم قسم واحد بلا شريط جانبي ولا تنقّل — يُعاد استعماله في المسرح حين تصير الأقسام
+ * صفحاتٍ داخل تمرير واحد (طلب المالك ٢٠٢٦-١١-١٤). لا نسخة ثانية من أي جسم هنا.
+ */
+@Composable
+internal fun LobbySectionContent(
+    section: LobbySection,
+    app: GameApp?,
+    config: AppConfig,
+    games: List<GameApp>,
+    stats: Map<String, GamePlayStats>,
+    sessions: List<PlaySession>,
+    tweaks: Map<String, Int>,
+    armed: Set<String>,
+    panelEnabled: Boolean,
+    onPanelEnabled: (Boolean) -> Unit,
+    overlayGranted: Boolean,
+    onGrantOverlay: () -> Unit,
+    onUpdate: (String, String) -> Unit,
+    onOpenFull: () -> Unit,
+    onSection: (LobbySection) -> Unit,
+    onOpenHistory: () -> Unit,
+    onOpenClips: () -> Unit,
+    onOpenGame: (String) -> Unit,
+    prefs: LobbyPrefsState,
+    onPrefs: ((LobbyPrefsState) -> LobbyPrefsState) -> Unit,
+    apps: List<GameApp>,
+    manual: Set<String>,
+    excluded: Set<String>,
+    onToggleGame: (String, Boolean) -> Unit,
+    accent: Color,
+) {
+    when (section) {
+        LobbySection.Loadout -> LoadoutBody(
+            app = app,
+            config = config,
+            panelEnabled = panelEnabled,
+            onPanelEnabled = onPanelEnabled,
+            overlayGranted = overlayGranted,
+            onGrantOverlay = onGrantOverlay,
+            onUpdate = onUpdate,
+            onOpenFull = onOpenFull,
+            onOpenProfile = { onSection(LobbySection.Game) }
+        )
+        LobbySection.Insights -> LobbyInsightsBody(
+            app = app,
+            games = games,
+            stats = stats,
+            sessions = sessions,
+            tweaks = tweaks,
+            armed = armed,
+            accent = accent,
+            onSection = onSection,
+            onPanelEnabled = onPanelEnabled,
+            onOpenHistory = onOpenHistory,
+            onOpenClips = onOpenClips,
+            onOpenGame = onOpenGame
+        )
+        LobbySection.Game -> GameBody(app, config, onUpdate, onOpenFull)
+        LobbySection.Panel -> PanelBody(app, panelEnabled, onPanelEnabled)
+        LobbySection.Lobby -> LobbyOptionsBody(prefs, onPrefs)
+        LobbySection.Library -> LibraryBody(apps, stats, manual, excluded, onToggleGame, accent)
     }
 }
 
