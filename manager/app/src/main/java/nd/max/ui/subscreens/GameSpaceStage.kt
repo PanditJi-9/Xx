@@ -69,6 +69,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -698,18 +699,27 @@ private fun HeroPanel(
                 ) { label ->
                     Text(
                         text = label,
-                        color = GameSpacePalette.Ink,
-                        fontSize = when {
-                            short -> 26.sp
-                            wide -> 40.sp
-                            else -> 32.sp
-                        },
-                        lineHeight = when {
-                            short -> 30.sp
-                            wide -> 44.sp
-                            else -> 36.sp
-                        },
-                        fontWeight = FontWeight.Black,
+                        // شعار اللعبة أبيض ثم ينزلق إلى البنفسجيّ في آخره — نظير شعار اللوحة.
+                        style = TextStyle(
+                            brush = Brush.linearGradient(
+                                listOf(
+                                    GameSpacePalette.Ink,
+                                    GameSpacePalette.Ink,
+                                    GameSpacePalette.VioletSoft
+                                )
+                            ),
+                            fontSize = when {
+                                short -> 26.sp
+                                wide -> 40.sp
+                                else -> 32.sp
+                            },
+                            lineHeight = when {
+                                short -> 30.sp
+                                wide -> 44.sp
+                                else -> 36.sp
+                            },
+                            fontWeight = FontWeight.Black
+                        ),
                         maxLines = if (short) 1 else 2,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -805,31 +815,128 @@ private fun HeroArtWash(game: GameApp) {
     }
 }
 
-/** أضواء المسرح خلف فنّ اللعبة: عمقٌ سينمائيّ من تدرّجات وأشعّة، بلا صورة. */
+/**
+ * كونُ المسرح خلف فنّ اللعبة: نجومٌ ثابتة، وسُحبُ سديمٍ بنفسجيّة، وكوكبٌ ذو حلقةٍ وهالةٍ رقيقة،
+ * وشعاعُ ضوءٍ مائل وأرضيّةٌ متدرّجة. لا صورة خارجيّة ولا أصلٌ منقول — كلّه رسمٌ إجرائيّ.
+ *
+ * النجوم ثابتة لا تتغيّر مع كل إعادة رسم: مولّدٌ بسيط ببذرةٍ ثابتة بدل `Random()`، فلا ترتجف
+ * السماء حين تتحدّث القراءات كلّ ثانيتين.
+ */
 @Composable
 private fun HeroBackdrop() {
     Canvas(Modifier.fillMaxSize()) {
+        // سديمٌ مائل: حزامٌ بنفسجيّ عريض وحزامٌ ورديّ رقيق يقطعان السماء قطريًّا.
+        val nebula = Path().apply {
+            moveTo(size.width * 0.06f, 0f)
+            lineTo(size.width * 0.46f, 0f)
+            lineTo(size.width * 0.86f, size.height)
+            lineTo(size.width * 0.44f, size.height)
+            close()
+        }
+        drawPath(
+            nebula,
+            Brush.linearGradient(
+                listOf(
+                    Color.Transparent,
+                    GameSpacePalette.Violet.copy(alpha = 0.16f),
+                    Color.Transparent
+                ),
+                start = Offset(size.width * 0.1f, 0f),
+                end = Offset(size.width * 0.8f, size.height)
+            )
+        )
+        val haze = Path().apply {
+            moveTo(size.width * 0.52f, 0f)
+            lineTo(size.width * 0.68f, 0f)
+            lineTo(size.width * 0.98f, size.height)
+            lineTo(size.width * 0.80f, size.height)
+            close()
+        }
+        drawPath(
+            haze,
+            Brush.linearGradient(
+                listOf(
+                    Color.Transparent,
+                    GameSpacePalette.Magenta.copy(alpha = 0.10f),
+                    Color.Transparent
+                ),
+                start = Offset(size.width * 0.55f, 0f),
+                end = Offset(size.width * 0.95f, size.height)
+            )
+        )
+
+        // نجومٌ ثابتة: بذرةٌ واحدة، فلا تتغيّر السماء بين إعادة رسمٍ وأخرى.
+        var seed = 0x2F6E2B1L
+        fun next(): Float {
+            seed = (seed * 1103515245L + 12345L) and 0x7FFFFFFFL
+            return seed.toFloat() / 0x7FFFFFFF.toFloat()
+        }
+        repeat(90) {
+            val x = next() * size.width
+            val y = next() * size.height * 0.92f
+            val r = 0.5f + next() * 1.3f
+            val a = 0.10f + next() * 0.42f
+            drawCircle(
+                color = if (next() > 0.7f) {
+                    GameSpacePalette.VioletSoft.copy(alpha = a)
+                } else {
+                    Color.White.copy(alpha = a)
+                },
+                radius = r,
+                center = Offset(x, y)
+            )
+        }
+
+        // الكوكب: كرةٌ داكنة بحافّةٍ مضيئة وحلقةٍ مائلة — عمقُ السديم في اللوحة.
+        val planet = Offset(size.width * 0.72f, size.height * 0.36f)
+        val planetR = size.minDimension * 0.17f
+        drawCircle(
+            brush = Brush.radialGradient(
+                listOf(
+                    GameSpacePalette.VioletDeep.copy(alpha = 0.55f),
+                    GameSpacePalette.Deep.copy(alpha = 0.20f),
+                    Color.Transparent
+                ),
+                center = Offset(planet.x - planetR * 0.35f, planet.y - planetR * 0.35f),
+                radius = planetR * 1.4f
+            ),
+            radius = planetR,
+            center = planet
+        )
+        drawArc(
+            color = GameSpacePalette.VioletSoft.copy(alpha = 0.38f),
+            startAngle = 168f,
+            sweepAngle = 118f,
+            useCenter = false,
+            topLeft = Offset(planet.x - planetR, planet.y - planetR),
+            size = Size(planetR * 2f, planetR * 2f),
+            style = Stroke(width = 1.6f)
+        )
+        rotate(degrees = -16f, pivot = planet) {
+            drawOval(
+                color = GameSpacePalette.Violet.copy(alpha = 0.30f),
+                topLeft = Offset(planet.x - planetR * 1.9f, planet.y - planetR * 0.42f),
+                size = Size(planetR * 3.8f, planetR * 0.84f),
+                style = Stroke(width = 1.4f)
+            )
+            drawOval(
+                color = GameSpacePalette.Magenta.copy(alpha = 0.16f),
+                topLeft = Offset(planet.x - planetR * 1.62f, planet.y - planetR * 0.32f),
+                size = Size(planetR * 3.24f, planetR * 0.64f),
+                style = Stroke(width = 3.2f)
+            )
+        }
+
         val key = Offset(size.width * 0.34f, size.height * 0.52f)
         val keyR = size.minDimension * 0.85f
         drawCircle(
             brush = Brush.radialGradient(
-                listOf(GameSpacePalette.Violet.copy(alpha = 0.30f), Color.Transparent),
+                listOf(GameSpacePalette.Violet.copy(alpha = 0.22f), Color.Transparent),
                 center = key,
                 radius = keyR
             ),
             radius = keyR,
             center = key
-        )
-        val rim = Offset(size.width * 0.82f, size.height * 0.16f)
-        val rimR = size.minDimension * 0.55f
-        drawCircle(
-            brush = Brush.radialGradient(
-                listOf(GameSpacePalette.Magenta.copy(alpha = 0.18f), Color.Transparent),
-                center = rim,
-                radius = rimR
-            ),
-            radius = rimR,
-            center = rim
         )
         // شعاع ضوء مائل من أعلى اليمين، كما في ملصقات الألعاب.
         val beam = Path().apply {
