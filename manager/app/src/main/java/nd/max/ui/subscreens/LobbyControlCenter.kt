@@ -110,6 +110,8 @@ import nd.max.core.gamespace.lobbyEnumOr
 import nd.max.ui.component.AppIconImage
 import nd.max.ui.component.LobbyNotice
 import nd.max.ui.component.LobbyPalette
+import nd.max.ui.gamespace.GameSpaceSchemeRow
+import nd.max.ui.gamespace.GameSpaceSkin
 import nd.max.ui.component.LocalLobbySounds
 import nd.max.ui.component.canvasScaleLabel
 import nd.max.ui.design.MaxDuration
@@ -893,6 +895,22 @@ private fun LobbyOptionsBody(
             .padding(horizontal = MaxSpace.xl, vertical = MaxSpace.lg),
         verticalArrangement = Arrangement.spacedBy(MaxSpace.lg)
     ) {
+        LobbySectionCard(stringResource(R.string.gs_scheme_title)) {
+            Text(
+                text = stringResource(R.string.gs_scheme_scope),
+                color = LobbyPalette.Steel,
+                fontSize = 12.sp
+            )
+            var scheme by remember { mutableStateOf(GameSpaceSkin.read(context)) }
+            GameSpaceSchemeRow(
+                selected = scheme,
+                onSelect = { next ->
+                    sounds.play(LobbyCue.Tap)
+                    scheme = next
+                    GameSpaceSkin.write(context, next)
+                }
+            )
+        }
         LobbySectionCard(stringResource(R.string.lobby_head_look)) {
             LobbyOptionRow(
                 title = stringResource(R.string.lobby_row_depth),

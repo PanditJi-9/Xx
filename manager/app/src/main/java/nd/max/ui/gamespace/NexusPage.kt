@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import nd.max.R
 import nd.max.core.gamespace.GameApp
@@ -44,6 +45,7 @@ internal fun NexusPage(
     onOpenSearch: () -> Unit,
     onClearFavorites: () -> Unit,
     onOpenLibrary: () -> Unit,
+    chromeAccent: Color? = null,
     modifier: Modifier = Modifier
 ) {
     // اللقطة تُعاد حين يتغيّر السجلّ أو المكتبة أو المقابض؛ الوقت وحده لا يحرّكها.
@@ -140,6 +142,7 @@ internal fun NexusPage(
         onOpenCareer = onOpenCareer,
         onOpenSearch = onOpenSearch,
         onEmptyAction = if (favoritesOnly) onClearFavorites else onOpenLibrary,
+        chromeAccent = chromeAccent,
         modifier = modifier
     )
 }

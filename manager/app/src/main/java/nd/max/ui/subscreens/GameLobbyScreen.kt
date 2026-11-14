@@ -117,6 +117,7 @@ import nd.max.ui.component.rememberLobbyTone
 import nd.max.ui.design.MaxDuration
 import nd.max.ui.design.MaxSpace
 import nd.max.ui.gamespace.CommandPalette
+import nd.max.ui.gamespace.GameSpaceSkin
 import nd.max.ui.gamespace.LobbyBackdrop
 import nd.max.ui.gamespace.NexusPage
 import nd.max.ui.gamespace.PaletteAction
@@ -533,6 +534,8 @@ fun GameLobbyScreen(
                             onOpenSearch = { tick(); paletteOpen = true },
                             onClearFavorites = { favoritesOnly = false },
                             onOpenLibrary = { openControl(LobbySection.Library) },
+                            // يُقرأ عند كل تركيب: الاختيار يقع في مركز التحكم، والعودة تُعيد القراءة.
+                            chromeAccent = GameSpaceSkin.read(context).accent,
                             modifier = Modifier
                                 .fillMaxSize()
                                 .displayCutoutPadding()

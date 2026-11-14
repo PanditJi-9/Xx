@@ -578,14 +578,13 @@
     <string name="palette_career_detail">Playtime, sessions, milestones</string>
     <string name="palette_sessions_detail">Every recorded session</string>
     <string name="palette_close_detail">Leave Game Space</string>
-    <string name="gs_brand_mark">M</string>
-    <string name="gs_brand_game">Game</string>
-    <string name="gs_brand_space">Space</string>
-    <string name="gs_brand_tagline">PLAY • BOOST • ENJOY</string>
-    <string name="gs_board_title">Device board</string>
-    <string name="gs_board_scope">Live sensor readings — read-only.</string>
-    <string name="gs_battery_heat">Battery heat</string>
-    <string name="gs_percent_value">%1$d%%</string>
-    <string name="gs_heat_value">%1$.1f°</string>
-    <string name="gs_status_ready">Ready to play</string>
+    <string name="gs_scheme_title">Game Space colours</string>
+    <string name="gs_scheme_scope">One colour is chosen here and the whole screen adopts it; the game keeps its own colour in its slab.</string>
+    <string name="gs_scheme_game">Game colour</string>
+    <string name="gs_scheme_ember">Ember</string>
+    <string name="gs_scheme_violet">Violet</string>
+    <string name="gs_scheme_azure">Azure</string>
+    <string name="gs_scheme_emerald">Emerald</string>
+    <string name="gs_scheme_rose">Rose</string>
+    <string name="gs_scheme_amber">Amber</string>
 </resources>

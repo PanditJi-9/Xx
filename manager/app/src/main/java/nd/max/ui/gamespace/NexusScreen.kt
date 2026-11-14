@@ -117,6 +117,8 @@ data class NexusModel(
 fun NexusScreen(
     model: NexusModel,
     copy: NexusCopy,
+    /** درجة الشاشة المختارة من تشكيلة Game Space؛ `null` يعني لون اللعبة (القائم). */
+    chromeAccent: Color? = null,
     onSelect: (Int) -> Unit,
     onLaunch: () -> Unit,
     onOpenVault: () -> Unit,
@@ -127,7 +129,7 @@ fun NexusScreen(
     modifier: Modifier = Modifier
 ) {
     val selected = model.games.getOrNull(model.selectedIndex) ?: model.games.firstOrNull()
-    val accent = monolithAccent(selected?.accent)
+    val accent = monolithAccent(chromeAccent ?: selected?.accent)
     Box(modifier = modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
