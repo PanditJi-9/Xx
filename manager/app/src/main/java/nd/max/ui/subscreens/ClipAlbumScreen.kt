@@ -42,6 +42,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ContentCut
 import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.Image
 import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material.icons.rounded.VideoLibrary
 import androidx.compose.material3.AlertDialog
@@ -124,16 +125,24 @@ fun ClipAlbumScreen(navController: NavController) {
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val permission = remember { clipPermission() }
+    // اللقطات تحتاج إذن الصور منفصلًا عن الفيديو: رفضه لا يُسقط الألبوم، بل يُخفي قسمه ويقول سببه.
+    val imagePermission = remember { imagePermission() }
 
     var permitted by remember {
         mutableStateOf(
             ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED
         )
     }
+    var imagePermitted by remember {
+        mutableStateOf(
+            ContextCompat.checkSelfPermission(context, imagePermission) == PackageManager.PERMISSION_GRANTED
+        )
+    }
     var deniedOnce by rememberSaveable { mutableStateOf(false) }
     var refresh by remember { mutableIntStateOf(0) }
     var state by remember { mutableStateOf(ClipAlbumState.Loading) }
     var clips by remember { mutableStateOf(emptyList<ClipEntry>()) }
+    var shots by remember { mutableStateOf(emptyList<ClipEntry>()) }
     // الحذف يمرّ بسؤال: التسجيل لا رجعة فيه بعد تأكيد النظام، ومسار ما قبل ٣٠ كان يحذف فورًا.
     var pendingDelete by remember { mutableStateOf<ClipEntry?>(null) }
     // القصّ يفتح حواره أولًا: لا يُكتب ملفّ بمجرّد لمس أيقونة.
@@ -147,26 +156,44 @@ fun ClipAlbumScreen(navController: NavController) {
         if (granted) refresh++ else deniedOnce = true
     }
 
+    val imageLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        imagePermitted = granted
+        if (granted) refresh++
+    }
+
     // العودة تعني أحد أمرين: إذن مُنح من الإعدادات، أو تسجيل جديد تمّ والمسجّل بثّ مسحه. في الحالتين
     // القراءة من جديد أرخص من انتظار خروج ودخول — والألبوم الذي لا يُظهر ما سُجّل للتوّ ألبوم كاذب.
     LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
         val now = ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED
         if (now != permitted) permitted = now
+        val imageNow =
+            ContextCompat.checkSelfPermission(context, imagePermission) == PackageManager.PERMISSION_GRANTED
+        if (imageNow != imagePermitted) imagePermitted = imageNow
         refresh++
     }
 
-    LaunchedEffect(permitted, refresh) {
+    LaunchedEffect(permitted, imagePermitted, refresh) {
         if (!permitted) {
             state = ClipAlbumState.NoPermission
-            return@LaunchedEffect
+        } else {
+            state = ClipAlbumState.Loading
+            val loaded = withContext(Dispatchers.IO) {
+                runCatching { readClips(context.contentResolver) }
+            }
+            val found = loaded.getOrNull()
+            clips = found?.let(ClipAlbumMath::sortNewestFirst).orEmpty()
+            state = ClipAlbumMath.stateOf(permitted = true, read = loaded.isSuccess, count = clips.size)
         }
-        state = ClipAlbumState.Loading
-        val loaded = withContext(Dispatchers.IO) {
-            runCatching { readClips(context.contentResolver) }
+        // اللقطات تُقرأ بإذنها وحدها: لا تُعلَّق قراءة المقاطع على إذن الصور.
+        shots = if (imagePermitted) {
+            withContext(Dispatchers.IO) {
+                runCatching { readScreenshots(context.contentResolver) }.getOrDefault(emptyList())
+            }
+        } else {
+            emptyList()
         }
-        val found = loaded.getOrNull()
-        clips = found?.let(ClipAlbumMath::sortNewestFirst).orEmpty()
-        state = ClipAlbumMath.stateOf(permitted = true, read = loaded.isSuccess, count = clips.size)
     }
 
     val deleteLauncher = rememberLauncherForActivityResult(
@@ -197,6 +224,30 @@ fun ClipAlbumScreen(navController: NavController) {
         val send = Intent(Intent.ACTION_SEND)
             .setType("video/mp4")
             .putExtra(Intent.EXTRA_STREAM, uriOf(clip))
+            .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        context.startActivity(
+            Intent.createChooser(send, context.getString(R.string.clip_album_share_title))
+        )
+    }
+
+    fun uriOfShot(shot: ClipEntry): Uri =
+        ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, shot.id)
+
+    fun openShot(shot: ClipEntry) {
+        val view = Intent(Intent.ACTION_VIEW)
+            .setDataAndType(uriOfShot(shot), "image/*")
+            .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        try {
+            context.startActivity(view)
+        } catch (_: ActivityNotFoundException) {
+            announce(R.string.clip_album_shots_open_failed)
+        }
+    }
+
+    fun shareShot(shot: ClipEntry) {
+        val send = Intent(Intent.ACTION_SEND)
+            .setType("image/*")
+            .putExtra(Intent.EXTRA_STREAM, uriOfShot(shot))
             .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         context.startActivity(
             Intent.createChooser(send, context.getString(R.string.clip_album_share_title))
@@ -317,6 +368,56 @@ fun ClipAlbumScreen(navController: NavController) {
                     },
                     onDelete = { pendingDelete = clip }
                 )
+            }
+        }
+
+        // لقطات الشاشة: قسم مستقلّ بإذنه. رفض إذن الصور لا يُسقط المقاطع، بل يعرض بطاقة طلب صغيرة
+        // تشرح ما يُفتح به؛ والمقاطع تبقى مقروءة لأن إذنها لا يُلمس.
+        item {
+            Text(
+                text = stringResource(R.string.clip_album_shots_title),
+                style = MaterialTheme.typography.titleSmall,
+                color = colors.onSurface,
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier.padding(top = MaxSpace.sm)
+            )
+        }
+        if (imagePermitted) {
+            if (shots.isEmpty()) {
+                item {
+                    Text(
+                        text = stringResource(R.string.clip_album_shots_empty),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = colors.onSurfaceVariant
+                    )
+                }
+            } else {
+                // مفتاح منفصل عن المقاطع: معرّف الصورة ومعرّف الفيديو جدولان مختلفان وقد يتصادفان.
+                items(shots, key = { "shot_${it.id}" }) { shot ->
+                    ShotRow(
+                        shot = shot,
+                        onOpen = { openShot(shot) },
+                        onShare = { shareShot(shot) }
+                    )
+                }
+            }
+        } else {
+            item {
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(vertical = MaxSpace.hairline),
+                    horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = stringResource(R.string.clip_album_shots_permission_hint),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = colors.onSurfaceVariant,
+                        modifier = Modifier.weight(1f)
+                    )
+                    TextButton(onClick = { imageLauncher.launch(imagePermission) }) {
+                        Text(stringResource(R.string.clip_album_shots_grant))
+                    }
+                }
             }
         }
     }
@@ -494,6 +595,110 @@ private fun readClips(resolver: ContentResolver): List<ClipEntry> {
                     )
                 )
             }
+        }
+    }
+}
+
+/** إذن الصور منفصل عن الفيديو: قسم اللقطات يُخفى وحده عند رفضه، ولا يُعلَّق عليه ألبوم المقاطع. */
+private fun imagePermission(): String =
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        Manifest.permission.READ_MEDIA_IMAGES
+    } else {
+        Manifest.permission.READ_EXTERNAL_STORAGE
+    }
+
+/**
+ * لقطات `Pictures/MaxManager` — المجلّد الذي يكتب فيه مسار اللقطة دون سواه.
+ *
+ * والفشل هنا لا يُرمى: قسم اللقطات مساعد، فيُعاد فارغًا ويُقال «لا لقطات» بدل إسقاط ألبوم
+ * المقاطع بسبب جدول صور لم يقرأ.
+ */
+private fun readScreenshots(resolver: ContentResolver): List<ClipEntry> {
+    val projection = arrayOf(
+        MediaStore.Images.Media._ID,
+        MediaStore.Images.Media.DISPLAY_NAME,
+        MediaStore.Images.Media.SIZE,
+        MediaStore.Images.Media.DATE_ADDED
+    )
+    val selection = "${MediaStore.Images.Media.RELATIVE_PATH} LIKE ?"
+    val args = arrayOf("Pictures/MaxManager%")
+    val order = "${MediaStore.Images.Media.DATE_ADDED} DESC"
+    val cursor = resolver.query(
+        MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+        projection,
+        selection,
+        args,
+        order
+    ) ?: return emptyList()
+    return cursor.use {
+        val idColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID)
+        val nameColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DISPLAY_NAME)
+        val sizeColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.SIZE)
+        val addedColumn = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATE_ADDED)
+        buildList {
+            while (cursor.moveToNext()) {
+                val id = cursor.getLong(idColumn)
+                add(
+                    ClipEntry(
+                        id = id,
+                        name = cursor.getString(nameColumn) ?: "Max_$id.png",
+                        sizeBytes = cursor.getLong(sizeColumn).takeIf { it > 0L },
+                        durationMs = null,
+                        addedAtMs = cursor.getLong(addedColumn).takeIf { it > 0L }?.times(1_000L)
+                    )
+                )
+            }
+        }
+    }
+}
+
+/** صفّ لقطة: أيقونة واسم وحجم، وفعلان فقط (فتح ومشاركة) — لا قصّ ولا حذف لصورة ثابتة. */
+@Composable
+private fun ShotRow(
+    shot: ClipEntry,
+    onOpen: () -> Unit,
+    onShare: () -> Unit
+) {
+    val colors = MaterialTheme.colorScheme
+    Row(
+        modifier = Modifier.fillMaxWidth().clickable(onClick = onOpen),
+        horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(
+            modifier = Modifier
+                .width(MaxVisualSpec.instrument)
+                .aspectRatio(16f / 9f)
+                .clip(RoundedCornerShape(maxRadius(MaxRadius.control)))
+                .background(colors.surfaceContainerHighest),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = Icons.Rounded.Image,
+                contentDescription = null,
+                tint = colors.onSurfaceVariant
+            )
+        }
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = shot.name,
+                style = MaterialTheme.typography.bodyMedium,
+                color = colors.onSurface,
+                fontWeight = FontWeight.SemiBold
+            )
+            Spacer(Modifier.height(MaxSpace.hairline))
+            Text(
+                text = ClipAlbumMath.sizeText(shot.sizeBytes),
+                style = MaterialTheme.typography.bodySmall,
+                color = colors.onSurfaceVariant
+            )
+        }
+        IconButton(onClick = onShare) {
+            Icon(
+                imageVector = Icons.Rounded.Share,
+                contentDescription = stringResource(R.string.clip_album_shots_share_cd),
+                tint = colors.onSurfaceVariant
+            )
         }
     }
 }

@@ -27,8 +27,11 @@ data class ShoulderPadLayout(
  */
 object ShoulderPadMath {
 
-    const val MIN_FRACTION = 0.02f
-    const val MAX_FRACTION = 0.98f
+    // النسبة تقع على المساحة المتاحة (`screen - pad`) لا على الشاشة كاملة؛ فالصفر يعني
+    // ملاصقة الحافة مع بقاء الزرّ كاملًا مرئيًّا، والواحد يعني الحافة الأخرى. وكانت ٠٫٠٢/٠٫٩٨
+    // تمنع الوصول إلى الحافتين بلا سبب، وقد أسقطها `ShoulderPadMathTest` فعلًا.
+    const val MIN_FRACTION = 0f
+    const val MAX_FRACTION = 1f
 
     fun clampFraction(value: Float): Float =
         if (!value.isFinite()) MIN_FRACTION else value.coerceIn(MIN_FRACTION, MAX_FRACTION)

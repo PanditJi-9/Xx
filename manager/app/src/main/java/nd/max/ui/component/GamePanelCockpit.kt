@@ -160,6 +160,9 @@ import nd.max.ui.util.GyroAimPrefs
 import nd.max.ui.util.InjectionConsentPrefs
 import nd.max.ui.util.ShoulderPadPrefs
 import nd.max.core.input.A11yGestureInjector
+import nd.max.core.input.ExtraGesture
+import nd.max.core.input.ExtraPoint
+import nd.max.core.input.GameExtrasMath
 import nd.max.core.input.GyroAimMath
 import nd.max.ui.design.MAX_VALUE_UNAVAILABLE
 import nd.max.ui.design.MaxDuration
@@ -168,8 +171,10 @@ import nd.max.ui.design.MaxSize
 import nd.max.ui.design.MaxSpace
 import nd.max.ui.design.maxRadius
 import nd.max.ui.util.GamePanelPrefs
+import nd.max.ui.util.GameExtrasPrefs
 import nd.max.ui.util.GameMemoPrefs
 import nd.max.service.FpsOverlayService
+import nd.max.service.GamePanelService
 
 /*
  * لوحة اللعبة المفتوحة بتصميم «Energy Cube»، على هيئة المرجع:
@@ -263,6 +268,8 @@ fun GamePanelCockpit(
     onCycleVeil: () -> Unit = {},
     /** رفع/إعادة تركيز نافذة اللوحة: الحقل النصّي لا يظهر له لوحة مفاتيح في نافذة غير قابلة للتركيز. */
     onTyping: (Boolean) -> Unit = {},
+    /** الحزمة المتتبَّعة: إضافات اللعبة تُخزَّن لكل لعبة. */
+    trackedPackage: String? = null,
     thermal: ThermalPanelState = ThermalPanelState(),
     onSelectThermal: (String) -> Unit = {},
     refreshChoices: List<Int> = emptyList(),
@@ -311,6 +318,17 @@ fun GamePanelCockpit(
     val gyroPresent = remember {
         val manager = context.getSystemService(Context.SENSOR_SERVICE) as? SensorManager
         manager?.getDefaultSensor(Sensor.TYPE_GYROSCOPE) != null
+    }
+    // إضافات اللعبة: تُقرأ للحزمة المتتبَّعة وحدها؛ وبلا لعبة لا تُفتح أصلًا.
+    var extrasOpen by remember { mutableStateOf(false) }
+    var extras by remember(trackedPackage) {
+        mutableStateOf(
+            if (trackedPackage != null) GameExtrasPrefs.load(context, trackedPackage) else GameExtrasPrefs.State()
+        )
+    }
+    val handPresent = remember {
+        val manager = context.getSystemService(Context.SENSOR_SERVICE) as? SensorManager
+        manager?.getDefaultSensor(Sensor.TYPE_PROXIMITY) != null
     }
     var optimizing by remember { mutableStateOf(false) }
     var listView by remember { mutableStateOf(true) }
@@ -411,6 +429,20 @@ fun GamePanelCockpit(
     val openAccessibility = stringResource(R.string.game_panel_injection_open_settings)
     val guardUnknownText = stringResource(R.string.game_panel_injection_guard_unknown)
     val injectionDisable = stringResource(R.string.game_panel_injection_disable)
+    val lExtras = stringResource(R.string.game_panel_tool_extras)
+    val extrasTitle = stringResource(R.string.game_panel_tool_extras)
+    val extrasHint = stringResource(R.string.game_extra_hint)
+    val extrasPointsLabel = stringResource(R.string.game_extra_points)
+    val extrasAddPoint = stringResource(R.string.game_extra_add_point)
+    val extrasClearPoints = stringResource(R.string.game_extra_clear_points)
+    val extrasScout = stringResource(R.string.game_extra_scout)
+    val extrasHand = stringResource(R.string.game_extra_hand)
+    val extrasTurbo = stringResource(R.string.game_extra_turbo)
+    val extrasRecord = stringResource(R.string.game_extra_record)
+    val extrasPlay = stringResource(R.string.game_extra_play)
+    val extrasCountFmt = stringResource(R.string.game_extra_count)
+    val extrasScoutUnavailable = stringResource(R.string.game_extra_scout_unavailable)
+    val extrasHandUnavailable = stringResource(R.string.game_extra_hand_unavailable)
     // availability يحتاج استدعاء صلاحية: يُقاس عند فتح الحوار فقط، لا مع كل إعادة رسم.
     LaunchedEffect(padsOpen, gyroOpen) {
         if (padsOpen || gyroOpen) {
@@ -899,6 +931,15 @@ fun GamePanelCockpit(
                 laneReady = A11yGestureInjector.available
                 gyroOpen = true
             }))
+            if (trackedPackage != null) {
+                add(CubeTileSpec(Icons.Rounded.AutoAwesome, null, lExtras, extras.enabled || extras.turbo, onClick = {
+                    hold()
+                    injectionAck = InjectionConsentPrefs.acknowledged(context)
+                    laneReady = A11yGestureInjector.available
+                    extras = GameExtrasPrefs.load(context, trackedPackage)
+                    extrasOpen = true
+                }))
+            }
             add(CubeTileSpec(Icons.Rounded.PowerSettingsNew, null, lClose, false, onClick = { leave(onClose) }))
         }
 
@@ -1238,9 +1279,132 @@ fun GamePanelCockpit(
                 }
             }
         }
+
+        // إضافات اللعبة: النقاط والماكرو والتكبير وشريط Turbo — كلها على طبقة الحقن الموصوفة فوق.
+        val extrasPkg = trackedPackage
+        if (extrasOpen && extrasPkg != null) {
+            CubeModal(title = extrasTitle, tint = tint, onDismiss = { extrasOpen = false }) {
+                Text(injectionWarning, color = CubeDim, fontSize = 12.sp)
+                if (!injectionAck) {
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs, Alignment.End)) {
+                        CubeModalAction(stringResource(R.string.cancel), CubeDim, onClick = { extrasOpen = false })
+                        CubeModalAction(injectionAckLabel, ModeGreen, onClick = {
+                            InjectionConsentPrefs.acknowledge(context)
+                            injectionAck = true
+                        })
+                    }
+                } else {
+                    Text(extrasHint, color = CubeDim, fontSize = 12.sp)
+                    Text(
+                        if (laneReady) laneReadyText else laneMissingText,
+                        color = if (laneReady) ModeGreen else ModeAmber,
+                        fontSize = 12.sp,
+                    )
+                    // النقاط: العنصر الأساسيّ في الفكرة ٤ — كل نقطة إيماءة مختارة تُحقن في موضعها.
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs, Alignment.CenterVertically)) {
+                        Text("$extrasPointsLabel  ${String.format(extrasCountFmt, extras.points.size)}", color = CubeInk, fontSize = 13.sp)
+                        CubeModalAction(
+                            if (extras.enabled) injectionDisable else extrasAddPoint,
+                            if (extras.enabled) ModeAmber else ModeGreen,
+                        ) {
+                            val next = if (!extras.enabled && extras.points.isEmpty()) {
+                                listOf(ExtraPoint(id = 0, gesture = ExtraGesture.TAP, x = 0.5f, y = 0.62f))
+                            } else {
+                                extras.points
+                            }
+                            extras = extras.copy(enabled = !extras.enabled, points = next)
+                            GameExtrasPrefs.setEnabled(context, extrasPkg, extras.enabled)
+                            GameExtrasPrefs.savePoints(context, extrasPkg, next)
+                        }
+                    }
+                    if (extras.enabled) {
+                        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs)) {
+                            CubeModalAction(extrasAddPoint, CubeDim, onClick = {
+                                val id = GameExtrasMath.nextId(extras.points)
+                                if (id >= 0) {
+                                    val added = extras.points + ExtraPoint(id = id, x = 0.5f, y = 0.5f)
+                                    extras = extras.copy(points = GameExtrasMath.sanitize(added))
+                                    GameExtrasPrefs.savePoints(context, extrasPkg, extras.points)
+                                }
+                            })
+                            CubeModalAction(extrasClearPoints, CubeDim, onClick = {
+                                extras = extras.copy(points = emptyList())
+                                GameExtrasPrefs.savePoints(context, extrasPkg, emptyList())
+                            })
+                        }
+                        // صفّ لكل نقطة: لمسة تُدوّر إيماءتها — سبع إيماءات تدور.
+                        extras.points.forEach { point ->
+                            CubeModalAction("${glyphOf(point.gesture)}  #${point.id}", CubeInk, onClick = {
+                                val cycled = extras.points.map {
+                                    if (it.id == point.id) it.copy(gesture = it.gesture.next()) else it
+                                }
+                                extras = extras.copy(points = cycled)
+                                GameExtrasPrefs.savePoints(context, extrasPkg, cycled)
+                            })
+                        }
+                    }
+                    // الماكرو: تسجيل وإعادة — والعدد المخزَّن يُقال لا يُقدَّر.
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs)) {
+                        CubeModalAction(extrasRecord, ModeAuto, onClick = {
+                            extrasOpen = false
+                            GamePanelService.sendAction(context, GamePanelService.ACTION_MACRO_RECORD)
+                        })
+                        CubeModalAction(
+                            "$extrasPlay ${String.format(extrasCountFmt, extras.macro.size)}",
+                            CubeDim,
+                            onClick = {
+                                extrasOpen = false
+                                GamePanelService.sendAction(context, GamePanelService.ACTION_MACRO_PLAY)
+                            },
+                        )
+                    }
+                    // التكبير واليد وشريط Turbo: ثلاثة مفاتيح مستقلة.
+                    ToggleRow(extrasScout, extras.scout, if (!A11yGestureInjector.screenshotAvailable) extrasScoutUnavailable else null) {
+                        extras = extras.copy(scout = !extras.scout)
+                        GameExtrasPrefs.setScout(context, extras.scout)
+                    }
+                    ToggleRow(extrasHand, extras.hand, if (!handPresent) extrasHandUnavailable else null) {
+                        extras = extras.copy(hand = !extras.hand)
+                        GameExtrasPrefs.setHand(context, extras.hand)
+                    }
+                    ToggleRow(extrasTurbo, extras.turbo, null) {
+                        extras = extras.copy(turbo = !extras.turbo)
+                        GameExtrasPrefs.setTurbo(context, extras.turbo)
+                    }
+                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs, Alignment.End)) {
+                        CubeModalAction(stringResource(R.string.cancel), CubeDim, onClick = { extrasOpen = false })
+                    }
+                }
+            }
+        }
     }
 }
 
+/** حرف الإيماءة كما يُعرض على النقطة وفي القائمة — رمز واحد لا يُترجم. */
+private fun glyphOf(gesture: ExtraGesture): String = when (gesture) {
+    ExtraGesture.TAP -> "•"
+    ExtraGesture.DOUBLE_TAP -> "2"
+    ExtraGesture.LONG_PRESS -> "L"
+    ExtraGesture.SWIPE_UP -> "↑"
+    ExtraGesture.SWIPE_DOWN -> "↓"
+    ExtraGesture.SWIPE_LEFT -> "←"
+    ExtraGesture.SWIPE_RIGHT -> "→"
+}
+
+/** صفّ مفتاح ثنائيّ بملاحظة اختياريّة تشرح غياب الشرط (حسّاس/خدمة) بدل تعطيل صامت. */
+@Composable
+private fun ToggleRow(
+    label: String,
+    on: Boolean,
+    note: String?,
+    onToggle: () -> Unit,
+) {
+    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs, Alignment.CenterVertically)) {
+        Text(label, color = CubeInk, fontSize = 13.sp, modifier = Modifier.weight(1f))
+        if (note != null) Text(note, color = ModeAmber, fontSize = 11.sp, modifier = Modifier.weight(1f))
+        CubeModalAction(if (on) "ON" else "OFF", if (on) ModeGreen else CubeDim, onClick = onToggle)
+    }
+}
 /**
  * حوار داخل شجرة اللوحة.
  *

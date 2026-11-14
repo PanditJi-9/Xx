@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
   Islandify uses this service to create a window above the status bar and to deliver the
-  game-panel controls the user explicitly enables (shoulder buttons, gyro aim). It never
-  reads screen content and never reacts to accessibility events.
+  game-panel controls the user explicitly enables (shoulder buttons, gyro aim, and the Scout
+  zoom preview). Scout is the only feature that reads the screen: it takes a screenshot on
+  request, shows it in a small preview, and never stores or sends it. The service never reacts
+  to accessibility events.
 -->
 <accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
     android:accessibilityFeedbackType="feedbackGeneric"
     android:accessibilityFlags="flagDefault"
     android:canRetrieveWindowContent="false"
+    android:canTakeScreenshot="true"
     android:description="@string/ify_a11y_description"
     android:canPerformGestures="true" />

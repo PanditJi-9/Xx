@@ -7,7 +7,10 @@ package nd.max.core.input
 
 import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.GestureDescription
+import android.graphics.Bitmap
 import android.graphics.Path
+import android.os.Build
+import android.view.Display
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
@@ -41,6 +44,10 @@ object A11yGestureInjector {
     /** هل الخدمة متّصلة الآن؟ الواجهة تعرض «المسار متاح» بناءً عليه. */
     val available: Boolean get() = service != null
 
+    /** هل يمكن التقاط الشاشة للـScout؟ يحتاج Android 11+ وخدمة وصول مفعّلة. */
+    val screenshotAvailable: Boolean
+        get() = service != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
+
     fun attach(service: AccessibilityService) {
         this.service = service
     }
@@ -58,6 +65,42 @@ object A11yGestureInjector {
         durationMs = durationMs.toLong()
             .coerceIn(TouchInjectionRules.MIN_SWIPE_MS.toLong(), MAX_DURATION_MS)
     )
+
+    /**
+     * لقطة شاشة عبر خدمة الوصول — لـScout فقط، ولا تُخزَّن ولا تُرسل.
+     *
+     * `takeScreenshot` متاح من Android 11 (`R`)، ويعيد `HardwareBuffer` يجب إغلاقه بعد النسخ.
+     * وكل فشل يُعيد `null` بلا استثناء: الواجهة تقول «غير متاح» ولا تُسقط شيئًا.
+     */
+    suspend fun screenshot(): Bitmap? {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) return null
+        return withContext(Dispatchers.Main) {
+            val attached = service ?: return@withContext null
+            withTimeoutOrNull(GESTURE_TIMEOUT_MS) {
+                suspendCancellableCoroutine<Bitmap?> { continuation ->
+                    val callback = object : AccessibilityService.TakeScreenshotCallback {
+                        override fun onSuccess(screenshot: AccessibilityService.ScreenshotResult) {
+                            val hardware = screenshot.hardwareBuffer
+                            val bitmap = runCatching {
+                                Bitmap.wrapHardwareBuffer(hardware, screenshot.colorSpace)
+                                    ?.copy(Bitmap.Config.ARGB_8888, false)
+                            }.getOrNull()
+                            runCatching { hardware.close() }
+                            if (continuation.isActive) continuation.resume(bitmap)
+                        }
+
+                        override fun onFailure(errorCode: Int) {
+                            if (continuation.isActive) continuation.resume(null)
+                        }
+                    }
+                    val accepted = runCatching {
+                        attached.takeScreenshot(Display.DEFAULT_DISPLAY, attached.mainExecutor, callback)
+                    }.isSuccess
+                    if (!accepted && continuation.isActive) continuation.resume(null)
+                }
+            }
+        }
+    }
 
     private suspend fun dispatch(
         fromX: Float, fromY: Float, toX: Float, toY: Float, durationMs: Long,

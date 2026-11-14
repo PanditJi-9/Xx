@@ -53,11 +53,30 @@ object TouchInjector {
         durationMs: Int,
     ): InjectionOutcome = inject(context, x1, y1, x2, y2, TouchInjectionRules.swipeDuration(durationMs))
 
+    /**
+     * تمرير لمسة **مسجِّل الماكرو** إلى اللعبة — الحارس يُتجاوَز هنا عن قصد.
+     *
+     * السبب: الإصبع الذي يرسم الخطوة هو نفسه الذي يجب أن تصل لمسته إلى اللعبة؛ فقراءة الحارس
+     * سترى `DOWN` وترفض كل خطوة، فيصير المسجِّل حاجزًا لا ناقلًا. وهذا **الموضع الوحيد** الذي
+     * يُتجاوَز فيه الحارس، ويُعلن في واجهة الماكرو؛ ولا يعني أن الحقن صار بلا حارس في بقية المسارات.
+     */
+    suspend fun passThrough(
+        context: Context,
+        x1: Float, y1: Float,
+        x2: Float, y2: Float,
+        durationMs: Int,
+    ): InjectionOutcome = inject(
+        context, x1, y1, x2, y2,
+        TouchInjectionRules.swipeDuration(durationMs),
+        guard = false,
+    )
+
     private suspend fun inject(
         context: Context,
         x1: Float, y1: Float,
         x2: Float, y2: Float,
         durationMs: Int,
+        guard: Boolean = true,
     ): InjectionOutcome {
         val metrics = context.resources.displayMetrics
         val startX = TouchInjectionRules.clampX(x1, metrics.widthPixels)
@@ -71,10 +90,10 @@ object TouchInjector {
         val now = SystemClock.elapsedRealtime()
         // لا يُسأل الجذر من أجل الحارس وحده: صلاحية غير متاحة الآن = قراءة مجهولة، لا طلب إذن.
         val canProbe = PrivilegeManager.snapshot.value.let { it.rootGranted || it.shizuku.ready }
-        val finger = if (canProbe) {
+        val finger = if (guard && canProbe) {
             FingerProbe.read()
         } else {
-            FingerProbeResult(FingerReading.UNKNOWN, "no-privilege")
+            FingerProbeResult(FingerReading.UNKNOWN, if (guard) "no-privilege" else "guard-bypassed")
         }
         lastFinger = finger
         if (finger.reading != FingerReading.UNKNOWN) guardEverActive = true

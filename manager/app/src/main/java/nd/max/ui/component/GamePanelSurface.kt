@@ -147,6 +147,8 @@ fun GamePanelSurface(
     veilEnabled: Boolean = false,
     veilTone: DisplayVeilTone = DisplayVeilTone.WARM,
     onCycleVeil: () -> Unit = {},
+    /** الحزمة المتتبَّعة: إضافات اللعبة تُخزَّن لكل لعبة، فتصل هذه إلى اللوحة لا تُخمَّن. */
+    trackedPackage: String? = null,
     /** رفع تركيز النافذة لحظة الكتابة في حقل المذكّرة ثم إعادته (نافذة غير قابلة للتركيز لا تُظهر لوحة مفاتيح). */
     onTyping: (Boolean) -> Unit = {},
     origin: Offset = Offset(1f, 0.5f),
@@ -193,6 +195,7 @@ fun GamePanelSurface(
                 veilTone = veilTone,
                 onCycleVeil = onCycleVeil,
                 onTyping = onTyping,
+                trackedPackage = trackedPackage,
                 thermal = thermal,
                 onSelectThermal = onSelectThermal,
                 refreshChoices = refreshChoices,

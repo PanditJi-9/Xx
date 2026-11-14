@@ -1710,6 +1710,12 @@
     <string name="clip_album_trim_working">يُقصّ…</string>
     <string name="clip_album_trim_saved">حُفظت النسخة المقصوصة</string>
     <string name="clip_album_trim_unavailable">مدة المقطع غير معروفة بعد؛ أعد المحاولة بعد فهرسته.</string>
+    <string name="clip_album_shots_title">اللقطات</string>
+    <string name="clip_album_shots_empty">اللقطات المحفوظة من لوحة اللعب تظهر هنا.</string>
+    <string name="clip_album_shots_grant">اسمح بالصور</string>
+    <string name="clip_album_shots_permission_hint">إذن الصور يعرض اللقطات التي حفظتها اللوحة. المقاطع تبقى متاحة بدونه.</string>
+    <string name="clip_album_shots_share_cd">شارك اللقطة</string>
+    <string name="clip_album_shots_open_failed">لا تطبيق يفتح هذه اللقطة</string>
     <string name="clip_album_trim_fail_read">تعذّرت قراءة المقطع</string>
     <string name="clip_album_trim_fail_write">تعذّر إنشاء النسخة المقصوصة</string>
     <string name="clip_album_trim_fail_mux">توقّف القصّ قبل اكتمال النسخة</string>
@@ -3514,7 +3520,7 @@
     <string name="home_note_counter">%1$d / %2$d</string>
     <string name="fps_overlay_intro">نافذة صغيرة قابلة للسحب تعرض إحصاءات الأداء المباشرة فوق أي تطبيق. اسحبها إلى أي مكان على الشاشة بعد تفعيلها.</string>
     <!-- ==== Islandify port (MIT, (c) 2026 bughunter11) — keys prefixed ify_ ==== -->
-    <string name="ify_a11y_description">تتيح رسم الجزيرة فوق شريط الحالة وإرسال لمسات لوحة الألعاب التي تفعّلها (أزرار الكتف، التصويب الجيروسكوبيّ). لا يقرأ التطبيق محتوى شاشتك ولا يسجّله.</string>
+    <string name="ify_a11y_description">تتيح رسم الجزيرة فوق شريط الحالة وإرسال لمسات لوحة الألعاب التي تفعّلها (أزرار الكتف، التصويب الجيروسكوبيّ، النقاط المربوطة)، وعرض معاينة التكبير الاستطلاعيّ. التكبير يأخذ لقطة عند الطلب ولا يخزّنها ولا يرسلها؛ ولا يقرأ التطبيق محتوى شاشتك ولا يسجّله سوى ذلك.</string>
     <string name="ify_tab_home">الرئيسية</string>
     <string name="ify_tab_activities">الأنشطة</string>
     <string name="ify_tab_customize">التخصيص</string>

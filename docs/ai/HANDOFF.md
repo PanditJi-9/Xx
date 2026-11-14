@@ -27975,3 +27975,43 @@ exit 0 · `i18n_coverage --assert` تطابق الأكواد الثلاثة و0 
 يُقرأ `UP` كما هو معلن) · **هل تقبل لعبتك سحبًا في مركز الشاشة كتحريك كاميرا** (الجيروسكوب يعمل حيث
 تفهم اللعبة السحب، ولا يُدّعى غير ذلك) · **هل يبقى الزرّان فوق أزرار اللعبة بعد الدوران** (النسبة
 محفوظة والاختبار يخصّ الحساب لا الرسم). ولا يُقال «نجح» في أيٍّ منها قبل تشغيل على الجهاز.
+
+### GAME-SPACE-EXTRAS-02 — الفكرة ٤ وشريط Game Turbo واللقطات — 2026-11-14 · DONE_WITH_CONCERNS
+
+**TASK:** أمر المالك «نفذها كلها» بعد «نفذ كل هذه الافكار حتي لو مستحيله…»، مع تصحيحه أن الشريط
+العائم **شريط تحكّم داخل اللعبة في وضع Game Turbo** (نمط RedMagic) لا شريط تنقّل لوبي. فبُني الثلاثة:
+الفكرة ٤، والشريط، وعرض اللقطات.
+
+**FILES:** `core/input/GameExtras.kt` (نقاط/إيماءات/ماكرو/قرب) · `core/input/MacroRunner.kt`
+(إعادة تشغيل + `HandTouchController`) · `ui/util/GameExtrasPrefs.kt` (لكل حزمة + عام) ·
+`service/GameExtrasOverlay.kt` · `service/GameTurboStrip.kt` · `service/ScoutZoomOverlay.kt` ·
+`service/MacroPadOverlay.kt` · `core/input/A11yGestureInjector.kt` (`screenshot()` + `screenshotAvailable`) ·
+`core/input/TouchInjector.kt` (`passThrough` الوحيد المتجاوز للحارس) · `service/GamePanelService.kt`
+(`syncExtras`، أوامر الماكرو، `toggleTurboRecording`) · `ui/component/GamePanelCockpit.kt`
+(بلاطة «إضافات اللعبة» وحوارها) · `ui/component/GamePanelSurface.kt` (`trackedPackage`) ·
+`res/xml/island_accessibility_config.xml` (`canTakeScreenshot`) · `ui/subscreens/ClipAlbumScreen.kt`
+(قسم اللقطات) · نصوص en/ar في `max_gaming_strings.xml` و`strings.xml` · ثلاثة اختبارات JVM جديدة.
+
+**ما بُني:** سبع إيماءات قابلة للربط بثماني نقاط تُسحب وتُحقن في موضعها؛ ماكرو يسجّل حتى ٤٠ خطوة
+ويعيدها بفواصلها، ويمرّر لمسة التسجيل للعبة عبر المسار الوحيد المتجاوز للحارس (معلن)؛ Scout يقرأ
+الشاشة عبر `takeScreenshot` (Android 11+) ولا يخزّن/يرسل؛ يد←لمس عبر حسّاس القرب بتهدئة ٧٠٠ms؛
+شريط Turbo بخمس أدوات حقيقية (FPS/لقطة/تسجيل/Scout/إغلاق) يُسحب رأسيًّا؛ قسم لقطات في الألبوم بإذن
+صور مستقلّ لا يُسقط المقاطع عند رفضه.
+
+**GATES:** `kt_balance` ٣٤٣١ · ٠ · `code_health` صحّة نظيفة 0 · `repo_audit` 0 (٩٩٨ ملفّ kt) ·
+`i18n_coverage` 0 عوائق · `--prune all` 0 يتيم · `design_tokens` 233/300 · `resource_compile` aapt2
+يمرّ · `provenance_guard` 0 مسار مرجعي (٤٢٠٦ ملفًّا) · `git diff --check` نظيف.
+
+**CI TRUTH:** `43529340801` على `67fb358e` = أحمر في اختبار واحد فقط `ShoulderPadMathTest.kt:24`
+(الترجمة نجحت). أُصلح `ShoulderPadMath.MIN_FRACTION/MAX_FRACTION` إلى `0f/1f` لأن النسبة على المساحة
+`screen - pad` فالصفر والواحد يُبقيان الزرّ كاملًا. وكُشف أثناء المراجعة تصادم اسم `toggleRecording`
+بين تسجيل HUD وشريط Turbo، فأُعيد تسمية الجديد `toggleTurboRecording` قبل الدفع. **رأس هذه الدفعة
+لم يُشغَّل بعد؛ لا يُقال أخضر قبل قراءة `conclusion`.**
+
+**BUILD:** لا بناء محليًّا (§0.10). الاختبارات الثلاثة الجديدة لم تُشغَّل محليًّا؛ CI وحده يحكمها.
+
+**RESIDUAL RISK:** وصول اللمسة إلى لعبة حقيقية وقبولها كإدخال مُولَّد · الماكرو على لعبة بزمن متغيّر ·
+لقطة Scout على جهاز فعلي وحدود Android 11 · وجود حسّاس القرب (وغيابه يُعلن) · الشريط فوق لعبة ملء
+الشاشة وبعد الدوران · فهرسة اللقطات في الألبوم · RTL/TalkBack و320/360dp — **جهاز المالك وحده**.
+
+**NEXT:** دفع هذه الدفعة إلى `main` وتشغيل Quick Verify `390059589` وقراءة حكمه قبل أي ادّعاء.

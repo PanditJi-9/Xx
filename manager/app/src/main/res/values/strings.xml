@@ -766,6 +766,12 @@
     <string name="clip_album_trim_working">Trimming…</string>
     <string name="clip_album_trim_saved">Trimmed copy saved</string>
     <string name="clip_album_trim_unavailable">The clip duration is not known yet; try again after it is indexed.</string>
+    <string name="clip_album_shots_title">Screenshots</string>
+    <string name="clip_album_shots_empty">Screenshots saved from the game panel appear here.</string>
+    <string name="clip_album_shots_grant">Allow photo access</string>
+    <string name="clip_album_shots_permission_hint">Photo access shows the screenshots the panel saved. Clips stay available without it.</string>
+    <string name="clip_album_shots_share_cd">Share screenshot</string>
+    <string name="clip_album_shots_open_failed">No app could open this screenshot</string>
     <string name="clip_album_trim_fail_read">The clip could not be read</string>
     <string name="clip_album_trim_fail_write">Could not create the trimmed copy</string>
     <string name="clip_album_trim_fail_mux">Trimming stopped before the copy was complete</string>
@@ -3569,7 +3575,7 @@
     <string name="home_note_saved_hint">Saved when you close</string>
     <string name="home_note_counter">%1$d / %2$d</string>
     <!-- ==== Islandify port (MIT, (c) 2026 bughunter11) — keys prefixed ify_ ==== -->
-    <string name="ify_a11y_description">Lets MaxManager draw the island above the status bar and send the game-panel taps you enable (shoulder buttons, gyro aim). MaxManager does not read or record anything on your screen.</string>
+    <string name="ify_a11y_description">Lets MaxManager draw the island above the status bar, send the game-panel taps you enable (shoulder buttons, gyro aim, mapped points), and show the Scout zoom preview. Scout takes a screenshot on demand and never stores or sends it; MaxManager does not read or record anything else on your screen.</string>
     <string name="ify_tab_home">Home</string>
     <string name="ify_tab_activities">Activities</string>
     <string name="ify_tab_customize">Customize</string>
