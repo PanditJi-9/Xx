@@ -123,11 +123,15 @@ class LobbyExploreContractTest {
         }
 
         // وكل سطح يعلن الباب يظلّ يعلنه — لا يُحذف بابٌ بصمت إصلاحًا لعدّ.
+        // وقاعدة المسرح خرجت من القائمة بتعديل المالك (`15706c90`): جُمعت أدوات التحكّم كلها في
+        // رأس واحد على الطرف الأيسر (إغلاق · سجلّ · تحديث · مفضّلة · استكشاف)، فلم يبقَ للمسرح
+        // بابٌ خاصّ ولم تبقَ وسيطة `onOpenSessions`. والمُثبِّت مكانه أيقونة السجلّ نفسها في ذلك
+        // الرأس: حذفها بصمت يُسقط الحارس، كما كان يُسقطه حذف باب المسرح قبله.
         listOf(
-            "onOpenSessions" to "the stage base",
+            "Icons.Rounded.History" to "the top bar history button",
             "onOpenHistory" to "the control centre",
             "PaletteActionId.Sessions" to "the command palette",
-            "R.string.game_sessions_lobby_open" to "the top bar",
+            "R.string.game_sessions_lobby_open" to "the sessions log label",
         ).forEach { (needle, surface) ->
             assertTrue("The sessions door disappeared from $surface", text.contains(needle))
         }
