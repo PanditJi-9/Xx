@@ -83,20 +83,36 @@ class LobbyExploreContractTest {
     }
 
     @Test
-    fun `every sessions door in the lobby opens a single top copy`() {
+    fun `every sessions door in the lobby is single top`() {
         val root = sourceRoot()
         assumeTrue("Cannot locate nd.max sources; guard not evaluated", root != null)
         val text = lobby()
 
-        // الباب صار أربعة لا ثلاثة: الشريط العلوي، والرؤى، ولوحة الألوان، وقاعدة المسرح.
-        // والبوابة لا تعدّها بعددها — تعدّ **كل** نداء تنقّل إلى سجلّ الجلسات وتشترط أن يحمل
-        // launchSingleTop في الكتلة نفسها، فلا يُضاف باب خامس بلا هذا الحارس.
-        val doors = Regex("navigate\\(MaxDestination\\.GameSessions\\.route\\)").findAll(text).count()
-        val guarded = Regex(
-            "navigate\\(MaxDestination\\.GameSessions\\.route\\)\\s*\\{\\s*launchSingleTop = true"
-        ).findAll(text).count()
-        assertTrue("The lobby must keep at least four sessions doors", doors >= 4)
-        assertEquals("A sessions door opens a stacked copy", doors, guarded)
+        // البوابة على **الفعل** لا على عدده: كل نداء يفتح سجلّ الجلسات يجب أن يكون single-top،
+        // فإضافة بابٍ مشروع جديد (قاعدة المسرح، مركز التحكّم، الشريط العلوي، لوحة الأوامر) لا
+        // تُسقط العقد، وبابٌ جديد ينسى `launchSingleTop` يُسقطه. والعدّ الثابت كان **أضعف** من
+        // الشرط الذي يحرسه: بابٌ خامس غير single-top لم يكن يُغيّر العدّ فيمرّ.
+        val doors = Regex(
+            "navigate\\(MaxDestination\\.GameSessions\\.route\\)\\s*\\{([^}]*)\\}"
+        ).findAll(text).toList()
+
+        assertTrue("The lobby has no door to the sessions log", doors.isNotEmpty())
+        doors.forEachIndexed { index, door ->
+            assertTrue(
+                "Sessions door #${index + 1} is not single-top: a second tap would stack the screen",
+                door.groupValues[1].contains("launchSingleTop = true")
+            )
+        }
+
+        // وكل سطح يعلن الباب يظلّ يعلنه — لا يُحذف بابٌ بصمت إصلاحًا لعدّ.
+        listOf(
+            "onOpenSessions" to "the stage base",
+            "onOpenHistory" to "the control centre",
+            "PaletteActionId.Sessions" to "the command palette",
+            "R.string.game_sessions_lobby_open" to "the top bar",
+        ).forEach { (needle, surface) ->
+            assertTrue("The sessions door disappeared from $surface", text.contains(needle))
+        }
     }
 
     @Test
