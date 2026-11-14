@@ -34,6 +34,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AddToHomeScreen
+import androidx.compose.material.icons.rounded.SportsEsports
 import androidx.compose.material.icons.rounded.Bolt
 import androidx.compose.material.icons.rounded.Layers
 import androidx.compose.material.icons.rounded.RestartAlt
@@ -76,6 +77,8 @@ import nd.max.core.gamespace.GameCapabilities
 import nd.max.core.gamespace.GameFeature
 import nd.max.core.gamespace.GameModeStatus
 import nd.max.core.gamespace.GameProfileRepository
+import nd.max.core.platform.SessionInsight
+import nd.max.core.platform.StoredGameSession
 import nd.max.core.gamespace.InAppProfileRules
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -130,6 +133,7 @@ import nd.max.ui.util.getSupportedRefreshRates
 
 /** أقسام مركز التحكم. الترتيب هو ترتيب الشريط الجانبي. */
 internal enum class LobbySection(val titleRes: Int, val icon: ImageVector) {
+    Arena(R.string.lobby_cc_arena, Icons.Rounded.SportsEsports),
     Loadout(R.string.lobby_cc_loadout, Icons.Rounded.Bolt),
     Game(R.string.lobby_tile_profile, Icons.Rounded.Tune),
     Panel(R.string.lobby_tile_panel, Icons.Rounded.ViewSidebar),
@@ -170,6 +174,13 @@ internal fun LobbyControlCenter(
     excluded: Set<String>,
     onToggleGame: (String, Boolean) -> Unit,
     accent: Color,
+    sessions: List<StoredGameSession>,
+    insight: SessionInsight?,
+    onSessions: () -> Unit,
+    onHud: () -> Unit,
+    onThermal: () -> Unit,
+    onDisplay: () -> Unit,
+    onGameProfile: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(modifier = modifier.fillMaxSize()) {
@@ -197,6 +208,20 @@ internal fun LobbyControlCenter(
                     .fillMaxSize()
             ) { current ->
                 when (current) {
+                    LobbySection.Arena -> LobbyArena(
+                        app = app,
+                        config = config,
+                        panelEnabled = panelEnabled,
+                        onPanelEnabled = onPanelEnabled,
+                        sessions = sessions,
+                        insight = insight,
+                        accent = accent,
+                        onSessions = onSessions,
+                        onHud = onHud,
+                        onThermal = onThermal,
+                        onDisplay = onDisplay,
+                        onGameProfile = onGameProfile
+                    )
                     LobbySection.Loadout -> LoadoutBody(app, config, panelEnabled, onPanelEnabled, onUpdate, onOpenFull)
                     LobbySection.Game -> GameBody(app, config, onUpdate, onOpenFull)
                     LobbySection.Panel -> PanelBody(app, panelEnabled, onPanelEnabled)

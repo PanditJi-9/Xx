@@ -63,6 +63,7 @@ import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -101,6 +102,9 @@ import nd.max.core.gamespace.PlaySessionStore
 import nd.max.core.gamespace.SidePanelArmedStore
 import nd.max.core.gamespace.gameLibrary
 import nd.max.core.platform.ForegroundAppResolver
+import nd.max.core.platform.GameSessionStore
+import nd.max.core.platform.StoredGameSession
+import nd.max.core.platform.sessionInsight
 import nd.max.service.GamePanelService
 import nd.max.ui.component.LOBBY_SLAB_ASPECT
 import nd.max.ui.component.LobbyDeck
@@ -124,7 +128,10 @@ import nd.max.ui.component.LocalLobbySounds
 import nd.max.ui.component.lobbyIntro
 import nd.max.ui.component.lobbyLoop
 import nd.max.ui.component.rememberLobbyAnimationsEnabled
+import nd.max.ui.component.rememberLobbyBattery
+import nd.max.ui.component.rememberLobbyClock
 import nd.max.ui.component.rememberLobbyIntro
+import nd.max.ui.component.rememberLobbyMemory
 import nd.max.ui.component.rememberLobbySounds
 import nd.max.ui.component.rememberLobbyTone
 import nd.max.ui.design.MaxDuration
@@ -139,6 +146,17 @@ import nd.max.ui.viewmodel.AppSettingsViewModel
 import nd.max.ui.viewmodel.GameSpaceViewModel
 
 private val TopBarHeight = 56.dp
+
+/** تحت هذا الارتفاع (هاتف عرضيّ) تُعرض لوحة القراءات بلا هامش ولا صفّ ملف. */
+private val StageCompactHeight = 420.dp
+
+/*
+ * عتبات عرض الشريط العلويّ: التبويبات والساعة تظهران حين يُوجد لهما مكان حقیقيّ، ويبقى الشعار
+ * والأزرار في كل عرض. العتبة بالـdp لا بالبكسل حتى لا يختلف الحكم بين كثافة وأخرى.
+ */
+private const val GameSpaceBrandCompactDp = 760
+private const val GameSpaceClockWidthDp = 900
+private const val GameSpaceTabsWidthDp = 1100
 private val MinSlabHeight = 132.dp
 private val MaxSlabHeight = 288.dp
 private val RailReserve = MaxSpace.xl + MaxSpace.md
@@ -265,6 +283,12 @@ fun GameLobbyScreen(
     var selected by rememberSaveable {
         mutableStateOf<String?>(lobbyPrefs.lastPackage.takeIf { lobbyPrefs.resumeLast })
     }
+    // سجلّ الجلسات: يُقرأ على IO مع كل عودة إلى الشاشة (الجلسة تُكتب واللوبي في الخلفية)،
+    // ويغذّي لوحة الحالة هنا وقسم «الساحة» في مركز التحكم — مصدر واحد لا نسختان.
+    var lobbySessions by remember { mutableStateOf<List<StoredGameSession>>(emptyList()) }
+    LaunchedEffect(statsRevision) {
+        lobbySessions = withContext(Dispatchers.IO) { GameSessionStore.load(context) }
+    }
     var favoritesOnly by rememberSaveable { mutableStateOf(false) }
     var section by rememberSaveable { mutableStateOf(LobbySection.Game) }
     var launchFailed by remember { mutableStateOf(false) }
@@ -334,6 +358,21 @@ fun GameLobbyScreen(
     val active = games.getOrNull(deckState.currentPage)
     val activeConfig: AppConfig? = active?.let { settingsViewModel.fullConfig[it.packageName] }
     val panelEnabled = active?.packageName in panelPrefs.enabledPackages
+
+    // جلسات اللعبة المحدَّدة وحدها (الأساس لا يخلط الألعاب)، وأحدثها هو ما يُحكم عليه.
+    val activeSessions = remember(lobbySessions, active) {
+        lobbySessions
+            .filter { it.packageName == active?.packageName }
+            .sortedByDescending { it.endedAtMs }
+    }
+    val insight = remember(activeSessions, lobbySessions) {
+        activeSessions.firstOrNull()?.let { sessionInsight(it, lobbySessions) }
+    }
+    val lobbyBattery by rememberLobbyBattery()
+    val lobbyMemory by rememberLobbyMemory()
+    val lobbyClock by rememberLobbyClock()
+    val lobbyDate by rememberLobbyDate()
+    val screenWidthDp = LocalConfiguration.current.screenWidthDp
 
     // لون المسرح يتبع اللعبة المحدَّدة (أو لون العلامة إن أُوقف «ألوان من اللعبة») وينتقل بنعومة؛
     // يُقرأ في مرحلة الرسم عبر `toneState.value` حيث أمكن.
@@ -512,13 +551,20 @@ fun GameLobbyScreen(
                 ) {
                     if (page == 0) {
                         // ─────────────── المسرح ───────────────
+                        BoxWithConstraints(Modifier.fillMaxSize()) {
                         Row(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .displayCutoutPadding()
-                                .padding(top = TopBarHeight),
+                                .padding(top = TopBarHeight, bottom = GameSpaceStatusHeight),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
+                            // شريط الأقسام على الحافة: يفتح مركز التحكم على القسم نفسه مباشرة،
+                            // فيبقى المسرح هو الشاشة الأولى والتنقّل بنقرة واحدة.
+                            GameSpaceRail(
+                                selected = section,
+                                onSection = openControl
+                            )
                             Box(
                                 modifier = Modifier
                                     .weight(INFO_WEIGHT)
@@ -650,6 +696,36 @@ fun GameLobbyScreen(
                                 }
                             }
                         }
+                        GameSpaceBoard(
+                            battery = lobbyBattery,
+                            memory = lobbyMemory,
+                            tweaks = activeConfig?.customizedFieldCount() ?: 0,
+                            panelEnabled = panelEnabled,
+                            onProfile = { openControl(LobbySection.Game) },
+                            compact = maxHeight < StageCompactHeight,
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .padding(top = TopBarHeight, end = MaxSpace.xxl)
+                        )
+                        GameSpaceStatusBar(
+                            label = insight?.let { stringResource(verdictText(it.verdict)) }
+                                ?: stringResource(R.string.gs_status_ready),
+                            detail = if (insight != null) {
+                                stringResource(R.string.lobby_arena_sessions_detail, activeSessions.size)
+                            } else {
+                                stringResource(R.string.lobby_arena_no_session)
+                            },
+                            tone = insight?.let { verdictTone(it.verdict) } ?: LobbyPalette.Muted,
+                            onSessions = {
+                                navController.navigate(MaxDestination.GameSessions.route) {
+                                    launchSingleTop = true
+                                }
+                            },
+                            modifier = Modifier
+                                .align(Alignment.BottomCenter)
+                                .padding(horizontal = MaxSpace.xxl)
+                        )
+                        }
                     } else {
                         // ─────────────── مركز التحكم ───────────────
                         LobbyControlCenter(
@@ -670,6 +746,17 @@ fun GameLobbyScreen(
                             excluded = library.excluded,
                             onToggleGame = viewModel::membership,
                             accent = toneState.value,
+                            sessions = activeSessions,
+                            insight = insight,
+                            onSessions = {
+                                navController.navigate(MaxDestination.GameSessions.route) {
+                                    launchSingleTop = true
+                                }
+                            },
+                            onHud = { navController.navigate(MaxDestination.FpsOverlay.route) },
+                            onThermal = { navController.navigate(MaxDestination.ThermalHub.route) },
+                            onDisplay = { navController.navigate(MaxDestination.DisplayStudio.route) },
+                            onGameProfile = { section = LobbySection.Game },
                             modifier = Modifier
                                 .displayCutoutPadding()
                                 .padding(top = TopBarHeight)
@@ -690,18 +777,29 @@ fun GameLobbyScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm)
             ) {
-                LobbyTopTabs(
-                    labels = listOf(
-                        stringResource(R.string.lobby_tab_games),
-                        stringResource(R.string.lobby_tab_control)
-                    ),
-                    selected = rootState.currentPage,
-                    position = { rootState.currentPage + rootState.currentPageOffsetFraction },
-                    tone = { toneState.value },
-                    description = stringResource(R.string.lobby_tab_lobby),
-                    onSelect = { index -> scope.launch { rootState.animateScrollToPage(index) } }
-                )
+                GameSpaceBrand(compact = screenWidthDp < GameSpaceBrandCompactDp)
+                if (screenWidthDp >= GameSpaceTabsWidthDp) {
+                    LobbyTopTabs(
+                        labels = listOf(
+                            stringResource(R.string.lobby_tab_games),
+                            stringResource(R.string.lobby_tab_control)
+                        ),
+                        selected = rootState.currentPage,
+                        position = { rootState.currentPage + rootState.currentPageOffsetFraction },
+                        tone = { toneState.value },
+                        description = stringResource(R.string.lobby_tab_lobby),
+                        onSelect = { index -> scope.launch { rootState.animateScrollToPage(index) } }
+                    )
+                }
                 Spacer(Modifier.weight(1f))
+                if (screenWidthDp >= GameSpaceClockWidthDp) {
+                    GameSpaceClockCluster(
+                        clock = lobbyClock,
+                        date = lobbyDate,
+                        batteryPercent = lobbyBattery?.percent,
+                        charging = lobbyBattery?.charging == true
+                    )
+                }
                 if (lobbyPrefs.showStatus) LobbyStatusCapsule()
                 LobbyRoundButton(
                     icon = Icons.Rounded.Star,
