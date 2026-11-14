@@ -158,7 +158,7 @@ private val GameSpaceBoardWidth = 300.dp
 
 /* عتبات الشريط العلويّ: الساعة والتبويبات تظهران حين يُوجد لهما مكان حقيقيّ، والشعار في كل عرض. */
 private const val GameSpaceBrandCompactDp = 760
-private const val GameSpaceClockWidthDp = 900
+private const val GameSpaceClockWidthDp = 720
 private const val GameSpaceTabsWidthDp = 1100
 
 /** عمود المعلومات والحلقة القديمة يوجّهان إضاءة الخلفية؛ المركز بينهما. */
@@ -555,6 +555,92 @@ fun GameLobbyScreen(
                 modifier = Modifier.fillMaxSize()
             )
 
+            // رأس اللوبي: يُرسم مرّة واحدة ويُستهلك في موضعين — داخل عمود المسرح (فيمتدّ الشريط
+            // الجانبيّ إلى أعلى الشاشة كما في تصميم المالك) أو فوق مركز التحكّم.
+            val lobbyHeader: @Composable () -> Unit = {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(TopBarHeight)
+                        .padding(horizontal = MaxSpace.xxl)
+                        .lobbyIntro(intro, fromBelow = (-24).dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm)
+                ) {
+                    GameSpaceBrand(compact = screenWidthDp < GameSpaceBrandCompactDp)
+                    if (screenWidthDp >= GameSpaceTabsWidthDp) {
+                        LobbyTopTabs(
+                            labels = listOf(
+                                stringResource(R.string.lobby_tab_games),
+                                stringResource(R.string.lobby_tab_control)
+                            ),
+                            selected = rootState.currentPage,
+                            position = { rootState.currentPage + rootState.currentPageOffsetFraction },
+                            tone = { toneState.value },
+                            description = stringResource(R.string.lobby_tab_lobby),
+                            onSelect = { index -> scope.launch { rootState.animateScrollToPage(index) } }
+                        )
+                    }
+                    // كبسولة الحالة هي العنصر المرن: تُقاس بالعرض المتبقّي وتُقصّ عند الضيق، ولا تدفع
+                    // أزرار النهاية (السجل/الإغلاق) خارج الشاشة بعد إضافة زرّ الاستكشاف الخامس.
+                    Box(Modifier.weight(1f), contentAlignment = Alignment.CenterEnd) {
+                        if (lobbyPrefs.showStatus) LobbyStatusCapsule()
+                    }
+                    if (screenWidthDp >= GameSpaceClockWidthDp) {
+                        GameSpaceClockCluster(
+                            clock = lobbyClock,
+                            date = lobbyDate,
+                            batteryPercent = lobbyBattery?.percent,
+                            charging = lobbyBattery?.charging == true
+                        )
+                    }
+                    // استكشاف المكتبة من المسرح: بحث فوري ومرشّحات وبطاقات غنية، بلا مغادرة اللوبي.
+                    LobbyRoundButton(
+                        icon = Icons.Rounded.Apps,
+                        description = stringResource(R.string.lobby_explore_open),
+                        onClick = {
+                            tick()
+                            exploreOpen = true
+                        },
+                        tone = toneState.value
+                    )
+                    LobbyRoundButton(
+                        icon = Icons.Rounded.Star,
+                        description = stringResource(R.string.lobby_favorites_filter),
+                        onClick = {
+                            tick()
+                            favoritesOnly = !favoritesOnly
+                        },
+                        selected = favoritesOnly,
+                        tone = toneState.value,
+                        cue = if (favoritesOnly) LobbyCue.Off else LobbyCue.On
+                    )
+                    LobbyRoundButton(
+                        icon = Icons.Rounded.Refresh,
+                        description = stringResource(R.string.gaming_refresh),
+                        onClick = { viewModel.refresh() }
+                    )
+                    // سجلّ الجلسات من سطح اللعب نفسه: اللاعب يخرج من اللعبة ويسأل «كيف كانت؟»
+                    // فلا يُطلب منه العودة إلى شاشة التراكب للوصول إلى الجواب.
+                    LobbyRoundButton(
+                        icon = Icons.Rounded.History,
+                        description = stringResource(R.string.game_sessions_lobby_open),
+                        // launchSingleTop: ضغطتان على الباب لا تكدّسان نسخًا من الشاشة —
+                        // النسخ المتكدّسة تعرض أوّل رجوع الشاشة نفسها فيُقرأ «لا يرجع».
+                        onClick = {
+                            navController.navigate(MaxDestination.GameSessions.route) {
+                                launchSingleTop = true
+                            }
+                        }
+                    )
+                    LobbyRoundButton(
+                        icon = Icons.Rounded.Close,
+                        description = stringResource(R.string.lobby_close),
+                        onClick = { navController.navigateUp() }
+                    )
+                }
+            }
+
             VerticalPager(
                 state = rootState,
                 modifier = Modifier
@@ -616,6 +702,7 @@ fun GameLobbyScreen(
                                     launchSingleTop = true
                                 }
                             },
+                            header = lobbyHeader,
                             modifier = Modifier.fillMaxSize()
                         )
 
@@ -668,89 +755,17 @@ fun GameLobbyScreen(
                 }
             }
 
-            // الشريط العلويّ ثابت فوق الصفحتين: تبويبات تنزلق مع السحب + كبسولة الحالة + أزرار.
-            Row(
-                modifier = Modifier
-                    .align(Alignment.TopCenter)
-                    .fillMaxWidth()
-                    .displayCutoutPadding()
-                    .height(TopBarHeight)
-                    .padding(horizontal = MaxSpace.xxl)
-                    .lobbyIntro(intro, fromBelow = (-24).dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm)
-            ) {
-                GameSpaceBrand(compact = screenWidthDp < GameSpaceBrandCompactDp)
-                if (screenWidthDp >= GameSpaceTabsWidthDp) {
-                    LobbyTopTabs(
-                        labels = listOf(
-                            stringResource(R.string.lobby_tab_games),
-                            stringResource(R.string.lobby_tab_control)
-                        ),
-                        selected = rootState.currentPage,
-                        position = { rootState.currentPage + rootState.currentPageOffsetFraction },
-                        tone = { toneState.value },
-                        description = stringResource(R.string.lobby_tab_lobby),
-                        onSelect = { index -> scope.launch { rootState.animateScrollToPage(index) } }
-                    )
+            // الشريط العلويّ فوق مركز التحكّم وحده: المسرح يرسم رأسه داخل عموده، فيمتدّ الشريط
+            // الجانبيّ إلى أعلى الشاشة كما في تصميم المالك — رأسٌ واحد لا رأسان.
+            if (rootState.currentPage != 0) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                        .fillMaxWidth()
+                        .displayCutoutPadding()
+                ) {
+                    lobbyHeader()
                 }
-                // كبسولة الحالة هي العنصر المرن: تُقاس بالعرض المتبقّي وتُقصّ عند الضيق، ولا تدفع
-                // أزرار النهاية (السجل/الإغلاق) خارج الشاشة بعد إضافة زرّ الاستكشاف الخامس.
-                Box(Modifier.weight(1f), contentAlignment = Alignment.CenterEnd) {
-                    if (lobbyPrefs.showStatus) LobbyStatusCapsule()
-                }
-                if (screenWidthDp >= GameSpaceClockWidthDp) {
-                    GameSpaceClockCluster(
-                        clock = lobbyClock,
-                        date = lobbyDate,
-                        batteryPercent = lobbyBattery?.percent,
-                        charging = lobbyBattery?.charging == true
-                    )
-                }
-                // استكشاف المكتبة من المسرح: بحث فوري ومرشّحات وبطاقات غنية، بلا مغادرة اللوبي.
-                LobbyRoundButton(
-                    icon = Icons.Rounded.Apps,
-                    description = stringResource(R.string.lobby_explore_open),
-                    onClick = {
-                        tick()
-                        exploreOpen = true
-                    },
-                    tone = toneState.value
-                )
-                LobbyRoundButton(
-                    icon = Icons.Rounded.Star,
-                    description = stringResource(R.string.lobby_favorites_filter),
-                    onClick = {
-                        tick()
-                        favoritesOnly = !favoritesOnly
-                    },
-                    selected = favoritesOnly,
-                    tone = toneState.value,
-                    cue = if (favoritesOnly) LobbyCue.Off else LobbyCue.On
-                )
-                LobbyRoundButton(
-                    icon = Icons.Rounded.Refresh,
-                    description = stringResource(R.string.gaming_refresh),
-                    onClick = { viewModel.refresh() }
-                )
-                // سجلّ الجلسات من سطح اللعب نفسه: اللاعب يخرج من اللعبة ويسأل «كيف كانت؟»
-                // فلا يُطلب منه العودة إلى شاشة التراكب للوصول إلى الجواب.
-                LobbyRoundButton(
-                    icon = Icons.Rounded.History,
-                    description = stringResource(R.string.game_sessions_lobby_open),
-                    // launchSingleTop: ضغطتان على الباب لا تكدّسان نسخًا من الشاشة —
-                    // النسخ المتكدّسة تعرض أوّل رجوع الشاشة نفسها فيُقرأ «لا يرجع».
-                    onClick = {
-                        navController.navigate(MaxDestination.GameSessions.route) {
-                            launchSingleTop = true
-                        }
-                    }
-                )
-                LobbyRoundButton(
-                    icon = Icons.Rounded.Close,
-                    description = stringResource(R.string.lobby_close),
-                    onClick = { navController.navigateUp() }
-                )
             }
 
             Column(
