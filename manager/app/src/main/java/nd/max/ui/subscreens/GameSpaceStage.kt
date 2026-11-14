@@ -103,7 +103,7 @@ import nd.max.ui.design.MaxSpace
 import nd.max.ui.design.maxRadius
 
 /*
- * المسرح — تفسيرٌ سينمائيّ للقطة المالك (١٦٨٠×٩٤٤)، لا نسخُ شكل تطبيقٍ آخر.
+ * المسرح — تخطيط سينمائيّ كامل للشاشة: لوحة فحمية محايدة ولمسات بنفسجية محدودة.
  *
  * الهندسة كما في اللقطة: شريط أقسام زجاجيّ على الحافة اليسرى، وبطلٌ يمتدّ على عرض المسرح بفنّ
  * اللعبة، وعنوانها، وسطرٌ عربيّ، وكبسولة تشغيل، ونقاط تنقّل. وإلى يمينه عمودٌ عائم من ثلاث
@@ -128,23 +128,23 @@ private val RailWide = 150.dp
 private val RailNarrow = 64.dp
 
 /** عمود الأداء: ٣٠٪ من عرض المسرح، بين ٢٦٨dp و٣٤٨dp. */
-private val PanelWidthRatio = 0.30f
-private val PanelMinWidth = 268.dp
-private val PanelMaxWidth = 348.dp
+private val PanelWidthRatio = 0.27f
+private val PanelMinWidth = 252.dp
+private val PanelMaxWidth = 340.dp
 
-/** قطر حلقة القياس: أكبر على الهاتف الطولي وأصغر في العمود الجانبيّ. */
-private val RingWide = 66.dp
+/** قطر حلقات القياس: أصغر قليلًا في العمود الجانبيّ كي تبقى البطاقات متوازنة. */
+private val RingWide = 62.dp
 private val RingCompact = 86.dp
 
-/** بطاقة الرفّ ملصقٌ رأسيّ: العرض ٦٠٪ من الارتفاع، والارتفاع ربع المسرح بين ٩٢dp و١٦٨dp. */
-private val CardHeightRatio = 0.24f
-private val CardMinHeight = 92.dp
-private val CardMaxHeight = 168.dp
-private const val CardAspect = 0.60f
+/** بطاقات المكتبة أقرب إلى أغلفة الألعاب شبه المربّعة، وتتكيف مع ارتفاع المسرح. */
+private val CardHeightRatio = 0.22f
+private val CardMinHeight = 82.dp
+private val CardMaxHeight = 150.dp
+private const val CardAspect = 0.82f
 
-/** قاعدة الحالة: ٨٪ من الارتفاع ولا تنزل عن ٥٢dp. */
-private val StatusHeightRatio = 0.08f
-private val StatusMinHeight = 52.dp
+/** شريط الحالة السفلي: ارتفاع مرن مع حد أدنى يحافظ على سهولة القراءة واللمس. */
+private val StatusHeightRatio = 0.065f
+private val StatusMinHeight = 42.dp
 
 /** أقصى عرض لكتلة نصّ البطل، فلا يمتدّ السطر على عرض المسرح. */
 private val HeroCopyMaxWidth = 520.dp
@@ -225,9 +225,14 @@ internal fun GameSpaceStage(
         ) {
             StageBackdrop()
 
-            // العرض وحده لا يكفي: في هاتف أفقيّ منخفض الارتفاع تصير مساحة البطل أضيق من عمود
-            // الأداء، فيُقصّ. فنشترط ارتفاعًا يكفي لعرض العمود، وإلا فالتكديس الرأسيّ المتمرّر.
-            val wide = maxWidth >= 720.dp && maxHeight >= 460.dp
+            // لا يكفي العرض وحده: نتحقق من نسبة الشاشة والحد الأدنى العملي للارتفاع.
+            // عامل النسبة أهم من الارتفاع المطلق: شاشات التلفاز/الأجهزة اللوحية قد تكون
+            // عريضة جدًا لكن ارتفاعها المنطقي أقل من 460dp بسبب كثافة العرض وشريط النظام.
+            // لا نحولها إلى تخطيط هاتف عموديّ لمجرد نقص الارتفاع؛ نستخدم العرض الأفقي
+            // متى توفرت مساحة عملية للمسرح ولوحة الأداء.
+            val wide = maxWidth >= 720.dp &&
+                maxHeight >= 340.dp &&
+                (maxWidth / maxHeight) >= 1.35f
             val panelWidth = (maxWidth * PanelWidthRatio)
                 .coerceIn(PanelMinWidth, PanelMaxWidth)
             val cardHeight = if (wide) {
@@ -391,7 +396,7 @@ private fun StageBackdrop() {
         val violetR = size.minDimension * 0.95f
         drawCircle(
             brush = Brush.radialGradient(
-                listOf(GameSpacePalette.Violet.copy(alpha = 0.22f), Color.Transparent),
+                listOf(GameSpacePalette.Violet.copy(alpha = 0.085f), Color.Transparent),
                 center = violet,
                 radius = violetR
             ),
@@ -402,7 +407,7 @@ private fun StageBackdrop() {
         val pinkR = size.minDimension * 0.60f
         drawCircle(
             brush = Brush.radialGradient(
-                listOf(GameSpacePalette.Magenta.copy(alpha = 0.12f), Color.Transparent),
+                listOf(GameSpacePalette.Magenta.copy(alpha = 0.045f), Color.Transparent),
                 center = pink,
                 radius = pinkR
             ),
@@ -416,7 +421,7 @@ private fun StageBackdrop() {
         for (i in 0 until lines) {
             val y = startY + step * i
             drawLine(
-                color = GameSpacePalette.VioletSoft.copy(alpha = 0.05f),
+                color = GameSpacePalette.VioletSoft.copy(alpha = 0.025f),
                 start = Offset(0f, y),
                 end = Offset(size.width, y),
                 strokeWidth = 1f
@@ -448,14 +453,14 @@ internal fun GameSpaceRail(
                 .shadow(
                     elevation = 20.dp,
                     shape = shape,
-                    ambientColor = GameSpacePalette.Violet.copy(alpha = 0.45f),
-                    spotColor = GameSpacePalette.Violet.copy(alpha = 0.60f)
+                    ambientColor = GameSpacePalette.Violet.copy(alpha = 0.16f),
+                    spotColor = GameSpacePalette.Violet.copy(alpha = 0.22f)
                 )
                 .clip(shape)
                 .background(
                     Brush.verticalGradient(
                         listOf(
-                            GameSpacePalette.Violet.copy(alpha = 0.10f),
+                            GameSpacePalette.Violet.copy(alpha = 0.035f),
                             GameSpacePalette.Deep.copy(alpha = 0.94f),
                             GameSpacePalette.Void.copy(alpha = 0.97f)
                         )
@@ -529,7 +534,7 @@ private fun RailMark(wide: Boolean) {
                 fontSize = if (wide) 34.sp else 26.sp,
                 fontWeight = FontWeight.Black,
                 shadow = Shadow(
-                    color = GameSpacePalette.VioletSoft.copy(alpha = 0.85f),
+                    color = GameSpacePalette.VioletSoft.copy(alpha = 0.38f),
                     blurRadius = 22f
                 )
             )
@@ -559,8 +564,8 @@ private fun RailItem(
                     Modifier.shadow(
                         elevation = 12.dp,
                         shape = pill,
-                        ambientColor = GameSpacePalette.Violet.copy(alpha = 0.65f),
-                        spotColor = GameSpacePalette.VioletSoft.copy(alpha = 0.8f)
+                        ambientColor = GameSpacePalette.Violet.copy(alpha = 0.20f),
+                        spotColor = GameSpacePalette.VioletSoft.copy(alpha = 0.30f)
                     )
                 } else {
                     Modifier
@@ -572,7 +577,7 @@ private fun RailItem(
                     Modifier.background(
                         Brush.horizontalGradient(
                             listOf(
-                                GameSpacePalette.Violet.copy(alpha = 0.46f),
+                                GameSpacePalette.Violet.copy(alpha = 0.20f),
                                 GameSpacePalette.VioletDeep.copy(alpha = 0.22f)
                             )
                         )
@@ -583,7 +588,7 @@ private fun RailItem(
             )
             .border(
                 MaxSize.hairlineBorder,
-                if (active) GameSpacePalette.VioletSoft.copy(alpha = 0.9f) else Color.Transparent,
+                if (active) GameSpacePalette.VioletSoft.copy(alpha = 0.58f) else Color.Transparent,
                 pill
             )
             .clickable(role = Role.Tab, onClick = onClick)
@@ -806,7 +811,7 @@ private fun HeroArtWash(game: GameApp) {
                 .background(
                     Brush.radialGradient(
                         listOf(
-                            GameSpacePalette.Violet.copy(alpha = 0.24f),
+                            GameSpacePalette.Violet.copy(alpha = 0.075f),
                             Color.Transparent
                         )
                     )
@@ -820,7 +825,7 @@ private fun HeroArtWash(game: GameApp) {
  * وشعاعُ ضوءٍ مائل وأرضيّةٌ متدرّجة. لا صورة خارجيّة ولا أصلٌ منقول — كلّه رسمٌ إجرائيّ.
  *
  * النجوم ثابتة لا تتغيّر مع كل إعادة رسم: مولّدٌ بسيط ببذرةٍ ثابتة بدل `Random()`، فلا ترتجف
- * السماء حين تتحدّث القراءات كلّ ثانيتين.
+ * السماء حين تتحدّث القراءات كلّ ثانيتين. الإضاءة البنفسجية خافتة كي تبقى الخلفية فحمية.
  */
 @Composable
 private fun HeroBackdrop() {
@@ -838,7 +843,7 @@ private fun HeroBackdrop() {
             Brush.linearGradient(
                 listOf(
                     Color.Transparent,
-                    GameSpacePalette.Violet.copy(alpha = 0.16f),
+                    GameSpacePalette.Violet.copy(alpha = 0.065f),
                     Color.Transparent
                 ),
                 start = Offset(size.width * 0.1f, 0f),
@@ -857,7 +862,7 @@ private fun HeroBackdrop() {
             Brush.linearGradient(
                 listOf(
                     Color.Transparent,
-                    GameSpacePalette.Magenta.copy(alpha = 0.10f),
+                    GameSpacePalette.Magenta.copy(alpha = 0.04f),
                     Color.Transparent
                 ),
                 start = Offset(size.width * 0.55f, 0f),
@@ -893,7 +898,7 @@ private fun HeroBackdrop() {
         drawCircle(
             brush = Brush.radialGradient(
                 listOf(
-                    GameSpacePalette.VioletDeep.copy(alpha = 0.55f),
+                    GameSpacePalette.VioletDeep.copy(alpha = 0.28f),
                     GameSpacePalette.Deep.copy(alpha = 0.20f),
                     Color.Transparent
                 ),
@@ -904,7 +909,7 @@ private fun HeroBackdrop() {
             center = planet
         )
         drawArc(
-            color = GameSpacePalette.VioletSoft.copy(alpha = 0.38f),
+            color = GameSpacePalette.VioletSoft.copy(alpha = 0.18f),
             startAngle = 168f,
             sweepAngle = 118f,
             useCenter = false,
@@ -914,13 +919,13 @@ private fun HeroBackdrop() {
         )
         rotate(degrees = -16f, pivot = planet) {
             drawOval(
-                color = GameSpacePalette.Violet.copy(alpha = 0.30f),
+                color = GameSpacePalette.Violet.copy(alpha = 0.13f),
                 topLeft = Offset(planet.x - planetR * 1.9f, planet.y - planetR * 0.42f),
                 size = Size(planetR * 3.8f, planetR * 0.84f),
                 style = Stroke(width = 1.4f)
             )
             drawOval(
-                color = GameSpacePalette.Magenta.copy(alpha = 0.16f),
+                color = GameSpacePalette.Magenta.copy(alpha = 0.065f),
                 topLeft = Offset(planet.x - planetR * 1.62f, planet.y - planetR * 0.32f),
                 size = Size(planetR * 3.24f, planetR * 0.64f),
                 style = Stroke(width = 3.2f)
@@ -931,7 +936,7 @@ private fun HeroBackdrop() {
         val keyR = size.minDimension * 0.85f
         drawCircle(
             brush = Brush.radialGradient(
-                listOf(GameSpacePalette.Violet.copy(alpha = 0.22f), Color.Transparent),
+                listOf(GameSpacePalette.Violet.copy(alpha = 0.085f), Color.Transparent),
                 center = key,
                 radius = keyR
             ),
@@ -949,7 +954,7 @@ private fun HeroBackdrop() {
         drawPath(
             beam,
             Brush.verticalGradient(
-                listOf(GameSpacePalette.VioletSoft.copy(alpha = 0.12f), Color.Transparent)
+                listOf(GameSpacePalette.VioletSoft.copy(alpha = 0.055f), Color.Transparent)
             )
         )
         val floor = Path().apply {
@@ -962,7 +967,7 @@ private fun HeroBackdrop() {
         drawPath(
             floor,
             Brush.verticalGradient(
-                listOf(Color.Transparent, GameSpacePalette.Violet.copy(alpha = 0.12f))
+                listOf(Color.Transparent, GameSpacePalette.Violet.copy(alpha = 0.05f))
             )
         )
     }
@@ -1072,21 +1077,21 @@ private fun LaunchRow(enabled: Boolean, onLaunch: () -> Unit, onOptions: () -> U
                 .shadow(
                     elevation = 16.dp,
                     shape = shape,
-                    ambientColor = GameSpacePalette.Violet.copy(alpha = 0.55f),
-                    spotColor = GameSpacePalette.VioletSoft.copy(alpha = 0.7f)
+                    ambientColor = GameSpacePalette.Violet.copy(alpha = 0.22f),
+                    spotColor = GameSpacePalette.VioletSoft.copy(alpha = 0.28f)
                 )
                 .clip(shape)
                 .background(
                     Brush.horizontalGradient(
                         listOf(
-                            GameSpacePalette.Violet.copy(alpha = 0.44f),
+                            GameSpacePalette.Violet.copy(alpha = 0.22f),
                             GameSpacePalette.Deep.copy(alpha = 0.72f)
                         )
                     )
                 )
                 .border(
                     MaxSize.emphasisBorder,
-                    GameSpacePalette.VioletSoft.copy(alpha = 0.85f),
+                    GameSpacePalette.VioletSoft.copy(alpha = 0.62f),
                     shape
                 )
                 .clickable(enabled = enabled, role = Role.Button, onClick = onLaunch)
@@ -1182,9 +1187,8 @@ private fun PerformancePanel(
 ) {
     val ringSize = if (wide) RingWide else RingCompact
     Column(
-        modifier = modifier
-            .then(if (wide) Modifier.verticalScroll(rememberScrollState()) else Modifier),
-        verticalArrangement = Arrangement.spacedBy(MaxSpace.sm)
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(MaxSpace.xs)
     ) {
         PerfSlab {
             Row(
@@ -1283,8 +1287,8 @@ private fun PerfSlab(
             .shadow(
                 elevation = 18.dp,
                 shape = shape,
-                ambientColor = GameSpacePalette.Violet.copy(alpha = 0.40f),
-                spotColor = GameSpacePalette.Violet.copy(alpha = 0.52f)
+                ambientColor = GameSpacePalette.Violet.copy(alpha = 0.15f),
+                spotColor = GameSpacePalette.Violet.copy(alpha = 0.20f)
             )
             .clip(shape)
             .background(
@@ -1296,7 +1300,7 @@ private fun PerfSlab(
                 )
             )
             .border(MaxSize.hairlineBorder, GameSpacePalette.Edge.copy(alpha = 0.60f), shape)
-            .padding(horizontal = MaxSpace.sm, vertical = MaxSpace.sm),
+            .padding(horizontal = MaxSpace.sm, vertical = MaxSpace.xs),
         verticalArrangement = Arrangement.spacedBy(MaxSpace.xs),
         content = content
     )
@@ -1753,7 +1757,7 @@ private fun ShelfArrow(
 }
 
 /**
- * بطاقة اللعبة ملصقٌ رأسيّ (عرضها ٦٠٪ من ارتفاعها): أيقونة اللعبة الحقيقيّة تملأ البطاقة،
+ * بطاقة اللعبة غلاف شبه مربّع: أيقونة اللعبة الحقيقيّة تملأ البطاقة،
  * وستارة سفلية تُظهر الاسم، والبطاقة المختارة وحدها بحدّ بنفسجيّ متوهّج وشريط سفليّ مضيء.
  */
 @Composable
@@ -1775,8 +1779,8 @@ private fun GameCard(
                     Modifier.shadow(
                         elevation = 18.dp,
                         shape = shape,
-                        ambientColor = GameSpacePalette.Violet.copy(alpha = 0.6f),
-                        spotColor = GameSpacePalette.VioletSoft.copy(alpha = 0.75f)
+                        ambientColor = GameSpacePalette.Violet.copy(alpha = 0.22f),
+                        spotColor = GameSpacePalette.VioletSoft.copy(alpha = 0.32f)
                     )
                 } else {
                     Modifier
@@ -1813,9 +1817,9 @@ private fun GameCard(
                     .background(
                         Brush.linearGradient(
                             listOf(
-                                GameSpacePalette.Violet.copy(alpha = 0.26f),
+                                GameSpacePalette.Violet.copy(alpha = 0.08f),
                                 Color.Transparent,
-                                GameSpacePalette.Magenta.copy(alpha = 0.20f)
+                                GameSpacePalette.Magenta.copy(alpha = 0.07f)
                             )
                         )
                     )
@@ -1951,8 +1955,8 @@ private fun StatusStrip(
             .shadow(
                 elevation = 14.dp,
                 shape = shape,
-                ambientColor = GameSpacePalette.Violet.copy(alpha = 0.4f),
-                spotColor = GameSpacePalette.Violet.copy(alpha = 0.5f)
+                ambientColor = GameSpacePalette.Violet.copy(alpha = 0.16f),
+                spotColor = GameSpacePalette.Violet.copy(alpha = 0.20f)
             )
             .clip(shape)
             .background(

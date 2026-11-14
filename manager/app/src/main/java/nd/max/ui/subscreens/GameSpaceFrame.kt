@@ -78,34 +78,34 @@ import nd.max.ui.design.maxRadius
  * يُقرآن في اللوبي، فيُعرض ما يُقرأ فعلًا (البطارية والذاكرة وحرارتها) و«—» لما لا يُقرأ — ADR-07.
  * وشريط «100%» ليس قراءة لشيء، فمكانه حكمُ آخر جلسة وعددُها.
  *
- * ### الأبعاد من اللقطة (١٦٧٢×٩٤١ ⇒ ١٦:٩)
+ * ### مرجع الأبعاد
  *
- * شريط جانبيّ ٢٢٨px (١٣٫٦٪) · لوحة ٣٨٤×٣٤٠px (٢٣٪ × ٣٦٪) · حلقات ٩٠px · قاعدة ٧١px. والقيم
- * أدناه محوّلة إلى رموز المشروع (‏٩٠px ÷ ١٫٣٠٦ ≈ ٦٩ ⇒ حلقة ٧٢dp، و٧١px ⇒ ٥٦dp).
+ * تُضبط الأبعاد في المسرح بحسب مساحة العرض المتاحة، مع إبقاء أحجام اللمس مقروءة على الأجهزة المختلفة.
  */
 
 /**
- * لوحة Game Space كما في تصميم المالك: نيليّ عميق + بنفسجيّ + ورديّ، والسماء سيانيّة للقراءات.
+ * لوحة Game Space فحمية ومحايدة؛ البنفسجي لمسات تفاعلية محدودة، والسياني للقراءات الحيّة.
  *
  * **محصورة في هذه الشاشة** ولا تحلّ محلّ رموز التطبيق العامّة: `MaxTone` و`LobbyPalette` تبقى
  * مرجع بقيّة الشاشات، فلا يتفرّع للتطبيق لوحتان.
  */
 internal object GameSpacePalette {
-    val Void = Color(0xFF050318)
-    val Deep = Color(0xFF0A0420)
-    val Panel = Color(0xFF15122E)
-    val PanelRaised = Color(0xFF1E1A3C)
-    val Violet = Color(0xFF7C3AED)
-    val VioletDeep = Color(0xFF55309F)
-    val VioletSoft = Color(0xFFA855F7)
-    val Magenta = Color(0xFFFF2D6B)
-    val Cyan = Color(0xFF38BDF8)
+    // لوحة فحمية محايدة؛ البنفسجي لمسات تفاعلية لا لونٌ يملأ الواجهة.
+    val Void = Color(0xFF070A0F)
+    val Deep = Color(0xFF0B1017)
+    val Panel = Color(0xFF121923)
+    val PanelRaised = Color(0xFF1A2430)
+    val Violet = Color(0xFF62558B)
+    val VioletDeep = Color(0xFF39364D)
+    val VioletSoft = Color(0xFF9A8BC4)
+    val Magenta = Color(0xFFB86D83)
+    val Cyan = Color(0xFF35B9E8)
     val Mint = Color(0xFF4ADE80)
-    val Track = Color(0xFF2D2250)
-    val Ink = Color(0xFFF2F3F8)
-    val Muted = Color(0xFF8B86A8)
-    val Hairline = Color(0x33A855F7)
-    val Edge = Color(0x73A855F7)
+    val Track = Color(0xFF28323D)
+    val Ink = Color(0xFFF1F3F6)
+    val Muted = Color(0xFF929BA7)
+    val Hairline = Color(0x334F5968)
+    val Edge = Color(0x665F6875)
 }
 
 /** عرض شريط الأقسام — ٩٦dp، محصور بين الهدف اللمسي ونصف عرض اللقطة. */
