@@ -8,6 +8,7 @@
 package nd.max.ui.gamespace
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -17,6 +18,11 @@ import nd.max.R
 import nd.max.core.gamespace.GameApp
 import nd.max.core.gamespace.GamePlayStats
 import nd.max.core.gamespace.PlaySession
+import nd.max.core.platform.HudLive
+import nd.max.core.platform.SessionCause
+import nd.max.core.platform.SessionVerdict
+import nd.max.core.platform.StoredGameSession
+import nd.max.core.platform.sessionInsight
 import nd.max.ui.component.rememberLobbyIcon
 import nd.max.ui.component.rememberLobbyTone
 import nd.max.ui.subscreens.lobbyPlayAgeText
@@ -37,6 +43,8 @@ internal fun NexusPage(
     armed: Set<String>,
     overlayGranted: Boolean,
     favoritesOnly: Boolean,
+    /** سجلّ الجلسات الغنيّ: منه وحده يُشتقّ حكم آخر جلسة. */
+    gameSessions: List<StoredGameSession>,
     onSelect: (String) -> Unit,
     onLaunch: () -> Unit,
     onOpenVault: () -> Unit,
@@ -45,6 +53,8 @@ internal fun NexusPage(
     onOpenSearch: () -> Unit,
     onClearFavorites: () -> Unit,
     onOpenLibrary: () -> Unit,
+    /** يكمل الشرط الناقص مباشرةً (ملفّ · لوحة · تراكب). */
+    onFixGap: (ReadyGap) -> Unit,
     chromeAccent: Color? = null,
     modifier: Modifier = Modifier
 ) {
@@ -52,6 +62,18 @@ internal fun NexusPage(
     // أول فتح بلا اختيار محفوظ: الأولى هي البطلة، لا هيكل بلا أيقونة أو لون.
     val focus = selected ?: games.firstOrNull()
     val nowMs = remember(stats, sessions) { System.currentTimeMillis() }
+    // حكم آخر جلسة لهذه اللعبة وحدها: الأساس لا يخلط لعبة ثقيلة بأخرى خفيفة.
+    val history = remember(gameSessions, focus) {
+        gameSessions.filter { it.packageName == focus?.packageName }.sortedByDescending { it.endedAtMs }
+    }
+    val lastInsight = remember(history, gameSessions) {
+        history.firstOrNull()?.let { sessionInsight(it, gameSessions) }
+    }
+    // القراءة الحيّة من تدفّق HUD نفسه؛ والتقادم يُقاس عند كل إصدار لا بمؤقّت ثانٍ.
+    val hud by HudLive.snapshot.collectAsState()
+    val telemetry = remember(hud, focus) {
+        nexusTelemetry(hud, focus?.packageName, System.currentTimeMillis())
+    }
     val snapshot = remember(games, stats, sessions, armed, overlayGranted, tweaks, focus, nowMs) {
         NexusState.snapshot(
             games = games,
@@ -106,7 +128,40 @@ internal fun NexusPage(
                 }
             )
         },
-        recentLine = recentLine
+        recentLine = recentLine,
+        lastSessionLine = lastInsight?.let { insight ->
+            val verdict = stringResource(
+                when (insight.verdict) {
+                    SessionVerdict.Better -> R.string.game_sessions_verdict_better
+                    SessionVerdict.Similar -> R.string.game_sessions_verdict_similar
+                    SessionVerdict.Worse -> R.string.game_sessions_verdict_worse
+                    SessionVerdict.FirstRun -> R.string.game_sessions_verdict_first
+                    SessionVerdict.Unusable -> R.string.game_sessions_verdict_unusable
+                }
+            )
+            val cause = insight.cause.takeIf { it != SessionCause.None }?.let { cause ->
+                stringResource(
+                    when (cause) {
+                        SessionCause.Thermal -> R.string.session_cause_thermal
+                        SessionCause.Jank -> R.string.session_cause_jank
+                        SessionCause.Energy -> R.string.session_cause_energy
+                        SessionCause.PowerSave -> R.string.session_cause_power_save
+                        SessionCause.Refresh -> R.string.session_cause_refresh
+                        SessionCause.Renderer -> R.string.session_cause_renderer
+                        SessionCause.None -> R.string.session_cause_thermal
+                    }
+                )
+            }
+            listOfNotNull(verdict, cause).joinToString(" · ")
+        },
+        lastSessionTone = when (lastInsight?.verdict) {
+            SessionVerdict.Better -> Monolith.Mint
+            SessionVerdict.Worse, SessionVerdict.Unusable -> Monolith.Amber
+            SessionVerdict.FirstRun -> Monolith.Ice
+            SessionVerdict.Similar, null -> Monolith.Muted
+        },
+        gap = snapshot.gap,
+        telemetry = telemetry
     )
 
     NexusScreen(
@@ -133,7 +188,8 @@ internal fun NexusPage(
             ),
             emptyAction = stringResource(
                 if (favoritesOnly) R.string.lobby_vault_all else R.string.lobby_manage_title
-            )
+            ),
+            fixNow = stringResource(R.string.gs_fix_now)
         ),
         onSelect = { index -> entries.getOrNull(index)?.let { onSelect(it.packageName) } },
         onLaunch = onLaunch,
@@ -142,6 +198,7 @@ internal fun NexusPage(
         onOpenCareer = onOpenCareer,
         onOpenSearch = onOpenSearch,
         onEmptyAction = if (favoritesOnly) onClearFavorites else onOpenLibrary,
+        onFixGap = onFixGap,
         chromeAccent = chromeAccent,
         modifier = modifier
     )

@@ -586,4 +586,10 @@
     <string name="gs_scheme_emerald">زمردي</string>
     <string name="gs_scheme_rose">وردي</string>
     <string name="gs_scheme_amber">عنبري</string>
+    <string name="gs_tele_fps">إطارات</string>
+    <string name="gs_tele_cpu">المعالج</string>
+    <string name="gs_tele_heat">الحرارة</string>
+    <string name="gs_tele_live">حيّ</string>
+    <string name="gs_tele_stale">آخر قراءة</string>
+    <string name="gs_fix_now">أصلح الآن</string>
 </resources>

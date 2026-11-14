@@ -96,7 +96,8 @@ data class NexusCopy(
     val installedLabel: String,
     val emptyTitle: String,
     val emptyBody: String,
-    val emptyAction: String
+    val emptyAction: String,
+    val fixNow: String
 )
 
 @Immutable
@@ -110,7 +111,13 @@ data class NexusModel(
     val readinessValue: String,
     /** جملة الشرط الناقص؛ `null` حين تكتمل التهيئة فيبقى رابط «راجع التهيئة». */
     val readinessGap: String? = null,
-    val recentLine: String? = null
+    val recentLine: String? = null,
+    /** حكم آخر جلسة مرصودة؛ `null` حين لا جلسة — الغياب يُخفى ولا يُكتب "—". */
+    val lastSessionLine: String? = null,
+    val lastSessionTone: Color = Monolith.Muted,
+    /** الشرط الناقص بوصفه إجراءً، لا جملةً للقراءة فقط. */
+    val gap: ReadyGap? = null,
+    val telemetry: NexusTelemetry? = null
 )
 
 @Composable
@@ -126,6 +133,7 @@ fun NexusScreen(
     onOpenCareer: () -> Unit,
     onOpenSearch: () -> Unit,
     onEmptyAction: () -> Unit,
+    onFixGap: (ReadyGap) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val selected = model.games.getOrNull(model.selectedIndex) ?: model.games.firstOrNull()
@@ -152,6 +160,7 @@ fun NexusScreen(
                     accent = accent,
                     onLaunch = onLaunch,
                     onOpenSetup = onOpenLoadout,
+                    onFixGap = onFixGap,
                     modifier = Modifier
                         .weight(1f)
                         .verticalScroll(rememberScrollState())
@@ -208,6 +217,7 @@ private fun NexusHero(
     accent: MonolithAccent,
     onLaunch: () -> Unit,
     onOpenSetup: () -> Unit,
+    onFixGap: (ReadyGap) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -249,18 +259,38 @@ private fun NexusHero(
             game.lastPlayed?.let {
                 MonolithChip(text = "${copy.lastPlayedLabel} · $it", accent = accent.base, filled = true)
             }
+            // حكم آخر جلسة: يملأ سؤال «هل نفع تعديلي؟» قبل الدخول، بلون معنويّ لا بلون اللعبة.
+            model.lastSessionLine?.let { line ->
+                MonolithChip(text = line, accent = model.lastSessionTone, filled = true)
+            }
         }
         Spacer(Modifier.height(MaxSpace.xxl))
         NexusStats(copy = copy, model = model)
+        model.telemetry?.let { telemetry ->
+            Spacer(Modifier.height(MaxSpace.md))
+            NexusTelemetryRow(telemetry = telemetry)
+        }
         Spacer(Modifier.height(MaxSpace.xxl))
         // الشرط الناقص يُسمّى قبل الزرّ، فيعرف اللاعب ما الذي سيدفع الرقم إلى ٣/٣.
         model.readinessGap?.let { gap ->
-            Text(
-                text = gap,
-                style = Monolith.label,
-                color = Monolith.BoneDim,
-                maxLines = 2
-            )
+            // النصّ نفسه صار إجراءً: الضغط على السطر يكمل الشرط الناقص بلا رحلة إلى Loadout.
+            Row(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(MaxRadius.control))
+                    .clickable(role = Role.Button) { model.gap?.let(onFixGap) }
+                    .padding(horizontal = MaxSpace.xs, vertical = MaxSpace.xs),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs)
+            ) {
+                Text(
+                    text = gap,
+                    style = Monolith.label,
+                    color = Monolith.BoneDim,
+                    maxLines = 2,
+                    modifier = Modifier.weight(1f)
+                )
+                Text(text = copy.fixNow, style = Monolith.label, color = accent.base, maxLines = 1)
+            }
             Spacer(Modifier.height(MaxSpace.sm))
         }
         Row(

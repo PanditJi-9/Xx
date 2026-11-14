@@ -94,6 +94,8 @@ import nd.max.core.gamespace.PanelOverlayGate
 import nd.max.core.gamespace.PlaySession
 import nd.max.core.gamespace.PlaySessionLedger
 import nd.max.core.gamespace.PlaySessionStore
+import nd.max.core.platform.GameSessionStore
+import nd.max.core.platform.StoredGameSession
 import nd.max.core.gamespace.SidePanelArmedStore
 import nd.max.core.gamespace.gameLibrary
 import nd.max.core.platform.ForegroundAppResolver
@@ -120,6 +122,7 @@ import nd.max.ui.gamespace.CommandPalette
 import nd.max.ui.gamespace.GameSpaceSkin
 import nd.max.ui.gamespace.LobbyBackdrop
 import nd.max.ui.gamespace.NexusPage
+import nd.max.ui.gamespace.ReadyGap
 import nd.max.ui.gamespace.PaletteAction
 import nd.max.ui.gamespace.PaletteActionId
 import nd.max.ui.gamespace.PaletteCopy
@@ -233,6 +236,12 @@ fun GameLobbyScreen(
         val read = withContext(Dispatchers.IO) { PlaySessionStore.read(context) }
         sessions = read
         playStats = withContext(Dispatchers.Default) { PlaySessionLedger.stats(read) }
+    }
+    // حكم آخر جلسة يحتاج السجلّ الغنيّ (`StoredGameSession`)، لا سجلّ وقت اللعب: ملفّان مختلفان
+    // وغرضان مختلفان، وكلٌّ يُقرأ مرّة عند العودة كما يُقرأ سجلّ الوقت.
+    var storedSessions by remember { mutableStateOf<List<StoredGameSession>>(emptyList()) }
+    LaunchedEffect(statsRevision) {
+        storedSessions = withContext(Dispatchers.IO) { GameSessionStore.load(context) }
     }
     var selected by rememberSaveable {
         mutableStateOf<String?>(lobbyPrefs.lastPackage.takeIf { lobbyPrefs.resumeLast })
@@ -526,6 +535,7 @@ fun GameLobbyScreen(
                             armed = panelPrefs.enabledPackages,
                             overlayGranted = overlayGranted,
                             favoritesOnly = favoritesOnly,
+                            gameSessions = storedSessions,
                             onSelect = selectGame,
                             onLaunch = start,
                             onOpenVault = { tick(); exploreOpen = true },
@@ -534,6 +544,15 @@ fun GameLobbyScreen(
                             onOpenSearch = { tick(); paletteOpen = true },
                             onClearFavorites = { favoritesOnly = false },
                             onOpenLibrary = { openControl(LobbySection.Library) },
+                            // كل شرط يُكمل بفعله لا برحلة إلى قسم آخر: الملفّ يُفتح، واللوحة تُفعَّل
+                            // (وتفتح منح التراكب إن لزم داخل setPanel)، والإذن يذهب إلى شاشة النظام.
+                            onFixGap = { gap ->
+                                when (gap) {
+                                    ReadyGap.Profile -> openControl(LobbySection.Game)
+                                    ReadyGap.Panel -> setPanel(true)
+                                    ReadyGap.Overlay -> OverlayPermission.openSettings(context)
+                                }
+                            },
                             // يُقرأ عند كل تركيب: الاختيار يقع في مركز التحكم، والعودة تُعيد القراءة.
                             chromeAccent = GameSpaceSkin.read(context).accent,
                             modifier = Modifier

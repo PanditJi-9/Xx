@@ -587,4 +587,10 @@
     <string name="gs_scheme_emerald">Emerald</string>
     <string name="gs_scheme_rose">Rose</string>
     <string name="gs_scheme_amber">Amber</string>
+    <string name="gs_tele_fps">FPS</string>
+    <string name="gs_tele_cpu">CPU</string>
+    <string name="gs_tele_heat">Heat</string>
+    <string name="gs_tele_live">Live</string>
+    <string name="gs_tele_stale">Last reading</string>
+    <string name="gs_fix_now">Fix now</string>
 </resources>
