@@ -60,6 +60,54 @@ MaxManager has a strong engine and a fragmented surface. `core/maxai` + `core/ha
 
 ## Executor log
 
+### GAME-SPACE-CINEMATIC-01 — إعادة بناء مسرح Game Space على اللقطة السينمائية: بطلٌ يملأ المسرح، ولوحة تعوم فوقه، ورفّ ملصقاتٍ حقيقيّ — 2026-11-14 · DONE_WITH_CONCERNS
+
+**TASK (المالك):** «قم الان ياعادة تصميم gamespace» — بعد أن وصف الشاشة السابقة بأنها «مخيبة للآمال
+جدًّا» و«ليس يشبه هذا بتاتًا»، والمرجع هو لقطته `3d1c0d86-1af8-4de0-a35c-9c92fcec280d.png` (1680×944).
+
+**SEARCH FIRST (§0.5):** لا مسار ثانٍ ولا مصدر حالة ثانٍ. النظير القائم هو `GameSpaceStage` نفسه
+بتوقيعه العام؛ فأُعيد بناء **جسمه** فقط، وبقي `GameLobbyScreen` يؤلّفه بلا تغيير. ولم يُنشأ `enum`
+جديد ولا `RailSection` ثانٍ، وحُذفت `RailSection`/`RailCollapse`/`HeroCover` القديمة من الملف نفسه.
+الأقسام تبقى من `LobbySection.entries` (المصدر الوحيد)، و«اللوبي» انتقل إلى ترسٍ في أسفل الشريط.
+
+**SHIPPED — ملف كود واحد + ٦ نصوص:**
+- `ui/subscreens/GameSpaceStage.kt`: البطل **يملأ المسرح** (`RectangleShape` بلا حدّ ولا هامش في
+  العرض الواسع) وفنّه من أيقونة اللعبة الحقيقية (`rememberLobbyIcon`) بمسحة بنفسجيّة/ورديّة؛ الشعار
+  والوسم (tagline) وزرّ «العب الآن» + «…» والنقاط في أسفل اليسار داخل نصف العرض (٥٤٪) كي لا يدخل
+  تحت اللوحة. **لوحة الأداء تعوم فوق الفنّ** في الطرف الأيمن (`TopEnd`، ٢٦٨–٣٤٨dp) بثلاث بطاقات
+  زجاجيّة: حلقات CPU/GPU/حرارة بتتبّع متقطّع وهالة، بطاقتا البطارية/الوضع، وموجة المعالج الحقيقيّة.
+  الشريط الجانبيّ صار **لوحًا زجاجيًّا عائمًا** بأربع زوايا مستديرة وهامش ٤dp، وعلامة «M» بتدرّجٍ
+  لا مربّع، والأسماء بجانب الأيقونات لا في طرفها. رفّ «الألعاب الشائعة» بملصقات طوليّة (٠٫٦٠)
+  وبلاطة «المزيد» وأسهم دائرية، ثم قاعدة الحالة بالخطوط المائلة والنسبة الحقيقيّة.
+- `res/values/max_gaming_strings.xml` و`values-ar/…`: ستّة مفاتيح فقط — `gs_play_now` · `gs_hero_tagline`
+  · `gs_popular_games` · `gs_realtime` · `gs_hz_value` · `gs_more_games` (§0.2: لا لغة ثالثة).
+
+**ADR-07 — لا رقم وهميّ:** «120 FPS» في اللقطة صار **معدّل تحديث الشاشة الحقيقيّ** من
+`LocalView.current.display?.refreshRate` موسومًا «لحظيّ / Hz»؛ والحلقات من `PanelCpuLoad.sample()`
+و`HudDeepReaders.gpuLoadPercent()` و`socTempC()`، وما لا يُقرأ يبقى «—». والموجة ترسم تاريخ
+المعالج الحقيقيّ (٤٨ عيّنة) لا موجةً زخرفيّة. معدّل التحديث لا يُقرأ ⇒ «—» لا «120».
+
+**BUILD:** لا بناء محليًّا (§0.10). Quick Verify `43609841025` على `ae5c6ecc` **فشل**:
+`Unresolved reference 'RectangleShape'` في `GameSpaceStage.kt` (السطر ٣٤ والسطر ٦٥٥) — الاستيراد
+كُتب من `androidx.compose.foundation.shape` والصحيح `androidx.compose.ui.graphics`. أُصلح في
+`780de8fa` (سطر واحد) ودُفع، ثم Quick Verify `43610583834` — الحكم المقروء من السجل: **نجاح**
+(`conclusion=success`، والمهمّة الوحيدة «Release Kotlin + release unit tests» ناجحة، انتهت
+15:35:43Z). و`build.yml` `43609752489` على `ae5c6ecc` سقط بالخطأ نفسه؛ و`build.yml` `43610552244`
+على `780de8fa` كان قيد التشغيل عند كتابة هذا السطر — لا يُدّعى حكمه.
+
+**GATES (مقيسة هنا بعد آخر تعديل):** `kt_balance` **3435 · 0** · `code_health` **صحة 0** (والدَّين
+مجمّد: 16 oversized · 26 wildcard · 5 inline copy · 4 literals) · `i18n_coverage` **0/85** ·
+`--prune all` **0 يتيم** · `design_tokens` **233 ≤ 300** (لم يُرفع السقف) · `resource_compile`
+**aapt2 مرّ** · `provenance_guard` **0** · `jni_symbols` طبقة ١ فقط (لا NDK) · `git diff --check` نظيف.
+
+**RESIDUAL RISK:** الشكل النهائيّ واللمس وRTL **يحتاج جهاز المالك** — لا لقطة حقيقيّة في هذه البيئة
+(لا جهاز ولا AVD)، فلا يُدّعى تطابق بصريّ. وفنّ الألعاب في اللقطة ليس ملكنا (§0.4): البطل يعرض
+أيقونة اللعبة نفسها واسمها، وليس صورة PUBG. وأدوات التصميم لم تُنتج صورة (لا Figma/OpenPencil/
+ComfyUI عاملة) — التصميم كُتب Compose مباشرةً من قياس اللقطة.
+
+**NEXT:** لقطة من الجهاز على العرض نفسه ومقارنتها بالمرجع؛ ثم قرار المالك في نصّ الحالة الافتراضيّ
+وخلفية اللوبي الثابتة.
+
 ### DESIGN-TOOLS-01 — تركيب أدوات تصميم في OpenCode والتحقق منها فعليًّا — 2026-11-14 · DONE_WITH_CONCERNS
 
 **TASK (المالك):** تثبيت Figma UI MCP · OpenPencil MCP · ComfyUI MCP · OpenStitch · Impeccable ·
