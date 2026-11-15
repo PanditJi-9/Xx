@@ -279,7 +279,6 @@ private fun StageCanvas(
 ) {
     Box(Modifier.requiredSize(StageDesignWidth.dp, StageDesignHeight.dp)) {
         StageHero(data = data, actions = actions)
-        StageRail(onHome = actions.onHome, onSection = actions.onOpenSection)
         StageStatusBar(
             data = data,
             onProfile = { actions.onOpenSection(LobbySection.Game) },

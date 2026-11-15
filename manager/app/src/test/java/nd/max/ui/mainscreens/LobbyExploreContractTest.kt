@@ -44,11 +44,14 @@ class LobbyExploreContractTest {
         assertTrue("Explore overlay is not composed", text.contains("LobbyExplore("))
         assertTrue("Explore overlay is not animated", text.contains("AnimatedVisibility("))
 
-        // غيّر المالك شكل الهيكل في `4ff3dff1`/`03562a31`: صار الجذر صفحتين (المسرح ⇄ مركز
-        // التحكّم) بدل شريط أقسام متعدّد، فشارك الضغط صار `rootState.currentPage == 1` بدل
-        // `spineIndex > 0`. الشرط الذي يحرسه هذا الاختبار هو **الترتيب** لا التسمية: رجوع
-        // استكشف لا يزال يُركَّب بعد رجوع الهيكل فيفوز عليه.
-        val controlBack = text.indexOf("BackHandler(enabled = rootState.currentPage == 1)")
+        // غيّر المالك شكل الهيكل مرارًا (`4ff3dff1`/`03562a31`/`d4644304`): صار الجذر بيدرًا
+        // على عدد صفحات `LobbyPage`، فشارك الضغط صار شرطًا على `rootState.currentPage` بدل
+        // `spineIndex > 0`، وتغيّرت صيغته من `== 1` إلى `!= 0` في `d4644304`. الشرط الذي
+        // يحرسه هذا الاختبار هو **الترتيب** لا التسمية ولا الشكل: رجوع استكشف لا يزال
+        // يُركَّب بعد رجوع الهيكل فيفوز عليه. ولذلك يُلتقط بمطابقة مرنة لا بنصّ حرفيّ:
+        // الصيغة الحرفيّة سقطت مرّتين بتغيير مشروع من المالك، والمرن يحرس المعنى نفسه.
+        val controlBack = Regex("BackHandler\\(enabled = rootState\\.currentPage\\s+[!=]=\\s+\\d+\\)")
+            .find(text)?.range?.first ?: -1
         val exploreBack = text.indexOf("BackHandler(enabled = exploreOpen)")
         assertTrue("Spine back handler is missing", controlBack >= 0)
         assertTrue("Explore back handler is missing", exploreBack >= 0)
@@ -61,16 +64,18 @@ class LobbyExploreContractTest {
         assumeTrue("Cannot locate nd.max sources; guard not evaluated", root != null)
         val text = lobby()
 
-        // صار الجذر في تصميم المالك (كوكبيت الألعاب) صفحتين ثابتتين: المسرح ومركز التحكّم،
-        // فذهبت الحاجة إلى `spineIndex`/`GameSpaceRail`/`LobbySectionContent` (انتقلت أجسام
-        // الأقسام إلى `LobbyControlCenter`) وإلى `pageSpacing` الصريح (الافتراضي `0.dp`).
+        // الجذر في تصميم المالك (كوكبيت الألعاب) بيدرٌ عدده من `LobbyPage` نفسه: المسرح ثم
+        // أقسام مركز التحكّم، فذهبت الحاجة إلى `spineIndex`/`GameSpaceRail`/`LobbySectionContent`
+        // (انتقلت أجسام الأقسام إلى `LobbyControlCenter`) وإلى `pageSpacing` الصريح
+        // (الافتراضي `0.dp`). والعدد **مشتقٌّ** لا مكتوب، فلا يمرّ تعديل العدد بلا مراجعة ولا
+        // يفشل هذا الحارس لمجرّد إضافة صفحة مشروعة.
         // ويبقى القفل المقصود: سحبٌ واحد = صفحة واحدة — وهو سلوك Compose الافتراضي
         // (`PagerSnapDistance.atMost(1)`) ما دام الملف لا يتجاوز مسافة الالتقاط.
         assertTrue("The page-locked pager is missing", text.contains("VerticalPager("))
         assertTrue("The pager state is missing", text.contains("rememberPagerState("))
         assertTrue(
-            "The lobby root must stay a two-page pager (stage and control centre)",
-            text.contains("rememberPagerState(initialPage = 0) { 2 }")
+            "The lobby root must derive its page count from LobbyPage, not a literal",
+            text.contains("rememberPagerState(initialPage = 0) { LobbyPage.entries.size }")
         )
         assertTrue("The pager must use the shared fling behaviour", text.contains("flingBehavior = rootFling"))
         assertTrue(

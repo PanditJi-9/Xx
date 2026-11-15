@@ -29,6 +29,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Bolt
+import androidx.compose.material.icons.rounded.Home
+import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -41,6 +43,7 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
@@ -65,6 +68,46 @@ import nd.max.ui.component.AppIconImage
  *    فيقع حيث تقع في اللقطة تمامًا ولا يتحرّك مع السحب. صفحات الأقسام تُزاح عن حافته.
  *  - عموديًّا (تخطيط بديل): شريط سفليّ بالأقسام نفسها، و«الرئيسية» عمود واحد من الكتل ذاتها.
  */
+
+/**
+ * صفحات اللوبي: «الرئيسية» أولًا، ثم صفحة لكل قسم من أقسام مركز التحكّم، والترس آخرًا.
+ *
+ * [section] هو القسم الذي تعرضه الصفحة (`null` للرئيسية وحدها). والترس يعرض قسم «اللوبي» لأن
+ * إعدادات مركز التحكّم تعيش هناك، وله تسمية وأيقونة خاصّتان به فلا يُقرأ «لوبي» على بندٍ اسمه «إعدادات».
+ */
+internal enum class LobbyPage(val section: LobbySection?) {
+    Home(null),
+    Loadout(LobbySection.Loadout),
+    Insights(LobbySection.Insights),
+    Game(LobbySection.Game),
+    Panel(LobbySection.Panel),
+    Library(LobbySection.Library),
+    Settings(LobbySection.Lobby);
+
+    /** عنوان البند في الشريط الجانبيّ والشريط السفليّ — من الموارد، فلا نصّ صلب في الواجهة. */
+    val labelRes: Int
+        get() = when (this) {
+            Home -> R.string.gs_nav_home
+            Settings -> R.string.gs_nav_settings
+            else -> requireNotNull(section).titleRes
+        }
+
+    val icon: ImageVector
+        get() = when (this) {
+            Home -> Icons.Rounded.Home
+            Settings -> Icons.Rounded.Settings
+            else -> requireNotNull(section).icon
+        }
+
+    companion object {
+        /** الصفحة عند رقم مُصفِّحٍ قد يخرج عن المدى — يُقيَّد ولا يرمي. */
+        fun at(index: Int): LobbyPage = entries[index.coerceIn(0, entries.lastIndex)]
+
+        /** صفحة القسم المطلوب: «لوبي» تعني الترس، وكل قسم آخر يملك صفحته. */
+        fun of(section: LobbySection): LobbyPage =
+            entries.firstOrNull { it.section == section } ?: Home
+    }
+}
 
 private const val RailRightEdge = 168
 private const val ShellMaxFontScale = 1.15f
