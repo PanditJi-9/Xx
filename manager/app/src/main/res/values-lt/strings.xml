@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">Nepavyko atidaryti programos</string>
     <string name="toast_applied_refresh_rate">Pasirinktas atnaujinimo dažnis pritaikytas</string>
     <string name="toast_applied_renderer">Pritaikyta: %1$s</string>
-    <string name="toast_applying_profile">Taikomas pasirinktas profilis</string>
     <string name="toast_install_fail">Diegimas nepavyko: %1$s</string>
     <string name="toast_log_gather_fail">Nepavyko surinkti žurnalo</string>
     <string name="toast_log_save_fail">Nepavyko išsaugoti žurnalo</string>

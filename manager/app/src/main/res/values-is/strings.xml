@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">Ekki hægt að opna forrit</string>
     <string name="toast_applied_refresh_rate">Valin endurnýjunartíðni beitt</string>
     <string name="toast_applied_renderer">Beitt: %1$s</string>
-    <string name="toast_applying_profile">Nota valda stillingu</string>
     <string name="toast_install_fail">Uppsetning mistókst: %1$s</string>
     <string name="toast_log_gather_fail">Mistókst að safna annálum</string>
     <string name="toast_log_save_fail">Mistókst að vista annál</string>

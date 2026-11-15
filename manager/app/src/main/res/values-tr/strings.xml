@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">Uygulama açılamadı</string>
     <string name="toast_applied_refresh_rate">Seçilen yenileme hızı uygulandı</string>
     <string name="toast_applied_renderer">Uygulandı: %1$s</string>
-    <string name="toast_applying_profile">Seçilen profil uygulanıyor</string>
     <string name="toast_install_fail">Yükleme başarısız: %1$s</string>
     <string name="toast_log_gather_fail">Günlük toplanamadı</string>
     <string name="toast_log_save_fail">Günlük kaydedilemedi</string>

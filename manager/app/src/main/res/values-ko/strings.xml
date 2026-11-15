@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">앱을 열 수 없습니다</string>
     <string name="toast_applied_refresh_rate">선택한 주사율이 적용되었습니다</string>
     <string name="toast_applied_renderer">적용됨: %1$s</string>
-    <string name="toast_applying_profile">선택한 프로필을 적용하는 중</string>
     <string name="toast_install_fail">설치 실패: %1$s</string>
     <string name="toast_log_gather_fail">로그 수집 실패</string>
     <string name="toast_log_save_fail">로그 저장 실패</string>

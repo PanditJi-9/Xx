@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">பயன்பாட்டைத் திறக்க முடியவில்லை</string>
     <string name="toast_applied_refresh_rate">தேர்ந்தெடுக்கப்பட்ட புதுப்பிப்பு வீதம் பயன்படுத்தப்பட்டது</string>
     <string name="toast_applied_renderer">பயன்படுத்தப்பட்டது: %1$s</string>
-    <string name="toast_applying_profile">தேர்ந்தெடுக்கப்பட்ட சுயவிவரம் பயன்படுத்தப்படுகிறது</string>
     <string name="toast_install_fail">நிறுவல் தோல்வி: %1$s</string>
     <string name="toast_log_gather_fail">பதிவுகளைச் சேகரிப்பதில் தோல்வி</string>
     <string name="toast_log_save_fail">பதிவைச் சேமிப்பதில் தோல்வி</string>

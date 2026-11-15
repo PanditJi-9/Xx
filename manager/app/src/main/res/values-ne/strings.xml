@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">एप खोल्न असमर्थ</string>
     <string name="toast_applied_refresh_rate">चयन गरिएको ताजा दर लागू गरियो</string>
     <string name="toast_applied_renderer">लागू गरियो: %1$s</string>
-    <string name="toast_applying_profile">चयन गरिएको कन्फिगरेसन योजना लागू गर्दै</string>
     <string name="toast_install_fail">स्थापना असफल: %1$s</string>
     <string name="toast_log_gather_fail">लग सङ्कलन गर्न असफल</string>
     <string name="toast_log_save_fail">लग सुरक्षित गर्न असफल</string>

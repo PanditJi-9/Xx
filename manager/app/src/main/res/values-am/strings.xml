@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">መተግበሪያውን መክፈት አልተሳካም</string>
     <string name="toast_applied_refresh_rate">የተመረጠው ማደሻ ፍጥነት ተተግብሯል</string>
     <string name="toast_applied_renderer">ተተግብሯል፦ %1$s</string>
-    <string name="toast_applying_profile">የተመረጠው ውቅር እየተተገበረ ነው</string>
     <string name="toast_install_fail">መጫን አልተሳካም፦ %1$s</string>
     <string name="toast_log_gather_fail">ሎጎችን መሰብሰብ አልተሳካም</string>
     <string name="toast_log_save_fail">ሎግ ማስቀመጥ አልተሳካም</string>

@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">ಅಪ್ಲಿಕೇಶನ್ ತೆರೆಯಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</string>
     <string name="toast_applied_refresh_rate">ಆಯ್ಕೆ ಮಾಡಿದ ರಿಫ್ರೆಶ್ ದರವನ್ನು ಅನ್ವಯಿಸಲಾಗಿದೆ</string>
     <string name="toast_applied_renderer">ಅನ್ವಯಿಸಲಾಗಿದೆ: %1$s</string>
-    <string name="toast_applying_profile">ಆಯ್ಕೆ ಮಾಡಿದ ಸಂರಚನೆಯನ್ನು ಅನ್ವಯಿಸಲಾಗುತ್ತಿದೆ</string>
     <string name="toast_install_fail">ಸ್ಥಾಪನೆ ವಿಫಲವಾಗಿದೆ: %1$s</string>
     <string name="toast_log_gather_fail">ಲಾಗ್ ಸಂಗ್ರಹ ವಿಫಲವಾಗಿದೆ</string>
     <string name="toast_log_save_fail">ಲಾಗ್ ಉಳಿಸಲು ವಿಫಲವಾಗಿದೆ</string>

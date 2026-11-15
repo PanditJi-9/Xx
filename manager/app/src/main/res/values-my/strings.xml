@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">အက်ပ်ကိုဖွင့်၍မရပါ</string>
     <string name="toast_applied_refresh_rate">ရွေးချယ်ထားသော ပြန်လည်ဆန်းသစ်နှုန်းကို အသုံးချပြီ</string>
     <string name="toast_applied_renderer">အသုံးချပြီ: %1$s</string>
-    <string name="toast_applying_profile">ရွေးချယ်ထားသော ပြင်ဆင်မှုအစီအစဉ်ကို အသုံးချနေသည်</string>
     <string name="toast_install_fail">တပ်ဆင်မှုမအောင်မြင်ပါ: %1$s</string>
     <string name="toast_log_gather_fail">မှတ်တမ်းစုဆောင်းမှု မအောင်မြင်ပါ</string>
     <string name="toast_log_save_fail">မှတ်တမ်းသိမ်းဆည်းမှု မအောင်မြင်ပါ</string>

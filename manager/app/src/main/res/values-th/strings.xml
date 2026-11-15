@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">ไม่สามารถเปิดแอปได้</string>
     <string name="toast_applied_refresh_rate">ใช้อัตรารีเฟรชที่เลือกแล้ว</string>
     <string name="toast_applied_renderer">ใช้แล้ว: %1$s</string>
-    <string name="toast_applying_profile">กำลังใช้โปรไฟล์ที่เลือก</string>
     <string name="toast_install_fail">ติดตั้งล้มเหลว: %1$s</string>
     <string name="toast_log_gather_fail">รวบรวมบันทึกล้มเหลว</string>
     <string name="toast_log_save_fail">บันทึกบันทึกล้มเหลว</string>

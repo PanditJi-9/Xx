@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">Tətbiqi açmaq mümkün olmadı</string>
     <string name="toast_applied_refresh_rate">Seçilmiş yeniləmə tezliyi tətbiq edildi</string>
     <string name="toast_applied_renderer">Tətbiq edildi: %1$s</string>
-    <string name="toast_applying_profile">Seçilmiş profil tətbiq edilir</string>
     <string name="toast_install_fail">Quraşdırma uğursuz oldu: %1$s</string>
     <string name="toast_log_gather_fail">Jurnal toplanması uğursuz oldu</string>
     <string name="toast_log_save_fail">Jurnalı saxlamaq uğursuz oldu</string>

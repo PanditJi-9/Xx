@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">无法打开应用</string>
     <string name="toast_applied_refresh_rate">已应用选定的刷新率</string>
     <string name="toast_applied_renderer">已应用：%1$s</string>
-    <string name="toast_applying_profile">正在应用所选配置方案</string>
     <string name="toast_install_fail">安装失败：%1$s</string>
     <string name="toast_log_gather_fail">收集日志失败</string>
     <string name="toast_log_save_fail">保存日志失败</string>

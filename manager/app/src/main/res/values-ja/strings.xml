@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">アプリを開けません</string>
     <string name="toast_applied_refresh_rate">選択したリフレッシュレートを適用しました</string>
     <string name="toast_applied_renderer">適用しました：%1$s</string>
-    <string name="toast_applying_profile">選択したプロファイルを適用しています</string>
     <string name="toast_install_fail">インストール失敗：%1$s</string>
     <string name="toast_log_gather_fail">ログの収集に失敗しました</string>
     <string name="toast_log_save_fail">ログの保存に失敗しました</string>

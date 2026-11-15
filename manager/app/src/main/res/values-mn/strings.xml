@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">Програмыг нээх боломжгүй</string>
     <string name="toast_applied_refresh_rate">Сонгосон сэргээх хурдыг хэрэглэсэн</string>
     <string name="toast_applied_renderer">Хэрэглэсэн: %1$s</string>
-    <string name="toast_applying_profile">Сонгосон тохиргоог хэрэглэж байна</string>
     <string name="toast_install_fail">Суулгах алдаа: %1$s</string>
     <string name="toast_log_gather_fail">Бүртгэл цуглуулахад алдаа гарлаа</string>
     <string name="toast_log_save_fail">Бүртгэл хадгалахад алдаа гарлаа</string>

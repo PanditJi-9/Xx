@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">Kan ikke åbne app</string>
     <string name="toast_applied_refresh_rate">Den valgte opdateringshastighed er anvendt</string>
     <string name="toast_applied_renderer">Anvendt: %1$s</string>
-    <string name="toast_applying_profile">Anvender den valgte profil</string>
     <string name="toast_install_fail">Installation mislykkedes: %1$s</string>
     <string name="toast_log_gather_fail">Kunne ikke indsamle log</string>
     <string name="toast_log_save_fail">Kunne ikke gemme log</string>

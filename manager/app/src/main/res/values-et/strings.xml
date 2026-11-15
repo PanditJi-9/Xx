@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">Rakendust ei saa avada</string>
     <string name="toast_applied_refresh_rate">Valitud värskendussagedus on rakendatud</string>
     <string name="toast_applied_renderer">Rakendatud: %1$s</string>
-    <string name="toast_applying_profile">Valitud profiili rakendamine</string>
     <string name="toast_install_fail">Installimine ebaõnnestus: %1$s</string>
     <string name="toast_log_gather_fail">Logi kogumine ebaõnnestus</string>
     <string name="toast_log_save_fail">Logi salvestamine ebaõnnestus</string>

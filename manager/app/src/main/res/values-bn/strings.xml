@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">অ্যাপ খোলা যায়নি</string>
     <string name="toast_applied_refresh_rate">নির্বাচিত রিফ্রেশ রেট প্রয়োগ করা হয়েছে</string>
     <string name="toast_applied_renderer">প্রয়োগ করা হয়েছে: %1$s</string>
-    <string name="toast_applying_profile">নির্বাচিত কনফিগারেশন স্কিম প্রয়োগ করা হচ্ছে</string>
     <string name="toast_install_fail">ইনস্টল ব্যর্থ: %1$s</string>
     <string name="toast_log_gather_fail">লগ সংগ্রহ করতে ব্যর্থ</string>
     <string name="toast_log_save_fail">লগ সংরক্ষণ করতে ব্যর্থ</string>

@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">अ‍ॅप उघडण्यात अयशस्वी</string>
     <string name="toast_applied_refresh_rate">निवडलेला रिफ्रेश रेट लागू केला</string>
     <string name="toast_applied_renderer">लागू केले: %1$s</string>
-    <string name="toast_applying_profile">निवडलेली योजना लागू केली जात आहे</string>
     <string name="toast_install_fail">स्थापना अयशस्वी: %1$s</string>
     <string name="toast_log_gather_fail">लॉग संकलित करण्यात अयशस्वी</string>
     <string name="toast_log_save_fail">लॉग जतन करण्यात अयशस्वी</string>

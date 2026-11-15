@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">Не вдалося відкрити застосунок</string>
     <string name="toast_applied_refresh_rate">Вибрана частота оновлення застосована</string>
     <string name="toast_applied_renderer">Застосовано: %1$s</string>
-    <string name="toast_applying_profile">Застосування вибраної схеми</string>
     <string name="toast_install_fail">Помилка встановлення: %1$s</string>
     <string name="toast_log_gather_fail">Помилка збору логів</string>
     <string name="toast_log_save_fail">Помилка збереження логу</string>

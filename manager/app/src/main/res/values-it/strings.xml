@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">Impossibile aprire l\'app</string>
     <string name="toast_applied_refresh_rate">Frequenza di aggiornamento selezionata applicata</string>
     <string name="toast_applied_renderer">Applicato: %1$s</string>
-    <string name="toast_applying_profile">Applicazione del profilo selezionato in corso</string>
     <string name="toast_install_fail">Installazione fallita: %1$s</string>
     <string name="toast_log_gather_fail">Raccolta log fallita</string>
     <string name="toast_log_save_fail">Salvataggio log fallito</string>

@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">Otvaranje aplikacije nije uspjelo</string>
     <string name="toast_applied_refresh_rate">Odabrana frekvencija osvježavanja je primijenjena</string>
     <string name="toast_applied_renderer">Primijenjeno: %1$s</string>
-    <string name="toast_applying_profile">Primjena odabranog profila</string>
     <string name="toast_install_fail">Instalacija nije uspjela: %1$s</string>
     <string name="toast_log_gather_fail">Prikupljanje zapisa nije uspjelo</string>
     <string name="toast_log_save_fail">Spremanje zapisa nije uspjelo</string>

@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">යෙදුම විවෘත කළ නොහැක</string>
     <string name="toast_applied_refresh_rate">තෝරාගත් නැවුම් කිරීමේ අනුපාතය යොදන ලදී</string>
     <string name="toast_applied_renderer">යොදන ලදී: %1$s</string>
-    <string name="toast_applying_profile">තෝරාගත් වින්‍යාසය යොදමින්</string>
     <string name="toast_install_fail">ස්ථාපනය අසමත් විය: %1$s</string>
     <string name="toast_log_gather_fail">ලොග් එකතු කිරීම අසමත් විය</string>
     <string name="toast_log_save_fail">ලොග් සුරැකීම අසමත් විය</string>

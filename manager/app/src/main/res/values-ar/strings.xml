@@ -596,7 +596,6 @@
     <string name="toast_app_launch_fail">لا يمكن فتح التطبيق</string>
     <string name="toast_applied_refresh_rate">تم تطبيق معدل التحديث المحدد</string>
     <string name="toast_applied_renderer">تم التطبيق: %1$s</string>
-    <string name="toast_applying_profile">جاري تطبيق ملف التعريف المحدد</string>
     <string name="toast_install_fail">فشل التثبيت: %1$s</string>
     <string name="toast_log_gather_fail">فشل جمع السجلات</string>
     <string name="toast_log_save_fail">فشل حفظ السجل</string>

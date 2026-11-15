@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">No es pot obrir l\'aplicació</string>
     <string name="toast_applied_refresh_rate">S\'ha aplicat la freqüència de refresc seleccionada</string>
     <string name="toast_applied_renderer">S\'ha aplicat: %1$s</string>
-    <string name="toast_applying_profile">Aplicant el perfil seleccionat</string>
     <string name="toast_install_fail">Error d\'instal·lació: %1$s</string>
     <string name="toast_log_gather_fail">Error en recollir registres</string>
     <string name="toast_log_save_fail">Error en desar registres</string>

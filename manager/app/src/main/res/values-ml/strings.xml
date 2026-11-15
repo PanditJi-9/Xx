@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">ആപ്പ് തുറക്കാൻ കഴിഞ്ഞില്ല</string>
     <string name="toast_applied_refresh_rate">തിരഞ്ഞെടുത്ത റിഫ്രഷ് റേറ്റ് പ്രയോഗിച്ചു</string>
     <string name="toast_applied_renderer">പ്രയോഗിച്ചു: %1$s</string>
-    <string name="toast_applying_profile">തിരഞ്ഞെടുത്ത പ്രൊഫൈൽ പ്രയോഗിക്കുന്നു</string>
     <string name="toast_install_fail">ഇൻസ്റ്റാളേഷൻ പരാജയപ്പെട്ടു: %1$s</string>
     <string name="toast_log_gather_fail">ലോഗ് ശേഖരിക്കുന്നതിൽ പരാജയം</string>
     <string name="toast_log_save_fail">ലോഗ് സംരക്ഷിക്കുന്നതിൽ പരാജയം</string>

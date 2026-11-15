@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">ਐਪ ਖੋਲ੍ਹਣ ਵਿਚ ਅਸਫ਼ਲ</string>
     <string name="toast_applied_refresh_rate">ਚੁਣਿਆ ਰਿਫਰੈਸ਼ ਰੇਟ ਲਾਗੂ ਹੋ ਗਿਆ</string>
     <string name="toast_applied_renderer">ਲਾਗੂ: %1$s</string>
-    <string name="toast_applying_profile">ਚੁਣੀ ਸੰਰਚਨਾ ਲਾਗੂ ਕੀਤੀ ਜਾ ਰਹੀ</string>
     <string name="toast_install_fail">ਇੰਸਟਾਲ ਅਸਫ਼ਲ: %1$s</string>
     <string name="toast_log_gather_fail">ਲੌਗ ਇਕੱਠਾ ਕਰਨ ਵਿਚ ਅਸਫ਼ਲ</string>
     <string name="toast_log_save_fail">ਲੌਗ ਸੇਵ ਕਰਨ ਵਿਚ ਅਸਫ਼ਲ</string>

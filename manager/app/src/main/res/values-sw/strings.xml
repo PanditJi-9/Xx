@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">Haiwezi kufungua programu</string>
     <string name="toast_applied_refresh_rate">Kasi ya kuonyesha upya iliyochaguliwa imetumika</string>
     <string name="toast_applied_renderer">Imetumika: %1$s</string>
-    <string name="toast_applying_profile">Inatumia mpango uliochaguliwa</string>
     <string name="toast_install_fail">Imeshindwa kusakinisha: %1$s</string>
     <string name="toast_log_gather_fail">Imeshindwa kukusanya logi</string>
     <string name="toast_log_save_fail">Imeshindwa kuhifadhi logi</string>

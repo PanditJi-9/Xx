@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">Nu se poate deschide aplicația</string>
     <string name="toast_applied_refresh_rate">Rata de reîmprospătare selectată a fost aplicată</string>
     <string name="toast_applied_renderer">Aplicat: %1$s</string>
-    <string name="toast_applying_profile">Se aplică configurația selectată</string>
     <string name="toast_install_fail">Instalare eșuată: %1$s</string>
     <string name="toast_log_gather_fail">Colectarea jurnalelor a eșuat</string>
     <string name="toast_log_save_fail">Salvarea jurnalelor a eșuat</string>

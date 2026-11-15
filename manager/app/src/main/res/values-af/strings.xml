@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">Kan nie program oopmaak nie</string>
     <string name="toast_applied_refresh_rate">Geselekteerde verfrissingstempo toegepas</string>
     <string name="toast_applied_renderer">Toegepas: %1$s</string>
-    <string name="toast_applying_profile">Besig om geselekteerde profiel toe te pas</string>
     <string name="toast_install_fail">Installasie misluk: %1$s</string>
     <string name="toast_log_gather_fail">Kon nie logboeke versamel nie</string>
     <string name="toast_log_save_fail">Kon nie logboek stoor nie</string>

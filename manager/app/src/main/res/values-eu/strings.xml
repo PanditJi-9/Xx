@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">Ezin izan da aplikazioa ireki</string>
     <string name="toast_applied_refresh_rate">Freskatze-maiztasuna aplikatu da</string>
     <string name="toast_applied_renderer">Aplikatuta: %1$s</string>
-    <string name="toast_applying_profile">Profila aplikatzen</string>
     <string name="toast_install_fail">Instalazioak huts egin du: %1$s</string>
     <string name="toast_log_gather_fail">Huts egin du erregistroa biltzeak</string>
     <string name="toast_log_save_fail">Huts egin du erregistroa gordetzeak</string>

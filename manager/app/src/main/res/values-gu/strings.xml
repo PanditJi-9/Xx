@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">એપ ખોલી શકાતી નથી</string>
     <string name="toast_applied_refresh_rate">પસંદ કરેલ રિફ્રેશ રેટ લાગુ કર્યો</string>
     <string name="toast_applied_renderer">લાગુ કર્યું: %1$s</string>
-    <string name="toast_applying_profile">પસંદ કરેલ રૂપરેખાંકન લાગુ કરી રહ્યા છીએ</string>
     <string name="toast_install_fail">ઇન્સ્ટોલ નિષ્ફળ: %1$s</string>
     <string name="toast_log_gather_fail">લોગ એકત્ર કરવામાં નિષ્ફળ</string>
     <string name="toast_log_save_fail">લોગ સાચવવામાં નિષ્ફળ</string>

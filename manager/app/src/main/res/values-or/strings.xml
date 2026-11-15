@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">ଆପ୍ ଖୋଲିବାରେ ବିଫଳ</string>
     <string name="toast_applied_refresh_rate">ନିର୍ଦ୍ଧାରିତ ରିଫ୍ରେସ୍ ରେଟ୍ ପ୍ରୟୋଗ କରାଯାଇଛି</string>
     <string name="toast_applied_renderer">ପ୍ରୟୋଗ କରାଯାଇଛି: %1$s</string>
-    <string name="toast_applying_profile">ନିର୍ଦ୍ଧାରିତ ବିନ୍ୟାସ ପ୍ରୟୋଗ କରାଯାଉଛି</string>
     <string name="toast_install_fail">ସଂସ୍ଥାପନ ବିଫଳ: %1$s</string>
     <string name="toast_log_gather_fail">ଲଗ୍ ସଂଗ୍ରହ ବିଫଳ</string>
     <string name="toast_log_save_fail">ଲଗ୍ ସଞ୍ଚୟ ବିଫଳ</string>

@@ -59,6 +59,8 @@ object WidgetIntents {
     const val ROUTE_APP_FREEZER = "debloatfreeze"
     const val ROUTE_SETEDIT = "setedit"
     const val ROUTE_DEVICE_INFO = "device_info"
+    /** شبكة الملفّ: المفتاح نفسه الذي يقرؤه `fromTileType`، فلا يفترق كاتبُه وقارئه. */
+    const val ROUTE_PROFILE = "profile"
 }
 
 /**

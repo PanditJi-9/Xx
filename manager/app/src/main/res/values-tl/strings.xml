@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">Hindi mabuksan ang app</string>
     <string name="toast_applied_refresh_rate">Inilapat ang napiling refresh rate</string>
     <string name="toast_applied_renderer">Inilapat: %1$s</string>
-    <string name="toast_applying_profile">Ina-apply ang napiling profile</string>
     <string name="toast_install_fail">Nabigo ang pag-install: %1$s</string>
     <string name="toast_log_gather_fail">Nabigo ang pagkokolekta ng log</string>
     <string name="toast_log_save_fail">Nabigo ang pag-save ng log</string>

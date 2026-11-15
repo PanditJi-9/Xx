@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">ऐप खोलने में असमर्थ</string>
     <string name="toast_applied_refresh_rate">चयनित रीफ्रेश दर लागू</string>
     <string name="toast_applied_renderer">लागू: %1$s</string>
-    <string name="toast_applying_profile">चयनित कॉन्फ़िगरेशन योजना लागू की जा रही है</string>
     <string name="toast_install_fail">स्थापना विफल: %1$s</string>
     <string name="toast_log_gather_fail">लॉग एकत्र करने में विफल</string>
     <string name="toast_log_save_fail">लॉग सहेजने में विफल</string>

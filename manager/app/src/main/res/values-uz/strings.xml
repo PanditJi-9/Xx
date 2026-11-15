@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">Ilovani ochish mumkin emas</string>
     <string name="toast_applied_refresh_rate">Tanlangan yangilanish tezligi qo‘llanildi</string>
     <string name="toast_applied_renderer">Qo‘llanildi: %1$s</string>
-    <string name="toast_applying_profile">Tanlangan konfiguratsiya qo‘llanilmoqda</string>
     <string name="toast_install_fail">O‘rnatish muvaffaqiyatsiz: %1$s</string>
     <string name="toast_log_gather_fail">Jurnal yig‘ish muvaffaqiyatsiz</string>
     <string name="toast_log_save_fail">Jurnalni saqlash muvaffaqiyatsiz</string>

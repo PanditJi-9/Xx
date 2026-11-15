@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">Nie można otworzyć aplikacji</string>
     <string name="toast_applied_refresh_rate">Zastosowano wybraną częstotliwość odświeżania</string>
     <string name="toast_applied_renderer">Zastosowano: %1$s</string>
-    <string name="toast_applying_profile">Stosowanie wybranego profilu</string>
     <string name="toast_install_fail">Instalacja nie powiodła się: %1$s</string>
     <string name="toast_log_gather_fail">Nie udało się zebrać logów</string>
     <string name="toast_log_save_fail">Zapis logów nie powiódł się</string>

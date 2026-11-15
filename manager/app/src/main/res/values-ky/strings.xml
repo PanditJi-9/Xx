@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">Колдонмону ачуу мүмкүн эмес</string>
     <string name="toast_applied_refresh_rate">Тандалган жаңыртуу ылдамдыгы колдонулду</string>
     <string name="toast_applied_renderer">Колдонулду: %1$s</string>
-    <string name="toast_applying_profile">Тандалган конфигурация колдонулууда</string>
     <string name="toast_install_fail">Орнотуу иштебей калды: %1$s</string>
     <string name="toast_log_gather_fail">Журнал чогултуу иштебей калды</string>
     <string name="toast_log_save_fail">Журнал сактоо иштебей калды</string>

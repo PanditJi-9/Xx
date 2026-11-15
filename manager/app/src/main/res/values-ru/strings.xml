@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">Не удалось открыть приложение</string>
     <string name="toast_applied_refresh_rate">Выбранная частота обновления применена</string>
     <string name="toast_applied_renderer">Применено: %1$s</string>
-    <string name="toast_applying_profile">Применение выбранного профиля</string>
     <string name="toast_install_fail">Ошибка установки: %1$s</string>
     <string name="toast_log_gather_fail">Не удалось собрать журнал</string>
     <string name="toast_log_save_fail">Не удалось сохранить журнал</string>

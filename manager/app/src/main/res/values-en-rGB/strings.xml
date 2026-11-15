@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">Unable to open app</string>
     <string name="toast_applied_refresh_rate">Selected refresh rate applied</string>
     <string name="toast_applied_renderer">Applied: %1$s</string>
-    <string name="toast_applying_profile">Applying selected profile</string>
     <string name="toast_install_fail">Installation failed: %1$s</string>
     <string name="toast_log_gather_fail">Failed to gather logs</string>
     <string name="toast_log_save_fail">Failed to save logs</string>

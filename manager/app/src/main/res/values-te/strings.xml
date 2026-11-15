@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">యాప్ తెరవడంలో విఫలమైంది</string>
     <string name="toast_applied_refresh_rate">ఎంచుకున్న రిఫ్రెష్ రేట్ వర్తించబడింది</string>
     <string name="toast_applied_renderer">వర్తించబడింది: %1$s</string>
-    <string name="toast_applying_profile">ఎంచుకున్న కాన్ఫిగరేషన్ పథకాన్ని వర్తింపజేస్తోంది</string>
     <string name="toast_install_fail">ఇన్‌స్టాలేషన్ విఫలమైంది: %1$s</string>
     <string name="toast_log_gather_fail">లాగ్ సేకరణ విఫలమైంది</string>
     <string name="toast_log_save_fail">లాగ్ సేవ్ చేయడంలో విఫలమైంది</string>

@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">Konnte App nicht öffnen</string>
     <string name="toast_applied_refresh_rate">Ausgewählte Bildwiederholfrequenz angewendet</string>
     <string name="toast_applied_renderer">Angewendet: %1$s</string>
-    <string name="toast_applying_profile">Ausgewähltes Profil wird angewendet</string>
     <string name="toast_install_fail">Installation fehlgeschlagen: %1$s</string>
     <string name="toast_log_gather_fail">Protokollerfassung fehlgeschlagen</string>
     <string name="toast_log_save_fail">Protokoll speichern fehlgeschlagen</string>

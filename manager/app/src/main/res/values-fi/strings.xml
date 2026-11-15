@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">Sovellusta ei voi avata</string>
     <string name="toast_applied_refresh_rate">Valittu virkistystaajuus käytetty</string>
     <string name="toast_applied_renderer">Käytetty: %1$s</string>
-    <string name="toast_applying_profile">Käytetään valittua profiilia</string>
     <string name="toast_install_fail">Asennus epäonnistui: %1$s</string>
     <string name="toast_log_gather_fail">Lokien kerääminen epäonnistui</string>
     <string name="toast_log_save_fail">Lokin tallennus epäonnistui</string>

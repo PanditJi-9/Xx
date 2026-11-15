@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">Nuk mund të hapet aplikacioni</string>
     <string name="toast_applied_refresh_rate">U aplikua ritmi i zgjedhur i rifreskimit</string>
     <string name="toast_applied_renderer">U aplikua: %1$s</string>
-    <string name="toast_applying_profile">Duke aplikuar planin e zgjedhur</string>
     <string name="toast_install_fail">Instalimi dështoi: %1$s</string>
     <string name="toast_log_gather_fail">Mbledhja e regjistrave dështoi</string>
     <string name="toast_log_save_fail">Ruajtja e regjistrave dështoi</string>

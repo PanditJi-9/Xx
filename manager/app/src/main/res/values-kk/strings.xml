@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">Қолданбаны ашу мүмкін емес</string>
     <string name="toast_applied_refresh_rate">Таңдалған жаңарту жиілігі қолданылды</string>
     <string name="toast_applied_renderer">Қолданылды: %1$s</string>
-    <string name="toast_applying_profile">Таңдалған конфигурация схемасы қолданылуда</string>
     <string name="toast_install_fail">Орнату сәтсіз аяқталды: %1$s</string>
     <string name="toast_log_gather_fail">Журналдарды жинау сәтсіз аяқталды</string>
     <string name="toast_log_save_fail">Журналды сақтау сәтсіз аяқталды</string>

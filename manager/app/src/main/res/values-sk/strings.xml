@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">Nepodarilo sa otvoriť aplikáciu</string>
     <string name="toast_applied_refresh_rate">Vybraná obnovovacia frekvencia bola aplikovaná.</string>
     <string name="toast_applied_renderer">Aplikované: %1$s</string>
-    <string name="toast_applying_profile">Aplikuje sa vybraný profil.</string>
     <string name="toast_install_fail">Inštalácia zlyhala: %1$s</string>
     <string name="toast_log_gather_fail">Zber logov zlyhal</string>
     <string name="toast_log_save_fail">Uloženie logu zlyhalo</string>

@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">باز کردن برنامه ممکن نیست</string>
     <string name="toast_applied_refresh_rate">نرخ تازه‌سازی انتخاب شده اعمال شد</string>
     <string name="toast_applied_renderer">اعمال شد: %1$s</string>
-    <string name="toast_applying_profile">در حال اعمال پیکربندی انتخاب شده</string>
     <string name="toast_install_fail">نصب ناموفق: %1$s</string>
     <string name="toast_log_gather_fail">جمع‌آوری لاگ ناموفق بود</string>
     <string name="toast_log_save_fail">ذخیره لاگ ناموفق بود</string>

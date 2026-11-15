@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">לא ניתן לפתוח אפליקציה</string>
     <string name="toast_applied_refresh_rate">קצב הרענון שנבחר הוחל</string>
     <string name="toast_applied_renderer">הוחל: %1$s</string>
-    <string name="toast_applying_profile">מיישם תצורה נבחרת</string>
     <string name="toast_install_fail">התקנה נכשלה: %1$s</string>
     <string name="toast_log_gather_fail">איסוף יומנים נכשל</string>
     <string name="toast_log_save_fail">שמירת יומנים נכשלה</string>

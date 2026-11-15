@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">এপ খোলিব নোৱাৰি</string>
     <string name="toast_applied_refresh_rate">নিৰ্বাচিত ৰিফ্ৰেশ্ব ৰেট প্ৰয়োগ কৰা হৈছে</string>
     <string name="toast_applied_renderer">প্ৰয়োগ কৰা হৈছে: %1$s</string>
-    <string name="toast_applying_profile">নিৰ্বাচিত কনফিগাৰেচন প্ৰয়োগ কৰি আছে</string>
     <string name="toast_install_fail">ইনষ্টল বিফল: %1$s</string>
     <string name="toast_log_gather_fail">লগ সংগ্ৰহ বিফল</string>
     <string name="toast_log_save_fail">লগ সংৰক্ষণ বিফল</string>

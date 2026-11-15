@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">ایپ کھولنے میں ناکامی</string>
     <string name="toast_applied_refresh_rate">منتخب ریفریش ریٹ لاگو ہو گیا</string>
     <string name="toast_applied_renderer">لاگو ہوا: %1$s</string>
-    <string name="toast_applying_profile">منتخب پروفائل لاگو ہو رہا ہے</string>
     <string name="toast_install_fail">انسٹالیشن ناکام: %1$s</string>
     <string name="toast_log_gather_fail">لاگ جمع کرنے میں ناکامی</string>
     <string name="toast_log_save_fail">لاگ محفوظ کرنے میں ناکامی</string>

@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">Không thể mở ứng dụng</string>
     <string name="toast_applied_refresh_rate">Đã áp dụng tần số làm tươi đã chọn</string>
     <string name="toast_applied_renderer">Đã áp dụng: %1$s</string>
-    <string name="toast_applying_profile">Đang áp dụng cấu hình đã chọn</string>
     <string name="toast_install_fail">Cài đặt thất bại: %1$s</string>
     <string name="toast_log_gather_fail">Thu thập log thất bại</string>
     <string name="toast_log_save_fail">Lưu log thất bại</string>

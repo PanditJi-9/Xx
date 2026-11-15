@@ -84,3 +84,6 @@ Thumbs.db
 *.jks
 *.keystore
 manager/app/azenith.jks
+
+# Playwright MCP proof artefacts (skill tooling, never shipped)
+.playwright-mcp/

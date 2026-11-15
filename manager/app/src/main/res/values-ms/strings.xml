@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">Tidak boleh membuka aplikasi</string>
     <string name="toast_applied_refresh_rate">Kadar segar semula yang dipilih telah digunakan</string>
     <string name="toast_applied_renderer">Digunakan: %1$s</string>
-    <string name="toast_applying_profile">Sedang menggunakan profil yang dipilih</string>
     <string name="toast_install_fail">Pemasangan gagal: %1$s</string>
     <string name="toast_log_gather_fail">Gagal mengumpul log</string>
     <string name="toast_log_save_fail">Gagal menyimpan log</string>

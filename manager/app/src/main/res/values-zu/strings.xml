@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">Akukwazanga ukuvula isicelo</string>
     <string name="toast_applied_refresh_rate">Izinga lokuvuselela elifakiwe selisetshenzisiwe</string>
     <string name="toast_applied_renderer">Kusetshenzisiwe: %1$s</string>
-    <string name="toast_applying_profile">Kusetshenziswa uhlelo olukhethiwe</string>
     <string name="toast_install_fail">Ukufaka kuhlulekile: %1$s</string>
     <string name="toast_log_gather_fail">Ukuqoqa amalogi kuhlulekile</string>
     <string name="toast_log_save_fail">Ukugcina i-log kuhlulekile</string>

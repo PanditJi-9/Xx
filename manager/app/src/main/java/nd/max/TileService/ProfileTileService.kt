@@ -18,11 +18,11 @@ package nd.max.TileService
 
 import nd.max.MaxManagerProps
 
-import android.app.AlertDialog
+import android.app.PendingIntent
+import android.content.Intent
+import android.os.Build
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
-import android.widget.Toast
-import com.topjohnwu.superuser.Shell
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -38,8 +38,13 @@ class ProfileTileService : TileService() {
     private val serviceScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     companion object {
+        /**
+         * نيّة «افتح شاشة الملفّ» من الشبكة — يقرؤها `MainActivity` ويحوّلها إلى مسار `now`،
+         * فالمستخدم يبدّل من الشاشة التي تملك القرار لا من نافذة مالكها خدمة.
+         */
+        const val ACTION_OPEN_PROFILE = "nd.max.action.OPEN_PROFILE"
+
         private const val AI_PROP = MaxManagerProps.Conf.AI_ENABLED
-        private val DAEMON_BIN: String get() = nd.max.MaxManagerPaths.serviceBin()
     }
 
     override fun onCreate() {
@@ -59,72 +64,42 @@ class ProfileTileService : TileService() {
         serviceScope.cancel()
     }
 
+    /**
+     * الضغط يفتح شاشة الملفّ داخل التطبيق — ولا يُطبَّق ملفّ من هنا إطلاقًا.
+     *
+     * **والعطب الذي أُزيل (بلاغ المالك ٢٠٢٦-١١-١٥):** كانت الشبكة تُنشئ `AlertDialog` وتُظهره بـ
+     * `showDialog`، أي **نافذة مالكها خدمة** لا نشاط؛ وهذا مسار مهجور منذ أندرويد ١٠، وبقيّة نافذة
+     * بلا رمز صالح تُترك فوق الواجهة فتتجمّد. وكان الضغط يستدعي `ProfileApplier.apply` مباشرةً،
+     * وهو **مالك ثانٍ** للقرار يتجاوز `maxAiEngine.requestManualProfile` وبوّابته، ويحتمل انتظارًا
+     * غير محدود في صفّ الجذر (`RootCommands.commandLock`) — وأيّ منهما كافٍ لتسمّر التطبيق.
+     *
+     * فصار للقرار مالك واحد: تُفتح شاشة `now` حيث `HomeViewmodel.applyProfile` ← المحرّك،
+     * بلا تنفيذ جذريّ ولا نافذة في هذه الخدمة. والشبكة تبقى **قارئة** فقط في [updateTileState].
+     */
     override fun onClick() {
         super.onClick()
-        val tile = qsTile ?: return
+        openProfileScreen()
+    }
 
-        serviceScope.launch {
-            val aiEnabled = PropertyUtils.get(AI_PROP, "0")
-            val isRooted = RootUtils.isRootGranted()
-
-            withContext(Dispatchers.Main) {
-                if (aiEnabled != "0" || tile.state == Tile.STATE_UNAVAILABLE || !isRooted) {
-                    return@withContext
-                }
-                showProfileDialog()
+    private fun openProfileScreen() {
+        val intent = Intent(this, nd.max.MainActivity::class.java)
+            .setAction(ACTION_OPEN_PROFILE)
+            .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        runCatching {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                // من أندرويد ١٤ لا تُفتح واجهة من شبكة بنيّة مباشرة: الوسيط `PendingIntent`.
+                startActivityAndCollapse(
+                    PendingIntent.getActivity(
+                        this,
+                        0,
+                        intent,
+                        PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+                    )
+                )
+            } else {
+                @Suppress("DEPRECATION")
+                startActivityAndCollapse(intent)
             }
-        }
-    }
-
-    private fun showProfileDialog() {
-        val themedContext = android.view.ContextThemeWrapper(this, android.R.style.Theme_DeviceDefault_DayNight)
-        val inflater = android.view.LayoutInflater.from(themedContext)
-        val view = inflater.inflate(R.layout.dialog_profile_selector, null)
-
-        val dialog = AlertDialog.Builder(themedContext, android.R.style.Theme_DeviceDefault_Dialog_Alert)
-            .setView(view)
-            .create()
-
-        dialog.window?.setBackgroundDrawable(android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT))
-
-        view.findViewById<android.view.View>(R.id.item_performance).setOnClickListener {
-            showApplyingToast()
-            applyProfile("1")
-            dialog.dismiss()
-        }
-        view.findViewById<android.view.View>(R.id.item_balanced).setOnClickListener {
-            showApplyingToast()
-            applyProfile("2")
-            dialog.dismiss()
-        }
-        view.findViewById<android.view.View>(R.id.item_eco).setOnClickListener {
-            showApplyingToast()
-            applyProfile("3")
-            dialog.dismiss()
-        }
-
-        showDialog(dialog)
-
-        dialog.window?.let { window ->
-            val layoutParams = window.attributes
-            val displayMetrics = resources.displayMetrics
-            layoutParams.width = (displayMetrics.widthPixels * 0.85).toInt()
-            window.attributes = layoutParams
-        }
-    }
-
-    private fun showApplyingToast() {
-        val message = getString(R.string.toast_applying_profile)
-        Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT).show()
-    }
-
-    private fun applyProfile(nextProfile: String) {
-        // مسار ProfileApplier الموحد (نفس تشخيصاته وسجلاته). البلاطة
-        // نفسها ترفض الفتح أثناء تفعيل AI — البوابة في الوحدة ترفض
-        // أي مسار يدوي متبقٍ، فلا يتصارع مالكان.
-        serviceScope.launch {
-            nd.max.core.hardware.ProfileApplier.apply(nextProfile)
-            withContext(Dispatchers.Main) { updateTileState() }
         }
     }
 

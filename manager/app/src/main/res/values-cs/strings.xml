@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">Nelze otevřít aplikaci</string>
     <string name="toast_applied_refresh_rate">Nastavená obnovovací frekvence byla použita.</string>
     <string name="toast_applied_renderer">Použito: %1$s</string>
-    <string name="toast_applying_profile">Probíhá aplikace vybraného profilu.</string>
     <string name="toast_install_fail">Instalace selhala: %1$s</string>
     <string name="toast_log_gather_fail">Shromáždění protokolů selhalo.</string>
     <string name="toast_log_save_fail">Uložení protokolu selhalo.</string>

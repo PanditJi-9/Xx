@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">Αδυναμία ανοίγματος εφαρμογής</string>
     <string name="toast_applied_refresh_rate">Εφαρμόστηκε ο επιλεγμένος ρυθμός ανανέωσης</string>
     <string name="toast_applied_renderer">Εφαρμόστηκε: %1$s</string>
-    <string name="toast_applying_profile">Εφαρμογή επιλεγμένου προφίλ</string>
     <string name="toast_install_fail">Αποτυχία εγκατάστασης: %1$s</string>
     <string name="toast_log_gather_fail">Αποτυχία συλλογής καταγραφών</string>
     <string name="toast_log_save_fail">Αποτυχία αποθήκευσης καταγραφών</string>

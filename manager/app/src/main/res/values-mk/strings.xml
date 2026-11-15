@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">Не може да се отвори апликацијата</string>
     <string name="toast_applied_refresh_rate">Избраната стапка на освежување е применета</string>
     <string name="toast_applied_renderer">Применето: %1$s</string>
-    <string name="toast_applying_profile">Се применува избраниот профил</string>
     <string name="toast_install_fail">Инсталацијата не успеа: %1$s</string>
     <string name="toast_log_gather_fail">Неуспешно собирање на дневници</string>
     <string name="toast_log_save_fail">Неуспешно зачувување на дневникот</string>

@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">មិនអាចបើកកម្មវិធីបានទេ</string>
     <string name="toast_applied_refresh_rate">បានអនុវត្តអត្រាធ្វើឱ្យស្រស់ដែលបានជ្រើសរើស</string>
     <string name="toast_applied_renderer">បានអនុវត្ត៖ %1$s</string>
-    <string name="toast_applying_profile">កំពុងអនុវត្តគម្រោងដែលបានជ្រើសរើស</string>
     <string name="toast_install_fail">ការដំឡើងបរាជ័យ៖ %1$s</string>
     <string name="toast_log_gather_fail">ការប្រមូលកំណត់ហេតុបរាជ័យ</string>
     <string name="toast_log_save_fail">ការរក្សាទុកកំណត់ហេតុបរាជ័យ</string>

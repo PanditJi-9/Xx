@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">Kan inte öppna appen</string>
     <string name="toast_applied_refresh_rate">Vald uppdateringsfrekvens tillämpad</string>
     <string name="toast_applied_renderer">Tillämpad: %1$s</string>
-    <string name="toast_applying_profile">Tillämpar vald profil</string>
     <string name="toast_install_fail">Installation misslyckades: %1$s</string>
     <string name="toast_log_gather_fail">Misslyckades med att samla in logg</string>
     <string name="toast_log_save_fail">Misslyckades med att spara logg</string>

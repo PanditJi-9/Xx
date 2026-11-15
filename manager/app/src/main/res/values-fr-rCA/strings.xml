@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">Impossible d\'ouvrir l\'application</string>
     <string name="toast_applied_refresh_rate">Fréquence de rafraîchissement appliquée</string>
     <string name="toast_applied_renderer">Appliqué : %1$s</string>
-    <string name="toast_applying_profile">Application du profil sélectionné</string>
     <string name="toast_install_fail">Échec de l\'installation : %1$s</string>
     <string name="toast_log_gather_fail">Échec de la collecte des journaux</string>
     <string name="toast_log_save_fail">Échec de l\'enregistrement du journal</string>

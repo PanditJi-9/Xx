@@ -104,6 +104,7 @@ import nd.max.ui.theme.ThemeStudio
 import nd.max.ui.util.*
 import nd.max.widget.core.WidgetIntents
 import nd.max.TileService.FreezeManagerTileService
+import nd.max.TileService.ProfileTileService
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     /**
@@ -134,19 +135,24 @@ class MainActivity : ComponentActivity() {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
             window.isNavigationBarContrastEnforced = false
         }
-        val fromTileType = if (intent.action == "android.service.quicksettings.action.QS_TILE_PREFERENCES") {
-            val component = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-                intent.getParcelableExtra(Intent.EXTRA_COMPONENT_NAME, android.content.ComponentName::class.java)
-            } else {
-                @Suppress("DEPRECATION")
-                intent.getParcelableExtra(Intent.EXTRA_COMPONENT_NAME)
+        val fromTileType = when {
+            // شبكة الملفّ صارت تفتح الشاشة بالضغط العاديّ لا بالضغط المطوّل فقط.
+            intent.action == ProfileTileService.ACTION_OPEN_PROFILE -> "profile"
+            intent.action == "android.service.quicksettings.action.QS_TILE_PREFERENCES" -> {
+                val component = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+                    intent.getParcelableExtra(Intent.EXTRA_COMPONENT_NAME, android.content.ComponentName::class.java)
+                } else {
+                    @Suppress("DEPRECATION")
+                    intent.getParcelableExtra(Intent.EXTRA_COMPONENT_NAME)
+                }
+                when (component?.className) {
+                    "nd.max.TileService.BypassChgTileService" -> "bypass"
+                    "nd.max.TileService.ProfileTileService" -> "profile"
+                    else -> null
+                }
             }
-            when (component?.className) {
-                "nd.max.TileService.BypassChgTileService" -> "bypass"
-                "nd.max.TileService.ProfileTileService" -> "profile"
-                else -> null
-            }
-        } else null
+            else -> null
+        }
         // نيّة الودجة (WidgetKit): مسار شاشة مطلوب من الإجراء الخارجيّ — تُقرأ إلى الحالة
         // التي يقرؤها الملاح (والتي يحدّثها `onNewIntent` أيضًا فوق مهمة قائمة).
         // **إطلاق فعليّ فقط (`savedInstanceState == null`)**: النشاط بلا `configChanges` فيُعاد إنشاؤه عند
@@ -182,6 +188,12 @@ class MainActivity : ComponentActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
+        // شبكة الملفّ على مهمة قائمة (`singleTask`) لا تمرّ بـ`onCreate` — وكانت تُهمَل.
+        if (intent.action == ProfileTileService.ACTION_OPEN_PROFILE) {
+            widgetRouteState.value = WidgetIntents.ROUTE_PROFILE
+            widgetRouteSeq.intValue++
+            return
+        }
         val route = intent.getStringExtra(WidgetIntents.EXTRA_OPEN_ROUTE)
             ?: freezeTilePreferencesRoute(intent)
             ?: return
@@ -296,6 +308,8 @@ fun MainScreen(fromTileType: String? = null, widgetRoute: String? = null, widget
     // لم تتغيّر (ودجة → نفس الشاشة بعد رجوع المستخدم).
     LaunchedEffect(widgetRoute, widgetRouteSeq) {
         val target = when (widgetRoute) {
+            // شبكة الملفّ: شاشة `now` هي التي تملك مبدّل الملفّ (`HomeViewmodel.applyProfile`).
+            WidgetIntents.ROUTE_PROFILE -> MaxDestination.Now.route
             WidgetIntents.ROUTE_STORAGE -> MaxDestination.StorageCare.route
             WidgetIntents.ROUTE_CONTROL -> MaxDestination.Control.route
             WidgetIntents.ROUTE_ISLAND -> MaxDestination.DynamicIsland.route

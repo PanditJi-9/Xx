@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">Aplikacije ni mogoče odpreti</string>
     <string name="toast_applied_refresh_rate">Izbrana hitrost osveževanja je uporabljena</string>
     <string name="toast_applied_renderer">Uporabljeno: %1$s</string>
-    <string name="toast_applying_profile">Uporabljam izbrani profil</string>
     <string name="toast_install_fail">Namestitev ni uspela: %1$s</string>
     <string name="toast_log_gather_fail">Zbiranje dnevnikov ni uspelo</string>
     <string name="toast_log_save_fail">Shranjevanje dnevnika ni uspelo</string>

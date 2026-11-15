@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">Не може да се отвори приложението</string>
     <string name="toast_applied_refresh_rate">Избраната честота на опресняване е приложена</string>
     <string name="toast_applied_renderer">Приложено: %1$s</string>
-    <string name="toast_applying_profile">Прилагане на избрания профил</string>
     <string name="toast_install_fail">Неуспешна инсталация: %1$s</string>
     <string name="toast_log_gather_fail">Неуспешно събиране на логове</string>
     <string name="toast_log_save_fail">Неуспешно запазване на лог</string>

@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">Nem sikerült megnyitni az alkalmazást</string>
     <string name="toast_applied_refresh_rate">Kiválasztott frissítési sebesség alkalmazva</string>
     <string name="toast_applied_renderer">Alkalmazva: %1$s</string>
-    <string name="toast_applying_profile">Kiválasztott profil alkalmazása</string>
     <string name="toast_install_fail">Telepítés sikertelen: %1$s</string>
     <string name="toast_log_gather_fail">Naplógyűjtés sikertelen</string>
     <string name="toast_log_save_fail">Napló mentése sikertelen</string>

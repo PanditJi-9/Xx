@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">Kan app niet openen</string>
     <string name="toast_applied_refresh_rate">Geselecteerde verversingsfrequentie toegepast</string>
     <string name="toast_applied_renderer">Toegepast: %1$s</string>
-    <string name="toast_applying_profile">Geselecteerd profiel toepassen</string>
     <string name="toast_install_fail">Installatie mislukt: %1$s</string>
     <string name="toast_log_gather_fail">Logboeken verzamelen mislukt</string>
     <string name="toast_log_save_fail">Logboeken opslaan mislukt</string>

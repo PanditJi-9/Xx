@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">Nevar atvērt lietotni</string>
     <string name="toast_applied_refresh_rate">Izvēlētā atsvaidzes frekvence ir lietota</string>
     <string name="toast_applied_renderer">Lietots: %1$s</string>
-    <string name="toast_applying_profile">Tiek lietots izvēlētais profils</string>
     <string name="toast_install_fail">Instalēšana neizdevās: %1$s</string>
     <string name="toast_log_gather_fail">Neizdevās savākt žurnālus</string>
     <string name="toast_log_save_fail">Neizdevās saglabāt žurnālu</string>

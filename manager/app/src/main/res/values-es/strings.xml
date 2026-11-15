@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">No se puede abrir la aplicación</string>
     <string name="toast_applied_refresh_rate">Tasa de refresco seleccionada aplicada</string>
     <string name="toast_applied_renderer">Aplicado: %1$s</string>
-    <string name="toast_applying_profile">Aplicando el perfil seleccionado</string>
     <string name="toast_install_fail">Error de instalación: %1$s</string>
     <string name="toast_log_gather_fail">Error al recopilar registros</string>
     <string name="toast_log_save_fail">Error al guardar registros</string>

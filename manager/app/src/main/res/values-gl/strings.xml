@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">Non se pode abrir a aplicación</string>
     <string name="toast_applied_refresh_rate">Taxa de actualización aplicada</string>
     <string name="toast_applied_renderer">Aplicado: %1$s</string>
-    <string name="toast_applying_profile">Aplicando o perfil seleccionado</string>
     <string name="toast_install_fail">Fallo na instalación: %1$s</string>
     <string name="toast_log_gather_fail">Fallo ao recoller rexistros</string>
     <string name="toast_log_save_fail">Fallo ao gardar rexistro</string>

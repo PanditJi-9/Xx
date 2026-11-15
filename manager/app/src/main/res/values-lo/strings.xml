@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">ບໍ່ສາມາດເປີດແອັບ</string>
     <string name="toast_applied_refresh_rate">ນຳໃຊ້ອັດຕາການຣີເຟຣຊທີ່ເລືອກແລ້ວ</string>
     <string name="toast_applied_renderer">ນຳໃຊ້: %1$s</string>
-    <string name="toast_applying_profile">ກຳລັງນຳໃຊ້ໂປຣໄຟລ໌ທີ່ເລືອກ</string>
     <string name="toast_install_fail">ຕິດຕັ້ງລົ້ມເຫຼວ: %1$s</string>
     <string name="toast_log_gather_fail">ເກັບກຳຂໍ້ມູນ log ລົ້ມເຫຼວ</string>
     <string name="toast_log_save_fail">ບັນທຶກ log ລົ້ມເຫຼວ</string>

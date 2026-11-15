@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">Հնարավոր չէ բացել հավելվածը</string>
     <string name="toast_applied_refresh_rate">Ընտրված թարմացման հաճախականությունը կիրառվել է</string>
     <string name="toast_applied_renderer">Կիրառվել է՝ %1$s</string>
-    <string name="toast_applying_profile">Կիրառվում է ընտրված պրոֆիլը</string>
     <string name="toast_install_fail">Տեղադրումը ձախողվեց՝ %1$s</string>
     <string name="toast_log_gather_fail">Լոգերի հավաքումը ձախողվեց</string>
     <string name="toast_log_save_fail">Լոգի պահպանումը ձախողվեց</string>

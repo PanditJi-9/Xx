@@ -327,7 +327,6 @@
     <string name="toast_app_launch_fail">აპლიკაციის გახსნა შეუძლებელია</string>
     <string name="toast_applied_refresh_rate">არჩეული განახლების სიხშირე გამოყენებულია</string>
     <string name="toast_applied_renderer">გამოყენებულია: %1$s</string>
-    <string name="toast_applying_profile">არჩეული კონფიგურაციის გამოყენება მიმდინარეობს</string>
     <string name="toast_install_fail">დაყენება ვერ მოხერხდა: %1$s</string>
     <string name="toast_log_gather_fail">ჟურნალის შეგროვება ვერ მოხერხდა</string>
     <string name="toast_log_save_fail">ჟურნალის შენახვა ვერ მოხერხდა</string>
