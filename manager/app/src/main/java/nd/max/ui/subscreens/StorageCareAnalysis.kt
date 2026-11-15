@@ -22,10 +22,12 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
@@ -37,6 +39,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import nd.max.R
 import nd.max.ui.component.NeuralCaption
@@ -60,6 +63,15 @@ private const val FOLDER_ROWS = 6
 
 /** كم ملفًّا معروضًا في «أكبر الملفات» قبل طيّ الباقي — ستة، والبقية في شاشة التفاصيل. */
 private const val LARGEST_ROWS = 6
+
+/** كم بلاطة في الخريطة قبل طيّ الباقي في بلاطة واحدة «البقية» — ستة تُقرأ بنظرة. */
+private const val MAP_TILES = 6
+
+/** ارتفاع الخريطة ثابت: خريطةٌ لا يعرف قارئها أين تنتهي ليست خريطة. */
+private val MapHeight = 132.dp
+
+/** الفاصل بين سطرَي البلاطة — أصغر من `MaxSpace.xs` عمدًا: البلاطة ضيّقة. */
+private val MapLineGap = 1.dp
 
 /**
  * قسم التحليل: مسح واحد، وتركيب مشهود، وأكبر المجلدات والملفات — وباب إلى التفاصيل الكاملة.
@@ -140,6 +152,12 @@ internal fun AnalysisSection(
                     for (bucket in ranked) {
                         BucketRow(bucket = bucket, total = result.measuredBytes, accent = accent)
                     }
+                    FoldersMap(
+                        scan = state.folderScan,
+                        failed = state.foldersFailed,
+                        accent = accent,
+                        onCopyPath = onCopyPath,
+                    )
                     FoldersCard(
                         scan = state.folderScan,
                         failed = state.foldersFailed,
@@ -280,6 +298,144 @@ internal fun FoldersCard(
         }
     }
 }
+
+/**
+ * خريطة المساحة — **الجواب البصريّ على «أين ذهبت المساحة»**: مستطيل مساحته بنسبة حجمه.
+ *
+ * `FoldersCard` تحته يقول الأرقام بالترتيب؛ وهذه تقول **الشكل** قبل الأرقام: مجلد واحد يملأ
+ * نصف الخريطة يُرى قبل أن يُقرأ. وهي **تحسين للقائم لا سطح ثانٍ** (§0.5): تقرأ `FolderScan`
+ * نفسها التي يقرأها `FoldersCard`، ولا تضيف مسحًا ولا مسارًا ولا رقمًا.
+ *
+ * والتقطيع بسيط عن قصد: عمودان يتقاربان في الحجم ثم بلاطات بأوزان نسبتها، فالقارئ يرى
+ * النسبة قبل أن يحسبها. ولا `Canvas`: هذه أشكال تخطيط لا رسم، فتُبنى بما يبنيه التطبيق كلّه.
+ * واللون هنا **ترتيب لا حكم** كحال `CompositionBar` — تدرّج ألفا واحد لا ألوان دلالية.
+ *
+ * وثلاث حالات تُترك بلا خريطة بدل أن تُكذب: فشل القياس، ولم يُقس بعد، ولا مجلدات — ADR-07.
+ */
+@Composable
+internal fun FoldersMap(
+    scan: FolderScan?,
+    failed: Boolean,
+    accent: Color,
+    onCopyPath: (String) -> Unit,
+) {
+    if (failed || scan == null || scan.slices.isEmpty()) return
+    val p = neuralPalette()
+    val fold = StorageScanModel.foldLargest(scan.slices, MAP_TILES)
+    // «البقية» نصّها من المورد، ويُحسب قبل البناء لأن `buildList` ليست موضعًا لنداء @Composable.
+    val restLabel = if (fold.restCount > 0) {
+        stringResource(R.string.storage_care_map_rest, fold.restCount)
+    } else {
+        null
+    }
+    val entries = buildList {
+        fold.shown.forEachIndexed { index, item ->
+            add(MapEntry(label = item.name, bytes = item.bytes, path = item.path, slot = index))
+        }
+        if (restLabel != null) {
+            add(MapEntry(label = restLabel, bytes = fold.restBytes, path = null, slot = fold.shown.size))
+        }
+    }
+    if (entries.isEmpty()) return
+    val base = entries.sumOf { it.bytes }
+    if (base <= 0L) return
+    NeuralSectionHeader(
+        title = stringResource(R.string.storage_care_map_title),
+        caption = stringResource(R.string.storage_care_map_caption),
+        accent = accent,
+    )
+    val columns = splitByWeight(entries)
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(MapHeight),
+        horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs),
+    ) {
+        columns.forEach { column ->
+            val columnBytes = column.sumOf { it.bytes }
+            Column(
+                modifier = Modifier
+                    .weight(columnBytes.toFloat().coerceAtLeast(1f))
+                    .fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(MaxSpace.xs),
+            ) {
+                column.forEach { entry ->
+                    MapTile(entry = entry, bytes = entry.bytes, base = base, accent = accent, onCopyPath = onCopyPath)
+                }
+            }
+        }
+    }
+    if (scan.unreadable > 0) {
+        NeuralCaption(
+            stringResource(R.string.storage_care_folders_unreadable, scan.unreadable),
+            color = p.warn,
+        )
+    }
+}
+
+/** بلاطة واحدة في الخريطة: مساحتها بنسبتها، واسمها وحجمها فوقها. */
+@Composable
+private fun ColumnScope.MapTile(
+    entry: MapEntry,
+    bytes: Long,
+    base: Long,
+    accent: Color,
+    onCopyPath: (String) -> Unit,
+) {
+    val p = neuralPalette()
+    val fraction = bytes.toFloat() / base.toFloat()
+    val clickable = entry.path?.let { path -> Modifier.clickable { onCopyPath(path) } } ?: Modifier
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .weight(fraction.coerceAtLeast(0.02f))
+            .clip(RoundedCornerShape(maxRadius(MaxRadius.control)))
+            .background(accent.copy(alpha = (0.90f - entry.slot * 0.11f).coerceAtLeast(0.22f)))
+            .then(clickable)
+            .padding(horizontal = MaxSpace.sm, vertical = MaxSpace.xs),
+        contentAlignment = Alignment.CenterStart,
+    ) {
+        Column(verticalArrangement = Arrangement.spacedBy(MapLineGap)) {
+            Text(
+                text = entry.label,
+                color = p.text,
+                fontSize = 12.sp,
+                lineHeight = 15.sp,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            Text(
+                text = StorageScanModel.formatBytes(bytes),
+                color = p.text,
+                fontSize = 12.sp,
+                lineHeight = 15.sp,
+                fontWeight = FontWeight.SemiBold,
+                maxLines = 1,
+            )
+        }
+    }
+}
+
+/** أقرب توزيع لعمودين بحسب الحجم — الأكبر أولًا، وكل جديد يأخذ العمود الأخفّ. */
+private fun splitByWeight(entries: List<MapEntry>): List<List<MapEntry>> {
+    val left = mutableListOf<MapEntry>()
+    val right = mutableListOf<MapEntry>()
+    var leftBytes = 0L
+    var rightBytes = 0L
+    entries.sortedByDescending { it.bytes }.forEach { entry ->
+        if (leftBytes <= rightBytes) {
+            left += entry
+            leftBytes += entry.bytes
+        } else {
+            right += entry
+            rightBytes += entry.bytes
+        }
+    }
+    return listOf(left, right).filter { it.isNotEmpty() }
+}
+
+/** بلاطة في الخريطة قبل أن تصير شكلًا: الاسم والحجم والمسار (و`null` لبلاطة «البقية»). */
+private data class MapEntry(val label: String, val bytes: Long, val path: String?, val slot: Int)
 
 /** أكبر الملفات المفردة — الاسم والمسار والمقاس، والنقر ينسخ المسار. */
 @Composable

@@ -3500,6 +3500,9 @@
     <string name="storage_care_analysis_empty">Nothing scanned yet.</string>
     <string name="storage_care_folders_title">Top folders</string>
     <string name="storage_care_folders_caption">First level under shared storage; Android is opened one level.</string>
+    <string name="storage_care_map_title">Space map</string>
+    <string name="storage_care_map_caption">Each tile\'s area is the space it actually holds, at the first level under shared storage. One colour ramp orders the tiles; it is not a judgement of them.</string>
+    <string name="storage_care_map_rest">%1$d more folders</string>
     <string name="storage_care_folders_failed">Folders could not be measured.</string>
     <string name="storage_care_folders_empty">No folders to show.</string>
     <string name="storage_care_folders_more">%1$d more folders · %2$s</string>

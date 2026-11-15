@@ -3446,6 +3446,9 @@
     <string name="storage_care_analysis_empty">لم يُمسح شيء بعد.</string>
     <string name="storage_care_folders_title">أكبر المجلدات</string>
     <string name="storage_care_folders_caption">الدرجة الأولى تحت التخزين المشترك، وAndroid تُفتح درجةً.</string>
+    <string name="storage_care_map_title">خريطة المساحة</string>
+    <string name="storage_care_map_caption">مساحة كل بلاطة هي ما تشغله فعلًا في الدرجة الأولى تحت التخزين المشترك. تدرّج لونيّ واحد يرتّب البلاطات، ولا يحكم عليها.</string>
+    <string name="storage_care_map_rest">%1$d مجلدات أخرى</string>
     <string name="storage_care_folders_failed">تعذّر قياس المجلدات.</string>
     <string name="storage_care_folders_empty">لا مجلدات لعرضها.</string>
     <string name="storage_care_folders_more">%1$d مجلدات أخرى · %2$s</string>
