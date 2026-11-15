@@ -323,7 +323,16 @@ object PanelScreenRecorder {
     suspend fun start() {
         PrivilegedShell.exec(
             "mkdir -p $DIR && touch $FLAG && " +
-                "((while [ -f $FLAG ]; do screenrecord --time-limit 180 $DIR/Max_\$(date +%Y%m%d_%H%M%S).mp4 " +
+                // الجودة لم تكن مضبوطة أصلًا: أعلام `screenrecord` الافتراضية (٤ ميغابت/ث، ٣٠ إطارًا، بلا
+                // `--size`) تُنتج ملفًّا مهروسًا على لوحة ١٤٤٠×٣١٢٠. فنطلب مقاس الشاشة الفعليّ من `wm size`
+                // مع ٢٤ ميغابت/ث و٦٠ إطارًا، ثم ننزل درجةً درجةً إن رفض المرمّز (−fps ثم بلا --size) فلا
+                // ينتهي الأمر بلا تسجيل، وآخر محاولة هي سلوك اليوم نفسه.
+                "sz=\$(wm size | sed -n 's/.*: //p' | tail -1); " +
+                "((while [ -f $FLAG ]; do " +
+                "out=$DIR/Max_\$(date +%Y%m%d_%H%M%S).mp4; " +
+                "screenrecord --time-limit 180 --bit-rate 24000000 --fps 60 \${sz:+--size \$sz} \$out " +
+                "|| screenrecord --time-limit 180 --bit-rate 24000000 \${sz:+--size \$sz} \$out " +
+                "|| screenrecord --time-limit 180 \$out " +
                 "|| { rm -f $FLAG; break; }; done) >/dev/null 2>&1 &)"
         )
     }

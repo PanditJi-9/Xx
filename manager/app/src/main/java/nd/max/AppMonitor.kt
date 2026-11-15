@@ -2998,64 +2998,14 @@ object AppMonitor {
     }
 
     private fun updateActiveAppNotification(pkg: String, focusedApp: String) {
+        // لا إشعار من هذا الموضع بعد اليوم: `systemContext` سياق حزمة «android» (uid النظام)،
+        // فلا تُسجَّل قناةٌ باسم تلك الحزمة ويُسقط الإطار الإشعار ويطبع تحذير المطوّر الذي رآه
+        // المستخدم — أي أن الإشعار لم يكن يصل أصلًا. القناة والنشر من عملية التطبيق وحدها.
         runCatching {
-            val context = systemContext ?: return@runCatching
-            val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as? AndroidNotificationManager ?: return@runCatching
-            val channelId = "maxmanager_per_app"
-            nm.createNotificationChannel(NotificationChannel(channelId, "Per-App Manager", AndroidNotificationManager.IMPORTANCE_LOW))
-            // نداء بلا معرّف (تحديث من خارج المقدمة) يُبقي آخر معرّف قيس لجلسة هذا التطبيق —
-            // كتابةُ PID تطبيقٍ آخر في إشعار هذا التطبيق كانت ستكون رقمًا كاذبًا.
-            val pid = if (focusedApp.isBlank()) {
-                notifiedPid
-            } else {
-                focusedApp.substringAfter(" ", "0").substringBefore(" ").also { notifiedPid = it }
-            }
-            val profile = readAppConfigField(pkg, "gpu_profile").ifBlank { "default" }
-            val thermal = readAppConfigField(pkg, "thermal_profile").ifBlank { "default" }
-            val cpuGov = readAppConfigField(pkg, "cpu_governor").ifBlank { "default" }
-            val gpuGov = readAppConfigField(pkg, "gpu_governor").ifBlank { "default" }
-            val gpuFreq = readAppConfigField(pkg, "gpu_max_freq").ifBlank { "default" }
-            val gpuProfile = if (profile == "default") thermal else profile
-            val appLabel = getAppName(pkg).ifBlank { pkg }
-            val liveCpuGov = shellRead("cat /sys/devices/system/cpu/cpufreq/policy0/scaling_governor 2>/dev/null").ifBlank { "N/A" }
-            val liveGpuGov = savedGpuNode.takeIf { it.isNotBlank() }
-                ?.let(GpuHardwareBackend::refresh)?.governor.orEmpty().ifBlank { "N/A" }
-            // حين يعمل Max AI يُذكر في الإشعار (المطلوب حرفيًا: «يكفي ذكر أن Max AI يعمل»)،
-            // وحين يكون مطفأً يبقى السطر الطويل يقول ذلك — والسطر القصير لا يزيد ضجيجًا
-            // بما لا يفعله أحد: الإشعار المطويّ يحمل ما يعمل، لا ما هو متوقف.
-            //
-            // وكل نصّ يُقرأ وحده: فشل حقل يُسقط سطره وحده (ويُسمَّى في السجل) لا الإشعار كله.
-            // والمطفأ له بديل حرفيّ أخير — لأن المورد نفسه قد يكون المعطوب، فلا بديل بالترجمة
-            // حينها؛ والعامِل إن تعذّر رسمه سقط سطره وحده ولا يُدَّعى «off» وهو يعمل (ADR-07).
-            val aiNotice = maxAiNotice()
-            val aiLine = if (aiNotice == null) {
-                notifText(pkg, "notif_maxai_off") { it.getString(R.string.notif_maxai_off) }
-                    ?: "Max AI: off"
-            } else {
-                notifText(pkg, "notif_maxai_running") { context -> ActiveObjectiveNotice.line(context, aiNotice) }
-            }
-            val body = "PID: $pid\nThermal/GPU: $gpuProfile\nCPU Governor: $cpuGov (live: $liveCpuGov)\n" +
-                "GPU Governor: $gpuGov (live: $liveGpuGov)\nGPU Frequency: $gpuFreq\n" +
-                (aiLine ?: "")
-            val intent = Intent().setClassName("nd.max", "nd.max.MainActivity")
-            val pi = PendingIntent.getActivity(context, 2409, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
-            val builder = Notification.Builder(context, channelId)
-                .setSmallIcon(android.R.drawable.stat_notify_sync_noanim)
-                .setContentTitle("MaxManager • $appLabel")
-                .setContentText(
-                    "Per-App active • PID $pid • GPU $gpuProfile" +
-                        (aiLine?.let { " • $it" } ?: ""),
-                )
-                .setStyle(Notification.BigTextStyle().bigText(body))
-                .setOngoing(true)
-                .setOnlyAlertOnce(true)
-                .setContentIntent(pi)
-            nm.notify(2409, builder.build())
-            // ما عُرض للتوّ هو مرجع الدورة التالية: أي فرق فيه يعيد البناء فورًا.
             notifiedPkg = pkg
             notifiedAiSignature = aiSignature()
             notifiedConfigModified = appListModified()
-        }.onFailure { AppMonitorLogger.e("EVENT=PERAPP_NOTIFICATION_FAILED pkg=$pkg sw=$currentSwitchId", it) }
+        }.onFailure { AppMonitorLogger.e("EVENT=PERAPP_NOTIFICATION_SKIPPED pkg=$pkg sw=$currentSwitchId", it) }
     }
 
     /** بصمة حالة Max AI كما تُعرض في الإشعار (تشغيل/تفضيل/هدف فاعل منشور) — وفرقها يُعيد بناء الإشعار. */
