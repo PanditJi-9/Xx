@@ -53,6 +53,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import nd.max.ui.design.MaxRadius
 import nd.max.R
 import nd.max.core.gamespace.GameApp
 import nd.max.ui.component.AppIconImage
@@ -251,7 +252,7 @@ internal fun StagePortrait(
         Box(Modifier.fillMaxWidth().height(PortraitHeroHeight)) {
             StageHeroBackdrop(
                 game = data.selected,
-                modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(28.dp))
+                modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(MaxRadius.sheet))
             )
             if (data.games.isEmpty()) {
                 EmptyHero(
@@ -327,7 +328,7 @@ internal fun StagePortrait(
 
 @Composable
 private fun PortraitShelfItem(game: GameApp, selected: Boolean, onClick: () -> Unit) {
-    val shape = RoundedCornerShape(20.dp)
+    val shape = RoundedCornerShape(MaxRadius.deck)
     Column(
         modifier = Modifier
             .width(84.dp)
@@ -365,7 +366,7 @@ private fun PortraitShelfItem(game: GameApp, selected: Boolean, onClick: () -> U
 @Composable
 private fun PortraitBase(title: String, detail: String, percent: Int, onOpen: () -> Unit) {
     val target = percent.coerceIn(0, 100)
-    val shape = RoundedCornerShape(20.dp)
+    val shape = RoundedCornerShape(MaxRadius.deck)
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -415,7 +416,7 @@ private fun PortraitBase(title: String, detail: String, percent: Int, onOpen: ()
             Modifier
                 .fillMaxWidth()
                 .height(6.dp)
-                .clip(RoundedCornerShape(3.dp))
+                .clip(RoundedCornerShape(MaxRadius.tick))
                 .background(Color.White.copy(alpha = 0.08f))
         ) {
             Box(
