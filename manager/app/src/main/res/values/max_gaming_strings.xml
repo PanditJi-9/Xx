@@ -635,4 +635,14 @@
     <string name="gs_fps_unit">FPS</string>
     <string name="gs_memory">Memory</string>
     <string name="gs_memory_detail">%1$.1f / %2$.1f GB</string>
+
+    <!-- غلاف اللعبة: يُختار من معرض المستخدم ويُحذف من الشاشة نفسها -->
+    <string name="gs_cover_set">Choose game cover</string>
+    <string name="gs_cover_clear">Remove game cover</string>
+    <!-- لعبة معطّلة تظهر في منتقي الألعاب -->
+    <string name="gs_game_disabled">disabled</string>
+    <!-- تسجيل الشاشة: اسم قناة الإشعار، عنوانه، وزر الإيقاف -->
+    <string name="gs_recording_channel">Screen recording</string>
+    <string name="gs_recording_title">Recording in progress</string>
+    <string name="gs_recording_stop">Stop</string>
 </resources>
