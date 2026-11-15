@@ -63,4 +63,12 @@ class GameLibraryTest {
         assertEquals(VisibilityChange.HIGHER, compareVisibility(10, 12))
         assertEquals(VisibilityChange.SAME, compareVisibility(10, 10))
     }
+    // اللعبة المعطّلة في النظام (`pm disable-user`، أو Hail) تبقى في المكتبة: العطب الذي شكا منه
+    // المستخدم كان في استعلام `PackageManager` لا في التصفية هنا — فلا تُصفّى مرة ثانية في هذا الموضع.
+    @Test fun disabledGameStaysInTheLibrary() {
+        val apps = listOf(GameApp("com.a", "A", true, enabled = false), GameApp("com.b", "B", true))
+        assertEquals(listOf("com.a", "com.b"), gameLibrary(apps, emptySet()).map { it.packageName })
+        assertTrue(apps[0].detectedGame)
+        assertTrue(!apps[0].enabled)
+    }
 }

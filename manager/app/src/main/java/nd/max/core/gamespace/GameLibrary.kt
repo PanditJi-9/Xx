@@ -3,7 +3,16 @@ package nd.max.core.gamespace
 
 import nd.max.core.platform.ForegroundAppResolver
 
-data class GameApp(val packageName: String, val label: String, val detectedGame: Boolean)
+/**
+ * لعبة كما يراها النظام. و`enabled` هي حقيقة `PackageManager` لا تفضيل عندنا: لعبة عطّلها
+ * المستخدم بـ`pm disable-user` (أو بـHail) تبقى في المكتبة وتُعرض، لكنها لا تُشغَّل حتى تُفعَّل.
+ */
+data class GameApp(
+    val packageName: String,
+    val label: String,
+    val detectedGame: Boolean,
+    val enabled: Boolean = true
+)
 
 fun gameLibrary(apps: List<GameApp>, manual: Set<String>, excluded: Set<String> = emptySet()): List<GameApp> = apps
     .filter { ForegroundAppResolver.isPackageName(it.packageName) }

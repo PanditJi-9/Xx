@@ -4,18 +4,27 @@ package nd.max.core.gamespace
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
+import android.content.pm.PackageManager
 
 object GameLibraryAccess {
-    /** Caller runs on IO. No package-wide visibility permission or root needed. */
+    /**
+     * Caller runs on IO. No package-wide visibility permission or root needed.
+     *
+     * `MATCH_DISABLED_COMPONENTS` مقصودة: لعبة عطّلها المستخدم بـ`pm disable-user` (أو Hail) ليست
+     * أقلّ لعبةً، وإخفاؤها كان يجعل المكتبة تكذب على صاحبها. ولا نضيف `MATCH_UNINSTALLED_PACKAGES`:
+     * غياب الحزمة من هذه القائمة هو ما يعرّفه `orphanedPackages` كإزالة حقيقية.
+     */
     fun apps(context: Context): List<GameApp> {
         val pm = context.packageManager
         @Suppress("DEPRECATION")
-        return pm.queryIntentActivities(Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER), 0)
+        val flags = PackageManager.MATCH_DISABLED_COMPONENTS
+        @Suppress("DEPRECATION")
+        return pm.queryIntentActivities(Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER), flags)
             .map { entry ->
                 val app = entry.activityInfo.applicationInfo
                 @Suppress("DEPRECATION")
                 val game = app.category == ApplicationInfo.CATEGORY_GAME || app.flags and ApplicationInfo.FLAG_IS_GAME != 0
-                GameApp(entry.activityInfo.packageName, entry.loadLabel(pm).toString(), game)
+                GameApp(entry.activityInfo.packageName, entry.loadLabel(pm).toString(), game, app.enabled)
             }.distinctBy { it.packageName }
     }
     fun manual(context: Context): Set<String> = context.getSharedPreferences("settings", Context.MODE_PRIVATE)

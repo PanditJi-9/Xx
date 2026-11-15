@@ -55,7 +55,12 @@ import nd.max.ui.design.MaxRow
 private val GAME_PICKER_MAX_HEIGHT = 420.dp
 
 /** بطاقة واحدة في القائمة: ما يُعرض وما يُشغَّل. */
-internal data class GamePickerItem(val packageName: String, val label: String, val isGame: Boolean)
+internal data class GamePickerItem(
+    val packageName: String,
+    val label: String,
+    val isGame: Boolean,
+    val enabled: Boolean = true
+)
 
 /** ترشيح لا يغيّر الترتيب: الاسم أو الحزمة، بأي حالة أحرف. */
 internal fun filterGamePicker(apps: List<GamePickerItem>, query: String): List<GamePickerItem> {
@@ -74,7 +79,7 @@ internal fun orderGamePicker(apps: List<GameApp>): List<GamePickerItem> = apps
             .thenBy { it.label.lowercase() }
             .thenBy { it.packageName }
     )
-    .map { GamePickerItem(it.packageName, it.label, it.detectedGame) }
+    .map { GamePickerItem(it.packageName, it.label, it.detectedGame, it.enabled) }
 
 @Composable
 internal fun GamePickerSheet(
@@ -134,14 +139,14 @@ internal fun GamePickerSheet(
 
             else -> LazyColumn(modifier = Modifier.heightIn(max = GAME_PICKER_MAX_HEIGHT)) {
                 items(list, key = { it.packageName }) { app ->
+                    // الوسوم تُحسب في سياق composable قبل الصفّ: `stringResource` لا يُنادى داخل
+                    // لامدا غير composable، وتجميع النصّ خارجه أصدق من رمي الاستثناء.
+                    val gameTag = if (app.isGame) " · " + stringResource(R.string.game_sessions_pick_game_tag) else ""
+                    val disabledTag = if (app.enabled) "" else " · " + stringResource(R.string.gs_game_disabled)
                     MaxGroup {
                         MaxRow(
                             title = app.label,
-                            subtitle = if (app.isGame) {
-                                app.packageName + " · " + stringResource(R.string.game_sessions_pick_game_tag)
-                            } else {
-                                app.packageName
-                            },
+                            subtitle = app.packageName + gameTag + disabledTag,
                             icon = if (app.isGame) Icons.Rounded.SportsEsports else null,
                             onClick = { onPick(app) }
                         )

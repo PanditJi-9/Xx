@@ -269,7 +269,8 @@ internal fun StageHero(data: StageData, actions: StageActions) {
         }
     }
     PlayRow(
-        enabled = data.selected != null,
+        // لعبة معطّلة في النظام تبقى مرئية لكنها لا تُشغَّل: الزرّ يخفت بدل أن يوعد ببدء يفشل.
+        enabled = data.selected?.enabled == true,
         onLaunch = actions.onLaunch,
         onOptions = actions.onOptions,
         launching = data.launching,

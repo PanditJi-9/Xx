@@ -633,4 +633,5 @@
     <string name="gs_more_tile">More</string>
     <string name="gs_fps_title">Real-time FPS</string>
     <string name="gs_fps_unit">FPS</string>
+    <string name="gs_game_disabled">Disabled in system</string>
 </resources>
