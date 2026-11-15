@@ -633,8 +633,6 @@
     <string name="gs_more_tile">More</string>
     <string name="gs_fps_title">Real-time FPS</string>
     <string name="gs_fps_unit">FPS</string>
-    <string name="gs_game_disabled">Disabled in system</string>
-    <string name="gs_recording_channel">Screen recording</string>
-    <string name="gs_recording_title">Recording the screen</string>
-    <string name="gs_recording_stop">Stop</string>
+    <string name="gs_memory">Memory</string>
+    <string name="gs_memory_detail">%1$.1f / %2$.1f GB</string>
 </resources>

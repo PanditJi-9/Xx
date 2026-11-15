@@ -34,8 +34,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.rounded.Apps
+import androidx.compose.material.icons.rounded.History
 import androidx.compose.material.icons.rounded.MoreHoriz
 import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material.icons.rounded.Timer
 import androidx.compose.material.icons.rounded.VideogameAsset
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -57,7 +59,6 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.graphicsLayer
@@ -128,7 +129,6 @@ private val NotchHeight = 24.dp
 private val DotSize = 11.dp
 private val DotActiveWidth = 28.dp
 private val DotGap = 15.dp
-private val ArtEdge = 292.dp
 private val GlowS = 14.dp
 private val GlowL = 40.dp
 private val SeeAllGlyph = 24.dp
@@ -137,6 +137,14 @@ private val LiftDistance = 7.dp
 private val FloatDistance = 9.dp
 private val OrbitGlow = 9.dp
 private val OrbitDot = 2.6.dp
+private const val HeroStackGap = 22
+private const val HeroDotsGap = 16
+private const val HeroDotsH = 12
+private val ChipHeight = 38.dp
+private val ChipGlyph = 22.dp
+private val ChipPadStart = 14.dp
+private val ChipPadEnd = 18.dp
+private val ChipGap = 8.dp
 
 private const val ShelfMoreKey = "stage.shelf.more"
 private const val SwipeShare = 0.10f
@@ -163,9 +171,11 @@ private val CardSheen = Brush.linearGradient(
 )
 
 /**
- * البطل: لوح اللعبة العائم في الوسط (مركزه ٨٥٠،٢٥٥)، واسمها الكبير بتدرّج لافندريّ وسطر «آخر لعب» وزرّ
- * «Play Now» عند (٢٣٠،١٥٠)، والنقاط عند (٨٠٣،٤٦٣). بلا ألعاب: بطاقة فراغ تقود إلى المكتبة، لا «٠٪» ولا زرّ
- * معطّل. السحب الأفقيّ فوقه يبدّل اللعبة (الطبقة تحت الأزرار فلا تسرق نقراتها).
+ * هويّة اللعبة في وسط الشاشة: بلاطة الأيقونة الواضحة بتوهّج بلون اللعبة، فاسمها الكبير، فشارتان حقيقيّتان
+ * («آخر لعب …» و«لُعبت …» من السجلّ المحلّيّ — تسقطان إن لم يوجد سجلّ)، ثم «Play Now» ونقاط التنقّل. كلّها
+ * في كتلة واحدة تتوسّط المنطقة بين الشريط العلويّ والرفّ، فلا شيء يعلو أزرار اللوبي ولا حلقات تدور حول فراغ.
+ * الخلفيّة السينمائيّة ([StageHeroBackdrop]) هي التي تعطي الوسط حضوره. السحب الأفقيّ فوق المنطقة يبدّل اللعبة
+ * (الطبقة تحت الأزرار فلا تسرق نقراتها). بلا ألعاب: بطاقة فراغ تقود إلى المكتبة، لا «٠٪» ولا زرّ معطّل.
  */
 @Composable
 internal fun StageHero(data: StageData, actions: StageActions) {
@@ -173,15 +183,9 @@ internal fun StageHero(data: StageData, actions: StageActions) {
     val extra = LocalStageExtra.current
     val drop = LocalStageDrop.current
     val boost = stageTouchBoost()
-    // العرض الإضافيّ بين نصّ اللعبة ولوحات اليمين: البطل والنقاط يتوسّطانه.
     val room = extra - stageRightGrow(extra)
-    val shift = room / 2
-    // أسفل منطقة البطل (= أعلى الرفّ): ٥٠٩ في اللقطة المرجعيّة، ويرتفع في التخطيط المضغوط فتقترب العناصر معه.
+    // أسفل منطقة البطل (= أعلى الرفّ): ٥٠٩ في اللقطة المرجعيّة، ويرتفع في التخطيط المضغوط.
     val z = StageGeo.shelfTop(drop)
-    val zone = z - 509
-    // الأيقونة الكبيرة تصغر قليلًا حين تضيق المنطقة (٠٫٨ كحدّ أدنى) وتكبر قليلًا حين تتّسع.
-    val artK = if (drop == 0) 1f else ((z - 86) / 423f).coerceIn(0.8f, 1.08f)
-    val titleTop = maxOf(96, z - 359)
     if (data.games.size > 1) {
         StageSwipeLayer(
             onStep = { delta ->
@@ -190,95 +194,165 @@ internal fun StageHero(data: StageData, actions: StageActions) {
             modifier = Modifier.at(168, 40, 1040 + room, z - 49)
         )
     }
-    Box(
-        modifier = Modifier
-            .at(570 + shift, zone / 2 - 5, 560, 520)
-            .lobbyIntro(intro, scaleFrom = 0.88f, start = 0.05f),
-        contentAlignment = Alignment.Center
-    ) {
-        HeroArt(game = data.selected, edge = ArtEdge * artK)
-    }
-    StageDots(
-        count = data.games.size,
-        index = if (data.selected == null) -1 else data.selectedIndex,
-        modifier = Modifier
-            .at(803 + shift, z - 46, 140, 12)
-            .lobbyIntro(intro, start = 0.30f)
-    )
     if (data.games.isEmpty()) {
+        val emptyTop = maxOf(96, z - 359)
         EmptyHero(
             onOpenLibrary = actions.onOpenLibrary,
             modifier = Modifier
-                .at(230, titleTop, 340, minOf(300, z - 59 - titleTop))
+                .at(230, emptyTop, 340, minOf(300, z - 59 - emptyTop))
                 .lobbyIntro(intro, fromStart = 70.dp, start = 0.10f)
         )
         return
     }
-    Box(
+    // المنطقة: من تحت الشريط العلويّ (١٠٠) إلى فوق الرفّ بـ٢٤، ويمينها قبل عمود اللوحات بـ٤٠.
+    val left = 230
+    val right = stageBoardX(extra) - 40
+    val topY = 100
+    val zoneH = (z - 24) - topY
+    val ctaH = (58 * boost).toInt()
+    // البلاطة تتّسع مع ارتفاع المنطقة (١٢٠–١٩٠) والكتلة كلّها تتوسّطها رأسيًّا.
+    val tile = (zoneH - HeroStackGap - ctaH - HeroDotsGap - HeroDotsH).coerceIn(120, 190)
+    val blockH = tile + HeroStackGap + ctaH + HeroDotsGap + HeroDotsH
+    val rowY = topY + ((zoneH - blockH) / 2).coerceAtLeast(0)
+    val ctaY = rowY + tile + HeroStackGap
+    val dotsY = ctaY + ctaH + HeroDotsGap
+    val textX = left + tile + 28
+    val textW = right - textX
+    val played = lobbyPlayTimeText(data.stats?.totalMs ?: 0L)
+    HeroTile(
+        game = data.selected,
+        edge = tile.dp,
         modifier = Modifier
-            .at(230, titleTop, 320, z - 189 - titleTop)
+            .at(left, rowY, tile, tile)
+            .lobbyIntro(intro, scaleFrom = 0.88f, start = 0.05f)
+    )
+    Column(
+        modifier = Modifier
+            .at(textX, rowY, textW, tile)
             .lobbyIntro(intro, fromStart = 70.dp, start = 0.10f),
-        contentAlignment = Alignment.Center
+        verticalArrangement = Arrangement.Center
     ) {
         Crossfade(
             targetState = data.selected?.label.orEmpty(),
             animationSpec = tween(durationMillis = 260),
             label = "stageHeroTitle"
         ) { label ->
-            // الأسماء الطويلة تصغر خطوة أو خطوتين بدل أن تُقتطع بنقاط وهي في سطرين.
+            // الأسماء الطويلة تصغر خطوة أو خطوتين بدل أن تُقتطع، وتأخذ سطرين كحدّ أقصى.
             val size = when {
-                label.length > 26 -> 32.sp
-                label.length > 16 -> 38.sp
-                else -> 46.sp
+                label.length > 26 -> 40.sp
+                label.length > 16 -> 48.sp
+                else -> 58.sp
             }
             Text(
                 text = label,
-                maxLines = 3,
+                maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
                 style = TextStyle(
                     brush = TitleFill,
                     fontSize = size,
-                    lineHeight = size * 1.08f,
+                    lineHeight = size * 1.05f,
                     fontFamily = DisplayFontFamily,
-                    fontWeight = FontWeight.Black,
-                    textAlign = TextAlign.Center,
-                    shadow = Shadow(
-                        color = GameSpacePalette.VioletSoft.copy(alpha = 0.60f),
-                        offset = Offset.Zero,
-                        blurRadius = 30f
-                    )
+                    fontWeight = FontWeight.Black
                 )
             )
         }
-    }
-    data.tagline?.let { line ->
-        Box(
-            modifier = Modifier
-                .at(230, z - 187, 320, 36)
-                .lobbyIntro(intro, fromStart = 70.dp, start = 0.16f),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = line,
-                color = GameSpacePalette.Lavender.copy(alpha = 0.95f),
-                fontSize = 22.sp,
-                textAlign = TextAlign.Center,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
+        val lastPlayed = data.tagline
+        if (lastPlayed != null || played != null) {
+            Spacer(Modifier.height(GapM))
+            Row(horizontalArrangement = Arrangement.spacedBy(GapS)) {
+                lastPlayed?.let { HeroChip(icon = Icons.Rounded.History, text = it) }
+                played?.let { HeroChip(icon = Icons.Rounded.Timer, text = it) }
+            }
         }
     }
     PlayRow(
-        // لعبة معطّلة في النظام تبقى مرئية لكنها لا تُشغَّل: الزرّ يخفت بدل أن يوعد ببدء يفشل.
-        enabled = data.selected?.enabled == true,
+        enabled = data.selected != null,
         onLaunch = actions.onLaunch,
         onOptions = actions.onOptions,
         launching = data.launching,
         boost = boost,
         modifier = Modifier
-            .at(230, z - 118, if (boost > 1f) 430 else 340, (58 * boost).toInt())
+            .at(left, ctaY, if (boost > 1f) 430 else 340, ctaH)
             .lobbyIntro(intro, fromStart = 70.dp, start = 0.22f)
     )
+    StageDots(
+        count = data.games.size,
+        index = if (data.selected == null) -1 else data.selectedIndex,
+        modifier = Modifier
+            .at(left + 6, dotsY, 140, HeroDotsH)
+            .lobbyIntro(intro, start = 0.30f)
+    )
+}
+
+/**
+ * بلاطة الأيقونة: الأيقونة الحقيقيّة بحدّها المتدرّج ولمعتها الزجاجيّة، تطفو طفوًا خفيفًا فوق توهّج بلون اللعبة
+ * (من أيقونتها) ينتقل بنعومة مع تبديلها. لا حلقات ولا أضواء تدور: الأيقونة هي الحدث.
+ */
+@Composable
+private fun HeroTile(game: GameApp?, edge: Dp, modifier: Modifier) {
+    val clock = LocalStageClock.current
+    val tone by animateColorAsState(
+        targetValue = rememberLobbyTone(game?.packageName),
+        animationSpec = tween(durationMillis = 520),
+        label = "heroTileTone"
+    )
+    Box(
+        modifier = modifier
+            .drawBehind {
+                val reach = size.minDimension * 0.95f
+                drawCircle(
+                    brush = Brush.radialGradient(
+                        colors = listOf(tone.copy(alpha = 0.55f), Color.Transparent),
+                        center = center,
+                        radius = reach
+                    ),
+                    radius = reach,
+                    center = center
+                )
+            }
+            .graphicsLayer {
+                translationY = (stageWave(clock.value, 3, 0.25f) - 0.5f) * 2f * FloatDistance.toPx()
+            },
+        contentAlignment = Alignment.Center
+    ) {
+        Crossfade(
+            targetState = game?.packageName,
+            animationSpec = tween(durationMillis = 320),
+            label = "stageHeroIcon"
+        ) { packageName ->
+            HeroIcon(packageName = packageName, label = game?.label.orEmpty(), edge = edge)
+        }
+    }
+}
+
+/** شارة معلومة صغيرة تحت اسم اللعبة: أيقونة ونصّ على زجاج خفيف بحدّ رفيع. */
+@Composable
+private fun HeroChip(icon: ImageVector, text: String) {
+    val shape = RoundedCornerShape(ChipHeight)
+    Row(
+        modifier = Modifier
+            .height(ChipHeight)
+            .clip(shape)
+            .background(Color.White.copy(alpha = 0.07f))
+            .border(StrokeFine, Color.White.copy(alpha = 0.16f), shape)
+            .padding(start = ChipPadStart, end = ChipPadEnd),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(ChipGap)
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = GameSpacePalette.VioletSoft,
+            modifier = Modifier.size(ChipGlyph)
+        )
+        Text(
+            text = text,
+            color = GameSpacePalette.Ink.copy(alpha = 0.92f),
+            fontSize = 18.sp,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+    }
 }
 
 /**
@@ -314,9 +388,9 @@ private fun StageSwipeLayer(onStep: (Int) -> Unit, modifier: Modifier) {
 }
 
 /**
- * خلفية البطل بعرض اللوحة كما في اللقطة المرجعيّة: فنّ اللعبة يملأ المنطقة خلف الاسم والبطل ويذوب في
- * العتمة من اليسار ومن الأسفل لتبقى النصوص والرفّ مقروءة. لا فنّ منقول (ADR-07): هي أيقونة اللعبة
- * الحقيقيّة مكبَّرة ومموَّهة، فوقها توهّج بلون اللعبة نفسه (من أيقونتها) ينتقل بنعومة مع تبديلها.
+ * خلفية البطل السينمائيّة: أيقونة اللعبة الحقيقيّة مكبَّرة ومموَّهة تملأ العرض كلّه وتتنفّس ببطء (تكبير وإزاحة
+ * على ساعة المسرح)، فوقها أورورا بلون اللعبة نفسه (من أيقونتها) ينتقل بنعومة مع تبديلها، وتدرّجات معتمة تحفظ
+ * قراءة النصّ على اليسار وتذيب الحافتين العليا والسفلى في الرفّ وشريط الحالة. لا فنّ منقول (ADR-07).
  */
 @Composable
 internal fun StageHeroBackdrop(game: GameApp?, modifier: Modifier = Modifier) {
@@ -326,6 +400,7 @@ internal fun StageHeroBackdrop(game: GameApp?, modifier: Modifier = Modifier) {
         animationSpec = tween(durationMillis = 520),
         label = "stageHeroTone"
     )
+    val clock = LocalStageClock.current
     Box(modifier.clipToBounds()) {
         Crossfade(
             targetState = icon,
@@ -339,6 +414,13 @@ internal fun StageHeroBackdrop(game: GameApp?, modifier: Modifier = Modifier) {
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .fillMaxSize()
+                        .graphicsLayer {
+                            val t = clock.value
+                            val k = 1.34f + 0.06f * stageWave(t, 1)
+                            scaleX = k
+                            scaleY = k
+                            translationX = (stageWave(t, 1, 0.25f) - 0.5f) * 70f
+                        }
                         .then(
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                                 Modifier.blur(GlowL)
@@ -346,7 +428,7 @@ internal fun StageHeroBackdrop(game: GameApp?, modifier: Modifier = Modifier) {
                                 Modifier
                             }
                         )
-                        .alpha(0.62f)
+                        .alpha(0.82f)
                 )
             }
         }
@@ -357,27 +439,28 @@ internal fun StageHeroBackdrop(game: GameApp?, modifier: Modifier = Modifier) {
                     drawRect(
                         Brush.radialGradient(
                             colors = listOf(
-                                tone.copy(alpha = 0.34f),
-                                tone.copy(alpha = 0.10f),
+                                tone.copy(alpha = 0.46f),
+                                tone.copy(alpha = 0.14f),
                                 Color.Transparent
                             ),
-                            center = Offset(size.width * 0.46f, size.height * 0.46f),
-                            radius = size.height * 1.05f
+                            center = Offset(size.width * 0.66f, size.height * 0.40f),
+                            radius = size.height * 1.25f
                         )
                     )
                     drawRect(
                         Brush.horizontalGradient(
-                            0f to GameSpacePalette.Void.copy(alpha = 0.94f),
-                            0.34f to GameSpacePalette.Void.copy(alpha = 0.62f),
-                            0.70f to Color.Transparent,
-                            1f to GameSpacePalette.Void.copy(alpha = 0.55f)
+                            0f to GameSpacePalette.Void.copy(alpha = 0.95f),
+                            0.24f to GameSpacePalette.Void.copy(alpha = 0.70f),
+                            0.46f to GameSpacePalette.Void.copy(alpha = 0.28f),
+                            0.62f to Color.Transparent,
+                            1f to GameSpacePalette.Void.copy(alpha = 0.50f)
                         )
                     )
                     drawRect(
                         Brush.verticalGradient(
-                            0f to GameSpacePalette.Void.copy(alpha = 0.55f),
-                            0.30f to Color.Transparent,
-                            0.62f to Color.Transparent,
+                            0f to GameSpacePalette.Void.copy(alpha = 0.50f),
+                            0.28f to Color.Transparent,
+                            0.60f to Color.Transparent,
                             1f to GameSpacePalette.Deep
                         )
                     )

@@ -33,8 +33,6 @@ class LobbyExploreContractTest {
 
     private fun explore(): String = File(sourceRoot(), "ui/subscreens/LobbyExplore.kt").readText()
 
-    private fun cockpit(): String = File(sourceRoot(), "ui/subscreens/GameSpaceCockpit.kt").readText()
-
     private fun insights(): String = File(sourceRoot(), "ui/subscreens/LobbyInsightsPanel.kt").readText()
 
     @Test
@@ -52,9 +50,7 @@ class LobbyExploreContractTest {
         // يحرسه هذا الاختبار هو **الترتيب** لا التسمية ولا الشكل: رجوع استكشف لا يزال
         // يُركَّب بعد رجوع الهيكل فيفوز عليه. ولذلك يُلتقط بمطابقة مرنة لا بنصّ حرفيّ:
         // الصيغة الحرفيّة سقطت مرّتين بتغيير مشروع من المالك، والمرن يحرس المعنى نفسه.
-        // والشرط نفسه لم يعد على `rootState` بعد تحويل الأفقيّ إلى شريط (جولة ٢٩٥): صار
-        // `page` индексًا واحدًا. يُقبل الاسمان معًا لأن المحروس هو **الترتيب** لا التسمية.
-        val controlBack = Regex("BackHandler\\(enabled = (?:rootState\\.currentPage|page)\\s+[!=]=\\s+\\d+\\)")
+        val controlBack = Regex("BackHandler\\(enabled = rootState\\.currentPage\\s+[!=]=\\s+\\d+\\)")
             .find(text)?.range?.first ?: -1
         val exploreBack = text.indexOf("BackHandler(enabled = exploreOpen)")
         assertTrue("Spine back handler is missing", controlBack >= 0)
@@ -63,35 +59,32 @@ class LobbyExploreContractTest {
     }
 
     @Test
-    fun `the lobby is one rail, not a hidden settings page`() {
+    fun `the lobby is one spine, not a hidden settings page`() {
         val root = sourceRoot()
         assumeTrue("Cannot locate nd.max sources; guard not evaluated", root != null)
         val text = lobby()
 
-        // تغيّر الهيكل بأمر المالك (جولة ٢٩٥، «A — Cockpit»): لا مُصفِّح رأسيّ ولا سحب بين الصفحات،
-        // بل شريط تنقّل واحد. الحارس يثبت **المعنى** لا الشكل: مسار تنقّل واحد، وعددُ صفحاته
-        // **مشتقٌّ** من `LobbyPage` نفسه لا مكتوبًا حرفيًّا، والفهرس مثبَّت داخل المدى.
-        assertFalse("The vertical pager is back: two navigation paths again", text.contains("VerticalPager("))
-        assertFalse("A pager state reappeared beside the rail", text.contains("rememberPagerState("))
+        // الجذر في تصميم المالك (كوكبيت الألعاب) بيدرٌ عدده من `LobbyPage` نفسه: المسرح ثم
+        // أقسام مركز التحكّم، فذهبت الحاجة إلى `spineIndex`/`GameSpaceRail`/`LobbySectionContent`
+        // (انتقلت أجسام الأقسام إلى `LobbyControlCenter`) وإلى `pageSpacing` الصريح
+        // (الافتراضي `0.dp`). والعدد **مشتقٌّ** لا مكتوب، فلا يمرّ تعديل العدد بلا مراجعة ولا
+        // يفشل هذا الحارس لمجرّد إضافة صفحة مشروعة.
+        // ويبقى القفل المقصود: سحبٌ واحد = صفحة واحدة — وهو سلوك Compose الافتراضي
+        // (`PagerSnapDistance.atMost(1)`) ما دام الملف لا يتجاوز مسافة الالتقاط.
+        assertTrue("The page-locked pager is missing", text.contains("VerticalPager("))
+        assertTrue("The pager state is missing", text.contains("rememberPagerState("))
         assertTrue(
-            "The page must be one saveable index owned by the lobby",
-            text.contains("var page by rememberSaveable { mutableIntStateOf(0) }")
+            "The lobby root must derive its page count from LobbyPage, not a literal",
+            text.contains("rememberPagerState(initialPage = 0) { LobbyPage.entries.size }")
         )
+        assertTrue("The pager must use the shared fling behaviour", text.contains("flingBehavior = rootFling"))
         assertTrue(
-            "Navigation must go through the LobbyPage table, not a hand-written index",
-            text.contains("LobbyPage.of(target).ordinal") && text.contains("LobbyPage.at(page)")
+            "The shared fling behaviour must come from PagerDefaults",
+            text.contains("PagerDefaults.flingBehavior(")
         )
-        assertTrue(
-            "The index must be clamped to the page table before it is written",
-            text.contains("index.coerceIn(0, LobbyPage.entries.lastIndex)")
-        )
-        assertTrue(
-            "The landscape rail must be the one navigator and receive the same callback",
-            text.contains("CockpitNav(") && text.contains("onPage = onPage")
-        )
-        assertTrue(
-            "The stage must receive the current page so the rail can mark it",
-            text.contains("currentPage = currentPage") && text.contains("onPage = onPage,")
+        assertFalse(
+            "The lobby must not widen the snap distance past one page per swipe",
+            text.contains("pagerSnapDistance")
         )
     }
 
@@ -149,26 +142,18 @@ class LobbyExploreContractTest {
         }
 
         // وكل سطح يعلن الباب يظلّ يعلنه — لا يُحذف بابٌ بصمت إصلاحًا لعدّ.
-        // وتاريخ هذا السطر متقلّب فيُقال كما هو: قاعدة المسرح أُخرجت من العدّ في `15706c90` حين
-        // جُمعت أدوات التحكّم في رأس واحد، ثم عادت الوسيطة `onOpenSessions` في جولة ٢٩٥ لأن
-        // الكوكبيت يرسم باب السجلّ داخل عدّاده. ولوحة الأوامر خرجت من اللوبي في الجولة نفسها،
-        // فلم يبقَ فيها `PaletteActionId.Sessions` — والحارس يتبع السطح الحيّ لا سطحًا مهجورًا.
+        // وقاعدة المسرح خرجت من القائمة بتعديل المالك (`15706c90`): جُمعت أدوات التحكّم كلها في
+        // رأس واحد على الطرف الأيسر (إغلاق · سجلّ · تحديث · مفضّلة · استكشاف)، فلم يبقَ للمسرح
+        // بابٌ خاصّ ولم تبقَ وسيطة `onOpenSessions`. والمُثبِّت مكانه أيقونة السجلّ نفسها في ذلك
+        // الرأس: حذفها بصمت يُسقط الحارس، كما كان يُسقطه حذف باب المسرح قبله.
         listOf(
             "Icons.Rounded.History" to "the top bar history button",
             "onOpenHistory" to "the control centre",
-            "onOpenSessions =" to "the stage sessions door",
+            "PaletteActionId.Sessions" to "the command palette",
             "R.string.game_sessions_lobby_open" to "the sessions log label",
         ).forEach { (needle, surface) ->
             assertTrue("The sessions door disappeared from $surface", text.contains(needle))
         }
-
-        // الكوكبيت هو الذي يرسم الباب الآن في الأفقيّ؛ حذفه من هناك يترك الشاشة بلا سجلّ.
-        val cockpitText = cockpit()
-        assertTrue(
-            "The cockpit dropped its sessions door",
-            cockpitText.contains("actions.onOpenSessions") &&
-                cockpitText.contains("R.string.lobby_insights_sessions")
-        )
     }
 
     @Test

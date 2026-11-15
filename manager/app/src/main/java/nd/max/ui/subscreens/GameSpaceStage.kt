@@ -1,45 +1,78 @@
 /* Copyright (C) 2026 Nader Magdy. All rights reserved. */
 package nd.max.ui.subscreens
 
+import android.app.ActivityManager
+import android.content.Context
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import kotlin.math.roundToInt
 import kotlinx.coroutines.delay
 import nd.max.core.gamespace.GameApp
+import nd.max.core.gamespace.GamePlayStats
 import nd.max.core.gamespace.PanelCpuLoad
 import nd.max.core.platform.HudDeepReaders
 import nd.max.core.platform.HudLive
 import nd.max.core.platform.HudSnapshot
+import nd.max.ui.component.lobbyIntro
 
 /*
- * **مدخل المسرح ونموذجه الحيّ** — بعد جولة ٢٩٥ لم يبقَ للأفقيّ لوحةً مرسومة:
- * `GameSpaceCockpit.kt` يبنيه بوحدات dp حقيقية، و`StagePortrait` في `GameSpaceShell.kt` يبني العموديّ.
+ * المسرح — «Home» لوحةٌ ثابتة الأبعاد داخل مساحة العرض المتاحة.
  *
- * يبقى هنا ما هو مشترك بينهما:
- *  - القراءة الحيّة الواحدة (`StageReadings` كل ثانيتين: المعالج والرسوميات والحرارة) وعيّنة الإطارات
- *    من `HudLive` — فلا مقياس ثانٍ ولا مؤقّتان.
- *  - نموذج العرض `StageData` وأفعاله `StageActions`، فيتلقّاه الكوكبيت والعموديّ كما هو.
- *  - آلات اللقطة القديمة (`stageSpace`/`StageGeo`/`LocalStage*`/`Modifier.at`) وكتل المسرح المرسومة في
- *    `GameSpaceStageHero.kt`/`GameSpaceStageParts.kt`: **لم يبقَ لها مستهلك في الأفقيّ**، وتُحذف في
- *    دفعة تنظيف تالية بعد أن يُثبت البناء سلامة الكوكبيت. لا تُستعمل في مسار جديد.
+ * اللقطة مرسومة على لوحة ١٦٧٢×٩٤١. فبدل أن تُعاد هندسة الشاشة على كل جهاز (فتخرج الأقسام واللوحات
+ * بقياسات غير المرسومة)، نبني اللوحة **مرّة واحدة بوحدات اللقطة نفسها** ثم نكبّرها أو نصغّرها
+ * بنسبةٍ واحدة تُلائم المساحة المتاحة، وتتوسّط وتترك هامشًا حيث لا تتّسع بالنسبة نفسها:
  *
- * وما لا يُدّعى (ADR-07): لا فنّ لعبة — البطل يعرض أيقونة التطبيق الحقيقيّة. والأرقام تُقرأ فعلًا
- * (المعالج من `PanelCpuLoad`، والرسوميات من `HudDeepReaders`، والإطارات من `HudLive`)، وما لم يُقرأ
- * يبقى «—» لا صفرًا.
+ *  - كل `dp` و`sp` داخل اللوحة يساوي **بكسلًا واحدًا من اللقطة**. بلغةٍ أخرى: `Modifier.at(1236, 87, 410, 229)`
+ *    هو مستطيل لوحة الأداء في الصورة بإحداثياتها حرفيًّا.
+ *  - التكبير بإبدال `LocalDensity` (لا بـ`graphicsLayer.scale`)، فيبقى النص والخطوط حادّة بأي نسبة،
+ *    وتبقى اللمسات تُقاس بالبكسل الفعلي فتقع على ما يُرى.
+ *  - الاتّجاه مثبّت LTR لهذه اللوحة وحدها: الشريط يسارًا واللوحات يمينًا كما في اللقطة، وقلبه في
+ *    العربية يعكس الهندسة كلها.
+ *  - حجم الخط يتبع تكبير النظام حتى ١٫١٥ فقط؛ فوقه يتجاوز النص حدود الألواح الثابتة.
+ *
+ * ### الحياة فوق اللوحة (جولة ٢٠٢٦-١١-١٥)
+ *
+ * أجواء الشاشة (سماء ليليّة وغبار) صارت في `LobbyAtmosphere` خلف المُصفِّح كلّه، وساعة الحركة الواحدة
+ * وتقدّم الدخول يصلان عبر `LocalStageClock`/`LocalStageIntro`: فكل جزء ينساب إلى مكانه بتأخّر نسبيّ بعد
+ * غطاء الدخول، والبطل يطفو، واللمعة تعبر زرّ التشغيل، والسحب الأفقيّ على البطل يبدّل اللعبة.
+ *
+ * ### الأحجام على الهواتف (جولة ٢٠٢٦-١١-١٥ الثانية)
+ *
+ * كان المقياس يتبع الارتفاع، فعلى هاتف ٩١٥×٤١٢dp تُرسم اللوحة بنسبة ≈٠٫٤٤ ويصير عنصر الشريط (٦٥ وحدة) نحو ٢٨dp.
+ * الآن يتبع **العرض** على الشاشات العريضة (انظر [stageSpace]): النسبة ≈٠٫٥٠–٠٫٥٥، ويُقتطع الفرق من ارتفاع
+ * اللوحة ([StageGeo]) فيُوزَّع على أجزائها بدل أن يُهدَر هامشًا — يلتصق الرفّ بأسفل الشاشة، وتنتقل قاعدة الحالة
+ * إلى أسفل عمود اللوحات اليمنى، وتتمدّد اللوحات الثلاث رأسيًّا. والأزرار الصغيرة (التشغيل، «…»، سهما الرفّ)
+ * تُرفع بمعامل ([stageTouchBoost]) ليبقى لمسها مريحًا. أزرار اللوبي العلويّة (الاستكشاف، المفضّلة، السجلّ،
+ * الإغلاق) تُرسم بمقاسها الفعليّ بإعادة `LocalDensity` الأصلي داخلها، وتُوضَع فوق اللوحة عند إحداثياتها.
+ *
+ * ### ما لا يُدّعى (ADR-07)
+ *
+ * لا فنّ لعبة: اللقطة تحمل فنّ PUBG وهو ليس ملكنا ولا يأتي مع `PackageManager`. فالبطل يعرض **أيقونة
+ * التطبيق الحقيقيّة**، وبطاقات الرفّ تأخذ الأيقونة فوق خلفية مموّهة منها. والأرقام تُقرأ فعلًا:
+ * المعالج من `PanelCpuLoad`، والرسوميات من `HudDeepReaders.gpuLoadPercent`، والحرارة من `socTempC`
+ * (أو حرارة البطارية عند غيابها)، والإطارات من `HudLive`. وما لم يُقرأ يبقى «—» وحلقةً بلا قوس.
  */
 
 internal const val StageDesignWidth = 1672
@@ -173,9 +206,32 @@ private data class StageReadings(
     val cpu: Int? = null,
     val gpu: Int? = null,
     val tempC: Float? = null,
+    val ram: StageRam? = null,
     /** وقت القراءة؛ يتغيّر كل دورة فيُعاد تقدير «حيّ/قديم» للإطارات حتى بلا عيّنة جديدة. */
     val atMs: Long = 0L,
 )
+
+/**
+ * ذاكرة الجهاز كما يقرؤها النظام: النسبة المستعملة، والمستعمل والكلّي بالجيجا. هي القراءة التي تبقى حيّةً في
+ * اللوبي دائمًا — بعكس الإطارات اللحظية التي لا تُقاس إلا داخل اللعبة فتظلّ «—» هنا.
+ */
+@Immutable
+internal data class StageRam(val percent: Int, val usedGb: Float, val totalGb: Float)
+
+private const val BytesPerGb = 1_073_741_824f
+
+private fun readStageRam(context: Context): StageRam? {
+    val manager = context.getSystemService(Context.ACTIVITY_SERVICE) as? ActivityManager ?: return null
+    val info = ActivityManager.MemoryInfo()
+    manager.getMemoryInfo(info)
+    if (info.totalMem <= 0L) return null
+    val used = (info.totalMem - info.availMem).coerceAtLeast(0L)
+    return StageRam(
+        percent = (used * 100L / info.totalMem).toInt().coerceIn(0, 100),
+        usedGb = used / BytesPerGb,
+        totalGb = info.totalMem / BytesPerGb
+    )
+}
 
 /**
  * الإطارات اللحظيّة: الرقم الأخير ومنحنى آخر العيّنات، و[live] صحيح إن كانت العيّنة أحدث من خمس ثوانٍ.
@@ -208,6 +264,9 @@ internal class StageData(
     val date: String,
     /** الإطلاق جارٍ: الزرّ يعرض مؤشّر تقدّم ويرفض نقرة ثانية. */
     val launching: Boolean = false,
+    val ram: StageRam? = null,
+    /** سجلّ لعب اللعبة المختارة (وقت اللعب)؛ `null` يُسقط شارة الوقت بدل أن تُكتب «٠». */
+    val stats: GamePlayStats? = null,
 )
 
 internal class StageActions(
@@ -253,10 +312,6 @@ internal fun GameSpaceStage(
     onOpenSection: (LobbySection) -> Unit,
     onOpenLibrary: () -> Unit,
     onOpenSessions: () -> Unit,
-    /** الصفحة المعروضة الآن في شريط الكوكبيت (أوّلها «الرئيسية»). */
-    currentPage: LobbyPage = LobbyPage.Home,
-    /** تنقّل الشريط؛ يملكه `GameLobbyScreen` في حالةٍ واحدة. */
-    onPage: (LobbyPage) -> Unit = {},
     modifier: Modifier = Modifier,
     /** سطر تحت اسم اللعبة (آخر لعب)؛ `null` يُسقطه، لا يُكتب مكانه شيء مخترع. */
     tagline: String? = null,
@@ -264,17 +319,21 @@ internal fun GameSpaceStage(
     date: String = "",
     /** الإطلاق جارٍ الآن (يمنع نقرتين ويُظهر مؤشّر التقدّم في الزرّ). */
     launching: Boolean = false,
+    /** سجلّ لعب اللعبة المختارة: منه شارة «لُعبت …» في هويّتها. */
+    stats: GamePlayStats? = null,
     /** أزرار اللوبي العلويّة (استكشاف/مفضّلة/سجلّ/إغلاق…) — تُوضع على اللوحة بمقاسها الفعليّ. */
     topActions: @Composable () -> Unit = {},
 ) {
     // القراءات الحيّة: نفس القارئين اللذين يغذّيان مراقب الجهاز، فلا مقياس ثانٍ.
     // مؤقّت واحد للثلاثة معًا: حلقة واحدة تُقاس مرّة كل ثانيتين، لا ثلاث حلقات تتصارع.
+    val context = LocalContext.current
     val readings by produceState(initialValue = StageReadings()) {
         while (true) {
             value = StageReadings(
                 cpu = PanelCpuLoad.sample(),
                 gpu = HudDeepReaders.gpuLoadPercent(),
                 tempC = HudDeepReaders.socTempC(),
+                ram = readStageRam(context),
                 atMs = System.currentTimeMillis()
             )
             delay(2_000L)
@@ -301,7 +360,9 @@ internal fun GameSpaceStage(
         statusDetail = statusDetail,
         clock = clock,
         date = date,
-        launching = launching
+        launching = launching,
+        ram = readings.ram,
+        stats = stats
     )
     val actions = StageActions(
         onSelect = onSelect,
@@ -317,20 +378,78 @@ internal fun GameSpaceStage(
         BoxWithConstraints(
             modifier = Modifier
                 .fillMaxSize()
-                .displayCutoutPadding()
+                .displayCutoutPadding(),
+            contentAlignment = Alignment.Center
         ) {
-            // التخطيط العموديّ البديل: عمود واحد بالكتل نفسها.
+            // التخطيط العموديّ البديل: عمود واحد بالكتل نفسها بدل لوحة أفقيّة تُصغَّر حتى لا تُقرأ.
             if (maxHeight > maxWidth) {
                 StagePortrait(data = data, actions = actions, topActions = topActions)
                 return@BoxWithConstraints
             }
-            // الأفقيّ: الكوكبيت — لا مقياس ولا قلب اتجاه ولا حصر للخط.
-            GameSpaceCockpit(
-                data = data,
-                actions = actions,
-                currentPage = currentPage,
-                onPage = onPage,
-                topActions = topActions
+            val real = LocalDensity.current
+            // نسبة واحدة للعرض والارتفاع: اللوحة لا تتمطّط أبدًا. والعرض الزائد عن ١٦:٩ تملؤه اللوحة نفسها.
+            val space = stageSpace(maxWidth, maxHeight)
+            val design = Density(
+                density = real.density * space.scale,
+                fontScale = stageFontScale(real.fontScale, space.scale)
+            )
+            CompositionLocalProvider(
+                LocalLayoutDirection provides LayoutDirection.Ltr,
+                LocalDensity provides design,
+                LocalStageExtra provides space.extra,
+                LocalStageDrop provides space.drop,
+                LocalStageScale provides space.scale
+            ) {
+                StageCanvas(data = data, actions = actions, realDensity = real, topActions = topActions)
+            }
+        }
+    }
+}
+
+/**
+ * اللوحة الثابتة نفسها: صندوق ١٦٧٢×٩٤١ وحدةً، وكل منطقة عند إحداثيات اللقطة. الشريط الجانبيّ ليس هنا:
+ * هو ثابت فوق كل الصفحات (`GameSpaceRailLayer`) فلا يتحرّك مع السحب بين الأقسام.
+ */
+@Composable
+private fun StageCanvas(
+    data: StageData,
+    actions: StageActions,
+    realDensity: Density,
+    topActions: @Composable () -> Unit,
+) {
+    val intro = LocalStageIntro.current
+    val extra = LocalStageExtra.current
+    val drop = LocalStageDrop.current
+    Box(Modifier.requiredSize((StageDesignWidth + extra).dp, StageGeo.height(drop).dp)) {
+        StageHeroBackdrop(
+            game = data.selected,
+            modifier = Modifier
+                .at(168, 0, 1504 + extra, StageGeo.shelfTop(drop) + 51)
+                .lobbyIntro(intro, scaleFrom = 1.04f)
+        )
+        StageHero(data = data, actions = actions)
+        StageStatusBar(
+            data = data,
+            onProfile = { actions.onOpenSection(LobbySection.Game) },
+            realDensity = realDensity,
+            topActions = topActions
+        )
+        // في التخطيط المضغوط تنتقل قاعدة الحالة إلى أسفل عمود اللوحات اليمنى (داخل StageBoard).
+        StageBoard(
+            data = data,
+            onOpen = actions.onOptions,
+            onOpenSessions = actions.onOpenSessions
+        )
+        StageShelf(data = data, actions = actions)
+        if (drop == 0) {
+            StageBase(
+                title = data.statusTitle,
+                detail = data.statusDetail,
+                percent = data.readinessPercent,
+                onOpen = actions.onOpenSessions,
+                modifier = Modifier
+                    .at(195, 850, 1451 + extra, 62)
+                    .lobbyIntro(intro, fromBelow = 40.dp, start = 0.40f)
             )
         }
     }
