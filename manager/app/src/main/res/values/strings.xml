@@ -1038,6 +1038,11 @@
     <string name="logsviewer_search_hint">Search tag or message</string>
     <string name="logsviewer_tab_logcat">Logcat</string>
     <string name="logsviewer_tab_unified">MaxManager Log</string>
+    <string name="logsviewer_tab_kernel">Kernel</string>
+    <string name="logsviewer_kernel_note">A snapshot of the kernel ring buffer. It needs root; a refused read is shown as a refusal.</string>
+    <string name="logsviewer_kernel_refresh">Refresh</string>
+    <string name="logsviewer_kernel_empty">Nothing was read yet.</string>
+    <string name="logsviewer_kernel_unavailable">This device does not let the app read the kernel log.</string>
     <string name="logsviewer_unified_search_hint">Search message, EVENT type, or sw- id</string>
     <string name="logsviewer_pause_cd">Pause</string>
     <string name="logsviewer_resume_cd">Resume</string>

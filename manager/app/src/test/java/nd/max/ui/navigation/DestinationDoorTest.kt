@@ -201,15 +201,15 @@ class DestinationDoorTest {
     @Test
     fun `M1 keeps all destinations and their families in the accepted homes`() {
         val all = destinations()
-        // ٦٧ = ٧٠ − الثلاث التي حُذفت بأمر المالك (التشخيص · صحة الوحدة · HMA).
-        // والزيادة الأخيرة ألبوم المقاطع: سطح أضافه المالك ليُقرأ ما أنتجه التسجيل، وله باب
-        // في التحكّم وكلمة قصد — فدخوله اللقطة مقصود لا انزلاق.
-        assertEquals("عدد وجهات M1 لا ينقص عند إعادة ترتيبها", 67, all.size)
-        // ٢٤ = المحاور العشرة + أربعة عشر أداة بلا محور (كانت ١٦ قبل أن يستقبل التحكّم
-        // أدوات التشخيص والألوان والنسخ والصلاحيات والتنظيف، ثم ألبوم المقاطع بأمر المالك).
+        // ٦٩ = ٧٠ − الثلاث التي حُذفت بأمر المالك (التشخيص · صحة الوحدة · HMA)، ثم ألبوم
+        // المقاطع، ثم فاحص البيان وفاحص الشبكة: أسطح أضافها المالك، ولها أبواب في التحكّم
+        // وكلمات قصد — فدخولها اللقطة مقصود لا انزلاق.
+        assertEquals("عدد وجهات M1 لا ينقص عند إعادة ترتيبها", 69, all.size)
+        // ٢٦ = المحاور العشرة + ستة عشر أداة بلا محور (كانت ١٦ قبل أن يستقبل التحكّم
+        // أدوات التشخيص والألوان والنسخ والصلاحيات والتنظيف، ثم ألبوم المقاطع، ثم الفاحصان).
         assertEquals(
             "Control يحتفظ بالمحاور والأسطح والأدوات المقبولة",
-            24,
+            26,
             all.count { !it.hidden && it.parent == "Control" },
         )
 
@@ -223,7 +223,15 @@ class DestinationDoorTest {
                 "BatteryHistory",
             ),
             // شاشة التشخيص حُذفت بأمر المالك، وأدواتها صارت أدوات تحكّم مباشرة.
-            "Control" to listOf("Logs", "UsageStats", "DeviceLab", "MaxBackup", "Permissions"),
+            "Control" to listOf(
+                "Logs",
+                "UsageStats",
+                "DeviceLab",
+                "ManifestInspector",
+                "NetworkScanner",
+                "MaxBackup",
+                "Permissions",
+            ),
             "Settings" to listOf("ConfigBackup", "Privilege"),
         )
         families.forEach { (parent, children) ->

@@ -217,6 +217,8 @@ fun GpuStudioScreen(
         }
 
         item(key = "gpu_intents") { GpuIntents(state, viewModel) }
+        // جدول الوقت في الحالة: يظهر فقط لمزوّد تنشره نواته — لا قسم ولا بطاقة لغيره (§0.8).
+        item(key = "gpu_state") { GpuStateShares(state) }
         // اللوحة تحت النوايا ما لم يكن المختبر مفتوحًا — وعندها تنتقل تحته،
         // فلا تظهر مرّتين ولا تخرج عن نطاق النظر.
         if (!labExpanded) item(key = "gpu_review") { GpuReview(state, viewModel) }
@@ -437,6 +439,61 @@ private fun GpuSparkline(values: List<Float>, color: Color) {
         }
     }
 }
+
+// ── الوقت في الحالة ──────────────────────────────────────────────────────────
+
+/**
+ * «إلى أين ذهب وقت الرسوميات» — لا «أين هي الآن».
+ *
+ * والفرق هو سبب وجود هذا القسم: `cur_freq` يقول اللحظة، والجدول يقول التاريخ. ومن رأى GPU
+ * عالقًا عند تردد منخفض لن يعرف من اللقطة إن كان ذلك سكنًا طويلًا أم مجرّد صدفة — والعدّادات
+ * تقولها بلا تفسير منّا.
+ *
+ * ولا قسم لمزوّد لا ينشر الجدول: `null` تعني «النواة لا تنشره»، وهي غير «كل الحالات صفر».
+ * والقاعدة نفسها مطبَّقة على المعالج، فلا يتصرّف الجهازان تصرّفين مختلفين في شاشة واحدة.
+ */
+@Composable
+private fun GpuStateShares(state: GpuStudioUiState) {
+    val device = state.device ?: return
+    val times = state.stateTimes ?: return
+    // الحساب في `CpuStateDistribution` نفسه لا في نسخة ثانية: قاعدة الحصص واحدة (ADR-11/18).
+    val shares = remember(times) {
+        nd.max.core.hardware.CpuStateDistribution.sharesOf(times.map { it.frequencyRaw to it.ticks })
+    } ?: return
+    val split = remember(shares) { nd.max.core.hardware.CpuStateDistribution.split(shares) }
+
+    MaxSection(
+        title = stringResource(R.string.max_gpu_state_title),
+        description = stringResource(R.string.max_gpu_state_desc),
+    ) {
+        MaxGroup {
+            split.visible.forEachIndexed { index, share ->
+                if (index > 0) MaxGroupDivider()
+                MaxRow(
+                    // الوحدة تُحوَّل بـ`frequencyMHz` وحدها: جدول النواة خام، ووحدته تختلف
+                    // بحسب المزوّد. وحين تكون الوحدة غير موثوقة تُعرض «—» لا رقم مخمَّن.
+                    title = GpuHardwareBackend.frequencyMHz(device, share.frequencyRaw)
+                        ?.let { "$it MHz" } ?: GpuDash,
+                    subtitle = gpuPercent(share.share),
+                )
+            }
+            if (split.hiddenCount > 0) {
+                if (split.visible.isNotEmpty()) MaxGroupDivider()
+                MaxRow(
+                    title = stringResource(R.string.max_gpu_state_hidden, split.hiddenCount),
+                    subtitle = stringResource(R.string.max_gpu_state_hidden_share, gpuPercent(split.hiddenShare)),
+                )
+            }
+        }
+    }
+}
+
+/** «—» لا «٠٪»: الحصة غير المعروفة لا تُكتب صفرًا (ADR-07). */
+private const val GpuDash = "—"
+
+/** كسر من ٠ إلى ١ إلى نسبة مقروءة، بأرقام اللغة الحالية. */
+private fun gpuPercent(share: Float): String =
+    String.format(java.util.Locale.getDefault(), "%.1f%%", share * 100f)
 
 // ── النوايا الذكية ────────────────────────────────────────────────────────────
 

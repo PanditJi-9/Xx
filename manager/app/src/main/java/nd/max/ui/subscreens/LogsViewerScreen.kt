@@ -184,29 +184,52 @@ fun LogsViewerScreen(
             }
         ) {
                 Column(modifier = Modifier.fillMaxSize()) {
-                    LogViewerStatusHeader(
-                        mode = viewModel.viewerMode,
-                        lineCount = if (viewModel.viewerMode == LogsViewerViewModel.ViewerMode.LOGCAT) viewModel.totalLineCount else viewModel.unifiedTotalLineCount,
-                        paused = viewModel.isPaused,
-                        filtered = if (viewModel.viewerMode == LogsViewerViewModel.ViewerMode.LOGCAT) viewModel.displayedLogs.size else viewModel.unifiedDisplayedLogs.size
-                    )
+                    // تبويب سجلّ النواة: قراءة لقطة لا بثّ، فلا تُخلط بـ`ViewerMode` (لا جلسة
+                    // تُدار ولا عدّاد سطور يُدار). ومعه لا شريط حالة: عدّادات logcat لا تصفه.
+                    var kernelTab by remember { mutableStateOf(false) }
 
-                    SecondaryTabRow(
-                        selectedTabIndex = if (viewModel.viewerMode == LogsViewerViewModel.ViewerMode.LOGCAT) 0 else 1
-                    ) {
-                        Tab(
-                            selected = viewModel.viewerMode == LogsViewerViewModel.ViewerMode.LOGCAT,
-                            onClick = { viewModel.setViewerMode(LogsViewerViewModel.ViewerMode.LOGCAT) },
-                            text = { Text(stringResource(R.string.logsviewer_tab_logcat)) }
-                        )
-                        Tab(
-                            selected = viewModel.viewerMode == LogsViewerViewModel.ViewerMode.UNIFIED,
-                            onClick = { viewModel.setViewerMode(LogsViewerViewModel.ViewerMode.UNIFIED) },
-                            text = { Text(stringResource(R.string.logsviewer_tab_unified)) }
+                    if (!kernelTab) {
+                        LogViewerStatusHeader(
+                            mode = viewModel.viewerMode,
+                            lineCount = if (viewModel.viewerMode == LogsViewerViewModel.ViewerMode.LOGCAT) viewModel.totalLineCount else viewModel.unifiedTotalLineCount,
+                            paused = viewModel.isPaused,
+                            filtered = if (viewModel.viewerMode == LogsViewerViewModel.ViewerMode.LOGCAT) viewModel.displayedLogs.size else viewModel.unifiedDisplayedLogs.size
                         )
                     }
 
-                    val currentAvailability = if (viewModel.viewerMode == LogsViewerViewModel.ViewerMode.LOGCAT) {
+                    SecondaryTabRow(
+                        selectedTabIndex = when {
+                            kernelTab -> 2
+                            viewModel.viewerMode == LogsViewerViewModel.ViewerMode.LOGCAT -> 0
+                            else -> 1
+                        }
+                    ) {
+                        Tab(
+                            selected = !kernelTab && viewModel.viewerMode == LogsViewerViewModel.ViewerMode.LOGCAT,
+                            onClick = {
+                                kernelTab = false
+                                viewModel.setViewerMode(LogsViewerViewModel.ViewerMode.LOGCAT)
+                            },
+                            text = { Text(stringResource(R.string.logsviewer_tab_logcat)) }
+                        )
+                        Tab(
+                            selected = !kernelTab && viewModel.viewerMode == LogsViewerViewModel.ViewerMode.UNIFIED,
+                            onClick = {
+                                kernelTab = false
+                                viewModel.setViewerMode(LogsViewerViewModel.ViewerMode.UNIFIED)
+                            },
+                            text = { Text(stringResource(R.string.logsviewer_tab_unified)) }
+                        )
+                        Tab(
+                            selected = kernelTab,
+                            onClick = { kernelTab = true },
+                            text = { Text(stringResource(R.string.logsviewer_tab_kernel)) }
+                        )
+                    }
+
+                    val currentAvailability = if (kernelTab) {
+                        true
+                    } else if (viewModel.viewerMode == LogsViewerViewModel.ViewerMode.LOGCAT) {
                         viewModel.isAvailable
                     } else {
                         viewModel.unifiedAvailable
@@ -219,7 +242,8 @@ fun LogsViewerScreen(
                     false -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         Text(stringResource(R.string.logsviewer_unavailable))
                     }
-                    true -> if (viewModel.viewerMode == LogsViewerViewModel.ViewerMode.LOGCAT) Column(
+                    true -> if (kernelTab) KernelLogPanel(modifier = Modifier.fillMaxSize())
+                    else if (viewModel.viewerMode == LogsViewerViewModel.ViewerMode.LOGCAT) Column(
                         modifier = Modifier
                             .fillMaxSize()
                     ) {

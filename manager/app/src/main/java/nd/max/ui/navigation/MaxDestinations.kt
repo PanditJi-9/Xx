@@ -365,12 +365,7 @@ sealed class MaxDestination(
      * شهادة التوقيع). **تحت التحكّم** مع أدوات النظام: شاشة قراءة لا تحكّم، ولا كتابة
      * فيها إطلاقًا — وحدُّها معلن داخلها (`uses-feature` التطبيق غير مقروء للمنصّة).
      */
-    data object ManifestInspector : MaxDestination(
-        "manifest_inspector",
-        R.string.manifest_inspector_title,
-        Icons.Rounded.AppSettingsAlt,
-        Control,
-    )
+    data object ManifestInspector : MaxDestination("manifest_inspector", R.string.manifest_inspector_title, Icons.Rounded.AppSettingsAlt, Control)
 
     /**
      * `NETWORK-SCANNER-01` — فاحص الشبكة المحليّة: عنوانك وبوّابتك وجيرانك من
@@ -378,12 +373,7 @@ sealed class MaxDestination(
      * **تحت التحكّم** مع أدوات النظام: قراءة فقط — لا مقابس خامّة ولا التقاط حزم
      * ولا جذر، وحدُّها معلن داخلها (الصمت ليس دليل غياب).
      */
-    data object NetworkScanner : MaxDestination(
-        "network_scanner",
-        R.string.network_scanner_title,
-        Icons.Rounded.Wifi,
-        Control,
-    )
+    data object NetworkScanner : MaxDestination("network_scanner", R.string.network_scanner_title, Icons.Rounded.Wifi, Control)
 
     /**
      * `USAGE-STATS-01` — زمن المقدّمة لكل تطبيق من قاعدة استخدام أندرويد نفسها.

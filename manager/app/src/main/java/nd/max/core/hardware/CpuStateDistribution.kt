@@ -27,18 +27,26 @@ object CpuStateDistribution {
     const val NOISE_SHARE: Float = 0.01f
 
     /** الحصص مرتّبة من أعلى تردد إلى أدناه؛ `null` حين لا عدّاد موجب أصلًا. */
-    fun shares(states: List<CpuHardwareBackend.StateTime>): List<Share>? {
+    fun shares(states: List<CpuHardwareBackend.StateTime>): List<Share>? =
+        sharesOf(states.map { it.frequencyKHz to it.ticks })
+
+    /**
+     * الحساب نفسه على أزواج (تردد، عدّاد) — لأن جدول الـGPU يُقرأ بوحدة تردد مختلفة عن kHz،
+     * ولأن هذا الكائن هو **موضع واحد** لقاعدة الحصص: إعادة كتابتها لجهة ثانية تُنتج رقمين
+     * مختلفين للشيء نفسه، وهو عطب ازدواج المصدر (ADR-11/ADR-18).
+     */
+    fun sharesOf(counts: List<Pair<Long, Long>>): List<Share>? {
         // صفٌّ بعدّاده صفر ليس حالة سكنها المعالج: النواة تنشر جدول OPP كاملًا وقد لا تُستخدم
         // بعض الترددات أبدًا. إدخاله يجعل «٠٪ مخفيّة» صفوفًا وهمية في العدّ، ويوهم بأن الخفاء
         // أكبر مما هو — فيُسقَط قبل الجمع لا بعد القسمة.
-        val used = states.filter { it.ticks > 0L }
-        val total = used.sumOf { it.ticks }
+        val used = counts.filter { it.second > 0L }
+        val total = used.sumOf { it.second }
         if (total <= 0L) return null
         // النواة قد تكرّر التردد (سطران لنفس القيمة على بعض الإصدارات): يُجمع قبل القسمة،
         // وإلا ظهرت حالتان متطابقتان بلا معنى.
         return used
-            .groupBy { it.frequencyKHz }
-            .map { (khz, rows) -> Share(khz, rows.sumOf { it.ticks }.toFloat() / total) }
+            .groupBy { it.first }
+            .map { (khz, rows) -> Share(khz, rows.sumOf { it.second }.toFloat() / total) }
             .sortedByDescending { it.frequencyKHz }
     }
 

@@ -67,6 +67,13 @@ data class GpuStudioUiState(
     val pending: GpuHardwareBackend.Request? = null,
     val baseline: GpuHardwareBackend.Baseline? = null,
     val historyMHz: List<Float> = emptyList(),
+    /**
+     * جدول الوقت في الحالة كما نشرته النواة، أو `null` إن لم تنشره.
+     *
+     * و`null` ليست «صفرًا»: القسم لا يُعرض أصلًا لمزوّد لا ينشر جدولًا (§0.8)، بينما `null`
+     * لجدول انقضى يبقى `null` ولا يُعرض له رقم. وهذا الفصل هو نفسه المطبَّق على المعالج.
+     */
+    val stateTimes: List<GpuHardwareBackend.StateTime>? = null,
     val applying: Boolean = false,
     val lastResult: GpuHardwareBackend.TransactionResult? = null,
     val notice: GpuNotice? = null,
@@ -144,6 +151,7 @@ class GpuStudioViewModel @Inject constructor(
                         device.maxFreq != verified.maxFreq ||
                         device.governor != verified.governor
                     )
+                val states = device?.let { GpuHardwareBackend.timeInState(it) }
                 val providerChanged = baselineProviderPath != device?.path
                 if (providerChanged) baselineProviderPath = device?.path
                 state = state.copy(
@@ -152,6 +160,7 @@ class GpuStudioViewModel @Inject constructor(
                     device = device,
                     baseline = if (providerChanged) device?.let(GpuHardwareBackend::captureBaseline) else state.baseline,
                     pending = if (providerChanged) null else state.pending,
+                    stateTimes = states,
                     historyMHz = if (providerChanged) listOfNotNull(sample) else if (sample != null) (state.historyMHz + sample).takeLast(60) else state.historyMHz,
                     verifiedSnapshot = if (drifted || providerChanged) null else verified,
                     // مع تغيّر المزوّد قد تقرأ المفاتيح حالةً لا تُصدَّق على عتادٍ آخر

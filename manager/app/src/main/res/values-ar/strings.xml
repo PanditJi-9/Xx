@@ -1977,6 +1977,11 @@
     <string name="logsviewer_search_hint">ابحث في الوسم أو الرسالة</string>
     <string name="logsviewer_tab_logcat">Logcat</string>
     <string name="logsviewer_tab_unified">سجل MaxManager</string>
+    <string name="logsviewer_tab_kernel">النواة</string>
+    <string name="logsviewer_kernel_note">لقطة من مخزن النواة الدائري. تحتاج الجذر، ورفض القراءة يُعرض رفضًا.</string>
+    <string name="logsviewer_kernel_refresh">تحديث</string>
+    <string name="logsviewer_kernel_empty">لم يُقرأ شيء بعد.</string>
+    <string name="logsviewer_kernel_unavailable">هذا الجهاز لا يسمح بقراءة سجلّ النواة.</string>
     <string name="logsviewer_unified_search_hint">ابحث في الرسالة أو نوع EVENT أو معرّف sw-</string>
     <string name="logsviewer_pause_cd">إيقاف مؤقت</string>
     <string name="logsviewer_resume_cd">متابعة</string>

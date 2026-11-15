@@ -1427,4 +1427,69 @@ object GpuHardwareBackend {
         (request.minFreq == null || actual.minFreq == request.minFreq) &&
         (request.maxFreq == null || actual.maxFreq == request.maxFreq) &&
         (request.governor == null || actual.governor.equals(request.governor, true))
+
+    // ─── جدول الوقت في الحالة ────────────────────────────────────────────────────────────────
+    //
+    // لماذا هنا ولماذا الآن: سجلّ المعالج في الحالة كان موجودًا (`CpuHardwareBackend.timeInState`)،
+    // وسجلّ الرسوميات لم يكن. ومعنى ذلك أن المستخدم يرى «إلى أين ذهب وقت المعالج» ولا يرى «إلى أين
+    // ذهب وقت الرسوميات» — وهو السؤال الذي يفسّر السخونة والتقطيع أكثر من أي رقم لحظيّ، لأن
+    // `cur_freq` يقول أين هو الآن، والجدول يقول أين كان فعلًا. والفكرة من مرجعين مستقلّين تتفقان
+    // على الشيء نفسه، والصياغة كلها هنا بلا نقل: صيغة النواة عامّة ومعلنة.
+
+    /**
+     * صفّ واحد من `time_in_state` كما كتبته النواة: ترددٌ **خام** وعدّاد.
+     *
+     * والتردد يبقى خامًّا هنا لا «ميجاهرتز»: وحدته تختلف بحسب المزوّد والعقدة، وتحويله قبل
+     * معرفة [Device.frequencyUnit] يُنتج رقمًا واثقًا من نفسه وهو خطأ بعامل ١٠٠٠. والتحويل
+     * عند العرض بـ[frequencyMHz] وحده، وهي التي تُرجع `null` حين تكون الوحدة غير موثوقة.
+     */
+    data class StateTime(val frequencyRaw: Long, val ticks: Long)
+
+    /**
+     * مسارات الجدول **نسبةً إلى عقدة المزوّد** — لا مسارات مطلقة.
+     *
+     * والثلاثة لأن العائلات لا تتفق: `devfreq` ينشر `stats/time_in_state`، وعقدة `kgsl` تحمل
+     * `devfreq/stats/time_in_state` تحتها، وبعض النوى القديمة تنشره في جذر العقدة. والقراءة
+     * بالتتابع لا بالمسار الواحد: عقدةٌ بلا جدول تعني «هذا المزوّد لا ينشره»، لا «انتهى البحث».
+     */
+    private val STATE_TIME_PATHS = listOf(
+        "stats/time_in_state",
+        "devfreq/stats/time_in_state",
+        "time_in_state",
+    )
+
+    /**
+     * جدول الوقت في الحالة لمزوّد الرسوميات، أو `null` حين لا تنشره نواته.
+     *
+     * و`null` هنا **ليست** «صفر»: مزوّد بلا جدول لا يُعرض له قسم أصلًا (§0.8)، ومزوّد بجدول
+     * كلّ عدّاداته صفر غير موجود في الواقع. والفصل بين الحالتين هو نفس القاعدة التي بُني عليها
+     * [CpuHardwareBackend.timeInState]، فلا يوجد في التطبيق جدولان يتصرّفان تصرّفين مختلفين.
+     */
+    fun timeInState(device: Device, io: ReadIo = SystemIo): List<StateTime>? {
+        for (relative in STATE_TIME_PATHS) {
+            val raw = io.read("${device.path}/$relative") ?: continue
+            parseTimeInState(raw)?.let { return it }
+        }
+        return null
+    }
+
+    /**
+     * المحلّل نفسه مفصولًا عن القراءة ليقيسه اختبار على نصّ ثابت بلا جهاز (نفس سبب فصل
+     * [CpuStateDistribution]): سطرٌ فيه أقلّ من حقلين يُسقَط، وترددٌ غير موجب يُسقَط، وعدّادٌ
+     * سالب يُسقَط، والعمود الثالث (وقت ثانٍ تضيفه بعض النوى) **يُهمَل ولا يُجمع** — جمعه يجعل
+     * الحصص تتجاوز ١٠٠٪ ثم تُقصّ، فيُعرض رقم مصطنع بدل الحقيقة.
+     */
+    internal fun parseTimeInState(raw: String): List<StateTime>? {
+        val states = raw.lineSequence().mapNotNull { line ->
+            val cells = line.trim().split(WHITESPACE)
+            if (cells.size < 2) return@mapNotNull null
+            val frequency = cells[0].toLongOrNull() ?: return@mapNotNull null
+            val ticks = cells[1].toLongOrNull() ?: return@mapNotNull null
+            if (frequency > 0L && ticks >= 0L) StateTime(frequency, ticks) else null
+        }.toList()
+        return states.ifEmpty { null }
+    }
 }
+
+/** فصل الحقول كما تنشره النواة: مسافة أو أكثر. */
+private val WHITESPACE = Regex("\\s+")

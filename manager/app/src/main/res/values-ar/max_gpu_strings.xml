@@ -114,4 +114,10 @@
     <string name="max_gpu_reason_unknown">تعذّر تنفيذ الطلب بأمان.</string>
     <string name="max_gpu_reason_technical">كود السبب</string>
 
+
+    <!-- الوقت في الحالة: من عدّادات النواة لا من لقطة الساعة. -->
+    <string name="max_gpu_state_title">الوقت في الحالة</string>
+    <string name="max_gpu_state_desc">أين ذهب وقت الرسوميات فعلًا، بعدّادات النواة لكل تردد تشغيل — لا لقطة للتردد الحالي.</string>
+    <string name="max_gpu_state_hidden">%1$d حالات دون ١٪</string>
+    <string name="max_gpu_state_hidden_share">مجموعها %1$s</string>
 </resources>

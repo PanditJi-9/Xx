@@ -409,6 +409,8 @@ internal val maxDestinationKeywords: Map<MaxDestination, List<String>> = mapOf(
     MaxDestination.DeviceLab to listOf("مختبر", "اختبار الجهاز", "device lab", "test"),
     MaxDestination.UsageStats to listOf("الاستخدام", "وقت الشاشه", "usage", "screen time"),
     MaxDestination.License to listOf("الترخيص", "license", "legal"),
+    MaxDestination.ManifestInspector to listOf("بيان", "بيان الحزمه", "الاذونات", "manifest", "package info"),
+    MaxDestination.NetworkScanner to listOf("فاحص الشبكه", "الجيران", "المنافذ", "lan", "network scan"),
     MaxDestination.ColorPalette to listOf("المظهر", "الالوان", "theme", "palette"),
     MaxDestination.ConfigBackup to listOf("نسخه احتياطيه", "backup", "restore", "config"),
     MaxDestination.MaxBackup to listOf("نسخ احتياطي للتطبيق", "app backup", "backup app"),
