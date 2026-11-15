@@ -964,6 +964,17 @@
     <string name="processmgr_threads_seconds">%1$s s</string>
     <string name="processmgr_threads_share">%1$d%%</string>
     <string name="processmgr_detail_cgroup">Cgroup</string>
+    <string name="processmgr_detail_ppid">Parent PID</string>
+    <string name="processmgr_detail_state">State</string>
+    <string name="processmgr_detail_uid">User</string>
+    <string name="processmgr_detail_cpus">Cores</string>
+    <string name="processmgr_detail_command">Command line</string>
+    <string name="processmgr_state_running">R · running</string>
+    <string name="processmgr_state_sleeping">S · sleeping</string>
+    <string name="processmgr_state_disk">D · waiting on I/O</string>
+    <string name="processmgr_state_zombie">Z · zombie</string>
+    <string name="processmgr_state_stopped">T · stopped</string>
+    <string name="processmgr_state_idle">I · idle</string>
     <string name="processmgr_details_loading">Reading kernel details…</string>
     <string name="processmgr_details_failed">Kernel details could not be read</string>
     <string name="processmgr_overlay_rows">Processes shown</string>

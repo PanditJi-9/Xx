@@ -89,6 +89,16 @@ data class ProcessDetails(
     val ioReadBytes: Long? = null,
     /** بايتات كُتبت إلى القرص — نفس التفريق بين الغياب والصفر. */
     val ioWrittenBytes: Long? = null,
+    /** العملية الأمّ — تُقرأ من `status` نفسه، فلا نداء جذر إضافي. */
+    val ppid: Int? = null,
+    /** حالة العملية كما تسمّيها النواة (`S`, `R`, `Z`…) بلا شرحها: التفسير في الواجهة. */
+    val state: String? = null,
+    /** معرّف المستخدم المالك — يفصل عملة النظام عن عملة التطبيق بلا تخمين. */
+    val uid: Int? = null,
+    /** الأنوية المسموح بها لهذه العملية، كما تُعلنها النواة. */
+    val cpusAllowed: String? = null,
+    /** سطر الأمر كاملًا — `null` حين لا تعلنه النواة (خيوط النواة بلا سطر أمر). */
+    val cmdline: String? = null,
 )
 
 /**
@@ -172,7 +182,8 @@ object ProcessFeed {
                 "cat /proc/$pid/status 2>/dev/null; echo '__MAX_OOM__'; " +
                     "cat /proc/$pid/oom_score_adj 2>/dev/null; echo '__MAX_CGROUP__'; " +
                     "cat /proc/$pid/cgroup 2>/dev/null; echo '__MAX_IO__'; " +
-                    "cat /proc/$pid/io 2>/dev/null"
+                    "cat /proc/$pid/io 2>/dev/null; echo '__MAX_CMDLINE__'; " +
+                    "cat /proc/$pid/cmdline 2>/dev/null"
             ).exec()
         }.getOrNull() ?: return null
         val text = result.out.joinToString("\n")
@@ -192,7 +203,13 @@ object ProcessFeed {
         val oom = text.substringAfter("__MAX_OOM__", "").substringBefore("__MAX_CGROUP__")
         val rest = text.substringAfter("__MAX_CGROUP__", "")
         val cgroup = rest.substringBefore("__MAX_IO__")
-        val io = rest.substringAfter("__MAX_IO__", "")
+        val io = rest.substringAfter("__MAX_IO__", "").substringBefore("__MAX_CMDLINE__")
+        // سطر الأمر مفصول بـNUL في `/proc`، ويُلحق بعد `io` كي لا يزحزح أقسامًا قائمة.
+        val cmdline = text.substringAfter("__MAX_CMDLINE__", "")
+            .replace('\u0000', ' ')
+            .replace('\n', ' ')
+            .trim()
+            .takeIf { it.isNotEmpty() }
 
         fun statusValue(key: String): String? = status.lineSequence()
             .map { it.trim() }
@@ -220,6 +237,13 @@ object ProcessFeed {
             threads = statusValue("Threads")?.toIntOrNull(),
             ioReadBytes = ioValue("read_bytes"),
             ioWrittenBytes = ioValue("write_bytes"),
+            ppid = statusValue("PPid")?.toIntOrNull(),
+            // `State` يعلنها كنمط `S (sleeping)` — نأخذ الرمز وحده، والشرح شأن العرض.
+            state = statusValue("State")?.substringBefore(' ')?.takeIf { it.isNotEmpty() },
+            // `Uid` أربعة أرقام مفصولة بمسافة بيضاء؛ الأوّل هو الفعليّ.
+            uid = statusValue("Uid")?.trim()?.split(SEPARATOR)?.firstOrNull()?.toIntOrNull(),
+            cpusAllowed = statusValue("Cpus_allowed_list"),
+            cmdline = cmdline,
         )
     }
 

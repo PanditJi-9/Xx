@@ -728,6 +728,7 @@ private fun DetailSheet(
                     stringResource(R.string.processmgr_detail_cgroup),
                     details.cgroup ?: "—"
                 )
+                ProcessDetailExtras(details)
                 if (!threadTimes.isNullOrEmpty()) {
                     Spacer(Modifier.height(MaxSpace.sm))
                     ProcessThreadsSection(times = threadTimes)
@@ -785,7 +786,7 @@ private fun DetailBadge(label: String, value: String) {
 
 /** سطر تفاصيل واحد: التسمية ثابتة والقيمة تنتهي عند الحافة، والطويلة تُقصّ بسطرين. */
 @Composable
-private fun DetailLine(label: String, value: String) {
+internal fun DetailLine(label: String, value: String) {
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm)) {
         Text(
             label,

@@ -1905,6 +1905,17 @@
     <string name="processmgr_threads_seconds">%1$s ث</string>
     <string name="processmgr_threads_share">%1$d%%</string>
     <string name="processmgr_detail_cgroup">المجموعة</string>
+    <string name="processmgr_detail_ppid">العملية الأمّ</string>
+    <string name="processmgr_detail_state">الحالة</string>
+    <string name="processmgr_detail_uid">المستخدم</string>
+    <string name="processmgr_detail_cpus">الأنوية</string>
+    <string name="processmgr_detail_command">سطر الأمر</string>
+    <string name="processmgr_state_running">R · تعمل</string>
+    <string name="processmgr_state_sleeping">S · ساكنة</string>
+    <string name="processmgr_state_disk">D · تنتظر إدخالًا/إخراجًا</string>
+    <string name="processmgr_state_zombie">Z · ميتة معلّقة</string>
+    <string name="processmgr_state_stopped">T · موقوفة</string>
+    <string name="processmgr_state_idle">I · خاملة</string>
     <string name="processmgr_details_loading">جارٍ قراءة تفاصيل النواة…</string>
     <string name="processmgr_details_failed">تعذّرت قراءة تفاصيل النواة</string>
     <string name="processmgr_overlay_rows">العمليات المعروضة</string>
