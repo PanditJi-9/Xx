@@ -310,8 +310,8 @@ internal fun LobbyExplore(
                 .padding(horizontal = MaxSpace.xl)
                 .heightIn(min = MaxSize.minTouchTarget)
                 .clip(searchShape)
-                .background(LobbyGlassBody)
-                .border(MaxSize.hairlineBorder, LobbyGlassEdge, searchShape)
+                .background(GlassFill)
+                .border(MaxSize.hairlineBorder, GlassBorder, searchShape)
                 .padding(horizontal = MaxSpace.md),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm)
@@ -519,7 +519,7 @@ private fun FilterChip(
             .clip(shape)
             .then(
                 if (selected) {
-                    Modifier.background(LobbyChipSelectedFill)
+                    Modifier.background(ActiveFill)
                 } else {
                     Modifier.background(Color.White.copy(alpha = 0.05f))
                 }
@@ -587,7 +587,7 @@ private fun ExploreCard(
                 scaleY = scale
             }
             .clip(shape)
-            .background(LobbyGlassBody)
+            .background(GlassFill)
             .then(
                 if (focused) Modifier.background(GameSpacePalette.Violet.copy(alpha = 0.14f)) else Modifier
             )
@@ -596,7 +596,7 @@ private fun ExploreCard(
                 when {
                     focused -> SolidColor(accent)
                     selected -> SolidColor(accent.copy(alpha = 0.55f))
-                    else -> LobbyGlassEdge
+                    else -> GlassBorder
                 },
                 shape
             )

@@ -143,20 +143,21 @@ private const val CountUpMs = 900
 private const val CountUpGate = 0.30f
 private const val DegToRad = 0.017453292f
 
-private val GlassBorder = Brush.linearGradient(
+/** زجاج المسرح — مشترك مع صفحة الاستكشاف كي لا تُنسخ التدرّجات في مكانين. */
+internal val GlassBorder = Brush.linearGradient(
     listOf(
         Color.White.copy(alpha = 0.16f),
         Color.White.copy(alpha = 0.05f),
         Color.White.copy(alpha = 0.10f)
     )
 )
-private val GlassFill = Brush.verticalGradient(
+internal val GlassFill = Brush.verticalGradient(
     listOf(GameSpacePalette.Glass.copy(alpha = 0.80f), GameSpacePalette.GlassDeep.copy(alpha = 0.88f))
 )
 private val RailFill = Brush.verticalGradient(
     listOf(GameSpacePalette.Glass.copy(alpha = 0.86f), GameSpacePalette.GlassDeep.copy(alpha = 0.93f))
 )
-private val ActiveFill = Brush.horizontalGradient(
+internal val ActiveFill = Brush.horizontalGradient(
     listOf(GameSpacePalette.VioletDeep.copy(alpha = 0.65f), GameSpacePalette.Plum.copy(alpha = 0.92f))
 )
 private val BrandBrush = Brush.linearGradient(
