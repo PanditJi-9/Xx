@@ -50,7 +50,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import nd.max.R
-import nd.max.ui.design.GameSpacePalette
 import nd.max.ui.design.MaxGroup
 import nd.max.ui.design.MaxGroupDivider
 import nd.max.ui.design.MaxRow

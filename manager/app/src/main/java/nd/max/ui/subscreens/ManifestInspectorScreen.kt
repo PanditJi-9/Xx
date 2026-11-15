@@ -48,7 +48,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import nd.max.R
 import nd.max.ui.component.AppIconImage
-import nd.max.ui.design.GameSpacePalette
 import nd.max.ui.design.MaxGroup
 import nd.max.ui.design.MaxGroupDivider
 import nd.max.ui.design.MaxMetric
@@ -395,7 +394,7 @@ private fun PermissionsSection(snapshot: ManifestSnapshot) {
                         title = permission.name.substringAfterLast('.'),
                         subtitle = permission.name,
                         icon = null,
-                        iconTone = if (permission.granted) MaxTone.Success else MaxTone.Neutral,
+                        iconTone = if (permission.granted) MaxTone.Positive else MaxTone.Neutral,
                         trailing = {
                             Text(
                                 text = stringResource(permissionLabel(permission)),
