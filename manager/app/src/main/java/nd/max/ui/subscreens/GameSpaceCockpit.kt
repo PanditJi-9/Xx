@@ -7,9 +7,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,15 +21,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.History
 import androidx.compose.material.icons.rounded.MoreHoriz
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,6 +38,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -62,38 +62,28 @@ import nd.max.ui.theme.DisplayFontFamily
 import kotlin.math.roundToInt
 
 /**
- * **كوكبيت اللوبي — التركيبة الأفقية الوحيدة** (اتجاه «A» الذي اختاره المالك، جولة ٢٩٥).
+ * **كوكبيت اللوبي الأفقيّ — تركيبة الأشرطة (جولة ٢٩٦).**
  *
- * ولماذا حلَّ محلّ المسرح المرسوم: المسرح كان لوحةً ثابتة ١٦٧٢×٩٤١ تُقاس إلى الشاشة، فكان
- * النصّ يُصغَّر إلى ما دون ١٢sp ويُقصّ عند `MaxFontScale = 1.15`، وكان اللمس يُضخَّم بحدّ ١.٢٥
- * فلا يبلغ ٤٨dp إلا عناصر كبيرة أصلًا، وكان `LayoutDirection.Ltr` مفروضًا على العربية كلها.
- * هنا كل شيء بوحدات dp حقيقية: لا مقياس، لا قصّ، لا قلب اتجاه، وكل هدف لمس ≥
- * `MaxSize.minTouchTarget`.
+ * ولا أقول إنها «بريميم» ولا إنها تطابق مرجعًا: المرجع الذي رسم المالك على شاشته يعيش ٩٠٪ منه
+ * على فنّ اللعبة (ملصق يغطّي الشاشة)، وهذه الشاشة لا تملك ملصقات — كل ما تملكه هو أيقونة التطبيق
+ * المثبَّت. فبُنيت على ما هو حقيقيّ: الأيقونة كبيرةً ومُضاءة كمرساة، وخلفها هالة لونيّة ساكنة،
+ * وعلى ذلك تُركَّب الأشرطة. وأي «ملصق» مُصنَّع بتدرّج مُموَّه قِيس في نماذج سابقة فقرأ ضبابًا أو
+ * لوحًا فارغًا — فلم يُشحن.
  *
- * **وقاعدة المعلومات:** كل قياس يظهر **مرّة واحدة** — الجاهزية والحالة في العدّاد، والمعالج
- * والرسوميات والحرارة في صفّ واحد، والإطارات في سطرها، والبطارية في سطرها. ولا توهّج إلا على
- * زرّ اللعب (`PlayRow`)، فتصير له الأولوية البصرية وحدها.
+ * و**القياس** الذي وُلدت منه هذه التركيبة (نموذج ١:١ بمقاس ٨٥٠×٣٩٢dp، مقيس في متصفّح حقيقيّ):
+ * `‏48dp رأس · المشهد 1fr · 104dp رفّ · 56dp تنقّل` ⇒ **صفر تجاوز، صفر تمرير** على هاتف أفقيّ.
+ * والتركيبة السابقة (شريط جانبيّ + آلة ٣٤٠dp + رفّ) كانت تحتاج ٤٥٠dp داخل ٣٩٢ ⇒ تمرير داخليّ
+ * أو خطّ تحت ١٢sp، وكلاهما مرفوض؛ فحُذفت.
  *
- * وحدوده المعلنة: قائمة الجلسات تفتح شاشتها (`onOpenSessions`)، وزرّ الخيارات يفتح قسم اللعبة
- * (`onOptions`)، والرفّ يختار اللعبة فقط؛ لا مسار ثانٍ لحفظ التفضيلات أو لتطبيق ملفّ.
+ * **وقواعد ثابتة:** كل هدف لمس ≥ `MaxSize.minTouchTarget` (الرفّ ٨٠dp، عناصر التنقّل ٥٦dp،
+ * زرّ القائمة ٤٨dp) · أصغر نصّ ١٢sp · لا كتابة عتاد (ADR-11) · المجهول «—» لا صفر (ADR-07) ·
+ * ولا توهّج إلا على زرّ التشغيل. والحركة الوحيدة المسموحة في ملفّات أخرى (`lobbyPress`) ساكنة
+ * النهاية ولا تعمل إن أوقف النظام الأنيميشن.
  */
-private val CockpitInstrumentWidth = 340.dp
-private val CockpitTopBarHeight = 56.dp
-private val CockpitShelfCardWidth = 84.dp
-private val CockpitShelfIcon = 64.dp
-private val CockpitArtEdge = 72.dp
-private val CockpitArtEdgeTight = 40.dp
-private val CockpitHeroTightHeight = 200.dp
-private val CockpitBrandRow = 34.dp
-private val CockpitSparkHeight = 34.dp
-private val CockpitBatteryTrack = 6.dp
-private val CockpitBatteryRadius = 3.dp
-
-/** المجهول يُكتب شرطةً لا صفرًا: «لا أعرف» ليس «صفر» (ADR-07). */
 private const val CockpitUnknown = "—"
 
-/** خمسة أبواب في الشريط؛ و«الملفّ» و«الإعدادات» في قائمة ⋯ فلا يزدحم الشريط. */
-private val CockpitRailPages = listOf(
+/** خمسة أبواب في الشريط السفليّ؛ و«الملفّ» و«الإعدادات» في قائمة ⋯ فلا يزدحم الشريط. */
+private val CockpitNavPages = listOf(
     LobbyPage.Home,
     LobbyPage.Library,
     LobbyPage.Performance,
@@ -101,99 +91,153 @@ private val CockpitRailPages = listOf(
     LobbyPage.Features,
 )
 
+/** ارتفاع شريط التنقّل — يحجزه الغلاف أسفل المشهد في مسار الأقسام أيضًا. */
+internal val CockpitNavHeight = 56.dp
+
+private val CockpitTopBarHeight = MaxSize.minTouchTarget
+private val CockpitShelfHeight = 104.dp
+private val CockpitTileSize = 80.dp
+private val CockpitTileIcon = 64.dp
+private val CockpitTileWidth = 92.dp
+private val CockpitHeroIcon = 96.dp
+private val CockpitHeroIconInner = 76.dp
+private val CockpitBrandRow = 32.dp
+private val CockpitNavIndicatorWidth = 28.dp
+private val CockpitNavIndicatorHeight = 3.dp
+
+/** عتبة لون الحرارة: تحت ٤٥° يبقى الحياد، وفوقها تحذير — لا لون لمجرّد الزينة. */
+private const val CockpitHeatWarn = 45f
+private val CockpitHeatTone = Color(0xFFFBBF24)
+private val CockpitEdgeLight = Color(0x33FFFFFF)
+private val CockpitGloss = Color(0x1AFFFFFF)
+private val CockpitBase = Color(0xFF0B0718)
+private val CockpitFloor = Color(0xFF05040D)
+
 @Composable
 internal fun GameSpaceCockpit(
     data: StageData,
     actions: StageActions,
-    currentPage: LobbyPage,
-    onPage: (LobbyPage) -> Unit,
+    @Suppress("UNUSED_PARAMETER") currentPage: LobbyPage,
+    @Suppress("UNUSED_PARAMETER") onPage: (LobbyPage) -> Unit,
     topActions: @Composable () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(horizontal = MaxSpace.xl, vertical = MaxSpace.md),
-        verticalArrangement = Arrangement.spacedBy(MaxSpace.md),
-    ) {
-        CockpitTopBar(data = data, onPage = onPage, topActions = topActions)
-        Row(
-            modifier = Modifier.fillMaxWidth().weight(1f),
-            horizontalArrangement = Arrangement.spacedBy(MaxSpace.md),
-        ) {
-            CockpitRail(current = currentPage, onPage = onPage, modifier = Modifier.fillMaxHeight())
-            Column(
-                modifier = Modifier.weight(1f).fillMaxHeight(),
-                verticalArrangement = Arrangement.spacedBy(MaxSpace.md),
-            ) {
-                if (data.games.isEmpty()) {
-                    EmptyHero(
-                        onOpenLibrary = actions.onOpenLibrary,
-                        modifier = Modifier.weight(1f).fillMaxWidth(),
-                    )
-                } else {
-                    CockpitHero(data = data, actions = actions, modifier = Modifier.weight(1f).fillMaxWidth())
-                }
-                CockpitShelf(data = data, actions = actions)
+    Box(modifier = modifier.fillMaxSize()) {
+        CockpitBloom(Modifier.matchParentSize())
+        Column(modifier = Modifier.fillMaxSize()) {
+            CockpitTopBar(
+                data = data,
+                onSelect = actions.onSelect,
+                onOpenSessions = actions.onOpenSessions,
+                onPage = onPage,
+                topActions = topActions,
+            )
+            if (data.games.isEmpty()) {
+                EmptyHero(
+                    onOpenLibrary = actions.onOpenLibrary,
+                    modifier = Modifier.weight(1f).fillMaxWidth(),
+                )
+            } else {
+                CockpitHero(
+                    data = data,
+                    actions = actions,
+                    modifier = Modifier.weight(1f).fillMaxWidth(),
+                )
             }
-            CockpitInstrument(data = data, actions = actions, modifier = Modifier.fillMaxHeight())
+            CockpitShelf(data = data, actions = actions)
+            // شريط التنقّل يملكه الغلاف (`GameLobbyScreen`) فيُرسم مرّة واحدة لكل الصفحات،
+            // ويحجز له المشهد ارتفاع `CockpitNavHeight` أسفله — فلا شريط مزدوج ولا تراكب.
         }
     }
+}
+
+/**
+ * خلفيّة المشهد: قاعدة شبه سوداء + هالة بنفسجيّة ساكنة في زاوية البداية + وهج أرضيّة.
+ * كلها `drawBehind` — تُرسم مرّة مع إعادة الرسم ولا تكلّف إطارًا.
+ */
+@Composable
+private fun CockpitBloom(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier.drawBehind {
+            drawRect(
+                Brush.verticalGradient(listOf(CockpitBase, GameSpacePalette.GlassDeep, CockpitFloor))
+            )
+            drawRect(
+                Brush.radialGradient(
+                    colors = listOf(
+                        GameSpacePalette.Violet.copy(alpha = MaxAlpha.toneContainerStrong),
+                        Color.Transparent,
+                    ),
+                    center = Offset(size.width * 0.22f, size.height * 0.34f),
+                    radius = size.maxDimension * 0.78f,
+                )
+            )
+        }
+    )
 }
 
 @Composable
 private fun CockpitTopBar(
     data: StageData,
+    onSelect: (String) -> Unit,
+    onOpenSessions: () -> Unit,
     onPage: (LobbyPage) -> Unit,
     topActions: @Composable () -> Unit,
 ) {
     var overflow by remember { mutableStateOf(false) }
     Row(
-        modifier = Modifier.fillMaxWidth().height(CockpitTopBarHeight),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(CockpitTopBarHeight)
+            .padding(horizontal = MaxSpace.xl),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(MaxSpace.md),
     ) {
-        val game = data.selected
-        if (game != null) {
-            AppIconImage(packageName = game.packageName, size = MaxSize.iconContainer)
-        }
-        Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = game?.label ?: stringResource(R.string.game_space_title),
-                color = GameSpacePalette.Ink,
-                fontSize = 18.sp,
-                fontFamily = DisplayFontFamily,
-                fontWeight = FontWeight.SemiBold,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
-            val tagline = data.tagline
-            if (!tagline.isNullOrBlank()) {
-                Text(
-                    text = tagline,
-                    color = GameSpacePalette.Muted,
-                    fontSize = 12.sp,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            }
-        }
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs),
-        ) { topActions() }
+        Text(
+            text = stringResource(R.string.gs_brand_mark),
+            color = GameSpacePalette.VioletSoft,
+            fontSize = 22.sp,
+            fontFamily = DisplayFontFamily,
+            fontWeight = FontWeight.Black,
+            maxLines = 1,
+            modifier = Modifier.height(CockpitBrandRow),
+        )
+        CockpitStat(label = stringResource(R.string.gs_cpu), value = data.cpu?.let { "$it%" })
+        CockpitStat(label = stringResource(R.string.gs_gpu), value = data.gpu?.let { "$it%" })
+        CockpitStat(
+            label = stringResource(R.string.gs_heat),
+            value = data.heat?.let { "${it.roundToInt()}°" },
+            tone = if ((data.heat ?: 0f) >= CockpitHeatWarn) CockpitHeatTone else null,
+        )
+        CockpitStat(
+            label = stringResource(R.string.gs_fps_unit),
+            value = data.fps.value?.toString(),
+            live = data.fps.live,
+        )
+        CockpitStat(
+            label = stringResource(R.string.gs_battery),
+            value = data.batteryPercent?.let { stringResource(R.string.gs_percent_value, it) },
+        )
+        Spacer(modifier = Modifier.weight(1f))
         Column(horizontalAlignment = Alignment.End) {
             Text(
                 text = data.clock,
                 color = GameSpacePalette.Ink,
-                fontSize = 16.sp,
+                fontSize = 15.sp,
                 fontFamily = DisplayFontFamily,
                 fontWeight = FontWeight.SemiBold,
+                maxLines = 1,
             )
             if (data.date.isNotBlank()) {
-                Text(text = data.date, color = GameSpacePalette.Muted, fontSize = 12.sp)
+                Text(
+                    text = data.date,
+                    color = GameSpacePalette.Muted,
+                    fontSize = 12.sp,
+                    maxLines = 1,
+                )
             }
         }
+        topActions()
         Box {
             CockpitIconButton(
                 icon = Icons.Rounded.MoreHoriz,
@@ -203,21 +247,64 @@ private fun CockpitTopBar(
             )
             DropdownMenu(expanded = overflow, onDismissRequest = { overflow = false }) {
                 DropdownMenuItem(
-                    text = { Text(stringResource(LobbyPage.Profile.labelRes)) },
+                    text = { Text(stringResource(LobbyPage.Profile.labelRes), fontSize = 14.sp) },
                     onClick = {
                         overflow = false
                         onPage(LobbyPage.Profile)
                     },
                 )
                 DropdownMenuItem(
-                    text = { Text(stringResource(LobbyPage.Settings.labelRes)) },
+                    text = { Text(stringResource(LobbyPage.Settings.labelRes), fontSize = 14.sp) },
                     onClick = {
                         overflow = false
                         onPage(LobbyPage.Settings)
                     },
                 )
+                HorizontalDivider()
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            text = stringResource(R.string.lobby_insights_sessions),
+                            fontSize = 14.sp,
+                        )
+                    },
+                    onClick = {
+                        overflow = false
+                        onOpenSessions()
+                    },
+                )
             }
         }
+    }
+}
+
+@Composable
+private fun CockpitStat(
+    label: String,
+    value: String?,
+    tone: Color? = null,
+    live: Boolean = false,
+) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = value ?: CockpitUnknown,
+                color = tone ?: if (value == null) GameSpacePalette.Muted else GameSpacePalette.Ink,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.SemiBold,
+                maxLines = 1,
+            )
+            if (live) {
+                Spacer(modifier = Modifier.width(MaxSpace.xs))
+                PulseDot(color = GameSpacePalette.Mint)
+            }
+        }
+        Text(
+            text = label,
+            color = GameSpacePalette.Muted,
+            fontSize = 12.sp,
+            maxLines = 1,
+        )
     }
 }
 
@@ -235,8 +322,11 @@ private fun CockpitIconButton(
             .size(MaxSize.minTouchTarget)
             .lobbyPress(interaction, 0.92f)
             .clip(shape)
-            .background(if (selected) GameSpacePalette.PanelSelected else GameSpacePalette.Glass)
-            .border(MaxSize.hairlineBorder, GameSpacePalette.Hairline, shape)
+            .background(
+                if (selected) GameSpacePalette.PanelSelected
+                else GameSpacePalette.Glass.copy(alpha = MaxAlpha.toneContainer)
+            )
+            .border(MaxSize.hairlineBorder, CockpitEdgeLight, shape)
             .clickable(
                 interactionSource = interaction,
                 indication = null,
@@ -254,396 +344,150 @@ private fun CockpitIconButton(
     }
 }
 
-@Composable
-internal fun CockpitRail(
-    current: LobbyPage,
-    onPage: (LobbyPage) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Column(
-        modifier = modifier
-            .width(GameSpaceRailWidth)
-            .fillMaxHeight()
-            .verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.spacedBy(MaxSpace.xs),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Text(
-            text = stringResource(R.string.gs_brand_mark),
-            color = GameSpacePalette.VioletSoft,
-            fontSize = 26.sp,
-            fontFamily = DisplayFontFamily,
-            fontWeight = FontWeight.Black,
-            maxLines = 1,
-            modifier = Modifier.height(CockpitBrandRow),
-        )
-        CockpitRailPages.forEach { page ->
-            CockpitRailItem(page = page, current = current, onPage = onPage)
-        }
-    }
-}
-
-@Composable
-private fun CockpitRailItem(page: LobbyPage, current: LobbyPage, onPage: (LobbyPage) -> Unit) {
-    val active = page == current
-    val interaction = remember { MutableInteractionSource() }
-    val shape = RoundedCornerShape(MaxRadius.control)
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(MaxSize.minTouchTarget)
-            .lobbyPress(interaction, 0.94f)
-            .clip(shape)
-            .background(if (active) GameSpacePalette.PanelSelected else Color.Transparent)
-            .selectable(
-                selected = active,
-                interactionSource = interaction,
-                indication = null,
-                role = Role.Tab,
-                onClick = { onPage(page) },
-            )
-            .padding(horizontal = MaxSpace.sm),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs),
-    ) {
-        Icon(
-            imageVector = page.icon,
-            contentDescription = null,
-            tint = if (active) GameSpacePalette.VioletSoft else GameSpacePalette.Muted,
-            modifier = Modifier.size(MaxSize.iconGlyph),
-        )
-        Text(
-            text = stringResource(page.labelRes),
-            color = if (active) GameSpacePalette.Ink else GameSpacePalette.Muted,
-            fontSize = 12.sp,
-            lineHeight = 15.sp,
-            fontWeight = if (active) FontWeight.SemiBold else FontWeight.Medium,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
-        )
-    }
-}
-
+/** المشهد: الأيقونة مرساةً، والاسم والجاهزية وزرّ اللعب — كلّ حقيقة مرّة واحدة. */
 @Composable
 private fun CockpitHero(data: StageData, actions: StageActions, modifier: Modifier = Modifier) {
-    val shape = RoundedCornerShape(MaxRadius.group)
-    BoxWithConstraints(modifier = modifier.clip(shape)) {
-        val tight = maxHeight < CockpitHeroTightHeight
-        Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(
-                    Brush.verticalGradient(
-                        listOf(GameSpacePalette.Glass, GameSpacePalette.GlassDeep)
-                    )
-                )
-                .border(MaxSize.hairlineBorder, GameSpacePalette.Hairline, shape)
-                .padding(horizontal = MaxSpace.xl, vertical = MaxSpace.lg),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(MaxSpace.xl),
+    val ready = data.readinessPercent.coerceIn(0, 100)
+    Row(
+        modifier = modifier.padding(horizontal = MaxSpace.xl, vertical = MaxSpace.md),
+        verticalAlignment = Alignment.Bottom,
+        horizontalArrangement = Arrangement.spacedBy(MaxSpace.lg),
+    ) {
+        CockpitHeroIcon(
+            packageName = data.selected?.packageName,
+            modifier = Modifier.align(Alignment.CenterVertically),
+        )
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(MaxSpace.xs),
         ) {
-            HeroArt(game = data.selected, edge = if (tight) CockpitArtEdgeTight else CockpitArtEdge)
-            Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(MaxSpace.sm),
-            ) {
+            Text(
+                text = data.statusTitle,
+                color = GameSpacePalette.VioletSoft,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.SemiBold,
+                letterSpacing = 1.6.sp,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            Text(
+                text = data.selected?.label ?: stringResource(R.string.game_space_title),
+                color = GameSpacePalette.Ink,
+                fontSize = 30.sp,
+                lineHeight = 32.sp,
+                fontFamily = DisplayFontFamily,
+                fontWeight = FontWeight.Black,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis,
+            )
+            val tagline = data.tagline
+            if (!tagline.isNullOrBlank()) {
                 Text(
-                    text = data.selected?.label ?: data.statusTitle,
-                    color = GameSpacePalette.Ink,
-                    fontSize = 24.sp,
-                    fontFamily = DisplayFontFamily,
-                    fontWeight = FontWeight.Black,
+                    text = tagline,
+                    color = GameSpacePalette.Muted,
+                    fontSize = 14.sp,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                 )
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm),
-                ) {
-                    val tagline = data.tagline
-                    if (!tagline.isNullOrBlank()) CockpitChip(text = tagline)
-                    CockpitChip(
-                        text = stringResource(
-                            R.string.gs_percent_value,
-                            data.readinessPercent.coerceIn(0, 100),
-                        )
-                    )
-                }
-                Spacer(modifier = Modifier.height(MaxSpace.hairline))
-                PlayRow(
-                    enabled = data.selected != null,
-                    onLaunch = actions.onLaunch,
-                    onOptions = actions.onOptions,
-                    modifier = Modifier,
-                    launching = data.launching,
-                )
             }
         }
-    }
-}
-
-@Composable
-private fun CockpitChip(text: String) {
-    val shape = RoundedCornerShape(MaxRadius.chip)
-    Text(
-        text = text,
-        color = GameSpacePalette.Lavender,
-        fontSize = 12.sp,
-        fontWeight = FontWeight.Medium,
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis,
-        modifier = Modifier
-            .clip(shape)
-            .background(GameSpacePalette.Violet.copy(alpha = MaxAlpha.toneContainer))
-            .border(MaxSize.hairlineBorder, GameSpacePalette.Hairline, shape)
-            .padding(horizontal = MaxSpace.sm, vertical = MaxSpace.xs),
-    )
-}
-
-@Composable
-private fun CockpitInstrument(data: StageData, actions: StageActions, modifier: Modifier = Modifier) {
-    val shape = RoundedCornerShape(MaxRadius.group)
-    val ready = data.readinessPercent.coerceIn(0, 100)
-    Column(
-        modifier = modifier
-            .width(CockpitInstrumentWidth)
-            .clip(shape)
-            .background(
-                Brush.verticalGradient(listOf(GameSpacePalette.Glass, GameSpacePalette.GlassDeep))
-            )
-            .border(MaxSize.hairlineBorder, GameSpacePalette.Hairline, shape)
-            .verticalScroll(rememberScrollState())
-            .padding(MaxSpace.lg),
-        verticalArrangement = Arrangement.spacedBy(MaxSpace.md),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
         StageRing(
             progress = ready / 100f,
             value = ready.toString(),
-            label = data.statusTitle,
+            label = stringResource(R.string.gs_ready_title),
             from = GameSpacePalette.VioletDeep,
             to = GameSpacePalette.VioletSoft,
             warn = false,
         )
-        if (data.statusDetail.isNotBlank()) {
-            Text(
-                text = data.statusDetail,
-                color = GameSpacePalette.Muted,
-                fontSize = 12.sp,
-                textAlign = TextAlign.Center,
-                maxLines = 3,
-                overflow = TextOverflow.Ellipsis,
-            )
-        }
-        CockpitDivider()
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm),
-        ) {
-            CockpitMetric(
-                label = stringResource(R.string.gs_cpu),
-                value = data.cpu?.let { "$it%" },
-                modifier = Modifier.weight(1f),
-            )
-            CockpitMetric(
-                label = stringResource(R.string.gs_gpu),
-                value = data.gpu?.let { "$it%" },
-                modifier = Modifier.weight(1f),
-            )
-            CockpitMetric(
-                label = stringResource(R.string.gs_heat),
-                value = data.heat?.let { "${it.roundToInt()}°" },
-                modifier = Modifier.weight(1f),
-            )
-        }
-        CockpitDivider()
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(MaxSpace.md),
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = stringResource(R.string.gs_fps_unit),
-                    color = GameSpacePalette.Muted,
-                    fontSize = 12.sp,
-                    maxLines = 1,
-                )
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        text = data.fps.value?.toString() ?: CockpitUnknown,
-                        color = GameSpacePalette.Ink,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.SemiBold,
-                    )
-                    if (data.fps.live) {
-                        Spacer(modifier = Modifier.width(MaxSpace.xs))
-                        PulseDot(color = GameSpacePalette.Mint)
-                    }
-                }
-            }
-            StageSparkline(
-                values = data.fps.history,
-                live = data.fps.live,
-                modifier = Modifier.weight(1.4f).height(CockpitSparkHeight),
-            )
-        }
-        CockpitDivider()
-        CockpitBattery(percent = data.batteryPercent, charging = data.charging)
-        CockpitDivider()
-        CockpitDoor(
-            label = stringResource(R.string.lobby_insights_sessions),
-            onOpen = actions.onOpenSessions,
+        PlayRow(
+            enabled = data.selected != null,
+            onLaunch = actions.onLaunch,
+            onOptions = actions.onOptions,
+            modifier = Modifier,
+            launching = data.launching,
         )
     }
 }
 
+/** الأيقونة كمرساة مادّيّة: لوح داكن، حافة مُضاءة أعلى، ولمعان زجاجيّ ساكن. */
 @Composable
-private fun CockpitDivider() {
+private fun CockpitHeroIcon(packageName: String?, modifier: Modifier = Modifier) {
+    val shape = RoundedCornerShape(MaxRadius.tile)
     Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(MaxSize.hairlineBorder)
-            .background(GameSpacePalette.Hairline)
-    )
-}
-
-@Composable
-private fun CockpitMetric(label: String, value: String?, modifier: Modifier = Modifier) {
-    Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(MaxSpace.hairline)) {
-        Text(
-            text = label,
-            color = GameSpacePalette.Muted,
-            fontSize = 12.sp,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-        )
-        Text(
-            text = value ?: CockpitUnknown,
-            color = if (value == null) GameSpacePalette.Muted else GameSpacePalette.Ink,
-            fontSize = 17.sp,
-            fontWeight = FontWeight.SemiBold,
-            maxLines = 1,
-        )
-    }
-}
-
-@Composable
-private fun CockpitBattery(percent: Int?, charging: Boolean) {
-    val tone = batteryTone(percent, charging)
-    Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(MaxSpace.xs)) {
-        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                text = stringResource(R.string.gs_battery),
-                color = GameSpacePalette.Muted,
-                fontSize = 12.sp,
-                maxLines = 1,
-                modifier = Modifier.weight(1f),
+        modifier = modifier
+            .size(CockpitHeroIcon)
+            .clip(shape)
+            .background(
+                Brush.linearGradient(
+                    listOf(GameSpacePalette.VioletDeep, GameSpacePalette.Glass, CockpitFloor)
+                )
             )
-            Text(
-                text = percent?.let { stringResource(R.string.gs_percent_value, it) } ?: CockpitUnknown,
-                color = tone,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.SemiBold,
-                maxLines = 1,
-            )
-        }
+            .border(MaxSize.hairlineBorder, CockpitEdgeLight, shape),
+        contentAlignment = Alignment.Center,
+    ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(CockpitBatteryTrack)
-                .clip(RoundedCornerShape(CockpitBatteryRadius))
-                .background(GameSpacePalette.Track)
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth((percent ?: 0).coerceIn(0, 100) / 100f)
-                    .fillMaxHeight()
-                    .background(tone)
-            )
+                .fillMaxHeight(0.46f)
+                .align(Alignment.TopCenter)
+                .background(
+                    Brush.verticalGradient(listOf(CockpitGloss, Color.Transparent))
+                )
+        )
+        if (packageName != null) {
+            AppIconImage(packageName = packageName, size = CockpitHeroIconInner)
         }
     }
 }
 
-@Composable
-private fun CockpitDoor(label: String, onOpen: () -> Unit) {
-    val interaction = remember { MutableInteractionSource() }
-    val shape = RoundedCornerShape(MaxRadius.control)
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(MaxSize.minTouchTarget)
-            .lobbyPress(interaction, 0.96f)
-            .clip(shape)
-            .background(GameSpacePalette.Violet.copy(alpha = MaxAlpha.toneWash))
-            .border(MaxSize.hairlineBorder, GameSpacePalette.Hairline, shape)
-            .clickable(
-                interactionSource = interaction,
-                indication = null,
-                role = Role.Button,
-                onClick = onOpen,
-            )
-            .padding(horizontal = MaxSpace.md),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm),
-    ) {
-        Icon(
-            imageVector = Icons.Rounded.History,
-            contentDescription = null,
-            tint = GameSpacePalette.VioletSoft,
-            modifier = Modifier.size(MaxSize.iconGlyphSmall),
-        )
-        Text(
-            text = label,
-            color = GameSpacePalette.Ink,
-            fontSize = 13.sp,
-            fontWeight = FontWeight.Medium,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.weight(1f),
-        )
-    }
-}
-
+/** رفّ الألعاب: مسار اختيار اللعبة الوحيد، وآخره «كل الألعاب». */
 @Composable
 private fun CockpitShelf(data: StageData, actions: StageActions) {
     if (data.games.isEmpty()) return
     val state = rememberLazyListState()
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm),
-    ) {
+    Box(modifier = Modifier.fillMaxWidth().height(CockpitShelfHeight)) {
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .background(
+                    Brush.verticalGradient(
+                        listOf(Color.Transparent, GameSpacePalette.GlassDeep.copy(alpha = 0.86f))
+                    )
+                )
+        )
         LazyRow(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.fillMaxSize().padding(horizontal = MaxSpace.xl),
             state = state,
             horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm),
+            verticalAlignment = Alignment.Top,
         ) {
             items(data.games, key = { it.packageName }) { game ->
-                CockpitShelfCard(
+                CockpitShelfTile(
                     game = game,
                     selected = game.packageName == data.selected?.packageName,
                     onClick = { actions.onSelect(game.packageName) },
                 )
             }
+            item {
+                CockpitSeeAll(onClick = actions.onOpenLibrary)
+            }
         }
-        CockpitSeeAll(onClick = actions.onOpenLibrary)
     }
 }
 
 @Composable
-private fun CockpitShelfCard(game: GameApp, selected: Boolean, onClick: () -> Unit) {
+private fun CockpitShelfTile(game: GameApp, selected: Boolean, onClick: () -> Unit) {
     val interaction = remember { MutableInteractionSource() }
     val shape = RoundedCornerShape(MaxRadius.tile)
     Column(
         modifier = Modifier
-            .width(CockpitShelfCardWidth)
+            .width(CockpitTileWidth)
             .lobbyPress(interaction, 0.94f)
             .clip(shape)
             .background(if (selected) GameSpacePalette.PanelSelected else Color.Transparent)
             .border(
                 width = if (selected) MaxSize.activeRing else MaxSize.hairlineBorder,
-                color = if (selected) GameSpacePalette.VioletSoft else GameSpacePalette.Hairline,
+                color = if (selected) GameSpacePalette.Lavender else CockpitEdgeLight,
                 shape = shape,
             )
             .clickable(
@@ -656,7 +500,22 @@ private fun CockpitShelfCard(game: GameApp, selected: Boolean, onClick: () -> Un
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(MaxSpace.xs),
     ) {
-        AppIconImage(packageName = game.packageName, size = CockpitShelfIcon)
+        Box(
+            modifier = Modifier
+                .size(CockpitTileSize - MaxSpace.sm)
+                .clip(RoundedCornerShape(MaxRadius.control))
+                .background(
+                    Brush.linearGradient(
+                        listOf(
+                            GameSpacePalette.Violet.copy(alpha = MaxAlpha.toneContainer),
+                            GameSpacePalette.Glass,
+                        )
+                    )
+                ),
+            contentAlignment = Alignment.Center,
+        ) {
+            AppIconImage(packageName = game.packageName, size = CockpitTileIcon - MaxSpace.md)
+        }
         Text(
             text = game.label,
             color = if (selected) GameSpacePalette.Ink else GameSpacePalette.Muted,
@@ -673,20 +532,20 @@ private fun CockpitShelfCard(game: GameApp, selected: Boolean, onClick: () -> Un
 @Composable
 private fun CockpitSeeAll(onClick: () -> Unit) {
     val interaction = remember { MutableInteractionSource() }
-    val shape = RoundedCornerShape(MaxRadius.control)
+    val shape = RoundedCornerShape(MaxRadius.tile)
     Box(
         modifier = Modifier
-            .height(MaxSize.minTouchTarget)
+            .width(CockpitTileWidth)
+            .height(CockpitTileSize)
             .lobbyPress(interaction, 0.94f)
             .clip(shape)
-            .border(MaxSize.hairlineBorder, GameSpacePalette.Hairline, shape)
+            .border(MaxSize.hairlineBorder, CockpitEdgeLight, shape)
             .clickable(
                 interactionSource = interaction,
                 indication = null,
                 role = Role.Button,
                 onClick = onClick,
-            )
-            .padding(horizontal = MaxSpace.md),
+            ),
         contentAlignment = Alignment.Center,
     ) {
         Text(
@@ -694,7 +553,85 @@ private fun CockpitSeeAll(onClick: () -> Unit) {
             color = GameSpacePalette.VioletSoft,
             fontSize = 12.sp,
             fontWeight = FontWeight.SemiBold,
-            maxLines = 1,
+            maxLines = 2,
+            textAlign = TextAlign.Center,
         )
+    }
+}
+
+/** شريط التنقّل السفليّ: مسار واحد، مؤشّر ساكن على النشط، وهدف ٥٦dp لكل باب. */
+@Composable
+internal fun CockpitNav(
+    current: LobbyPage,
+    onPage: (LobbyPage) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(CockpitNavHeight)
+            .background(
+                Brush.verticalGradient(
+                    listOf(GameSpacePalette.PanelSelected, GameSpacePalette.GlassDeep)
+                )
+            )
+            .padding(horizontal = MaxSpace.lg),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        CockpitNavPages.forEach { page ->
+            CockpitNavItem(page = page, current = current, onPage = onPage)
+        }
+    }
+}
+
+@Composable
+private fun RowScope.CockpitNavItem(
+    page: LobbyPage,
+    current: LobbyPage,
+    onPage: (LobbyPage) -> Unit,
+) {
+    val active = page == current
+    val interaction = remember { MutableInteractionSource() }
+    Column(
+        modifier = Modifier
+            .weight(1f)
+            .fillMaxHeight()
+            .lobbyPress(interaction, 0.94f)
+            .selectable(
+                selected = active,
+                interactionSource = interaction,
+                indication = null,
+                role = Role.Tab,
+                onClick = { onPage(page) },
+            ),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
+        Box(
+            modifier = Modifier
+                .width(CockpitNavIndicatorWidth)
+                .height(CockpitNavIndicatorHeight)
+                .clip(RoundedCornerShape(MaxRadius.chip))
+                .background(if (active) GameSpacePalette.VioletSoft else Color.Transparent)
+        )
+        Spacer(modifier = Modifier.height(MaxSpace.xs))
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs),
+        ) {
+            Icon(
+                imageVector = page.icon,
+                contentDescription = null,
+                tint = if (active) GameSpacePalette.VioletSoft else GameSpacePalette.Muted,
+                modifier = Modifier.size(MaxSize.iconGlyphSmall),
+            )
+            Text(
+                text = stringResource(page.labelRes),
+                color = if (active) GameSpacePalette.Ink else GameSpacePalette.Muted,
+                fontSize = 12.sp,
+                fontWeight = if (active) FontWeight.SemiBold else FontWeight.Medium,
+                maxLines = 1,
+            )
+        }
     }
 }

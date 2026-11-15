@@ -87,7 +87,7 @@ class LobbyExploreContractTest {
         )
         assertTrue(
             "The landscape rail must be the one navigator and receive the same callback",
-            text.contains("CockpitRail(") && text.contains("onPage = onPage")
+            text.contains("CockpitNav(") && text.contains("onPage = onPage")
         )
         assertTrue(
             "The stage must receive the current page so the rail can mark it",
@@ -166,7 +166,7 @@ class LobbyExploreContractTest {
         val cockpitText = cockpit()
         assertTrue(
             "The cockpit dropped its sessions door",
-            cockpitText.contains("onOpen = actions.onOpenSessions") &&
+            cockpitText.contains("actions.onOpenSessions") &&
                 cockpitText.contains("R.string.lobby_insights_sessions")
         )
     }

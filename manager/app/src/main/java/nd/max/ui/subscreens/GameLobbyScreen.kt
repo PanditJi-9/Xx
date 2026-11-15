@@ -592,7 +592,9 @@ fun GameLobbyScreen(
                                 launchSingleTop = true
                             }
                         },
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(bottom = if (portrait) 0.dp else CockpitNavHeight)
                     )
                 } else {
                     val target = currentPage.section ?: LobbySection.Game
@@ -603,18 +605,11 @@ fun GameLobbyScreen(
                                 start = if (portrait) 0.dp else MaxSpace.xl,
                                 end = if (portrait) 0.dp else MaxSpace.xl,
                                 top = if (portrait) 0.dp else MaxSpace.md,
-                                bottom = if (portrait) PortraitNavHeight else MaxSpace.md
+                                bottom = if (portrait) PortraitNavHeight else CockpitNavHeight + MaxSpace.xs
                             ),
                         horizontalArrangement = Arrangement.spacedBy(MaxSpace.md)
                     ) {
-                        // الشريط نفسه في الأفقيّ: التنقّل لا يختفي لأنك دخلت قسمًا.
-                        if (!portrait) {
-                            CockpitRail(
-                                current = currentPage,
-                                onPage = onPage,
-                                modifier = Modifier.fillMaxHeight()
-                            )
-                        }
+                        // التنقّل في الأفقيّ شريطٌ سفليّ واحد يملكه الغلاف، فلا يُخفى في الأقسام.
                         Column(modifier = Modifier.weight(1f).fillMaxHeight()) {
                             Row(
                                 modifier = Modifier
@@ -706,6 +701,12 @@ fun GameLobbyScreen(
 
                 if (portrait) {
                     GameSpaceBottomNav(
+                        current = currentPage,
+                        onPage = onPage,
+                        modifier = Modifier.align(Alignment.BottomCenter)
+                    )
+                } else {
+                    CockpitNav(
                         current = currentPage,
                         onPage = onPage,
                         modifier = Modifier.align(Alignment.BottomCenter)
