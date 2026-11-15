@@ -115,6 +115,7 @@ fun maxDestinationRole(destination: MaxDestination): Int = when (destination) {
     MaxDestination.DeviceInfo -> R.string.max_role_device_info
     // ومختبر الجهاز: دورٌ يقول إنه **يفحص** العتاد تفاعليًّا، لا أنه يعرض أرقامًا فقط.
     MaxDestination.DeviceLab -> R.string.max_role_device_lab
+    MaxDestination.ManifestInspector -> R.string.max_role_manifest_inspector
     MaxDestination.UsageStats -> R.string.max_role_usage_stats
     MaxDestination.BatteryHistory -> R.string.max_role_battery_history
     // وشاشة تعريف المحرّك (§٥): شاشة قراءةٍ أيضًا — تشرح الحلقة والمتاح، ولا تضبط شيئًا.

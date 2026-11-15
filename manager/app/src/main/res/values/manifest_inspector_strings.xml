@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  `MANIFEST-INSPECTOR-01` — نصوص فاحص بيان الحزمة (إنجليزي).
+  العربية في `values-ar/manifest_inspector_strings.xml` فقط (ADR-14): لا لغة ثالثة بلا أمر «زامن».
+-->
+<resources>
+    <string name="manifest_inspector_title">Manifest Inspector</string>
+    <string name="manifest_inspector_subtitle">What an installed app declares about itself, read from PackageManager.</string>
+    <string name="max_role_manifest_inspector">Shows what a package declares about itself — read-only.</string>
+
+    <string name="mi_search">Search apps</string>
+    <string name="mi_empty">Choose an app on the left.</string>
+    <string name="mi_yes">Yes</string>
+    <string name="mi_no">No</string>
+
+    <string name="mi_section_identity">Package</string>
+    <string name="mi_version">Version</string>
+    <string name="mi_version_code">Version code</string>
+    <string name="mi_min_sdk">Minimum SDK</string>
+    <string name="mi_target_sdk">Target SDK</string>
+    <string name="mi_installed">Installed</string>
+    <string name="mi_updated">Updated</string>
+    <string name="mi_installer">Installer</string>
+    <string name="mi_uid">UID</string>
+    <string name="mi_data_dir">Data directory</string>
+    <string name="mi_debuggable">Debuggable</string>
+    <string name="mi_system_app">System app</string>
+    <string name="mi_enabled">Enabled</string>
+
+    <string name="mi_section_permissions">Requested permissions</string>
+    <string name="mi_permissions_summary">%1$d permissions · %2$d of them dangerous</string>
+    <string name="mi_permissions_none">This app requests no permission.</string>
+    <string name="mi_perm_dangerous">Dangerous</string>
+    <string name="mi_perm_signature">Signature</string>
+    <string name="mi_perm_normal">Normal</string>
+    <string name="mi_perm_unknown">Unclassified</string>
+
+    <string name="mi_section_components">Components</string>
+    <string name="mi_activities">Activities</string>
+    <string name="mi_services">Services</string>
+    <string name="mi_receivers">Receivers</string>
+    <string name="mi_providers">Providers</string>
+    <string name="mi_components_none">None declared</string>
+
+    <string name="mi_section_features">Device features</string>
+    <string name="mi_features_note">The platform does not expose another app\'s uses-feature list; these are the features this device reports.</string>
+    <string name="mi_features_none">No feature reported</string>
+
+    <string name="mi_section_signature">Signing certificate</string>
+    <string name="mi_signature_note">SHA-256 of the signing certificate. Two builds with the same value are the same publisher.</string>
+    <string name="mi_signature_sha256">Certificate digest</string>
+</resources>

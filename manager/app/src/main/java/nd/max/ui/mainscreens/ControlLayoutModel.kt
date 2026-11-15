@@ -84,6 +84,7 @@ val ControlToolDestinations: List<MaxDestination> = listOf(
     MaxDestination.ActivityLauncher,
     // أدوات التشخيص بقيّة: شاشة التشخيص حُذفت بأمر المالك، فبقيت أدواتها هنا.
     MaxDestination.DeviceLab,
+    MaxDestination.ManifestInspector,
     MaxDestination.UsageStats,
     MaxDestination.Logs,
     MaxDestination.MaxBackup,
@@ -184,6 +185,7 @@ private val ControlToolBands: List<Pair<Int, List<MaxDestination>>> = listOf(
     // أدوات النظام: ما يقرأ الجهاز ويُدير تطبيقاته وشحنه — لا يُخفى خلف «متقدّم».
     R.string.control_tools_system to listOf(
         MaxDestination.DeviceLab,
+        MaxDestination.ManifestInspector,
         MaxDestination.UsageStats,
         MaxDestination.Logs,
         MaxDestination.Permissions,

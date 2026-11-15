@@ -1489,7 +1489,7 @@
     <string name="dex2oat_confirm_compile_user_desc">هذا يعيد تصريف كل تطبيق مثبّته المستخدم بالمرشّح المختار.</string>
     <string name="dex2oat_confirm_reset_all_title">إعادة ضبط كل التطبيقات؟</string>
     <string name="dex2oat_confirm_reset_all_desc">هذا يمسح الملفات المصرّفة لكل تطبيق مثبّت ويعيدها إلى حالة التصريف عند التثبيت. ستُعيد التطبيقات التصريف في الخلفية أو عند التشغيل التالي ما قد يسبب بطئًا مؤقتًا.</string>
-    <string name="fps_overlay_title">شاشة الأداء</string>
+    <string name="fps_overlay_title">المراقب العائم</string>
     <string name="fps_overlay_menu_desc">عرض عائم على الشاشة لمعدل الإطارات والمعالج والذاكرة أثناء اللعب</string>
     <string name="fps_overlay_enable">إظهار اللوحة</string>
     <string name="fps_overlay_needs_permission">يتطلب إذن «العرض فوق التطبيقات الأخرى»</string>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  `MANIFEST-INSPECTOR-01` — نصوص فاحص بيان الحزمة (عربيّة).
+-->
+<resources>
+    <string name="manifest_inspector_title">فاحص البيان</string>
+    <string name="manifest_inspector_subtitle">ما يُصرّح به تطبيق مثبَّت عن نفسه، مقروءًا من PackageManager.</string>
+    <string name="max_role_manifest_inspector">يعرض ما تُصرّح به الحزمة عن نفسها — قراءةً فقط.</string>
+
+    <string name="mi_search">ابحث في التطبيقات</string>
+    <string name="mi_empty">اختر تطبيقًا من اليمين.</string>
+    <string name="mi_yes">نعم</string>
+    <string name="mi_no">لا</string>
+
+    <string name="mi_section_identity">الحزمة</string>
+    <string name="mi_version">الإصدار</string>
+    <string name="mi_version_code">رمز الإصدار</string>
+    <string name="mi_min_sdk">أدنى SDK</string>
+    <string name="mi_target_sdk">SDK الهدف</string>
+    <string name="mi_installed">تاريخ التثبيت</string>
+    <string name="mi_updated">آخر تحديث</string>
+    <string name="mi_installer">المُثبِّت</string>
+    <string name="mi_uid">المعرّف UID</string>
+    <string name="mi_data_dir">مجلّد البيانات</string>
+    <string name="mi_debuggable">قابل للتنقيح</string>
+    <string name="mi_system_app">تطبيق نظام</string>
+    <string name="mi_enabled">مُفعَّل</string>
+
+    <string name="mi_section_permissions">الأذونات المطلوبة</string>
+    <string name="mi_permissions_summary">%1$d إذنًا · %2$d منها خطر</string>
+    <string name="mi_permissions_none">هذا التطبيق لا يطلب أيّ إذن.</string>
+    <string name="mi_perm_dangerous">خطر</string>
+    <string name="mi_perm_signature">توقيع</string>
+    <string name="mi_perm_normal">عاديّ</string>
+    <string name="mi_perm_unknown">غير مصنَّف</string>
+
+    <string name="mi_section_components">المكوّنات</string>
+    <string name="mi_activities">الأنشطة</string>
+    <string name="mi_services">الخدمات</string>
+    <string name="mi_receivers">المستقبلات</string>
+    <string name="mi_providers">المزوّدات</string>
+    <string name="mi_components_none">لا شيء مصرَّح به</string>
+
+    <string name="mi_section_features">ميزات الجهاز</string>
+    <string name="mi_features_note">المنصّة لا تكشف قائمة uses-feature لتطبيق آخر؛ هذه الميزات التي يعلنها هذا الجهاز.</string>
+    <string name="mi_features_none">لا ميزة معلنة</string>
+
+    <string name="mi_section_signature">شهادة التوقيع</string>
+    <string name="mi_signature_note">بصمة SHA-256 لشهادة التوقيع. بناءان بالبصمة نفسها ناشرهما واحد.</string>
+    <string name="mi_signature_sha256">بصمة الشهادة</string>
+</resources>

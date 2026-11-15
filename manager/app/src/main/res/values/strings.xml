@@ -550,7 +550,7 @@
     <string name="dex2oat_confirm_compile_user_desc">This force-recompiles every user-installed app with the selected filter.</string>
     <string name="dex2oat_confirm_reset_all_title">Reset all apps?</string>
     <string name="dex2oat_confirm_reset_all_desc">This clears compiled artifacts for every installed app, reverting them to their installer-time compilation state. Apps will recompile in the background or on next launch, which may cause temporary slowdowns.</string>
-    <string name="fps_overlay_title">Performance HUD</string>
+    <string name="fps_overlay_title">Floating Monitor</string>
     <string name="fps_overlay_menu_desc">Floating on-screen readout of FPS, CPU, and RAM while you play</string>
     <string name="fps_overlay_intro">A small draggable window shows live performance stats over any app. Drag it anywhere on screen once enabled.</string>
     <string name="fps_overlay_enable">Show the panel</string>
