@@ -36,10 +36,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.ImageShader
+import androidx.compose.ui.graphics.Shader
+import androidx.compose.ui.graphics.ShaderBrush
+import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -90,6 +95,9 @@ internal fun CockpitScene(accent: Color, ignition: Float, modifier: Modifier) {
         val rnd = kotlin.random.Random(CockpitDustSeed)
         List(CockpitDustCount * 3) { rnd.nextFloat() }
     }
+    val grain = rememberGrain()
+    // الفرشاة تُحفظ لا تُنشأ كل إطار: `ShaderBrush` يخزّن تظليله بحسب المقاس.
+    val grainBrush = remember(grain) { GrainBrush(grain) }
     Canvas(modifier) {
         val w = size.width
         val h = size.height
@@ -138,6 +146,29 @@ internal fun CockpitScene(accent: Color, ignition: Float, modifier: Modifier) {
                 listOf(accent.copy(alpha = CockpitHaloAccent * lit), Color.Transparent),
                 center = Offset(w * 0.30f, h * 0.36f),
                 radius = w * 0.46f,
+            ),
+            blendMode = BlendMode.Plus,
+        )
+        // الانحراف اللونيّ: نفس الهالة بإزاحة بكسلين — الحافّة الحمراء والباردة تفصلها عن الخلف.
+        drawRect(
+            brush = Brush.radialGradient(
+                listOf(
+                    Color(0xFFFF5A7A).copy(alpha = CockpitFringeWarm * lit),
+                    Color.Transparent,
+                ),
+                center = Offset(w * 0.30f - CockpitFringePx * 2f, h * 0.36f),
+                radius = w * 0.30f,
+            ),
+            blendMode = BlendMode.Plus,
+        )
+        drawRect(
+            brush = Brush.radialGradient(
+                listOf(
+                    Color(0xFF3AD8FF).copy(alpha = CockpitFringeCool * lit),
+                    Color.Transparent,
+                ),
+                center = Offset(w * 0.30f + CockpitFringePx * 2f, h * 0.36f),
+                radius = w * 0.30f,
             ),
             blendMode = BlendMode.Plus,
         )
@@ -197,7 +228,34 @@ internal fun CockpitScene(accent: Color, ignition: Float, modifier: Modifier) {
             )
             i += 3
         }
+
+        // حبيبات: نسيج مبلَّط يُضاف لا يُغطّي — يمنع التدرّج من القراءة مسطّحًا رقميًّا.
+        drawRect(
+            brush = grainBrush,
+            alpha = CockpitGrainAlpha,
+            blendMode = BlendMode.Plus,
+        )
     }
+}
+
+/** نسيج حبيبات ثابت: يُولَّد مرّة واحدة بذرة ثابتة، لا ملف صورة ولا أصل خارجيّ. */
+@Composable
+private fun rememberGrain(): ImageBitmap = remember {
+    val n = CockpitGrainPx
+    val px = IntArray(n * n)
+    val rnd = kotlin.random.Random(CockpitDustSeed + 7)
+    for (k in px.indices) {
+        val v = rnd.nextInt(0, CockpitGrainMax + 1)
+        px[k] = (v shl 24) or 0x00FFFFFF
+    }
+    val bmp = Bitmap.createBitmap(n, n, Bitmap.Config.ARGB_8888)
+    bmp.setPixels(px, 0, n, 0, 0, n, n)
+    bmp.asImageBitmap()
+}
+
+private class GrainBrush(private val image: ImageBitmap) : ShaderBrush() {
+    override fun createShader(size: Size): Shader =
+        ImageShader(image, TileMode.Repeated, TileMode.Repeated)
 }
 
 /** موضع واحد من العمق الميدانيّ: أيقونة لعبة أخرى تُقرأ ضوءًا لا تفصيلًا. */
@@ -255,8 +313,8 @@ internal fun CockpitBokeh(games: List<GameApp>, selected: String?, modifier: Mod
 
 /** نسخة مصغَّرة جدًّا من الأيقونة: تكبيرها هو الضباب المطلوب. */
 @Composable
-private fun rememberSoftIcon(packageName: String): ImageBitmap? {
-    val soft by produceState<ImageBitmap?>(null, packageName) {
+private fun rememberSoftIcon(packageName: String, px: Int = CockpitBokehPx): ImageBitmap? {
+    val soft by produceState<ImageBitmap?>(null, packageName, px) {
         var icon = AppIconCache.get(packageName)
         var tries = 0
         while (icon == null && tries < CockpitAccentTries) {
@@ -267,7 +325,7 @@ private fun rememberSoftIcon(packageName: String): ImageBitmap? {
         val source = icon?.asAndroidBitmap() ?: return@produceState
         value = withContext(Dispatchers.Default) {
             runCatching {
-                Bitmap.createScaledBitmap(source, CockpitBokehPx, CockpitBokehPx, true).asImageBitmap()
+                Bitmap.createScaledBitmap(source, px, px, true).asImageBitmap()
             }.getOrNull()
         }
     }
@@ -321,21 +379,25 @@ internal fun CockpitSlab(
                 ),
             contentAlignment = Alignment.Center,
         ) {
-            // المادّة: الأيقونة نفسها مكبَّرةً ١٫٦× وخلف حجاب — تُقرأ نسيجًا لا أيقونةً ثانية.
-            // (لا `Modifier.blur`: يحتاج API 31 والحدّ الأدنى هنا 29 — فالتكبير والشفافيّة يصنعان العمق.)
-            Box(
-                modifier = Modifier.matchParentSize().graphicsLayer {
-                    scaleX = CockpitSlabMaterialScale
-                    scaleY = CockpitSlabMaterialScale
-                    alpha = CockpitSlabMaterialAlpha
-                },
-                contentAlignment = Alignment.Center,
-            ) {
-                AppIconImage(
-                    packageName = packageName,
-                    size = CockpitSlabSize,
-                    contentDescription = null,
-                )
+            // المادّة: الأيقونة نفسها مصغَّرة إلى ٢٤px ثم مكبَّرة — تمويه حقيقيّ لا مرشّح
+            // (`Modifier.blur` يحتاج API 31 والحدّ الأدنى هنا 29)، فتقرأ نسيجًا لا أيقونةً ثانية.
+            val material = rememberSoftIcon(packageName, CockpitSlabMaterialPx)
+            if (material != null) {
+                Box(
+                    modifier = Modifier.matchParentSize().graphicsLayer {
+                        scaleX = CockpitSlabMaterialScale
+                        scaleY = CockpitSlabMaterialScale
+                        alpha = CockpitSlabMaterialAlpha
+                    },
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Image(
+                        bitmap = material,
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.matchParentSize(),
+                    )
+                }
             }
             // صبغة اللعبة + تعتيم سفليّ في طبقة واحدة: الحافّة العليا تبقى الأفتح.
             Box(

@@ -194,6 +194,22 @@ internal const val CockpitBokehCount = 3
 internal const val CockpitDustCount = 54
 internal const val CockpitDustSeed = 11
 
+/**
+ * مادّة اللوح تُصغَّر إلى ٢٤px ثم تُكبَّر إلى ٣٠٠dp: هذا هو التمويه نفسه، لا مرشّحًا.
+ * (كانت الأيقونة تُرسم بحجمها الكامل خلف صبغة، فتقرأ أيقونةً ثانيةً داخل الأولى — وهو عيب «مسطَّح».)
+ */
+internal const val CockpitSlabMaterialPx = 24
+
+/** حبيبات: نسيج ثابت ٦٤px يُبلَّط، وهو آخر ما يفصل «مُصيَّرًا» عن «مرسومًا» في الشاشة. */
+internal const val CockpitGrainPx = 64
+internal const val CockpitGrainAlpha = 0.055f
+internal const val CockpitGrainMax = 24
+
+/** انحراف لونيّ: الهالة تُكرَّر بإزاحة بكسلين، حمراء وباردة، فتُقرأ عدسةً لا بقعة. */
+internal const val CockpitFringePx = 4f
+internal const val CockpitFringeWarm = 0.05f
+internal const val CockpitFringeCool = 0.05f
+
 /** استخراج لون الأيقونة: عيّنة صغيرة تكفي، ومحاولات قصيرة قبل الرجوع إلى البنفسجي. */
 internal const val CockpitAccentTries = 6
 internal const val CockpitAccentRetryMs = 140L
