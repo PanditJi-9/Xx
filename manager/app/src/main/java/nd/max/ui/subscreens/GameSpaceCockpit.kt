@@ -2,27 +2,13 @@
 package nd.max.ui.subscreens
 
 import android.animation.ValueAnimator
+import android.graphics.Bitmap
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.produceState
-import androidx.compose.ui.draw.clipToBounds
-import androidx.compose.ui.graphics.asAndroidBitmap
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.unit.LayoutDirection
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.withContext
-import nd.max.island.engine.dominantColor
-import nd.max.ui.component.AppIconCache
-import nd.max.ui.design.MaxDuration
-
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -37,46 +23,74 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.MoreHoriz
+import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material.icons.rounded.Tune
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asAndroidBitmap
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 import nd.max.R
 import nd.max.core.gamespace.GameApp
+import nd.max.island.engine.dominantColor
+import nd.max.ui.component.AppIconCache
 import nd.max.ui.component.AppIconImage
 import nd.max.ui.component.lobbyPress
-import nd.max.ui.design.MaxAlpha
+import nd.max.ui.design.MaxDuration
 import nd.max.ui.design.MaxRadius
 import nd.max.ui.design.MaxSize
 import nd.max.ui.design.MaxSpace
@@ -84,28 +98,29 @@ import nd.max.ui.theme.DisplayFontFamily
 import kotlin.math.roundToInt
 
 /**
- * **كوكبيت اللوبي الأفقيّ — تركيبة الأشرطة (جولة ٢٩٦).**
+ * **كوكبيت اللوبي الأفقيّ — مشهد مُضاء لا لوحة أشرطة (جولة ٢٩٨).**
  *
- * ولا أقول إنها «بريميم» ولا إنها تطابق مرجعًا: المرجع الذي رسم المالك على شاشته يعيش ٩٠٪ منه
- * على فنّ اللعبة (ملصق يغطّي الشاشة)، وهذه الشاشة لا تملك ملصقات — كل ما تملكه هو أيقونة التطبيق
- * المثبَّت. فبُنيت على ما هو حقيقيّ: الأيقونة كبيرةً ومُضاءة كمرساة، وخلفها هالة لونيّة ساكنة،
- * وعلى ذلك تُركَّب الأشرطة. وأي «ملصق» مُصنَّع بتدرّج مُموَّه قِيس في نماذج سابقة فقرأ ضبابًا أو
- * لوحًا فارغًا — فلم يُشحن.
+ * سبب إعادة الكتابة: حكم المالك على التركيبات السابقة («بسيطة جدًا كأنها مرسومة بالـCPU لا بالـGPU»)
+ * كان صحيحًا تقنيًّا. القياس: كل طبقة فيها كانت `background = تدرّج واحد`، ولوح واحد داخل صفّ ارتفاعه
+ * ١٨٤dp، فلا عمق ولا ضوء. والمراجع التي يقصدها تفوز بثلاثة أشياء لا بالزخرفة: **أرضيّة بمنظور**
+ * تُثبّت الكاميرا، **هالات إضافيّة** (الضوء يُجمع بـ`Plus` لا يُغطّى)، و**عمق ميدانيّ** (عناصر خارج
+ * التركيز في الخلف).
  *
- * و**القياس** الذي وُلدت منه هذه التركيبة (نموذج ١:١ بمقاس ٨٥٠×٣٩٢dp، مقيس في متصفّح حقيقيّ):
- * `‏48dp رأس · المشهد 1fr · 104dp رفّ · 56dp تنقّل` ⇒ **صفر تجاوز، صفر تمرير** على هاتف أفقيّ.
- * والتركيبة السابقة (شريط جانبيّ + آلة ٣٤٠dp + رفّ) كانت تحتاج ٤٥٠dp داخل ٣٩٢ ⇒ تمرير داخليّ
- * أو خطّ تحت ١٢sp، وكلاهما مرفوض؛ فحُذفت.
+ * فالبنية الآن: `CockpitScene` (قاعدة + شبكة أرضيّة + ٣ هالات + حجب + فينييت + غبار) ← `CockpitBokeh`
+ * (أيقونات ألعاب أخرى خارج التركيز: تُصغَّر إلى بكسلات ثم تُكبَّر بـ`ContentScale.Crop`) ←
+ * `CockpitSlab` (اللوح ٣٠٠dp يخرج من الحافتين العليا والبداية، مادّته أيقونة اللعبة نفسها) ← الأشرطة.
  *
- * **وقواعد ثابتة:** كل هدف لمس ≥ `MaxSize.minTouchTarget` (الرفّ ٨٠dp، عناصر التنقّل ٥٦dp،
- * زرّ القائمة ٤٨dp) · أصغر نصّ ١٢sp · لا كتابة عتاد (ADR-11) · المجهول «—» لا صفر (ADR-07) ·
- * ولا توهّج إلا على زرّ التشغيل. والحركة الوحيدة المسموحة في ملفّات أخرى (`lobbyPress`) ساكنة
- * النهاية ولا تعمل إن أوقف النظام الأنيميشن.
+ * **ولا أصل جديد ولا صورة:** كل ما يُرسم هنا إمّا تدرّج أو أيقونة التطبيق المثبَّتة (`AppIconCache`).
+ * وقياس التركيبة في نموذج ١:١ بمقاس ٨٥٠×٣٩٢dp: `scroll 1700×784` بلا تجاوز، اللوح `[−60,−60,600,600]px`,
+ * كتلة الاسم `900×102px`، زرّ البدء `254×106px`، التنقّل `1700×112px`.
+ *
+ * **وقواعد ثابتة:** كل هدف لمس ≥ ٤٨dp · أصغر نصّ ١٢sp · لا كتابة عتاد (ADR-11) · المجهول «—» لا صفر
+ * (ADR-07) · الحركة الوحيدة دخول ≤ 360ms ويتوقّف كليًّا إن أوقف النظام المؤثّرات.
  */
-private const val CockpitUnknown = "—"
+internal const val CockpitUnknown = "—"
 
 /** خمسة أبواب في الشريط السفليّ؛ و«الملفّ» و«الإعدادات» في قائمة ⋯ فلا يزدحم الشريط. */
-private val CockpitNavPages = listOf(
+internal val CockpitNavPages = listOf(
     LobbyPage.Home,
     LobbyPage.Library,
     LobbyPage.Performance,
@@ -116,55 +131,88 @@ private val CockpitNavPages = listOf(
 /** ارتفاع شريط التنقّل — يحجزه الغلاف أسفل المشهد في مسار الأقسام أيضًا. */
 internal val CockpitNavHeight = 56.dp
 
-private val CockpitTopBarHeight = MaxSize.minTouchTarget
-private val CockpitShelfHeight = 104.dp
-private val CockpitTileSize = 80.dp
-private val CockpitTileIcon = 64.dp
-private val CockpitTileWidth = 92.dp
-private val CockpitHeroIcon = 96.dp
-private val CockpitHeroIconInner = 76.dp
-private val CockpitBrandRow = 32.dp
-private val CockpitNavIndicatorWidth = 28.dp
-private val CockpitNavIndicatorHeight = 3.dp
+internal val CockpitTopBarHeight = MaxSize.minTouchTarget
+internal val CockpitShelfHeight = 84.dp
+internal val CockpitTileWidth = 68.dp
+internal val CockpitTileBox = 64.dp
+internal val CockpitTileBoxSelected = 76.dp
+internal val CockpitTileIcon = 44.dp
+internal val CockpitTileIconSelected = 52.dp
+internal val CockpitNavIndicatorWidth = 32.dp
+internal val CockpitNavIndicatorHeight = 3.dp
+internal val CockpitHeroTextMax = 440.dp
+internal val CockpitHeroName = 52.sp
+internal val CockpitHeroIndexGap = 18.dp
+
+/** اللوح: ٣٠٠dp يخرج من الحافة كي تُقرأ الشاشة مشهدًا لا صفًّا. */
+internal val CockpitSlabSize = 300.dp
+internal val CockpitSlabBleed = 30.dp
+internal val CockpitSlabRadius = 56.dp
+internal val CockpitSlabEmblem = 162.dp
+internal val CockpitSlabRim = 2.dp
+internal val CockpitSlabHairline = 1.dp
+/** نسيج اللوح: الأيقونة تُكبَّر وتخفت فتُقرأ مادّة، لا أيقونةً مكرّرة داخل إطار. */
+internal const val CockpitSlabMaterialScale = 1.6f
+internal const val CockpitSlabMaterialAlpha = 0.5f
+
+/** الأزرار: أبيض واحد للفعل الأساسيّ، ودائرة زجاجيّة للخيارات. */
+internal val CockpitPlayHeight = 52.dp
+internal val CockpitPlayDot = 38.dp
+internal val CockpitPlayGlyph = 20.dp
+internal val CockpitRoundButton = 52.dp
+internal val CockpitRoundGlyph = 22.dp
+internal val CockpitDividerWidth = 1.dp
+internal val CockpitDividerHeight = 26.dp
 
 /** عتبة لون الحرارة: تحت ٤٥° يبقى الحياد، وفوقها تحذير — لا لون لمجرّد الزينة. */
-private const val CockpitHeatWarn = 45f
-private val CockpitHeatTone = Color(0xFFFBBF24)
-private val CockpitEdgeLight = Color(0x33FFFFFF)
-private val CockpitGloss = Color(0x1AFFFFFF)
-private val CockpitBase = Color(0xFF0B0718)
-private val CockpitFloor = Color(0xFF05040D)
+internal const val CockpitHeatWarn = 45f
+internal val CockpitHeatTone = Color(0xFFFBBF24)
+internal val CockpitEdgeLight = Color(0x33FFFFFF)
+internal val CockpitSkyTop = Color(0xFF0B0820)
+internal val CockpitSkyMid = Color(0xFF070513)
+internal val CockpitFloor = Color(0xFF04030A)
+internal val CockpitScrim = Color(0xFF04030A)
+internal val CockpitWarm = Color(0xFFFFBE86)
+internal val CockpitCool = Color(0xFF28D2EB)
+internal val CockpitGlassVeil = Color(0x14FFFFFF)
+internal val CockpitSlabShade = Color(0xC405040C)
 
-/** تحت هذا الارتفاع يُصغَّر الأيقون والاسم ويُخفى الوصف: لا شيء يُدفع خارج الشاشة. */
-private val CockpitHeroTight = 150.dp
-private val CockpitHeroIconTight = 72.dp
+/** هندسة المشهد: أفق عند ٦٢٪، شبكة تتقارب، وهالات بألفة صغيرة تُجمع بالضوء. */
+internal const val CockpitHorizon = 0.62f
+internal const val CockpitGridRays = 15
+internal const val CockpitGridRows = 11
+internal const val CockpitGridReach = 1.9f
+internal const val CockpitGridAlpha = 0.10f
+internal val CockpitGridStroke = 1.dp
+internal const val CockpitHaloAccent = 0.34f
+internal const val CockpitHaloCool = 0.12f
+internal const val CockpitHaloWarm = 0.10f
 
-/** أقصى عرض لكتلة الاسم: يبقيها ملتصقة بلوح الأيقونة بدل أن تتوزّع الشاشة كلها. */
-private val CockpitHeroTextMax = 360.dp
-private val CockpitHeroNameTight = 30.sp
-private val CockpitHeroNameWide = 40.sp
-private const val CockpitHeroRise = 14f
-private const val CockpitShelfDrop = 10f
+/** العمق الميدانيّ: الأيقونات الأخرى تُصغَّر إلى ١٦px ثم تُكبَّر، فالضباب حقيقيّ لا مرشّح. */
+internal const val CockpitBokehPx = 16
+internal const val CockpitBokehCount = 3
+internal const val CockpitDustCount = 54
+internal const val CockpitDustSeed = 11
 
 /** استخراج لون الأيقونة: عيّنة صغيرة تكفي، ومحاولات قصيرة قبل الرجوع إلى البنفسجي. */
-private const val CockpitAccentTries = 6
-private const val CockpitAccentRetryMs = 140L
+internal const val CockpitAccentTries = 6
+internal const val CockpitAccentRetryMs = 140L
 
 /** منظور الرفّ: زاوية الجار، وخطوة العمق، وتتابع الظهور. */
-private const val CockpitTileYaw = 14f
-private const val CockpitShelfCamera = 10f
-private const val CockpitShelfStagger = 0.06f
+internal const val CockpitTileYaw = 14f
+internal const val CockpitShelfCamera = 10f
+internal const val CockpitShelfStagger = 0.06f
 
 @Composable
 internal fun GameSpaceCockpit(
     data: StageData,
     actions: StageActions,
     @Suppress("UNUSED_PARAMETER") currentPage: LobbyPage,
-    @Suppress("UNUSED_PARAMETER") onPage: (LobbyPage) -> Unit,
+    onPage: (LobbyPage) -> Unit,
     topActions: @Composable () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    // لون اللعبة يقود الهالة والحلقة ووجه الأيقونة؛ ويُرجَع إلى البنفسجي بلا وميض إن لم يُقرأ.
+    // لون اللعبة يقود الضوء كلّه؛ ويُرجَع إلى البنفسجي بلا وميض إن لم يُقرأ.
     val rawAccent = rememberCockpitAccent(data.selected?.packageName)
     val accent by animateColorAsState(
         targetValue = rawAccent,
@@ -182,8 +230,20 @@ internal fun GameSpaceCockpit(
             )
         }
     }
-    Box(modifier.fillMaxSize()) {
-        CockpitBloom(accent = accent, ignition = entrance.value, modifier = Modifier.matchParentSize())
+    val index = data.games.indexOfFirst { it.packageName == data.selected?.packageName }
+    Box(modifier.fillMaxSize().clipToBounds()) {
+        CockpitScene(accent = accent, ignition = entrance.value, modifier = Modifier.matchParentSize())
+        CockpitBokeh(
+            games = data.games,
+            selected = data.selected?.packageName,
+            modifier = Modifier.matchParentSize(),
+        )
+        CockpitSlab(
+            packageName = data.selected?.packageName,
+            accent = accent,
+            ignition = entrance.value,
+            modifier = Modifier.matchParentSize(),
+        )
         Column(Modifier.fillMaxSize()) {
             CockpitTopBar(
                 data = data,
@@ -198,10 +258,12 @@ internal fun GameSpaceCockpit(
                     modifier = Modifier.weight(1f).fillMaxWidth(),
                 )
             } else {
-                CockpitHero(
+                CockpitHeroText(
                     data = data,
                     actions = actions,
                     accent = accent,
+                    index = index,
+                    total = data.games.size,
                     entrance = entrance.value,
                     modifier = Modifier.weight(1f).fillMaxWidth(),
                 )
@@ -237,34 +299,6 @@ private fun rememberCockpitAccent(packageName: String?): Color {
     return accent
 }
 
-/**
- * خلفيّة المشهد: قاعدة شبه سوداء + هالة بلون اللعبة في زاوية البداية، تشتعل مع الدخول ثم تستقرّ.
- * كلها `drawBehind` — تُرسم مرّة مع إعادة الرسم ولا تكلّف إطارًا بعدها.
- */
-@Composable
-private fun CockpitBloom(accent: Color, ignition: Float, modifier: Modifier) {
-    Box(
-        modifier = modifier.drawBehind {
-            drawRect(
-                Brush.verticalGradient(
-                    listOf(CockpitBase, GameSpacePalette.GlassDeep, CockpitFloor)
-                )
-            )
-            // هالة واحدة تُشتعل مع الدخول وتستقرّ: رسم ثابت لا يكلف إطارًا بعدها.
-            drawRect(
-                Brush.radialGradient(
-                    listOf(
-                        accent.copy(alpha = MaxAlpha.toneContainerStrong * ignition),
-                        Color.Transparent,
-                    ),
-                    center = Offset(size.width * 0.22f, size.height * 0.34f),
-                    radius = size.maxDimension * 0.78f,
-                )
-            )
-        }
-    )
-}
-
 @Composable
 private fun CockpitTopBar(
     data: StageData,
@@ -284,12 +318,20 @@ private fun CockpitTopBar(
     ) {
         Text(
             text = stringResource(R.string.gs_brand_mark),
-            color = GameSpacePalette.VioletSoft,
+            color = GameSpacePalette.Ink,
             fontSize = 22.sp,
             fontFamily = DisplayFontFamily,
             fontWeight = FontWeight.Black,
             maxLines = 1,
-            modifier = Modifier.height(CockpitBrandRow),
+            modifier = Modifier
+                .height(CockpitTopBarHeight * 0.66f)
+                .drawBehind {
+                    drawCircle(
+                        color = GameSpacePalette.VioletSoft.copy(alpha = 0.55f),
+                        radius = size.minDimension * 1.4f,
+                        blendMode = BlendMode.Plus,
+                    )
+                },
         )
         CockpitStat(label = stringResource(R.string.gs_cpu), value = data.cpu?.let { "$it%" })
         CockpitStat(label = stringResource(R.string.gs_gpu), value = data.gpu?.let { "$it%" })
@@ -302,10 +344,6 @@ private fun CockpitTopBar(
             label = stringResource(R.string.gs_fps_unit),
             value = data.fps.value?.toString(),
             live = data.fps.live,
-        )
-        CockpitStat(
-            label = stringResource(R.string.gs_battery),
-            value = data.batteryPercent?.let { stringResource(R.string.gs_percent_value, it) },
         )
         Spacer(modifier = Modifier.weight(1f))
         Column(horizontalAlignment = Alignment.End) {
@@ -379,7 +417,7 @@ private fun CockpitStat(
             Text(
                 text = value ?: CockpitUnknown,
                 color = tone ?: if (value == null) GameSpacePalette.Muted else GameSpacePalette.Ink,
-                fontSize = 16.sp,
+                fontSize = 15.sp,
                 fontWeight = FontWeight.SemiBold,
                 maxLines = 1,
             )
@@ -413,7 +451,7 @@ private fun CockpitIconButton(
             .clip(shape)
             .background(
                 if (selected) GameSpacePalette.PanelSelected
-                else GameSpacePalette.Glass.copy(alpha = MaxAlpha.toneContainer)
+                else GameSpacePalette.Glass.copy(alpha = 0.55f)
             )
             .border(MaxSize.hairlineBorder, CockpitEdgeLight, shape)
             .clickable(
@@ -433,156 +471,145 @@ private fun CockpitIconButton(
     }
 }
 
-/** المشهد: الأيقونة مرساةً، والاسم والجاهزية وزرّ اللعب — كلّ حقيقة مرّة واحدة. */
+/**
+ * كتلة الاسم والفعل: على الطرف المقابل للوح، فاللوح هو الغلاف والاسم هو العنوان.
+ *
+ * والاسم `TextStyle(brush = …)` لا لونًا مسطّحًا: التدرّج من الأبيض إلى اللافندر يجعل الحروف
+ * تقرأ مُضاءة من أعلى، وهو الفرق بين عنوان في تطبيق وعنوان في لعبة.
+ */
 @Composable
-private fun CockpitHero(
+private fun CockpitHeroText(
     data: StageData,
     actions: StageActions,
     accent: Color,
+    index: Int,
+    total: Int,
     entrance: Float,
     modifier: Modifier = Modifier,
 ) {
     val ready = data.readinessPercent.coerceIn(0, 100)
-    BoxWithConstraints(modifier = modifier) {
-        val tight = maxHeight < CockpitHeroTight
-        val nameSize = if (tight) CockpitHeroNameTight else CockpitHeroNameWide
-        Row(
+    Box(modifier.padding(horizontal = MaxSpace.xl, vertical = MaxSpace.md)) {
+        Column(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = MaxSpace.xl, vertical = MaxSpace.md),
-            verticalAlignment = Alignment.Bottom,
-            horizontalArrangement = Arrangement.spacedBy(MaxSpace.lg),
+                .align(Alignment.CenterEnd)
+                .widthIn(max = CockpitHeroTextMax)
+                .graphicsLayer {
+                    alpha = entrance
+                    translationY = (1f - entrance) * MaxSpace.md.toPx() * 2f
+                },
+            horizontalAlignment = Alignment.End,
         ) {
-            CockpitHeroIcon(
-                packageName = data.selected?.packageName,
-                accent = accent,
-                size = if (tight) CockpitHeroIconTight else CockpitHeroIcon,
-                modifier = Modifier.align(Alignment.CenterVertically),
-            )
-            Column(
-                modifier = Modifier
-                    .widthIn(max = CockpitHeroTextMax)
-                    .graphicsLayer {
-                        alpha = entrance
-                        translationY = (1f - entrance) * CockpitHeroRise
-                    },
-                verticalArrangement = Arrangement.spacedBy(MaxSpace.xs),
-            ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = data.statusTitle,
-                    color = GameSpacePalette.VioletSoft,
+                    color = GameSpacePalette.Ink.copy(alpha = 0.86f),
                     fontSize = 12.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    letterSpacing = 1.6.sp,
+                    fontWeight = FontWeight.Bold,
+                    letterSpacing = 2.2.sp,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.widthIn(max = CockpitHeroTextMax * 0.72f),
                 )
-                Text(
-                    text = data.selected?.label ?: stringResource(R.string.game_space_title),
-                    style = TextStyle(
-                        brush = Brush.linearGradient(
-                            listOf(GameSpacePalette.Ink, GameSpacePalette.Lavender)
-                        ),
-                        fontSize = nameSize,
-                        lineHeight = nameSize * 1.08f,
-                        fontFamily = DisplayFontFamily,
-                        fontWeight = FontWeight.Black,
-                        letterSpacing = (-0.8).sp,
-                    ),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
+                Spacer(modifier = Modifier.width(MaxSpace.sm))
+                Box(
+                    Modifier
+                        .size(MaxSpace.sm)
+                        .drawBehind {
+                            val r = size.minDimension / 2f
+                            drawCircle(GameSpacePalette.Mint.copy(alpha = 0.55f), r)
+                            drawCircle(GameSpacePalette.Mint, r * 0.45f)
+                        }
                 )
-                val tagline = data.tagline
-                if (!tight && !tagline.isNullOrBlank()) {
+                Spacer(modifier = Modifier.width(CockpitHeroIndexGap))
+                if (index >= 0) {
                     Text(
-                        text = tagline,
+                        text = "${(index + 1).toString().padStart(2, '0')} / ${total.toString().padStart(2, '0')}",
                         color = GameSpacePalette.Muted,
-                        fontSize = 14.sp,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        letterSpacing = 1.2.sp,
                         maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
                     )
                 }
-                Spacer(modifier = Modifier.height(MaxSpace.sm))
-                PlayRow(
-                    enabled = data.selected != null,
-                    onLaunch = actions.onLaunch,
-                    onOptions = actions.onOptions,
-                    modifier = Modifier,
-                    launching = data.launching,
-                )
             }
-            StageRing(
-                progress = ready / 100f * entrance,
-                value = (ready * entrance).roundToInt().toString(),
-                label = stringResource(R.string.gs_ready_title),
-                from = GameSpacePalette.VioletDeep,
-                to = accent,
-                warn = false,
-            )
-            Spacer(modifier = Modifier.weight(1f))
-        }
-    }
-}
-
-/** الأيقونة كمرساة مادّيّة: لوح داكن، حافة مُضاءة أعلى، ولمعان زجاجيّ ساكن. */
-@Composable
-private fun CockpitHeroIcon(
-    packageName: String?,
-    accent: Color,
-    size: androidx.compose.ui.unit.Dp,
-    modifier: Modifier = Modifier,
-) {
-    val shape = RoundedCornerShape(MaxRadius.tile)
-    Box(
-        modifier = modifier
-            .size(size)
-            .drawBehind {
-                // هالة اللون تحت الأيقونة: تُرسم مرّة واحدة، ولا ظلّ متحرّك ولا ضباب.
-                val radius = this.size.minDimension * 0.78f
-                drawCircle(
-                    brush = Brush.radialGradient(
-                        colors = listOf(accent.copy(alpha = 0.45f), Color.Transparent),
-                        center = center,
-                        radius = radius,
+            Text(
+                text = data.selected?.label ?: stringResource(R.string.game_space_title),
+                style = TextStyle(
+                    brush = Brush.verticalGradient(
+                        listOf(
+                            Color.White,
+                            Color.White,
+                            GameSpacePalette.Lavender,
+                        )
                     ),
-                    radius = radius,
+                    fontSize = CockpitHeroName,
+                    lineHeight = CockpitHeroName * 1.04f,
+                    fontFamily = DisplayFontFamily,
+                    fontWeight = FontWeight.Black,
+                    letterSpacing = (-1.4).sp,
+                ),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            val tagline = data.tagline
+            if (!tagline.isNullOrBlank()) {
+                Text(
+                    text = tagline,
+                    color = GameSpacePalette.Ink.copy(alpha = 0.72f),
+                    fontSize = 13.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                 )
             }
-            .clip(shape)
-            .background(
-                Brush.linearGradient(
-                    listOf(accent.copy(alpha = 0.55f), GameSpacePalette.Glass, CockpitFloor)
+            Spacer(modifier = Modifier.height(MaxSpace.md))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                CockpitPlay(
+                    enabled = data.selected != null,
+                    launching = data.launching,
+                    accent = accent,
+                    onLaunch = actions.onLaunch,
                 )
-            )
-            .border(MaxSize.hairlineBorder, CockpitEdgeLight, shape),
-        contentAlignment = Alignment.Center,
-    ) {
-        // وجه علويّ لامع وضلع سفليّ داكن: تُقرأ جسمًا لا بطاقة مسطّحة.
-        Box(
-            Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(0.46f)
-                .align(Alignment.TopCenter)
-                .background(
-                    Brush.verticalGradient(listOf(CockpitGloss, Color.Transparent))
+                Spacer(modifier = Modifier.width(MaxSpace.sm))
+                CockpitRoundAction(
+                    icon = Icons.Rounded.Tune,
+                    description = stringResource(R.string.gs_more),
+                    onClick = actions.onOptions,
                 )
-        )
-        Box(
-            Modifier
-                .fillMaxWidth()
-                .height(MaxSpace.xs)
-                .align(Alignment.BottomCenter)
-                .background(
-                    Brush.verticalGradient(listOf(Color.Transparent, Color(0x66000000)))
+                Spacer(modifier = Modifier.width(MaxSpace.md))
+                Box(
+                    Modifier
+                        .width(CockpitDividerWidth)
+                        .height(CockpitDividerHeight)
+                        .background(CockpitEdgeLight)
                 )
-        )
-        if (packageName != null) {
-            AppIconImage(packageName = packageName, size = size - MaxSpace.md)
+                Spacer(modifier = Modifier.width(MaxSpace.md))
+                Column(horizontalAlignment = Alignment.End) {
+                    Text(
+                        text = stringResource(R.string.gs_percent_value, ready),
+                        color = GameSpacePalette.Ink,
+                        fontSize = 24.sp,
+                        fontFamily = DisplayFontFamily,
+                        fontWeight = FontWeight.Black,
+                        maxLines = 1,
+                    )
+                    Text(
+                        text = stringResource(R.string.gs_ready_title),
+                        color = GameSpacePalette.Muted,
+                        fontSize = 12.sp,
+                        maxLines = 1,
+                    )
+                }
+            }
         }
     }
 }
 
-/** رفّ الألعاب: مسار اختيار اللعبة الوحيد، وآخره «كل الألعاب». */
+/**
+ * مبدّل الألعاب: صفّ أيقونات يطفو فوق الأرضيّة، والمختارة وحدها تكبر وتُحاط بخيط أبيض.
+ *
+ * بلا أسماء: الاسم مكتوب فوقها بخطّ ضخم أصلًا — وتكراره في كلّ مربّع هو ما جعل الشاشة السابقة
+ * مزدحمة. والاسم باقٍ لقارئ الشاشة عبر `contentDescription` فلا تضيع الوصوليّة بحذف النصّ الظاهر.
+ */
 @Composable
 private fun CockpitShelf(data: StageData, actions: StageActions, entrance: Float) {
     if (data.games.isEmpty()) return
@@ -595,7 +622,7 @@ private fun CockpitShelf(data: StageData, actions: StageActions, entrance: Float
                 .matchParentSize()
                 .background(
                     Brush.verticalGradient(
-                        listOf(Color.Transparent, GameSpacePalette.GlassDeep.copy(alpha = 0.86f))
+                        listOf(Color.Transparent, GameSpacePalette.GlassDeep.copy(alpha = 0.72f))
                     )
                 )
         )
@@ -603,7 +630,7 @@ private fun CockpitShelf(data: StageData, actions: StageActions, entrance: Float
             modifier = Modifier.fillMaxSize().padding(horizontal = MaxSpace.xl),
             state = state,
             horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm),
-            verticalAlignment = Alignment.Top,
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             itemsIndexed(data.games, key = { _, game -> game.packageName }) { index, game ->
                 val depth = (index - focus).coerceIn(-2, 2)
@@ -634,26 +661,40 @@ private fun CockpitShelfTile(
 ) {
     val interaction = remember { MutableInteractionSource() }
     val shape = RoundedCornerShape(MaxRadius.tile)
-    Column(
+    Box(
         modifier = Modifier
             .width(CockpitTileWidth)
             .graphicsLayer {
-                // منظور الرفّ: البطاقة المختارة إلى الأمام، وجاراها يدوران عنها في العمق.
+                // منظور الرفّ: المختارة إلى الأمام، وجاراها يدوران عنها في العمق.
                 rotationY = yaw
                 cameraDistance = CockpitShelfCamera * density
-                val scale = 0.94f + 0.06f * presence + if (selected) 0.04f else 0f
+                val scale = if (selected) 1f else 0.92f + 0.08f * presence
                 scaleX = scale
                 scaleY = scale
                 alpha = presence
-                translationY = (1f - presence) * CockpitShelfDrop
+                translationY = (1f - presence) * MaxSpace.sm.toPx()
             }
+            .semantics { contentDescription = game.label }
             .lobbyPress(interaction, 0.94f)
             .clip(shape)
-            .background(if (selected) GameSpacePalette.PanelSelected else Color.Transparent)
-            .border(
-                width = if (selected) MaxSize.activeRing else MaxSize.hairlineBorder,
-                color = if (selected) GameSpacePalette.Lavender else CockpitEdgeLight,
-                shape = shape,
+            .then(
+                if (selected) {
+                    Modifier
+                        .drawBehind {
+                            drawRoundRect(
+                                brush = Brush.radialGradient(
+                                    listOf(GameSpacePalette.VioletSoft.copy(alpha = 0.55f), Color.Transparent),
+                                    center = center,
+                                    radius = size.minDimension,
+                                ),
+                                cornerRadius = CornerRadius(MaxRadius.tile.toPx()),
+                                blendMode = BlendMode.Plus,
+                            )
+                        }
+                        .border(MaxSize.activeRing, Color.White.copy(alpha = 0.92f), shape)
+                } else {
+                    Modifier.border(MaxSize.hairlineBorder, CockpitEdgeLight, shape)
+                }
             )
             .clickable(
                 interactionSource = interaction,
@@ -662,35 +703,20 @@ private fun CockpitShelfTile(
                 onClick = onClick,
             )
             .padding(MaxSpace.xs),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(MaxSpace.xs),
+        contentAlignment = Alignment.Center,
     ) {
-        Box(
-            modifier = Modifier
-                .size(CockpitTileSize - MaxSpace.sm)
-                .clip(RoundedCornerShape(MaxRadius.control))
-                .background(
-                    Brush.linearGradient(
-                        listOf(
-                            GameSpacePalette.Violet.copy(alpha = MaxAlpha.toneContainer),
-                            GameSpacePalette.Glass,
-                        )
-                    )
-                ),
-            contentAlignment = Alignment.Center,
-        ) {
-            AppIconImage(game.packageName, CockpitTileIcon - MaxSpace.md)
-        }
-        Text(
-            text = game.label,
-            color = if (selected) GameSpacePalette.Ink else GameSpacePalette.Muted,
-            fontSize = 12.sp,
-            fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Medium,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth(),
+        AppIconImage(
+            packageName = game.packageName,
+            size = if (selected) CockpitTileIconSelected else CockpitTileIcon,
+            contentDescription = null,
         )
+        if (!selected) {
+            Box(
+                Modifier
+                    .matchParentSize()
+                    .background(GameSpacePalette.GlassDeep.copy(alpha = 0.42f))
+            )
+        }
     }
 }
 
@@ -701,7 +727,7 @@ private fun CockpitSeeAll(onClick: () -> Unit) {
     Box(
         modifier = Modifier
             .width(CockpitTileWidth)
-            .height(CockpitTileSize)
+            .height(CockpitTileBox)
             .lobbyPress(interaction, 0.94f)
             .clip(shape)
             .border(MaxSize.hairlineBorder, CockpitEdgeLight, shape)
@@ -777,7 +803,15 @@ private fun RowScope.CockpitNavItem(
                 .width(CockpitNavIndicatorWidth)
                 .height(CockpitNavIndicatorHeight)
                 .clip(RoundedCornerShape(MaxRadius.chip))
-                .background(if (active) GameSpacePalette.VioletSoft else Color.Transparent)
+                .background(
+                    if (active) {
+                        Brush.horizontalGradient(
+                            listOf(Color.Transparent, GameSpacePalette.Lavender, Color.Transparent)
+                        )
+                    } else {
+                        Brush.horizontalGradient(listOf(Color.Transparent, Color.Transparent))
+                    }
+                )
         )
         Spacer(modifier = Modifier.height(MaxSpace.xs))
         Row(
