@@ -90,7 +90,12 @@ import nd.max.ui.theme.DisplayFontFamily
  * عاديّة لقرأت بقعًا رماديّة فوق بعضها — وهذا بالضبط ما جعل النسخ السابقة تبدو مسطّحة.
  */
 @Composable
-internal fun CockpitScene(accent: Color, ignition: Float, modifier: Modifier) {
+internal fun CockpitScene(
+    accent: Color,
+    ignition: Float,
+    cover: ImageBitmap?,
+    modifier: Modifier,
+) {
     val motes = remember {
         val rnd = kotlin.random.Random(CockpitDustSeed)
         List(CockpitDustCount * 3) { rnd.nextFloat() }
@@ -98,7 +103,20 @@ internal fun CockpitScene(accent: Color, ignition: Float, modifier: Modifier) {
     val grain = rememberGrain()
     // الفرشاة تُحفظ لا تُنشأ كل إطار: `ShaderBrush` يخزّن تظليله بحسب المقاس.
     val grainBrush = remember(grain) { GrainBrush(grain) }
-    Canvas(modifier) {
+    Box(modifier = modifier) {
+        // غلاف المستخدم يتقدّم على كلّ ما نرسمه: إن اختاره فهو فنّه، ونحن نُلطّفه فقط،
+        // والتمويه عندنا تدرّج لا مرشّح. وإن لم يختر فهو `null` ولا شيء يتغيّر.
+        if (cover != null) {
+            Image(
+                bitmap = cover,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .matchParentSize()
+                    .graphicsLayer { alpha = CockpitCoverVeil },
+            )
+        }
+        Canvas(modifier = Modifier.matchParentSize()) {
         val w = size.width
         val h = size.height
         val lit = ignition.coerceIn(0f, 1f)
@@ -235,6 +253,7 @@ internal fun CockpitScene(accent: Color, ignition: Float, modifier: Modifier) {
             alpha = CockpitGrainAlpha,
             blendMode = BlendMode.Plus,
         )
+        }
     }
 }
 
@@ -343,6 +362,7 @@ internal fun CockpitSlab(
     packageName: String?,
     accent: Color,
     ignition: Float,
+    cover: ImageBitmap?,
     modifier: Modifier,
 ) {
     val rtl = LocalLayoutDirection.current == LayoutDirection.Rtl
@@ -382,7 +402,16 @@ internal fun CockpitSlab(
             // المادّة: الأيقونة نفسها مصغَّرة إلى ٢٤px ثم مكبَّرة — تمويه حقيقيّ لا مرشّح
             // (`Modifier.blur` يحتاج API 31 والحدّ الأدنى هنا 29)، فتقرأ نسيجًا لا أيقونةً ثانية.
             val material = rememberSoftIcon(packageName, CockpitSlabMaterialPx)
-            if (material != null) {
+            if (cover != null) {
+                // الصورة التي اختارها المالك هي المادّة نفسها: تُقصّ مربّعةً ولا تُصبَغ،
+                // فلا يُعاد رسمها ولا يُشوَّه فنّه.
+                Image(
+                    bitmap = cover,
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.matchParentSize(),
+                )
+            } else if (material != null) {
                 Box(
                     modifier = Modifier.matchParentSize().graphicsLayer {
                         scaleX = CockpitSlabMaterialScale

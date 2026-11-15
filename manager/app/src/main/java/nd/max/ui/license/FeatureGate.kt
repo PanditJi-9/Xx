@@ -303,7 +303,8 @@ private fun featureIcon(featureId: String): ImageVector = when (featureId) {
 }
 
 /** فتح صفحة الاشتراك في المتصفّح — لا شراء داخل التطبيق ولا حساب. */
-private fun openSubscriptionPage(context: Context, url: String) {
+/** فتح صفحة الاشتراك التي كتبها المالك. `internal` لأن شاشة الترخيص تستعملها نفسها — ولا نسخة ثانية. */
+internal fun openSubscriptionPage(context: Context, url: String) {
     runCatching {
         context.startActivity(
             Intent(Intent.ACTION_VIEW, Uri.parse(url)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)

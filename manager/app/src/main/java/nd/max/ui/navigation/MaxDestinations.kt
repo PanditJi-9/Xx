@@ -373,6 +373,19 @@ sealed class MaxDestination(
     )
 
     /**
+     * `NETWORK-SCANNER-01` — فاحص الشبكة المحليّة: عنوانك وبوّابتك وجيرانك من
+     * `LinkProperties` و`/proc/net/arp`، مع فحص منافذ شائع **بطلب المستخدم**.
+     * **تحت التحكّم** مع أدوات النظام: قراءة فقط — لا مقابس خامّة ولا التقاط حزم
+     * ولا جذر، وحدُّها معلن داخلها (الصمت ليس دليل غياب).
+     */
+    data object NetworkScanner : MaxDestination(
+        "network_scanner",
+        R.string.network_scanner_title,
+        Icons.Rounded.Wifi,
+        Control,
+    )
+
+    /**
      * `USAGE-STATS-01` — زمن المقدّمة لكل تطبيق من قاعدة استخدام أندرويد نفسها.
      * **تحت التحكّم بأمر المالك.** سطح قراءة لحالة الجهاز، ويحتاج إذن الوصول إلى الاستخدام وحده.
      */
@@ -493,7 +506,7 @@ sealed class MaxDestination(
                 ThermalDetail, Charging, BypassCharging, BypassChargingCheck, DozeMode,
                 Dex2oat, StorageDetail, StorageCare, NetworkScheduler, NetworkDetail,
                 ProcessManager, DebloatFreeze, AppSettings, GameLobby, EmulatorHub,
-                ColorPalette, ColorScheme, DeviceLab, ManifestInspector, UsageStats, BatteryHistory, License, Logs, ConfigBackup, CommunityStats, Plugins, MaxBackup, Permissions, About,
+                ColorPalette, ColorScheme, DeviceLab, ManifestInspector, NetworkScanner, UsageStats, BatteryHistory, License, Logs, ConfigBackup, CommunityStats, Plugins, MaxBackup, Permissions, About,
                 Privilege,
                 SetEdit, ActivityLauncher, FileManager,
             )

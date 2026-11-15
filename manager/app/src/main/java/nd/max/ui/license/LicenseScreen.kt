@@ -48,6 +48,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -221,8 +222,66 @@ fun LicenseScreen(navController: NavHostController) {
                 }
             }
         }
+
+        // ③ الاشتراك — ما يفتحه، ثم رابطٌ واحد يكتبه المالك بيده في لوحة Max Control. ولا سعر
+        //    ولا مدّة ولا خطّة تُكتب هنا: لا نعرفها ولا نخترعها (ADR-07). وإن لم يُنشر شيء
+        //    (لا رابط ولا نصّ ولا ميزة مشتركة) فلا قسم ولا زرّ — لا وعدٌ إلى فراغ.
+        val subscription = snapshot.config.subscription
+        val arabic = LocalConfiguration.current.locales[0].language.lowercase().startsWith("ar")
+        val paymentText = (if (arabic) subscription?.paymentTextAr else subscription?.paymentTextEn)
+            ?.takeIf { it.isNotBlank() }
+            ?: (if (arabic) subscription?.paymentTextEn else subscription?.paymentTextAr)
+                ?.takeIf { it.isNotBlank() }
+        val subscribeUrl = subscription?.url?.trim()
+            ?.takeIf { it.startsWith("http", ignoreCase = true) }
+        val unlocks = remember(snapshot.config.features) {
+            snapshot.config.features.values
+                .filter { it.state.equals("subscribe", true) || it.state.equals("subscription", true) }
+                .map { it.title.trim() }
+                .filter { it.isNotEmpty() }
+                .take(MaxSubscriptionUnlocks)
+        }
+        if (subscribeUrl != null || paymentText != null || unlocks.isNotEmpty()) {
+            MaxSection(title = stringResource(R.string.max_license_subscription_section)) {
+                MaxGroup {
+                    unlocks.forEachIndexed { index, title ->
+                        if (index > 0) MaxGroupDivider()
+                        MaxRow(
+                            title = title,
+                            icon = Icons.Rounded.CheckCircle,
+                            iconTone = MaxTone.Positive,
+                        )
+                    }
+                    if (unlocks.isNotEmpty()) MaxGroupDivider()
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(
+                                horizontal = MaxSpace.rowPaddingHorizontal,
+                                vertical = MaxSpace.rowPaddingVertical,
+                            ),
+                        verticalArrangement = Arrangement.spacedBy(MaxSpace.md),
+                    ) {
+                        if (paymentText != null) {
+                            Text(text = paymentText, style = MaterialTheme.typography.bodyMedium)
+                        }
+                        if (subscribeUrl != null) {
+                            StudioTonalButton(
+                                onClick = { openSubscriptionPage(context, subscribeUrl) },
+                                modifier = Modifier.fillMaxWidth(),
+                            ) {
+                                Text(stringResource(R.string.max_license_subscription_open))
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
+
+/** سقف صفوف «ما يفتحه» — قائمة طويلة تُقرأ بلا نهاية ليست عرضًا، بل جدالًا. */
+private const val MaxSubscriptionUnlocks = 8
 
 @StringRes
 private fun licenseStatusRes(status: LicenseStatus): Int = when (status) {

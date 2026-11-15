@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- فاحص الشبكة المحليّة: النظير العربيّ للمفاتيح نفسها. -->
+<resources>
+    <string name="network_scanner_title">فاحص الشبكة المحليّة</string>
+    <string name="network_scanner_subtitle">عنوانك، والبوّابة التي تصل إليها، ومن ردّ من الجيران.</string>
+    <string name="max_role_network_scanner">يقرأ الشبكة التي أنت عليها — بلا التقاط وبلا جذر.</string>
+
+    <string name="ns_no_network">لا شبكة موصولة.</string>
+    <string name="ns_interface">الواجهة</string>
+    <string name="ns_address">العنوان</string>
+    <string name="ns_gateway">البوّابة</string>
+    <string name="ns_dns">خوادم الأسماء</string>
+    <string name="ns_mac">العنوان الفيزيائيّ</string>
+    <string name="ns_transport_wifi">واي-فاي</string>
+    <string name="ns_transport_ethernet">إيثرنت</string>
+    <string name="ns_transport_cellular">خلويّ</string>
+    <string name="ns_transport_other">غير ذلك</string>
+
+    <string name="ns_sources_title">من أين جاءت هذه الأرقام</string>
+    <string name="ns_sources_body">العنوان والبوّابة من خصائص الوصلة في المنصّة. جدول الجيران من ذاكرة ARP في النواة، فهو يحمل ما تكلّم معه هذا الجهاز مؤخرًا فقط — وجدولٌ فارغ لا يعني شبكةً فارغة.</string>
+    <string name="ns_refresh">تحديث</string>
+
+    <string name="ns_probe">افحص المنافذ الشائعة</string>
+    <string name="ns_probe_stop">إيقاف</string>
+    <string name="ns_probe_progress">يُفحص %1$d من %2$d</string>
+    <string name="ns_probe_note">وصلات TCP على المنافذ ٢٢ و٨٠ و٤٤٣ و٥٠٠٠ و٥٥٥٥ في هذا النطاق /24. من ردّ يُذكر، والسكوت ليس دليلًا على الغياب.</string>
+
+    <string name="ns_neighbours">الجيران المعروفون</string>
+    <string name="ns_neighbours_note">من /proc/net/arp — قراءة فقط.</string>
+    <string name="ns_neighbours_empty">لا جيران معروفون بعد.</string>
+    <string name="ns_ports_value">المنافذ %1$s</string>
+</resources>

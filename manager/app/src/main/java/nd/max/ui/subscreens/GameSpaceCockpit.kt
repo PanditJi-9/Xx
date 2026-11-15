@@ -203,6 +203,9 @@ internal const val CockpitSlabMaterialPx = 24
 /** حبيبات: نسيج ثابت ٦٤px يُبلَّط، وهو آخر ما يفصل «مُصيَّرًا» عن «مرسومًا» في الشاشة. */
 internal const val CockpitGrainPx = 64
 internal const val CockpitGrainAlpha = 0.055f
+
+/** ستارة الغلاف على كامل الشاشة: يُقرأ فنُّه، ولا يبتلع الواجهة. */
+internal const val CockpitCoverVeil = 0.34f
 internal const val CockpitGrainMax = 24
 
 /** انحراف لونيّ: الهالة تُكرَّر بإزاحة بكسلين، حمراء وباردة، فتُقرأ عدسةً لا بقعة. */
@@ -247,8 +250,14 @@ internal fun GameSpaceCockpit(
         }
     }
     val index = data.games.indexOfFirst { it.packageName == data.selected?.packageName }
+    val cover = rememberGameCover(data.selected?.packageName)
     Box(modifier.fillMaxSize().clipToBounds()) {
-        CockpitScene(accent = accent, ignition = entrance.value, modifier = Modifier.matchParentSize())
+        CockpitScene(
+            accent = accent,
+            ignition = entrance.value,
+            cover = cover,
+            modifier = Modifier.matchParentSize(),
+        )
         CockpitBokeh(
             games = data.games,
             selected = data.selected?.packageName,
@@ -258,7 +267,15 @@ internal fun GameSpaceCockpit(
             packageName = data.selected?.packageName,
             accent = accent,
             ignition = entrance.value,
+            cover = cover,
             modifier = Modifier.matchParentSize(),
+        )
+        // مدخل الغلاف في مكانه من الشاشة لا في الإعدادات: صورة اللعبة تُختار بجوار اللعبة.
+        GameCoverButton(
+            packageName = data.selected?.packageName,
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(start = MaxSpace.lg, bottom = CockpitShelfHeight + MaxSpace.md),
         )
         Column(Modifier.fillMaxSize()) {
             CockpitTopBar(

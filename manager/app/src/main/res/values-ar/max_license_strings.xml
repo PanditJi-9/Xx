@@ -61,4 +61,6 @@
     <string name="max_license_gate_action">افتح إعدادات الترخيص</string>
     <!-- زرّ الاشتراك في بوّابة السطح المقفل: يظهر فقط إن نشر المالك رابط اشتراك في اللوحة -->
     <string name="max_license_gate_subscribe">اشترك الآن</string>
+    <string name="max_license_subscription_section">الاشتراك</string>
+    <string name="max_license_subscription_open">افتح صفحة الاشتراك</string>
 </resources>
