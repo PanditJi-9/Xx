@@ -1,3 +1,38 @@
+## GAME-SPACE-COCKPIT-FIX-02 — ثلاثة أحمر: سقف رموزٍ، نوعٌ لم يوجد قطّ، واستيراد — 2026-11-15 · DONE
+
+**أمر المالك:** «اصلح مشكلة البناء» · «اكمل».
+
+**١. بوابة الرموز (`43658329053` + docs `43658329123` على `d4644304`):** الخطوة ٥ «Contract gates
+(fast, no compiler)» — `radius: 19 > 15` و`distinct_radii: 6 > 5` من حرفيّات `GameSpaceShell.kt`.
+الإصلاح `1c137f83`: `MaxRadius.deck = 20.dp` و`MaxRadius.tick = 3.dp` وأربعة تحويلات حرفيّ→رمز؛
+**السقف لم يُرفع**. القياس: radius 15/15 · متمايز 4/5 · 243/300.
+
+**٢. نوع غائب (`43659394633` على `1c137f83`):** ٤٢ خطأ تصريف كلها `Unresolved reference 'LobbyPage'`
+— نوعٌ تستعمله أربعة ملفات ولم يُعرَّف في أي commit. الإصلاح `85dc3627`: `internal enum class
+LobbyPage(val section: LobbySection?)` في `GameSpaceShell.kt:78`، سبع صفحات (Home · Loadout ·
+Insights · Game · Panel · Library · Settings) و`labelRes`/`icon`/`at(index)`/`of(section)`؛ وحذف
+شريط مكرّر من `StageCanvas`، واستيراد `width` في `LobbyExplore.kt`، وتحديث إبرتَي الحارس
+(معالج الرجوع `rootState.currentPage != 0` بتسامح، وعدّاد الصفحات من الـenum لا حرفيًّا).
+
+**٣. استيرادان (`43661865270` على `85dc3627`):** `LobbyExplore.kt:275 Unresolved reference 'height'`
+⇒ `e844cb0a` (سطر استيراد واحد). ثم مسحٌ للملفات التسعة التي مسّها المالك: لا استيراد ناقص آخر.
+
+**٤. حارس قديم (`43663177872` على `e844cb0a`):** التصريف نظيف، والفشل اختبار واحد يثبّت
+`fontWeight = FontWeight.Light` والعنوان صار `Bold` ⇒ `99ebcf44` يجعل الحارس يؤكّد وجود وزن صريح
+لا نوعه. **درس:** الإبرة تُفحص على ملفها لا على اتحاد الملفات.
+
+**الحكم المقروء:** `43665104779` على `99ebcf44` = **نجاح**. لا بناء أُلغي · لا Quick Verify أُرسل.
+
+**GATES:** kt_balance 3439/0 · code_health 0 · i18n 0 · prune 0 · design_tokens 243/300 ·
+resource_compile ✓ · provenance 4462/0/0 · jni 23/0/0/0 · diff نظيف · بديل بلا مُصرّف: نسخة Python
+من شروط الحارس على ملفاتها الحيّة = PASS.
+
+**RESIDUAL RISK:** لا لقطة جهاز ⇒ لا ادّعاء تطابق بصريّ · الحُرّاس نصّية · RTL واللمس على الجهاز.
+
+**NEXT:** أخضر على `99ebcf44`. أي أحمر يُسمّى من السجل (خطوة + ملف:سطر) قبل الإصلاح.
+
+---
+
 ## GAME-SPACE-COCKPIT-FIX-01 — إغلاق ثلاثة أحمر متتالية: لوحة ناقصة ثم حارسان على هيكل قديم — 2026-11-14 · DONE
 
 **أمر المالك:** «اصلح مشكلة البناء» · «اكمل».
