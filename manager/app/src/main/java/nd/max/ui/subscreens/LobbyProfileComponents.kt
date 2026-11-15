@@ -5,8 +5,6 @@
  */
 package nd.max.ui.subscreens
 
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
@@ -22,12 +20,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,11 +39,11 @@ import androidx.compose.ui.unit.sp
 import nd.max.R
 import nd.max.core.gamespace.LobbyCue
 import nd.max.ui.component.LocalLobbySounds
-import nd.max.ui.design.MaxDuration
 import nd.max.ui.design.MaxRadius
 import nd.max.ui.design.MaxSize
 import nd.max.ui.design.MaxSpace
 import nd.max.ui.design.maxRadius
+import nd.max.ui.theme.DisplayFontFamily
 
 /**
  * صفوف «ملفّ اللعبة» — **مكوّنات الاختيار المشتركة** لمركز التحكم: رقاقة الاختيار نفسها، والحالات
@@ -57,49 +55,41 @@ import nd.max.ui.design.maxRadius
 /** نصف قطر رقاقة الاختيار في صفوف اللوبي — قيمة واحدة للموضعين. */
 internal val LobbyChipRadius = 12.dp
 
-/** علامة الترويسة البنفسجية أمام عنوان البطاقة — نفسها نتوء «Popular Games» في الرئيسية. */
-private val CardNotchWidth = 4.dp
-private val CardNotchHeight = 18.dp
-
-/** لغة الزجاج نفسها المرسومة على ألواح الرئيسية: جسم داكن بحدّ أبيض خافت، والبنفسجيّ للمختار وحده. */
-internal val LobbyGlassBody = Brush.verticalGradient(
-    listOf(GameSpacePalette.Glass.copy(alpha = 0.80f), GameSpacePalette.GlassDeep.copy(alpha = 0.88f))
-)
-internal val LobbyGlassEdge = Brush.linearGradient(
-    listOf(
-        Color.White.copy(alpha = 0.16f),
-        Color.White.copy(alpha = 0.05f),
-        Color.White.copy(alpha = 0.10f)
-    )
-)
-internal val LobbyChipSelectedFill = Brush.horizontalGradient(
-    listOf(GameSpacePalette.VioletDeep.copy(alpha = 0.65f), GameSpacePalette.Plum.copy(alpha = 0.92f))
-)
-
 /** بطاقة قسم بترويسة — تُستعمل في أقسام مركز التحكم. */
 @Composable
 internal fun LobbySectionCard(title: String, content: @Composable () -> Unit) {
-    val shape = RoundedCornerShape(maxRadius(MaxRadius.group))
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(shape)
-            .background(LobbyGlassBody)
-            .border(MaxSize.hairlineBorder, LobbyGlassEdge, shape)
+            .clip(RoundedCornerShape(maxRadius(MaxRadius.group)))
+            .background(
+                Brush.verticalGradient(
+                    listOf(GameSpacePalette.Glass.copy(alpha = 0.84f), GameSpacePalette.GlassDeep.copy(alpha = 0.92f))
+                )
+            )
+            .border(
+                MaxSize.hairlineBorder,
+                GameSpacePalette.VioletSoft.copy(alpha = 0.20f),
+                RoundedCornerShape(maxRadius(MaxRadius.group))
+            )
             .padding(MaxSpace.lg),
         verticalArrangement = Arrangement.spacedBy(MaxSpace.md)
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm)
-        ) {
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm)) {
             Box(
                 Modifier
-                    .width(CardNotchWidth)
-                    .height(CardNotchHeight)
-                    .background(GameSpacePalette.Violet)
+                    .width(3.dp)
+                    .height(16.dp)
+                    .clip(CircleShape)
+                    .background(GameSpacePalette.VioletSoft)
             )
-            Text(text = title, color = GameSpacePalette.Ink, fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
+            Text(
+                text = title,
+                color = GameSpacePalette.Ink,
+                fontSize = 17.sp,
+                fontFamily = DisplayFontFamily,
+                fontWeight = FontWeight.SemiBold
+            )
         }
         content()
     }
@@ -134,23 +124,16 @@ internal fun LobbyOptionRow(
         ) {
             options.forEach { (value, label) ->
                 val isSelected = value.equals(selected, ignoreCase = true)
-                val rim by animateColorAsState(
-                    targetValue = if (isSelected) GameSpacePalette.VioletSoft.copy(alpha = 0.85f) else Color.Transparent,
-                    animationSpec = tween(MaxDuration.quick),
-                    label = "lobbyChipRim"
-                )
                 Box(
                     modifier = Modifier
                         .heightIn(min = MaxSize.minTouchTarget)
                         .clip(RoundedCornerShape(LobbyChipRadius))
-                        .then(
-                            if (isSelected) {
-                                Modifier.background(LobbyChipSelectedFill)
-                            } else {
-                                Modifier.background(Color.White.copy(alpha = 0.05f))
-                            }
+                        .background(if (isSelected) GameSpacePalette.Violet.copy(alpha = 0.32f) else GameSpacePalette.PanelRaised.copy(alpha = 0.55f))
+                        .border(
+                            MaxSize.hairlineBorder,
+                            if (isSelected) GameSpacePalette.VioletSoft.copy(alpha = 0.75f) else Color.Transparent,
+                            RoundedCornerShape(LobbyChipRadius)
                         )
-                        .border(MaxSize.hairlineBorder, rim, RoundedCornerShape(LobbyChipRadius))
                         .selectable(
                             selected = isSelected,
                             role = Role.RadioButton,
@@ -202,7 +185,7 @@ internal fun LobbySwitchRow(title: String, checked: Boolean, onChecked: (Boolean
             colors = SwitchDefaults.colors(
                 checkedTrackColor = GameSpacePalette.Violet,
                 checkedThumbColor = GameSpacePalette.Ink,
-                uncheckedTrackColor = Color.White.copy(alpha = 0.10f),
+                uncheckedTrackColor = GameSpacePalette.PanelRaised,
                 uncheckedThumbColor = GameSpacePalette.Muted
             )
         )

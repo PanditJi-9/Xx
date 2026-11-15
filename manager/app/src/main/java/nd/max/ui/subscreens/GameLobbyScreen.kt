@@ -29,6 +29,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.PagerDefaults
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Apps
 import androidx.compose.material.icons.rounded.Close
@@ -52,6 +53,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -115,13 +117,13 @@ import nd.max.ui.component.rememberLobbyIcon
 import nd.max.ui.component.LobbyEntrance
 import nd.max.ui.component.LobbyKeepScreenOn
 import nd.max.ui.component.LobbyNotice
-import nd.max.ui.component.LobbyPalette
 import nd.max.ui.component.LobbyRoundButton
 import nd.max.ui.component.LobbySnapSpring
 import nd.max.ui.component.LobbyStatusCapsule
 import nd.max.ui.component.LobbyWindowEffect
 import nd.max.ui.component.LocalLobbySounds
 import nd.max.ui.component.lobbyIntro
+import nd.max.ui.component.lobbyLoop
 import nd.max.ui.component.rememberLobbyAnimationsEnabled
 import nd.max.ui.component.rememberLobbyBattery
 import nd.max.ui.component.rememberLobbyClock
@@ -144,6 +146,7 @@ import nd.max.ui.gamespace.PaletteCopy
 import nd.max.ui.gamespace.PaletteGame
 import nd.max.ui.navigation.MaxDestination
 import nd.max.ui.navigation.openAppSettings
+import nd.max.ui.theme.DisplayFontFamily
 import nd.max.ui.util.AppConfig
 import nd.max.ui.util.GamePanelPrefs
 import nd.max.ui.util.OverlayPermission
@@ -161,10 +164,6 @@ private val GameSpaceWideStage = 720.dp
 
 /** عرض عمود اللوحة — ٣٠٠dp ≈ ٢٣٪ من ١٢٨٠dp كما في اللقطة. */
 private val GameSpaceBoardWidth = 300.dp
-
-/** العلامة البنفسجية أمام عنوان القسم، نفسها نتوء «Popular Games» في الرئيسية. */
-private val SectionNotchWidth = 4.dp
-private val SectionNotchHeight = 22.dp
 
 /* كبسولة الحالة في شريط الأقسام تظهر حين يتّسع العرض لها بجوار العنوان والأزرار. */
 private const val SectionCapsuleWidthDp = 900
@@ -358,7 +357,7 @@ fun GameLobbyScreen(
     // يُقرأ في مرحلة الرسم عبر `toneState.value` حيث أمكن.
     val gameTone = rememberLobbyTone(active?.packageName)
     val toneState = animateColorAsState(
-        targetValue = if (lobbyPrefs.gameColors) gameTone else LobbyPalette.Red,
+        targetValue = if (lobbyPrefs.gameColors) gameTone else GameSpacePalette.Violet,
         animationSpec = tween(MaxDuration.deliberate),
         label = "lobbyStageTone"
     )
@@ -402,6 +401,8 @@ fun GameLobbyScreen(
     var entranceSkip by remember { mutableIntStateOf(0) }
     val entranceOn = animations && lobbyPrefs.entrance && !entranceDone
     val intro = rememberLobbyIntro(animations, hold = entranceOn)
+    // ساعة الحركة الواحدة للوبي كلّه (غبار الأجواء، طفو البطل، لمعة الأزرار، نبض «Live»): تُقرأ في الرسم فقط.
+    val stageClock = lobbyLoop(animations, StageClockMs)
 
     val tick = {
         if (lobbyPrefs.haptics) haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
@@ -555,7 +556,11 @@ fun GameLobbyScreen(
         )
     }
 
-    CompositionLocalProvider(LocalLobbySounds provides sounds) {
+    CompositionLocalProvider(
+        LocalLobbySounds provides sounds,
+        LocalStageClock provides stageClock,
+        LocalStageIntro provides intro
+    ) {
         Box(
             Modifier
                 .fillMaxSize()
@@ -618,6 +623,8 @@ fun GameLobbyScreen(
                 icon = backdropIcon,
                 modifier = Modifier.fillMaxSize()
             )
+            // أجواء موحّدة خلف المُصفِّح: سماء بنفسجيّة وتوهّجات وغبار متصاعد، فتتّحد الرئيسية والأقسام في مشهد واحد.
+            LobbyAtmosphere()
 
             // الصفحات كلها في مُصفِّح رأسيّ واحد: الرئيسية أولًا ثم الأقسام بترتيب الشريط الجانبيّ. الشريط
             // نفسه ثابت فوقها (أفقيًّا)، أو شريط سفليّ (عموديًّا)، والسحب واللمس يصلان إلى الصفحة نفسها.
@@ -680,7 +687,14 @@ fun GameLobbyScreen(
                                 batteryPercent = lobbyBattery?.percent,
                                 batteryTempC = lobbyBattery?.tempTenthsC?.let { it / 10f },
                                 charging = lobbyBattery?.charging == true,
-                                onSelect = selectGame,
+                                // تبديل اللعبة (بالسحب على البطل أو بنقر البطاقة) يُسمَع ويُحَسّ كعبور بطاقة في الحلقة.
+                                onSelect = { pkg ->
+                                    if (pkg != active?.packageName) {
+                                        sounds.play(LobbyCue.Tick)
+                                        tick()
+                                    }
+                                    selectGame(pkg)
+                                },
                                 onLaunch = start,
                                 onOptions = { openControl(LobbySection.Game) },
                                 onHome = {},
@@ -689,6 +703,7 @@ fun GameLobbyScreen(
                                 tagline = active?.let { lobbyPlayAgeText(playStats[it.packageName]) },
                                 clock = lobbyClock,
                                 date = lobbyDate,
+                                launching = launching,
                                 // أزرار اللوبي فقط: الساعة والبطارية والحرارة مرسومة في اللوحة نفسها، وكبسولة
                                 // الحالة كانت تغطّي الساعة والشريط فتُركت لشريط الأقسام.
                                 topActions = {
@@ -728,15 +743,17 @@ fun GameLobbyScreen(
                                 ) {
                                     Box(
                                         Modifier
-                                            .width(SectionNotchWidth)
-                                            .height(SectionNotchHeight)
-                                            .background(GameSpacePalette.Violet)
+                                            .width(4.dp)
+                                            .height(22.dp)
+                                            .clip(CircleShape)
+                                            .background(GameSpacePalette.VioletSoft)
                                     )
                                     Text(
                                         text = stringResource(target.titleRes),
                                         color = GameSpacePalette.Ink,
-                                        fontSize = 20.sp,
-                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 22.sp,
+                                        fontFamily = DisplayFontFamily,
+                                        fontWeight = FontWeight.SemiBold,
                                         maxLines = 1,
                                         overflow = TextOverflow.Ellipsis,
                                         modifier = Modifier.weight(1f)

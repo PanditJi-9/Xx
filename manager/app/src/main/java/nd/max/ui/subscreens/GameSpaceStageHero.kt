@@ -3,20 +3,20 @@ package nd.max.ui.subscreens
 
 import android.os.Build
 import androidx.compose.animation.Crossfade
-import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -37,12 +37,15 @@ import androidx.compose.material.icons.rounded.Apps
 import androidx.compose.material.icons.rounded.MoreHoriz
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.VideogameAsset
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -50,16 +53,18 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.scale
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextStyle
@@ -69,18 +74,30 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlin.math.PI
+import kotlin.math.cos
+import kotlin.math.sin
 import nd.max.R
 import nd.max.core.gamespace.GameApp
-import nd.max.ui.component.rememberLobbyAnimationsEnabled
+import nd.max.ui.component.lobbyIntro
+import nd.max.ui.component.lobbyPress
 import nd.max.ui.component.rememberLobbyIcon
+import nd.max.ui.component.rememberLobbyTone
+import nd.max.ui.theme.DisplayFontFamily
 
 /*
  * البطل والرفّ بإحداثيات اللقطة (١٦٧٢×٩٤١) — انظر `GameSpaceStage.kt`.
  *
  * لا فنّ لعبة: اللقطة تحمل فنّ PUBG وهو ليس ملكنا ولا يأتي مع `PackageManager`. فالبطل يعرض **أيقونة
- * التطبيق الحقيقيّة** على لوح بهالة، وبطاقات الرفّ تأخذ الأيقونة نفسها فوق خلفية مموّهة منها (أندرويد ١٢+؛
- * قبله تدرّج بنفسجيّ وحده). الأسماء أرقامٌ مسمّاة لا حرفيّة، لبوّابة `design_tokens`.
+ * التطبيق الحقيقيّة** على لوح عائم بهالة بلون اللعبة نفسها (من أيقونتها) وحلقتين يدور عليهما ضوءان، وبطاقات
+ * الرفّ تأخذ الأيقونة نفسها فوق خلفية مموّهة منها (أندرويد ١٢+؛ قبله تدرّج بنفسجيّ وحده). الأسماء أرقامٌ
+ * مسمّاة لا حرفيّة، لبوّابة `design_tokens`.
+ *
+ * التفاعل: السحب الأفقيّ على البطل يبدّل اللعبة، والبطاقة المختارة تتوسّط الرفّ وترتفع، وكل زرّ ينكمش
+ * بزنبرك عند اللمس، وزرّ «Play Now» تعبره لمعة وتتحوّل أيقونته إلى مؤشّر تقدّم أثناء الإطلاق.
  */
+
+private val TwoPi = (2.0 * PI).toFloat()
 
 private val RadiusPanel = 32.dp
 private val RadiusCard = 18.dp
@@ -98,35 +115,31 @@ private val PlayWidth = 248.dp
 private val PlayHeight = 57.dp
 private val MoreSize = 58.dp
 private val PlayGlyph = 30.dp
-
-/** ضغطة زرّ التشغيل: تصغير خفيف يعود بسرعة، ووهج يمرّ مرّة واحدة حين يصبح الزرّ متاحًا (حدث لا حلقة). */
-private const val PlayPressScale = 0.97f
-private const val PlayPressMs = 120
-private const val PlaySheenMs = 900
-private const val PlaySheenAlpha = 0.22f
-
-/** تركيز الرفّ: المختارة بحجمها الكامل، وغيرها تتراجع قليلًا فتبرز دون أن يقصّها حدّ القائمة. */
-private const val CardIdleScale = 0.95f
-private const val CardIdleAlpha = 0.82f
-private const val CardFocusMs = 220
+private val ProgressStroke = 3.dp
 private val CardWidth = 184.dp
 private val CardHeight = 214.dp
-private val CardIcon = 112.dp
+private val CardIcon = 120.dp
 private val MoreWidth = 158.dp
 private val MoreGlyph = 52.dp
 private val ArrowSize = 38.dp
-private val ArrowGlyph = 24.dp
-private val NotchWidth = 3.dp
-private val NotchHeight = 23.dp
+private val ArrowGlyph = 28.dp
+private val NotchWidth = 4.dp
+private val NotchHeight = 24.dp
 private val DotSize = 11.dp
-private val DotActiveWidth = 26.dp
+private val DotActiveWidth = 28.dp
 private val DotGap = 15.dp
-private val ArtEdge = 250.dp
+private val ArtEdge = 292.dp
 private val GlowS = 14.dp
 private val GlowL = 40.dp
 private val SeeAllGlyph = 24.dp
+private val ShelfInset = 8.dp
+private val LiftDistance = 7.dp
+private val FloatDistance = 9.dp
+private val OrbitGlow = 9.dp
+private val OrbitDot = 2.6.dp
 
 private const val ShelfMoreKey = "stage.shelf.more"
+private const val SwipeShare = 0.10f
 
 private val PlayFill = Brush.horizontalGradient(
     listOf(GameSpacePalette.Plum.copy(alpha = 0.88f), GameSpacePalette.VioletDeep.copy(alpha = 0.55f))
@@ -139,57 +152,108 @@ private val SelectedRim = Brush.linearGradient(
 )
 private val CardFill = Brush.verticalGradient(listOf(Color(0xFF2B1660), Color(0xFF0C0626)))
 private val IdleRim = Brush.linearGradient(
-    listOf(Color.White.copy(alpha = 0.14f), Color.White.copy(alpha = 0.14f))
+    listOf(Color.White.copy(alpha = 0.18f), Color.White.copy(alpha = 0.06f))
+)
+private val TitleFill = Brush.verticalGradient(listOf(Color.White, GameSpacePalette.Lavender))
+private val NotchFill = Brush.verticalGradient(listOf(GameSpacePalette.VioletSoft, GameSpacePalette.Violet))
+private val CardSheen = Brush.linearGradient(
+    colors = listOf(Color.White.copy(alpha = 0.14f), Color.Transparent),
+    start = Offset.Zero,
+    end = Offset(260f, 300f)
 )
 
 /**
- * البطل: لوح اللعبة في الوسط (مركزه ٨٥٠،٢٥٥)، واسمها الكبير وسطر «آخر لعب» وزرّ «Play Now» عند
- * (٢٣٠،١٥٠)، والنقاط عند (٨٠٣،٤٦٣). بلا ألعاب: بطاقة فراغ تقود إلى المكتبة، لا «٠٪» ولا زرّ معطّل.
+ * البطل: لوح اللعبة العائم في الوسط (مركزه ٨٥٠،٢٥٥)، واسمها الكبير بتدرّج لافندريّ وسطر «آخر لعب» وزرّ
+ * «Play Now» عند (٢٣٠،١٥٠)، والنقاط عند (٨٠٣،٤٦٣). بلا ألعاب: بطاقة فراغ تقود إلى المكتبة، لا «٠٪» ولا زرّ
+ * معطّل. السحب الأفقيّ فوقه يبدّل اللعبة (الطبقة تحت الأزرار فلا تسرق نقراتها).
  */
 @Composable
 internal fun StageHero(data: StageData, actions: StageActions) {
-    Box(Modifier.at(620, 25, 460, 460), contentAlignment = Alignment.Center) {
+    val intro = LocalStageIntro.current
+    val extra = LocalStageExtra.current
+    // العرض الإضافيّ بين نصّ اللعبة ولوحات اليمين: البطل والنقاط يتوسّطانه.
+    val room = extra - stageRightGrow(extra)
+    val shift = room / 2
+    if (data.games.size > 1) {
+        StageSwipeLayer(
+            onStep = { delta ->
+                data.games.getOrNull(data.selectedIndex + delta)?.let { actions.onSelect(it.packageName) }
+            },
+            modifier = Modifier.at(168, 40, 1040 + room, 460)
+        )
+    }
+    Box(
+        modifier = Modifier
+            .at(570 + shift, -5, 560, 520)
+            .lobbyIntro(intro, scaleFrom = 0.88f, start = 0.05f),
+        contentAlignment = Alignment.Center
+    ) {
         HeroArt(game = data.selected, edge = ArtEdge)
     }
     StageDots(
         count = data.games.size,
         index = if (data.selected == null) -1 else data.selectedIndex,
-        modifier = Modifier.at(803, 463, 140, 12)
+        modifier = Modifier
+            .at(803 + shift, 463, 140, 12)
+            .lobbyIntro(intro, start = 0.30f)
     )
     if (data.games.isEmpty()) {
-        EmptyHero(onOpenLibrary = actions.onOpenLibrary, modifier = Modifier.at(230, 150, 340, 300))
+        EmptyHero(
+            onOpenLibrary = actions.onOpenLibrary,
+            modifier = Modifier
+                .at(230, 150, 340, 300)
+                .lobbyIntro(intro, fromStart = 70.dp, start = 0.10f)
+        )
         return
     }
-    Box(Modifier.at(230, 150, 280, 170), contentAlignment = Alignment.Center) {
+    Box(
+        modifier = Modifier
+            .at(230, 150, 320, 170)
+            .lobbyIntro(intro, fromStart = 70.dp, start = 0.10f),
+        contentAlignment = Alignment.Center
+    ) {
         Crossfade(
             targetState = data.selected?.label.orEmpty(),
-            animationSpec = tween(durationMillis = 260)
+            animationSpec = tween(durationMillis = 260),
+            label = "stageHeroTitle"
         ) { label ->
+            // الأسماء الطويلة تصغر خطوة أو خطوتين بدل أن تُقتطع بنقاط وهي في سطرين.
+            val size = when {
+                label.length > 26 -> 32.sp
+                label.length > 16 -> 38.sp
+                else -> 46.sp
+            }
             Text(
                 text = label,
-                color = GameSpacePalette.Ink,
-                fontSize = 46.sp,
-                lineHeight = 50.sp,
-                fontWeight = FontWeight.Black,
-                textAlign = TextAlign.Center,
                 maxLines = 3,
                 overflow = TextOverflow.Ellipsis,
                 style = TextStyle(
+                    brush = TitleFill,
+                    fontSize = size,
+                    lineHeight = size * 1.08f,
+                    fontFamily = DisplayFontFamily,
+                    fontWeight = FontWeight.Black,
+                    textAlign = TextAlign.Center,
                     shadow = Shadow(
-                        color = GameSpacePalette.VioletSoft.copy(alpha = 0.55f),
+                        color = GameSpacePalette.VioletSoft.copy(alpha = 0.60f),
                         offset = Offset.Zero,
-                        blurRadius = 28f
+                        blurRadius = 30f
                     )
                 )
             )
         }
     }
     data.tagline?.let { line ->
-        Box(Modifier.at(230, 322, 280, 36), contentAlignment = Alignment.Center) {
+        Box(
+            modifier = Modifier
+                .at(230, 322, 320, 36)
+                .lobbyIntro(intro, fromStart = 70.dp, start = 0.16f),
+            contentAlignment = Alignment.Center
+        ) {
             Text(
                 text = line,
-                color = GameSpacePalette.Ink.copy(alpha = 0.92f),
-                fontSize = 24.sp,
+                color = GameSpacePalette.Lavender.copy(alpha = 0.95f),
+                fontSize = 22.sp,
                 textAlign = TextAlign.Center,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
@@ -200,22 +264,62 @@ internal fun StageHero(data: StageData, actions: StageActions) {
         enabled = data.selected != null,
         onLaunch = actions.onLaunch,
         onOptions = actions.onOptions,
-        modifier = Modifier.at(230, 391, 340, 58)
+        launching = data.launching,
+        modifier = Modifier
+            .at(230, 391, 340, 58)
+            .lobbyIntro(intro, fromStart = 70.dp, start = 0.22f)
+    )
+}
+
+/**
+ * طبقة سحب شفّافة فوق البطل: سحبة أفقيّة تتجاوز عُشر العرض تنقل اللعبة المختارة خطوة (يسارًا = التالية).
+ * تُقرأ دالّة الخطوة بـ`rememberUpdatedState` فلا يُعاد تسجيل المستمع أثناء السحب كلما أُعيد التركيب
+ * (القراءات الحيّة تُجدَّد كل ثانيتين). والسحب الرأسيّ لا يُستهلك هنا فيصل إلى المُصفِّح.
+ */
+@Composable
+private fun StageSwipeLayer(onStep: (Int) -> Unit, modifier: Modifier) {
+    val step by rememberUpdatedState(onStep)
+    Box(
+        modifier.pointerInput(Unit) {
+            var dragged = 0f
+            detectHorizontalDragGestures(
+                onDragStart = { dragged = 0f },
+                onDragEnd = {
+                    val threshold = size.width * SwipeShare
+                    if (dragged <= -threshold) {
+                        step(1)
+                    } else if (dragged >= threshold) {
+                        step(-1)
+                    }
+                    dragged = 0f
+                },
+                onDragCancel = { dragged = 0f },
+                onHorizontalDrag = { change, amount ->
+                    change.consume()
+                    dragged += amount
+                }
+            )
+        }
     )
 }
 
 /**
  * خلفية البطل بعرض اللوحة كما في اللقطة المرجعيّة: فنّ اللعبة يملأ المنطقة خلف الاسم والبطل ويذوب في
  * العتمة من اليسار ومن الأسفل لتبقى النصوص والرفّ مقروءة. لا فنّ منقول (ADR-07): هي أيقونة اللعبة
- * الحقيقيّة مكبَّرة ومموَّهة، وتتبدّل بنعومة مع تبديل اللعبة.
+ * الحقيقيّة مكبَّرة ومموَّهة، فوقها توهّج بلون اللعبة نفسه (من أيقونتها) ينتقل بنعومة مع تبديلها.
  */
 @Composable
 internal fun StageHeroBackdrop(game: GameApp?, modifier: Modifier = Modifier) {
     val icon by rememberLobbyIcon(game?.packageName)
+    val tone by animateColorAsState(
+        targetValue = rememberLobbyTone(game?.packageName),
+        animationSpec = tween(durationMillis = 520),
+        label = "stageHeroTone"
+    )
     Box(modifier.clipToBounds()) {
         Crossfade(
             targetState = icon,
-            animationSpec = tween(durationMillis = 420),
+            animationSpec = tween(durationMillis = 520),
             label = "stageHeroBackdrop"
         ) { bitmap ->
             if (bitmap != null) {
@@ -232,7 +336,7 @@ internal fun StageHeroBackdrop(game: GameApp?, modifier: Modifier = Modifier) {
                                 Modifier
                             }
                         )
-                        .alpha(0.60f)
+                        .alpha(0.62f)
                 )
             }
         }
@@ -240,6 +344,17 @@ internal fun StageHeroBackdrop(game: GameApp?, modifier: Modifier = Modifier) {
             Modifier
                 .fillMaxSize()
                 .drawBehind {
+                    drawRect(
+                        Brush.radialGradient(
+                            colors = listOf(
+                                tone.copy(alpha = 0.34f),
+                                tone.copy(alpha = 0.10f),
+                                Color.Transparent
+                            ),
+                            center = Offset(size.width * 0.46f, size.height * 0.46f),
+                            radius = size.height * 1.05f
+                        )
+                    )
                     drawRect(
                         Brush.horizontalGradient(
                             0f to GameSpacePalette.Void.copy(alpha = 0.94f),
@@ -261,31 +376,28 @@ internal fun StageHeroBackdrop(game: GameApp?, modifier: Modifier = Modifier) {
     }
 }
 
-/** «Play Now» بحدّ بنفسجيّ متدرّج على خلفية داكنة (٢٤٨×٥٧)، و«…» دائرة (٥٨) بجواره. */
+/**
+ * «Play Now» بحدّ بنفسجيّ متدرّج على خلفية داكنة (٢٤٨×٥٧) تعبرها لمعة، و«…» دائرة (٥٨) بجواره. كلاهما
+ * ينكمش بزنبرك عند اللمس. أثناء [launching] تتحوّل أيقونة التشغيل إلى مؤشّر تقدّم ويُمنع النقر الثاني.
+ */
 @Composable
-internal fun PlayRow(enabled: Boolean, onLaunch: () -> Unit, onOptions: () -> Unit, modifier: Modifier) {
-    val animations = rememberLobbyAnimationsEnabled()
-    val press = remember { MutableInteractionSource() }
-    val pressed by press.collectIsPressedAsState()
-    val pressScale by animateFloatAsState(
-        targetValue = if (pressed && enabled) PlayPressScale else 1f,
-        animationSpec = tween(durationMillis = PlayPressMs),
-        label = "playPress"
-    )
-    val sheen = remember { Animatable(1f) }
-    LaunchedEffect(enabled, animations) {
-        if (enabled && animations) {
-            sheen.snapTo(0f)
-            sheen.animateTo(1f, tween(durationMillis = PlaySheenMs))
-        }
-    }
-    val indication = LocalIndication.current
+internal fun PlayRow(
+    enabled: Boolean,
+    onLaunch: () -> Unit,
+    onOptions: () -> Unit,
+    modifier: Modifier,
+    launching: Boolean = false,
+) {
+    val clock = LocalStageClock.current
+    val playInteraction = remember { MutableInteractionSource() }
+    val moreInteraction = remember { MutableInteractionSource() }
     Row(modifier, verticalAlignment = Alignment.CenterVertically) {
         val shape = RoundedCornerShape(PlayHeight)
         Row(
             modifier = Modifier
                 .width(PlayWidth)
                 .height(PlayHeight)
+                .lobbyPress(playInteraction, 0.96f)
                 .alpha(if (enabled) 1f else 0.5f)
                 .shadow(
                     elevation = GlowS,
@@ -296,49 +408,37 @@ internal fun PlayRow(enabled: Boolean, onLaunch: () -> Unit, onOptions: () -> Un
                 .clip(shape)
                 .background(PlayFill)
                 .border(StrokeFirm, PlayRim, shape)
-                .drawWithContent {
-                    drawContent()
-                    val p = sheen.value
-                    if (p < 1f) {
-                        val x = size.width * (p * 1.6f - 0.3f)
-                        drawRect(
-                            brush = Brush.linearGradient(
-                                colors = listOf(
-                                    Color.Transparent,
-                                    Color.White.copy(alpha = PlaySheenAlpha),
-                                    Color.Transparent
-                                ),
-                                start = Offset(x - size.width * 0.2f, 0f),
-                                end = Offset(x + size.width * 0.2f, size.height)
-                            )
-                        )
-                    }
-                }
-                .graphicsLayer {
-                    scaleX = pressScale
-                    scaleY = pressScale
-                }
+                .stageSheen(clock, cycles = 6, strength = 0.20f)
                 .clickable(
-                    interactionSource = press,
-                    indication = indication,
-                    enabled = enabled,
+                    interactionSource = playInteraction,
+                    indication = null,
+                    enabled = enabled && !launching,
                     role = Role.Button,
                     onClick = onLaunch
                 ),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(GapS, Alignment.CenterHorizontally)
         ) {
-            Icon(
-                imageVector = Icons.Rounded.PlayArrow,
-                contentDescription = null,
-                tint = Color.White,
-                modifier = Modifier.size(PlayGlyph)
-            )
+            if (launching) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(PlayGlyph),
+                    color = Color.White,
+                    strokeWidth = ProgressStroke
+                )
+            } else {
+                Icon(
+                    imageVector = Icons.Rounded.PlayArrow,
+                    contentDescription = null,
+                    tint = Color.White,
+                    modifier = Modifier.size(PlayGlyph)
+                )
+            }
             Text(
                 text = stringResource(R.string.gs_launch),
                 color = Color.White,
                 fontSize = 22.sp,
-                fontWeight = FontWeight.Medium,
+                fontFamily = DisplayFontFamily,
+                fontWeight = FontWeight.SemiBold,
                 maxLines = 1
             )
         }
@@ -346,10 +446,16 @@ internal fun PlayRow(enabled: Boolean, onLaunch: () -> Unit, onOptions: () -> Un
         Box(
             modifier = Modifier
                 .size(MoreSize)
+                .lobbyPress(moreInteraction, 0.90f)
                 .clip(CircleShape)
                 .background(GameSpacePalette.Plum.copy(alpha = 0.90f))
                 .border(StrokeFine, GameSpacePalette.VioletSoft.copy(alpha = 0.45f), CircleShape)
-                .clickable(role = Role.Button, onClick = onOptions),
+                .clickable(
+                    interactionSource = moreInteraction,
+                    indication = null,
+                    role = Role.Button,
+                    onClick = onOptions
+                ),
             contentAlignment = Alignment.Center
         ) {
             Icon(
@@ -362,19 +468,31 @@ internal fun PlayRow(enabled: Boolean, onLaunch: () -> Unit, onOptions: () -> Un
     }
 }
 
-/** لوح اللعبة: أيقونة التطبيق الحقيقيّة بحدّ متدرّج، فوق هالة بنفسجيّة وحلقتين رفيعتين. */
+/**
+ * لوح اللعبة: أيقونة التطبيق الحقيقيّة بحدّ متدرّج ولمعة زجاجيّة، تطفو وتميل ميلًا طفيفًا فوق هالة بلون
+ * اللعبة (من أيقونتها)، وحلقتين رفيعتين يدور عليهما ثلاثة أضواء، وبقعة ضوء على «أرضيّة» تحتها. الحركة كلّها
+ * دالّة في ساعة المسرح الواحدة وتُقرأ في مرحلة الرسم/الطبقة.
+ */
 @Composable
 internal fun HeroArt(game: GameApp?, edge: Dp) {
+    val clock = LocalStageClock.current
+    val tone by animateColorAsState(
+        targetValue = rememberLobbyTone(game?.packageName),
+        animationSpec = tween(durationMillis = 520),
+        label = "heroArtTone"
+    )
     Box(
         modifier = Modifier
             .size(edge * 1.84f)
             .drawBehind {
                 val reach = size.minDimension / 2f
+                val t = clock.value
+                val e = edge.toPx()
                 drawCircle(
                     brush = Brush.radialGradient(
                         colors = listOf(
-                            GameSpacePalette.Violet.copy(alpha = 0.55f),
-                            GameSpacePalette.Magenta.copy(alpha = 0.12f),
+                            tone.copy(alpha = 0.50f),
+                            GameSpacePalette.Violet.copy(alpha = 0.22f),
                             Color.Transparent
                         ),
                         center = center,
@@ -395,20 +513,60 @@ internal fun HeroArt(game: GameApp?, edge: Dp) {
                     center = center,
                     style = Stroke(width = 1.dp.toPx())
                 )
+                // أرضيّة ضوئيّة: دائرة مضغوطة رأسيًّا فتصير قطعًا ناقصًا بحافة ناعمة من كل جهة.
+                val floorY = center.y + e * 0.60f
+                scale(scaleX = 1f, scaleY = 0.2f, pivot = Offset(center.x, floorY)) {
+                    drawCircle(
+                        brush = Brush.radialGradient(
+                            colors = listOf(tone.copy(alpha = 0.55f), Color.Transparent),
+                            center = Offset(center.x, floorY),
+                            radius = e * 0.70f
+                        ),
+                        radius = e * 0.70f,
+                        center = Offset(center.x, floorY)
+                    )
+                }
+                // ثلاثة أضواء تدور على الحلقة الداخليّة (٣ دورات في دورة الساعة).
+                val ring = reach * 0.82f
+                for (k in 0 until 3) {
+                    val a = TwoPi * (t * 3f + k / 3f)
+                    val p = Offset(center.x + ring * cos(a), center.y + ring * sin(a))
+                    drawCircle(
+                        color = GameSpacePalette.Lavender.copy(alpha = 0.20f),
+                        radius = OrbitGlow.toPx(),
+                        center = p
+                    )
+                    drawCircle(
+                        color = Color.White.copy(alpha = 0.85f),
+                        radius = OrbitDot.toPx(),
+                        center = p
+                    )
+                }
             },
         contentAlignment = Alignment.Center
     ) {
-        Crossfade(
-            targetState = game?.packageName,
-            animationSpec = tween(durationMillis = 320)
-        ) { packageName ->
-            HeroIcon(packageName = packageName, label = game?.label.orEmpty(), edge = edge)
+        Box(
+            modifier = Modifier.graphicsLayer {
+                val t = clock.value
+                translationY = (stageWave(t, 3, 0.25f) - 0.5f) * 2f * FloatDistance.toPx()
+                rotationZ = (stageWave(t, 2, 0.60f) - 0.5f) * 2.4f
+            },
+            contentAlignment = Alignment.Center
+        ) {
+            Crossfade(
+                targetState = game?.packageName,
+                animationSpec = tween(durationMillis = 320),
+                label = "stageHeroIcon"
+            ) { packageName ->
+                HeroIcon(packageName = packageName, label = game?.label.orEmpty(), edge = edge)
+            }
         }
     }
 }
 
 @Composable
 private fun HeroIcon(packageName: String?, label: String, edge: Dp) {
+    val clock = LocalStageClock.current
     val icon by rememberLobbyIcon(packageName)
     val shape = RoundedCornerShape(edge * 0.24f)
     Box(
@@ -422,7 +580,8 @@ private fun HeroIcon(packageName: String?, label: String, edge: Dp) {
             )
             .clip(shape)
             .background(CardFill)
-            .border(StrokeSelected, SelectedRim, shape),
+            .border(StrokeSelected, SelectedRim, shape)
+            .stageSheen(clock, cycles = 4, strength = 0.16f),
         contentAlignment = Alignment.Center
     ) {
         val bitmap = icon
@@ -447,6 +606,7 @@ private fun HeroIcon(packageName: String?, label: String, edge: Dp) {
 @Composable
 internal fun EmptyHero(onOpenLibrary: () -> Unit, modifier: Modifier) {
     val shape = RoundedCornerShape(RadiusCard)
+    val interaction = remember { MutableInteractionSource() }
     Column(modifier, verticalArrangement = Arrangement.spacedBy(GapM)) {
         Icon(
             imageVector = Icons.Rounded.VideogameAsset,
@@ -458,6 +618,7 @@ internal fun EmptyHero(onOpenLibrary: () -> Unit, modifier: Modifier) {
             text = stringResource(R.string.gs_empty_title),
             color = GameSpacePalette.Ink,
             fontSize = 34.sp,
+            fontFamily = DisplayFontFamily,
             fontWeight = FontWeight.Black,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis
@@ -470,10 +631,16 @@ internal fun EmptyHero(onOpenLibrary: () -> Unit, modifier: Modifier) {
         Row(
             modifier = Modifier
                 .height(PlayHeight)
+                .lobbyPress(interaction, 0.96f)
                 .clip(shape)
                 .background(PlayFill)
                 .border(StrokeFirm, PlayRim, shape)
-                .clickable(role = Role.Button, onClick = onOpenLibrary)
+                .clickable(
+                    interactionSource = interaction,
+                    indication = null,
+                    role = Role.Button,
+                    onClick = onOpenLibrary
+                )
                 .padding(horizontal = PadCta),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(GapS)
@@ -495,7 +662,7 @@ internal fun EmptyHero(onOpenLibrary: () -> Unit, modifier: Modifier) {
     }
 }
 
-/** نقاط التنقّل: النقطة الحالية قرص ممتدّ بنفسجيّ (٢٦×١١)، والبقيّة دوائر (١١) باهتة. */
+/** نقاط التنقّل: النقطة الحالية قرص ممتدّ بنفسجيّ (٢٨×١١) يتمدّد بنعومة، والبقيّة دوائر (١١) باهتة. */
 @Composable
 internal fun StageDots(count: Int, index: Int, modifier: Modifier = Modifier) {
     if (count <= 1) return
@@ -508,14 +675,21 @@ internal fun StageDots(count: Int, index: Int, modifier: Modifier = Modifier) {
         horizontalArrangement = Arrangement.spacedBy(DotGap)
     ) {
         for (i in start until end) {
-            val active = i == index
-            Box(
-                modifier = Modifier
-                    .height(DotSize)
-                    .width(if (active) DotActiveWidth else DotSize)
-                    .clip(CircleShape)
-                    .background(if (active) GameSpacePalette.Violet else Color.White.copy(alpha = 0.35f))
-            )
+            key(i) {
+                val active = i == index
+                val width by animateDpAsState(
+                    targetValue = if (active) DotActiveWidth else DotSize,
+                    animationSpec = tween(durationMillis = 260),
+                    label = "stageDot"
+                )
+                Box(
+                    modifier = Modifier
+                        .height(DotSize)
+                        .width(width)
+                        .clip(CircleShape)
+                        .background(if (active) GameSpacePalette.VioletSoft else Color.White.copy(alpha = 0.32f))
+                )
+            }
         }
     }
 }
@@ -523,18 +697,34 @@ internal fun StageDots(count: Int, index: Int, modifier: Modifier = Modifier) {
 /**
  * رفّ الألعاب (١٩٥،٥٠٩، ١٤٥١×٣٠٦): لوح زجاجيّ بعنوان ذي شقّ بنفسجيّ و«See All»، صفّ بطاقات
  * (١٨٤×٢١٤ عند y=٥٧٣) ينتهي ببطاقة «More»، وسهمان دائريّان على حافتي اللوح (مركزاهما ١٩٩ و١٦٤٥، y=٦٨١).
+ * الاختيار بالأسهم أو النقاط أو السحب يُوسِّط بطاقته في الرفّ بتمرير ناعم بدل تركها عند الحافة.
  */
 @Composable
 internal fun StageShelf(data: StageData, actions: StageActions) {
+    val intro = LocalStageIntro.current
+    val extra = LocalStageExtra.current
+    val density = LocalDensity.current
     val listState = rememberLazyListState()
-    val animations = rememberLobbyAnimationsEnabled()
-    // اختيارٌ بالأسهم أو النقاط يجب أن يُظهر بطاقته، لا أن يتركها خارج اللوح.
     LaunchedEffect(data.selectedIndex) {
-        if (data.selectedIndex in data.games.indices) listState.animateScrollToItem(data.selectedIndex)
+        if (data.selectedIndex in data.games.indices) {
+            val viewport = listState.layoutInfo.viewportSize.width
+            val card = with(density) { CardWidth.roundToPx() }
+            listState.animateScrollToItem(
+                index = data.selectedIndex,
+                scrollOffset = -((viewport - card) / 2).coerceAtLeast(0)
+            )
+        }
     }
-    Box(Modifier.at(195, 509, 1451, 306).stageGlass(RoundedCornerShape(RadiusPanel)))
+    Box(
+        Modifier
+            .at(195, 509, 1451 + extra, 306)
+            .lobbyIntro(intro, fromBelow = 60.dp, start = 0.25f)
+            .stageGlass(RoundedCornerShape(RadiusPanel))
+    )
     Row(
-        modifier = Modifier.at(217, 520, 1405, 36),
+        modifier = Modifier
+            .at(217, 520, 1405 + extra, 36)
+            .lobbyIntro(intro, fromBelow = 60.dp, start = 0.28f),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(GapM)
     ) {
@@ -542,47 +732,60 @@ internal fun StageShelf(data: StageData, actions: StageActions) {
             Modifier
                 .width(NotchWidth)
                 .height(NotchHeight)
-                .background(GameSpacePalette.Violet)
+                .clip(CircleShape)
+                .background(NotchFill)
         )
         Text(
             text = stringResource(R.string.gs_shelf),
             color = GameSpacePalette.Ink,
             fontSize = 24.sp,
+            fontFamily = DisplayFontFamily,
             fontWeight = FontWeight.Bold,
             maxLines = 1,
             modifier = Modifier.weight(1f)
         )
+        val seeAllInteraction = remember { MutableInteractionSource() }
         Row(
             modifier = Modifier
-                .clip(RoundedCornerShape(RadiusCard))
-                .clickable(role = Role.Button, onClick = actions.onOpenLibrary),
+                .lobbyPress(seeAllInteraction, 0.94f)
+                .clip(CircleShape)
+                .border(StrokeFine, Color.White.copy(alpha = 0.16f), CircleShape)
+                .clickable(
+                    interactionSource = seeAllInteraction,
+                    indication = null,
+                    role = Role.Button,
+                    onClick = actions.onOpenLibrary
+                )
+                .padding(start = 16.dp, end = 6.dp, top = 4.dp, bottom = 4.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(GapS)
         ) {
             Text(
                 text = stringResource(R.string.gs_view_all),
-                color = GameSpacePalette.Ink.copy(alpha = 0.88f),
+                color = GameSpacePalette.Ink.copy(alpha = 0.90f),
                 fontSize = 18.sp,
                 maxLines = 1
             )
             Icon(
                 imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight,
                 contentDescription = null,
-                tint = GameSpacePalette.Ink.copy(alpha = 0.88f),
+                tint = GameSpacePalette.VioletSoft,
                 modifier = Modifier.size(SeeAllGlyph)
             )
         }
     }
     LazyRow(
-        modifier = Modifier.at(228, 573, 1384, 214),
+        modifier = Modifier
+            .at(220, 573, 1400 + extra, 214)
+            .lobbyIntro(intro, fromBelow = 60.dp, start = 0.32f),
         state = listState,
+        contentPadding = PaddingValues(horizontal = ShelfInset),
         horizontalArrangement = Arrangement.spacedBy(GapCard)
     ) {
         items(data.games, key = { it.packageName }) { game ->
             ShelfCard(
                 game = game,
                 selected = game.packageName == data.selected?.packageName,
-                animations = animations,
                 onClick = { actions.onSelect(game.packageName) }
             )
         }
@@ -595,14 +798,18 @@ internal fun StageShelf(data: StageData, actions: StageActions) {
         description = stringResource(R.string.gs_prev),
         enabled = data.selectedIndex > 0,
         onClick = { data.games.getOrNull(data.selectedIndex - 1)?.let { actions.onSelect(it.packageName) } },
-        modifier = Modifier.at(180, 662, 38, 38)
+        modifier = Modifier
+            .at(174, 657, 50, 50)
+            .lobbyIntro(intro, start = 0.40f)
     )
     ShelfArrow(
         icon = Icons.AutoMirrored.Rounded.KeyboardArrowRight,
         description = stringResource(R.string.gs_next),
         enabled = data.selectedIndex < data.games.lastIndex,
         onClick = { data.games.getOrNull(data.selectedIndex + 1)?.let { actions.onSelect(it.packageName) } },
-        modifier = Modifier.at(1626, 662, 38, 38)
+        modifier = Modifier
+            .at(1621 + extra, 657, 50, 50)
+            .lobbyIntro(intro, start = 0.40f)
     )
 }
 
@@ -614,13 +821,21 @@ private fun ShelfArrow(
     onClick: () -> Unit,
     modifier: Modifier,
 ) {
+    val interaction = remember { MutableInteractionSource() }
     Box(
         modifier = modifier
+            .lobbyPress(interaction, 0.88f)
             .alpha(if (enabled) 1f else 0.35f)
             .clip(CircleShape)
-            .background(GameSpacePalette.Glass.copy(alpha = 0.92f))
+            .background(GameSpacePalette.Glass.copy(alpha = 0.94f))
             .border(StrokeFine, Color.White.copy(alpha = 0.25f), CircleShape)
-            .clickable(enabled = enabled, role = Role.Button, onClick = onClick),
+            .clickable(
+                interactionSource = interaction,
+                indication = null,
+                enabled = enabled,
+                role = Role.Button,
+                onClick = onClick
+            ),
         contentAlignment = Alignment.Center
     ) {
         Icon(
@@ -636,18 +851,25 @@ private fun ShelfArrow(
 @Composable
 private fun ShelfMore(onClick: () -> Unit) {
     val shape = RoundedCornerShape(RadiusMore)
+    val interaction = remember { MutableInteractionSource() }
     Column(
         modifier = Modifier
             .size(width = MoreWidth, height = CardHeight)
+            .lobbyPress(interaction, 0.95f)
             .stageGlass(shape)
-            .clickable(role = Role.Button, onClick = onClick),
+            .clickable(
+                interactionSource = interaction,
+                indication = null,
+                role = Role.Button,
+                onClick = onClick
+            ),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         Icon(
             imageVector = Icons.Rounded.Apps,
             contentDescription = null,
-            tint = GameSpacePalette.Lavender.copy(alpha = 0.70f),
+            tint = GameSpacePalette.Lavender.copy(alpha = 0.75f),
             modifier = Modifier.size(MoreGlyph)
         )
         Spacer(Modifier.height(GapM))
@@ -661,26 +883,29 @@ private fun ShelfMore(onClick: () -> Unit) {
 }
 
 /**
- * بطاقة لعبة (١٨٤×٢١٤): خلفية مموّهة من أيقونتها والأيقونة نفسها واضحة فوقها، واسم اللعبة على حجاب
- * سفليّ. المختارة وحدها تحمل حدًّا متدرّجًا (٣) وتوهّجًا.
+ * بطاقة لعبة (١٨٤×٢١٤): خلفية مموّهة من أيقونتها والأيقونة نفسها واضحة فوقها، ولمعة زجاجيّة قطريّة، واسم
+ * اللعبة على حجاب سفليّ. المختارة وحدها ترتفع وتكبر قليلًا وتحمل حدًّا متدرّجًا (٣) وتوهّجًا؛ والضغط
+ * ينكمش بزنبرك.
  */
 @Composable
-private fun ShelfCard(game: GameApp, selected: Boolean, animations: Boolean, onClick: () -> Unit) {
+private fun ShelfCard(game: GameApp, selected: Boolean, onClick: () -> Unit) {
     val icon by rememberLobbyIcon(game.packageName)
     val shape = RoundedCornerShape(RadiusCard)
-    val focus by animateFloatAsState(
+    val interaction = remember { MutableInteractionSource() }
+    val lift by animateFloatAsState(
         targetValue = if (selected) 1f else 0f,
-        animationSpec = if (animations) tween(durationMillis = CardFocusMs) else snap(),
-        label = "shelfFocus"
+        animationSpec = tween(durationMillis = 300),
+        label = "shelfCardLift"
     )
     Box(
         modifier = Modifier
             .size(width = CardWidth, height = CardHeight)
+            .lobbyPress(interaction, 0.95f)
             .graphicsLayer {
-                val s = CardIdleScale + (1f - CardIdleScale) * focus
-                scaleX = s
-                scaleY = s
-                alpha = CardIdleAlpha + (1f - CardIdleAlpha) * focus
+                val k = 1f + 0.05f * lift
+                scaleX = k
+                scaleY = k
+                translationY = -LiftDistance.toPx() * lift
             }
             .then(
                 if (selected) {
@@ -697,7 +922,12 @@ private fun ShelfCard(game: GameApp, selected: Boolean, animations: Boolean, onC
             .clip(shape)
             .background(CardFill)
             .border(if (selected) StrokeSelected else StrokeFine, if (selected) SelectedRim else IdleRim, shape)
-            .clickable(role = Role.Button, onClick = onClick)
+            .clickable(
+                interactionSource = interaction,
+                indication = null,
+                role = Role.Button,
+                onClick = onClick
+            )
     ) {
         val bitmap = icon
         if (bitmap != null) {
@@ -708,7 +938,7 @@ private fun ShelfCard(game: GameApp, selected: Boolean, animations: Boolean, onC
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .fillMaxSize()
-                        .alpha(0.55f)
+                        .alpha(0.58f)
                         .blur(GapM + GapS)
                 )
             }
@@ -718,8 +948,14 @@ private fun ShelfCard(game: GameApp, selected: Boolean, animations: Boolean, onC
                 contentScale = ContentScale.Fit,
                 modifier = Modifier
                     .align(Alignment.TopCenter)
-                    .padding(top = 26.dp)
+                    .padding(top = 22.dp)
                     .size(CardIcon)
+                    .shadow(
+                        elevation = GlowS,
+                        shape = RoundedCornerShape(CardIcon * 0.22f),
+                        ambientColor = Color.Black.copy(alpha = 0.50f),
+                        spotColor = Color.Black.copy(alpha = 0.60f)
+                    )
                     .clip(RoundedCornerShape(CardIcon * 0.22f))
             )
         } else {
@@ -732,12 +968,17 @@ private fun ShelfCard(game: GameApp, selected: Boolean, animations: Boolean, onC
             )
         }
         Box(
+            Modifier
+                .fillMaxSize()
+                .background(CardSheen)
+        )
+        Box(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
                 .background(
                     Brush.verticalGradient(
-                        listOf(Color.Transparent, GameSpacePalette.Void.copy(alpha = 0.88f))
+                        listOf(Color.Transparent, GameSpacePalette.Void.copy(alpha = 0.92f))
                     )
                 )
                 .padding(horizontal = PadName, vertical = PadNameV)
@@ -746,6 +987,7 @@ private fun ShelfCard(game: GameApp, selected: Boolean, animations: Boolean, onC
                 text = game.label,
                 color = if (selected) GameSpacePalette.Ink else GameSpacePalette.Lavender,
                 fontSize = 17.sp,
+                fontFamily = DisplayFontFamily,
                 fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,

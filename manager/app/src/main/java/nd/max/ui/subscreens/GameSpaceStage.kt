@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
@@ -13,18 +12,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import kotlin.math.roundToInt
@@ -34,6 +31,7 @@ import nd.max.core.gamespace.PanelCpuLoad
 import nd.max.core.platform.HudDeepReaders
 import nd.max.core.platform.HudLive
 import nd.max.core.platform.HudSnapshot
+import nd.max.ui.component.lobbyIntro
 
 /*
  * المسرح — «Home» لوحةٌ ثابتة الأبعاد داخل مساحة العرض المتاحة.
@@ -49,6 +47,12 @@ import nd.max.core.platform.HudSnapshot
  *  - الاتّجاه مثبّت LTR لهذه اللوحة وحدها: الشريط يسارًا واللوحات يمينًا كما في اللقطة، وقلبه في
  *    العربية يعكس الهندسة كلها.
  *  - حجم الخط يتبع تكبير النظام حتى ١٫١٥ فقط؛ فوقه يتجاوز النص حدود الألواح الثابتة.
+ *
+ * ### الحياة فوق اللوحة (جولة ٢٠٢٦-١١-١٥)
+ *
+ * أجواء الشاشة (سماء ليليّة وغبار) صارت في `LobbyAtmosphere` خلف المُصفِّح كلّه، وساعة الحركة الواحدة
+ * وتقدّم الدخول يصلان عبر `LocalStageClock`/`LocalStageIntro`: فكل جزء ينساب إلى مكانه بتأخّر نسبيّ بعد
+ * غطاء الدخول، والبطل يطفو، واللمعة تعبر زرّ التشغيل، والسحب الأفقيّ على البطل يبدّل اللعبة.
  *
  * ### الثمن، صراحةً
  *
@@ -69,6 +73,44 @@ internal const val StageDesignHeight = 941
 
 /** أقصى تكبير للخط يتحمّله تخطيط اللوحة الثابتة. */
 private const val MaxFontScale = 1.15f
+
+/**
+ * أدنى نسبة يُقرأ عندها نصّ اللوحة بلا عناء: تحتها (هاتف عرضيّ قصير الارتفاع) يُرفع حجم الخط وحده
+ * دون الهندسة، فيبقى النصّ مقروءًا والمقاسات المرسومة كما هي. فوقها لا رفع.
+ */
+private const val LegibleScale = 0.60f
+private const val MaxFontBoost = 1.28f
+private const val MaxFontCombined = 1.35f
+
+/** أقصى عرض إضافيّ (بوحدات اللقطة) تتمدّد به اللوحة على الشاشات الأعرض من ١٦:٩ بدل الهامش الفارغ. */
+private const val MaxStageExtra = 760
+
+/** أقصى ما تأخذه لوحات اليمين من العرض الإضافيّ لتتّسع للنصّ الأكبر. */
+private const val MaxRightGrow = 130
+
+/**
+ * العرض الإضافيّ للوحة الحاليّة بوحدات اللقطة. الارتفاع ثابت ٩٤١، فإن كانت الشاشة أعرض من ١٦:٩
+ * (أغلب الهواتف: ٢٠:٩) امتدّت اللوحة بدل أن يُترك على جانبيها شريطان فارغان: الشريط يبقى على اليسار،
+ * ولوحات الأداء على اليمين، ويتّسع البطل والرفّ بينهما.
+ */
+internal val LocalStageExtra = compositionLocalOf { 0 }
+
+internal class StageSpace(val scale: Float, val extra: Int)
+
+internal fun stageSpace(width: Dp, height: Dp): StageSpace {
+    val scale = minOf(width.value / StageDesignWidth, height.value / StageDesignHeight)
+    val extra = (width.value / scale - StageDesignWidth).toInt().coerceIn(0, MaxStageExtra)
+    return StageSpace(scale = scale, extra = extra)
+}
+
+/** حصّة اللوحات اليمنى من العرض الإضافيّ: تتّسع قليلًا ليبقى فيها النصّ الأكبر بلا اقتطاع. */
+internal fun stageRightGrow(extra: Int): Int = (extra * 3 / 10).coerceAtMost(MaxRightGrow)
+
+/** مقياس الخط داخل اللوحة: تكبير النظام (حتى ١٫١٥) مضروبًا برفع القراءة على الشاشات الصغيرة، بسقف واحد. */
+internal fun stageFontScale(system: Float, scale: Float): Float {
+    val boost = (LegibleScale / scale).coerceIn(1f, MaxFontBoost)
+    return minOf(minOf(system, MaxFontScale) * boost, MaxFontCombined)
+}
 private const val FpsLiveMs = 5_000L
 
 /** موضع عنصرٍ على اللوحة بإحداثيات اللقطة (بكسل اللقطة = ١dp داخل اللوحة). */
@@ -85,8 +127,8 @@ private data class StageReadings(
 )
 
 /**
- * قراءة الإطارات اللحظيّة من `HudLive` نفسه الذي يغذّي التراكب: الرقم الأخير ومنحنى آخر العيّنات،
- * و[live] صحيح إن كانت العيّنة أحدث من خمس ثوانٍ. بلا عيّنة للعبة المختارة: لا رقم ولا منحنى.
+ * الإطارات اللحظيّة: الرقم الأخير ومنحنى آخر العيّنات، و[live] صحيح إن كانت العيّنة أحدث من خمس ثوانٍ.
+ * بلا عيّنة للعبة المختارة: لا رقم ولا منحنى.
  */
 @Immutable
 internal data class StageFps(
@@ -113,6 +155,8 @@ internal class StageData(
     val statusDetail: String,
     val clock: String,
     val date: String,
+    /** الإطلاق جارٍ: الزرّ يعرض مؤشّر تقدّم ويرفض نقرة ثانية. */
+    val launching: Boolean = false,
 )
 
 internal class StageActions(
@@ -163,6 +207,8 @@ internal fun GameSpaceStage(
     tagline: String? = null,
     clock: String = "",
     date: String = "",
+    /** الإطلاق جارٍ الآن (يمنع نقرتين ويُظهر مؤشّر التقدّم في الزرّ). */
+    launching: Boolean = false,
     /** أزرار اللوبي العلويّة (استكشاف/مفضّلة/سجلّ/إغلاق…) — تُوضع على اللوحة بمقاسها الفعليّ. */
     topActions: @Composable () -> Unit = {},
 ) {
@@ -199,7 +245,8 @@ internal fun GameSpaceStage(
         statusTitle = statusTitle,
         statusDetail = statusDetail,
         clock = clock,
-        date = date
+        date = date,
+        launching = launching
     )
     val actions = StageActions(
         onSelect = onSelect,
@@ -212,23 +259,28 @@ internal fun GameSpaceStage(
     )
 
     Box(modifier.fillMaxSize()) {
-        StageAtmosphere()
         BoxWithConstraints(
             modifier = Modifier
                 .fillMaxSize()
                 .displayCutoutPadding(),
             contentAlignment = Alignment.Center
         ) {
+            // التخطيط العموديّ البديل: عمود واحد بالكتل نفسها بدل لوحة أفقيّة تُصغَّر حتى لا تُقرأ.
+            if (maxHeight > maxWidth) {
+                StagePortrait(data = data, actions = actions, topActions = topActions)
+                return@BoxWithConstraints
+            }
             val real = LocalDensity.current
-            // نسبة واحدة للعرض والارتفاع: اللوحة لا تتمطّط أبدًا، وما يفيض من المساحة هامشٌ حول اللوحة.
-            val scale = minOf(maxWidth.value / StageDesignWidth, maxHeight.value / StageDesignHeight)
+            // نسبة واحدة للعرض والارتفاع: اللوحة لا تتمطّط أبدًا. والعرض الزائد عن ١٦:٩ تملؤه اللوحة نفسها.
+            val space = stageSpace(maxWidth, maxHeight)
             val design = Density(
-                density = real.density * scale,
-                fontScale = minOf(real.fontScale, MaxFontScale)
+                density = real.density * space.scale,
+                fontScale = stageFontScale(real.fontScale, space.scale)
             )
             CompositionLocalProvider(
                 LocalLayoutDirection provides LayoutDirection.Ltr,
-                LocalDensity provides design
+                LocalDensity provides design,
+                LocalStageExtra provides space.extra
             ) {
                 StageCanvas(data = data, actions = actions, realDensity = real, topActions = topActions)
             }
@@ -236,40 +288,10 @@ internal fun GameSpaceStage(
     }
 }
 
-/** غلاف داكن فوق خلفية اللوبي: سماء قاتمة وتوهّج بنفسجيّ خفيف خلف البطل ووردي في الزاوية السفلى. */
-@Composable
-private fun StageAtmosphere() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .drawBehind {
-                drawRect(
-                    Brush.verticalGradient(
-                        listOf(
-                            GameSpacePalette.Void.copy(alpha = 0.70f),
-                            GameSpacePalette.Deep.copy(alpha = 0.90f)
-                        )
-                    )
-                )
-                drawRect(
-                    Brush.radialGradient(
-                        colors = listOf(GameSpacePalette.Violet.copy(alpha = 0.16f), Color.Transparent),
-                        center = Offset(size.width * 0.55f, size.height * 0.30f),
-                        radius = size.minDimension * 0.95f
-                    )
-                )
-                drawRect(
-                    Brush.radialGradient(
-                        colors = listOf(GameSpacePalette.Magenta.copy(alpha = 0.07f), Color.Transparent),
-                        center = Offset(size.width * 0.15f, size.height * 0.98f),
-                        radius = size.minDimension * 0.80f
-                    )
-                )
-            }
-    )
-}
-
-/** اللوحة الثابتة نفسها: صندوق ١٦٧٢×٩٤١ وحدةً، وكل منطقة عند إحداثيات اللقطة. */
+/**
+ * اللوحة الثابتة نفسها: صندوق ١٦٧٢×٩٤١ وحدةً، وكل منطقة عند إحداثيات اللقطة. الشريط الجانبيّ ليس هنا:
+ * هو ثابت فوق كل الصفحات (`GameSpaceRailLayer`) فلا يتحرّك مع السحب بين الأقسام.
+ */
 @Composable
 private fun StageCanvas(
     data: StageData,
@@ -277,7 +299,15 @@ private fun StageCanvas(
     realDensity: Density,
     topActions: @Composable () -> Unit,
 ) {
-    Box(Modifier.requiredSize(StageDesignWidth.dp, StageDesignHeight.dp)) {
+    val intro = LocalStageIntro.current
+    val extra = LocalStageExtra.current
+    Box(Modifier.requiredSize((StageDesignWidth + extra).dp, StageDesignHeight.dp)) {
+        StageHeroBackdrop(
+            game = data.selected,
+            modifier = Modifier
+                .at(168, 0, 1504 + extra, 560)
+                .lobbyIntro(intro, scaleFrom = 1.04f)
+        )
         StageHero(data = data, actions = actions)
         StageStatusBar(
             data = data,
@@ -295,7 +325,9 @@ private fun StageCanvas(
             detail = data.statusDetail,
             percent = data.readinessPercent,
             onOpen = actions.onOpenSessions,
-            modifier = Modifier.at(195, 850, 1451, 62)
+            modifier = Modifier
+                .at(195, 850, 1451 + extra, 62)
+                .lobbyIntro(intro, fromBelow = 40.dp, start = 0.40f)
         )
     }
 }

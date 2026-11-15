@@ -291,6 +291,11 @@ private fun StatusReading(icon: ImageVector, text: String, description: String, 
 
 // ─────────────────────────────── أزرار ───────────────────────────────
 
+/** زجاج داكن وبنفسجيّ الهويّة لعناصر اللوبي — تطابق `GameSpacePalette` دون استيرادها عبر الطبقات. */
+private val ChromeGlass = Color(0xFF14142B)
+private val ChromeViolet = Color(0xFF7C3AED)
+private val ChromeVioletSoft = Color(0xFFA855F7)
+
 /**
  * زرّ أيقونة دائريّ؛ هدف اللمس 48dp من `minimumInteractiveComponentSize` والدائرة المرئيّة أصغر.
  * عند [selected] يمتلئ بلون [tone] وتشتدّ حافّته (مثلًا: مرشّح المفضّلة مفعّل).
@@ -302,7 +307,7 @@ internal fun LobbyRoundButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     selected: Boolean = false,
-    tone: Color = LobbyPalette.Red,
+    tone: Color = ChromeViolet,
     cue: LobbyCue? = LobbyCue.Tap
 ) {
     val interaction = remember { MutableInteractionSource() }
@@ -312,8 +317,12 @@ internal fun LobbyRoundButton(
             .minimumInteractiveComponentSize()
             .lobbyPress(interaction)
             .clip(CircleShape)
-            .background(if (selected) tone.copy(alpha = 0.28f) else LobbyPalette.Black.copy(alpha = CHROME_FILL_ALPHA))
-            .border(MaxSize.hairlineBorder, if (selected) tone else LobbyPalette.Hairline, CircleShape)
+            .background(if (selected) tone.copy(alpha = 0.32f) else ChromeGlass.copy(alpha = 0.78f))
+            .border(
+                MaxSize.hairlineBorder,
+                if (selected) ChromeVioletSoft else Color.White.copy(alpha = 0.14f),
+                CircleShape
+            )
             .clickable(
                 interactionSource = interaction,
                 indication = null,
@@ -633,7 +642,7 @@ internal fun LobbyNotice(
         if (action != null) {
             Text(
                 text = action,
-                color = LobbyPalette.RedBright,
+                color = ChromeVioletSoft,
                 fontSize = 13.sp,
                 fontWeight = FontWeight.SemiBold,
                 modifier = Modifier

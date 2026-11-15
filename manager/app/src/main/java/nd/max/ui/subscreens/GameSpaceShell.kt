@@ -1,17 +1,19 @@
 /* Copyright (C) 2026 Nader Magdy. All rights reserved. */
 package nd.max.ui.subscreens
 
-import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,17 +27,17 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Bolt
-import androidx.compose.material.icons.rounded.Home
-import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,7 +45,8 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
@@ -56,10 +59,10 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import nd.max.ui.design.MaxRadius
 import nd.max.R
 import nd.max.core.gamespace.GameApp
 import nd.max.ui.component.AppIconImage
+import nd.max.ui.component.lobbyPress
 
 /*
  * غلاف اللوبي: ما يبقى ثابتًا فوق صفحات المُصفِّح الرأسيّ.
@@ -69,56 +72,21 @@ import nd.max.ui.component.AppIconImage
  *  - عموديًّا (تخطيط بديل): شريط سفليّ بالأقسام نفسها، و«الرئيسية» عمود واحد من الكتل ذاتها.
  */
 
-/**
- * صفحات اللوبي: «الرئيسية» أولًا، ثم صفحة لكل قسم من أقسام مركز التحكّم، والترس آخرًا.
- *
- * [section] هو القسم الذي تعرضه الصفحة (`null` للرئيسية وحدها). والترس يعرض قسم «اللوبي» لأن
- * إعدادات مركز التحكّم تعيش هناك، وله تسمية وأيقونة خاصّتان به فلا يُقرأ «لوبي» على بندٍ اسمه «إعدادات».
- */
-internal enum class LobbyPage(val section: LobbySection?) {
-    Home(null),
-    Loadout(LobbySection.Loadout),
-    Insights(LobbySection.Insights),
-    Game(LobbySection.Game),
-    Panel(LobbySection.Panel),
-    Library(LobbySection.Library),
-    Settings(LobbySection.Lobby);
-
-    /** عنوان البند في الشريط الجانبيّ والشريط السفليّ — من الموارد، فلا نصّ صلب في الواجهة. */
-    val labelRes: Int
-        get() = when (this) {
-            Home -> R.string.gs_nav_home
-            Settings -> R.string.gs_nav_settings
-            else -> requireNotNull(section).titleRes
-        }
-
-    val icon: ImageVector
-        get() = when (this) {
-            Home -> Icons.Rounded.Home
-            Settings -> Icons.Rounded.Settings
-            else -> requireNotNull(section).icon
-        }
-
-    companion object {
-        /** الصفحة عند رقم مُصفِّحٍ قد يخرج عن المدى — يُقيَّد ولا يرمي. */
-        fun at(index: Int): LobbyPage = entries[index.coerceIn(0, entries.lastIndex)]
-
-        /** صفحة القسم المطلوب: «لوبي» تعني الترس، وكل قسم آخر يملك صفحته. */
-        fun of(section: LobbySection): LobbyPage =
-            entries.firstOrNull { it.section == section } ?: Home
-    }
-}
-
 private const val RailRightEdge = 168
 private const val ShellMaxFontScale = 1.15f
+
+private val NavHairline = 1.dp
+private val PortraitHeroRadius = 28.dp
+private val PortraitCardRadius = 20.dp
+private val PortraitBarRadius = 3.dp
 
 /** هندسة اللوحة الثابتة داخل مساحة معيّنة: النسبة، وحافة الشريط اليمنى لإزاحة صفحات الأقسام عنها. */
 internal class StageFrame(val scale: Float, val railEnd: Dp)
 
 internal fun stageFrame(width: Dp, height: Dp): StageFrame {
-    val scale = minOf(width.value / StageDesignWidth, height.value / StageDesignHeight)
-    val left = (width.value - StageDesignWidth * scale) / 2f
-    return StageFrame(scale = scale, railEnd = (left + RailRightEdge * scale).dp)
+    val space = stageSpace(width, height)
+    val left = (width.value - (StageDesignWidth + space.extra) * space.scale) / 2f
+    return StageFrame(scale = space.scale, railEnd = (left + RailRightEdge * space.scale).dp)
 }
 
 /**
@@ -133,16 +101,16 @@ internal fun GameSpaceRailLayer(
 ) {
     BoxWithConstraints(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         val real = LocalDensity.current
-        val scale = minOf(maxWidth.value / StageDesignWidth, maxHeight.value / StageDesignHeight)
+        val space = stageSpace(maxWidth, maxHeight)
         val design = Density(
-            density = real.density * scale,
-            fontScale = minOf(real.fontScale, ShellMaxFontScale)
+            density = real.density * space.scale,
+            fontScale = stageFontScale(real.fontScale, space.scale)
         )
         CompositionLocalProvider(
             LocalLayoutDirection provides LayoutDirection.Ltr,
             LocalDensity provides design
         ) {
-            Box(Modifier.requiredSize(StageDesignWidth.dp, StageDesignHeight.dp)) {
+            Box(Modifier.requiredSize((StageDesignWidth + space.extra).dp, StageDesignHeight.dp)) {
                 StageRail(current = current, onPage = onPage)
             }
         }
@@ -150,10 +118,9 @@ internal fun GameSpaceRailLayer(
 }
 
 internal val PortraitNavHeight = 64.dp
-private const val NavTintMs = 200
 private val PortraitHeroHeight = 340.dp
 
-/** الشريط السفليّ للتخطيط العموديّ: الأقسام نفسها بالترتيب نفسه، والصفحة الظاهرة مضاءة. */
+/** الشريط السفليّ للتخطيط العموديّ: الأقسام نفسها بالترتيب نفسه، والصفحة الظاهرة مضاءة بانتقال. */
 @Composable
 internal fun GameSpaceBottomNav(
     current: LobbyPage,
@@ -166,63 +133,83 @@ internal fun GameSpaceBottomNav(
             .height(PortraitNavHeight)
             .background(
                 Brush.verticalGradient(
-                    listOf(GameSpacePalette.Glass.copy(alpha = 0.92f), GameSpacePalette.Void.copy(alpha = 0.97f))
+                    listOf(GameSpacePalette.Glass.copy(alpha = 0.94f), GameSpacePalette.Void.copy(alpha = 0.98f))
                 )
             )
             .drawBehind {
                 drawLine(
-                    color = Color.White.copy(alpha = 0.10f),
-                    start = Offset(0f, 0f),
+                    brush = Brush.horizontalGradient(
+                        listOf(Color.Transparent, GameSpacePalette.VioletSoft.copy(alpha = 0.55f), Color.Transparent)
+                    ),
+                    start = Offset.Zero,
                     end = Offset(size.width, 0f),
-                    strokeWidth = 1.dp.toPx()
+                    strokeWidth = NavHairline.toPx()
                 )
             },
         verticalAlignment = Alignment.CenterVertically
     ) {
         LobbyPage.entries.forEach { page ->
-            val active = page == current
-            val tint by animateColorAsState(
-                targetValue = if (active) Color.White else GameSpacePalette.Ink.copy(alpha = 0.66f),
-                animationSpec = tween(durationMillis = NavTintMs),
-                label = "navTint"
-            )
-            val bar by animateColorAsState(
-                targetValue = if (active) GameSpacePalette.VioletSoft else Color.Transparent,
-                animationSpec = tween(durationMillis = NavTintMs),
-                label = "navBar"
-            )
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxHeight()
-                    .selectable(selected = active, role = Role.Tab, onClick = { onPage(page) }),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Box(
-                    Modifier
-                        .width(24.dp)
-                        .height(3.dp)
-                        .clip(RoundedCornerShape(2.dp))
-                        .background(bar)
-                )
-                Spacer(Modifier.height(4.dp))
-                Icon(
-                    imageVector = page.icon,
-                    contentDescription = null,
-                    tint = tint,
-                    modifier = Modifier.size(24.dp)
-                )
-                Text(
-                    text = stringResource(page.labelRes),
-                    color = tint,
-                    fontSize = 10.sp,
-                    fontWeight = if (active) FontWeight.SemiBold else FontWeight.Normal,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
+            BottomNavItem(page = page, active = page == current, onClick = { onPage(page) })
         }
+    }
+}
+
+@Composable
+private fun RowScope.BottomNavItem(page: LobbyPage, active: Boolean, onClick: () -> Unit) {
+    val interaction = remember { MutableInteractionSource() }
+    val selection by animateFloatAsState(
+        targetValue = if (active) 1f else 0f,
+        animationSpec = tween(durationMillis = 220),
+        label = "bottomNavSelection"
+    )
+    val tint = lerp(GameSpacePalette.Ink.copy(alpha = 0.66f), Color.White, selection)
+    Column(
+        modifier = Modifier
+            .weight(1f)
+            .fillMaxHeight()
+            .lobbyPress(interaction, 0.92f)
+            .selectable(
+                selected = active,
+                interactionSource = interaction,
+                indication = null,
+                role = Role.Tab,
+                onClick = onClick
+            ),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Box(
+            Modifier
+                .width(24.dp)
+                .height(3.dp)
+                .graphicsLayer {
+                    scaleX = selection
+                    alpha = selection
+                }
+                .clip(CircleShape)
+                .background(GameSpacePalette.VioletSoft)
+        )
+        Spacer(Modifier.height(4.dp))
+        Icon(
+            imageVector = page.icon,
+            contentDescription = null,
+            tint = tint,
+            modifier = Modifier
+                .size(24.dp)
+                .graphicsLayer {
+                    val k = 1f + 0.10f * selection
+                    scaleX = k
+                    scaleY = k
+                }
+        )
+        Text(
+            text = stringResource(page.labelRes),
+            color = tint,
+            fontSize = 10.sp,
+            fontWeight = if (active) FontWeight.SemiBold else FontWeight.Normal,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
     }
 }
 
@@ -295,7 +282,7 @@ internal fun StagePortrait(
         Box(Modifier.fillMaxWidth().height(PortraitHeroHeight)) {
             StageHeroBackdrop(
                 game = data.selected,
-                modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(MaxRadius.sheet))
+                modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(PortraitHeroRadius))
             )
             if (data.games.isEmpty()) {
                 EmptyHero(
@@ -333,7 +320,8 @@ internal fun StagePortrait(
                         enabled = data.selected != null,
                         onLaunch = actions.onLaunch,
                         onOptions = actions.onOptions,
-                        modifier = Modifier
+                        modifier = Modifier,
+                        launching = data.launching
                     )
                 }
             }
@@ -341,7 +329,7 @@ internal fun StagePortrait(
 
         StageScaled(designWidth = 410, designHeight = 418) {
             PerformanceCard(data = data, onOpen = actions.onOptions, modifier = Modifier.at(0, 0, 410, 229))
-            StatusCard(data = data, modifier = Modifier.at(0, 241, 410, 91))
+            StatusCard(data = data, modifier = Modifier.at(0, 241, 410, 91), onOpen = actions.onOptions)
             FpsCard(fps = data.fps, modifier = Modifier.at(0, 333, 410, 85))
         }
 
@@ -371,7 +359,7 @@ internal fun StagePortrait(
 
 @Composable
 private fun PortraitShelfItem(game: GameApp, selected: Boolean, onClick: () -> Unit) {
-    val shape = RoundedCornerShape(MaxRadius.deck)
+    val shape = RoundedCornerShape(PortraitCardRadius)
     Column(
         modifier = Modifier
             .width(84.dp)
@@ -409,7 +397,7 @@ private fun PortraitShelfItem(game: GameApp, selected: Boolean, onClick: () -> U
 @Composable
 private fun PortraitBase(title: String, detail: String, percent: Int, onOpen: () -> Unit) {
     val target = percent.coerceIn(0, 100)
-    val shape = RoundedCornerShape(MaxRadius.deck)
+    val shape = RoundedCornerShape(PortraitCardRadius)
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -459,7 +447,7 @@ private fun PortraitBase(title: String, detail: String, percent: Int, onOpen: ()
             Modifier
                 .fillMaxWidth()
                 .height(6.dp)
-                .clip(RoundedCornerShape(MaxRadius.tick))
+                .clip(RoundedCornerShape(PortraitBarRadius))
                 .background(Color.White.copy(alpha = 0.08f))
         ) {
             Box(
