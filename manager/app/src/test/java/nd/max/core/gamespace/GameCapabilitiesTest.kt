@@ -58,7 +58,9 @@ class GameCapabilitiesTest {
         // الجدول يعكس المسار الفعلي: لا ميزة تُعلَن Shizuku وهي ما زالت بصدفة جذر مباشرة (يحرسه GameSpaceExecutionGuardTest).
         assertEquals(GameFeature.entries.size, GameFeature.entries.map { it.name }.toSet().size)
         assertEquals(PrivilegeLevel.ROOT, GameFeature.FLOATING_WINDOW.requires)
-        assertEquals(PrivilegeLevel.SHIZUKU, GameFeature.SCREEN_RECORD.requires)
+        // التسجيل انتقل إلى `MediaProjection` + `AudioPlaybackCapture` داخل التطبيق بإذن المستخدم،
+        // فلم يبقَ `screenrecord` على المسار الموحَّد: الصفّ يقول NONE لأن هذا ما يفعله الكود فعلًا.
+        assertEquals(PrivilegeLevel.NONE, GameFeature.SCREEN_RECORD.requires)
     }
 
     @Test
