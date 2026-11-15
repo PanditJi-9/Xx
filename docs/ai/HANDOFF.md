@@ -28503,3 +28503,84 @@ Quick Verify (`cancel-in-progress: true`).
 **RESIDUAL RISK:** لا لقطة جهاز ⇒ لا ادّعاء تطابق بصريّ لتصميم الكونسول · الحُرّاس نصّية تحرس الوجود
 والترتيب لا السلوك المعروض · RTL واللمس والأداء تبقى جهاز المالك.
 **NEXT:** أخضر على `99ebcf44`. أي أحمر جديد يُسمّى من السجل (خطوة + ملف:سطر) قبل أي إصلاح.
+
+---
+
+## جولة ٢٩٤ — مسجّل الشاشة بالصوت، ومفاتيح ميتة، واستوديو وكلاء، وإيقاف تجميد بلاطة الوضع — 2026-11-15
+
+**أمر المالك في هذه الجولة:** «اصلح مشكلة البناء» · «اكمل» · ثم مهمّة «استوديو UI/UX» الكاملة
+(عشر مراحل)، ثم بلاغه: «الايقونه … الي بتغير الوضع متوازن-بطارية-أداء في شريط الاشعارات لما غيرت
+الوضع منها التطبيق وقف مبقاش يستجيب» مع تخييره «قم بازالتها او اعادة تصميمها».
+
+### ١. أحمران مقروءان من السجل، لا مُخمَّنان
+
+1. `43715336292` على `bc5d8d48` — التصريف نظيف، والفشل **اختبار واحد**: `VisualIdentityTest > every
+   AI-labelled string is called by the UI` عند `VisualIdentityTest.kt:253`. السبب المقيس: حذف كتلة
+   إشعار «per-app» من `AppMonitor.kt` أزال **المستهلك الوحيد** لـ`R.string.notif_maxai_off`، فبقي
+   المفتاح في ٨٤ لغة بلا نداء. نسخة Python من شرط الاختبار طبعتها صراحةً: `declared AI keys: 246`,
+   `UNUSED: ['notif_maxai_off']` — واحد لا غير.
+2. `43716246594` على `761a8840` — الخطوة ٣٩ «Compile main sources»، خطأ واحد:
+   `ScreenRecordService.kt:149:18 Unresolved reference 'setAudioPlaybackCaptureConfig'`.
+   **والحقيقة مقيسة من مرجع أندرويد**: `android.media.MediaRecorder` لا يملك هذا المستدعي إطلاقًا —
+   كل متاحه `setAudioSource/Encoder/Channels/EncodingBitRate/AudioProfile/SamplingRate`
+   (`hasPlaybackCapture:false`، والصفحة 2,397,356 بايت). المستدعي الوحيد له
+   `AudioRecord.Builder` (مؤكَّد من صفحته، ومعه `setBufferSizeInBytes`)، و`MediaMuxer(FileDescriptor,
+   MPEG_4)` مؤكَّد أيضًا (2,270,594 بايت).
+
+### ٢. الإصلاح `67eb71be` — المسجّل صار MediaCodec لا MediaRecorder
+
+`ScreenRecordService.kt` أُعيد بناؤه: سطح `MediaCodec` (AVC) للصورة، و`AudioRecord` مع
+`AudioPlaybackCaptureConfiguration` للصوت (PCM 48 كيلو ستيريو) ← مرمّز AAC ← `MediaMuxer` على
+`FileDescriptor` من صفّ `MediaStore`. العقد العام لم يتغيّر (`ACTION_STOP`، `isRecording()`،
+`start/stop`، الـextras، القناة `maxmanager_screen_record`، `NOTIFICATION_ID = 2411`،
+`Movies/MaxManager`، سقف ١٩٢٠، ٢٤ ميغابت، سلّم ٦٠←٣٠ إطارًا). **وعيوب كُشفت أثناء الكتابة وأُصلحت:**
+`Object()/wait()/notifyAll()` غير موجودة في كوتلن ⇒ `Any()` + استقصاء ٥ ms؛ والجامع كان يبدأ
+بالفيديو وحده فيُسقط الصوت كلَّه صامتًا ⇒ لا يبدأ إلا بمعلوميّة المسارين مع مهلة ١٫٥ ثانية لبديل
+الفيديو وحده؛ و`shutdown()` كان يضع `running = false` أولًا فتضيع آخر ثانية ⇒ الإشارة أولًا ثم
+`join(700)` ثم الإيقاف؛ والإعادة من ٦٠ إلى ٣٠ إطارًا كانت تُسرّب مرمّزًا ⇒ تحرير قبل كل محاولة؛
+والعدّادات لم تُصفَّر بين تسجيلين في الخدمة نفسها ⇒ تسجيل فارغ صامت. وحُذف `notif_maxai_off` من
+القائمة و`python3 tools/i18n_coverage.py --prune all` أزاله من ٨٣ مجلّدًا آخر («٨٤ لغة · ٨٣ يتيمًا»).
+
+### ٣. `a5f32679` — صفّ القدرة يقول ما يفعله الكود
+
+`GameCapabilitiesTest` كان يثبّت `SCREEN_RECORD.requires = SHIZUKU`، والتسجيل صار داخليًّا
+(`MediaProjection` + التقاط الصوت) ⇒ `NONE`، مع تعليق يشرح أن الصفّ يتبع الواقع لا العكس.
+**الحكم المقروء** لهذه السلسلة: `43713659360` على `d5a44cbc` و`43711962782` على `fe1bb09a` = نجاح.
+
+### ٤. `3e3c02f5` — استوديو UI/UX (مهمّة المالك العشرية)
+
+* **مهارات:** `frontend-design` (Anthropic، Apache-2.0، منسوخة حرفيًّا) · `writing-for-agents`
+  (tanveerabid، MIT) · `design-taste-frontend` (Leonxlnx v2.5.1، MIT، **مُكيَّفة لا منسوخة**:
+  حُذفت آلات الويب و٣٥ ميغابايت من الصور، وقاعدة «لا بنفسجي» **مُلغاة** لأن هويّة Game Space
+  بنفسجية — والإلغاء معلَن في الملف وفي الإشعارات). المستبعَد من الـ٤٨ مهارة مذكور بسببه في
+  `THIRD_PARTY_NOTICES.md`.
+* **وكلاء سبعة** في `.opencode/agents/` — كلهم `mode: subagent` بلا `model` (يرثون نموذج الجلسة)،
+  وستة منهم `deny: edit/*` والمنفّذ الوحيد `android-engineering`. تحقّقهم: `opencode debug agents`
+  أظهر السبعة بنفس هذا الشكل.
+* **أوامر ثمانية** `/ui-audit` … `/ui-regression` في `.opencode/commands/`، كلٌّ يسمّي وكيله وبديله
+  المباشر إن تعذّر التفويض (حدّ الاستخدام المجاني مقيس).
+* **`docs/design/` ستة مستندات** مشتقّة من `MaxTokens`/`MaxMotion`/`ui/theme` لا من هويّة جديدة،
+  وتقول صراحةً: عند أي تعارض فالكود هو الحكم.
+* **MCP:** أُضيف `playwright` (مسار مطلق لا npx)، وأُثبت عمليًّا بـnavigate+snapshot+screenshot؛
+  و`context7`/`gh_grep` يأتيان مع OpenCode v2.3.0؛ و`adb` (٨١ أداة) يغني عن أي MCP جهاز ثانٍ؛
+  و`figma` يبقى «يحتاج مصادقة» ولا ادّعاء غير ذلك.
+
+### ٥. `69a20932` — بلاطة الوضع: عِلّتان محذوفتان، ومسار مالك واحد
+
+البلاطة كانت (أ) تُظهر `android.app.AlertDialog` عبر `TileService.showDialog()` — **نافذة يملكها
+Service**، مُهمَلة منذ أندرويد ١٠، والمسار المدعوم `startActivityAndCollapse(PendingIntent)`؛
+و(ب) تنادي `ProfileApplier.apply()` مباشرةً — **مالك ثانٍ للقرار** يتجاوز
+`maxAiEngine.requestManualProfile()` وبوّابته، ويستطيع السقوط إلى `RootCommands.cmd(...).exec()`
+الذي ينتظر قفلًا واحدًا للعملية بلا مهلة. الآن: النقر يفتح التطبيق على شاشة الوضع
+(`ACTION_OPEN_PROFILE` + `WidgetIntents.ROUTE_PROFILE`)، و`onNewIntent` يعرف الإجراء نفسه فتصل
+اللمسة الثانية على نشاط حيّ، والنصّ الفرعي يظلّ قراءةً فقط على `Dispatchers.IO`. وحُذف
+`res/layout/dialog_profile_selector.xml` والمفتاح `toast_applying_profile` من ٨٤ لغة.
+
+**GATES قبل الالتزام (المقيس، آخر دورة):** `kt_balance` 3442/0 · `code_health` exit 0 ·
+`i18n` 0 عوائق · `prune` 0 · `design_tokens` exit 0 · `resource_compile` ✓ ·
+`provenance` 4493/0/0 · `jni` 23/0/0/0 · `git diff --check` نظيف.
+**BUILD:** `761a8840` و`bc5d8d48` أحمران مقروءان أعلاه · `3e3c02f5` = نجاح
+(`43722751533` + `43722751518`) · حكم `69a20932` يُقرأ من `watch_runs` قبل أي ادّعاء.
+**RESIDUAL RISK:** لا جهاز ⇒ لم يُعَد إنتاج التجميد أصلًا، والتشخيص من الكود وحده؛ والتسجيل الجديد
+لم يُشغَّل على جهاز (الصوت يعتمد سماح كل تطبيق بالالتقاط)؛ وPlaywright أثبت صفحةً محلية لا تطبيقًا.
+**NEXT:** قراءة حكم `69a20932`، ثم تقرير المهمّة A–H.
