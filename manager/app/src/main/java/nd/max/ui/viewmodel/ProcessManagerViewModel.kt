@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import nd.max.core.platform.ProcessDetails
+import nd.max.core.platform.ThreadTime
 import nd.max.core.platform.ProcessFeed
 import nd.max.core.platform.ProcessReadGuard
 import nd.max.core.platform.ProcessReadState
@@ -109,6 +110,15 @@ class ProcessManagerViewModel : ViewModel() {
 
     /** قرأت الطبقة ولم تجد شيئًا — فشل معلن، لا صفّ فارغ. */
     var detailsFailed by mutableStateOf(false)
+        private set
+
+    /**
+     * زمن CPU لكل خيط في الصفّ المفتوح، أو `null` حين لم يُقرأ.
+     *
+     * ويُقرأ مع التفاصيل في النداء نفسه: الخيوط سؤال «أين يذهب المعالج؟» وهو سؤال الصفّ لا
+     * سؤال شاشة ثانية، فنقرأه حين يُفتح ويُنسى حين يُغلق.
+     */
+    var threadTimes by mutableStateOf<List<ThreadTime>?>(null)
         private set
 
     private var detailsPid: Int? = null
@@ -203,11 +213,14 @@ class ProcessManagerViewModel : ViewModel() {
         details = null
         detailsFailed = false
         detailsLoading = true
+        threadTimes = null
         viewModelScope.launch(Dispatchers.IO) {
             val loaded = ProcessFeed.details(pid)
+            val threads = ProcessFeed.threadTimes(pid)
             withContext(Dispatchers.Main) {
                 if (detailsPid == pid) {
                     details = loaded
+                    threadTimes = threads
                     detailsFailed = loaded == null
                     detailsLoading = false
                 }
@@ -220,6 +233,7 @@ class ProcessManagerViewModel : ViewModel() {
         details = null
         detailsFailed = false
         detailsLoading = false
+        threadTimes = null
     }
 
     fun kill(reading: ProcessReading) = applyResult(

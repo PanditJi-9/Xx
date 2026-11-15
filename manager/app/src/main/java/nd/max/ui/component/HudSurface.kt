@@ -29,14 +29,18 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
@@ -74,6 +78,33 @@ import nd.max.ui.design.maxRadius
 
 /** أقصى إطار/ثانية يُقاس عليه القوس حين لا يُعرف معدّل تحديث الشاشة. */
 private const val FALLBACK_CEILING = 120f
+
+/** كم عيّنة يحتفظ بها تاريخ الحقل في اللوحة — ما يُقرأ بنظرة في ارتفاع شريط صغير. */
+private const val HUD_SERIES_SAMPLES = 40
+
+/** سماكة خطّ الرسم. */
+private const val GraphStroke = 2.5f
+
+/** ألفة ملء المساحة تحت الخطّ — شكل لا حكم. */
+private const val AreaFillAlpha = 0.20f
+
+/** حصة عرض العمود من الخطوة بين عيّنتين. */
+private const val BarWidthShare = 0.62f
+
+/** أضيق عمود مرئي حين تتزاحم العيّنات. */
+private const val MinBarWidth = 1.5f
+
+/** هامش فوق أعلى عيّنة حين لا سقف طبيعيًّا للقياس، فلا يلتصق الشكل بالحافة. */
+private const val SeriesCeilingHeadroom = 1.15f
+
+/**
+ * شكل الرسم بحسب **نوع القياس** لا بحسب الذوق.
+ *
+ * الخطّ لمعدّل يتحرّك كل لحظة، والملء لحمل يشغل نسبة من سقف، والأعمدة لنسبة تُقرأ حصصًا،
+ * والدرج لدرجة أو تردد يقفز ثم يسكن. وهذا ما كان ناقصًا: شكل واحد لكل حقل يلغي الفرق بين
+ * الأنواع ويجعل العين تقرأ الهيئة نفسها في كل مرة.
+ */
+private enum class HudChartShape { Line, Area, Bars, Stepped }
 
 /**
  * مقاس زرّ واحد في صفّ أدوات اللوحة.
@@ -216,10 +247,18 @@ fun HudSurface(
     modifier: Modifier = Modifier,
     filter: HudFilter = HudFilter.All
 ) {
-    val ceiling = framesCeiling()
-    val chartPossible = HudField.Frames in fields
+    val displayCeiling = framesCeiling()
+    /*
+     * المنحنى يتبع **الحقل المعروض** لا حقل الإطارات وحده: كان الرسم لا يظهر إلا إذا كان
+     * `Frames` بين الحقول، فمن عرض الحرارة أو الحمل أو التقطيع بقي بلا شكل يُقرأ بالعين.
+     * والشكل يتبع ما يقيسه الحقل: خطٌّ لمعدّل، ومساحةٌ لحمل، وأعمدةٌ لنسبة تقطيع، ودرجٌ
+     * لتردد أو حرارة تتغيّر قفزًا. ولا محور مُختلق: الرقم بجانب الشكل هو القياس (ADR-07).
+     */
+    val chartField = hudChartField(fields)
+    val chartPossible = chartField != null
     val textVisible = hudTextVisible(filter, chartPossible)
     val chartVisible = hudChartVisible(filter, showGraph, chartPossible)
+    val series = rememberHudSeries(chartField, reading, framesHistory)
     // وزرّ التسجيل جزء من **نفس الصفّ** بأمر المالك: كان صفًّا مستقلًّا بارتفاع ٤٨dp وفاصل ثابت
     // حتى وهو لا يسجّل — أي ثلث ارتفاع اللوحة مقابل إجراء لا يُستعمل في كل جلسة (تكملة ١٨٢).
     val hasActions = onHide != null || onClose != null || onToggleRecording != null
@@ -264,14 +303,21 @@ fun HudSurface(
                         HudPane(reading, fields, accent, textSizeSp, arrangement)
 
                     HudForm.Ring ->
-                        HudRing(reading, fields, accent, textSizeSp, ceiling)
+                        HudRing(reading, fields, accent, textSizeSp, displayCeiling)
                     HudForm.Badge ->
                         HudBadge(reading, fields, accent, textSizeSp, arrangement, if (inlineActions) actions else null)
                 }
             }
 
             if (chartVisible) {
-                HudFramesGraph(framesHistory, accent, ceiling)
+                if (chartField != null) {
+                    HudMetricGraph(
+                        series = series,
+                        accent = accent,
+                        shape = hudChartShape(chartField),
+                        ceiling = hudChartCeiling(chartField, displayCeiling, series)
+                    )
+                }
             }
 
             // صفّ أزرار واحد لِما هو غير مُضمَّن في صفّ البيانات — وفاصل واحد قبله يفصل
@@ -660,26 +706,190 @@ private fun HudRing(
 }
 
 /**
- * منحنى الإطارات. الطول يُختار من الإعدادات (١٠ أو ٢٠ أو ٤٠ عيّنة) — والمنحنى في نسخة سابقة
- * كان **ثابتًا لا يُطفأ** ويأكل ارتفاعًا من نافذة فوق لعبة، وهو أسوأ موضع لفرض عنصر.
+ * منحنى الحقل المعروض — **وشكله من نوع ما يقيسه**، لا شكل واحد لكل شيء.
+ *
+ * المرجع (Scene) يفصل لكل مقياس رسمًا لأنّ الأنواع لا تتشابه سطحيًّا: معدّل يتحرّك كل لحظة،
+ * وحرارة تقفز درجاتٍ ثم تسكن، ونسبة تقطيعٍ تُقرأ حصصًا لا خطًّا، وترددٌ يثبت على درجة ثم
+ * ينتقل. رسمُ الأربعة بخطّ واحد يُلغي هذه الفروق ويجعل العين تقرأ الهيئة نفسها في كل مرة.
+ * فالشكل هنا **يعبّر عن نوع القياس**: خطٌّ لمعدّل، ومساحةٌ لحمل، وأعمدةٌ لنسبة، ودرجٌ لدرجة
+ * أو تردد. وليس مقحَمًا: قيمة غائبة لا تُرسم ولا تُخترع نقطة مكانها (ADR-07).
+ *
+ * **ولا محور واحد في هذا الرسم** — وهذا اختيار: الرقم المجاور في اللوحة هو القياس ووحدته،
+ * والرسم يصف الحركة فقط. السقف يُمرَّر محسوبًا (`hudChartCeiling`) فيصبغ الشكل ولا يُعلن.
+ *
+ * والطول: `Frames` يتبع نافذة الإعدادات كما كان، وبقية الحقول تحتفظ بآخر
+ * [HUD_SERIES_SAMPLES] عيّنة محليًّا — لم يُغيَّر مصدر ولا خدمة ولا نموذج عرض.
  */
 @Composable
-private fun HudFramesGraph(history: List<Float>, accent: Color, ceiling: Float) {
-    if (history.size < 2) return
-    val span = history.size
+private fun HudMetricGraph(
+    series: List<Float>,
+    accent: Color,
+    shape: HudChartShape,
+    ceiling: Float,
+) {
+    if (series.size < 2) return
     Canvas(modifier = Modifier.fillMaxWidth().height(MaxSize.sparklineHeight)) {
+        val safeCeiling = if (ceiling.isFinite() && ceiling > 0f) ceiling else 1f
+        val span = series.size
         val step = size.width / (span - 1).coerceAtLeast(1)
-        val points = history.mapIndexed { index, value ->
-            Offset(
-                x = index * step,
-                y = size.height - (value / ceiling).coerceIn(0f, 1f) * size.height
-            )
+        val points = series.mapIndexed { index, value ->
+            val v = if (value.isFinite()) value else safeCeiling
+            Offset(x = index * step, y = size.height - (v / safeCeiling).coerceIn(0f, 1f) * size.height)
         }
-        val path = Path().apply {
-            moveTo(points.first().x, points.first().y)
-            points.drop(1).forEach { lineTo(it.x, it.y) }
+        when (shape) {
+            HudChartShape.Line -> drawSeriesLine(points, accent)
+
+            HudChartShape.Area -> {
+                val fill = Path().apply {
+                    moveTo(points.first().x, size.height)
+                    points.forEach { lineTo(it.x, it.y) }
+                    lineTo(points.last().x, size.height)
+                    close()
+                }
+                drawPath(path = fill, color = accent.copy(alpha = AreaFillAlpha))
+                drawSeriesLine(points, accent)
+            }
+
+            HudChartShape.Bars -> {
+                val barWidth = (step * BarWidthShare).coerceAtLeast(MinBarWidth)
+                points.forEach { point ->
+                    val height = (size.height - point.y).coerceAtLeast(0f)
+                    drawRect(
+                        color = accent,
+                        topLeft = Offset(point.x - barWidth / 2f, point.y),
+                        size = Size(barWidth, height)
+                    )
+                }
+            }
+
+            HudChartShape.Stepped -> {
+                val path = Path().apply {
+                    moveTo(points.first().x, points.first().y)
+                    var previous = points.first().y
+                    points.drop(1).forEach { point ->
+                        lineTo(point.x, previous)
+                        lineTo(point.x, point.y)
+                        previous = point.y
+                    }
+                }
+                drawPath(path = path, color = accent, style = Stroke(width = GraphStroke, cap = StrokeCap.Round))
+            }
         }
-        drawPath(path = path, color = accent, style = Stroke(width = 2.5f, cap = StrokeCap.Round))
+    }
+}
+
+/** خطّ متّصل بين النقاط — الشكل المشترك لـ[HudChartShape.Line] و[HudChartShape.Area]. */
+private fun DrawScope.drawSeriesLine(points: List<Offset>, accent: Color) {
+    val path = Path().apply {
+        moveTo(points.first().x, points.first().y)
+        points.drop(1).forEach { lineTo(it.x, it.y) }
+    }
+    drawPath(path = path, color = accent, style = Stroke(width = GraphStroke, cap = StrokeCap.Round))
+}
+
+/**
+ * الحقل الذي يُرسم له منحنى: **أوّل حقل معروض يقبل رقمًا**، و[HudField.Renderer] نصّ فلا شكل له.
+ *
+ * وهذا هو جوهر التحسين: قبل اليوم كان الرسم لا يظهر إلا إذا كان `Frames` بين الحقول، فمن
+ * عرض الحرارة أو الحمل بقي بلا شكل.
+ */
+private fun hudChartField(fields: List<HudField>): HudField? =
+    fields.firstOrNull { it != HudField.Renderer }
+
+/** شكل الرسم بحسب نوع القياس — لا بحسب الذوق. */
+private fun hudChartShape(field: HudField): HudChartShape = when (field) {
+    // معدّلات تتحرّك كل لحظة: الخطّ يصف حركتها بلا ملء يوهم بثقل.
+    HudField.Frames, HudField.Stability, HudField.Power,
+    HudField.Battery, HudField.BatteryVoltage, HudField.Network, HudField.DiskIo -> HudChartShape.Line
+
+    // أحمال تشغل نسبة من كلٍّ: الملء يقول «كم من السقف مشغول» بنظرة.
+    HudField.Cpu, HudField.Ram, HudField.GpuLoad -> HudChartShape.Area
+
+    // نسبة تقطيع: حصص إطارات متتالية، والأعمدة تقرأ حصصًا لا ميلًا.
+    HudField.Jank -> HudChartShape.Bars
+
+    // درجات وترددات تقفز ثم تسكن: الدرج يمنع إيهام التدرّج بين قيمتين منفصلتين.
+    HudField.Heat, HudField.SocTemp, HudField.CpuFreq, HudField.GpuFreq, HudField.DdrFreq ->
+        HudChartShape.Stepped
+
+    HudField.Renderer -> HudChartShape.Line
+}
+
+/**
+ * سقف الرسم: ثابت حين يكون القياس نسبةً من معروف، ومشتقًّا من العيّنة نفسها حين لا سقف طبيعي.
+ *
+ * ولا يُعلن كرقم على الشاشة: هو صبغة شكل فقط. وحين لا عيّنة موجبة بعد يُرجع ١ لا صفرًا،
+ * فلا قسمة على صفر ولا خطّ مسطّح كاذب.
+ */
+private fun hudChartCeiling(field: HudField, displayCeiling: Float, series: List<Float>): Float {
+    return when (field) {
+        HudField.Frames -> displayCeiling
+        HudField.Stability, HudField.Jank, HudField.Cpu, HudField.GpuLoad, HudField.Battery -> 100f
+        else -> {
+            val peak = series.filter { it.isFinite() }.maxOrNull() ?: 0f
+            if (peak > 0f) peak * SeriesCeilingHeadroom else 1f
+        }
+    }
+}
+
+/**
+ * الرقم الذي يُرسم للحقل — لا النصّ المعروض.
+ *
+ * `HudReading.valueOf` يعطي الشبكة والقرص اتجاه النزول وحده، وهنا يُرسم الاتجاه نفسه:
+ * منحنى الشبكة/القرص يصف **النزول/القراءة**، والرقم المجاور يقول الاتجاهين معًا.
+ * والغائب `null` فلا نقطة، والنصّ (`Renderer`) لا يُرسم إطلاقًا.
+ */
+private fun hudFieldValue(reading: HudReading?, field: HudField): Float? {
+    if (reading == null) return null
+    return when (field) {
+        HudField.Frames -> reading.frames
+        HudField.Stability -> reading.stability?.toFloat()
+        HudField.Jank -> reading.jankPercent?.toFloat()
+        HudField.Cpu -> reading.cpu?.toFloat()
+        HudField.Heat -> reading.heat
+        HudField.Ram -> reading.ramMb?.toFloat()
+        HudField.Power -> reading.watt
+        HudField.Battery -> reading.battery?.toFloat()
+        HudField.Network -> reading.rxBps ?: reading.txBps
+        HudField.Renderer -> null
+        HudField.CpuFreq -> reading.cpuFreqMhz?.toFloat()
+        HudField.SocTemp -> reading.socTempC
+        HudField.GpuFreq -> reading.gpuFreqMhz?.toFloat()
+        HudField.GpuLoad -> reading.gpuLoadPercent?.toFloat()
+        HudField.DdrFreq -> reading.ddrFreqMhz?.toFloat()
+        HudField.DiskIo -> reading.diskReadBps ?: reading.diskWriteBps
+        HudField.BatteryVoltage -> reading.batteryVoltageMv?.toFloat()
+    }
+}
+
+/**
+ * تاريخ الحقل المعروض. `Frames` يبقى على نافذته المضبوطة في الإعدادات (لا يُلمس سلوكه)،
+ * وبقية الحقول تُجمع هنا: `HudReading` يحمل كل المقاييس في كل نبضة، فلا حاجة إلى تغيير
+ * الخدمة ولا نموذج العرض لرسمها.
+ *
+ * ولا يُضاف شيء حين تكون القيمة غائبة: التاريخ لا يُملأ بفراغ. والغازل الواحدة تُرسم خطًّا
+ * مسطّحًا من نقطتين متماثلتين — قياسٌ واحد معروض كقياس، لا محور مُختلق.
+ */
+@Composable
+private fun rememberHudSeries(
+    field: HudField?,
+    reading: HudReading?,
+    framesHistory: List<Float>,
+): List<Float> {
+    val samples = remember(field) { mutableStateListOf<Float>() }
+    val value = if (field == null || field == HudField.Frames) null else hudFieldValue(reading, field)
+    LaunchedEffect(field, reading, value) {
+        if (value != null) {
+            samples.add(value)
+            while (samples.size > HUD_SERIES_SAMPLES) samples.removeAt(0)
+        }
+    }
+    return when {
+        field == null -> emptyList()
+        field == HudField.Frames -> framesHistory
+        samples.isEmpty() -> emptyList()
+        samples.size == 1 -> listOf(samples[0], samples[0])
+        else -> samples.toList()
     }
 }
 

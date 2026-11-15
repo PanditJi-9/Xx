@@ -1900,6 +1900,10 @@
     <string name="processmgr_detail_disk_read">قراءة القرص</string>
     <string name="processmgr_detail_disk_written">كتابة القرص</string>
     <string name="processmgr_detail_threads">الخيوط</string>
+    <string name="processmgr_threads_title">أعلى الخيوط</string>
+    <string name="processmgr_threads_caption">زمن المعالج لكل خيط، من /proc. والحصة من زمن معالج هذه العملية نفسها، لا من زمن الجهاز كلّه.</string>
+    <string name="processmgr_threads_seconds">%1$s ث</string>
+    <string name="processmgr_threads_share">%1$d%%</string>
     <string name="processmgr_detail_cgroup">المجموعة</string>
     <string name="processmgr_details_loading">جارٍ قراءة تفاصيل النواة…</string>
     <string name="processmgr_details_failed">تعذّرت قراءة تفاصيل النواة</string>

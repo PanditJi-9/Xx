@@ -92,6 +92,19 @@ data class ProcessDetails(
 )
 
 /**
+ * زمن معالج خيط واحد داخل عملية — `utime + stime` بالساعات النبضية (`ticks`).
+ *
+ * **والوحدة خامّة عن قصد:** تحويلها إلى ثوانٍ يحتاج `_SC_CLK_TCK` من النظام، وهو رقم يختلف
+ * بين نواة وأخرى (١٠٠ عادةً، وليس قاعدة). فتبقى الطبقة تقيس ما قرأت، والتحويل يقع عند العرض
+ * بـ[ProcessFeed.clockTicksPerSecond] — وحين لا يُعرف المعدّل تُعرض «—» لا ثوانٍ مخمَّنة (ADR-07).
+ */
+data class ThreadTime(
+    val tid: Int,
+    val name: String,
+    val ticks: Long
+)
+
+/**
  * نتيجة دورة قراءة واحدة.
  *
  * @param readings ما سيُعرض (بعد التصفية والترتيب والقَصّ).
@@ -231,6 +244,68 @@ object ProcessFeed {
         if (header < 0) return emptyList()
         return lines.drop(header + 1).mapNotNull(::parseRow)
     }
+
+    /**
+     * زمن CPU لكل خيوط عملية — نداء جذر واحد على كل ملفّ `stat` تحت `/proc/<pid>/task`.
+     *
+     * **ولماذا `stat` لا `top -H`:** `top` المجهول لا يُثبت دعم `-H` على كل نسخة، وترتيبه قد
+     * يخلط الخيوط بالعمليات. و`stat` عقدٌ ثابت في النواة: الحقول مرقّمة، والخيط نفسه يذكر
+     * `tid` في أوّلها. فما يُقرأ هنا لا يعتمد على أداة قد تختلف.
+     *
+     * @return `null` حين لم يُقرأ سطر واحد (لا جذر، أو العملية ماتت) — والقائمة الفارغة لا
+     *         تُعاد، لأن عملية حيّة لها خيط واحد على الأقلّ.
+     */
+    fun threadTimes(pid: Int): List<ThreadTime>? {
+        if (pid <= 0) return null
+        val lines = runCatching {
+            nd.max.core.privilege.RootCommands.cmd(
+                "for f in /proc/$pid/task/*/stat; do cat \"\$f\" 2>/dev/null; echo; done"
+            ).exec().out
+        }.getOrNull() ?: return null
+        return parseThreadTimes(lines)
+    }
+
+    /**
+     * يقرأ أسطر `stat` إلى خيوط مرتَّبة — دالّة خالصة تُقاس بلا جهاز.
+     *
+     * الأسطر غير المقروءة تُسقط وحدها؛ وإن لم يبقَ سطر فالجواب `null` لا قائمة فارغة: «لم أقرأ»
+     * و«قرأت فلم أجد خيطًا» ليسا الشيء نفسه، والثانية غير ممكنة لعملية حيّة.
+     */
+    internal fun parseThreadTimes(lines: List<String>): List<ThreadTime>? {
+        val parsed = lines.mapNotNull { parseThreadLine(it) }
+        if (parsed.isEmpty()) return null
+        return parsed.sortedWith(compareByDescending<ThreadTime> { it.ticks }.thenBy { it.tid })
+    }
+
+    /**
+     * سطر `stat` واحد ← خيط. القطع بعد **آخر** قوس لأن `comm` قد يحوي مسافة أو قوسًا، فتقطيع
+     * من أوّله يزحزح كل الحقول ويُنتج أرقامًا خاطئة بلا خطأ ظاهر.
+     *
+     * وبعد القوس يبدأ الحقل الثالث (`state`)، فـ`utime` (الحقل ١٤) عند الفهرس ١١ و`stime`
+     * (١٥) عند ١٢ — وهذا موضعُ خطأ شائع، لذا الرقم مكتوب هنا مرّة.
+     */
+    internal fun parseThreadLine(raw: String): ThreadTime? {
+        val close = raw.lastIndexOf(')')
+        val open = raw.indexOf('(')
+        if (open <= 0 || close <= open) return null
+        val tid = raw.substring(0, open).trim().toIntOrNull() ?: return null
+        val name = raw.substring(open + 1, close).ifBlank { tid.toString() }
+        val fields = raw.substring(close + 1).trim().split(SEPARATOR)
+        if (fields.size < 13) return null
+        val utime = fields[11].toLongOrNull() ?: return null
+        val stime = fields[12].toLongOrNull() ?: return null
+        return ThreadTime(tid = tid, name = name, ticks = utime + stime)
+    }
+
+    /**
+     * نبضات الساعة في الثانية من النظام نفسه، أو `null` حين لا تُقرأ.
+     *
+     * ولا يُفترض ١٠٠: الرقم ثابت في نوى كثيرة لا في كلها، وافتراضه يجعل الثواني المعروضة
+     * مضروبة في ثابت مجهول. وغيابه يعني «—» في الواجهة.
+     */
+    fun clockTicksPerSecond(): Long? = runCatching {
+        android.system.Os.sysconf(android.system.OsConstants._SC_CLK_TCK).takeIf { it > 0 }
+    }.getOrNull()
 
     private fun parseRow(raw: String): ProcessRow? {
         val line = raw.trim()

@@ -959,6 +959,10 @@
     <string name="processmgr_detail_disk_read">Disk read</string>
     <string name="processmgr_detail_disk_written">Disk written</string>
     <string name="processmgr_detail_threads">Threads</string>
+    <string name="processmgr_threads_title">Top threads</string>
+    <string name="processmgr_threads_caption">Processor time per thread, read from /proc. The share is of this process\'s own CPU time, not the whole device.</string>
+    <string name="processmgr_threads_seconds">%1$s s</string>
+    <string name="processmgr_threads_share">%1$d%%</string>
     <string name="processmgr_detail_cgroup">Cgroup</string>
     <string name="processmgr_details_loading">Reading kernel details…</string>
     <string name="processmgr_details_failed">Kernel details could not be read</string>

@@ -73,6 +73,7 @@ import nd.max.core.platform.ProcessSample
 import nd.max.core.platform.ProcessScope
 import nd.max.core.platform.ProcessSort
 import nd.max.core.platform.ProcessWatch
+import nd.max.core.platform.ThreadTime
 import nd.max.service.ProcessOverlayService
 import nd.max.ui.component.ConfirmDialogHost
 import nd.max.ui.component.CustomBottomSheet
@@ -313,6 +314,7 @@ fun ProcessManagerScreen(
                 details = viewModel.details,
                 detailsLoading = viewModel.detailsLoading,
                 detailsFailed = viewModel.detailsFailed,
+                threadTimes = viewModel.threadTimes,
                 onForceStop = {
                     forceStopDialog.showConfirm(
                         title = resources.getString(R.string.processmgr_force_stop_confirm_title, reading.label),
@@ -662,6 +664,7 @@ private fun DetailSheet(
     details: ProcessDetails?,
     detailsLoading: Boolean,
     detailsFailed: Boolean,
+    threadTimes: List<ThreadTime>?,
     onForceStop: () -> Unit,
     onKill: () -> Unit,
     onAppInfo: () -> Unit,
@@ -725,6 +728,10 @@ private fun DetailSheet(
                     stringResource(R.string.processmgr_detail_cgroup),
                     details.cgroup ?: "—"
                 )
+                if (!threadTimes.isNullOrEmpty()) {
+                    Spacer(Modifier.height(MaxSpace.sm))
+                    ProcessThreadsSection(times = threadTimes)
+                }
             }
         }
         Spacer(Modifier.height(MaxSpace.lg))
