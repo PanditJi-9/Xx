@@ -278,10 +278,12 @@ class LobbyExploreContractTest {
                 text.contains("private val ExploreCompactHeight")
         )
         assertTrue(
-            "The compact header must drop the count line and keep the light page title",
+            // الوزن نفسه ليس عقدًا — المالك يبدّله مع كل جولة (Light ثم Bold)؛ العقد أن
+            // العنوان يبقى **معلنًا صراحة** ويصغر في الوضع المضغوط، لا أن يقع على الوزن الافتراضي.
+            "The compact header must drop the count line and keep an explicit page-title weight",
             text.contains("if (!compact)") &&
                 text.contains("fontSize = if (compact)") &&
-                text.contains("fontWeight = FontWeight.Light")
+                Regex("fontWeight = FontWeight\\.\\w+").containsMatchIn(text)
         )
         assertTrue(
             "The compact card must shrink its padding and skip the redundant dots",
