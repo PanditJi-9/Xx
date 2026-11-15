@@ -54,10 +54,13 @@ import nd.max.ui.component.lobbyIntro
  * وتقدّم الدخول يصلان عبر `LocalStageClock`/`LocalStageIntro`: فكل جزء ينساب إلى مكانه بتأخّر نسبيّ بعد
  * غطاء الدخول، والبطل يطفو، واللمعة تعبر زرّ التشغيل، والسحب الأفقيّ على البطل يبدّل اللعبة.
  *
- * ### الثمن، صراحةً
+ * ### الأحجام على الهواتف (جولة ٢٠٢٦-١١-١٥ الثانية)
  *
- * اللمسات تتبع نسبة اللوحة: على شاشة ٩١٥×٤١٢dp النسبة ≈٠٫٤٤ فيُرى عنصر الشريط (٦٥ وحدة) بنحو ٢٨dp.
- * وهذا ثمن «اللوحة الثابتة» الذي طُلب؛ ولذلك أزرار اللوبي العلويّة (الاستكشاف، المفضّلة، السجلّ،
+ * كان المقياس يتبع الارتفاع، فعلى هاتف ٩١٥×٤١٢dp تُرسم اللوحة بنسبة ≈٠٫٤٤ ويصير عنصر الشريط (٦٥ وحدة) نحو ٢٨dp.
+ * الآن يتبع **العرض** على الشاشات العريضة (انظر [stageSpace]): النسبة ≈٠٫٥٠–٠٫٥٥، ويُقتطع الفرق من ارتفاع
+ * اللوحة ([StageGeo]) فيُوزَّع على أجزائها بدل أن يُهدَر هامشًا — يلتصق الرفّ بأسفل الشاشة، وتنتقل قاعدة الحالة
+ * إلى أسفل عمود اللوحات اليمنى، وتتمدّد اللوحات الثلاث رأسيًّا. والأزرار الصغيرة (التشغيل، «…»، سهما الرفّ)
+ * تُرفع بمعامل ([stageTouchBoost]) ليبقى لمسها مريحًا. أزرار اللوبي العلويّة (الاستكشاف، المفضّلة، السجلّ،
  * الإغلاق) تُرسم بمقاسها الفعليّ بإعادة `LocalDensity` الأصلي داخلها، وتُوضَع فوق اللوحة عند إحداثياتها.
  *
  * ### ما لا يُدّعى (ADR-07)
@@ -78,9 +81,9 @@ private const val MaxFontScale = 1.15f
  * أدنى نسبة يُقرأ عندها نصّ اللوحة بلا عناء: تحتها (هاتف عرضيّ قصير الارتفاع) يُرفع حجم الخط وحده
  * دون الهندسة، فيبقى النصّ مقروءًا والمقاسات المرسومة كما هي. فوقها لا رفع.
  */
-private const val LegibleScale = 0.60f
-private const val MaxFontBoost = 1.28f
-private const val MaxFontCombined = 1.35f
+private const val LegibleScale = 0.68f
+private const val MaxFontBoost = 1.40f
+private const val MaxFontCombined = 1.50f
 
 /** أقصى عرض إضافيّ (بوحدات اللقطة) تتمدّد به اللوحة على الشاشات الأعرض من ١٦:٩ بدل الهامش الفارغ. */
 private const val MaxStageExtra = 760
@@ -95,12 +98,89 @@ private const val MaxRightGrow = 130
  */
 internal val LocalStageExtra = compositionLocalOf { 0 }
 
-internal class StageSpace(val scale: Float, val extra: Int)
+/**
+ * [drop]: كم وحدةً تُقتطع من ارتفاع اللوحة (٩٤١) على الهواتف العريضة. صفر = اللقطة المرجعيّة كما هي.
+ */
+internal class StageSpace(val scale: Float, val extra: Int, val drop: Int = 0)
 
+/** أقصر ارتفاع (بوحدات اللقطة) تُضغَط إليه اللوحة؛ أقصر منه يعود العرض الزائد فيتمدّد به البطل والرفّ. */
+private const val MinStageHeight = 760
+
+/** أصغر ضغط يستحقّ التخطيط المضغوط؛ دونه (شاشات ١٦:٩ وما يقاربها) تبقى اللقطة المرجعيّة بلا تغيير. */
+private const val MinStageDrop = 60
+
+/** حدّ أدنى لمقاس لمسةٍ مريحة بالـdp الفعليّ، تُرفع إليه الأزرار الصغيرة المرسومة بوحدات اللقطة. */
+private const val TouchScale = 0.62f
+
+/**
+ * نموذج المقاس: على الهواتف العريضة (٢٠:٩ وأخواتها) كان المقياس يتبع **الارتفاع** فتُرسم اللوحة بـ٤٣٪ فقط
+ * وتبقى على الجانبين مساحة فارغة تُملأ تمدّدًا. الآن المقياس يتبع **العرض** (١٦٧٢ وحدة تملأ الشاشة)، ويُقتطع
+ * الفرق من ارتفاع اللوحة ([StageSpace.drop]) فيُوزَّع على أجزائها: يضيق البطل ويُحمَل الرفّ إلى أسفل الشاشة،
+ * وتنتقل قاعدة الحالة إلى عمود اللوحات اليمنى. النتيجة: كل عنصر أكبر بنحو ١٥–٢٥٪ دون تغيير في هيئته.
+ */
 internal fun stageSpace(width: Dp, height: Dp): StageSpace {
-    val scale = minOf(width.value / StageDesignWidth, height.value / StageDesignHeight)
+    val fitWidth = width.value / StageDesignWidth
+    val need = height.value / fitWidth
+    val raw = (StageDesignHeight - need).toInt()
+    if (raw >= MinStageDrop) {
+        val drop = raw.coerceAtMost(StageDesignHeight - MinStageHeight)
+        val scale = height.value / (StageDesignHeight - drop)
+        val extra = (width.value / scale - StageDesignWidth).toInt().coerceIn(0, MaxStageExtra)
+        return StageSpace(scale = scale, extra = extra, drop = drop)
+    }
+    val scale = minOf(fitWidth, height.value / StageDesignHeight)
     val extra = (width.value / scale - StageDesignWidth).toInt().coerceIn(0, MaxStageExtra)
     return StageSpace(scale = scale, extra = extra)
+}
+
+/** الضغط الرأسيّ الجاري للوحة الحاليّة (٠ = اللقطة المرجعيّة). */
+internal val LocalStageDrop = compositionLocalOf { 0 }
+
+/** نسبة اللوحة إلى الشاشة (وحدة اللقطة بالـdp)؛ تُستعمل لرفع أحجام اللمس الصغيرة. */
+internal val LocalStageScale = compositionLocalOf { 1f }
+
+/** معامل تمدّد لوحات اليمين رأسيًّا في التخطيط المضغوط (١ = مقاسها المرجعيّ). */
+internal val LocalStageStretch = compositionLocalOf { 1f }
+
+/** معامل رفع مقاس الأزرار الصغيرة ليبقى لمسها مريحًا حين تصغر اللوحة (١ = بلا رفع). */
+@Composable
+internal fun stageTouchBoost(): Float = (TouchScale / LocalStageScale.current).coerceIn(1f, 1.25f)
+
+/** يسار لوحات اليمين بوحدات اللقطة (الحافة اليمنى ثابتة، وتتّسع اللوحات يسارًا بحصّتها من العرض الإضافيّ). */
+internal fun stageBoardX(extra: Int): Int = 1236 + extra - stageRightGrow(extra)
+
+/** هندسة اللوحة الرأسيّة بوحدات اللقطة، دالّةً في [StageSpace.drop]. عند صفر تساوي اللقطة المرجعيّة حرفيًّا. */
+internal object StageGeo {
+    const val ShelfH = 306
+    private const val BottomMargin = 30
+
+    /** ارتفاع اللوحة. */
+    fun height(drop: Int): Int = StageDesignHeight - drop
+
+    /** أعلى الرفّ = أسفل منطقة البطل. في المضغوط يلتصق الرفّ بأسفل الشاشة بعد أن غادرته قاعدة الحالة. */
+    fun shelfTop(drop: Int): Int = if (drop == 0) 509 else height(drop) - BottomMargin - ShelfH
+
+    /** عرض الرفّ: في المضغوط ينتهي قبل عمود اللوحات اليمنى بهامش. */
+    fun shelfWidth(drop: Int, extra: Int): Int =
+        if (drop == 0) 1451 + extra else stageBoardX(extra) - 26 - 195
+
+    /** أسفل عمود اللوحات اليمنى في المضغوط. */
+    fun columnBottom(drop: Int): Int = height(drop) - BottomMargin
+}
+
+/** أحجام عمود اللوحات اليمنى في التخطيط المضغوط: الثلاث تتمدّد بمعامل [kv] والباقي لقاعدة الحالة. */
+internal class StageColumn(val kv: Float, val perf: Int, val status: Int, val fps: Int, val baseTop: Int, val baseH: Int)
+
+internal fun stageColumn(drop: Int): StageColumn {
+    val bottom = StageGeo.columnBottom(drop)
+    val avail = bottom - 87
+    val gaps = 14 + 12 + 14
+    val kv = ((avail - gaps - 118) / 405f).coerceIn(1f, 1.45f)
+    val perf = (229 * kv).toInt()
+    val status = (91 * kv).toInt()
+    val fps = (85 * kv).toInt()
+    val baseH = avail - gaps - perf - status - fps
+    return StageColumn(kv = kv, perf = perf, status = status, fps = fps, baseTop = bottom - baseH, baseH = baseH)
 }
 
 /** حصّة اللوحات اليمنى من العرض الإضافيّ: تتّسع قليلًا ليبقى فيها النصّ الأكبر بلا اقتطاع. */
@@ -280,7 +360,9 @@ internal fun GameSpaceStage(
             CompositionLocalProvider(
                 LocalLayoutDirection provides LayoutDirection.Ltr,
                 LocalDensity provides design,
-                LocalStageExtra provides space.extra
+                LocalStageExtra provides space.extra,
+                LocalStageDrop provides space.drop,
+                LocalStageScale provides space.scale
             ) {
                 StageCanvas(data = data, actions = actions, realDensity = real, topActions = topActions)
             }
@@ -301,11 +383,12 @@ private fun StageCanvas(
 ) {
     val intro = LocalStageIntro.current
     val extra = LocalStageExtra.current
-    Box(Modifier.requiredSize((StageDesignWidth + extra).dp, StageDesignHeight.dp)) {
+    val drop = LocalStageDrop.current
+    Box(Modifier.requiredSize((StageDesignWidth + extra).dp, StageGeo.height(drop).dp)) {
         StageHeroBackdrop(
             game = data.selected,
             modifier = Modifier
-                .at(168, 0, 1504 + extra, 560)
+                .at(168, 0, 1504 + extra, StageGeo.shelfTop(drop) + 51)
                 .lobbyIntro(intro, scaleFrom = 1.04f)
         )
         StageHero(data = data, actions = actions)
@@ -315,19 +398,23 @@ private fun StageCanvas(
             realDensity = realDensity,
             topActions = topActions
         )
+        // في التخطيط المضغوط تنتقل قاعدة الحالة إلى أسفل عمود اللوحات اليمنى (داخل StageBoard).
         StageBoard(
             data = data,
-            onOpen = actions.onOptions
+            onOpen = actions.onOptions,
+            onOpenSessions = actions.onOpenSessions
         )
         StageShelf(data = data, actions = actions)
-        StageBase(
-            title = data.statusTitle,
-            detail = data.statusDetail,
-            percent = data.readinessPercent,
-            onOpen = actions.onOpenSessions,
-            modifier = Modifier
-                .at(195, 850, 1451 + extra, 62)
-                .lobbyIntro(intro, fromBelow = 40.dp, start = 0.40f)
-        )
+        if (drop == 0) {
+            StageBase(
+                title = data.statusTitle,
+                detail = data.statusDetail,
+                percent = data.readinessPercent,
+                onOpen = actions.onOpenSessions,
+                modifier = Modifier
+                    .at(195, 850, 1451 + extra, 62)
+                    .lobbyIntro(intro, fromBelow = 40.dp, start = 0.40f)
+            )
+        }
     }
 }

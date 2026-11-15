@@ -108,9 +108,11 @@ internal fun GameSpaceRailLayer(
         )
         CompositionLocalProvider(
             LocalLayoutDirection provides LayoutDirection.Ltr,
-            LocalDensity provides design
+            LocalDensity provides design,
+            LocalStageDrop provides space.drop,
+            LocalStageScale provides space.scale
         ) {
-            Box(Modifier.requiredSize((StageDesignWidth + space.extra).dp, StageDesignHeight.dp)) {
+            Box(Modifier.requiredSize((StageDesignWidth + space.extra).dp, StageGeo.height(space.drop).dp)) {
                 StageRail(current = current, onPage = onPage)
             }
         }

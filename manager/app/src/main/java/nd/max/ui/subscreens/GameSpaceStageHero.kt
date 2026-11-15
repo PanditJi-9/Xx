@@ -171,44 +171,52 @@ private val CardSheen = Brush.linearGradient(
 internal fun StageHero(data: StageData, actions: StageActions) {
     val intro = LocalStageIntro.current
     val extra = LocalStageExtra.current
+    val drop = LocalStageDrop.current
+    val boost = stageTouchBoost()
     // العرض الإضافيّ بين نصّ اللعبة ولوحات اليمين: البطل والنقاط يتوسّطانه.
     val room = extra - stageRightGrow(extra)
     val shift = room / 2
+    // أسفل منطقة البطل (= أعلى الرفّ): ٥٠٩ في اللقطة المرجعيّة، ويرتفع في التخطيط المضغوط فتقترب العناصر معه.
+    val z = StageGeo.shelfTop(drop)
+    val zone = z - 509
+    // الأيقونة الكبيرة تصغر قليلًا حين تضيق المنطقة (٠٫٨ كحدّ أدنى) وتكبر قليلًا حين تتّسع.
+    val artK = if (drop == 0) 1f else ((z - 86) / 423f).coerceIn(0.8f, 1.08f)
+    val titleTop = maxOf(96, z - 359)
     if (data.games.size > 1) {
         StageSwipeLayer(
             onStep = { delta ->
                 data.games.getOrNull(data.selectedIndex + delta)?.let { actions.onSelect(it.packageName) }
             },
-            modifier = Modifier.at(168, 40, 1040 + room, 460)
+            modifier = Modifier.at(168, 40, 1040 + room, z - 49)
         )
     }
     Box(
         modifier = Modifier
-            .at(570 + shift, -5, 560, 520)
+            .at(570 + shift, zone / 2 - 5, 560, 520)
             .lobbyIntro(intro, scaleFrom = 0.88f, start = 0.05f),
         contentAlignment = Alignment.Center
     ) {
-        HeroArt(game = data.selected, edge = ArtEdge)
+        HeroArt(game = data.selected, edge = ArtEdge * artK)
     }
     StageDots(
         count = data.games.size,
         index = if (data.selected == null) -1 else data.selectedIndex,
         modifier = Modifier
-            .at(803 + shift, 463, 140, 12)
+            .at(803 + shift, z - 46, 140, 12)
             .lobbyIntro(intro, start = 0.30f)
     )
     if (data.games.isEmpty()) {
         EmptyHero(
             onOpenLibrary = actions.onOpenLibrary,
             modifier = Modifier
-                .at(230, 150, 340, 300)
+                .at(230, titleTop, 340, minOf(300, z - 59 - titleTop))
                 .lobbyIntro(intro, fromStart = 70.dp, start = 0.10f)
         )
         return
     }
     Box(
         modifier = Modifier
-            .at(230, 150, 320, 170)
+            .at(230, titleTop, 320, z - 189 - titleTop)
             .lobbyIntro(intro, fromStart = 70.dp, start = 0.10f),
         contentAlignment = Alignment.Center
     ) {
@@ -246,7 +254,7 @@ internal fun StageHero(data: StageData, actions: StageActions) {
     data.tagline?.let { line ->
         Box(
             modifier = Modifier
-                .at(230, 322, 320, 36)
+                .at(230, z - 187, 320, 36)
                 .lobbyIntro(intro, fromStart = 70.dp, start = 0.16f),
             contentAlignment = Alignment.Center
         ) {
@@ -265,8 +273,9 @@ internal fun StageHero(data: StageData, actions: StageActions) {
         onLaunch = actions.onLaunch,
         onOptions = actions.onOptions,
         launching = data.launching,
+        boost = boost,
         modifier = Modifier
-            .at(230, 391, 340, 58)
+            .at(230, z - 118, if (boost > 1f) 430 else 340, (58 * boost).toInt())
             .lobbyIntro(intro, fromStart = 70.dp, start = 0.22f)
     )
 }
@@ -387,16 +396,19 @@ internal fun PlayRow(
     onOptions: () -> Unit,
     modifier: Modifier,
     launching: Boolean = false,
+    /** رفع مقاس الزرّين ليبقى لمسهما مريحًا حين تصغر اللوحة (١ = المقاس المرجعيّ). */
+    boost: Float = 1f,
 ) {
     val clock = LocalStageClock.current
     val playInteraction = remember { MutableInteractionSource() }
     val moreInteraction = remember { MutableInteractionSource() }
     Row(modifier, verticalAlignment = Alignment.CenterVertically) {
-        val shape = RoundedCornerShape(PlayHeight)
+        val playH = PlayHeight * boost
+        val shape = RoundedCornerShape(playH)
         Row(
             modifier = Modifier
-                .width(PlayWidth)
-                .height(PlayHeight)
+                .width(PlayWidth * boost)
+                .height(playH)
                 .lobbyPress(playInteraction, 0.96f)
                 .alpha(if (enabled) 1f else 0.5f)
                 .shadow(
@@ -421,7 +433,7 @@ internal fun PlayRow(
         ) {
             if (launching) {
                 CircularProgressIndicator(
-                    modifier = Modifier.size(PlayGlyph),
+                    modifier = Modifier.size(PlayGlyph * boost),
                     color = Color.White,
                     strokeWidth = ProgressStroke
                 )
@@ -430,7 +442,7 @@ internal fun PlayRow(
                     imageVector = Icons.Rounded.PlayArrow,
                     contentDescription = null,
                     tint = Color.White,
-                    modifier = Modifier.size(PlayGlyph)
+                    modifier = Modifier.size(PlayGlyph * boost)
                 )
             }
             Text(
@@ -445,7 +457,7 @@ internal fun PlayRow(
         Spacer(Modifier.width(30.dp))
         Box(
             modifier = Modifier
-                .size(MoreSize)
+                .size(MoreSize * boost)
                 .lobbyPress(moreInteraction, 0.90f)
                 .clip(CircleShape)
                 .background(GameSpacePalette.Plum.copy(alpha = 0.90f))
@@ -462,7 +474,7 @@ internal fun PlayRow(
                 imageVector = Icons.Rounded.MoreHoriz,
                 contentDescription = stringResource(R.string.gs_more),
                 tint = GameSpacePalette.Ink,
-                modifier = Modifier.size(PlayGlyph)
+                modifier = Modifier.size(PlayGlyph * boost)
             )
         }
     }
@@ -703,6 +715,11 @@ internal fun StageDots(count: Int, index: Int, modifier: Modifier = Modifier) {
 internal fun StageShelf(data: StageData, actions: StageActions) {
     val intro = LocalStageIntro.current
     val extra = LocalStageExtra.current
+    val drop = LocalStageDrop.current
+    val boost = stageTouchBoost()
+    // الرفّ: ٥٠٩ و١٤٥١ عرضًا في اللقطة؛ في التخطيط المضغوط يلتصق بأسفل الشاشة وينتهي قبل عمود اللوحات اليمنى.
+    val top = StageGeo.shelfTop(drop)
+    val shelfW = StageGeo.shelfWidth(drop, extra)
     val density = LocalDensity.current
     val listState = rememberLazyListState()
     LaunchedEffect(data.selectedIndex) {
@@ -717,13 +734,13 @@ internal fun StageShelf(data: StageData, actions: StageActions) {
     }
     Box(
         Modifier
-            .at(195, 509, 1451 + extra, 306)
+            .at(195, top, shelfW, StageGeo.ShelfH)
             .lobbyIntro(intro, fromBelow = 60.dp, start = 0.25f)
             .stageGlass(RoundedCornerShape(RadiusPanel))
     )
     Row(
         modifier = Modifier
-            .at(217, 520, 1405 + extra, 36)
+            .at(217, top + 11, shelfW - 46, 36)
             .lobbyIntro(intro, fromBelow = 60.dp, start = 0.28f),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(GapM)
@@ -776,7 +793,7 @@ internal fun StageShelf(data: StageData, actions: StageActions) {
     }
     LazyRow(
         modifier = Modifier
-            .at(220, 573, 1400 + extra, 214)
+            .at(220, top + 64, shelfW - 51, 214)
             .lobbyIntro(intro, fromBelow = 60.dp, start = 0.32f),
         state = listState,
         contentPadding = PaddingValues(horizontal = ShelfInset),
@@ -799,7 +816,7 @@ internal fun StageShelf(data: StageData, actions: StageActions) {
         enabled = data.selectedIndex > 0,
         onClick = { data.games.getOrNull(data.selectedIndex - 1)?.let { actions.onSelect(it.packageName) } },
         modifier = Modifier
-            .at(174, 657, 50, 50)
+            .at(199 - (50 * boost).toInt() / 2, top + 173 - (50 * boost).toInt() / 2, (50 * boost).toInt(), (50 * boost).toInt())
             .lobbyIntro(intro, start = 0.40f)
     )
     ShelfArrow(
@@ -808,7 +825,7 @@ internal fun StageShelf(data: StageData, actions: StageActions) {
         enabled = data.selectedIndex < data.games.lastIndex,
         onClick = { data.games.getOrNull(data.selectedIndex + 1)?.let { actions.onSelect(it.packageName) } },
         modifier = Modifier
-            .at(1621 + extra, 657, 50, 50)
+            .at(195 + shelfW - (50 * boost).toInt() / 2, top + 173 - (50 * boost).toInt() / 2, (50 * boost).toInt(), (50 * boost).toInt())
             .lobbyIntro(intro, start = 0.40f)
     )
 }

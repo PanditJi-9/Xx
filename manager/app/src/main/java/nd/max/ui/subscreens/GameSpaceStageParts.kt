@@ -124,6 +124,7 @@ private val PadWide = 22.dp
 private val AvatarSize = 36.dp
 private val GearIcon = 40.dp
 private val GlyphRail = 30.dp
+private val GlyphRailBig = 34.dp
 private val GlyphStatus = 30.dp
 private val RingSize = 106.dp
 private val RingLabelIcon = 26.dp
@@ -253,10 +254,12 @@ private fun batteryTone(percent: Int?, charging: Boolean): Color = when {
 internal fun StageRail(current: LobbyPage, onPage: (LobbyPage) -> Unit) {
     val intro = LocalStageIntro.current
     val clock = LocalStageClock.current
+    val drop = LocalStageDrop.current
+    val railBottom = StageGeo.height(drop)
     val frame = RoundedCornerShape(RadiusRail)
     Box(
         Modifier
-            .at(0, 24, 168, 892)
+            .at(0, 24, 168, railBottom - 49)
             .lobbyIntro(intro, fromStart = 60.dp)
             .clip(frame)
             .background(RailFill)
@@ -309,12 +312,16 @@ internal fun StageRail(current: LobbyPage, onPage: (LobbyPage) -> Unit) {
             maxLines = 1
         )
     }
-    Column(Modifier.at(14, 152, 154, 490)) {
+    // التخطيط المضغوط: بنود الشريط تتّسع لما يتيحه ارتفاع الشاشة (حتى ٩٢) فيسهل لمسها؛ المرجعيّ ٧٦/٧٨ كما هو.
+    val sectionCount = LobbyPage.entries.count { it != LobbyPage.Home && it != LobbyPage.Settings }
+    val itemH = if (drop == 0) 78 else ((railBottom - 258 - 18) / (sectionCount + 1)).coerceIn(78, 92)
+    val homeH = if (drop == 0) 76 else itemH - 2
+    Column(Modifier.at(14, 152, 154, maxOf(490, homeH + 18 + sectionCount * itemH))) {
         StageRailItem(
             labelRes = LobbyPage.Home.labelRes,
             icon = LobbyPage.Home.icon,
             active = current == LobbyPage.Home,
-            height = 76,
+            height = homeH,
             order = 0,
             onClick = { onPage(LobbyPage.Home) }
         )
@@ -326,7 +333,7 @@ internal fun StageRail(current: LobbyPage, onPage: (LobbyPage) -> Unit) {
                     labelRes = page.labelRes,
                     icon = page.icon,
                     active = current == page,
-                    height = 78,
+                    height = itemH,
                     order = index + 1,
                     onClick = { onPage(page) }
                 )
@@ -341,7 +348,7 @@ internal fun StageRail(current: LobbyPage, onPage: (LobbyPage) -> Unit) {
     )
     Box(
         modifier = Modifier
-            .at(48, 843, 64, 64)
+            .at(48, railBottom - 98, 64, 64)
             .lobbyIntro(intro, fromBelow = 30.dp, start = 0.36f)
             .lobbyPress(gearInteraction, 0.90f)
             .clip(CircleShape)
@@ -442,7 +449,7 @@ private fun StageRailItem(
             contentDescription = null,
             tint = tint,
             modifier = Modifier
-                .size(GlyphRail)
+                .size(if (LocalStageDrop.current > 0) GlyphRailBig else GlyphRail)
                 .graphicsLayer {
                     val k = 1f + 0.08f * selection
                     scaleX = k
@@ -647,32 +654,73 @@ private fun PulseLine(modifier: Modifier = Modifier) {
  * (١٢٣٦،٣٣٠، ٤١٠×٩١)، والإطارات اللحظيّة (١٢٣٦،٤٣٣، ٤١٠×٨٥). تنساب من يمين اللوحة واحدةً بعد أخرى.
  */
 @Composable
-internal fun StageBoard(data: StageData, onOpen: () -> Unit) {
+internal fun StageBoard(data: StageData, onOpen: () -> Unit, onOpenSessions: () -> Unit) {
     val intro = LocalStageIntro.current
     val extra = LocalStageExtra.current
+    val drop = LocalStageDrop.current
     // العرض الإضافيّ: الحافة اليمنى ثابتة، واللوحات تتّسع جهة اليسار بحصّةٍ محدودة ليبقى النصّ الأكبر فيها.
     val grow = stageRightGrow(extra)
-    val x = 1236 + extra - grow
+    val x = stageBoardX(extra)
     val w = 410 + grow
-    PerformanceCard(
-        data = data,
-        onOpen = onOpen,
+    if (drop == 0) {
+        PerformanceCard(
+            data = data,
+            onOpen = onOpen,
+            modifier = Modifier
+                .at(x, 87, w, 229)
+                .lobbyIntro(intro, fromStart = (-70).dp, start = 0.18f)
+        )
+        StatusCard(
+            data = data,
+            modifier = Modifier
+                .at(x, 330, w, 91)
+                .lobbyIntro(intro, fromStart = (-70).dp, start = 0.24f),
+            onOpen = onOpen
+        )
+        FpsCard(
+            fps = data.fps,
+            modifier = Modifier
+                .at(x, 433, w, 85)
+                .lobbyIntro(intro, fromStart = (-70).dp, start = 0.30f)
+        )
+        return
+    }
+    // التخطيط المضغوط (هاتف عريض): العمود يمتدّ إلى أسفل الشاشة، واللوحات الثلاث تتمدّد رأسيًّا بمعامل واحد،
+    // وتسكن تحتها قاعدة الحالة بدل شريطها السفليّ العريض.
+    val col = stageColumn(drop)
+    val statusY = 87 + col.perf + 14
+    val fpsY = statusY + col.status + 12
+    CompositionLocalProvider(LocalStageStretch provides col.kv) {
+        PerformanceCard(
+            data = data,
+            onOpen = onOpen,
+            modifier = Modifier
+                .at(x, 87, w, col.perf)
+                .lobbyIntro(intro, fromStart = (-70).dp, start = 0.18f)
+        )
+        StatusCard(
+            data = data,
+            modifier = Modifier
+                .at(x, statusY, w, col.status)
+                .lobbyIntro(intro, fromStart = (-70).dp, start = 0.24f),
+            onOpen = onOpen
+        )
+        FpsCard(
+            fps = data.fps,
+            modifier = Modifier
+                .at(x, fpsY, w, col.fps)
+                .lobbyIntro(intro, fromStart = (-70).dp, start = 0.30f)
+        )
+    }
+    StageBase(
+        title = data.statusTitle,
+        detail = data.statusDetail,
+        percent = data.readinessPercent,
+        onOpen = onOpenSessions,
+        compact = true,
         modifier = Modifier
-            .at(x, 87, w, 229)
-            .lobbyIntro(intro, fromStart = (-70).dp, start = 0.18f)
-    )
-    StatusCard(
-        data = data,
-        modifier = Modifier
-            .at(x, 330, w, 91)
-            .lobbyIntro(intro, fromStart = (-70).dp, start = 0.24f),
-        onOpen = onOpen
-    )
-    FpsCard(
-        fps = data.fps,
-        modifier = Modifier
-            .at(x, 433, w, 85)
-            .lobbyIntro(intro, fromStart = (-70).dp, start = 0.30f)
+            .at(x, col.baseTop, w, col.baseH)
+            .lobbyIntro(intro, fromBelow = 40.dp, start = 0.36f)
     )
 }
 
@@ -700,7 +748,8 @@ internal fun PerformanceCard(data: StageData, onOpen: () -> Unit, modifier: Modi
                 role = Role.Button,
                 onClick = onOpen
             )
-            .padding(start = PadCard, top = 16.dp, end = 10.dp)
+            .padding(start = PadCard, top = 16.dp, end = 10.dp),
+        verticalArrangement = if (LocalStageStretch.current > 1f) Arrangement.SpaceEvenly else Arrangement.Top
     ) {
         Row(
             modifier = Modifier
@@ -1234,6 +1283,8 @@ private fun StageBars(active: Boolean, modifier: Modifier = Modifier) {
  * قاعدة الحالة (١٩٥،٨٥٠، ١٤٥١×٦٢): برق متوهّج، فاصل، حكم آخر جلسة (أو الجاهزية)، وشريط نسبة بشرائح مائلة
  * تمتلئ بعدّ تصاعديّ وتعبرها لمعة. [detail] سطر ثانٍ **اختياريّ**: يظهر حين يكون هناك شرط ناقص يُقال،
  * ويُسقط حين تكتمل التهيئة. النسبة هي الجاهزية الحقيقيّة لا رقمًا مرسومًا.
+ * [compact]: في التخطيط المضغوط (هاتف عريض) تسكن أسفل عمود اللوحات اليمنى بسطرين: البرق والحكم والنسبة فوق،
+ * والشريط بعرض اللوح تحتها.
  */
 @Composable
 internal fun StageBase(
@@ -1242,11 +1293,73 @@ internal fun StageBase(
     percent: Int,
     onOpen: () -> Unit,
     modifier: Modifier = Modifier,
+    compact: Boolean = false,
 ) {
     val target = percent.coerceIn(0, 100)
     val level = rememberCountUp(target / 100f)
-    val clock = LocalStageClock.current
     val interaction = remember { MutableInteractionSource() }
+    if (compact) {
+        val card = RoundedCornerShape(RadiusCard)
+        Column(
+            modifier = modifier
+                .lobbyPress(interaction, 0.985f)
+                .clip(card)
+                .background(GlassFill)
+                .drawBehind {
+                    drawRect(
+                        Brush.horizontalGradient(
+                            listOf(GameSpacePalette.Violet.copy(alpha = 0.14f), Color.Transparent)
+                        )
+                    )
+                }
+                .border(StrokeFine, GlassBorder, card)
+                .clickable(
+                    interactionSource = interaction,
+                    indication = null,
+                    role = Role.Button,
+                    onClick = onOpen
+                )
+                .padding(start = PadCard, end = PadCard),
+            verticalArrangement = Arrangement.Center
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(GapM)
+            ) {
+                BaseBolt()
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = title,
+                        color = GameSpacePalette.Ink,
+                        fontSize = 21.sp,
+                        fontWeight = FontWeight.Medium,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    if (detail.isNotBlank()) {
+                        Text(
+                            text = detail,
+                            color = GameSpacePalette.VioletSoft,
+                            fontSize = 15.sp,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                }
+                Text(
+                    text = stringResource(R.string.gs_percent_value, target),
+                    color = GameSpacePalette.Ink,
+                    fontSize = 26.sp,
+                    fontFamily = DisplayFontFamily,
+                    fontWeight = FontWeight.SemiBold,
+                    maxLines = 1
+                )
+            }
+            Spacer(Modifier.height(GapM))
+            BaseBar(target = target, level = level, modifier = Modifier.fillMaxWidth().height(BarHeight))
+        }
+        return
+    }
     Row(
         modifier = modifier
             .lobbyPress(interaction, 0.985f)
@@ -1269,23 +1382,7 @@ internal fun StageBase(
             .padding(start = 47.dp, end = 132.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(
-            imageVector = Icons.Rounded.Bolt,
-            contentDescription = null,
-            tint = GameSpacePalette.VioletSoft,
-            modifier = Modifier
-                .size(BaseIcon)
-                .drawBehind {
-                    drawCircle(
-                        brush = Brush.radialGradient(
-                            colors = listOf(GameSpacePalette.Violet.copy(alpha = 0.40f), Color.Transparent),
-                            center = center,
-                            radius = size.minDimension * 1.1f
-                        ),
-                        radius = size.minDimension * 1.1f
-                    )
-                }
-        )
+        BaseBolt()
         Spacer(Modifier.width(33.dp))
         StageDivider(BaseIcon)
         Spacer(Modifier.width(20.dp))
@@ -1308,57 +1405,7 @@ internal fun StageBase(
                 )
             }
         }
-        Box(
-            modifier = Modifier
-                .size(width = BarWidth, height = BarHeight)
-                .semantics {
-                    progressBarRangeInfo = ProgressBarRangeInfo(target / 100f, 0f..1f)
-                }
-                .drawWithCache {
-                    val gap = size.width * 0.006f
-                    val skew = size.height * 0.55f
-                    val segment = (size.width - skew - gap * (BarCells - 1)) / BarCells
-                    val cells = Array(BarCells) { i ->
-                        val x = i * (segment + gap)
-                        Path().apply {
-                            moveTo(x + skew, 0f)
-                            lineTo(x + skew + segment, 0f)
-                            lineTo(x + segment, size.height)
-                            lineTo(x, size.height)
-                            close()
-                        }
-                    }
-                    val fill = Brush.horizontalGradient(
-                        colors = listOf(
-                            GameSpacePalette.VioletDeep,
-                            GameSpacePalette.Violet,
-                            GameSpacePalette.VioletSoft
-                        ),
-                        startX = 0f,
-                        endX = size.width
-                    )
-                    onDrawBehind {
-                        val filledF = BarCells * level.value
-                        val whole = filledF.toInt()
-                        val frac = filledF - whole
-                        val glint = ((clock.value * BaseGlintCycles) % 1f) * (whole + 8) - 4f
-                        for (i in 0 until BarCells) {
-                            if (i < whole) {
-                                drawPath(path = cells[i], brush = fill)
-                                val w = 1f - abs(i - glint) / 3f
-                                if (w > 0f) {
-                                    drawPath(path = cells[i], color = Color.White.copy(alpha = 0.30f * w))
-                                }
-                            } else {
-                                drawPath(path = cells[i], color = Color.White.copy(alpha = 0.08f))
-                                if (i == whole && frac > 0.04f) {
-                                    drawPath(path = cells[i], brush = fill, alpha = frac)
-                                }
-                            }
-                        }
-                    }
-                }
-        )
+        BaseBar(target = target, level = level, modifier = Modifier.size(width = BarWidth, height = BarHeight))
         Spacer(Modifier.width(21.dp))
         Text(
             text = stringResource(R.string.gs_percent_value, target),
@@ -1369,4 +1416,82 @@ internal fun StageBase(
             maxLines = 1
         )
     }
+}
+
+/** البرق المتوهّج أمام الحكم، مشترك بين التخطيطين. */
+@Composable
+private fun BaseBolt() {
+    Icon(
+        imageVector = Icons.Rounded.Bolt,
+        contentDescription = null,
+        tint = GameSpacePalette.VioletSoft,
+        modifier = Modifier
+            .size(BaseIcon)
+            .drawBehind {
+                drawCircle(
+                    brush = Brush.radialGradient(
+                        colors = listOf(GameSpacePalette.Violet.copy(alpha = 0.40f), Color.Transparent),
+                        center = center,
+                        radius = size.minDimension * 1.1f
+                    ),
+                    radius = size.minDimension * 1.1f
+                )
+            }
+    )
+}
+
+/** شريط الجاهزية بشرائحه المائلة: يمتلئ بعدّ تصاعديّ وتعبره لمعة؛ عرضه وارتفاعه من [modifier]. */
+@Composable
+private fun BaseBar(target: Int, level: State<Float>, modifier: Modifier) {
+    val clock = LocalStageClock.current
+    Box(
+        modifier = modifier
+            .semantics {
+                progressBarRangeInfo = ProgressBarRangeInfo(target / 100f, 0f..1f)
+            }
+            .drawWithCache {
+                val gap = size.width * 0.006f
+                val skew = size.height * 0.55f
+                val segment = (size.width - skew - gap * (BarCells - 1)) / BarCells
+                val cells = Array(BarCells) { i ->
+                    val x = i * (segment + gap)
+                    Path().apply {
+                        moveTo(x + skew, 0f)
+                        lineTo(x + skew + segment, 0f)
+                        lineTo(x + segment, size.height)
+                        lineTo(x, size.height)
+                        close()
+                    }
+                }
+                val fill = Brush.horizontalGradient(
+                    colors = listOf(
+                        GameSpacePalette.VioletDeep,
+                        GameSpacePalette.Violet,
+                        GameSpacePalette.VioletSoft
+                    ),
+                    startX = 0f,
+                    endX = size.width
+                )
+                onDrawBehind {
+                    val filledF = BarCells * level.value
+                    val whole = filledF.toInt()
+                    val frac = filledF - whole
+                    val glint = ((clock.value * BaseGlintCycles) % 1f) * (whole + 8) - 4f
+                    for (i in 0 until BarCells) {
+                        if (i < whole) {
+                            drawPath(path = cells[i], brush = fill)
+                            val w = 1f - abs(i - glint) / 3f
+                            if (w > 0f) {
+                                drawPath(path = cells[i], color = Color.White.copy(alpha = 0.30f * w))
+                            }
+                        } else {
+                            drawPath(path = cells[i], color = Color.White.copy(alpha = 0.08f))
+                            if (i == whole && frac > 0.04f) {
+                                drawPath(path = cells[i], brush = fill, alpha = frac)
+                            }
+                        }
+                    }
+                }
+            }
+    )
 }
