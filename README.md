@@ -723,6 +723,9 @@ require stays in [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md), which remai
 | [VMTouch](https://github.com/hoytech/vmtouch) | (c) 2009-2023 Doug Hoyte and contributors | BSD-3-Clause |
 | [COPG](https://github.com/AlirezaParsi/COPG) | AlirezaParsi | Apache-2.0 |
 | [Islandify](https://github.com/bughunter11/Islandify) | (c) 2026 bughunter11 | MIT |
+| [Anthropic Skills — frontend-design](https://github.com/anthropics/skills) | Anthropic | Apache-2.0 |
+| [taste-skill — design-taste-frontend](https://github.com/Leonxlnx/taste-skill) | (c) 2026 Leonxlnx | MIT |
+| [OpenCode Skills — writing-for-agents](https://github.com/tanveerabid/opencode-skills) | (c) 2026 Tanveer Abid | MIT |
 
 <sub><b>Missing from this list?</b> If a work of yours ends up used here and is not named above,
 message me privately — or find me in the [group](https://t.me/ROBINHOOD_GROUP_RODIN) — and I will add it.</sub>

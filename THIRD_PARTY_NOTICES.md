@@ -28,6 +28,14 @@
 
 فكرة تنظيم السجلّ — تدوير متعدّد الأجيال، وسجلّ التفصيل خلف `debugmode` — مأخوذة من AZenith (commit `95df79b`، Apache-2.0)، ولا شيفرة منقولة منه؛ التنفيذ في `SystemLogger.c` و`FileHandler.c` من تأليفنا.
 
+**مهارات وكلاء البرمجة** (`.opencode/skills/`) — نصوص إرشادية للوكيل داخل المستودع، **لا يُشحن منها حرف في التطبيق**؛ وتُسجَّل هنا لأنها تدخل الشجرة وتُوزَّع معها. نصّ كلّ رخصة محفوظ في ملفّها كما هو، فلا يُنسخ إلى هذا الملفّ (§2):
+
+| المكوّن | ما استُعمل منه | الترخيص | حقوق النشر |
+| --- | --- | --- | --- |
+| **Anthropic Skills — frontend-design** `github.com/anthropics/skills` | مهارة `frontend-design` كما هي: `SKILL.md` + `LICENSE.txt` في `.opencode/skills/frontend-design/` — توجيه تصميم للوكيل (اتجاه بصريّ، تيبوغرافيا، تجنّب القوالب) | Apache-2.0 | Anthropic؛ و`LICENSE.txt` المنقول هو نصّ Apache-2.0 القياسي بلا سطر حقوق ناشرٍ مفرد (قِيس: `grep -i copyright` لا يُصيب إلا صياغة التعريفات) |
+| **taste-skill — design-taste-frontend** `github.com/Leonxlnx/taste-skill` | **مُكيَّفة لا منسوخة**: `.opencode/skills/design-taste-frontend/SKILL.md` صياغة مختصرة (≈١١٠ أسطر) تستبقي الحكم الجماليّ المضادّ للقالب فقط؛ وأُسقطت أدواتها الشبكية (Node/Chromium) و٣٥ ميغابايت صور أمثلة، وصُرِّح بتعارض قاعدتها «لا بنفسجيّ» مع هويّة Game Space | MIT | Copyright (c) 2026 Leonxlnx |
+| **OpenCode Skills — writing-for-agents** `github.com/tanveerabid/opencode-skills` | مهارة `writing-for-agents` (`SKILL.md` + `SKILL-MECHANICS.md`) في `.opencode/skills/writing-for-agents/` — كتابة مستندات للوكلاء ومؤشّرات السياق؛ اختيرت وحدها من ٤٨ مهارة لأن غيرها مكرّر أو غير قابل للتشغيل هنا | MIT | Copyright (c) 2026 Tanveer Abid |
+
 ## 2. الإشعارات المحفوظة في ملفّاتها — ولا تُنسخ هنا
 
 - **Apache-2.0 محفوظ كما هو في ٢٨١ ملفًّا** داخل `manager/app` يحمل في ترويسته اسم مؤلّف خارجي
