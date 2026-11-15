@@ -55,7 +55,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -65,59 +64,19 @@ import nd.max.ui.component.AppIconImage
 import nd.max.ui.component.lobbyPress
 
 /*
- * غلاف اللوبي: ما يبقى ثابتًا فوق صفحات المُصفِّح الرأسيّ.
+ * غلاف اللوبي — بعد تحويل الأفقيّ إلى «كوكبيت» (جولة ٢٩٥) بقي في هذا الملفّ ما يخصّ التخطيط
+ * العموديّ وحده: الشريط السفليّ، وصفحة «الرئيسية» العموديّة، وقاعدة الحالة.
  *
- *  - أفقيًّا: الشريط الجانبيّ المرسوم بإحداثيات اللقطة نفسها وبالنسبة نفسها التي تُرسم بها «الرئيسية»،
- *    فيقع حيث تقع في اللقطة تمامًا ولا يتحرّك مع السحب. صفحات الأقسام تُزاح عن حافته.
  *  - عموديًّا (تخطيط بديل): شريط سفليّ بالأقسام نفسها، و«الرئيسية» عمود واحد من الكتل ذاتها.
+ *  - أفقيًّا: لا شيء هنا — الشريط والمسرح والآلة والرفّ في `GameSpaceCockpit.kt` بوحدات dp حقيقية.
  */
 
-private const val RailRightEdge = 168
 private const val ShellMaxFontScale = 1.15f
 
 private val NavHairline = 1.dp
 private val PortraitHeroRadius = 28.dp
 private val PortraitCardRadius = 20.dp
 private val PortraitBarRadius = 3.dp
-
-/** هندسة اللوحة الثابتة داخل مساحة معيّنة: النسبة، وحافة الشريط اليمنى لإزاحة صفحات الأقسام عنها. */
-internal class StageFrame(val scale: Float, val railEnd: Dp)
-
-internal fun stageFrame(width: Dp, height: Dp): StageFrame {
-    val space = stageSpace(width, height)
-    val left = (width.value - (StageDesignWidth + space.extra) * space.scale) / 2f
-    return StageFrame(scale = space.scale, railEnd = (left + RailRightEdge * space.scale).dp)
-}
-
-/**
- * الشريط الجانبيّ فوق المُصفِّح. لا يعترض اللمس خارج بنوده، فالسحب الرأسيّ على الصفحة يصل إلى
- * المُصفِّح، ولمس بند ينقله إلى صفحته.
- */
-@Composable
-internal fun GameSpaceRailLayer(
-    current: LobbyPage,
-    onPage: (LobbyPage) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    BoxWithConstraints(modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        val real = LocalDensity.current
-        val space = stageSpace(maxWidth, maxHeight)
-        val design = Density(
-            density = real.density * space.scale,
-            fontScale = stageFontScale(real.fontScale, space.scale)
-        )
-        CompositionLocalProvider(
-            LocalLayoutDirection provides LayoutDirection.Ltr,
-            LocalDensity provides design,
-            LocalStageDrop provides space.drop,
-            LocalStageScale provides space.scale
-        ) {
-            Box(Modifier.requiredSize((StageDesignWidth + space.extra).dp, StageGeo.height(space.drop).dp)) {
-                StageRail(current = current, onPage = onPage)
-            }
-        }
-    }
-}
 
 internal val PortraitNavHeight = 64.dp
 private val PortraitHeroHeight = 340.dp

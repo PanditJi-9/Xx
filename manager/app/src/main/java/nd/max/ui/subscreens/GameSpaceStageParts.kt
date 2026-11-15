@@ -110,8 +110,6 @@ import nd.max.ui.theme.DisplayFontFamily
  *    أعمدة الإطارات)، فلا إعادة تركيب أثناء الحركة؛ وكلّه ساكن إن أوقف النظام الأنيميشن.
  */
 
-private val RadiusRail = 40.dp
-private val RadiusItem = 16.dp
 private val RadiusCard = 24.dp
 private val StrokeFine = 1.dp
 private val StrokeFirm = 1.5.dp
@@ -122,9 +120,6 @@ private val GapL = 24.dp
 private val PadCard = 22.dp
 private val PadWide = 22.dp
 private val AvatarSize = 36.dp
-private val GearIcon = 40.dp
-private val GlyphRail = 30.dp
-private val GlyphRailBig = 34.dp
 private val GlyphStatus = 30.dp
 private val RingSize = 106.dp
 private val RingLabelIcon = 26.dp
@@ -154,14 +149,8 @@ internal val GlassBorder = Brush.linearGradient(
 internal val GlassFill = Brush.verticalGradient(
     listOf(GameSpacePalette.Glass.copy(alpha = 0.80f), GameSpacePalette.GlassDeep.copy(alpha = 0.88f))
 )
-private val RailFill = Brush.verticalGradient(
-    listOf(GameSpacePalette.Glass.copy(alpha = 0.86f), GameSpacePalette.GlassDeep.copy(alpha = 0.93f))
-)
 internal val ActiveFill = Brush.horizontalGradient(
     listOf(GameSpacePalette.VioletDeep.copy(alpha = 0.65f), GameSpacePalette.Plum.copy(alpha = 0.92f))
-)
-private val BrandBrush = Brush.linearGradient(
-    listOf(Color.White, GameSpacePalette.Lavender, GameSpacePalette.VioletSoft)
 )
 private val AvatarBrush = Brush.linearGradient(
     listOf(GameSpacePalette.VioletSoft, GameSpacePalette.VioletDeep)
@@ -221,7 +210,7 @@ private fun rememberCountUp(target: Float): State<Float> {
 
 /** نقطة نابضة بلون [color]؛ تقرأ الساعة في الرسم فقط. */
 @Composable
-private fun PulseDot(color: Color, modifier: Modifier = Modifier) {
+internal fun PulseDot(color: Color, modifier: Modifier = Modifier) {
     val clock = LocalStageClock.current
     Box(
         modifier.drawBehind {
@@ -236,7 +225,7 @@ private fun PulseDot(color: Color, modifier: Modifier = Modifier) {
 }
 
 /** نبرة البطارية: الأخضر عاديّ، البرتقاليّ منخفض، الأحمر حرج، «—» رماديّ حين لا قراءة. */
-private fun batteryTone(percent: Int?, charging: Boolean): Color = when {
+internal fun batteryTone(percent: Int?, charging: Boolean): Color = when {
     percent == null -> GameSpacePalette.Muted
     charging -> GameSpacePalette.Mint
     percent <= 10 -> GameSpacePalette.Magenta
@@ -250,230 +239,6 @@ private fun batteryTone(percent: Int?, charging: Boolean): Color = when {
  *
  * ثابت فوق كل الصفحات: [current] الصفحة الظاهرة فيُضاء بندها بانتقال، ولمس أي بند ينقل المُصفِّح الرأسيّ
  * إلى صفحته — السحب واللمس طريقان إلى المكان نفسه.
- */
-@Composable
-internal fun StageRail(current: LobbyPage, onPage: (LobbyPage) -> Unit) {
-    val intro = LocalStageIntro.current
-    val clock = LocalStageClock.current
-    val drop = LocalStageDrop.current
-    val railBottom = StageGeo.height(drop)
-    val frame = RoundedCornerShape(RadiusRail)
-    Box(
-        Modifier
-            .at(0, 24, 168, railBottom - 49)
-            .lobbyIntro(intro, fromStart = 60.dp)
-            .clip(frame)
-            .background(RailFill)
-            .drawBehind {
-                drawRect(
-                    Brush.radialGradient(
-                        colors = listOf(GameSpacePalette.Violet.copy(alpha = 0.22f), Color.Transparent),
-                        center = Offset(size.width * 0.5f, 0f),
-                        radius = size.width * 1.4f
-                    )
-                )
-                drawRect(
-                    Brush.radialGradient(
-                        colors = listOf(GameSpacePalette.Magenta.copy(alpha = 0.09f), Color.Transparent),
-                        center = Offset(size.width * 0.5f, size.height),
-                        radius = size.width * 1.3f
-                    )
-                )
-            }
-            .border(StrokeFine, GlassBorder, frame)
-    )
-    Box(
-        modifier = Modifier
-            .at(0, 40, 168, 90)
-            .lobbyIntro(intro, scaleFrom = 0.7f, start = 0.04f)
-            .drawBehind {
-                val breath = stageWave(clock.value, 3)
-                drawCircle(
-                    brush = Brush.radialGradient(
-                        colors = listOf(
-                            GameSpacePalette.VioletSoft.copy(alpha = 0.26f + 0.18f * breath),
-                            Color.Transparent
-                        ),
-                        center = center,
-                        radius = size.minDimension * (0.66f + 0.08f * breath)
-                    ),
-                    radius = size.minDimension * 0.76f
-                )
-            },
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = stringResource(R.string.gs_brand_mark),
-            style = TextStyle(
-                brush = BrandBrush,
-                fontSize = 52.sp,
-                fontFamily = DisplayFontFamily,
-                fontWeight = FontWeight.Black
-            ),
-            maxLines = 1
-        )
-    }
-    // التخطيط المضغوط: بنود الشريط تتّسع لما يتيحه ارتفاع الشاشة (حتى ٩٢) فيسهل لمسها؛ المرجعيّ ٧٦/٧٨ كما هو.
-    val sectionCount = LobbyPage.entries.count { it != LobbyPage.Home && it != LobbyPage.Settings }
-    val itemH = if (drop == 0) 78 else ((railBottom - 258 - 18) / (sectionCount + 1)).coerceIn(78, 92)
-    val homeH = if (drop == 0) 76 else itemH - 2
-    Column(Modifier.at(14, 152, 154, maxOf(490, homeH + 18 + sectionCount * itemH))) {
-        StageRailItem(
-            labelRes = LobbyPage.Home.labelRes,
-            icon = LobbyPage.Home.icon,
-            active = current == LobbyPage.Home,
-            height = homeH,
-            order = 0,
-            onClick = { onPage(LobbyPage.Home) }
-        )
-        Spacer(Modifier.height(18.dp))
-        LobbyPage.entries
-            .filter { it != LobbyPage.Home && it != LobbyPage.Settings }
-            .forEachIndexed { index, page ->
-                StageRailItem(
-                    labelRes = page.labelRes,
-                    icon = page.icon,
-                    active = current == page,
-                    height = itemH,
-                    order = index + 1,
-                    onClick = { onPage(page) }
-                )
-            }
-    }
-    val gearActive = current == LobbyPage.Settings
-    val gearInteraction = remember { MutableInteractionSource() }
-    val gearSelection by animateFloatAsState(
-        targetValue = if (gearActive) 1f else 0f,
-        animationSpec = tween(durationMillis = 260),
-        label = "railGearSelection"
-    )
-    Box(
-        modifier = Modifier
-            .at(48, railBottom - 98, 64, 64)
-            .lobbyIntro(intro, fromBelow = 30.dp, start = 0.36f)
-            .lobbyPress(gearInteraction, 0.90f)
-            .clip(CircleShape)
-            .drawBehind {
-                if (gearSelection > 0.01f) {
-                    val rim = StrokeFirm.toPx()
-                    drawCircle(brush = ActiveFill, alpha = gearSelection)
-                    drawCircle(
-                        color = GameSpacePalette.VioletSoft.copy(alpha = 0.85f * gearSelection),
-                        radius = size.minDimension / 2f - rim / 2f,
-                        style = Stroke(width = rim)
-                    )
-                }
-            }
-            .selectable(
-                selected = gearActive,
-                interactionSource = gearInteraction,
-                indication = null,
-                role = Role.Tab,
-                onClick = { onPage(LobbyPage.Settings) }
-            ),
-        contentAlignment = Alignment.Center
-    ) {
-        Icon(
-            imageVector = LobbyPage.Settings.icon,
-            contentDescription = stringResource(R.string.gs_nav_settings),
-            tint = lerp(GameSpacePalette.Ink.copy(alpha = 0.80f), Color.White, gearSelection),
-            modifier = Modifier
-                .size(GearIcon)
-                .graphicsLayer { rotationZ = 90f * gearSelection }
-        )
-    }
-}
-
-@Composable
-private fun StageRailItem(
-    labelRes: Int,
-    icon: ImageVector,
-    active: Boolean,
-    height: Int,
-    order: Int,
-    onClick: () -> Unit,
-) {
-    val intro = LocalStageIntro.current
-    val interaction = remember { MutableInteractionSource() }
-    val selection by animateFloatAsState(
-        targetValue = if (active) 1f else 0f,
-        animationSpec = tween(durationMillis = 260),
-        label = "railSelection"
-    )
-    val shape = RoundedCornerShape(RadiusItem)
-    val tint = lerp(GameSpacePalette.Ink.copy(alpha = 0.80f), Color.White, selection)
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(height.dp)
-            .lobbyIntro(intro, fromStart = 44.dp, start = 0.08f + 0.05f * order)
-            .lobbyPress(interaction, 0.95f)
-            .clip(shape)
-            .drawBehind {
-                if (selection > 0.01f) {
-                    val rim = StrokeFirm.toPx()
-                    val radius = RadiusItem.toPx()
-                    drawRoundRect(
-                        brush = ActiveFill,
-                        cornerRadius = CornerRadius(radius),
-                        alpha = selection
-                    )
-                    drawRoundRect(
-                        color = GameSpacePalette.VioletSoft.copy(alpha = 0.85f * selection),
-                        topLeft = Offset(rim / 2f, rim / 2f),
-                        size = Size(size.width - rim, size.height - rim),
-                        cornerRadius = CornerRadius(radius - rim / 2f),
-                        style = Stroke(width = rim)
-                    )
-                    val barHeight = size.height * 0.46f * selection
-                    drawRoundRect(
-                        color = GameSpacePalette.Lavender,
-                        topLeft = Offset(0f, (size.height - barHeight) / 2f),
-                        size = Size(rim * 2.4f, barHeight),
-                        cornerRadius = CornerRadius(rim)
-                    )
-                }
-            }
-            .selectable(
-                selected = active,
-                interactionSource = interaction,
-                indication = null,
-                role = Role.Tab,
-                onClick = onClick
-            )
-            .padding(start = 14.dp, end = 4.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(GapS)
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = tint,
-            modifier = Modifier
-                .size(if (LocalStageDrop.current > 0) GlyphRailBig else GlyphRail)
-                .graphicsLayer {
-                    val k = 1f + 0.08f * selection
-                    scaleX = k
-                    scaleY = k
-                }
-        )
-        Text(
-            text = stringResource(labelRes),
-            color = tint,
-            fontSize = 17.sp,
-            lineHeight = 20.sp,
-            fontWeight = if (active) FontWeight.SemiBold else FontWeight.Normal,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.weight(1f)
-        )
-    }
-}
-
-/**
- * شريط الحالة العلويّ: الساعة والتاريخ يسارًا (x=٢٠٠)، واتّصال + بطارية + نسبة + صورة «M» يمينًا.
- * أزرار اللوبي (استكشاف/مفضّلة/سجلّ/إغلاق) تُوضع بين الطرفين بمقاسها **الفعليّ** — بإعادة
- * `LocalDensity` الأصلي داخل منطقتها — فتبقى قابلة للّمس مهما صغّرت اللوحة.
  */
 @Composable
 internal fun StageStatusBar(
@@ -833,7 +598,7 @@ private fun LivePill() {
  * بوحدة أصغر. فوق ٨٢٪ يميل اللون نحو الأحمر/البرتقاليّ ([warn]). الغائب بلا قوس (ADR-07).
  */
 @Composable
-private fun StageRing(
+internal fun StageRing(
     progress: Float?,
     value: String,
     label: String,
@@ -1190,7 +955,7 @@ internal fun FpsCard(fps: StageFps, modifier: Modifier) {
  * أقلّ من عيّنتين = خطّ أساس متقطّع لا منحنى مخترع.
  */
 @Composable
-private fun StageSparkline(values: List<Float>, live: Boolean, modifier: Modifier = Modifier) {
+internal fun StageSparkline(values: List<Float>, live: Boolean, modifier: Modifier = Modifier) {
     val clock = LocalStageClock.current
     Canvas(modifier) {
         if (values.size < 2) {
