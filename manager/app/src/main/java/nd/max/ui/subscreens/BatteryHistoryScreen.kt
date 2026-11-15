@@ -612,6 +612,26 @@ fun BatteryHistoryScreen(navController: NavHostController) {
                         )
                     }
                 )
+                // القدرة من الدالّة الواحدة `ChargeCurve.watts` — لا حساب ثانٍ هنا،
+                // وغياب الجهد أو التيار يعني غياب الصفّ لا صفرًا (ADR-07).
+                latest?.let { sample ->
+                    ChargeCurve.watts(sample)?.let { watts ->
+                        MaxGroupDivider()
+                        MaxRow(
+                            title = stringResource(R.string.battery_history_power),
+                            trailing = {
+                                Text(
+                                    text = stringResource(
+                                        R.string.battery_history_power_value,
+                                        String.format(Locale.getDefault(), "%.1f", watts)
+                                    ),
+                                    style = MonoValueStyleSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        )
+                    }
+                }
                 latest?.voltageMv?.let { voltage ->
                     MaxGroupDivider()
                     MaxRow(

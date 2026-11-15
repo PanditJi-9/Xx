@@ -38,6 +38,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import nd.max.R
@@ -118,6 +119,12 @@ private fun ThreadRow(thread: ThreadTime, total: Long, ticksPerSecond: Long?) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
+                text = stringResource(R.string.processmgr_threads_tid, thread.tid),
+                // `bodySmall` لا `labelSmall`: أرضية النصّ في المستودع ١٢sp، وlabelSmall ١١.
+                style = MaterialTheme.typography.bodySmall,
+                color = colors.onSurfaceVariant
+            )
+            Text(
                 text = thread.name,
                 style = MaterialTheme.typography.bodySmall,
                 maxLines = 1,
@@ -126,7 +133,8 @@ private fun ThreadRow(thread: ThreadTime, total: Long, ticksPerSecond: Long?) {
             )
             Text(
                 text = seconds,
-                style = MaterialTheme.typography.bodySmall,
+                // أرقام بعرض ثابت فتنتظم في عمود واحد تحت بعضها.
+                style = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
                 color = colors.onSurfaceVariant
             )
             Text(

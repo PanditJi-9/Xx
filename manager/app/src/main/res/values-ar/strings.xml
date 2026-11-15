@@ -1904,6 +1904,7 @@
     <string name="processmgr_threads_caption">زمن المعالج لكل خيط، من /proc. والحصة من زمن معالج هذه العملية نفسها، لا من زمن الجهاز كلّه.</string>
     <string name="processmgr_threads_seconds">%1$s ث</string>
     <string name="processmgr_threads_share">%1$d%%</string>
+    <string name="processmgr_threads_tid">معرّف %1$d</string>
     <string name="processmgr_detail_cgroup">المجموعة</string>
     <string name="processmgr_detail_ppid">العملية الأمّ</string>
     <string name="processmgr_detail_state">الحالة</string>
@@ -4259,6 +4260,8 @@
     <string name="battery_history_voltage_value">%1$s mV</string>
     <string name="battery_history_temperature">الحرارة</string>
     <string name="battery_history_temperature_value">%1$s °C</string>
+    <string name="battery_history_power">القدرة</string>
+    <string name="battery_history_power_value">%1$s واط</string>
     <string name="battery_history_percent">%1$d%%</string>
     <string name="battery_history_empty_title">لا نقاط في هذه الفترة</string>
     <string name="battery_history_empty_detail">فعّل التسجيل في الخلفية أدناه، أو عُد إلى هذا السطح بعد أوّل عيّنة.</string>
