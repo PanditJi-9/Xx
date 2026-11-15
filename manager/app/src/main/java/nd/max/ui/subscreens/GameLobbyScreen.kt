@@ -11,12 +11,14 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.displayCutoutPadding
@@ -33,6 +35,7 @@ import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.History
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.Star
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
@@ -68,8 +71,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -113,7 +119,6 @@ import nd.max.ui.component.LobbyPalette
 import nd.max.ui.component.LobbyRoundButton
 import nd.max.ui.component.LobbySnapSpring
 import nd.max.ui.component.LobbyStatusCapsule
-import nd.max.ui.component.LobbyTopTabs
 import nd.max.ui.component.LobbyWindowEffect
 import nd.max.ui.component.LocalLobbySounds
 import nd.max.ui.component.lobbyIntro
@@ -125,6 +130,7 @@ import nd.max.ui.component.rememberLobbyMemory
 import nd.max.ui.component.rememberLobbySounds
 import nd.max.ui.component.rememberLobbyTone
 import nd.max.ui.design.MaxDuration
+import nd.max.ui.design.MaxSize
 import nd.max.ui.design.MaxSpace
 import nd.max.ui.gamespace.CommandPalette
 import nd.max.ui.gamespace.GameSpaceSkin
@@ -156,10 +162,12 @@ private val GameSpaceWideStage = 720.dp
 /** عرض عمود اللوحة — ٣٠٠dp ≈ ٢٣٪ من ١٢٨٠dp كما في اللقطة. */
 private val GameSpaceBoardWidth = 300.dp
 
-/* عتبات الشريط العلويّ: الساعة والتبويبات تظهران حين يُوجد لهما مكان حقيقيّ، والشعار في كل عرض. */
-private const val GameSpaceBrandCompactDp = 760
-private const val GameSpaceClockWidthDp = 900
-private const val GameSpaceTabsWidthDp = 1100
+/** العلامة البنفسجية أمام عنوان القسم، نفسها نتوء «Popular Games» في الرئيسية. */
+private val SectionNotchWidth = 4.dp
+private val SectionNotchHeight = 22.dp
+
+/* كبسولة الحالة في شريط الأقسام تظهر حين يتّسع العرض لها بجوار العنوان والأزرار. */
+private const val SectionCapsuleWidthDp = 900
 
 /** عمود المعلومات والحلقة القديمة يوجّهان إضاءة الخلفية؛ المركز بينهما. */
 
@@ -178,12 +186,13 @@ private const val SWISH_DOWN_RATE = 0.85f
 private val metaCache = LruCache<String, GameLobbyMeta>(64)
 
 /**
- * مساحة الألعاب: صفحتان رأسيّتان — **Nexus** (لعبة واحدة كبيرة، جاهزيتها، والإطلاق) و**مركز التحكّم**
- * (ملف اللعبة، اللوحة، خيارات اللوبي، الرؤى، وإدارة المكتبة).
+ * مساحة الألعاب: مُصفِّح رأسيّ واحد — **الرئيسية** (لعبة واحدة كبيرة، جاهزيتها، والإطلاق، كلّها في شاشة
+ * واحدة) ثم صفحة لكل قسم (المكتبة، الأداء، الأدوات، المزايا، ملف اللعبة، الإعدادات) بترتيب الشريط
+ * الجانبيّ. الشريط ثابت فوق الصفحات (أفقيًّا) أو سفليّ (عموديًّا)، والسحب الرأسيّ ولمسه يصلان إلى الصفحة نفسها.
  *
  *  - الخلفية حقل بازلتيّ ساكن واحد؛ لا مسرح متحرّك ولا جسيمات خلف واجهة ساكنة.
  *  - الانتقال بين الصفحتين تلاشٍ بسيط يتبع الإصبع (VerticalPager)، والتبويبات العلويّة تنزلق معه.
- *  - من الريموت: ↑ أو R1 يفتح المركز، L1 أو الرجوع يعيد Nexus، و←/→ يبدّلان اللعبة.
+ *  - من الريموت: ↓ أو R1 للصفحة التالية، L1 للسابقة، الرجوع يعيد «الرئيسية»، و←/→ يبدّلان اللعبة.
  *
  * ### الدخول السينمائيّ والأصوات (بطلب المالك ٢٠٢٦-١٠-٢١)
  *
@@ -290,12 +299,15 @@ fun GameLobbyScreen(
             playStats = playStats
         )
     }
-    val rootState = rememberPagerState(initialPage = 0) { 2 }
+    val rootState = rememberPagerState(initialPage = 0) { LobbyPage.entries.size }
 
-    // انتقال المسرح ⇄ مركز التحكّم: مسحة هواء حين تعبر الصفحة منتصفها (سحبًا أو بلمس التبويب).
+    // الانتقال بين الصفحات: مسحة هواء حين تعبر الصفحة منتصفها (سحبًا أو بلمس الشريط)؛ أسرع نزولًا إلى
+    // الأقسام وأبطأ صعودًا إلى الرئيسية.
     LaunchedEffect(rootState) {
+        var previous = rootState.currentPage
         snapshotFlow { rootState.currentPage }.drop(1).collect { page ->
-            sounds.play(LobbyCue.Swish, rate = if (page == 1) SWISH_UP_RATE else SWISH_DOWN_RATE)
+            sounds.play(LobbyCue.Swish, rate = if (page > previous) SWISH_UP_RATE else SWISH_DOWN_RATE)
+            previous = page
         }
     }
 
@@ -394,18 +406,21 @@ fun GameLobbyScreen(
     val tick = {
         if (lobbyPrefs.haptics) haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
     }
+    // كل الأقسام صفحات في مُصفِّح واحد: اللمس على الشريط والسحب الرأسيّ والريموت تصل إلى المكان نفسه.
+    val goPage: (Int) -> Unit = { index ->
+        scope.launch {
+            rootState.animateScrollToPage(
+                index.coerceIn(0, LobbyPage.entries.lastIndex),
+                animationSpec = tween(MaxDuration.deliberate, easing = FastOutSlowInEasing)
+            )
+        }
+    }
     val openControl: (LobbySection) -> Unit = { target ->
         section = target
-        scope.launch {
-            rootState.animateScrollToPage(1, animationSpec = tween(MaxDuration.deliberate, easing = FastOutSlowInEasing))
-        }
+        goPage(LobbyPage.of(target).ordinal)
     }
-    val closeControl: () -> Unit = {
-        scope.launch {
-            rootState.animateScrollToPage(0, animationSpec = tween(MaxDuration.deliberate, easing = FastOutSlowInEasing))
-        }
-    }
-    BackHandler(enabled = rootState.currentPage == 1) { closeControl() }
+    val closeControl: () -> Unit = { goPage(0) }
+    BackHandler(enabled = rootState.currentPage != 0) { closeControl() }
     // «استكشف» يعلو الصفحتين: أوّل رجوع يغلق الطبقة وحدها قبل أي انتقال أو خروج من اللوبي.
     BackHandler(enabled = exploreOpen) { exploreOpen = false }
 
@@ -435,8 +450,8 @@ fun GameLobbyScreen(
             burst.animateTo(0f, tween(MaxDuration.deliberate))
         }
     }
-    // تحكم بالريموت/الكيبورد (أجهزة الألعاب): ←/→ بين الألعاب (معكوسة في RTL)، ↑ أو R1 مركز التحكم،
-    // L1 أو الرجوع للمسرح، Enter/A تشغيل، X ملف اللعبة. الأزرار المركَّزة تستهلك Enter بنفسها قبل هنا.
+    // تحكم بالريموت/الكيبورد (أجهزة الألعاب): ←/→ بين الألعاب (معكوسة في RTL)، ↓ أو R1 الصفحة التالية،
+    // L1 السابقة، الرجوع للرئيسية، Enter/A تشغيل، X ملف اللعبة. الأزرار المركَّزة تستهلك Enter بنفسها قبل هنا.
     val rtl = LocalLayoutDirection.current == LayoutDirection.Rtl
     val focus = remember { FocusRequester() }
     // إغلاق «استكشف» يُعيد التركيز إلى المسرح، وإلا بقيت الأسهم بلا هدف بعد الطبقة.
@@ -558,7 +573,8 @@ fun GameLobbyScreen(
                         false
                     } else if (rootState.currentPage != 0) {
                         when (event.key) {
-                            Key.ButtonL1 -> { closeControl(); true }
+                            Key.ButtonL1 -> { goPage(rootState.currentPage - 1); true }
+                            Key.ButtonR1 -> { goPage(rootState.currentPage + 1); true }
                             Key.ButtonY -> { paletteOpen = true; true }
                             Key.K -> {
                                 if (event.isCtrlPressed) {
@@ -574,8 +590,8 @@ fun GameLobbyScreen(
                         when (event.key) {
                             Key.DirectionLeft -> { step(if (rtl) 1 else -1); true }
                             Key.DirectionRight -> { step(if (rtl) -1 else 1); true }
-                            Key.DirectionUp -> { openControl(LobbySection.Game); true }
-                            Key.ButtonR1 -> { openControl(section); true }
+                            Key.DirectionDown -> { goPage(1); true }
+                            Key.ButtonR1 -> { goPage(1); true }
                             Key.ButtonY -> { paletteOpen = true; true }
                             Key.K -> {
                                 if (event.isCtrlPressed) {
@@ -603,171 +619,200 @@ fun GameLobbyScreen(
                 modifier = Modifier.fillMaxSize()
             )
 
-            VerticalPager(
-                state = rootState,
-                modifier = Modifier
+            // الصفحات كلها في مُصفِّح رأسيّ واحد: الرئيسية أولًا ثم الأقسام بترتيب الشريط الجانبيّ. الشريط
+            // نفسه ثابت فوقها (أفقيًّا)، أو شريط سفليّ (عموديًّا)، والسحب واللمس يصلان إلى الصفحة نفسها.
+            BoxWithConstraints(
+                Modifier
                     .fillMaxSize()
-                    .graphicsLayer {
-                        val p = burst.value
-                        alpha = 1f - DIVE_FADE * p
-                        scaleX = 1f + DIVE_ZOOM * p
-                        scaleY = scaleX
-                    },
-                beyondViewportPageCount = 1,
-                flingBehavior = rootFling,
-                key = { it }
-            ) { page ->
-                Box(
-                    Modifier
+                    .displayCutoutPadding()
+            ) {
+                val portrait = maxHeight > maxWidth
+                val frame = remember(maxWidth, maxHeight) { stageFrame(maxWidth, maxHeight) }
+                val currentPage = LobbyPage.at(rootState.currentPage)
+
+                VerticalPager(
+                    state = rootState,
+                    modifier = Modifier
                         .fillMaxSize()
                         .graphicsLayer {
-                            val slot = page - (rootState.currentPage + rootState.currentPageOffsetFraction)
-                            val a = abs(slot).coerceIn(0f, 1f)
-                            alpha = 1f - ROOT_FADE * a
-                        }
-                ) {
-                    if (page == 0) {
-                        val readyPercent = if (readinessSnapshot.readyTotal > 0) {
-                            readinessSnapshot.readyDone * 100 / readinessSnapshot.readyTotal
-                        } else {
-                            0
-                        }
-                        val gapText = readinessSnapshot.gap?.let { gap ->
-                            stringResource(
-                                when (gap) {
-                                    ReadyGap.Profile -> R.string.lobby_nexus_gap_profile
-                                    ReadyGap.Panel -> R.string.lobby_nexus_gap_panel
-                                    ReadyGap.Overlay -> R.string.lobby_nexus_gap_overlay
-                                }
+                            val p = burst.value
+                            alpha = 1f - DIVE_FADE * p
+                            scaleX = 1f + DIVE_ZOOM * p
+                            scaleY = scaleX
+                        },
+                    beyondViewportPageCount = 1,
+                    flingBehavior = rootFling,
+                    key = { it }
+                ) { page ->
+                    Box(
+                        Modifier
+                            .fillMaxSize()
+                            .graphicsLayer {
+                                val slot = page - (rootState.currentPage + rootState.currentPageOffsetFraction)
+                                val a = abs(slot).coerceIn(0f, 1f)
+                                alpha = 1f - ROOT_FADE * a
+                            }
+                    ) {
+                        if (page == 0) {
+                            val readyPercent = if (readinessSnapshot.readyTotal > 0) {
+                                readinessSnapshot.readyDone * 100 / readinessSnapshot.readyTotal
+                            } else {
+                                0
+                            }
+                            val gapText = readinessSnapshot.gap?.let { gap ->
+                                stringResource(
+                                    when (gap) {
+                                        ReadyGap.Profile -> R.string.lobby_nexus_gap_profile
+                                        ReadyGap.Panel -> R.string.lobby_nexus_gap_panel
+                                        ReadyGap.Overlay -> R.string.lobby_nexus_gap_overlay
+                                    }
+                                )
+                            }
+                            // الرئيسية كما في تصميم المالك: بطل، لوحة أداء، رفّ ألعاب، قاعدة — كلّها في شاشة واحدة.
+                            GameSpaceStage(
+                                games = games,
+                                selected = active,
+                                readinessPercent = readyPercent,
+                                statusTitle = insight?.let { gameSpaceVerdictLabel(it.verdict) }
+                                    ?: stringResource(R.string.gs_ready_title),
+                                statusDetail = gapText.orEmpty(),
+                                panelEnabled = panelEnabled,
+                                batteryPercent = lobbyBattery?.percent,
+                                batteryTempC = lobbyBattery?.tempTenthsC?.let { it / 10f },
+                                charging = lobbyBattery?.charging == true,
+                                onSelect = selectGame,
+                                onLaunch = start,
+                                onOptions = { openControl(LobbySection.Game) },
+                                onHome = {},
+                                onOpenSection = openControl,
+                                onOpenLibrary = { openControl(LobbySection.Library) },
+                                tagline = active?.let { lobbyPlayAgeText(playStats[it.packageName]) },
+                                clock = lobbyClock,
+                                date = lobbyDate,
+                                // أزرار اللوبي فقط: الساعة والبطارية والحرارة مرسومة في اللوحة نفسها، وكبسولة
+                                // الحالة كانت تغطّي الساعة والشريط فتُركت لشريط الأقسام.
+                                topActions = {
+                                    Row(
+                                        horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        lobbyButtons()
+                                    }
+                                },
+                                onOpenSessions = {
+                                    navController.navigate(MaxDestination.GameSessions.route) {
+                                        launchSingleTop = true
+                                    }
+                                },
+                                modifier = Modifier.fillMaxSize()
                             )
-                        }
-                        // الشاشة كما في تصميم المالك: شريط أقسام، بطل، لوحة أداء، رفّ ألعاب، قاعدة.
-                        GameSpaceStage(
-                            games = games,
-                            selected = active,
-                            readinessPercent = readyPercent,
-                            statusTitle = insight?.let { gameSpaceVerdictLabel(it.verdict) }
-                                ?: stringResource(R.string.gs_ready_title),
-                            statusDetail = gapText.orEmpty(),
-                            panelEnabled = panelEnabled,
-                            batteryPercent = lobbyBattery?.percent,
-                            batteryTempC = lobbyBattery?.tempTenthsC?.let { it / 10f },
-                            charging = lobbyBattery?.charging == true,
-                            onSelect = selectGame,
-                            onLaunch = start,
-                            onOptions = { openControl(LobbySection.Game) },
-                            onHome = {},
-                            onOpenSection = openControl,
-                            onOpenLibrary = { openControl(LobbySection.Library) },
-                            tagline = active?.let { lobbyPlayAgeText(playStats[it.packageName]) },
-                            clock = lobbyClock,
-                            date = lobbyDate,
-                            topActions = {
+                        } else {
+                            // ─────────────── صفحة قسم ───────────────
+                            val target = LobbyPage.at(page).section ?: LobbySection.Game
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(
+                                        start = if (portrait) 0.dp else frame.railEnd + MaxSpace.md,
+                                        bottom = if (portrait) PortraitNavHeight else 0.dp
+                                    )
+                            ) {
                                 Row(
-                                    horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm),
-                                    verticalAlignment = Alignment.CenterVertically
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(TopBarHeight)
+                                        .padding(horizontal = if (portrait) MaxSpace.md else MaxSpace.xl)
+                                        .lobbyIntro(intro, fromBelow = (-24).dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm)
                                 ) {
-                                    if (lobbyPrefs.showStatus) LobbyStatusCapsule()
+                                    Box(
+                                        Modifier
+                                            .width(SectionNotchWidth)
+                                            .height(SectionNotchHeight)
+                                            .background(GameSpacePalette.Violet)
+                                    )
+                                    Text(
+                                        text = stringResource(target.titleRes),
+                                        color = GameSpacePalette.Ink,
+                                        fontSize = 20.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                    if (!portrait && lobbyPrefs.showStatus && screenWidthDp >= SectionCapsuleWidthDp) {
+                                        LobbyStatusCapsule()
+                                    }
                                     lobbyButtons()
                                 }
-                            },
-                            onOpenSessions = {
-                                navController.navigate(MaxDestination.GameSessions.route) {
-                                    launchSingleTop = true
+                                Box(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .fillMaxWidth(),
+                                    contentAlignment = Alignment.TopCenter
+                                ) {
+                                    Box(
+                                        Modifier
+                                            .widthIn(max = MaxSize.readingMaxWidth)
+                                            .fillMaxSize()
+                                    ) {
+                                        LobbySectionContent(
+                                            section = target,
+                                            app = active,
+                                            config = activeConfig ?: AppConfig(),
+                                            games = allGames,
+                                            stats = playStats,
+                                            sessions = sessions,
+                                            tweaks = tweaksByGame,
+                                            armed = panelPrefs.enabledPackages,
+                                            panelEnabled = panelEnabled,
+                                            onPanelEnabled = setPanel,
+                                            overlayGranted = overlayGranted,
+                                            onGrantOverlay = { OverlayPermission.openSettings(context) },
+                                            onUpdate = { key, value ->
+                                                active?.let { settingsViewModel.updateSetting(it.packageName, key, value) }
+                                            },
+                                            onOpenFull = { active?.let { navController.openAppSettings(it.packageName) } },
+                                            onSection = openControl,
+                                            onOpenHistory = {
+                                                navController.navigate(MaxDestination.GameSessions.route) {
+                                                    launchSingleTop = true
+                                                }
+                                            },
+                                            onOpenClips = {
+                                                navController.navigate(MaxDestination.ClipAlbum.route) {
+                                                    launchSingleTop = true
+                                                }
+                                            },
+                                            onOpenGame = { pkg ->
+                                                closeControl()
+                                                selectGame(pkg)
+                                            },
+                                            prefs = lobbyPrefs,
+                                            onPrefs = updatePrefs,
+                                            apps = manageApps,
+                                            manual = library.manual,
+                                            excluded = library.excluded,
+                                            onToggleGame = viewModel::membership,
+                                            accent = toneState.value
+                                        )
+                                    }
                                 }
-                            },
-                            modifier = Modifier.fillMaxSize()
-                        )
-
-                    } else {
-                        // ─────────────── مركز التحكم ───────────────
-                        LobbyControlCenter(
-                            section = section,
-                            onSection = { section = it },
-                            app = active,
-                            config = activeConfig ?: AppConfig(),
-                            games = allGames,
-                            stats = playStats,
-                            sessions = sessions,
-                            tweaks = tweaksByGame,
-                            armed = panelPrefs.enabledPackages,
-                            panelEnabled = panelEnabled,
-                            onPanelEnabled = setPanel,
-                            overlayGranted = overlayGranted,
-                            onGrantOverlay = { OverlayPermission.openSettings(context) },
-                            onUpdate = { key, value ->
-                                active?.let { settingsViewModel.updateSetting(it.packageName, key, value) }
-                            },
-                            onOpenFull = { active?.let { navController.openAppSettings(it.packageName) } },
-                            onOpenHistory = {
-                                navController.navigate(MaxDestination.GameSessions.route) {
-                                    launchSingleTop = true
-                                }
-                            },
-                            onOpenClips = {
-                                navController.navigate(MaxDestination.ClipAlbum.route) {
-                                    launchSingleTop = true
-                                }
-                            },
-                            onOpenGame = { pkg ->
-                                closeControl()
-                                selectGame(pkg)
-                            },
-                            prefs = lobbyPrefs,
-                            onPrefs = updatePrefs,
-                            apps = manageApps,
-                            manual = library.manual,
-                            excluded = library.excluded,
-                            onToggleGame = viewModel::membership,
-                            accent = toneState.value,
-                            modifier = Modifier
-                                .displayCutoutPadding()
-                                .padding(top = TopBarHeight)
-                        )
+                            }
+                        }
                     }
                 }
-            }
 
-            // الشريط العلويّ ثابت فوق الصفحتين: تبويبات تنزلق مع السحب + كبسولة الحالة + أزرار.
-            if (rootState.currentPage != 0) Row(
-                modifier = Modifier
-                    .align(Alignment.TopCenter)
-                    .fillMaxWidth()
-                    .displayCutoutPadding()
-                    .height(TopBarHeight)
-                    .padding(horizontal = MaxSpace.xxl)
-                    .lobbyIntro(intro, fromBelow = (-24).dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm)
-            ) {
-                GameSpaceBrand(compact = screenWidthDp < GameSpaceBrandCompactDp)
-                if (screenWidthDp >= GameSpaceTabsWidthDp) {
-                    LobbyTopTabs(
-                        labels = listOf(
-                            stringResource(R.string.lobby_tab_games),
-                            stringResource(R.string.lobby_tab_control)
-                        ),
-                        selected = rootState.currentPage,
-                        position = { rootState.currentPage + rootState.currentPageOffsetFraction },
-                        tone = { toneState.value },
-                        description = stringResource(R.string.lobby_tab_lobby),
-                        onSelect = { index -> scope.launch { rootState.animateScrollToPage(index) } }
+                if (portrait) {
+                    GameSpaceBottomNav(
+                        current = currentPage,
+                        onPage = { goPage(it.ordinal) },
+                        modifier = Modifier.align(Alignment.BottomCenter)
                     )
+                } else {
+                    GameSpaceRailLayer(current = currentPage, onPage = { goPage(it.ordinal) })
                 }
-                // كبسولة الحالة هي العنصر المرن: تُقاس بالعرض المتبقّي وتُقصّ عند الضيق، ولا تدفع
-                // أزرار النهاية (السجل/الإغلاق) خارج الشاشة بعد إضافة زرّ الاستكشاف الخامس.
-                Box(Modifier.weight(1f), contentAlignment = Alignment.CenterEnd) {
-                    if (lobbyPrefs.showStatus) LobbyStatusCapsule()
-                }
-                if (screenWidthDp >= GameSpaceClockWidthDp) {
-                    GameSpaceClockCluster(
-                        clock = lobbyClock,
-                        date = lobbyDate,
-                        batteryPercent = lobbyBattery?.percent,
-                        charging = lobbyBattery?.charging == true
-                    )
-                }
-                lobbyButtons()
             }
 
             Column(

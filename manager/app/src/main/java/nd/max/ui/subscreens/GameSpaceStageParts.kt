@@ -1,6 +1,7 @@
 /* Copyright (C) 2026 Nader Magdy. All rights reserved. */
 package nd.max.ui.subscreens
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
@@ -23,13 +24,6 @@ import androidx.compose.foundation.shape.GenericShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
-import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Insights
-import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material.icons.outlined.SportsEsports
-import androidx.compose.material.icons.outlined.StarBorder
-import androidx.compose.material.icons.outlined.Tune
-import androidx.compose.material.icons.outlined.ViewSidebar
 import androidx.compose.material.icons.rounded.BatteryFull
 import androidx.compose.material.icons.rounded.Bolt
 import androidx.compose.material.icons.rounded.SignalCellularAlt
@@ -44,6 +38,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
@@ -151,24 +146,14 @@ internal fun Modifier.stageGlass(shape: Shape): Modifier =
         .border(StrokeFine, GlassBorder, shape)
 
 /**
- * أقسام الشريط كما في التصميم. العناوين والأيقونات للأقسام **القائمة فعلًا** في مركز التحكّم:
- * المكتبة، الأداء (الرؤى)، الأدوات (اللوحة الجانبية)، المزايا (ملفّ اللعبة)، وإعدادات اللعبة.
- * أمّا الإعدادات فتحملها أيقونة الترس أسفل الشريط.
- */
-internal enum class StageNav(val labelRes: Int, val icon: ImageVector, val section: LobbySection) {
-    Library(R.string.gs_nav_games, Icons.Outlined.SportsEsports, LobbySection.Library),
-    Performance(R.string.gs_nav_perf, Icons.Outlined.Insights, LobbySection.Insights),
-    Tools(R.string.gs_nav_tools, Icons.Outlined.ViewSidebar, LobbySection.Panel),
-    Features(R.string.gs_nav_features, Icons.Outlined.StarBorder, LobbySection.Loadout),
-    Profile(LobbySection.Game.titleRes, Icons.Outlined.Tune, LobbySection.Game)
-}
-
-/**
- * الشريط الجانبيّ بإحداثيات اللقطة: لوح (٠،٢٤، ١٦٨×٨٩٢)، شعار عند y≈٨٥، «Home» نشطة في (١٤،١٥٢)
+ * الشريط الجانبيّ بإحداثيات اللقطة: لوح (٠،٢٤، ١٦٨×٨٩٢)، شعار عند y≈٨٥، «Home» في (١٤،١٥٢)
  * بارتفاع ٦٣، ثم خمسة أقسام بارتفاع ٦٥ لكلٍّ، والترس مركزه (٨٠،٨٧٥).
+ *
+ * ثابت فوق كل الصفحات: [current] الصفحة الظاهرة فيُضاء بندها، ولمس أي بند ينقل المُصفِّح الرأسيّ
+ * إلى صفحته — السحب واللمس طريقان إلى المكان نفسه.
  */
 @Composable
-internal fun StageRail(onHome: () -> Unit, onSection: (LobbySection) -> Unit) {
+internal fun StageRail(current: LobbyPage, onPage: (LobbyPage) -> Unit) {
     val frame = RoundedCornerShape(RadiusRail)
     Box(
         Modifier
@@ -186,34 +171,46 @@ internal fun StageRail(onHome: () -> Unit, onSection: (LobbySection) -> Unit) {
     }
     Column(Modifier.at(14, 152, 154, 410)) {
         StageRailItem(
-            labelRes = R.string.gs_nav_home,
-            icon = Icons.Outlined.Home,
-            active = true,
+            labelRes = LobbyPage.Home.labelRes,
+            icon = LobbyPage.Home.icon,
+            active = current == LobbyPage.Home,
             height = 63,
-            onClick = onHome
+            onClick = { onPage(LobbyPage.Home) }
         )
         Spacer(Modifier.height(19.dp))
-        StageNav.entries.forEach { entry ->
-            StageRailItem(
-                labelRes = entry.labelRes,
-                icon = entry.icon,
-                active = false,
-                height = 65,
-                onClick = { onSection(entry.section) }
-            )
-        }
+        LobbyPage.entries
+            .filter { it != LobbyPage.Home && it != LobbyPage.Settings }
+            .forEach { page ->
+                StageRailItem(
+                    labelRes = page.labelRes,
+                    icon = page.icon,
+                    active = current == page,
+                    height = 65,
+                    onClick = { onPage(page) }
+                )
+            }
     }
+    val gearActive = current == LobbyPage.Settings
     Box(
         modifier = Modifier
             .at(48, 843, 64, 64)
             .clip(CircleShape)
-            .clickable(role = Role.Button, onClick = { onSection(LobbySection.Lobby) }),
+            .then(
+                if (gearActive) {
+                    Modifier
+                        .background(ActiveFill)
+                        .border(StrokeFirm, GameSpacePalette.VioletSoft.copy(alpha = 0.85f), CircleShape)
+                } else {
+                    Modifier
+                }
+            )
+            .clickable(role = Role.Tab, onClick = { onPage(LobbyPage.Settings) }),
         contentAlignment = Alignment.Center
     ) {
         Icon(
-            imageVector = Icons.Outlined.Settings,
+            imageVector = LobbyPage.Settings.icon,
             contentDescription = stringResource(R.string.gs_nav_settings),
-            tint = GameSpacePalette.Ink,
+            tint = if (gearActive) Color.White else GameSpacePalette.Ink,
             modifier = Modifier.size(GearIcon)
         )
     }
@@ -230,7 +227,11 @@ private fun StageRailItem(
     onClick: () -> Unit,
 ) {
     val shape = RoundedCornerShape(RadiusItem)
-    val tint = if (active) Color.White else GameSpacePalette.Ink.copy(alpha = 0.88f)
+    val tint by animateColorAsState(
+        targetValue = if (active) Color.White else GameSpacePalette.Ink.copy(alpha = 0.88f),
+        animationSpec = tween(durationMillis = RailTintMs),
+        label = "railTint"
+    )
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -245,6 +246,16 @@ private fun StageRailItem(
                     Modifier
                 }
             )
+            .drawBehind {
+                if (active) {
+                    drawRoundRect(
+                        color = GameSpacePalette.VioletSoft,
+                        topLeft = Offset(0f, size.height * RailBarInset),
+                        size = Size(RailBarWidth.toPx(), size.height * (1f - 2f * RailBarInset)),
+                        cornerRadius = CornerRadius(RailBarWidth.toPx())
+                    )
+                }
+            }
             .clickable(role = Role.Tab, onClick = onClick)
             .padding(start = 17.dp, end = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -270,6 +281,11 @@ private fun StageRailItem(
 }
 
 private val GlyphRail = 32.dp
+
+/** شريط التمييز على الحافة اليسرى للبند النشط، وانزلاق لون الأيقونة والنص بدل القفز. */
+private val RailBarWidth = 4.dp
+private const val RailBarInset = 0.22f
+private const val RailTintMs = 220
 
 /**
  * شريط الحالة العلويّ: الساعة والتاريخ يسارًا (x=٢٠٠)، واتّصال + بطارية + نسبة + صورة «M» يمينًا.
@@ -304,9 +320,9 @@ internal fun StageStatusBar(
             overflow = TextOverflow.Ellipsis
         )
     }
-    Box(Modifier.at(700, 0, 720, 86), contentAlignment = Alignment.CenterEnd) {
+    Box(Modifier.at(700, 0, 720, 86), contentAlignment = Alignment.Center) {
         CompositionLocalProvider(LocalDensity provides realDensity) {
-            Row(Modifier.wrapContentSize(align = Alignment.CenterEnd, unbounded = true)) {
+            Row(Modifier.wrapContentSize(align = Alignment.Center, unbounded = true)) {
                 topActions()
             }
         }
@@ -425,7 +441,7 @@ internal fun StageBoard(data: StageData, onOpen: () -> Unit) {
 }
 
 @Composable
-private fun PerformanceCard(data: StageData, onOpen: () -> Unit, modifier: Modifier) {
+internal fun PerformanceCard(data: StageData, onOpen: () -> Unit, modifier: Modifier) {
     val shape = RoundedCornerShape(RadiusCard)
     Column(
         modifier = modifier
@@ -600,7 +616,7 @@ private val ChevronIcon = 28.dp
 
 /** لوحة البطارية ووضع الأداء: نصفان يفصلهما خطّ رفيع، وسهم يشير إلى أنّ الوضع قابل للفتح. */
 @Composable
-private fun StatusCard(data: StageData, modifier: Modifier) {
+internal fun StatusCard(data: StageData, modifier: Modifier) {
     val shape = RoundedCornerShape(RadiusCard)
     Row(
         modifier = modifier
@@ -677,7 +693,7 @@ private fun StatusCard(data: StageData, modifier: Modifier) {
 
 /** لوحة الإطارات اللحظيّة: منحنى آخر العيّنات يسارًا (١٥٤×٤٨)، والرقم الكبير، ثم أيقونة أعمدة. */
 @Composable
-private fun FpsCard(fps: StageFps, modifier: Modifier) {
+internal fun FpsCard(fps: StageFps, modifier: Modifier) {
     val shape = RoundedCornerShape(RadiusCard)
     val shown = fps.value != null && fps.live
     Row(

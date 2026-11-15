@@ -5,6 +5,8 @@
  */
 package nd.max.ui.subscreens
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll
@@ -14,6 +16,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -24,6 +27,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,6 +41,7 @@ import androidx.compose.ui.unit.sp
 import nd.max.R
 import nd.max.core.gamespace.LobbyCue
 import nd.max.ui.component.LocalLobbySounds
+import nd.max.ui.design.MaxDuration
 import nd.max.ui.design.MaxRadius
 import nd.max.ui.design.MaxSize
 import nd.max.ui.design.MaxSpace
@@ -52,23 +57,50 @@ import nd.max.ui.design.maxRadius
 /** نصف قطر رقاقة الاختيار في صفوف اللوبي — قيمة واحدة للموضعين. */
 internal val LobbyChipRadius = 12.dp
 
+/** علامة الترويسة البنفسجية أمام عنوان البطاقة — نفسها نتوء «Popular Games» في الرئيسية. */
+private val CardNotchWidth = 4.dp
+private val CardNotchHeight = 18.dp
+
+/** لغة الزجاج نفسها المرسومة على ألواح الرئيسية: جسم داكن بحدّ أبيض خافت، والبنفسجيّ للمختار وحده. */
+internal val LobbyGlassBody = Brush.verticalGradient(
+    listOf(GameSpacePalette.Glass.copy(alpha = 0.80f), GameSpacePalette.GlassDeep.copy(alpha = 0.88f))
+)
+internal val LobbyGlassEdge = Brush.linearGradient(
+    listOf(
+        Color.White.copy(alpha = 0.16f),
+        Color.White.copy(alpha = 0.05f),
+        Color.White.copy(alpha = 0.10f)
+    )
+)
+internal val LobbyChipSelectedFill = Brush.horizontalGradient(
+    listOf(GameSpacePalette.VioletDeep.copy(alpha = 0.65f), GameSpacePalette.Plum.copy(alpha = 0.92f))
+)
+
 /** بطاقة قسم بترويسة — تُستعمل في أقسام مركز التحكم. */
 @Composable
 internal fun LobbySectionCard(title: String, content: @Composable () -> Unit) {
+    val shape = RoundedCornerShape(maxRadius(MaxRadius.group))
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(maxRadius(MaxRadius.group)))
-            .background(
-                Brush.verticalGradient(
-                    listOf(GameSpacePalette.PanelRaised.copy(alpha = 0.82f), GameSpacePalette.Panel.copy(alpha = 0.96f))
-                )
-            )
-            .border(MaxSize.hairlineBorder, GameSpacePalette.Hairline, RoundedCornerShape(maxRadius(MaxRadius.group)))
+            .clip(shape)
+            .background(LobbyGlassBody)
+            .border(MaxSize.hairlineBorder, LobbyGlassEdge, shape)
             .padding(MaxSpace.lg),
         verticalArrangement = Arrangement.spacedBy(MaxSpace.md)
     ) {
-        Text(text = title, color = GameSpacePalette.Ink, fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm)
+        ) {
+            Box(
+                Modifier
+                    .width(CardNotchWidth)
+                    .height(CardNotchHeight)
+                    .background(GameSpacePalette.Violet)
+            )
+            Text(text = title, color = GameSpacePalette.Ink, fontSize = 17.sp, fontWeight = FontWeight.SemiBold)
+        }
         content()
     }
 }
@@ -102,16 +134,23 @@ internal fun LobbyOptionRow(
         ) {
             options.forEach { (value, label) ->
                 val isSelected = value.equals(selected, ignoreCase = true)
+                val rim by animateColorAsState(
+                    targetValue = if (isSelected) GameSpacePalette.VioletSoft.copy(alpha = 0.85f) else Color.Transparent,
+                    animationSpec = tween(MaxDuration.quick),
+                    label = "lobbyChipRim"
+                )
                 Box(
                     modifier = Modifier
                         .heightIn(min = MaxSize.minTouchTarget)
                         .clip(RoundedCornerShape(LobbyChipRadius))
-                        .background(if (isSelected) GameSpacePalette.PanelSelected else GameSpacePalette.PanelRaised.copy(alpha = 0.55f))
-                        .border(
-                            MaxSize.hairlineBorder,
-                            if (isSelected) GameSpacePalette.Hairline else Color.Transparent,
-                            RoundedCornerShape(LobbyChipRadius)
+                        .then(
+                            if (isSelected) {
+                                Modifier.background(LobbyChipSelectedFill)
+                            } else {
+                                Modifier.background(Color.White.copy(alpha = 0.05f))
+                            }
                         )
+                        .border(MaxSize.hairlineBorder, rim, RoundedCornerShape(LobbyChipRadius))
                         .selectable(
                             selected = isSelected,
                             role = Role.RadioButton,
@@ -161,9 +200,9 @@ internal fun LobbySwitchRow(title: String, checked: Boolean, onChecked: (Boolean
             checked = checked,
             onCheckedChange = onChecked,
             colors = SwitchDefaults.colors(
-                checkedTrackColor = GameSpacePalette.Red,
+                checkedTrackColor = GameSpacePalette.Violet,
                 checkedThumbColor = GameSpacePalette.Ink,
-                uncheckedTrackColor = GameSpacePalette.PanelRaised,
+                uncheckedTrackColor = Color.White.copy(alpha = 0.10f),
                 uncheckedThumbColor = GameSpacePalette.Muted
             )
         )

@@ -7,6 +7,7 @@
 
 package nd.max.ui.subscreens
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -624,10 +625,12 @@ internal fun lobbyPlayTimeText(totalMs: Long): String? {
 
 @Composable
 private fun InsightTile(label: String, value: String, modifier: Modifier = Modifier) {
+    val shape = RoundedCornerShape(maxRadius(MaxRadius.tile))
     Column(
         modifier = modifier
-            .clip(RoundedCornerShape(maxRadius(MaxRadius.tile)))
-            .background(GameSpacePalette.PanelRaised.copy(alpha = 0.45f))
+            .clip(shape)
+            .background(Color.White.copy(alpha = 0.05f))
+            .border(MaxSize.hairlineBorder, Color.White.copy(alpha = 0.08f), shape)
             .padding(MaxSpace.lg),
         verticalArrangement = Arrangement.spacedBy(MaxSpace.xs)
     ) {

@@ -9,6 +9,8 @@
 
 package nd.max.ui.subscreens
 
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -102,6 +104,11 @@ private val ExploreColumnMin = MaxVisualSpec.hero * 2f
  */
 private val ExploreCompactHeight = 420.dp
 
+/** علامة العنوان البنفسجية أمام «استكشف»، نفسها نتوء «Popular Games» في الرئيسية. */
+private val ExploreNotchWidth = 4.dp
+private val ExploreNotchHeight = 28.dp
+private const val ExploreChipRimMs = 160
+
 /**
  * «استكشف»: مكتبة كاملة فوق المسرح بلا مغادرة اللوبي.
  *
@@ -167,7 +174,11 @@ internal fun LobbyExplore(
     BoxWithConstraints(
         modifier = modifier
             .fillMaxSize()
-            .background(GameSpacePalette.Black.copy(alpha = 0.92f))
+            .background(
+                Brush.verticalGradient(
+                    listOf(GameSpacePalette.Void.copy(alpha = 0.95f), GameSpacePalette.Deep.copy(alpha = 0.97f))
+                )
+            )
             // التقاط اللمسات الفارغة بـpointerInput لا بـclickable: الجذر لا زرّ، وإعلانه زرًّا
             // بلا نصّ يجعل TalkBack يقف على «زرّ» فارغ قبل كل بطاقة.
             .pointerInput(Unit) { detectTapGestures { } }
@@ -257,13 +268,19 @@ internal fun LobbyExplore(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(MaxSpace.md)
         ) {
+            Box(
+                Modifier
+                    .width(ExploreNotchWidth)
+                    .height(ExploreNotchHeight)
+                    .background(GameSpacePalette.Violet)
+            )
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = stringResource(R.string.lobby_explore_title),
                     color = GameSpacePalette.Ink,
                     // عنوان الشاشة، لا عنوان بطاقة: كبير وخفيف كما تفعل العناوين الأولى.
                     fontSize = if (compact) 20.sp else 30.sp,
-                    fontWeight = FontWeight.Light,
+                    fontWeight = FontWeight.Bold,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -291,8 +308,8 @@ internal fun LobbyExplore(
                 .padding(horizontal = MaxSpace.xl)
                 .heightIn(min = MaxSize.minTouchTarget)
                 .clip(searchShape)
-                .background(GameSpacePalette.Panel)
-                .border(MaxSize.hairlineBorder, accent.copy(alpha = 0.35f), searchShape)
+                .background(LobbyGlassBody)
+                .border(MaxSize.hairlineBorder, LobbyGlassEdge, searchShape)
                 .padding(horizontal = MaxSpace.md),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm)
@@ -489,16 +506,23 @@ private fun FilterChip(
     onClick: () -> Unit,
 ) {
     val shape = RoundedCornerShape(maxRadius(MaxRadius.pill))
+    val rim by animateColorAsState(
+        targetValue = if (selected) GameSpacePalette.VioletSoft.copy(alpha = 0.85f) else Color.White.copy(alpha = 0.10f),
+        animationSpec = tween(ExploreChipRimMs),
+        label = "exploreChipRim"
+    )
     Row(
         modifier = Modifier
             .heightIn(min = MaxSize.minTouchTarget)
             .clip(shape)
-            .background(if (selected) accent.copy(alpha = 0.22f) else GameSpacePalette.PanelRaised.copy(alpha = 0.55f))
-            .border(
-                MaxSize.hairlineBorder,
-                if (selected) accent.copy(alpha = 0.55f) else GameSpacePalette.Hairline,
-                shape
+            .then(
+                if (selected) {
+                    Modifier.background(LobbyChipSelectedFill)
+                } else {
+                    Modifier.background(Color.White.copy(alpha = 0.05f))
+                }
             )
+            .border(MaxSize.hairlineBorder, rim, shape)
             .selectable(selected = selected, role = Role.Tab, onClick = onClick)
             .padding(horizontal = MaxSpace.lg),
         verticalAlignment = Alignment.CenterVertically,
@@ -513,7 +537,7 @@ private fun FilterChip(
         )
         Text(
             text = count.toString(),
-            color = if (selected) accent else GameSpacePalette.Muted,
+            color = if (selected) GameSpacePalette.Lavender else GameSpacePalette.Muted,
             fontSize = 11.sp,
             fontWeight = FontWeight.SemiBold,
             maxLines = 1
@@ -561,13 +585,16 @@ private fun ExploreCard(
                 scaleY = scale
             }
             .clip(shape)
-            .background(if (focused) GameSpacePalette.PanelRaised.copy(alpha = 0.72f) else GameSpacePalette.Panel)
+            .background(LobbyGlassBody)
+            .then(
+                if (focused) Modifier.background(GameSpacePalette.Violet.copy(alpha = 0.14f)) else Modifier
+            )
             .border(
                 if (focused || selected) MaxSize.activeRing else MaxSize.hairlineBorder,
                 when {
-                    focused -> accent
-                    selected -> accent.copy(alpha = 0.55f)
-                    else -> GameSpacePalette.Hairline
+                    focused -> SolidColor(accent)
+                    selected -> SolidColor(accent.copy(alpha = 0.55f))
+                    else -> LobbyGlassEdge
                 },
                 shape
             )
@@ -614,7 +641,11 @@ private fun ExploreCard(
                     color = accent,
                     fontSize = 10.sp,
                     fontWeight = FontWeight.SemiBold,
-                    maxLines = 1
+                    maxLines = 1,
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(maxRadius(MaxRadius.pill)))
+                        .background(accent.copy(alpha = 0.18f))
+                        .padding(horizontal = MaxSpace.sm, vertical = MaxSpace.hairline)
                 )
             }
         }
@@ -647,7 +678,7 @@ private fun ExploreCard(
                         modifier = Modifier
                             .size(8.dp)
                             .clip(CircleShape)
-                            .background(if (index < ready) accent else GameSpacePalette.PanelRaised)
+                            .background(if (index < ready) accent else Color.White.copy(alpha = 0.12f))
                     )
                 }
             }
@@ -664,7 +695,7 @@ private fun MetaChip(text: String) {
         maxLines = 1,
         modifier = Modifier
             .clip(RoundedCornerShape(maxRadius(MaxRadius.pill)))
-            .background(GameSpacePalette.PanelRaised.copy(alpha = 0.55f))
+            .background(Color.White.copy(alpha = 0.07f))
             .padding(horizontal = MaxSpace.sm, vertical = MaxSpace.hairline)
     )
 }

@@ -1,3 +1,44 @@
+## GAME-SPACE-COCKPIT-FIX-01 — إغلاق ثلاثة أحمر متتالية: لوحة ناقصة ثم حارسان على هيكل قديم — 2026-11-14 · DONE
+
+**أمر المالك:** «اصلح مشكلة البناء» · «اكمل».
+
+**القاعدة التي حُكم بها:** لا يُخمَّن سبب الأحمر — يُقرأ من `gh run view --json jobs` (الخطوة) ثم من
+سجل الوظيفة (الملف والسطر)؛ ويُصلَح **السبب** لا العَرَض؛ ولا يُعاد كودٌ حذفه المالك بقصد (ADR-18).
+
+**الأحمر الثلاثة وإصلاحها:**
+1. `43643185821` على `03562a31` — **تصريف**: `Unresolved reference 'Steel'/'Positive'/'Red'/'RedBright'/
+   'PanelSelected'/'Black'` (٢٤ موضعًا في `LobbyControlCenter.kt` · `LobbyExplore.kt` ·
+   `LobbyInsightsPanel.kt` · `LobbyProfileComponents.kt`) بعد أن أُعيدت كتابة `GameSpacePalette`.
+   الإصلاح: ستة أعضاء **معلنة** في `object GameSpacePalette` داخل `GameSpaceFrame.kt`
+   (Steel `#94A3B8` · Positive `#4ADE80` · Red `#EF4444` · RedBright `#F87171` · PanelSelected
+   `#262046` · Black `#000000`) — لا حرفيّة في كل موضع ⇒ commit `5bc81e66`.
+2. `43646514146` على `5bc81e66` — **اختباران**: `the lobby is one spine…` (٦٥) و`explore is composed
+   over the stage…` (٤٩): الحارسان كانا يتحرّشان على `spineIndex > 0` و`PagerSnapDistance.atMost(1)`/
+   `pageSpacing = 0.dp`/`GameSpaceRail(`/`LobbySectionContent(`/`spineIndex by remember`، والتصميم
+   الجديد جذرُ **صفحتين** `rememberPagerState(initialPage = 0) { 2 }` وشاركُ رجوعه
+   `BackHandler(enabled = rootState.currentPage == 1)`. الإصلاح `ba0a3181`: تثبيت الحارس على الشكل
+   الجديد **وتقويته** — صفحتان · `flingBehavior = rootFling` من `PagerDefaults.flingBehavior(` ·
+   ومنع `pagerSnapDistance` ليظلّ الافتراضي `atMost(1)` (سحب = صفحة) · وبقاء شرط الترتيب
+   `exploreBack > controlBack`.
+3. (سابق في السلسلة) `43630187144` على `26d7efa3` — `every sessions door in the lobby is single top`
+   (١٣٢): المالك جمع أدوات التحكّم في رأس واحد فخرجت قاعدة المسرح و`onOpenSessions`. الإصلاح
+   `638b02b1`: الباب مثبَّت على أيقونة السجلّ في ذلك الرأس.
+
+**الحكم المقروء:** `43640881117` نجاح · `43649112081` على `ba0a3181` **نجاح** (`status=completed`,
+`conclusion=success`) · `43633565258` نجاح. ولم يُلغَ أيّ بناء: الدفع لا يُلغي `build.yml`، ولم يُرسَل
+Quick Verify (`cancel-in-progress: true`).
+
+**GATES:** `kt_balance` 3438/0 · `code_health` exit 0 · `i18n` 0 عوائق · `prune` 0 يتيم ·
+`design_tokens` 233/300 · `resource_compile` ✓ · `provenance` 4461/0/0 · `jni` 23/0/0/0 ·
+`git diff --check` نظيف · بديل بلا مُصرّف: نسخة Python من شرطَي الحارس على المصدر الحيّ = PASS.
+
+**RESIDUAL RISK:** لا لقطة جهاز ⇒ لا ادّعاء تطابق بصريّ لتصميم الكونسول · الحُرّاس نصّية تحرس الوجود
+والترتيب لا السلوك المعروض · جودة العرض وRTL واللمس تبقى جهاز المالك.
+
+**NEXT:** أخضر على `ba0a3181`. وأي أحمر جديد يُسمّى من السجل (خطوة + سطر) قبل أي إصلاح.
+
+---
+
 ## GAME-SPACE-COCKPIT-01 — إعادة تصميم Game Space Stage طبق أصل اللقطة (الكونسول) — 2026-11-14
 
 **أمر المالك:** «اريد تحويل Looby الي هذا بالضبط بدل من الصورة الثانية اعد كتابة تصميم وتخطيط Looby من الصفر ليكون مثل هذا طبق الاصل ولا تتردد في سؤالي عن اي شيئ»

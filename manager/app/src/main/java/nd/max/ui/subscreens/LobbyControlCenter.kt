@@ -7,6 +7,7 @@
 
 package nd.max.ui.subscreens
 
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
@@ -159,6 +160,9 @@ private val SidebarItemHeight = 54.dp
 private val SidebarIcon = 36.dp
 private val ChipHeight = 48.dp
 private val LibraryIcon = 40.dp
+private val LoadoutNotchWidth = 4.dp
+private val LoadoutNotchHeight = 26.dp
+private val ReadyBarHeight = 6.dp
 
 /** تحت هذا الارتفاع يتحوّل الشريط إلى شبكة بلاطات، فلا يضيع قسم خلف تمرير طويل في الوضع الأفقي. */
 private val SidebarCompactHeight = 440.dp
@@ -520,15 +524,25 @@ private fun LoadoutBody(
             .padding(horizontal = MaxSpace.xl, vertical = MaxSpace.lg),
         verticalArrangement = Arrangement.spacedBy(MaxSpace.lg)
     ) {
-        Text(
-            text = stringResource(R.string.lobby_loadout_title, app.label),
-            color = GameSpacePalette.Ink,
-            // عنوان الصفحة لا عنوان بطاقة: الحجم الكبير الخفيف نفسه المستعمل في المسرح.
-            fontSize = 28.sp,
-            fontWeight = FontWeight.Light,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm)
+        ) {
+            Box(
+                Modifier
+                    .width(LoadoutNotchWidth)
+                    .height(LoadoutNotchHeight)
+                    .background(GameSpacePalette.Violet)
+            )
+            Text(
+                text = stringResource(R.string.lobby_loadout_title, app.label),
+                color = GameSpacePalette.Ink,
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
         LobbySectionCard(stringResource(R.string.lobby_loadout_ready)) {
             Text(
                 text = stringResource(
@@ -539,6 +553,7 @@ private fun LoadoutBody(
                 color = GameSpacePalette.Muted,
                 fontSize = 12.sp
             )
+            LoadoutReadyBar(done = listOf(tweaks > 0, panelEnabled, overlayGranted).count { it }, total = 3)
             LoadoutCheck(
                 done = tweaks > 0,
                 title = stringResource(R.string.lobby_loadout_check_profile),
@@ -612,6 +627,36 @@ private fun LoadoutBody(
     }
 }
 
+/** شريط الجاهزية: شرائح بنفسجية بعدد الفحوص المكتملة، والباقي خافت — نفس لغة شريط «تم تحسين الأداء» في الرئيسية. */
+@Composable
+private fun LoadoutReadyBar(done: Int, total: Int) {
+    val shape = RoundedCornerShape(maxRadius(MaxRadius.pill))
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs)
+    ) {
+        repeat(total) { index ->
+            Box(
+                Modifier
+                    .weight(1f)
+                    .height(ReadyBarHeight)
+                    .clip(shape)
+                    .then(
+                        if (index < done) {
+                            Modifier.background(
+                                Brush.horizontalGradient(
+                                    listOf(GameSpacePalette.VioletDeep, GameSpacePalette.Violet, GameSpacePalette.VioletSoft)
+                                )
+                            )
+                        } else {
+                            Modifier.background(Color.White.copy(alpha = 0.08f))
+                        }
+                    )
+            )
+        }
+    }
+}
+
 /**
  * فحص واحد من فحوص الإطلاق: حالته مقروءة، وسببه مكتوب، والإصلاح زرّ حقيقي لا وعد.
  * الصفّ لا يدمج الدلالات لأن الزرّ داخله يجب أن يبقى هدفًا مستقلًّا في TalkBack.
@@ -627,7 +672,10 @@ private fun LoadoutCheck(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .heightIn(min = MaxSize.minTouchTarget),
+            .heightIn(min = MaxSize.minTouchTarget)
+            .clip(RoundedCornerShape(maxRadius(MaxRadius.row)))
+            .background(Color.White.copy(alpha = 0.04f))
+            .padding(horizontal = MaxSpace.md),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(MaxSpace.md)
     ) {
@@ -1290,13 +1338,24 @@ private fun LibraryBody(
             verticalAlignment = Alignment.Bottom,
             horizontalArrangement = Arrangement.spacedBy(MaxSpace.md)
         ) {
-            Text(
-                text = stringResource(R.string.lobby_manage_title),
-                color = GameSpacePalette.Ink,
-                fontSize = 26.sp,
-                fontWeight = FontWeight.Light,
-                modifier = Modifier.weight(1f)
-            )
+            Row(
+                modifier = Modifier.weight(1f),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm)
+            ) {
+                Box(
+                    Modifier
+                        .width(LoadoutNotchWidth)
+                        .height(LoadoutNotchHeight)
+                        .background(GameSpacePalette.Violet)
+                )
+                Text(
+                    text = stringResource(R.string.lobby_manage_title),
+                    color = GameSpacePalette.Ink,
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
             Text(
                 text = stringResource(R.string.lobby_vault_count, includedCount, apps.size),
                 color = GameSpacePalette.Muted,
@@ -1335,7 +1394,8 @@ private fun LibraryBody(
                 .fillMaxWidth()
                 .heightIn(min = MaxSize.minTouchTarget)
                 .clip(RoundedCornerShape(maxRadius(MaxRadius.control)))
-                .background(GameSpacePalette.Panel)
+                .background(LobbyGlassBody)
+                .border(MaxSize.hairlineBorder, LobbyGlassEdge, RoundedCornerShape(maxRadius(MaxRadius.control)))
                 .padding(horizontal = MaxSpace.md),
             contentAlignment = Alignment.CenterStart
         ) {
@@ -1370,7 +1430,9 @@ private fun LibraryBody(
                         modifier = Modifier
                             .fillMaxWidth()
                             .heightIn(min = MaxSize.minTouchTarget)
-                            .padding(vertical = MaxSpace.xs),
+                            .clip(RoundedCornerShape(maxRadius(MaxRadius.row)))
+                            .background(Color.White.copy(alpha = if (included) 0.06f else 0.03f))
+                            .padding(horizontal = MaxSpace.md, vertical = MaxSpace.xs),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(MaxSpace.md)
                     ) {
@@ -1399,9 +1461,9 @@ private fun LibraryBody(
                             checked = included,
                             onCheckedChange = { onToggle(app.packageName, it) },
                             colors = SwitchDefaults.colors(
-                                checkedTrackColor = GameSpacePalette.Red,
+                                checkedTrackColor = GameSpacePalette.Violet,
                                 checkedThumbColor = GameSpacePalette.Ink,
-                                uncheckedTrackColor = GameSpacePalette.PanelRaised,
+                                uncheckedTrackColor = Color.White.copy(alpha = 0.10f),
                                 uncheckedThumbColor = GameSpacePalette.Muted
                             )
                         )
@@ -1426,7 +1488,7 @@ private fun EmptyBody() {
     }
 }
 
-/** صفّ خيارات متساوية العرض؛ المحدَّد بلون اللوبي الأحمر. القيمة المعروضة تتبع [selected] لا حالة محلية. */
+/** صفّ خيارات متساوية العرض؛ المحدَّد بالبنفسجيّ كباقي شاشات اللوبي. القيمة المعروضة تتبع [selected] لا حالة محلية. */
 @Composable
 private fun <T> LobbyChoiceRow(
     title: String,
@@ -1447,12 +1509,12 @@ private fun <T> LobbyChoiceRow(
                         .height(ChipHeight)
                         .clip(shape)
                         .background(
-                            if (on) GameSpacePalette.Red.copy(alpha = 0.28f)
-                            else GameSpacePalette.PanelRaised.copy(alpha = 0.45f)
+                            if (on) GameSpacePalette.VioletDeep.copy(alpha = 0.55f)
+                            else Color.White.copy(alpha = 0.05f)
                         )
                         .border(
                             MaxSize.hairlineBorder,
-                            if (on) GameSpacePalette.RedBright else GameSpacePalette.Hairline,
+                            if (on) GameSpacePalette.VioletSoft else GameSpacePalette.Hairline,
                             shape
                         )
                         .selectable(
@@ -1467,7 +1529,7 @@ private fun <T> LobbyChoiceRow(
                 ) {
                     Text(
                         text = label,
-                        color = if (on) GameSpacePalette.RedBright else GameSpacePalette.Ink,
+                        color = if (on) GameSpacePalette.Lavender else GameSpacePalette.Ink,
                         fontSize = 13.sp,
                         fontWeight = if (on) FontWeight.SemiBold else FontWeight.Normal,
                         maxLines = 1
@@ -1506,8 +1568,8 @@ private fun LobbyToggleRow(title: String, detail: String?, checked: Boolean, onC
             onCheckedChange = null,
             colors = SwitchDefaults.colors(
                 checkedThumbColor = Color.White,
-                checkedTrackColor = GameSpacePalette.Red,
-                uncheckedTrackColor = GameSpacePalette.PanelRaised,
+                checkedTrackColor = GameSpacePalette.Violet,
+                uncheckedTrackColor = Color.White.copy(alpha = 0.10f),
                 uncheckedThumbColor = GameSpacePalette.Muted
             )
         )
