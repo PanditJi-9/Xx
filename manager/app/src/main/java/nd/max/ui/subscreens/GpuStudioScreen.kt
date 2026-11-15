@@ -472,7 +472,7 @@ private fun GpuStateShares(state: GpuStudioUiState) {
                 MaxRow(
                     // الوحدة تُحوَّل بـ`frequencyMHz` وحدها: جدول النواة خام، ووحدته تختلف
                     // بحسب المزوّد. وحين تكون الوحدة غير موثوقة تُعرض «—» لا رقم مخمَّن.
-                    title = GpuHardwareBackend.frequencyMHz(device, share.frequencyRaw)
+                    title = GpuHardwareBackend.frequencyMHz(device, share.frequencyKHz)
                         ?.let { "$it MHz" } ?: GpuDash,
                     subtitle = gpuPercent(share.share),
                 )
