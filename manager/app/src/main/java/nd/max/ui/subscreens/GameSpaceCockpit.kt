@@ -191,7 +191,7 @@ private fun CockpitTopBar(
                 fontWeight = FontWeight.SemiBold,
             )
             if (data.date.isNotBlank()) {
-                Text(text = data.date, color = GameSpacePalette.Muted, fontSize = 11.sp)
+                Text(text = data.date, color = GameSpacePalette.Muted, fontSize = 12.sp)
             }
         }
         Box {
@@ -315,8 +315,8 @@ private fun CockpitRailItem(page: LobbyPage, current: LobbyPage, onPage: (LobbyP
         Text(
             text = stringResource(page.labelRes),
             color = if (active) GameSpacePalette.Ink else GameSpacePalette.Muted,
-            fontSize = 11.sp,
-            lineHeight = 13.sp,
+            fontSize = 12.sp,
+            lineHeight = 15.sp,
             fontWeight = if (active) FontWeight.SemiBold else FontWeight.Medium,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
@@ -466,7 +466,7 @@ private fun CockpitInstrument(data: StageData, actions: StageActions, modifier: 
                 Text(
                     text = stringResource(R.string.gs_fps_unit),
                     color = GameSpacePalette.Muted,
-                    fontSize = 11.sp,
+                    fontSize = 12.sp,
                     maxLines = 1,
                 )
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -514,7 +514,7 @@ private fun CockpitMetric(label: String, value: String?, modifier: Modifier = Mo
         Text(
             text = label,
             color = GameSpacePalette.Muted,
-            fontSize = 11.sp,
+            fontSize = 12.sp,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
@@ -536,7 +536,7 @@ private fun CockpitBattery(percent: Int?, charging: Boolean) {
             Text(
                 text = stringResource(R.string.gs_battery),
                 color = GameSpacePalette.Muted,
-                fontSize = 11.sp,
+                fontSize = 12.sp,
                 maxLines = 1,
                 modifier = Modifier.weight(1f),
             )
@@ -660,7 +660,7 @@ private fun CockpitShelfCard(game: GameApp, selected: Boolean, onClick: () -> Un
         Text(
             text = game.label,
             color = if (selected) GameSpacePalette.Ink else GameSpacePalette.Muted,
-            fontSize = 11.sp,
+            fontSize = 12.sp,
             fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Medium,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
