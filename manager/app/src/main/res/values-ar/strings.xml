@@ -1905,6 +1905,7 @@
     <string name="processmgr_threads_seconds">%1$s ث</string>
     <string name="processmgr_threads_share">%1$d%%</string>
     <string name="processmgr_threads_tid">معرّف %1$d</string>
+    <string name="processmgr_threads_core">نواة %1$d</string>
     <string name="processmgr_detail_cgroup">المجموعة</string>
     <string name="processmgr_detail_ppid">العملية الأمّ</string>
     <string name="processmgr_detail_state">الحالة</string>

@@ -964,6 +964,7 @@
     <string name="processmgr_threads_seconds">%1$s s</string>
     <string name="processmgr_threads_share">%1$d%%</string>
     <string name="processmgr_threads_tid">tid %1$d</string>
+    <string name="processmgr_threads_core">core %1$d</string>
     <string name="processmgr_detail_cgroup">Cgroup</string>
     <string name="processmgr_detail_ppid">Parent PID</string>
     <string name="processmgr_detail_state">State</string>

@@ -111,7 +111,14 @@ data class ProcessDetails(
 data class ThreadTime(
     val tid: Int,
     val name: String,
-    val ticks: Long
+    val ticks: Long,
+    /**
+     * آخر نواة رُبط بها الخيط (`processor`)، أو `null` حين لا يعطيها `stat` (نواة أقدم).
+     *
+     * وهي إجابة سؤال عمليّ لا زينة: خيط يتردّد على نواة صغيرة يفسّر هبوطًا لا يفسّره زمنه
+     * التراكمي. وغيابها «لم تُقرأ» لا «النواة صفر» (ADR-07).
+     */
+    val lastCore: Int? = null
 )
 
 /**
@@ -318,7 +325,10 @@ object ProcessFeed {
         if (fields.size < 13) return null
         val utime = fields[11].toLongOrNull() ?: return null
         val stime = fields[12].toLongOrNull() ?: return null
-        return ThreadTime(tid = tid, name = name, ticks = utime + stime)
+        // `processor` هو الحقل ٣٩ في `stat`: بعد `comm` تبدأ الحقول من الحالة (الحقل ٣)،
+        // فما بعدها بإزاحة ٣ ⇒ الفهرس ٣٦. ونواة لا تعطيه تُبقيه `null` ولا تخترع صفرًا.
+        val lastCore = if (fields.size >= 37) fields[36].toIntOrNull() else null
+        return ThreadTime(tid = tid, name = name, ticks = utime + stime, lastCore = lastCore)
     }
 
     /**

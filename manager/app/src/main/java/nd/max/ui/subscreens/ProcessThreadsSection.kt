@@ -107,6 +107,12 @@ private fun ThreadRow(thread: ThreadTime, total: Long, ticksPerSecond: Long?) {
     } else {
         MAX_VALUE_UNAVAILABLE
     }
+    // النواة تُعرض حين قرأتها النواة؛ وغيابها يُسقط النصّ ولا يُكتب «النواة —» بلا معنى.
+    val core = if (thread.lastCore != null) {
+        stringResource(R.string.processmgr_threads_core, thread.lastCore)
+    } else {
+        null
+    }
     val fraction = if (total > 0L) {
         (thread.ticks.toFloat() / total.toFloat()).coerceIn(0f, 1f)
     } else {
@@ -131,6 +137,13 @@ private fun ThreadRow(thread: ThreadTime, total: Long, ticksPerSecond: Long?) {
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.weight(1f)
             )
+            if (core != null) {
+                Text(
+                    text = core,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = colors.onSurfaceVariant
+                )
+            }
             Text(
                 text = seconds,
                 // أرقام بعرض ثابت فتنتظم في عمود واحد تحت بعضها.
