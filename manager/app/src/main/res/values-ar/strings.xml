@@ -1906,6 +1906,8 @@
     <string name="processmgr_threads_share">%1$d%%</string>
     <string name="processmgr_threads_tid">معرّف %1$d</string>
     <string name="processmgr_threads_core">نواة %1$d</string>
+    <string name="game_sessions_threads_title">أكثر الخيوط انشغالًا</string>
+    <string name="game_sessions_threads_caption">زمن المعالج لكل خيط في الجلسة، من قراءة عند البدء وأخرى عند الإيقاف. والخيط الذي وُلد في منتصف الجلسة يُستبعد لأن زمنه في الجلسة مجهول، والحصة من زمن معالج اللعبة نفسها.</string>
     <string name="processmgr_detail_cgroup">المجموعة</string>
     <string name="processmgr_detail_ppid">العملية الأمّ</string>
     <string name="processmgr_detail_state">الحالة</string>

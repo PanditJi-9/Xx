@@ -5,7 +5,7 @@
  */
 
 /*
- * الخيوط — **زمن المعالج لكل خيط** داخل العملية المفتوحة.
+ * الخيوط — **زمن المعالج لكل خيط**، حيًّا داخل العملية المفتوحة، وعبر الجلسة كاملة في تقريرها.
  *
  * كان السطح يقول عدد الخيوط فقط («٢٤ خيطًا»)، والعدد لا يقول أين يذهب المعالج: عمليةٌ بخيط
  * واحد مشغول تُقرأ كعملية هادئة ذات أربعة وعشرين خيطًا. فالناقص لم يكن عدًّا آخر بل **توزيعًا**:
@@ -63,58 +63,88 @@ private const val ThreadTrackAlpha = 0.18f
  */
 @Composable
 internal fun ProcessThreadsSection(times: List<ThreadTime>?) {
-    if (times.isNullOrEmpty()) return
+    ThreadRowsSection(
+        title = stringResource(R.string.processmgr_threads_title),
+        caption = stringResource(R.string.processmgr_threads_caption),
+        rows = remember(times) {
+            times?.map { ThreadRowFacts(it.tid, it.name, it.lastCore, it.ticks) }
+        }
+    )
+}
+
+/**
+ * صفّ خيط واحد كما تحتاجه الرسم، لا كما تقرؤه الطبقة.
+ *
+ * **ولماذا وسيط:** اللقطة الحيّة تعرف النواة الأخيرة، وفرق الجلسة لا يعرفها (خيط ينتقل بين
+ * نوى لا نواة له). فالصفّ يحمل ما قد يغيب، والرسم يُسقط الغائب ولا يكتب «النواة —» بلا معنى.
+ */
+internal data class ThreadRowFacts(
+    val tid: Int,
+    val name: String,
+    val core: Int?,
+    val ticks: Long
+)
+
+/**
+ * خيوط بعنوانها ووصفها — الشكل الواحد الذي يُعرض به التوزيع في كل سطح.
+ *
+ * السطحان مختلفان في المصدر (لقطة حيّة · فرق جلسة) ومتّفقان في القراءة المطلوبة: من يستهلك،
+ * وكم، وأي حصة. فلا يُكتب الصفّ مرّتين بقواعدين تنحرفان.
+ */
+@Composable
+internal fun ThreadRowsSection(title: String, caption: String, rows: List<ThreadRowFacts>?) {
+    if (rows.isNullOrEmpty()) return
     val colors = MaterialTheme.colorScheme
     val ticksPerSecond = remember { ProcessFeed.clockTicksPerSecond() }
-    val total = times.sumOf { it.ticks }
+    val total = rows.sumOf { it.ticks }
     Column(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(MaxSpace.xs)
     ) {
         Text(
-            text = stringResource(R.string.processmgr_threads_title),
+            text = title,
             style = MaterialTheme.typography.titleSmall,
             fontWeight = FontWeight.SemiBold
         )
         Text(
-            text = stringResource(R.string.processmgr_threads_caption),
+            text = caption,
             style = MaterialTheme.typography.bodySmall,
             color = colors.onSurfaceVariant
         )
         Spacer(Modifier.height(MaxSpace.xs))
-        times.take(THREADS_SHOWN).forEach { thread ->
-            ThreadRow(thread = thread, total = total, ticksPerSecond = ticksPerSecond)
+        rows.take(THREADS_SHOWN).forEach { row ->
+            ThreadRow(row = row, total = total, ticksPerSecond = ticksPerSecond)
         }
     }
 }
 
 /** خيط واحد: اسمه، وزمنه، وحصته من زمن العملية — ثم مسارٌ يقول الحصة بلا قراءة رقم. */
 @Composable
-private fun ThreadRow(thread: ThreadTime, total: Long, ticksPerSecond: Long?) {
+private fun ThreadRow(row: ThreadRowFacts, total: Long, ticksPerSecond: Long?) {
     val colors = MaterialTheme.colorScheme
     // النصوص تُحسب قبل التخطيط: `stringResource` نداء @Composable لا يُستدعى داخل تعبير شرطي
     // خارج نطاق التركيب.
     val seconds = if (ticksPerSecond != null && ticksPerSecond > 0L) {
         stringResource(
             R.string.processmgr_threads_seconds,
-            "%.1f".format(thread.ticks.toFloat() / ticksPerSecond)
+            "%.1f".format(row.ticks.toFloat() / ticksPerSecond)
         )
     } else {
         MAX_VALUE_UNAVAILABLE
     }
     val share = if (total > 0L) {
-        stringResource(R.string.processmgr_threads_share, (thread.ticks * 100 / total).toInt())
+        stringResource(R.string.processmgr_threads_share, (row.ticks * 100 / total).toInt())
     } else {
         MAX_VALUE_UNAVAILABLE
     }
     // النواة تُعرض حين قرأتها النواة؛ وغيابها يُسقط النصّ ولا يُكتب «النواة —» بلا معنى.
-    val core = if (thread.lastCore != null) {
-        stringResource(R.string.processmgr_threads_core, thread.lastCore)
+    val core = if (row.core != null) {
+        stringResource(R.string.processmgr_threads_core, row.core)
     } else {
         null
     }
     val fraction = if (total > 0L) {
-        (thread.ticks.toFloat() / total.toFloat()).coerceIn(0f, 1f)
+        (row.ticks.toFloat() / total.toFloat()).coerceIn(0f, 1f)
     } else {
         0f
     }
@@ -125,13 +155,13 @@ private fun ThreadRow(thread: ThreadTime, total: Long, ticksPerSecond: Long?) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = stringResource(R.string.processmgr_threads_tid, thread.tid),
+                text = stringResource(R.string.processmgr_threads_tid, row.tid),
                 // `bodySmall` لا `labelSmall`: أرضية النصّ في المستودع ١٢sp، وlabelSmall ١١.
                 style = MaterialTheme.typography.bodySmall,
                 color = colors.onSurfaceVariant
             )
             Text(
-                text = thread.name,
+                text = row.name,
                 style = MaterialTheme.typography.bodySmall,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,

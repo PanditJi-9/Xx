@@ -965,6 +965,8 @@
     <string name="processmgr_threads_share">%1$d%%</string>
     <string name="processmgr_threads_tid">tid %1$d</string>
     <string name="processmgr_threads_core">core %1$d</string>
+    <string name="game_sessions_threads_title">Busiest threads</string>
+    <string name="game_sessions_threads_caption">Processor time per thread across the session, from one reading at the start and one at the stop. A thread created mid-session is left out because its session time is unknown, and the share is of the game\'s own CPU time.</string>
     <string name="processmgr_detail_cgroup">Cgroup</string>
     <string name="processmgr_detail_ppid">Parent PID</string>
     <string name="processmgr_detail_state">State</string>

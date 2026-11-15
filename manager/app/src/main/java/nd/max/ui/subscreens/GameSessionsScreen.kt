@@ -520,6 +520,11 @@ fun GameSessionsScreen(
                                 accent = scheme.tertiary,
                                 emptyText = stringResource(R.string.game_sessions_empty),
                             )
+                            // أين ذهب المعالج طوال الجلسة: قراءتان عند الحدّين، لا عيّنة أثناء اللعب.
+                            // وغياب القائمة «لم تُقرأ» فتُسقط القسم كله ولا ترسم أصفارًا (ADR-07).
+                            if (!session.threadLoad.isNullOrEmpty()) {
+                                SessionThreadsSection(loads = session.threadLoad)
+                            }
                             MaxGroup {
                                 MaxNavigationRow(
                                     title = stringResource(R.string.game_sessions_remark),

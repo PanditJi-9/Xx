@@ -721,6 +721,12 @@ object HudRecorder {
     @Volatile var lastSaved: StoredGameSession? = null
         private set
 
+    /**
+     * لقطة خيوط الجلسة عند البدء — حدّ واحد من حدّي توزيع الخيوط.
+     * تُقرأ في الخلفية، فلا ينتظر بدء التسجيل نداءً جذريًّا.
+     */
+    @Volatile private var sessionThreads: ThreadsSnapshot? = null
+
     private val saveScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     val isLive: Boolean get() = live
@@ -742,6 +748,7 @@ object HudRecorder {
         live = true
         persisted = false
         lastSaved = null
+        sessionThreads = null
         sessionPackage = packageOverride?.takeIf { it.isNotBlank() }
             ?: context?.let { AppMonitor.currentForegroundPackage() }
         sessionLabel = sessionPackage?.let { pkg -> appLabelOf(context, pkg) }
@@ -755,6 +762,14 @@ object HudRecorder {
         remark = null
         lastStopReason = null
         HudLive.markRecording(true)
+        // الحدّ الأوّل لتوزيع الخيوط: قراءة واحدة عند البدء. وليست على المسار الحرج —
+        // من بدأ اللعب لا ينتظر `su`. ولو أُعيد البدء قبل وصولها، تُرفض اللقطة القديمة بساعة الجلسة.
+        val probedPackage = sessionPackage
+        val probedStart = sessionStartedAtMs
+        saveScope.launch {
+            val snapshot = SessionThreadProbe.read(probedPackage)
+            if (sessionStartedAtMs == probedStart) sessionThreads = snapshot
+        }
     }
 
     /** إيقاف يدوي — الغلاف القديم، ويُسجّل السبب صريحًا في السجلّ. */
@@ -826,6 +841,10 @@ object HudRecorder {
                 val history = GameSessionStore.load(app)
                 SessionSummaryNotifier.notify(app, record, sessionInsight(record, history))
             }
+            // الحدّ الثاني لتوزيع الخيوط: القراءة بعد الحفظ، فالانتظار لا يؤجّل حفظ الجلسة أبدًا.
+            // والكتابة تحديثٌ للصفّ نفسه بالمعرّف، لا صفٌّ ثانٍ — والفرق يُحسب في الطبقة لا هنا.
+            val loads = SessionThreadProbe.loads(sessionThreads, SessionThreadProbe.read(sessionPackage))
+            if (loads != null) GameSessionStore.update(app, record.id) { it.copy(threadLoad = loads) }
         }
     }
 
@@ -843,6 +862,7 @@ object HudRecorder {
         remark = null
         lastStopReason = null
         lastSaved = null
+        sessionThreads = null
         HudLive.markRecording(false)
     }
 
