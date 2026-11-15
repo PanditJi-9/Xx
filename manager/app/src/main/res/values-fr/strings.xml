@@ -1717,7 +1717,6 @@
     <string name="io_scheduler">Planificateur d\'E/S</string>
     <string name="io_scheduler_desc">Une valeur pour chaque profil, écrite immédiatement sur chaque périphérique de bloc.</string>
     <string name="app_settings_more_actions">Plus de propositions</string>
-    <string name="notif_maxai_off">Max AI : éteint</string>
     <string name="notif_maxai_running">Max AI : en cours d\'exécution (%1$s)</string>
     <string name="section_daemon">Démon</string>
     <string name="str_daemon_not_running">Le démon ne fonctionne pas</string>

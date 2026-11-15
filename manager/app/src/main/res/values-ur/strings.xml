@@ -1717,7 +1717,6 @@
     <string name="io_scheduler">I/O شیڈولر</string>
     <string name="io_scheduler_desc">ہر پروفائل کے لیے ایک قدر، ہر بلاک ڈیوائس پر فوراً لکھا جاتا ہے۔</string>
     <string name="app_settings_more_actions">مزید کارروائیاں</string>
-    <string name="notif_maxai_off">Max AI: بند</string>
     <string name="notif_maxai_running">Max AI: دوڑنا (%1$s)</string>
     <string name="section_daemon">ڈیمن</string>
     <string name="str_daemon_not_running">ڈیمون نہیں چل رہا ہے۔</string>

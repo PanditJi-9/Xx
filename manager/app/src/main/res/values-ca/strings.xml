@@ -1717,7 +1717,6 @@
     <string name="io_scheduler">Programador d\'E/S</string>
     <string name="io_scheduler_desc">Un valor per a cada perfil, escrit a cada dispositiu de bloc immediatament.</string>
     <string name="app_settings_more_actions">Més accions</string>
-    <string name="notif_maxai_off">Max AI: apagat</string>
     <string name="notif_maxai_running">Max AI: corrent (%1$s)</string>
     <string name="section_daemon">Dimoni</string>
     <string name="str_daemon_not_running">El dimoni no s\'està executant</string>

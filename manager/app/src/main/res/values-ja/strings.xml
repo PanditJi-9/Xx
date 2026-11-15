@@ -1717,7 +1717,6 @@
     <string name="io_scheduler">I/Oスケジューラ</string>
     <string name="io_scheduler_desc">プロファイルごとに 1 つの値が、すべてのブロック デバイスに即座に書き込まれます。</string>
     <string name="app_settings_more_actions">さらなるアクション</string>
-    <string name="notif_maxai_off">Max AI：オフ</string>
     <string name="notif_maxai_running">Max AI: 実行中 (%1$s)</string>
     <string name="section_daemon">デーモン</string>
     <string name="str_daemon_not_running">デーモンが実行されていません</string>

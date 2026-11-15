@@ -1717,7 +1717,6 @@
     <string name="io_scheduler">I/O-planner</string>
     <string name="io_scheduler_desc">Eén waarde voor elk profiel, onmiddellijk naar elk blokapparaat geschreven.</string>
     <string name="app_settings_more_actions">Meer acties</string>
-    <string name="notif_maxai_off">Max AI: uit</string>
     <string name="notif_maxai_running">Max AI: hardlopen (%1$s)</string>
     <string name="section_daemon">Demon</string>
     <string name="str_daemon_not_running">De daemon is niet actief</string>

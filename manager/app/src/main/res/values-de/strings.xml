@@ -1717,7 +1717,6 @@
     <string name="io_scheduler">I/O-Planer</string>
     <string name="io_scheduler_desc">Ein Wert für jedes Profil, der sofort auf jedes Blockgerät geschrieben wird.</string>
     <string name="app_settings_more_actions">Weitere Aktionen</string>
-    <string name="notif_maxai_off">Max AI: aus</string>
     <string name="notif_maxai_running">Max AI: Laufen (%1$s)</string>
     <string name="section_daemon">Dämon</string>
     <string name="str_daemon_not_running">Der Daemon läuft nicht</string>

@@ -1717,7 +1717,6 @@
     <string name="io_scheduler">I/O Распоредувач</string>
     <string name="io_scheduler_desc">Една вредност за секој профил, напишана на секој блок уред веднаш.</string>
     <string name="app_settings_more_actions">Повеќе акции</string>
-    <string name="notif_maxai_off">Max AI: исклучено</string>
     <string name="notif_maxai_running">Max AI: трчање (%1$s)</string>
     <string name="section_daemon">Демон</string>
     <string name="str_daemon_not_running">Демонот не работи</string>

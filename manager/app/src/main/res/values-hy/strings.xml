@@ -1717,7 +1717,6 @@
     <string name="io_scheduler">I/O ժամանակացույց</string>
     <string name="io_scheduler_desc">Մեկ արժեք յուրաքանչյուր պրոֆիլի համար՝ անմիջապես գրված յուրաքանչյուր բլոկ սարքի վրա:</string>
     <string name="app_settings_more_actions">Ավելի շատ գործողություններ</string>
-    <string name="notif_maxai_off">Max AI: անջատված է</string>
     <string name="notif_maxai_running">Max AI: վազում (%1$s)</string>
     <string name="section_daemon">Դեյմոն</string>
     <string name="str_daemon_not_running">Դեյմոնը չի վազում</string>

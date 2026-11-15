@@ -1717,7 +1717,6 @@
     <string name="io_scheduler">កម្មវិធីកំណត់ពេល I/O</string>
     <string name="io_scheduler_desc">តម្លៃមួយសម្រាប់រាល់ទម្រង់ ដែលសរសេរទៅគ្រប់ឧបករណ៍ប្លុកភ្លាមៗ។</string>
     <string name="app_settings_more_actions">សកម្មភាពច្រើនទៀត</string>
-    <string name="notif_maxai_off">Max AI៖ បិទ</string>
     <string name="notif_maxai_running">Max AI៖ កំពុងដំណើរការ (%1$s)</string>
     <string name="section_daemon">ដេមិន</string>
     <string name="str_daemon_not_running">ដេមិនមិនដំណើរការទេ។</string>

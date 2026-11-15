@@ -1717,7 +1717,6 @@
     <string name="io_scheduler">I/O-planlægger</string>
     <string name="io_scheduler_desc">Én værdi for hver profil, skrevet til hver blokenhed med det samme.</string>
     <string name="app_settings_more_actions">Flere handlinger</string>
-    <string name="notif_maxai_off">Max AI: slukket</string>
     <string name="notif_maxai_running">Max AI: løb (%1$s)</string>
     <string name="section_daemon">Dæmon</string>
     <string name="str_daemon_not_running">Dæmonen kører ikke</string>

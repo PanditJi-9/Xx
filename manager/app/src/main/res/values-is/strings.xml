@@ -1717,7 +1717,6 @@
     <string name="io_scheduler">I/O tímaáætlun</string>
     <string name="io_scheduler_desc">Eitt gildi fyrir hvert snið, skrifað í hvert blokkartæki strax.</string>
     <string name="app_settings_more_actions">Fleiri aðgerðir</string>
-    <string name="notif_maxai_off">Max AI: slökkt</string>
     <string name="notif_maxai_running">Max AI: í gangi (%1$s)</string>
     <string name="section_daemon">Púki</string>
     <string name="str_daemon_not_running">Púkinn er ekki í gangi</string>

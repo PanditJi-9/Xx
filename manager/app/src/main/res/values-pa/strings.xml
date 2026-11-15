@@ -1717,7 +1717,6 @@
     <string name="io_scheduler">I/O ਸ਼ਡਿਊਲਰ</string>
     <string name="io_scheduler_desc">ਹਰੇਕ ਪ੍ਰੋਫਾਈਲ ਲਈ ਇੱਕ ਮੁੱਲ, ਹਰੇਕ ਬਲਾਕ ਡਿਵਾਈਸ ਨੂੰ ਤੁਰੰਤ ਲਿਖਿਆ ਜਾਂਦਾ ਹੈ।</string>
     <string name="app_settings_more_actions">ਹੋਰ ਕਾਰਵਾਈਆਂ</string>
-    <string name="notif_maxai_off">Max AI: ਬੰਦ</string>
     <string name="notif_maxai_running">Max AI: ਦੌੜਨਾ (%1$s)</string>
     <string name="section_daemon">ਡੈਮਨ</string>
     <string name="str_daemon_not_running">ਡੈਮਨ ਨਹੀਂ ਚੱਲ ਰਿਹਾ ਹੈ</string>

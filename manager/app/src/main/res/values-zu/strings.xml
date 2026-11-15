@@ -1717,7 +1717,6 @@
     <string name="io_scheduler">I/O Isihleli</string>
     <string name="io_scheduler_desc">Inani elilodwa layo yonke iphrofayela, elibhalelwe yonke idivayisi yokuvimba ngokushesha.</string>
     <string name="app_settings_more_actions">Izenzo ezengeziwe</string>
-    <string name="notif_maxai_off">Max AI: icishiwe</string>
     <string name="notif_maxai_running">Max AI: ukugijima (%1$s)</string>
     <string name="section_daemon">I-Daemon</string>
     <string name="str_daemon_not_running">I-daemon ayisebenzi</string>

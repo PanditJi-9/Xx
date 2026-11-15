@@ -1717,7 +1717,6 @@
     <string name="io_scheduler">I/O ಶೆಡ್ಯೂಲರ್</string>
     <string name="io_scheduler_desc">ಪ್ರತಿ ಪ್ರೊಫೈಲ್‌ಗೆ ಒಂದು ಮೌಲ್ಯ, ಪ್ರತಿ ಬ್ಲಾಕ್ ಸಾಧನಕ್ಕೆ ತಕ್ಷಣವೇ ಬರೆಯಲಾಗುತ್ತದೆ.</string>
     <string name="app_settings_more_actions">ಇನ್ನಷ್ಟು ಕ್ರಮಗಳು</string>
-    <string name="notif_maxai_off">Max AI: ಆಫ್</string>
     <string name="notif_maxai_running">Max AI: ಚಾಲನೆಯಲ್ಲಿರುವ (%1$s)</string>
     <string name="section_daemon">ಡೀಮನ್</string>
     <string name="str_daemon_not_running">ಡೀಮನ್ ಓಡುತ್ತಿಲ್ಲ</string>

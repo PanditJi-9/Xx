@@ -1717,7 +1717,6 @@
     <string name="io_scheduler">I/O Scheduler</string>
     <string name="io_scheduler_desc">One value for every profile, written to every block device immediately.</string>
     <string name="app_settings_more_actions">More actions</string>
-    <string name="notif_maxai_off">Max AI: off</string>
     <string name="notif_maxai_running">Max AI: running (%1$s)</string>
     <string name="section_daemon">Daemon</string>
     <string name="str_daemon_not_running">The daemon is not running</string>

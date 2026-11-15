@@ -1717,7 +1717,6 @@
     <string name="io_scheduler">Енгізу/шығару жоспарлағышы</string>
     <string name="io_scheduler_desc">Әрбір профиль үшін бір мән, әр блок құрылғысына дереу жазылады.</string>
     <string name="app_settings_more_actions">Қосымша әрекеттер</string>
-    <string name="notif_maxai_off">Max AI: өшірулі</string>
     <string name="notif_maxai_running">Max AI: жүгіру (%1$s)</string>
     <string name="section_daemon">Демон</string>
     <string name="str_daemon_not_running">Демон жұмыс істемейді</string>

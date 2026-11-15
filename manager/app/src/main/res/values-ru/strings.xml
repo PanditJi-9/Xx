@@ -1717,7 +1717,6 @@
     <string name="io_scheduler">Планировщик ввода-вывода</string>
     <string name="io_scheduler_desc">Одно значение для каждого профиля, немедленно записываемое на каждое блочное устройство.</string>
     <string name="app_settings_more_actions">Дополнительные действия</string>
-    <string name="notif_maxai_off">Max AI: выкл.</string>
     <string name="notif_maxai_running">Max AI: бег (%1$s)</string>
     <string name="section_daemon">Демон</string>
     <string name="str_daemon_not_running">Демон не запускается</string>

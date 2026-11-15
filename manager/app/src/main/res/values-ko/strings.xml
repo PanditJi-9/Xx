@@ -1717,7 +1717,6 @@
     <string name="io_scheduler">I/O 스케줄러</string>
     <string name="io_scheduler_desc">모든 프로필에 대해 하나의 값이 모든 블록 장치에 즉시 기록됩니다.</string>
     <string name="app_settings_more_actions">추가 작업</string>
-    <string name="notif_maxai_off">Max AI: 꺼짐</string>
     <string name="notif_maxai_running">Max AI : 실행 중 (%1$s)</string>
     <string name="section_daemon">악마</string>
     <string name="str_daemon_not_running">데몬이 실행되고 있지 않습니다.</string>

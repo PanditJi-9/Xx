@@ -1717,7 +1717,6 @@
     <string name="io_scheduler">I/O Planlayıcısı</string>
     <string name="io_scheduler_desc">Hər profil üçün bir dəyər, hər blok cihazına dərhal yazılır.</string>
     <string name="app_settings_more_actions">Daha çox hərəkət</string>
-    <string name="notif_maxai_off">Max AI: söndürülür</string>
     <string name="notif_maxai_running">Max AI: qaçış (%1$s)</string>
     <string name="section_daemon">Daemon</string>
     <string name="str_daemon_not_running">Demon işləmir</string>

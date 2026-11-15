@@ -1717,7 +1717,6 @@
     <string name="io_scheduler">I/O plānotājs</string>
     <string name="io_scheduler_desc">Viena vērtība katram profilam, kas nekavējoties tiek ierakstīta katrā bloka ierīcē.</string>
     <string name="app_settings_more_actions">Vairāk darbību</string>
-    <string name="notif_maxai_off">Max AI: izslēgts</string>
     <string name="notif_maxai_running">Max AI: skriešana (%1$s)</string>
     <string name="section_daemon">Dēmons</string>
     <string name="str_daemon_not_running">Dēmons nedarbojas</string>

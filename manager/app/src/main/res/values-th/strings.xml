@@ -1717,7 +1717,6 @@
     <string name="io_scheduler">ตัวกำหนดเวลา I/O</string>
     <string name="io_scheduler_desc">ค่าเดียวสำหรับทุกโปรไฟล์ เขียนไปยังอุปกรณ์บล็อคทุกตัวทันที</string>
     <string name="app_settings_more_actions">การดำเนินการเพิ่มเติม</string>
-    <string name="notif_maxai_off">Max AI: ปิด</string>
     <string name="notif_maxai_running">Max AI: วิ่ง (%1$s)</string>
     <string name="section_daemon">ภูต</string>
     <string name="str_daemon_not_running">ภูตไม่ทำงาน</string>

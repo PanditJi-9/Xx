@@ -1717,7 +1717,6 @@
     <string name="io_scheduler">ຕົວກຳນົດເວລາ I/O</string>
     <string name="io_scheduler_desc">ຄ່າໜຶ່ງສຳລັບທຸກໂປຣໄຟລ໌, ຂຽນໃສ່ທຸກອຸປະກອນບລັອກທັນທີ.</string>
     <string name="app_settings_more_actions">ການປະຕິບັດເພີ່ມເຕີມ</string>
-    <string name="notif_maxai_off">Max AI: ປິດ</string>
     <string name="notif_maxai_running">Max AI: ແລ່ນ (%1$s)</string>
     <string name="section_daemon">Daemon</string>
     <string name="str_daemon_not_running">daemon ບໍ່ໄດ້ແລ່ນ</string>

@@ -1717,7 +1717,6 @@
     <string name="io_scheduler">I/O хуваарьлагч</string>
     <string name="io_scheduler_desc">Профайл бүрийн нэг утгыг блок төхөөрөмж бүрт нэн даруй бичнэ.</string>
     <string name="app_settings_more_actions">Илүү олон үйлдэл</string>
-    <string name="notif_maxai_off">Max AI: унтраалттай</string>
     <string name="notif_maxai_running">Max AI: гүйж байна (%1$s)</string>
     <string name="section_daemon">Демон</string>
     <string name="str_daemon_not_running">Демон ажиллахгүй байна</string>

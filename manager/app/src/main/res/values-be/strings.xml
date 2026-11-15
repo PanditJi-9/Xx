@@ -1717,7 +1717,6 @@
     <string name="io_scheduler">Планіроўшчык уводу-вываду</string>
     <string name="io_scheduler_desc">Адно значэнне для кожнага профілю, якое неадкладна запісваецца на кожную блокавую прыладу.</string>
     <string name="app_settings_more_actions">Больш дзеянняў</string>
-    <string name="notif_maxai_off">Max AI: выключана</string>
     <string name="notif_maxai_running">Max AI: бег (%1$s)</string>
     <string name="section_daemon">Дэман</string>
     <string name="str_daemon_not_running">Дэман не працуе</string>

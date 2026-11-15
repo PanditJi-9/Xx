@@ -1717,7 +1717,6 @@
     <string name="io_scheduler">Programator I/O</string>
     <string name="io_scheduler_desc">O valoare pentru fiecare profil, scrisă imediat pe fiecare dispozitiv bloc.</string>
     <string name="app_settings_more_actions">Mai multe acțiuni</string>
-    <string name="notif_maxai_off">Max AI: oprit</string>
     <string name="notif_maxai_running">Max AI: alergare (%1$s)</string>
     <string name="section_daemon">Daemon</string>
     <string name="str_daemon_not_running">Daemonul nu rulează</string>

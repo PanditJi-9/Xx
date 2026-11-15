@@ -1717,7 +1717,6 @@
     <string name="io_scheduler">Προγραμματιστής I/O</string>
     <string name="io_scheduler_desc">Μία τιμή για κάθε προφίλ, γραμμένη σε κάθε μπλοκ συσκευή αμέσως.</string>
     <string name="app_settings_more_actions">Περισσότερες ενέργειες</string>
-    <string name="notif_maxai_off">Max AI: απενεργοποιημένο</string>
     <string name="notif_maxai_running">Max AI: τρέξιμο (%1$s)</string>
     <string name="section_daemon">Δαίμονας</string>
     <string name="str_daemon_not_running">Ο δαίμονας δεν τρέχει</string>

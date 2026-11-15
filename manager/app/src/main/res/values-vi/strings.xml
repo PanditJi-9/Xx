@@ -1717,7 +1717,6 @@
     <string name="io_scheduler">Bộ lập lịch I/O</string>
     <string name="io_scheduler_desc">Một giá trị cho mỗi cấu hình, được ghi ngay lập tức vào mọi thiết bị khối.</string>
     <string name="app_settings_more_actions">Thêm hành động</string>
-    <string name="notif_maxai_off">Max AI: tắt</string>
     <string name="notif_maxai_running">Max AI: đang chạy (%1$s)</string>
     <string name="section_daemon">Daemon</string>
     <string name="str_daemon_not_running">Daemon không chạy</string>

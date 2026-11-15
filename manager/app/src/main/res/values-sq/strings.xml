@@ -1717,7 +1717,6 @@
     <string name="io_scheduler">Scheduler I/O</string>
     <string name="io_scheduler_desc">Një vlerë për çdo profil, e shkruar në çdo pajisje blloku menjëherë.</string>
     <string name="app_settings_more_actions">Më shumë veprime</string>
-    <string name="notif_maxai_off">Max AI: joaktive</string>
     <string name="notif_maxai_running">Max AI: vrapim (%1$s)</string>
     <string name="section_daemon">Daemon</string>
     <string name="str_daemon_not_running">Daemon nuk po vrapon</string>

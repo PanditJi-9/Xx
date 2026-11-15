@@ -1717,7 +1717,6 @@
     <string name="io_scheduler">I/O શેડ્યૂલર</string>
     <string name="io_scheduler_desc">દરેક પ્રોફાઇલ માટે એક મૂલ્ય, દરેક બ્લોક ઉપકરણ પર તરત જ લખવામાં આવે છે.</string>
     <string name="app_settings_more_actions">વધુ ક્રિયાઓ</string>
-    <string name="notif_maxai_off">Max AI: બંધ</string>
     <string name="notif_maxai_running">Max AI: દોડવું (%1$s)</string>
     <string name="section_daemon">ડિમન</string>
     <string name="str_daemon_not_running">ડિમન ચાલી રહ્યું નથી</string>

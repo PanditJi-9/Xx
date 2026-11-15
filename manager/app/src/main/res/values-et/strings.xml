@@ -1717,7 +1717,6 @@
     <string name="io_scheduler">I/O planeerija</string>
     <string name="io_scheduler_desc">Iga profiili jaoks üks väärtus, mis kirjutatakse kohe igasse blokeerimisseadmesse.</string>
     <string name="app_settings_more_actions">Rohkem toiminguid</string>
-    <string name="notif_maxai_off">Max AI: väljas</string>
     <string name="notif_maxai_running">Max AI: jooksmine (%1$s)</string>
     <string name="section_daemon">Deemon</string>
     <string name="str_daemon_not_running">Deemon ei tööta</string>

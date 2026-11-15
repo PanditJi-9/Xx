@@ -1717,7 +1717,6 @@
     <string name="io_scheduler">I/O-aikataulu</string>
     <string name="io_scheduler_desc">Yksi arvo jokaiselle profiilille, joka kirjoitetaan välittömästi jokaiseen lohkolaitteeseen.</string>
     <string name="app_settings_more_actions">Lisää toimintoja</string>
-    <string name="notif_maxai_off">Max AI: pois päältä</string>
     <string name="notif_maxai_running">Max AI: juoksu (%1$s)</string>
     <string name="section_daemon">Daemon</string>
     <string name="str_daemon_not_running">Demoni ei ole käynnissä</string>

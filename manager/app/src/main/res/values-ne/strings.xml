@@ -1717,7 +1717,6 @@
     <string name="io_scheduler">I/O अनुसूचीकर्ता</string>
     <string name="io_scheduler_desc">प्रत्येक प्रोफाइलको लागि एक मान, प्रत्येक ब्लक उपकरणमा तुरुन्तै लेखिएको।</string>
     <string name="app_settings_more_actions">थप कार्यहरू</string>
-    <string name="notif_maxai_off">Max AI: बन्द</string>
     <string name="notif_maxai_running">Max AI: दौडिरहेको (%1$s)</string>
     <string name="section_daemon">डेमन</string>
     <string name="str_daemon_not_running">डेमन चलिरहेको छैन</string>

@@ -1717,7 +1717,6 @@
     <string name="io_scheduler">Планувальник введення/виведення</string>
     <string name="io_scheduler_desc">Одне значення для кожного профілю, миттєво записується на кожен блоковий пристрій.</string>
     <string name="app_settings_more_actions">Більше дій</string>
-    <string name="notif_maxai_off">Max AI: вимкнено</string>
     <string name="notif_maxai_running">Max AI: біжить (%1$s)</string>
     <string name="section_daemon">Демон</string>
     <string name="str_daemon_not_running">Демон не працює</string>

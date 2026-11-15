@@ -1717,7 +1717,6 @@
     <string name="io_scheduler">I/O Scheduler</string>
     <string name="io_scheduler_desc">Ар бир блок түзмөгүнө дароо жазылган ар бир профиль үчүн бир маани.</string>
     <string name="app_settings_more_actions">Дагы аракеттер</string>
-    <string name="notif_maxai_off">Max AI: өчүк</string>
     <string name="notif_maxai_running">Max AI: чуркоо (%1$s)</string>
     <string name="section_daemon">Демон</string>
     <string name="str_daemon_not_running">Демон иштебейт</string>

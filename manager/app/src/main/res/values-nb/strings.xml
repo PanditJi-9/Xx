@@ -1717,7 +1717,6 @@
     <string name="io_scheduler">I/O-planlegger</string>
     <string name="io_scheduler_desc">Én verdi for hver profil, skrevet til hver blokkeringsenhet umiddelbart.</string>
     <string name="app_settings_more_actions">Flere handlinger</string>
-    <string name="notif_maxai_off">Max AI: av</string>
     <string name="notif_maxai_running">Max AI: løping (%1$s)</string>
     <string name="section_daemon">Daemon</string>
     <string name="str_daemon_not_running">Daemonen kjører ikke</string>

@@ -1717,7 +1717,6 @@
     <string name="io_scheduler">Įvesties / išvesties planuoklis</string>
     <string name="io_scheduler_desc">Viena vertė kiekvienam profiliui, iškart įrašoma į kiekvieną blokinį įrenginį.</string>
     <string name="app_settings_more_actions">Daugiau veiksmų</string>
-    <string name="notif_maxai_off">Max AI: išjungta</string>
     <string name="notif_maxai_running">Max AI: bėgimas (%1$s)</string>
     <string name="section_daemon">Demonas</string>
     <string name="str_daemon_not_running">Demonas neveikia</string>

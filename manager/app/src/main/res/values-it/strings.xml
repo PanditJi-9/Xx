@@ -1717,7 +1717,6 @@
     <string name="io_scheduler">Pianificatore I/O</string>
     <string name="io_scheduler_desc">Un valore per ogni profilo, scritto immediatamente su ogni dispositivo a blocchi.</string>
     <string name="app_settings_more_actions">Più azioni</string>
-    <string name="notif_maxai_off">Max AI: spento</string>
     <string name="notif_maxai_running">Max AI: corsa (%1$s)</string>
     <string name="section_daemon">Demone</string>
     <string name="str_daemon_not_running">Il demone non è in esecuzione</string>

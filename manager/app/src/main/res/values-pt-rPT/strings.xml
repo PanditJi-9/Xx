@@ -1717,7 +1717,6 @@
     <string name="io_scheduler">Agendador de E/S</string>
     <string name="io_scheduler_desc">Um valor para cada perfil, gravado em cada dispositivo de bloco imediatamente.</string>
     <string name="app_settings_more_actions">Mais ações</string>
-    <string name="notif_maxai_off">Max AI: desligado</string>
     <string name="notif_maxai_running">Max AI: correndo (%1$s)</string>
     <string name="section_daemon">Demônio</string>
     <string name="str_daemon_not_running">O daemon não está rodando</string>

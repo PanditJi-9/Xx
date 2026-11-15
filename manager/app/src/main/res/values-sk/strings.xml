@@ -1717,7 +1717,6 @@
     <string name="io_scheduler">Plánovač I/O</string>
     <string name="io_scheduler_desc">Jedna hodnota pre každý profil, okamžite zapísaná do každého blokového zariadenia.</string>
     <string name="app_settings_more_actions">Viac akcií</string>
-    <string name="notif_maxai_off">Max AI: vypnuté</string>
     <string name="notif_maxai_running">Max AI: beží (%1$s)</string>
     <string name="section_daemon">Démon</string>
     <string name="str_daemon_not_running">Démon nebeží</string>

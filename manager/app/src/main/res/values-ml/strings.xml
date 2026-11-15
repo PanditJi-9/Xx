@@ -1717,7 +1717,6 @@
     <string name="io_scheduler">I/O ഷെഡ്യൂളർ</string>
     <string name="io_scheduler_desc">ഓരോ പ്രൊഫൈലിനും ഒരു മൂല്യം, എല്ലാ ബ്ലോക്ക് ഉപകരണത്തിലും ഉടനടി എഴുതിയിരിക്കുന്നു.</string>
     <string name="app_settings_more_actions">കൂടുതൽ പ്രവർത്തനങ്ങൾ</string>
-    <string name="notif_maxai_off">Max AI: ഓഫ്</string>
     <string name="notif_maxai_running">Max AI: ഓട്ടം (%1$s)</string>
     <string name="section_daemon">ഡെമൺ</string>
     <string name="str_daemon_not_running">ഡെമൺ പ്രവർത്തിക്കുന്നില്ല</string>

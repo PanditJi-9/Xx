@@ -1276,7 +1276,6 @@
     <string name="no">No</string>
     <string name="notif_ch_profiles">Max Manager Profiles</string>
     <string name="notif_ch_system">Max Manager System</string>
-    <string name="notif_maxai_off">Max AI: off</string>
     <string name="notif_maxai_running">Max AI: running (%1$s)</string>
     <string name="off_label">Off</string>
     <string name="on_label">On</string>

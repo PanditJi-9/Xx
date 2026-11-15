@@ -1717,7 +1717,6 @@
     <string name="io_scheduler">I/O programatzailea</string>
     <string name="io_scheduler_desc">Balio bat profil bakoitzeko, bloke-gailu guztietan berehala idatzita.</string>
     <string name="app_settings_more_actions">Ekintza gehiago</string>
-    <string name="notif_maxai_off">Max AI: itzalita</string>
     <string name="notif_maxai_running">Max AI: korrika (%1$s)</string>
     <string name="section_daemon">Daemon</string>
     <string name="str_daemon_not_running">Deabrua ez da martxan</string>

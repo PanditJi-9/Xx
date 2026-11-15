@@ -1717,7 +1717,6 @@
     <string name="io_scheduler">I/O መርሐግብር ያዥ</string>
     <string name="io_scheduler_desc">ለእያንዳንዱ መገለጫ አንድ እሴት፣ ወዲያውኑ ለእያንዳንዱ የማገጃ መሳሪያ የተጻፈ።</string>
     <string name="app_settings_more_actions">ተጨማሪ ድርጊቶች</string>
-    <string name="notif_maxai_off">Max AI: ጠፍቷል</string>
     <string name="notif_maxai_running">Max AI: መሮጥ (%1$s)</string>
     <string name="section_daemon">ዴሞን</string>
     <string name="str_daemon_not_running">ዴሞን እየሮጠ አይደለም።</string>

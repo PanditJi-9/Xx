@@ -228,7 +228,6 @@
     <string name="no">لا</string>
     <string name="notif_ch_profiles">ملفات تعريف Max Manager</string>
     <string name="notif_ch_system">نظام Max Manager</string>
-    <string name="notif_maxai_off">Max AI: متوقف</string>
     <string name="notif_maxai_running">Max AI: يعمل (%1$s)</string>
     <string name="off_label">إيقاف</string>
     <string name="on_label">تشغيل</string>

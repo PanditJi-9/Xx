@@ -1717,7 +1717,6 @@
     <string name="io_scheduler">I/O အစီအစဉ်ဆွဲသူ</string>
     <string name="io_scheduler_desc">ပရိုဖိုင်တစ်ခုစီအတွက် တန်ဖိုးတစ်ခု၊ ဘလောက်ကိရိယာတိုင်းထံ ချက်ချင်းရေးပါ။</string>
     <string name="app_settings_more_actions">လုပ်ဆောင်ချက်တွေ ပိုများတယ်။</string>
-    <string name="notif_maxai_off">Max AI: ပိတ်သည်။</string>
     <string name="notif_maxai_running">Max AI- ပြေးနေသည် (%1$s)</string>
     <string name="section_daemon">Daemon</string>
     <string name="str_daemon_not_running">daemon သည် မပြေးပါ။</string>

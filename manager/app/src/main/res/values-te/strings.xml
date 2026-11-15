@@ -1717,7 +1717,6 @@
     <string name="io_scheduler">I/O షెడ్యూలర్</string>
     <string name="io_scheduler_desc">ప్రతి ప్రొఫైల్‌కు ఒక విలువ, ప్రతి బ్లాక్ పరికరానికి వెంటనే వ్రాయబడుతుంది.</string>
     <string name="app_settings_more_actions">మరిన్ని చర్యలు</string>
-    <string name="notif_maxai_off">Max AI: ఆఫ్</string>
     <string name="notif_maxai_running">Max AI: నడుస్తున్న (%1$s)</string>
     <string name="section_daemon">డెమోన్</string>
     <string name="str_daemon_not_running">డెమోన్ అమలు చేయడం లేదు</string>

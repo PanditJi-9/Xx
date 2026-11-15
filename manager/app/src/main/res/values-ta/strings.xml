@@ -1717,7 +1717,6 @@
     <string name="io_scheduler">I/O திட்டமிடுபவர்</string>
     <string name="io_scheduler_desc">ஒவ்வொரு சுயவிவரத்திற்கும் ஒரு மதிப்பு, ஒவ்வொரு தொகுதி சாதனத்திற்கும் உடனடியாக எழுதப்படும்.</string>
     <string name="app_settings_more_actions">மேலும் செயல்கள்</string>
-    <string name="notif_maxai_off">Max AI: ஆஃப்</string>
     <string name="notif_maxai_running">Max AI: இயங்கும் (%1$s)</string>
     <string name="section_daemon">டெமான்</string>
     <string name="str_daemon_not_running">டீமான் இயங்கவில்லை</string>

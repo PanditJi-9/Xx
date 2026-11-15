@@ -1717,7 +1717,6 @@
     <string name="io_scheduler">I/O अनुसूचक</string>
     <string name="io_scheduler_desc">प्रत्येक प्रोफ़ाइल के लिए एक मान, प्रत्येक ब्लॉक डिवाइस पर तुरंत लिखा जाता है।</string>
     <string name="app_settings_more_actions">अधिक क्रियाएं</string>
-    <string name="notif_maxai_off">Max AI: बंद</string>
     <string name="notif_maxai_running">Max AI: दौड़ना (%1$s)</string>
     <string name="section_daemon">डेमन</string>
     <string name="str_daemon_not_running">डेमॉन नहीं चल रहा है</string>

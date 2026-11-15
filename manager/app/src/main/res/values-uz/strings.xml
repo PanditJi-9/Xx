@@ -1717,7 +1717,6 @@
     <string name="io_scheduler">I/U taqvimi</string>
     <string name="io_scheduler_desc">Har bir profil uchun bitta qiymat, har bir blok qurilmaga darhol yoziladi.</string>
     <string name="app_settings_more_actions">Ko\'proq harakatlar</string>
-    <string name="notif_maxai_off">Max AI: oʻchirilgan</string>
     <string name="notif_maxai_running">Max AI: yugurish (%1$s)</string>
     <string name="section_daemon">Daemon</string>
     <string name="str_daemon_not_running">Demon ishlamayapti</string>

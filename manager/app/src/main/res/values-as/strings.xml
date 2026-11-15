@@ -1717,7 +1717,6 @@
     <string name="io_scheduler">I/O সময়সূচীকাৰী</string>
     <string name="io_scheduler_desc">প্ৰতিটো আলেখ্যনৰ বাবে এটা মান, প্ৰতিটো ব্লক ডিভাইচত তৎক্ষণাত লিখা।</string>
     <string name="app_settings_more_actions">অধিক কাৰ্য্য</string>
-    <string name="notif_maxai_off">Max AI: বন্ধ</string>
     <string name="notif_maxai_running">Max AI: চলি থকা (%1$s)</string>
     <string name="section_daemon">ডেমন</string>
     <string name="str_daemon_not_running">ডেমন চলি থকা নাই</string>

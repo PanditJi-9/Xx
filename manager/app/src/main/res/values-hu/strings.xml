@@ -1717,7 +1717,6 @@
     <string name="io_scheduler">I/O ütemező</string>
     <string name="io_scheduler_desc">Minden profilhoz egy érték, azonnal minden blokkeszközre írva.</string>
     <string name="app_settings_more_actions">További műveletek</string>
-    <string name="notif_maxai_off">Max AI: ki</string>
     <string name="notif_maxai_running">Max AI: fut (%1$s)</string>
     <string name="section_daemon">Démon</string>
     <string name="str_daemon_not_running">A démon nem fut</string>

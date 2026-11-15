@@ -1717,7 +1717,6 @@
     <string name="io_scheduler">I/O Scheduler</string>
     <string name="io_scheduler_desc">Isang halaga para sa bawat profile, kaagad na nakasulat sa bawat block device.</string>
     <string name="app_settings_more_actions">Higit pang mga aksyon</string>
-    <string name="notif_maxai_off">Max AI: naka-off</string>
     <string name="notif_maxai_running">Max AI: tumatakbo (%1$s)</string>
     <string name="section_daemon">Daemon</string>
     <string name="str_daemon_not_running">Hindi tumatakbo ang daemon</string>

@@ -1717,7 +1717,6 @@
     <string name="io_scheduler">I/O උපලේඛනගත කරන්නා</string>
     <string name="io_scheduler_desc">සෑම පැතිකඩක් සඳහාම එක් අගයක්, සෑම බ්ලොක් උපාංගයකටම වහාම ලියා ඇත.</string>
     <string name="app_settings_more_actions">තවත් ක්‍රියා</string>
-    <string name="notif_maxai_off">Max AI: අක්‍රියයි</string>
     <string name="notif_maxai_running">Max AI: ධාවනය (%1$s)</string>
     <string name="section_daemon">ඩේමන්</string>
     <string name="str_daemon_not_running">ඩීමන් දුවන්නේ නැත</string>

@@ -1717,7 +1717,6 @@
     <string name="io_scheduler">I/O Scheduler</string>
     <string name="io_scheduler_desc">ერთი მნიშვნელობა ყველა პროფილისთვის, რომელიც დაუყოვნებლივ იწერება ყველა ბლოკის მოწყობილობაზე.</string>
     <string name="app_settings_more_actions">მეტი მოქმედებები</string>
-    <string name="notif_maxai_off">Max AI: გამორთულია</string>
     <string name="notif_maxai_running">Max AI: გაშვებული (%1$s)</string>
     <string name="section_daemon">დემონი</string>
     <string name="str_daemon_not_running">დემონი არ მუშაობს</string>

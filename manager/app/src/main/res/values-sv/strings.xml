@@ -1717,7 +1717,6 @@
     <string name="io_scheduler">I/O-schemaläggare</string>
     <string name="io_scheduler_desc">Ett värde för varje profil, skrivs till varje blockenhet omedelbart.</string>
     <string name="app_settings_more_actions">Fler åtgärder</string>
-    <string name="notif_maxai_off">Max AI: av</string>
     <string name="notif_maxai_running">Max AI: löpning (%1$s)</string>
     <string name="section_daemon">Demon</string>
     <string name="str_daemon_not_running">Demonen körs inte</string>

@@ -1717,7 +1717,6 @@
     <string name="io_scheduler">I/O планировчик</string>
     <string name="io_scheduler_desc">Една стойност за всеки профил, незабавно записана на всяко блоково устройство.</string>
     <string name="app_settings_more_actions">Още действия</string>
-    <string name="notif_maxai_off">Max AI: изключено</string>
     <string name="notif_maxai_running">Max AI: работи (%1$s)</string>
     <string name="section_daemon">Демон</string>
     <string name="str_daemon_not_running">Демонът не работи</string>

@@ -1717,7 +1717,6 @@
     <string name="io_scheduler">I/O সময়সূচী</string>
     <string name="io_scheduler_desc">প্রতিটি প্রোফাইলের জন্য একটি মান, অবিলম্বে প্রতিটি ব্লক ডিভাইসে লেখা।</string>
     <string name="app_settings_more_actions">আরো কর্ম</string>
-    <string name="notif_maxai_off">Max AI: বন্ধ</string>
     <string name="notif_maxai_running">Max AI: দৌড়াচ্ছে (%1$s)</string>
     <string name="section_daemon">ডেমন</string>
     <string name="str_daemon_not_running">ডেমন চলছে না</string>

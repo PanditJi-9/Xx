@@ -1717,7 +1717,6 @@
     <string name="io_scheduler">I / O ଅନୁସୂଚୀତକାରୀ |</string>
     <string name="io_scheduler_desc">ପ୍ରତ୍ୟେକ ପ୍ରୋଫାଇଲ୍ ପାଇଁ ଗୋଟିଏ ମୂଲ୍ୟ, ତୁରନ୍ତ ପ୍ରତ୍ୟେକ ବ୍ଲକ୍ ଡିଭାଇସ୍ କୁ ଲେଖାଯାଇଛି |</string>
     <string name="app_settings_more_actions">ଅଧିକ କ୍ରିୟା</string>
-    <string name="notif_maxai_off">Max AI: ବନ୍ଦ |</string>
     <string name="notif_maxai_running">Max AI: ଚାଲୁଛି (%1$s)</string>
     <string name="section_daemon">ଡେମନ୍ |</string>
     <string name="str_daemon_not_running">ଡେମନ୍ ଚାଲୁନାହିଁ |</string>

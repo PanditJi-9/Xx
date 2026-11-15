@@ -1717,7 +1717,6 @@
     <string name="io_scheduler">Mratibu wa I/O</string>
     <string name="io_scheduler_desc">Thamani moja kwa kila wasifu, iliyoandikwa kwa kila kifaa cha kuzuia mara moja.</string>
     <string name="app_settings_more_actions">Vitendo zaidi</string>
-    <string name="notif_maxai_off">Max AI: imezimwa</string>
     <string name="notif_maxai_running">Max AI: kukimbia (%1$s)</string>
     <string name="section_daemon">Daemon</string>
     <string name="str_daemon_not_running">Daemon haifanyi kazi</string>

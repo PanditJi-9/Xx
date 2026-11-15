@@ -1717,7 +1717,6 @@
     <string name="io_scheduler">מתזמן I/O</string>
     <string name="io_scheduler_desc">ערך אחד לכל פרופיל, נכתב לכל מכשיר חסימה באופן מיידי.</string>
     <string name="app_settings_more_actions">עוד פעולות</string>
-    <string name="notif_maxai_off">Max AI: כבוי</string>
     <string name="notif_maxai_running">Max AI: ריצה (%1$s)</string>
     <string name="section_daemon">דימון</string>
     <string name="str_daemon_not_running">הדמון לא פועל</string>

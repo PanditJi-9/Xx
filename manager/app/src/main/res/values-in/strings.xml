@@ -1717,7 +1717,6 @@
     <string name="io_scheduler">Penjadwal I/O</string>
     <string name="io_scheduler_desc">Satu nilai untuk setiap profil, segera ditulis ke setiap perangkat blok.</string>
     <string name="app_settings_more_actions">Lebih banyak tindakan</string>
-    <string name="notif_maxai_off">Max AI: mati</string>
     <string name="notif_maxai_running">Max AI: berlari (%1$s)</string>
     <string name="section_daemon">Daemon</string>
     <string name="str_daemon_not_running">Daemon tidak berjalan</string>

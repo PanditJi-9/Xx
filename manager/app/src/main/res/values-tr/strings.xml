@@ -1717,7 +1717,6 @@
     <string name="io_scheduler">G/Ç Zamanlayıcı</string>
     <string name="io_scheduler_desc">Her profil için tek bir değer, her blok cihaza anında yazılır.</string>
     <string name="app_settings_more_actions">Daha fazla işlem</string>
-    <string name="notif_maxai_off">Max AI: kapalı</string>
     <string name="notif_maxai_running">Max AI: çalışıyor (%1$s)</string>
     <string name="section_daemon">Şeytan</string>
     <string name="str_daemon_not_running">Daemon çalışmıyor</string>

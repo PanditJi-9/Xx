@@ -1717,7 +1717,6 @@
     <string name="io_scheduler">输入/输出调度程序</string>
     <string name="io_scheduler_desc">每个配置文件都有一个值，立即写入每个块设备。</string>
     <string name="app_settings_more_actions">更多行动</string>
-    <string name="notif_maxai_off">Max AI：关闭</string>
     <string name="notif_maxai_running">Max AI：运行（%1$s）</string>
     <string name="section_daemon">守护进程</string>
     <string name="str_daemon_not_running">守护进程未运行</string>

@@ -1717,7 +1717,6 @@
     <string name="io_scheduler">И/О Планер</string>
     <string name="io_scheduler_desc">Једна вредност за сваки профил, одмах уписана на сваки блок уређај.</string>
     <string name="app_settings_more_actions">Више акција</string>
-    <string name="notif_maxai_off">Max AI: искључено</string>
     <string name="notif_maxai_running">Max AI: трчање (%1$s)</string>
     <string name="section_daemon">Даемон</string>
     <string name="str_daemon_not_running">Демон не ради</string>

@@ -12,8 +12,13 @@ import android.content.pm.ServiceInfo
 import android.hardware.display.DisplayManager
 import android.hardware.display.VirtualDisplay
 import android.media.AudioAttributes
+import android.media.AudioFormat
 import android.media.AudioPlaybackCaptureConfiguration
-import android.media.MediaRecorder
+import android.media.AudioRecord
+import android.media.MediaCodec
+import android.media.MediaCodecInfo
+import android.media.MediaFormat
+import android.media.MediaMuxer
 import android.media.projection.MediaProjection
 import android.media.projection.MediaProjectionManager
 import android.net.Uri
@@ -22,10 +27,12 @@ import android.os.IBinder
 import android.os.ParcelFileDescriptor
 import android.provider.MediaStore
 import android.util.DisplayMetrics
+import android.view.Surface
 import android.view.WindowManager
 import androidx.core.app.NotificationCompat
 import nd.max.R
 import nd.max.ui.settings.AppLanguage
+import java.nio.ByteBuffer
 
 /**
  * مسجّل الشاشة الداخليّ: `MediaProjection` للصورة و`AudioPlaybackCapture` لصوت اللعب نفسه.
@@ -35,6 +42,11 @@ import nd.max.ui.settings.AppLanguage
  * هذا المسجّل يكتب بجودة مضبوطة وبمسار صوت النظام، والملفّ في المجلّد نفسه (`Movies/MaxManager`)
  * عبر `MediaStore` لا بكتابة مباشرة، فلا يحتاج «الوصول لكل الملفّات» ولا فحص وسائط يدويًّا.
  *
+ * **ولماذا لا `MediaRecorder`:** لا يملك `setAudioPlaybackCaptureConfig` أصلًا (قِيس في مرجع
+ * `android.media.MediaRecorder`: كل متاحه `setAudioSource/Encoder/Channels/EncodingBitRate/
+ * AudioProfile/SamplingRate`)، فصوت الالتقاط لا يُركَب عليه. لذلك المسار: صورة H.264 من سطح
+ * `MediaCodec`، وصوت AAC من `AudioRecord` المُلتقِط، ثم `MediaMuxer` يجمع المسارين في ملفّ واحد.
+ *
  * **حدوده المعلنة (ADR-07):** الصوت يأتي من التطبيقات التي تسمح بالالتقاط (`allowAudioPlaybackCapture`،
  * وهو الافتراضيّ لأهداف ≥ 29)؛ تطبيق يمنعه يُسجَّل صامتًا لا خطأً. والالتقاط يحتاج خدمة أمامية بنوع
  * `mediaProjection` وإقرار المستخدم في حوار النظام — وكلاهما في هذا الملفّ والمانيفست.
@@ -43,9 +55,33 @@ class ScreenRecordService : Service() {
 
     private var projection: MediaProjection? = null
     private var virtualDisplay: VirtualDisplay? = null
-    private var recorder: MediaRecorder? = null
+    private var inputSurface: Surface? = null
+    private var videoCodec: MediaCodec? = null
+    private var audioCodec: MediaCodec? = null
+    private var audioRecord: AudioRecord? = null
+    private var muxer: MediaMuxer? = null
+    private var videoThread: Thread? = null
+    private var audioThread: Thread? = null
     private var target: Uri? = null
     private var descriptor: ParcelFileDescriptor? = null
+
+    private val muxLock = Any()
+    private var videoFormat: MediaFormat? = null
+    private var audioFormat: MediaFormat? = null
+    private var videoTrack = -1
+    private var audioTrack = -1
+    private var muxerStarted = false
+    private var wroteSamples = false
+
+    @Volatile
+    private var running = false
+
+    /** يُرفع إن لم يبدأ الصوت (سماح التقاط مرفوض أو مسجّل مشغول) فتنتهي المهلة ويبدأ الفيديو وحده. */
+    @Volatile
+    private var audioUnavailable = false
+
+    /** يُقرأ من خيطَي الاستنزاف، فـ`@Volatile` شرط (بلاها قد يبقى الصوت في حلقة قراءة أبديّة). */
+    @Volatile
     private var stopping = false
 
     override fun onBind(intent: Intent?): IBinder? = null
@@ -94,27 +130,34 @@ class ScreenRecordService : Service() {
         )
         projection = created
 
-        // ٣) المقاس: أبعاد اللوحة الحقيقية، بسقف ١٩٢٠ على الضلع الأطول وبأبعاد زوجية (شرط H.264).
-        val (width, height) = captureSize()
+        // ٣) الهدف: صفّ `MediaStore` بدل مسار ملفّ، ثم واصف يُكتب عليه الملفّ النهائيّ.
         val uri = createTarget() ?: run {
             shutdown()
             return
         }
         target = uri
+        val pfd = runCatching { contentResolver.openFileDescriptor(uri, "w") }.getOrNull()
+        if (pfd == null) {
+            shutdown()
+            return
+        }
+        descriptor = pfd
 
-        // ٤) المرمّز: ٦٠ إطارًا ثم ٣٠ — بعض مرمّزات 1440p ترفض ٦٠، فلا ينتهي الأمر بلا تسجيل.
-        val ready = FPS_LADDER.any { fps ->
-            runCatching { recorder = build(width, height, fps, uri) }.isSuccess
-        }
-        if (!ready) {
+        // ٤) المراميز: ٦٠ إطارًا ثم ٣٠ — بعض مرمّزات 1440p ترفض ٦٠، فلا ينتهي الأمر بلا تسجيل.
+        val (width, height) = captureSize()
+        val prepared = FPS_LADDER.any { fps -> runCatching { openPipeline(width, height, fps, pfd) }.isSuccess }
+        if (!prepared) {
             shutdown()
             return
         }
-        val started = runCatching { recorder?.start() }.isSuccess
-        if (!started) {
+        val surface = inputSurface
+        val video = videoCodec
+        if (surface == null || video == null) {
             shutdown()
             return
         }
+
+        // ٥) المرآة: كل ما تعرضه اللوحة يُسلَّم لسطح المرمّز مباشرةً (بلا نسخ في الذاكرة).
         virtualDisplay = runCatching {
             created.createVirtualDisplay(
                 DISPLAY_NAME,
@@ -122,7 +165,7 @@ class ScreenRecordService : Service() {
                 height,
                 resources.displayMetrics.densityDpi,
                 DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
-                recorder?.surface,
+                surface,
                 null,
                 null
             )
@@ -131,40 +174,240 @@ class ScreenRecordService : Service() {
             shutdown()
             return
         }
+
+        running = true
+        videoThread = Thread({ drainVideo(video) }, "MaxManager-record-video").also { it.start() }
+        val audio = audioRecord
+        val audioEnc = audioCodec
+        if (audio != null && audioEnc != null) {
+            audioThread = Thread({ drainAudio(audio, audioEnc) }, "MaxManager-record-audio").also { it.start() }
+        } else {
+            audioUnavailable = true
+        }
         active = true
     }
 
-    private fun build(width: Int, height: Int, fps: Int, uri: Uri): MediaRecorder {
-        val pfd = contentResolver.openFileDescriptor(uri, "w") ?: error("no descriptor for $uri")
-        try {
-            val capture = AudioPlaybackCaptureConfiguration
-                .Builder(requireNotNull(projection))
+    /** يجهّز الجامع والمرمّزين. يُرمى استثناء إن رفض المرمّز المقاس، فيُجرَّب الإطار التالي. */
+    private fun openPipeline(width: Int, height: Int, fps: Int, pfd: ParcelFileDescriptor) {
+        // محاولة سابقة (٦٠ إطارًا رفضها المرمّز) قد تركت جامعًا ومرمّزًا وواصفًا مفتوحًا: تُحرَّر قبل
+        // بناء الجديد، وإلا بقي الواصف نفسه مملوكًا لجامعَين فسقطت الكتابة.
+        runCatching { videoCodec?.release() }
+        videoCodec = null
+        runCatching { inputSurface?.release() }
+        inputSurface = null
+        runCatching { audioCodec?.release() }
+        audioCodec = null
+        runCatching { audioRecord?.release() }
+        audioRecord = null
+        runCatching { muxer?.release() }
+        muxer = null
+        audioUnavailable = false
+
+        muxer = MediaMuxer(pfd.fileDescriptor, MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4)
+
+        val videoFormat = MediaFormat.createVideoFormat(MediaFormat.MIMETYPE_VIDEO_AVC, width, height)
+        videoFormat.setInteger(MediaFormat.KEY_COLOR_FORMAT, MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface)
+        videoFormat.setInteger(MediaFormat.KEY_BIT_RATE, BIT_RATE)
+        videoFormat.setInteger(MediaFormat.KEY_FRAME_RATE, fps)
+        videoFormat.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, I_FRAME_SECONDS)
+        val video = MediaCodec.createEncoderByType(MediaFormat.MIMETYPE_VIDEO_AVC)
+        video.configure(videoFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE)
+        val surface = video.createInputSurface()
+        video.start()
+        videoCodec = video
+        inputSurface = surface
+
+        // الصوت اختياريّ بحقّه: فشله لا يُسقط التسجيل، لكنه يُعلَن (`audioUnavailable`).
+        if (!openAudio()) audioUnavailable = true
+    }
+
+    private fun openAudio(): Boolean {
+        val proj = projection ?: return false
+        return try {
+            val capture = AudioPlaybackCaptureConfiguration.Builder(proj)
                 .addMatchingUsage(AudioAttributes.USAGE_MEDIA)
                 .addMatchingUsage(AudioAttributes.USAGE_GAME)
                 .addMatchingUsage(AudioAttributes.USAGE_UNKNOWN)
                 .build()
-            @Suppress("DEPRECATION")
-            val made = MediaRecorder()
-            made.setAudioSource(MediaRecorder.AudioSource.MIC)
-            made.setAudioPlaybackCaptureConfig(capture)
-            made.setVideoSource(MediaRecorder.VideoSource.SURFACE)
-            made.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
-            made.setVideoSize(width, height)
-            made.setVideoFrameRate(fps)
-            made.setVideoEncoder(MediaRecorder.VideoEncoder.H264)
-            made.setVideoEncodingBitRate(BIT_RATE)
-            made.setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
-            made.setAudioChannels(2)
-            made.setAudioSamplingRate(AUDIO_RATE)
-            made.setAudioEncodingBitRate(AUDIO_BIT_RATE)
-            made.setOutputFile(pfd.fileDescriptor)
-            made.prepare()
-            descriptor?.let { runCatching { it.close() } }
-            descriptor = pfd
-            return made
+            val format = AudioFormat.Builder()
+                .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
+                .setSampleRate(AUDIO_RATE)
+                .setChannelMask(AudioFormat.CHANNEL_IN_STEREO)
+                .build()
+            val minBytes = AudioRecord.getMinBufferSize(
+                AUDIO_RATE,
+                AudioFormat.CHANNEL_IN_STEREO,
+                AudioFormat.ENCODING_PCM_16BIT
+            ).coerceAtLeast(PCM_BYTES)
+            val record = AudioRecord.Builder()
+                .setAudioFormat(format)
+                .setBufferSizeInBytes(minBytes * 2)
+                .setAudioPlaybackCaptureConfig(capture)
+                .build()
+            if (record.state != AudioRecord.STATE_INITIALIZED) {
+                runCatching { record.release() }
+                return false
+            }
+            val spec = MediaFormat.createAudioFormat(MediaFormat.MIMETYPE_AUDIO_AAC, AUDIO_RATE, CHANNELS)
+                .apply {
+                    setInteger(MediaFormat.KEY_AAC_PROFILE, MediaCodecInfo.CodecProfileLevel.AACObjectLC)
+                    setInteger(MediaFormat.KEY_BIT_RATE, AUDIO_BIT_RATE)
+                    setInteger(MediaFormat.KEY_MAX_INPUT_SIZE, PCM_BYTES * 2)
+                }
+            val codec = MediaCodec.createEncoderByType(MediaFormat.MIMETYPE_AUDIO_AAC)
+            codec.configure(spec, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE)
+            codec.start()
+            audioRecord = record
+            audioCodec = codec
+            true
         } catch (error: Throwable) {
-            runCatching { pfd.close() }
-            throw error
+            runCatching { audioCodec?.release() }
+            audioCodec = null
+            runCatching { audioRecord?.release() }
+            audioRecord = null
+            false
+        }
+    }
+
+    /** مسار الصورة: كل عيّنة يخرجها المرمّز تُكتب في الجامع بمجرّد أن يصبح جاهزًا. */
+    private fun drainVideo(codec: MediaCodec) {
+        val info = MediaCodec.BufferInfo()
+        while (running) {
+            val index = runCatching { codec.dequeueOutputBuffer(info, TIMEOUT_US) }
+                .getOrDefault(MediaCodec.INFO_TRY_AGAIN_LATER)
+            when {
+                index == MediaCodec.INFO_TRY_AGAIN_LATER -> Unit
+                index == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED -> registerTrack(true, codec.outputFormat)
+                index >= 0 -> {
+                    val buffer = runCatching { codec.getOutputBuffer(index) }.getOrNull()
+                    val isConfig = info.flags and MediaCodec.BUFFER_FLAG_CODEC_CONFIG != 0
+                    if (buffer != null && info.size > 0 && !isConfig) writeSample(true, buffer, info)
+                    runCatching { codec.releaseOutputBuffer(index, false) }
+                    if (info.flags and MediaCodec.BUFFER_FLAG_END_OF_STREAM != 0) break
+                }
+            }
+        }
+    }
+
+    /** مسار الصوت: PCM من الالتقاط ← مرمّز AAC ← الجامع، بتوقيت متراكم من عدد الأُطر. */
+    private fun drainAudio(record: AudioRecord, codec: MediaCodec) {
+        val info = MediaCodec.BufferInfo()
+        val pcm = ByteArray(PCM_BYTES)
+        var frames = 0L
+        runCatching { record.startRecording() }
+        while (running) {
+            val read = runCatching { record.read(pcm, 0, pcm.size) }.getOrDefault(0)
+            // `read <= 0` بعد `stopping` يعني أن الالتقاط توقّف: الخروج لا الدوران على معالج مشغول.
+            if (read <= 0) {
+                if (stopping) break
+                continue
+            }
+            var offset = 0
+            while (offset < read && running) {
+                val index = runCatching { codec.dequeueInputBuffer(TIMEOUT_US) }.getOrDefault(-1)
+                if (index < 0) break
+                val input = runCatching { codec.getInputBuffer(index) }.getOrNull() ?: break
+                input.clear()
+                val chunk = minOf(read - offset, input.remaining())
+                input.put(pcm, offset, chunk)
+                codec.queueInputBuffer(index, 0, chunk, frames * 1_000_000L / AUDIO_RATE, 0)
+                frames += chunk / BYTES_PER_FRAME
+                offset += chunk
+            }
+            drainAudioEncoder(codec, info)
+        }
+        runCatching { record.stop() }
+    }
+
+    private fun drainAudioEncoder(codec: MediaCodec, info: MediaCodec.BufferInfo) {
+        while (true) {
+            val index = runCatching { codec.dequeueOutputBuffer(info, 0) }.getOrDefault(MediaCodec.INFO_TRY_AGAIN_LATER)
+            if (index == MediaCodec.INFO_TRY_AGAIN_LATER) return
+            if (index == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
+                registerTrack(false, codec.outputFormat)
+                continue
+            }
+            if (index < 0) continue
+            val buffer = runCatching { codec.getOutputBuffer(index) }.getOrNull()
+            val isConfig = info.flags and MediaCodec.BUFFER_FLAG_CODEC_CONFIG != 0
+            if (buffer != null && info.size > 0 && !isConfig) writeSample(false, buffer, info)
+            runCatching { codec.releaseOutputBuffer(index, false) }
+            if (info.flags and MediaCodec.BUFFER_FLAG_END_OF_STREAM != 0) return
+        }
+    }
+
+    private fun registerTrack(isVideo: Boolean, format: MediaFormat) {
+        synchronized(muxLock) {
+            if (isVideo) {
+                if (videoTrack < 0) videoFormat = format
+            } else {
+                if (audioTrack < 0) audioFormat = format
+            }
+            // لا يبدأ الجامع هنا إلا بالمسارين معًا: مسار الفيديو يُعلن تنسيقه أولًا دائمًا، ولو بدأ
+            // الجامع عنده وحده لضاع صوت التسجيل كلّه بلا أن يظهر خطأ. مسار «الصوت تعذّر» ينتهي في
+            // `awaitMuxStart` بعد المهلة.
+            if (videoFormat != null && audioFormat != null) startMuxerLocked()
+        }
+    }
+
+    /** يبدأ الجامع مرّة واحدة؛ ويبدأ بالفيديو وحده إن تأخّر الصوت أو تعذّر. */
+    private fun startMuxerLocked() {
+        if (muxerStarted) return
+        val out = muxer ?: return
+        val video = videoFormat ?: return
+        val audio = audioFormat
+        val started = runCatching {
+            videoTrack = out.addTrack(video)
+            if (audio != null) audioTrack = out.addTrack(audio)
+            out.start()
+            true
+        }.getOrDefault(false)
+        if (started) {
+            muxerStarted = true
+            audioUnavailable = audio == null
+        }
+    }
+
+    private fun writeSample(isVideo: Boolean, buffer: ByteBuffer, info: MediaCodec.BufferInfo) {
+        if (!awaitMuxStart()) return
+        synchronized(muxLock) {
+            if (!muxerStarted) return
+            val track = if (isVideo) videoTrack else audioTrack
+            val out = muxer
+            if (out == null || track < 0) return
+            runCatching {
+                buffer.position(info.offset)
+                buffer.limit(info.offset + info.size)
+                out.writeSampleData(track, buffer, info)
+                wroteSamples = true
+            }
+        }
+    }
+
+    /**
+     * لا `wait`/`notify` هنا: `Any()` في كوتلن لا يحملهما. العيّنة محفوظة في ذاكرة المرمّز ما دام
+     * مقبضها لم يُحرَّر، فيصحّ الانتظار القصير بين المحاولات، وبعد المهلة يبدأ الجامع بالفيديو وحده.
+     */
+    private fun awaitMuxStart(): Boolean {
+        val deadline = System.currentTimeMillis() + MUX_WAIT_MS
+        while (true) {
+            synchronized(muxLock) {
+                if (muxerStarted) return true
+                val now = System.currentTimeMillis()
+                // المسارَان معًا = الجودة المطلوبة. والصوت وحده قد يتأخّر أو يتعذّر، فله مسارات ثلاث:
+                // أُعلن تنسيقه · أُعلن تعذّره · مضت المهلة ولم يصل (فلا يُسقط الصمت التسجيل كلّه).
+                if (videoFormat != null && (audioFormat != null || audioUnavailable)) {
+                    startMuxerLocked()
+                    return muxerStarted
+                }
+                if (videoFormat != null && now >= deadline) {
+                    audioUnavailable = true
+                    startMuxerLocked()
+                    return muxerStarted
+                }
+                if (videoFormat == null && now >= deadline) return false
+            }
+            runCatching { Thread.sleep(5) }
         }
     }
 
@@ -201,12 +444,48 @@ class ScreenRecordService : Service() {
     private fun shutdown() {
         if (stopping) return
         stopping = true
+        audioUnavailable = true
+        // **الترتيب مقصود:** `running` تبقى صحيحة حتى تُستنزف آخر العيّنات. لو أُسقطت الآن لخرجت
+        // حلقتا الاستنزاف فورًا وضاع آخر ما التقطته الشاشة (نحو ثانية كاملة بلا صورة في نهاية الملف).
         runCatching { virtualDisplay?.release() }
         virtualDisplay = null
-        runCatching { recorder?.stop() }
-        runCatching { recorder?.reset() }
-        runCatching { recorder?.release() }
-        recorder = null
+        runCatching { videoCodec?.signalEndOfInputStream() }
+        runCatching { audioRecord?.stop() }
+        runCatching { videoThread?.join(700) }
+        runCatching { audioThread?.join(700) }
+        videoThread = null
+        audioThread = null
+        running = false
+
+        runCatching { videoCodec?.stop() }
+        runCatching { videoCodec?.release() }
+        videoCodec = null
+        runCatching { audioCodec?.stop() }
+        runCatching { audioCodec?.release() }
+        audioCodec = null
+        runCatching { audioRecord?.release() }
+        audioRecord = null
+        runCatching { inputSurface?.release() }
+        inputSurface = null
+
+        synchronized(muxLock) {
+            val out = muxer
+            val usable = muxerStarted && wroteSamples
+            if (out != null) {
+                if (usable) runCatching { out.stop() }
+                runCatching { out.release() }
+            }
+            muxer = null
+            muxerStarted = false
+            // وتُصفَّر أرقام المسارات وتنسيقاتها معه: الخدمة تبقى حيّةً لحظةً بعد `stopSelf`، فإن بدأت
+            // جلسة ثانية قبل `onDestroy` لمنع رقمُ مسارٍ قديم (≥ 0) `registerTrack` من تسجيل تنسيق
+            // الجلسة الجديدة، فلا يبدأ الجامع إطلاقًا ويُسجَّل فراغ. التصفير يقطع هذا الاحتمال.
+            videoFormat = null
+            audioFormat = null
+            videoTrack = -1
+            audioTrack = -1
+        }
+
         runCatching { projection?.stop() }
         projection = null
         finishTarget()
@@ -218,10 +497,17 @@ class ScreenRecordService : Service() {
 
     private fun finishTarget() {
         val uri = target
+        val wrote = wroteSamples
         target = null
+        wroteSamples = false
         runCatching { descriptor?.close() }
         descriptor = null
         if (uri == null) return
+        if (!wrote) {
+            // لا عيّنات ⇒ لا ملفّ: تُحذف البطاقة العالقة بدل أن يظهر مقطعٌ فارغ في المعرض.
+            runCatching { contentResolver.delete(uri, null, null) }
+            return
+        }
         // `IS_PENDING = 0` هو إعلان «انتهى الملفّ» لمعرض الوسائط، فلا يظهر نصف مسجَّل.
         runCatching {
             contentResolver.update(
@@ -275,7 +561,13 @@ class ScreenRecordService : Service() {
         private const val MAX_SIDE = 1920
         private const val BIT_RATE = 24_000_000
         private const val AUDIO_RATE = 48_000
+        private const val CHANNELS = 2
         private const val AUDIO_BIT_RATE = 192_000
+        private const val BYTES_PER_FRAME = 4
+        private const val PCM_BYTES = 8 * 1024
+        private const val I_FRAME_SECONDS = 1
+        private const val TIMEOUT_US = 10_000L
+        private const val MUX_WAIT_MS = 1_500L
         private val FPS_LADDER = intArrayOf(60, 30)
 
         /** الحقيقة من الخدمة نفسها، لا من ذاكرة الواجهة: إن ماتت توقّف التسجيل معها. */

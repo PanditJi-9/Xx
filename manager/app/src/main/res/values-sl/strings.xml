@@ -1717,7 +1717,6 @@
     <string name="io_scheduler">V/I razporejevalnik</string>
     <string name="io_scheduler_desc">Ena vrednost za vsak profil, takoj zapisana v vsako blokovno napravo.</string>
     <string name="app_settings_more_actions">Več dejanj</string>
-    <string name="notif_maxai_off">Max AI: izklopljeno</string>
     <string name="notif_maxai_running">Max AI: tek (%1$s)</string>
     <string name="section_daemon">Daemon</string>
     <string name="str_daemon_not_running">Demon se ne izvaja</string>
