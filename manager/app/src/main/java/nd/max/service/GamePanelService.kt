@@ -998,10 +998,10 @@ class GamePanelService : LifecycleService() {
         lifecycleScope.launch(Dispatchers.IO) {
             val wasRecording = runCatching { PanelScreenRecorder.isRecording() }.getOrDefault(false)
             val text = if (wasRecording) {
-                runCatching { PanelScreenRecorder.stop() }
+                runCatching { PanelScreenRecorder.stop(applicationContext) }
                 R.string.game_turbo_record_stopped
             } else {
-                runCatching { PanelScreenRecorder.start() }
+                runCatching { PanelScreenRecorder.start(applicationContext) }
                 R.string.game_turbo_record_started
             }
             withContext(Dispatchers.Main) {

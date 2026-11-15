@@ -633,4 +633,7 @@
     <string name="gs_fps_title">الإطارات اللحظية</string>
     <string name="gs_fps_unit">FPS</string>
     <string name="gs_game_disabled">معطّل في النظام</string>
+    <string name="gs_recording_channel">تسجيل الشاشة</string>
+    <string name="gs_recording_title">جارٍ تسجيل الشاشة</string>
+    <string name="gs_recording_stop">إيقاف</string>
 </resources>

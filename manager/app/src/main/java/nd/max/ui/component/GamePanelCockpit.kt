@@ -760,10 +760,10 @@ fun GamePanelCockpit(
     fun beginCapture() {
         screenRec = true
         say(String.format(fmtOn, lScreen))
-        PanelToggles.async { PanelScreenRecorder.start() }
+        PanelToggles.async { PanelScreenRecorder.start(context) }
         scope.launch {
-            // ملفّ العلم لم يظهر بعد المهلة ⇒ `screenrecord` لم يبدأ (لا جذر أو رفض):
-            // تُصحّح البلاطة ويُعلن الفشل — بدل «بدأ التسجيل» وهو لم يبدأ (§9.2).
+            // الحالة تُقرأ من الخدمة نفسها بعد مهلة قصيرة: لم تبدأ (أُلغيت النافذة أو لم تنهض الخدمة)
+            // ⇒ تُصحّح البلاطة ويُعلن الفشل — بدل «بدأ التسجيل» وهو لم يبدأ (§9.2).
             delay(1400)
             val live = withContext(Dispatchers.IO) { PanelScreenRecorder.isRecording() }
             if (!live) {
@@ -845,7 +845,7 @@ fun GamePanelCockpit(
                 if (screenRec) {
                     screenRec = false
                     say(msgSaved)
-                    PanelToggles.async { PanelScreenRecorder.stop() }
+                    PanelToggles.async { PanelScreenRecorder.stop(context) }
                 } else if (!CaptureConsentPrefs.acknowledged(context)) {
                     // أول مرة: يُسأل قبل أن يُسجَّل بكسل واحد. ومن أغلق الحوار لم يُسجَّل له شيء.
                     consentOpen = true

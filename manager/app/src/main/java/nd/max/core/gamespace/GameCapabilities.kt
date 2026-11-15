@@ -46,8 +46,12 @@ enum class GameFeature(val requires: PrivilegeLevel) {
     /** `screencap` عبر المسار الموحَّد. */
     SCREENSHOT(PrivilegeLevel.SHIZUKU),
 
-    /** `screenrecord` عبر المسار الموحَّد (استمرار العملية الخلفية تحت Shizuku غير مقيس على جهاز). */
-    SCREEN_RECORD(PrivilegeLevel.SHIZUKU),
+    /**
+     * التسجيل صار **داخل التطبيق** بـ`MediaProjection` + `AudioPlaybackCapture` (إذن المستخدم من حوار
+     * النظام)، لا بـ`screenrecord` عبر المسار الموحَّد — فلا امتياز مطلوب، والجودة والصوت صارا في
+     * متناولنا بدل أن يكونا حدًّا في ملفّ تنفيذيّ لا يدعم الصوت أصلًا.
+     */
+    SCREEN_RECORD(PrivilegeLevel.NONE),
 
     /** `wm size/density` عبر المسار الموحَّد. */
     DISPLAY_SCALE(PrivilegeLevel.SHIZUKU),

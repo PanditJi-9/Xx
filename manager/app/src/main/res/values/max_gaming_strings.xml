@@ -634,4 +634,7 @@
     <string name="gs_fps_title">Real-time FPS</string>
     <string name="gs_fps_unit">FPS</string>
     <string name="gs_game_disabled">Disabled in system</string>
+    <string name="gs_recording_channel">Screen recording</string>
+    <string name="gs_recording_title">Recording the screen</string>
+    <string name="gs_recording_stop">Stop</string>
 </resources>

@@ -74,6 +74,7 @@
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION" />
     <!--
       صلاحيات استوديو الجزيرة (نقل Islandify — MIT © 2026 bughunter11):
       - `QUERY_ALL_PACKAGES`: لسرد كل التطبيقات في تبويب «التطبيقات» حتى تُحجب أو تُسمح.
@@ -369,6 +370,24 @@
                 android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
                 android:value="Displays a floating top-processes CPU/RAM monitor" />
         </service>
+
+        <!--
+          مسجّل الشاشة الداخليّ: صورةٌ بـ`MediaProjection` وصوتُ اللعب بـ`AudioPlaybackCapture`.
+          النوع `mediaProjection` شرطٌ على أندرويد ١٤+ لاستدعاء `getMediaProjection`، والإشعار
+          الأماميّ هو نفسه زرّ الإيقاف. والنافذة الشفافة أدناه لا واجهة لها: تطلب إقرار النظام
+          لأن الإذن لا يُمنح إلا لنتيجة `Activity`.
+        -->
+        <service
+            android:name=".service.ScreenRecordService"
+            android:exported="false"
+            android:foregroundServiceType="mediaProjection" />
+
+        <activity
+            android:name=".service.ScreenRecordRequest"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
 
         <!--
           الجزيرة الديناميكية: كبسولة حيّة واحدة فوق التطبيقات (إشعارات/وسائط/شحن/مؤشرات).

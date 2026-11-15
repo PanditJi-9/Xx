@@ -32,6 +32,8 @@ import nd.max.MaxManagerProps
 import nd.max.core.privilege.PrivilegedShell
 import nd.max.core.hardware.TouchControlBackend
 import nd.max.core.platform.PropertyUtils
+import nd.max.service.ScreenRecordRequest
+import nd.max.service.ScreenRecordService
 import java.util.Locale
 
 /**
@@ -304,45 +306,28 @@ object PanelReminder {
 }
 
 /**
- * تسجيل الشاشة عبر `screenrecord` (مقاطع ≤ 3 دقائق متتابعة حتى الإيقاف) إلى `Movies/MaxManager`،
- * **بالمسار الموحَّد** ([PrivilegedShell]): جذر، أو Shizuku (uid الـshell يملك `screenrecord` والكتابة إلى
- * `/sdcard`)، أو رفض معلَن. العلم ملفّ في `/data/local/tmp` فيعيش خارج عمر اللوحة، ولو فشل
- * `screenrecord` توقّفت الحلقة بدل أن تدور بلا نهاية.
+ * تسجيل الشاشة من داخل التطبيق: `MediaProjection` للصورة و`AudioPlaybackCapture` لصوت اللعب.
  *
- * **غير مقيس على جهاز:** استمرار الحلقة الخلفية (`&`) بعد عودة الأمر تحت خدمة Shizuku. والتحقّق من
- * الحالة يبقى على ملفّ العلم نفسه، فإن لم تستمرّ تُعلن اللوحة فشل البدء بدل «بدأ التسجيل».
+ * **ولماذا ليس `screenrecord`:** ذلك الملفّ التنفيذيّ يكتب ٤ ميغابت/ث و٣٠ إطارًا بلا `--size` (فيهبط
+ * المرمّز إلى ٧٢٠p على لوحة ١٤٤٠×٣١٢٠)، ولا يدعم الصوت إطلاقًا — فلا يُصلح فيه شيء من الشكويين.
+ * والمسجّل الداخليّ ([ScreenRecordService]) يكتب ٢٤ ميغابت/ث و٦٠ إطارًا (ثم ٣٠ إن رفضها المرمّز)
+ * بسقف ١٩٢٠ على الضلع الأطول، ويأخذ الصوت من مسار التشغيل نفسه، إلى المجلّد ذاته
+ * `Movies/MaxManager` — فلا مسارَ ثانٍ للتسجيل.
+ *
+ * والإذن يأتي من حوار النظام مرّة لكل تسجيل ([ScreenRecordRequest])، والحالة تُقرأ من الخدمة لا من
+ * ذاكرة الواجهة: إن ماتت توقّف التسجيل معها، ولا تقول اللوحة «يعمل» وهي لا تعمل.
  */
 object PanelScreenRecorder {
-    private const val DIR = "/sdcard/Movies/MaxManager"
-    private const val FLAG = "/data/local/tmp/.max_screenrec"
+    /** الحقيقة من الخدمة نفسها لا من البلاطة. */
+    fun isRecording(): Boolean = ScreenRecordService.isRecording()
 
-    /** الحالة من ملفّ العلم نفسه: لو مات `screenrecord` وحذف العلم، تتصحّح اللوحة وحدها. */
-    suspend fun isRecording(): Boolean =
-        PanelShellOutput.lastLine(PrivilegedShell.exec("[ -f $FLAG ] && echo 1 || echo 0")) == "1"
-
-    suspend fun start() {
-        PrivilegedShell.exec(
-            "mkdir -p $DIR && touch $FLAG && " +
-                // الجودة لم تكن مضبوطة أصلًا: أعلام `screenrecord` الافتراضية (٤ ميغابت/ث، ٣٠ إطارًا، بلا
-                // `--size`) تُنتج ملفًّا مهروسًا على لوحة ١٤٤٠×٣١٢٠. فنطلب مقاس الشاشة الفعليّ من `wm size`
-                // مع ٢٤ ميغابت/ث و٦٠ إطارًا، ثم ننزل درجةً درجةً إن رفض المرمّز (−fps ثم بلا --size) فلا
-                // ينتهي الأمر بلا تسجيل، وآخر محاولة هي سلوك اليوم نفسه.
-                "sz=\$(wm size | sed -n 's/.*: //p' | tail -1); " +
-                "((while [ -f $FLAG ]; do " +
-                "out=$DIR/Max_\$(date +%Y%m%d_%H%M%S).mp4; " +
-                "screenrecord --time-limit 180 --bit-rate 24000000 --fps 60 \${sz:+--size \$sz} \$out " +
-                "|| screenrecord --time-limit 180 --bit-rate 24000000 \${sz:+--size \$sz} \$out " +
-                "|| screenrecord --time-limit 180 \$out " +
-                "|| { rm -f $FLAG; break; }; done) >/dev/null 2>&1 &)"
-        )
+    /** يفتح حوار الإقرار ثم تبدأ الخدمة بنتيجته؛ والبدء لا يُدّعى قبل `isRecording`. */
+    fun start(context: Context) {
+        ScreenRecordRequest.launch(context)
     }
 
-    suspend fun stop() {
-        PrivilegedShell.exec(
-            "rm -f $FLAG; pkill -2 screenrecord || killall -2 screenrecord; sleep 1; " +
-                "for f in $DIR/*.mp4; do am broadcast -a android.intent.action.MEDIA_SCANNER_SCAN_FILE " +
-                "-d file://\$f >/dev/null 2>&1; done"
-        )
+    fun stop(context: Context) {
+        ScreenRecordService.stop(context)
     }
 }
 
