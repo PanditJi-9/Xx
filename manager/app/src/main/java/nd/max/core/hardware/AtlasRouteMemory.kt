@@ -70,6 +70,21 @@ data class AtlasRouteMemoryEntry(
             this.privilegeGeneration == privilegeGeneration
 
     /**
+     * Clean failure repeated without a single verification in this generation.
+     *
+     * This is learning order, not a ban: the route remains eligible when nothing better exists.
+     * Design value, unmeasured — two clean failures are enough to stop trying it first, and never
+     * enough to stop trying it at all.
+     */
+    fun isDiscouragedIn(bootGeneration: Long, privilegeGeneration: Long): Boolean =
+        lastOutcome == AtlasRouteOutcome.FAILED &&
+            successes == 0 &&
+            failures >= AtlasRouteMemory.DISCOURAGE_AFTER_FAILURES &&
+            !isQuarantinedIn(bootGeneration, privilegeGeneration) &&
+            this.bootGeneration == bootGeneration &&
+            this.privilegeGeneration == privilegeGeneration
+
+    /**
      * When this record was last touched, for ageing one record against another.
      *
      * Falls back to the verification stamp for records written before [lastAttemptElapsedMs]
@@ -134,6 +149,23 @@ class AtlasRouteMemory(
             .filter { it.target == target && it.isVerifiedIn(boot, privilege) }
             .maxByOrNull { it.lastVerifiedElapsedMs ?: Long.MIN_VALUE }
             ?.routeId
+    }
+
+    /** Routes that must not be attempted again in this boot generation. */
+    /**
+     * Routes that failed repeatedly in this boot without ever verifying.
+     *
+     * They stay eligible: a clean failure says nothing about hardware safety. But a route that has
+     * not once worked here is tried after a route with no such history, inside the same transport
+     * tier. The caller applies the demotion; this store only reports what it measured.
+     */
+    fun discouragedRoutes(target: String): Set<String> = synchronized(lock) {
+        val boot = bootGeneration()
+        val privilege = privilegeGeneration()
+        entries()
+            .filter { it.target == target && it.isDiscouragedIn(boot, privilege) }
+            .map { it.routeId }
+            .toSet()
     }
 
     /** Routes that must not be attempted again in this boot generation. */
@@ -430,6 +462,14 @@ class AtlasRouteMemory(
         const val NAME_PREFIX: String = "route."
         const val NAME_SUFFIX: String = ".json"
         const val NAME_SEPARATOR: String = "."
+
+        /**
+         * Clean failures before a route is tried after another one.
+         *
+         * Design value (unmeasured): the first failure can be noise, the second is a pattern, and
+         * neither is evidence about safety. [AtlasAdaptiveExecutor] demotes, never excludes.
+         */
+        const val DISCOURAGE_AFTER_FAILURES: Int = 2
 
         private const val MAX_ENTRIES = 64
         private const val MAX_ENTRY_CHARS = 2 * 1024

@@ -7,6 +7,8 @@
 
 package nd.max.ui.component
 
+import android.graphics.Bitmap
+import android.graphics.Canvas as AndroidCanvas
 import android.util.LruCache
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
@@ -31,8 +33,10 @@ import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -54,6 +58,7 @@ import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.StrokeJoin
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.withTransform
@@ -198,19 +203,54 @@ internal const val LOBBY_SLAB_ASPECT = 1.0f
 
 // ─────────────────────────────── أيقونات ولون ───────────────────────────────
 
-/** أيقونة التطبيق من نفس `AppIconCache` الذي تستعمله بقية الشاشات؛ `null` إلى أن تُقرأ. */
+/**
+ * أيقونة التطبيق من نفس `AppIconCache` الذي تستعمله بقية الشاشات؛ `null` إلى أن تُقرأ.
+ *
+ * الحالة مربوطة بالحزمة (`remember(packageName)`): `produceState` يحتفظ بقيمته السابقة عند تغيّر المفتاح، فكان
+ * أيّ موضع ثابت التركيب (خلفية البطل ولونه) يتجمّد على أيقونة أول لعبة ويُلوَّن بها كل لعبة تُختار بعدها.
+ */
 @Composable
 internal fun rememberLobbyIcon(packageName: String?): State<ImageBitmap?> {
     val context = LocalContext.current
     val density = LocalDensity.current
     val px = remember(density) { with(density) { IconRaster.roundToPx() } }
-    return produceState<ImageBitmap?>(packageName?.let { AppIconCache.get(it) }, packageName) {
-        if (packageName == null) {
-            value = null
-        } else if (value == null) {
-            value = runCatching { AppIconCache.loadIcon(context.packageManager, packageName, px) }.getOrNull()
+    val state = remember(packageName) { mutableStateOf<ImageBitmap?>(packageName?.let { AppIconCache.get(it) }) }
+    LaunchedEffect(packageName, px) {
+        if (packageName != null && state.value == null) {
+            state.value = runCatching { AppIconCache.loadIcon(context.packageManager, packageName, px) }.getOrNull()
         }
     }
+    return state
+}
+
+/** دقّة فنّ البطل بالبكسل: تكفي لتملأ نصف عرض الشاشة بلا تشوّش. */
+private const val ArtRaster = 512
+private val artCache = LruCache<String, ImageBitmap>(6)
+
+/**
+ * أيقونة اللعبة بدقّة عالية لفنّ البطل. أيقونة `AppIconCache` بحجم الرفّ (≈١٢٨dp) تتشوّش إن كُبّرت لتملأ خلفية
+ * الشاشة، فتُرسم هنا مرّة لكل حزمة من `PackageManager` نفسه في مخزن صغير (٦ صور) منفصل عن مخزن الأيقونات.
+ */
+@Composable
+internal fun rememberLobbyArt(packageName: String?): State<ImageBitmap?> {
+    val context = LocalContext.current
+    val state = remember(packageName) {
+        mutableStateOf<ImageBitmap?>(packageName?.let { synchronized(artCache) { artCache.get(it) } })
+    }
+    LaunchedEffect(packageName) {
+        if (packageName != null && state.value == null) {
+            state.value = withContext(Dispatchers.IO) {
+                runCatching {
+                    val drawable = context.packageManager.getApplicationIcon(packageName)
+                    val bitmap = Bitmap.createBitmap(ArtRaster, ArtRaster, Bitmap.Config.ARGB_8888)
+                    drawable.setBounds(0, 0, ArtRaster, ArtRaster)
+                    drawable.draw(AndroidCanvas(bitmap))
+                    bitmap.asImageBitmap().also { synchronized(artCache) { artCache.put(packageName, it) } }
+                }.getOrNull()
+            }
+        }
+    }
+    return state
 }
 
 /**

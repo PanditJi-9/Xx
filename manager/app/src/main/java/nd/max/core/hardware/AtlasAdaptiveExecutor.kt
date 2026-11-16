@@ -71,17 +71,27 @@ class AtlasAdaptiveExecutor(
             .filter { it.candidate.id in quarantined }
             .map { it.candidate.id to SKIP_ROUTE_QUARANTINED }
         val preferred = memory?.preferredRoute(targetKey)
+        val discouraged = memory?.discouragedRoutes(targetKey).orEmpty()
 
         val remaining = bindings
             .filter { it.candidate.id !in quarantined }
             .map { binding ->
                 // The boost is a priority shift, not a transport promotion: `AtlasRoutePlanner` orders
                 // by transport first, so a remembered sysfs route still loses to a platform route.
-                if (preferred != null && binding.candidate.id == preferred) {
-                    binding.copy(candidate = binding.candidate.copy(priority = 0))
+                val basePriority = if (preferred != null && binding.candidate.id == preferred) {
+                    0
                 } else {
-                    binding.copy(candidate = binding.candidate.copy(priority = binding.candidate.priority + 1))
+                    binding.candidate.priority + 1
                 }
+                // Repeated clean failure demotes a route inside its transport tier. It cannot
+                // promote another tier, and it never makes this route ineligible: if it is the
+                // only eligible route, it is still attempted and can still be verified.
+                val priority = if (binding.candidate.id in discouraged) {
+                    basePriority + DISCOURAGED_PRIORITY_PENALTY
+                } else {
+                    basePriority
+                }
+                binding.copy(candidate = binding.candidate.copy(priority = priority))
             }
             .toMutableList()
 
@@ -158,5 +168,8 @@ class AtlasAdaptiveExecutor(
     private companion object {
         /** A stable machine reason, not a sentence: the caller owns the wording. */
         const val SKIP_ROUTE_QUARANTINED = "route-quarantined-after-unverified-rollback"
+
+        /** Priority gap that keeps a repeatedly-failed route behind an unproven one in its tier. */
+        const val DISCOURAGED_PRIORITY_PENALTY = 10
     }
 }

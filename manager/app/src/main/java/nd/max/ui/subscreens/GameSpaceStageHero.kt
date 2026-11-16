@@ -4,9 +4,12 @@ package nd.max.ui.subscreens
 import android.os.Build
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -44,6 +47,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
@@ -57,11 +61,19 @@ import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.CompositingStrategy
+import androidx.compose.ui.graphics.FilterQuality
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
@@ -73,15 +85,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlin.math.PI
 import kotlin.math.cos
+import kotlin.math.roundToInt
 import kotlin.math.sin
 import nd.max.R
 import nd.max.core.gamespace.GameApp
 import nd.max.ui.component.lobbyIntro
 import nd.max.ui.component.lobbyPress
+import nd.max.ui.component.rememberLobbyArt
 import nd.max.ui.component.rememberLobbyIcon
 import nd.max.ui.component.rememberLobbyTone
 import nd.max.ui.theme.DisplayFontFamily
@@ -119,7 +135,7 @@ private val PlayGlyph = 30.dp
 private val ProgressStroke = 3.dp
 private val CardWidth = 184.dp
 private val CardHeight = 214.dp
-private val CardIcon = 120.dp
+private val CardIcon = 128.dp
 private val MoreWidth = 158.dp
 private val MoreGlyph = 52.dp
 private val ArrowSize = 38.dp
@@ -149,21 +165,81 @@ private val ChipGap = 8.dp
 private const val ShelfMoreKey = "stage.shelf.more"
 private const val SwipeShare = 0.10f
 
+/** أصغر مقاس للوح الأيقونة (وحدات اللقطة) تُعرض معه تحيّة الاستقبال؛ أدناه لا يتّسع العمود لسطر إضافيّ. */
+private const val GreetingMinTile = 150
+
+/** وهج زرّ التشغيل، وشفافيّة البطاقة غير المختارة في الرفّ (المختارة وحدها كاملة فيتّضح التركيز). */
+private val GlowPlay = 24.dp
+private const val IdleAlpha = 0.80f
+
+/** أرضيّة ضوئيّة تحت لوح الأيقونة (بعدها عن حافته السفلى بوحدات اللقطة، وانضغاطها الرأسيّ، ومداها بنسبة عرضه). */
+private val FloorGap = 6.dp
+private const val FloorSquash = 0.18f
+private const val FloorReach = 0.62f
+
+/** ميل لوح الأيقونة حول المحور الرأسيّ (درجات) وبُعد الكاميرا (× الكثافة): منظور خفيف يوحي بعمق لا بتدوير. */
+private const val TiltDegrees = 6f
+private const val TiltCamera = 14f
+
+/** وهج اسم اللعبة: لون اللعبة نفسه خلف الحروف (شفافيّته، وإزاحته رأسيًّا، وتمويهه بالبكسل). */
+private const val TitleGlow = 0.55f
+private const val TitleGlowDrop = 6f
+private const val TitleGlowBlur = 26f
+
+/**
+ * فنّ البطل (من أيقونة اللعبة بدقّة ٥١٢): ضلعه نسبةً إلى ارتفاع الخلفية، وشفافيّته، وانزياحه وتنفّسه البطيئان،
+ * ومقدار ما يمتدّ تحت عمود اللوحات (نسبة من ضلعه)، ومركزه الرأسيّ. الهاتف العموديّ يتوسّط الفنّ بأصغر ضلع وأخفّ شفافيّة.
+ */
+private const val ArtSide = 1.22f
+private const val ArtSidePortrait = 1.05f
+private const val ArtAlpha = 0.94f
+private const val ArtAlphaPortrait = 0.50f
+private const val ArtDrift = 14f
+private const val ArtBreath = 0.03f
+private const val ArtUnderBoard = 0.10f
+private const val ArtCenterY = 0.46f
+
+/** أشعّة الضوء المائلة فوق الأورورا: ميلها، ومراكزها وعروضها (نسبة من العرض)، وشدّة كلٍّ منها. */
+private const val BeamTilt = 22f
+private val BeamCenters = floatArrayOf(0.50f, 0.66f, 0.84f)
+private val BeamWidths = floatArrayOf(0.05f, 0.10f, 0.06f)
+private val BeamAlphas = floatArrayOf(0.09f, 0.14f, 0.08f)
+
+/** إزاحة صبغة الأورورا الثانية (درجات على عجلة الألوان) عن لون اللعبة. */
+private const val HueShift = 42f
+
+/** انبثاق الاختيار عند تبديل اللعبة: مدّته، وشفافيّة حلقته، ومداها (× مقاس اللوح)، وسمكها، ومقاس اللوح قبل أن «ينبثق». */
+private const val BurstMs = 900
+private const val BurstAlpha = 0.60f
+private const val BurstReach = 1.0f
+private val BurstStroke = 5.dp
+private const val PopFrom = 0.90f
+
+/** سمك إطار الطاقة الرفيع على زرّ التشغيل، ومدى انجراف الأورورا البطيء (وحدات اللقطة). */
+private val RimThin = 2.dp
+private const val AuroraDrift = 44f
+
 private val PlayFill = Brush.horizontalGradient(
-    listOf(GameSpacePalette.Plum.copy(alpha = 0.88f), GameSpacePalette.VioletDeep.copy(alpha = 0.55f))
+    listOf(GameSpacePalette.Violet.copy(alpha = 0.72f), GameSpacePalette.VioletDeep.copy(alpha = 0.58f))
+)
+
+/** لمعة علويّة على الزرّ: تُبرزه كزجاج مضيء فوق الخلفية الداكنة. */
+private val PlayGloss = Brush.verticalGradient(
+    0f to Color.White.copy(alpha = 0.20f),
+    0.55f to Color.Transparent
 )
 private val PlayRim = Brush.horizontalGradient(
-    listOf(GameSpacePalette.VioletSoft, GameSpacePalette.Violet.copy(alpha = 0.60f), GameSpacePalette.VioletSoft)
+    listOf(LuxGold, LuxGoldDeep.copy(alpha = 0.70f), LuxGold)
 )
 private val SelectedRim = Brush.linearGradient(
-    listOf(GameSpacePalette.Lavender, GameSpacePalette.VioletSoft, GameSpacePalette.Violet)
+    listOf(LuxGold, GameSpacePalette.Lavender, LuxGoldDeep)
 )
 private val CardFill = Brush.verticalGradient(listOf(Color(0xFF2B1660), Color(0xFF0C0626)))
 private val IdleRim = Brush.linearGradient(
     listOf(Color.White.copy(alpha = 0.18f), Color.White.copy(alpha = 0.06f))
 )
-private val TitleFill = Brush.verticalGradient(listOf(Color.White, GameSpacePalette.Lavender))
-private val NotchFill = Brush.verticalGradient(listOf(GameSpacePalette.VioletSoft, GameSpacePalette.Violet))
+private val TitleFill = Brush.verticalGradient(listOf(Color.White, LuxGold))
+private val NotchFill = Brush.verticalGradient(listOf(LuxGold, LuxGoldDeep))
 private val CardSheen = Brush.linearGradient(
     colors = listOf(Color.White.copy(alpha = 0.14f), Color.Transparent),
     start = Offset.Zero,
@@ -232,30 +308,8 @@ internal fun StageHero(data: StageData, actions: StageActions) {
             .lobbyIntro(intro, fromStart = 70.dp, start = 0.10f),
         verticalArrangement = Arrangement.Center
     ) {
-        Crossfade(
-            targetState = data.selected?.label.orEmpty(),
-            animationSpec = tween(durationMillis = 260),
-            label = "stageHeroTitle"
-        ) { label ->
-            // الأسماء الطويلة تصغر خطوة أو خطوتين بدل أن تُقتطع، وتأخذ سطرين كحدّ أقصى.
-            val size = when {
-                label.length > 26 -> 40.sp
-                label.length > 16 -> 48.sp
-                else -> 58.sp
-            }
-            Text(
-                text = label,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-                style = TextStyle(
-                    brush = TitleFill,
-                    fontSize = size,
-                    lineHeight = size * 1.05f,
-                    fontFamily = DisplayFontFamily,
-                    fontWeight = FontWeight.Black
-                )
-            )
-        }
+        if (tile >= GreetingMinTile) HeroGreeting()
+        HeroTitle(label = data.selected?.label.orEmpty(), packageName = data.selected?.packageName)
         val lastPlayed = data.tagline
         if (lastPlayed != null || played != null) {
             Spacer(Modifier.height(GapM))
@@ -296,10 +350,16 @@ private fun HeroTile(game: GameApp?, edge: Dp, modifier: Modifier) {
         animationSpec = tween(durationMillis = 520),
         label = "heroTileTone"
     )
+    // انبثاق عند كل تبديل (وعند أول ظهور): حلقة ضوء تتّسع وتنطفئ حول اللوح، واللوح ينبثق من مقاس أصغر.
+    val burst = remember { Animatable(1f) }
+    LaunchedEffect(game?.packageName) {
+        burst.snapTo(0f)
+        burst.animateTo(1f, tween(durationMillis = BurstMs, easing = FastOutSlowInEasing))
+    }
     Box(
         modifier = modifier
             .drawBehind {
-                val reach = size.minDimension * 0.95f
+                val reach = size.minDimension * 1.05f
                 drawCircle(
                     brush = Brush.radialGradient(
                         colors = listOf(tone.copy(alpha = 0.55f), Color.Transparent),
@@ -309,9 +369,37 @@ private fun HeroTile(game: GameApp?, edge: Dp, modifier: Modifier) {
                     radius = reach,
                     center = center
                 )
+                // أرضيّة ضوئيّة تحت اللوح: قرص مضغوط رأسيًّا يوحي بأن اللوح يطفو فوق سطح لا أنه ملصق على الخلفية.
+                val floor = Offset(center.x, size.height + FloorGap.toPx())
+                scale(scaleX = 1f, scaleY = FloorSquash, pivot = floor) {
+                    drawCircle(
+                        brush = Brush.radialGradient(
+                            colors = listOf(tone.copy(alpha = 0.50f), Color.Transparent),
+                            center = floor,
+                            radius = size.width * FloorReach
+                        ),
+                        radius = size.width * FloorReach,
+                        center = floor
+                    )
+                }
+                val b = burst.value
+                if (b < 1f) {
+                    drawCircle(
+                        color = tone.copy(alpha = BurstAlpha * (1f - b)),
+                        radius = size.minDimension * (0.55f + BurstReach * b),
+                        center = center,
+                        style = Stroke(width = BurstStroke.toPx() * (1f - b))
+                    )
+                }
             }
             .graphicsLayer {
-                translationY = (stageWave(clock.value, 3, 0.25f) - 0.5f) * 2f * FloatDistance.toPx()
+                val t = clock.value
+                translationY = (stageWave(t, 3, 0.25f) - 0.5f) * 2f * FloatDistance.toPx()
+                rotationY = (stageWave(t, 2, 0.10f) - 0.5f) * 2f * TiltDegrees
+                cameraDistance = TiltCamera * density
+                val pop = PopFrom + (1f - PopFrom) * burst.value
+                scaleX = pop
+                scaleY = pop
             },
         contentAlignment = Alignment.Center
     ) {
@@ -322,6 +410,75 @@ private fun HeroTile(game: GameApp?, edge: Dp, modifier: Modifier) {
         ) { packageName ->
             HeroIcon(packageName = packageName, label = game?.label.orEmpty(), edge = edge)
         }
+    }
+}
+
+/**
+ * تحيّة الاستقبال: سطر ذهبيّ صغير فوق الاسم يتبدّل بساعة اليوم («مساء الخير · جناحك جاهز») فيضيف دفء مضيف الفندق.
+ * الساعة تُقرأ مرّة عند التركيب: الشاشة تُفتح وتُغلق، فلا حاجة لمؤقّت يُحدّثها كل دقيقة.
+ */
+@Composable
+private fun HeroGreeting() {
+    val hour = remember { java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY) }
+    val greeting = stringResource(
+        when (hour) {
+            in 5..11 -> R.string.gs_greet_morning
+            in 12..16 -> R.string.gs_greet_afternoon
+            in 17..21 -> R.string.gs_greet_evening
+            else -> R.string.gs_greet_night
+        }
+    )
+    Text(
+        text = stringResource(R.string.gs_greet_format, greeting, stringResource(R.string.gs_greet_suite)),
+        color = LuxGold,
+        fontSize = 16.sp,
+        fontWeight = FontWeight.Medium,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis
+    )
+}
+
+/**
+ * اسم اللعبة بخطّ العرض الأسود وتدرّج أبيض→لافندر، وخلفه وهج بلون اللعبة (من أيقونتها) ينتقل بنعومة مع تبديلها.
+ * منفصل عن [StageHero] كي لا يُعيد تركيب كتلة البطل كلها مع كل إطار من انتقال اللون.
+ */
+@Composable
+private fun HeroTitle(label: String, packageName: String?) {
+    val clock = LocalStageClock.current
+    val tone by animateColorAsState(
+        targetValue = rememberLobbyTone(packageName),
+        animationSpec = tween(durationMillis = 520),
+        label = "heroTitleTone"
+    )
+    Crossfade(
+        targetState = label,
+        animationSpec = tween(durationMillis = 260),
+        label = "stageHeroTitle"
+    ) { text ->
+        // الأسماء الطويلة تصغر خطوة أو خطوتين بدل أن تُقتطع، وتأخذ سطرين كحدّ أقصى.
+        val size = when {
+            text.length > 26 -> 40.sp
+            text.length > 16 -> 48.sp
+            else -> 58.sp
+        }
+        Text(
+            text = text,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.stageTextShine(clock),
+            style = TextStyle(
+                brush = TitleFill,
+                fontSize = size,
+                lineHeight = size * 1.05f,
+                fontFamily = DisplayFontFamily,
+                fontWeight = FontWeight.Black,
+                shadow = Shadow(
+                    color = tone.copy(alpha = TitleGlow),
+                    offset = Offset(0f, TitleGlowDrop),
+                    blurRadius = TitleGlowBlur
+                )
+            )
+        )
     }
 }
 
@@ -342,7 +499,7 @@ private fun HeroChip(icon: ImageVector, text: String) {
         Icon(
             imageVector = icon,
             contentDescription = null,
-            tint = GameSpacePalette.VioletSoft,
+            tint = LuxGold,
             modifier = Modifier.size(ChipGlyph)
         )
         Text(
@@ -388,19 +545,26 @@ private fun StageSwipeLayer(onStep: (Int) -> Unit, modifier: Modifier) {
 }
 
 /**
- * خلفية البطل السينمائيّة: أيقونة اللعبة الحقيقيّة مكبَّرة ومموَّهة تملأ العرض كلّه وتتنفّس ببطء (تكبير وإزاحة
- * على ساعة المسرح)، فوقها أورورا بلون اللعبة نفسه (من أيقونتها) ينتقل بنعومة مع تبديلها، وتدرّجات معتمة تحفظ
- * قراءة النصّ على اليسار وتذيب الحافتين العليا والسفلى في الرفّ وشريط الحالة. لا فنّ منقول (ADR-07).
+ * خلفية البطل السينمائيّة — ثلاث طبقات كلّها من أيقونة اللعبة الحقيقيّة (لا فنّ منقول، ADR-07):
+ *  ١. **لون**: الأيقونة مكبَّرة ومموَّهة تملأ العرض وتتنفّس ببطء، فوقها أورورا بلونين متناغمين (لون اللعبة ولونٌ
+ *     مجاور له على عجلة الألوان) وثلاثة أشعّة ضوء مائلة تنبض؛
+ *  ٢. **فنّ**: الأيقونة نفسها بدقّة ٥١٢ كبيرةً خلف عمود اللوحات، تذوب أطرافها (وزواياها الشفّافة) بقناع شعاعيّ
+ *     وتتلاشى من جهة النصّ فلا تزاحم الاسم؛ وفي هذا الفنّ يمرّ الزجاج الخلفيّ للوحات فيأخذ عمقًا؛
+ *  ٣. **قراءة**: حجاب معتم على الجانبين والأعلى والأسفل يحفظ وضوح النصّ ويُذيب الحافتين في الرفّ وشريط الحالة.
+ * ينتقل اللون والفنّ بنعومة مع تبديل اللعبة. [boardEdge]: حافة عمود اللوحات اليمنى بإحداثيات هذه الطبقة
+ * (وحدات اللقطة)؛ بلا قيمة (الهاتف العموديّ) يتوسّط الفنّ.
  */
 @Composable
-internal fun StageHeroBackdrop(game: GameApp?, modifier: Modifier = Modifier) {
+internal fun StageHeroBackdrop(game: GameApp?, modifier: Modifier = Modifier, boardEdge: Int? = null) {
     val icon by rememberLobbyIcon(game?.packageName)
+    val art by rememberLobbyArt(game?.packageName)
     val tone by animateColorAsState(
         targetValue = rememberLobbyTone(game?.packageName),
         animationSpec = tween(durationMillis = 520),
         label = "stageHeroTone"
     )
     val clock = LocalStageClock.current
+    val accent = shiftHue(tone, HueShift)
     Box(modifier.clipToBounds()) {
         Crossfade(
             targetState = icon,
@@ -428,38 +592,96 @@ internal fun StageHeroBackdrop(game: GameApp?, modifier: Modifier = Modifier) {
                                 Modifier
                             }
                         )
-                        .alpha(0.82f)
+                        .alpha(0.55f)
                 )
             }
         }
+        // أورورا: تُرسم مرّة واحدة ثم تتحرّك الطبقة نفسها ببطء (إزاحة وتكبير) فلا إعادة رسم كل إطار.
+        Box(
+            Modifier
+                .fillMaxSize()
+                .graphicsLayer {
+                    val t = clock.value
+                    translationX = (stageWave(t, 1, 0.10f) - 0.5f) * AuroraDrift * 1.dp.toPx()
+                    translationY = (stageWave(t, 2, 0.35f) - 0.5f) * AuroraDrift * 0.5f * 1.dp.toPx()
+                    val k = 1.04f + 0.04f * stageWave(t, 1, 0.55f)
+                    scaleX = k
+                    scaleY = k
+                }
+                .drawBehind {
+                    drawRect(
+                        Brush.radialGradient(
+                            colors = listOf(
+                                tone.copy(alpha = 0.50f),
+                                tone.copy(alpha = 0.14f),
+                                Color.Transparent
+                            ),
+                            center = Offset(size.width * 0.66f, size.height * 0.38f),
+                            radius = size.height * 1.25f
+                        )
+                    )
+                    drawRect(
+                        Brush.radialGradient(
+                            colors = listOf(accent.copy(alpha = 0.32f), Color.Transparent),
+                            center = Offset(size.width * 0.96f, size.height * 0.92f),
+                            radius = size.height * 0.95f
+                        )
+                    )
+                }
+        )
+        Box(
+            Modifier
+                .fillMaxSize()
+                .drawBehind {
+                    val pulse = 0.55f + 0.45f * stageWave(clock.value, 2, 0.20f)
+                    rotate(degrees = BeamTilt, pivot = Offset(size.width * 0.72f, 0f)) {
+                        for (i in BeamCenters.indices) {
+                            val w = size.width * BeamWidths[i]
+                            val x = size.width * BeamCenters[i] - w / 2f
+                            drawRect(
+                                brush = Brush.horizontalGradient(
+                                    colors = listOf(
+                                        Color.Transparent,
+                                        tone.copy(alpha = BeamAlphas[i] * pulse),
+                                        Color.Transparent
+                                    ),
+                                    startX = x,
+                                    endX = x + w
+                                ),
+                                topLeft = Offset(x, -size.height * 0.30f),
+                                size = Size(w, size.height * 1.90f)
+                            )
+                        }
+                    }
+                }
+        )
+        Crossfade(
+            targetState = art,
+            animationSpec = tween(durationMillis = 520),
+            label = "stageHeroArt"
+        ) { bitmap ->
+            if (bitmap != null) {
+                HeroKeyArt(bitmap = bitmap, clock = clock, boardEdge = boardEdge)
+            }
+        }
+        StageEmbers(tone = { tone }, modifier = Modifier.fillMaxSize())
         Box(
             Modifier
                 .fillMaxSize()
                 .drawBehind {
                     drawRect(
-                        Brush.radialGradient(
-                            colors = listOf(
-                                tone.copy(alpha = 0.46f),
-                                tone.copy(alpha = 0.14f),
-                                Color.Transparent
-                            ),
-                            center = Offset(size.width * 0.66f, size.height * 0.40f),
-                            radius = size.height * 1.25f
-                        )
-                    )
-                    drawRect(
                         Brush.horizontalGradient(
-                            0f to GameSpacePalette.Void.copy(alpha = 0.95f),
-                            0.24f to GameSpacePalette.Void.copy(alpha = 0.70f),
-                            0.46f to GameSpacePalette.Void.copy(alpha = 0.28f),
-                            0.62f to Color.Transparent,
-                            1f to GameSpacePalette.Void.copy(alpha = 0.50f)
+                            0f to GameSpacePalette.Void.copy(alpha = 0.92f),
+                            0.20f to GameSpacePalette.Void.copy(alpha = 0.66f),
+                            0.38f to GameSpacePalette.Void.copy(alpha = 0.22f),
+                            0.52f to Color.Transparent,
+                            1f to GameSpacePalette.Void.copy(alpha = 0.42f)
                         )
                     )
                     drawRect(
                         Brush.verticalGradient(
                             0f to GameSpacePalette.Void.copy(alpha = 0.50f),
-                            0.28f to Color.Transparent,
+                            0.26f to Color.Transparent,
                             0.60f to Color.Transparent,
                             1f to GameSpacePalette.Deep
                         )
@@ -467,6 +689,81 @@ internal fun StageHeroBackdrop(game: GameApp?, modifier: Modifier = Modifier) {
                 }
         )
     }
+}
+
+/**
+ * فنّ البطل: أيقونة اللعبة بدقّة عالية ترتكز على حافة عمود اللوحات (ويمتدّ عُشرها تحته)، أطرافها تذوب بقناع
+ * شعاعيّ يُبقي قلبها، وتتلاشى من جهة النصّ. تُرسم **مرّة واحدة** على طبقة مستقلّة، والانزياح والتنفّس البطيئان
+ * يجريان بتحويل الطبقة نفسها (لا إعادة رسم كل إطار).
+ */
+@Composable
+private fun HeroKeyArt(bitmap: ImageBitmap, clock: State<Float>, boardEdge: Int?) {
+    Canvas(
+        Modifier
+            .fillMaxSize()
+            .graphicsLayer {
+                compositingStrategy = CompositingStrategy.Offscreen
+                val t = clock.value
+                translationX = (stageWave(t, 1, 0.25f) - 0.5f) * ArtDrift * 1.dp.toPx()
+                val k = 1f + ArtBreath * stageWave(t, 1)
+                scaleX = k
+                scaleY = k
+            }
+    ) {
+        val unit = 1.dp.toPx()
+        val centered = boardEdge == null
+        val side = size.height * if (centered) ArtSidePortrait else ArtSide
+        val cx = if (boardEdge == null) size.width * 0.5f else boardEdge * unit - side * ArtUnderBoard
+        val cy = size.height * if (centered) 0.5f else ArtCenterY
+        val left = cx - side / 2f
+        val top = cy - side / 2f
+        drawImage(
+            image = bitmap,
+            srcOffset = IntOffset.Zero,
+            srcSize = IntSize(bitmap.width, bitmap.height),
+            dstOffset = IntOffset(left.roundToInt(), top.roundToInt()),
+            dstSize = IntSize(side.roundToInt(), side.roundToInt()),
+            alpha = if (centered) ArtAlphaPortrait else ArtAlpha,
+            filterQuality = FilterQuality.High
+        )
+        // ذوبان الحواف: قناع شعاعيّ يُبقي قلب الفنّ ويُذيب أطرافه وزوايا الأيقونة الشفّافة في الخلفية.
+        drawRect(
+            brush = Brush.radialGradient(
+                0f to Color.Black,
+                0.56f to Color.Black,
+                0.84f to Color.Black.copy(alpha = 0.40f),
+                1f to Color.Transparent,
+                center = Offset(cx, cy),
+                radius = side * 0.5f
+            ),
+            topLeft = Offset(left, top),
+            size = Size(side, side),
+            blendMode = BlendMode.DstIn
+        )
+        if (!centered) {
+            // تلاشٍ من جهة النصّ: يحفظ قراءة الاسم والأزرار.
+            drawRect(
+                brush = Brush.horizontalGradient(
+                    0f to Color.Transparent,
+                    0.38f to Color.Black,
+                    1f to Color.Black,
+                    startX = left,
+                    endX = left + side
+                ),
+                topLeft = Offset(left, top),
+                size = Size(side, side),
+                blendMode = BlendMode.DstIn
+            )
+        }
+    }
+}
+
+/** لونٌ مجاور على عجلة الألوان (إزاحة [degrees] في الصبغة): يعطي الأورورا لونين متناغمين بدل لون واحد مسطّح. */
+private fun shiftHue(color: Color, degrees: Float): Color {
+    val hsv = FloatArray(3)
+    android.graphics.Color.colorToHSV(color.toArgb(), hsv)
+    hsv[0] = (hsv[0] + degrees) % 360f
+    return Color(android.graphics.Color.HSVToColor(hsv))
 }
 
 /**
@@ -496,15 +793,23 @@ internal fun PlayRow(
                 .lobbyPress(playInteraction, 0.96f)
                 .alpha(if (enabled) 1f else 0.5f)
                 .shadow(
-                    elevation = GlowS,
+                    elevation = GlowPlay,
                     shape = shape,
-                    ambientColor = GameSpacePalette.Violet.copy(alpha = 0.45f),
-                    spotColor = GameSpacePalette.VioletSoft.copy(alpha = 0.70f)
+                    ambientColor = GameSpacePalette.Violet.copy(alpha = 0.55f),
+                    spotColor = LuxGold.copy(alpha = 0.60f)
                 )
                 .clip(shape)
                 .background(PlayFill)
+                .background(PlayGloss)
                 .border(StrokeFirm, PlayRim, shape)
                 .stageSheen(clock, cycles = 6, strength = 0.20f)
+                .stageEnergyRim(
+                    clock = clock,
+                    tone = { LuxGold },
+                    corner = playH / 2f,
+                    thickness = RimThin,
+                    cycles = 6
+                )
                 .clickable(
                     interactionSource = playInteraction,
                     indication = null,
@@ -545,7 +850,7 @@ internal fun PlayRow(
                 .lobbyPress(moreInteraction, 0.90f)
                 .clip(CircleShape)
                 .background(GameSpacePalette.Plum.copy(alpha = 0.90f))
-                .border(StrokeFine, GameSpacePalette.VioletSoft.copy(alpha = 0.45f), CircleShape)
+                .border(StrokeFine, LuxGold.copy(alpha = 0.45f), CircleShape)
                 .clickable(
                     interactionSource = moreInteraction,
                     indication = null,
@@ -664,6 +969,7 @@ internal fun HeroArt(game: GameApp?, edge: Dp) {
 private fun HeroIcon(packageName: String?, label: String, edge: Dp) {
     val clock = LocalStageClock.current
     val icon by rememberLobbyIcon(packageName)
+    val tone = rememberLobbyTone(packageName)
     val shape = RoundedCornerShape(edge * 0.24f)
     Box(
         modifier = Modifier
@@ -677,7 +983,15 @@ private fun HeroIcon(packageName: String?, label: String, edge: Dp) {
             .clip(shape)
             .background(CardFill)
             .border(StrokeSelected, SelectedRim, shape)
-            .stageSheen(clock, cycles = 4, strength = 0.16f),
+            .stageSheen(clock, cycles = 4, strength = 0.16f)
+            .stageEnergyRim(
+                clock = clock,
+                tone = { tone },
+                corner = edge * 0.24f,
+                thickness = StrokeSelected,
+                head = LegendGold
+            )
+            .stageGlint(clock),
         contentAlignment = Alignment.Center
     ) {
         val bitmap = icon
@@ -783,7 +1097,7 @@ internal fun StageDots(count: Int, index: Int, modifier: Modifier = Modifier) {
                         .height(DotSize)
                         .width(width)
                         .clip(CircleShape)
-                        .background(if (active) GameSpacePalette.VioletSoft else Color.White.copy(alpha = 0.32f))
+                        .background(if (active) LuxGold else Color.White.copy(alpha = 0.32f))
                 )
             }
         }
@@ -990,6 +1304,7 @@ private fun ShelfMore(onClick: () -> Unit) {
  */
 @Composable
 private fun ShelfCard(game: GameApp, selected: Boolean, onClick: () -> Unit) {
+    val clock = LocalStageClock.current
     val icon by rememberLobbyIcon(game.packageName)
     val shape = RoundedCornerShape(RadiusCard)
     val interaction = remember { MutableInteractionSource() }
@@ -1007,6 +1322,7 @@ private fun ShelfCard(game: GameApp, selected: Boolean, onClick: () -> Unit) {
                 scaleX = k
                 scaleY = k
                 translationY = -LiftDistance.toPx() * lift
+                alpha = IdleAlpha + (1f - IdleAlpha) * lift
             }
             .then(
                 if (selected) {
@@ -1023,6 +1339,21 @@ private fun ShelfCard(game: GameApp, selected: Boolean, onClick: () -> Unit) {
             .clip(shape)
             .background(CardFill)
             .border(if (selected) StrokeSelected else StrokeFine, if (selected) SelectedRim else IdleRim, shape)
+            .then(
+                if (selected) {
+                    Modifier
+                        .stageSheen(clock, cycles = 5, strength = 0.14f)
+                        .stageEnergyRim(
+                            clock = clock,
+                            tone = { LuxGold },
+                            corner = RadiusCard,
+                            thickness = StrokeSelected,
+                            cycles = 4
+                        )
+                } else {
+                    Modifier
+                }
+            )
             .clickable(
                 interactionSource = interaction,
                 indication = null,

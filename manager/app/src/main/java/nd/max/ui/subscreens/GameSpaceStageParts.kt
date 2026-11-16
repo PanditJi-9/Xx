@@ -74,6 +74,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Density
@@ -86,6 +87,7 @@ import kotlin.math.roundToInt
 import kotlin.math.sin
 import kotlinx.coroutines.flow.first
 import nd.max.R
+import nd.max.ui.component.FitText
 import nd.max.ui.component.lobbyIntro
 import nd.max.ui.component.lobbyPress
 import nd.max.ui.design.MAX_VALUE_UNAVAILABLE
@@ -146,15 +148,23 @@ private const val CountUpMs = 900
 private const val CountUpGate = 0.30f
 private const val DegToRad = 0.017453292f
 
+/** أقصى وأدنى حجم لاسم بند الشريط (sp): يصغر داخل هذا المدى حتى يبقى في سطر واحد. */
+private const val RailLabelMax = 17f
+private const val RailLabelMin = 12f
+
+/** شدّة اللمعة العلويّة على الزجاج: وهج أبيض ينطفئ قبل منتصف اللوح فيبدو سطحًا مصقولًا. */
+private const val GlassSheen = 0.07f
+
 internal val GlassBorder = Brush.linearGradient(
     listOf(
-        Color.White.copy(alpha = 0.16f),
-        Color.White.copy(alpha = 0.05f),
-        Color.White.copy(alpha = 0.10f)
+        LuxGold.copy(alpha = 0.55f),
+        Color.White.copy(alpha = 0.07f),
+        Color.White.copy(alpha = 0.04f),
+        LuxGold.copy(alpha = 0.26f)
     )
 )
 internal val GlassFill = Brush.verticalGradient(
-    listOf(GameSpacePalette.Glass.copy(alpha = 0.80f), GameSpacePalette.GlassDeep.copy(alpha = 0.88f))
+    listOf(Color(0xFF1B1840).copy(alpha = 0.80f), GameSpacePalette.GlassDeep.copy(alpha = 0.90f))
 )
 private val RailFill = Brush.verticalGradient(
     listOf(GameSpacePalette.Glass.copy(alpha = 0.86f), GameSpacePalette.GlassDeep.copy(alpha = 0.93f))
@@ -163,18 +173,13 @@ internal val ActiveFill = Brush.horizontalGradient(
     listOf(GameSpacePalette.VioletDeep.copy(alpha = 0.65f), GameSpacePalette.Plum.copy(alpha = 0.92f))
 )
 private val BrandBrush = Brush.linearGradient(
-    listOf(Color.White, GameSpacePalette.Lavender, GameSpacePalette.VioletSoft)
+    listOf(LuxIvory, LuxGold, LuxGoldDeep)
 )
 private val AvatarBrush = Brush.linearGradient(
     listOf(GameSpacePalette.VioletSoft, GameSpacePalette.VioletDeep)
 )
 private val AvatarRing = Brush.sweepGradient(
-    listOf(
-        GameSpacePalette.VioletSoft,
-        GameSpacePalette.Cyan,
-        GameSpacePalette.Magenta,
-        GameSpacePalette.VioletSoft
-    )
+    listOf(LuxGold, LuxIvory, LuxGoldDeep, LuxGold)
 )
 private val ModeOnFill = Brush.linearGradient(
     listOf(GameSpacePalette.Violet.copy(alpha = 0.60f), GameSpacePalette.VioletDeep.copy(alpha = 0.40f))
@@ -204,6 +209,14 @@ internal fun Modifier.stageGlass(shape: Shape): Modifier =
     this
         .clip(shape)
         .background(GlassFill)
+        .drawBehind {
+            drawRect(
+                Brush.verticalGradient(
+                    0f to Color.White.copy(alpha = GlassSheen),
+                    0.42f to Color.Transparent
+                )
+            )
+        }
         .border(StrokeFine, GlassBorder, shape)
 
 /**
@@ -312,7 +325,8 @@ internal fun StageRail(current: LobbyPage, onPage: (LobbyPage) -> Unit) {
                 fontFamily = DisplayFontFamily,
                 fontWeight = FontWeight.Black
             ),
-            maxLines = 1
+            maxLines = 1,
+            modifier = Modifier.stageTextShine(clock, cycles = 2)
         )
     }
     // التخطيط المضغوط: بنود الشريط تتّسع لما يتيحه ارتفاع الشاشة (حتى ٩٢) فيسهل لمسها؛ المرجعيّ ٧٦/٧٨ كما هو.
@@ -403,7 +417,7 @@ private fun StageRailItem(
         label = "railSelection"
     )
     val shape = RoundedCornerShape(RadiusItem)
-    val tint = lerp(GameSpacePalette.Ink.copy(alpha = 0.80f), Color.White, selection)
+    val tint = lerp(GameSpacePalette.Ink.copy(alpha = 0.80f), LuxGold, selection)
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -420,16 +434,42 @@ private fun StageRailItem(
                         cornerRadius = CornerRadius(radius),
                         alpha = selection
                     )
+                    // وهج داخليّ من جهة الأيقونة: يعطي البند النشط عمقًا بدل تعبئة مسطّحة.
                     drawRoundRect(
-                        color = GameSpacePalette.VioletSoft.copy(alpha = 0.85f * selection),
+                        brush = Brush.radialGradient(
+                            colors = listOf(
+                                LuxGold.copy(alpha = 0.20f * selection),
+                                Color.Transparent
+                            ),
+                            center = Offset(size.height * 0.55f, size.height * 0.5f),
+                            radius = size.width * 0.85f
+                        ),
+                        cornerRadius = CornerRadius(radius)
+                    )
+                    drawRoundRect(
+                        color = LuxGold.copy(alpha = 0.80f * selection),
                         topLeft = Offset(rim / 2f, rim / 2f),
                         size = Size(size.width - rim, size.height - rim),
                         cornerRadius = CornerRadius(radius - rim / 2f),
                         style = Stroke(width = rim)
                     )
                     val barHeight = size.height * 0.46f * selection
+                    // توهّج نيون خلف الشريط: نطاق يخبو نحو الداخل، فيبدو الشريط مضيئًا لا مرسومًا.
                     drawRoundRect(
-                        color = GameSpacePalette.Lavender,
+                        brush = Brush.horizontalGradient(
+                            colors = listOf(
+                                LuxGold.copy(alpha = 0.55f * selection),
+                                LuxGold.copy(alpha = 0f)
+                            ),
+                            startX = 0f,
+                            endX = rim * 10f
+                        ),
+                        topLeft = Offset(0f, (size.height - barHeight * 1.7f) / 2f),
+                        size = Size(rim * 10f, barHeight * 1.7f),
+                        cornerRadius = CornerRadius(rim * 2f)
+                    )
+                    drawRoundRect(
+                        color = LuxGold,
                         topLeft = Offset(0f, (size.height - barHeight) / 2f),
                         size = Size(rim * 2.4f, barHeight),
                         cornerRadius = CornerRadius(rim)
@@ -459,15 +499,15 @@ private fun StageRailItem(
                     scaleY = k
                 }
         )
-        Text(
+        // سطر واحد دائمًا: «مكتبة الألعاب» و«ملف اللعبة» كانا ينكسران فيختلف إيقاع البنود، فيصغر الاسم حتى يتّسع.
+        FitText(
             text = stringResource(labelRes),
             color = tint,
-            fontSize = 17.sp,
-            lineHeight = 20.sp,
-            fontWeight = if (active) FontWeight.SemiBold else FontWeight.Normal,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.weight(1f)
+            maxSp = RailLabelMax,
+            minSp = RailLabelMin,
+            modifier = Modifier.weight(1f),
+            weight = if (active) FontWeight.SemiBold else FontWeight.Normal,
+            align = TextAlign.Start
         )
     }
 }
@@ -496,7 +536,7 @@ internal fun StageStatusBar(
     ) {
         Text(
             text = data.clock,
-            color = GameSpacePalette.Ink,
+            color = LuxIvory,
             fontSize = 23.sp,
             fontFamily = DisplayFontFamily,
             fontWeight = FontWeight.SemiBold,
@@ -507,12 +547,12 @@ internal fun StageStatusBar(
                 Modifier
                     .size(PulseSize / 2)
                     .clip(CircleShape)
-                    .background(GameSpacePalette.VioletSoft.copy(alpha = 0.85f))
+                    .background(LuxGold.copy(alpha = 0.85f))
             )
         }
         Text(
             text = data.date,
-            color = GameSpacePalette.Ink.copy(alpha = 0.75f),
+            color = LuxGold.copy(alpha = 0.90f),
             fontSize = 19.sp,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
@@ -871,14 +911,22 @@ private fun StageRing(
                         radius = size.minDimension / 2f
                     )
                 }
+                // بلا قراءة: مسار متقطّع هادئ بدل حلقة ميّتة، فيُقرأ «لا قياس» لا «عطل».
                 drawArc(
-                    color = Color.White.copy(alpha = 0.08f),
+                    color = Color.White.copy(alpha = if (progress == null) 0.16f else 0.08f),
                     startAngle = -90f,
                     sweepAngle = 360f,
                     useCenter = false,
                     topLeft = topLeft,
                     size = arcSize,
-                    style = Stroke(width = strokeWidth)
+                    style = Stroke(
+                        width = strokeWidth,
+                        pathEffect = if (progress == null) {
+                            PathEffect.dashPathEffect(floatArrayOf(strokeWidth * 0.9f, strokeWidth * 1.5f))
+                        } else {
+                            null
+                        }
+                    )
                 )
                 if (progress != null && shown > 0.005f) {
                     val sweep = 360f * shown
@@ -1566,11 +1614,7 @@ private fun BaseBar(target: Int, level: State<Float>, modifier: Modifier) {
                     }
                 }
                 val fill = Brush.horizontalGradient(
-                    colors = listOf(
-                        GameSpacePalette.VioletDeep,
-                        GameSpacePalette.Violet,
-                        GameSpacePalette.VioletSoft
-                    ),
+                    colors = listOf(LuxGoldDeep, LuxGold, LuxIvory),
                     startX = 0f,
                     endX = size.width
                 )

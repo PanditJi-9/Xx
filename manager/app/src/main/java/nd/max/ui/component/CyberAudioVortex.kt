@@ -214,10 +214,16 @@ fun CyberAudioVortex(
                 modifier = Modifier.size(VortexStageSize),
                 contentAlignment = Alignment.Center,
             ) {
+                // **النبض يتبع الصوت لا المفتاح (قياس ٢٠٢٦-١١-١٦):** كان يُركَّب متى
+                // `power > 0.01f` أي متى كان المفتاح العام مفتوحًا، فنبضت الهالة والموجة
+                // **بلا جلسة صوت واحدة**. قِيس على الشاشة ساكنة: ٦٤٫٤٪ من نواة
+                // (RenderThread ٣٥٫٦٪) — تسخينٌ لا يقابله صوت. صار `live` شرطًا،
+                // والحالة الخاملة تحتفظ بهالة ساكنة (`breathe = 0.5f`) فلا يُفقد المعنى.
                 if (power > 0.01f) {
                     VortexLivePulse(
                         accent = accent,
                         strength = power,
+                        live = live,
                         orbRadius = VortexOrbRadius,
                         stageRadius = VortexStageRadius,
                         modifier = Modifier.fillMaxSize(),
@@ -324,6 +330,7 @@ fun CyberAudioVortex(
 private fun VortexLivePulse(
     accent: Color,
     strength: Float,
+    live: Boolean,
     orbRadius: Dp,
     stageRadius: Dp,
     modifier: Modifier = Modifier,
@@ -333,7 +340,7 @@ private fun VortexLivePulse(
     val animationsEnabled = rememberAnimationsEnabled()
     val breathe: Float
     val wave: Float
-    if (animationsEnabled) {
+    if (animationsEnabled && live) {
         val transition = rememberInfiniteTransition(label = "vortex_live")
         breathe = transition.animateFloat(
             initialValue = 0f,

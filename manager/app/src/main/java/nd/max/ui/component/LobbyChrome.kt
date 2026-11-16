@@ -57,6 +57,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -296,6 +297,19 @@ private val ChromeGlass = Color(0xFF14142B)
 private val ChromeViolet = Color(0xFF7C3AED)
 private val ChromeVioletSoft = Color(0xFFA855F7)
 
+/** زجاج الأزرار الدائريّة: تدرّج رأسيّ خفيف من الأعلى (لمعة) إلى الأسفل، وحدّ متدرّج يسطع من الزاوية العليا. */
+private val ChromeGlassFill = Brush.verticalGradient(
+    listOf(Color(0xFF24214F).copy(alpha = 0.84f), ChromeGlass.copy(alpha = 0.88f))
+)
+private val ChromeGold = Color(0xFFE6C77A)
+private val ChromeRim = Brush.linearGradient(
+    listOf(
+        ChromeGold.copy(alpha = 0.60f),
+        Color.White.copy(alpha = 0.07f),
+        ChromeGold.copy(alpha = 0.28f)
+    )
+)
+
 /**
  * زرّ أيقونة دائريّ؛ هدف اللمس 48dp من `minimumInteractiveComponentSize` والدائرة المرئيّة أصغر.
  * عند [selected] يمتلئ بلون [tone] وتشتدّ حافّته (مثلًا: مرشّح المفضّلة مفعّل).
@@ -317,10 +331,11 @@ internal fun LobbyRoundButton(
             .minimumInteractiveComponentSize()
             .lobbyPress(interaction)
             .clip(CircleShape)
-            .background(if (selected) tone.copy(alpha = 0.32f) else ChromeGlass.copy(alpha = 0.78f))
+            .background(ChromeGlassFill)
+            .background(if (selected) tone.copy(alpha = 0.32f) else Color.Transparent)
             .border(
                 MaxSize.hairlineBorder,
-                if (selected) ChromeVioletSoft else Color.White.copy(alpha = 0.14f),
+                if (selected) SolidColor(ChromeVioletSoft) else ChromeRim,
                 CircleShape
             )
             .clickable(
@@ -337,7 +352,7 @@ internal fun LobbyRoundButton(
         Icon(
             imageVector = icon,
             contentDescription = description,
-            tint = if (selected) LobbyPalette.Ink else LobbyPalette.Steel,
+            tint = if (selected) LobbyPalette.Ink else LobbyPalette.Ink.copy(alpha = 0.88f),
             modifier = Modifier
                 .padding(MaxSpace.sm)
                 .size(MaxSize.iconGlyph)

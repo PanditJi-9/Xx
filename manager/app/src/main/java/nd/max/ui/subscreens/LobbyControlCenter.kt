@@ -1505,8 +1505,8 @@ private fun LobbyToggleRow(title: String, detail: String?, checked: Boolean, onC
             checked = checked,
             onCheckedChange = null,
             colors = SwitchDefaults.colors(
-                checkedThumbColor = Color.White,
-                checkedTrackColor = GameSpacePalette.Violet,
+                checkedThumbColor = LuxObsidian,
+                checkedTrackColor = LuxGold,
                 uncheckedTrackColor = GameSpacePalette.PanelRaised,
                 uncheckedThumbColor = GameSpacePalette.Muted
             )

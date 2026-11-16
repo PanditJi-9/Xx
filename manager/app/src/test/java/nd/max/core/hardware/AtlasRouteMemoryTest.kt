@@ -32,6 +32,7 @@ class AtlasRouteMemoryTest {
         memory.noteFailed("cpu_frequency", "cpu.frequency.arbiter", rollbackVerified = true)
 
         assertTrue(memory.quarantinedRoutes("cpu_frequency").isEmpty())
+        assertTrue(memory.discouragedRoutes("cpu_frequency").isEmpty())
         assertNull(memory.preferredRoute("cpu_frequency"))
     }
 
@@ -486,6 +487,54 @@ class AtlasRouteMemoryTest {
 
         assertEquals(700L, reloaded.entries().single().lastAttemptElapsedMs)
         assertEquals(700L, reloaded.entries().single().recencyElapsedMs())
+    }
+
+    @Test
+    fun `repeated clean failure discourages a route without banning it`() {
+        val memory = memory()
+        memory.noteFailed("gpu_frequency", "gpu.frequency.arbiter", rollbackVerified = true)
+
+        assertTrue("one failure can still be noise", memory.discouragedRoutes("gpu_frequency").isEmpty())
+
+        memory.noteFailed("gpu_frequency", "gpu.frequency.arbiter", rollbackVerified = true)
+
+        assertEquals(setOf("gpu.frequency.arbiter"), memory.discouragedRoutes("gpu_frequency"))
+        assertTrue(
+            "discouragement is ordering, not a quarantine: the route stays eligible",
+            memory.quarantinedRoutes("gpu_frequency").isEmpty(),
+        )
+        assertNull(memory.preferredRoute("gpu_frequency"))
+    }
+
+    @Test
+    fun `a verified route clears its discouragement`() {
+        val memory = memory()
+        repeat(AtlasRouteMemory.DISCOURAGE_AFTER_FAILURES) {
+            memory.noteFailed("cpu_frequency", "cpu.frequency.arbiter", rollbackVerified = true)
+        }
+        assertEquals(setOf("cpu.frequency.arbiter"), memory.discouragedRoutes("cpu_frequency"))
+
+        memory.noteVerified("cpu_frequency", "cpu.frequency.arbiter")
+
+        assertTrue(memory.discouragedRoutes("cpu_frequency").isEmpty())
+        assertEquals("cpu.frequency.arbiter", memory.preferredRoute("cpu_frequency"))
+    }
+
+    @Test
+    fun `discouragement expires with the boot it was measured in`() {
+        var boot = 7L
+        val memory = AtlasRouteMemory(InMemoryIo(), clockMs = { 1_000L }, bootGeneration = { boot })
+        repeat(AtlasRouteMemory.DISCOURAGE_AFTER_FAILURES) {
+            memory.noteFailed("gpu_frequency", "gpu.frequency.arbiter", rollbackVerified = true)
+        }
+        assertEquals(setOf("gpu.frequency.arbiter"), memory.discouragedRoutes("gpu_frequency"))
+
+        boot = 8L
+
+        assertTrue(
+            "a new boot rebuilt vendor state; past failure is no longer a reason to demote",
+            memory.discouragedRoutes("gpu_frequency").isEmpty(),
+        )
     }
 
     private fun memory(): AtlasRouteMemory =

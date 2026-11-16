@@ -56,6 +56,7 @@ import nd.max.core.hardware.ProfileApplier
 import nd.max.core.maxai.CadenceStatus
 import nd.max.core.maxai.ControlOutcomeModel
 import nd.max.core.maxai.ControlRegistry
+import nd.max.core.maxai.MaxAiBehavior
 import nd.max.core.maxai.MaxAiCandidate
 import nd.max.core.maxai.MaxAiEpisode
 import nd.max.core.maxai.MaxAiEpisodeKind
@@ -65,6 +66,7 @@ import nd.max.core.maxai.Objective
 import nd.max.core.maxai.MaxAiRejection
 import nd.max.core.maxai.MaxAiCadence
 import nd.max.core.maxai.MaxAiState
+import nd.max.core.maxai.MaxAiThermalBudget
 import nd.max.core.maxai.MaxAiVerdict
 import nd.max.core.maxai.OwnershipCommitState
 import nd.max.core.maxai.SafetyEnforcement
@@ -256,6 +258,7 @@ fun MaxAiScreen(
     ) {
         if (workspace == MaxAiWorkspace.Overview) {
             item(key = "overview_now") { NowHeader(state, nowMs) }
+            item(key = "overview_budget") { ThermalBudgetSection(state.thermalBudget) }
             item(key = "overview_objective") { ObjectiveSection(state, viewModel) }
             item(key = "overview_safety") { SafetySection(safety, state.lastSampleAtMs > 0L) }
             episodes.firstOrNull()?.let { episode ->
@@ -676,6 +679,76 @@ private fun contextLine(state: MaxAiState): String {
 
 // ── الهدف ───────────────────────────────────────────
 
+@Composable
+private fun behaviorDescription(behavior: MaxAiBehavior): String = stringResource(
+    when (behavior) {
+        MaxAiBehavior.CALM -> R.string.max_ai_behavior_calm_desc
+        MaxAiBehavior.BALANCED -> R.string.max_ai_behavior_balanced_desc
+        MaxAiBehavior.DECISIVE -> R.string.max_ai_behavior_decisive_desc
+    },
+)
+
+/**
+ * ميزانية الحرارة: الزمن حتى أول خفض أمان، من وحدة قياس نقيّة ومُختبَرة.
+ *
+ * الجلسة المفتوحة تُعرض زمنًا جاريًا، والمنتهية تُعرض زمنًا مقيسًا، وما لم
+ * يُقس بعد يُقال إنه لم يُقس — ولا يُعرض صفرًا يبدو فشلًا.
+ */
+@Composable
+private fun ThermalBudgetSection(status: MaxAiThermalBudget.Status) {
+    val detail = when {
+        status.sessionOpen -> stringResource(
+            R.string.max_ai_budget_running,
+            budgetDuration(status.sessionElapsedMs),
+        )
+
+        status.lastBudgetMs != null -> stringResource(
+            R.string.max_ai_budget_last,
+            budgetDuration(status.lastBudgetMs),
+        )
+
+        status.lastCleanSessionMs != null -> stringResource(
+            R.string.max_ai_budget_clean,
+            budgetDuration(status.lastCleanSessionMs),
+        )
+
+        else -> stringResource(R.string.max_ai_budget_none)
+    }
+    MaxSection(
+        title = stringResource(R.string.max_ai_budget_section),
+        description = stringResource(R.string.max_ai_budget_desc),
+    ) {
+        MaxGroup {
+            MaxRow(
+                title = stringResource(R.string.max_ai_budget_state_title),
+                subtitle = detail,
+                icon = Icons.Rounded.Insights,
+                iconTone = if (status.sessionOpen) MaxTone.Accent else MaxTone.Positive,
+            )
+            if (status.sessionsMeasured > 0) {
+                MaxGroupDivider()
+                MaxRow(
+                    title = stringResource(R.string.max_ai_budget_sessions, status.sessionsMeasured),
+                    icon = Icons.Rounded.Tune,
+                    iconTone = MaxTone.Inactive,
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun budgetDuration(durationMs: Long): String {
+    val seconds = (durationMs / 1_000L).coerceAtLeast(0L)
+    val minutes = seconds / 60L
+    val rest = seconds % 60L
+    return if (minutes > 0L) {
+        stringResource(R.string.max_ai_budget_minutes, minutes, rest)
+    } else {
+        stringResource(R.string.max_ai_budget_seconds, rest)
+    }
+}
+
 /**
  * أوزان الهدف النشطة ومن أين جاءت، وفوقها اختيار الأولوية مباشرة.
  *
@@ -735,6 +808,29 @@ private fun ObjectiveSection(state: MaxAiState, viewModel: MaxAiViewModel) {
                 // إشارة لمسية فورية عند الضغط، قبل أن يصل الأثر إلى الإشعار.
                 haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
                 viewModel.setObjectivePreference(ObjectivePreferenceKeys[index])
+            },
+        )
+
+        // السلوك بعد الوضع مباشرةً لأنه يجيبه عن السؤال التالي: «ومتى تتدخل؟».
+        // وهو لا يغيّر الملفّ ولا الأوزان — فقط عتبة الرضا وسقف الاستكشاف.
+        MaxGroup {
+            MaxRow(
+                title = stringResource(R.string.max_ai_behavior_title),
+                subtitle = behaviorDescription(state.behavior),
+                icon = Icons.Rounded.Tune,
+                iconTone = MaxTone.Accent,
+            )
+        }
+        MaxSegmented(
+            options = listOf(
+                stringResource(R.string.max_ai_behavior_calm),
+                stringResource(R.string.max_ai_behavior_balanced),
+                stringResource(R.string.max_ai_behavior_decisive),
+            ),
+            selectedIndex = state.behavior.ordinal,
+            onSelect = { index ->
+                haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                viewModel.setBehavior(MaxAiBehavior.entries[index].id)
             },
         )
 
@@ -1777,6 +1873,7 @@ private fun blockText(reason: String): String = when (reason) {
     TrustModel.Block.NOTHING_UNKNOWN -> stringResource(R.string.max_live_block_nothing)
     TrustModel.Block.IRREVERSIBLE -> stringResource(R.string.max_live_block_irreversible)
     TrustModel.Block.COST_TOO_HIGH -> stringResource(R.string.max_live_block_cost)
+    TrustModel.Block.BEHAVIOR -> stringResource(R.string.max_live_block_behavior)
     else -> stringResource(R.string.max_ai_value_unknown)
 }
 

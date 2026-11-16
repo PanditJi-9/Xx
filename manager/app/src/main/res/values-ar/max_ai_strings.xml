@@ -40,6 +40,26 @@
     <string name="max_ai_weight_thermal">المتسع الحراري</string>
     <string name="max_ai_objective_pending">لم تُحسب أوزان بعد: تُشتق من أول دورة مقيسة.</string>
 
+    <string name="max_ai_behavior_title">سلوك التدخل</string>
+    <string name="max_ai_behavior_calm">هادئ</string>
+    <string name="max_ai_behavior_balanced">متوازن</string>
+    <string name="max_ai_behavior_decisive">حاسم</string>
+    <string name="max_ai_behavior_calm_desc">لا يتدخل إلا عند فجوة واضحة، ولا يجرّب مقبضًا مجهولًا أبدًا.</string>
+    <string name="max_ai_behavior_balanced_desc">يتدخل عند فجوة مقيسة، ولا يجرّب إلا حيث يبقى الخطأ رخيصًا.</string>
+    <string name="max_ai_behavior_decisive_desc">يعالج الفجوة أبكر، ويسمح بتجربة واحدة أوسع تبقى قابلة للاسترجاع.</string>
+
+    <string name="max_ai_budget_section">ميزانية الحرارة المستمرة</string>
+    <string name="max_ai_budget_desc">الزمن من بدء جلسة حمل ثقيل إلى أول خفض أمان، مقيسًا على هذا الجهاز.</string>
+    <string name="max_ai_budget_state_title">مقيس على هذا الجهاز</string>
+    <string name="max_ai_budget_running">جلسة حمل ثقيل جارية: %1$s حتى الآن، وبلا خفض بعد.</string>
+    <string name="max_ai_budget_last">آخر جلسة صمدت بكامل الأداء %1$s قبل أول خفض.</string>
+    <string name="max_ai_budget_clean">آخر جلسة نظيفة: %1$s بلا خفض.</string>
+    <string name="max_ai_budget_none">لم تُقس جلسة حمل ثقيل بعد.</string>
+    <string name="max_ai_budget_sessions">%1$d جلسة مقيسة.</string>
+    <string name="max_ai_budget_minutes">%1$d د %2$d ث</string>
+    <string name="max_ai_budget_seconds">%1$d ث</string>
+    <string name="max_live_block_behavior">السلوك المختار لا يسمح بالتجارب</string>
+
     <string name="max_ai_section_timeline">الخط الزمني للقرارات</string>
     <string name="max_ai_section_timeline_desc">مدخل واحد لكل حلقة تحكم حقيقية: ملاحطة، قرار، كتابة، قياس ثانٍ، حكم، تعلّم.</string>
     <string name="max_ai_timeline_empty_title">لا حلقة مسجلة بعد</string>

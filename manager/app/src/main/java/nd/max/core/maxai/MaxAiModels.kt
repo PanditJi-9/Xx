@@ -159,10 +159,23 @@ data class MaxAiState(
     val aiEnabled: Boolean = false,
     /** Persisted user preference, independent of the current screen-off objective. */
     val objectivePreference: String? = null,
+    /**
+     * سلوك التدخل المختار — يضبط عتبة الرضا وميزانية الاستكشاف، ولا يغيّر
+     * الوضع ولا ملفّ النظام ولا ملكية أي مقبض. تفصيله في [MaxAiBehavior].
+     */
+    val behavior: MaxAiBehavior = MaxAiBehavior.DEFAULT,
     /** موجز مشتق من الملكية الفعلية/الأمان/حالة AI، وليس وضع تحكم عالميًا. */
     val strategyLabel: String = "يدوي",
     val lastDecision: DecisionRecord? = null,
     val safety: SafetyStatus = SafetyStatus(),
+    /**
+     * ميزانية الحرارة المقيسة: زمن الصمود قبل أول خفض أمان.
+     *
+     * الوحدة [MaxAiThermalBudget] كانت قائمة ومُختبَرة بلا مستدعٍ في مسار
+     * القرار؛ فصار المحرك يغذّيها من نفس لقطة الحلقة السريعة وينشرها بلا
+     * رقم مُقدَّر. جلسة لم تُقس تبقى `null`، ولا تُعرض صفرًا.
+     */
+    val thermalBudget: MaxAiThermalBudget.Status = MaxAiThermalBudget.Status(),
     /** عدادات النشاط الحقيقية منذ التثبيت. */
     val totalDecisions: Long = 0L,
     val successfulDecisions: Long = 0L,

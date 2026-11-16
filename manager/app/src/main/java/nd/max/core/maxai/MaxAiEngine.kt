@@ -174,6 +174,9 @@ class MaxAiEngine @Inject constructor(
         private const val PREF_ADJUSTED = "adjusted"
         private const val PREF_BLOCKED = "blocked"
 
+        /** تفضيل سلوك التدخل — قيمة واحدة يقرؤها المحرك في كل دورة. */
+        private const val PREF_BEHAVIOR = "behavior"
+
         /** ملف حالة الرفيق الذي يكتبه AppMonitor (نفس مسار service.sh). */
         private const val APP_STATUS_PATH = "/data/adb/.config/MaxManager/app_status"
 
@@ -281,6 +284,15 @@ class MaxAiEngine @Inject constructor(
     private val probesThisSession = java.util.concurrent.atomic.AtomicInteger(0)
 
     /**
+     * ميزانية الحرارة المقيسة — تُغذّى من الحلقة السريعة بلا أي قراءة إضافية.
+     *
+     * الوحدة [MaxAiThermalBudget] كانت قائمة ومُختبَرة بلا مستدعٍ في مسار القرار
+     * (فجوة موثّقة في تحليل Max AI §٧). فصار القياس هنا، والنشر في [publish]،
+     * والحكم في [statusOf] — ولا كتابة على العتاد في أي منها.
+     */
+    @Volatile private var thermalBudgetState = MaxAiThermalBudget.State()
+
+    /**
      * آخر تدخل مقيس يمكن أن يُرفض — مرجع ربط رد فعل المستخدم بالحلقة
      * التي أثارته، وبالمفتاح/الاتجاه/السياق المعاقَب في المصداقية.
      */
@@ -345,6 +357,7 @@ class MaxAiEngine @Inject constructor(
                 it.copy(
                     aiEnabled = readAiEnabled(),
                     objectivePreference = preference,
+                    behavior = readBehavior(),
                     baseProfile = base,
                 )
             }
@@ -400,6 +413,16 @@ class MaxAiEngine @Inject constructor(
                     screenOn = snapshot.screenOn > 0.5f
                     val predicted = PredictorBridge.predictThermal(THERMAL_FORECAST_STEPS)?.maxOrNull()
                     safetyEngine.evaluate(snapshot.thermal * 100f, snapshot, predicted)
+                    // ميزانية الحرارة تُقاس من نفس اللقطة ومن نفس مستوى السلامة:
+                    // لا قراءة إضافية، ولا كتابة. `demanding` مشتق من نية الاستخدام
+                    // المقيسة، والجلسة تُفتح فقط والشاشة قائمة.
+                    thermalBudgetState = MaxAiThermalBudget.observe(
+                        previous = thermalBudgetState,
+                        nowMs = System.currentTimeMillis(),
+                        demanding = snapshot.appIntent >= MaxAiThermalBudget.DEMANDING_INTENT,
+                        screenOn = screenOn,
+                        level = safetyEngine.status.value.level,
+                    )
                     // السلامة حلقة من الدرجة الأولى: «لماذا خفّض جهازي نفسه؟» لا
                     // يجيبه عداّد؛ كل تبدل حالة موثّق يدخل نفس الخط الزمني.
                     recordSafetyEpisode(safetyEngine.status.value, snapshot)
@@ -466,6 +489,7 @@ class MaxAiEngine @Inject constructor(
         // لا «متى انتهت الكتابة» — فدورة طويلة لا تُنشئ استيقاظًا مزدحمًا بعدها.
         lastCycleAtMs = System.currentTimeMillis()
         val aiEnabled = readAiEnabled()
+        val tuning = MaxAiBehaviorTuning.of(readBehavior())
 
         // مطفأ ولا سؤال من المستخدم ⇒ لا عمل.
         //
@@ -535,7 +559,7 @@ class MaxAiEngine @Inject constructor(
             objective = objective,
             objectiveSource = objectiveSource,
             appContextKey = appContextKey,
-            satisfaction = MinimalPlanner.SATISFIED_SCORE,
+            satisfaction = tuning.satisfactionTarget,
             score = score,
         )
         if (snapshot != null && score != null) {
@@ -558,7 +582,7 @@ class MaxAiEngine @Inject constructor(
         dynamicIntentLearner.observe(snapshot, appContextKey, screenOn)
 
         // 6) الحالة → الهدف → أصغر تدخل كافٍ → تحقق → تعلّم → توثيق.
-        decisionCycle(snapshot, objective, objectiveSource, appContextKey)
+        decisionCycle(snapshot, objective, objectiveSource, appContextKey, tuning)
     }
 
     /**
@@ -592,6 +616,7 @@ class MaxAiEngine @Inject constructor(
         objective: Objective,
         objectiveSource: String,
         appContextKey: String,
+        tuning: MaxAiTuning,
     ) = withContext(Dispatchers.IO) {
         // المفردات تُبنى من قدرات هذا الجهاز في كل دورة: ما لا يُثبَت
         // أنه قابل للكتابة لا يوجد كمرشح أصلًا (INV-5) — نفس الكود
@@ -667,6 +692,7 @@ class MaxAiEngine @Inject constructor(
             state = before,
             objective = objective,
             appContext = appContextKey,
+            satisfaction = tuning.satisfactionTarget,
         )
         val step = plan.step
 
@@ -729,6 +755,7 @@ class MaxAiEngine @Inject constructor(
                     appContextKey = appContextKey,
                     direction = direction,
                     trust = trustList,
+                    tuning = tuning,
                 )
             ) {
                 return@withContext
@@ -1134,7 +1161,17 @@ class MaxAiEngine @Inject constructor(
         appContextKey: String,
         direction: ControlRegistry.Direction,
         trust: List<TrustModel.KnobTrust>,
+        tuning: MaxAiTuning,
     ): Boolean {
+        // سلوك «هادئ» لا يجرّب مجهولًا أصلًا. وهذا ليس منعًا من طبقة الثقة،
+        // بل قرار مستخدم يُقال باسمه (`Block.BEHAVIOR`) كي لا يبدو جهازًا ممنوعًا.
+        if (!tuning.allowsProbes) {
+            lastExploration = ExplorationState(
+                blockReason = TrustModel.Block.BEHAVIOR,
+                budget = 0,
+            )
+            return false
+        }
         val trustByKey = trust.associateBy { it.key }
         val candidates = controls.mapNotNull { control ->
             val knobTrust = trustByKey[control.key] ?: return@mapNotNull null
@@ -1161,6 +1198,8 @@ class MaxAiEngine @Inject constructor(
             nowMs = System.currentTimeMillis(),
             lastProbeAtMs = lastProbeAtMs,
             probesThisSession = probesThisSession.get(),
+            budget = tuning.probeBudget,
+            maxCost = tuning.maxProbeCost,
         )
         lastExploration = ExplorationState(
             blockReason = gate.blockReason,
@@ -1168,7 +1207,7 @@ class MaxAiEngine @Inject constructor(
             worstCaseCost = gate.cost?.worstCase,
             informationGain = gate.target?.trust?.informationGain,
             probesThisSession = probesThisSession.get(),
-            budget = TrustModel.MAX_PROBES_PER_SESSION,
+            budget = tuning.probeBudget,
             lastProbeAtMs = lastProbeAtMs,
         )
         val target = gate.target ?: return false
@@ -2013,6 +2052,30 @@ class MaxAiEngine @Inject constructor(
         }
     }
 
+    /** سلوك التدخل المحفوظ — يُقرأ من التفضيلات لا من خاصية عتاد. */
+    private fun readBehavior(): MaxAiBehavior =
+        MaxAiBehavior.fromId(prefs.getString(PREF_BEHAVIOR, MaxAiBehavior.DEFAULT.id))
+
+    /**
+     * يغيّر **كيف** يتدخل المحرك، لا ماذا يريد.
+     *
+     * لا يكتب ملفّ نظام، ولا خاصية عتاد، ولا يغيّر ملكية أي مقبض: يكتب تفضيلًا
+     * واحدًا ثم يعيد دورة تقييم بالعتبة الجديدة. والاستكشاف الممنوع في «هادئ»
+     * يظهر سببه في بوابة الاستكشاف ولا يُعاد تصنيفه كعيب جهاز.
+     */
+    fun setBehavior(behavior: MaxAiBehavior) {
+        if (readBehavior() == behavior) return
+        prefs.edit().putString(PREF_BEHAVIOR, behavior.id).apply()
+        _state.update {
+            it.copy(
+                behavior = behavior,
+                satisfactionTarget = MaxAiBehaviorTuning.of(behavior).satisfactionTarget,
+            )
+        }
+        EventLog.userAction("MaxAiEngine", "behavior", "user", behavior.id)
+        scope.launch(Dispatchers.IO) { runCycleSingleFlight() }
+    }
+
     /**
      * التفضيل الحالي للعرض في الواجهة — من الوضع الواحد لا من خصيصة ثانية.
      *
@@ -2094,6 +2157,7 @@ class MaxAiEngine @Inject constructor(
         lockedKnobs: List<LockedKnobSnapshot>,
         learning: MinimalPlanner.LearningProgress,
         context: CycleContext?,
+        satisfaction: Float,
         prev: MaxAiState,
     ): AutomationPlan {
         val score = context?.score
@@ -2128,10 +2192,10 @@ class MaxAiEngine @Inject constructor(
                 reversible = true,
                 confidencePercent = confidence,
             )
-            score != null && score >= MinimalPlanner.SATISFIED_SCORE -> AutomationPlan(
+            score != null && score >= satisfaction -> AutomationPlan(
                 mode = "Hold",
                 profileHint = "Stable for $app",
-                reason = "Objective score %.0f%% already meets the %.0f%% target".format(score * 100f, MinimalPlanner.SATISFIED_SCORE * 100f),
+                reason = "Objective score %.0f%% already meets the %.0f%% target".format(score * 100f, satisfaction * 100f),
                 nextAction = "Keep current leases; avoid unnecessary writes",
                 reversible = true,
                 confidencePercent = confidence,
@@ -2173,6 +2237,8 @@ class MaxAiEngine @Inject constructor(
         mutate: MaxAiState.() -> MaxAiState = { this },
     ) {
         val prev = _state.value
+        val behavior = readBehavior()
+        val tuning = MaxAiBehaviorTuning.of(behavior)
         val safetyNow = safetyEngine.status.value
         val profile = runCatching { ProfileApplier.currentProfile() }.getOrNull()
         val baseProfile = runCatching { MaxAiMode.currentProfileId() }.getOrNull()
@@ -2217,9 +2283,11 @@ class MaxAiEngine @Inject constructor(
         _state.value = MaxAiState(
             aiEnabled = aiEnabled,
             objectivePreference = objectivePreference(),
+            behavior = behavior,
             strategyLabel = strategy,
             lastDecision = prev.lastDecision,
             safety = safetyNow,
+            thermalBudget = MaxAiThermalBudget.statusOf(thermalBudgetState, System.currentTimeMillis()),
             totalDecisions = prefs.getLong(PREF_DECISIONS, 0L),
             successfulDecisions = prefs.getLong(PREF_SUCCESSFUL, 0L),
             adjustedDecisions = prefs.getLong(PREF_ADJUSTED, 0L),
@@ -2239,14 +2307,16 @@ class MaxAiEngine @Inject constructor(
             objectiveSource = context?.objectiveSource ?: prev.objectiveSource,
             appContext = context?.appContextKey ?: prev.appContext,
             objectiveScore = context?.score ?: prev.objectiveScore,
-            satisfactionTarget = context?.satisfaction ?: MinimalPlanner.SATISFIED_SCORE,
+            satisfactionTarget = context?.satisfaction ?: tuning.satisfactionTarget,
             memoryPercent = snapshot?.let { (it.memoryUsage * 100f).toInt() } ?: prev.memoryPercent,
             lastSampleAtMs = if (snapshot != null) System.currentTimeMillis() else prev.lastSampleAtMs,
             thermalForecast = forecastSnapshot(),
             forecastErrorC = forecastError(),
             trust = lastTrust,
             exploration = lastExploration,
-            automationPlan = automationPlan(aiEnabled, safetyNow, ownership, lockedKnobs, learning, context, prev),
+            automationPlan = automationPlan(
+                aiEnabled, safetyNow, ownership, lockedKnobs, learning, context, tuning.satisfactionTarget, prev,
+            ),
             // الزمن يُقرأ عند النشر لا من اللقطة المحفوظة: الصف يعني «آخر دورة
             // قرار» فعلًا، لا آخر مرة نُشرت فيها الحالة.
             cadence = lastCadence.copy(lastCycleAtMs = lastCycleAtMs),

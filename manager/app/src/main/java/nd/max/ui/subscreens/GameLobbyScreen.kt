@@ -680,8 +680,11 @@ fun GameLobbyScreen(
                                 games = games,
                                 selected = active,
                                 readinessPercent = readyPercent,
+                                // «تم تحسين الأداء بنجاح» لا تُكتب إلا حين تكتمل الجاهزية؛ دونها عنوان محايد فلا يناقض الشريط ٠٪.
                                 statusTitle = insight?.let { gameSpaceVerdictLabel(it.verdict) }
-                                    ?: stringResource(R.string.gs_ready_title),
+                                    ?: stringResource(
+                                        if (readyPercent >= 100) R.string.gs_ready_title else R.string.gs_ready_pending
+                                    ),
                                 statusDetail = gapText.orEmpty(),
                                 panelEnabled = panelEnabled,
                                 batteryPercent = lobbyBattery?.percent,
@@ -747,11 +750,11 @@ fun GameLobbyScreen(
                                             .width(4.dp)
                                             .height(22.dp)
                                             .clip(CircleShape)
-                                            .background(GameSpacePalette.VioletSoft)
+                                            .background(Brush.verticalGradient(listOf(LuxGold, LuxGoldDeep)))
                                     )
                                     Text(
                                         text = stringResource(target.titleRes),
-                                        color = GameSpacePalette.Ink,
+                                        color = LuxIvory,
                                         fontSize = 22.sp,
                                         fontFamily = DisplayFontFamily,
                                         fontWeight = FontWeight.SemiBold,

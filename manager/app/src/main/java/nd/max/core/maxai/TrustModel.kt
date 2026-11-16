@@ -130,6 +130,9 @@ object TrustModel {
         const val NOTHING_UNKNOWN = "nothing_unknown"
         const val IRREVERSIBLE = "irreversible"
         const val COST_TOO_HIGH = "cost_too_high"
+
+        /** السلوك المختار لا يسمح بالتجربة أصلًا — قرار مستخدم، لا حالة جهاز. */
+        const val BEHAVIOR = "behavior"
     }
 
     // ── عدم اليقين ──────────────────────────────────────────

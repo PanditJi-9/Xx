@@ -55,6 +55,13 @@ import nd.max.ui.theme.DisplayFontFamily
 /** نصف قطر رقاقة الاختيار في صفوف اللوبي — قيمة واحدة للموضعين. */
 internal val LobbyChipRadius = 12.dp
 
+/** حافة البطاقة المذهّبة، ولمعتها العلويّة، وخطّها الفاصل — تدرّجات ثابتة تُبنى مرّة. */
+private val SectionSheen = Brush.verticalGradient(0f to Color.White.copy(alpha = 0.05f), 0.30f to Color.Transparent)
+private val SectionRim = Brush.linearGradient(
+    listOf(LuxGold.copy(alpha = 0.50f), Color.White.copy(alpha = 0.06f), LuxGold.copy(alpha = 0.22f))
+)
+private val SectionDivider = Brush.horizontalGradient(listOf(LuxGold.copy(alpha = 0.55f), Color.Transparent))
+
 /** بطاقة قسم بترويسة — تُستعمل في أقسام مركز التحكم. */
 @Composable
 internal fun LobbySectionCard(title: String, content: @Composable () -> Unit) {
@@ -64,14 +71,11 @@ internal fun LobbySectionCard(title: String, content: @Composable () -> Unit) {
             .clip(RoundedCornerShape(maxRadius(MaxRadius.group)))
             .background(
                 Brush.verticalGradient(
-                    listOf(GameSpacePalette.Glass.copy(alpha = 0.84f), GameSpacePalette.GlassDeep.copy(alpha = 0.92f))
+                    listOf(Color(0xFF1B1840).copy(alpha = 0.86f), GameSpacePalette.GlassDeep.copy(alpha = 0.94f))
                 )
             )
-            .border(
-                MaxSize.hairlineBorder,
-                GameSpacePalette.VioletSoft.copy(alpha = 0.20f),
-                RoundedCornerShape(maxRadius(MaxRadius.group))
-            )
+            .background(SectionSheen)
+            .border(MaxSize.hairlineBorder, SectionRim, RoundedCornerShape(maxRadius(MaxRadius.group)))
             .padding(MaxSpace.lg),
         verticalArrangement = Arrangement.spacedBy(MaxSpace.md)
     ) {
@@ -81,16 +85,18 @@ internal fun LobbySectionCard(title: String, content: @Composable () -> Unit) {
                     .width(3.dp)
                     .height(16.dp)
                     .clip(CircleShape)
-                    .background(GameSpacePalette.VioletSoft)
+                    .background(Brush.verticalGradient(listOf(LuxGold, LuxGoldDeep)))
             )
             Text(
                 text = title,
-                color = GameSpacePalette.Ink,
+                color = LuxIvory,
                 fontSize = 17.sp,
                 fontFamily = DisplayFontFamily,
                 fontWeight = FontWeight.SemiBold
             )
         }
+        // خطّ ذهبيّ رفيع يخبو نحو الداخل: لافتة جناح تفصل الترويسة عن المحتوى.
+        Box(Modifier.fillMaxWidth().height(MaxSize.hairlineBorder).background(SectionDivider))
         content()
     }
 }
@@ -128,10 +134,10 @@ internal fun LobbyOptionRow(
                     modifier = Modifier
                         .heightIn(min = MaxSize.minTouchTarget)
                         .clip(RoundedCornerShape(LobbyChipRadius))
-                        .background(if (isSelected) GameSpacePalette.Violet.copy(alpha = 0.32f) else GameSpacePalette.PanelRaised.copy(alpha = 0.55f))
+                        .background(if (isSelected) LuxGold.copy(alpha = 0.16f) else GameSpacePalette.PanelRaised.copy(alpha = 0.55f))
                         .border(
                             MaxSize.hairlineBorder,
-                            if (isSelected) GameSpacePalette.VioletSoft.copy(alpha = 0.75f) else Color.Transparent,
+                            if (isSelected) LuxGold.copy(alpha = 0.80f) else Color.Transparent,
                             RoundedCornerShape(LobbyChipRadius)
                         )
                         .selectable(
@@ -147,7 +153,7 @@ internal fun LobbyOptionRow(
                 ) {
                     Text(
                         text = label,
-                        color = if (isSelected) GameSpacePalette.Ink else GameSpacePalette.Muted,
+                        color = if (isSelected) LuxIvory else GameSpacePalette.Muted,
                         fontSize = 13.sp,
                         fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
                         maxLines = 1
@@ -183,8 +189,8 @@ internal fun LobbySwitchRow(title: String, checked: Boolean, onChecked: (Boolean
             checked = checked,
             onCheckedChange = onChecked,
             colors = SwitchDefaults.colors(
-                checkedTrackColor = GameSpacePalette.Violet,
-                checkedThumbColor = GameSpacePalette.Ink,
+                checkedTrackColor = LuxGold,
+                checkedThumbColor = LuxObsidian,
                 uncheckedTrackColor = GameSpacePalette.PanelRaised,
                 uncheckedThumbColor = GameSpacePalette.Muted
             )

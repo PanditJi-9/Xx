@@ -768,6 +768,7 @@ private fun blockText(reason: String): String = when (reason) {
     TrustModel.Block.NOTHING_UNKNOWN -> stringResource(R.string.max_live_block_nothing)
     TrustModel.Block.IRREVERSIBLE -> stringResource(R.string.max_live_block_irreversible)
     TrustModel.Block.COST_TOO_HIGH -> stringResource(R.string.max_live_block_cost)
+    TrustModel.Block.BEHAVIOR -> stringResource(R.string.max_live_block_behavior)
     else -> stringResource(R.string.max_ai_value_unknown)
 }
 

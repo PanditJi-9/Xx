@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import nd.max.core.maxai.MaxAiBehavior
 import nd.max.core.maxai.MaxAiEngine
 import nd.max.core.maxai.MaxAiCycleStatus
 import nd.max.core.maxai.MaxAiEpisode
@@ -106,6 +107,16 @@ class MaxAiViewModel @Inject constructor(
      */
     fun setObjectivePreference(preference: String) {
         viewModelScope.launch(Dispatchers.IO) { engine.setObjectivePreference(preference) }
+    }
+
+    /**
+     * سلوك التدخل: عتبة الرضا وسقف الاستكشاف، لا وضع جديد ولا ملفّ عتاد.
+     * اختياره لا يُغيّر الوجهة (الأوزان) بل الكيفية (متى يتدخل وكم يجرّب).
+     */
+    fun setBehavior(behaviorId: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            engine.setBehavior(MaxAiBehavior.fromId(behaviorId))
+        }
     }
 
 }

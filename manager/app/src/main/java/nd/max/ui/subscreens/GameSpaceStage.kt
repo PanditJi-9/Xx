@@ -423,6 +423,8 @@ private fun StageCanvas(
     Box(Modifier.requiredSize((StageDesignWidth + extra).dp, StageGeo.height(drop).dp)) {
         StageHeroBackdrop(
             game = data.selected,
+            // حافة عمود اللوحات اليمنى بإحداثيات هذه الطبقة (تبدأ عند x=١٦٨): عندها يرتكز فنّ البطل.
+            boardEdge = stageBoardX(extra) - 168,
             modifier = Modifier
                 .at(168, 0, 1504 + extra, StageGeo.shelfTop(drop) + 51)
                 .lobbyIntro(intro, scaleFrom = 1.04f)

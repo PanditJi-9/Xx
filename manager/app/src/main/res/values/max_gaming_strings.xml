@@ -626,6 +626,13 @@
     <string name="gs_prev">Previous</string>
     <string name="gs_next">Next</string>
     <string name="gs_ready_title">Performance tuned</string>
+    <string name="gs_ready_pending">Game readiness</string>
+    <string name="gs_greet_morning">Good morning</string>
+    <string name="gs_greet_afternoon">Good afternoon</string>
+    <string name="gs_greet_evening">Good evening</string>
+    <string name="gs_greet_night">Welcome back</string>
+    <string name="gs_greet_suite">Your suite is ready</string>
+    <string name="gs_greet_format">%1$s  ·  %2$s</string>
     <string name="gs_ready_body">Smoother play ahead</string>
     <string name="gs_empty_title">No games yet</string>
     <string name="gs_empty_body">Install a game and it appears here, ready to tune.</string>
