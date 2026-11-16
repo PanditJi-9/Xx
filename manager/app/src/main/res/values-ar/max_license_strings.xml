@@ -30,7 +30,7 @@
     <string name="max_license_key_section">التفعيل</string>
     <string name="max_license_key_label">مفتاح الترخيص</string>
     <string name="max_license_key_placeholder">MAXM-XXXXX-XXXXX-XXXXX-XXXXX-XX</string>
-    <string name="max_license_key_helper">الفوارز وحالة الأحرف لا تهمّان — الصقه كما وصلك.</string>
+    <string name="max_license_key_helper">الشرطات وحالة الأحرف لا تهمّان — الصقه كما وصلك.</string>
     <string name="max_license_activate">تفعيل</string>
     <string name="max_license_activating">جارٍ التحقّق من المفتاح…</string>
     <string name="max_license_refresh">تحقّق الآن</string>

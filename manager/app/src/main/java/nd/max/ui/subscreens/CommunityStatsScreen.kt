@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextDirection
 import androidx.navigation.NavHostController
 import nd.max.R
 import nd.max.core.access.CommunityStats
@@ -95,9 +96,15 @@ fun CommunityStatsScreen(navController: NavHostController) {
                 description = stringResource(R.string.max_stats_payload_desc),
             ) {
                 MaxGroup {
+                    // الاتجاه يُثبَّت يسارًا هنا ولا يُترك لاتجاه الواجهة: الحمولة JSON، وأقواسه
+                    // ونقطتاه الرأسيتان علامات محايدة تُقلب في السياق العربي فيخرج النصّ مشوّهًا
+                    // ومقصوصًا من الحافّة. الاتجاه نفسه جزء من صحة العرض لا من الزينة (ADR-07).
                     Text(
                         text = payload,
-                        style = MaterialTheme.typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
+                        style = MaterialTheme.typography.bodySmall.copy(
+                            fontFamily = FontFamily.Monospace,
+                            textDirection = TextDirection.Ltr
+                        ),
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.fillMaxWidth(),
                     )
