@@ -43,7 +43,13 @@ plugins {
 // ويرشد `rea`/JADX إلى موضع الصنف الأصلي — وهو ما يهدم `-repackageclasses`.
 // والقياس الذي كشفه: `apk_leak_scan` وجد `ContextBridge.kt` في حزمة الإصدار.
 composeCompiler {
-    sourceInformation.set(false)
+    // الاسم في Kotlin 2.3 هو `includeSourceInformation`؛ `sourceInformation` (الاسم الأقدم)
+    // لا يُحلّ هنا — أسقطت البناء مرةً بـ«Unresolved reference» (CI 43935634848)، فالاسم
+    // مُقاس من إصدار الإضافة لا من الذاكرة.
+    includeSourceInformation.set(false)
+    // وخريطة Compose (صنف ← اسم) لو كُتبت لصارت خريطةً ثانية بجوار mapping.txt؛
+    // والاسم مُقاس من `javap` على `compose-compiler-gradle-plugin-2.3.10.jar`.
+    includeComposeMappingFile.set(false)
 }
 
 
