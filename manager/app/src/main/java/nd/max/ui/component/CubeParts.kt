@@ -580,7 +580,7 @@ internal fun ViewToggle(
 internal fun SectionCaption(icon: ImageVector, text: String, modifier: Modifier = Modifier) {
     Row(modifier.fillMaxWidth().padding(horizontal = 2.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
         Icon(icon, null, tint = CubeDim, modifier = Modifier.size(12.dp))
-        FitText(text, CubeDim, maxSp = 11f, minSp = 8f, weight = FontWeight.Bold, align = TextAlign.Left, modifier = Modifier.weight(1f))
+        FitText(text, CubeDim, maxSp = 11f, minSp = 8f, weight = FontWeight.Bold, align = TextAlign.Start, modifier = Modifier.weight(1f))
     }
 }
 
@@ -617,9 +617,9 @@ internal fun OptionRow(
             Icon(option.icon, null, tint = option.color, modifier = Modifier.size(height * 0.4f))
         }
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.Center) {
-            FitText(option.label, CubeInk, maxSp = 13f, minSp = 9f, weight = FontWeight.Bold, align = TextAlign.Left, modifier = Modifier.fillMaxWidth())
+            FitText(option.label, CubeInk, maxSp = 13f, minSp = 9f, weight = FontWeight.Bold, align = TextAlign.Start, modifier = Modifier.fillMaxWidth())
             if (option.sub.isNotEmpty()) {
-                FitText(option.sub, option.subColor, maxSp = 10.5f, minSp = 8f, align = TextAlign.Left, modifier = Modifier.fillMaxWidth())
+                FitText(option.sub, option.subColor, maxSp = 10.5f, minSp = 8f, align = TextAlign.Start, modifier = Modifier.fillMaxWidth())
             }
         }
         if (busy) {
@@ -714,7 +714,7 @@ internal fun CubeDropdown(
             verticalArrangement = Arrangement.spacedBy(0.dp)
         ) {
             FitText(
-                title, CubeDim, maxSp = 11f, minSp = 8f, weight = FontWeight.Bold, align = TextAlign.Left,
+                title, CubeDim, maxSp = 11f, minSp = 8f, weight = FontWeight.Bold, align = TextAlign.Start,
                 modifier = Modifier.fillMaxWidth().height(titleH.dp).padding(horizontal = 6.dp)
             )
             if (rows < options.size) {

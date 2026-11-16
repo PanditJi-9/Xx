@@ -377,10 +377,10 @@ private fun DeckProfileCard(
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.Center) {
             FitText(
                 option.label, CubeInk, maxSp = 12f, minSp = 9f, weight = FontWeight.Bold,
-                align = TextAlign.Left, modifier = Modifier.fillMaxWidth()
+                align = TextAlign.Start, modifier = Modifier.fillMaxWidth()
             )
             if (option.sub.isNotEmpty()) {
-                FitText(option.sub, option.subColor, maxSp = 10f, minSp = 8f, align = TextAlign.Left, modifier = Modifier.fillMaxWidth())
+                FitText(option.sub, option.subColor, maxSp = 10f, minSp = 8f, align = TextAlign.Start, modifier = Modifier.fillMaxWidth())
             }
         }
         if (busy) {
@@ -871,7 +871,7 @@ internal fun BoxScope.CockpitDeck(
             horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically
         ) {
             FitText(
-                title, CubeInk, maxSp = 12f, minSp = 9f, weight = FontWeight.Bold, align = TextAlign.Left,
+                title, CubeInk, maxSp = 12f, minSp = 9f, weight = FontWeight.Bold, align = TextAlign.Start,
                 modifier = Modifier.widthIn(max = (room * 0.45f).dp)
             )
             DeckSep()

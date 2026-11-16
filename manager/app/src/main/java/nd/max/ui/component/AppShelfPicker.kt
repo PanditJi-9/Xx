@@ -80,11 +80,11 @@ internal fun AppShelfPicker(
                 .swallowTaps().padding(6.dp)
         ) {
             FitText(
-                title, CubeDim, maxSp = 11f, minSp = 8f, weight = FontWeight.Bold, align = TextAlign.Left,
+                title, CubeDim, maxSp = 11f, minSp = 8f, weight = FontWeight.Bold, align = TextAlign.Start,
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 6.dp)
             )
             FitText(
-                hint, CubeDim, maxSp = 10f, minSp = 8f, align = TextAlign.Left,
+                hint, CubeDim, maxSp = 10f, minSp = 8f, align = TextAlign.Start,
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 6.dp, vertical = 2.dp)
             )
             Row(
@@ -97,7 +97,7 @@ internal fun AppShelfPicker(
                 Icon(Icons.Rounded.Autorenew, null, tint = tint, modifier = Modifier.size(18.dp))
                 FitText(
                     autoLabel, CubeInk, maxSp = 12f, minSp = 9f, weight = FontWeight.Medium,
-                    align = TextAlign.Left, modifier = Modifier.weight(1f)
+                    align = TextAlign.Start, modifier = Modifier.weight(1f)
                 )
                 if (picked.isEmpty()) Icon(Icons.Rounded.Check, null, tint = CubeInk, modifier = Modifier.size(16.dp))
             }
@@ -115,7 +115,7 @@ internal fun AppShelfPicker(
                         AppIconImage(packageName = app.pkg, size = 26.dp, contentDescription = null)
                         FitText(
                             app.label, if (blocked) CubeDim else CubeInk, maxSp = 12f, minSp = 9f,
-                            weight = FontWeight.Medium, align = TextAlign.Left, modifier = Modifier.weight(1f)
+                            weight = FontWeight.Medium, align = TextAlign.Start, modifier = Modifier.weight(1f)
                         )
                         if (on) Icon(Icons.Rounded.Check, null, tint = tint, modifier = Modifier.size(16.dp))
                     }

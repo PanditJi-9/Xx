@@ -255,9 +255,9 @@ private fun PortraitHeader(
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(MaxSpace.hairline)) {
             FitText(
                 title, CubeInk, maxSp = 16f, minSp = 11f, weight = FontWeight.Bold,
-                align = TextAlign.Left, modifier = Modifier.fillMaxWidth()
+                align = TextAlign.Start, modifier = Modifier.fillMaxWidth()
             )
-            FitText(statusLine, CubeDim, maxSp = 12f, minSp = 9f, align = TextAlign.Left, modifier = Modifier.fillMaxWidth())
+            FitText(statusLine, CubeDim, maxSp = 12f, minSp = 9f, align = TextAlign.Start, modifier = Modifier.fillMaxWidth())
         }
         CubeCircle(layout.btn.dp, collapseLabel, onCollapse) { CubeLogo(Modifier.size(MaxSpace.xxl)) }
     }
@@ -312,13 +312,13 @@ private fun PortraitGaugeCard(g: PortraitGauge, tint: Color, layout: PortraitLay
         Row(verticalAlignment = Alignment.Bottom) {
             FitText(
                 g.value, CubeInk, maxSp = layout.numberSp, minSp = 16f, weight = FontWeight.Black,
-                style = FontStyle.Italic, align = TextAlign.Left, modifier = Modifier.weight(1f, fill = false)
+                style = FontStyle.Italic, align = TextAlign.Start, modifier = Modifier.weight(1f, fill = false)
             )
             Spacer(Modifier.width(MaxSpace.xs))
             Text(g.unit, color = CubeDim, fontSize = 12.sp, maxLines = 1, modifier = Modifier.padding(bottom = MaxSpace.xs))
         }
         FrequencyBar(g.level, tint, Modifier.fillMaxWidth().height(CubeLayoutMath.FREQ_BAR_H.dp + 2.dp))
-        FitText(g.loadText ?: " ", CubeDim, maxSp = 11f, minSp = 8f, align = TextAlign.Left, modifier = Modifier.fillMaxWidth())
+        FitText(g.loadText ?: " ", CubeDim, maxSp = 11f, minSp = 8f, align = TextAlign.Start, modifier = Modifier.fillMaxWidth())
         CubePill(
             g.pill, tint, (layout.gaugeW - 2f * 12f).dp, 40.dp, false, g.onPillBounds, g.onPill,
             Modifier.align(Alignment.CenterHorizontally)

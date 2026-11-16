@@ -236,27 +236,36 @@ class ProcessManagerViewModel : ViewModel() {
         threadTimes = null
     }
 
-    fun kill(reading: ProcessReading) = applyResult(
-        success = ProcessFeed.kill(reading.pid),
+    fun kill(reading: ProcessReading) = applyAction(
         ok = ProcessActionKind.Killed,
         failed = ProcessActionKind.KillFailed,
         name = reading.label
-    )
+    ) { ProcessFeed.kill(reading.pid) }
 
-    fun forceStop(reading: ProcessReading) = applyResult(
-        success = ProcessFeed.forceStop(reading.packageName),
+    fun forceStop(reading: ProcessReading) = applyAction(
         ok = ProcessActionKind.Stopped,
         failed = ProcessActionKind.StopFailed,
         name = reading.label
-    )
+    ) { ProcessFeed.forceStop(reading.packageName) }
 
-    private fun applyResult(
-        success: Boolean,
+    /**
+     * ينفّذ الأمر على خيط الإدخال/الإخراج ثم يُعلن النتيجة على الرئيسيّ.
+     *
+     * **وكان قبلها على الرئيسيّ:** تُنادى الدالتان من `onClick` في الواجهة، و`ProcessFeed.kill`
+     * يستدعي `RootCommands…exec()` وهو **حاجز** ينتظر `su` فعلًا. فكانت أول ضغطة على «إنهاء»
+     * تُجمّد الإطار إلى أن يعود الجذر — وحين يظهر حوار منح الصلاحية يطول الانتظار بلا نهاية
+     * معروفة. والفعل نفسه لا يتغيّر: الأمر واحد، والنتيجة واحدة، لكن الإطار لا ينتظرها.
+     */
+    private fun applyAction(
         ok: ProcessActionKind,
         failed: ProcessActionKind,
-        name: String
+        name: String,
+        action: () -> Boolean
     ) {
-        result = ProcessActionResult(kind = if (success) ok else failed, name = name)
+        viewModelScope.launch {
+            val success = withContext(Dispatchers.IO) { action() }
+            result = ProcessActionResult(kind = if (success) ok else failed, name = name)
+        }
     }
 
     override fun onCleared() {
