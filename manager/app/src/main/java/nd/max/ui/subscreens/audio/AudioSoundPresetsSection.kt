@@ -121,7 +121,6 @@ fun AudioSoundPresetsSection(
                 }),
                 valueRange = 0f..100f,
                 onValueChange = { intensity = it },
-                subtitle = stringResource(R.string.audio_presets_strength_note),
                 onValueChangeFinished = {
                     if (active && preview == state.soundPreset && !state.comparingOriginal) {
                         onPreset(state.soundPreset, intensity.toInt())
@@ -129,6 +128,14 @@ fun AudioSoundPresetsSection(
                 },
                 enabled = !busy && !state.loading && !state.comparingOriginal,
                 lockedReason = if (state.comparingOriginal) stringResource(R.string.audio_presets_original_playing) else null,
+            )
+            // الشرح كان `subtitle` داخل `MaxSliderRow`، والصفّ المشترك يقصّ الشرح عند **سطرين**
+            // ويشارك العرض مع قيمة «متوازن» — فقُصَّت الجملة الأخيرة على جهاز المالك («…القوّة ليس»).
+            // وهنا يأخذ الشرح عرضه الكامل تحت الصفّ، فيُقرأ كاملًا ولا يزاحم القيمة.
+            Text(
+                text = stringResource(R.string.audio_presets_strength_note),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
         Row(horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm)) {
@@ -152,7 +159,11 @@ fun AudioSoundPresetsSection(
             val skippedNames = result.skipped.map { effectName(it) }.joinToString(", ")
             val text = when {
                 result.failedRestore.isNotEmpty() -> stringResource(R.string.audio_presets_restore_failed,
-                    result.failedRestore.joinToString(", "))
+                    // التطبيع قبل العرض: مفاتيح المحرّك (`bass_boost/enable_first`, `equalizer/band/1` …)
+                    // تسمية داخلية لا تُقرأ للمستخدم — ولاحظها المالك على الجهاز فعليًّا. فتُختصر
+                    // إلى **اسم المؤثّر المترجم** (مشتقًّا من بادئة المفتاح) بلا تكرار.
+                    result.failedRestore.map { it.substringBefore('/') }.distinct()
+                        .map { effectName(it) }.joinToString(", "))
                 !result.applied -> stringResource(R.string.audio_presets_apply_failed,
                     result.reason?.let { engineReasonText(it) } ?: stringResource(R.string.audio_presets_unavailable))
                 state.soundPreset == AudioSoundPreset.OFF -> stringResource(R.string.audio_presets_restored)

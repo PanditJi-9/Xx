@@ -54,9 +54,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -111,6 +114,7 @@ import nd.max.ui.navigation.MaxDestination
 import nd.max.ui.navigation.RegisterSwipeNavigation
 import nd.max.ui.viewmodel.AudioStudioUiState
 import nd.max.ui.viewmodel.AudioStudioViewModel
+import kotlin.math.roundToInt
 
 /*
  * مفاتيح الإخفاء — طلب المالك (2026-10-12). كلها `false`، فلا يُعرض شيءٌ منها على الشاشة.
@@ -231,8 +235,18 @@ fun AudioStudioScreen(
                     AudioTab.System -> AudioSystemTab(navController, state, viewModel, context)
                 }
 
-                // ويُحجَز للشريط العائم قدرُه المُعلَن، فلا يقف آخر صفٍّ تحته (الرمز واحد يُشار إليه).
-                Spacer(Modifier.height(audioTabBarReserve))
+                // ويُحجَز للشريط العائم قدرُه المُعلَن **مع حشوه وإزاحة شريط التنقّل**، فلا
+                // يقف آخر صفٍّ تحته. والرمز يحسب الشريط وحده؛ وهذا الملفّ يُحيط به
+                // `MaxSpace.sm` من أعلى وأسفل (سطر `AudioTabBar` أدناه) ويضيف
+                // `navigationBarsPadding`، فكان النقص مقدارهما — وقِيس على جهاز المالك أن
+                // بطاقتَي المازج («OFF» و«210%») كانتا تحت الشريط لا فوقه.
+                val navBottomInset =
+                    WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
+                Spacer(
+                    Modifier.height(
+                        audioTabBarReserve + MaxSpace.sm * 2 + navBottomInset,
+                    ),
+                )
             }
         }
 
@@ -342,7 +356,17 @@ private fun AudioEngineTab(
     // في المعادل يعني «وسط المدى» لا «مجهول» — وخلطُهما يجعل الشاشة تكذب على المستخدم.
     LaunchedEffect(state.eq) {
         val bands = state.eq?.bands ?: return@LaunchedEffect
-        eqBands = bands.mapIndexed { index, band -> band.levelMb ?: eqBands.getOrElse(index) { 0 } }
+        // **والوحدة هنا ليست تفصيلًا — هي عطبٌ مرئيّ كان على الشاشة:** `eqBands` بالديسيبل، بدليل
+        // أنّ [AudioEffectService.updateEqualizerBand] يقصّها `coerceIn(-15, 15)` ويضربها في ١٠٠ عند
+        // الكتابة (`(manualEqBands[i] * 100).coerceIn(-1500, 1500)`). و`levelMb` **بالميلي‑ديسيبل**
+        // (‎1500‎ تعني ‎+15‎dB). فكان `eqGainToNorm(1500)` تُرجع ‎≈−41.5‎ (المقياس ‎−41.5‎ ضعف ارتفاع
+        // اللوحة) فتُرسم نقطة النطاق خارجها، ويخرج المنحنى من أعلى الرسم وأسفله بينما أكثر النقاط على
+        // خطّ الصفر — وهو ما صوّره المالك. وحتى ‎+5‎dB المخزّنة ‎500‎ كانت تعطي ‎≈−16‎. التحويل هنا لا في
+        // الرسم، فيبقى كل مستهلك على وحدة واحدة.
+        eqBands = bands.mapIndexed { index, band ->
+            band.levelMb?.let { (it / 100f).roundToInt().coerceIn(-15, 15) }
+                ?: eqBands.getOrElse(index) { 0 }
+        }
     }
     LaunchedEffect(state.strengths) {
         state.strengths[AudioEffectKind.BASS_BOOST]?.value?.let { bassBoost = it }

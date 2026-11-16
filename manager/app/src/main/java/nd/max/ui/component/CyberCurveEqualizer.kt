@@ -13,6 +13,7 @@ import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
@@ -174,6 +175,10 @@ fun CyberCurveEqualizer(
             // شريط الأنماط الصوتية السريعة
             LazyRow(
                 modifier = Modifier.fillMaxWidth(),
+                // **والحشو هنا لا في الأب:** الشريط يعتمر داخل بطاقةٍ زواياها مستديرة، وبلا حشو
+                // يبدأ أوّل قرصٍ وينتهي آخرُه على القوس نفسه فيأكله — وهو ما صوّره المالك: «كلا»
+                // مقصوصة عند حرف البطاقة. والحشو يعطي القصّ موضعًا يسبق الزاوية.
+                contentPadding = PaddingValues(horizontal = MaxSpace.md),
                 horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs),
             ) {
                 items(EQ_PRESET_ORDER) { preset ->
