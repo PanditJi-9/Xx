@@ -14,8 +14,6 @@ import nd.max.ui.design.MaxHelpAction
 import androidx.compose.foundation.layout.fillMaxWidth
 import nd.max.ui.design.maxEdgeFade
 import nd.max.ui.design.maxBleed
-import android.graphics.Bitmap
-import android.graphics.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -30,7 +28,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -250,7 +247,16 @@ private fun DebloatAppRow(
     ExpressiveListItem(
         onClick = onOpenSettings,
         onLongClick = { menuExpanded = true },
-        leadingContent = { DebloatAppIcon(app) },
+        // الأيقونة تُطلب هنا من المخزن المشترك (`AppIconCache`) لا من حقلٍ في النموذج:
+        // كان `getInstalledApps` يجلب أيقونة كل الحزم الثمانمئة ويحتفظ بالـ`Drawable`
+        // في حالة الشاشة، فقِيس على الجهاز PSS = 491MB وNative = 178MB عند فتحها.
+        leadingContent = {
+            AppIconImage(
+                packageName = app.packageName,
+                size = 44.dp,
+                contentDescription = app.label,
+            )
+        },
         headlineContent = {
             Text(
                 text = app.label,
@@ -295,28 +301,6 @@ private fun DebloatAppRow(
             }
         }
     )
-}
-
-@Composable
-private fun DebloatAppIcon(app: DebloatAppInfo) {
-    val bitmap = remember(app.packageName) {
-        val drawable = app.icon ?: return@remember null
-        val size = 108
-        val bmp = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(bmp)
-        drawable.setBounds(0, 0, size, size)
-        drawable.draw(canvas)
-        bmp.asImageBitmap()
-    }
-    Box(modifier = Modifier.size(44.dp)) {
-        if (bitmap != null) {
-            Image(
-                bitmap = bitmap,
-                contentDescription = app.label,
-                modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(maxRadius(MaxRadius.chip)))
-            )
-        }
-    }
 }
 
 @Composable

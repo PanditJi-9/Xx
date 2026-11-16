@@ -10,7 +10,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
-import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.provider.Settings
 import java.text.Collator
@@ -29,7 +28,6 @@ data class DebloatAppInfo(
     val versionCode: Long,
     val isSystem: Boolean,
     val isEnabled: Boolean,
-    val icon: Drawable?
 )
 
 /**
@@ -71,7 +69,6 @@ object DebloatFreezeUtil {
                 versionCode = pkg.longVersionCode,
                 isSystem = (app.flags and ApplicationInfo.FLAG_SYSTEM) != 0,
                 isEnabled = app.enabled,
-                icon = runCatching { pm.getApplicationIcon(app) }.getOrNull(),
             )
         }.onFailure { EventLog.error(SCREEN, "read_package:${pkg.packageName}", it) }
             .getOrNull()

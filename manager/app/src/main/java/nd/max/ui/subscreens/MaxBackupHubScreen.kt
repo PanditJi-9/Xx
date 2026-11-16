@@ -97,6 +97,7 @@ import nd.max.ui.util.MaxBackupModel
 import nd.max.ui.util.MaxBackupSchedule
 import nd.max.ui.util.MaxBackupScheduler
 import nd.max.ui.util.MaxBackupStorage
+import nd.max.ui.util.ltrIsolated
 import nd.max.ui.viewmodel.ApplistViewmodel
 
 // ────────────────────────────────────────────────────────────────────────────
@@ -205,7 +206,9 @@ internal fun MaxBackupStorageSection(
         MaxGroup {
             MaxRow(
                 title = stringResource(R.string.max_backup_storage_path),
-                subtitle = readout?.folderPath,
+                // المسار لاتينيّ الاتجاه داخل فقرة عربية: بلا عزل تُقلب فواصله فتُقرأ
+                // «Android//data» و«//MaxManger» — قِيس في لقطة الشاشة.
+                subtitle = ltrIsolated(readout?.folderPath),
                 icon = Icons.Rounded.Folder,
                 iconTone = MaxTone.Neutral,
             )
@@ -240,10 +243,10 @@ internal fun MaxBackupStorageSection(
                     title = stringResource(R.string.max_backup_storage_fallback_title),
                     detail = stringResource(
                         R.string.max_backup_storage_fallback_desc,
-                        readout.requestedPath,
-                        readout.folderPath,
+                        ltrIsolated(readout.requestedPath),
+                        ltrIsolated(readout.folderPath),
                     ),
-                    technicalDetail = readout.folderPath,
+                    technicalDetail = ltrIsolated(readout.folderPath),
                     primaryActionLabel = onGrant?.let { stringResource(R.string.max_backup_storage_grant) },
                     onPrimaryAction = onGrant,
                 )
