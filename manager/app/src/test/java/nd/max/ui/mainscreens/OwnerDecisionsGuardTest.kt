@@ -93,7 +93,9 @@ class OwnerDecisionsGuardTest {
             "UsageStats" to ", Control)",
             "Logs" to ", Control)",
             "ColorPalette" to ", Control)",
-            "ColorScheme" to ", Control)",
+            // **والسمة استُثنيت بأمر مالك أحدث (٢٠٢٦-١١-١٦):** «واجعل السمة في الاعدادات أسفل
+            // الغة» — فصار لها صفّ في الإعدادات، وهو الاستثناء الوحيد على قاعدة الباب الواحد،
+            // ويُقاس وجوده صراحةً أسفل هذا الحارس (لا يُترك مفتوحًا بلا قياس).
             // والاثنان يحملان `MaxRisk.Advanced` بعدهما، فالسطر ينتهي بالتصنيف لا بالأب — وهو
             // سبب سقوط هذا الحارس في `f693ef18`: كان الشرط يقارن `", Settings,"` بنهاية السطر.
             "MaxBackup" to ", Control, MaxRisk.Advanced)",
@@ -129,5 +131,11 @@ class OwnerDecisionsGuardTest {
         expected.keys.forEach { name ->
             assertFalse("SettingsScreen يفتح $name بصفٍّ خاص — بابها الوحيد في التحكّم", settings.contains("MaxDestination.$name"))
         }
+        // وقياس الاستثناء الوحيد: السمة تُفتح من الإعدادات بأمر المالك ٢٠٢٦-١١-١٦،
+        // فلو حُذف الصفّ عاد الأمر مُخالفًا بلا أن يسقط شيء.
+        assertTrue(
+            "SettingsScreen صار لا يفتح السمة — أمر المالك ٢٠٢٦-١١-١٦ نصّ على صفٍّ في الإعدادات",
+            settings.contains("MaxDestination.ColorScheme"),
+        )
     }
 }

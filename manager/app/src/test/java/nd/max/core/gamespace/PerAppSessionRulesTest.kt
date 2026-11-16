@@ -90,11 +90,17 @@ class PerAppSessionRulesTest {
     fun `the knob list covers every AppConfig field`() {
         val descriptor = AppConfig.serializer().descriptor
         val declared = (0 until descriptor.elementsCount).map { descriptor.getElementName(it) }.toSet()
+        val covered = PerAppSessionRules.KNOB_KEYS + PerAppSessionRules.NON_HARDWARE_KEYS
         assertEquals(
-            "PerAppSessionRules.KNOB_KEYS must track AppConfig: " +
-                "missing=${declared - PerAppSessionRules.KNOB_KEYS} extra=${PerAppSessionRules.KNOB_KEYS - declared}",
+            "PerAppSessionRules: KNOB_KEYS + NON_HARDWARE_KEYS must track AppConfig: " +
+                "missing=${declared - covered} extra=${covered - declared}",
             declared,
-            PerAppSessionRules.KNOB_KEYS,
+            covered,
+        )
+        // والاستثناء ليس بابًا خلفيًّا: مفتاح غير عتادي لا يفتح جلسة.
+        assertFalse(
+            "تفضيل غير عتادي فتح جلسة عتاد",
+            PerAppSessionRules.hasExplicitOverride(entry("max_ai_behavior" to "decisive")),
         )
     }
 

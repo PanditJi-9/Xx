@@ -172,7 +172,29 @@ def scan_dir(path: str) -> tuple[list[dict], dict]:
         if name.lower().endswith(".apk")
     ) if os.path.isdir(path) else []
     if not apks:
-        return ([{"rule": "dex_absent", "where": path, "detail": "لا حزمة .apk في المسار"}], {})
+        # مجلّد `*.dex` خام — وهو ما يُنتجه `bla harden` في `.bla-hardened/`.
+        # قبل هذا كان يُردّ بـ`dex_absent` فيتعذّر قياس أثر التصليب على النصوص
+        # نفسها، ويُقرأ الردّ «لا شيء هنا» وهو «لا أعرف أن أقرأ هذا الشكل».
+        dexes = sorted(
+            os.path.join(path, name)
+            for name in os.listdir(path)
+            if name.lower().endswith(".dex")
+        ) if os.path.isdir(path) else []
+        if not dexes:
+            return ([{"rule": "dex_absent", "where": path, "detail": "لا حزمة .apk ولا ملفّات .dex في المسار"}], {})
+        findings: list[dict] = []
+        stats: dict = {"dex_files": 0, "strings": 0}
+        for dex in dexes:
+            stats["dex_files"] += 1
+            try:
+                with open(dex, "rb") as handle:
+                    strings = dex_strings(handle.read())
+            except (ValueError, struct.error, zlib.error) as exc:
+                findings.append({"rule": "dex_unreadable", "where": os.path.basename(dex), "detail": str(exc)[:100]})
+                continue
+            stats["strings"] += len(strings)
+            findings.extend(scan_strings(strings, os.path.basename(dex)))
+        return findings, stats
     findings: list[dict] = []
     stats: dict = {"apks": len(apks), "dex_files": 0, "strings": 0}
     for apk in apks:

@@ -408,6 +408,17 @@ def check_shield_ci(text: str) -> list[dict]:
             "لا فحص لآثار الهندسة العكسية في الحزمة النهائية (`apk_leak_scan.py --assert`) — "
             "فاسم ملفّ مصدر أو مسار بناء أو خريطة R8 قد يشحن بلا أن يسقط شيء"
         ),
+        # **مقيس لا مُفترض (٢٠٢٦-١١-١٦):** `bla harden` يكتب النسخ المصلَّبة في
+        # `<dir>/.bla-hardened/` ولا يعدّل مكانه. ونسخ `<dir>/*.dex` كان يعلن نجاحًا
+        # ويشحن الأصلية — فالمسار المصلَّب نفسه صار مشروطًا هنا.
+        ".bla-hardened": (
+            "الخطوة لا تقرأ `.bla-hardened/` — و`bla harden` لا يعدّل مكانه، فالمُشحَن "
+            "سيكون DEX غير مصلَّب مع تقرير نجاح كاذب"
+        ),
+        "node-version: '24'": (
+            "إصدار Node دون ٢٤ يخالف `engines.node` لأداة `bla-agents@3.4.1` "
+            "(‏`^22.23.4 || >=24`) ويعمل بتحذير EBADENGINE لا بحكم"
+        ),
     }
     for needle, detail in required.items():
         if needle not in text:

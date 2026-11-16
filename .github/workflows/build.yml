@@ -1449,7 +1449,10 @@ jobs:
       - name: Setup Node for the DEX shield
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          # إصدار Node من متطلّبات الأداة نفسها: `bla-agents@3.4.1` يعلن
+          # `engines.node: ^22.23.4 || >=24`؛ و20 كان يُشغّلها بتحذير EBADENGINE
+          # ويُخاطر بفشل غير مفهوم.
+          node-version: '24'
 
       - name: Shield DEX with bla-agents
         shell: bash
@@ -1493,12 +1496,19 @@ jobs:
             exit 1
           fi
 
-          after="$(find "$work/dex" -maxdepth 1 -name '*.dex' | wc -l | tr -d ' ')"
-          test "$after" = "$count" || { echo "::error::عدد DEX تغيّر ($count → $after)"; exit 1; }
+          after="$(find "$work/dex/.bla-hardened" -maxdepth 1 -name '*.dex' 2>/dev/null | wc -l | tr -d ' ')"
+          # **قِيس في هذه البيئة (٢٠٢٦-١١-١٦):** `bla harden` لا يعدّل مكانه، بل يكتب
+          # النسخ المصلَّبة في `<dir>/.bla-hardened/`. وكانت الخطوة تنسخ الأصلية فتُعلن
+          # نجاحًا وتحمل حزمةً غير مصلَّبة — وهذا ما كشفه التشغيل لا المراجعة.
+          test -d "$work/dex/.bla-hardened" || {
+            echo "::error::bla-agents لم تُنتج .bla-hardened — لا تصليب، والحزمة الأصلية لا تُشحن"
+            exit 1
+          }
+          test "$after" = "$count" || { echo "::error::عدد DEX المصلَّبة تغيّر ($count → $after)"; exit 1; }
 
-          python3 tools/dex_integrity.py --assert --path "$work/dex"
+          python3 tools/dex_integrity.py --assert --path "$work/dex/.bla-hardened"
           if command -v dexdump >/dev/null 2>&1; then
-            for dex in "$work"/dex/*.dex; do
+            for dex in "$work"/dex/.bla-hardened/*.dex; do
               dexdump -f "$dex" > /dev/null \
                 || { echo "::error::dexdump رفض $(basename "$dex") بعد التصليب"; exit 1; }
             done
@@ -1507,7 +1517,7 @@ jobs:
             echo "⚠️ dexdump غير متاح: الطبقة البنيوية الثانية غير مُتحقَّقة (تُقال ولا تُدَّعى)"
           fi
 
-          cp "$work"/dex/*.dex "$work/unpacked/"
+          cp "$work"/dex/.bla-hardened/*.dex "$work/unpacked/"
           python3 tools/apk_repack.py "$work/unpacked" "$work/unsigned.apk"
 
           zipalign -f -p 4 "$work/unsigned.apk" "$work/aligned.apk"

@@ -67,6 +67,15 @@ object PerAppSessionRules {
     /** ما لا يُعدّ طلبًا: القيمة الغائبة والفارغة والافتراضية. */
     private val NEUTRAL = setOf("", "default", "null")
 
+    /**
+     * حقول [nd.max.ui.util.AppConfig] التي **ليست مقابض عتاد** فتُستثنى صراحةً ولا تفتح جلسة.
+     *
+     * `max_ai_behavior` تفضيل سلوك الذكاء الاصطناعي لكل تطبيق (أُضيف ٢٠٢٦-١١-١٦)، ولا
+     * كتابة عتاد فيه؛ فإدخالها في [KNOB_KEYS] كان سيعلّق جلسة عتاد على تفضيل واجهة —
+     * والاستثناء يُقاس في `PerAppSessionRulesTest` بدل أن يُترك للحظّ.
+     */
+    val NON_HARDWARE_KEYS: Set<String> = setOf("max_ai_behavior")
+
     private val ENTRY = Regex("\"([A-Za-z0-9_]+)\"\\s*:\\s*(?:\"([^\"]*)\"|([^,}\\n]*))")
 
     /**
