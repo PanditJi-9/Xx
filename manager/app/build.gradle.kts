@@ -38,6 +38,15 @@ plugins {
     id("dagger.hilt.android.plugin")
 }
 
+// **بيانات مصدر Compose لا تُشحن (٢٠٢٦-١١-١٦):** مُصرِّف Compose يضيف افتراضيًّا
+// `SourceInformation`يحمل اسم الملفّ في الشيفرة المترجَمة، فيبقى في DEX بعد R8
+// ويرشد `rea`/JADX إلى موضع الصنف الأصلي — وهو ما يهدم `-repackageclasses`.
+// والقياس الذي كشفه: `apk_leak_scan` وجد `ContextBridge.kt` في حزمة الإصدار.
+composeCompiler {
+    sourceInformation.set(false)
+}
+
+
 /**
  * زمن البناء الذي يُكتب في `BuildConfig.BUILD_TIME` (يُعرض كتاريخ بناء في ترويسة الإعدادات).
  *

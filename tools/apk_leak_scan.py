@@ -115,6 +115,10 @@ def scan_strings(strings: list[str], origin: str) -> list[dict]:
     findings: list[dict] = []
     seen: set[tuple[str, str]] = set()
     for text in strings:
+        # الاستشهادات العامة (https…) ليست مسار بناء: الماركر `/app/src/main/` يقع داخل
+        # عنوان GitHub لمشروع مُعتمد، ووسمُه أثرًا كاذبًا يُفقد البوابة ثقتها.
+        if text[:8].lower().startswith(("http://", "https://")):
+            continue
         kind = classify_string(text)
         if kind is None:
             continue

@@ -120,7 +120,7 @@ object AtlasCommunityBank {
 
     private val ZRAM = Group(
         sourceId = "LOCAL-ZRAM",
-        reference = "local:manager/app/src/main/java/nd/max/core/hardware/ZramHardwareBackend.kt",
+        reference = "local:zram-backend",
         revision = "working tree, observed 2026-09-20",
         licenseNote = "Project source, independently authored; no upstream code copied",
         confidence = AtlasSourceConfidence.DESIGN,
@@ -128,7 +128,7 @@ object AtlasCommunityBank {
 
     private val PSI = Group(
         sourceId = "LOCAL-PSI",
-        reference = "local:manager/app/src/main/java/nd/max/core/maxai/MemoryStall.kt",
+        reference = "local:memory-stall",
         revision = "working tree, observed 2026-09-20",
         licenseNote = "Project source, independently authored; no upstream code copied",
         confidence = AtlasSourceConfidence.DESIGN,

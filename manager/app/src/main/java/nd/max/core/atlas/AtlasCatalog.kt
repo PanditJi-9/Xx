@@ -314,8 +314,11 @@ object AtlasAnchors {
  */
 object AtlasReviewedSeeds {
 
-    private const val LOCAL_CPU = "local:manager/app/src/main/java/nd/max/core/hardware/CpuHardwareBackend.kt"
-    private const val LOCAL_GPU = "local:manager/app/src/main/java/nd/max/core/hardware/GpuHardwareBackend.kt"
+    // **معرّفات لا مسارات (٢٠٢٦-١١-١٦):** كان المرجع نصًّا يحمل مسار الملفّ كاملًا، فيبقى
+    // في جدول نصوص DEX بعد R8 ويكشف بنية الشجرة التي يخفيها `-repackageclasses`.
+    // والمسارات الكاملة هنا للقارئ: CpuHardwareBackend.kt · GpuHardwareBackend.kt
+    private const val LOCAL_CPU = "local:cpu-backend"
+    private const val LOCAL_GPU = "local:gpu-backend"
     private const val LOCAL_TREE = "working tree, observed 2026-09-20"
 
     fun validation(): AtlasCatalogValidation =
@@ -649,7 +652,8 @@ object AtlasReviewedSeeds {
             attribute = "cpu",
             unit = AtlasUnit.UNKNOWN,
             source = "LOCAL-PSI",
-            reference = "local:manager/app/src/main/java/nd/max/core/maxai/MemoryStall.kt",
+            // MemoryStall.kt — معرّف لا مسار، كما في LOCAL_CPU.
+            reference = "local:memory-stall",
             revision = LOCAL_TREE,
             note = "A reviewed proc summary, so it may use the larger read allowance. PSI stays a distinct signal from meminfo heuristics.",
         ),
@@ -663,7 +667,8 @@ object AtlasReviewedSeeds {
             childPrefix = "zram",
             unit = AtlasUnit.BYTES,
             source = "LOCAL-ZRAM",
-            reference = "local:manager/app/src/main/java/nd/max/core/hardware/ZramHardwareBackend.kt",
+            // ZramHardwareBackend.kt — معرّف لا مسار.
+            reference = "local:zram-backend",
             revision = LOCAL_TREE,
             note = "Enumerate every zram device; a hardcoded zram0 is not the device set.",
         ),

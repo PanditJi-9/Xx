@@ -72,17 +72,17 @@ object RemoteFlags {
     const val LICENSE = "license"
 
     val ALL: List<Flag> = listOf(
-        Flag(GAMESPACE, enabledByDefault = true, surface = "ui/subscreens/GameLobbyScreen.kt"),
+        Flag(GAMESPACE, enabledByDefault = true, surface = "ui/subscreens"),
         Flag(AUDIO, enabledByDefault = true, surface = "core/audio"),
         Flag(ATLAS, enabledByDefault = true, surface = "core/atlas"),
-        Flag(MAXAI, enabledByDefault = true, surface = "ui/mainscreens/MaxAiScreen.kt"),
-        Flag(SPOOF, enabledByDefault = true, surface = "ui/subscreens/AppSpoofSection.kt"),
-        Flag(EMUHUB, enabledByDefault = true, surface = "ui/subscreens/EmulatorHubScreen.kt"),
-        Flag(BYPASS_CHARGE, enabledByDefault = true, surface = "ui/subscreens/BypassChargeScreen.kt"),
+        Flag(MAXAI, enabledByDefault = true, surface = "ui/mainscreens"),
+        Flag(SPOOF, enabledByDefault = true, surface = "ui/subscreens"),
+        Flag(EMUHUB, enabledByDefault = true, surface = "ui/subscreens"),
+        Flag(BYPASS_CHARGE, enabledByDefault = true, surface = "ui/subscreens"),
         Flag(
             LICENSE,
             enabledByDefault = false,
-            surface = "ui/mainscreens/SettingsScreen.kt",
+            surface = "ui/mainscreens",
             showInMaxAiIntro = false,
         ),
     )
