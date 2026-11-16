@@ -454,6 +454,10 @@ def check_shield_ci(text: str) -> list[dict]:
         "bla-agents": "خطوة تصليب DEX محذوفة: لا `bla-agents` في سير العمل",
         "dex_integrity.py --assert": "لا تحقّق بنيوي بعد التصليب (`dex_integrity.py --assert`)",
         "apk_repack.py": "لا إعادة حزم عبر `apk_repack.py` (فقد يُضغط `resources.arsc` فتسقط التثبيت)",
+        "apk_repack.py --verify": (
+            "لا قياس لشرط التثبيت على الحزمة النهائية (`apk_repack.py --verify`) — "
+            "مكتبة `.so` مضغوطة تُسقط التثبيت على الجهاز بـ`res=-2`، ولا بوابة تقيسها"
+        ),
         "apksigner sign": "لا إعادة توقيع بعد التصليب (توقيع Gradle صار باطلًا بتعديل DEX)",
         "apk_leak_scan.py --assert": (
             "لا فحص لآثار الهندسة العكسية في الحزمة النهائية (`apk_leak_scan.py --assert`) — "
