@@ -132,6 +132,8 @@
     <string name="max_ai_candidate_metrics">utility %1$s · credibility %2$s · %3$d samples</string>
     <string name="max_ai_rejected_measured_harm">Measured harm</string>
     <string name="max_ai_rejected_predicted_harm">Predicted harm</string>
+    <string name="max_ai_rejected_next_worse">Rejected: the next state would be worse</string>
+    <string name="max_ai_rejected_thermal_ceiling">Rejected: the next state would cross the thermal margin</string>
     <string name="max_ai_rejected_no_step">No step left</string>
     <string name="max_ai_rejected_unreadable">Unreadable</string>
     <string name="max_ai_rejected_other">Not chosen</string>

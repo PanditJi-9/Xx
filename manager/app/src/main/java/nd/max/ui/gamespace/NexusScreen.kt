@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -39,12 +40,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
@@ -52,6 +57,7 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import android.os.SystemClock
 import nd.max.ui.design.MaxRadius
 import nd.max.ui.design.MaxSpace
 import nd.max.ui.component.rememberLobbyIcon
@@ -138,6 +144,15 @@ fun NexusScreen(
 ) {
     val selected = model.games.getOrNull(model.selectedIndex) ?: model.games.firstOrNull()
     val accent = monolithAccent(chromeAccent ?: selected?.accent)
+    // حارس الضغط المزدوج: لمستان سريعتان على «ابدأ» تُطلقان اللعبة مرة واحدة لا مرتين.
+    var lastLaunchMs by remember { mutableLongStateOf(0L) }
+    val guardedLaunch: () -> Unit = {
+        val now = SystemClock.elapsedRealtime()
+        if (now - lastLaunchMs > LaunchGuardMs) {
+            lastLaunchMs = now
+            onLaunch()
+        }
+    }
     Box(modifier = modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
@@ -158,13 +173,20 @@ fun NexusScreen(
                     copy = copy,
                     model = model,
                     accent = accent,
-                    onLaunch = onLaunch,
-                    onOpenSetup = onOpenLoadout,
-                    onFixGap = onFixGap,
                     modifier = Modifier
                         .weight(1f)
                         .verticalScroll(rememberScrollState())
                 )
+                Spacer(Modifier.height(MaxSpace.md))
+                NexusLaunchBar(
+                    copy = copy,
+                    model = model,
+                    accent = accent,
+                    onLaunch = guardedLaunch,
+                    onOpenSetup = onOpenLoadout,
+                    onFixGap = onFixGap
+                )
+                Spacer(Modifier.height(MaxSpace.lg))
             }
             NexusRail(
                 games = model.games,
@@ -215,9 +237,6 @@ private fun NexusHero(
     copy: NexusCopy,
     model: NexusModel,
     accent: MonolithAccent,
-    onLaunch: () -> Unit,
-    onOpenSetup: () -> Unit,
-    onFixGap: (ReadyGap) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -270,12 +289,34 @@ private fun NexusHero(
             Spacer(Modifier.height(MaxSpace.md))
             NexusTelemetryRow(telemetry = telemetry)
         }
-        Spacer(Modifier.height(MaxSpace.xxl))
+        Spacer(Modifier.height(MaxSpace.sm))
+    }
+}
+
+/**
+ * شريط الإطلاق: الشرط الناقص + حلقة الجاهزية + زرّ التشغيل.
+ * مثبَّت خارج منطقة التمرير، فزرّ «ابدأ» يبقى ظاهرًا وتحت الإبهام في كل الشاشات،
+ * حتى حين يطول محتوى البطل على هاتف صغير أو خطّ مكبَّر.
+ */
+@Composable
+private fun NexusLaunchBar(
+    copy: NexusCopy,
+    model: NexusModel,
+    accent: MonolithAccent,
+    onLaunch: () -> Unit,
+    onOpenSetup: () -> Unit,
+    onFixGap: (ReadyGap) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier.fillMaxWidth()) {
         // الشرط الناقص يُسمّى قبل الزرّ، فيعرف اللاعب ما الذي سيدفع الرقم إلى ٣/٣.
         model.readinessGap?.let { gap ->
             // النصّ نفسه صار إجراءً: الضغط على السطر يكمل الشرط الناقص بلا رحلة إلى Loadout.
             Row(
                 modifier = Modifier
+                    .fillMaxWidth()
+                    // هدف لمس لا يقلّ عن 48dp: السطر هو الإجراء الأسرع لإكمال التهيئة.
+                    .heightIn(min = 48.dp)
                     .clip(RoundedCornerShape(MaxRadius.control))
                     .clickable(role = Role.Button) { model.gap?.let(onFixGap) }
                     .padding(horizontal = MaxSpace.xs, vertical = MaxSpace.xs),
@@ -412,6 +453,7 @@ private fun NexusRail(
     if (games.isEmpty()) return
     val shape = RoundedCornerShape(MaxRadius.control)
     val state = rememberLazyListState()
+    val haptic = LocalHapticFeedback.current
     LaunchedEffect(selectedIndex) {
         if (selectedIndex in games.indices) state.animateScrollToItem(selectedIndex)
     }
@@ -445,7 +487,11 @@ private fun NexusRail(
                         indication = null,
                         selected = active,
                         role = Role.Tab
-                    ) { onSelect(index) }
+                    ) {
+                        // اهتزاز خفيف عند تبديل اللعبة فقط، لا عند لمس اللعبة المختارة أصلًا.
+                        if (!active) haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                        onSelect(index)
+                    }
                     .semantics { contentDescription = game.label },
                 contentAlignment = Alignment.Center
             ) {
@@ -543,6 +589,9 @@ private fun NexusFooter(
 }
 
 private val FooterCompactWidth = 420.dp
+
+/** أقصر فاصل بين إطلاقين متتاليين من الزرّ نفسه، بالميلي ثانية. */
+private const val LaunchGuardMs = 1200L
 
 @Composable
 private fun NexusEmpty(

@@ -234,6 +234,40 @@ class MinimalPlanner @Inject constructor(
                 return@forEach
             }
 
+            // **نظرة استباقية — خطوة واحدة فقط:** التنبؤ يُستخدم لفحص الحالة
+            // التي ستتركها الخطوة، لا لترتيبها فقط. خطوة تُحسّن الآن ثم تُسقط
+            // الدرجة بعدها ليست تدخلًا ذكيًا. وهذا تقدير أثر لا محاكاة كاملة:
+            // لا نبحث عن خطوة ثانية، ولا نعيد تشغيل المخطّط على حالة معدَّلة.
+            // والحرارة المجهولة لا تُفهم كصفر آمن، والسلامة تبقى فوق هذا الفحص.
+            if (prediction != null && prediction.confidence >= TRUST_CONFIDENCE) {
+                val lookahead = MaxAiLookahead.assess(
+                    currentScore = score,
+                    currentThermalC = state.thermal * 100f,
+                    predictedGain = prediction.objectiveGain,
+                    predictedThermalC = prediction.thermalDeltaC,
+                    raisingPerformance = direction == ControlRegistry.Direction.RAISE_PERFORMANCE,
+                )
+                if (!lookahead.allowed) {
+                    traces += CandidateTrace(
+                        key = control.key, label = control.label, from = current, to = next,
+                        utility = 0f, credibility = cred,
+                        predictedGain = prediction.objectiveGain,
+                        predictedThermalC = prediction.thermalDeltaC,
+                        predictionConfidence = prediction.confidence,
+                        samples = effect.samples,
+                        rejection = when (lookahead.rejection) {
+                            MaxAiLookahead.Rejection.NEXT_STATE_WORSE ->
+                                MaxAiRejection.PREDICTED_NEXT_WORSE
+                            MaxAiLookahead.Rejection.THERMAL_CEILING ->
+                                MaxAiRejection.PREDICTED_THERMAL_CEILING
+                            null -> null
+                        },
+                        chosen = false,
+                    )
+                    return@forEach
+                }
+            }
+
             // مصدر تقدير الأثر: التنبؤ حين يكون موثوقًا، وإلا التجربة
             // المتفائلة (UCB). مزيج مرجّح بالثقة كي ينتقل العقل تدريجيًا
             // من "جرّب لتعرف" إلى "توقّع ثم اختر".

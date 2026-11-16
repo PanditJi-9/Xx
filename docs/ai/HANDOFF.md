@@ -60,6 +60,42 @@ MaxManager has a strong engine and a fragmented surface. `core/maxai` + `core/ha
 
 ## Executor log
 
+### MAX-AI-BEHAVIOR-01 + THERMAL-BUDGET-WIRING-01 + ATLAS-ROUTE-LEARNING-01 — 2026-11-16 · DONE_WITH_CONCERNS
+
+**TASK (المالك):** «تحسين max ai و max atlas … زيادة قدراتهم وتعمّقهم … جعله فائق الذكاء … ومن يفعل max ai
+ويختار الوضع المفضل والسلوك يجعل الهاتف خارقًا».
+
+**١. سلوك التدخل — `MaxAiBehavior` + `MaxAiBehaviorTuning` (جديد):** `CALM` / `BALANCED` / `DECISIVE`
+محفوظة في تفضيلات Max AI ومقروءة في `MaxAiEngine.start`، وليست مبدّل ملف ثانٍ: لا تكتب خاصية ولا تغيّر
+ملكية مقبض. تصل إلى `MinimalPlanner.planWithTrace` (عتبة الرضا)، و`TrustModel.gate` (نفس العتبة)، وسقف
+الاستكشاف، و`automationPlan`. القيم: 0.68/0/0 · 0.75/3/0.35 · 0.82/4/0.45 (الوسطى تُقرأ من ثوابت المحرك
+لا تُنسخ). أُضيف `TrustModel.Block.BEHAVIOR` ومترجمه في `MaxAiScreen` و`MaxLiveScreen`، ومُحدِّد ثلاثي في
+شاشة Max AI. وحلقتا النظام والتجربة تسجّلان العتبة المختارة نفسها في الدفتر، لا `0.75` ثابتة.
+
+**٢. توصيل ميزانية الحرارة:** `MaxAiThermalBudget` كان مكتوبًا ومُختبَرًا لكن **بلا مستدعٍ حيّ**. صار
+`observe` يُنادى في حلقة الأمان السريعة، و`Status` يُنشر في `MaxAiState.thermalBudget`، وتُعرض البطاقة في
+نظرة عامة (جلسة جارية/آخر جلسة نظيفة/آخر ميزانية أو `—` صريح). هذا توصيل فجوة لا وحدة ثانية.
+
+**٣. تعلّم ترتيب Atlas:** `isDiscouragedIn` + `discouragedRoutes` — مسار فشل فشلًا نظيفًا مرتين في جيل
+الإقلاع/الصلاحية نفسه بلا تحقّق واحد يُخفَّض ترتيبه داخل طبقة النقل نفسها (`+10`) ولا يُحجر ولا يُمنع؛
+ويبقى يُجرَّب إن كان الوحيد. الفشل مع rollback غير محقَّق يظل حجرًا حتى الإقلاع.
+
+**GATES (مقيسة اليوم):** `kt_balance` 3461/0 · `code_health` صحّة نظيفة (19 oversized، 26 wildcard،
+3 inline، 3 literals، 0 hw writes) · `i18n_coverage` 0 عوائق · `design_tokens` 243/300 ·
+`resource_compile` كل مجلدات res · `git diff --check` نظيف · `test_atlas_jvm.py` **OK (54 tests)** ·
+ترجمة JVM مباشرة لـ`MaxAiBehavior.kt` + اختباره **OK (4 tests)**. **لا بناء Gradle محليًا (§0.10).**
+
+**NOT VERIFIED:** التصريف على release، تركيب Compose، RTL، وسلوك الجهاز الحقيقي — كلها تحتاج
+Actions/جهازًا. `tools/test_maxai_jvm.py` ما زال لا يعمل قبل هذه الدفعة وبعدها: `FilePaneModel.kt` /
+`FilePaneModelTest.kt` مفقودان و`ArchiveFormat`/`MaxDestination`/`FilePermissionRules` غير محلولة —
+عطب قديم مسمّى، لا يُنسب لهذه الدفعة، والاختبار الجديد مسجَّل فيه ليُصرَّف في CI.
+
+**RESIDUAL RISK:** أرقام السلوك (0.68/0.82، +1 probe، 0.45) **قيم تصميم غير معايَرة على جهاز**؛ وميزانية
+الحرارة تعتمد `appIntent ≥ 0.75` و`MIN_SESSION_MS = 30s`، وكلاهما يحتاج معايرة. لا ادّعاء «كمبيوتر كمي»:
+ما أُضيف تعلّم وترتيب وحدود، لا خرق لقوانين العتاد.
+
+**NEXT:** قراءة حكم Quick Verify؛ ثم مقترحات `NEXT_TASK.md` (نظرة استباقية، سلوك لكل تطبيق، معايرة).
+
 ### DESIGN-PIPELINE-01 — مسار تصميمٍ يُنتج صورةً فعلًا: SVG ← resvg ← PNG بلا حساب ولا مفتاح — 2026-11-14 · DONE
 
 **TASK (المالك):** أوقف تجميل Game Space مؤقّتًا، وأعد تقييم بيئة التصميم كلها: المشكلة ليست في كتابة

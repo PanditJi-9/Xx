@@ -123,6 +123,8 @@
     <string name="max_ai_candidate_metrics">الجدوى %1$s · المصداقية %2$s · %3$d عينة</string>
     <string name="max_ai_rejected_measured_harm">ضرر مقيس</string>
     <string name="max_ai_rejected_predicted_harm">ضرر متوقع</string>
+    <string name="max_ai_rejected_next_worse">مرفوض: الحالة التالية ستكون أسوأ</string>
+    <string name="max_ai_rejected_thermal_ceiling">مرفوض: الحالة التالية ستتجاوز هامش الحرارة</string>
     <string name="max_ai_rejected_no_step">لا خطوة متاحة</string>
     <string name="max_ai_rejected_unreadable">غير قابل للقراءة</string>
     <string name="max_ai_rejected_other">لم يُختر</string>

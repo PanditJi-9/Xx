@@ -14,6 +14,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,12 +29,17 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.Shape
@@ -196,6 +202,31 @@ fun MonolithGameSlab(
     }
 }
 
+/**
+ * ردّ فعل اللمس: الزرّ ينكمش قليلًا ويخفت وهو مضغوط، فيعرف اللاعب أن لمسته وصلت
+ * حتى قبل أن تنتهي العملية. حركة قصيرة (90ms) بلا ارتداد ولا توهّج.
+ */
+@Composable
+private fun Modifier.pressFeedback(interaction: MutableInteractionSource, enabled: Boolean): Modifier {
+    val pressed by interaction.collectIsPressedAsState()
+    val down = pressed && enabled
+    val scale by animateFloatAsState(
+        targetValue = if (down) 0.97f else 1f,
+        animationSpec = tween(durationMillis = 90),
+        label = "monolithPressScale"
+    )
+    val alpha by animateFloatAsState(
+        targetValue = if (down) 0.86f else 1f,
+        animationSpec = tween(durationMillis = 90),
+        label = "monolithPressAlpha"
+    )
+    return graphicsLayer {
+        scaleX = scale
+        scaleY = scale
+        this.alpha = alpha
+    }
+}
+
 /** حلقة تركيز مرئية للريموت ولوحة المفاتيح: حدّ رفيع يظهر فقط حين يملك العنصر التركيز. */
 @Composable
 private fun Modifier.focusOutline(
@@ -220,9 +251,11 @@ fun MonolithPrimaryButton(
 ) {
     val shape = RoundedCornerShape(MaxRadius.control)
     val interaction = remember { MutableInteractionSource() }
+    val haptic = LocalHapticFeedback.current
     Box(
         modifier = modifier
             .height(56.dp)
+            .pressFeedback(interaction, enabled)
             .clip(shape)
             .background(if (enabled) Monolith.Bone else Monolith.Glass)
             .focusOutline(interaction, shape, Monolith.Obsidian)
@@ -232,7 +265,10 @@ fun MonolithPrimaryButton(
                 indication = null,
                 enabled = enabled,
                 role = Role.Button,
-                onClick = onClick
+                onClick = {
+                    haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                    onClick()
+                }
             )
             .padding(horizontal = MaxSpace.xl),
         contentAlignment = Alignment.Center
@@ -256,9 +292,11 @@ fun MonolithGhostButton(
 ) {
     val shape = RoundedCornerShape(MaxRadius.control)
     val interaction = remember { MutableInteractionSource() }
+    val haptic = LocalHapticFeedback.current
     Box(
         modifier = modifier
             .height(48.dp)
+            .pressFeedback(interaction, enabled)
             .clip(shape)
             .border(MaxSpace.hairline, Monolith.HairlineStrong, shape)
             .focusOutline(interaction, shape, Monolith.Bone)
@@ -268,7 +306,10 @@ fun MonolithGhostButton(
                 indication = null,
                 enabled = enabled,
                 role = Role.Button,
-                onClick = onClick
+                onClick = {
+                    haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                    onClick()
+                }
             )
             .padding(horizontal = MaxSpace.lg),
         contentAlignment = Alignment.Center

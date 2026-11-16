@@ -48,6 +48,12 @@ object MaxAiRejection {
     const val MEASURED_HARM = "measured_harm"
     const val PREDICTED_HARM = "predicted_harm"
 
+    /** الخطوة تُحسّن الآن، لكن الحالة التالية المتوقعة أسوأ. */
+    const val PREDICTED_NEXT_WORSE = "predicted_next_worse"
+
+    /** الخطوة ترفع الأداء لكنها تتجاوز هامش الحرارة المتوقع. */
+    const val PREDICTED_THERMAL_CEILING = "predicted_thermal_ceiling"
+
     /**
      * الخطوة سليمة تقنيًّا لكنها تنزل تحت **أرضية الاستجابة** — سقف يُجعل الهاتف بطيئًا
      * بلا مكسب يُثبته القياس. سجلّ جهاز حقيقي يوثّق البلاغ: `cpu_limits:policy0` بلغ

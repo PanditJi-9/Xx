@@ -1811,6 +1811,9 @@ private fun insightVerdictTone(verdict: MaxAiInsights.Verdict): MaxTone = when (
 private fun rejectionLabel(rejection: String?): String = when (rejection) {
     MaxAiRejection.MEASURED_HARM -> stringResource(R.string.max_ai_rejected_measured_harm)
     MaxAiRejection.PREDICTED_HARM -> stringResource(R.string.max_ai_rejected_predicted_harm)
+    MaxAiRejection.PREDICTED_NEXT_WORSE -> stringResource(R.string.max_ai_rejected_next_worse)
+    MaxAiRejection.PREDICTED_THERMAL_CEILING ->
+        stringResource(R.string.max_ai_rejected_thermal_ceiling)
     MaxAiRejection.NO_STEP -> stringResource(R.string.max_ai_rejected_no_step)
     MaxAiRejection.UNREADABLE -> stringResource(R.string.max_ai_rejected_unreadable)
     else -> stringResource(R.string.max_ai_rejected_other)

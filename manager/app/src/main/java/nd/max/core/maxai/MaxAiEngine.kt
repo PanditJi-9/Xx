@@ -1221,6 +1221,7 @@ class MaxAiEngine @Inject constructor(
             objective = objective,
             objectiveSource = objectiveSource,
             appContextKey = appContextKey,
+            satisfaction = tuning.satisfactionTarget,
             direction = direction,
         )
     }
@@ -1241,6 +1242,7 @@ class MaxAiEngine @Inject constructor(
         objective: Objective,
         objectiveSource: String,
         appContextKey: String,
+        satisfaction: Float,
         direction: ControlRegistry.Direction,
     ): Boolean {
         val from = runCatching { control.read() }.getOrNull() ?: return false
@@ -1262,8 +1264,8 @@ class MaxAiEngine @Inject constructor(
         val probePlan = MinimalPlanner.Plan(
             step = step,
             score = baseScore,
-            gap = MinimalPlanner.SATISFIED_SCORE - baseScore,
-            satisfaction = MinimalPlanner.SATISFIED_SCORE,
+            gap = satisfaction - baseScore,
+            satisfaction = satisfaction,
             direction = direction,
             // لا ترشيح بالمنفعة حدث هنا؛ ترك القائمة فارغة أصدق من أرقام ملفّقة.
             candidates = emptyList(),
@@ -1783,6 +1785,9 @@ class MaxAiEngine @Inject constructor(
         detail: String,
     ): MaxAiEpisode {
         val beforeReading = reading(snapshot, objective)
+        // حلقة النظام تُقرأ بالعتبة التي يعمل بها المحرك الآن، لا بثابتة 0.75:
+        // وإلا عرض الدفتر فجوةً لا تطابق القرار الذي رفض أو سمح قبله.
+        val target = MaxAiBehaviorTuning.of(readBehavior()).satisfactionTarget
         return MaxAiEpisode(
             id = System.currentTimeMillis(),
             appContext = appContextKey,
@@ -1791,8 +1796,8 @@ class MaxAiEngine @Inject constructor(
             weightPerformance = objective.performance,
             weightBattery = objective.battery,
             weightThermal = objective.thermalHeadroom,
-            satisfactionTarget = MinimalPlanner.SATISFIED_SCORE,
-            gap = MinimalPlanner.SATISFIED_SCORE - beforeReading.objectiveScore,
+            satisfactionTarget = target,
+            gap = target - beforeReading.objectiveScore,
             before = beforeReading,
             after = null,
             knobKey = knobKey,

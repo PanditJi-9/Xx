@@ -33,6 +33,12 @@ data class AtlasAdaptiveResult(
     val detail: String? = null,
     /** Routes that were not attempted, each with a stable reason code (never a sentence). */
     val skipped: List<Pair<String, String>> = emptyList(),
+    /**
+     * Routes that were attempted only after an unproven peer because they failed cleanly twice in
+     * this generation. A demotion, never a ban: a demoted route is still attempted when no better
+     * route exists. Reported for diagnoses, with a stable machine code.
+     */
+    val demoted: List<Pair<String, String>> = emptyList(),
 ) {
     val successful: Boolean get() = attempts.lastOrNull()?.successful == true
 }
@@ -72,6 +78,10 @@ class AtlasAdaptiveExecutor(
             .map { it.candidate.id to SKIP_ROUTE_QUARANTINED }
         val preferred = memory?.preferredRoute(targetKey)
         val discouraged = memory?.discouragedRoutes(targetKey).orEmpty()
+        // Quarantine is the stronger fact; a quarantined route is reported in [skipped], not here.
+        val demoted = bindings
+            .filter { it.candidate.id in discouraged && it.candidate.id !in quarantined }
+            .map { it.candidate.id to ROUTE_DEMOTED }
 
         val remaining = bindings
             .filter { it.candidate.id !in quarantined }
@@ -148,6 +158,7 @@ class AtlasAdaptiveExecutor(
                     fallbackStopped = true,
                     detail = "fallback stopped: rollback was not verified",
                     skipped = skipped,
+                    demoted = demoted,
                 )
             }
         }
@@ -162,6 +173,7 @@ class AtlasAdaptiveExecutor(
                 else -> "all eligible routes failed"
             },
             skipped = skipped,
+            demoted = demoted,
         )
     }
 
@@ -171,5 +183,8 @@ class AtlasAdaptiveExecutor(
 
         /** Priority gap that keeps a repeatedly-failed route behind an unproven one in its tier. */
         const val DISCOURAGED_PRIORITY_PENALTY = 10
+
+        /** A stable machine reason, not a sentence: the caller owns the wording. */
+        const val ROUTE_DEMOTED = "route-demoted-repeated-clean-failure"
     }
 }

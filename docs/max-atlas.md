@@ -18,6 +18,13 @@ levels of honesty. Atlas is the system that finds out which of those is true her
 | **Verify** | Did it actually settle? | `HardwareVerification` + the confirmation window |
 | **Learn** | What does this device remember? | `AtlasRouteMemory` + `AtlasEvidenceStore` |
 
+The Learn stage is not only "remember the winner". A route that failed cleanly (`FAILED`, baseline
+restored) twice in the same boot/privilege generation without ever verifying is **demoted inside its
+transport tier**, never banned: it is tried after routes with no such history, and still attempted when
+it is the only eligible one. A rollback failure is different and stays quarantined for the boot. The
+demotion is a priority penalty applied by `AtlasAdaptiveExecutor`; the planner's transport ordering
+still outranks it, so a remembered sysfs route can never jump ahead of a platform route.
+
 ## Five design rules that produced the whole system
 
 **1. Discovery is bounded, and a limit is reported as a limit.** A scan runs under a budget —
