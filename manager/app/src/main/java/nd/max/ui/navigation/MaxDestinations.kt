@@ -21,6 +21,8 @@ import androidx.compose.material.icons.rounded.Cable
 import androidx.compose.material.icons.rounded.CleaningServices
 import androidx.compose.material.icons.rounded.ColorLens
 import androidx.compose.material.icons.rounded.DataUsage
+import androidx.compose.material.icons.rounded.Policy
+import androidx.compose.material.icons.rounded.QueryStats
 import androidx.compose.material.icons.rounded.DeveloperBoard
 import androidx.compose.material.icons.rounded.DisplaySettings
 import androidx.compose.material.icons.rounded.Edit
@@ -365,7 +367,7 @@ sealed class MaxDestination(
      * شهادة التوقيع). **تحت التحكّم** مع أدوات النظام: شاشة قراءة لا تحكّم، ولا كتابة
      * فيها إطلاقًا — وحدُّها معلن داخلها (`uses-feature` التطبيق غير مقروء للمنصّة).
      */
-    data object ManifestInspector : MaxDestination("manifest_inspector", R.string.manifest_inspector_title, Icons.Rounded.AppSettingsAlt, Control)
+    data object ManifestInspector : MaxDestination("manifest_inspector", R.string.manifest_inspector_title, Icons.Rounded.Policy, Control)
 
     /**
      * `NETWORK-SCANNER-01` — فاحص الشبكة المحليّة: عنوانك وبوّابتك وجيرانك من
@@ -379,7 +381,7 @@ sealed class MaxDestination(
      * `USAGE-STATS-01` — زمن المقدّمة لكل تطبيق من قاعدة استخدام أندرويد نفسها.
      * **تحت التحكّم بأمر المالك.** سطح قراءة لحالة الجهاز، ويحتاج إذن الوصول إلى الاستخدام وحده.
      */
-    data object UsageStats : MaxDestination("usage_stats", R.string.usage_stats_title, Icons.Rounded.DataUsage, Control)
+    data object UsageStats : MaxDestination("usage_stats", R.string.usage_stats_title, Icons.Rounded.QueryStats, Control)
 
     /**
      * `BATTERY-HISTORY-01` — سجلّ البطارية الطويل: عيّنات دورية كل ١٥ دقيقة،

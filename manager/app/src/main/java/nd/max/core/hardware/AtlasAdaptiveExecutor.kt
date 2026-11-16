@@ -146,6 +146,7 @@ class AtlasAdaptiveExecutor(
                     selectedRouteId = selected.id,
                     detail = "route verified",
                     skipped = skipped,
+                    demoted = demoted,
                 )
             }
 

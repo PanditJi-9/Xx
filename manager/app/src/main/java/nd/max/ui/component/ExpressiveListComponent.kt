@@ -519,28 +519,13 @@ fun ExpressiveSwitchItem(
         headlineContent = { Text(title) },
         leadingContent = icon?.let { { LeadingIcon(icon = it, contentDescription = title) } },
         trailingContent = {
+            // The switch itself carries the state: a checked mark when on and a neutral dot
+            // when off. The old explicit Close glyph read as "blocked/error", not "off".
             MaxSwitch(
                 checked = checked,
                 enabled = enabled,
-                thumbContent = {
-                    if (checked) {
-                        Icon(
-                            imageVector = Icons.Filled.Check,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(SwitchDefaults.IconSize),
-                        )
-                    } else {
-                        Icon(
-                            imageVector = Icons.Filled.Close,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.surfaceContainerHighest,
-                            modifier = Modifier.size(SwitchDefaults.IconSize),
-                        )
-                    }
-                }, 
                 onCheckedChange = onCheckedChange,
-                interactionSource = interactionSource
+                interactionSource = interactionSource,
             )
         },
         supportingContent = summary?.let { { Text(it) } }

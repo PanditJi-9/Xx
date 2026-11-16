@@ -688,6 +688,15 @@ private fun behaviorDescription(behavior: MaxAiBehavior): String = stringResourc
     },
 )
 
+@Composable
+private fun behaviorLabel(behavior: MaxAiBehavior): String = stringResource(
+    when (behavior) {
+        MaxAiBehavior.CALM -> R.string.max_ai_behavior_calm
+        MaxAiBehavior.BALANCED -> R.string.max_ai_behavior_balanced
+        MaxAiBehavior.DECISIVE -> R.string.max_ai_behavior_decisive
+    },
+)
+
 /**
  * ميزانية الحرارة: الزمن حتى أول خفض أمان، من وحدة قياس نقيّة ومُختبَرة.
  *
@@ -833,6 +842,24 @@ private fun ObjectiveSection(state: MaxAiState, viewModel: MaxAiViewModel) {
                 viewModel.setBehavior(MaxAiBehavior.entries[index].id)
             },
         )
+
+        if (state.behaviorFromApp && state.effectiveBehavior != state.behavior) {
+            Text(
+                text = stringResource(
+                    R.string.max_ai_behavior_app_override,
+                    behaviorLabel(state.effectiveBehavior),
+                ),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.secondary,
+                modifier = Modifier.padding(horizontal = MaxSpace.md),
+            )
+            Text(
+                text = stringResource(R.string.max_ai_behavior_app_override_desc),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(horizontal = MaxSpace.md),
+            )
+        }
 
         // الملفّ الفاعل قد يكون تبديلًا مؤقّتًا (لعبة/بطارية منخفضة) بينما الأساس
         // هو اختيار المستخدم. إظهار الفرق يمنع قراءة «الوضع الفاعل» على أنه اختياره.

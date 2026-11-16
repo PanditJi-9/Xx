@@ -20,6 +20,8 @@ package nd.max.ui.subscreens
 
 
 import android.app.Activity
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -78,8 +80,22 @@ import nd.max.BuildConfig
 import nd.max.R
 import nd.max.ui.component.*
 import nd.max.ui.design.MaxListScreen
+import nd.max.ui.design.MaxSpace
 import nd.max.core.platform.PropertyUtils
 
+
+private fun copySupportInfo(context: Context) {
+    val text = buildString {
+        appendLine("MaxManager ${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})")
+        appendLine("Device: ${Build.MANUFACTURER} ${Build.MODEL}")
+        appendLine("Android: ${Build.VERSION.RELEASE} (API ${Build.VERSION.SDK_INT})")
+        appendLine("ABI: ${Build.SUPPORTED_ABIS.joinToString()}")
+        appendLine("Kernel: " + System.getProperty("os.version").orEmpty())
+    }
+    val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
+    clipboard?.setPrimaryClip(ClipData.newPlainText("MaxManager support", text))
+    Toast.makeText(context, context.getString(R.string.about_copy_support_info_done), Toast.LENGTH_SHORT).show()
+}
 
 @Composable
 fun AboutScreen(navController: NavController) {
@@ -135,6 +151,12 @@ fun AboutScreen(navController: NavController) {
                         style = MaterialTheme.typography.titleSmall,
                         color = MaterialTheme.colorScheme.primary
                     )
+                    Spacer(modifier = Modifier.height(MaxSpace.sm))
+                    TextButton(onClick = { copySupportInfo(context) }) {
+                        Icon(Icons.Rounded.ContentCopy, contentDescription = null)
+                        Spacer(modifier = Modifier.width(MaxSpace.xs))
+                        Text(stringResource(R.string.about_copy_support_info))
+                    }
                     
                 }
             }

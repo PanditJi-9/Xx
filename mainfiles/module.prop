@@ -1,6 +1,6 @@
 id=MaxManager
 name=MaxManager
-version=V4
+version=V5.0
 versionCode=4
 author=MaxManager Project
 description=MaxManager - adaptive, chip-aware performance tuning for your device.

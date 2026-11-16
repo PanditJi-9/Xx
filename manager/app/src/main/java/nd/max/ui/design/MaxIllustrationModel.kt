@@ -5,10 +5,18 @@
  */
 package nd.max.ui.design
 
-/** Navigation artwork, not telemetry: its topology never changes with a reading. */
+/**
+ * Navigation artwork, not telemetry: its topology never changes with a reading.
+ *
+ * The current family is a **filled pictogram**, not a wireframe: one wash silhouette gives the
+ * domain a shape at 34dp, one accent detail names it, and the outline keeps it legible on both
+ * light and dark surfaces. The older set was almost entirely 1.5dp line work; at row size the
+ * domains read as the same thin diagram with different internal scratches.
+ */
 enum class MaxIllustrationKind {
     Device, Cpu, Gpu, Memory, Storage, Display, Power, Thermal, Network, Audio,
     Games, Apps, System, Security, Controls, Tools, Camera, Sensors, Intelligence,
+    Island, Overlay, Clips, Sessions, Manifest, Scan, Usage, BatteryHistory,
 }
 
 enum class MaxIllustrationInk { Accent, Outline, Wash }
@@ -23,6 +31,8 @@ sealed interface MaxIllustrationPart {
         val points: List<MaxIllustrationPoint>,
         override val ink: MaxIllustrationInk = MaxIllustrationInk.Accent,
         val closed: Boolean = false,
+        /** Filled silhouettes carry the domain; [closed] must be true for them to read cleanly. */
+        val filled: Boolean = false,
     ) : MaxIllustrationPart
 
     data class Box(
@@ -59,7 +69,15 @@ fun maxIllustrationKind(iconName: String?): MaxIllustrationKind? = when (iconNam
     "Apps", "AppSettingsAlt", "Android" -> MaxIllustrationKind.Apps
     "Settings", "SettingsApplications", "Code", "Terminal" -> MaxIllustrationKind.System
     "Shield", "Security", "Key", "Lock", "VerifiedUser" -> MaxIllustrationKind.Security
-    "Tune", "TouchApp", "SmartButton", "PictureInPicture" -> MaxIllustrationKind.Controls
+    "Tune", "TouchApp" -> MaxIllustrationKind.Controls
+    "SmartButton" -> MaxIllustrationKind.Island
+    "PictureInPicture" -> MaxIllustrationKind.Overlay
+    "VideoLibrary" -> MaxIllustrationKind.Clips
+    "History" -> MaxIllustrationKind.Sessions
+    "Policy", "FactCheck" -> MaxIllustrationKind.Manifest
+    "Radar", "TravelExplore", "NetworkPing" -> MaxIllustrationKind.Scan
+    "QueryStats", "BarChart", "InsertChart", "HourglassEmpty" -> MaxIllustrationKind.Usage
+    "BatterySaver", "BatteryAlert", "BatteryCharging90" -> MaxIllustrationKind.BatteryHistory
     "Build", "Science", "CleaningServices", "BugReport", "Edit" -> MaxIllustrationKind.Tools
     "Camera", "CameraAlt", "PhotoCamera" -> MaxIllustrationKind.Camera
     "Sensors", "SensorsOff", "Explore" -> MaxIllustrationKind.Sensors
@@ -71,8 +89,20 @@ fun maxIllustrationKind(iconName: String?): MaxIllustrationKind? = when (iconNam
 
 /** No platform calls, randomness, clocks or unbounded detail in the artwork. */
 fun maxIllustrationParts(kind: MaxIllustrationKind): List<MaxIllustrationPart> = buildList {
-    fun line(vararg xy: Float, ink: MaxIllustrationInk = MaxIllustrationInk.Accent, closed: Boolean = false) {
-        add(MaxIllustrationPart.Line(xy.toList().chunked(2).map { MaxIllustrationPoint(it[0], it[1]) }, ink, closed))
+    fun line(
+        vararg xy: Float,
+        ink: MaxIllustrationInk = MaxIllustrationInk.Accent,
+        closed: Boolean = false,
+        filled: Boolean = false,
+    ) {
+        add(
+            MaxIllustrationPart.Line(
+                points = xy.toList().chunked(2).map { MaxIllustrationPoint(it[0], it[1]) },
+                ink = ink,
+                closed = closed,
+                filled = filled,
+            ),
+        )
     }
     fun box(
         x: Float, y: Float, w: Float, h: Float,
@@ -92,165 +122,247 @@ fun maxIllustrationParts(kind: MaxIllustrationKind): List<MaxIllustrationPart> =
 
     when (kind) {
         MaxIllustrationKind.Device -> {
-            box(0.29f, 0.12f, 0.42f, 0.76f, wash, true, 0.08f)
-            box(0.29f, 0.12f, 0.42f, 0.76f, radius = 0.08f)
-            line(0.42f, 0.20f, 0.58f, 0.20f)
-            line(0.43f, 0.79f, 0.57f, 0.79f)
-            line(0.38f, 0.48f, 0.46f, 0.40f, 0.56f, 0.53f, 0.63f, 0.45f, ink = outline)
-            line(0.15f, 0.33f, 0.22f, 0.33f, ink = outline)
-            line(0.78f, 0.67f, 0.86f, 0.67f, ink = outline)
+            box(0.28f, 0.10f, 0.44f, 0.80f, wash, true, 0.10f)
+            box(0.28f, 0.10f, 0.44f, 0.80f, radius = 0.10f)
+            line(0.40f, 0.17f, 0.60f, 0.17f, ink = outline)
+            line(0.45f, 0.82f, 0.55f, 0.82f, ink = outline)
+            line(0.35f, 0.59f, 0.44f, 0.47f, 0.53f, 0.57f, 0.65f, 0.40f)
+            ring(0.50f, 0.72f, 0.035f, filled = true)
+            line(0.16f, 0.30f, 0.23f, 0.30f, ink = outline)
+            line(0.77f, 0.66f, 0.84f, 0.66f, ink = outline)
         }
         MaxIllustrationKind.Cpu -> {
-            box(0.26f, 0.26f, 0.48f, 0.48f, wash, true)
-            box(0.26f, 0.26f, 0.48f, 0.48f)
+            box(0.24f, 0.24f, 0.52f, 0.52f, wash, true, 0.10f)
+            box(0.24f, 0.24f, 0.52f, 0.52f, radius = 0.10f)
+            box(0.36f, 0.36f, 0.28f, 0.28f, wash, true, 0.06f)
+            box(0.36f, 0.36f, 0.28f, 0.28f, radius = 0.06f)
+            line(0.50f, 0.37f, 0.50f, 0.63f, ink = outline)
+            line(0.37f, 0.50f, 0.63f, 0.50f, ink = outline)
             for (i in 0..3) {
-                val p = 0.34f + i * 0.105f
-                line(p, 0.15f, p, 0.24f, ink = outline)
-                line(p, 0.76f, p, 0.85f, ink = outline)
-                line(0.15f, p, 0.24f, p, ink = outline)
-                line(0.76f, p, 0.85f, p, ink = outline)
+                val p = 0.32f + i * 0.12f
+                line(p, 0.13f, p, 0.23f, ink = outline)
+                line(p, 0.77f, p, 0.87f, ink = outline)
+                line(0.13f, p, 0.23f, p, ink = outline)
+                line(0.77f, p, 0.87f, p, ink = outline)
             }
-            box(0.37f, 0.37f, 0.26f, 0.26f, radius = 0.025f)
-            line(0.50f, 0.38f, 0.50f, 0.62f, ink = outline)
-            line(0.38f, 0.50f, 0.62f, 0.50f, ink = outline)
         }
         MaxIllustrationKind.Gpu -> {
-            line(0.16f, 0.63f, 0.50f, 0.83f, 0.84f, 0.63f, ink = outline)
-            line(0.16f, 0.49f, 0.50f, 0.69f, 0.84f, 0.49f, ink = outline)
-            line(0.16f, 0.34f, 0.50f, 0.14f, 0.84f, 0.34f, 0.50f, 0.54f, closed = true)
-            line(0.50f, 0.15f, 0.50f, 0.53f, ink = outline)
-            line(0.33f, 0.24f, 0.67f, 0.44f, ink = outline)
-            line(0.67f, 0.24f, 0.33f, 0.44f, ink = outline)
-            ring(0.50f, 0.34f, 0.045f, filled = true)
+            line(0.50f, 0.12f, 0.86f, 0.32f, 0.86f, 0.68f, 0.50f, 0.88f, 0.14f, 0.68f, 0.14f, 0.32f, closed = true, filled = true, ink = wash)
+            line(0.50f, 0.12f, 0.86f, 0.32f, 0.86f, 0.68f, 0.50f, 0.88f, 0.14f, 0.68f, 0.14f, 0.32f, closed = true)
+            line(0.50f, 0.12f, 0.50f, 0.50f, 0.86f, 0.68f, ink = outline)
+            line(0.50f, 0.50f, 0.14f, 0.68f, ink = outline)
+            line(0.34f, 0.32f, 0.66f, 0.50f, 0.34f, 0.68f, closed = true, filled = true)
+            ring(0.50f, 0.50f, 0.055f, filled = true)
         }
         MaxIllustrationKind.Memory -> {
-            box(0.14f, 0.29f, 0.72f, 0.42f, wash, true)
-            box(0.14f, 0.29f, 0.72f, 0.42f)
-            for (i in 0..2) box(0.23f + i * 0.20f, 0.38f, 0.13f, 0.20f, radius = 0.02f)
-            for (i in 0..5) line(0.25f + i * 0.10f, 0.73f, 0.25f + i * 0.10f, 0.81f, ink = outline)
+            box(0.12f, 0.26f, 0.76f, 0.48f, wash, true, 0.08f)
+            box(0.12f, 0.26f, 0.76f, 0.48f, radius = 0.08f)
+            for (i in 0..2) {
+                val x = 0.20f + i * 0.21f
+                box(x, 0.36f, 0.15f, 0.28f, if (i == 1) wash else outline, filled = i == 1, radius = 0.03f)
+                line(x + 0.075f, 0.36f, x + 0.075f, 0.28f, ink = outline)
+            }
+            for (i in 0..5) line(0.20f + i * 0.12f, 0.74f, 0.20f + i * 0.12f, 0.84f, ink = outline)
         }
         MaxIllustrationKind.Storage -> {
             for (i in 0..2) {
-                val y = 0.17f + i * 0.23f
-                box(0.19f, y, 0.62f, 0.18f, if (i == 0) wash else outline, filled = i == 0)
-                if (i == 0) box(0.19f, y, 0.62f, 0.18f)
-                ring(0.29f, y + 0.09f, 0.025f, filled = true)
-                line(0.58f, y + 0.09f, 0.71f, y + 0.09f, ink = outline)
+                val y = 0.16f + i * 0.24f
+                box(0.18f, y, 0.64f, 0.20f, if (i == 0) wash else outline, filled = i == 0, radius = 0.05f)
+                if (i == 0) box(0.18f, y, 0.64f, 0.20f, radius = 0.05f)
+                ring(0.29f, y + 0.10f, 0.03f, filled = true)
+                line(0.58f, y + 0.10f, 0.72f, y + 0.10f, ink = outline)
             }
         }
         MaxIllustrationKind.Display -> {
-            box(0.23f, 0.11f, 0.54f, 0.78f, wash, true, 0.055f)
-            box(0.23f, 0.11f, 0.54f, 0.78f, radius = 0.055f)
-            line(0.35f, 0.68f, 0.65f, 0.32f)
-            line(0.35f, 0.58f, 0.35f, 0.68f, 0.45f, 0.68f)
-            line(0.55f, 0.32f, 0.65f, 0.32f, 0.65f, 0.42f)
-            line(0.40f, 0.80f, 0.60f, 0.80f, ink = outline)
+            box(0.18f, 0.10f, 0.64f, 0.72f, wash, true, 0.07f)
+            box(0.18f, 0.10f, 0.64f, 0.72f, radius = 0.07f)
+            line(0.32f, 0.66f, 0.68f, 0.28f)
+            line(0.32f, 0.56f, 0.32f, 0.66f, 0.42f, 0.66f)
+            line(0.52f, 0.28f, 0.68f, 0.28f, 0.68f, 0.38f)
+            line(0.38f, 0.82f, 0.62f, 0.82f, ink = outline)
+            line(0.50f, 0.72f, 0.50f, 0.82f, ink = outline)
         }
         MaxIllustrationKind.Power -> {
-            box(0.16f, 0.30f, 0.65f, 0.40f, wash, true, 0.07f)
-            box(0.16f, 0.30f, 0.65f, 0.40f, radius = 0.07f)
-            line(0.85f, 0.43f, 0.85f, 0.57f)
-            line(0.51f, 0.35f, 0.39f, 0.51f, 0.55f, 0.51f, 0.43f, 0.65f)
-            line(0.20f, 0.79f, 0.63f, 0.79f, ink = outline)
+            box(0.12f, 0.30f, 0.70f, 0.40f, wash, true, 0.08f)
+            box(0.12f, 0.30f, 0.70f, 0.40f, radius = 0.08f)
+            box(0.82f, 0.42f, 0.06f, 0.16f, radius = 0.02f)
+            line(0.46f, 0.33f, 0.30f, 0.53f, 0.46f, 0.53f, 0.38f, 0.67f, 0.56f, 0.47f, 0.40f, 0.47f, closed = true, filled = true)
+            line(0.20f, 0.79f, 0.64f, 0.79f, ink = outline)
         }
         MaxIllustrationKind.Thermal -> {
-            box(0.39f, 0.16f, 0.20f, 0.47f, radius = 0.10f)
-            ring(0.49f, 0.73f, 0.14f, wash, true)
-            ring(0.49f, 0.73f, 0.14f)
-            line(0.49f, 0.37f, 0.49f, 0.73f)
-            for (i in 0..2) line(0.66f, 0.28f + i * 0.13f, 0.76f, 0.28f + i * 0.13f, ink = outline)
+            line(0.40f, 0.16f, 0.60f, 0.16f, 0.60f, 0.58f, 0.69f, 0.70f, 0.60f, 0.82f, 0.40f, 0.82f, 0.31f, 0.70f, 0.40f, 0.58f, closed = true, filled = true, ink = wash)
+            line(0.40f, 0.16f, 0.60f, 0.16f, 0.60f, 0.58f, 0.69f, 0.70f, 0.60f, 0.82f, 0.40f, 0.82f, 0.31f, 0.70f, 0.40f, 0.58f, closed = true)
+            ring(0.50f, 0.72f, 0.13f, wash, true)
+            ring(0.50f, 0.72f, 0.13f)
+            line(0.50f, 0.38f, 0.50f, 0.72f)
+            for (i in 0..2) line(0.68f, 0.30f + i * 0.12f, 0.78f, 0.30f + i * 0.12f, ink = outline)
         }
         MaxIllustrationKind.Network -> {
-            line(0.28f, 0.70f, 0.50f, 0.50f, 0.72f, 0.70f, ink = outline)
-            line(0.50f, 0.50f, 0.50f, 0.26f, ink = outline)
-            ring(0.50f, 0.50f, 0.11f, wash, true)
-            ring(0.50f, 0.50f, 0.11f)
-            ring(0.50f, 0.19f, 0.065f)
-            ring(0.23f, 0.75f, 0.065f)
-            ring(0.77f, 0.75f, 0.065f)
-            line(0.18f, 0.41f, 0.23f, 0.31f, 0.32f, 0.24f, ink = outline)
-            line(0.68f, 0.24f, 0.77f, 0.31f, 0.82f, 0.41f, ink = outline)
+            ring(0.50f, 0.50f, 0.40f, wash, true)
+            line(0.50f, 0.10f, 0.50f, 0.90f, ink = outline)
+            line(0.12f, 0.50f, 0.88f, 0.50f, ink = outline)
+            line(0.50f, 0.10f, 0.78f, 0.24f, 0.88f, 0.50f, 0.78f, 0.76f, 0.50f, 0.90f, 0.22f, 0.76f, 0.12f, 0.50f, 0.22f, 0.24f, closed = true, filled = true, ink = wash)
+            ring(0.50f, 0.50f, 0.10f)
+            ring(0.50f, 0.18f, 0.055f, filled = true)
+            ring(0.23f, 0.72f, 0.055f)
+            ring(0.77f, 0.72f, 0.055f)
         }
         MaxIllustrationKind.Audio -> {
-            line(0.17f, 0.40f, 0.32f, 0.40f, 0.48f, 0.25f, 0.48f, 0.75f, 0.32f, 0.60f, 0.17f, 0.60f, closed = true)
-            line(0.60f, 0.37f, 0.67f, 0.43f, 0.69f, 0.50f, 0.67f, 0.57f, 0.60f, 0.63f)
-            line(0.70f, 0.25f, 0.80f, 0.36f, 0.84f, 0.50f, 0.80f, 0.64f, 0.70f, 0.75f, ink = outline)
+            line(0.16f, 0.38f, 0.32f, 0.38f, 0.48f, 0.22f, 0.48f, 0.78f, 0.32f, 0.62f, 0.16f, 0.62f, closed = true, filled = true, ink = wash)
+            line(0.16f, 0.38f, 0.32f, 0.38f, 0.48f, 0.22f, 0.48f, 0.78f, 0.32f, 0.62f, 0.16f, 0.62f, closed = true)
+            line(0.60f, 0.36f, 0.68f, 0.43f, 0.70f, 0.50f, 0.68f, 0.57f, 0.60f, 0.64f)
+            line(0.71f, 0.24f, 0.81f, 0.36f, 0.85f, 0.50f, 0.81f, 0.64f, 0.71f, 0.76f, ink = outline)
         }
         MaxIllustrationKind.Games -> {
-            line(0.22f, 0.31f, 0.78f, 0.31f, 0.88f, 0.69f, 0.75f, 0.75f, 0.63f, 0.61f, 0.37f, 0.61f, 0.25f, 0.75f, 0.12f, 0.69f, closed = true)
-            line(0.25f, 0.45f, 0.39f, 0.45f)
-            line(0.32f, 0.38f, 0.32f, 0.52f)
-            ring(0.69f, 0.42f, 0.035f, filled = true)
-            ring(0.77f, 0.51f, 0.035f, filled = true)
-            line(0.44f, 0.52f, 0.54f, 0.52f, ink = outline)
+            line(0.18f, 0.30f, 0.82f, 0.30f, 0.90f, 0.68f, 0.74f, 0.78f, 0.62f, 0.60f, 0.38f, 0.60f, 0.26f, 0.78f, 0.10f, 0.68f, closed = true, filled = true, ink = wash)
+            line(0.18f, 0.30f, 0.82f, 0.30f, 0.90f, 0.68f, 0.74f, 0.78f, 0.62f, 0.60f, 0.38f, 0.60f, 0.26f, 0.78f, 0.10f, 0.68f, closed = true)
+            line(0.24f, 0.44f, 0.38f, 0.44f)
+            line(0.31f, 0.37f, 0.31f, 0.51f)
+            ring(0.69f, 0.42f, 0.04f, filled = true)
+            ring(0.79f, 0.50f, 0.04f)
+            line(0.43f, 0.53f, 0.57f, 0.53f, ink = outline)
         }
         MaxIllustrationKind.Apps -> {
-            box(0.17f, 0.17f, 0.27f, 0.27f, wash, true, 0.06f)
-            box(0.17f, 0.17f, 0.27f, 0.27f, radius = 0.06f)
-            box(0.56f, 0.17f, 0.27f, 0.27f, outline, radius = 0.06f)
-            box(0.17f, 0.56f, 0.27f, 0.27f, outline, radius = 0.06f)
-            ring(0.695f, 0.695f, 0.13f)
-            line(0.63f, 0.695f, 0.76f, 0.695f)
-            line(0.695f, 0.63f, 0.695f, 0.76f)
+            box(0.16f, 0.16f, 0.29f, 0.29f, wash, true, 0.07f)
+            box(0.16f, 0.16f, 0.29f, 0.29f, radius = 0.07f)
+            box(0.55f, 0.16f, 0.29f, 0.29f, radius = 0.07f)
+            box(0.16f, 0.55f, 0.29f, 0.29f, radius = 0.07f)
+            ring(0.695f, 0.695f, 0.145f, wash, true)
+            ring(0.695f, 0.695f, 0.145f)
+            line(0.61f, 0.695f, 0.78f, 0.695f)
+            line(0.695f, 0.61f, 0.695f, 0.78f)
         }
         MaxIllustrationKind.System -> {
-            line(0.18f, 0.29f, 0.50f, 0.13f, 0.82f, 0.29f, 0.50f, 0.45f, closed = true)
-            line(0.18f, 0.45f, 0.50f, 0.61f, 0.82f, 0.45f, ink = outline)
-            line(0.18f, 0.61f, 0.50f, 0.77f, 0.82f, 0.61f, ink = outline)
-            line(0.18f, 0.77f, 0.50f, 0.93f, 0.82f, 0.77f, ink = outline)
+            line(0.50f, 0.10f, 0.88f, 0.31f, 0.50f, 0.52f, 0.12f, 0.31f, closed = true, filled = true, ink = wash)
+            line(0.50f, 0.10f, 0.88f, 0.31f, 0.50f, 0.52f, 0.12f, 0.31f, closed = true)
+            line(0.12f, 0.48f, 0.50f, 0.69f, 0.88f, 0.48f, ink = outline)
+            line(0.12f, 0.66f, 0.50f, 0.87f, 0.88f, 0.66f, ink = outline)
+            ring(0.50f, 0.31f, 0.05f, filled = true)
         }
         MaxIllustrationKind.Security -> {
-            line(0.50f, 0.12f, 0.80f, 0.25f, 0.75f, 0.60f, 0.65f, 0.75f, 0.50f, 0.87f, 0.35f, 0.75f, 0.25f, 0.60f, 0.20f, 0.25f, closed = true)
-            ring(0.50f, 0.43f, 0.085f, wash, true)
-            ring(0.50f, 0.43f, 0.085f)
-            line(0.50f, 0.52f, 0.50f, 0.65f)
+            line(0.50f, 0.10f, 0.82f, 0.24f, 0.76f, 0.60f, 0.50f, 0.90f, 0.24f, 0.60f, 0.18f, 0.24f, closed = true, filled = true, ink = wash)
+            line(0.50f, 0.10f, 0.82f, 0.24f, 0.76f, 0.60f, 0.50f, 0.90f, 0.24f, 0.60f, 0.18f, 0.24f, closed = true)
+            ring(0.50f, 0.42f, 0.10f, wash, true)
+            ring(0.50f, 0.42f, 0.10f)
+            line(0.50f, 0.52f, 0.50f, 0.66f)
+            ring(0.50f, 0.69f, 0.025f, filled = true)
         }
         MaxIllustrationKind.Controls -> {
             for (i in 0..2) {
                 val y = 0.24f + i * 0.26f
                 val x = if (i == 1) 0.65f else 0.35f
-                line(0.16f, y, x - 0.08f, y, ink = outline)
-                line(x + 0.08f, y, 0.84f, y, ink = outline)
-                ring(x, y, 0.07f)
+                line(0.14f, y, x - 0.09f, y, ink = outline)
+                line(x + 0.09f, y, 0.86f, y, ink = outline)
+                ring(x, y, 0.075f, wash, true)
+                ring(x, y, 0.075f)
+                ring(x, y, 0.025f, filled = true)
             }
         }
         MaxIllustrationKind.Tools -> {
-            line(0.19f, 0.74f, 0.74f, 0.19f, 0.82f, 0.27f, 0.27f, 0.82f, closed = true)
-            for (i in 0..2) {
-                val p = 0.39f + i * 0.13f
-                line(p, 0.81f - p, p + 0.06f, 0.87f - p, ink = outline)
-            }
-            line(0.23f, 0.20f, 0.23f, 0.40f, 0.40f, 0.40f, ink = outline)
-            ring(0.68f, 0.70f, 0.075f)
+            line(0.18f, 0.76f, 0.72f, 0.22f, 0.82f, 0.32f, 0.28f, 0.86f, closed = true, filled = true, ink = wash)
+            line(0.18f, 0.76f, 0.72f, 0.22f, 0.82f, 0.32f, 0.28f, 0.86f, closed = true)
+            line(0.18f, 0.42f, 0.18f, 0.20f, 0.40f, 0.20f, ink = outline)
+            ring(0.68f, 0.70f, 0.09f, wash, true)
+            ring(0.68f, 0.70f, 0.09f)
+            line(0.62f, 0.70f, 0.74f, 0.70f)
         }
         MaxIllustrationKind.Camera -> {
-            box(0.14f, 0.29f, 0.72f, 0.48f, wash, true, 0.07f)
-            box(0.14f, 0.29f, 0.72f, 0.48f, radius = 0.07f)
-            line(0.30f, 0.28f, 0.36f, 0.19f, 0.59f, 0.19f, 0.65f, 0.28f)
-            ring(0.50f, 0.53f, 0.17f)
-            ring(0.50f, 0.53f, 0.10f, outline)
-            ring(0.75f, 0.39f, 0.025f, filled = true)
+            box(0.12f, 0.28f, 0.76f, 0.50f, wash, true, 0.08f)
+            box(0.12f, 0.28f, 0.76f, 0.50f, radius = 0.08f)
+            line(0.30f, 0.28f, 0.38f, 0.18f, 0.60f, 0.18f, 0.68f, 0.28f)
+            ring(0.50f, 0.54f, 0.18f, wash, true)
+            ring(0.50f, 0.54f, 0.18f)
+            ring(0.50f, 0.54f, 0.11f, ink = outline)
+            ring(0.76f, 0.38f, 0.03f, filled = true)
         }
         MaxIllustrationKind.Sensors -> {
-            ring(0.50f, 0.50f, 0.12f, wash, true)
-            ring(0.50f, 0.50f, 0.12f)
-            line(0.50f, 0.17f, 0.50f, 0.32f, ink = outline)
-            line(0.50f, 0.68f, 0.50f, 0.83f, ink = outline)
-            line(0.17f, 0.50f, 0.32f, 0.50f, ink = outline)
-            line(0.68f, 0.50f, 0.83f, 0.50f, ink = outline)
-            ring(0.24f, 0.24f, 0.055f)
-            ring(0.76f, 0.76f, 0.055f)
-            ring(0.76f, 0.24f, 0.055f, outline)
-            ring(0.24f, 0.76f, 0.055f, outline)
+            ring(0.50f, 0.50f, 0.34f, wash, true)
+            ring(0.50f, 0.50f, 0.34f)
+            ring(0.50f, 0.50f, 0.20f)
+            ring(0.50f, 0.50f, 0.08f, filled = true)
+            line(0.50f, 0.16f, 0.50f, 0.30f, ink = outline)
+            line(0.50f, 0.70f, 0.50f, 0.84f, ink = outline)
+            line(0.16f, 0.50f, 0.30f, 0.50f, ink = outline)
+            line(0.70f, 0.50f, 0.84f, 0.50f, ink = outline)
         }
         MaxIllustrationKind.Intelligence -> {
-            line(0.50f, 0.20f, 0.80f, 0.50f, 0.50f, 0.80f, 0.20f, 0.50f, closed = true, ink = outline)
-            ring(0.50f, 0.50f, 0.14f, wash, true)
-            ring(0.50f, 0.50f, 0.14f)
-            ring(0.50f, 0.20f, 0.06f)
-            ring(0.80f, 0.50f, 0.06f)
-            ring(0.50f, 0.80f, 0.06f)
-            ring(0.20f, 0.50f, 0.06f)
+            line(0.50f, 0.12f, 0.88f, 0.50f, 0.50f, 0.88f, 0.12f, 0.50f, closed = true, filled = true, ink = wash)
+            line(0.50f, 0.12f, 0.88f, 0.50f, 0.50f, 0.88f, 0.12f, 0.50f, closed = true)
+            ring(0.50f, 0.50f, 0.16f, wash, true)
+            ring(0.50f, 0.50f, 0.16f)
+            ring(0.50f, 0.16f, 0.06f, filled = true)
+            ring(0.84f, 0.50f, 0.06f)
+            ring(0.50f, 0.84f, 0.06f)
+            ring(0.16f, 0.50f, 0.06f)
+        }
+        MaxIllustrationKind.Island -> {
+            box(0.12f, 0.39f, 0.76f, 0.22f, wash, true, 0.11f)
+            box(0.12f, 0.39f, 0.76f, 0.22f, radius = 0.11f)
+            ring(0.27f, 0.50f, 0.035f, filled = true)
+            line(0.36f, 0.50f, 0.52f, 0.50f, ink = outline)
+            line(0.63f, 0.45f, 0.70f, 0.50f, 0.63f, 0.55f, closed = true, filled = true)
+        }
+        MaxIllustrationKind.Overlay -> {
+            box(0.10f, 0.18f, 0.58f, 0.44f, wash, true, 0.05f)
+            box(0.10f, 0.18f, 0.58f, 0.44f, radius = 0.05f)
+            box(0.32f, 0.40f, 0.58f, 0.44f, outline, radius = 0.05f)
+            line(0.40f, 0.62f, 0.50f, 0.52f, 0.58f, 0.57f, 0.68f, 0.46f)
+            line(0.40f, 0.68f, 0.78f, 0.68f, ink = outline)
+        }
+        MaxIllustrationKind.Clips -> {
+            box(0.14f, 0.20f, 0.72f, 0.60f, wash, true, 0.05f)
+            box(0.14f, 0.20f, 0.72f, 0.60f, radius = 0.05f)
+            for (i in 0..2) {
+                val y = 0.25f + i * 0.17f
+                box(0.18f, y, 0.08f, 0.09f, outline, radius = 0.015f)
+                box(0.74f, y, 0.08f, 0.09f, outline, radius = 0.015f)
+            }
+            line(0.40f, 0.37f, 0.64f, 0.50f, 0.40f, 0.63f, closed = true, filled = true)
+        }
+        MaxIllustrationKind.Sessions -> {
+            ring(0.50f, 0.52f, 0.30f, wash, true)
+            ring(0.50f, 0.52f, 0.30f)
+            line(0.50f, 0.52f, 0.50f, 0.34f)
+            line(0.50f, 0.52f, 0.64f, 0.61f)
+            ring(0.50f, 0.52f, 0.035f, filled = true)
+            line(0.20f, 0.30f, 0.28f, 0.22f, 0.36f, 0.25f, ink = outline)
+            line(0.20f, 0.30f, 0.20f, 0.20f, ink = outline)
+        }
+        MaxIllustrationKind.Manifest -> {
+            box(0.24f, 0.12f, 0.50f, 0.76f, wash, true, 0.05f)
+            box(0.24f, 0.12f, 0.50f, 0.76f, radius = 0.05f)
+            line(0.62f, 0.12f, 0.74f, 0.24f, 0.62f, 0.24f, closed = true, ink = outline)
+            line(0.32f, 0.34f, 0.58f, 0.34f, ink = outline)
+            line(0.32f, 0.44f, 0.58f, 0.44f, ink = outline)
+            line(0.32f, 0.54f, 0.50f, 0.54f, ink = outline)
+            ring(0.62f, 0.74f, 0.10f, wash, true)
+            ring(0.62f, 0.74f, 0.10f)
+            line(0.57f, 0.74f, 0.61f, 0.79f, 0.68f, 0.69f)
+        }
+        MaxIllustrationKind.Scan -> {
+            ring(0.50f, 0.50f, 0.34f, outline)
+            ring(0.50f, 0.50f, 0.20f)
+            ring(0.50f, 0.50f, 0.035f, filled = true)
+            line(0.50f, 0.50f, 0.74f, 0.26f)
+            line(0.50f, 0.22f, 0.62f, 0.28f, 0.70f, 0.40f, ink = outline)
+            ring(0.33f, 0.58f, 0.03f, filled = true)
+            ring(0.64f, 0.64f, 0.03f, filled = true)
+        }
+        MaxIllustrationKind.Usage -> {
+            line(0.16f, 0.80f, 0.84f, 0.80f, ink = outline)
+            box(0.24f, 0.56f, 0.13f, 0.24f, wash, true, 0.02f)
+            box(0.43f, 0.40f, 0.13f, 0.40f, radius = 0.02f)
+            box(0.62f, 0.24f, 0.13f, 0.56f, outline, radius = 0.02f)
+            line(0.24f, 0.50f, 0.43f, 0.34f, 0.62f, 0.18f, 0.78f, 0.12f)
+            ring(0.78f, 0.12f, 0.025f, filled = true)
+        }
+        MaxIllustrationKind.BatteryHistory -> {
+            box(0.12f, 0.34f, 0.68f, 0.36f, wash, true, 0.06f)
+            box(0.12f, 0.34f, 0.68f, 0.36f, radius = 0.06f)
+            box(0.82f, 0.43f, 0.06f, 0.18f, radius = 0.02f)
+            line(0.20f, 0.56f, 0.32f, 0.48f, 0.44f, 0.52f, 0.56f, 0.40f, 0.72f, 0.44f)
+            ring(0.72f, 0.44f, 0.025f, filled = true)
+            line(0.20f, 0.62f, 0.74f, 0.62f, ink = outline)
         }
     }
 }

@@ -42,6 +42,9 @@ def main():
         # مفردات السلوك: معرّفها يُحفظ على القرص، فثباتها عقد يُقاس في JDK.
         SOURCE / "core/maxai/MaxAiBehavior.kt",
         TEST / "core/maxai/MaxAiBehaviorTest.kt",
+        # النظرة الاستباقية قرار نقيّ (درجة/حرارة) قبل أي كتابة؛ تُقاس بلا Android.
+        SOURCE / "core/maxai/MaxAiLookahead.kt",
+        TEST / "core/maxai/MaxAiLookaheadTest.kt",
         SOURCE / "core/maxai/CoalescingCycleRunner.kt",
         SOURCE / "core/maxai/MaxAiEpisode.kt",
         SOURCE / "ui/mainscreens/MaxAiPresentation.kt",
@@ -97,6 +100,7 @@ def main():
     ]
     tests = [
         "nd.max.core.maxai.MaxAiBehaviorTest",
+        "nd.max.core.maxai.MaxAiLookaheadTest",
         "nd.max.core.maxai.CoalescingCycleRunnerTest",
         "nd.max.core.maxai.MaxAiInterruptSafetyTest",
         "nd.max.ui.mainscreens.MaxAiPresentationTest",

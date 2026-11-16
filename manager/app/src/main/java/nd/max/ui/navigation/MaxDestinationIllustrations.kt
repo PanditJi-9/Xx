@@ -12,7 +12,7 @@ import nd.max.ui.design.maxIllustrationKind
 val MaxDestination.illustrationKind: MaxIllustrationKind
     get() = when (this) {
         MaxDestination.Now, MaxDestination.DeviceInfo -> MaxIllustrationKind.Device
-        MaxDestination.Apps, MaxDestination.UsageStats -> MaxIllustrationKind.Apps
+        MaxDestination.Apps -> MaxIllustrationKind.Apps
         MaxDestination.Control -> MaxIllustrationKind.Controls
         MaxDestination.Settings, MaxDestination.About -> MaxIllustrationKind.System
         MaxDestination.MaxAi, MaxDestination.MaxLive, MaxDestination.MaxAiIntro -> MaxIllustrationKind.Intelligence
@@ -22,12 +22,20 @@ val MaxDestination.illustrationKind: MaxIllustrationKind
         MaxDestination.DisplayHub -> MaxIllustrationKind.Display
         MaxDestination.ResponsivenessHub -> MaxIllustrationKind.Controls
         MaxDestination.ThermalHub -> MaxIllustrationKind.Thermal
-        MaxDestination.PowerHub, MaxDestination.BatteryHistory -> MaxIllustrationKind.Power
+        MaxDestination.PowerHub -> MaxIllustrationKind.Power
         MaxDestination.StorageHub, MaxDestination.MaxBackup, MaxDestination.ConfigBackup -> MaxIllustrationKind.Storage
         MaxDestination.NetworkHub -> MaxIllustrationKind.Network
         MaxDestination.AudioHub -> MaxIllustrationKind.Audio
         MaxDestination.GameLobby, MaxDestination.EmulatorHub -> MaxIllustrationKind.Games
         MaxDestination.Permissions, MaxDestination.Privilege, MaxDestination.License -> MaxIllustrationKind.Security
         MaxDestination.DeviceLab -> MaxIllustrationKind.Sensors
+        MaxDestination.DynamicIsland -> MaxIllustrationKind.Island
+        MaxDestination.FpsOverlay -> MaxIllustrationKind.Overlay
+        MaxDestination.ClipAlbum -> MaxIllustrationKind.Clips
+        MaxDestination.GameSessions -> MaxIllustrationKind.Sessions
+        MaxDestination.ManifestInspector -> MaxIllustrationKind.Manifest
+        MaxDestination.NetworkScanner -> MaxIllustrationKind.Scan
+        MaxDestination.UsageStats -> MaxIllustrationKind.Usage
+        MaxDestination.BatteryHistory -> MaxIllustrationKind.BatteryHistory
         else -> parent?.illustrationKind ?: maxIllustrationKind(icon.name) ?: MaxIllustrationKind.Tools
     }

@@ -432,7 +432,10 @@ private fun DeviceInfoCardBlock(
     collapsible: Boolean = false,
 ) {
     if (facts.isEmpty() && rows.isEmpty()) return
-    MaxSection(title = title, collapsible = collapsible) {
+    // التفاصيل تُعرض مفتوحة تلقائيًّا بأمر المالك (٢٠٢٦-١١-١٦): القسم هنا هو **المحتوى**
+    // نفسه لا عنوان عريض يخفي ما تحته، وطيّه الافتراضي كان يجعل الصفحة تبدو فارغة.
+    // ويبقى العنوان قابلًا للطيّ (`collapsible = true`) فلا يُسلب المستخدم الفعل.
+    MaxSection(title = title, collapsible = collapsible, initiallyExpanded = true) {
         MaxGroup {
             facts.forEachIndexed { position, fact ->
                 if (position > 0) MaxGroupDivider()

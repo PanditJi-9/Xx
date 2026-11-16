@@ -168,6 +168,49 @@ class AtlasAdaptiveExecutorTest {
         assertEquals(listOf("route-first" to "route-quarantined-after-unverified-rollback"), result.skipped)
     }
 
+    @Test
+    fun `a route that failed cleanly twice is reported as demoted, not banned`() {
+        val calls = mutableListOf<String>()
+        val memory = AtlasRouteMemory(InMemoryIo(), clockMs = { 0L }, bootGeneration = { 1L })
+        repeat(2) { memory.noteFailed("cpu_frequency", "route-first", rollbackVerified = true) }
+        val executor = AtlasAdaptiveExecutor(port { request ->
+            calls += request.routeId
+            success(request)
+        }, memory = memory)
+
+        val result = executor.execute(
+            intent = intent(),
+            bindings = listOf(binding("route-first"), binding("route-second", priority = 1)),
+        )
+
+        assertEquals(listOf("route-second"), calls)
+        assertTrue(result.successful)
+        assertEquals(
+            listOf("route-first" to "route-demoted-repeated-clean-failure"),
+            result.demoted,
+        )
+    }
+
+    @Test
+    fun `a demoted route is still attempted when it is the only eligible route`() {
+        val calls = mutableListOf<String>()
+        val memory = AtlasRouteMemory(InMemoryIo(), clockMs = { 0L }, bootGeneration = { 1L })
+        repeat(2) { memory.noteFailed("cpu_frequency", "route-first", rollbackVerified = true) }
+        val executor = AtlasAdaptiveExecutor(port { request ->
+            calls += request.routeId
+            success(request)
+        }, memory = memory)
+
+        val result = executor.execute(intent(), listOf(binding("route-first")))
+
+        assertEquals(listOf("route-first"), calls)
+        assertTrue(result.successful)
+        assertEquals(
+            listOf("route-first" to "route-demoted-repeated-clean-failure"),
+            result.demoted,
+        )
+    }
+
     private fun port(block: (HardwareRepairRequest) -> HardwareRepairResult) = object : AtlasRepairPort {
         override fun execute(request: HardwareRepairRequest): HardwareRepairResult = block(request)
     }

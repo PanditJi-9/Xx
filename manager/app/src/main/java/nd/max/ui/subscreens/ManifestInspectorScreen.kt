@@ -25,9 +25,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.ContentCopy
 import androidx.compose.material.icons.rounded.AppSettingsAlt
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -223,6 +226,11 @@ fun ManifestInspectorScreen(navController: NavController) {
     }
     var query by rememberSaveable { mutableStateOf("") }
     var selected by rememberSaveable { mutableStateOf<String?>(null) }
+    val clipboard = context.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as? android.content.ClipboardManager
+    fun copyText(label: String, value: String) {
+        clipboard?.setPrimaryClip(android.content.ClipData.newPlainText(label, value))
+        android.widget.Toast.makeText(context, context.getString(R.string.mi_copied), android.widget.Toast.LENGTH_SHORT).show()
+    }
 
     // القراءة الأولى تختار أوّل تطبيق كي لا تُفتح الشاشة فارغة: الاختيار حالةٌ لا شرط.
     val current = selected ?: apps.firstOrNull()?.packageName
@@ -259,11 +267,31 @@ fun ManifestInspectorScreen(navController: NavController) {
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                     label = { Text(stringResource(R.string.mi_search)) },
+                    trailingIcon = {
+                        if (query.isNotEmpty()) {
+                            IconButton(onClick = { query = "" }) {
+                                Icon(
+                                    imageVector = Icons.Rounded.Close,
+                                    contentDescription = stringResource(R.string.mi_search_clear),
+                                )
+                            }
+                        }
+                    },
                 )
                 LazyColumn(
                     modifier = Modifier.fillMaxSize().padding(top = MaxSpace.sm),
                     verticalArrangement = Arrangement.spacedBy(MaxSpace.xs),
                 ) {
+                    if (shown.isEmpty()) {
+                        item(key = "mi_no_match") {
+                            Text(
+                                text = stringResource(R.string.mi_no_match),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = GameSpacePalette.Muted,
+                                modifier = Modifier.padding(MaxSpace.sm),
+                            )
+                        }
+                    }
                     items(shown, key = { it.packageName }) { item ->
                         MaxRow(
                             title = item.label,
@@ -301,12 +329,12 @@ fun ManifestInspectorScreen(navController: NavController) {
                         color = GameSpacePalette.Muted,
                     )
                 } else {
-                    ManifestHeader(s)
+                    ManifestHeader(s, onCopyPackage = { copyText("package", s.packageName) })
                     IdentitySection(s)
                     PermissionsSection(s)
                     ComponentsSection(s)
                     FeaturesSection(s)
-                    SignatureSection(s)
+                    SignatureSection(s, onCopySignature = { s.signature?.let { copyText("sha256", it) } })
                 }
             }
         }
@@ -314,7 +342,7 @@ fun ManifestInspectorScreen(navController: NavController) {
 }
 
 @Composable
-private fun ManifestHeader(snapshot: ManifestSnapshot) {
+private fun ManifestHeader(snapshot: ManifestSnapshot, onCopyPackage: () -> Unit) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
@@ -339,6 +367,12 @@ private fun ManifestHeader(snapshot: ManifestSnapshot) {
                 color = GameSpacePalette.Muted,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
+            )
+        }
+        IconButton(onClick = onCopyPackage) {
+            Icon(
+                imageVector = Icons.Rounded.ContentCopy,
+                contentDescription = stringResource(R.string.mi_copy_package),
             )
         }
     }
@@ -467,13 +501,26 @@ private fun FeaturesSection(snapshot: ManifestSnapshot) {
 }
 
 @Composable
-private fun SignatureSection(snapshot: ManifestSnapshot) {
+private fun SignatureSection(snapshot: ManifestSnapshot, onCopySignature: () -> Unit) {
     MaxSection(
         title = stringResource(R.string.mi_section_signature),
         description = stringResource(R.string.mi_signature_note),
     ) {
         MaxGroup {
             MetricRow(stringResource(R.string.mi_signature_sha256), snapshot.signature)
+            if (snapshot.signature != null) {
+                MaxGroupDivider()
+                MaxRow(
+                    title = stringResource(R.string.mi_copy_signature),
+                    onClick = onCopySignature,
+                    trailing = {
+                        Icon(
+                            imageVector = Icons.Rounded.ContentCopy,
+                            contentDescription = null,
+                        )
+                    },
+                )
+            }
         }
     }
 }

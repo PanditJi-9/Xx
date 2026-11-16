@@ -164,6 +164,10 @@ data class MaxAiState(
      * الوضع ولا ملفّ النظام ولا ملكية أي مقبض. تفصيله في [MaxAiBehavior].
      */
     val behavior: MaxAiBehavior = MaxAiBehavior.DEFAULT,
+    /** السلوك الفعّال بعد تجاوز التطبيق الأمامي، أو نفس العام. */
+    val effectiveBehavior: MaxAiBehavior = MaxAiBehavior.DEFAULT,
+    /** true حين يتقدّم بروفايل التطبيق الأمامي على الاختيار العام. */
+    val behaviorFromApp: Boolean = false,
     /** موجز مشتق من الملكية الفعلية/الأمان/حالة AI، وليس وضع تحكم عالميًا. */
     val strategyLabel: String = "يدوي",
     val lastDecision: DecisionRecord? = null,

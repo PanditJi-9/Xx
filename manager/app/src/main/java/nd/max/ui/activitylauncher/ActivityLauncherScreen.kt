@@ -7,6 +7,10 @@
 
 package nd.max.ui.activitylauncher
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
@@ -15,6 +19,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Launch
+import androidx.compose.material.icons.rounded.ContentCopy
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
@@ -25,6 +32,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -252,6 +260,7 @@ private fun DetailLevel(
     onLaunch: (IndexedActivity) -> Unit,
     onBack: () -> Unit,
 ) {
+    val context = LocalContext.current
     val condition = when {
         loading -> MaxCondition(
             kind = MaxConditionKind.Loading,
@@ -289,6 +298,14 @@ private fun DetailLevel(
         condition = condition,
         banner = banner,
         snackbarHostState = snackbarHostState,
+        actions = {
+            IconButton(onClick = { copyPackage(context, app.packageName) }) {
+                Icon(
+                    imageVector = Icons.Rounded.ContentCopy,
+                    contentDescription = stringResource(R.string.max_launcher_copy_package),
+                )
+            }
+        },
     ) {
         items(activities, key = { it.name }) { activity ->
             ExpressiveListItem(
@@ -321,6 +338,12 @@ private fun DetailLevel(
             )
         }
     }
+}
+
+private fun copyPackage(context: Context, packageName: String) {
+    val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
+    clipboard?.setPrimaryClip(ClipData.newPlainText("package", packageName))
+    Toast.makeText(context, context.getString(R.string.max_launcher_copy_package_done), Toast.LENGTH_SHORT).show()
 }
 
 /** What the activity list needs to say about a row, beyond its name. */

@@ -459,6 +459,26 @@ fun AppSettingsScreen(
                                 modifier = Modifier,
                                 content = buildList {
                                     add {
+                                        val behaviorValues = listOf("default", "calm", "balanced", "decisive")
+                                        val behaviorLabels = listOf(
+                                            defaultLabel,
+                                            stringResource(R.string.max_ai_behavior_calm),
+                                            stringResource(R.string.max_ai_behavior_balanced),
+                                            stringResource(R.string.max_ai_behavior_decisive),
+                                        )
+                                        ExpressiveDropdownItem(
+                                            enabled = localMasterOn,
+                                            icon = Icons.Rounded.Tune,
+                                            title = stringResource(R.string.app_settings_max_ai_behavior),
+                                            summary = stringResource(R.string.app_settings_max_ai_behavior_summary),
+                                            items = behaviorLabels,
+                                            selectedIndex = behaviorValues.indexOf(cfg.max_ai_behavior).coerceAtLeast(0),
+                                            onItemSelected = { i ->
+                                                settingsKey?.let { viewModel.updateSetting(it, "max_ai_behavior", behaviorValues[i]) }
+                                            },
+                                        )
+                                    }
+                                    add {
                                         ExpressiveDropdownItem(
                                             enabled = localMasterOn && rootKnobs,
                                             icon = Icons.Rounded.Bolt,

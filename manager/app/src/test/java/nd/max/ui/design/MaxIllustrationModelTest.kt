@@ -47,6 +47,15 @@ class MaxIllustrationModelTest {
     }
 
     @Test
+    fun `filled silhouettes are closed`() {
+        MaxIllustrationKind.entries
+            .flatMap(::maxIllustrationParts)
+            .filterIsInstance<MaxIllustrationPart.Line>()
+            .filter { it.filled }
+            .forEach { assertTrue("filled line must close its path", it.closed) }
+    }
+
+    @Test
     fun `image vector styles do not change their domain`() {
         listOf("Filled", "Outlined", "Rounded", "AutoMirrored.Rounded").forEach { style ->
             assertEquals(MaxIllustrationKind.Network, maxIllustrationKind("$style.Wifi"))

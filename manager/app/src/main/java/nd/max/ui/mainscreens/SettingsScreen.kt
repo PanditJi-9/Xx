@@ -362,6 +362,43 @@ fun SettingsScreen(
                                     }
                                 )
                             }
+                            {
+                                // السمة أسفل اللغة مباشرةً بأمر المالك (٢٠٢٦-١١-١٦): اللسان ثم
+                                // المظهر — أقرب قرارَين يغيّرهما المستخدم في أول دقيقة.
+                                ExpressiveListItem(
+                                    onClick = { MaxNavActions(navController).navigateTo(MaxDestination.ColorScheme) },
+                                    headlineContent = { Text(stringResource(R.string.color_scheme)) },
+                                    leadingContent = { LeadingIcon(icon = Icons.Rounded.ColorLens) },
+                                    trailingContent = {
+                                        Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null)
+                                    }
+                                )
+                            }
+                        )
+                    )
+                }
+
+                // «حول» و«التحقق من التحديثات» في أعلى الشاشة بأمر المالك (٢٠٢٦-١١-١٦):
+                // كانتا في ذيلها فلا يُراهما إلا من مرّ بالإعدادات كلها.
+                item { SettingsSectionTitle(stringResource(R.string.section_about)) }
+                item {
+                    ExpressiveList(
+                        content = listOf(
+                            {
+                                ExpressiveListItem(
+                                    onClick = { MaxNavActions(navController).navigateTo(MaxDestination.About) },
+                                    headlineContent = { Text(stringResource(R.string.about_maxmanager)) },
+                                    supportingContent = {
+                                        Text(stringResource(R.string.version_format, BuildConfig.VERSION_NAME))
+                                    },
+                                    leadingContent = { LeadingIcon(icon = Icons.Filled.ContactPage) },
+                                    trailingContent = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null) }
+                                )
+                            },
+                            // فحص التحديث بطلب المستخدم — يستدعي الفحص نفسه ولا يكرّر منطقًا،
+                            // وهو المكان الوحيد الذي يرى فيه المستخدم ما تخطّاه سابقًا دون
+                            // انتظار إصدارٍ أحدث.
+                            { UpdateCheckRow() }
                         )
                     )
                 }
@@ -563,6 +600,13 @@ fun SettingsScreen(
                 item { SettingsSectionTitle(stringResource(R.string.settings_home_section)) }
                 item { ActivityCardSettingsItem() }
 
+                // «التطبيق التلقائي عند الإقلاع» انتقل هنا من شاشة التفضيلات بأمر المالك
+                // (٢٠٢٦-١١-١٦): هو تفضيل جهاز لا وصفة عتاد، ومكانه مع بقية تفضيلات الإعدادات.
+                // والمكوّن نفسه `PersistRestoreItem()` بلا تغيير — فمفاتيح التخزين وأنواعها كما
+                // هي، ولا يفقد مستخدمٌ قيمةً ضبطها.
+                item { SettingsSectionTitle(stringResource(R.string.persist_section)) }
+                item { PersistRestoreItem() }
+
                 item {
                     SettingsSectionTitle(stringResource(R.string.section_others))
                 }
@@ -663,28 +707,6 @@ fun SettingsScreen(
                     }
                 }
 
-                item { SettingsSectionTitle(stringResource(R.string.section_about)) }
-                item {
-                    ExpressiveList(
-                        content = listOf(
-                            {
-                                ExpressiveListItem(
-                                    onClick = { MaxNavActions(navController).navigateTo(MaxDestination.About) },
-                                    headlineContent = { Text(stringResource(R.string.about_maxmanager)) },
-                                    supportingContent = {
-                                        Text(stringResource(R.string.version_format, BuildConfig.VERSION_NAME))
-                                    },
-                                    leadingContent = { LeadingIcon(icon = Icons.Filled.ContactPage) },
-                                    trailingContent = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null) }
-                                )
-                            },
-                            // فحص التحديث بطلب المستخدم — يستدعي الفحص نفسه ولا يكرّر منطقًا،
-                            // وهو المكان الوحيد الذي يرى فيه المستخدم ما تخطّاه سابقًا دون
-                            // انتظار إصدارٍ أحدث.
-                            { UpdateCheckRow() }
-                        )
-                    )
-                }
             }
         }
 

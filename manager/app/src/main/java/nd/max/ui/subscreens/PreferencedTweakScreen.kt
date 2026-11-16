@@ -80,7 +80,6 @@ import kotlinx.coroutines.launch
 import nd.max.R
 import nd.max.ui.component.*
 import nd.max.ui.design.MaxListScreen
-import nd.max.ui.mainscreens.PersistRestoreItem
 import nd.max.ui.util.DebugUtils
 import nd.max.core.platform.PropertyUtils
 import nd.max.ui.util.RebootManager
@@ -347,8 +346,8 @@ fun PreferenceTweakScreen(navController: NavController) {
             // أصلًا (‏`PropertyUtils`) — فلا تُضاف شاشة جديدة ولا يُمنح السطح شاشةً لا تكتب.
             // تطبيق التعديلات بعد الإقلاع كان قسمًا مستقلًّا في الإعدادات؛ أمر المالك بدمجه
             // في الإعدادات المتقدّمة — وهذه شاشة الكتابة نفسها، فلا باب ثانٍ لها.
-            item { PrefSectionTitle(stringResource(R.string.persist_section)) }
-            item { PersistRestoreItem() }
+            // ثم أمر المالك (٢٠٢٦-١١-١٦) بنقله من التفضيلات إلى شاشة الإعدادات نفسها:
+            // هو تفضيل جهاز لا وصفة عتاد — فخرج من هنا وبقي مكوّنه `PersistRestoreItem()` واحدًا.
 
             item { RecipeCard() }
         }

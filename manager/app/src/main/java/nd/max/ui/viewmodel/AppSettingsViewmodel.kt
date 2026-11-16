@@ -157,6 +157,7 @@ class AppSettingsViewModel : ViewModel() {
             "game_preload" -> currentAppConfig.copy(game_preload = value)
             "cpu_boost" -> currentAppConfig.copy(cpu_boost = value)
             "cpu_policy_controls" -> currentAppConfig.copy(cpu_policy_controls = value)
+            "max_ai_behavior" -> currentAppConfig.copy(max_ai_behavior = value)
             "gpu_profile", "gpu_max_freq", "thermal_profile" -> applyGpuCeilingChoice(currentAppConfig, key, value)
             "cpu_governor" -> currentAppConfig.copy(cpu_governor = value)
             "gpu_governor" -> currentAppConfig.copy(gpu_governor = value)
@@ -191,6 +192,7 @@ class AppSettingsViewModel : ViewModel() {
         "game_preload" -> config.game_preload
         "cpu_boost" -> config.cpu_boost
         "cpu_policy_controls" -> config.cpu_policy_controls
+        "max_ai_behavior" -> config.max_ai_behavior
         "gpu_profile" -> config.gpu_profile
         "cpu_governor" -> config.cpu_governor
         "gpu_governor" -> config.gpu_governor

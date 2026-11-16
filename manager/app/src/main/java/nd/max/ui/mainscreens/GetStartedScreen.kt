@@ -94,7 +94,9 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.material.icons.rounded.HelpOutline
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.rounded.Send
+import androidx.compose.material.icons.rounded.Language
 import androidx.compose.material.icons.rounded.Star
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
@@ -140,7 +142,7 @@ private fun ExpressiveSystemBackground(
     val posA by animateOffsetAsState(targetValue = targetOffsetA, animationSpec = animSpec, label = "posA")
     val posB by animateOffsetAsState(targetValue = targetOffsetB, animationSpec = animSpec, label = "posB")
 
-    val targetScale = if (currentPage == 3) 1.5f else 0.6f
+    val targetScale = if (currentPage == 4) 1.5f else 0.6f
     val scaleAnim by animateFloatAsState(targetValue = targetScale, animationSpec = spring(dampingRatio = 0.8f, stiffness = 50f), label = "scale")
 
     val primary = MaterialTheme.colorScheme.primary
@@ -274,7 +276,7 @@ fun GetStartedScreen(navController: NavController) {
     }
 
     val coroutineScope = rememberCoroutineScope()
-    val totalPages = 4
+    val totalPages = 5
 
     // صفحة الامتياز الموحّدة (الجذر + Shizuku): تُقرأ هنا لتحديد إمكانية التقدّم.
     val privilegeSnapshot by PrivilegeManager.snapshot.collectAsState()
@@ -358,8 +360,12 @@ fun GetStartedScreen(navController: NavController) {
                                         if (currentPage > 0) currentPage-- 
                                     },
                                     colors = ButtonDefaults.buttonColors(
-                                        containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                                        contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+                                        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                                        contentColor = MaterialTheme.colorScheme.onSurface
+                                    ),
+                                    border = BorderStroke(
+                                        MaxSize.hairlineBorder,
+                                        MaterialTheme.colorScheme.outlineVariant,
                                     ),
                                     shape = RoundedCornerShape(maxRadius(MaxCardSpec.radius)),
                                     modifier = Modifier
@@ -519,9 +525,8 @@ fun GetStartedScreen(navController: NavController) {
                             }
                         }
                         1 -> {
-                            // صفحة واحدة مكان ثلاث: اختيار وضع التشغيل، ومنح الصلاحية،
-                            // والانتماء (GitHub/Telegram). تُقرأ من أعلى إلى أسفل: «كيف يعمل؟»
-                            // ثم «هل مُنح؟» ثم «أين أتابع؟» — بلا تنقّل بين شاشات إعداد.
+                            // صفحة واحدة للوصول: اختيار وضع التشغيل ومنح الصلاحية. والمجتمع
+                            // انتقل إلى صفحة مستقلة (٢) فلا يزاحم قرار الصلاحية.
                             Column(
                                 modifier = Modifier
                                     .fillMaxSize()
@@ -544,8 +549,9 @@ fun GetStartedScreen(navController: NavController) {
                                 Text(
                                     text = stringResource(R.string.str_privilege_intro),
                                     style = MaterialTheme.typography.bodyMedium,
-                                    textAlign = TextAlign.Center,
+                                    textAlign = TextAlign.Start,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.fillMaxWidth(),
                                 )
                                 Spacer(modifier = Modifier.height(MaxSpace.lg))
                                 OnboardingModeChoice()
@@ -553,8 +559,9 @@ fun GetStartedScreen(navController: NavController) {
                                 Text(
                                     text = stringResource(R.string.onboarding_access_soft_note),
                                     style = MaterialTheme.typography.bodySmall,
-                                    textAlign = TextAlign.Center,
+                                    textAlign = TextAlign.Start,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.fillMaxWidth(),
                                 )
                                 Spacer(modifier = Modifier.height(MaxSpace.md))
                                 // **مفتاح الكشف بأمر المالك (تكملة ٨٧):** يُقرأ هنا وفي
@@ -567,11 +574,38 @@ fun GetStartedScreen(navController: NavController) {
                                 Spacer(modifier = Modifier.height(MaxSpace.lg))
                                 PrivilegePanel()
                                 Spacer(modifier = Modifier.height(MaxSpace.xl))
+                            }
+                        }
+                        2 -> {
+                            // المجتمع صفحةٌ مستقلة بأمر المالك: كان تحت شاشة منح الجذر، فطغى
+                            // على قرار الصلاحية وخلط سؤال «كيف يعمل؟» بسؤال «أين أتابع؟».
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .verticalScroll(rememberScrollState()),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                            ) {
+                                Spacer(modifier = Modifier.height(MaxSpace.sm))
+                                Text(
+                                    text = stringResource(R.string.onboarding_community_title),
+                                    style = MaterialTheme.typography.headlineMedium,
+                                    fontWeight = FontWeight.ExtraBold,
+                                    textAlign = TextAlign.Center,
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                )
+                                Spacer(modifier = Modifier.height(MaxSpace.sm))
+                                Text(
+                                    text = stringResource(R.string.onboarding_community_desc),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    textAlign = TextAlign.Center,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                                Spacer(modifier = Modifier.height(MaxSpace.lg))
                                 OnboardingCommunity()
                                 Spacer(modifier = Modifier.height(MaxSpace.xl))
                             }
                         }
-                        2 -> {
+                        3 -> {
                             // الإعدادات والأذونات في صفحة واحدة: كل صفّ يقول حالته الحقيقية
                             // ويأخذ إلى شاشة المنح، فلم يبقَ إذن يُطلب من مكان آخر.
                             Column(
@@ -613,7 +647,7 @@ fun GetStartedScreen(navController: NavController) {
                                 Spacer(modifier = Modifier.height(MaxSpace.xl))
                             }
                         }
-                        3 -> {
+                        4 -> {
                             StatusGlyph(
                                 success = true,
                                 modifier = Modifier
@@ -714,6 +748,8 @@ private fun OnboardingModeChoice() {
             text = stringResource(R.string.onboarding_run_as_note),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Start,
+            modifier = Modifier.fillMaxWidth(),
         )
     }
 }
@@ -894,6 +930,53 @@ private fun OnboardingCommunity() {
                         modifier = Modifier.padding(horizontal = MaxSpace.sm, vertical = MaxSpace.xs),
                     )
                 }
+            }
+        }
+
+        // رابط الموقع تحت قناة Telegram مباشرةً بأمر المالك (٢٠٢٦-١١-١٦): القناة للخبر
+        // العاجل، والموقع للمرجع الثابت (الأدلة والتنزيلات). وبنفس شكل البطاقتين فوقه
+        // حتى يُقرأ الثلاثة كمجموعة واحدة لا كإضافتين.
+        Spacer(modifier = Modifier.height(MaxSpace.md))
+
+        MaxCardShell(
+            container = scheme.surfaceContainerHigh,
+            borderColor = scheme.outlineVariant,
+            onClick = { openExternal(context, MAXMANAGER_SITE_URL) },
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .size(MaxSize.iconContainer)
+                        .clip(RoundedCornerShape(maxRadius(MaxRadius.chip)))
+                        .background(scheme.primary.copy(alpha = 0.14f))
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Language,
+                        contentDescription = null,
+                        tint = scheme.primary,
+                        modifier = Modifier.size(MaxSize.iconGlyph)
+                    )
+                }
+                Spacer(modifier = Modifier.width(MaxSpace.md))
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = stringResource(R.string.onboarding_site_title),
+                        style = MaterialTheme.typography.titleSmall,
+                        color = scheme.onSurface,
+                    )
+                    Text(
+                        text = stringResource(R.string.onboarding_site_desc),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = scheme.onSurfaceVariant,
+                    )
+                }
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                    contentDescription = null,
+                    tint = scheme.onSurfaceVariant,
+                    modifier = Modifier.size(MaxSize.iconGlyph)
+                )
             }
         }
     }
@@ -1092,3 +1175,7 @@ private fun openExternal(context: Context, url: String) {
 
 private const val MAXMANAGER_GITHUB_URL = "https://github.com/nader295/MaxManager"
 private const val MAXMANAGER_TELEGRAM_URL = "https://t.me/GetMaxManager"
+
+// الموقع كما كتبه المالك حرفيًّا (٢٠٢٦-١١-١٦). ويُنبَّه أن صيغة GitHub Pages القياسية
+// هي `https://nader295.github.io/MaxManager` — ولا تُستبدل هنا إلا بأمره.
+private const val MAXMANAGER_SITE_URL = "https://github.io/nader295/MaxManager"

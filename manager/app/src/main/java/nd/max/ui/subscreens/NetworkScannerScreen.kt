@@ -8,6 +8,7 @@
 package nd.max.ui.subscreens
 
 import android.content.Context
+import android.widget.Toast
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import androidx.compose.foundation.layout.Arrangement
@@ -22,8 +23,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ContentCopy
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.Wifi
+import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -210,6 +213,11 @@ private fun mergePorts(base: List<LanNeighbour>, found: Map<String, List<Int>>):
 fun NetworkScannerScreen(navController: NavController) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
+    val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as? android.content.ClipboardManager
+    fun copyAddress(address: String) {
+        clipboard?.setPrimaryClip(android.content.ClipData.newPlainText("IP", address))
+        Toast.makeText(context, context.getString(R.string.ns_copied), Toast.LENGTH_SHORT).show()
+    }
     var link by remember { mutableStateOf<LanLink?>(null) }
     var neighbours by remember { mutableStateOf<List<LanNeighbour>>(emptyList()) }
     var names by remember { mutableStateOf<Map<String, String>>(emptyMap()) }
@@ -288,6 +296,13 @@ fun NetworkScannerScreen(navController: NavController) {
                         MaxRow(
                             title = stringResource(R.string.ns_address),
                             subtitle = "${current.address}/${current.prefix}",
+                            onClick = { copyAddress("${current.address}/${current.prefix}") },
+                            trailing = {
+                                Icon(
+                                    imageVector = Icons.Rounded.ContentCopy,
+                                    contentDescription = null,
+                                )
+                            },
                         )
                         MaxGroupDivider()
                         MaxRow(
@@ -402,6 +417,11 @@ fun NetworkScannerScreen(navController: NavController) {
                     style = androidx.compose.material3.MaterialTheme.typography.bodySmall,
                     color = GameSpacePalette.Muted,
                 )
+                Text(
+                    text = stringResource(R.string.ns_neighbours_copy_hint),
+                    style = androidx.compose.material3.MaterialTheme.typography.bodySmall,
+                    color = GameSpacePalette.Muted,
+                )
                 if (neighbours.isEmpty()) {
                     Text(
                         text = stringResource(R.string.ns_neighbours_empty),
@@ -423,6 +443,7 @@ fun NetworkScannerScreen(navController: NavController) {
                                     append(item.mac)
                                     if (name != null) append(" · ").append(name)
                                 },
+                                onClick = { copyAddress(item.ip) },
                                 trailing = if (item.ports.isEmpty()) {
                                     null
                                 } else {

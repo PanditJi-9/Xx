@@ -31,6 +31,7 @@ fun MaxIllustration(
 ) {
     val parts = remember(kind) { maxIllustrationParts(kind) }
     val outline = MaterialTheme.colorScheme.onSurfaceVariant
+    val accent = color
     Canvas(modifier = modifier.size(size)) {
         val side = this.size.minDimension
         if (!side.isFinite() || side <= 0f) return@Canvas
@@ -39,7 +40,7 @@ fun MaxIllustration(
         fun ink(value: MaxIllustrationInk): Color = when (value) {
             MaxIllustrationInk.Accent -> color
             MaxIllustrationInk.Outline -> outline.copy(alpha = MaxAlpha.supportingText)
-            MaxIllustrationInk.Wash -> color.copy(alpha = MaxAlpha.toneContainer)
+            MaxIllustrationInk.Wash -> accent.copy(alpha = MaxAlpha.toneContainer)
         }
         for (part in parts) {
             when (part) {
@@ -51,21 +52,43 @@ fun MaxIllustration(
                         if (index == 0) path.moveTo(x, y) else path.lineTo(x, y)
                     }
                     if (part.closed) path.close()
-                    drawPath(path, color = ink(part.ink), style = stroke)
+                    // A filled silhouette is the domain's body; wash at 0.10 disappeared at row
+                    // size, so filled wash uses the stronger container tone and outline strokes
+                    // stay above it. This is what separates the new family from the old wireframe.
+                    val fillColor = if (part.filled && part.ink == MaxIllustrationInk.Wash) {
+                        accent.copy(alpha = MaxAlpha.toneContainerStrong)
+                    } else {
+                        ink(part.ink)
+                    }
+                    drawPath(path, color = fillColor, style = if (part.filled) Fill else stroke)
                 }
-                is MaxIllustrationPart.Box -> drawRoundRect(
-                    color = ink(part.ink),
-                    topLeft = origin + Offset(part.x * side, part.y * side),
-                    size = Size(part.width * side, part.height * side),
-                    cornerRadius = CornerRadius(part.radius * side),
-                    style = if (part.filled) Fill else stroke,
-                )
-                is MaxIllustrationPart.Ring -> drawCircle(
-                    color = ink(part.ink),
-                    center = origin + Offset(part.x * side, part.y * side),
-                    radius = part.radius * side,
-                    style = if (part.filled) Fill else stroke,
-                )
+                is MaxIllustrationPart.Box -> {
+                    val fillColor = if (part.filled && part.ink == MaxIllustrationInk.Wash) {
+                        accent.copy(alpha = MaxAlpha.toneContainerStrong)
+                    } else {
+                        ink(part.ink)
+                    }
+                    drawRoundRect(
+                        color = fillColor,
+                        topLeft = origin + Offset(part.x * side, part.y * side),
+                        size = Size(part.width * side, part.height * side),
+                        cornerRadius = CornerRadius(part.radius * side),
+                        style = if (part.filled) Fill else stroke,
+                    )
+                }
+                is MaxIllustrationPart.Ring -> {
+                    val fillColor = if (part.filled && part.ink == MaxIllustrationInk.Wash) {
+                        accent.copy(alpha = MaxAlpha.toneContainerStrong)
+                    } else {
+                        ink(part.ink)
+                    }
+                    drawCircle(
+                        color = fillColor,
+                        center = origin + Offset(part.x * side, part.y * side),
+                        radius = part.radius * side,
+                        style = if (part.filled) Fill else stroke,
+                    )
+                }
             }
         }
     }

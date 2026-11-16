@@ -66,6 +66,7 @@ class GamelistContractTest {
         game_preload = "true",
         cpu_boost = "true",
         cpu_policy_controls = "policy0|lock|300000|1800000",
+        max_ai_behavior = "decisive",
         gpu_profile = "performance",
         cpu_governor = "performance",
         gpu_governor = "msm-adreno-tz",

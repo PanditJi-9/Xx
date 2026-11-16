@@ -26,6 +26,7 @@ These are not aspirations in a document; each one is visible in the code.
 | --- | --- |
 | `Objective` | The weights of the selected mode. The mode also applies the system preset, but the AI keeps optimising continuously inside it — the preset is the floor, not the whole decision |
 | `MaxAiBehavior` + `MaxAiBehaviorTuning` | **How** the engine intervenes, not what it optimises: calm (a higher bar, no probes), balanced (the engine's own defaults), decisive (earlier action, one extra probe). It changes only the satisfaction target and the probe ceiling — never a profile, never a write path |
+| `MaxAiLookahead` | One step of forethought: projects the state after the candidate step and refuses a step whose projected score is worse, or whose predicted heat crosses the 46 °C margin on a raise. It is a projection, not a full simulator, and unknown heat is not treated as cool |
 | `MinimalPlanner` | The **smallest sufficient intervention** (a design decision, not an optimization): change one thing that is enough, instead of distributing a change across eight strings |
 | `ControlRegistry` | The canonical vocabulary — the real knobs discovered on this device, keyed so that two layers can never invent two keys for one control |
 | `ControlOutcomeModel` | The learning core, pure Kotlin over measured outcomes |
@@ -63,8 +64,20 @@ neither is a second profile: behavior changes only the satisfaction target and t
 (`MaxAiBehaviorTuning`), while the mode still owns the preset and the weights. Calm is `0.68` with no
 probes, balanced is the engine's own `0.75` / 3 probes / `0.35` cost ceiling, and decisive is `0.82` /
 4 probes / `0.45`. These are declared design values, not calibrated on a device. Changing behavior
-writes no system property and moves no knob ownership; every decision still passes the planner, the
-trust gate, the safety layer and the arbiter.
+writes no system property and moves no knob ownership; every decision still passes the planner,the trust gate, the safety layer and the arbiter.
+
+## One step of forethought before a write
+
+The planner already ranks candidates by predicted gain and thermal cost. `MaxAiLookahead` asks the next
+question: *if this step is taken, is the next state worse?* It projects the objective score and the
+temperature from the same `ResponseModel` prediction, and the planner rejects the candidate when the
+projected score regresses by more than `0.01`, or when a performance-raising step would cross `46 °C` —
+two degrees below the safety layer's `48 °C` engage line. The safety layer still has the last word; this
+is a pre-check, not a second policy.
+
+Two limits are deliberate. It looks **one step** ahead, not a full search over future candidates; and a
+missing thermal reading (`0`) skips the heat check rather than pretending the device is cool. Both
+values are design values, not yet calibrated on a device.
 
 ## What it will not do
 

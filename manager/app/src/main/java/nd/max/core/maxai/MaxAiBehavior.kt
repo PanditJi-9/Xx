@@ -33,7 +33,17 @@ enum class MaxAiBehavior(val id: String) {
         /** ما لم يختر المستخدم شيئًا: نفس سلوك المحرك قبل وجود هذا المفهوم. */
         val DEFAULT = BALANCED
 
+        /** قراءة صريحة: null لمعرّف مجهول أو غائب — لا تُحوَّل إلى الافتراضي. */
+        fun fromIdOrNull(id: String?): MaxAiBehavior? = entries.firstOrNull { it.id == id }
+
         /** قراءة محفوظة قد تكون قديمة أو مجهولة ⇒ الافتراضي لا استثناء. */
-        fun fromId(id: String?): MaxAiBehavior = entries.firstOrNull { it.id == id } ?: DEFAULT
+        fun fromId(id: String?): MaxAiBehavior = fromIdOrNull(id) ?: DEFAULT
+
+        /**
+         * السلوك الفعّال: تجاوز التطبيق إن كان معرّفًا صحيحًا، وإلا الاختيار العام.
+         * `"default"` و`null` والمجهول كلها تعني «ورّث العام» لا «متوازن».
+         */
+        fun resolve(global: MaxAiBehavior, perAppId: String?): MaxAiBehavior =
+            fromIdOrNull(perAppId) ?: global
     }
 }

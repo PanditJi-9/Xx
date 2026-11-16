@@ -303,6 +303,7 @@ private fun ControlRow(entry: ControlEntry, onOpen: (MaxDestination) -> Unit) {
         title = stringResource(entry.destination.titleRes),
         subtitle = stringResource(entry.subtitleRes),
         icon = entry.destination.icon,
+        illustration = entry.destination.illustrationKind,
         onClick = { onOpen(entry.destination) },
         trailing = {
             Icon(

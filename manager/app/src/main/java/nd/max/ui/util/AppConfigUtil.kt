@@ -145,6 +145,8 @@ data class AppConfig(
     val game_preload: String = "default",
     val cpu_boost: String = "default",          // boost CPU clocks on app launch
     val cpu_policy_controls: String = "",        // policy|range/lock|minKHz|maxKHz;...
+    /** Max AI behavior for this app; "default" inherits the global choice. */
+    val max_ai_behavior: String = "default",     // default | calm | balanced | decisive
 
     // ── Per-App GPU / Governor ────────────────────────────────
     // gpu_profile changes only the GPU frequency ceiling. Default means no GPU override.
@@ -179,7 +181,7 @@ data class AppConfig(
  * get added to AppConfig later.
  */
 fun AppConfig.customizedFieldCount(): Int = listOf(
-    perf_lite_mode, app_priority, game_preload, cpu_boost,
+    perf_lite_mode, app_priority, game_preload, cpu_boost, max_ai_behavior,
     gpu_profile, cpu_governor, gpu_governor, gpu_max_freq,
     refresh_rate, renderer, resolution_downscale,
     dnd_on_gaming, bypass_charging, touch_boost, haptic_feedback,

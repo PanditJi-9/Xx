@@ -182,6 +182,9 @@ private val ControlToolBands: List<Pair<Int, List<MaxDestination>>> = listOf(
     R.string.control_tools_advanced to listOf(
         MaxDestination.SetEdit,
         MaxDestination.ActivityLauncher,
+        // مراقب المهام بأمر المالك (٢٠٢٦-١١-١٦): أداة متقدّمة، لا أداة حيّة تُراقَب دائمًا.
+        // ونُقل بين المجموعات لا إلى صفحة ثانية — هو نفس `ProcessManager` ونفس وجهته.
+        MaxDestination.ProcessManager,
     ),
     // أدوات النظام: ما يقرأ الجهاز ويُدير تطبيقاته وشحنه — لا يُخفى خلف «متقدّم».
     R.string.control_tools_system to listOf(

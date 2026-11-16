@@ -18,7 +18,8 @@ import org.junit.Test
  * جديد بلا بوّابة، أو أن يُعطَّل بالخطأ أحد الثلاثة.
  */
 class AppSettingsRootKnobsTest {
-    private val inAppFields = setOf("refresh_rate", "haptic_feedback", "dnd_on_gaming")
+    // max_ai_behavior تفضيل داخل التطبيق لا يكتب عتادًا، فيبقى متاحًا في الوضعين.
+    private val inAppFields = setOf("refresh_rate", "haptic_feedback", "dnd_on_gaming", "max_ai_behavior")
 
     private fun screen(): String {
         val root = listOf(
@@ -46,7 +47,7 @@ class AppSettingsRootKnobsTest {
     }
 
     @Test
-    fun `the three in-app fields stay editable in every mode`() {
+    fun `the in-app fields stay editable in every mode`() {
         val text = screen()
         // لكل صفّ مُعطَّل بالبوّابة: أوّل حقل يحرّره هو الذي يُحسب (لا أيّ حقل لاحق في المدى).
         val gatedFields = Regex("enabled = localMasterOn && rootKnobs,\\n").findAll(text).mapNotNull { match ->

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Start-screen website card.
+
+  The channel card answers "what changed"; the site answers "where do I read the
+  rest". Its label stayed a literal nowhere — both locales carry it here, and no
+  other locale is filled without an explicit sync request.
+-->
+<resources>
+
+    <string name="onboarding_site_title">MaxManager website</string>
+    <string name="onboarding_site_desc">Guides, downloads and release notes</string>
+
+</resources>

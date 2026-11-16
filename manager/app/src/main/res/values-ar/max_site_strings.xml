@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  بطاقة الموقع في شاشة البداية.
+
+  بطاقة القناة تجيب «ما الجديد»، وبطاقة الموقع تجيب «أين أقرأ الباقي». النصّان
+  هنا بالعربية كما في الإنجليزية، ولا تُعبَّأ لغة ثالثة إلا بأمر «زامن» صريح.
+-->
+<resources>
+
+    <string name="onboarding_site_title">موقع MaxManager</string>
+    <string name="onboarding_site_desc">الأدلة والتنزيلات وملاحظات الإصدارات</string>
+
+</resources>

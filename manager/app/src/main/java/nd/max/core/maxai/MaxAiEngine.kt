@@ -353,11 +353,21 @@ class MaxAiEngine @Inject constructor(
             runCatching { MaxAiMode.migrateIfMissing() }
             val preference = runCatching { objectivePreference() }.getOrNull()
             val base = runCatching { MaxAiMode.currentProfileId() }.getOrNull()
+            // بروفايلات التطبيقات قد تُحمَّل من مالك مختلف (جذر/محلي)؛ لا يُقرأ تجاوز قبل تحميلها.
+            runCatching {
+                if (nd.max.core.gamespace.GameProfileRepository.state.value.loading) {
+                    nd.max.core.gamespace.GameProfileRepository.load()
+                }
+            }
+            val globalBehavior = readGlobalBehavior()
+            val effectiveBehavior = readBehavior(currentAppContextKey())
             _state.update {
                 it.copy(
                     aiEnabled = readAiEnabled(),
                     objectivePreference = preference,
-                    behavior = readBehavior(),
+                    behavior = globalBehavior,
+                    effectiveBehavior = effectiveBehavior,
+                    behaviorFromApp = effectiveBehavior != globalBehavior,
                     baseProfile = base,
                 )
             }
@@ -489,7 +499,13 @@ class MaxAiEngine @Inject constructor(
         // لا «متى انتهت الكتابة» — فدورة طويلة لا تُنشئ استيقاظًا مزدحمًا بعدها.
         lastCycleAtMs = System.currentTimeMillis()
         val aiEnabled = readAiEnabled()
-        val tuning = MaxAiBehaviorTuning.of(readBehavior())
+        // السياق قبل السلوك: التطبيق الأمامي قد يحمل تجاوزًا في بروفايله.
+        val appContextKey = currentAppContextKey()
+        // التجاوز يُقرأ من مستودع البروفايلات نفسه؛ يُحمَّل مرة عند الحاجة لا في كل دورة.
+        if (nd.max.core.gamespace.GameProfileRepository.state.value.loading) {
+            runCatching { nd.max.core.gamespace.GameProfileRepository.load() }
+        }
+        val tuning = MaxAiBehaviorTuning.of(readBehavior(appContextKey))
 
         // مطفأ ولا سؤال من المستخدم ⇒ لا عمل.
         //
@@ -523,7 +539,6 @@ class MaxAiEngine @Inject constructor(
         // الهدف يُحسب حتى والمحرك مطفأ: درجة الرضا والأوزان وصف للحالة
         // المقيسة لا ناتج تدخل، فعرضها والمحرك مطفأ صادق ومفيد: يرى
         // المستخدم ماذا كان سيوازن لو فعّله.
-        val appContextKey = currentAppContextKey()
         // الوضع الواحد أولًا: `AIobjective` مرآة قد تتأخّر عن ملفّ `max_ai_mode`
         // إن كتبه مسار خارجي، فلا يُبنى قرار الدورة على مرآة قديمة.
         val preference = MaxAiMode.currentProfileId()?.let(MaxAiMode::preferenceForProfile)
@@ -1787,7 +1802,7 @@ class MaxAiEngine @Inject constructor(
         val beforeReading = reading(snapshot, objective)
         // حلقة النظام تُقرأ بالعتبة التي يعمل بها المحرك الآن، لا بثابتة 0.75:
         // وإلا عرض الدفتر فجوةً لا تطابق القرار الذي رفض أو سمح قبله.
-        val target = MaxAiBehaviorTuning.of(readBehavior()).satisfactionTarget
+        val target = MaxAiBehaviorTuning.of(readBehavior(appContextKey)).satisfactionTarget
         return MaxAiEpisode(
             id = System.currentTimeMillis(),
             appContext = appContextKey,
@@ -2057,9 +2072,25 @@ class MaxAiEngine @Inject constructor(
         }
     }
 
-    /** سلوك التدخل المحفوظ — يُقرأ من التفضيلات لا من خاصية عتاد. */
-    private fun readBehavior(): MaxAiBehavior =
+    /** السلوك العام المحفوظ — ما اختاره المستخدم في Max AI. */
+    private fun readGlobalBehavior(): MaxAiBehavior =
         MaxAiBehavior.fromId(prefs.getString(PREF_BEHAVIOR, MaxAiBehavior.DEFAULT.id))
+
+    /**
+     * السلوك الفعّال: بروفايل التطبيق الأمامي (من `AppConfig` نفسه) يتقدّم
+     * على الاختيار العام، وإلا ورث العام. لا مخزن ثانٍ ولا كتابة عتاد.
+     */
+    private fun readBehavior(appContextKey: String? = null): MaxAiBehavior =
+        MaxAiBehavior.resolve(readGlobalBehavior(), perAppBehaviorId(appContextKey))
+
+    /** معرّف تجاوز التطبيق: المفتاح الدقيق (حزمة/نشاط) ثم الحزمة، و`default` يعني الوراثة. */
+    private fun perAppBehaviorId(appContextKey: String?): String? {
+        val key = appContextKey?.takeIf { it != "system" && it.contains('.') } ?: return null
+        val profiles = nd.max.core.gamespace.GameProfileRepository.state.value.profiles
+        val exact = profiles[key]?.max_ai_behavior
+        if (exact != null && exact != "default") return exact
+        return profiles[key.substringBefore('/')]?.max_ai_behavior?.takeIf { it != "default" }
+    }
 
     /**
      * يغيّر **كيف** يتدخل المحرك، لا ماذا يريد.
@@ -2069,12 +2100,16 @@ class MaxAiEngine @Inject constructor(
      * يظهر سببه في بوابة الاستكشاف ولا يُعاد تصنيفه كعيب جهاز.
      */
     fun setBehavior(behavior: MaxAiBehavior) {
-        if (readBehavior() == behavior) return
+        if (readGlobalBehavior() == behavior) return
         prefs.edit().putString(PREF_BEHAVIOR, behavior.id).apply()
         _state.update {
+            // التجاوز الفعّال قد يكون بروفايل التطبيق الحالي؛ تغيير العام لا يلغيه.
+            val effective = readBehavior(it.appContext)
             it.copy(
                 behavior = behavior,
-                satisfactionTarget = MaxAiBehaviorTuning.of(behavior).satisfactionTarget,
+                effectiveBehavior = effective,
+                behaviorFromApp = effective != behavior,
+                satisfactionTarget = MaxAiBehaviorTuning.of(effective).satisfactionTarget,
             )
         }
         EventLog.userAction("MaxAiEngine", "behavior", "user", behavior.id)
@@ -2242,8 +2277,9 @@ class MaxAiEngine @Inject constructor(
         mutate: MaxAiState.() -> MaxAiState = { this },
     ) {
         val prev = _state.value
-        val behavior = readBehavior()
-        val tuning = MaxAiBehaviorTuning.of(behavior)
+        val globalBehavior = readGlobalBehavior()
+        val effectiveBehavior = readBehavior(lastCycleContext?.appContextKey ?: prev.appContext)
+        val tuning = MaxAiBehaviorTuning.of(effectiveBehavior)
         val safetyNow = safetyEngine.status.value
         val profile = runCatching { ProfileApplier.currentProfile() }.getOrNull()
         val baseProfile = runCatching { MaxAiMode.currentProfileId() }.getOrNull()
@@ -2288,7 +2324,9 @@ class MaxAiEngine @Inject constructor(
         _state.value = MaxAiState(
             aiEnabled = aiEnabled,
             objectivePreference = objectivePreference(),
-            behavior = behavior,
+            behavior = globalBehavior,
+            effectiveBehavior = effectiveBehavior,
+            behaviorFromApp = effectiveBehavior != globalBehavior,
             strategyLabel = strategy,
             lastDecision = prev.lastDecision,
             safety = safetyNow,

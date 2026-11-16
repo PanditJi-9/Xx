@@ -242,8 +242,8 @@ android {
         applicationId = "nd.max"
         minSdk = 29
         targetSdk = 37
-        versionCode = 41
-        versionName = "V4.1"
+        versionCode = 42
+        versionName = "V5.0"
         vectorDrawables.useSupportLibrary = true
         buildConfigField("long", "BUILD_TIME", "${buildTimeEpochMs}L")
         // قناة المانيفست بقيت متاحة لكنها **اختيارية صريحة** الآن: قناة التحديث الفعّالة هي
