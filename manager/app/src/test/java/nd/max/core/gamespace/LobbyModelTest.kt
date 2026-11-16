@@ -30,8 +30,10 @@ class LobbyModelTest {
         assertNull(LobbyModel.temperatureText(null))
         assertNull(LobbyModel.temperatureText(-301))
         assertNull(LobbyModel.temperatureText(1501))
-        assertEquals("34.5°C", LobbyModel.temperatureText(345))
-        assertEquals("0.0°C", LobbyModel.temperatureText(0))
+        // العلامة المزدوجة جزء من العقد لا زينة: بدونها يقلب السياق العربي الوحدة
+        // فتُقرأ «C°34.5» بدل «34.5°C». الاختبار يقيس النصّ المعروض كما يُعرض.
+        assertEquals("\u200E34.5°C\u200E", LobbyModel.temperatureText(345))
+        assertEquals("\u200E0.0°C\u200E", LobbyModel.temperatureText(0))
     }
 
     @Test
