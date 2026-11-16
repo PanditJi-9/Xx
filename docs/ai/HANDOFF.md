@@ -28770,3 +28770,85 @@ CSS = ٣٣٨٨ سطرًا · ٤٥ خاصية · ٠ متغيّر غير معرّ�
 - **ما تغيّر:** `GetStartedScreen` صار خمس صفحات: ٠ ترحيب · ١ الوصول ومنح الجذر · ٢ المجتمع · ٣ الأذونات · ٤ النهاية. أُخرج `OnboardingCommunity()` من صفحة الوصول، وأُضيفت صفحة مستقلة بعنوان/وصف (`onboarding_community_title/_desc` في `values/` و`values-ar/` فقط، §0.2)، وانتقلت الأذونات إلى ٣ والنهاية إلى ٤، مع إزاحة مقياس الخلفية إلى الصفحة ٤. النصوص الطويلة في صفحة الوصول صارت `TextAlign.Start` بعرض كامل.
 - **أصلح عائق بناء مقيس:** `resource_compile --assert` أسقطه aapt2 في `resolution_downscale_custom_desc` و`ify_hint_battery` عبر ٧٨ ملف لغة (`multiple substitutions` بسبب `%` غير المهرَّب/غير الموضعي)؛ أُضيف `formatted="false"` لهما، فصار الحكم «كل مجلدات الموارد تُترجم».
 - **التحقق (محليًا):** `kt_balance` ٣٧٩٨ ملفًا/٠ عوائق · `code_health` خروج ٠ · `i18n_coverage --assert` عوائق ٠ · `i18n_coverage --prune all --assert` يتامى ٠ · `design_tokens` خروج ٠ · `resource_compile --assert` خروج ٠ · `git diff --check` نظيف. **BUILD:** لا بناء محلي (§0.10)؛ لم تُقرأ CI لهذه الدفعة بعد. **RESIDUAL RISK:** الرسم البصري للمجتمع وRTL واللمس **غير مُتحقَّقة** على جهاز. ولوحظ أثناء الجولة commit خارجي `6cc9bf53` (مزامنة ٨٤ لغة) حمل نصوص العربية وإصلاحات `formatted`؛ لم أصدره ولا أعدت كتابة التاريخ. **NEXT:** قراءة حكم CI بعد دفع المالك، ثم فتح الشاشة على جهاز للتأكد من ترتيب البطاقات.
+
+## تكملة — ستّة تعديلات واجهة بأمر المالك، والإصدار v5.0 (2026-11-16)
+
+**الأمر (حرفيًّا):** «قم باضفة في شاشة البداية ايضا تحت قناة تيجرام رابط الموقع
+https://github.io/nader295/MaxManager ثانيا اجعل مراقب المهام في ادوات متقدمة
+واجعل السمة في الاعدادات أسفل الغة واجعل حول max manager والتحقق من التحديثات
+في بدايات شاشة الاعدادات وليس في نهايته ابجث عن مكان مناسب وانقل التطبيق التلقائي
+بعد الاقلاع من شاشة التفضيلات الى شاشة الاعدادات واخيؤا اجعل device info التفاصيل
+تعرض بشكل تلقائي وليست مطوية» — ثم «بعد الانتهاء اجعل الاصدار v5.0».
+
+**ما تغيّر، بندًا بندًا:**
+
+1. **رابط الموقع تحت قناة تيجرام:** بطاقة ثالثة في `OnboardingCommunity()`
+   (`ui/mainscreens/GetStartedScreen.kt`) بنفس شكل بطاقة تيجرام (`MaxCardShell`،
+   `surfaceContainerHigh`/`outlineVariant`)، وأيقونة `Icons.Rounded.Language`،
+   والنصّان `onboarding_site_title`/`_desc` في ملفَّين **جديدين**
+   `res/values/max_site_strings.xml` و`res/values-ar/max_site_strings.xml` حتى لا
+   يُلمس `strings.xml` المشترك بين الجولتين. والثابت
+   `MAXMANAGER_SITE_URL = "https://github.io/nader295/MaxManager"` **كما كتبه
+   المالك حرفًا**، مع تعليق يذكر أنّ الصيغة القياسية لـGitHub Pages هي
+   `https://nader295.github.io/MaxManager`، وأنّ صفحات هذا المستودع هي
+   `https://panditji-9.github.io/Xx/`. **لم يُصحَّح الرابط بلا إذن** — تغييره
+   قرار مالك لا استنتاج.
+2. **مراقب المهام في أدوات متقدمة:** `MaxDestination.ProcessManager` أُضيف إلى
+   مجموعة `R.string.control_tools_advanced` في `ui/mainscreens/ControlLayoutModel.kt`
+   (كان في المجموعة الحيّة). لا صفحة ثانية ولا مسار تنقّل جديد: نفس الوجهة
+   (`"processmanager"`) بقيت في قائمة `MemoryHub`، وهذا مدخل إضافي فقط.
+3. **السمة أسفل اللغة:** `ExpressiveListItem` ثالث في نفس `ExpressiveList` التي
+   تحمل ترويسة التطبيق واللغة، `onClick → MaxDestination.ColorScheme`، أيقونة
+   `Icons.Rounded.ColorLens`، العنوان `R.string.color_scheme`.
+4. **«حول» والتحقق من التحديثات في بداية الإعدادات:** نُقل القسم كاملًا (عنوان
+   `section_about` + صفّ `about_maxmanager` بوصف `version_format`/`BuildConfig.VERSION_NAME`
+   + `UpdateCheckRow()`) من ذيل `SettingsScreen.kt` إلى ما قبل `section_features`
+   مباشرةً، وحُذف من مكانه القديم. صفّ واحد فقط لكلٍّ منهما بعد النقل (قيس بالعدّ).
+5. **التطبيق التلقائي بعد الإقلاع انتقل:** `item { PersistRestoreItem() }` وبجانبه
+   `SettingsSectionTitle(persist_section)` صارا في `SettingsScreen.kt` قبل
+   `section_others`، وحُذف الاستدعاء الوحيد من `ui/subscreens/PreferencedTweakScreen.kt`
+   مع استيراده. **المكوّن نفسه لم يُلمس** (`ui/mainscreens/PersistRestoreItem.kt:50`)
+   فمفاتيح التخزين وأنواعها كما هي — لا قيمة مستخدم تُفقد ولا هجرة لازمة.
+6. **تفاصيل Device Info مفتوحة تلقائيًّا:** `MaxSection` يملك أصلًا
+   `initiallyExpanded` (`ui/design/MaxStructure.kt:85`)، فلم تُضَف وسيطة جديدة
+   (له ١٤١ نداءً في ٤٠ ملفًا) — غُيّر موضع النداء وحده في
+   `ui/subscreens/DeviceInfoScreen.kt` إلى `initiallyExpanded = true` مع بقاء
+   `collapsible = true`، فالطيّ يبقى ممكنًا بالنقر على الترويسة.
+
+**الإصدار v5.0 في مواضع العقد الثلاثة:** ملف `version` (‏`V5.0`) و
+`mainfiles/module.prop` (‏`version=V5.0`) و`archdaemon/jni/include/MaxManager.h`
+(‏`#define MODULE_VERSION "V5.0"`) — الثلاثة **متطابقة بايتًا** كما يفرضه خطوة
+«Confirm the single version string across its three homes»، وإلا مات الخادم عند
+الإقلاع بـ`EVENT=MODULE_INTEGRITY_FAILED reason=version_mismatch`. وأُضيف في
+`manager/app/build.gradle.kts` `versionCode = 42` و`versionName = "V5.0"` لاتساق
+القراءة المحلية — **وهما تجميليّان**: `verify.sh:58-59` يعيد كتابتهما قبل البناء من
+`$(cat version)` و`git rev-list HEAD --count`.
+
+**الدَّين الذي كشفه الدفع، وأُصلح:** `84efdae4` («Update MaxManager») حمل جولة أخرى
+كاملة (‏Max AI لكل تطبيق، رسوم المجالات، صفحة المجتمع الخمسية) ومعها تعديلاتي الستة.
+فشل تشغيلان: `43909092067` بـ`unresolved_resource: 4` — لأنني كنت قد حذفت أربعة
+مفاتيح AI كانت مراجعها Kotlin غير مُلتزَمة بعد، فلمّا التُزمت صار الحذف هو العطب؛
+أُعيدت في `90057d24`. و`43909092060` بثلاث بوابات صور: `docs/screenshots/02-now-home.png`
+التُزم **JPEG** (‏JFIF 1162×2480 progressive) بامتداد `.png`، فأسقط
+`store_thumbnails --self-test`/`--assert` و`screenshot_gallery --assert`
+(‏«ليس PNG: التوقيع غائب»). أُعيد ترميزه إلى PNG حقيقي بلوحة ٢٥٦ لونًا
+(‏343665 B تحت سقف اللقطة 409600 B — والترميز 24-bit أعطى 741476 B فرفضته البوابة؛
+والشاشة مسطّحة الألوان فالفارق غير محسوس).
+
+**التحقق المقيس في هذه الجولة (كلّه بأدوات تُشغَّل هنا):**
+`kt_balance --assert` ٣٧٩٩ ملفًا/٠ عوائق · `code_health --assert` exit 0
+(‏«صحّة نظيفة»، و`hardcoded_ui_literals` انخفض ٤→٣) · `i18n_coverage --assert`
+٨٤+en مجلدًا وأكواد المنتقي متطابقة و٠ عوائق · `design_tokens --assert` exit 0 ·
+`screenshot_gallery --assert` exit 0 (‏«الكتلة في الـREADMEين مطابقة للمولَّد») ·
+`store_thumbnails --assert` ٠ عوائق و`--self-test` ١١/١١ · `git diff --check` نظيف.
+وفُحصت المواضع الستة في الشجرة **بعد** الالتزام الخارجي (‏`git show HEAD:` لكل ملف)
+فوجدت جميعها قائمة، و`PersistRestoreItem` بنداءٍ واحد، و`UpdateCheckRow()` واحدًا.
+
+**الحدود (لا تُدَّعى):** لا بناء Gradle ولا اختبار على هذا الجهاز (§0.10) — الحكم من
+Actions وحده. الرابط `github.io/nader295/MaxManager` **لم يُفتح ولم يُتحقَّق أنه
+يستجيب**؛ كتبته كما أمر المالك. والسلوك البصري واللمس وRTL وتوسّع الأقسام على شاشة
+حقيقية **غير مُتحقَّقة** بهذه البوابات.
+
+**NEXT:** قراءة حكم تشغيلات `main` بعد هذا الالتزام؛ وفتح صفحة البداية والإعدادات
+وDevice Info على جهاز للتأكد من ترتيب البطاقات والتوسّع الافتراضي.
+
