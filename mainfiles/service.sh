@@ -161,7 +161,17 @@ STATE=$(getprop "$PROP_STATE")
 
 readonly COMPANION_NAME="sys.maxmanager-appmonitoring"
 
+# سقف `sysmon.log` (٤ م.ب) قبل كل إضافة — والزائد يُنقل إلى `sysmon.log.1` ولا يُحذف، لأن
+# دليل فشل الرفيق لا يُمحى. الحجم وصل ١٥٦ م.ب على جهاز حقيقي، فكان ٩٦٪ من حزمة السجلّ المصدَّرة.
+rotate_sysmon_log() {
+    [ -f "$MODULE_CONFIG/sysmon.log" ] || return 0
+    size=$(wc -c <"$MODULE_CONFIG/sysmon.log" 2>/dev/null || echo 0)
+    [ "${size:-0}" -gt 4194304 ] || return 0
+    mv -f "$MODULE_CONFIG/sysmon.log" "$MODULE_CONFIG/sysmon.log.1" 2>/dev/null
+}
+
 launch_companion() {
+    rotate_sysmon_log
     # والمخرَج **يُضاف** لا يُقتطع: كان `>` يمحو ما كتبه رفيق سابق في الإقلاع نفسه —
     # والحالة التي دفعت الثمن هي التي تُشفى: موت الرفيق في الإقلاع يُتبع بإعادة تشغيل
     # (من الحارس في التطبيق، أو من شاشة فحص الشحن) — فلو مُحي السابق لم يبق دليل يُرسل.

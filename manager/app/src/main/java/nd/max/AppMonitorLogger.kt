@@ -127,6 +127,14 @@ object AppMonitorLogger {
     fun fatal(message: String, throwable: Throwable? = null) = log(LEVEL_FATAL, message, throwable)
 
     private fun log(level: Int, message: String, throwable: Throwable?) {
+        // **الكتم قبل أيّ كتابة، ومقيس لا مُقدَّر:** حزمة سجلّ المالك (٢٠٢٦-١١-١٦) حملت
+        // `sysmon.log` بحجم **١٥٦ م.ب = ٩٦٪ من الحزمة**، و`grep -a` عليه أعطى **١٠٥٬٨٦٢**
+        // أثرًا كاملًا للاستثناء نفسه (`DeadSystemRuntimeException` من `DisplayManagerGlobal`
+        // بعد إعادة تشغيل `system_server`): الدورة تفشل كل اقتراع، وكل فشل يطبع أثرًا كاملًا
+        // على `stderr` — و`stderr` هو نفس الملفّ. فالأثر الكامل يُطبع مرّة، والتكرار يُحصى
+        // ويُبلَّغ كل `REPEAT_REPORT_EVERY` مرّة، فلا يضيع الدليل ولا ينفجر الملفّ.
+        if (suppressRepeatedTrace(level, message, throwable)) return
+
         // Local stderr copy first and unconditionally -- this must never be
         // skipped just because the CLI forward below fails, is slow, or is
         // disabled by the detailed-log toggle.
@@ -145,6 +153,57 @@ object AppMonitorLogger {
             )
             process.waitFor()
             process.destroy()
+        }
+    }
+
+    /**
+     * نافذة اعتبار التكرار «نفس العطب» — دقيقة واحدة.
+     *
+     * **ولماذا زمنية لا عدّية فقط:** عطبٌ يتكرّر مرّتين في اليوم ليس عاصفة، ويجب أن يُطبع
+     * أثره كاملًا في المرّتين؛ والعاصفة (٥/ثانية كما قيست) تبقى داخل النافذة فتُكتم.
+     */
+    private const val REPEAT_WINDOW_NS = 60_000_000_000L
+
+    /** كل كم تكرارًا يُبلَّغ بسطر إحصاء واحد — فلا يضيع الدليل ولا يتضخّم الملفّ. */
+    private const val REPEAT_REPORT_EVERY = 500
+
+    private val repeatLock = Any()
+    private var repeatKey: String? = null
+    private var repeatFirstAtNs = 0L
+    private var repeatLastAtNs = 0L
+    private var repeatCount = 0
+
+    /**
+     * هل يُكتم هذا السطر لأنه تكرار لعطبٍ مطبوع قبل قليل؟
+     *
+     * المفتاح: نوع الاستثناء + الرسالة + أوّل إطار في الأثر — فالعطب نفسه من موضع آخر
+     * يبقى ظاهرًا. والإبلاغ الدوري يمرّ (يُعاد `false`) فيُطبع سطر إحصاء موجز.
+     */
+    private fun suppressRepeatedTrace(level: Int, message: String, throwable: Throwable?): Boolean {
+        if (throwable == null || level < LEVEL_WARN) return false
+        val frame = throwable.stackTrace.firstOrNull()?.toString().orEmpty()
+        val key = throwable.javaClass.name + '|' + message + '|' + frame
+        val now = System.nanoTime()
+        synchronized(repeatLock) {
+            val same = key == repeatKey && now - repeatLastAtNs <= REPEAT_WINDOW_NS
+            if (!same) {
+                repeatKey = key
+                repeatFirstAtNs = now
+                repeatLastAtNs = now
+                repeatCount = 0
+                return false
+            }
+            repeatLastAtNs = now
+            repeatCount++
+            if (repeatCount % REPEAT_REPORT_EVERY == 0) {
+                val elapsedS = (now - repeatFirstAtNs) / 1_000_000_000L
+                System.err.println(
+                    "[$TAG] ${levelTag(level)}: (suppressed ${repeatCount} repeats of " +
+                        "${throwable.javaClass.simpleName} over ${elapsedS}s) $message"
+                )
+                return false
+            }
+            return true
         }
     }
 

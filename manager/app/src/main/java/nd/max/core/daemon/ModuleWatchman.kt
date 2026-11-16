@@ -123,11 +123,28 @@ object CompanionCommands {
      * الخلفيّة، قفل الرفيق)، ومخرَجه **يُضاف** إلى `sysmon.log` لا يُقتطع (فلا يُمحى دليل فشل سابق
      * بإعادة تشغيل — وهو العطب نفسه الذي يمنعه `DaemonSupervisor`).
      */
+    /** سقف `sysmon.log` قبل كل إضافة (٤ م.ب) — انظر [`rotateCommand`]. */
+    private const val SYSLOG_MAX_BYTES = 4L * 1024 * 1024
+
     fun launch(apkPath: String = MaxManagerPaths.companionApk()): String {
         val config = MaxManagerPaths.MODULE_CONFIG
-        return "nohup app_process -Djava.class.path='$apkPath' / --nice-name=$NICE_NAME $MAIN_CLASS " +
+        return rotateCommand() +
+            "nohup app_process -Djava.class.path='$apkPath' / --nice-name=$NICE_NAME $MAIN_CLASS " +
             "'$config/app_status' '$config/background_apps' '$config/java.lock' " +
             ">> '$config/sysmon.log' 2>&1 </dev/null &"
+    }
+
+    /**
+     * سقف `sysmon.log` قبل كل إضافة: ٤ م.ب.
+     *
+     * **والزائد يُنقل لا يُحذف** (`sysmon.log.1`): الحجم وصل ١٥٦ م.ب على جهاز حقيقي (قِيس داخل
+     * حزمة سجلّ ٣٫٤ م.ب = ٩٦٪ منها)، والملفّ يُضاف إليه بلا سقف لأن دليل فشل الرفيق لا يُمحى.
+     * فالحدّ يحفظ الدليل ويقطع النموّ — والقراءة (`tail`) لا تتغيّر.
+     */
+    fun rotateCommand(): String {
+        val log = "${MaxManagerPaths.MODULE_CONFIG}/sysmon.log"
+        return "if [ -f '$log' ] && [ \"\$(wc -c <'$log' 2>/dev/null || echo 0)\" -gt $SYSLOG_MAX_BYTES ]; " +
+            "then mv -f '$log' '$log.1'; fi; "
     }
 
     /** وجود الرفيق: `pidof` ثم تأكيد `ps` — والحكم في [`CompanionProbe`] (خالص). */

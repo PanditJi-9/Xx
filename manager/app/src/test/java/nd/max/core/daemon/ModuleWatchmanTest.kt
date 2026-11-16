@@ -56,7 +56,7 @@ class ModuleWatchmanTest {
                 command == CompanionCommands.PROBE_CONFIRM ->
                     ShellOutcome(0, if (companionAlive) "1\n" else "0\n", "")
 
-                command.startsWith("nohup app_process") -> {
+                command.contains("nohup app_process") -> {
                     if (launchAccepted && companionAppearsOnLaunch) companionAlive = true
                     ShellOutcome(if (launchAccepted) 0 else 1, "", "")
                 }
@@ -86,7 +86,7 @@ class ModuleWatchmanTest {
 
         override fun uptimeMs(): Long = clock
 
-        fun startedCompanion(): Boolean = commands.any { it.startsWith("nohup app_process") }
+        fun startedCompanion(): Boolean = commands.any { it.contains("nohup app_process") }
         fun startedDaemon(): Boolean = commands.any { it.contains(" --run ") }
     }
 
@@ -185,7 +185,11 @@ class ModuleWatchmanTest {
     fun `the heal command mirrors the boot command`() {
         val command = CompanionCommands.launch(apkPath = "/data/adb/modules/MaxManager/app/MaxManager.apk")
 
-        assertTrue(command.startsWith("nohup app_process -Djava.class.path='/data/adb/modules/MaxManager/app/MaxManager.apk' /"))
+        assertTrue(command.contains("nohup app_process -Djava.class.path='/data/adb/modules/MaxManager/app/MaxManager.apk' /"))
+        assertTrue(
+            "rotation prologue before the append: ${command}",
+            command.startsWith("if [ -f ") && command.indexOf("nohup app_process") > 0,
+        )
         assertTrue(command.contains("--nice-name=${CompanionCommands.NICE_NAME}"))
         assertTrue(command.contains(CompanionCommands.MAIN_CLASS))
         assertTrue(
@@ -240,7 +244,7 @@ class ModuleWatchmanTest {
         assertTrue(root.startedDaemon())
         assertTrue(
             "الرفيق قبل الخادم: ${root.commands}",
-            root.commands.indexOfFirst { it.startsWith("nohup app_process") } <
+            root.commands.indexOfFirst { it.contains("nohup app_process") } <
                 root.commands.indexOfFirst { it.contains(" --run ") },
         )
         assertTrue(recorder.info.any { it.contains("WATCHMAN_COMPANION_STARTED") })

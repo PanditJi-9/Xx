@@ -97,6 +97,12 @@ suspend fun dumpDiagnosticLogs(context: Context, saveToDownloads: Boolean): File
         mkdir -p ${d}TMP_DIR/log
         
         cp -r /data/adb/.config/MaxManager/* ${d}TMP_DIR/MaxManagerConfig/ 2>/dev/null
+        # سجلّ الرفيق يُضاف إليه بلا سقف: قِيس ١٥٦ م.ب منه في حزمة ٣٫٤ م.ب (٩٦٪ من الحجم)،
+        # فلا يُنسخ كاملًا — ما يفيد التشخيص آخره، وما يضخّم الحزمة يبقى على الجهاز.
+        if [ -f ${d}TMP_DIR/MaxManagerConfig/sysmon.log ]; then
+            tail -c 524288 ${d}TMP_DIR/MaxManagerConfig/sysmon.log > ${d}TMP_DIR/MaxManagerConfig/sysmon.log.tail 2>/dev/null \
+                && mv -f ${d}TMP_DIR/MaxManagerConfig/sysmon.log.tail ${d}TMP_DIR/MaxManagerConfig/sysmon.log
+        fi
         cp ${blueprintFile} ${d}TMP_DIR/log/device_blueprint.txt 2>/dev/null
         
         INFO_FILE="${d}TMP_DIR/log/MaxManager.log"
