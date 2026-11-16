@@ -3877,6 +3877,7 @@
 
 
     <string name="theme_accent_custom">مخصّص</string>
+    <string name="theme_accent_swatch">لون التمييز %1$d</string>
     <string name="theme_accent_custom_hint">اسحب للضبط: تتحدّث المعاينة أثناء الحركة، ويُحفَظ اللون عند رفع إصبعك.</string>
     <string name="theme_accent_hue">الصبغة</string>
     <string name="theme_accent_saturation">التشبّع</string>

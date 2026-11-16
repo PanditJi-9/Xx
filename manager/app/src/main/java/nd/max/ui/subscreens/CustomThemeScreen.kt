@@ -63,6 +63,7 @@ import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -1483,6 +1484,9 @@ internal fun ColorSwatch(
     isDark: Boolean,
     colorSpec: ColorSpec.SpecVersion,
     label: String = "",
+    // الشرائح كانت بلا اسم يُقرأ: `label` نصٌّ مرئيّ **شقيق** للشريحة لا داخلها، والشرائح
+    // نفسها مجرّد لون. فقارئ الشاشة كان يجد ٩ عناصر قابلة للنقر بلا نصّ (قِيس في `color_palette`).
+    contentDescription: String? = null,
     onClick: () -> Unit
 ) {
     val context = LocalContext.current
@@ -1519,6 +1523,7 @@ internal fun ColorSwatch(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
+        val desc = contentDescription
         Surface(
             onClick = onClick,
             shape = RoundedCornerShape(maxRadius(MaxRadius.group)),
@@ -1531,6 +1536,10 @@ internal fun ColorSwatch(
                     color = cs.primary.copy(alpha = borderAlpha),
                     shape = RoundedCornerShape(maxRadius(MaxRadius.group))
                 )
+                .semantics {
+                    desc?.let { text -> this.contentDescription = text }
+                    role = Role.Button
+                }
         ) {
             Box(contentAlignment = Alignment.Center) {
                 // Dual-tone arc

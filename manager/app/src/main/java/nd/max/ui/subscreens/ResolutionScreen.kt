@@ -59,6 +59,7 @@ import nd.max.ui.design.MaxSection
 import nd.max.ui.design.MaxSliderRow
 import nd.max.ui.design.MaxSpace
 import nd.max.ui.design.MaxSwitchRow
+import nd.max.ui.util.ltrIsolated
 import nd.max.ui.design.MaxTone
 import nd.max.ui.viewmodel.ResolutionViewModel
 
@@ -254,7 +255,7 @@ fun ResolutionScreen(
                             preset.dpi == viewModel.activeDpi
                         MaxChoiceRow(
                             title = presetTitle(preset.id),
-                            subtitle = "${preset.widthPx}×${preset.heightPx} · ${preset.dpi} dpi",
+                            subtitle = ltrIsolated("${preset.widthPx}×${preset.heightPx} · ${preset.dpi} dpi"),
                             selected = active,
                             onSelect = { viewModel.applyPreset(preset) }
                         )
@@ -279,7 +280,9 @@ fun ResolutionScreen(
                         title = stringResource(R.string.resolution_width),
                         value = widthSlider,
                         onValueChange = { widthSlider = it },
-                        valueText = "${widthSlider.roundToInt()} px",
+                        // رقم + وحدة لاتينية في فقرة عربية: الفاصل المحايد يُحسم بالاتجاه العربي
+                        // فيُقرأ «px 1220» بدل «1220 px» — قيس في لقطة الشاشة على الجهاز.
+                        valueText = ltrIsolated("${widthSlider.roundToInt()} px"),
                         valueRange = minWidth.toFloat()..maxWidth.toFloat(),
                         onValueChangeFinished = {
                             viewModel.applyResolution(
@@ -307,7 +310,7 @@ fun ResolutionScreen(
                             title = stringResource(R.string.resolution_height),
                             value = heightSlider,
                             onValueChange = { heightSlider = it },
-                            valueText = "${heightSlider.roundToInt()} px",
+                            valueText = ltrIsolated("${heightSlider.roundToInt()} px"),
                             valueRange = minHeight.toFloat()..maxHeight.toFloat(),
                             onValueChangeFinished = {
                                 viewModel.applyResolution(
@@ -323,7 +326,7 @@ fun ResolutionScreen(
                         title = stringResource(R.string.resolution_dpi),
                         value = dpiSlider,
                         onValueChange = { dpiSlider = it },
-                        valueText = "${dpiSlider.roundToInt()} dpi",
+                        valueText = ltrIsolated("${dpiSlider.roundToInt()} dpi"),
                         valueRange = minDpi.toFloat()..maxDpi.toFloat(),
                         onValueChangeFinished = {
                             viewModel.applyResolution(

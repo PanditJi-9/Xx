@@ -37,7 +37,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -60,6 +60,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -139,6 +143,7 @@ internal fun AccentSwatchRow(
                     isDark = isDark,
                     colorSpec = currentColorSpec,
                     label = stringResource(R.string.theme_accent_auto),
+                    contentDescription = stringResource(R.string.theme_accent_auto),
                     onClick = {
                         onKeyColorChange(0)
                         EventLog.userAction(screen = "CustomTheme", field = "key_color", old = currentKeyColor.toString(), new = "0")
@@ -146,12 +151,15 @@ internal fun AccentSwatchRow(
                     }
                 )
             }
-            items(palette) { colorInt ->
+            // الشرائح تُقرأ بالترتيب لا باللون وحده: قيس من تفريغ uiautomator أن تسعة عناصر
+            // قابلة للنقر في هذه الصفحة كانت بلا نصّ ولا وصف يقرأه TalkBack.
+            itemsIndexed(palette) { index, colorInt ->
                 ColorSwatch(
                     color = Color(colorInt),
                     isSelected = currentKeyColor == colorInt,
                     isDark = isDark,
                     colorSpec = currentColorSpec,
+                    contentDescription = stringResource(R.string.theme_accent_swatch, index + 1),
                     onClick = {
                         onKeyColorChange(colorInt)
                         EventLog.userAction(screen = "CustomTheme", field = "key_color", old = currentKeyColor.toString(), new = colorInt.toString())
@@ -188,6 +196,7 @@ internal fun AccentSwatchRow(
 @Composable
 private fun CustomAccentSwatch(isSelected: Boolean, onClick: () -> Unit) {
     val scheme = MaterialTheme.colorScheme
+    val customDesc = stringResource(R.string.theme_accent_custom)
     val shape = RoundedCornerShape(maxRadius(MaxRadius.group))
     val borderAlpha by animateFloatAsState(
         targetValue = if (isSelected) 1f else 0f,

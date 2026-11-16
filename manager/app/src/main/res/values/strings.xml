@@ -3935,6 +3935,7 @@
 
 
     <string name="theme_accent_custom">Custom</string>
+    <string name="theme_accent_swatch">Accent color %1$d</string>
     <string name="theme_accent_custom_hint">Drag to tune. The preview updates as you move, and the color is saved when you let go.</string>
     <string name="theme_accent_hue">Hue</string>
     <string name="theme_accent_saturation">Saturation</string>

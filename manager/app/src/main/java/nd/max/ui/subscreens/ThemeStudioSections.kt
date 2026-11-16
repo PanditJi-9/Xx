@@ -78,6 +78,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -193,13 +194,22 @@ private fun ThemePresetCard(
     // التطبيق يراها في بطاقتها قبل أن يضغط.
     val cardShape = RoundedCornerShape(MaxRadius.control * preset.roundness.scale)
 
+    // اسم النمط كان يُرسم شقيقًا للبطاقة لا داخلها، فلم يجد TalkBack ما يقرأه على
+    // البطاقة القابلة للنقر (قيس: أربع بطاقات بلا وصف في color_palette).
+    val presetName = stringResource(preset.nameRes)
+
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(MaxSpace.xs),
     ) {
         Surface(
             onClick = onClick,
-            modifier = Modifier.size(80.dp),
+            modifier = Modifier
+                .size(80.dp)
+                .semantics {
+                    contentDescription = presetName
+                    role = Role.Button
+                },
             shape = cardShape,
             color = scheme.surfaceContainerHigh,
             border = BorderStroke(
@@ -273,7 +283,7 @@ private fun ThemePresetCard(
             }
         }
         Text(
-            text = stringResource(preset.nameRes),
+            text = presetName,
             style = MaterialTheme.typography.labelSmall,
             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
             color = if (isSelected) {
