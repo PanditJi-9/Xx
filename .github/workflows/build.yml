@@ -1459,7 +1459,14 @@ jobs:
           cp "$work"/dex/.bla-hardened/*.dex "$work/unpacked/"
           python3 tools/apk_repack.py "$work/unpacked" "$work/unsigned.apk"
 
-          zipalign -f -p 4 "$work/unsigned.apk" "$work/aligned.apk"
+          # **محاذاة ١٦ ك.ب لا ٤ (تكملة ٢٠٢٦-١١-١٦):** البيان يقول
+          # `android:extractNativeLibs="false"`، فالرابط يحوّل `.so` من الحزمة مباشرةً،
+          # و`zipalign -p 4` يحاذي ٤ ك.ب فقط. وعلى أجهزة Android 15+ بصفحات ١٦ ك.ب يرفض
+          # المثبّت الحزمة بـ`INSTALL_FAILED_INVALID_APK … Failed to extract native
+          # libraries, res=-2` — قِيس على حزمة الإصدار المشحونة (`zipalign -c -p 4` مرّ،
+          # وهو نفسه ما يجعل العطب لا يُرى). فالمحاذاة الآن `-P 16` ويُتحقّق منها صراحةً.
+          zipalign -P 16 -f -p 4 "$work/unsigned.apk" "$work/aligned.apk"
+          zipalign -c -P 16 -p 4 "$work/aligned.apk"
           apksigner sign \
             --ks manager/app/maxmanager.jks \
             --ks-key-alias azenith_key \
@@ -1474,6 +1481,7 @@ jobs:
           # تجميعها رفضها جهاز المالك بـ`INSTALL_FAILED_INVALID_APK … res=-2` لأن `.so`
           # كانت مضغوطة؛ و`zipalign -p` يُحاذيها ولا يفكّ ضغطها.
           python3 tools/apk_repack.py --verify "$apk"
+          zipalign -c -P 16 -p 4 "$apk"
 
           # فحص آثار الهندسة العكسية في الحزمة النهائية بعد التصليب: اسم ملفّ مصدر أو
           # مسار بناء مطلق أو خريطة R8 داخل الحزمة = مادة أوّل ما يقرأها JADX.
