@@ -55,6 +55,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.platform.LocalContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import nd.max.core.module.ModuleBootstrap
+import nd.max.ui.util.RootUtil
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -617,6 +624,15 @@ private fun HomeStatusReasonDialog(
     onClose: () -> Unit,
 ) {
     val p = neuralPalette()
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    // الزر لا يُعرض إلا لمن يستطيع الاستفادة: جذر ممنوح، ولا وحدة، وحِمل موجود في الحزمة.
+    // ومن لا جذر عنده لا يرى زرًّا يفشل — وهذا نصّ أمر المالك «مراعاة لعدم إزعاج الحالات الأخرى».
+    val canBootstrap = remember {
+        RootUtil.isRootGranted() && !moduleInstalled && ModuleBootstrap.hasPayload(context)
+    }
+    var busy by remember { mutableStateOf(false) }
+    var outcome by remember { mutableStateOf<String?>(null) }
     AlertDialog(
         onDismissRequest = onClose,
         title = { Text(stringResource(R.string.home_status_reason_title)) },
@@ -630,10 +646,48 @@ private fun HomeStatusReasonDialog(
                 HomeStatusReasonRow(R.string.home_status_row_root, accessLevel == PrivilegeLevel.ROOT)
                 HomeStatusReasonRow(R.string.home_status_row_module, moduleInstalled)
                 HomeStatusReasonRow(R.string.home_status_row_shizuku, accessLevel == PrivilegeLevel.SHIZUKU)
+                outcome?.let { line ->
+                    Text(line, color = p.text, style = MaterialTheme.typography.bodySmall)
+                }
             }
         },
         confirmButton = {
             TextButton(onClick = onClose) { Text(stringResource(R.string.home_status_close)) }
+        },
+        dismissButton = if (!canBootstrap) null else {
+            {
+                TextButton(
+                    enabled = !busy,
+                    onClick = {
+                        busy = true
+                        scope.launch {
+                            val report = withContext(Dispatchers.IO) { ModuleBootstrap.install(context) }
+                            outcome = when (report) {
+                                is ModuleBootstrap.Report.Written ->
+                                    context.getString(R.string.home_status_enable_module_written)
+                                is ModuleBootstrap.Report.Failed -> context.getString(
+                                    R.string.home_status_enable_module_failed,
+                                    report.detail,
+                                )
+                                is ModuleBootstrap.Report.MissingPayload -> context.getString(
+                                    R.string.home_status_enable_module_failed,
+                                    report.reason,
+                                )
+                                ModuleBootstrap.Report.NoRoot ->
+                                    context.getString(R.string.home_status_row_root)
+                            }
+                            busy = false
+                        }
+                    },
+                ) {
+                    Text(
+                        stringResource(
+                            if (busy) R.string.home_status_enable_module_running
+                            else R.string.home_status_enable_module,
+                        ),
+                    )
+                }
+            }
         },
     )
 }

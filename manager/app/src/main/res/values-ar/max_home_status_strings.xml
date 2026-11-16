@@ -7,4 +7,9 @@
     <string name="home_status_row_module">الوحدة مثبّتة</string>
     <string name="home_status_row_shizuku">Shizuku جاهز</string>
     <string name="home_status_close">إغلاق</string>
+    <!-- تفعيل الوحدة بلا إنترنت من حِمل مضمَّن (أمر المالك ٢٠٢٦-١١-١٦) -->
+    <string name="home_status_enable_module">تفعيل الوحدة (بلا إنترنت)</string>
+    <string name="home_status_enable_module_running">جارٍ كتابة الوحدة…</string>
+    <string name="home_status_enable_module_written">كُتبت الوحدة — أعِد التشغيل لتعمل</string>
+    <string name="home_status_enable_module_failed">تعذّر كتابة الوحدة: %1$s</string>
 </resources>

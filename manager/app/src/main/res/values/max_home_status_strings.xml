@@ -7,4 +7,9 @@
     <string name="home_status_row_module">Module installed</string>
     <string name="home_status_row_shizuku">Shizuku ready</string>
     <string name="home_status_close">Close</string>
+    <!-- تفعيل الوحدة بلا إنترنت من حِمل مضمَّن (أمر المالك ٢٠٢٦-١١-١٦) -->
+    <string name="home_status_enable_module">Enable the module (offline)</string>
+    <string name="home_status_enable_module_running">Writing the module…</string>
+    <string name="home_status_enable_module_written">The module was written — reboot to activate it</string>
+    <string name="home_status_enable_module_failed">Could not write the module: %1$s</string>
 </resources>

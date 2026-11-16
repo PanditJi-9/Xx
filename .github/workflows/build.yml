@@ -1392,6 +1392,10 @@ jobs:
         env:
           KS_PWD: ${{ secrets.KEYSTORE_PASSWORD }}
           BLA_SHIELD: ${{ vars.BLA_SHIELD || '1' }}
+          # مفتاح ثانٍ مقصود: إيقاف `bla-agents` وحدها للتشخيص، دون تعطيل
+          # إزالة اسم المصدر وإعادة التغليف والمحاذاة والتوقيع — وإلا خرجت حزمة ناقصة
+          # لا تصلح شاهدًا (قِيس: 43982002047 سقط في فحص الآثار لا في البناء).
+          BLA_HARDEN: ${{ vars.BLA_HARDEN || '1' }}
         run: |
           set -euo pipefail
           if [ "${BLA_SHIELD:-1}" != "1" ]; then
@@ -1415,33 +1419,39 @@ jobs:
           cp "$work"/unpacked/*.dex "$work/dex/"
 
           # التصليب على نسخة معزولة من DEX وحدها: أي ملفّ تقرير تكتبه الأداة لا يدخل الحزمة.
-          set +e
-          npx --yes bla-agents@3.4.1 harden "$work/dex" \
-            --intensity bankrupt --seed maxmanager -y --json \
-            > "$work/bla.json" 2> "$work/bla.err"
-          bla_code=$?
-          set -e
-          echo "bla exit=$bla_code"
-          tail -c 1200 "$work/bla.json" || true
-          tail -c 1200 "$work/bla.err" || true
-          if [ "$bla_code" -ne 0 ]; then
-            echo "::error::bla-agents فشل (exit $bla_code) — و2 تعني «لا شيء ليُصلَّب» أو فشل أثر، وكلاهما عطب هنا"
-            exit 1
+          hard="$work/dex/.bla-hardened"
+          if [ "${BLA_HARDEN:-1}" = "1" ]; then
+            set +e
+            npx --yes bla-agents@3.4.1 harden "$work/dex" \
+              --intensity bankrupt --seed maxmanager -y --json \
+              > "$work/bla.json" 2> "$work/bla.err"
+            bla_code=$?
+            set -e
+            echo "bla exit=$bla_code"
+            tail -c 1200 "$work/bla.json" || true
+            tail -c 1200 "$work/bla.err" || true
+            if [ "$bla_code" -ne 0 ]; then
+              echo "::error::bla-agents فشل (exit $bla_code) — و2 تعني «لا شيء ليُصلَّب» أو فشل أثر، وكلاهما عطب هنا"
+              exit 1
+            fi
+            # **قِيس في هذه البيئة (٢٠٢٦-١١-١٦):** `bla harden` لا يعدّل مكانه، بل يكتب
+            # النسخ المصلَّبة في `<dir>/.bla-hardened/`. وكانت الخطوة تنسخ الأصلية فتُعلن
+            # نجاحًا وتحمل حزمةً غير مصلَّبة — وهذا ما كشفه التشغيل لا المراجعة.
+            test -d "$hard" || {
+              echo "::error::bla-agents لم تُنتج .bla-hardened — لا تصليب، والحزمة الأصلية لا تُشحن"
+              exit 1
+            }
+          else
+            echo "⏭️ bla-agents وحدها موقوفة (BLA_HARDEN=${BLA_HARDEN}) — وبقية السلسلة تعمل كما هي."
+            hard="$work/dex"
           fi
 
-          after="$(find "$work/dex/.bla-hardened" -maxdepth 1 -name '*.dex' 2>/dev/null | wc -l | tr -d ' ')"
-          # **قِيس في هذه البيئة (٢٠٢٦-١١-١٦):** `bla harden` لا يعدّل مكانه، بل يكتب
-          # النسخ المصلَّبة في `<dir>/.bla-hardened/`. وكانت الخطوة تنسخ الأصلية فتُعلن
-          # نجاحًا وتحمل حزمةً غير مصلَّبة — وهذا ما كشفه التشغيل لا المراجعة.
-          test -d "$work/dex/.bla-hardened" || {
-            echo "::error::bla-agents لم تُنتج .bla-hardened — لا تصليب، والحزمة الأصلية لا تُشحن"
-            exit 1
-          }
+          after="$(find "$hard" -maxdepth 1 -name '*.dex' 2>/dev/null | wc -l | tr -d ' ')"
           test "$after" = "$count" || { echo "::error::عدد DEX المصلَّبة تغيّر ($count → $after)"; exit 1; }
 
-          python3 tools/dex_integrity.py --assert --path "$work/dex/.bla-hardened"
+          python3 tools/dex_integrity.py --assert --path "$hard"
           if command -v dexdump >/dev/null 2>&1; then
-            for dex in "$work"/dex/.bla-hardened/*.dex; do
+            for dex in "$hard"/*.dex; do
               dexdump -f "$dex" > /dev/null \
                 || { echo "::error::dexdump رفض $(basename "$dex") بعد التصليب"; exit 1; }
             done
@@ -1454,9 +1464,15 @@ jobs:
           # ولو بنفيها في `-keepattributes` (قِيس: بقيت `ContextBridge.kt` في ثلاث دورات)،
           # فتُفرَّغ هنا بعد التصليب: مرجعها في `class_def` **ونصّها** في الجدول، ثم تُعاد
           # بصمة DEX وتوقيعه. و`dex_integrity` بعدها يتحقّق من التواقيع لا من النيّة.
-          python3 tools/dex_strip_source_names.py --assert --path "$work/dex/.bla-hardened"
-          python3 tools/dex_integrity.py --assert --path "$work/dex/.bla-hardened"
-          cp "$work"/dex/.bla-hardened/*.dex "$work/unpacked/"
+          python3 tools/dex_strip_source_names.py --assert --path "$hard"
+          python3 tools/dex_integrity.py --assert --path "$hard"
+          cp "$hard"/*.dex "$work/unpacked/"
+          # **حِمل الوحدة داخل الحزمة (أمر المالك ٢٠٢٦-١١-١٦):** من ثبّت APK وحده يستطيع
+          # تفعيل ميزات الإقلاع **بلا إنترنت**، فيُبنى الحِمل من المصادر نفسها التي يبني منها
+          # `compile_zip.sh` الوحدة (لا نسخة ثانية تُنحرف عنها) ويوضع في `assets/`.
+          bash .github/scripts/module_payload.sh "${RUST_PROFILE:-release}" "$work/module_payload.zip"
+          mkdir -p "$work/unpacked/assets"
+          cp "$work/module_payload.zip" "$work/unpacked/assets/module_payload.zip"
           python3 tools/apk_repack.py "$work/unpacked" "$work/unsigned.apk"
 
           # **محاذاة ١٦ ك.ب لا ٤ (تكملة ٢٠٢٦-١١-١٦):** البيان يقول
