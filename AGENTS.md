@@ -426,9 +426,10 @@ python3 tools/design_tokens.py --assert           # سقوف حرفيّات ال
 python3 tools/jni_symbols.py --assert             # عقود JNI: Kotlin/Java ↔ Rust، وما وُجد من ثنائيات (ADR-48)
 python3 tools/resource_compile.py --assert        # aapt2 على كل مجلّدات res — الحكم الذي يُسقط البناء
 python3 tools/provenance_guard.py --assert        # الأصل: لا مسار مرجعي ولا بصمة صنف من مرجع في مصدرنا
+python3 tools/hardening_guard.py --assert         # تصليب الإصدار: R8 والتقليص وقواعد الإبقاء والبيان (تكملة ٢٠٢٦-١١-١٦)
 ```
 
-وهذه الخمس تعمل اليوم في CI أيضًا: خطوة **«Contract gates»** في `.github/workflows/build.yml`
+وهذه تعمل اليوم في CI أيضًا: خطوة **«Contract gates»** في `.github/workflows/build.yml`
 (ثوانٍ، وتُشغَّل **قبل** البناء الثقيل فيفشل التشغيل في ثوانٍ لا بعد دقائق) — و`resource_compile.py`
 **تُشغّل `aapt2` الحقيقي** لأن حكم المورد لا يُقلَّد (قِيس أنّ نفس النصّ يمرّ وحده ويرسب مع غيره)،
 وبلا `aapt2` تُعلن «غير مُتحقَّقة» لا «تمرّ» — و`jni_symbols.py`

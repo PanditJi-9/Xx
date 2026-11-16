@@ -247,6 +247,14 @@ jobs:
           python3 tools/maxfx_contract.py --self-test
           python3 tools/fetch_maxfx_aidl.py --self-test
           python3 tools/jni_symbols.py --self-test
+          # ← تصليب الإصدار: `isMinifyEnabled`/`isShrinkResources`/`vcsInfo` في كتلة release،
+          # وقواعد R8 التي يُبطل غيابُها التعتيم كله، وقواعد إبقاء شاملة على `nd.max…**`،
+          # وسرّ مكتوب في ملفّ البناء، و`debuggable`/`allowBackup` في البيان، و`mapping.txt`
+          # مُلتزَم في الشجرة. والسبب: الشجرة كانت مُصلَّبة **بوصف** لا بقياس — وقيست فيها
+          # ثغرتان حقيقيتان في أول تشغيل (`-allowaccessmodification` غائب، و`-keep
+          # nd.max.core.jni.** { *; }` شامل). والباقي في `tools/hardening_guard.py` نفسه.
+          python3 tools/hardening_guard.py --assert
+          python3 tools/hardening_guard.py --self-test
           # ← الوحدات الميتة: ملفّ Rust **خارج شجرة الوحدات** (لا يُصرَّف إطلاقًا، فيتعفّن بلا
           # خطأ ولا تحذير — مقيس: `thermalcore/src/prediction.rs` يقرأ سبعة حقول لا وجود لها
           # في نوعه، ولو وُصل لَما تُرجم) ووحدة C **مبنية بلا مُستخدِم خارجي**. والأساس المُعلَن

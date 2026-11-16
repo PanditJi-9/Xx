@@ -473,6 +473,48 @@ Expected on a clean tree, and what each line means:
 على المثيل **لا تُفحص هنا** (تحتاج مُصرّفًا). ويُفحص **الوجود** و**التطابق بين الأبنية**، وهما ما يسقط في
 `UnsatisfiedLinkError`. وثنائيات Android تُبنى في CI فقط، فلا ادّعاء لطبقة ثنائيات محليًّا.
 
+## 9.1 بوابة تصليب الإصدار (`hardening_guard.py`) — طلب المالك ٢٠٢٦-١١-١٦
+
+**السؤال الذي بُنيت له:** «اجعله من المستحيل سرقته وتحليله». والجواب الصادق: **الاستحالة غير موجودة** —
+من يملك الجهاز يملك الحزمة، ويمكنه فكّها؛ والقابل للشراء هو **رفع الكلفة** و**كشف العبث**. والشجرة كانت
+تحمل هذا النظام أصلًا (`core/security/**`: ١٣ ملفًا · ١٦٨٥ سطرًا — تثبيت الموقّع من مسارين، `ApkVerifier`
+v2/v3 على الحزمة المثبَّتة، خزنة أصول مختومة، مطابقة صورة `.so`، وفحص `tracer`/`hook` من الأصل)، فلم
+يُبْنَ مسار ثانٍ (§0.5). الناقص كان **قياسًا يمنع التراجع**، وهو هذه البوابة.
+
+```sh
+python3 tools/hardening_guard.py --assert      # يفشل عند أول تراجع مقيس
+python3 tools/hardening_guard.py --self-test   # ٩ حالات معروفة: يقيس الأداة لا الشجرة
+```
+
+| ما تقيسه | الحكم |
+| --- | --- |
+| كتلة `release` في `manager/app/build.gradle.kts` | `isMinifyEnabled = true` · `isShrinkResources = true` · `vcsInfo.include = false` · `proguardFiles` تشير إلى `proguard-android-optimize.txt` و`proguard-rules.pro` |
+| سرّ حرفي في ملفّ البناء | `storePassword`/`keyPassword`/`KS_PWD` بقيمة ليست `$…` ⇒ عطب |
+| `proguard-rules.pro` | يلزم `-repackageclasses` · `-allowaccessmodification` · `-optimizationpasses` · `-renamesourcefileattribute`؛ ويُرفض `-dontobfuscate` · `-dontoptimize` · `-keepnames class nd.max.` |
+| قواعد الإبقاء على `nd.max…**` | `{ *; }` مرفوض. و`{ native <methods>; }` **مسموح**: هو الحدّ الأدنى لعقد JNI كما يُقاس بالسطر التالي |
+| `AndroidManifest.xml` | `android:debuggable="true"` مرفوض · `android:allowBackup="false"` مطلوب |
+| `git ls-files` | أي `mapping*.txt` مُلتزَم = عطب (خريطة التعتيم تُعيد الأسماء) |
+
+**ثغرتان حقيقيتان كشفهما أول تشغيل، وأُصلحتا:**
+1. `proguard_missing:allowaccessmodification` — التعليق فوق `-repackageclasses 'o'` يصف فائدته
+   («يسمح بتضييق صلاحيات الأصناف والدوال بعد الدمج») والبند نفسه **لم يكن مكتوبًا** (صفر ظهور في الشجرة).
+2. `proguard_blanket_keep` — `-keep class nd.max.core.jni.** { *; }` كان يُجمّد **كل** عضو. والقياس:
+   رموز Rust مُصدَّرة بالأسماء `Java_nd_max_core_jni_ProbeBridge_native*`
+   (`manager/src/main/rust/src/lib.rs:434,450,466,491`)، و`grep` على `.rs` يعطي **صفر**
+   `Call*Method`/`GetMethodID` ⇒ لا نداء معاكس من الأصل إلى Java. فاسم الصنف والدالة الأصلية وحدهما
+   يلزمهما البقاء، وصارت القاعدة `{ native <methods>; }`.
+
+**وما كان مُصلَّبًا فِعلًا وقيس هنا بدل أن يُوصف:** `[profile.release]` في
+`manager/src/main/rust/Cargo.toml` يحمل `strip = true` و`panic = "abort"` (بأرقام مقيسة في تعليقه:
+١١٦٢٦٩٦ ← ٨٥٧٢٧٢ ← ٧٩١٧٣٦ بايت)، و`-repackageclasses`/`-overloadaggressively`/`-optimizationpasses 5`
+قائمة، و`allowBackup="false"`، ولا `mapping.txt` في الشجرة.
+
+**الحدود المعلنة:** هذه بوابة **إعدادات** لا مُعتِّم بذاتها؛ لا تُثبت أن R8 طبّق ما قُرِّر (يحتاج مُصرّفًا:
+`mapping.txt` و`classes.dex` المقيسين — وCI هو الذي يبنيه). و`strip` يُقاس أثرُه في CI على `.so` المبنية.
+وأداتا الهجوم/الدفاع المذكورتان في الطلب (`morluto/rea` و`qybaihe/bla`، كلتاهما MIT) **لم يُدخَل كودهما**:
+`bla` تعيد كتابة DEX فتُبطل التوقيع وتحتاج إعادة توقيع، ولا تُتحقَّق في هذه البيئة — فتبقى خطوة حمراء
+يدوية موثَّقة إن طُلبت، لا تبعيةً خفيّة في مسار الإصدار.
+
 ## 10. قياس النقل إلى Rust (قبل/بعد) — ADR-45 · ADR-49
 
 القاعدة: **لا يُنقل مسار قبل رقم**. والمسطرة تُبنى مؤقتًا خارج المستودع (كما في الموجتين ١ و٣)، وتُسجَّل

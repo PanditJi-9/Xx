@@ -34,6 +34,11 @@
 # · ووصفات Stub في حزم شركات أخرى)، ولا موضع واحد يسأل عن صنف من أصنافنا بالاسم.
 -repackageclasses 'o'
 -overloadaggressively
+# **وكان هذا السطر غائبًا حتى ٢٠٢٦-١١-١٦:** التعليق أعلاه يصف فائدته («يسمح بتضييق صلاحيات
+# الأصناف والدوال بعد الدمج»)، والبند نفسه لم يكن مكتوبًا — أي أنّ الفائدة الموصوفة لم تكن
+# مُشتراة. وقيست الغياب بأداة `tools/hardening_guard.py` (قاعدة
+# `proguard_missing:allowaccessmodification`)، فصار السطر مراقَبًا لا موعودًا.
+-allowaccessmodification
 
 # خمس مرّات تحسين بدل الافتراضي: مزيد من الدمج والإزالة ⇒ مخرَج أصغر وأغمض.
 -optimizationpasses 5
@@ -72,7 +77,14 @@
 -keepclasseswithmembernames class * {
     native <methods>;
 }
--keep class nd.max.core.jni.** { *; }
+# **وكانت هنا `-keep class nd.max.core.jni.** { *; }` حتى ٢٠٢٦-١١-١١-١٦:** شاملة تُجمّد كل
+# عضو — وإنما يلزم من هذه الحزمة **اسم الصنف واسم دالته الأصلية** فقط، لأن رموز Rust
+# مُصدَّرة بالأسماء: `Java_nd_max_core_jni_ProbeBridge_nativeReadManyPacked` وأخواتها الأربع
+# (`manager/src/main/rust/src/lib.rs:434,450,466,491`). وقِيس أنّه **لا نداء معاكس** من الأصل
+# إلى Java: صفر `Call*Method`/`GetMethodID` في `.rs` — فالأعضاء غير الأصلية يُعاد تسميتها
+# بحرّية، والربط لا ينكسر. (وبوابة `tools/hardening_guard.py` ترفض الآن أي `nd.max…**` لا
+# يقتصر عضوه على `native <methods>;`.)
+-keep class nd.max.core.jni.** { native <methods>; }
 -keep class nd.max.core.security.SecurityBridge { *; }
 -keep class com.android.apksig.** { *; }
 
