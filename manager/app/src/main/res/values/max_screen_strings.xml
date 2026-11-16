@@ -850,4 +850,6 @@
     <string name="memufs_reason_probe_failed">the check itself failed — a failed check is not a verdict on the device</string>
     <string name="memufs_reason_overlay_not_saved">the classification was checked but the file could not be written</string>
     <string name="memufs_reason_graphics_owned">a graphics node: it belongs to the GPU studio, and a knob may not have two owners</string>
+    <string name="about_copy_support_info">Copy support information</string>
+    <string name="about_copy_support_info_done">Support information copied</string>
 </resources>

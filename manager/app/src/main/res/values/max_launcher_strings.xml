@@ -36,4 +36,6 @@
     <string name="max_launcher_outcome_needs_root">This activity is not exported — root is required</string>
     <string name="max_launcher_outcome_refused">Android refused to start this activity</string>
     <string name="max_launcher_outcome_missing">No activity with that name is installed</string>
+    <string name="max_launcher_copy_package">Copy package name</string>
+    <string name="max_launcher_copy_package_done">Package name copied</string>
 </resources>

@@ -49,4 +49,9 @@
     <string name="mi_section_signature">Signing certificate</string>
     <string name="mi_signature_note">SHA-256 of the signing certificate. Two builds with the same value are the same publisher.</string>
     <string name="mi_signature_sha256">Certificate digest</string>
+    <string name="mi_search_clear">Clear search</string>
+    <string name="mi_no_match">No app matches this search.</string>
+    <string name="mi_copy_package">Copy package name</string>
+    <string name="mi_copy_signature">Copy SHA-256 signature</string>
+    <string name="mi_copied">Copied</string>
 </resources>

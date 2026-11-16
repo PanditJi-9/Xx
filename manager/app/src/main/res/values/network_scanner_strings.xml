@@ -30,4 +30,6 @@
     <string name="ns_neighbours_note">From /proc/net/arp — read only.</string>
     <string name="ns_neighbours_empty">No neighbours are known yet.</string>
     <string name="ns_ports_value">Ports %1$s</string>
+    <string name="ns_copied">Address copied</string>
+    <string name="ns_neighbours_copy_hint">Tap a host to copy its address.</string>
 </resources>

@@ -1515,11 +1515,13 @@
     <string name="str_launch_app">Launch App</string>
     <string name="str_launch_compatibility_check">Launch Compatibility Check</string>
     <string name="str_let_s_adjust_a_few_basic_setti">Let\'s adjust a few basic settings</string>
-    <string name="str_let_s_grant_maxmanager_a_root_acc">Please grant Max Manager root access</string>
+    <string name="str_let_s_grant_maxmanager_a_root_acc">Give Max Manager root access</string>
     <string name="str_privilege_intro">Root gives full access, Shizuku gives ADB-level access without root. Either one is enough — both are detected here automatically.</string>
     <string name="onboarding_run_as">Run as</string>
-    <string name="onboarding_run_as_note">Saved here and used by every screen.</string>
+    <string name="onboarding_run_as_note">Applies to every screen.</string>
     <string name="onboarding_access_soft_note">Standard works without root; root and Shizuku add the controls that need system access. You can change this later from the access sheet.</string>
+    <string name="onboarding_community_title">Follow Max Manager</string>
+    <string name="onboarding_community_desc">The repository and the release channel, one tap away.</string>
     <string name="onboarding_github_mark">N</string>
     <string name="onboarding_github_platform">GitHub</string>
     <string name="onboarding_github_repo">nader295 / MaxManager</string>
@@ -3644,7 +3646,7 @@
     <string name="ify_hint_charging">A battery card when you plug in the charger</string>
     <string name="ify_hint_timer">Timer countdown</string>
     <string name="ify_hint_devices">When Bluetooth or wired headphones connect</string>
-    <string name="ify_hint_battery">A warning at 20% and 10% while the charger is not connected</string>
+    <string name="ify_hint_battery" formatted="false">A warning at 20% and 10% while the charger is not connected</string>
     <string name="ify_hint_toggles">When silent, vibrate, Do Not Disturb or the flashlight changes</string>
     <string name="ify_hint_navigation">Live directions from Google Maps, Waze and OsmAnd</string>
     <string name="ify_hint_tracking">Live order and ride status from Zomato, Swiggy, Uber and more</string>
