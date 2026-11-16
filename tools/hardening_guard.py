@@ -36,6 +36,8 @@ PROGUARD_REL = os.path.join("manager", "app", "proguard-rules.pro")
 MANIFEST_REL = os.path.join("manager", "app", "src", "main", "AndroidManifest.xml")
 WORKFLOW_REL = os.path.join(".github", "workflows", "build.yml")
 CARGO_REL = os.path.join("manager", "src", "main", "rust", "Cargo.toml")
+# ملفّ خصائص Gradle: فيه تُعلَن أعلام R8 صراحةً بدل الاعتماد على افتراضيّ إصدار AGP.
+GRADLE_PROPS_REL = os.path.join("manager", "gradle.properties")
 
 # ── القواعد ────────────────────────────────────────────────────────────────
 #
@@ -336,6 +338,46 @@ def check_cargo(text: str) -> list[dict]:
     return findings
 
 
+def check_gradle_properties(text: str) -> list[dict]:
+    """R8 full mode يُعلَن صراحةً، لا يُفترض من إصدار AGP.
+
+    **وسبب القاعدة مقيس:** كان الاعتماد على أنّ AGP 8 يُشغّل full mode افتراضيًّا،
+    وهذا صحيح اليوم وغدًا يتغيّر بلا سطر في شجرتنا — وأثره أن `-allowaccessmodification`
+    و`-repackageclasses` يبقيان بلا نصف قوّتهما (تضييق الصلاحيات بعد الدمج)، فيصير
+    التعتيم أضعف بلا أن يسقط فحصٌ واحد. والقاعدة تمنع أيضًا الإطفاء الصريح.
+    """
+    findings: list[dict] = []
+    path = rel(os.path.join(ROOT, GRADLE_PROPS_REL))
+    enabled = re.search(r"(?m)^\s*android\.enableR8\.fullMode\s*=\s*true\s*$", text)
+    disabled = re.search(r"(?m)^\s*android\.enableR8\.fullMode\s*=\s*false\s*$", text)
+    r8_off = re.search(r"(?m)^\s*android\.enableR8\s*=\s*false\s*$", text)
+    if disabled:
+        findings.append(
+            {
+                "rule": "r8_full_mode_off",
+                "where": path + ":" + str(text.count("\n", 0, disabled.start()) + 1),
+                "detail": "`android.enableR8.fullMode=false` يُبطل نصف قوّة قواعد التعتيم",
+            }
+        )
+    elif r8_off:
+        findings.append(
+            {
+                "rule": "r8_off",
+                "where": path + ":" + str(text.count("\n", 0, r8_off.start()) + 1),
+                "detail": "`android.enableR8=false` يُلغي التعتيم والتقليص كليًّا",
+            }
+        )
+    elif not enabled:
+        findings.append(
+            {
+                "rule": "r8_full_mode_missing",
+                "where": path + ":1",
+                "detail": "R8 full mode غير مُعلَن — يُفترض من إصدار AGP، وأثره على `-allowaccessmodification` غير مضمون",
+            }
+        )
+    return findings
+
+
 def check_mapping_upload(text: str) -> list[dict]:
     """`mapping.txt` تصعد كأثر (artifact) = خريطة الأسماء تُنشر مع المخرَج.
 
@@ -452,6 +494,11 @@ def scan() -> dict:
     else:
         findings += check_manifest(manifest_text)
     findings += tracked_mapping()
+    props_text = read(os.path.join(ROOT, GRADLE_PROPS_REL))
+    if not props_text:
+        findings.append({"rule": "missing_file", "where": GRADLE_PROPS_REL, "detail": "ملفّ خصائص Gradle غير موجود"})
+    else:
+        findings += check_gradle_properties(props_text)
     workflow_text = read(os.path.join(ROOT, WORKFLOW_REL))
     findings += check_shield_ci(workflow_text)
     findings += check_mapping_upload(workflow_text)
@@ -463,7 +510,7 @@ def scan() -> dict:
     return {
         "obstacles": len(findings),
         "findings": findings,
-        "scope": [GRADLE_REL, PROGUARD_REL, MANIFEST_REL, WORKFLOW_REL, CARGO_REL],
+        "scope": [GRADLE_REL, PROGUARD_REL, MANIFEST_REL, WORKFLOW_REL, CARGO_REL, GRADLE_PROPS_REL],
     }
 
 
@@ -538,11 +585,18 @@ panic = "unwind"
 GOOD_WORKFLOW = "steps:\n  - uses: actions/upload-artifact@v4\n    with:\n      path: build/reports/\n"
 BAD_WORKFLOW = "steps:\n  - uses: actions/upload-artifact@v4\n    with:\n      path: build/outputs/mapping.txt\n"
 
+# خصائص Gradle: العلم السليم صريح، والمعطوب إمّا مُطفأ صراحةً أو غائب يُفترض من AGP.
+GOOD_PROPS = "android.useAndroidX=true\nandroid.enableR8.fullMode=true\n"
+BAD_PROPS = "android.useAndroidX=true\nandroid.enableR8.fullMode=false\n"
+NO_PROPS = "android.useAndroidX=true\n"
+
 
 def self_test() -> int:
     failures: list[str] = []
+    cases: list[str] = []
 
     def expect(name: str, actual: int, want_bad: bool) -> None:
+        cases.append(name)
         ok = (actual > 0) if want_bad else (actual == 0)
         if not ok:
             failures.append(f"{name}: {actual} obstacles (want {'>0' if want_bad else '0'})")
@@ -588,12 +642,17 @@ def self_test() -> int:
     expect("good workflow paths", len(check_mapping_upload(GOOD_WORKFLOW)), False)
     expect("mapping artifact", len(check_mapping_upload(BAD_WORKFLOW)), True)
 
+    # R8 full mode: الإعلان الصريح يمرّ، والغائب والمعطوب يُرصدان (والغائب ليس «سليمًا بالافتراض»).
+    expect("good gradle.properties", len(check_gradle_properties(GOOD_PROPS)), False)
+    expect("r8 full mode off", len(check_gradle_properties(BAD_PROPS)), True)
+    expect("r8 full mode missing", len(check_gradle_properties(NO_PROPS)), True)
+
     if failures:
         print("✗ البوابة نفسها معطوبة:")
         for failure in failures:
             print("  - " + failure)
         return 1
-    print("✓ قياس الأداة: ١٤ حالات معروفة، كلها بالحكم المتوقّع")
+    print("✓ قياس الأداة: " + str(len(cases)) + " حالات معروفة، كلها بالحكم المتوقّع")
     return 0
 
 
