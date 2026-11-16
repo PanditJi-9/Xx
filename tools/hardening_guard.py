@@ -241,12 +241,21 @@ def check_proguard(text: str) -> list[dict]:
     # تمنع أن تُضاف في جولة «إصلاح تتبّع» بلا أن يسقط شيء.
     for match in re.finditer(r"(?mi)^\s*-keepattributes[^\n]*", text):
         line = match.group(0)
-        if "SourceFile" in line or "LineNumberTable" in line:
+        # **ونفي السمة ليس إعادة إحضارها (تكملة ٢٠٢٦-١١-١٦):** القاعدة التي أُضيفت للحزمة
+        # نفسها هي `!SourceFile,!SourceDebugExtension` — أي إسقاطٌ لا إبقاء. فتُقبل الرموز
+        # المنفيّة، ويُبلَّغ عن الإيجابيّة وحدها: العطب هو أن يعود الاسم، لا أن يُمنَع.
+        offending = [
+            token.strip()
+            for token in line.split(None, 1)[-1].split(",")
+            if token.strip() and not token.strip().startswith("!")
+            and token.strip() in ("SourceFile", "LineNumberTable", "SourceDebugExtension")
+        ]
+        if offending:
             findings.append(
                 {
                     "rule": "proguard_attributes_readded",
                     "where": path + ":" + str(text.count("\n", 0, match.start()) + 1),
-                    "detail": "خصائص تشخيصية أُعيد حفظها بعد تعتيم الاسم: " + line.strip()[:60],
+                    "detail": "خصائص تشخيصية أُعيد حفظها بعد تعتيم الاسم: " + ", ".join(offending),
                 }
             )
     return findings
@@ -637,6 +646,10 @@ def self_test() -> int:
     # خصائص تشخيصية أُعيدت بعد التعتيم: تُرصد ولو كان بقية الملفّ سليمًا.
     readded = GOOD_PROGUARD + "-keepattributes SourceFile,LineNumberTable\n"
     expect("attributes readded", len(check_proguard(readded)) - len(check_proguard(GOOD_PROGUARD)), True)
+
+    # ونفيها **ليس** إعادة إحضارها: السطر الذي في الحزمة نفسها يُسقط الاسم، فلا يُبلَّغ عنه.
+    negated = GOOD_PROGUARD + "-keepattributes !SourceFile,!SourceDebugExtension\n"
+    expect("attributes negated", len(check_proguard(negated)) - len(check_proguard(GOOD_PROGUARD)), False)
 
     # رفع `mapping.txt` كأثر: يُرصد، والقاعدة لا تتوهّم مسارًا عاديًّا.
     expect("good workflow paths", len(check_mapping_upload(GOOD_WORKFLOW)), False)
