@@ -68,3 +68,4 @@ runtime/gpu_discovery	state	manager/app/src/main/java/nd/max/MaxManagerPaths.kt
 runtime/per_app_cpu_status	file	manager/app/src/main/java/nd/max/MaxManagerPaths.kt
 runtime/per_app_hw_status	file	manager/app/src/main/java/nd/max/MaxManagerPaths.kt
 sysmon.log	log	mainfiles/service.sh
+sysmon.log.1	log	mainfiles/service.sh

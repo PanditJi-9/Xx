@@ -58,7 +58,10 @@ class FilePathsContractTest {
 
     /** العدد المقيس — مفروض بالمساواة الدقيقة: جدول ينقص صفًّا بصمت يتوقّف عن القياس. */
     // ٣٨ = ٣٧ + `API/max_ai_mode`: نيّة المستخدم الواحدة التي يكتبها التطبيق ويقرؤها الخادم عند الإقلاع، فالعدد يُرفع معها لا صامتًا.
-    private val expectedRows = 38
+    // ٣٩ = ٣٨ + `sysmon.log.1`: شقيقُ الدوران الذي كتبه `mainfiles/service.sh` عند إضافة سقف ٤ م.ب
+    // (تكملة سجلّ الضخامة) — وله سابقةٌ في الجدول نفسه (`preload/MaxManagerPR.log.1`)، ويُرفع العدد
+    // معه صراحةً لا صامتًا.
+    private val expectedRows = 39
 
     private fun root(): File {
         val r = ContractFixtures.repoRoot
