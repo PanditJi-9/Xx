@@ -54,6 +54,10 @@
     <string name="max_ai_behavior_calm_desc">Acts only on a clear gap and never probes an unknown knob.</string>
     <string name="max_ai_behavior_balanced_desc">Acts on a measured gap and probes only while a mistake stays cheap.</string>
     <string name="max_ai_behavior_decisive_desc">Acts earlier on the gap and allows one wider, still reversible probe.</string>
+    <string name="max_ai_behavior_app_override">This app uses %1$s behavior</string>
+    <string name="max_ai_behavior_app_override_desc">From its app profile. The selector above changes the global behavior.</string>
+    <string name="app_settings_max_ai_behavior">Max AI behavior for this app</string>
+    <string name="app_settings_max_ai_behavior_summary">Inherit the global behavior, or give this app its own.</string>
 
     <!-- Sustained heat budget: measured as time, not as another status readout. -->
     <string name="max_ai_budget_section">Sustained heat budget</string>
