@@ -64,7 +64,7 @@ permissions:
 jobs:
   verify:
     name: Release Kotlin + release unit tests (fast, no native/package)
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.BUILD_RUNNER || 'ubuntu-latest' }}
     # السقف هو الطلب نفسه: إن تجاوزه المسار السريع فهو عطب يُرى أحمر، لا انتظار صامت.
     timeout-minutes: 10
     steps:

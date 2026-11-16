@@ -51,7 +51,7 @@ concurrency:
 jobs:
   gates:
     name: Contract gates (no compiler)
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.BUILD_RUNNER || 'ubuntu-latest' }}
     # البوّابات ثوانٍ (٣٧ ثانية مقيسة محليًّا). والعشر دقائق ليست للحاجة بل لتقرير أحمر
     # باسمه إن تعطّل شيء، بدل أن يجلس على runner إلى السقف الافتراضي (٦ ساعات).
     timeout-minutes: 10
