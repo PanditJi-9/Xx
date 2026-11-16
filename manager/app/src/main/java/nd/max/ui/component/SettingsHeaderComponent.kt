@@ -48,6 +48,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import java.text.SimpleDateFormat
@@ -148,22 +149,36 @@ fun AppInfoHeaderContent(modifier: Modifier = Modifier) {
                         text = stringResource(R.string.app_name),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
-                        maxLines = 1
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                     Text(
                         text = stringResource(R.string.str_archhaven_devs),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        maxLines = 1
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
 
+                // **الوسم المختصر لا السطر الكامل:** نسخ CI تأتي بـ`VERSION_NAME` كاملًا
+                // («4 (506-8bed540-stable)»)، ووسمٌ بهذا الطول يأكل عرض الصفّ فيُقتطع اسم
+                // التطبيق نفسه إلى «Max» بلا نقطة حذف. فالبطاقة تعرض رقم الإصدار وحده،
+                // والسطر الكامل باقٍ في «حول» عبر `version_format`.
+                val fullVersion = BuildConfig.VERSION_NAME
+                val compactVersion = fullVersion.substringBefore(" (").substringBefore('(').trim()
+                    .ifEmpty { fullVersion }
+                val versionBadge = if (compactVersion.startsWith("v", ignoreCase = true)) {
+                    compactVersion
+                } else {
+                    "V$compactVersion"
+                }
                 Surface(
                     shape = RoundedCornerShape(maxRadius(MaxRadius.control)),
                     color = MaterialTheme.colorScheme.primary.copy(alpha = 0.10f)
                 ) {
                     Text(
-                        text = if (BuildConfig.VERSION_NAME.startsWith("v", ignoreCase = true)) BuildConfig.VERSION_NAME else "V${BuildConfig.VERSION_NAME}",
+                        text = versionBadge,
                         modifier = Modifier.padding(horizontal = 10.dp, vertical = 7.dp),
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.primary,
