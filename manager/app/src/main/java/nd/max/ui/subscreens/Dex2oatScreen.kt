@@ -48,13 +48,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.core.graphics.drawable.toBitmap
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import nd.max.R
@@ -66,6 +64,7 @@ import nd.max.ui.design.MaxConfirmDialog
 import nd.max.ui.design.MaxGroup
 import nd.max.ui.design.MaxGroupDivider
 import nd.max.ui.design.MaxListScreen
+import nd.max.ui.component.AppIconImage
 import nd.max.ui.design.MaxRadius
 import nd.max.ui.design.MaxRow
 import nd.max.ui.design.MaxSection
@@ -365,8 +364,8 @@ private fun Dex2oatAppRow(
     onCompile: () -> Unit,
     onReset: () -> Unit
 ) {
-    // Keyed on the package so scrolling does not re-rasterize icons.
-    val iconBitmap = remember(app.packageName) { app.icon?.toBitmap()?.asImageBitmap() }
+    // الأيقونة من الكاش المشترك `AppIconCache` (تُرسم مرة لكل حزمة على IO) — لا تُحمَّل
+    // هنا ولا تُحتجَز في القائمة: احتجاز أيقونات ٧٨٨ حزمة قِيس PSS ٤٩١ م.ب في قائمة التنظيف.
 
     Row(
         modifier = Modifier
@@ -379,20 +378,11 @@ private fun Dex2oatAppRow(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(MaxSpace.md)
     ) {
-        if (iconBitmap != null) {
-            Image(
-                bitmap = iconBitmap,
-                contentDescription = null,
-                modifier = Modifier.size(MaxSize.rowIconContainer)
-            )
-        } else {
-            Icon(
-                imageVector = Icons.Rounded.Android,
-                contentDescription = null,
-                modifier = Modifier.size(MaxSize.rowIconContainer),
-                tint = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
+        AppIconImage(
+            packageName = app.packageName,
+            size = MaxSize.rowIconContainer,
+            contentDescription = app.label,
+        )
 
         Column(
             modifier = Modifier.weight(1f),

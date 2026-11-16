@@ -243,8 +243,8 @@ internal fun MaxBackupStorageSection(
                     title = stringResource(R.string.max_backup_storage_fallback_title),
                     detail = stringResource(
                         R.string.max_backup_storage_fallback_desc,
-                        ltrIsolated(readout.requestedPath),
-                        ltrIsolated(readout.folderPath),
+                        ltrIsolated(readout.requestedPath).orEmpty(),
+                        ltrIsolated(readout.folderPath).orEmpty(),
                     ),
                     technicalDetail = ltrIsolated(readout.folderPath),
                     primaryActionLabel = onGrant?.let { stringResource(R.string.max_backup_storage_grant) },
