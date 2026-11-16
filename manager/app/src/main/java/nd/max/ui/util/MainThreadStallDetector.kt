@@ -30,14 +30,24 @@ import android.view.Choreographer
  * آخر بلا امتياز أعلى، ولا نُوهم العكس. كذلك **لا يُدَّعى** أن الإطارات المُسقَطة = إطارات
  * النظام: هذا مؤشّر على تجربة استخدام تطبيقنا، وليس محلّل أداء للجهاز (ذلك `AR-07`).
  *
- * الكلفة: نداء واحد لكل إطار، وبلا أي كتابة عتاد. والسجل ببوابة `DETAILED_LOG` كبقية الأحداث.
+ * **الكلفة كانت هي العطب (قِيست في ٢٠٢٦-١١-١٦):** كان `postFrameCallback` بلا تأجيل يعيد
+ * تسجيل نفسه كل مزامنة رأسيّة، فيستيقظ الخيط الرئيسي **١٢٠ مرّة في الثانية** على كل شاشة
+ * بلا رسم شيء: `atrace view gfx` أعطى ~٩٠ شريحة `animation`/ثانية على `apps` و`settings`،
+ * و`RenderThread` صفرًا، و`thr2.py` أعطى ٦٪ من نواة على الخيط الرئيسي في كل مسار.
+ * وهو تشخيص، فلا يجوز أن يكون **أكبر مستهلك** في التطبيق.
+ *
+ * **والعلاج:** العيّنة تُؤخذ بوتيرة الحدّ نفسه (٧٠٠ م.ث ⇒ ~١٫٤ استيقاظًا/ثانية) لا بوتيرة
+ * الإطار، ولا يتغيّر الحكم: نطلب الإطار التالي بعد `thresholdMs` ونسجّل **تأخّر النداء عن
+ * موعده** (زمن الآن ناقص الزمن المتوقّع)، فيبقى [StallMath.classify] كما هو ويعطي المدّة
+ * الحقيقية للانسداد. ودقّة ٧٠٠ م.ث كافية لحدٍّ هو ٧٠٠ م.ث — ولا تُنقص قدرة الكشف.
+ * والسجل ببوابة `DETAILED_LOG` كبقية الأحداث.
  */
 class MainThreadStallDetector(
     private val thresholdMs: Long = StallMath.DEFAULT_THRESHOLD_MS,
     private val onStall: (StallReport) -> Unit = {},
 ) : Choreographer.FrameCallback {
 
-    private var previousFrameNanos = 0L
+    private var expectedFrameNanos = 0L
     private var running = false
     private var count = 0L
     private var worstMs = 0L
@@ -52,9 +62,9 @@ class MainThreadStallDetector(
     fun start() {
         if (running) return
         running = true
-        // ‏0 تعني «لا إطار سابق» ⇒ أول إطار لا يُحكم عليه بشيء (لا مقارنة بمجهول).
-        previousFrameNanos = 0L
-        Choreographer.getInstance().postFrameCallback(this)
+        // ‏0 تعني «لا موعد سابق» ⇒ أول نداء لا يُحكم عليه بشيء (لا مقارنة بمجهول).
+        expectedFrameNanos = 0L
+        arm()
     }
 
     /** يوقف المراقبة. لا يمسح العدّادات — التقرير يبقى صالحًا بعد التوقّف. */
@@ -62,23 +72,39 @@ class MainThreadStallDetector(
         if (!running) return
         running = false
         Choreographer.getInstance().removeFrameCallback(this)
+        expectedFrameNanos = 0L
+    }
+
+    /**
+     * يطلب النداء التالي بعد [thresholdMs] لا في الإطار القادم.
+     *
+     * **ولماذا التأجيل لا الإطار:** الطلب في كل إطار يعني استيقاظًا ١٢٠ مرّة/ثانية بلا رسم
+     * (قِيس: ٦٪ من نواة على كل شاشة). والحدّ الذي نحكم به ٧٠٠ م.ث، فعيّنة بوتيرة الحدّ تكشف
+     * كل انسداد يستحقّ الاسم بتكلفة ١٫٤ استيقاظًا/ثانية.
+     */
+    private fun arm() {
+        expectedFrameNanos = System.nanoTime() + thresholdMs * 1_000_000L
+        Choreographer.getInstance().postFrameCallbackDelayed(this, thresholdMs)
     }
 
     override fun doFrame(frameTimeNanos: Long) {
         if (!running) return
-        val previous = previousFrameNanos
-        previousFrameNanos = frameTimeNanos
-        when (val verdict = StallMath.classify(previous, frameTimeNanos, thresholdMs)) {
-            is StallMath.Verdict.Stall -> {
-                count += 1
-                if (verdict.durationMs > worstMs) worstMs = verdict.durationMs
-                onStall(StallReport(verdict.durationMs, worstMs, count))
+        val expected = expectedFrameNanos
+        if (expected > 0L) {
+            // الفجوة المقيسة = تأخّر النداء عن موعده، لا الفرق بين إطارين متتاليين.
+            // و`expected` يجعل [StallMath] يحكم على التأخّر نفسه بلا أي تغيير في منطقه.
+            when (val verdict = StallMath.classify(expected, System.nanoTime(), thresholdMs)) {
+                is StallMath.Verdict.Stall -> {
+                    count += 1
+                    if (verdict.durationMs > worstMs) worstMs = verdict.durationMs
+                    onStall(StallReport(verdict.durationMs, worstMs, count))
+                }
+                // فجوة أطول من حدّ المعقول: الحلقة كانت متوقّفة (شاشة مطفأة/خلفية)، ولا دليل
+                // على انسداد. نتجاهلها بدل أن ندّعي عيبًا لم نقسه.
+                is StallMath.Verdict.Ignored, StallMath.Verdict.None -> Unit
             }
-            // فجوة أطول من حدّ المعقول: الحلقة كانت متوقّفة (شاشة مطفأة/خلفية)، ولا دليل
-            // على انسداد. نتجاهلها بدل أن ندّعي عيبًا لم نقسه.
-            is StallMath.Verdict.Ignored, StallMath.Verdict.None -> Unit
         }
-        Choreographer.getInstance().postFrameCallback(this)
+        arm()
     }
 }
 
