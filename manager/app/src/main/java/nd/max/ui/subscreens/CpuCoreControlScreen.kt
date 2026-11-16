@@ -578,7 +578,7 @@ private fun CoreClockTile(
     ) {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             Text(
-                text = "${stringResource(R.string.cpu_label)}$LTR_MARK${row.cpu}",
+                text = "${stringResource(R.string.cpu_label)} $LTR_MARK${row.cpu}",
                 style = MaterialTheme.typography.labelMedium,
                 fontWeight = FontWeight.SemiBold,
                 color = scheme.onSurface,
@@ -1355,7 +1355,7 @@ private fun CpusetGroupRow(
                                 pendingSelection + cpu
                             }
                         },
-                        label = { Text("${stringResource(R.string.cpu_label)}$LTR_MARK$cpu") }
+                        label = { Text("${stringResource(R.string.cpu_label)} $LTR_MARK$cpu") }
                     )
                 }
             }

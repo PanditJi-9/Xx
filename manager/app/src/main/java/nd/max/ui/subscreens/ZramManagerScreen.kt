@@ -59,6 +59,7 @@ import nd.max.ui.design.MaxScreen
 import nd.max.ui.design.MaxSection
 import nd.max.ui.design.MaxSliderRow
 import nd.max.ui.design.MaxTone
+import java.util.Locale
 import nd.max.ui.component.MaxDeviceInfoShortcut
 import nd.max.ui.component.rememberMemoryLedgerFields
 import nd.max.ui.navigation.MaxDestination
@@ -161,10 +162,12 @@ fun ZramManagerScreen(
 
     // Compression ratio is derived, never invented: without both counters the
     // metric is unreadable rather than silently shown as zero.
+    // والصياغة بأرقام لاتينية كبقية الصفّ: `%.2f.format` بلا لغة يعطي ٢٫٩ في العربية
+    // بينما الحجم المجاور يُطبع 4398، فيخرج الصفّ بواحدتين.
     val origMb = viewModel.origDataMb
     val compMb = viewModel.compDataMb
     val ratio = if (origMb > 0 && compMb > 0) origMb.toFloat() / compMb.toFloat() else null
-    val ratioText = ratio?.let { stringResource(R.string.max_zram_ratio_value, "%.2f".format(it)) }
+    val ratioText = ratio?.let { stringResource(R.string.max_zram_ratio_value, "%.2f".format(Locale.US, it)) }
 
     val condition = when (viewModel.isAvailable) {
         null -> MaxCondition(

@@ -36,6 +36,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -80,6 +81,18 @@ import java.net.Socket
 
 private const val NsDash = "—"
 private val NsPaneWidth = 304.dp
+
+/**
+ * أقلّ عرض يُترك للوحة النتائج حين يضيق الجهاز.
+ *
+ * الشاشة مبنيّة عمودين للعرض الأفقي، وفي الوضع الرأسي (٣٧٥dp) كان العمود الثابت
+ * ٣٠٤dp يترك للنتائج نحو ١١dp، فتُرسم ملاحظة الفحص **حرفًا في كل سطر** (قيست على
+ * جهاز المستخدم: ١٢٢٠×٢٧١٢ بكثافة ٥٢٠). فلا يُسمح للّوحة أن تأكل عرض النتائج.
+ */
+private val NsDetailMinWidth = 190.dp
+
+/** وحدّ أدنى للوحة نفسها كي لا تُسحق بدورها على شاشة ضيّقة جدًّا. */
+private val NsPaneMinWidth = 140.dp
 private val NsProbePorts = listOf(22, 80, 443, 5000, 5555)
 private const val NsProbeParallel = 24
 private const val NsProbeTimeoutMs = 350
@@ -229,6 +242,12 @@ fun NetworkScannerScreen(navController: NavController) {
         accent = GameSpacePalette.VioletSoft,
         scrollEnabled = false,
     ) {
+        // العمود الأيسر عرضه ثابت في التصميم الأفقي، وفي الرأسي يحسب من عرض الشاشة
+        // كي تبقى لوحة النتائج قابلة للقراءة (انظر [NsDetailMinWidth]).
+        val screenWidth = LocalConfiguration.current.screenWidthDp.dp
+        val paneWidth = NsPaneWidth
+            .coerceAtMost(screenWidth - MaxSpace.lg * 3 - NsDetailMinWidth)
+            .coerceAtLeast(NsPaneMinWidth)
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -237,7 +256,7 @@ fun NetworkScannerScreen(navController: NavController) {
         ) {
             Column(
                 modifier = Modifier
-                    .width(NsPaneWidth)
+                    .width(paneWidth)
                     .fillMaxHeight()
                     .padding(vertical = MaxSpace.sm),
                 verticalArrangement = Arrangement.spacedBy(MaxSpace.md),

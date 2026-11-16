@@ -203,7 +203,13 @@ fun PreferenceTweakScreen(navController: NavController) {
                                     ExpressiveSwitchItem(
                                         icon = Icons.Rounded.Timeline,
                                         title = stringResource(R.string.walt_tunes),
-                                        summary = if (isSnapdragon) stringResource(R.string.walt_tunes_desc) else "This option is only available for Snapdragon devices.",
+                                        // الشرط يُقال بالعربية أيضًا: الشاشة عربية، وجملة إنجليزية واحدة
+                                        // في بطاقة معطّلة تُقرأ عيبًا لا تعليمًا.
+                                        summary = if (isSnapdragon) {
+                                            stringResource(R.string.walt_tunes_desc)
+                                        } else {
+                                            stringResource(R.string.pref_snapdragon_only)
+                                        },
                                         checked = waltTunes!!,
                                         enabled = isSnapdragon,
                                         onCheckedChange = { isChecked ->

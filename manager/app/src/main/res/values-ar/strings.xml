@@ -627,6 +627,7 @@
     <string name="version_format">الإصدار %1$s</string>
     <string name="walt_tunes">ضبط محافظ WALT</string>
     <string name="walt_tunes_desc">تحسين معلمات محافظ WALT لزيادة سرعة استجابة جدولة CPU</string>
+    <string name="pref_snapdragon_only">هذا الخيار متاح على أجهزة Snapdragon فقط</string>
     <string name="welcome_maxmanager">مرحبًا بك في Max Manager</string>
     <string name="yes">نعم</string>
     <string name="str_use_scroll_animation">استخدام تأثيرات التمرير</string>
@@ -4272,7 +4273,7 @@
     <string name="battery_history_voltage">الجهد</string>
     <string name="battery_history_voltage_value">%1$s mV</string>
     <string name="battery_history_temperature">الحرارة</string>
-    <string name="battery_history_temperature_value">%1$s °C</string>
+    <string name="battery_history_temperature_value">&#8206;%1$s °C&#8206;</string>
     <string name="battery_history_power">القدرة</string>
     <string name="battery_history_power_value">%1$s واط</string>
     <string name="battery_history_percent">%1$d%%</string>

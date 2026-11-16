@@ -66,6 +66,7 @@ import androidx.compose.ui.unit.coerceAtMost
 import androidx.compose.ui.unit.coerceIn
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import java.util.Locale
 import nd.max.R
 import nd.max.ui.overlay.HandleFx
 import nd.max.core.gamespace.GamePanelMode
@@ -84,6 +85,12 @@ import nd.max.ui.design.MAX_VALUE_UNAVAILABLE
 import nd.max.ui.design.MaxRadius
 import nd.max.ui.design.MaxSpace
 import nd.max.ui.design.maxRadius
+
+/**
+ * علامة اتجاه قوية حول القراءة ووحدتها: بلاها يقلب سياقُ العربية ترتيبَ «°C» و«W»
+ * فتُقرأ «C°41» بدل «41°C» — وهي قراءة خاطئة لا تُنبّه. الحدّ من المصدر لا من كل موضع عرض.
+ */
+private const val LTR_MARK = "\u200E"
 
 private val PANEL_MAX_WIDTH = 640.dp
 private val PANEL_MAX_HEIGHT = 420.dp
@@ -270,10 +277,20 @@ internal fun PanelReadings(reading: HudReading?, fields: List<HudField>) {
             add(stringResource(R.string.game_panel_chip_ram) to (reading?.ramMb?.let(::ramText) ?: MAX_VALUE_UNAVAILABLE))
         }
         if (HudField.Power in fields) {
-            add(stringResource(R.string.game_panel_chip_power) to (reading?.watt?.let { "%.1f W".format(it) } ?: MAX_VALUE_UNAVAILABLE))
+            add(
+                stringResource(R.string.game_panel_chip_power) to (
+                    reading?.watt?.let { "$LTR_MARK${"%.1f".format(Locale.US, it)} W$LTR_MARK" }
+                        ?: MAX_VALUE_UNAVAILABLE
+                    )
+            )
         }
         if (HudField.Heat in fields) {
-            add(stringResource(R.string.game_panel_chip_heat) to (reading?.heat?.let { "%.0f°C".format(it) } ?: MAX_VALUE_UNAVAILABLE))
+            add(
+                stringResource(R.string.game_panel_chip_heat) to (
+                    reading?.heat?.let { "$LTR_MARK${"%.0f".format(Locale.US, it)}°C$LTR_MARK" }
+                        ?: MAX_VALUE_UNAVAILABLE
+                    )
+            )
         }
         if (HudField.Renderer in fields) {
             add(stringResource(R.string.game_panel_chip_renderer) to (reading?.renderer ?: MAX_VALUE_UNAVAILABLE))

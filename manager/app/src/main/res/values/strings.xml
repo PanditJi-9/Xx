@@ -453,7 +453,7 @@
     <string name="cpu_state_share_flat">Time is spread evenly across frequencies.</string>
     <string name="cpu_state_share_dominant">Longest time at %1$s (%2$d%%)</string>
     <string name="cpu_state_share_percent">%1$d%%</string>
-    <string name="detail_thermal_value_celsius" translatable="false">%1$d°C</string>
+    <string name="detail_thermal_value_celsius" translatable="false">&#8206;%1$d&#8206;°C</string>
     <string name="detail_thermal_device_meta" translatable="false">%1$s · %2$s</string>
     <string name="cpu_affinity_title">Task Affinity Groups</string>
     <string name="cpu_affinity_subtitle">Choose which cores each scheduling group is allowed to run threads on \u2014 e.g. pin \"Top App\" to the performance cluster only.</string>
@@ -1688,6 +1688,7 @@
     <string name="version_format">Version %1$s</string>
     <string name="walt_tunes">WALT Governor Tuning</string>
     <string name="walt_tunes_desc">Optimize WALT governor parameters to improve CPU scheduling responsiveness</string>
+    <string name="pref_snapdragon_only">This option is only available on Snapdragon devices</string>
     <string name="welcome_maxmanager">Welcome to Max Manager</string>
     <string name="yes">Yes</string>
     <string name="str_use_scroll_animation">Use Scroll Animation</string>
@@ -4332,7 +4333,7 @@
     <string name="battery_history_voltage">Voltage</string>
     <string name="battery_history_voltage_value">%1$s mV</string>
     <string name="battery_history_temperature">Temperature</string>
-    <string name="battery_history_temperature_value">%1$s °C</string>
+    <string name="battery_history_temperature_value">&#8206;%1$s °C&#8206;</string>
     <string name="battery_history_power">Power</string>
     <string name="battery_history_power_value">%1$s W</string>
     <string name="battery_history_percent">%1$d%%</string>

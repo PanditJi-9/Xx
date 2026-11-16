@@ -21,6 +21,12 @@ object LobbyModel {
     private const val TEMP_MIN_TENTHS = -300
     private const val TEMP_MAX_TENTHS = 1500
 
+    /**
+     * علامة اتجاه قويّة تُثبّت «°C» بعد الرقم في السياق العربي؛ بلاها يقلب RTL الوحدة
+     * فتُقرأ «C°34.5» بدل «34.5°C».
+     */
+    private const val LTR_MARK = "\u200E"
+
     /** أقلّ وزن نسبيّ للّون المميَّز لنقبله؛ دونه تكون الأيقونة رماديّة/سوداء فنعود لأحمر العلامة. */
     private const val MIN_RELATIVE_WEIGHT = 0.03f
 
@@ -38,7 +44,7 @@ object LobbyModel {
     fun temperatureText(tenthsOfCelsius: Int?): String? {
         if (tenthsOfCelsius == null) return null
         if (tenthsOfCelsius < TEMP_MIN_TENTHS || tenthsOfCelsius > TEMP_MAX_TENTHS) return null
-        return "%.1f°C".format(Locale.US, tenthsOfCelsius / 10f)
+        return "$LTR_MARK${"%.1f".format(Locale.US, tenthsOfCelsius / 10f)}°C$LTR_MARK"
     }
 
     /**
