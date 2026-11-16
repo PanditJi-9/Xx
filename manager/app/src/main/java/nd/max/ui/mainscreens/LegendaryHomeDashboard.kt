@@ -40,13 +40,17 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.rounded.Cancel
+import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.HelpOutline
 import androidx.compose.material.icons.rounded.PowerSettingsNew
 import androidx.compose.material.icons.rounded.Speed
 import androidx.compose.material.icons.rounded.Storage
 import androidx.compose.material.icons.rounded.Thermostat
 import androidx.compose.material3.Icon
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -133,7 +137,9 @@ internal fun LegendaryHomeDashboard(
     /** فتح نافذة وضع الوصول من شارة البطل. */
     onAccess: () -> Unit = {},
 ) {
-    val online = (ui.rootStatus || ui.daemonOnline) && ui.moduleInstalled
+    // «مفعّل» إثبات أنّ المسار المختار يعمل بشرطيه، لا زينة بصرية (أمر المالك ٢٠٢٦-١١-١٦):
+    // جذر بلا وحدة = نصف منظومة، وShizuku لا يصل هنا إلا بإذنه ممنوحًا. القرار في `HomeActivityRules`.
+    val active = HomeActivityRules.active(accessLevel, ui.moduleInstalled)
     // ترتيب حسب الخطورة: بطاقة الخلل الحقيقي تصعد تحت البطل، وإلا تبقى في موضعها المحدّد.
     val focusFirst = HomeFocusModel.focusKind(
         heatC = deviceHeatC(dashboard) ?: 0,
@@ -141,7 +147,13 @@ internal fun LegendaryHomeDashboard(
         storageVisible = storageCardVisible,
     ) != null
     Column(modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(MaxSpace.lg)) {
-        HomeHeader(online, onReboot, onShowGuide)
+        HomeHeader(
+            active = active,
+            accessLevel = accessLevel,
+            moduleInstalled = ui.moduleInstalled,
+            onReboot = onReboot,
+            onShowGuide = onShowGuide,
+        )
         // المرساة تُعلَّق من الجذر (`LocalHomeTourTargets`) لا من وسيط في التوقيع: نفس المرساة
         // تعيش في أربع شاشات، وتوقيعٌ يحملها كان يجعل كل شاشة تعرف بجولة تعرضها أخرى.
         HomeTourAnchor(HomeTourTarget.Hero) {
@@ -225,13 +237,17 @@ internal fun LegendaryHomeDashboard(
  */
 @Composable
 private fun HomeHeader(
-    online: Boolean,
+    active: Boolean,
+    accessLevel: PrivilegeLevel,
+    moduleInstalled: Boolean,
     onReboot: () -> Unit,
     onShowGuide: () -> Unit,
 ) {
     val p = neuralPalette()
     // نافذة الكتابة تُفتح من الكلمة نفسها، فحالتها هنا.
     var noteOpen by rememberSaveable { mutableStateOf(false) }
+    // ونافذة «لماذا غير مفعّل؟» تُفتح من الشارة نفسها — سببٌ لا إجراء.
+    var reasonOpen by rememberSaveable { mutableStateOf(false) }
     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(3.dp)) {
             Text(
@@ -245,9 +261,14 @@ private fun HomeHeader(
                 modifier = Modifier.neuralClickable(onClick = { noteOpen = true }, role = Role.Button),
             )
         }
+        // الشارة زرّ الآن: الضغط يشرح **سبب** الحالة لا يبدّلها (أمر المالك: «نافذة منبثقة بالسبب»).
         HomeStatusChip(
-            text = stringResource(if (online) R.string.home_active else R.string.home_idle),
-            accent = if (online) p.ok else p.danger,
+            text = stringResource(if (active) R.string.home_active else R.string.home_not_active),
+            accent = if (active) p.ok else p.danger,
+            modifier = Modifier.neuralClickable(
+                onClick = { reasonOpen = true },
+                role = Role.Button,
+            ),
         )
         Spacer(Modifier.width(8.dp))
         // **`?` قبل الزرّ بأمر §5.1:** الجولة تُطلب من الرأس لا من داخل البطاقة، ومن
@@ -262,6 +283,13 @@ private fun HomeHeader(
     }
     if (noteOpen) {
         HomeNoteWindow(onClose = { noteOpen = false })
+    }
+    if (reasonOpen) {
+        HomeStatusReasonDialog(
+            accessLevel = accessLevel,
+            moduleInstalled = moduleInstalled,
+            onClose = { reasonOpen = false },
+        )
     }
 }
 
@@ -557,7 +585,7 @@ private fun FocusCard(
  * كبسولة قصيرة بين مربعات مستديرة. اللون يحمل الحالة، والكلمة تحملها أيضًا.
  */
 @Composable
-private fun HomeStatusChip(text: String, accent: Color) {
+private fun HomeStatusChip(text: String, accent: Color, modifier: Modifier = Modifier) {
     val p = neuralPalette()
     val shape = RoundedCornerShape(maxRadius(MaxRadius.control))
     Row(
@@ -566,11 +594,69 @@ private fun HomeStatusChip(text: String, accent: Color) {
             .clip(shape)
             .background(accent.copy(alpha = .14f))
             .border(BorderStroke(1.dp, accent.copy(alpha = .40f)), shape)
+            .then(modifier)
             .padding(horizontal = MaxSpace.md),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(Modifier.size(MaxSpace.sm).clip(CircleShape).background(accent))
         Spacer(Modifier.width(MaxSpace.xs))
         Text(text, color = p.text, style = MaterialTheme.typography.labelMedium, maxLines = 1)
+    }
+}
+
+/**
+ * «لماذا غير مفعّل؟» — نافذة **سبب** لا إجراء (أمر المالك: «وعند الضغط عليه نافذة منبثقة بالسبب»).
+ *
+ * وتعرض الثلاثة دائمًا، والمحقَّق منها بعلامة صح والمعطّل بعلامة رفض: إخفاء غير المحقَّق كان سيترك
+ * المستخدم يظنّ الشرط غير مطلوب، وهو عكس ما طُلب.
+ */
+@Composable
+private fun HomeStatusReasonDialog(
+    accessLevel: PrivilegeLevel,
+    moduleInstalled: Boolean,
+    onClose: () -> Unit,
+) {
+    val p = neuralPalette()
+    AlertDialog(
+        onDismissRequest = onClose,
+        title = { Text(stringResource(R.string.home_status_reason_title)) },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(MaxSpace.sm)) {
+                Text(
+                    stringResource(R.string.home_status_reason_body),
+                    color = p.text,
+                    style = MaterialTheme.typography.bodySmall,
+                )
+                HomeStatusReasonRow(R.string.home_status_row_root, accessLevel == PrivilegeLevel.ROOT)
+                HomeStatusReasonRow(R.string.home_status_row_module, moduleInstalled)
+                HomeStatusReasonRow(R.string.home_status_row_shizuku, accessLevel == PrivilegeLevel.SHIZUKU)
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onClose) { Text(stringResource(R.string.home_status_close)) }
+        },
+    )
+}
+
+/** سطر شرط واحد: علامة تُقرأ بلا لون وحده (لون ≠ معنى وحيد — ADR-07). */
+@Composable
+private fun HomeStatusReasonRow(labelRes: Int, satisfied: Boolean) {
+    val p = neuralPalette()
+    Row(
+        Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(MaxSpace.xs),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(
+            imageVector = if (satisfied) Icons.Rounded.CheckCircle else Icons.Rounded.Cancel,
+            contentDescription = null,
+            tint = if (satisfied) p.ok else p.danger,
+            modifier = Modifier.size(MaxSize.iconGlyph),
+        )
+        Text(
+            text = stringResource(labelRes),
+            color = p.text,
+            style = MaterialTheme.typography.bodySmall,
+        )
     }
 }

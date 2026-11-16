@@ -1,0 +1,10 @@
+<resources>
+    <!-- شارة الرأس في الرئيسية: بديل «Idle» (أمر المالك ٢٠٢٦-١١-١٦). -->
+    <string name="home_not_active">Not active</string>
+    <string name="home_status_reason_title">Why not active?</string>
+    <string name="home_status_reason_body">One working path is enough to be active: root with the module installed, or Shizuku with its permission granted.</string>
+    <string name="home_status_row_root">Root granted</string>
+    <string name="home_status_row_module">Module installed</string>
+    <string name="home_status_row_shizuku">Shizuku ready</string>
+    <string name="home_status_close">Close</string>
+</resources>
