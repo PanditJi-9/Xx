@@ -49,12 +49,11 @@
 # الحقيقية تُقرأ بها، وإزالتها تعمية عن المالك لا عن المهاجم.
 -renamesourcefileattribute SourceFile
 
-# **وإعادة الاسم كانت تعود من باب آخر (تكملة ٢٠٢٦-١١-١٦):** بعد إعلان القاعدة أعلاه بقيت
-# `ContextBridge.kt` ظاهرةً في جدول نصوص حزمة الإصدار، وأسقطت `apk_leak_scan` البناء بها في
-# تشغيلين. فاسم الملفّ يُكتب أيضًا في **سمة** `SourceFile` وفي كتلة `SourceDebugExtension`
-# (SMAP) التي يولّدها المُصرِّف للدوال المضمَّنة، و`-renamesourcefileattribute` لا يمسّ داخل
-# SMAP. فالسمتان تُسقَطان كلتاهما: لا اسم ملفّ أصلًا، والأرقام تبقى في `LineNumberTable`.
--keepattributes !SourceFile,!SourceDebugExtension
+# **تصحيح بعد القياس (تكملة ٢٠٢٦-١١-١٦):** جرّبت نفي السمة هنا
+# (`-keepattributes !SourceFile,!SourceDebugExtension`) فبقيت `ContextBridge.kt` في جدول نصوص
+# حزمة الإصدار ثلاثة تشغيلات — R8 لا يُسقط السمات بالنفي. فالسطر حُذف ونُقل الإسقاط إلى
+# `tools/dex_strip_source_names.py` بعد التصليب: يُفرّغ مرجع `class_def` **ونصّ الجدول**،
+# ثم يعيد بصمة DEX وتوقيعه، و`apk_leak_scan` يُثبته في CI.
 
 # ── قواعد الإبقاء (Keep) ──
 #

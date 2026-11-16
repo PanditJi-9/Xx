@@ -260,6 +260,7 @@ jobs:
           python3 tools/dex_integrity.py --self-test
           python3 tools/apk_repack.py --self-test
           python3 tools/apk_leak_scan.py --self-test
+          python3 tools/dex_strip_source_names.py --self-test
           # ← الوحدات الميتة: ملفّ Rust **خارج شجرة الوحدات** (لا يُصرَّف إطلاقًا، فيتعفّن بلا
           # خطأ ولا تحذير — مقيس: `thermalcore/src/prediction.rs` يقرأ سبعة حقول لا وجود لها
           # في نوعه، ولو وُصل لَما تُرجم) ووحدة C **مبنية بلا مُستخدِم خارجي**. والأساس المُعلَن
@@ -1449,6 +1450,12 @@ jobs:
             echo "⚠️ dexdump غير متاح: الطبقة البنيوية الثانية غير مُتحقَّقة (تُقال ولا تُدَّعى)"
           fi
 
+          # **وإزالة اسم ملفّ المصدر (تكملة ٢٠٢٦-١١-١٦):** R8 لا يُسقط سمة `SourceFile`
+          # ولو بنفيها في `-keepattributes` (قِيس: بقيت `ContextBridge.kt` في ثلاث دورات)،
+          # فتُفرَّغ هنا بعد التصليب: مرجعها في `class_def` **ونصّها** في الجدول، ثم تُعاد
+          # بصمة DEX وتوقيعه. و`dex_integrity` بعدها يتحقّق من التواقيع لا من النيّة.
+          python3 tools/dex_strip_source_names.py --assert --path "$work/dex/.bla-hardened"
+          python3 tools/dex_integrity.py --assert --path "$work/dex/.bla-hardened"
           cp "$work"/dex/.bla-hardened/*.dex "$work/unpacked/"
           python3 tools/apk_repack.py "$work/unpacked" "$work/unsigned.apk"
 
