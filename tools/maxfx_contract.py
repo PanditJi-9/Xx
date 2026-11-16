@@ -404,15 +404,27 @@ def check_wrapper_includes(text: str, fmq_files: dict[str, str], project: set[st
 
 
 def check_build(android_mk: str, gen_sh: str, app_mk: str, workflow: str,
-                gitignore: str) -> list[str]:
-    """اتّساق البناء: الرأس المولَّد، والرموز المقيسة، والأعمدة، والتجاهل."""
+                gitignore: str, script: str = "") -> list[str]:
+    """اتّساق البناء: الرأس المولَّد، والرموز المقيسة، والأعمدة، والتجاهل.
+
+    **و`script` (٢٠٢٦-١١-١٦):** جسم بناء MaxFx نُقل من `build.yml` إلى
+    `maxfx/build-and-verify.sh` ليعمل في الخلفية (أمر المالك: بناء أسرع). فلو بقي الفحص
+    يقرأ `build.yml` وحده لسقط بـ«بوابة الرموز لا تذكر …» وهو **موجود** في السكربت —
+    بلاغ كاذب يُغري بحذف الفحص. فالنصّ المقيس = سير العمل + السكربت، ويُشترط أن يستدعي
+    `build.yml` السكربت صراحةً كي لا يبقى سكربت يتيمًا لا يُشغَّل.
+    """
     problems = []
+
+    effective = workflow if not script else workflow + "\n" + script
+    if script and "maxfx/build-and-verify.sh" not in workflow:
+        problems.append(
+            "workflow: لا يستدعي maxfx/build-and-verify.sh ⇒ بناء MaxFx قد يبقى سكربتًا لا يُشغَّل")
 
     # `Android.mk` يبنيه من `$(MAXFX_AIDL_GEN)` ⇒ يُقاس **اللاحقة المشتركة** لا السلسلة الكاملة.
     binder_suffix = "android/hardware/audio/effect/BnEffect.h"
     if binder_suffix not in android_mk or "MAXFX_AIDL_GEN" not in android_mk:
         problems.append(f"Android.mk: لا يُشير إلى الرأس المولَّد ({binder_suffix}) عبر MAXFX_AIDL_GEN")
-    if GENERATED_REL not in workflow:
+    if GENERATED_REL not in effective:
         problems.append("workflow: لا يقيس وجود الرأس المولَّد ⇒ قد يُبنى بلا الغلاف بلا إنذار")
     # ومصادر الحزمة المُولَّدة: الرؤوس تُكتَب ببادئة `aidl/` (‏`--header_out`، والمولِّد يضع
     # البادئة)، والمصادر من `GetOutputFilePath` التي تبني من اسم الحزمة وحده (‏`--out`، بلا
@@ -433,9 +445,9 @@ def check_build(android_mk: str, gen_sh: str, app_mk: str, workflow: str,
         problems.append("gen.sh: لا يستعمل `--lang=ndk` ⇒ رؤوس C++ لا تصلح لمكتبة NDK")
 
     block = ""
-    idx = workflow.find("symbols=")
+    idx = effective.find("symbols=")
     if idx != -1:
-        block = workflow[idx:idx + 1500]
+        block = effective[idx:idx + 1500]
     for sym in CI_SYMBOLS:
         if sym not in block:
             problems.append(f"workflow: بوابة الرموز لا تذكر {sym}")
@@ -498,6 +510,7 @@ def collect(repo: str) -> dict:
         "gen_sh": _read(os.path.join(repo, "maxfx", "aidl", "gen.sh")),
         "app_mk": _read(os.path.join(repo, "maxfx", "jni", "Application.mk")),
         "workflow": _read(os.path.join(repo, ".github", "workflows", "build.yml")),
+        "maxfx_script": _read(os.path.join(repo, "maxfx", "build-and-verify.sh")),
         "gitignore": _read(os.path.join(repo, ".gitignore")),
         "_aidl_root": aidl_root,
     }
@@ -517,7 +530,7 @@ def audit(data: dict) -> list[tuple[str, list[str]]]:
          check_wrapper_includes(data["symbols_text"], data["fmq"], data["project"])),
         ("اتّساق البناء والأعمدة",
          check_build(data["android_mk"], data["gen_sh"], data["app_mk"], data["workflow"],
-                     data["gitignore"])),
+                     data["gitignore"], data.get("maxfx_script", ""))),
     ]
 
 
