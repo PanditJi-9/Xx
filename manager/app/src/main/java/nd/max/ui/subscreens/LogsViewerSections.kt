@@ -118,12 +118,17 @@ internal fun LogViewerStatusHeader(
     ) {
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = if (mode == LogsViewerViewModel.ViewerMode.LOGCAT) "System log" else "MaxManager log",
+                text = stringResource(
+                    if (mode == LogsViewerViewModel.ViewerMode.LOGCAT) R.string.logs_mode_system
+                    else R.string.logs_mode_maxmanager
+                ),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold
             )
             Text(
-                text = if (paused) "Stream paused" else "Live stream",
+                text = stringResource(
+                    if (paused) R.string.logs_stream_paused else R.string.logs_stream_live
+                ),
                 style = MaterialTheme.typography.bodySmall,
                 color = if (paused) colors.error else colors.onSurfaceVariant
             )

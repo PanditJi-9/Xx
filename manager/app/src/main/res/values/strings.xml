@@ -165,6 +165,18 @@
     <string name="screen_finder_forget_confirm_body">The list of screens you open most is cleared. Nothing else is touched — your settings and your choices stay.</string>
     <string name="screen_finder_opens_from">Pick the app first</string>
     <string name="logs_visible_count">%1$d shown</string>
+    <!-- The viewer header: which stream, and whether it is live. -->
+    <string name="logs_mode_system">System log</string>
+    <string name="logs_mode_maxmanager">MaxManager log</string>
+    <string name="logs_stream_paused">Stream paused</string>
+    <string name="logs_stream_live">Live stream</string>
+    <!-- Colour presets: names only, never part of the comparison above. -->
+    <string name="color_preset_default">Default</string>
+    <string name="color_preset_vivid">Vivid</string>
+    <string name="color_preset_warm">Warm</string>
+    <string name="color_preset_cool">Cool</string>
+    <string name="color_preset_amoled">AMOLED</string>
+    <string name="color_preset_custom">Custom</string>
     <!-- العدّاد الواحد: يقرؤه المُوجِّد ومنصة التحكم معًا، فلا يقول أحدهما غير ما يقوله الآخر. -->
     <string name="screen_opens_count">opened %1$d×</string>
     <string name="diagnostic_complete">Diagnostic Complete</string>

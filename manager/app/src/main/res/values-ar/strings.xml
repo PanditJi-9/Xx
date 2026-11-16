@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="about_maxmanager">حول Max Manager</string>
-    <string name="about_source_code">Join our %1$s group</string>
+    <string name="about_source_code">انضم إلى مجموعة %1$s</string>
     <string name="accent_color">لون التركيز</string>
     <string name="all_checks_finished">جميع الفحوصات منتهية</string>
     <string name="all_set">كل شيء جاهز، يمكنك الآن استخدام Max Manager</string>
@@ -120,6 +120,16 @@
     <string name="screen_finder_forget_confirm_body">تُمسح قائمة الشاشات التي تفتحها أكثر. لا يُمسّ شيء آخر — إعداداتك واختياراتك تبقى.</string>
     <string name="screen_finder_opens_from">اختر التطبيق أولًا</string>
     <string name="logs_visible_count">%1$d معروض</string>
+    <string name="logs_mode_system">سجلّ النظام</string>
+    <string name="logs_mode_maxmanager">سجلّ MaxManager</string>
+    <string name="logs_stream_paused">البثّ متوقّف</string>
+    <string name="logs_stream_live">بثّ حيّ</string>
+    <string name="color_preset_default">افتراضي</string>
+    <string name="color_preset_vivid">زاهية</string>
+    <string name="color_preset_warm">دافئة</string>
+    <string name="color_preset_cool">باردة</string>
+    <string name="color_preset_amoled">أموليد</string>
+    <string name="color_preset_custom">مخصّص</string>
     <!-- العدّاد الواحد: يقرؤه المُوجِّد ومنصة التحكم معًا، فلا يقول أحدهما غير ما يقوله الآخر. -->
     <string name="screen_opens_count">فُتحت %1$d مرة</string>
     <string name="diagnostic_complete">اكتمل التشخيص</string>

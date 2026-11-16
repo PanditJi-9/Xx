@@ -29,6 +29,7 @@ import android.content.Context
 import android.os.Build
 import android.view.WindowManager
 import android.widget.Toast
+import androidx.annotation.StringRes
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
@@ -84,19 +85,25 @@ import nd.max.ui.component.*
 import nd.max.core.platform.PropertyUtils
 import nd.max.ui.design.maxRadius
 
+/**
+ * إعداد لونيّ جاهز. **والاسم موردٌ لا حرفٌ مكتوب:** الشاشة عربية، والأسماء كانت
+ * تُعرض لاتينية («Vivid» · «Warm» · «Custom») في واجهة لا كلمة إنجليزية فيها.
+ * ولأن الاسم للعرض وحده، لا يدخل في المقارنة ولا في الحساب — `labelRes` يُقرأ
+ * عند الرسم فقط.
+ */
 enum class ColorPreset(
-    val label: String,
+    @StringRes val labelRes: Int,
     val r: Float,
     val g: Float,
     val b: Float,
     val s: Float
 ) {
-    DEFAULT("Default", 1000f, 1000f, 1000f, 1000f),
-    VIVID("Vivid", 1000f, 1000f, 1000f, 1250f),
-    WARM("Warm", 1050f, 1000f, 950f, 1100f),
-    COOL("Cool", 950f, 950f, 1050f, 1000f),
-    AMOLED("AMOLED", 1020f, 1020f, 1020f, 1150f),
-    CUSTOM("Custom", -1f, -1f, -1f, -1f)
+    DEFAULT(R.string.color_preset_default, 1000f, 1000f, 1000f, 1000f),
+    VIVID(R.string.color_preset_vivid, 1000f, 1000f, 1000f, 1250f),
+    WARM(R.string.color_preset_warm, 1050f, 1000f, 950f, 1100f),
+    COOL(R.string.color_preset_cool, 950f, 950f, 1050f, 1000f),
+    AMOLED(R.string.color_preset_amoled, 1020f, 1020f, 1020f, 1150f),
+    CUSTOM(R.string.color_preset_custom, -1f, -1f, -1f, -1f)
 }
 
 @Composable
@@ -346,7 +353,7 @@ fun PresetSelectorItem(
         content = ColorPreset.values().map { preset ->
             {
                 ExpressiveRadioItem(
-                    title = preset.label,
+                    title = stringResource(preset.labelRes),
                     selected = currentPreset == preset,
                     onClick = { onPresetSelected(preset) }
                 )
