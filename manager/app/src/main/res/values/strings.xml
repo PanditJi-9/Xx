@@ -3408,7 +3408,7 @@
     <string name="home_refresh_detail">The rate the panel runs at right now</string>
     <string name="home_vital_net_up">Upload %1$s</string>
     <string name="home_focus_hide">Hide</string>
-    <string name="home_unit_celsius" translatable="false">°C</string>
+    <string name="home_unit_celsius" translatable="false">&#8206;°C</string>
     <string name="home_unit_percent" translatable="false">%</string>
     <string name="home_unit_hz" translatable="false">Hz</string>
     <string name="home_section_live">Live readings</string>

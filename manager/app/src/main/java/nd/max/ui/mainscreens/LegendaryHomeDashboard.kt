@@ -309,7 +309,7 @@ private fun HardwarePulseCards(
         horizontalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         FrequencyMetricCard(
-            title = "GPU",
+            title = stringResource(R.string.detail_zone_gpu),
             percent = dashboard.gpuLoadPercent,
             frequencyMhz = dashboard.gpuFreqMhz,
             ceilingMhz = dashboard.gpuCeilingMhz,
@@ -327,7 +327,7 @@ private fun HardwarePulseCards(
             modifier = Modifier.weight(1f)
         )
         FrequencyMetricCard(
-            title = "CPU",
+            title = stringResource(R.string.detail_zone_cpu),
             percent = dashboard.cpuLoadPercent,
             frequencyMhz = dashboard.cpuTopCoreMhz.takeIf { it > 0 },
             ceilingMhz = dashboard.cpuCeilingMhz.takeIf { it > 0 },

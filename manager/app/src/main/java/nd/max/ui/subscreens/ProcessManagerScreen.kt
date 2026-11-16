@@ -65,6 +65,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.lifecycle.compose.LifecycleStartEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import java.util.Locale
 import kotlinx.coroutines.launch
 import nd.max.R
 import nd.max.core.platform.ProcessDetails
@@ -817,7 +818,7 @@ internal fun DetailLine(label: String, value: String) {
 }
 
 private fun swapText(kb: Long): String =
-    if (kb >= 1024L) "%.1f MB".format(kb / 1024f) else "$kb KB"
+    if (kb >= 1024L) "%.1f MB".format(Locale.US, kb / 1024f) else "$kb KB"
 
 /**
  * القرص يُقرأ لصفّ واحد لا لكل صفّ: `top` لا يعطي `io`، وقراءته لمئات العمليات تعني نداء جذر
@@ -827,7 +828,7 @@ private fun swapText(kb: Long): String =
 private fun diskText(bytes: Long?): String {
     if (bytes == null) return "—"
     val kb = bytes / 1024L
-    return if (kb >= 1024L) "%.1f MB".format(kb / 1024f) else "$kb KB"
+    return if (kb >= 1024L) "%.1f MB".format(Locale.US, kb / 1024f) else "$kb KB"
 }
 
 /**

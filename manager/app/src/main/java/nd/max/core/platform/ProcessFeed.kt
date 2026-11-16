@@ -61,12 +61,17 @@ data class ProcessReading(
     /** ما يعرفه مدير الحزم عن حزمة: ما يُكتب للقارئ وصفة النظام. */
     internal data class Identity(val label: String, val isSystem: Boolean)
 
-    /** حجم مقروء — الصيغة واحدة لكل من يعرض [residentKb]، فلا تختلف وحدة عن أخرى. */
+    /**
+     * حجم مقروء — الصيغة واحدة لكل من يعرض [residentKb]، فلا تختلف وحدة عن أخرى.
+     *
+     * و`Locale.US` مقصودة: بقية أرقام الصفّ (المعرّف والتعداد) لاتينية دائمًا لأنها
+     * `Int.toString`، فقراءة الصفّ بأرقام هندية في خانتين ولاتينية في ثالثة خلطٌ مرئي.
+     */
     val residentText: String
-        get() = if (residentKb >= 1024L) "%.1f MB".format(residentKb / 1024f) else "$residentKb KB"
+        get() = if (residentKb >= 1024L) "%.1f MB".format(java.util.Locale.US, residentKb / 1024f) else "$residentKb KB"
 
     /** نسبة مقروءة — بمنزلة واحدة كأقصى، فلا يتغيّر عرض الرقم بعرض العمود. */
-    val cpuText: String get() = "%.1f%%".format(cpuPercent)
+    val cpuText: String get() = "%.1f%%".format(java.util.Locale.US, cpuPercent)
 }
 
 /** تعداد **الشجرة كلها** لا القائمة المعروضة: رقم يصف ما قرأته الأداة لا ما قصّته. */
