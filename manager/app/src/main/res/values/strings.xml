@@ -764,6 +764,7 @@
     <string name="clip_album_play_failed">No app could play this clip</string>
     <string name="clip_album_share_title">Share clip</string>
     <string name="clip_album_share_cd">Share clip</string>
+    <string name="clip_album_actions_cd">Clip actions</string>
     <string name="clip_album_delete_cd">Delete clip</string>
     <string name="clip_album_delete_failed">Could not delete the clip</string>
     <string name="clip_album_delete_title">Delete this clip?</string>

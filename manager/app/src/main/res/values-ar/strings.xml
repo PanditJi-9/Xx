@@ -1705,6 +1705,7 @@
     <string name="clip_album_play_failed">لا تطبيق يشغّل هذا المقطع</string>
     <string name="clip_album_share_title">شارك المقطع</string>
     <string name="clip_album_share_cd">شارك المقطع</string>
+    <string name="clip_album_actions_cd">إجراءات المقطع</string>
     <string name="clip_album_delete_cd">احذف المقطع</string>
     <string name="clip_album_delete_failed">تعذّر حذف المقطع</string>
     <string name="clip_album_delete_title">أتحذف هذا المقطع؟</string>

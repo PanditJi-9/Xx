@@ -91,6 +91,8 @@ import nd.max.core.gamespace.ClipTrimmer
 import nd.max.ui.component.MaxEmptyState
 import nd.max.ui.component.MaxErrorState
 import nd.max.ui.component.MaxLoadingState
+import nd.max.ui.design.MaxCommand
+import nd.max.ui.design.MaxCommandMenu
 import nd.max.ui.design.MaxListScreen
 import nd.max.ui.design.MaxRadius
 import nd.max.ui.design.MaxSpace
@@ -703,7 +705,7 @@ private fun ShotRow(
     }
 }
 
-/** صفّ مقطع: صورة مصغّرة، اسم، مدة وحجم، ثم فعلان لا يسرقان النقر من التشغيل. */
+/** صفّ مقطع: صورة مصغّرة، اسم، مدة وحجم، والأفعال في قائمة واحدة لا تزاحم الاسم. */
 @Composable
 private fun ClipRow(
     clip: ClipEntry,
@@ -727,7 +729,7 @@ private fun ClipRow(
             Column(Modifier.weight(1f)) {
                 Text(
                     text = clip.name,
-                    maxLines = 1,
+                    maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.SemiBold
@@ -739,31 +741,36 @@ private fun ClipRow(
                         ClipAlbumMath.durationText(clip.durationMs),
                         ClipAlbumMath.sizeText(clip.sizeBytes)
                     ),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                     style = MaterialTheme.typography.bodySmall,
                     color = colors.onSurfaceVariant
                 )
             }
-            IconButton(onClick = onTrim) {
-                Icon(
-                    imageVector = Icons.Rounded.ContentCut,
-                    contentDescription = stringResource(R.string.clip_album_trim_cd),
-                    tint = colors.onSurfaceVariant
-                )
-            }
-            IconButton(onClick = onShare) {
-                Icon(
-                    imageVector = Icons.Rounded.Share,
-                    contentDescription = stringResource(R.string.clip_album_share_cd),
-                    tint = colors.onSurfaceVariant
-                )
-            }
-            IconButton(onClick = onDelete) {
-                Icon(
-                    imageVector = Icons.Rounded.Delete,
-                    contentDescription = stringResource(R.string.clip_album_delete_cd),
-                    tint = colors.error
-                )
-            }
+            // الأفعال الثلاثة كانت ثلاثة أزرار ٤٨dp داخل الصفّ نفسه، فللاسم وحده بقي
+            // نحو ٣١dp على جهاز ٣٧٥dp فقُرئ «Ma…» في كل صفّ — قيس في لقطة الشاشة.
+            // القائمة تُعيد للاسم نحو ١٥٠dp، وكل فعل يبقى على مساحة لمس ٤٨dp كاملة.
+            MaxCommandMenu(
+                commands = listOf(
+                    MaxCommand(
+                        label = stringResource(R.string.clip_album_trim_cd),
+                        onSelect = onTrim,
+                        icon = Icons.Rounded.ContentCut,
+                    ),
+                    MaxCommand(
+                        label = stringResource(R.string.clip_album_share_cd),
+                        onSelect = onShare,
+                        icon = Icons.Rounded.Share,
+                    ),
+                    MaxCommand(
+                        label = stringResource(R.string.clip_album_delete_cd),
+                        onSelect = onDelete,
+                        icon = Icons.Rounded.Delete,
+                        destructive = true,
+                    ),
+                ),
+                contentDescription = stringResource(R.string.clip_album_actions_cd),
+            )
         }
     }
 }

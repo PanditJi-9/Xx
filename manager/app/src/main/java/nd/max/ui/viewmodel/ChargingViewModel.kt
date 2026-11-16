@@ -29,6 +29,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.topjohnwu.superuser.Shell
 import nd.max.core.hardware.RootFileAccess
+import nd.max.ui.design.MAX_VALUE_UNAVAILABLE
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -111,7 +112,10 @@ class ChargingViewModel : ViewModel() {
         private set
     var temperatureC by mutableStateOf(0f)
         private set
-    var chargerType by mutableStateOf("Unknown")
+    // القيمة الخامّ من عقدة النواة قد تكون `Unknown` الإنجليزية، وهي كلمة لا تُعرض في
+    // واجهة عربية. فما لم تكن رمزًا حقيقيًّا (SDP · CDP · DCP · PD) تُقرأ «—» كبقية
+    // مجاهيل الشاشة (ADR-07)؛ ولا يُخترع نوع شحن لم تقله النواة.
+    var chargerType by mutableStateOf(MAX_VALUE_UNAVAILABLE)
         private set
     var usbConnected by mutableStateOf(false)
         private set
@@ -309,7 +313,14 @@ class ChargingViewModel : ViewModel() {
         } ?: currentMa
 
         // USB type/online live under power_supply/usb, a sibling of the battery node.
-        chargerType = RootFileAccess.read("/sys/class/power_supply/usb/type").orEmpty().ifEmpty { "-" }
+        // الرمز الحقيقي يُعرض كما ورد؛ وأمّا الفراغ و`Unknown` و`-` فليست نوعًا، فتُقرأ «—».
+        chargerType = RootFileAccess.read("/sys/class/power_supply/usb/type")
+            .orEmpty()
+            .trim()
+            .takeIf { token ->
+                token.isNotEmpty() && token != "-" && !token.equals("Unknown", ignoreCase = true)
+            }
+            ?: MAX_VALUE_UNAVAILABLE
         usbConnected = RootFileAccess.read("/sys/class/power_supply/usb/online") == "1"
 
         fastChargeNodePath?.let { path ->
