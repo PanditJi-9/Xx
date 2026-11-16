@@ -259,6 +259,7 @@ jobs:
           # فخطوة التصليب تتخطّى في بناء غير موقّع، وبوابة تُقاس أحيانًا تصدأ بصمت.
           python3 tools/dex_integrity.py --self-test
           python3 tools/apk_repack.py --self-test
+          python3 tools/apk_leak_scan.py --self-test
           # ← الوحدات الميتة: ملفّ Rust **خارج شجرة الوحدات** (لا يُصرَّف إطلاقًا، فيتعفّن بلا
           # خطأ ولا تحذير — مقيس: `thermalcore/src/prediction.rs` يقرأ سبعة حقول لا وجود لها
           # في نوعه، ولو وُصل لَما تُرجم) ووحدة C **مبنية بلا مُستخدِم خارجي**. والأساس المُعلَن
@@ -1520,6 +1521,21 @@ jobs:
 
           cp "$work/signed.apk" "$apk"
           echo "✅ الحزمة الموقّعة استُبدلت بنسخة مصلَّبة: $(sha256sum "$apk" | cut -d' ' -f1)"
+
+          # فحص آثار الهندسة العكسية في الحزمة النهائية بعد التصليب: اسم ملفّ مصدر أو
+          # مسار بناء مطلق أو خريطة R8 داخل الحزمة = مادة أوّل ما يقرأها JADX.
+          # وحدّه: يقرأ جدول نصوص DEX ومدخلات الحزمة، لا كل الشيفرة — فيُقال ولا يُبالَغ.
+      - name: Scan the release APK for reverse-engineering traces
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "${SIGNED_BUILD:-0}" != "1" ]; then
+            echo "⏭️ بناء غير موقّع: الفحص على نسخة الإصدار المتقلّصة فقط، وdebug يحمل أسماء ملفّات المصدر بالتصميم."
+            exit 0
+          fi
+          apk="manager/app/build/outputs/apk/release/app-release.apk"
+          test -f "$apk" || { echo "::error::APK مفقود: $apk"; exit 1; }
+          python3 tools/apk_leak_scan.py --assert --apk "$apk"
 
       - name: Validate Manager APK
         env:

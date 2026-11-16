@@ -28941,3 +28941,51 @@ MIT) **لم يُدخَل**: `bla` تعيد كتابة DEX (تكويث جدول �
   «لا تعتبر `defenseScore` العالي برهانًا ضد الهجمات التشفيرية دون اتصال».
 - **NEXT:** قراءة حكم تشغيل `main` بعد الدفع: خطوتا «Contract gates» و«Shield DEX with bla-agents»؛
   فإن رفض `dexdump`/`dex_integrity` بعد التصليب فالمسار `BLA_SHIELD=0` يوقفها في دقيقة بلا تعديل ملفّ.
+
+## تكملة — حماية من `rea`: خريطة هجومه، وثلاث أدوات تقيس ما يُسهّل التحليل (2026-11-16)
+
+**الأمر (حرفيًّا):** «ادرس كيف يعمل هذا https://github.com/morluto/rea وقم بحماية تطبيقي منه
+وايضا استخدم كل هذه الاشياء حتي لو استغرق الامر ساعات» — ثم قائمة ٢٦ مستودعًا، مع إقراره أن
+**لا حماية مطلقة**.
+
+**ما قُرئ من `rea` نفسه (لا من وصف):** أدواته تقرأ الحزمة **ساكنًا** بـJADX بلا تشغيل
+(`inspect_android_package` · `search_android_classes` · `inspect_android_method` ·
+`inspect_android_jni_bindings`)، وأخطر سطر في وثائقه: تمرير `mapping_path` يجعل كل رمز
+`mapped` ⇒ **نشر `mapping.txt` يُلغي تعتيم R8 كله**. ومساره الحيّ Frida مغطّى أصلًا في
+`core/security` (`HOOK_LIBRARY_MARKERS` · `JAVA_HOOK_CLASSES` · `tracerAttached`).
+
+**ما كان قائمًا فلم يُعَد بناؤه (§0.5):** `core/security/**` — ١٣ ملفًا/١٦٨٥ سطرًا: توقيع مزدوج
+(من المنصّة ومن ملف APK) مقابل بصمة مشتقّة وقت البناء، و`ApkVerifier` v2/v3، و`AssetVault`،
+ومقارنة `.so`، وفحص tracer/hook، ودفتر إشارات لا يعدّ الجذر دليلًا (`NEVER_EVIDENCE`).
+
+**ما أُضيف هذه الجولة:**
+- `tools/apk_leak_scan.py` (جديد): يقرأ `string_ids` من كل DEX بنفسه (‏`read_uleb128` + MUTF-8)
+  ويبلّغ عن اسم ملفّ مصدر أو مسار بناء مطلق أو مسار keystore أو `mapping.txt` داخل الحزمة.
+  **قياس حيّ على `app-debug.apk`: ٢٠ DEX · ٤٩٤٠٨٢ نصًّا · ٨٢٢٢ أثرًا** (٨٢١٧ اسم مصدر + ٥ مسارات
+  بناء) — وهذا متوقّع في debug، فالبوابة على نسخة release وحدها.
+- `tools/dex_integrity.py` + `tools/apk_repack.py` (من الجولة السابقة) صار قياسهما الذاتي في
+  خطوة Contract gates، لأن خطوة التصليب تتخطّى في بناء غير موقّع — وبوابة تُقاس أحيانًا تصدأ.
+- `hardening_guard.py`: مُدخل سادس (`apk_leak_scan.py --assert`) في `check_shield_ci`، ورصد
+  `debug = false` في `Cargo.toml` عبر قراءة TOML بالقسم، ورصد رفع `mapping.txt` كأثر.
+- `Cargo.toml`: `debug = false` في `[profile.release]` (كان تابعًا لافتراض المصرّف).
+- `docs/ai/security-hardening.md` (جديد): **قرار كل مستودع من الستّة والعشرين** بترخيصه المقيس
+  وسببه — مُدخَل (bla) · مغطّى قائمًا (FreeRASP/android-rasp/NativeShield/DeviceIntelligence/
+  paranoid/StringCare) · غير منطبق (AAB/JVM/HTTP) · مرفوض (§0.4: ProGuard GPL، ARMANDroid AGPL)
+  · مرجع لا نقل (samples). و`VALIDATION.md` §9.3 يوثّق البوابة.
+
+**عطب كشفه CI وأصلحته:** تشغيل `b2130203` سقط في «Compile main sources» بخطأ نوع في
+`SettingsScreen.kt:333` — **فاصلة ناقصة** بين عنصر اللغة وعنصر السمة في `listOf(...)`، فقُرئ
+`{…}({…})` كنداء. أُضيفت `},` وصار الترتيب سليمًا. والدرس: `kt_balance` لا يرى فاصلة ناقصة
+داخل قائمة lambdas — والمُصرّف في CI هو القياس الوحيد (§0.10).
+
+**التحقق:** kt_balance ٠ · code_health ٠ · i18n_coverage ٠ · design_tokens ٠ ·
+hardening_guard --assert ٠ و--self-test ١٤ · dex_integrity/apk_repack/apk_leak_scan --self-test ٠
+· bundle_contract --assert ٠ و--self-test ١٩/١٩ · license_audit ٠ · provenance_guard ٠ ·
+YAML يُحلَّل · `git diff --check` نظيف.
+
+**الحدود:** `bla-agents` **لم تُشغَّل في هذه البيئة** (لا شبكة npm) فحكمها من CI؛ و«حزمة مصلَّبة
+تعمل» يحتاج جهازًا؛ و`apk_leak_scan` يقرأ جدول النصوص ومدخلات الحزمة لا كل الشيفرة؛ ولا شيء
+يجعل الحزمة **غير قابلة** للتحليل — الكلفة تُرفع والتلاعب يُكشف، والاستحالة تُقال لا تُوعد.
+
+**NEXT:** قراءة حكم تشغيل `main` الجديد للتأكد من نجاح خطوة التصليب والبوابتين، ثم قياس الحزمة
+الموقّعة على جهاز قبل أي إصدار.

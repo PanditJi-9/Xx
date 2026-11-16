@@ -35,6 +35,7 @@ GRADLE_REL = os.path.join("manager", "app", "build.gradle.kts")
 PROGUARD_REL = os.path.join("manager", "app", "proguard-rules.pro")
 MANIFEST_REL = os.path.join("manager", "app", "src", "main", "AndroidManifest.xml")
 WORKFLOW_REL = os.path.join(".github", "workflows", "build.yml")
+CARGO_REL = os.path.join("manager", "src", "main", "rust", "Cargo.toml")
 
 # ── القواعد ────────────────────────────────────────────────────────────────
 #
@@ -94,6 +95,23 @@ JNI_MINIMAL_BODY = "native <methods>;"
 INLINE_SECRET = re.compile(
     r"(?:storePassword|keyPassword|KS_PWD)\s*=\s*\"(?![$])([^\"]+)\""
 )
+
+# ── بروفايل Rust للإصدار (`manager/src/main/rust/Cargo.toml`) ──
+#
+# المكتبة الأصلية تُشحن داخل الـAPK، وهي أوّل ما يُقرأ عند فكّه: الرموز تقول أسماء
+# الدوال، وجداول التنقيح تقول أرقام الأسطر. فخصائص الإصدار عقدٌ أمنيّ لا تفضيل بناء.
+CARGO_MUST = {
+    "strip = true": "الرموز تبقى في المكتبة المشحونة — من يفتح الحزمة يقرأ أسماء الدوال",
+    'panic = "abort"': "جدول الاسترحاء يُحمل بلا مستخدم ويوسّع سطح التحليل",
+    "debug = false": "جداول التنقيح (أرقام الأسطر والملفّات) تعود إلى المكتبة المشحونة",
+}
+CARGO_FORBIDDEN = {
+    "strip = false": "تصليب الرموز مطفأ صراحةً",
+    "debug = true": "معلومات تنقيح كاملة في مكتبة تُشحن",
+    'panic = "unwind"': "استرحاء عبر حدود JNI: يوسّع السطح ولا يعالجه أحد",
+}
+
+# ما يُبقي عقد JNI وحده — الصيغة الوحيدة المسموح بها مع `nd.max…**`.
 
 
 def rel(path: str) -> str:
@@ -215,6 +233,20 @@ def check_proguard(text: str) -> list[dict]:
                 "detail": "قاعدة إبقاء شاملة على `nd.max` تُبقي الأسماء كلها: " + match.group(0).strip()[:60],
             }
         )
+    # **إعادة الخصائص التشخيصية إلى المخرَج (2026-11-16):** `-keepattributes SourceFile`
+    # أو `LineNumberTable` تُعيد ما حذفه `-renamesourcefileattribute`، فيصير كل أثر عطل
+    # في المخرَج خريطةَ أسطرٍ إلى الشيفرة. ولا سطر في الشجرة اليوم يفعلها — والقاعدة
+    # تمنع أن تُضاف في جولة «إصلاح تتبّع» بلا أن يسقط شيء.
+    for match in re.finditer(r"(?mi)^\s*-keepattributes[^\n]*", text):
+        line = match.group(0)
+        if "SourceFile" in line or "LineNumberTable" in line:
+            findings.append(
+                {
+                    "rule": "proguard_attributes_readded",
+                    "where": path + ":" + str(text.count("\n", 0, match.start()) + 1),
+                    "detail": "خصائص تشخيصية أُعيد حفظها بعد تعتيم الاسم: " + line.strip()[:60],
+                }
+            )
     return findings
 
 
@@ -235,6 +267,91 @@ def check_manifest(text: str) -> list[dict]:
                 "rule": "manifest_allow_backup",
                 "where": path + ":0",
                 "detail": "`allowBackup` غير مضبوط على `false` — نسخ احتياطي يخرج ببيانات التطبيق",
+            }
+        )
+    return findings
+
+
+def toml_section(text: str, header: str) -> str:
+    """يُعيد نصّ قسم TOML بالعنوان الحرفيّ (من سطره إلى ما قبل القسم التالي).
+
+    ولا يُعاد استعمال `extract_block`: ذاك يقيس أقواس Kotlin، و`Cargo.toml` بلا أقواس —
+    فاستعماله كان يعيد «القسم مفقود» على ملفّ سليم (قِيس في القياس الذاتي).
+    """
+    lines = text.splitlines()
+    start = -1
+    for index, line in enumerate(lines):
+        if line.strip() == header:
+            start = index
+            break
+    if start < 0:
+        return ""
+    collected: list[str] = []
+    for line in lines[start + 1 :]:
+        if line.lstrip().startswith("["):
+            break
+        collected.append(line)
+    return "\n".join(collected)
+
+
+def check_cargo(text: str) -> list[dict]:
+    """بروفايل Rust للإصدار: الرموز والاسترحاء والتنقيح تُقاس، لا تُفترض.
+
+    السبب المقيس (جولة ٢٠٢٦-١١-١٦، طلب المالك حمايةً من الهندسة العكسية): ملفّ
+    `Cargo.toml` كان يشرح `strip` و`panic` في تعليق طويل — وشرحٌ لا يقيسه أحد يسقط
+    بأول تعديل. و`debug = false` **لم تكن مكتوبة أصلًا**، فكانت رهنًا لافتراض المُصرّف.
+    ومن يفكّ الـAPK يقرأ المكتبة المشحونة أوّلًا: `strip` و`debug` هما ما يقرّر هل يرى
+    رموزًا وتنقيحًا أم لا.
+    """
+    path = rel(os.path.join(ROOT, CARGO_REL))
+    findings: list[dict] = []
+    block = toml_section(text, "[profile.release]")
+    if not block:
+        findings.append(
+            {
+                "rule": "cargo_profile_missing",
+                "where": path + ":0",
+                "detail": "لا قسم `[profile.release]` — كل ما بُني صار بخصائص التطوير",
+            }
+        )
+        return findings
+    for needle, detail in CARGO_MUST.items():
+        if needle not in block:
+            findings.append(
+                {
+                    "rule": "cargo_missing:" + needle.split("=")[0].strip(),
+                    "where": path + ":0",
+                    "detail": detail,
+                }
+            )
+    for needle, detail in CARGO_FORBIDDEN.items():
+        if needle in block:
+            findings.append(
+                {
+                    "rule": "cargo_forbidden:" + needle.split("=")[0].strip(),
+                    "where": path + ":" + str(line_of(text, needle)),
+                    "detail": detail,
+                }
+            )
+    return findings
+
+
+def check_mapping_upload(text: str) -> list[dict]:
+    """`mapping.txt` تصعد كأثر (artifact) = خريطة الأسماء تُنشر مع المخرَج.
+
+    وهذا أخطر من تسريب الشيفرة وحدها: `rea` نفسه يأخذ `mapping_path` صريحًا كوسيطة
+    ويعيد تمثيل الأسماء (`mapped`/`ambiguous`/`unmapped`) فوق الـAPK المقلوب. فحين
+    يوجد التمثيل، يسقط أثر R8 كله بملفّ واحد. والقاعدة تمنع `path:` يحمل `mapping`
+    في خطوة رفع، وتمنع `-printmapping` في قواعد التعتيم.
+    """
+    findings: list[dict] = []
+    path = rel(os.path.join(ROOT, WORKFLOW_REL))
+    for match in re.finditer(r"(?mi)^\s*(?:path|name):\s*.*mapping[^\n]*$", text):
+        findings.append(
+            {
+                "rule": "mapping_uploaded",
+                "where": path + ":" + str(text.count("\n", 0, match.start()) + 1),
+                "detail": "خطوة رفع تحمل `mapping` — خريطة الأسماء تُنشر فتسقط حماية التعتيم",
             }
         )
     return findings
@@ -273,8 +390,9 @@ def check_shield_ci(text: str) -> list[dict]:
 
     السبب: خطوة واحدة في ملفّ سير عمل هي التي تفصل «تصليب مطلوب» عن «تصليب موعود».
     وحذفها لا يُسقط شيئًا آخر في الشجرة — لا تصريف ولا اختبار — فتُمرّ بصمت. فهذه
-    القاعدة تربط أربعة أشياء معًا: تشغيل `bla-agents`، وتحقّق `dex_integrity`، وإعادة
-    الحزم بـ`apk_repack` (‏`resources.arsc` بلا ضغط)، وإعادة التوقيع بـ`apksigner`.
+    القاعدة تربط خمسة أشياء معًا: تشغيل `bla-agents`، وتحقّق `dex_integrity`، وإعادة
+    الحزم بـ`apk_repack` (‏`resources.arsc` بلا ضغط)، وإعادة التوقيع بـ`apksigner`،
+    وفحص آثار الهندسة العكسية في الحزمة النهائية بـ`apk_leak_scan`.
     """
     findings: list[dict] = []
     path = rel(os.path.join(ROOT, WORKFLOW_REL))
@@ -286,6 +404,10 @@ def check_shield_ci(text: str) -> list[dict]:
         "dex_integrity.py --assert": "لا تحقّق بنيوي بعد التصليب (`dex_integrity.py --assert`)",
         "apk_repack.py": "لا إعادة حزم عبر `apk_repack.py` (فقد يُضغط `resources.arsc` فتسقط التثبيت)",
         "apksigner sign": "لا إعادة توقيع بعد التصليب (توقيع Gradle صار باطلًا بتعديل DEX)",
+        "apk_leak_scan.py --assert": (
+            "لا فحص لآثار الهندسة العكسية في الحزمة النهائية (`apk_leak_scan.py --assert`) — "
+            "فاسم ملفّ مصدر أو مسار بناء أو خريطة R8 قد يشحن بلا أن يسقط شيء"
+        ),
     }
     for needle, detail in required.items():
         if needle not in text:
@@ -319,11 +441,18 @@ def scan() -> dict:
     else:
         findings += check_manifest(manifest_text)
     findings += tracked_mapping()
-    findings += check_shield_ci(read(os.path.join(ROOT, WORKFLOW_REL)))
+    workflow_text = read(os.path.join(ROOT, WORKFLOW_REL))
+    findings += check_shield_ci(workflow_text)
+    findings += check_mapping_upload(workflow_text)
+    cargo_text = read(os.path.join(ROOT, CARGO_REL))
+    if not cargo_text:
+        findings.append({"rule": "missing_file", "where": CARGO_REL, "detail": "ملفّ Cargo غير موجود"})
+    else:
+        findings += check_cargo(cargo_text)
     return {
         "obstacles": len(findings),
         "findings": findings,
-        "scope": [GRADLE_REL, PROGUARD_REL, MANIFEST_REL, WORKFLOW_REL],
+        "scope": [GRADLE_REL, PROGUARD_REL, MANIFEST_REL, WORKFLOW_REL, CARGO_REL],
     }
 
 
@@ -380,6 +509,24 @@ BAD_PROGUARD = """
 GOOD_MANIFEST = '<manifest><application android:allowBackup="false" /></manifest>'
 BAD_MANIFEST = '<manifest><application android:allowBackup="true" android:debuggable="true" /></manifest>'
 
+GOOD_CARGO = """
+[profile.release]
+lto = "thin"
+strip = true
+panic = "abort"
+debug = false
+"""
+
+BAD_CARGO = """
+[profile.release]
+strip = false
+debug = true
+panic = "unwind"
+"""
+
+GOOD_WORKFLOW = "steps:\n  - uses: actions/upload-artifact@v4\n    with:\n      path: build/reports/\n"
+BAD_WORKFLOW = "steps:\n  - uses: actions/upload-artifact@v4\n    with:\n      path: build/outputs/mapping.txt\n"
+
 
 def self_test() -> int:
     failures: list[str] = []
@@ -412,12 +559,30 @@ def self_test() -> int:
     jni_blanket = GOOD_PROGUARD + "-keep class nd.max.core.jni.** { *; }\n"
     expect("jni blanket keep", len(check_proguard(jni_blanket)) - len(check_proguard(GOOD_PROGUARD)), True)
 
+    # بروفايل Rust: السليم يمرّ، وكل مفتاح معطوب يُرصد وحده (لا مجرد «الملفّ سيّئ»).
+    expect("good cargo", len(check_cargo(GOOD_CARGO)), False)
+    expect("bad cargo", len(check_cargo(BAD_CARGO)), True)
+    if len(check_cargo(BAD_CARGO)) != 6:
+        # ستة لا ثلاثة: كل مفتاح معطوب يسقط شرطَ وجوده **و**يُخالف صيغته الممنوعة،
+        # والبلاغان مقصودان — الأول يقول «الشرط غائب»، والثاني يقول «الصيغة موجودة وممنوعة».
+        failures.append(f"bad cargo: expected 6 obstacles, got {len(check_cargo(BAD_CARGO))}")
+    no_profile = "".join(line for line in GOOD_CARGO.splitlines(True) if "profile.release" not in line)
+    expect("cargo without profile", len(check_cargo(no_profile)), True)
+
+    # خصائص تشخيصية أُعيدت بعد التعتيم: تُرصد ولو كان بقية الملفّ سليمًا.
+    readded = GOOD_PROGUARD + "-keepattributes SourceFile,LineNumberTable\n"
+    expect("attributes readded", len(check_proguard(readded)) - len(check_proguard(GOOD_PROGUARD)), True)
+
+    # رفع `mapping.txt` كأثر: يُرصد، والقاعدة لا تتوهّم مسارًا عاديًّا.
+    expect("good workflow paths", len(check_mapping_upload(GOOD_WORKFLOW)), False)
+    expect("mapping artifact", len(check_mapping_upload(BAD_WORKFLOW)), True)
+
     if failures:
         print("✗ البوابة نفسها معطوبة:")
         for failure in failures:
             print("  - " + failure)
         return 1
-    print("✓ قياس الأداة: ٩ حالات معروفة، كلها بالحكم المتوقّع")
+    print("✓ قياس الأداة: ١٤ حالات معروفة، كلها بالحكم المتوقّع")
     return 0
 
 
