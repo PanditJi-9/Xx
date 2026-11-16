@@ -255,6 +255,10 @@ jobs:
           # nd.max.core.jni.** { *; }` شامل). والباقي في `tools/hardening_guard.py` نفسه.
           python3 tools/hardening_guard.py --assert
           python3 tools/hardening_guard.py --self-test
+          # وأداتا التصليب في CI: قياسهما الذاتي هنا لا في خطوة التصليب وحدها —
+          # فخطوة التصليب تتخطّى في بناء غير موقّع، وبوابة تُقاس أحيانًا تصدأ بصمت.
+          python3 tools/dex_integrity.py --self-test
+          python3 tools/apk_repack.py --self-test
           # ← الوحدات الميتة: ملفّ Rust **خارج شجرة الوحدات** (لا يُصرَّف إطلاقًا، فيتعفّن بلا
           # خطأ ولا تحذير — مقيس: `thermalcore/src/prediction.rs` يقرأ سبعة حقول لا وجود لها
           # في نوعه، ولو وُصل لَما تُرجم) ووحدة C **مبنية بلا مُستخدِم خارجي**. والأساس المُعلَن
