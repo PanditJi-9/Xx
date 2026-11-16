@@ -1429,6 +1429,94 @@ jobs:
           echo "✅ انتهت البناءات الأصلية في الخلفية (كانت مخفيّة تحت خطوة Gradle)"
           tail -25 native-build.log
 
+      # ── تصليب DEX (bla-agents · MIT) — طلب المالك ٢٠٢٦-١١-١٦ ──
+      #
+      # **السؤال الذي يجيبه هذا القسم:** هل يُصعَّب على من يفكّ الحزمة أن يقرأها؟ وأدوات
+      # `bla` تعمل على **DEX** لا على APK موقّع (وثائقها: «APK resigning unsupported;
+      # standalone DEX shield is in-tree»)، فالمسار: فكّ الحزمة ⇒ تصليب `*.dex` ⇒ تحقّق
+      # بنيوي ⇒ إعادة حزم ⇒ `zipalign` ⇒ إعادة توقيع بالمفتاح نفسه. ولذلك **لا تُشغَّل إلا
+      # على بناء موقّع**: في PR من fork لا سرّ ولا توقيع، فتُتخطّى **بإعلان** لا بصمت.
+      #
+      # **والحدّ الذي لا يُخفى:** التصليب يغيّر بايتات DEX، وما بعده لا اختبار على جهاز
+      # (لا جهاز في CI). فالبوابات هنا بنيوية: `dex_integrity.py` (ترويسة/حجوم/Adler32/SHA-1)
+      # و`dexdump -f` إن توفّر. وأي عطب سلوكي لا تكشفه هاتان الأداتان يظهر في التشغيل لا هنا.
+      # والمفتاح `BLA_SHIELD=0` في متغيّرات المستودع يوقف الخطوة بلا تعديل ملفّ.
+      - name: Setup Node for the DEX shield
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Shield DEX with bla-agents
+        shell: bash
+        env:
+          KS_PWD: ${{ secrets.KEYSTORE_PASSWORD }}
+          BLA_SHIELD: ${{ vars.BLA_SHIELD || '1' }}
+        run: |
+          set -euo pipefail
+          if [ "${BLA_SHIELD:-1}" != "1" ]; then
+            echo "⏭️ تصليب DEX موقوف صراحةً (BLA_SHIELD=${BLA_SHIELD}) — يُعلن ولا يُسكت عنه."
+            exit 0
+          fi
+          if [ "${SIGNED_BUILD:-0}" != "1" ] || [ -z "${KS_PWD:-}" ]; then
+            echo "⏭️ بناء غير موقّع (PR بلا سرّ): التصليب يُبطل التوقيع ويحتاج keystore لإعادته، فلا يُشغَّل."
+            exit 0
+          fi
+
+          apk="manager/app/build/outputs/apk/release/app-release.apk"
+          test -f "$apk" || { echo "::error::APK مفقود: $apk"; exit 1; }
+          work="$(mktemp -d)"
+          mkdir -p "$work/unpacked" "$work/dex"
+          unzip -q "$apk" -d "$work/unpacked"
+
+          count="$(find "$work/unpacked" -maxdepth 1 -name '*.dex' | wc -l | tr -d ' ')"
+          echo "عدد ملفّات DEX: $count"
+          test "$count" -ge 1 || { echo "::error::لا DEX في الحزمة"; exit 1; }
+          cp "$work"/unpacked/*.dex "$work/dex/"
+
+          # التصليب على نسخة معزولة من DEX وحدها: أي ملفّ تقرير تكتبه الأداة لا يدخل الحزمة.
+          set +e
+          npx --yes bla-agents@3.4.1 harden "$work/dex" \
+            --intensity bankrupt --seed maxmanager -y --json \
+            > "$work/bla.json" 2> "$work/bla.err"
+          bla_code=$?
+          set -e
+          echo "bla exit=$bla_code"
+          tail -c 1200 "$work/bla.json" || true
+          tail -c 1200 "$work/bla.err" || true
+          if [ "$bla_code" -ne 0 ]; then
+            echo "::error::bla-agents فشل (exit $bla_code) — و2 تعني «لا شيء ليُصلَّب» أو فشل أثر، وكلاهما عطب هنا"
+            exit 1
+          fi
+
+          after="$(find "$work/dex" -maxdepth 1 -name '*.dex' | wc -l | tr -d ' ')"
+          test "$after" = "$count" || { echo "::error::عدد DEX تغيّر ($count → $after)"; exit 1; }
+
+          python3 tools/dex_integrity.py --assert --path "$work/dex"
+          if command -v dexdump >/dev/null 2>&1; then
+            for dex in "$work"/dex/*.dex; do
+              dexdump -f "$dex" > /dev/null \
+                || { echo "::error::dexdump رفض $(basename "$dex") بعد التصليب"; exit 1; }
+            done
+            echo "✓ dexdump قرأ كل DEX بعد التصليب"
+          else
+            echo "⚠️ dexdump غير متاح: الطبقة البنيوية الثانية غير مُتحقَّقة (تُقال ولا تُدَّعى)"
+          fi
+
+          cp "$work"/dex/*.dex "$work/unpacked/"
+          python3 tools/apk_repack.py "$work/unpacked" "$work/unsigned.apk"
+
+          zipalign -f -p 4 "$work/unsigned.apk" "$work/aligned.apk"
+          apksigner sign \
+            --ks manager/app/maxmanager.jks \
+            --ks-key-alias azenith_key \
+            --ks-pass env:KS_PWD --key-pass env:KS_PWD \
+            --min-sdk-version 29 \
+            --out "$work/signed.apk" "$work/aligned.apk"
+          apksigner verify --verbose --print-certs "$work/signed.apk"
+
+          cp "$work/signed.apk" "$apk"
+          echo "✅ الحزمة الموقّعة استُبدلت بنسخة مصلَّبة: $(sha256sum "$apk" | cut -d' ' -f1)"
+
       - name: Validate Manager APK
         env:
           # Public certificate identity, not a credential. Keep validation self-contained.

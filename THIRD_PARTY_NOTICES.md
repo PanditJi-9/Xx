@@ -104,3 +104,15 @@ python3 tools/license_audit.py --self-test    # يقيس الأداة نفسها
 - **COPG (مفردات الوسوم)** — `CopgTag.kt` يعيد صياغة **مفردات** وسوم الحزم الموصوفة في README المستودع (Apache-2.0)؛ **لا شيفرة منقولة**. الإسناد: AlirezaParsi/COPG (README الإصدار 6.8.0 وREADME أقدم منه، قُرئا 2026-10-04).
 
 - **COPG (بيانات كتالوج الأجهزة)** — `manager/app/src/main/assets-internal/spoof/device_catalog.json` مستخرَج من `module/COPG.json` (كتل `PACKAGES_*_DEVICE` فقط) في AlirezaParsi/COPG، فرع `JSON` عند `e1d7da6c24cb571c5d123a6f7c85fafbb42b870b` (قُرئ 2026-10-04)، **Apache-2.0**. **عُدِّل**: أُعيد ترميز المفاتيح وحُذفت قوائم الحزم والوسوم. نصّ الترخيص مرفق: `manager/app/src/main/assets/spoof/device_catalog.LICENSE.txt`. شُحنت البيانات كما هي (لا بصمة اختُلقت).
+
+## أدوات بناء تُشغَّل في CI — لا شيفرة مُشحَنة
+
+هذه ليست مكتبات في التطبيق، بل أدوات تُشغَّل على مخرَج البناء ثم يبقى أثرها **بايتات** لا شيفرة.
+
+- **bla-agents** — https://github.com/qybaihe/bla.git · `MIT` · الإصدار المثبَّت: `3.4.1` (`npm`, `npx --yes bla-agents@3.4.1`).
+  يُشغَّل في `.github/workflows/build.yml` ← «Shield DEX with bla-agents» على ملفّات `*.dex` **بعد R8 وقبل
+  إعادة التوقيع**: تُفكّ الحزمة، وتُصلَّب نسخة معزولة من DEX، ويُتحقَّق منها بـ`tools/dex_integrity.py`
+  و`dexdump -f`، ثم يُعاد الحزم بـ`tools/apk_repack.py` ويُوقَّع بالمفتاح نفسه. **لا يُضمَّن شيء من شيفرته**
+  ولا من أصوله في الحزمة، ولا يُغيّر هذا الإسنادُ ترخيصَ التطبيق (يبقى مغلق المصدر). وحدّه المُعلَن من
+  وثائق المشروع نفسه: «APK resigning unsupported; standalone DEX shield is in-tree»، و«لا تعتبر
+  `defenseScore` العالي برهانًا ضد الهجمات التشفيرية دون اتصال».

@@ -28910,3 +28910,34 @@ MIT) **لم يُدخَل**: `bla` تعيد كتابة DEX (تكويث جدول �
 **NEXT:** قراءة حكم تشغيل «Contract gates» على `main` بعد الدفع؛ وإن طلب المالك كلفةً أعلى
 فالخطوة التالية المُقاسة هي تشغيل `bla` يدويًّا على APK **غير موقّع** ثم إعادة التوقيع في CI —
 وهي تحتاج إذنه لأنها تغيّر مسار الإصدار.
+
+## تكملة — تصليب DEX في CI بـ`bla-agents`، وأداتان تقيسان ما لا يقيسه `zip` (2026-11-16)
+
+- **الأمر (حرفيًّا):** «اريد ان تستخدم هذا المستودع لزيادة الامان في التطبيق ومنع الهندسة العكسية»
+  (`https://github.com/qybaihe/bla.git`، `MIT`)، بعد سؤال سابق أجبتُ عنه بصدق: **«مستحيل» ليست نتيجة
+  تُشترى بأداة**؛ التصليب يرفع الكلفة، والكاشف يمنع تشغيل نسخة معدّلة، ولا يمنع فهم الفكرة.
+- **ما رُكِّب فعلًا:** خطوة «Shield DEX with bla-agents» في `.github/workflows/build.yml` بين
+  `assembleRelease` و«Validate Manager APK»: فكّ الحزمة ⇒ نسخ `*.dex` إلى مجلّد معزول (فلا تدخل تقارير
+  الأداة الحزمة) ⇒ `npx --yes bla-agents@3.4.1 harden --intensity bankrupt --seed maxmanager -y --json`
+  ⇒ تحقّق بنيوي ⇒ إعادة حزم ⇒ `zipalign -f -p 4` ⇒ `apksigner sign` بالمفتاح نفسه ⇒ `apksigner verify`.
+- **مفتاح إيقاف وإعلان:** متغيّر المستودع `BLA_SHIELD=0` يوقف الخطوة ويطبع السبب؛ وبناء غير موقّع
+  (PR من fork بلا `KEYSTORE_PASSWORD`) يتخطّاها بإعلان، لأن التصليب يُبطل التوقيع ولا keystore لإعادته.
+- **أداتان جديدتان في `tools/`:** `dex_integrity.py` (ترويسة DEX، `file_size`، `header_size`، `endian_tag`،
+  `Adler32` على `data[12:]`، `SHA-1` على `data[32:]` — ٨ حالات في `--self-test`) و`apk_repack.py`
+  (إعادة الحزم مع **`resources.arsc` مُخزَّنًا** وحذف توقيعات `META-INF` البائدة — ١٠ حالات في `--self-test`).
+  وسبب وجودهما مقيس: `zip` لا يحفظ شرط الضغط، و`apksigner` لا يقرأ محتوى DEX، فحزمة «موقّعة وسليمة
+  التوقيع» قد تسقط في التثبيت أو في تحميل الصنف بلا رسالة مفهومة.
+- **بوابة `hardening_guard.py` توسّعت:** قاعدة `check_shield_ci` تمنع حذف الخطوة أو أحد أبوابها الأربعة
+  (`bla-agents` · `dex_integrity.py --assert` · `apk_repack.py` · `apksigner sign`) بصمت؛ فحذفها لا يُسقط
+  أي بوابة أخرى. و`scope` صار يشمل `.github/workflows/build.yml`.
+- **الإسناد:** `bla-agents` في `THIRD_PARTY_NOTICES.md` (أداة بناء، **لا شيفرة مُشحَنة**)، و`rea` **لم يُدخَل**:
+  أداة هجوم لا دفاع، ولا تُشغَّل في مسار الإصدار.
+- **التحقق (محليًّا، بالأرقام):** `hardening_guard --assert` «✓ التصليب قائم» (نطاقه أربعة ملفّات) ·
+  `hardening_guard --self-test` ٩ حالات · `dex_integrity --self-test` ٨ حالات · `apk_repack --self-test`
+  ١٠ حالات · `license_audit --assert` «لا مكوّن GPL» (4856 ملفًّا متعقَّبًا) · `kt_balance` · `code_health` ·
+  `i18n_coverage` · `design_tokens` · `provenance_guard` · `git diff --check` · `build.yml` يُحلَّل بـPyYAML.
+- **الحدود:** **`bla-agents` لم تُشغَّل في هذه البيئة** (لا شبكة npm هنا) — فحكمها الأول يأتي من CI.
+  و«حزمة مصلَّبة تعمل» **غير مُتحقَّقة** بلا جهاز: البوابات بنيوية فقط. وحدّ الأداة من وثائقها:
+  «لا تعتبر `defenseScore` العالي برهانًا ضد الهجمات التشفيرية دون اتصال».
+- **NEXT:** قراءة حكم تشغيل `main` بعد الدفع: خطوتا «Contract gates» و«Shield DEX with bla-agents»؛
+  فإن رفض `dexdump`/`dex_integrity` بعد التصليب فالمسار `BLA_SHIELD=0` يوقفها في دقيقة بلا تعديل ملفّ.

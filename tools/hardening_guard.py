@@ -34,6 +34,7 @@ ROOT = os.path.dirname(HERE)
 GRADLE_REL = os.path.join("manager", "app", "build.gradle.kts")
 PROGUARD_REL = os.path.join("manager", "app", "proguard-rules.pro")
 MANIFEST_REL = os.path.join("manager", "app", "src", "main", "AndroidManifest.xml")
+WORKFLOW_REL = os.path.join(".github", "workflows", "build.yml")
 
 # ── القواعد ────────────────────────────────────────────────────────────────
 #
@@ -267,6 +268,31 @@ def tracked_mapping() -> list[dict]:
     return findings
 
 
+def check_shield_ci(text: str) -> list[dict]:
+    """خطوة تصليب DEX في CI: لا تُحذف بصمت، ولا تُحذف أبوابها.
+
+    السبب: خطوة واحدة في ملفّ سير عمل هي التي تفصل «تصليب مطلوب» عن «تصليب موعود».
+    وحذفها لا يُسقط شيئًا آخر في الشجرة — لا تصريف ولا اختبار — فتُمرّ بصمت. فهذه
+    القاعدة تربط أربعة أشياء معًا: تشغيل `bla-agents`، وتحقّق `dex_integrity`، وإعادة
+    الحزم بـ`apk_repack` (‏`resources.arsc` بلا ضغط)، وإعادة التوقيع بـ`apksigner`.
+    """
+    findings: list[dict] = []
+    path = rel(os.path.join(ROOT, WORKFLOW_REL))
+    if not text:
+        return [{"rule": "missing_file", "where": WORKFLOW_REL, "detail": "ملفّ سير العمل غير موجود"}]
+
+    required = {
+        "bla-agents": "خطوة تصليب DEX محذوفة: لا `bla-agents` في سير العمل",
+        "dex_integrity.py --assert": "لا تحقّق بنيوي بعد التصليب (`dex_integrity.py --assert`)",
+        "apk_repack.py": "لا إعادة حزم عبر `apk_repack.py` (فقد يُضغط `resources.arsc` فتسقط التثبيت)",
+        "apksigner sign": "لا إعادة توقيع بعد التصليب (توقيع Gradle صار باطلًا بتعديل DEX)",
+    }
+    for needle, detail in required.items():
+        if needle not in text:
+            findings.append({"rule": "shield_step:" + needle.split()[0], "where": path + ":0", "detail": detail})
+    return findings
+
+
 def read(path: str) -> str:
     try:
         with open(path, "r", encoding="utf-8", errors="replace") as handle:
@@ -293,10 +319,11 @@ def scan() -> dict:
     else:
         findings += check_manifest(manifest_text)
     findings += tracked_mapping()
+    findings += check_shield_ci(read(os.path.join(ROOT, WORKFLOW_REL)))
     return {
         "obstacles": len(findings),
         "findings": findings,
-        "scope": [GRADLE_REL, PROGUARD_REL, MANIFEST_REL],
+        "scope": [GRADLE_REL, PROGUARD_REL, MANIFEST_REL, WORKFLOW_REL],
     }
 
 
