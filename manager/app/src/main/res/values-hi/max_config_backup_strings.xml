@@ -18,4 +18,10 @@
     <string name="max_cfg_section_appearance">उपस्थिति और इंटरफ़ेस</string>
     <string name="max_cfg_section_app_prefs">ऐप प्राथमिकताएं और भाषा</string>
     <string name="max_cfg_restore_merge_note">प्राथमिकताओं को पुनर्स्थापित करना मर्ज होता है: फ़ाइल में मौजूद कुंजियाँ लिखी जाती हैं, और जिन कुंजियों का उल्लेख नहीं किया गया है वे वैसी ही रहेंगी। कुछ भी साफ़ नहीं हुआ.</string>
+    <string name="max_cfg_diff_title">%1$d सहेजी गई सेटिंग्स इस डिवाइस से भिन्न हैं</string>
+    <string name="max_cfg_diff_line">%1$s: %2$s → %3$s</string>
+    <string name="max_cfg_diff_unset">सेट नहीं</string>
+    <string name="max_cfg_diff_more">और %1$d अधिक</string>
+    <string name="max_cfg_diff_applist">%1$d ऐप-सूची पंक्तियाँ जोड़ी गईं, %2$d हटाई गईं - पूरी सूची बदल दी गई है, विलय नहीं किया गया है।</string>
+    <string name="max_cfg_diff_prefs">%1$d प्राथमिकता कुंजियाँ भिन्न-भिन्न हैं - मर्ज की गई हैं, मिटाई नहीं गई हैं।</string>
 </resources>

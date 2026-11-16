@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_update_strings.xml -->
+<resources>
+    <string name="update_dialog_title">Güncelleme mevcut</string>
+    <string name="update_dialog_title_required">Güncelleme gerekli</string>
+    <string name="update_required_notice">MaxManager kullanmaya devam etmek için bu güncelleme gereklidir. Yükleyin, ardından uygulamayı yeniden açın.</string>
+    <string name="update_dialog_body">Sürüm %1$s mevcut. %2$s\'dasınız.</string>
+    <string name="update_block_title">Devam etmek için güncelleme gerekli</string>
+    <string name="update_block_body">Bu yapı (%1$s) artık desteklenmiyor. MaxManager kullanmaya devam etmek için %2$s sürümüne güncelleyin.</string>
+    <string name="update_block_body_no_release">Bu yapı (%1$s) artık desteklenmiyor.</string>
+    <string name="update_release_notes_label">Ne var ne yok</string>
+    <string name="update_size">İndirme boyutu: %1$s</string>
+    <string name="update_button_now">Şimdi güncelle</string>
+    <string name="update_button_later">Daha sonra</string>
+    <string name="update_button_close">Kapalı</string>
+    <string name="update_button_open_page">İndirme sayfasını aç</string>
+    <string name="update_state_downloading">İndiriliyor… %1$d%%</string>
+    <string name="update_state_downloading_unknown">İndiriliyor…</string>
+    <string name="update_state_installing">Yükleniyor…</string>
+    <string name="update_error_network">Güncelleme sunucusuna ulaşılamadı. Bağlantınızı kontrol edip tekrar deneyin.</string>
+    <string name="update_error_http">Güncelleme sunucusu bir hatayla yanıt verdi. Daha sonra tekrar deneyin.</string>
+    <string name="update_error_format">Güncelleme bilgileri okunamadı.</string>
+    <string name="update_error_too_large">Güncelleme bilgileri beklenenden daha büyüktü ve silindi.</string>
+    <string name="update_error_integrity">İndirilen dosya sağlama toplamıyla eşleşmedi ve silindi.</string>
+    <string name="update_error_install">Kurulum başarısız oldu. Tekrar deneyin.</string>
+    <string name="update_error_not_configured">Bu yapıda hiçbir güncelleme kanalı yapılandırılmadı.</string>
+    <string name="update_maintenance_title">Geçici olarak kullanılamıyor</string>
+    <string name="update_maintenance_body">MaxManager geçici olarak kullanılamıyor. Lütfen kısa süre sonra tekrar deneyin.</string>
+    <string name="update_check_title">Güncellemeleri kontrol edin</string>
+    <string name="update_check_supporting">Güncel sürüm: %1$s</string>
+    <string name="update_check_updated">Bir güncelleme mevcut.</string>
+    <string name="update_check_uptodate">En son sürümdesiniz.</string>
+    <string name="update_check_failed">Güncellemeler kontrol edilemedi.</string>
+    <string name="update_check_not_configured">Bu yapıda hiçbir güncelleme kanalı yapılandırılmadı.</string>
+    <string name="update_released_label">Çıkış tarihi: %1$s</string>
+    <string name="update_check_none_published">Kontrol panelinden henüz bir güncelleme yayınlanmadı.</string>
+    <string name="update_check_link_missing">Bir güncelleme yayınlandı ancak indirme bağlantısı eksik.</string>
+</resources>

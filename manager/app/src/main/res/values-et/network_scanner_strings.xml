@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/network_scanner_strings.xml -->
+<resources>
+    <string name="network_scanner_title">Kohaliku võrgu skanner</string>
+    <string name="network_scanner_subtitle">Teie aadress, värav, kuhu see jõuab ja millised naabrid vastasid.</string>
+    <string name="max_role_network_scanner">Loeb teie kasutatavat võrku – pole hõivamist ega juurt.</string>
+    <string name="ns_no_network">Võrku pole ühendatud.</string>
+    <string name="ns_interface">Liides</string>
+    <string name="ns_address">Aadress</string>
+    <string name="ns_gateway">Värav</string>
+    <string name="ns_dns">DNS</string>
+    <string name="ns_mac">MAC</string>
+    <string name="ns_transport_wifi">Wi-Fi</string>
+    <string name="ns_transport_ethernet">Ethernet</string>
+    <string name="ns_transport_cellular">Mobiilne</string>
+    <string name="ns_transport_other">muud</string>
+    <string name="ns_sources_title">Kust see tuleb</string>
+    <string name="ns_sources_body">Aadresse ja lüüsi loetakse platvormi lingi atribuutidest. Naabertabel loetakse kerneli ARP-vahemälust, nii et see sisaldab ainult seda, millega see seade on hiljuti rääkinud – tühi tabel ei tähenda tühja võrku.</string>
+    <string name="ns_refresh">Värskenda</string>
+    <string name="ns_probe">Proovige ühiseid porte</string>
+    <string name="ns_probe_stop">Peatus</string>
+    <string name="ns_probe_progress">Proovimine %1$d / %2$d</string>
+    <string name="ns_probe_note">Saadab TCP-ühenduse pordidesse 22, 80, 443, 5000 ja 5555 üle selle /24. Teatatakse port, mis vastab; vaikus ei ole tõend peremehe puudumisest.</string>
+    <string name="ns_neighbours">Tuntud naabrid</string>
+    <string name="ns_neighbours_note">Alates /proc/net/arp – ainult lugemiseks.</string>
+    <string name="ns_neighbours_empty">Naabreid pole veel teada.</string>
+    <string name="ns_ports_value">Pordid %1$s</string>
+</resources>

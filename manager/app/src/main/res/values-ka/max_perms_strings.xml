@@ -69,4 +69,25 @@
     <string name="max_perms_entry_title">ნებართვები და აპის ოპერაციები</string>
     <string name="max_perms_entry_desc">ნახეთ, რას აცხადებს ეს აპლიკაცია და რას იძლევა სისტემა რეალურად</string>
     <string name="max_perms_entry_action">გახსენით ნებართვები</string>
+    <string name="max_perms_manifest_title">მანიფესტის შეჯამება</string>
+    <string name="max_perms_manifest_desc">წაიკითხეთ პაკეტის მენეჯერიდან: ვერსია, SDK დიაპაზონი, კომპონენტები და რამდენი მათგანია ექსპორტირებული. ექსპორტირებული კომპონენტის გაშვება შესაძლებელია სხვა აპებით.</string>
+    <string name="max_perms_manifest_version">ვერსია</string>
+    <string name="max_perms_manifest_sdk">SDK დიაპაზონი</string>
+    <string name="max_perms_manifest_location">დააინსტალირეთ ადგილმდებარეობა</string>
+    <string name="max_perms_manifest_location_auto">ავტომატური</string>
+    <string name="max_perms_manifest_location_internal">მხოლოდ შიდა მეხსიერება</string>
+    <string name="max_perms_manifest_location_external">ურჩევნია გარე</string>
+    <string name="max_perms_manifest_components">კომპონენტები</string>
+    <string name="max_perms_manifest_components_order">საქმიანობა · მომსახურება · მიმღებები · პროვაიდერები</string>
+    <string name="max_perms_manifest_exported">ექსპორტირებული კომპონენტები</string>
+    <string name="max_perms_manifest_splits">APK-ების გაყოფა</string>
+    <string name="max_perms_manifest_debug">გამართვადი</string>
+    <string name="max_perms_features_title">დეკლარირებული მახასიათებლები</string>
+    <string name="max_perms_features_desc">რას მოითხოვს პაკეტი მოწყობილობისგან, შედარებით იმასთან შედარებით, რასაც ეს მოწყობილობა რეკლამებს. საჭირო ფუნქცია, რომელიც აქ აკლია, ჩვეულებრივ ნიშნავს, რომ აპლიკაცია სრულად არ იმუშავებს – ეს არის პაკეტის მენეჯერის პრეტენზია და არა გამოცნობა.</string>
+    <string name="max_perms_features_loading">პაკეტის დეკლარირებული ფუნქციების წაკითხვა…</string>
+    <string name="max_perms_features_none">პაკეტში არ არის გამოცხადებული საჭირო ფუნქციები.</string>
+    <string name="max_perms_features_required">საჭირო</string>
+    <string name="max_perms_features_unsupported">არა ამ მოწყობილობაზე</string>
+    <string name="max_perms_manifest_none">არ არის მოხსენებული პაკეტის მენეჯერის მიერ.</string>
+    <string name="max_perms_manifest_unknown">უცნობი</string>
 </resources>

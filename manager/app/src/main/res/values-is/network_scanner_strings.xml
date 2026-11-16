@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/network_scanner_strings.xml -->
+<resources>
+    <string name="network_scanner_title">Staðbundinn netskanni</string>
+    <string name="network_scanner_subtitle">Heimilisfangið þitt, hliðið sem það nær og hvaða nágrannar svöruðu.</string>
+    <string name="max_role_network_scanner">Les netið sem þú ert á - engin handtaka, engin rót.</string>
+    <string name="ns_no_network">Ekkert net er tengt.</string>
+    <string name="ns_interface">Viðmót</string>
+    <string name="ns_address">Heimilisfang</string>
+    <string name="ns_gateway">Gátt</string>
+    <string name="ns_dns">DNS</string>
+    <string name="ns_mac">MAC</string>
+    <string name="ns_transport_wifi">Wi-Fi</string>
+    <string name="ns_transport_ethernet">Ethernet</string>
+    <string name="ns_transport_cellular">Farsíma</string>
+    <string name="ns_transport_other">Annað</string>
+    <string name="ns_sources_title">Hvaðan kemur þetta</string>
+    <string name="ns_sources_body">Heimilisföng og gátt eru lesin úr tengieiginleikum vettvangsins. Nágrannataflan er lesin úr ARP skyndiminni kjarnans, þannig að hún geymir aðeins það sem þetta tæki hefur nýlega talað við - tóm tafla þýðir ekki tómt net.</string>
+    <string name="ns_refresh">Endurnýja</string>
+    <string name="ns_probe">Rannsakaðu algengar hafnir</string>
+    <string name="ns_probe_stop">Hættu</string>
+    <string name="ns_probe_progress">Skoða %1$d af %2$d</string>
+    <string name="ns_probe_note">Sendir TCP tengingu á tengi 22, 80, 443, 5000 og 5555 yfir þetta /24. Greint er frá höfn sem svarar; þögn er ekki sönnun þess að gestgjafi sé fjarverandi.</string>
+    <string name="ns_neighbours">Þekktir nágrannar</string>
+    <string name="ns_neighbours_note">Frá /proc/net/arp - les eingöngu.</string>
+    <string name="ns_neighbours_empty">Ekki er vitað um nágranna ennþá.</string>
+    <string name="ns_ports_value">Hafnir %1$s</string>
+</resources>

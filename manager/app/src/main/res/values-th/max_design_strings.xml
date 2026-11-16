@@ -13,4 +13,23 @@
     <string name="max_expand_section">แสดงรายละเอียด</string>
     <string name="max_collapse_section">ซ่อนรายละเอียด</string>
     <string name="max_trust_loading">การอ่าน…</string>
+    <string name="max_gov_title">ใครปกครองตอนนี้</string>
+    <string name="max_gov_separator">" > "</string>
+    <string name="max_gov_order_note">ลำดับคงที่: รุ่งที่สูงกว่าจะบล็อกลำดับที่ต่ำกว่า มันไม่เคยเปลี่ยนแปลงนโยบายใดที่จะชนะ</string>
+    <string name="max_gov_open_details">ผู้ถือที่ใช้งานอยู่</string>
+    <string name="max_gov_active_title">ใครเป็นผู้ควบคุม</string>
+    <string name="max_gov_none">ไม่มีนโยบายเป็นเจ้าของการควบคุมฮาร์ดแวร์ในขณะนี้</string>
+    <string name="max_gov_count">สัญญาเช่าการควบคุมที่ใช้งานอยู่: %1$d</string>
+    <string name="max_gov_requested">ร้องขอ: %1$s</string>
+    <string name="max_gov_owner_recovery">การกู้คืน</string>
+    <string name="max_gov_owner_safety">ความปลอดภัยด้านความร้อน</string>
+    <string name="max_gov_owner_per_app">โปรไฟล์แอป</string>
+    <string name="max_gov_owner_max_ai">Max AI</string>
+    <string name="max_gov_owner_global">โปรไฟล์ระดับโลก</string>
+    <string name="max_gov_owner_system">ระบบ</string>
+    <string name="max_gov_owner_a11y">%1$s เป็นเจ้าของการควบคุมฮาร์ดแวร์</string>
+    <string name="max_gov_now_none">ไม่มีเจ้าของอัตโนมัติในขณะนี้ — การควบคุมยังคงเป็นของคุณ</string>
+    <string name="max_gov_now_one">%1$s ถือการควบคุม</string>
+    <string name="max_gov_now_many">%1$s ถือ %2$d การควบคุม</string>
+    <string name="devinfo_details">รายละเอียด</string>
 </resources>

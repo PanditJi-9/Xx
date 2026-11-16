@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/network_scanner_strings.xml -->
+<resources>
+    <string name="network_scanner_title">Sare lokaleko eskanerra</string>
+    <string name="network_scanner_subtitle">Zure helbidea, iristen den atea eta auzokideek erantzun duten.</string>
+    <string name="max_role_network_scanner">Zu zauden sarea irakurtzen du — ez harrapatu, ez root.</string>
+    <string name="ns_no_network">Ez dago sarerik konektatuta.</string>
+    <string name="ns_interface">Interfazea</string>
+    <string name="ns_address">Helbidea</string>
+    <string name="ns_gateway">Pasabidea</string>
+    <string name="ns_dns">DNS</string>
+    <string name="ns_mac">MAC</string>
+    <string name="ns_transport_wifi">Wi-Fi</string>
+    <string name="ns_transport_ethernet">Ethernet</string>
+    <string name="ns_transport_cellular">Zelularra</string>
+    <string name="ns_transport_other">Bestela</string>
+    <string name="ns_sources_title">Nondik datorren hau</string>
+    <string name="ns_sources_body">Helbideak eta atebidea plataformaren estekaren propietateetatik irakurtzen dira. Bizilagunen taula nukleoaren ARP cachetik irakurtzen da, beraz, gailu honek duela gutxi hitz egin duenarekin bakarrik gordetzen du — taula hutsak ez du sare hutsik esan nahi.</string>
+    <string name="ns_refresh">Freskatu</string>
+    <string name="ns_probe">Zundatu portu komunak</string>
+    <string name="ns_probe_stop">Gelditu</string>
+    <string name="ns_probe_progress">%1$dren %2$d zundaketa</string>
+    <string name="ns_probe_note">TCP konexio bat bidaltzen du 22, 80, 443, 5000 eta 5555 portuetan /24 honetan. Erantzuten duen ataka baten berri ematen da; isiltasuna ez da ostalari bat falta dela frogatzen.</string>
+    <string name="ns_neighbours">Bizilagun ezagunak</string>
+    <string name="ns_neighbours_note">/proc/net/arp-tik — irakurtzeko soilik.</string>
+    <string name="ns_neighbours_empty">Oraindik ez da auzokiderik ezagutzen.</string>
+    <string name="ns_ports_value">Portuak %1$s</string>
+</resources>

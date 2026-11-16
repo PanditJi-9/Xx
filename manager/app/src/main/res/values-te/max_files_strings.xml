@@ -220,4 +220,5 @@
     <string name="max_files_compress_level_normal">సాధారణ</string>
     <string name="max_files_compress_level_max">గరిష్టంగా</string>
     <string name="max_files_compress_summary">%1$d అంశాలు \u2192 %2$s</string>
+    <string name="max_files_history_more">%1$d పాత ఫోల్డర్‌లు చూపబడలేదు</string>
 </resources>

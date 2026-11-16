@@ -18,4 +18,10 @@
     <string name="max_cfg_section_appearance">Vzhľad a rozhranie</string>
     <string name="max_cfg_section_app_prefs">Predvoľby a jazyk aplikácie</string>
     <string name="max_cfg_restore_merge_note">Obnovenie preferencií sa zlúči: kľúče prítomné v súbore sú zapísané a kľúče, o ktorých sa nezmieňuje, zostanú tak, ako sú. Nič nie je vyčistené.</string>
+    <string name="max_cfg_diff_title">%1$d uložené nastavenia sa líšia od tohto zariadenia</string>
+    <string name="max_cfg_diff_line">%1$s: %2$s → %3$s</string>
+    <string name="max_cfg_diff_unset">nie je nastavený</string>
+    <string name="max_cfg_diff_more">a %1$d ďalších</string>
+    <string name="max_cfg_diff_applist">%1$d pridaných riadkov zoznamu aplikácií, %2$d odstránených — celý zoznam sa nahradí, nie zlúči.</string>
+    <string name="max_cfg_diff_prefs">%1$d preferenčné klávesy sa líšia – zlúčené, nie vymazané.</string>
 </resources>

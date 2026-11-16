@@ -69,4 +69,25 @@
     <string name="max_perms_entry_title">Kebenaran &amp; ops Apl</string>
     <string name="max_perms_entry_desc">Lihat perkara yang diisytiharkan oleh aplikasi ini dan perkara yang sebenarnya dibenarkan oleh sistem</string>
     <string name="max_perms_entry_action">Buka kebenaran</string>
+    <string name="max_perms_manifest_title">Ringkasan manifes</string>
+    <string name="max_perms_manifest_desc">Baca daripada pengurus pakej: versi, julat SDK, komponen dan bilangan daripadanya yang dieksport. Komponen yang dieksport boleh dimulakan oleh apl lain.</string>
+    <string name="max_perms_manifest_version">Versi</string>
+    <string name="max_perms_manifest_sdk">Julat SDK</string>
+    <string name="max_perms_manifest_location">Pasang lokasi</string>
+    <string name="max_perms_manifest_location_auto">Automatik</string>
+    <string name="max_perms_manifest_location_internal">Storan dalaman sahaja</string>
+    <string name="max_perms_manifest_location_external">Lebih suka luaran</string>
+    <string name="max_perms_manifest_components">Komponen</string>
+    <string name="max_perms_manifest_components_order">aktiviti · perkhidmatan · penerima · pembekal</string>
+    <string name="max_perms_manifest_exported">Komponen yang dieksport</string>
+    <string name="max_perms_manifest_splits">Pisahkan APK</string>
+    <string name="max_perms_manifest_debug">Boleh nyahpepijat</string>
+    <string name="max_perms_features_title">Ciri yang diisytiharkan</string>
+    <string name="max_perms_features_desc">Perkara yang diperlukan oleh pakej daripada peranti, berbanding dengan perkara yang diiklankan oleh peranti ini. Ciri yang diperlukan tiada di sini biasanya bermakna apl tidak akan berfungsi sepenuhnya — ia adalah tuntutan daripada pengurus pakej, bukan tekaan.</string>
+    <string name="max_perms_features_loading">Membaca ciri yang diisytiharkan pakej…</string>
+    <string name="max_perms_features_none">Pakej mengisytiharkan tiada ciri yang diperlukan.</string>
+    <string name="max_perms_features_required">Diperlukan</string>
+    <string name="max_perms_features_unsupported">Bukan pada peranti ini</string>
+    <string name="max_perms_manifest_none">Tidak dilaporkan oleh pengurus pakej.</string>
+    <string name="max_perms_manifest_unknown">Tidak diketahui</string>
 </resources>

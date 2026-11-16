@@ -69,4 +69,25 @@
     <string name="max_perms_entry_title">Machtigingen en app-bewerkingen</string>
     <string name="max_perms_entry_desc">Kijk wat deze app aangeeft en wat het systeem daadwerkelijk toestaat</string>
     <string name="max_perms_entry_action">Rechten openen</string>
+    <string name="max_perms_manifest_title">Duidelijke samenvatting</string>
+    <string name="max_perms_manifest_desc">Lees vanuit de pakketbeheerder: versie, SDK-bereik, componenten en hoeveel ervan worden geëxporteerd. Een geëxporteerd onderdeel kan door andere apps worden gestart.</string>
+    <string name="max_perms_manifest_version">Versie</string>
+    <string name="max_perms_manifest_sdk">SDK-bereik</string>
+    <string name="max_perms_manifest_location">Installeer locatie</string>
+    <string name="max_perms_manifest_location_auto">Automatisch</string>
+    <string name="max_perms_manifest_location_internal">Alleen interne opslag</string>
+    <string name="max_perms_manifest_location_external">Geeft de voorkeur aan extern</string>
+    <string name="max_perms_manifest_components">Componenten</string>
+    <string name="max_perms_manifest_components_order">activiteiten · diensten · ontvangers · aanbieders</string>
+    <string name="max_perms_manifest_exported">Geëxporteerde componenten</string>
+    <string name="max_perms_manifest_splits">APK\'s splitsen</string>
+    <string name="max_perms_manifest_debug">Foutopsporing mogelijk</string>
+    <string name="max_perms_features_title">Aangegeven kenmerken</string>
+    <string name="max_perms_features_desc">Wat het pakket van het apparaat vereist, vergeleken met wat dit apparaat adverteert. Een vereiste functie die hier ontbreekt, betekent meestal dat de app niet volledig zal werken. Het is een claim van de pakketbeheerder, geen gok.</string>
+    <string name="max_perms_features_loading">De aangegeven functies van het pakket lezen...</string>
+    <string name="max_perms_features_none">Het pakket vermeldt geen vereiste functies.</string>
+    <string name="max_perms_features_required">Vereist</string>
+    <string name="max_perms_features_unsupported">Niet op dit apparaat</string>
+    <string name="max_perms_manifest_none">Niet gerapporteerd door de pakketbeheerder.</string>
+    <string name="max_perms_manifest_unknown">Onbekend</string>
 </resources>

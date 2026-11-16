@@ -18,4 +18,10 @@
     <string name="max_cfg_section_appearance">Aspect și interfață</string>
     <string name="max_cfg_section_app_prefs">Preferințele aplicației și limba</string>
     <string name="max_cfg_restore_merge_note">Restabilirea îmbinării preferințelor: cheile prezente în fișier sunt scrise, iar cheile pe care nu le menționează rămân așa cum sunt. Nimic nu este șters.</string>
+    <string name="max_cfg_diff_title">%1$d setările salvate diferă de acest dispozitiv</string>
+    <string name="max_cfg_diff_line">%1$s: %2$s → %3$s</string>
+    <string name="max_cfg_diff_unset">nu setat</string>
+    <string name="max_cfg_diff_more">și %1$d mai mult</string>
+    <string name="max_cfg_diff_applist">%1$d Liniile listei de aplicații adăugate, %2$d eliminate — întreaga listă este înlocuită, nu fuzionată.</string>
+    <string name="max_cfg_diff_prefs">%1$d Tastele de preferință diferă — îmbinate, nu șterse.</string>
 </resources>

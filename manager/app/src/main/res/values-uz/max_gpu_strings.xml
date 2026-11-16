@@ -99,4 +99,12 @@
     <string name="max_gpu_saved_desc">Ilgari saqlangan va har bir yuklashda qo\'llaniladi: %1$s. Yuqoridagi standart faqat ushbu seansni tugatadi, hech qachon saqlanmaydi.</string>
     <string name="max_gpu_dynamic_min">Minimal · dinamik</string>
     <string name="max_gpu_dynamic_max">Maksimal · dinamik</string>
+    <string name="max_gpu_monitor_only_detail">Ushbu yadro ochadigan yagona grafik tugunlar tarmoqli kengligi va QoS monitorlaridir: ular GPU soatiga ega emas, shuning uchun sozlash chastotasi yo\'q. Nazorat GPU kabi xotira boshqaruvchisi yozish o\'rniga o\'chirilgan.</string>
+    <string name="max_gpu_danger_title">GPU chegaralar yozilsinmi?</string>
+    <string name="max_gpu_danger_body">Bu grafik chastota oynasini va regulyatorni GPU tugunlariga yozadi. Haydovchi rad etgan oyna yoki davom eta olmaydigan gubernator butun interfeysni qoqib qo\'yishi yoki panelni muzlatib qo\'yishi mumkin. Ilova buni bir marta qabul qilganingizni qayd qiladi — siz qo\'llagan qadriyatlar uchun javobgarlik sizniki.</string>
+    <string name="max_gpu_danger_action">Tushundim - murojaat qiling</string>
+    <string name="max_gpu_state_title">Shtatdagi vaqt</string>
+    <string name="max_gpu_state_desc">GPU\'ning vaqti aslida qayerga ketgan bo\'lsa, yadro tomonidan ish chastotasi bo\'yicha hisoblanadi - joriy soatning surati emas.</string>
+    <string name="max_gpu_state_hidden_share">%1$s birga</string>
+    <string name="max_gpu_state_hidden">%1$d 1%% dan past koʻrsatkichlarni bildiradi</string>
 </resources>

@@ -99,4 +99,11 @@
     <string name="max_gpu_saved_desc">Əvvəlki yaddaşdan saxlanılır və hər açılışda tətbiq olunur: %1$s. Yuxarıdakı defolt yalnız bu sessiyanı bitirir, heç vaxt yadda saxlanmır.</string>
     <string name="max_gpu_dynamic_min">Minimum · dinamik</string>
     <string name="max_gpu_dynamic_max">Maksimum · dinamik</string>
+    <string name="max_gpu_monitor_only_detail">Bu nüvənin ifşa etdiyi yeganə qrafik qovşaqlar bant genişliyi və QoS monitorlarıdır: onlar GPU saat daşımır, ona görə də təyin etmək üçün tezlik yoxdur. Nəzarət GPU olduğu kimi yaddaş idarəçisi yazmaq əvəzinə söndürülür.</string>
+    <string name="max_gpu_danger_title">GPU limitləri yazın?</string>
+    <string name="max_gpu_danger_body">Bu, qrafik tezliyi pəncərəsini və idarəedicini GPU qovşaqlarına yazır. Sürücünün rədd etdiyi pəncərə və ya davam edə bilməyən qubernator bütün interfeysi kəkələyə və ya paneli dondura bilər. Tətbiq bunu bir dəfə qəbul etdiyinizi qeyd edir — tətbiq etdiyiniz dəyərlərə görə məsuliyyət sizindir.</string>
+    <string name="max_gpu_danger_action">başa düşürəm - müraciət edin</string>
+    <string name="max_gpu_state_title">Dövlətdə vaxt</string>
+    <string name="max_gpu_state_desc">GPU\-nin vaxtının əslində getdiyi yer, hər əməliyyat tezliyinə görə nüvə ilə hesablanır – cari saatın şəkli deyil.</string>
+    <string name="max_gpu_state_hidden_share">%1$s birlikdə</string>
 </resources>

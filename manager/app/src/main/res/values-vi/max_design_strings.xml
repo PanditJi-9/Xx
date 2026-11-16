@@ -13,4 +13,23 @@
     <string name="max_expand_section">Hiển thị chi tiết</string>
     <string name="max_collapse_section">Ẩn chi tiết</string>
     <string name="max_trust_loading">Đọc…</string>
+    <string name="max_gov_title">Ai cai trị bây giờ</string>
+    <string name="max_gov_separator">" > "</string>
+    <string name="max_gov_order_note">Thứ tự cố định: bậc cao hơn chặn bậc thấp hơn. Nó không bao giờ thay đổi chính sách nào thắng.</string>
+    <string name="max_gov_open_details">Người nắm giữ đang hoạt động</string>
+    <string name="max_gov_active_title">Ai nắm quyền kiểm soát</string>
+    <string name="max_gov_none">Hiện tại không có chính sách nào sở hữu quyền kiểm soát phần cứng.</string>
+    <string name="max_gov_count">Hợp đồng thuê kiểm soát chủ động: %1$d</string>
+    <string name="max_gov_requested">Đã yêu cầu: %1$s</string>
+    <string name="max_gov_owner_recovery">Sự hồi phục</string>
+    <string name="max_gov_owner_safety">An toàn nhiệt</string>
+    <string name="max_gov_owner_per_app">Hồ sơ ứng dụng</string>
+    <string name="max_gov_owner_max_ai">Max AI</string>
+    <string name="max_gov_owner_global">Hồ sơ toàn cầu</string>
+    <string name="max_gov_owner_system">Hệ thống</string>
+    <string name="max_gov_owner_a11y">%1$s sở hữu bộ điều khiển phần cứng</string>
+    <string name="max_gov_now_none">Hiện không có chủ sở hữu tự động - quyền kiểm soát vẫn là của bạn</string>
+    <string name="max_gov_now_one">%1$s giữ quyền kiểm soát</string>
+    <string name="max_gov_now_many">%1$s giữ %2$d điều khiển</string>
+    <string name="devinfo_details">Chi tiết</string>
 </resources>

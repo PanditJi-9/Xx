@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/network_scanner_strings.xml -->
+<resources>
+    <string name="network_scanner_title">Scanner de rede local</string>
+    <string name="network_scanner_subtitle">Seu endereço, o gateway que ele alcança e quais vizinhos responderam.</string>
+    <string name="max_role_network_scanner">Lê a rede em que você está – sem captura, sem root.</string>
+    <string name="ns_no_network">Nenhuma rede está conectada.</string>
+    <string name="ns_interface">Interface</string>
+    <string name="ns_address">Endereço</string>
+    <string name="ns_gateway">Portal</string>
+    <string name="ns_dns">DNS</string>
+    <string name="ns_mac">MAC</string>
+    <string name="ns_transport_wifi">Wi-fi</string>
+    <string name="ns_transport_ethernet">Ethernet</string>
+    <string name="ns_transport_cellular">Celular</string>
+    <string name="ns_transport_other">Outro</string>
+    <string name="ns_sources_title">De onde isso vem</string>
+    <string name="ns_sources_body">Endereços e gateway são lidos nas propriedades do link da plataforma. A tabela vizinha é lida do cache ARP do kernel, portanto ela contém apenas o que este dispositivo conversou recentemente - uma tabela vazia não significa uma rede vazia.</string>
+    <string name="ns_refresh">Atualizar</string>
+    <string name="ns_probe">Sondar portas comuns</string>
+    <string name="ns_probe_stop">Parar</string>
+    <string name="ns_probe_progress">Sondagem %1$d de %2$d</string>
+    <string name="ns_probe_note">Envia uma conexão TCP nas portas 22, 80, 443, 5000 e 5555 através deste /24. Uma porta que atende é relatada; o silêncio não é prova de que um anfitrião está ausente.</string>
+    <string name="ns_neighbours">Vizinhos conhecidos</string>
+    <string name="ns_neighbours_note">De /proc/net/arp — somente leitura.</string>
+    <string name="ns_neighbours_empty">Nenhum vizinho é conhecido ainda.</string>
+    <string name="ns_ports_value">Portas %1$s</string>
+</resources>

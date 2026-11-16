@@ -51,4 +51,14 @@
     <string name="copg_tweak_kso_title">Giữ màn hình luôn bật</string>
     <string name="copg_tweak_kso_desc">Áp dụng tinh chỉnh giữ màn hình COPG cho ứng dụng này. Đã lưu ở đây, được ghi vào công cụ bằng Review và áp dụng trong tab Giả mạo.</string>
     <string name="copg_tweak_needs_device">Trước tiên, cần có thiết bị cho ứng dụng này, trong tab Giả mạo.</string>
+    <string name="spoof_engine_unmeasured">Trạng thái công cụ chưa được đo: quyền truy cập root chưa được cấp. Cấp quyền root rồi mở lại tab này.</string>
+    <string name="spoof_engine_config_missing">COPG đã được cài đặt nhưng tệp cấu hình của nó (COPG.json) bị thiếu. Việc đăng ký bị từ chối cho đến khi mô-đun cung cấp lại nó.</string>
+    <string name="spoof_engine_config_unreadable">COPG đã được cài đặt nhưng không thể đọc được tệp cấu hình JSON. Việc đăng ký bị từ chối cho đến khi tập tin được sửa chữa.</string>
+    <string name="spoof_imei_spoof">giả mạo IMEI</string>
+    <string name="spoof_imei_spoof_desc">Hiển thị ứng dụng này một IMEI khác. Cần kích hoạt mô-đun Max Manager trong LSPosed với ứng dụng này trong phạm vi của nó. Khởi động lại ứng dụng sau khi bật.</string>
+    <string name="spoof_imei_active">Hiển thị ứng dụng này: %1$s</string>
+    <string name="spoof_imei_summary">giả mạo IMEI</string>
+    <string name="spoof_imei_regenerate">IMEI ngẫu nhiên mới</string>
+    <string name="spoof_imei_regenerate_desc">Tạo một IMEI hợp lệ khác cho ứng dụng này. Khởi động lại ứng dụng để xem nó.</string>
+    <string name="spoof_imei_module_inactive">Mô-đun Max Manager không được bật trong LSPosed nên các ứng dụng vẫn nhìn thấy IMEI thực. Kích hoạt mô-đun trong LSPosed, thêm ứng dụng này vào phạm vi của nó, sau đó mở lại màn hình này.</string>
 </resources>

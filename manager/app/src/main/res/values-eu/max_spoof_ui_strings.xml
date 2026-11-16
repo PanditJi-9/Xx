@@ -51,4 +51,14 @@
     <string name="copg_tweak_kso_title">Mantendu pantaila piztuta</string>
     <string name="copg_tweak_kso_desc">COPG pantaila-aktibatzeko doikuntza aplikatzen dio aplikazio honi. Hemen gordeta, Berrikuspenaren bidez motorra idatzita eta eskatu Spoof fitxan.</string>
     <string name="copg_tweak_needs_device">Gailu bat behar du aplikazio honetarako lehenik, Spoof fitxan.</string>
+    <string name="spoof_engine_unmeasured">Motor-egoera ez da neurtzen: root sarbidea ez dago oraindik eman. Eman root eta ireki berriro fitxa hau.</string>
+    <string name="spoof_engine_config_missing">COPG instalatuta dago, baina bere konfigurazio fitxategia (COPG.json) falta da. Eskaera ukatu egiten da moduluak berriro ematen duen arte.</string>
+    <string name="spoof_engine_config_unreadable">COPG instalatuta dago, baina bere konfigurazio fitxategia ezin da irakurtzen JSON. Eskaera ukatu egiten da fitxategia konpondu arte.</string>
+    <string name="spoof_imei_spoof">IMEI faltseatzea</string>
+    <string name="spoof_imei_spoof_desc">Aplikazio honi beste IMEI bat erakusten du. LSPosed-en Max Manager modulua gaituta behar du aplikazio honekin bere esparruan. Berrabiarazi aplikazioa piztu ondoren.</string>
+    <string name="spoof_imei_active">Aplikazio hau erakusten: %1$s</string>
+    <string name="spoof_imei_summary">IMEI faltseatzea</string>
+    <string name="spoof_imei_regenerate">Ausazko IMEI berria</string>
+    <string name="spoof_imei_regenerate_desc">Aplikazio honetarako baliozko beste IMEI bat sortzen du. Berrabiarazi aplikazioa ikusteko.</string>
+    <string name="spoof_imei_module_inactive">Max Manager modulua ez dago gaituta LSPosed-en, beraz, aplikazioek benetako IMEI ikusten dute oraindik. Gaitu modulua LSPosed-en, gehitu aplikazio hau bere esparrura, eta ireki berriro pantaila hau.</string>
 </resources>

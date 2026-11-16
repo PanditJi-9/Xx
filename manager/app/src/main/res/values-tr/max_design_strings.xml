@@ -13,4 +13,23 @@
     <string name="max_expand_section">Ayrıntıları göster</string>
     <string name="max_collapse_section">Ayrıntıları gizle</string>
     <string name="max_trust_loading">Okuma…</string>
+    <string name="max_gov_title">Şimdi kim yönetiyor</string>
+    <string name="max_gov_separator">" › "</string>
+    <string name="max_gov_order_note">Sabit sıra: Daha yüksek bir basamak daha düşük bir basamağı bloke eder. Hangi politikanın kazanacağı asla değişmez.</string>
+    <string name="max_gov_open_details">Aktif sahipler</string>
+    <string name="max_gov_active_title">Kontrolü kim elinde tutuyor</string>
+    <string name="max_gov_none">Şu anda hiçbir politikanın donanım kontrolü yoktur.</string>
+    <string name="max_gov_count">Aktif kontrol kiralamaları: %1$d</string>
+    <string name="max_gov_requested">Talep edilen: %1$s</string>
+    <string name="max_gov_owner_recovery">İyileşmek</string>
+    <string name="max_gov_owner_safety">Termal güvenlik</string>
+    <string name="max_gov_owner_per_app">Uygulama profili</string>
+    <string name="max_gov_owner_max_ai">Max AI</string>
+    <string name="max_gov_owner_global">Küresel profil</string>
+    <string name="max_gov_owner_system">Sistem</string>
+    <string name="max_gov_owner_a11y">%1$s bir donanım kontrolüne sahiptir</string>
+    <string name="max_gov_now_none">Şu anda otomatik sahip yok; kontrol sizde kalacak</string>
+    <string name="max_gov_now_one">%1$s kontrolü elinde tutar</string>
+    <string name="max_gov_now_many">%1$s %2$d kontrollerini tutar</string>
+    <string name="devinfo_details">Detaylar</string>
 </resources>

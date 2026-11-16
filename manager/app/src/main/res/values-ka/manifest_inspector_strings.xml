@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/manifest_inspector_strings.xml -->
+<resources>
+    <string name="manifest_inspector_title">მანიფესტის ინსპექტორი</string>
+    <string name="manifest_inspector_subtitle">რას აცხადებს დაინსტალირებული აპლიკაცია თავის შესახებ, წაიკითხეთ PackageManager-იდან.</string>
+    <string name="max_role_manifest_inspector">აჩვენებს რას აცხადებს პაკეტი თავის შესახებ - მხოლოდ წაკითხვადი.</string>
+    <string name="mi_search">მოძებნეთ აპები</string>
+    <string name="mi_empty">აირჩიეთ აპლიკაცია მარცხნივ.</string>
+    <string name="mi_yes">დიახ</string>
+    <string name="mi_no">არა</string>
+    <string name="mi_section_identity">პაკეტი</string>
+    <string name="mi_version">ვერსია</string>
+    <string name="mi_version_code">ვერსიის კოდი</string>
+    <string name="mi_min_sdk">მინიმალური SDK</string>
+    <string name="mi_target_sdk">სამიზნე SDK</string>
+    <string name="mi_installed">დაყენებულია</string>
+    <string name="mi_updated">განახლებულია</string>
+    <string name="mi_installer">ინსტალერი</string>
+    <string name="mi_uid">UID</string>
+    <string name="mi_data_dir">მონაცემთა დირექტორია</string>
+    <string name="mi_debuggable">გამართვადი</string>
+    <string name="mi_system_app">სისტემის აპლიკაცია</string>
+    <string name="mi_enabled">ჩართულია</string>
+    <string name="mi_section_permissions">მოითხოვა ნებართვები</string>
+    <string name="mi_permissions_summary">%1$d ნებართვა · %2$d მათგან საშიში</string>
+    <string name="mi_permissions_none">ეს აპლიკაცია არ ითხოვს ნებართვას.</string>
+    <string name="mi_perm_dangerous">სახიფათო</string>
+    <string name="mi_perm_signature">ხელმოწერა</string>
+    <string name="mi_perm_normal">ნორმალური</string>
+    <string name="mi_perm_unknown">არაკლასიფიცირებული</string>
+    <string name="mi_section_components">კომპონენტები</string>
+    <string name="mi_activities">აქტივობები</string>
+    <string name="mi_services">სერვისები</string>
+    <string name="mi_receivers">მიმღებები</string>
+    <string name="mi_providers">პროვაიდერები</string>
+    <string name="mi_components_none">არცერთი არ გამოცხადებულა</string>
+    <string name="mi_section_features">მოწყობილობის მახასიათებლები</string>
+    <string name="mi_features_note">პლატფორმა არ ავლენს სხვა აპლიკაციის გამოყენების-ფუნქციების სიას; ეს არის ფუნქციების შესახებ ინფორმაცია ამ მოწყობილობის შესახებ.</string>
+    <string name="mi_features_none">არ არის მოხსენებული ფუნქცია</string>
+    <string name="mi_section_signature">მოწმობის ხელმოწერა</string>
+    <string name="mi_signature_note">ხელმოწერის მოწმობის SHA-256. ორი კონსტრუქცია ერთი და იგივე ღირებულებით არის იგივე გამომცემელი.</string>
+    <string name="mi_signature_sha256">სერთიფიკატის დაიჯესტი</string>
+</resources>

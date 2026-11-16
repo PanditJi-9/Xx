@@ -13,4 +13,23 @@
     <string name="max_expand_section">Tafsilotlarni ko\'rsatish</string>
     <string name="max_collapse_section">Tafsilotlarni yashirish</string>
     <string name="max_trust_loading">Oʻqilmoqda…</string>
+    <string name="max_gov_title">Endi kim boshqaradi</string>
+    <string name="max_gov_separator">" › "</string>
+    <string name="max_gov_order_note">Ruxsat etilgan tartib: yuqori pog\'ona pastroqni bloklaydi. Qaysi siyosat g\'alaba qozonishi hech qachon o\'zgarmaydi.</string>
+    <string name="max_gov_open_details">Faol egalari</string>
+    <string name="max_gov_active_title">Kim nazorat qiladi</string>
+    <string name="max_gov_none">Hozirda hech qanday siyosat apparat boshqaruviga ega emas.</string>
+    <string name="max_gov_count">Faol nazorat ijarasi: %1$d</string>
+    <string name="max_gov_requested">Talab qilingan: %1$s</string>
+    <string name="max_gov_owner_recovery">Qayta tiklash</string>
+    <string name="max_gov_owner_safety">Termal xavfsizlik</string>
+    <string name="max_gov_owner_per_app">Ilova profili</string>
+    <string name="max_gov_owner_max_ai">Max AI</string>
+    <string name="max_gov_owner_global">Global profil</string>
+    <string name="max_gov_owner_system">Tizim</string>
+    <string name="max_gov_owner_a11y">%1$s apparat boshqaruviga ega</string>
+    <string name="max_gov_now_none">Hozirda avtomatlashtirilgan egasi yo‘q — boshqaruv sizniki bo‘lib qoladi</string>
+    <string name="max_gov_now_one">%1$s boshqaruvni ushlab turadi</string>
+    <string name="max_gov_now_many">%1$s %2$d boshqaruv elementlarini ushlab turadi</string>
+    <string name="devinfo_details">Tafsilotlar</string>
 </resources>

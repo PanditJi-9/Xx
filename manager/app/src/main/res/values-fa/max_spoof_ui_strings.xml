@@ -51,4 +51,14 @@
     <string name="copg_tweak_kso_title">روشن نگه داشتن صفحه نمایش</string>
     <string name="copg_tweak_kso_desc">نیشگون گرفتن و کشیدن نگه داشتن صفحه نمایش COPG را در این برنامه اعمال می کند. ذخیره شده در اینجا، نوشته شده در موتور توسط مرور و اعمال در تب Spoof.</string>
     <string name="copg_tweak_needs_device">ابتدا در برگه Spoof به دستگاهی برای این برنامه نیاز دارد.</string>
+    <string name="spoof_engine_unmeasured">وضعیت موتور اندازه‌گیری نمی‌شود: دسترسی ریشه هنوز داده نشده است. Grant root، سپس این تب را دوباره باز کنید.</string>
+    <string name="spoof_engine_config_missing">COPG نصب شده است، اما فایل پیکربندی آن (COPG.json) وجود ندارد. درخواست رد می شود تا زمانی که ماژول آن را دوباره ارائه دهد.</string>
+    <string name="spoof_engine_config_unreadable">COPG نصب شده است، اما فایل پیکربندی آن قابل خواندن نیست JSON. درخواست تا زمان تعمیر فایل رد می شود.</string>
+    <string name="spoof_imei_spoof">جعل IMEI</string>
+    <string name="spoof_imei_spoof_desc">این برنامه یک IMEI متفاوت را نشان می دهد. به ماژول Max Manager در LSPosed با این برنامه در محدوده خود نیاز دارد. پس از روشن کردن برنامه، آن را مجدداً راه اندازی کنید.</string>
+    <string name="spoof_imei_active">نمایش این برنامه: %1$s</string>
+    <string name="spoof_imei_summary">جعل IMEI</string>
+    <string name="spoof_imei_regenerate">IMEI تصادفی جدید</string>
+    <string name="spoof_imei_regenerate_desc">IMEI معتبر دیگری برای این برنامه ایجاد می کند. برنامه را مجدداً راه اندازی کنید تا آن را ببینید.</string>
+    <string name="spoof_imei_module_inactive">ماژول Max Manager در LSPosed فعال نیست، بنابراین برنامه ها همچنان IMEI واقعی را می بینند. ماژول را در LSPosed فعال کنید، این برنامه را به محدوده آن اضافه کنید، سپس این صفحه را دوباره باز کنید.</string>
 </resources>

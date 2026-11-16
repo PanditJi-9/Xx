@@ -13,4 +13,23 @@
     <string name="max_expand_section">ವಿವರಗಳನ್ನು ತೋರಿಸಿ</string>
     <string name="max_collapse_section">ವಿವರಗಳನ್ನು ಮರೆಮಾಡಿ</string>
     <string name="max_trust_loading">ಓದಲಾಗುತ್ತಿದೆ...</string>
+    <string name="max_gov_title">ಈಗ ಯಾರು ಆಳುತ್ತಾರೆ</string>
+    <string name="max_gov_separator">" ›"</string>
+    <string name="max_gov_order_note">ಸ್ಥಿರ ಕ್ರಮ: ಹೆಚ್ಚಿನ ಹಂತವು ಕಡಿಮೆ ಒಂದನ್ನು ನಿರ್ಬಂಧಿಸುತ್ತದೆ. ಯಾವ ನೀತಿ ಗೆಲ್ಲುತ್ತದೆ ಎಂಬುದನ್ನು ಅದು ಎಂದಿಗೂ ಬದಲಾಯಿಸುವುದಿಲ್ಲ.</string>
+    <string name="max_gov_open_details">ಸಕ್ರಿಯ ಹೊಂದಿರುವವರು</string>
+    <string name="max_gov_active_title">ಯಾರು ನಿಯಂತ್ರಣವನ್ನು ಹೊಂದಿದ್ದಾರೆ</string>
+    <string name="max_gov_none">ಯಾವುದೇ ನೀತಿಯು ಇದೀಗ ಹಾರ್ಡ್‌ವೇರ್ ನಿಯಂತ್ರಣವನ್ನು ಹೊಂದಿಲ್ಲ.</string>
+    <string name="max_gov_count">ಸಕ್ರಿಯ ನಿಯಂತ್ರಣ ಗುತ್ತಿಗೆಗಳು: %1$d</string>
+    <string name="max_gov_requested">ವಿನಂತಿಸಲಾಗಿದೆ: %1$s</string>
+    <string name="max_gov_owner_recovery">ಚೇತರಿಕೆ</string>
+    <string name="max_gov_owner_safety">ಉಷ್ಣ ಸುರಕ್ಷತೆ</string>
+    <string name="max_gov_owner_per_app">ಅಪ್ಲಿಕೇಶನ್ ಪ್ರೊಫೈಲ್</string>
+    <string name="max_gov_owner_max_ai">Max AI</string>
+    <string name="max_gov_owner_global">ಜಾಗತಿಕ ಪ್ರೊಫೈಲ್</string>
+    <string name="max_gov_owner_system">ವ್ಯವಸ್ಥೆ</string>
+    <string name="max_gov_owner_a11y">%1$s ಹಾರ್ಡ್‌ವೇರ್ ನಿಯಂತ್ರಣವನ್ನು ಹೊಂದಿದೆ</string>
+    <string name="max_gov_now_none">ಇದೀಗ ಯಾವುದೇ ಸ್ವಯಂಚಾಲಿತ ಮಾಲೀಕರಿಲ್ಲ - ನಿಯಂತ್ರಣವು ನಿಮ್ಮದೇ ಆಗಿರುತ್ತದೆ</string>
+    <string name="max_gov_now_one">%1$s ನಿಯಂತ್ರಣವನ್ನು ಹೊಂದಿದೆ</string>
+    <string name="max_gov_now_many">%1$s %2$d ನಿಯಂತ್ರಣಗಳನ್ನು ಹೊಂದಿದೆ</string>
+    <string name="devinfo_details">ವಿವರಗಳು</string>
 </resources>

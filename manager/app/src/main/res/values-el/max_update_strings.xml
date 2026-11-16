@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_update_strings.xml -->
+<resources>
+    <string name="update_dialog_title">Διαθέσιμη ενημέρωση</string>
+    <string name="update_dialog_title_required">Απαιτείται ενημέρωση</string>
+    <string name="update_required_notice">Αυτή η ενημέρωση απαιτείται για να συνεχίσετε να χρησιμοποιείτε το MaxManager. Εγκαταστήστε το και μετά ανοίξτε ξανά την εφαρμογή.</string>
+    <string name="update_dialog_body">Η έκδοση %1$s είναι διαθέσιμη. Είστε στο %2$s.</string>
+    <string name="update_block_title">Απαιτείται ενημέρωση για να συνεχιστεί</string>
+    <string name="update_block_body">Αυτή η έκδοση (%1$s) δεν υποστηρίζεται πλέον. Κάντε ενημέρωση σε %2$s για να συνεχίσετε να χρησιμοποιείτε το MaxManager.</string>
+    <string name="update_block_body_no_release">Αυτή η έκδοση (%1$s) δεν υποστηρίζεται πλέον.</string>
+    <string name="update_release_notes_label">Τι νέο υπάρχει</string>
+    <string name="update_size">Μέγεθος λήψης: %1$s</string>
+    <string name="update_button_now">Ενημέρωση τώρα</string>
+    <string name="update_button_later">Αργότερα</string>
+    <string name="update_button_close">Κοντά</string>
+    <string name="update_button_open_page">Ανοίξτε τη σελίδα λήψης</string>
+    <string name="update_state_downloading">Λήψη… %1$d%%</string>
+    <string name="update_state_downloading_unknown">Λήψη…</string>
+    <string name="update_state_installing">Εγκατάσταση…</string>
+    <string name="update_error_network">Δεν ήταν δυνατή η πρόσβαση στον διακομιστή ενημέρωσης. Ελέγξτε τη σύνδεσή σας και δοκιμάστε ξανά.</string>
+    <string name="update_error_http">Ο διακομιστής ενημέρωσης απάντησε με σφάλμα. Δοκιμάστε ξανά αργότερα.</string>
+    <string name="update_error_format">Δεν ήταν δυνατή η ανάγνωση των πληροφοριών ενημέρωσης.</string>
+    <string name="update_error_too_large">Οι πληροφορίες ενημέρωσης ήταν μεγαλύτερες από το αναμενόμενο και απορρίφθηκαν.</string>
+    <string name="update_error_integrity">Το ληφθέν αρχείο δεν ταιριάζει με το άθροισμα ελέγχου του και διαγράφηκε.</string>
+    <string name="update_error_install">Η εγκατάσταση απέτυχε. Προσπαθήστε ξανά.</string>
+    <string name="update_error_not_configured">Δεν έχει διαμορφωθεί κανάλι ενημέρωσης σε αυτήν την έκδοση.</string>
+    <string name="update_maintenance_title">Προσωρινά μη διαθέσιμο</string>
+    <string name="update_maintenance_body">Το MaxManager δεν είναι προσωρινά διαθέσιμο. Δοκιμάστε ξανά σύντομα.</string>
+    <string name="update_check_title">Ελέγξτε για ενημερώσεις</string>
+    <string name="update_check_supporting">Τρέχουσα έκδοση: %1$s</string>
+    <string name="update_check_updated">Υπάρχει διαθέσιμη ενημέρωση.</string>
+    <string name="update_check_uptodate">Βρίσκεστε στην πιο πρόσφατη έκδοση.</string>
+    <string name="update_check_failed">Δεν ήταν δυνατός ο έλεγχος για ενημερώσεις.</string>
+    <string name="update_check_not_configured">Δεν έχει διαμορφωθεί κανάλι ενημέρωσης σε αυτήν την έκδοση.</string>
+    <string name="update_released_label">Ημερομηνία κυκλοφορίας: %1$s</string>
+    <string name="update_check_none_published">Δεν έχει δημοσιευθεί ακόμα καμία ενημέρωση από τον πίνακα ελέγχου.</string>
+    <string name="update_check_link_missing">Δημοσιεύτηκε μια ενημέρωση, αλλά λείπει ο σύνδεσμος λήψης.</string>
+</resources>

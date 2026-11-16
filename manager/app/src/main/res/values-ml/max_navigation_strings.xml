@@ -53,4 +53,8 @@
     <string name="max_title_get_started">സജ്ജമാക്കുക</string>
     <string name="max_hub_audio">ഓഡിയോ</string>
     <string name="max_hub_audio_desc">ഔട്ട്പുട്ട് ഉപകരണങ്ങൾ, സ്ട്രീമുകൾ, പ്രഖ്യാപിത ഇഫക്റ്റുകൾ</string>
+    <string name="control_tools_live">ലൈവ് ഉപരിതലങ്ങൾ</string>
+    <string name="control_tools_advanced">വിപുലമായ ഉപകരണങ്ങൾ</string>
+    <string name="control_tools_system">സിസ്റ്റം ടൂളുകൾ</string>
+    <string name="control_tools_appearance">രൂപഭാവം</string>
 </resources>

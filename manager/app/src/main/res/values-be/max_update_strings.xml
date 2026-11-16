@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_update_strings.xml -->
+<resources>
+    <string name="update_dialog_title">Абнаўленне даступна</string>
+    <string name="update_dialog_title_required">Патрабуецца абнаўленне</string>
+    <string name="update_required_notice">Гэта абнаўленне патрабуецца, каб працягваць выкарыстоўваць MaxManager. Усталюйце яго, затым зноў адкрыйце прыкладанне.</string>
+    <string name="update_dialog_body">Версія %1$s даступная. Вы на %2$s.</string>
+    <string name="update_block_title">Каб працягнуць, патрабуецца абнаўленне</string>
+    <string name="update_block_body">Гэтая зборка (%1$s) больш не падтрымліваецца. Абнавіце да %2$s, каб працягваць выкарыстоўваць MaxManager.</string>
+    <string name="update_block_body_no_release">Гэтая зборка (%1$s) больш не падтрымліваецца.</string>
+    <string name="update_release_notes_label">Што новага</string>
+    <string name="update_size">Памер спампоўкі: %1$s</string>
+    <string name="update_button_now">Абнавіце зараз</string>
+    <string name="update_button_later">Пазней</string>
+    <string name="update_button_close">Блізка</string>
+    <string name="update_button_open_page">Адкрыць старонку загрузкі</string>
+    <string name="update_state_downloading">Спампоўка… %1$d%%</string>
+    <string name="update_state_downloading_unknown">Спампоўка...</string>
+    <string name="update_state_installing">Усталяванне...</string>
+    <string name="update_error_network">Немагчыма падключыцца да сервера абнаўленняў. Праверце падключэнне і паўтарыце спробу.</string>
+    <string name="update_error_http">Сервер абнаўлення адказаў з памылкай. Паўтарыце спробу пазней.</string>
+    <string name="update_error_format">Немагчыма прачытаць інфармацыю аб абнаўленні.</string>
+    <string name="update_error_too_large">Інфармацыя аб абнаўленні была большай, чым чакалася, і была адхілена.</string>
+    <string name="update_error_integrity">Спампаваны файл не адпавядаў кантрольнай суме і быў выдалены.</string>
+    <string name="update_error_install">Збой усталявання. Паспрабуйце яшчэ раз.</string>
+    <string name="update_error_not_configured">У гэтай зборцы не наладжаны канал абнаўлення.</string>
+    <string name="update_maintenance_title">Часова недаступны</string>
+    <string name="update_maintenance_body">MaxManager часова недаступны. Калі ласка, паўтарыце спробу ў бліжэйшы час.</string>
+    <string name="update_check_title">Праверце наяўнасць абнаўленняў</string>
+    <string name="update_check_supporting">Актуальная версія: %1$s</string>
+    <string name="update_check_updated">Даступна абнаўленне.</string>
+    <string name="update_check_uptodate">Вы карыстаецеся апошняй версіяй.</string>
+    <string name="update_check_failed">Немагчыма праверыць наяўнасць абнаўленняў.</string>
+    <string name="update_check_not_configured">У гэтай зборцы не наладжаны канал абнаўлення.</string>
+    <string name="update_released_label">Дата выхаду: %1$s</string>
+    <string name="update_check_none_published">Абнаўленне з панэлі кіравання яшчэ не апублікавана.</string>
+    <string name="update_check_link_missing">Абнаўленне апублікавана, але спасылка для яго загрузкі адсутнічае.</string>
+</resources>

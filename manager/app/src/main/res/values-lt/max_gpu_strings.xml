@@ -99,4 +99,12 @@
     <string name="max_gpu_saved_desc">Išsaugota iš ankstesnio išsaugojimo ir taikoma kiekvienam įkrovimui: %1$s. Aukščiau esantis numatytasis nustatymas baigia tik šią seansą, o ne išsaugotą būseną.</string>
     <string name="max_gpu_dynamic_min">Minimalus · dinaminis</string>
     <string name="max_gpu_dynamic_max">Maksimalus · dinaminis</string>
+    <string name="max_gpu_monitor_only_detail">Vieninteliai grafiniai mazgai, kuriuos atskleidžia šis branduolys, yra pralaidumo ir QoS monitoriai: jie neturi GPU laikrodžio, todėl nereikia nustatyti dažnio. Valdymas lieka išjungtas, užuot įrašęs atminties valdiklį, tarsi jis būtų GPU.</string>
+    <string name="max_gpu_danger_title">Rašyti GPU ribas?</string>
+    <string name="max_gpu_danger_body">Tai įrašo grafikos dažnio langą ir reguliatorių į GPU mazgus. Langas, kurį vairuotojas atmeta, arba reguliatorius, kuris negali neatsilikti, gali mikčioti visą sąsają arba užšaldyti skydelį. Programėlė įrašo, kad su tuo sutikote vieną kartą – atsakomybė už taikomas vertybes tenka jums.</string>
+    <string name="max_gpu_danger_action">Suprantu - kreipkis</string>
+    <string name="max_gpu_state_title">Laikas būsenoje</string>
+    <string name="max_gpu_state_desc">Kur iš tikrųjų praėjo GPU laikas, skaičiuojamas branduolio pagal veikimo dažnį – ne dabartinio laikrodžio momentinė nuotrauka.</string>
+    <string name="max_gpu_state_hidden_share">%1$s kartu</string>
+    <string name="max_gpu_state_hidden">%1$d būsenos žemiau 1 %%</string>
 </resources>

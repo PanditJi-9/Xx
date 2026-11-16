@@ -126,6 +126,6 @@
     <!-- الوقت في الحالة: من عدّادات النواة لا من لقطة الساعة. -->
     <string name="max_gpu_state_title">Time in state</string>
     <string name="max_gpu_state_desc">Where the GPU\'s time actually went, counted by the kernel per operating frequency — not a snapshot of the current clock.</string>
-    <string name="max_gpu_state_hidden">%1$d states below 1%</string>
+    <string name="max_gpu_state_hidden">%1$d states below 1%%</string>
     <string name="max_gpu_state_hidden_share">%1$s together</string>
 </resources>

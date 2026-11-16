@@ -69,4 +69,25 @@
     <string name="max_perms_entry_title">Թույլտվություններ և հավելվածների գործառնություններ</string>
     <string name="max_perms_entry_desc">Տեսեք, թե ինչ է հայտարարում այս հավելվածը և ինչ է իրականում թույլ տալիս համակարգը</string>
     <string name="max_perms_entry_action">Բացեք թույլտվությունները</string>
+    <string name="max_perms_manifest_title">Մանիֆեստի ամփոփում</string>
+    <string name="max_perms_manifest_desc">Կարդացեք փաթեթի կառավարիչից՝ տարբերակը, SDK տիրույթը, բաղադրիչները և դրանցից քանիսն են արտահանվում: Արտահանված բաղադրիչը կարող է գործարկվել այլ հավելվածների կողմից:</string>
+    <string name="max_perms_manifest_version">Տարբերակ</string>
+    <string name="max_perms_manifest_sdk">SDK միջակայք</string>
+    <string name="max_perms_manifest_location">Տեղադրեք տեղադրությունը</string>
+    <string name="max_perms_manifest_location_auto">Ավտոմատ</string>
+    <string name="max_perms_manifest_location_internal">Միայն ներքին պահեստավորում</string>
+    <string name="max_perms_manifest_location_external">Նախընտրում է արտաքին</string>
+    <string name="max_perms_manifest_components">Բաղադրիչներ</string>
+    <string name="max_perms_manifest_components_order">գործունեություն · ծառայություններ · ստացողներ · մատակարարներ</string>
+    <string name="max_perms_manifest_exported">Արտահանված բաղադրիչներ</string>
+    <string name="max_perms_manifest_splits">Բաժանել APK-ները</string>
+    <string name="max_perms_manifest_debug">Վրիպազերծելի</string>
+    <string name="max_perms_features_title">Հայտարարված հատկանիշներ</string>
+    <string name="max_perms_features_desc">Ինչ է պահանջում փաթեթը սարքից՝ համեմատած այն ամենի հետ, ինչ գովազդում է այս սարքը։ Այստեղ բացակայող պարտադիր հատկանիշը սովորաբար նշանակում է, որ հավելվածն ամբողջությամբ չի աշխատի. դա փաթեթի կառավարչի պահանջ է, այլ ոչ թե գուշակություն:</string>
+    <string name="max_perms_features_loading">Փաթեթի հայտարարված հատկանիշների ընթերցում…</string>
+    <string name="max_perms_features_none">Փաթեթը չի հայտարարում պահանջվող հատկանիշների մասին:</string>
+    <string name="max_perms_features_required">Պահանջվում է</string>
+    <string name="max_perms_features_unsupported">Ոչ այս սարքում</string>
+    <string name="max_perms_manifest_none">Փաթեթի կառավարչի կողմից չի հաղորդվում:</string>
+    <string name="max_perms_manifest_unknown">Անհայտ</string>
 </resources>

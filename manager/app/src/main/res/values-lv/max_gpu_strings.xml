@@ -99,4 +99,12 @@
     <string name="max_gpu_saved_desc">Saglabāts no iepriekšējās saglabāšanas un lietots katrā sāknēšanas reizē: %1$s. Iepriekš minētais noklusējuma iestatījums beidz tikai šo sesiju, nevis saglabāto stāvokli.</string>
     <string name="max_gpu_dynamic_min">Minimums · dinamisks</string>
     <string name="max_gpu_dynamic_max">Maksimums · dinamisks</string>
+    <string name="max_gpu_monitor_only_detail">Vienīgie grafiskie mezgli, ko šis kodols atklāj, ir joslas platums un QoS monitori: tiem nav GPU pulksteņa, tāpēc nav iestatāmas frekvences. Vadība paliek izslēgta, nevis ieraksta atmiņas regulatoru, it kā tas būtu GPU.</string>
+    <string name="max_gpu_danger_title">Rakstīt GPU ierobežojumus?</string>
+    <string name="max_gpu_danger_body">Tas ieraksta grafikas frekvences logu un regulatoru GPU mezglos. Logs, kuru draiveris noraida, vai regulators, kas nevar sekot līdzi, var stostīties visā saskarnē vai iesaldēt paneli. Lietojumprogramma reģistrē, ka jūs to piekritāt vienreiz — jūs esat atbildīgs par vērtībām, kuras izmantojat.</string>
+    <string name="max_gpu_danger_action">Saprotu - piesakies</string>
+    <string name="max_gpu_state_title">Laiks stāvoklī</string>
+    <string name="max_gpu_state_desc">Kur faktiski gāja GPU laiks, ko skaitīja kodols katrai darbības frekvencei — nevis pašreizējā pulksteņa momentuzņēmums.</string>
+    <string name="max_gpu_state_hidden_share">%1$s kopā</string>
+    <string name="max_gpu_state_hidden">%1$d norāda zem 1%%</string>
 </resources>

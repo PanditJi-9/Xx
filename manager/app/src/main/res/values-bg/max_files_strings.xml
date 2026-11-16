@@ -220,4 +220,5 @@
     <string name="max_files_compress_level_normal">нормално</string>
     <string name="max_files_compress_level_max">Макс</string>
     <string name="max_files_compress_summary">%1$d елементи \u2192 %2$s</string>
+    <string name="max_files_history_more">%1$d по-старите папки не са показани</string>
 </resources>

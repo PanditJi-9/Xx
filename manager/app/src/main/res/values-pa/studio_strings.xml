@@ -10,4 +10,6 @@
     <string name="studio_display">ਡਿਸਪਲੇ</string>
     <string name="studio_power">ਪਾਵਰ ਵਿਕਲਪ</string>
     <string name="studio_settings">ਸੈਟਿੰਗਾਂ</string>
+    <string name="audio_dsp_live">ਡੀਐਸਪੀ ਲਾਈਵ</string>
+    <string name="max_audio_session_label">ਆਡੀਓ ਸੈਸ਼ਨ #%1$d</string>
 </resources>

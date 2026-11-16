@@ -13,4 +13,23 @@
     <string name="max_expand_section">세부정보 표시</string>
     <string name="max_collapse_section">세부정보 숨기기</string>
     <string name="max_trust_loading">독서…</string>
+    <string name="max_gov_title">지금은 누가 지배하는가</string>
+    <string name="max_gov_separator">" › "</string>
+    <string name="max_gov_order_note">고정 순서: 높은 단계가 낮은 단계를 차단합니다. 어떤 정책이 승리하는지는 결코 바뀌지 않습니다.</string>
+    <string name="max_gov_open_details">활성 보유자</string>
+    <string name="max_gov_active_title">누가 통제권을 갖고 있는가</string>
+    <string name="max_gov_none">현재 하드웨어 제어권을 소유한 정책은 없습니다.</string>
+    <string name="max_gov_count">활성 제어 임대: %1$d</string>
+    <string name="max_gov_requested">요청됨: %1$s</string>
+    <string name="max_gov_owner_recovery">회복</string>
+    <string name="max_gov_owner_safety">열 안전</string>
+    <string name="max_gov_owner_per_app">앱 프로필</string>
+    <string name="max_gov_owner_max_ai">Max AI</string>
+    <string name="max_gov_owner_global">글로벌 프로필</string>
+    <string name="max_gov_owner_system">체계</string>
+    <string name="max_gov_owner_a11y">%1$s 하드웨어 제어 장치를 소유합니다.</string>
+    <string name="max_gov_now_none">현재는 자동화된 소유자가 없습니다. 제어권은 귀하의 것입니다.</string>
+    <string name="max_gov_now_one">%1$s 컨트롤 보유</string>
+    <string name="max_gov_now_many">%1$s는 %2$d 컨트롤을 보유합니다.</string>
+    <string name="devinfo_details">세부</string>
 </resources>

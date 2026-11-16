@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/manifest_inspector_strings.xml -->
+<resources>
+    <string name="manifest_inspector_title">Manifestuen ikuskatzailea</string>
+    <string name="manifest_inspector_subtitle">Instalatutako aplikazio batek bere buruari buruz adierazten duena, irakurri PackageManager-etik.</string>
+    <string name="max_role_manifest_inspector">Pakete batek bere buruari buruz deklaratzen duena erakusten du - irakurtzeko soilik.</string>
+    <string name="mi_search">Bilatu aplikazioak</string>
+    <string name="mi_empty">Aukeratu aplikazio bat ezkerrean.</string>
+    <string name="mi_yes">Bai</string>
+    <string name="mi_no">Ez</string>
+    <string name="mi_section_identity">Paketea</string>
+    <string name="mi_version">Bertsioa</string>
+    <string name="mi_version_code">Bertsio-kodea</string>
+    <string name="mi_min_sdk">Gutxieneko SDK</string>
+    <string name="mi_target_sdk">Xede SDK</string>
+    <string name="mi_installed">Instalatua</string>
+    <string name="mi_updated">Eguneratua</string>
+    <string name="mi_installer">Instalatzailea</string>
+    <string name="mi_uid">UID</string>
+    <string name="mi_data_dir">Datuen direktorioa</string>
+    <string name="mi_debuggable">Arazgarria</string>
+    <string name="mi_system_app">Sistemaren aplikazioa</string>
+    <string name="mi_enabled">Gaituta</string>
+    <string name="mi_section_permissions">Eskatutako baimenak</string>
+    <string name="mi_permissions_summary">%1$d baimenak · %2$d horietako arriskutsuak</string>
+    <string name="mi_permissions_none">Aplikazio honek ez du baimenik eskatzen.</string>
+    <string name="mi_perm_dangerous">Arriskutsua</string>
+    <string name="mi_perm_signature">Sinadura</string>
+    <string name="mi_perm_normal">Normala</string>
+    <string name="mi_perm_unknown">Sailkatu gabea</string>
+    <string name="mi_section_components">Osagaiak</string>
+    <string name="mi_activities">Jarduerak</string>
+    <string name="mi_services">Zerbitzuak</string>
+    <string name="mi_receivers">Hartzaileak</string>
+    <string name="mi_providers">Hornitzaileak</string>
+    <string name="mi_components_none">Inor ez da deklaratu</string>
+    <string name="mi_section_features">Gailuaren ezaugarriak</string>
+    <string name="mi_features_note">Plataformak ez du beste aplikazio baten erabilera-eginbideen zerrenda erakusten; hauek dira gailu honek ematen dituen ezaugarriak.</string>
+    <string name="mi_features_none">Ez da eginbiderik jakinarazi</string>
+    <string name="mi_section_signature">Sinadura ziurtagiria</string>
+    <string name="mi_signature_note">Sinadura-ziurtagiriaren SHA-256. Balio bereko bi eraikuntza argitaletxe bera dira.</string>
+    <string name="mi_signature_sha256">Ziurtagirien laburpena</string>
+</resources>

@@ -99,4 +99,12 @@
     <string name="max_gpu_saved_desc">Păstrată dintr-o salvare anterioară și aplicată pe fiecare cizmă: %1$s. Valoarea implicită de mai sus încheie numai această sesiune, niciodată starea salvată.</string>
     <string name="max_gpu_dynamic_min">Minim · dinamic</string>
     <string name="max_gpu_dynamic_max">Maxim · dinamic</string>
+    <string name="max_gpu_monitor_only_detail">Singurele noduri grafice pe care le expune acest nucleu sunt monitoarele cu lățimea de bandă și QoS: nu au ceas GPU, deci nu există frecvență de setat. Controlul rămâne dezactivat în loc să scrie un guvernator de memorie ca și cum ar fi GPU.</string>
+    <string name="max_gpu_danger_title">Scrieți GPU limite?</string>
+    <string name="max_gpu_danger_body">Aceasta scrie fereastra frecvenței grafice și guvernatorul în nodurile GPU. O fereastră pe care șoferul o respinge sau un guvernator care nu poate ține pasul poate bâlbâi întreaga interfață sau îngheța panoul. Aplicația înregistrează că ați acceptat acest lucru odată - responsabilitatea pentru valorile pe care le aplicați este a dvs.</string>
+    <string name="max_gpu_danger_action">Am înțeles — aplică</string>
+    <string name="max_gpu_state_title">Timp în stare</string>
+    <string name="max_gpu_state_desc">Unde a trecut de fapt timpul lui GPU\, numărat după nucleu pe frecvență de operare - nu un instantaneu al ceasului curent.</string>
+    <string name="max_gpu_state_hidden_share">%1$s împreună</string>
+    <string name="max_gpu_state_hidden">%1$d afirmă sub 1%%</string>
 </resources>

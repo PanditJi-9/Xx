@@ -69,4 +69,25 @@
     <string name="max_perms_entry_title">Käyttöoikeudet ja sovellustoiminnot</string>
     <string name="max_perms_entry_desc">Katso, mitä tämä sovellus ilmoittaa ja mitä järjestelmä todella sallii</string>
     <string name="max_perms_entry_action">Avaa käyttöoikeudet</string>
+    <string name="max_perms_manifest_title">Manifestin yhteenveto</string>
+    <string name="max_perms_manifest_desc">Lue paketinhallinnasta: versio, SDK-alue, komponentit ja kuinka monta niistä viedään. Muut sovellukset voivat käynnistää viedyn komponentin.</string>
+    <string name="max_perms_manifest_version">Versio</string>
+    <string name="max_perms_manifest_sdk">SDK-valikoima</string>
+    <string name="max_perms_manifest_location">Asennuspaikka</string>
+    <string name="max_perms_manifest_location_auto">Automaattinen</string>
+    <string name="max_perms_manifest_location_internal">Vain sisäinen tallennustila</string>
+    <string name="max_perms_manifest_location_external">Suosii ulkoista</string>
+    <string name="max_perms_manifest_components">Komponentit</string>
+    <string name="max_perms_manifest_components_order">toiminnot · palvelut · vastaanottajat · tarjoajat</string>
+    <string name="max_perms_manifest_exported">Viedyt komponentit</string>
+    <string name="max_perms_manifest_splits">Jaa APK:t</string>
+    <string name="max_perms_manifest_debug">Virheenkorjaus</string>
+    <string name="max_perms_features_title">Ilmoitetut ominaisuudet</string>
+    <string name="max_perms_features_desc">Mitä paketti vaatii laitteelta verrattuna siihen, mitä tämä laite mainostaa. Tästä puuttuva pakollinen ominaisuus tarkoittaa yleensä sitä, että sovellus ei toimi täysin - se on paketinhallinnan vaatimus, ei arvaus.</string>
+    <string name="max_perms_features_loading">Paketin ilmoitettujen ominaisuuksien lukeminen…</string>
+    <string name="max_perms_features_none">Paketissa ei mainita vaadittavia ominaisuuksia.</string>
+    <string name="max_perms_features_required">Pakollinen</string>
+    <string name="max_perms_features_unsupported">Ei tällä laitteella</string>
+    <string name="max_perms_manifest_none">Paketinhallinta ei ole ilmoittanut.</string>
+    <string name="max_perms_manifest_unknown">Tuntematon</string>
 </resources>

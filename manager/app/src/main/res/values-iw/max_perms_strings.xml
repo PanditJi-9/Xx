@@ -69,4 +69,25 @@
     <string name="max_perms_entry_title">הרשאות ופעולות אפליקציה</string>
     <string name="max_perms_entry_desc">ראה מה האפליקציה הזו מצהירה ומה המערכת מאפשרת בפועל</string>
     <string name="max_perms_entry_action">פתח הרשאות</string>
+    <string name="max_perms_manifest_title">סיכום מניפסט</string>
+    <string name="max_perms_manifest_desc">קרא ממנהל החבילות: גרסה, טווח SDK, רכיבים וכמה מהם מיוצאים. ניתן להפעיל רכיב מיוצא על ידי אפליקציות אחרות.</string>
+    <string name="max_perms_manifest_version">גִרְסָה</string>
+    <string name="max_perms_manifest_sdk">טווח SDK</string>
+    <string name="max_perms_manifest_location">מיקום התקן</string>
+    <string name="max_perms_manifest_location_auto">אוֹטוֹמָטִי</string>
+    <string name="max_perms_manifest_location_internal">אחסון פנימי בלבד</string>
+    <string name="max_perms_manifest_location_external">מעדיף חיצוני</string>
+    <string name="max_perms_manifest_components">רכיבים</string>
+    <string name="max_perms_manifest_components_order">פעילויות · שירותים · מקלטים · ספקים</string>
+    <string name="max_perms_manifest_exported">רכיבים מיוצאים</string>
+    <string name="max_perms_manifest_splits">פיצול חבילות APK</string>
+    <string name="max_perms_manifest_debug">ניתן לניפוי באגים</string>
+    <string name="max_perms_features_title">תכונות מוצהרות</string>
+    <string name="max_perms_features_desc">מה החבילה דורשת מהמכשיר, בהשוואה למה שהמכשיר הזה מפרסם. תכונה נדרשת שחסרה כאן בדרך כלל אומרת שהאפליקציה לא תעבוד במלואה - זו תביעה ממנהל החבילה, לא ניחוש.</string>
+    <string name="max_perms_features_loading">קורא את התכונות המוצהרות של החבילה...</string>
+    <string name="max_perms_features_none">החבילה מצהירה שאין תכונות נדרשות.</string>
+    <string name="max_perms_features_required">דָרוּשׁ</string>
+    <string name="max_perms_features_unsupported">לא במכשיר הזה</string>
+    <string name="max_perms_manifest_none">לא דווח על ידי מנהל החבילות.</string>
+    <string name="max_perms_manifest_unknown">לֹא יְדוּעַ</string>
 </resources>

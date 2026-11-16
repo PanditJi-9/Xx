@@ -69,4 +69,25 @@
     <string name="max_perms_entry_title">அனுமதிகள் &amp; ஆப் ஆப்ஸ்</string>
     <string name="max_perms_entry_desc">இந்த ஆப்ஸ் என்ன அறிவிக்கிறது மற்றும் சிஸ்டம் உண்மையில் என்ன அனுமதிக்கிறது என்பதைப் பார்க்கவும்</string>
     <string name="max_perms_entry_action">அனுமதிகளைத் திறக்கவும்</string>
+    <string name="max_perms_manifest_title">வெளிப்படையான சுருக்கம்</string>
+    <string name="max_perms_manifest_desc">தொகுப்பு மேலாளரிடமிருந்து படிக்கவும்: பதிப்பு, SDK வரம்பு, கூறுகள் மற்றும் அவற்றில் எத்தனை ஏற்றுமதி செய்யப்படுகின்றன. ஏற்றுமதி செய்யப்பட்ட கூறுகளை பிற பயன்பாடுகள் மூலம் தொடங்கலாம்.</string>
+    <string name="max_perms_manifest_version">பதிப்பு</string>
+    <string name="max_perms_manifest_sdk">SDK வரம்பு</string>
+    <string name="max_perms_manifest_location">இருப்பிடத்தை நிறுவவும்</string>
+    <string name="max_perms_manifest_location_auto">தானியங்கி</string>
+    <string name="max_perms_manifest_location_internal">உள் சேமிப்பு மட்டுமே</string>
+    <string name="max_perms_manifest_location_external">வெளிப்புறத்தை விரும்புகிறது</string>
+    <string name="max_perms_manifest_components">கூறுகள்</string>
+    <string name="max_perms_manifest_components_order">நடவடிக்கைகள் · சேவைகள் · பெறுநர்கள் · வழங்குநர்கள்</string>
+    <string name="max_perms_manifest_exported">ஏற்றுமதி செய்யப்பட்ட கூறுகள்</string>
+    <string name="max_perms_manifest_splits">APKகளைப் பிரிக்கவும்</string>
+    <string name="max_perms_manifest_debug">பிழை நீக்கக்கூடியது</string>
+    <string name="max_perms_features_title">அறிவிக்கப்பட்ட அம்சங்கள்</string>
+    <string name="max_perms_features_desc">இந்தச் சாதனம் எதை விளம்பரப்படுத்துகிறது என்பதை ஒப்பிடும்போது, ​​சாதனத்திலிருந்து பேக்கேஜுக்கு என்ன தேவை. தேவையான அம்சம் இங்கே இல்லை என்றால், பயன்பாடு முழுமையாக வேலை செய்யாது - இது தொகுப்பு நிர்வாகியின் கூற்று, யூகம் அல்ல.</string>
+    <string name="max_perms_features_loading">தொகுப்பின் அறிவிக்கப்பட்ட அம்சங்களைப் படிக்கிறது…</string>
+    <string name="max_perms_features_none">தொகுப்பு தேவையான அம்சங்களை அறிவிக்கவில்லை.</string>
+    <string name="max_perms_features_required">தேவை</string>
+    <string name="max_perms_features_unsupported">இந்தச் சாதனத்தில் இல்லை</string>
+    <string name="max_perms_manifest_none">தொகுப்பு மேலாளரால் தெரிவிக்கப்படவில்லை.</string>
+    <string name="max_perms_manifest_unknown">தெரியவில்லை</string>
 </resources>

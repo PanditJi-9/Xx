@@ -18,4 +18,10 @@
     <string name="max_cfg_section_appearance">उपस्थिति र इन्टरफेस</string>
     <string name="max_cfg_section_app_prefs">एप प्राथमिकता र भाषा</string>
     <string name="max_cfg_restore_merge_note">पुनर्स्थापना प्राथमिकताहरू मर्जहरू: फाइलमा उपस्थित कुञ्जीहरू लेखिएका छन्, र यसले कुञ्जीहरू जस्तै रहन उल्लेख गर्दैन। केही क्लियर छैन।</string>
+    <string name="max_cfg_diff_title">%1$d सुरक्षित गरिएका सेटिङहरू यो यन्त्रभन्दा फरक छन्</string>
+    <string name="max_cfg_diff_line">%1$s: %2$s → %3$s</string>
+    <string name="max_cfg_diff_unset">सेट गरिएको छैन</string>
+    <string name="max_cfg_diff_more">र %1$d थप</string>
+    <string name="max_cfg_diff_applist">%1$d एप-सूची लाइनहरू थपियो, %2$d हटाइयो — सम्पूर्ण सूची प्रतिस्थापन गरिएको छ, मर्ज गरिएको छैन।</string>
+    <string name="max_cfg_diff_prefs">%1$d प्राथमिकता कुञ्जीहरू फरक छन् — मर्ज गरिएको, मेटाइएको छैन।</string>
 </resources>

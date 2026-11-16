@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_update_strings.xml -->
+<resources>
+    <string name="update_dialog_title">အပ်ဒိတ်ရနိုင်သည်။</string>
+    <string name="update_dialog_title_required">အပ်ဒိတ်လုပ်ရန် လိုအပ်သည်။</string>
+    <string name="update_required_notice">MaxManager ဆက်လက်အသုံးပြုရန် ဤအပ်ဒိတ်ကို လိုအပ်ပါသည်။ ၎င်းကို ထည့်သွင်းပြီးနောက် အက်ပ်ကို ပြန်ဖွင့်ပါ။</string>
+    <string name="update_dialog_body">ဗားရှင်း %1$s ရရှိနိုင်ပါသည်။ သင်သည် %2$s တွင် ရှိနေသည်။</string>
+    <string name="update_block_title">ဆက်လုပ်ရန် အပ်ဒိတ် လိုအပ်ပါသည်။</string>
+    <string name="update_block_body">ဤတည်ဆောက်မှု (%1$s) ကို မပံ့ပိုးတော့ပါ။ MaxManager ဆက်လက်အသုံးပြုရန် %2$sသို့ အပ်ဒိတ်လုပ်ပါ။</string>
+    <string name="update_block_body_no_release">ဤတည်ဆောက်မှု (%1$s) ကို မပံ့ပိုးတော့ပါ။</string>
+    <string name="update_release_notes_label">ဘာထူးသလဲ</string>
+    <string name="update_size">ဒေါင်းလုဒ်အရွယ်အစား- %1$s</string>
+    <string name="update_button_now">ယခု Update လုပ်ပါ။</string>
+    <string name="update_button_later">နောက်တော့</string>
+    <string name="update_button_close">ပိတ်လိုက်</string>
+    <string name="update_button_open_page">ဒေါင်းလုဒ်စာမျက်နှာကိုဖွင့်ပါ။</string>
+    <string name="update_state_downloading">ဒေါင်းလုဒ်လုပ်နေသည်… %1$d%%</string>
+    <string name="update_state_downloading_unknown">ဒေါင်းလုဒ်လုပ်နေသည်...</string>
+    <string name="update_state_installing">ထည့်သွင်းနေသည်…</string>
+    <string name="update_error_network">အပ်ဒိတ်ဆာဗာသို့ မရောက်ရှိနိုင်ပါ။ သင့်ချိတ်ဆက်မှုကို စစ်ဆေးပြီး ထပ်စမ်းကြည့်ပါ။</string>
+    <string name="update_error_http">အပ်ဒိတ်ဆာဗာသည် အမှားတစ်ခုဖြင့် အဖြေပေးခဲ့သည်။ နောက်မှ ထပ်စမ်းကြည့်ပါ။</string>
+    <string name="update_error_format">အပ်ဒိတ်အချက်အလက်ကို ဖတ်၍မရပါ။</string>
+    <string name="update_error_too_large">အပ်ဒိတ်အချက်အလက်သည် မျှော်လင့်ထားသည်ထက် ပိုကြီးပြီး စွန့်ပစ်ထားသည်။</string>
+    <string name="update_error_integrity">ဒေါင်းလုဒ်လုပ်ထားသောဖိုင်သည် ၎င်း၏ checksum နှင့် မကိုက်ညီသောကြောင့် ဖျက်လိုက်ပါသည်။</string>
+    <string name="update_error_install">ထည့်သွင်းခြင်း မအောင်မြင်ပါ။ ထပ်ကြိုးစားပါ။</string>
+    <string name="update_error_not_configured">ဤတည်ဆောက်မှုတွင် အပ်ဒိတ်ချန်နယ်ကို စီစဉ်သတ်မှတ်ထားခြင်းမရှိပါ။</string>
+    <string name="update_maintenance_title">ယာယီ မရနိုင်ပါ။</string>
+    <string name="update_maintenance_body">MaxManager ခေတ္တမရနိုင်ပါ။ ခဏနေ ထပ်စမ်းကြည့်ပါ။</string>
+    <string name="update_check_title">အပ်ဒိတ်များအတွက် စစ်ဆေးပါ။</string>
+    <string name="update_check_supporting">လက်ရှိဗားရှင်း- %1$s</string>
+    <string name="update_check_updated">အပ်ဒိတ်တစ်ခု ရနိုင်ပါသည်။</string>
+    <string name="update_check_uptodate">သင်သည် နောက်ဆုံးဗားရှင်းတွင် ရှိနေပါသည်။</string>
+    <string name="update_check_failed">အပ်ဒိတ်များကို စစ်ဆေး၍မရပါ။</string>
+    <string name="update_check_not_configured">ဤတည်ဆောက်မှုတွင် အပ်ဒိတ်ချန်နယ်ကို စီစဉ်သတ်မှတ်ထားခြင်းမရှိပါ။</string>
+    <string name="update_released_label">ထုတ်ဝေသည့်ရက်စွဲ- %1$s</string>
+    <string name="update_check_none_published">ထိန်းချုပ်အကန့်မှ အပ်ဒိတ်ကို ထုတ်ပြန်ခြင်းမရှိသေးပါ။</string>
+    <string name="update_check_link_missing">အပ်ဒိတ်တစ်ခုကို လွှင့်တင်ထားသော်လည်း ၎င်း၏ဒေါင်းလုဒ်လင့်ခ် ပျောက်ဆုံးနေပါသည်။</string>
+</resources>

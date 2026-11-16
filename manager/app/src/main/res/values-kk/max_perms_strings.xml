@@ -69,4 +69,25 @@
     <string name="max_perms_entry_title">Рұқсаттар және қолданба операциялары</string>
     <string name="max_perms_entry_desc">Бұл қолданба нені жариялайтынын және жүйенің не мүмкіндік беретінін қараңыз</string>
     <string name="max_perms_entry_action">Рұқсаттарды ашу</string>
+    <string name="max_perms_manifest_title">Манифест қорытындысы</string>
+    <string name="max_perms_manifest_desc">Пакет менеджерінен оқыңыз: нұсқа, SDK ауқымы, құрамдас бөліктер және олардың қаншасы экспортталған. Экспортталған құрамдас басқа қолданбалармен іске қосылуы мүмкін.</string>
+    <string name="max_perms_manifest_version">Нұсқа</string>
+    <string name="max_perms_manifest_sdk">SDK ауқымы</string>
+    <string name="max_perms_manifest_location">Орнату орны</string>
+    <string name="max_perms_manifest_location_auto">Автоматты</string>
+    <string name="max_perms_manifest_location_internal">Тек ішкі жад</string>
+    <string name="max_perms_manifest_location_external">Сыртқы түрін жақсы көреді</string>
+    <string name="max_perms_manifest_components">Құрамдас бөліктер</string>
+    <string name="max_perms_manifest_components_order">қызметі · қызметтер · қабылдаушылар · жеткізушілер</string>
+    <string name="max_perms_manifest_exported">Экспортталған компоненттер</string>
+    <string name="max_perms_manifest_splits">APK файлдарын бөлу</string>
+    <string name="max_perms_manifest_debug">Түзетуге болады</string>
+    <string name="max_perms_features_title">Жарияланған ерекшеліктер</string>
+    <string name="max_perms_features_desc">Пакет құрылғыдан нені талап етеді, бұл құрылғы жарнамалайтын нәрсемен салыстырғанда. Мұнда жетіспейтін қажетті мүмкіндік әдетте қолданбаның толық жұмыс істемейтінін білдіреді — бұл болжам емес, пакет менеджерінің шағымы.</string>
+    <string name="max_perms_features_loading">Пакеттің жарияланған мүмкіндіктері оқылуда…</string>
+    <string name="max_perms_features_none">Пакетте қажетті мүмкіндіктер жоқ.</string>
+    <string name="max_perms_features_required">Міндетті</string>
+    <string name="max_perms_features_unsupported">Бұл құрылғыда емес</string>
+    <string name="max_perms_manifest_none">Пакет менеджері хабарлаған жоқ.</string>
+    <string name="max_perms_manifest_unknown">Белгісіз</string>
 </resources>

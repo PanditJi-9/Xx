@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/manifest_inspector_strings.xml -->
+<resources>
+    <string name="manifest_inspector_title">매니페스트 검사기</string>
+    <string name="manifest_inspector_subtitle">설치된 앱이 자체적으로 선언하는 내용은 PackageManager에서 읽습니다.</string>
+    <string name="max_role_manifest_inspector">패키지가 자체적으로 선언하는 내용을 표시합니다(읽기 전용).</string>
+    <string name="mi_search">앱 검색</string>
+    <string name="mi_empty">왼쪽에서 앱을 선택하세요.</string>
+    <string name="mi_yes">예</string>
+    <string name="mi_no">아니요</string>
+    <string name="mi_section_identity">패키지</string>
+    <string name="mi_version">버전</string>
+    <string name="mi_version_code">버전 코드</string>
+    <string name="mi_min_sdk">최소 SDK</string>
+    <string name="mi_target_sdk">타겟 SDK</string>
+    <string name="mi_installed">설치됨</string>
+    <string name="mi_updated">업데이트됨</string>
+    <string name="mi_installer">설치자</string>
+    <string name="mi_uid">UID</string>
+    <string name="mi_data_dir">데이터 디렉터리</string>
+    <string name="mi_debuggable">디버깅 가능</string>
+    <string name="mi_system_app">시스템 앱</string>
+    <string name="mi_enabled">활성화됨</string>
+    <string name="mi_section_permissions">요청된 권한</string>
+    <string name="mi_permissions_summary">%1$d 권한 · %2$d은 위험함</string>
+    <string name="mi_permissions_none">이 앱은 권한을 요청하지 않습니다.</string>
+    <string name="mi_perm_dangerous">위험한</string>
+    <string name="mi_perm_signature">서명</string>
+    <string name="mi_perm_normal">정상</string>
+    <string name="mi_perm_unknown">분류되지 않음</string>
+    <string name="mi_section_components">구성요소</string>
+    <string name="mi_activities">활동</string>
+    <string name="mi_services">서비스</string>
+    <string name="mi_receivers">수신기</string>
+    <string name="mi_providers">공급자</string>
+    <string name="mi_components_none">선언된 바 없음</string>
+    <string name="mi_section_features">장치 기능</string>
+    <string name="mi_features_note">플랫폼은 다른 앱의 사용 기능 목록을 노출하지 않습니다. 이는 이 장치가 보고하는 기능입니다.</string>
+    <string name="mi_features_none">보고된 기능 없음</string>
+    <string name="mi_section_signature">서명 인증서</string>
+    <string name="mi_signature_note">서명 인증서의 SHA-256입니다. 동일한 값을 가진 두 빌드는 동일한 게시자입니다.</string>
+    <string name="mi_signature_sha256">인증서 다이제스트</string>
+</resources>

@@ -69,4 +69,25 @@
     <string name="max_perms_entry_desc">ይህ መተግበሪያ ምን እንደሚያውጅ እና ስርዓቱ ምን እንደሚፈቅድ ይመልከቱ</string>
     <string name="max_perms_entry_action">ፈቃዶችን ይክፈቱ</string>
     <string name="max_perms_ref_restore_done">ተቀባይነት አግኝቷል %1$s · መሻር ተወግዷል %2$s · መሳሪያ የራሱን ዋጋ አስቀምጧል %3$s · ተቀባይነት አላገኘም። %4$s · የማይታወቅ %5$s</string>
+    <string name="max_perms_manifest_title">ገላጭ ማጠቃለያ</string>
+    <string name="max_perms_manifest_desc">ከጥቅል አቀናባሪ አንብብ፡ ስሪት፣ ኤስዲኬ ክልል፣ አካላት እና ምን ያህሉ ወደ ውጭ እንደሚላኩ ወደ ውጭ የተላከ አካል በሌሎች መተግበሪያዎች ሊጀመር ይችላል።</string>
+    <string name="max_perms_manifest_version">ሥሪት</string>
+    <string name="max_perms_manifest_sdk">የኤስዲኬ ክልል</string>
+    <string name="max_perms_manifest_location">ቦታን ጫን</string>
+    <string name="max_perms_manifest_location_auto">አውቶማቲክ</string>
+    <string name="max_perms_manifest_location_internal">የውስጥ ማከማቻ ብቻ</string>
+    <string name="max_perms_manifest_location_external">ውጫዊን ይመርጣል</string>
+    <string name="max_perms_manifest_components">አካላት</string>
+    <string name="max_perms_manifest_components_order">ተግባራት · አገልግሎቶች · ተቀባዮች · አቅራቢዎች</string>
+    <string name="max_perms_manifest_exported">ወደ ውጭ የተላኩ አካላት</string>
+    <string name="max_perms_manifest_splits">ኤፒኬዎች ተከፋፈሉ።</string>
+    <string name="max_perms_manifest_debug">ሊታረም የሚችል</string>
+    <string name="max_perms_features_title">የተገለጹ ባህሪያት</string>
+    <string name="max_perms_features_desc">ይህ መሣሪያ ከሚያስተዋውቀው ጋር ሲነጻጸር ጥቅሉ ከመሣሪያው የሚፈልገው። እዚህ የሚጎድል አስፈላጊ ባህሪ ብዙውን ጊዜ መተግበሪያው ሙሉ በሙሉ አይሰራም ማለት ነው - ከጥቅል አስተዳዳሪ የቀረበ የይገባኛል ጥያቄ እንጂ ግምት አይደለም።</string>
+    <string name="max_perms_features_loading">የታወጁትን ጥቅል ባህሪያት በማንበብ ላይ…</string>
+    <string name="max_perms_features_none">ጥቅሉ ምንም አስፈላጊ ባህሪያትን አይገልጽም።</string>
+    <string name="max_perms_features_required">ያስፈልጋል</string>
+    <string name="max_perms_features_unsupported">በዚህ መሣሪያ ላይ አይደለም።</string>
+    <string name="max_perms_manifest_none">በጥቅል አስተዳዳሪው አልተዘገበም።</string>
+    <string name="max_perms_manifest_unknown">ያልታወቀ</string>
 </resources>

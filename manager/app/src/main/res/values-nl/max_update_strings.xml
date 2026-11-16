@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_update_strings.xml -->
+<resources>
+    <string name="update_dialog_title">Update beschikbaar</string>
+    <string name="update_dialog_title_required">Update vereist</string>
+    <string name="update_required_notice">Deze update is vereist om MaxManager te blijven gebruiken. Installeer het en open de app opnieuw.</string>
+    <string name="update_dialog_body">Versie %1$s is beschikbaar. Je bevindt je op %2$s.</string>
+    <string name="update_block_title">Update vereist om door te gaan</string>
+    <string name="update_block_body">Deze build (%1$s) wordt niet langer ondersteund. Update naar %2$s om MaxManager te blijven gebruiken.</string>
+    <string name="update_block_body_no_release">Deze build (%1$s) wordt niet langer ondersteund.</string>
+    <string name="update_release_notes_label">Wat is er nieuw</string>
+    <string name="update_size">Downloadgrootte: %1$s</string>
+    <string name="update_button_now">Nu bijwerken</string>
+    <string name="update_button_later">Later</string>
+    <string name="update_button_close">Dichtbij</string>
+    <string name="update_button_open_page">Downloadpagina openen</string>
+    <string name="update_state_downloading">Downloaden… %1$d%%</string>
+    <string name="update_state_downloading_unknown">Downloaden…</string>
+    <string name="update_state_installing">Installeren…</string>
+    <string name="update_error_network">Kan de updateserver niet bereiken. Controleer uw verbinding en probeer het opnieuw.</string>
+    <string name="update_error_http">De updateserver antwoordde met een fout. Probeer het later opnieuw.</string>
+    <string name="update_error_format">De update-informatie kon niet worden gelezen.</string>
+    <string name="update_error_too_large">De update-informatie was groter dan verwacht en werd verwijderd.</string>
+    <string name="update_error_integrity">Het gedownloade bestand kwam niet overeen met de controlesom en werd verwijderd.</string>
+    <string name="update_error_install">Installatie mislukt. Probeer het opnieuw.</string>
+    <string name="update_error_not_configured">Er is geen updatekanaal geconfigureerd in deze build.</string>
+    <string name="update_maintenance_title">Tijdelijk niet beschikbaar</string>
+    <string name="update_maintenance_body">MaxManager is tijdelijk niet beschikbaar. Probeer het binnenkort opnieuw.</string>
+    <string name="update_check_title">Controleer op updates</string>
+    <string name="update_check_supporting">Huidige versie: %1$s</string>
+    <string name="update_check_updated">Er is een update beschikbaar.</string>
+    <string name="update_check_uptodate">U gebruikt de nieuwste versie.</string>
+    <string name="update_check_failed">Kan niet controleren op updates.</string>
+    <string name="update_check_not_configured">Er is geen updatekanaal geconfigureerd in deze build.</string>
+    <string name="update_released_label">Releasedatum: %1$s</string>
+    <string name="update_check_none_published">Er is nog geen update gepubliceerd vanuit het controlepaneel.</string>
+    <string name="update_check_link_missing">Er is een update gepubliceerd, maar de downloadlink ontbreekt.</string>
+</resources>

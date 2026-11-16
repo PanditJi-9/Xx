@@ -10,4 +10,6 @@
     <string name="studio_display">לְהַצִיג</string>
     <string name="studio_power">אפשרויות כוח</string>
     <string name="studio_settings">הגדרות</string>
+    <string name="audio_dsp_live">DSP בשידור חי</string>
+    <string name="max_audio_session_label">סשן שמע #%1$d</string>
 </resources>

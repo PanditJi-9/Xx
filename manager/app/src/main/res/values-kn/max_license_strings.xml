@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_license_strings.xml -->
+<resources>
+    <string name="max_license_title">ಪರವಾನಗಿ</string>
+    <string name="max_license_subtitle">ಒಂದು ಕೀ, ಈ ಸಾಧನ, ಖಾತೆ ಇಲ್ಲ</string>
+    <string name="max_license_help_body">ನೀವು ಅದನ್ನು ನಮೂದಿಸಿದಾಗ ಕೀಲಿಯನ್ನು ಆನ್‌ಲೈನ್‌ನಲ್ಲಿ ಒಮ್ಮೆ ಪರಿಶೀಲಿಸಲಾಗುತ್ತದೆ. ಅಂದಿನಿಂದ ಸರ್ವರ್‌ನ ಸಹಿ ಮಾಡಿದ ಪ್ರಮಾಣಪತ್ರವು ಅದರ ಸಮಯ ಮುಗಿಯುವವರೆಗೆ ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತದೆ - ನೀವು ಪರದೆಯನ್ನು ತೆರೆದಾಗಲೆಲ್ಲಾ ಅಪ್ಲಿಕೇಶನ್ ಮನೆಗೆ ಕರೆ ಮಾಡುವುದಿಲ್ಲ. ಪ್ರಮಾಣಪತ್ರವು ಈ ಸಾಧನದ ಯಾದೃಚ್ಛಿಕ ಇನ್‌ಸ್ಟಾಲ್ ಐಡಿಗೆ ಬದ್ಧವಾಗಿದೆ, ಆದ್ದರಿಂದ ಅಪ್ಲಿಕೇಶನ್ ಡೇಟಾವನ್ನು ಮತ್ತೊಂದು ಫೋನ್‌ಗೆ ನಕಲಿಸುವುದು ಅದರೊಂದಿಗೆ ಪರವಾನಗಿಯನ್ನು ಹೊಂದಿರುವುದಿಲ್ಲ ಮತ್ತು ನೀವು ಫೋನ್‌ಗಳನ್ನು ಬದಲಾಯಿಸಿದರೆ ಮಾಲೀಕರು ಆ ಬೈಂಡಿಂಗ್ ಅನ್ನು ಮರುಹೊಂದಿಸಬಹುದು.</string>
+    <string name="max_license_status_section">ಸ್ಥಿತಿ</string>
+    <string name="max_license_status_active">ಸಕ್ರಿಯ</string>
+    <string name="max_license_status_expired">ಅವಧಿ ಮೀರಿದೆ</string>
+    <string name="max_license_status_none">ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿಲ್ಲ</string>
+    <string name="max_license_active_detail">ಉಳಿದಿರುವ: %1$d ದಿನಗಳು</string>
+    <string name="max_license_expired_detail">ಈ ಕೀಲಿಯ ಸಮಯ ಮುಗಿದಿದೆ. ಹೊಸ ಕೀಲಿಯು ಪ್ರವೇಶವನ್ನು ನವೀಕರಿಸುತ್ತದೆ.</string>
+    <string name="max_license_none_detail">ಪಾವತಿಸಿದ ಮೇಲ್ಮೈಗಳನ್ನು ಅನ್ಲಾಕ್ ಮಾಡಲು ನೀವು ಸ್ವೀಕರಿಸಿದ ಕೀಲಿಯನ್ನು ನಮೂದಿಸಿ.</string>
+    <string name="max_license_promo_active">%1$s ವರೆಗೆ ಎಲ್ಲರಿಗೂ ಉಚಿತ</string>
+    <string name="max_license_plan_title">ಯೋಜನೆ</string>
+    <string name="max_license_devices_title">ಸಾಧನಗಳು</string>
+    <string name="max_license_devices_detail">%1$d ಆಫ್ %2$d ಬಳಸಲಾಗಿದೆ</string>
+    <string name="max_license_device_id_title">ಈ ಸಾಧನ</string>
+    <string name="max_license_device_id_detail">%1$s</string>
+    <string name="max_license_key_section">ಸಕ್ರಿಯಗೊಳಿಸುವಿಕೆ</string>
+    <string name="max_license_key_label">ಪರವಾನಗಿ ಕೀ</string>
+    <string name="max_license_key_placeholder">ಮ್ಯಾಕ್ಸ್‌ಎಂ-ಎಕ್ಸ್‌ಎಕ್ಸ್‌ಎಕ್ಸ್-ಎಕ್ಸ್‌ಎಕ್ಸ್‌ಎಕ್ಸ್-ಎಕ್ಸ್‌ಎಕ್ಸ್‌ಎಕ್ಸ್-ಎಕ್ಸ್‌ಎಕ್ಸ್‌ಎಕ್ಸ್‌ಎಕ್ಸ್</string>
+    <string name="max_license_key_helper">ಡ್ಯಾಶ್‌ಗಳು ಮತ್ತು ಕ್ಯಾಪಿಟಲೈಸೇಶನ್ ಅಪ್ರಸ್ತುತವಾಗುತ್ತದೆ - ನೀವು ಸ್ವೀಕರಿಸಿದಂತೆ ಅಂಟಿಸಿ.</string>
+    <string name="max_license_activate">ಸಕ್ರಿಯಗೊಳಿಸಿ</string>
+    <string name="max_license_activating">ಕೀಲಿಯನ್ನು ಪರಿಶೀಲಿಸಲಾಗುತ್ತಿದೆ...</string>
+    <string name="max_license_refresh">ಈಗ ಪರಿಶೀಲಿಸಿ</string>
+    <string name="max_license_activated">ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ. ಈ ಸಾಧನವನ್ನು ಇದೀಗ ನಿಮ್ಮ ಕೀಗೆ ಲಿಂಕ್ ಮಾಡಲಾಗಿದೆ.</string>
+    <string name="max_license_error_invalid_key">ಈ ಕೀಲಿಯು ಪೂರ್ಣವಾಗಿ ಕಾಣುತ್ತಿಲ್ಲ. ಅದನ್ನು ಪರಿಶೀಲಿಸಿ ಮತ್ತು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</string>
+    <string name="max_license_error_not_configured">ಈ ನಿರ್ಮಾಣವು ಯಾವುದೇ ಪರವಾನಗಿ ಸರ್ವರ್ ಅನ್ನು ಕಾನ್ಫಿಗರ್ ಮಾಡಿಲ್ಲ.</string>
+    <string name="max_license_error_network">ಸಂಪರ್ಕವಿಲ್ಲ. ಕೀಲಿಯನ್ನು ಒಮ್ಮೆ ಪರಿಶೀಲಿಸಲಾಗುತ್ತದೆ, ನಂತರ ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿ ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತದೆ.</string>
+    <string name="max_license_error_timeout">ಪರವಾನಗಿ ಸರ್ವರ್ ಸಮಯಕ್ಕೆ ಉತ್ತರಿಸಲಿಲ್ಲ. ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</string>
+    <string name="max_license_error_server">ಪರವಾನಗಿ ಸರ್ವರ್ ದೋಷದೊಂದಿಗೆ ಉತ್ತರಿಸಿದೆ. ನಂತರ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</string>
+    <string name="max_license_error_client">ಪರವಾನಗಿ ಕಾರ್ಯವನ್ನು ಸರ್ವರ್‌ನಲ್ಲಿ ನಿಯೋಜಿಸಲಾಗಿಲ್ಲ.</string>
+    <string name="max_license_error_format">ಸರ್ವರ್ ಉತ್ತರ ಅರ್ಥವಾಗಲಿಲ್ಲ.</string>
+    <string name="max_license_error_expired">ಈ ಕೀ ಅವಧಿ ಮುಗಿದಿದೆ.</string>
+    <string name="max_license_error_not_found">ಈ ಕೀ ತಿಳಿದಿಲ್ಲ.</string>
+    <string name="max_license_error_revoked">ಈ ಕೀಲಿಯನ್ನು ಹಿಂಪಡೆಯಲಾಗಿದೆ.</string>
+    <string name="max_license_error_device_limit">ಈ ಕೀಲಿಯು ತನ್ನ ಸಾಧನದ ಮಿತಿಯನ್ನು ತಲುಪಿದೆ. ಸಾಧನವನ್ನು ಮರುಹೊಂದಿಸಲು ಕೇಳಿ.</string>
+    <string name="max_license_error_device_unknown">ಈ ಸಾಧನವನ್ನು ಇನ್ನೂ ಕೀಗೆ ಲಿಂಕ್ ಮಾಡಲಾಗಿಲ್ಲ. ಅದನ್ನು ಮೊದಲು ಇಲ್ಲಿ ಸಕ್ರಿಯಗೊಳಿಸಿ.</string>
+    <string name="max_license_error_device_removed">ಈ ಸಾಧನವನ್ನು ಮಾಲೀಕರು ಕೀಲಿಯಿಂದ ತೆಗೆದುಹಾಕಿದ್ದಾರೆ.</string>
+    <string name="max_license_error_rate_limited">ಈ ಸಂಪರ್ಕದಿಂದ ಹಲವಾರು ಪ್ರಯತ್ನಗಳು — ಕೆಲವು ನಿಮಿಷ ನಿರೀಕ್ಷಿಸಿ, ನಂತರ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</string>
+    <string name="max_license_error_unknown">ಏನೋ ತಪ್ಪಾಗಿದೆ. ಕಾರಣವನ್ನು ಡಯಾಗ್ನೋಸ್ಟಿಕ್ಸ್‌ನಲ್ಲಿ ದಾಖಲಿಸಲಾಗಿದೆ.</string>
+    <string name="max_license_gate_title">ಈ ಮೇಲ್ಮೈಗೆ ಪರವಾನಗಿ ಅಗತ್ಯವಿದೆ</string>
+    <string name="max_license_gate_detail">ಇದನ್ನು ಕೀಲಿಯೊಂದಿಗೆ ಸೇರಿಸಲಾಗಿದೆ. ಒಂದು ಕೀಲಿಯು ಈ ಸಾಧನವನ್ನು ಆವರಿಸುತ್ತದೆ ಮತ್ತು ಅದನ್ನು ನಮೂದಿಸಲು ಒಂದು ನಿಮಿಷ ತೆಗೆದುಕೊಳ್ಳುತ್ತದೆ.</string>
+    <string name="max_feature_off_title">ಆಫ್ ಮಾಡಲಾಗಿದೆ</string>
+    <string name="max_feature_off_detail">ನಿಯಂತ್ರಣ ಫಲಕವು ಈ ಮೇಲ್ಮೈಯನ್ನು ಆಫ್ ಮಾಡಿದೆ. ಅದನ್ನು ಮತ್ತೆ ಸಕ್ರಿಯಗೊಳಿಸಿದ ತಕ್ಷಣ ಅದು ಹಿಂತಿರುಗುತ್ತದೆ.</string>
+    <string name="max_license_gate_action">ಪರವಾನಗಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</string>
+    <string name="max_license_gate_subscribe">ಈಗ ಚಂದಾದಾರರಾಗಿ</string>
+    <string name="max_license_subscription_section">ಚಂದಾದಾರಿಕೆ</string>
+    <string name="max_license_subscription_open">ಚಂದಾದಾರಿಕೆ ಪುಟವನ್ನು ತೆರೆಯಿರಿ</string>
+</resources>

@@ -10,4 +10,6 @@
     <string name="studio_display">표시하다</string>
     <string name="studio_power">전원 옵션</string>
     <string name="studio_settings">설정</string>
+    <string name="audio_dsp_live">DSP 라이브</string>
+    <string name="max_audio_session_label">오디오 세션 #%1$d</string>
 </resources>

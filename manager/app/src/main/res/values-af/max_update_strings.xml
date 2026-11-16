@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_update_strings.xml -->
+<resources>
+    <string name="update_dialog_title">Opdatering beskikbaar</string>
+    <string name="update_dialog_title_required">Opdatering vereis</string>
+    <string name="update_required_notice">Hierdie opdatering is nodig om aan te hou om MaxManager te gebruik. Installeer dit en maak dan die toepassing weer oop.</string>
+    <string name="update_dialog_body">Weergawe %1$s is beskikbaar. Jy is op %2$s.</string>
+    <string name="update_block_title">Opdatering word vereis om voort te gaan</string>
+    <string name="update_block_body">Hierdie gebou (%1$s) word nie meer ondersteun nie. Dateer op na %2$s om aan te hou gebruik MaxManager.</string>
+    <string name="update_block_body_no_release">Hierdie gebou (%1$s) word nie meer ondersteun nie.</string>
+    <string name="update_release_notes_label">Wat is nuut</string>
+    <string name="update_size">Aflaai grootte: %1$s</string>
+    <string name="update_button_now">Dateer nou op</string>
+    <string name="update_button_later">Later</string>
+    <string name="update_button_close">Maak toe</string>
+    <string name="update_button_open_page">Maak die aflaaibladsy oop</string>
+    <string name="update_state_downloading">Laai tans af … %1$d%%</string>
+    <string name="update_state_downloading_unknown">Laai tans af …</string>
+    <string name="update_state_installing">Installeer tans …</string>
+    <string name="update_error_network">Kon nie die opdateringbediener bereik nie. Gaan jou verbinding na en probeer weer.</string>
+    <string name="update_error_http">Die opdateringbediener het met \'n fout geantwoord. Probeer later weer.</string>
+    <string name="update_error_format">Die opdateringsinligting kon nie gelees word nie.</string>
+    <string name="update_error_too_large">Die opdateringsinligting was groter as wat verwag is en is weggegooi.</string>
+    <string name="update_error_integrity">Die afgelaaide lêer het nie by sy kontrolesom gepas nie en is uitgevee.</string>
+    <string name="update_error_install">Installasie het misluk. Probeer weer.</string>
+    <string name="update_error_not_configured">Geen opdateringskanaal is in hierdie gebou opgestel nie.</string>
+    <string name="update_maintenance_title">Tydelik onbeskikbaar</string>
+    <string name="update_maintenance_body">MaxManager is tydelik onbeskikbaar. Probeer asseblief binnekort weer.</string>
+    <string name="update_check_title">Kyk vir opdaterings</string>
+    <string name="update_check_supporting">Huidige weergawe: %1$s</string>
+    <string name="update_check_updated">\'n Opdatering is beskikbaar.</string>
+    <string name="update_check_uptodate">Jy is op die nuutste weergawe.</string>
+    <string name="update_check_failed">Kon nie kyk vir opdaterings nie.</string>
+    <string name="update_check_not_configured">Geen opdateringskanaal is in hierdie gebou opgestel nie.</string>
+    <string name="update_released_label">Vrystellingsdatum: %1$s</string>
+    <string name="update_check_none_published">Geen opdatering is nog vanaf die beheerpaneel gepubliseer nie.</string>
+    <string name="update_check_link_missing">\'n Opdatering word gepubliseer, maar die aflaaiskakel daarvan ontbreek.</string>
+</resources>

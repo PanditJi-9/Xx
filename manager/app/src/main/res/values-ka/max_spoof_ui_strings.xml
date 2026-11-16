@@ -51,4 +51,14 @@
     <string name="copg_tweak_kso_title">ეკრანი ჩართული</string>
     <string name="copg_tweak_kso_desc">იყენებს COPG-ის შენარჩუნების ეკრანის ჩართვას ამ აპზე. შენახულია აქ, ჩაწერილია ძრავზე მიმოხილვით და ვრცელდება Spoof ჩანართში.</string>
     <string name="copg_tweak_needs_device">ჯერ ესაჭიროება მოწყობილობა ამ აპისთვის, Spoof ჩანართში.</string>
+    <string name="spoof_engine_unmeasured">ძრავის მდგომარეობა არ არის გაზომილი: root წვდომა ჯერ არ არის მინიჭებული. მიანიჭეთ root და ხელახლა გახსენით ეს ჩანართი.</string>
+    <string name="spoof_engine_config_missing">COPG დაინსტალირებულია, მაგრამ მისი კონფიგურაციის ფაილი (COPG.json) აკლია. განაცხადზე უარი თქვას მანამ, სანამ მოდული ხელახლა არ უზრუნველყოფს მას.</string>
+    <string name="spoof_engine_config_unreadable">COPG დაინსტალირებულია, მაგრამ მისი კონფიგურაციის ფაილი არ იკითხება JSON. განაცხადზე უარი თქვას ფაილის შეკეთებამდე.</string>
+    <string name="spoof_imei_spoof">IMEI გაყალბება</string>
+    <string name="spoof_imei_spoof_desc">აჩვენებს ამ აპს განსხვავებულ IMEI-ს. სჭირდება Max Manager მოდული, რომელიც ჩართულია LSP-ში, ამ აპლიკაციის ფარგლებში. გადატვირთეთ აპლიკაცია ჩართვის შემდეგ.</string>
+    <string name="spoof_imei_active">ამ აპის ჩვენება: %1$s</string>
+    <string name="spoof_imei_summary">IMEI გაყალბება</string>
+    <string name="spoof_imei_regenerate">ახალი შემთხვევითი IMEI</string>
+    <string name="spoof_imei_regenerate_desc">ქმნის სხვა მოქმედ IMEI ამ აპისთვის. გადატვირთეთ აპი მის სანახავად.</string>
+    <string name="spoof_imei_module_inactive">Max Manager მოდული არ არის ჩართული LSPosed-ში, ამიტომ აპები მაინც ხედავენ რეალურ IMEI-ს. ჩართეთ მოდული LSPosed-ში, დაამატეთ ეს აპი მის ფარგლებს, შემდეგ ხელახლა გახსენით ეს ეკრანი.</string>
 </resources>

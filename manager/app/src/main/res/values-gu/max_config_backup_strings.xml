@@ -18,4 +18,10 @@
     <string name="max_cfg_section_appearance">દેખાવ અને ઇન્ટરફેસ</string>
     <string name="max_cfg_section_app_prefs">એપ્લિકેશન પસંદગીઓ અને ભાષા</string>
     <string name="max_cfg_restore_merge_note">પુનઃસ્થાપિત પસંદગીઓ મર્જ: ફાઇલમાં હાજર કીઓ લખવામાં આવે છે, અને તે ચાવીઓ જેમ છે તેમ રહેવાનો ઉલ્લેખ કરતી નથી. કંઈ સાફ નથી.</string>
+    <string name="max_cfg_diff_title">%1$d સાચવેલ સેટિંગ્સ આ ઉપકરણથી અલગ છે</string>
+    <string name="max_cfg_diff_line">%1$s: %2$s → %3$s</string>
+    <string name="max_cfg_diff_unset">સેટ નથી</string>
+    <string name="max_cfg_diff_more">અને %1$d વધુ</string>
+    <string name="max_cfg_diff_applist">%1$d એપ્લિકેશન-સૂચિની રેખાઓ ઉમેરી, %2$d દૂર કરવામાં આવી — આખી સૂચિ બદલાઈ ગઈ છે, મર્જ કરવામાં આવી નથી.</string>
+    <string name="max_cfg_diff_prefs">%1$d પ્રેફરન્સ કીઓ અલગ-અલગ છે — મર્જ કરેલી, લૂછી નથી.</string>
 </resources>

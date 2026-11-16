@@ -69,4 +69,25 @@
     <string name="max_perms_entry_title">Permisiuni și operațiuni pentru aplicații</string>
     <string name="max_perms_entry_desc">Vedeți ce declara această aplicație și ce permite sistemul de fapt</string>
     <string name="max_perms_entry_action">Permisiuni deschise</string>
+    <string name="max_perms_manifest_title">Rezumatul manifestului</string>
+    <string name="max_perms_manifest_desc">Citiți din managerul de pachete: versiune, gama SDK, componente și câte dintre ele sunt exportate. O componentă exportată poate fi pornită de alte aplicații.</string>
+    <string name="max_perms_manifest_version">Versiune</string>
+    <string name="max_perms_manifest_sdk">Interval SDK</string>
+    <string name="max_perms_manifest_location">Locația de instalare</string>
+    <string name="max_perms_manifest_location_auto">Automat</string>
+    <string name="max_perms_manifest_location_internal">Doar stocare internă</string>
+    <string name="max_perms_manifest_location_external">Preferă extern</string>
+    <string name="max_perms_manifest_components">Componente</string>
+    <string name="max_perms_manifest_components_order">activități · servicii · receptori · furnizori</string>
+    <string name="max_perms_manifest_exported">Componente exportate</string>
+    <string name="max_perms_manifest_splits">Împărțiți APK-urile</string>
+    <string name="max_perms_manifest_debug">Depanabil</string>
+    <string name="max_perms_features_title">Caracteristici declarate</string>
+    <string name="max_perms_features_desc">Ce necesită pachetul de la dispozitiv, în comparație cu ceea ce reclamă acest dispozitiv. O caracteristică necesară care lipsește aici înseamnă, de obicei, că aplicația nu va funcționa pe deplin - este o revendicare din partea managerului de pachete, nu o presupunere.</string>
+    <string name="max_perms_features_loading">Se citesc caracteristicile declarate ale pachetului...</string>
+    <string name="max_perms_features_none">Pachetul nu declară caracteristicile necesare.</string>
+    <string name="max_perms_features_required">Necesar</string>
+    <string name="max_perms_features_unsupported">Nu pe acest dispozitiv</string>
+    <string name="max_perms_manifest_none">Nu este raportat de managerul de pachete.</string>
+    <string name="max_perms_manifest_unknown">Necunoscut</string>
 </resources>

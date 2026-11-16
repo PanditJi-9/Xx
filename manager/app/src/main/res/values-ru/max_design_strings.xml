@@ -13,4 +13,23 @@
     <string name="max_expand_section">Показать детали</string>
     <string name="max_collapse_section">Скрыть детали</string>
     <string name="max_trust_loading">Чтение…</string>
+    <string name="max_gov_title">Кто правит сейчас</string>
+    <string name="max_gov_separator">" › "</string>
+    <string name="max_gov_order_note">Фиксированный порядок: более высокая ступень блокирует нижнюю. Никогда не меняется, какая политика победит.</string>
+    <string name="max_gov_open_details">Активные держатели</string>
+    <string name="max_gov_active_title">Кто держит контроль</string>
+    <string name="max_gov_none">На данный момент ни одна политика не владеет аппаратным контролем.</string>
+    <string name="max_gov_count">Аренда активного контроля: %1$d</string>
+    <string name="max_gov_requested">Запрошено: %1$s</string>
+    <string name="max_gov_owner_recovery">Восстановление</string>
+    <string name="max_gov_owner_safety">Тепловая безопасность</string>
+    <string name="max_gov_owner_per_app">Профиль приложения</string>
+    <string name="max_gov_owner_max_ai">Max AI</string>
+    <string name="max_gov_owner_global">Глобальный профиль</string>
+    <string name="max_gov_owner_system">Система</string>
+    <string name="max_gov_owner_a11y">%1$s владеет аппаратным управлением</string>
+    <string name="max_gov_now_none">Автоматизированного владельца сейчас нет — контроль остается за вами.</string>
+    <string name="max_gov_now_one">%1$s держит элемент управления</string>
+    <string name="max_gov_now_many">%1$s удерживает %2$d элементы управления</string>
+    <string name="devinfo_details">Подробности</string>
 </resources>

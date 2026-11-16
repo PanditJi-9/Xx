@@ -69,4 +69,25 @@
     <string name="max_perms_entry_title">अनुमति र एप अप्स</string>
     <string name="max_perms_entry_desc">यो एपले के घोषणा गर्छ र प्रणालीले वास्तवमा के अनुमति दिन्छ हेर्नुहोस्</string>
     <string name="max_perms_entry_action">अनुमतिहरू खोल्नुहोस्</string>
+    <string name="max_perms_manifest_title">प्रकट सारांश</string>
+    <string name="max_perms_manifest_desc">प्याकेज प्रबन्धकबाट पढ्नुहोस्: संस्करण, SDK दायरा, कम्पोनेन्टहरू र तीमध्ये कति निर्यात गरिन्छन्। निर्यात गरिएको कम्पोनेन्ट अन्य एपहरूद्वारा सुरु गर्न सकिन्छ।</string>
+    <string name="max_perms_manifest_version">संस्करण</string>
+    <string name="max_perms_manifest_sdk">SDK दायरा</string>
+    <string name="max_perms_manifest_location">स्थान स्थापना गर्नुहोस्</string>
+    <string name="max_perms_manifest_location_auto">स्वचालित</string>
+    <string name="max_perms_manifest_location_internal">आन्तरिक भण्डारण मात्र</string>
+    <string name="max_perms_manifest_location_external">बाह्य रुचाउँछ</string>
+    <string name="max_perms_manifest_components">अवयवहरू</string>
+    <string name="max_perms_manifest_components_order">गतिविधिहरू · सेवाहरू · प्राप्तकर्ताहरू · प्रदायकहरू</string>
+    <string name="max_perms_manifest_exported">निर्यात गरिएका अवयवहरू</string>
+    <string name="max_perms_manifest_splits">एपीकेहरू विभाजित गर्नुहोस्</string>
+    <string name="max_perms_manifest_debug">डिबग गर्न मिल्ने</string>
+    <string name="max_perms_features_title">घोषित सुविधाहरू</string>
+    <string name="max_perms_features_desc">प्याकेजलाई यन्त्रबाट के चाहिन्छ, यो यन्त्रले विज्ञापित गरेको तुलनामा। यहाँ हराइरहेको एउटा आवश्यक सुविधाको अर्थ सामान्यतया एपले पूर्ण रूपमा काम गर्दैन — यो प्याकेज प्रबन्धकको दाबी हो, अनुमान होइन।</string>
+    <string name="max_perms_features_loading">प्याकेजका घोषित सुविधाहरू पढ्दै...</string>
+    <string name="max_perms_features_none">प्याकेजले कुनै आवश्यक सुविधाहरू घोषणा गर्दैन।</string>
+    <string name="max_perms_features_required">आवश्यक छ</string>
+    <string name="max_perms_features_unsupported">यो यन्त्रमा छैन</string>
+    <string name="max_perms_manifest_none">प्याकेज प्रबन्धक द्वारा रिपोर्ट गरिएको छैन।</string>
+    <string name="max_perms_manifest_unknown">अज्ञात</string>
 </resources>

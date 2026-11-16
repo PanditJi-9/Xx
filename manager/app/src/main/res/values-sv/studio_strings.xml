@@ -10,4 +10,6 @@
     <string name="studio_display">Visa</string>
     <string name="studio_power">Energialternativ</string>
     <string name="studio_settings">Inställningar</string>
+    <string name="audio_dsp_live">DSP live</string>
+    <string name="max_audio_session_label">Ljudsession #%1$d</string>
 </resources>

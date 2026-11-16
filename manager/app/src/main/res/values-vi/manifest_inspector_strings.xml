@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/manifest_inspector_strings.xml -->
+<resources>
+    <string name="manifest_inspector_title">Thanh tra kê khai</string>
+    <string name="manifest_inspector_subtitle">Những gì một ứng dụng đã cài đặt khai báo về chính nó, hãy đọc từ PackageManager.</string>
+    <string name="max_role_manifest_inspector">Hiển thị những gì gói khai báo về chính nó - chỉ đọc.</string>
+    <string name="mi_search">Tìm kiếm ứng dụng</string>
+    <string name="mi_empty">Chọn một ứng dụng ở bên trái.</string>
+    <string name="mi_yes">Đúng</string>
+    <string name="mi_no">KHÔNG</string>
+    <string name="mi_section_identity">Bưu kiện</string>
+    <string name="mi_version">Phiên bản</string>
+    <string name="mi_version_code">Mã phiên bản</string>
+    <string name="mi_min_sdk">SDK tối thiểu</string>
+    <string name="mi_target_sdk">SDK mục tiêu</string>
+    <string name="mi_installed">Đã cài đặt</string>
+    <string name="mi_updated">Đã cập nhật</string>
+    <string name="mi_installer">Trình cài đặt</string>
+    <string name="mi_uid">UID</string>
+    <string name="mi_data_dir">Thư mục dữ liệu</string>
+    <string name="mi_debuggable">Có thể gỡ lỗi</string>
+    <string name="mi_system_app">Ứng dụng hệ thống</string>
+    <string name="mi_enabled">Đã bật</string>
+    <string name="mi_section_permissions">Quyền được yêu cầu</string>
+    <string name="mi_permissions_summary">%1$d quyền · %2$d trong số đó nguy hiểm</string>
+    <string name="mi_permissions_none">Ứng dụng này không yêu cầu sự cho phép.</string>
+    <string name="mi_perm_dangerous">Nguy hiểm</string>
+    <string name="mi_perm_signature">Chữ ký</string>
+    <string name="mi_perm_normal">Bình thường</string>
+    <string name="mi_perm_unknown">Chưa được phân loại</string>
+    <string name="mi_section_components">Linh kiện</string>
+    <string name="mi_activities">Các hoạt động</string>
+    <string name="mi_services">Dịch vụ</string>
+    <string name="mi_receivers">Người nhận</string>
+    <string name="mi_providers">Nhà cung cấp</string>
+    <string name="mi_components_none">Không khai báo</string>
+    <string name="mi_section_features">Tính năng thiết bị</string>
+    <string name="mi_features_note">Nền tảng không hiển thị danh sách tính năng sử dụng của ứng dụng khác; đây là những tính năng mà thiết bị này báo cáo.</string>
+    <string name="mi_features_none">Không có tính năng nào được báo cáo</string>
+    <string name="mi_section_signature">Ký giấy chứng nhận</string>
+    <string name="mi_signature_note">SHA-256 của chứng chỉ ký. Hai bản dựng có cùng giá trị là cùng một nhà xuất bản.</string>
+    <string name="mi_signature_sha256">Thông báo chứng chỉ</string>
+</resources>

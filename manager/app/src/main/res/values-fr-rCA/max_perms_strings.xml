@@ -69,4 +69,25 @@
     <string name="max_perms_entry_title">Autorisations et opérations sur les applications</string>
     <string name="max_perms_entry_desc">Découvrez ce que cette application déclare et ce que le système permet réellement</string>
     <string name="max_perms_entry_action">Autorisations d\'ouverture</string>
+    <string name="max_perms_manifest_title">Résumé du manifeste</string>
+    <string name="max_perms_manifest_desc">Lisez depuis le gestionnaire de packages : version, plage du SDK, composants et combien d\'entre eux sont exportés. Un composant exporté peut être démarré par d\'autres applications.</string>
+    <string name="max_perms_manifest_version">Version</string>
+    <string name="max_perms_manifest_sdk">Gamme de SDK</string>
+    <string name="max_perms_manifest_location">Emplacement d\'installation</string>
+    <string name="max_perms_manifest_location_auto">Automatique</string>
+    <string name="max_perms_manifest_location_internal">Stockage interne uniquement</string>
+    <string name="max_perms_manifest_location_external">Préfère l\'externe</string>
+    <string name="max_perms_manifest_components">Composants</string>
+    <string name="max_perms_manifest_components_order">activités · services · récepteurs · prestataires</string>
+    <string name="max_perms_manifest_exported">Composants exportés</string>
+    <string name="max_perms_manifest_splits">Diviser les APK</string>
+    <string name="max_perms_manifest_debug">Débogable</string>
+    <string name="max_perms_features_title">Caractéristiques déclarées</string>
+    <string name="max_perms_features_desc">Ce que le package exige de l\'appareil, par rapport à ce que cet appareil annonce. Une fonctionnalité requise manquante ici signifie généralement que l\'application ne fonctionnera pas pleinement – ​​il s\'agit d\'une réclamation du gestionnaire de packages, pas d\'une supposition.</string>
+    <string name="max_perms_features_loading">Lecture des fonctionnalités déclarées du package…</string>
+    <string name="max_perms_features_none">Le package ne déclare aucune fonctionnalité requise.</string>
+    <string name="max_perms_features_required">Requis</string>
+    <string name="max_perms_features_unsupported">Pas sur cet appareil</string>
+    <string name="max_perms_manifest_none">Non signalé par le gestionnaire de packages.</string>
+    <string name="max_perms_manifest_unknown">Inconnu</string>
 </resources>

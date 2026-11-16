@@ -10,4 +10,6 @@
     <string name="studio_display">ჩვენება</string>
     <string name="studio_power">დენის პარამეტრები</string>
     <string name="studio_settings">პარამეტრები</string>
+    <string name="audio_dsp_live">DSP პირდაპირ ეთერში</string>
+    <string name="max_audio_session_label">აუდიო სესია #%1$d</string>
 </resources>

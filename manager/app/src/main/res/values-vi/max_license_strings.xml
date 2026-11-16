@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_license_strings.xml -->
+<resources>
+    <string name="max_license_title">Giấy phép</string>
+    <string name="max_license_subtitle">Một chìa khóa, thiết bị này, không có tài khoản</string>
+    <string name="max_license_help_body">Một khóa được kiểm tra trực tuyến một lần khi bạn nhập nó. Từ đó trở đi, chứng chỉ đã ký của máy chủ sẽ hoạt động ngoại tuyến cho đến khi hết thời gian — ứng dụng sẽ không gọi về nhà mỗi khi bạn mở màn hình. Chứng chỉ được liên kết với id cài đặt ngẫu nhiên của thiết bị này, do đó, việc sao chép dữ liệu ứng dụng sang điện thoại khác sẽ không mang theo giấy phép và chủ sở hữu có thể đặt lại liên kết đó từ bảng điều khiển nếu bạn đổi điện thoại.</string>
+    <string name="max_license_status_section">Trạng thái</string>
+    <string name="max_license_status_active">Tích cực</string>
+    <string name="max_license_status_expired">Hết hạn</string>
+    <string name="max_license_status_none">Chưa kích hoạt</string>
+    <string name="max_license_active_detail">Còn lại: %1$d ngày</string>
+    <string name="max_license_expired_detail">Thời gian của chìa khóa này đã hết. Một khóa mới làm mới quyền truy cập.</string>
+    <string name="max_license_none_detail">Nhập khóa bạn nhận được để mở khóa các bề mặt trả phí.</string>
+    <string name="max_license_promo_active">Miễn phí cho mọi người cho đến %1$s</string>
+    <string name="max_license_plan_title">Kế hoạch</string>
+    <string name="max_license_devices_title">Thiết bị</string>
+    <string name="max_license_devices_detail">%1$d trong số %2$d đã sử dụng</string>
+    <string name="max_license_device_id_title">Thiết bị này</string>
+    <string name="max_license_device_id_detail">%1$s</string>
+    <string name="max_license_key_section">Kích hoạt</string>
+    <string name="max_license_key_label">Mã cấp phép</string>
+    <string name="max_license_key_placeholder">MAXM-XXXXX-XXXXX-XXXXX-XXXXX-XX</string>
+    <string name="max_license_key_helper">Dấu gạch ngang và cách viết hoa không quan trọng — hãy dán nó khi bạn nhận được.</string>
+    <string name="max_license_activate">Kích hoạt</string>
+    <string name="max_license_activating">Đang kiểm tra chìa khóa…</string>
+    <string name="max_license_refresh">Kiểm tra ngay</string>
+    <string name="max_license_activated">Đã kích hoạt. Thiết bị này hiện đã được liên kết với chìa khóa của bạn.</string>
+    <string name="max_license_error_invalid_key">Chìa khóa này có vẻ chưa hoàn chỉnh. Hãy kiểm tra và thử lại.</string>
+    <string name="max_license_error_not_configured">Bản dựng này chưa được cấu hình máy chủ cấp phép.</string>
+    <string name="max_license_error_network">Không có kết nối. Chìa khóa được kiểm tra một lần, sau đó hoạt động ngoại tuyến.</string>
+    <string name="max_license_error_timeout">Máy chủ cấp phép không trả lời kịp thời. Hãy thử lại.</string>
+    <string name="max_license_error_server">Máy chủ cấp phép đã trả lời có lỗi. Hãy thử lại sau.</string>
+    <string name="max_license_error_client">Chức năng cấp phép không được triển khai trên máy chủ.</string>
+    <string name="max_license_error_format">Câu trả lời của máy chủ không được hiểu.</string>
+    <string name="max_license_error_expired">Chìa khóa này đã hết hạn.</string>
+    <string name="max_license_error_not_found">Chìa khóa này không được biết đến.</string>
+    <string name="max_license_error_revoked">Chìa khóa này đã bị thu hồi.</string>
+    <string name="max_license_error_device_limit">Khóa này đã đạt đến giới hạn thiết bị. Yêu cầu thiết lập lại thiết bị.</string>
+    <string name="max_license_error_device_unknown">Thiết bị này chưa được liên kết với khóa. Kích hoạt nó ở đây đầu tiên.</string>
+    <string name="max_license_error_device_removed">Thiết bị này đã bị chủ nhân lấy ra khỏi chìa khóa.</string>
+    <string name="max_license_error_rate_limited">Quá nhiều lần thử từ kết nối này — hãy đợi vài phút rồi thử lại.</string>
+    <string name="max_license_error_unknown">Đã xảy ra lỗi. Nguyên nhân đã được ghi vào Diagnostics.</string>
+    <string name="max_license_gate_title">Bề mặt này cần có giấy phép</string>
+    <string name="max_license_gate_detail">Nó được bao gồm với một chìa khóa. Một phím bao gồm thiết bị này và việc nhập nó sẽ mất một phút.</string>
+    <string name="max_feature_off_title">Đã tắt</string>
+    <string name="max_feature_off_detail">Bảng điều khiển đã tắt bề mặt này. Nó quay trở lại ngay sau khi được kích hoạt lại.</string>
+    <string name="max_license_gate_action">Mở cài đặt giấy phép</string>
+    <string name="max_license_gate_subscribe">Đăng ký ngay bây giờ</string>
+    <string name="max_license_subscription_section">Đăng ký</string>
+    <string name="max_license_subscription_open">Mở trang đăng ký</string>
+</resources>

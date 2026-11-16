@@ -99,4 +99,12 @@
     <string name="max_gpu_saved_desc">Disimpan dari penyimpanan sebelumnya dan diterapkan pada setiap boot: %1$s. Default di atas mengakhiri sesi ini saja, bukan status tersimpan.</string>
     <string name="max_gpu_dynamic_min">Minimal · dinamis</string>
     <string name="max_gpu_dynamic_max">Maksimum · dinamis</string>
+    <string name="max_gpu_monitor_only_detail">Satu-satunya node grafis yang diekspos oleh kernel ini adalah monitor bandwidth dan QoS: node tersebut tidak membawa clock GPU, sehingga tidak ada frekuensi yang perlu diatur. Kontrol tetap mati alih-alih menulis pengatur memori seolah-olah itu adalah GPU.</string>
+    <string name="max_gpu_danger_title">Tulis batas GPU?</string>
+    <string name="max_gpu_danger_body">Ini menulis jendela frekuensi grafis dan gubernur ke dalam node GPU. Jendela yang ditolak oleh pengemudi, atau pengatur yang tidak dapat mengikuti, dapat membuat seluruh antarmuka menjadi gagap atau membekukan panel. Aplikasi mencatat bahwa Anda menerimanya satu kali — tanggung jawab atas nilai-nilai yang Anda terapkan ada di tangan Anda.</string>
+    <string name="max_gpu_danger_action">Saya mengerti — terapkan</string>
+    <string name="max_gpu_state_title">Waktu di negara bagian</string>
+    <string name="max_gpu_state_desc">Ke mana waktu GPU yang sebenarnya, dihitung oleh kernel per frekuensi operasi — bukan cuplikan dari jam saat ini.</string>
+    <string name="max_gpu_state_hidden_share">%1$s bersama-sama</string>
+    <string name="max_gpu_state_hidden">%1$d menyatakan di bawah 1%%</string>
 </resources>

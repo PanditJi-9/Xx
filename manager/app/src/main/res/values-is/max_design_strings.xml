@@ -13,4 +13,23 @@
     <string name="max_expand_section">Sýna upplýsingar</string>
     <string name="max_collapse_section">Fela upplýsingar</string>
     <string name="max_trust_loading">Er að lesa…</string>
+    <string name="max_gov_title">Hver ræður núna</string>
+    <string name="max_gov_separator">" ›"</string>
+    <string name="max_gov_order_note">Föst röð: hærri þrep blokkar lægri. Það breytir aldrei hvaða stefna vinnur.</string>
+    <string name="max_gov_open_details">Virkir handhafar</string>
+    <string name="max_gov_active_title">Hver hefur stjórnina</string>
+    <string name="max_gov_none">Engin stefna á vélbúnaðarstýringu eins og er.</string>
+    <string name="max_gov_count">Virk stjórnunarleigusamningar: %1$d</string>
+    <string name="max_gov_requested">Óskað eftir: %1$s</string>
+    <string name="max_gov_owner_recovery">Bati</string>
+    <string name="max_gov_owner_safety">Hitaöryggi</string>
+    <string name="max_gov_owner_per_app">App prófíll</string>
+    <string name="max_gov_owner_max_ai">Max AI</string>
+    <string name="max_gov_owner_global">Alheimsprófíll</string>
+    <string name="max_gov_owner_system">Kerfi</string>
+    <string name="max_gov_owner_a11y">%1$s á vélbúnaðarstýringu</string>
+    <string name="max_gov_now_none">Enginn sjálfvirkur eigandi eins og er – stjórnin er áfram þín</string>
+    <string name="max_gov_now_one">%1$s hefur stjórn</string>
+    <string name="max_gov_now_many">%1$s geymir %2$d stýringar</string>
+    <string name="devinfo_details">Upplýsingar</string>
 </resources>

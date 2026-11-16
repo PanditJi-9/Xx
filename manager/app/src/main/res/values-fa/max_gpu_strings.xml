@@ -99,4 +99,12 @@
     <string name="max_gpu_saved_desc">از ذخیره قبلی نگهداری می شود و روی هر بوت اعمال می شود: %1$s. پیش‌فرض بالا فقط این جلسه را پایان می‌دهد، هرگز وضعیت ذخیره‌شده را ندارد.</string>
     <string name="max_gpu_dynamic_min">حداقل · پویا</string>
     <string name="max_gpu_dynamic_max">حداکثر · پویا</string>
+    <string name="max_gpu_monitor_only_detail">تنها گره‌های گرافیکی که این هسته در معرض دید قرار می‌دهد، پهنای باند و مانیتورهای QoS هستند: آن‌ها هیچ ساعت GPU ندارند، بنابراین فرکانسی برای تنظیم وجود ندارد. کنترل به جای نوشتن یک گاورنر حافظه به گونه‌ای که GPU است خاموش می‌ماند.</string>
+    <string name="max_gpu_danger_title">محدودیت GPU را بنویسید؟</string>
+    <string name="max_gpu_danger_body">این پنجره فرکانس گرافیکی و گاورنر را در گره های GPU می نویسد. پنجره‌ای که راننده آن را رد می‌کند، یا گاورنر که نمی‌تواند به آن ادامه دهد، می‌تواند کل رابط را دچار لکنت کند یا پانل را منجمد کند. برنامه ثبت می کند که شما یک بار این را پذیرفته اید - مسئولیت مقادیری که اعمال می کنید با شماست.</string>
+    <string name="max_gpu_danger_action">من درک می کنم - اعمال کنید</string>
+    <string name="max_gpu_state_title">زمان در حالت</string>
+    <string name="max_gpu_state_desc">زمان GPU\'s واقعاً کجا رفته است، با هسته در هر فرکانس کاری شمارش می شود - نه یک عکس فوری از ساعت فعلی.</string>
+    <string name="max_gpu_state_hidden_share">%1$s با هم</string>
+    <string name="max_gpu_state_hidden">%1$d حالات زیر 1%%</string>
 </resources>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_update_strings.xml -->
+<resources>
+    <string name="update_dialog_title">Доступно обновление</string>
+    <string name="update_dialog_title_required">Требуется обновление</string>
+    <string name="update_required_notice">Это обновление необходимо для продолжения использования MaxManager. Установите его, затем снова откройте приложение.</string>
+    <string name="update_dialog_body">Доступна версия %1$s. Вы находитесь на %2$s.</string>
+    <string name="update_block_title">Требуется обновление для продолжения</string>
+    <string name="update_block_body">Эта сборка (%1$s) больше не поддерживается. Обновите %2$s, чтобы продолжать использовать MaxManager.</string>
+    <string name="update_block_body_no_release">Эта сборка (%1$s) больше не поддерживается.</string>
+    <string name="update_release_notes_label">Что нового</string>
+    <string name="update_size">Размер загрузки: %1$s</string>
+    <string name="update_button_now">Обновить сейчас</string>
+    <string name="update_button_later">Позже</string>
+    <string name="update_button_close">Закрывать</string>
+    <string name="update_button_open_page">Открыть страницу загрузки</string>
+    <string name="update_state_downloading">Загрузка… %1$d%%</string>
+    <string name="update_state_downloading_unknown">Загрузка…</string>
+    <string name="update_state_installing">Установка…</string>
+    <string name="update_error_network">Не удалось связаться с сервером обновлений. Проверьте подключение и повторите попытку.</string>
+    <string name="update_error_http">Сервер обновлений ответил ошибкой. Повторите попытку позже.</string>
+    <string name="update_error_format">Не удалось прочитать информацию об обновлении.</string>
+    <string name="update_error_too_large">Информация об обновлении оказалась больше ожидаемой и была удалена.</string>
+    <string name="update_error_integrity">Загруженный файл не соответствовал своей контрольной сумме и был удален.</string>
+    <string name="update_error_install">Установка не удалась. Попробуйте еще раз.</string>
+    <string name="update_error_not_configured">В этой сборке не настроен канал обновления.</string>
+    <string name="update_maintenance_title">Временно недоступно</string>
+    <string name="update_maintenance_body">MaxManager временно недоступен. Пожалуйста, повторите попытку в ближайшее время.</string>
+    <string name="update_check_title">Проверьте наличие обновлений</string>
+    <string name="update_check_supporting">Текущая версия: %1$s</string>
+    <string name="update_check_updated">Доступно обновление.</string>
+    <string name="update_check_uptodate">Вы используете последнюю версию.</string>
+    <string name="update_check_failed">Не удалось проверить наличие обновлений.</string>
+    <string name="update_check_not_configured">В этой сборке не настроен канал обновления.</string>
+    <string name="update_released_label">Дата выхода: %1$s</string>
+    <string name="update_check_none_published">Обновления из панели управления пока не опубликованы.</string>
+    <string name="update_check_link_missing">Обновление опубликовано, но ссылка на его скачивание отсутствует.</string>
+</resources>

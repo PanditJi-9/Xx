@@ -13,4 +13,23 @@
     <string name="max_expand_section">Tunjukkan butiran</string>
     <string name="max_collapse_section">Sembunyikan butiran</string>
     <string name="max_trust_loading">Membaca…</string>
+    <string name="max_gov_title">Siapa yang memerintah sekarang</string>
+    <string name="max_gov_separator">" › "</string>
+    <string name="max_gov_order_note">Tertib tetap: anak tangga yang lebih tinggi menghalang yang lebih rendah. Ia tidak pernah mengubah dasar mana yang menang.</string>
+    <string name="max_gov_open_details">Pemegang aktif</string>
+    <string name="max_gov_active_title">Siapa yang memegang kawalan</string>
+    <string name="max_gov_none">Tiada dasar yang memiliki kawalan perkakasan sekarang.</string>
+    <string name="max_gov_count">Pajakan kawalan aktif: %1$d</string>
+    <string name="max_gov_requested">Diminta: %1$s</string>
+    <string name="max_gov_owner_recovery">Pemulihan</string>
+    <string name="max_gov_owner_safety">Keselamatan haba</string>
+    <string name="max_gov_owner_per_app">Profil apl</string>
+    <string name="max_gov_owner_max_ai">Max AI</string>
+    <string name="max_gov_owner_global">Profil global</string>
+    <string name="max_gov_owner_system">Sistem</string>
+    <string name="max_gov_owner_a11y">%1$s memiliki kawalan perkakasan</string>
+    <string name="max_gov_now_none">Tiada pemilik automatik sekarang — kawalan kekal milik anda</string>
+    <string name="max_gov_now_one">%1$s memegang kawalan</string>
+    <string name="max_gov_now_many">%1$s memegang %2$d kawalan</string>
+    <string name="devinfo_details">Butiran</string>
 </resources>

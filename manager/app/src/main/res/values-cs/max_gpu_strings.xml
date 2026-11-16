@@ -99,4 +99,12 @@
     <string name="max_gpu_saved_desc">Zachováno z dřívějšího uložení a použito při každém spuštění: %1$s. Výchozí výše ukončí pouze tuto relaci, nikdy neuložený stav.</string>
     <string name="max_gpu_dynamic_min">Minimální · dynamický</string>
     <string name="max_gpu_dynamic_max">Maximální · dynamický</string>
+    <string name="max_gpu_monitor_only_detail">Jediné grafické uzly, které toto jádro odhaluje, jsou monitory šířky pásma a QoS: nenesou žádné hodiny GPU, takže není třeba nastavovat žádnou frekvenci. Ovládání zůstane vypnuté místo zápisu regulátoru paměti, jako by to byl GPU.</string>
+    <string name="max_gpu_danger_title">Napsat GPU limity?</string>
+    <string name="max_gpu_danger_body">Tím se zapíše okno frekvence grafiky a regulátor do uzlů GPU. Okno, které řidič odmítne, nebo regulátor, který nestíhá, může zadrhnout celé rozhraní nebo zamrznout panel. Aplikace zaznamená, že jste to jednou přijali – odpovědnost za hodnoty, které použijete, je na vás.</string>
+    <string name="max_gpu_danger_action">Rozumím - aplikujte</string>
+    <string name="max_gpu_state_title">Čas ve stavu</string>
+    <string name="max_gpu_state_desc">Kam se ve skutečnosti poděl čas GPU, počítaný jádrem na provozní frekvenci – není to snímek aktuálních hodin.</string>
+    <string name="max_gpu_state_hidden_share">%1$s společně</string>
+    <string name="max_gpu_state_hidden">%1$d stavy pod 1%%</string>
 </resources>

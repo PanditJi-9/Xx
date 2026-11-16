@@ -51,4 +51,14 @@
     <string name="copg_tweak_kso_title">திரையை இயக்கவும்</string>
     <string name="copg_tweak_kso_desc">இந்த பயன்பாட்டிற்கு COPG கீப்-ஸ்கிரீன்-ஆன் மாற்றங்களைப் பயன்படுத்துகிறது. இங்கே சேமிக்கப்பட்டது, மதிப்பாய்வு மூலம் இயந்திரத்தில் எழுதப்பட்டு ஸ்பூஃப் தாவலில் விண்ணப்பிக்கவும்.</string>
     <string name="copg_tweak_needs_device">ஸ்பூஃப் தாவலில் இந்த பயன்பாட்டிற்கு முதலில் ஒரு சாதனம் தேவை.</string>
+    <string name="spoof_engine_unmeasured">எஞ்சின் நிலை அளவிடப்படவில்லை: ரூட் அணுகல் இன்னும் வழங்கப்படவில்லை. ரூட்டை வழங்கவும், பின்னர் இந்த தாவலை மீண்டும் திறக்கவும்.</string>
+    <string name="spoof_engine_config_missing">COPG நிறுவப்பட்டது, ஆனால் அதன் கட்டமைப்பு கோப்பு (COPG.json) இல்லை. தொகுதி அதை மீண்டும் வழங்கும் வரை விண்ணப்பம் மறுக்கப்படும்.</string>
+    <string name="spoof_engine_config_unreadable">COPG நிறுவப்பட்டது, ஆனால் அதன் உள்ளமைவு கோப்பு படிக்கக்கூடியதாக இல்லை JSON. கோப்பு சரிசெய்யப்படும் வரை விண்ணப்பம் மறுக்கப்படுகிறது.</string>
+    <string name="spoof_imei_spoof">IMEI ஏமாற்றுதல்</string>
+    <string name="spoof_imei_spoof_desc">இந்தப் பயன்பாட்டை வேறு IMEIஐக் காட்டுகிறது. LSPosed இல் Max Manager மாட்யூல் இயக்கப்பட்டிருக்க வேண்டும், அதன் நோக்கத்தில் இந்தப் பயன்பாடு உள்ளது. ஆப்ஸை ஆன் செய்த பிறகு மீண்டும் தொடங்கவும்.</string>
+    <string name="spoof_imei_active">இந்த பயன்பாட்டைக் காட்டுகிறது: %1$s</string>
+    <string name="spoof_imei_summary">IMEI ஏமாற்றுதல்</string>
+    <string name="spoof_imei_regenerate">புதிய சீரற்ற IMEI</string>
+    <string name="spoof_imei_regenerate_desc">இந்த பயன்பாட்டிற்கு மற்றொரு சரியான IMEI ஐ உருவாக்குகிறது. அதைப் பார்க்க, பயன்பாட்டை மறுதொடக்கம் செய்யவும்.</string>
+    <string name="spoof_imei_module_inactive">Max Manager தொகுதி LSPosed இல் இயக்கப்படவில்லை, எனவே பயன்பாடுகள் இன்னும் உண்மையான IMEI ஐப் பார்க்கின்றன. LSPosed இல் தொகுதியை இயக்கி, இந்த பயன்பாட்டை அதன் நோக்கத்தில் சேர்த்து, இந்தத் திரையை மீண்டும் திறக்கவும்.</string>
 </resources>

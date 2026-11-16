@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/network_scanner_strings.xml -->
+<resources>
+    <string name="network_scanner_title">স্থানীয় নেটওয়ার্ক স্ক্যানার</string>
+    <string name="network_scanner_subtitle">আপনার ঠিকানা, এটি পৌঁছানোর গেটওয়ে, এবং কোন প্রতিবেশীরা উত্তর দিয়েছে।</string>
+    <string name="max_role_network_scanner">আপনি যে নেটওয়ার্কে আছেন তা পড়ে — কোনো ক্যাপচার নেই, কোনো রুট নেই৷</string>
+    <string name="ns_no_network">কোন নেটওয়ার্ক সংযুক্ত নেই.</string>
+    <string name="ns_interface">ইন্টারফেস</string>
+    <string name="ns_address">ঠিকানা</string>
+    <string name="ns_gateway">গেটওয়ে</string>
+    <string name="ns_dns">ডিএনএস</string>
+    <string name="ns_mac">ম্যাক</string>
+    <string name="ns_transport_wifi">ওয়াই-ফাই</string>
+    <string name="ns_transport_ethernet">ইথারনেট</string>
+    <string name="ns_transport_cellular">সেলুলার</string>
+    <string name="ns_transport_other">অন্যান্য</string>
+    <string name="ns_sources_title">এই কোথা থেকে আসে</string>
+    <string name="ns_sources_body">ঠিকানা এবং গেটওয়ে প্ল্যাটফর্মের লিঙ্ক বৈশিষ্ট্য থেকে পড়া হয়. প্রতিবেশী টেবিলটি কার্নেলের এআরপি ক্যাশে থেকে পড়া হয়, তাই এটি কেবলমাত্র এই ডিভাইসটির সাথে কথা বলেছে — একটি খালি টেবিল মানে খালি নেটওয়ার্ক নয়৷</string>
+    <string name="ns_refresh">রিফ্রেশ</string>
+    <string name="ns_probe">সাধারণ পোর্ট অনুসন্ধান করুন</string>
+    <string name="ns_probe_stop">থামো</string>
+    <string name="ns_probe_progress">%2$d এর মধ্যে %1$d অনুসন্ধান করা হচ্ছে</string>
+    <string name="ns_probe_note">এই /24 জুড়ে 22, 80, 443, 5000 এবং 5555 পোর্টে একটি TCP সংযোগ পাঠায়। একটি পোর্ট যা উত্তর দেয় রিপোর্ট করা হয়; নীরবতা প্রমাণ নয় যে একজন হোস্ট অনুপস্থিত।</string>
+    <string name="ns_neighbours">পরিচিত প্রতিবেশী</string>
+    <string name="ns_neighbours_note">/proc/net/arp থেকে — শুধুমাত্র পড়ুন।</string>
+    <string name="ns_neighbours_empty">এখনো কোনো প্রতিবেশীর পরিচয় নেই।</string>
+    <string name="ns_ports_value">পোর্ট %1$s</string>
+</resources>

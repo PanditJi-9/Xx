@@ -10,4 +10,6 @@
     <string name="studio_display">ප්රදර්ශනය කරන්න</string>
     <string name="studio_power">බල විකල්ප</string>
     <string name="studio_settings">සැකසීම්</string>
+    <string name="audio_dsp_live">DSP සජීවීව</string>
+    <string name="max_audio_session_label">ශ්‍රව්‍ය සැසිය #%1$d</string>
 </resources>

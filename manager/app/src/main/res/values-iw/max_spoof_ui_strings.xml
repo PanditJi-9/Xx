@@ -51,4 +51,14 @@
     <string name="copg_tweak_kso_title">השאר את המסך דולק</string>
     <string name="copg_tweak_kso_desc">מחיל את ה-COPG keep-screen on tweak על האפליקציה הזו. נשמר כאן, נכתב למנוע על ידי סקירה והחל בלשונית זיוף.</string>
     <string name="copg_tweak_needs_device">צריך קודם כל מכשיר עבור האפליקציה הזו, בכרטיסייה זיוף.</string>
+    <string name="spoof_engine_unmeasured">מצב המנוע לא נמדד: עדיין לא ניתנה גישת שורש. הענק שורש ולאחר מכן פתח מחדש את הכרטיסייה הזו.</string>
+    <string name="spoof_engine_config_missing">COPG מותקן, אבל קובץ התצורה שלו (COPG.json) חסר. הגשת הבקשה נדחתה עד שהמודול יספק אותה שוב.</string>
+    <string name="spoof_engine_config_unreadable">COPG מותקן, אך קובץ התצורה שלו אינו קריא JSON. הגשת הבקשה נדחתה עד לתיקון הקובץ.</string>
+    <string name="spoof_imei_spoof">זיוף IMEI</string>
+    <string name="spoof_imei_spoof_desc">מראה לאפליקציה הזו IMEI שונה. צריך את מודול Max Manager מופעל ב-LSPosed עם אפליקציה זו בהיקפו. הפעל מחדש את האפליקציה לאחר הפעלתה.</string>
+    <string name="spoof_imei_active">מציג את האפליקציה הזו: %1$s</string>
+    <string name="spoof_imei_summary">זיוף IMEI</string>
+    <string name="spoof_imei_regenerate">IMEI אקראי חדש</string>
+    <string name="spoof_imei_regenerate_desc">יוצר IMEI חוקי אחר עבור אפליקציה זו. הפעל מחדש את האפליקציה כדי לראות אותה.</string>
+    <string name="spoof_imei_module_inactive">המודול Max Manager אינו מופעל ב-LSPosed, כך שאפליקציות עדיין רואות את ה-IMEI האמיתי. אפשר את המודול ב-LSPosed, הוסף את האפליקציה הזו להיקף שלה, ואז פתח מחדש את המסך הזה.</string>
 </resources>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_license_strings.xml -->
+<resources>
+    <string name="max_license_title">इजाजतपत्र</string>
+    <string name="max_license_subtitle">एउटा कुञ्जी, यो यन्त्र, कुनै खाता छैन</string>
+    <string name="max_license_help_body">एउटा कुञ्जी एक पटक अनलाइन जाँच गरिन्छ, जब तपाइँ यसलाई प्रविष्ट गर्नुहुन्छ। त्यसपछि सर्भरको हस्ताक्षर गरिएको प्रमाणपत्र अफलाइन काम गर्दछ जबसम्म यसको समय समाप्त हुँदैन - एपले प्रत्येक पटक तपाईंले स्क्रिन खोल्दा घरमा कल गर्दैन। प्रमाणपत्र यस यन्त्रको अनियमित स्थापना आईडीमा बाँधिएको छ, त्यसैले अर्को फोनमा एप डेटा प्रतिलिपि गर्दा इजाजतपत्र साथमा हुँदैन, र यदि तपाईंले फोनहरू परिवर्तन गर्नुभयो भने मालिकले प्यानलबाट त्यो बाइन्डिङ रिसेट गर्न सक्छ।</string>
+    <string name="max_license_status_section">स्थिति</string>
+    <string name="max_license_status_active">सक्रिय</string>
+    <string name="max_license_status_expired">म्याद सकियो</string>
+    <string name="max_license_status_none">सक्रिय गरिएको छैन</string>
+    <string name="max_license_active_detail">बाँकी: %1$d दिन</string>
+    <string name="max_license_expired_detail">यो कुञ्जीको समय सकियो। एउटा नयाँ कुञ्जीले पहुँच नवीकरण गर्दछ।</string>
+    <string name="max_license_none_detail">सशुल्क सतहहरू अनलक गर्न तपाईंले प्राप्त गर्नुभएको कुञ्जी प्रविष्ट गर्नुहोस्।</string>
+    <string name="max_license_promo_active">%1$s सम्म सबैका लागि निःशुल्क</string>
+    <string name="max_license_plan_title">योजना</string>
+    <string name="max_license_devices_title">यन्त्रहरू</string>
+    <string name="max_license_devices_detail">%2$d को %1$d प्रयोग गरियो</string>
+    <string name="max_license_device_id_title">यो यन्त्र</string>
+    <string name="max_license_device_id_detail">%1$s</string>
+    <string name="max_license_key_section">सक्रियता</string>
+    <string name="max_license_key_label">इजाजतपत्र कुञ्जी</string>
+    <string name="max_license_key_placeholder">MAXM-XXXXXX-XXXXXX-XXXXXX-XXXXXX-XXX</string>
+    <string name="max_license_key_helper">ड्यास र क्यापिटलाइजेसनले फरक पार्दैन - तपाईंले प्राप्त गरे अनुसार टाँस्नुहोस्।</string>
+    <string name="max_license_activate">सक्रिय गर्नुहोस्</string>
+    <string name="max_license_activating">कुञ्जी जाँच गर्दै...</string>
+    <string name="max_license_refresh">अहिले जाँच गर्नुहोस्</string>
+    <string name="max_license_activated">सक्रिय गरियो। यो यन्त्र अब तपाइँको कुञ्जीमा लिङ्क गरिएको छ।</string>
+    <string name="max_license_error_invalid_key">यो कुञ्जी पूर्ण देखिँदैन। यसलाई जाँच्नुहोस् र फेरि प्रयास गर्नुहोस्।</string>
+    <string name="max_license_error_not_configured">यो निर्माणमा कुनै लाइसेन्स सर्भर कन्फिगर गरिएको छैन।</string>
+    <string name="max_license_error_network">कुनै जडान छैन। कुञ्जी एक पटक जाँच गरिन्छ, त्यसपछि अफलाइन काम गर्दछ।</string>
+    <string name="max_license_error_timeout">लाइसेन्स सर्भरले समयमा जवाफ दिएन। पुन: प्रयास गर्नुहोस्।</string>
+    <string name="max_license_error_server">इजाजतपत्र सर्भरले त्रुटिको साथ जवाफ दियो। पछि फेरि प्रयास गर्नुहोस्।</string>
+    <string name="max_license_error_client">इजाजतपत्र प्रकार्य सर्भरमा तैनात गरिएको छैन।</string>
+    <string name="max_license_error_format">सर्भरको जवाफ बुझिएन।</string>
+    <string name="max_license_error_expired">यो कुञ्जीको म्याद सकिएको छ।</string>
+    <string name="max_license_error_not_found">यो कुञ्जी थाहा छैन।</string>
+    <string name="max_license_error_revoked">यो कुञ्जी खारेज गरिएको छ।</string>
+    <string name="max_license_error_device_limit">यो कुञ्जी यसको यन्त्र सीमामा पुगेको छ। यन्त्र रिसेटको लागि सोध्नुहोस्।</string>
+    <string name="max_license_error_device_unknown">यो यन्त्र अझै कुञ्जीसँग लिङ्क गरिएको छैन। यसलाई पहिले यहाँ सक्रिय गर्नुहोस्।</string>
+    <string name="max_license_error_device_removed">यो यन्त्र मालिकद्वारा कुञ्जीबाट हटाइयो।</string>
+    <string name="max_license_error_rate_limited">यस जडानबाट धेरै प्रयासहरू - केही मिनेट पर्खनुहोस्, त्यसपछि पुन: प्रयास गर्नुहोस्।</string>
+    <string name="max_license_error_unknown">केही गडबड भयो। कारण निदान मा रेकर्ड गरिएको थियो।</string>
+    <string name="max_license_gate_title">यो सतहलाई इजाजतपत्र चाहिन्छ</string>
+    <string name="max_license_gate_detail">यो एक कुञ्जी संग समावेश छ। एउटा कुञ्जीले यो यन्त्रलाई ढाक्छ, र यसलाई प्रविष्ट गर्न एक मिनेट लाग्छ।</string>
+    <string name="max_feature_off_title">बन्द गरियो</string>
+    <string name="max_feature_off_detail">नियन्त्रण प्यानलले यो सतह बन्द गरेको छ। यो पुन: सक्षम हुने बित्तिकै फिर्ता आउँछ।</string>
+    <string name="max_license_gate_action">लाइसेन्स सेटिङहरू खोल्नुहोस्</string>
+    <string name="max_license_gate_subscribe">अब सदस्यता लिनुहोस्</string>
+    <string name="max_license_subscription_section">सदस्यता</string>
+    <string name="max_license_subscription_open">सदस्यता पृष्ठ खोल्नुहोस्</string>
+</resources>

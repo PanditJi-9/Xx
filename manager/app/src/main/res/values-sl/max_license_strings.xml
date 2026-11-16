@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_license_strings.xml -->
+<resources>
+    <string name="max_license_title">Licenca</string>
+    <string name="max_license_subtitle">En ključ, ta naprava, brez računa</string>
+    <string name="max_license_help_body">Ključ se enkrat preveri na spletu, ko ga vnesete. Od takrat naprej podpisano potrdilo strežnika deluje brez povezave, dokler ne poteče čas — aplikacija ne pokliče domov vsakič, ko odprete zaslon. Potrdilo je vezano na naključni ID namestitve te naprave, zato kopiranje podatkov aplikacije v drug telefon ne nosi s seboj licence, lastnik pa lahko to vezavo ponastavi na plošči, če zamenjate telefon.</string>
+    <string name="max_license_status_section">Stanje</string>
+    <string name="max_license_status_active">Aktiven</string>
+    <string name="max_license_status_expired">potekel</string>
+    <string name="max_license_status_none">Ni aktivirano</string>
+    <string name="max_license_active_detail">Preostalo: %1$d dni</string>
+    <string name="max_license_expired_detail">Čas tega ključa je potekel. Nov ključ obnovi dostop.</string>
+    <string name="max_license_none_detail">Vnesite ključ, ki ste ga prejeli, da odklenete plačljive površine.</string>
+    <string name="max_license_promo_active">Brezplačno za vse do %1$s</string>
+    <string name="max_license_plan_title">Načrtujte</string>
+    <string name="max_license_devices_title">Naprave</string>
+    <string name="max_license_devices_detail">Uporabljeno %1$d od %2$d</string>
+    <string name="max_license_device_id_title">Ta naprava</string>
+    <string name="max_license_device_id_detail">%1$s</string>
+    <string name="max_license_key_section">Aktivacija</string>
+    <string name="max_license_key_label">Licenčni ključ</string>
+    <string name="max_license_key_placeholder">MAXM-XXXXX-XXXXX-XXXXX-XXXXX-XX</string>
+    <string name="max_license_key_helper">Pomišljaji in velike črke niso pomembni — prilepite tako, kot ste prejeli.</string>
+    <string name="max_license_activate">Aktiviraj</string>
+    <string name="max_license_activating">Preverjanje ključa ...</string>
+    <string name="max_license_refresh">Preverite zdaj</string>
+    <string name="max_license_activated">Aktivirano. Ta naprava je zdaj povezana z vašim ključem.</string>
+    <string name="max_license_error_invalid_key">Ta ključ ni videti popoln. Preverite in poskusite znova.</string>
+    <string name="max_license_error_not_configured">Ta zgradba nima konfiguriranega licenčnega strežnika.</string>
+    <string name="max_license_error_network">Brez povezave. Ključ se enkrat preveri, nato pa deluje brez povezave.</string>
+    <string name="max_license_error_timeout">Licenčni strežnik ni odgovoril pravočasno. poskusi ponovno</string>
+    <string name="max_license_error_server">Licenčni strežnik je odgovoril z napako. Poskusite znova pozneje.</string>
+    <string name="max_license_error_client">Funkcija licence ni nameščena na strežniku.</string>
+    <string name="max_license_error_format">Odgovor strežnika ni bil razumljen.</string>
+    <string name="max_license_error_expired">Ta ključ je potekel.</string>
+    <string name="max_license_error_not_found">Ta ključ ni znan.</string>
+    <string name="max_license_error_revoked">Ta ključ je bil preklican.</string>
+    <string name="max_license_error_device_limit">Ta ključ je dosegel omejitev naprave. Zahtevajte ponastavitev naprave.</string>
+    <string name="max_license_error_device_unknown">Ta naprava še ni povezana s ključem. Najprej ga aktivirajte tukaj.</string>
+    <string name="max_license_error_device_removed">To napravo je lastnik odstranil iz ključa.</string>
+    <string name="max_license_error_rate_limited">Preveč poskusov iz te povezave — počakajte nekaj minut in poskusite znova.</string>
+    <string name="max_license_error_unknown">Nekaj ​​je šlo narobe. Razlog je bil zabeležen v diagnostiki.</string>
+    <string name="max_license_gate_title">Ta površina potrebuje licenco</string>
+    <string name="max_license_gate_detail">Priložen je s ključem. Ena tipka pokriva to napravo in vnos traja minuto.</string>
+    <string name="max_feature_off_title">Izklopljeno</string>
+    <string name="max_feature_off_detail">Nadzorna plošča je izklopila to površino. Vrne se takoj, ko je znova omogočen.</string>
+    <string name="max_license_gate_action">Odprite nastavitve licence</string>
+    <string name="max_license_gate_subscribe">Naročite se zdaj</string>
+    <string name="max_license_subscription_section">Naročnina</string>
+    <string name="max_license_subscription_open">Odprite stran za naročnino</string>
+</resources>

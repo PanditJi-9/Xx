@@ -13,4 +13,23 @@
     <string name="max_expand_section">വിശദാംശങ്ങൾ കാണിക്കുക</string>
     <string name="max_collapse_section">വിശദാംശങ്ങൾ മറയ്ക്കുക</string>
     <string name="max_trust_loading">വായിക്കുന്നു...</string>
+    <string name="max_gov_title">ആരാണ് ഇപ്പോൾ ഭരിക്കുന്നത്</string>
+    <string name="max_gov_separator">" ›"</string>
+    <string name="max_gov_order_note">നിശ്ചിത ക്രമം: ഉയർന്ന റംഗ് താഴ്ന്നതിനെ തടയുന്നു. ഏത് നയമാണ് വിജയിച്ചതെന്നത് ഒരിക്കലും മാറ്റില്ല.</string>
+    <string name="max_gov_open_details">സജീവ ഉടമകൾ</string>
+    <string name="max_gov_active_title">ആർക്കാണ് നിയന്ത്രണം</string>
+    <string name="max_gov_none">ഒരു നയത്തിനും ഇപ്പോൾ ഹാർഡ്‌വെയർ നിയന്ത്രണം ഇല്ല.</string>
+    <string name="max_gov_count">സജീവ നിയന്ത്രണ പാട്ടങ്ങൾ: %1$d</string>
+    <string name="max_gov_requested">അഭ്യർത്ഥിച്ചത്: %1$s</string>
+    <string name="max_gov_owner_recovery">വീണ്ടെടുക്കൽ</string>
+    <string name="max_gov_owner_safety">താപ സുരക്ഷ</string>
+    <string name="max_gov_owner_per_app">ആപ്പ് പ്രൊഫൈൽ</string>
+    <string name="max_gov_owner_max_ai">Max AI</string>
+    <string name="max_gov_owner_global">ആഗോള പ്രൊഫൈൽ</string>
+    <string name="max_gov_owner_system">സിസ്റ്റം</string>
+    <string name="max_gov_owner_a11y">%1$s-ന് ഒരു ഹാർഡ്‌വെയർ നിയന്ത്രണം ഉണ്ട്</string>
+    <string name="max_gov_now_none">ഇപ്പോൾ സ്വയമേവയുള്ള ഉടമകളൊന്നുമില്ല - നിയന്ത്രണം നിങ്ങളുടേതായിരിക്കും</string>
+    <string name="max_gov_now_one">%1$s ഒരു നിയന്ത്രണം വഹിക്കുന്നു</string>
+    <string name="max_gov_now_many">%1$s %2$d നിയന്ത്രണങ്ങൾ ഉൾക്കൊള്ളുന്നു</string>
+    <string name="devinfo_details">വിശദാംശങ്ങൾ</string>
 </resources>

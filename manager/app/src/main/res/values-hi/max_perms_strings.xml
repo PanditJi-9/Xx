@@ -69,4 +69,25 @@
     <string name="max_perms_entry_title">अनुमतियाँ और ऐप संचालन</string>
     <string name="max_perms_entry_desc">देखें कि यह ऐप क्या घोषित करता है और सिस्टम वास्तव में क्या अनुमति देता है</string>
     <string name="max_perms_entry_action">अनुमतियाँ खोलें</string>
+    <string name="max_perms_manifest_title">प्रकट सारांश</string>
+    <string name="max_perms_manifest_desc">पैकेज मैनेजर से पढ़ें: संस्करण, एसडीके रेंज, घटक और उनमें से कितने निर्यात किए गए हैं। एक निर्यातित घटक को अन्य ऐप्स द्वारा प्रारंभ किया जा सकता है।</string>
+    <string name="max_perms_manifest_version">संस्करण</string>
+    <string name="max_perms_manifest_sdk">एसडीके रेंज</string>
+    <string name="max_perms_manifest_location">स्थान स्थापित करें</string>
+    <string name="max_perms_manifest_location_auto">स्वचालित</string>
+    <string name="max_perms_manifest_location_internal">केवल आंतरिक भंडारण</string>
+    <string name="max_perms_manifest_location_external">बाहरी पसंद करता है</string>
+    <string name="max_perms_manifest_components">अवयव</string>
+    <string name="max_perms_manifest_components_order">गतिविधियाँ · सेवाएँ · प्राप्तकर्ता · प्रदाता</string>
+    <string name="max_perms_manifest_exported">निर्यातित घटक</string>
+    <string name="max_perms_manifest_splits">स्प्लिट एपीके</string>
+    <string name="max_perms_manifest_debug">डीबग करने योग्य</string>
+    <string name="max_perms_features_title">घोषित विशेषताएं</string>
+    <string name="max_perms_features_desc">यह उपकरण जो विज्ञापित करता है उसकी तुलना में पैकेज को उपकरण से क्या चाहिए। यहां एक आवश्यक सुविधा गायब होने का आमतौर पर मतलब है कि ऐप पूरी तरह से काम नहीं करेगा - यह पैकेज मैनेजर का दावा है, अनुमान नहीं।</string>
+    <string name="max_perms_features_loading">पैकेज की घोषित विशेषताएं पढ़ रहा हूं...</string>
+    <string name="max_perms_features_none">पैकेज कोई आवश्यक सुविधाएँ नहीं होने की घोषणा करता है।</string>
+    <string name="max_perms_features_required">आवश्यक</string>
+    <string name="max_perms_features_unsupported">इस डिवाइस पर नहीं</string>
+    <string name="max_perms_manifest_none">पैकेज मैनेजर द्वारा रिपोर्ट नहीं की गई।</string>
+    <string name="max_perms_manifest_unknown">अज्ञात</string>
 </resources>

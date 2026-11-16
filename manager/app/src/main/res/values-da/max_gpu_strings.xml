@@ -99,4 +99,12 @@
     <string name="max_gpu_saved_desc">Gemt fra en tidligere lagring og anvendt på hver boot: %1$s. Standarden ovenfor afslutter kun denne session, aldrig den gemte tilstand.</string>
     <string name="max_gpu_dynamic_min">Minimum · dynamisk</string>
     <string name="max_gpu_dynamic_max">Maksimal · dynamisk</string>
+    <string name="max_gpu_monitor_only_detail">De eneste grafikknuder, som denne kerne afslører, er båndbredde- og QoS-monitorer: de har intet GPU-ur, så der er ingen frekvens at indstille. Kontrol forbliver slukket i stedet for at skrive en hukommelsesregulator, som om det var GPU.</string>
+    <string name="max_gpu_danger_title">Skrive GPU grænser?</string>
+    <string name="max_gpu_danger_body">Dette skriver grafikfrekvensvinduet og regulatoren ind i GPU noderne. Et vindue, som føreren afviser, eller en guvernør, der ikke kan følge med, kan hakke hele grænsefladen eller fryse panelet. Appen registrerer, at du har accepteret dette én gang - ansvaret for de værdier, du anvender, er dit.</string>
+    <string name="max_gpu_danger_action">Jeg forstår - ansøg</string>
+    <string name="max_gpu_state_title">Tid i staten</string>
+    <string name="max_gpu_state_desc">Hvor GPU\'s tid rent faktisk gik, tællet af kernen pr. driftsfrekvens — ikke et øjebliksbillede af det aktuelle ur.</string>
+    <string name="max_gpu_state_hidden_share">%1$s sammen</string>
+    <string name="max_gpu_state_hidden">%1$d stater under 1 %%</string>
 </resources>

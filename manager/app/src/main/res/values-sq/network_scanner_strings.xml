@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/network_scanner_strings.xml -->
+<resources>
+    <string name="network_scanner_title">Skaneri i rrjetit lokal</string>
+    <string name="network_scanner_subtitle">Adresa juaj, porta ku arrin dhe cila u përgjigj fqinjët.</string>
+    <string name="max_role_network_scanner">Lexon rrjetin në të cilin jeni - pa kapje, pa rrënjë.</string>
+    <string name="ns_no_network">Asnjë rrjet nuk është i lidhur.</string>
+    <string name="ns_interface">Ndërfaqja</string>
+    <string name="ns_address">Adresa</string>
+    <string name="ns_gateway">Porta</string>
+    <string name="ns_dns">DNS</string>
+    <string name="ns_mac">MAC</string>
+    <string name="ns_transport_wifi">Wi-Fi</string>
+    <string name="ns_transport_ethernet">Ethernet</string>
+    <string name="ns_transport_cellular">Qelizore</string>
+    <string name="ns_transport_other">Të tjera</string>
+    <string name="ns_sources_title">Nga vjen kjo</string>
+    <string name="ns_sources_body">Adresat dhe porta lexohen nga vetitë e lidhjes së platformës. Tabela fqinje lexohet nga cache ARP e kernelit, kështu që ajo mban vetëm atë me të cilën kjo pajisje ka folur së fundi — një tabelë bosh nuk do të thotë një rrjet bosh.</string>
+    <string name="ns_refresh">Rifresko</string>
+    <string name="ns_probe">Zbuloni portet e zakonshme</string>
+    <string name="ns_probe_stop">Ndalo</string>
+    <string name="ns_probe_progress">Hetimi %1$d nga %2$d</string>
+    <string name="ns_probe_note">Dërgon një lidhje TCP në portat 22, 80, 443, 5000 dhe 5555 në këtë /24. Raportohet një port që përgjigjet; heshtja nuk është provë që një mikpritës mungon.</string>
+    <string name="ns_neighbours">Fqinjët e njohur</string>
+    <string name="ns_neighbours_note">Nga /proc/net/arp — vetëm për lexim.</string>
+    <string name="ns_neighbours_empty">Nuk dihet ende asnjë fqinj.</string>
+    <string name="ns_ports_value">Portet %1$s</string>
+</resources>

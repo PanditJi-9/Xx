@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_update_strings.xml -->
+<resources>
+    <string name="update_dialog_title">Kemas kini tersedia</string>
+    <string name="update_dialog_title_required">Kemas kini diperlukan</string>
+    <string name="update_required_notice">Kemas kini ini diperlukan untuk terus menggunakan MaxManager. Pasangnya, kemudian buka semula apl itu.</string>
+    <string name="update_dialog_body">Versi %1$s tersedia. Anda berada di %2$s.</string>
+    <string name="update_block_title">Kemas kini diperlukan untuk meneruskan</string>
+    <string name="update_block_body">Binaan ini (%1$s) tidak lagi disokong. Kemas kini kepada %2$s untuk terus menggunakan MaxManager.</string>
+    <string name="update_block_body_no_release">Binaan ini (%1$s) tidak lagi disokong.</string>
+    <string name="update_release_notes_label">Apa yang baharu</string>
+    <string name="update_size">Saiz muat turun: %1$s</string>
+    <string name="update_button_now">Kemas kini sekarang</string>
+    <string name="update_button_later">Nanti</string>
+    <string name="update_button_close">tutup</string>
+    <string name="update_button_open_page">Buka halaman muat turun</string>
+    <string name="update_state_downloading">Memuat turun… %1$d%%</string>
+    <string name="update_state_downloading_unknown">Memuat turun…</string>
+    <string name="update_state_installing">Memasang…</string>
+    <string name="update_error_network">Tidak dapat mencapai pelayan kemas kini. Semak sambungan anda dan cuba lagi.</string>
+    <string name="update_error_http">Pelayan kemas kini menjawab dengan ralat. Cuba lagi nanti.</string>
+    <string name="update_error_format">Maklumat kemas kini tidak dapat dibaca.</string>
+    <string name="update_error_too_large">Maklumat kemas kini adalah lebih besar daripada jangkaan dan telah dibuang.</string>
+    <string name="update_error_integrity">Fail yang dimuat turun tidak sepadan dengan jumlah semaknya dan telah dipadamkan.</string>
+    <string name="update_error_install">Pemasangan gagal. Cuba lagi.</string>
+    <string name="update_error_not_configured">Tiada saluran kemas kini dikonfigurasikan dalam binaan ini.</string>
+    <string name="update_maintenance_title">Tidak tersedia buat sementara waktu</string>
+    <string name="update_maintenance_body">MaxManager tidak tersedia buat sementara waktu. Sila cuba sebentar lagi.</string>
+    <string name="update_check_title">Semak kemas kini</string>
+    <string name="update_check_supporting">Versi semasa: %1$s</string>
+    <string name="update_check_updated">Kemas kini tersedia.</string>
+    <string name="update_check_uptodate">Anda menggunakan versi terkini.</string>
+    <string name="update_check_failed">Tidak dapat menyemak kemas kini.</string>
+    <string name="update_check_not_configured">Tiada saluran kemas kini dikonfigurasikan dalam binaan ini.</string>
+    <string name="update_released_label">Tarikh keluaran: %1$s</string>
+    <string name="update_check_none_published">Tiada kemas kini telah diterbitkan daripada panel kawalan lagi.</string>
+    <string name="update_check_link_missing">Kemas kini diterbitkan, tetapi pautan muat turunnya tiada.</string>
+</resources>

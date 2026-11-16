@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_update_strings.xml -->
+<resources>
+    <string name="update_dialog_title">Налична актуализация</string>
+    <string name="update_dialog_title_required">Изисква се актуализация</string>
+    <string name="update_required_notice">Тази актуализация е необходима, за да продължите да използвате MaxManager. Инсталирайте го, след което отворете отново приложението.</string>
+    <string name="update_dialog_body">Налична е версия %1$s. Вие сте на %2$s.</string>
+    <string name="update_block_title">Необходима е актуализация, за да продължите</string>
+    <string name="update_block_body">Тази компилация (%1$s) вече не се поддържа. Актуализирайте до %2$s, за да продължите да използвате MaxManager.</string>
+    <string name="update_block_body_no_release">Тази компилация (%1$s) вече не се поддържа.</string>
+    <string name="update_release_notes_label">Какво ново</string>
+    <string name="update_size">Размер за изтегляне: %1$s</string>
+    <string name="update_button_now">Актуализирайте сега</string>
+    <string name="update_button_later">по-късно</string>
+    <string name="update_button_close">затвори</string>
+    <string name="update_button_open_page">Отворете страницата за изтегляне</string>
+    <string name="update_state_downloading">Изтегля се... %1$d%%</string>
+    <string name="update_state_downloading_unknown">Изтегля се...</string>
+    <string name="update_state_installing">Инсталиране...</string>
+    <string name="update_error_network">Не можа да се достигне до сървъра за актуализиране. Проверете връзката си и опитайте отново.</string>
+    <string name="update_error_http">Сървърът за актуализиране отговори с грешка. Опитайте отново по-късно.</string>
+    <string name="update_error_format">Информацията за актуализацията не можа да бъде прочетена.</string>
+    <string name="update_error_too_large">Информацията за актуализацията беше по-голяма от очакваното и беше отхвърлена.</string>
+    <string name="update_error_integrity">Изтегленият файл не съответства на контролната си сума и беше изтрит.</string>
+    <string name="update_error_install">Инсталирането е неуспешно. Опитайте отново.</string>
+    <string name="update_error_not_configured">В тази компилация не е конфигуриран канал за актуализиране.</string>
+    <string name="update_maintenance_title">Временно недостъпен</string>
+    <string name="update_maintenance_body">MaxManager временно не е наличен. Моля, опитайте отново след малко.</string>
+    <string name="update_check_title">Проверете за актуализации</string>
+    <string name="update_check_supporting">Текуща версия: %1$s</string>
+    <string name="update_check_updated">Налична е актуализация.</string>
+    <string name="update_check_uptodate">Вие сте на най-новата версия.</string>
+    <string name="update_check_failed">Не можах да проверя за актуализации.</string>
+    <string name="update_check_not_configured">В тази компилация не е конфигуриран канал за актуализиране.</string>
+    <string name="update_released_label">Дата на издаване: %1$s</string>
+    <string name="update_check_none_published">Все още не е публикувана актуализация от контролния панел.</string>
+    <string name="update_check_link_missing">Публикувана е актуализация, но връзката за изтегляне липсва.</string>
+</resources>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/manifest_inspector_strings.xml -->
+<resources>
+    <string name="manifest_inspector_title">ප්රකාශන පරීක්ෂක</string>
+    <string name="manifest_inspector_subtitle">ස්ථාපිත යෙදුමක් තමන් ගැන ප්‍රකාශ කරන්නේ කුමක්ද, PackageManager වෙතින් කියවන්න.</string>
+    <string name="max_role_manifest_inspector">පැකේජයක් තමන් ගැන ප්‍රකාශ කරන දේ පෙන්වයි — කියවීමට පමණි.</string>
+    <string name="mi_search">යෙදුම් සොයන්න</string>
+    <string name="mi_empty">වම් පැත්තේ යෙදුමක් තෝරන්න.</string>
+    <string name="mi_yes">ඔව්</string>
+    <string name="mi_no">නැත</string>
+    <string name="mi_section_identity">පැකේජය</string>
+    <string name="mi_version">අනුවාදය</string>
+    <string name="mi_version_code">අනුවාද කේතය</string>
+    <string name="mi_min_sdk">අවම SDK</string>
+    <string name="mi_target_sdk">ඉලක්ක SDK</string>
+    <string name="mi_installed">ස්ථාපනය කර ඇත</string>
+    <string name="mi_updated">යාවත්කාලීන කරන ලදී</string>
+    <string name="mi_installer">ස්ථාපකය</string>
+    <string name="mi_uid">UID</string>
+    <string name="mi_data_dir">දත්ත නාමාවලිය</string>
+    <string name="mi_debuggable">නිදොස් කළ හැකි</string>
+    <string name="mi_system_app">පද්ධති යෙදුම</string>
+    <string name="mi_enabled">සබල කර ඇත</string>
+    <string name="mi_section_permissions">අවසර ඉල්ලා ඇත</string>
+    <string name="mi_permissions_summary">%1$d අවසර · %2$d ඒවායින් භයානකයි</string>
+    <string name="mi_permissions_none">මෙම යෙදුම කිසිදු අවසරයක් ඉල්ලන්නේ නැත.</string>
+    <string name="mi_perm_dangerous">භයානකයි</string>
+    <string name="mi_perm_signature">අත්සන</string>
+    <string name="mi_perm_normal">සාමාන්යයි</string>
+    <string name="mi_perm_unknown">වර්ගීකරණය නොකළ</string>
+    <string name="mi_section_components">සංරචක</string>
+    <string name="mi_activities">ක්රියාකාරකම්</string>
+    <string name="mi_services">සේවා</string>
+    <string name="mi_receivers">ග්රාහකයින්</string>
+    <string name="mi_providers">සපයන්නන්</string>
+    <string name="mi_components_none">කිසිවෙක් ප්‍රකාශ කළේ නැත</string>
+    <string name="mi_section_features">උපාංග විශේෂාංග</string>
+    <string name="mi_features_note">වේදිකාව වෙනත් යෙදුමක භාවිත විශේෂාංග ලැයිස්තුව හෙළි නොකරයි; මෙම උපාංගය වාර්තා කරන විශේෂාංග මේවාය.</string>
+    <string name="mi_features_none">කිසිදු විශේෂාංගයක් වාර්තා වී නැත</string>
+    <string name="mi_section_signature">අත්සන් කිරීමේ සහතිකය</string>
+    <string name="mi_signature_note">අත්සන් කිරීමේ සහතිකයේ SHA-256. එකම වටිනාකමක් ඇති බිල්ඩ් දෙකක් එකම ප්‍රකාශකයා වේ.</string>
+    <string name="mi_signature_sha256">සහතික පත්‍රය</string>
+</resources>

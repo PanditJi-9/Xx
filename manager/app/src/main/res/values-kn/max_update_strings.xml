@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_update_strings.xml -->
+<resources>
+    <string name="update_dialog_title">ನವೀಕರಣ ಲಭ್ಯವಿದೆ</string>
+    <string name="update_dialog_title_required">ನವೀಕರಣದ ಅಗತ್ಯವಿದೆ</string>
+    <string name="update_required_notice">MaxManager ಬಳಸುವುದನ್ನು ಮುಂದುವರಿಸಲು ಈ ನವೀಕರಣದ ಅಗತ್ಯವಿದೆ. ಅದನ್ನು ಸ್ಥಾಪಿಸಿ, ನಂತರ ಅಪ್ಲಿಕೇಶನ್ ಅನ್ನು ಮತ್ತೆ ತೆರೆಯಿರಿ.</string>
+    <string name="update_dialog_body">ಆವೃತ್ತಿ %1$s ಲಭ್ಯವಿದೆ. ನೀವು %2$sನಲ್ಲಿದ್ದೀರಿ.</string>
+    <string name="update_block_title">ಮುಂದುವರಿಸಲು ಅಪ್‌ಡೇಟ್ ಅಗತ್ಯವಿದೆ</string>
+    <string name="update_block_body">ಈ ನಿರ್ಮಾಣ (%1$s) ಇನ್ನು ಮುಂದೆ ಬೆಂಬಲಿಸುವುದಿಲ್ಲ. MaxManager ಬಳಸುವುದನ್ನು ಮುಂದುವರಿಸಲು %2$s ಗೆ ನವೀಕರಿಸಿ.</string>
+    <string name="update_block_body_no_release">ಈ ನಿರ್ಮಾಣ (%1$s) ಇನ್ನು ಮುಂದೆ ಬೆಂಬಲಿಸುವುದಿಲ್ಲ.</string>
+    <string name="update_release_notes_label">ಹೊಸದೇನಿದೆ</string>
+    <string name="update_size">ಡೌನ್‌ಲೋಡ್ ಗಾತ್ರ: %1$s</string>
+    <string name="update_button_now">ಈಗ ನವೀಕರಿಸಿ</string>
+    <string name="update_button_later">ನಂತರ</string>
+    <string name="update_button_close">ಮುಚ್ಚಿ</string>
+    <string name="update_button_open_page">ಡೌನ್‌ಲೋಡ್ ಪುಟವನ್ನು ತೆರೆಯಿರಿ</string>
+    <string name="update_state_downloading">ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ... %1$d%%</string>
+    <string name="update_state_downloading_unknown">ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</string>
+    <string name="update_state_installing">ಸ್ಥಾಪಿಸಲಾಗುತ್ತಿದೆ...</string>
+    <string name="update_error_network">ನವೀಕರಣ ಸರ್ವರ್ ಅನ್ನು ತಲುಪಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ನಿಮ್ಮ ಸಂಪರ್ಕವನ್ನು ಪರಿಶೀಲಿಸಿ ಹಾಗೂ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</string>
+    <string name="update_error_http">ನವೀಕರಣ ಸರ್ವರ್ ದೋಷದೊಂದಿಗೆ ಉತ್ತರಿಸಿದೆ. ನಂತರ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</string>
+    <string name="update_error_format">ನವೀಕರಣ ಮಾಹಿತಿಯನ್ನು ಓದಲಾಗಲಿಲ್ಲ.</string>
+    <string name="update_error_too_large">ನವೀಕರಣದ ಮಾಹಿತಿಯು ನಿರೀಕ್ಷೆಗಿಂತ ದೊಡ್ಡದಾಗಿದೆ ಮತ್ತು ತಿರಸ್ಕರಿಸಲಾಗಿದೆ.</string>
+    <string name="update_error_integrity">ಡೌನ್‌ಲೋಡ್ ಮಾಡಿದ ಫೈಲ್ ಅದರ ಚೆಕ್‌ಸಮ್‌ಗೆ ಹೊಂದಿಕೆಯಾಗಲಿಲ್ಲ ಮತ್ತು ಅಳಿಸಲಾಗಿದೆ.</string>
+    <string name="update_error_install">ಅನುಸ್ಥಾಪನೆಯು ವಿಫಲವಾಗಿದೆ. ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</string>
+    <string name="update_error_not_configured">ಈ ನಿರ್ಮಾಣದಲ್ಲಿ ಯಾವುದೇ ನವೀಕರಣ ಚಾನಲ್ ಅನ್ನು ಕಾನ್ಫಿಗರ್ ಮಾಡಲಾಗಿಲ್ಲ.</string>
+    <string name="update_maintenance_title">ತಾತ್ಕಾಲಿಕವಾಗಿ ಲಭ್ಯವಿಲ್ಲ</string>
+    <string name="update_maintenance_body">MaxManager ತಾತ್ಕಾಲಿಕವಾಗಿ ಲಭ್ಯವಿಲ್ಲ. ದಯವಿಟ್ಟು ಸ್ವಲ್ಪ ಸಮಯದ ನಂತರ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</string>
+    <string name="update_check_title">ನವೀಕರಣಗಳಿಗಾಗಿ ಪರಿಶೀಲಿಸಿ</string>
+    <string name="update_check_supporting">ಪ್ರಸ್ತುತ ಆವೃತ್ತಿ: %1$s</string>
+    <string name="update_check_updated">ನವೀಕರಣ ಲಭ್ಯವಿದೆ.</string>
+    <string name="update_check_uptodate">ನೀವು ಇತ್ತೀಚಿನ ಆವೃತ್ತಿಯಲ್ಲಿರುವಿರಿ.</string>
+    <string name="update_check_failed">ನವೀಕರಣಗಳಿಗಾಗಿ ಪರಿಶೀಲಿಸಲಾಗಲಿಲ್ಲ.</string>
+    <string name="update_check_not_configured">ಈ ನಿರ್ಮಾಣದಲ್ಲಿ ಯಾವುದೇ ನವೀಕರಣ ಚಾನಲ್ ಅನ್ನು ಕಾನ್ಫಿಗರ್ ಮಾಡಲಾಗಿಲ್ಲ.</string>
+    <string name="update_released_label">ಬಿಡುಗಡೆ ದಿನಾಂಕ: %1$s</string>
+    <string name="update_check_none_published">ನಿಯಂತ್ರಣ ಫಲಕದಿಂದ ಇನ್ನೂ ಯಾವುದೇ ನವೀಕರಣವನ್ನು ಪ್ರಕಟಿಸಲಾಗಿಲ್ಲ.</string>
+    <string name="update_check_link_missing">ನವೀಕರಣವನ್ನು ಪ್ರಕಟಿಸಲಾಗಿದೆ, ಆದರೆ ಅದರ ಡೌನ್‌ಲೋಡ್ ಲಿಂಕ್ ಕಾಣೆಯಾಗಿದೆ.</string>
+</resources>

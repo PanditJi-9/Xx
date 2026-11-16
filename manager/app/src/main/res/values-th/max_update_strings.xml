@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_update_strings.xml -->
+<resources>
+    <string name="update_dialog_title">อัปเดตพร้อมใช้งาน</string>
+    <string name="update_dialog_title_required">จำเป็นต้องอัปเดต</string>
+    <string name="update_required_notice">จำเป็นต้องมีการอัปเดตนี้เพื่อใช้ MaxManager ต่อไป ติดตั้งแล้วเปิดแอปอีกครั้ง</string>
+    <string name="update_dialog_body">มีเวอร์ชัน %1$s ให้ใช้งาน คุณอยู่ที่ %2$s</string>
+    <string name="update_block_title">จำเป็นต้องอัปเดตเพื่อดำเนินการต่อ</string>
+    <string name="update_block_body">ไม่รองรับบิลด์นี้ (%1$s) อีกต่อไป อัปเดตเป็น %2$s เพื่อใช้งาน MaxManager ต่อไป</string>
+    <string name="update_block_body_no_release">ไม่รองรับบิลด์นี้ (%1$s) อีกต่อไป</string>
+    <string name="update_release_notes_label">มีอะไรใหม่</string>
+    <string name="update_size">ขนาดการดาวน์โหลด: %1$s</string>
+    <string name="update_button_now">อัปเดตตอนนี้</string>
+    <string name="update_button_later">ภายหลัง</string>
+    <string name="update_button_close">ปิด</string>
+    <string name="update_button_open_page">เปิดหน้าดาวน์โหลด</string>
+    <string name="update_state_downloading">กำลังดาวน์โหลด… %1$d%%</string>
+    <string name="update_state_downloading_unknown">กำลังดาวน์โหลด...</string>
+    <string name="update_state_installing">กำลังติดตั้ง...</string>
+    <string name="update_error_network">ไม่สามารถเข้าถึงเซิร์ฟเวอร์การอัพเดต ตรวจสอบการเชื่อมต่อของคุณแล้วลองอีกครั้ง</string>
+    <string name="update_error_http">เซิร์ฟเวอร์การอัพเดตตอบกลับโดยมีข้อผิดพลาด ลองอีกครั้งในภายหลัง</string>
+    <string name="update_error_format">ไม่สามารถอ่านข้อมูลการอัพเดตได้</string>
+    <string name="update_error_too_large">ข้อมูลการอัปเดตมีขนาดใหญ่กว่าที่คาดไว้และถูกยกเลิก</string>
+    <string name="update_error_integrity">ไฟล์ที่ดาวน์โหลดไม่ตรงกับผลรวมตรวจสอบและถูกลบไปแล้ว</string>
+    <string name="update_error_install">การติดตั้งล้มเหลว ลองอีกครั้ง</string>
+    <string name="update_error_not_configured">ไม่มีการกำหนดค่าช่องทางการอัปเดตในรุ่นนี้</string>
+    <string name="update_maintenance_title">ไม่สามารถใช้งานได้ชั่วคราว</string>
+    <string name="update_maintenance_body">MaxManager ไม่สามารถใช้งานได้ชั่วคราว โปรดลองอีกครั้งในอีกสักครู่</string>
+    <string name="update_check_title">ตรวจสอบการอัปเดต</string>
+    <string name="update_check_supporting">เวอร์ชันปัจจุบัน: %1$s</string>
+    <string name="update_check_updated">มีการอัปเดตให้ใช้งาน</string>
+    <string name="update_check_uptodate">คุณอยู่ในเวอร์ชันล่าสุด</string>
+    <string name="update_check_failed">ไม่สามารถตรวจสอบการอัปเดตได้</string>
+    <string name="update_check_not_configured">ไม่มีการกำหนดค่าช่องทางการอัปเดตในรุ่นนี้</string>
+    <string name="update_released_label">วันที่วางจำหน่าย: %1$s</string>
+    <string name="update_check_none_published">ยังไม่มีการเผยแพร่การอัปเดตจากแผงควบคุม</string>
+    <string name="update_check_link_missing">มีการเผยแพร่การอัปเดตแล้ว แต่ลิงก์ดาวน์โหลดหายไป</string>
+</resources>

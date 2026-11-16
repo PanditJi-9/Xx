@@ -99,4 +99,12 @@
     <string name="max_gpu_saved_desc">پہلے کی بچت سے رکھا گیا اور ہر بوٹ پر لاگو کیا گیا: %1$s۔ اوپر ڈیفالٹ صرف اس سیشن کو ختم کرتا ہے، کبھی بھی محفوظ شدہ حالت نہیں۔</string>
     <string name="max_gpu_dynamic_min">کم از کم · متحرک</string>
     <string name="max_gpu_dynamic_max">زیادہ سے زیادہ · متحرک</string>
+    <string name="max_gpu_monitor_only_detail">صرف گرافکس نوڈس جن کو یہ دانا بے نقاب کرتا ہے وہ بینڈوتھ اور QoS مانیٹر ہیں: ان میں کوئی GPU گھڑی نہیں ہے، لہذا سیٹ کرنے کے لیے کوئی فریکوئنسی نہیں ہے۔ میموری گورنر لکھنے کے بجائے کنٹرول بند رہتا ہے گویا یہ GPU ہے۔</string>
+    <string name="max_gpu_danger_title">GPU حدود لکھیں؟</string>
+    <string name="max_gpu_danger_body">یہ گرافکس فریکوئنسی ونڈو اور گورنر کو GPU نوڈس میں لکھتا ہے۔ ایک ونڈو جسے ڈرائیور مسترد کرتا ہے، یا ایک گورنر جو برقرار نہیں رہ سکتا، پورے انٹرفیس کو روک سکتا ہے یا پینل کو منجمد کر سکتا ہے۔ ایپ ریکارڈ کرتی ہے کہ آپ نے اسے ایک بار قبول کیا — جو اقدار آپ لاگو کرتے ہیں ان کی ذمہ داری آپ کی ہے۔</string>
+    <string name="max_gpu_danger_action">میں سمجھتا ہوں - درخواست دیں۔</string>
+    <string name="max_gpu_state_title">حالت میں وقت</string>
+    <string name="max_gpu_state_desc">جہاں GPU\ کا وقت درحقیقت چلا گیا، فی آپریٹنگ فریکوئنسی کرنل کے ذریعہ شمار کیا گیا — موجودہ گھڑی کا سنیپ شاٹ نہیں۔</string>
+    <string name="max_gpu_state_hidden_share">%1$s ایک ساتھ</string>
+    <string name="max_gpu_state_hidden">%1$d 1%% سے کم ریاستیں</string>
 </resources>

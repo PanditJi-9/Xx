@@ -69,4 +69,25 @@
     <string name="max_perms_entry_title">اجازتیں اور ایپ آپریشنز</string>
     <string name="max_perms_entry_desc">دیکھیں کہ یہ ایپ کیا اعلان کرتی ہے اور سسٹم اصل میں کیا اجازت دیتا ہے۔</string>
     <string name="max_perms_entry_action">اجازتیں کھولیں۔</string>
+    <string name="max_perms_manifest_title">واضح خلاصہ</string>
+    <string name="max_perms_manifest_desc">پیکیج مینیجر سے پڑھیں: ورژن، SDK رینج، اجزاء اور ان میں سے کتنے برآمد کیے گئے ہیں۔ ایک برآمد شدہ جزو دیگر ایپس کے ذریعہ شروع کیا جاسکتا ہے۔</string>
+    <string name="max_perms_manifest_version">ورژن</string>
+    <string name="max_perms_manifest_sdk">SDK رینج</string>
+    <string name="max_perms_manifest_location">مقام انسٹال کریں۔</string>
+    <string name="max_perms_manifest_location_auto">خودکار</string>
+    <string name="max_perms_manifest_location_internal">صرف اندرونی اسٹوریج</string>
+    <string name="max_perms_manifest_location_external">بیرونی کو ترجیح دیتا ہے۔</string>
+    <string name="max_perms_manifest_components">اجزاء</string>
+    <string name="max_perms_manifest_components_order">سرگرمیاں · خدمات · وصول کنندگان · فراہم کنندگان</string>
+    <string name="max_perms_manifest_exported">برآمد شدہ اجزاء</string>
+    <string name="max_perms_manifest_splits">APKs تقسیم کریں۔</string>
+    <string name="max_perms_manifest_debug">ڈیبگ ایبل</string>
+    <string name="max_perms_features_title">اعلان کردہ خصوصیات</string>
+    <string name="max_perms_features_desc">یہ آلہ جس چیز کی تشہیر کرتا ہے اس کے مقابلے میں پیکیج کو ڈیوائس سے کیا درکار ہے۔ یہاں ایک مطلوبہ خصوصیت غائب ہونے کا عام طور پر مطلب ہے کہ ایپ پوری طرح کام نہیں کرے گی — یہ پیکیج مینیجر کا دعویٰ ہے، اندازہ نہیں۔</string>
+    <string name="max_perms_features_loading">پیکیج کی اعلان کردہ خصوصیات کو پڑھنا…</string>
+    <string name="max_perms_features_none">پیکیج کسی مطلوبہ خصوصیات کا اعلان نہیں کرتا ہے۔</string>
+    <string name="max_perms_features_required">درکار ہے۔</string>
+    <string name="max_perms_features_unsupported">اس ڈیوائس پر نہیں۔</string>
+    <string name="max_perms_manifest_none">پیکیج مینیجر کے ذریعہ اطلاع نہیں دی گئی۔</string>
+    <string name="max_perms_manifest_unknown">نامعلوم</string>
 </resources>

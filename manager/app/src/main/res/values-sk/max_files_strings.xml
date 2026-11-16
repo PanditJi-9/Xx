@@ -220,4 +220,5 @@
     <string name="max_files_compress_level_normal">Normálne</string>
     <string name="max_files_compress_level_max">Max</string>
     <string name="max_files_compress_summary">%1$d položiek \u2192 %2$s</string>
+    <string name="max_files_history_more">%1$d staršie priečinky sa nezobrazujú</string>
 </resources>

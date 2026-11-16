@@ -99,4 +99,12 @@
     <string name="max_gpu_saved_desc">Behouden van een eerdere opslag en toegepast bij elke keer opstarten: %1$s. Standaard hierboven beëindigt alleen deze sessie, nooit de opgeslagen status.</string>
     <string name="max_gpu_dynamic_min">Minimaal · dynamisch</string>
     <string name="max_gpu_dynamic_max">Maximaal · dynamisch</string>
+    <string name="max_gpu_monitor_only_detail">De enige grafische knooppunten die deze kernel blootlegt zijn bandbreedte- en QoS-monitors: ze hebben geen GPU klok, dus er valt geen frequentie in te stellen. De besturing blijft uitgeschakeld in plaats van een geheugenregelaar te schrijven alsof het de GPU is.</string>
+    <string name="max_gpu_danger_title">GPU limieten schrijven?</string>
+    <string name="max_gpu_danger_body">Dit schrijft het grafische frequentievenster en de gouverneur naar de GPU knooppunten. Een raam dat de bestuurder afwijst, of een regelaar die het niet bij kan houden, kan de hele interface laten stotteren of het paneel bevriezen. De app registreert dat je dit een keer hebt geaccepteerd; de verantwoordelijkheid voor de waarden die je toepast ligt bij jou.</string>
+    <string name="max_gpu_danger_action">Ik begrijp het - solliciteer</string>
+    <string name="max_gpu_state_title">Tijd in staat</string>
+    <string name="max_gpu_state_desc">Waar de tijd van de GPU feitelijk naartoe ging, geteld door de kernel per werkfrequentie - geen momentopname van de huidige klok.</string>
+    <string name="max_gpu_state_hidden_share">%1$s samen</string>
+    <string name="max_gpu_state_hidden">%1$d staten onder 1%%</string>
 </resources>

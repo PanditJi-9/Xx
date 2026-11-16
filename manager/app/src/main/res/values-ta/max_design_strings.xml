@@ -13,4 +13,23 @@
     <string name="max_expand_section">விவரங்களைக் காட்டு</string>
     <string name="max_collapse_section">விவரங்களை மறை</string>
     <string name="max_trust_loading">படிக்கிறது…</string>
+    <string name="max_gov_title">இப்போது யார் ஆட்சி செய்கிறார்கள்</string>
+    <string name="max_gov_separator">" ›"</string>
+    <string name="max_gov_order_note">நிலையான வரிசை: உயரமான வரிசை குறைந்த ஒன்றைத் தடுக்கிறது. எந்தக் கொள்கை வென்றாலும் அது மாறாது.</string>
+    <string name="max_gov_open_details">செயலில் வைத்திருப்பவர்கள்</string>
+    <string name="max_gov_active_title">யார் கட்டுப்பாட்டை வைத்திருக்கிறார்கள்</string>
+    <string name="max_gov_none">எந்தக் கொள்கையும் தற்போது வன்பொருள் கட்டுப்பாட்டை வைத்திருக்கவில்லை.</string>
+    <string name="max_gov_count">செயலில் கட்டுப்பாடு குத்தகைகள்: %1$d</string>
+    <string name="max_gov_requested">கோரப்பட்டது: %1$s</string>
+    <string name="max_gov_owner_recovery">மீட்பு</string>
+    <string name="max_gov_owner_safety">வெப்ப பாதுகாப்பு</string>
+    <string name="max_gov_owner_per_app">பயன்பாட்டு சுயவிவரம்</string>
+    <string name="max_gov_owner_max_ai">Max AI</string>
+    <string name="max_gov_owner_global">உலகளாவிய சுயவிவரம்</string>
+    <string name="max_gov_owner_system">அமைப்பு</string>
+    <string name="max_gov_owner_a11y">%1$s ஒரு வன்பொருள் கட்டுப்பாட்டைக் கொண்டுள்ளது</string>
+    <string name="max_gov_now_none">இப்போது தானியங்கு உரிமையாளர் இல்லை - கட்டுப்பாடு உங்களுடையது</string>
+    <string name="max_gov_now_one">%1$s ஒரு கட்டுப்பாட்டைக் கொண்டுள்ளது</string>
+    <string name="max_gov_now_many">%1$s %2$d கட்டுப்பாடுகளைக் கொண்டுள்ளது</string>
+    <string name="devinfo_details">விவரங்கள்</string>
 </resources>

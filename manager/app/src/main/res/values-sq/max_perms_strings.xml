@@ -69,4 +69,25 @@
     <string name="max_perms_entry_title">Lejet dhe funksionet e aplikacioneve</string>
     <string name="max_perms_entry_desc">Shikoni se çfarë deklaron ky aplikacion dhe çfarë lejon sistemi në të vërtetë</string>
     <string name="max_perms_entry_action">Hapni lejet</string>
+    <string name="max_perms_manifest_title">Përmbledhja e manifestit</string>
+    <string name="max_perms_manifest_desc">Lexoni nga menaxheri i paketave: versioni, diapazoni i SDK-së, komponentët dhe sa prej tyre eksportohen. Një komponent i eksportuar mund të niset nga aplikacione të tjera.</string>
+    <string name="max_perms_manifest_version">Versioni</string>
+    <string name="max_perms_manifest_sdk">Gama e SDK-së</string>
+    <string name="max_perms_manifest_location">Vendndodhja e instalimit</string>
+    <string name="max_perms_manifest_location_auto">Automatik</string>
+    <string name="max_perms_manifest_location_internal">Vetëm ruajtja e brendshme</string>
+    <string name="max_perms_manifest_location_external">Preferon të jashtëm</string>
+    <string name="max_perms_manifest_components">Komponentët</string>
+    <string name="max_perms_manifest_components_order">aktivitete · shërbime · marrës · ofrues</string>
+    <string name="max_perms_manifest_exported">Komponentët e eksportuar</string>
+    <string name="max_perms_manifest_splits">Ndani APK-të</string>
+    <string name="max_perms_manifest_debug">E korrigjueshme</string>
+    <string name="max_perms_features_title">Karakteristikat e deklaruara</string>
+    <string name="max_perms_features_desc">Çfarë kërkon paketa nga pajisja, krahasuar me atë që reklamon kjo pajisje. Një veçori e kërkuar që mungon këtu zakonisht do të thotë që aplikacioni nuk do të funksionojë plotësisht - është një pretendim nga menaxheri i paketave, jo një supozim.</string>
+    <string name="max_perms_features_loading">Duke lexuar veçoritë e deklaruara të paketës…</string>
+    <string name="max_perms_features_none">Paketa nuk deklaron veçori të kërkuara.</string>
+    <string name="max_perms_features_required">E detyrueshme</string>
+    <string name="max_perms_features_unsupported">Jo në këtë pajisje</string>
+    <string name="max_perms_manifest_none">Nuk raportohet nga menaxheri i paketës.</string>
+    <string name="max_perms_manifest_unknown">E panjohur</string>
 </resources>

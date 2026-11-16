@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_license_strings.xml -->
+<resources>
+    <string name="max_license_title">Lizenz</string>
+    <string name="max_license_subtitle">Ein Schlüssel, dieses Gerät, kein Konto</string>
+    <string name="max_license_help_body">Ein Schlüssel wird einmal online überprüft, wenn Sie ihn eingeben. Von da an funktioniert das signierte Zertifikat des Servers offline, bis die Zeit abgelaufen ist – die App ruft nicht jedes Mal auf, wenn Sie einen Bildschirm öffnen. Das Zertifikat ist an die zufällige Installations-ID dieses Geräts gebunden, sodass beim Kopieren der App-Daten auf ein anderes Telefon die Lizenz nicht mitgeführt wird und der Besitzer diese Bindung über das Bedienfeld zurücksetzen kann, wenn Sie das Telefon wechseln.</string>
+    <string name="max_license_status_section">Status</string>
+    <string name="max_license_status_active">Aktiv</string>
+    <string name="max_license_status_expired">Abgelaufen</string>
+    <string name="max_license_status_none">Nicht aktiviert</string>
+    <string name="max_license_active_detail">Verbleibend: %1$d Tage</string>
+    <string name="max_license_expired_detail">Die Zeit dieses Schlüssels ist abgelaufen. Ein neuer Schlüssel erneuert den Zugang.</string>
+    <string name="max_license_none_detail">Geben Sie den Schlüssel ein, den Sie erhalten haben, um die kostenpflichtigen Oberflächen freizuschalten.</string>
+    <string name="max_license_promo_active">Kostenlos für alle bis %1$s</string>
+    <string name="max_license_plan_title">Planen</string>
+    <string name="max_license_devices_title">Geräte</string>
+    <string name="max_license_devices_detail">%1$d von %2$d verwendet</string>
+    <string name="max_license_device_id_title">Dieses Gerät</string>
+    <string name="max_license_device_id_detail">%1$s</string>
+    <string name="max_license_key_section">Aktivierung</string>
+    <string name="max_license_key_label">Lizenzschlüssel</string>
+    <string name="max_license_key_placeholder">MAXM-XXXXX-XXXXX-XXXXX-XXXXX-XX</string>
+    <string name="max_license_key_helper">Bindestriche und Groß-/Kleinschreibung spielen keine Rolle – fügen Sie es so ein, wie Sie es erhalten haben.</string>
+    <string name="max_license_activate">Aktivieren</string>
+    <string name="max_license_activating">Überprüfung des Schlüssels…</string>
+    <string name="max_license_refresh">Jetzt prüfen</string>
+    <string name="max_license_activated">Aktiviert. Dieses Gerät ist nun mit Ihrem Schlüssel verknüpft.</string>
+    <string name="max_license_error_invalid_key">Dieser Schlüssel sieht nicht vollständig aus. Überprüfen Sie es und versuchen Sie es erneut.</string>
+    <string name="max_license_error_not_configured">Für diesen Build ist kein Lizenzserver konfiguriert.</string>
+    <string name="max_license_error_network">Keine Verbindung. Der Schlüssel wird einmal überprüft und funktioniert dann offline.</string>
+    <string name="max_license_error_timeout">Der Lizenzserver hat nicht rechtzeitig geantwortet. Versuchen Sie es erneut.</string>
+    <string name="max_license_error_server">Der Lizenzserver hat mit einem Fehler geantwortet. Versuchen Sie es später noch einmal.</string>
+    <string name="max_license_error_client">Die Lizenzfunktion ist nicht auf dem Server bereitgestellt.</string>
+    <string name="max_license_error_format">Die Serverantwort wurde nicht verstanden.</string>
+    <string name="max_license_error_expired">Dieser Schlüssel ist abgelaufen.</string>
+    <string name="max_license_error_not_found">Dieser Schlüssel ist nicht bekannt.</string>
+    <string name="max_license_error_revoked">Dieser Schlüssel wurde widerrufen.</string>
+    <string name="max_license_error_device_limit">Dieser Schlüssel hat sein Gerätelimit erreicht. Fordern Sie einen Geräte-Reset an.</string>
+    <string name="max_license_error_device_unknown">Dieses Gerät ist noch nicht mit dem Schlüssel verknüpft. Aktivieren Sie es zunächst hier.</string>
+    <string name="max_license_error_device_removed">Dieses Gerät wurde vom Besitzer vom Schlüssel entfernt.</string>
+    <string name="max_license_error_rate_limited">Zu viele Versuche von dieser Verbindung – warten Sie ein paar Minuten und versuchen Sie es dann erneut.</string>
+    <string name="max_license_error_unknown">Etwas ist schief gelaufen. Der Grund wurde in der Diagnose erfasst.</string>
+    <string name="max_license_gate_title">Für diese Oberfläche ist eine Lizenz erforderlich</string>
+    <string name="max_license_gate_detail">Im Lieferumfang ist ein Schlüssel enthalten. Ein Schlüssel deckt dieses Gerät ab und die Eingabe dauert eine Minute.</string>
+    <string name="max_feature_off_title">Ausgeschaltet</string>
+    <string name="max_feature_off_detail">Das Bedienfeld hat diese Oberfläche ausgeschaltet. Es kommt wieder, sobald es wieder aktiviert wird.</string>
+    <string name="max_license_gate_action">Öffnen Sie die Lizenzeinstellungen</string>
+    <string name="max_license_gate_subscribe">Jetzt abonnieren</string>
+    <string name="max_license_subscription_section">Abonnement</string>
+    <string name="max_license_subscription_open">Öffnen Sie die Abonnementseite</string>
+</resources>

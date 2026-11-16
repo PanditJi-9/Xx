@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_update_strings.xml -->
+<resources>
+    <string name="update_dialog_title">Eguneratzea eskuragarri</string>
+    <string name="update_dialog_title_required">Eguneratzea beharrezkoa da</string>
+    <string name="update_required_notice">Eguneratze hau beharrezkoa da MaxManager erabiltzen jarraitzeko. Instalatu eta, ondoren, berriro ireki aplikazioa.</string>
+    <string name="update_dialog_body">%1$s bertsioa eskuragarri dago. %2$sn zaude.</string>
+    <string name="update_block_title">Eguneratzea beharrezkoa da jarraitzeko</string>
+    <string name="update_block_body">Eraikuntza hau (%1$s) jada ez da onartzen. Eguneratu %2$s-ra MaxManager erabiltzen jarraitzeko.</string>
+    <string name="update_block_body_no_release">Eraikuntza hau (%1$s) jada ez da onartzen.</string>
+    <string name="update_release_notes_label">Zer berri</string>
+    <string name="update_size">Deskargaren tamaina: %1$s</string>
+    <string name="update_button_now">Eguneratu orain</string>
+    <string name="update_button_later">Geroago</string>
+    <string name="update_button_close">Itxi</string>
+    <string name="update_button_open_page">Ireki deskarga orria</string>
+    <string name="update_state_downloading">Deskargatzen… %1$d%%</string>
+    <string name="update_state_downloading_unknown">Deskargatzen…</string>
+    <string name="update_state_installing">Instalatzen…</string>
+    <string name="update_error_network">Ezin izan da eguneratze-zerbitzarira iritsi. Egiaztatu konexioa eta saiatu berriro.</string>
+    <string name="update_error_http">Eguneratze zerbitzariak errore batekin erantzun du. Saiatu berriro geroago.</string>
+    <string name="update_error_format">Ezin izan da eguneratze-informazioa irakurri.</string>
+    <string name="update_error_too_large">Eguneratze-informazioa espero baino handiagoa izan da eta baztertu egin da.</string>
+    <string name="update_error_integrity">Deskargatutako fitxategia ez dator bat bere kontrol batura eta ezabatu egin da.</string>
+    <string name="update_error_install">Instalazioak huts egin du. Saiatu berriro.</string>
+    <string name="update_error_not_configured">Ez dago eguneratze kanalik konfiguratuta konfigurazio honetan.</string>
+    <string name="update_maintenance_title">Aldi baterako ez dago erabilgarri</string>
+    <string name="update_maintenance_body">MaxManager aldi baterako ez dago erabilgarri. Saiatu berriro laster.</string>
+    <string name="update_check_title">Egiaztatu eguneratzeak</string>
+    <string name="update_check_supporting">Uneko bertsioa: %1$s</string>
+    <string name="update_check_updated">Eguneratze bat eskuragarri dago.</string>
+    <string name="update_check_uptodate">Azken bertsioan zaude.</string>
+    <string name="update_check_failed">Ezin izan dira egiaztatu eguneratzeak.</string>
+    <string name="update_check_not_configured">Ez dago eguneratze kanalik konfiguratuta konfigurazio honetan.</string>
+    <string name="update_released_label">Argitaratze data: %1$s</string>
+    <string name="update_check_none_published">Oraindik ez da eguneratzerik argitaratu kontrol paneletik.</string>
+    <string name="update_check_link_missing">Eguneratze bat argitaratu da, baina deskargatzeko esteka falta da.</string>
+</resources>

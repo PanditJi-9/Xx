@@ -13,4 +13,23 @@
     <string name="max_expand_section">Rodyti detales</string>
     <string name="max_collapse_section">Slėpti detales</string>
     <string name="max_trust_loading">Skaitoma…</string>
+    <string name="max_gov_title">Kas dabar valdo</string>
+    <string name="max_gov_separator">"›"</string>
+    <string name="max_gov_order_note">Fiksuota tvarka: aukštesnė pakopa blokuoja žemesnę. Niekada nesikeičia, kuri politika laimi.</string>
+    <string name="max_gov_open_details">Aktyvūs laikikliai</string>
+    <string name="max_gov_active_title">Kas valdo</string>
+    <string name="max_gov_none">Šiuo metu jokia politika neturi aparatinės įrangos valdymo.</string>
+    <string name="max_gov_count">Aktyviosios kontrolės nuomos sutartys: %1$d</string>
+    <string name="max_gov_requested">Paprašyta: %1$s</string>
+    <string name="max_gov_owner_recovery">Atsigavimas</string>
+    <string name="max_gov_owner_safety">Šiluminė sauga</string>
+    <string name="max_gov_owner_per_app">Programėlės profilis</string>
+    <string name="max_gov_owner_max_ai">Max AI</string>
+    <string name="max_gov_owner_global">Pasaulinis profilis</string>
+    <string name="max_gov_owner_system">Sistema</string>
+    <string name="max_gov_owner_a11y">%1$s turi aparatinės įrangos valdiklį</string>
+    <string name="max_gov_now_none">Šiuo metu nėra automatinio savininko – valdymas lieka jūsų</string>
+    <string name="max_gov_now_one">%1$s turi valdiklį</string>
+    <string name="max_gov_now_many">%1$s turi %2$d valdiklius</string>
+    <string name="devinfo_details">Detalės</string>
 </resources>

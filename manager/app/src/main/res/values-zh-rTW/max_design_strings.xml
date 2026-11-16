@@ -13,4 +13,23 @@
     <string name="max_expand_section">顯示詳情</string>
     <string name="max_collapse_section">隱藏詳細訊息</string>
     <string name="max_trust_loading">阅读…</string>
+    <string name="max_gov_title">现在谁统治</string>
+    <string name="max_gov_separator">“>”</string>
+    <string name="max_gov_order_note">固定顺序：较高的梯级阻挡较低的梯级。哪种政策获胜永远不会改变。</string>
+    <string name="max_gov_open_details">活跃持有者</string>
+    <string name="max_gov_active_title">谁掌握控制权</string>
+    <string name="max_gov_none">目前没有策略拥有硬件控制。</string>
+    <string name="max_gov_count">主动控制租赁：%1$d</string>
+    <string name="max_gov_requested">要求：%1$s</string>
+    <string name="max_gov_owner_recovery">恢复</string>
+    <string name="max_gov_owner_safety">热安全性</string>
+    <string name="max_gov_owner_per_app">应用程序简介</string>
+    <string name="max_gov_owner_max_ai">Max AI</string>
+    <string name="max_gov_owner_global">全球概况</string>
+    <string name="max_gov_owner_system">系统</string>
+    <string name="max_gov_owner_a11y">%1$s 拥有硬件控制</string>
+    <string name="max_gov_now_none">目前没有自动所有者 - 控制权仍属于您</string>
+    <string name="max_gov_now_one">%1$s 持有一个控件</string>
+    <string name="max_gov_now_many">%1$s 持有%2$d 控制</string>
+    <string name="devinfo_details">细节</string>
 </resources>

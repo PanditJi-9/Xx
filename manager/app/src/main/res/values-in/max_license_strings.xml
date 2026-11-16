@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_license_strings.xml -->
+<resources>
+    <string name="max_license_title">Lisensi</string>
+    <string name="max_license_subtitle">Satu kunci, perangkat ini, tanpa akun</string>
+    <string name="max_license_help_body">Kunci diperiksa secara online satu kali, saat Anda memasukkannya. Sejak saat itu, sertifikat yang ditandatangani server berfungsi offline hingga waktunya habis — aplikasi tidak menelepon ke rumah setiap kali Anda membuka layar. Sertifikat terikat pada id pemasangan acak perangkat ini, jadi menyalin data aplikasi ke ponsel lain tidak membawa lisensinya, dan pemilik dapat menyetel ulang pengikatan tersebut dari panel jika Anda mengganti ponsel.</string>
+    <string name="max_license_status_section">Status</string>
+    <string name="max_license_status_active">Aktif</string>
+    <string name="max_license_status_expired">Kedaluwarsa</string>
+    <string name="max_license_status_none">Tidak diaktifkan</string>
+    <string name="max_license_active_detail">Sisa: %1$d hari</string>
+    <string name="max_license_expired_detail">Waktu kunci ini telah berakhir. Kunci baru memperbarui akses.</string>
+    <string name="max_license_none_detail">Masukkan kunci yang Anda terima untuk membuka kunci permukaan berbayar.</string>
+    <string name="max_license_promo_active">Gratis untuk semua orang hingga %1$s</string>
+    <string name="max_license_plan_title">Rencana</string>
+    <string name="max_license_devices_title">Perangkat</string>
+    <string name="max_license_devices_detail">%1$d dari %2$d digunakan</string>
+    <string name="max_license_device_id_title">Perangkat ini</string>
+    <string name="max_license_device_id_detail">%1$s</string>
+    <string name="max_license_key_section">Pengaktifan</string>
+    <string name="max_license_key_label">Kunci lisensi</string>
+    <string name="max_license_key_placeholder">MAXM-XXXXX-XXXXX-XXXXX-XXXXX-XX</string>
+    <string name="max_license_key_helper">Tanda hubung dan huruf besar tidak menjadi masalah — tempelkan saat Anda menerimanya.</string>
+    <string name="max_license_activate">Mengaktifkan</string>
+    <string name="max_license_activating">Memeriksa kunci…</string>
+    <string name="max_license_refresh">Periksa sekarang</string>
+    <string name="max_license_activated">Diaktifkan. Perangkat ini sekarang ditautkan ke kunci Anda.</string>
+    <string name="max_license_error_invalid_key">Kunci ini tampaknya tidak lengkap. Periksa dan coba lagi.</string>
+    <string name="max_license_error_not_configured">Build ini tidak memiliki server lisensi yang dikonfigurasi.</string>
+    <string name="max_license_error_network">Tidak ada koneksi. Kuncinya dicentang satu kali, lalu berfungsi offline.</string>
+    <string name="max_license_error_timeout">Server lisensi tidak menjawab tepat waktu. Coba lagi.</string>
+    <string name="max_license_error_server">Server lisensi menjawab dengan kesalahan. Coba lagi nanti.</string>
+    <string name="max_license_error_client">Fungsi lisensi tidak diterapkan di server.</string>
+    <string name="max_license_error_format">Jawaban server tidak dimengerti.</string>
+    <string name="max_license_error_expired">Kunci ini telah kedaluwarsa.</string>
+    <string name="max_license_error_not_found">Kunci ini tidak diketahui.</string>
+    <string name="max_license_error_revoked">Kunci ini telah dicabut.</string>
+    <string name="max_license_error_device_limit">Kunci ini telah mencapai batas perangkatnya. Minta reset perangkat.</string>
+    <string name="max_license_error_device_unknown">Perangkat ini belum tertaut ke kunci. Aktifkan dulu di sini.</string>
+    <string name="max_license_error_device_removed">Perangkat ini telah dihapus dari kuncinya oleh pemiliknya.</string>
+    <string name="max_license_error_rate_limited">Terlalu banyak upaya dari koneksi ini — tunggu beberapa menit, lalu coba lagi.</string>
+    <string name="max_license_error_unknown">Ada yang tidak beres. Alasannya tercatat di Diagnostik.</string>
+    <string name="max_license_gate_title">Permukaan ini memerlukan lisensi</string>
+    <string name="max_license_gate_detail">Itu disertakan dengan kunci. Satu kunci menutupi perangkat ini, dan perlu waktu satu menit untuk memasukkannya.</string>
+    <string name="max_feature_off_title">Mati</string>
+    <string name="max_feature_off_detail">Panel kontrol telah mematikan permukaan ini. Itu muncul kembali segera setelah diaktifkan kembali.</string>
+    <string name="max_license_gate_action">Buka pengaturan lisensi</string>
+    <string name="max_license_gate_subscribe">Berlangganan sekarang</string>
+    <string name="max_license_subscription_section">Berlangganan</string>
+    <string name="max_license_subscription_open">Buka halaman berlangganan</string>
+</resources>

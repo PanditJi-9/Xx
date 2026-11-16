@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_license_strings.xml -->
+<resources>
+    <string name="max_license_title">လိုင်စင်</string>
+    <string name="max_license_subtitle">သော့တစ်ခု၊ ဤစက်ပစ္စည်း၊ အကောင့်မရှိပါ။</string>
+    <string name="max_license_help_body">သင်ထည့်သွင်းသည့်အခါ သော့ကို အွန်လိုင်းတွင် တစ်ကြိမ်စစ်ဆေးသည်။ ထိုအချိန်မှစ၍ ဆာဗာ၏လက်မှတ်ထိုးထားသော လက်မှတ်တွင် အချိန်ကုန်သွားသည်အထိ အော့ဖ်လိုင်းအလုပ်လုပ်သည် — အက်ပ်သည် သင်စခရင်ကိုဖွင့်တိုင်း အိမ်သို့မခေါ်ပါ။ လက်မှတ်သည် ဤစက်ပစ္စည်း၏ ကျပန်းထည့်သွင်းမှု id နှင့် ချည်နှောင်ထားသောကြောင့် အက်ပ်ဒေတာကို အခြားဖုန်းသို့ ကူးယူခြင်းသည် ၎င်းနှင့်အတူ လိုင်စင်ကို သယ်ဆောင်သွားခြင်းမရှိသည့်အပြင် ဖုန်းများကို ပြောင်းလဲပါက ပိုင်ရှင်သည် အဆိုပါချိတ်ဆက်မှုကို အကန့်မှ ပြန်လည်သတ်မှတ်နိုင်ပါသည်။</string>
+    <string name="max_license_status_section">အဆင့်အတန်း</string>
+    <string name="max_license_status_active">လှုပ်လှုပ်ရှားရှား</string>
+    <string name="max_license_status_expired">သက်တမ်းကုန်သွားပြီ</string>
+    <string name="max_license_status_none">အသက်မဝင်ပါ။</string>
+    <string name="max_license_active_detail">လက်ကျန်- %1$d ရက်များ</string>
+    <string name="max_license_expired_detail">ဤသော့၏အချိန်ကုန်ပြီ။ သော့အသစ်ဝင်ရောက်ခွင့်ကို သက်တမ်းတိုးသည်။</string>
+    <string name="max_license_none_detail">အခပေးမျက်နှာပြင်များကိုသော့ဖွင့်ရန် သင်လက်ခံရရှိသောသော့ကိုထည့်ပါ။</string>
+    <string name="max_license_promo_active">%1$sအထိ လူတိုင်းအတွက် အခမဲ့</string>
+    <string name="max_license_plan_title">အစီအစဉ်</string>
+    <string name="max_license_devices_title">စက်များ</string>
+    <string name="max_license_devices_detail">%1$d ၏ %2$d သုံးသည်။</string>
+    <string name="max_license_device_id_title">ဒီကိရိယာ</string>
+    <string name="max_license_device_id_detail">%1$s</string>
+    <string name="max_license_key_section">အသက်သွင်းခြင်း။</string>
+    <string name="max_license_key_label">လိုင်စင်ကီး</string>
+    <string name="max_license_key_placeholder">MAXM-XXXXX-XXXXX-XXXXX-XXXXX-XX</string>
+    <string name="max_license_key_helper">ဒက်ရှ်များနှင့် စာလုံးကြီးများသည် အရေးမကြီးပါ — သင်ရရှိထားသည့်အတိုင်း ၎င်းကို ကူးထည့်ပါ။</string>
+    <string name="max_license_activate">အသက်သွင်းပါ။</string>
+    <string name="max_license_activating">သော့ကို စစ်ဆေးနေသည်...</string>
+    <string name="max_license_refresh">ယခုစစ်ဆေးပါ။</string>
+    <string name="max_license_activated">ရပါပြီ။ ဤစက်ပစ္စည်းကို ယခု သင့်သော့နှင့် ချိတ်ဆက်ထားသည်။</string>
+    <string name="max_license_error_invalid_key">ဤသော့သည် ပြီးပြည့်စုံပုံမပေါ်ပါ။ စစ်ဆေးပြီး ထပ်စမ်းကြည့်ပါ။</string>
+    <string name="max_license_error_not_configured">ဤတည်ဆောက်မှုတွင် ပြင်ဆင်သတ်မှတ်ထားသော လိုင်စင်ဆာဗာမရှိပါ။</string>
+    <string name="max_license_error_network">ချိတ်ဆက်မှု မရှိပါ။ သော့ကို တစ်ကြိမ်စစ်ဆေးပြီးနောက် အော့ဖ်လိုင်းအလုပ်လုပ်သည်။</string>
+    <string name="max_license_error_timeout">လိုင်စင်ဆာဗာသည် အချိန်မီ အဖြေမပေးခဲ့ပါ။ ထပ်ကြိုးစားပါ။</string>
+    <string name="max_license_error_server">လိုင်စင်ဆာဗာသည် အမှားတစ်ခုဖြင့် အဖြေပေးခဲ့သည်။ နောက်မှ ထပ်စမ်းကြည့်ပါ။</string>
+    <string name="max_license_error_client">လိုင်စင်လုပ်ဆောင်ချက်ကို ဆာဗာပေါ်တွင် အသုံးမပြုပါ။</string>
+    <string name="max_license_error_format">ဆာဗာ၏အဖြေကို နားမလည်ခဲ့ပါ။</string>
+    <string name="max_license_error_expired">ဤသော့ သက်တမ်းကုန်သွားပါပြီ။</string>
+    <string name="max_license_error_not_found">ဤသော့ကို မသိပါ။</string>
+    <string name="max_license_error_revoked">ဤသော့ကို ရုပ်သိမ်းလိုက်ပါပြီ။</string>
+    <string name="max_license_error_device_limit">ဤကီးသည် ၎င်း၏စက်ပစ္စည်းကန့်သတ်ချက်သို့ ရောက်ရှိသွားပါပြီ။ စက်ပစ္စည်းကို ပြန်လည်သတ်မှတ်ရန် တောင်းဆိုပါ။</string>
+    <string name="max_license_error_device_unknown">ဤစက်ပစ္စည်းသည် သော့နှင့် မချိတ်ဆက်ရသေးပါ။ ဤနေရာတွင် ဦးစွာအသက်သွင်းပါ။</string>
+    <string name="max_license_error_device_removed">ဤစက်ပစ္စည်းကို ပိုင်ရှင်က သော့မှဖယ်ရှားခဲ့သည်။</string>
+    <string name="max_license_error_rate_limited">ဤချိတ်ဆက်မှုမှ ကြိုးစားမှု များလွန်းသည် — မိနစ်အနည်းငယ်စောင့်ပါ၊ ထို့နောက် ထပ်စမ်းကြည့်ပါ။</string>
+    <string name="max_license_error_unknown">တစ်ခုခုမှားသွားသည်။ အကြောင်းရင်းကို Diagnostics တွင် မှတ်တမ်းတင်ထားသည်။</string>
+    <string name="max_license_gate_title">ဤမျက်နှာပြင်သည် လိုင်စင်လိုအပ်သည်။</string>
+    <string name="max_license_gate_detail">သော့တစ်ခုပါ၀င်ပါတယ်။ သော့တစ်ခုသည် ဤစက်ပစ္စည်းကို ဖုံးအုပ်ထားပြီး ဝင်ရောက်ရန် တစ်မိနစ်ခန့် ကြာသည်။</string>
+    <string name="max_feature_off_title">ပိတ်ထားသည်။</string>
+    <string name="max_feature_off_detail">ထိန်းချုပ်အကန့်သည် ဤမျက်နှာပြင်ကို ပိတ်ထားသည်။ ပြန်ဖွင့်ပြီးတာနဲ့ ပြန်ပေါ်လာပါတယ်။</string>
+    <string name="max_license_gate_action">လိုင်စင်ဆက်တင်များကို ဖွင့်ပါ။</string>
+    <string name="max_license_gate_subscribe">ယခု စာရင်းသွင်းလိုက်ပါ။</string>
+    <string name="max_license_subscription_section">စာရင်းသွင်းပါ။</string>
+    <string name="max_license_subscription_open">စာရင်းသွင်းမှုစာမျက်နှာကိုဖွင့်ပါ။</string>
+</resources>

@@ -18,4 +18,10 @@
     <string name="max_cfg_section_appearance">ਦਿੱਖ ਅਤੇ ਇੰਟਰਫੇਸ</string>
     <string name="max_cfg_section_app_prefs">ਐਪ ਤਰਜੀਹਾਂ ਅਤੇ ਭਾਸ਼ਾ</string>
     <string name="max_cfg_restore_merge_note">ਰੀਸਟੋਰਿੰਗ ਪ੍ਰੈਫਰੈਂਸ ਮਰਜ: ਫਾਈਲ ਵਿੱਚ ਮੌਜੂਦ ਕੁੰਜੀਆਂ ਲਿਖੀਆਂ ਜਾਂਦੀਆਂ ਹਨ, ਅਤੇ ਕੁੰਜੀਆਂ ਇਸ ਵਿੱਚ ਰਹਿਣ ਦਾ ਜ਼ਿਕਰ ਨਹੀਂ ਕਰਦੀਆਂ ਜਿਵੇਂ ਉਹ ਹਨ। ਕੁਝ ਵੀ ਸਾਫ਼ ਨਹੀਂ ਹੁੰਦਾ।</string>
+    <string name="max_cfg_diff_title">%1$d ਰੱਖਿਅਤ ਕੀਤੀਆਂ ਸੈਟਿੰਗਾਂ ਇਸ ਡੀਵਾਈਸ ਤੋਂ ਵੱਖਰੀਆਂ ਹਨ</string>
+    <string name="max_cfg_diff_line">%1$s: %2$s → %3$s</string>
+    <string name="max_cfg_diff_unset">ਸੈੱਟ ਨਹੀਂ</string>
+    <string name="max_cfg_diff_more">ਅਤੇ %1$d ਹੋਰ</string>
+    <string name="max_cfg_diff_applist">%1$d ਐਪ-ਸੂਚੀ ਦੀਆਂ ਲਾਈਨਾਂ ਜੋੜੀਆਂ ਗਈਆਂ, %2$d ਹਟਾਈਆਂ ਗਈਆਂ — ਪੂਰੀ ਸੂਚੀ ਬਦਲੀ ਗਈ ਹੈ, ਵਿਲੀਨ ਨਹੀਂ ਕੀਤੀ ਗਈ।</string>
+    <string name="max_cfg_diff_prefs">%1$d ਤਰਜੀਹ ਕੁੰਜੀਆਂ ਵੱਖਰੀਆਂ ਹਨ — ਵਿਲੀਨ ਕੀਤੀਆਂ ਗਈਆਂ, ਮਿਟਾਈਆਂ ਨਹੀਂ ਗਈਆਂ।</string>
 </resources>

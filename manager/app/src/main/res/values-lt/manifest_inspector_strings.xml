@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/manifest_inspector_strings.xml -->
+<resources>
+    <string name="manifest_inspector_title">Manifesto inspektorius</string>
+    <string name="manifest_inspector_subtitle">Ką apie save deklaruoja įdiegta programa, skaitykite PackageManager.</string>
+    <string name="max_role_manifest_inspector">Rodo, ką apie save deklaruoja paketas – tik skaitoma.</string>
+    <string name="mi_search">Ieškoti programų</string>
+    <string name="mi_empty">Kairėje pasirinkite programą.</string>
+    <string name="mi_yes">Taip</string>
+    <string name="mi_no">Nr</string>
+    <string name="mi_section_identity">Paketas</string>
+    <string name="mi_version">Versija</string>
+    <string name="mi_version_code">Versijos kodas</string>
+    <string name="mi_min_sdk">Minimalus SDK</string>
+    <string name="mi_target_sdk">Tikslinis SDK</string>
+    <string name="mi_installed">Įdiegta</string>
+    <string name="mi_updated">Atnaujinta</string>
+    <string name="mi_installer">Montuotojas</string>
+    <string name="mi_uid">UID</string>
+    <string name="mi_data_dir">Duomenų katalogas</string>
+    <string name="mi_debuggable">Derinamas</string>
+    <string name="mi_system_app">Sistemos programa</string>
+    <string name="mi_enabled">Įjungta</string>
+    <string name="mi_section_permissions">Prašė leidimų</string>
+    <string name="mi_permissions_summary">%1$d leidimai · %2$d iš jų pavojingi</string>
+    <string name="mi_permissions_none">Ši programa neprašo leidimo.</string>
+    <string name="mi_perm_dangerous">Pavojinga</string>
+    <string name="mi_perm_signature">Parašas</string>
+    <string name="mi_perm_normal">Normalus</string>
+    <string name="mi_perm_unknown">Neklasifikuotas</string>
+    <string name="mi_section_components">Komponentai</string>
+    <string name="mi_activities">Veikla</string>
+    <string name="mi_services">Paslaugos</string>
+    <string name="mi_receivers">Imtuvai</string>
+    <string name="mi_providers">Teikėjai</string>
+    <string name="mi_components_none">Nė vienas nebuvo deklaruotas</string>
+    <string name="mi_section_features">Įrenginio savybės</string>
+    <string name="mi_features_note">Platforma neatskleidžia kitos programos naudojimo funkcijų sąrašo; Tai yra šio įrenginio funkcijos.</string>
+    <string name="mi_features_none">Nėra pranešta apie funkciją</string>
+    <string name="mi_section_signature">Pasirašyti sertifikatą</string>
+    <string name="mi_signature_note">SHA-256 pasirašymo sertifikatą. Dvi versijos su ta pačia verte yra to paties leidėjo.</string>
+    <string name="mi_signature_sha256">Sertifikato santrauka</string>
+</resources>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_license_strings.xml -->
+<resources>
+    <string name="max_license_title">Litsents</string>
+    <string name="max_license_subtitle">Üks võti, see seade, konto puudub</string>
+    <string name="max_license_help_body">Võtit kontrollitakse võrgus üks kord selle sisestamisel. Edaspidi töötab serveri allkirjastatud sertifikaat võrguühenduseta, kuni selle aeg otsa saab – rakendus ei helista iga kord, kui avate ekraani, koju. Sertifikaat on seotud selle seadme juhusliku installi ID-ga, nii et rakenduse andmete kopeerimisel teise telefoni ei ole litsentsi kaasas ja omanik saab telefoni vahetamisel selle sidumise paneelilt lähtestada.</string>
+    <string name="max_license_status_section">Olek</string>
+    <string name="max_license_status_active">Aktiivne</string>
+    <string name="max_license_status_expired">Aegunud</string>
+    <string name="max_license_status_none">Pole aktiveeritud</string>
+    <string name="max_license_active_detail">Järelejäänud: %1$d päeva</string>
+    <string name="max_license_expired_detail">Selle võtme aeg on möödas. Uus võti uuendab juurdepääsu.</string>
+    <string name="max_license_none_detail">Tasuliste pindade avamiseks sisestage saadud võti.</string>
+    <string name="max_license_promo_active">Tasuta kõigile kuni %1$s</string>
+    <string name="max_license_plan_title">Plaan</string>
+    <string name="max_license_devices_title">Seadmed</string>
+    <string name="max_license_devices_detail">%1$d / %2$d kasutatud</string>
+    <string name="max_license_device_id_title">See seade</string>
+    <string name="max_license_device_id_detail">%1$s</string>
+    <string name="max_license_key_section">Aktiveerimine</string>
+    <string name="max_license_key_label">Litsentsi võti</string>
+    <string name="max_license_key_placeholder">MAXM-XXXXX-XXXXX-XXXXX-XXXXX-XX</string>
+    <string name="max_license_key_helper">Kriipsud ja suurtähtede kasutamine ei oma tähtsust – kleepige see nii, nagu saite.</string>
+    <string name="max_license_activate">Aktiveerige</string>
+    <string name="max_license_activating">Võtme kontrollimine…</string>
+    <string name="max_license_refresh">Kontrollige kohe</string>
+    <string name="max_license_activated">Aktiveeritud. See seade on nüüd teie võtmega lingitud.</string>
+    <string name="max_license_error_invalid_key">See võti ei tundu täielik. Kontrollige seda ja proovige uuesti.</string>
+    <string name="max_license_error_not_configured">Sellel järgul pole litsentsiserverit konfigureeritud.</string>
+    <string name="max_license_error_network">Ühendust pole. Võtit kontrollitakse üks kord, seejärel töötab võrguühenduseta.</string>
+    <string name="max_license_error_timeout">Litsentsiserver ei vastanud õigel ajal. Proovi uuesti.</string>
+    <string name="max_license_error_server">Litsentsiserver vastas veaga. Proovige hiljem uuesti.</string>
+    <string name="max_license_error_client">Litsentsifunktsiooni pole serveris juurutatud.</string>
+    <string name="max_license_error_format">Serveri vastusest ei saanud aru.</string>
+    <string name="max_license_error_expired">See võti on aegunud.</string>
+    <string name="max_license_error_not_found">See võti pole teada.</string>
+    <string name="max_license_error_revoked">See võti on tühistatud.</string>
+    <string name="max_license_error_device_limit">See võti on jõudnud oma seadmepiiranguni. Küsige seadme lähtestamist.</string>
+    <string name="max_license_error_device_unknown">See seade pole veel võtmega lingitud. Kõigepealt aktiveerige see siin.</string>
+    <string name="max_license_error_device_removed">Omanik eemaldas selle seadme võtme küljest.</string>
+    <string name="max_license_error_rate_limited">Liiga palju katseid sellelt ühenduselt – oodake mõni minut ja proovige uuesti.</string>
+    <string name="max_license_error_unknown">Midagi läks valesti. Põhjus fikseeriti Diagnostikas.</string>
+    <string name="max_license_gate_title">See pind vajab litsentsi</string>
+    <string name="max_license_gate_detail">See on võtmega kaasas. Üks klahv katab seda seadet ja selle sisestamine võtab minuti.</string>
+    <string name="max_feature_off_title">Välja lülitatud</string>
+    <string name="max_feature_off_detail">Juhtpaneel on selle pinna välja lülitanud. See naaseb kohe, kui see uuesti sisse lülitatakse.</string>
+    <string name="max_license_gate_action">Avage litsentsi seaded</string>
+    <string name="max_license_gate_subscribe">Telli kohe</string>
+    <string name="max_license_subscription_section">Tellimus</string>
+    <string name="max_license_subscription_open">Avage tellimisleht</string>
+</resources>

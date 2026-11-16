@@ -220,4 +220,5 @@
     <string name="max_files_compress_level_normal">ปกติ</string>
     <string name="max_files_compress_level_max">สูงสุด</string>
     <string name="max_files_compress_summary">%1$d รายการ \u2192 %2$s</string>
+    <string name="max_files_history_more">%1$d โฟลเดอร์เก่าไม่แสดง</string>
 </resources>

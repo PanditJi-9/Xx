@@ -29,4 +29,6 @@
     <string name="ns_neighbours_note">من /proc/net/arp — قراءة فقط.</string>
     <string name="ns_neighbours_empty">لا جيران معروفون بعد.</string>
     <string name="ns_ports_value">المنافذ %1$s</string>
+    <string name="ns_copied">نُسخ العنوان</string>
+    <string name="ns_neighbours_copy_hint">المس مضيفًا لنسخ عنوانه.</string>
 </resources>

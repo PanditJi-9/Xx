@@ -10,4 +10,6 @@
     <string name="studio_display">Bistaratzea</string>
     <string name="studio_power">Potentzia aukerak</string>
     <string name="studio_settings">Ezarpenak</string>
+    <string name="audio_dsp_live">DSP zuzenean</string>
+    <string name="max_audio_session_label">Audio saioa #%1$d</string>
 </resources>

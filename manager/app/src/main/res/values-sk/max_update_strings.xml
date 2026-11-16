@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_update_strings.xml -->
+<resources>
+    <string name="update_dialog_title">K dispozícii je aktualizácia</string>
+    <string name="update_dialog_title_required">Vyžaduje sa aktualizácia</string>
+    <string name="update_required_notice">Ak chcete naďalej používať MaxManager, je potrebná táto aktualizácia. Nainštalujte ju a potom aplikáciu znova otvorte.</string>
+    <string name="update_dialog_body">K dispozícii je verzia %1$s. Ste na %2$s.</string>
+    <string name="update_block_title">Ak chcete pokračovať, je potrebná aktualizácia</string>
+    <string name="update_block_body">Táto zostava (%1$s) už nie je podporovaná. Ak chcete naďalej používať MaxManager, aktualizujte na %2$s.</string>
+    <string name="update_block_body_no_release">Táto zostava (%1$s) už nie je podporovaná.</string>
+    <string name="update_release_notes_label">Čo je nové</string>
+    <string name="update_size">Veľkosť na stiahnutie: %1$s</string>
+    <string name="update_button_now">Aktualizujte teraz</string>
+    <string name="update_button_later">Neskôr</string>
+    <string name="update_button_close">Zavrieť</string>
+    <string name="update_button_open_page">Otvorte stránku sťahovania</string>
+    <string name="update_state_downloading">Sťahuje sa… %1$d%%</string>
+    <string name="update_state_downloading_unknown">Sťahuje sa…</string>
+    <string name="update_state_installing">Inštaluje sa…</string>
+    <string name="update_error_network">Nepodarilo sa spojiť s aktualizačným serverom. Skontrolujte pripojenie a skúste to znova.</string>
+    <string name="update_error_http">Aktualizačný server odpovedal chybou. Skúste to znova neskôr.</string>
+    <string name="update_error_format">Informácie o aktualizácii sa nepodarilo prečítať.</string>
+    <string name="update_error_too_large">Informácie o aktualizácii boli väčšie, ako sa očakávalo, a boli zahodené.</string>
+    <string name="update_error_integrity">Stiahnutý súbor nezodpovedal jeho kontrolnému súčtu a bol odstránený.</string>
+    <string name="update_error_install">Inštalácia zlyhala. Skúste to znova.</string>
+    <string name="update_error_not_configured">V tejto zostave nie je nakonfigurovaný žiadny aktualizačný kanál.</string>
+    <string name="update_maintenance_title">Dočasne nedostupné</string>
+    <string name="update_maintenance_body">MaxManager je dočasne nedostupný. Skúste to znova o chvíľu.</string>
+    <string name="update_check_title">Skontrolujte aktualizácie</string>
+    <string name="update_check_supporting">Aktuálna verzia: %1$s</string>
+    <string name="update_check_updated">K dispozícii je aktualizácia.</string>
+    <string name="update_check_uptodate">Používate najnovšiu verziu.</string>
+    <string name="update_check_failed">Nepodarilo sa skontrolovať aktualizácie.</string>
+    <string name="update_check_not_configured">V tejto zostave nie je nakonfigurovaný žiadny aktualizačný kanál.</string>
+    <string name="update_released_label">Dátum vydania: %1$s</string>
+    <string name="update_check_none_published">Zatiaľ nebola zverejnená žiadna aktualizácia z ovládacieho panela.</string>
+    <string name="update_check_link_missing">Aktualizácia je zverejnená, ale chýba odkaz na jej stiahnutie.</string>
+</resources>

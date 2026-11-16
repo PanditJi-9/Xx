@@ -10,4 +10,6 @@
     <string name="studio_display">Kijelző</string>
     <string name="studio_power">Energiagazdálkodási lehetőségek</string>
     <string name="studio_settings">Beállítások elemre</string>
+    <string name="audio_dsp_live">DSP élőben</string>
+    <string name="max_audio_session_label">Hangmenet #%1$d</string>
 </resources>

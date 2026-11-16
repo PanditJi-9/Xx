@@ -13,4 +13,23 @@
     <string name="max_expand_section">Näytä tiedot</string>
     <string name="max_collapse_section">Piilota tiedot</string>
     <string name="max_trust_loading">Luetaan…</string>
+    <string name="max_gov_title">Kuka hallitsee nyt</string>
+    <string name="max_gov_separator">"›"</string>
+    <string name="max_gov_order_note">Kiinteä järjestys: korkeampi puola estää alemman. Se ei koskaan muuta sitä, mikä politiikka voittaa.</string>
+    <string name="max_gov_open_details">Aktiiviset pidikkeet</string>
+    <string name="max_gov_active_title">Kuka hallitsee</string>
+    <string name="max_gov_none">Mikään käytäntö ei omista laitteiston ohjausta tällä hetkellä.</string>
+    <string name="max_gov_count">Aktiiviset ohjausvuokrasopimukset: %1$d</string>
+    <string name="max_gov_requested">Pyydetty: %1$s</string>
+    <string name="max_gov_owner_recovery">Toipuminen</string>
+    <string name="max_gov_owner_safety">Lämpöturvallisuus</string>
+    <string name="max_gov_owner_per_app">Sovellusprofiili</string>
+    <string name="max_gov_owner_max_ai">Max AI</string>
+    <string name="max_gov_owner_global">Globaali profiili</string>
+    <string name="max_gov_owner_system">Järjestelmä</string>
+    <string name="max_gov_owner_a11y">%1$s omistaa laitteiston ohjauksen</string>
+    <string name="max_gov_now_none">Ei automaattista omistajaa juuri nyt – valvonta pysyy sinun</string>
+    <string name="max_gov_now_one">%1$s pitää sisällään säätimen</string>
+    <string name="max_gov_now_many">%1$s sisältää %2$d säätimiä</string>
+    <string name="devinfo_details">Yksityiskohdat</string>
 </resources>

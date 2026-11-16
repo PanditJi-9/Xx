@@ -13,4 +13,23 @@
     <string name="max_expand_section">तपशील दाखवा</string>
     <string name="max_collapse_section">तपशील लपवा</string>
     <string name="max_trust_loading">वाचत आहे…</string>
+    <string name="max_gov_title">आता कोण राज्य करतो</string>
+    <string name="max_gov_separator">" › "</string>
+    <string name="max_gov_order_note">निश्चित क्रम: उच्च पंक्ती खालच्याला अवरोधित करते. कोणते धोरण जिंकते ते कधीही बदलत नाही.</string>
+    <string name="max_gov_open_details">सक्रिय धारक</string>
+    <string name="max_gov_active_title">कोणावर नियंत्रण आहे</string>
+    <string name="max_gov_none">कोणत्याही पॉलिसीकडे सध्या हार्डवेअर नियंत्रण आहे.</string>
+    <string name="max_gov_count">सक्रिय नियंत्रण लीज: %1$d</string>
+    <string name="max_gov_requested">विनंती केली: %1$s</string>
+    <string name="max_gov_owner_recovery">पुनर्प्राप्ती</string>
+    <string name="max_gov_owner_safety">थर्मल सुरक्षा</string>
+    <string name="max_gov_owner_per_app">ॲप प्रोफाइल</string>
+    <string name="max_gov_owner_max_ai">Max AI</string>
+    <string name="max_gov_owner_global">जागतिक प्रोफाइल</string>
+    <string name="max_gov_owner_system">प्रणाली</string>
+    <string name="max_gov_owner_a11y">%1$s कडे हार्डवेअर नियंत्रण आहे</string>
+    <string name="max_gov_now_none">आत्ता कोणताही स्वयंचलित मालक नाही — नियंत्रण तुमचेच राहते</string>
+    <string name="max_gov_now_one">%1$s नियंत्रण ठेवते</string>
+    <string name="max_gov_now_many">%1$s मध्ये %2$d नियंत्रणे आहेत</string>
+    <string name="devinfo_details">तपशील</string>
 </resources>

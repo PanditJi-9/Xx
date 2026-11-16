@@ -13,4 +13,23 @@
     <string name="max_expand_section">Ցույց տալ մանրամասները</string>
     <string name="max_collapse_section">Թաքցնել մանրամասները</string>
     <string name="max_trust_loading">Ընթերցանություն…</string>
+    <string name="max_gov_title">Ով է հիմա կառավարում</string>
+    <string name="max_gov_separator">«»</string>
+    <string name="max_gov_order_note">Հաստատուն կարգ. ավելի բարձր աստիճանը արգելափակում է ցածրը: Երբեք չի փոխվում, թե որ քաղաքականությունն է հաղթում:</string>
+    <string name="max_gov_open_details">Ակտիվ սեփականատերեր</string>
+    <string name="max_gov_active_title">Ով է վերահսկում</string>
+    <string name="max_gov_none">Այս պահին ոչ մի քաղաքականություն չունի ապարատային հսկողություն:</string>
+    <string name="max_gov_count">Ակտիվ հսկողության վարձակալություն՝ %1$d</string>
+    <string name="max_gov_requested">Հարցված՝ %1$s</string>
+    <string name="max_gov_owner_recovery">Վերականգնում</string>
+    <string name="max_gov_owner_safety">Ջերմային անվտանգություն</string>
+    <string name="max_gov_owner_per_app">Հավելվածի պրոֆիլը</string>
+    <string name="max_gov_owner_max_ai">Max AI</string>
+    <string name="max_gov_owner_global">Համաշխարհային պրոֆիլ</string>
+    <string name="max_gov_owner_system">Համակարգ</string>
+    <string name="max_gov_owner_a11y">%1$s-ն ունի ապարատային հսկողություն</string>
+    <string name="max_gov_now_none">Այս պահին չկա ավտոմատ սեփականատեր. կառավարումը մնում է ձերը</string>
+    <string name="max_gov_now_one">%1$s-ն ունի կառավարում</string>
+    <string name="max_gov_now_many">%1$s պահում է %2$d կառավարում</string>
+    <string name="devinfo_details">Մանրամասներ</string>
 </resources>

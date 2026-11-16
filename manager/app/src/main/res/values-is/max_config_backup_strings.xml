@@ -18,4 +18,10 @@
     <string name="max_cfg_section_appearance">Útlit og viðmót</string>
     <string name="max_cfg_section_app_prefs">Forritsstillingar og tungumál</string>
     <string name="max_cfg_restore_merge_note">Að endurheimta kjörstillingar sameinast: lyklar sem eru til staðar í skránni eru skrifaðir og lyklar sem hún nefnir ekki haldast eins og þeir eru. Ekkert er hreinsað.</string>
+    <string name="max_cfg_diff_title">%1$d vistaðar stillingar eru frábrugðnar þessu tæki</string>
+    <string name="max_cfg_diff_line">%1$s: %2$s → %3$s</string>
+    <string name="max_cfg_diff_unset">ekki stillt</string>
+    <string name="max_cfg_diff_more">og %1$d fleira</string>
+    <string name="max_cfg_diff_applist">%1$d línum fyrir forritalista bætt við, %2$d fjarlægð — öllum listanum er skipt út, ekki sameinaður.</string>
+    <string name="max_cfg_diff_prefs">%1$d forstillingarlyklar eru mismunandi — sameinaðir, ekki þurrkaðir út.</string>
 </resources>

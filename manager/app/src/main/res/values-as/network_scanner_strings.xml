@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/network_scanner_strings.xml -->
+<resources>
+    <string name="network_scanner_title">স্থানীয় নেটৱৰ্ক স্ক্যানাৰ</string>
+    <string name="network_scanner_subtitle">আপোনাৰ ঠিকনা, ই পোৱা গেটৱে, আৰু কোনবোৰ ওচৰ-চুবুৰীয়াই উত্তৰ দিলে।</string>
+    <string name="max_role_network_scanner">আপুনি থকা নে\'টৱৰ্ক পঢ়ে — কোনো কেপচাৰ নাই, কোনো ৰূট নাই ।</string>
+    <string name="ns_no_network">কোনো নেটৱৰ্ক সংযোগ কৰা হোৱা নাই।</string>
+    <string name="ns_interface">আন্তঃপৃষ্ঠ</string>
+    <string name="ns_address">ঠিকনা</string>
+    <string name="ns_gateway">গেটৱে</string>
+    <string name="ns_dns">DNS</string>
+    <string name="ns_mac">MAC</string>
+    <string name="ns_transport_wifi">ৱাই-ফাই</string>
+    <string name="ns_transport_ethernet">ইথাৰনেট</string>
+    <string name="ns_transport_cellular">কোষীয়</string>
+    <string name="ns_transport_other">অন্যান্য</string>
+    <string name="ns_sources_title">এইটো ক’ৰ পৰা আহিছে</string>
+    <string name="ns_sources_body">ঠিকনা আৰু গেটৱে প্লেটফৰ্মৰ লিংক বৈশিষ্ট্যৰ পৰা পঢ়া হয়। চুবুৰীয়া টেবুল কাৰ্ণেলৰ ARP কেশ্বৰ পৰা পঢ়া হয়, গতিকে ই কেৱল এই ডিভাইচে শেহতীয়াকৈ কোৱা বস্তুটোহে ৰাখে — এটা খালী টেবুলৰ অৰ্থ এটা খালী নে\'টৱৰ্ক নহয় ।</string>
+    <string name="ns_refresh">সতেজ কৰক</string>
+    <string name="ns_probe">সাধাৰণ পৰ্টসমূহ অনুসন্ধান কৰক</string>
+    <string name="ns_probe_stop">ৰ’ব</string>
+    <string name="ns_probe_progress">%2$d ৰ %1$d অনুসন্ধান কৰা</string>
+    <string name="ns_probe_note">এই /24 ৰ মাজেৰে 22, 80, 443, 5000 আৰু 5555 পৰ্টেত এটা TCP সংযোগ পঠায় । উত্তৰ দিয়া এটা পৰ্টে ৰিপৰ্ট কৰা হয়; মৌনতাই কোনো গৃহস্থ অনুপস্থিত থকাৰ প্ৰমাণ নহয়।</string>
+    <string name="ns_neighbours">চিনাকি চুবুৰীয়া</string>
+    <string name="ns_neighbours_note">/proc/net/arp ৰ পৰা — কেৱল পঢ়িব।</string>
+    <string name="ns_neighbours_empty">কোনো চুবুৰীয়া এতিয়াও জনা হোৱা নাই।</string>
+    <string name="ns_ports_value">বন্দৰসমূহ %1$s</string>
+</resources>

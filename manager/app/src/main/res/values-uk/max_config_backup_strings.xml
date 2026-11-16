@@ -18,4 +18,10 @@
     <string name="max_cfg_section_appearance">Зовнішній вигляд та інтерфейс</string>
     <string name="max_cfg_section_app_prefs">Параметри програми та мова</string>
     <string name="max_cfg_restore_merge_note">Відновлення налаштувань об’єднується: ключі, наявні у файлі, записуються, а ключі, які в ньому не згадуються, залишаються без змін. Нічого не очищається.</string>
+    <string name="max_cfg_diff_title">%1$d збережені налаштування відрізняються від цього пристрою</string>
+    <string name="max_cfg_diff_line">%1$s: %2$s → %3$s</string>
+    <string name="max_cfg_diff_unset">не встановлено</string>
+    <string name="max_cfg_diff_more">і ще %1$d</string>
+    <string name="max_cfg_diff_applist">%1$d додано рядків списку додатків, %2$d видалено — весь список замінено, а не об’єднано.</string>
+    <string name="max_cfg_diff_prefs">%1$d ключі налаштувань відрізняються — об’єднані, не стерті.</string>
 </resources>

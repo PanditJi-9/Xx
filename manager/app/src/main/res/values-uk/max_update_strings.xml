@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_update_strings.xml -->
+<resources>
+    <string name="update_dialog_title">Доступне оновлення</string>
+    <string name="update_dialog_title_required">Потрібне оновлення</string>
+    <string name="update_required_notice">Це оновлення потрібне, щоб продовжувати використовувати MaxManager. Установіть його, а потім знову відкрийте додаток.</string>
+    <string name="update_dialog_body">Доступна версія %1$s. Ви на %2$s.</string>
+    <string name="update_block_title">Щоб продовжити, потрібно оновити</string>
+    <string name="update_block_body">Ця збірка (%1$s) більше не підтримується. Оновіть до %2$s, щоб і надалі використовувати MaxManager.</string>
+    <string name="update_block_body_no_release">Ця збірка (%1$s) більше не підтримується.</string>
+    <string name="update_release_notes_label">Що нового</string>
+    <string name="update_size">Розмір завантаження: %1$s</string>
+    <string name="update_button_now">Оновіть зараз</string>
+    <string name="update_button_later">Пізніше</string>
+    <string name="update_button_close">Закрити</string>
+    <string name="update_button_open_page">Відкрити сторінку завантаження</string>
+    <string name="update_state_downloading">Завантаження… %1$d%%</string>
+    <string name="update_state_downloading_unknown">Завантаження…</string>
+    <string name="update_state_installing">Встановлення…</string>
+    <string name="update_error_network">Не вдалося отримати доступ до сервера оновлення. Перевірте підключення та повторіть спробу.</string>
+    <string name="update_error_http">Сервер оновлень відповів помилкою. Повторіть спробу пізніше.</string>
+    <string name="update_error_format">Не вдалося прочитати інформацію про оновлення.</string>
+    <string name="update_error_too_large">Інформація про оновлення була більшою, ніж очікувалося, і була відхилена.</string>
+    <string name="update_error_integrity">Завантажений файл не відповідав контрольній сумі та був видалений.</string>
+    <string name="update_error_install">Помилка встановлення. Спробуйте знову.</string>
+    <string name="update_error_not_configured">У цій збірці не налаштовано канал оновлення.</string>
+    <string name="update_maintenance_title">Тимчасово недоступний</string>
+    <string name="update_maintenance_body">MaxManager тимчасово недоступний. Спробуйте ще раз незабаром.</string>
+    <string name="update_check_title">Перевірте наявність оновлень</string>
+    <string name="update_check_supporting">Поточна версія: %1$s</string>
+    <string name="update_check_updated">Доступне оновлення.</string>
+    <string name="update_check_uptodate">Ви використовуєте останню версію.</string>
+    <string name="update_check_failed">Не вдалося перевірити наявність оновлень.</string>
+    <string name="update_check_not_configured">У цій збірці не налаштовано канал оновлення.</string>
+    <string name="update_released_label">Дата виходу: %1$s</string>
+    <string name="update_check_none_published">З панелі керування ще не опубліковано жодного оновлення.</string>
+    <string name="update_check_link_missing">Оновлення опубліковано, але посилання для його завантаження відсутнє.</string>
+</resources>

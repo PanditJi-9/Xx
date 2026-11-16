@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/manifest_inspector_strings.xml -->
+<resources>
+    <string name="manifest_inspector_title">مینی فیسٹ انسپکٹر</string>
+    <string name="manifest_inspector_subtitle">انسٹال کردہ ایپ اپنے بارے میں کیا اعلان کرتی ہے، PackageManager سے پڑھیں۔</string>
+    <string name="max_role_manifest_inspector">دکھاتا ہے کہ ایک پیکج اپنے بارے میں کیا اعلان کرتا ہے — صرف پڑھنے کے لیے۔</string>
+    <string name="mi_search">ایپس تلاش کریں۔</string>
+    <string name="mi_empty">بائیں طرف ایک ایپ منتخب کریں۔</string>
+    <string name="mi_yes">جی ہاں</string>
+    <string name="mi_no">نہیں</string>
+    <string name="mi_section_identity">پیکج</string>
+    <string name="mi_version">ورژن</string>
+    <string name="mi_version_code">ورژن کوڈ</string>
+    <string name="mi_min_sdk">کم از کم SDK</string>
+    <string name="mi_target_sdk">ہدف SDK</string>
+    <string name="mi_installed">انسٹال</string>
+    <string name="mi_updated">تازہ کاری</string>
+    <string name="mi_installer">انسٹالر</string>
+    <string name="mi_uid">UID</string>
+    <string name="mi_data_dir">ڈیٹا ڈائریکٹری</string>
+    <string name="mi_debuggable">ڈیبگ ایبل</string>
+    <string name="mi_system_app">سسٹم ایپ</string>
+    <string name="mi_enabled">فعال</string>
+    <string name="mi_section_permissions">اجازتوں کی درخواست کی۔</string>
+    <string name="mi_permissions_summary">%1$d اجازتیں · %2$d ان میں سے خطرناک</string>
+    <string name="mi_permissions_none">یہ ایپ کسی اجازت کی درخواست نہیں کرتی ہے۔</string>
+    <string name="mi_perm_dangerous">خطرناک</string>
+    <string name="mi_perm_signature">دستخط</string>
+    <string name="mi_perm_normal">نارمل</string>
+    <string name="mi_perm_unknown">غیر مرتب شدہ</string>
+    <string name="mi_section_components">اجزاء</string>
+    <string name="mi_activities">سرگرمیاں</string>
+    <string name="mi_services">خدمات</string>
+    <string name="mi_receivers">وصول کنندگان</string>
+    <string name="mi_providers">فراہم کرنے والے</string>
+    <string name="mi_components_none">کسی نے بھی اعلان نہیں کیا۔</string>
+    <string name="mi_section_features">ڈیوائس کی خصوصیات</string>
+    <string name="mi_features_note">پلیٹ فارم کسی اور ایپ کے استعمال کی خصوصیت کی فہرست کو ظاہر نہیں کرتا ہے۔ یہ وہ خصوصیات ہیں جو اس ڈیوائس کی رپورٹ کرتی ہیں۔</string>
+    <string name="mi_features_none">کسی خصوصیت کی اطلاع نہیں دی گئی۔</string>
+    <string name="mi_section_signature">دستخطی سرٹیفکیٹ</string>
+    <string name="mi_signature_note">دستخطی سرٹیفکیٹ کا SHA-256۔ ایک ہی قیمت کے ساتھ دو تعمیرات ایک ہی ناشر ہیں۔</string>
+    <string name="mi_signature_sha256">سرٹیفکیٹ ڈائجسٹ</string>
+</resources>

@@ -69,4 +69,25 @@
     <string name="max_perms_entry_title">Уруксаттар жана Колдонмонун амалдары</string>
     <string name="max_perms_entry_desc">Бул колдонмо эмнени жарыялаганын жана система эмнеге уруксат берерин көрүңүз</string>
     <string name="max_perms_entry_action">Уруксаттарды ачуу</string>
+    <string name="max_perms_manifest_title">Манифесттин корутундусу</string>
+    <string name="max_perms_manifest_desc">Пакет менеджеринен окуңуз: версия, SDK диапазону, компоненттер жана алардын канчасы экспорттолот. Экспорттолгон компонентти башка колдонмолор баштаса болот.</string>
+    <string name="max_perms_manifest_version">Версия</string>
+    <string name="max_perms_manifest_sdk">SDK диапазону</string>
+    <string name="max_perms_manifest_location">Орнотуу орду</string>
+    <string name="max_perms_manifest_location_auto">Автоматтык</string>
+    <string name="max_perms_manifest_location_internal">Ички сактагыч гана</string>
+    <string name="max_perms_manifest_location_external">Сырттан артык көрөт</string>
+    <string name="max_perms_manifest_components">Компоненттер</string>
+    <string name="max_perms_manifest_components_order">иш-чаралар · кызматтар · алуучулар · провайдерлер</string>
+    <string name="max_perms_manifest_exported">Экспорттолгон компоненттер</string>
+    <string name="max_perms_manifest_splits">Бөлүнгөн APK</string>
+    <string name="max_perms_manifest_debug">Мүчүлүштүктөрдү оңдоо</string>
+    <string name="max_perms_features_title">Жарыяланган өзгөчөлүктөр</string>
+    <string name="max_perms_features_desc">Пакет аппараттан эмнени талап кылат, бул аппарат жарнамалаган нерсеге салыштырмалуу. Бул жерде жок талап кылынган функция, адатта, колдонмо толук иштебей калат дегенди билдирет - бул болжолдоо эмес, пакет менеджеринин дооматы.</string>
+    <string name="max_perms_features_loading">Пакеттин жарыяланган функциялары окулууда…</string>
+    <string name="max_perms_features_none">Пакет талап кылынган функцияларды жарыялабайт.</string>
+    <string name="max_perms_features_required">Талап кылынат</string>
+    <string name="max_perms_features_unsupported">Бул түзмөктө эмес</string>
+    <string name="max_perms_manifest_none">Пакет менеджери кабарлаган эмес.</string>
+    <string name="max_perms_manifest_unknown">Белгисиз</string>
 </resources>

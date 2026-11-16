@@ -51,4 +51,14 @@
     <string name="copg_tweak_kso_title">Haltu skjánum á</string>
     <string name="copg_tweak_kso_desc">Notar COPG keep-screen-on klipið á þetta forrit. Vistað hér, skrifað í vélina af Review og notaðu í Spoof flipanum.</string>
     <string name="copg_tweak_needs_device">Þarf fyrst tæki fyrir þetta forrit, í Spoof flipanum.</string>
+    <string name="spoof_engine_unmeasured">Vélarstaða er ekki mæld: rótaraðgangur er ekki enn veittur. Veittu rót, opnaðu síðan þennan flipa aftur.</string>
+    <string name="spoof_engine_config_missing">COPG er uppsett, en stillingarskrá hennar (COPG.json) vantar. Umsókn er hafnað þar til einingin veitir hana aftur.</string>
+    <string name="spoof_engine_config_unreadable">COPG er uppsett, en stillingarskrá hennar er ekki læsileg JSON. Umsókn er hafnað þar til skráin hefur verið lagfærð.</string>
+    <string name="spoof_imei_spoof">IMEI skopstæling</string>
+    <string name="spoof_imei_spoof_desc">Sýnir þessu forriti annað IMEI. Þarfnast Max Manager einingarinnar virkjað í LSPosed með þessu forriti í umfangi þess. Endurræstu forritið eftir að hafa kveikt á því.</string>
+    <string name="spoof_imei_active">Sýnir þetta forrit: %1$s</string>
+    <string name="spoof_imei_summary">IMEI skopstæling</string>
+    <string name="spoof_imei_regenerate">Nýtt tilviljunarkennt IMEI</string>
+    <string name="spoof_imei_regenerate_desc">Býr til annað gilt IMEI fyrir þetta forrit. Endurræstu forritið til að sjá það.</string>
+    <string name="spoof_imei_module_inactive">Max Manager einingin er ekki virkjuð í LSPosed, þannig að forrit sjá enn raunverulegt IMEI. Virkjaðu eininguna í LSPosed, bættu þessu forriti við umfang þess og opnaðu síðan þennan skjá aftur.</string>
 </resources>

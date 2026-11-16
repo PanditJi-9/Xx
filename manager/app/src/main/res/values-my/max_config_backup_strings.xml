@@ -18,4 +18,10 @@
     <string name="max_cfg_section_appearance">အသွင်အပြင်နှင့် မျက်နှာပြင်</string>
     <string name="max_cfg_section_app_prefs">အက်ပ်စိတ်ကြိုက်များနှင့် ဘာသာစကား</string>
     <string name="max_cfg_restore_merge_note">ပြန်လည်ရယူခြင်း ဦးစားပေးများ ပေါင်းစည်းခြင်း- ဖိုင်တွင်ပါရှိသော သော့များကို ရေးသားထားပြီး၊ ၎င်းတွင် ဖော်ပြထားခြင်းမရှိသော သော့များသည် ၎င်းတို့ကဲ့သို့ ရှိနေပါသည်။ ဘာမှမရှင်းဘူး။</string>
+    <string name="max_cfg_diff_title">%1$d သိမ်းဆည်းထားသော ဆက်တင်များသည် ဤစက်ပစ္စည်းနှင့် ကွဲပြားသည်။</string>
+    <string name="max_cfg_diff_line">%1$s: %2$s → %3$s</string>
+    <string name="max_cfg_diff_unset">မသတ်မှတ်ထားပါဘူး။</string>
+    <string name="max_cfg_diff_more">နှင့် %1$d နောက်ထပ်</string>
+    <string name="max_cfg_diff_applist">%1$d အက်ပ်စာရင်းလိုင်းများကို ပေါင်းထည့်လိုက်သည်၊ %2$d ဖယ်ရှားလိုက်သည် — စာရင်းတစ်ခုလုံးကို အစားထိုးသည်၊ ပေါင်းစည်းမည်မဟုတ်ပါ။</string>
+    <string name="max_cfg_diff_prefs">%1$d ဦးစားပေးသော့များ ကွဲပြားသည် — ပေါင်းလိုက်သည်၊ မသုတ်ဘဲ။</string>
 </resources>

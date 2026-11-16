@@ -10,4 +10,6 @@
     <string name="studio_display">បង្ហាញ</string>
     <string name="studio_power">ជម្រើសថាមពល</string>
     <string name="studio_settings">ការកំណត់</string>
+    <string name="audio_dsp_live">DSP បានផ្សាយបន្តផ្ទាល់</string>
+    <string name="max_audio_session_label">វគ្គអូឌីយ៉ូ #%1$d</string>
 </resources>

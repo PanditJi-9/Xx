@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/manifest_inspector_strings.xml -->
+<resources>
+    <string name="manifest_inspector_title">Манифест байцаагч</string>
+    <string name="manifest_inspector_subtitle">Суулгасан програм өөрийнхөө тухай юу гэж мэдэгддэгийг PackageManager-аас уншина уу.</string>
+    <string name="max_role_manifest_inspector">Багц өөрийнхөө тухай юу зарлаж байгааг харуулдаг — зөвхөн унших боломжтой.</string>
+    <string name="mi_search">Апп хайх</string>
+    <string name="mi_empty">Зүүн талд байгаа програмыг сонгоно уу.</string>
+    <string name="mi_yes">Тиймээ</string>
+    <string name="mi_no">Үгүй</string>
+    <string name="mi_section_identity">Багц</string>
+    <string name="mi_version">Хувилбар</string>
+    <string name="mi_version_code">Хувилбарын код</string>
+    <string name="mi_min_sdk">Хамгийн бага SDK</string>
+    <string name="mi_target_sdk">Зорилтот SDK</string>
+    <string name="mi_installed">Суулгасан</string>
+    <string name="mi_updated">Шинэчлэгдсэн</string>
+    <string name="mi_installer">Суулгагч</string>
+    <string name="mi_uid">UID</string>
+    <string name="mi_data_dir">Өгөгдлийн лавлах</string>
+    <string name="mi_debuggable">Дебаг хийх боломжтой</string>
+    <string name="mi_system_app">Системийн програм</string>
+    <string name="mi_enabled">Идэвхжүүлсэн</string>
+    <string name="mi_section_permissions">Хүссэн зөвшөөрөл</string>
+    <string name="mi_permissions_summary">%1$d зөвшөөрөл · %2$d нь аюултай</string>
+    <string name="mi_permissions_none">Энэ апп ямар ч зөвшөөрөл хүсээгүй.</string>
+    <string name="mi_perm_dangerous">Аюултай</string>
+    <string name="mi_perm_signature">Гарын үсэг</string>
+    <string name="mi_perm_normal">Ердийн</string>
+    <string name="mi_perm_unknown">Ангилалгүй</string>
+    <string name="mi_section_components">Бүрэлдэхүүн хэсгүүд</string>
+    <string name="mi_activities">Үйл ажиллагаа</string>
+    <string name="mi_services">Үйлчилгээ</string>
+    <string name="mi_receivers">Хүлээн авагчид</string>
+    <string name="mi_providers">Үйлчилгээ үзүүлэгчид</string>
+    <string name="mi_components_none">Аль нь ч зарлаагүй</string>
+    <string name="mi_section_features">Төхөөрөмжийн онцлог</string>
+    <string name="mi_features_note">Платформ нь өөр програмын хэрэглээний онцлогуудын жагсаалтыг гаргадаггүй; Эдгээр нь энэ төхөөрөмжийн мэдээлдэг онцлогууд юм.</string>
+    <string name="mi_features_none">Ямар ч онцлог мэдээлээгүй байна</string>
+    <string name="mi_section_signature">Гарын үсэг зурах гэрчилгээ</string>
+    <string name="mi_signature_note">Гарын үсэг зурах гэрчилгээний SHA-256. Ижил утгатай хоёр бүтээл нь ижил нийтлэгч юм.</string>
+    <string name="mi_signature_sha256">Сертификат тойм</string>
+</resources>

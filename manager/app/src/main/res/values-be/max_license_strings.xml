@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_license_strings.xml -->
+<resources>
+    <string name="max_license_title">Ліцэнзія</string>
+    <string name="max_license_subtitle">Адзін ключ, гэта прылада, без уліковага запісу</string>
+    <string name="max_license_help_body">Ключ правяраецца онлайн адзін раз, калі вы яго ўводзіце. З гэтага часу падпісаны сертыфікат сервера працуе ў аўтаномным рэжыме, пакуль не скончыцца яго час — праграма не тэлефануе дадому кожны раз, калі вы адкрываеце экран. Сертыфікат прывязаны да выпадковага ідэнтыфікатара ўсталёўкі гэтай прылады, таму капіраванне даных праграмы на іншы тэлефон не прадугледжвае ліцэнзіі, і ўладальнік можа скінуць гэтую прывязку з панэлі, калі вы зменіце тэлефон.</string>
+    <string name="max_license_status_section">Статус</string>
+    <string name="max_license_status_active">Актыўны</string>
+    <string name="max_license_status_expired">Пратэрмінаваны</string>
+    <string name="max_license_status_none">Не актываваны</string>
+    <string name="max_license_active_detail">Засталося: %1$d дзён</string>
+    <string name="max_license_expired_detail">Час гэтага ключа скончыўся. Новы ключ аднаўляе доступ.</string>
+    <string name="max_license_none_detail">Каб разблакіраваць платныя паверхні, увядзіце атрыманы ключ.</string>
+    <string name="max_license_promo_active">Бясплатна для ўсіх да %1$s</string>
+    <string name="max_license_plan_title">План</string>
+    <string name="max_license_devices_title">прылады</string>
+    <string name="max_license_devices_detail">%1$d з %2$d выкарыстана</string>
+    <string name="max_license_device_id_title">Гэта прылада</string>
+    <string name="max_license_device_id_detail">%1$s</string>
+    <string name="max_license_key_section">Актывацыя</string>
+    <string name="max_license_key_label">Ліцэнзійны ключ</string>
+    <string name="max_license_key_placeholder">MAXM-XXXXX-XXXXX-XXXXX-XXXXX-XX</string>
+    <string name="max_license_key_helper">Працяжнікі і вялікія літары не маюць значэння — устаўце так, як вы атрымалі.</string>
+    <string name="max_license_activate">Актываваць</string>
+    <string name="max_license_activating">Праверка ключа…</string>
+    <string name="max_license_refresh">Праверце зараз</string>
+    <string name="max_license_activated">Актываваны. Цяпер гэта прылада звязана з вашым ключом.</string>
+    <string name="max_license_error_invalid_key">Гэты ключ не выглядае завершаным. Праверце і паўтарыце спробу.</string>
+    <string name="max_license_error_not_configured">У гэтай зборкі не наладжаны сервер ліцэнзій.</string>
+    <string name="max_license_error_network">Няма сувязі. Ключ правяраецца адзін раз, пасля чаго працуе ў аўтаномным рэжыме.</string>
+    <string name="max_license_error_timeout">Сервер ліцэнзій не адказаў своечасова. Паспрабуйце яшчэ раз.</string>
+    <string name="max_license_error_server">Сервер ліцэнзій адказаў з памылкай. Паўтарыце спробу пазней.</string>
+    <string name="max_license_error_client">Функцыя ліцэнзіі не разгорнута на серверы.</string>
+    <string name="max_license_error_format">Адказ сервера не зразуметы.</string>
+    <string name="max_license_error_expired">Тэрмін дзеяння гэтага ключа скончыўся.</string>
+    <string name="max_license_error_not_found">Гэты ключ невядомы.</string>
+    <string name="max_license_error_revoked">Гэты ключ быў ануляваны.</string>
+    <string name="max_license_error_device_limit">Гэты ключ дасягнуў ліміту прылад. Запытайце скід прылады.</string>
+    <string name="max_license_error_device_unknown">Гэта прылада яшчэ не звязана з ключом. Спачатку актывуйце яго тут.</string>
+    <string name="max_license_error_device_removed">Гэта прылада была выдалена з ключа ўладальнікам.</string>
+    <string name="max_license_error_rate_limited">Занадта шмат спроб з гэтага злучэння — пачакайце некалькі хвілін і паўтарыце спробу.</string>
+    <string name="max_license_error_unknown">Нешта пайшло не так. Прычына была зафіксавана ў дыягностыцы.</string>
+    <string name="max_license_gate_title">Для гэтай паверхні патрэбна ліцэнзія</string>
+    <string name="max_license_gate_detail">У камплекце з ключом. Адзін ключ накрывае гэта прылада, і ўваход у яго займае хвіліну.</string>
+    <string name="max_feature_off_title">Выключана</string>
+    <string name="max_feature_off_detail">Панэль кіравання адключыла гэту паверхню. Ён вяртаецца, як толькі яго зноў уключаюць.</string>
+    <string name="max_license_gate_action">Адкрыйце налады ліцэнзіі</string>
+    <string name="max_license_gate_subscribe">Падпішыцеся зараз</string>
+    <string name="max_license_subscription_section">Падпіска</string>
+    <string name="max_license_subscription_open">Адкрыйце старонку падпіскі</string>
+</resources>

@@ -51,4 +51,14 @@
     <string name="copg_tweak_kso_title">Tetap nyalakan layar</string>
     <string name="copg_tweak_kso_desc">Menerapkan penyesuaian layar tetap COPG ke aplikasi ini. Disimpan di sini, ditulis ke mesin dengan Review dan diterapkan di tab Spoof.</string>
     <string name="copg_tweak_needs_device">Membutuhkan perangkat untuk aplikasi ini terlebih dahulu, di tab Spoof.</string>
+    <string name="spoof_engine_unmeasured">Status mesin belum diukur: akses root belum diberikan. Berikan root, lalu buka kembali tab ini.</string>
+    <string name="spoof_engine_config_missing">COPG diinstal, tetapi file konfigurasinya (COPG.json) tidak ada. Penerapan ditolak sampai modul menyediakannya lagi.</string>
+    <string name="spoof_engine_config_unreadable">COPG telah diinstal, tetapi file konfigurasinya tidak dapat dibaca JSON. Permohonan ditolak sampai file diperbaiki.</string>
+    <string name="spoof_imei_spoof">pemalsuan IMEI</string>
+    <string name="spoof_imei_spoof_desc">Menunjukkan aplikasi ini IMEI yang berbeda. Memerlukan modul Max Manager yang diaktifkan di LSPosed dengan aplikasi ini dalam cakupannya. Mulai ulang aplikasi setelah menyalakannya.</string>
+    <string name="spoof_imei_active">Menampilkan aplikasi ini: %1$s</string>
+    <string name="spoof_imei_summary">pemalsuan IMEI</string>
+    <string name="spoof_imei_regenerate">IMEI acak baru</string>
+    <string name="spoof_imei_regenerate_desc">Menghasilkan IMEI lain yang valid untuk aplikasi ini. Mulai ulang aplikasi untuk melihatnya.</string>
+    <string name="spoof_imei_module_inactive">Modul Max Manager tidak diaktifkan di LSPosed, jadi aplikasi masih melihat IMEI asli. Aktifkan modul di LSPosed, tambahkan aplikasi ini ke cakupannya, lalu buka kembali layar ini.</string>
 </resources>

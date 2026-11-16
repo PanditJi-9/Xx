@@ -51,4 +51,14 @@
     <string name="copg_tweak_kso_title">Држите екран укључен</string>
     <string name="copg_tweak_kso_desc">Примењује ЦОПГ подешавање укљученог екрана на ову апликацију. Сачувано овде, уписано у машину од стране Прегледа и примењено на картици Спооф.</string>
     <string name="copg_tweak_needs_device">Прво је потребан уређај за ову апликацију, на картици Спооф.</string>
+    <string name="spoof_engine_unmeasured">Стање мотора се не мери: роот приступ још није одобрен. Дајте роот, а затим поново отворите ову картицу.</string>
+    <string name="spoof_engine_config_missing">ЦОПГ је инсталиран, али недостаје његова конфигурациона датотека (ЦОПГ.јсон). Пријава се одбија док је модул поново не обезбеди.</string>
+    <string name="spoof_engine_config_unreadable">ЦОПГ је инсталиран, али његова конфигурациона датотека није читљива JSON. Пријава се одбија док се датотека не поправи.</string>
+    <string name="spoof_imei_spoof">ИМЕИ лажирање</string>
+    <string name="spoof_imei_spoof_desc">Приказује овој апликацији другачији ИМЕИ. Потребан је модул Max Manager омогућен у ЛПоседу са овом апликацијом у свом обиму. Поново покрените апликацију након што је укључите.</string>
+    <string name="spoof_imei_active">Приказује се ова апликација: %1$s</string>
+    <string name="spoof_imei_summary">ИМЕИ лажирање</string>
+    <string name="spoof_imei_regenerate">Нови насумични ИМЕИ</string>
+    <string name="spoof_imei_regenerate_desc">Генерише још један важећи ИМЕИ за ову апликацију. Поново покрените апликацију да бисте је видели.</string>
+    <string name="spoof_imei_module_inactive">Модул Max Manager није омогућен у ЛПоседу, тако да апликације и даље виде прави ИМЕИ. Омогућите модул у ЛПоседу, додајте ову апликацију у њен опсег, а затим поново отворите овај екран.</string>
 </resources>

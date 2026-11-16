@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_license_strings.xml -->
+<resources>
+    <string name="max_license_title">רִשָׁיוֹן</string>
+    <string name="max_license_subtitle">מפתח אחד, המכשיר הזה, אין חשבון</string>
+    <string name="max_license_help_body">מפתח נבדק באופן מקוון פעם אחת, כאשר אתה מזין אותו. מכאן ואילך האישור החתום של השרת פועל במצב לא מקוון עד שנגמר הזמן שלו - האפליקציה לא מתקשרת הביתה בכל פעם שאתה פותח מסך. האישור קשור למזהה ההתקנה האקראי של המכשיר הזה, כך שהעתקת נתוני האפליקציה לטלפון אחר אינה נושאת את הרישיון איתו, והבעלים יכול לאפס את הקישור הזה מהפאנל אם תחליף טלפון.</string>
+    <string name="max_license_status_section">סטָטוּס</string>
+    <string name="max_license_status_active">פָּעִיל</string>
+    <string name="max_license_status_expired">פג תוקף</string>
+    <string name="max_license_status_none">לא מופעל</string>
+    <string name="max_license_active_detail">נותרו: %1$d ימים</string>
+    <string name="max_license_expired_detail">הזמן של המפתח הזה נגמר. מפתח חדש מחדש את הגישה.</string>
+    <string name="max_license_none_detail">הזן את המפתח שקיבלת כדי לפתוח את המשטחים בתשלום.</string>
+    <string name="max_license_promo_active">חינם לכולם עד %1$s</string>
+    <string name="max_license_plan_title">לְתַכְנֵן</string>
+    <string name="max_license_devices_title">התקנים</string>
+    <string name="max_license_devices_detail">%1$d מתוך %2$d בשימוש</string>
+    <string name="max_license_device_id_title">המכשיר הזה</string>
+    <string name="max_license_device_id_detail">%1$s</string>
+    <string name="max_license_key_section">הַפעָלָה</string>
+    <string name="max_license_key_label">מפתח רישיון</string>
+    <string name="max_license_key_placeholder">MAXM-XXXXX-XXXX-XXXX-XXXXX-XX</string>
+    <string name="max_license_key_helper">מקפים ואותיות רישיות לא חשובות - הדבק אותו כפי שקיבלת אותו.</string>
+    <string name="max_license_activate">לְהַפְעִיל</string>
+    <string name="max_license_activating">בודק את המפתח...</string>
+    <string name="max_license_refresh">בדוק עכשיו</string>
+    <string name="max_license_activated">מוּפעָל. מכשיר זה מקושר כעת למפתח שלך.</string>
+    <string name="max_license_error_invalid_key">מפתח זה לא נראה שלם. בדוק את זה ונסה שוב.</string>
+    <string name="max_license_error_not_configured">ל-build הזה לא מוגדר שרת רישיון.</string>
+    <string name="max_license_error_network">אין קשר. המפתח נבדק פעם אחת, ואז פועל במצב לא מקוון.</string>
+    <string name="max_license_error_timeout">שרת הרישיון לא ענה בזמן. נסה שוב.</string>
+    <string name="max_license_error_server">שרת הרישיון ענה בשגיאה. נסה שוב מאוחר יותר.</string>
+    <string name="max_license_error_client">פונקציית הרישיון אינה פרוסה בשרת.</string>
+    <string name="max_license_error_format">תשובת השרת לא הובנה.</string>
+    <string name="max_license_error_expired">פג תוקף המפתח הזה.</string>
+    <string name="max_license_error_not_found">מפתח זה אינו ידוע.</string>
+    <string name="max_license_error_revoked">מפתח זה בוטל.</string>
+    <string name="max_license_error_device_limit">מפתח זה הגיע למגבלת המכשיר שלו. בקש איפוס מכשיר.</string>
+    <string name="max_license_error_device_unknown">המכשיר הזה עדיין לא מקושר למפתח. תחילה הפעל אותו כאן.</string>
+    <string name="max_license_error_device_removed">מכשיר זה הוסר מהמפתח על ידי הבעלים.</string>
+    <string name="max_license_error_rate_limited">יותר מדי ניסיונות מהחיבור הזה - המתן כמה דקות, ואז נסה שוב.</string>
+    <string name="max_license_error_unknown">משהו השתבש. הסיבה נרשמה בדיאגנוסטיקה.</string>
+    <string name="max_license_gate_title">המשטח הזה צריך רישיון</string>
+    <string name="max_license_gate_detail">זה כלול עם מפתח. מפתח אחד מכסה את המכשיר הזה, והכניסה אליו לוקחת דקה.</string>
+    <string name="max_feature_off_title">כבוי</string>
+    <string name="max_feature_off_detail">לוח הבקרה כיבה את המשטח הזה. זה חוזר ברגע שהוא מופעל שוב.</string>
+    <string name="max_license_gate_action">פתח את הגדרות הרישיון</string>
+    <string name="max_license_gate_subscribe">הירשם עכשיו</string>
+    <string name="max_license_subscription_section">מִנוּי</string>
+    <string name="max_license_subscription_open">פתח את דף ההרשמה</string>
+</resources>

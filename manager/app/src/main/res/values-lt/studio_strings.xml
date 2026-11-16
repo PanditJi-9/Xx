@@ -10,4 +10,6 @@
     <string name="studio_display">Ekranas</string>
     <string name="studio_power">Maitinimo parinktys</string>
     <string name="studio_settings">Nustatymai</string>
+    <string name="audio_dsp_live">DSP gyvai</string>
+    <string name="max_audio_session_label">Garso sesija #%1$d</string>
 </resources>

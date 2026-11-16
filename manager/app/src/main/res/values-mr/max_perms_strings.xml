@@ -69,4 +69,25 @@
     <string name="max_perms_entry_title">परवानग्या आणि ॲप ऑपरेशन्स</string>
     <string name="max_perms_entry_desc">हे ॲप काय घोषित करते आणि सिस्टम प्रत्यक्षात काय परवानगी देते ते पहा</string>
     <string name="max_perms_entry_action">परवानग्या उघडा</string>
+    <string name="max_perms_manifest_title">प्रकट सारांश</string>
+    <string name="max_perms_manifest_desc">पॅकेज व्यवस्थापकाकडून वाचा: आवृत्ती, SDK श्रेणी, घटक आणि त्यापैकी किती निर्यात केले जातात. निर्यात केलेला घटक इतर ॲप्सद्वारे सुरू केला जाऊ शकतो.</string>
+    <string name="max_perms_manifest_version">आवृत्ती</string>
+    <string name="max_perms_manifest_sdk">SDK श्रेणी</string>
+    <string name="max_perms_manifest_location">स्थान स्थापित करा</string>
+    <string name="max_perms_manifest_location_auto">स्वयंचलित</string>
+    <string name="max_perms_manifest_location_internal">फक्त अंतर्गत स्टोरेज</string>
+    <string name="max_perms_manifest_location_external">बाह्य पसंत करतात</string>
+    <string name="max_perms_manifest_components">घटक</string>
+    <string name="max_perms_manifest_components_order">क्रियाकलाप · सेवा · प्राप्तकर्ते · प्रदाता</string>
+    <string name="max_perms_manifest_exported">निर्यात केलेले घटक</string>
+    <string name="max_perms_manifest_splits">APK विभाजित करा</string>
+    <string name="max_perms_manifest_debug">डीबग करण्यायोग्य</string>
+    <string name="max_perms_features_title">घोषित वैशिष्ट्ये</string>
+    <string name="max_perms_features_desc">हे डिव्हाइस काय जाहिरात करते याच्या तुलनेत डिव्हाइसकडून पॅकेजला काय आवश्यक आहे. येथे एक आवश्यक वैशिष्ट्य गहाळ आहे याचा अर्थ सहसा ॲप पूर्णपणे कार्य करणार नाही — हा पॅकेज व्यवस्थापकाचा दावा आहे, अंदाज नाही.</string>
+    <string name="max_perms_features_loading">पॅकेजची घोषित वैशिष्ट्ये वाचत आहे...</string>
+    <string name="max_perms_features_none">पॅकेज कोणतीही आवश्यक वैशिष्ट्ये घोषित करत नाही.</string>
+    <string name="max_perms_features_required">आवश्यक आहे</string>
+    <string name="max_perms_features_unsupported">या डिव्हाइसवर नाही</string>
+    <string name="max_perms_manifest_none">पॅकेज मॅनेजरने अहवाल दिला नाही.</string>
+    <string name="max_perms_manifest_unknown">अज्ञात</string>
 </resources>

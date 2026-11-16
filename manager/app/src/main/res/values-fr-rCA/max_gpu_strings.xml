@@ -99,4 +99,12 @@
     <string name="max_gpu_saved_desc">Conservé d\'une sauvegarde antérieure et appliqué à chaque démarrage : %1$s. La valeur par défaut ci-dessus met fin à cette session seulement, jamais à l\'état enregistré.</string>
     <string name="max_gpu_dynamic_min">Minimum · dynamique</string>
     <string name="max_gpu_dynamic_max">Maximale · dynamique</string>
+    <string name="max_gpu_monitor_only_detail">Les seuls nœuds graphiques exposés par ce noyau sont les moniteurs de bande passante et de QoS : ils ne portent pas d\'horloge GPU, il n\'y a donc pas de fréquence à définir. Le contrôle reste désactivé au lieu d\'écrire un gouverneur de mémoire comme s\'il s\'agissait du GPU.</string>
+    <string name="max_gpu_danger_title">Écrire des limites GPU ?</string>
+    <string name="max_gpu_danger_body">Cela écrit la fenêtre de fréquence graphique et le gouverneur dans les nœuds GPU. Une fenêtre que le pilote rejette, ou un régulateur qui ne peut pas suivre, peut bégayer toute l\'interface ou geler le panneau. L’application enregistre que vous l’avez accepté une fois – la responsabilité des valeurs que vous appliquez vous incombe.</string>
+    <string name="max_gpu_danger_action">Je comprends — postuler</string>
+    <string name="max_gpu_state_title">Temps dans l\'état</string>
+    <string name="max_gpu_state_desc">Où est réellement passé le temps du GPU, compté par le noyau par fréquence de fonctionnement — et non un instantané de l\'horloge actuelle.</string>
+    <string name="max_gpu_state_hidden_share">%1$s ensemble</string>
+    <string name="max_gpu_state_hidden">%1$d indique en dessous de 1%%</string>
 </resources>

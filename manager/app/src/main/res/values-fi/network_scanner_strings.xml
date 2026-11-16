@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/network_scanner_strings.xml -->
+<resources>
+    <string name="network_scanner_title">Paikallinen verkkoskanneri</string>
+    <string name="network_scanner_subtitle">Osoitteesi, yhdyskäytävä, johon se saapuu, ja naapurit vastasivat.</string>
+    <string name="max_role_network_scanner">Lukee verkkoa, jossa olet – ei sieppausta, ei juurta.</string>
+    <string name="ns_no_network">Verkkoa ei ole yhdistetty.</string>
+    <string name="ns_interface">Käyttöliittymä</string>
+    <string name="ns_address">Osoite</string>
+    <string name="ns_gateway">Gateway</string>
+    <string name="ns_dns">DNS</string>
+    <string name="ns_mac">MAC</string>
+    <string name="ns_transport_wifi">Wi-Fi</string>
+    <string name="ns_transport_ethernet">Ethernet</string>
+    <string name="ns_transport_cellular">Mobiili</string>
+    <string name="ns_transport_other">muu</string>
+    <string name="ns_sources_title">Mistä tämä tulee</string>
+    <string name="ns_sources_body">Osoitteet ja yhdyskäytävä luetaan alustan linkkiominaisuuksista. Naapuritaulukko luetaan ytimen ARP-välimuistista, joten se sisältää vain sen, jonka kanssa tämä laite on äskettäin puhunut – tyhjä taulukko ei tarkoita tyhjää verkkoa.</string>
+    <string name="ns_refresh">Päivitä</string>
+    <string name="ns_probe">Etsi yleiset portit</string>
+    <string name="ns_probe_stop">Stop</string>
+    <string name="ns_probe_progress">Tutkitaan %1$d / %2$d</string>
+    <string name="ns_probe_note">Lähettää TCP-yhteyden portteihin 22, 80, 443, 5000 ja 5555 tämän /24 kautta. Portti, joka vastaa, ilmoitetaan; hiljaisuus ei ole todiste isännän poissaolosta.</string>
+    <string name="ns_neighbours">Tunnetut naapurit</string>
+    <string name="ns_neighbours_note">Tiedostosta /proc/net/arp – vain luku.</string>
+    <string name="ns_neighbours_empty">Naapureita ei vielä tunneta.</string>
+    <string name="ns_ports_value">Portit %1$s</string>
+</resources>

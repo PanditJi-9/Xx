@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_update_strings.xml -->
+<resources>
+    <string name="update_dialog_title">განახლება ხელმისაწვდომია</string>
+    <string name="update_dialog_title_required">საჭიროა განახლება</string>
+    <string name="update_required_notice">ეს განახლება საჭიროა MaxManager-ის გამოყენების გასაგრძელებლად. დააინსტალირეთ, შემდეგ გახსენით აპი.</string>
+    <string name="update_dialog_body">ვერსია %1$s ხელმისაწვდომია. თქვენ ხართ %2$s-ზე.</string>
+    <string name="update_block_title">გასაგრძელებლად საჭიროა განახლება</string>
+    <string name="update_block_body">ეს აშენება (%1$s) აღარ არის მხარდაჭერილი. განაახლეთ %2$s-ზე, რათა გააგრძელოთ MaxManager-ის გამოყენება.</string>
+    <string name="update_block_body_no_release">ეს აშენება (%1$s) აღარ არის მხარდაჭერილი.</string>
+    <string name="update_release_notes_label">რა არის ახალი</string>
+    <string name="update_size">ჩამოტვირთვის ზომა: %1$s</string>
+    <string name="update_button_now">განაახლეთ ახლავე</string>
+    <string name="update_button_later">მოგვიანებით</string>
+    <string name="update_button_close">დახურვა</string>
+    <string name="update_button_open_page">გახსენით ჩამოტვირთვის გვერდი</string>
+    <string name="update_state_downloading">მიმდინარეობს ჩამოტვირთვა… %1$d%%</string>
+    <string name="update_state_downloading_unknown">მიმდინარეობს ჩამოტვირთვა…</string>
+    <string name="update_state_installing">მიმდინარეობს ინსტალაცია…</string>
+    <string name="update_error_network">განახლების სერვერთან დაკავშირება ვერ მოხერხდა. შეამოწმეთ თქვენი კავშირი და სცადეთ ხელახლა.</string>
+    <string name="update_error_http">განახლების სერვერმა უპასუხა შეცდომით. სცადეთ მოგვიანებით.</string>
+    <string name="update_error_format">განახლების ინფორმაციის წაკითხვა ვერ მოხერხდა.</string>
+    <string name="update_error_too_large">განახლების ინფორმაცია მოსალოდნელზე დიდი იყო და გაუქმდა.</string>
+    <string name="update_error_integrity">გადმოწერილი ფაილი არ ემთხვეოდა მის კონტროლს და წაიშალა.</string>
+    <string name="update_error_install">ინსტალაცია ვერ მოხერხდა. სცადეთ ხელახლა.</string>
+    <string name="update_error_not_configured">განახლების არხი არ არის კონფიგურირებული ამ build-ში.</string>
+    <string name="update_maintenance_title">დროებით მიუწვდომელია</string>
+    <string name="update_maintenance_body">MaxManager დროებით მიუწვდომელია. გთხოვთ, სცადოთ ხელახლა მალე.</string>
+    <string name="update_check_title">შეამოწმეთ განახლებები</string>
+    <string name="update_check_supporting">მიმდინარე ვერსია: %1$s</string>
+    <string name="update_check_updated">განახლება ხელმისაწვდომია.</string>
+    <string name="update_check_uptodate">თქვენ უახლეს ვერსიაზე ხართ.</string>
+    <string name="update_check_failed">განახლებების შემოწმება ვერ მოხერხდა.</string>
+    <string name="update_check_not_configured">განახლების არხი არ არის კონფიგურირებული ამ build-ში.</string>
+    <string name="update_released_label">გამოშვების თარიღი: %1$s</string>
+    <string name="update_check_none_published">საკონტროლო პანელიდან განახლება ჯერ არ გამოქვეყნებულა.</string>
+    <string name="update_check_link_missing">გამოქვეყნებულია განახლება, მაგრამ მისი ჩამოტვირთვის ბმული აკლია.</string>
+</resources>

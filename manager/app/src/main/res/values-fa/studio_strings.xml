@@ -10,4 +10,6 @@
     <string name="studio_display">نمایش</string>
     <string name="studio_power">گزینه های قدرت</string>
     <string name="studio_settings">تنظیمات</string>
+    <string name="audio_dsp_live">DSP زنده</string>
+    <string name="max_audio_session_label">جلسه صوتی #%1$d</string>
 </resources>

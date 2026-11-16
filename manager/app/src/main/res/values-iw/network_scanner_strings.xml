@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/network_scanner_strings.xml -->
+<resources>
+    <string name="network_scanner_title">סורק רשת מקומית</string>
+    <string name="network_scanner_subtitle">הכתובת שלך, השער אליו הוא מגיע, ואיזה השכנים ענו.</string>
+    <string name="max_role_network_scanner">קורא את הרשת שבה אתה נמצא - ללא לכידה, ללא שורש.</string>
+    <string name="ns_no_network">אין רשת מחוברת.</string>
+    <string name="ns_interface">מִמְשָׁק</string>
+    <string name="ns_address">כְּתוֹבֶת</string>
+    <string name="ns_gateway">כְּנִיסָה</string>
+    <string name="ns_dns">DNS</string>
+    <string name="ns_mac">MAC</string>
+    <string name="ns_transport_wifi">Wi-Fi</string>
+    <string name="ns_transport_ethernet">אתרנט</string>
+    <string name="ns_transport_cellular">תָאִי</string>
+    <string name="ns_transport_other">אַחֵר</string>
+    <string name="ns_sources_title">מאיפה זה בא</string>
+    <string name="ns_sources_body">כתובות ושער נקראים ממאפייני הקישור של הפלטפורמה. הטבלה השכנה נקראת ממטמון ה-ARP של הליבה, כך שהיא מכילה רק את מה שהמכשיר הזה דיבר איתו לאחרונה - טבלה ריקה לא אומרת רשת ריקה.</string>
+    <string name="ns_refresh">לְרַעֲנֵן</string>
+    <string name="ns_probe">בדיקה של יציאות נפוצות</string>
+    <string name="ns_probe_stop">לְהַפְסִיק</string>
+    <string name="ns_probe_progress">בדיקה של %1$d מתוך %2$d</string>
+    <string name="ns_probe_note">שולח חיבור TCP ביציאות 22, 80, 443, 5000 ו-5555 על פני /24 זה. נמל שעונה מדווח; שתיקה אינה הוכחה שמארח נעדר.</string>
+    <string name="ns_neighbours">שכנים ידועים</string>
+    <string name="ns_neighbours_note">מאת /proc/net/arp - לקריאה בלבד.</string>
+    <string name="ns_neighbours_empty">עדיין לא ידוע על שכנים.</string>
+    <string name="ns_ports_value">יציאות %1$s</string>
+</resources>

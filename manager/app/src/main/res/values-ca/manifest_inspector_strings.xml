@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/manifest_inspector_strings.xml -->
+<resources>
+    <string name="manifest_inspector_title">Inspector de manifest</string>
+    <string name="manifest_inspector_subtitle">El que una aplicació instal·lada declara sobre si mateixa, llegiu des de PackageManager.</string>
+    <string name="max_role_manifest_inspector">Mostra el que un paquet declara sobre si mateix: només de lectura.</string>
+    <string name="mi_search">Cerca aplicacions</string>
+    <string name="mi_empty">Trieu una aplicació a l\'esquerra.</string>
+    <string name="mi_yes">Sí</string>
+    <string name="mi_no">No</string>
+    <string name="mi_section_identity">paquet</string>
+    <string name="mi_version">Versió</string>
+    <string name="mi_version_code">Codi de versió</string>
+    <string name="mi_min_sdk">SDK mínim</string>
+    <string name="mi_target_sdk">SDK de destinació</string>
+    <string name="mi_installed">Instal·lat</string>
+    <string name="mi_updated">Actualitzat</string>
+    <string name="mi_installer">Instal·lador</string>
+    <string name="mi_uid">UID</string>
+    <string name="mi_data_dir">Directori de dades</string>
+    <string name="mi_debuggable">Depurable</string>
+    <string name="mi_system_app">Aplicació del sistema</string>
+    <string name="mi_enabled">Habilitat</string>
+    <string name="mi_section_permissions">Permisos sol·licitats</string>
+    <string name="mi_permissions_summary">%1$d permisos · %2$d d\'ells perillosos</string>
+    <string name="mi_permissions_none">Aquesta aplicació no demana permís.</string>
+    <string name="mi_perm_dangerous">Perillós</string>
+    <string name="mi_perm_signature">Signatura</string>
+    <string name="mi_perm_normal">Normal</string>
+    <string name="mi_perm_unknown">Sense classificar</string>
+    <string name="mi_section_components">Components</string>
+    <string name="mi_activities">Activitats</string>
+    <string name="mi_services">Serveis</string>
+    <string name="mi_receivers">Receptors</string>
+    <string name="mi_providers">Proveïdors</string>
+    <string name="mi_components_none">Cap declarat</string>
+    <string name="mi_section_features">Característiques del dispositiu</string>
+    <string name="mi_features_note">La plataforma no exposa la llista d\'usos de funcions d\'una altra aplicació; aquestes són les característiques que informa aquest dispositiu.</string>
+    <string name="mi_features_none">No s\'ha informat de cap característica</string>
+    <string name="mi_section_signature">Certificat de signatura</string>
+    <string name="mi_signature_note">SHA-256 del certificat de signatura. Dues compilacions amb el mateix valor són el mateix editor.</string>
+    <string name="mi_signature_sha256">Resum de certificats</string>
+</resources>

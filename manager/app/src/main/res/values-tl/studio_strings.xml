@@ -10,4 +10,6 @@
     <string name="studio_display">Pagpapakita</string>
     <string name="studio_power">Mga pagpipilian sa kapangyarihan</string>
     <string name="studio_settings">Mga setting</string>
+    <string name="audio_dsp_live">Live ang DSP</string>
+    <string name="max_audio_session_label">Sesyon ng audio #%1$d</string>
 </resources>

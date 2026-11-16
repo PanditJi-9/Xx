@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_update_strings.xml -->
+<resources>
+    <string name="update_dialog_title">ਅੱਪਡੇਟ ਉਪਲਬਧ ਹੈ</string>
+    <string name="update_dialog_title_required">ਅੱਪਡੇਟ ਦੀ ਲੋੜ ਹੈ</string>
+    <string name="update_required_notice">MaxManager ਦੀ ਵਰਤੋਂ ਕਰਦੇ ਰਹਿਣ ਲਈ ਇਹ ਅੱਪਡੇਟ ਲੋੜੀਂਦਾ ਹੈ। ਇਸਨੂੰ ਸਥਾਪਿਤ ਕਰੋ, ਫਿਰ ਐਪ ਨੂੰ ਦੁਬਾਰਾ ਖੋਲ੍ਹੋ।</string>
+    <string name="update_dialog_body">ਸੰਸਕਰਣ %1$s ਉਪਲਬਧ ਹੈ। ਤੁਸੀਂ %2$s \'ਤੇ ਹੋ।</string>
+    <string name="update_block_title">ਜਾਰੀ ਰੱਖਣ ਲਈ ਅੱਪਡੇਟ ਦੀ ਲੋੜ ਹੈ</string>
+    <string name="update_block_body">ਇਹ ਬਿਲਡ (%1$s) ਹੁਣ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ। MaxManager ਦੀ ਵਰਤੋਂ ਜਾਰੀ ਰੱਖਣ ਲਈ %2$s ਨੂੰ ਅੱਪਡੇਟ ਕਰੋ।</string>
+    <string name="update_block_body_no_release">ਇਹ ਬਿਲਡ (%1$s) ਹੁਣ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ।</string>
+    <string name="update_release_notes_label">ਨਵਾਂ ਕੀ ਹੈ</string>
+    <string name="update_size">ਡਾਊਨਲੋਡ ਆਕਾਰ: %1$s</string>
+    <string name="update_button_now">ਹੁਣੇ ਅੱਪਡੇਟ ਕਰੋ</string>
+    <string name="update_button_later">ਬਾਅਦ ਵਿੱਚ</string>
+    <string name="update_button_close">ਬੰਦ ਕਰੋ</string>
+    <string name="update_button_open_page">ਡਾਊਨਲੋਡ ਪੰਨਾ ਖੋਲ੍ਹੋ</string>
+    <string name="update_state_downloading">ਡਾਊਨਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ… %1$d%%</string>
+    <string name="update_state_downloading_unknown">ਡਾਊਨਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</string>
+    <string name="update_state_installing">ਸਥਾਪਤ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</string>
+    <string name="update_error_network">ਅੱਪਡੇਟ ਸਰਵਰ ਤੱਕ ਨਹੀਂ ਪਹੁੰਚ ਸਕਿਆ। ਆਪਣੇ ਕਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰੋ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</string>
+    <string name="update_error_http">ਅੱਪਡੇਟ ਸਰਵਰ ਨੇ ਇੱਕ ਗਲਤੀ ਨਾਲ ਜਵਾਬ ਦਿੱਤਾ। ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</string>
+    <string name="update_error_format">ਅੱਪਡੇਟ ਜਾਣਕਾਰੀ ਪੜ੍ਹੀ ਨਹੀਂ ਜਾ ਸਕੀ।</string>
+    <string name="update_error_too_large">ਅੱਪਡੇਟ ਜਾਣਕਾਰੀ ਉਮੀਦ ਨਾਲੋਂ ਵੱਡੀ ਸੀ ਅਤੇ ਰੱਦ ਕਰ ਦਿੱਤੀ ਗਈ ਸੀ।</string>
+    <string name="update_error_integrity">ਡਾਊਨਲੋਡ ਕੀਤੀ ਫ਼ਾਈਲ ਇਸ ਦੇ ਚੈੱਕਸਮ ਨਾਲ ਮੇਲ ਨਹੀਂ ਖਾਂਦੀ ਅਤੇ ਮਿਟਾ ਦਿੱਤੀ ਗਈ ਸੀ।</string>
+    <string name="update_error_install">ਸਥਾਪਨਾ ਅਸਫਲ ਰਹੀ। ਫਿਰ ਕੋਸ਼ਿਸ਼ ਕਰੋ.</string>
+    <string name="update_error_not_configured">ਇਸ ਬਿਲਡ ਵਿੱਚ ਕੋਈ ਅੱਪਡੇਟ ਚੈਨਲ ਕੌਂਫਿਗਰ ਨਹੀਂ ਕੀਤਾ ਗਿਆ ਹੈ।</string>
+    <string name="update_maintenance_title">ਅਸਥਾਈ ਤੌਰ \'ਤੇ ਅਣਉਪਲਬਧ</string>
+    <string name="update_maintenance_body">MaxManager ਅਸਥਾਈ ਤੌਰ \'ਤੇ ਅਣਉਪਲਬਧ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਜਲਦੀ ਹੀ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</string>
+    <string name="update_check_title">ਅੱਪਡੇਟ ਲਈ ਚੈੱਕ ਕਰੋ</string>
+    <string name="update_check_supporting">ਮੌਜੂਦਾ ਸੰਸਕਰਣ: %1$s</string>
+    <string name="update_check_updated">ਇੱਕ ਅੱਪਡੇਟ ਉਪਲਬਧ ਹੈ।</string>
+    <string name="update_check_uptodate">ਤੁਸੀਂ ਨਵੀਨਤਮ ਸੰਸਕਰਣ \'ਤੇ ਹੋ।</string>
+    <string name="update_check_failed">ਅੱਪਡੇਟ ਲਈ ਜਾਂਚ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੀ।</string>
+    <string name="update_check_not_configured">ਇਸ ਬਿਲਡ ਵਿੱਚ ਕੋਈ ਅੱਪਡੇਟ ਚੈਨਲ ਕੌਂਫਿਗਰ ਨਹੀਂ ਕੀਤਾ ਗਿਆ ਹੈ।</string>
+    <string name="update_released_label">ਰਿਲੀਜ਼ ਮਿਤੀ: %1$s</string>
+    <string name="update_check_none_published">ਕੰਟਰੋਲ ਪੈਨਲ ਤੋਂ ਅਜੇ ਤੱਕ ਕੋਈ ਅੱਪਡੇਟ ਪ੍ਰਕਾਸ਼ਿਤ ਨਹੀਂ ਕੀਤਾ ਗਿਆ ਹੈ।</string>
+    <string name="update_check_link_missing">ਇੱਕ ਅੱਪਡੇਟ ਪ੍ਰਕਾਸ਼ਿਤ ਕੀਤਾ ਗਿਆ ਹੈ, ਪਰ ਇਸਦਾ ਡਾਊਨਲੋਡ ਲਿੰਕ ਗੁੰਮ ਹੈ।</string>
+</resources>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_license_strings.xml -->
+<resources>
+    <string name="max_license_title">Lisenziya</string>
+    <string name="max_license_subtitle">Bir açar, bu cihaz, hesab yoxdur</string>
+    <string name="max_license_help_body">Açar daxil olduqda bir dəfə onlayn yoxlanılır. Bundan sonra serverin imzalanmış sertifikatı onun vaxtı bitənə qədər oflayn işləyir – hər dəfə ekranı açanda proqram evə zəng etmir. Sertifikat bu cihazın təsadüfi quraşdırma identifikatoruna bağlıdır, ona görə də proqram məlumatının başqa telefona kopyalanması onunla lisenziya daşımır və telefonları dəyişsəniz, sahib paneldən həmin bağlamanı sıfırlaya bilər.</string>
+    <string name="max_license_status_section">Vəziyyət</string>
+    <string name="max_license_status_active">Aktiv</string>
+    <string name="max_license_status_expired">İstifadə müddəti bitdi</string>
+    <string name="max_license_status_none">Aktivləşdirilməyib</string>
+    <string name="max_license_active_detail">Qalan: %1$d gün</string>
+    <string name="max_license_expired_detail">Bu açarın vaxtı bitdi. Yeni açar girişi yeniləyir.</string>
+    <string name="max_license_none_detail">Ödənişli səthlərin kilidini açmaq üçün aldığınız açarı daxil edin.</string>
+    <string name="max_license_promo_active">%1$s qədər hər kəs üçün pulsuzdur</string>
+    <string name="max_license_plan_title">Plan</string>
+    <string name="max_license_devices_title">Cihazlar</string>
+    <string name="max_license_devices_detail">%1$d / %2$d istifadə edilmişdir</string>
+    <string name="max_license_device_id_title">Bu cihaz</string>
+    <string name="max_license_device_id_detail">%1$s</string>
+    <string name="max_license_key_section">Aktivləşdirmə</string>
+    <string name="max_license_key_label">Lisenziya açarı</string>
+    <string name="max_license_key_placeholder">MAXM-XXXXXX-XXXXX-XXXXX-XXXXX-XX</string>
+    <string name="max_license_key_helper">Tire və böyük hərf fərqi yoxdur - onu aldığınız kimi yapışdırın.</string>
+    <string name="max_license_activate">Aktivləşdirin</string>
+    <string name="max_license_activating">Açar yoxlanılır...</string>
+    <string name="max_license_refresh">İndi yoxlayın</string>
+    <string name="max_license_activated">Aktivləşdirilib. Bu cihaz indi açarınızla əlaqələndirilib.</string>
+    <string name="max_license_error_invalid_key">Bu açar tam görünmür. Yoxlayın və yenidən cəhd edin.</string>
+    <string name="max_license_error_not_configured">Bu quruluşda konfiqurasiya edilmiş lisenziya serveri yoxdur.</string>
+    <string name="max_license_error_network">Bağlantı yoxdur. Açar bir dəfə yoxlanılır, sonra oflayn işləyir.</string>
+    <string name="max_license_error_timeout">Lisenziya serveri vaxtında cavab vermədi. Yenidən cəhd edin.</string>
+    <string name="max_license_error_server">Lisenziya serveri xəta ilə cavab verdi. Daha sonra yenidən cəhd edin.</string>
+    <string name="max_license_error_client">Lisenziya funksiyası serverdə yerləşdirilməyib.</string>
+    <string name="max_license_error_format">Serverin cavabı başa düşülmədi.</string>
+    <string name="max_license_error_expired">Bu açarın vaxtı keçib.</string>
+    <string name="max_license_error_not_found">Bu açar məlum deyil.</string>
+    <string name="max_license_error_revoked">Bu açar ləğv edilib.</string>
+    <string name="max_license_error_device_limit">Bu açar cihaz limitinə çatıb. Cihazın sıfırlanmasını istəyin.</string>
+    <string name="max_license_error_device_unknown">Bu cihaz hələ açarla əlaqələndirilməyib. Əvvəlcə onu burada aktivləşdirin.</string>
+    <string name="max_license_error_device_removed">Bu cihaz sahibi tərəfindən açardan çıxarılıb.</string>
+    <string name="max_license_error_rate_limited">Bu bağlantıdan həddən çox cəhd olub — bir neçə dəqiqə gözləyin, sonra yenidən cəhd edin.</string>
+    <string name="max_license_error_unknown">Nəsə xəta baş verdi. Səbəb Diaqnostikada qeyd edilib.</string>
+    <string name="max_license_gate_title">Bu səthin lisenziyaya ehtiyacı var</string>
+    <string name="max_license_gate_detail">Açarı ilə birlikdə verilir. Bir düymə bu cihazı əhatə edir və onu daxil etmək bir dəqiqə çəkir.</string>
+    <string name="max_feature_off_title">Söndürülüb</string>
+    <string name="max_feature_off_detail">İdarəetmə paneli bu səthi söndürdü. Yenidən aktivləşdirildikdən sonra geri qayıdır.</string>
+    <string name="max_license_gate_action">Lisenziya parametrlərini açın</string>
+    <string name="max_license_gate_subscribe">İndi abunə olun</string>
+    <string name="max_license_subscription_section">Abunəlik</string>
+    <string name="max_license_subscription_open">Abunə səhifəsini açın</string>
+</resources>

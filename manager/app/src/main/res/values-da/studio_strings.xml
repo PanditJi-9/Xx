@@ -10,4 +10,6 @@
     <string name="studio_display">Vise</string>
     <string name="studio_power">Strømmuligheder</string>
     <string name="studio_settings">Indstillinger</string>
+    <string name="audio_dsp_live">DSP live</string>
+    <string name="max_audio_session_label">Lydsession #%1$d</string>
 </resources>

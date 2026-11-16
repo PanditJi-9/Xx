@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_update_strings.xml -->
+<resources>
+    <string name="update_dialog_title">Isibuyekezo siyatholakala</string>
+    <string name="update_dialog_title_required">Kudingeka isibuyekezo</string>
+    <string name="update_required_notice">Lesi sibuyekezo siyadingeka ukuze uqhubeke usebenzisa MaxManager. Ifake, bese uvule kabusha uhlelo lokusebenza.</string>
+    <string name="update_dialog_body">Inguqulo %1$s iyatholakala. Uku-%2$s.</string>
+    <string name="update_block_title">Kudingeka isibuyekezo ukuze uqhubeke</string>
+    <string name="update_block_body">Lesi sakhiwo (%1$s) asisasekelwa. Buyekeza uye ku-%2$s ukuze uqhubeke nokusebenzisa MaxManager.</string>
+    <string name="update_block_body_no_release">Lesi sakhiwo (%1$s) asisasekelwa.</string>
+    <string name="update_release_notes_label">Yini entsha</string>
+    <string name="update_size">Usayizi wokulanda: %1$s</string>
+    <string name="update_button_now">Buyekeza manje</string>
+    <string name="update_button_later">Kamuva</string>
+    <string name="update_button_close">Vala</string>
+    <string name="update_button_open_page">Vula ikhasi lokulanda</string>
+    <string name="update_state_downloading">Iyalanda… %1$d%%</string>
+    <string name="update_state_downloading_unknown">Iyalanda...</string>
+    <string name="update_state_installing">Iyafaka...</string>
+    <string name="update_error_network">Ayikwazanga ukufinyelela iseva yokubuyekeza. Hlola uxhumo lwakho bese uyazama futhi.</string>
+    <string name="update_error_http">Iseva yokubuyekeza iphendule ngephutha. Zama futhi emuva kwesikhathi.</string>
+    <string name="update_error_format">Ulwazi lwesibuyekezo alukwazanga ukufundwa.</string>
+    <string name="update_error_too_large">Ulwazi lwesibuyekezo belulukhulu kunobekulindelekile futhi lwalahlwa.</string>
+    <string name="update_error_integrity">Ifayela elilandiwe alifananga ne-checksum yalo futhi lisusiwe.</string>
+    <string name="update_error_install">Ukufaka kuhlulekile. Zama futhi.</string>
+    <string name="update_error_not_configured">Asikho isiteshi sokubuyekeza esilungisiwe kulesi sakhiwo.</string>
+    <string name="update_maintenance_title">Ayitholakali okwesikhashana</string>
+    <string name="update_maintenance_body">MaxManager ayitholakali okwamanje. Sicela uzame futhi maduze.</string>
+    <string name="update_check_title">Hlola izibuyekezo</string>
+    <string name="update_check_supporting">Inguqulo yamanje: %1$s</string>
+    <string name="update_check_updated">Isibuyekezo siyatholakala.</string>
+    <string name="update_check_uptodate">Ukunguqulo yakamuva.</string>
+    <string name="update_check_failed">Ayikwazanga ukuhlola izibuyekezo.</string>
+    <string name="update_check_not_configured">Asikho isiteshi sokubuyekeza esilungisiwe kulesi sakhiwo.</string>
+    <string name="update_released_label">Idethi yokukhishwa: %1$s</string>
+    <string name="update_check_none_published">Asikho isibuyekezo esishicilelwe kusukela kuphaneli yokulawula okwamanje.</string>
+    <string name="update_check_link_missing">Isibuyekezo sishicilelwe, kodwa isixhumanisi saso sokulanda asikho.</string>
+</resources>

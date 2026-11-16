@@ -99,4 +99,12 @@
     <string name="max_gpu_saved_desc">Được giữ lại từ lần lưu trước đó và áp dụng cho mỗi lần khởi động: %1$s. Mặc định ở trên chỉ kết thúc phiên này, không bao giờ kết thúc trạng thái đã lưu.</string>
     <string name="max_gpu_dynamic_min">Tối thiểu · năng động</string>
     <string name="max_gpu_dynamic_max">Tối đa · năng động</string>
+    <string name="max_gpu_monitor_only_detail">Các nút đồ họa duy nhất mà hạt nhân này hiển thị là màn hình băng thông và QoS: chúng không có đồng hồ GPU, do đó không có tần số để đặt. Kiểm soát sẽ tắt thay vì ghi bộ điều chỉnh bộ nhớ như thể nó là GPU.</string>
+    <string name="max_gpu_danger_title">Viết giới hạn GPU?</string>
+    <string name="max_gpu_danger_body">Thao tác này ghi cửa sổ tần số đồ họa và bộ điều chỉnh vào các nút GPU. Cửa sổ bị trình điều khiển từ chối hoặc bộ điều chỉnh không theo kịp có thể gây giật toàn bộ giao diện hoặc đóng băng bảng điều khiển. Ứng dụng ghi lại rằng bạn đã chấp nhận điều này một lần - trách nhiệm đối với các giá trị bạn áp dụng là của bạn.</string>
+    <string name="max_gpu_danger_action">Tôi hiểu - áp dụng</string>
+    <string name="max_gpu_state_title">Thời gian ở trạng thái</string>
+    <string name="max_gpu_state_desc">Nơi thời gian của GPU\ thực sự đã trôi qua, được tính theo hạt nhân trên mỗi tần số hoạt động — không phải ảnh chụp nhanh của đồng hồ hiện tại.</string>
+    <string name="max_gpu_state_hidden_share">%1$s cùng nhau</string>
+    <string name="max_gpu_state_hidden">%1$d trạng thái dưới 1%%</string>
 </resources>

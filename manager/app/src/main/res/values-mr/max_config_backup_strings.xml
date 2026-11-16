@@ -18,4 +18,10 @@
     <string name="max_cfg_section_appearance">स्वरूप आणि इंटरफेस</string>
     <string name="max_cfg_section_app_prefs">ॲप प्राधान्ये आणि भाषा</string>
     <string name="max_cfg_restore_merge_note">पुनर्संचयित प्राधान्ये विलीन होतात: फाइलमध्ये उपस्थित की लिहिल्या जातात आणि की ज्या आहेत त्याप्रमाणे राहण्याचा उल्लेख नाही. काहीही क्लिअर होत नाही.</string>
+    <string name="max_cfg_diff_title">%1$d जतन केलेली सेटिंग्ज या डिव्हाइसपेक्षा भिन्न आहेत</string>
+    <string name="max_cfg_diff_line">%1$s: %2$s → %3$s</string>
+    <string name="max_cfg_diff_unset">सेट नाही</string>
+    <string name="max_cfg_diff_more">आणि %1$d अधिक</string>
+    <string name="max_cfg_diff_applist">%1$d ॲप-सूची ओळी जोडल्या, %2$d काढल्या — संपूर्ण सूची बदलली आहे, विलीन केलेली नाही.</string>
+    <string name="max_cfg_diff_prefs">%1$d प्राधान्य की भिन्न आहेत — विलीन केल्या, पुसल्या नाहीत.</string>
 </resources>

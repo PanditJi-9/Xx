@@ -69,4 +69,25 @@
     <string name="max_perms_entry_title">Izimvume nezinhlelo zokusebenza</string>
     <string name="max_perms_entry_desc">Bona ukuthi lolu hlelo lokusebenza lumemezela ini nokuthi isistimu ivumela ini ngempela</string>
     <string name="max_perms_entry_action">Vula izimvume</string>
+    <string name="max_perms_manifest_title">Bonisa isifinyezo</string>
+    <string name="max_perms_manifest_desc">Funda kumphathi wephakheji: inguqulo, ububanzi be-SDK, izingxenye nokuthi zingaki zazo ezithunyelwa ngaphandle. Ingxenye ethunyelwe ingaqalwa ezinye izinhlelo zokusebenza.</string>
+    <string name="max_perms_manifest_version">Inguqulo</string>
+    <string name="max_perms_manifest_sdk">Ibanga le-SDK</string>
+    <string name="max_perms_manifest_location">Faka indawo</string>
+    <string name="max_perms_manifest_location_auto">Okuzenzakalelayo</string>
+    <string name="max_perms_manifest_location_internal">Isitoreji sangaphakathi kuphela</string>
+    <string name="max_perms_manifest_location_external">Uncamela okwangaphandle</string>
+    <string name="max_perms_manifest_components">Izingxenye</string>
+    <string name="max_perms_manifest_components_order">imisebenzi · izinsiza · abemukeli · abahlinzeki</string>
+    <string name="max_perms_manifest_exported">Izingxenye ezithunyelwe</string>
+    <string name="max_perms_manifest_splits">Hlukanisa ama-APK</string>
+    <string name="max_perms_manifest_debug">Okususekayo</string>
+    <string name="max_perms_features_title">Izici ezimenyezelwe</string>
+    <string name="max_perms_features_desc">Okudingwa yiphakheji kudivayisi, uma kuqhathaniswa nalokho okukhangiswa yile divayisi. Isici esidingekayo esingekho lapha ngokuvamile sisho ukuthi uhlelo lokusebenza ngeke lusebenze ngokugcwele — isimangalo esivela kumphathi wephakheji, hhayi ukuqagela.</string>
+    <string name="max_perms_features_loading">Ifunda izici ezimenyezelwe zephakheji...</string>
+    <string name="max_perms_features_none">Iphakheji isho ukuthi azikho izici ezidingekayo.</string>
+    <string name="max_perms_features_required">Kudingeka</string>
+    <string name="max_perms_features_unsupported">Hhayi kule divayisi</string>
+    <string name="max_perms_manifest_none">Ayibikwanga umphathi wephakheji.</string>
+    <string name="max_perms_manifest_unknown">Akwaziwa</string>
 </resources>

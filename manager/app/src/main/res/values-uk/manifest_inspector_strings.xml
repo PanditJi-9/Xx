@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/manifest_inspector_strings.xml -->
+<resources>
+    <string name="manifest_inspector_title">Маніфестний інспектор</string>
+    <string name="manifest_inspector_subtitle">Те, що встановлена ​​програма повідомляє про себе, читайте в PackageManager.</string>
+    <string name="max_role_manifest_inspector">Показує, що пакет декларує про себе — тільки для читання.</string>
+    <string name="mi_search">Пошук програм</string>
+    <string name="mi_empty">Виберіть додаток ліворуч.</string>
+    <string name="mi_yes">так</string>
+    <string name="mi_no">немає</string>
+    <string name="mi_section_identity">Пакет</string>
+    <string name="mi_version">Версія</string>
+    <string name="mi_version_code">Код версії</string>
+    <string name="mi_min_sdk">Мінімальний SDK</string>
+    <string name="mi_target_sdk">Цільовий SDK</string>
+    <string name="mi_installed">встановлено</string>
+    <string name="mi_updated">Оновлено</string>
+    <string name="mi_installer">Інсталятор</string>
+    <string name="mi_uid">UID</string>
+    <string name="mi_data_dir">Каталог даних</string>
+    <string name="mi_debuggable">Відлагоджується</string>
+    <string name="mi_system_app">Системний додаток</string>
+    <string name="mi_enabled">Увімкнено</string>
+    <string name="mi_section_permissions">Запитані дозволи</string>
+    <string name="mi_permissions_summary">%1$d дозволів · %2$d з них небезпечні</string>
+    <string name="mi_permissions_none">Цей додаток не вимагає дозволу.</string>
+    <string name="mi_perm_dangerous">Небезпечно</string>
+    <string name="mi_perm_signature">Підпис</string>
+    <string name="mi_perm_normal">нормальний</string>
+    <string name="mi_perm_unknown">Некласифікований</string>
+    <string name="mi_section_components">компоненти</string>
+    <string name="mi_activities">Діяльність</string>
+    <string name="mi_services">Послуги</string>
+    <string name="mi_receivers">Приймачі</string>
+    <string name="mi_providers">Провайдери</string>
+    <string name="mi_components_none">Жодного не заявлено</string>
+    <string name="mi_section_features">Особливості пристрою</string>
+    <string name="mi_features_note">Платформа не розкриває список функцій використання іншої програми; це функції, які повідомляє цей пристрій.</string>
+    <string name="mi_features_none">Не повідомляється про жодну функцію</string>
+    <string name="mi_section_signature">Сертифікат підпису</string>
+    <string name="mi_signature_note">SHA-256 сертифіката підпису. Дві збірки з однаковим значенням є одним видавцем.</string>
+    <string name="mi_signature_sha256">Дайджест сертифіката</string>
+</resources>

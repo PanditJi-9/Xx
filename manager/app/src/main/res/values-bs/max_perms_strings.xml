@@ -69,4 +69,25 @@
     <string name="max_perms_entry_title">Dozvole i funkcije aplikacije</string>
     <string name="max_perms_entry_desc">Pogledajte šta ova aplikacija objavljuje i šta sistem zapravo dozvoljava</string>
     <string name="max_perms_entry_action">Otvorene dozvole</string>
+    <string name="max_perms_manifest_title">Sažetak manifesta</string>
+    <string name="max_perms_manifest_desc">Pročitajte iz menadžera paketa: verziju, opseg SDK-a, komponente i koliko ih se izvozi. Izvezenu komponentu mogu pokrenuti druge aplikacije.</string>
+    <string name="max_perms_manifest_version">Verzija</string>
+    <string name="max_perms_manifest_sdk">SDK asortiman</string>
+    <string name="max_perms_manifest_location">Lokacija instalacije</string>
+    <string name="max_perms_manifest_location_auto">Automatski</string>
+    <string name="max_perms_manifest_location_internal">Samo interna pohrana</string>
+    <string name="max_perms_manifest_location_external">Preferira eksterno</string>
+    <string name="max_perms_manifest_components">Komponente</string>
+    <string name="max_perms_manifest_components_order">aktivnosti · usluge · primaoci · provajderi</string>
+    <string name="max_perms_manifest_exported">Izvezene komponente</string>
+    <string name="max_perms_manifest_splits">Podijelite APK-ove</string>
+    <string name="max_perms_manifest_debug">Debuggable</string>
+    <string name="max_perms_features_title">Deklarisane karakteristike</string>
+    <string name="max_perms_features_desc">Šta paket zahteva od uređaja, u poređenju sa onim što ovaj uređaj reklamira. Potrebna funkcija koja ovdje nedostaje obično znači da aplikacija neće raditi u potpunosti – to je zahtjev od upravitelja paketa, a ne nagađanje.</string>
+    <string name="max_perms_features_loading">Čitanje deklariranih karakteristika paketa…</string>
+    <string name="max_perms_features_none">Paket deklarira da nema potrebnih karakteristika.</string>
+    <string name="max_perms_features_required">Obavezno</string>
+    <string name="max_perms_features_unsupported">Ne na ovom uređaju</string>
+    <string name="max_perms_manifest_none">Nije prijavljeno od strane menadžera paketa.</string>
+    <string name="max_perms_manifest_unknown">Nepoznato</string>
 </resources>

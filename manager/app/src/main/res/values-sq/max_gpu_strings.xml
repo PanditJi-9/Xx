@@ -99,4 +99,12 @@
     <string name="max_gpu_saved_desc">Mbajtur nga një kursim i mëparshëm dhe aplikuar në çdo boot: %1$s. Parazgjedhja e mësipërme përfundon vetëm këtë sesion, asnjëherë gjendjen e ruajtur.</string>
     <string name="max_gpu_dynamic_min">Minimumi · dinamik</string>
     <string name="max_gpu_dynamic_max">Maksimumi · dinamik</string>
+    <string name="max_gpu_monitor_only_detail">Të vetmet nyje grafike që ekspozon ky kernel janë monitorët e brezit dhe QoS: ato nuk mbajnë orë GPU, kështu që nuk ka frekuencë për të vendosur. Kontrolli qëndron i fikur në vend që të shkruani një guvernator kujtese sikur të ishte GPU.</string>
+    <string name="max_gpu_danger_title">Shkruani kufijtë GPU?</string>
+    <string name="max_gpu_danger_body">Kjo shkruan dritaren e frekuencës grafike dhe guvernatorin në nyjet GPU. Një dritare që shoferi refuzon, ose një guvernator që nuk mund të vazhdojë, mund të belbëzojë të gjithë ndërfaqen ose të ngrijë panelin. Aplikacioni regjistron që ju e keni pranuar këtë një herë - përgjegjësia për vlerat që aplikoni është e juaja.</string>
+    <string name="max_gpu_danger_action">Unë e kuptoj - aplikoni</string>
+    <string name="max_gpu_state_title">Koha në gjendje</string>
+    <string name="max_gpu_state_desc">Aty ku shkoi në të vërtetë koha e GPU\'s, e numëruar nga kerneli për frekuencë funksionimi - jo një fotografi e orës aktuale.</string>
+    <string name="max_gpu_state_hidden_share">%1$s së bashku</string>
+    <string name="max_gpu_state_hidden">%1$d shtetet nën 1%%</string>
 </resources>

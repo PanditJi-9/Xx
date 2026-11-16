@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_license_strings.xml -->
+<resources>
+    <string name="max_license_title">Licenca</string>
+    <string name="max_license_subtitle">Një çelës, kjo pajisje, pa llogari</string>
+    <string name="max_license_help_body">Një çelës kontrollohet në internet një herë, kur e futni atë. Që atëherë, certifikata e nënshkruar e serverit funksionon jashtë linje derisa koha e saj të mbarojë - aplikacioni nuk telefonon në shtëpi sa herë që hapni një ekran. Certifikata është e lidhur me ID-në e instalimit të rastësishëm të kësaj pajisjeje, kështu që kopjimi i të dhënave të aplikacionit në një telefon tjetër nuk e mbart licencën me vete dhe zotëruesi mund ta rivendosë atë lidhje nga paneli nëse ndryshon telefonat.</string>
+    <string name="max_license_status_section">Statusi</string>
+    <string name="max_license_status_active">Aktiv</string>
+    <string name="max_license_status_expired">I skaduar</string>
+    <string name="max_license_status_none">Nuk është aktivizuar</string>
+    <string name="max_license_active_detail">Kanë mbetur: %1$d ditë</string>
+    <string name="max_license_expired_detail">Koha e këtij çelësi ka mbaruar. Një çelës i ri rinovon aksesin.</string>
+    <string name="max_license_none_detail">Futni çelësin që keni marrë për të zhbllokuar sipërfaqet me pagesë.</string>
+    <string name="max_license_promo_active">Falas për të gjithë deri në %1$s</string>
+    <string name="max_license_plan_title">Planifikoni</string>
+    <string name="max_license_devices_title">Pajisjet</string>
+    <string name="max_license_devices_detail">%1$d nga %2$d të përdorura</string>
+    <string name="max_license_device_id_title">Kjo pajisje</string>
+    <string name="max_license_device_id_detail">%1$s</string>
+    <string name="max_license_key_section">Aktivizimi</string>
+    <string name="max_license_key_label">Çelësi i licencës</string>
+    <string name="max_license_key_placeholder">MAXM-XXXXX-XXXXX-XXXX-XXXX-XX</string>
+    <string name="max_license_key_helper">Vizat dhe shkronjat e mëdha nuk kanë rëndësi - ngjisni ashtu siç e keni marrë.</string>
+    <string name="max_license_activate">Aktivizoni</string>
+    <string name="max_license_activating">Po kontrollon çelësin…</string>
+    <string name="max_license_refresh">Kontrollo tani</string>
+    <string name="max_license_activated">Aktivizuar. Kjo pajisje tani është e lidhur me çelësin tuaj.</string>
+    <string name="max_license_error_invalid_key">Ky çelës nuk duket i plotë. Kontrollo dhe provo sërish.</string>
+    <string name="max_license_error_not_configured">Ky ndërtim nuk ka asnjë server licence të konfiguruar.</string>
+    <string name="max_license_error_network">Asnjë lidhje. Çelësi kontrollohet një herë dhe më pas funksionon jashtë linje.</string>
+    <string name="max_license_error_timeout">Serveri i licencës nuk u përgjigj në kohë. Provo sërish.</string>
+    <string name="max_license_error_server">Serveri i licencës u përgjigj me një gabim. Provo sërish më vonë.</string>
+    <string name="max_license_error_client">Funksioni i licencës nuk është vendosur në server.</string>
+    <string name="max_license_error_format">Përgjigja e serverit nuk u kuptua.</string>
+    <string name="max_license_error_expired">Ky çelës ka skaduar.</string>
+    <string name="max_license_error_not_found">Ky çelës nuk dihet.</string>
+    <string name="max_license_error_revoked">Ky çelës është revokuar.</string>
+    <string name="max_license_error_device_limit">Ky çelës ka arritur kufirin e pajisjes. Kërkoni një rivendosje të pajisjes.</string>
+    <string name="max_license_error_device_unknown">Kjo pajisje nuk është ende e lidhur me çelësin. Aktivizoni këtu së pari.</string>
+    <string name="max_license_error_device_removed">Kjo pajisje u hoq nga çelësi nga zotëruesi.</string>
+    <string name="max_license_error_rate_limited">Shumë përpjekje nga kjo lidhje - prisni disa minuta dhe më pas provoni përsëri.</string>
+    <string name="max_license_error_unknown">Diçka shkoi keq. Arsyeja është regjistruar në Diagnostics.</string>
+    <string name="max_license_gate_title">Kjo sipërfaqe ka nevojë për licencë</string>
+    <string name="max_license_gate_detail">Përfshihet me një çelës. Një çelës mbulon këtë pajisje dhe futja në të kërkon një minutë.</string>
+    <string name="max_feature_off_title">E fikur</string>
+    <string name="max_feature_off_detail">Paneli i kontrollit e ka fikur këtë sipërfaqe. Ai kthehet sapo të aktivizohet përsëri.</string>
+    <string name="max_license_gate_action">Hap cilësimet e licencës</string>
+    <string name="max_license_gate_subscribe">Abonohu ​​tani</string>
+    <string name="max_license_subscription_section">Abonimi</string>
+    <string name="max_license_subscription_open">Hapni faqen e abonimit</string>
+</resources>

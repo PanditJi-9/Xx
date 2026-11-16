@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/manifest_inspector_strings.xml -->
+<resources>
+    <string name="manifest_inspector_title">Duidelijke inspecteur</string>
+    <string name="manifest_inspector_subtitle">Wat een geïnstalleerde app over zichzelf verklaart, leest u in PackageManager.</string>
+    <string name="max_role_manifest_inspector">Toont wat een pakket over zichzelf verklaart: alleen-lezen.</string>
+    <string name="mi_search">Zoek apps</string>
+    <string name="mi_empty">Kies aan de linkerkant een app.</string>
+    <string name="mi_yes">Ja</string>
+    <string name="mi_no">Nee</string>
+    <string name="mi_section_identity">Pakket</string>
+    <string name="mi_version">Versie</string>
+    <string name="mi_version_code">Versiecode</string>
+    <string name="mi_min_sdk">Minimale SDK</string>
+    <string name="mi_target_sdk">Doel-SDK</string>
+    <string name="mi_installed">Geïnstalleerd</string>
+    <string name="mi_updated">Bijgewerkt</string>
+    <string name="mi_installer">Installateur</string>
+    <string name="mi_uid">UID</string>
+    <string name="mi_data_dir">Gegevensmap</string>
+    <string name="mi_debuggable">Foutopsporing mogelijk</string>
+    <string name="mi_system_app">Systeem-app</string>
+    <string name="mi_enabled">Ingeschakeld</string>
+    <string name="mi_section_permissions">Toestemmingen aangevraagd</string>
+    <string name="mi_permissions_summary">%1$d rechten · %2$d daarvan gevaarlijk</string>
+    <string name="mi_permissions_none">Deze app vraagt ​​geen toestemming.</string>
+    <string name="mi_perm_dangerous">Gevaarlijk</string>
+    <string name="mi_perm_signature">Handtekening</string>
+    <string name="mi_perm_normal">Normaal</string>
+    <string name="mi_perm_unknown">Niet geclassificeerd</string>
+    <string name="mi_section_components">Componenten</string>
+    <string name="mi_activities">Activiteiten</string>
+    <string name="mi_services">Diensten</string>
+    <string name="mi_receivers">Ontvangers</string>
+    <string name="mi_providers">Aanbieders</string>
+    <string name="mi_components_none">Geen verklaard</string>
+    <string name="mi_section_features">Apparaatfuncties</string>
+    <string name="mi_features_note">Het platform toont de lijst met gebruiksfuncties van een andere app niet; dit zijn de functies die dit apparaat rapporteert.</string>
+    <string name="mi_features_none">Geen functie gerapporteerd</string>
+    <string name="mi_section_signature">Ondertekeningscertificaat</string>
+    <string name="mi_signature_note">SHA-256 van het handtekeningcertificaat. Twee builds met dezelfde waarde zijn van dezelfde uitgever.</string>
+    <string name="mi_signature_sha256">Certificaat samenvatting</string>
+</resources>

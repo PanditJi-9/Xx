@@ -53,4 +53,8 @@
     <string name="max_title_get_started">Настройка</string>
     <string name="max_hub_audio">Аўдыё</string>
     <string name="max_hub_audio_desc">Прылады вываду, патокі і заяўленыя эфекты</string>
+    <string name="control_tools_live">Жывыя паверхні</string>
+    <string name="control_tools_advanced">Прасунутыя інструменты</string>
+    <string name="control_tools_system">Сістэмныя сродкі</string>
+    <string name="control_tools_appearance">Знешні выгляд</string>
 </resources>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/network_scanner_strings.xml -->
+<resources>
+    <string name="network_scanner_title">Scanner de réseau local</string>
+    <string name="network_scanner_subtitle">Votre adresse, la porte d\'entrée atteinte et les voisins qui ont répondu.</string>
+    <string name="max_role_network_scanner">Lit le réseau sur lequel vous vous trouvez – pas de capture, pas de racine.</string>
+    <string name="ns_no_network">Aucun réseau n\'est connecté.</string>
+    <string name="ns_interface">Interface</string>
+    <string name="ns_address">Adresse</string>
+    <string name="ns_gateway">Porte</string>
+    <string name="ns_dns">DNS</string>
+    <string name="ns_mac">MAC</string>
+    <string name="ns_transport_wifi">Wi-Fi</string>
+    <string name="ns_transport_ethernet">Ethernet</string>
+    <string name="ns_transport_cellular">Cellulaire</string>
+    <string name="ns_transport_other">Autre</string>
+    <string name="ns_sources_title">D\'où ça vient</string>
+    <string name="ns_sources_body">Les adresses et la passerelle sont lues à partir des propriétés des liens de la plateforme. La table voisine est lue à partir du cache ARP du noyau, elle ne contient donc que ce avec quoi ce périphérique a récemment communiqué — une table vide ne signifie pas un réseau vide.</string>
+    <string name="ns_refresh">Rafraîchir</string>
+    <string name="ns_probe">Ports communs de la sonde</string>
+    <string name="ns_probe_stop">Arrêt</string>
+    <string name="ns_probe_progress">Sondage %1$d de %2$d</string>
+    <string name="ns_probe_note">Envoie une connexion TCP sur les ports 22, 80, 443, 5000 et 5555 via ce /24. Un port qui répond est signalé ; le silence n\'est pas la preuve qu\'un hôte est absent.</string>
+    <string name="ns_neighbours">Voisins connus</string>
+    <string name="ns_neighbours_note">Depuis /proc/net/arp — lecture seule.</string>
+    <string name="ns_neighbours_empty">Aucun voisin n\'est encore connu.</string>
+    <string name="ns_ports_value">Ports %1$s</string>
+</resources>

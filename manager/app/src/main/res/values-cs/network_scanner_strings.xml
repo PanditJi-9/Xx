@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/network_scanner_strings.xml -->
+<resources>
+    <string name="network_scanner_title">Místní síťový skener</string>
+    <string name="network_scanner_subtitle">Vaše adresa, brána, na kterou dosáhne, a kteří sousedé odpověděli.</string>
+    <string name="max_role_network_scanner">Čte síť, ve které se nacházíte – žádné zachycení, žádný root.</string>
+    <string name="ns_no_network">Není připojena žádná síť.</string>
+    <string name="ns_interface">Rozhraní</string>
+    <string name="ns_address">Adresa</string>
+    <string name="ns_gateway">Brána</string>
+    <string name="ns_dns">DNS</string>
+    <string name="ns_mac">MAC</string>
+    <string name="ns_transport_wifi">Wi-Fi</string>
+    <string name="ns_transport_ethernet">Ethernet</string>
+    <string name="ns_transport_cellular">Buněčný</string>
+    <string name="ns_transport_other">Ostatní</string>
+    <string name="ns_sources_title">Odkud to pochází</string>
+    <string name="ns_sources_body">Adresy a brány se čtou z vlastností propojení platformy. Tabulka sousedů je načtena z mezipaměti ARP jádra, takže obsahuje pouze to, s čím toto zařízení nedávno mluvilo — prázdná tabulka neznamená prázdnou síť.</string>
+    <string name="ns_refresh">Obnovit</string>
+    <string name="ns_probe">Vyzkoušejte společné porty</string>
+    <string name="ns_probe_stop">Zastávka</string>
+    <string name="ns_probe_progress">Snímání %1$d z %2$d</string>
+    <string name="ns_probe_note">Odešle připojení TCP na portech 22, 80, 443, 5000 a 5555 přes toto /24. Je hlášen port, který odpovídá; ticho není důkazem nepřítomnosti hostitele.</string>
+    <string name="ns_neighbours">Známí sousedé</string>
+    <string name="ns_neighbours_note">Z /proc/net/arp — pouze pro čtení.</string>
+    <string name="ns_neighbours_empty">Zatím nejsou známi žádní sousedé.</string>
+    <string name="ns_ports_value">Porty %1$s</string>
+</resources>

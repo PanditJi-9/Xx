@@ -18,4 +18,10 @@
     <string name="max_cfg_section_appearance">Көрүнүш жана интерфейс</string>
     <string name="max_cfg_section_app_prefs">Колдонмонун тандоолору жана тили</string>
     <string name="max_cfg_restore_merge_note">Калыбына келтирилген артыкчылыктар биригет: файлдагы ачкычтар жазылат жана анда айтылбаган баскычтар ошол бойдон калат. Эч нерсе тазаланган жок.</string>
+    <string name="max_cfg_diff_title">%1$d сакталган орнотуулар бул түзмөктөн айырмаланат</string>
+    <string name="max_cfg_diff_line">%1$s: %2$s → %3$s</string>
+    <string name="max_cfg_diff_unset">коюлган эмес</string>
+    <string name="max_cfg_diff_more">жана дагы %1$d</string>
+    <string name="max_cfg_diff_applist">%1$d колдонмо тизмеси саптары кошулду, %2$d алынып салынды — тизме толук эмес, алмаштырылды.</string>
+    <string name="max_cfg_diff_prefs">%1$d артыкчылык баскычтары айырмаланат — бириктирилген, жок кылынган эмес.</string>
 </resources>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/network_scanner_strings.xml -->
+<resources>
+<string name="network_scanner_title">Локални мрежни скенер</string>
+<string name="network_scanner_subtitle">Ваша адреса, капија до које долази, и комшије су се јавиле.</string>
+<string name="max_role_network_scanner">Чита мрежу на којој се налазите — без снимања, без роот-а.</string>
+<string name="ns_no_network">Ниједна мрежа није повезана.</string>
+<string name="ns_interface">Интерфејс</string>
+<string name="ns_address">Адреса</string>
+<string name="ns_gateway">Гатеваи</string>
+<string name="ns_dns">ДНС</string>
+<string name="ns_mac">МАЦ</string>
+<string name="ns_transport_wifi">Ви-Фи</string>
+<string name="ns_transport_ethernet">Етхернет</string>
+<string name="ns_transport_cellular">Целлулар</string>
+<string name="ns_transport_other">Остало</string>
+<string name="ns_sources_title">Одакле ово долази</string>
+<string name="ns_sources_body">Адресе и мрежни пролаз се читају из својстава везе платформе. Табела суседа се чита из АРП кеша кернела, тако да садржи само оно са чиме је овај уређај недавно разговарао — празна табела не значи празну мрежу.</string>
+<string name="ns_refresh">Освежи</string>
+<string name="ns_probe">Испитајте заједничке портове</string>
+<string name="ns_probe_stop">Стани</string>
+<string name="ns_probe_progress">Испитивање %1$d од %2$d</string>
+<string name="ns_probe_note">Шаље ТЦП везу на портовима 22, 80, 443, 5000 и 5555 преко овог /24. Пријављен је порт који одговара; ћутање није доказ одсуства домаћина.</string>
+<string name="ns_neighbours">Познате комшије</string>
+<string name="ns_neighbours_note">Из /проц/нет/арп — само за читање.</string>
+<string name="ns_neighbours_empty">Комшије још нису познате.</string>
+<string name="ns_ports_value">Портови %1$s</string>
+</resources>

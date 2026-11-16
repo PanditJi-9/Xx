@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/manifest_inspector_strings.xml -->
+<resources>
+    <string name="manifest_inspector_title">Манифест инспектору</string>
+    <string name="manifest_inspector_subtitle">Орнотулган колдонмо өзү жөнүндө эмнени билдирерин PackageManagerден окуңуз.</string>
+    <string name="max_role_manifest_inspector">Пакет өзү жөнүндө эмнени билдирерин көрсөтөт — окуу үчүн гана.</string>
+    <string name="mi_search">Колдонмолорду издөө</string>
+    <string name="mi_empty">Сол жактагы колдонмону тандаңыз.</string>
+    <string name="mi_yes">Ооба</string>
+    <string name="mi_no">Жок</string>
+    <string name="mi_section_identity">Пакет</string>
+    <string name="mi_version">Версия</string>
+    <string name="mi_version_code">Версия коду</string>
+    <string name="mi_min_sdk">Минималдуу SDK</string>
+    <string name="mi_target_sdk">Максаттуу SDK</string>
+    <string name="mi_installed">Орнотулган</string>
+    <string name="mi_updated">Жаңыртылган</string>
+    <string name="mi_installer">Орнотуучу</string>
+    <string name="mi_uid">UID</string>
+    <string name="mi_data_dir">Маалымат каталогу</string>
+    <string name="mi_debuggable">Мүчүлүштүктөрдү оңдоо</string>
+    <string name="mi_system_app">Системалык колдонмо</string>
+    <string name="mi_enabled">Иштетилди</string>
+    <string name="mi_section_permissions">Суралган уруксаттар</string>
+    <string name="mi_permissions_summary">%1$d уруксаттар · %2$d алардын ичинен кооптуу</string>
+    <string name="mi_permissions_none">Бул колдонмо эч кандай уруксат сурабайт.</string>
+    <string name="mi_perm_dangerous">коркунучтуу</string>
+    <string name="mi_perm_signature">Кол коюу</string>
+    <string name="mi_perm_normal">Кадимки</string>
+    <string name="mi_perm_unknown">Классификацияланбаган</string>
+    <string name="mi_section_components">Компоненттер</string>
+    <string name="mi_activities">Иш-чаралар</string>
+    <string name="mi_services">Кызматтар</string>
+    <string name="mi_receivers">Кабыл алуучулар</string>
+    <string name="mi_providers">Провайдерлер</string>
+    <string name="mi_components_none">Эч ким жарыялаган жок</string>
+    <string name="mi_section_features">Түзмөктүн өзгөчөлүктөрү</string>
+    <string name="mi_features_note">Платформа башка колдонмонун колдонуу функцияларынын тизмесин көрсөтпөйт; бул аппараттын өзгөчөлүктөрү жөнүндө кабарлайт.</string>
+    <string name="mi_features_none">Эч кандай өзгөчөлүк билдирилди</string>
+    <string name="mi_section_signature">Кол коюу сертификаты</string>
+    <string name="mi_signature_note">Кол коюу сертификатынын SHA-256. Бир эле маанидеги эки түзүм бир эле жарыялоочу.</string>
+    <string name="mi_signature_sha256">Сертификаттын дайджести</string>
+</resources>

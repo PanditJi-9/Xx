@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/network_scanner_strings.xml -->
+<resources>
+    <string name="network_scanner_title">स्थानीय नेटवर्क स्क्यानर</string>
+    <string name="network_scanner_subtitle">तपाईंको ठेगाना, यो पुग्ने गेटवे, र कुन छिमेकीहरूले जवाफ दिए।</string>
+    <string name="max_role_network_scanner">तपाईं मा हुनुहुन्छ नेटवर्क पढ्छ — कुनै क्याप्चर, कुनै रूट छैन।</string>
+    <string name="ns_no_network">कुनै नेटवर्क जडान गरिएको छैन।</string>
+    <string name="ns_interface">इन्टरफेस</string>
+    <string name="ns_address">ठेगाना</string>
+    <string name="ns_gateway">गेटवे</string>
+    <string name="ns_dns">DNS</string>
+    <string name="ns_mac">MAC</string>
+    <string name="ns_transport_wifi">Wi-Fi</string>
+    <string name="ns_transport_ethernet">इथरनेट</string>
+    <string name="ns_transport_cellular">सेलुलर</string>
+    <string name="ns_transport_other">अन्य</string>
+    <string name="ns_sources_title">यो कहाँबाट आउँछ</string>
+    <string name="ns_sources_body">ठेगाना र गेटवे प्लेटफर्मको लिङ्क गुणहरूबाट पढिन्छ। छिमेकी तालिका कर्नेलको एआरपी क्यासबाट पढिन्छ, त्यसैले यो यन्त्रले हालसालै कुरा गरेको कुरा मात्र राख्छ — खाली तालिकाको अर्थ खाली नेटवर्क होइन।</string>
+    <string name="ns_refresh">रिफ्रेस गर्नुहोस्</string>
+    <string name="ns_probe">साधारण पोर्टहरू जाँच गर्नुहोस्</string>
+    <string name="ns_probe_stop">रोक्नुहोस्</string>
+    <string name="ns_probe_progress">%2$d को %1$d अनुसन्धान</string>
+    <string name="ns_probe_note">यो /24 मा पोर्ट 22, 80, 443, 5000 र 5555 मा TCP जडान पठाउँछ। जवाफ दिने पोर्ट रिपोर्ट गरिएको छ; मौनता प्रमाण होइन एक होस्ट अनुपस्थित छ।</string>
+    <string name="ns_neighbours">परिचित छिमेकीहरू</string>
+    <string name="ns_neighbours_note">/proc/net/arp बाट — पढ्न मात्र।</string>
+    <string name="ns_neighbours_empty">छिमेकीहरू अझै चिनिएका छैनन्।</string>
+    <string name="ns_ports_value">पोर्टहरू %1$s</string>
+</resources>

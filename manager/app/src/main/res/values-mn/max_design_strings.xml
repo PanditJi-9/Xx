@@ -13,4 +13,23 @@
     <string name="max_expand_section">Дэлгэрэнгүйг харуулах</string>
     <string name="max_collapse_section">Дэлгэрэнгүй мэдээллийг нуух</string>
     <string name="max_trust_loading">Уншиж байна...</string>
+    <string name="max_gov_title">Одоо хэн захирч байна</string>
+    <string name="max_gov_separator">" › "</string>
+    <string name="max_gov_order_note">Тогтмол дараалал: өндөр шат нь доод шатыг блоклодог. Аль бодлого ялах нь хэзээ ч өөрчлөгддөггүй.</string>
+    <string name="max_gov_open_details">Идэвхтэй эзэмшигчид</string>
+    <string name="max_gov_active_title">Хэн хяналт тавьдаг</string>
+    <string name="max_gov_none">Одоогоор ямар ч бодлого техник хангамжийн хяналтыг эзэмшдэггүй.</string>
+    <string name="max_gov_count">Идэвхтэй хяналтын түрээс: %1$d</string>
+    <string name="max_gov_requested">Хүссэн: %1$s</string>
+    <string name="max_gov_owner_recovery">Сэргээх</string>
+    <string name="max_gov_owner_safety">Дулааны аюулгүй байдал</string>
+    <string name="max_gov_owner_per_app">Апп профайл</string>
+    <string name="max_gov_owner_max_ai">Max AI</string>
+    <string name="max_gov_owner_global">Глобал профайл</string>
+    <string name="max_gov_owner_system">Систем</string>
+    <string name="max_gov_owner_a11y">%1$s нь техник хангамжийн хяналтыг эзэмшдэг</string>
+    <string name="max_gov_now_none">Одоогоор автоматжуулсан эзэмшигч байхгүй - хяналт таных хэвээр байна</string>
+    <string name="max_gov_now_one">%1$s нь хяналтыг эзэмшдэг</string>
+    <string name="max_gov_now_many">%1$s нь %2$d удирдлагыг агуулна</string>
+    <string name="devinfo_details">Дэлгэрэнгүй мэдээлэл</string>
 </resources>

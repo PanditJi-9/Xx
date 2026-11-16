@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/manifest_inspector_strings.xml -->
+<resources>
+    <string name="manifest_inspector_title">Inspektori i Manifestit</string>
+    <string name="manifest_inspector_subtitle">Çfarë deklaron një aplikacion i instaluar për veten e tij, lexoni nga PackageManager.</string>
+    <string name="max_role_manifest_inspector">Tregon se çfarë deklaron një paketë për vete - vetëm për lexim.</string>
+    <string name="mi_search">Kërko aplikacione</string>
+    <string name="mi_empty">Zgjidhni një aplikacion në të majtë.</string>
+    <string name="mi_yes">po</string>
+    <string name="mi_no">Nr</string>
+    <string name="mi_section_identity">Paketa</string>
+    <string name="mi_version">Versioni</string>
+    <string name="mi_version_code">Kodi i versionit</string>
+    <string name="mi_min_sdk">SDK minimale</string>
+    <string name="mi_target_sdk">SDK e synuar</string>
+    <string name="mi_installed">Instaluar</string>
+    <string name="mi_updated">Përditësuar</string>
+    <string name="mi_installer">Instalues</string>
+    <string name="mi_uid">UID</string>
+    <string name="mi_data_dir">Drejtoria e të dhënave</string>
+    <string name="mi_debuggable">E korrigjueshme</string>
+    <string name="mi_system_app">Aplikacioni i sistemit</string>
+    <string name="mi_enabled">Aktivizuar</string>
+    <string name="mi_section_permissions">Lejet e kërkuara</string>
+    <string name="mi_permissions_summary">%1$d leje · %2$d prej tyre të rrezikshme</string>
+    <string name="mi_permissions_none">Ky aplikacion nuk kërkon leje.</string>
+    <string name="mi_perm_dangerous">E rrezikshme</string>
+    <string name="mi_perm_signature">Nënshkrimi</string>
+    <string name="mi_perm_normal">Normale</string>
+    <string name="mi_perm_unknown">E paklasifikuar</string>
+    <string name="mi_section_components">Komponentët</string>
+    <string name="mi_activities">Aktivitetet</string>
+    <string name="mi_services">Shërbimet</string>
+    <string name="mi_receivers">Marrësit</string>
+    <string name="mi_providers">Ofruesit</string>
+    <string name="mi_components_none">Asnjë i deklaruar</string>
+    <string name="mi_section_features">Karakteristikat e pajisjes</string>
+    <string name="mi_features_note">Platforma nuk ekspozon listën e funksioneve të përdorimit të një aplikacioni tjetër; këto janë veçoritë që raporton kjo pajisje.</string>
+    <string name="mi_features_none">Asnjë veçori e raportuar</string>
+    <string name="mi_section_signature">Certifikata e nënshkrimit</string>
+    <string name="mi_signature_note">SHA-256 të certifikatës së nënshkrimit. Dy ndërtime me të njëjtën vlerë janë i njëjti botues.</string>
+    <string name="mi_signature_sha256">Përmbledhje e certifikatës</string>
+</resources>

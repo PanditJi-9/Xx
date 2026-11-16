@@ -18,4 +18,10 @@
     <string name="max_cfg_section_appearance">Voorkoms en koppelvlak</string>
     <string name="max_cfg_section_app_prefs">Programvoorkeure en taal</string>
     <string name="max_cfg_restore_merge_note">Herstel van voorkeure smelt saam: sleutels wat in die lêer teenwoordig is, word geskryf, en sleutels wat nie genoem word nie, bly soos hulle is. Niks word skoongemaak nie.</string>
+    <string name="max_cfg_diff_title">%1$d gestoorde instellings verskil van hierdie toestel</string>
+    <string name="max_cfg_diff_line">%1$s: %2$s → %3$s</string>
+    <string name="max_cfg_diff_unset">nie gestel nie</string>
+    <string name="max_cfg_diff_more">en %1$d meer</string>
+    <string name="max_cfg_diff_applist">%1$d applyslyne bygevoeg, %2$d verwyder — die hele lys word vervang, nie saamgevoeg nie.</string>
+    <string name="max_cfg_diff_prefs">%1$d voorkeursleutels verskil — saamgevoeg, nie uitgevee nie.</string>
 </resources>

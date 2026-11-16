@@ -69,4 +69,25 @@
     <string name="max_perms_entry_title">Izin &amp; Operasi Aplikasi</string>
     <string name="max_perms_entry_desc">Lihat apa yang dinyatakan oleh aplikasi ini dan apa yang sebenarnya diizinkan oleh sistem</string>
     <string name="max_perms_entry_action">Buka izin</string>
+    <string name="max_perms_manifest_title">Ringkasan manifes</string>
+    <string name="max_perms_manifest_desc">Baca dari manajer paket: versi, rentang SDK, komponen, dan berapa banyak yang diekspor. Komponen yang diekspor dapat dijalankan oleh aplikasi lain.</string>
+    <string name="max_perms_manifest_version">Versi</string>
+    <string name="max_perms_manifest_sdk">Kisaran SDK</string>
+    <string name="max_perms_manifest_location">Lokasi pemasangan</string>
+    <string name="max_perms_manifest_location_auto">Otomatis</string>
+    <string name="max_perms_manifest_location_internal">Penyimpanan internal saja</string>
+    <string name="max_perms_manifest_location_external">Lebih suka eksternal</string>
+    <string name="max_perms_manifest_components">Komponen</string>
+    <string name="max_perms_manifest_components_order">kegiatan · layanan · penerima · penyedia</string>
+    <string name="max_perms_manifest_exported">Komponen yang diekspor</string>
+    <string name="max_perms_manifest_splits">Pisahkan APK</string>
+    <string name="max_perms_manifest_debug">Dapat di-debug</string>
+    <string name="max_perms_features_title">Fitur yang dideklarasikan</string>
+    <string name="max_perms_features_desc">Apa yang dibutuhkan paket dari perangkat, dibandingkan dengan apa yang diiklankan oleh perangkat ini. Fitur wajib yang hilang di sini biasanya berarti aplikasi tidak akan berfungsi sepenuhnya — ini merupakan klaim dari manajer paket, bukan dugaan.</string>
+    <string name="max_perms_features_loading">Membaca fitur paket yang dideklarasikan…</string>
+    <string name="max_perms_features_none">Paket ini menyatakan tidak ada fitur yang diperlukan.</string>
+    <string name="max_perms_features_required">Diperlukan</string>
+    <string name="max_perms_features_unsupported">Tidak di perangkat ini</string>
+    <string name="max_perms_manifest_none">Tidak dilaporkan oleh manajer paket.</string>
+    <string name="max_perms_manifest_unknown">Tidak dikenal</string>
 </resources>

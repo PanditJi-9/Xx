@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_update_strings.xml -->
+<resources>
+    <string name="update_dialog_title">Yeniləmə mövcuddur</string>
+    <string name="update_dialog_title_required">Yeniləmə tələb olunur</string>
+    <string name="update_required_notice">MaxManager istifadə etməyə davam etmək üçün bu yeniləmə tələb olunur. Onu quraşdırın, sonra proqramı yenidən açın.</string>
+    <string name="update_dialog_body">%1$s versiyası mövcuddur. Siz %2$s-dəsiniz.</string>
+    <string name="update_block_title">Davam etmək üçün yeniləmə tələb olunur</string>
+    <string name="update_block_body">Bu quruluş (%1$s) artıq dəstəklənmir. MaxManager istifadə etməyə davam etmək üçün %2$s-ə güncəlləyin.</string>
+    <string name="update_block_body_no_release">Bu quruluş (%1$s) artıq dəstəklənmir.</string>
+    <string name="update_release_notes_label">Nə yenilik var</string>
+    <string name="update_size">Yükləmə ölçüsü: %1$s</string>
+    <string name="update_button_now">İndi yeniləyin</string>
+    <string name="update_button_later">Daha sonra</string>
+    <string name="update_button_close">Bağlayın</string>
+    <string name="update_button_open_page">Yükləmə səhifəsini açın</string>
+    <string name="update_state_downloading">Endirilir... %1$d%%</string>
+    <string name="update_state_downloading_unknown">Endirilir...</string>
+    <string name="update_state_installing">Quraşdırılır...</string>
+    <string name="update_error_network">Yeniləmə serverinə daxil olmaq mümkün olmadı. Bağlantınızı yoxlayın və yenidən cəhd edin.</string>
+    <string name="update_error_http">Yeniləmə serveri xəta ilə cavab verdi. Daha sonra yenidən cəhd edin.</string>
+    <string name="update_error_format">Yeniləmə məlumatını oxumaq mümkün olmadı.</string>
+    <string name="update_error_too_large">Yeniləmə məlumatı gözləniləndən daha böyük idi və ləğv edildi.</string>
+    <string name="update_error_integrity">Yüklənmiş fayl yoxlama məbləğinə uyğun gəlmədi və silindi.</string>
+    <string name="update_error_install">Quraşdırma uğursuz oldu. Yenidən cəhd edin.</string>
+    <string name="update_error_not_configured">Bu quruluşda heç bir yeniləmə kanalı konfiqurasiya edilməyib.</string>
+    <string name="update_maintenance_title">Müvəqqəti olaraq əlçatan deyil</string>
+    <string name="update_maintenance_body">MaxManager müvəqqəti olaraq əlçatan deyil. Lütfən, tezliklə yenidən cəhd edin.</string>
+    <string name="update_check_title">Yeniləmələri yoxlayın</string>
+    <string name="update_check_supporting">Cari versiya: %1$s</string>
+    <string name="update_check_updated">Yeniləmə mövcuddur.</string>
+    <string name="update_check_uptodate">Ən son versiyadasınız.</string>
+    <string name="update_check_failed">Yeniləmələri yoxlamaq mümkün olmadı.</string>
+    <string name="update_check_not_configured">Bu quruluşda heç bir yeniləmə kanalı konfiqurasiya edilməyib.</string>
+    <string name="update_released_label">Buraxılış tarixi: %1$s</string>
+    <string name="update_check_none_published">İdarə panelindən hələ heç bir yeniləmə dərc edilməyib.</string>
+    <string name="update_check_link_missing">Yeniləmə dərc edilib, lakin onun endirmə linki yoxdur.</string>
+</resources>

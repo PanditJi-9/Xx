@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_license_strings.xml -->
+<resources>
+    <string name="max_license_title">Licence</string>
+    <string name="max_license_subtitle">Une clé, cet appareil, pas de compte</string>
+    <string name="max_license_help_body">Une clé est vérifiée en ligne une fois, lorsque vous la saisissez. À partir de ce moment-là, le certificat signé du serveur fonctionne hors ligne jusqu\'à ce que son temps soit écoulé : l\'application n\'appelle pas chez vous à chaque fois que vous ouvrez un écran. Le certificat est lié à l\'ID d\'installation aléatoire de cet appareil, donc la copie des données de l\'application sur un autre téléphone ne comporte pas la licence, et le propriétaire peut réinitialiser cette liaison à partir du panneau si vous changez de téléphone.</string>
+    <string name="max_license_status_section">Statut</string>
+    <string name="max_license_status_active">Actif</string>
+    <string name="max_license_status_expired">Expiré</string>
+    <string name="max_license_status_none">Non activé</string>
+    <string name="max_license_active_detail">Restant : %1$d jours</string>
+    <string name="max_license_expired_detail">Le temps de cette clé est révolu. Une nouvelle clé renouvelle l\'accès.</string>
+    <string name="max_license_none_detail">Entrez la clé que vous avez reçue pour déverrouiller les surfaces payantes.</string>
+    <string name="max_license_promo_active">Gratuit pour tous jusqu\'à %1$s</string>
+    <string name="max_license_plan_title">Plan</string>
+    <string name="max_license_devices_title">Appareils</string>
+    <string name="max_license_devices_detail">%1$d sur %2$d utilisé</string>
+    <string name="max_license_device_id_title">Cet appareil</string>
+    <string name="max_license_device_id_detail">%1$s</string>
+    <string name="max_license_key_section">Activation</string>
+    <string name="max_license_key_label">Clé de licence</string>
+    <string name="max_license_key_placeholder">MAXM-XXXXX-XXXXX-XXXXX-XXXXX-XX</string>
+    <string name="max_license_key_helper">Les tirets et les majuscules n\'ont pas d\'importance : collez-les tels que vous les avez reçus.</string>
+    <string name="max_license_activate">Activer</string>
+    <string name="max_license_activating">Vérification de la clé…</string>
+    <string name="max_license_refresh">Vérifiez maintenant</string>
+    <string name="max_license_activated">Activé. Cet appareil est désormais lié à votre clé.</string>
+    <string name="max_license_error_invalid_key">Cette clé ne semble pas complète. Vérifiez-le et réessayez.</string>
+    <string name="max_license_error_not_configured">Cette version n\'a aucun serveur de licences configuré.</string>
+    <string name="max_license_error_network">Aucune connexion. La clé est vérifiée une fois, puis fonctionne hors ligne.</string>
+    <string name="max_license_error_timeout">Le serveur de licences n\'a pas répondu à temps. Essayer à nouveau.</string>
+    <string name="max_license_error_server">Le serveur de licences a répondu avec une erreur. Réessayez plus tard.</string>
+    <string name="max_license_error_client">La fonction licence n\'est pas déployée sur le serveur.</string>
+    <string name="max_license_error_format">La réponse du serveur n\'a pas été comprise.</string>
+    <string name="max_license_error_expired">Cette clé a expiré.</string>
+    <string name="max_license_error_not_found">Cette clé n\'est pas connue.</string>
+    <string name="max_license_error_revoked">Cette clé a été révoquée.</string>
+    <string name="max_license_error_device_limit">Cette clé a atteint sa limite d\'appareils. Demandez une réinitialisation de l\'appareil.</string>
+    <string name="max_license_error_device_unknown">Cet appareil n\'est pas encore lié à la clé. Activez-le ici d\'abord.</string>
+    <string name="max_license_error_device_removed">Cet appareil a été retiré de la clé par le propriétaire.</string>
+    <string name="max_license_error_rate_limited">Trop de tentatives de cette connexion : attendez quelques minutes, puis réessayez.</string>
+    <string name="max_license_error_unknown">Quelque chose s\'est mal passé. La raison a été enregistrée dans Diagnostics.</string>
+    <string name="max_license_gate_title">Cette surface nécessite une licence</string>
+    <string name="max_license_gate_detail">Il est inclus avec une clé. Une clé couvre cet appareil et sa saisie prend une minute.</string>
+    <string name="max_feature_off_title">Éteint</string>
+    <string name="max_feature_off_detail">Le panneau de commande a éteint cette surface. Il revient dès qu\'il est à nouveau activé.</string>
+    <string name="max_license_gate_action">Ouvrir les paramètres de licence</string>
+    <string name="max_license_gate_subscribe">Abonnez-vous maintenant</string>
+    <string name="max_license_subscription_section">Abonnement</string>
+    <string name="max_license_subscription_open">Ouvrir la page d\'abonnement</string>
+</resources>

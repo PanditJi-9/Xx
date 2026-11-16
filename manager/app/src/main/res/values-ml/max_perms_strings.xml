@@ -69,4 +69,25 @@
     <string name="max_perms_entry_title">അനുമതികളും ആപ്പ് ഓപ്‌സും</string>
     <string name="max_perms_entry_desc">ഈ ആപ്പ് എന്താണ് പ്രഖ്യാപിക്കുന്നതെന്നും സിസ്റ്റം യഥാർത്ഥത്തിൽ എന്താണ് അനുവദിക്കുന്നതെന്നും കാണുക</string>
     <string name="max_perms_entry_action">അനുമതികൾ തുറക്കുക</string>
+    <string name="max_perms_manifest_title">മാനിഫെസ്റ്റ് സംഗ്രഹം</string>
+    <string name="max_perms_manifest_desc">പാക്കേജ് മാനേജറിൽ നിന്ന് വായിക്കുക: പതിപ്പ്, SDK ശ്രേണി, ഘടകങ്ങൾ, അവയിൽ എത്രയെണ്ണം കയറ്റുമതി ചെയ്തു. കയറ്റുമതി ചെയ്‌ത ഘടകം മറ്റ് ആപ്പുകൾ വഴി ആരംഭിക്കാനാകും.</string>
+    <string name="max_perms_manifest_version">പതിപ്പ്</string>
+    <string name="max_perms_manifest_sdk">SDK ശ്രേണി</string>
+    <string name="max_perms_manifest_location">ലൊക്കേഷൻ ഇൻസ്റ്റാൾ ചെയ്യുക</string>
+    <string name="max_perms_manifest_location_auto">ഓട്ടോമാറ്റിക്</string>
+    <string name="max_perms_manifest_location_internal">ആന്തരിക സംഭരണം മാത്രം</string>
+    <string name="max_perms_manifest_location_external">ബാഹ്യമായി ഇഷ്ടപ്പെടുന്നു</string>
+    <string name="max_perms_manifest_components">ഘടകങ്ങൾ</string>
+    <string name="max_perms_manifest_components_order">പ്രവർത്തനങ്ങൾ · സേവനങ്ങൾ · റിസീവറുകൾ · ദാതാക്കൾ</string>
+    <string name="max_perms_manifest_exported">കയറ്റുമതി ചെയ്ത ഘടകങ്ങൾ</string>
+    <string name="max_perms_manifest_splits">APK-കൾ വിഭജിക്കുക</string>
+    <string name="max_perms_manifest_debug">ഡീബഗ്ഗ് ചെയ്യാവുന്നത്</string>
+    <string name="max_perms_features_title">പ്രഖ്യാപിച്ച സവിശേഷതകൾ</string>
+    <string name="max_perms_features_desc">ഈ ഉപകരണം പരസ്യം ചെയ്യുന്നതുമായി താരതമ്യപ്പെടുത്തുമ്പോൾ, പാക്കേജിന് ഉപകരണത്തിൽ നിന്ന് എന്താണ് വേണ്ടത്. ആവശ്യമായ ഒരു ഫീച്ചർ ഇവിടെ കാണുന്നില്ല എന്നതിനർത്ഥം ആപ്പ് പൂർണ്ണമായി പ്രവർത്തിക്കില്ല എന്നാണ് - ഇത് പാക്കേജ് മാനേജറിൽ നിന്നുള്ള ഒരു ക്ലെയിം ആണ്, ഊഹമല്ല.</string>
+    <string name="max_perms_features_loading">പാക്കേജിൻ്റെ പ്രഖ്യാപിത സവിശേഷതകൾ വായിക്കുന്നു...</string>
+    <string name="max_perms_features_none">പാക്കേജ് ആവശ്യമായ സവിശേഷതകളൊന്നും പ്രഖ്യാപിക്കുന്നില്ല.</string>
+    <string name="max_perms_features_required">ആവശ്യമാണ്</string>
+    <string name="max_perms_features_unsupported">ഈ ഉപകരണത്തിൽ ഇല്ല</string>
+    <string name="max_perms_manifest_none">പാക്കേജ് മാനേജർ റിപ്പോർട്ട് ചെയ്തിട്ടില്ല.</string>
+    <string name="max_perms_manifest_unknown">അജ്ഞാതം</string>
 </resources>

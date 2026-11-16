@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/manifest_inspector_strings.xml -->
+<resources>
+    <string name="manifest_inspector_title">Manifesti inspektor</string>
+    <string name="manifest_inspector_subtitle">Mida installitud rakendus enda kohta deklareerib, lugege PackageManagerist.</string>
+    <string name="max_role_manifest_inspector">Näitab, mida pakett enda kohta deklareerib – kirjutuskaitstud.</string>
+    <string name="mi_search">Otsige rakendusi</string>
+    <string name="mi_empty">Valige vasakult rakendus.</string>
+    <string name="mi_yes">Jah</string>
+    <string name="mi_no">Ei</string>
+    <string name="mi_section_identity">pakett</string>
+    <string name="mi_version">Versioon</string>
+    <string name="mi_version_code">Versiooni kood</string>
+    <string name="mi_min_sdk">Minimaalne SDK</string>
+    <string name="mi_target_sdk">Siht-SDK</string>
+    <string name="mi_installed">Paigaldatud</string>
+    <string name="mi_updated">Uuendatud</string>
+    <string name="mi_installer">Installer</string>
+    <string name="mi_uid">UID</string>
+    <string name="mi_data_dir">Andmekataloog</string>
+    <string name="mi_debuggable">Silutav</string>
+    <string name="mi_system_app">Süsteemi rakendus</string>
+    <string name="mi_enabled">Lubatud</string>
+    <string name="mi_section_permissions">Taotles õigusi</string>
+    <string name="mi_permissions_summary">%1$d load · %2$d neist ohtlikud</string>
+    <string name="mi_permissions_none">See rakendus ei küsi luba.</string>
+    <string name="mi_perm_dangerous">Ohtlik</string>
+    <string name="mi_perm_signature">Allkiri</string>
+    <string name="mi_perm_normal">Tavaline</string>
+    <string name="mi_perm_unknown">Salastamata</string>
+    <string name="mi_section_components">Komponendid</string>
+    <string name="mi_activities">Tegevused</string>
+    <string name="mi_services">Teenused</string>
+    <string name="mi_receivers">Vastuvõtjad</string>
+    <string name="mi_providers">Pakkujad</string>
+    <string name="mi_components_none">Ükski pole deklareeritud</string>
+    <string name="mi_section_features">Seadme omadused</string>
+    <string name="mi_features_note">Platvorm ei avalda mõne teise rakenduse kasutus-funktsioonide loendit; Need on funktsioonid, millest see seade teatab.</string>
+    <string name="mi_features_none">Funktsioonidest ei teatatud</string>
+    <string name="mi_section_signature">Sertifikaadi allkirjastamine</string>
+    <string name="mi_signature_note">Allkirjastamissertifikaadi SHA-256. Kaks sama väärtusega järgut on sama väljaandja.</string>
+    <string name="mi_signature_sha256">Sertifikaadi kokkuvõte</string>
+</resources>

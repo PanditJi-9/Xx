@@ -18,4 +18,10 @@
     <string name="max_cfg_section_appearance">Izgled i sučelje</string>
     <string name="max_cfg_section_app_prefs">Postavke aplikacije i jezik</string>
     <string name="max_cfg_restore_merge_note">Vraćanje postavki se spaja: ključevi prisutni u datoteci se zapisuju, a ključevi koje ne spominje ostaju takvi kakvi jesu. Ništa nije očišćeno.</string>
+    <string name="max_cfg_diff_title">%1$d spremljene postavke razlikuju se od ovog uređaja</string>
+    <string name="max_cfg_diff_line">%1$s: %2$s → %3$s</string>
+    <string name="max_cfg_diff_unset">nije postavljeno</string>
+    <string name="max_cfg_diff_more">i još %1$d</string>
+    <string name="max_cfg_diff_applist">%1$d dodani redovi popisa aplikacija, %2$d uklonjeni — cijeli popis je zamijenjen, nije spojen.</string>
+    <string name="max_cfg_diff_prefs">%1$d Preferencijske tipke se razlikuju — spojene, ne obrisane.</string>
 </resources>

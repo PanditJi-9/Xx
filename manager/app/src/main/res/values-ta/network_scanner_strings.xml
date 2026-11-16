@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/network_scanner_strings.xml -->
+<resources>
+    <string name="network_scanner_title">உள்ளூர் நெட்வொர்க் ஸ்கேனர்</string>
+    <string name="network_scanner_subtitle">உங்கள் முகவரி, அது சென்றடையும் நுழைவாயில் மற்றும் அக்கம்பக்கத்தினர் பதிலளித்தனர்.</string>
+    <string name="max_role_network_scanner">நீங்கள் இருக்கும் நெட்வொர்க்கைப் படிக்கிறது - பிடிப்பு இல்லை, ரூட் இல்லை.</string>
+    <string name="ns_no_network">நெட்வொர்க் எதுவும் இணைக்கப்படவில்லை.</string>
+    <string name="ns_interface">இடைமுகம்</string>
+    <string name="ns_address">முகவரி</string>
+    <string name="ns_gateway">நுழைவாயில்</string>
+    <string name="ns_dns">டிஎன்எஸ்</string>
+    <string name="ns_mac">MAC</string>
+    <string name="ns_transport_wifi">Wi-Fi</string>
+    <string name="ns_transport_ethernet">ஈதர்நெட்</string>
+    <string name="ns_transport_cellular">செல்லுலார்</string>
+    <string name="ns_transport_other">மற்றவை</string>
+    <string name="ns_sources_title">இது எங்கிருந்து வருகிறது</string>
+    <string name="ns_sources_body">தளத்தின் இணைப்பு பண்புகளிலிருந்து முகவரிகள் மற்றும் நுழைவாயில் படிக்கப்படும். அண்டை அட்டவணையானது கர்னலின் ARP தற்காலிக சேமிப்பிலிருந்து படிக்கப்படுகிறது, எனவே இந்தச் சாதனம் சமீபத்தில் பேசியதை மட்டுமே வைத்திருக்கிறது - வெற்று அட்டவணை என்பது வெற்று நெட்வொர்க் என்று அர்த்தமல்ல.</string>
+    <string name="ns_refresh">புதுப்பிக்கவும்</string>
+    <string name="ns_probe">பொதுவான துறைமுகங்களை ஆய்வு செய்யவும்</string>
+    <string name="ns_probe_stop">நிறுத்து</string>
+    <string name="ns_probe_progress">%2$d இன் %1$d ஆய்வு</string>
+    <string name="ns_probe_note">இந்த /24 முழுவதும் போர்ட்கள் 22, 80, 443, 5000 மற்றும் 5555 இல் TCP இணைப்பை அனுப்புகிறது. பதிலளிக்கும் ஒரு துறைமுகம் தெரிவிக்கப்படுகிறது; ஒரு புரவலன் இல்லாததற்கு மௌனம் ஆதாரம் அல்ல.</string>
+    <string name="ns_neighbours">தெரிந்த அயலவர்கள்</string>
+    <string name="ns_neighbours_note">/proc/net/arp இலிருந்து — படிக்க மட்டும்.</string>
+    <string name="ns_neighbours_empty">அக்கம் பக்கத்தினர் இன்னும் தெரியவில்லை.</string>
+    <string name="ns_ports_value">துறைமுகங்கள் %1$s</string>
+</resources>

@@ -13,4 +13,23 @@
     <string name="max_expand_section">نمایش جزئیات</string>
     <string name="max_collapse_section">پنهان کردن جزئیات</string>
     <string name="max_trust_loading">خواندن…</string>
+    <string name="max_gov_title">کی الان حکومت میکنه</string>
+    <string name="max_gov_separator">" ›"</string>
+    <string name="max_gov_order_note">ترتیب ثابت: یک پله بالاتر، یک پله پایین تر را مسدود می کند. هرگز تغییر نمی کند که کدام سیاست برنده می شود.</string>
+    <string name="max_gov_open_details">دارندگان فعال</string>
+    <string name="max_gov_active_title">چه کسی کنترل را در دست دارد</string>
+    <string name="max_gov_none">در حال حاضر هیچ سیاستی دارای کنترل سخت افزاری نیست.</string>
+    <string name="max_gov_count">اجاره های کنترل فعال: %1$d</string>
+    <string name="max_gov_requested">درخواستی: %1$s</string>
+    <string name="max_gov_owner_recovery">بازیابی</string>
+    <string name="max_gov_owner_safety">ایمنی حرارتی</string>
+    <string name="max_gov_owner_per_app">نمایه برنامه</string>
+    <string name="max_gov_owner_max_ai">Max AI</string>
+    <string name="max_gov_owner_global">نمایه جهانی</string>
+    <string name="max_gov_owner_system">سیستم</string>
+    <string name="max_gov_owner_a11y">%1$s دارای کنترل سخت افزاری است</string>
+    <string name="max_gov_now_none">در حال حاضر مالک خودکاری وجود ندارد - کنترل در اختیار شماست</string>
+    <string name="max_gov_now_one">%1$s یک کنترل دارد</string>
+    <string name="max_gov_now_many">%1$s کنترل های %2$d را نگه می دارد</string>
+    <string name="devinfo_details">جزئیات</string>
 </resources>

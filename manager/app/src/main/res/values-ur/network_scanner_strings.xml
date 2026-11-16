@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/network_scanner_strings.xml -->
+<resources>
+    <string name="network_scanner_title">مقامی نیٹ ورک سکینر</string>
+    <string name="network_scanner_subtitle">آپ کا پتہ، اس تک پہنچنے کا گیٹ وے، اور کون سے پڑوسیوں نے جواب دیا۔</string>
+    <string name="max_role_network_scanner">آپ جس نیٹ ورک پر ہیں اسے پڑھتا ہے — کوئی کیپچر نہیں، کوئی جڑ نہیں۔</string>
+    <string name="ns_no_network">کوئی نیٹ ورک منسلک نہیں ہے۔</string>
+    <string name="ns_interface">انٹرفیس</string>
+    <string name="ns_address">پتہ</string>
+    <string name="ns_gateway">گیٹ وے</string>
+    <string name="ns_dns">ڈی این ایس</string>
+    <string name="ns_mac">میک</string>
+    <string name="ns_transport_wifi">وائی ​​فائی</string>
+    <string name="ns_transport_ethernet">ایتھرنیٹ</string>
+    <string name="ns_transport_cellular">سیلولر</string>
+    <string name="ns_transport_other">دیگر</string>
+    <string name="ns_sources_title">یہ کہاں سے آتا ہے۔</string>
+    <string name="ns_sources_body">پتے اور گیٹ وے پلیٹ فارم کی لنک پراپرٹیز سے پڑھے جاتے ہیں۔ پڑوسی ٹیبل کو کرنل کے اے آر پی کیشے سے پڑھا جاتا ہے، لہذا اس میں صرف وہی ہوتا ہے جس سے اس ڈیوائس نے حال ہی میں بات کی ہے — خالی ٹیبل کا مطلب خالی نیٹ ورک نہیں ہوتا ہے۔</string>
+    <string name="ns_refresh">ریفریش کریں۔</string>
+    <string name="ns_probe">عام بندرگاہوں کی تحقیقات کریں۔</string>
+    <string name="ns_probe_stop">رک جاؤ</string>
+    <string name="ns_probe_progress">پروبنگ %1$d از %2$d</string>
+    <string name="ns_probe_note">اس/24 پر 22، 80، 443، 5000 اور 5555 بندرگاہوں پر TCP کنیکٹ بھیجتا ہے۔ ایک پورٹ جو جواب دیتا ہے اطلاع دی جاتی ہے۔ خاموشی اس بات کا ثبوت نہیں ہے کہ میزبان غیر حاضر ہے۔</string>
+    <string name="ns_neighbours">جانے پہچانے پڑوسی</string>
+    <string name="ns_neighbours_note">/proc/net/arp سے — صرف پڑھنے کے لیے۔</string>
+    <string name="ns_neighbours_empty">ابھی تک کوئی پڑوسی معلوم نہیں ہے۔</string>
+    <string name="ns_ports_value">بندرگاہیں %1$s</string>
+</resources>

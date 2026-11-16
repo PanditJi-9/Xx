@@ -18,4 +18,10 @@
     <string name="max_cfg_section_appearance">Знешні выгляд і інтэрфейс</string>
     <string name="max_cfg_section_app_prefs">Параметры праграмы і мова</string>
     <string name="max_cfg_restore_merge_note">Аднаўленне параметраў аб\'ядноўвае: ключы, якія прысутнічаюць у файле, запісваюцца, а ключы, якія ў ім не згадваюцца, застаюцца без змены. Нічога не ачышчана.</string>
+    <string name="max_cfg_diff_title">%1$d захаваныя налады адрозніваюцца ад гэтай прылады</string>
+    <string name="max_cfg_diff_line">%1$s: %2$s → %3$s</string>
+    <string name="max_cfg_diff_unset">не ўстаноўлена</string>
+    <string name="max_cfg_diff_more">і яшчэ %1$d</string>
+    <string name="max_cfg_diff_applist">%1$d радкоў спісу прыкладанняў дададзена, %2$d выдалена — увесь спіс заменены, а не аб\'яднаны.</string>
+    <string name="max_cfg_diff_prefs">%1$d ключы пераваг адрозніваюцца — аб\'яднаны, не выдалены.</string>
 </resources>

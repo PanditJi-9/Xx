@@ -69,4 +69,25 @@
     <string name="max_perms_entry_title">অনুমতি এবং অ্যাপ অপারেশন</string>
     <string name="max_perms_entry_desc">এই অ্যাপটি কী ঘোষণা করে এবং সিস্টেমটি আসলে কী অনুমতি দেয় তা দেখুন</string>
     <string name="max_perms_entry_action">অনুমতি খুলুন</string>
+    <string name="max_perms_manifest_title">ম্যানিফেস্ট সারাংশ</string>
+    <string name="max_perms_manifest_desc">প্যাকেজ ম্যানেজার থেকে পড়ুন: সংস্করণ, SDK পরিসর, উপাদান এবং কতগুলি রপ্তানি করা হয়। একটি রপ্তানি উপাদান অন্যান্য অ্যাপ্লিকেশন দ্বারা শুরু করা যেতে পারে.</string>
+    <string name="max_perms_manifest_version">সংস্করণ</string>
+    <string name="max_perms_manifest_sdk">SDK পরিসর</string>
+    <string name="max_perms_manifest_location">অবস্থান ইনস্টল করুন</string>
+    <string name="max_perms_manifest_location_auto">স্বয়ংক্রিয়</string>
+    <string name="max_perms_manifest_location_internal">শুধুমাত্র অভ্যন্তরীণ স্টোরেজ</string>
+    <string name="max_perms_manifest_location_external">বাহ্যিক পছন্দ করে</string>
+    <string name="max_perms_manifest_components">উপাদান</string>
+    <string name="max_perms_manifest_components_order">কার্যক্রম · সেবা · রিসিভার · প্রদানকারী</string>
+    <string name="max_perms_manifest_exported">রপ্তানিকৃত উপাদান</string>
+    <string name="max_perms_manifest_splits">APK বিভক্ত করুন</string>
+    <string name="max_perms_manifest_debug">ডিবাগযোগ্য</string>
+    <string name="max_perms_features_title">ঘোষিত বৈশিষ্ট্য</string>
+    <string name="max_perms_features_desc">এই ডিভাইসের বিজ্ঞাপনের সাথে তুলনা করে ডিভাইস থেকে প্যাকেজটির কী প্রয়োজন। এখানে একটি প্রয়োজনীয় বৈশিষ্ট্য অনুপস্থিত হওয়ার অর্থ সাধারণত অ্যাপটি সম্পূর্ণভাবে কাজ করবে না — এটি প্যাকেজ পরিচালকের দাবি, অনুমান নয়।</string>
+    <string name="max_perms_features_loading">প্যাকেজের ঘোষিত বৈশিষ্ট্যগুলি পড়া হচ্ছে...</string>
+    <string name="max_perms_features_none">প্যাকেজ কোনো প্রয়োজনীয় বৈশিষ্ট্য ঘোষণা করে না.</string>
+    <string name="max_perms_features_required">প্রয়োজন</string>
+    <string name="max_perms_features_unsupported">এই ডিভাইসে নয়</string>
+    <string name="max_perms_manifest_none">প্যাকেজ ম্যানেজার দ্বারা রিপোর্ট করা হয়নি.</string>
+    <string name="max_perms_manifest_unknown">অজানা</string>
 </resources>

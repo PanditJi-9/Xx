@@ -51,4 +51,14 @@
     <string name="copg_tweak_kso_title">Držite ekran uključen</string>
     <string name="copg_tweak_kso_desc">Primjenjuje COPG podešavanje uključenog ekrana na ovu aplikaciju. Sačuvano ovdje, upisano u motor od strane Pregleda i primijenjeno na kartici Spoof.</string>
     <string name="copg_tweak_needs_device">Prvo treba uređaj za ovu aplikaciju, na kartici Spoof.</string>
+    <string name="spoof_engine_unmeasured">Stanje motora se ne mjeri: root pristup još nije odobren. Dodijelite root, a zatim ponovo otvorite ovu karticu.</string>
+    <string name="spoof_engine_config_missing">COPG je instaliran, ali nedostaje njegova konfiguracijska datoteka (COPG.json). Prijava se odbija sve dok je modul ponovo ne pruži.</string>
+    <string name="spoof_engine_config_unreadable">COPG je instaliran, ali njegova konfiguracijska datoteka nije čitljiva JSON. Prijava se odbija dok se datoteka ne popravi.</string>
+    <string name="spoof_imei_spoof">IMEI lažiranje</string>
+    <string name="spoof_imei_spoof_desc">Prikazuje ovoj aplikaciji drugačiji IMEI. Potreban je modul Max Manager omogućen u LPosedu s ovom aplikacijom u svom djelokrugu. Ponovo pokrenite aplikaciju nakon što je uključite.</string>
+    <string name="spoof_imei_active">Prikazuje se ova aplikacija: %1$s</string>
+    <string name="spoof_imei_summary">IMEI lažiranje</string>
+    <string name="spoof_imei_regenerate">Novi nasumični IMEI</string>
+    <string name="spoof_imei_regenerate_desc">Generira još jedan važeći IMEI za ovu aplikaciju. Ponovo pokrenite aplikaciju da je vidite.</string>
+    <string name="spoof_imei_module_inactive">Modul Max Manager nije omogućen u LPosedu, tako da aplikacije i dalje vide pravi IMEI. Omogućite modul u LPosedu, dodajte ovu aplikaciju u njen opseg, a zatim ponovo otvorite ovaj ekran.</string>
 </resources>

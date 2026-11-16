@@ -99,4 +99,12 @@
     <string name="max_gpu_saved_desc">කලින් සුරැකීමකින් තබා සෑම බූට් එකකම යෙදී ඇත: %1$s. ඉහත පෙරනිමියෙන් අවසන් වන්නේ මෙම සැසිය පමණි, කිසිදා සුරැකි තත්ත්වය නොවේ.</string>
     <string name="max_gpu_dynamic_min">අවම · ගතික</string>
     <string name="max_gpu_dynamic_max">උපරිම · ගතික</string>
+    <string name="max_gpu_monitor_only_detail">මෙම කර්නලය නිරාවරණය කරන එකම ග්‍රැෆික් නෝඩ් කලාප පළල සහ QoS මොනිටර වේ: ඒවාට GPU ඔරලෝසුවක් නොමැත, එබැවින් සැකසීමට සංඛ්‍යාතයක් නොමැත. GPU ලෙස මතක ආණ්ඩුකාරයක් ලිවීම වෙනුවට පාලනය ක්‍රියා විරහිත වේ.</string>
+    <string name="max_gpu_danger_title">GPU සීමාවන් ලියන්නද?</string>
+    <string name="max_gpu_danger_body">මෙය ග්‍රැෆික් සංඛ්‍යාත කවුළුව සහ ආණ්ඩුකාරයා GPU නෝඩ් වලට ලියයි. රියදුරු ප්‍රතික්ෂේප කරන කවුළුවක්, හෝ දිගටම පවත්වා ගත නොහැකි ආණ්ඩුකාරයෙකුට, සම්පූර්ණ අතුරු මුහුණත පැකිලීමට හෝ පැනලය කැටි කිරීමට හැකිය. ඔබ මෙය වරක් පිළිගත් බව යෙදුම වාර්තා කරයි - ඔබ යොදන අගයන් සඳහා වගකීම ඔබ සතුය.</string>
+    <string name="max_gpu_danger_action">මට තේරෙනවා - අයදුම් කරන්න</string>
+    <string name="max_gpu_state_title">රාජ්යයේ කාලය</string>
+    <string name="max_gpu_state_desc">GPU\'s time ඇත්තටම ගිය තැන, මෙහෙයුම් සංඛ්‍යාතය අනුව කර්නලය මගින් ගණන් කරනු ලැබේ - වත්මන් ඔරලෝසුවේ සැණරුවක් නොවේ.</string>
+    <string name="max_gpu_state_hidden_share">%1$s එකට</string>
+    <string name="max_gpu_state_hidden">%1$d 1%%ට අඩු ප්‍රකාශන</string>
 </resources>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/manifest_inspector_strings.xml -->
+<resources>
+    <string name="manifest_inspector_title">Manifestin tarkastaja</string>
+    <string name="manifest_inspector_subtitle">Mitä asennettu sovellus ilmoittaa itsestään, lue PackageManagerista.</string>
+    <string name="max_role_manifest_inspector">Näyttää, mitä paketti ilmoittaa itsestään – vain luku -tilassa.</string>
+    <string name="mi_search">Hae sovelluksia</string>
+    <string name="mi_empty">Valitse sovellus vasemmalta.</string>
+    <string name="mi_yes">Kyllä</string>
+    <string name="mi_no">Ei</string>
+    <string name="mi_section_identity">Paketti</string>
+    <string name="mi_version">Versio</string>
+    <string name="mi_version_code">Versiokoodi</string>
+    <string name="mi_min_sdk">Minimi SDK</string>
+    <string name="mi_target_sdk">Kohde-SDK</string>
+    <string name="mi_installed">Asennettu</string>
+    <string name="mi_updated">Päivitetty</string>
+    <string name="mi_installer">Asentaja</string>
+    <string name="mi_uid">UID</string>
+    <string name="mi_data_dir">Tietohakemisto</string>
+    <string name="mi_debuggable">Virheenkorjaus</string>
+    <string name="mi_system_app">Järjestelmäsovellus</string>
+    <string name="mi_enabled">Käytössä</string>
+    <string name="mi_section_permissions">Pyydetty käyttöoikeuksia</string>
+    <string name="mi_permissions_summary">%1$d luvat · %2$d niistä vaarallisia</string>
+    <string name="mi_permissions_none">Tämä sovellus ei pyydä lupaa.</string>
+    <string name="mi_perm_dangerous">Vaarallinen</string>
+    <string name="mi_perm_signature">Allekirjoitus</string>
+    <string name="mi_perm_normal">Normaali</string>
+    <string name="mi_perm_unknown">Luokittelematon</string>
+    <string name="mi_section_components">Komponentit</string>
+    <string name="mi_activities">Aktiviteetit</string>
+    <string name="mi_services">Palvelut</string>
+    <string name="mi_receivers">Vastaanottimet</string>
+    <string name="mi_providers">Palveluntarjoajat</string>
+    <string name="mi_components_none">Yhtään ei ilmoitettu</string>
+    <string name="mi_section_features">Laitteen ominaisuudet</string>
+    <string name="mi_features_note">Alusta ei paljasta toisen sovelluksen käyttö-ominaisuusluetteloa; nämä ovat tämän laitteen raportoimia ominaisuuksia.</string>
+    <string name="mi_features_none">Ominaisuutta ei raportoitu</string>
+    <string name="mi_section_signature">Varmenteen allekirjoitus</string>
+    <string name="mi_signature_note">SHA-256 allekirjoitusvarmenteen. Kaksi koontiversiota, joilla on sama arvo, ovat sama julkaisija.</string>
+    <string name="mi_signature_sha256">Sertifikaattikooste</string>
+</resources>

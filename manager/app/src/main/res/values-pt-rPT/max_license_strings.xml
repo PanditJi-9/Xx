@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_license_strings.xml -->
+<resources>
+    <string name="max_license_title">Licença</string>
+    <string name="max_license_subtitle">Uma chave, este dispositivo, sem conta</string>
+    <string name="max_license_help_body">Uma chave é verificada online uma vez, quando você a insere. A partir de então, o certificado assinado do servidor funciona offline até o tempo acabar – o aplicativo não liga para casa toda vez que você abre uma tela. O certificado está vinculado ao ID de instalação aleatório deste dispositivo, portanto, copiar os dados do aplicativo para outro telefone não carrega a licença, e o proprietário pode redefinir essa vinculação no painel se você mudar de telefone.</string>
+    <string name="max_license_status_section">Status</string>
+    <string name="max_license_status_active">Ativo</string>
+    <string name="max_license_status_expired">Expirado</string>
+    <string name="max_license_status_none">Não ativado</string>
+    <string name="max_license_active_detail">Restantes: %1$d dias</string>
+    <string name="max_license_expired_detail">O tempo desta chave acabou. Uma nova chave renova o acesso.</string>
+    <string name="max_license_none_detail">Digite a chave que você recebeu para desbloquear as superfícies pagas.</string>
+    <string name="max_license_promo_active">Gratuito para todos até %1$s</string>
+    <string name="max_license_plan_title">Plano</string>
+    <string name="max_license_devices_title">Dispositivos</string>
+    <string name="max_license_devices_detail">%1$d de %2$d usado</string>
+    <string name="max_license_device_id_title">Este dispositivo</string>
+    <string name="max_license_device_id_detail">%1$s</string>
+    <string name="max_license_key_section">Ativação</string>
+    <string name="max_license_key_label">Chave de licença</string>
+    <string name="max_license_key_placeholder">MAXM-XXXXX-XXXXX-XXXXX-XXXXX-XX</string>
+    <string name="max_license_key_helper">Traços e letras maiúsculas não importam – cole-os como você os recebeu.</string>
+    <string name="max_license_activate">Ativar</string>
+    <string name="max_license_activating">Verificando a chave…</string>
+    <string name="max_license_refresh">Verifique agora</string>
+    <string name="max_license_activated">Ativado. Este dispositivo agora está vinculado à sua chave.</string>
+    <string name="max_license_error_invalid_key">Esta chave não parece completa. Verifique e tente novamente.</string>
+    <string name="max_license_error_not_configured">Esta compilação não possui servidor de licença configurado.</string>
+    <string name="max_license_error_network">Sem conexão. A chave é verificada uma vez e funciona offline.</string>
+    <string name="max_license_error_timeout">O servidor de licença não respondeu a tempo. Tente novamente.</string>
+    <string name="max_license_error_server">O servidor de licença respondeu com um erro. Tente novamente mais tarde.</string>
+    <string name="max_license_error_client">A função de licença não está implementada no servidor.</string>
+    <string name="max_license_error_format">A resposta do servidor não foi compreendida.</string>
+    <string name="max_license_error_expired">Esta chave expirou.</string>
+    <string name="max_license_error_not_found">Esta chave não é conhecida.</string>
+    <string name="max_license_error_revoked">Esta chave foi revogada.</string>
+    <string name="max_license_error_device_limit">Esta chave atingiu o limite de dispositivos. Peça uma redefinição do dispositivo.</string>
+    <string name="max_license_error_device_unknown">Este dispositivo ainda não está vinculado à chave. Ative-o aqui primeiro.</string>
+    <string name="max_license_error_device_removed">Este dispositivo foi removido da chave pelo proprietário.</string>
+    <string name="max_license_error_rate_limited">Muitas tentativas desta conexão. Aguarde alguns minutos e tente novamente.</string>
+    <string name="max_license_error_unknown">Algo deu errado. O motivo foi registrado em Diagnóstico.</string>
+    <string name="max_license_gate_title">Esta superfície precisa de uma licença</string>
+    <string name="max_license_gate_detail">Está incluído com uma chave. Uma chave cobre este dispositivo e sua inserção leva um minuto.</string>
+    <string name="max_feature_off_title">Desligado</string>
+    <string name="max_feature_off_detail">O painel de controle desligou esta superfície. Ele volta assim que é ativado novamente.</string>
+    <string name="max_license_gate_action">Abrir configurações de licença</string>
+    <string name="max_license_gate_subscribe">Assine agora</string>
+    <string name="max_license_subscription_section">Subscrição</string>
+    <string name="max_license_subscription_open">Abra a página de assinatura</string>
+</resources>

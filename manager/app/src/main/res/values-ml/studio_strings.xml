@@ -10,4 +10,6 @@
     <string name="studio_display">പ്രദർശിപ്പിക്കുക</string>
     <string name="studio_power">പവർ ഓപ്ഷനുകൾ</string>
     <string name="studio_settings">ക്രമീകരണങ്ങൾ</string>
+    <string name="audio_dsp_live">ഡിഎസ്പി തത്സമയം</string>
+    <string name="max_audio_session_label">ഓഡിയോ സെഷൻ #%1$d</string>
 </resources>

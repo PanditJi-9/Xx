@@ -10,4 +10,6 @@
     <string name="studio_display">காட்சி</string>
     <string name="studio_power">பவர் விருப்பங்கள்</string>
     <string name="studio_settings">அமைப்புகள்</string>
+    <string name="audio_dsp_live">டிஎஸ்பி நேரலை</string>
+    <string name="max_audio_session_label">ஆடியோ அமர்வு #%1$d</string>
 </resources>

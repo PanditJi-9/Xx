@@ -13,4 +13,23 @@
     <string name="max_expand_section">විස්තර පෙන්වන්න</string>
     <string name="max_collapse_section">විස්තර සඟවන්න</string>
     <string name="max_trust_loading">කියවමින්...</string>
+    <string name="max_gov_title">කවුද දැන් පාලනය කරන්නේ</string>
+    <string name="max_gov_separator">" ›"</string>
+    <string name="max_gov_order_note">ස්ථාවර අනුපිළිවෙල: ඉහළ තට්ටුවක් පහළ එකක් අවහිර කරයි. ජයග්‍රහණය කරන ප්‍රතිපත්තිය කිසිවිටෙක වෙනස් නොවේ.</string>
+    <string name="max_gov_open_details">ක්රියාකාරී හිමිකරුවන්</string>
+    <string name="max_gov_active_title">පාලනයක් දරන්නේ කවුද</string>
+    <string name="max_gov_none">දැන් කිසිදු ප්‍රතිපත්තියකට දෘඪාංග පාලනයක් නැත.</string>
+    <string name="max_gov_count">ක්රියාකාරී පාලන කල්බදු: %1$d</string>
+    <string name="max_gov_requested">ඉල්ලන ලද්දේ: %1$s</string>
+    <string name="max_gov_owner_recovery">ප්රකෘතිමත් වීම</string>
+    <string name="max_gov_owner_safety">තාප ආරක්ෂාව</string>
+    <string name="max_gov_owner_per_app">යෙදුම් පැතිකඩ</string>
+    <string name="max_gov_owner_max_ai">Max AI</string>
+    <string name="max_gov_owner_global">ගෝලීය පැතිකඩ</string>
+    <string name="max_gov_owner_system">පද්ධතිය</string>
+    <string name="max_gov_owner_a11y">%1$s සතුව දෘඪාංග පාලනයක් ඇත</string>
+    <string name="max_gov_now_none">මේ මොහොතේ ස්වයංක්‍රීය හිමිකරු නැත - පාලනය ඔබ සතුයි</string>
+    <string name="max_gov_now_one">%1$s පාලනයක් දරයි</string>
+    <string name="max_gov_now_many">%1$s %2$d පාලනයන් දරයි</string>
+    <string name="devinfo_details">විස්තර</string>
 </resources>

@@ -51,4 +51,14 @@
     <string name="copg_tweak_kso_title">Mbaje ekranin të ndezur</string>
     <string name="copg_tweak_kso_desc">Zbaton rregullimin COPG të mbajtjes së ekranit në këtë aplikacion. Ruajtur këtu, shkruar në motor nga Rishikimi dhe aplikoni në skedën "Mashtrim".</string>
     <string name="copg_tweak_needs_device">Së pari ka nevojë për një pajisje për këtë aplikacion, në skedën Spoof.</string>
+    <string name="spoof_engine_unmeasured">Gjendja e motorit nuk matet: qasja në rrënjë nuk është dhënë ende. Jepni rrënjë, pastaj rihapni këtë skedë.</string>
+    <string name="spoof_engine_config_missing">COPG është i instaluar, por skedari i tij i konfigurimit (COPG.json) mungon. Aplikimi refuzohet derisa moduli ta sigurojë atë përsëri.</string>
+    <string name="spoof_engine_config_unreadable">COPG është i instaluar, por skedari i tij i konfigurimit nuk është i lexueshëm JSON. Aplikimi refuzohet derisa dosja të riparohet.</string>
+    <string name="spoof_imei_spoof">Mashtrim IMEI</string>
+    <string name="spoof_imei_spoof_desc">I tregon këtij aplikacioni një IMEI të ndryshëm. Ka nevojë për modulin Max Manager të aktivizuar në LSPosed me këtë aplikacion në objektin e tij. Rinisni aplikacionin pasi ta aktivizoni.</string>
+    <string name="spoof_imei_active">Duke shfaqur këtë aplikacion: %1$s</string>
+    <string name="spoof_imei_summary">Mashtrim IMEI</string>
+    <string name="spoof_imei_regenerate">IMEI i ri i rastësishëm</string>
+    <string name="spoof_imei_regenerate_desc">Gjeneron një IMEI tjetër të vlefshme për këtë aplikacion. Rinisni aplikacionin për ta parë atë.</string>
+    <string name="spoof_imei_module_inactive">Moduli Max Manager nuk është i aktivizuar në LSPosed, kështu që aplikacionet ende shohin IMEI-n e vërtetë. Aktivizo modulin në LSPosed, shto këtë aplikacion në objektin e tij dhe më pas rihap këtë ekran.</string>
 </resources>

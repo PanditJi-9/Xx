@@ -51,4 +51,14 @@
     <string name="copg_tweak_kso_title">Mantener la pantalla encendida</string>
     <string name="copg_tweak_kso_desc">Aplica el ajuste COPG para mantener la pantalla encendida a esta aplicación. Guardado aquí, escrito en el motor mediante Revisión y aplicado en la pestaña Spoof.</string>
     <string name="copg_tweak_needs_device">Primero necesita un dispositivo para esta aplicación, en la pestaña Spoof.</string>
+    <string name="spoof_engine_unmeasured">No se ha medido el estado del motor: aún no se ha concedido el acceso de root. Conceda root y luego vuelva a abrir esta pestaña.</string>
+    <string name="spoof_engine_config_missing">COPG está instalado, pero falta su archivo de configuración (COPG.json). La solicitud se rechaza hasta que el módulo la proporcione nuevamente.</string>
+    <string name="spoof_engine_config_unreadable">COPG está instalado, pero su archivo de configuración no se puede leer JSON. La solicitud se rechaza hasta que se repare el archivo.</string>
+    <string name="spoof_imei_spoof">Suplantación de IMEI</string>
+    <string name="spoof_imei_spoof_desc">Muestra esta aplicación un IMEI diferente. Necesita el módulo Max Manager habilitado en LSPose con esta aplicación en su alcance. Reinicie la aplicación después de encenderla.</string>
+    <string name="spoof_imei_active">Mostrando esta aplicación: %1$s</string>
+    <string name="spoof_imei_summary">Suplantación de IMEI</string>
+    <string name="spoof_imei_regenerate">Nuevo IMEI aleatorio</string>
+    <string name="spoof_imei_regenerate_desc">Genera otro IMEI válido para esta aplicación. Reinicie la aplicación para verla.</string>
+    <string name="spoof_imei_module_inactive">El módulo Max Manager no está habilitado en LSPosed, por lo que las aplicaciones aún ven el IMEI real. Habilite el módulo en LSPosed, agregue esta aplicación a su alcance y luego vuelva a abrir esta pantalla.</string>
 </resources>

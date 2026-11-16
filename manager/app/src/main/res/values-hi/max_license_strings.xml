@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_license_strings.xml -->
+<resources>
+    <string name="max_license_title">लाइसेंस</string>
+    <string name="max_license_subtitle">एक कुंजी, यह उपकरण, कोई खाता नहीं</string>
+    <string name="max_license_help_body">जब आप कोई कुंजी दर्ज करते हैं तो उसे एक बार ऑनलाइन जांचा जाता है। तब से सर्वर का हस्ताक्षरित प्रमाणपत्र तब तक ऑफ़लाइन काम करता है जब तक उसका समय समाप्त नहीं हो जाता - हर बार जब आप स्क्रीन खोलते हैं तो ऐप होम पर कॉल नहीं करता है। प्रमाणपत्र इस डिवाइस की रैंडम इंस्टॉल आईडी से जुड़ा हुआ है, इसलिए ऐप डेटा को किसी अन्य फोन पर कॉपी करने के लिए लाइसेंस साथ नहीं आता है, और यदि आप फोन बदलते हैं तो मालिक पैनल से उस बाइंडिंग को रीसेट कर सकता है।</string>
+    <string name="max_license_status_section">स्थिति</string>
+    <string name="max_license_status_active">सक्रिय</string>
+    <string name="max_license_status_expired">खत्म हो चुका</string>
+    <string name="max_license_status_none">सक्रिय नहीं है</string>
+    <string name="max_license_active_detail">शेष: %1$d दिन</string>
+    <string name="max_license_expired_detail">इस कुंजी का समय समाप्त हो गया है. एक नई कुंजी पहुंच नवीनीकृत करती है.</string>
+    <string name="max_license_none_detail">भुगतान सतहों को अनलॉक करने के लिए आपको प्राप्त कुंजी दर्ज करें।</string>
+    <string name="max_license_promo_active">%1$s तक सभी के लिए निःशुल्क</string>
+    <string name="max_license_plan_title">योजना</string>
+    <string name="max_license_devices_title">उपकरण</string>
+    <string name="max_license_devices_detail">%2$d में से %1$d का उपयोग किया गया</string>
+    <string name="max_license_device_id_title">यह डिवाइस</string>
+    <string name="max_license_device_id_detail">%1$s</string>
+    <string name="max_license_key_section">सक्रियण</string>
+    <string name="max_license_key_label">लाइसेंस कुंजी</string>
+    <string name="max_license_key_placeholder">MAXM-XXXXX-XXXXX-XXXXX-XXXXX-XX</string>
+    <string name="max_license_key_helper">डैश और बड़े अक्षरकरण से कोई फर्क नहीं पड़ता - इसे वैसे ही चिपकाएँ जैसे आपने इसे प्राप्त किया था।</string>
+    <string name="max_license_activate">सक्रिय करें</string>
+    <string name="max_license_activating">कुंजी की जाँच हो रही है...</string>
+    <string name="max_license_refresh">अब जांचें</string>
+    <string name="max_license_activated">सक्रिय. यह डिवाइस अब आपकी कुंजी से लिंक हो गया है।</string>
+    <string name="max_license_error_invalid_key">यह कुंजी पूर्ण नहीं दिखती. इसकी जांच करें और पुनः प्रयास करें.</string>
+    <string name="max_license_error_not_configured">इस बिल्ड में कोई लाइसेंस सर्वर कॉन्फ़िगर नहीं है।</string>
+    <string name="max_license_error_network">कोई कनेक्शन नहीं। कुंजी को एक बार जांचा जाता है, फिर ऑफ़लाइन काम करता है।</string>
+    <string name="max_license_error_timeout">लाइसेंस सर्वर ने समय पर उत्तर नहीं दिया. पुनः प्रयास करें।</string>
+    <string name="max_license_error_server">लाइसेंस सर्वर ने त्रुटि के साथ उत्तर दिया. बाद में पुन: प्रयास।</string>
+    <string name="max_license_error_client">लाइसेंस फ़ंक्शन सर्वर पर तैनात नहीं है.</string>
+    <string name="max_license_error_format">सर्वर का उत्तर समझ नहीं आया.</string>
+    <string name="max_license_error_expired">यह कुंजी समाप्त हो गई है.</string>
+    <string name="max_license_error_not_found">यह कुंजी ज्ञात नहीं है.</string>
+    <string name="max_license_error_revoked">यह कुंजी निरस्त कर दी गई है.</string>
+    <string name="max_license_error_device_limit">यह कुंजी अपनी डिवाइस सीमा तक पहुंच गई है. डिवाइस रीसेट के लिए पूछें.</string>
+    <string name="max_license_error_device_unknown">यह डिवाइस अभी तक कुंजी से लिंक नहीं है. इसे पहले यहां सक्रिय करें.</string>
+    <string name="max_license_error_device_removed">इस उपकरण को स्वामी द्वारा चाबी से हटा दिया गया था।</string>
+    <string name="max_license_error_rate_limited">इस कनेक्शन से बहुत अधिक प्रयास - कुछ मिनट प्रतीक्षा करें, फिर पुनः प्रयास करें।</string>
+    <string name="max_license_error_unknown">कुछ गलत हो गया। कारण डायग्नोस्टिक्स में दर्ज किया गया था।</string>
+    <string name="max_license_gate_title">इस सतह को लाइसेंस की आवश्यकता है</string>
+    <string name="max_license_gate_detail">यह एक कुंजी के साथ शामिल है. एक कुंजी इस उपकरण को कवर करती है, और इसमें प्रवेश करने में एक मिनट का समय लगता है।</string>
+    <string name="max_feature_off_title">कामोत्तेजित</string>
+    <string name="max_feature_off_detail">नियंत्रण कक्ष ने इस सतह को बंद कर दिया है. दोबारा सक्षम होते ही यह वापस आ जाता है।</string>
+    <string name="max_license_gate_action">लाइसेंस सेटिंग खोलें</string>
+    <string name="max_license_gate_subscribe">अब सदस्यता लें</string>
+    <string name="max_license_subscription_section">सदस्यता</string>
+    <string name="max_license_subscription_open">सदस्यता पृष्ठ खोलें</string>
+</resources>

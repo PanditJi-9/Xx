@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/manifest_inspector_strings.xml -->
+<resources>
+    <string name="manifest_inspector_title">ผู้ตรวจการฯ</string>
+    <string name="manifest_inspector_subtitle">สิ่งที่แอปที่ติดตั้งประกาศเกี่ยวกับตัวเอง อ่านจาก PackageManager</string>
+    <string name="max_role_manifest_inspector">แสดงสิ่งที่แพ็คเกจประกาศเกี่ยวกับตัวเอง — อ่านอย่างเดียว</string>
+    <string name="mi_search">ค้นหาแอพ</string>
+    <string name="mi_empty">เลือกแอปทางด้านซ้าย</string>
+    <string name="mi_yes">ใช่</string>
+    <string name="mi_no">เลขที่</string>
+    <string name="mi_section_identity">บรรจุุภัณฑ์</string>
+    <string name="mi_version">เวอร์ชัน</string>
+    <string name="mi_version_code">รหัสเวอร์ชัน</string>
+    <string name="mi_min_sdk">SDK ขั้นต่ำ</string>
+    <string name="mi_target_sdk">SDK เป้าหมาย</string>
+    <string name="mi_installed">ติดตั้งแล้ว</string>
+    <string name="mi_updated">อัปเดตแล้ว</string>
+    <string name="mi_installer">โปรแกรมติดตั้ง</string>
+    <string name="mi_uid">UID</string>
+    <string name="mi_data_dir">ไดเร็กทอรีข้อมูล</string>
+    <string name="mi_debuggable">แก้ไขข้อบกพร่องได้</string>
+    <string name="mi_system_app">แอพระบบ</string>
+    <string name="mi_enabled">เปิดใช้งานแล้ว</string>
+    <string name="mi_section_permissions">สิทธิ์ที่ร้องขอ</string>
+    <string name="mi_permissions_summary">%1$d สิทธิ์· %2$d ของพวกเขาเป็นอันตราย</string>
+    <string name="mi_permissions_none">แอพนี้ไม่ขออนุญาต</string>
+    <string name="mi_perm_dangerous">อันตราย</string>
+    <string name="mi_perm_signature">ลายเซ็น</string>
+    <string name="mi_perm_normal">ปกติ</string>
+    <string name="mi_perm_unknown">ไม่จำแนกประเภท</string>
+    <string name="mi_section_components">ส่วนประกอบ</string>
+    <string name="mi_activities">กิจกรรม</string>
+    <string name="mi_services">บริการ</string>
+    <string name="mi_receivers">เครื่องรับ</string>
+    <string name="mi_providers">ผู้ให้บริการ</string>
+    <string name="mi_components_none">ไม่มีการประกาศ</string>
+    <string name="mi_section_features">คุณสมบัติของอุปกรณ์</string>
+    <string name="mi_features_note">แพลตฟอร์มไม่เปิดเผยรายการคุณสมบัติการใช้งานของแอปอื่น นี่คือคุณสมบัติที่อุปกรณ์นี้รายงาน</string>
+    <string name="mi_features_none">ไม่มีการรายงานคุณสมบัติ</string>
+    <string name="mi_section_signature">ใบรับรองการลงนาม</string>
+    <string name="mi_signature_note">SHA-256 ของใบรับรองการลงนาม สองบิลด์ที่มีค่าเท่ากันคือผู้เผยแพร่คนเดียวกัน</string>
+    <string name="mi_signature_sha256">สรุปใบรับรอง</string>
+</resources>

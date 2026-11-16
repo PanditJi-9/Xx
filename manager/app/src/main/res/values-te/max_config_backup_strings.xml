@@ -18,4 +18,10 @@
     <string name="max_cfg_section_appearance">స్వరూపం &amp; ఇంటర్‌ఫేస్</string>
     <string name="max_cfg_section_app_prefs">యాప్ ప్రాధాన్యతలు &amp; భాష</string>
     <string name="max_cfg_restore_merge_note">పునరుద్ధరణ ప్రాధాన్యతలు విలీనం అవుతాయి: ఫైల్‌లో ఉన్న కీలు వ్రాయబడ్డాయి మరియు కీలు అలాగే ఉండమని పేర్కొనలేదు. ఏదీ క్లియర్ కాలేదు.</string>
+    <string name="max_cfg_diff_title">%1$d సేవ్ చేయబడిన సెట్టింగ్‌లు ఈ పరికరానికి భిన్నంగా ఉంటాయి</string>
+    <string name="max_cfg_diff_line">%1$s: %2$s → %3$s</string>
+    <string name="max_cfg_diff_unset">సెట్ చేయలేదు</string>
+    <string name="max_cfg_diff_more">మరియు %1$d మరిన్ని</string>
+    <string name="max_cfg_diff_applist">%1$d యాప్-జాబితా పంక్తులు జోడించబడ్డాయి, %2$d తీసివేయబడ్డాయి - మొత్తం జాబితా భర్తీ చేయబడింది, విలీనం చేయబడలేదు.</string>
+    <string name="max_cfg_diff_prefs">%1$d ప్రాధాన్యత కీలు విభిన్నంగా ఉంటాయి - విలీనం చేయబడ్డాయి, తుడిచివేయబడలేదు.</string>
 </resources>

@@ -51,4 +51,14 @@
     <string name="copg_tweak_kso_title">Էկրանը միացված պահել</string>
     <string name="copg_tweak_kso_desc">Այս հավելվածի վրա կիրառում է COPG-ի էկրանի պահպանման կարգավորումը: Պահպանված է այստեղ, գրվել է շարժիչին Review-ի կողմից և կիրառել Spoof ներդիրում:</string>
     <string name="copg_tweak_needs_device">Այս հավելվածի համար նախ սարք է պետք՝ Spoof ներդիրում:</string>
+    <string name="spoof_engine_unmeasured">Շարժիչի վիճակը չի չափվում. արմատային մուտքը դեռ չի տրվել: Տրամադրեք արմատը, ապա նորից բացեք այս ներդիրը:</string>
+    <string name="spoof_engine_config_missing">COPG-ը տեղադրված է, բայց դրա կազմաձևման ֆայլը (COPG.json) բացակայում է: Դիմումը մերժվում է, քանի դեռ մոդուլը նորից չի տրամադրել այն:</string>
+    <string name="spoof_engine_config_unreadable">COPG-ը տեղադրված է, բայց դրա կազմաձևման ֆայլը ընթեռնելի չէ JSON: Դիմումը մերժվում է մինչև ֆայլի վերանորոգումը։</string>
+    <string name="spoof_imei_spoof">IMEI կեղծում</string>
+    <string name="spoof_imei_spoof_desc">Ցույց է տալիս այս հավելվածին այլ IMEI: Պահանջվում է Max Manager մոդուլը միացված LSP-ում, որն ունի այս հավելվածը իր շրջանակում: Վերագործարկեք հավելվածը միացնելուց հետո:</string>
+    <string name="spoof_imei_active">Ցուցադրվում է այս հավելվածը՝ %1$s</string>
+    <string name="spoof_imei_summary">IMEI կեղծում</string>
+    <string name="spoof_imei_regenerate">Նոր պատահական IMEI</string>
+    <string name="spoof_imei_regenerate_desc">Ստեղծում է մեկ այլ վավեր IMEI այս հավելվածի համար: Այն տեսնելու համար վերագործարկեք հավելվածը:</string>
+    <string name="spoof_imei_module_inactive">Max Manager մոդուլը միացված չէ LSPosed-ում, ուստի հավելվածները դեռ տեսնում են իրական IMEI-ը: Միացրեք մոդուլը LSPosed-ում, ավելացրեք այս հավելվածը դրա շրջանակում, այնուհետև նորից բացեք այս էկրանը:</string>
 </resources>

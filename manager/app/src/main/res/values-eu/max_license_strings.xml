@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_license_strings.xml -->
+<resources>
+    <string name="max_license_title">Lizentzia</string>
+    <string name="max_license_subtitle">Gako bat, gailu hau, konturik ez</string>
+    <string name="max_license_help_body">Gako bat sarean egiaztatzen da behin sartzen duzunean. Hortik aurrera zerbitzariaren sinatutako ziurtagiriak lineaz kanpo funtzionatzen du bere denbora agortu arte; aplikazioak ez du etxera deitzen pantaila bat irekitzen duzun bakoitzean. Ziurtagiria gailu honen ausazko instalazio IDarekin lotuta dago; beraz, aplikazioaren datuak beste telefono batera kopiatzeak ez du lizentziarik berekin eramaten, eta jabeak paneletik berrezar dezake lotura hori telefonoz aldatzen baduzu.</string>
+    <string name="max_license_status_section">Egoera</string>
+    <string name="max_license_status_active">Aktiboa</string>
+    <string name="max_license_status_expired">Iraungi egin da</string>
+    <string name="max_license_status_none">Ez dago aktibatuta</string>
+    <string name="max_license_active_detail">Gainerakoak: %1$d egun</string>
+    <string name="max_license_expired_detail">Gako honen denbora amaitu da. Gako berri batek sarbidea berritzen du.</string>
+    <string name="max_license_none_detail">Sartu jaso duzun giltza ordainpeko gainazalak desblokeatzeko.</string>
+    <string name="max_license_promo_active">Denontzat doan %1$s arte</string>
+    <string name="max_license_plan_title">Plana</string>
+    <string name="max_license_devices_title">Gailuak</string>
+    <string name="max_license_devices_detail">%1$d de %2$d erabiltzen da</string>
+    <string name="max_license_device_id_title">Gailu hau</string>
+    <string name="max_license_device_id_detail">%1$s</string>
+    <string name="max_license_key_section">Aktibazioa</string>
+    <string name="max_license_key_label">Lizentzia-gakoa</string>
+    <string name="max_license_key_placeholder">MAXM-XXXX-XXXX-XXXX-XXXX-XX</string>
+    <string name="max_license_key_helper">Marratxoak eta maiuskulak ez dute axola; itsatsi jaso duzun bezala.</string>
+    <string name="max_license_activate">Aktibatu</string>
+    <string name="max_license_activating">Gakoa egiaztatzen…</string>
+    <string name="max_license_refresh">Egiaztatu orain</string>
+    <string name="max_license_activated">Aktibatuta. Gailu hau zure giltzari lotuta dago orain.</string>
+    <string name="max_license_error_invalid_key">Gako honek ez du itxura osoa. Egiaztatu eta saiatu berriro.</string>
+    <string name="max_license_error_not_configured">Eraikuntza honek ez du lizentzia zerbitzaririk konfiguratuta.</string>
+    <string name="max_license_error_network">Ez dago konexiorik. Gakoa behin egiaztatzen da, eta lineaz kanpo funtzionatzen du.</string>
+    <string name="max_license_error_timeout">Lizentzia zerbitzariak ez zuen garaiz erantzun. Saiatu berriro.</string>
+    <string name="max_license_error_server">Lizentzia zerbitzariak errore batekin erantzun du. Saiatu berriro geroago.</string>
+    <string name="max_license_error_client">Lizentzia-funtzioa ez dago zerbitzarian inplementatzen.</string>
+    <string name="max_license_error_format">Zerbitzariaren erantzuna ez da ulertu.</string>
+    <string name="max_license_error_expired">Gako hau iraungi da.</string>
+    <string name="max_license_error_not_found">Gako hau ez da ezagutzen.</string>
+    <string name="max_license_error_revoked">Gako hau ezeztatu egin da.</string>
+    <string name="max_license_error_device_limit">Gako hau gailuaren mugara iritsi da. Eskatu gailua berrezartzeko.</string>
+    <string name="max_license_error_device_unknown">Gailu hau oraindik ez dago giltzari lotuta. Aktibatu hemen lehenik.</string>
+    <string name="max_license_error_device_removed">Gailu hau giltzatik kendu du jabeak.</string>
+    <string name="max_license_error_rate_limited">Saiakera gehiegi konexio honetatik: itxaron minutu batzuk eta saiatu berriro.</string>
+    <string name="max_license_error_unknown">Zerbait gaizki joan da. Arrazoia Diagnostikoetan jaso da.</string>
+    <string name="max_license_gate_title">Azalera honek lizentzia behar du</string>
+    <string name="max_license_gate_detail">Giltza batekin sartzen da. Tekla batek estaltzen du gailu hau, eta minutu bat behar da bertan sartzeko.</string>
+    <string name="max_feature_off_title">Itzalduta</string>
+    <string name="max_feature_off_detail">Kontrol panelak gainazal hori itzali du. Berriro gaitu bezain laster itzultzen da.</string>
+    <string name="max_license_gate_action">Ireki lizentzia ezarpenak</string>
+    <string name="max_license_gate_subscribe">Harpidetu orain</string>
+    <string name="max_license_subscription_section">Harpidetza</string>
+    <string name="max_license_subscription_open">Ireki harpidetza orria</string>
+</resources>

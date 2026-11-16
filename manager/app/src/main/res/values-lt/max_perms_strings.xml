@@ -69,4 +69,25 @@
     <string name="max_perms_entry_title">Leidimai ir programos operacijos</string>
     <string name="max_perms_entry_desc">Pažiūrėkite, ką ši programa deklaruoja ir ką sistema iš tikrųjų leidžia</string>
     <string name="max_perms_entry_action">Atidaryti leidimus</string>
+    <string name="max_perms_manifest_title">Manifesto santrauka</string>
+    <string name="max_perms_manifest_desc">Perskaitykite iš paketų tvarkyklės: versija, SDK diapazonas, komponentai ir kiek jų eksportuota. Eksportuotą komponentą gali paleisti kitos programos.</string>
+    <string name="max_perms_manifest_version">Versija</string>
+    <string name="max_perms_manifest_sdk">SDK diapazonas</string>
+    <string name="max_perms_manifest_location">Įdiegimo vieta</string>
+    <string name="max_perms_manifest_location_auto">Automatinis</string>
+    <string name="max_perms_manifest_location_internal">Tik vidinė atmintis</string>
+    <string name="max_perms_manifest_location_external">Pirmenybę teikia išoriniam</string>
+    <string name="max_perms_manifest_components">Komponentai</string>
+    <string name="max_perms_manifest_components_order">veikla · paslaugos · gavėjai · teikėjai</string>
+    <string name="max_perms_manifest_exported">Eksportuojami komponentai</string>
+    <string name="max_perms_manifest_splits">Padalinti APK</string>
+    <string name="max_perms_manifest_debug">Derinamas</string>
+    <string name="max_perms_features_title">Deklaruojamos savybės</string>
+    <string name="max_perms_features_desc">Ko pakuotė reikalauja iš įrenginio, palyginti su tuo, ką šis įrenginys reklamuoja. Čia trūksta būtinos funkcijos, paprastai reiškia, kad programa neveiks iki galo – tai paketo tvarkyklės reikalavimas, o ne spėjimas.</string>
+    <string name="max_perms_features_loading">Paketo deklaruotų savybių skaitymas…</string>
+    <string name="max_perms_features_none">Paketas deklaruoja, kad nėra reikalingų funkcijų.</string>
+    <string name="max_perms_features_required">Reikalingas</string>
+    <string name="max_perms_features_unsupported">Ne šiame įrenginyje</string>
+    <string name="max_perms_manifest_none">Paketo valdytojas nepranešė.</string>
+    <string name="max_perms_manifest_unknown">Nežinoma</string>
 </resources>

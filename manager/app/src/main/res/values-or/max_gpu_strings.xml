@@ -99,4 +99,12 @@
     <string name="max_gpu_saved_desc">ପୂର୍ବ ସ save ୍ଚୟରୁ ରଖ ଏବଂ ପ୍ରତ୍ୟେକ ବୁଟରେ ପ୍ରୟୋଗ: %1$s। ଉପରୋକ୍ତ ଡିଫଲ୍ଟ କେବଳ ଏହି ଅଧିବେଶନକୁ ସମାପ୍ତ କରେ, କେବେବି ସଂରକ୍ଷିତ ଅବସ୍ଥା ନୁହେଁ</string>
     <string name="max_gpu_dynamic_min">ସର୍ବନିମ୍ନ · ଗତିଶୀଳ |</string>
     <string name="max_gpu_dynamic_max">ସର୍ବାଧିକ · ଗତିଶୀଳ |</string>
+    <string name="max_gpu_monitor_only_detail">ଏହି କର୍ଣ୍ଣଲ ପ୍ରକାଶ କରୁଥିବା ଏକମାତ୍ର ଗ୍ରାଫିକ୍ସ ନୋଡଗୁଡ଼ିକ ହେଉଛି ବ୍ୟାଣ୍ଡୱିଡଥ୍ ଏବଂ QoS ମନିଟର: ସେମାନେ GPU ଘଣ୍ଟା ବହନ କରନ୍ତି ନାହିଁ, ତେଣୁ ସେଟ୍ କରିବାକୁ କ frequ ଣସି ଫ୍ରିକ୍ୱେନ୍ସି ନାହିଁ | ମେମୋରୀ ଗଭର୍ଣ୍ଣର ଲେଖିବା ପରିବର୍ତ୍ତେ କଣ୍ଟ୍ରୋଲ୍ ବନ୍ଦ ହୋଇଯାଏ ଯେପରି ଏହା GPU |</string>
+    <string name="max_gpu_danger_title">GPU ସୀମା ଲେଖନ୍ତୁ?</string>
+    <string name="max_gpu_danger_body">ଏହା ଗ୍ରାଫିକ୍ସ ଫ୍ରିକ୍ୱେନ୍ସି ୱିଣ୍ଡୋ ଏବଂ ଗଭର୍ଣ୍ଣର GPU ନୋଡରେ ଲେଖେ | ଡ୍ରାଇଭର ପ୍ରତ୍ୟାଖ୍ୟାନ କରୁଥିବା ଏକ ୱିଣ୍ଡୋ, କିମ୍ବା ଜଣେ ଗଭର୍ଣ୍ଣର ଯାହା ଜାରି ରଖିପାରିବ ନାହିଁ, ସମଗ୍ର ଇଣ୍ଟରଫେସକୁ ଅଟକାଇପାରେ କିମ୍ବା ପ୍ୟାନେଲକୁ ଫ୍ରିଜ୍ କରିପାରେ | ଆପ୍ ରେକର୍ଡ କରେ ଯେ ଆପଣ ଏହାକୁ ଥରେ ଗ୍ରହଣ କରିଛନ୍ତି - ଆପଣ ପ୍ରୟୋଗ କରୁଥିବା ମୂଲ୍ୟଗୁଡିକ ପାଇଁ ଦାୟିତ୍ your ଆପଣଙ୍କର ଅଟେ |</string>
+    <string name="max_gpu_danger_action">ମୁଁ ବୁ understand ିଛି - ପ୍ରୟୋଗ କର |</string>
+    <string name="max_gpu_state_title">ରାଜ୍ୟରେ ସମୟ |</string>
+    <string name="max_gpu_state_desc">ଯେଉଁଠାରେ GPU ର ସମୟ ପ୍ରକୃତରେ ଗଲା, ଅପରେଟିଂ ଫ୍ରିକ୍ୱେନ୍ସିରେ କର୍ଣ୍ଣଲ ଦ୍ୱାରା ଗଣିତ - ସାମ୍ପ୍ରତିକ ଘଣ୍ଟାର ସ୍ନାପସଟ୍ ନୁହେଁ |</string>
+    <string name="max_gpu_state_hidden_share">%1$s ଏକତ୍ର |</string>
+    <string name="max_gpu_state_hidden">%1$d 1 %% ତଳେ ଅଛି |</string>
 </resources>

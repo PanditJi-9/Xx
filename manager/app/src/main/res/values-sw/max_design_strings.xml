@@ -13,4 +13,23 @@
     <string name="max_expand_section">Onyesha maelezo</string>
     <string name="max_collapse_section">Ficha maelezo</string>
     <string name="max_trust_loading">Inasoma...</string>
+    <string name="max_gov_title">Nani anatawala sasa</string>
+    <string name="max_gov_separator">"»"</string>
+    <string name="max_gov_order_note">Agizo lisilobadilika: rung ya juu huzuia ya chini. Haibadilishi ni sera ipi itashinda.</string>
+    <string name="max_gov_open_details">Wamiliki hai</string>
+    <string name="max_gov_active_title">Nani ana udhibiti</string>
+    <string name="max_gov_none">Hakuna sera inayomiliki udhibiti wa maunzi kwa sasa.</string>
+    <string name="max_gov_count">Ukodishaji unaotumika wa udhibiti: %1$d</string>
+    <string name="max_gov_requested">Umeomba: %1$s</string>
+    <string name="max_gov_owner_recovery">Ahueni</string>
+    <string name="max_gov_owner_safety">Usalama wa joto</string>
+    <string name="max_gov_owner_per_app">Wasifu wa programu</string>
+    <string name="max_gov_owner_max_ai">Max AI</string>
+    <string name="max_gov_owner_global">Wasifu wa kimataifa</string>
+    <string name="max_gov_owner_system">Mfumo</string>
+    <string name="max_gov_owner_a11y">%1$s anamiliki udhibiti wa maunzi</string>
+    <string name="max_gov_now_none">Hakuna mmiliki kiotomatiki kwa sasa - udhibiti unabaki kuwa wako</string>
+    <string name="max_gov_now_one">%1$s ina kidhibiti</string>
+    <string name="max_gov_now_many">%1$s inashikilia %2$d vidhibiti</string>
+    <string name="devinfo_details">Maelezo</string>
 </resources>

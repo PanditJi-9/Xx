@@ -99,4 +99,12 @@
     <string name="max_gpu_saved_desc">Conservato da un salvataggio precedente e applicato a ogni avvio: %1$s. L\'impostazione predefinita sopra termina solo questa sessione, mai lo stato salvato.</string>
     <string name="max_gpu_dynamic_min">Minimo · dinamico</string>
     <string name="max_gpu_dynamic_max">Massimo · dinamico</string>
+    <string name="max_gpu_monitor_only_detail">Gli unici nodi grafici esposti da questo kernel sono la larghezza di banda e i monitor QoS: non hanno un clock GPU, quindi non c\'è alcuna frequenza da impostare. Il controllo rimane disattivato invece di scrivere un governatore di memoria come se fosse il GPU.</string>
+    <string name="max_gpu_danger_title">Scrivi i limiti GPU?</string>
+    <string name="max_gpu_danger_body">Questo scrive la finestra di frequenza grafica e il regolatore nei nodi GPU. Una finestra che il conducente rifiuta, o un regolatore che non riesce a tenere il passo, può far balbettare l\'intera interfaccia o bloccare il pannello. L\'app registra che hai accettato questo una volta: la responsabilità dei valori che applichi è tua.</string>
+    <string name="max_gpu_danger_action">Capisco: fai domanda</string>
+    <string name="max_gpu_state_title">Tempo nello stato</string>
+    <string name="max_gpu_state_desc">Dove è andato effettivamente il tempo di GPU, conteggiato dal kernel per frequenza operativa, non un\'istantanea dell\'orologio corrente.</string>
+    <string name="max_gpu_state_hidden_share">%1$s insieme</string>
+    <string name="max_gpu_state_hidden">%1$d stati inferiori all\'1%%</string>
 </resources>

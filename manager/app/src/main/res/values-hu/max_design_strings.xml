@@ -13,4 +13,23 @@
     <string name="max_expand_section">Részletek megjelenítése</string>
     <string name="max_collapse_section">Részletek elrejtése</string>
     <string name="max_trust_loading">Olvasás…</string>
+    <string name="max_gov_title">Aki most uralkodik</string>
+    <string name="max_gov_separator">"›"</string>
+    <string name="max_gov_order_note">Rögzített sorrend: egy magasabb létrafok blokkolja az alacsonyabbat. Soha nem változik, hogy melyik politika nyer.</string>
+    <string name="max_gov_open_details">Aktív tartók</string>
+    <string name="max_gov_active_title">Aki irányítja</string>
+    <string name="max_gov_none">Jelenleg egyetlen szabályzat sem rendelkezik hardvervezérléssel.</string>
+    <string name="max_gov_count">Aktív vezérlési bérletek: %1$d</string>
+    <string name="max_gov_requested">Kért: %1$s</string>
+    <string name="max_gov_owner_recovery">Helyreállítás</string>
+    <string name="max_gov_owner_safety">Hőbiztonság</string>
+    <string name="max_gov_owner_per_app">Alkalmazásprofil</string>
+    <string name="max_gov_owner_max_ai">Max AI</string>
+    <string name="max_gov_owner_global">Globális profil</string>
+    <string name="max_gov_owner_system">Rendszer</string>
+    <string name="max_gov_owner_a11y">%1$s rendelkezik egy hardveres vezérlővel</string>
+    <string name="max_gov_now_none">Jelenleg nincs automatikus tulajdonos – az irányítás az Öné marad</string>
+    <string name="max_gov_now_one">%1$s egy vezérlőt tartalmaz</string>
+    <string name="max_gov_now_many">%1$s %2$d vezérlőket tartalmaz</string>
+    <string name="devinfo_details">Részletek</string>
 </resources>

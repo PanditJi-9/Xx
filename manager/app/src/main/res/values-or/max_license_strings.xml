@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_license_strings.xml -->
+<resources>
+    <string name="max_license_title">ଲାଇସେନ୍ସ</string>
+    <string name="max_license_subtitle">ଗୋଟିଏ ଚାବି, ଏହି ଉପକରଣ, ଖାତା ନାହିଁ |</string>
+    <string name="max_license_help_body">ଏକ ଚାବି ଅନଲାଇନରେ ଥରେ ଯାଞ୍ଚ କରାଯାଏ, ଯେତେବେଳେ ତୁମେ ଏହାକୁ ପ୍ରବେଶ କର | ସେବେଠାରୁ ସର୍ଭରର ସ୍ signed ାକ୍ଷରିତ ସାର୍ଟିଫିକେଟ୍ ଅଫଲାଇନରେ କାମ କରେ ଯେପର୍ଯ୍ୟନ୍ତ ଏହାର ସମୟ ଶେଷ ନହୁଏ - ଆପଣ ପ୍ରତ୍ୟେକ ଥର ସ୍କ୍ରିନ୍ ଖୋଲିବା ସମୟରେ ଆପ୍ ଘରକୁ ଡାକିନଥାଏ | ସାର୍ଟିଫିକେଟ୍ ଏହି ଡିଭାଇସର ଅନିୟମିତ ଇନଷ୍ଟଲ୍ id ସହିତ ବନ୍ଧା ହୋଇଛି, ତେଣୁ ଆପ୍ ତଥ୍ୟକୁ ଅନ୍ୟ ଫୋନରେ କପି କରିବା ଏହା ସହିତ ଲାଇସେନ୍ସ ବହନ କରେ ନାହିଁ, ଏବଂ ଯଦି ଆପଣ ଫୋନ୍ ବଦଳାନ୍ତି ତେବେ ମାଲିକ ସେହି ବନ୍ଧନକୁ ପୁନ res ସେଟ୍ କରିପାରିବେ |</string>
+    <string name="max_license_status_section">ସ୍ଥିତି</string>
+    <string name="max_license_status_active">ସକ୍ରିୟ |</string>
+    <string name="max_license_status_expired">ମିଆଦ ପୂର୍ଣ୍ଣ ହୋଇଛି</string>
+    <string name="max_license_status_none">ସକ୍ରିୟ ନୁହେଁ |</string>
+    <string name="max_license_active_detail">ଅବଶିଷ୍ଟ: %1$d ଦିନ |</string>
+    <string name="max_license_expired_detail">ଏହି ଚାବିର ସମୟ ସମାପ୍ତ ହୋଇଛି | ଏକ ନୂତନ ଚାବି ପ୍ରବେଶକୁ ନବୀକରଣ କରେ |</string>
+    <string name="max_license_none_detail">ଦେୟଯୁକ୍ତ ପୃଷ୍ଠଗୁଡ଼ିକୁ ଅନଲକ୍ କରିବାକୁ ଆପଣ ଗ୍ରହଣ କରିଥିବା ଚାବିକୁ ପ୍ରବେଶ କରନ୍ତୁ |</string>
+    <string name="max_license_promo_active">%1$s ପର୍ଯ୍ୟନ୍ତ ସମସ୍ତଙ୍କ ପାଇଁ ମାଗଣା |</string>
+    <string name="max_license_plan_title">ଯୋଜନା କରନ୍ତୁ |</string>
+    <string name="max_license_devices_title">ଉପକରଣଗୁଡ଼ିକ</string>
+    <string name="max_license_devices_detail">ବ୍ୟବହୃତ %2$d ର %1$d |</string>
+    <string name="max_license_device_id_title">ଏହି ଉପକରଣ</string>
+    <string name="max_license_device_id_detail">%1$s</string>
+    <string name="max_license_key_section">ସକ୍ରିୟକରଣ</string>
+    <string name="max_license_key_label">ଲାଇସେନ୍ସ ଚାବି |</string>
+    <string name="max_license_key_placeholder">MAXM-XXXXX-XXXXX-XXXXX-XXXXX-XX |</string>
+    <string name="max_license_key_helper">ଡ୍ୟାସ୍ ଏବଂ କ୍ୟାପିଟାଲାଇଜେସନ୍ କ matter ଣସି ଫରକ ପଡେ ନାହିଁ - ଏହାକୁ ଗ୍ରହଣ କଲାବେଳେ ଏହାକୁ ଲେପନ କର |</string>
+    <string name="max_license_activate">ସକ୍ରିୟ କରନ୍ତୁ |</string>
+    <string name="max_license_activating">ଚାବି ଯାଞ୍ଚ କରୁଛି…</string>
+    <string name="max_license_refresh">ବର୍ତ୍ତମାନ ଯାଞ୍ଚ କରନ୍ତୁ |</string>
+    <string name="max_license_activated">ସକ୍ରିୟ ହୋଇଛି | ଏହି ଡିଭାଇସ୍ ବର୍ତ୍ତମାନ ଆପଣଙ୍କ ଚାବି ସହିତ ଲିଙ୍କ୍ ହୋଇଛି |</string>
+    <string name="max_license_error_invalid_key">ଏହି ଚାବି ସଂପୂର୍ଣ୍ଣ ଦେଖାଯାଏ ନାହିଁ | ଏହାକୁ ଯାଞ୍ଚ କରନ୍ତୁ ଏବଂ ପୁନର୍ବାର ଚେଷ୍ଟା କରନ୍ତୁ |</string>
+    <string name="max_license_error_not_configured">ଏହି ବିଲ୍ଡରେ କ license ଣସି ଲାଇସେନ୍ସ ସର୍ଭର ବିନ୍ୟାସ ହୋଇନାହିଁ |</string>
+    <string name="max_license_error_network">କ connection ଣସି ସଂଯୋଗ ନାହିଁ | ଚାବି ଥରେ ଯାଞ୍ଚ କରାଯାଏ, ତାପରେ ଅଫଲାଇନରେ କାମ କରେ |</string>
+    <string name="max_license_error_timeout">ଲାଇସେନ୍ସ ସର୍ଭର ଠିକ୍ ସମୟରେ ଉତ୍ତର ଦେଇନଥିଲା | ପୁନର୍ବାର ଚେଷ୍ଟା କରନ୍ତୁ |</string>
+    <string name="max_license_error_server">ଲାଇସେନ୍ସ ସର୍ଭର ଏକ ତ୍ରୁଟି ସହିତ ଉତ୍ତର ଦେଲା | ପରେ ପୁନର୍ବାର ଚେଷ୍ଟା କରନ୍ତୁ |</string>
+    <string name="max_license_error_client">ଲାଇସେନ୍ସ କାର୍ଯ୍ୟ ସର୍ଭରରେ ନିୟୋଜିତ ନୁହେଁ |</string>
+    <string name="max_license_error_format">ସର୍ଭର ଉତ୍ତର ବୁ understood ିପାରିଲା ନାହିଁ |</string>
+    <string name="max_license_error_expired">ଏହି ଚାବି ମିଆଦ ପୂର୍ଣ୍ଣ ହୋଇଛି |</string>
+    <string name="max_license_error_not_found">ଏହି ଚାବି ଜଣା ନାହିଁ |</string>
+    <string name="max_license_error_revoked">ଏହି ଚାବି ପ୍ରତ୍ୟାହାର କରାଯାଇଛି |</string>
+    <string name="max_license_error_device_limit">ଏହି ଚାବି ଏହାର ଡିଭାଇସ୍ ସୀମାରେ ପହଞ୍ଚିଛି | ଏକ ଉପକରଣ ପୁନ et ସେଟ୍ ପାଇଁ ପଚାର |</string>
+    <string name="max_license_error_device_unknown">ଏହି ଡିଭାଇସ୍ ଏପର୍ଯ୍ୟନ୍ତ ଚାବି ସହିତ ଲିଙ୍କ୍ ହୋଇନାହିଁ | ଏହାକୁ ପ୍ରଥମେ ଏଠାରେ ସକ୍ରିୟ କରନ୍ତୁ |</string>
+    <string name="max_license_error_device_removed">ଏହି ଡିଭାଇସ୍ ମାଲିକଙ୍କ ଦ୍ୱାରା ଚାବିରୁ ବାହାର କରାଯାଇଥିଲା |</string>
+    <string name="max_license_error_rate_limited">ଏହି ସଂଯୋଗରୁ ବହୁତ ଚେଷ୍ଟା - କିଛି ମିନିଟ୍ ଅପେକ୍ଷା କର, ତାପରେ ପୁନର୍ବାର ଚେଷ୍ଟା କର |</string>
+    <string name="max_license_error_unknown">କିଛି ଭୁଲ୍ ହୋଇଗଲା | ଏହାର କାରଣ ଡାଇଗ୍ନୋଷ୍ଟିକ୍ ରେକର୍ଡ କରାଯାଇଥିଲା |</string>
+    <string name="max_license_gate_title">ଏହି ପୃଷ୍ଠଟି ଏକ ଲାଇସେନ୍ସ ଆବଶ୍ୟକ କରେ |</string>
+    <string name="max_license_gate_detail">ଏହା ଏକ ଚାବି ସହିତ ଅନ୍ତର୍ଭୂକ୍ତ କରାଯାଇଛି | ଗୋଟିଏ ଚାବି ଏହି ଉପକରଣକୁ ଆବୃତ କରେ, ଏବଂ ଏହାକୁ ପ୍ରବେଶ କରିବା ପାଇଁ ଏକ ମିନିଟ୍ ସମୟ ଲାଗେ |</string>
+    <string name="max_feature_off_title">ବନ୍ଦ ହୋଇଗଲା |</string>
+    <string name="max_feature_off_detail">କଣ୍ଟ୍ରୋଲ୍ ପ୍ୟାନେଲ୍ ଏହି ପୃଷ୍ଠକୁ ବନ୍ଦ କରିଦେଇଛି | ଏହା ପୁନର୍ବାର ସକ୍ଷମ ହେବା ମାତ୍ରେ ଫେରି ଆସେ |</string>
+    <string name="max_license_gate_action">ଲାଇସେନ୍ସ ସେଟିଂସମୂହ ଖୋଲନ୍ତୁ |</string>
+    <string name="max_license_gate_subscribe">ବର୍ତ୍ତମାନ ସବସ୍କ୍ରାଇବ କରନ୍ତୁ |</string>
+    <string name="max_license_subscription_section">ସଦସ୍ୟତା</string>
+    <string name="max_license_subscription_open">ସଦସ୍ୟତା ପୃଷ୍ଠା ଖୋଲନ୍ତୁ |</string>
+</resources>

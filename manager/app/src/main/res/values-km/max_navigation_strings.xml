@@ -53,4 +53,8 @@
     <string name="max_title_get_started">រៀបចំ</string>
     <string name="max_hub_audio">អូឌីយ៉ូ</string>
     <string name="max_hub_audio_desc">ឧបករណ៍បញ្ចេញ ស្ទ្រីម និងផលប៉ះពាល់ដែលបានប្រកាស</string>
+    <string name="control_tools_live">ផ្ទៃផ្ទាល់</string>
+    <string name="control_tools_advanced">ឧបករណ៍កម្រិតខ្ពស់</string>
+    <string name="control_tools_system">ឧបករណ៍ប្រព័ន្ធ</string>
+    <string name="control_tools_appearance">រូបរាង</string>
 </resources>

@@ -18,4 +18,10 @@
     <string name="max_cfg_section_appearance">Гадаад төрх ба интерфейс</string>
     <string name="max_cfg_section_app_prefs">Аппын тохиргоо ба хэл</string>
     <string name="max_cfg_restore_merge_note">Тохируулгыг сэргээх нь нэгддэг: файлд байгаа товчлуурууд бичигдсэн байх ба энд дурдаагүй түлхүүрүүд байгаагаар нь үлдэнэ. Юу ч арилаагүй.</string>
+    <string name="max_cfg_diff_title">%1$d хадгалсан тохиргоо нь энэ төхөөрөмжөөс ялгаатай байна</string>
+    <string name="max_cfg_diff_line">%1$s: %2$s → %3$s</string>
+    <string name="max_cfg_diff_unset">тохируулаагүй</string>
+    <string name="max_cfg_diff_more">болон %1$d бусад</string>
+    <string name="max_cfg_diff_applist">%1$d програмын жагсаалтын мөрүүд нэмэгдсэн, %2$d хасагдсан — жагсаалтыг бүхэлд нь сольсон, нэгтгэсэнгүй.</string>
+    <string name="max_cfg_diff_prefs">%1$d сонголтын товчлуурууд ялгаатай — нэгтгэсэн, арчигдаагүй.</string>
 </resources>

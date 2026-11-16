@@ -13,4 +13,23 @@
     <string name="max_expand_section">विवरण देखाउनुहोस्</string>
     <string name="max_collapse_section">विवरण लुकाउनुहोस्</string>
     <string name="max_trust_loading">पढ्दै…</string>
+    <string name="max_gov_title">अहिले कसले शासन गर्छ</string>
+    <string name="max_gov_separator">" ›"</string>
+    <string name="max_gov_order_note">फिक्स्ड अर्डर: अग्लो रङले तल्लोलाई रोक्छ। कुन नीतिले जित्छ यसले कहिल्यै परिवर्तन गर्दैन।</string>
+    <string name="max_gov_open_details">सक्रिय धारकहरू</string>
+    <string name="max_gov_active_title">जसको नियन्त्रण हुन्छ</string>
+    <string name="max_gov_none">कुनै पनि नीतिले अहिले हार्डवेयर नियन्त्रणको स्वामित्व राख्दैन।</string>
+    <string name="max_gov_count">सक्रिय नियन्त्रण पट्टाहरू: %1$d</string>
+    <string name="max_gov_requested">अनुरोध गरिएको: %1$s</string>
+    <string name="max_gov_owner_recovery">रिकभरी</string>
+    <string name="max_gov_owner_safety">थर्मल सुरक्षा</string>
+    <string name="max_gov_owner_per_app">एप प्रोफाइल</string>
+    <string name="max_gov_owner_max_ai">Max AI</string>
+    <string name="max_gov_owner_global">ग्लोबल प्रोफाइल</string>
+    <string name="max_gov_owner_system">प्रणाली</string>
+    <string name="max_gov_owner_a11y">%1$sसँग हार्डवेयर नियन्त्रणको स्वामित्व छ</string>
+    <string name="max_gov_now_none">अहिले कुनै स्वचालित मालिक छैन — नियन्त्रण तपाईंको रहन्छ</string>
+    <string name="max_gov_now_one">%1$s ले नियन्त्रण राख्छ</string>
+    <string name="max_gov_now_many">%1$s ले %2$d नियन्त्रणहरू राख्छ</string>
+    <string name="devinfo_details">विवरणहरू</string>
 </resources>

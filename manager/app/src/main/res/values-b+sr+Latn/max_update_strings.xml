@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_update_strings.xml -->
+<resources>
+<string name="update_dialog_title">Доступно је ажурирање</string>
+<string name="update_dialog_title_required">Потребно је ажурирање</string>
+<string name="update_required_notice">Ово ажурирање је потребно да бисте наставили да користите MaxManager. Инсталирајте га, а затим поново отворите апликацију.</string>
+<string name="update_dialog_body">Доступна је верзија %1$s. Ви сте на %2$s.</string>
+<string name="update_block_title">За наставак је потребно ажурирање</string>
+<string name="update_block_body">Ова верзија (%1$s) више није подржана. Ажурирајте на %2$s да бисте наставили да користите MaxManager.</string>
+<string name="update_block_body_no_release">Ова верзија (%1$s) више није подржана.</string>
+<string name="update_release_notes_label">Шта је ново</string>
+<string name="update_size">Величина преузимања: %1$s</string>
+<string name="update_button_now">Ажурирајте одмах</string>
+<string name="update_button_later">касније</string>
+<string name="update_button_close">Затвори</string>
+<string name="update_button_open_page">Отворите страницу за преузимање</string>
+<string name="update_state_downloading">Преузимање… %1$d%%</string>
+<string name="update_state_downloading_unknown">Преузимање…</string>
+<string name="update_state_installing">Инсталирање…</string>
+<string name="update_error_network">Није могуће приступити серверу за ажурирање. Проверите своју везу и покушајте поново.</string>
+<string name="update_error_http">Сервер за ажурирање је одговорио грешком. Покушајте поново касније.</string>
+<string name="update_error_format">Информација о ажурирању није могла да се прочита.</string>
+<string name="update_error_too_large">Информације о ажурирању биле су веће од очекиваног и одбачене.</string>
+<string name="update_error_integrity">Преузета датотека се не подудара са контролном сумом и избрисана је.</string>
+<string name="update_error_install">Инсталација није успела. Покушајте поново.</string>
+<string name="update_error_not_configured">Ниједан канал за ажурирање није конфигурисан у овој верзији.</string>
+<string name="update_maintenance_title">Привремено недоступно</string>
+<string name="update_maintenance_body">MaxManager је привремено недоступан. Покушајте поново ускоро.</string>
+<string name="update_check_title">Проверите ажурирања</string>
+<string name="update_check_supporting">Тренутна верзија: %1$s</string>
+<string name="update_check_updated">Ажурирање је доступно.</string>
+<string name="update_check_uptodate">Ви сте на најновијој верзији.</string>
+<string name="update_check_failed">Провера ажурирања није успела.</string>
+<string name="update_check_not_configured">Ниједан канал за ажурирање није конфигурисан у овој верзији.</string>
+<string name="update_released_label">Датум изласка: %1$s</string>
+<string name="update_check_none_published">Још увек није објављено ажурирање са контролне табле.</string>
+<string name="update_check_link_missing">Ажурирање је објављено, али недостаје веза за преузимање.</string>
+</resources>

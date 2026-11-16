@@ -18,4 +18,10 @@
     <string name="max_cfg_section_appearance">පෙනුම සහ අතුරු මුහුණත</string>
     <string name="max_cfg_section_app_prefs">යෙදුම් මනාප සහ භාෂාව</string>
     <string name="max_cfg_restore_merge_note">ප්‍රතිස්ථාපන අභිරුචි ඒකාබද්ධ වේ: ගොනුවේ පවතින යතුරු ලියා ඇති අතර, එහි සඳහන් නොවන යතුරු පවතින ලෙසම පවතී. කිසිවක් පිරිසිදු නොවේ.</string>
+    <string name="max_cfg_diff_title">%1$d සුරැකි සැකසුම් මෙම උපාංගයට වඩා වෙනස් වේ</string>
+    <string name="max_cfg_diff_line">%1$s: %2$s → %3$s</string>
+    <string name="max_cfg_diff_unset">සකසා නැත</string>
+    <string name="max_cfg_diff_more">සහ %1$d තවත්</string>
+    <string name="max_cfg_diff_applist">%1$d යෙදුම්-ලැයිස්තු පේළි එකතු කරන ලදී, %2$d ඉවත් කරන ලදී - සම්පූර්ණ ලැයිස්තුව ප්‍රතිස්ථාපනය කර ඇත, ඒකාබද්ධ නොවේ.</string>
+    <string name="max_cfg_diff_prefs">%1$d මනාප යතුරු වෙනස් වේ - ඒකාබද්ධ කර ඇත, අතුගා නැත.</string>
 </resources>

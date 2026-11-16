@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_license_strings.xml -->
+<resources>
+<string name="max_license_title">Лиценца</string>
+<string name="max_license_subtitle">Један кључ, овај уређај, без налога</string>
+<string name="max_license_help_body">Кључ се проверава на мрежи једном, када га унесете. Од тада потписани сертификат сервера ради ван мреже док му не истекне време — апликација се не јавља кући сваки пут када отворите екран. Сертификат је везан за насумични ИД за инсталацију овог уређаја, тако да копирање података апликације на други телефон не носи лиценцу са собом, а власник може да ресетује ту везу са панела ако промените телефон.</string>
+<string name="max_license_status_section">Статус</string>
+<string name="max_license_status_active">Активан</string>
+<string name="max_license_status_expired">Истекао</string>
+<string name="max_license_status_none">Није активирано</string>
+<string name="max_license_active_detail">Преостало: %1$d дана</string>
+<string name="max_license_expired_detail">Време овог кључа је прошло. Нови кључ обнавља приступ.</string>
+<string name="max_license_none_detail">Унесите кључ који сте добили за откључавање плаћених површина.</string>
+<string name="max_license_promo_active">Бесплатно за све до %1$s</string>
+<string name="max_license_plan_title">План</string>
+<string name="max_license_devices_title">Уређаји</string>
+<string name="max_license_devices_detail">Користи се %1$d од %2$d</string>
+<string name="max_license_device_id_title">Овај уређај</string>
+<string name="max_license_device_id_detail">%1$s</string>
+<string name="max_license_key_section">Активација</string>
+<string name="max_license_key_label">Лиценцни кључ</string>
+<string name="max_license_key_placeholder">МАКСМ-КСКСКСКСКС-КСКСКСКС-КСКСКСКС-КСКСКСКСКС-КСКС</string>
+<string name="max_license_key_helper">Цртице и велика слова нису битни - налепите их онако како сте их примили.</string>
+<string name="max_license_activate">Активирај</string>
+<string name="max_license_activating">Провера кључа…</string>
+<string name="max_license_refresh">Проверите сада</string>
+<string name="max_license_activated">Активирано. Овај уређај је сада повезан са вашим кључем.</string>
+<string name="max_license_error_invalid_key">Овај кључ не изгледа комплетан. Проверите и покушајте поново.</string>
+<string name="max_license_error_not_configured">Ова верзија нема конфигурисан сервер за лиценце.</string>
+<string name="max_license_error_network">Нема везе. Кључ се проверава једном, а затим ради ван мреже.</string>
+<string name="max_license_error_timeout">Сервер за лиценце није одговорио на време. Покушајте поново.</string>
+<string name="max_license_error_server">Сервер лиценци је одговорио са грешком. Покушајте поново касније.</string>
+<string name="max_license_error_client">Функција лиценце није распоређена на серверу.</string>
+<string name="max_license_error_format">Одговор сервера није схваћен.</string>
+<string name="max_license_error_expired">Овај кључ је истекао.</string>
+<string name="max_license_error_not_found">Овај кључ није познат.</string>
+<string name="max_license_error_revoked">Овај кључ је опозван.</string>
+<string name="max_license_error_device_limit">Овај кључ је достигао ограничење уређаја. Затражите ресетовање уређаја.</string>
+<string name="max_license_error_device_unknown">Овај уређај још није повезан са кључем. Прво га активирајте овде.</string>
+<string name="max_license_error_device_removed">Власник је уклонио овај уређај са кључа.</string>
+<string name="max_license_error_rate_limited">Превише покушаја са ове везе — сачекајте неколико минута, па покушајте поново.</string>
+<string name="max_license_error_unknown">Нешто је пошло по злу. Разлог је забележен у Дијагностици.</string>
+<string name="max_license_gate_title">Ова површина захтева лиценцу</string>
+<string name="max_license_gate_detail">Укључен је са кључем. Један кључ покрива овај уређај, а улазак у њега траје минут.</string>
+<string name="max_feature_off_title">Искључено</string>
+<string name="max_feature_off_detail">Контролна табла је искључила ову површину. Враћа се чим се поново омогући.</string>
+<string name="max_license_gate_action">Отворите подешавања лиценце</string>
+<string name="max_license_gate_subscribe">Претплатите се сада</string>
+<string name="max_license_subscription_section">Претплата</string>
+<string name="max_license_subscription_open">Отворите страницу за претплату</string>
+</resources>

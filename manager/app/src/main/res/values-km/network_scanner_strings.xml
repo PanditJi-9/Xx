@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/network_scanner_strings.xml -->
+<resources>
+    <string name="network_scanner_title">ម៉ាស៊ីនស្កេនបណ្តាញមូលដ្ឋាន</string>
+    <string name="network_scanner_subtitle">អាស័យដ្ឋានរបស់អ្នក ផ្លូវដែលវាទៅដល់ ហើយអ្នកជិតខាងបានឆ្លើយ។</string>
+    <string name="max_role_network_scanner">អានបណ្តាញដែលអ្នកកំពុងបើក — គ្មានការចាប់យក គ្មានឫស។</string>
+    <string name="ns_no_network">មិនមានបណ្តាញភ្ជាប់ទេ។</string>
+    <string name="ns_interface">ចំណុចប្រទាក់</string>
+    <string name="ns_address">អាស័យដ្ឋាន</string>
+    <string name="ns_gateway">ច្រកផ្លូវ</string>
+    <string name="ns_dns">DNS</string>
+    <string name="ns_mac">MAC</string>
+    <string name="ns_transport_wifi">វ៉ាយហ្វាយ</string>
+    <string name="ns_transport_ethernet">អ៊ីសឺរណិត</string>
+    <string name="ns_transport_cellular">កោសិកា</string>
+    <string name="ns_transport_other">ផ្សេងៗ</string>
+    <string name="ns_sources_title">នេះមកពីណា</string>
+    <string name="ns_sources_body">អាសយដ្ឋាន និងច្រកផ្លូវត្រូវបានអានពីលក្ខណៈសម្បត្តិតំណរបស់វេទិកា។ តារាងអ្នកជិតខាងត្រូវបានអានពីឃ្លាំងសម្ងាត់ ARP របស់ខឺណែល ដូច្នេះវាផ្ទុកតែអ្វីដែលឧបករណ៍នេះបាននិយាយជាមួយថ្មីៗនេះ — តារាងទទេមិនមានន័យថាបណ្តាញទទេនោះទេ។</string>
+    <string name="ns_refresh">ធ្វើឱ្យស្រស់</string>
+    <string name="ns_probe">ស៊ើបអង្កេតច្រកទូទៅ</string>
+    <string name="ns_probe_stop">ឈប់</string>
+    <string name="ns_probe_progress">ការស៊ើបអង្កេត%1$dនៃ%2$d</string>
+    <string name="ns_probe_note">ផ្ញើការភ្ជាប់ TCP នៅលើច្រក 22, 80, 443, 5000 និង 5555 ឆ្លងកាត់ /24 នេះ។ ច្រកដែលឆ្លើយតបត្រូវបានរាយការណ៍; ភាពស្ងៀមស្ងាត់មិនមែនជាភ័ស្តុតាងថាម្ចាស់ផ្ទះអវត្តមានទេ។</string>
+    <string name="ns_neighbours">អ្នកជិតខាងដែលស្គាល់</string>
+    <string name="ns_neighbours_note">ពី /proc/net/arp — បានតែអានប៉ុណ្ណោះ។</string>
+    <string name="ns_neighbours_empty">មិន​ទាន់​មាន​អ្នក​ជិត​ខាង​ណា​ស្គាល់​នៅ​ឡើយ​ទេ។</string>
+    <string name="ns_ports_value">ច្រក %1$s</string>
+</resources>

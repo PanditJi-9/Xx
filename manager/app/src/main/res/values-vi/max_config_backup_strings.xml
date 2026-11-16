@@ -18,4 +18,10 @@
     <string name="max_cfg_section_appearance">Ngoại hình &amp; giao diện</string>
     <string name="max_cfg_section_app_prefs">Tùy chọn ứng dụng và ngôn ngữ</string>
     <string name="max_cfg_restore_merge_note">Khôi phục các tùy chọn hợp nhất: các khóa có trong tệp được ghi và các khóa không đề cập đến vẫn giữ nguyên như cũ. Không có gì được xóa.</string>
+    <string name="max_cfg_diff_title">%1$d cài đặt đã lưu khác với thiết bị này</string>
+    <string name="max_cfg_diff_line">%1$s: %2$s → %3$s</string>
+    <string name="max_cfg_diff_unset">chưa được đặt</string>
+    <string name="max_cfg_diff_more">và %1$d hơn thế nữa</string>
+    <string name="max_cfg_diff_applist">%1$d dòng danh sách ứng dụng được thêm vào, %2$d xóa — toàn bộ danh sách được thay thế, không được hợp nhất.</string>
+    <string name="max_cfg_diff_prefs">%1$d các phím ưu tiên khác nhau — được hợp nhất, không bị xóa.</string>
 </resources>

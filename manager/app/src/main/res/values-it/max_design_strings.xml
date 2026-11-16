@@ -13,4 +13,23 @@
     <string name="max_expand_section">Mostra dettagli</string>
     <string name="max_collapse_section">Nascondi dettagli</string>
     <string name="max_trust_loading">Lettura…</string>
+    <string name="max_gov_title">Chi governa adesso</string>
+    <string name="max_gov_separator">" › "</string>
+    <string name="max_gov_order_note">Ordine fisso: un piolo più alto blocca quello più basso. Non cambia mai quale politica vince.</string>
+    <string name="max_gov_open_details">Titolari attivi</string>
+    <string name="max_gov_active_title">Chi detiene il controllo</string>
+    <string name="max_gov_none">Nessuna policy possiede un controllo hardware in questo momento.</string>
+    <string name="max_gov_count">Leasing di controllo attivo: %1$d</string>
+    <string name="max_gov_requested">Richiesto: %1$s</string>
+    <string name="max_gov_owner_recovery">Recupero</string>
+    <string name="max_gov_owner_safety">Sicurezza termica</string>
+    <string name="max_gov_owner_per_app">Profilo dell\'app</string>
+    <string name="max_gov_owner_max_ai">Max AI</string>
+    <string name="max_gov_owner_global">Profilo globale</string>
+    <string name="max_gov_owner_system">Sistema</string>
+    <string name="max_gov_owner_a11y">%1$s possiede un controllo hardware</string>
+    <string name="max_gov_now_none">Nessun proprietario automatizzato al momento: il controllo rimane tuo</string>
+    <string name="max_gov_now_one">%1$s contiene un controllo</string>
+    <string name="max_gov_now_many">%1$s contiene i controlli %2$d</string>
+    <string name="devinfo_details">Dettagli</string>
 </resources>

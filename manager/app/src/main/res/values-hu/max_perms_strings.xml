@@ -69,4 +69,25 @@
     <string name="max_perms_entry_title">Engedélyek és alkalmazásműveletek</string>
     <string name="max_perms_entry_desc">Nézze meg, mit deklarál ez az alkalmazás, és mit enged meg a rendszer valójában</string>
     <string name="max_perms_entry_action">Nyissa meg az engedélyeket</string>
+    <string name="max_perms_manifest_title">Manifest összefoglaló</string>
+    <string name="max_perms_manifest_desc">Olvassa el a csomagkezelőből: verzió, SDK tartomány, összetevők és ezek közül hány exportálva van. Az exportált összetevőket más alkalmazások is elindíthatják.</string>
+    <string name="max_perms_manifest_version">Változat</string>
+    <string name="max_perms_manifest_sdk">SDK tartomány</string>
+    <string name="max_perms_manifest_location">Telepítési hely</string>
+    <string name="max_perms_manifest_location_auto">Automatikus</string>
+    <string name="max_perms_manifest_location_internal">Csak belső tárhely</string>
+    <string name="max_perms_manifest_location_external">A külsőt részesíti előnyben</string>
+    <string name="max_perms_manifest_components">Alkatrészek</string>
+    <string name="max_perms_manifest_components_order">tevékenységek · szolgáltatások · vevők · szolgáltatók</string>
+    <string name="max_perms_manifest_exported">Exportált alkatrészek</string>
+    <string name="max_perms_manifest_splits">Osztott APK-k</string>
+    <string name="max_perms_manifest_debug">Hibakeresés</string>
+    <string name="max_perms_features_title">Deklarált jellemzők</string>
+    <string name="max_perms_features_desc">Amit a csomag megkövetel az eszköztől, összehasonlítva azzal, amit ez az eszköz hirdet. A hiányzó kötelező funkció általában azt jelenti, hogy az alkalmazás nem fog teljesen működni – ez a csomagkezelő követelése, nem pedig találgatás.</string>
+    <string name="max_perms_features_loading">A csomag deklarált funkcióinak elolvasása…</string>
+    <string name="max_perms_features_none">A csomag nem nyilatkozik szükséges funkciókról.</string>
+    <string name="max_perms_features_required">Kívánt</string>
+    <string name="max_perms_features_unsupported">Nem ezen a készüléken</string>
+    <string name="max_perms_manifest_none">A csomagkezelő nem jelentette.</string>
+    <string name="max_perms_manifest_unknown">Ismeretlen</string>
 </resources>

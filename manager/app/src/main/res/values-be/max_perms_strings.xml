@@ -69,4 +69,25 @@
     <string name="max_perms_entry_title">Дазволы і аперацыі праграмы</string>
     <string name="max_perms_entry_desc">Паглядзіце, што дэкларуе гэта дадатак і што насамрэч дазваляе сістэма</string>
     <string name="max_perms_entry_action">Адкрытыя дазволы</string>
+    <string name="max_perms_manifest_title">Рэзюмэ маніфеста</string>
+    <string name="max_perms_manifest_desc">Чытайце з менеджэра пакетаў: версію, дыяпазон SDK, кампаненты і колькі з іх экспартавана. Экспартаваны кампанент можа быць запушчаны іншымі праграмамі.</string>
+    <string name="max_perms_manifest_version">Версія</string>
+    <string name="max_perms_manifest_sdk">Дыяпазон SDK</string>
+    <string name="max_perms_manifest_location">Месца ўстаноўкі</string>
+    <string name="max_perms_manifest_location_auto">Аўтаматычны</string>
+    <string name="max_perms_manifest_location_internal">Толькі ўнутраная памяць</string>
+    <string name="max_perms_manifest_location_external">Аддае перавагу знешнія</string>
+    <string name="max_perms_manifest_components">Кампаненты</string>
+    <string name="max_perms_manifest_components_order">дзейнасць · паслугі · атрымальнікі · пастаўшчыкі</string>
+    <string name="max_perms_manifest_exported">Экспартныя кампаненты</string>
+    <string name="max_perms_manifest_splits">Раздзяліць APK</string>
+    <string name="max_perms_manifest_debug">Адладжваецца</string>
+    <string name="max_perms_features_title">Заяўленыя асаблівасці</string>
+    <string name="max_perms_features_desc">Што пакет патрабуе ад прылады ў параўнанні з тым, што рэкламуе гэтая прылада. Адсутнасць неабходнай функцыі звычайна азначае, што праграма не будзе працаваць цалкам — гэта прэтэнзія ад мэнэджара пакетаў, а не здагадка.</string>
+    <string name="max_perms_features_loading">Чытанне заяўленых функцый пакета…</string>
+    <string name="max_perms_features_none">Пакет дэкларуе адсутнасць неабходных функцый.</string>
+    <string name="max_perms_features_required">абавязковы</string>
+    <string name="max_perms_features_unsupported">Не на гэтай прыладзе</string>
+    <string name="max_perms_manifest_none">Не паведамляе менеджэр пакетаў.</string>
+    <string name="max_perms_manifest_unknown">Невядомы</string>
 </resources>

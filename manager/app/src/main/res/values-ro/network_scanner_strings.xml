@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/network_scanner_strings.xml -->
+<resources>
+    <string name="network_scanner_title">Scaner de rețea locală</string>
+    <string name="network_scanner_subtitle">Adresa ta, poarta la care ajunge și la care au răspuns vecinii.</string>
+    <string name="max_role_network_scanner">Citește rețeaua în care vă aflați — fără captură, fără root.</string>
+    <string name="ns_no_network">Nu este conectată nicio rețea.</string>
+    <string name="ns_interface">Interfață</string>
+    <string name="ns_address">Adresa</string>
+    <string name="ns_gateway">Poarta de acces</string>
+    <string name="ns_dns">DNS</string>
+    <string name="ns_mac">MAC</string>
+    <string name="ns_transport_wifi">Wifi</string>
+    <string name="ns_transport_ethernet">Ethernet</string>
+    <string name="ns_transport_cellular">Celular</string>
+    <string name="ns_transport_other">Alte</string>
+    <string name="ns_sources_title">De unde vine asta</string>
+    <string name="ns_sources_body">Adresele și gateway-ul sunt citite din proprietățile link-urilor platformei. Tabelul vecin este citit din memoria cache ARP a kernelului, deci conține doar ceea ce a vorbit recent acest dispozitiv - un tabel gol nu înseamnă o rețea goală.</string>
+    <string name="ns_refresh">Reîmprospăta</string>
+    <string name="ns_probe">Sondați porturile comune</string>
+    <string name="ns_probe_stop">Stop</string>
+    <string name="ns_probe_progress">Sondarea %1$d din %2$d</string>
+    <string name="ns_probe_note">Trimite o conexiune TCP pe porturile 22, 80, 443, 5000 și 5555 prin acest /24. Este raportat un port care răspunde; tăcerea nu este dovada că o gazdă este absentă.</string>
+    <string name="ns_neighbours">Vecini cunoscuți</string>
+    <string name="ns_neighbours_note">Din /proc/net/arp — numai pentru citire.</string>
+    <string name="ns_neighbours_empty">Încă nu se cunosc vecini.</string>
+    <string name="ns_ports_value">Porturi %1$s</string>
+</resources>

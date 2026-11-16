@@ -51,4 +51,14 @@
     <string name="copg_tweak_kso_title">ಪರದೆಯನ್ನು ಆನ್ ಮಾಡಿ</string>
     <string name="copg_tweak_kso_desc">ಈ ಅಪ್ಲಿಕೇಶನ್‌ಗೆ COPG ಕೀಪ್-ಸ್ಕ್ರೀನ್-ಆನ್ ಟ್ವೀಕ್ ಅನ್ನು ಅನ್ವಯಿಸುತ್ತದೆ. ಇಲ್ಲಿ ಉಳಿಸಲಾಗಿದೆ, ವಿಮರ್ಶೆ ಮೂಲಕ ಎಂಜಿನ್‌ಗೆ ಬರೆಯಲಾಗಿದೆ ಮತ್ತು ಸ್ಪೂಫ್ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ಅನ್ವಯಿಸಿ.</string>
     <string name="copg_tweak_needs_device">ಸ್ಪೂಫ್ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ಈ ಅಪ್ಲಿಕೇಶನ್‌ಗೆ ಮೊದಲು ಸಾಧನದ ಅಗತ್ಯವಿದೆ.</string>
+    <string name="spoof_engine_unmeasured">ಎಂಜಿನ್ ಸ್ಥಿತಿಯನ್ನು ಅಳೆಯಲಾಗಿಲ್ಲ: ರೂಟ್ ಪ್ರವೇಶವನ್ನು ಇನ್ನೂ ನೀಡಲಾಗಿಲ್ಲ. ರೂಟ್ ನೀಡಿ, ನಂತರ ಈ ಟ್ಯಾಬ್ ಅನ್ನು ಮತ್ತೆ ತೆರೆಯಿರಿ.</string>
+    <string name="spoof_engine_config_missing">COPG ಅನ್ನು ಸ್ಥಾಪಿಸಲಾಗಿದೆ, ಆದರೆ ಅದರ ಕಾನ್ಫಿಗರ್ ಫೈಲ್ (COPG.json) ಕಾಣೆಯಾಗಿದೆ. ಮಾಡ್ಯೂಲ್ ಅದನ್ನು ಮತ್ತೆ ಒದಗಿಸುವವರೆಗೆ ಅನ್ವಯಿಸುವುದನ್ನು ನಿರಾಕರಿಸಲಾಗುತ್ತದೆ.</string>
+    <string name="spoof_engine_config_unreadable">COPG ಅನ್ನು ಸ್ಥಾಪಿಸಲಾಗಿದೆ, ಆದರೆ ಅದರ ಸಂರಚನಾ ಫೈಲ್ ಅನ್ನು ಓದಲಾಗುವುದಿಲ್ಲ JSON. ಫೈಲ್ ರಿಪೇರಿ ಆಗುವವರೆಗೆ ಅರ್ಜಿ ಸಲ್ಲಿಸಲು ನಿರಾಕರಿಸಲಾಗಿದೆ.</string>
+    <string name="spoof_imei_spoof">IMEI ವಂಚನೆ</string>
+    <string name="spoof_imei_spoof_desc">ಈ ಅಪ್ಲಿಕೇಶನ್ ಬೇರೆ IMEI ಅನ್ನು ತೋರಿಸುತ್ತದೆ. ಅದರ ವ್ಯಾಪ್ತಿಯಲ್ಲಿ ಈ ಅಪ್ಲಿಕೇಶನ್‌ನೊಂದಿಗೆ LSPposed ನಲ್ಲಿ ಸಕ್ರಿಯಗೊಳಿಸಲಾದ Max Manager ಮಾಡ್ಯೂಲ್ ಅಗತ್ಯವಿದೆ. ಅಪ್ಲಿಕೇಶನ್ ಅನ್ನು ಆನ್ ಮಾಡಿದ ನಂತರ ಅದನ್ನು ಮರುಪ್ರಾರಂಭಿಸಿ.</string>
+    <string name="spoof_imei_active">ಈ ಅಪ್ಲಿಕೇಶನ್ ಅನ್ನು ತೋರಿಸಲಾಗುತ್ತಿದೆ: %1$s</string>
+    <string name="spoof_imei_summary">IMEI ವಂಚನೆ</string>
+    <string name="spoof_imei_regenerate">ಹೊಸ ಯಾದೃಚ್ಛಿಕ IMEI</string>
+    <string name="spoof_imei_regenerate_desc">ಈ ಅಪ್ಲಿಕೇಶನ್‌ಗಾಗಿ ಮತ್ತೊಂದು ಮಾನ್ಯವಾದ IMEI ಅನ್ನು ರಚಿಸುತ್ತದೆ. ಅದನ್ನು ನೋಡಲು ಅಪ್ಲಿಕೇಶನ್ ಅನ್ನು ಮರುಪ್ರಾರಂಭಿಸಿ.</string>
+    <string name="spoof_imei_module_inactive">LSPosed ನಲ್ಲಿ Max Manager ಮಾಡ್ಯೂಲ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿಲ್ಲ, ಆದ್ದರಿಂದ ಅಪ್ಲಿಕೇಶನ್‌ಗಳು ಇನ್ನೂ ನಿಜವಾದ IMEI ಅನ್ನು ನೋಡುತ್ತವೆ. LSPposed ನಲ್ಲಿ ಮಾಡ್ಯೂಲ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ, ಈ ಅಪ್ಲಿಕೇಶನ್ ಅನ್ನು ಅದರ ವ್ಯಾಪ್ತಿಗೆ ಸೇರಿಸಿ, ನಂತರ ಈ ಪರದೆಯನ್ನು ಪುನಃ ತೆರೆಯಿರಿ.</string>
 </resources>

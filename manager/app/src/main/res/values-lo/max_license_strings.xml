@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_license_strings.xml -->
+<resources>
+    <string name="max_license_title">ໃບອະນຸຍາດ</string>
+    <string name="max_license_subtitle">ກະແຈອັນດຽວ, ອຸປະກອນນີ້, ບໍ່ມີບັນຊີ</string>
+    <string name="max_license_help_body">ລະຫັດຖືກກວດສອບອອນໄລນ໌ຄັ້ງດຽວ, ເມື່ອທ່ານໃສ່ມັນ. ຈາກ​ນັ້ນ​ໃນ​ໃບ​ຢັ້ງ​ຢືນ​ການ​ເຊັນ​ຊື່​ຂອງ​ເຊີບ​ເວີ​ຈະ​ເຮັດ​ວຽກ​ແບບ​ອອບ​ລາຍ​ຈົນ​ກ​່​ວາ​ເວ​ລາ​ຂອງ​ມັນ​ຫມົດ — app ບໍ່​ໄດ້​ໂທ​ຫາ​ເຮືອນ​ທຸກ​ຄັ້ງ​ທີ່​ທ່ານ​ເປີດ​ຫນ້າ​ຈໍ. ໃບຮັບຮອງຖືກຜູກມັດກັບ ID ການຕິດຕັ້ງແບບສຸ່ມຂອງອຸປະກອນນີ້, ດັ່ງນັ້ນການສຳເນົາຂໍ້ມູນແອັບໄປໃສ່ໂທລະສັບເຄື່ອງອື່ນບໍ່ໄດ້ມີໃບອະນຸຍາດນຳມັນ, ແລະເຈົ້າຂອງສາມາດຣີເຊັດການຜູກມັດນັ້ນຈາກແຜງໄດ້ຫາກເຈົ້າປ່ຽນໂທລະສັບ.</string>
+    <string name="max_license_status_section">ສະຖານະ</string>
+    <string name="max_license_status_active">ເຄື່ອນໄຫວ</string>
+    <string name="max_license_status_expired">ໝົດອາຍຸແລ້ວ</string>
+    <string name="max_license_status_none">ບໍ່ໄດ້ເປີດໃຊ້ງານ</string>
+    <string name="max_license_active_detail">ຍັງເຫຼືອ: %1$d ມື້</string>
+    <string name="max_license_expired_detail">ເວລາຂອງກະແຈນີ້ໝົດແລ້ວ. ລະຫັດໃໝ່ຕໍ່ອາຍຸການເຂົ້າເຖິງ.</string>
+    <string name="max_license_none_detail">ໃສ່ກະແຈທີ່ທ່ານໄດ້ຮັບເພື່ອປົດລັອກພື້ນຜິວທີ່ຈ່າຍ.</string>
+    <string name="max_license_promo_active">ຟຣີສໍາລັບທຸກຄົນຈົນກ່ວາ %1$s</string>
+    <string name="max_license_plan_title">ແຜນການ</string>
+    <string name="max_license_devices_title">ອຸປະກອນ</string>
+    <string name="max_license_devices_detail">%1$d ຂອງ %2$d ໃຊ້ແລ້ວ</string>
+    <string name="max_license_device_id_title">ອຸປະກອນນີ້</string>
+    <string name="max_license_device_id_detail">%1$s</string>
+    <string name="max_license_key_section">ການເປີດໃຊ້ງານ</string>
+    <string name="max_license_key_label">ລະຫັດໃບອະນຸຍາດ</string>
+    <string name="max_license_key_placeholder">MAXM-XXXXX-XXXX-XXXXX-XXXXX-XX</string>
+    <string name="max_license_key_helper">ຂີດຕໍ່ ແລະຕົວພິມໃຫຍ່ບໍ່ສຳຄັນ — ວາງມັນຕາມທີ່ທ່ານໄດ້ຮັບມັນ.</string>
+    <string name="max_license_activate">ເປີດໃຊ້</string>
+    <string name="max_license_activating">ກຳລັງກວດເບິ່ງກະແຈ...</string>
+    <string name="max_license_refresh">ກວດເບິ່ງດຽວນີ້</string>
+    <string name="max_license_activated">ເປີດໃຊ້ແລ້ວ. ຕອນນີ້ອຸປະກອນນີ້ເຊື່ອມຕໍ່ກັບກະແຈຂອງທ່ານແລ້ວ.</string>
+    <string name="max_license_error_invalid_key">ກະແຈນີ້ເບິ່ງບໍ່ຄົບຖ້ວນ. ກວດເບິ່ງມັນແລ້ວລອງອີກຄັ້ງ.</string>
+    <string name="max_license_error_not_configured">ການສ້າງນີ້ບໍ່ມີເຄື່ອງແມ່ຂ່າຍໃບອະນຸຍາດທີ່ຖືກຕັ້ງຄ່າ.</string>
+    <string name="max_license_error_network">ບໍ່ມີການເຊື່ອມຕໍ່. ລະຫັດຖືກກວດເບິ່ງຄັ້ງດຽວ, ຈາກນັ້ນເຮັດວຽກອອບລາຍ.</string>
+    <string name="max_license_error_timeout">ເຊີບເວີໃບອະນຸຍາດບໍ່ຕອບສະ ໜອງ ໃນເວລາ. ລອງອີກຄັ້ງ.</string>
+    <string name="max_license_error_server">ເຊີບເວີໃບອະນຸຍາດຕອບດ້ວຍຄວາມຜິດພາດ. ລອງໃໝ່ໃນພາຍຫຼັງ.</string>
+    <string name="max_license_error_client">ຟັງຊັນໃບອະນຸຍາດບໍ່ໄດ້ນຳໃຊ້ຢູ່ໃນເຊີບເວີ.</string>
+    <string name="max_license_error_format">ຄໍາຕອບຂອງເຄື່ອງແມ່ຂ່າຍບໍ່ເຂົ້າໃຈ.</string>
+    <string name="max_license_error_expired">ກະແຈນີ້ໝົດອາຍຸແລ້ວ.</string>
+    <string name="max_license_error_not_found">ລະຫັດນີ້ບໍ່ເປັນທີ່ຮູ້ຈັກ.</string>
+    <string name="max_license_error_revoked">ກະແຈນີ້ຖືກຖອນຄືນແລ້ວ.</string>
+    <string name="max_license_error_device_limit">ກະແຈນີ້ຮອດຂີດຈຳກັດອຸປະກອນແລ້ວ. ຂໍການຣີເຊັດອຸປະກອນ.</string>
+    <string name="max_license_error_device_unknown">ອຸປະກອນນີ້ຍັງບໍ່ໄດ້ເຊື່ອມຕໍ່ກັບກະແຈເທື່ອ. ເປີດໃຊ້ມັນຢູ່ບ່ອນນີ້ກ່ອນ.</string>
+    <string name="max_license_error_device_removed">ອຸປະກອນນີ້ຖືກເອົາອອກຈາກກະແຈໂດຍເຈົ້າຂອງ.</string>
+    <string name="max_license_error_rate_limited">ພະຍາຍາມເຊື່ອມຕໍ່ນີ້ຫຼາຍເກີນໄປ — ລໍຖ້າສອງສາມນາທີ, ຈາກນັ້ນລອງອີກຄັ້ງ.</string>
+    <string name="max_license_error_unknown">ມີບາງຢ່າງຜິດພາດ. ເຫດຜົນໄດ້ຖືກບັນທຶກໄວ້ໃນ Diagnostics.</string>
+    <string name="max_license_gate_title">ພື້ນຜິວນີ້ຕ້ອງການໃບອະນຸຍາດ</string>
+    <string name="max_license_gate_detail">ມັນໄດ້ຖືກລວມເຂົ້າກັບຄີ. ກະແຈອັນໜຶ່ງກວມເອົາອຸປະກອນນີ້, ແລະການເຂົ້າມັນໃຊ້ເວລາໜຶ່ງນາທີ.</string>
+    <string name="max_feature_off_title">ປິດແລ້ວ</string>
+    <string name="max_feature_off_detail">ແຜງຄວບຄຸມໄດ້ປິດພື້ນຜິວນີ້ແລ້ວ. ມັນກັບຄືນມາທັນທີທີ່ມັນຖືກເປີດໃຊ້ອີກເທື່ອຫນຶ່ງ.</string>
+    <string name="max_license_gate_action">ເປີດການຕັ້ງຄ່າໃບອະນຸຍາດ</string>
+    <string name="max_license_gate_subscribe">ຈອງດຽວນີ້</string>
+    <string name="max_license_subscription_section">ການສະໝັກໃຊ້</string>
+    <string name="max_license_subscription_open">ເປີດໜ້າສະໝັກສະມາຊິກ</string>
+</resources>

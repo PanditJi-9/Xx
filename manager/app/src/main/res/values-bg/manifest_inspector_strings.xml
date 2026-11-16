@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/manifest_inspector_strings.xml -->
+<resources>
+    <string name="manifest_inspector_title">Манифест инспектор</string>
+    <string name="manifest_inspector_subtitle">Какво декларира инсталираното приложение за себе си, прочетете от PackageManager.</string>
+    <string name="max_role_manifest_inspector">Показва какво декларира пакетът за себе си - само за четене.</string>
+    <string name="mi_search">Приложения за търсене</string>
+    <string name="mi_empty">Изберете приложение отляво.</string>
+    <string name="mi_yes">да</string>
+    <string name="mi_no">не</string>
+    <string name="mi_section_identity">Пакет</string>
+    <string name="mi_version">Версия</string>
+    <string name="mi_version_code">Код на версията</string>
+    <string name="mi_min_sdk">Минимален SDK</string>
+    <string name="mi_target_sdk">Целеви SDK</string>
+    <string name="mi_installed">Инсталиран</string>
+    <string name="mi_updated">Актуализиран</string>
+    <string name="mi_installer">Инсталатор</string>
+    <string name="mi_uid">UID</string>
+    <string name="mi_data_dir">Директория с данни</string>
+    <string name="mi_debuggable">Възможност за отстраняване на грешки</string>
+    <string name="mi_system_app">Системно приложение</string>
+    <string name="mi_enabled">Активирано</string>
+    <string name="mi_section_permissions">Поискани разрешения</string>
+    <string name="mi_permissions_summary">%1$d разрешения · %2$d от тях опасни</string>
+    <string name="mi_permissions_none">Това приложение не иска разрешение.</string>
+    <string name="mi_perm_dangerous">Опасни</string>
+    <string name="mi_perm_signature">Подпис</string>
+    <string name="mi_perm_normal">нормално</string>
+    <string name="mi_perm_unknown">Некласифициран</string>
+    <string name="mi_section_components">Компоненти</string>
+    <string name="mi_activities">дейности</string>
+    <string name="mi_services">Услуги</string>
+    <string name="mi_receivers">Приемници</string>
+    <string name="mi_providers">Доставчици</string>
+    <string name="mi_components_none">Няма декларирани</string>
+    <string name="mi_section_features">Характеристики на устройството</string>
+    <string name="mi_features_note">Платформата не излага списъка с употребявани функции на друго приложение; това са характеристиките, които това устройство отчита.</string>
+    <string name="mi_features_none">Няма отчетена функция</string>
+    <string name="mi_section_signature">Сертификат за подписване</string>
+    <string name="mi_signature_note">SHA-256 на сертификата за подписване. Две компилации с една и съща стойност са един и същ издател.</string>
+    <string name="mi_signature_sha256">Дайджест на сертификата</string>
+</resources>

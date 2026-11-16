@@ -99,4 +99,12 @@
     <string name="max_gpu_saved_desc">पहिलेको बचतबाट राखिएको र प्रत्येक बुटमा लागू गरिएको: %1$s। माथिको पूर्वनिर्धारित यो सत्र मात्र समाप्त हुन्छ, कहिल्यै बचत गरिएको अवस्था छैन।</string>
     <string name="max_gpu_dynamic_min">न्यूनतम · गतिशील</string>
     <string name="max_gpu_dynamic_max">अधिकतम · गतिशील</string>
+    <string name="max_gpu_monitor_only_detail">यो कर्नेलले उजागर गर्ने ग्राफिक्स नोडहरू ब्यान्डविथ र QoS मोनिटरहरू हुन्: तिनीहरूसँग कुनै GPU घडी हुँदैन, त्यसैले त्यहाँ सेट गर्न कुनै फ्रिक्वेन्सी छैन। GPU जस्तै मेमोरी गभर्नर लेख्नुको सट्टा नियन्त्रण बन्द रहन्छ।</string>
+    <string name="max_gpu_danger_title">GPU सीमा लेख्नुहोस्?</string>
+    <string name="max_gpu_danger_body">यसले ग्राफिक्स फ्रिक्वेन्सी सञ्झ्याल र गभर्नरलाई GPU नोडहरूमा लेख्छ। ड्राइभरले अस्वीकार गरेको सञ्झ्याल, वा राख्न नसक्ने गभर्नरले पूरै इन्टरफेसलाई हल्लाउन सक्छ वा प्यानल फ्रिज गर्न सक्छ। तपाईंले यसलाई एक पटक स्वीकार गर्नुभएको एपले रेकर्ड गर्छ — तपाईंले लागू गर्नुहुने मानहरूको जिम्मेवारी तपाईंको हो।</string>
+    <string name="max_gpu_danger_action">मैले बुझें - लागू गर्नुहोस्</string>
+    <string name="max_gpu_state_title">राज्य मा समय</string>
+    <string name="max_gpu_state_desc">जहाँ GPU\ को समय वास्तवमा गयो, प्रति अपरेटिङ फ्रिक्वेन्सी कर्नेलद्वारा गणना गरियो — हालको घडीको स्न्यापसट होइन।</string>
+    <string name="max_gpu_state_hidden_share">%1$s सँगै</string>
+    <string name="max_gpu_state_hidden">%1$d 1%% भन्दा कम राज्यहरू</string>
 </resources>

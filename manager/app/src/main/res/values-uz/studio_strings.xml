@@ -10,4 +10,6 @@
     <string name="studio_display">Displey</string>
     <string name="studio_power">Quvvat imkoniyatlari</string>
     <string name="studio_settings">Sozlamalar</string>
+    <string name="audio_dsp_live">DSP jonli</string>
+    <string name="max_audio_session_label">Audio sessiya #%1$d</string>
 </resources>

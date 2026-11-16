@@ -99,4 +99,12 @@
     <string name="max_gpu_saved_desc">ਇੱਕ ਪੁਰਾਣੇ ਸੇਵ ਤੋਂ ਰੱਖਿਆ ਗਿਆ ਅਤੇ ਹਰੇਕ ਬੂਟ \'ਤੇ ਲਾਗੂ ਕੀਤਾ ਗਿਆ: %1$s। ਉਪਰੋਕਤ ਪੂਰਵ-ਨਿਰਧਾਰਤ ਸਿਰਫ਼ ਇਸ ਸੈਸ਼ਨ ਨੂੰ ਖਤਮ ਕਰਦਾ ਹੈ, ਕਦੇ ਵੀ ਰੱਖਿਅਤ ਸਥਿਤੀ ਨਹੀਂ।</string>
     <string name="max_gpu_dynamic_min">ਨਿਊਨਤਮ · ਗਤੀਸ਼ੀਲ</string>
     <string name="max_gpu_dynamic_max">ਅਧਿਕਤਮ · ਗਤੀਸ਼ੀਲ</string>
+    <string name="max_gpu_monitor_only_detail">ਸਿਰਫ਼ ਗ੍ਰਾਫਿਕਸ ਨੋਡਸ ਜੋ ਇਹ ਕਰਨਲ ਪ੍ਰਗਟ ਕਰਦਾ ਹੈ ਬੈਂਡਵਿਡਥ ਅਤੇ QoS ਮਾਨੀਟਰ ਹਨ: ਉਹਨਾਂ ਕੋਲ ਕੋਈ GPU ਘੜੀ ਨਹੀਂ ਹੈ, ਇਸਲਈ ਸੈੱਟ ਕਰਨ ਲਈ ਕੋਈ ਬਾਰੰਬਾਰਤਾ ਨਹੀਂ ਹੈ। ਮੈਮੋਰੀ ਗਵਰਨਰ ਲਿਖਣ ਦੀ ਬਜਾਏ ਕੰਟਰੋਲ ਬੰਦ ਰਹਿੰਦਾ ਹੈ ਜਿਵੇਂ ਕਿ ਇਹ GPU ਸੀ।</string>
+    <string name="max_gpu_danger_title">GPU ਸੀਮਾਵਾਂ ਲਿਖੋ?</string>
+    <string name="max_gpu_danger_body">ਇਹ ਗ੍ਰਾਫਿਕਸ ਬਾਰੰਬਾਰਤਾ ਵਿੰਡੋ ਅਤੇ ਗਵਰਨਰ ਨੂੰ GPU ਨੋਡਾਂ ਵਿੱਚ ਲਿਖਦਾ ਹੈ। ਇੱਕ ਵਿੰਡੋ ਜੋ ਡਰਾਈਵਰ ਨੂੰ ਰੱਦ ਕਰਦਾ ਹੈ, ਜਾਂ ਇੱਕ ਗਵਰਨਰ ਜੋ ਜਾਰੀ ਨਹੀਂ ਰੱਖ ਸਕਦਾ, ਪੂਰੇ ਇੰਟਰਫੇਸ ਨੂੰ ਰੋਕ ਸਕਦਾ ਹੈ ਜਾਂ ਪੈਨਲ ਨੂੰ ਫ੍ਰੀਜ਼ ਕਰ ਸਕਦਾ ਹੈ। ਐਪ ਰਿਕਾਰਡ ਕਰਦਾ ਹੈ ਕਿ ਤੁਸੀਂ ਇਸਨੂੰ ਇੱਕ ਵਾਰ ਸਵੀਕਾਰ ਕੀਤਾ ਸੀ — ਤੁਹਾਡੇ ਦੁਆਰਾ ਲਾਗੂ ਕੀਤੇ ਮੁੱਲਾਂ ਦੀ ਜ਼ਿੰਮੇਵਾਰੀ ਤੁਹਾਡੀ ਹੈ।</string>
+    <string name="max_gpu_danger_action">ਮੈਂ ਸਮਝਦਾ ਹਾਂ - ਲਾਗੂ ਕਰੋ</string>
+    <string name="max_gpu_state_title">ਰਾਜ ਵਿੱਚ ਸਮਾਂ</string>
+    <string name="max_gpu_state_desc">GPU ਦਾ ਸਮਾਂ ਅਸਲ ਵਿੱਚ ਕਿੱਥੇ ਗਿਆ, ਪ੍ਰਤੀ ਓਪਰੇਟਿੰਗ ਬਾਰੰਬਾਰਤਾ ਲਈ ਕਰਨਲ ਦੁਆਰਾ ਗਿਣਿਆ ਗਿਆ — ਮੌਜੂਦਾ ਘੜੀ ਦਾ ਸਨੈਪਸ਼ਾਟ ਨਹੀਂ।</string>
+    <string name="max_gpu_state_hidden_share">%1$s ਇਕੱਠੇ</string>
+    <string name="max_gpu_state_hidden">%1$d 1%% ਤੋਂ ਘੱਟ ਰਾਜ</string>
 </resources>

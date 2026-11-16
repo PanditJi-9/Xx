@@ -99,4 +99,12 @@
     <string name="max_gpu_saved_desc">এটা পূৰ্বৰ সংৰক্ষণৰ পৰা ৰখা হৈছে আৰু প্ৰতিটো বুটত প্ৰয়োগ কৰা হৈছে: %1$s । ওপৰৰ অবিকল্পিতে কেৱল এই অধিবেশন শেষ কৰে, কেতিয়াও সংৰক্ষণ কৰা অৱস্থা নহয় ।</string>
     <string name="max_gpu_dynamic_min">নূন্যতম · গতিশীল</string>
     <string name="max_gpu_dynamic_max">সৰ্বোচ্চ · গতিশীল</string>
+    <string name="max_gpu_monitor_only_detail">এই কাৰ্ণেলে উন্মোচন কৰা একমাত্ৰ গ্ৰাফিক্স ন\'ডসমূহ হৈছে বেণ্ডউইডথ আৰু QoS মনিটৰসমূহ: সিহঁতে কোনো GPU ঘড়ী কঢ়িয়াই নিয়ে, গতিকে সংহতি কৰিবলে কোনো কম্পাঙ্ক নাই। মেমৰি গভৰ্ণৰ লিখাৰ পৰিৱৰ্তে নিয়ন্ত্ৰণ বন্ধ হৈ থাকে যেন ই GPU।</string>
+    <string name="max_gpu_danger_title">GPU সীমা লিখা?</string>
+    <string name="max_gpu_danger_body">ই গ্ৰাফিক্স ফ্ৰিকুৱেন্সি উইণ্ড\' আৰু গভৰ্ণৰক GPU ন\'ডসমূহত লিখে। ড্ৰাইভাৰে নাকচ কৰা এটা উইন্ডো, বা এটা গভৰ্ণৰে যি খোজ কাঢ়িব নোৱাৰে, গোটেই আন্তঃপৃষ্ঠক ষ্টটাৰ কৰিব পাৰে বা পেনেল ফ্ৰীজ কৰিব পাৰে। এপটোৱে ৰেকৰ্ড কৰে যে আপুনি এবাৰ এইটো গ্ৰহণ কৰিছিল — আপুনি প্ৰয়োগ কৰা মূল্যবোধৰ দায়িত্ব আপোনাৰ।</string>
+    <string name="max_gpu_danger_action">বুজিলোঁ — প্ৰয়োগ কৰক</string>
+    <string name="max_gpu_state_title">ৰাজ্যত সময়</string>
+    <string name="max_gpu_state_desc">GPU\'s সময় প্ৰকৃততে ক\'লৈ গৈছিল, প্ৰতিটো কাৰ্য্যকৰী কম্পাঙ্ক কাৰ্নেলে গণনা কৰা — বৰ্তমান ঘড়ীৰ এটা স্নেপশ্বট নহয় ।</string>
+    <string name="max_gpu_state_hidden_share">%1$s একেলগে</string>
+    <string name="max_gpu_state_hidden">%1$d ১%% তকৈ কম ৰাজ্য</string>
 </resources>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_update_strings.xml -->
+<resources>
+    <string name="update_dialog_title">Жаңыртуу жеткиликтүү</string>
+    <string name="update_dialog_title_required">Жаңыртуу керек</string>
+    <string name="update_required_notice">Бул жаңыртуу MaxManager колдонууну улантуу үчүн талап кылынат. Аны орнотуп, анан колдонмону кайра ачыңыз.</string>
+    <string name="update_dialog_body">%1$s версиясы жеткиликтүү. Сиз %2$sдесиз.</string>
+    <string name="update_block_title">Улантуу үчүн жаңыртуу керек</string>
+    <string name="update_block_body">Бул куруу (%1$s) мындан ары колдоого алынбайт. MaxManager колдонууну улантуу үчүн %2$sге жаңыртыңыз.</string>
+    <string name="update_block_body_no_release">Бул куруу (%1$s) мындан ары колдоого алынбайт.</string>
+    <string name="update_release_notes_label">Эмне жаңылык</string>
+    <string name="update_size">Жүктөп алуу өлчөмү: %1$s</string>
+    <string name="update_button_now">Азыр жаңыртыңыз</string>
+    <string name="update_button_later">Кийинчерээк</string>
+    <string name="update_button_close">Жабуу</string>
+    <string name="update_button_open_page">Жүктөп алуу барагын ачыңыз</string>
+    <string name="update_state_downloading">Жүктөлүүдө… %1$d%%</string>
+    <string name="update_state_downloading_unknown">Жүктөлүүдө…</string>
+    <string name="update_state_installing">Орнотулууда…</string>
+    <string name="update_error_network">Жаңыртуу серверине жете алган жок. Туташууңузду текшерип, кайра аракет кылыңыз.</string>
+    <string name="update_error_http">Жаңыртуу сервери ката менен жооп берди. Кийинчерээк кайра аракет кылыңыз.</string>
+    <string name="update_error_format">Жаңыртуу маалыматын окуу мүмкүн эмес.</string>
+    <string name="update_error_too_large">Жаңыртуу маалыматы күтүлгөндөн чоңураак болуп, жокко чыгарылды.</string>
+    <string name="update_error_integrity">Жүктөлгөн файл анын текшерүү суммасына дал келген жок жана жок кылынды.</string>
+    <string name="update_error_install">Орнотуу ишке ашкан жок. Кайра аракет кыл.</string>
+    <string name="update_error_not_configured">Бул түзүүдө жаңыртуу каналы конфигурацияланган эмес.</string>
+    <string name="update_maintenance_title">Убактылуу жеткиликсиз</string>
+    <string name="update_maintenance_body">MaxManager убактылуу жеткиликсиз. Сураныч, бир аздан кийин кайталап көрүңүз.</string>
+    <string name="update_check_title">Жаңыртууларды текшериңиз</string>
+    <string name="update_check_supporting">Учурдагы версия: %1$s</string>
+    <string name="update_check_updated">Жаңыртуу жеткиликтүү.</string>
+    <string name="update_check_uptodate">Сиз акыркы версиядасыз.</string>
+    <string name="update_check_failed">Жаңыртуулар текшерилген жок.</string>
+    <string name="update_check_not_configured">Бул түзүүдө жаңыртуу каналы конфигурацияланган эмес.</string>
+    <string name="update_released_label">Чыгарылган күнү: %1$s</string>
+    <string name="update_check_none_published">Башкаруу панелинен жаңыртуу азырынча жарыяланган жок.</string>
+    <string name="update_check_link_missing">Жаңыртуу жарыяланды, бирок анын жүктөп алуу шилтемеси жок.</string>
+</resources>

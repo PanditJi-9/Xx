@@ -51,4 +51,14 @@
     <string name="copg_tweak_kso_title">Экранды қосулы ұстаңыз</string>
     <string name="copg_tweak_kso_desc">Осы қолданбаға COPG экранын қосулы күйде қалдыруды қолданады. Мұнда сақталды, «Шолу» арқылы қозғалтқышқа жазылған және «Бұзушылық» қойындысында қолданылады.</string>
     <string name="copg_tweak_needs_device">Бұл қолданба үшін алдымен «Бұзушылық» қойындысында құрылғы қажет.</string>
+    <string name="spoof_engine_unmeasured">Қозғалтқыш күйі өлшенбеген: түбірлік рұқсат әлі берілген жоқ. Түбірді беріңіз, содан кейін осы қойындыны қайта ашыңыз.</string>
+    <string name="spoof_engine_config_missing">COPG орнатылған, бірақ оның конфигурация файлы (COPG.json) жоқ. Модуль оны қайтадан бергенше өтініш беруден бас тартылады.</string>
+    <string name="spoof_engine_config_unreadable">COPG орнатылған, бірақ оның конфигурация файлын оқу мүмкін емес JSON. Файл жөнделмейінше өтініш беруден бас тартылады.</string>
+    <string name="spoof_imei_spoof">IMEI жалғандығы</string>
+    <string name="spoof_imei_spoof_desc">Бұл қолданба басқа IMEI көрсетеді. LSPosed ішінде қосылған Max Manager модулі осы қолданбаның аясында қажет. Қолданбаны қосқаннан кейін оны қайта іске қосыңыз.</string>
+    <string name="spoof_imei_active">Осы қолданбаны көрсету: %1$s</string>
+    <string name="spoof_imei_summary">IMEI жалғандығы</string>
+    <string name="spoof_imei_regenerate">Жаңа кездейсоқ IMEI</string>
+    <string name="spoof_imei_regenerate_desc">Осы қолданба үшін басқа жарамды IMEI жасайды. Оны көру үшін қолданбаны қайта іске қосыңыз.</string>
+    <string name="spoof_imei_module_inactive">Max Manager модулі LSPosed қолданбасында қосылмаған, сондықтан қолданбалар әлі де шынайы IMEI-ді көреді. LSPosed ішінде модульді қосыңыз, осы қолданбаны оның ауқымына қосыңыз, содан кейін осы экранды қайта ашыңыз.</string>
 </resources>

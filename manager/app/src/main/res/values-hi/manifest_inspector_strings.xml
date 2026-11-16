@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/manifest_inspector_strings.xml -->
+<resources>
+    <string name="manifest_inspector_title">प्रकट निरीक्षक</string>
+    <string name="manifest_inspector_subtitle">एक इंस्टॉल किया गया ऐप अपने बारे में क्या घोषणा करता है, पैकेजमैनेजर से पढ़ें।</string>
+    <string name="max_role_manifest_inspector">दिखाता है कि एक पैकेज अपने बारे में क्या घोषणा करता है - केवल पढ़ने के लिए।</string>
+    <string name="mi_search">ऐप्स खोजें</string>
+    <string name="mi_empty">बाईं ओर एक ऐप चुनें.</string>
+    <string name="mi_yes">हाँ</string>
+    <string name="mi_no">नहीं</string>
+    <string name="mi_section_identity">पैकेट</string>
+    <string name="mi_version">संस्करण</string>
+    <string name="mi_version_code">संस्करण कोड</string>
+    <string name="mi_min_sdk">न्यूनतम एसडीके</string>
+    <string name="mi_target_sdk">लक्ष्य एसडीके</string>
+    <string name="mi_installed">स्थापित</string>
+    <string name="mi_updated">अद्यतन</string>
+    <string name="mi_installer">इंस्टालर</string>
+    <string name="mi_uid">यूआईडी</string>
+    <string name="mi_data_dir">डेटा निर्देशिका</string>
+    <string name="mi_debuggable">डीबग करने योग्य</string>
+    <string name="mi_system_app">सिस्टम ऐप</string>
+    <string name="mi_enabled">सक्रिय</string>
+    <string name="mi_section_permissions">अनुरोधित अनुमतियाँ</string>
+    <string name="mi_permissions_summary">%1$d अनुमतियाँ · %2$d उनमें से खतरनाक हैं</string>
+    <string name="mi_permissions_none">यह ऐप किसी अनुमति का अनुरोध नहीं करता है.</string>
+    <string name="mi_perm_dangerous">खतरनाक</string>
+    <string name="mi_perm_signature">हस्ताक्षर</string>
+    <string name="mi_perm_normal">सामान्य</string>
+    <string name="mi_perm_unknown">अवर्गीकृत</string>
+    <string name="mi_section_components">अवयव</string>
+    <string name="mi_activities">गतिविधियाँ</string>
+    <string name="mi_services">सेवाएं</string>
+    <string name="mi_receivers">रिसीवर</string>
+    <string name="mi_providers">प्रदाताओं</string>
+    <string name="mi_components_none">किसी ने घोषणा नहीं की</string>
+    <string name="mi_section_features">डिवाइस की विशेषताएं</string>
+    <string name="mi_features_note">प्लेटफ़ॉर्म किसी अन्य ऐप की उपयोग-सुविधा सूची को उजागर नहीं करता है; ये वे विशेषताएँ हैं जो यह उपकरण रिपोर्ट करता है।</string>
+    <string name="mi_features_none">कोई सुविधा रिपोर्ट नहीं की गई</string>
+    <string name="mi_section_signature">प्रमाणपत्र पर हस्ताक्षर</string>
+    <string name="mi_signature_note">हस्ताक्षर प्रमाणपत्र का SHA-256। समान मूल्य वाले दो बिल्ड एक ही प्रकाशक हैं।</string>
+    <string name="mi_signature_sha256">सर्टिफिकेट डाइजेस्ट</string>
+</resources>

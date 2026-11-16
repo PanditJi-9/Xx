@@ -10,4 +10,6 @@
     <string name="studio_display">Приказ</string>
     <string name="studio_power">Опции за напојување</string>
     <string name="studio_settings">Поставки</string>
+    <string name="audio_dsp_live">DSP во живо</string>
+    <string name="max_audio_session_label">Аудио сесија #%1$d</string>
 </resources>

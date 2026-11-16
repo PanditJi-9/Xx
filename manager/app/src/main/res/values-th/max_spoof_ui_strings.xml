@@ -51,4 +51,14 @@
     <string name="copg_tweak_kso_title">เปิดหน้าจอไว้</string>
     <string name="copg_tweak_kso_desc">ใช้การปรับแต่งหน้าจอเก็บ COPG กับแอปนี้ บันทึกไว้ที่นี่ เขียนถึงเครื่องยนต์โดย Review และนำไปใช้ในแท็บ Spoof</string>
     <string name="copg_tweak_needs_device">ต้องมีอุปกรณ์สำหรับแอปนี้ก่อนในแท็บการปลอมแปลง</string>
+    <string name="spoof_engine_unmeasured">ไม่ได้วัดสถานะของกลไก: ยังไม่ได้รับสิทธิ์การเข้าถึงรูท ให้สิทธิ์รูท จากนั้นเปิดแท็บนี้อีกครั้ง</string>
+    <string name="spoof_engine_config_missing">ติดตั้ง COPG แล้ว แต่ไฟล์กำหนดค่า (COPG.json) หายไป การสมัครจะถูกปฏิเสธจนกว่าโมดูลจะจัดเตรียมอีกครั้ง</string>
+    <string name="spoof_engine_config_unreadable">ติดตั้ง COPG แล้ว แต่ไฟล์กำหนดค่าไม่สามารถอ่านได้ JSON การสมัครจะถูกปฏิเสธจนกว่าไฟล์จะได้รับการซ่อมแซม</string>
+    <string name="spoof_imei_spoof">การปลอมแปลง IMEI</string>
+    <string name="spoof_imei_spoof_desc">แสดงแอปนี้ด้วย IMEI อื่น ต้องการโมดูล Max Manager ที่เปิดใช้งานใน LSPosed โดยมีแอปนี้อยู่ในขอบเขต รีสตาร์ทแอปหลังจากเปิดเครื่อง</string>
+    <string name="spoof_imei_active">กำลังแสดงแอปนี้: %1$s</string>
+    <string name="spoof_imei_summary">การปลอมแปลง IMEI</string>
+    <string name="spoof_imei_regenerate">IMEI แบบสุ่มใหม่</string>
+    <string name="spoof_imei_regenerate_desc">สร้าง IMEI ที่ถูกต้องอื่นสำหรับแอปนี้ รีสตาร์ทแอปเพื่อดู</string>
+    <string name="spoof_imei_module_inactive">โมดูล Max Manager ไม่ได้เปิดใช้งานใน LSPosed ดังนั้นแอปจึงยังคงเห็น IMEI จริง เปิดใช้งานโมดูลใน LSPosed เพิ่มแอปนี้ในขอบเขต จากนั้นเปิดหน้าจอนี้อีกครั้ง</string>
 </resources>

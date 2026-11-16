@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/manifest_inspector_strings.xml -->
+<resources>
+    <string name="manifest_inspector_title">Մանիֆեստի տեսուչ</string>
+    <string name="manifest_inspector_subtitle">Ինչ է հայտարարում տեղադրված հավելվածն իր մասին, կարդացեք PackageManager-ից:</string>
+    <string name="max_role_manifest_inspector">Ցույց է տալիս, թե ինչ է հայտարարում փաթեթն իր մասին՝ միայն կարդալու համար:</string>
+    <string name="mi_search">Որոնել հավելվածներ</string>
+    <string name="mi_empty">Ընտրեք հավելվածը ձախ կողմում:</string>
+    <string name="mi_yes">Այո՛</string>
+    <string name="mi_no">Ոչ</string>
+    <string name="mi_section_identity">Փաթեթ</string>
+    <string name="mi_version">Տարբերակ</string>
+    <string name="mi_version_code">Տարբերակի կոդը</string>
+    <string name="mi_min_sdk">Նվազագույն SDK</string>
+    <string name="mi_target_sdk">Թիրախային SDK</string>
+    <string name="mi_installed">Տեղադրված է</string>
+    <string name="mi_updated">Թարմացվել է</string>
+    <string name="mi_installer">Տեղադրող</string>
+    <string name="mi_uid">UID</string>
+    <string name="mi_data_dir">Տվյալների գրացուցակ</string>
+    <string name="mi_debuggable">Վրիպազերծելի</string>
+    <string name="mi_system_app">Համակարգային հավելված</string>
+    <string name="mi_enabled">Միացված է</string>
+    <string name="mi_section_permissions">Հայցված թույլտվություններ</string>
+    <string name="mi_permissions_summary">%1$d թույլտվություններ · %2$d դրանցից վտանգավոր</string>
+    <string name="mi_permissions_none">Այս հավելվածը թույլտվություն չի պահանջում:</string>
+    <string name="mi_perm_dangerous">Վտանգավոր</string>
+    <string name="mi_perm_signature">Ստորագրություն</string>
+    <string name="mi_perm_normal">Նորմալ</string>
+    <string name="mi_perm_unknown">Չդասակարգված</string>
+    <string name="mi_section_components">Բաղադրիչներ</string>
+    <string name="mi_activities">Գործունեություն</string>
+    <string name="mi_services">Ծառայություններ</string>
+    <string name="mi_receivers">Ստացողներ</string>
+    <string name="mi_providers">Մատակարարներ</string>
+    <string name="mi_components_none">Ոչ մեկը չի հայտարարել</string>
+    <string name="mi_section_features">Սարքի առանձնահատկությունները</string>
+    <string name="mi_features_note">Պլատֆորմը չի բացահայտում մեկ այլ հավելվածի օգտագործման-հատկությունների ցանկը. սրանք այն հատկանիշներն են, որոնք հաղորդում է այս սարքը:</string>
+    <string name="mi_features_none">Ոչ մի առանձնահատկություն չի հաղորդվել</string>
+    <string name="mi_section_signature">Ստորագրման վկայական</string>
+    <string name="mi_signature_note">ստորագրման վկայականի ՇԱ-256. Նույն արժեքով երկու շինություններ նույն հրատարակիչն են:</string>
+    <string name="mi_signature_sha256">Հավաստագրի ամփոփում</string>
+</resources>

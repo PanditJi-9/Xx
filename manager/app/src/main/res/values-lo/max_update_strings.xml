@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_update_strings.xml -->
+<resources>
+    <string name="update_dialog_title">ມີອັບເດດ</string>
+    <string name="update_dialog_title_required">ຕ້ອງການອັບເດດ</string>
+    <string name="update_required_notice">ການປັບປຸງນີ້ຈໍາເປັນຕ້ອງສືບຕໍ່ໃຊ້ MaxManager. ຕິດຕັ້ງມັນ, ຈາກນັ້ນເປີດແອັບຄືນໃໝ່.</string>
+    <string name="update_dialog_body">ລຸ້ນ %1$s ສາມາດໃຊ້ໄດ້. ເຈົ້າຢູ່ໃນ %2$s.</string>
+    <string name="update_block_title">ຕ້ອງການອັບເດດເພື່ອສືບຕໍ່</string>
+    <string name="update_block_body">ການກໍ່ສ້າງນີ້ (%1$s) ບໍ່ຮອງຮັບອີກຕໍ່ໄປ. ອັບເດດເປັນ %2$s ເພື່ອສືບຕໍ່ນຳໃຊ້ MaxManager.</string>
+    <string name="update_block_body_no_release">ການກໍ່ສ້າງນີ້ (%1$s) ບໍ່ຮອງຮັບອີກຕໍ່ໄປ.</string>
+    <string name="update_release_notes_label">ມີຫຍັງໃໝ່</string>
+    <string name="update_size">ຂະໜາດດາວໂຫລດ: %1$s</string>
+    <string name="update_button_now">ອັບເດດດຽວນີ້</string>
+    <string name="update_button_later">ຕໍ່ມາ</string>
+    <string name="update_button_close">ປິດ</string>
+    <string name="update_button_open_page">ເປີດໜ້າດາວໂຫຼດ</string>
+    <string name="update_state_downloading">ກຳລັງດາວໂຫຼດ… %1$d%%</string>
+    <string name="update_state_downloading_unknown">ກຳລັງດາວໂຫຼດ...</string>
+    <string name="update_state_installing">ກຳລັງຕິດຕັ້ງ...</string>
+    <string name="update_error_network">ບໍ່ສາມາດເຂົ້າຫາເຊີບເວີອັບເດດໄດ້. ກວດເບິ່ງການເຊື່ອມຕໍ່ຂອງທ່ານແລ້ວລອງໃໝ່ອີກຄັ້ງ.</string>
+    <string name="update_error_http">ເຊີບເວີອັບເດດຕອບດ້ວຍຄວາມຜິດພາດ. ລອງໃໝ່ໃນພາຍຫຼັງ.</string>
+    <string name="update_error_format">ຂໍ້ມູນການອັບເດດບໍ່ສາມາດອ່ານໄດ້.</string>
+    <string name="update_error_too_large">ຂໍ້ມູນການອັບເດດໃຫຍ່ກວ່າທີ່ຄາດໄວ້ ແລະຖືກຍົກເລີກ.</string>
+    <string name="update_error_integrity">ໄຟລ໌ທີ່ດາວໂຫລດບໍ່ກົງກັບ checksum ຂອງມັນແລະຖືກລຶບຖິ້ມ.</string>
+    <string name="update_error_install">ການຕິດຕັ້ງລົ້ມເຫລວ. ລອງອີກຄັ້ງ.</string>
+    <string name="update_error_not_configured">ບໍ່ມີຊ່ອງອັບເດດໃດຖືກຕັ້ງຄ່າໃນການກໍ່ສ້າງນີ້.</string>
+    <string name="update_maintenance_title">ບໍ່ສາມາດໃຊ້ໄດ້ຊົ່ວຄາວ</string>
+    <string name="update_maintenance_body">MaxManager ບໍ່ສາມາດໃຊ້ໄດ້ຊົ່ວຄາວ. ກະລຸນາລອງໃໝ່ອີກຄັ້ງໃນໄວໆນີ້.</string>
+    <string name="update_check_title">ກວດສອບການອັບເດດ</string>
+    <string name="update_check_supporting">ລຸ້ນປັດຈຸບັນ: %1$s</string>
+    <string name="update_check_updated">ມີການອັບເດດ.</string>
+    <string name="update_check_uptodate">ທ່ານຢູ່ໃນສະບັບຫລ້າສຸດ.</string>
+    <string name="update_check_failed">ບໍ່ສາມາດກວດສອບການອັບເດດໄດ້.</string>
+    <string name="update_check_not_configured">ບໍ່ມີຊ່ອງອັບເດດໃດຖືກຕັ້ງຄ່າໃນການກໍ່ສ້າງນີ້.</string>
+    <string name="update_released_label">ວັນທີປ່ອຍ: %1$s</string>
+    <string name="update_check_none_published">ບໍ່ມີການອັບເດດໄດ້ຮັບການເຜີຍແຜ່ຈາກແຜງຄວບຄຸມເທື່ອ.</string>
+    <string name="update_check_link_missing">ການອັບເດດຖືກເຜີຍແຜ່, ແຕ່ລິ້ງດາວໂຫຼດຂອງມັນຫາຍໄປ.</string>
+</resources>

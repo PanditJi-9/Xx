@@ -10,4 +10,6 @@
     <string name="studio_display">Vertoon</string>
     <string name="studio_power">Krag opsies</string>
     <string name="studio_settings">Instellings</string>
+    <string name="audio_dsp_live">DSP regstreeks</string>
+    <string name="max_audio_session_label">Oudiosessie #%1$d</string>
 </resources>

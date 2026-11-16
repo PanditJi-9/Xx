@@ -10,4 +10,6 @@
     <string name="studio_display">画面</string>
     <string name="studio_power">電源オプション</string>
     <string name="studio_settings">設定</string>
+    <string name="audio_dsp_live">DSPライブ</string>
+    <string name="max_audio_session_label">音声セッション #%1$d</string>
 </resources>

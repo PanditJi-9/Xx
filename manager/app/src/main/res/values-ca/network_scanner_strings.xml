@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/network_scanner_strings.xml -->
+<resources>
+    <string name="network_scanner_title">Escàner de xarxa local</string>
+    <string name="network_scanner_subtitle">La teva adreça, la porta d\'entrada a la qual arriba i quina resposta van respondre els veïns.</string>
+    <string name="max_role_network_scanner">Llegeix la xarxa a la qual esteu: sense captura, sense root.</string>
+    <string name="ns_no_network">No hi ha cap xarxa connectada.</string>
+    <string name="ns_interface">Interfície</string>
+    <string name="ns_address">Adreça</string>
+    <string name="ns_gateway">Porta d\'entrada</string>
+    <string name="ns_dns">DNS</string>
+    <string name="ns_mac">MAC</string>
+    <string name="ns_transport_wifi">Wi-Fi</string>
+    <string name="ns_transport_ethernet">Ethernet</string>
+    <string name="ns_transport_cellular">Cel·lular</string>
+    <string name="ns_transport_other">Altres</string>
+    <string name="ns_sources_title">D\'on ve això</string>
+    <string name="ns_sources_body">Les adreces i la passarel·la es llegeixen des de les propietats d\'enllaç de la plataforma. La taula veïna es llegeix des de la memòria cau ARP del nucli, de manera que només conté el que aquest dispositiu ha parlat recentment: una taula buida no significa una xarxa buida.</string>
+    <string name="ns_refresh">Actualitza</string>
+    <string name="ns_probe">Sondeu els ports comuns</string>
+    <string name="ns_probe_stop">Atureu-vos</string>
+    <string name="ns_probe_progress">Sondejant %1$d de %2$d</string>
+    <string name="ns_probe_note">Envia una connexió TCP als ports 22, 80, 443, 5000 i 5555 a través d\'aquest /24. S\'informa d\'un port que respon; el silenci no és una prova que l\'amfitrió està absent.</string>
+    <string name="ns_neighbours">Veïns coneguts</string>
+    <string name="ns_neighbours_note">Des de /proc/net/arp: només lectura.</string>
+    <string name="ns_neighbours_empty">Encara no es coneix cap veí.</string>
+    <string name="ns_ports_value">Ports %1$s</string>
+</resources>

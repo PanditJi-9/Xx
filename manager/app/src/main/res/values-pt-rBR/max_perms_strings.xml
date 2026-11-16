@@ -69,4 +69,25 @@
     <string name="max_perms_entry_title">Permissões e operações de aplicativos</string>
     <string name="max_perms_entry_desc">Veja o que este app declara e o que o sistema realmente permite</string>
     <string name="max_perms_entry_action">Permissões abertas</string>
+    <string name="max_perms_manifest_title">Resumo do manifesto</string>
+    <string name="max_perms_manifest_desc">Leia no gerenciador de pacotes: versão, intervalo do SDK, componentes e quantos deles são exportados. Um componente exportado pode ser iniciado por outros aplicativos.</string>
+    <string name="max_perms_manifest_version">Versão</string>
+    <string name="max_perms_manifest_sdk">Gama SDK</string>
+    <string name="max_perms_manifest_location">Local de instalação</string>
+    <string name="max_perms_manifest_location_auto">Automático</string>
+    <string name="max_perms_manifest_location_internal">Somente armazenamento interno</string>
+    <string name="max_perms_manifest_location_external">Prefere externo</string>
+    <string name="max_perms_manifest_components">Componentes</string>
+    <string name="max_perms_manifest_components_order">atividades · serviços · receptores · fornecedores</string>
+    <string name="max_perms_manifest_exported">Componentes exportados</string>
+    <string name="max_perms_manifest_splits">Dividir APKs</string>
+    <string name="max_perms_manifest_debug">Depurável</string>
+    <string name="max_perms_features_title">Recursos declarados</string>
+    <string name="max_perms_features_desc">O que o pacote exige do dispositivo, em comparação com o que este dispositivo anuncia. Um recurso obrigatório ausente aqui geralmente significa que o aplicativo não funcionará totalmente – é uma afirmação do gerenciador de pacotes, não uma suposição.</string>
+    <string name="max_perms_features_loading">Lendo os recursos declarados do pacote…</string>
+    <string name="max_perms_features_none">O pacote não declara nenhum recurso obrigatório.</string>
+    <string name="max_perms_features_required">Obrigatório</string>
+    <string name="max_perms_features_unsupported">Não neste dispositivo</string>
+    <string name="max_perms_manifest_none">Não relatado pelo gerenciador de pacotes.</string>
+    <string name="max_perms_manifest_unknown">Desconhecido</string>
 </resources>

@@ -10,4 +10,6 @@
     <string name="studio_display">Onyesho</string>
     <string name="studio_power">Chaguzi za nguvu</string>
     <string name="studio_settings">Mipangilio</string>
+    <string name="audio_dsp_live">DSP moja kwa moja</string>
+    <string name="max_audio_session_label">Kipindi cha sauti #%1$d</string>
 </resources>

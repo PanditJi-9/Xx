@@ -18,4 +18,10 @@
     <string name="max_cfg_section_appearance">Hitsura at interface</string>
     <string name="max_cfg_section_app_prefs">Mga kagustuhan sa app at wika</string>
     <string name="max_cfg_restore_merge_note">Ang pagpapanumbalik ng mga kagustuhan ay pinagsama-sama: ang mga susi na nasa file ay nakasulat, at ang mga susi na hindi nito binanggit ay mananatiling tulad ng mga ito. Walang nalilinis.</string>
+    <string name="max_cfg_diff_title">%1$d ang mga naka-save na setting ay naiiba sa device na ito</string>
+    <string name="max_cfg_diff_line">%1$s: %2$s → %3$s</string>
+    <string name="max_cfg_diff_unset">hindi nakatakda</string>
+    <string name="max_cfg_diff_more">at %1$d higit pa</string>
+    <string name="max_cfg_diff_applist">%1$d mga linya ng app-list na idinagdag, %2$d inalis — ang buong listahan ay papalitan, hindi pinagsama.</string>
+    <string name="max_cfg_diff_prefs">%1$d magkakaiba ang mga preference key — pinagsama, hindi pinunasan.</string>
 </resources>

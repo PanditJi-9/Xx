@@ -53,4 +53,8 @@
     <string name="max_config_backup_help">ଏକ ବ୍ୟାକଅପ୍ ଫାଇଲ୍ ଆପଣ ପ୍ରୟୋଗ କରିଥିବା ଟ୍ୱିକ୍ସ ଏବଂ ଆପଣଙ୍କର ପ୍ରତି ଆପ୍ ସେଟିଙ୍ଗ୍ ଗଚ୍ଛିତ କରେ, ତେଣୁ ଆପଣ ସେଗୁଡିକୁ ଅନ୍ୟ ଏକ ROM କୁ ସ୍ଥାନାନ୍ତର କରିପାରିବେ କିମ୍ବା ଏକ ଜଣାଶୁଣା-ଭଲ ସ୍ଥିତିକୁ ଫେରିପାରିବେ · ଟ୍ୱିକ୍ସ ପୁନରୁଦ୍ଧାର ପାଇଁ ସମାନ ଚିପସେଟ ଆବଶ୍ୟକ, ବ୍ୟାକଅପ୍ ନିଆଯାଇଥିଲା; ପ୍ରତି ଆପ୍ ସେଟିଂସମୂହ ସର୍ବଦା ପୁନରୁଦ୍ଧାର ହୋଇପାରିବ</string>
     <string name="max_hub_audio">ଅଡିଓ</string>
     <string name="max_hub_audio_desc">ଆଉଟପୁଟ୍ ଡିଭାଇସ୍, ଷ୍ଟ୍ରିମ୍ ଏବଂ ଘୋଷିତ ପ୍ରଭାବଗୁଡିକ |</string>
+    <string name="control_tools_live">ଜୀବନ୍ତ ପୃଷ୍ଠଭୂମି |</string>
+    <string name="control_tools_advanced">ଉନ୍ନତ ଉପକରଣଗୁଡ଼ିକ |</string>
+    <string name="control_tools_system">ସିଷ୍ଟମ୍ ଉପକରଣଗୁଡିକ |</string>
+    <string name="control_tools_appearance">ଦୃଶ୍ୟ</string>
 </resources>

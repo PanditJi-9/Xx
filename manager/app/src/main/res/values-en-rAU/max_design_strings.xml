@@ -13,4 +13,23 @@
     <string name="max_expand_section">Show details</string>
     <string name="max_collapse_section">Hide details</string>
     <string name="max_trust_loading">Reading…</string>
+    <string name="max_gov_title">Who rules now</string>
+    <string name="max_gov_separator">" › "</string>
+    <string name="max_gov_order_note">Fixed order: a higher rung blocks a lower one. It never changes which policy wins.</string>
+    <string name="max_gov_open_details">Active holders</string>
+    <string name="max_gov_active_title">Who holds a control</string>
+    <string name="max_gov_none">No policy owns a hardware control right now.</string>
+    <string name="max_gov_count">Active control leases: %1$d</string>
+    <string name="max_gov_requested">Requested: %1$s</string>
+    <string name="max_gov_owner_recovery">Recovery</string>
+    <string name="max_gov_owner_safety">Thermal safety</string>
+    <string name="max_gov_owner_per_app">App profile</string>
+    <string name="max_gov_owner_max_ai">Max AI</string>
+    <string name="max_gov_owner_global">Global profile</string>
+    <string name="max_gov_owner_system">System</string>
+    <string name="max_gov_owner_a11y">%1$s owns a hardware control</string>
+    <string name="max_gov_now_none">No automated owner right now — control stays yours</string>
+    <string name="max_gov_now_one">%1$s holds a control</string>
+    <string name="max_gov_now_many">%1$s holds %2$d controls</string>
+    <string name="devinfo_details">Details</string>
 </resources>

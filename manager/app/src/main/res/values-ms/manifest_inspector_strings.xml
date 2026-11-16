@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/manifest_inspector_strings.xml -->
+<resources>
+    <string name="manifest_inspector_title">Pemeriksa Manifest</string>
+    <string name="manifest_inspector_subtitle">Perkara yang diisytiharkan oleh apl yang dipasang tentang dirinya, baca daripada PackageManager.</string>
+    <string name="max_role_manifest_inspector">Menunjukkan perkara yang diisytiharkan oleh pakej tentang dirinya sendiri — baca sahaja.</string>
+    <string name="mi_search">Cari apl</string>
+    <string name="mi_empty">Pilih apl di sebelah kiri.</string>
+    <string name="mi_yes">ya</string>
+    <string name="mi_no">Tidak</string>
+    <string name="mi_section_identity">Pakej</string>
+    <string name="mi_version">Versi</string>
+    <string name="mi_version_code">Kod versi</string>
+    <string name="mi_min_sdk">SDK minimum</string>
+    <string name="mi_target_sdk">SDK sasaran</string>
+    <string name="mi_installed">Dipasang</string>
+    <string name="mi_updated">dikemas kini</string>
+    <string name="mi_installer">Pemasang</string>
+    <string name="mi_uid">UID</string>
+    <string name="mi_data_dir">Direktori data</string>
+    <string name="mi_debuggable">Boleh nyahpepijat</string>
+    <string name="mi_system_app">Apl sistem</string>
+    <string name="mi_enabled">Didayakan</string>
+    <string name="mi_section_permissions">Meminta kebenaran</string>
+    <string name="mi_permissions_summary">%1$d kebenaran · %2$d daripadanya berbahaya</string>
+    <string name="mi_permissions_none">Apl ini tidak meminta kebenaran.</string>
+    <string name="mi_perm_dangerous">bahaya</string>
+    <string name="mi_perm_signature">Tandatangan</string>
+    <string name="mi_perm_normal">Biasalah</string>
+    <string name="mi_perm_unknown">Tidak dikelaskan</string>
+    <string name="mi_section_components">Komponen</string>
+    <string name="mi_activities">Aktiviti</string>
+    <string name="mi_services">Perkhidmatan</string>
+    <string name="mi_receivers">Penerima</string>
+    <string name="mi_providers">Pembekal</string>
+    <string name="mi_components_none">Tiada yang diisytiharkan</string>
+    <string name="mi_section_features">Ciri peranti</string>
+    <string name="mi_features_note">Platform ini tidak mendedahkan senarai ciri kegunaan apl lain; ini ialah ciri yang dilaporkan oleh peranti ini.</string>
+    <string name="mi_features_none">Tiada ciri dilaporkan</string>
+    <string name="mi_section_signature">Menandatangani sijil</string>
+    <string name="mi_signature_note">SHA-256 sijil menandatangani. Dua binaan dengan nilai yang sama adalah penerbit yang sama.</string>
+    <string name="mi_signature_sha256">Ringkasan sijil</string>
+</resources>

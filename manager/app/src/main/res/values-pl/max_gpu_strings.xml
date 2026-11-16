@@ -99,4 +99,12 @@
     <string name="max_gpu_saved_desc">Zachowane z wcześniejszego zapisu i stosowane przy każdym uruchomieniu: %1$s. Domyślnie powyżej kończy się tylko ta sesja, nigdy zapisany stan.</string>
     <string name="max_gpu_dynamic_min">Minimalny · dynamiczny</string>
     <string name="max_gpu_dynamic_max">Maksimum · dynamiczny</string>
+    <string name="max_gpu_monitor_only_detail">Jedynymi węzłami graficznymi udostępnianymi przez to jądro są monitory przepustowości i QoS: nie obsługują one zegara GPU, więc nie ma możliwości ustawienia częstotliwości. Sterowanie pozostaje wyłączone, zamiast zapisywać regulator pamięci tak, jakby to był GPU.</string>
+    <string name="max_gpu_danger_title">Zapisz limity GPU?</string>
+    <string name="max_gpu_danger_body">Spowoduje to zapisanie okna częstotliwości grafiki i regulatora w węzłach GPU. Okno, które sterownik odrzuci, lub regulator, który nie nadąża, może zaciąć cały interfejs lub zawiesić panel. Aplikacja odnotowuje, że raz to zaakceptowałeś – odpowiedzialność za wartości, które stosujesz, spoczywają na Tobie.</string>
+    <string name="max_gpu_danger_action">Rozumiem – zastosuj</string>
+    <string name="max_gpu_state_title">Czas w stanie</string>
+    <string name="max_gpu_state_desc">Gdzie faktycznie upłynął czas GPU, liczony przez jądro według częstotliwości roboczej — a nie migawka bieżącego zegara.</string>
+    <string name="max_gpu_state_hidden_share">%1$s razem</string>
+    <string name="max_gpu_state_hidden">%1$d stwierdza poniżej 1%%</string>
 </resources>

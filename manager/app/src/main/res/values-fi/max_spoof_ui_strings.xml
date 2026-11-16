@@ -51,4 +51,14 @@
     <string name="copg_tweak_kso_title">Pidä näyttö päällä</string>
     <string name="copg_tweak_kso_desc">Käyttää COPG-näytön päällä -säätöä tähän sovellukseen. Tallennettu tähän, kirjoitettu moottorille Tarkista ja käytä Huijaus-välilehdellä.</string>
     <string name="copg_tweak_needs_device">Tarvitsee ensin laitteen tätä sovellusta varten Huijaus-välilehdellä.</string>
+    <string name="spoof_engine_unmeasured">Moottorin tilaa ei mitata: pääkäyttäjän oikeuksia ei ole vielä myönnetty. Myönnä root ja avaa tämä välilehti uudelleen.</string>
+    <string name="spoof_engine_config_missing">COPG on asennettu, mutta sen konfigurointitiedosto (COPG.json) puuttuu. Hakeminen hylätään, kunnes moduuli antaa sen uudelleen.</string>
+    <string name="spoof_engine_config_unreadable">COPG on asennettu, mutta sen konfigurointitiedostoa ei voi lukea JSON. Hakemus hylätään, kunnes tiedosto on korjattu.</string>
+    <string name="spoof_imei_spoof">IMEI-huijaus</string>
+    <string name="spoof_imei_spoof_desc">Näyttää tälle sovellukselle eri IMEI-koodin. Tarvitsee moduulin Max Manager käyttöön LSPosedissa tämän sovelluksen puitteissa. Käynnistä sovellus uudelleen käynnistämisen jälkeen.</string>
+    <string name="spoof_imei_active">Näytetään tämä sovellus: %1$s</string>
+    <string name="spoof_imei_summary">IMEI-huijaus</string>
+    <string name="spoof_imei_regenerate">Uusi satunnainen IMEI</string>
+    <string name="spoof_imei_regenerate_desc">Luo toisen kelvollisen IMEI:n tälle sovellukselle. Käynnistä sovellus uudelleen nähdäksesi sen.</string>
+    <string name="spoof_imei_module_inactive">Max Manager-moduuli ei ole käytössä LSPosedissa, joten sovellukset näkevät silti oikean IMEI:n. Ota moduuli käyttöön LSPosedissa, lisää tämä sovellus sen soveltamisalaan ja avaa sitten tämä näyttö uudelleen.</string>
 </resources>

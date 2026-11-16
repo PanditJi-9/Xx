@@ -13,4 +13,23 @@
     <string name="max_expand_section">Prikaži podrobnosti</string>
     <string name="max_collapse_section">Skrij podrobnosti</string>
     <string name="max_trust_loading">Branje ...</string>
+    <string name="max_gov_title">Kdo zdaj vlada</string>
+    <string name="max_gov_separator">" › "</string>
+    <string name="max_gov_order_note">Fiksni vrstni red: višja prečka blokira nižjo. Nikoli se ne spremeni, katera politika zmaga.</string>
+    <string name="max_gov_open_details">Aktivni imetniki</string>
+    <string name="max_gov_active_title">Kdo ima nadzor</string>
+    <string name="max_gov_none">Noben pravilnik trenutno nima nadzora nad strojno opremo.</string>
+    <string name="max_gov_count">Zakupi aktivnega nadzora: %1$d</string>
+    <string name="max_gov_requested">Zahtevano: %1$s</string>
+    <string name="max_gov_owner_recovery">Okrevanje</string>
+    <string name="max_gov_owner_safety">Toplotna varnost</string>
+    <string name="max_gov_owner_per_app">Profil aplikacije</string>
+    <string name="max_gov_owner_max_ai">Max AI</string>
+    <string name="max_gov_owner_global">Globalni profil</string>
+    <string name="max_gov_owner_system">Sistem</string>
+    <string name="max_gov_owner_a11y">%1$s ima nadzor strojne opreme</string>
+    <string name="max_gov_now_none">Trenutno ni avtomatiziranega lastnika – nadzor ostaja vaš</string>
+    <string name="max_gov_now_one">%1$s ima nadzor</string>
+    <string name="max_gov_now_many">%1$s ima nadzor %2$d</string>
+    <string name="devinfo_details">Podrobnosti</string>
 </resources>

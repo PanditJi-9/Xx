@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/manifest_inspector_strings.xml -->
+<resources>
+    <string name="manifest_inspector_title">Манифест инспектор</string>
+    <string name="manifest_inspector_subtitle">Што објавува инсталираната апликација за себе, прочитајте од PackageManager.</string>
+    <string name="max_role_manifest_inspector">Покажува што декларира пакетот за себе — само за читање.</string>
+    <string name="mi_search">Пребарувајте апликации</string>
+    <string name="mi_empty">Изберете апликација лево.</string>
+    <string name="mi_yes">Да</string>
+    <string name="mi_no">бр</string>
+    <string name="mi_section_identity">Пакет</string>
+    <string name="mi_version">Верзија</string>
+    <string name="mi_version_code">Код на верзијата</string>
+    <string name="mi_min_sdk">Минимален SDK</string>
+    <string name="mi_target_sdk">Цел SDK</string>
+    <string name="mi_installed">Инсталиран</string>
+    <string name="mi_updated">Ажурирано</string>
+    <string name="mi_installer">Инсталатор</string>
+    <string name="mi_uid">UID</string>
+    <string name="mi_data_dir">Директориум со податоци</string>
+    <string name="mi_debuggable">Дебагирање</string>
+    <string name="mi_system_app">Системска апликација</string>
+    <string name="mi_enabled">Овозможено</string>
+    <string name="mi_section_permissions">Побарани дозволи</string>
+    <string name="mi_permissions_summary">%1$d дозволи · %2$d од нив опасни</string>
+    <string name="mi_permissions_none">Оваа апликација не бара дозвола.</string>
+    <string name="mi_perm_dangerous">Опасно</string>
+    <string name="mi_perm_signature">Потпис</string>
+    <string name="mi_perm_normal">Нормално</string>
+    <string name="mi_perm_unknown">Некласифицирани</string>
+    <string name="mi_section_components">Компоненти</string>
+    <string name="mi_activities">Активности</string>
+    <string name="mi_services">Услуги</string>
+    <string name="mi_receivers">Приемници</string>
+    <string name="mi_providers">Даватели</string>
+    <string name="mi_components_none">Никој не се изјасни</string>
+    <string name="mi_section_features">Карактеристики на уредот</string>
+    <string name="mi_features_note">Платформата не ја изложува листата на употреби-функционалности на друга апликација; ова се карактеристиките што ги известува овој уред.</string>
+    <string name="mi_features_none">Нема пријавена функција</string>
+    <string name="mi_section_signature">Сертификат за потпишување</string>
+    <string name="mi_signature_note">SHA-256 од потврдата за потпишување. Две изданија со иста вредност се ист издавач.</string>
+    <string name="mi_signature_sha256">Дигест со сертификат</string>
+</resources>

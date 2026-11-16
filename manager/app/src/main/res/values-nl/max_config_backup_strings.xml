@@ -18,4 +18,10 @@
     <string name="max_cfg_section_appearance">Uiterlijk en interface</string>
     <string name="max_cfg_section_app_prefs">App-voorkeuren en taal</string>
     <string name="max_cfg_restore_merge_note">Het herstellen van voorkeuren wordt samengevoegd: de sleutels die in het bestand aanwezig zijn, worden geschreven en de sleutels die er niet in staan, blijven zoals ze zijn. Er wordt niets opgeruimd.</string>
+    <string name="max_cfg_diff_title">%1$d opgeslagen instellingen verschillen van dit apparaat</string>
+    <string name="max_cfg_diff_line">%1$s: %2$s → %3$s</string>
+    <string name="max_cfg_diff_unset">niet ingesteld</string>
+    <string name="max_cfg_diff_more">en %1$d meer</string>
+    <string name="max_cfg_diff_applist">%1$d app-lijstregels toegevoegd, %2$d verwijderd: de hele lijst is vervangen, niet samengevoegd.</string>
+    <string name="max_cfg_diff_prefs">%1$d voorkeurstoetsen verschillen: samengevoegd, niet gewist.</string>
 </resources>

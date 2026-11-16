@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_license_strings.xml -->
+<resources>
+    <string name="max_license_title">Լիցենզիա</string>
+    <string name="max_license_subtitle">Մեկ բանալի՝ այս սարքը, հաշիվ չկա</string>
+    <string name="max_license_help_body">Բանալին ստուգվում է առցանց մեկ անգամ, երբ մուտք եք գործում այն: Այդ ժամանակվանից սերվերի ստորագրված վկայականն աշխատում է անցանց, մինչև դրա ժամանակը սպառվի. հավելվածը չի զանգում տուն ամեն անգամ, երբ դուք բացում եք էկրանը: Վկայագիրը կապված է այս սարքի պատահական տեղադրման ID-ին, ուստի հավելվածի տվյալները մեկ այլ հեռախոսի վրա պատճենելը լիցենզիա չի կրում, և սեփականատերը կարող է վերականգնել այդ կապը վահանակից, եթե փոխեք հեռախոսը:</string>
+    <string name="max_license_status_section">Կարգավիճակ</string>
+    <string name="max_license_status_active">Ակտիվ</string>
+    <string name="max_license_status_expired">Ժամկետանց</string>
+    <string name="max_license_status_none">Ակտիվացված չէ</string>
+    <string name="max_license_active_detail">Մնացել է՝ %1$d օր</string>
+    <string name="max_license_expired_detail">Այս բանալի ժամանակն ավարտվել է: Նոր բանալին թարմացնում է մուտքը:</string>
+    <string name="max_license_none_detail">Մուտքագրեք այն բանալին, որը ստացել եք վճարովի մակերեսները բացելու համար:</string>
+    <string name="max_license_promo_active">Անվճար բոլորի համար մինչև %1$s</string>
+    <string name="max_license_plan_title">Պլանավորել</string>
+    <string name="max_license_devices_title">Սարքեր</string>
+    <string name="max_license_devices_detail">%1$d %2$d-ից օգտագործված</string>
+    <string name="max_license_device_id_title">Այս սարքը</string>
+    <string name="max_license_device_id_detail">%1$s</string>
+    <string name="max_license_key_section">Ակտիվացում</string>
+    <string name="max_license_key_label">Լիցենզիայի բանալի</string>
+    <string name="max_license_key_placeholder">MAXM-XXXXX-XXXXX-XXXX-XXXX-XX</string>
+    <string name="max_license_key_helper">Գծիկներն ու մեծատառերը նշանակություն չունեն. տեղադրեք այն այնպես, ինչպես ստացել եք:</string>
+    <string name="max_license_activate">Ակտիվացնել</string>
+    <string name="max_license_activating">Ստուգվում է բանալին…</string>
+    <string name="max_license_refresh">Ստուգեք հիմա</string>
+    <string name="max_license_activated">Ակտիվացված է: Այս սարքն այժմ կապված է ձեր բանալիին:</string>
+    <string name="max_license_error_invalid_key">Այս բանալին ամբողջական տեսք չունի: Ստուգեք այն և նորից փորձեք:</string>
+    <string name="max_license_error_not_configured">Այս կառուցումը չունի լիցենզիայի սերվեր կազմաձևված:</string>
+    <string name="max_license_error_network">Կապ չկա: Բանալին ստուգվում է մեկ անգամ, այնուհետև աշխատում է անցանց:</string>
+    <string name="max_license_error_timeout">Լիցենզիայի սերվերը ժամանակին չի պատասխանել: Նորից փորձեք:</string>
+    <string name="max_license_error_server">Լիցենզիայի սերվերը պատասխանել է սխալմամբ: Փորձեք ավելի ուշ:</string>
+    <string name="max_license_error_client">Լիցենզիայի գործառույթը տեղադրված չէ սերվերի վրա:</string>
+    <string name="max_license_error_format">Սերվերի պատասխանը չհասկացվեց:</string>
+    <string name="max_license_error_expired">Այս բանալին ժամկետանց է:</string>
+    <string name="max_license_error_not_found">Այս բանալին հայտնի չէ:</string>
+    <string name="max_license_error_revoked">Այս բանալին հետ է կանչվել:</string>
+    <string name="max_license_error_device_limit">Այս բանալին հասել է իր սարքի սահմանաչափին: Խնդրեք սարքի վերակայում:</string>
+    <string name="max_license_error_device_unknown">Այս սարքը դեռ միացված չէ բանալիին: Ակտիվացրեք այն նախ այստեղ:</string>
+    <string name="max_license_error_device_removed">Այս սարքը սեփականատիրոջ կողմից հեռացվել է բանալիից:</string>
+    <string name="max_license_error_rate_limited">Չափազանց շատ փորձեր այս կապից. սպասեք մի քանի րոպե, ապա նորից փորձեք:</string>
+    <string name="max_license_error_unknown">Սխալ առաջացավ։ Պատճառը գրանցվել է Diagnostics-ում։</string>
+    <string name="max_license_gate_title">Այս մակերեսին լիցենզիա է պետք</string>
+    <string name="max_license_gate_detail">Ներառված է բանալիով։ Մեկ բանալին ծածկում է այս սարքը, և այն մուտքագրելը տևում է մեկ րոպե:</string>
+    <string name="max_feature_off_title">Անջատված է</string>
+    <string name="max_feature_off_detail">Կառավարման վահանակն անջատել է այս մակերեսը: Այն վերադառնում է հենց որ նորից միացվի:</string>
+    <string name="max_license_gate_action">Բացեք լիցենզիայի կարգավորումները</string>
+    <string name="max_license_gate_subscribe">Բաժանորդագրվեք հիմա</string>
+    <string name="max_license_subscription_section">Բաժանորդագրություն</string>
+    <string name="max_license_subscription_open">Բացեք բաժանորդագրության էջը</string>
+</resources>

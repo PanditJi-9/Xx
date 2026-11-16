@@ -220,4 +220,5 @@
     <string name="max_files_compress_level_normal">정상</string>
     <string name="max_files_compress_level_max">맥스</string>
     <string name="max_files_compress_summary">%1$d 항목 \u2192 %2$s</string>
+    <string name="max_files_history_more">%1$d 이전 폴더는 표시되지 않음</string>
 </resources>

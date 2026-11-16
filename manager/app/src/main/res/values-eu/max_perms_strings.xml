@@ -69,4 +69,25 @@
     <string name="max_perms_entry_title">Baimenak eta aplikazio-operazioak</string>
     <string name="max_perms_entry_desc">Ikusi aplikazio honek zer deklaratzen duen eta sistemak benetan onartzen duena</string>
     <string name="max_perms_entry_action">Ireki baimenak</string>
+    <string name="max_perms_manifest_title">Manifestuaren laburpena</string>
+    <string name="max_perms_manifest_desc">Irakurri pakete kudeatzailetik: bertsioa, SDK sorta, osagaiak eta horietako zenbat esportatzen diren. Esportatutako osagai bat beste aplikazio batzuek abi dezakete.</string>
+    <string name="max_perms_manifest_version">Bertsioa</string>
+    <string name="max_perms_manifest_sdk">SDK sorta</string>
+    <string name="max_perms_manifest_location">Instalatu kokapena</string>
+    <string name="max_perms_manifest_location_auto">Automatikoa</string>
+    <string name="max_perms_manifest_location_internal">Barne biltegiratzea soilik</string>
+    <string name="max_perms_manifest_location_external">Kanpokoa nahiago du</string>
+    <string name="max_perms_manifest_components">Osagaiak</string>
+    <string name="max_perms_manifest_components_order">jarduerak · zerbitzuak · hartzaileak · hornitzaileak</string>
+    <string name="max_perms_manifest_exported">Esportatutako osagaiak</string>
+    <string name="max_perms_manifest_splits">Zatitu APKak</string>
+    <string name="max_perms_manifest_debug">Arazgarria</string>
+    <string name="max_perms_features_title">Deklaratutako ezaugarriak</string>
+    <string name="max_perms_features_desc">Paketeak gailutik eskatzen duena, gailu honek iragartzen duenarekin alderatuta. Hemen falta den eginbide batek normalean aplikazioak ez duela guztiz funtzionatuko esan nahi du - paketeen kudeatzailearen erreklamazioa da, ez asmakizun bat.</string>
+    <string name="max_perms_features_loading">Paketearen deklaratutako ezaugarriak irakurtzen…</string>
+    <string name="max_perms_features_none">Paketeak ez du beharrezko ezaugarririk adierazten.</string>
+    <string name="max_perms_features_required">Beharrezkoa</string>
+    <string name="max_perms_features_unsupported">Ez gailu honetan</string>
+    <string name="max_perms_manifest_none">Pakete-kudeatzaileak ez du jakinarazi.</string>
+    <string name="max_perms_manifest_unknown">Ezezaguna</string>
 </resources>

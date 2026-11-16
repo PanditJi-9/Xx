@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/network_scanner_strings.xml -->
+<resources>
+    <string name="network_scanner_title">ローカルネットワークスキャナ</string>
+    <string name="network_scanner_subtitle">あなたの住所、到達するゲートウェイ、およびどの隣人が応答したか。</string>
+    <string name="max_role_network_scanner">使用しているネットワークを読み取ります。キャプチャやルートはありません。</string>
+    <string name="ns_no_network">ネットワークが接続されていません。</string>
+    <string name="ns_interface">インタフェース</string>
+    <string name="ns_address">住所</string>
+    <string name="ns_gateway">ゲートウェイ</string>
+    <string name="ns_dns">DNS</string>
+    <string name="ns_mac">マック</string>
+    <string name="ns_transport_wifi">Wi-Fi</string>
+    <string name="ns_transport_ethernet">イーサネット</string>
+    <string name="ns_transport_cellular">携帯電話</string>
+    <string name="ns_transport_other">他の</string>
+    <string name="ns_sources_title">これはどこから来たのか</string>
+    <string name="ns_sources_body">アドレスとゲートウェイは、プラットフォームのリンク プロパティから読み取られます。近隣テーブルはカーネルの ARP キャッシュから読み取られるため、このデバイスが最近通信した内容のみが保持されます。空のテーブルは空のネットワークを意味しません。</string>
+    <string name="ns_refresh">リフレッシュ</string>
+    <string name="ns_probe">プローブ共通ポート</string>
+    <string name="ns_probe_stop">停止</string>
+    <string name="ns_probe_progress">%2$dの%1$dを探る</string>
+    <string name="ns_probe_note">この /24 を介してポート 22、80、443、5000、および 5555 に TCP 接続を送信します。応答したポートが報告されます。沈黙はホストが不在であるという証拠ではありません。</string>
+    <string name="ns_neighbours">既知の隣人</string>
+    <string name="ns_neighbours_note">/proc/net/arp から — 読み取り専用。</string>
+    <string name="ns_neighbours_empty">隣人はまだ知られていません。</string>
+    <string name="ns_ports_value">ポート %1$s</string>
+</resources>

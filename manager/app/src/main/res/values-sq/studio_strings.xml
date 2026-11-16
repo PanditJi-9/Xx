@@ -10,4 +10,6 @@
     <string name="studio_display">Ekrani</string>
     <string name="studio_power">Opsionet e energjisë</string>
     <string name="studio_settings">Cilësimet</string>
+    <string name="audio_dsp_live">DSP drejtpërdrejt</string>
+    <string name="max_audio_session_label">Sesioni audio #%1$d</string>
 </resources>

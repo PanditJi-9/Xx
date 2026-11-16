@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_license_strings.xml -->
+<resources>
+    <string name="max_license_title">Litsenziya</string>
+    <string name="max_license_subtitle">Bitta kalit, bu qurilma, hisob yo\'q</string>
+    <string name="max_license_help_body">Kalitni kiritganingizda bir marta onlayn tekshiriladi. Shundan so‘ng serverning imzolangan sertifikati muddati tugamaguncha oflayn rejimda ishlaydi — har safar ekranni ochganingizda ilova uyga qo‘ng‘iroq qilmaydi. Sertifikat ushbu qurilmaning tasodifiy oʻrnatish identifikatoriga bogʻlangan, shuning uchun ilova maʼlumotlarini boshqa telefonga nusxalash litsenziyani oʻzi bilan olib ketmaydi va agar siz telefonlarni oʻzgartirsangiz, egasi bu bogʻlanishni paneldan tiklashi mumkin.</string>
+    <string name="max_license_status_section">Status</string>
+    <string name="max_license_status_active">Faol</string>
+    <string name="max_license_status_expired">Muddati tugagan</string>
+    <string name="max_license_status_none">Faollashtirilmagan</string>
+    <string name="max_license_active_detail">Qolgan: %1$d kun</string>
+    <string name="max_license_expired_detail">Bu kalitning vaqti tugadi. Yangi kalit kirishni yangilaydi.</string>
+    <string name="max_license_none_detail">Pulli yuzalarni qulfdan chiqarish uchun olingan kalitni kiriting.</string>
+    <string name="max_license_promo_active">%1$s gacha hamma uchun bepul</string>
+    <string name="max_license_plan_title">Reja</string>
+    <string name="max_license_devices_title">Qurilmalar</string>
+    <string name="max_license_devices_detail">%1$d / %2$d ishlatilgan</string>
+    <string name="max_license_device_id_title">Ushbu qurilma</string>
+    <string name="max_license_device_id_detail">%1$s</string>
+    <string name="max_license_key_section">Faollashtirish</string>
+    <string name="max_license_key_label">Litsenziya kaliti</string>
+    <string name="max_license_key_placeholder">MAXM-XXXXXX-XXXXX-XXXXX-XXXXX-XX</string>
+    <string name="max_license_key_helper">Chiziqlar va bosh harflar muhim emas - uni olganingizdek joylashtiring.</string>
+    <string name="max_license_activate">Faollashtirish</string>
+    <string name="max_license_activating">Kalit tekshirilmoqda…</string>
+    <string name="max_license_refresh">Hozir tekshiring</string>
+    <string name="max_license_activated">Faollashtirilgan. Bu qurilma endi kalitingizga ulangan.</string>
+    <string name="max_license_error_invalid_key">Bu kalit to\'liq ko\'rinmaydi. Tekshirib, qayta urinib ko\'ring.</string>
+    <string name="max_license_error_not_configured">Bu tuzilmada litsenziya serveri sozlanmagan.</string>
+    <string name="max_license_error_network">Ulanish yo‘q. Kalit bir marta tekshiriladi, keyin oflayn rejimda ishlaydi.</string>
+    <string name="max_license_error_timeout">Litsenziya serveri o\'z vaqtida javob bermadi. Qayta urinib ko\'ring.</string>
+    <string name="max_license_error_server">Litsenziya serveri xato bilan javob berdi. Keyinroq qayta urinib ko‘ring.</string>
+    <string name="max_license_error_client">Litsenziya funktsiyasi serverda o\'rnatilmagan.</string>
+    <string name="max_license_error_format">Server javobi tushunilmadi.</string>
+    <string name="max_license_error_expired">Bu kalit muddati tugagan.</string>
+    <string name="max_license_error_not_found">Bu kalit ma\'lum emas.</string>
+    <string name="max_license_error_revoked">Bu kalit bekor qilindi.</string>
+    <string name="max_license_error_device_limit">Bu kalit qurilma chegarasiga yetdi. Qurilmani qayta tiklashni so\'rang.</string>
+    <string name="max_license_error_device_unknown">Bu qurilma hali kalitga ulanmagan. Avval uni shu yerda faollashtiring.</string>
+    <string name="max_license_error_device_removed">Bu qurilma egasi tomonidan kalitdan olib tashlangan.</string>
+    <string name="max_license_error_rate_limited">Bu ulanishdan juda koʻp urinishlar boʻldi — bir necha daqiqa kuting, keyin qayta urinib koʻring.</string>
+    <string name="max_license_error_unknown">Nimadir xato ketdi. Sababi Diagnostics da qayd etilgan.</string>
+    <string name="max_license_gate_title">Ushbu sirt litsenziyaga muhtoj</string>
+    <string name="max_license_gate_detail">U kalit bilan birga keladi. Bitta tugma bu qurilmani qamrab oladi va uni kiritish bir daqiqa vaqt oladi.</string>
+    <string name="max_feature_off_title">Oʻchirilgan</string>
+    <string name="max_feature_off_detail">Boshqaruv paneli bu sirtni o\'chirib qo\'ydi. Qayta yoqilgandan so\'ng u qaytib keladi.</string>
+    <string name="max_license_gate_action">Litsenziya sozlamalarini oching</string>
+    <string name="max_license_gate_subscribe">Hozir obuna boʻling</string>
+    <string name="max_license_subscription_section">Obuna</string>
+    <string name="max_license_subscription_open">Obuna sahifasini oching</string>
+</resources>

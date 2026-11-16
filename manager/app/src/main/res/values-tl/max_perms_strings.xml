@@ -69,4 +69,25 @@
     <string name="max_perms_entry_title">Mga Pahintulot at App ops</string>
     <string name="max_perms_entry_desc">Tingnan kung ano ang ipinapahayag ng app na ito at kung ano talaga ang pinapayagan ng system</string>
     <string name="max_perms_entry_action">Buksan ang mga pahintulot</string>
+    <string name="max_perms_manifest_title">Manifest na buod</string>
+    <string name="max_perms_manifest_desc">Basahin mula sa manager ng package: bersyon, hanay ng SDK, mga bahagi at kung ilan sa mga ito ang na-export. Ang isang na-export na bahagi ay maaaring simulan ng iba pang mga app.</string>
+    <string name="max_perms_manifest_version">Bersyon</string>
+    <string name="max_perms_manifest_sdk">Saklaw ng SDK</string>
+    <string name="max_perms_manifest_location">I-install ang lokasyon</string>
+    <string name="max_perms_manifest_location_auto">Awtomatiko</string>
+    <string name="max_perms_manifest_location_internal">Panloob na imbakan lamang</string>
+    <string name="max_perms_manifest_location_external">Mas pinipili ang panlabas</string>
+    <string name="max_perms_manifest_components">Mga bahagi</string>
+    <string name="max_perms_manifest_components_order">mga aktibidad · mga serbisyo · mga receiver · mga provider</string>
+    <string name="max_perms_manifest_exported">Mga na-export na bahagi</string>
+    <string name="max_perms_manifest_splits">Hatiin ang mga APK</string>
+    <string name="max_perms_manifest_debug">Debuggable</string>
+    <string name="max_perms_features_title">Ipinahayag na mga tampok</string>
+    <string name="max_perms_features_desc">Ano ang kailangan ng package mula sa device, kumpara sa kung ano ang ina-advertise ng device na ito. Ang isang kinakailangang tampok na nawawala dito ay karaniwang nangangahulugan na ang app ay hindi gagana nang buo — ito ay isang paghahabol mula sa manager ng package, hindi isang hula.</string>
+    <string name="max_perms_features_loading">Binabasa ang mga ipinahayag na feature ng package…</string>
+    <string name="max_perms_features_none">Ang pakete ay nagpahayag ng walang kinakailangang mga tampok.</string>
+    <string name="max_perms_features_required">Kinakailangan</string>
+    <string name="max_perms_features_unsupported">Wala sa device na ito</string>
+    <string name="max_perms_manifest_none">Hindi iniulat ng manager ng package.</string>
+    <string name="max_perms_manifest_unknown">Hindi alam</string>
 </resources>

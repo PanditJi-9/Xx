@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_update_strings.xml -->
+<resources>
+    <string name="update_dialog_title">Aggiornamento disponibile</string>
+    <string name="update_dialog_title_required">Aggiornamento richiesto</string>
+    <string name="update_required_notice">Questo aggiornamento è necessario per continuare a utilizzare MaxManager. Installalo, quindi riapri l\'app.</string>
+    <string name="update_dialog_body">La versione %1$s è disponibile. Sei su %2$s.</string>
+    <string name="update_block_title">Aggiornamento necessario per continuare</string>
+    <string name="update_block_body">Questa build (%1$s) non è più supportata. Aggiorna a %2$s per continuare a utilizzare MaxManager.</string>
+    <string name="update_block_body_no_release">Questa build (%1$s) non è più supportata.</string>
+    <string name="update_release_notes_label">Cosa c\'è di nuovo</string>
+    <string name="update_size">Dimensione download: %1$s</string>
+    <string name="update_button_now">Aggiorna ora</string>
+    <string name="update_button_later">Dopo</string>
+    <string name="update_button_close">Vicino</string>
+    <string name="update_button_open_page">Apri la pagina di download</string>
+    <string name="update_state_downloading">Download in corso... %1$d%%</string>
+    <string name="update_state_downloading_unknown">Download in corso...</string>
+    <string name="update_state_installing">Installazione…</string>
+    <string name="update_error_network">Impossibile raggiungere il server di aggiornamento. Controlla la connessione e riprova.</string>
+    <string name="update_error_http">Il server di aggiornamento ha risposto con un errore. Riprova più tardi.</string>
+    <string name="update_error_format">Impossibile leggere le informazioni sull\'aggiornamento.</string>
+    <string name="update_error_too_large">Le informazioni sull\'aggiornamento erano più grandi del previsto e sono state scartate.</string>
+    <string name="update_error_integrity">Il file scaricato non corrispondeva al checksum ed è stato eliminato.</string>
+    <string name="update_error_install">Installazione non riuscita. Riprova.</string>
+    <string name="update_error_not_configured">Nessun canale di aggiornamento è configurato in questa build.</string>
+    <string name="update_maintenance_title">Temporaneamente non disponibile</string>
+    <string name="update_maintenance_body">MaxManager è temporaneamente non disponibile. Per favore riprova a breve.</string>
+    <string name="update_check_title">Controlla gli aggiornamenti</string>
+    <string name="update_check_supporting">Versione attuale: %1$s</string>
+    <string name="update_check_updated">È disponibile un aggiornamento.</string>
+    <string name="update_check_uptodate">Sei sull\'ultima versione.</string>
+    <string name="update_check_failed">Impossibile verificare la presenza di aggiornamenti.</string>
+    <string name="update_check_not_configured">Nessun canale di aggiornamento è configurato in questa build.</string>
+    <string name="update_released_label">Data di rilascio: %1$s</string>
+    <string name="update_check_none_published">Nessun aggiornamento è stato ancora pubblicato dal pannello di controllo.</string>
+    <string name="update_check_link_missing">È stato pubblicato un aggiornamento, ma manca il collegamento per il download.</string>
+</resources>

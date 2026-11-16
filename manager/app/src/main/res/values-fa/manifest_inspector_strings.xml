@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/manifest_inspector_strings.xml -->
+<resources>
+    <string name="manifest_inspector_title">بازرس آشکار</string>
+    <string name="manifest_inspector_subtitle">آنچه که یک برنامه نصب شده در مورد خودش اعلام می کند، از PackageManager بخوانید.</string>
+    <string name="max_role_manifest_inspector">نشان می دهد که یک بسته در مورد خودش چه چیزی را اعلام می کند - فقط خواندنی.</string>
+    <string name="mi_search">جستجوی اپلیکیشن ها</string>
+    <string name="mi_empty">یک برنامه را در سمت چپ انتخاب کنید.</string>
+    <string name="mi_yes">بله</string>
+    <string name="mi_no">خیر</string>
+    <string name="mi_section_identity">بسته</string>
+    <string name="mi_version">نسخه</string>
+    <string name="mi_version_code">کد نسخه</string>
+    <string name="mi_min_sdk">حداقل SDK</string>
+    <string name="mi_target_sdk">هدف SDK</string>
+    <string name="mi_installed">نصب شده است</string>
+    <string name="mi_updated">به روز شد</string>
+    <string name="mi_installer">نصب کننده</string>
+    <string name="mi_uid">UID</string>
+    <string name="mi_data_dir">دایرکتوری داده ها</string>
+    <string name="mi_debuggable">قابل اشکال زدایی</string>
+    <string name="mi_system_app">برنامه سیستم</string>
+    <string name="mi_enabled">فعال شد</string>
+    <string name="mi_section_permissions">مجوزها را درخواست کرد</string>
+    <string name="mi_permissions_summary">%1$d مجوز · %2$d از آنها خطرناک است</string>
+    <string name="mi_permissions_none">این برنامه هیچ مجوزی درخواست نمی کند.</string>
+    <string name="mi_perm_dangerous">خطرناکه</string>
+    <string name="mi_perm_signature">امضا</string>
+    <string name="mi_perm_normal">عادی</string>
+    <string name="mi_perm_unknown">طبقه بندی نشده</string>
+    <string name="mi_section_components">اجزاء</string>
+    <string name="mi_activities">فعالیت ها</string>
+    <string name="mi_services">خدمات</string>
+    <string name="mi_receivers">گیرنده ها</string>
+    <string name="mi_providers">ارائه دهندگان</string>
+    <string name="mi_components_none">هیچ کدام اعلام نکردند</string>
+    <string name="mi_section_features">ویژگی های دستگاه</string>
+    <string name="mi_features_note">پلتفرم لیست استفاده-ویژگی های برنامه دیگر را فاش نمی کند. اینها ویژگی هایی است که این دستگاه گزارش می دهد.</string>
+    <string name="mi_features_none">هیچ ویژگی گزارش نشده است</string>
+    <string name="mi_section_signature">گواهی امضا</string>
+    <string name="mi_signature_note">SHA-256 گواهی امضا. دو ساخت با ارزش یکسان ناشر یکسان هستند.</string>
+    <string name="mi_signature_sha256">خلاصه گواهی</string>
+</resources>

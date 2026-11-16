@@ -53,4 +53,8 @@
     <string name="max_title_get_started">Beállítás</string>
     <string name="max_hub_audio">Hang</string>
     <string name="max_hub_audio_desc">Kimeneti eszközök, adatfolyamok és deklarált effektusok</string>
+    <string name="control_tools_live">Élő felületek</string>
+    <string name="control_tools_advanced">Speciális eszközök</string>
+    <string name="control_tools_system">Rendszereszközök</string>
+    <string name="control_tools_appearance">Megjelenés</string>
 </resources>

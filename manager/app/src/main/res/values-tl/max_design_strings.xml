@@ -13,4 +13,23 @@
     <string name="max_expand_section">Ipakita ang mga detalye</string>
     <string name="max_collapse_section">Itago ang mga detalye</string>
     <string name="max_trust_loading">Binabasa…</string>
+    <string name="max_gov_title">Sino ang namumuno ngayon</string>
+    <string name="max_gov_separator">" › "</string>
+    <string name="max_gov_order_note">Nakapirming ayos: hinaharangan ng mas mataas na baitang ang mas mababang baitang. Hindi nito binabago kung aling patakaran ang mananalo.</string>
+    <string name="max_gov_open_details">Mga aktibong may hawak</string>
+    <string name="max_gov_active_title">Sino ang may hawak ng kontrol</string>
+    <string name="max_gov_none">Walang patakaran ang nagmamay-ari ng kontrol sa hardware sa ngayon.</string>
+    <string name="max_gov_count">Mga aktibong pagpapaupa ng kontrol: %1$d</string>
+    <string name="max_gov_requested">Hiniling: %1$s</string>
+    <string name="max_gov_owner_recovery">Pagbawi</string>
+    <string name="max_gov_owner_safety">Thermal na kaligtasan</string>
+    <string name="max_gov_owner_per_app">Profile ng app</string>
+    <string name="max_gov_owner_max_ai">Max AI</string>
+    <string name="max_gov_owner_global">Pandaigdigang profile</string>
+    <string name="max_gov_owner_system">Sistema</string>
+    <string name="max_gov_owner_a11y">%1$s nagmamay-ari ng kontrol sa hardware</string>
+    <string name="max_gov_now_none">Walang awtomatikong may-ari sa ngayon — mananatili sa iyo ang kontrol</string>
+    <string name="max_gov_now_one">Ang %1$s ay may hawak na kontrol</string>
+    <string name="max_gov_now_many">Ang %1$s ay may hawak na %2$d na mga kontrol</string>
+    <string name="devinfo_details">Mga Detalye</string>
 </resources>

@@ -18,4 +18,10 @@
     <string name="max_cfg_section_appearance">Արտաքին տեսք և ինտերֆեյս</string>
     <string name="max_cfg_section_app_prefs">Հավելվածի նախապատվություններ և լեզուն</string>
     <string name="max_cfg_restore_merge_note">Նախապատվությունների վերականգնումը միաձուլվում է. ֆայլում առկա ստեղները գրված են, իսկ ստեղները, որոնցում նշված չէ, մնում են այնպես, ինչպես կան: Ոչինչ չի մաքրվում։</string>
+    <string name="max_cfg_diff_title">%1$d պահպանված կարգավորումները տարբերվում են այս սարքից</string>
+    <string name="max_cfg_diff_line">%1$s: %2$s → %3$s</string>
+    <string name="max_cfg_diff_unset">սահմանված չէ</string>
+    <string name="max_cfg_diff_more">և %1$d ավելին</string>
+    <string name="max_cfg_diff_applist">%1$d հավելվածների ցանկի տողերը ավելացվել են, %2$d հեռացվել են — ամբողջ ցուցակը փոխարինված է, ոչ միաձուլված:</string>
+    <string name="max_cfg_diff_prefs">%1$d նախապատվության ստեղները տարբերվում են՝ միաձուլված, չջնջված:</string>
 </resources>

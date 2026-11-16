@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_license_strings.xml -->
+<resources>
+    <string name="max_license_title">مجوز</string>
+    <string name="max_license_subtitle">یک کلید، این دستگاه، بدون حساب</string>
+    <string name="max_license_help_body">هنگامی که یک کلید را وارد می کنید، یک بار به صورت آنلاین بررسی می شود. از آن زمان به بعد گواهی امضا شده سرور به صورت آفلاین کار می کند تا زمانی که زمان آن تمام شود - برنامه هر بار که صفحه ای را باز می کنید با خانه تماس نمی گیرد. گواهی به شناسه نصب تصادفی این دستگاه متصل است، بنابراین کپی کردن داده‌های برنامه در تلفن دیگری مجوز را به همراه ندارد و مالک می‌تواند در صورت تغییر تلفن، آن را از پانل بازنشانی کند.</string>
+    <string name="max_license_status_section">وضعیت</string>
+    <string name="max_license_status_active">فعال</string>
+    <string name="max_license_status_expired">منقضی شده است</string>
+    <string name="max_license_status_none">فعال نشده است</string>
+    <string name="max_license_active_detail">باقیمانده: %1$d روز</string>
+    <string name="max_license_expired_detail">زمان این کلید تمام شده است. یک کلید جدید دسترسی را تجدید می کند.</string>
+    <string name="max_license_none_detail">کلید دریافتی را برای باز کردن قفل سطوح پرداخت شده وارد کنید.</string>
+    <string name="max_license_promo_active">رایگان برای همه تا %1$s</string>
+    <string name="max_license_plan_title">برنامه ریزی کنید</string>
+    <string name="max_license_devices_title">دستگاه ها</string>
+    <string name="max_license_devices_detail">%1$d از %2$d استفاده شده است</string>
+    <string name="max_license_device_id_title">این دستگاه</string>
+    <string name="max_license_device_id_detail">%1$s</string>
+    <string name="max_license_key_section">فعال سازی</string>
+    <string name="max_license_key_label">کلید مجوز</string>
+    <string name="max_license_key_placeholder">MAXM-XXXX-XXXX-XXXX-XXXX-XXXX</string>
+    <string name="max_license_key_helper">خط تیره و حروف بزرگ مهم نیست - آن را همانطور که دریافت کردید جایگذاری کنید.</string>
+    <string name="max_license_activate">فعال کنید</string>
+    <string name="max_license_activating">چک کردن کلید…</string>
+    <string name="max_license_refresh">اکنون بررسی کنید</string>
+    <string name="max_license_activated">فعال شد. این دستگاه اکنون به کلید شما متصل شده است.</string>
+    <string name="max_license_error_invalid_key">این کلید کامل به نظر نمی رسد. آن را بررسی کنید و دوباره امتحان کنید.</string>
+    <string name="max_license_error_not_configured">این بیلد هیچ سرور مجوزی پیکربندی نشده است.</string>
+    <string name="max_license_error_network">بدون اتصال کلید یک بار بررسی می شود، سپس به صورت آفلاین کار می کند.</string>
+    <string name="max_license_error_timeout">سرور لایسنس به موقع جواب نداد. دوباره امتحان کنید.</string>
+    <string name="max_license_error_server">سرور مجوز با خطا پاسخ داد. بعداً دوباره امتحان کنید.</string>
+    <string name="max_license_error_client">تابع مجوز روی سرور مستقر نیست.</string>
+    <string name="max_license_error_format">پاسخ سرور درک نشد.</string>
+    <string name="max_license_error_expired">این کلید منقضی شده است.</string>
+    <string name="max_license_error_not_found">این کلید مشخص نیست.</string>
+    <string name="max_license_error_revoked">این کلید باطل شده است.</string>
+    <string name="max_license_error_device_limit">این کلید به محدودیت دستگاه خود رسیده است. درخواست ریست دستگاه کنید.</string>
+    <string name="max_license_error_device_unknown">این دستگاه هنوز به کلید متصل نشده است. ابتدا آن را در اینجا فعال کنید.</string>
+    <string name="max_license_error_device_removed">این دستگاه توسط مالک از کلید برداشته شد.</string>
+    <string name="max_license_error_rate_limited">تلاش‌های زیادی از این اتصال انجام شده است - چند دقیقه صبر کنید، سپس دوباره امتحان کنید.</string>
+    <string name="max_license_error_unknown">مشکلی پیش آمد. دلیل آن در Diagnostics ثبت شده است.</string>
+    <string name="max_license_gate_title">این سطح نیاز به مجوز دارد</string>
+    <string name="max_license_gate_detail">همراه با کلید است. یک کلید این دستگاه را می پوشاند و ورود به آن یک دقیقه طول می کشد.</string>
+    <string name="max_feature_off_title">خاموش شد</string>
+    <string name="max_feature_off_detail">کنترل پنل این سطح را خاموش کرده است. به محض اینکه دوباره فعال شد برمی گردد.</string>
+    <string name="max_license_gate_action">تنظیمات مجوز را باز کنید</string>
+    <string name="max_license_gate_subscribe">اکنون مشترک شوید</string>
+    <string name="max_license_subscription_section">اشتراک</string>
+    <string name="max_license_subscription_open">صفحه اشتراک را باز کنید</string>
+</resources>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/network_scanner_strings.xml -->
+<resources>
+    <string name="network_scanner_title">로컬 네트워크 스캐너</string>
+    <string name="network_scanner_subtitle">귀하의 주소, 도달하는 게이트웨이 및 응답한 이웃.</string>
+    <string name="max_role_network_scanner">현재 있는 네트워크를 읽습니다. 캡처나 루트가 없습니다.</string>
+    <string name="ns_no_network">연결된 네트워크가 없습니다.</string>
+    <string name="ns_interface">인터페이스</string>
+    <string name="ns_address">주소</string>
+    <string name="ns_gateway">게이트웨이</string>
+    <string name="ns_dns">DNS</string>
+    <string name="ns_mac">스코틀랜드 사람</string>
+    <string name="ns_transport_wifi">Wi-Fi</string>
+    <string name="ns_transport_ethernet">이더넷</string>
+    <string name="ns_transport_cellular">셀룰러</string>
+    <string name="ns_transport_other">다른</string>
+    <string name="ns_sources_title">이게 어디서 나온거야?</string>
+    <string name="ns_sources_body">주소와 게이트웨이는 플랫폼의 링크 속성에서 읽습니다. 이웃 테이블은 커널의 ARP 캐시에서 읽혀지므로 이 장치가 최근에 통신한 내용만 보유합니다. 테이블이 비어 있다고 해서 네트워크가 비어 있다는 의미는 아닙니다.</string>
+    <string name="ns_refresh">새로 고치다</string>
+    <string name="ns_probe">프로브 공통 포트</string>
+    <string name="ns_probe_stop">멈추다</string>
+    <string name="ns_probe_progress">%2$d 중 %1$d 조사 중</string>
+    <string name="ns_probe_note">이 /24를 통해 포트 22, 80, 443, 5000 및 5555에서 TCP 연결을 보냅니다. 응답하는 포트가 보고됩니다. 침묵은 호스트가 없다는 증거가 아닙니다.</string>
+    <string name="ns_neighbours">알려진 이웃</string>
+    <string name="ns_neighbours_note">/proc/net/arp에서 — 읽기 전용입니다.</string>
+    <string name="ns_neighbours_empty">아직 알려진 이웃이 없습니다.</string>
+    <string name="ns_ports_value">포트 %1$s</string>
+</resources>

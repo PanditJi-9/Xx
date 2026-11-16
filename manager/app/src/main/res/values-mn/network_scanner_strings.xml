@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/network_scanner_strings.xml -->
+<resources>
+    <string name="network_scanner_title">Дотоод сүлжээний сканнер</string>
+    <string name="network_scanner_subtitle">Таны хаяг, хүрч очих гарц, хөршүүд нь хариулсан.</string>
+    <string name="max_role_network_scanner">Таны байгаа сүлжээг уншина - ямар ч барих, root байхгүй.</string>
+    <string name="ns_no_network">Сүлжээ холбогдоогүй байна.</string>
+    <string name="ns_interface">Интерфэйс</string>
+    <string name="ns_address">Хаяг</string>
+    <string name="ns_gateway">Гарц</string>
+    <string name="ns_dns">DNS</string>
+    <string name="ns_mac">MAC</string>
+    <string name="ns_transport_wifi">Wi-Fi</string>
+    <string name="ns_transport_ethernet">Ethernet</string>
+    <string name="ns_transport_cellular">Үүрэн</string>
+    <string name="ns_transport_other">Бусад</string>
+    <string name="ns_sources_title">Энэ хаанаас гараад байна</string>
+    <string name="ns_sources_body">Хаяг болон гарцыг платформын холбоосын шинж чанараас уншина. Хөршийн хүснэгтийг цөмийн ARP кэшээс уншдаг тул энэ төхөөрөмжийн саяхан ярьсан зүйлийг л хадгалдаг - хоосон хүснэгт нь хоосон сүлжээ гэсэн үг биш юм.</string>
+    <string name="ns_refresh">Сэргээх</string>
+    <string name="ns_probe">Нийтлэг портуудыг шалгах</string>
+    <string name="ns_probe_stop">Зогс</string>
+    <string name="ns_probe_progress">Шинжилгээ %1$d-ийн %2$d</string>
+    <string name="ns_probe_note">TCP холболтыг 22, 80, 443, 5000, 5555 портууд дээр илгээдэг /24. Хариулах портыг мэдээлсэн; Чимээгүй байх нь эзэн байхгүй гэдгийг батлах баталгаа биш юм.</string>
+    <string name="ns_neighbours">Мэдэгдэж буй хөршүүд</string>
+    <string name="ns_neighbours_note">/proc/net/arp - зөвхөн унших.</string>
+    <string name="ns_neighbours_empty">Одоогоор хөршүүд нь мэдэгдэхгүй байна.</string>
+    <string name="ns_ports_value">Портууд %1$s</string>
+</resources>

@@ -99,4 +99,12 @@
     <string name="max_gpu_saved_desc">Iniingatan mula sa isang mas naunang pag-save at inilapat sa bawat boot: %1$s. Ang default sa itaas ay nagtatapos sa session na ito lamang, hindi kailanman ang naka-save na estado.</string>
     <string name="max_gpu_dynamic_min">Minimum · dynamic</string>
     <string name="max_gpu_dynamic_max">Pinakamataas · dynamic</string>
+    <string name="max_gpu_monitor_only_detail">Ang tanging mga graphics node na inilalantad ng kernel na ito ay bandwidth at QoS monitor: wala silang dalang GPU na orasan, kaya walang frequency na itatakda. Ang kontrol ay nananatiling naka-off sa halip na magsulat ng isang memory governor na parang ito ay ang GPU.</string>
+    <string name="max_gpu_danger_title">Sumulat ng GPU mga limitasyon?</string>
+    <string name="max_gpu_danger_body">Isinulat nito ang window ng dalas ng graphics at gobernador sa GPU node. Ang isang window na tinatanggihan ng driver, o isang gobernador na hindi makakasabay, ay maaaring mautal ang buong interface o i-freeze ang panel. Itinala ng app na tinanggap mo ito nang isang beses — ang responsibilidad para sa mga halagang inilalapat mo ay sa iyo.</string>
+    <string name="max_gpu_danger_action">Naiintindihan ko — mag-apply</string>
+    <string name="max_gpu_state_title">Oras sa estado</string>
+    <string name="max_gpu_state_desc">Kung saan aktwal na napunta ang oras ng GPU, binibilang ng kernel sa bawat dalas ng pagpapatakbo — hindi isang snapshot ng kasalukuyang orasan.</string>
+    <string name="max_gpu_state_hidden_share">%1$s magkasama</string>
+    <string name="max_gpu_state_hidden">%1$d ay nasa ibaba ng 1%%</string>
 </resources>

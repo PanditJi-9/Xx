@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/network_scanner_strings.xml -->
+<resources>
+    <string name="network_scanner_title">Lokal na Network Scanner</string>
+    <string name="network_scanner_subtitle">Ang iyong address, ang gateway na nararating nito, at kung sinong mga kapitbahay ang sumagot.</string>
+    <string name="max_role_network_scanner">Binabasa ang network kung nasaan ka — walang kinukunan, walang ugat.</string>
+    <string name="ns_no_network">Walang nakakonektang network.</string>
+    <string name="ns_interface">Interface</string>
+    <string name="ns_address">Address</string>
+    <string name="ns_gateway">Gateway</string>
+    <string name="ns_dns">DNS</string>
+    <string name="ns_mac">MAC</string>
+    <string name="ns_transport_wifi">Wi-Fi</string>
+    <string name="ns_transport_ethernet">Ethernet</string>
+    <string name="ns_transport_cellular">Cellular</string>
+    <string name="ns_transport_other">Iba pa</string>
+    <string name="ns_sources_title">Saan ito nanggaling</string>
+    <string name="ns_sources_body">Ang mga address at gateway ay binabasa mula sa mga katangian ng link ng platform. Ang talahanayan ng kapitbahay ay binabasa mula sa cache ng ARP ng kernel, kaya hawak lamang nito ang kamakailang nakipag-usap sa device na ito — ang isang walang laman na talahanayan ay hindi nangangahulugang isang walang laman na network.</string>
+    <string name="ns_refresh">I-refresh</string>
+    <string name="ns_probe">Suriin ang mga karaniwang port</string>
+    <string name="ns_probe_stop">Tumigil ka</string>
+    <string name="ns_probe_progress">Sinusuri ang %1$d ng %2$d</string>
+    <string name="ns_probe_note">Nagpapadala ng TCP connect sa mga port 22, 80, 443, 5000 at 5555 sa kabuuan nitong /24. Ang isang port na sumasagot ay iniulat; Ang katahimikan ay hindi patunay na wala ang host.</string>
+    <string name="ns_neighbours">Mga kilalang kapitbahay</string>
+    <string name="ns_neighbours_note">Mula sa /proc/net/arp — read only.</string>
+    <string name="ns_neighbours_empty">Wala pang alam na kapitbahay.</string>
+    <string name="ns_ports_value">Mga Port %1$s</string>
+</resources>

@@ -13,4 +13,23 @@
     <string name="max_expand_section">Trego detajet</string>
     <string name="max_collapse_section">Fshih detajet</string>
     <string name="max_trust_loading">Duke lexuar…</string>
+    <string name="max_gov_title">Kush sundon tani</string>
+    <string name="max_gov_separator">" ›"</string>
+    <string name="max_gov_order_note">Rendi fiks: një shkallë më e lartë bllokon një më të ulët. Nuk ndryshon kurrë se cila politikë fiton.</string>
+    <string name="max_gov_open_details">Mbajtësit aktivë</string>
+    <string name="max_gov_active_title">Kush mban kontrollin</string>
+    <string name="max_gov_none">Asnjë politikë nuk zotëron një kontroll të harduerit për momentin.</string>
+    <string name="max_gov_count">Qiratë e kontrollit aktiv: %1$d</string>
+    <string name="max_gov_requested">Kërkuar: %1$s</string>
+    <string name="max_gov_owner_recovery">Rimëkëmbja</string>
+    <string name="max_gov_owner_safety">Siguria termike</string>
+    <string name="max_gov_owner_per_app">Profili i aplikacionit</string>
+    <string name="max_gov_owner_max_ai">Max AI</string>
+    <string name="max_gov_owner_global">Profili global</string>
+    <string name="max_gov_owner_system">Sistemi</string>
+    <string name="max_gov_owner_a11y">%1$s zotëron një kontroll harduerik</string>
+    <string name="max_gov_now_none">Asnjë zotërues i automatizuar për momentin - kontrolli mbetet i yti</string>
+    <string name="max_gov_now_one">%1$s mban një kontroll</string>
+    <string name="max_gov_now_many">%1$s mban %2$d kontrolle</string>
+    <string name="devinfo_details">Detajet</string>
 </resources>

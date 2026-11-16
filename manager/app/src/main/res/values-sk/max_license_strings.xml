@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_license_strings.xml -->
+<resources>
+    <string name="max_license_title">Licencia</string>
+    <string name="max_license_subtitle">Jeden kľúč, toto zariadenie, žiadny účet</string>
+    <string name="max_license_help_body">Kľúč sa skontroluje online raz, keď ho zadáte. Odvtedy podpísaný certifikát servera funguje offline, kým nevyprší jeho čas – aplikácia nezavolá domov zakaždým, keď otvoríte obrazovku. Certifikát je viazaný na náhodné inštalačné ID tohto zariadenia, takže kopírovanie údajov aplikácie do iného telefónu so sebou nenesie licenciu a vlastník môže túto väzbu resetovať z panela, ak zmeníte telefón.</string>
+    <string name="max_license_status_section">Stav</string>
+    <string name="max_license_status_active">Aktívne</string>
+    <string name="max_license_status_expired">Platnosť vypršala</string>
+    <string name="max_license_status_none">Nie je aktivované</string>
+    <string name="max_license_active_detail">Zostáva: %1$d dní</string>
+    <string name="max_license_expired_detail">Čas tohto kľúča sa skončil. Nový kľúč obnoví prístup.</string>
+    <string name="max_license_none_detail">Zadajte kľúč, ktorý ste dostali, na odomknutie platených plôch.</string>
+    <string name="max_license_promo_active">Do %1$s zadarmo pre všetkých</string>
+    <string name="max_license_plan_title">Plán</string>
+    <string name="max_license_devices_title">Zariadenia</string>
+    <string name="max_license_devices_detail">Použité %1$d z %2$d</string>
+    <string name="max_license_device_id_title">Toto zariadenie</string>
+    <string name="max_license_device_id_detail">%1$s</string>
+    <string name="max_license_key_section">Aktivácia</string>
+    <string name="max_license_key_label">Licenčný kľúč</string>
+    <string name="max_license_key_placeholder">MAXM-XXXXX-XXXXX-XXXXX-XXXXX-XX</string>
+    <string name="max_license_key_helper">Na pomlčkách a veľkých písmenách nezáleží – prilepte ich tak, ako ste ich dostali.</string>
+    <string name="max_license_activate">Aktivovať</string>
+    <string name="max_license_activating">Kontroluje sa kľúč…</string>
+    <string name="max_license_refresh">Skontrolujte teraz</string>
+    <string name="max_license_activated">Aktivované. Toto zariadenie je teraz prepojené s vaším kľúčom.</string>
+    <string name="max_license_error_invalid_key">Tento kľúč sa nezdá byť úplný. Skontrolujte to a skúste to znova.</string>
+    <string name="max_license_error_not_configured">Táto zostava nemá nakonfigurovaný žiadny licenčný server.</string>
+    <string name="max_license_error_network">Žiadne spojenie. Kľúč sa skontroluje raz a potom funguje offline.</string>
+    <string name="max_license_error_timeout">Licenčný server neodpovedal včas. Skúste to znova.</string>
+    <string name="max_license_error_server">Licenčný server odpovedal chybou. Skúste to znova neskôr.</string>
+    <string name="max_license_error_client">Funkcia licencie nie je nasadená na serveri.</string>
+    <string name="max_license_error_format">Odpoveď servera nebola pochopená.</string>
+    <string name="max_license_error_expired">Platnosť tohto kľúča vypršala.</string>
+    <string name="max_license_error_not_found">Tento kľúč nie je známy.</string>
+    <string name="max_license_error_revoked">Tento kľúč bol odvolaný.</string>
+    <string name="max_license_error_device_limit">Tento kľúč dosiahol limit zariadenia. Požiadajte o resetovanie zariadenia.</string>
+    <string name="max_license_error_device_unknown">Toto zariadenie ešte nie je prepojené s kľúčom. Najprv si ho aktivujte tu.</string>
+    <string name="max_license_error_device_removed">Toto zariadenie bolo majiteľom odstránené z kľúča.</string>
+    <string name="max_license_error_rate_limited">Príliš veľa pokusov z tohto pripojenia – počkajte niekoľko minút a skúste to znova.</string>
+    <string name="max_license_error_unknown">Niečo sa pokazilo. Dôvod bol zaznamenaný v Diagnostike.</string>
+    <string name="max_license_gate_title">Tento povrch vyžaduje licenciu</string>
+    <string name="max_license_gate_detail">Je súčasťou kľúča. Jeden kľúč zakrýva toto zariadenie a jeho zadanie trvá minútu.</string>
+    <string name="max_feature_off_title">Vypnuté</string>
+    <string name="max_feature_off_detail">Ovládací panel tento povrch vypol. Vráti sa hneď po opätovnom zapnutí.</string>
+    <string name="max_license_gate_action">Otvorte nastavenia licencie</string>
+    <string name="max_license_gate_subscribe">Prihláste sa teraz</string>
+    <string name="max_license_subscription_section">Predplatné</string>
+    <string name="max_license_subscription_open">Otvorte stránku odberu</string>
+</resources>

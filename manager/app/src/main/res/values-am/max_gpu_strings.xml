@@ -99,4 +99,12 @@
     <string name="max_gpu_saved_desc">ቀደም ሲል ከተቀመጠው ተጠብቆ በእያንዳንዱ ቡት ላይ ተተግብሯል: %1$s. ከላይ ያለው ነባሪ ይህንን ክፍለ ጊዜ ብቻ ያጠናቅቃል፣ በጭራሽ የተቀመጠ ሁኔታ የለም።</string>
     <string name="max_gpu_dynamic_min">ዝቅተኛው · ተለዋዋጭ</string>
     <string name="max_gpu_dynamic_max">ከፍተኛው · ተለዋዋጭ</string>
+    <string name="max_gpu_monitor_only_detail">ይህ ከርነል የሚያጋልጥ ብቸኛው የግራፊክስ ኖዶች የመተላለፊያ ይዘት እና የ QoS ማሳያዎች ናቸው፡ ምንም GPU ሰዓት አይያዙም ስለዚህ የሚቀመጥ ድግግሞሽ የለም። የማስታወሻ ገዥን ከመጻፍ ይልቅ መቆጣጠሪያው እንደ GPU ሆኖ ይቆያል።</string>
+    <string name="max_gpu_danger_title">ገደብ ይጻፉ GPU?</string>
+    <string name="max_gpu_danger_body">ይህ የግራፊክስ ፍሪኩዌንሲ መስኮት እና ገዥ ወደ GPU ኖዶች ይጽፋል። ሾፌሩ ውድቅ የሆነበት መስኮት ወይም ገዢው መቀጠል የማይችል፣ ሙሉውን በይነገጽ ሊንተባተብ ወይም ፓነሉን ማሰር ይችላል። መተግበሪያው አንድ ጊዜ የተቀበልከውን ይመዘግባል - ለሚመለከቷቸው እሴቶች ሃላፊነት የእርስዎ ነው።</string>
+    <string name="max_gpu_danger_action">ተረድቻለሁ - ተግብር</string>
+    <string name="max_gpu_state_title">የግዛት ጊዜ</string>
+    <string name="max_gpu_state_desc">የGPU ጊዜ በትክክል የሄደበት፣ በከርነል በየኦፕሬሽኑ ድግግሞሽ የሚቆጠር - የአሁኑን ሰዓት ቅጽበታዊ እይታ አይደለም።</string>
+    <string name="max_gpu_state_hidden_share">%1$s አንድ ላይ</string>
+    <string name="max_gpu_state_hidden">%1$d ከ 1%% በታች ይላል</string>
 </resources>

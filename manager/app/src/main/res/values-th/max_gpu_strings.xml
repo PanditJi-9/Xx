@@ -99,4 +99,12 @@
     <string name="max_gpu_saved_desc">เก็บจากการบันทึกก่อนหน้านี้และนำไปใช้กับการบู๊ตแต่ละครั้ง: %1$s ค่าเริ่มต้นด้านบนจะสิ้นสุดเซสชันนี้เท่านั้น โดยจะไม่อยู่ในสถานะที่บันทึกไว้</string>
     <string name="max_gpu_dynamic_min">ขั้นต่ำ · ไดนามิก</string>
     <string name="max_gpu_dynamic_max">สูงสุด · ไดนามิก</string>
+    <string name="max_gpu_monitor_only_detail">โหนดกราฟิกเดียวที่เคอร์เนลนี้เปิดเผยคือแบนด์วิดท์และมอนิเตอร์ QoS: โหนดเหล่านั้นไม่มีนาฬิกา GPU ดังนั้นจึงไม่มีความถี่ในการตั้งค่า การควบคุมปิดอยู่แทนที่จะเขียนตัวควบคุมหน่วยความจำราวกับว่าเป็น GPU</string>
+    <string name="max_gpu_danger_title">เขียนขีดจำกัด GPU หรือไม่</string>
+    <string name="max_gpu_danger_body">สิ่งนี้จะเขียนหน้าต่างความถี่กราฟิกและผู้ควบคุมลงในโหนด GPU หน้าต่างที่คนขับปฏิเสธ หรือ Governor ที่ไม่สามารถตามทันได้ อาจทำให้อินเทอร์เฟซทั้งหมดติดขัดหรือทำให้แผงควบคุมค้างได้ แอปบันทึกว่าคุณยอมรับสิ่งนี้ครั้งหนึ่ง - ความรับผิดชอบต่อค่าที่คุณใช้เป็นของคุณ</string>
+    <string name="max_gpu_danger_action">ฉันเข้าใจ - สมัคร</string>
+    <string name="max_gpu_state_title">เวลาในรัฐ</string>
+    <string name="max_gpu_state_desc">โดยที่เวลาของ GPU\ ผ่านไปจริง ๆ นับโดยเคอร์เนลต่อความถี่ในการทำงาน - ไม่ใช่ภาพรวมของนาฬิกาปัจจุบัน</string>
+    <string name="max_gpu_state_hidden_share">%1$s ด้วยกัน</string>
+    <string name="max_gpu_state_hidden">%1$d ระบุต่ำกว่า 1%%</string>
 </resources>

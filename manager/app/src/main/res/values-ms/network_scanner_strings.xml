@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/network_scanner_strings.xml -->
+<resources>
+    <string name="network_scanner_title">Pengimbas Rangkaian Tempatan</string>
+    <string name="network_scanner_subtitle">Alamat anda, pintu masuk yang dicapai dan jiran mana yang menjawab.</string>
+    <string name="max_role_network_scanner">Membaca rangkaian yang anda gunakan — tiada tangkapan, tiada akar.</string>
+    <string name="ns_no_network">Tiada rangkaian disambungkan.</string>
+    <string name="ns_interface">Antara muka</string>
+    <string name="ns_address">Alamat</string>
+    <string name="ns_gateway">Gerbang</string>
+    <string name="ns_dns">DNS</string>
+    <string name="ns_mac">MAC</string>
+    <string name="ns_transport_wifi">Wi-Fi</string>
+    <string name="ns_transport_ethernet">Ethernet</string>
+    <string name="ns_transport_cellular">Selular</string>
+    <string name="ns_transport_other">Lain-lain</string>
+    <string name="ns_sources_title">Dari mana ini datang</string>
+    <string name="ns_sources_body">Alamat dan get laluan dibaca daripada sifat pautan platform. Jadual jiran dibaca daripada cache ARP kernel, jadi ia hanya menyimpan perkara yang baru-baru ini bercakap dengan peranti ini — jadual kosong tidak bermakna rangkaian kosong.</string>
+    <string name="ns_refresh">Segarkan semula</string>
+    <string name="ns_probe">Siasat port biasa</string>
+    <string name="ns_probe_stop">Berhenti</string>
+    <string name="ns_probe_progress">Menyelidik %1$d daripada %2$d</string>
+    <string name="ns_probe_note">Menghantar sambungan TCP pada port 22, 80, 443, 5000 dan 5555 merentas /24 ini. Pelabuhan yang menjawab dilaporkan; diam bukan bukti tuan rumah tidak hadir.</string>
+    <string name="ns_neighbours">Jiran yang dikenali</string>
+    <string name="ns_neighbours_note">Daripada /proc/net/arp — baca sahaja.</string>
+    <string name="ns_neighbours_empty">Belum ada jiran yang dikenali.</string>
+    <string name="ns_ports_value">Pelabuhan %1$s</string>
+</resources>

@@ -10,4 +10,6 @@
     <string name="studio_display">Afişa</string>
     <string name="studio_power">Opțiuni de alimentare</string>
     <string name="studio_settings">Setări</string>
+    <string name="audio_dsp_live">DSP live</string>
+    <string name="max_audio_session_label">Sesiunea audio #%1$d</string>
 </resources>

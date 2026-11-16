@@ -51,4 +51,14 @@
     <string name="copg_tweak_kso_title">Ekranı açık tut</string>
     <string name="copg_tweak_kso_desc">Bu uygulamaya COPG ekranı açık tutma ayarını uygular. Buraya kaydedilir, İnceleme tarafından motora yazılır ve Parodi sekmesinde uygulanır.</string>
     <string name="copg_tweak_needs_device">Öncelikle bu uygulama için Parodi sekmesinde bir cihaza ihtiyaç var.</string>
+    <string name="spoof_engine_unmeasured">Motor durumu ölçülmüyor: Kök erişimine henüz izin verilmedi. Kök verin, ardından bu sekmeyi yeniden açın.</string>
+    <string name="spoof_engine_config_missing">COPG yüklü ancak yapılandırma dosyası (COPG.json) eksik. Modül tekrar sağlayana kadar başvuru reddedilir.</string>
+    <string name="spoof_engine_config_unreadable">COPG yüklü ancak yapılandırma dosyası okunamıyor JSON. Dosya onarılıncaya kadar başvuru reddedilir.</string>
+    <string name="spoof_imei_spoof">IMEI sahtekarlığı</string>
+    <string name="spoof_imei_spoof_desc">Bu uygulamaya farklı bir IMEI gösterir. Kapsamında bu uygulama varken LSPosed\'da Max Manager modülünün etkinleştirilmesi gerekiyor. Uygulamayı açtıktan sonra yeniden başlatın.</string>
+    <string name="spoof_imei_active">Bu uygulama gösteriliyor: %1$s</string>
+    <string name="spoof_imei_summary">IMEI sahtekarlığı</string>
+    <string name="spoof_imei_regenerate">Yeni rastgele IMEI</string>
+    <string name="spoof_imei_regenerate_desc">Bu uygulama için başka bir geçerli IMEI oluşturur. Görmek için uygulamayı yeniden başlatın.</string>
+    <string name="spoof_imei_module_inactive">Max Manager modülü LSPosed\'de etkinleştirilmediğinden uygulamalar hala gerçek IMEI\'yi görüyor. LSPosed\'de modülü etkinleştirin, bu uygulamayı kapsamına ekleyin ve ardından bu ekranı yeniden açın.</string>
 </resources>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_update_strings.xml -->
+<resources>
+    <string name="update_dialog_title">利用可能なアップデート</string>
+    <string name="update_dialog_title_required">アップデートが必要です</string>
+    <string name="update_required_notice">MaxManagerを引き続き使用するには、このアップデートが必要です。インストールしてから、アプリを再度開きます。</string>
+    <string name="update_dialog_body">バージョン %1$s が利用可能です。あなたは%2$sにいます。</string>
+    <string name="update_block_title">続行するにはアップデートが必要です</string>
+    <string name="update_block_body">このビルド (%1$s) はサポートされなくなりました。 MaxManager を引き続き使用するには、%2$s に更新してください。</string>
+    <string name="update_block_body_no_release">このビルド (%1$s) はサポートされなくなりました。</string>
+    <string name="update_release_notes_label">新着情報</string>
+    <string name="update_size">ダウンロードサイズ: %1$s</string>
+    <string name="update_button_now">今すぐアップデートしてください</string>
+    <string name="update_button_later">後で</string>
+    <string name="update_button_close">近い</string>
+    <string name="update_button_open_page">ダウンロードページを開く</string>
+    <string name="update_state_downloading">ダウンロード中… %1$d%%</string>
+    <string name="update_state_downloading_unknown">ダウンロード中…</string>
+    <string name="update_state_installing">インストール中…</string>
+    <string name="update_error_network">アップデートサーバーにアクセスできませんでした。接続を確認して、もう一度試してください。</string>
+    <string name="update_error_http">更新サーバーがエラーで応答しました。後でもう一度試してください。</string>
+    <string name="update_error_format">アップデート情報を読み込めませんでした。</string>
+    <string name="update_error_too_large">更新情報が予想より大きかったため、破棄されました。</string>
+    <string name="update_error_integrity">ダウンロードされたファイルはチェックサムと一致しないため、削除されました。</string>
+    <string name="update_error_install">インストールに失敗しました。もう一度やり直してください。</string>
+    <string name="update_error_not_configured">このビルドでは更新チャネルが構成されていません。</string>
+    <string name="update_maintenance_title">一時的に利用できません</string>
+    <string name="update_maintenance_body">MaxManager は一時的に利用できなくなります。しばらくしてからもう一度お試しください。</string>
+    <string name="update_check_title">アップデートをチェックする</string>
+    <string name="update_check_supporting">現在のバージョン: %1$s</string>
+    <string name="update_check_updated">アップデートが利用可能です。</string>
+    <string name="update_check_uptodate">最新バージョンを使用しています。</string>
+    <string name="update_check_failed">アップデートを確認できませんでした。</string>
+    <string name="update_check_not_configured">このビルドでは更新チャネルが構成されていません。</string>
+    <string name="update_released_label">発売日：%1$s</string>
+    <string name="update_check_none_published">コントロール パネルからのアップデートはまだ公開されていません。</string>
+    <string name="update_check_link_missing">アップデートが公開されましたが、ダウンロード リンクがありません。</string>
+</resources>

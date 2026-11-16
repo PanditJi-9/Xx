@@ -10,4 +10,6 @@
     <string name="studio_display">Trưng bày</string>
     <string name="studio_power">Tùy chọn nguồn</string>
     <string name="studio_settings">Cài đặt</string>
+    <string name="audio_dsp_live">DSP trực tiếp</string>
+    <string name="max_audio_session_label">Phiên âm thanh #%1$d</string>
 </resources>

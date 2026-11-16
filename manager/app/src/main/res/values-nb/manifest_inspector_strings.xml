@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/manifest_inspector_strings.xml -->
+<resources>
+    <string name="manifest_inspector_title">Manifestinspektør</string>
+    <string name="manifest_inspector_subtitle">Hva en installert app erklærer om seg selv, les fra PackageManager.</string>
+    <string name="max_role_manifest_inspector">Viser hva en pakke erklærer om seg selv – skrivebeskyttet.</string>
+    <string name="mi_search">Søk etter apper</string>
+    <string name="mi_empty">Velg en app til venstre.</string>
+    <string name="mi_yes">Ja</string>
+    <string name="mi_no">Ingen</string>
+    <string name="mi_section_identity">Pakke</string>
+    <string name="mi_version">Versjon</string>
+    <string name="mi_version_code">Versjonskode</string>
+    <string name="mi_min_sdk">Minimum SDK</string>
+    <string name="mi_target_sdk">Mål-SDK</string>
+    <string name="mi_installed">Installert</string>
+    <string name="mi_updated">Oppdatert</string>
+    <string name="mi_installer">Installatør</string>
+    <string name="mi_uid">UID</string>
+    <string name="mi_data_dir">Datakatalog</string>
+    <string name="mi_debuggable">Feilsøkbar</string>
+    <string name="mi_system_app">System app</string>
+    <string name="mi_enabled">Aktivert</string>
+    <string name="mi_section_permissions">Forespurte tillatelser</string>
+    <string name="mi_permissions_summary">%1$d tillatelser · %2$d av dem er farlige</string>
+    <string name="mi_permissions_none">Denne appen ber ikke om tillatelse.</string>
+    <string name="mi_perm_dangerous">Farlig</string>
+    <string name="mi_perm_signature">Signatur</string>
+    <string name="mi_perm_normal">Normal</string>
+    <string name="mi_perm_unknown">Uklassifisert</string>
+    <string name="mi_section_components">Komponenter</string>
+    <string name="mi_activities">Aktiviteter</string>
+    <string name="mi_services">Tjenester</string>
+    <string name="mi_receivers">Mottakere</string>
+    <string name="mi_providers">Leverandører</string>
+    <string name="mi_components_none">Ingen erklært</string>
+    <string name="mi_section_features">Enhetsfunksjoner</string>
+    <string name="mi_features_note">Plattformen viser ikke en annen apps liste over bruksfunksjoner; dette er funksjonene denne enheten rapporterer.</string>
+    <string name="mi_features_none">Ingen funksjon rapportert</string>
+    <string name="mi_section_signature">Signeringssertifikat</string>
+    <string name="mi_signature_note">SHA-256 for signeringssertifikatet. To bygg med samme verdi er samme utgiver.</string>
+    <string name="mi_signature_sha256">Sertifikatsammendrag</string>
+</resources>

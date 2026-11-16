@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/manifest_inspector_strings.xml -->
+<resources>
+    <string name="manifest_inspector_title">মেনিফেষ্ট পৰিদৰ্শক</string>
+    <string name="manifest_inspector_subtitle">এটা ইনষ্টল কৰা এপে নিজৰ বিষয়ে কি ঘোষণা কৰে, PackageManager ৰ পৰা পঢ়ক।</string>
+    <string name="max_role_manifest_inspector">এটা পেকেইজে নিজৰ বিষয়ে কি ঘোষণা কৰে দেখুৱায় — কেৱল পঢ়িব পৰাকৈ।</string>
+    <string name="mi_search">এপসমূহ সন্ধান কৰক</string>
+    <string name="mi_empty">বাওঁফালে এটা এপ বাছক।</string>
+    <string name="mi_yes">হয়</string>
+    <string name="mi_no">নহয়</string>
+    <string name="mi_section_identity">পেকেজ</string>
+    <string name="mi_version">সংস্কৰণ</string>
+    <string name="mi_version_code">সংস্কৰণ ক\'ড</string>
+    <string name="mi_min_sdk">নূন্যতম SDK</string>
+    <string name="mi_target_sdk">লক্ষ্য SDK</string>
+    <string name="mi_installed">সংস্থাপন কৰা হৈছে</string>
+    <string name="mi_updated">আপডেট কৰা হৈছে</string>
+    <string name="mi_installer">ইনষ্টলাৰ</string>
+    <string name="mi_uid">ইউআইডি</string>
+    <string name="mi_data_dir">ডাটা ডাইৰেকটৰী</string>
+    <string name="mi_debuggable">ডিবাগযোগ্য</string>
+    <string name="mi_system_app">চিষ্টেম এপ</string>
+    <string name="mi_enabled">সামৰ্থবান কৰা হৈছে</string>
+    <string name="mi_section_permissions">অনুৰোধ কৰা অনুমতি</string>
+    <string name="mi_permissions_summary">%1$d অনুমতি · %2$d তেওঁলোকৰ বিপজ্জনক</string>
+    <string name="mi_permissions_none">এই এপটোৱে কোনো অনুমতি বিচৰা নাই।</string>
+    <string name="mi_perm_dangerous">বিপদজনক</string>
+    <string name="mi_perm_signature">চহী</string>
+    <string name="mi_perm_normal">স্বাভাৱিক</string>
+    <string name="mi_perm_unknown">অশ্ৰেণীভুক্ত</string>
+    <string name="mi_section_components">উপাদানসমূহ</string>
+    <string name="mi_activities">কাৰ্যকলাপ</string>
+    <string name="mi_services">সেৱাসমূহ</string>
+    <string name="mi_receivers">ৰিচিভাৰ</string>
+    <string name="mi_providers">প্ৰদানকাৰীসকল</string>
+    <string name="mi_components_none">কোনোৱেই ঘোষণা কৰা নাছিল</string>
+    <string name="mi_section_features">ডিভাইচ বৈশিষ্ট্যসমূহ</string>
+    <string name="mi_features_note">প্লেটফৰ্মে আন এটা এপৰ ব্যৱহাৰ-বৈশিষ্ট্য তালিকা উন্মোচন নকৰে; এইবোৰ হৈছে এই ডিভাইচে প্ৰতিবেদন কৰা বৈশিষ্ট্যসমূহ।</string>
+    <string name="mi_features_none">কোনো বৈশিষ্ট্যৰ ৰিপৰ্ট দিয়া হোৱা নাই</string>
+    <string name="mi_section_signature">প্ৰমাণপত্ৰ স্বাক্ষৰ কৰা</string>
+    <string name="mi_signature_note">স্বাক্ষৰ প্ৰমাণ পত্ৰৰ SHA-256। একে মূল্যৰ দুটা বিল্ড একেটা প্ৰকাশক।</string>
+    <string name="mi_signature_sha256">প্ৰমাণপত্ৰ ডাইজেষ্ট</string>
+</resources>

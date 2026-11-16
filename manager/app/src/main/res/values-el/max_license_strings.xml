@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_license_strings.xml -->
+<resources>
+    <string name="max_license_title">Αδεια</string>
+    <string name="max_license_subtitle">Ένα κλειδί, αυτή η συσκευή, χωρίς λογαριασμό</string>
+    <string name="max_license_help_body">Ένα κλειδί ελέγχεται διαδικτυακά μία φορά, όταν το εισάγετε. Από τότε, το υπογεγραμμένο πιστοποιητικό του διακομιστή λειτουργεί εκτός σύνδεσης μέχρι να τελειώσει ο χρόνος του — η εφαρμογή δεν καλεί το σπίτι κάθε φορά που ανοίγετε μια οθόνη. Το πιστοποιητικό είναι δεσμευμένο στο τυχαίο αναγνωριστικό εγκατάστασης αυτής της συσκευής, επομένως η αντιγραφή των δεδομένων της εφαρμογής σε άλλο τηλέφωνο δεν συνοδεύεται από την άδεια χρήσης και ο κάτοχος μπορεί να επαναφέρει τη δέσμευση από τον πίνακα, εάν αλλάξετε τηλέφωνα.</string>
+    <string name="max_license_status_section">Κατάσταση</string>
+    <string name="max_license_status_active">Ενεργός</string>
+    <string name="max_license_status_expired">Λήξη</string>
+    <string name="max_license_status_none">Δεν έχει ενεργοποιηθεί</string>
+    <string name="max_license_active_detail">Απομένουν: %1$d ημέρες</string>
+    <string name="max_license_expired_detail">Ο χρόνος αυτού του κλειδιού τελείωσε. Ένα νέο κλειδί ανανεώνει την πρόσβαση.</string>
+    <string name="max_license_none_detail">Εισαγάγετε το κλειδί που λάβατε για να ξεκλειδώσετε τις πληρωμένες επιφάνειες.</string>
+    <string name="max_license_promo_active">Δωρεάν για όλους έως %1$s</string>
+    <string name="max_license_plan_title">Σχέδιο</string>
+    <string name="max_license_devices_title">Συσκευές</string>
+    <string name="max_license_devices_detail">Χρησιμοποιούνται %1$d από %2$d</string>
+    <string name="max_license_device_id_title">Αυτή η συσκευή</string>
+    <string name="max_license_device_id_detail">%1$s</string>
+    <string name="max_license_key_section">Δραστηριοποίηση</string>
+    <string name="max_license_key_label">Κλειδί άδειας χρήσης</string>
+    <string name="max_license_key_placeholder">ΜΑΧΜ-ΧΧΧΧ-ΧΧΧΧ-ΧΧΧΧ-ΧΧΧΧ-ΧΧΧ</string>
+    <string name="max_license_key_helper">Οι παύλες και η χρήση κεφαλαίων δεν έχουν σημασία — επικολλήστε τα όπως τα λάβατε.</string>
+    <string name="max_license_activate">Δραστηριοποιώ</string>
+    <string name="max_license_activating">Έλεγχος του κλειδιού…</string>
+    <string name="max_license_refresh">Ελέγξτε τώρα</string>
+    <string name="max_license_activated">Ενεργοποιήθηκε. Αυτή η συσκευή είναι πλέον συνδεδεμένη με το κλειδί σας.</string>
+    <string name="max_license_error_invalid_key">Αυτό το κλειδί δεν φαίνεται ολοκληρωμένο. Ελέγξτε το και δοκιμάστε ξανά.</string>
+    <string name="max_license_error_not_configured">Αυτή η έκδοση δεν έχει ρυθμισμένο διακομιστή άδειας χρήσης.</string>
+    <string name="max_license_error_network">Καμία σύνδεση. Το κλειδί ελέγχεται μία φορά και στη συνέχεια λειτουργεί εκτός σύνδεσης.</string>
+    <string name="max_license_error_timeout">Ο διακομιστής αδειών δεν απάντησε εγκαίρως. Προσπαθήστε ξανά.</string>
+    <string name="max_license_error_server">Ο διακομιστής αδειών απάντησε με σφάλμα. Δοκιμάστε ξανά αργότερα.</string>
+    <string name="max_license_error_client">Η λειτουργία άδειας χρήσης δεν έχει αναπτυχθεί στον διακομιστή.</string>
+    <string name="max_license_error_format">Η απάντηση του διακομιστή δεν έγινε κατανοητή.</string>
+    <string name="max_license_error_expired">Αυτό το κλειδί έχει λήξει.</string>
+    <string name="max_license_error_not_found">Αυτό το κλειδί δεν είναι γνωστό.</string>
+    <string name="max_license_error_revoked">Αυτό το κλειδί έχει ανακληθεί.</string>
+    <string name="max_license_error_device_limit">Αυτό το κλειδί έχει φτάσει το όριο συσκευής του. Ζητήστε επαναφορά συσκευής.</string>
+    <string name="max_license_error_device_unknown">Αυτή η συσκευή δεν είναι ακόμη συνδεδεμένη με το κλειδί. Ενεργοποιήστε το πρώτα εδώ.</string>
+    <string name="max_license_error_device_removed">Αυτή η συσκευή αφαιρέθηκε από το κλειδί από τον κάτοχο.</string>
+    <string name="max_license_error_rate_limited">Πάρα πολλές προσπάθειες από αυτήν τη σύνδεση — περιμένετε λίγα λεπτά και μετά δοκιμάστε ξανά.</string>
+    <string name="max_license_error_unknown">Κάτι πήγε στραβά. Ο λόγος καταγράφηκε στο Diagnostics.</string>
+    <string name="max_license_gate_title">Αυτή η επιφάνεια χρειάζεται άδεια</string>
+    <string name="max_license_gate_detail">Περιλαμβάνεται με κλειδί. Ένα κλειδί καλύπτει αυτήν τη συσκευή και η εισαγωγή της διαρκεί ένα λεπτό.</string>
+    <string name="max_feature_off_title">Απενεργοποιήθηκε</string>
+    <string name="max_feature_off_detail">Ο πίνακας ελέγχου έχει απενεργοποιήσει αυτήν την επιφάνεια. Επιστρέφει μόλις ενεργοποιηθεί ξανά.</string>
+    <string name="max_license_gate_action">Ανοίξτε τις ρυθμίσεις άδειας χρήσης</string>
+    <string name="max_license_gate_subscribe">Εγγραφείτε τώρα</string>
+    <string name="max_license_subscription_section">Συνδρομή</string>
+    <string name="max_license_subscription_open">Ανοίξτε τη σελίδα συνδρομής</string>
+</resources>

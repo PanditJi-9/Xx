@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_update_strings.xml -->
+<resources>
+    <string name="update_dialog_title">Достапно е ажурирање</string>
+    <string name="update_dialog_title_required">Потребно е ажурирање</string>
+    <string name="update_required_notice">Ова ажурирање е потребно за да продолжите да го користите MaxManager. Инсталирајте ја, а потоа повторно отворете ја апликацијата.</string>
+    <string name="update_dialog_body">Достапна е верзијата %1$s. Вие сте на %2$s.</string>
+    <string name="update_block_title">Потребно е ажурирање за да продолжите</string>
+    <string name="update_block_body">Оваа верзија (%1$s) повеќе не е поддржана. Ажурирајте до %2$s за да продолжите да го користите MaxManager.</string>
+    <string name="update_block_body_no_release">Оваа верзија (%1$s) повеќе не е поддржана.</string>
+    <string name="update_release_notes_label">Што има ново</string>
+    <string name="update_size">Големина на преземање: %1$s</string>
+    <string name="update_button_now">Ажурирајте сега</string>
+    <string name="update_button_later">Подоцна</string>
+    <string name="update_button_close">Затвори</string>
+    <string name="update_button_open_page">Отворете ја страницата за преземање</string>
+    <string name="update_state_downloading">Се презема… %1$d%%</string>
+    <string name="update_state_downloading_unknown">Се презема…</string>
+    <string name="update_state_installing">Се инсталира…</string>
+    <string name="update_error_network">Не може да дојде до серверот за ажурирање. Проверете ја врската и обидете се повторно.</string>
+    <string name="update_error_http">Серверот за ажурирање одговори со грешка. Обидете се повторно подоцна.</string>
+    <string name="update_error_format">Информациите за ажурирање не може да се прочитаат.</string>
+    <string name="update_error_too_large">Информациите за ажурирање беа поголеми од очекуваното и беа отфрлени.</string>
+    <string name="update_error_integrity">Преземената датотека не се совпаѓа со нејзината контролна сума и беше избришана.</string>
+    <string name="update_error_install">Инсталирањето не успеа. Обидете се повторно.</string>
+    <string name="update_error_not_configured">Ниту еден канал за ажурирање не е конфигуриран во оваа верзија.</string>
+    <string name="update_maintenance_title">Привремено недостапно</string>
+    <string name="update_maintenance_body">MaxManager е привремено недостапен. Обидете се повторно наскоро.</string>
+    <string name="update_check_title">Проверете дали има ажурирања</string>
+    <string name="update_check_supporting">Тековна верзија: %1$s</string>
+    <string name="update_check_updated">Достапно е ажурирање.</string>
+    <string name="update_check_uptodate">Вие сте на најновата верзија.</string>
+    <string name="update_check_failed">Не може да се провери дали има ажурирања.</string>
+    <string name="update_check_not_configured">Ниту еден канал за ажурирање не е конфигуриран во оваа верзија.</string>
+    <string name="update_released_label">Датум на издавање: %1$s</string>
+    <string name="update_check_none_published">Сè уште не е објавено ажурирање од контролната табла.</string>
+    <string name="update_check_link_missing">Објавено е ажурирање, но неговата врска за преземање недостасува.</string>
+</resources>

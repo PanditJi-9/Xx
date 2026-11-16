@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_license_strings.xml -->
+<resources>
+    <string name="max_license_title">ლიცენზია</string>
+    <string name="max_license_subtitle">ერთი გასაღები, ეს მოწყობილობა, ანგარიში არ არის</string>
+    <string name="max_license_help_body">გასაღები მოწმდება ერთხელ ინტერნეტში, როდესაც შედიხართ. მას შემდეგ სერვერის ხელმოწერილი სერთიფიკატი მუშაობს ხაზგარეშე, სანამ მისი დრო ამოიწურება — აპი არ ურეკავს სახლში ყოველ ჯერზე, როცა ეკრანს ხსნით. სერთიფიკატი მიბმულია ამ მოწყობილობის შემთხვევითი ინსტალაციის ID-ზე, ამიტომ აპის მონაცემების სხვა ტელეფონზე კოპირება ლიცენზიას არ ატარებს და მფლობელს შეუძლია აღადგინოს ეს სავალდებულო პანელიდან, თუ ტელეფონს შეცვლით.</string>
+    <string name="max_license_status_section">სტატუსი</string>
+    <string name="max_license_status_active">აქტიური</string>
+    <string name="max_license_status_expired">ვადა გაუვიდა</string>
+    <string name="max_license_status_none">არ არის გააქტიურებული</string>
+    <string name="max_license_active_detail">დარჩენილია: %1$d დღე</string>
+    <string name="max_license_expired_detail">ამ გასაღების დრო დასრულდა. ახალი გასაღები განაახლებს წვდომას.</string>
+    <string name="max_license_none_detail">შეიყვანეთ გასაღები, რომელიც მიიღეთ ფასიანი ზედაპირების განსაბლოკად.</string>
+    <string name="max_license_promo_active">უფასოა ყველასთვის %1$s-მდე</string>
+    <string name="max_license_plan_title">გეგმავენ</string>
+    <string name="max_license_devices_title">მოწყობილობები</string>
+    <string name="max_license_devices_detail">გამოყენებულია %1$d %2$d-დან</string>
+    <string name="max_license_device_id_title">ეს მოწყობილობა</string>
+    <string name="max_license_device_id_detail">%1$s</string>
+    <string name="max_license_key_section">გააქტიურება</string>
+    <string name="max_license_key_label">ლიცენზიის გასაღები</string>
+    <string name="max_license_key_placeholder">MAXM-XXXX-XXXX-XXXX-XXXX-XX</string>
+    <string name="max_license_key_helper">ტირეებსა და კაპიტალიზაციას მნიშვნელობა არ აქვს - ჩასვით, როგორც მიიღეთ.</string>
+    <string name="max_license_activate">გააქტიურება</string>
+    <string name="max_license_activating">გასაღების შემოწმება…</string>
+    <string name="max_license_refresh">შეამოწმეთ ახლა</string>
+    <string name="max_license_activated">გააქტიურებულია. ეს მოწყობილობა ახლა დაკავშირებულია თქვენს გასაღებთან.</string>
+    <string name="max_license_error_invalid_key">ეს გასაღები არ გამოიყურება სრულყოფილი. შეამოწმეთ და სცადეთ ხელახლა.</string>
+    <string name="max_license_error_not_configured">ამ build-ს არ აქვს კონფიგურირებული სალიცენზიო სერვერი.</string>
+    <string name="max_license_error_network">არანაირი კავშირი. გასაღები მოწმდება ერთხელ, შემდეგ მუშაობს ოფლაინში.</string>
+    <string name="max_license_error_timeout">სალიცენზიო სერვერმა დროულად არ უპასუხა. სცადეთ ხელახლა.</string>
+    <string name="max_license_error_server">ლიცენზიის სერვერმა უპასუხა შეცდომით. სცადეთ მოგვიანებით.</string>
+    <string name="max_license_error_client">ლიცენზიის ფუნქცია არ არის განლაგებული სერვერზე.</string>
+    <string name="max_license_error_format">სერვერის პასუხი გაუგებარია.</string>
+    <string name="max_license_error_expired">ამ გასაღებს ვადა გაუვიდა.</string>
+    <string name="max_license_error_not_found">ეს გასაღები უცნობია.</string>
+    <string name="max_license_error_revoked">ეს გასაღები გაუქმებულია.</string>
+    <string name="max_license_error_device_limit">ამ კლავიშმა მიაღწია მოწყობილობის ლიმიტს. მოითხოვეთ მოწყობილობის გადატვირთვა.</string>
+    <string name="max_license_error_device_unknown">ეს მოწყობილობა ჯერ არ არის დაკავშირებული გასაღებთან. ჯერ აქ გაააქტიურე.</string>
+    <string name="max_license_error_device_removed">ეს მოწყობილობა გასაღებიდან ამოიღო მფლობელმა.</string>
+    <string name="max_license_error_rate_limited">ძალიან ბევრი მცდელობა ამ კავშირიდან — დაელოდეთ რამდენიმე წუთს და სცადეთ ხელახლა.</string>
+    <string name="max_license_error_unknown">რაღაც შეფერხდა. მიზეზი დიაგნოსტიკაში დაფიქსირდა.</string>
+    <string name="max_license_gate_title">ამ ზედაპირს ლიცენზია სჭირდება</string>
+    <string name="max_license_gate_detail">მოყვება გასაღები. ერთი გასაღები ფარავს ამ მოწყობილობას და მის შეყვანას ერთი წუთი სჭირდება.</string>
+    <string name="max_feature_off_title">გამორთულია</string>
+    <string name="max_feature_off_detail">მართვის პანელმა გამორთო ეს ზედაპირი. ის ბრუნდება როგორც კი ისევ ჩართულია.</string>
+    <string name="max_license_gate_action">გახსენით ლიცენზიის პარამეტრები</string>
+    <string name="max_license_gate_subscribe">გამოიწერეთ ახლავე</string>
+    <string name="max_license_subscription_section">გამოწერა</string>
+    <string name="max_license_subscription_open">გახსენით გამოწერის გვერდი</string>
+</resources>

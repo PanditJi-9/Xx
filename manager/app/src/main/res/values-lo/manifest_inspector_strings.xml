@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/manifest_inspector_strings.xml -->
+<resources>
+    <string name="manifest_inspector_title">Manifest Inspector</string>
+    <string name="manifest_inspector_subtitle">ສິ່ງທີ່ແອັບຯທີ່ຕິດຕັ້ງປະກາດກ່ຽວກັບຕົວມັນເອງ, ອ່ານຈາກ PackageManager.</string>
+    <string name="max_role_manifest_inspector">ສະແດງສິ່ງທີ່ຊຸດປະກາດກ່ຽວກັບຕົວມັນເອງ — ອ່ານເທົ່ານັ້ນ.</string>
+    <string name="mi_search">ຄົ້ນຫາແອັບຯ</string>
+    <string name="mi_empty">ເລືອກແອັບຢູ່ເບື້ອງຊ້າຍ.</string>
+    <string name="mi_yes">ແມ່ນແລ້ວ</string>
+    <string name="mi_no">ບໍ່</string>
+    <string name="mi_section_identity">ຊຸດ</string>
+    <string name="mi_version">ຮຸ່ນ</string>
+    <string name="mi_version_code">ລະຫັດເວີຊັນ</string>
+    <string name="mi_min_sdk">SDK ຕໍ່າສຸດ</string>
+    <string name="mi_target_sdk">SDK ເປົ້າໝາຍ</string>
+    <string name="mi_installed">ຕິດຕັ້ງແລ້ວ</string>
+    <string name="mi_updated">ອັບເດດ</string>
+    <string name="mi_installer">ຜູ້ຕິດຕັ້ງ</string>
+    <string name="mi_uid">UID</string>
+    <string name="mi_data_dir">ໄດເລກະທໍລີຂໍ້ມູນ</string>
+    <string name="mi_debuggable">ສາມາດແກ້ບັນຫາໄດ້</string>
+    <string name="mi_system_app">ແອັບລະບົບ</string>
+    <string name="mi_enabled">ເປີດໃຊ້ແລ້ວ</string>
+    <string name="mi_section_permissions">ຮ້ອງຂໍການອະນຸຍາດ</string>
+    <string name="mi_permissions_summary">%1$dການອະນຸຍາດ · %2$d ອັນຕະລາຍ</string>
+    <string name="mi_permissions_none">ແອັບນີ້ບໍ່ຮ້ອງຂໍການອະນຸຍາດ.</string>
+    <string name="mi_perm_dangerous">ອັນຕະລາຍ</string>
+    <string name="mi_perm_signature">ລາຍເຊັນ</string>
+    <string name="mi_perm_normal">ປົກກະຕິ</string>
+    <string name="mi_perm_unknown">ບໍ່ຈັດປະເພດ</string>
+    <string name="mi_section_components">ອົງປະກອບ</string>
+    <string name="mi_activities">ກິດຈະກໍາ</string>
+    <string name="mi_services">ການບໍລິການ</string>
+    <string name="mi_receivers">ຜູ້ຮັບ</string>
+    <string name="mi_providers">ຜູ້ໃຫ້ບໍລິການ</string>
+    <string name="mi_components_none">ບໍ່ມີໃຜປະກາດ</string>
+    <string name="mi_section_features">ຄຸນສົມບັດອຸປະກອນ</string>
+    <string name="mi_features_note">ແພລດຟອມບໍ່ໄດ້ເປີດເຜີຍລາຍການຄຸນສົມບັດການນໍາໃຊ້ຂອງແອັບຯອື່ນ; ເຫຼົ່ານີ້ແມ່ນຄຸນສົມບັດທີ່ອຸປະກອນນີ້ລາຍງານ.</string>
+    <string name="mi_features_none">ບໍ່ມີລາຍງານຄຸນສົມບັດ</string>
+    <string name="mi_section_signature">ເຊັນໃບຢັ້ງຢືນ</string>
+    <string name="mi_signature_note">SHA-256 ຂອງໃບຢັ້ງຢືນການລົງນາມ. ສອງການກໍ່ສ້າງທີ່ມີມູນຄ່າດຽວກັນແມ່ນຜູ້ເຜີຍແຜ່ດຽວກັນ.</string>
+    <string name="mi_signature_sha256">ສະຫຼຸບໃບຮັບຮອງ</string>
+</resources>

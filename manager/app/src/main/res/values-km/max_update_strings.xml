@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_update_strings.xml -->
+<resources>
+    <string name="update_dialog_title">ការអាប់ដេតមាន</string>
+    <string name="update_dialog_title_required">តម្រូវឱ្យធ្វើបច្ចុប្បន្នភាព</string>
+    <string name="update_required_notice">ការអាប់ដេតនេះតម្រូវឱ្យបន្តប្រើប្រាស់ MaxManager។ ដំឡើងវា បន្ទាប់មកបើកកម្មវិធីឡើងវិញ។</string>
+    <string name="update_dialog_body">កំណែ %1$s មាន។ អ្នកស្ថិតនៅលើ %2$s។</string>
+    <string name="update_block_title">តម្រូវឱ្យធ្វើបច្ចុប្បន្នភាពដើម្បីបន្ត</string>
+    <string name="update_block_body">ការស្ថាបនានេះ (%1$s) មិនត្រូវបានគាំទ្រទៀតទេ។ ធ្វើបច្ចុប្បន្នភាពទៅ %2$s ដើម្បីបន្តប្រើប្រាស់ MaxManager។</string>
+    <string name="update_block_body_no_release">ការស្ថាបនានេះ (%1$s) មិនត្រូវបានគាំទ្រទៀតទេ។</string>
+    <string name="update_release_notes_label">តើមានអ្វីថ្មី។</string>
+    <string name="update_size">ទំហំទាញយក៖ %1$s</string>
+    <string name="update_button_now">ធ្វើបច្ចុប្បន្នភាពឥឡូវនេះ</string>
+    <string name="update_button_later">ពេលក្រោយ</string>
+    <string name="update_button_close">បិទ</string>
+    <string name="update_button_open_page">បើកទំព័រទាញយក</string>
+    <string name="update_state_downloading">កំពុងទាញយក... %1$d%%</string>
+    <string name="update_state_downloading_unknown">កំពុងទាញយក...</string>
+    <string name="update_state_installing">កំពុងដំឡើង...</string>
+    <string name="update_error_network">មិនអាចទៅដល់ម៉ាស៊ីនមេអាប់ដេតបានទេ។ ពិនិត្យការតភ្ជាប់របស់អ្នក ហើយព្យាយាមម្តងទៀត។</string>
+    <string name="update_error_http">ម៉ាស៊ីនមេធ្វើបច្ចុប្បន្នភាពបានឆ្លើយតបដោយមានកំហុស។ សូមព្យាយាមម្តងទៀតនៅពេលក្រោយ។</string>
+    <string name="update_error_format">ព័ត៌មានបច្ចុប្បន្នភាពមិនអាចអានបានទេ។</string>
+    <string name="update_error_too_large">ព័ត៌មានអាប់ដេតមានទំហំធំជាងការរំពឹងទុក ហើយត្រូវបានលុបចោល។</string>
+    <string name="update_error_integrity">ឯកសារដែលបានទាញយកមិនត្រូវគ្នានឹងមូលប្បទានប័ត្ររបស់វា ហើយត្រូវបានលុបចេញ។</string>
+    <string name="update_error_install">ការដំឡើងបរាជ័យ។ ព្យាយាមម្តងទៀត។</string>
+    <string name="update_error_not_configured">គ្មាន​ប៉ុស្តិ៍​អាប់ដេត​ត្រូវ​បាន​កំណត់​រចនាសម្ព័ន្ធ​ក្នុង​ការ​បង្កើត​នេះ​ទេ។</string>
+    <string name="update_maintenance_title">មិន​អាច​ប្រើ​បាន​ជា​បណ្ដោះ​អាសន្ន</string>
+    <string name="update_maintenance_body">MaxManager មិនអាចប្រើបានជាបណ្តោះអាសន្ន។ សូមព្យាយាមម្តងទៀតក្នុងពេលឆាប់ៗនេះ។</string>
+    <string name="update_check_title">ពិនិត្យមើលបច្ចុប្បន្នភាព</string>
+    <string name="update_check_supporting">កំណែបច្ចុប្បន្ន៖ %1$s</string>
+    <string name="update_check_updated">ការអាប់ដេតមាន។</string>
+    <string name="update_check_uptodate">អ្នកនៅលើកំណែចុងក្រោយបំផុត។</string>
+    <string name="update_check_failed">មិនអាចពិនិត្យមើលបច្ចុប្បន្នភាពបានទេ។</string>
+    <string name="update_check_not_configured">គ្មាន​ប៉ុស្តិ៍​អាប់ដេត​ត្រូវ​បាន​កំណត់​រចនាសម្ព័ន្ធ​ក្នុង​ការ​បង្កើត​នេះ​ទេ។</string>
+    <string name="update_released_label">កាលបរិច្ឆេទចេញផ្សាយ៖ %1$s</string>
+    <string name="update_check_none_published">មិន​ទាន់​មាន​ការ​ធ្វើ​បច្ចុប្បន្នភាព​ត្រូវ​បាន​បោះពុម្ព​ពី​ផ្ទាំង​បញ្ជា​នៅ​ឡើយ​ទេ។</string>
+    <string name="update_check_link_missing">ការអាប់ដេតត្រូវបានបោះពុម្ពផ្សាយ ប៉ុន្តែតំណទាញយករបស់វាបាត់។</string>
+</resources>

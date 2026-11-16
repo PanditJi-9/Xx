@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_license_strings.xml -->
+<resources>
+    <string name="max_license_title">អាជ្ញាប័ណ្ណ</string>
+    <string name="max_license_subtitle">សោមួយ ឧបករណ៍នេះ គ្មានគណនីទេ។</string>
+    <string name="max_license_help_body">សោត្រូវបានធីកលើអ៊ីនធឺណិតម្តង នៅពេលអ្នកបញ្ចូលវា។ ចាប់ពីពេលនោះមកនៅលើវិញ្ញាបនបត្រដែលបានចុះហត្ថលេខារបស់ម៉ាស៊ីនមេដំណើរការដោយគ្មានអ៊ីនធឺណិតរហូតដល់ពេលវេលារបស់វាអស់ — កម្មវិធីមិនហៅទៅផ្ទះរាល់ពេលដែលអ្នកបើកអេក្រង់ទេ។ វិញ្ញាបនបត្រត្រូវបានចងភ្ជាប់ជាមួយលេខសម្គាល់ការដំឡើងចៃដន្យរបស់ឧបករណ៍នេះ ដូច្នេះការចម្លងទិន្នន័យកម្មវិធីទៅទូរស័ព្ទមួយផ្សេងទៀតមិនមានអាជ្ញាប័ណ្ណជាមួយវាទេ ហើយម្ចាស់អាចកំណត់ការចងនោះឡើងវិញពីបន្ទះ ប្រសិនបើអ្នកប្តូរទូរស័ព្ទ។</string>
+    <string name="max_license_status_section">ស្ថានភាព</string>
+    <string name="max_license_status_active">សកម្ម</string>
+    <string name="max_license_status_expired">ផុតកំណត់</string>
+    <string name="max_license_status_none">មិនដំណើរការទេ។</string>
+    <string name="max_license_active_detail">នៅសល់៖ %1$d ថ្ងៃ។</string>
+    <string name="max_license_expired_detail">ពេល​វេលា​នៃ​គន្លឹះ​នេះ​បាន​ចប់​ហើយ។ សោថ្មីបន្តការចូលប្រើ។</string>
+    <string name="max_license_none_detail">បញ្ចូលសោដែលអ្នកបានទទួលដើម្បីដោះសោផ្ទៃដែលបានបង់។</string>
+    <string name="max_license_promo_active">ឥតគិតថ្លៃសម្រាប់អ្នករាល់គ្នារហូតដល់ %1$s</string>
+    <string name="max_license_plan_title">ផែនការ</string>
+    <string name="max_license_devices_title">ឧបករណ៍</string>
+    <string name="max_license_devices_detail">%1$d នៃ %2$d បានប្រើ</string>
+    <string name="max_license_device_id_title">ឧបករណ៍នេះ។</string>
+    <string name="max_license_device_id_detail">%1$s</string>
+    <string name="max_license_key_section">ការធ្វើឱ្យសកម្ម</string>
+    <string name="max_license_key_label">លេខកូដអាជ្ញាប័ណ្ណ</string>
+    <string name="max_license_key_placeholder">MAXM-XXXXX-XXXXX-XXXXX-XXXXX-XX</string>
+    <string name="max_license_key_helper">សញ្ញាដាច់ ៗ និងអក្សរធំមិនសំខាន់ទេ — បិទភ្ជាប់វាដូចដែលអ្នកបានទទួលវា។</string>
+    <string name="max_license_activate">ធ្វើឱ្យសកម្ម</string>
+    <string name="max_license_activating">កំពុងពិនិត្យសោ...</string>
+    <string name="max_license_refresh">ពិនិត្យឥឡូវនេះ</string>
+    <string name="max_license_activated">បានធ្វើឱ្យសកម្ម។ ឥឡូវនេះឧបករណ៍នេះត្រូវបានភ្ជាប់ទៅសោរបស់អ្នក។</string>
+    <string name="max_license_error_invalid_key">សោនេះមើលទៅមិនពេញលេញទេ។ សូមពិនិត្យមើលវា ហើយព្យាយាមម្តងទៀត។</string>
+    <string name="max_license_error_not_configured">ការបង្កើតនេះមិនមានអាជ្ញាប័ណ្ណម៉ាស៊ីនមេដែលបានកំណត់រចនាសម្ព័ន្ធទេ។</string>
+    <string name="max_license_error_network">គ្មានការតភ្ជាប់។ សោត្រូវបានធីកម្តង បន្ទាប់មកដំណើរការដោយគ្មានអ៊ីនធឺណិត។</string>
+    <string name="max_license_error_timeout">ម៉ាស៊ីនមេអាជ្ញាប័ណ្ណមិនបានឆ្លើយតបទាន់ពេលវេលាទេ។ ព្យាយាមម្តងទៀត។</string>
+    <string name="max_license_error_server">ម៉ាស៊ីនមេអាជ្ញាប័ណ្ណបានឆ្លើយតបដោយមានកំហុស។ សូមព្យាយាមម្តងទៀតនៅពេលក្រោយ។</string>
+    <string name="max_license_error_client">មុខងារអាជ្ញាប័ណ្ណមិនត្រូវបានដាក់ឱ្យប្រើប្រាស់នៅលើម៉ាស៊ីនមេទេ។</string>
+    <string name="max_license_error_format">ចម្លើយរបស់ម៉ាស៊ីនមេមិនត្រូវបានគេយល់ទេ។</string>
+    <string name="max_license_error_expired">សោនេះបានផុតកំណត់ហើយ។</string>
+    <string name="max_license_error_not_found">សោនេះមិនត្រូវបានគេស្គាល់ទេ។</string>
+    <string name="max_license_error_revoked">សោនេះត្រូវបានដកហូត។</string>
+    <string name="max_license_error_device_limit">សោនេះបានដល់ដែនកំណត់ឧបករណ៍របស់វា។ ស្នើសុំការកំណត់ឧបករណ៍ឡើងវិញ។</string>
+    <string name="max_license_error_device_unknown">ឧបករណ៍នេះមិនទាន់បានភ្ជាប់ទៅសោនៅឡើយទេ។ បើកដំណើរការវានៅទីនេះជាមុនសិន។</string>
+    <string name="max_license_error_device_removed">ឧបករណ៍នេះត្រូវបានលុបចេញពីសោដោយម្ចាស់។</string>
+    <string name="max_license_error_rate_limited">ការព្យាយាមច្រើនពេកពីការតភ្ជាប់នេះ — រង់ចាំពីរបីនាទី បន្ទាប់មកព្យាយាមម្តងទៀត។</string>
+    <string name="max_license_error_unknown">មានអ្វីមួយខុសប្រក្រតី។ ហេតុផលត្រូវបានកត់ត្រានៅក្នុង Diagnostics ។</string>
+    <string name="max_license_gate_title">ផ្ទៃនេះត្រូវការអាជ្ញាប័ណ្ណ</string>
+    <string name="max_license_gate_detail">វាត្រូវបានរួមបញ្ចូលជាមួយសោ។ សោមួយគ្របដណ្តប់ឧបករណ៍នេះ ហើយការបញ្ចូលវាចំណាយពេលមួយនាទី។</string>
+    <string name="max_feature_off_title">បានបិទ</string>
+    <string name="max_feature_off_detail">ផ្ទាំងបញ្ជាបានបិទផ្ទៃនេះ។ វាត្រលប់មកវិញភ្លាមៗនៅពេលដែលវាត្រូវបានបើកម្តងទៀត។</string>
+    <string name="max_license_gate_action">បើកការកំណត់អាជ្ញាប័ណ្ណ</string>
+    <string name="max_license_gate_subscribe">ជាវឥឡូវនេះ</string>
+    <string name="max_license_subscription_section">ការជាវ</string>
+    <string name="max_license_subscription_open">បើកទំព័រជាវ</string>
+</resources>

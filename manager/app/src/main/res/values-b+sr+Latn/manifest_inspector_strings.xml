@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/manifest_inspector_strings.xml -->
+<resources>
+<string name="manifest_inspector_title">Манифест Инспецтор</string>
+<string name="manifest_inspector_subtitle">Шта инсталирана апликација изјављује о себи, прочитајте из ПацкагеМанагер-а.</string>
+<string name="max_role_manifest_inspector">Показује шта пакет изјављује о себи — само за читање.</string>
+<string name="mi_search">Претражите апликације</string>
+<string name="mi_empty">Изаберите апликацију са леве стране.</string>
+<string name="mi_yes">Да</string>
+<string name="mi_no">бр</string>
+<string name="mi_section_identity">Пакет</string>
+<string name="mi_version">Версион</string>
+<string name="mi_version_code">Код верзије</string>
+<string name="mi_min_sdk">Минимални СДК</string>
+<string name="mi_target_sdk">Циљни СДК</string>
+<string name="mi_installed">Инсталиран</string>
+<string name="mi_updated">Ажурирано</string>
+<string name="mi_installer">Инсталлер</string>
+<string name="mi_uid">УИД</string>
+<string name="mi_data_dir">Именик података</string>
+<string name="mi_debuggable">Дебуггабле</string>
+<string name="mi_system_app">Системска апликација</string>
+<string name="mi_enabled">Омогућено</string>
+<string name="mi_section_permissions">Захтеване дозволе</string>
+<string name="mi_permissions_summary">%1$d дозволе · %2$d од њих опасни</string>
+<string name="mi_permissions_none">Ова апликација не захтева дозволу.</string>
+<string name="mi_perm_dangerous">Опасно</string>
+<string name="mi_perm_signature">Потпис</string>
+<string name="mi_perm_normal">Нормално</string>
+<string name="mi_perm_unknown">Унцлассифиед</string>
+<string name="mi_section_components">Компоненте</string>
+<string name="mi_activities">Активности</string>
+<string name="mi_services">Услуге</string>
+<string name="mi_receivers">Пријемници</string>
+<string name="mi_providers">Провајдери</string>
+<string name="mi_components_none">Ниједан није проглашен</string>
+<string name="mi_section_features">Карактеристике уређаја</string>
+<string name="mi_features_note">Платформа не открива листу функција коришћења друге апликације; ово су карактеристике које овај уређај извештава.</string>
+<string name="mi_features_none">Ниједна карактеристика није пријављена</string>
+<string name="mi_section_signature">Потписивање сертификата</string>
+<string name="mi_signature_note">СХА-256 сертификата за потписивање. Две верзије са истом вредношћу су исти издавач.</string>
+<string name="mi_signature_sha256">Сажетак сертификата</string>
+</resources>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_update_strings.xml -->
+<resources>
+    <string name="update_dialog_title">עדכון זמין</string>
+    <string name="update_dialog_title_required">נדרש עדכון</string>
+    <string name="update_required_notice">עדכון זה נדרש כדי להמשיך להשתמש ב-MaxManager. התקן אותו ואז פתח מחדש את האפליקציה.</string>
+    <string name="update_dialog_body">גרסה %1$s זמינה. אתה ב-%2$s.</string>
+    <string name="update_block_title">נדרש עדכון כדי להמשיך</string>
+    <string name="update_block_body">המבנה הזה (%1$s) אינו נתמך עוד. עדכן ל-%2$s כדי להמשיך להשתמש בMaxManager.</string>
+    <string name="update_block_body_no_release">המבנה הזה (%1$s) אינו נתמך עוד.</string>
+    <string name="update_release_notes_label">מה חדש</string>
+    <string name="update_size">גודל הורדה: %1$s</string>
+    <string name="update_button_now">עדכן עכשיו</string>
+    <string name="update_button_later">מְאוּחָר יוֹתֵר</string>
+    <string name="update_button_close">לִסְגוֹר</string>
+    <string name="update_button_open_page">פתח את דף ההורדה</string>
+    <string name="update_state_downloading">מוריד... %1$d%%</string>
+    <string name="update_state_downloading_unknown">מוריד...</string>
+    <string name="update_state_installing">מתקין...</string>
+    <string name="update_error_network">לא ניתן היה להגיע לשרת העדכונים. בדוק את החיבור שלך ונסה שוב.</string>
+    <string name="update_error_http">שרת העדכונים ענה בשגיאה. נסה שוב מאוחר יותר.</string>
+    <string name="update_error_format">לא ניתן היה לקרוא את פרטי העדכון.</string>
+    <string name="update_error_too_large">מידע העדכון היה גדול מהצפוי ונמחק.</string>
+    <string name="update_error_integrity">הקובץ שהורד לא תאם את סכום הבדיקה שלו ונמחק.</string>
+    <string name="update_error_install">ההתקנה נכשלה. נסה שוב.</string>
+    <string name="update_error_not_configured">אין ערוץ עדכון מוגדר ב-build זה.</string>
+    <string name="update_maintenance_title">לא זמין באופן זמני</string>
+    <string name="update_maintenance_body">MaxManager אינו זמין באופן זמני. אנא נסה שוב בקרוב.</string>
+    <string name="update_check_title">בדוק אם יש עדכונים</string>
+    <string name="update_check_supporting">גרסה נוכחית: %1$s</string>
+    <string name="update_check_updated">עדכון זמין.</string>
+    <string name="update_check_uptodate">אתה בגרסה האחרונה.</string>
+    <string name="update_check_failed">לא ניתן היה לחפש עדכונים.</string>
+    <string name="update_check_not_configured">אין ערוץ עדכון מוגדר ב-build זה.</string>
+    <string name="update_released_label">תאריך יציאה: %1$s</string>
+    <string name="update_check_none_published">עדיין לא פורסם עדכון מלוח הבקרה.</string>
+    <string name="update_check_link_missing">עדכון פורסם, אך קישור ההורדה שלו חסר.</string>
+</resources>

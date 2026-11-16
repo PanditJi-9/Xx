@@ -10,4 +10,6 @@
     <string name="studio_display">Menampilkan</string>
     <string name="studio_power">Opsi daya</string>
     <string name="studio_settings">Pengaturan</string>
+    <string name="audio_dsp_live">DSP siaran langsung</string>
+    <string name="max_audio_session_label">Sesi audio #%1$d</string>
 </resources>

@@ -69,4 +69,25 @@
     <string name="max_perms_entry_title">ການ​ອະ​ນຸ​ຍາດ​ແລະ app ops</string>
     <string name="max_perms_entry_desc">ເບິ່ງສິ່ງທີ່ app ນີ້ປະກາດແລະສິ່ງທີ່ລະບົບອະນຸຍາດໃຫ້ຕົວຈິງ</string>
     <string name="max_perms_entry_action">ເປີດການອະນຸຍາດ</string>
+    <string name="max_perms_manifest_title">ສະຫຼຸບສັງລວມ</string>
+    <string name="max_perms_manifest_desc">ອ່ານຈາກຕົວຈັດການແພັກເກັດ: ຮຸ່ນ, ຊ່ວງ SDK, ອົງປະກອບ ແລະຈຳນວນຂອງພວກມັນຖືກສົ່ງອອກ. ອົງປະກອບທີ່ສົ່ງອອກສາມາດເລີ່ມຕົ້ນໄດ້ໂດຍແອັບຯອື່ນ.</string>
+    <string name="max_perms_manifest_version">ຮຸ່ນ</string>
+    <string name="max_perms_manifest_sdk">ໄລຍະ SDK</string>
+    <string name="max_perms_manifest_location">ຕິດຕັ້ງສະຖານທີ່</string>
+    <string name="max_perms_manifest_location_auto">ອັດຕະໂນມັດ</string>
+    <string name="max_perms_manifest_location_internal">ການເກັບຮັກສາພາຍໃນເທົ່ານັ້ນ</string>
+    <string name="max_perms_manifest_location_external">ມັກພາຍນອກ</string>
+    <string name="max_perms_manifest_components">ອົງປະກອບ</string>
+    <string name="max_perms_manifest_components_order">ກິດຈະກໍາ · ບໍລິການ · ຜູ້ຮັບ · ຜູ້ໃຫ້ບໍລິການ</string>
+    <string name="max_perms_manifest_exported">ອົງປະກອບທີ່ສົ່ງອອກ</string>
+    <string name="max_perms_manifest_splits">ແຍກ APKs</string>
+    <string name="max_perms_manifest_debug">ສາມາດແກ້ບັນຫາໄດ້</string>
+    <string name="max_perms_features_title">ຄຸນສົມບັດທີ່ປະກາດແລ້ວ</string>
+    <string name="max_perms_features_desc">ສິ່ງທີ່ຊຸດຕ້ອງການຈາກອຸປະກອນ, ເມື່ອທຽບກັບສິ່ງທີ່ອຸປະກອນນີ້ໂຄສະນາ. ຄຸນສົມບັດທີ່ຈໍາເປັນທີ່ຂາດຫາຍໄປໃນທີ່ນີ້ປົກກະຕິແລ້ວຫມາຍຄວາມວ່າແອັບຯຈະບໍ່ເຮັດວຽກເຕັມທີ່ - ມັນເປັນການຮຽກຮ້ອງຈາກຜູ້ຈັດການຊຸດ, ບໍ່ແມ່ນການຄາດເດົາ.</string>
+    <string name="max_perms_features_loading">ກຳລັງອ່ານຄຸນສົມບັດທີ່ປະກາດແລ້ວຂອງແພັກເກດ...</string>
+    <string name="max_perms_features_none">ແພັກເກດປະກາດວ່າບໍ່ມີຄຸນສົມບັດທີ່ຕ້ອງການ.</string>
+    <string name="max_perms_features_required">ຕ້ອງການ</string>
+    <string name="max_perms_features_unsupported">ບໍ່ມີຢູ່ໃນອຸປະກອນນີ້</string>
+    <string name="max_perms_manifest_none">ບໍ່ໄດ້ລາຍງານໂດຍຜູ້ຈັດການຊຸດ.</string>
+    <string name="max_perms_manifest_unknown">ບໍ່ຮູ້ຈັກ</string>
 </resources>

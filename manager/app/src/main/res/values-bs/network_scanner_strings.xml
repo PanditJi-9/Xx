@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/network_scanner_strings.xml -->
+<resources>
+    <string name="network_scanner_title">Skener lokalne mreže</string>
+    <string name="network_scanner_subtitle">Vaša adresa, kapija do koje dolazi i komšije koje su odgovorile.</string>
+    <string name="max_role_network_scanner">Čita mrežu na kojoj se nalazite — bez snimanja, bez root-a.</string>
+    <string name="ns_no_network">Nijedna mreža nije povezana.</string>
+    <string name="ns_interface">Interface</string>
+    <string name="ns_address">Adresa</string>
+    <string name="ns_gateway">Gateway</string>
+    <string name="ns_dns">DNS</string>
+    <string name="ns_mac">MAC</string>
+    <string name="ns_transport_wifi">Wi-Fi</string>
+    <string name="ns_transport_ethernet">Ethernet</string>
+    <string name="ns_transport_cellular">Cellular</string>
+    <string name="ns_transport_other">Ostalo</string>
+    <string name="ns_sources_title">Odakle ovo dolazi</string>
+    <string name="ns_sources_body">Adrese i gateway se čitaju iz svojstava veze platforme. Tabela susjeda se čita iz ARP keša kernela, tako da sadrži samo ono s čim je ovaj uređaj nedavno razgovarao — prazna tabela ne znači praznu mrežu.</string>
+    <string name="ns_refresh">Osvježi</string>
+    <string name="ns_probe">Ispitajte zajedničke portove</string>
+    <string name="ns_probe_stop">Stani</string>
+    <string name="ns_probe_progress">Ispitivanje %1$d od %2$d</string>
+    <string name="ns_probe_note">Šalje TCP vezu na portovima 22, 80, 443, 5000 i 5555 preko ovog /24. Prijavljen je port koji odgovara; tišina nije dokaz da je domaćin odsutan.</string>
+    <string name="ns_neighbours">Poznate komšije</string>
+    <string name="ns_neighbours_note">Iz /proc/net/arp — samo za čitanje.</string>
+    <string name="ns_neighbours_empty">Komšije još nisu poznate.</string>
+    <string name="ns_ports_value">Portovi %1$s</string>
+</resources>

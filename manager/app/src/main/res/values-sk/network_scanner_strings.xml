@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/network_scanner_strings.xml -->
+<resources>
+    <string name="network_scanner_title">Lokálny sieťový skener</string>
+    <string name="network_scanner_subtitle">Vaša adresa, brána, ktorú dosiahne, a ktorí susedia odpovedali.</string>
+    <string name="max_role_network_scanner">Číta sieť, v ktorej sa nachádzate – žiadne zachytávanie, žiadny root.</string>
+    <string name="ns_no_network">Nie je pripojená žiadna sieť.</string>
+    <string name="ns_interface">Rozhranie</string>
+    <string name="ns_address">Adresa</string>
+    <string name="ns_gateway">Brána</string>
+    <string name="ns_dns">DNS</string>
+    <string name="ns_mac">MAC</string>
+    <string name="ns_transport_wifi">Wi-Fi</string>
+    <string name="ns_transport_ethernet">Ethernet</string>
+    <string name="ns_transport_cellular">Bunkový</string>
+    <string name="ns_transport_other">Iné</string>
+    <string name="ns_sources_title">Odkiaľ to pochádza</string>
+    <string name="ns_sources_body">Adresy a brána sa čítajú z vlastností prepojenia platformy. Tabuľka susedov je načítaná z ARP cache jadra, takže obsahuje iba to, s čím toto zariadenie nedávno hovorilo — prázdna tabuľka neznamená prázdnu sieť.</string>
+    <string name="ns_refresh">Obnoviť</string>
+    <string name="ns_probe">Snímajte spoločné porty</string>
+    <string name="ns_probe_stop">Stop</string>
+    <string name="ns_probe_progress">Snímanie %1$d z %2$d</string>
+    <string name="ns_probe_note">Odošle pripojenie TCP na porty 22, 80, 443, 5000 a 5555 cez toto /24. Oznámi sa port, ktorý odpovedá; ticho nie je dôkazom neprítomnosti hostiteľa.</string>
+    <string name="ns_neighbours">Známi susedia</string>
+    <string name="ns_neighbours_note">Z /proc/net/arp – len na čítanie.</string>
+    <string name="ns_neighbours_empty">Zatiaľ nie sú známi žiadni susedia.</string>
+    <string name="ns_ports_value">Porty %1$s</string>
+</resources>

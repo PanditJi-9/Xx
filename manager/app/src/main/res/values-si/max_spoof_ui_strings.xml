@@ -51,4 +51,14 @@
     <string name="copg_tweak_kso_title">තිරය ​​මත තබා ගන්න</string>
     <string name="copg_tweak_kso_desc">මෙම යෙදුමට COPG තබා-තිරය මත වෙනස් කිරීම යොදයි. මෙහි සුරැකි, Review මගින් එන්ජිමට ලියා Spoof පටිත්තෙහි යොදන්න.</string>
     <string name="copg_tweak_needs_device">මෙම යෙදුම සඳහා පළමුව, Spoof පටිත්තෙහි උපාංගයක් අවශ්‍ය වේ.</string>
+    <string name="spoof_engine_unmeasured">එන්ජිමේ තත්ත්වය මනිනු නොලැබේ: මූල ප්‍රවේශය තවමත් ලබා දී නොමැත. මූල ලබා දෙන්න, ඉන්පසු මෙම ටැබය නැවත විවෘත කරන්න.</string>
+    <string name="spoof_engine_config_missing">COPG ස්ථාපනය කර ඇත, නමුත් එහි වින්‍යාස ගොනුව (COPG.json) නොමැත. මොඩියුලය එය නැවත ලබා දෙන තෙක් අයදුම් කිරීම ප්‍රතික්ෂේප කරනු ලැබේ.</string>
+    <string name="spoof_engine_config_unreadable">COPG ස්ථාපනය කර ඇත, නමුත් එහි වින්‍යාස ගොනුව කියවිය නොහැක JSON. ගොනුව අලුත්වැඩියා කරන තුරු අයදුම් කිරීම ප්රතික්ෂේප කරනු ලැබේ.</string>
+    <string name="spoof_imei_spoof">IMEI වංචා කිරීම</string>
+    <string name="spoof_imei_spoof_desc">මෙම යෙදුම වෙනස් IMEI එකක් පෙන්වයි. මෙම යෙදුම එහි විෂය පථය සමඟින් LSPosed හි සබල කර ඇති Max Manager මොඩියුලය අවශ්‍ය වේ. යෙදුම ක්‍රියාත්මක කිරීමෙන් පසු එය නැවත ආරම්භ කරන්න.</string>
+    <string name="spoof_imei_active">මෙම යෙදුම පෙන්වමින්: %1$s</string>
+    <string name="spoof_imei_summary">IMEI වංචා කිරීම</string>
+    <string name="spoof_imei_regenerate">නව අහඹු IMEI</string>
+    <string name="spoof_imei_regenerate_desc">මෙම යෙදුම සඳහා තවත් වලංගු IMEI ජනනය කරයි. එය බැලීමට යෙදුම නැවත ආරම්භ කරන්න.</string>
+    <string name="spoof_imei_module_inactive">Max Manager මොඩියුලය LSPosed හි සබල කර නැත, එබැවින් යෙදුම් තවමත් සැබෑ IMEI දකියි. LSPosed හි මොඩියුලය සබල කරන්න, මෙම යෙදුම එහි විෂය පථයට එක් කරන්න, ඉන්පසු මෙම තිරය නැවත විවෘත කරන්න.</string>
 </resources>

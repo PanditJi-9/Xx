@@ -69,4 +69,25 @@
     <string name="max_perms_entry_title">අවසර සහ යෙදුම් විකල්ප</string>
     <string name="max_perms_entry_desc">මෙම යෙදුම ප්‍රකාශ කරන්නේ කුමක්ද සහ පද්ධතිය සැබවින්ම ඉඩ දෙන දේ බලන්න</string>
     <string name="max_perms_entry_action">අවසර විවෘත කරන්න</string>
+    <string name="max_perms_manifest_title">ප්රකාශිත සාරාංශය</string>
+    <string name="max_perms_manifest_desc">පැකේජ කළමනාකරුගෙන් කියවන්න: අනුවාදය, SDK පරාසය, සංරචක සහ ඒවායින් කීයක් අපනයනය කරන්නේද යන්න. අපනයනය කරන ලද සංරචකයක් වෙනත් යෙදුම් මගින් ආරම්භ කළ හැක.</string>
+    <string name="max_perms_manifest_version">අනුවාදය</string>
+    <string name="max_perms_manifest_sdk">SDK පරාසය</string>
+    <string name="max_perms_manifest_location">ස්ථානය ස්ථාපනය කරන්න</string>
+    <string name="max_perms_manifest_location_auto">ස්වයංක්රීය</string>
+    <string name="max_perms_manifest_location_internal">අභ්යන්තර ගබඩාව පමණි</string>
+    <string name="max_perms_manifest_location_external">බාහිරව කැමති</string>
+    <string name="max_perms_manifest_components">සංරචක</string>
+    <string name="max_perms_manifest_components_order">ක්‍රියාකාරකම් · සේවා · ග්‍රාහක · සපයන්නන්</string>
+    <string name="max_perms_manifest_exported">අපනයනය කරන ලද සංරචක</string>
+    <string name="max_perms_manifest_splits">APK බෙදන්න</string>
+    <string name="max_perms_manifest_debug">නිදොස් කළ හැකි</string>
+    <string name="max_perms_features_title">ප්රකාශිත විශේෂාංග</string>
+    <string name="max_perms_features_desc">මෙම උපාංගය ප්‍රචාරණය කරන දේ සමඟ සසඳන විට, උපාංගයෙන් පැකේජයට අවශ්‍ය දේ. අවශ්‍ය අංගයක් මෙහි අස්ථානගත වීම සාමාන්‍යයෙන් අදහස් වන්නේ යෙදුම සම්පුර්ණයෙන්ම ක්‍රියා නොකරනු ඇති බවයි - එය පැකේජ කළමනාකරුගේ හිමිකම් පෑමක් මිස අනුමානයක් නොවේ.</string>
+    <string name="max_perms_features_loading">පැකේජයේ ප්‍රකාශිත විශේෂාංග කියවීම...</string>
+    <string name="max_perms_features_none">පැකේජය අවශ්‍ය විශේෂාංග කිසිවක් ප්‍රකාශ නොකරයි.</string>
+    <string name="max_perms_features_required">අවශ්යයි</string>
+    <string name="max_perms_features_unsupported">මෙම උපාංගය මත නොවේ</string>
+    <string name="max_perms_manifest_none">පැකේජ කළමනාකරු විසින් වාර්තා කර නොමැත.</string>
+    <string name="max_perms_manifest_unknown">නොදන්නා</string>
 </resources>

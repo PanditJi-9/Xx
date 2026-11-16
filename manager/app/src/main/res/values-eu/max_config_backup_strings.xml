@@ -18,4 +18,10 @@
     <string name="max_cfg_section_appearance">Itxura eta interfazea</string>
     <string name="max_cfg_section_app_prefs">Aplikazioaren hobespenak eta hizkuntza</string>
     <string name="max_cfg_restore_merge_note">Hobespenak bateratzeak leheneratzea: fitxategian dauden gakoak idazten dira, eta aipatzen ez dituen gakoak dauden bezala geratzen dira. Ez da ezer garbitu.</string>
+    <string name="max_cfg_diff_title">%1$d Gordetako ezarpenak gailu honetatik desberdinak dira</string>
+    <string name="max_cfg_diff_line">%1$s: %2$s → %3$s</string>
+    <string name="max_cfg_diff_unset">ezarri gabe</string>
+    <string name="max_cfg_diff_more">eta %1$d gehiago</string>
+    <string name="max_cfg_diff_applist">%1$d aplikazio-zerrendako lerroak gehitu dira, %2$d kendu dira — zerrenda osoa ordezkatzen da, ez batu.</string>
+    <string name="max_cfg_diff_prefs">%1$d hobespen-teklak desberdinak dira: batu, ez garbitu.</string>
 </resources>

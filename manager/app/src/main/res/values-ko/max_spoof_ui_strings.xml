@@ -51,4 +51,14 @@
     <string name="copg_tweak_kso_title">화면을 계속 켜두세요</string>
     <string name="copg_tweak_kso_desc">이 앱에 COPG 화면 켜기 유지 조정을 적용합니다. 여기에 저장되어 검토를 통해 엔진에 기록되고 Spoof 탭에서 적용됩니다.</string>
     <string name="copg_tweak_needs_device">스푸핑 탭에서 먼저 이 앱을 사용하려면 기기가 필요합니다.</string>
+    <string name="spoof_engine_unmeasured">엔진 상태가 측정되지 않습니다. 루트 액세스가 아직 부여되지 않았습니다. 루트 권한을 부여한 다음 이 탭을 다시 엽니다.</string>
+    <string name="spoof_engine_config_missing">COPG가 설치되었지만 해당 구성 파일(COPG.json)이 누락되었습니다. 모듈이 다시 제공할 때까지 적용이 거부됩니다.</string>
+    <string name="spoof_engine_config_unreadable">COPG가 설치되었지만 해당 구성 파일을 읽을 수 없습니다 JSON. 파일이 복구될 때까지 신청이 거부됩니다.</string>
+    <string name="spoof_imei_spoof">IMEI 스푸핑</string>
+    <string name="spoof_imei_spoof_desc">이 앱에 다른 IMEI를 표시합니다. 해당 범위에 이 앱이 포함된 LSPosed에서 Max Manager 모듈을 활성화해야 합니다. 앱을 켠 후 다시 시작하세요.</string>
+    <string name="spoof_imei_active">이 앱 표시: %1$s</string>
+    <string name="spoof_imei_summary">IMEI 스푸핑</string>
+    <string name="spoof_imei_regenerate">새로운 무작위 IMEI</string>
+    <string name="spoof_imei_regenerate_desc">이 앱에 대해 또 다른 유효한 IMEI를 생성합니다. 확인하려면 앱을 다시 시작하세요.</string>
+    <string name="spoof_imei_module_inactive">LSPosed에서는 Max Manager 모듈이 활성화되지 않으므로 앱에는 여전히 실제 IMEI가 표시됩니다. LSPosed에서 모듈을 활성화하고 이 앱을 해당 범위에 추가한 다음 이 화면을 다시 엽니다.</string>
 </resources>

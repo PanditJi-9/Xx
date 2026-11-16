@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_update_strings.xml -->
+<resources>
+    <string name="update_dialog_title">अपडेट उपलब्ध छ</string>
+    <string name="update_dialog_title_required">अद्यावधिक आवश्यक छ</string>
+    <string name="update_required_notice">MaxManager प्रयोग गरिराख्न यो अपडेट आवश्यक छ। यसलाई स्थापना गर्नुहोस्, त्यसपछि एप पुन: खोल्नुहोस्।</string>
+    <string name="update_dialog_body">संस्करण %1$s उपलब्ध छ। तपाईं %2$s मा हुनुहुन्छ।</string>
+    <string name="update_block_title">जारी राख्न अद्यावधिक आवश्यक छ</string>
+    <string name="update_block_body">यो निर्माण (%1$s) अब समर्थित छैन। MaxManager प्रयोग गरिराख्न %2$s मा अद्यावधिक गर्नुहोस्।</string>
+    <string name="update_block_body_no_release">यो निर्माण (%1$s) अब समर्थित छैन।</string>
+    <string name="update_release_notes_label">नयाँ के छ</string>
+    <string name="update_size">डाउनलोड साइज: %1$s</string>
+    <string name="update_button_now">अहिले अपडेट गर्नुहोस्</string>
+    <string name="update_button_later">पछि</string>
+    <string name="update_button_close">बन्द गर्नुहोस्</string>
+    <string name="update_button_open_page">डाउनलोड पृष्ठ खोल्नुहोस्</string>
+    <string name="update_state_downloading">डाउनलोड गर्दै… %1$d%%</string>
+    <string name="update_state_downloading_unknown">डाउनलोड गर्दै...</string>
+    <string name="update_state_installing">स्थापना गर्दै...</string>
+    <string name="update_error_network">अपडेट सर्भरमा पुग्न सकेन। आफ्नो जडान जाँच गर्नुहोस् र फेरि प्रयास गर्नुहोस्।</string>
+    <string name="update_error_http">अपडेट सर्भरले त्रुटिको साथ जवाफ दियो। पछि फेरि प्रयास गर्नुहोस्।</string>
+    <string name="update_error_format">अद्यावधिक जानकारी पढ्न सकिएन।</string>
+    <string name="update_error_too_large">अद्यावधिक जानकारी अपेक्षित भन्दा ठूलो थियो र खारेज गरियो।</string>
+    <string name="update_error_integrity">डाउनलोड गरिएको फाइल यसको चेकसमसँग मेल खाएन र मेटियो।</string>
+    <string name="update_error_install">स्थापना असफल भयो। पुन: प्रयास गर्नुहोस्।</string>
+    <string name="update_error_not_configured">यस निर्माणमा कुनै पनि अद्यावधिक च्यानल कन्फिगर गरिएको छैन।</string>
+    <string name="update_maintenance_title">अस्थायी रूपमा अनुपलब्ध</string>
+    <string name="update_maintenance_body">MaxManager अस्थायी रूपमा अनुपलब्ध छ। कृपया छिट्टै पुन: प्रयास गर्नुहोस्।</string>
+    <string name="update_check_title">अपडेटहरूको लागि जाँच गर्नुहोस्</string>
+    <string name="update_check_supporting">हालको संस्करण: %1$s</string>
+    <string name="update_check_updated">अपडेट उपलब्ध छ।</string>
+    <string name="update_check_uptodate">तपाईं नवीनतम संस्करणमा हुनुहुन्छ।</string>
+    <string name="update_check_failed">अद्यावधिकहरूको लागि जाँच गर्न सकिएन।</string>
+    <string name="update_check_not_configured">यस निर्माणमा कुनै पनि अद्यावधिक च्यानल कन्फिगर गरिएको छैन।</string>
+    <string name="update_released_label">रिलीज मिति: %1$s</string>
+    <string name="update_check_none_published">नियन्त्रण प्यानलबाट अहिलेसम्म कुनै अद्यावधिक प्रकाशित गरिएको छैन।</string>
+    <string name="update_check_link_missing">एउटा अद्यावधिक प्रकाशित छ, तर यसको डाउनलोड लिङ्क हराइरहेको छ।</string>
+</resources>

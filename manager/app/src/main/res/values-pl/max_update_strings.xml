@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_update_strings.xml -->
+<resources>
+    <string name="update_dialog_title">Dostępna aktualizacja</string>
+    <string name="update_dialog_title_required">Wymagana aktualizacja</string>
+    <string name="update_required_notice">Ta aktualizacja jest wymagana, aby móc dalej korzystać z MaxManager. Zainstaluj go, a następnie otwórz ponownie aplikację.</string>
+    <string name="update_dialog_body">Dostępna jest wersja %1$s. Jesteś na %2$s.</string>
+    <string name="update_block_title">Aby kontynuować, wymagana jest aktualizacja</string>
+    <string name="update_block_body">Ta kompilacja (%1$s) nie jest już obsługiwana. Zaktualizuj do %2$s, aby nadal korzystać z MaxManager.</string>
+    <string name="update_block_body_no_release">Ta kompilacja (%1$s) nie jest już obsługiwana.</string>
+    <string name="update_release_notes_label">Co nowego</string>
+    <string name="update_size">Rozmiar pobierania: %1$s</string>
+    <string name="update_button_now">Zaktualizuj teraz</string>
+    <string name="update_button_later">Później</string>
+    <string name="update_button_close">Zamknąć</string>
+    <string name="update_button_open_page">Otwórz stronę pobierania</string>
+    <string name="update_state_downloading">Pobieram… ​​%1$d%%</string>
+    <string name="update_state_downloading_unknown">Ściąganie…</string>
+    <string name="update_state_installing">Instaluję…</string>
+    <string name="update_error_network">Nie udało się połączyć z serwerem aktualizacji. Sprawdź połączenie i spróbuj ponownie.</string>
+    <string name="update_error_http">Serwer aktualizacji odpowiedział z błędem. Spróbuj ponownie później.</string>
+    <string name="update_error_format">Nie można odczytać informacji o aktualizacji.</string>
+    <string name="update_error_too_large">Informacje o aktualizacji były większe niż oczekiwano i zostały odrzucone.</string>
+    <string name="update_error_integrity">Pobrany plik nie odpowiadał sumie kontrolnej i został usunięty.</string>
+    <string name="update_error_install">Instalacja nie powiodła się. Spróbuj ponownie.</string>
+    <string name="update_error_not_configured">W tej kompilacji nie skonfigurowano żadnego kanału aktualizacji.</string>
+    <string name="update_maintenance_title">Tymczasowo niedostępne</string>
+    <string name="update_maintenance_body">MaxManager jest chwilowo niedostępne. Spróbuj ponownie wkrótce.</string>
+    <string name="update_check_title">Sprawdź aktualizacje</string>
+    <string name="update_check_supporting">Aktualna wersja: %1$s</string>
+    <string name="update_check_updated">Dostępna jest aktualizacja.</string>
+    <string name="update_check_uptodate">Korzystasz z najnowszej wersji.</string>
+    <string name="update_check_failed">Nie można sprawdzić dostępności aktualizacji.</string>
+    <string name="update_check_not_configured">W tej kompilacji nie skonfigurowano żadnego kanału aktualizacji.</string>
+    <string name="update_released_label">Data wydania: %1$s</string>
+    <string name="update_check_none_published">Z panelu sterowania nie została jeszcze opublikowana żadna aktualizacja.</string>
+    <string name="update_check_link_missing">Aktualizacja została opublikowana, ale brakuje linku do jej pobrania.</string>
+</resources>

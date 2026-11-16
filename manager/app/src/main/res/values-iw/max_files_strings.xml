@@ -220,4 +220,5 @@
     <string name="max_files_compress_level_normal">נוֹרמָלִי</string>
     <string name="max_files_compress_level_max">מקסימום</string>
     <string name="max_files_compress_summary">%1$d פריטים \u2192 %2$s</string>
+    <string name="max_files_history_more">%1$d תיקיות ישנות יותר לא מוצגות</string>
 </resources>

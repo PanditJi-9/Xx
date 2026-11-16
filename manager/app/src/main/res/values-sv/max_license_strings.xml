@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_license_strings.xml -->
+<resources>
+    <string name="max_license_title">Licens</string>
+    <string name="max_license_subtitle">En nyckel, den här enheten, inget konto</string>
+    <string name="max_license_help_body">En nyckel kontrolleras online en gång när du anger den. Från och med då fungerar serverns signerade certifikat offline tills dess tid går ut — appen ringer inte hem varje gång du öppnar en skärm. Certifikatet är bundet till enhetens slumpmässiga installations-id, så att kopiera appdata till en annan telefon medför inte licensen, och ägaren kan återställa den bindningen från panelen om du byter telefon.</string>
+    <string name="max_license_status_section">Status</string>
+    <string name="max_license_status_active">Aktiv</string>
+    <string name="max_license_status_expired">Utgått</string>
+    <string name="max_license_status_none">Ej aktiverad</string>
+    <string name="max_license_active_detail">Återstående: %1$d dagar</string>
+    <string name="max_license_expired_detail">Den här nyckelns tid är förbi. En ny nyckel förnyar åtkomst.</string>
+    <string name="max_license_none_detail">Ange nyckeln du fick för att låsa upp de betalda ytorna.</string>
+    <string name="max_license_promo_active">Gratis för alla till %1$s</string>
+    <string name="max_license_plan_title">Planera</string>
+    <string name="max_license_devices_title">Enheter</string>
+    <string name="max_license_devices_detail">%1$d av %2$d används</string>
+    <string name="max_license_device_id_title">Denna enhet</string>
+    <string name="max_license_device_id_detail">%1$s</string>
+    <string name="max_license_key_section">Aktivering</string>
+    <string name="max_license_key_label">Licensnyckel</string>
+    <string name="max_license_key_placeholder">MAXM-XXXXX-XXXX-XXXX-XXXXX-XX</string>
+    <string name="max_license_key_helper">Bindestreck och versaler spelar ingen roll – klistra in det som du fick det.</string>
+    <string name="max_license_activate">Aktivera</string>
+    <string name="max_license_activating">Kontrollerar nyckeln...</string>
+    <string name="max_license_refresh">Kolla nu</string>
+    <string name="max_license_activated">Aktiverad. Den här enheten är nu länkad till din nyckel.</string>
+    <string name="max_license_error_invalid_key">Den här nyckeln ser inte komplett ut. Kontrollera det och försök igen.</string>
+    <string name="max_license_error_not_configured">Denna version har ingen licensserver konfigurerad.</string>
+    <string name="max_license_error_network">Ingen anslutning. Nyckeln kontrolleras en gång och fungerar sedan offline.</string>
+    <string name="max_license_error_timeout">Licensservern svarade inte i tid. Försök igen.</string>
+    <string name="max_license_error_server">Licensservern svarade med ett fel. Försök igen senare.</string>
+    <string name="max_license_error_client">Licensfunktionen är inte distribuerad på servern.</string>
+    <string name="max_license_error_format">Serversvaret förstods inte.</string>
+    <string name="max_license_error_expired">Denna nyckel har upphört att gälla.</string>
+    <string name="max_license_error_not_found">Denna nyckel är inte känd.</string>
+    <string name="max_license_error_revoked">Denna nyckel har återkallats.</string>
+    <string name="max_license_error_device_limit">Den här nyckeln har nått sin enhetsgräns. Be om en enhetsåterställning.</string>
+    <string name="max_license_error_device_unknown">Den här enheten är inte länkad till nyckeln ännu. Aktivera den här först.</string>
+    <string name="max_license_error_device_removed">Denna enhet togs bort från nyckeln av ägaren.</string>
+    <string name="max_license_error_rate_limited">För många försök från den här anslutningen – vänta några minuter och försök sedan igen.</string>
+    <string name="max_license_error_unknown">Något gick fel. Orsaken registrerades i Diagnostik.</string>
+    <string name="max_license_gate_title">Denna yta behöver en licens</string>
+    <string name="max_license_gate_detail">Det medföljer nyckel. En nyckel täcker den här enheten och det tar en minut att gå in i den.</string>
+    <string name="max_feature_off_title">Avstängd</string>
+    <string name="max_feature_off_detail">Kontrollpanelen har stängt av denna yta. Den kommer tillbaka så fort den är aktiverad igen.</string>
+    <string name="max_license_gate_action">Öppna licensinställningarna</string>
+    <string name="max_license_gate_subscribe">Prenumerera nu</string>
+    <string name="max_license_subscription_section">Prenumeration</string>
+    <string name="max_license_subscription_open">Öppna prenumerationssidan</string>
+</resources>

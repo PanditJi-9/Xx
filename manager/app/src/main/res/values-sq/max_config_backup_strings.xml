@@ -18,4 +18,10 @@
     <string name="max_cfg_section_appearance">Pamja dhe ndërfaqja</string>
     <string name="max_cfg_section_app_prefs">Preferencat dhe gjuha e aplikacionit</string>
     <string name="max_cfg_restore_merge_note">Rivendosja e preferencave bashkohet: çelësat e pranishëm në skedar shkruhen dhe çelësat që ai nuk i përmend qëndrojnë ashtu siç janë. Asgjë nuk është pastruar.</string>
+    <string name="max_cfg_diff_title">%1$d Cilësimet e ruajtura ndryshojnë nga kjo pajisje</string>
+    <string name="max_cfg_diff_line">%1$s: %2$s → %3$s</string>
+    <string name="max_cfg_diff_unset">nuk është vendosur</string>
+    <string name="max_cfg_diff_more">dhe %1$d më shumë</string>
+    <string name="max_cfg_diff_applist">%1$d linjat e listës së aplikacioneve u shtuan, %2$d u hoq - e gjithë lista zëvendësohet, nuk shkrihet.</string>
+    <string name="max_cfg_diff_prefs">%1$d tastet e preferencës ndryshojnë - të bashkuar, jo të fshirë.</string>
 </resources>

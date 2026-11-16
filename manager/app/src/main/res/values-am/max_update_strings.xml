@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_update_strings.xml -->
+<resources>
+    <string name="update_dialog_title">ማዘመን አለ።</string>
+    <string name="update_dialog_title_required">ማዘመን ያስፈልጋል</string>
+    <string name="update_required_notice">MaxManager መጠቀሙን ለመቀጠል ይህ ማሻሻያ ያስፈልጋል። ይጫኑት፣ ከዚያ መተግበሪያውን እንደገና ይክፈቱት።</string>
+    <string name="update_dialog_body">ሥሪት %1$s ይገኛል። %2$s ላይ ነህ።</string>
+    <string name="update_block_title">ለመቀጠል ማዘመን ያስፈልጋል</string>
+    <string name="update_block_body">ይህ ግንባታ (%1$s) ከአሁን በኋላ አይደገፍም። MaxManager መጠቀሙን ለመቀጠል ወደ %2$s ያዘምኑ።</string>
+    <string name="update_block_body_no_release">ይህ ግንባታ (%1$s) ከአሁን በኋላ አይደገፍም።</string>
+    <string name="update_release_notes_label">ምን አዲስ ነገር አለ</string>
+    <string name="update_size">የማውረድ መጠን: %1$s</string>
+    <string name="update_button_now">አሁን አዘምን</string>
+    <string name="update_button_later">በኋላ</string>
+    <string name="update_button_close">ገጠመ</string>
+    <string name="update_button_open_page">የማውረድ ገጽ ክፈት</string>
+    <string name="update_state_downloading">በማውረድ ላይ… %1$d%%</string>
+    <string name="update_state_downloading_unknown">በማውረድ ላይ…</string>
+    <string name="update_state_installing">በመጫን ላይ…</string>
+    <string name="update_error_network">የዝማኔ አገልጋዩን ማግኘት አልተቻለም። ግንኙነትዎን ይፈትሹ እና እንደገና ይሞክሩ።</string>
+    <string name="update_error_http">የዝማኔ አገልጋዩ በስህተት መለሰ። ቆይተው እንደገና ይሞክሩ።</string>
+    <string name="update_error_format">የዝማኔው መረጃ ሊነበብ አልቻለም።</string>
+    <string name="update_error_too_large">የዝማኔው መረጃ ከተጠበቀው በላይ ነበር እና ተጥሏል።</string>
+    <string name="update_error_integrity">የወረደው ፋይል ከቼክ ድምር ጋር አልተዛመደም እና ተሰርዟል።</string>
+    <string name="update_error_install">መጫኑ አልተሳካም። እንደገና ይሞክሩ።</string>
+    <string name="update_error_not_configured">በዚህ ግንባታ ውስጥ ምንም የዝማኔ ሰርጥ አልተዋቀረም።</string>
+    <string name="update_maintenance_title">ለጊዜው አይገኝም</string>
+    <string name="update_maintenance_body">MaxManager ለጊዜው አይገኝም። እባክዎ ከጥቂት ቆይታ በኋላ እንደገና ይሞክሩ።</string>
+    <string name="update_check_title">ዝማኔዎችን ይመልከቱ</string>
+    <string name="update_check_supporting">የአሁኑ ስሪት: %1$s</string>
+    <string name="update_check_updated">ማሻሻያ አለ።</string>
+    <string name="update_check_uptodate">በአዲሱ ስሪት ላይ ነዎት።</string>
+    <string name="update_check_failed">ዝማኔዎችን መፈለግ አልተቻለም።</string>
+    <string name="update_check_not_configured">በዚህ ግንባታ ውስጥ ምንም የዝማኔ ሰርጥ አልተዋቀረም።</string>
+    <string name="update_released_label">የተለቀቀበት ቀን: %1$s</string>
+    <string name="update_check_none_published">እስካሁን ከቁጥጥር ፓነል ምንም ዝማኔ አልታተመም።</string>
+    <string name="update_check_link_missing">አንድ ዝማኔ ታትሟል፣ ነገር ግን የማውረጃ አገናኙ ጠፍቷል።</string>
+</resources>

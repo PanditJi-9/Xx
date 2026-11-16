@@ -51,4 +51,14 @@
     <string name="copg_tweak_kso_title">Washa skrini</string>
     <string name="copg_tweak_kso_desc">Hutumia uboreshaji wa skrini ya COPG kwenye programu hii. Imehifadhiwa hapa, iliyoandikwa kwa injini na Kagua na kutumia katika kichupo cha Spoof.</string>
     <string name="copg_tweak_needs_device">Inahitaji kifaa cha programu hii kwanza, katika kichupo cha Spoof.</string>
+    <string name="spoof_engine_unmeasured">Hali ya injini haijapimwa: ufikiaji wa mizizi bado haujatolewa. Toa mizizi, kisha ufungue tena kichupo hiki.</string>
+    <string name="spoof_engine_config_missing">COPG imesakinishwa, lakini faili yake ya usanidi (COPG.json) haipo. Utumaji umekataliwa hadi moduli itoe tena.</string>
+    <string name="spoof_engine_config_unreadable">COPG imesakinishwa, lakini faili yake ya usanidi haisomeki JSON. Utumaji umekataliwa hadi faili itengenezwe.</string>
+    <string name="spoof_imei_spoof">Uharibifu wa IMEI</string>
+    <string name="spoof_imei_spoof_desc">Huonyesha programu hii IMEI tofauti. Inahitaji sehemu ya Max Manager kuwezeshwa katika LSPosed na programu hii katika mawanda yake. Anzisha tena programu baada ya kuiwasha.</string>
+    <string name="spoof_imei_active">Inaonyesha programu hii: %1$s</string>
+    <string name="spoof_imei_summary">Uharibifu wa IMEI</string>
+    <string name="spoof_imei_regenerate">IMEI mpya bila mpangilio</string>
+    <string name="spoof_imei_regenerate_desc">Huzalisha IMEI nyingine halali ya programu hii. Anzisha tena programu ili kuiona.</string>
+    <string name="spoof_imei_module_inactive">Sehemu ya Max Manager haijawashwa katika LSPosed, kwa hivyo programu bado zinaona IMEI halisi. Washa sehemu katika LSPosed, ongeza programu hii kwenye upeo wake, kisha ufungue tena skrini hii.</string>
 </resources>

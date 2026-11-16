@@ -13,4 +13,23 @@
     <string name="max_expand_section">বিৱৰণ দেখুৱাওক</string>
     <string name="max_collapse_section">সবিশেষ লুকুৱাওক</string>
     <string name="max_trust_loading">পঢ়ি থকা…</string>
+    <string name="max_gov_title">এতিয়া কোনে শাসন কৰে</string>
+    <string name="max_gov_separator">" › "</string>
+    <string name="max_gov_order_note">ফিক্সড অৰ্ডাৰ: এটা উচ্চ ৰেঙে তলৰ এটাক ব্লক কৰে। কোনটো নীতি জয়ী হয় সেয়া কেতিয়াও সলনি নহয়।</string>
+    <string name="max_gov_open_details">সক্ৰিয় ধাৰী</string>
+    <string name="max_gov_active_title">কোনে নিয়ন্ত্ৰণ ৰাখে</string>
+    <string name="max_gov_none">কোনো নীতিয়ে এতিয়াই এটা হাৰ্ডৱেৰ নিয়ন্ত্ৰণৰ মালিক নহয়।</string>
+    <string name="max_gov_count">সক্ৰিয় নিয়ন্ত্ৰণ পট্টা: %1$d</string>
+    <string name="max_gov_requested">অনুৰোধ কৰা হৈছে: %1$s</string>
+    <string name="max_gov_owner_recovery">পুনৰুদ্ধাৰ</string>
+    <string name="max_gov_owner_safety">তাপীয় সুৰক্ষা</string>
+    <string name="max_gov_owner_per_app">এপ প্ৰফাইল</string>
+    <string name="max_gov_owner_max_ai">␟০␞</string>
+    <string name="max_gov_owner_global">গ্লোবেল প্ৰফাইল</string>
+    <string name="max_gov_owner_system">পদ্ধতি</string>
+    <string name="max_gov_owner_a11y">%1$s এটা হাৰ্ডৱেৰ নিয়ন্ত্ৰণৰ মালিক</string>
+    <string name="max_gov_now_none">বৰ্তমান কোনো স্বয়ংক্ৰিয় মালিক নাই — নিয়ন্ত্ৰণ আপোনাৰ হৈয়েই থাকে</string>
+    <string name="max_gov_now_one">%1$s এটা নিয়ন্ত্ৰণ ধৰি ৰাখে</string>
+    <string name="max_gov_now_many">%1$s %2$d নিয়ন্ত্ৰণসমূহ ধৰি ৰাখে</string>
+    <string name="devinfo_details">সবিশেষ</string>
 </resources>

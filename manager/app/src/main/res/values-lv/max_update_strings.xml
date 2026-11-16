@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_update_strings.xml -->
+<resources>
+    <string name="update_dialog_title">Pieejams atjauninājums</string>
+    <string name="update_dialog_title_required">Nepieciešams atjauninājums</string>
+    <string name="update_required_notice">Šis atjauninājums ir nepieciešams, lai turpinātu lietot MaxManager. Instalējiet to un pēc tam atkārtoti atveriet lietotni.</string>
+    <string name="update_dialog_body">Ir pieejama versija %1$s. Jūs atrodaties vietnē %2$s.</string>
+    <string name="update_block_title">Lai turpinātu, ir nepieciešams atjauninājums</string>
+    <string name="update_block_body">Šis būvējums (%1$s) vairs netiek atbalstīts. Atjauniniet uz %2$s, lai turpinātu izmantot MaxManager.</string>
+    <string name="update_block_body_no_release">Šis būvējums (%1$s) vairs netiek atbalstīts.</string>
+    <string name="update_release_notes_label">Kas jauns</string>
+    <string name="update_size">Lejupielādes lielums: %1$s</string>
+    <string name="update_button_now">Atjauniniet tūlīt</string>
+    <string name="update_button_later">Vēlāk</string>
+    <string name="update_button_close">Aizvērt</string>
+    <string name="update_button_open_page">Atveriet lejupielādes lapu</string>
+    <string name="update_state_downloading">Notiek lejupielāde… %1$d%%</string>
+    <string name="update_state_downloading_unknown">Notiek lejupielāde…</string>
+    <string name="update_state_installing">Notiek instalēšana…</string>
+    <string name="update_error_network">Nevarēja sasniegt atjaunināšanas serveri. Pārbaudiet savienojumu un mēģiniet vēlreiz.</string>
+    <string name="update_error_http">Atjaunināšanas serveris atbildēja ar kļūdu. Vēlāk mēģiniet vēlreiz.</string>
+    <string name="update_error_format">Atjaunināšanas informāciju nevarēja nolasīt.</string>
+    <string name="update_error_too_large">Atjaunināšanas informācija bija lielāka, nekā gaidīts, un tika izmesta.</string>
+    <string name="update_error_integrity">Lejupielādētais fails neatbilda tā kontrolsummai un tika izdzēsts.</string>
+    <string name="update_error_install">Instalēšana neizdevās. Mēģiniet vēlreiz.</string>
+    <string name="update_error_not_configured">Šajā būvniecībā nav konfigurēts neviens atjaunināšanas kanāls.</string>
+    <string name="update_maintenance_title">Īslaicīgi nav pieejams</string>
+    <string name="update_maintenance_body">MaxManager īslaicīgi nav pieejams. Lūdzu, drīzumā mēģiniet vēlreiz.</string>
+    <string name="update_check_title">Pārbaudiet, vai nav atjauninājumu</string>
+    <string name="update_check_supporting">Pašreizējā versija: %1$s</string>
+    <string name="update_check_updated">Ir pieejams atjauninājums.</string>
+    <string name="update_check_uptodate">Jūs izmantojat jaunāko versiju.</string>
+    <string name="update_check_failed">Nevarēja pārbaudīt, vai nav atjauninājumu.</string>
+    <string name="update_check_not_configured">Šajā būvniecībā nav konfigurēts neviens atjaunināšanas kanāls.</string>
+    <string name="update_released_label">Izdošanas datums: %1$s</string>
+    <string name="update_check_none_published">No vadības paneļa vēl nav publicēts neviens atjauninājums.</string>
+    <string name="update_check_link_missing">Atjauninājums ir publicēts, taču trūkst tā lejupielādes saites.</string>
+</resources>

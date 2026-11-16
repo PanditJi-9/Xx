@@ -13,4 +13,23 @@
     <string name="max_expand_section">వివరాలను చూపించు</string>
     <string name="max_collapse_section">వివరాలను దాచండి</string>
     <string name="max_trust_loading">చదువుతోంది...</string>
+    <string name="max_gov_title">ఇప్పుడు ఎవరు పాలిస్తున్నారు</string>
+    <string name="max_gov_separator">" ›"</string>
+    <string name="max_gov_order_note">స్థిరమైన క్రమం: ఒక ఎత్తైన పరుగు తక్కువ దానిని అడ్డుకుంటుంది. ఏ పాలసీ గెలుస్తుందో అది ఎప్పటికీ మార్చదు.</string>
+    <string name="max_gov_open_details">క్రియాశీల హోల్డర్లు</string>
+    <string name="max_gov_active_title">ఎవరు నియంత్రణ కలిగి ఉంటారు</string>
+    <string name="max_gov_none">ప్రస్తుతం ఏ పాలసీకి హార్డ్‌వేర్ నియంత్రణ లేదు.</string>
+    <string name="max_gov_count">క్రియాశీల నియంత్రణ లీజులు: %1$d</string>
+    <string name="max_gov_requested">అభ్యర్థించబడింది: %1$s</string>
+    <string name="max_gov_owner_recovery">రికవరీ</string>
+    <string name="max_gov_owner_safety">థర్మల్ భద్రత</string>
+    <string name="max_gov_owner_per_app">యాప్ ప్రొఫైల్</string>
+    <string name="max_gov_owner_max_ai">Max AI</string>
+    <string name="max_gov_owner_global">గ్లోబల్ ప్రొఫైల్</string>
+    <string name="max_gov_owner_system">వ్యవస్థ</string>
+    <string name="max_gov_owner_a11y">%1$s హార్డ్‌వేర్ నియంత్రణను కలిగి ఉంది</string>
+    <string name="max_gov_now_none">ప్రస్తుతం ఆటోమేటెడ్ యజమాని లేరు — నియంత్రణ మీదే ఉంటుంది</string>
+    <string name="max_gov_now_one">%1$s నియంత్రణను కలిగి ఉంది</string>
+    <string name="max_gov_now_many">%1$s %2$d నియంత్రణలను కలిగి ఉంది</string>
+    <string name="devinfo_details">వివరాలు</string>
 </resources>

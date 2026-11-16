@@ -51,4 +51,14 @@
     <string name="copg_tweak_kso_title">Gcina isikrini sivuliwe</string>
     <string name="copg_tweak_kso_desc">Isebenzisa i-COPG yokugcina-skrini ivuliwe kulolu hlelo lokusebenza. Kulondolozwe lapha, kubhalelwe injini ngokubuyekezwa futhi kusetshenziswe kuthebhu ye-Spoof.</string>
     <string name="copg_tweak_needs_device">Idinga idivayisi yalolu hlelo lokusebenza kuqala, kuthebhu ye-Spoof.</string>
+    <string name="spoof_engine_unmeasured">Isimo senjini asikalwa: ukufinyelela kwempande akukakanikezwa. Nikeza impande, bese uvule kabusha le thebhu.</string>
+    <string name="spoof_engine_config_missing">I-COPG ifakiwe, kodwa ifayela layo lokumisa (COPG.json) alikho. Ukufaka isicelo kwenqatshwa kuze kube yilapho imojula ikuhlinzeka futhi.</string>
+    <string name="spoof_engine_config_unreadable">I-COPG ifakiwe, kodwa ifayela layo lokumisa alifundeki JSON. Ukufaka isicelo kwenqatshwa kuze kube yilapho ifayela selilungisiwe.</string>
+    <string name="spoof_imei_spoof">Ukukhishwa kwe-IMEI</string>
+    <string name="spoof_imei_spoof_desc">Ibonisa lolu hlelo lokusebenza i-IMEI ehlukile. Idinga Max Manager module enikwe amandla ku-LSPosed nalolu hlelo lokusebenza kububanzi bayo. Qala kabusha uhlelo lokusebenza ngemva kokuluvula.</string>
+    <string name="spoof_imei_active">Ibonisa lolu hlelo lokusebenza: %1$s</string>
+    <string name="spoof_imei_summary">Ukukhishwa kwe-IMEI</string>
+    <string name="spoof_imei_regenerate">I-IMEI entsha engahleliwe</string>
+    <string name="spoof_imei_regenerate_desc">Ikhiqiza enye i-IMEI evumelekile yalolu hlelo lokusebenza. Qala kabusha uhlelo lokusebenza ukuze ulubone.</string>
+    <string name="spoof_imei_module_inactive">Imojula Max Manager ayinikiwe amandla ku-LSPosed, ngakho-ke izinhlelo zokusebenza zisabona i-IMEI yangempela. Nika amandla imojuli kokuthi LSPosed, engeza lolu hlelo lokusebenza kububanzi bayo, bese uvule kabusha lesi sikrini.</string>
 </resources>

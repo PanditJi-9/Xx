@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/network_scanner_strings.xml -->
+<resources>
+    <string name="network_scanner_title">Τοπικός σαρωτής δικτύου</string>
+    <string name="network_scanner_subtitle">Η διεύθυνσή σας, η πύλη στην οποία φτάνει και ποιοι γείτονες απάντησαν.</string>
+    <string name="max_role_network_scanner">Διαβάζει το δίκτυο στο οποίο βρίσκεστε — χωρίς λήψη, χωρίς root.</string>
+    <string name="ns_no_network">Δεν είναι συνδεδεμένο δίκτυο.</string>
+    <string name="ns_interface">Διασύνδεση</string>
+    <string name="ns_address">Διεύθυνση</string>
+    <string name="ns_gateway">Είσοδος πυλών</string>
+    <string name="ns_dns">DNS</string>
+    <string name="ns_mac">MAC</string>
+    <string name="ns_transport_wifi">Wi-Fi</string>
+    <string name="ns_transport_ethernet">Ethernet</string>
+    <string name="ns_transport_cellular">Κυτταρικός</string>
+    <string name="ns_transport_other">Αλλος</string>
+    <string name="ns_sources_title">Από πού προέρχεται αυτό</string>
+    <string name="ns_sources_body">Οι διευθύνσεις και η πύλη διαβάζονται από τις ιδιότητες συνδέσμων της πλατφόρμας. Ο πίνακας γειτόνων διαβάζεται από τη μνήμη cache ARP του πυρήνα, επομένως διατηρεί μόνο ό,τι μίλησε πρόσφατα αυτή η συσκευή — ένας κενός πίνακας δεν σημαίνει κενό δίκτυο.</string>
+    <string name="ns_refresh">Φρεσκάρω</string>
+    <string name="ns_probe">Ανιχνεύστε κοινές θύρες</string>
+    <string name="ns_probe_stop">Στάση</string>
+    <string name="ns_probe_progress">Ανίχνευση %1$d από %2$d</string>
+    <string name="ns_probe_note">Στέλνει μια σύνδεση TCP στις θύρες 22, 80, 443, 5000 και 5555 σε αυτό το /24. Αναφέρεται μια θύρα που απαντά. Η σιωπή δεν είναι απόδειξη ότι ένας οικοδεσπότης απουσιάζει.</string>
+    <string name="ns_neighbours">Γνωστοί γείτονες</string>
+    <string name="ns_neighbours_note">Από /proc/net/arp — μόνο για ανάγνωση.</string>
+    <string name="ns_neighbours_empty">Δεν έχουν γίνει γνωστοί ακόμη γείτονες.</string>
+    <string name="ns_ports_value">Θύρες %1$s</string>
+</resources>

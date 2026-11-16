@@ -53,4 +53,8 @@
     <string name="max_nav_max_ai">Max AI</string>
     <string name="max_hub_audio">অডিঅ\'</string>
     <string name="max_hub_audio_desc">আউটপুট ডিভাইচসমূহ, ষ্ট্ৰিমসমূহ আৰু ঘোষিত প্ৰভাৱসমূহ</string>
+    <string name="control_tools_live">জীৱন্ত পৃষ্ঠ</string>
+    <string name="control_tools_advanced">উন্নত সঁজুলি</string>
+    <string name="control_tools_system">চিস্টেম সঁজুলিসমূহ</string>
+    <string name="control_tools_appearance">ৰূপ</string>
 </resources>

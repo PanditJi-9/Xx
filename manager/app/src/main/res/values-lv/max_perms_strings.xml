@@ -69,4 +69,25 @@
     <string name="max_perms_entry_title">Atļaujas un lietotņu darbības</string>
     <string name="max_perms_entry_desc">Skatiet, ko šī lietotne deklarē un ko sistēma faktiski atļauj</string>
     <string name="max_perms_entry_action">Atvērt atļaujas</string>
+    <string name="max_perms_manifest_title">Manifesta kopsavilkums</string>
+    <string name="max_perms_manifest_desc">Izlasiet no pakotņu pārvaldnieka: versija, SDK diapazons, komponenti un cik no tiem tiek eksportēti. Eksportēto komponentu var palaist citas lietotnes.</string>
+    <string name="max_perms_manifest_version">Versija</string>
+    <string name="max_perms_manifest_sdk">SDK diapazons</string>
+    <string name="max_perms_manifest_location">Instalēšanas vieta</string>
+    <string name="max_perms_manifest_location_auto">Automātiski</string>
+    <string name="max_perms_manifest_location_internal">Tikai iekšējā atmiņa</string>
+    <string name="max_perms_manifest_location_external">Dod priekšroku ārējai</string>
+    <string name="max_perms_manifest_components">Sastāvdaļas</string>
+    <string name="max_perms_manifest_components_order">darbības · pakalpojumi · uztvērēji · nodrošinātāji</string>
+    <string name="max_perms_manifest_exported">Eksportētās sastāvdaļas</string>
+    <string name="max_perms_manifest_splits">Sadalīti APK</string>
+    <string name="max_perms_manifest_debug">Atkļūdojams</string>
+    <string name="max_perms_features_title">Deklarētās pazīmes</string>
+    <string name="max_perms_features_desc">Ko pakotne pieprasa no ierīces, salīdzinot ar to, ko šī ierīce reklamē. Šeit trūkst vajadzīgās funkcijas, kas parasti nozīmē, ka lietotne nedarbosies pilnībā — tā ir pakotnes pārvaldnieka prasība, nevis minējums.</string>
+    <string name="max_perms_features_loading">Paciņas deklarēto funkciju lasīšana…</string>
+    <string name="max_perms_features_none">Paketē nav norādītas nepieciešamās funkcijas.</string>
+    <string name="max_perms_features_required">Obligāti</string>
+    <string name="max_perms_features_unsupported">Nav šajā ierīcē</string>
+    <string name="max_perms_manifest_none">Pakešu pārvaldnieks nav ziņojis.</string>
+    <string name="max_perms_manifest_unknown">Nezināms</string>
 </resources>

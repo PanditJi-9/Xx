@@ -18,4 +18,10 @@
     <string name="max_cfg_section_appearance">外觀及介面</string>
     <string name="max_cfg_section_app_prefs">應用程式偏好設定和語言</string>
     <string name="max_cfg_restore_merge_note">恢復首選項合併：寫入檔案中存在的金鑰，且檔案中未提及的金鑰保持原樣。什麼都沒有清除。</string>
+    <string name="max_cfg_diff_title">%1$d 保存的设置与该设备不同</string>
+    <string name="max_cfg_diff_line">%1$s: %2$s → %3$s</string>
+    <string name="max_cfg_diff_unset">未设置</string>
+    <string name="max_cfg_diff_more">还有%1$d更多</string>
+    <string name="max_cfg_diff_applist">添加了 %1$d app-list 行，删除了 %2$d — 整个列表被替换，而不是合并。</string>
+    <string name="max_cfg_diff_prefs">%1$d 首选项键不同 - 合并，而不是擦除。</string>
 </resources>

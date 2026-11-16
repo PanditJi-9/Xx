@@ -18,4 +18,10 @@
     <string name="max_cfg_section_appearance">外観とインターフェース</string>
     <string name="max_cfg_section_app_prefs">アプリの設定と言語</string>
     <string name="max_cfg_restore_merge_note">環境設定のマージを復元すると、ファイル内に存在するキーが書き込まれ、言及されていないキーはそのまま残ります。何もクリアされていません。</string>
+    <string name="max_cfg_diff_title">%1$d 保存された設定はこのデバイスとは異なります</string>
+    <string name="max_cfg_diff_line">%1$s: %2$s → %3$s</string>
+    <string name="max_cfg_diff_unset">設定されていません</string>
+    <string name="max_cfg_diff_more">そして %1$d 詳細</string>
+    <string name="max_cfg_diff_applist">%1$d app-list 行が追加され、%2$d が削除されました。リスト全体がマージされずに置き換えられます。</string>
+    <string name="max_cfg_diff_prefs">%1$d 設定キーは異なります - 消去されずにマージされます。</string>
 </resources>

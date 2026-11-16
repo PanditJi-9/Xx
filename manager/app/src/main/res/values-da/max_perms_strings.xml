@@ -69,4 +69,25 @@
     <string name="max_perms_entry_title">Tilladelser og app-ops</string>
     <string name="max_perms_entry_desc">Se, hvad denne app erklærer, og hvad systemet rent faktisk tillader</string>
     <string name="max_perms_entry_action">Åbn tilladelser</string>
+    <string name="max_perms_manifest_title">Manifest resumé</string>
+    <string name="max_perms_manifest_desc">Læs fra pakkehåndteringen: version, SDK-sortiment, komponenter og hvor mange af dem der eksporteres. En eksporteret komponent kan startes af andre apps.</string>
+    <string name="max_perms_manifest_version">Version</string>
+    <string name="max_perms_manifest_sdk">SDK-sortiment</string>
+    <string name="max_perms_manifest_location">Installer placering</string>
+    <string name="max_perms_manifest_location_auto">Automatisk</string>
+    <string name="max_perms_manifest_location_internal">Kun internt lager</string>
+    <string name="max_perms_manifest_location_external">Foretrækker eksternt</string>
+    <string name="max_perms_manifest_components">Komponenter</string>
+    <string name="max_perms_manifest_components_order">aktiviteter · tjenester · modtagere · udbydere</string>
+    <string name="max_perms_manifest_exported">Eksporterede komponenter</string>
+    <string name="max_perms_manifest_splits">Opdel APK\'er</string>
+    <string name="max_perms_manifest_debug">Fejlbarlig</string>
+    <string name="max_perms_features_title">Erklærede funktioner</string>
+    <string name="max_perms_features_desc">Hvad pakken kræver af enheden sammenlignet med, hvad denne enhed annoncerer. En påkrævet funktion, der mangler her, betyder normalt, at appen ikke fungerer fuldt ud - det er et krav fra pakkeadministratoren, ikke et gæt.</string>
+    <string name="max_perms_features_loading">Læser pakkens erklærede funktioner...</string>
+    <string name="max_perms_features_none">Pakken erklærer ingen nødvendige funktioner.</string>
+    <string name="max_perms_features_required">Påkrævet</string>
+    <string name="max_perms_features_unsupported">Ikke på denne enhed</string>
+    <string name="max_perms_manifest_none">Ikke rapporteret af pakkeadministratoren.</string>
+    <string name="max_perms_manifest_unknown">Ukendt</string>
 </resources>

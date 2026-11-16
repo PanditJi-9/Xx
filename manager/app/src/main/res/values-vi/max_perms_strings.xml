@@ -69,4 +69,25 @@
     <string name="max_perms_entry_title">Quyền và hoạt động ứng dụng</string>
     <string name="max_perms_entry_desc">Xem những gì ứng dụng này tuyên bố và những gì hệ thống thực sự cho phép</string>
     <string name="max_perms_entry_action">Quyền mở</string>
+    <string name="max_perms_manifest_title">Bản tóm tắt kê khai</string>
+    <string name="max_perms_manifest_desc">Đọc từ trình quản lý gói: phiên bản, phạm vi SDK, thành phần và số lượng chúng được xuất. Một thành phần đã xuất có thể được khởi động bởi các ứng dụng khác.</string>
+    <string name="max_perms_manifest_version">Phiên bản</string>
+    <string name="max_perms_manifest_sdk">Phạm vi SDK</string>
+    <string name="max_perms_manifest_location">Vị trí cài đặt</string>
+    <string name="max_perms_manifest_location_auto">Tự động</string>
+    <string name="max_perms_manifest_location_internal">Chỉ bộ nhớ trong</string>
+    <string name="max_perms_manifest_location_external">Thích bên ngoài hơn</string>
+    <string name="max_perms_manifest_components">Linh kiện</string>
+    <string name="max_perms_manifest_components_order">hoạt động · dịch vụ · người nhận · nhà cung cấp</string>
+    <string name="max_perms_manifest_exported">Thành phần đã xuất</string>
+    <string name="max_perms_manifest_splits">Chia APK</string>
+    <string name="max_perms_manifest_debug">Có thể gỡ lỗi</string>
+    <string name="max_perms_features_title">Tính năng được khai báo</string>
+    <string name="max_perms_features_desc">Gói này yêu cầu gì từ thiết bị, so với những gì thiết bị này quảng cáo. Một tính năng bắt buộc bị thiếu ở đây thường có nghĩa là ứng dụng sẽ không hoạt động đầy đủ - đó là xác nhận từ người quản lý gói chứ không phải phỏng đoán.</string>
+    <string name="max_perms_features_loading">Đọc các tính năng được khai báo của gói…</string>
+    <string name="max_perms_features_none">Gói tuyên bố không có tính năng cần thiết.</string>
+    <string name="max_perms_features_required">Yêu cầu</string>
+    <string name="max_perms_features_unsupported">Không có trên thiết bị này</string>
+    <string name="max_perms_manifest_none">Người quản lý gói không báo cáo.</string>
+    <string name="max_perms_manifest_unknown">Không xác định</string>
 </resources>

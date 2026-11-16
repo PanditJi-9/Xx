@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/manifest_inspector_strings.xml -->
+<resources>
+    <string name="manifest_inspector_title">Manifestni inspektor</string>
+    <string name="manifest_inspector_subtitle">Što instalirana aplikacija izjavljuje o sebi, pročitajte u PackageManageru.</string>
+    <string name="max_role_manifest_inspector">Prikazuje što paket deklarira o sebi — samo za čitanje.</string>
+    <string name="mi_search">Traži aplikacije</string>
+    <string name="mi_empty">Odaberite aplikaciju s lijeve strane.</string>
+    <string name="mi_yes">Da</string>
+    <string name="mi_no">Ne</string>
+    <string name="mi_section_identity">Paket</string>
+    <string name="mi_version">Verzija</string>
+    <string name="mi_version_code">Šifra verzije</string>
+    <string name="mi_min_sdk">Minimalni SDK</string>
+    <string name="mi_target_sdk">Ciljani SDK</string>
+    <string name="mi_installed">instalirano</string>
+    <string name="mi_updated">Ažurirano</string>
+    <string name="mi_installer">Instalater</string>
+    <string name="mi_uid">UID</string>
+    <string name="mi_data_dir">Imenik podataka</string>
+    <string name="mi_debuggable">Mogućnost otklanjanja pogrešaka</string>
+    <string name="mi_system_app">Aplikacija sustava</string>
+    <string name="mi_enabled">Omogućeno</string>
+    <string name="mi_section_permissions">Zatražene dozvole</string>
+    <string name="mi_permissions_summary">%1$d dopuštenja · %2$d od njih opasno</string>
+    <string name="mi_permissions_none">Ova aplikacija ne traži dopuštenje.</string>
+    <string name="mi_perm_dangerous">opasno</string>
+    <string name="mi_perm_signature">Potpis</string>
+    <string name="mi_perm_normal">Normalan</string>
+    <string name="mi_perm_unknown">Nerazvrstano</string>
+    <string name="mi_section_components">Komponente</string>
+    <string name="mi_activities">Aktivnosti</string>
+    <string name="mi_services">Usluge</string>
+    <string name="mi_receivers">Prijemnici</string>
+    <string name="mi_providers">Pružatelji usluga</string>
+    <string name="mi_components_none">Nijedan deklariran</string>
+    <string name="mi_section_features">Značajke uređaja</string>
+    <string name="mi_features_note">Platforma ne izlaže popis značajki upotrebe druge aplikacije; ovo su značajke koje ovaj uređaj prijavljuje.</string>
+    <string name="mi_features_none">Nema prijavljenih značajki</string>
+    <string name="mi_section_signature">Certifikat za potpisivanje</string>
+    <string name="mi_signature_note">SHA-256 certifikata za potpisivanje. Dvije verzije s istom vrijednošću isti su izdavač.</string>
+    <string name="mi_signature_sha256">Sažetak certifikata</string>
+</resources>

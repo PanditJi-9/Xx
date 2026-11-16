@@ -13,4 +13,23 @@
     <string name="max_expand_section">Vis detaljer</string>
     <string name="max_collapse_section">Skjul detaljer</string>
     <string name="max_trust_loading">Lesning…</string>
+    <string name="max_gov_title">Hvem regjerer nå</string>
+    <string name="max_gov_separator">" › "</string>
+    <string name="max_gov_order_note">Fast rekkefølge: et høyere trinn blokkerer et lavere. Det endrer aldri hvilken politikk som vinner.</string>
+    <string name="max_gov_open_details">Aktive holdere</string>
+    <string name="max_gov_active_title">Hvem har kontroll</string>
+    <string name="max_gov_none">Ingen policy eier en maskinvarekontroll akkurat nå.</string>
+    <string name="max_gov_count">Aktiv kontroll leieavtaler: %1$d</string>
+    <string name="max_gov_requested">Forespurt: %1$s</string>
+    <string name="max_gov_owner_recovery">Bedring</string>
+    <string name="max_gov_owner_safety">Termisk sikkerhet</string>
+    <string name="max_gov_owner_per_app">App-profil</string>
+    <string name="max_gov_owner_max_ai">Max AI</string>
+    <string name="max_gov_owner_global">Global profil</string>
+    <string name="max_gov_owner_system">System</string>
+    <string name="max_gov_owner_a11y">%1$s eier en maskinvarekontroll</string>
+    <string name="max_gov_now_none">Ingen automatisert eier akkurat nå – kontrollen forblir din</string>
+    <string name="max_gov_now_one">%1$s holder en kontroll</string>
+    <string name="max_gov_now_many">%1$s inneholder %2$d kontroller</string>
+    <string name="devinfo_details">Detaljer</string>
 </resources>

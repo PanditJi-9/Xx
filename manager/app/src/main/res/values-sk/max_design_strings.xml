@@ -13,4 +13,23 @@
     <string name="max_expand_section">Zobraziť podrobnosti</string>
     <string name="max_collapse_section">Skryť podrobnosti</string>
     <string name="max_trust_loading">Číta sa…</string>
+    <string name="max_gov_title">Kto teraz vládne</string>
+    <string name="max_gov_separator">" › "</string>
+    <string name="max_gov_order_note">Pevné poradie: vyššia priečka blokuje nižšiu. Nikdy sa nemení, ktorá politika vyhrá.</string>
+    <string name="max_gov_open_details">Aktívne držiaky</string>
+    <string name="max_gov_active_title">Kto má kontrolu</string>
+    <string name="max_gov_none">Žiadna politika momentálne nevlastní hardvérovú kontrolu.</string>
+    <string name="max_gov_count">Aktívne kontrolné prenájmy: %1$d</string>
+    <string name="max_gov_requested">Požadované: %1$s</string>
+    <string name="max_gov_owner_recovery">zotavenie</string>
+    <string name="max_gov_owner_safety">Tepelná bezpečnosť</string>
+    <string name="max_gov_owner_per_app">Profil aplikácie</string>
+    <string name="max_gov_owner_max_ai">Max AI</string>
+    <string name="max_gov_owner_global">Globálny profil</string>
+    <string name="max_gov_owner_system">Systém</string>
+    <string name="max_gov_owner_a11y">%1$s vlastní hardvérové ​​ovládanie</string>
+    <string name="max_gov_now_none">Momentálne žiadny automatizovaný vlastník – kontrola zostáva na vás</string>
+    <string name="max_gov_now_one">%1$s drží ovládanie</string>
+    <string name="max_gov_now_many">%1$s drží ovládacie prvky %2$d</string>
+    <string name="devinfo_details">Podrobnosti</string>
 </resources>

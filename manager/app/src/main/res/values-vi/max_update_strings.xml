@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_update_strings.xml -->
+<resources>
+    <string name="update_dialog_title">Đã có bản cập nhật</string>
+    <string name="update_dialog_title_required">Yêu cầu cập nhật</string>
+    <string name="update_required_notice">Cần có bản cập nhật này để tiếp tục sử dụng MaxManager. Cài đặt nó, sau đó mở lại ứng dụng.</string>
+    <string name="update_dialog_body">Phiên bản %1$s có sẵn. Bạn đang ở trên %2$s.</string>
+    <string name="update_block_title">Cần cập nhật để tiếp tục</string>
+    <string name="update_block_body">Bản dựng này (%1$s) không còn được hỗ trợ. Cập nhật lên %2$s để tiếp tục sử dụng MaxManager.</string>
+    <string name="update_block_body_no_release">Bản dựng này (%1$s) không còn được hỗ trợ.</string>
+    <string name="update_release_notes_label">Có gì mới</string>
+    <string name="update_size">Kích thước tải xuống: %1$s</string>
+    <string name="update_button_now">Cập nhật ngay bây giờ</string>
+    <string name="update_button_later">Sau đó</string>
+    <string name="update_button_close">Đóng</string>
+    <string name="update_button_open_page">Mở trang tải xuống</string>
+    <string name="update_state_downloading">Đang tải xuống… %1$d%%</string>
+    <string name="update_state_downloading_unknown">Đang tải xuống…</string>
+    <string name="update_state_installing">Đang cài đặt…</string>
+    <string name="update_error_network">Không thể truy cập máy chủ cập nhật. Hãy kiểm tra kết nối của bạn và thử lại.</string>
+    <string name="update_error_http">Máy chủ cập nhật đã trả lời có lỗi. Hãy thử lại sau.</string>
+    <string name="update_error_format">Không thể đọc được thông tin cập nhật.</string>
+    <string name="update_error_too_large">Thông tin cập nhật lớn hơn dự kiến ​​và đã bị loại bỏ.</string>
+    <string name="update_error_integrity">Tệp đã tải xuống không khớp với tổng kiểm tra của nó và đã bị xóa.</string>
+    <string name="update_error_install">Cài đặt không thành công. Hãy thử lại.</string>
+    <string name="update_error_not_configured">Không có kênh cập nhật nào được định cấu hình trong bản dựng này.</string>
+    <string name="update_maintenance_title">Tạm thời không có</string>
+    <string name="update_maintenance_body">MaxManager tạm thời không khả dụng. Vui lòng thử lại trong thời gian ngắn.</string>
+    <string name="update_check_title">Kiểm tra các bản cập nhật</string>
+    <string name="update_check_supporting">Phiên bản hiện tại: %1$s</string>
+    <string name="update_check_updated">Đã có bản cập nhật.</string>
+    <string name="update_check_uptodate">Bạn đang ở phiên bản mới nhất.</string>
+    <string name="update_check_failed">Không thể kiểm tra cập nhật.</string>
+    <string name="update_check_not_configured">Không có kênh cập nhật nào được định cấu hình trong bản dựng này.</string>
+    <string name="update_released_label">Ngày phát hành: %1$s</string>
+    <string name="update_check_none_published">Chưa có bản cập nhật nào được xuất bản từ bảng điều khiển.</string>
+    <string name="update_check_link_missing">Một bản cập nhật được xuất bản nhưng liên kết tải xuống của nó bị thiếu.</string>
+</resources>

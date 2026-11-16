@@ -48,4 +48,9 @@
     <string name="mi_section_signature">شهادة التوقيع</string>
     <string name="mi_signature_note">بصمة SHA-256 لشهادة التوقيع. بناءان بالبصمة نفسها ناشرهما واحد.</string>
     <string name="mi_signature_sha256">بصمة الشهادة</string>
+    <string name="mi_search_clear">مسح البحث</string>
+    <string name="mi_no_match">لا تطبيق يطابق هذا البحث.</string>
+    <string name="mi_copy_package">نسخ اسم الحزمة</string>
+    <string name="mi_copy_signature">نسخ توقيع SHA-256</string>
+    <string name="mi_copied">نُسخ</string>
 </resources>

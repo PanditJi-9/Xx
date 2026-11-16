@@ -10,4 +10,6 @@
     <string name="studio_display">Отображать</string>
     <string name="studio_power">Варианты питания</string>
     <string name="studio_settings">Настройки</string>
+    <string name="audio_dsp_live">DSP в прямом эфире</string>
+    <string name="max_audio_session_label">Аудиосессия №%1$d</string>
 </resources>

@@ -18,4 +18,10 @@
     <string name="max_cfg_section_appearance">Aussehen &amp; Oberfläche</string>
     <string name="max_cfg_section_app_prefs">App-Einstellungen &amp; Sprache</string>
     <string name="max_cfg_restore_merge_note">Das Wiederherstellen von Einstellungen führt zusammen: Schlüssel, die in der Datei vorhanden sind, werden geschrieben, und Schlüssel, die sie nicht erwähnt, bleiben, wie sie sind. Nichts wird gelöscht.</string>
+    <string name="max_cfg_diff_title">%1$d Die gespeicherten Einstellungen unterscheiden sich von diesem Gerät</string>
+    <string name="max_cfg_diff_line">%1$s: %2$s → %3$s</string>
+    <string name="max_cfg_diff_unset">nicht eingestellt</string>
+    <string name="max_cfg_diff_more">und %1$d mehr</string>
+    <string name="max_cfg_diff_applist">%1$d App-Listenzeilen hinzugefügt, %2$d entfernt – die gesamte Liste wird ersetzt, nicht zusammengeführt.</string>
+    <string name="max_cfg_diff_prefs">%1$d Präferenzschlüssel unterscheiden sich – zusammengeführt, nicht gelöscht.</string>
 </resources>

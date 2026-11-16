@@ -99,4 +99,12 @@
     <string name="max_gpu_saved_desc">Aus einer früheren Speicherung übernommen und bei jedem Start angewendet: %1$s. Die obige Standardeinstellung beendet nur diese Sitzung, niemals den gespeicherten Zustand.</string>
     <string name="max_gpu_dynamic_min">Minimal · dynamisch</string>
     <string name="max_gpu_dynamic_max">Maximal · dynamisch</string>
+    <string name="max_gpu_monitor_only_detail">Die einzigen Grafikknoten, die dieser Kernel verfügbar macht, sind Bandbreiten- und QoS-Monitore: Sie tragen keinen GPU-Takt, daher muss keine Frequenz eingestellt werden. Die Steuerung bleibt ausgeschaltet, anstatt einen Speicherregler zu schreiben, als wäre es die GPU.</string>
+    <string name="max_gpu_danger_title">GPU Grenzen schreiben?</string>
+    <string name="max_gpu_danger_body">Dadurch werden das Grafikfrequenzfenster und der Regler in die GPU-Knoten geschrieben. Ein Fenster, das der Treiber ablehnt, oder ein Regler, der nicht mithalten kann, können zum Stottern der gesamten Schnittstelle oder zum Einfrieren des Panels führen. Die App zeichnet auf, dass Sie dies einmal akzeptiert haben – die Verantwortung für die von Ihnen angewendeten Werte liegt bei Ihnen.</string>
+    <string name="max_gpu_danger_action">Ich verstehe – bewerben Sie sich</string>
+    <string name="max_gpu_state_title">Zeit im Staat</string>
+    <string name="max_gpu_state_desc">Wo die Zeit des GPU tatsächlich verstrichen ist, gezählt vom Kernel pro Betriebsfrequenz – keine Momentaufnahme der aktuellen Uhr.</string>
+    <string name="max_gpu_state_hidden_share">%1$s zusammen</string>
+    <string name="max_gpu_state_hidden">%1$d Staaten unter 1 %%</string>
 </resources>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_update_strings.xml -->
+<resources>
+    <string name="update_dialog_title">Pembaruan tersedia</string>
+    <string name="update_dialog_title_required">Diperlukan pembaruan</string>
+    <string name="update_required_notice">Pembaruan ini diperlukan untuk tetap menggunakan MaxManager. Instal, lalu buka kembali aplikasi.</string>
+    <string name="update_dialog_body">Versi %1$s tersedia. Anda berada di %2$s.</string>
+    <string name="update_block_title">Pembaruan diperlukan untuk melanjutkan</string>
+    <string name="update_block_body">Versi ini (%1$s) tidak lagi didukung. Perbarui ke %2$s untuk terus menggunakan MaxManager.</string>
+    <string name="update_block_body_no_release">Versi ini (%1$s) tidak lagi didukung.</string>
+    <string name="update_release_notes_label">Apa yang baru</string>
+    <string name="update_size">Ukuran unduhan: %1$s</string>
+    <string name="update_button_now">Perbarui sekarang</string>
+    <string name="update_button_later">Nanti</string>
+    <string name="update_button_close">Menutup</string>
+    <string name="update_button_open_page">Buka halaman unduhan</string>
+    <string name="update_state_downloading">Mengunduh… %1$d%%</string>
+    <string name="update_state_downloading_unknown">Mengunduh…</string>
+    <string name="update_state_installing">Memasang…</string>
+    <string name="update_error_network">Tidak dapat menjangkau server pembaruan. Periksa koneksi Anda dan coba lagi.</string>
+    <string name="update_error_http">Server pembaruan menjawab dengan kesalahan. Coba lagi nanti.</string>
+    <string name="update_error_format">Informasi pembaruan tidak dapat dibaca.</string>
+    <string name="update_error_too_large">Informasi pembaruan lebih besar dari yang diharapkan dan dibuang.</string>
+    <string name="update_error_integrity">File yang diunduh tidak cocok dengan checksumnya dan telah dihapus.</string>
+    <string name="update_error_install">Instalasi gagal. Coba lagi.</string>
+    <string name="update_error_not_configured">Tidak ada saluran pembaruan yang dikonfigurasi dalam build ini.</string>
+    <string name="update_maintenance_title">Untuk sementara tidak tersedia</string>
+    <string name="update_maintenance_body">MaxManager untuk sementara tidak tersedia. Silakan coba lagi sebentar lagi.</string>
+    <string name="update_check_title">Periksa pembaruan</string>
+    <string name="update_check_supporting">Versi saat ini: %1$s</string>
+    <string name="update_check_updated">Pembaruan tersedia.</string>
+    <string name="update_check_uptodate">Anda menggunakan versi terbaru.</string>
+    <string name="update_check_failed">Tidak dapat memeriksa pembaruan.</string>
+    <string name="update_check_not_configured">Tidak ada saluran pembaruan yang dikonfigurasi dalam build ini.</string>
+    <string name="update_released_label">Tanggal rilis: %1$s</string>
+    <string name="update_check_none_published">Belum ada pembaruan yang dipublikasikan dari panel kontrol.</string>
+    <string name="update_check_link_missing">Pembaruan diterbitkan, tetapi tautan unduhannya tidak ada.</string>
+</resources>

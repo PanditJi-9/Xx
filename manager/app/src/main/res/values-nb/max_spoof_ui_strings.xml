@@ -51,4 +51,14 @@
     <string name="copg_tweak_kso_title">Hold skjermen på</string>
     <string name="copg_tweak_kso_desc">Bruker COPG keep-screen-on tweak på denne appen. Lagret her, skrevet til motoren av gjennomgang og bruk i Spoof-fanen.</string>
     <string name="copg_tweak_needs_device">Trenger en enhet for denne appen først, i Spoof-fanen.</string>
+    <string name="spoof_engine_unmeasured">Motorstatus er ikke målt: root-tilgang er ikke gitt ennå. Gi root, og åpne deretter denne fanen på nytt.</string>
+    <string name="spoof_engine_config_missing">COPG er installert, men konfigurasjonsfilen (COPG.json) mangler. Søknad avslås inntil modulen gir det igjen.</string>
+    <string name="spoof_engine_config_unreadable">COPG er installert, men konfigurasjonsfilen er ikke lesbar JSON. Søknad nektes før filen er reparert.</string>
+    <string name="spoof_imei_spoof">IMEI-spoofing</string>
+    <string name="spoof_imei_spoof_desc">Viser denne appen en annen IMEI. Trenger Max Manager-modulen aktivert i LSPosed med denne appen i sitt omfang. Start appen på nytt etter at du har slått den på.</string>
+    <string name="spoof_imei_active">Viser denne appen: %1$s</string>
+    <string name="spoof_imei_summary">IMEI-spoofing</string>
+    <string name="spoof_imei_regenerate">Ny tilfeldig IMEI</string>
+    <string name="spoof_imei_regenerate_desc">Genererer en annen gyldig IMEI for denne appen. Start appen på nytt for å se den.</string>
+    <string name="spoof_imei_module_inactive">Max Manager-modulen er ikke aktivert i LSPosed, så apper ser fortsatt den virkelige IMEI. Aktiver modulen i LSPosed, legg til denne appen i omfanget, og åpne deretter denne skjermen på nytt.</string>
 </resources>

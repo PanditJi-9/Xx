@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_license_strings.xml -->
+<resources>
+    <string name="max_license_title">Лицензия</string>
+    <string name="max_license_subtitle">Бір кілт, бұл құрылғы, есептік жазба жоқ</string>
+    <string name="max_license_help_body">Кілтті енгізген кезде желіде бір рет тексеріледі. Содан кейін сервердің қол қойылған сертификаты уақыты біткенше желіден тыс жұмыс істейді — экранды ашқан сайын қолданба үйге қоңырау шалмайды. Сертификат осы құрылғының кездейсоқ орнату идентификаторына байланыстырылған, сондықтан қолданба деректерін басқа телефонға көшіру онымен бірге лицензияны алып жүрмейді және телефондарды ауыстырсаңыз, иесі бұл байланыстыруды панельден қалпына келтіре алады.</string>
+    <string name="max_license_status_section">Күй</string>
+    <string name="max_license_status_active">Белсенді</string>
+    <string name="max_license_status_expired">Мерзімі бітті</string>
+    <string name="max_license_status_none">Іске қосылмаған</string>
+    <string name="max_license_active_detail">Қалған: %1$d күн</string>
+    <string name="max_license_expired_detail">Бұл кілттің уақыты аяқталды. Жаңа кілт қолжетімділікті жаңартады.</string>
+    <string name="max_license_none_detail">Ақылы беттердің құлпын ашу үшін алынған кілтті енгізіңіз.</string>
+    <string name="max_license_promo_active">%1$s дейін барлығына тегін</string>
+    <string name="max_license_plan_title">Жоспар</string>
+    <string name="max_license_devices_title">Құрылғылар</string>
+    <string name="max_license_devices_detail">%1$d/%2$d пайдаланылды</string>
+    <string name="max_license_device_id_title">Бұл құрылғы</string>
+    <string name="max_license_device_id_detail">%1$s</string>
+    <string name="max_license_key_section">Белсендіру</string>
+    <string name="max_license_key_label">Лицензия кілті</string>
+    <string name="max_license_key_placeholder">MAXM-XXXXX-XXXXX-XXXXX-XXXXX-XX</string>
+    <string name="max_license_key_helper">Сызықшалар мен бас әріптер маңызды емес — оны алғаныңыздай қойыңыз.</string>
+    <string name="max_license_activate">Іске қосу</string>
+    <string name="max_license_activating">Кілт тексерілуде…</string>
+    <string name="max_license_refresh">Қазір тексеріңіз</string>
+    <string name="max_license_activated">Іске қосылды. Бұл құрылғы енді сіздің кілтіңізге байланысты.</string>
+    <string name="max_license_error_invalid_key">Бұл кілт толық емес көрінеді. Тексеріп, әрекетті қайталаңыз.</string>
+    <string name="max_license_error_not_configured">Бұл құрылымда конфигурацияланған лицензия сервері жоқ.</string>
+    <string name="max_license_error_network">Байланыс жоқ. Кілт бір рет тексеріледі, содан кейін желіден тыс жұмыс істейді.</string>
+    <string name="max_license_error_timeout">Лицензия сервері уақытында жауап бермеді. Қайтадан байқап көріңіз.</string>
+    <string name="max_license_error_server">Лицензия сервері қатемен жауап берді. Әрекетті кейінірек қайталаңыз.</string>
+    <string name="max_license_error_client">Лицензия функциясы серверде қолданылмаған.</string>
+    <string name="max_license_error_format">Сервер жауабы түсінбеді.</string>
+    <string name="max_license_error_expired">Бұл кілттің мерзімі бітті.</string>
+    <string name="max_license_error_not_found">Бұл кілт белгісіз.</string>
+    <string name="max_license_error_revoked">Бұл кілт кері қайтарылды.</string>
+    <string name="max_license_error_device_limit">Бұл кілт құрылғының шегіне жетті. Құрылғыны қалпына келтіруді сұраңыз.</string>
+    <string name="max_license_error_device_unknown">Бұл құрылғы әлі кілтке қосылмаған. Алдымен оны осында іске қосыңыз.</string>
+    <string name="max_license_error_device_removed">Бұл құрылғыны иесі кілттен алып тастады.</string>
+    <string name="max_license_error_rate_limited">Бұл қосылымнан тым көп әрекет жасалды — бірнеше минут күтіп, әрекетті қайталаңыз.</string>
+    <string name="max_license_error_unknown">Бірдеңе дұрыс болмады. Себебі Диагностикада жазылған.</string>
+    <string name="max_license_gate_title">Бұл бетке лицензия қажет</string>
+    <string name="max_license_gate_detail">Ол кілтпен бірге беріледі. Бір перне осы құрылғыны қамтиды және оны енгізу бір минутты алады.</string>
+    <string name="max_feature_off_title">Өшірілген</string>
+    <string name="max_feature_off_detail">Басқару тақтасы бұл бетті өшірді. Ол қайта қосылған кезде қайта оралады.</string>
+    <string name="max_license_gate_action">Лицензия параметрлерін ашыңыз</string>
+    <string name="max_license_gate_subscribe">Қазір жазылыңыз</string>
+    <string name="max_license_subscription_section">Жазылым</string>
+    <string name="max_license_subscription_open">Жазылым бетін ашыңыз</string>
+</resources>

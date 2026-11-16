@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_update_strings.xml -->
+<resources>
+    <string name="update_dialog_title">আপডেট উপলব্ধ</string>
+    <string name="update_dialog_title_required">আপডেইটৰ প্ৰয়োজন</string>
+    <string name="update_required_notice">MaxManager ব্যৱহাৰ কৰি থাকিবলৈ এই আপডেইটৰ প্ৰয়োজন। ইয়াক ইনষ্টল কৰক, তাৰ পিছত এপটো পুনৰ খোলক।</string>
+    <string name="update_dialog_body">সংস্কৰণ %1$s উপলব্ধ। আপুনি %2$s ত আছে।</string>
+    <string name="update_block_title">অব্যাহত ৰাখিবলৈ আপডেইটৰ প্ৰয়োজন</string>
+    <string name="update_block_body">এই বিল্ড (%1$s) আৰু সমৰ্থিত নহয়। MaxManager ব্যৱহাৰ কৰি থাকিবলৈ %2$s লৈ আপডেইট কৰক।</string>
+    <string name="update_block_body_no_release">এই বিল্ড (%1$s) আৰু সমৰ্থিত নহয়।</string>
+    <string name="update_release_notes_label">কি\'s নতুন</string>
+    <string name="update_size">ডাউনলোডৰ আকাৰ: %1$s</string>
+    <string name="update_button_now">এতিয়াই আপডেট কৰক</string>
+    <string name="update_button_later">পাছত</string>
+    <string name="update_button_close">বন্ধ</string>
+    <string name="update_button_open_page">ডাউনলোড পৃষ্ঠা খোলক</string>
+    <string name="update_state_downloading">ডাউনলোড... %1$d%%</string>
+    <string name="update_state_downloading_unknown">ডাউনলোড...</string>
+    <string name="update_state_installing">ইনস্টল...</string>
+    <string name="update_error_network">আপডেইট চাৰ্ভাৰত উপনীত হ\'ব পৰা নগ\'ল। আপোনাৰ সংযোগ পৰীক্ষা কৰক আৰু পুনৰ চেষ্টা কৰক।</string>
+    <string name="update_error_http">আপডেইট চাৰ্ভাৰে এটা ভুলৰ সৈতে উত্তৰ দিলে। পিছত আকৌ চেষ্টা কৰক।</string>
+    <string name="update_error_format">আপডেটৰ তথ্য পঢ়িব পৰা নগ\'ল।</string>
+    <string name="update_error_too_large">আপডেটৰ তথ্য আশা কৰাতকৈ ডাঙৰ আছিল আৰু বাতিল কৰা হৈছিল।</string>
+    <string name="update_error_integrity">ডাউনলোড কৰা ফাইলটো ইয়াৰ চেকছামৰ সৈতে মিল নাছিল আৰু মচি পেলোৱা হৈছিল।</string>
+    <string name="update_error_install">সংস্থাপন বিফল হ\'ল। আকৌ এবাৰ চেষ্টা কৰক।</string>
+    <string name="update_error_not_configured">এই বিল্ডত কোনো আপডেইট চেনেল বিন্যাস কৰা হোৱা নাই ।</string>
+    <string name="update_maintenance_title">সাময়িকভাৱে উপলব্ধ নহয়</string>
+    <string name="update_maintenance_body">MaxManager সাময়িকভাৱে উপলব্ধ নহয়। অনুগ্ৰহ কৰি অলপ পিছতে পুনৰ চেষ্টা কৰক।</string>
+    <string name="update_check_title">আপডেইটসমূহৰ বাবে পৰীক্ষা কৰক</string>
+    <string name="update_check_supporting">বৰ্তমান সংস্কৰণ: %1$s</string>
+    <string name="update_check_updated">এটা আপডেট উপলব্ধ।</string>
+    <string name="update_check_uptodate">আপুনি শেহতীয়া সংস্কৰণত আছে।</string>
+    <string name="update_check_failed">আপডেটসমূহৰ বাবে পৰীক্ষা কৰিব পৰা নগ\'ল।</string>
+    <string name="update_check_not_configured">এই বিল্ডত কোনো আপডেইট চেনেল বিন্যাস কৰা হোৱা নাই ।</string>
+    <string name="update_released_label">মুক্তিৰ তাৰিখ: %1$s</string>
+    <string name="update_check_none_published">নিয়ন্ত্ৰণ পেনেলৰ পৰা এতিয়াও কোনো আপডেট প্ৰকাশ কৰা হোৱা নাই।</string>
+    <string name="update_check_link_missing">এটা আপডেট প্ৰকাশ কৰা হৈছে, কিন্তু ইয়াৰ ডাউনলোড লিংক নোহোৱা হৈছে।</string>
+</resources>

@@ -99,4 +99,12 @@
     <string name="max_gpu_saved_desc">נשמר משמירה מוקדמת ומוחל על כל אתחול: %1$s. ברירת המחדל שלמעלה מסיימת את ההפעלה הזו בלבד, לעולם לא את המצב השמור.</string>
     <string name="max_gpu_dynamic_min">מינימום · דינמי</string>
     <string name="max_gpu_dynamic_max">מקסימום · דינמי</string>
+    <string name="max_gpu_monitor_only_detail">הצמתים הגרפיים היחידים שהגלעין הזה חושף הם צגי רוחב פס ו-QoS: הם אינם נושאים שעון GPU, כך שאין תדר להגדרה. הבקרה נשארת כבויה במקום לכתוב מושל זיכרון כאילו היה ה-GPU.</string>
+    <string name="max_gpu_danger_title">לכתוב מגבלות של GPU?</string>
+    <string name="max_gpu_danger_body">זה כותב את חלון התדר הגרפי ואת המושל לתוך הצמתים GPU. חלון שהנהג דוחה, או מושל שלא יכול לעמוד בקצב, יכול לגמגם את כל הממשק או להקפיא את הפאנל. האפליקציה מתעדת שקיבלת זאת פעם אחת - האחריות על הערכים שאתה מיישם היא שלך.</string>
+    <string name="max_gpu_danger_action">אני מבין - ליישם</string>
+    <string name="max_gpu_state_title">זמן במדינה</string>
+    <string name="max_gpu_state_desc">לאן הלך הזמן של GPU\, נספר לפי הליבה לכל תדר פעולה - לא תמונת מצב של השעון הנוכחי.</string>
+    <string name="max_gpu_state_hidden_share">%1$s ביחד</string>
+    <string name="max_gpu_state_hidden">%1$d מצבים מתחת ל-1%%</string>
 </resources>

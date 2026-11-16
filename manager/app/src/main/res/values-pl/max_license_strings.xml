@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_license_strings.xml -->
+<resources>
+    <string name="max_license_title">Licencja</string>
+    <string name="max_license_subtitle">Jeden klucz, to urządzenie, bez konta</string>
+    <string name="max_license_help_body">Klucz jest sprawdzany online raz, po jego wprowadzeniu. Od tego momentu podpisany certyfikat serwera działa w trybie offline, aż upłynie jego czas — aplikacja nie będzie dzwonić do domu za każdym razem, gdy otworzysz ekran. Certyfikat jest powiązany z losowym identyfikatorem instalacji tego urządzenia, więc kopiowanie danych aplikacji na inny telefon nie powoduje utraty licencji, a właściciel może zresetować to powiązanie z poziomu panelu w przypadku zmiany telefonu.</string>
+    <string name="max_license_status_section">Status</string>
+    <string name="max_license_status_active">Aktywny</string>
+    <string name="max_license_status_expired">Wygasły</string>
+    <string name="max_license_status_none">Nieaktywowany</string>
+    <string name="max_license_active_detail">Pozostało: %1$d dni</string>
+    <string name="max_license_expired_detail">Czas tego klucza dobiegł końca. Nowy klucz odnawia dostęp.</string>
+    <string name="max_license_none_detail">Wpisz otrzymany klucz, aby odblokować płatne powierzchnie.</string>
+    <string name="max_license_promo_active">Bezpłatnie dla wszystkich do %1$s</string>
+    <string name="max_license_plan_title">Plan</string>
+    <string name="max_license_devices_title">Urządzenia</string>
+    <string name="max_license_devices_detail">Wykorzystano %1$d z %2$d</string>
+    <string name="max_license_device_id_title">To urządzenie</string>
+    <string name="max_license_device_id_detail">%1$s</string>
+    <string name="max_license_key_section">Aktywacja</string>
+    <string name="max_license_key_label">Klucz licencyjny</string>
+    <string name="max_license_key_placeholder">MAXM-XXXXXX-XXXXXX-XXXXXX-XXXXXX-XX</string>
+    <string name="max_license_key_helper">Myślniki i wielkie litery nie mają znaczenia — wklej je w takiej postaci, w jakiej je otrzymałeś.</string>
+    <string name="max_license_activate">Aktywować</string>
+    <string name="max_license_activating">Sprawdzam klucz…</string>
+    <string name="max_license_refresh">Sprawdź teraz</string>
+    <string name="max_license_activated">Aktywowany. To urządzenie jest teraz połączone z Twoim kluczem.</string>
+    <string name="max_license_error_invalid_key">Ten klucz nie wygląda na kompletny. Sprawdź i spróbuj ponownie.</string>
+    <string name="max_license_error_not_configured">W tej kompilacji nie skonfigurowano serwera licencji.</string>
+    <string name="max_license_error_network">Brak połączenia. Klucz jest sprawdzany raz, a następnie działa w trybie offline.</string>
+    <string name="max_license_error_timeout">Serwer licencji nie odpowiedział na czas. Spróbuj ponownie.</string>
+    <string name="max_license_error_server">Serwer licencji odpowiedział z błędem. Spróbuj ponownie później.</string>
+    <string name="max_license_error_client">Funkcja licencji nie jest wdrożona na serwerze.</string>
+    <string name="max_license_error_format">Odpowiedź serwera nie została zrozumiana.</string>
+    <string name="max_license_error_expired">Ten klucz wygasł.</string>
+    <string name="max_license_error_not_found">Ten klucz nie jest znany.</string>
+    <string name="max_license_error_revoked">Ten klucz został unieważniony.</string>
+    <string name="max_license_error_device_limit">Ten klucz osiągnął limit urządzenia. Poproś o zresetowanie urządzenia.</string>
+    <string name="max_license_error_device_unknown">To urządzenie nie jest jeszcze połączone z kluczem. Najpierw aktywuj go tutaj.</string>
+    <string name="max_license_error_device_removed">Urządzenie to zostało wyjęte z kluczyka przez właściciela.</string>
+    <string name="max_license_error_rate_limited">Zbyt wiele prób z tego połączenia — poczekaj kilka minut i spróbuj ponownie.</string>
+    <string name="max_license_error_unknown">Coś poszło nie tak. Powód został odnotowany w Diagnostyce.</string>
+    <string name="max_license_gate_title">Nawierzchnia ta wymaga pozwolenia</string>
+    <string name="max_license_gate_detail">Jest dołączony do klucza. Jeden klucz obejmuje to urządzenie, a wejście do niego zajmuje minutę.</string>
+    <string name="max_feature_off_title">Wyłączony</string>
+    <string name="max_feature_off_detail">Panel sterowania wyłączył tę powierzchnię. Wraca, gdy tylko zostanie ponownie włączony.</string>
+    <string name="max_license_gate_action">Otwórz ustawienia licencji</string>
+    <string name="max_license_gate_subscribe">Zapisz się teraz</string>
+    <string name="max_license_subscription_section">Prenumerata</string>
+    <string name="max_license_subscription_open">Otwórz stronę subskrypcji</string>
+</resources>

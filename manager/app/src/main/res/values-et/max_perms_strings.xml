@@ -69,4 +69,25 @@
     <string name="max_perms_mode_foreground_note">Lubatud ainult siis, kui rakendus on esiplaanil.</string>
     <string name="max_perms_picker_desc">Iga selles seadmes olev rakendus koos selle deklareeritud lubadega ja rakendusega, mida süsteem tegelikult lubab.</string>
     <string name="max_perms_entry_desc">Vaadake, mida see rakendus deklareerib ja mida süsteem tegelikult võimaldab</string>
+    <string name="max_perms_manifest_title">Manifesti kokkuvõte</string>
+    <string name="max_perms_manifest_desc">Loe paketihaldurist: versioon, SDK vahemik, komponendid ja kui palju neid eksporditakse. Eksporditud komponendi saavad käivitada teised rakendused.</string>
+    <string name="max_perms_manifest_version">Versioon</string>
+    <string name="max_perms_manifest_sdk">SDK vahemik</string>
+    <string name="max_perms_manifest_location">Installi asukoht</string>
+    <string name="max_perms_manifest_location_auto">Automaatne</string>
+    <string name="max_perms_manifest_location_internal">Ainult sisemälu</string>
+    <string name="max_perms_manifest_location_external">Eelistab välist</string>
+    <string name="max_perms_manifest_components">Komponendid</string>
+    <string name="max_perms_manifest_components_order">tegevused · teenused · vastuvõtjad · pakkujad</string>
+    <string name="max_perms_manifest_exported">Eksporditud komponendid</string>
+    <string name="max_perms_manifest_splits">Tükeldatud APK-d</string>
+    <string name="max_perms_manifest_debug">Silutav</string>
+    <string name="max_perms_features_title">Deklareeritud omadused</string>
+    <string name="max_perms_features_desc">Mida pakett seadmelt nõuab, võrreldes sellega, mida see seade reklaamib. Siin puuduv nõutav funktsioon tähendab tavaliselt, et rakendus ei tööta täielikult – see on paketihalduri nõue, mitte oletus.</string>
+    <string name="max_perms_features_loading">Paketi deklareeritud funktsioonide lugemine…</string>
+    <string name="max_perms_features_none">Pakett deklareerib, et puuduvad vajalikud funktsioonid.</string>
+    <string name="max_perms_features_required">Nõutav</string>
+    <string name="max_perms_features_unsupported">Mitte selles seadmes</string>
+    <string name="max_perms_manifest_none">Paketihaldur ei teatanud.</string>
+    <string name="max_perms_manifest_unknown">Tundmatu</string>
 </resources>

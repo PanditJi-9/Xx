@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_update_strings.xml -->
+<resources>
+    <string name="update_dialog_title">Update verfügbar</string>
+    <string name="update_dialog_title_required">Update erforderlich</string>
+    <string name="update_required_notice">Dieses Update ist erforderlich, um MaxManager weiterhin verwenden zu können. Installieren Sie es und öffnen Sie die App erneut.</string>
+    <string name="update_dialog_body">Version %1$s ist verfügbar. Sie befinden sich auf %2$s.</string>
+    <string name="update_block_title">Zum Fortfahren ist ein Update erforderlich</string>
+    <string name="update_block_body">Dieser Build (%1$s) wird nicht mehr unterstützt. Aktualisieren Sie auf %2$s, um MaxManager weiterhin zu verwenden.</string>
+    <string name="update_block_body_no_release">Dieser Build (%1$s) wird nicht mehr unterstützt.</string>
+    <string name="update_release_notes_label">Was ist neu</string>
+    <string name="update_size">Downloadgröße: %1$s</string>
+    <string name="update_button_now">Jetzt aktualisieren</string>
+    <string name="update_button_later">Später</string>
+    <string name="update_button_close">Schließen</string>
+    <string name="update_button_open_page">Download-Seite öffnen</string>
+    <string name="update_state_downloading">Herunterladen… %1$d%%</string>
+    <string name="update_state_downloading_unknown">Herunterladen…</string>
+    <string name="update_state_installing">Installieren…</string>
+    <string name="update_error_network">Der Update-Server konnte nicht erreicht werden. Überprüfen Sie Ihre Verbindung und versuchen Sie es erneut.</string>
+    <string name="update_error_http">Der Update-Server antwortete mit einem Fehler. Versuchen Sie es später noch einmal.</string>
+    <string name="update_error_format">Die Update-Informationen konnten nicht gelesen werden.</string>
+    <string name="update_error_too_large">Die Aktualisierungsinformationen waren größer als erwartet und wurden verworfen.</string>
+    <string name="update_error_integrity">Die heruntergeladene Datei entsprach nicht ihrer Prüfsumme und wurde gelöscht.</string>
+    <string name="update_error_install">Die Installation ist fehlgeschlagen. Versuchen Sie es erneut.</string>
+    <string name="update_error_not_configured">In diesem Build ist kein Update-Kanal konfiguriert.</string>
+    <string name="update_maintenance_title">Vorübergehend nicht verfügbar</string>
+    <string name="update_maintenance_body">MaxManager ist vorübergehend nicht verfügbar. Bitte versuchen Sie es in Kürze noch einmal.</string>
+    <string name="update_check_title">Suchen Sie nach Updates</string>
+    <string name="update_check_supporting">Aktuelle Version: %1$s</string>
+    <string name="update_check_updated">Ein Update ist verfügbar.</string>
+    <string name="update_check_uptodate">Sie sind auf der neuesten Version.</string>
+    <string name="update_check_failed">Es konnte nicht nach Updates gesucht werden.</string>
+    <string name="update_check_not_configured">In diesem Build ist kein Update-Kanal konfiguriert.</string>
+    <string name="update_released_label">Erscheinungsdatum: %1$s</string>
+    <string name="update_check_none_published">Es wurde noch kein Update über das Control Panel veröffentlicht.</string>
+    <string name="update_check_link_missing">Ein Update ist veröffentlicht, aber der Download-Link fehlt.</string>
+</resources>

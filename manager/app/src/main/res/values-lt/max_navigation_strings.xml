@@ -53,4 +53,8 @@
     <string name="max_title_get_started">Sąranka</string>
     <string name="max_hub_audio">Garsas</string>
     <string name="max_hub_audio_desc">Išvesties įrenginiai, srautai ir deklaruojami efektai</string>
+    <string name="control_tools_live">Gyvi paviršiai</string>
+    <string name="control_tools_advanced">Išplėstiniai įrankiai</string>
+    <string name="control_tools_system">Sistemos įrankiai</string>
+    <string name="control_tools_appearance">Išvaizda</string>
 </resources>

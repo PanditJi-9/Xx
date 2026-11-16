@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/manifest_inspector_strings.xml -->
+<resources>
+    <string name="manifest_inspector_title">Manifest Inspekteur</string>
+    <string name="manifest_inspector_subtitle">Wat \'n geïnstalleerde toepassing oor homself verklaar, lees uit PackageManager.</string>
+    <string name="max_role_manifest_inspector">Wys wat \'n pakket oor homself verklaar - leesalleen.</string>
+    <string name="mi_search">Soek programme</string>
+    <string name="mi_empty">Kies \'n toepassing aan die linkerkant.</string>
+    <string name="mi_yes">Ja</string>
+    <string name="mi_no">Nee</string>
+    <string name="mi_section_identity">Pakket</string>
+    <string name="mi_version">Weergawe</string>
+    <string name="mi_version_code">Weergawe kode</string>
+    <string name="mi_min_sdk">Minimum SDK</string>
+    <string name="mi_target_sdk">Teiken SDK</string>
+    <string name="mi_installed">Geïnstalleer</string>
+    <string name="mi_updated">Opgedateer</string>
+    <string name="mi_installer">Installeerder</string>
+    <string name="mi_uid">UID</string>
+    <string name="mi_data_dir">Data gids</string>
+    <string name="mi_debuggable">Ontfoutbaar</string>
+    <string name="mi_system_app">Stelsel app</string>
+    <string name="mi_enabled">Geaktiveer</string>
+    <string name="mi_section_permissions">Toestemmings versoek</string>
+    <string name="mi_permissions_summary">%1$d toestemmings · %2$d van hulle gevaarlik</string>
+    <string name="mi_permissions_none">Hierdie toepassing vra geen toestemming nie.</string>
+    <string name="mi_perm_dangerous">Gevaarlik</string>
+    <string name="mi_perm_signature">Handtekening</string>
+    <string name="mi_perm_normal">Normaal</string>
+    <string name="mi_perm_unknown">Ongeklassifiseer</string>
+    <string name="mi_section_components">Komponente</string>
+    <string name="mi_activities">Aktiwiteite</string>
+    <string name="mi_services">Dienste</string>
+    <string name="mi_receivers">Ontvangers</string>
+    <string name="mi_providers">Verskaffers</string>
+    <string name="mi_components_none">Geen verklaar nie</string>
+    <string name="mi_section_features">Toestelkenmerke</string>
+    <string name="mi_features_note">Die platform stel nie \'n ander toepassing se gebruike-kenmerklys bloot nie; dit is die kenmerke wat hierdie toestel rapporteer.</string>
+    <string name="mi_features_none">Geen kenmerk is gerapporteer nie</string>
+    <string name="mi_section_signature">Ondertekening sertifikaat</string>
+    <string name="mi_signature_note">SHA-256 van die ondertekeningsertifikaat. Twee weergawes met dieselfde waarde is dieselfde uitgewer.</string>
+    <string name="mi_signature_sha256">Sertifikaat-samestelling</string>
+</resources>

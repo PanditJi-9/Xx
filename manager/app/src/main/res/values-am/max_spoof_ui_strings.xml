@@ -51,4 +51,14 @@
     <string name="copg_tweak_kso_title">ማያ ገጹን እንደበራ አቆይ</string>
     <string name="copg_tweak_kso_desc">የ COPG ስክሪን ላይ ማቆየት በዚህ መተግበሪያ ላይ ይተገበራል። እዚህ ተቀምጧል፣ በግምገማ ወደ ሞተሩ ተፃፈ እና በስፖፍ ትር ውስጥ ተግብር።</string>
     <string name="copg_tweak_needs_device">በመጀመሪያ ለዚህ መተግበሪያ መሣሪያ ያስፈልገዋል፣ በ Spoof ትር ውስጥ።</string>
+    <string name="spoof_engine_unmeasured">የሞተር ሁኔታ አይለካም፡ ስርወ መዳረሻ ገና አልተሰጠም። ሩትን ይስጡ፣ ከዚያ ይህን ትር እንደገና ይክፈቱት።</string>
+    <string name="spoof_engine_config_missing">COPG ተጭኗል፣ ግን የማዋቀር ፋይሉ (COPG.json) ይጎድላል። ሞጁሉ እንደገና እስኪያቀርብ ድረስ ማመልከት ውድቅ ተደርጓል።</string>
+    <string name="spoof_engine_config_unreadable">COPG ተጭኗል፣ ነገር ግን የውቅር ፋይሉ ሊነበብ አይችልም። ፋይሉ እስኪጠገን ድረስ ማመልከት ውድቅ ነው።</string>
+    <string name="spoof_imei_spoof">IMEI ማጭበርበር</string>
+    <string name="spoof_imei_spoof_desc">ይህን መተግበሪያ የተለየ IMEI ያሳያል። በዚህ መተግበሪያ በኤልኤስፖዝድ ውስጥ የነቃ የMax Manager ሞጁል ይፈልጋል። መተግበሪያውን ካበሩት በኋላ እንደገና ያስጀምሩት።</string>
+    <string name="spoof_imei_active">ይህን መተግበሪያ በማሳየት ላይ፡ %1$s</string>
+    <string name="spoof_imei_summary">IMEI ማጭበርበር</string>
+    <string name="spoof_imei_regenerate">አዲስ የዘፈቀደ IMEI</string>
+    <string name="spoof_imei_regenerate_desc">ለዚህ መተግበሪያ ሌላ የሚሰራ IMEI ያመነጫል። እሱን ለማየት መተግበሪያውን እንደገና ያስጀምሩት።</string>
+    <string name="spoof_imei_module_inactive">የMax Manager ሞጁል በLSPosed ውስጥ አልነቃም፣ ስለዚህ መተግበሪያዎች አሁንም ትክክለኛውን IMEI ያያሉ። ሞጁሉን በLSPosed ውስጥ ያንቁ፣ ይህን መተግበሪያ ወደ ስፋቱ ያክሉት፣ ከዚያ ይህን ማያ ገጽ እንደገና ይክፈቱት።</string>
 </resources>

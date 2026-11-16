@@ -18,4 +18,10 @@
     <string name="max_cfg_section_appearance">รูปลักษณ์และอินเทอร์เฟซ</string>
     <string name="max_cfg_section_app_prefs">การตั้งค่าแอปและภาษา</string>
     <string name="max_cfg_restore_merge_note">การคืนค่าการตั้งค่าจะผสาน: คีย์ที่อยู่ในไฟล์จะถูกเขียน และคีย์ในไฟล์ไม่ได้กล่าวถึงว่าจะคงอยู่เหมือนเดิม ไม่มีอะไรชัดเจน</string>
+    <string name="max_cfg_diff_title">%1$d การตั้งค่าที่บันทึกไว้แตกต่างจากอุปกรณ์นี้</string>
+    <string name="max_cfg_diff_line">%1$s: %2$s → %3$s</string>
+    <string name="max_cfg_diff_unset">ไม่ได้ตั้งค่า</string>
+    <string name="max_cfg_diff_more">และ %1$d เพิ่มเติม</string>
+    <string name="max_cfg_diff_applist">%1$d เพิ่มบรรทัดรายการแอป, %2$d ลบออก — รายการทั้งหมดถูกแทนที่ แต่ไม่ถูกรวมเข้าด้วยกัน</string>
+    <string name="max_cfg_diff_prefs">%1$d ปุ่มกำหนดลักษณะแตกต่างกัน — ผสานเข้าด้วยกัน ไม่ใช่ถูกล้างข้อมูล</string>
 </resources>

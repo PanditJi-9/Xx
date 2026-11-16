@@ -10,4 +10,6 @@
     <string name="studio_display">Weergave</string>
     <string name="studio_power">Stroomopties</string>
     <string name="studio_settings">Instellingen</string>
+    <string name="audio_dsp_live">DSP live</string>
+    <string name="max_audio_session_label">Audiosessie #%1$d</string>
 </resources>

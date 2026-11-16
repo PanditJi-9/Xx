@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/manifest_inspector_strings.xml -->
+<resources>
+    <string name="manifest_inspector_title">Инспектор манифеста</string>
+    <string name="manifest_inspector_subtitle">Что заявляет о себе установленное приложение, читайте в PackageManager.</string>
+    <string name="max_role_manifest_inspector">Показывает, что пакет заявляет о себе — только для чтения.</string>
+    <string name="mi_search">Поиск приложений</string>
+    <string name="mi_empty">Выберите приложение слева.</string>
+    <string name="mi_yes">Да</string>
+    <string name="mi_no">Нет</string>
+    <string name="mi_section_identity">Упаковка</string>
+    <string name="mi_version">Версия</string>
+    <string name="mi_version_code">Код версии</string>
+    <string name="mi_min_sdk">Минимальный SDK</string>
+    <string name="mi_target_sdk">Целевой SDK</string>
+    <string name="mi_installed">Установлено</string>
+    <string name="mi_updated">Обновлено</string>
+    <string name="mi_installer">Установщик</string>
+    <string name="mi_uid">UID</string>
+    <string name="mi_data_dir">Каталог данных</string>
+    <string name="mi_debuggable">Отлаживаемый</string>
+    <string name="mi_system_app">Системное приложение</string>
+    <string name="mi_enabled">Включено</string>
+    <string name="mi_section_permissions">Запрошенные разрешения</string>
+    <string name="mi_permissions_summary">%1$d разрешений · %2$d из них опасны</string>
+    <string name="mi_permissions_none">Это приложение не запрашивает разрешения.</string>
+    <string name="mi_perm_dangerous">Опасный</string>
+    <string name="mi_perm_signature">Подпись</string>
+    <string name="mi_perm_normal">Нормальный</string>
+    <string name="mi_perm_unknown">Неклассифицированный</string>
+    <string name="mi_section_components">Компоненты</string>
+    <string name="mi_activities">Деятельность</string>
+    <string name="mi_services">Услуги</string>
+    <string name="mi_receivers">Ресиверы</string>
+    <string name="mi_providers">Провайдеры</string>
+    <string name="mi_components_none">Ничего не заявлено</string>
+    <string name="mi_section_features">Возможности устройства</string>
+    <string name="mi_features_note">Платформа не раскрывает список используемых функций другого приложения; это функции, о которых сообщает это устройство.</string>
+    <string name="mi_features_none">Ни одна функция не сообщается</string>
+    <string name="mi_section_signature">Сертификат подписи</string>
+    <string name="mi_signature_note">SHA-256 сертификата подписи. Две сборки с одинаковым значением принадлежат одному и тому же издателю.</string>
+    <string name="mi_signature_sha256">Дайджест сертификата</string>
+</resources>

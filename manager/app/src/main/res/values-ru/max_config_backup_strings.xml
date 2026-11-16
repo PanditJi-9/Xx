@@ -18,4 +18,10 @@
     <string name="max_cfg_section_appearance">Внешний вид и интерфейс</string>
     <string name="max_cfg_section_app_prefs">Настройки приложения и язык</string>
     <string name="max_cfg_restore_merge_note">Восстановление настроек объединяется: ключи, присутствующие в файле, записываются, а ключи, которые в нем не упоминаются, остаются такими, какие они есть. Ничего не очищается.</string>
+    <string name="max_cfg_diff_title">%1$d сохраненные настройки отличаются от этого устройства</string>
+    <string name="max_cfg_diff_line">%1$s: %2$s → %3$s</string>
+    <string name="max_cfg_diff_unset">не установлено</string>
+    <string name="max_cfg_diff_more">и %1$d ещё</string>
+    <string name="max_cfg_diff_applist">Добавлено %1$d строк списка приложений, %2$d удалено — весь список заменяется, а не объединяется.</string>
+    <string name="max_cfg_diff_prefs">%1$d ключи предпочтений различаются — объединены, а не удалены.</string>
 </resources>

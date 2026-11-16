@@ -13,4 +13,23 @@
     <string name="max_expand_section">Mostrar detalles</string>
     <string name="max_collapse_section">Ocultar detalles</string>
     <string name="max_trust_loading">Lendo…</string>
+    <string name="max_gov_title">Quen goberna agora</string>
+    <string name="max_gov_separator">" › "</string>
+    <string name="max_gov_order_note">Orde fixa: un chanzo máis alto bloquea un inferior. Nunca cambia que política gaña.</string>
+    <string name="max_gov_open_details">Titulares activos</string>
+    <string name="max_gov_active_title">Quen ten o control</string>
+    <string name="max_gov_none">Ningunha política posúe un control de hardware neste momento.</string>
+    <string name="max_gov_count">Arrendamentos de control activo: %1$d</string>
+    <string name="max_gov_requested">Solicitado: %1$s</string>
+    <string name="max_gov_owner_recovery">Recuperación</string>
+    <string name="max_gov_owner_safety">Seguridade térmica</string>
+    <string name="max_gov_owner_per_app">Perfil da aplicación</string>
+    <string name="max_gov_owner_max_ai">Max AI</string>
+    <string name="max_gov_owner_global">Perfil global</string>
+    <string name="max_gov_owner_system">Sistema</string>
+    <string name="max_gov_owner_a11y">%1$s posúe un control de hardware</string>
+    <string name="max_gov_now_none">Non hai propietario automatizado neste momento; o control segue sendo teu</string>
+    <string name="max_gov_now_one">%1$s mantén un control</string>
+    <string name="max_gov_now_many">%1$s mantén os controis %2$d</string>
+    <string name="devinfo_details">Detalles</string>
 </resources>

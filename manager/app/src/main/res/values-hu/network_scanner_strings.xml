@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/network_scanner_strings.xml -->
+<resources>
+    <string name="network_scanner_title">Helyi hálózati szkenner</string>
+    <string name="network_scanner_subtitle">Az Ön címe, az átjáró, amelyet elér, és mely szomszédok válaszoltak.</string>
+    <string name="max_role_network_scanner">Beolvassa a hálózatot, amelyen éppen tartózkodik – nincs rögzítés, nincs gyökér.</string>
+    <string name="ns_no_network">Nincs hálózat csatlakoztatva.</string>
+    <string name="ns_interface">Felület</string>
+    <string name="ns_address">Cím</string>
+    <string name="ns_gateway">Átjáró</string>
+    <string name="ns_dns">DNS</string>
+    <string name="ns_mac">MAC</string>
+    <string name="ns_transport_wifi">Wi-Fi</string>
+    <string name="ns_transport_ethernet">Ethernet</string>
+    <string name="ns_transport_cellular">Sejtes</string>
+    <string name="ns_transport_other">Más</string>
+    <string name="ns_sources_title">Honnan ez jön</string>
+    <string name="ns_sources_body">A címek és az átjáró a platform linktulajdonságaiból olvasható ki. A szomszédos tábla a kernel ARP-gyorsítótárából olvassa be, így csak azt tárolja, amivel az eszköz nemrégiben beszélt – az üres tábla nem jelent üres hálózatot.</string>
+    <string name="ns_refresh">Frissítés</string>
+    <string name="ns_probe">Vizsgálja meg a közös portokat</string>
+    <string name="ns_probe_stop">Stop</string>
+    <string name="ns_probe_progress">%2$d %1$d vizsgálata</string>
+    <string name="ns_probe_note">TCP-kapcsolatot küld a 22-es, 80-as, 443-as, 5000-es és 5555-ös portokon ezen a /24-en keresztül. A port, amely válaszol, jelentve van; a csend nem bizonyíték arra, hogy a házigazda hiányzik.</string>
+    <string name="ns_neighbours">Ismert szomszédok</string>
+    <string name="ns_neighbours_note">A /proc/net/arp forrásból – csak olvasható.</string>
+    <string name="ns_neighbours_empty">A szomszédokat még nem ismerik.</string>
+    <string name="ns_ports_value">Portok %1$s</string>
+</resources>

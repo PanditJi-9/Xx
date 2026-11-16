@@ -51,4 +51,14 @@
     <string name="copg_tweak_kso_title">Διατηρήστε την οθόνη ενεργοποιημένη</string>
     <string name="copg_tweak_kso_desc">Εφαρμόζει την προσαρμογή COPG διατήρησης οθόνης σε αυτήν την εφαρμογή. Αποθηκεύτηκε εδώ, εγγράφηκε στον κινητήρα από την Αναθεώρηση και εφαρμόστε στην καρτέλα Spoof.</string>
     <string name="copg_tweak_needs_device">Χρειάζεται πρώτα μια συσκευή για αυτήν την εφαρμογή, στην καρτέλα Spoof.</string>
+    <string name="spoof_engine_unmeasured">Η κατάσταση του κινητήρα δεν μετράται: η πρόσβαση root δεν έχει παραχωρηθεί ακόμα. Εκχωρήστε root και, στη συνέχεια, ανοίξτε ξανά αυτήν την καρτέλα.</string>
+    <string name="spoof_engine_config_missing">Το COPG είναι εγκατεστημένο, αλλά το αρχείο ρυθμίσεών του (COPG.json) λείπει. Η αίτηση απορρίπτεται έως ότου η ενότητα την παράσχει ξανά.</string>
+    <string name="spoof_engine_config_unreadable">Το COPG είναι εγκατεστημένο, αλλά το αρχείο ρυθμίσεών του δεν είναι αναγνώσιμο JSON. Η αίτηση απορρίπτεται μέχρι να επιδιορθωθεί το αρχείο.</string>
+    <string name="spoof_imei_spoof">Spoofing IMEI</string>
+    <string name="spoof_imei_spoof_desc">Εμφανίζει σε αυτήν την εφαρμογή ένα διαφορετικό IMEI. Χρειάζεται η λειτουργική μονάδα Max Manager ενεργοποιημένη στο LSPosed με αυτήν την εφαρμογή στο πεδίο εφαρμογής της. Επανεκκινήστε την εφαρμογή αφού την ενεργοποιήσετε.</string>
+    <string name="spoof_imei_active">Εμφάνιση αυτής της εφαρμογής: %1$s</string>
+    <string name="spoof_imei_summary">Spoofing IMEI</string>
+    <string name="spoof_imei_regenerate">Νέο τυχαίο IMEI</string>
+    <string name="spoof_imei_regenerate_desc">Δημιουργεί ένα άλλο έγκυρο IMEI για αυτήν την εφαρμογή. Επανεκκινήστε την εφαρμογή για να τη δείτε.</string>
+    <string name="spoof_imei_module_inactive">Η μονάδα Max Manager δεν είναι ενεργοποιημένη στο LSPosed, επομένως οι εφαρμογές εξακολουθούν να βλέπουν το πραγματικό IMEI. Ενεργοποιήστε τη λειτουργική μονάδα στο LSPosed, προσθέστε αυτήν την εφαρμογή στο πεδίο εφαρμογής της και, στη συνέχεια, ανοίξτε ξανά αυτήν την οθόνη.</string>
 </resources>

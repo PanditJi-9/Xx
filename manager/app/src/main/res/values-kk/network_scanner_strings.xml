@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/network_scanner_strings.xml -->
+<resources>
+    <string name="network_scanner_title">Жергілікті желі сканері</string>
+    <string name="network_scanner_subtitle">Сіздің мекен-жайыңыз, ол жететін шлюз және қай көршілер жауап берді.</string>
+    <string name="max_role_network_scanner">Сіз қосылған желіні оқиды — түсіру, түбірлік жоқ.</string>
+    <string name="ns_no_network">Ешбір желі қосылмаған.</string>
+    <string name="ns_interface">Интерфейс</string>
+    <string name="ns_address">Мекенжай</string>
+    <string name="ns_gateway">Шлюз</string>
+    <string name="ns_dns">DNS</string>
+    <string name="ns_mac">MAC</string>
+    <string name="ns_transport_wifi">Сымсыз дәлдiк</string>
+    <string name="ns_transport_ethernet">Ethernet</string>
+    <string name="ns_transport_cellular">Ұялы</string>
+    <string name="ns_transport_other">Басқа</string>
+    <string name="ns_sources_title">Бұл қайдан келеді</string>
+    <string name="ns_sources_body">Мекенжайлар мен шлюз платформаның сілтеме сипаттарынан оқылады. Көрші кесте ядроның ARP кэшінен оқылады, сондықтан ол осы құрылғының жақында сөйлескенін ғана сақтайды — бос кесте бос желіні білдірмейді.</string>
+    <string name="ns_refresh">Жаңарту</string>
+    <string name="ns_probe">Жалпы порттарды зерттеу</string>
+    <string name="ns_probe_stop">Тоқта</string>
+    <string name="ns_probe_progress">Тексеру %1$d/%2$d</string>
+    <string name="ns_probe_note">Осы /24 арқылы 22, 80, 443, 5000 және 5555 порттарына TCP қосылымын жібереді. Жауап беретін порт хабарланады; үнсіздік хосттың жоқ екенін дәлелдемейді.</string>
+    <string name="ns_neighbours">Танымал көршілер</string>
+    <string name="ns_neighbours_note">/proc/net/arp ішінен — тек оқуға арналған.</string>
+    <string name="ns_neighbours_empty">Көршілері әлі белгісіз.</string>
+    <string name="ns_ports_value">Порттар %1$s</string>
+</resources>

@@ -69,4 +69,25 @@
     <string name="max_perms_entry_title">Разрешения и операции на приложението</string>
     <string name="max_perms_entry_desc">Вижте какво декларира това приложение и какво всъщност позволява системата</string>
     <string name="max_perms_entry_action">Отворени разрешения</string>
+    <string name="max_perms_manifest_title">Резюме на манифеста</string>
+    <string name="max_perms_manifest_desc">Прочетете от мениджъра на пакети: версия, диапазон на SDK, компоненти и колко от тях са експортирани. Експортиран компонент може да се стартира от други приложения.</string>
+    <string name="max_perms_manifest_version">Версия</string>
+    <string name="max_perms_manifest_sdk">Гама SDK</string>
+    <string name="max_perms_manifest_location">Местоположение на инсталиране</string>
+    <string name="max_perms_manifest_location_auto">Автоматичен</string>
+    <string name="max_perms_manifest_location_internal">Само вътрешна памет</string>
+    <string name="max_perms_manifest_location_external">Предпочита външни</string>
+    <string name="max_perms_manifest_components">Компоненти</string>
+    <string name="max_perms_manifest_components_order">дейности · услуги · получатели · доставчици</string>
+    <string name="max_perms_manifest_exported">Изнесени компоненти</string>
+    <string name="max_perms_manifest_splits">Разделени APK файлове</string>
+    <string name="max_perms_manifest_debug">Възможност за отстраняване на грешки</string>
+    <string name="max_perms_features_title">Декларирани характеристики</string>
+    <string name="max_perms_features_desc">Какво пакетът изисква от устройството в сравнение с това, което това устройство рекламира. Липсата на задължителна функция тук обикновено означава, че приложението няма да работи напълно - това е твърдение от мениджъра на пакети, а не предположение.</string>
+    <string name="max_perms_features_loading">Четене на декларираните характеристики на пакета...</string>
+    <string name="max_perms_features_none">Пакетът декларира, че няма необходими функции.</string>
+    <string name="max_perms_features_required">Задължително</string>
+    <string name="max_perms_features_unsupported">Не на това устройство</string>
+    <string name="max_perms_manifest_none">Не е докладвано от мениджъра на пакети.</string>
+    <string name="max_perms_manifest_unknown">неизвестен</string>
 </resources>

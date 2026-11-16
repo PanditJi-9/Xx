@@ -13,4 +13,23 @@
     <string name="max_expand_section">Detalları göstərin</string>
     <string name="max_collapse_section">Detalları gizlədin</string>
     <string name="max_trust_loading">Oxuyur...</string>
+    <string name="max_gov_title">İndi kim idarə edir</string>
+    <string name="max_gov_separator">" › "</string>
+    <string name="max_gov_order_note">Sabit sifariş: daha yüksək pillə aşağı olanı bloklayır. Hansı siyasətin qalib gəldiyi heç vaxt dəyişmir.</string>
+    <string name="max_gov_open_details">Aktiv sahiblər</string>
+    <string name="max_gov_active_title">Kim nəzarət edir</string>
+    <string name="max_gov_none">Hazırda heç bir siyasət aparat nəzarətinə malik deyil.</string>
+    <string name="max_gov_count">Aktiv nəzarət icarələri: %1$d</string>
+    <string name="max_gov_requested">Sorğu: %1$s</string>
+    <string name="max_gov_owner_recovery">Bərpa</string>
+    <string name="max_gov_owner_safety">Termal təhlükəsizlik</string>
+    <string name="max_gov_owner_per_app">Tətbiq profili</string>
+    <string name="max_gov_owner_max_ai">Max AI</string>
+    <string name="max_gov_owner_global">Qlobal profil</string>
+    <string name="max_gov_owner_system">Sistem</string>
+    <string name="max_gov_owner_a11y">%1$s hardware nəzarətinə malikdir</string>
+    <string name="max_gov_now_none">Hal-hazırda avtomatlaşdırılmış sahib yoxdur - nəzarət sizindir</string>
+    <string name="max_gov_now_one">%1$s nəzarəti saxlayır</string>
+    <string name="max_gov_now_many">%1$s %2$d nəzarətlərini saxlayır</string>
+    <string name="devinfo_details">Təfərrüatlar</string>
 </resources>

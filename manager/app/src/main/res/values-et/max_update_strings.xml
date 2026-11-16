@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_update_strings.xml -->
+<resources>
+    <string name="update_dialog_title">Värskendus saadaval</string>
+    <string name="update_dialog_title_required">Värskendus on vajalik</string>
+    <string name="update_required_notice">See värskendus on vajalik MaxManager kasutamise jätkamiseks. Installige see ja seejärel avage rakendus uuesti.</string>
+    <string name="update_dialog_body">Saadaval on versioon %1$s. Olete saidil %2$s.</string>
+    <string name="update_block_title">Jätkamiseks on vaja värskendust</string>
+    <string name="update_block_body">Seda järgu (%1$s) enam ei toetata. Värskendage versioonile %2$s, et jätkata MaxManager kasutamist.</string>
+    <string name="update_block_body_no_release">Seda järgu (%1$s) enam ei toetata.</string>
+    <string name="update_release_notes_label">Mis on uut</string>
+    <string name="update_size">Allalaadimise suurus: %1$s</string>
+    <string name="update_button_now">Värskendage kohe</string>
+    <string name="update_button_later">Hiljem</string>
+    <string name="update_button_close">Sule</string>
+    <string name="update_button_open_page">Ava allalaadimisleht</string>
+    <string name="update_state_downloading">Allalaadimine… %1$d%%</string>
+    <string name="update_state_downloading_unknown">Allalaadimine…</string>
+    <string name="update_state_installing">Installimine…</string>
+    <string name="update_error_network">Värskendusserveriga ei õnnestunud ühendust saada. Kontrollige ühendust ja proovige uuesti.</string>
+    <string name="update_error_http">Värskendusserver vastas veaga. Proovige hiljem uuesti.</string>
+    <string name="update_error_format">Värskendusteavet ei õnnestunud lugeda.</string>
+    <string name="update_error_too_large">Värskendusteave oli oodatust suurem ja see jäeti kõrvale.</string>
+    <string name="update_error_integrity">Allalaaditud fail ei vastanud selle kontrollsummale ja see kustutati.</string>
+    <string name="update_error_install">Installimine ebaõnnestus. Proovi uuesti.</string>
+    <string name="update_error_not_configured">Selles järgus pole värskenduskanalit konfigureeritud.</string>
+    <string name="update_maintenance_title">Ajutiselt kättesaamatu</string>
+    <string name="update_maintenance_body">MaxManager pole ajutiselt saadaval. Proovige varsti uuesti.</string>
+    <string name="update_check_title">Kontrollige värskendusi</string>
+    <string name="update_check_supporting">Praegune versioon: %1$s</string>
+    <string name="update_check_updated">Värskendus on saadaval.</string>
+    <string name="update_check_uptodate">Kasutate uusimat versiooni.</string>
+    <string name="update_check_failed">Värskendusi ei saanud kontrollida.</string>
+    <string name="update_check_not_configured">Selles järgus pole värskenduskanalit konfigureeritud.</string>
+    <string name="update_released_label">Väljalaskekuupäev: %1$s</string>
+    <string name="update_check_none_published">Juhtpaneelilt pole veel värskendust avaldatud.</string>
+    <string name="update_check_link_missing">Värskendus on avaldatud, kuid selle allalaadimislink puudub.</string>
+</resources>

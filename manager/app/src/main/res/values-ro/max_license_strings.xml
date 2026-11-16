@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_license_strings.xml -->
+<resources>
+    <string name="max_license_title">Licenţă</string>
+    <string name="max_license_subtitle">O cheie, acest dispozitiv, niciun cont</string>
+    <string name="max_license_help_body">O cheie este verificată online o dată, când o introduceți. De atunci, certificatul semnat al serverului funcționează offline până la expirarea timpului - aplicația nu sună acasă de fiecare dată când deschideți un ecran. Certificatul este legat de ID-ul de instalare aleatoriu al acestui dispozitiv, așa că copierea datelor aplicației pe alt telefon nu include licența, iar proprietarul poate reseta acea legare din panou dacă schimbați telefoanele.</string>
+    <string name="max_license_status_section">Stare</string>
+    <string name="max_license_status_active">Activ</string>
+    <string name="max_license_status_expired">Expirat</string>
+    <string name="max_license_status_none">Nu este activat</string>
+    <string name="max_license_active_detail">Rămas: %1$d zile</string>
+    <string name="max_license_expired_detail">Timpul acestei chei a trecut. O nouă cheie reînnoiește accesul.</string>
+    <string name="max_license_none_detail">Introduceți cheia primită pentru a debloca suprafețele plătite.</string>
+    <string name="max_license_promo_active">Gratuit pentru toată lumea până la %1$s</string>
+    <string name="max_license_plan_title">Plan</string>
+    <string name="max_license_devices_title">Dispozitive</string>
+    <string name="max_license_devices_detail">%1$d din %2$d folosit</string>
+    <string name="max_license_device_id_title">Acest dispozitiv</string>
+    <string name="max_license_device_id_detail">%1$s</string>
+    <string name="max_license_key_section">Activare</string>
+    <string name="max_license_key_label">Cheia de licență</string>
+    <string name="max_license_key_placeholder">MAXM-XXXX-XXXX-XXXX-XXXX-XX</string>
+    <string name="max_license_key_helper">Linițele și majusculele nu contează - lipiți-o așa cum le-ați primit.</string>
+    <string name="max_license_activate">Activa</string>
+    <string name="max_license_activating">Se verifică cheia...</string>
+    <string name="max_license_refresh">Verificați acum</string>
+    <string name="max_license_activated">Activat. Acest dispozitiv este acum conectat la cheia dvs.</string>
+    <string name="max_license_error_invalid_key">Această cheie nu pare completă. Verificați-l și încercați din nou.</string>
+    <string name="max_license_error_not_configured">Această versiune nu are un server de licență configurat.</string>
+    <string name="max_license_error_network">Nicio conexiune. Cheia este verificată o dată, apoi funcționează offline.</string>
+    <string name="max_license_error_timeout">Serverul de licențe nu a răspuns la timp. Încearcă din nou.</string>
+    <string name="max_license_error_server">Serverul de licențe a răspuns cu o eroare. Încercați din nou mai târziu.</string>
+    <string name="max_license_error_client">Funcția de licență nu este implementată pe server.</string>
+    <string name="max_license_error_format">Răspunsul serverului nu a fost înțeles.</string>
+    <string name="max_license_error_expired">Această cheie a expirat.</string>
+    <string name="max_license_error_not_found">Această cheie nu este cunoscută.</string>
+    <string name="max_license_error_revoked">Această cheie a fost revocată.</string>
+    <string name="max_license_error_device_limit">Această cheie a atins limita de dispozitiv. Solicitați o resetare a dispozitivului.</string>
+    <string name="max_license_error_device_unknown">Acest dispozitiv nu este încă conectat la cheie. Activați-l aici mai întâi.</string>
+    <string name="max_license_error_device_removed">Acest dispozitiv a fost scos din cheie de către proprietar.</string>
+    <string name="max_license_error_rate_limited">Prea multe încercări de la această conexiune — așteptați câteva minute, apoi încercați din nou.</string>
+    <string name="max_license_error_unknown">Ceva a mers prost. Motivul a fost consemnat în Diagnosticare.</string>
+    <string name="max_license_gate_title">Această suprafață are nevoie de licență</string>
+    <string name="max_license_gate_detail">Este inclus cu o cheie. O tastă acoperă acest dispozitiv, iar introducerea acestuia durează un minut.</string>
+    <string name="max_feature_off_title">Dezactivat</string>
+    <string name="max_feature_off_detail">Panoul de control a dezactivat această suprafață. Acesta revine imediat ce este activat din nou.</string>
+    <string name="max_license_gate_action">Deschideți setările de licență</string>
+    <string name="max_license_gate_subscribe">Abonați-vă acum</string>
+    <string name="max_license_subscription_section">Abonament</string>
+    <string name="max_license_subscription_open">Deschide pagina de abonament</string>
+</resources>

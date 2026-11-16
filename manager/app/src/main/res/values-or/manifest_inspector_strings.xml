@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/manifest_inspector_strings.xml -->
+<resources>
+    <string name="manifest_inspector_title">ମନିଫେଷ୍ଟ ଇନ୍ସପେକ୍ଟର |</string>
+    <string name="manifest_inspector_subtitle">ଏକ ସଂସ୍ଥାପିତ ଆପ୍ ନିଜ ବିଷୟରେ ଯାହା ଘୋଷଣା କରେ, ପ୍ୟାକେଜ୍ ମ୍ୟାନେଜର୍ ଠାରୁ ପ read |</string>
+    <string name="max_role_manifest_inspector">ଏକ ପ୍ୟାକେଜ୍ ନିଜ ବିଷୟରେ କ’ଣ ଘୋଷଣା କରେ ତାହା ଦେଖାଏ - କେବଳ ପଠନୀୟ |</string>
+    <string name="mi_search">ଆପ୍ଲିକେସନ୍ ସନ୍ଧାନ କରନ୍ତୁ |</string>
+    <string name="mi_empty">ବାମ ପାର୍ଶ୍ୱରେ ଏକ ଆପ୍ ବାଛନ୍ତୁ |</string>
+    <string name="mi_yes">ହଁ</string>
+    <string name="mi_no">ନା</string>
+    <string name="mi_section_identity">ପ୍ୟାକେଜ୍</string>
+    <string name="mi_version">ସଂସ୍କରଣ</string>
+    <string name="mi_version_code">ସଂସ୍କରଣ କୋଡ୍</string>
+    <string name="mi_min_sdk">ସର୍ବନିମ୍ନ SDK |</string>
+    <string name="mi_target_sdk">SDK କୁ ଟାର୍ଗେଟ୍ କରନ୍ତୁ |</string>
+    <string name="mi_installed">ସଂସ୍ଥାପିତ |</string>
+    <string name="mi_updated">ଅଦ୍ୟତନ କରାଯାଇଛି</string>
+    <string name="mi_installer">ସଂସ୍ଥାପକ</string>
+    <string name="mi_uid">UID</string>
+    <string name="mi_data_dir">ଡାଟା ଡିରେକ୍ଟୋରୀ |</string>
+    <string name="mi_debuggable">ତ୍ରୁଟି ନିବାରଣ |</string>
+    <string name="mi_system_app">ସିଷ୍ଟମ୍ ଆପ୍ |</string>
+    <string name="mi_enabled">ସକ୍ଷମ</string>
+    <string name="mi_section_permissions">ଅନୁରୋଧ ଅନୁମତି |</string>
+    <string name="mi_permissions_summary">ସେମାନଙ୍କ ମଧ୍ୟରୁ %1$d ଅନୁମତି · %2$d ବିପଜ୍ଜନକ |</string>
+    <string name="mi_permissions_none">ଏହି ଆପ୍ କ permission ଣସି ଅନୁମତି ମାଗି ନାହିଁ |</string>
+    <string name="mi_perm_dangerous">ବିପଜ୍ଜନକ |</string>
+    <string name="mi_perm_signature">ଦସ୍ତଖତ</string>
+    <string name="mi_perm_normal">ସାଧାରଣ</string>
+    <string name="mi_perm_unknown">ଅଣ ଶ୍ରେଣୀଭୁକ୍ତ |</string>
+    <string name="mi_section_components">ଉପାଦାନଗୁଡ଼ିକ |</string>
+    <string name="mi_activities">କାର୍ଯ୍ୟକଳାପ</string>
+    <string name="mi_services">ସେବାଗୁଡିକ</string>
+    <string name="mi_receivers">ଗ୍ରହଣକାରୀ</string>
+    <string name="mi_providers">ପ୍ରଦାନକାରୀ |</string>
+    <string name="mi_components_none">କେହି ଘୋଷଣା କରିନାହାଁନ୍ତି |</string>
+    <string name="mi_section_features">ଉପକରଣ ବ features ଶିଷ୍ଟ୍ୟଗୁଡିକ</string>
+    <string name="mi_features_note">ପ୍ଲାଟଫର୍ମ ଅନ୍ୟ ଏକ ଆପର ବ୍ୟବହାର-ବ feature ଶିଷ୍ଟ୍ୟ ତାଲିକା ପ୍ରକାଶ କରେ ନାହିଁ; ଏହି ଡିଭାଇସ୍ ରିପୋର୍ଟ କରୁଥିବା ବ features ଶିଷ୍ଟ୍ୟଗୁଡିକ |</string>
+    <string name="mi_features_none">କ feature ଣସି ବ feature ଶିଷ୍ଟ୍ୟ ରିପୋର୍ଟ ହୋଇନାହିଁ |</string>
+    <string name="mi_section_signature">ଦସ୍ତଖତ ପ୍ରମାଣପତ୍ର</string>
+    <string name="mi_signature_note">ଦସ୍ତଖତ ପ୍ରମାଣପତ୍ରର SHA-256 | ସମାନ ମୂଲ୍ୟ ସହିତ ଦୁଇଟି ବିଲ୍ଡ ସମାନ ପ୍ରକାଶକ |</string>
+    <string name="mi_signature_sha256">ସାର୍ଟିଫିକେଟ୍ ହଜମ</string>
+</resources>

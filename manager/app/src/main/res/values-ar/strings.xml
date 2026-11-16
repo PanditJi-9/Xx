@@ -273,7 +273,7 @@
     <string name="resolution_downscale_desc">استهدف دقة تصيير اللعبة الداخلية — لا دقة الشاشة المادية</string>
     <string name="resolution_downscale_title">تقليل الدقة</string>
     <string name="resolution_downscale_custom_title">معامل مخصّص للدقة</string>
-    <string name="resolution_downscale_custom_desc">درجة أدق بين ٣٠٪ و٩٥٪ من الأصلية — تُعرض كنسبة من شاشتك</string>
+    <string name="resolution_downscale_custom_desc" formatted="false">درجة أدق بين ٣٠٪ و٩٥٪ من الأصلية — تُعرض كنسبة من شاشتك</string>
     <string name="canvas_scale_native">الدقة الأصلية</string>
     <string name="canvas_scale_shortside">%1$dp</string>
     <string name="canvas_scale_percent">مخصّص · %1$d%%</string>
@@ -452,11 +452,13 @@
     <string name="str_launch_app">تشغيل التطبيق</string>
     <string name="str_launch_compatibility_check">بدء فحص التوافق</string>
     <string name="str_let_s_adjust_a_few_basic_setti">دعنا نضبط بعض الإعدادات الأساسية</string>
-    <string name="str_let_s_grant_maxmanager_a_root_acc">يرجى منح صلاحية الجذر لـ Max Manager</string>
+    <string name="str_let_s_grant_maxmanager_a_root_acc">امنح Max Manager صلاحية الجذر</string>
     <string name="str_privilege_intro">الجذر يمنح وصولًا كاملًا، وShizuku يمنح وصولًا بمستوى ADB بلا جذر. أحدهما يكفي — ويُكشفان هنا تلقائيًا.</string>
     <string name="onboarding_run_as">وضع التشغيل</string>
-    <string name="onboarding_run_as_note">يُحفظ هنا وتستخدمه كل الشاشات.</string>
+    <string name="onboarding_run_as_note">يُطبَّق على كل الشاشات.</string>
     <string name="onboarding_access_soft_note">«أساسي» يعمل بلا جذر، والجذر وShizuku يضيفان التحكّم الذي يحتاج وصول النظام. يمكنك تغيير هذا لاحقًا من نافذة الوصول.</string>
+    <string name="onboarding_community_title">تابع Max Manager</string>
+    <string name="onboarding_community_desc">المستودع وقناة الإصدارات على بُعد لمسة.</string>
     <string name="onboarding_github_mark">N</string>
     <string name="onboarding_github_platform">GitHub</string>
     <string name="onboarding_github_repo">nader295 / MaxManager</string>
@@ -3587,7 +3589,7 @@
     <string name="ify_hint_charging">بطاقة شحن عند توصيل الشاحن</string>
     <string name="ify_hint_timer">عدّ تنازلي للمؤقّت</string>
     <string name="ify_hint_devices">عند اتصال سمّاعة بلوتوث أو سلكية</string>
-    <string name="ify_hint_battery">تنبيه عند 20٪ و10٪ والشاحن غير موصول</string>
+    <string name="ify_hint_battery" formatted="false">تنبيه عند 20٪ و10٪ والشاحن غير موصول</string>
     <string name="ify_hint_toggles">عند تغيّر الصامت أو الاهتزاز أو «عدم الإزعاج» أو الكشاف</string>
     <string name="ify_hint_navigation">توجيهات حيّة من خرائط Google وWaze وOsmAnd</string>
     <string name="ify_hint_tracking">حالة الطلب والرحلة مباشرة من Zomato وSwiggy وUber وغيرها</string>
@@ -4522,4 +4524,12 @@
     <string name="session_notify_similar">قريبة من المعتاد</string>
     <string name="session_notify_first">من أوّل الجلسات — لا أساس بعد</string>
     <string name="session_notify_unusable">أقصر من أن تُقارن</string>
+    <string name="storage_care_cat_duplicates">الملفات المكررة</string>
+    <string name="storage_care_cat_duplicates_desc">الملفات التي لها نفس المحتوى، والتي تم تحديدها بواسطة التجزئة</string>
+    <string name="storage_care_cat_broken_symlinks">الروابط الرمزية المعطلة</string>
+    <string name="storage_care_cat_broken_symlinks_desc">روابط رمزية تشير إلى أهداف غير موجودة</string>
+    <string name="storage_care_cat_databases">قواعد البيانات</string>
+    <string name="storage_care_cat_databases_desc">قواعد بيانات SQLite محسنة باستخدام الفراغ</string>
+    <string name="storage_care_cat_recycle_bin">سلة المحذوفات</string>
+    <string name="storage_care_cat_recycle_bin_desc">العناصر المحذوفة لا تزال في نظام الملفات</string>
 </resources>

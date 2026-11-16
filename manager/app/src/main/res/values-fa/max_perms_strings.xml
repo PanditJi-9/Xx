@@ -69,4 +69,25 @@
     <string name="max_perms_entry_title">مجوزها و عملیات برنامه</string>
     <string name="max_perms_entry_desc">ببینید این برنامه چه چیزی را اعلام می کند و سیستم واقعاً چه چیزی اجازه می دهد</string>
     <string name="max_perms_entry_action">مجوزها را باز کنید</string>
+    <string name="max_perms_manifest_title">خلاصه مانیفست</string>
+    <string name="max_perms_manifest_desc">از مدیر بسته بخوانید: نسخه، محدوده SDK، اجزا و تعداد زیادی از آنها صادر شده است. یک جزء صادر شده می تواند توسط برنامه های دیگر راه اندازی شود.</string>
+    <string name="max_perms_manifest_version">نسخه</string>
+    <string name="max_perms_manifest_sdk">محدوده SDK</string>
+    <string name="max_perms_manifest_location">محل نصب</string>
+    <string name="max_perms_manifest_location_auto">خودکار</string>
+    <string name="max_perms_manifest_location_internal">فقط حافظه داخلی</string>
+    <string name="max_perms_manifest_location_external">خارجی را ترجیح می دهد</string>
+    <string name="max_perms_manifest_components">اجزاء</string>
+    <string name="max_perms_manifest_components_order">فعالیت ها · خدمات · گیرنده ها · ارائه دهندگان</string>
+    <string name="max_perms_manifest_exported">اجزای صادراتی</string>
+    <string name="max_perms_manifest_splits">APK ها را تقسیم کنید</string>
+    <string name="max_perms_manifest_debug">قابل اشکال زدایی</string>
+    <string name="max_perms_features_title">ویژگی های اعلام شده</string>
+    <string name="max_perms_features_desc">آنچه که بسته از دستگاه نیاز دارد، در مقایسه با آنچه این دستگاه تبلیغ می کند. یک ویژگی ضروری که در اینجا گم شده است معمولاً به این معنی است که برنامه به طور کامل کار نمی کند - این یک ادعا از مدیر بسته است، نه یک حدس.</string>
+    <string name="max_perms_features_loading">خواندن ویژگی های اعلام شده بسته…</string>
+    <string name="max_perms_features_none">بسته هیچ ویژگی مورد نیازی را اعلام نمی کند.</string>
+    <string name="max_perms_features_required">مورد نیاز</string>
+    <string name="max_perms_features_unsupported">در این دستگاه نیست</string>
+    <string name="max_perms_manifest_none">توسط مدیر بسته گزارش نشده است.</string>
+    <string name="max_perms_manifest_unknown">ناشناس</string>
 </resources>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/manifest_inspector_strings.xml -->
+<resources>
+    <string name="manifest_inspector_title">マニフェスト検査官</string>
+    <string name="manifest_inspector_subtitle">インストールされたアプリがそれ自体について何を宣言するかは、PackageManager から読み取ります。</string>
+    <string name="max_role_manifest_inspector">パッケージがそれ自体について何を宣言しているかを表示します (読み取り専用)。</string>
+    <string name="mi_search">アプリを検索する</string>
+    <string name="mi_empty">左側でアプリを選択します。</string>
+    <string name="mi_yes">はい</string>
+    <string name="mi_no">いいえ</string>
+    <string name="mi_section_identity">パッケージ</string>
+    <string name="mi_version">バージョン</string>
+    <string name="mi_version_code">バージョンコード</string>
+    <string name="mi_min_sdk">最小 SDK</string>
+    <string name="mi_target_sdk">ターゲットSDK</string>
+    <string name="mi_installed">インストール済み</string>
+    <string name="mi_updated">更新されました</string>
+    <string name="mi_installer">インストーラ</string>
+    <string name="mi_uid">UID</string>
+    <string name="mi_data_dir">データディレクトリ</string>
+    <string name="mi_debuggable">デバッグ可能</string>
+    <string name="mi_system_app">システムアプリ</string>
+    <string name="mi_enabled">有効</string>
+    <string name="mi_section_permissions">要求された権限</string>
+    <string name="mi_permissions_summary">%1$d 権限 · %2$d は危険です</string>
+    <string name="mi_permissions_none">このアプリは許可を要求しません。</string>
+    <string name="mi_perm_dangerous">危険な</string>
+    <string name="mi_perm_signature">サイン</string>
+    <string name="mi_perm_normal">普通</string>
+    <string name="mi_perm_unknown">未分類</string>
+    <string name="mi_section_components">コンポーネント</string>
+    <string name="mi_activities">活動内容</string>
+    <string name="mi_services">サービス</string>
+    <string name="mi_receivers">受信機</string>
+    <string name="mi_providers">プロバイダー</string>
+    <string name="mi_components_none">何も宣言されていない</string>
+    <string name="mi_section_features">デバイスの機能</string>
+    <string name="mi_features_note">プラットフォームは、別のアプリの使用機能リストを公開しません。これらは、このデバイスが報告する機能です。</string>
+    <string name="mi_features_none">機能は報告されていません</string>
+    <string name="mi_section_signature">署名証明書</string>
+    <string name="mi_signature_note">署名証明書の SHA-256。同じ値を持つ 2 つのビルドは同じ発行者です。</string>
+    <string name="mi_signature_sha256">証明書ダイジェスト</string>
+</resources>

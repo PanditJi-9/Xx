@@ -69,4 +69,25 @@
     <string name="max_perms_no_match_detail">ଏହି ସନ୍ଧାନରେ ଏହି ଉପକରଣରେ କିଛି ନାହିଁ · ପ୍ରତ୍ୟେକ ଆପ୍ ପୁନର୍ବାର ଦେଖିବା ପାଇଁ ଏହାକୁ ସଫା କର</string>
     <string name="max_perms_declared_count">%2$s ବିପଦପୂର୍ଣ୍ଣ ଅନୁମତି ମଧ୍ୟରୁ %1$s ମଞ୍ଜୁର</string>
     <string name="max_perms_ref_restore_message">%1$s କାର୍ଯ୍ୟ ନିଜ ସନ୍ଦର୍ଭ ମୂଲ୍ୟକୁ ଲେଖାଯିବ। ପ୍ରତ୍ୟେକଟି ପରେ ପଢ଼ାଯାଇ ରିପୋର୍ଟ ହେବ।</string>
+    <string name="max_perms_manifest_title">ସଂକ୍ଷିପ୍ତ ସାରାଂଶ</string>
+    <string name="max_perms_manifest_desc">ପ୍ୟାକେଜ୍ ମ୍ୟାନେଜର୍ ଠାରୁ ପ: ଼ନ୍ତୁ: ସଂସ୍କରଣ, SDK ପରିସର, ଉପାଦାନ ଏବଂ ସେଗୁଡ଼ିକ ମଧ୍ୟରୁ କେତେ ରପ୍ତାନି ହେଉଛି | ଅନ୍ୟ ଆପ୍ ଦ୍ୱାରା ଏକ ରପ୍ତାନି ହୋଇଥିବା ଉପାଦାନ ଆରମ୍ଭ ହୋଇପାରିବ |</string>
+    <string name="max_perms_manifest_version">ସଂସ୍କରଣ</string>
+    <string name="max_perms_manifest_sdk">SDK ପରିସର |</string>
+    <string name="max_perms_manifest_location">ଅବସ୍ଥାନ ସଂସ୍ଥାପନ କରନ୍ତୁ |</string>
+    <string name="max_perms_manifest_location_auto">ସ୍ୱୟଂଚାଳିତ |</string>
+    <string name="max_perms_manifest_location_internal">କେବଳ ଆଭ୍ୟନ୍ତରୀଣ ସଂରକ୍ଷଣ ସ୍ଥାନ |</string>
+    <string name="max_perms_manifest_location_external">ବାହ୍ୟକୁ ପସନ୍ଦ କରେ |</string>
+    <string name="max_perms_manifest_components">ଉପାଦାନଗୁଡ଼ିକ |</string>
+    <string name="max_perms_manifest_components_order">କାର୍ଯ୍ୟକଳାପ · ସେବା · ଗ୍ରହଣକାରୀ · ପ୍ରଦାନକାରୀ |</string>
+    <string name="max_perms_manifest_exported">ରପ୍ତାନି ହୋଇଥିବା ଉପାଦାନଗୁଡ଼ିକ |</string>
+    <string name="max_perms_manifest_splits">APK ଗୁଡ଼ିକୁ ବିଭାଜନ କର |</string>
+    <string name="max_perms_manifest_debug">ତ୍ରୁଟି ନିବାରଣ |</string>
+    <string name="max_perms_features_title">ଘୋଷିତ ବ features ଶିଷ୍ଟ୍ୟଗୁଡିକ</string>
+    <string name="max_perms_features_desc">ଡିଭାଇସ୍ ଠାରୁ ପ୍ୟାକେଜ୍ ଯାହା ଆବଶ୍ୟକ କରେ, ଏହି ଡିଭାଇସ୍ ବିଜ୍ଞାପନ କରୁଥିବା ତୁଳନାରେ | ଏଠାରେ ଏକ ଆବଶ୍ୟକୀୟ ବ feature ଶିଷ୍ଟ୍ୟ ସାଧାରଣତ missing ଅର୍ଥ ହେଉଛି ଆପ୍ ସମ୍ପୂର୍ଣ୍ଣ ରୂପେ କାମ କରିବ ନାହିଁ - ଏହା ପ୍ୟାକେଜ୍ ମ୍ୟାନେଜରଙ୍କ ଏକ ଦାବି, ଅନୁମାନ ନୁହେଁ |</string>
+    <string name="max_perms_features_loading">ପ୍ୟାକେଜ୍ ର ଘୋଷିତ ବ features ଶିଷ୍ଟ୍ୟଗୁଡିକ ପ Reading ଼ିବା…</string>
+    <string name="max_perms_features_none">ପ୍ୟାକେଜ୍ କ required ଣସି ଆବଶ୍ୟକୀୟ ବ features ଶିଷ୍ଟ୍ୟ ଘୋଷଣା କରେ ନାହିଁ |</string>
+    <string name="max_perms_features_required">ଆବଶ୍ୟକ</string>
+    <string name="max_perms_features_unsupported">ଏହି ଉପକରଣରେ ନୁହେଁ |</string>
+    <string name="max_perms_manifest_none">ପ୍ୟାକେଜ୍ ମ୍ୟାନେଜର୍ ଦ୍ୱାରା ରିପୋର୍ଟ କରାଯାଇ ନାହିଁ |</string>
+    <string name="max_perms_manifest_unknown">ଅଜ୍ଞାତ</string>
 </resources>

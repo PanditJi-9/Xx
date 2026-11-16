@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_license_strings.xml -->
+<resources>
+    <string name="max_license_title">Lisensie</string>
+    <string name="max_license_subtitle">Een sleutel, hierdie toestel, geen rekening nie</string>
+    <string name="max_license_help_body">\'n Sleutel word een keer aanlyn nagegaan wanneer jy dit invoer. Van toe af werk die bediener se getekende sertifikaat vanlyn totdat die tyd verstreke is — die toepassing bel nie huis toe elke keer as jy \'n skerm oopmaak nie. Die sertifikaat is gebind aan hierdie toestel se ewekansige installasie-ID, dus die kopiëring van die programdata na \'n ander foon dra nie die lisensie saam nie, en die eienaar kan daardie binding vanaf die paneel terugstel as jy van fone verander.</string>
+    <string name="max_license_status_section">Status</string>
+    <string name="max_license_status_active">Aktief</string>
+    <string name="max_license_status_expired">Verval</string>
+    <string name="max_license_status_none">Nie geaktiveer nie</string>
+    <string name="max_license_active_detail">Oorblywende: %1$d dae</string>
+    <string name="max_license_expired_detail">Hierdie sleutel se tyd is verby. \'n Nuwe sleutel hernu toegang.</string>
+    <string name="max_license_none_detail">Voer die sleutel in wat jy ontvang het om die betaalde oppervlaktes te ontsluit.</string>
+    <string name="max_license_promo_active">Gratis vir almal tot %1$s</string>
+    <string name="max_license_plan_title">Beplan</string>
+    <string name="max_license_devices_title">Toestelle</string>
+    <string name="max_license_devices_detail">%1$d van %2$d gebruik</string>
+    <string name="max_license_device_id_title">Hierdie toestel</string>
+    <string name="max_license_device_id_detail">%1$s</string>
+    <string name="max_license_key_section">Aktivering</string>
+    <string name="max_license_key_label">Lisensie sleutel</string>
+    <string name="max_license_key_placeholder">MAXM-XXXXX-XXXX-XXXX-XXXXX-XX</string>
+    <string name="max_license_key_helper">Strepies en hoofletters maak nie saak nie - plak dit soos jy dit ontvang het.</string>
+    <string name="max_license_activate">Aktiveer</string>
+    <string name="max_license_activating">Kontroleer tans die sleutel …</string>
+    <string name="max_license_refresh">Kyk nou</string>
+    <string name="max_license_activated">Geaktiveer. Hierdie toestel is nou aan jou sleutel gekoppel.</string>
+    <string name="max_license_error_invalid_key">Hierdie sleutel lyk nie volledig nie. Gaan dit na en probeer weer.</string>
+    <string name="max_license_error_not_configured">Hierdie gebou het geen lisensiebediener opgestel nie.</string>
+    <string name="max_license_error_network">Geen verbinding nie. Die sleutel word een keer nagegaan en werk dan vanlyn.</string>
+    <string name="max_license_error_timeout">Die lisensiebediener het nie betyds geantwoord nie. Probeer weer.</string>
+    <string name="max_license_error_server">Die lisensiebediener het met \'n fout geantwoord. Probeer later weer.</string>
+    <string name="max_license_error_client">Die lisensiefunksie word nie op die bediener ontplooi nie.</string>
+    <string name="max_license_error_format">Die bedienerantwoord is nie verstaan ​​nie.</string>
+    <string name="max_license_error_expired">Hierdie sleutel het verval.</string>
+    <string name="max_license_error_not_found">Hierdie sleutel is nie bekend nie.</string>
+    <string name="max_license_error_revoked">Hierdie sleutel is herroep.</string>
+    <string name="max_license_error_device_limit">Hierdie sleutel het sy toestellimiet bereik. Vra vir \'n toestelterugstelling.</string>
+    <string name="max_license_error_device_unknown">Hierdie toestel is nog nie aan die sleutel gekoppel nie. Aktiveer dit eers hier.</string>
+    <string name="max_license_error_device_removed">Hierdie toestel is deur die eienaar van die sleutel verwyder.</string>
+    <string name="max_license_error_rate_limited">Te veel pogings vanaf hierdie verbinding – wag \'n paar minute en probeer dan weer.</string>
+    <string name="max_license_error_unknown">Iets het verkeerd geloop. Die rede is in Diagnostics aangeteken.</string>
+    <string name="max_license_gate_title">Hierdie oppervlak benodig \'n lisensie</string>
+    <string name="max_license_gate_detail">Dit is by \'n sleutel ingesluit. Een sleutel dek hierdie toestel, en dit neem \'n minuut om dit binne te gaan.</string>
+    <string name="max_feature_off_title">Afgeskakel</string>
+    <string name="max_feature_off_detail">Die beheerpaneel het hierdie oppervlak afgeskakel. Dit kom terug sodra dit weer geaktiveer is.</string>
+    <string name="max_license_gate_action">Maak lisensie-instellings oop</string>
+    <string name="max_license_gate_subscribe">Teken nou in</string>
+    <string name="max_license_subscription_section">Intekening</string>
+    <string name="max_license_subscription_open">Maak die intekeningbladsy oop</string>
+</resources>

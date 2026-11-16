@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/network_scanner_strings.xml -->
+<resources>
+    <string name="network_scanner_title">स्थानिक नेटवर्क स्कॅनर</string>
+    <string name="network_scanner_subtitle">तुमचा पत्ता, तो पोहोचलेला प्रवेशद्वार आणि कोणत्या शेजाऱ्यांनी उत्तर दिले.</string>
+    <string name="max_role_network_scanner">तुम्ही ज्या नेटवर्कवर आहात ते वाचते — कॅप्चर नाही, रूट नाही.</string>
+    <string name="ns_no_network">कोणतेही नेटवर्क कनेक्ट केलेले नाही.</string>
+    <string name="ns_interface">इंटरफेस</string>
+    <string name="ns_address">पत्ता</string>
+    <string name="ns_gateway">प्रवेशद्वार</string>
+    <string name="ns_dns">DNS</string>
+    <string name="ns_mac">MAC</string>
+    <string name="ns_transport_wifi">वाय-फाय</string>
+    <string name="ns_transport_ethernet">इथरनेट</string>
+    <string name="ns_transport_cellular">सेल्युलर</string>
+    <string name="ns_transport_other">इतर</string>
+    <string name="ns_sources_title">हे कुठून येते</string>
+    <string name="ns_sources_body">पत्ते आणि गेटवे प्लॅटफॉर्मच्या लिंक गुणधर्मांवरून वाचले जातात. शेजारी सारणी कर्नलच्या ARP कॅशेमधून वाचली जाते, त्यामुळे या उपकरणाने अलीकडे जे बोलले आहे तेच ते ठेवते — रिक्त टेबलचा अर्थ रिक्त नेटवर्क असा होत नाही.</string>
+    <string name="ns_refresh">रिफ्रेश करा</string>
+    <string name="ns_probe">सामान्य पोर्ट्सची तपासणी करा</string>
+    <string name="ns_probe_stop">थांबा</string>
+    <string name="ns_probe_progress">%2$d पैकी %1$d तपासत आहे</string>
+    <string name="ns_probe_note">पोर्ट 22, 80, 443, 5000 आणि 5555 वर या/24 वर TCP कनेक्ट पाठवते. उत्तरे देणारे पोर्ट कळवले जाते; शांतता हा पुरावा नाही की होस्ट अनुपस्थित आहे.</string>
+    <string name="ns_neighbours">ओळखीचे शेजारी</string>
+    <string name="ns_neighbours_note">/proc/net/arp वरून — फक्त वाचा.</string>
+    <string name="ns_neighbours_empty">शेजारी अजून ओळखले नाहीत.</string>
+    <string name="ns_ports_value">पोर्ट्स %1$s</string>
+</resources>

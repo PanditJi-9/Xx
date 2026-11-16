@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_update_strings.xml -->
+<resources>
+    <string name="update_dialog_title">अपडेट उपलब्ध</string>
+    <string name="update_dialog_title_required">अपडेट आवश्यक आहे</string>
+    <string name="update_required_notice">MaxManager वापरत राहण्यासाठी हे अपडेट आवश्यक आहे. ते स्थापित करा, नंतर ॲप पुन्हा उघडा.</string>
+    <string name="update_dialog_body">आवृत्ती %1$s उपलब्ध आहे. तुम्ही %2$s वर आहात.</string>
+    <string name="update_block_title">सुरू ठेवण्यासाठी अपडेट आवश्यक आहे</string>
+    <string name="update_block_body">हे बिल्ड (%1$s) यापुढे समर्थित नाही. MaxManager वापरत राहण्यासाठी %2$s वर अपडेट करा.</string>
+    <string name="update_block_body_no_release">हे बिल्ड (%1$s) यापुढे समर्थित नाही.</string>
+    <string name="update_release_notes_label">नवीन काय आहे</string>
+    <string name="update_size">डाउनलोड आकार: %1$s</string>
+    <string name="update_button_now">आता अपडेट करा</string>
+    <string name="update_button_later">नंतर</string>
+    <string name="update_button_close">बंद करा</string>
+    <string name="update_button_open_page">डाउनलोड पृष्ठ उघडा</string>
+    <string name="update_state_downloading">डाउनलोड करत आहे… %1$d%%</string>
+    <string name="update_state_downloading_unknown">डाउनलोड करत आहे...</string>
+    <string name="update_state_installing">स्थापित करत आहे...</string>
+    <string name="update_error_network">अपडेट सर्व्हरपर्यंत पोहोचू शकलो नाही. तुमचे कनेक्शन तपासा आणि पुन्हा प्रयत्न करा.</string>
+    <string name="update_error_http">अद्यतन सर्व्हरने त्रुटीसह उत्तर दिले. नंतर पुन्हा प्रयत्न करा.</string>
+    <string name="update_error_format">अपडेट माहिती वाचता आली नाही.</string>
+    <string name="update_error_too_large">अपडेट माहिती अपेक्षेपेक्षा मोठी होती आणि ती टाकून देण्यात आली.</string>
+    <string name="update_error_integrity">डाउनलोड केलेली फाइल तिच्या चेकसमशी जुळत नाही आणि ती हटवली गेली.</string>
+    <string name="update_error_install">स्थापना अयशस्वी. पुन्हा प्रयत्न करा.</string>
+    <string name="update_error_not_configured">या बिल्डमध्ये कोणतेही अपडेट चॅनल कॉन्फिगर केलेले नाही.</string>
+    <string name="update_maintenance_title">तात्पुरते अनुपलब्ध</string>
+    <string name="update_maintenance_body">MaxManager तात्पुरते अनुपलब्ध आहे. कृपया थोड्या वेळाने पुन्हा प्रयत्न करा.</string>
+    <string name="update_check_title">अद्यतनांसाठी तपासा</string>
+    <string name="update_check_supporting">वर्तमान आवृत्ती: %1$s</string>
+    <string name="update_check_updated">अपडेट उपलब्ध आहे.</string>
+    <string name="update_check_uptodate">तुम्ही नवीनतम आवृत्तीवर आहात.</string>
+    <string name="update_check_failed">अद्यतनांसाठी तपासू शकलो नाही.</string>
+    <string name="update_check_not_configured">या बिल्डमध्ये कोणतेही अपडेट चॅनल कॉन्फिगर केलेले नाही.</string>
+    <string name="update_released_label">प्रकाशन तारीख: %1$s</string>
+    <string name="update_check_none_published">नियंत्रण पॅनेलकडून अद्याप कोणतेही अद्यतन प्रकाशित केले गेले नाही.</string>
+    <string name="update_check_link_missing">अपडेट प्रकाशित झाले आहे, परंतु त्याची डाउनलोड लिंक गहाळ आहे.</string>
+</resources>

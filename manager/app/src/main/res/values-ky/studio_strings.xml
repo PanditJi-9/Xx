@@ -10,4 +10,6 @@
     <string name="studio_display">Дисплей</string>
     <string name="studio_power">Кубат параметрлери</string>
     <string name="studio_settings">Орнотуулар</string>
+    <string name="audio_dsp_live">DSP түз</string>
+    <string name="max_audio_session_label">Аудио сессия #%1$d</string>
 </resources>

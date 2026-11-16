@@ -99,4 +99,12 @@
     <string name="max_gpu_saved_desc">Sparad från en tidigare lagring och använd på varje start: %1$s. Standarden ovan avslutar endast denna session, aldrig det sparade tillståndet.</string>
     <string name="max_gpu_dynamic_min">Minimum · dynamisk</string>
     <string name="max_gpu_dynamic_max">Maximal · dynamisk</string>
+    <string name="max_gpu_monitor_only_detail">De enda grafiknoder som denna kärna exponerar är bandbredds- och QoS-monitorer: de har ingen GPU-klocka, så det finns ingen frekvens att ställa in. Kontrollen förblir avstängd istället för att skriva en minnesregulator som om det vore GPU.</string>
+    <string name="max_gpu_danger_title">Skriva GPU gränser?</string>
+    <string name="max_gpu_danger_body">Detta skriver grafikfrekvensfönstret och regulatorn in i GPU-noderna. Ett fönster som föraren avvisar, eller en guvernör som inte kan hänga med, kan stampa hela gränssnittet eller frysa panelen. Appen registrerar att du accepterade detta en gång – ansvaret för de värden du tillämpar är ditt.</string>
+    <string name="max_gpu_danger_action">Jag förstår - ansök</string>
+    <string name="max_gpu_state_title">Tid i staten</string>
+    <string name="max_gpu_state_desc">Vart tiden för GPU faktiskt gick, räknat av kärnan per driftsfrekvens — inte en ögonblicksbild av den aktuella klockan.</string>
+    <string name="max_gpu_state_hidden_share">%1$s tillsammans</string>
+    <string name="max_gpu_state_hidden">%1$d tillstånd under 1 %%</string>
 </resources>

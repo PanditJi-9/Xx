@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_update_strings.xml -->
+<resources>
+    <string name="update_dialog_title">ଅଦ୍ୟତନ ଉପଲବ୍ଧ |</string>
+    <string name="update_dialog_title_required">ଅଦ୍ୟତନ ଆବଶ୍ୟକ |</string>
+    <string name="update_required_notice">ଏହି ଅଦ୍ୟତନ MaxManager ବ୍ୟବହାର ଜାରି ରଖିବା ଆବଶ୍ୟକ | ଏହାକୁ ସଂସ୍ଥାପନ କରନ୍ତୁ, ତାପରେ ଆପ୍ ଖୋଲନ୍ତୁ |</string>
+    <string name="update_dialog_body">ସଂସ୍କରଣ %1$s ଉପଲବ୍ଧ | ଆପଣ %2$s ରେ ଅଛନ୍ତି |</string>
+    <string name="update_block_title">ଜାରି ରଖିବାକୁ ଅଦ୍ୟତନ ଆବଶ୍ୟକ |</string>
+    <string name="update_block_body">ଏହି ବିଲ୍ଡ (%1$s) ଆଉ ସମର୍ଥିତ ନୁହେଁ | MaxManager ବ୍ୟବହାର ଜାରି ରଖିବା ପାଇଁ %2$s କୁ ଅଦ୍ୟତନ କରନ୍ତୁ |</string>
+    <string name="update_block_body_no_release">ଏହି ବିଲ୍ଡ (%1$s) ଆଉ ସମର୍ଥିତ ନୁହେଁ |</string>
+    <string name="update_release_notes_label">କଣ ନୂଆ |</string>
+    <string name="update_size">ଡାଉନଲୋଡ୍ ଆକାର: %1$s |</string>
+    <string name="update_button_now">ବର୍ତ୍ତମାନ ଅଦ୍ୟତନ କରନ୍ତୁ |</string>
+    <string name="update_button_later">ପରେ</string>
+    <string name="update_button_close">ବନ୍ଦ</string>
+    <string name="update_button_open_page">ଡାଉନଲୋଡ୍ ପୃଷ୍ଠା ଖୋଲନ୍ତୁ |</string>
+    <string name="update_state_downloading">ଡାଉନଲୋଡ୍… %1$d %%</string>
+    <string name="update_state_downloading_unknown">ଡାଉନଲୋଡ୍…</string>
+    <string name="update_state_installing">ସଂସ୍ଥାପନ…</string>
+    <string name="update_error_network">ଅଦ୍ୟତନ ସର୍ଭରରେ ପହଞ୍ଚି ପାରିଲା ନାହିଁ | ଆପଣଙ୍କର ସଂଯୋଗ ଯାଞ୍ଚ କରନ୍ତୁ ଏବଂ ପୁନର୍ବାର ଚେଷ୍ଟା କରନ୍ତୁ |</string>
+    <string name="update_error_http">ଅପଡେଟ୍ ସର୍ଭର ଏକ ତ୍ରୁଟି ସହିତ ଉତ୍ତର ଦେଲା | ପରେ ପୁନର୍ବାର ଚେଷ୍ଟା କରନ୍ତୁ |</string>
+    <string name="update_error_format">ଅଦ୍ୟତନ ସୂଚନା ପ read ିପାରିଲା ନାହିଁ |</string>
+    <string name="update_error_too_large">ଅପଡେଟ୍ ସୂଚନା ଆଶା କରାଯାଉଥିବା ଠାରୁ ବଡ ଥିଲା ଏବଂ ଏହାକୁ ପରିତ୍ୟାଗ କରାଯାଇଥିଲା |</string>
+    <string name="update_error_integrity">ଡାଉନଲୋଡ୍ ହୋଇଥିବା ଫାଇଲ୍ ଏହାର ଚେକସମ୍ ସହିତ ମେଳ ଖାଉ ନାହିଁ ଏବଂ ଡିଲିଟ୍ ହୋଇଗଲା |</string>
+    <string name="update_error_install">ସ୍ଥାପନ ବିଫଳ ହେଲା। ପୁନର୍ବାର ଚେଷ୍ଟା କରନ୍ତୁ |</string>
+    <string name="update_error_not_configured">ଏହି ବିଲ୍ଡରେ କ update ଣସି ଅଦ୍ୟତନ ଚ୍ୟାନେଲ ବିନ୍ୟାସିତ ହୋଇନାହିଁ |</string>
+    <string name="update_maintenance_title">ଅସ୍ଥାୟୀ ଭାବରେ ଉପଲବ୍ଧ ନାହିଁ |</string>
+    <string name="update_maintenance_body">MaxManager ଅସ୍ଥାୟୀ ଭାବରେ ଉପଲବ୍ଧ ନାହିଁ | ଦୟାକରି ଶୀଘ୍ର ପୁନର୍ବାର ଚେଷ୍ଟା କରନ୍ତୁ |</string>
+    <string name="update_check_title">ଅଦ୍ୟତନ ପାଇଁ ଯାଞ୍ଚ କରନ୍ତୁ |</string>
+    <string name="update_check_supporting">ସାମ୍ପ୍ରତିକ ସଂସ୍କରଣ: %1$s |</string>
+    <string name="update_check_updated">ଏକ ଅଦ୍ୟତନ ଉପଲବ୍ଧ |</string>
+    <string name="update_check_uptodate">ଆପଣ ସର୍ବଶେଷ ସଂସ୍କରଣରେ ଅଛନ୍ତି |</string>
+    <string name="update_check_failed">ଅଦ୍ୟତନ ପାଇଁ ଯାଞ୍ଚ କରିପାରିଲା ନାହିଁ |</string>
+    <string name="update_check_not_configured">ଏହି ବିଲ୍ଡରେ କ update ଣସି ଅଦ୍ୟତନ ଚ୍ୟାନେଲ ବିନ୍ୟାସିତ ହୋଇନାହିଁ |</string>
+    <string name="update_released_label">ରିଲିଜ୍ ତାରିଖ: %1$s |</string>
+    <string name="update_check_none_published">କଣ୍ଟ୍ରୋଲ୍ ପ୍ୟାନେଲରୁ ଏପର୍ଯ୍ୟନ୍ତ କ update ଣସି ଅଦ୍ୟତନ ପ୍ରକାଶିତ ହୋଇନାହିଁ |</string>
+    <string name="update_check_link_missing">ଏକ ଅଦ୍ୟତନ ପ୍ରକାଶିତ ହୋଇଛି, କିନ୍ତୁ ଏହାର ଡାଉନଲୋଡ୍ ଲିଙ୍କ୍ ହଜିଯାଇଛି |</string>
+</resources>

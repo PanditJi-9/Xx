@@ -13,4 +13,23 @@
     <string name="max_expand_section">Pokaż szczegóły</string>
     <string name="max_collapse_section">Ukryj szczegóły</string>
     <string name="max_trust_loading">Czytanie…</string>
+    <string name="max_gov_title">Kto teraz rządzi</string>
+    <string name="max_gov_separator">„ › ”</string>
+    <string name="max_gov_order_note">Ustalona kolejność: wyższy szczebel blokuje niższy. Nigdy nie zmienia się, która polityka wygrywa.</string>
+    <string name="max_gov_open_details">Aktywni posiadacze</string>
+    <string name="max_gov_active_title">Kto sprawuje kontrolę</string>
+    <string name="max_gov_none">Żadna polityka nie posiada obecnie kontroli nad sprzętem.</string>
+    <string name="max_gov_count">Dzierżawa z aktywną kontrolą: %1$d</string>
+    <string name="max_gov_requested">Żądano: %1$s</string>
+    <string name="max_gov_owner_recovery">Powrót do zdrowia</string>
+    <string name="max_gov_owner_safety">Bezpieczeństwo termiczne</string>
+    <string name="max_gov_owner_per_app">Profil aplikacji</string>
+    <string name="max_gov_owner_max_ai">Max AI</string>
+    <string name="max_gov_owner_global">Profil globalny</string>
+    <string name="max_gov_owner_system">System</string>
+    <string name="max_gov_owner_a11y">%1$s posiada kontrolę sprzętową</string>
+    <string name="max_gov_now_none">W tej chwili nie ma automatycznego właściciela — kontrola pozostaje Twoja</string>
+    <string name="max_gov_now_one">%1$s posiada kontrolę</string>
+    <string name="max_gov_now_many">%1$s trzyma %2$d elementy sterujące</string>
+    <string name="devinfo_details">Bliższe dane</string>
 </resources>

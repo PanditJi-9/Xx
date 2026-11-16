@@ -69,4 +69,25 @@
     <string name="max_perms_entry_title">Tillatelser og appoperasjoner</string>
     <string name="max_perms_entry_desc">Se hva denne appen erklærer og hva systemet faktisk tillater</string>
     <string name="max_perms_entry_action">Åpne tillatelser</string>
+    <string name="max_perms_manifest_title">Manifest oppsummering</string>
+    <string name="max_perms_manifest_desc">Les fra pakkebehandleren: versjon, SDK-serie, komponenter og hvor mange av dem som eksporteres. En eksportert komponent kan startes av andre apper.</string>
+    <string name="max_perms_manifest_version">Versjon</string>
+    <string name="max_perms_manifest_sdk">SDK-område</string>
+    <string name="max_perms_manifest_location">Installer plassering</string>
+    <string name="max_perms_manifest_location_auto">Automatisk</string>
+    <string name="max_perms_manifest_location_internal">Kun intern lagring</string>
+    <string name="max_perms_manifest_location_external">Foretrekker eksternt</string>
+    <string name="max_perms_manifest_components">Komponenter</string>
+    <string name="max_perms_manifest_components_order">aktiviteter · tjenester · mottakere · tilbydere</string>
+    <string name="max_perms_manifest_exported">Eksporterte komponenter</string>
+    <string name="max_perms_manifest_splits">Del APK-er</string>
+    <string name="max_perms_manifest_debug">Feilsøkbar</string>
+    <string name="max_perms_features_title">Erklærte funksjoner</string>
+    <string name="max_perms_features_desc">Hva pakken krever av enheten, sammenlignet med hva denne enheten annonserer. En nødvendig funksjon som mangler her betyr vanligvis at appen ikke vil fungere fullt ut - det er et krav fra pakkebehandleren, ikke en gjetning.</string>
+    <string name="max_perms_features_loading">Leser pakkens deklarerte funksjoner...</string>
+    <string name="max_perms_features_none">Pakken erklærer ingen nødvendige funksjoner.</string>
+    <string name="max_perms_features_required">Obligatorisk</string>
+    <string name="max_perms_features_unsupported">Ikke på denne enheten</string>
+    <string name="max_perms_manifest_none">Ikke rapportert av pakkeansvarlig.</string>
+    <string name="max_perms_manifest_unknown">Ukjent</string>
 </resources>

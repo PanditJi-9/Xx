@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_update_strings.xml -->
+<resources>
+    <string name="update_dialog_title">යාවත්කාලීන ලබා ගත හැක</string>
+    <string name="update_dialog_title_required">යාවත්කාලීන කිරීම අවශ්‍යයි</string>
+    <string name="update_required_notice">MaxManager භාවිතා කිරීමට මෙම යාවත්කාලීන කිරීම අවශ්‍ය වේ. එය ස්ථාපනය කරන්න, පසුව යෙදුම නැවත විවෘත කරන්න.</string>
+    <string name="update_dialog_body">අනුවාදය %1$s ඇත. ඔබ %2$s මත සිටී.</string>
+    <string name="update_block_title">ඉදිරියට යාමට යාවත්කාලීන කිරීම අවශ්‍යයි</string>
+    <string name="update_block_body">මෙම ගොඩනැගීම (%1$s) තවදුරටත් සහාය නොදක්වයි. MaxManager දිගටම භාවිතා කිරීමට %2$s වෙත යාවත්කාලීන කරන්න.</string>
+    <string name="update_block_body_no_release">මෙම ගොඩනැගීම (%1$s) තවදුරටත් සහාය නොදක්වයි.</string>
+    <string name="update_release_notes_label">මොනවද අළුත්</string>
+    <string name="update_size">බාගත කිරීමේ ප්‍රමාණය: %1$s</string>
+    <string name="update_button_now">දැන් යාවත්කාලීන කරන්න</string>
+    <string name="update_button_later">පසුව</string>
+    <string name="update_button_close">වසන්න</string>
+    <string name="update_button_open_page">බාගැනීම් පිටුව විවෘත කරන්න</string>
+    <string name="update_state_downloading">බාගත කරමින්... %1$d%%</string>
+    <string name="update_state_downloading_unknown">බාගනිමින්…</string>
+    <string name="update_state_installing">ස්ථාපනය කරමින්...</string>
+    <string name="update_error_network">යාවත්කාලීන සේවාදායකය වෙත ළඟා වීමට නොහැකි විය. ඔබගේ සම්බන්ධතාවය පරීක්ෂා කර නැවත උත්සාහ කරන්න.</string>
+    <string name="update_error_http">යාවත්කාලීන සේවාදායකය දෝෂයකින් පිළිතුරු දුන්නේය. පසුව නැවත උත්සාහ කරන්න.</string>
+    <string name="update_error_format">යාවත්කාලීන තොරතුරු කියවිය නොහැක.</string>
+    <string name="update_error_too_large">යාවත්කාලීන තොරතුරු බලාපොරොත්තු වූවාට වඩා විශාල වූ අතර ඉවත දමන ලදී.</string>
+    <string name="update_error_integrity">බාගත කළ ගොනුව එහි චෙක්සම් නොගැලපෙන අතර මකා දමන ලදී.</string>
+    <string name="update_error_install">ස්ථාපනය අසාර්ථක විය. නැවත උත්සාහ කරන්න.</string>
+    <string name="update_error_not_configured">මෙම ගොඩනැගීමේ කිසිදු යාවත්කාලීන නාලිකාවක් වින්‍යාස කර නොමැත.</string>
+    <string name="update_maintenance_title">තාවකාලිකව ලබා ගත නොහැක</string>
+    <string name="update_maintenance_body">MaxManager තාවකාලිකව නොමැත. කරුණාකර ඉක්මනින් නැවත උත්සාහ කරන්න.</string>
+    <string name="update_check_title">යාවත්කාලීන සඳහා පරීක්ෂා කරන්න</string>
+    <string name="update_check_supporting">වත්මන් අනුවාදය: %1$s</string>
+    <string name="update_check_updated">යාවත්කාලීන කිරීමක් තිබේ.</string>
+    <string name="update_check_uptodate">ඔබ සිටින්නේ නවතම අනුවාදයේ ය.</string>
+    <string name="update_check_failed">යාවත්කාලීන සඳහා පරීක්ෂා කළ නොහැකි විය.</string>
+    <string name="update_check_not_configured">මෙම ගොඩනැගීමේ කිසිදු යාවත්කාලීන නාලිකාවක් වින්‍යාස කර නොමැත.</string>
+    <string name="update_released_label">මුදා හැරීමේ දිනය: %1$s</string>
+    <string name="update_check_none_published">පාලක පැනලයෙන් තවම යාවත්කාලීනයක් ප්‍රකාශ කර නොමැත.</string>
+    <string name="update_check_link_missing">යාවත්කාලීනයක් ප්‍රකාශනය කර ඇත, නමුත් එහි බාගත කිරීමේ සබැඳිය අස්ථානගත වී ඇත.</string>
+</resources>

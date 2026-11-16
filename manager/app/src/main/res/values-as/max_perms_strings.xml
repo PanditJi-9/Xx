@@ -69,4 +69,25 @@
     <string name="max_perms_entry_title">অনুমতি আৰু App ops</string>
     <string name="max_perms_entry_desc">এই এপটোৱে কি ঘোষণা কৰে আৰু চিষ্টেমে প্ৰকৃততে কি অনুমতি দিয়ে চাওক</string>
     <string name="max_perms_entry_action">অনুমতিসমূহ খোলক</string>
+    <string name="max_perms_manifest_title">স্পষ্ট সাৰাংশ</string>
+    <string name="max_perms_manifest_desc">পেকেইজ ব্যৱস্থাপকৰ পৰা পঢ়ক: সংস্কৰণ, SDK পৰিসীমা, উপাদানসমূহ আৰু ইয়াৰে কিমান ৰপ্তানি কৰা হৈছে। এটা ৰপ্তানি কৰা উপাদান অন্য এপসমূহৰ দ্বাৰা আৰম্ভ কৰিব পাৰি।</string>
+    <string name="max_perms_manifest_version">সংস্কৰণ</string>
+    <string name="max_perms_manifest_sdk">SDK পৰিসীমা</string>
+    <string name="max_perms_manifest_location">অৱস্থান সংস্থাপন কৰক</string>
+    <string name="max_perms_manifest_location_auto">স্বয়ংক্ৰিয়</string>
+    <string name="max_perms_manifest_location_internal">কেৱল আভ্যন্তৰীণ সংৰক্ষণ</string>
+    <string name="max_perms_manifest_location_external">বাহ্যিক পছন্দ কৰে</string>
+    <string name="max_perms_manifest_components">উপাদানসমূহ</string>
+    <string name="max_perms_manifest_components_order">কাৰ্য্যকলাপ · সেৱা · গ্ৰাহক · প্ৰদানকাৰী</string>
+    <string name="max_perms_manifest_exported">ৰপ্তানি কৰা উপাদানসমূহ</string>
+    <string name="max_perms_manifest_splits">বিভাজিত APKs</string>
+    <string name="max_perms_manifest_debug">ডিবাগযোগ্য</string>
+    <string name="max_perms_features_title">ঘোষিত বৈশিষ্ট্যসমূহ</string>
+    <string name="max_perms_features_desc">এই ডিভাইচে কি বিজ্ঞাপন দিয়ে তাৰ তুলনাত পেকেইজে ডিভাইচৰ পৰা কি বিচাৰে। ইয়াত বাদ পৰা এটা প্ৰয়োজনীয় বৈশিষ্ট্যৰ অৰ্থ সাধাৰণতে এপটোৱে সম্পূৰ্ণৰূপে কাম নকৰিব — ই পেকেজ মেনেজাৰৰ পৰা দাবী, অনুমান নহয়।</string>
+    <string name="max_perms_features_loading">পেকেজ\'s ঘোষিত বৈশিষ্ট্যসমূহ পঢ়া...</string>
+    <string name="max_perms_features_none">পেকেইজে কোনো প্ৰয়োজনীয় বৈশিষ্ট্য ঘোষণা নকৰে।</string>
+    <string name="max_perms_features_required">প্ৰয়োজনীয়</string>
+    <string name="max_perms_features_unsupported">এই ডিভাইচত নহয়</string>
+    <string name="max_perms_manifest_none">পেকেইজ ব্যৱস্থাপকে প্ৰতিবেদন কৰা নাই।</string>
+    <string name="max_perms_manifest_unknown">অজ্ঞাত</string>
 </resources>

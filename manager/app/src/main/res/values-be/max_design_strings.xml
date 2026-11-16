@@ -13,4 +13,23 @@
     <string name="max_expand_section">Паказаць дэталі</string>
     <string name="max_collapse_section">Схаваць дэталі</string>
     <string name="max_trust_loading">Чытанне...</string>
+    <string name="max_gov_title">Хто кіруе цяпер</string>
+    <string name="max_gov_separator">" ›"</string>
+    <string name="max_gov_order_note">Фіксаваны парадак: вышэйшая прыступка блакуе ніжнюю. Гэта ніколі не мяняе, якая палітыка перамагае.</string>
+    <string name="max_gov_open_details">Актыўныя трымальнікі</string>
+    <string name="max_gov_active_title">Хто трымае кантроль</string>
+    <string name="max_gov_none">Зараз ніводная палітыка не валодае апаратным кіраваннем.</string>
+    <string name="max_gov_count">Арэнда актыўнага кантролю: %1$d</string>
+    <string name="max_gov_requested">Запытаны: %1$s</string>
+    <string name="max_gov_owner_recovery">Аднаўленне</string>
+    <string name="max_gov_owner_safety">Цеплавая бяспека</string>
+    <string name="max_gov_owner_per_app">Профіль праграмы</string>
+    <string name="max_gov_owner_max_ai">Max AI</string>
+    <string name="max_gov_owner_global">Глабальны профіль</string>
+    <string name="max_gov_owner_system">сістэма</string>
+    <string name="max_gov_owner_a11y">%1$s валодае апаратным кіраваннем</string>
+    <string name="max_gov_now_none">Зараз няма аўтаматызаванага ўладальніка — кантроль застаецца за вамі</string>
+    <string name="max_gov_now_one">%1$s трымае кантроль</string>
+    <string name="max_gov_now_many">%1$s трымае элементы кіравання %2$d</string>
+    <string name="devinfo_details">Дэталі</string>
 </resources>

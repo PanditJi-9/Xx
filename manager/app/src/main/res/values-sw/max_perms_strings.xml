@@ -69,4 +69,25 @@
     <string name="max_perms_entry_title">Ruhusa &amp; Ops za Programu</string>
     <string name="max_perms_entry_desc">Tazama kile programu hii inatangaza na kile ambacho mfumo unaruhusu</string>
     <string name="max_perms_entry_action">Fungua ruhusa</string>
+    <string name="max_perms_manifest_title">Dhihirisha muhtasari</string>
+    <string name="max_perms_manifest_desc">Soma kutoka kwa kidhibiti kifurushi: toleo, anuwai ya SDK, vijenzi na ni ngapi kati ya hizo zinazosafirishwa. Kipengele kilichohamishwa kinaweza kuanzishwa na programu zingine.</string>
+    <string name="max_perms_manifest_version">Toleo</string>
+    <string name="max_perms_manifest_sdk">Masafa ya SDK</string>
+    <string name="max_perms_manifest_location">Sakinisha eneo</string>
+    <string name="max_perms_manifest_location_auto">Otomatiki</string>
+    <string name="max_perms_manifest_location_internal">Hifadhi ya ndani pekee</string>
+    <string name="max_perms_manifest_location_external">Inapendelea nje</string>
+    <string name="max_perms_manifest_components">Vipengele</string>
+    <string name="max_perms_manifest_components_order">shughuli · huduma · wapokeaji · watoa huduma</string>
+    <string name="max_perms_manifest_exported">Vipengee vilivyosafirishwa</string>
+    <string name="max_perms_manifest_splits">Gawanya APK</string>
+    <string name="max_perms_manifest_debug">Inaweza kutatuliwa</string>
+    <string name="max_perms_features_title">Vipengele vilivyotangazwa</string>
+    <string name="max_perms_features_desc">Kile kifurushi kinahitaji kutoka kwa kifaa, ikilinganishwa na kile kifaa hiki kinatangaza. Kipengele kinachohitajika kinachokosekana hapa kwa kawaida humaanisha kuwa programu haitafanya kazi kikamilifu - ni dai kutoka kwa msimamizi wa kifurushi, si kubahatisha.</string>
+    <string name="max_perms_features_loading">Inasoma vipengele vilivyotangazwa vya kifurushi...</string>
+    <string name="max_perms_features_none">Kifurushi kinatangaza hakuna vipengele vinavyohitajika.</string>
+    <string name="max_perms_features_required">Inahitajika</string>
+    <string name="max_perms_features_unsupported">Sio kwenye kifaa hiki</string>
+    <string name="max_perms_manifest_none">Haijaripotiwa na msimamizi wa kifurushi.</string>
+    <string name="max_perms_manifest_unknown">Haijulikani</string>
 </resources>

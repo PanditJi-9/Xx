@@ -51,4 +51,14 @@
     <string name="copg_tweak_kso_title">မျက်နှာပြင်ကိုဖွင့်ထားပါ။</string>
     <string name="copg_tweak_kso_desc">COPG Keep-screen-on tweak ကို ဤအက်ပ်တွင် အသုံးပြုပါ။ Review ဖြင့် အင်ဂျင်သို့ စာရေးပြီး Spoof တက်ဘ်တွင် အသုံးချရန် ဤနေရာတွင် သိမ်းဆည်းထားသည်။</string>
     <string name="copg_tweak_needs_device">Spoof တက်ဘ်တွင် ဤအက်ပ်အတွက် စက်ပစ္စည်းတစ်ခု လိုအပ်ပါသည်။</string>
+    <string name="spoof_engine_unmeasured">အင်ဂျင်အခြေအနေကို မတိုင်းတာရသေးပါ- root access ကို ခွင့်မပြုသေးပါ။ root ပေးပြီးနောက် ဤတဘ်ကို ပြန်ဖွင့်ပါ။</string>
+    <string name="spoof_engine_config_missing">COPG ကို ထည့်သွင်းထားသော်လည်း ၎င်း၏ config ဖိုင် (COPG.json) ပျောက်ဆုံးနေပါသည်။ မော်ဂျူးက ၎င်းကို ထပ်မံမပေးမချင်း လျှောက်ထားခြင်းကို ငြင်းဆိုထားသည်။</string>
+    <string name="spoof_engine_config_unreadable">COPG ကို ထည့်သွင်းထားသော်လည်း ၎င်း၏ config ဖိုင်ကို JSON ဖတ်၍မရပါ။ ဖိုင်ကို မပြုပြင်မချင်း လျှောက်ထားခြင်းကို ငြင်းဆိုထားသည်။</string>
+    <string name="spoof_imei_spoof">IMEI အတုအယောင်</string>
+    <string name="spoof_imei_spoof_desc">ဤအက်ပ်အား မတူညီသော IMEI ကိုပြသသည်။ ဤအက်ပ်ဖြင့် ၎င်း၏နယ်ပယ်တွင် LSPosed တွင်ဖွင့်ထားသော Max Manager module လိုအပ်သည်။ ၎င်းကိုဖွင့်ပြီးနောက် အက်ပ်ကို ပြန်လည်စတင်ပါ။</string>
+    <string name="spoof_imei_active">ဤအက်ပ်ကိုပြသနေသည်- %1$s</string>
+    <string name="spoof_imei_summary">IMEI အတုအယောင်</string>
+    <string name="spoof_imei_regenerate">ကျပန်း IMEI အသစ်</string>
+    <string name="spoof_imei_regenerate_desc">ဤအက်ပ်အတွက် နောက်ထပ် တရားဝင် IMEI ကို ဖန်တီးပါ။ ၎င်းကိုကြည့်ရှုရန် အက်ပ်ကို ပြန်လည်စတင်ပါ။</string>
+    <string name="spoof_imei_module_inactive">Max Manager မော်ဂျူးကို LSPosed တွင် ဖွင့်မထားသောကြောင့် အပလီကေးရှင်းများသည် IMEI အစစ်အမှန်ကို မြင်တွေ့နေရဆဲဖြစ်သည်။ LSPosed တွင် မော်ဂျူးကိုဖွင့်ပါ၊ ဤအက်ပ်ကို ၎င်း၏နယ်ပယ်တွင် ထည့်ပါ၊ ထို့နောက် ဤမျက်နှာပြင်ကို ပြန်ဖွင့်ပါ။</string>
 </resources>

@@ -51,4 +51,14 @@
     <string name="copg_tweak_kso_title">ສືບຕໍ່ເປີດໜ້າຈໍ</string>
     <string name="copg_tweak_kso_desc">ນຳໃຊ້ການປັບປ່ຽນໜ້າຈໍຮັກສາ COPG ກັບແອັບນີ້. ບັນທຶກຢູ່ທີ່ນີ້, ຂຽນໃສ່ເຄື່ອງຈັກໂດຍການທົບທວນຄືນແລະນໍາໃຊ້ໃນແຖບ Spoof.</string>
     <string name="copg_tweak_needs_device">ຕ້ອງການອຸປະກອນສໍາລັບແອັບຯນີ້ກ່ອນ, ໃນແຖບ Spoof.</string>
+    <string name="spoof_engine_unmeasured">ສະຖານະເຄື່ອງຈັກບໍ່ໄດ້ຖືກວັດແທກ: ການເຂົ້າເຖິງຮາກຍັງບໍ່ໄດ້ຮັບອະນຸຍາດເທື່ອ. ໃຫ້ root, ຈາກນັ້ນເປີດແຖບນີ້ຄືນໃໝ່.</string>
+    <string name="spoof_engine_config_missing">COPG ຖືກຕິດຕັ້ງ, ແຕ່ໄຟລ໌ config ຂອງມັນ (COPG.json) ຫາຍໄປ. ການສະຫມັກແມ່ນຖືກປະຕິເສດຈົນກ່ວາໂມດູນຈະສະຫນອງມັນອີກເທື່ອຫນຶ່ງ.</string>
+    <string name="spoof_engine_config_unreadable">COPG ຖືກຕິດຕັ້ງ, ແຕ່ໄຟລ໌ config ຂອງມັນບໍ່ສາມາດອ່ານໄດ້ JSON. ການສະຫມັກແມ່ນຖືກປະຕິເສດຈົນກ່ວາໄຟລ໌ຈະຖືກສ້ອມແປງ.</string>
+    <string name="spoof_imei_spoof">ການຫຼອກລວງ IMEI</string>
+    <string name="spoof_imei_spoof_desc">ສະ​ແດງ​ໃຫ້​ເຫັນ app ນີ້​ເປັນ IMEI ທີ່​ແຕກ​ຕ່າງ​ກັນ​. ຕ້ອງການໂມດູນ Max Manager ເປີດໃຊ້ໃນ LSPosed ກັບແອັບນີ້ໃນຂອບເຂດຂອງມັນ. ຣີສະຕາດແອັບຫຼັງຈາກເປີດມັນ.</string>
+    <string name="spoof_imei_active">ກຳລັງສະແດງແອັບນີ້: %1$s</string>
+    <string name="spoof_imei_summary">ການຫຼອກລວງ IMEI</string>
+    <string name="spoof_imei_regenerate">IMEI ແບບສຸ່ມໃໝ່</string>
+    <string name="spoof_imei_regenerate_desc">ສ້າງ IMEI ທີ່ຖືກຕ້ອງອື່ນສໍາລັບແອັບຯນີ້. ຣີສະຕາດແອັບເພື່ອເບິ່ງມັນ.</string>
+    <string name="spoof_imei_module_inactive">ໂມດູນ Max Manager ບໍ່ໄດ້ເປີດໃຊ້ໃນ LSPosed, ດັ່ງນັ້ນແອັບຕ່າງໆຍັງຄົງເຫັນ IMEI ທີ່ແທ້ຈິງຢູ່. ເປີດໃຊ້ໂມດູນໃນ LSposed, ເພີ່ມແອັບນີ້ໃສ່ຂອບເຂດຂອງມັນ, ຈາກນັ້ນເປີດໜ້າຈໍນີ້ຄືນໃໝ່.</string>
 </resources>

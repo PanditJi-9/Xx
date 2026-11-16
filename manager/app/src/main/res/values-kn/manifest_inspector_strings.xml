@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/manifest_inspector_strings.xml -->
+<resources>
+    <string name="manifest_inspector_title">ಮ್ಯಾನಿಫೆಸ್ಟ್ ಇನ್ಸ್ಪೆಕ್ಟರ್</string>
+    <string name="manifest_inspector_subtitle">ಸ್ಥಾಪಿಸಲಾದ ಅಪ್ಲಿಕೇಶನ್ ತನ್ನ ಬಗ್ಗೆ ಏನನ್ನು ಘೋಷಿಸುತ್ತದೆ, PackageManager ನಿಂದ ಓದಿ.</string>
+    <string name="max_role_manifest_inspector">ಪ್ಯಾಕೇಜ್ ತನ್ನ ಬಗ್ಗೆ ಏನನ್ನು ಘೋಷಿಸುತ್ತದೆ ಎಂಬುದನ್ನು ತೋರಿಸುತ್ತದೆ — ಓದಲು ಮಾತ್ರ.</string>
+    <string name="mi_search">ಅಪ್ಲಿಕೇಶನ್‌ಗಳನ್ನು ಹುಡುಕಿ</string>
+    <string name="mi_empty">ಎಡಭಾಗದಲ್ಲಿ ಅಪ್ಲಿಕೇಶನ್ ಆಯ್ಕೆಮಾಡಿ.</string>
+    <string name="mi_yes">ಹೌದು</string>
+    <string name="mi_no">ಸಂ</string>
+    <string name="mi_section_identity">ಪ್ಯಾಕೇಜ್</string>
+    <string name="mi_version">ಆವೃತ್ತಿ</string>
+    <string name="mi_version_code">ಆವೃತ್ತಿ ಕೋಡ್</string>
+    <string name="mi_min_sdk">ಕನಿಷ್ಠ SDK</string>
+    <string name="mi_target_sdk">ಗುರಿ SDK</string>
+    <string name="mi_installed">ಸ್ಥಾಪಿಸಲಾಗಿದೆ</string>
+    <string name="mi_updated">ನವೀಕರಿಸಲಾಗಿದೆ</string>
+    <string name="mi_installer">ಅನುಸ್ಥಾಪಕ</string>
+    <string name="mi_uid">ಯುಐಡಿ</string>
+    <string name="mi_data_dir">ಡೇಟಾ ಡೈರೆಕ್ಟರಿ</string>
+    <string name="mi_debuggable">ಡೀಬಗ್ ಮಾಡಬಹುದಾದ</string>
+    <string name="mi_system_app">ಸಿಸ್ಟಮ್ ಅಪ್ಲಿಕೇಶನ್</string>
+    <string name="mi_enabled">ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</string>
+    <string name="mi_section_permissions">ಅನುಮತಿಗಳನ್ನು ವಿನಂತಿಸಲಾಗಿದೆ</string>
+    <string name="mi_permissions_summary">%1$d ಅನುಮತಿಗಳು · %2$d ಅವುಗಳಲ್ಲಿ ಅಪಾಯಕಾರಿ</string>
+    <string name="mi_permissions_none">ಈ ಅಪ್ಲಿಕೇಶನ್ ಯಾವುದೇ ಅನುಮತಿಯನ್ನು ಕೋರುವುದಿಲ್ಲ.</string>
+    <string name="mi_perm_dangerous">ಅಪಾಯಕಾರಿ</string>
+    <string name="mi_perm_signature">ಸಹಿ</string>
+    <string name="mi_perm_normal">ಸಾಮಾನ್ಯ</string>
+    <string name="mi_perm_unknown">ವರ್ಗೀಕರಿಸದ</string>
+    <string name="mi_section_components">ಘಟಕಗಳು</string>
+    <string name="mi_activities">ಚಟುವಟಿಕೆಗಳು</string>
+    <string name="mi_services">ಸೇವೆಗಳು</string>
+    <string name="mi_receivers">ಸ್ವೀಕರಿಸುವವರು</string>
+    <string name="mi_providers">ಪೂರೈಕೆದಾರರು</string>
+    <string name="mi_components_none">ಯಾವುದನ್ನೂ ಘೋಷಿಸಿಲ್ಲ</string>
+    <string name="mi_section_features">ಸಾಧನದ ವೈಶಿಷ್ಟ್ಯಗಳು</string>
+    <string name="mi_features_note">ಪ್ಲಾಟ್‌ಫಾರ್ಮ್ ಮತ್ತೊಂದು ಅಪ್ಲಿಕೇಶನ್‌ನ ಉಪಯೋಗಗಳು-ವೈಶಿಷ್ಟ್ಯದ ಪಟ್ಟಿಯನ್ನು ಬಹಿರಂಗಪಡಿಸುವುದಿಲ್ಲ; ಇವು ಈ ಸಾಧನ ವರದಿ ಮಾಡುವ ವೈಶಿಷ್ಟ್ಯಗಳಾಗಿವೆ.</string>
+    <string name="mi_features_none">ಯಾವುದೇ ವೈಶಿಷ್ಟ್ಯವನ್ನು ವರದಿ ಮಾಡಲಾಗಿಲ್ಲ</string>
+    <string name="mi_section_signature">ಸಹಿ ಪ್ರಮಾಣಪತ್ರ</string>
+    <string name="mi_signature_note">ಸಹಿ ಪ್ರಮಾಣಪತ್ರದ SHA-256. ಒಂದೇ ಮೌಲ್ಯದ ಎರಡು ಬಿಲ್ಡ್‌ಗಳು ಒಂದೇ ಪ್ರಕಾಶಕರು.</string>
+    <string name="mi_signature_sha256">ಪ್ರಮಾಣಪತ್ರ ಡೈಜೆಸ್ಟ್</string>
+</resources>

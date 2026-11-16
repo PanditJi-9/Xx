@@ -53,4 +53,8 @@
     <string name="max_title_get_started">Поставување</string>
     <string name="max_hub_audio">Аудио</string>
     <string name="max_hub_audio_desc">Излезни уреди, стримови и декларирани ефекти</string>
+    <string name="control_tools_live">Живи површини</string>
+    <string name="control_tools_advanced">Напредни алатки</string>
+    <string name="control_tools_system">Системски алатки</string>
+    <string name="control_tools_appearance">Изглед</string>
 </resources>

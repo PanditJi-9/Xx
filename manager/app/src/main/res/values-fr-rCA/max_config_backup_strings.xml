@@ -18,4 +18,10 @@
     <string name="max_cfg_section_appearance">Apparence et interface</string>
     <string name="max_cfg_section_app_prefs">Préférences et langue de l\'application</string>
     <string name="max_cfg_restore_merge_note">La restauration des préférences fusionne : les clés présentes dans le fichier sont écrites, et les clés qu\'il ne mentionne pas restent telles quelles. Rien n\'est effacé.</string>
+    <string name="max_cfg_diff_title">%1$d les paramètres enregistrés diffèrent de ceux de cet appareil</string>
+    <string name="max_cfg_diff_line">%1$s : %2$s → %3$s</string>
+    <string name="max_cfg_diff_unset">pas réglé</string>
+    <string name="max_cfg_diff_more">et %1$d de plus</string>
+    <string name="max_cfg_diff_applist">%1$d lignes de liste d\'applications ajoutées, %2$d supprimées — la liste entière est remplacée et non fusionnée.</string>
+    <string name="max_cfg_diff_prefs">%1$d Les touches de préférence diffèrent : fusionnées, non effacées.</string>
 </resources>

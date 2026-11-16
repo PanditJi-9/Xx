@@ -51,4 +51,14 @@
     <string name="copg_tweak_kso_title">Ekranı açıq saxlayın</string>
     <string name="copg_tweak_kso_desc">COPG saxlama ekranını bu proqrama tətbiq edir. Burada saxlandı, Mühərrikə Nəzərdən keçirin və Spoof sekmesinde tətbiq edin.</string>
     <string name="copg_tweak_needs_device">Spoof tabında əvvəlcə bu proqram üçün cihaz lazımdır.</string>
+    <string name="spoof_engine_unmeasured">Mühərrikin vəziyyəti ölçülməyib: kök girişi hələ verilməyib. Kök verin, sonra bu tabı yenidən açın.</string>
+    <string name="spoof_engine_config_missing">COPG quraşdırılıb, lakin onun konfiqurasiya faylı (COPG.json) yoxdur. Modul onu yenidən təmin edənə qədər müraciət etməkdən imtina edilir.</string>
+    <string name="spoof_engine_config_unreadable">COPG quraşdırılıb, lakin onun konfiqurasiya faylını oxumaq mümkün deyil JSON. Fayl təmir olunana qədər müraciət etməkdən imtina edilir.</string>
+    <string name="spoof_imei_spoof">IMEI saxtakarlığı</string>
+    <string name="spoof_imei_spoof_desc">Bu proqramı fərqli bir IMEI göstərir. LSPosed-də aktivləşdirilmiş Max Manager moduluna ehtiyacı var. Proqramı yandırdıqdan sonra onu yenidən başladın.</string>
+    <string name="spoof_imei_active">Bu proqram göstərilir: %1$s</string>
+    <string name="spoof_imei_summary">IMEI saxtakarlığı</string>
+    <string name="spoof_imei_regenerate">Yeni təsadüfi IMEI</string>
+    <string name="spoof_imei_regenerate_desc">Bu proqram üçün başqa etibarlı IMEI yaradır. Onu görmək üçün proqramı yenidən başladın.</string>
+    <string name="spoof_imei_module_inactive">Max Manager modulu LSPosed-də aktiv deyil, ona görə də proqramlar hələ də real IMEI-ni görür. LSPosed-də modulu aktivləşdirin, bu proqramı onun əhatə dairəsinə əlavə edin, sonra bu ekranı yenidən açın.</string>
 </resources>

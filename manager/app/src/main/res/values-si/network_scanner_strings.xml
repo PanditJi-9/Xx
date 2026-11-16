@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/network_scanner_strings.xml -->
+<resources>
+    <string name="network_scanner_title">දේශීය ජාල ස්කෑනරය</string>
+    <string name="network_scanner_subtitle">ඔබේ ලිපිනය, එය ළඟා වන දොරටුව සහ අසල්වාසීන් පිළිතුරු දුන්.</string>
+    <string name="max_role_network_scanner">ඔබ සිටින ජාලය කියවයි - ග්‍රහණයක් නැත, මූලයක් නැත.</string>
+    <string name="ns_no_network">ජාලයක් සම්බන්ධ වී නැත.</string>
+    <string name="ns_interface">අතුරු මුහුණත</string>
+    <string name="ns_address">ලිපිනය</string>
+    <string name="ns_gateway">ගේට්වේ</string>
+    <string name="ns_dns">DNS</string>
+    <string name="ns_mac">MAC</string>
+    <string name="ns_transport_wifi">Wifi</string>
+    <string name="ns_transport_ethernet">ඊතර්නෙට්</string>
+    <string name="ns_transport_cellular">සෛලීය</string>
+    <string name="ns_transport_other">වෙනත්</string>
+    <string name="ns_sources_title">මේක කොහෙන්ද එන්නේ</string>
+    <string name="ns_sources_body">ලිපිනයන් සහ ද්වාර වේදිකාවේ සබැඳි ගුණාංග වලින් කියවනු ලැබේ. අසල්වැසි වගුව kernel හි ARP හැඹිලියෙන් කියවනු ලැබේ, එබැවින් එහි ඇත්තේ මෙම උපාංගය මෑතකදී කතා කළ දේ පමණි - හිස් වගුවක් හිස් ජාලයක් අදහස් නොවේ.</string>
+    <string name="ns_refresh">නැවුම් කරන්න</string>
+    <string name="ns_probe">පොදු වරායන් පරීක්ෂා කරන්න</string>
+    <string name="ns_probe_stop">නවත්වන්න</string>
+    <string name="ns_probe_progress">%2$d හි %1$d විමර්ශනය කිරීම</string>
+    <string name="ns_probe_note">මෙම /24 හරහා 22, 80, 443, 5000 සහ 5555 වරායන් මත TCP සම්බන්ධතාවයක් යවයි. පිළිතුරු සපයන වරායක් වාර්තා වේ; නිශ්ශබ්දතාවය ධාරකයෙකු නොමැති බවට සාක්ෂියක් නොවේ.</string>
+    <string name="ns_neighbours">දන්නා අසල්වැසියන්</string>
+    <string name="ns_neighbours_note">/proc/net/arp වෙතින් — කියවීමට පමණි.</string>
+    <string name="ns_neighbours_empty">අසල්වැසියන් තවමත් හඳුනාගෙන නොමැත.</string>
+    <string name="ns_ports_value">වරාය %1$s</string>
+</resources>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/network_scanner_strings.xml -->
+<resources>
+    <string name="network_scanner_title">اسکنر شبکه محلی</string>
+    <string name="network_scanner_subtitle">آدرس شما، دروازه ای که به آن می رسد و همسایه ها پاسخ داده اند.</string>
+    <string name="max_role_network_scanner">شبکه‌ای را که در آن هستید می‌خواند - بدون ضبط، بدون روت.</string>
+    <string name="ns_no_network">هیچ شبکه ای متصل نیست.</string>
+    <string name="ns_interface">رابط</string>
+    <string name="ns_address">آدرس</string>
+    <string name="ns_gateway">دروازه</string>
+    <string name="ns_dns">DNS</string>
+    <string name="ns_mac">MAC</string>
+    <string name="ns_transport_wifi">وای فای</string>
+    <string name="ns_transport_ethernet">اترنت</string>
+    <string name="ns_transport_cellular">سلولی</string>
+    <string name="ns_transport_other">دیگر</string>
+    <string name="ns_sources_title">این از کجا می آید</string>
+    <string name="ns_sources_body">آدرس ها و دروازه ها از ویژگی های پیوند پلت فرم خوانده می شوند. جدول همسایه از حافظه نهان ARP هسته خوانده می شود، بنابراین فقط چیزی را که این دستگاه اخیراً با آن صحبت کرده است را در خود نگه می دارد - جدول خالی به معنای شبکه خالی نیست.</string>
+    <string name="ns_refresh">تازه کردن</string>
+    <string name="ns_probe">پورت های رایج را بررسی کنید</string>
+    <string name="ns_probe_stop">توقف کنید</string>
+    <string name="ns_probe_progress">کاوش %1$d از %2$d</string>
+    <string name="ns_probe_note">یک اتصال TCP بر روی پورت های 22، 80، 443، 5000 و 5555 در این /24 ارسال می کند. پورتی که پاسخ می دهد گزارش می شود. سکوت دلیلی برای غیبت میزبان نیست.</string>
+    <string name="ns_neighbours">همسایگان شناخته شده</string>
+    <string name="ns_neighbours_note">از /proc/net/arp - فقط خواندنی.</string>
+    <string name="ns_neighbours_empty">هنوز هیچ همسایه ای مشخص نیست.</string>
+    <string name="ns_ports_value">پورت ها %1$s</string>
+</resources>

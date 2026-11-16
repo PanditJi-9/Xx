@@ -69,4 +69,25 @@
     <string name="max_perms_entry_title">Зөвшөөрөл ба Апп үйлдлийн систем</string>
     <string name="max_perms_entry_desc">Энэ апп юу зарлаж, систем нь юуг зөвшөөрдөг болохыг харна уу</string>
     <string name="max_perms_entry_action">Нээлттэй зөвшөөрөл</string>
+    <string name="max_perms_manifest_title">Манифестийн хураангуй</string>
+    <string name="max_perms_manifest_desc">Багц менежерээс уншина уу: хувилбар, SDK хүрээ, бүрэлдэхүүн хэсэг, тэдгээрийн хэд нь экспортлогдсон. Экспортолсон бүрэлдэхүүн хэсгийг бусад програмууд эхлүүлж болно.</string>
+    <string name="max_perms_manifest_version">Хувилбар</string>
+    <string name="max_perms_manifest_sdk">SDK хүрээ</string>
+    <string name="max_perms_manifest_location">Байршлыг суулгах</string>
+    <string name="max_perms_manifest_location_auto">Автомат</string>
+    <string name="max_perms_manifest_location_internal">Зөвхөн дотоод санах ой</string>
+    <string name="max_perms_manifest_location_external">Гаднаас илүүд үздэг</string>
+    <string name="max_perms_manifest_components">Бүрэлдэхүүн хэсгүүд</string>
+    <string name="max_perms_manifest_components_order">үйл ажиллагаа · үйлчилгээ · хүлээн авагч · үйлчилгээ үзүүлэгч</string>
+    <string name="max_perms_manifest_exported">Экспортолсон бүрэлдэхүүн хэсгүүд</string>
+    <string name="max_perms_manifest_splits">APK-г хуваах</string>
+    <string name="max_perms_manifest_debug">Дебаг хийх боломжтой</string>
+    <string name="max_perms_features_title">Зарлагдсан шинж чанарууд</string>
+    <string name="max_perms_features_desc">Багц нь төхөөрөмжөөс юу шаарддаг, энэ төхөөрөмжийн сурталчилсан зүйлтэй харьцуулахад. Энд байхгүй шаардлагатай функц нь ихэвчлэн програм бүрэн ажиллахгүй гэсэн үг юм - энэ нь таавар биш багц менежерийн нэхэмжлэл юм.</string>
+    <string name="max_perms_features_loading">Багцын зарласан функцуудыг уншиж байна...</string>
+    <string name="max_perms_features_none">Багц нь шаардлагатай функцуудыг зарлаагүй.</string>
+    <string name="max_perms_features_required">Шаардлагатай</string>
+    <string name="max_perms_features_unsupported">Энэ төхөөрөмж дээр биш</string>
+    <string name="max_perms_manifest_none">Багц менежер мэдээлээгүй.</string>
+    <string name="max_perms_manifest_unknown">Тодорхойгүй</string>
 </resources>

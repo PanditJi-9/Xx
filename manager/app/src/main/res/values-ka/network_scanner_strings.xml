@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/network_scanner_strings.xml -->
+<resources>
+    <string name="network_scanner_title">ლოკალური ქსელის სკანერი</string>
+    <string name="network_scanner_subtitle">თქვენი მისამართი, კარიბჭე, სადაც ის აღწევს და მეზობლებმა უპასუხეს.</string>
+    <string name="max_role_network_scanner">კითხულობს ქსელს, რომელზედაც იმყოფებით — არა გადაღება, არც root.</string>
+    <string name="ns_no_network">ქსელი არ არის დაკავშირებული.</string>
+    <string name="ns_interface">ინტერფეისი</string>
+    <string name="ns_address">მისამართი</string>
+    <string name="ns_gateway">კარიბჭე</string>
+    <string name="ns_dns">DNS</string>
+    <string name="ns_mac">MAC</string>
+    <string name="ns_transport_wifi">Wi-Fi</string>
+    <string name="ns_transport_ethernet">Ethernet</string>
+    <string name="ns_transport_cellular">ფიჭური</string>
+    <string name="ns_transport_other">სხვა</string>
+    <string name="ns_sources_title">საიდან მოდის ეს</string>
+    <string name="ns_sources_body">მისამართები და კარიბჭე იკითხება პლატფორმის ბმულის თვისებებიდან. მეზობელი ცხრილი იკითხება ბირთვის ARP ქეშიდან, ამიტომ ის ინახავს მხოლოდ იმას, რაზეც ეს მოწყობილობა ახლახან ისაუბრა — ცარიელი ცხრილი არ ნიშნავს ცარიელ ქსელს.</string>
+    <string name="ns_refresh">განაახლეთ</string>
+    <string name="ns_probe">გამოიკვლიეთ საერთო პორტები</string>
+    <string name="ns_probe_stop">გაჩერდი</string>
+    <string name="ns_probe_progress">პრობირება %1$d %2$d-დან</string>
+    <string name="ns_probe_note">აგზავნის TCP კავშირს 22, 80, 443, 5000 და 5555 პორტებზე ამ /24. მოხსენებულია პორტი, რომელიც პასუხობს; დუმილი არ არის იმის მტკიცებულება, რომ მასპინძელი არ არის.</string>
+    <string name="ns_neighbours">ცნობილი მეზობლები</string>
+    <string name="ns_neighbours_note">/proc/net/arp-დან — მხოლოდ წაკითხვა.</string>
+    <string name="ns_neighbours_empty">მეზობლები ჯერ არ არის ცნობილი.</string>
+    <string name="ns_ports_value">პორტები %1$s</string>
+</resources>

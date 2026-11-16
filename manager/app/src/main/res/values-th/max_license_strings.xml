@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_license_strings.xml -->
+<resources>
+    <string name="max_license_title">ใบอนุญาต</string>
+    <string name="max_license_subtitle">กุญแจดอกเดียว อุปกรณ์นี้ ไม่มีบัญชี</string>
+    <string name="max_license_help_body">คีย์จะถูกตรวจสอบออนไลน์หนึ่งครั้งเมื่อคุณป้อน จากนั้นใบรับรองที่ลงนามของเซิร์ฟเวอร์จะทำงานแบบออฟไลน์จนกว่าจะหมดเวลา - แอปจะไม่โทรกลับบ้านทุกครั้งที่คุณเปิดหน้าจอ ใบรับรองเชื่อมโยงกับรหัสการติดตั้งแบบสุ่มของอุปกรณ์นี้ ดังนั้นการคัดลอกข้อมูลแอปไปยังโทรศัพท์เครื่องอื่นจึงไม่มีใบอนุญาตไปด้วย และเจ้าของสามารถรีเซ็ตการเชื่อมโยงนั้นจากแผงควบคุมได้หากคุณเปลี่ยนโทรศัพท์</string>
+    <string name="max_license_status_section">สถานะ</string>
+    <string name="max_license_status_active">คล่องแคล่ว</string>
+    <string name="max_license_status_expired">หมดอายุแล้ว</string>
+    <string name="max_license_status_none">ไม่ได้เปิดใช้งาน</string>
+    <string name="max_license_active_detail">ที่เหลืออยู่: %1$d วัน</string>
+    <string name="max_license_expired_detail">เวลาของคีย์นี้หมดลงแล้ว คีย์ใหม่จะต่ออายุการเข้าถึง</string>
+    <string name="max_license_none_detail">ป้อนรหัสที่คุณได้รับเพื่อปลดล็อกแพลตฟอร์มที่ต้องชำระเงิน</string>
+    <string name="max_license_promo_active">ฟรีสำหรับทุกคนจนถึง %1$s</string>
+    <string name="max_license_plan_title">วางแผน</string>
+    <string name="max_license_devices_title">อุปกรณ์</string>
+    <string name="max_license_devices_detail">%1$d จาก %2$d ใช้แล้ว</string>
+    <string name="max_license_device_id_title">อุปกรณ์นี้</string>
+    <string name="max_license_device_id_detail">%1$s</string>
+    <string name="max_license_key_section">การเปิดใช้งาน</string>
+    <string name="max_license_key_label">รหัสใบอนุญาต</string>
+    <string name="max_license_key_placeholder">MAXM-XXXXX-XXXXX-XXXXX-XXXXX-XX</string>
+    <string name="max_license_key_helper">ขีดกลางและตัวพิมพ์ใหญ่ไม่สำคัญ — วางตามที่คุณได้รับ</string>
+    <string name="max_license_activate">เปิดใช้งาน</string>
+    <string name="max_license_activating">กำลังตรวจสอบกุญแจ...</string>
+    <string name="max_license_refresh">ตรวจสอบตอนนี้</string>
+    <string name="max_license_activated">เปิดใช้งานแล้ว ขณะนี้อุปกรณ์นี้เชื่อมโยงกับกุญแจของคุณแล้ว</string>
+    <string name="max_license_error_invalid_key">คีย์นี้ดูไม่สมบูรณ์ ตรวจสอบแล้วลองอีกครั้ง</string>
+    <string name="max_license_error_not_configured">โครงสร้างนี้ไม่มีการกำหนดค่าเซิร์ฟเวอร์ใบอนุญาต</string>
+    <string name="max_license_error_network">ไม่มีการเชื่อมต่อ ตรวจสอบคีย์หนึ่งครั้ง จากนั้นจึงทำงานแบบออฟไลน์</string>
+    <string name="max_license_error_timeout">เซิร์ฟเวอร์ใบอนุญาตไม่ตอบทันเวลา ลองอีกครั้ง</string>
+    <string name="max_license_error_server">เซิร์ฟเวอร์ใบอนุญาตตอบกลับโดยมีข้อผิดพลาด ลองอีกครั้งในภายหลัง</string>
+    <string name="max_license_error_client">ฟังก์ชันใบอนุญาตไม่ได้ปรับใช้บนเซิร์ฟเวอร์</string>
+    <string name="max_license_error_format">คำตอบของเซิร์ฟเวอร์ไม่เข้าใจ</string>
+    <string name="max_license_error_expired">คีย์นี้หมดอายุแล้ว</string>
+    <string name="max_license_error_not_found">คีย์นี้ไม่มีใครรู้จัก</string>
+    <string name="max_license_error_revoked">คีย์นี้ถูกเพิกถอนแล้ว</string>
+    <string name="max_license_error_device_limit">คีย์นี้ถึงขีดจำกัดอุปกรณ์แล้ว Ask for a device reset.</string>
+    <string name="max_license_error_device_unknown">อุปกรณ์นี้ยังไม่ได้ลิงก์กับกุญแจ Activate it here first.</string>
+    <string name="max_license_error_device_removed">เจ้าของนำอุปกรณ์นี้ออกจากกุญแจแล้ว</string>
+    <string name="max_license_error_rate_limited">พยายามเชื่อมต่อนี้หลายครั้งเกินไป โปรดรอสักครู่แล้วลองอีกครั้ง</string>
+    <string name="max_license_error_unknown">มีบางอย่างผิดพลาด เหตุผลถูกบันทึกไว้ในการวินิจฉัย</string>
+    <string name="max_license_gate_title">พื้นผิวนี้ต้องมีใบอนุญาต</string>
+    <string name="max_license_gate_detail">มันมาพร้อมกับกุญแจ ปุ่มเดียวครอบคลุมอุปกรณ์นี้ และการเข้าสู่อุปกรณ์จะใช้เวลาสักครู่</string>
+    <string name="max_feature_off_title">ปิดแล้ว</string>
+    <string name="max_feature_off_detail">แผงควบคุมได้ปิดพื้นผิวนี้แล้ว มันจะกลับมาทันทีที่เปิดใช้งานอีกครั้ง</string>
+    <string name="max_license_gate_action">เปิดการตั้งค่าใบอนุญาต</string>
+    <string name="max_license_gate_subscribe">สมัครสมาชิกตอนนี้</string>
+    <string name="max_license_subscription_section">สมัครสมาชิก</string>
+    <string name="max_license_subscription_open">เปิดหน้าสมัครสมาชิก</string>
+</resources>

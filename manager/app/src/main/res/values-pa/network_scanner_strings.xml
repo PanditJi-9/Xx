@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/network_scanner_strings.xml -->
+<resources>
+    <string name="network_scanner_title">ਸਥਾਨਕ ਨੈੱਟਵਰਕ ਸਕੈਨਰ</string>
+    <string name="network_scanner_subtitle">ਤੁਹਾਡਾ ਪਤਾ, ਇਹ ਪਹੁੰਚਦਾ ਗੇਟਵੇ, ਅਤੇ ਕਿਹੜੇ ਗੁਆਂਢੀਆਂ ਨੇ ਜਵਾਬ ਦਿੱਤਾ।</string>
+    <string name="max_role_network_scanner">ਉਸ ਨੈੱਟਵਰਕ ਨੂੰ ਪੜ੍ਹਦਾ ਹੈ ਜਿਸ \'ਤੇ ਤੁਸੀਂ ਹੋ — ਕੋਈ ਕੈਪਚਰ ਨਹੀਂ, ਕੋਈ ਰੂਟ ਨਹੀਂ।</string>
+    <string name="ns_no_network">ਕੋਈ ਨੈੱਟਵਰਕ ਕਨੈਕਟ ਨਹੀਂ ਹੈ।</string>
+    <string name="ns_interface">ਇੰਟਰਫੇਸ</string>
+    <string name="ns_address">ਪਤਾ</string>
+    <string name="ns_gateway">ਗੇਟਵੇ</string>
+    <string name="ns_dns">DNS</string>
+    <string name="ns_mac">MAC</string>
+    <string name="ns_transport_wifi">ਵਾਈ-ਫਾਈ</string>
+    <string name="ns_transport_ethernet">ਈਥਰਨੈੱਟ</string>
+    <string name="ns_transport_cellular">ਸੈਲੂਲਰ</string>
+    <string name="ns_transport_other">ਹੋਰ</string>
+    <string name="ns_sources_title">ਇਹ ਕਿੱਥੋਂ ਆਉਂਦਾ ਹੈ</string>
+    <string name="ns_sources_body">ਪਤੇ ਅਤੇ ਗੇਟਵੇ ਪਲੇਟਫਾਰਮ ਦੀਆਂ ਲਿੰਕ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਤੋਂ ਪੜ੍ਹੇ ਜਾਂਦੇ ਹਨ। ਗੁਆਂਢੀ ਟੇਬਲ ਨੂੰ ਕਰਨਲ ਦੇ ARP ਕੈਸ਼ ਤੋਂ ਪੜ੍ਹਿਆ ਜਾਂਦਾ ਹੈ, ਇਸਲਈ ਇਹ ਸਿਰਫ਼ ਉਹੀ ਰੱਖਦਾ ਹੈ ਜਿਸ ਨਾਲ ਇਸ ਡਿਵਾਈਸ ਨੇ ਹਾਲ ਹੀ ਵਿੱਚ ਗੱਲ ਕੀਤੀ ਹੈ — ਇੱਕ ਖਾਲੀ ਟੇਬਲ ਦਾ ਮਤਲਬ ਖਾਲੀ ਨੈੱਟਵਰਕ ਨਹੀਂ ਹੈ।</string>
+    <string name="ns_refresh">ਤਾਜ਼ਾ ਕਰੋ</string>
+    <string name="ns_probe">ਆਮ ਪੋਰਟਾਂ ਦੀ ਜਾਂਚ ਕਰੋ</string>
+    <string name="ns_probe_stop">ਰੂਕੋ</string>
+    <string name="ns_probe_progress">%2$d ਵਿੱਚੋਂ %1$d ਦੀ ਪੜਤਾਲ</string>
+    <string name="ns_probe_note">ਇਸ/24 ਵਿੱਚ ਪੋਰਟ 22, 80, 443, 5000 ਅਤੇ 5555 \'ਤੇ ਇੱਕ TCP ਕਨੈਕਟ ਭੇਜਦਾ ਹੈ। ਇੱਕ ਪੋਰਟ ਜੋ ਜਵਾਬ ਦਿੰਦੀ ਹੈ, ਰਿਪੋਰਟ ਕੀਤੀ ਜਾਂਦੀ ਹੈ; ਚੁੱਪ ਇਸ ਗੱਲ ਦਾ ਸਬੂਤ ਨਹੀਂ ਹੈ ਕਿ ਮੇਜ਼ਬਾਨ ਗੈਰਹਾਜ਼ਰ ਹੈ।</string>
+    <string name="ns_neighbours">ਜਾਣੇ-ਪਛਾਣੇ ਗੁਆਂਢੀ</string>
+    <string name="ns_neighbours_note">/proc/net/arp ਤੋਂ — ਸਿਰਫ਼ ਪੜ੍ਹੋ।</string>
+    <string name="ns_neighbours_empty">ਅਜੇ ਤੱਕ ਕੋਈ ਗੁਆਂਢੀ ਨਹੀਂ ਜਾਣਿਆ ਗਿਆ।</string>
+    <string name="ns_ports_value">ਪੋਰਟ %1$s</string>
+</resources>

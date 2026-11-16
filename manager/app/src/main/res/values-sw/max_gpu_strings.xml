@@ -99,4 +99,12 @@
     <string name="max_gpu_saved_desc">Imehifadhiwa kutoka kwa hifadhi ya awali na kutumika kwenye kila buti: %1$s. Chaguomsingi hapo juu huisha kipindi hiki pekee, kamwe halijahifadhiwa.</string>
     <string name="max_gpu_dynamic_min">Kiwango cha chini · inayobadilika</string>
     <string name="max_gpu_dynamic_max">Upeo · nguvu</string>
+    <string name="max_gpu_monitor_only_detail">Nodi za michoro pekee ambazo kerneli hii inafichua ni kipimo data na vichunguzi vya QoS: hazibeba saa GPU, kwa hivyo hakuna marudio ya kuweka. Kidhibiti kitazimwa badala ya kuandika kidhibiti cha kumbukumbu kana kwamba ni GPU.</string>
+    <string name="max_gpu_danger_title">Ungependa kuandika GPU mipaka?</string>
+    <string name="max_gpu_danger_body">Hii huandika kidirisha cha marudio ya michoro na gavana kwenye nodi GPU. Dirisha ambalo dereva anakataa, au gavana ambaye hawezi kuendelea, anaweza kudumaa kiolesura kizima au kugandisha kidirisha. Rekodi za programu ambazo ulikubali hii mara moja - jukumu la maadili unayotumia ni lako.</string>
+    <string name="max_gpu_danger_action">Ninaelewa - kuomba</string>
+    <string name="max_gpu_state_title">Muda katika jimbo</string>
+    <string name="max_gpu_state_desc">Wakati GPU\ ulienda wapi, ikihesabiwa na kernel kwa mzunguko wa uendeshaji - sio muhtasari wa saa ya sasa.</string>
+    <string name="max_gpu_state_hidden_share">%1$s pamoja</string>
+    <string name="max_gpu_state_hidden">%1$d majimbo chini ya 1%%</string>
 </resources>

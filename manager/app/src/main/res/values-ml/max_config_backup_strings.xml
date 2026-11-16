@@ -18,4 +18,10 @@
     <string name="max_cfg_section_appearance">രൂപവും ഇൻ്റർഫേസും</string>
     <string name="max_cfg_section_app_prefs">ആപ്പ് മുൻഗണനകളും ഭാഷയും</string>
     <string name="max_cfg_restore_merge_note">മുൻഗണനകൾ പുനഃസ്ഥാപിക്കൽ ലയിപ്പിക്കുന്നു: ഫയലിൽ നിലവിലുള്ള കീകൾ എഴുതിയിരിക്കുന്നു, കൂടാതെ കീകൾ അതേപടി നിലനിൽക്കുമെന്ന് പരാമർശിക്കുന്നില്ല. ഒന്നും മായ്ച്ചിട്ടില്ല.</string>
+    <string name="max_cfg_diff_title">%1$d സംരക്ഷിച്ച ക്രമീകരണങ്ങൾ ഈ ഉപകരണത്തിൽ നിന്ന് വ്യത്യസ്തമാണ്</string>
+    <string name="max_cfg_diff_line">%1$s: %2$s → %3$s</string>
+    <string name="max_cfg_diff_unset">സജ്ജമാക്കിയിട്ടില്ല</string>
+    <string name="max_cfg_diff_more">കൂടാതെ %1$d കൂടുതൽ</string>
+    <string name="max_cfg_diff_applist">%1$d ആപ്പ്-ലിസ്റ്റ് ലൈനുകൾ ചേർത്തു, %2$d നീക്കം ചെയ്തു - മുഴുവൻ ലിസ്‌റ്റും മാറ്റി, ലയിപ്പിച്ചിട്ടില്ല.</string>
+    <string name="max_cfg_diff_prefs">%1$d മുൻഗണനാ കീകൾ വ്യത്യാസപ്പെട്ടിരിക്കുന്നു - ലയിപ്പിച്ചു, തുടച്ചുമാറ്റില്ല.</string>
 </resources>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/manifest_inspector_strings.xml -->
+<resources>
+    <string name="manifest_inspector_title">ম্যানিফেস্ট ইন্সপেক্টর</string>
+    <string name="manifest_inspector_subtitle">একটি ইনস্টল করা অ্যাপ নিজের সম্পর্কে কী ঘোষণা করে, প্যাকেজ ম্যানেজার থেকে পড়ুন।</string>
+    <string name="max_role_manifest_inspector">একটি প্যাকেজ নিজের সম্পর্কে কী ঘোষণা করে তা দেখায় — শুধুমাত্র পঠনযোগ্য৷</string>
+    <string name="mi_search">অ্যাপস অনুসন্ধান করুন</string>
+    <string name="mi_empty">বাম দিকে একটি অ্যাপ বেছে নিন।</string>
+    <string name="mi_yes">হ্যাঁ</string>
+    <string name="mi_no">না</string>
+    <string name="mi_section_identity">প্যাকেজ</string>
+    <string name="mi_version">সংস্করণ</string>
+    <string name="mi_version_code">সংস্করণ কোড</string>
+    <string name="mi_min_sdk">ন্যূনতম SDK</string>
+    <string name="mi_target_sdk">টার্গেট SDK</string>
+    <string name="mi_installed">ইনস্টল করা হয়েছে</string>
+    <string name="mi_updated">আপডেট করা হয়েছে</string>
+    <string name="mi_installer">ইনস্টলার</string>
+    <string name="mi_uid">ইউআইডি</string>
+    <string name="mi_data_dir">ডেটা ডিরেক্টরি</string>
+    <string name="mi_debuggable">ডিবাগযোগ্য</string>
+    <string name="mi_system_app">সিস্টেম অ্যাপ</string>
+    <string name="mi_enabled">সক্রিয়</string>
+    <string name="mi_section_permissions">অনুমতি চাওয়া হয়েছে</string>
+    <string name="mi_permissions_summary">%1$d অনুমতি · %2$d এর মধ্যে বিপজ্জনক</string>
+    <string name="mi_permissions_none">এই অ্যাপটি কোন অনুমতির জন্য অনুরোধ করে না।</string>
+    <string name="mi_perm_dangerous">বিপজ্জনক</string>
+    <string name="mi_perm_signature">স্বাক্ষর</string>
+    <string name="mi_perm_normal">স্বাভাবিক</string>
+    <string name="mi_perm_unknown">অশ্রেণীবদ্ধ</string>
+    <string name="mi_section_components">উপাদান</string>
+    <string name="mi_activities">কার্যক্রম</string>
+    <string name="mi_services">সেবা</string>
+    <string name="mi_receivers">রিসিভার</string>
+    <string name="mi_providers">প্রদানকারী</string>
+    <string name="mi_components_none">কোনোটিই ঘোষণা করেনি</string>
+    <string name="mi_section_features">ডিভাইস বৈশিষ্ট্য</string>
+    <string name="mi_features_note">প্ল্যাটফর্মটি অন্য অ্যাপের ব্যবহার-বৈশিষ্ট্যের তালিকা প্রকাশ করে না; এই বৈশিষ্ট্য এই ডিভাইস রিপোর্ট.</string>
+    <string name="mi_features_none">কোন বৈশিষ্ট্য রিপোর্ট করা হয়নি</string>
+    <string name="mi_section_signature">স্বাক্ষর শংসাপত্র</string>
+    <string name="mi_signature_note">স্বাক্ষরকারী শংসাপত্রের SHA-256। একই মান সহ দুটি বিল্ড একই প্রকাশক।</string>
+    <string name="mi_signature_sha256">সার্টিফিকেট ডাইজেস্ট</string>
+</resources>

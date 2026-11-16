@@ -10,4 +10,6 @@
     <string name="studio_display">แสดง</string>
     <string name="studio_power">ตัวเลือกพลังงาน</string>
     <string name="studio_settings">การตั้งค่า</string>
+    <string name="audio_dsp_live">ดีเอสพีถ่ายทอดสด</string>
+    <string name="max_audio_session_label">เซสชันเสียง #%1$d</string>
 </resources>

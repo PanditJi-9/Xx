@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_update_strings.xml -->
+<resources>
+    <string name="update_dialog_title">Թարմացումը հասանելի է</string>
+    <string name="update_dialog_title_required">Պահանջվում է թարմացում</string>
+    <string name="update_required_notice">Այս թարմացումը պահանջվում է MaxManager-ը շարունակելու համար: Տեղադրեք այն, ապա նորից բացեք հավելվածը:</string>
+    <string name="update_dialog_body">%1$s տարբերակը հասանելի է: Դուք %2$s-ում եք:</string>
+    <string name="update_block_title">Շարունակելու համար անհրաժեշտ է թարմացում</string>
+    <string name="update_block_body">Այս կառուցվածքը (%1$s) այլևս չի աջակցվում: Թարմացրեք %2$s-ի՝ MaxManager-ը շարունակելու համար:</string>
+    <string name="update_block_body_no_release">Այս կառուցվածքը (%1$s) այլևս չի աջակցվում:</string>
+    <string name="update_release_notes_label">Ինչ նորություն կա</string>
+    <string name="update_size">Ներբեռնման չափը՝ %1$s</string>
+    <string name="update_button_now">Թարմացրեք հիմա</string>
+    <string name="update_button_later">Ավելի ուշ</string>
+    <string name="update_button_close">Փակել</string>
+    <string name="update_button_open_page">Բացեք ներբեռնման էջը</string>
+    <string name="update_state_downloading">Ներբեռնվում է… %1$d%%</string>
+    <string name="update_state_downloading_unknown">Ներբեռնվում է…</string>
+    <string name="update_state_installing">Տեղադրվում է…</string>
+    <string name="update_error_network">Չհաջողվեց հասնել թարմացման սերվերին: Ստուգեք ձեր կապը և նորից փորձեք:</string>
+    <string name="update_error_http">Թարմացման սերվերը պատասխանել է սխալմամբ: Փորձեք ավելի ուշ:</string>
+    <string name="update_error_format">Թարմացման տեղեկատվությունը չհաջողվեց կարդալ:</string>
+    <string name="update_error_too_large">Թարմացման տեղեկատվությունը սպասվածից ավելի մեծ էր և հեռացվեց:</string>
+    <string name="update_error_integrity">Ներբեռնված ֆայլը չի ​​համապատասխանում իր ստուգաչափին և ջնջվել է:</string>
+    <string name="update_error_install">Տեղադրումը ձախողվեց: Նորից փորձեք:</string>
+    <string name="update_error_not_configured">Այս նախագծում թարմացման ալիք կազմաձևված չէ:</string>
+    <string name="update_maintenance_title">Ժամանակավորապես անհասանելի է</string>
+    <string name="update_maintenance_body">MaxManager ժամանակավորապես անհասանելի է: Խնդրում ենք շուտով նորից փորձեք:</string>
+    <string name="update_check_title">Ստուգեք թարմացումների համար</string>
+    <string name="update_check_supporting">Ընթացիկ տարբերակը՝ %1$s</string>
+    <string name="update_check_updated">Թարմացումը հասանելի է:</string>
+    <string name="update_check_uptodate">Դուք վերջին տարբերակում եք:</string>
+    <string name="update_check_failed">Չհաջողվեց ստուգել թարմացումների առկայությունը:</string>
+    <string name="update_check_not_configured">Այս նախագծում թարմացման ալիք կազմաձևված չէ:</string>
+    <string name="update_released_label">Թողարկման ամսաթիվ՝ %1$s</string>
+    <string name="update_check_none_published">Կառավարման վահանակից դեռ ոչ մի թարմացում չի հրապարակվել։</string>
+    <string name="update_check_link_missing">Թարմացումը հրապարակված է, սակայն դրա ներբեռնման հղումը բացակայում է:</string>
+</resources>

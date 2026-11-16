@@ -10,4 +10,6 @@
     <string name="studio_display">Дисплей</string>
     <string name="studio_power">Параметри живлення</string>
     <string name="studio_settings">Налаштування</string>
+    <string name="audio_dsp_live">DSP наживо</string>
+    <string name="max_audio_session_label">Аудіо сесія №%1$d</string>
 </resources>

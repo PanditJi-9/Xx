@@ -99,4 +99,12 @@
     <string name="max_gpu_saved_desc">आधीच्या सेव्हमधून ठेवले आणि प्रत्येक बूटवर लागू केले: %1$s. वरील डीफॉल्ट केवळ हे सत्र संपेल, कधीही जतन केलेली स्थिती नाही.</string>
     <string name="max_gpu_dynamic_min">किमान · डायनॅमिक</string>
     <string name="max_gpu_dynamic_max">कमाल · डायनॅमिक</string>
+    <string name="max_gpu_monitor_only_detail">या कर्नलने उघड केलेले एकमेव ग्राफिक्स नोड्स बँडविड्थ आणि QoS मॉनिटर्स आहेत: त्यांच्याकडे GPU घड्याळ नसते, त्यामुळे सेट करण्यासाठी कोणतीही वारंवारता नसते. मेमरी गव्हर्नर GPU असल्याप्रमाणे लिहिण्याऐवजी नियंत्रण बंद राहते.</string>
+    <string name="max_gpu_danger_title">GPU मर्यादा लिहा?</string>
+    <string name="max_gpu_danger_body">हे ग्राफिक्स फ्रिक्वेन्सी विंडो आणि गव्हर्नर GPU नोड्समध्ये लिहिते. ड्रायव्हरने नाकारलेली विंडो, किंवा गव्हर्नर जो चालू ठेवू शकत नाही, तो संपूर्ण इंटरफेस अडवू शकतो किंवा पॅनेल गोठवू शकतो. तुम्ही हे एकदा स्वीकारल्याचे ॲप रेकॉर्ड करते — तुम्ही लागू करत असलेल्या मूल्यांची जबाबदारी तुमची आहे.</string>
+    <string name="max_gpu_danger_action">मला समजले - अर्ज करा</string>
+    <string name="max_gpu_state_title">राज्यात वेळ</string>
+    <string name="max_gpu_state_desc">GPU\ चा वेळ प्रत्यक्षात कुठे गेला, कर्नलद्वारे प्रति ऑपरेटिंग फ्रिक्वेन्सी मोजली जाते — वर्तमान घड्याळाचा स्नॅपशॉट नाही.</string>
+    <string name="max_gpu_state_hidden_share">%1$s एकत्र</string>
+    <string name="max_gpu_state_hidden">%1$d 1%% पेक्षा कमी राज्ये</string>
 </resources>

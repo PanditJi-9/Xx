@@ -220,4 +220,5 @@
     <string name="max_files_compress_level_normal">ປົກກະຕິ</string>
     <string name="max_files_compress_level_max">ສູງສຸດ</string>
     <string name="max_files_compress_summary">%1$d ລາຍການ \u2192 %2$s</string>
+    <string name="max_files_history_more">%1$d ໂຟນເດີເກົ່າບໍ່ສະແດງ</string>
 </resources>

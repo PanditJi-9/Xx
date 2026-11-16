@@ -13,4 +13,23 @@
     <string name="max_expand_section">Details anzeigen</string>
     <string name="max_collapse_section">Details ausblenden</string>
     <string name="max_trust_loading">Lektüre…</string>
+    <string name="max_gov_title">Wer regiert jetzt?</string>
+    <string name="max_gov_separator">" › "</string>
+    <string name="max_gov_order_note">Feste Reihenfolge: Eine höhere Sprosse blockiert eine niedrigere. Es ändert sich nie, welche Politik gewinnt.</string>
+    <string name="max_gov_open_details">Aktive Inhaber</string>
+    <string name="max_gov_active_title">Wer hat die Kontrolle?</string>
+    <string name="max_gov_none">Derzeit besitzt keine Police eine Hardware-Kontrolle.</string>
+    <string name="max_gov_count">Aktive Kontrollmietverträge: %1$d</string>
+    <string name="max_gov_requested">Angefordert: %1$s</string>
+    <string name="max_gov_owner_recovery">Erholung</string>
+    <string name="max_gov_owner_safety">Thermische Sicherheit</string>
+    <string name="max_gov_owner_per_app">App-Profil</string>
+    <string name="max_gov_owner_max_ai">Max AI</string>
+    <string name="max_gov_owner_global">Globales Profil</string>
+    <string name="max_gov_owner_system">System</string>
+    <string name="max_gov_owner_a11y">%1$s besitzt eine Hardwaresteuerung</string>
+    <string name="max_gov_now_none">Derzeit gibt es keinen automatisierten Eigentümer – die Kontrolle bleibt bei Ihnen</string>
+    <string name="max_gov_now_one">%1$s hält eine Kontrolle</string>
+    <string name="max_gov_now_many">%1$s enthält die Steuerelemente %2$d</string>
+    <string name="devinfo_details">Einzelheiten</string>
 </resources>

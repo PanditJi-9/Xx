@@ -18,4 +18,10 @@
     <string name="max_cfg_section_appearance">Изглед и интерфејс</string>
     <string name="max_cfg_section_app_prefs">Подешавања и језик апликације</string>
     <string name="max_cfg_restore_merge_note">Враћање поставки се спаја: кључеви присутни у датотеци су уписани, а кључеви које не помиње остају онакви какви јесу. Ништа није очишћено.</string>
+<string name="max_cfg_diff_title">%1$d сачувана подешавања се разликују од овог уређаја</string>
+<string name="max_cfg_diff_line">%1$s: %2$s → %3$s</string>
+<string name="max_cfg_diff_unset">није постављено</string>
+<string name="max_cfg_diff_more">и %1$d више</string>
+<string name="max_cfg_diff_applist">%1$d додане линије листе апликација, %2$d уклоњене — цела листа је замењена, а не спојена.</string>
+<string name="max_cfg_diff_prefs">%1$d преферирани тастери се разликују — спојени, не обрисани.</string>
 </resources>

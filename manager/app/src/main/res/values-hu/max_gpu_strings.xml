@@ -99,4 +99,12 @@
     <string name="max_gpu_saved_desc">Egy korábbi mentésből megőrizve és minden rendszerindításkor alkalmazva: %1$s. A fenti alapértelmezés csak ezt a munkamenetet fejezi be, a mentett állapotot soha.</string>
     <string name="max_gpu_dynamic_min">Minimum · dinamikus</string>
     <string name="max_gpu_dynamic_max">Maximum · dinamikus</string>
+    <string name="max_gpu_monitor_only_detail">A kernel egyetlen grafikus csomópontja a sávszélesség és a QoS monitorok: nincs GPU órajelük, így nincs beállítandó frekvencia. A vezérlés kikapcsolva marad, ahelyett, hogy memóriaszabályzót írna, mintha az GPU lenne.</string>
+    <string name="max_gpu_danger_title">Írjon GPU limiteket?</string>
+    <string name="max_gpu_danger_body">Ez a GPU csomópontokba írja a grafikus frekvencia ablakot és a kormányzót. Egy ablak, amelyet az illesztőprogram elutasít, vagy egy kormányzó, amely nem tud lépést tartani, akadozhatja az egész felületet, vagy lefagyhatja a panelt. Az alkalmazás rögzíti, hogy Ön ezt egyszer elfogadta – az Ön által alkalmazott értékekért az Ön felelőssége.</string>
+    <string name="max_gpu_danger_action">Értem – jelentkezz</string>
+    <string name="max_gpu_state_title">Állapotban töltött idő</string>
+    <string name="max_gpu_state_desc">Ahová a GPU ideje ténylegesen ment, a kernel működési frekvenciánként számolva – nem az aktuális óra pillanatképe.</string>
+    <string name="max_gpu_state_hidden_share">%1$s együtt</string>
+    <string name="max_gpu_state_hidden">%1$d 1%% alatt van</string>
 </resources>

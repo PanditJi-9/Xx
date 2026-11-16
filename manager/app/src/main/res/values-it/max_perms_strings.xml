@@ -69,4 +69,25 @@
     <string name="max_perms_entry_title">Autorizzazioni e operazioni dell\'app</string>
     <string name="max_perms_entry_desc">Scopri cosa dichiara questa app e cosa consente effettivamente il sistema</string>
     <string name="max_perms_entry_action">Apri permessi</string>
+    <string name="max_perms_manifest_title">Sintesi manifesta</string>
+    <string name="max_perms_manifest_desc">Leggi dal gestore pacchetti: versione, gamma SDK, componenti e quanti di essi vengono esportati. Un componente esportato può essere avviato da altre app.</string>
+    <string name="max_perms_manifest_version">Versione</string>
+    <string name="max_perms_manifest_sdk">Intervallo dell\'SDK</string>
+    <string name="max_perms_manifest_location">Posizione di installazione</string>
+    <string name="max_perms_manifest_location_auto">Automatico</string>
+    <string name="max_perms_manifest_location_internal">Solo memoria interna</string>
+    <string name="max_perms_manifest_location_external">Preferisce l\'esterno</string>
+    <string name="max_perms_manifest_components">Componenti</string>
+    <string name="max_perms_manifest_components_order">attività · servizi · destinatari · fornitori</string>
+    <string name="max_perms_manifest_exported">Componenti esportati</string>
+    <string name="max_perms_manifest_splits">APK divisi</string>
+    <string name="max_perms_manifest_debug">Debug</string>
+    <string name="max_perms_features_title">Caratteristiche dichiarate</string>
+    <string name="max_perms_features_desc">Ciò che il pacchetto richiede dal dispositivo, rispetto a ciò che pubblicizza questo dispositivo. Una funzionalità richiesta mancante qui di solito significa che l\'app non funzionerà completamente: si tratta di un reclamo da parte del gestore pacchetti, non di un\'ipotesi.</string>
+    <string name="max_perms_features_loading">Lettura delle funzionalità dichiarate del pacchetto…</string>
+    <string name="max_perms_features_none">Il pacchetto non dichiara alcuna funzionalità richiesta.</string>
+    <string name="max_perms_features_required">Necessario</string>
+    <string name="max_perms_features_unsupported">Non su questo dispositivo</string>
+    <string name="max_perms_manifest_none">Non segnalato dal gestore pacchetti.</string>
+    <string name="max_perms_manifest_unknown">Sconosciuto</string>
 </resources>

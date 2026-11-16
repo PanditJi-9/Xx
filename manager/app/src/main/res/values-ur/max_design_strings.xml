@@ -13,4 +13,23 @@
     <string name="max_expand_section">تفصیلات دکھائیں۔</string>
     <string name="max_collapse_section">تفصیلات چھپائیں۔</string>
     <string name="max_trust_loading">پڑھ رہا ہے…</string>
+    <string name="max_gov_title">اب کون حکمرانی کرتا ہے۔</string>
+    <string name="max_gov_separator">" ›</string>
+    <string name="max_gov_order_note">فکسڈ آرڈر: اونچا دھڑا نیچے والے کو روکتا ہے۔ یہ کبھی نہیں بدلتا کہ کون سی پالیسی جیتتی ہے۔</string>
+    <string name="max_gov_open_details">فعال ہولڈرز</string>
+    <string name="max_gov_active_title">جس کے پاس کنٹرول ہے۔</string>
+    <string name="max_gov_none">ابھی کوئی پالیسی ہارڈ ویئر کنٹرول کی مالک نہیں ہے۔</string>
+    <string name="max_gov_count">فعال کنٹرول لیز: %1$d</string>
+    <string name="max_gov_requested">درخواست کی گئی: %1$s</string>
+    <string name="max_gov_owner_recovery">بازیابی۔</string>
+    <string name="max_gov_owner_safety">تھرمل سیفٹی</string>
+    <string name="max_gov_owner_per_app">ایپ پروفائل</string>
+    <string name="max_gov_owner_max_ai">Max AI</string>
+    <string name="max_gov_owner_global">عالمی پروفائل</string>
+    <string name="max_gov_owner_system">سسٹم</string>
+    <string name="max_gov_owner_a11y">%1$s ہارڈ ویئر کنٹرول کا مالک ہے۔</string>
+    <string name="max_gov_now_none">ابھی کوئی خودکار مالک نہیں ہے — کنٹرول آپ کا ہی رہتا ہے۔</string>
+    <string name="max_gov_now_one">%1$s کنٹرول رکھتا ہے۔</string>
+    <string name="max_gov_now_many">%1$s %2$d کنٹرول رکھتا ہے۔</string>
+    <string name="devinfo_details">تفصیلات</string>
 </resources>

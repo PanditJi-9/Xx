@@ -10,4 +10,6 @@
     <string name="studio_display">প্ৰদৰ্শন</string>
     <string name="studio_power">শক্তি বিকল্পসমূহ</string>
     <string name="studio_settings">ছেটিংছ</string>
+    <string name="audio_dsp_live">ডি এছ পি লাইভ</string>
+    <string name="max_audio_session_label">অডিঅ\' অধিবেশন #%1$d</string>
 </resources>

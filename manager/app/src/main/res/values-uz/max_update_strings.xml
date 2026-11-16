@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_update_strings.xml -->
+<resources>
+    <string name="update_dialog_title">Yangilanish mavjud</string>
+    <string name="update_dialog_title_required">Yangilash kerak</string>
+    <string name="update_required_notice">Ushbu yangilanish MaxManager dan foydalanishni davom ettirish uchun talab qilinadi. Uni o\'rnating, so\'ngra ilovani qayta oching.</string>
+    <string name="update_dialog_body">%1$s versiyasi mavjud. Siz %2$s dasiz.</string>
+    <string name="update_block_title">Davom etish uchun yangilanish kerak</string>
+    <string name="update_block_body">Bu tuzilish (%1$s) endi qoʻllab-quvvatlanmaydi. MaxManager dan foydalanishda davom etish uchun %2$s ga yangilang.</string>
+    <string name="update_block_body_no_release">Bu tuzilish (%1$s) endi qoʻllab-quvvatlanmaydi.</string>
+    <string name="update_release_notes_label">Nima yangiliklar</string>
+    <string name="update_size">Yuklab olish hajmi: %1$s</string>
+    <string name="update_button_now">Hozir yangilang</string>
+    <string name="update_button_later">Keyinchalik</string>
+    <string name="update_button_close">Yopish</string>
+    <string name="update_button_open_page">Yuklab olish sahifasini oching</string>
+    <string name="update_state_downloading">Yuklab olinmoqda… %1$d%%</string>
+    <string name="update_state_downloading_unknown">Yuklab olinmoqda…</string>
+    <string name="update_state_installing">Oʻrnatilmoqda…</string>
+    <string name="update_error_network">Yangilash serveriga ulanib boʻlmadi. Ulanishingizni tekshiring va qaytadan urining.</string>
+    <string name="update_error_http">Yangilash serveri xato bilan javob berdi. Keyinroq qayta urinib ko‘ring.</string>
+    <string name="update_error_format">Yangilanish maʼlumotlarini oʻqib boʻlmadi.</string>
+    <string name="update_error_too_large">Yangilanish ma\'lumotlari kutilganidan kattaroq edi va o\'chirib tashlandi.</string>
+    <string name="update_error_integrity">Yuklab olingan fayl nazorat summasiga mos kelmadi va oʻchirildi.</string>
+    <string name="update_error_install">O‘rnatish amalga oshmadi. Qayta urinib ko\'ring.</string>
+    <string name="update_error_not_configured">Ushbu tuzilmada yangilanish kanali sozlanmagan.</string>
+    <string name="update_maintenance_title">Vaqtinchalik mavjud emas</string>
+    <string name="update_maintenance_body">MaxManager vaqtincha mavjud emas. Tez orada qayta urinib koʻring.</string>
+    <string name="update_check_title">Yangilanishlarni tekshiring</string>
+    <string name="update_check_supporting">Joriy versiya: %1$s</string>
+    <string name="update_check_updated">Yangilanish mavjud.</string>
+    <string name="update_check_uptodate">Siz oxirgi versiyadasiz.</string>
+    <string name="update_check_failed">Yangilanishlarni tekshirib bo‘lmadi.</string>
+    <string name="update_check_not_configured">Ushbu tuzilmada yangilanish kanali sozlanmagan.</string>
+    <string name="update_released_label">Chiqarilgan sana: %1$s</string>
+    <string name="update_check_none_published">Boshqaruv panelidan hali hech qanday yangilanish chop etilmagan.</string>
+    <string name="update_check_link_missing">Yangilanish chop etildi, lekin uni yuklab olish havolasi yoʻq.</string>
+</resources>

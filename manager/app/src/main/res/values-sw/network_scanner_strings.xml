@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/network_scanner_strings.xml -->
+<resources>
+    <string name="network_scanner_title">Kichanganuzi cha Mtandao wa Karibu</string>
+    <string name="network_scanner_subtitle">Anwani yako, lango inapofikia, na ambayo majirani walijibu.</string>
+    <string name="max_role_network_scanner">Husoma mtandao unaotumia - hakuna kunasa, hakuna mizizi.</string>
+    <string name="ns_no_network">Hakuna mtandao uliounganishwa.</string>
+    <string name="ns_interface">Kiolesura</string>
+    <string name="ns_address">Anwani</string>
+    <string name="ns_gateway">Lango</string>
+    <string name="ns_dns">DNS</string>
+    <string name="ns_mac">MAC</string>
+    <string name="ns_transport_wifi">Wi-Fi</string>
+    <string name="ns_transport_ethernet">Ethaneti</string>
+    <string name="ns_transport_cellular">Simu ya rununu</string>
+    <string name="ns_transport_other">Nyingine</string>
+    <string name="ns_sources_title">Hii inatoka wapi</string>
+    <string name="ns_sources_body">Anwani na lango husomwa kutoka kwa sifa za kiungo za jukwaa. Jedwali la jirani linasomwa kutoka kwa akiba ya ARP ya kernel, kwa hivyo inashikilia tu kile ambacho kifaa hiki kimezungumza nacho hivi majuzi - jedwali tupu haimaanishi mtandao tupu.</string>
+    <string name="ns_refresh">Onyesha upya</string>
+    <string name="ns_probe">Chunguza bandari za kawaida</string>
+    <string name="ns_probe_stop">Acha</string>
+    <string name="ns_probe_progress">Inachunguza %1$d ya %2$d</string>
+    <string name="ns_probe_note">Hutuma muunganisho wa TCP kwenye bandari 22, 80, 443, 5000 na 5555 kote hii /24. Bandari inayojibu inaripotiwa; kunyamaza sio uthibitisho kuwa mwenyeji hayupo.</string>
+    <string name="ns_neighbours">Majirani wanaojulikana</string>
+    <string name="ns_neighbours_note">Kutoka /proc/net/arp - soma tu.</string>
+    <string name="ns_neighbours_empty">Hakuna majirani wanaojulikana bado.</string>
+    <string name="ns_ports_value">Bandari %1$s</string>
+</resources>

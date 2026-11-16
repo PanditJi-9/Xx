@@ -99,4 +99,12 @@
     <string name="max_gpu_saved_desc">Säilitatud varasemast salvestusest ja rakendatud igal alglaadimisel: %1$s. Ülaltoodud vaikeväärtus lõpetab ainult selle seansi, mitte kunagi salvestatud olekut.</string>
     <string name="max_gpu_dynamic_min">Minimaalne · dünaamiline</string>
     <string name="max_gpu_dynamic_max">Maksimaalne · dünaamiline</string>
+    <string name="max_gpu_monitor_only_detail">Ainsad graafikasõlmed, mida see kernel paljastab, on ribalaius ja QoS-i monitorid: neil pole GPU kella, seega pole sagedust määrata. Mäluregulaatori kirjutamise asemel lülitub juhtimine välja, nagu oleks see GPU.</string>
+    <string name="max_gpu_danger_title">Kas kirjutada GPU piirid?</string>
+    <string name="max_gpu_danger_body">See kirjutab graafika sagedusakna ja regulaatori GPU sõlmedesse. Aken, mille draiver tagasi lükkab, või regulaator, mis ei suuda sammu pidada, võib kogu liidese kokutada või paneeli külmutada. Rakendus registreerib, et nõustusite sellega üks kord – vastutate rakendatavate väärtuste eest teie.</string>
+    <string name="max_gpu_danger_action">Saan aru – kandideeri</string>
+    <string name="max_gpu_state_title">Aeg olekus</string>
+    <string name="max_gpu_state_desc">Kuhu GPU aeg tegelikult läks, loendatuna kerneli järgi töösageduse kohta – mitte hetketõmmis praegusest kellast.</string>
+    <string name="max_gpu_state_hidden_share">%1$s koos</string>
+    <string name="max_gpu_state_hidden">%1$d on alla 1%%</string>
 </resources>

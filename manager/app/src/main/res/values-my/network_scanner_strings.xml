@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/network_scanner_strings.xml -->
+<resources>
+    <string name="network_scanner_title">Local Network Scanner</string>
+    <string name="network_scanner_subtitle">မင်းရဲ့လိပ်စာ၊ သူရောက်တဲ့ တံခါးပေါက်နဲ့ အိမ်နီးနားချင်းတွေက ဖြေတယ်။</string>
+    <string name="max_role_network_scanner">သင်အသုံးပြုနေသည့် ကွန်ရက်ကို ဖတ်သည် — ဖမ်းယူမှု မရှိ၊ အမြစ်မရှိပေ။</string>
+    <string name="ns_no_network">ကွန်ရက်ချိတ်ဆက်မှု မရှိပါ။</string>
+    <string name="ns_interface">အင်တာဖေ့စ်</string>
+    <string name="ns_address">လိပ်စာ</string>
+    <string name="ns_gateway">မုခ်ဦး</string>
+    <string name="ns_dns">DNS</string>
+    <string name="ns_mac">မက်</string>
+    <string name="ns_transport_wifi">ဝိုင်ဖိုင်</string>
+    <string name="ns_transport_ethernet">အီသာနက်</string>
+    <string name="ns_transport_cellular">ဆယ်လူလာ</string>
+    <string name="ns_transport_other">တခြား</string>
+    <string name="ns_sources_title">ဒါက ဘယ်ကလာတာလဲ။</string>
+    <string name="ns_sources_body">လိပ်စာများနှင့် ဂိတ်ဝေးများကို ပလပ်ဖောင်း၏ လင့်ခ်ဂုဏ်သတ္တိများမှ ဖတ်ပြပါသည်။ အိမ်နီးချင်းဇယားကို kernel\'s ARP ကက်ရှ်မှ ဖတ်ရသောကြောင့် ၎င်းသည် မကြာသေးမီက ဤစက်ပစ္စည်းနှင့် ပြောဆိုခဲ့သည့်အရာကိုသာ ကိုင်ဆောင်ထားပါသည် — ဇယားအလွတ်သည် ကွန်ရက်အလွတ်ကို မဆိုလိုပါ။</string>
+    <string name="ns_refresh">ပြန်လည်စတင်ပါ။</string>
+    <string name="ns_probe">ဘုံပေါက်များကို စစ်ဆေးပါ။</string>
+    <string name="ns_probe_stop">ရပ်</string>
+    <string name="ns_probe_progress">%1$d ၏ %2$d ကို စစ်ဆေးခြင်း။</string>
+    <string name="ns_probe_note">ဤ /24 ကိုဖြတ်၍ အပေါက် 22၊ 80၊ 443၊ 5000 နှင့် 5555 တွင် TCP ချိတ်ဆက်မှုကို ပေးပို့သည်။ အဖြေများကို အစီရင်ခံထားသည့် ဆိပ်ကမ်းတစ်ခု၊ ဆိတ်ဆိတ်နေခြင်းသည် အိမ်ရှင်မရှိဟု သက်သေပြခြင်းမဟုတ်ပါ။</string>
+    <string name="ns_neighbours">အိမ်နီးနားချင်းတွေ သိတယ်။</string>
+    <string name="ns_neighbours_note">/proc/net/arp မှ — ဖတ်ရန်သာ။</string>
+    <string name="ns_neighbours_empty">အိမ်နီးနားချင်းတွေ မသိရသေးဘူး။</string>
+    <string name="ns_ports_value">ဆိပ်ကမ်းများ %1$s</string>
+</resources>

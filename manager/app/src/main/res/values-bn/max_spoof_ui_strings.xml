@@ -51,4 +51,14 @@
     <string name="copg_tweak_kso_title">পর্দা চালু রাখুন</string>
     <string name="copg_tweak_kso_desc">এই অ্যাপে COPG কিপ-স্ক্রিন-অন টুইক প্রয়োগ করে। এখানে সংরক্ষিত, পর্যালোচনা দ্বারা ইঞ্জিনে লিখিত এবং Spoof ট্যাবে প্রয়োগ করুন৷</string>
     <string name="copg_tweak_needs_device">এই অ্যাপের জন্য প্রথমে স্পুফ ট্যাবে একটি ডিভাইস প্রয়োজন৷</string>
+    <string name="spoof_engine_unmeasured">ইঞ্জিনের অবস্থা পরিমাপ করা হয়নি: রুট অ্যাক্সেস এখনও মঞ্জুর করা হয়নি। গ্রান্ট রুট, তারপর এই ট্যাব আবার খুলুন.</string>
+    <string name="spoof_engine_config_missing">COPG ইনস্টল করা আছে, কিন্তু এর কনফিগারেশন ফাইল (COPG.json) অনুপস্থিত। মডিউল আবার প্রদান না করা পর্যন্ত আবেদন প্রত্যাখ্যান করা হয়।</string>
+    <string name="spoof_engine_config_unreadable">COPG ইনস্টল করা আছে, কিন্তু এর কনফিগারেশন ফাইলটি পড়ার যোগ্য নয় JSON৷ ফাইল মেরামত না হওয়া পর্যন্ত আবেদন প্রত্যাখ্যান করা হয়.</string>
+    <string name="spoof_imei_spoof">IMEI স্পুফিং</string>
+    <string name="spoof_imei_spoof_desc">এই অ্যাপটিকে একটি ভিন্ন IMEI দেখায়। LSPosed-এ Max Manager মডিউল সক্ষম করা প্রয়োজন এই অ্যাপের সাথে এর সুযোগে। এটি চালু করার পরে অ্যাপটি পুনরায় চালু করুন।</string>
+    <string name="spoof_imei_active">এই অ্যাপটি দেখানো হচ্ছে: %1$s</string>
+    <string name="spoof_imei_summary">IMEI স্পুফিং</string>
+    <string name="spoof_imei_regenerate">নতুন এলোমেলো IMEI</string>
+    <string name="spoof_imei_regenerate_desc">এই অ্যাপের জন্য আরেকটি বৈধ IMEI তৈরি করে। এটি দেখতে অ্যাপটি পুনরায় চালু করুন।</string>
+    <string name="spoof_imei_module_inactive">LSPosed-এ Max Manager মডিউল সক্ষম করা নেই, তাই অ্যাপগুলি এখনও আসল IMEI দেখতে পায়৷ LSPosed-এ মডিউলটি সক্ষম করুন, এই অ্যাপটিকে এর সুযোগে যুক্ত করুন, তারপর এই স্ক্রীনটি পুনরায় খুলুন৷</string>
 </resources>

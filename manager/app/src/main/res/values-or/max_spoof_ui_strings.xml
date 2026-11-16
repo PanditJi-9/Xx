@@ -51,4 +51,14 @@
     <string name="copg_tweak_kso_title">ସ୍କ୍ରିନ୍ ଅନ୍ ରଖନ୍ତୁ |</string>
     <string name="copg_tweak_kso_desc">ଏହି ଆପରେ COPG କିପ୍-ସ୍କ୍ରିନ୍-ଅନ୍ ଟ୍ୱିକ୍ ପ୍ରୟୋଗ କରେ | ଏଠାରେ ସଞ୍ଚୟ ହୋଇଛି, ସମୀକ୍ଷା ଦ୍ୱାରା ଇଞ୍ଜିନକୁ ଲେଖାଯାଇଛି ଏବଂ ସ୍ପୁଫ୍ ଟ୍ୟାବରେ ପ୍ରୟୋଗ କରନ୍ତୁ |</string>
     <string name="copg_tweak_needs_device">ସ୍ପୁଫ୍ ଟ୍ୟାବ୍ ରେ ପ୍ରଥମେ ଏହି ଆପ୍ ପାଇଁ ଏକ ଡିଭାଇସ୍ ଦରକାର |</string>
+    <string name="spoof_engine_unmeasured">ଇଞ୍ଜିନ୍ ସ୍ଥିତି ମାପ କରାଯାଏ ନାହିଁ: ମୂଳ ପ୍ରବେଶ ଏପର୍ଯ୍ୟନ୍ତ ଅନୁମୋଦିତ ନୁହେଁ | ମୂଳ ଦିଅନ୍ତୁ, ତାପରେ ଏହି ଟ୍ୟାବ୍ ଖୋଲନ୍ତୁ |</string>
+    <string name="spoof_engine_config_missing">COPG ସଂସ୍ଥାପିତ ହୋଇଛି, କିନ୍ତୁ ଏହାର ବିନ୍ୟାସ ଫାଇଲ (COPG.json) ନିଖୋଜ ଅଛି | ମଡ୍ୟୁଲ୍ ପୁନର୍ବାର ପ୍ରଦାନ ନକରିବା ପର୍ଯ୍ୟନ୍ତ ଆବେଦନକୁ ପ୍ରତ୍ୟାଖ୍ୟାନ କରାଯାଇଛି |</string>
+    <string name="spoof_engine_config_unreadable">COPG ସଂସ୍ଥାପିତ ହୋଇଛି, କିନ୍ତୁ ଏହାର ବିନ୍ୟାସ ଫାଇଲ ପ read ଼ିବା ଯୋଗ୍ୟ JSON ନୁହେଁ | ଫାଇଲ ମରାମତି ନହେବା ପର୍ଯ୍ୟନ୍ତ ଆବେଦନକୁ ପ୍ରତ୍ୟାଖ୍ୟାନ କରାଯାଇଛି |</string>
+    <string name="spoof_imei_spoof">IMEI ସ୍ପୁଫିଙ୍ଗ୍ |</string>
+    <string name="spoof_imei_spoof_desc">ଏହି ଆପକୁ ଏକ ଭିନ୍ନ IMEI ଦେଖାଏ | ଏହାର ପରିସର ମଧ୍ୟରେ ଏହି ଆପ୍ ସହିତ LSPosed ରେ Max Manager ମଡ୍ୟୁଲ୍ ସକ୍ଷମ ହେବା ଆବଶ୍ୟକ | ଏହାକୁ ଟର୍ନ୍ ଅନ୍ କରିବା ପରେ ପୁନ Rest ଆରମ୍ଭ କରନ୍ତୁ |</string>
+    <string name="spoof_imei_active">ଏହି ଆପ୍ ଦେଖାଉଛି: %1$s |</string>
+    <string name="spoof_imei_summary">IMEI ସ୍ପୁଫିଙ୍ଗ୍ |</string>
+    <string name="spoof_imei_regenerate">ନୂତନ ରାଣ୍ଡମ IMEI |</string>
+    <string name="spoof_imei_regenerate_desc">ଏହି ଆପ୍ ପାଇଁ ଅନ୍ୟ ଏକ ବ valid ଧ IMEI ସୃଷ୍ଟି କରେ | ଏହାକୁ ଦେଖିବା ପାଇଁ ଆପ୍ ପୁନ Rest ଆରମ୍ଭ କରନ୍ତୁ |</string>
+    <string name="spoof_imei_module_inactive">LSPosed ରେ Max Manager ମଡ୍ୟୁଲ୍ ସକ୍ଷମ ନୁହେଁ, ତେଣୁ ଆପଗୁଡ଼ିକ ପ୍ରକୃତ IMEI ଦେଖନ୍ତି | LSPosed ରେ ମଡ୍ୟୁଲ୍ ସକ୍ଷମ କରନ୍ତୁ, ଏହି ଆପକୁ ଏହାର ପରିସର ସହିତ ଯୋଡନ୍ତୁ, ତାପରେ ଏହି ସ୍କ୍ରିନ୍ ଖୋଲନ୍ତୁ |</string>
 </resources>

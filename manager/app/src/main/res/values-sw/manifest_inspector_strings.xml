@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/manifest_inspector_strings.xml -->
+<resources>
+    <string name="manifest_inspector_title">Dhihirisha Inspekta</string>
+    <string name="manifest_inspector_subtitle">Kile ambacho programu iliyosakinishwa inatangaza kujihusu, soma kutoka kwa PackageManager.</string>
+    <string name="max_role_manifest_inspector">Inaonyesha kile kifurushi kinatangaza kujihusu - soma tu.</string>
+    <string name="mi_search">Tafuta programu</string>
+    <string name="mi_empty">Chagua programu upande wa kushoto.</string>
+    <string name="mi_yes">Ndiyo</string>
+    <string name="mi_no">Hapana</string>
+    <string name="mi_section_identity">Kifurushi</string>
+    <string name="mi_version">Toleo</string>
+    <string name="mi_version_code">Msimbo wa toleo</string>
+    <string name="mi_min_sdk">Kiwango cha chini cha SDK</string>
+    <string name="mi_target_sdk">SDK lengwa</string>
+    <string name="mi_installed">Imesakinishwa</string>
+    <string name="mi_updated">Imesasishwa</string>
+    <string name="mi_installer">Kisakinishi</string>
+    <string name="mi_uid">UID</string>
+    <string name="mi_data_dir">Saraka ya data</string>
+    <string name="mi_debuggable">Inaweza kutatuliwa</string>
+    <string name="mi_system_app">Programu ya mfumo</string>
+    <string name="mi_enabled">Imewashwa</string>
+    <string name="mi_section_permissions">Umeomba ruhusa</string>
+    <string name="mi_permissions_summary">%1$d ruhusa · %2$d kati yao ni hatari</string>
+    <string name="mi_permissions_none">Programu hii haiombi ruhusa.</string>
+    <string name="mi_perm_dangerous">Hatari</string>
+    <string name="mi_perm_signature">Sahihi</string>
+    <string name="mi_perm_normal">Kawaida</string>
+    <string name="mi_perm_unknown">Haijaainishwa</string>
+    <string name="mi_section_components">Vipengele</string>
+    <string name="mi_activities">Shughuli</string>
+    <string name="mi_services">Huduma</string>
+    <string name="mi_receivers">Wapokeaji</string>
+    <string name="mi_providers">Watoa huduma</string>
+    <string name="mi_components_none">Hakuna iliyotangazwa</string>
+    <string name="mi_section_features">Vipengele vya kifaa</string>
+    <string name="mi_features_note">Mfumo hauonyeshi orodha ya vipengele vya matumizi ya programu nyingine; hivi ndivyo vipengele vinavyoripoti kifaa hiki.</string>
+    <string name="mi_features_none">Hakuna kipengele kilichoripotiwa</string>
+    <string name="mi_section_signature">Cheti cha kusaini</string>
+    <string name="mi_signature_note">SHA-256 ya cheti cha kutia saini. Miundo miwili yenye thamani sawa ni mchapishaji sawa.</string>
+    <string name="mi_signature_sha256">Muhtasari wa cheti</string>
+</resources>

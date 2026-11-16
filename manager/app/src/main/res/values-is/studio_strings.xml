@@ -10,4 +10,6 @@
     <string name="studio_display">Skjár</string>
     <string name="studio_power">Rafmagnsvalkostir</string>
     <string name="studio_settings">Stillingar</string>
+    <string name="audio_dsp_live">DSP í beinni</string>
+    <string name="max_audio_session_label">Hljóðlota #%1$d</string>
 </resources>

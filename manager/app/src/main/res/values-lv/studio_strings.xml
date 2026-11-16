@@ -10,4 +10,6 @@
     <string name="studio_display">Displejs</string>
     <string name="studio_power">Jaudas iespējas</string>
     <string name="studio_settings">Iestatījumi</string>
+    <string name="audio_dsp_live">DSP tiešraidē</string>
+    <string name="max_audio_session_label">Audio sesija #%1$d</string>
 </resources>

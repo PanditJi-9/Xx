@@ -69,4 +69,25 @@
     <string name="max_perms_entry_title">İcazələr və Tətbiq əməliyyatları</string>
     <string name="max_perms_entry_desc">Bu proqramın nə elan etdiyinə və sistemin əslində nəyə icazə verdiyinə baxın</string>
     <string name="max_perms_entry_action">İcazələri açın</string>
+    <string name="max_perms_manifest_title">Manifest xülasəsi</string>
+    <string name="max_perms_manifest_desc">Paket menecerindən oxuyun: versiya, SDK diapazonu, komponentlər və onlardan neçəsinin ixrac edildiyi. İxrac edilmiş komponent digər proqramlar tərəfindən işə salına bilər.</string>
+    <string name="max_perms_manifest_version">Versiya</string>
+    <string name="max_perms_manifest_sdk">SDK diapazonu</string>
+    <string name="max_perms_manifest_location">Yeri quraşdırın</string>
+    <string name="max_perms_manifest_location_auto">Avtomatik</string>
+    <string name="max_perms_manifest_location_internal">Yalnız daxili yaddaş</string>
+    <string name="max_perms_manifest_location_external">Xaricilərə üstünlük verir</string>
+    <string name="max_perms_manifest_components">Komponentlər</string>
+    <string name="max_perms_manifest_components_order">fəaliyyətlər · xidmətlər · alıcılar · provayderlər</string>
+    <string name="max_perms_manifest_exported">İxrac edilmiş komponentlər</string>
+    <string name="max_perms_manifest_splits">APK-ları ayırın</string>
+    <string name="max_perms_manifest_debug">Hata edilə bilən</string>
+    <string name="max_perms_features_title">Elan edilmiş xüsusiyyətlər</string>
+    <string name="max_perms_features_desc">Paketin cihazdan nə tələb etdiyi, bu cihazın reklam etdiyi ilə müqayisədə. Burada çatışmayan tələb olunan funksiya adətən proqramın tam işləməyəcəyi deməkdir – bu, təxmin deyil, paket menecerinin iddiasıdır.</string>
+    <string name="max_perms_features_loading">Paketin elan edilmiş xüsusiyyətləri oxunur...</string>
+    <string name="max_perms_features_none">Paket heç bir tələb olunan funksiyanı elan etmir.</string>
+    <string name="max_perms_features_required">Tələb olunur</string>
+    <string name="max_perms_features_unsupported">Bu cihazda deyil</string>
+    <string name="max_perms_manifest_none">Paket meneceri tərəfindən məlumat verilmir.</string>
+    <string name="max_perms_manifest_unknown">Naməlum</string>
 </resources>

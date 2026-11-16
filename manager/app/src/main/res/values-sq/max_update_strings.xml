@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_update_strings.xml -->
+<resources>
+    <string name="update_dialog_title">Ofrohet përditësim</string>
+    <string name="update_dialog_title_required">Kërkohet përditësim</string>
+    <string name="update_required_notice">Ky përditësim kërkohet për të vazhduar përdorimin e MaxManager. Instaloni atë dhe më pas rihapni aplikacionin.</string>
+    <string name="update_dialog_body">Versioni %1$s është i disponueshëm. Ju jeni në %2$s.</string>
+    <string name="update_block_title">Kërkohet përditësim për të vazhduar</string>
+    <string name="update_block_body">Ky ndërtim (%1$s) nuk mbështetet më. Përditëso në %2$s për të vazhduar përdorimin MaxManager.</string>
+    <string name="update_block_body_no_release">Ky ndërtim (%1$s) nuk mbështetet më.</string>
+    <string name="update_release_notes_label">Çfarë ka të re</string>
+    <string name="update_size">Madhësia e shkarkimit: %1$s</string>
+    <string name="update_button_now">Përditëso tani</string>
+    <string name="update_button_later">Më vonë</string>
+    <string name="update_button_close">Mbylle</string>
+    <string name="update_button_open_page">Hapni faqen e shkarkimit</string>
+    <string name="update_state_downloading">Po shkarkohet… %1$d%%</string>
+    <string name="update_state_downloading_unknown">Po shkarkohet…</string>
+    <string name="update_state_installing">Po instalohet…</string>
+    <string name="update_error_network">Nuk arrita dot te serveri i përditësimit. Kontrollo lidhjen tënde dhe provo sërish.</string>
+    <string name="update_error_http">Serveri i përditësimit u përgjigj me një gabim. Provo sërish më vonë.</string>
+    <string name="update_error_format">Informacioni i përditësimit nuk mund të lexohej.</string>
+    <string name="update_error_too_large">Informacioni i përditësimit ishte më i madh se sa pritej dhe u hodh poshtë.</string>
+    <string name="update_error_integrity">Skedari i shkarkuar nuk përputhej me kontrollin e tij dhe u fshi.</string>
+    <string name="update_error_install">Instalimi dështoi. Provo sërish.</string>
+    <string name="update_error_not_configured">Asnjë kanal përditësimi nuk është konfiguruar në këtë ndërtim.</string>
+    <string name="update_maintenance_title">Përkohësisht i padisponueshëm</string>
+    <string name="update_maintenance_body">MaxManager është përkohësisht i padisponueshëm. Ju lutemi provoni sërish së shpejti.</string>
+    <string name="update_check_title">Kontrolloni për përditësime</string>
+    <string name="update_check_supporting">Versioni aktual: %1$s</string>
+    <string name="update_check_updated">Ekziston një përditësim.</string>
+    <string name="update_check_uptodate">Jeni në versionin më të fundit.</string>
+    <string name="update_check_failed">Nuk mund të kontrollohej për përditësime.</string>
+    <string name="update_check_not_configured">Asnjë kanal përditësimi nuk është konfiguruar në këtë ndërtim.</string>
+    <string name="update_released_label">Data e publikimit: %1$s</string>
+    <string name="update_check_none_published">Asnjë përditësim nuk është publikuar ende nga paneli i kontrollit.</string>
+    <string name="update_check_link_missing">Një përditësim është publikuar, por lidhja e shkarkimit të tij mungon.</string>
+</resources>

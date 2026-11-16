@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/network_scanner_strings.xml -->
+<resources>
+    <string name="network_scanner_title">स्थानीय नेटवर्क स्कैनर</string>
+    <string name="network_scanner_subtitle">आपका पता, वह प्रवेश द्वार जिस तक वह पहुंचता है, और किस पड़ोसियों ने उत्तर दिया।</string>
+    <string name="max_role_network_scanner">आप जिस नेटवर्क पर हैं उसे पढ़ता है - कोई कैप्चर नहीं, कोई रूट नहीं।</string>
+    <string name="ns_no_network">कोई नेटवर्क कनेक्ट नहीं है.</string>
+    <string name="ns_interface">इंटरफ़ेस</string>
+    <string name="ns_address">पता</string>
+    <string name="ns_gateway">द्वार</string>
+    <string name="ns_dns">डीएनएस</string>
+    <string name="ns_mac">मैक</string>
+    <string name="ns_transport_wifi">वाईफ़ाई</string>
+    <string name="ns_transport_ethernet">ईथरनेट</string>
+    <string name="ns_transport_cellular">सेलुलर</string>
+    <string name="ns_transport_other">अन्य</string>
+    <string name="ns_sources_title">यह कहां से आता है</string>
+    <string name="ns_sources_body">पते और गेटवे प्लेटफ़ॉर्म के लिंक गुणों से पढ़े जाते हैं। पड़ोसी तालिका को कर्नेल के एआरपी कैश से पढ़ा जाता है, इसलिए यह केवल वही रखता है जिससे इस डिवाइस ने हाल ही में बात की है - एक खाली तालिका का मतलब खाली नेटवर्क नहीं है।</string>
+    <string name="ns_refresh">ताज़ा करना</string>
+    <string name="ns_probe">सामान्य बंदरगाहों की जांच करें</string>
+    <string name="ns_probe_stop">रुकना</string>
+    <string name="ns_probe_progress">%2$d में से %1$d की जांच</string>
+    <string name="ns_probe_note">इस /24 पर पोर्ट 22, 80, 443, 5000 और 5555 पर एक टीसीपी कनेक्ट भेजता है। उत्तर देने वाले पोर्ट की सूचना दी जाती है; मौन इस बात का प्रमाण नहीं है कि मेज़बान अनुपस्थित है।</string>
+    <string name="ns_neighbours">परिचित पड़ोसी</string>
+    <string name="ns_neighbours_note">/proc/net/arp से - केवल पढ़ने के लिए।</string>
+    <string name="ns_neighbours_empty">अभी तक किसी पड़ोसी का पता नहीं है.</string>
+    <string name="ns_ports_value">बंदरगाह %1$s</string>
+</resources>

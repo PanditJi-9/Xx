@@ -69,4 +69,25 @@
     <string name="max_perms_entry_title">Ruxsatlar va ilovalar</string>
     <string name="max_perms_entry_desc">Ushbu ilova nimani e\'lon qilishini va tizim aslida nimaga ruxsat berishini ko\'ring</string>
     <string name="max_perms_entry_action">Ruxsatlarni ochish</string>
+    <string name="max_perms_manifest_title">Manifest xulosasi</string>
+    <string name="max_perms_manifest_desc">Paket menejeridan o\'qing: versiya, SDK diapazoni, komponentlar va ularning qanchasi eksport qilinadi. Eksport qilingan komponent boshqa ilovalar tomonidan ishga tushirilishi mumkin.</string>
+    <string name="max_perms_manifest_version">Versiya</string>
+    <string name="max_perms_manifest_sdk">SDK diapazoni</string>
+    <string name="max_perms_manifest_location">Joyni o\'rnatish</string>
+    <string name="max_perms_manifest_location_auto">Avtomatik</string>
+    <string name="max_perms_manifest_location_internal">Faqat ichki xotira</string>
+    <string name="max_perms_manifest_location_external">Tashqi ko\'rinishni afzal ko\'radi</string>
+    <string name="max_perms_manifest_components">Komponentlar</string>
+    <string name="max_perms_manifest_components_order">faoliyat · xizmatlar · qabul qiluvchi · provayderlar</string>
+    <string name="max_perms_manifest_exported">Eksport qilingan komponentlar</string>
+    <string name="max_perms_manifest_splits">APK\'larni ajratish</string>
+    <string name="max_perms_manifest_debug">Nosozliklarni tuzatish mumkin</string>
+    <string name="max_perms_features_title">E\'lon qilingan xususiyatlar</string>
+    <string name="max_perms_features_desc">Paket qurilmadan nimani talab qiladi, bu qurilma reklama qilgan narsalar bilan solishtirganda. Bu yerda talab qilinadigan funksiyaning yetishmasligi odatda ilovaning toʻliq ishlamasligini bildiradi — bu paket menejerining daʼvosi, taxmin emas.</string>
+    <string name="max_perms_features_loading">Paketning eʼlon qilingan funksiyalari oʻqilmoqda…</string>
+    <string name="max_perms_features_none">Paket hech qanday talab qilinadigan xususiyatlarni e\'lon qilmaydi.</string>
+    <string name="max_perms_features_required">Majburiy</string>
+    <string name="max_perms_features_unsupported">Bu qurilmada emas</string>
+    <string name="max_perms_manifest_none">Paket menejeri xabar bermadi.</string>
+    <string name="max_perms_manifest_unknown">Noma\'lum</string>
 </resources>

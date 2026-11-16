@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_license_strings.xml -->
+<resources>
+    <string name="max_license_title">ലൈസൻസ്</string>
+    <string name="max_license_subtitle">ഒരു കീ, ഈ ഉപകരണം, അക്കൗണ്ടില്ല</string>
+    <string name="max_license_help_body">നിങ്ങൾ അത് നൽകുമ്പോൾ ഒരു കീ ഒരിക്കൽ ഓൺലൈനിൽ പരിശോധിക്കും. അതിനുശേഷം, സെർവറിൻ്റെ ഒപ്പിട്ട സർട്ടിഫിക്കറ്റ് അതിൻ്റെ സമയം കഴിയുന്നതുവരെ ഓഫ്‌ലൈനായി പ്രവർത്തിക്കുന്നു - നിങ്ങൾ സ്‌ക്രീൻ തുറക്കുമ്പോഴെല്ലാം ആപ്പ് വീട്ടിലേക്ക് വിളിക്കില്ല. സർട്ടിഫിക്കറ്റ് ഈ ഉപകരണത്തിൻ്റെ റാൻഡം ഇൻസ്റ്റാളേഷൻ ഐഡിയുമായി ബന്ധപ്പെട്ടിരിക്കുന്നു, അതിനാൽ ആപ്പ് ഡാറ്റ മറ്റൊരു ഫോണിലേക്ക് പകർത്തുന്നത് ലൈസൻസ് കൈവശം വയ്ക്കില്ല, നിങ്ങൾ ഫോണുകൾ മാറ്റുകയാണെങ്കിൽ ഉടമയ്ക്ക് പാനലിൽ നിന്ന് ആ ബൈൻഡിംഗ് പുനഃസജ്ജമാക്കാനാകും.</string>
+    <string name="max_license_status_section">നില</string>
+    <string name="max_license_status_active">സജീവമാണ്</string>
+    <string name="max_license_status_expired">കാലഹരണപ്പെട്ടു</string>
+    <string name="max_license_status_none">സജീവമാക്കിയിട്ടില്ല</string>
+    <string name="max_license_active_detail">ശേഷിക്കുന്നത്: %1$d ദിവസം</string>
+    <string name="max_license_expired_detail">ഈ കീയുടെ സമയം കഴിഞ്ഞു. ഒരു പുതിയ കീ ആക്സസ് പുതുക്കുന്നു.</string>
+    <string name="max_license_none_detail">പണമടച്ചുള്ള ഉപരിതലങ്ങൾ അൺലോക്ക് ചെയ്യുന്നതിന് നിങ്ങൾക്ക് ലഭിച്ച കീ നൽകുക.</string>
+    <string name="max_license_promo_active">%1$s വരെ എല്ലാവർക്കും സൗജന്യം</string>
+    <string name="max_license_plan_title">പ്ലാൻ ചെയ്യുക</string>
+    <string name="max_license_devices_title">ഉപകരണങ്ങൾ</string>
+    <string name="max_license_devices_detail">%1$d of %2$d ഉപയോഗിച്ചു</string>
+    <string name="max_license_device_id_title">ഈ ഉപകരണം</string>
+    <string name="max_license_device_id_detail">%1$s</string>
+    <string name="max_license_key_section">സജീവമാക്കൽ</string>
+    <string name="max_license_key_label">ലൈസൻസ് കീ</string>
+    <string name="max_license_key_placeholder">പരമാവധി-XXXXX-XXXX-XXXXX-XXXX-XX</string>
+    <string name="max_license_key_helper">ഡാഷുകളും വലിയക്ഷരവും പ്രശ്നമല്ല - നിങ്ങൾക്ക് ലഭിച്ചതുപോലെ ഒട്ടിക്കുക.</string>
+    <string name="max_license_activate">സജീവമാക്കുക</string>
+    <string name="max_license_activating">കീ പരിശോധിക്കുന്നു...</string>
+    <string name="max_license_refresh">ഇപ്പോൾ പരിശോധിക്കുക</string>
+    <string name="max_license_activated">സജീവമാക്കി. ഈ ഉപകരണം ഇപ്പോൾ നിങ്ങളുടെ കീയുമായി ലിങ്ക് ചെയ്‌തിരിക്കുന്നു.</string>
+    <string name="max_license_error_invalid_key">ഈ കീ പൂർണ്ണമായി കാണുന്നില്ല. അത് പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക.</string>
+    <string name="max_license_error_not_configured">ഈ ബിൽഡിന് ലൈസൻസ് സെർവർ കോൺഫിഗർ ചെയ്തിട്ടില്ല.</string>
+    <string name="max_license_error_network">കണക്ഷനില്ല. കീ ഒരിക്കൽ പരിശോധിച്ച ശേഷം ഓഫ്‌ലൈനിൽ പ്രവർത്തിക്കുന്നു.</string>
+    <string name="max_license_error_timeout">ലൈസൻസ് സെർവർ കൃത്യസമയത്ത് ഉത്തരം നൽകിയില്ല. വീണ്ടും ശ്രമിക്കുക.</string>
+    <string name="max_license_error_server">ലൈസൻസ് സെർവർ ഒരു പിശകോടെ ഉത്തരം നൽകി. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</string>
+    <string name="max_license_error_client">ലൈസൻസ് പ്രവർത്തനം സെർവറിൽ വിന്യസിച്ചിട്ടില്ല.</string>
+    <string name="max_license_error_format">സെർവർ ഉത്തരം മനസ്സിലായില്ല.</string>
+    <string name="max_license_error_expired">ഈ കീ കാലഹരണപ്പെട്ടു.</string>
+    <string name="max_license_error_not_found">ഈ താക്കോൽ അറിയില്ല.</string>
+    <string name="max_license_error_revoked">ഈ കീ അസാധുവാക്കിയിരിക്കുന്നു.</string>
+    <string name="max_license_error_device_limit">ഈ കീ അതിൻ്റെ ഉപകരണ പരിധിയിലെത്തി. ഉപകരണം പുനഃസജ്ജമാക്കാൻ ആവശ്യപ്പെടുക.</string>
+    <string name="max_license_error_device_unknown">ഈ ഉപകരണം ഇതുവരെ കീയുമായി ലിങ്ക് ചെയ്‌തിട്ടില്ല. ആദ്യം അത് ഇവിടെ സജീവമാക്കുക.</string>
+    <string name="max_license_error_device_removed">ഈ ഉപകരണം ഉടമ കീയിൽ നിന്ന് നീക്കംചെയ്തു.</string>
+    <string name="max_license_error_rate_limited">ഈ കണക്ഷനിൽ നിന്ന് നിരവധി ശ്രമങ്ങൾ — കുറച്ച് മിനിറ്റ് കാത്തിരിക്കുക, തുടർന്ന് വീണ്ടും ശ്രമിക്കുക.</string>
+    <string name="max_license_error_unknown">എന്തോ കുഴപ്പം സംഭവിച്ചു. കാരണം ഡയഗ്നോസ്റ്റിക്സിൽ രേഖപ്പെടുത്തിയിട്ടുണ്ട്.</string>
+    <string name="max_license_gate_title">ഈ ഉപരിതലത്തിന് ഒരു ലൈസൻസ് ആവശ്യമാണ്</string>
+    <string name="max_license_gate_detail">ഇത് ഒരു താക്കോലിനൊപ്പം ഉൾപ്പെടുത്തിയിട്ടുണ്ട്. ഒരു കീ ഈ ഉപകരണത്തെ ഉൾക്കൊള്ളുന്നു, അത് നൽകുന്നതിന് ഒരു മിനിറ്റ് എടുക്കും.</string>
+    <string name="max_feature_off_title">ഓഫ് ചെയ്തു</string>
+    <string name="max_feature_off_detail">നിയന്ത്രണ പാനൽ ഈ ഉപരിതലം ഓഫാക്കി. അത് വീണ്ടും പ്രവർത്തനക്ഷമമാക്കിയ ഉടൻ തന്നെ അത് തിരികെ വരുന്നു.</string>
+    <string name="max_license_gate_action">ലൈസൻസ് ക്രമീകരണങ്ങൾ തുറക്കുക</string>
+    <string name="max_license_gate_subscribe">ഇപ്പോൾ സബ്സ്ക്രൈബ് ചെയ്യുക</string>
+    <string name="max_license_subscription_section">സബ്സ്ക്രിപ്ഷൻ</string>
+    <string name="max_license_subscription_open">സബ്സ്ക്രിപ്ഷൻ പേജ് തുറക്കുക</string>
+</resources>

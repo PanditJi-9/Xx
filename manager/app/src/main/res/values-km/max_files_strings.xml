@@ -220,4 +220,5 @@
     <string name="max_files_compress_level_normal">ធម្មតា។</string>
     <string name="max_files_compress_level_max">អតិបរមា</string>
     <string name="max_files_compress_summary">ធាតុ %1$d \u2192 %2$s</string>
+    <string name="max_files_history_more">%1$d ថតចាស់មិនត្រូវបានបង្ហាញទេ។</string>
 </resources>

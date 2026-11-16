@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_license_strings.xml -->
+<resources>
+    <string name="max_license_title">অনুজ্ঞাপত্ৰ</string>
+    <string name="max_license_subtitle">এটা চাবি, এই ডিভাইচ, কোনো একাউণ্ট নাই</string>
+    <string name="max_license_help_body">এটা চাবি এবাৰ অনলাইনত পৰীক্ষা কৰা হয়, যেতিয়া আপুনি ইয়াক প্ৰৱেশ কৰে। তেতিয়াৰ পৰা চাৰ্ভাৰৰ স্বাক্ষৰিত প্ৰমাণপত্ৰই অফলাইন কাম কৰে যেতিয়ালৈকে ইয়াৰ সময় শেষ নহয় — এপটোৱে প্ৰতিবাৰ আপুনি এটা পৰ্দা খোলে ঘৰলৈ কল নকৰে। প্ৰমাণপত্ৰ এই ডিভাইচৰ ৰেণ্ডম ইনষ্টল আইডিৰ সৈতে বান্ধ খাই আছে, গতিকে এপ ডাটা অন্য ফোনলৈ কপি কৰিলে অনুজ্ঞাপত্ৰ ইয়াৰ সৈতে নাথাকে, আৰু মালিকে পেনেলৰ পৰা সেই বাইণ্ডিং পুনৰায় সেট কৰিব পাৰে যদি আপুনি ফোন সলনি কৰে।</string>
+    <string name="max_license_status_section">স্থিতি</string>
+    <string name="max_license_status_active">সক্ৰিয়</string>
+    <string name="max_license_status_expired">ম্যাদ উকলিছে</string>
+    <string name="max_license_status_none">সক্ৰিয় কৰা হোৱা নাই</string>
+    <string name="max_license_active_detail">বাকী থকা: %1$d দিন</string>
+    <string name="max_license_expired_detail">এই চাবিৰ সময় শেষ। এটা নতুন কি\'ই অভিগম নবীকৰণ কৰে।</string>
+    <string name="max_license_none_detail">পেইড পৃষ্ঠসমূহ আনলক কৰিবলে আপুনি লাভ কৰা কি\'টো সুমুৱাওক।</string>
+    <string name="max_license_promo_active">%1$s লৈকে সকলোৰে বাবে বিনামূলীয়া</string>
+    <string name="max_license_plan_title">পৰিকল্পনা</string>
+    <string name="max_license_devices_title">ডিভাইচসমূহ</string>
+    <string name="max_license_devices_detail">%2$d ৰ %1$d ব্যৱহাৰ কৰা হৈছে</string>
+    <string name="max_license_device_id_title">এই ডিভাইচটো</string>
+    <string name="max_license_device_id_detail">%1$s</string>
+    <string name="max_license_key_section">সক্ৰিয়কৰণ</string>
+    <string name="max_license_key_label">অনুজ্ঞা চাবি</string>
+    <string name="max_license_key_placeholder">সৰ্বোচ্চ-XXXXX-XXXXX-XXXX-XXXXX-XX</string>
+    <string name="max_license_key_helper">ডেচ আৰু কেপিটেলাইজেচনৰ কোনো গুৰুত্ব নাই — আপুনি পোৱাৰ দৰেই পেষ্ট কৰক।</string>
+    <string name="max_license_activate">সক্ৰিয় কৰক</string>
+    <string name="max_license_activating">কী পরীক্ষা করছেন...</string>
+    <string name="max_license_refresh">এতিয়াই পৰীক্ষা কৰক</string>
+    <string name="max_license_activated">সক্ৰিয় কৰা হৈছে। এই ডিভাইচ এতিয়া আপোনাৰ কি\'ৰ সৈতে সংযুক্ত।</string>
+    <string name="max_license_error_invalid_key">এই চাবিটো সম্পূৰ্ণ যেন নালাগে। ইয়াক পৰীক্ষা কৰক আৰু পুনৰ চেষ্টা কৰক।</string>
+    <string name="max_license_error_not_configured">এই বিল্ডৰ কোনো অনুজ্ঞা চাৰ্ভাৰ বিন্যাস কৰা হোৱা নাই ।</string>
+    <string name="max_license_error_network">কোনো সংযোগ নাই। চাবিটো এবাৰ পৰীক্ষা কৰা হয়, তাৰ পিছত অফলাইনত কাম কৰে।</string>
+    <string name="max_license_error_timeout">অনুজ্ঞাপত্ৰ চাৰ্ভাৰে সময়মতে কোনো উত্তৰ নিদিলে। আকৌ এবাৰ চেষ্টা কৰক।</string>
+    <string name="max_license_error_server">অনুজ্ঞা চাৰ্ভাৰে এটা ভুলৰ সৈতে উত্তৰ দিলে। পিছত আকৌ চেষ্টা কৰক।</string>
+    <string name="max_license_error_client">অনুজ্ঞা ফলন চাৰ্ভাৰত মোতায়েন কৰা হোৱা নাই।</string>
+    <string name="max_license_error_format">চাৰ্ভাৰৰ উত্তৰটো বুজি পোৱা নাছিল।</string>
+    <string name="max_license_error_expired">এই কি\'ৰ ম্যাদ উকলি গৈছে।</string>
+    <string name="max_license_error_not_found">এই চাবিটো জনা নাযায়।</string>
+    <string name="max_license_error_revoked">এই চাবি বাতিল কৰা হৈছে।</string>
+    <string name="max_license_error_device_limit">এই কি\' ইয়াৰ ডিভাইচ সীমাত উপনীত হৈছে। এটা ডিভাইচ ৰিছেটৰ বাবে কওক।</string>
+    <string name="max_license_error_device_unknown">এই ডিভাইচটো এতিয়াও কি\'ৰ সৈতে সংযুক্ত নহয়। প্ৰথমে ইয়াত সক্ৰিয় কৰক।</string>
+    <string name="max_license_error_device_removed">এই ডিভাইচটো মালিকে চাবিৰ পৰা আঁতৰাই পেলাইছিল।</string>
+    <string name="max_license_error_rate_limited">এই সংযোগৰ পৰা বহুত চেষ্টা — কেইমিনিটমান অপেক্ষা কৰক, তাৰ পিছত পুনৰ চেষ্টা কৰক।</string>
+    <string name="max_license_error_unknown">কিবা এটা ভুল হ’ল। কাৰণটো ডায়েগনষ্টিকছত লিপিবদ্ধ কৰা হৈছিল।</string>
+    <string name="max_license_gate_title">এই পৃষ্ঠত অনুজ্ঞাপত্ৰৰ প্ৰয়োজন</string>
+    <string name="max_license_gate_detail">ইয়াক এটা চাবিৰ সৈতে অন্তৰ্ভুক্ত কৰা হৈছে। এটা কি\'ই এই ডিভাইচটো আবৰি ৰাখে, আৰু ইয়াত প্ৰৱেশ কৰিবলৈ এমিনিট সময় লাগে।</string>
+    <string name="max_feature_off_title">বন্ধ হৈ গ’ল</string>
+    <string name="max_feature_off_detail">নিয়ন্ত্ৰণ পেনেলে এই পৃষ্ঠভাগ বন্ধ কৰি দিছে। ইয়াক পুনৰ সক্ৰিয় কৰাৰ লগে লগে ই ঘূৰি আহে।</string>
+    <string name="max_license_gate_action">অনুজ্ঞা সংহতিসমূহ খোলক</string>
+    <string name="max_license_gate_subscribe">এতিয়াই চাবস্ক্ৰাইব কৰক</string>
+    <string name="max_license_subscription_section">চাবস্ক্ৰিপচন</string>
+    <string name="max_license_subscription_open">চাবস্ক্ৰিপচন পৃষ্ঠা খোলক</string>
+</resources>

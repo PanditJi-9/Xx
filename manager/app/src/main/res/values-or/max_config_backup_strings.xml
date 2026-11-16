@@ -18,4 +18,10 @@
     <string name="max_cfg_section_appearance">ଦୃଶ୍ୟ ଏବଂ ଇଣ୍ଟରଫେସ୍ |</string>
     <string name="max_cfg_section_app_prefs">ଆପ୍ ପସନ୍ଦ ଏବଂ ଭାଷା |</string>
     <string name="max_cfg_restore_merge_note">ଅଗ୍ରାଧିକାରଗୁଡିକ ପୁନ oring ସ୍ଥାପନ ମିଶ୍ରଣ: ଫାଇଲରେ ଉପସ୍ଥିତ ଚାବିଗୁଡ଼ିକ ଲେଖା ହୋଇଛି, ଏବଂ ଚାବିଗୁଡ଼ିକ ସେପରି ରହିବା ବିଷୟରେ ଉଲ୍ଲେଖ କରେ ନାହିଁ · କିଛି ସଫା ହୋଇନାହିଁ</string>
+    <string name="max_cfg_diff_title">%1$d ସଞ୍ଚିତ ସେଟିଂସମୂହ ଏହି ଉପକରଣଠାରୁ ଭିନ୍ନ |</string>
+    <string name="max_cfg_diff_line">%1$s: %2$s → %3$s |</string>
+    <string name="max_cfg_diff_unset">ସେଟ୍ ହୋଇନାହିଁ |</string>
+    <string name="max_cfg_diff_more">ଏବଂ %1$d ଅଧିକ |</string>
+    <string name="max_cfg_diff_applist">%1$d ଆପ୍-ତାଲିକା ରେଖା ଯୋଡି ହୋଇଛି, %2$d ଅପସାରିତ ହୋଇଛି - ସମଗ୍ର ତାଲିକା ବଦଳାଯାଇଛି, ମିଶ୍ରିତ ନୁହେଁ |</string>
+    <string name="max_cfg_diff_prefs">%1$d ପସନ୍ଦ କିଗୁଡ଼ିକ ଭିନ୍ନ - ମିଶ୍ରିତ, ପୋଛି ହୋଇନାହିଁ |</string>
 </resources>

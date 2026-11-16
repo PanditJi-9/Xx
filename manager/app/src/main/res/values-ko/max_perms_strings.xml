@@ -69,4 +69,25 @@
     <string name="max_perms_entry_title">권한 및 앱 운영</string>
     <string name="max_perms_entry_desc">이 앱이 선언하는 내용과 시스템이 실제로 허용하는 내용을 확인하세요.</string>
     <string name="max_perms_entry_action">권한 열기</string>
+    <string name="max_perms_manifest_title">매니페스트 요약</string>
+    <string name="max_perms_manifest_desc">패키지 관리자에서 버전, SDK 범위, 구성 요소 및 내보낸 구성 요소 수를 읽어보세요. 내보낸 구성요소는 다른 앱에서 시작할 수 있습니다.</string>
+    <string name="max_perms_manifest_version">버전</string>
+    <string name="max_perms_manifest_sdk">SDK 범위</string>
+    <string name="max_perms_manifest_location">설치 위치</string>
+    <string name="max_perms_manifest_location_auto">오토매틱</string>
+    <string name="max_perms_manifest_location_internal">내부 저장소만 해당</string>
+    <string name="max_perms_manifest_location_external">외부를 선호</string>
+    <string name="max_perms_manifest_components">구성요소</string>
+    <string name="max_perms_manifest_components_order">활동 · 서비스 · 수신자 · 제공자</string>
+    <string name="max_perms_manifest_exported">내보낸 구성요소</string>
+    <string name="max_perms_manifest_splits">APK 분할</string>
+    <string name="max_perms_manifest_debug">디버깅 가능</string>
+    <string name="max_perms_features_title">선언된 기능</string>
+    <string name="max_perms_features_desc">이 장치가 광고하는 것과 비교하여 패키지가 장치에서 요구하는 것입니다. 여기에 누락된 필수 기능은 일반적으로 앱이 완전히 작동하지 않음을 의미합니다. 이는 추측이 아니라 패키지 관리자의 주장입니다.</string>
+    <string name="max_perms_features_loading">패키지의 선언된 기능을 읽는 중…</string>
+    <string name="max_perms_features_none">패키지는 필수 기능을 선언하지 않습니다.</string>
+    <string name="max_perms_features_required">필수의</string>
+    <string name="max_perms_features_unsupported">이 기기에는 없습니다</string>
+    <string name="max_perms_manifest_none">패키지 관리자에 의해 보고되지 않습니다.</string>
+    <string name="max_perms_manifest_unknown">알려지지 않은</string>
 </resources>

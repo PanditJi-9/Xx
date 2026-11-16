@@ -99,4 +99,12 @@
     <string name="max_gpu_saved_desc">Van \'n vroeër stoor gehou en op elke selflaai toegepas: %1$s. Verstek hierbo beëindig slegs hierdie sessie, nooit die gestoorde toestand nie.</string>
     <string name="max_gpu_dynamic_min">Minimum · dinamies</string>
     <string name="max_gpu_dynamic_max">Maksimum · dinamies</string>
+    <string name="max_gpu_monitor_only_detail">Die enigste grafiese nodusse wat hierdie kern blootstel, is bandwydte en QoS-monitors: hulle dra geen GPU-klok nie, so daar is geen frekwensie om te stel nie. Beheer bly af in plaas daarvan om \'n geheue-goewerneur te skryf asof dit die GPU is.</string>
+    <string name="max_gpu_danger_title">Skryf GPU limiete?</string>
+    <string name="max_gpu_danger_body">Dit skryf die grafiese frekwensie venster en goewerneur in die GPU nodusse. \'n Venster wat die bestuurder verwerp, of \'n goewerneur wat nie kan byhou nie, kan die hele koppelvlak stotter of die paneel vries. Die toepassing teken aan dat jy dit een keer aanvaar het - die verantwoordelikheid vir die waardes wat jy toepas is joune.</string>
+    <string name="max_gpu_danger_action">Ek verstaan ​​- pas toe</string>
+    <string name="max_gpu_state_title">Tyd in staat</string>
+    <string name="max_gpu_state_desc">Waar die GPU se tyd eintlik gegaan het, getel deur die kern per bedryfsfrekwensie - nie \'n momentopname van die huidige horlosie nie.</string>
+    <string name="max_gpu_state_hidden_share">%1$s saam</string>
+    <string name="max_gpu_state_hidden">%1$d state onder 1%%</string>
 </resources>

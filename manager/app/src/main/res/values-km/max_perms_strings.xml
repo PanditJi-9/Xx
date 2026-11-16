@@ -69,4 +69,25 @@
     <string name="max_perms_entry_title">ការអនុញ្ញាត និងកម្មវិធី ops</string>
     <string name="max_perms_entry_desc">មើលអ្វីដែលកម្មវិធីនេះប្រកាស និងអ្វីដែលប្រព័ន្ធពិតជាអនុញ្ញាត</string>
     <string name="max_perms_entry_action">បើកការអនុញ្ញាត</string>
+    <string name="max_perms_manifest_title">សង្ខេបបង្ហាញ</string>
+    <string name="max_perms_manifest_desc">អានពីកម្មវិធីគ្រប់គ្រងកញ្ចប់៖ កំណែ ជួរ SDK សមាសធាតុ និងចំនួននៃពួកវាត្រូវបាននាំចេញ។ សមាសភាគដែលបាននាំចេញអាចត្រូវបានចាប់ផ្តើមដោយកម្មវិធីផ្សេងទៀត។</string>
+    <string name="max_perms_manifest_version">កំណែ</string>
+    <string name="max_perms_manifest_sdk">ជួរ SDK</string>
+    <string name="max_perms_manifest_location">ដំឡើងទីតាំង</string>
+    <string name="max_perms_manifest_location_auto">ស្វ័យប្រវត្តិ</string>
+    <string name="max_perms_manifest_location_internal">ការផ្ទុកខាងក្នុងតែប៉ុណ្ណោះ</string>
+    <string name="max_perms_manifest_location_external">ចូលចិត្តខាងក្រៅ</string>
+    <string name="max_perms_manifest_components">សមាសធាតុ</string>
+    <string name="max_perms_manifest_components_order">សកម្មភាព · សេវាកម្ម · អ្នកទទួល · អ្នកផ្តល់សេវា</string>
+    <string name="max_perms_manifest_exported">សមាសភាគដែលបាននាំចេញ</string>
+    <string name="max_perms_manifest_splits">បំបែក APKs</string>
+    <string name="max_perms_manifest_debug">អាចបំបាត់កំហុសបាន។</string>
+    <string name="max_perms_features_title">លក្ខណៈពិសេសដែលបានប្រកាស</string>
+    <string name="max_perms_features_desc">អ្វីដែលកញ្ចប់ត្រូវការពីឧបករណ៍ បើប្រៀបធៀបជាមួយអ្វីដែលឧបករណ៍នេះផ្សាយពាណិជ្ជកម្ម។ មុខងារដែលត្រូវការបាត់នៅទីនេះ ជាធម្មតាមានន័យថាកម្មវិធីនឹងមិនដំណើរការពេញលេញទេ វាជាការទាមទារពីអ្នកគ្រប់គ្រងកញ្ចប់ មិនមែនជាការស្មាននោះទេ។</string>
+    <string name="max_perms_features_loading">កំពុងអានមុខងារដែលបានប្រកាសរបស់កញ្ចប់...</string>
+    <string name="max_perms_features_none">កញ្ចប់ប្រកាសថាមិនមានលក្ខណៈពិសេសដែលត្រូវការ។</string>
+    <string name="max_perms_features_required">ទាមទារ</string>
+    <string name="max_perms_features_unsupported">មិនមាននៅលើឧបករណ៍នេះទេ។</string>
+    <string name="max_perms_manifest_none">មិនត្រូវបានរាយការណ៍ដោយអ្នកគ្រប់គ្រងកញ្ចប់ទេ។</string>
+    <string name="max_perms_manifest_unknown">មិនស្គាល់</string>
 </resources>

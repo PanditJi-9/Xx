@@ -99,4 +99,12 @@
     <string name="max_gpu_saved_desc">ເກັບໄວ້ຈາກບັນທຶກກ່ອນໜ້ານີ້ ແລະນຳໃຊ້ໃສ່ແຕ່ລະບູດ: %1$s. ຄ່າເລີ່ມຕົ້ນຂ້າງເທິງຈະສິ້ນສຸດເຊດຊັນນີ້ເທົ່ານັ້ນ, ບໍ່ມີສະຖານະທີ່ບັນທຶກໄວ້.</string>
     <string name="max_gpu_dynamic_min">ຕ່ຳສຸດ · ເຄື່ອນໄຫວ</string>
     <string name="max_gpu_dynamic_max">ສູງສຸດ · ໄດນາມິກ</string>
+    <string name="max_gpu_monitor_only_detail">ໂນດກຣາບຟິກອັນດຽວທີ່ kernel exposes ນີ້ແມ່ນແບນວິດແລະຈໍສະແດງຜົນ QoS: ພວກມັນບໍ່ມີໂມງ GPU, ດັ່ງນັ້ນບໍ່ມີຄວາມຖີ່ທີ່ຈະຕັ້ງ. ການຄວບຄຸມຈະປິດຢູ່ແທນທີ່ຈະຂຽນຕົວຄວບຄຸມຄວາມຊົງຈໍາຄືກັບວ່າມັນເປັນ GPU.</string>
+    <string name="max_gpu_danger_title">ຂຽນ GPU ຂີດຈຳກັດບໍ?</string>
+    <string name="max_gpu_danger_body">ອັນນີ້ຂຽນໜ້າຕ່າງຄວາມຖີ່ກຣາຟິກ ແລະເຈົ້າເມືອງໃສ່ໃນ GPU nodes. ປ່ອງຢ້ຽມທີ່ຄົນຂັບປະຕິເສດ, ຫຼືຜູ້ປົກຄອງທີ່ບໍ່ສາມາດຕິດຕາມໄດ້, ສາມາດເຮັດໃຫ້ການໂຕ້ຕອບທັງຫມົດ stutter ຫຼື freeze ກະດານ. ແອັບບັນທຶກວ່າທ່ານຍອມຮັບອັນນີ້ຄັ້ງດຽວ — ຄວາມຮັບຜິດຊອບຕໍ່ຄຸນຄ່າທີ່ທ່ານນຳໃຊ້ແມ່ນຂອງທ່ານ.</string>
+    <string name="max_gpu_danger_action">ຂ້ອຍເຂົ້າໃຈ - ນຳໃຊ້</string>
+    <string name="max_gpu_state_title">ເວລາຢູ່ໃນລັດ</string>
+    <string name="max_gpu_state_desc">ເວລາຂອງ GPU\ ໄປໃສແທ້, ນັບດ້ວຍ kernel ຕໍ່ຄວາມຖີ່ຂອງການໃຊ້ງານ — ບໍ່ແມ່ນຮູບຖ່າຍຂອງໂມງປະຈຸບັນ.</string>
+    <string name="max_gpu_state_hidden_share">%1$s ຮ່ວມກັນ</string>
+    <string name="max_gpu_state_hidden">%1$d ລັດຕ່ຳກວ່າ 1%%</string>
 </resources>

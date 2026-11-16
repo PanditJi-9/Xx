@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/manifest_inspector_strings.xml -->
+<resources>
+    <string name="manifest_inspector_title">മാനിഫെസ്റ്റ് ഇൻസ്പെക്ടർ</string>
+    <string name="manifest_inspector_subtitle">ഒരു ഇൻസ്റ്റാൾ ചെയ്ത ആപ്പ് സ്വയം എന്താണ് പ്രഖ്യാപിക്കുന്നത്, പാക്കേജ്മാനേജറിൽ നിന്ന് വായിക്കുക.</string>
+    <string name="max_role_manifest_inspector">ഒരു പാക്കേജ് സ്വയം എന്താണ് പ്രഖ്യാപിക്കുന്നതെന്ന് കാണിക്കുന്നു - വായിക്കാൻ മാത്രം.</string>
+    <string name="mi_search">ആപ്പുകൾ തിരയുക</string>
+    <string name="mi_empty">ഇടതുവശത്ത് ഒരു ആപ്പ് തിരഞ്ഞെടുക്കുക.</string>
+    <string name="mi_yes">അതെ</string>
+    <string name="mi_no">ഇല്ല</string>
+    <string name="mi_section_identity">പാക്കേജ്</string>
+    <string name="mi_version">പതിപ്പ്</string>
+    <string name="mi_version_code">പതിപ്പ് കോഡ്</string>
+    <string name="mi_min_sdk">കുറഞ്ഞ SDK</string>
+    <string name="mi_target_sdk">ലക്ഷ്യം SDK</string>
+    <string name="mi_installed">ഇൻസ്റ്റാൾ ചെയ്തു</string>
+    <string name="mi_updated">അപ്ഡേറ്റ് ചെയ്തു</string>
+    <string name="mi_installer">ഇൻസ്റ്റാളർ</string>
+    <string name="mi_uid">യുഐഡി</string>
+    <string name="mi_data_dir">ഡാറ്റ ഡയറക്ടറി</string>
+    <string name="mi_debuggable">ഡീബഗ്ഗ് ചെയ്യാവുന്നത്</string>
+    <string name="mi_system_app">സിസ്റ്റം ആപ്പ്</string>
+    <string name="mi_enabled">പ്രവർത്തനക്ഷമമാക്കി</string>
+    <string name="mi_section_permissions">അനുമതികൾ അഭ്യർത്ഥിച്ചു</string>
+    <string name="mi_permissions_summary">%1$d അനുമതികൾ · %2$d അവയിൽ അപകടകരമാണ്</string>
+    <string name="mi_permissions_none">ഈ ആപ്പ് അനുമതിയൊന്നും അഭ്യർത്ഥിക്കുന്നില്ല.</string>
+    <string name="mi_perm_dangerous">അപകടകരമാണ്</string>
+    <string name="mi_perm_signature">ഒപ്പ്</string>
+    <string name="mi_perm_normal">സാധാരണ</string>
+    <string name="mi_perm_unknown">തരംതിരിക്കാത്തത്</string>
+    <string name="mi_section_components">ഘടകങ്ങൾ</string>
+    <string name="mi_activities">പ്രവർത്തനങ്ങൾ</string>
+    <string name="mi_services">സേവനങ്ങൾ</string>
+    <string name="mi_receivers">റിസീവറുകൾ</string>
+    <string name="mi_providers">ദാതാക്കൾ</string>
+    <string name="mi_components_none">ആരും പ്രഖ്യാപിച്ചില്ല</string>
+    <string name="mi_section_features">ഉപകരണ സവിശേഷതകൾ</string>
+    <string name="mi_features_note">പ്ലാറ്റ്ഫോം മറ്റൊരു ആപ്പിൻ്റെ ഉപയോഗ-സവിശേഷതകളുടെ ലിസ്റ്റ് വെളിപ്പെടുത്തുന്നില്ല; ഈ ഉപകരണം റിപ്പോർട്ടുചെയ്യുന്ന സവിശേഷതകൾ ഇവയാണ്.</string>
+    <string name="mi_features_none">ഒരു ഫീച്ചറും റിപ്പോർട്ട് ചെയ്തിട്ടില്ല</string>
+    <string name="mi_section_signature">സർട്ടിഫിക്കറ്റ് ഒപ്പിടുന്നു</string>
+    <string name="mi_signature_note">ഒപ്പിടൽ സർട്ടിഫിക്കറ്റിൻ്റെ SHA-256. ഒരേ മൂല്യമുള്ള രണ്ട് ബിൽഡുകൾ ഒരേ പ്രസാധകനാണ്.</string>
+    <string name="mi_signature_sha256">സർട്ടിഫിക്കറ്റ് ഡൈജസ്റ്റ്</string>
+</resources>

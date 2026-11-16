@@ -13,4 +13,23 @@
     <string name="max_expand_section">အသေးစိတ်ကိုပြပါ။</string>
     <string name="max_collapse_section">အသေးစိတ်ကို ဖျောက်ပါ။</string>
     <string name="max_trust_loading">စာဖတ်နေသည်…</string>
+    <string name="max_gov_title">အခု ဘယ်သူတွေ စည်းကမ်းရှိလဲ။</string>
+    <string name="max_gov_separator">" › "</string>
+    <string name="max_gov_order_note">ပုံသေအမှာစာ- ပိုမြင့်သောကြိုးသည် အောက်ပိုင်းကို ပိတ်ဆို့သည်။ ဘယ်မူဝါဒက အောင်နိုင်မလဲဆိုတာ ဘယ်တော့မှ မပြောင်းလဲပါဘူး။</string>
+    <string name="max_gov_open_details">တက်ကြွစွာ ကိုင်ဆောင်ထားသူ</string>
+    <string name="max_gov_active_title">ဘယ်သူက ချုပ်ကိုင်ထားလဲ။</string>
+    <string name="max_gov_none">ယခုအချိန်တွင် ဟာ့ဒ်ဝဲထိန်းချုပ်မှုကို ပိုင်ဆိုင်သည့် မူဝါဒမရှိပါ။</string>
+    <string name="max_gov_count">အသက်ဝင်သော ထိန်းချုပ်ငှားရမ်းမှုများ- %1$d</string>
+    <string name="max_gov_requested">တောင်းဆိုထားသည်- %1$s</string>
+    <string name="max_gov_owner_recovery">ပြန်လည်ထူထောင်ရေး</string>
+    <string name="max_gov_owner_safety">အပူဘေးကင်းရေး</string>
+    <string name="max_gov_owner_per_app">အက်ပ်ပရိုဖိုင်</string>
+    <string name="max_gov_owner_max_ai">Max AI</string>
+    <string name="max_gov_owner_global">ကမ္ဘာလုံးဆိုင်ရာ ပရိုဖိုင်</string>
+    <string name="max_gov_owner_system">စနစ်</string>
+    <string name="max_gov_owner_a11y">%1$s ဟာ့ဒ်ဝဲထိန်းချုပ်မှုတစ်ခုပိုင်ဆိုင်သည်။</string>
+    <string name="max_gov_now_none">ယခု အလိုအလျောက် ပိုင်ရှင်မရှိပါ — ထိန်းချုပ်မှုသည် သင့်တွင်ရှိနေပါသည်။</string>
+    <string name="max_gov_now_one">%1$s ထိန်းချုပ်မှုတစ်ခုရှိသည်။</string>
+    <string name="max_gov_now_many">%1$s %2$d ထိန်းချုပ်မှုများကို ကိုင်ဆောင်ထားသည်။</string>
+    <string name="devinfo_details">အသေးစိတ်</string>
 </resources>

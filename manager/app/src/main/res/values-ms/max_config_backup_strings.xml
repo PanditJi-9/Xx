@@ -18,4 +18,10 @@
     <string name="max_cfg_section_appearance">Rupa &amp; antara muka</string>
     <string name="max_cfg_section_app_prefs">Pilihan apl &amp; bahasa</string>
     <string name="max_cfg_restore_merge_note">Memulihkan pilihan bercantum: kunci yang terdapat dalam fail ditulis dan kunci yang tidak disebut kekal seperti sedia ada. Tiada apa-apa yang dibersihkan.</string>
+    <string name="max_cfg_diff_title">%1$d tetapan yang disimpan berbeza daripada peranti ini</string>
+    <string name="max_cfg_diff_line">%1$s: %2$s → %3$s</string>
+    <string name="max_cfg_diff_unset">tidak ditetapkan</string>
+    <string name="max_cfg_diff_more">dan %1$d lagi</string>
+    <string name="max_cfg_diff_applist">%1$d baris senarai apl ditambah, %2$d dialih keluar — keseluruhan senarai diganti, bukan digabungkan.</string>
+    <string name="max_cfg_diff_prefs">%1$d kekunci pilihan berbeza — digabungkan, bukan dipadam.</string>
 </resources>

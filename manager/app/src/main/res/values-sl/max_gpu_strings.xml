@@ -99,4 +99,12 @@
     <string name="max_gpu_saved_desc">Ohranjeno iz prejšnjega shranjevanja in uporabljeno pri vsakem zagonu: %1$s. Zgornja privzeta vrednost konča samo to sejo, nikoli pa shranjenega stanja.</string>
     <string name="max_gpu_dynamic_min">Minimalno · dinamično</string>
     <string name="max_gpu_dynamic_max">Največja · dinamika</string>
+    <string name="max_gpu_monitor_only_detail">Edina grafična vozlišča, ki jih izpostavlja to jedro, so nadzorniki pasovne širine in QoS: nimajo ure GPU, zato ni frekvence za nastavitev. Nadzor ostane izklopljen, namesto da bi zapisal regulator pomnilnika, kot da bi bil GPU.</string>
+    <string name="max_gpu_danger_title">Napiši GPU meje?</string>
+    <string name="max_gpu_danger_body">To zapiše grafično frekvenčno okno in regulator v vozlišča GPU. Okno, ki ga gonilnik zavrne, ali regulator, ki ne more slediti, lahko zatika celoten vmesnik ali zamrzne ploščo. Aplikacija beleži, da ste to enkrat sprejeli – odgovornost za vrednosti, ki jih uporabite, je vaša.</string>
+    <string name="max_gpu_danger_action">Razumem - prijavi se</string>
+    <string name="max_gpu_state_title">Čas v stanju</string>
+    <string name="max_gpu_state_desc">Kam je dejansko šel čas GPU\, ki ga šteje jedro glede na delovno frekvenco — ne posnetek trenutne ure.</string>
+    <string name="max_gpu_state_hidden_share">%1$s skupaj</string>
+    <string name="max_gpu_state_hidden">%1$d stanje pod 1%%</string>
 </resources>

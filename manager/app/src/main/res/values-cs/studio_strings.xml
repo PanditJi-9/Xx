@@ -10,4 +10,6 @@
     <string name="studio_display">Zobrazit</string>
     <string name="studio_power">Možnosti napájení</string>
     <string name="studio_settings">Nastavení</string>
+    <string name="audio_dsp_live">DSP živě</string>
+    <string name="max_audio_session_label">Audio relace #%1$d</string>
 </resources>

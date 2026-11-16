@@ -841,4 +841,6 @@
     <string name="memufs_reason_probe_failed">الفحص نفسه فشل — وفشل الفحص ليس حكمًا على الجهاز</string>
     <string name="memufs_reason_overlay_not_saved">التصنيف فُحص ولكن الملفّ لم يُكتب</string>
     <string name="memufs_reason_graphics_owned">عقدة رسومية: ملكها استوديو GPU، ولا يجوز أن يكون للمقبض الواحد مالكَان</string>
+    <string name="about_copy_support_info">نسخ معلومات الدعم</string>
+    <string name="about_copy_support_info_done">نُسخت معلومات الدعم</string>
 </resources>

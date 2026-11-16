@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/network_scanner_strings.xml -->
+<resources>
+    <string name="network_scanner_title">ಸ್ಥಳೀಯ ನೆಟ್ವರ್ಕ್ ಸ್ಕ್ಯಾನರ್</string>
+    <string name="network_scanner_subtitle">ನಿಮ್ಮ ವಿಳಾಸ, ಅದು ತಲುಪುವ ಗೇಟ್‌ವೇ ಮತ್ತು ಯಾವ ನೆರೆಹೊರೆಯವರು ಉತ್ತರಿಸಿದ್ದಾರೆ.</string>
+    <string name="max_role_network_scanner">ನೀವು ಇರುವ ನೆಟ್‌ವರ್ಕ್ ಅನ್ನು ಓದುತ್ತದೆ - ಕ್ಯಾಪ್ಚರ್ ಇಲ್ಲ, ರೂಟ್ ಇಲ್ಲ.</string>
+    <string name="ns_no_network">ಯಾವುದೇ ನೆಟ್‌ವರ್ಕ್ ಸಂಪರ್ಕಗೊಂಡಿಲ್ಲ.</string>
+    <string name="ns_interface">ಇಂಟರ್ಫೇಸ್</string>
+    <string name="ns_address">ವಿಳಾಸ</string>
+    <string name="ns_gateway">ಗೇಟ್ವೇ</string>
+    <string name="ns_dns">DNS</string>
+    <string name="ns_mac">MAC</string>
+    <string name="ns_transport_wifi">ವೈ-ಫೈ</string>
+    <string name="ns_transport_ethernet">ಎತರ್ನೆಟ್</string>
+    <string name="ns_transport_cellular">ಸೆಲ್ಯುಲಾರ್</string>
+    <string name="ns_transport_other">ಇತರೆ</string>
+    <string name="ns_sources_title">ಇದು ಎಲ್ಲಿಂದ ಬರುತ್ತದೆ</string>
+    <string name="ns_sources_body">ಪ್ಲಾಟ್‌ಫಾರ್ಮ್‌ನ ಲಿಂಕ್ ಗುಣಲಕ್ಷಣಗಳಿಂದ ವಿಳಾಸಗಳು ಮತ್ತು ಗೇಟ್‌ವೇ ಅನ್ನು ಓದಲಾಗುತ್ತದೆ. ನೆರೆಯ ಕೋಷ್ಟಕವನ್ನು ಕರ್ನಲ್‌ನ ARP ಸಂಗ್ರಹದಿಂದ ಓದಲಾಗುತ್ತದೆ, ಆದ್ದರಿಂದ ಇದು ಈ ಸಾಧನವು ಇತ್ತೀಚೆಗೆ ಮಾತನಾಡಿದ್ದನ್ನು ಮಾತ್ರ ಹೊಂದಿದೆ - ಖಾಲಿ ಟೇಬಲ್ ಎಂದರೆ ಖಾಲಿ ನೆಟ್‌ವರ್ಕ್ ಎಂದಲ್ಲ.</string>
+    <string name="ns_refresh">ರಿಫ್ರೆಶ್ ಮಾಡಿ</string>
+    <string name="ns_probe">ಸಾಮಾನ್ಯ ಬಂದರುಗಳನ್ನು ಪರೀಕ್ಷಿಸಿ</string>
+    <string name="ns_probe_stop">ನಿಲ್ಲಿಸು</string>
+    <string name="ns_probe_progress">%2$d ರಲ್ಲಿ %1$d ತನಿಖೆ</string>
+    <string name="ns_probe_note">ಈ /24 ನಾದ್ಯಂತ 22, 80, 443, 5000 ಮತ್ತು 5555 ಪೋರ್ಟ್‌ಗಳಲ್ಲಿ TCP ಸಂಪರ್ಕವನ್ನು ಕಳುಹಿಸುತ್ತದೆ. ಉತ್ತರಿಸುವ ಪೋರ್ಟ್ ವರದಿಯಾಗಿದೆ; ಆತಿಥೇಯರು ಗೈರುಹಾಜರಾಗಿದ್ದಾರೆ ಎಂಬುದಕ್ಕೆ ಮೌನ ಪುರಾವೆಯಲ್ಲ.</string>
+    <string name="ns_neighbours">ಪರಿಚಿತ ನೆರೆಹೊರೆಯವರು</string>
+    <string name="ns_neighbours_note">/proc/net/arp ನಿಂದ — ಓದಲು ಮಾತ್ರ.</string>
+    <string name="ns_neighbours_empty">ನೆರೆಹೊರೆಯವರು ಇನ್ನೂ ತಿಳಿದಿಲ್ಲ.</string>
+    <string name="ns_ports_value">ಬಂದರುಗಳು %1$s</string>
+</resources>

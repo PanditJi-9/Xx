@@ -99,4 +99,12 @@
     <string name="max_gpu_saved_desc">Haldið frá fyrri vistun og notað á hverja stígvél: %1$s. Sjálfgefið hér að ofan lýkur aðeins þessari lotu, aldrei vistað ástand.</string>
     <string name="max_gpu_dynamic_min">Lágmark · kraftmikið</string>
     <string name="max_gpu_dynamic_max">Hámarks · kraftmikill</string>
+    <string name="max_gpu_monitor_only_detail">Einu grafísku hnúðarnir sem þessi kjarni afhjúpar eru bandbreidd og QoS skjáir: þeir bera enga GPU klukku, svo það er engin tíðni til að stilla. Stýringin er slökkt í stað þess að skrifa minnisstjóra eins og það væri GPU.</string>
+    <string name="max_gpu_danger_title">Skrifa GPU takmörk?</string>
+    <string name="max_gpu_danger_body">Þetta skrifar grafíktíðnigluggann og landstjórann í GPU hnútana. Gluggi sem ökumaðurinn hafnar, eða bankastjóri sem getur ekki fylgst með, getur stamað allt viðmótið eða fryst spjaldið. Forritið skráir að þú hafir samþykkt þetta einu sinni - ábyrgðin á gildunum sem þú notar er þín.</string>
+    <string name="max_gpu_danger_action">Ég skil - sækja um</string>
+    <string name="max_gpu_state_title">Tími í ríki</string>
+    <string name="max_gpu_state_desc">Hvar tími GPU\ fór í raun og veru, talinn af kjarnanum á hverja notkunartíðni — ekki skyndimynd af núverandi klukku.</string>
+    <string name="max_gpu_state_hidden_share">%1$s saman</string>
+    <string name="max_gpu_state_hidden">%1$d ríki undir 1%%</string>
 </resources>

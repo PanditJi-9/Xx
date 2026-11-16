@@ -18,4 +18,10 @@
     <string name="max_cfg_section_appearance">தோற்றம் மற்றும் இடைமுகம்</string>
     <string name="max_cfg_section_app_prefs">பயன்பாட்டு விருப்பத்தேர்வுகள் &amp; மொழி</string>
     <string name="max_cfg_restore_merge_note">விருப்பத்தேர்வுகளை மீட்டமைத்தல் ஒன்றிணைகிறது: கோப்பில் இருக்கும் விசைகள் எழுதப்பட்டுள்ளன, மேலும் விசைகள் அப்படியே இருப்பதைக் குறிப்பிடவில்லை. எதுவும் அழிக்கப்படவில்லை.</string>
+    <string name="max_cfg_diff_title">%1$d சேமிக்கப்பட்ட அமைப்புகள் இந்தச் சாதனத்திலிருந்து வேறுபடுகின்றன</string>
+    <string name="max_cfg_diff_line">%1$s: %2$s → %3$s</string>
+    <string name="max_cfg_diff_unset">அமைக்கப்படவில்லை</string>
+    <string name="max_cfg_diff_more">மற்றும் %1$d மேலும்</string>
+    <string name="max_cfg_diff_applist">%1$d ஆப்-லிஸ்ட் கோடுகள் சேர்க்கப்பட்டன, %2$d அகற்றப்பட்டன - முழு பட்டியல் மாற்றப்பட்டது, ஒன்றிணைக்கப்படவில்லை.</string>
+    <string name="max_cfg_diff_prefs">%1$d விருப்ப விசைகள் வேறுபடுகின்றன - இணைக்கப்பட்டன, அழிக்கப்படவில்லை.</string>
 </resources>

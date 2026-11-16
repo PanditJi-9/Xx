@@ -18,4 +18,10 @@
     <string name="max_cfg_section_appearance">გარეგნობა და ინტერფეისი</string>
     <string name="max_cfg_section_app_prefs">აპის პარამეტრები და ენა</string>
     <string name="max_cfg_restore_merge_note">პრეფერენციების აღდგენა გაერთიანებულია: ფაილში არსებული გასაღებები იწერება და გასაღებები, რომლებშიც არ არის ნახსენები, რჩება ისე, როგორც არის. არაფერია გასუფთავებული.</string>
+    <string name="max_cfg_diff_title">%1$d შენახული პარამეტრები განსხვავდება ამ მოწყობილობისგან</string>
+    <string name="max_cfg_diff_line">%1$s: %2$s → %3$s</string>
+    <string name="max_cfg_diff_unset">არ არის დაყენებული</string>
+    <string name="max_cfg_diff_more">და %1$d მეტი</string>
+    <string name="max_cfg_diff_applist">%1$d აპლიკაციების სიის ხაზები დამატებულია, %2$d ამოღებულია — მთელი სია ჩანაცვლებულია, არ არის გაერთიანებული.</string>
+    <string name="max_cfg_diff_prefs">%1$d უპირატესობის ღილაკები განსხვავდება — გაერთიანებულია, არ წაშლილია.</string>
 </resources>

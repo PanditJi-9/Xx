@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/network_scanner_strings.xml -->
+<resources>
+    <string name="network_scanner_title">Скенер за локална мрежа</string>
+    <string name="network_scanner_subtitle">Вашият адрес, шлюзът, до който достига, и кои съседи са отговорили.</string>
+    <string name="max_role_network_scanner">Чете мрежата, в която се намирате — без улавяне, без root.</string>
+    <string name="ns_no_network">Няма свързана мрежа.</string>
+    <string name="ns_interface">Интерфейс</string>
+    <string name="ns_address">Адрес</string>
+    <string name="ns_gateway">Шлюз</string>
+    <string name="ns_dns">DNS</string>
+    <string name="ns_mac">MAC</string>
+    <string name="ns_transport_wifi">Wi-Fi</string>
+    <string name="ns_transport_ethernet">Ethernet</string>
+    <string name="ns_transport_cellular">Клетъчен</string>
+    <string name="ns_transport_other">други</string>
+    <string name="ns_sources_title">Откъде идва това</string>
+    <string name="ns_sources_body">Адресите и шлюзът се четат от свойствата на връзката на платформата. Таблицата на съседите се чете от ARP кеша на ядрото, така че съдържа само това, с което това устройство наскоро е говорило — празна таблица не означава празна мрежа.</string>
+    <string name="ns_refresh">Опресняване</string>
+    <string name="ns_probe">Проучете общи портове</string>
+    <string name="ns_probe_stop">Спрете</string>
+    <string name="ns_probe_progress">Пробване %1$d на %2$d</string>
+    <string name="ns_probe_note">Изпраща TCP връзка на портове 22, 80, 443, 5000 и 5555 през този /24. Отчита се порт, който отговаря; мълчанието не е доказателство, че хост отсъства.</string>
+    <string name="ns_neighbours">Познати съседи</string>
+    <string name="ns_neighbours_note">От /proc/net/arp — само за четене.</string>
+    <string name="ns_neighbours_empty">Все още не са известни съседи.</string>
+    <string name="ns_ports_value">Портове %1$s</string>
+</resources>

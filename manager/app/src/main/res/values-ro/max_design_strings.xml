@@ -13,4 +13,23 @@
     <string name="max_expand_section">Afișați detalii</string>
     <string name="max_collapse_section">Ascunde detaliile</string>
     <string name="max_trust_loading">Lectură…</string>
+    <string name="max_gov_title">Cine guvernează acum</string>
+    <string name="max_gov_separator">" › "</string>
+    <string name="max_gov_order_note">Ordin fix: o treaptă mai înaltă o blochează pe una inferioară. Nu se schimbă niciodată care politică câștigă.</string>
+    <string name="max_gov_open_details">Deținători activi</string>
+    <string name="max_gov_active_title">Cine deține controlul</string>
+    <string name="max_gov_none">Nicio politică nu deține un control hardware în acest moment.</string>
+    <string name="max_gov_count">Contracte de închiriere cu control activ: %1$d</string>
+    <string name="max_gov_requested">Solicitat: %1$s</string>
+    <string name="max_gov_owner_recovery">Recuperare</string>
+    <string name="max_gov_owner_safety">Siguranta termica</string>
+    <string name="max_gov_owner_per_app">Profilul aplicației</string>
+    <string name="max_gov_owner_max_ai">Max AI</string>
+    <string name="max_gov_owner_global">Profil global</string>
+    <string name="max_gov_owner_system">Sistem</string>
+    <string name="max_gov_owner_a11y">%1$s deține un control hardware</string>
+    <string name="max_gov_now_none">Niciun proprietar automatizat în acest moment – ​​controlul rămâne al tău</string>
+    <string name="max_gov_now_one">%1$s deține un control</string>
+    <string name="max_gov_now_many">%1$s ține %2$d comenzile</string>
+    <string name="devinfo_details">Detalii</string>
 </resources>

@@ -10,4 +10,6 @@
     <string name="studio_display">Mostrar</string>
     <string name="studio_power">Opciones de energía</string>
     <string name="studio_settings">Ajustes</string>
+    <string name="audio_dsp_live">DSP en vivo</string>
+    <string name="max_audio_session_label">Sesión de audio #%1$d</string>
 </resources>

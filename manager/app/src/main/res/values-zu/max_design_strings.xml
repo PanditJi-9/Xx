@@ -13,4 +13,23 @@
     <string name="max_expand_section">Bonisa imininingwane</string>
     <string name="max_collapse_section">Fihla imininingwane</string>
     <string name="max_trust_loading">Iyafunda...</string>
+    <string name="max_gov_title">Ubani obusayo manje</string>
+    <string name="max_gov_separator">" ›"</string>
+    <string name="max_gov_order_note">I-oda elilungisiwe: i-rung ephakeme ivimba ephansi. Ayishintshi ukuthi iyiphi inqubomgomo ewinayo.</string>
+    <string name="max_gov_open_details">Abaphathi abasebenzayo</string>
+    <string name="max_gov_active_title">Ubani ophethe</string>
+    <string name="max_gov_none">Ayikho inqubomgomo ephethe isilawuli sezingxenyekazi zekhompuyutha njengamanje.</string>
+    <string name="max_gov_count">Ukuqashwa kokulawula okusebenzayo: %1$d</string>
+    <string name="max_gov_requested">Kuceliwe: %1$s</string>
+    <string name="max_gov_owner_recovery">Ukubuyisela</string>
+    <string name="max_gov_owner_safety">Ukuphepha okushisayo</string>
+    <string name="max_gov_owner_per_app">Iphrofayela yohlelo lokusebenza</string>
+    <string name="max_gov_owner_max_ai">Max AI</string>
+    <string name="max_gov_owner_global">Iphrofayili yomhlaba wonke</string>
+    <string name="max_gov_owner_system">Uhlelo</string>
+    <string name="max_gov_owner_a11y">%1$s ungumnikazi wokulawula izingxenyekazi zekhompuyutha</string>
+    <string name="max_gov_now_none">Akekho umnikazi ozenzakalelayo njengamanje — ukulawula kuhlala kungokwakho</string>
+    <string name="max_gov_now_one">%1$s iphethe isilawuli</string>
+    <string name="max_gov_now_many">%1$s iphethe %2$d izilawuli</string>
+    <string name="devinfo_details">Imininingwane</string>
 </resources>

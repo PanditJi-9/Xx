@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/network_scanner_strings.xml -->
+<resources>
+    <string name="network_scanner_title">Mahalliy tarmoq skaneri</string>
+    <string name="network_scanner_subtitle">Sizning manzilingiz, u etib boradigan shlyuz va qaysi qo\'shnilar javob bergan.</string>
+    <string name="max_role_network_scanner">Siz mavjud bo\'lgan tarmoqni o\'qiydi - qo\'lga kiritilmaydi, ildiz yo\'q.</string>
+    <string name="ns_no_network">Hech qanday tarmoq ulanmagan.</string>
+    <string name="ns_interface">Interfeys</string>
+    <string name="ns_address">Manzil</string>
+    <string name="ns_gateway">Gateway</string>
+    <string name="ns_dns">DNS</string>
+    <string name="ns_mac">MAC</string>
+    <string name="ns_transport_wifi">Wi-fi</string>
+    <string name="ns_transport_ethernet">Ethernet</string>
+    <string name="ns_transport_cellular">Uyali</string>
+    <string name="ns_transport_other">Boshqa</string>
+    <string name="ns_sources_title">Bu qayerdan keladi</string>
+    <string name="ns_sources_body">Manzillar va shlyuzlar platformaning havola xususiyatlaridan o\'qiladi. Qo\'shni jadval yadroning ARP keshidan o\'qiladi, shuning uchun u faqat ushbu qurilma yaqinda gaplashgan narsalarni saqlaydi - bo\'sh jadval bo\'sh tarmoq degani emas.</string>
+    <string name="ns_refresh">Yangilash</string>
+    <string name="ns_probe">Umumiy portlarni tekshirish</string>
+    <string name="ns_probe_stop">STOP</string>
+    <string name="ns_probe_progress">Tekshirish %1$d / %2$d</string>
+    <string name="ns_probe_note">Ushbu /24 bo\'ylab 22, 80, 443, 5000 va 5555 portlariga TCP ulanishini yuboradi. Javob beradigan port haqida xabar beriladi; sukunat mezbonning yo\'qligining isboti emas.</string>
+    <string name="ns_neighbours">Taniqli qo\'shnilar</string>
+    <string name="ns_neighbours_note">/proc/net/arp dan - faqat o\'qish.</string>
+    <string name="ns_neighbours_empty">Hozircha qo\'shnilar ma\'lum emas.</string>
+    <string name="ns_ports_value">Portlar %1$s</string>
+</resources>

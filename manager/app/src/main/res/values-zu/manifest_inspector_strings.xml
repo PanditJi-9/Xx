@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/manifest_inspector_strings.xml -->
+<resources>
+    <string name="manifest_inspector_title">Manifest Inspector</string>
+    <string name="manifest_inspector_subtitle">Lokho okushiwo uhlelo lokusebenza olufakiwe mayelana nalo, funda ku-PackageManager.</string>
+    <string name="max_role_manifest_inspector">Ibonisa ukuthi iphakheji ithini mayelana nayo — funda kuphela.</string>
+    <string name="mi_search">Sesha izinhlelo zokusebenza</string>
+    <string name="mi_empty">Khetha uhlelo lokusebenza kwesokunxele.</string>
+    <string name="mi_yes">Yebo</string>
+    <string name="mi_no">Cha</string>
+    <string name="mi_section_identity">Iphakheji</string>
+    <string name="mi_version">Inguqulo</string>
+    <string name="mi_version_code">Ikhodi yenguqulo</string>
+    <string name="mi_min_sdk">I-SDK encane</string>
+    <string name="mi_target_sdk">I-SDK eqondisiwe</string>
+    <string name="mi_installed">Kufakiwe</string>
+    <string name="mi_updated">Kubuyekeziwe</string>
+    <string name="mi_installer">Isifaki</string>
+    <string name="mi_uid">I-UID</string>
+    <string name="mi_data_dir">Uhlu lwedatha</string>
+    <string name="mi_debuggable">Okususekayo</string>
+    <string name="mi_system_app">Uhlelo lokusebenza lwesistimu</string>
+    <string name="mi_enabled">Inikwe amandla</string>
+    <string name="mi_section_permissions">Ucele izimvume</string>
+    <string name="mi_permissions_summary">%1$d izimvume · %2$d zazo eziyingozi</string>
+    <string name="mi_permissions_none">Lolu hlelo lokusebenza aluceli mvume.</string>
+    <string name="mi_perm_dangerous">Kuyingozi</string>
+    <string name="mi_perm_signature">Isiginesha</string>
+    <string name="mi_perm_normal">Okuvamile</string>
+    <string name="mi_perm_unknown">Akuhlukaniswanga</string>
+    <string name="mi_section_components">Izingxenye</string>
+    <string name="mi_activities">Imisebenzi</string>
+    <string name="mi_services">Amasevisi</string>
+    <string name="mi_receivers">Abamukeli</string>
+    <string name="mi_providers">Abahlinzeki</string>
+    <string name="mi_components_none">Akukho okumenyezelwe</string>
+    <string name="mi_section_features">Izici zedivayisi</string>
+    <string name="mi_features_note">Inkundla ayivezi uhlu lwesici sokusetshenziswa kolunye uhlelo lokusebenza; lezi izici ezibikwa yile divayisi.</string>
+    <string name="mi_features_none">Asikho isici esibikiwe</string>
+    <string name="mi_section_signature">Isitifiketi sokusayina</string>
+    <string name="mi_signature_note">I-SHA-256 yesitifiketi sokusayina. Izakhiwo ezimbili ezinenani elifanayo zingumshicileli ofanayo.</string>
+    <string name="mi_signature_sha256">Inhlabamkhosi yesitifiketi</string>
+</resources>

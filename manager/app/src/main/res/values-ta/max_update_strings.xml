@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_update_strings.xml -->
+<resources>
+    <string name="update_dialog_title">புதுப்பிப்பு கிடைக்கிறது</string>
+    <string name="update_dialog_title_required">புதுப்பித்தல் தேவை</string>
+    <string name="update_required_notice">MaxManagerஐ தொடர்ந்து பயன்படுத்த இந்த புதுப்பிப்பு தேவை. அதை நிறுவவும், பின்னர் பயன்பாட்டை மீண்டும் திறக்கவும்.</string>
+    <string name="update_dialog_body">பதிப்பு %1$s கிடைக்கிறது. நீங்கள் %2$s இல் உள்ளீர்கள்.</string>
+    <string name="update_block_title">தொடர புதுப்பித்தல் தேவை</string>
+    <string name="update_block_body">இந்த உருவாக்கம் (%1$s) இனி ஆதரிக்கப்படாது. MaxManager ஐத் தொடர்ந்து பயன்படுத்த %2$s க்கு புதுப்பிக்கவும்.</string>
+    <string name="update_block_body_no_release">இந்த உருவாக்கம் (%1$s) இனி ஆதரிக்கப்படாது.</string>
+    <string name="update_release_notes_label">என்ன புதியது</string>
+    <string name="update_size">பதிவிறக்க அளவு: %1$s</string>
+    <string name="update_button_now">இப்போது புதுப்பிக்கவும்</string>
+    <string name="update_button_later">பின்னர்</string>
+    <string name="update_button_close">மூடு</string>
+    <string name="update_button_open_page">பதிவிறக்கப் பக்கத்தைத் திறக்கவும்</string>
+    <string name="update_state_downloading">பதிவிறக்குகிறது… %1$d%%</string>
+    <string name="update_state_downloading_unknown">பதிவிறக்குகிறது…</string>
+    <string name="update_state_installing">நிறுவுகிறது…</string>
+    <string name="update_error_network">புதுப்பிப்பு சேவையகத்தை அடைய முடியவில்லை. உங்கள் இணைப்பைச் சரிபார்த்து மீண்டும் முயலவும்.</string>
+    <string name="update_error_http">புதுப்பிப்பு சேவையகம் பிழையுடன் பதிலளித்தது. பிறகு முயற்சிக்கவும்.</string>
+    <string name="update_error_format">புதுப்பிப்புத் தகவலைப் படிக்க முடியவில்லை.</string>
+    <string name="update_error_too_large">புதுப்பிப்பு தகவல் எதிர்பார்த்ததை விட பெரியதாக இருந்தது மற்றும் நிராகரிக்கப்பட்டது.</string>
+    <string name="update_error_integrity">பதிவிறக்கம் செய்யப்பட்ட கோப்பு அதன் செக்சம் உடன் பொருந்தவில்லை மற்றும் நீக்கப்பட்டது.</string>
+    <string name="update_error_install">நிறுவல் தோல்வியடைந்தது. மீண்டும் முயற்சிக்கவும்.</string>
+    <string name="update_error_not_configured">இந்த கட்டமைப்பில் புதுப்பிப்பு சேனல் எதுவும் உள்ளமைக்கப்படவில்லை.</string>
+    <string name="update_maintenance_title">தற்காலிகமாக கிடைக்கவில்லை</string>
+    <string name="update_maintenance_body">MaxManager தற்காலிகமாக கிடைக்கவில்லை. சிறிது நேரத்தில் மீண்டும் முயற்சிக்கவும்.</string>
+    <string name="update_check_title">புதுப்பிப்புகளைச் சரிபார்க்கவும்</string>
+    <string name="update_check_supporting">தற்போதைய பதிப்பு: %1$s</string>
+    <string name="update_check_updated">ஒரு புதுப்பிப்பு கிடைக்கிறது.</string>
+    <string name="update_check_uptodate">நீங்கள் சமீபத்திய பதிப்பில் உள்ளீர்கள்.</string>
+    <string name="update_check_failed">புதுப்பிப்புகளைச் சரிபார்க்க முடியவில்லை.</string>
+    <string name="update_check_not_configured">இந்த கட்டமைப்பில் புதுப்பிப்பு சேனல் எதுவும் உள்ளமைக்கப்படவில்லை.</string>
+    <string name="update_released_label">வெளியீட்டு தேதி: %1$s</string>
+    <string name="update_check_none_published">கட்டுப்பாட்டுப் பலகத்திலிருந்து இதுவரை எந்தப் புதுப்பிப்பும் வெளியிடப்படவில்லை.</string>
+    <string name="update_check_link_missing">புதுப்பிப்பு வெளியிடப்பட்டது, ஆனால் அதன் பதிவிறக்க இணைப்பு இல்லை.</string>
+</resources>

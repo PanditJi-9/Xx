@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_update_strings.xml -->
+<resources>
+    <string name="update_dialog_title">അപ്ഡേറ്റ് ലഭ്യമാണ്</string>
+    <string name="update_dialog_title_required">അപ്ഡേറ്റ് ആവശ്യമാണ്</string>
+    <string name="update_required_notice">MaxManager ഉപയോഗിക്കുന്നത് തുടരാൻ ഈ അപ്‌ഡേറ്റ് ആവശ്യമാണ്. ഇത് ഇൻസ്റ്റാൾ ചെയ്യുക, തുടർന്ന് ആപ്പ് വീണ്ടും തുറക്കുക.</string>
+    <string name="update_dialog_body">പതിപ്പ് %1$s ലഭ്യമാണ്. നിങ്ങൾ %2$s-ലാണ്.</string>
+    <string name="update_block_title">തുടരാൻ അപ്ഡേറ്റ് ആവശ്യമാണ്</string>
+    <string name="update_block_body">ഈ ബിൽഡ് (%1$s) ഇനി പിന്തുണയ്ക്കില്ല. MaxManager ഉപയോഗിക്കുന്നത് തുടരാൻ %2$s ലേക്ക് അപ്ഡേറ്റ് ചെയ്യുക.</string>
+    <string name="update_block_body_no_release">ഈ ബിൽഡ് (%1$s) ഇനി പിന്തുണയ്ക്കില്ല.</string>
+    <string name="update_release_notes_label">പുതിയതെന്താണ്</string>
+    <string name="update_size">ഡൗൺലോഡ് വലുപ്പം: %1$s</string>
+    <string name="update_button_now">ഇപ്പോൾ അപ്ഡേറ്റ് ചെയ്യുക</string>
+    <string name="update_button_later">പിന്നീട്</string>
+    <string name="update_button_close">അടയ്ക്കുക</string>
+    <string name="update_button_open_page">ഡൗൺലോഡ് പേജ് തുറക്കുക</string>
+    <string name="update_state_downloading">ഡൗൺലോഡ് ചെയ്യുന്നു... %1$d%%</string>
+    <string name="update_state_downloading_unknown">ഡൗൺലോഡ് ചെയ്യുന്നു...</string>
+    <string name="update_state_installing">ഇൻസ്റ്റാൾ ചെയ്യുന്നു...</string>
+    <string name="update_error_network">അപ്ഡേറ്റ് സെർവറിൽ എത്താൻ കഴിഞ്ഞില്ല. നിങ്ങളുടെ കണക്ഷൻ പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക.</string>
+    <string name="update_error_http">അപ്‌ഡേറ്റ് സെർവർ ഒരു പിശകോടെ ഉത്തരം നൽകി. പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</string>
+    <string name="update_error_format">അപ്‌ഡേറ്റ് വിവരങ്ങൾ വായിക്കാൻ കഴിഞ്ഞില്ല.</string>
+    <string name="update_error_too_large">അപ്‌ഡേറ്റ് വിവരങ്ങൾ പ്രതീക്ഷിച്ചതിലും വലുതായതിനാൽ നിരസിക്കപ്പെട്ടു.</string>
+    <string name="update_error_integrity">ഡൗൺലോഡ് ചെയ്‌ത ഫയൽ അതിൻ്റെ ചെക്ക്‌സവുമായി പൊരുത്തപ്പെടാത്തതിനാൽ അത് ഇല്ലാതാക്കി.</string>
+    <string name="update_error_install">ഇൻസ്റ്റാളേഷൻ പരാജയപ്പെട്ടു. വീണ്ടും ശ്രമിക്കുക.</string>
+    <string name="update_error_not_configured">ഈ ബിൽഡിൽ ഒരു അപ്‌ഡേറ്റ് ചാനലും കോൺഫിഗർ ചെയ്തിട്ടില്ല.</string>
+    <string name="update_maintenance_title">താൽക്കാലികമായി ലഭ്യമല്ല</string>
+    <string name="update_maintenance_body">MaxManager താൽക്കാലികമായി ലഭ്യമല്ല. ദയവായി ഉടൻ വീണ്ടും ശ്രമിക്കുക.</string>
+    <string name="update_check_title">അപ്ഡേറ്റുകൾക്കായി പരിശോധിക്കുക</string>
+    <string name="update_check_supporting">നിലവിലെ പതിപ്പ്: %1$s</string>
+    <string name="update_check_updated">ഒരു അപ്ഡേറ്റ് ലഭ്യമാണ്.</string>
+    <string name="update_check_uptodate">നിങ്ങൾ ഏറ്റവും പുതിയ പതിപ്പിലാണ്.</string>
+    <string name="update_check_failed">അപ്‌ഡേറ്റുകൾക്കായി പരിശോധിക്കാനായില്ല.</string>
+    <string name="update_check_not_configured">ഈ ബിൽഡിൽ ഒരു അപ്‌ഡേറ്റ് ചാനലും കോൺഫിഗർ ചെയ്തിട്ടില്ല.</string>
+    <string name="update_released_label">റിലീസ് തീയതി: %1$s</string>
+    <string name="update_check_none_published">നിയന്ത്രണ പാനലിൽ നിന്ന് ഇതുവരെ ഒരു അപ്‌ഡേറ്റും പ്രസിദ്ധീകരിച്ചിട്ടില്ല.</string>
+    <string name="update_check_link_missing">ഒരു അപ്‌ഡേറ്റ് പ്രസിദ്ധീകരിച്ചു, പക്ഷേ അതിൻ്റെ ഡൗൺലോഡ് ലിങ്ക് കാണുന്നില്ല.</string>
+</resources>

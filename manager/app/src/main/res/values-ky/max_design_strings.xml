@@ -13,4 +13,23 @@
     <string name="max_expand_section">Деталдарды көрсөтүү</string>
     <string name="max_collapse_section">Деталдарды жашыруу</string>
     <string name="max_trust_loading">Окулуп жатат…</string>
+    <string name="max_gov_title">Эми ким башкарат</string>
+    <string name="max_gov_separator">" › "</string>
+    <string name="max_gov_order_note">Туруктуу тартип: жогорураак тепкич ылдыйкы тепкичти бөгөттөйт. Кайсы саясат жеңет эч качан өзгөрбөйт.</string>
+    <string name="max_gov_open_details">Активдүү ээлери</string>
+    <string name="max_gov_active_title">Ким көзөмөлдөйт</string>
+    <string name="max_gov_none">Азыр эч бир саясат аппараттык башкарууга ээ эмес.</string>
+    <string name="max_gov_count">Активдүү башкаруу ижаралары: %1$d</string>
+    <string name="max_gov_requested">Суралган: %1$s</string>
+    <string name="max_gov_owner_recovery">Калыбына келтирүү</string>
+    <string name="max_gov_owner_safety">Термикалык коопсуздук</string>
+    <string name="max_gov_owner_per_app">Колдонмо профили</string>
+    <string name="max_gov_owner_max_ai">Max AI</string>
+    <string name="max_gov_owner_global">Глобалдык профиль</string>
+    <string name="max_gov_owner_system">Система</string>
+    <string name="max_gov_owner_a11y">%1$s аппараттык башкарууга ээ</string>
+    <string name="max_gov_now_none">Учурда автоматташтырылган ээси жок — башкаруу сизде болот</string>
+    <string name="max_gov_now_one">%1$s башкарууну кармап турат</string>
+    <string name="max_gov_now_many">%1$s %2$d башкаруу элементтерин кармайт</string>
+    <string name="devinfo_details">Толук маалымат</string>
 </resources>

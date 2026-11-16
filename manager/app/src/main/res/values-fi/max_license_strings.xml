@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_license_strings.xml -->
+<resources>
+    <string name="max_license_title">Lisenssi</string>
+    <string name="max_license_subtitle">Yksi avain, tämä laite, ei tiliä</string>
+    <string name="max_license_help_body">Avain tarkistetaan kerran verkossa, kun annat sen. Siitä lähtien palvelimen allekirjoitettu varmenne toimii offline-tilassa, kunnes sen aika loppuu – sovellus ei soita kotiin joka kerta, kun avaat näytön. Varmenne on sidottu tämän laitteen satunnaiseen asennustunnukseen, joten sovelluksen tietojen kopioiminen toiseen puhelimeen ei sisällä lisenssiä, ja omistaja voi nollata sitoumuksen paneelista, jos vaihdat puhelinta.</string>
+    <string name="max_license_status_section">Status</string>
+    <string name="max_license_status_active">Aktiivinen</string>
+    <string name="max_license_status_expired">Vanhentunut</string>
+    <string name="max_license_status_none">Ei aktivoitu</string>
+    <string name="max_license_active_detail">Jäljellä: %1$d päivää</string>
+    <string name="max_license_expired_detail">Tämän avaimen aika on ohi. Uusi avain uusii pääsyn.</string>
+    <string name="max_license_none_detail">Avaa maksulliset pinnat antamalla saamasi avain.</string>
+    <string name="max_license_promo_active">Ilmainen kaikille %1$s asti</string>
+    <string name="max_license_plan_title">Suunnitelma</string>
+    <string name="max_license_devices_title">Laitteet</string>
+    <string name="max_license_devices_detail">%1$d / %2$d käytetty</string>
+    <string name="max_license_device_id_title">Tämä laite</string>
+    <string name="max_license_device_id_detail">%1$s</string>
+    <string name="max_license_key_section">Aktivointi</string>
+    <string name="max_license_key_label">Lisenssiavain</string>
+    <string name="max_license_key_placeholder">MAXM-XXXXX-XXXXX-XXXXX-XXXXX-XX</string>
+    <string name="max_license_key_helper">Viivoilla ja isoilla kirjaimilla ei ole väliä – liitä se sellaisena kuin sait sen.</string>
+    <string name="max_license_activate">Aktivoida</string>
+    <string name="max_license_activating">Tarkistetaan avainta…</string>
+    <string name="max_license_refresh">Tarkista nyt</string>
+    <string name="max_license_activated">Aktivoitu. Tämä laite on nyt yhdistetty avaimesi.</string>
+    <string name="max_license_error_invalid_key">Tämä avain ei näytä valmiilta. Tarkista se ja yritä uudelleen.</string>
+    <string name="max_license_error_not_configured">Tälle koontiversiolle ei ole määritetty lisenssipalvelinta.</string>
+    <string name="max_license_error_network">Ei yhteyttä. Avain tarkistetaan kerran ja toimii sitten offline-tilassa.</string>
+    <string name="max_license_error_timeout">Lisenssipalvelin ei vastannut ajoissa. Yritä uudelleen.</string>
+    <string name="max_license_error_server">Lisenssipalvelin vastasi virheellä. Yritä myöhemmin uudelleen.</string>
+    <string name="max_license_error_client">Lisenssitoimintoa ei ole otettu käyttöön palvelimella.</string>
+    <string name="max_license_error_format">Palvelimen vastausta ei ymmärretty.</string>
+    <string name="max_license_error_expired">Tämä avain on vanhentunut.</string>
+    <string name="max_license_error_not_found">Tätä avainta ei tunneta.</string>
+    <string name="max_license_error_revoked">Tämä avain on peruutettu.</string>
+    <string name="max_license_error_device_limit">Tämä avain on saavuttanut laiterajan. Pyydä laitteen nollausta.</string>
+    <string name="max_license_error_device_unknown">Tätä laitetta ei ole vielä linkitetty avaimeen. Aktivoi se ensin täällä.</string>
+    <string name="max_license_error_device_removed">Omistaja poisti tämän laitteen avaimesta.</string>
+    <string name="max_license_error_rate_limited">Liian monta yritystä tästä yhteydestä – odota muutama minuutti ja yritä sitten uudelleen.</string>
+    <string name="max_license_error_unknown">Jotain meni pieleen. Syy kirjattiin Diagnostiikkaan.</string>
+    <string name="max_license_gate_title">Tämä pinta vaatii lisenssin</string>
+    <string name="max_license_gate_detail">Se tulee avaimen mukana. Yksi näppäin peittää tämän laitteen, ja sen syöttäminen kestää minuutin.</string>
+    <string name="max_feature_off_title">Pois päältä</string>
+    <string name="max_feature_off_detail">Ohjauspaneeli on sammuttanut tämän pinnan. Se tulee takaisin heti, kun se otetaan uudelleen käyttöön.</string>
+    <string name="max_license_gate_action">Avaa lisenssiasetukset</string>
+    <string name="max_license_gate_subscribe">Tilaa nyt</string>
+    <string name="max_license_subscription_section">Tilaus</string>
+    <string name="max_license_subscription_open">Avaa tilaussivu</string>
+</resources>

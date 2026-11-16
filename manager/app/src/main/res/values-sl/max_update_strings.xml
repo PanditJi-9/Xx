@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_update_strings.xml -->
+<resources>
+    <string name="update_dialog_title">Na voljo je posodobitev</string>
+    <string name="update_dialog_title_required">Potrebna posodobitev</string>
+    <string name="update_required_notice">Ta posodobitev je potrebna za nadaljnjo uporabo MaxManager. Namestite jo in nato znova odprite aplikacijo.</string>
+    <string name="update_dialog_body">Na voljo je različica %1$s. Ste na %2$s.</string>
+    <string name="update_block_title">Za nadaljevanje je potrebna posodobitev</string>
+    <string name="update_block_body">Ta zgradba (%1$s) ni več podprta. Posodobite na %2$s, če želite še naprej uporabljati MaxManager.</string>
+    <string name="update_block_body_no_release">Ta zgradba (%1$s) ni več podprta.</string>
+    <string name="update_release_notes_label">Kaj je novega</string>
+    <string name="update_size">Velikost prenosa: %1$s</string>
+    <string name="update_button_now">Posodobite zdaj</string>
+    <string name="update_button_later">Kasneje</string>
+    <string name="update_button_close">Zapri</string>
+    <string name="update_button_open_page">Odpri stran za prenos</string>
+    <string name="update_state_downloading">Prenašanje… %1$d%%</string>
+    <string name="update_state_downloading_unknown">Prenašanje ...</string>
+    <string name="update_state_installing">Namestitev ...</string>
+    <string name="update_error_network">Strežnika za posodabljanje ni bilo mogoče doseči. Preverite povezavo in poskusite znova.</string>
+    <string name="update_error_http">Posodobitveni strežnik je odgovoril z napako. Poskusite znova pozneje.</string>
+    <string name="update_error_format">Informacij o posodobitvi ni bilo mogoče prebrati.</string>
+    <string name="update_error_too_large">Informacije o posodobitvi so bile večje od pričakovanih in so bile zavržene.</string>
+    <string name="update_error_integrity">Prenesena datoteka se ni ujemala s svojo kontrolno vsoto in je bila izbrisana.</string>
+    <string name="update_error_install">Namestitev ni uspela. poskusi ponovno</string>
+    <string name="update_error_not_configured">V tej gradnji ni konfiguriran noben kanal za posodobitev.</string>
+    <string name="update_maintenance_title">Začasno ni na voljo</string>
+    <string name="update_maintenance_body">MaxManager je začasno nedosegljiv. Poskusite znova kmalu.</string>
+    <string name="update_check_title">Preverite posodobitve</string>
+    <string name="update_check_supporting">Trenutna različica: %1$s</string>
+    <string name="update_check_updated">Na voljo je posodobitev.</string>
+    <string name="update_check_uptodate">Ste na najnovejši različici.</string>
+    <string name="update_check_failed">Ni bilo mogoče preveriti posodobitev.</string>
+    <string name="update_check_not_configured">V tej gradnji ni konfiguriran noben kanal za posodobitev.</string>
+    <string name="update_released_label">Datum izdaje: %1$s</string>
+    <string name="update_check_none_published">Na nadzorni plošči še ni bila objavljena nobena posodobitev.</string>
+    <string name="update_check_link_missing">Posodobitev je objavljena, vendar manjka povezava za prenos.</string>
+</resources>

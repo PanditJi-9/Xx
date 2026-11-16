@@ -99,4 +99,12 @@
     <string name="max_gpu_saved_desc">Gardado dun gardado anterior e aplicado en cada arranque: %1$s. O valor predeterminado anterior só remata esta sesión, nunca o estado gardado.</string>
     <string name="max_gpu_dynamic_min">Mínimo · dinámico</string>
     <string name="max_gpu_dynamic_max">Máximo · dinámico</string>
+    <string name="max_gpu_monitor_only_detail">Os únicos nodos gráficos que expón este núcleo son os monitores de ancho de banda e QoS: non levan un reloxo GPU, polo que non hai frecuencia que establecer. O control permanece desactivado en lugar de escribir un gobernador de memoria coma se fose o GPU.</string>
+    <string name="max_gpu_danger_title">Escribir límites GPU?</string>
+    <string name="max_gpu_danger_body">Isto escribe a xanela de frecuencia gráfica e o gobernador nos nodos GPU. Unha xanela que o controlador rexeita, ou un gobernador que non pode seguir o ritmo, pode trabucar toda a interface ou conxelar o panel. A aplicación rexistra que aceptaches isto unha vez; a responsabilidade dos valores que aplicas é túa.</string>
+    <string name="max_gpu_danger_action">Entendo - aplicar</string>
+    <string name="max_gpu_state_title">Tempo en estado</string>
+    <string name="max_gpu_state_desc">Onde foi o tempo do GPU\, contado polo núcleo por frecuencia de operación, non unha instantánea do reloxo actual.</string>
+    <string name="max_gpu_state_hidden_share">%1$s xuntos</string>
+    <string name="max_gpu_state_hidden">%1$d estados por debaixo do 1%%</string>
 </resources>

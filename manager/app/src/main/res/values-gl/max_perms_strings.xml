@@ -69,4 +69,25 @@
     <string name="max_perms_entry_title">Permisos e operacións da aplicación</string>
     <string name="max_perms_entry_desc">Consulta o que declara esta aplicación e o que realmente permite o sistema</string>
     <string name="max_perms_entry_action">Abrir permisos</string>
+    <string name="max_perms_manifest_title">Resumo do manifesto</string>
+    <string name="max_perms_manifest_desc">Le dende o xestor de paquetes: versión, rango do SDK, compoñentes e cantos deles se exportan. Outras aplicacións poden iniciar un compoñente exportado.</string>
+    <string name="max_perms_manifest_version">Versión</string>
+    <string name="max_perms_manifest_sdk">Rango SDK</string>
+    <string name="max_perms_manifest_location">Localización de instalación</string>
+    <string name="max_perms_manifest_location_auto">Automático</string>
+    <string name="max_perms_manifest_location_internal">Só almacenamento interno</string>
+    <string name="max_perms_manifest_location_external">Prefire externo</string>
+    <string name="max_perms_manifest_components">Compoñentes</string>
+    <string name="max_perms_manifest_components_order">actividades · servizos · receptores · provedores</string>
+    <string name="max_perms_manifest_exported">Compoñentes exportados</string>
+    <string name="max_perms_manifest_splits">Dividir APK</string>
+    <string name="max_perms_manifest_debug">Depurable</string>
+    <string name="max_perms_features_title">Características declaradas</string>
+    <string name="max_perms_features_desc">O que o paquete require do dispositivo, en comparación co que este dispositivo anuncia. Unha característica obrigatoria que falta aquí normalmente significa que a aplicación non funcionará completamente; é unha reclamación do xestor de paquetes, non unha suposición.</string>
+    <string name="max_perms_features_loading">Lendo as funcións declaradas do paquete...</string>
+    <string name="max_perms_features_none">O paquete non declara características necesarias.</string>
+    <string name="max_perms_features_required">Obrigatorio</string>
+    <string name="max_perms_features_unsupported">Non neste dispositivo</string>
+    <string name="max_perms_manifest_none">Non informado polo xestor de paquetes.</string>
+    <string name="max_perms_manifest_unknown">Descoñecido</string>
 </resources>

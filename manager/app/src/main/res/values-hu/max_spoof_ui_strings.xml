@@ -51,4 +51,14 @@
     <string name="copg_tweak_kso_title">Tartsa bekapcsolva a képernyőt</string>
     <string name="copg_tweak_kso_desc">Alkalmazza a COPG képernyőntartási beállítását erre az alkalmazásra. Ide mentve, az áttekintés és alkalmazás a Hamis lapon írt a motorba.</string>
     <string name="copg_tweak_needs_device">Ehhez az alkalmazáshoz először eszközre van szüksége a Spoof lapon.</string>
+    <string name="spoof_engine_unmeasured">A motor állapota nincs mérve: a root hozzáférés még nincs megadva. Adja meg a root jogot, majd nyissa meg újra ezt a lapot.</string>
+    <string name="spoof_engine_config_missing">A COPG telepítve van, de a konfigurációs fájlja (COPG.json) hiányzik. A jelentkezés mindaddig elutasításra kerül, amíg a modul újból nem adja meg.</string>
+    <string name="spoof_engine_config_unreadable">A COPG telepítve van, de a konfigurációs fájlja nem olvasható JSON. A jelentkezést a fájl kijavításáig elutasítják.</string>
+    <string name="spoof_imei_spoof">IMEI hamisítás</string>
+    <string name="spoof_imei_spoof_desc">Ennek az alkalmazásnak egy másik IMEI-t jelenít meg. Engedélyeznie kell a Max Manager modult az LSPosedben, és ennek az alkalmazásnak a hatálya alá tartozik. Bekapcsolás után indítsa újra az alkalmazást.</string>
+    <string name="spoof_imei_active">Ez az alkalmazás látható: %1$s</string>
+    <string name="spoof_imei_summary">IMEI hamisítás</string>
+    <string name="spoof_imei_regenerate">Új véletlenszerű IMEI</string>
+    <string name="spoof_imei_regenerate_desc">Egy másik érvényes IMEI-t generál ehhez az alkalmazáshoz. A megtekintéséhez indítsa újra az alkalmazást.</string>
+    <string name="spoof_imei_module_inactive">A Max Manager modul nincs engedélyezve az LSPosedben, így az alkalmazások továbbra is a valódi IMEI-t látják. Engedélyezze a modult az LSPosedben, adja hozzá ezt az alkalmazást a hatóköréhez, majd nyissa meg újra ezt a képernyőt.</string>
 </resources>

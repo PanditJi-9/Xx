@@ -10,4 +10,6 @@
     <string name="studio_display">Bonisa</string>
     <string name="studio_power">Izinketho zamandla</string>
     <string name="studio_settings">Izilungiselelo</string>
+    <string name="audio_dsp_live">I-DSP ibukhoma</string>
+    <string name="max_audio_session_label">Iseshini yomsindo #%1$d</string>
 </resources>

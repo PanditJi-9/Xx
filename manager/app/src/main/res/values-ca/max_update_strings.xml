@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_update_strings.xml -->
+<resources>
+    <string name="update_dialog_title">Actualització disponible</string>
+    <string name="update_dialog_title_required">Actualització necessària</string>
+    <string name="update_required_notice">Aquesta actualització és necessària per seguir utilitzant MaxManager. Instal·leu-lo i torneu a obrir l\'aplicació.</string>
+    <string name="update_dialog_body">La versió %1$s està disponible. Estàs a %2$s.</string>
+    <string name="update_block_title">Actualització necessària per continuar</string>
+    <string name="update_block_body">Aquesta compilació (%1$s) ja no és compatible. Actualitza a %2$s per seguir utilitzant MaxManager.</string>
+    <string name="update_block_body_no_release">Aquesta compilació (%1$s) ja no és compatible.</string>
+    <string name="update_release_notes_label">Què hi ha de nou</string>
+    <string name="update_size">Mida de la baixada: %1$s</string>
+    <string name="update_button_now">Actualitza ara</string>
+    <string name="update_button_later">Més tard</string>
+    <string name="update_button_close">Tancar</string>
+    <string name="update_button_open_page">Obriu la pàgina de descàrrega</string>
+    <string name="update_state_downloading">S\'està baixant... %1$d%%</string>
+    <string name="update_state_downloading_unknown">S\'està baixant…</string>
+    <string name="update_state_installing">S\'està instal·lant...</string>
+    <string name="update_error_network">No s\'ha pogut arribar al servidor d\'actualitzacions. Comprova la teva connexió i torna-ho a provar.</string>
+    <string name="update_error_http">El servidor d\'actualització ha respost amb un error. Torna-ho a provar més tard.</string>
+    <string name="update_error_format">No s\'ha pogut llegir la informació d\'actualització.</string>
+    <string name="update_error_too_large">La informació d\'actualització era més gran del que s\'esperava i es va descartar.</string>
+    <string name="update_error_integrity">El fitxer baixat no coincideix amb la seva suma de comprovació i s\'ha suprimit.</string>
+    <string name="update_error_install">La instal·lació ha fallat. Torna-ho a provar.</string>
+    <string name="update_error_not_configured">No hi ha cap canal d\'actualització configurat en aquesta compilació.</string>
+    <string name="update_maintenance_title">No disponible temporalment</string>
+    <string name="update_maintenance_body">MaxManager no està disponible temporalment. Si us plau, torna-ho a provar en breu.</string>
+    <string name="update_check_title">Comproveu si hi ha actualitzacions</string>
+    <string name="update_check_supporting">Versió actual: %1$s</string>
+    <string name="update_check_updated">Hi ha una actualització disponible.</string>
+    <string name="update_check_uptodate">Esteu a l\'última versió.</string>
+    <string name="update_check_failed">No s\'han pogut comprovar si hi ha actualitzacions.</string>
+    <string name="update_check_not_configured">No hi ha cap canal d\'actualització configurat en aquesta compilació.</string>
+    <string name="update_released_label">Data de llançament: %1$s</string>
+    <string name="update_check_none_published">Encara no s\'ha publicat cap actualització des del tauler de control.</string>
+    <string name="update_check_link_missing">S\'ha publicat una actualització, però falta el seu enllaç de descàrrega.</string>
+</resources>

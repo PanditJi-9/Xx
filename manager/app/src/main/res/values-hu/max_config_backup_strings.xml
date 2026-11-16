@@ -18,4 +18,10 @@
     <string name="max_cfg_section_appearance">Megjelenés és felület</string>
     <string name="max_cfg_section_app_prefs">Alkalmazásbeállítások és nyelv</string>
     <string name="max_cfg_restore_merge_note">A beállítások visszaállítása összeolvad: a fájlban lévő kulcsok kiírásra kerülnek, és a nem említett kulcsok változatlanok maradnak. Semmi sem törlődik.</string>
+    <string name="max_cfg_diff_title">%1$d a mentett beállítások eltérnek ezen az eszközön</string>
+    <string name="max_cfg_diff_line">%1$s: %2$s → %3$s</string>
+    <string name="max_cfg_diff_unset">nincs beállítva</string>
+    <string name="max_cfg_diff_more">és %1$d további</string>
+    <string name="max_cfg_diff_applist">%1$d alkalmazáslista sorok hozzáadva, %2$d eltávolítva – a teljes lista lecserélésre kerül, nem egyesítve.</string>
+    <string name="max_cfg_diff_prefs">%1$d a preferenciakulcsok különböznek – egyesítve, nem törölve.</string>
 </resources>

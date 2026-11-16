@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/manifest_inspector_strings.xml -->
+<resources>
+    <string name="manifest_inspector_title">Manifest Müfettişi</string>
+    <string name="manifest_inspector_subtitle">Yüklü bir uygulamanın kendisi hakkında ne bildirdiğini PackageManager\'dan okuyun.</string>
+    <string name="max_role_manifest_inspector">Bir paketin kendisi hakkında ne bildirdiğini gösterir - salt okunurdur.</string>
+    <string name="mi_search">Uygulamaları arayın</string>
+    <string name="mi_empty">Soldan bir uygulama seçin.</string>
+    <string name="mi_yes">Evet</string>
+    <string name="mi_no">HAYIR</string>
+    <string name="mi_section_identity">Paket</string>
+    <string name="mi_version">Sürüm</string>
+    <string name="mi_version_code">Sürüm kodu</string>
+    <string name="mi_min_sdk">Minimum SDK</string>
+    <string name="mi_target_sdk">Hedef SDK</string>
+    <string name="mi_installed">Yüklendi</string>
+    <string name="mi_updated">Güncellendi</string>
+    <string name="mi_installer">Kurulumcu</string>
+    <string name="mi_uid">UID</string>
+    <string name="mi_data_dir">Veri dizini</string>
+    <string name="mi_debuggable">Hata ayıklanabilir</string>
+    <string name="mi_system_app">Sistem uygulaması</string>
+    <string name="mi_enabled">Etkinleştirilmiş</string>
+    <string name="mi_section_permissions">İstenen izinler</string>
+    <string name="mi_permissions_summary">%1$d izinler · %2$d bunlardan tehlikeli</string>
+    <string name="mi_permissions_none">Bu uygulama hiçbir izin istemiyor.</string>
+    <string name="mi_perm_dangerous">Tehlikeli</string>
+    <string name="mi_perm_signature">İmza</string>
+    <string name="mi_perm_normal">Normal</string>
+    <string name="mi_perm_unknown">sınıflandırılmamış</string>
+    <string name="mi_section_components">Bileşenler</string>
+    <string name="mi_activities">Faaliyetler</string>
+    <string name="mi_services">Hizmetler</string>
+    <string name="mi_receivers">Alıcılar</string>
+    <string name="mi_providers">Sağlayıcılar</string>
+    <string name="mi_components_none">Hiçbiri beyan edilmedi</string>
+    <string name="mi_section_features">Cihaz özellikleri</string>
+    <string name="mi_features_note">Platform, başka bir uygulamanın kullanım-özellik listesini açığa çıkarmaz; bunlar bu cihazın bildirdiği özelliklerdir.</string>
+    <string name="mi_features_none">Hiçbir özellik bildirilmedi</string>
+    <string name="mi_section_signature">İmza sertifikası</string>
+    <string name="mi_signature_note">İmza sertifikasının SHA-256\'sı. Aynı değere sahip iki yapı aynı yayıncıdır.</string>
+    <string name="mi_signature_sha256">Sertifika özeti</string>
+</resources>

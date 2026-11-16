@@ -69,4 +69,25 @@
     <string name="max_perms_entry_title">Leyfi og forritaaðgerðir</string>
     <string name="max_perms_entry_desc">Sjáðu hvað þetta app lýsir yfir og hvað kerfið leyfir í raun</string>
     <string name="max_perms_entry_action">Opna heimildir</string>
+    <string name="max_perms_manifest_title">Augljós samantekt</string>
+    <string name="max_perms_manifest_desc">Lestu úr pakkastjóranum: útgáfa, SDK svið, íhlutir og hversu margir þeirra eru fluttir út. Útfluttur íhlutur er hægt að ræsa með öðrum forritum.</string>
+    <string name="max_perms_manifest_version">Útgáfa</string>
+    <string name="max_perms_manifest_sdk">SDK svið</string>
+    <string name="max_perms_manifest_location">Settu upp staðsetningu</string>
+    <string name="max_perms_manifest_location_auto">Sjálfvirk</string>
+    <string name="max_perms_manifest_location_internal">Aðeins innri geymsla</string>
+    <string name="max_perms_manifest_location_external">Kýs ytra</string>
+    <string name="max_perms_manifest_components">Íhlutir</string>
+    <string name="max_perms_manifest_components_order">starfsemi · þjónusta · viðtakendur · veitendur</string>
+    <string name="max_perms_manifest_exported">Útfluttir íhlutir</string>
+    <string name="max_perms_manifest_splits">Skiptu APK-skjölum</string>
+    <string name="max_perms_manifest_debug">Villuleitanlegt</string>
+    <string name="max_perms_features_title">Yfirlýstir eiginleikar</string>
+    <string name="max_perms_features_desc">Það sem pakkinn krefst af tækinu samanborið við það sem þetta tæki auglýsir. Nauðsynlegur eiginleiki sem vantar hér þýðir venjulega að appið virkar ekki að fullu - það er krafa frá pakkastjóranum, ekki ágiskun.</string>
+    <string name="max_perms_features_loading">Að lesa yfirlýsta eiginleika pakkans...</string>
+    <string name="max_perms_features_none">Pakkinn lýsir yfir engum nauðsynlegum eiginleikum.</string>
+    <string name="max_perms_features_required">Áskilið</string>
+    <string name="max_perms_features_unsupported">Ekki á þessu tæki</string>
+    <string name="max_perms_manifest_none">Ekki tilkynnt af pakkastjóranum.</string>
+    <string name="max_perms_manifest_unknown">Óþekkt</string>
 </resources>

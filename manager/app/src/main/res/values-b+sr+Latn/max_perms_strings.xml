@@ -69,4 +69,25 @@
     <string name="max_perms_entry_title">Дозволе и опције апликације</string>
     <string name="max_perms_entry_desc">Погледајте шта ова апликација објављује и шта систем заправо дозвољава</string>
     <string name="max_perms_entry_action">Отворите дозволе</string>
+<string name="max_perms_manifest_title">Сажетак манифеста</string>
+<string name="max_perms_manifest_desc">Прочитајте из менаџера пакета: верзију, опсег СДК-а, компоненте и колико их се извози. Извезену компоненту могу покренути друге апликације.</string>
+<string name="max_perms_manifest_version">Версион</string>
+<string name="max_perms_manifest_sdk">СДК опсег</string>
+<string name="max_perms_manifest_location">Инсталирајте локацију</string>
+<string name="max_perms_manifest_location_auto">Аутоматски</string>
+<string name="max_perms_manifest_location_internal">Само интерна меморија</string>
+<string name="max_perms_manifest_location_external">Преферира спољашње</string>
+<string name="max_perms_manifest_components">Компоненте</string>
+<string name="max_perms_manifest_components_order">активности · услуге · примаоци · провајдери</string>
+<string name="max_perms_manifest_exported">Извезене компоненте</string>
+<string name="max_perms_manifest_splits">Подели АПК-ове</string>
+<string name="max_perms_manifest_debug">Дебуггабле</string>
+<string name="max_perms_features_title">Декларисане карактеристике</string>
+<string name="max_perms_features_desc">Шта пакет захтева од уређаја, у поређењу са оним што овај уређај рекламира. Потребна функција која овде недостаје обично значи да апликација неће радити у потпуности — то је захтев менаџера пакета, а не нагађање.</string>
+<string name="max_perms_features_loading">Читање декларисаних карактеристика пакета…</string>
+<string name="max_perms_features_none">Пакет не декларира да нема потребних функција.</string>
+<string name="max_perms_features_required">Обавезно</string>
+<string name="max_perms_features_unsupported">Не на овом уређају</string>
+<string name="max_perms_manifest_none">Није пријављено од стране менаџера пакета.</string>
+<string name="max_perms_manifest_unknown">Непознато</string>
 </resources>

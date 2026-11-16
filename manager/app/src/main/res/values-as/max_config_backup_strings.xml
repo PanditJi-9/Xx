@@ -18,4 +18,10 @@
     <string name="max_cfg_section_appearance">চেহেৰা আৰু আন্তঃপৃষ্ঠ</string>
     <string name="max_cfg_section_app_prefs">এপৰ পছন্দ আৰু ভাষা</string>
     <string name="max_cfg_restore_merge_note">পছন্দসমূহ পুনৰুদ্ধাৰ কৰা একত্ৰীকৰণ: নথিপত্ৰত উপস্থিত কি\'সমূহ লিখা হয়, আৰু ই উল্লেখ নকৰা কি\'সমূহ যিদৰে আছে তেনেদৰে থাকে। একোৱেই ক্লিয়াৰ হোৱা নাই।</string>
+    <string name="max_cfg_diff_title">%1$d সংৰক্ষিত ছেটিংছ এই ডিভাইচৰ পৰা পৃথক</string>
+    <string name="max_cfg_diff_line">%1$s: %2$s → %3$s</string>
+    <string name="max_cfg_diff_unset">ছেট কৰা হোৱা নাই</string>
+    <string name="max_cfg_diff_more">আৰু %1$d অধিক</string>
+    <string name="max_cfg_diff_applist">%1$d এপ-তালিকা শাৰীসমূহ যোগ কৰা হৈছে, %2$d আঁতৰোৱা হৈছে — গোটেই তালিকাখন সলনি কৰা হৈছে, একত্ৰিত কৰা হোৱা নাই।</string>
+    <string name="max_cfg_diff_prefs">%1$d পছন্দ কি\'সমূহ পৃথক — একত্ৰিত কৰা হৈছে, মচি পেলোৱা হোৱা নাই।</string>
 </resources>

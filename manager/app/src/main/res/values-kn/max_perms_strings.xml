@@ -69,4 +69,25 @@
     <string name="max_perms_entry_title">ಅನುಮತಿಗಳು ಮತ್ತು ಅಪ್ಲಿಕೇಶನ್ ಆಪ್‌ಗಳು</string>
     <string name="max_perms_entry_desc">ಈ ಅಪ್ಲಿಕೇಶನ್ ಏನನ್ನು ಘೋಷಿಸುತ್ತದೆ ಮತ್ತು ಸಿಸ್ಟಮ್ ನಿಜವಾಗಿ ಏನು ಅನುಮತಿಸುತ್ತದೆ ಎಂಬುದನ್ನು ನೋಡಿ</string>
     <string name="max_perms_entry_action">ಅನುಮತಿಗಳನ್ನು ತೆರೆಯಿರಿ</string>
+    <string name="max_perms_manifest_title">ಮ್ಯಾನಿಫೆಸ್ಟ್ ಸಾರಾಂಶ</string>
+    <string name="max_perms_manifest_desc">ಪ್ಯಾಕೇಜ್ ಮ್ಯಾನೇಜರ್‌ನಿಂದ ಓದಿ: ಆವೃತ್ತಿ, SDK ಶ್ರೇಣಿ, ಘಟಕಗಳು ಮತ್ತು ಅವುಗಳಲ್ಲಿ ಎಷ್ಟು ರಫ್ತು ಮಾಡಲಾಗಿದೆ. ರಫ್ತು ಮಾಡಲಾದ ಘಟಕವನ್ನು ಇತರ ಅಪ್ಲಿಕೇಶನ್‌ಗಳಿಂದ ಪ್ರಾರಂಭಿಸಬಹುದು.</string>
+    <string name="max_perms_manifest_version">ಆವೃತ್ತಿ</string>
+    <string name="max_perms_manifest_sdk">SDK ಶ್ರೇಣಿ</string>
+    <string name="max_perms_manifest_location">ಸ್ಥಳವನ್ನು ಸ್ಥಾಪಿಸಿ</string>
+    <string name="max_perms_manifest_location_auto">ಸ್ವಯಂಚಾಲಿತ</string>
+    <string name="max_perms_manifest_location_internal">ಆಂತರಿಕ ಸಂಗ್ರಹಣೆ ಮಾತ್ರ</string>
+    <string name="max_perms_manifest_location_external">ಬಾಹ್ಯ ಆದ್ಯತೆ</string>
+    <string name="max_perms_manifest_components">ಘಟಕಗಳು</string>
+    <string name="max_perms_manifest_components_order">ಚಟುವಟಿಕೆಗಳು · ಸೇವೆಗಳು · ಸ್ವೀಕರಿಸುವವರು · ಪೂರೈಕೆದಾರರು</string>
+    <string name="max_perms_manifest_exported">ರಫ್ತು ಮಾಡಲಾದ ಘಟಕಗಳು</string>
+    <string name="max_perms_manifest_splits">APKಗಳನ್ನು ವಿಭಜಿಸಿ</string>
+    <string name="max_perms_manifest_debug">ಡೀಬಗ್ ಮಾಡಬಹುದಾದ</string>
+    <string name="max_perms_features_title">ಘೋಷಿತ ವೈಶಿಷ್ಟ್ಯಗಳು</string>
+    <string name="max_perms_features_desc">ಈ ಸಾಧನದ ಜಾಹೀರಾತುಗಳೊಂದಿಗೆ ಹೋಲಿಸಿದರೆ ಸಾಧನದಿಂದ ಪ್ಯಾಕೇಜ್‌ಗೆ ಏನು ಬೇಕು. ಅಗತ್ಯವಿರುವ ವೈಶಿಷ್ಟ್ಯವು ಇಲ್ಲಿ ಕಾಣೆಯಾಗಿದೆ ಎಂದರೆ ಅಪ್ಲಿಕೇಶನ್ ಸಂಪೂರ್ಣವಾಗಿ ಕಾರ್ಯನಿರ್ವಹಿಸುವುದಿಲ್ಲ - ಇದು ಪ್ಯಾಕೇಜ್ ಮ್ಯಾನೇಜರ್‌ನಿಂದ ಕ್ಲೈಮ್ ಆಗಿದೆ, ಊಹೆಯಲ್ಲ.</string>
+    <string name="max_perms_features_loading">ಪ್ಯಾಕೇಜ್‌ನ ಘೋಷಿತ ವೈಶಿಷ್ಟ್ಯಗಳನ್ನು ಓದಲಾಗುತ್ತಿದೆ...</string>
+    <string name="max_perms_features_none">ಪ್ಯಾಕೇಜ್ ಯಾವುದೇ ಅಗತ್ಯ ವೈಶಿಷ್ಟ್ಯಗಳನ್ನು ಘೋಷಿಸುವುದಿಲ್ಲ.</string>
+    <string name="max_perms_features_required">ಅಗತ್ಯವಿದೆ</string>
+    <string name="max_perms_features_unsupported">ಈ ಸಾಧನದಲ್ಲಿ ಇಲ್ಲ</string>
+    <string name="max_perms_manifest_none">ಪ್ಯಾಕೇಜ್ ನಿರ್ವಾಹಕರಿಂದ ವರದಿ ಮಾಡಲಾಗಿಲ್ಲ.</string>
+    <string name="max_perms_manifest_unknown">ಅಜ್ಞಾತ</string>
 </resources>

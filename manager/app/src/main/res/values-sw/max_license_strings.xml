@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_license_strings.xml -->
+<resources>
+    <string name="max_license_title">Leseni</string>
+    <string name="max_license_subtitle">Ufunguo mmoja, kifaa hiki, hakuna akaunti</string>
+    <string name="max_license_help_body">Ufunguo huangaliwa mtandaoni mara moja, unapouingiza. Kuanzia wakati huo cheti kilichotiwa saini na seva hufanya kazi nje ya mtandao hadi muda wake uishe - programu haipigi simu nyumbani kila wakati unapofungua skrini. Cheti kimefungwa kwenye kitambulisho cha kusakinisha bila mpangilio maalum cha kifaa hiki, kwa hivyo kunakili data ya programu kwenye simu nyingine hakubeba leseni, na mmiliki anaweza kuweka upya kiambatanisho hicho kutoka kwa paneli ukibadilisha simu.</string>
+    <string name="max_license_status_section">Hali</string>
+    <string name="max_license_status_active">Inayotumika</string>
+    <string name="max_license_status_expired">Muda wake umeisha</string>
+    <string name="max_license_status_none">Haijawezeshwa</string>
+    <string name="max_license_active_detail">Zilizosalia: %1$d siku</string>
+    <string name="max_license_expired_detail">Wakati wa ufunguo huu umekwisha. Ufunguo mpya husasisha ufikiaji.</string>
+    <string name="max_license_none_detail">Weka ufunguo uliopokea ili kufungua sehemu zinazolipiwa.</string>
+    <string name="max_license_promo_active">Bila malipo kwa kila mtu hadi %1$s</string>
+    <string name="max_license_plan_title">Mpango</string>
+    <string name="max_license_devices_title">Vifaa</string>
+    <string name="max_license_devices_detail">%1$d kati ya %2$d imetumika</string>
+    <string name="max_license_device_id_title">Kifaa hiki</string>
+    <string name="max_license_device_id_detail">%1$s</string>
+    <string name="max_license_key_section">Uwezeshaji</string>
+    <string name="max_license_key_label">Kitufe cha leseni</string>
+    <string name="max_license_key_placeholder">MAXM-XXXXX-XXXXX-XXXXX-XXXXX-XX</string>
+    <string name="max_license_key_helper">Dashi na herufi kubwa haijalishi - ibandike jinsi ulivyoipokea.</string>
+    <string name="max_license_activate">Washa</string>
+    <string name="max_license_activating">Inakagua ufunguo...</string>
+    <string name="max_license_refresh">Angalia sasa</string>
+    <string name="max_license_activated">Imewashwa. Kifaa hiki sasa kimeunganishwa na ufunguo wako.</string>
+    <string name="max_license_error_invalid_key">Ufunguo huu hauonekani kuwa kamili. Iangalie na ujaribu tena.</string>
+    <string name="max_license_error_not_configured">Muundo huu hauna seva ya leseni iliyosanidiwa.</string>
+    <string name="max_license_error_network">Hakuna muunganisho. Ufunguo huangaliwa mara moja, kisha hufanya kazi nje ya mtandao.</string>
+    <string name="max_license_error_timeout">Seva ya leseni haikujibu kwa wakati. Jaribu tena.</string>
+    <string name="max_license_error_server">Seva ya leseni ilijibu kwa hitilafu. Jaribu tena baadaye.</string>
+    <string name="max_license_error_client">Utendakazi wa leseni haujawekwa kwenye seva.</string>
+    <string name="max_license_error_format">Jibu la seva halikueleweka.</string>
+    <string name="max_license_error_expired">Ufunguo huu umekwisha muda wake.</string>
+    <string name="max_license_error_not_found">Ufunguo huu haujulikani.</string>
+    <string name="max_license_error_revoked">Ufunguo huu umebatilishwa.</string>
+    <string name="max_license_error_device_limit">Ufunguo huu umefikia kikomo chake cha kifaa. Omba urejeshaji wa kifaa.</string>
+    <string name="max_license_error_device_unknown">Kifaa hiki bado hakijaunganishwa na ufunguo. Iwashe hapa kwanza.</string>
+    <string name="max_license_error_device_removed">Kifaa hiki kiliondolewa kutoka kwa ufunguo na mmiliki.</string>
+    <string name="max_license_error_rate_limited">Majaribio mengi sana kutoka kwa muunganisho huu - subiri dakika chache, kisha ujaribu tena.</string>
+    <string name="max_license_error_unknown">Hitilafu fulani imetokea. Sababu ilirekodiwa katika Diagnostics.</string>
+    <string name="max_license_gate_title">Uso huu unahitaji leseni</string>
+    <string name="max_license_gate_detail">Imejumuishwa na ufunguo. Ufunguo mmoja hufunika kifaa hiki, na kukiingiza huchukua dakika moja.</string>
+    <string name="max_feature_off_title">Imezimwa</string>
+    <string name="max_feature_off_detail">Paneli dhibiti imezima uso huu. Inarudi mara tu inapowashwa tena.</string>
+    <string name="max_license_gate_action">Fungua mipangilio ya leseni</string>
+    <string name="max_license_gate_subscribe">Jisajili sasa</string>
+    <string name="max_license_subscription_section">Usajili</string>
+    <string name="max_license_subscription_open">Fungua ukurasa wa usajili</string>
+</resources>

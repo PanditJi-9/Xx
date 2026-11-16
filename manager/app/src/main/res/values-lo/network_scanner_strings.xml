@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/network_scanner_strings.xml -->
+<resources>
+    <string name="network_scanner_title">ເຄື່ອງສະແກນເຄືອຂ່າຍທ້ອງຖິ່ນ</string>
+    <string name="network_scanner_subtitle">ທີ່ຢູ່ຂອງເຈົ້າ, ປະຕູທີ່ມັນໄປຮອດ, ແລະເພື່ອນບ້ານຕອບ.</string>
+    <string name="max_role_network_scanner">ອ່ານ​ເຄືອ​ຂ່າຍ​ທີ່​ທ່ານ​ຢູ່ — ບໍ່​ມີ​ການ​ຈັບ​, ບໍ່​ມີ​ຮາກ​.</string>
+    <string name="ns_no_network">ບໍ່ມີເຄືອຂ່າຍເຊື່ອມຕໍ່.</string>
+    <string name="ns_interface">ການໂຕ້ຕອບ</string>
+    <string name="ns_address">ທີ່ຢູ່</string>
+    <string name="ns_gateway">ປະຕູ</string>
+    <string name="ns_dns">DNS</string>
+    <string name="ns_mac">MAC</string>
+    <string name="ns_transport_wifi">Wi-Fi</string>
+    <string name="ns_transport_ethernet">ອີເທີເນັດ</string>
+    <string name="ns_transport_cellular">ໂທລະສັບມືຖື</string>
+    <string name="ns_transport_other">ອື່ນໆ</string>
+    <string name="ns_sources_title">ອັນນີ້ມາຈາກໃສ</string>
+    <string name="ns_sources_body">ທີ່ຢູ່ ແລະປະຕູແມ່ນອ່ານຈາກຄຸນສົມບັດການເຊື່ອມໂຍງຂອງເວທີ. ຕາຕະລາງໃກ້ຄຽງແມ່ນອ່ານຈາກຖານຄວາມຈໍາ ARP ຂອງ kernel, ສະນັ້ນມັນຖືພຽງແຕ່ສິ່ງທີ່ອຸປະກອນນີ້ໄດ້ເວົ້າກັບບໍ່ດົນມານີ້ - ຕາຕະລາງເປົ່າບໍ່ໄດ້ຫມາຍຄວາມວ່າເຄືອຂ່າຍຫວ່າງເປົ່າ.</string>
+    <string name="ns_refresh">ໂຫຼດຂໍ້ມູນຄືນໃໝ່</string>
+    <string name="ns_probe">ກວດຫາພອດທົ່ວໄປ</string>
+    <string name="ns_probe_stop">ຢຸດ</string>
+    <string name="ns_probe_progress">ການກວດສອບ %1$d ຂອງ %2$d</string>
+    <string name="ns_probe_note">ສົ່ງການເຊື່ອມຕໍ່ TCP ໃນພອດ 22, 80, 443, 5000 ແລະ 5555 ໃນທົ່ວ/24 ນີ້. ພອດທີ່ຕອບຖືກລາຍງານ; ຄວາມງຽບບໍ່ແມ່ນຫຼັກຖານສະແດງວ່າເຈົ້າພາບບໍ່ຢູ່.</string>
+    <string name="ns_neighbours">ເພື່ອນບ້ານທີ່ຮູ້ຈັກ</string>
+    <string name="ns_neighbours_note">ຈາກ /proc/net/arp — ອ່ານ​ເທົ່າ​ນັ້ນ​.</string>
+    <string name="ns_neighbours_empty">ຍັງບໍ່ມີປະເທດເພື່ອນບ້ານຮູ້ຈັກເທື່ອ.</string>
+    <string name="ns_ports_value">ທ່າເຮືອ %1$s</string>
+</resources>

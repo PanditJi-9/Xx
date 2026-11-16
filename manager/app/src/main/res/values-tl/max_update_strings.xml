@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_update_strings.xml -->
+<resources>
+    <string name="update_dialog_title">Available ang update</string>
+    <string name="update_dialog_title_required">Kinakailangan ang pag-update</string>
+    <string name="update_required_notice">Ang update na ito ay kinakailangan upang patuloy na magamit ang MaxManager. I-install ito, pagkatapos ay buksan muli ang app.</string>
+    <string name="update_dialog_body">Available ang bersyon %1$s. Ikaw ay nasa %2$s.</string>
+    <string name="update_block_title">Kinakailangan ang pag-update upang magpatuloy</string>
+    <string name="update_block_body">Hindi na sinusuportahan ang build na ito (%1$s). Mag-update sa %2$s upang patuloy na magamit ang MaxManager.</string>
+    <string name="update_block_body_no_release">Hindi na sinusuportahan ang build na ito (%1$s).</string>
+    <string name="update_release_notes_label">Ano ang bago</string>
+    <string name="update_size">Laki ng download: %1$s</string>
+    <string name="update_button_now">Update ngayon</string>
+    <string name="update_button_later">Mamaya</string>
+    <string name="update_button_close">Isara</string>
+    <string name="update_button_open_page">Buksan ang pahina ng pag-download</string>
+    <string name="update_state_downloading">Dina-download... %1$d%%</string>
+    <string name="update_state_downloading_unknown">Dina-download…</string>
+    <string name="update_state_installing">Ini-install…</string>
+    <string name="update_error_network">Hindi maabot ang update server. Suriin ang iyong koneksyon at subukang muli.</string>
+    <string name="update_error_http">Ang server ng pag-update ay sumagot ng isang error. Subukan ulit mamaya.</string>
+    <string name="update_error_format">Hindi mabasa ang impormasyon sa pag-update.</string>
+    <string name="update_error_too_large">Ang impormasyon sa pag-update ay mas malaki kaysa sa inaasahan at itinapon.</string>
+    <string name="update_error_integrity">Ang na-download na file ay hindi tumugma sa checksum nito at tinanggal.</string>
+    <string name="update_error_install">Nabigo ang pag-install. Subukan muli.</string>
+    <string name="update_error_not_configured">Walang channel sa pag-update ang na-configure sa build na ito.</string>
+    <string name="update_maintenance_title">Pansamantalang hindi magagamit</string>
+    <string name="update_maintenance_body">MaxManager ay pansamantalang hindi magagamit. Pakisubukang muli sa ilang sandali.</string>
+    <string name="update_check_title">Tingnan ang mga update</string>
+    <string name="update_check_supporting">Kasalukuyang bersyon: %1$s</string>
+    <string name="update_check_updated">May available na update.</string>
+    <string name="update_check_uptodate">Ikaw ay nasa pinakabagong bersyon.</string>
+    <string name="update_check_failed">Hindi masuri ang mga update.</string>
+    <string name="update_check_not_configured">Walang channel sa pag-update ang na-configure sa build na ito.</string>
+    <string name="update_released_label">Petsa ng paglabas: %1$s</string>
+    <string name="update_check_none_published">Wala pang update na nai-publish mula sa control panel.</string>
+    <string name="update_check_link_missing">Na-publish ang isang update, ngunit nawawala ang link sa pag-download nito.</string>
+</resources>

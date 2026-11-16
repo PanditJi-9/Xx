@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/network_scanner_strings.xml -->
+<resources>
+    <string name="network_scanner_title">Iskena Senethiwekhi Yasendaweni</string>
+    <string name="network_scanner_subtitle">Ikheli lakho, isango elifinyelela kulo, nokuthi omakhelwane baphendule baphi.</string>
+    <string name="max_role_network_scanner">Ifunda inethiwekhi okuyo - akukho ukuthwebula, akukho mpande.</string>
+    <string name="ns_no_network">Ayikho inethiwekhi exhunyiwe.</string>
+    <string name="ns_interface">Isixhumi esibonakalayo</string>
+    <string name="ns_address">Ikheli</string>
+    <string name="ns_gateway">Isango</string>
+    <string name="ns_dns">I-DNS</string>
+    <string name="ns_mac">I-MAC</string>
+    <string name="ns_transport_wifi">I-Wi-Fi</string>
+    <string name="ns_transport_ethernet">I-Ethernet</string>
+    <string name="ns_transport_cellular">Iselula</string>
+    <string name="ns_transport_other">Okunye</string>
+    <string name="ns_sources_title">Lapho kuvela khona lokhu</string>
+    <string name="ns_sources_body">Amakheli nesango afundwa ezicini zesixhumanisi zeplathifomu. Ithebula likamakhelwane lifundwa kunqolobane ye-ARP ye-kernel, ngakho-ke liphethe lokho le divayisi esanda kukhuluma nakho - ithebula elingenalutho alisho inethiwekhi engenalutho.</string>
+    <string name="ns_refresh">Vuselela</string>
+    <string name="ns_probe">Hlola izimbobo ezivamile</string>
+    <string name="ns_probe_stop">Ima</string>
+    <string name="ns_probe_progress">Iphenya %1$d kokungu %2$d</string>
+    <string name="ns_probe_note">Ithumela ukuxhuma kwe-TCP kumachweba angu-22, 80, 443, 5000 kanye no-5555 kuyo yonke le /24. Ichweba eliphendulayo liyabikwa; ukuthula akubona ubufakazi bokuthi umninikhaya akekho.</string>
+    <string name="ns_neighbours">Omakhelwane abaziwayo</string>
+    <string name="ns_neighbours_note">Kusuka ku-/proc/net/arp — funda kuphela.</string>
+    <string name="ns_neighbours_empty">Abekho omakhelwane abaziwa okwamanje.</string>
+    <string name="ns_ports_value">Izikhumulo %1$s</string>
+</resources>

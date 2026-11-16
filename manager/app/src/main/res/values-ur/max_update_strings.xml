@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_update_strings.xml -->
+<resources>
+    <string name="update_dialog_title">اپ ڈیٹ دستیاب ہے۔</string>
+    <string name="update_dialog_title_required">اپ ڈیٹ درکار ہے۔</string>
+    <string name="update_required_notice">MaxManager کا استعمال جاری رکھنے کے لیے یہ اپ ڈیٹ درکار ہے۔ اسے انسٹال کریں، پھر ایپ کو دوبارہ کھولیں۔</string>
+    <string name="update_dialog_body">ورژن %1$s دستیاب ہے۔ آپ %2$s پر ہیں۔</string>
+    <string name="update_block_title">جاری رکھنے کے لیے اپ ڈیٹ درکار ہے۔</string>
+    <string name="update_block_body">یہ تعمیر (%1$s) مزید تعاون یافتہ نہیں ہے۔ MaxManager کا استعمال جاری رکھنے کے لیے %2$s میں اپ ڈیٹ کریں۔</string>
+    <string name="update_block_body_no_release">یہ تعمیر (%1$s) مزید تعاون یافتہ نہیں ہے۔</string>
+    <string name="update_release_notes_label">نیا کیا ہے۔</string>
+    <string name="update_size">ڈاؤن لوڈ سائز: %1$s</string>
+    <string name="update_button_now">ابھی اپ ڈیٹ کریں۔</string>
+    <string name="update_button_later">بعد میں</string>
+    <string name="update_button_close">بند</string>
+    <string name="update_button_open_page">ڈاؤن لوڈ صفحہ کھولیں۔</string>
+    <string name="update_state_downloading">ڈاؤن لوڈ ہو رہا ہے… %1$d%%</string>
+    <string name="update_state_downloading_unknown">ڈاؤن لوڈ ہو رہا ہے…</string>
+    <string name="update_state_installing">انسٹال ہو رہا ہے…</string>
+    <string name="update_error_network">اپ ڈیٹ سرور تک نہیں پہنچ سکا۔ اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔</string>
+    <string name="update_error_http">اپ ڈیٹ سرور نے غلطی کے ساتھ جواب دیا۔ بعد میں دوبارہ کوشش کریں۔</string>
+    <string name="update_error_format">اپ ڈیٹ کی معلومات کو پڑھا نہیں جا سکا۔</string>
+    <string name="update_error_too_large">اپ ڈیٹ کی معلومات توقع سے زیادہ تھی اور اسے مسترد کر دیا گیا تھا۔</string>
+    <string name="update_error_integrity">ڈاؤن لوڈ کی گئی فائل اس کے چیکسم سے مماثل نہیں تھی اور اسے حذف کر دیا گیا تھا۔</string>
+    <string name="update_error_install">تنصیب ناکام ہو گئی۔ دوبارہ کوشش کریں۔</string>
+    <string name="update_error_not_configured">اس تعمیر میں کوئی اپ ڈیٹ چینل کنفیگر نہیں ہے۔</string>
+    <string name="update_maintenance_title">عارضی طور پر دستیاب نہیں ہے۔</string>
+    <string name="update_maintenance_body">MaxManager عارضی طور پر دستیاب نہیں ہے۔ براہ کرم جلد ہی دوبارہ کوشش کریں۔</string>
+    <string name="update_check_title">اپ ڈیٹس کے لیے چیک کریں۔</string>
+    <string name="update_check_supporting">موجودہ ورژن: %1$s</string>
+    <string name="update_check_updated">ایک اپ ڈیٹ دستیاب ہے۔</string>
+    <string name="update_check_uptodate">آپ تازہ ترین ورژن پر ہیں۔</string>
+    <string name="update_check_failed">اپ ڈیٹس کی جانچ نہیں ہو سکی۔</string>
+    <string name="update_check_not_configured">اس تعمیر میں کوئی اپ ڈیٹ چینل کنفیگر نہیں ہے۔</string>
+    <string name="update_released_label">ریلیز کی تاریخ: %1$s</string>
+    <string name="update_check_none_published">کنٹرول پینل سے ابھی تک کوئی اپ ڈیٹ شائع نہیں کیا گیا ہے۔</string>
+    <string name="update_check_link_missing">ایک اپ ڈیٹ شائع ہوا ہے، لیکن اس کا ڈاؤن لوڈ لنک غائب ہے۔</string>
+</resources>

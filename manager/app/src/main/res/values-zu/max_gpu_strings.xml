@@ -99,4 +99,12 @@
     <string name="max_gpu_saved_desc">Kugcinwe ekulondolozweni kwangaphambilini futhi kwasetshenziswa ebhuthini ngayinye: %1$s. Okuzenzakalelayo ngenhla kuphelisa lesi sikhathi kuphela, hhayi isimo esilondoloziwe.</string>
     <string name="max_gpu_dynamic_min">Okuncane · okuguquguqukayo</string>
     <string name="max_gpu_dynamic_max">Ubuningi · ashukumisayo</string>
+    <string name="max_gpu_monitor_only_detail">Okuwukuphela kwendawo yezithombe evezwa yile kernel ama-bandwidth neziqaphi ze-QoS: aziphathi GPU iwashi, ngakho-ke asikho imvamisa yokusetha. Ukulawula kuhlala kuvaliwe esikhundleni sokubhala umphathi wememori njengokungathi GPU.</string>
+    <string name="max_gpu_danger_title">Bhala GPU imikhawulo?</string>
+    <string name="max_gpu_danger_body">Lokhu kubhala iwindi lokuvama kwezithombe kanye nombusi kumanodi GPU. Iwindi elenqabayo umshayeli, noma umbusi ongakwazi ukuqhubeka, angangingiza sonke isixhumi esibonakalayo noma amise iphaneli. Uhlelo lokusebenza lirekhoda ukuthi ukwamukele lokhu kanye — isibopho samanani owasebenzisayo singowakho.</string>
+    <string name="max_gpu_danger_action">Ngiyaqonda - sebenzisa</string>
+    <string name="max_gpu_state_title">Isikhathi esimweni</string>
+    <string name="max_gpu_state_desc">Lapho siye khona isikhathi GPU\', sibalwa nge-kernel ngokuvama kokusebenza - hhayi isifinyezo sewashi lamanje.</string>
+    <string name="max_gpu_state_hidden_share">%1$s ndawonye</string>
+    <string name="max_gpu_state_hidden">%1$d izifunda ngaphansi kuka-1%%</string>
 </resources>

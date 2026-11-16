@@ -69,4 +69,25 @@
     <string name="max_perms_entry_title">権限とアプリ操作</string>
     <string name="max_perms_entry_desc">このアプリが何を宣言しているのか、そしてシステムが実際に何を許可しているのかを確認してください</string>
     <string name="max_perms_entry_action">オープン権限</string>
+    <string name="max_perms_manifest_title">マニフェストの概要</string>
+    <string name="max_perms_manifest_desc">パッケージ マネージャーから、バージョン、SDK 範囲、コンポーネント、およびエクスポートされるコンポーネントの数を読み取ります。エクスポートされたコンポーネントは、他のアプリによって起動できます。</string>
+    <string name="max_perms_manifest_version">バージョン</string>
+    <string name="max_perms_manifest_sdk">SDKの範囲</string>
+    <string name="max_perms_manifest_location">設置場所</string>
+    <string name="max_perms_manifest_location_auto">自動</string>
+    <string name="max_perms_manifest_location_internal">内部ストレージのみ</string>
+    <string name="max_perms_manifest_location_external">外部を好む</string>
+    <string name="max_perms_manifest_components">コンポーネント</string>
+    <string name="max_perms_manifest_components_order">アクティビティ、サービス、受信者、提供者</string>
+    <string name="max_perms_manifest_exported">エクスポートされたコンポーネント</string>
+    <string name="max_perms_manifest_splits">分割APK</string>
+    <string name="max_perms_manifest_debug">デバッグ可能</string>
+    <string name="max_perms_features_title">宣言された機能</string>
+    <string name="max_perms_features_desc">パッケージがデバイスに要求するものと、このデバイスがアドバタイズするものとの比較。ここで必要な機能が欠落している場合は、通常、アプリが完全に動作しないことを意味します。これはパッケージ マネージャーからの主張であり、推測ではありません。</string>
+    <string name="max_perms_features_loading">パッケージで宣言された機能を読んでいます…</string>
+    <string name="max_perms_features_none">パッケージでは必要な機能が宣言されていません。</string>
+    <string name="max_perms_features_required">必須</string>
+    <string name="max_perms_features_unsupported">このデバイスにはありません</string>
+    <string name="max_perms_manifest_none">パッケージマネージャーによって報告されません。</string>
+    <string name="max_perms_manifest_unknown">未知</string>
 </resources>

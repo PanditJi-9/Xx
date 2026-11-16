@@ -51,4 +51,14 @@
     <string name="copg_tweak_kso_title">Hou skerm aan</string>
     <string name="copg_tweak_kso_desc">Pas die COPG hou-skerm-aan-aanpassing op hierdie toepassing toe. Hier gestoor, deur Review na die enjin geskryf en pas toe in die Spoof-oortjie.</string>
     <string name="copg_tweak_needs_device">Benodig eers \'n toestel vir hierdie toepassing, in die Spoof-oortjie.</string>
+    <string name="spoof_engine_unmeasured">Enjinstatus word nie gemeet nie: worteltoegang is nog nie toegestaan ​​nie. Ken wortel toe, maak dan hierdie oortjie weer oop.</string>
+    <string name="spoof_engine_config_missing">COPG is geïnstalleer, maar sy konfigurasielêer (COPG.json) ontbreek. Aansoek word geweier totdat die module dit weer verskaf.</string>
+    <string name="spoof_engine_config_unreadable">COPG is geïnstalleer, maar sy konfigurasielêer is nie leesbaar nie JSON. Aansoek word geweier totdat die lêer herstel is.</string>
+    <string name="spoof_imei_spoof">IMEI-spoofing</string>
+    <string name="spoof_imei_spoof_desc">Wys hierdie toepassing \'n ander IMEI. Benodig die Max Manager-module geaktiveer in LSPosed met hierdie toepassing in sy omvang. Herbegin die toepassing nadat u dit aangeskakel het.</string>
+    <string name="spoof_imei_active">Wys tans hierdie toepassing: %1$s</string>
+    <string name="spoof_imei_summary">IMEI-spoofing</string>
+    <string name="spoof_imei_regenerate">Nuwe ewekansige IMEI</string>
+    <string name="spoof_imei_regenerate_desc">Genereer nog \'n geldige IMEI vir hierdie toepassing. Herbegin die toepassing om dit te sien.</string>
+    <string name="spoof_imei_module_inactive">Die Max Manager-module is nie in LSPosed geaktiveer nie, so programme sien steeds die regte IMEI. Aktiveer die module in LSPosed, voeg hierdie toepassing by sy omvang en maak dan hierdie skerm weer oop.</string>
 </resources>

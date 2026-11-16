@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_update_strings.xml -->
+<resources>
+    <string name="update_dialog_title">Actualización dispoñible</string>
+    <string name="update_dialog_title_required">É necesario actualizar</string>
+    <string name="update_required_notice">Esta actualización é necesaria para seguir usando MaxManager. Instálao e volve abrir a aplicación.</string>
+    <string name="update_dialog_body">A versión %1$s está dispoñible. Estás en %2$s.</string>
+    <string name="update_block_title">É necesario actualizar para continuar</string>
+    <string name="update_block_body">Esta compilación (%1$s) xa non é compatible. Actualiza a %2$s para seguir usando MaxManager.</string>
+    <string name="update_block_body_no_release">Esta compilación (%1$s) xa non é compatible.</string>
+    <string name="update_release_notes_label">Que hai de novo</string>
+    <string name="update_size">Tamaño da descarga: %1$s</string>
+    <string name="update_button_now">Actualiza agora</string>
+    <string name="update_button_later">Máis tarde</string>
+    <string name="update_button_close">Pechar</string>
+    <string name="update_button_open_page">Abre a páxina de descarga</string>
+    <string name="update_state_downloading">Descargando... %1$d%%</string>
+    <string name="update_state_downloading_unknown">Descargando…</string>
+    <string name="update_state_installing">Instalando…</string>
+    <string name="update_error_network">Non se puido acceder ao servidor de actualizacións. Comproba a túa conexión e téntao de novo.</string>
+    <string name="update_error_http">O servidor de actualizacións respondeu cun erro. Téntao de novo máis tarde.</string>
+    <string name="update_error_format">Non se puido ler a información da actualización.</string>
+    <string name="update_error_too_large">A información de actualización foi maior do esperado e descartouse.</string>
+    <string name="update_error_integrity">O ficheiro descargado non coincidía coa súa suma de verificación e eliminouse.</string>
+    <string name="update_error_install">Produciuse un erro na instalación. Téntao de novo.</string>
+    <string name="update_error_not_configured">Non hai ningunha canle de actualización configurada nesta compilación.</string>
+    <string name="update_maintenance_title">Non dispoñible temporalmente</string>
+    <string name="update_maintenance_body">MaxManager non está dispoñible temporalmente. Téntao de novo en breve.</string>
+    <string name="update_check_title">Comproba se hai actualizacións</string>
+    <string name="update_check_supporting">Versión actual: %1$s</string>
+    <string name="update_check_updated">Hai unha actualización dispoñible.</string>
+    <string name="update_check_uptodate">Estás na última versión.</string>
+    <string name="update_check_failed">Non se puideron buscar actualizacións.</string>
+    <string name="update_check_not_configured">Non hai ningunha canle de actualización configurada nesta compilación.</string>
+    <string name="update_released_label">Data de lanzamento: %1$s</string>
+    <string name="update_check_none_published">Aínda non se publicou ningunha actualización do panel de control.</string>
+    <string name="update_check_link_missing">Publicouse unha actualización, pero falta a súa ligazón de descarga.</string>
+</resources>

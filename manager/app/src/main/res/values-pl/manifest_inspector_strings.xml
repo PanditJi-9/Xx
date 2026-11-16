@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/manifest_inspector_strings.xml -->
+<resources>
+    <string name="manifest_inspector_title">Manifestowy Inspektor</string>
+    <string name="manifest_inspector_subtitle">Co zainstalowana aplikacja deklaruje o sobie, przeczytaj w PackageManager.</string>
+    <string name="max_role_manifest_inspector">Pokazuje, co pakiet deklaruje na swój temat — tylko do odczytu.</string>
+    <string name="mi_search">Wyszukaj aplikacje</string>
+    <string name="mi_empty">Wybierz aplikację po lewej stronie.</string>
+    <string name="mi_yes">Tak</string>
+    <string name="mi_no">NIE</string>
+    <string name="mi_section_identity">Pakiet</string>
+    <string name="mi_version">Wersja</string>
+    <string name="mi_version_code">Kod wersji</string>
+    <string name="mi_min_sdk">Minimalny pakiet SDK</string>
+    <string name="mi_target_sdk">Docelowy pakiet SDK</string>
+    <string name="mi_installed">Zainstalowany</string>
+    <string name="mi_updated">Zaktualizowano</string>
+    <string name="mi_installer">Instalator</string>
+    <string name="mi_uid">UID</string>
+    <string name="mi_data_dir">Katalog danych</string>
+    <string name="mi_debuggable">Debugowalne</string>
+    <string name="mi_system_app">Aplikacja systemowa</string>
+    <string name="mi_enabled">Włączony</string>
+    <string name="mi_section_permissions">Żądane uprawnienia</string>
+    <string name="mi_permissions_summary">%1$d uprawnienia · %2$d z nich niebezpieczne</string>
+    <string name="mi_permissions_none">Ta aplikacja nie żąda żadnego pozwolenia.</string>
+    <string name="mi_perm_dangerous">Niebezpieczny</string>
+    <string name="mi_perm_signature">Podpis</string>
+    <string name="mi_perm_normal">Normalna</string>
+    <string name="mi_perm_unknown">Niesklasyfikowane</string>
+    <string name="mi_section_components">Komponenty</string>
+    <string name="mi_activities">Działania</string>
+    <string name="mi_services">Usługi</string>
+    <string name="mi_receivers">Odbiorniki</string>
+    <string name="mi_providers">Dostawcy</string>
+    <string name="mi_components_none">Żaden nie zadeklarował</string>
+    <string name="mi_section_features">Funkcje urządzenia</string>
+    <string name="mi_features_note">Platforma nie udostępnia listy zastosowań innej aplikacji; to są funkcje raportowane przez to urządzenie.</string>
+    <string name="mi_features_none">Nie zgłoszono żadnej funkcji</string>
+    <string name="mi_section_signature">Certyfikat podpisu</string>
+    <string name="mi_signature_note">SHA-256 certyfikatu podpisywania. Dwie kompilacje o tej samej wartości pochodzą od tego samego wydawcy.</string>
+    <string name="mi_signature_sha256">Podsumowanie certyfikatu</string>
+</resources>

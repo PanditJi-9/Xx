@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_license_strings.xml -->
+<resources>
+    <string name="max_license_title">执照</string>
+    <string name="max_license_subtitle">一键，此设备，无账户</string>
+    <string name="max_license_help_body">当您输入密钥时，会在线检查一次密钥。从那时起，服务器的签名证书将离线工作，直到其时间用完 - 每次打开屏幕时，应用程序都不会打电话回家。该证书绑定到该设备的随机安装 ID，因此将应用程序数据复制到另一部手机不会附带许可证，并且如果您更换手机，所有者可以从面板重置该绑定。</string>
+    <string name="max_license_status_section">地位</string>
+    <string name="max_license_status_active">积极的</string>
+    <string name="max_license_status_expired">已到期</string>
+    <string name="max_license_status_none">未激活</string>
+    <string name="max_license_active_detail">剩余：%1$d 天</string>
+    <string name="max_license_expired_detail">这把钥匙的时代已经结束了。新密钥可更新访问权限。</string>
+    <string name="max_license_none_detail">输入您收到的密钥以解锁付费表面。</string>
+    <string name="max_license_promo_active">所有人免费直至%1$s</string>
+    <string name="max_license_plan_title">计划</string>
+    <string name="max_license_devices_title">设备</string>
+    <string name="max_license_devices_detail">使用了%2$d中的%1$d</string>
+    <string name="max_license_device_id_title">这个装置</string>
+    <string name="max_license_device_id_detail">%1$s</string>
+    <string name="max_license_key_section">激活</string>
+    <string name="max_license_key_label">许可证密钥</string>
+    <string name="max_license_key_placeholder">MAXM-XXXXX-XXXXX-XXXXX-XXXXX-XX</string>
+    <string name="max_license_key_helper">破折号和大小写并不重要 - 按您收到的方式粘贴。</string>
+    <string name="max_license_activate">激活</string>
+    <string name="max_license_activating">检查钥匙...</string>
+    <string name="max_license_refresh">立即查看</string>
+    <string name="max_license_activated">活性。该设备现已链接到您的密钥。</string>
+    <string name="max_license_error_invalid_key">这把钥匙看起来并不完整。检查并重试。</string>
+    <string name="max_license_error_not_configured">此版本没有配置许可证服务器。</string>
+    <string name="max_license_error_network">没有连接。密钥检查一次，然后离线工作。</string>
+    <string name="max_license_error_timeout">许可证服务器没有及时应答。再试一次。</string>
+    <string name="max_license_error_server">许可证服务器回答错误。稍后再试。</string>
+    <string name="max_license_error_client">服务器上未部署License功能。</string>
+    <string name="max_license_error_format">服务器的回答不明白。</string>
+    <string name="max_license_error_expired">该密钥已过期。</string>
+    <string name="max_license_error_not_found">该密钥未知。</string>
+    <string name="max_license_error_revoked">该密钥已被撤销。</string>
+    <string name="max_license_error_device_limit">该密钥已达到其设备限制。请求重置设备。</string>
+    <string name="max_license_error_device_unknown">该设备尚未链接到密钥。首先在这里激活它。</string>
+    <string name="max_license_error_device_removed">该设备已被所有者从钥匙中移除。</string>
+    <string name="max_license_error_rate_limited">此连接的尝试次数过多 - 等待几分钟，然后重试。</string>
+    <string name="max_license_error_unknown">出了点问题。原因已记录在诊断中。</string>
+    <string name="max_license_gate_title">该表面需要许可证</string>
+    <string name="max_license_gate_detail">它包含有一把钥匙。一把钥匙覆盖了这个设备，进入它需要一分钟。</string>
+    <string name="max_feature_off_title">已关闭</string>
+    <string name="max_feature_off_detail">控制面板已关闭该表面。一旦再次启用它就会回来。</string>
+    <string name="max_license_gate_action">打开许可证设置</string>
+    <string name="max_license_gate_subscribe">立即订阅</string>
+    <string name="max_license_subscription_section">订阅</string>
+    <string name="max_license_subscription_open">打开订阅页面</string>
+</resources>

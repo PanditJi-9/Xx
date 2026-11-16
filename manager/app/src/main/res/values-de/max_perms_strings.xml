@@ -69,4 +69,25 @@
     <string name="max_perms_entry_title">Berechtigungen &amp; App-Vorgänge</string>
     <string name="max_perms_entry_desc">Sieh, was diese App erklärt und was das System tatsächlich erlaubt</string>
     <string name="max_perms_entry_action">Berechtigungen öffnen</string>
+    <string name="max_perms_manifest_title">Zusammenfassung des Manifests</string>
+    <string name="max_perms_manifest_desc">Lesen Sie aus dem Paketmanager: Version, SDK-Bereich, Komponenten und wie viele davon exportiert werden. Eine exportierte Komponente kann von anderen Apps gestartet werden.</string>
+    <string name="max_perms_manifest_version">Version</string>
+    <string name="max_perms_manifest_sdk">SDK-Bereich</string>
+    <string name="max_perms_manifest_location">Installationsort</string>
+    <string name="max_perms_manifest_location_auto">Automatisch</string>
+    <string name="max_perms_manifest_location_internal">Nur interner Speicher</string>
+    <string name="max_perms_manifest_location_external">Bevorzugt extern</string>
+    <string name="max_perms_manifest_components">Komponenten</string>
+    <string name="max_perms_manifest_components_order">Aktivitäten · Dienstleistungen · Empfänger · Anbieter</string>
+    <string name="max_perms_manifest_exported">Exportierte Komponenten</string>
+    <string name="max_perms_manifest_splits">Teilen Sie APKs</string>
+    <string name="max_perms_manifest_debug">Debugbar</string>
+    <string name="max_perms_features_title">Deklarierte Funktionen</string>
+    <string name="max_perms_features_desc">Was das Paket vom Gerät verlangt, verglichen mit dem, was dieses Gerät bewirbt. Fehlt hier eine erforderliche Funktion, bedeutet dies normalerweise, dass die App nicht vollständig funktioniert – es handelt sich dabei um eine Behauptung des Paketmanagers, nicht um eine Vermutung.</string>
+    <string name="max_perms_features_loading">Lesen der deklarierten Funktionen des Pakets ...</string>
+    <string name="max_perms_features_none">Das Paket deklariert keine erforderlichen Funktionen.</string>
+    <string name="max_perms_features_required">Erforderlich</string>
+    <string name="max_perms_features_unsupported">Nicht auf diesem Gerät</string>
+    <string name="max_perms_manifest_none">Wird vom Paketmanager nicht gemeldet.</string>
+    <string name="max_perms_manifest_unknown">Unbekannt</string>
 </resources>

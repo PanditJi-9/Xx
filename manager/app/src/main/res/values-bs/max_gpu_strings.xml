@@ -99,4 +99,12 @@
     <string name="max_gpu_saved_desc">Sačuvano iz ranijeg spremanja i primijenjeno na svako pokretanje: %1$s. Zadano iznad završava samo ovu sesiju, nikada sačuvano stanje.</string>
     <string name="max_gpu_dynamic_min">Minimum · dinamičan</string>
     <string name="max_gpu_dynamic_max">Maksimalna · dinamika</string>
+    <string name="max_gpu_monitor_only_detail">Jedini grafički čvorovi koje ovo kernel izlaže su propusni opseg i QoS monitori: oni nemaju GPU sat, tako da nema frekvencije za postavljanje. Kontrola ostaje isključena umjesto da piše regulator memorije kao da je GPU.</string>
+    <string name="max_gpu_danger_title">Napisati GPU ograničenja?</string>
+    <string name="max_gpu_danger_body">Ovo upisuje grafički prozor frekvencije i guverner u čvorove GPU. Prozor koji vozač odbije ili regulator koji ne može da prati korak, može da zamuckuje čitav interfejs ili da zamrzne panel. Aplikacija bilježi da ste to jednom prihvatili — odgovornost za vrijednosti koje primjenjujete je vaša.</string>
+    <string name="max_gpu_danger_action">Razumijem — primjenjujte</string>
+    <string name="max_gpu_state_title">Vrijeme u stanju</string>
+    <string name="max_gpu_state_desc">Gdje je stvarno otišlo vrijeme GPU, računano od strane kernela po radnoj frekvenciji — a ne snimak trenutnog sata.</string>
+    <string name="max_gpu_state_hidden_share">%1$s zajedno</string>
+    <string name="max_gpu_state_hidden">%1$d države ispod 1%%</string>
 </resources>

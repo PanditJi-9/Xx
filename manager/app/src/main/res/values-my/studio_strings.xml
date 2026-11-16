@@ -10,4 +10,6 @@
     <string name="studio_display">ပြသခြင်း။</string>
     <string name="studio_power">ပါဝါရွေးချယ်မှုများ</string>
     <string name="studio_settings">ဆက်တင်များ</string>
+    <string name="audio_dsp_live">DSP တိုက်ရိုက်လွှင့်</string>
+    <string name="max_audio_session_label">အသံအပိုင်း #%1$d</string>
 </resources>

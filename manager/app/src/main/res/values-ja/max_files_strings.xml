@@ -220,4 +220,5 @@
     <string name="max_files_compress_level_normal">普通</string>
     <string name="max_files_compress_level_max">マックス</string>
     <string name="max_files_compress_summary">%1$d アイテム \u2192 %2$s</string>
+    <string name="max_files_history_more">%1$d 古いフォルダーは表示されません</string>
 </resources>

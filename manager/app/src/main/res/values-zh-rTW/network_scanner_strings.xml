@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/network_scanner_strings.xml -->
+<resources>
+    <string name="network_scanner_title">本地网络扫描仪</string>
+    <string name="network_scanner_subtitle">您的地址、到达的网关以及应答的邻居。</string>
+    <string name="max_role_network_scanner">读取您所在的网络——无需捕获，无需root。</string>
+    <string name="ns_no_network">没有连接网络。</string>
+    <string name="ns_interface">界面</string>
+    <string name="ns_address">地址</string>
+    <string name="ns_gateway">网关</string>
+    <string name="ns_dns">域名系统</string>
+    <string name="ns_mac">苹果</string>
+    <string name="ns_transport_wifi">无线上网</string>
+    <string name="ns_transport_ethernet">以太网</string>
+    <string name="ns_transport_cellular">蜂窝网络</string>
+    <string name="ns_transport_other">其他</string>
+    <string name="ns_sources_title">这是从哪里来的</string>
+    <string name="ns_sources_body">地址和网关是从平台的链接属性中读取的。邻居表是从内核的 ARP 缓存中读取的，因此它只保存该设备最近与之通信的内容 — 空表并不意味着空网络。</string>
+    <string name="ns_refresh">刷新</string>
+    <string name="ns_probe">探头公共端口</string>
+    <string name="ns_probe_stop">停止</string>
+    <string name="ns_probe_progress">探测 %2$d 的 %1$d</string>
+    <string name="ns_probe_note">通过此 /24 在端口 22、80、443、5000 和 5555 上发送 TCP 连接。报告有应答的端口；沉默并不能证明主人不在。</string>
+    <string name="ns_neighbours">已知的邻居</string>
+    <string name="ns_neighbours_note">来自 /proc/net/arp — 只读。</string>
+    <string name="ns_neighbours_empty">目前还不知道有邻居。</string>
+    <string name="ns_ports_value">端口%1$s</string>
+</resources>

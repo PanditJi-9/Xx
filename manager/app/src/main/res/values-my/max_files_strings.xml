@@ -220,4 +220,5 @@
     <string name="max_files_compress_level_normal">ပုံမှန်</string>
     <string name="max_files_compress_level_max">မက်တယ်။</string>
     <string name="max_files_compress_summary">%1$d ပစ္စည်းများ \u2192 %2$s</string>
+    <string name="max_files_history_more">%1$d ဖိုင်အဟောင်းများကို မပြသပါ။</string>
 </resources>

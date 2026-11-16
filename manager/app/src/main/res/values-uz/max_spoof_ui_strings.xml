@@ -51,4 +51,14 @@
     <string name="copg_tweak_kso_title">Ekranni yoniq tuting</string>
     <string name="copg_tweak_kso_desc">Ushbu ilovaga COPG ekranni yoqish sozlamalarini qo\'llaydi. Bu yerda saqlangan, "Ko\'rib chiqish" tomonidan dvigatelga yozilgan va "Spoof" yorlig\'ida qo\'llaniladi.</string>
     <string name="copg_tweak_needs_device">“Spoof” sahifasida avval ushbu ilova uchun qurilma kerak.</string>
+    <string name="spoof_engine_unmeasured">Dvigatel holati o‘lchanmagan: ildizga kirish hali berilmagan. Ildizni bering, keyin ushbu yorliqni qayta oching.</string>
+    <string name="spoof_engine_config_missing">COPG oʻrnatilgan, lekin uning konfiguratsiya fayli (COPG.json) yoʻq. Modul uni qayta taqdim qilmaguncha ariza berish rad etiladi.</string>
+    <string name="spoof_engine_config_unreadable">COPG o\'rnatilgan, lekin uning konfiguratsiya faylini o\'qib bo\'lmaydi JSON. Fayl tuzatilgunga qadar ariza berish rad etiladi.</string>
+    <string name="spoof_imei_spoof">IMEI soxtalashtirish</string>
+    <string name="spoof_imei_spoof_desc">Ushbu ilovani boshqa IMEI ko\'rsatadi. Ushbu ilova doirasida LSPosed\'da yoqilgan Max Manager moduli kerak. Ilovani yoqgandan so\'ng uni qayta ishga tushiring.</string>
+    <string name="spoof_imei_active">Ushbu ilova koʻrsatilmoqda: %1$s</string>
+    <string name="spoof_imei_summary">IMEI soxtalashtirish</string>
+    <string name="spoof_imei_regenerate">Yangi tasodifiy IMEI</string>
+    <string name="spoof_imei_regenerate_desc">Bu ilova uchun boshqa yaroqli IMEI hosil qiladi. Uni ko\'rish uchun ilovani qayta ishga tushiring.</string>
+    <string name="spoof_imei_module_inactive">Max Manager moduli LSPosed-da yoqilmagan, shuning uchun ilovalar hali ham haqiqiy IMEI-ni ko\'radi. LSPosed-da modulni yoqing, ushbu ilovani uning doirasiga qo\'shing, so\'ngra ushbu ekranni qayta oching.</string>
 </resources>

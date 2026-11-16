@@ -220,4 +220,5 @@
     <string name="max_files_compress_level_normal">স্বাভাৱিক</string>
     <string name="max_files_compress_level_max">সৰ্বোচ্চ</string>
     <string name="max_files_compress_summary">%1$d বস্তু \u2192 %2$s</string>
+    <string name="max_files_history_more">%1$d পুৰণি ফোল্ডাৰসমূহ দেখুওৱা হোৱা নাই</string>
 </resources>

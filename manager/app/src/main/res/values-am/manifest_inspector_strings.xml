@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/manifest_inspector_strings.xml -->
+<resources>
+    <string name="manifest_inspector_title">ገላጭ ኢንስፔክተር</string>
+    <string name="manifest_inspector_subtitle">የተጫነ መተግበሪያ ስለራሱ የሚናገረውን ከPackageManager ያንብቡ።</string>
+    <string name="max_role_manifest_inspector">አንድ ጥቅል ስለራሱ ምን እንደሚያውጅ ያሳያል - ተነባቢ-ብቻ።</string>
+    <string name="mi_search">መተግበሪያዎችን ይፈልጉ</string>
+    <string name="mi_empty">በግራ በኩል አንድ መተግበሪያ ይምረጡ።</string>
+    <string name="mi_yes">አዎ</string>
+    <string name="mi_no">አይ</string>
+    <string name="mi_section_identity">ጥቅል</string>
+    <string name="mi_version">ሥሪት</string>
+    <string name="mi_version_code">የስሪት ኮድ</string>
+    <string name="mi_min_sdk">ዝቅተኛው ኤስዲኬ</string>
+    <string name="mi_target_sdk">ኢላማ ኤስዲኬ</string>
+    <string name="mi_installed">ተጭኗል</string>
+    <string name="mi_updated">ተዘምኗል</string>
+    <string name="mi_installer">ጫኝ</string>
+    <string name="mi_uid">UID</string>
+    <string name="mi_data_dir">የውሂብ ማውጫ</string>
+    <string name="mi_debuggable">ሊታረም የሚችል</string>
+    <string name="mi_system_app">የስርዓት መተግበሪያ</string>
+    <string name="mi_enabled">ነቅቷል</string>
+    <string name="mi_section_permissions">ፍቃዶችን ጠይቀዋል።</string>
+    <string name="mi_permissions_summary">%1$d ፍቃዶች · %2$d ከነሱ አደገኛ</string>
+    <string name="mi_permissions_none">ይህ መተግበሪያ ምንም ፍቃድ አይጠይቅም።</string>
+    <string name="mi_perm_dangerous">አደገኛ</string>
+    <string name="mi_perm_signature">ፊርማ</string>
+    <string name="mi_perm_normal">መደበኛ</string>
+    <string name="mi_perm_unknown">ያልተመደበ</string>
+    <string name="mi_section_components">አካላት</string>
+    <string name="mi_activities">እንቅስቃሴዎች</string>
+    <string name="mi_services">አገልግሎቶች</string>
+    <string name="mi_receivers">ተቀባዮች</string>
+    <string name="mi_providers">አቅራቢዎች</string>
+    <string name="mi_components_none">አንድም አልተገለጸም።</string>
+    <string name="mi_section_features">የመሣሪያ ባህሪያት</string>
+    <string name="mi_features_note">መድረኩ የሌላ መተግበሪያ አጠቃቀም-ባህሪ ዝርዝርን አያጋልጥም፤ ይህ መሳሪያ የሚዘግብባቸው ባህሪያት ናቸው።</string>
+    <string name="mi_features_none">ምንም ባህሪይ ሪፖርት ተደርጓል</string>
+    <string name="mi_section_signature">የምስክር ወረቀት መፈረም</string>
+    <string name="mi_signature_note">የመፈረሚያ የምስክር ወረቀት SHA-256. ተመሳሳይ ዋጋ ያላቸው ሁለት ግንባታዎች አንድ አሳታሚ ናቸው።</string>
+    <string name="mi_signature_sha256">የምስክር ወረቀት መፍጨት</string>
+</resources>

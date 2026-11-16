@@ -10,4 +10,6 @@
     <string name="studio_display">Görüntülemek</string>
     <string name="studio_power">Güç seçenekleri</string>
     <string name="studio_settings">Ayarlar</string>
+    <string name="audio_dsp_live">DSP canlı</string>
+    <string name="max_audio_session_label">Sesli oturum #%1$d</string>
 </resources>

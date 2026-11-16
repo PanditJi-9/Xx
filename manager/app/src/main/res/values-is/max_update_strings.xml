@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_update_strings.xml -->
+<resources>
+    <string name="update_dialog_title">Uppfærsla í boði</string>
+    <string name="update_dialog_title_required">Uppfærslu krafist</string>
+    <string name="update_required_notice">Þessi uppfærsla er nauðsynleg til að halda áfram að nota MaxManager. Settu það upp og opnaðu síðan appið aftur.</string>
+    <string name="update_dialog_body">Útgáfa %1$s er fáanleg. Þú ert á %2$s.</string>
+    <string name="update_block_title">Uppfærsla þarf til að halda áfram</string>
+    <string name="update_block_body">Þessi smíði (%1$s) er ekki lengur studd. Uppfærðu í %2$s til að halda áfram að nota MaxManager.</string>
+    <string name="update_block_body_no_release">Þessi smíði (%1$s) er ekki lengur studd.</string>
+    <string name="update_release_notes_label">Hvað er nýtt</string>
+    <string name="update_size">Niðurhalsstærð: %1$s</string>
+    <string name="update_button_now">Uppfærðu núna</string>
+    <string name="update_button_later">Seinna</string>
+    <string name="update_button_close">Loka</string>
+    <string name="update_button_open_page">Opna niðurhalssíðu</string>
+    <string name="update_state_downloading">Sækir… %1$d%%</string>
+    <string name="update_state_downloading_unknown">Sækir…</string>
+    <string name="update_state_installing">Setur upp...</string>
+    <string name="update_error_network">Ekki tókst að ná í uppfærsluþjóninn. Athugaðu tenginguna þína og reyndu aftur.</string>
+    <string name="update_error_http">Uppfærsluþjónninn svaraði með villu. Reyndu aftur síðar.</string>
+    <string name="update_error_format">Ekki var hægt að lesa uppfærsluupplýsingarnar.</string>
+    <string name="update_error_too_large">Uppfærsluupplýsingarnar voru stærri en búist var við og var hent.</string>
+    <string name="update_error_integrity">Skráin sem var hlaðið niður passaði ekki við eftirlitssumman og var eytt.</string>
+    <string name="update_error_install">Uppsetning mistókst. Reyndu aftur.</string>
+    <string name="update_error_not_configured">Engin uppfærslurás er stillt í þessari byggingu.</string>
+    <string name="update_maintenance_title">Tímabundið ekki tiltækt</string>
+    <string name="update_maintenance_body">MaxManager er ekki tiltækt tímabundið. Vinsamlegast reyndu aftur fljótlega.</string>
+    <string name="update_check_title">Leitaðu að uppfærslum</string>
+    <string name="update_check_supporting">Núverandi útgáfa: %1$s</string>
+    <string name="update_check_updated">Uppfærsla er í boði.</string>
+    <string name="update_check_uptodate">Þú ert á nýjustu útgáfunni.</string>
+    <string name="update_check_failed">Gat ekki leitað að uppfærslum.</string>
+    <string name="update_check_not_configured">Engin uppfærslurás er stillt í þessari byggingu.</string>
+    <string name="update_released_label">Útgáfudagur: %1$s</string>
+    <string name="update_check_none_published">Engin uppfærsla hefur verið birt frá stjórnborðinu ennþá.</string>
+    <string name="update_check_link_missing">Uppfærsla er birt en niðurhalstengilinn hennar vantar.</string>
+</resources>

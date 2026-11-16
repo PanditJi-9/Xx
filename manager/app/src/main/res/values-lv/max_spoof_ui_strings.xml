@@ -51,4 +51,14 @@
     <string name="copg_tweak_kso_title">Turiet ekrānu ieslēgtu</string>
     <string name="copg_tweak_kso_desc">Šai lietotnei tiek lietots COPG saglabāšanas ekrāns. Saglabāts šeit, ierakstīts dzinējā, izmantojot Pārskatīt un pieteikties cilnē Maldīšanās.</string>
     <string name="copg_tweak_needs_device">Vispirms ir nepieciešama ierīce šai lietotnei cilnē Spoof.</string>
+    <string name="spoof_engine_unmeasured">Dzinēja stāvoklis nav izmērīts: root piekļuve vēl nav piešķirta. Piešķirt sakni, pēc tam atkārtoti atveriet šo cilni.</string>
+    <string name="spoof_engine_config_missing">COPG ir instalēts, taču trūkst tā konfigurācijas faila (COPG.json). Pieteikšanās tiek atteikta, līdz modulis to atkal nodrošina.</string>
+    <string name="spoof_engine_config_unreadable">COPG ir instalēts, bet tā konfigurācijas fails nav lasāms JSON. Pieteikšanās tiek noraidīta, kamēr fails nav salabots.</string>
+    <string name="spoof_imei_spoof">IMEI viltošana</string>
+    <string name="spoof_imei_spoof_desc">Šai lietotnei tiek rādīts cits IMEI. Nepieciešams modulis Max Manager, kas iespējots programmā LSPosed ar šo lietotni. Restartējiet lietotni pēc tās ieslēgšanas.</string>
+    <string name="spoof_imei_active">Tiek rādīta šī lietotne: %1$s</string>
+    <string name="spoof_imei_summary">IMEI viltošana</string>
+    <string name="spoof_imei_regenerate">Jauns nejaušs IMEI</string>
+    <string name="spoof_imei_regenerate_desc">Šai lietotnei ģenerē citu derīgu IMEI. Restartējiet lietotni, lai to redzētu.</string>
+    <string name="spoof_imei_module_inactive">Max Manager modulis nav iespējots programmā LSPosed, tāpēc lietotnes joprojām redz īsto IMEI. Iespējojiet moduli programmā LSPosed, pievienojiet šo lietotni tās darbības jomai un pēc tam atkārtoti atveriet šo ekrānu.</string>
 </resources>

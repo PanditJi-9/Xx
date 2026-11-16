@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/network_scanner_strings.xml -->
+<resources>
+    <string name="network_scanner_title">Local Network Scanner</string>
+    <string name="network_scanner_subtitle">Your address, the gateway it reaches, and which neighbours answered.</string>
+    <string name="max_role_network_scanner">Reads the network you are on — no capture, no root.</string>
+    <string name="ns_no_network">No network is connected.</string>
+    <string name="ns_interface">Interface</string>
+    <string name="ns_address">Address</string>
+    <string name="ns_gateway">Gateway</string>
+    <string name="ns_dns">DNS</string>
+    <string name="ns_mac">MAC</string>
+    <string name="ns_transport_wifi">Wi-Fi</string>
+    <string name="ns_transport_ethernet">Ethernet</string>
+    <string name="ns_transport_cellular">Cellular</string>
+    <string name="ns_transport_other">Other</string>
+    <string name="ns_sources_title">Where this comes from</string>
+    <string name="ns_sources_body">Addresses and gateway are read from the platform\'s link properties. The neighbour table is read from the kernel\'s ARP cache, so it holds only what this device has recently talked to — an empty table does not mean an empty network.</string>
+    <string name="ns_refresh">Refresh</string>
+    <string name="ns_probe">Probe common ports</string>
+    <string name="ns_probe_stop">Stop</string>
+    <string name="ns_probe_progress">Probing %1$d of %2$d</string>
+    <string name="ns_probe_note">Sends a TCP connect on ports 22, 80, 443, 5000 and 5555 across this /24. A port that answers is reported; silence is not proof a host is absent.</string>
+    <string name="ns_neighbours">Known neighbours</string>
+    <string name="ns_neighbours_note">From /proc/net/arp — read only.</string>
+    <string name="ns_neighbours_empty">No neighbours are known yet.</string>
+    <string name="ns_ports_value">Ports %1$s</string>
+</resources>

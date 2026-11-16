@@ -18,4 +18,10 @@
     <string name="max_cfg_section_appearance">Appearance &amp; interface</string>
     <string name="max_cfg_section_app_prefs">App preferences &amp; language</string>
     <string name="max_cfg_restore_merge_note">Restoring preferences merges: keys present in the file are written, and keys it does not mention stay as they are. Nothing is cleared.</string>
+    <string name="max_cfg_diff_title">%1$d saved settings differ from this device</string>
+    <string name="max_cfg_diff_line">%1$s: %2$s → %3$s</string>
+    <string name="max_cfg_diff_unset">not set</string>
+    <string name="max_cfg_diff_more">and %1$d more</string>
+    <string name="max_cfg_diff_applist">%1$d app-list lines added, %2$d removed — the whole list is replaced, not merged.</string>
+    <string name="max_cfg_diff_prefs">%1$d preference keys differ — merged, not wiped.</string>
 </resources>

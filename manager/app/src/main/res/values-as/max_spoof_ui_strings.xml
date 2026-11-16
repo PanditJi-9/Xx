@@ -51,4 +51,14 @@
     <string name="copg_tweak_kso_title">পৰ্দা অন কৰি ৰাখক</string>
     <string name="copg_tweak_kso_desc">এই এপটোত COPG keep-screen-on tweak প্ৰয়োগ কৰে। ইয়াত সংৰক্ষণ কৰা হৈছে, ইঞ্জিনলৈ লিখা হৈছে পৰ্যালোচনা আৰু স্পুফ টেবত প্ৰয়োগ কৰক।</string>
     <string name="copg_tweak_needs_device">এই এপৰ বাবে প্ৰথমে এটা ডিভাইচৰ প্ৰয়োজন, স্পুফ টেবত।</string>
+    <string name="spoof_engine_unmeasured">ইঞ্জিনৰ অৱস্থা জুখিব পৰা হোৱা নাই: ৰূট অভিগম এতিয়াও অনুমোদিত হোৱা নাই। ৰূট প্ৰদান কৰক, তাৰ পিছত এই টেব পুনৰ খোলক।</string>
+    <string name="spoof_engine_config_missing">COPG সংস্থাপন কৰা হৈছে, কিন্তু ইয়াৰ বিন্যাস নথিপত্ৰ (COPG.json) অনুপস্থিত । মডিউলে ইয়াক পুনৰ প্ৰদান নকৰালৈকে প্ৰয়োগ নাকচ কৰা হয়।</string>
+    <string name="spoof_engine_config_unreadable">COPG সংস্থাপন কৰা হৈছে, কিন্তু ইয়াৰ বিন্যাস নথিপত্ৰ পঢ়িব নোৱাৰা JSON । ফাইলটো মেৰামতি নোহোৱালৈকে প্ৰয়োগ কৰাটো নাকচ কৰা হয়।</string>
+    <string name="spoof_imei_spoof">আইএমইআই স্পুফিং</string>
+    <string name="spoof_imei_spoof_desc">এই এপটোৱে এটা বেলেগ IMEI দেখুৱাইছে। এই এপটোৰ পৰিসৰত LSPosed ত সক্ষম কৰা Max Manager মডিউলৰ প্ৰয়োজন। এপটো অন কৰাৰ পিছত পুনৰ আৰম্ভ কৰক।</string>
+    <string name="spoof_imei_active">এই এপটো দেখুৱাইছে: %1$s</string>
+    <string name="spoof_imei_summary">আইএমইআই স্পুফিং</string>
+    <string name="spoof_imei_regenerate">নতুন ৰেণ্ডম IMEI</string>
+    <string name="spoof_imei_regenerate_desc">এই এপৰ বাবে আন এটা বৈধ IMEI সৃষ্টি কৰে। এপটো চাবলৈ পুনৰ আৰম্ভ কৰক।</string>
+    <string name="spoof_imei_module_inactive">Max Manager মডিউল LSPosed ত সক্ৰিয় কৰা হোৱা নাই, গতিকে এপসমূহে এতিয়াও প্ৰকৃত IMEI দেখে। LSPosed ত মডিউল সামৰ্থবান কৰক, এই এপটো ইয়াৰ পৰিসৰত যোগ কৰক, তাৰ পিছত এই পৰ্দা পুনৰ খোলক।</string>
 </resources>

@@ -51,4 +51,14 @@
     <string name="copg_tweak_kso_title">اسکرین آن رکھیں</string>
     <string name="copg_tweak_kso_desc">اس ایپ پر COPG کیپ اسکرین آن موافقت کا اطلاق کرتا ہے۔ یہاں محفوظ کیا گیا، انجن کو بذریعہ جائزہ لکھا گیا اور اسپوف ٹیب میں اپلائی کریں۔</string>
     <string name="copg_tweak_needs_device">Spoof ٹیب میں اس ایپ کے لیے پہلے ایک ڈیوائس کی ضرورت ہے۔</string>
+    <string name="spoof_engine_unmeasured">انجن کی حالت کی پیمائش نہیں کی گئی ہے: روٹ تک رسائی ابھی تک نہیں دی گئی ہے۔ گرانٹ روٹ، پھر اس ٹیب کو دوبارہ کھولیں۔</string>
+    <string name="spoof_engine_config_missing">COPG انسٹال ہے، لیکن اس کی کنفگ فائل (COPG.json) غائب ہے۔ درخواست دینے سے انکار کر دیا جاتا ہے جب تک کہ ماڈیول اسے دوبارہ فراہم نہ کرے۔</string>
+    <string name="spoof_engine_config_unreadable">COPG انسٹال ہے، لیکن اس کی تشکیل فائل پڑھنے کے قابل نہیں ہے JSON۔ فائل کی مرمت ہونے تک درخواست دینے سے انکار کر دیا جاتا ہے۔</string>
+    <string name="spoof_imei_spoof">IMEI جعل سازی</string>
+    <string name="spoof_imei_spoof_desc">اس ایپ کو ایک مختلف IMEI دکھاتا ہے۔ اس ایپ کے ساتھ اس کے دائرہ کار میں LSPosed میں Max Manager ماڈیول کو فعال کرنے کی ضرورت ہے۔ ایپ کو آن کرنے کے بعد اسے دوبارہ شروع کریں۔</string>
+    <string name="spoof_imei_active">یہ ایپ دکھا رہا ہے: %1$s</string>
+    <string name="spoof_imei_summary">IMEI جعل سازی</string>
+    <string name="spoof_imei_regenerate">نیا رینڈم IMEI</string>
+    <string name="spoof_imei_regenerate_desc">اس ایپ کے لیے ایک اور درست IMEI تیار کرتا ہے۔ اسے دیکھنے کے لیے ایپ کو دوبارہ شروع کریں۔</string>
+    <string name="spoof_imei_module_inactive">LSPosed میں Max Manager ماڈیول فعال نہیں ہے، لہذا ایپس اب بھی حقیقی IMEI دیکھتی ہیں۔ LSPosed میں ماڈیول کو فعال کریں، اس ایپ کو اس کے دائرہ کار میں شامل کریں، پھر اس اسکرین کو دوبارہ کھولیں۔</string>
 </resources>

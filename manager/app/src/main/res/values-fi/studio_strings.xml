@@ -10,4 +10,6 @@
     <string name="studio_display">Näyttö</string>
     <string name="studio_power">Virtavaihtoehdot</string>
     <string name="studio_settings">Asetukset</string>
+    <string name="audio_dsp_live">DSP livenä</string>
+    <string name="max_audio_session_label">Ääniistunto #%1$d</string>
 </resources>

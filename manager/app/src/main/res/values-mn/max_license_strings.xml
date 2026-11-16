@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_license_strings.xml -->
+<resources>
+    <string name="max_license_title">Лиценз</string>
+    <string name="max_license_subtitle">Нэг түлхүүр, энэ төхөөрөмж, бүртгэл байхгүй</string>
+    <string name="max_license_help_body">Түлхүүрийг оруулахад нэг удаа онлайнаар шалгана. Үүнээс хойш серверийн гарын үсэг зурсан гэрчилгээ нь хугацаа дуусах хүртэл офлайнаар ажилладаг бөгөөд таныг дэлгэц нээх болгонд апп гэр рүүгээ залгадаггүй. Сертификат нь энэ төхөөрөмжийн санамсаргүй суулгах ID-д холбогдсон тул програмын өгөгдлийг өөр утас руу хуулах нь лицензийг авч явахгүй бөгөөд хэрэв та утсаа сольсон тохиолдолд эзэмшигч нь уг холболтыг самбараас дахин тохируулах боломжтой.</string>
+    <string name="max_license_status_section">Статус</string>
+    <string name="max_license_status_active">Идэвхтэй</string>
+    <string name="max_license_status_expired">Хугацаа дууссан</string>
+    <string name="max_license_status_none">Идэвхжүүлээгүй байна</string>
+    <string name="max_license_active_detail">Үлдсэн: %1$d хоног</string>
+    <string name="max_license_expired_detail">Энэ түлхүүрийн хугацаа дууслаа. Шинэ түлхүүр нь хандалтыг шинэчилдэг.</string>
+    <string name="max_license_none_detail">Төлбөртэй гадаргууг нээхийн тулд хүлээн авсан түлхүүрээ оруулна уу.</string>
+    <string name="max_license_promo_active">%1$s хүртэл хүн бүрт үнэгүй</string>
+    <string name="max_license_plan_title">Төлөвлөгөө</string>
+    <string name="max_license_devices_title">Төхөөрөмжүүд</string>
+    <string name="max_license_devices_detail">%2$d-ийн %1$d-г ашигласан</string>
+    <string name="max_license_device_id_title">Энэ төхөөрөмж</string>
+    <string name="max_license_device_id_detail">%1$s</string>
+    <string name="max_license_key_section">Идэвхжүүлэх</string>
+    <string name="max_license_key_label">Лицензийн түлхүүр</string>
+    <string name="max_license_key_placeholder">MAXM-XXXXX-XXXXX-XXXXX-XXXXX-XX</string>
+    <string name="max_license_key_helper">Зураас болон том үсгээр бичих нь хамаагүй - үүнийг хүлээн авсан шигээ буулгана уу.</string>
+    <string name="max_license_activate">Идэвхжүүлэх</string>
+    <string name="max_license_activating">Түлхүүрийг шалгаж байна...</string>
+    <string name="max_license_refresh">Одоо шалгана уу</string>
+    <string name="max_license_activated">Идэвхжүүлсэн. Энэ төхөөрөмж одоо таны түлхүүртэй холбогдсон байна.</string>
+    <string name="max_license_error_invalid_key">Энэ түлхүүр бүрэн гүйцэд харагдахгүй байна. Үүнийг шалгаад дахин оролдоно уу.</string>
+    <string name="max_license_error_not_configured">Энэ бүтцэд тохируулагдсан лицензийн сервер байхгүй байна.</string>
+    <string name="max_license_error_network">Холболт байхгүй. Түлхүүрийг нэг удаа шалгаад офлайнаар ажиллана.</string>
+    <string name="max_license_error_timeout">Лицензийн сервер цаг тухайд нь хариу өгөөгүй. Дахин оролдоно уу.</string>
+    <string name="max_license_error_server">Лицензийн сервер алдаатай хариулсан. Дараа дахин оролдоно уу.</string>
+    <string name="max_license_error_client">Лицензийн функцийг сервер дээр суулгаагүй байна.</string>
+    <string name="max_license_error_format">Серверийн хариултыг ойлгосонгүй.</string>
+    <string name="max_license_error_expired">Энэ түлхүүрийн хугацаа дууссан.</string>
+    <string name="max_license_error_not_found">Энэ түлхүүр нь мэдэгдэхгүй байна.</string>
+    <string name="max_license_error_revoked">Энэ түлхүүрийг хүчингүй болгосон.</string>
+    <string name="max_license_error_device_limit">Энэ түлхүүр төхөөрөмжийн хязгаарт хүрсэн байна. Төхөөрөмжийг дахин тохируулахыг хүс.</string>
+    <string name="max_license_error_device_unknown">Энэ төхөөрөмж нь түлхүүрт хараахан холбогдоогүй байна. Эхлээд үүнийг энд идэвхжүүлнэ үү.</string>
+    <string name="max_license_error_device_removed">Энэ төхөөрөмжийг эзэмшигч нь түлхүүрээс хассан.</string>
+    <string name="max_license_error_rate_limited">Энэ холболтоос хэт олон оролдлого хийсэн байна. Хэдэн минут хүлээгээд дахин оролдоно уу.</string>
+    <string name="max_license_error_unknown">Ямар нэг алдаа гарлаа. Шалтгааныг Оношлогоонд тэмдэглэсэн.</string>
+    <string name="max_license_gate_title">Энэ гадаргуу нь лиценз хэрэгтэй</string>
+    <string name="max_license_gate_detail">Энэ нь түлхүүрийн хамт ирдэг. Нэг товчлуур нь энэ төхөөрөмжийг хамардаг бөгөөд үүнийг оруулахад нэг минут болно.</string>
+    <string name="max_feature_off_title">Унтраасан</string>
+    <string name="max_feature_off_detail">Хяналтын самбар энэ гадаргууг унтраасан. Энэ нь дахин идэвхжсэн даруйд буцаж ирдэг.</string>
+    <string name="max_license_gate_action">Лицензийн тохиргоог нээнэ үү</string>
+    <string name="max_license_gate_subscribe">Яг одоо бүртгүүлээрэй</string>
+    <string name="max_license_subscription_section">Захиалга</string>
+    <string name="max_license_subscription_open">Захиалгын хуудсыг нээнэ үү</string>
+</resources>

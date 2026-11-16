@@ -13,4 +13,23 @@
     <string name="max_expand_section">הצג פרטים</string>
     <string name="max_collapse_section">הסתר פרטים</string>
     <string name="max_trust_loading">קְרִיאָה…</string>
+    <string name="max_gov_title">מי שולט עכשיו</string>
+    <string name="max_gov_separator">" ›"</string>
+    <string name="max_gov_order_note">סדר קבוע: שלב גבוה יותר חוסם שלב נמוך יותר. זה אף פעם לא משנה איזו מדיניות מנצחת.</string>
+    <string name="max_gov_open_details">מחזיקים פעילים</string>
+    <string name="max_gov_active_title">מי מחזיק בשליטה</string>
+    <string name="max_gov_none">לאף מדיניות אין שליטה בחומרה כרגע.</string>
+    <string name="max_gov_count">חוזי שכירות בקרה פעילה: %1$d</string>
+    <string name="max_gov_requested">מבוקש: %1$s</string>
+    <string name="max_gov_owner_recovery">הִתאוֹשְׁשׁוּת</string>
+    <string name="max_gov_owner_safety">בטיחות תרמית</string>
+    <string name="max_gov_owner_per_app">פרופיל האפליקציה</string>
+    <string name="max_gov_owner_max_ai">Max AI</string>
+    <string name="max_gov_owner_global">פרופיל גלובלי</string>
+    <string name="max_gov_owner_system">מַעֲרֶכֶת</string>
+    <string name="max_gov_owner_a11y">%1$s הבעלים של בקרת חומרה</string>
+    <string name="max_gov_now_none">אין בעלים אוטומטיים כרגע - השליטה נשארת שלך</string>
+    <string name="max_gov_now_one">%1$s מחזיק בפקד</string>
+    <string name="max_gov_now_many">%1$s מחזיק בפקדים %2$d</string>
+    <string name="devinfo_details">פרטים</string>
 </resources>

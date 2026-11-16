@@ -99,4 +99,12 @@
     <string name="max_gpu_saved_desc">Zachované z predchádzajúceho uloženia a použité pri každom spustení: %1$s. Predvolene vyššie ukončí iba túto reláciu, nikdy neuložený stav.</string>
     <string name="max_gpu_dynamic_min">Minimum · dynamický</string>
     <string name="max_gpu_dynamic_max">Maximálne · dynamické</string>
+    <string name="max_gpu_monitor_only_detail">Jediné grafické uzly, ktoré toto jadro odhaľuje, sú monitory šírky pásma a QoS: nenesú žiadne GPU hodiny, takže nie je potrebné nastaviť frekvenciu. Ovládanie zostane vypnuté namiesto zapisovania regulátora pamäte, ako keby to bol GPU.</string>
+    <string name="max_gpu_danger_title">Napíšte limity GPU?</string>
+    <string name="max_gpu_danger_body">Toto zapíše okno grafickej frekvencie a regulátora do uzlov GPU. Okno, ktoré vodič odmietne, alebo regulátor, ktorý nestíha, môže zadrhnúť celé rozhranie alebo zamrznúť panel. Aplikácia zaznamená, že ste to raz prijali – zodpovednosť za hodnoty, ktoré uplatňujete, je na vás.</string>
+    <string name="max_gpu_danger_action">Rozumiem — prihlás sa</string>
+    <string name="max_gpu_state_title">Čas v stave</string>
+    <string name="max_gpu_state_desc">Kam skutočne šiel čas GPU, počítaný jadrom na prevádzkovú frekvenciu – nie je to snímka aktuálnych hodín.</string>
+    <string name="max_gpu_state_hidden_share">%1$s spolu</string>
+    <string name="max_gpu_state_hidden">%1$d stavy pod 1%%</string>
 </resources>

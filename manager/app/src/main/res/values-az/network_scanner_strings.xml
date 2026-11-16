@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/network_scanner_strings.xml -->
+<resources>
+    <string name="network_scanner_title">Yerli Şəbəkə Skaneri</string>
+    <string name="network_scanner_subtitle">Ünvanınız, çatdığı şlüz və hansı qonşuların cavab verdiyi.</string>
+    <string name="max_role_network_scanner">Qoşulduğunuz şəbəkəni oxuyur - tutma yox, kök yoxdur.</string>
+    <string name="ns_no_network">Heç bir şəbəkə qoşulmayıb.</string>
+    <string name="ns_interface">İnterfeys</string>
+    <string name="ns_address">Ünvan</string>
+    <string name="ns_gateway">Gateway</string>
+    <string name="ns_dns">DNS</string>
+    <string name="ns_mac">MAC</string>
+    <string name="ns_transport_wifi">Wi-Fi</string>
+    <string name="ns_transport_ethernet">Ethernet</string>
+    <string name="ns_transport_cellular">Mobil</string>
+    <string name="ns_transport_other">Digər</string>
+    <string name="ns_sources_title">Bu haradan gəlir</string>
+    <string name="ns_sources_body">Ünvanlar və şlüz platformanın keçid xüsusiyyətlərindən oxunur. Qonşu cədvəl nüvənin ARP keşindən oxunur, ona görə də o, yalnız bu cihazın bu yaxınlarda danışdığı şeyi saxlayır — boş cədvəl boş şəbəkə demək deyil.</string>
+    <string name="ns_refresh">Yeniləyin</string>
+    <string name="ns_probe">Ümumi portları yoxlayın</string>
+    <string name="ns_probe_stop">Dayan</string>
+    <string name="ns_probe_progress">%2$d-dən %1$d yoxlanılır</string>
+    <string name="ns_probe_note">Bu /24 arasında 22, 80, 443, 5000 və 5555 portlarına TCP bağlantısı göndərir. Cavab verən port bildirildi; sükut ev sahibinin yoxluğunun sübutu deyil.</string>
+    <string name="ns_neighbours">Tanınmış qonşular</string>
+    <string name="ns_neighbours_note">/proc/net/arp-dan — yalnız oxumaq.</string>
+    <string name="ns_neighbours_empty">Hələ heç bir qonşu tanınmır.</string>
+    <string name="ns_ports_value">Limanlar %1$s</string>
+</resources>

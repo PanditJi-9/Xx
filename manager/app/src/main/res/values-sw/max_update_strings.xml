@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_update_strings.xml -->
+<resources>
+    <string name="update_dialog_title">Sasisho linapatikana</string>
+    <string name="update_dialog_title_required">Usasishaji unahitajika</string>
+    <string name="update_required_notice">Sasisho hili linahitajika ili kuendelea kutumia MaxManager. Isakinishe, kisha ufungue programu upya.</string>
+    <string name="update_dialog_body">Toleo la %1$s linapatikana. Uko kwenye %2$s.</string>
+    <string name="update_block_title">Usasishaji unahitajika ili kuendelea</string>
+    <string name="update_block_body">Muundo huu (%1$s) hautumiki tena. Sasisha hadi %2$s ili uendelee kutumia MaxManager.</string>
+    <string name="update_block_body_no_release">Muundo huu (%1$s) hautumiki tena.</string>
+    <string name="update_release_notes_label">Nini kipya</string>
+    <string name="update_size">Ukubwa wa upakuaji: %1$s</string>
+    <string name="update_button_now">Sasisha sasa</string>
+    <string name="update_button_later">Baadaye</string>
+    <string name="update_button_close">Funga</string>
+    <string name="update_button_open_page">Fungua ukurasa wa kupakua</string>
+    <string name="update_state_downloading">Inapakua… %1$d%%</string>
+    <string name="update_state_downloading_unknown">Inapakua...</string>
+    <string name="update_state_installing">Inasakinisha...</string>
+    <string name="update_error_network">Haikuweza kufikia seva ya sasisho. Angalia muunganisho wako na ujaribu tena.</string>
+    <string name="update_error_http">Seva ya sasisho ilijibu kwa hitilafu. Jaribu tena baadaye.</string>
+    <string name="update_error_format">Taarifa ya sasisho haikuweza kusomeka.</string>
+    <string name="update_error_too_large">Taarifa ya sasisho ilikuwa kubwa kuliko ilivyotarajiwa na ilitupwa.</string>
+    <string name="update_error_integrity">Faili iliyopakuliwa haikulingana na hundi yake na ilifutwa.</string>
+    <string name="update_error_install">Usakinishaji haukufaulu. Jaribu tena.</string>
+    <string name="update_error_not_configured">Hakuna kituo cha sasisho kilichosanidiwa katika muundo huu.</string>
+    <string name="update_maintenance_title">Haipatikani kwa muda</string>
+    <string name="update_maintenance_body">MaxManager haipatikani kwa sasa. Tafadhali jaribu tena baada ya muda mfupi.</string>
+    <string name="update_check_title">Angalia masasisho</string>
+    <string name="update_check_supporting">Toleo la sasa: %1$s</string>
+    <string name="update_check_updated">Sasisho linapatikana.</string>
+    <string name="update_check_uptodate">Uko kwenye toleo jipya zaidi.</string>
+    <string name="update_check_failed">Haikuweza kuangalia masasisho.</string>
+    <string name="update_check_not_configured">Hakuna kituo cha sasisho kilichosanidiwa katika muundo huu.</string>
+    <string name="update_released_label">Tarehe ya kutolewa: %1$s</string>
+    <string name="update_check_none_published">Bado hakuna sasisho lililochapishwa kutoka kwa paneli dhibiti.</string>
+    <string name="update_check_link_missing">Sasisho limechapishwa, lakini kiungo chake cha kupakua hakipo.</string>
+</resources>

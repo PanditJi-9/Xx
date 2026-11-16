@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_update_strings.xml -->
+<resources>
+    <string name="update_dialog_title">Opdatering tilgængelig</string>
+    <string name="update_dialog_title_required">Opdatering påkrævet</string>
+    <string name="update_required_notice">Denne opdatering er nødvendig for at blive ved med at bruge MaxManager. Installer det, og åbn derefter appen igen.</string>
+    <string name="update_dialog_body">Version %1$s er tilgængelig. Du er på %2$s.</string>
+    <string name="update_block_title">Opdatering påkrævet for at fortsætte</string>
+    <string name="update_block_body">Denne build (%1$s) understøttes ikke længere. Opdater til %2$s for at fortsætte med at bruge MaxManager.</string>
+    <string name="update_block_body_no_release">Denne build (%1$s) understøttes ikke længere.</string>
+    <string name="update_release_notes_label">Hvad er nyt</string>
+    <string name="update_size">Downloadstørrelse: %1$s</string>
+    <string name="update_button_now">Opdater nu</string>
+    <string name="update_button_later">Senere</string>
+    <string name="update_button_close">Tæt</string>
+    <string name="update_button_open_page">Åbn downloadsiden</string>
+    <string name="update_state_downloading">Downloader... %1$d%%</string>
+    <string name="update_state_downloading_unknown">Downloader...</string>
+    <string name="update_state_installing">Installerer...</string>
+    <string name="update_error_network">Kunne ikke nå opdateringsserveren. Tjek din forbindelse, og prøv igen.</string>
+    <string name="update_error_http">Opdateringsserveren svarede med en fejl. Prøv igen senere.</string>
+    <string name="update_error_format">Opdateringsoplysningerne kunne ikke læses.</string>
+    <string name="update_error_too_large">Opdateringsoplysningerne var større end forventet og blev kasseret.</string>
+    <string name="update_error_integrity">Den downloadede fil matchede ikke dens kontrolsum og blev slettet.</string>
+    <string name="update_error_install">Installationen mislykkedes. Prøv igen.</string>
+    <string name="update_error_not_configured">Der er ikke konfigureret nogen opdateringskanal i denne build.</string>
+    <string name="update_maintenance_title">Midlertidigt utilgængelig</string>
+    <string name="update_maintenance_body">MaxManager er midlertidigt utilgængelig. Prøv igen snart.</string>
+    <string name="update_check_title">Se efter opdateringer</string>
+    <string name="update_check_supporting">Nuværende version: %1$s</string>
+    <string name="update_check_updated">En opdatering er tilgængelig.</string>
+    <string name="update_check_uptodate">Du er på den seneste version.</string>
+    <string name="update_check_failed">Kunne ikke søge efter opdateringer.</string>
+    <string name="update_check_not_configured">Der er ikke konfigureret nogen opdateringskanal i denne build.</string>
+    <string name="update_released_label">Udgivelsesdato: %1$s</string>
+    <string name="update_check_none_published">Der er endnu ikke offentliggjort nogen opdatering fra kontrolpanelet.</string>
+    <string name="update_check_link_missing">En opdatering er offentliggjort, men dens downloadlink mangler.</string>
+</resources>

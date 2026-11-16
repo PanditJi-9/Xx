@@ -13,4 +13,23 @@
     <string name="max_expand_section">Wys besonderhede</string>
     <string name="max_collapse_section">Versteek besonderhede</string>
     <string name="max_trust_loading">Lees tans …</string>
+    <string name="max_gov_title">Wie regeer nou</string>
+    <string name="max_gov_separator">" ›"</string>
+    <string name="max_gov_order_note">Vaste volgorde: \'n hoër sport blokkeer \'n laer een. Dit verander nooit watter beleid wen nie.</string>
+    <string name="max_gov_open_details">Aktiewe houers</string>
+    <string name="max_gov_active_title">Wie hou \'n beheer</string>
+    <string name="max_gov_none">Geen beleid besit tans \'n hardewarebeheer nie.</string>
+    <string name="max_gov_count">Aktiewe beheer huurkontrakte: %1$d</string>
+    <string name="max_gov_requested">Gevra: %1$s</string>
+    <string name="max_gov_owner_recovery">Herstel</string>
+    <string name="max_gov_owner_safety">Termiese veiligheid</string>
+    <string name="max_gov_owner_per_app">App profiel</string>
+    <string name="max_gov_owner_max_ai">Max AI</string>
+    <string name="max_gov_owner_global">Globale profiel</string>
+    <string name="max_gov_owner_system">Stelsel</string>
+    <string name="max_gov_owner_a11y">%1$s besit \'n hardewarebeheer</string>
+    <string name="max_gov_now_none">Geen outomatiese eienaar op die oomblik nie - beheer bly joune</string>
+    <string name="max_gov_now_one">%1$s hou \'n kontrole</string>
+    <string name="max_gov_now_many">%1$s hou %2$d kontroles</string>
+    <string name="devinfo_details">Besonderhede</string>
 </resources>

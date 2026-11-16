@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_license_strings.xml -->
+<resources>
+    <string name="max_license_title">Ilayisensi</string>
+    <string name="max_license_subtitle">Ukhiye owodwa, le divayisi, ayikho i-akhawunti</string>
+    <string name="max_license_help_body">Ukhiye uhlolwa ku-inthanethi kanye, uma uwufaka. Kusukela lapho kuqhubeke isitifiketi esisayiniwe seseva sisebenza ngokungaxhunyiwe ku-inthanethi kuze kuphele isikhathi saso — uhlelo lokusebenza alushayeli ekhaya njalo uma uvula isikrini. Isitifiketi siboshelwe ku-id yokufaka okungahleliwe yale divayisi, ngakho ukukopisha idatha yohlelo lokusebenza kwenye ifoni akuphathi ilayisensi nayo, futhi umnikazi angasetha kabusha lokho kubophezela kusuka kuphaneli uma ushintsha amafoni.</string>
+    <string name="max_license_status_section">Isimo</string>
+    <string name="max_license_status_active">Iyasebenza</string>
+    <string name="max_license_status_expired">Iphelelwe yisikhathi</string>
+    <string name="max_license_status_none">Akucushiwe</string>
+    <string name="max_license_active_detail">Ezisele: %1$d izinsuku</string>
+    <string name="max_license_expired_detail">Isikhathi salo khiye siphelile. Ukhiye omusha uvuselela ukufinyelela.</string>
+    <string name="max_license_none_detail">Faka ukhiye owutholile ukuze uvule izindawo ezikhokhelwayo.</string>
+    <string name="max_license_promo_active">Kumahhala kuwo wonke umuntu kuze kube %1$s</string>
+    <string name="max_license_plan_title">Hlela</string>
+    <string name="max_license_devices_title">Amadivayisi</string>
+    <string name="max_license_devices_detail">%1$d kokungu-%2$d okusetshenzisiwe</string>
+    <string name="max_license_device_id_title">Le divayisi</string>
+    <string name="max_license_device_id_detail">%1$s</string>
+    <string name="max_license_key_section">Ukwenza kusebenze</string>
+    <string name="max_license_key_label">Ukhiye welayisensi</string>
+    <string name="max_license_key_placeholder">MAXM-XXXXX-XXXXX-XXXXX-XXXXX-XX</string>
+    <string name="max_license_key_helper">Amadeshi nosonhlamvukazi akusho lutho — kunamathisele njengoba ukutholile.</string>
+    <string name="max_license_activate">Yenza kusebenze</string>
+    <string name="max_license_activating">Ihlola ukhiye...</string>
+    <string name="max_license_refresh">Hlola manje</string>
+    <string name="max_license_activated">Yenziwe yasebenza. Le divayisi manje isixhunywe kukhiye wakho.</string>
+    <string name="max_license_error_invalid_key">Lo khiye awubukeki uphelele. Kuhlole bese uzama futhi.</string>
+    <string name="max_license_error_not_configured">Lesi sakhiwo asinaso iseva yelayisensi emisiwe.</string>
+    <string name="max_license_error_network">Alukho uxhumano. Ukhiye uthikhiwe kanye, bese usebenza ungaxhunyiwe ku-inthanethi.</string>
+    <string name="max_license_error_timeout">Iseva yelayisensi ayizange iphendule ngesikhathi. Zama futhi.</string>
+    <string name="max_license_error_server">Iseva yelayisensi iphendule ngephutha. Zama futhi emuva kwesikhathi.</string>
+    <string name="max_license_error_client">Umsebenzi welayisensi awusetshenziswanga kuseva.</string>
+    <string name="max_license_error_format">Impendulo yeseva ayizange iqondwe.</string>
+    <string name="max_license_error_expired">Lo khiye uphelelwe yisikhathi.</string>
+    <string name="max_license_error_not_found">Lo khiye awaziwa.</string>
+    <string name="max_license_error_revoked">Lo khiye uhoxisiwe.</string>
+    <string name="max_license_error_device_limit">Lo khiye ufinyelele umkhawulo wedivayisi. Cela ukusethwa kabusha kwedivayisi.</string>
+    <string name="max_license_error_device_unknown">Le divayisi ayikaxhunywanga kukhiye okwamanje. Yenze isebenze lapha kuqala.</string>
+    <string name="max_license_error_device_removed">Le divayisi ikhishwe kukhiye ngumnikazi.</string>
+    <string name="max_license_error_rate_limited">Imizamo eminingi kakhulu esuka kulolu xhumo — linda amaminithi ambalwa, bese uyazama futhi.</string>
+    <string name="max_license_error_unknown">Kukhona into engahambanga kahle. Isizathu sarekhodwa kokuthi I-Diagnostics.</string>
+    <string name="max_license_gate_title">Le ndawo idinga ilayisense</string>
+    <string name="max_license_gate_detail">Ifakwe nokhiye. Ukhiye owodwa uvala le divayisi, futhi ukuyifaka kuthatha iminithi.</string>
+    <string name="max_feature_off_title">Ivaliwe</string>
+    <string name="max_feature_off_detail">Iphaneli yokulawula ivale le ndawo. Ibuya ngemuva nje kokuthi inikwe amandla futhi.</string>
+    <string name="max_license_gate_action">Vula izilungiselelo zelayisensi</string>
+    <string name="max_license_gate_subscribe">Bhalisa manje</string>
+    <string name="max_license_subscription_section">Ukubhalisa</string>
+    <string name="max_license_subscription_open">Vula ikhasi lokubhalisa</string>
+</resources>

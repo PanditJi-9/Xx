@@ -13,4 +13,23 @@
     <string name="max_expand_section">ବିବରଣୀ ଦେଖାନ୍ତୁ |</string>
     <string name="max_collapse_section">ବିବରଣୀ ଲୁଚାନ୍ତୁ |</string>
     <string name="max_trust_loading">ପ Reading ିବା…</string>
+    <string name="max_gov_title">କିଏ ବର୍ତ୍ତମାନ ଶାସନ କରେ |</string>
+    <string name="max_gov_separator">"› "</string>
+    <string name="max_gov_order_note">ସ୍ଥିର କ୍ରମ: ଏକ ଉଚ୍ଚ ରଙ୍ଗ ଏକ ନିମ୍ନକୁ ଅବରୋଧ କରେ | କେଉଁ ନୀତି ଜିତେ ତାହା କଦାପି ପରିବର୍ତ୍ତନ ହୁଏ ନାହିଁ |</string>
+    <string name="max_gov_open_details">ସକ୍ରିୟ ଧାରକ |</string>
+    <string name="max_gov_active_title">ଯିଏ ନିୟନ୍ତ୍ରଣ କରେ |</string>
+    <string name="max_gov_none">କ No ଣସି ନୀତିର ବର୍ତ୍ତମାନ ହାର୍ଡୱେର୍ ନିୟନ୍ତ୍ରଣର ମାଲିକାନା ନାହିଁ |</string>
+    <string name="max_gov_count">ସକ୍ରିୟ ନିୟନ୍ତ୍ରଣ ଲିଜ୍: %1$d |</string>
+    <string name="max_gov_requested">ଅନୁରୋଧ: %1$s</string>
+    <string name="max_gov_owner_recovery">ପୁନରୁଦ୍ଧାର</string>
+    <string name="max_gov_owner_safety">ତାପଜ ସୁରକ୍ଷା</string>
+    <string name="max_gov_owner_per_app">ଆପ୍ ପ୍ରୋଫାଇଲ୍ |</string>
+    <string name="max_gov_owner_max_ai">Max AI</string>
+    <string name="max_gov_owner_global">ଗ୍ଲୋବାଲ୍ ପ୍ରୋଫାଇଲ୍ |</string>
+    <string name="max_gov_owner_system">ସିଷ୍ଟମ୍ |</string>
+    <string name="max_gov_owner_a11y">%1$s ଏକ ହାର୍ଡୱେର୍ ନିୟନ୍ତ୍ରଣର ମାଲିକ |</string>
+    <string name="max_gov_now_none">ବର୍ତ୍ତମାନ କ No ଣସି ସ୍ୱୟଂଚାଳିତ ମାଲିକ ନାହିଁ - ନିୟନ୍ତ୍ରଣ ଆପଣଙ୍କର ରହିଥାଏ |</string>
+    <string name="max_gov_now_one">%1$s ଏକ ନିୟନ୍ତ୍ରଣ ଧାରଣ କରେ |</string>
+    <string name="max_gov_now_many">%1$s %2$d ନିୟନ୍ତ୍ରଣ ଧାରଣ କରେ |</string>
+    <string name="devinfo_details">ବିବରଣୀ</string>
 </resources>

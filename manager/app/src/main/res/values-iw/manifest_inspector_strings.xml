@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/manifest_inspector_strings.xml -->
+<resources>
+    <string name="manifest_inspector_title">מפקח מניפסט</string>
+    <string name="manifest_inspector_subtitle">מה שאפליקציה מותקנת מצהירה על עצמה, קרא מ-PackageManager.</string>
+    <string name="max_role_manifest_inspector">מראה מה חבילה מצהירה על עצמה - לקריאה בלבד.</string>
+    <string name="mi_search">חיפוש אפליקציות</string>
+    <string name="mi_empty">בחר אפליקציה בצד שמאל.</string>
+    <string name="mi_yes">כֵּן</string>
+    <string name="mi_no">לֹא</string>
+    <string name="mi_section_identity">חֲבִילָה</string>
+    <string name="mi_version">גִרְסָה</string>
+    <string name="mi_version_code">קוד גרסה</string>
+    <string name="mi_min_sdk">SDK מינימום</string>
+    <string name="mi_target_sdk">יעד SDK</string>
+    <string name="mi_installed">מוּתקָן</string>
+    <string name="mi_updated">מְעוּדכָּן</string>
+    <string name="mi_installer">מתקין</string>
+    <string name="mi_uid">UID</string>
+    <string name="mi_data_dir">ספריית נתונים</string>
+    <string name="mi_debuggable">ניתן לניפוי באגים</string>
+    <string name="mi_system_app">אפליקציית מערכת</string>
+    <string name="mi_enabled">מופעל</string>
+    <string name="mi_section_permissions">הרשאות ביקשו</string>
+    <string name="mi_permissions_summary">%1$d הרשאות · %2$d מהן מסוכנות</string>
+    <string name="mi_permissions_none">אפליקציה זו אינה מבקשת הרשאה.</string>
+    <string name="mi_perm_dangerous">מְסוּכָּן</string>
+    <string name="mi_perm_signature">חֲתִימָה</string>
+    <string name="mi_perm_normal">נוֹרמָלִי</string>
+    <string name="mi_perm_unknown">לא מסווג</string>
+    <string name="mi_section_components">רכיבים</string>
+    <string name="mi_activities">פעילויות</string>
+    <string name="mi_services">שירותים</string>
+    <string name="mi_receivers">מקלטים</string>
+    <string name="mi_providers">ספקים</string>
+    <string name="mi_components_none">אף אחד לא הוצהר</string>
+    <string name="mi_section_features">תכונות המכשיר</string>
+    <string name="mi_features_note">הפלטפורמה אינה חושפת את רשימת תכונות השימושים של אפליקציה אחרת; אלה התכונות שהמכשיר הזה מדווח.</string>
+    <string name="mi_features_none">לא דווח על תכונה</string>
+    <string name="mi_section_signature">תעודת חתימה</string>
+    <string name="mi_signature_note">SHA-256 של תעודת החתימה. שני מבנים עם אותו ערך הם אותו מפרסם.</string>
+    <string name="mi_signature_sha256">תקציר תעודה</string>
+</resources>

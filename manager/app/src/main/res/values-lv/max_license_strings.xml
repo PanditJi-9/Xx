@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_license_strings.xml -->
+<resources>
+    <string name="max_license_title">Licence</string>
+    <string name="max_license_subtitle">Viena atslēga, šī ierīce, bez konta</string>
+    <string name="max_license_help_body">Atslēga tiek pārbaudīta tiešsaistē vienreiz, kad to ievadāt. No šī brīža servera parakstītais sertifikāts darbojas bezsaistē, līdz beidzas tā laiks — lietotne nezvana uz mājām katru reizi, kad atverat ekrānu. Sertifikāts ir saistīts ar šīs ierīces nejauši izvēlēto instalēšanas ID, tāpēc, kopējot lietotnes datus uz citu tālruni, licence netiek pievienota, un īpašnieks var atiestatīt šo saiti no paneļa, ja maināt tālruni.</string>
+    <string name="max_license_status_section">Statuss</string>
+    <string name="max_license_status_active">Aktīvs</string>
+    <string name="max_license_status_expired">Beidzies derīguma termiņš</string>
+    <string name="max_license_status_none">Nav aktivizēts</string>
+    <string name="max_license_active_detail">Atlikušas: %1$d dienas</string>
+    <string name="max_license_expired_detail">Šīs atslēgas laiks ir beidzies. Jauna atslēga atjauno piekļuvi.</string>
+    <string name="max_license_none_detail">Ievadiet saņemto atslēgu, lai atbloķētu maksas virsmas.</string>
+    <string name="max_license_promo_active">Bezmaksas ikvienam līdz %1$s</string>
+    <string name="max_license_plan_title">Plāns</string>
+    <string name="max_license_devices_title">Ierīces</string>
+    <string name="max_license_devices_detail">Izmantoti %1$d no %2$d</string>
+    <string name="max_license_device_id_title">Šī ierīce</string>
+    <string name="max_license_device_id_detail">%1$s</string>
+    <string name="max_license_key_section">Aktivizēšana</string>
+    <string name="max_license_key_label">Licences atslēga</string>
+    <string name="max_license_key_placeholder">MAXM-XXXXX-XXXXX-XXXXX-XXXXX-XX</string>
+    <string name="max_license_key_helper">Domuzīmēm un lielo burtu lietojumam nav nozīmes — ielīmējiet to, kā to saņēmāt.</string>
+    <string name="max_license_activate">Aktivizēt</string>
+    <string name="max_license_activating">Notiek atslēgas pārbaude…</string>
+    <string name="max_license_refresh">Pārbaudiet tūlīt</string>
+    <string name="max_license_activated">Aktivizēts. Šī ierīce tagad ir saistīta ar jūsu atslēgu.</string>
+    <string name="max_license_error_invalid_key">Šī atslēga neizskatās pabeigta. Pārbaudiet to un mēģiniet vēlreiz.</string>
+    <string name="max_license_error_not_configured">Šim būvējumam nav konfigurēts licences serveris.</string>
+    <string name="max_license_error_network">Nav savienojuma. Atslēga tiek pārbaudīta vienu reizi, pēc tam darbojas bezsaistē.</string>
+    <string name="max_license_error_timeout">Licences serveris neatbildēja laikā. Mēģiniet vēlreiz.</string>
+    <string name="max_license_error_server">Licences serveris atbildēja ar kļūdu. Vēlāk mēģiniet vēlreiz.</string>
+    <string name="max_license_error_client">Licences funkcija serverī nav izvietota.</string>
+    <string name="max_license_error_format">Servera atbilde netika saprasta.</string>
+    <string name="max_license_error_expired">Šīs atslēgas derīguma termiņš ir beidzies.</string>
+    <string name="max_license_error_not_found">Šī atslēga nav zināma.</string>
+    <string name="max_license_error_revoked">Šī atslēga ir atsaukta.</string>
+    <string name="max_license_error_device_limit">Šī atslēga ir sasniegusi ierīces ierobežojumu. Pieprasiet ierīces atiestatīšanu.</string>
+    <string name="max_license_error_device_unknown">Šī ierīce vēl nav saistīta ar atslēgu. Vispirms aktivizējiet to šeit.</string>
+    <string name="max_license_error_device_removed">Šo ierīci īpašnieks noņēma no atslēgas.</string>
+    <string name="max_license_error_rate_limited">Pārāk daudz mēģinājumu no šī savienojuma — uzgaidiet dažas minūtes un pēc tam mēģiniet vēlreiz.</string>
+    <string name="max_license_error_unknown">Kaut kas nogāja greizi. Iemesls tika ierakstīts Diagnostikā.</string>
+    <string name="max_license_gate_title">Šai virsmai ir nepieciešama licence</string>
+    <string name="max_license_gate_detail">Tas ir iekļauts komplektā ar atslēgu. Viena atslēga pārklāj šo ierīci, un tās ievadīšana aizņem minūti.</string>
+    <string name="max_feature_off_title">Izslēgts</string>
+    <string name="max_feature_off_detail">Vadības panelis ir izslēdzis šo virsmu. Tas atgriežas, tiklīdz tas atkal tiek iespējots.</string>
+    <string name="max_license_gate_action">Atveriet licences iestatījumus</string>
+    <string name="max_license_gate_subscribe">Abonējiet tūlīt</string>
+    <string name="max_license_subscription_section">Abonēšana</string>
+    <string name="max_license_subscription_open">Atveriet abonēšanas lapu</string>
+</resources>

@@ -69,4 +69,25 @@
     <string name="max_perms_entry_title">પરવાનગીઓ અને એપ્લિકેશન ઑપ્સ</string>
     <string name="max_perms_entry_desc">જુઓ કે આ એપ્લિકેશન શું જાહેર કરે છે અને સિસ્ટમ ખરેખર શું મંજૂરી આપે છે</string>
     <string name="max_perms_entry_action">પરવાનગીઓ ખોલો</string>
+    <string name="max_perms_manifest_title">મેનિફેસ્ટ સારાંશ</string>
+    <string name="max_perms_manifest_desc">પેકેજ મેનેજર પાસેથી વાંચો: સંસ્કરણ, SDK શ્રેણી, ઘટકો અને તેમાંથી કેટલા નિકાસ થાય છે. નિકાસ કરેલ ઘટક અન્ય એપ્લિકેશનો દ્વારા શરૂ કરી શકાય છે.</string>
+    <string name="max_perms_manifest_version">સંસ્કરણ</string>
+    <string name="max_perms_manifest_sdk">SDK શ્રેણી</string>
+    <string name="max_perms_manifest_location">સ્થાન સ્થાપિત કરો</string>
+    <string name="max_perms_manifest_location_auto">સ્વયંસંચાલિત</string>
+    <string name="max_perms_manifest_location_internal">માત્ર આંતરિક સ્ટોરેજ</string>
+    <string name="max_perms_manifest_location_external">બાહ્ય પસંદ કરે છે</string>
+    <string name="max_perms_manifest_components">ઘટકો</string>
+    <string name="max_perms_manifest_components_order">પ્રવૃત્તિઓ · સેવાઓ · પ્રાપ્તકર્તા · પ્રદાતાઓ</string>
+    <string name="max_perms_manifest_exported">નિકાસ કરેલ ઘટકો</string>
+    <string name="max_perms_manifest_splits">વિભાજિત APK</string>
+    <string name="max_perms_manifest_debug">ડીબગેબલ</string>
+    <string name="max_perms_features_title">ઘોષિત સુવિધાઓ</string>
+    <string name="max_perms_features_desc">આ ઉપકરણ જે જાહેરાત કરે છે તેની સરખામણીમાં, ઉપકરણમાંથી પેકેજને શું જરૂરી છે. અહીં ગુમ થયેલ આવશ્યક સુવિધાનો સામાન્ય રીતે અર્થ એ છે કે એપ્લિકેશન સંપૂર્ણપણે કામ કરશે નહીં — તે પેકેજ મેનેજરનો દાવો છે, અનુમાન નથી.</string>
+    <string name="max_perms_features_loading">પેકેજની ઘોષિત સુવિધાઓ વાંચી રહ્યું છે...</string>
+    <string name="max_perms_features_none">પેકેજ કોઈ આવશ્યક સુવિધાઓ જાહેર કરતું નથી.</string>
+    <string name="max_perms_features_required">જરૂરી છે</string>
+    <string name="max_perms_features_unsupported">આ ઉપકરણ પર નથી</string>
+    <string name="max_perms_manifest_none">પેકેજ મેનેજર દ્વારા જાણ કરવામાં આવી નથી.</string>
+    <string name="max_perms_manifest_unknown">અજ્ઞાત</string>
 </resources>

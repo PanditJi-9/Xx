@@ -13,4 +13,23 @@
     <string name="max_expand_section">ዝርዝሮችን አሳይ</string>
     <string name="max_collapse_section">ዝርዝሮችን ደብቅ</string>
     <string name="max_trust_loading">በማንበብ…</string>
+    <string name="max_gov_title">አሁን ማን ይገዛል</string>
+    <string name="max_gov_separator">" ›</string>
+    <string name="max_gov_order_note">ቋሚ ቅደም ተከተል፡ ከፍ ያለ ደረጃ ዝቅተኛውን ያግዳል። የትኛው ፖሊሲ እንደሚያሸንፍ አይለውጠውም።</string>
+    <string name="max_gov_open_details">ንቁ መያዣዎች</string>
+    <string name="max_gov_active_title">ማን ቁጥጥር ይይዛል</string>
+    <string name="max_gov_none">በአሁኑ ጊዜ የሃርድዌር ቁጥጥር ባለቤት የሆነ መመሪያ የለም።</string>
+    <string name="max_gov_count">ንቁ የቁጥጥር ውል: %1$d</string>
+    <string name="max_gov_requested">የተጠየቀው፡ %1$s</string>
+    <string name="max_gov_owner_recovery">ማገገም</string>
+    <string name="max_gov_owner_safety">የሙቀት ደህንነት</string>
+    <string name="max_gov_owner_per_app">የመተግበሪያ መገለጫ</string>
+    <string name="max_gov_owner_max_ai">Max AI</string>
+    <string name="max_gov_owner_global">ዓለም አቀፍ መገለጫ</string>
+    <string name="max_gov_owner_system">ስርዓት</string>
+    <string name="max_gov_owner_a11y">%1$s የሃርድዌር መቆጣጠሪያ ባለቤት ነው።</string>
+    <string name="max_gov_now_none">በአሁኑ ጊዜ ምንም አውቶማቲክ ባለቤት የለም - ቁጥጥር የእርስዎ እንደሆነ ይቆያል</string>
+    <string name="max_gov_now_one">%1$s ቁጥጥር ይይዛል</string>
+    <string name="max_gov_now_many">%1$s %2$d መቆጣጠሪያዎችን ይይዛል</string>
+    <string name="devinfo_details">ዝርዝሮች</string>
 </resources>

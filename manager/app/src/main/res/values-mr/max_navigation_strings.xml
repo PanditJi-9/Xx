@@ -53,4 +53,8 @@
     <string name="max_title_get_started">सेटअप</string>
     <string name="max_hub_audio">ऑडिओ</string>
     <string name="max_hub_audio_desc">आउटपुट डिव्हाइसेस, प्रवाह आणि घोषित प्रभाव</string>
+    <string name="control_tools_live">थेट पृष्ठभाग</string>
+    <string name="control_tools_advanced">प्रगत साधने</string>
+    <string name="control_tools_system">सिस्टम टूल्स</string>
+    <string name="control_tools_appearance">देखावा</string>
 </resources>

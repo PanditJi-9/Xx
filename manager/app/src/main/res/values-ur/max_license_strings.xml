@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_license_strings.xml -->
+<resources>
+    <string name="max_license_title">لائسنس</string>
+    <string name="max_license_subtitle">ایک کلید، یہ آلہ، کوئی اکاؤنٹ نہیں۔</string>
+    <string name="max_license_help_body">ایک کلید کو ایک بار آن لائن چیک کیا جاتا ہے، جب آپ اسے داخل کرتے ہیں۔ اس کے بعد سے سرور کا دستخط شدہ سرٹیفکیٹ آف لائن کام کرتا ہے جب تک کہ اس کا وقت ختم نہ ہو جائے — جب بھی آپ اسکرین کھولتے ہیں تو ایپ گھر پر کال نہیں کرتی ہے۔ سرٹیفکیٹ اس ڈیوائس کی رینڈم انسٹال آئی ڈی کا پابند ہے، لہذا ایپ ڈیٹا کو کسی دوسرے فون پر کاپی کرنے سے لائسنس اس کے ساتھ نہیں ہوتا ہے، اور اگر آپ فون تبدیل کرتے ہیں تو مالک پینل سے اس پابندی کو دوبارہ ترتیب دے سکتا ہے۔</string>
+    <string name="max_license_status_section">حیثیت</string>
+    <string name="max_license_status_active">فعال</string>
+    <string name="max_license_status_expired">میعاد ختم</string>
+    <string name="max_license_status_none">فعال نہیں ہے۔</string>
+    <string name="max_license_active_detail">باقی: %1$d دن</string>
+    <string name="max_license_expired_detail">اس کلید کا وقت ختم ہو گیا ہے۔ ایک نئی کلید رسائی کی تجدید کرتی ہے۔</string>
+    <string name="max_license_none_detail">ادا شدہ سطحوں کو غیر مقفل کرنے کے لیے آپ کو موصول ہونے والی کلید درج کریں۔</string>
+    <string name="max_license_promo_active">%1$s تک سب کے لیے مفت</string>
+    <string name="max_license_plan_title">منصوبہ</string>
+    <string name="max_license_devices_title">آلات</string>
+    <string name="max_license_devices_detail">%2$d کا %1$d استعمال کیا گیا۔</string>
+    <string name="max_license_device_id_title">یہ ڈیوائس</string>
+    <string name="max_license_device_id_detail">%1$s</string>
+    <string name="max_license_key_section">چالو کرنا</string>
+    <string name="max_license_key_label">لائسنس کی کلید</string>
+    <string name="max_license_key_placeholder">MAXM-XXXXX-XXXXX-XXXXX-XXXXX-XX</string>
+    <string name="max_license_key_helper">ڈیشز اور کیپٹلائزیشن سے کوئی فرق نہیں پڑتا — جیسے ہی آپ کو موصول ہوا اسے پیسٹ کریں۔</string>
+    <string name="max_license_activate">چالو کریں۔</string>
+    <string name="max_license_activating">کلید کی جانچ ہو رہی ہے…</string>
+    <string name="max_license_refresh">ابھی چیک کریں۔</string>
+    <string name="max_license_activated">چالو یہ آلہ اب آپ کی کلید سے منسلک ہے۔</string>
+    <string name="max_license_error_invalid_key">یہ کلید مکمل نظر نہیں آتی۔ اسے چیک کریں اور دوبارہ کوشش کریں۔</string>
+    <string name="max_license_error_not_configured">اس بلڈ میں کوئی لائسنس سرور کنفیگر نہیں ہے۔</string>
+    <string name="max_license_error_network">کوئی تعلق نہیں۔ کلید کو ایک بار چیک کیا جاتا ہے، پھر آف لائن کام کرتا ہے۔</string>
+    <string name="max_license_error_timeout">لائسنس سرور نے بروقت جواب نہیں دیا۔ دوبارہ کوشش کریں۔</string>
+    <string name="max_license_error_server">لائسنس سرور نے غلطی کے ساتھ جواب دیا۔ بعد میں دوبارہ کوشش کریں۔</string>
+    <string name="max_license_error_client">لائسنس فنکشن سرور پر تعینات نہیں ہے۔</string>
+    <string name="max_license_error_format">سرور کا جواب سمجھ نہیں آیا۔</string>
+    <string name="max_license_error_expired">اس کلید کی میعاد ختم ہو چکی ہے۔</string>
+    <string name="max_license_error_not_found">یہ کلید معلوم نہیں ہے۔</string>
+    <string name="max_license_error_revoked">اس کلید کو منسوخ کر دیا گیا ہے۔</string>
+    <string name="max_license_error_device_limit">یہ کلید اپنے آلے کی حد کو پہنچ گئی ہے۔ ڈیوائس ری سیٹ کے لیے پوچھیں۔</string>
+    <string name="max_license_error_device_unknown">یہ آلہ ابھی تک کلید سے منسلک نہیں ہے۔ پہلے اسے یہاں چالو کریں۔</string>
+    <string name="max_license_error_device_removed">اس آلہ کو مالک نے کلید سے ہٹا دیا تھا۔</string>
+    <string name="max_license_error_rate_limited">اس کنکشن سے بہت زیادہ کوششیں — چند منٹ انتظار کریں، پھر دوبارہ کوشش کریں۔</string>
+    <string name="max_license_error_unknown">کچھ غلط ہو گیا۔ وجہ تشخیص میں درج کی گئی تھی۔</string>
+    <string name="max_license_gate_title">اس سطح کو لائسنس کی ضرورت ہے۔</string>
+    <string name="max_license_gate_detail">یہ ایک چابی کے ساتھ شامل ہے۔ ایک کلید اس آلے کا احاطہ کرتی ہے، اور اس میں داخل ہونے میں ایک منٹ لگتا ہے۔</string>
+    <string name="max_feature_off_title">بند کر دیا۔</string>
+    <string name="max_feature_off_detail">کنٹرول پینل نے اس سطح کو آف کر دیا ہے۔ یہ دوبارہ فعال ہوتے ہی واپس آجاتا ہے۔</string>
+    <string name="max_license_gate_action">لائسنس کی ترتیبات کھولیں۔</string>
+    <string name="max_license_gate_subscribe">ابھی سبسکرائب کریں۔</string>
+    <string name="max_license_subscription_section">رکنیت</string>
+    <string name="max_license_subscription_open">سبسکرپشن کا صفحہ کھولیں۔</string>
+</resources>

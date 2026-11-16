@@ -10,4 +10,6 @@
     <string name="studio_display">ຈໍສະແດງຜົນ</string>
     <string name="studio_power">ທາງເລືອກພະລັງງານ</string>
     <string name="studio_settings">ການຕັ້ງຄ່າ</string>
+    <string name="audio_dsp_live">DSP ສົດ</string>
+    <string name="max_audio_session_label">ເຊດຊັນສຽງ #%1$d</string>
 </resources>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/manifest_inspector_strings.xml -->
+<resources>
+    <string name="manifest_inspector_title">Manifest Inspector</string>
+    <string name="manifest_inspector_subtitle">Kung ano ang idineklara ng isang naka-install na app tungkol sa sarili nito, basahin mula sa PackageManager.</string>
+    <string name="max_role_manifest_inspector">Ipinapakita kung ano ang ipinapahayag ng isang pakete tungkol sa sarili nito — read-only.</string>
+    <string name="mi_search">Maghanap ng mga app</string>
+    <string name="mi_empty">Pumili ng app sa kaliwa.</string>
+    <string name="mi_yes">Oo</string>
+    <string name="mi_no">Hindi</string>
+    <string name="mi_section_identity">Package</string>
+    <string name="mi_version">Bersyon</string>
+    <string name="mi_version_code">Code ng bersyon</string>
+    <string name="mi_min_sdk">Minimum na SDK</string>
+    <string name="mi_target_sdk">Target na SDK</string>
+    <string name="mi_installed">Naka-install</string>
+    <string name="mi_updated">Na-update</string>
+    <string name="mi_installer">installer</string>
+    <string name="mi_uid">UID</string>
+    <string name="mi_data_dir">Direktoryo ng data</string>
+    <string name="mi_debuggable">Debuggable</string>
+    <string name="mi_system_app">System app</string>
+    <string name="mi_enabled">Pinagana</string>
+    <string name="mi_section_permissions">Humiling ng mga pahintulot</string>
+    <string name="mi_permissions_summary">%1$d mga pahintulot · %2$d sa mga ito ay mapanganib</string>
+    <string name="mi_permissions_none">Ang app na ito ay humihiling ng walang pahintulot.</string>
+    <string name="mi_perm_dangerous">Mapanganib</string>
+    <string name="mi_perm_signature">Lagda</string>
+    <string name="mi_perm_normal">Normal</string>
+    <string name="mi_perm_unknown">Unclassified</string>
+    <string name="mi_section_components">Mga bahagi</string>
+    <string name="mi_activities">Mga aktibidad</string>
+    <string name="mi_services">Mga serbisyo</string>
+    <string name="mi_receivers">Mga tatanggap</string>
+    <string name="mi_providers">Mga tagapagbigay</string>
+    <string name="mi_components_none">Walang idineklara</string>
+    <string name="mi_section_features">Mga feature ng device</string>
+    <string name="mi_features_note">Hindi inilalantad ng platform ang listahan ng mga gamit-feature ng isa pang app; ito ang mga feature na iniuulat ng device na ito.</string>
+    <string name="mi_features_none">Walang naiulat na feature</string>
+    <string name="mi_section_signature">Pagpirma ng sertipiko</string>
+    <string name="mi_signature_note">SHA-256 ng sertipiko ng pagpirma. Dalawang build na may parehong halaga ang parehong publisher.</string>
+    <string name="mi_signature_sha256">Certificate digest</string>
+</resources>

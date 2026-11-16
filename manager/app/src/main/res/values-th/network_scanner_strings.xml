@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/network_scanner_strings.xml -->
+<resources>
+    <string name="network_scanner_title">เครื่องสแกนเครือข่ายท้องถิ่น</string>
+    <string name="network_scanner_subtitle">ที่อยู่ของคุณ ประตูที่ไปถึง และเพื่อนบ้านคนไหนที่ตอบ</string>
+    <string name="max_role_network_scanner">อ่านเครือข่ายที่คุณใช้งานอยู่ — ไม่ต้องจับภาพ ไม่ต้องรูท</string>
+    <string name="ns_no_network">ไม่มีการเชื่อมต่อเครือข่าย</string>
+    <string name="ns_interface">อินเทอร์เฟซ</string>
+    <string name="ns_address">ที่อยู่</string>
+    <string name="ns_gateway">เกตเวย์</string>
+    <string name="ns_dns">DNS</string>
+    <string name="ns_mac">แม็ค</string>
+    <string name="ns_transport_wifi">อินเตอร์เน็ตไร้สาย</string>
+    <string name="ns_transport_ethernet">อีเทอร์เน็ต</string>
+    <string name="ns_transport_cellular">เซลล์</string>
+    <string name="ns_transport_other">อื่น</string>
+    <string name="ns_sources_title">สิ่งนี้มาจากไหน</string>
+    <string name="ns_sources_body">ที่อยู่และเกตเวย์ถูกอ่านจากคุณสมบัติลิงก์ของแพลตฟอร์ม ตารางข้างเคียงถูกอ่านจากแคช ARP ของเคอร์เนล ดังนั้นจึงเก็บเฉพาะสิ่งที่อุปกรณ์นี้เพิ่งพูดคุยด้วย ตารางว่างไม่ได้หมายความว่าเครือข่ายว่างเปล่า</string>
+    <string name="ns_refresh">รีเฟรช</string>
+    <string name="ns_probe">ตรวจสอบพอร์ตทั่วไป</string>
+    <string name="ns_probe_stop">หยุด</string>
+    <string name="ns_probe_progress">การซักถาม %1$d จาก %2$d</string>
+    <string name="ns_probe_note">ส่งการเชื่อมต่อ TCP บนพอร์ต 22, 80, 443, 5000 และ 5555 ข้าม /24 นี้ พอร์ตที่ตอบถูกรายงาน ความเงียบไม่ได้พิสูจน์ว่าโฮสต์ไม่อยู่</string>
+    <string name="ns_neighbours">เพื่อนบ้านที่รู้จัก</string>
+    <string name="ns_neighbours_note">จาก /proc/net/arp — อ่านอย่างเดียว</string>
+    <string name="ns_neighbours_empty">ยังไม่รู้จักเพื่อนบ้านเลย</string>
+    <string name="ns_ports_value">พอร์ต %1$s</string>
+</resources>

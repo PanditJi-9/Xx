@@ -99,4 +99,12 @@
     <string name="max_gpu_saved_desc">Disimpan daripada simpanan terdahulu dan digunakan pada setiap but: %1$s. Lalai di atas menamatkan sesi ini sahaja, bukan keadaan yang disimpan.</string>
     <string name="max_gpu_dynamic_min">Minimum · dinamik</string>
     <string name="max_gpu_dynamic_max">Maksimum · dinamik</string>
+    <string name="max_gpu_monitor_only_detail">Satu-satunya nod grafik yang didedahkan oleh kernel ini ialah lebar jalur dan monitor QoS: ia tidak membawa jam GPU, jadi tiada kekerapan untuk ditetapkan. Kawalan tetap dimatikan dan bukannya menulis gabenor memori seolah-olah ia adalah GPU.</string>
+    <string name="max_gpu_danger_title">Tulis GPU had?</string>
+    <string name="max_gpu_danger_body">Ini menulis tetingkap frekuensi grafik dan gabenor ke dalam nod GPU. Tetingkap yang ditolak pemandu, atau gabenor yang tidak dapat bersaing, boleh gagap seluruh antara muka atau membekukan panel. Apl merekodkan bahawa anda menerima ini sekali — tanggungjawab untuk nilai yang anda gunakan adalah milik anda.</string>
+    <string name="max_gpu_danger_action">Saya faham — mohon</string>
+    <string name="max_gpu_state_title">Masa dalam negeri</string>
+    <string name="max_gpu_state_desc">Di mana masa GPU sebenarnya pergi, dikira oleh kernel setiap kekerapan operasi — bukan petikan jam semasa.</string>
+    <string name="max_gpu_state_hidden_share">%1$s bersama-sama</string>
+    <string name="max_gpu_state_hidden">%1$d menyatakan di bawah 1%%</string>
 </resources>

@@ -99,4 +99,12 @@
     <string name="max_gpu_saved_desc">Conservat d\'un desament anterior i aplicat a cada arrencada: %1$s. L\'opció predeterminada anterior només acaba aquesta sessió, mai l\'estat desat.</string>
     <string name="max_gpu_dynamic_min">Mínim · dinàmic</string>
     <string name="max_gpu_dynamic_max">Màxim · dinàmic</string>
+    <string name="max_gpu_monitor_only_detail">Els únics nodes gràfics que exposa aquest nucli són els monitors d\'amplada de banda i QoS: no porten cap rellotge GPU, de manera que no hi ha freqüència per configurar. El control es manté desactivat en lloc d\'escriure un governador de memòria com si fos el GPU.</string>
+    <string name="max_gpu_danger_title">Escriure límits GPU?</string>
+    <string name="max_gpu_danger_body">Això escriu la finestra de freqüència gràfica i el governador als nodes GPU. Una finestra que el controlador rebutja, o un governador que no pot seguir el ritme, pot tartamudejar tota la interfície o congelar el panell. L\'aplicació registra que ho vau acceptar una vegada; la responsabilitat dels valors que apliqueu és vostra.</string>
+    <string name="max_gpu_danger_action">Ho entenc - apliqueu</string>
+    <string name="max_gpu_state_title">Temps en estat</string>
+    <string name="max_gpu_state_desc">On va passar el temps de GPU\, comptat pel nucli per freqüència de funcionament, no una instantània del rellotge actual.</string>
+    <string name="max_gpu_state_hidden_share">%1$s junts</string>
+    <string name="max_gpu_state_hidden">%1$d estats per sota de l\'1%%</string>
 </resources>

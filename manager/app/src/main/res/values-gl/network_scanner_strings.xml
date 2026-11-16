@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/network_scanner_strings.xml -->
+<resources>
+    <string name="network_scanner_title">Escáner de rede local</string>
+    <string name="network_scanner_subtitle">O teu enderezo, a porta de entrada á que chega e a que contestaron os veciños.</string>
+    <string name="max_role_network_scanner">Le a rede na que estás: sen captura, sen root.</string>
+    <string name="ns_no_network">Non hai ningunha rede conectada.</string>
+    <string name="ns_interface">Interface</string>
+    <string name="ns_address">Enderezo</string>
+    <string name="ns_gateway">Pasarela</string>
+    <string name="ns_dns">DNS</string>
+    <string name="ns_mac">MAC</string>
+    <string name="ns_transport_wifi">Wi-Fi</string>
+    <string name="ns_transport_ethernet">Ethernet</string>
+    <string name="ns_transport_cellular">Celular</string>
+    <string name="ns_transport_other">Outros</string>
+    <string name="ns_sources_title">De onde vén isto</string>
+    <string name="ns_sources_body">Os enderezos e a pasarela lense desde as propiedades das ligazóns da plataforma. A táboa de veciños lese desde a caché ARP do núcleo, polo que só contén o que este dispositivo falou recentemente: unha táboa baleira non significa unha rede baleira.</string>
+    <string name="ns_refresh">Actualizar</string>
+    <string name="ns_probe">Sonde os portos comúns</string>
+    <string name="ns_probe_stop">Pare</string>
+    <string name="ns_probe_progress">Probando %1$d de %2$d</string>
+    <string name="ns_probe_note">Envía unha conexión TCP nos portos 22, 80, 443, 5000 e 5555 a través deste /24. Infórmase dun porto que responde; o silencio non é unha proba de ausencia dun anfitrión.</string>
+    <string name="ns_neighbours">Veciños coñecidos</string>
+    <string name="ns_neighbours_note">Desde /proc/net/arp: só lectura.</string>
+    <string name="ns_neighbours_empty">Aínda non se coñecen veciños.</string>
+    <string name="ns_ports_value">Portos %1$s</string>
+</resources>

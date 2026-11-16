@@ -51,4 +51,14 @@
     <string name="copg_tweak_kso_title">Nechajte obrazovku zapnutú</string>
     <string name="copg_tweak_kso_desc">Aplikuje na túto aplikáciu vylepšenie COPG na udržiavanie obrazovky. Uložené tu, zapísané do nástroja pomocou Review a použiť na karte Spoof.</string>
     <string name="copg_tweak_needs_device">Najprv potrebuje zariadenie pre túto aplikáciu na karte Spoof.</string>
+    <string name="spoof_engine_unmeasured">Stav motora sa nemeria: zatiaľ nie je povolený prístup root. Udeľte root a potom znova otvorte túto kartu.</string>
+    <string name="spoof_engine_config_missing">COPG je nainštalovaný, ale jeho konfiguračný súbor (COPG.json) chýba. Žiadosť je odmietnutá, kým ju modul znova neposkytne.</string>
+    <string name="spoof_engine_config_unreadable">COPG je nainštalovaný, ale jeho konfiguračný súbor nie je čitateľný JSON. Žiadosť sa zamietne, kým sa súbor neopraví.</string>
+    <string name="spoof_imei_spoof">IMEI spoofing</string>
+    <string name="spoof_imei_spoof_desc">Zobrazuje tejto aplikácii iný IMEI. Vyžaduje modul Max Manager povolený v LSPosed s touto aplikáciou vo svojom rozsahu. Po zapnutí aplikáciu reštartujte.</string>
+    <string name="spoof_imei_active">Zobrazuje sa táto aplikácia: %1$s</string>
+    <string name="spoof_imei_summary">IMEI spoofing</string>
+    <string name="spoof_imei_regenerate">Nové náhodné IMEI</string>
+    <string name="spoof_imei_regenerate_desc">Vygeneruje ďalšie platné IMEI pre túto aplikáciu. Reštartujte aplikáciu, aby ste ju videli.</string>
+    <string name="spoof_imei_module_inactive">Modul Max Manager nie je povolený v LSPosed, takže aplikácie stále vidia skutočné IMEI. Povoľte modul v LSPosed, pridajte túto aplikáciu do jej rozsahu a potom znova otvorte túto obrazovku.</string>
 </resources>

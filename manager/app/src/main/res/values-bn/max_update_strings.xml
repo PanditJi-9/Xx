@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_update_strings.xml -->
+<resources>
+    <string name="update_dialog_title">আপডেট উপলব্ধ</string>
+    <string name="update_dialog_title_required">আপডেট প্রয়োজন</string>
+    <string name="update_required_notice">MaxManager ব্যবহার চালিয়ে যেতে এই আপডেটটি প্রয়োজন। এটি ইনস্টল করুন, তারপর অ্যাপটি আবার খুলুন।</string>
+    <string name="update_dialog_body">সংস্করণ %1$s উপলব্ধ। আপনি %2$s এ আছেন।</string>
+    <string name="update_block_title">চালিয়ে যেতে আপডেট প্রয়োজন</string>
+    <string name="update_block_body">এই বিল্ড (%1$s) আর সমর্থিত নয়। MaxManager ব্যবহার চালিয়ে যেতে %2$s-এ আপডেট করুন।</string>
+    <string name="update_block_body_no_release">এই বিল্ড (%1$s) আর সমর্থিত নয়।</string>
+    <string name="update_release_notes_label">নতুন কি</string>
+    <string name="update_size">ডাউনলোড সাইজ: %1$s</string>
+    <string name="update_button_now">এখনই আপডেট করুন</string>
+    <string name="update_button_later">পরে</string>
+    <string name="update_button_close">বন্ধ</string>
+    <string name="update_button_open_page">ডাউনলোড পৃষ্ঠা খুলুন</string>
+    <string name="update_state_downloading">ডাউনলোড হচ্ছে… %1$d%%</string>
+    <string name="update_state_downloading_unknown">ডাউনলোড হচ্ছে...</string>
+    <string name="update_state_installing">ইনস্টল করা হচ্ছে...</string>
+    <string name="update_error_network">আপডেট সার্ভারে পৌঁছানো যায়নি। আপনার সংযোগ পরীক্ষা করুন এবং আবার চেষ্টা করুন.</string>
+    <string name="update_error_http">আপডেট সার্ভার একটি ত্রুটির সাথে উত্তর দিয়েছে৷ পরে আবার চেষ্টা করুন.</string>
+    <string name="update_error_format">আপডেট তথ্য পড়া যায়নি.</string>
+    <string name="update_error_too_large">আপডেট তথ্য প্রত্যাশিত চেয়ে বড় এবং বাতিল করা হয়েছে.</string>
+    <string name="update_error_integrity">ডাউনলোড করা ফাইলটি তার চেকসামের সাথে মেলেনি এবং মুছে ফেলা হয়েছে।</string>
+    <string name="update_error_install">ইনস্টলেশন ব্যর্থ হয়েছে. আবার চেষ্টা করুন</string>
+    <string name="update_error_not_configured">এই বিল্ডে কোন আপডেট চ্যানেল কনফিগার করা নেই।</string>
+    <string name="update_maintenance_title">সাময়িকভাবে অনুপলব্ধ</string>
+    <string name="update_maintenance_body">MaxManager সাময়িকভাবে অনুপলব্ধ। শীঘ্রই আবার চেষ্টা করুন.</string>
+    <string name="update_check_title">আপডেটের জন্য চেক করুন</string>
+    <string name="update_check_supporting">বর্তমান সংস্করণ: %1$s</string>
+    <string name="update_check_updated">একটি আপডেট উপলব্ধ.</string>
+    <string name="update_check_uptodate">আপনি সর্বশেষ সংস্করণে আছেন।</string>
+    <string name="update_check_failed">আপডেটের জন্য চেক করা যায়নি.</string>
+    <string name="update_check_not_configured">এই বিল্ডে কোন আপডেট চ্যানেল কনফিগার করা নেই।</string>
+    <string name="update_released_label">প্রকাশের তারিখ: %1$s</string>
+    <string name="update_check_none_published">কন্ট্রোল প্যানেল থেকে এখনও কোন আপডেট প্রকাশিত হয়নি।</string>
+    <string name="update_check_link_missing">একটি আপডেট প্রকাশিত হয়েছে, কিন্তু এর ডাউনলোড লিঙ্ক অনুপস্থিত।</string>
+</resources>

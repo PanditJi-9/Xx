@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_license_strings.xml -->
+<resources>
+    <string name="max_license_title">Licens</string>
+    <string name="max_license_subtitle">Én nøgle, denne enhed, ingen konto</string>
+    <string name="max_license_help_body">En nøgle kontrolleres online én gang, når du indtaster den. Fra da af fungerer serverens signerede certifikat offline, indtil tiden løber ud - appen ringer ikke hjem, hver gang du åbner en skærm. Certifikatet er bundet til denne enheds tilfældige installations-id, så kopiering af appdata til en anden telefon medfører ikke licensen, og ejeren kan nulstille denne binding fra panelet, hvis du skifter telefon.</string>
+    <string name="max_license_status_section">Status</string>
+    <string name="max_license_status_active">Aktiv</string>
+    <string name="max_license_status_expired">Udløbet</string>
+    <string name="max_license_status_none">Ikke aktiveret</string>
+    <string name="max_license_active_detail">Resterende: %1$d dage</string>
+    <string name="max_license_expired_detail">Denne nøgles tid er forbi. En ny nøgle fornyer adgangen.</string>
+    <string name="max_license_none_detail">Indtast nøglen, du modtog for at låse de betalte overflader op.</string>
+    <string name="max_license_promo_active">Gratis for alle indtil %1$s</string>
+    <string name="max_license_plan_title">Plan</string>
+    <string name="max_license_devices_title">Enheder</string>
+    <string name="max_license_devices_detail">%1$d af %2$d brugt</string>
+    <string name="max_license_device_id_title">Denne enhed</string>
+    <string name="max_license_device_id_detail">%1$s</string>
+    <string name="max_license_key_section">Aktivering</string>
+    <string name="max_license_key_label">Licensnøgle</string>
+    <string name="max_license_key_placeholder">MAXM-XXXXX-XXXX-XXXX-XXXXX-XX</string>
+    <string name="max_license_key_helper">Tankestreger og store bogstaver betyder ikke noget - indsæt det, som du modtog det.</string>
+    <string name="max_license_activate">Aktiver</string>
+    <string name="max_license_activating">Tjekker nøglen...</string>
+    <string name="max_license_refresh">Tjek nu</string>
+    <string name="max_license_activated">Aktiveret. Denne enhed er nu knyttet til din nøgle.</string>
+    <string name="max_license_error_invalid_key">Denne nøgle ser ikke komplet ud. Tjek det og prøv igen.</string>
+    <string name="max_license_error_not_configured">Denne build har ingen licensserver konfigureret.</string>
+    <string name="max_license_error_network">Ingen forbindelse. Nøglen kontrolleres én gang og fungerer derefter offline.</string>
+    <string name="max_license_error_timeout">Licensserveren svarede ikke i tide. Prøv igen.</string>
+    <string name="max_license_error_server">Licensserveren svarede med en fejl. Prøv igen senere.</string>
+    <string name="max_license_error_client">Licensfunktionen er ikke installeret på serveren.</string>
+    <string name="max_license_error_format">Serversvaret blev ikke forstået.</string>
+    <string name="max_license_error_expired">Denne nøgle er udløbet.</string>
+    <string name="max_license_error_not_found">Denne nøgle er ikke kendt.</string>
+    <string name="max_license_error_revoked">Denne nøgle er blevet tilbagekaldt.</string>
+    <string name="max_license_error_device_limit">Denne nøgle har nået sin enhedsgrænse. Bed om en enhedsnulstilling.</string>
+    <string name="max_license_error_device_unknown">Denne enhed er ikke knyttet til nøglen endnu. Aktiver den her først.</string>
+    <string name="max_license_error_device_removed">Denne enhed blev fjernet fra nøglen af ​​ejeren.</string>
+    <string name="max_license_error_rate_limited">For mange forsøg fra denne forbindelse – vent et par minutter, og prøv derefter igen.</string>
+    <string name="max_license_error_unknown">Noget gik galt. Årsagen blev registreret i Diagnostics.</string>
+    <string name="max_license_gate_title">Denne overflade kræver en licens</string>
+    <string name="max_license_gate_detail">Det følger med en nøgle. Én tast dækker denne enhed, og indtastning af den tager et minut.</string>
+    <string name="max_feature_off_title">Slukket</string>
+    <string name="max_feature_off_detail">Kontrolpanelet har slukket denne overflade. Det kommer tilbage, så snart det er aktiveret igen.</string>
+    <string name="max_license_gate_action">Åbn licensindstillinger</string>
+    <string name="max_license_gate_subscribe">Tilmeld dig nu</string>
+    <string name="max_license_subscription_section">Abonnement</string>
+    <string name="max_license_subscription_open">Åbn abonnementssiden</string>
+</resources>

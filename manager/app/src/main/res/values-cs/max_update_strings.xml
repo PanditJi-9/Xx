@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_update_strings.xml -->
+<resources>
+    <string name="update_dialog_title">Aktualizace k dispozici</string>
+    <string name="update_dialog_title_required">Je vyžadována aktualizace</string>
+    <string name="update_required_notice">Tato aktualizace je nutná, abyste mohli nadále používat MaxManager. Nainstalujte ji a poté aplikaci znovu otevřete.</string>
+    <string name="update_dialog_body">K dispozici je verze %1$s. Jste na %2$s.</string>
+    <string name="update_block_title">Pro pokračování je vyžadována aktualizace</string>
+    <string name="update_block_body">Toto sestavení (%1$s) již není podporováno. Chcete-li nadále používat MaxManager, aktualizujte na %2$s.</string>
+    <string name="update_block_body_no_release">Toto sestavení (%1$s) již není podporováno.</string>
+    <string name="update_release_notes_label">Co je nového</string>
+    <string name="update_size">Velikost ke stažení: %1$s</string>
+    <string name="update_button_now">Aktualizujte nyní</string>
+    <string name="update_button_later">Později</string>
+    <string name="update_button_close">Blízko</string>
+    <string name="update_button_open_page">Otevřete stránku stahování</string>
+    <string name="update_state_downloading">Stahování… %1$d%%</string>
+    <string name="update_state_downloading_unknown">Stahování…</string>
+    <string name="update_state_installing">Instalace…</string>
+    <string name="update_error_network">Nelze se spojit s aktualizačním serverem. Zkontrolujte připojení a zkuste to znovu.</string>
+    <string name="update_error_http">Aktualizační server odpověděl chybou. Zkuste to znovu později.</string>
+    <string name="update_error_format">Informace o aktualizaci nelze přečíst.</string>
+    <string name="update_error_too_large">Informace o aktualizaci byly větší, než se očekávalo, a byly zahozeny.</string>
+    <string name="update_error_integrity">Stažený soubor neodpovídal svému kontrolnímu součtu a byl smazán.</string>
+    <string name="update_error_install">Instalace se nezdařila. Zkuste to znovu.</string>
+    <string name="update_error_not_configured">V tomto sestavení není nakonfigurován žádný aktualizační kanál.</string>
+    <string name="update_maintenance_title">Dočasně nedostupné</string>
+    <string name="update_maintenance_body">MaxManager je dočasně nedostupné. Zkuste to za chvíli znovu.</string>
+    <string name="update_check_title">Zkontrolujte aktualizace</string>
+    <string name="update_check_supporting">Aktuální verze: %1$s</string>
+    <string name="update_check_updated">K dispozici je aktualizace.</string>
+    <string name="update_check_uptodate">Jste na nejnovější verzi.</string>
+    <string name="update_check_failed">Nelze zkontrolovat aktualizace.</string>
+    <string name="update_check_not_configured">V tomto sestavení není nakonfigurován žádný aktualizační kanál.</string>
+    <string name="update_released_label">Datum vydání: %1$s</string>
+    <string name="update_check_none_published">Dosud nebyla zveřejněna žádná aktualizace z ovládacího panelu.</string>
+    <string name="update_check_link_missing">Aktualizace je zveřejněna, ale chybí odkaz ke stažení.</string>
+</resources>

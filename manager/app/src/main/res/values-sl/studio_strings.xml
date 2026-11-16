@@ -10,4 +10,6 @@
     <string name="studio_display">Zaslon</string>
     <string name="studio_power">Možnosti napajanja</string>
     <string name="studio_settings">nastavitve</string>
+    <string name="audio_dsp_live">DSP v živo</string>
+    <string name="max_audio_session_label">Avdio seja #%1$d</string>
 </resources>

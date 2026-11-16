@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_update_strings.xml -->
+<resources>
+    <string name="update_dialog_title">Actualizare disponibilă</string>
+    <string name="update_dialog_title_required">Actualizare necesară</string>
+    <string name="update_required_notice">Această actualizare este necesară pentru a utiliza în continuare MaxManager. Instalați-l, apoi redeschideți aplicația.</string>
+    <string name="update_dialog_body">Versiunea %1$s este disponibilă. Ești pe %2$s.</string>
+    <string name="update_block_title">Actualizare necesară pentru a continua</string>
+    <string name="update_block_body">Această versiune (%1$s) nu mai este acceptată. Actualizați la %2$s pentru a continua să utilizați MaxManager.</string>
+    <string name="update_block_body_no_release">Această versiune (%1$s) nu mai este acceptată.</string>
+    <string name="update_release_notes_label">Ce este nou</string>
+    <string name="update_size">Dimensiune descărcare: %1$s</string>
+    <string name="update_button_now">Actualizați acum</string>
+    <string name="update_button_later">Mai târziu</string>
+    <string name="update_button_close">Aproape</string>
+    <string name="update_button_open_page">Deschide pagina de descărcare</string>
+    <string name="update_state_downloading">Se descarcă... %1$d%%</string>
+    <string name="update_state_downloading_unknown">Se descarcă...</string>
+    <string name="update_state_installing">Se instalează…</string>
+    <string name="update_error_network">Nu s-a putut accesa serverul de actualizare. Verificați conexiunea și încercați din nou.</string>
+    <string name="update_error_http">Serverul de actualizare a răspuns cu o eroare. Încercați din nou mai târziu.</string>
+    <string name="update_error_format">Informațiile de actualizare nu au putut fi citite.</string>
+    <string name="update_error_too_large">Informațiile de actualizare au fost mai mari decât se aștepta și au fost eliminate.</string>
+    <string name="update_error_integrity">Fișierul descărcat nu se potrivea cu suma de control și a fost șters.</string>
+    <string name="update_error_install">Instalarea a eșuat. Încearcă din nou.</string>
+    <string name="update_error_not_configured">Niciun canal de actualizare nu este configurat în această versiune.</string>
+    <string name="update_maintenance_title">Temporar indisponibil</string>
+    <string name="update_maintenance_body">MaxManager este temporar indisponibil. Vă rugăm să încercați din nou în scurt timp.</string>
+    <string name="update_check_title">Verificați actualizările</string>
+    <string name="update_check_supporting">Versiunea curentă: %1$s</string>
+    <string name="update_check_updated">Este disponibilă o actualizare.</string>
+    <string name="update_check_uptodate">Sunteți la cea mai recentă versiune.</string>
+    <string name="update_check_failed">Nu s-au putut verifica actualizări.</string>
+    <string name="update_check_not_configured">Niciun canal de actualizare nu este configurat în această versiune.</string>
+    <string name="update_released_label">Data lansării: %1$s</string>
+    <string name="update_check_none_published">Nicio actualizare nu a fost publicată încă de la panoul de control.</string>
+    <string name="update_check_link_missing">Este publicată o actualizare, dar lipsește linkul de descărcare.</string>
+</resources>

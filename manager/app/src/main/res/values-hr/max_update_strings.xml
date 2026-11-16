@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_update_strings.xml -->
+<resources>
+    <string name="update_dialog_title">Ažuriranje dostupno</string>
+    <string name="update_dialog_title_required">Potrebno ažuriranje</string>
+    <string name="update_required_notice">Ovo ažuriranje je potrebno za nastavak upotrebe MaxManager. Instalirajte je, a zatim ponovno otvorite aplikaciju.</string>
+    <string name="update_dialog_body">Dostupna je verzija %1$s. Vi ste na %2$s.</string>
+    <string name="update_block_title">Za nastavak je potrebno ažuriranje</string>
+    <string name="update_block_body">Ova verzija (%1$s) više nije podržana. Ažurirajte na %2$s da nastavite koristiti MaxManager.</string>
+    <string name="update_block_body_no_release">Ova verzija (%1$s) više nije podržana.</string>
+    <string name="update_release_notes_label">Što je novo</string>
+    <string name="update_size">Veličina preuzimanja: %1$s</string>
+    <string name="update_button_now">Ažurirajte sada</string>
+    <string name="update_button_later">Kasnije</string>
+    <string name="update_button_close">Zatvoriti</string>
+    <string name="update_button_open_page">Otvori stranicu za preuzimanje</string>
+    <string name="update_state_downloading">Preuzimanje… %1$d%%</string>
+    <string name="update_state_downloading_unknown">Preuzimanje...</string>
+    <string name="update_state_installing">Instaliranje...</string>
+    <string name="update_error_network">Nije moguće doći do poslužitelja za ažuriranje. Provjerite vezu i pokušajte ponovno.</string>
+    <string name="update_error_http">Poslužitelj ažuriranja odgovorio je pogreškom. Pokušajte ponovno kasnije.</string>
+    <string name="update_error_format">Nije moguće pročitati informacije o ažuriranju.</string>
+    <string name="update_error_too_large">Informacije o ažuriranju bile su veće od očekivanih i odbačene su.</string>
+    <string name="update_error_integrity">Preuzeta datoteka nije odgovarala svom kontrolnom zbroju i izbrisana je.</string>
+    <string name="update_error_install">Instalacija nije uspjela. Pokušajte ponovno.</string>
+    <string name="update_error_not_configured">U ovoj verziji nije konfiguriran kanal ažuriranja.</string>
+    <string name="update_maintenance_title">Privremeno nedostupan</string>
+    <string name="update_maintenance_body">MaxManager je privremeno nedostupan. Pokušajte ponovno uskoro.</string>
+    <string name="update_check_title">Provjerite ima li ažuriranja</string>
+    <string name="update_check_supporting">Trenutna verzija: %1$s</string>
+    <string name="update_check_updated">Ažuriranje je dostupno.</string>
+    <string name="update_check_uptodate">Nalazite se na najnovijoj verziji.</string>
+    <string name="update_check_failed">Nije moguće provjeriti ima li ažuriranja.</string>
+    <string name="update_check_not_configured">U ovoj verziji nije konfiguriran kanal ažuriranja.</string>
+    <string name="update_released_label">Datum izlaska: %1$s</string>
+    <string name="update_check_none_published">Nijedno ažuriranje još nije objavljeno s upravljačke ploče.</string>
+    <string name="update_check_link_missing">Ažuriranje je objavljeno, ali nedostaje poveznica za preuzimanje.</string>
+</resources>

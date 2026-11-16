@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_license_strings.xml -->
+<resources>
+    <string name="max_license_title">Lisans</string>
+    <string name="max_license_subtitle">Tek anahtar, bu cihaz, hesap yok</string>
+    <string name="max_license_help_body">Bir anahtar, girdiğinizde çevrimiçi olarak bir kez kontrol edilir. O andan itibaren sunucunun imzalı sertifikası, süresi dolana kadar çevrimdışı çalışır; uygulama, ekranı her açtığınızda anasayfayı aramaz. Sertifika, bu cihazın rastgele yükleme kimliğine bağlıdır, dolayısıyla uygulama verilerinin başka bir telefona kopyalanması lisansı beraberinde taşımaz ve telefonu değiştirirseniz cihaz sahibi bu bağlamayı panelden sıfırlayabilir.</string>
+    <string name="max_license_status_section">Durum</string>
+    <string name="max_license_status_active">Aktif</string>
+    <string name="max_license_status_expired">Günü geçmiş</string>
+    <string name="max_license_status_none">Etkinleştirilmedi</string>
+    <string name="max_license_active_detail">Kalan: %1$d gün</string>
+    <string name="max_license_expired_detail">Bu anahtarın süresi bitti. Yeni bir anahtar erişimi yeniler.</string>
+    <string name="max_license_none_detail">Ücretli yüzeylerin kilidini açmak için aldığınız anahtarı girin.</string>
+    <string name="max_license_promo_active">%1$s tarihine kadar herkes için ücretsiz</string>
+    <string name="max_license_plan_title">Planı</string>
+    <string name="max_license_devices_title">Cihazlar</string>
+    <string name="max_license_devices_detail">%1$d / %2$d kullanıldı</string>
+    <string name="max_license_device_id_title">Bu cihaz</string>
+    <string name="max_license_device_id_detail">%1$s</string>
+    <string name="max_license_key_section">Aktivasyon</string>
+    <string name="max_license_key_label">Lisans anahtarı</string>
+    <string name="max_license_key_placeholder">MAXM-XXXXX-XXXXX-XXXXX-XXXXX-XX</string>
+    <string name="max_license_key_helper">Kısa çizgiler ve büyük harf kullanımı önemli değil; aldığınız gibi yapıştırın.</string>
+    <string name="max_license_activate">Etkinleştir</string>
+    <string name="max_license_activating">Anahtar kontrol ediliyor…</string>
+    <string name="max_license_refresh">Şimdi kontrol et</string>
+    <string name="max_license_activated">Etkinleştirildi. Bu cihaz artık anahtarınıza bağlı.</string>
+    <string name="max_license_error_invalid_key">Bu anahtar tam görünmüyor. Kontrol edip tekrar deneyin.</string>
+    <string name="max_license_error_not_configured">Bu yapıda yapılandırılmış bir lisans sunucusu yok.</string>
+    <string name="max_license_error_network">Bağlantı yok. Anahtar bir kez kontrol edilir ve ardından çevrimdışı çalışır.</string>
+    <string name="max_license_error_timeout">Lisans sunucusu zamanında yanıt vermedi. Tekrar deneyin.</string>
+    <string name="max_license_error_server">Lisans sunucusu bir hatayla yanıt verdi. Daha sonra tekrar deneyin.</string>
+    <string name="max_license_error_client">Lisans işlevi sunucuda konuşlandırılmamıştır.</string>
+    <string name="max_license_error_format">Sunucunun yanıtı anlaşılmadı.</string>
+    <string name="max_license_error_expired">Bu anahtarın süresi doldu.</string>
+    <string name="max_license_error_not_found">Bu anahtar bilinmiyor.</string>
+    <string name="max_license_error_revoked">Bu anahtar iptal edildi.</string>
+    <string name="max_license_error_device_limit">Bu anahtar cihaz sınırına ulaştı. Cihazın sıfırlanmasını isteyin.</string>
+    <string name="max_license_error_device_unknown">Bu cihaz henüz anahtara bağlanmadı. Önce burayı etkinleştirin.</string>
+    <string name="max_license_error_device_removed">Bu cihaz, sahibi tarafından anahtardan çıkarıldı.</string>
+    <string name="max_license_error_rate_limited">Bu bağlantıdan çok fazla deneme yapıldı; birkaç dakika bekleyip tekrar deneyin.</string>
+    <string name="max_license_error_unknown">Bir şeyler ters gitti. Nedeni Teşhis\'e kaydedildi.</string>
+    <string name="max_license_gate_title">Bu yüzeyin lisansa ihtiyacı var</string>
+    <string name="max_license_gate_detail">Bir anahtarla birlikte verilir. Bir anahtar bu cihazı kapsıyor ve ona girmek bir dakika sürüyor.</string>
+    <string name="max_feature_off_title">Kapatıldı</string>
+    <string name="max_feature_off_detail">Kontrol paneli bu yüzeyi kapattı. Tekrar etkinleştirildiği anda geri gelir.</string>
+    <string name="max_license_gate_action">Lisans ayarlarını aç</string>
+    <string name="max_license_gate_subscribe">Şimdi abone olun</string>
+    <string name="max_license_subscription_section">Abonelik</string>
+    <string name="max_license_subscription_open">Abonelik sayfasını açın</string>
+</resources>

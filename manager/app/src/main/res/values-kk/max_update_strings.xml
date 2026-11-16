@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_update_strings.xml -->
+<resources>
+    <string name="update_dialog_title">Жаңарту қолжетімді</string>
+    <string name="update_dialog_title_required">Жаңарту қажет</string>
+    <string name="update_required_notice">Бұл жаңарту MaxManager пайдалануды жалғастыру үшін қажет. Оны орнатыңыз, содан кейін қолданбаны қайта ашыңыз.</string>
+    <string name="update_dialog_body">%1$s нұсқасы қолжетімді. Сіз %2$s қатарындасыз.</string>
+    <string name="update_block_title">Жалғастыру үшін жаңарту қажет</string>
+    <string name="update_block_body">Бұл құрастыруға (%1$s) енді қолдау көрсетілмейді. MaxManager пайдалануды жалғастыру үшін %2$s нұсқасына жаңартыңыз.</string>
+    <string name="update_block_body_no_release">Бұл құрастыруға (%1$s) енді қолдау көрсетілмейді.</string>
+    <string name="update_release_notes_label">Не жаңалық</string>
+    <string name="update_size">Жүктеп алу өлшемі: %1$s</string>
+    <string name="update_button_now">Қазір жаңартыңыз</string>
+    <string name="update_button_later">Кейінірек</string>
+    <string name="update_button_close">Жабу</string>
+    <string name="update_button_open_page">Жүктеп алу бетін ашыңыз</string>
+    <string name="update_state_downloading">Жүктеп алынуда… %1$d%%</string>
+    <string name="update_state_downloading_unknown">Жүктеп алынуда…</string>
+    <string name="update_state_installing">Орнатылуда…</string>
+    <string name="update_error_network">Жаңарту серверіне қол жеткізу мүмкін болмады. Байланысты тексеріп, әрекетті қайталаңыз.</string>
+    <string name="update_error_http">Жаңарту сервері қатемен жауап берді. Әрекетті кейінірек қайталаңыз.</string>
+    <string name="update_error_format">Жаңарту туралы ақпаратты оқу мүмкін емес.</string>
+    <string name="update_error_too_large">Жаңарту ақпараты күтілгеннен үлкен болды және жойылды.</string>
+    <string name="update_error_integrity">Жүктелген файл бақылау сомасына сәйкес келмеді және жойылды.</string>
+    <string name="update_error_install">Орнату сәтсіз аяқталды. Қайтадан байқап көріңіз.</string>
+    <string name="update_error_not_configured">Бұл құрылымда жаңарту арнасы конфигурацияланбаған.</string>
+    <string name="update_maintenance_title">Уақытша қолжетімсіз</string>
+    <string name="update_maintenance_body">MaxManager уақытша қолжетімсіз. Жақында қайталап көріңіз.</string>
+    <string name="update_check_title">Жаңартуларды тексеріңіз</string>
+    <string name="update_check_supporting">Ағымдағы нұсқасы: %1$s</string>
+    <string name="update_check_updated">Жаңарту қолжетімді.</string>
+    <string name="update_check_uptodate">Сіз соңғы нұсқадасыз.</string>
+    <string name="update_check_failed">Жаңартуларды тексеру мүмкін болмады.</string>
+    <string name="update_check_not_configured">Бұл құрылымда жаңарту арнасы конфигурацияланбаған.</string>
+    <string name="update_released_label">Шығарылған күні: %1$s</string>
+    <string name="update_check_none_published">Басқару тақтасынан әлі ешқандай жаңарту жарияланған жоқ.</string>
+    <string name="update_check_link_missing">Жаңарту жарияланды, бірақ оның жүктеп алу сілтемесі жоқ.</string>
+</resources>

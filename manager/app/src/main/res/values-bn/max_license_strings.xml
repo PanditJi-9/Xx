@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_license_strings.xml -->
+<resources>
+    <string name="max_license_title">লাইসেন্স</string>
+    <string name="max_license_subtitle">একটি কী, এই ডিভাইস, কোনো অ্যাকাউন্ট নেই</string>
+    <string name="max_license_help_body">একটি কী অনলাইনে একবার চেক করা হয়, যখন আপনি এটি প্রবেশ করেন। তারপর থেকে সার্ভারের স্বাক্ষরিত শংসাপত্র অফলাইনে কাজ করে যতক্ষণ না এর সময় শেষ হয় — আপনি যখনই একটি স্ক্রীন খুলবেন তখন অ্যাপটি বাড়িতে কল করবে না। শংসাপত্রটি এই ডিভাইসের র্যান্ডম ইনস্টল আইডির সাথে আবদ্ধ, তাই অন্য ফোনে অ্যাপ ডেটা অনুলিপি করা লাইসেন্সটি বহন করে না, এবং আপনি ফোন পরিবর্তন করলে মালিক প্যানেল থেকে সেই বাঁধাই পুনরায় সেট করতে পারেন৷</string>
+    <string name="max_license_status_section">স্ট্যাটাস</string>
+    <string name="max_license_status_active">সক্রিয়</string>
+    <string name="max_license_status_expired">মেয়াদ শেষ</string>
+    <string name="max_license_status_none">সক্রিয় করা হয়নি</string>
+    <string name="max_license_active_detail">অবশিষ্ট: %1$d দিন</string>
+    <string name="max_license_expired_detail">এই কীর সময় শেষ। একটি নতুন কী অ্যাক্সেস পুনর্নবীকরণ.</string>
+    <string name="max_license_none_detail">প্রদত্ত সারফেস আনলক করতে আপনি যে কী পেয়েছেন তা লিখুন।</string>
+    <string name="max_license_promo_active">%1$s পর্যন্ত সবার জন্য বিনামূল্যে</string>
+    <string name="max_license_plan_title">পরিকল্পনা</string>
+    <string name="max_license_devices_title">ডিভাইস</string>
+    <string name="max_license_devices_detail">%2$d এর %1$d ব্যবহার করা হয়েছে</string>
+    <string name="max_license_device_id_title">এই ডিভাইস</string>
+    <string name="max_license_device_id_detail">%1$s</string>
+    <string name="max_license_key_section">সক্রিয়করণ</string>
+    <string name="max_license_key_label">লাইসেন্স কী</string>
+    <string name="max_license_key_placeholder">MAXM-XXXXX-XXXXX-XXXXX-XXXXX-XX</string>
+    <string name="max_license_key_helper">ড্যাশ এবং ক্যাপিটালাইজেশন কোন ব্যাপার না — আপনি এটি পেয়েছেন হিসাবে পেস্ট করুন।</string>
+    <string name="max_license_activate">সক্রিয় করুন</string>
+    <string name="max_license_activating">চাবি পরীক্ষা করা হচ্ছে...</string>
+    <string name="max_license_refresh">এখন পরীক্ষা করুন</string>
+    <string name="max_license_activated">সক্রিয় এই ডিভাইসটি এখন আপনার কী এর সাথে লিঙ্ক করা হয়েছে।</string>
+    <string name="max_license_error_invalid_key">এই কী সম্পূর্ণ দেখায় না। এটি পরীক্ষা করুন এবং আবার চেষ্টা করুন.</string>
+    <string name="max_license_error_not_configured">এই বিল্ডের কোন লাইসেন্স সার্ভার কনফিগার করা নেই।</string>
+    <string name="max_license_error_network">সংযোগ নেই। কী একবার চেক করা হয়, তারপর অফলাইনে কাজ করে।</string>
+    <string name="max_license_error_timeout">লাইসেন্স সার্ভার সময়মত উত্তর দেয়নি। আবার চেষ্টা করুন</string>
+    <string name="max_license_error_server">লাইসেন্স সার্ভার একটি ত্রুটির সাথে উত্তর দিয়েছে৷ পরে আবার চেষ্টা করুন.</string>
+    <string name="max_license_error_client">লাইসেন্স ফাংশন সার্ভারে স্থাপন করা হয় না.</string>
+    <string name="max_license_error_format">সার্ভার উত্তর বোঝা যায়নি.</string>
+    <string name="max_license_error_expired">এই কী মেয়াদ শেষ হয়েছে.</string>
+    <string name="max_license_error_not_found">এই চাবিটি জানা নেই।</string>
+    <string name="max_license_error_revoked">এই কী প্রত্যাহার করা হয়েছে৷</string>
+    <string name="max_license_error_device_limit">এই কী এর ডিভাইসের সীমাতে পৌঁছেছে। একটি ডিভাইস রিসেট জন্য জিজ্ঞাসা করুন.</string>
+    <string name="max_license_error_device_unknown">এই ডিভাইসটি এখনও কীটির সাথে লিঙ্ক করা হয়নি৷ প্রথমে এখানে এটি সক্রিয় করুন।</string>
+    <string name="max_license_error_device_removed">এই ডিভাইসটি মালিক দ্বারা চাবি থেকে সরানো হয়েছে৷</string>
+    <string name="max_license_error_rate_limited">এই সংযোগ থেকে অনেক প্রচেষ্টা — কয়েক মিনিট অপেক্ষা করুন, তারপর আবার চেষ্টা করুন.</string>
+    <string name="max_license_error_unknown">কিছু ভুল হয়েছে কারণটি ডায়াগনস্টিকসে রেকর্ড করা হয়েছিল।</string>
+    <string name="max_license_gate_title">এই পৃষ্ঠ একটি লাইসেন্স প্রয়োজন</string>
+    <string name="max_license_gate_detail">এটি একটি চাবি সঙ্গে অন্তর্ভুক্ত করা হয়. একটি কী এই ডিভাইসটিকে কভার করে এবং এটি প্রবেশ করতে এক মিনিট সময় লাগে৷</string>
+    <string name="max_feature_off_title">বন্ধ</string>
+    <string name="max_feature_off_detail">কন্ট্রোল প্যানেল এই পৃষ্ঠটি বন্ধ করে দিয়েছে। এটি আবার চালু হওয়ার সাথে সাথে এটি ফিরে আসে।</string>
+    <string name="max_license_gate_action">লাইসেন্স সেটিংস খুলুন</string>
+    <string name="max_license_gate_subscribe">এখন সদস্যতা</string>
+    <string name="max_license_subscription_section">সাবস্ক্রিপশন</string>
+    <string name="max_license_subscription_open">সদস্যতা পৃষ্ঠা খুলুন</string>
+</resources>

@@ -53,4 +53,8 @@
     <string name="max_title_get_started">Sozlash; o\'rnatish</string>
     <string name="max_hub_audio">Audio</string>
     <string name="max_hub_audio_desc">Chiqish qurilmalari, oqimlar va e\'lon qilingan effektlar</string>
+    <string name="control_tools_live">Jonli yuzalar</string>
+    <string name="control_tools_advanced">Murakkab vositalar</string>
+    <string name="control_tools_system">Tizim vositalari</string>
+    <string name="control_tools_appearance">Tashqi ko\'rinish</string>
 </resources>

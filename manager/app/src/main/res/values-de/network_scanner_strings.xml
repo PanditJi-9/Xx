@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/network_scanner_strings.xml -->
+<resources>
+    <string name="network_scanner_title">Lokaler Netzwerkscanner</string>
+    <string name="network_scanner_subtitle">Ihre Adresse, das Gateway, das es erreicht, und welche Nachbarn geantwortet haben.</string>
+    <string name="max_role_network_scanner">Liest das Netzwerk, in dem Sie sich befinden – keine Erfassung, kein Root.</string>
+    <string name="ns_no_network">Es ist kein Netzwerk verbunden.</string>
+    <string name="ns_interface">Schnittstelle</string>
+    <string name="ns_address">Adresse</string>
+    <string name="ns_gateway">Tor</string>
+    <string name="ns_dns">DNS</string>
+    <string name="ns_mac">MAC</string>
+    <string name="ns_transport_wifi">W-lan</string>
+    <string name="ns_transport_ethernet">Ethernet</string>
+    <string name="ns_transport_cellular">Mobilfunk</string>
+    <string name="ns_transport_other">Andere</string>
+    <string name="ns_sources_title">Woher das kommt</string>
+    <string name="ns_sources_body">Adressen und Gateway werden aus den Linkeigenschaften der Plattform gelesen. Die Nachbartabelle wird aus dem ARP-Cache des Kernels gelesen und enthält daher nur das, mit dem dieses Gerät kürzlich kommuniziert hat – eine leere Tabelle bedeutet nicht, dass das Netzwerk leer ist.</string>
+    <string name="ns_refresh">Aktualisieren</string>
+    <string name="ns_probe">Gemeinsame Ports prüfen</string>
+    <string name="ns_probe_stop">Stoppen</string>
+    <string name="ns_probe_progress">Sondierung von %1$d von %2$d</string>
+    <string name="ns_probe_note">Sendet eine TCP-Verbindung an die Ports 22, 80, 443, 5000 und 5555 über diesen /24. Ein Port, der antwortet, wird gemeldet; Schweigen ist kein Beweis dafür, dass ein Gastgeber abwesend ist.</string>
+    <string name="ns_neighbours">Bekannte Nachbarn</string>
+    <string name="ns_neighbours_note">Von /proc/net/arp – schreibgeschützt.</string>
+    <string name="ns_neighbours_empty">Es sind noch keine Nachbarn bekannt.</string>
+    <string name="ns_ports_value">Häfen %1$s</string>
+</resources>

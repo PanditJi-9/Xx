@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/network_scanner_strings.xml -->
+<resources>
+    <string name="network_scanner_title">പ്രാദേശിക നെറ്റ്‌വർക്ക് സ്കാനർ</string>
+    <string name="network_scanner_subtitle">നിങ്ങളുടെ വിലാസം, അത് എത്തുന്ന ഗേറ്റ്‌വേ, ഏത് അയൽക്കാർ ഉത്തരം നൽകി.</string>
+    <string name="max_role_network_scanner">നിങ്ങൾ ഉള്ള നെറ്റ്‌വർക്ക് വായിക്കുന്നു - ക്യാപ്‌ചർ ഇല്ല, റൂട്ട് ഇല്ല.</string>
+    <string name="ns_no_network">നെറ്റ്‌വർക്കൊന്നും ബന്ധിപ്പിച്ചിട്ടില്ല.</string>
+    <string name="ns_interface">ഇൻ്റർഫേസ്</string>
+    <string name="ns_address">വിലാസം</string>
+    <string name="ns_gateway">ഗേറ്റ്‌വേ</string>
+    <string name="ns_dns">ഡിഎൻഎസ്</string>
+    <string name="ns_mac">MAC</string>
+    <string name="ns_transport_wifi">വൈഫൈ</string>
+    <string name="ns_transport_ethernet">ഇഥർനെറ്റ്</string>
+    <string name="ns_transport_cellular">സെല്ലുലാർ</string>
+    <string name="ns_transport_other">മറ്റുള്ളവ</string>
+    <string name="ns_sources_title">ഇത് എവിടെ നിന്ന് വരുന്നു</string>
+    <string name="ns_sources_body">വിലാസങ്ങളും ഗേറ്റ്‌വേയും പ്ലാറ്റ്‌ഫോമിൻ്റെ ലിങ്ക് പ്രോപ്പർട്ടികളിൽ നിന്ന് വായിക്കുന്നു. കേർണലിൻ്റെ ARP കാഷെയിൽ നിന്നാണ് അയൽപക്ക പട്ടിക വായിക്കുന്നത്, അതിനാൽ ഈ ഉപകരണം അടുത്തിടെ സംസാരിച്ചത് മാത്രം ഉൾക്കൊള്ളുന്നു - ശൂന്യമായ ടേബിൾ അർത്ഥമാക്കുന്നത് ശൂന്യമായ നെറ്റ്‌വർക്ക് എന്നല്ല.</string>
+    <string name="ns_refresh">പുതുക്കുക</string>
+    <string name="ns_probe">സാധാരണ തുറമുഖങ്ങൾ പരിശോധിക്കുക</string>
+    <string name="ns_probe_stop">നിർത്തുക</string>
+    <string name="ns_probe_progress">%1$d ഓഫ് %2$d അന്വേഷിക്കുന്നു</string>
+    <string name="ns_probe_note">ഈ /24-ൽ ഉടനീളമുള്ള 22, 80, 443, 5000, 5555 എന്നീ പോർട്ടുകളിൽ ഒരു TCP കണക്ഷൻ അയയ്ക്കുന്നു. ഉത്തരം നൽകുന്ന ഒരു പോർട്ട് റിപ്പോർട്ടുചെയ്‌തു; ആതിഥേയൻ ഇല്ലെന്നതിൻ്റെ തെളിവല്ല നിശബ്ദത.</string>
+    <string name="ns_neighbours">അറിയപ്പെടുന്ന അയൽക്കാർ</string>
+    <string name="ns_neighbours_note">/proc/net/arp-ൽ നിന്ന് - വായിക്കാൻ മാത്രം.</string>
+    <string name="ns_neighbours_empty">അയൽവാസികളെ ഇതുവരെ അറിയില്ല.</string>
+    <string name="ns_ports_value">തുറമുഖങ്ങൾ %1$s</string>
+</resources>

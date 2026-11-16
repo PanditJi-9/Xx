@@ -69,4 +69,25 @@
     <string name="max_perms_entry_title">Toestemmings &amp; App ops</string>
     <string name="max_perms_entry_desc">Kyk wat hierdie toepassing verklaar en wat die stelsel eintlik toelaat</string>
     <string name="max_perms_entry_action">Maak toestemmings oop</string>
+    <string name="max_perms_manifest_title">Manifesteerde opsomming</string>
+    <string name="max_perms_manifest_desc">Lees uit die pakketbestuurder: weergawe, SDK-reeks, komponente en hoeveel daarvan uitgevoer word. \'n Uitgevoerde komponent kan deur ander toepassings begin word.</string>
+    <string name="max_perms_manifest_version">Weergawe</string>
+    <string name="max_perms_manifest_sdk">SDK-reeks</string>
+    <string name="max_perms_manifest_location">Installeer ligging</string>
+    <string name="max_perms_manifest_location_auto">Outomatiese</string>
+    <string name="max_perms_manifest_location_internal">Slegs interne berging</string>
+    <string name="max_perms_manifest_location_external">Verkies ekstern</string>
+    <string name="max_perms_manifest_components">Komponente</string>
+    <string name="max_perms_manifest_components_order">aktiwiteite · dienste · ontvangers · verskaffers</string>
+    <string name="max_perms_manifest_exported">Uitgevoerde komponente</string>
+    <string name="max_perms_manifest_splits">Verdeel APK\'s</string>
+    <string name="max_perms_manifest_debug">Ontfoutbaar</string>
+    <string name="max_perms_features_title">Verklaarde kenmerke</string>
+    <string name="max_perms_features_desc">Wat die pakket van die toestel vereis, in vergelyking met wat hierdie toestel adverteer. \'n Vereiste kenmerk wat hier ontbreek, beteken gewoonlik dat die toepassing nie ten volle sal werk nie - dit is \'n eis van die pakketbestuurder, nie \'n raaiskoot nie.</string>
+    <string name="max_perms_features_loading">Lees tans die pakket se verklaarde kenmerke...</string>
+    <string name="max_perms_features_none">Die pakket verklaar geen vereiste kenmerke nie.</string>
+    <string name="max_perms_features_required">Vereis</string>
+    <string name="max_perms_features_unsupported">Nie op hierdie toestel nie</string>
+    <string name="max_perms_manifest_none">Nie deur die pakketbestuurder gerapporteer nie.</string>
+    <string name="max_perms_manifest_unknown">Onbekend</string>
 </resources>

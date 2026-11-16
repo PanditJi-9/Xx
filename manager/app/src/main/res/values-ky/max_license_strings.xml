@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_license_strings.xml -->
+<resources>
+    <string name="max_license_title">Лицензия</string>
+    <string name="max_license_subtitle">Бир ачкыч, бул түзмөк, эсеп жок</string>
+    <string name="max_license_help_body">Ачкычты киргизгениңизде бир жолу онлайн текшерилет. Ошондон баштап сервердин кол коюлган сертификаты анын убактысы бүткүчө оффлайн режиминде иштейт — экранды ачкан сайын колдонмо үйгө чалбайт. Сертификат бул түзмөктүн туш келди орнотуу идентификаторуна байланган, андыктан колдонмонун дайындарын башка телефонго көчүрүү лицензияны алып келбейт жана телефонду алмаштырсаңыз, ээси панелден ал байланышты баштапкы абалга келтире алат.</string>
+    <string name="max_license_status_section">Статус</string>
+    <string name="max_license_status_active">Активдүү</string>
+    <string name="max_license_status_expired">Мөөнөтү бүттү</string>
+    <string name="max_license_status_none">Жандырылган эмес</string>
+    <string name="max_license_active_detail">Калган: %1$d күн</string>
+    <string name="max_license_expired_detail">Бул ачкычтын убактысы бүттү. Жаңы ачкыч мүмкүнчүлүктү жаңылайт.</string>
+    <string name="max_license_none_detail">Төлөнүүчү беттердин кулпусун ачуу үчүн алган ачкычты киргизиңиз.</string>
+    <string name="max_license_promo_active">%1$s чейин бардыгы үчүн акысыз</string>
+    <string name="max_license_plan_title">План</string>
+    <string name="max_license_devices_title">Түзмөктөр</string>
+    <string name="max_license_devices_detail">%1$d ичинен %2$d колдонулган</string>
+    <string name="max_license_device_id_title">Бул аппарат</string>
+    <string name="max_license_device_id_detail">%1$s</string>
+    <string name="max_license_key_section">Активдештирүү</string>
+    <string name="max_license_key_label">Лицензия ачкычы</string>
+    <string name="max_license_key_placeholder">MAXM-XXXXX-XXXXX-XXXXX-XXXXX-XX</string>
+    <string name="max_license_key_helper">Тирелер жана баш тамгалар маанилүү эмес — аны кандай кабыл алсаңыз, ошондой чаптаңыз.</string>
+    <string name="max_license_activate">Иштетүү</string>
+    <string name="max_license_activating">Ачкыч текшерилүүдө…</string>
+    <string name="max_license_refresh">Азыр текшериңиз</string>
+    <string name="max_license_activated">Жандырылды. Бул түзмөк эми ачкычыңызга туташтырылган.</string>
+    <string name="max_license_error_invalid_key">Бул ачкыч толук көрүнбөйт. Аны текшерип, кайра аракет кылыңыз.</string>
+    <string name="max_license_error_not_configured">Бул түзүүдө конфигурацияланган лицензия сервери жок.</string>
+    <string name="max_license_error_network">Байланыш жок. Ачкыч бир жолу текшерилет, андан кийин оффлайн режиминде иштейт.</string>
+    <string name="max_license_error_timeout">Лицензия сервери өз убагында жооп берген жок. Кайра аракет кыл.</string>
+    <string name="max_license_error_server">Лицензия сервери ката менен жооп берди. Кийинчерээк кайра аракет кылыңыз.</string>
+    <string name="max_license_error_client">Лицензия функциясы серверде орнотулган эмес.</string>
+    <string name="max_license_error_format">Сервердин жообу түшүнгөн жок.</string>
+    <string name="max_license_error_expired">Бул ачкычтын мөөнөтү бүттү.</string>
+    <string name="max_license_error_not_found">Бул ачкыч белгисиз.</string>
+    <string name="max_license_error_revoked">Бул ачкыч жокко чыгарылды.</string>
+    <string name="max_license_error_device_limit">Бул ачкыч түзмөгүнүн чегине жетти. Түзмөктү баштапкы абалга келтирүүнү сураныңыз.</string>
+    <string name="max_license_error_device_unknown">Бул түзмөк азырынча ачкычка туташа элек. Адегенде аны бул жерден иштетиңиз.</string>
+    <string name="max_license_error_device_removed">Бул түзмөк ээси тарабынан ачкычтан алынып салынган.</string>
+    <string name="max_license_error_rate_limited">Бул туташуудан өтө көп аракет болду — бир нече мүнөт күтө туруп, кайра аракет кыл.</string>
+    <string name="max_license_error_unknown">Бир жерден ката кетти. Себеби Диагностикада жазылган.</string>
+    <string name="max_license_gate_title">Бул жердин лицензиясы керек</string>
+    <string name="max_license_gate_detail">Ал ачкыч менен кошо берилет. Бир ачкыч бул түзмөктү камтыйт жана аны киргизүү бир мүнөт талап кылынат.</string>
+    <string name="max_feature_off_title">Өчүрүлгөн</string>
+    <string name="max_feature_off_detail">Башкаруу панели бул бетти өчүрдү. Ал кайра иштетилгенден кийин кайра келет.</string>
+    <string name="max_license_gate_action">Лицензия орнотууларын ачыңыз</string>
+    <string name="max_license_gate_subscribe">Азыр жазылыңыз</string>
+    <string name="max_license_subscription_section">Жазылуу</string>
+    <string name="max_license_subscription_open">Жазылуу барагын ачыңыз</string>
+</resources>

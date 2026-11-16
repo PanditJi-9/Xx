@@ -13,4 +13,23 @@
     <string name="max_expand_section">Erakutsi xehetasunak</string>
     <string name="max_collapse_section">Ezkutatu xehetasunak</string>
     <string name="max_trust_loading">Irakurtzen…</string>
+    <string name="max_gov_title">Nork agintzen du orain</string>
+    <string name="max_gov_separator">" › "</string>
+    <string name="max_gov_order_note">Ordena finkoa: maila altuago batek beherago bat blokeatzen du. Ez da inoiz aldatzen zein politikak irabazten duen.</string>
+    <string name="max_gov_open_details">Titular aktiboak</string>
+    <string name="max_gov_active_title">Kontrola duenak</string>
+    <string name="max_gov_none">Ez dago politikarik hardware-kontrol baten jabea une honetan.</string>
+    <string name="max_gov_count">Kontrol aktiboko errentamenduak: %1$d</string>
+    <string name="max_gov_requested">Eskatutakoa: %1$s</string>
+    <string name="max_gov_owner_recovery">Berreskuratzea</string>
+    <string name="max_gov_owner_safety">Segurtasun termikoa</string>
+    <string name="max_gov_owner_per_app">Aplikazioaren profila</string>
+    <string name="max_gov_owner_max_ai">Max AI</string>
+    <string name="max_gov_owner_global">Profil globala</string>
+    <string name="max_gov_owner_system">Sistema</string>
+    <string name="max_gov_owner_a11y">%1$s hardware-kontrol baten jabea da</string>
+    <string name="max_gov_now_none">Ez dago jabe automatikorik une honetan; kontrola zurea da</string>
+    <string name="max_gov_now_one">%1$s kontrol bat dauka</string>
+    <string name="max_gov_now_many">%1$s %2$d kontrolak eusten ditu</string>
+    <string name="devinfo_details">Xehetasunak</string>
 </resources>

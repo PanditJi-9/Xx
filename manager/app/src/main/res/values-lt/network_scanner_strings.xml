@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/network_scanner_strings.xml -->
+<resources>
+    <string name="network_scanner_title">Vietinio tinklo skaitytuvas</string>
+    <string name="network_scanner_subtitle">Jūsų adresas, vartai, kuriuos jis pasiekia, ir į kuriuos kaimynus atsakė.</string>
+    <string name="max_role_network_scanner">Skaito tinklą, kuriame esate – jokio fiksavimo, jokios šaknies.</string>
+    <string name="ns_no_network">Tinklas neprijungtas.</string>
+    <string name="ns_interface">Sąsaja</string>
+    <string name="ns_address">Adresas</string>
+    <string name="ns_gateway">Vartai</string>
+    <string name="ns_dns">DNS</string>
+    <string name="ns_mac">MAC</string>
+    <string name="ns_transport_wifi">Wi-Fi</string>
+    <string name="ns_transport_ethernet">Ethernet</string>
+    <string name="ns_transport_cellular">Korinis</string>
+    <string name="ns_transport_other">Kita</string>
+    <string name="ns_sources_title">Iš kur tai atsiranda</string>
+    <string name="ns_sources_body">Adresai ir šliuzai nuskaitomi iš platformos nuorodų ypatybių. Kaimyninė lentelė nuskaitoma iš branduolio ARP talpyklos, todėl joje saugoma tik tai, su kuo šis įrenginys neseniai kalbėjo – tuščia lentelė nereiškia tuščio tinklo.</string>
+    <string name="ns_refresh">Atnaujinti</string>
+    <string name="ns_probe">Išbandykite bendruosius prievadus</string>
+    <string name="ns_probe_stop">Sustok</string>
+    <string name="ns_probe_progress">Zonduojama %1$d iš %2$d</string>
+    <string name="ns_probe_note">Siunčia TCP ryšį per 22, 80, 443, 5000 ir 5555 prievadus per šį /24. Pranešama apie prievadą, kuris atsako; tyla nėra įrodymas, kad šeimininko nėra.</string>
+    <string name="ns_neighbours">Žinomi kaimynai</string>
+    <string name="ns_neighbours_note">Iš /proc/net/arp – tik skaityti.</string>
+    <string name="ns_neighbours_empty">Kaimynai kol kas nežinomi.</string>
+    <string name="ns_ports_value">Prievadai %1$s</string>
+</resources>

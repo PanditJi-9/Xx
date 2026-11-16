@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_update_strings.xml -->
+<resources>
+    <string name="update_dialog_title">Galimas atnaujinimas</string>
+    <string name="update_dialog_title_required">Reikia atnaujinti</string>
+    <string name="update_required_notice">Šis naujinimas reikalingas norint toliau naudoti MaxManager. Įdiekite ją, tada iš naujo atidarykite programą.</string>
+    <string name="update_dialog_body">Yra versija %1$s. Jūs esate %2$s.</string>
+    <string name="update_block_title">Norint tęsti, reikia atnaujinti</string>
+    <string name="update_block_body">Ši versija (%1$s) nebepalaikoma. Atnaujinkite į %2$s, kad toliau naudotumėte MaxManager.</string>
+    <string name="update_block_body_no_release">Ši versija (%1$s) nebepalaikoma.</string>
+    <string name="update_release_notes_label">Kas naujo</string>
+    <string name="update_size">Atsisiuntimo dydis: %1$s</string>
+    <string name="update_button_now">Atnaujinkite dabar</string>
+    <string name="update_button_later">Vėliau</string>
+    <string name="update_button_close">Uždaryti</string>
+    <string name="update_button_open_page">Atidaryti atsisiuntimo puslapį</string>
+    <string name="update_state_downloading">Atsisiunčiama… %1$d%%</string>
+    <string name="update_state_downloading_unknown">Atsisiunčiama…</string>
+    <string name="update_state_installing">Diegiama…</string>
+    <string name="update_error_network">Nepavyko pasiekti naujinimo serverio. Patikrinkite ryšį ir bandykite dar kartą.</string>
+    <string name="update_error_http">Atnaujinimo serveris atsakė su klaida. Vėliau bandykite dar kartą.</string>
+    <string name="update_error_format">Nepavyko nuskaityti atnaujinimo informacijos.</string>
+    <string name="update_error_too_large">Atnaujinimo informacija buvo didesnė nei tikėtasi ir buvo atmesta.</string>
+    <string name="update_error_integrity">Atsisiųstas failas neatitiko kontrolinės sumos ir buvo ištrintas.</string>
+    <string name="update_error_install">Diegimas nepavyko. Bandykite dar kartą.</string>
+    <string name="update_error_not_configured">Šiame versijoje nėra sukonfigūruotas naujinimo kanalas.</string>
+    <string name="update_maintenance_title">Laikinai nepasiekiamas</string>
+    <string name="update_maintenance_body">MaxManager laikinai nepasiekiamas. Netrukus bandykite dar kartą.</string>
+    <string name="update_check_title">Patikrinkite, ar nėra atnaujinimų</string>
+    <string name="update_check_supporting">Dabartinė versija: %1$s</string>
+    <string name="update_check_updated">Yra atnaujinimas.</string>
+    <string name="update_check_uptodate">Jūs naudojate naujausią versiją.</string>
+    <string name="update_check_failed">Nepavyko patikrinti, ar yra naujinimų.</string>
+    <string name="update_check_not_configured">Šiame versijoje nėra sukonfigūruotas naujinimo kanalas.</string>
+    <string name="update_released_label">Išleidimo data: %1$s</string>
+    <string name="update_check_none_published">Valdymo skydelyje dar nepaskelbtas joks atnaujinimas.</string>
+    <string name="update_check_link_missing">Atnaujinimas paskelbtas, bet nėra jo atsisiuntimo nuorodos.</string>
+</resources>

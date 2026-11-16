@@ -13,4 +13,23 @@
     <string name="max_expand_section">प्रदर्शन का विवरण</string>
     <string name="max_collapse_section">विवरण छुपाओ</string>
     <string name="max_trust_loading">पढ़ना…</string>
+    <string name="max_gov_title">अब कौन राज करता है</string>
+    <string name="max_gov_separator">" › "</string>
+    <string name="max_gov_order_note">निश्चित क्रम: ऊँचा पायदान निचले पायदान को रोकता है। यह कभी नहीं बदलता कि कौन सी नीति जीतती है।</string>
+    <string name="max_gov_open_details">सक्रिय धारक</string>
+    <string name="max_gov_active_title">नियंत्रण किसके पास है</string>
+    <string name="max_gov_none">अभी किसी भी नीति के पास हार्डवेयर नियंत्रण नहीं है।</string>
+    <string name="max_gov_count">सक्रिय नियंत्रण पट्टे: %1$d</string>
+    <string name="max_gov_requested">अनुरोध: %1$s</string>
+    <string name="max_gov_owner_recovery">वसूली</string>
+    <string name="max_gov_owner_safety">थर्मल सुरक्षा</string>
+    <string name="max_gov_owner_per_app">ऐप प्रोफ़ाइल</string>
+    <string name="max_gov_owner_max_ai">Max AI</string>
+    <string name="max_gov_owner_global">वैश्विक प्रोफ़ाइल</string>
+    <string name="max_gov_owner_system">प्रणाली</string>
+    <string name="max_gov_owner_a11y">%1$s के पास हार्डवेयर नियंत्रण है</string>
+    <string name="max_gov_now_none">अभी कोई स्वचालित स्वामी नहीं - नियंत्रण आपका है</string>
+    <string name="max_gov_now_one">%1$s नियंत्रण रखता है</string>
+    <string name="max_gov_now_many">%1$s %2$d नियंत्रण रखता है</string>
+    <string name="devinfo_details">विवरण</string>
 </resources>

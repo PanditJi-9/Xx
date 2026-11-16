@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_license_strings.xml -->
+<resources>
+    <string name="max_license_title">Leyfi</string>
+    <string name="max_license_subtitle">Einn lykill, þetta tæki, enginn aðgangur</string>
+    <string name="max_license_help_body">Lykill er skoðaður á netinu einu sinni þegar þú slærð hann inn. Upp frá því virkar undirritað vottorð netþjónsins án nettengingar þar til tíminn rennur út - appið hringir ekki heim í hvert skipti sem þú opnar skjá. Vottorðið er bundið handahófskenndu uppsetningarauðkenni þessa tækis, svo að afrita forritsgögnin í annan síma ber ekki leyfið með sér og eigandinn getur endurstillt þá bindingu frá pallborðinu ef þú skiptir um síma.</string>
+    <string name="max_license_status_section">Staða</string>
+    <string name="max_license_status_active">Virkur</string>
+    <string name="max_license_status_expired">Útrunnið</string>
+    <string name="max_license_status_none">Ekki virkjað</string>
+    <string name="max_license_active_detail">Eftir: %1$d dagar</string>
+    <string name="max_license_expired_detail">Tími þessa lykils er liðinn. Nýr lykill endurnýjar aðgang.</string>
+    <string name="max_license_none_detail">Sláðu inn lykilinn sem þú fékkst til að opna greidda fleti.</string>
+    <string name="max_license_promo_active">Frítt fyrir alla til %1$s</string>
+    <string name="max_license_plan_title">Áætlun</string>
+    <string name="max_license_devices_title">Tæki</string>
+    <string name="max_license_devices_detail">%1$d af %2$d notað</string>
+    <string name="max_license_device_id_title">Þetta tæki</string>
+    <string name="max_license_device_id_detail">%1$s</string>
+    <string name="max_license_key_section">Virkjun</string>
+    <string name="max_license_key_label">Leyfislykill</string>
+    <string name="max_license_key_placeholder">MAXM-XXXXX-XXXX-XXXX-XXXXX-XX</string>
+    <string name="max_license_key_helper">Strik og hástafir skipta ekki máli - límdu það eins og þú fékkst það.</string>
+    <string name="max_license_activate">Virkjaðu</string>
+    <string name="max_license_activating">Athugar lykilinn...</string>
+    <string name="max_license_refresh">Athugaðu núna</string>
+    <string name="max_license_activated">Virkjað. Þetta tæki er nú tengt við lykilinn þinn.</string>
+    <string name="max_license_error_invalid_key">Þessi lykill lítur ekki út fyrir að vera heill. Athugaðu það og reyndu aftur.</string>
+    <string name="max_license_error_not_configured">Þessi smíði hefur engan leyfisþjón stilltan.</string>
+    <string name="max_license_error_network">Engin tenging. Lykillinn er skoðaður einu sinni og virkar síðan án nettengingar.</string>
+    <string name="max_license_error_timeout">Leyfisþjónninn svaraði ekki í tæka tíð. Reyndu aftur.</string>
+    <string name="max_license_error_server">Leyfisþjónninn svaraði með villu. Reyndu aftur síðar.</string>
+    <string name="max_license_error_client">Leyfisaðgerðin er ekki notuð á þjóninum.</string>
+    <string name="max_license_error_format">Svar þjónsins var ekki skilið.</string>
+    <string name="max_license_error_expired">Þessi lykill er útrunninn.</string>
+    <string name="max_license_error_not_found">Þessi lykill er ekki þekktur.</string>
+    <string name="max_license_error_revoked">Þessi lykill hefur verið afturkallaður.</string>
+    <string name="max_license_error_device_limit">Þessi lykill hefur náð tækjatakmörkunum sínum. Biddu um endurstillingu tækisins.</string>
+    <string name="max_license_error_device_unknown">Þetta tæki er ekki enn tengt við lykilinn. Virkjaðu það hér fyrst.</string>
+    <string name="max_license_error_device_removed">Þetta tæki var tekið úr lyklinum af eigandanum.</string>
+    <string name="max_license_error_rate_limited">Of margar tilraunir frá þessari tengingu — bíddu í nokkrar mínútur og reyndu svo aftur.</string>
+    <string name="max_license_error_unknown">Eitthvað fór úrskeiðis. Ástæðan var skráð í Diagnostics.</string>
+    <string name="max_license_gate_title">Þetta yfirborð þarf leyfi</string>
+    <string name="max_license_gate_detail">Það fylgir með lykli. Einn takki hylur þetta tæki og það tekur eina mínútu að komast inn í það.</string>
+    <string name="max_feature_off_title">Slökkt</string>
+    <string name="max_feature_off_detail">Stjórnborðið hefur slökkt á þessu yfirborði. Það kemur aftur um leið og það er virkjað aftur.</string>
+    <string name="max_license_gate_action">Opnaðu leyfisstillingar</string>
+    <string name="max_license_gate_subscribe">Gerast áskrifandi núna</string>
+    <string name="max_license_subscription_section">Áskrift</string>
+    <string name="max_license_subscription_open">Opnaðu áskriftarsíðuna</string>
+</resources>

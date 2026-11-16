@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_license_strings.xml -->
+<resources>
+    <string name="max_license_title">ፍቃድ</string>
+    <string name="max_license_subtitle">አንድ ቁልፍ፣ ይህ መሣሪያ፣ ምንም መለያ የለም።</string>
+    <string name="max_license_help_body">አንድ ቁልፍ በመስመር ላይ አንዴ ሲገባ ምልክት ይደረግበታል። ከዚያን ጊዜ ጀምሮ የአገልጋዩ የተፈረመ ሰርተፍኬት ጊዜው እስኪያልቅ ድረስ ከመስመር ውጭ ይሰራል - ስክሪን በከፈቱ ቁጥር መተግበሪያው ወደ ቤት አይደውልም። ሰርተፍኬቱ ከዚህ መሳሪያ የዘፈቀደ ጭነት መታወቂያ ጋር የተቆራኘ ነው፣ስለዚህ የመተግበሪያውን ዳታ ወደ ሌላ ስልክ መቅዳት ፍቃዱን አይይዘውም፣ እና ባለቤቱ ስልክ ከቀየሩ ያንን ማሰሪያ ከፓነሉ ላይ ዳግም ማስጀመር ይችላል።</string>
+    <string name="max_license_status_section">ሁኔታ</string>
+    <string name="max_license_status_active">ንቁ</string>
+    <string name="max_license_status_expired">ጊዜው አልፎበታል።</string>
+    <string name="max_license_status_none">አልነቃም።</string>
+    <string name="max_license_active_detail">የቀረው: %1$d ቀናት</string>
+    <string name="max_license_expired_detail">የዚህ ቁልፍ ጊዜ አልቋል። አዲስ ቁልፍ መዳረሻን ያድሳል።</string>
+    <string name="max_license_none_detail">የተከፈለባቸውን ወለሎች ለመክፈት የተቀበልከውን ቁልፍ አስገባ።</string>
+    <string name="max_license_promo_active">እስከ %1$s ለሁሉም ሰው ነፃ</string>
+    <string name="max_license_plan_title">እቅድ</string>
+    <string name="max_license_devices_title">መሳሪያዎች</string>
+    <string name="max_license_devices_detail">%1$d ከ%2$d ጥቅም ላይ ውሏል</string>
+    <string name="max_license_device_id_title">ይህ መሳሪያ</string>
+    <string name="max_license_device_id_detail">%1$s</string>
+    <string name="max_license_key_section">ማግበር</string>
+    <string name="max_license_key_label">የፍቃድ ቁልፍ</string>
+    <string name="max_license_key_placeholder">MAXM-XXX-XXX-XXX-XXX-XXX-XX</string>
+    <string name="max_license_key_helper">ሰረዞች እና ካፒታላይዜሽን ምንም አይደሉም - እንደተቀበሉት ይለጥፉ።</string>
+    <string name="max_license_activate">አግብር</string>
+    <string name="max_license_activating">ቁልፉን በመፈተሽ ላይ…</string>
+    <string name="max_license_refresh">አሁን ያረጋግጡ</string>
+    <string name="max_license_activated">ነቅቷል ይህ መሳሪያ አሁን ከእርስዎ ቁልፍ ጋር ተገናኝቷል።</string>
+    <string name="max_license_error_invalid_key">ይህ ቁልፍ የተጠናቀቀ አይመስልም። ያረጋግጡ እና እንደገና ይሞክሩ።</string>
+    <string name="max_license_error_not_configured">ይህ ግንባታ የተዋቀረ የፍቃድ አገልጋይ የለውም።</string>
+    <string name="max_license_error_network">ግንኙነት የለም። ቁልፉ አንዴ ምልክት ይደረግበታል፣ ከዚያ ከመስመር ውጭ ይሰራል።</string>
+    <string name="max_license_error_timeout">የፍቃድ አገልጋዩ በጊዜ ምላሽ አልሰጠም። እንደገና ይሞክሩ።</string>
+    <string name="max_license_error_server">የፍቃድ አገልጋዩ በስህተት መለሰ። ቆይተው እንደገና ይሞክሩ።</string>
+    <string name="max_license_error_client">የፍቃዱ ተግባር በአገልጋዩ ላይ አልተዘረጋም።</string>
+    <string name="max_license_error_format">የአገልጋዩ መልስ አልተረዳም።</string>
+    <string name="max_license_error_expired">ይህ ቁልፍ ጊዜው አልፎበታል።</string>
+    <string name="max_license_error_not_found">ይህ ቁልፍ አይታወቅም.</string>
+    <string name="max_license_error_revoked">ይህ ቁልፍ ተሽሯል።</string>
+    <string name="max_license_error_device_limit">ይህ ቁልፍ የመሳሪያው ገደብ ላይ ደርሷል። የመሣሪያ ዳግም ማስጀመር ይጠይቁ።</string>
+    <string name="max_license_error_device_unknown">ይህ መሳሪያ እስካሁን ከቁልፍ ጋር አልተገናኘም። መጀመሪያ እዚህ ያግብሩት።</string>
+    <string name="max_license_error_device_removed">ይህ መሳሪያ በባለቤቱ ከቁልፍ ተወግዷል።</string>
+    <string name="max_license_error_rate_limited">ከዚህ ግንኙነት ብዙ ሙከራዎች - ጥቂት ደቂቃዎችን ይጠብቁ እና እንደገና ይሞክሩ።</string>
+    <string name="max_license_error_unknown">የሆነ ችግር ተፈጥሯል። ምክንያቱ በዲያግኖስቲክስ ውስጥ ተመዝግቧል.</string>
+    <string name="max_license_gate_title">ይህ ወለል ፈቃድ ያስፈልገዋል</string>
+    <string name="max_license_gate_detail">ከቁልፍ ጋር ተካትቷል። አንድ ቁልፍ ይህንን መሳሪያ ይሸፍናል፣ እና እሱን ለመግባት አንድ ደቂቃ ይወስዳል።</string>
+    <string name="max_feature_off_title">ጠፍቷል</string>
+    <string name="max_feature_off_detail">የቁጥጥር ፓኔሉ ይህን ገጽ አጥፍቶታል። እንደገና እንደነቃ ተመልሶ ይመጣል።</string>
+    <string name="max_license_gate_action">የፍቃድ ቅንብሮችን ይክፈቱ</string>
+    <string name="max_license_gate_subscribe">አሁን ይመዝገቡ</string>
+    <string name="max_license_subscription_section">የደንበኝነት ምዝገባ</string>
+    <string name="max_license_subscription_open">የምዝገባ ገጹን ይክፈቱ</string>
+</resources>

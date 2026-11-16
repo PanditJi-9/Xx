@@ -13,4 +13,23 @@
     <string name="max_expand_section">વિગતો બતાવો</string>
     <string name="max_collapse_section">વિગતો છુપાવો</string>
     <string name="max_trust_loading">વાંચી રહ્યું છે...</string>
+    <string name="max_gov_title">હવે કોણ શાસન કરે છે</string>
+    <string name="max_gov_separator">" › "</string>
+    <string name="max_gov_order_note">સ્થિર ક્રમ: ઊંચો પંક્તિ નીચલા ભાગને અવરોધે છે. જે નીતિ જીતે છે તે ક્યારેય બદલાતું નથી.</string>
+    <string name="max_gov_open_details">સક્રિય ધારકો</string>
+    <string name="max_gov_active_title">જેની પાસે નિયંત્રણ છે</string>
+    <string name="max_gov_none">અત્યારે કોઈપણ નીતિ હાર્ડવેર નિયંત્રણની માલિકી ધરાવતું નથી.</string>
+    <string name="max_gov_count">સક્રિય નિયંત્રણ લીઝ: %1$d</string>
+    <string name="max_gov_requested">વિનંતી કરેલ: %1$s</string>
+    <string name="max_gov_owner_recovery">પુનઃપ્રાપ્તિ</string>
+    <string name="max_gov_owner_safety">થર્મલ સલામતી</string>
+    <string name="max_gov_owner_per_app">એપ્લિકેશન પ્રોફાઇલ</string>
+    <string name="max_gov_owner_max_ai">Max AI</string>
+    <string name="max_gov_owner_global">વૈશ્વિક પ્રોફાઇલ</string>
+    <string name="max_gov_owner_system">સિસ્ટમ</string>
+    <string name="max_gov_owner_a11y">%1$s હાર્ડવેર નિયંત્રણ ધરાવે છે</string>
+    <string name="max_gov_now_none">અત્યારે કોઈ સ્વચાલિત માલિક નથી — નિયંત્રણ તમારું રહે છે</string>
+    <string name="max_gov_now_one">%1$s નિયંત્રણ ધરાવે છે</string>
+    <string name="max_gov_now_many">%1$s %2$d નિયંત્રણો ધરાવે છે</string>
+    <string name="devinfo_details">વિગતો</string>
 </resources>

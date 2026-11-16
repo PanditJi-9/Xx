@@ -13,4 +13,23 @@
     <string name="max_expand_section">詳細を表示</string>
     <string name="max_collapse_section">詳細を隠す</string>
     <string name="max_trust_loading">読む…</string>
+    <string name="max_gov_title">今を支配するのは誰か</string>
+    <string name="max_gov_separator">" › "</string>
+    <string name="max_gov_order_note">固定順序: 高い段は低い段をブロックします。どの政策が勝つかは決して変わりません。</string>
+    <string name="max_gov_open_details">アクティブなホルダー</string>
+    <string name="max_gov_active_title">誰がコントロールを握っているのか</string>
+    <string name="max_gov_none">現在、ハードウェア コントロールを所有するポリシーはありません。</string>
+    <string name="max_gov_count">アクティブ コントロール リース: %1$d</string>
+    <string name="max_gov_requested">リクエスト: %1$s</string>
+    <string name="max_gov_owner_recovery">回復</string>
+    <string name="max_gov_owner_safety">熱的安全性</string>
+    <string name="max_gov_owner_per_app">アプリプロフィール</string>
+    <string name="max_gov_owner_max_ai">Max AI</string>
+    <string name="max_gov_owner_global">グローバルプロフィール</string>
+    <string name="max_gov_owner_system">システム</string>
+    <string name="max_gov_owner_a11y">%1$s はハードウェア コントロールを所有しています</string>
+    <string name="max_gov_now_none">現在、自動化された所有者は存在しません。制御は引き続きあなたのものになります</string>
+    <string name="max_gov_now_one">%1$s はコントロールを保持します</string>
+    <string name="max_gov_now_many">%1$s は %2$d コントロールを保持します</string>
+    <string name="devinfo_details">詳細</string>
 </resources>

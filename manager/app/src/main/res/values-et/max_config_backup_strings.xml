@@ -18,4 +18,10 @@
     <string name="max_cfg_excluded_safety">Max AI ohutusseaded on konfigureeritud rakenduse sees, neid ei kanta kunagi failis</string>
     <string name="max_cfg_excluded_other_apps">teiste rakenduste andmed kuuluvad rakenduse varundusse, mitte konfiguratsiooni varundamisse</string>
     <string name="max_cfg_excluded_secret">allkirjastamisvõtmeid ja saladusi ei kirjutata kunagi faili, mida võite jagada</string>
+    <string name="max_cfg_diff_title">%1$d salvestatud seaded erinevad selle seadme omast</string>
+    <string name="max_cfg_diff_line">%1$s: %2$s → %3$s</string>
+    <string name="max_cfg_diff_unset">pole seatud</string>
+    <string name="max_cfg_diff_more">ja veel %1$d</string>
+    <string name="max_cfg_diff_applist">%1$d rakenduste loendi read lisatud, %2$d eemaldatud — kogu loend asendatakse, mitte ei liideta.</string>
+    <string name="max_cfg_diff_prefs">%1$d eelistusklahvid erinevad – ühendatud, mitte kustutatud.</string>
 </resources>

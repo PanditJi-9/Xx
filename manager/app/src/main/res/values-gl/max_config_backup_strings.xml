@@ -18,4 +18,10 @@
     <string name="max_cfg_section_appearance">Aspecto e interface</string>
     <string name="max_cfg_section_app_prefs">Preferencias e idioma da aplicación</string>
     <string name="max_cfg_restore_merge_note">Restaurar combinacións de preferencias: as claves presentes no ficheiro escríbense e as claves que non menciona quedan como están. Non se aclara nada.</string>
+    <string name="max_cfg_diff_title">%1$d As configuracións gardadas difiren deste dispositivo</string>
+    <string name="max_cfg_diff_line">%1$s: %2$s → %3$s</string>
+    <string name="max_cfg_diff_unset">non configurado</string>
+    <string name="max_cfg_diff_more">e %1$d máis</string>
+    <string name="max_cfg_diff_applist">%1$d Engadíronse liñas de lista de aplicacións, %2$d eliminadas — substitúese toda a lista, non se fusiona.</string>
+    <string name="max_cfg_diff_prefs">%1$d As teclas de preferencias son diferentes: fusionadas, non borradas.</string>
 </resources>

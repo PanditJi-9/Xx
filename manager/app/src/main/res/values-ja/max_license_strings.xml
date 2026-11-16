@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_license_strings.xml -->
+<resources>
+    <string name="max_license_title">ライセンス</string>
+    <string name="max_license_subtitle">キー 1 つ、このデバイス、アカウントなし</string>
+    <string name="max_license_help_body">キーを入力すると、キーがオンラインで一度チェックされます。それ以降、サーバーの署名付き証明書は期限が切れるまでオフラインで動作します。画面を開くたびにアプリがホームにアクセスするわけではありません。証明書はこのデバイスのランダムなインストール ID にバインドされているため、アプリ データを別の電話にコピーしてもライセンスは引き継がれません。また、電話を変更した場合、所有者はパネルからそのバインドをリセットできます。</string>
+    <string name="max_license_status_section">状態</string>
+    <string name="max_license_status_active">アクティブ</string>
+    <string name="max_license_status_expired">期限切れ</string>
+    <string name="max_license_status_none">アクティブ化されていません</string>
+    <string name="max_license_active_detail">残り: %1$d 日</string>
+    <string name="max_license_expired_detail">この鍵の時代は終わりました。新しいキーによりアクセスが更新されます。</string>
+    <string name="max_license_none_detail">受け取ったキーを入力して、有料サーフェスのロックを解除します。</string>
+    <string name="max_license_promo_active">%1$sまでは誰でも無料</string>
+    <string name="max_license_plan_title">プラン</string>
+    <string name="max_license_devices_title">デバイス</string>
+    <string name="max_license_devices_detail">%1$d/%2$dが使用されました</string>
+    <string name="max_license_device_id_title">このデバイス</string>
+    <string name="max_license_device_id_detail">%1$s</string>
+    <string name="max_license_key_section">アクティベーション</string>
+    <string name="max_license_key_label">ライセンスキー</string>
+    <string name="max_license_key_placeholder">MAXM-XXXXX-XXXXX-XXXXX-XXXXX-XX</string>
+    <string name="max_license_key_helper">ダッシュと大文字は関係ありません。受け取ったとおりに貼り付けてください。</string>
+    <string name="max_license_activate">活性化</string>
+    <string name="max_license_activating">キーを確認中…</string>
+    <string name="max_license_refresh">今すぐチェック</string>
+    <string name="max_license_activated">アクティブ化されました。このデバイスはキーにリンクされました。</string>
+    <string name="max_license_error_invalid_key">このキーは完全ではないようです。確認してもう一度試してください。</string>
+    <string name="max_license_error_not_configured">このビルドにはライセンス サーバーが構成されていません。</string>
+    <string name="max_license_error_network">接続がありません。キーは一度チェックされると、オフラインで動作します。</string>
+    <string name="max_license_error_timeout">ライセンス サーバーが時間内に応答しませんでした。もう一度やり直してください。</string>
+    <string name="max_license_error_server">ライセンス サーバーはエラーで応答しました。後でもう一度試してください。</string>
+    <string name="max_license_error_client">ライセンス機能はサーバー上に展開されません。</string>
+    <string name="max_license_error_format">サーバーの応答が理解できませんでした。</string>
+    <string name="max_license_error_expired">このキーの有効期限が切れています。</string>
+    <string name="max_license_error_not_found">このキーは不明です。</string>
+    <string name="max_license_error_revoked">このキーは取り消されました。</string>
+    <string name="max_license_error_device_limit">このキーはデバイスの制限に達しました。デバイスのリセットを要求します。</string>
+    <string name="max_license_error_device_unknown">このデバイスはまだキーにリンクされていません。まずはここで有効化してください。</string>
+    <string name="max_license_error_device_removed">このデバイスは所有者によってキーから削除されました。</string>
+    <string name="max_license_error_rate_limited">この接続からの試行が多すぎます。数分待ってから、再試行してください。</string>
+    <string name="max_license_error_unknown">何か問題が発生しました。理由は診断に記録されました。</string>
+    <string name="max_license_gate_title">このサーフェスにはライセンスが必要です</string>
+    <string name="max_license_gate_detail">鍵も付属しております。このデバイスは 1 つのキーでカバーされており、入力には 1 分かかります。</string>
+    <string name="max_feature_off_title">オフになっています</string>
+    <string name="max_feature_off_detail">コントロール パネルがこのサーフェスをオフにしました。再度有効にするとすぐに元に戻ります。</string>
+    <string name="max_license_gate_action">ライセンス設定を開く</string>
+    <string name="max_license_gate_subscribe">今すぐ購読する</string>
+    <string name="max_license_subscription_section">サブスクリプション</string>
+    <string name="max_license_subscription_open">購読ページを開く</string>
+</resources>

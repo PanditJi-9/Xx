@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/manifest_inspector_strings.xml -->
+<resources>
+    <string name="manifest_inspector_title">Manifest inspektori</string>
+    <string name="manifest_inspector_subtitle">O\'rnatilgan ilova o\'zi haqida nima deyishini PackageManager-dan o\'qing.</string>
+    <string name="max_role_manifest_inspector">Paket o\'zi haqida nima deyishini ko\'rsatadi - faqat o\'qish uchun.</string>
+    <string name="mi_search">Ilovalarni qidirish</string>
+    <string name="mi_empty">Chapdagi ilovani tanlang.</string>
+    <string name="mi_yes">Ha</string>
+    <string name="mi_no">Yo\'q</string>
+    <string name="mi_section_identity">Paket</string>
+    <string name="mi_version">Versiya</string>
+    <string name="mi_version_code">Versiya kodi</string>
+    <string name="mi_min_sdk">Minimal SDK</string>
+    <string name="mi_target_sdk">Maqsadli SDK</string>
+    <string name="mi_installed">Oʻrnatilgan</string>
+    <string name="mi_updated">Yangilangan</string>
+    <string name="mi_installer">O\'rnatuvchi</string>
+    <string name="mi_uid">UID</string>
+    <string name="mi_data_dir">Ma\'lumotlar katalogi</string>
+    <string name="mi_debuggable">Nosozliklarni tuzatish mumkin</string>
+    <string name="mi_system_app">Tizim ilovasi</string>
+    <string name="mi_enabled">Yoqilgan</string>
+    <string name="mi_section_permissions">Talab qilingan ruxsatlar</string>
+    <string name="mi_permissions_summary">%1$d ruxsatlar · %2$d ulardan xavfli</string>
+    <string name="mi_permissions_none">Bu ilova ruxsat soʻramaydi.</string>
+    <string name="mi_perm_dangerous">Xavfli</string>
+    <string name="mi_perm_signature">Imzo</string>
+    <string name="mi_perm_normal">Oddiy</string>
+    <string name="mi_perm_unknown">Tasniflanmagan</string>
+    <string name="mi_section_components">Komponentlar</string>
+    <string name="mi_activities">Faoliyatlar</string>
+    <string name="mi_services">Xizmatlar</string>
+    <string name="mi_receivers">Qabul qiluvchilar</string>
+    <string name="mi_providers">Provayderlar</string>
+    <string name="mi_components_none">Hech kim e\'lon qilmagan</string>
+    <string name="mi_section_features">Qurilmaning xususiyatlari</string>
+    <string name="mi_features_note">Platforma boshqa ilovaning foydalanish funksiyalari roʻyxatini koʻrsatmaydi; Bular ushbu qurilma xabar bergan xususiyatlar.</string>
+    <string name="mi_features_none">Hech qanday xususiyat haqida xabar berilmagan</string>
+    <string name="mi_section_signature">Imzo sertifikati</string>
+    <string name="mi_signature_note">Imzo sertifikatining SHA-256. Bir xil qiymatga ega ikkita qurilish bir xil nashriyotdir.</string>
+    <string name="mi_signature_sha256">Sertifikat to\'plami</string>
+</resources>

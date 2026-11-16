@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/manifest_inspector_strings.xml -->
+<resources>
+    <string name="manifest_inspector_title">Manifesta inspektors</string>
+    <string name="manifest_inspector_subtitle">Ko par sevi paziņo instalētā lietotne, lasiet vietnē PackageManager.</string>
+    <string name="max_role_manifest_inspector">Parāda, ko pakotne deklarē par sevi — tikai lasāma.</string>
+    <string name="mi_search">Meklēt lietotnes</string>
+    <string name="mi_empty">Kreisajā pusē izvēlieties lietotni.</string>
+    <string name="mi_yes">Jā</string>
+    <string name="mi_no">Nē</string>
+    <string name="mi_section_identity">Iepakojums</string>
+    <string name="mi_version">Versija</string>
+    <string name="mi_version_code">Versijas kods</string>
+    <string name="mi_min_sdk">Minimālais SDK</string>
+    <string name="mi_target_sdk">Mērķa SDK</string>
+    <string name="mi_installed">Uzstādīts</string>
+    <string name="mi_updated">Atjaunināts</string>
+    <string name="mi_installer">Uzstādītājs</string>
+    <string name="mi_uid">UID</string>
+    <string name="mi_data_dir">Datu direktorijs</string>
+    <string name="mi_debuggable">Atkļūdojams</string>
+    <string name="mi_system_app">Sistēmas lietotne</string>
+    <string name="mi_enabled">Iespējots</string>
+    <string name="mi_section_permissions">Pieprasītas atļaujas</string>
+    <string name="mi_permissions_summary">%1$d atļaujas · %2$d no tām bīstamas</string>
+    <string name="mi_permissions_none">Šī lietotne neprasa atļauju.</string>
+    <string name="mi_perm_dangerous">Bīstami</string>
+    <string name="mi_perm_signature">Paraksts</string>
+    <string name="mi_perm_normal">Normāls</string>
+    <string name="mi_perm_unknown">Neklasificēts</string>
+    <string name="mi_section_components">Sastāvdaļas</string>
+    <string name="mi_activities">Darbības</string>
+    <string name="mi_services">Pakalpojumi</string>
+    <string name="mi_receivers">Uztvērēji</string>
+    <string name="mi_providers">Pakalpojumu sniedzēji</string>
+    <string name="mi_components_none">Neviens nav deklarēts</string>
+    <string name="mi_section_features">Ierīces funkcijas</string>
+    <string name="mi_features_note">Platforma neatklāj citas lietotnes lietojumu-funkciju sarakstu; Šīs ir šīs ierīces funkcijas.</string>
+    <string name="mi_features_none">Nav ziņots par funkciju</string>
+    <string name="mi_section_signature">Parakstīšanas sertifikāts</string>
+    <string name="mi_signature_note">parakstīšanas sertifikāta SHA-256. Divām versijām ar vienādu vērtību ir viens un tas pats izdevējs.</string>
+    <string name="mi_signature_sha256">Sertifikāta īssavilkums</string>
+</resources>

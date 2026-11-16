@@ -220,4 +220,5 @@
     <string name="max_files_compress_level_normal">Normal</string>
     <string name="max_files_compress_level_max">Maks</string>
     <string name="max_files_compress_summary">%1$d item \u2192 %2$s</string>
+    <string name="max_files_history_more">%1$d folder lama tidak ditampilkan</string>
 </resources>

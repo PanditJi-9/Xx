@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_license_strings.xml -->
+<resources>
+    <string name="max_license_title">බලපත්රය</string>
+    <string name="max_license_subtitle">එක් යතුරක්, මෙම උපාංගය, ගිණුමක් නැත</string>
+    <string name="max_license_help_body">ඔබ එය ඇතුල් කරන විට යතුරක් වරක් මාර්ගගතව පරීක්ෂා කරනු ලැබේ. එතැන් සිට සේවාදායකයේ අත්සන් කළ සහතිකය එහි කාලය අවසන් වන තුරු නොබැඳිව ක්‍රියා කරයි - ඔබ තිරයක් විවෘත කරන සෑම අවස්ථාවකම යෙදුම නිවසට අමතා නැත. සහතිකය මෙම උපාංගයේ අහඹු ස්ථාපන හැඳුනුම්පතට බැඳී ඇත, එබැවින් යෙදුම් දත්ත වෙනත් දුරකථනයකට පිටපත් කිරීමෙන් බලපත්‍රය රැගෙන නොයන අතර, ඔබ දුරකථන වෙනස් කළහොත් හිමිකරුට පැනලයෙන් එම බැඳීම යළි සැකසිය හැක.</string>
+    <string name="max_license_status_section">තත්ත්වය</string>
+    <string name="max_license_status_active">ක්රියාකාරී</string>
+    <string name="max_license_status_expired">කල් ඉකුත් වී ඇත</string>
+    <string name="max_license_status_none">සක්රිය කර නැත</string>
+    <string name="max_license_active_detail">ඉතිරි: %1$d දින</string>
+    <string name="max_license_expired_detail">මෙම යතුරේ කාලය අවසන්. නව යතුරක් ප්‍රවේශය අලුත් කරයි.</string>
+    <string name="max_license_none_detail">ගෙවූ මතුපිට අගුළු ඇරීමට ඔබට ලැබුණු යතුර ඇතුළත් කරන්න.</string>
+    <string name="max_license_promo_active">%1$s දක්වා සැමට නොමිලේ</string>
+    <string name="max_license_plan_title">සැලසුම් කරන්න</string>
+    <string name="max_license_devices_title">උපාංග</string>
+    <string name="max_license_devices_detail">%1$d of %2$d භාවිතා කර ඇත</string>
+    <string name="max_license_device_id_title">මෙම උපාංගය</string>
+    <string name="max_license_device_id_detail">%1$s</string>
+    <string name="max_license_key_section">සක්රිය කිරීම</string>
+    <string name="max_license_key_label">බලපත්ර යතුර</string>
+    <string name="max_license_key_placeholder">MAXM-XXXXX-XXXX-XXXXX-XXXXXX-XX</string>
+    <string name="max_license_key_helper">ඉර සහ විශාලනය වැදගත් නැත - ඔබට ලැබුණු පරිදි එය අලවන්න.</string>
+    <string name="max_license_activate">සක්රිය කරන්න</string>
+    <string name="max_license_activating">යතුර පරීක්ෂා කරමින්...</string>
+    <string name="max_license_refresh">දැන් පරීක්ෂා කරන්න</string>
+    <string name="max_license_activated">සක්රිය කර ඇත. මෙම උපාංගය දැන් ඔබගේ යතුරට සම්බන්ධ කර ඇත.</string>
+    <string name="max_license_error_invalid_key">මෙම යතුර සම්පූර්ණ නොවන බව පෙනේ. එය පරීක්ෂා කර නැවත උත්සාහ කරන්න.</string>
+    <string name="max_license_error_not_configured">මෙම ගොඩනැගීමට බලපත්‍ර සේවාදායකයක් වින්‍යාස කර නොමැත.</string>
+    <string name="max_license_error_network">සම්බන්ධයක් නැත. යතුර එක් වරක් පරීක්ෂා කර, පසුව නොබැඳි ලෙස ක්රියා කරයි.</string>
+    <string name="max_license_error_timeout">බලපත්‍ර සේවාදායකය නියමිත වේලාවට පිළිතුරු දුන්නේ නැත. නැවත උත්සාහ කරන්න.</string>
+    <string name="max_license_error_server">බලපත්‍ර සේවාදායකය දෝෂයකින් පිළිතුරු දුන්නේය. පසුව නැවත උත්සාහ කරන්න.</string>
+    <string name="max_license_error_client">බලපත්‍ර කාර්යය සේවාදායකයේ යොදවා නැත.</string>
+    <string name="max_license_error_format">සේවාදායක පිළිතුර තේරුනේ නැත.</string>
+    <string name="max_license_error_expired">මෙම යතුර කල් ඉකුත් වී ඇත.</string>
+    <string name="max_license_error_not_found">මෙම යතුර නොදනී.</string>
+    <string name="max_license_error_revoked">මෙම යතුර අවලංගු කර ඇත.</string>
+    <string name="max_license_error_device_limit">මෙම යතුර එහි උපාංග සීමාවට ළඟා වී ඇත. උපාංගය යළි පිහිටුවීම සඳහා ඉල්ලන්න.</string>
+    <string name="max_license_error_device_unknown">මෙම උපාංගය තවමත් යතුරට සම්බන්ධ කර නොමැත. මුලින්ම මෙතනින් Activate කරගන්න.</string>
+    <string name="max_license_error_device_removed">මෙම උපාංගය හිමිකරු විසින් යතුරෙන් ඉවත් කරන ලදී.</string>
+    <string name="max_license_error_rate_limited">මෙම සම්බන්ධතාවයෙන් බොහෝ උත්සාහයන් - මිනිත්තු කිහිපයක් රැඳී සිට නැවත උත්සාහ කරන්න.</string>
+    <string name="max_license_error_unknown">යමක් වැරදී ඇත. හේතුව Diagnostics හි සටහන් කර ඇත.</string>
+    <string name="max_license_gate_title">මෙම මතුපිටට බලපත්‍රයක් අවශ්‍ය වේ</string>
+    <string name="max_license_gate_detail">එය යතුරක් සමඟ ඇතුළත් කර ඇත. එක් යතුරක් මෙම උපාංගය ආවරණය කරයි, එය ඇතුල් කිරීමට මිනිත්තුවක් ගත වේ.</string>
+    <string name="max_feature_off_title">අක්රිය කළා</string>
+    <string name="max_feature_off_detail">පාලක පැනලය මෙම පෘෂ්ඨය අක්රිය කර ඇත. එය නැවත සක්රිය කළ වහාම එය නැවත පැමිණේ.</string>
+    <string name="max_license_gate_action">බලපත්ර සැකසුම් විවෘත කරන්න</string>
+    <string name="max_license_gate_subscribe">දැන්ම දායක වන්න</string>
+    <string name="max_license_subscription_section">දායකත්වය</string>
+    <string name="max_license_subscription_open">දායකත්ව පිටුව විවෘත කරන්න</string>
+</resources>

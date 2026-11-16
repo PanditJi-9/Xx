@@ -18,4 +18,10 @@
     <string name="max_cfg_section_appearance">מראה וממשק</string>
     <string name="max_cfg_section_app_prefs">העדפות אפליקציה ושפה</string>
     <string name="max_cfg_restore_merge_note">שחזור ההעדפות מתמזג: מפתחות הקיימים בקובץ נכתבים, והמפתחות שהוא לא מזכיר נשארים כפי שהם. שום דבר לא מנוקה.</string>
+    <string name="max_cfg_diff_title">%1$d ההגדרות השמורות שונות מהמכשיר הזה</string>
+    <string name="max_cfg_diff_line">%1$s: %2$s → %3$s</string>
+    <string name="max_cfg_diff_unset">לא מוגדר</string>
+    <string name="max_cfg_diff_more">ועוד %1$d</string>
+    <string name="max_cfg_diff_applist">%1$d שורות רשימת אפליקציות נוספו, %2$d הוסרו - כל הרשימה מוחלפת, לא ממוזגת.</string>
+    <string name="max_cfg_diff_prefs">%1$d מקשי העדפות שונים - ממוזגים, לא נמחקו.</string>
 </resources>

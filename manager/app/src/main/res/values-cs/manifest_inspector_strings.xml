@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/manifest_inspector_strings.xml -->
+<resources>
+    <string name="manifest_inspector_title">Manifest Inspektor</string>
+    <string name="manifest_inspector_subtitle">Co o sobě nainstalovaná aplikace deklaruje, přečtěte si z PackageManager.</string>
+    <string name="max_role_manifest_inspector">Ukazuje, co o sobě balíček deklaruje – pouze pro čtení.</string>
+    <string name="mi_search">Hledat aplikace</string>
+    <string name="mi_empty">Vlevo vyberte aplikaci.</string>
+    <string name="mi_yes">Ano</string>
+    <string name="mi_no">Žádný</string>
+    <string name="mi_section_identity">Balík</string>
+    <string name="mi_version">Verze</string>
+    <string name="mi_version_code">Kód verze</string>
+    <string name="mi_min_sdk">Minimální SDK</string>
+    <string name="mi_target_sdk">Cílová sada SDK</string>
+    <string name="mi_installed">Instalováno</string>
+    <string name="mi_updated">Aktualizováno</string>
+    <string name="mi_installer">Instalátor</string>
+    <string name="mi_uid">UID</string>
+    <string name="mi_data_dir">Datový adresář</string>
+    <string name="mi_debuggable">Laditelné</string>
+    <string name="mi_system_app">Systémová aplikace</string>
+    <string name="mi_enabled">Povoleno</string>
+    <string name="mi_section_permissions">Požadovaná oprávnění</string>
+    <string name="mi_permissions_summary">%1$d oprávnění · %2$d z nich nebezpečných</string>
+    <string name="mi_permissions_none">Tato aplikace nevyžaduje žádné oprávnění.</string>
+    <string name="mi_perm_dangerous">Nebezpečný</string>
+    <string name="mi_perm_signature">Podpis</string>
+    <string name="mi_perm_normal">Normální</string>
+    <string name="mi_perm_unknown">Nezařazeno</string>
+    <string name="mi_section_components">Komponenty</string>
+    <string name="mi_activities">Činnosti</string>
+    <string name="mi_services">Služby</string>
+    <string name="mi_receivers">Přijímače</string>
+    <string name="mi_providers">Poskytovatelé</string>
+    <string name="mi_components_none">Žádná nebyla vyhlášena</string>
+    <string name="mi_section_features">Vlastnosti zařízení</string>
+    <string name="mi_features_note">Platforma nezveřejňuje seznam funkcí použití jiné aplikace; toto jsou funkce, které toto zařízení hlásí.</string>
+    <string name="mi_features_none">Nebyla hlášena žádná funkce</string>
+    <string name="mi_section_signature">Podpisový certifikát</string>
+    <string name="mi_signature_note">SHA-256 podpisového certifikátu. Dvě sestavení se stejnou hodnotou jsou stejným vydavatelem.</string>
+    <string name="mi_signature_sha256">Přehled certifikátu</string>
+</resources>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_license_strings.xml -->
+<resources>
+    <string name="max_license_title">લાઇસન્સ</string>
+    <string name="max_license_subtitle">એક કી, આ ઉપકરણ, કોઈ એકાઉન્ટ નથી</string>
+    <string name="max_license_help_body">જ્યારે તમે તેને દાખલ કરો છો ત્યારે કી એકવાર ઓનલાઈન ચેક કરવામાં આવે છે. ત્યારથી સર્વરના હસ્તાક્ષરિત પ્રમાણપત્રનો સમય પૂરો ન થાય ત્યાં સુધી ઑફલાઇન કાર્ય કરે છે — જ્યારે પણ તમે સ્ક્રીન ખોલો છો ત્યારે એપ્લિકેશન ઘરે કૉલ કરતી નથી. પ્રમાણપત્ર આ ઉપકરણના રેન્ડમ ઇન્સ્ટોલ આઈડી સાથે બંધાયેલું છે, તેથી એપ્લિકેશન ડેટાને બીજા ફોન પર કૉપિ કરવાથી લાયસન્સ તેની સાથે રહેતું નથી, અને જો તમે ફોન બદલો છો તો માલિક પેનલમાંથી તે બંધનકર્તાને ફરીથી સેટ કરી શકે છે.</string>
+    <string name="max_license_status_section">સ્થિતિ</string>
+    <string name="max_license_status_active">સક્રિય</string>
+    <string name="max_license_status_expired">સમાપ્ત</string>
+    <string name="max_license_status_none">સક્રિય નથી</string>
+    <string name="max_license_active_detail">બાકી: %1$d દિવસો</string>
+    <string name="max_license_expired_detail">આ કીનો સમય પૂરો થઈ ગયો છે. નવી કી એક્સેસ રિન્યૂ કરે છે.</string>
+    <string name="max_license_none_detail">ચૂકવેલ સપાટીઓને અનલૉક કરવા માટે તમે પ્રાપ્ત કરેલી કી દાખલ કરો.</string>
+    <string name="max_license_promo_active">%1$s સુધી દરેક માટે મફત</string>
+    <string name="max_license_plan_title">યોજના</string>
+    <string name="max_license_devices_title">ઉપકરણો</string>
+    <string name="max_license_devices_detail">%2$d માંથી %1$d વપરાયેલ</string>
+    <string name="max_license_device_id_title">આ ઉપકરણ</string>
+    <string name="max_license_device_id_detail">%1$s</string>
+    <string name="max_license_key_section">સક્રિયકરણ</string>
+    <string name="max_license_key_label">લાઇસન્સ કી</string>
+    <string name="max_license_key_placeholder">MAXM-XXXXXX-XXXXXX-XXXXXX-XXXXXX-XXX</string>
+    <string name="max_license_key_helper">ડૅશ અને કૅપિટલાઇઝેશનથી કોઈ ફરક પડતો નથી — તમે તેને મેળવ્યું હોય તેમ પેસ્ટ કરો.</string>
+    <string name="max_license_activate">સક્રિય કરો</string>
+    <string name="max_license_activating">કી તપાસી રહ્યું છે...</string>
+    <string name="max_license_refresh">હવે તપાસો</string>
+    <string name="max_license_activated">સક્રિય. આ ઉપકરણ હવે તમારી કી સાથે લિંક થયેલ છે.</string>
+    <string name="max_license_error_invalid_key">આ કી સંપૂર્ણ દેખાતી નથી. તેને તપાસો અને ફરી પ્રયાસ કરો.</string>
+    <string name="max_license_error_not_configured">આ બિલ્ડમાં કોઈ લાયસન્સ સર્વર ગોઠવેલ નથી.</string>
+    <string name="max_license_error_network">કોઈ કનેક્શન નથી. કી એકવાર તપાસવામાં આવે છે, પછી ઑફલાઇન કાર્ય કરે છે.</string>
+    <string name="max_license_error_timeout">લાયસન્સ સર્વરે સમયસર જવાબ આપ્યો ન હતો. ફરી પ્રયાસ કરો.</string>
+    <string name="max_license_error_server">લાયસન્સ સર્વરે ભૂલ સાથે જવાબ આપ્યો. પછીથી ફરી પ્રયાસ કરો.</string>
+    <string name="max_license_error_client">લાયસન્સ કાર્ય સર્વર પર જમાવવામાં આવ્યું નથી.</string>
+    <string name="max_license_error_format">સર્વરનો જવાબ સમજાયો ન હતો.</string>
+    <string name="max_license_error_expired">આ કી સમાપ્ત થઈ ગઈ છે.</string>
+    <string name="max_license_error_not_found">આ કી જાણીતી નથી.</string>
+    <string name="max_license_error_revoked">આ કી રદ કરવામાં આવી છે.</string>
+    <string name="max_license_error_device_limit">આ કી તેની ઉપકરણ મર્યાદા સુધી પહોંચી ગઈ છે. ઉપકરણ રીસેટ માટે પૂછો.</string>
+    <string name="max_license_error_device_unknown">આ ઉપકરણ હજી સુધી કી સાથે જોડાયેલ નથી. પહેલા તેને અહીં સક્રિય કરો.</string>
+    <string name="max_license_error_device_removed">માલિક દ્વારા આ ઉપકરણને કીમાંથી દૂર કરવામાં આવ્યું હતું.</string>
+    <string name="max_license_error_rate_limited">આ કનેક્શનમાંથી ઘણા બધા પ્રયાસો — થોડીવાર રાહ જુઓ, પછી ફરી પ્રયાસ કરો.</string>
+    <string name="max_license_error_unknown">કંઈક ખોટું થયું. કારણ ડાયગ્નોસ્ટિક્સમાં નોંધવામાં આવ્યું હતું.</string>
+    <string name="max_license_gate_title">આ સપાટીને લાયસન્સની જરૂર છે</string>
+    <string name="max_license_gate_detail">તે કી સાથે સમાવવામાં આવેલ છે. એક કી આ ઉપકરણને આવરી લે છે, અને તેને દાખલ કરવામાં એક મિનિટ લાગે છે.</string>
+    <string name="max_feature_off_title">બંધ કર્યું</string>
+    <string name="max_feature_off_detail">કંટ્રોલ પેનલે આ સપાટીને બંધ કરી દીધી છે. તે ફરીથી સક્ષમ થતાં જ તે પાછો આવે છે.</string>
+    <string name="max_license_gate_action">લાયસન્સ સેટિંગ્સ ખોલો</string>
+    <string name="max_license_gate_subscribe">હમણાં સબ્સ્ક્રાઇબ કરો</string>
+    <string name="max_license_subscription_section">સબ્સ્ક્રિપ્શન</string>
+    <string name="max_license_subscription_open">સબ્સ્ક્રિપ્શન પૃષ્ઠ ખોલો</string>
+</resources>

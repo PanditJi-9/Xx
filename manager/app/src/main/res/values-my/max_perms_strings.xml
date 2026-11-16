@@ -69,4 +69,25 @@
     <string name="max_perms_entry_title">ခွင့်ပြုချက်များနှင့် အက်ပ်အသုံးပြုမှုများ</string>
     <string name="max_perms_entry_desc">ဤအက်ပ်က မည်သည့်အရာကို ကြေညာသည်နှင့် စနစ်က အမှန်တကယ် ခွင့်ပြုထားသည်ကို ကြည့်ပါ။</string>
     <string name="max_perms_entry_action">ခွင့်ပြုချက်များကိုဖွင့်ပါ။</string>
+    <string name="max_perms_manifest_title">ဖော်ပြပါ အကျဉ်းချုပ်</string>
+    <string name="max_perms_manifest_desc">ပက်ကေ့ဂျ်မန်နေဂျာမှ ဖတ်ပါ- ဗားရှင်း၊ SDK အပိုင်းအခြား၊ အစိတ်အပိုင်းများနှင့် ၎င်းတို့ထဲမှ မည်မျှကို တင်ပို့ထားသည်။ ထုတ်ယူထားသော အစိတ်အပိုင်းတစ်ခုကို အခြားအက်ပ်များမှ စတင်နိုင်သည်။</string>
+    <string name="max_perms_manifest_version">ဗားရှင်း</string>
+    <string name="max_perms_manifest_sdk">SDK အပိုင်း</string>
+    <string name="max_perms_manifest_location">တည်နေရာကို ထည့်သွင်းပါ။</string>
+    <string name="max_perms_manifest_location_auto">အလိုအလျောက်</string>
+    <string name="max_perms_manifest_location_internal">စက်တွင်းသိုလှောင်ရုံသာ</string>
+    <string name="max_perms_manifest_location_external">ပြင်ပကို ပိုနှစ်သက်သည်။</string>
+    <string name="max_perms_manifest_components">အစိတ်အပိုင်းများ</string>
+    <string name="max_perms_manifest_components_order">လုပ်ဆောင်ချက်များ · ဝန်ဆောင်မှုများ · လက်ခံသူများ · ပံ့ပိုးပေးသူများ</string>
+    <string name="max_perms_manifest_exported">အစိတ်အပိုင်းများကို တင်ပို့သည်။</string>
+    <string name="max_perms_manifest_splits">APK များကို ခွဲထုတ်ပါ။</string>
+    <string name="max_perms_manifest_debug">အမှားရှာနိုင်သည်။</string>
+    <string name="max_perms_features_title">ကြေငြာပါရှိပါတယ်။</string>
+    <string name="max_perms_features_desc">ဤစက်တွင် ကြော်ငြာထားသည်များနှင့် နှိုင်းယှဉ်ပါက စက်ပစ္စည်းမှ ပက်ကေ့ချ် လိုအပ်သည်များ။ ဤနေရာတွင် လိုအပ်သောအင်္ဂါရပ်တစ်ခု ပျောက်ဆုံးနေခြင်းသည် အများအားဖြင့် အက်ပ်သည် အပြည့်အဝ အလုပ်မလုပ်ခြင်းကို ဆိုလိုသည် — ၎င်းသည် ပက်ကေ့ဂျ်မန်နေဂျာထံမှ တောင်းဆိုချက်ဖြစ်ပြီး ခန့်မှန်းချက်မဟုတ်ပါ။</string>
+    <string name="max_perms_features_loading">ပက်ကေ့ဂျ်၏ အင်္ဂါရပ်များကို ဖတ်နေသည်...</string>
+    <string name="max_perms_features_none">ပက်ကေ့ဂျ်တွင် မလိုအပ်သော အင်္ဂါရပ်များကို ကြေငြာသည်။</string>
+    <string name="max_perms_features_required">လိုအပ်သည်။</string>
+    <string name="max_perms_features_unsupported">ဤစက်ပစ္စည်းတွင် မရှိပါ။</string>
+    <string name="max_perms_manifest_none">ပက်ကေ့ဂျ်မန်နေဂျာမှ သတင်းမပို့ပါ။</string>
+    <string name="max_perms_manifest_unknown">မသိ</string>
 </resources>

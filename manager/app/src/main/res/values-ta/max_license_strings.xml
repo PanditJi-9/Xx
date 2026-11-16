@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_license_strings.xml -->
+<resources>
+    <string name="max_license_title">உரிமம்</string>
+    <string name="max_license_subtitle">ஒரு விசை, இந்தச் சாதனம், கணக்கு இல்லை</string>
+    <string name="max_license_help_body">நீங்கள் அதை உள்ளிடும்போது ஒரு விசை ஆன்லைனில் ஒருமுறை சரிபார்க்கப்படும். அப்போதிருந்து, சேவையகத்தின் கையொப்பமிடப்பட்ட சான்றிதழ் அதன் நேரம் முடியும் வரை ஆஃப்லைனில் வேலை செய்யும் - நீங்கள் திரையைத் திறக்கும் ஒவ்வொரு முறையும் பயன்பாடு வீட்டிற்கு அழைக்காது. இந்தச் சாதனத்தின் ரேண்டம் இன்ஸ்டால் ஐடியுடன் சான்றிதழ் பிணைக்கப்பட்டுள்ளது, எனவே ஆப்ஸ் தரவை வேறொரு மொபைலுக்கு நகலெடுப்பது உரிமத்தை அதனுடன் கொண்டு செல்லாது, மேலும் நீங்கள் தொலைபேசிகளை மாற்றினால், உரிமையாளர் பேனலில் இருந்து பிணைப்பை மீட்டமைக்க முடியும்.</string>
+    <string name="max_license_status_section">நிலை</string>
+    <string name="max_license_status_active">செயலில்</string>
+    <string name="max_license_status_expired">காலாவதியானது</string>
+    <string name="max_license_status_none">செயல்படுத்தப்படவில்லை</string>
+    <string name="max_license_active_detail">மீதமுள்ளவை: %1$d நாட்கள்</string>
+    <string name="max_license_expired_detail">இந்த விசையின் நேரம் முடிந்துவிட்டது. புதிய விசை அணுகலைப் புதுப்பிக்கிறது.</string>
+    <string name="max_license_none_detail">கட்டண மேற்பரப்புகளைத் திறக்க நீங்கள் பெற்ற விசையை உள்ளிடவும்.</string>
+    <string name="max_license_promo_active">%1$s வரை அனைவருக்கும் இலவசம்</string>
+    <string name="max_license_plan_title">திட்டம்</string>
+    <string name="max_license_devices_title">சாதனங்கள்</string>
+    <string name="max_license_devices_detail">%1$d of %2$d பயன்படுத்தப்பட்டது</string>
+    <string name="max_license_device_id_title">இந்த சாதனம்</string>
+    <string name="max_license_device_id_detail">%1$s</string>
+    <string name="max_license_key_section">செயல்படுத்துதல்</string>
+    <string name="max_license_key_label">உரிம விசை</string>
+    <string name="max_license_key_placeholder">அதிகபட்சம்-XXXXX-XXXX-XXXX-XXXX-XX</string>
+    <string name="max_license_key_helper">கோடுகள் மற்றும் கேப்பிடலைசேஷன் ஒரு பொருட்டல்ல - நீங்கள் பெற்றதைப் போல் ஒட்டவும்.</string>
+    <string name="max_license_activate">செயல்படுத்து</string>
+    <string name="max_license_activating">விசையைச் சரிபார்க்கிறது…</string>
+    <string name="max_license_refresh">இப்போது சரிபார்க்கவும்</string>
+    <string name="max_license_activated">செயல்படுத்தப்பட்டது. இந்தச் சாதனம் இப்போது உங்கள் விசையுடன் இணைக்கப்பட்டுள்ளது.</string>
+    <string name="max_license_error_invalid_key">இந்த விசை முழுமையானதாக தெரியவில்லை. சரிபார்த்து மீண்டும் முயலவும்.</string>
+    <string name="max_license_error_not_configured">இந்த உருவாக்கத்தில் உரிமம் சர்வர் கட்டமைக்கப்படவில்லை.</string>
+    <string name="max_license_error_network">இணைப்பு இல்லை. விசை ஒரு முறை சரிபார்க்கப்பட்டது, பின்னர் ஆஃப்லைனில் வேலை செய்கிறது.</string>
+    <string name="max_license_error_timeout">உரிம சர்வர் சரியான நேரத்தில் பதிலளிக்கவில்லை. மீண்டும் முயற்சிக்கவும்.</string>
+    <string name="max_license_error_server">உரிம சேவையகம் பிழையுடன் பதிலளித்தது. பிறகு முயற்சிக்கவும்.</string>
+    <string name="max_license_error_client">உரிமச் செயல்பாடு சர்வரில் பயன்படுத்தப்படவில்லை.</string>
+    <string name="max_license_error_format">சர்வர் பதில் புரியவில்லை.</string>
+    <string name="max_license_error_expired">இந்த விசை காலாவதியானது.</string>
+    <string name="max_license_error_not_found">இந்த சாவி தெரியவில்லை.</string>
+    <string name="max_license_error_revoked">இந்த சாவி திரும்பப் பெறப்பட்டது.</string>
+    <string name="max_license_error_device_limit">இந்த விசை அதன் சாதன வரம்பை அடைந்துவிட்டது. சாதனத்தை மீட்டமைக்கக் கேட்கவும்.</string>
+    <string name="max_license_error_device_unknown">இந்தச் சாதனம் இன்னும் விசையுடன் இணைக்கப்படவில்லை. முதலில் அதை இங்கே செயல்படுத்தவும்.</string>
+    <string name="max_license_error_device_removed">இந்தச் சாதனம் உரிமையாளரால் சாவியிலிருந்து அகற்றப்பட்டது.</string>
+    <string name="max_license_error_rate_limited">இந்த இணைப்பிலிருந்து பல முயற்சிகள் — சில நிமிடங்கள் காத்திருந்து, மீண்டும் முயலவும்.</string>
+    <string name="max_license_error_unknown">ஏதோ தவறாகிவிட்டது. காரணம் கண்டறிதலில் பதிவு செய்யப்பட்டுள்ளது.</string>
+    <string name="max_license_gate_title">இந்த மேற்பரப்புக்கு உரிமம் தேவை</string>
+    <string name="max_license_gate_detail">இது ஒரு விசையுடன் சேர்க்கப்பட்டுள்ளது. ஒரு விசை இந்தச் சாதனத்தை உள்ளடக்கியது, அதை உள்ளிடுவதற்கு ஒரு நிமிடம் ஆகும்.</string>
+    <string name="max_feature_off_title">அணைக்கப்பட்டது</string>
+    <string name="max_feature_off_detail">கட்டுப்பாட்டு குழு இந்த மேற்பரப்பை முடக்கியுள்ளது. அது மீண்டும் இயக்கப்பட்டவுடன் மீண்டும் வரும்.</string>
+    <string name="max_license_gate_action">உரிம அமைப்புகளைத் திறக்கவும்</string>
+    <string name="max_license_gate_subscribe">இப்போது குழுசேர்</string>
+    <string name="max_license_subscription_section">சந்தா</string>
+    <string name="max_license_subscription_open">சந்தா பக்கத்தைத் திறக்கவும்</string>
+</resources>

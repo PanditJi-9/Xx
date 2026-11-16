@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/network_scanner_strings.xml -->
+<resources>
+    <string name="network_scanner_title">Skaner sieci lokalnej</string>
+    <string name="network_scanner_subtitle">Twój adres, brama, do której dociera, i którzy sąsiedzi odpowiedzieli.</string>
+    <string name="max_role_network_scanner">Odczytuje sieć, w której się znajdujesz — bez przechwytywania i bez rootowania.</string>
+    <string name="ns_no_network">Żadna sieć nie jest podłączona.</string>
+    <string name="ns_interface">Interfejs</string>
+    <string name="ns_address">Adres</string>
+    <string name="ns_gateway">Wejście</string>
+    <string name="ns_dns">DNS</string>
+    <string name="ns_mac">PROCHOWIEC</string>
+    <string name="ns_transport_wifi">Wi-Fi</string>
+    <string name="ns_transport_ethernet">Ethernetu</string>
+    <string name="ns_transport_cellular">Komórkowy</string>
+    <string name="ns_transport_other">Inny</string>
+    <string name="ns_sources_title">Skąd to się bierze</string>
+    <string name="ns_sources_body">Adresy i brama odczytywane są z właściwości łącza platformy. Tablica sąsiadów jest odczytywana z pamięci podręcznej ARP jądra, więc zawiera tylko to, z czym ostatnio rozmawiało to urządzenie — pusta tabela nie oznacza pustej sieci.</string>
+    <string name="ns_refresh">Odświeżać</string>
+    <string name="ns_probe">Sonduj wspólne porty</string>
+    <string name="ns_probe_stop">Zatrzymywać się</string>
+    <string name="ns_probe_progress">Sondowanie %1$d z %2$d</string>
+    <string name="ns_probe_note">Wysyła połączenie TCP na portach 22, 80, 443, 5000 i 5555 przez ten /24. Zgłaszany jest port, który odpowiada; cisza nie jest dowodem nieobecności gospodarza.</string>
+    <string name="ns_neighbours">Znani sąsiedzi</string>
+    <string name="ns_neighbours_note">Z /proc/net/arp — tylko do odczytu.</string>
+    <string name="ns_neighbours_empty">Nie są jeszcze znani sąsiedzi.</string>
+    <string name="ns_ports_value">Porty %1$s</string>
+</resources>

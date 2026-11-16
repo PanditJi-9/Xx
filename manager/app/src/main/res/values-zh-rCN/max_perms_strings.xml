@@ -69,4 +69,25 @@
     <string name="max_perms_entry_title">权限和应用程序操作</string>
     <string name="max_perms_entry_desc">查看此应用程序声明的内容以及系统实际允许的内容</string>
     <string name="max_perms_entry_action">开放权限</string>
+    <string name="max_perms_manifest_title">舱单摘要</string>
+    <string name="max_perms_manifest_desc">从包管理器中读取：版本、SDK 范围、组件以及导出的数量。导出的组件可以由其他应用程序启动。</string>
+    <string name="max_perms_manifest_version">版本</string>
+    <string name="max_perms_manifest_sdk">SDK范围</string>
+    <string name="max_perms_manifest_location">安装位置</string>
+    <string name="max_perms_manifest_location_auto">自动的</string>
+    <string name="max_perms_manifest_location_internal">仅内部存储</string>
+    <string name="max_perms_manifest_location_external">更喜欢外部</string>
+    <string name="max_perms_manifest_components">成分</string>
+    <string name="max_perms_manifest_components_order">活动·服务·接收者·提供者</string>
+    <string name="max_perms_manifest_exported">出口组件</string>
+    <string name="max_perms_manifest_splits">拆分 APK</string>
+    <string name="max_perms_manifest_debug">可调试</string>
+    <string name="max_perms_features_title">声明的功能</string>
+    <string name="max_perms_features_desc">与该设备宣传的内容相比，软件包对设备的要求。此处缺少的必需功能通常意味着应用程序将无法完全运行 - 这是包管理器的声明，而不是猜测。</string>
+    <string name="max_perms_features_loading">阅读包的声明功能...</string>
+    <string name="max_perms_features_none">该包声明没有必需的功能。</string>
+    <string name="max_perms_features_required">必需的</string>
+    <string name="max_perms_features_unsupported">不在此设备上</string>
+    <string name="max_perms_manifest_none">包管理器未报告。</string>
+    <string name="max_perms_manifest_unknown">未知</string>
 </resources>

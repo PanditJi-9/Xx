@@ -99,4 +99,12 @@
     <string name="max_gpu_saved_desc">Daha önceki bir kaydetmeden alınmış ve her önyüklemede uygulanmıştır: %1$s. Yukarıdaki varsayılan ayar yalnızca bu oturumu sonlandırır, kayıtlı durumu asla sonlandırmaz.</string>
     <string name="max_gpu_dynamic_min">Minimum · dinamik</string>
     <string name="max_gpu_dynamic_max">Maksimum · dinamik</string>
+    <string name="max_gpu_monitor_only_detail">Bu çekirdeğin ortaya çıkardığı tek grafik düğümleri bant genişliği ve QoS monitörleridir: GPU saati taşımazlar, dolayısıyla ayarlanacak bir frekans yoktur. GPU gibi bir bellek düzenleyicisi yazmak yerine kontrol kapalı kalıyor.</string>
+    <string name="max_gpu_danger_title">GPU limitlerini yaz?</string>
+    <string name="max_gpu_danger_body">Bu, grafik frekans penceresini ve düzenleyiciyi GPU düğümlerine yazar. Sürücünün reddettiği bir pencere veya buna ayak uyduramayan bir regülatör tüm arayüzü kilitleyebilir veya paneli dondurabilir. Uygulama bunu bir kez kabul ettiğinizi kaydeder; uyguladığınız değerlerin sorumluluğu size aittir.</string>
+    <string name="max_gpu_danger_action">Anladım - uygula</string>
+    <string name="max_gpu_state_title">Durumdaki süre</string>
+    <string name="max_gpu_state_desc">GPU\'ın zamanının gerçekte nereye gittiği, çekirdek tarafından çalışma frekansı başına sayılır; mevcut saatin anlık görüntüsü değildir.</string>
+    <string name="max_gpu_state_hidden_share">%1$s birlikte</string>
+    <string name="max_gpu_state_hidden">%1$d %%1\'in altında olduğunu belirtir</string>
 </resources>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/network_scanner_strings.xml -->
+<resources>
+    <string name="network_scanner_title">Lokal nätverksskanner</string>
+    <string name="network_scanner_subtitle">Din adress, gatewayen den når och vilka grannar som svarat.</string>
+    <string name="max_role_network_scanner">Läser nätverket du är på — ingen infångning, ingen rot.</string>
+    <string name="ns_no_network">Inget nätverk är anslutet.</string>
+    <string name="ns_interface">Gränssnitt</string>
+    <string name="ns_address">Adress</string>
+    <string name="ns_gateway">Inkörsport</string>
+    <string name="ns_dns">DNS</string>
+    <string name="ns_mac">MAC</string>
+    <string name="ns_transport_wifi">Wi-Fi</string>
+    <string name="ns_transport_ethernet">Ethernet</string>
+    <string name="ns_transport_cellular">Cellulär</string>
+    <string name="ns_transport_other">Andra</string>
+    <string name="ns_sources_title">Var kommer detta ifrån</string>
+    <string name="ns_sources_body">Adresser och gateway läses från plattformens länkegenskaper. Granntabellen läses från kärnans ARP-cache, så den innehåller bara det som den här enheten nyligen har pratat med – en tom tabell betyder inte ett tomt nätverk.</string>
+    <string name="ns_refresh">Uppdatera</string>
+    <string name="ns_probe">Sonder gemensamma portar</string>
+    <string name="ns_probe_stop">Stopp</string>
+    <string name="ns_probe_progress">Undersöker %1$d av %2$d</string>
+    <string name="ns_probe_note">Skickar en TCP-anslutning på portarna 22, 80, 443, 5000 och 5555 över denna /24. En port som svarar rapporteras; tystnad är inte ett bevis på att en värd är frånvarande.</string>
+    <string name="ns_neighbours">Kända grannar</string>
+    <string name="ns_neighbours_note">Från /proc/net/arp — skrivskyddad.</string>
+    <string name="ns_neighbours_empty">Inga grannar är kända ännu.</string>
+    <string name="ns_ports_value">Portar %1$s</string>
+</resources>

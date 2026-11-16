@@ -69,4 +69,25 @@
     <string name="max_perms_entry_title">Uprawnienia i operacje aplikacji</string>
     <string name="max_perms_entry_desc">Zobacz, co deklaruje ta aplikacja i na co faktycznie pozwala system</string>
     <string name="max_perms_entry_action">Otwórz uprawnienia</string>
+    <string name="max_perms_manifest_title">Oczywiste podsumowanie</string>
+    <string name="max_perms_manifest_desc">Odczytuj z menedżera pakietów: wersję, zakres SDK, komponenty i liczbę z nich eksportowanych. Wyeksportowany komponent może zostać uruchomiony przez inne aplikacje.</string>
+    <string name="max_perms_manifest_version">Wersja</string>
+    <string name="max_perms_manifest_sdk">Zakres SDK</string>
+    <string name="max_perms_manifest_location">Zainstaluj lokalizację</string>
+    <string name="max_perms_manifest_location_auto">Automatyczny</string>
+    <string name="max_perms_manifest_location_internal">Tylko pamięć wewnętrzna</string>
+    <string name="max_perms_manifest_location_external">Preferuje zewnętrzne</string>
+    <string name="max_perms_manifest_components">Komponenty</string>
+    <string name="max_perms_manifest_components_order">działalność · usługi · odbiorcy · dostawcy</string>
+    <string name="max_perms_manifest_exported">Eksportowane komponenty</string>
+    <string name="max_perms_manifest_splits">Podziel pliki APK</string>
+    <string name="max_perms_manifest_debug">Debugowalne</string>
+    <string name="max_perms_features_title">Deklarowane funkcje</string>
+    <string name="max_perms_features_desc">Czego pakiet wymaga od urządzenia w porównaniu z tym, co reklamuje to urządzenie. Brak wymaganej funkcji zwykle oznacza, że ​​aplikacja nie będzie w pełni działać — jest to twierdzenie menedżera pakietów, a nie przypuszczenie.</string>
+    <string name="max_perms_features_loading">Czytanie deklarowanych funkcji pakietu…</string>
+    <string name="max_perms_features_none">Pakiet nie deklaruje żadnych wymaganych funkcji.</string>
+    <string name="max_perms_features_required">Wymagany</string>
+    <string name="max_perms_features_unsupported">Nie na tym urządzeniu</string>
+    <string name="max_perms_manifest_none">Nie zgłoszone przez menedżera pakietów.</string>
+    <string name="max_perms_manifest_unknown">Nieznany</string>
 </resources>

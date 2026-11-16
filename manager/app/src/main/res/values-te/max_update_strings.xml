@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_update_strings.xml -->
+<resources>
+    <string name="update_dialog_title">అప్‌డేట్ అందుబాటులో ఉంది</string>
+    <string name="update_dialog_title_required">నవీకరణ అవసరం</string>
+    <string name="update_required_notice">MaxManagerని ఉపయోగించడం కొనసాగించడానికి ఈ నవీకరణ అవసరం. దీన్ని ఇన్‌స్టాల్ చేసి, ఆపై యాప్‌ని మళ్లీ తెరవండి.</string>
+    <string name="update_dialog_body">వెర్షన్ %1$s అందుబాటులో ఉంది. మీరు %2$sలో ఉన్నారు.</string>
+    <string name="update_block_title">కొనసాగించడానికి నవీకరణ అవసరం</string>
+    <string name="update_block_body">ఈ బిల్డ్ (%1$s)కి ఇకపై మద్దతు లేదు. MaxManagerని ఉపయోగించడం కొనసాగించడానికి %2$sకి అప్‌డేట్ చేయండి.</string>
+    <string name="update_block_body_no_release">ఈ బిల్డ్ (%1$s)కి ఇకపై మద్దతు లేదు.</string>
+    <string name="update_release_notes_label">కొత్తవి ఏమిటి</string>
+    <string name="update_size">డౌన్‌లోడ్ పరిమాణం: %1$s</string>
+    <string name="update_button_now">ఇప్పుడే నవీకరించండి</string>
+    <string name="update_button_later">తరువాత</string>
+    <string name="update_button_close">మూసివేయి</string>
+    <string name="update_button_open_page">డౌన్‌లోడ్ పేజీని తెరవండి</string>
+    <string name="update_state_downloading">డౌన్‌లోడ్ చేస్తోంది… %1$d%%</string>
+    <string name="update_state_downloading_unknown">డౌన్‌లోడ్ చేస్తోంది...</string>
+    <string name="update_state_installing">ఇన్‌స్టాల్ చేస్తోంది...</string>
+    <string name="update_error_network">నవీకరణ సర్వర్‌ని చేరుకోవడం సాధ్యపడలేదు. మీ కనెక్షన్‌ని తనిఖీ చేసి, మళ్లీ ప్రయత్నించండి.</string>
+    <string name="update_error_http">నవీకరణ సర్వర్ లోపంతో సమాధానం ఇచ్చింది. తర్వాత మళ్లీ ప్రయత్నించండి.</string>
+    <string name="update_error_format">నవీకరణ సమాచారాన్ని చదవడం సాధ్యం కాలేదు.</string>
+    <string name="update_error_too_large">నవీకరణ సమాచారం ఊహించిన దాని కంటే పెద్దది మరియు విస్మరించబడింది.</string>
+    <string name="update_error_integrity">డౌన్‌లోడ్ చేయబడిన ఫైల్ దాని చెక్‌సమ్‌తో సరిపోలలేదు మరియు తొలగించబడింది.</string>
+    <string name="update_error_install">ఇన్‌స్టాలేషన్ విఫలమైంది. మళ్లీ ప్రయత్నించండి.</string>
+    <string name="update_error_not_configured">ఈ బిల్డ్‌లో అప్‌డేట్ ఛానెల్ ఏదీ కాన్ఫిగర్ చేయబడలేదు.</string>
+    <string name="update_maintenance_title">తాత్కాలికంగా అందుబాటులో లేదు</string>
+    <string name="update_maintenance_body">MaxManager తాత్కాలికంగా అందుబాటులో లేదు. దయచేసి త్వరలో మళ్లీ ప్రయత్నించండి.</string>
+    <string name="update_check_title">నవీకరణల కోసం తనిఖీ చేయండి</string>
+    <string name="update_check_supporting">ప్రస్తుత వెర్షన్: %1$s</string>
+    <string name="update_check_updated">ఒక నవీకరణ అందుబాటులో ఉంది.</string>
+    <string name="update_check_uptodate">మీరు తాజా వెర్షన్‌లో ఉన్నారు.</string>
+    <string name="update_check_failed">నవీకరణల కోసం తనిఖీ చేయడం సాధ్యపడలేదు.</string>
+    <string name="update_check_not_configured">ఈ బిల్డ్‌లో అప్‌డేట్ ఛానెల్ ఏదీ కాన్ఫిగర్ చేయబడలేదు.</string>
+    <string name="update_released_label">విడుదల తేదీ: %1$s</string>
+    <string name="update_check_none_published">నియంత్రణ ప్యానెల్ నుండి ఇంకా ఎటువంటి నవీకరణ ప్రచురించబడలేదు.</string>
+    <string name="update_check_link_missing">నవీకరణ ప్రచురించబడింది, కానీ దాని డౌన్‌లోడ్ లింక్ లేదు.</string>
+</resources>

@@ -69,4 +69,25 @@
     <string name="max_perms_entry_title">Дозволи и операции за апликации</string>
     <string name="max_perms_entry_desc">Погледнете што објавува оваа апликација и што всушност дозволува системот</string>
     <string name="max_perms_entry_action">Отворете дозволи</string>
+    <string name="max_perms_manifest_title">Резиме на манифестот</string>
+    <string name="max_perms_manifest_desc">Прочитајте од менаџерот на пакети: верзија, опсег на SDK, компоненти и колку од нив се извезени. Извезената компонента може да се стартува од други апликации.</string>
+    <string name="max_perms_manifest_version">Верзија</string>
+    <string name="max_perms_manifest_sdk">Опсег на SDK</string>
+    <string name="max_perms_manifest_location">Инсталирајте локација</string>
+    <string name="max_perms_manifest_location_auto">Автоматски</string>
+    <string name="max_perms_manifest_location_internal">Само внатрешно складирање</string>
+    <string name="max_perms_manifest_location_external">Претпочита надворешен</string>
+    <string name="max_perms_manifest_components">Компоненти</string>
+    <string name="max_perms_manifest_components_order">активности · услуги · приемници · даватели</string>
+    <string name="max_perms_manifest_exported">Извезени компоненти</string>
+    <string name="max_perms_manifest_splits">Поделете АПК</string>
+    <string name="max_perms_manifest_debug">Дебагирање</string>
+    <string name="max_perms_features_title">Декларирани карактеристики</string>
+    <string name="max_perms_features_desc">Што бара пакетот од уредот, во споредба со она што го рекламира овој уред. Потребната карактеристика што недостасува овде обично значи дека апликацијата нема да работи целосно - тоа е тврдење од менаџерот на пакети, а не претпоставка.</string>
+    <string name="max_perms_features_loading">Читање на декларираните карактеристики на пакетот…</string>
+    <string name="max_perms_features_none">Пакетот не објавува потребни карактеристики.</string>
+    <string name="max_perms_features_required">Задолжително</string>
+    <string name="max_perms_features_unsupported">Не на овој уред</string>
+    <string name="max_perms_manifest_none">Не е пријавено од менаџерот на пакети.</string>
+    <string name="max_perms_manifest_unknown">Непознат</string>
 </resources>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/manifest_inspector_strings.xml -->
+<resources>
+    <string name="manifest_inspector_title">Manifest စစ်ဆေးရေးမှူး</string>
+    <string name="manifest_inspector_subtitle">ထည့်သွင်းထားသည့်အက်ပ်က သူ့အကြောင်းကြေညာထားသည်ကို PackageManager မှဖတ်ပါ။</string>
+    <string name="max_role_manifest_inspector">ပက်ကေ့ဂျ်တစ်ခုက သူ့အကြောင်း ကြေငြာထားသည်ကို ပြသည် — ဖတ်ရန်သာ။</string>
+    <string name="mi_search">အက်ပ်များကို ရှာဖွေပါ။</string>
+    <string name="mi_empty">ဘယ်ဘက်ရှိ အက်ပ်တစ်ခုကို ရွေးပါ။</string>
+    <string name="mi_yes">ဟုတ်ကဲ့</string>
+    <string name="mi_no">မရှိ</string>
+    <string name="mi_section_identity">အထုပ်</string>
+    <string name="mi_version">ဗားရှင်း</string>
+    <string name="mi_version_code">ဗားရှင်းကုဒ်</string>
+    <string name="mi_min_sdk">အနည်းဆုံး SDK</string>
+    <string name="mi_target_sdk">ပစ်မှတ် SDK</string>
+    <string name="mi_installed">တပ်ဆင်ထားသည်။</string>
+    <string name="mi_updated">မွမ်းမံထားသည်။</string>
+    <string name="mi_installer">တပ်ဆင်သူ</string>
+    <string name="mi_uid">UID</string>
+    <string name="mi_data_dir">ဒေတာလမ်းညွှန်</string>
+    <string name="mi_debuggable">အမှားရှာနိုင်သည်။</string>
+    <string name="mi_system_app">စနစ်အက်ပ်</string>
+    <string name="mi_enabled">ဖွင့်ထားသည်။</string>
+    <string name="mi_section_permissions">ခွင့်ပြုချက်တောင်းခံခဲ့သည်။</string>
+    <string name="mi_permissions_summary">%1$d ခွင့်ပြုချက်များ · %2$d ၎င်းတို့ထဲမှ အန္တရာယ်ရှိသည်။</string>
+    <string name="mi_permissions_none">ဤအက်ပ်သည် ခွင့်ပြုချက်မတောင်းပါ။</string>
+    <string name="mi_perm_dangerous">အန္တရာယ်ရှိသည်။</string>
+    <string name="mi_perm_signature">လက်မှတ်</string>
+    <string name="mi_perm_normal">ပုံမှန်</string>
+    <string name="mi_perm_unknown">အမျိုးအစားမခွဲခြားပါ။</string>
+    <string name="mi_section_components">အစိတ်အပိုင်းများ</string>
+    <string name="mi_activities">လှုပ်ရှားမှုများ</string>
+    <string name="mi_services">ဝန်ဆောင်မှုများ</string>
+    <string name="mi_receivers">လက်ခံသူများ</string>
+    <string name="mi_providers">ပံ့ပိုးပေးသည်။</string>
+    <string name="mi_components_none">မည်သူမျှ မကြေညာခဲ့ပါ။</string>
+    <string name="mi_section_features">ကိရိယာအင်္ဂါရပ်များ</string>
+    <string name="mi_features_note">ပလပ်ဖောင်းသည် အခြားအက်ပ်၏အသုံးပြုမှု-အင်္ဂါရပ်စာရင်းကို မဖော်ပြပါ။ ဤအရာများသည် ဤစက်၏ အစီရင်ခံစာတွင် ဖော်ပြထားသော အင်္ဂါရပ်များဖြစ်သည်။</string>
+    <string name="mi_features_none">လုပ်ဆောင်ချက်ကို အစီရင်ခံခြင်းမရှိပါ။</string>
+    <string name="mi_section_signature">လက်မှတ် ရေးထိုးခြင်း။</string>
+    <string name="mi_signature_note">SHA-256 ၏ လက်မှတ်ထိုးလက်မှတ်။ တန်ဖိုးတူညီသော တည်ဆောက်မှုနှစ်ခုသည် တူညီသောထုတ်ဝေသူဖြစ်သည်။</string>
+    <string name="mi_signature_sha256">လက်မှတ်အနှစ်ချုပ်</string>
+</resources>

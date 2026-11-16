@@ -69,4 +69,25 @@
     <string name="max_perms_entry_title">Povolenia a operácie aplikácií</string>
     <string name="max_perms_entry_desc">Pozrite sa, čo táto aplikácia deklaruje a čo systém skutočne umožňuje</string>
     <string name="max_perms_entry_action">Otvoriť povolenia</string>
+    <string name="max_perms_manifest_title">Zjavné zhrnutie</string>
+    <string name="max_perms_manifest_desc">Prečítajte si zo správcu balíkov: verzia, rozsah SDK, komponenty a koľko z nich sa exportuje. Exportovaný komponent môžu spustiť iné aplikácie.</string>
+    <string name="max_perms_manifest_version">Verzia</string>
+    <string name="max_perms_manifest_sdk">rozsah SDK</string>
+    <string name="max_perms_manifest_location">Miesto inštalácie</string>
+    <string name="max_perms_manifest_location_auto">Automaticky</string>
+    <string name="max_perms_manifest_location_internal">Iba interné úložisko</string>
+    <string name="max_perms_manifest_location_external">Preferuje externé</string>
+    <string name="max_perms_manifest_components">Komponenty</string>
+    <string name="max_perms_manifest_components_order">činnosti · služby · prijímatelia · poskytovatelia</string>
+    <string name="max_perms_manifest_exported">Exportované komponenty</string>
+    <string name="max_perms_manifest_splits">Rozdeliť súbory APK</string>
+    <string name="max_perms_manifest_debug">Laditeľné</string>
+    <string name="max_perms_features_title">Deklarované vlastnosti</string>
+    <string name="max_perms_features_desc">Čo balík vyžaduje od zariadenia v porovnaní s tým, čo toto zariadenie inzeruje. Požadovaná funkcia, ktorá tu chýba, zvyčajne znamená, že aplikácia nebude plne fungovať – ide o nárok správcu balíkov, nie o odhad.</string>
+    <string name="max_perms_features_loading">Čítanie deklarovaných funkcií balíka…</string>
+    <string name="max_perms_features_none">Balík nedeklaruje žiadne požadované funkcie.</string>
+    <string name="max_perms_features_required">Povinné</string>
+    <string name="max_perms_features_unsupported">Nie na tomto zariadení</string>
+    <string name="max_perms_manifest_none">Nehlásil správca balíkov.</string>
+    <string name="max_perms_manifest_unknown">Neznámy</string>
 </resources>

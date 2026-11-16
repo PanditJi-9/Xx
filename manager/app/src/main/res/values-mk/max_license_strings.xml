@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_license_strings.xml -->
+<resources>
+    <string name="max_license_title">Лиценца</string>
+    <string name="max_license_subtitle">Еден клуч, овој уред, без сметка</string>
+    <string name="max_license_help_body">Еден клуч се проверува онлајн еднаш, кога ќе го внесете. Оттогаш, потпишаниот сертификат на серверот работи офлајн додека не му истече времето - апликацијата не се јавува дома секогаш кога ќе отворите екран. Сертификатот е врзан за случајната идентификација на инсталирање на овој уред, така што копирањето на податоците на апликацијата на друг телефон не ја носи лиценцата со себе, а сопственикот може да го ресетира тоа врзување од панелот ако го промените телефонот.</string>
+    <string name="max_license_status_section">Статус</string>
+    <string name="max_license_status_active">Активен</string>
+    <string name="max_license_status_expired">Истечен</string>
+    <string name="max_license_status_none">Не е активирано</string>
+    <string name="max_license_active_detail">Преостанати: %1$d дена</string>
+    <string name="max_license_expired_detail">Времето на овој клуч заврши. Нов клуч го обновува пристапот.</string>
+    <string name="max_license_none_detail">Внесете го клучот што го добивте за да ги отклучите платените површини.</string>
+    <string name="max_license_promo_active">Бесплатно за сите до %1$s</string>
+    <string name="max_license_plan_title">Планирајте</string>
+    <string name="max_license_devices_title">Уреди</string>
+    <string name="max_license_devices_detail">Искористени %1$d од %2$d</string>
+    <string name="max_license_device_id_title">Овој уред</string>
+    <string name="max_license_device_id_detail">%1$s</string>
+    <string name="max_license_key_section">Активирање</string>
+    <string name="max_license_key_label">Лиценца клуч</string>
+    <string name="max_license_key_placeholder">MAXM-XXXXX-XXXXX-XXXXX-XXXXX-XX</string>
+    <string name="max_license_key_helper">Цртичките и буквите не се важни - залепете ги како што сте ги примиле.</string>
+    <string name="max_license_activate">Активирајте</string>
+    <string name="max_license_activating">Се проверува клучот…</string>
+    <string name="max_license_refresh">Проверете сега</string>
+    <string name="max_license_activated">Активиран. Овој уред сега е поврзан со вашиот клуч.</string>
+    <string name="max_license_error_invalid_key">Овој клуч не изгледа комплетен. Проверете го и обидете се повторно.</string>
+    <string name="max_license_error_not_configured">Оваа градба нема конфигуриран сервер за лиценца.</string>
+    <string name="max_license_error_network">Нема врска. Клучот се проверува еднаш, а потоа работи офлајн.</string>
+    <string name="max_license_error_timeout">Серверот за лиценца не одговори на време. Обидете се повторно.</string>
+    <string name="max_license_error_server">Серверот за лиценца одговори со грешка. Обидете се повторно подоцна.</string>
+    <string name="max_license_error_client">Функцијата за лиценца не е распоредена на серверот.</string>
+    <string name="max_license_error_format">Одговорот на серверот не беше разбран.</string>
+    <string name="max_license_error_expired">Овој клуч е истечен.</string>
+    <string name="max_license_error_not_found">Овој клуч не е познат.</string>
+    <string name="max_license_error_revoked">Овој клуч е отповикан.</string>
+    <string name="max_license_error_device_limit">Овој клуч го достигна ограничувањето на уредот. Побарајте ресетирање на уредот.</string>
+    <string name="max_license_error_device_unknown">Овој уред сè уште не е поврзан со клучот. Прво активирајте го овде.</string>
+    <string name="max_license_error_device_removed">Овој уред беше отстранет од клучот од сопственикот.</string>
+    <string name="max_license_error_rate_limited">Премногу обиди од оваа врска - почекајте неколку минути, па обидете се повторно.</string>
+    <string name="max_license_error_unknown">Нешто тргна наопаку. Причината е снимена во Дијагностика.</string>
+    <string name="max_license_gate_title">Оваа површина бара лиценца</string>
+    <string name="max_license_gate_detail">Вклучен е со клуч. Едно копче го покрива овој уред, а неговото внесување трае една минута.</string>
+    <string name="max_feature_off_title">Исклучено</string>
+    <string name="max_feature_off_detail">Контролната табла ја исклучи оваа површина. Се враќа веднаш штом ќе се вклучи повторно.</string>
+    <string name="max_license_gate_action">Отворете ги поставките за лиценца</string>
+    <string name="max_license_gate_subscribe">Претплатете се сега</string>
+    <string name="max_license_subscription_section">Претплата</string>
+    <string name="max_license_subscription_open">Отворете ја страницата за претплата</string>
+</resources>

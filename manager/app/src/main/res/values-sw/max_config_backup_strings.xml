@@ -18,4 +18,10 @@
     <string name="max_cfg_section_appearance">Muonekano na kiolesura</string>
     <string name="max_cfg_section_app_prefs">Mapendeleo ya programu na lugha</string>
     <string name="max_cfg_restore_merge_note">Kurejesha mapendeleo kuunganishwa: funguo zilizopo kwenye faili zimeandikwa, na funguo hazitaji kukaa jinsi zilivyo. Hakuna kinachosafishwa.</string>
+    <string name="max_cfg_diff_title">%1$d Mipangilio iliyohifadhiwa inatofautiana na kifaa hiki</string>
+    <string name="max_cfg_diff_line">%1$s: %2$s → %3$s</string>
+    <string name="max_cfg_diff_unset">haijawekwa</string>
+    <string name="max_cfg_diff_more">na %1$d zaidi</string>
+    <string name="max_cfg_diff_applist">%1$d mistari ya orodha ya programu imeongezwa, %2$d imeondolewa - orodha nzima inabadilishwa, haijaunganishwa.</string>
+    <string name="max_cfg_diff_prefs">%1$d vitufe vya mapendeleo vinatofautiana - vimeunganishwa, havijafutwa.</string>
 </resources>

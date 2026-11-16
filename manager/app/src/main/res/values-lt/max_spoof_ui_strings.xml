@@ -51,4 +51,14 @@
     <string name="copg_tweak_kso_title">Laikykite ekraną įjungtą</string>
     <string name="copg_tweak_kso_desc">Šiai programai pritaiko COPG nuolatinio ekrano patobulinimą. Išsaugotas čia, įrašytas į variklį peržiūros ir pritaikymo skirtuke Spoof.</string>
     <string name="copg_tweak_needs_device">Pirmiausia reikia įrenginio šiai programai skirtuke Apgaulė.</string>
+    <string name="spoof_engine_unmeasured">Variklio būsena nėra išmatuota: šakninė prieiga dar nesuteikta. Suteikite šaknį, tada iš naujo atidarykite šį skirtuką.</string>
+    <string name="spoof_engine_config_missing">COPG įdiegtas, bet trūksta jo konfigūracijos failo (COPG.json). Paraiška atsisakoma tol, kol modulis ją vėl nepateiks.</string>
+    <string name="spoof_engine_config_unreadable">COPG įdiegtas, bet jo konfigūracijos failas neįskaitomas JSON. Paraiška atsisakoma tol, kol failas nebus pataisytas.</string>
+    <string name="spoof_imei_spoof">IMEI klastojimas</string>
+    <string name="spoof_imei_spoof_desc">Šiai programai rodomas kitas IMEI. Reikia, kad LSPosed būtų įgalintas modulis Max Manager su šia programa. Įjungę programą iš naujo paleiskite ją.</string>
+    <string name="spoof_imei_active">Rodoma ši programa: %1$s</string>
+    <string name="spoof_imei_summary">IMEI klastojimas</string>
+    <string name="spoof_imei_regenerate">Naujas atsitiktinis IMEI</string>
+    <string name="spoof_imei_regenerate_desc">Sugeneruoja kitą galiojantį šios programos IMEI. Iš naujo paleiskite programą, kad ją pamatytumėte.</string>
+    <string name="spoof_imei_module_inactive">Max Manager modulis LSPosed neįjungtas, todėl programos vis tiek mato tikrąjį IMEI. Įgalinkite modulį LSPosed, pridėkite šią programą prie jo taikymo srities, tada vėl atidarykite šį ekraną.</string>
 </resources>

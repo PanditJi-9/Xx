@@ -13,4 +13,23 @@
     <string name="max_expand_section">Tampilkan detailnya</string>
     <string name="max_collapse_section">Sembunyikan detailnya</string>
     <string name="max_trust_loading">Membaca…</string>
+    <string name="max_gov_title">Siapa yang memerintah sekarang</string>
+    <string name="max_gov_separator">" › "</string>
+    <string name="max_gov_order_note">Urutan tetap: anak tangga yang lebih tinggi memblokir anak tangga yang lebih rendah. Hal ini tidak pernah mengubah kebijakan mana yang menang.</string>
+    <string name="max_gov_open_details">Pemegang aktif</string>
+    <string name="max_gov_active_title">Siapa yang memegang kendali</string>
+    <string name="max_gov_none">Tidak ada kebijakan yang memiliki kontrol perangkat keras saat ini.</string>
+    <string name="max_gov_count">Sewa kendali aktif: %1$d</string>
+    <string name="max_gov_requested">Diminta: %1$s</string>
+    <string name="max_gov_owner_recovery">Pemulihan</string>
+    <string name="max_gov_owner_safety">Keamanan termal</string>
+    <string name="max_gov_owner_per_app">Profil aplikasi</string>
+    <string name="max_gov_owner_max_ai">Max AI</string>
+    <string name="max_gov_owner_global">Profil global</string>
+    <string name="max_gov_owner_system">Sistem</string>
+    <string name="max_gov_owner_a11y">%1$s memiliki kontrol perangkat keras</string>
+    <string name="max_gov_now_none">Tidak ada pemilik otomatis saat ini — kendali tetap berada di tangan Anda</string>
+    <string name="max_gov_now_one">%1$s memegang kendali</string>
+    <string name="max_gov_now_many">%1$s memegang kontrol %2$d</string>
+    <string name="devinfo_details">Detail</string>
 </resources>

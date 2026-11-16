@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/manifest_inspector_strings.xml -->
+<resources>
+    <string name="manifest_inspector_title">អធិការបតី</string>
+    <string name="manifest_inspector_subtitle">អ្វីដែលកម្មវិធីដែលបានដំឡើងប្រកាសអំពីខ្លួនវា អានពី PackageManager ។</string>
+    <string name="max_role_manifest_inspector">បង្ហាញអ្វីដែលកញ្ចប់ប្រកាសអំពីខ្លួនវា — បានតែអានប៉ុណ្ណោះ។</string>
+    <string name="mi_search">ស្វែងរកកម្មវិធី</string>
+    <string name="mi_empty">ជ្រើសរើសកម្មវិធីមួយនៅខាងឆ្វេង។</string>
+    <string name="mi_yes">បាទ</string>
+    <string name="mi_no">ទេ</string>
+    <string name="mi_section_identity">កញ្ចប់</string>
+    <string name="mi_version">កំណែ</string>
+    <string name="mi_version_code">កូដកំណែ</string>
+    <string name="mi_min_sdk">SDK អប្បបរមា</string>
+    <string name="mi_target_sdk">គោលដៅ SDK</string>
+    <string name="mi_installed">បានដំឡើង</string>
+    <string name="mi_updated">បានធ្វើបច្ចុប្បន្នភាព</string>
+    <string name="mi_installer">អ្នកដំឡើង</string>
+    <string name="mi_uid">UID</string>
+    <string name="mi_data_dir">ថតទិន្នន័យ</string>
+    <string name="mi_debuggable">អាចបំបាត់កំហុសបាន។</string>
+    <string name="mi_system_app">កម្មវិធីប្រព័ន្ធ</string>
+    <string name="mi_enabled">បានបើក</string>
+    <string name="mi_section_permissions">បានស្នើសុំការអនុញ្ញាត</string>
+    <string name="mi_permissions_summary">%1$d ការអនុញ្ញាត · %2$d ក្នុងចំណោមពួកគេគ្រោះថ្នាក់</string>
+    <string name="mi_permissions_none">កម្មវិធីនេះមិនស្នើសុំការអនុញ្ញាតទេ។</string>
+    <string name="mi_perm_dangerous">គ្រោះថ្នាក់</string>
+    <string name="mi_perm_signature">ហត្ថលេខា</string>
+    <string name="mi_perm_normal">ធម្មតា។</string>
+    <string name="mi_perm_unknown">មិនបានចាត់ថ្នាក់</string>
+    <string name="mi_section_components">សមាសធាតុ</string>
+    <string name="mi_activities">សកម្មភាព</string>
+    <string name="mi_services">សេវាកម្ម</string>
+    <string name="mi_receivers">អ្នកទទួល</string>
+    <string name="mi_providers">អ្នកផ្តល់សេវា</string>
+    <string name="mi_components_none">គ្មាន​ការ​ប្រកាស</string>
+    <string name="mi_section_features">លក្ខណៈពិសេសឧបករណ៍</string>
+    <string name="mi_features_note">វេទិកានេះមិនបង្ហាញបញ្ជីមុខងារប្រើប្រាស់របស់កម្មវិធីផ្សេងទៀតទេ។ ទាំងនេះគឺជាលក្ខណៈពិសេសដែលឧបករណ៍នេះរាយការណ៍។</string>
+    <string name="mi_features_none">មិនមានការរាយការណ៍អំពីលក្ខណៈពិសេសទេ។</string>
+    <string name="mi_section_signature">ការចុះហត្ថលេខាលើវិញ្ញាបនបត្រ</string>
+    <string name="mi_signature_note">SHA-256 នៃវិញ្ញាបនបត្រចុះហត្ថលេខា។ ការបង្កើតពីរដែលមានតម្លៃដូចគ្នាគឺជាអ្នកបោះពុម្ពដូចគ្នា។</string>
+    <string name="mi_signature_sha256">វិញ្ញាបនបត្រសង្ខេប</string>
+</resources>

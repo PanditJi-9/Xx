@@ -18,4 +18,10 @@
     <string name="max_cfg_section_appearance">Izskats un saskarne</string>
     <string name="max_cfg_section_app_prefs">Lietotņu preferences un valoda</string>
     <string name="max_cfg_restore_merge_note">Atjaunojot preferences, tiek sapludinātas: failā esošās atslēgas tiek ierakstītas, un atslēgas, kuras tajā nav minētas, paliek tādas, kādas ir. Nekas nav notīrīts.</string>
+    <string name="max_cfg_diff_title">%1$d saglabātie iestatījumi atšķiras no šīs ierīces</string>
+    <string name="max_cfg_diff_line">%1$s: %2$s → %3$s</string>
+    <string name="max_cfg_diff_unset">nav iestatīts</string>
+    <string name="max_cfg_diff_more">un vēl %1$d</string>
+    <string name="max_cfg_diff_applist">%1$d lietotņu saraksta rindas pievienotas, %2$d noņemtas — viss saraksts tiek aizstāts, nevis apvienots.</string>
+    <string name="max_cfg_diff_prefs">%1$d preferenču atslēgas atšķiras — apvienotas, nevis izdzēstas.</string>
 </resources>

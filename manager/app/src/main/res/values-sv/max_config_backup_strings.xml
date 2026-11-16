@@ -18,4 +18,10 @@
     <string name="max_cfg_section_appearance">Utseende &amp; gränssnitt</string>
     <string name="max_cfg_section_app_prefs">Appinställningar och språk</string>
     <string name="max_cfg_restore_merge_note">Återställning av inställningar slås samman: nycklar som finns i filen skrivs och nycklar som den inte nämner förblir som de är. Ingenting är rensat.</string>
+    <string name="max_cfg_diff_title">%1$d sparade inställningar skiljer sig från denna enhet</string>
+    <string name="max_cfg_diff_line">%1$s: %2$s → %3$s</string>
+    <string name="max_cfg_diff_unset">inte inställt</string>
+    <string name="max_cfg_diff_more">och %1$d mer</string>
+    <string name="max_cfg_diff_applist">%1$d app-listrader tillagda, %2$d borttagna — hela listan ersätts, inte sammanfogad.</string>
+    <string name="max_cfg_diff_prefs">%1$d preferensnycklar skiljer sig – sammanslagna, inte raderade.</string>
 </resources>

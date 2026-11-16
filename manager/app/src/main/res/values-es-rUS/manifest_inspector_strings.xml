@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/manifest_inspector_strings.xml -->
+<resources>
+    <string name="manifest_inspector_title">Inspector de manifiestos</string>
+    <string name="manifest_inspector_subtitle">Lo que una aplicación instalada declara sobre sí misma, léalo en PackageManager.</string>
+    <string name="max_role_manifest_inspector">Muestra lo que un paquete declara sobre sí mismo (solo lectura).</string>
+    <string name="mi_search">Buscar aplicaciones</string>
+    <string name="mi_empty">Elija una aplicación a la izquierda.</string>
+    <string name="mi_yes">Sí</string>
+    <string name="mi_no">No</string>
+    <string name="mi_section_identity">Paquete</string>
+    <string name="mi_version">Versión</string>
+    <string name="mi_version_code">Código de versión</string>
+    <string name="mi_min_sdk">SDK mínimo</string>
+    <string name="mi_target_sdk">SDK de destino</string>
+    <string name="mi_installed">Instalado</string>
+    <string name="mi_updated">Actualizado</string>
+    <string name="mi_installer">Instalador</string>
+    <string name="mi_uid">UID</string>
+    <string name="mi_data_dir">Directorio de datos</string>
+    <string name="mi_debuggable">Depurable</string>
+    <string name="mi_system_app">Aplicación del sistema</string>
+    <string name="mi_enabled">Activado</string>
+    <string name="mi_section_permissions">Permisos solicitados</string>
+    <string name="mi_permissions_summary">%1$d permisos · %2$d de ellos peligrosos</string>
+    <string name="mi_permissions_none">Esta aplicación no solicita permiso.</string>
+    <string name="mi_perm_dangerous">Peligroso</string>
+    <string name="mi_perm_signature">Firma</string>
+    <string name="mi_perm_normal">Normal</string>
+    <string name="mi_perm_unknown">sin clasificar</string>
+    <string name="mi_section_components">Componentes</string>
+    <string name="mi_activities">Actividades</string>
+    <string name="mi_services">Servicios</string>
+    <string name="mi_receivers">Receptores</string>
+    <string name="mi_providers">Proveedores</string>
+    <string name="mi_components_none">Ninguno declarado</string>
+    <string name="mi_section_features">Características del dispositivo</string>
+    <string name="mi_features_note">La plataforma no expone la lista de usos y funciones de otra aplicación; estas son las características que reporta este dispositivo.</string>
+    <string name="mi_features_none">Ninguna característica reportada</string>
+    <string name="mi_section_signature">Certificado de firma</string>
+    <string name="mi_signature_note">SHA-256 del certificado de firma. Dos compilaciones con el mismo valor pertenecen al mismo editor.</string>
+    <string name="mi_signature_sha256">Resumen del certificado</string>
+</resources>

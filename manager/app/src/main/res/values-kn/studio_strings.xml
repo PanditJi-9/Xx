@@ -10,4 +10,6 @@
     <string name="studio_display">ಪ್ರದರ್ಶನ</string>
     <string name="studio_power">ಪವರ್ ಆಯ್ಕೆಗಳು</string>
     <string name="studio_settings">ಸೆಟ್ಟಿಂಗ್‌ಗಳು</string>
+    <string name="audio_dsp_live">DSP ಲೈವ್</string>
+    <string name="max_audio_session_label">ಆಡಿಯೋ ಸೆಷನ್ #%1$d</string>
 </resources>

@@ -18,4 +18,10 @@
     <string name="max_cfg_section_appearance">Wygląd i interfejs</string>
     <string name="max_cfg_section_app_prefs">Preferencje aplikacji i język</string>
     <string name="max_cfg_restore_merge_note">Przywracanie preferencji łączy się: klucze znajdujące się w pliku są zapisywane, a klucze, o których nie wspomina, pozostają bez zmian. Nic nie jest wyczyszczone.</string>
+    <string name="max_cfg_diff_title">%1$d zapisane ustawienia różnią się od tego urządzenia</string>
+    <string name="max_cfg_diff_line">%1$s: %2$s → %3$s</string>
+    <string name="max_cfg_diff_unset">nie ustawione</string>
+    <string name="max_cfg_diff_more">i %1$d więcej</string>
+    <string name="max_cfg_diff_applist">Dodano %1$d wiersze listy aplikacji, usunięto %2$d — cała lista zostanie zastąpiona, a nie scalona.</string>
+    <string name="max_cfg_diff_prefs">%1$d Klucze preferencji różnią się — są scalone, a nie wymazane.</string>
 </resources>

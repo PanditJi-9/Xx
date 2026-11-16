@@ -99,4 +99,12 @@
     <string name="max_gpu_saved_desc">從早期保存中保留並應用於每次啟動：%1$s。上面的預設設定僅結束此會話，而不是已儲存的狀態。</string>
     <string name="max_gpu_dynamic_min">最小·动态</string>
     <string name="max_gpu_dynamic_max">最大·动态</string>
+    <string name="max_gpu_monitor_only_detail">该内核公开的唯一图形节点是带宽和 QoS 监视器：它们不携带 GPU 时钟，因此无需设置频率。控制保持关闭状态，而不是像GPU那样编写内存调控器。</string>
+    <string name="max_gpu_danger_title">写出GPU极限？</string>
+    <string name="max_gpu_danger_body">这会将图形频率窗口和调节器写入GPU节点。驱动程序拒绝的窗口或无法跟上的调速器可能会使整个界面卡顿或冻结面板。应用程序会记录您曾经接受过的信息 - 您对所应用的值负责。</string>
+    <string name="max_gpu_danger_action">我明白——申请</string>
+    <string name="max_gpu_state_title">状态时间</string>
+    <string name="max_gpu_state_desc">GPU\ 的时间实际去了哪里，由内核根据操作频率进行计数——而不是当前时钟的快照。</string>
+    <string name="max_gpu_state_hidden_share">%1$s在一起</string>
+    <string name="max_gpu_state_hidden">%1$d 表示低于 1%%</string>
 </resources>

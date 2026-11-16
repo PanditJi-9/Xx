@@ -51,4 +51,14 @@
     <string name="copg_tweak_kso_title">Pastikan skrin dihidupkan</string>
     <string name="copg_tweak_kso_desc">Menggunakan tweak keep-screen-on COPG pada apl ini. Disimpan di sini, ditulis kepada enjin dengan Semak dan gunakan dalam tab Spoof.</string>
     <string name="copg_tweak_needs_device">Memerlukan peranti untuk apl ini dahulu, dalam tab Spoof.</string>
+    <string name="spoof_engine_unmeasured">Keadaan enjin tidak diukur: akses root belum diberikan lagi. Berikan akar, kemudian buka semula tab ini.</string>
+    <string name="spoof_engine_config_missing">COPG dipasang, tetapi fail konfigurasinya (COPG.json) tiada. Permohonan ditolak sehingga modul menyediakannya semula.</string>
+    <string name="spoof_engine_config_unreadable">COPG dipasang, tetapi fail konfigurasinya tidak boleh dibaca JSON. Permohonan ditolak sehingga fail dibaiki.</string>
+    <string name="spoof_imei_spoof">IMEI spoofing</string>
+    <string name="spoof_imei_spoof_desc">Menunjukkan apl ini IMEI yang berbeza. Memerlukan modul Max Manager didayakan dalam LSPosed dengan apl ini dalam skopnya. Mulakan semula apl selepas menghidupkannya.</string>
+    <string name="spoof_imei_active">Menunjukkan apl ini: %1$s</string>
+    <string name="spoof_imei_summary">IMEI spoofing</string>
+    <string name="spoof_imei_regenerate">IMEI rawak baharu</string>
+    <string name="spoof_imei_regenerate_desc">Menjana satu lagi IMEI yang sah untuk apl ini. Mulakan semula apl untuk melihatnya.</string>
+    <string name="spoof_imei_module_inactive">Modul Max Manager tidak didayakan dalam LSPosed, jadi apl masih melihat IMEI sebenar. Dayakan modul dalam LSPosed, tambahkan apl ini pada skopnya, kemudian buka semula skrin ini.</string>
 </resources>

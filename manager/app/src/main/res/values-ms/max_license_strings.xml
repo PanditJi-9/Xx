@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_license_strings.xml -->
+<resources>
+    <string name="max_license_title">Lesen</string>
+    <string name="max_license_subtitle">Satu kunci, peranti ini, tiada akaun</string>
+    <string name="max_license_help_body">Kunci disemak dalam talian sekali, apabila anda memasukkannya. Sejak itu, sijil yang ditandatangani pelayan berfungsi di luar talian sehingga masanya tamat — apl tidak memanggil ke rumah setiap kali anda membuka skrin. Sijil terikat pada id pemasangan rawak peranti ini, jadi menyalin data apl ke telefon lain tidak membawa lesen bersamanya dan pemilik boleh menetapkan semula pengikatan itu daripada panel jika anda menukar telefon.</string>
+    <string name="max_license_status_section">Status</string>
+    <string name="max_license_status_active">Aktif</string>
+    <string name="max_license_status_expired">Tamat tempoh</string>
+    <string name="max_license_status_none">Tidak diaktifkan</string>
+    <string name="max_license_active_detail">Baki: %1$d hari</string>
+    <string name="max_license_expired_detail">Masa kunci ini sudah tamat. Kunci baharu memperbaharui akses.</string>
+    <string name="max_license_none_detail">Masukkan kunci yang anda terima untuk membuka kunci permukaan berbayar.</string>
+    <string name="max_license_promo_active">Percuma untuk semua orang sehingga %1$s</string>
+    <string name="max_license_plan_title">Rancang</string>
+    <string name="max_license_devices_title">Peranti</string>
+    <string name="max_license_devices_detail">%1$d daripada %2$d digunakan</string>
+    <string name="max_license_device_id_title">Peranti ini</string>
+    <string name="max_license_device_id_detail">%1$s</string>
+    <string name="max_license_key_section">Pengaktifan</string>
+    <string name="max_license_key_label">Kunci lesen</string>
+    <string name="max_license_key_placeholder">MAXM-XXXXX-XXXXX-XXXXX-XXXXX-XX</string>
+    <string name="max_license_key_helper">Sempang dan huruf besar tidak penting — tampalkannya semasa anda menerimanya.</string>
+    <string name="max_license_activate">Aktifkan</string>
+    <string name="max_license_activating">Menyemak kunci…</string>
+    <string name="max_license_refresh">Semak sekarang</string>
+    <string name="max_license_activated">Diaktifkan. Peranti ini kini dipautkan ke kunci anda.</string>
+    <string name="max_license_error_invalid_key">Kunci ini tidak kelihatan lengkap. Semak dan cuba lagi.</string>
+    <string name="max_license_error_not_configured">Binaan ini tidak mempunyai pelayan lesen yang dikonfigurasikan.</string>
+    <string name="max_license_error_network">Tiada sambungan. Kekunci disemak sekali, kemudian berfungsi di luar talian.</string>
+    <string name="max_license_error_timeout">Pelayan lesen tidak menjawab tepat pada masanya. Cuba lagi.</string>
+    <string name="max_license_error_server">Pelayan lesen menjawab dengan ralat. Cuba lagi nanti.</string>
+    <string name="max_license_error_client">Fungsi lesen tidak digunakan pada pelayan.</string>
+    <string name="max_license_error_format">Jawapan pelayan tidak difahami.</string>
+    <string name="max_license_error_expired">Kunci ini telah tamat tempoh.</string>
+    <string name="max_license_error_not_found">Kunci ini tidak diketahui.</string>
+    <string name="max_license_error_revoked">Kunci ini telah dibatalkan.</string>
+    <string name="max_license_error_device_limit">Kunci ini telah mencapai had perantinya. Minta tetapan semula peranti.</string>
+    <string name="max_license_error_device_unknown">Peranti ini belum dipautkan kepada kunci lagi. Aktifkan di sini dahulu.</string>
+    <string name="max_license_error_device_removed">Peranti ini telah dialih keluar daripada kunci oleh pemiliknya.</string>
+    <string name="max_license_error_rate_limited">Terlalu banyak percubaan daripada sambungan ini — tunggu beberapa minit, kemudian cuba lagi.</string>
+    <string name="max_license_error_unknown">Sesuatu telah berlaku. Sebabnya telah direkodkan dalam Diagnostik.</string>
+    <string name="max_license_gate_title">Permukaan ini memerlukan lesen</string>
+    <string name="max_license_gate_detail">Ia disertakan dengan kunci. Satu kekunci menutup peranti ini dan memasukkannya mengambil masa seminit.</string>
+    <string name="max_feature_off_title">Dimatikan</string>
+    <string name="max_feature_off_detail">Panel kawalan telah mematikan permukaan ini. Ia kembali sebaik sahaja ia didayakan semula.</string>
+    <string name="max_license_gate_action">Buka tetapan lesen</string>
+    <string name="max_license_gate_subscribe">Langgan sekarang</string>
+    <string name="max_license_subscription_section">Langganan</string>
+    <string name="max_license_subscription_open">Buka halaman langganan</string>
+</resources>

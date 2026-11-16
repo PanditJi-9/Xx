@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_update_strings.xml -->
+<resources>
+    <string name="update_dialog_title">Шинэчлэлт боломжтой</string>
+    <string name="update_dialog_title_required">Шинэчлэлт шаардлагатай</string>
+    <string name="update_required_notice">MaxManager-г үргэлжлүүлэн ашиглахын тулд энэ шинэчлэлт шаардлагатай. Үүнийг суулгаад дараа нь програмыг дахин нээнэ үү.</string>
+    <string name="update_dialog_body">%1$s хувилбар боломжтой. Та %2$s дээр байна.</string>
+    <string name="update_block_title">Үргэлжлүүлэхийн тулд шинэчлэх шаардлагатай</string>
+    <string name="update_block_body">Энэ бүтээх (%1$s) цаашид дэмжигдэхгүй. MaxManager-г үргэлжлүүлэн ашиглахын тулд %2$s болгож шинэчилнэ үү.</string>
+    <string name="update_block_body_no_release">Энэ бүтээх (%1$s) цаашид дэмжигдэхгүй.</string>
+    <string name="update_release_notes_label">Шинэ юу байна</string>
+    <string name="update_size">Татаж авах хэмжээ: %1$s</string>
+    <string name="update_button_now">Одоо шинэчилнэ үү</string>
+    <string name="update_button_later">Дараа нь</string>
+    <string name="update_button_close">Хаах</string>
+    <string name="update_button_open_page">Татаж авах хуудсыг нээх</string>
+    <string name="update_state_downloading">Татаж байна… %1$d%%</string>
+    <string name="update_state_downloading_unknown">Татаж авч байна…</string>
+    <string name="update_state_installing">Суулгаж байна...</string>
+    <string name="update_error_network">Шинэчлэх серверт холбогдож чадсангүй. Холболтоо шалгаад дахин оролдоно уу.</string>
+    <string name="update_error_http">Шинэчлэх сервер алдаатай хариулав. Дараа дахин оролдоно уу.</string>
+    <string name="update_error_format">Шинэчлэлийн мэдээллийг уншиж чадсангүй.</string>
+    <string name="update_error_too_large">Шинэчлэлийн мэдээлэл хүлээгдэж байснаас их байсан тул устгасан.</string>
+    <string name="update_error_integrity">Татаж авсан файл нь шалгах нийлбэртэй таарахгүй байсан тул устгасан.</string>
+    <string name="update_error_install">Суулгалт амжилтгүй боллоо. Дахин оролдоно уу.</string>
+    <string name="update_error_not_configured">Энэ бүтцэд шинэчлэх суваг тохируулагдаагүй байна.</string>
+    <string name="update_maintenance_title">Түр хугацаагаар ашиглах боломжгүй</string>
+    <string name="update_maintenance_body">MaxManager түр ашиглах боломжгүй. Удахгүй дахин оролдоно уу.</string>
+    <string name="update_check_title">Шинэчлэлт байгаа эсэхийг шалгана уу</string>
+    <string name="update_check_supporting">Одоогийн хувилбар: %1$s</string>
+    <string name="update_check_updated">Шинэчлэлт бэлэн байна.</string>
+    <string name="update_check_uptodate">Та хамгийн сүүлийн хувилбар дээр байна.</string>
+    <string name="update_check_failed">Шинэчлэлтүүдийг шалгаж чадсангүй.</string>
+    <string name="update_check_not_configured">Энэ бүтцэд шинэчлэх суваг тохируулагдаагүй байна.</string>
+    <string name="update_released_label">Гарсан огноо: %1$s</string>
+    <string name="update_check_none_published">Хяналтын самбараас шинэчлэлт хараахан нийтлээгүй байна.</string>
+    <string name="update_check_link_missing">Шинэчлэлт нийтлэгдсэн боловч татаж авах холбоос байхгүй байна.</string>
+</resources>

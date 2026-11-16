@@ -18,4 +18,10 @@
     <string name="max_cfg_section_appearance">Penampilan &amp; antarmuka</string>
     <string name="max_cfg_section_app_prefs">Preferensi &amp; bahasa aplikasi</string>
     <string name="max_cfg_restore_merge_note">Mengembalikan penggabungan preferensi: kunci yang ada dalam file ditulis, dan kunci yang tidak disebutkan tetap sebagaimana adanya. Tidak ada yang dibersihkan.</string>
+    <string name="max_cfg_diff_title">%1$d Pengaturan tersimpan berbeda dari perangkat ini</string>
+    <string name="max_cfg_diff_line">%1$s: %2$s → %3$s</string>
+    <string name="max_cfg_diff_unset">tidak disetel</string>
+    <string name="max_cfg_diff_more">dan %1$d lainnya</string>
+    <string name="max_cfg_diff_applist">%1$d baris daftar aplikasi ditambahkan, %2$d dihapus — seluruh daftar diganti, bukan digabungkan.</string>
+    <string name="max_cfg_diff_prefs">%1$d kunci preferensi berbeda — digabungkan, bukan dihapus.</string>
 </resources>

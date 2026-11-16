@@ -69,4 +69,25 @@
     <string name="max_perms_entry_title">Oprávnění a operace aplikace</string>
     <string name="max_perms_entry_desc">Podívejte se, co tato aplikace deklaruje a co systém skutečně umožňuje</string>
     <string name="max_perms_entry_action">Otevřít oprávnění</string>
+    <string name="max_perms_manifest_title">Manifestní shrnutí</string>
+    <string name="max_perms_manifest_desc">Přečtěte si ze správce balíčků: verze, rozsah SDK, komponenty a kolik z nich je exportováno. Exportovanou komponentu lze spustit jinými aplikacemi.</string>
+    <string name="max_perms_manifest_version">Verze</string>
+    <string name="max_perms_manifest_sdk">Rozsah SDK</string>
+    <string name="max_perms_manifest_location">Umístění instalace</string>
+    <string name="max_perms_manifest_location_auto">Automatický</string>
+    <string name="max_perms_manifest_location_internal">Pouze interní úložiště</string>
+    <string name="max_perms_manifest_location_external">Preferuje vnější</string>
+    <string name="max_perms_manifest_components">Komponenty</string>
+    <string name="max_perms_manifest_components_order">činnosti · služby · příjemci · poskytovatelé</string>
+    <string name="max_perms_manifest_exported">Exportované komponenty</string>
+    <string name="max_perms_manifest_splits">Rozdělit soubory APK</string>
+    <string name="max_perms_manifest_debug">Laditelné</string>
+    <string name="max_perms_features_title">Deklarované vlastnosti</string>
+    <string name="max_perms_features_desc">Co balíček vyžaduje od zařízení ve srovnání s tím, co toto zařízení inzeruje. Požadovaná funkce, která zde chybí, obvykle znamená, že aplikace nebude plně fungovat – jde o tvrzení správce balíčků, nikoli o odhad.</string>
+    <string name="max_perms_features_loading">Čtení deklarovaných funkcí balíčku…</string>
+    <string name="max_perms_features_none">Balíček nedeklaruje žádné požadované funkce.</string>
+    <string name="max_perms_features_required">Požadovaný</string>
+    <string name="max_perms_features_unsupported">Ne na tomto zařízení</string>
+    <string name="max_perms_manifest_none">Není hlášeno správcem balíčků.</string>
+    <string name="max_perms_manifest_unknown">Neznámý</string>
 </resources>

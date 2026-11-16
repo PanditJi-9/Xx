@@ -10,4 +10,6 @@
     <string name="studio_display">ማሳያ</string>
     <string name="studio_power">የኃይል አማራጮች</string>
     <string name="studio_settings">ቅንብሮች</string>
+    <string name="audio_dsp_live">DSP በቀጥታ</string>
+    <string name="max_audio_session_label">የድምጽ ክፍለ ጊዜ #%1$d</string>
 </resources>

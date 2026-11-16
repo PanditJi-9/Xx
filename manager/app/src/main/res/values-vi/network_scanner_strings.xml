@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/network_scanner_strings.xml -->
+<resources>
+    <string name="network_scanner_title">Máy quét mạng cục bộ</string>
+    <string name="network_scanner_subtitle">Địa chỉ của bạn, cổng mà nó đến và những người hàng xóm trả lời.</string>
+    <string name="max_role_network_scanner">Đọc mạng bạn đang truy cập — không cần chụp, không cần root.</string>
+    <string name="ns_no_network">Không có mạng được kết nối.</string>
+    <string name="ns_interface">Giao diện</string>
+    <string name="ns_address">Địa chỉ</string>
+    <string name="ns_gateway">Cổng vào</string>
+    <string name="ns_dns">DNS</string>
+    <string name="ns_mac">MAC</string>
+    <string name="ns_transport_wifi">Wi-Fi</string>
+    <string name="ns_transport_ethernet">Ethernet</string>
+    <string name="ns_transport_cellular">Di động</string>
+    <string name="ns_transport_other">Khác</string>
+    <string name="ns_sources_title">Điều này đến từ đâu</string>
+    <string name="ns_sources_body">Địa chỉ và cổng được đọc từ thuộc tính liên kết của nền tảng. Bảng lân cận được đọc từ bộ đệm ARP của kernel, do đó, nó chỉ chứa những gì thiết bị này đã giao tiếp gần đây - một bảng trống không có nghĩa là mạng trống.</string>
+    <string name="ns_refresh">Làm cho khỏe lại</string>
+    <string name="ns_probe">Thăm dò các cổng chung</string>
+    <string name="ns_probe_stop">Dừng lại</string>
+    <string name="ns_probe_progress">Thăm dò %1$d trên %2$d</string>
+    <string name="ns_probe_note">Gửi kết nối TCP trên các cổng 22, 80, 443, 5000 và 5555 qua/24 này. Một cổng trả lời được báo cáo; im lặng không phải là bằng chứng chủ nhà vắng mặt.</string>
+    <string name="ns_neighbours">Hàng xóm được biết đến</string>
+    <string name="ns_neighbours_note">Từ /proc/net/arp - chỉ đọc.</string>
+    <string name="ns_neighbours_empty">Chưa có hàng xóm nào được biết đến.</string>
+    <string name="ns_ports_value">Cổng %1$s</string>
+</resources>

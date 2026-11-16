@@ -99,4 +99,12 @@
     <string name="max_gpu_saved_desc">Säilytetty aikaisemmasta tallennuksesta ja otettu käyttöön jokaisessa käynnistyksessä: %1$s. Yllä oleva oletusarvo lopettaa vain tämän istunnon, ei koskaan tallennettua tilaa.</string>
     <string name="max_gpu_dynamic_min">Minimi · dynaaminen</string>
     <string name="max_gpu_dynamic_max">Maksimi · dynaaminen</string>
+    <string name="max_gpu_monitor_only_detail">Ainoat tämän ytimen paljastamat grafiikkasolmut ovat kaistanleveys ja QoS-monitorit: niissä ei ole GPU -kelloa, joten taajuutta ei voi asettaa. Ohjaus pysyy poissa sen sijaan, että kirjoittaisi muistisäätimen ikään kuin se olisi GPU.</string>
+    <string name="max_gpu_danger_title">Kirjoita GPU rajat?</string>
+    <string name="max_gpu_danger_body">Tämä kirjoittaa grafiikkataajuusikkunan ja ohjaimen GPU-solmuihin. Ikkuna, jonka kuljettaja hylkää, tai säädin, joka ei pysy perässä, voi änkyttää koko käyttöliittymän tai jäädyttää paneelin. Sovellus tallentaa, että hyväksyit tämän kerran – vastuu käyttämistäsi arvoista on sinun.</string>
+    <string name="max_gpu_danger_action">Ymmärrän - hae</string>
+    <string name="max_gpu_state_title">Aika tilassa</string>
+    <string name="max_gpu_state_desc">Mihin GPU:n aika todellisuudessa meni, ytimen laskettuna toimintataajuutta kohden – ei tilannekuvaa nykyisestä kellosta.</string>
+    <string name="max_gpu_state_hidden_share">%1$s yhdessä</string>
+    <string name="max_gpu_state_hidden">%1$d toteaa alle 1 %%</string>
 </resources>

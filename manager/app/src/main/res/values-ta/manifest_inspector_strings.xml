@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/manifest_inspector_strings.xml -->
+<resources>
+    <string name="manifest_inspector_title">மேனிஃபெஸ்ட் இன்ஸ்பெக்டர்</string>
+    <string name="manifest_inspector_subtitle">நிறுவப்பட்ட பயன்பாடு தன்னைப் பற்றி என்ன அறிவிக்கிறது, PackageManager இலிருந்து படிக்கவும்.</string>
+    <string name="max_role_manifest_inspector">ஒரு தொகுப்பு தன்னைப் பற்றி என்ன அறிவிக்கிறது என்பதைக் காட்டுகிறது — படிக்க மட்டும்.</string>
+    <string name="mi_search">பயன்பாடுகளைத் தேடுங்கள்</string>
+    <string name="mi_empty">இடதுபுறத்தில் ஒரு பயன்பாட்டைத் தேர்ந்தெடுக்கவும்.</string>
+    <string name="mi_yes">ஆம்</string>
+    <string name="mi_no">இல்லை</string>
+    <string name="mi_section_identity">தொகுப்பு</string>
+    <string name="mi_version">பதிப்பு</string>
+    <string name="mi_version_code">பதிப்பு குறியீடு</string>
+    <string name="mi_min_sdk">குறைந்தபட்ச SDK</string>
+    <string name="mi_target_sdk">இலக்கு SDK</string>
+    <string name="mi_installed">நிறுவப்பட்டது</string>
+    <string name="mi_updated">புதுப்பிக்கப்பட்டது</string>
+    <string name="mi_installer">நிறுவி</string>
+    <string name="mi_uid">UID</string>
+    <string name="mi_data_dir">தரவு அடைவு</string>
+    <string name="mi_debuggable">பிழை நீக்கக்கூடியது</string>
+    <string name="mi_system_app">கணினி பயன்பாடு</string>
+    <string name="mi_enabled">இயக்கப்பட்டது</string>
+    <string name="mi_section_permissions">அனுமதிகள் கோரப்பட்டது</string>
+    <string name="mi_permissions_summary">%1$d அனுமதிகள் · %2$d அவற்றில் ஆபத்தானது</string>
+    <string name="mi_permissions_none">இந்த ஆப்ஸ் அனுமதி கோரவில்லை.</string>
+    <string name="mi_perm_dangerous">ஆபத்தானது</string>
+    <string name="mi_perm_signature">கையெழுத்து</string>
+    <string name="mi_perm_normal">இயல்பானது</string>
+    <string name="mi_perm_unknown">வகைப்படுத்தப்படாதது</string>
+    <string name="mi_section_components">கூறுகள்</string>
+    <string name="mi_activities">செயல்பாடுகள்</string>
+    <string name="mi_services">சேவைகள்</string>
+    <string name="mi_receivers">பெறுபவர்கள்</string>
+    <string name="mi_providers">வழங்குபவர்கள்</string>
+    <string name="mi_components_none">எதுவும் அறிவிக்கவில்லை</string>
+    <string name="mi_section_features">சாதன அம்சங்கள்</string>
+    <string name="mi_features_note">இயங்குதளம் மற்றொரு பயன்பாட்டின் பயன்கள்-அம்சப் பட்டியலை வெளிப்படுத்தாது; இவை இந்த சாதனம் தெரிவிக்கும் அம்சங்கள்.</string>
+    <string name="mi_features_none">எந்த அம்சமும் தெரிவிக்கப்படவில்லை</string>
+    <string name="mi_section_signature">கையொப்பமிடும் சான்றிதழ்</string>
+    <string name="mi_signature_note">கையொப்பமிடும் சான்றிதழின் SHA-256. ஒரே மதிப்பைக் கொண்ட இரண்டு கட்டிடங்கள் ஒரே வெளியீட்டாளர்.</string>
+    <string name="mi_signature_sha256">சான்றிதழ் செரிமானம்</string>
+</resources>

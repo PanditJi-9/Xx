@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/network_scanner_strings.xml -->
+<resources>
+    <string name="network_scanner_title">સ્થાનિક નેટવર્ક સ્કેનર</string>
+    <string name="network_scanner_subtitle">તમારું સરનામું, તે જ્યાં પહોંચે છે તે ગેટવે અને કયા પડોશીઓએ જવાબ આપ્યો.</string>
+    <string name="max_role_network_scanner">તમે જે નેટવર્ક પર છો તે વાંચે છે — કોઈ કૅપ્ચર નથી, કોઈ રુટ નથી.</string>
+    <string name="ns_no_network">કોઈ નેટવર્ક કનેક્ટેડ નથી.</string>
+    <string name="ns_interface">ઈન્ટરફેસ</string>
+    <string name="ns_address">સરનામું</string>
+    <string name="ns_gateway">ગેટવે</string>
+    <string name="ns_dns">DNS</string>
+    <string name="ns_mac">MAC</string>
+    <string name="ns_transport_wifi">Wi-Fi</string>
+    <string name="ns_transport_ethernet">ઈથરનેટ</string>
+    <string name="ns_transport_cellular">સેલ્યુલર</string>
+    <string name="ns_transport_other">અન્ય</string>
+    <string name="ns_sources_title">આ ક્યાંથી આવે છે</string>
+    <string name="ns_sources_body">સરનામાં અને ગેટવે પ્લેટફોર્મની લિંક પ્રોપર્ટીઝમાંથી વાંચવામાં આવે છે. પડોશી કોષ્ટક કર્નલની ARP કેશમાંથી વાંચવામાં આવે છે, તેથી તે ફક્ત તે જ ધરાવે છે જેની સાથે આ ઉપકરણે તાજેતરમાં વાત કરી છે — ખાલી કોષ્ટકનો અર્થ ખાલી નેટવર્ક નથી.</string>
+    <string name="ns_refresh">તાજું કરો</string>
+    <string name="ns_probe">સામાન્ય બંદરોની તપાસ કરો</string>
+    <string name="ns_probe_stop">રોકો</string>
+    <string name="ns_probe_progress">%2$d માંથી %1$d ચકાસણી</string>
+    <string name="ns_probe_note">આ/24માં પોર્ટ 22, 80, 443, 5000 અને 5555 પર TCP કનેક્ટ મોકલે છે. એક પોર્ટ કે જે જવાબ આપે છે તેની જાણ કરવામાં આવે છે; મૌન એ સાબિતી નથી કે યજમાન ગેરહાજર છે.</string>
+    <string name="ns_neighbours">જાણીતા પડોશીઓ</string>
+    <string name="ns_neighbours_note">/proc/net/arp થી — ફક્ત વાંચો.</string>
+    <string name="ns_neighbours_empty">કોઈ પડોશીઓ હજુ સુધી જાણીતા નથી.</string>
+    <string name="ns_ports_value">પોર્ટ્સ %1$s</string>
+</resources>

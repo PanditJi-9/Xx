@@ -13,4 +13,23 @@
     <string name="max_expand_section">បង្ហាញព័ត៌មានលម្អិត</string>
     <string name="max_collapse_section">លាក់ព័ត៌មានលម្អិត</string>
     <string name="max_trust_loading">កំពុងអាន…</string>
+    <string name="max_gov_title">តើអ្នកណាគ្រប់គ្រងឥឡូវនេះ</string>
+    <string name="max_gov_separator">"›"</string>
+    <string name="max_gov_order_note">លំដាប់​ថេរ៖ ជួរ​ខ្ពស់​រារាំង​មួយ​ទាប។ វាមិនផ្លាស់ប្តូរគោលនយោបាយណាឈ្នះ។</string>
+    <string name="max_gov_open_details">អ្នកកាន់សកម្ម</string>
+    <string name="max_gov_active_title">អ្នកណាកាន់ការគ្រប់គ្រង</string>
+    <string name="max_gov_none">មិនមានគោលការណ៍គ្រប់គ្រងផ្នែករឹងទេឥឡូវនេះ។</string>
+    <string name="max_gov_count">ការជួលគ្រប់គ្រងសកម្ម៖ %1$d</string>
+    <string name="max_gov_requested">បានស្នើសុំ៖ %1$s</string>
+    <string name="max_gov_owner_recovery">ការងើបឡើងវិញ</string>
+    <string name="max_gov_owner_safety">សុវត្ថិភាពកំដៅ</string>
+    <string name="max_gov_owner_per_app">កម្រងព័ត៌មានកម្មវិធី</string>
+    <string name="max_gov_owner_max_ai">Max AI</string>
+    <string name="max_gov_owner_global">ប្រវត្តិរូបសកល</string>
+    <string name="max_gov_owner_system">ប្រព័ន្ធ</string>
+    <string name="max_gov_owner_a11y">%1$s គ្រប់គ្រងផ្នែករឹង</string>
+    <string name="max_gov_now_none">មិនមានម្ចាស់ដោយស្វ័យប្រវត្តិទេឥឡូវនេះ — ការគ្រប់គ្រងនៅតែជារបស់អ្នក។</string>
+    <string name="max_gov_now_one">%1$s មានការគ្រប់គ្រង</string>
+    <string name="max_gov_now_many">%1$s កាន់ %2$d ការគ្រប់គ្រង</string>
+    <string name="devinfo_details">ព័ត៌មានលម្អិត</string>
 </resources>

@@ -13,4 +13,23 @@
     <string name="max_expand_section">ສະແດງລາຍລະອຽດ</string>
     <string name="max_collapse_section">ເຊື່ອງລາຍລະອຽດ</string>
     <string name="max_trust_loading">ກຳລັງອ່ານ...</string>
+    <string name="max_gov_title">ໃຜປົກຄອງດຽວນີ້</string>
+    <string name="max_gov_separator">" › "</string>
+    <string name="max_gov_order_note">ລຳດັບທີ່ຄົງທີ່: ແຖວທີ່ສູງກວ່າຈະຕັນອັນຕໍ່າກວ່າ. ມັນບໍ່ເຄີຍປ່ຽນແປງນະໂຍບາຍໃດຊະນະ.</string>
+    <string name="max_gov_open_details">ຜູ້ຖືທີ່ຫ້າວຫັນ</string>
+    <string name="max_gov_active_title">ໃຜເປັນຜູ້ຄວບຄຸມ</string>
+    <string name="max_gov_none">ບໍ່ມີນະໂຍບາຍເປັນເຈົ້າຂອງການຄວບຄຸມຮາດແວໃນຂະນະນີ້.</string>
+    <string name="max_gov_count">ສັນຍາເຊົ່າທີ່ມີການເຄື່ອນໄຫວ: %1$d</string>
+    <string name="max_gov_requested">ຮ້ອງຂໍ: %1$s</string>
+    <string name="max_gov_owner_recovery">ການຟື້ນຕົວ</string>
+    <string name="max_gov_owner_safety">ຄວາມປອດໄພດ້ານຄວາມຮ້ອນ</string>
+    <string name="max_gov_owner_per_app">ໂປຣໄຟລ໌ແອັບ</string>
+    <string name="max_gov_owner_max_ai">Max AI</string>
+    <string name="max_gov_owner_global">ໂປຣໄຟລ໌ທົ່ວໂລກ</string>
+    <string name="max_gov_owner_system">ລະບົບ</string>
+    <string name="max_gov_owner_a11y">%1$s ເປັນເຈົ້າຂອງການຄວບຄຸມຮາດແວ</string>
+    <string name="max_gov_now_none">ບໍ່ມີເຈົ້າຂອງອັດຕະໂນມັດໃນຂະນະນີ້ — ການຄວບຄຸມຍັງຄົງເປັນຂອງທ່ານ</string>
+    <string name="max_gov_now_one">%1$s ມີການຄວບຄຸມ</string>
+    <string name="max_gov_now_many">%1$s ຖື %2$d ການຄວບຄຸມ</string>
+    <string name="devinfo_details">ລາຍລະອຽດ</string>
 </resources>

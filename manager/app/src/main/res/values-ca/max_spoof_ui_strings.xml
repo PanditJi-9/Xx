@@ -51,4 +51,14 @@
     <string name="copg_tweak_kso_title">Mantén la pantalla encesa</string>
     <string name="copg_tweak_kso_desc">Aplica l\'ajust de manteniment de la pantalla COPG a aquesta aplicació. Desat aquí, escrit al motor mitjançant una revisió i aplicar-lo a la pestanya Falsificació.</string>
     <string name="copg_tweak_needs_device">Primer necessita un dispositiu per a aquesta aplicació, a la pestanya Falsificació.</string>
+    <string name="spoof_engine_unmeasured">L\'estat del motor no es mesura: encara no s\'ha concedit l\'accés root. Concedeix root i torna a obrir aquesta pestanya.</string>
+    <string name="spoof_engine_config_missing">COPG està instal·lat, però falta el seu fitxer de configuració (COPG.json). Es rebutja la sol·licitud fins que el mòdul la torni a proporcionar.</string>
+    <string name="spoof_engine_config_unreadable">COPG està instal·lat, però el seu fitxer de configuració no es pot llegir JSON. Es rebutja la sol·licitud fins que es repara el fitxer.</string>
+    <string name="spoof_imei_spoof">Suplantació d\'IMEI</string>
+    <string name="spoof_imei_spoof_desc">Mostra aquesta aplicació amb un IMEI diferent. Necessita el mòdul Max Manager habilitat a LSPosed amb aquesta aplicació en el seu abast. Reinicieu l\'aplicació després d\'activar-la.</string>
+    <string name="spoof_imei_active">Mostrant aquesta aplicació: %1$s</string>
+    <string name="spoof_imei_summary">Suplantació d\'IMEI</string>
+    <string name="spoof_imei_regenerate">Nou IMEI aleatori</string>
+    <string name="spoof_imei_regenerate_desc">Genera un altre IMEI vàlid per a aquesta aplicació. Reinicieu l\'aplicació per veure-la.</string>
+    <string name="spoof_imei_module_inactive">El mòdul Max Manager no està habilitat a LSPosed, de manera que les aplicacions encara veuen l\'IMEI real. Habiliteu el mòdul a LSPosed, afegiu aquesta aplicació al seu abast i torneu a obrir aquesta pantalla.</string>
 </resources>

@@ -47,6 +47,10 @@
     <string name="max_ai_behavior_calm_desc">لا يتدخل إلا عند فجوة واضحة، ولا يجرّب مقبضًا مجهولًا أبدًا.</string>
     <string name="max_ai_behavior_balanced_desc">يتدخل عند فجوة مقيسة، ولا يجرّب إلا حيث يبقى الخطأ رخيصًا.</string>
     <string name="max_ai_behavior_decisive_desc">يعالج الفجوة أبكر، ويسمح بتجربة واحدة أوسع تبقى قابلة للاسترجاع.</string>
+    <string name="max_ai_behavior_app_override">هذا التطبيق يستخدم سلوك «%1$s»</string>
+    <string name="max_ai_behavior_app_override_desc">من بروفايل التطبيق. المحدِّد أعلاه يغيّر السلوك العام.</string>
+    <string name="app_settings_max_ai_behavior">سلوك Max AI لهذا التطبيق</string>
+    <string name="app_settings_max_ai_behavior_summary">ورّث السلوك العام، أو أعطِ هذا التطبيق سلوكًا خاصًّا.</string>
 
     <string name="max_ai_budget_section">ميزانية الحرارة المستمرة</string>
     <string name="max_ai_budget_desc">الزمن من بدء جلسة حمل ثقيل إلى أول خفض أمان، مقيسًا على هذا الجهاز.</string>

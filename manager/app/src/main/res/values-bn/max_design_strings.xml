@@ -13,4 +13,23 @@
     <string name="max_expand_section">বিস্তারিত দেখান</string>
     <string name="max_collapse_section">বিস্তারিত লুকান</string>
     <string name="max_trust_loading">পড়া হচ্ছে...</string>
+    <string name="max_gov_title">কে এখন শাসন করে</string>
+    <string name="max_gov_separator">" ›"</string>
+    <string name="max_gov_order_note">স্থির ক্রম: একটি উচ্চ দন্ড একটি নিম্ন একটি ব্লক. কোন নীতিতে জয় হয় তা কখনই পরিবর্তন হয় না।</string>
+    <string name="max_gov_open_details">সক্রিয় ধারক</string>
+    <string name="max_gov_active_title">যে একটি নিয়ন্ত্রণ ধরে রাখে</string>
+    <string name="max_gov_none">এই মুহুর্তে কোন পলিসি একটি হার্ডওয়্যার নিয়ন্ত্রণের মালিক নয়৷</string>
+    <string name="max_gov_count">সক্রিয় নিয়ন্ত্রণ ইজারা: %1$d</string>
+    <string name="max_gov_requested">অনুরোধ করা হয়েছে: %1$s</string>
+    <string name="max_gov_owner_recovery">পুনরুদ্ধার</string>
+    <string name="max_gov_owner_safety">তাপ নিরাপত্তা</string>
+    <string name="max_gov_owner_per_app">অ্যাপ প্রোফাইল</string>
+    <string name="max_gov_owner_max_ai">Max AI</string>
+    <string name="max_gov_owner_global">গ্লোবাল প্রোফাইল</string>
+    <string name="max_gov_owner_system">সিস্টেম</string>
+    <string name="max_gov_owner_a11y">%1$s একটি হার্ডওয়্যার নিয়ন্ত্রণের মালিক</string>
+    <string name="max_gov_now_none">এই মুহূর্তে কোন স্বয়ংক্রিয় মালিক নেই — নিয়ন্ত্রণ আপনারই থাকবে</string>
+    <string name="max_gov_now_one">%1$s একটি নিয়ন্ত্রণ রাখে</string>
+    <string name="max_gov_now_many">%1$s %2$d নিয়ন্ত্রণ রাখে</string>
+    <string name="devinfo_details">বিস্তারিত</string>
 </resources>

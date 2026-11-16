@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/network_scanner_strings.xml -->
+<resources>
+    <string name="network_scanner_title">Lokal nettverksskanner</string>
+    <string name="network_scanner_subtitle">Adressen din, porten den når, og hvilke naboer som svarte.</string>
+    <string name="max_role_network_scanner">Leser nettverket du er på – ingen registrering, ingen rot.</string>
+    <string name="ns_no_network">Ingen nettverk er tilkoblet.</string>
+    <string name="ns_interface">Grensesnitt</string>
+    <string name="ns_address">Adresse</string>
+    <string name="ns_gateway">Inngangsport</string>
+    <string name="ns_dns">DNS</string>
+    <string name="ns_mac">MAC</string>
+    <string name="ns_transport_wifi">Wi-Fi</string>
+    <string name="ns_transport_ethernet">Ethernet</string>
+    <string name="ns_transport_cellular">Cellular</string>
+    <string name="ns_transport_other">Annen</string>
+    <string name="ns_sources_title">Hvor kommer dette fra</string>
+    <string name="ns_sources_body">Adresser og gateway leses fra plattformens lenkeegenskaper. Nabotabellen leses fra kjernens ARP-cache, så den inneholder bare det denne enheten nylig har snakket med - en tom tabell betyr ikke et tomt nettverk.</string>
+    <string name="ns_refresh">Forfriske</string>
+    <string name="ns_probe">Probe vanlige porter</string>
+    <string name="ns_probe_stop">Stoppe</string>
+    <string name="ns_probe_progress">Undersøker %1$d av %2$d</string>
+    <string name="ns_probe_note">Sender en TCP-tilkobling på portene 22, 80, 443, 5000 og 5555 over denne /24. En port som svarer rapporteres; stillhet er ikke et bevis på at en vert er fraværende.</string>
+    <string name="ns_neighbours">Kjente naboer</string>
+    <string name="ns_neighbours_note">Fra /proc/net/arp — skrivebeskyttet.</string>
+    <string name="ns_neighbours_empty">Ingen naboer er kjent ennå.</string>
+    <string name="ns_ports_value">Porter %1$s</string>
+</resources>

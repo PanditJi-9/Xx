@@ -99,4 +99,12 @@
     <string name="max_gpu_saved_desc">पहले वाले सेव से रखा गया और प्रत्येक बूट पर लागू किया गया: %1$s। उपरोक्त डिफ़ॉल्ट केवल इस सत्र को समाप्त करता है, सहेजी गई स्थिति को कभी नहीं।</string>
     <string name="max_gpu_dynamic_min">न्यूनतम · गतिशील</string>
     <string name="max_gpu_dynamic_max">अधिकतम · गतिशील</string>
+    <string name="max_gpu_monitor_only_detail">इस कर्नेल द्वारा उजागर किए जाने वाले एकमात्र ग्राफ़िक्स नोड बैंडविड्थ और क्यूओएस मॉनिटर हैं: उनमें कोई GPU घड़ी नहीं होती है, इसलिए सेट करने के लिए कोई आवृत्ति नहीं होती है। मेमोरी गवर्नर लिखने के बजाय नियंत्रण बंद रहता है जैसे कि यह GPU हो।</string>
+    <string name="max_gpu_danger_title">GPU सीमाएं लिखें?</string>
+    <string name="max_gpu_danger_body">यह ग्राफ़िक्स फ़्रीक्वेंसी विंडो और गवर्नर को GPU नोड्स में लिखता है। एक विंडो जिसे ड्राइवर अस्वीकार कर देता है, या एक गवर्नर जो चालू नहीं रह सकता, पूरे इंटरफ़ेस को बाधित कर सकता है या पैनल को फ्रीज कर सकता है। ऐप रिकॉर्ड करता है कि आपने इसे एक बार स्वीकार कर लिया है - आपके द्वारा लागू किए गए मूल्यों की जिम्मेदारी आपकी है।</string>
+    <string name="max_gpu_danger_action">मैं समझता हूं - आवेदन करें</string>
+    <string name="max_gpu_state_title">राज्य में समय</string>
+    <string name="max_gpu_state_desc">GPU\ का समय वास्तव में कहां गया, इसकी गणना प्रति ऑपरेटिंग आवृत्ति कर्नेल द्वारा की जाती है - वर्तमान घड़ी का स्नैपशॉट नहीं।</string>
+    <string name="max_gpu_state_hidden_share">%1$s एक साथ</string>
+    <string name="max_gpu_state_hidden">%1$d 1%% से नीचे के राज्य</string>
 </resources>

@@ -99,4 +99,12 @@
     <string name="max_gpu_saved_desc">Збережено з попереднього збереження та застосовано до кожного завантаження: %1$s. За замовчуванням вище завершується лише цей сеанс, а не збережений стан.</string>
     <string name="max_gpu_dynamic_min">Мінімальний · динамічний</string>
     <string name="max_gpu_dynamic_max">Максимальна · динамічна</string>
+    <string name="max_gpu_monitor_only_detail">Єдиними графічними вузлами, які відкриває це ядро, є монітори пропускної здатності та QoS: вони не мають годинника GPU, тому немає необхідності встановлювати частоту. Контроль залишається вимкненим замість того, щоб писати регулятор пам’яті, ніби це GPU.</string>
+    <string name="max_gpu_danger_title">Напишіть GPU обмеження?</string>
+    <string name="max_gpu_danger_body">Це записує графічне частотне вікно та регулятор у вузли GPU. Вікно, яке відхиляє драйвер, або регулятор, який не встигає, може заїкати весь інтерфейс або зависати на панелі. Програма записує, що ви прийняли це один раз — відповідальність за значення, які ви застосовуєте, лежить на вас.</string>
+    <string name="max_gpu_danger_action">Розумію — звертайся</string>
+    <string name="max_gpu_state_title">Час у стані</string>
+    <string name="max_gpu_state_desc">Куди фактично пішов час GPU\, підрахований ядром на робочу частоту — не знімок поточного годинника.</string>
+    <string name="max_gpu_state_hidden_share">%1$s разом</string>
+    <string name="max_gpu_state_hidden">%1$d стани нижче 1%%</string>
 </resources>

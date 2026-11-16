@@ -13,4 +13,23 @@
     <string name="max_expand_section">დეტალების ჩვენება</string>
     <string name="max_collapse_section">დეტალების დამალვა</string>
     <string name="max_trust_loading">კითხვა…</string>
+    <string name="max_gov_title">ვინც ახლა მართავს</string>
+    <string name="max_gov_separator">"\""</string>
+    <string name="max_gov_order_note">ფიქსირებული წესრიგი: უფრო მაღალი საფეხური ბლოკავს ქვედას. ის არასოდეს იცვლება, რომელი პოლიტიკა იმარჯვებს.</string>
+    <string name="max_gov_open_details">აქტიური მფლობელები</string>
+    <string name="max_gov_active_title">ვინც აკონტროლებს</string>
+    <string name="max_gov_none">არცერთი პოლიტიკა არ ფლობს ტექნიკის კონტროლს ამჟამად.</string>
+    <string name="max_gov_count">აქტიური კონტროლის იჯარა: %1$d</string>
+    <string name="max_gov_requested">მოთხოვნილი: %1$s</string>
+    <string name="max_gov_owner_recovery">აღდგენა</string>
+    <string name="max_gov_owner_safety">თერმული უსაფრთხოება</string>
+    <string name="max_gov_owner_per_app">აპლიკაციის პროფილი</string>
+    <string name="max_gov_owner_max_ai">Max AI</string>
+    <string name="max_gov_owner_global">გლობალური პროფილი</string>
+    <string name="max_gov_owner_system">სისტემა</string>
+    <string name="max_gov_owner_a11y">%1$s ფლობს აპარატურულ კონტროლს</string>
+    <string name="max_gov_now_none">ამჟამად ავტომატური მფლობელი არ არის — კონტროლი თქვენი რჩება</string>
+    <string name="max_gov_now_one">%1$s ფლობს კონტროლს</string>
+    <string name="max_gov_now_many">%1$s ფლობს %2$d კონტროლს</string>
+    <string name="devinfo_details">დეტალები</string>
 </resources>

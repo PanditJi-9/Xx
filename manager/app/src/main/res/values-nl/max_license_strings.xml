@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_license_strings.xml -->
+<resources>
+    <string name="max_license_title">Licentie</string>
+    <string name="max_license_subtitle">Eén sleutel, dit apparaat, geen account</string>
+    <string name="max_license_help_body">Een sleutel wordt eenmalig online gecontroleerd, wanneer u deze invoert. Vanaf dat moment werkt het ondertekende certificaat van de server offline totdat de tijd om is: de app belt niet elke keer dat u een scherm opent naar huis. Het certificaat is gebonden aan de willekeurige installatie-ID van dit apparaat, dus als u de app-gegevens naar een andere telefoon kopieert, wordt de licentie niet met zich meegebracht. De eigenaar kan die binding via het paneel resetten als u van telefoon verandert.</string>
+    <string name="max_license_status_section">Status</string>
+    <string name="max_license_status_active">Actief</string>
+    <string name="max_license_status_expired">Verlopen</string>
+    <string name="max_license_status_none">Niet geactiveerd</string>
+    <string name="max_license_active_detail">Resterend: %1$d dagen</string>
+    <string name="max_license_expired_detail">De tijd van deze sleutel is voorbij. Een nieuwe sleutel vernieuwt de toegang.</string>
+    <string name="max_license_none_detail">Voer de sleutel in die je hebt ontvangen om de betaalde oppervlakken te ontgrendelen.</string>
+    <string name="max_license_promo_active">Gratis voor iedereen tot %1$s</string>
+    <string name="max_license_plan_title">Plan</string>
+    <string name="max_license_devices_title">Apparaten</string>
+    <string name="max_license_devices_detail">%1$d van %2$d gebruikt</string>
+    <string name="max_license_device_id_title">Dit apparaat</string>
+    <string name="max_license_device_id_detail">%1$s</string>
+    <string name="max_license_key_section">Activering</string>
+    <string name="max_license_key_label">Licentiesleutel</string>
+    <string name="max_license_key_placeholder">MAXM-XXXX-XXXXX-XXXX-XXXXXX-XX</string>
+    <string name="max_license_key_helper">Streepjes en hoofdletters doen er niet toe; plak het zoals je het hebt ontvangen.</string>
+    <string name="max_license_activate">Activeren</string>
+    <string name="max_license_activating">De sleutel controleren...</string>
+    <string name="max_license_refresh">Controleer nu</string>
+    <string name="max_license_activated">Geactiveerd. Dit apparaat is nu gekoppeld aan uw sleutel.</string>
+    <string name="max_license_error_invalid_key">Deze sleutel ziet er niet compleet uit. Controleer het en probeer het opnieuw.</string>
+    <string name="max_license_error_not_configured">Voor deze build is geen licentieserver geconfigureerd.</string>
+    <string name="max_license_error_network">Geen verbinding. De sleutel wordt één keer gecontroleerd en werkt vervolgens offline.</string>
+    <string name="max_license_error_timeout">De licentieserver antwoordde niet op tijd. Probeer het opnieuw.</string>
+    <string name="max_license_error_server">De licentieserver antwoordde met een fout. Probeer het later opnieuw.</string>
+    <string name="max_license_error_client">De licentiefunctie is niet op de server geïmplementeerd.</string>
+    <string name="max_license_error_format">Het antwoord van de server werd niet begrepen.</string>
+    <string name="max_license_error_expired">Deze sleutel is verlopen.</string>
+    <string name="max_license_error_not_found">Deze sleutel is niet bekend.</string>
+    <string name="max_license_error_revoked">Deze sleutel is ingetrokken.</string>
+    <string name="max_license_error_device_limit">Deze sleutel heeft de apparaatlimiet bereikt. Vraag om een ​​apparaatreset.</string>
+    <string name="max_license_error_device_unknown">Dit apparaat is nog niet aan de sleutel gekoppeld. Activeer deze eerst hier.</string>
+    <string name="max_license_error_device_removed">Dit apparaat is door de eigenaar uit de sleutel verwijderd.</string>
+    <string name="max_license_error_rate_limited">Te veel pogingen van deze verbinding. Wacht een paar minuten en probeer het opnieuw.</string>
+    <string name="max_license_error_unknown">Er is iets misgegaan. De reden is vastgelegd in Diagnostiek.</string>
+    <string name="max_license_gate_title">Voor deze ondergrond is een licentie nodig</string>
+    <string name="max_license_gate_detail">Het wordt geleverd met een sleutel. Eén sleutel bedekt dit apparaat en het invoeren ervan duurt een minuut.</string>
+    <string name="max_feature_off_title">Uitgeschakeld</string>
+    <string name="max_feature_off_detail">Het bedieningspaneel heeft dit oppervlak uitgeschakeld. Het komt terug zodra het weer wordt ingeschakeld.</string>
+    <string name="max_license_gate_action">Licentie-instellingen openen</string>
+    <string name="max_license_gate_subscribe">Abonneer je nu</string>
+    <string name="max_license_subscription_section">Abonnement</string>
+    <string name="max_license_subscription_open">Open de abonnementspagina</string>
+</resources>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/network_scanner_strings.xml -->
+<resources>
+    <string name="network_scanner_title">స్థానిక నెట్‌వర్క్ స్కానర్</string>
+    <string name="network_scanner_subtitle">మీ చిరునామా, అది చేరుకునే గేట్‌వే మరియు ఇరుగుపొరుగు వారు సమాధానం ఇచ్చారు.</string>
+    <string name="max_role_network_scanner">మీరు ఉన్న నెట్‌వర్క్‌ని చదువుతుంది — క్యాప్చర్ లేదు, రూట్ లేదు.</string>
+    <string name="ns_no_network">నెట్‌వర్క్ కనెక్ట్ కాలేదు.</string>
+    <string name="ns_interface">ఇంటర్ఫేస్</string>
+    <string name="ns_address">చిరునామా</string>
+    <string name="ns_gateway">గేట్‌వే</string>
+    <string name="ns_dns">DNS</string>
+    <string name="ns_mac">MAC</string>
+    <string name="ns_transport_wifi">Wi-Fi</string>
+    <string name="ns_transport_ethernet">ఈథర్నెట్</string>
+    <string name="ns_transport_cellular">సెల్యులార్</string>
+    <string name="ns_transport_other">ఇతర</string>
+    <string name="ns_sources_title">ఇది ఎక్కడ నుండి వస్తుంది</string>
+    <string name="ns_sources_body">ప్లాట్‌ఫారమ్ యొక్క లింక్ లక్షణాల నుండి చిరునామాలు మరియు గేట్‌వే చదవబడతాయి. పొరుగు పట్టిక కెర్నల్ యొక్క ARP కాష్ నుండి చదవబడుతుంది, కనుక ఇది ఈ పరికరం ఇటీవల మాట్లాడిన వాటిని మాత్రమే కలిగి ఉంటుంది - ఖాళీ పట్టిక అంటే ఖాళీ నెట్‌వర్క్ అని కాదు.</string>
+    <string name="ns_refresh">రిఫ్రెష్ చేయండి</string>
+    <string name="ns_probe">సాధారణ పోర్టులను పరిశీలించండి</string>
+    <string name="ns_probe_stop">ఆపు</string>
+    <string name="ns_probe_progress">ప్రోబింగ్ %1$d of %2$d</string>
+    <string name="ns_probe_note">ఈ /24 అంతటా పోర్ట్‌లు 22, 80, 443, 5000 మరియు 5555పై TCP కనెక్ట్‌ని పంపుతుంది. సమాధానమిచ్చే పోర్ట్ నివేదించబడింది; అతిధేయుడు లేడని మౌనం రుజువు కాదు.</string>
+    <string name="ns_neighbours">తెలిసిన పొరుగువారు</string>
+    <string name="ns_neighbours_note">/proc/net/arp నుండి — చదవడానికి మాత్రమే.</string>
+    <string name="ns_neighbours_empty">ఇరుగుపొరుగు వారికి ఇంకా తెలియదు.</string>
+    <string name="ns_ports_value">పోర్టులు %1$s</string>
+</resources>

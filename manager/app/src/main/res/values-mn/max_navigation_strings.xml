@@ -53,4 +53,8 @@
     <string name="max_title_get_started">Тохиргоо</string>
     <string name="max_hub_audio">Аудио</string>
     <string name="max_hub_audio_desc">Гаралтын төхөөрөмж, урсгал болон зарласан эффектүүд</string>
+    <string name="control_tools_live">Амьд гадаргуу</string>
+    <string name="control_tools_advanced">Нарийвчилсан хэрэгслүүд</string>
+    <string name="control_tools_system">Системийн хэрэгслүүд</string>
+    <string name="control_tools_appearance">Гадаад төрх</string>
 </resources>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/network_scanner_strings.xml -->
+<resources>
+    <string name="network_scanner_title">የአካባቢ አውታረ መረብ ስካነር</string>
+    <string name="network_scanner_subtitle">አድራሻዎ፣ የሚደርስበት መግቢያ እና የትኛው ጎረቤቶች መልስ ሰጥተዋል።</string>
+    <string name="max_role_network_scanner">ያሉበትን አውታረ መረብ ያነባል - ምንም አይያዝም፣ ስር የለም።</string>
+    <string name="ns_no_network">ምንም አውታረ መረብ አልተገናኘም።</string>
+    <string name="ns_interface">በይነገጽ</string>
+    <string name="ns_address">አድራሻ</string>
+    <string name="ns_gateway">መግቢያ</string>
+    <string name="ns_dns">ዲ ኤን ኤስ</string>
+    <string name="ns_mac">ማክ</string>
+    <string name="ns_transport_wifi">ዋይ ፋይ</string>
+    <string name="ns_transport_ethernet">ኤተርኔት</string>
+    <string name="ns_transport_cellular">ሴሉላር</string>
+    <string name="ns_transport_other">ሌላ</string>
+    <string name="ns_sources_title">ይህ ከየት የመጣ ነው።</string>
+    <string name="ns_sources_body">አድራሻዎች እና መግቢያ በር የሚነበቡት ከመድረክ ማገናኛ ባህሪያት ነው። የጎረቤት ሠንጠረዥ የሚነበበው ከከርነል ARP መሸጎጫ ነው፣ ስለዚህ ይህ መሳሪያ በቅርቡ የተነጋገረውን ብቻ ይይዛል - ባዶ ጠረጴዛ ማለት ባዶ አውታረ መረብ ማለት አይደለም።</string>
+    <string name="ns_refresh">አድስ</string>
+    <string name="ns_probe">የጋራ ወደቦችን ይመርምሩ</string>
+    <string name="ns_probe_stop">ተወ</string>
+    <string name="ns_probe_progress">ምርመራ %1$d የ%2$d</string>
+    <string name="ns_probe_note">በዚህ/24 ላይ የTCP ግንኙነትን ወደቦች 22፣ 80፣ 443፣ 5000 እና 5555 ይልካል። መልስ የሚሰጥ ወደብ ሪፖርት ተደርጓል; አስተናጋጅ አለመኖሩን ዝምታ አያረጋግጥም።</string>
+    <string name="ns_neighbours">የታወቁ ጎረቤቶች</string>
+    <string name="ns_neighbours_note">ከ/proc/net/arp - ማንበብ ብቻ።</string>
+    <string name="ns_neighbours_empty">እስካሁን ምንም ጎረቤቶች አይታወቁም።</string>
+    <string name="ns_ports_value">ወደቦች %1$s</string>
+</resources>

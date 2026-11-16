@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_license_strings.xml -->
+<resources>
+    <string name="max_license_title">Lisensya</string>
+    <string name="max_license_subtitle">Isang susi, ang device na ito, walang account</string>
+    <string name="max_license_help_body">Ang isang susi ay sinusuri online nang isang beses, kapag ipinasok mo ito. Mula noon, gumagana offline ang pinirmahang certificate ng server hanggang sa maubos ang oras nito — hindi tumatawag sa bahay ang app sa tuwing magbubukas ka ng screen. Ang certificate ay nakatali sa random install id ng device na ito, kaya ang pagkopya sa data ng app sa isa pang telepono ay hindi nagdadala ng lisensya kasama nito, at maaaring i-reset ng may-ari ang pagbubuklod na iyon mula sa panel kung magpapalit ka ng mga telepono.</string>
+    <string name="max_license_status_section">Katayuan</string>
+    <string name="max_license_status_active">Aktibo</string>
+    <string name="max_license_status_expired">Nag-expire na</string>
+    <string name="max_license_status_none">Hindi activated</string>
+    <string name="max_license_active_detail">Natitira: %1$d araw</string>
+    <string name="max_license_expired_detail">Tapos na ang oras ng susi na ito. Isang bagong key ang nagpapanibago ng access.</string>
+    <string name="max_license_none_detail">Ilagay ang key na natanggap mo para i-unlock ang mga bayad na surface.</string>
+    <string name="max_license_promo_active">Libre para sa lahat hanggang %1$s</string>
+    <string name="max_license_plan_title">Plano</string>
+    <string name="max_license_devices_title">Mga device</string>
+    <string name="max_license_devices_detail">%1$d ng %2$d ginamit</string>
+    <string name="max_license_device_id_title">Ang device na ito</string>
+    <string name="max_license_device_id_detail">%1$s</string>
+    <string name="max_license_key_section">Pag-activate</string>
+    <string name="max_license_key_label">Susi ng lisensya</string>
+    <string name="max_license_key_placeholder">MAXM-XXXXX-XXXXX-XXXXX-XXXXX-XX</string>
+    <string name="max_license_key_helper">Hindi mahalaga ang mga gitling at capitalization — i-paste ito habang natanggap mo ito.</string>
+    <string name="max_license_activate">I-activate</string>
+    <string name="max_license_activating">Sinusuri ang susi…</string>
+    <string name="max_license_refresh">Suriin ngayon</string>
+    <string name="max_license_activated">Na-activate. Naka-link na ang device na ito sa iyong key.</string>
+    <string name="max_license_error_invalid_key">Mukhang hindi kumpleto ang susi na ito. Suriin ito at subukang muli.</string>
+    <string name="max_license_error_not_configured">Walang naka-configure na server ng lisensya ang build na ito.</string>
+    <string name="max_license_error_network">Walang koneksyon. Ang susi ay nasuri nang isang beses, pagkatapos ay gumagana offline.</string>
+    <string name="max_license_error_timeout">Ang server ng lisensya ay hindi sumagot sa oras. Subukan muli.</string>
+    <string name="max_license_error_server">Ang server ng lisensya ay sumagot ng isang error. Subukan ulit mamaya.</string>
+    <string name="max_license_error_client">Ang function ng lisensya ay hindi na-deploy sa server.</string>
+    <string name="max_license_error_format">Hindi naintindihan ang sagot ng server.</string>
+    <string name="max_license_error_expired">Nag-expire na ang key na ito.</string>
+    <string name="max_license_error_not_found">Hindi alam ang susi na ito.</string>
+    <string name="max_license_error_revoked">Ang susi na ito ay binawi.</string>
+    <string name="max_license_error_device_limit">Naabot na ng key na ito ang limitasyon ng device nito. Humingi ng pag-reset ng device.</string>
+    <string name="max_license_error_device_unknown">Hindi pa naka-link ang device na ito sa susi. I-activate mo muna dito.</string>
+    <string name="max_license_error_device_removed">Inalis ng may-ari ang device na ito sa susi.</string>
+    <string name="max_license_error_rate_limited">Masyadong maraming mga pagtatangka mula sa koneksyon na ito — maghintay ng ilang minuto, pagkatapos ay subukang muli.</string>
+    <string name="max_license_error_unknown">Nagkaproblema. Ang dahilan ay naitala sa Diagnostics.</string>
+    <string name="max_license_gate_title">Ang ibabaw na ito ay nangangailangan ng lisensya</string>
+    <string name="max_license_gate_detail">May kasama itong susi. Sinasaklaw ng isang key ang device na ito, at ang pagpasok nito ay tumatagal ng isang minuto.</string>
+    <string name="max_feature_off_title">Naka-off</string>
+    <string name="max_feature_off_detail">In-off ng control panel ang surface na ito. Babalik ito kaagad kapag na-enable itong muli.</string>
+    <string name="max_license_gate_action">Buksan ang mga setting ng lisensya</string>
+    <string name="max_license_gate_subscribe">Mag-subscribe ngayon</string>
+    <string name="max_license_subscription_section">Subscription</string>
+    <string name="max_license_subscription_open">Buksan ang pahina ng subscription</string>
+</resources>

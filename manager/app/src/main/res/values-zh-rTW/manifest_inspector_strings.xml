@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/manifest_inspector_strings.xml -->
+<resources>
+    <string name="manifest_inspector_title">舱单检查员</string>
+    <string name="manifest_inspector_subtitle">已安装的应用程序声明其自身的内容，请从 PackageManager 中读取。</string>
+    <string name="max_role_manifest_inspector">显示包对其自身的声明内容 - 只读。</string>
+    <string name="mi_search">搜索应用程序</string>
+    <string name="mi_empty">选择左侧的应用程序。</string>
+    <string name="mi_yes">是的</string>
+    <string name="mi_no">不</string>
+    <string name="mi_section_identity">包裹</string>
+    <string name="mi_version">版本</string>
+    <string name="mi_version_code">版本代码</string>
+    <string name="mi_min_sdk">最低SDK</string>
+    <string name="mi_target_sdk">目标SDK</string>
+    <string name="mi_installed">已安装</string>
+    <string name="mi_updated">已更新</string>
+    <string name="mi_installer">安装人员</string>
+    <string name="mi_uid">用户识别码</string>
+    <string name="mi_data_dir">数据目录</string>
+    <string name="mi_debuggable">可调试</string>
+    <string name="mi_system_app">系统应用程序</string>
+    <string name="mi_enabled">启用</string>
+    <string name="mi_section_permissions">请求的权限</string>
+    <string name="mi_permissions_summary">%1$d 权限 · %2$d 其中危险</string>
+    <string name="mi_permissions_none">此应用程序不请求任何许可。</string>
+    <string name="mi_perm_dangerous">危险的</string>
+    <string name="mi_perm_signature">签名</string>
+    <string name="mi_perm_normal">普通的</string>
+    <string name="mi_perm_unknown">未分类</string>
+    <string name="mi_section_components">成分</string>
+    <string name="mi_activities">活动</string>
+    <string name="mi_services">服务</string>
+    <string name="mi_receivers">接收器</string>
+    <string name="mi_providers">供应商</string>
+    <string name="mi_components_none">没有声明</string>
+    <string name="mi_section_features">设备特点</string>
+    <string name="mi_features_note">该平台不会公开其他应用程序的使用功能列表；这些是该设备报告的功能。</string>
+    <string name="mi_features_none">没有报告任何功能</string>
+    <string name="mi_section_signature">签署证书</string>
+    <string name="mi_signature_note">签名证书的 SHA-256。具有相同值的两个版本是同一发布者。</string>
+    <string name="mi_signature_sha256">证书摘要</string>
+</resources>

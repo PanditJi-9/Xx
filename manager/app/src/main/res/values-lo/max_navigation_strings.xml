@@ -53,4 +53,8 @@
     <string name="max_title_get_started">ຕັ້ງຄ່າ</string>
     <string name="max_hub_audio">ສຽງ</string>
     <string name="max_hub_audio_desc">ອຸ​ປະ​ກອນ​ຜະ​ລິດ​ຕະ​ພັນ​, ສະ​ຕ​ຣີມ​ແລະ​ຜົນ​ກະ​ທົບ​ທີ່​ປະ​ກາດ​</string>
+    <string name="control_tools_live">ພື້ນຜິວສົດ</string>
+    <string name="control_tools_advanced">ເຄື່ອງມືຂັ້ນສູງ</string>
+    <string name="control_tools_system">ເຄື່ອງມືລະບົບ</string>
+    <string name="control_tools_appearance">ຮູບລັກສະນະ</string>
 </resources>

@@ -51,4 +51,14 @@
     <string name="copg_tweak_kso_title">Дэлгэцийг асаалттай байлга</string>
     <string name="copg_tweak_kso_desc">COPG дэлгэцийг асаах тохиргоог энэ аппликешнд хэрэглэнэ. Энд хадгалсан, Хяналтаар хөдөлгүүрт бичсэн бөгөөд Хуурамч таб дээр хэрэглэнэ.</string>
     <string name="copg_tweak_needs_device">Хуурамч таб хэсэгт эхлээд энэ апп-д төхөөрөмж хэрэгтэй.</string>
+    <string name="spoof_engine_unmeasured">Хөдөлгүүрийн төлөвийг хэмжээгүй байна: root хандалтыг хараахан олгоогүй байна. Root эрх өгөөд энэ табыг дахин нээнэ үү.</string>
+    <string name="spoof_engine_config_missing">COPG суулгасан боловч түүний тохиргооны файл (COPG.json) байхгүй байна. Модуль дахин өгөх хүртэл өргөдөл гаргахаас татгалзана.</string>
+    <string name="spoof_engine_config_unreadable">COPG суулгасан боловч түүний тохиргооны файлыг унших боломжгүй JSON. Файлыг засах хүртэл өргөдөл гаргахаас татгалздаг.</string>
+    <string name="spoof_imei_spoof">IMEI хуурамчаар үйлдэх</string>
+    <string name="spoof_imei_spoof_desc">Энэ програмыг өөр IMEI харуулж байна. LSPosed-д Max Manager модулийг энэ програмын хүрээнд идэвхжүүлсэн байх шаардлагатай. Програмыг асаасаны дараа дахин эхлүүлнэ үү.</string>
+    <string name="spoof_imei_active">Энэ програмыг харуулж байна: %1$s</string>
+    <string name="spoof_imei_summary">IMEI хуурамчаар үйлдэх</string>
+    <string name="spoof_imei_regenerate">Шинэ санамсаргүй IMEI</string>
+    <string name="spoof_imei_regenerate_desc">Энэ апп-д өөр хүчинтэй IMEI үүсгэнэ. Үүнийг харахын тулд програмыг дахин эхлүүлнэ үү.</string>
+    <string name="spoof_imei_module_inactive">Max Manager модулийг LSPosed-д идэвхжүүлээгүй тул програмууд жинхэнэ IMEI-г харсаар байна. LSPosed-д модулийг идэвхжүүлж, энэ програмыг хамрах хүрээндээ нэмээд энэ дэлгэцийг дахин нээнэ үү.</string>
 </resources>

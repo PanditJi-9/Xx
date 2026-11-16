@@ -99,4 +99,12 @@
     <string name="max_gpu_saved_desc">Сачувано из ранијег чувања и примењено на свако покретање: %1$s. Подразумевано изнад завршава само ову сесију, никада сачувано стање.</string>
     <string name="max_gpu_dynamic_min">Минимум · динамичан</string>
     <string name="max_gpu_dynamic_max">Максимално · динамично</string>
+<string name="max_gpu_monitor_only_detail">Једини графички чворови које ово језгро излаже су пропусни опсег и КоС монитори: они немају GPU сат, тако да нема фреквенције за подешавање. Контрола остаје искључена уместо да пише регулатор меморије као да је GPU.</string>
+<string name="max_gpu_danger_title">Напишите GPU ограничења?</string>
+<string name="max_gpu_danger_body">Ово уписује графички прозор фреквенције и гувернер у чворове GPU. Прозор који возач одбије, или регулатор који не може да прати корак, може да замуцкује цео интерфејс или да замрзне панел. Апликација бележи да сте то једном прихватили — одговорност за вредности које примењујете је ваша.</string>
+<string name="max_gpu_danger_action">Разумем — примените</string>
+<string name="max_gpu_state_title">Време у држави</string>
+<string name="max_gpu_state_desc">Где је заправо отишло време GPU, рачунано од стране кернела по радној фреквенцији — а не снимак тренутног сата.</string>
+<string name="max_gpu_state_hidden_share">%1$s заједно</string>
+<string name="max_gpu_state_hidden">%1$d државе испод 1%%</string>
 </resources>

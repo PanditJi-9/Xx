@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/network_scanner_strings.xml -->
+<resources>
+    <string name="network_scanner_title">Vietējā tīkla skeneris</string>
+    <string name="network_scanner_subtitle">Jūsu adrese, vārteja, uz kuru tā sasniedz, un uz kuriem kaimiņiem atbildēja.</string>
+    <string name="max_role_network_scanner">Nolasa tīklu, kurā atrodaties — bez uztveršanas, bez saknes.</string>
+    <string name="ns_no_network">Nav pievienots neviens tīkls.</string>
+    <string name="ns_interface">Interfeiss</string>
+    <string name="ns_address">Adrese</string>
+    <string name="ns_gateway">Vārteja</string>
+    <string name="ns_dns">DNS</string>
+    <string name="ns_mac">MAC</string>
+    <string name="ns_transport_wifi">Wi-Fi</string>
+    <string name="ns_transport_ethernet">Ethernet</string>
+    <string name="ns_transport_cellular">Mobilais</string>
+    <string name="ns_transport_other">Cits</string>
+    <string name="ns_sources_title">No kurienes tas nāk</string>
+    <string name="ns_sources_body">Adreses un vārteja tiek nolasītas no platformas saites rekvizītiem. Kaimiņu tabula tiek nolasīta no kodola ARP kešatmiņas, tāpēc tajā ir tikai tas, ar ko šī ierīce ir nesen runājusi — tukša tabula nenozīmē tukšu tīklu.</string>
+    <string name="ns_refresh">Atsvaidzināt</string>
+    <string name="ns_probe">Izpētiet kopīgās ostas</string>
+    <string name="ns_probe_stop">Stop</string>
+    <string name="ns_probe_progress">Tiek pārbaudīts %1$d no %2$d</string>
+    <string name="ns_probe_note">Nosūta TCP savienojumu uz portiem 22, 80, 443, 5000 un 5555 pa šo /24. Tiek ziņots par portu, kas atbild; klusēšana nav pierādījums tam, ka saimnieka nav.</string>
+    <string name="ns_neighbours">Zināmi kaimiņi</string>
+    <string name="ns_neighbours_note">No /proc/net/arp — tikai lasāms.</string>
+    <string name="ns_neighbours_empty">Pagaidām kaimiņi nav zināmi.</string>
+    <string name="ns_ports_value">Porti %1$s</string>
+</resources>

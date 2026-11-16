@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_license_strings.xml -->
+<resources>
+    <string name="max_license_title">Licencija</string>
+    <string name="max_license_subtitle">Vienas raktas, šis įrenginys, be paskyros</string>
+    <string name="max_license_help_body">Raktas tikrinamas internete vieną kartą, kai jį įvedate. Nuo tada serverio pasirašytas sertifikatas veikia neprisijungus, kol baigsis jo laikas – programa neskambina į namus kiekvieną kartą, kai atidarote ekraną. Sertifikatas susietas su šio įrenginio atsitiktiniu diegimo ID, todėl kopijuojant programos duomenis į kitą telefoną licencija nesiunčiama, o savininkas gali iš naujo nustatyti susiejimą skydelyje, jei pakeičiate telefonus.</string>
+    <string name="max_license_status_section">Būsena</string>
+    <string name="max_license_status_active">Aktyvus</string>
+    <string name="max_license_status_expired">Baigėsi galiojimo laikas</string>
+    <string name="max_license_status_none">Neaktyvuota</string>
+    <string name="max_license_active_detail">Liko: %1$d dienų</string>
+    <string name="max_license_expired_detail">Šio rakto laikas baigėsi. Naujas raktas atnaujina prieigą.</string>
+    <string name="max_license_none_detail">Įveskite gautą raktą, kad atrakintumėte mokamus paviršius.</string>
+    <string name="max_license_promo_active">Visiems nemokamai iki %1$s</string>
+    <string name="max_license_plan_title">Planuoti</string>
+    <string name="max_license_devices_title">Prietaisai</string>
+    <string name="max_license_devices_detail">Naudojama %1$d iš %2$d</string>
+    <string name="max_license_device_id_title">Šis prietaisas</string>
+    <string name="max_license_device_id_detail">%1$s</string>
+    <string name="max_license_key_section">Aktyvinimas</string>
+    <string name="max_license_key_label">Licencijos raktas</string>
+    <string name="max_license_key_placeholder">MAXM-XXXXX-XXXXX-XXXXX-XXXXX-XX</string>
+    <string name="max_license_key_helper">Brūkšniai ir didžiosios raidės neturi reikšmės – įklijuokite juos taip, kaip gavote.</string>
+    <string name="max_license_activate">Suaktyvinti</string>
+    <string name="max_license_activating">Tikrinamas raktas…</string>
+    <string name="max_license_refresh">Patikrinkite dabar</string>
+    <string name="max_license_activated">Aktyvuota. Šis įrenginys dabar susietas su jūsų raktu.</string>
+    <string name="max_license_error_invalid_key">Šis raktas neatrodo pilnas. Patikrinkite ir bandykite dar kartą.</string>
+    <string name="max_license_error_not_configured">Šioje versijoje nesukonfigūruotas licencijos serveris.</string>
+    <string name="max_license_error_network">Nėra ryšio. Raktas patikrinamas vieną kartą, tada veikia neprisijungus.</string>
+    <string name="max_license_error_timeout">Licencijos serveris laiku neatsakė. Bandykite dar kartą.</string>
+    <string name="max_license_error_server">Licencijos serveris atsakė su klaida. Vėliau bandykite dar kartą.</string>
+    <string name="max_license_error_client">Licencijos funkcija serveryje neįdiegta.</string>
+    <string name="max_license_error_format">Serverio atsakymas nebuvo suprastas.</string>
+    <string name="max_license_error_expired">Šio rakto galiojimo laikas baigėsi.</string>
+    <string name="max_license_error_not_found">Šis raktas nežinomas.</string>
+    <string name="max_license_error_revoked">Šis raktas buvo atšauktas.</string>
+    <string name="max_license_error_device_limit">Šis raktas pasiekė įrenginio limitą. Paprašykite iš naujo nustatyti įrenginį.</string>
+    <string name="max_license_error_device_unknown">Šis įrenginys dar nesusietas su raktu. Pirmiausia suaktyvinkite jį čia.</string>
+    <string name="max_license_error_device_removed">Šį įrenginį nuo rakto nuėmė savininkas.</string>
+    <string name="max_license_error_rate_limited">Per daug bandymų iš šio ryšio – palaukite kelias minutes, tada bandykite dar kartą.</string>
+    <string name="max_license_error_unknown">Kažkas nutiko. Priežastis buvo užfiksuota Diagnostikoje.</string>
+    <string name="max_license_gate_title">Šiam paviršiui reikalinga licencija</string>
+    <string name="max_license_gate_detail">Komplekte yra raktas. Vienas klavišas uždengia šį įrenginį, o jo įvedimas užtrunka minutę.</string>
+    <string name="max_feature_off_title">Išjungtas</string>
+    <string name="max_feature_off_detail">Valdymo skydelis išjungė šį paviršių. Jis grįžta, kai tik vėl įjungiamas.</string>
+    <string name="max_license_gate_action">Atidarykite licencijos nustatymus</string>
+    <string name="max_license_gate_subscribe">Prenumeruokite dabar</string>
+    <string name="max_license_subscription_section">Prenumerata</string>
+    <string name="max_license_subscription_open">Atidarykite prenumeratos puslapį</string>
+</resources>

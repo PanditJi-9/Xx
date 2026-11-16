@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/manifest_inspector_strings.xml -->
+<resources>
+    <string name="manifest_inspector_title">Manifest Inspector</string>
+    <string name="manifest_inspector_subtitle">Það sem uppsett app lýsir yfir um sjálft sig, lesið úr PackageManager.</string>
+    <string name="max_role_manifest_inspector">Sýnir það sem pakki segir um sjálfan sig - skrifvarinn.</string>
+    <string name="mi_search">Leitaðu að forritum</string>
+    <string name="mi_empty">Veldu app til vinstri.</string>
+    <string name="mi_yes">Já</string>
+    <string name="mi_no">Nei</string>
+    <string name="mi_section_identity">Pakki</string>
+    <string name="mi_version">Útgáfa</string>
+    <string name="mi_version_code">Útgáfukóði</string>
+    <string name="mi_min_sdk">Lágmarks SDK</string>
+    <string name="mi_target_sdk">Markmið SDK</string>
+    <string name="mi_installed">Uppsett</string>
+    <string name="mi_updated">Uppfært</string>
+    <string name="mi_installer">Uppsetningarforrit</string>
+    <string name="mi_uid">UID</string>
+    <string name="mi_data_dir">Gagnaskrá</string>
+    <string name="mi_debuggable">Villuleitanlegt</string>
+    <string name="mi_system_app">Kerfisforrit</string>
+    <string name="mi_enabled">Virkt</string>
+    <string name="mi_section_permissions">Óskað eftir heimildum</string>
+    <string name="mi_permissions_summary">%1$d heimildir · %2$d af þeim hættulegar</string>
+    <string name="mi_permissions_none">Þetta app biður ekki um leyfi.</string>
+    <string name="mi_perm_dangerous">Hættulegt</string>
+    <string name="mi_perm_signature">Undirskrift</string>
+    <string name="mi_perm_normal">Eðlilegt</string>
+    <string name="mi_perm_unknown">Óflokkað</string>
+    <string name="mi_section_components">Íhlutir</string>
+    <string name="mi_activities">Starfsemi</string>
+    <string name="mi_services">Þjónusta</string>
+    <string name="mi_receivers">Viðtakendur</string>
+    <string name="mi_providers">Veitendur</string>
+    <string name="mi_components_none">Engum lýst yfir</string>
+    <string name="mi_section_features">Eiginleikar tækisins</string>
+    <string name="mi_features_note">Vettvangurinn afhjúpar ekki notkunareiginleikalista annars forrits; þetta eru eiginleikar sem þetta tæki tilkynnir.</string>
+    <string name="mi_features_none">Enginn eiginleiki tilkynntur</string>
+    <string name="mi_section_signature">Undirritunarvottorð</string>
+    <string name="mi_signature_note">SHA-256 undirritunarskírteinisins. Tvær smíðir með sama gildi eru sami útgefandi.</string>
+    <string name="mi_signature_sha256">Samantekt skírteina</string>
+</resources>

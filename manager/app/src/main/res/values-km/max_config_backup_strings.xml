@@ -18,4 +18,10 @@
     <string name="max_cfg_section_appearance">រូបរាង &amp; ចំណុចប្រទាក់</string>
     <string name="max_cfg_section_app_prefs">ចំណូលចិត្តកម្មវិធី និងភាសា</string>
     <string name="max_cfg_restore_merge_note">ការស្ដារចំណូលចិត្តបញ្ចូលគ្នា៖ គ្រាប់ចុចដែលមាននៅក្នុងឯកសារត្រូវបានសរសេរ ហើយសោដែលវាមិននិយាយអំពីការស្នាក់នៅដូចដែលពួកវាមាន។ គ្មានអ្វីត្រូវបានជម្រះទេ។</string>
+    <string name="max_cfg_diff_title">%1$d ការកំណត់ដែលបានរក្សាទុកខុសពីឧបករណ៍នេះ។</string>
+    <string name="max_cfg_diff_line">%1$s៖ %2$s → %3$s</string>
+    <string name="max_cfg_diff_unset">មិនបានកំណត់</string>
+    <string name="max_cfg_diff_more">និង%1$dច្រើនទៀត</string>
+    <string name="max_cfg_diff_applist">%1$d បន្ទាត់បញ្ជីកម្មវិធីត្រូវបានបន្ថែម %2$dបានដកចេញ — បញ្ជីទាំងមូលត្រូវបានជំនួស មិនត្រូវបានបញ្ចូលចូលគ្នាទេ។</string>
+    <string name="max_cfg_diff_prefs">គ្រាប់ចុចចំណូលចិត្ត %1$d ខុសគ្នា — បញ្ចូលចូលគ្នា មិនត្រូវបានលុបចោលទេ។</string>
 </resources>

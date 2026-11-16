@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/manifest_inspector_strings.xml -->
+<resources>
+    <string name="manifest_inspector_title">మానిఫెస్ట్ ఇన్స్పెక్టర్</string>
+    <string name="manifest_inspector_subtitle">ఇన్‌స్టాల్ చేయబడిన యాప్ దాని గురించి ఏమి ప్రకటిస్తుంది, ప్యాకేజీ మేనేజర్ నుండి చదవండి.</string>
+    <string name="max_role_manifest_inspector">ఒక ప్యాకేజీ దాని గురించి ఏమి ప్రకటిస్తుందో చూపిస్తుంది — చదవడానికి మాత్రమే.</string>
+    <string name="mi_search">అనువర్తనాలను శోధించండి</string>
+    <string name="mi_empty">ఎడమవైపున యాప్‌ను ఎంచుకోండి.</string>
+    <string name="mi_yes">అవును</string>
+    <string name="mi_no">నం</string>
+    <string name="mi_section_identity">ప్యాకేజీ</string>
+    <string name="mi_version">వెర్షన్</string>
+    <string name="mi_version_code">వెర్షన్ కోడ్</string>
+    <string name="mi_min_sdk">కనిష్ట SDK</string>
+    <string name="mi_target_sdk">లక్ష్యం SDK</string>
+    <string name="mi_installed">ఇన్‌స్టాల్ చేయబడింది</string>
+    <string name="mi_updated">నవీకరించబడింది</string>
+    <string name="mi_installer">ఇన్‌స్టాలర్</string>
+    <string name="mi_uid">UID</string>
+    <string name="mi_data_dir">డేటా డైరెక్టరీ</string>
+    <string name="mi_debuggable">డీబగ్ చేయదగినది</string>
+    <string name="mi_system_app">సిస్టమ్ యాప్</string>
+    <string name="mi_enabled">ప్రారంభించబడింది</string>
+    <string name="mi_section_permissions">అనుమతులు అభ్యర్థించారు</string>
+    <string name="mi_permissions_summary">%1$d అనుమతులు · %2$d వాటిలో ప్రమాదకరమైనవి</string>
+    <string name="mi_permissions_none">ఈ యాప్ ఎటువంటి అనుమతిని అభ్యర్థించదు.</string>
+    <string name="mi_perm_dangerous">ప్రమాదకరమైనది</string>
+    <string name="mi_perm_signature">సంతకం</string>
+    <string name="mi_perm_normal">సాధారణ</string>
+    <string name="mi_perm_unknown">వర్గీకరించని</string>
+    <string name="mi_section_components">భాగాలు</string>
+    <string name="mi_activities">కార్యకలాపాలు</string>
+    <string name="mi_services">సేవలు</string>
+    <string name="mi_receivers">రిసీవర్లు</string>
+    <string name="mi_providers">ప్రొవైడర్లు</string>
+    <string name="mi_components_none">ఏదీ ప్రకటించలేదు</string>
+    <string name="mi_section_features">పరికర లక్షణాలు</string>
+    <string name="mi_features_note">ప్లాట్‌ఫారమ్ మరొక యాప్ యొక్క ఉపయోగాలు-లక్షణాల జాబితాను బహిర్గతం చేయదు; ఇవి ఈ పరికరం నివేదించే లక్షణాలు.</string>
+    <string name="mi_features_none">ఏ ఫీచర్ నివేదించబడలేదు</string>
+    <string name="mi_section_signature">సంతకం సర్టిఫికేట్</string>
+    <string name="mi_signature_note">సంతకం సర్టిఫికేట్ యొక్క SHA-256. ఒకే విలువ కలిగిన రెండు బిల్డ్‌లు ఒకే ప్రచురణకర్త.</string>
+    <string name="mi_signature_sha256">సర్టిఫికేట్ డైజెస్ట్</string>
+</resources>

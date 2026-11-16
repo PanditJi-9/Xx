@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/manifest_inspector_strings.xml -->
+<resources>
+    <string name="manifest_inspector_title">Εκδηλωτικός Επιθεωρητής</string>
+    <string name="manifest_inspector_subtitle">Τι δηλώνει μια εγκατεστημένη εφαρμογή για τον εαυτό της, διαβάστε από το PackageManager.</string>
+    <string name="max_role_manifest_inspector">Δείχνει τι δηλώνει ένα πακέτο για τον εαυτό του — μόνο για ανάγνωση.</string>
+    <string name="mi_search">Αναζήτηση εφαρμογών</string>
+    <string name="mi_empty">Επιλέξτε μια εφαρμογή στα αριστερά.</string>
+    <string name="mi_yes">Ναί</string>
+    <string name="mi_no">Οχι</string>
+    <string name="mi_section_identity">Πακέτο</string>
+    <string name="mi_version">Εκδοχή</string>
+    <string name="mi_version_code">Κωδικός έκδοσης</string>
+    <string name="mi_min_sdk">Ελάχιστο SDK</string>
+    <string name="mi_target_sdk">Στόχος SDK</string>
+    <string name="mi_installed">Εγκατεστημένο</string>
+    <string name="mi_updated">Ενημερώθηκε</string>
+    <string name="mi_installer">Εγκαταστάτης</string>
+    <string name="mi_uid">UID</string>
+    <string name="mi_data_dir">Κατάλογος δεδομένων</string>
+    <string name="mi_debuggable">Δυνατότητα εντοπισμού σφαλμάτων</string>
+    <string name="mi_system_app">Εφαρμογή συστήματος</string>
+    <string name="mi_enabled">Ενεργοποιημένο</string>
+    <string name="mi_section_permissions">Ζητήθηκαν άδειες</string>
+    <string name="mi_permissions_summary">%1$d δικαιώματα · %2$d από αυτά επικίνδυνα</string>
+    <string name="mi_permissions_none">Αυτή η εφαρμογή δεν ζητά άδεια.</string>
+    <string name="mi_perm_dangerous">Επικίνδυνος</string>
+    <string name="mi_perm_signature">Υπογραφή</string>
+    <string name="mi_perm_normal">Κανονικός</string>
+    <string name="mi_perm_unknown">Αταξινόμητος</string>
+    <string name="mi_section_components">εξαρτήματα</string>
+    <string name="mi_activities">Δραστηριότητες</string>
+    <string name="mi_services">Υπηρεσίες</string>
+    <string name="mi_receivers">Δέκτες</string>
+    <string name="mi_providers">Παρόχους</string>
+    <string name="mi_components_none">Κανένας δεν δηλώθηκε</string>
+    <string name="mi_section_features">Χαρακτηριστικά συσκευής</string>
+    <string name="mi_features_note">Η πλατφόρμα δεν εκθέτει τη λίστα χρήσεων-δυνατοτήτων άλλης εφαρμογής. Αυτά είναι τα χαρακτηριστικά που αναφέρει αυτή η συσκευή.</string>
+    <string name="mi_features_none">Δεν αναφέρθηκε κανένα χαρακτηριστικό</string>
+    <string name="mi_section_signature">Πιστοποιητικό υπογραφής</string>
+    <string name="mi_signature_note">SHA-256 του πιστοποιητικού υπογραφής. Δύο εκδόσεις με την ίδια αξία είναι ο ίδιος εκδότης.</string>
+    <string name="mi_signature_sha256">Περίληψη πιστοποιητικού</string>
+</resources>

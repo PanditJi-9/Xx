@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/manifest_inspector_strings.xml -->
+<resources>
+    <string name="manifest_inspector_title">Inspector de manifeste</string>
+    <string name="manifest_inspector_subtitle">Ceea ce o aplicație instalată declară despre ea însăși, citiți din PackageManager.</string>
+    <string name="max_role_manifest_inspector">Afișează ceea ce un pachet declară despre el însuși - numai în citire.</string>
+    <string name="mi_search">Căutați aplicații</string>
+    <string name="mi_empty">Alegeți o aplicație din stânga.</string>
+    <string name="mi_yes">Da</string>
+    <string name="mi_no">Nu</string>
+    <string name="mi_section_identity">Pachet</string>
+    <string name="mi_version">Versiune</string>
+    <string name="mi_version_code">Codul versiunii</string>
+    <string name="mi_min_sdk">SDK minim</string>
+    <string name="mi_target_sdk">SDK țintă</string>
+    <string name="mi_installed">Instalat</string>
+    <string name="mi_updated">Actualizat</string>
+    <string name="mi_installer">Instalator</string>
+    <string name="mi_uid">UID</string>
+    <string name="mi_data_dir">Director de date</string>
+    <string name="mi_debuggable">Depanabil</string>
+    <string name="mi_system_app">Aplicația de sistem</string>
+    <string name="mi_enabled">Activat</string>
+    <string name="mi_section_permissions">Permisiuni solicitate</string>
+    <string name="mi_permissions_summary">%1$d permisiuni · %2$d dintre ele periculoase</string>
+    <string name="mi_permissions_none">Această aplicație nu solicită permisiunea.</string>
+    <string name="mi_perm_dangerous">Periculos</string>
+    <string name="mi_perm_signature">Semnătura</string>
+    <string name="mi_perm_normal">Normal</string>
+    <string name="mi_perm_unknown">Neclasificat</string>
+    <string name="mi_section_components">Componente</string>
+    <string name="mi_activities">Activități</string>
+    <string name="mi_services">Servicii</string>
+    <string name="mi_receivers">Receptorii</string>
+    <string name="mi_providers">Furnizorii</string>
+    <string name="mi_components_none">Niciuna nu a declarat</string>
+    <string name="mi_section_features">Caracteristicile dispozitivului</string>
+    <string name="mi_features_note">Platforma nu expune lista de utilizări a altei aplicații; acestea sunt caracteristicile raportate de acest dispozitiv.</string>
+    <string name="mi_features_none">Nicio caracteristică raportată</string>
+    <string name="mi_section_signature">Certificat de semnare</string>
+    <string name="mi_signature_note">SHA-256 al certificatului de semnare. Două versiuni cu aceeași valoare sunt același editor.</string>
+    <string name="mi_signature_sha256">Rezumat certificat</string>
+</resources>

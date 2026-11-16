@@ -51,4 +51,14 @@
     <string name="copg_tweak_kso_title">Hoidke ekraan sees</string>
     <string name="copg_tweak_kso_desc">Rakendab sellele rakendusele COPG-ekraani jälgimise näpunäide. Salvestatud siia, kirjutatud mootorisse vahekaardil Pettus ülevaatamine ja rakendamine.</string>
     <string name="copg_tweak_needs_device">Vajab esmalt selle rakenduse jaoks seadet vahekaardil Pettus.</string>
+    <string name="spoof_engine_unmeasured">Mootori olekut ei mõõdeta: juurjuurdepääsu pole veel antud. Andke juur, seejärel avage see vahekaart uuesti.</string>
+    <string name="spoof_engine_config_missing">COPG on installitud, kuid selle konfiguratsioonifail (COPG.json) puudub. Kandideerimine lükatakse tagasi, kuni moodul seda uuesti esitab.</string>
+    <string name="spoof_engine_config_unreadable">COPG on installitud, kuid selle konfiguratsioonifail ei ole loetav JSON. Taotluse esitamisest keeldutakse kuni faili parandamiseni.</string>
+    <string name="spoof_imei_spoof">IMEI võltsimine</string>
+    <string name="spoof_imei_spoof_desc">Näitab sellele rakendusele teist IMEI-d. Vajab LSPosedis lubatud moodulit Max Manager selle rakendusega. Taaskäivitage rakendus pärast selle sisselülitamist.</string>
+    <string name="spoof_imei_active">Kuvatakse see rakendus: %1$s</string>
+    <string name="spoof_imei_summary">IMEI võltsimine</string>
+    <string name="spoof_imei_regenerate">Uus juhuslik IMEI</string>
+    <string name="spoof_imei_regenerate_desc">Loob selle rakenduse jaoks teise kehtiva IMEI-koodi. Selle nägemiseks taaskäivitage rakendus.</string>
+    <string name="spoof_imei_module_inactive">Moodul Max Manager pole rakenduses LSPosed lubatud, nii et rakendused näevad endiselt tegelikku IMEI-d. Lubage moodul rakenduses LSPosed, lisage see rakendus selle ulatusse ja avage see ekraan uuesti.</string>
 </resources>

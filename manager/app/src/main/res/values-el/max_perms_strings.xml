@@ -69,4 +69,25 @@
     <string name="max_perms_entry_title">Δικαιώματα και λειτουργίες εφαρμογών</string>
     <string name="max_perms_entry_desc">Δείτε τι δηλώνει αυτή η εφαρμογή και τι επιτρέπει στην πραγματικότητα το σύστημα</string>
     <string name="max_perms_entry_action">Ανοίξτε τα δικαιώματα</string>
+    <string name="max_perms_manifest_title">Περίληψη Μανιφέστου</string>
+    <string name="max_perms_manifest_desc">Διαβάστε από τον διαχειριστή πακέτων: έκδοση, εύρος SDK, στοιχεία και πόσα από αυτά εξάγονται. Ένα εξαγόμενο στοιχείο μπορεί να ξεκινήσει από άλλες εφαρμογές.</string>
+    <string name="max_perms_manifest_version">Εκδοχή</string>
+    <string name="max_perms_manifest_sdk">Εύρος SDK</string>
+    <string name="max_perms_manifest_location">Τοποθεσία εγκατάστασης</string>
+    <string name="max_perms_manifest_location_auto">Αυτόματο</string>
+    <string name="max_perms_manifest_location_internal">Μόνο εσωτερική αποθήκευση</string>
+    <string name="max_perms_manifest_location_external">Προτιμά το εξωτερικό</string>
+    <string name="max_perms_manifest_components">εξαρτήματα</string>
+    <string name="max_perms_manifest_components_order">δραστηριότητες · υπηρεσίες · δέκτες · πάροχοι</string>
+    <string name="max_perms_manifest_exported">Εξαγόμενα εξαρτήματα</string>
+    <string name="max_perms_manifest_splits">Διαχωρίστε τα APK</string>
+    <string name="max_perms_manifest_debug">Δυνατότητα εντοπισμού σφαλμάτων</string>
+    <string name="max_perms_features_title">Δηλωμένα χαρακτηριστικά</string>
+    <string name="max_perms_features_desc">Τι απαιτεί το πακέτο από τη συσκευή, σε σύγκριση με αυτό που διαφημίζει αυτή η συσκευή. Μια απαιτούμενη δυνατότητα που λείπει εδώ συνήθως σημαίνει ότι η εφαρμογή δεν θα λειτουργήσει πλήρως — πρόκειται για αξίωση από τον διαχειριστή πακέτων και όχι εικασία.</string>
+    <string name="max_perms_features_loading">Ανάγνωση των δηλωμένων χαρακτηριστικών του πακέτου…</string>
+    <string name="max_perms_features_none">Το πακέτο δηλώνει ότι δεν απαιτούνται χαρακτηριστικά.</string>
+    <string name="max_perms_features_required">Υποχρεούμαι</string>
+    <string name="max_perms_features_unsupported">Όχι σε αυτήν τη συσκευή</string>
+    <string name="max_perms_manifest_none">Δεν αναφέρεται από τον διαχειριστή πακέτων.</string>
+    <string name="max_perms_manifest_unknown">Αγνωστος</string>
 </resources>

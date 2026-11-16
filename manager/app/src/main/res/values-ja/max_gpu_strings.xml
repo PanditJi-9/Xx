@@ -99,4 +99,12 @@
     <string name="max_gpu_saved_desc">以前の保存から保持され、各起動時に適用されます: %1$s。上記のデフォルトでは、このセッションのみが終了し、保存された状態は終了しません。</string>
     <string name="max_gpu_dynamic_min">ミニマム・ダイナミック</string>
     <string name="max_gpu_dynamic_max">最大・ダイナミック</string>
+    <string name="max_gpu_monitor_only_detail">このカーネルが公開する唯一のグラフィックス ノードは帯域幅と QoS モニターです。これらは GPU クロックを伝送しないため、周波数を設定する必要はありません。 GPU であるかのようにメモリ ガバナーを書き込む代わりに、制御はオフのままになります。</string>
+    <string name="max_gpu_danger_title">GPU の制限を書き込みますか?</string>
+    <string name="max_gpu_danger_body">これにより、グラフィックス周波数ウィンドウとガバナーが GPU ノードに書き込まれます。ドライバーが拒否したウィンドウやガバナが追いつかないと、インターフェイス全体が途切れたり、パネルがフリーズしたりする可能性があります。アプリは、ユーザーがこれを一度受け入れたことを記録します。適用した値に対する責任はユーザーにあります。</string>
+    <string name="max_gpu_danger_action">理解しました - 申請してください</string>
+    <string name="max_gpu_state_title">州内の時間</string>
+    <string name="max_gpu_state_desc">GPU\ の時間が実際にどのようになったのか。カーネルによって動作周波数ごとにカウントされます。現在のクロックのスナップショットではありません。</string>
+    <string name="max_gpu_state_hidden_share">%1$s一緒に</string>
+    <string name="max_gpu_state_hidden">%1$dは 1%% 未満を示します</string>
 </resources>

@@ -99,4 +99,12 @@
     <string name="max_gpu_saved_desc">আগের সংরক্ষণ থেকে রাখা এবং প্রতিটি বুটে প্রয়োগ করা হয়েছে: %1$s। উপরে ডিফল্ট শুধুমাত্র এই অধিবেশন শেষ হয়, সংরক্ষিত অবস্থা কখনও.</string>
     <string name="max_gpu_dynamic_min">ন্যূনতম · গতিশীল</string>
     <string name="max_gpu_dynamic_max">সর্বোচ্চ · গতিশীল</string>
+    <string name="max_gpu_monitor_only_detail">এই কার্নেল শুধুমাত্র যে গ্রাফিক্স নোডগুলিকে প্রকাশ করে তা হল ব্যান্ডউইথ এবং QoS মনিটর: তারা কোন GPU ঘড়ি বহন করে না, তাই সেট করার কোন ফ্রিকোয়েন্সি নেই। একটি মেমরি গভর্নর লেখার পরিবর্তে নিয়ন্ত্রণ বন্ধ থাকে যেন এটি GPU ছিল।</string>
+    <string name="max_gpu_danger_title">GPU সীমা লিখ?</string>
+    <string name="max_gpu_danger_body">এটি গ্রাফিক্স ফ্রিকোয়েন্সি উইন্ডো এবং গভর্নরকে GPU নোডগুলিতে লেখে। একটি উইন্ডো যা ড্রাইভার প্রত্যাখ্যান করে, বা একটি গভর্নর যা ধরে রাখতে পারে না, পুরো ইন্টারফেসটি তোতলাতে পারে বা প্যানেলটি হিমায়িত করতে পারে। অ্যাপটি রেকর্ড করে যে আপনি এটি একবার গ্রহণ করেছেন — আপনি যে মানগুলি প্রয়োগ করেন তার দায়িত্ব আপনার।</string>
+    <string name="max_gpu_danger_action">আমি বুঝতে পারি - প্রয়োগ করুন</string>
+    <string name="max_gpu_state_title">রাজ্যে সময়</string>
+    <string name="max_gpu_state_desc">GPU\ এর সময় আসলে কোথায় গেছে, কার্নেল দ্বারা প্রতি অপারেটিং ফ্রিকোয়েন্সি দ্বারা গণনা করা হয়েছে — বর্তমান ঘড়ির একটি স্ন্যাপশট নয়।</string>
+    <string name="max_gpu_state_hidden_share">%1$s একসাথে</string>
+    <string name="max_gpu_state_hidden">%1$d রাজ্য 1%% এর নিচে</string>
 </resources>

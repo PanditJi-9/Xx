@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_license_strings.xml -->
+<resources>
+    <string name="max_license_title">లైసెన్స్</string>
+    <string name="max_license_subtitle">ఒక కీ, ఈ పరికరం, ఖాతా లేదు</string>
+    <string name="max_license_help_body">మీరు దాన్ని నమోదు చేసినప్పుడు, ఒక కీ ఆన్‌లైన్‌లో ఒకసారి తనిఖీ చేయబడుతుంది. అప్పటి నుండి సర్వర్ సంతకం చేసిన సర్టిఫికేట్ సమయం ముగిసే వరకు ఆఫ్‌లైన్‌లో పని చేస్తుంది — మీరు స్క్రీన్ తెరిచిన ప్రతిసారీ యాప్ ఇంటికి కాల్ చేయదు. సర్టిఫికేట్ ఈ పరికరం యొక్క యాదృచ్ఛిక ఇన్‌స్టాల్ ఐడికి కట్టుబడి ఉంటుంది, కాబట్టి యాప్ డేటాను మరొక ఫోన్‌కి కాపీ చేయడం వలన దానితో లైసెన్స్ ఉండదు మరియు మీరు ఫోన్‌లను మార్చినట్లయితే యజమాని ఆ బైండింగ్‌ని ప్యానెల్ నుండి రీసెట్ చేయవచ్చు.</string>
+    <string name="max_license_status_section">స్థితి</string>
+    <string name="max_license_status_active">చురుకుగా</string>
+    <string name="max_license_status_expired">గడువు ముగిసింది</string>
+    <string name="max_license_status_none">యాక్టివేట్ కాలేదు</string>
+    <string name="max_license_active_detail">మిగిలినవి: %1$d రోజులు</string>
+    <string name="max_license_expired_detail">ఈ కీ యొక్క సమయం ముగిసింది. కొత్త కీ యాక్సెస్‌ని పునరుద్ధరిస్తుంది.</string>
+    <string name="max_license_none_detail">చెల్లింపు ఉపరితలాలను అన్‌లాక్ చేయడానికి మీరు అందుకున్న కీని నమోదు చేయండి.</string>
+    <string name="max_license_promo_active">%1$s వరకు అందరికీ ఉచితం</string>
+    <string name="max_license_plan_title">ప్లాన్ చేయండి</string>
+    <string name="max_license_devices_title">పరికరాలు</string>
+    <string name="max_license_devices_detail">%2$dలో %1$d ఉపయోగించబడింది</string>
+    <string name="max_license_device_id_title">ఈ పరికరం</string>
+    <string name="max_license_device_id_detail">%1$s</string>
+    <string name="max_license_key_section">యాక్టివేషన్</string>
+    <string name="max_license_key_label">లైసెన్స్ కీ</string>
+    <string name="max_license_key_placeholder">MAXM-XXXXX-XXXX-XXXXXX-XXXXXX-XX</string>
+    <string name="max_license_key_helper">డాష్‌లు మరియు క్యాపిటలైజేషన్ పట్టింపు లేదు — మీరు అందుకున్నట్లుగా అతికించండి.</string>
+    <string name="max_license_activate">యాక్టివేట్ చేయండి</string>
+    <string name="max_license_activating">కీని తనిఖీ చేస్తోంది…</string>
+    <string name="max_license_refresh">ఇప్పుడే తనిఖీ చేయండి</string>
+    <string name="max_license_activated">యాక్టివేట్ చేయబడింది. ఈ పరికరం ఇప్పుడు మీ కీకి లింక్ చేయబడింది.</string>
+    <string name="max_license_error_invalid_key">ఈ కీ పూర్తిగా కనిపించడం లేదు. దాన్ని తనిఖీ చేసి, మళ్లీ ప్రయత్నించండి.</string>
+    <string name="max_license_error_not_configured">ఈ బిల్డ్ లైసెన్స్ సర్వర్ కాన్ఫిగర్ చేయబడలేదు.</string>
+    <string name="max_license_error_network">కనెక్షన్ లేదు. కీ ఒకసారి తనిఖీ చేయబడి, ఆఫ్‌లైన్‌లో పని చేస్తుంది.</string>
+    <string name="max_license_error_timeout">లైసెన్స్ సర్వర్ సకాలంలో సమాధానం ఇవ్వలేదు. మళ్లీ ప్రయత్నించండి.</string>
+    <string name="max_license_error_server">లైసెన్స్ సర్వర్ లోపంతో సమాధానం ఇచ్చింది. తర్వాత మళ్లీ ప్రయత్నించండి.</string>
+    <string name="max_license_error_client">లైసెన్స్ ఫంక్షన్ సర్వర్‌లో అమలు చేయబడలేదు.</string>
+    <string name="max_license_error_format">సర్వర్ సమాధానం అర్థం కాలేదు.</string>
+    <string name="max_license_error_expired">ఈ కీ గడువు ముగిసింది.</string>
+    <string name="max_license_error_not_found">ఈ కీ తెలియదు.</string>
+    <string name="max_license_error_revoked">ఈ కీ ఉపసంహరించబడింది.</string>
+    <string name="max_license_error_device_limit">ఈ కీ దాని పరికర పరిమితిని చేరుకుంది. పరికరాన్ని రీసెట్ చేయమని అడగండి.</string>
+    <string name="max_license_error_device_unknown">ఈ పరికరం ఇంకా కీకి లింక్ చేయబడలేదు. ముందుగా దీన్ని ఇక్కడ యాక్టివేట్ చేయండి.</string>
+    <string name="max_license_error_device_removed">ఈ పరికరం యజమాని ద్వారా కీ నుండి తీసివేయబడింది.</string>
+    <string name="max_license_error_rate_limited">ఈ కనెక్షన్ నుండి చాలా ఎక్కువ ప్రయత్నాలు జరిగాయి — కొన్ని నిమిషాలు వేచి ఉండి, ఆపై మళ్లీ ప్రయత్నించండి.</string>
+    <string name="max_license_error_unknown">ఏదో తప్పు జరిగింది. కారణం డయాగ్నోస్టిక్స్‌లో నమోదు చేయబడింది.</string>
+    <string name="max_license_gate_title">ఈ ఉపరితలానికి లైసెన్స్ అవసరం</string>
+    <string name="max_license_gate_detail">ఇది ఒక కీతో చేర్చబడింది. ఒక కీ ఈ పరికరాన్ని కవర్ చేస్తుంది మరియు దానిని నమోదు చేయడానికి ఒక నిమిషం పడుతుంది.</string>
+    <string name="max_feature_off_title">ఆఫ్ చేయబడింది</string>
+    <string name="max_feature_off_detail">నియంత్రణ ప్యానెల్ ఈ ఉపరితలాన్ని ఆఫ్ చేసింది. ఇది మళ్లీ ప్రారంభించబడిన వెంటనే తిరిగి వస్తుంది.</string>
+    <string name="max_license_gate_action">లైసెన్స్ సెట్టింగ్‌లను తెరవండి</string>
+    <string name="max_license_gate_subscribe">ఇప్పుడే సభ్యత్వం పొందండి</string>
+    <string name="max_license_subscription_section">చందా</string>
+    <string name="max_license_subscription_open">చందా పేజీని తెరవండి</string>
+</resources>

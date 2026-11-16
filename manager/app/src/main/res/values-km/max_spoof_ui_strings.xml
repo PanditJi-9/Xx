@@ -51,4 +51,14 @@
     <string name="copg_tweak_kso_title">បើកអេក្រង់</string>
     <string name="copg_tweak_kso_desc">អនុវត្តការបង្កើនល្បឿនរក្សាអេក្រង់ COPG ទៅកម្មវិធីនេះ។ រក្សាទុកនៅទីនេះ សរសេរទៅម៉ាស៊ីនដោយ ពិនិត្យ និងអនុវត្តនៅក្នុងផ្ទាំង ស្ពូល។</string>
     <string name="copg_tweak_needs_device">ត្រូវការឧបករណ៍សម្រាប់កម្មវិធីនេះជាមុនសិន នៅក្នុងផ្ទាំង Spoof ។</string>
+    <string name="spoof_engine_unmeasured">ស្ថានភាព​ម៉ាស៊ីន​មិន​ត្រូវ​បាន​វាស់​ទេ៖ ការ​ចូល​ប្រើ​ជា root មិន​ត្រូវ​បាន​ផ្តល់​នៅ​ឡើយ​ទេ។ ផ្តល់សិទ្ធិជា root បន្ទាប់មកបើកផ្ទាំងនេះឡើងវិញ។</string>
+    <string name="spoof_engine_config_missing">COPG ត្រូវបានដំឡើង ប៉ុន្តែឯកសារកំណត់របស់វា (COPG.json) បាត់។ ការដាក់ពាក្យត្រូវបានបដិសេធរហូតដល់ម៉ូឌុលផ្តល់វាម្តងទៀត។</string>
+    <string name="spoof_engine_config_unreadable">COPG ត្រូវបានដំឡើង ប៉ុន្តែឯកសារកំណត់រចនាសម្ព័ន្ធរបស់វាមិនអាចអានបាន JSON។ ការដាក់ពាក្យត្រូវបានបដិសេធរហូតដល់ឯកសារត្រូវបានជួសជុល។</string>
+    <string name="spoof_imei_spoof">ការក្លែងបន្លំ IMEI</string>
+    <string name="spoof_imei_spoof_desc">បង្ហាញកម្មវិធីនេះនូវ IMEI ផ្សេង។ ត្រូវការម៉ូឌុល Max Manager បើកនៅក្នុង LSPosed ជាមួយកម្មវិធីនេះក្នុងវិសាលភាពរបស់វា។ ចាប់ផ្តើមកម្មវិធីឡើងវិញបន្ទាប់ពីបើកវា។</string>
+    <string name="spoof_imei_active">ការបង្ហាញកម្មវិធីនេះ៖ %1$s</string>
+    <string name="spoof_imei_summary">ការក្លែងបន្លំ IMEI</string>
+    <string name="spoof_imei_regenerate">IMEI ចៃដន្យថ្មី។</string>
+    <string name="spoof_imei_regenerate_desc">បង្កើត IMEI ត្រឹមត្រូវមួយផ្សេងទៀតសម្រាប់កម្មវិធីនេះ។ ចាប់ផ្តើមកម្មវិធីឡើងវិញដើម្បីមើលវា។</string>
+    <string name="spoof_imei_module_inactive">ម៉ូឌុល Max Manager មិនត្រូវបានបើកនៅក្នុង LSPosed ទេ ដូច្នេះកម្មវិធីនៅតែឃើញ IMEI ពិតប្រាកដ។ បើកដំណើរការម៉ូឌុលនៅក្នុង LSposed បន្ថែមកម្មវិធីនេះទៅវិសាលភាពរបស់វា បន្ទាប់មកបើកអេក្រង់នេះឡើងវិញ។</string>
 </resources>

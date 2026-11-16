@@ -10,4 +10,6 @@
     <string name="studio_display">展示</string>
     <string name="studio_power">電源選項</string>
     <string name="studio_settings">設定</string>
+    <string name="audio_dsp_live">DSP直播</string>
+    <string name="max_audio_session_label">音频会话#%1$d</string>
 </resources>

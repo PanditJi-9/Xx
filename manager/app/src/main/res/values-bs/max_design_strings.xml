@@ -13,4 +13,23 @@
     <string name="max_expand_section">Prikaži detalje</string>
     <string name="max_collapse_section">Sakrij detalje</string>
     <string name="max_trust_loading">Čitanje…</string>
+    <string name="max_gov_title">Ko sada vlada</string>
+    <string name="max_gov_separator">" › "</string>
+    <string name="max_gov_order_note">Fiksni redosled: viša prečka blokira nižu. Nikada ne mijenja koja politika pobjeđuje.</string>
+    <string name="max_gov_open_details">Aktivni držači</string>
+    <string name="max_gov_active_title">Ko ima kontrolu</string>
+    <string name="max_gov_none">Trenutno nijedna politika nema kontrolu nad hardverom.</string>
+    <string name="max_gov_count">Aktivni kontrolni zakupi: %1$d</string>
+    <string name="max_gov_requested">Traženo: %1$s</string>
+    <string name="max_gov_owner_recovery">Oporavak</string>
+    <string name="max_gov_owner_safety">Termička sigurnost</string>
+    <string name="max_gov_owner_per_app">Profil aplikacije</string>
+    <string name="max_gov_owner_max_ai">Max AI</string>
+    <string name="max_gov_owner_global">Globalni profil</string>
+    <string name="max_gov_owner_system">Sistem</string>
+    <string name="max_gov_owner_a11y">%1$s posjeduje hardversku kontrolu</string>
+    <string name="max_gov_now_none">Trenutno nema automatiziranog vlasnika – kontrola ostaje vaša</string>
+    <string name="max_gov_now_one">%1$s drži kontrolu</string>
+    <string name="max_gov_now_many">%1$s drži %2$d kontrole</string>
+    <string name="devinfo_details">Detalji</string>
 </resources>

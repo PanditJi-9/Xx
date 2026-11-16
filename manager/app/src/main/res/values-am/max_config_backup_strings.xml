@@ -18,4 +18,10 @@
     <string name="max_cfg_section_appearance">መልክ እና በይነገጽ</string>
     <string name="max_cfg_section_app_prefs">የመተግበሪያ ምርጫዎች እና ቋንቋ</string>
     <string name="max_cfg_restore_merge_note">ምርጫዎችን ወደነበረበት መመለስ ውህዶች፡ በፋይሉ ውስጥ ያሉ ቁልፎች ተጽፈዋል፣ እና ቁልፎች እንደነበሩ መቆየታቸውን አይጠቅስም። ምንም ነገር አልጸዳም።</string>
+    <string name="max_cfg_diff_title">%1$d የተቀመጡ ቅንብሮች ከዚህ መሳሪያ ይለያያሉ።</string>
+    <string name="max_cfg_diff_line">%1$s: %2$s → %3$s</string>
+    <string name="max_cfg_diff_unset">አልተዘጋጀም</string>
+    <string name="max_cfg_diff_more">እና %1$d ተጨማሪ</string>
+    <string name="max_cfg_diff_applist">%1$d የመተግበሪያ ዝርዝር መስመሮች ታክለዋል፣ %2$d ተወግደዋል - ሙሉው ዝርዝር ተተክቷል እንጂ አልተዋሃደም።</string>
+    <string name="max_cfg_diff_prefs">%1$d የምርጫ ቁልፎች ይለያያሉ - የተዋሃዱ እንጂ ያልተጸዳዱ።</string>
 </resources>

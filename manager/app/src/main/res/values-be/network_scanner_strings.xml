@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/network_scanner_strings.xml -->
+<resources>
+    <string name="network_scanner_title">Сканер лакальнай сеткі</string>
+    <string name="network_scanner_subtitle">Ваш адрас, шлюз, які ён дасягае, і якія суседзі адказалі.</string>
+    <string name="max_role_network_scanner">Счытвае сетку, у якой вы знаходзіцеся - без захопу, без root.</string>
+    <string name="ns_no_network">Няма падключэння да сеткі.</string>
+    <string name="ns_interface">Інтэрфейс</string>
+    <string name="ns_address">Адрас</string>
+    <string name="ns_gateway">Шлюз</string>
+    <string name="ns_dns">DNS</string>
+    <string name="ns_mac">MAC</string>
+    <string name="ns_transport_wifi">Wi-Fi</string>
+    <string name="ns_transport_ethernet">Ethernet</string>
+    <string name="ns_transport_cellular">Сотавы</string>
+    <string name="ns_transport_other">Іншае</string>
+    <string name="ns_sources_title">Адкуль гэта</string>
+    <string name="ns_sources_body">Адрасы і шлюз чытаюцца з уласцівасцей спасылак платформы. Табліца суседзяў счытваецца з ARP-кэша ядра, таму ўтрымлівае толькі тое, з чым гэтая прылада нядаўна размаўляла — пустая табліца не азначае пустую сетку.</string>
+    <string name="ns_refresh">Абнавіць</string>
+    <string name="ns_probe">Праверце агульныя парты</string>
+    <string name="ns_probe_stop">Стоп</string>
+    <string name="ns_probe_progress">Зандзіраванне %1$d з %2$d</string>
+    <string name="ns_probe_note">Адпраўляе TCP-злучэнне на парты 22, 80, 443, 5000 і 5555 праз гэты /24. Паведамляецца пра порт, які адказвае; маўчанне не з\'яўляецца доказам адсутнасці гаспадара.</string>
+    <string name="ns_neighbours">Знаёмыя суседзі</string>
+    <string name="ns_neighbours_note">З /proc/net/arp — толькі для чытання.</string>
+    <string name="ns_neighbours_empty">Суседзяў пакуль не ведаюць.</string>
+    <string name="ns_ports_value">Парты %1$s</string>
+</resources>

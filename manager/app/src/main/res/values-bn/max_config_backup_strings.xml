@@ -18,4 +18,10 @@
     <string name="max_cfg_section_appearance">চেহারা এবং ইন্টারফেস</string>
     <string name="max_cfg_section_app_prefs">অ্যাপের পছন্দ এবং ভাষা</string>
     <string name="max_cfg_restore_merge_note">রিস্টোরিং প্রেফারেন্স মার্জ: ফাইলে উপস্থিত কীগুলি লেখা হয় এবং কীগুলি যেমন আছে তেমন থাকার কথা উল্লেখ করে না। কিছুই পরিষ্কার করা হয় না.</string>
+    <string name="max_cfg_diff_title">%1$d সংরক্ষিত সেটিংস এই ডিভাইস থেকে আলাদা</string>
+    <string name="max_cfg_diff_line">%1$s: %2$s → %3$s</string>
+    <string name="max_cfg_diff_unset">সেট না</string>
+    <string name="max_cfg_diff_more">এবং %1$d আরো</string>
+    <string name="max_cfg_diff_applist">%1$d অ্যাপ-তালিকা লাইন যোগ করা হয়েছে, %2$d সরানো হয়েছে — পুরো তালিকাটি প্রতিস্থাপিত হয়েছে, মার্জ করা হয়নি।</string>
+    <string name="max_cfg_diff_prefs">%1$d পছন্দের কীগুলি আলাদা — মার্জ করা হয়েছে, মোছা হয়নি৷</string>
 </resources>

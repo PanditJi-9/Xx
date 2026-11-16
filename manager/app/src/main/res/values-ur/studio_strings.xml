@@ -10,4 +10,6 @@
     <string name="studio_display">ڈسپلے</string>
     <string name="studio_power">پاور کے اختیارات</string>
     <string name="studio_settings">ترتیبات</string>
+    <string name="audio_dsp_live">ڈی ایس پی زندہ باد</string>
+    <string name="max_audio_session_label">آڈیو سیشن #%1$d</string>
 </resources>

@@ -53,4 +53,8 @@
     <string name="max_title_get_started">Орнату</string>
     <string name="max_hub_audio">Аудио</string>
     <string name="max_hub_audio_desc">Шығару құрылғылары, ағындар және жарияланған әсерлер</string>
+    <string name="control_tools_live">Тірі беттер</string>
+    <string name="control_tools_advanced">Жетілдірілген құралдар</string>
+    <string name="control_tools_system">Жүйе құралдары</string>
+    <string name="control_tools_appearance">Сыртқы түрі</string>
 </resources>

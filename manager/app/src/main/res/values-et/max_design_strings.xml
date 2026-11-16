@@ -13,4 +13,23 @@
     <string name="max_expand_section">Kuva üksikasjad</string>
     <string name="max_collapse_section">Peida üksikasjad</string>
     <string name="max_trust_loading">Lugemine…</string>
+    <string name="max_gov_title">Kes praegu valitseb</string>
+    <string name="max_gov_separator">"›"</string>
+    <string name="max_gov_order_note">Fikseeritud järjekord: kõrgem pulk blokeerib madalama. See ei muuda kunagi, milline poliitika võidab.</string>
+    <string name="max_gov_open_details">Aktiivsed hoidjad</string>
+    <string name="max_gov_active_title">Kellel on kontroll</string>
+    <string name="max_gov_none">Ükski poliitika ei oma praegu riistvaralist juhtimist.</string>
+    <string name="max_gov_count">Aktiivsed juhtliisingud: %1$d</string>
+    <string name="max_gov_requested">Soovitud: %1$s</string>
+    <string name="max_gov_owner_recovery">Taastumine</string>
+    <string name="max_gov_owner_safety">Soojusohutus</string>
+    <string name="max_gov_owner_per_app">Rakenduse profiil</string>
+    <string name="max_gov_owner_max_ai">Max AI</string>
+    <string name="max_gov_owner_global">Globaalne profiil</string>
+    <string name="max_gov_owner_system">Süsteem</string>
+    <string name="max_gov_owner_a11y">%1$s omab riistvarajuhtimist</string>
+    <string name="max_gov_now_none">Praegu pole automatiseeritud omanikku – juhtimine jääb teie omaks</string>
+    <string name="max_gov_now_one">%1$s hoiab juhtnuppu</string>
+    <string name="max_gov_now_many">%1$s sisaldab %2$d juhtnuppe</string>
+    <string name="devinfo_details">Üksikasjad</string>
 </resources>

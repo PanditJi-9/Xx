@@ -18,4 +18,10 @@
     <string name="max_cfg_section_appearance">Aparença i interfície</string>
     <string name="max_cfg_section_app_prefs">Preferències i idioma de l\'aplicació</string>
     <string name="max_cfg_restore_merge_note">Restauració de les combinacions de preferències: les claus presents al fitxer s\'escriuen i les claus que no esmenta es mantenen tal com estan. No s\'esborra res.</string>
+    <string name="max_cfg_diff_title">%1$d La configuració desada és diferent d\'aquest dispositiu</string>
+    <string name="max_cfg_diff_line">%1$s: %2$s → %3$s</string>
+    <string name="max_cfg_diff_unset">no establert</string>
+    <string name="max_cfg_diff_more">i %1$d més</string>
+    <string name="max_cfg_diff_applist">%1$d S\'han afegit línies de llista d\'aplicacions, %2$d s\'han eliminat: tota la llista es substitueix, no es fusiona.</string>
+    <string name="max_cfg_diff_prefs">%1$d Les tecles de preferència són diferents: fusionades, no esborrades.</string>
 </resources>

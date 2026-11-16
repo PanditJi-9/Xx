@@ -69,4 +69,25 @@
     <string name="max_perms_entry_title">สิทธิ์และการทำงานของแอป</string>
     <string name="max_perms_entry_desc">ดูว่าแอปนี้ประกาศอะไรและสิ่งที่ระบบอนุญาตจริงๆ</string>
     <string name="max_perms_entry_action">เปิดสิทธิ์</string>
+    <string name="max_perms_manifest_title">สรุปประจักษ์</string>
+    <string name="max_perms_manifest_desc">อ่านจากตัวจัดการแพ็คเกจ: เวอร์ชัน ช่วง SDK ส่วนประกอบ และจำนวนที่จะส่งออก ส่วนประกอบที่ส่งออกสามารถเริ่มต้นได้โดยแอปอื่น</string>
+    <string name="max_perms_manifest_version">เวอร์ชัน</string>
+    <string name="max_perms_manifest_sdk">ช่วง SDK</string>
+    <string name="max_perms_manifest_location">สถานที่ติดตั้ง</string>
+    <string name="max_perms_manifest_location_auto">อัตโนมัติ</string>
+    <string name="max_perms_manifest_location_internal">ที่เก็บข้อมูลภายในเท่านั้น</string>
+    <string name="max_perms_manifest_location_external">ชอบภายนอก</string>
+    <string name="max_perms_manifest_components">ส่วนประกอบ</string>
+    <string name="max_perms_manifest_components_order">กิจกรรม · บริการ · ผู้รับ · ผู้ให้บริการ</string>
+    <string name="max_perms_manifest_exported">ส่วนประกอบที่ส่งออก</string>
+    <string name="max_perms_manifest_splits">แยก APK</string>
+    <string name="max_perms_manifest_debug">แก้ไขข้อบกพร่องได้</string>
+    <string name="max_perms_features_title">คุณสมบัติที่ประกาศไว้</string>
+    <string name="max_perms_features_desc">สิ่งที่แพ็คเกจต้องการจากอุปกรณ์ เปรียบเทียบกับสิ่งที่อุปกรณ์นี้โฆษณา ฟีเจอร์ที่จำเป็นที่ขาดหายไปในที่นี้มักจะหมายความว่าแอปจะทำงานได้ไม่สมบูรณ์ — เป็นการอ้างสิทธิ์จากผู้จัดการแพ็คเกจ ไม่ใช่การคาดเดา</string>
+    <string name="max_perms_features_loading">กำลังอ่านคุณสมบัติที่ประกาศของแพ็คเกจ...</string>
+    <string name="max_perms_features_none">แพ็คเกจประกาศว่าไม่มีคุณสมบัติที่จำเป็น</string>
+    <string name="max_perms_features_required">ที่จำเป็น</string>
+    <string name="max_perms_features_unsupported">ไม่ได้อยู่ในอุปกรณ์นี้</string>
+    <string name="max_perms_manifest_none">ไม่ได้รายงานโดยผู้จัดการแพ็คเกจ</string>
+    <string name="max_perms_manifest_unknown">ไม่ทราบ</string>
 </resources>

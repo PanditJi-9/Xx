@@ -10,4 +10,6 @@
     <string name="studio_display">Ցուցադրել</string>
     <string name="studio_power">Էլեկտրաէներգիայի ընտրանքներ</string>
     <string name="studio_settings">Կարգավորումներ</string>
+    <string name="audio_dsp_live">DSP ուղիղ եթերում</string>
+    <string name="max_audio_session_label">Աուդիո նիստ #%1$d</string>
 </resources>

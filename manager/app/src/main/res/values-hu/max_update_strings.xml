@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_update_strings.xml -->
+<resources>
+    <string name="update_dialog_title">Frissítés elérhető</string>
+    <string name="update_dialog_title_required">Frissítés szükséges</string>
+    <string name="update_required_notice">Ez a frissítés szükséges a MaxManager használatának folytatásához. Telepítse, majd nyissa meg újra az alkalmazást.</string>
+    <string name="update_dialog_body">A %1$s verzió elérhető. Ön itt van: %2$s.</string>
+    <string name="update_block_title">A folytatáshoz frissítés szükséges</string>
+    <string name="update_block_body">Ez a build (%1$s) már nem támogatott. Frissítse a %2$s számra a MaxManager használatának folytatásához.</string>
+    <string name="update_block_body_no_release">Ez a build (%1$s) már nem támogatott.</string>
+    <string name="update_release_notes_label">Mi az új</string>
+    <string name="update_size">Letöltés mérete: %1$s</string>
+    <string name="update_button_now">Frissítse most</string>
+    <string name="update_button_later">Később</string>
+    <string name="update_button_close">Közeli</string>
+    <string name="update_button_open_page">Nyissa meg a letöltési oldalt</string>
+    <string name="update_state_downloading">Letöltés… %1$d%%</string>
+    <string name="update_state_downloading_unknown">Letöltés…</string>
+    <string name="update_state_installing">Telepítés…</string>
+    <string name="update_error_network">Nem sikerült elérni a frissítési szervert. Ellenőrizze a kapcsolatot, és próbálja újra.</string>
+    <string name="update_error_http">A frissítési szerver hibával válaszolt. Próbálja újra később.</string>
+    <string name="update_error_format">A frissítési információ nem olvasható.</string>
+    <string name="update_error_too_large">A frissítési információ a vártnál nagyobb volt, ezért elvetették.</string>
+    <string name="update_error_integrity">A letöltött fájl nem egyezik az ellenőrző összegével, ezért törölték.</string>
+    <string name="update_error_install">A telepítés nem sikerült. Próbáld újra.</string>
+    <string name="update_error_not_configured">Ebben a buildben nincs konfigurálva frissítési csatorna.</string>
+    <string name="update_maintenance_title">Átmenetileg nem elérhető</string>
+    <string name="update_maintenance_body">MaxManager átmenetileg nem elérhető. Kérjük, próbálja újra rövidesen.</string>
+    <string name="update_check_title">Ellenőrizze a frissítéseket</string>
+    <string name="update_check_supporting">Jelenlegi verzió: %1$s</string>
+    <string name="update_check_updated">Frissítés elérhető.</string>
+    <string name="update_check_uptodate">Ön a legújabb verziót használja.</string>
+    <string name="update_check_failed">Nem sikerült ellenőrizni a frissítéseket.</string>
+    <string name="update_check_not_configured">Ebben a buildben nincs konfigurálva frissítési csatorna.</string>
+    <string name="update_released_label">Megjelenés dátuma: %1$s</string>
+    <string name="update_check_none_published">Még nem tettek közzé frissítést a vezérlőpultról.</string>
+    <string name="update_check_link_missing">Frissítés megjelent, de a letöltési hivatkozás hiányzik.</string>
+</resources>

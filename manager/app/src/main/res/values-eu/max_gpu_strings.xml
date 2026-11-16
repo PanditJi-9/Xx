@@ -99,4 +99,11 @@
     <string name="max_gpu_saved_desc">Lehenago gordeta eta abio bakoitzean aplikatuta: %1$s. Goiko lehenetsiak saio hau bakarrik amaitzen du, inoiz ez gordetako egoera.</string>
     <string name="max_gpu_dynamic_min">Gutxieneko · dinamikoa</string>
     <string name="max_gpu_dynamic_max">Gehienezko · dinamikoa</string>
+    <string name="max_gpu_monitor_only_detail">Nukleo honek erakusten dituen nodo grafiko bakarrak banda zabalera eta QoS monitoreak dira: ez dute GPU erlojurik eramaten, beraz, ez dago ezartzeko maiztasunik. Kontrola desaktibatuta geratzen da memoria gobernatzailea idatzi beharrean GPU izango balitz bezala.</string>
+    <string name="max_gpu_danger_title">GPU mugak idatzi?</string>
+    <string name="max_gpu_danger_body">Honek maiztasun grafikoaren leihoa eta gobernatzailea GPU nodoetan idazten ditu. Gidariak baztertzen duen leiho batek edo aurrera jarraitu ezin duen gobernadore batek interfaze osoa totelkatu edo panela izoztu dezake. Aplikazioak hau behin onartu duzula erregistratzen du - aplikatzen dituzun balioen erantzukizuna zurea da.</string>
+    <string name="max_gpu_danger_action">Ulertzen dut — aplikatu</string>
+    <string name="max_gpu_state_title">Denbora egoeran</string>
+    <string name="max_gpu_state_desc">GPU\-ren denbora benetan non joan zen, kernelaren arabera zenbatuta, funtzionamendu-maiztasun bakoitzeko, ez uneko erlojuaren argazki bat.</string>
+    <string name="max_gpu_state_hidden_share">%1$s elkarrekin</string>
 </resources>

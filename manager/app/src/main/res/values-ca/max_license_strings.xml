@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_license_strings.xml -->
+<resources>
+    <string name="max_license_title">llicència</string>
+    <string name="max_license_subtitle">Una clau, aquest dispositiu, cap compte</string>
+    <string name="max_license_help_body">Una clau es comprova en línia una vegada, quan la introduïu. A partir d\'aleshores, el certificat signat del servidor funciona fora de línia fins que s\'acaba el seu temps; l\'aplicació no truca a casa cada vegada que obriu una pantalla. El certificat està lligat a l\'identificador d\'instal·lació aleatòria d\'aquest dispositiu, de manera que copiar les dades de l\'aplicació a un altre telèfon no comporta la llicència i el propietari pot restablir aquesta vinculació des del tauler si canvieu de telèfon.</string>
+    <string name="max_license_status_section">Estat</string>
+    <string name="max_license_status_active">Actius</string>
+    <string name="max_license_status_expired">Caducat</string>
+    <string name="max_license_status_none">No activat</string>
+    <string name="max_license_active_detail">Restant: %1$d dies</string>
+    <string name="max_license_expired_detail">S\'ha acabat el temps d\'aquesta clau. Una nova clau renova l\'accés.</string>
+    <string name="max_license_none_detail">Introdueix la clau que has rebut per desbloquejar les superfícies de pagament.</string>
+    <string name="max_license_promo_active">Gratuït per a tothom fins a les %1$s</string>
+    <string name="max_license_plan_title">Pla</string>
+    <string name="max_license_devices_title">Dispositius</string>
+    <string name="max_license_devices_detail">%1$d de %2$d utilitzat</string>
+    <string name="max_license_device_id_title">Aquest dispositiu</string>
+    <string name="max_license_device_id_detail">%1$s</string>
+    <string name="max_license_key_section">Activació</string>
+    <string name="max_license_key_label">Clau de llicència</string>
+    <string name="max_license_key_placeholder">MAXM-XXXX-XXXX-XXXX-XXXX-XX</string>
+    <string name="max_license_key_helper">Els guions i les majúscules no importen: enganxeu-lo tal com l\'heu rebut.</string>
+    <string name="max_license_activate">Activar</string>
+    <string name="max_license_activating">S\'està comprovant la clau...</string>
+    <string name="max_license_refresh">Comproveu ara</string>
+    <string name="max_license_activated">Activat. Ara aquest dispositiu està enllaçat a la teva clau.</string>
+    <string name="max_license_error_invalid_key">Aquesta clau no sembla completa. Comprova-ho i torna-ho a provar.</string>
+    <string name="max_license_error_not_configured">Aquesta compilació no té cap servidor de llicències configurat.</string>
+    <string name="max_license_error_network">Sense connexió. La clau es comprova una vegada i després funciona fora de línia.</string>
+    <string name="max_license_error_timeout">El servidor de llicències no va respondre a temps. Torna-ho a provar.</string>
+    <string name="max_license_error_server">El servidor de llicències va respondre amb un error. Torna-ho a provar més tard.</string>
+    <string name="max_license_error_client">La funció de llicència no està desplegada al servidor.</string>
+    <string name="max_license_error_format">La resposta del servidor no es va entendre.</string>
+    <string name="max_license_error_expired">Aquesta clau ha caducat.</string>
+    <string name="max_license_error_not_found">Aquesta clau no es coneix.</string>
+    <string name="max_license_error_revoked">Aquesta clau ha estat revocada.</string>
+    <string name="max_license_error_device_limit">Aquesta clau ha arribat al límit de dispositiu. Demaneu un restabliment del dispositiu.</string>
+    <string name="max_license_error_device_unknown">Aquest dispositiu encara no està enllaçat a la clau. Activeu-lo aquí primer.</string>
+    <string name="max_license_error_device_removed">El propietari va eliminar aquest dispositiu de la clau.</string>
+    <string name="max_license_error_rate_limited">Hi ha massa intents des d\'aquesta connexió: espereu uns minuts i torneu-ho a provar.</string>
+    <string name="max_license_error_unknown">Alguna cosa va fallar. El motiu es va registrar a Diagnòstic.</string>
+    <string name="max_license_gate_title">Aquesta superfície necessita llicència</string>
+    <string name="max_license_gate_detail">S\'inclou amb una clau. Una clau cobreix aquest dispositiu i entrar-hi triga un minut.</string>
+    <string name="max_feature_off_title">Apagat</string>
+    <string name="max_feature_off_detail">El tauler de control ha desactivat aquesta superfície. Torna tan bon punt es torna a activar.</string>
+    <string name="max_license_gate_action">Obriu la configuració de la llicència</string>
+    <string name="max_license_gate_subscribe">Subscriu-te ara</string>
+    <string name="max_license_subscription_section">Subscripció</string>
+    <string name="max_license_subscription_open">Obriu la pàgina de subscripció</string>
+</resources>

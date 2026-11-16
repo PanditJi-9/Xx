@@ -69,4 +69,25 @@
     <string name="max_perms_entry_title">Permisos i operacions de l\'aplicació</string>
     <string name="max_perms_entry_desc">Vegeu què declara aquesta aplicació i què permet realment el sistema</string>
     <string name="max_perms_entry_action">Permisos oberts</string>
+    <string name="max_perms_manifest_title">Resum del manifest</string>
+    <string name="max_perms_manifest_desc">Llegeix des del gestor de paquets: versió, rang SDK, components i quants d\'ells s\'exporten. Altres aplicacions poden iniciar un component exportat.</string>
+    <string name="max_perms_manifest_version">Versió</string>
+    <string name="max_perms_manifest_sdk">Interval d\'SDK</string>
+    <string name="max_perms_manifest_location">Localització d\'instal·lació</string>
+    <string name="max_perms_manifest_location_auto">Automàtic</string>
+    <string name="max_perms_manifest_location_internal">Només emmagatzematge intern</string>
+    <string name="max_perms_manifest_location_external">Prefereix l\'exterior</string>
+    <string name="max_perms_manifest_components">Components</string>
+    <string name="max_perms_manifest_components_order">activitats · serveis · receptors · proveïdors</string>
+    <string name="max_perms_manifest_exported">Components exportats</string>
+    <string name="max_perms_manifest_splits">Dividiu els APK</string>
+    <string name="max_perms_manifest_debug">Depurable</string>
+    <string name="max_perms_features_title">Característiques declarades</string>
+    <string name="max_perms_features_desc">Què requereix el paquet del dispositiu, en comparació amb el que aquest dispositiu anuncia. Una característica necessària que falta aquí normalment significa que l\'aplicació no funcionarà completament: és una reclamació del gestor de paquets, no una conjectura.</string>
+    <string name="max_perms_features_loading">Llegint les característiques declarades del paquet...</string>
+    <string name="max_perms_features_none">El paquet no declara cap característiques requerides.</string>
+    <string name="max_perms_features_required">Obligatori</string>
+    <string name="max_perms_features_unsupported">No en aquest dispositiu</string>
+    <string name="max_perms_manifest_none">No informat pel gestor de paquets.</string>
+    <string name="max_perms_manifest_unknown">Desconegut</string>
 </resources>

@@ -13,4 +13,23 @@
     <string name="max_expand_section">ਵੇਰਵੇ ਦਿਖਾਓ</string>
     <string name="max_collapse_section">ਵੇਰਵੇ ਲੁਕਾਓ</string>
     <string name="max_trust_loading">ਪੜ੍ਹ ਰਿਹਾ ਹੈ…</string>
+    <string name="max_gov_title">ਹੁਣ ਕੌਣ ਰਾਜ ਕਰਦਾ ਹੈ</string>
+    <string name="max_gov_separator">" ›"</string>
+    <string name="max_gov_order_note">ਸਥਿਰ ਆਰਡਰ: ਇੱਕ ਉੱਚਾ ਕ੍ਰਮ ਇੱਕ ਹੇਠਲੇ ਨੂੰ ਰੋਕਦਾ ਹੈ। ਇਹ ਕਦੇ ਨਹੀਂ ਬਦਲਦਾ ਕਿ ਕਿਹੜੀ ਨੀਤੀ ਜਿੱਤਦੀ ਹੈ।</string>
+    <string name="max_gov_open_details">ਸਰਗਰਮ ਧਾਰਕ</string>
+    <string name="max_gov_active_title">ਜਿਸ ਕੋਲ ਕੰਟਰੋਲ ਹੈ</string>
+    <string name="max_gov_none">ਇਸ ਵੇਲੇ ਕੋਈ ਵੀ ਨੀਤੀ ਹਾਰਡਵੇਅਰ ਕੰਟਰੋਲ ਦੀ ਮਾਲਕ ਨਹੀਂ ਹੈ।</string>
+    <string name="max_gov_count">ਐਕਟਿਵ ਕੰਟਰੋਲ ਲੀਜ਼: %1$d</string>
+    <string name="max_gov_requested">ਬੇਨਤੀ ਕੀਤੀ: %1$s</string>
+    <string name="max_gov_owner_recovery">ਰਿਕਵਰੀ</string>
+    <string name="max_gov_owner_safety">ਥਰਮਲ ਸੁਰੱਖਿਆ</string>
+    <string name="max_gov_owner_per_app">ਐਪ ਪ੍ਰੋਫਾਈਲ</string>
+    <string name="max_gov_owner_max_ai">Max AI</string>
+    <string name="max_gov_owner_global">ਗਲੋਬਲ ਪ੍ਰੋਫਾਈਲ</string>
+    <string name="max_gov_owner_system">ਸਿਸਟਮ</string>
+    <string name="max_gov_owner_a11y">%1$s ਕੋਲ ਇੱਕ ਹਾਰਡਵੇਅਰ ਕੰਟਰੋਲ ਹੈ</string>
+    <string name="max_gov_now_none">ਇਸ ਸਮੇਂ ਕੋਈ ਸਵੈਚਲਿਤ ਮਾਲਕ ਨਹੀਂ — ਕੰਟਰੋਲ ਤੁਹਾਡਾ ਰਹਿੰਦਾ ਹੈ</string>
+    <string name="max_gov_now_one">%1$s ਕੰਟਰੋਲ ਰੱਖਦਾ ਹੈ</string>
+    <string name="max_gov_now_many">%1$s ਕੋਲ %2$d ਨਿਯੰਤਰਣ ਹਨ</string>
+    <string name="devinfo_details">ਵੇਰਵੇ</string>
 </resources>

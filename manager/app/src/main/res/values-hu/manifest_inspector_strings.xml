@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/manifest_inspector_strings.xml -->
+<resources>
+    <string name="manifest_inspector_title">Manifest Ellenőr</string>
+    <string name="manifest_inspector_subtitle">Olvassa el a PackageManagerből, hogy mit nyilatkozik magáról egy telepített alkalmazás.</string>
+    <string name="max_role_manifest_inspector">Megmutatja, hogy egy csomag mit nyilatkozik önmagáról – csak olvasható.</string>
+    <string name="mi_search">Alkalmazások keresése</string>
+    <string name="mi_empty">Válasszon egy alkalmazást a bal oldalon.</string>
+    <string name="mi_yes">Igen</string>
+    <string name="mi_no">Nem</string>
+    <string name="mi_section_identity">Csomag</string>
+    <string name="mi_version">Változat</string>
+    <string name="mi_version_code">Verziókód</string>
+    <string name="mi_min_sdk">Minimális SDK</string>
+    <string name="mi_target_sdk">Cél SDK</string>
+    <string name="mi_installed">Telepítve</string>
+    <string name="mi_updated">Frissítve</string>
+    <string name="mi_installer">Telepítő</string>
+    <string name="mi_uid">UID</string>
+    <string name="mi_data_dir">Adatkönyvtár</string>
+    <string name="mi_debuggable">Hibakeresés</string>
+    <string name="mi_system_app">Rendszeralkalmazás</string>
+    <string name="mi_enabled">Engedélyezve</string>
+    <string name="mi_section_permissions">Engedélyeket kért</string>
+    <string name="mi_permissions_summary">%1$d engedélyek · %2$d ezek közül veszélyes</string>
+    <string name="mi_permissions_none">Ez az alkalmazás nem kér engedélyt.</string>
+    <string name="mi_perm_dangerous">Veszélyes</string>
+    <string name="mi_perm_signature">Aláírás</string>
+    <string name="mi_perm_normal">Normál</string>
+    <string name="mi_perm_unknown">Besorolatlan</string>
+    <string name="mi_section_components">Alkatrészek</string>
+    <string name="mi_activities">Tevékenységek</string>
+    <string name="mi_services">Szolgáltatások</string>
+    <string name="mi_receivers">Vevők</string>
+    <string name="mi_providers">Szolgáltatók</string>
+    <string name="mi_components_none">Egyik sem deklarált</string>
+    <string name="mi_section_features">A készülék jellemzői</string>
+    <string name="mi_features_note">A platform nem teszi közzé egy másik alkalmazás használati funkcióinak listáját; ezekről a funkciókról számol be az eszköz.</string>
+    <string name="mi_features_none">Nincs jelentett funkció</string>
+    <string name="mi_section_signature">Aláíró tanúsítvány</string>
+    <string name="mi_signature_note">Az aláíró tanúsítvány SHA-256. Két azonos értékű build ugyanaz a kiadó.</string>
+    <string name="mi_signature_sha256">Tanúsítvány kivonat</string>
+</resources>

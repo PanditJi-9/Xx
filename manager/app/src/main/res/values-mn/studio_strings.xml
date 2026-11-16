@@ -10,4 +10,6 @@
     <string name="studio_display">Дэлгэц</string>
     <string name="studio_power">Эрчим хүчний сонголтууд</string>
     <string name="studio_settings">Тохиргоо</string>
+    <string name="audio_dsp_live">DSP шууд дамжуулж байна</string>
+    <string name="max_audio_session_label">Аудио сесс #%1$d</string>
 </resources>

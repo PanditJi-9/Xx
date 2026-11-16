@@ -69,4 +69,25 @@
     <string name="max_perms_entry_title">ਅਨੁਮਤੀਆਂ ਅਤੇ ਐਪ ਓਪਸ</string>
     <string name="max_perms_entry_desc">ਦੇਖੋ ਕਿ ਇਹ ਐਪ ਕੀ ਘੋਸ਼ਿਤ ਕਰਦਾ ਹੈ ਅਤੇ ਸਿਸਟਮ ਅਸਲ ਵਿੱਚ ਕੀ ਇਜਾਜ਼ਤ ਦਿੰਦਾ ਹੈ</string>
     <string name="max_perms_entry_action">ਖੁੱਲ੍ਹੀਆਂ ਇਜਾਜ਼ਤਾਂ</string>
+    <string name="max_perms_manifest_title">ਮੈਨੀਫੈਸਟ ਸੰਖੇਪ</string>
+    <string name="max_perms_manifest_desc">ਪੈਕੇਜ ਮੈਨੇਜਰ ਤੋਂ ਪੜ੍ਹੋ: ਸੰਸਕਰਣ, SDK ਰੇਂਜ, ਭਾਗ ਅਤੇ ਉਹਨਾਂ ਵਿੱਚੋਂ ਕਿੰਨੇ ਨਿਰਯਾਤ ਕੀਤੇ ਜਾਂਦੇ ਹਨ। ਇੱਕ ਨਿਰਯਾਤ ਕੰਪੋਨੈਂਟ ਹੋਰ ਐਪਸ ਦੁਆਰਾ ਸ਼ੁਰੂ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ।</string>
+    <string name="max_perms_manifest_version">ਸੰਸਕਰਣ</string>
+    <string name="max_perms_manifest_sdk">SDK ਰੇਂਜ</string>
+    <string name="max_perms_manifest_location">ਸਥਾਨ ਸਥਾਪਿਤ ਕਰੋ</string>
+    <string name="max_perms_manifest_location_auto">ਆਟੋਮੈਟਿਕ</string>
+    <string name="max_perms_manifest_location_internal">ਸਿਰਫ ਅੰਦਰੂਨੀ ਸਟੋਰੇਜ</string>
+    <string name="max_perms_manifest_location_external">ਬਾਹਰੀ ਨੂੰ ਤਰਜੀਹ ਦਿੰਦਾ ਹੈ</string>
+    <string name="max_perms_manifest_components">ਕੰਪੋਨੈਂਟਸ</string>
+    <string name="max_perms_manifest_components_order">ਗਤੀਵਿਧੀਆਂ · ਸੇਵਾਵਾਂ · ਪ੍ਰਾਪਤਕਰਤਾ · ਪ੍ਰਦਾਤਾ</string>
+    <string name="max_perms_manifest_exported">ਨਿਰਯਾਤ ਹਿੱਸੇ</string>
+    <string name="max_perms_manifest_splits">ਏਪੀਕੇ ਵੰਡੋ</string>
+    <string name="max_perms_manifest_debug">ਡੀਬੱਗ ਕਰਨ ਯੋਗ</string>
+    <string name="max_perms_features_title">ਘੋਸ਼ਿਤ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ</string>
+    <string name="max_perms_features_desc">ਪੈਕੇਜ ਨੂੰ ਡਿਵਾਈਸ ਤੋਂ ਕੀ ਚਾਹੀਦਾ ਹੈ, ਇਸ ਡਿਵਾਈਸ ਦੇ ਇਸ਼ਤਿਹਾਰਾਂ ਦੇ ਮੁਕਾਬਲੇ। ਇੱਥੇ ਇੱਕ ਲੋੜੀਂਦੀ ਵਿਸ਼ੇਸ਼ਤਾ ਗੁੰਮ ਹੋਣ ਦਾ ਆਮ ਤੌਰ \'ਤੇ ਮਤਲਬ ਹੈ ਕਿ ਐਪ ਪੂਰੀ ਤਰ੍ਹਾਂ ਕੰਮ ਨਹੀਂ ਕਰੇਗੀ — ਇਹ ਪੈਕੇਜ ਮੈਨੇਜਰ ਦਾ ਦਾਅਵਾ ਹੈ, ਅੰਦਾਜ਼ਾ ਨਹੀਂ।</string>
+    <string name="max_perms_features_loading">ਪੈਕੇਜ ਦੀਆਂ ਘੋਸ਼ਿਤ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਨੂੰ ਪੜ੍ਹਿਆ ਜਾ ਰਿਹਾ ਹੈ...</string>
+    <string name="max_perms_features_none">ਪੈਕੇਜ ਕੋਈ ਲੋੜੀਂਦੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਦਾ ਐਲਾਨ ਨਹੀਂ ਕਰਦਾ।</string>
+    <string name="max_perms_features_required">ਲੋੜੀਂਦਾ ਹੈ</string>
+    <string name="max_perms_features_unsupported">ਇਸ ਡਿਵਾਈਸ \'ਤੇ ਨਹੀਂ</string>
+    <string name="max_perms_manifest_none">ਪੈਕੇਜ ਮੈਨੇਜਰ ਦੁਆਰਾ ਰਿਪੋਰਟ ਨਹੀਂ ਕੀਤੀ ਗਈ।</string>
+    <string name="max_perms_manifest_unknown">ਅਗਿਆਤ</string>
 </resources>

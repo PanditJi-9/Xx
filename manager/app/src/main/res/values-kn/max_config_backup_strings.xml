@@ -18,4 +18,10 @@
     <string name="max_cfg_section_appearance">ಗೋಚರತೆ ಮತ್ತು ಇಂಟರ್ಫೇಸ್</string>
     <string name="max_cfg_section_app_prefs">ಅಪ್ಲಿಕೇಶನ್ ಆದ್ಯತೆಗಳು ಮತ್ತು ಭಾಷೆ</string>
     <string name="max_cfg_restore_merge_note">ಪ್ರಾಶಸ್ತ್ಯಗಳನ್ನು ಮರುಸ್ಥಾಪಿಸುವುದು ವಿಲೀನಗೊಳ್ಳುತ್ತದೆ: ಫೈಲ್‌ನಲ್ಲಿ ಇರುವ ಕೀಲಿಗಳನ್ನು ಬರೆಯಲಾಗಿದೆ ಮತ್ತು ಕೀಗಳು ಹಾಗೆಯೇ ಇರುವುದನ್ನು ಉಲ್ಲೇಖಿಸುವುದಿಲ್ಲ. ಯಾವುದನ್ನೂ ತೆರವುಗೊಳಿಸಲಾಗಿಲ್ಲ.</string>
+    <string name="max_cfg_diff_title">%1$d ಉಳಿಸಿದ ಸೆಟ್ಟಿಂಗ್‌ಗಳು ಈ ಸಾಧನದಿಂದ ಭಿನ್ನವಾಗಿವೆ</string>
+    <string name="max_cfg_diff_line">%1$s: %2$s → %3$s</string>
+    <string name="max_cfg_diff_unset">ಹೊಂದಿಸಿಲ್ಲ</string>
+    <string name="max_cfg_diff_more">ಮತ್ತು %1$d ಹೆಚ್ಚು</string>
+    <string name="max_cfg_diff_applist">%1$d ಅಪ್ಲಿಕೇಶನ್-ಪಟ್ಟಿ ಸಾಲುಗಳನ್ನು ಸೇರಿಸಲಾಗಿದೆ, %2$d ತೆಗೆದುಹಾಕಲಾಗಿದೆ - ಸಂಪೂರ್ಣ ಪಟ್ಟಿಯನ್ನು ಬದಲಾಯಿಸಲಾಗಿದೆ, ವಿಲೀನಗೊಳಿಸಲಾಗಿಲ್ಲ.</string>
+    <string name="max_cfg_diff_prefs">%1$d ಆದ್ಯತೆಯ ಕೀಗಳು ಭಿನ್ನವಾಗಿರುತ್ತವೆ - ವಿಲೀನಗೊಳಿಸಲಾಗಿದೆ, ಅಳಿಸಲಾಗಿಲ್ಲ.</string>
 </resources>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_license_strings.xml -->
+<resources>
+    <string name="max_license_title">ਲਾਇਸੰਸ</string>
+    <string name="max_license_subtitle">ਇੱਕ ਕੁੰਜੀ, ਇਹ ਡਿਵਾਈਸ, ਕੋਈ ਖਾਤਾ ਨਹੀਂ</string>
+    <string name="max_license_help_body">ਇੱਕ ਕੁੰਜੀ ਨੂੰ ਇੱਕ ਵਾਰ ਔਨਲਾਈਨ ਚੈੱਕ ਕੀਤਾ ਜਾਂਦਾ ਹੈ, ਜਦੋਂ ਤੁਸੀਂ ਇਸਨੂੰ ਦਾਖਲ ਕਰਦੇ ਹੋ। ਉਦੋਂ ਤੋਂ ਸਰਵਰ ਦੇ ਹਸਤਾਖਰਿਤ ਸਰਟੀਫਿਕੇਟ ਔਫਲਾਈਨ ਕੰਮ ਕਰਦਾ ਹੈ ਜਦੋਂ ਤੱਕ ਇਸਦਾ ਸਮਾਂ ਪੂਰਾ ਨਹੀਂ ਹੋ ਜਾਂਦਾ — ਐਪ ਹਰ ਵਾਰ ਜਦੋਂ ਤੁਸੀਂ ਸਕ੍ਰੀਨ ਖੋਲ੍ਹਦੇ ਹੋ ਤਾਂ ਘਰ ਕਾਲ ਨਹੀਂ ਕਰਦਾ ਹੈ। ਸਰਟੀਫਿਕੇਟ ਇਸ ਡਿਵਾਈਸ ਦੀ ਬੇਤਰਤੀਬ ਇੰਸਟੌਲ ਆਈਡੀ ਨਾਲ ਜੁੜਿਆ ਹੋਇਆ ਹੈ, ਇਸਲਈ ਐਪ ਡੇਟਾ ਨੂੰ ਕਿਸੇ ਹੋਰ ਫ਼ੋਨ ਵਿੱਚ ਕਾਪੀ ਕਰਨ ਨਾਲ ਲਾਇਸੰਸ ਨਹੀਂ ਹੁੰਦਾ ਹੈ, ਅਤੇ ਜੇਕਰ ਤੁਸੀਂ ਫ਼ੋਨ ਬਦਲਦੇ ਹੋ ਤਾਂ ਮਾਲਕ ਪੈਨਲ ਤੋਂ ਉਸ ਬਾਈਡਿੰਗ ਨੂੰ ਰੀਸੈਟ ਕਰ ਸਕਦਾ ਹੈ।</string>
+    <string name="max_license_status_section">ਸਥਿਤੀ</string>
+    <string name="max_license_status_active">ਕਿਰਿਆਸ਼ੀਲ</string>
+    <string name="max_license_status_expired">ਮਿਆਦ ਪੁੱਗ ਗਈ</string>
+    <string name="max_license_status_none">ਕਿਰਿਆਸ਼ੀਲ ਨਹੀਂ ਹੈ</string>
+    <string name="max_license_active_detail">ਬਾਕੀ: %1$d ਦਿਨ</string>
+    <string name="max_license_expired_detail">ਇਸ ਕੁੰਜੀ ਦਾ ਸਮਾਂ ਖਤਮ ਹੋ ਗਿਆ ਹੈ। ਇੱਕ ਨਵੀਂ ਕੁੰਜੀ ਪਹੁੰਚ ਦਾ ਨਵੀਨੀਕਰਨ ਕਰਦੀ ਹੈ।</string>
+    <string name="max_license_none_detail">ਭੁਗਤਾਨ ਕੀਤੀ ਸਤ੍ਹਾ ਨੂੰ ਅਨਲੌਕ ਕਰਨ ਲਈ ਤੁਹਾਨੂੰ ਪ੍ਰਾਪਤ ਹੋਈ ਕੁੰਜੀ ਦਾਖਲ ਕਰੋ।</string>
+    <string name="max_license_promo_active">%1$s ਤੱਕ ਹਰੇਕ ਲਈ ਮੁਫ਼ਤ</string>
+    <string name="max_license_plan_title">ਯੋਜਨਾ</string>
+    <string name="max_license_devices_title">ਡਿਵਾਈਸਾਂ</string>
+    <string name="max_license_devices_detail">%2$d ਦਾ %1$d ਵਰਤਿਆ ਗਿਆ</string>
+    <string name="max_license_device_id_title">ਇਹ ਯੰਤਰ</string>
+    <string name="max_license_device_id_detail">%1$s</string>
+    <string name="max_license_key_section">ਐਕਟੀਵੇਸ਼ਨ</string>
+    <string name="max_license_key_label">ਲਾਇਸੰਸ ਕੁੰਜੀ</string>
+    <string name="max_license_key_placeholder">MAXM-XXXXX-XXXXXX-XXXXXX-XXXXXX-XXX</string>
+    <string name="max_license_key_helper">ਡੈਸ਼ ਅਤੇ ਕੈਪੀਟਲਾਈਜ਼ੇਸ਼ਨ ਕੋਈ ਮਾਇਨੇ ਨਹੀਂ ਰੱਖਦੇ - ਜਿਵੇਂ ਤੁਸੀਂ ਇਸਨੂੰ ਪ੍ਰਾਪਤ ਕੀਤਾ ਸੀ ਉਸੇ ਤਰ੍ਹਾਂ ਪੇਸਟ ਕਰੋ।</string>
+    <string name="max_license_activate">ਸਰਗਰਮ ਕਰੋ</string>
+    <string name="max_license_activating">ਕੁੰਜੀ ਦੀ ਜਾਂਚ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...</string>
+    <string name="max_license_refresh">ਹੁਣੇ ਜਾਂਚ ਕਰੋ</string>
+    <string name="max_license_activated">ਕਿਰਿਆਸ਼ੀਲ ਕੀਤਾ। ਇਹ ਡਿਵਾਈਸ ਹੁਣ ਤੁਹਾਡੀ ਕੁੰਜੀ ਨਾਲ ਲਿੰਕ ਹੈ।</string>
+    <string name="max_license_error_invalid_key">ਇਹ ਕੁੰਜੀ ਪੂਰੀ ਨਹੀਂ ਲੱਗਦੀ। ਇਸ ਦੀ ਜਾਂਚ ਕਰੋ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</string>
+    <string name="max_license_error_not_configured">ਇਸ ਬਿਲਡ ਦਾ ਕੋਈ ਲਾਇਸੰਸ ਸਰਵਰ ਕੌਂਫਿਗਰ ਨਹੀਂ ਕੀਤਾ ਗਿਆ ਹੈ।</string>
+    <string name="max_license_error_network">ਕੋਈ ਕਨੈਕਸ਼ਨ ਨਹੀਂ। ਕੁੰਜੀ ਨੂੰ ਇੱਕ ਵਾਰ ਜਾਂਚਿਆ ਜਾਂਦਾ ਹੈ, ਫਿਰ ਔਫਲਾਈਨ ਕੰਮ ਕਰਦਾ ਹੈ।</string>
+    <string name="max_license_error_timeout">ਲਾਇਸੈਂਸ ਸਰਵਰ ਨੇ ਸਮੇਂ ਸਿਰ ਜਵਾਬ ਨਹੀਂ ਦਿੱਤਾ। ਫਿਰ ਕੋਸ਼ਿਸ਼ ਕਰੋ.</string>
+    <string name="max_license_error_server">ਲਾਇਸੰਸ ਸਰਵਰ ਨੇ ਇੱਕ ਗਲਤੀ ਨਾਲ ਜਵਾਬ ਦਿੱਤਾ। ਬਾਅਦ ਵਿੱਚ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</string>
+    <string name="max_license_error_client">ਲਾਇਸੰਸ ਫੰਕਸ਼ਨ ਸਰਵਰ \'ਤੇ ਤੈਨਾਤ ਨਹੀਂ ਕੀਤਾ ਗਿਆ ਹੈ।</string>
+    <string name="max_license_error_format">ਸਰਵਰ ਦਾ ਜਵਾਬ ਸਮਝ ਨਹੀਂ ਆਇਆ।</string>
+    <string name="max_license_error_expired">ਇਸ ਕੁੰਜੀ ਦੀ ਮਿਆਦ ਪੁੱਗ ਗਈ ਹੈ।</string>
+    <string name="max_license_error_not_found">ਇਹ ਕੁੰਜੀ ਪਤਾ ਨਹੀਂ ਹੈ।</string>
+    <string name="max_license_error_revoked">ਇਸ ਕੁੰਜੀ ਨੂੰ ਰੱਦ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ।</string>
+    <string name="max_license_error_device_limit">ਇਹ ਕੁੰਜੀ ਇਸਦੀ ਡਿਵਾਈਸ ਸੀਮਾ ਤੱਕ ਪਹੁੰਚ ਗਈ ਹੈ। ਇੱਕ ਡਿਵਾਈਸ ਰੀਸੈਟ ਲਈ ਪੁੱਛੋ।</string>
+    <string name="max_license_error_device_unknown">ਇਹ ਡਿਵਾਈਸ ਅਜੇ ਕੁੰਜੀ ਨਾਲ ਲਿੰਕ ਨਹੀਂ ਕੀਤੀ ਗਈ ਹੈ। ਇਸਨੂੰ ਪਹਿਲਾਂ ਇੱਥੇ ਐਕਟੀਵੇਟ ਕਰੋ।</string>
+    <string name="max_license_error_device_removed">ਇਸ ਡਿਵਾਈਸ ਨੂੰ ਮਾਲਕ ਦੁਆਰਾ ਕੁੰਜੀ ਤੋਂ ਹਟਾ ਦਿੱਤਾ ਗਿਆ ਸੀ।</string>
+    <string name="max_license_error_rate_limited">ਇਸ ਕਨੈਕਸ਼ਨ ਤੋਂ ਬਹੁਤ ਸਾਰੀਆਂ ਕੋਸ਼ਿਸ਼ਾਂ — ਕੁਝ ਮਿੰਟ ਉਡੀਕ ਕਰੋ, ਫਿਰ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</string>
+    <string name="max_license_error_unknown">ਕੁਝ ਗਲਤ ਹੋ ਗਿਆ। ਕਾਰਨ ਡਾਇਗਨੌਸਟਿਕਸ ਵਿੱਚ ਦਰਜ ਕੀਤਾ ਗਿਆ ਸੀ।</string>
+    <string name="max_license_gate_title">ਇਸ ਸਤਹ ਨੂੰ ਲਾਇਸੈਂਸ ਦੀ ਲੋੜ ਹੈ</string>
+    <string name="max_license_gate_detail">ਇਹ ਇੱਕ ਕੁੰਜੀ ਦੇ ਨਾਲ ਸ਼ਾਮਿਲ ਕੀਤਾ ਗਿਆ ਹੈ. ਇੱਕ ਕੁੰਜੀ ਇਸ ਡਿਵਾਈਸ ਨੂੰ ਕਵਰ ਕਰਦੀ ਹੈ, ਅਤੇ ਇਸਨੂੰ ਦਾਖਲ ਕਰਨ ਵਿੱਚ ਇੱਕ ਮਿੰਟ ਲੱਗਦਾ ਹੈ।</string>
+    <string name="max_feature_off_title">ਬੰਦ ਕਰ ਦਿੱਤਾ</string>
+    <string name="max_feature_off_detail">ਕੰਟਰੋਲ ਪੈਨਲ ਨੇ ਇਸ ਸਤਹ ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਹੈ। ਇਹ ਦੁਬਾਰਾ ਚਾਲੂ ਹੁੰਦੇ ਹੀ ਵਾਪਸ ਆ ਜਾਂਦਾ ਹੈ।</string>
+    <string name="max_license_gate_action">ਲਾਇਸੈਂਸ ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ</string>
+    <string name="max_license_gate_subscribe">ਹੁਣੇ ਸਬਸਕ੍ਰਾਈਬ ਕਰੋ</string>
+    <string name="max_license_subscription_section">ਗਾਹਕੀ</string>
+    <string name="max_license_subscription_open">ਗਾਹਕੀ ਪੰਨਾ ਖੋਲ੍ਹੋ</string>
+</resources>

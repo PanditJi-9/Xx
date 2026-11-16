@@ -13,4 +13,23 @@
     <string name="max_expand_section">Mostra els detalls</string>
     <string name="max_collapse_section">Amaga els detalls</string>
     <string name="max_trust_loading">Llegint…</string>
+    <string name="max_gov_title">Qui governa ara</string>
+    <string name="max_gov_separator">" › "</string>
+    <string name="max_gov_order_note">Ordre fix: un esglaó més alt en bloqueja un de més baix. Mai canvia quina política guanya.</string>
+    <string name="max_gov_open_details">Titulars actius</string>
+    <string name="max_gov_active_title">Qui té el control</string>
+    <string name="max_gov_none">Cap política té un control de maquinari ara mateix.</string>
+    <string name="max_gov_count">Arrendaments de control actiu: %1$d</string>
+    <string name="max_gov_requested">Sol·licitat: %1$s</string>
+    <string name="max_gov_owner_recovery">Recuperació</string>
+    <string name="max_gov_owner_safety">Seguretat tèrmica</string>
+    <string name="max_gov_owner_per_app">Perfil de l\'aplicació</string>
+    <string name="max_gov_owner_max_ai">Max AI</string>
+    <string name="max_gov_owner_global">Perfil global</string>
+    <string name="max_gov_owner_system">Sistema</string>
+    <string name="max_gov_owner_a11y">%1$s posseeix un control de maquinari</string>
+    <string name="max_gov_now_none">No hi ha propietari automatitzat ara mateix: el control continua sent teu</string>
+    <string name="max_gov_now_one">%1$s té un control</string>
+    <string name="max_gov_now_many">%1$s manté els controls %2$d</string>
+    <string name="devinfo_details">Detalls</string>
 </resources>

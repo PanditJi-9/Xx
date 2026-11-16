@@ -69,4 +69,25 @@
     <string name="max_perms_entry_title">İzinler ve Uygulama işlemleri</string>
     <string name="max_perms_entry_desc">Bu uygulamanın ne bildirdiğini ve sistemin gerçekte neye izin verdiğini görün</string>
     <string name="max_perms_entry_action">İzinleri aç</string>
+    <string name="max_perms_manifest_title">Bildiri özeti</string>
+    <string name="max_perms_manifest_desc">Paket yöneticisinden okuyun: sürüm, SDK aralığı, bileşenler ve bunlardan kaçının dışa aktarıldığı. Dışa aktarılan bir bileşen diğer uygulamalar tarafından başlatılabilir.</string>
+    <string name="max_perms_manifest_version">Sürüm</string>
+    <string name="max_perms_manifest_sdk">SDK aralığı</string>
+    <string name="max_perms_manifest_location">Yükleme konumu</string>
+    <string name="max_perms_manifest_location_auto">Otomatik</string>
+    <string name="max_perms_manifest_location_internal">Yalnızca dahili depolama</string>
+    <string name="max_perms_manifest_location_external">Harici tercih ediyor</string>
+    <string name="max_perms_manifest_components">Bileşenler</string>
+    <string name="max_perms_manifest_components_order">faaliyetler · hizmetler · alıcılar · sağlayıcılar</string>
+    <string name="max_perms_manifest_exported">Dışa aktarılan bileşenler</string>
+    <string name="max_perms_manifest_splits">APK\'ları böl</string>
+    <string name="max_perms_manifest_debug">Hata ayıklanabilir</string>
+    <string name="max_perms_features_title">Beyan edilen özellikler</string>
+    <string name="max_perms_features_desc">Bu cihazın reklamını yaptığı şeyle karşılaştırıldığında paketin cihazdan gerektirdiği şey. Gerekli bir özelliğin burada eksik olması genellikle uygulamanın tam olarak çalışmayacağı anlamına gelir; bu bir tahmin değil, paket yöneticisinin bir iddiasıdır.</string>
+    <string name="max_perms_features_loading">Paketin beyan edilen özellikleri okunuyor…</string>
+    <string name="max_perms_features_none">Paket gerekli hiçbir özelliği bildirmiyor.</string>
+    <string name="max_perms_features_required">Gerekli</string>
+    <string name="max_perms_features_unsupported">Bu cihazda değil</string>
+    <string name="max_perms_manifest_none">Paket yöneticisi tarafından bildirilmedi.</string>
+    <string name="max_perms_manifest_unknown">Bilinmiyor</string>
 </resources>

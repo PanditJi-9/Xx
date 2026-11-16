@@ -69,4 +69,25 @@
     <string name="max_perms_entry_title">అనుమతులు &amp; యాప్ ఆప్‌లు</string>
     <string name="max_perms_entry_desc">ఈ యాప్ ఏమి ప్రకటిస్తుందో మరియు సిస్టమ్ వాస్తవానికి ఏమి అనుమతిస్తుందో చూడండి</string>
     <string name="max_perms_entry_action">అనుమతులను తెరవండి</string>
+    <string name="max_perms_manifest_title">మానిఫెస్ట్ సారాంశం</string>
+    <string name="max_perms_manifest_desc">ప్యాకేజీ మేనేజర్ నుండి చదవండి: వెర్షన్, SDK పరిధి, భాగాలు మరియు వాటిలో ఎన్ని ఎగుమతి చేయబడ్డాయి. ఎగుమతి చేయబడిన భాగాన్ని ఇతర యాప్‌ల ద్వారా ప్రారంభించవచ్చు.</string>
+    <string name="max_perms_manifest_version">వెర్షన్</string>
+    <string name="max_perms_manifest_sdk">SDK పరిధి</string>
+    <string name="max_perms_manifest_location">స్థానాన్ని ఇన్స్టాల్ చేయండి</string>
+    <string name="max_perms_manifest_location_auto">ఆటోమేటిక్</string>
+    <string name="max_perms_manifest_location_internal">అంతర్గత నిల్వ మాత్రమే</string>
+    <string name="max_perms_manifest_location_external">బాహ్యంగా ఇష్టపడతారు</string>
+    <string name="max_perms_manifest_components">భాగాలు</string>
+    <string name="max_perms_manifest_components_order">కార్యకలాపాలు · సేవలు · రిసీవర్లు · ప్రొవైడర్లు</string>
+    <string name="max_perms_manifest_exported">ఎగుమతి చేయబడిన భాగాలు</string>
+    <string name="max_perms_manifest_splits">APKలను విభజించండి</string>
+    <string name="max_perms_manifest_debug">డీబగ్ చేయదగినది</string>
+    <string name="max_perms_features_title">ఫీచర్లను ప్రకటించింది</string>
+    <string name="max_perms_features_desc">ఈ పరికరం ప్రచారం చేసే దానితో పోలిస్తే, పరికరం నుండి ప్యాకేజీకి ఏమి అవసరం. ఇక్కడ అవసరమైన ఫీచర్ తప్పితే యాప్ పూర్తిగా పని చేయదని అర్థం — ఇది ప్యాకేజీ మేనేజర్ నుండి వచ్చిన దావా, ఊహ కాదు.</string>
+    <string name="max_perms_features_loading">ప్యాకేజీ ప్రకటించిన ఫీచర్లను చదవడం...</string>
+    <string name="max_perms_features_none">ప్యాకేజీ అవసరమైన లక్షణాలను ప్రకటించలేదు.</string>
+    <string name="max_perms_features_required">అవసరం</string>
+    <string name="max_perms_features_unsupported">ఈ పరికరంలో కాదు</string>
+    <string name="max_perms_manifest_none">ప్యాకేజీ మేనేజర్ ద్వారా నివేదించబడలేదు.</string>
+    <string name="max_perms_manifest_unknown">తెలియదు</string>
 </resources>

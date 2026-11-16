@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_license_strings.xml -->
+<resources>
+    <string name="max_license_title">Engedély</string>
+    <string name="max_license_subtitle">Egy kulcs, ez az eszköz, nincs fiók</string>
+    <string name="max_license_help_body">Egy kulcs online ellenőrzése egyszer megtörténik, amikor beírja. Ettől kezdve a szerver aláírt tanúsítványa offline módban működik, amíg le nem telik az ideje – az alkalmazás nem hív otthont minden alkalommal, amikor megnyit egy képernyőt. A tanúsítvány ennek az eszköznek a véletlenszerű telepítési azonosítójához van kötve, így az alkalmazás adatainak másik telefonra másolása nem jár magával a licenccel, és a tulajdonos visszaállíthatja ezt a kötést a panelről, ha telefont vált.</string>
+    <string name="max_license_status_section">Állapot</string>
+    <string name="max_license_status_active">Aktív</string>
+    <string name="max_license_status_expired">Lejárt</string>
+    <string name="max_license_status_none">Nincs aktiválva</string>
+    <string name="max_license_active_detail">Hátralévő: %1$d nap</string>
+    <string name="max_license_expired_detail">Ennek a kulcsnak az ideje lejárt. Egy új kulcs megújítja a hozzáférést.</string>
+    <string name="max_license_none_detail">Adja meg a kapott kulcsot a fizetős felületek feloldásához.</string>
+    <string name="max_license_promo_active">%1$s-ig mindenki számára ingyenes</string>
+    <string name="max_license_plan_title">Terv</string>
+    <string name="max_license_devices_title">Eszközök</string>
+    <string name="max_license_devices_detail">%1$d / %2$d használt</string>
+    <string name="max_license_device_id_title">Ez a készülék</string>
+    <string name="max_license_device_id_detail">%1$s</string>
+    <string name="max_license_key_section">Aktiválás</string>
+    <string name="max_license_key_label">Licenc kulcs</string>
+    <string name="max_license_key_placeholder">MAXM-XXXXX-XXXXX-XXXXX-XXXXX-XX</string>
+    <string name="max_license_key_helper">A kötőjelek és a nagybetűk nem számítanak – illessze be úgy, ahogy megkapta.</string>
+    <string name="max_license_activate">Aktiválja</string>
+    <string name="max_license_activating">A kulcs ellenőrzése…</string>
+    <string name="max_license_refresh">Ellenőrizze most</string>
+    <string name="max_license_activated">Aktív. Ez az eszköz most össze van kapcsolva a kulcsával.</string>
+    <string name="max_license_error_invalid_key">Ez a kulcs nem tűnik teljesnek. Ellenőrizze, és próbálja újra.</string>
+    <string name="max_license_error_not_configured">Ehhez a buildhez nincs konfigurálva licenckiszolgáló.</string>
+    <string name="max_license_error_network">Nincs kapcsolat. A kulcsot egyszer ellenőrzik, majd offline módban működik.</string>
+    <string name="max_license_error_timeout">A licencszerver nem válaszolt időben. Próbáld újra.</string>
+    <string name="max_license_error_server">A licencszerver hibával válaszolt. Próbálja újra később.</string>
+    <string name="max_license_error_client">A licenc funkció nincs telepítve a kiszolgálón.</string>
+    <string name="max_license_error_format">A szerver választ nem értette.</string>
+    <string name="max_license_error_expired">Ez a kulcs lejárt.</string>
+    <string name="max_license_error_not_found">Ez a kulcs nem ismert.</string>
+    <string name="max_license_error_revoked">Ezt a kulcsot visszavonták.</string>
+    <string name="max_license_error_device_limit">Ez a kulcs elérte az eszközkorlátot. Kérje az eszköz visszaállítását.</string>
+    <string name="max_license_error_device_unknown">Ez az eszköz még nincs összekapcsolva a kulccsal. Először aktiválja itt.</string>
+    <string name="max_license_error_device_removed">Ezt a készüléket a tulajdonos eltávolította a kulcsból.</string>
+    <string name="max_license_error_rate_limited">Túl sok próbálkozás erről a kapcsolatról – várjon néhány percet, majd próbálja újra.</string>
+    <string name="max_license_error_unknown">Valami elromlott. Az okot a Diagnosztika rögzítette.</string>
+    <string name="max_license_gate_title">Ehhez a felülethez engedély szükséges</string>
+    <string name="max_license_gate_detail">Kulccsal együtt jár hozzá. Egy gomb lefedi ezt az eszközt, és a bevitel egy percig tart.</string>
+    <string name="max_feature_off_title">Kikapcsolva</string>
+    <string name="max_feature_off_detail">A vezérlőpanel kikapcsolta ezt a felületet. Visszajön, amint újra engedélyezve van.</string>
+    <string name="max_license_gate_action">Nyissa meg a licencbeállításokat</string>
+    <string name="max_license_gate_subscribe">Iratkozz fel most</string>
+    <string name="max_license_subscription_section">Előfizetés</string>
+    <string name="max_license_subscription_open">Nyissa meg az előfizetési oldalt</string>
+</resources>

@@ -10,4 +10,6 @@
     <string name="studio_display">ପ୍ରଦର୍ଶନ</string>
     <string name="studio_power">ଶକ୍ତି ବିକଳ୍ପଗୁଡ଼ିକ</string>
     <string name="studio_settings">ସେଟିଂସମୂହ</string>
+    <string name="audio_dsp_live">DSP ଲାଇଭ୍ |</string>
+    <string name="max_audio_session_label">ଅଡିଓ ଅଧିବେଶନ # %1$d |</string>
 </resources>

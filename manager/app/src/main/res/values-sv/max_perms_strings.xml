@@ -69,4 +69,25 @@
     <string name="max_perms_entry_title">Behörigheter och appoperationer</string>
     <string name="max_perms_entry_desc">Se vad den här appen deklarerar och vad systemet faktiskt tillåter</string>
     <string name="max_perms_entry_action">Öppna behörigheter</string>
+    <string name="max_perms_manifest_title">Manifest sammanfattning</string>
+    <string name="max_perms_manifest_desc">Läs från pakethanteraren: version, SDK-sortiment, komponenter och hur många av dem som exporteras. En exporterad komponent kan startas av andra appar.</string>
+    <string name="max_perms_manifest_version">Version</string>
+    <string name="max_perms_manifest_sdk">SDK-intervall</string>
+    <string name="max_perms_manifest_location">Installationsplats</string>
+    <string name="max_perms_manifest_location_auto">Automatisk</string>
+    <string name="max_perms_manifest_location_internal">Endast intern lagring</string>
+    <string name="max_perms_manifest_location_external">Föredrar externt</string>
+    <string name="max_perms_manifest_components">Komponenter</string>
+    <string name="max_perms_manifest_components_order">aktiviteter · tjänster · mottagare · leverantörer</string>
+    <string name="max_perms_manifest_exported">Exporterade komponenter</string>
+    <string name="max_perms_manifest_splits">Dela APK-filer</string>
+    <string name="max_perms_manifest_debug">Felsökningsbar</string>
+    <string name="max_perms_features_title">Deklarerade funktioner</string>
+    <string name="max_perms_features_desc">Vad paketet kräver av enheten, jämfört med vad denna enhet annonserar. En obligatorisk funktion som saknas här betyder vanligtvis att appen inte kommer att fungera fullt ut - det är ett påstående från pakethanteraren, inte en gissning.</string>
+    <string name="max_perms_features_loading">Läser paketets deklarerade funktioner...</string>
+    <string name="max_perms_features_none">Paketet deklarerar inga nödvändiga funktioner.</string>
+    <string name="max_perms_features_required">Nödvändig</string>
+    <string name="max_perms_features_unsupported">Inte på den här enheten</string>
+    <string name="max_perms_manifest_none">Inte rapporterad av pakethanteraren.</string>
+    <string name="max_perms_manifest_unknown">Okänd</string>
 </resources>

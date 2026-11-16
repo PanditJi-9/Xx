@@ -13,4 +13,23 @@
     <string name="max_expand_section">Прикажи детали</string>
     <string name="max_collapse_section">Сокриј детали</string>
     <string name="max_trust_loading">Читање…</string>
+    <string name="max_gov_title">Кој владее сега</string>
+    <string name="max_gov_separator">" ›"</string>
+    <string name="max_gov_order_note">Фиксен редослед: повисоко скалило блокира пониско. Никогаш не се менува која политика ќе победи.</string>
+    <string name="max_gov_open_details">Активни држачи</string>
+    <string name="max_gov_active_title">Кој има контрола</string>
+    <string name="max_gov_none">Ниту една политика не поседува хардверска контрола во моментов.</string>
+    <string name="max_gov_count">Активни контролни закупи: %1$d</string>
+    <string name="max_gov_requested">Се бара: %1$s</string>
+    <string name="max_gov_owner_recovery">Закрепнување</string>
+    <string name="max_gov_owner_safety">Термичка безбедност</string>
+    <string name="max_gov_owner_per_app">Профил на апликација</string>
+    <string name="max_gov_owner_max_ai">Max AI</string>
+    <string name="max_gov_owner_global">Глобален профил</string>
+    <string name="max_gov_owner_system">Систем</string>
+    <string name="max_gov_owner_a11y">%1$s поседува хардверска контрола</string>
+    <string name="max_gov_now_none">Нема автоматизиран сопственик во моментов - контролата останува ваша</string>
+    <string name="max_gov_now_one">%1$s држи контрола</string>
+    <string name="max_gov_now_many">%1$s држи %2$d контроли</string>
+    <string name="devinfo_details">Детали</string>
 </resources>

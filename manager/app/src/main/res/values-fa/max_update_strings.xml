@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/max_update_strings.xml -->
+<resources>
+    <string name="update_dialog_title">به روز رسانی موجود است</string>
+    <string name="update_dialog_title_required">به روز رسانی لازم است</string>
+    <string name="update_required_notice">این به‌روزرسانی برای ادامه استفاده از MaxManager لازم است. آن را نصب کنید، سپس برنامه را دوباره باز کنید.</string>
+    <string name="update_dialog_body">نسخه %1$s موجود است. شما در %2$s هستید.</string>
+    <string name="update_block_title">برای ادامه به‌روزرسانی لازم است</string>
+    <string name="update_block_body">این ساخت (%1$s) دیگر پشتیبانی نمی شود. برای ادامه استفاده از MaxManager به %2$s به روز رسانی کنید.</string>
+    <string name="update_block_body_no_release">این ساخت (%1$s) دیگر پشتیبانی نمی شود.</string>
+    <string name="update_release_notes_label">چه چیزی جدید است</string>
+    <string name="update_size">حجم دانلود: %1$s</string>
+    <string name="update_button_now">اکنون به روز رسانی کنید</string>
+    <string name="update_button_later">بعدا</string>
+    <string name="update_button_close">بستن</string>
+    <string name="update_button_open_page">صفحه دانلود را باز کنید</string>
+    <string name="update_state_downloading">در حال دانلود… %1$d%%</string>
+    <string name="update_state_downloading_unknown">در حال دانلود…</string>
+    <string name="update_state_installing">در حال نصب…</string>
+    <string name="update_error_network">دسترسی به سرور به روز رسانی امکان پذیر نیست. اتصال خود را بررسی کنید و دوباره امتحان کنید.</string>
+    <string name="update_error_http">سرور به روز رسانی با خطا پاسخ داد. بعداً دوباره امتحان کنید.</string>
+    <string name="update_error_format">اطلاعات به روز رسانی خوانده نشد.</string>
+    <string name="update_error_too_large">اطلاعات به‌روزرسانی بزرگ‌تر از حد انتظار بود و کنار گذاشته شد.</string>
+    <string name="update_error_integrity">فایل دانلود شده با چک سام خود مطابقت نداشت و حذف شد.</string>
+    <string name="update_error_install">نصب انجام نشد. دوباره امتحان کنید.</string>
+    <string name="update_error_not_configured">هیچ کانال به روز رسانی در این بیلد پیکربندی نشده است.</string>
+    <string name="update_maintenance_title">به طور موقت در دسترس نیست</string>
+    <string name="update_maintenance_body">MaxManager به طور موقت در دسترس نیست. لطفاً به زودی دوباره امتحان کنید.</string>
+    <string name="update_check_title">به روز رسانی را بررسی کنید</string>
+    <string name="update_check_supporting">نسخه فعلی: %1$s</string>
+    <string name="update_check_updated">به روز رسانی در دسترس است.</string>
+    <string name="update_check_uptodate">شما در آخرین نسخه هستید.</string>
+    <string name="update_check_failed">نمی‌توان به‌روزرسانی‌ها را بررسی کرد.</string>
+    <string name="update_check_not_configured">هیچ کانال به روز رسانی در این بیلد پیکربندی نشده است.</string>
+    <string name="update_released_label">تاریخ انتشار: %1$s</string>
+    <string name="update_check_none_published">هنوز هیچ آپدیتی از کنترل پنل منتشر نشده است.</string>
+    <string name="update_check_link_missing">به روز رسانی منتشر شده است، اما لینک دانلود آن موجود نیست.</string>
+</resources>

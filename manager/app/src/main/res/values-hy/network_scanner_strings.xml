@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/network_scanner_strings.xml -->
+<resources>
+    <string name="network_scanner_title">Տեղական ցանցի սկաներ</string>
+    <string name="network_scanner_subtitle">Ձեր հասցեն, այն դարպասը, որին հասնում է, և որոնց պատասխանել են հարևանները:</string>
+    <string name="max_role_network_scanner">Կարդում է այն ցանցը, որում գտնվում եք՝ առանց գրավման, առանց արմատի:</string>
+    <string name="ns_no_network">Ոչ մի ցանց միացված չէ:</string>
+    <string name="ns_interface">Ինտերֆեյս</string>
+    <string name="ns_address">Հասցե</string>
+    <string name="ns_gateway">Դարպաս</string>
+    <string name="ns_dns">DNS</string>
+    <string name="ns_mac">MAC</string>
+    <string name="ns_transport_wifi">Wi-Fi</string>
+    <string name="ns_transport_ethernet">Ethernet</string>
+    <string name="ns_transport_cellular">Բջջային</string>
+    <string name="ns_transport_other">Այլ</string>
+    <string name="ns_sources_title">Որտեղ է սա գալիս</string>
+    <string name="ns_sources_body">Հասցեները և դարպասները կարդացվում են հարթակի հղման հատկություններից: Հարևան աղյուսակը կարդացվում է միջուկի ARP քեշից, ուստի այն պահում է միայն այն, ինչի հետ այս սարքը վերջերս խոսել է. դատարկ աղյուսակը չի նշանակում դատարկ ցանց:</string>
+    <string name="ns_refresh">Թարմացնել</string>
+    <string name="ns_probe">Զննեք ընդհանուր նավահանգիստները</string>
+    <string name="ns_probe_stop">Դադարեցրեք</string>
+    <string name="ns_probe_progress">Զոնդավորում %1$d %2$d-ից</string>
+    <string name="ns_probe_note">Ուղարկում է TCP կապ 22, 80, 443, 5000 և 5555 նավահանգիստների վրա այս /24-ով: Հաղորդվում է մի նավահանգիստ, որը պատասխանում է. լռությունը հաղորդավարի բացակայության ապացույց չէ:</string>
+    <string name="ns_neighbours">Հայտնի հարևաններ</string>
+    <string name="ns_neighbours_note">/proc/net/arp-ից — միայն կարդալ:</string>
+    <string name="ns_neighbours_empty">Հարևանները դեռ հայտնի չեն։</string>
+    <string name="ns_ports_value">Նավահանգիստներ %1$s</string>
+</resources>

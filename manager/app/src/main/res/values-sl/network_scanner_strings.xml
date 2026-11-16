@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ترجمات مضافة — المصدر: values/network_scanner_strings.xml -->
+<resources>
+    <string name="network_scanner_title">Optični bralnik lokalnega omrežja</string>
+    <string name="network_scanner_subtitle">Vaš naslov, prehod, ki ga doseže, in kateri sosedje so odgovorili.</string>
+    <string name="max_role_network_scanner">Bere omrežje, v katerem ste – brez zajemanja, brez korena.</string>
+    <string name="ns_no_network">Nobeno omrežje ni povezano.</string>
+    <string name="ns_interface">Vmesnik</string>
+    <string name="ns_address">Naslov</string>
+    <string name="ns_gateway">Prehod</string>
+    <string name="ns_dns">DNS</string>
+    <string name="ns_mac">MAC</string>
+    <string name="ns_transport_wifi">Wi-Fi</string>
+    <string name="ns_transport_ethernet">Ethernet</string>
+    <string name="ns_transport_cellular">Cellular</string>
+    <string name="ns_transport_other">drugo</string>
+    <string name="ns_sources_title">Od kod prihaja to</string>
+    <string name="ns_sources_body">Naslovi in ​​prehod se berejo iz lastnosti povezave platforme. Tabela sosedov se bere iz predpomnilnika ARP jedra, tako da vsebuje samo tisto, s čimer je ta naprava nedavno komunicirala — prazna tabela ne pomeni praznega omrežja.</string>
+    <string name="ns_refresh">Osveži</string>
+    <string name="ns_probe">Preskusite skupna vrata</string>
+    <string name="ns_probe_stop">Stop</string>
+    <string name="ns_probe_progress">Preizkušanje %1$d od %2$d</string>
+    <string name="ns_probe_note">Pošlje povezavo TCP na vrata 22, 80, 443, 5000 in 5555 prek tega /24. Prijavljena so vrata, ki odgovorijo; tišina ni dokaz, da je gostitelj odsoten.</string>
+    <string name="ns_neighbours">Znani sosedje</string>
+    <string name="ns_neighbours_note">Iz /proc/net/arp — samo za branje.</string>
+    <string name="ns_neighbours_empty">Sosedje še niso znani.</string>
+    <string name="ns_ports_value">Vrata %1$s</string>
+</resources>
