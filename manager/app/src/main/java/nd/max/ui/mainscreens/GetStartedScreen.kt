@@ -82,6 +82,7 @@ import nd.max.ui.component.PrivilegePanel
 import nd.max.ui.component.ExpressiveSwitchItem
 import nd.max.ui.component.ScreenAccentGlyph
 import nd.max.ui.component.ScreenAccentProvider
+import nd.max.ui.component.FitText
 import nd.max.core.platform.PropertyUtils
 import nd.max.ui.util.RootUtils
 import nd.max.ui.design.maxRadius
@@ -476,19 +477,23 @@ fun GetStartedScreen(navController: NavController) {
 
                             Spacer(modifier = Modifier.height(8.dp))
 
-                            Text(
+                            // الاسم كلمة واحدة بلا مسافة، فبعرضٍ ضيّق يُقطع في منتصفها
+                            // («MaxManag» ثم «er»). يُصغَّر خطّه حتى يتّسع في سطر واحد بدل القطع.
+                            FitText(
                                 text = stringResource(R.string.app_name),
-                                style = MaterialTheme.typography.displayLarge,
-                                fontWeight = FontWeight.ExtraBold,
                                 color = MaterialTheme.colorScheme.primary,
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier.graphicsLayer {
-                                    val titleProgress = (enterTransition.value - 0.2f).coerceAtLeast(0f) / 0.8f
-                                    alpha = titleProgress
-                                    translationY = 60f * (1f - titleProgress)
-                                    scaleX = 0.9f + (0.1f * titleProgress)
-                                    scaleY = 0.9f + (0.1f * titleProgress)
-                                }
+                                maxSp = MaterialTheme.typography.displayLarge.fontSize.value,
+                                minSp = 26f,
+                                weight = FontWeight.ExtraBold,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .graphicsLayer {
+                                        val titleProgress = (enterTransition.value - 0.2f).coerceAtLeast(0f) / 0.8f
+                                        alpha = titleProgress
+                                        translationY = 60f * (1f - titleProgress)
+                                        scaleX = 0.9f + (0.1f * titleProgress)
+                                        scaleY = 0.9f + (0.1f * titleProgress)
+                                    }
                             )
 
                             Spacer(modifier = Modifier.height(20.dp))

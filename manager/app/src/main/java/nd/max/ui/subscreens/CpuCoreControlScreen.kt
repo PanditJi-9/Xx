@@ -1355,7 +1355,7 @@ private fun CpusetGroupRow(
                                 pendingSelection + cpu
                             }
                         },
-                        label = { Text("CPU$cpu") }
+                        label = { Text("${stringResource(R.string.cpu_label)}$LTR_MARK$cpu") }
                     )
                 }
             }

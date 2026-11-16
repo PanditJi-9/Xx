@@ -179,7 +179,7 @@ private fun StudioLoadOrbit(load: Int, accent: Color) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Icon(Icons.Rounded.Memory, null, Modifier.size(18.dp), tint = accent)
             Text("${load.coerceIn(0, 100)}%", style = MaterialTheme.typography.headlineSmall.copy(fontFeatureSettings = "tnum"), fontWeight = FontWeight.Bold, color = accent)
-            Text("CPU", style = MaterialTheme.typography.labelSmall, letterSpacing = 2.sp, color = accent)
+            Text(stringResource(R.string.cpu_label), style = MaterialTheme.typography.labelSmall, letterSpacing = 2.sp, color = accent)
         }
     }
 }
