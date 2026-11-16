@@ -247,7 +247,12 @@ fun MaxScreen(
                 .maxAdaptiveContentWidth()
                 // No vertical shading on the page shell: scrolled content ends at the bar with a hard edge
                 // (the translucent bar shades itself — see TranslucentTopBar).
-                .verticalScroll(scrollState, enabled = scrollEnabled)
+                //
+                // `enabled = false` يكفّ اللمس ولا يكفّ القياس: `verticalScroll` يظلّ يقيس أبناءه
+                // بارتفاع لا نهائيّ، فأيّ `LazyColumn` داخله يسقط بـ`IllegalStateException`
+                // («Vertically scrollable component was measured with an infinity maximum height»)
+                // — قِيس على الجهاز في `manifest_inspector`. فحين لا تمرّر الصفحة لا يُركَّب المُلحِق.
+                .then(if (scrollEnabled) Modifier.verticalScroll(scrollState) else Modifier)
                 // الفراغ العلويّ جزءٌ من المحتوى المُمرَّر، لا نطاقٌ تُقصّ عنده المنطقة: فالمحتوى ينزلق
                 // حتى حافة البار نفسها، ولا يتوقّف 16dp تحتها ويترك شريطًا فارغًا. وعند فتح الشاشة
                 // يبقى الفراغ كما هو بين البار وأوّل عنصر. وفي الشريط الشفّاف يضاف ارتفاعه هنا

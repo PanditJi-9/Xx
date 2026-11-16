@@ -152,7 +152,6 @@ fun DisplayStudioScreen(
                                     ExpressiveDropdownItem(
                                         icon = Icons.Outlined.Animation,
                                         title = stringResource(R.string.display_animation_scale_title),
-                                        summary = formatAnimationScale(viewModel.animationScale),
                                         items = DisplayStudioViewModel.ANIMATION_SCALE_PRESETS.map(::formatAnimationScale),
                                         selectedIndex = animIndex,
                                         onItemSelected = { viewModel.updateAnimationScale(DisplayStudioViewModel.ANIMATION_SCALE_PRESETS[it]) }
@@ -162,7 +161,6 @@ fun DisplayStudioScreen(
                                     ExpressiveDropdownItem(
                                         icon = Icons.Outlined.FormatSize,
                                         title = stringResource(R.string.display_font_scale_title),
-                                        summary = formatFontScale(viewModel.fontScale),
                                         items = DisplayStudioViewModel.FONT_SCALE_PRESETS.map(::formatFontScale),
                                         selectedIndex = fontIndex,
                                         onItemSelected = { viewModel.updateFontScale(DisplayStudioViewModel.FONT_SCALE_PRESETS[it]) }
@@ -172,7 +170,6 @@ fun DisplayStudioScreen(
                                     ExpressiveDropdownItem(
                                         icon = Icons.Outlined.Timer,
                                         title = stringResource(R.string.display_screen_timeout_title),
-                                        summary = formatTimeout(viewModel.screenTimeoutSeconds),
                                         items = DisplayStudioViewModel.SCREEN_TIMEOUT_PRESETS.map(::formatTimeout),
                                         selectedIndex = timeoutIndex,
                                         onItemSelected = { viewModel.setScreenTimeout(DisplayStudioViewModel.SCREEN_TIMEOUT_PRESETS[it]) }
@@ -200,7 +197,6 @@ fun DisplayStudioScreen(
                                     ExpressiveDropdownItem(
                                         icon = Icons.Outlined.NightlightRound,
                                         title = stringResource(R.string.display_night_start_title),
-                                        summary = formatHour(viewModel.nightStartMinute / 60),
                                         items = HOUR_LABELS,
                                         enabled = viewModel.nightScheduleEnabled,
                                         selectedIndex = (viewModel.nightStartMinute / 60).coerceIn(0, HOUR_LABELS.lastIndex),
@@ -211,7 +207,6 @@ fun DisplayStudioScreen(
                                     ExpressiveDropdownItem(
                                         icon = Icons.Outlined.NightlightRound,
                                         title = stringResource(R.string.display_night_end_title),
-                                        summary = formatHour(viewModel.nightEndMinute / 60),
                                         items = HOUR_LABELS,
                                         enabled = viewModel.nightScheduleEnabled,
                                         selectedIndex = (viewModel.nightEndMinute / 60).coerceIn(0, HOUR_LABELS.lastIndex),

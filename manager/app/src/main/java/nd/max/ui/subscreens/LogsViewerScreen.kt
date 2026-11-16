@@ -43,6 +43,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
+import nd.max.ui.design.MaxCommand
+import nd.max.ui.design.MaxCommandMenu
 import nd.max.ui.design.MaxRadius
 import nd.max.ui.design.MaxSpace
 import nd.max.R
@@ -149,33 +151,46 @@ fun LogsViewerScreen(
                                     )
                                 )
                             }
-                            IconButton(onClick = {
-                                val isUnified = viewModel.viewerMode == LogsViewerViewModel.ViewerMode.UNIFIED
-                                clearConfirmDialog.showConfirm(
-                                    title = resources.getString(R.string.logsviewer_clear_confirm_title),
-                                    content = resources.getString(
-                                        if (isUnified) R.string.logsviewer_clear_confirm_desc_unified else R.string.logsviewer_clear_confirm_desc
+                            // «مسح» و«مشاركة» كانا زرّين دائمين، فصار الشريط مع الإيقاف والإعدادات
+                            // وزرّ المساعدة خمسة أهداف، وتقلّص العنوان إلى «وحدة ال…» — قيس على
+                            // الجهاز. فالفعلان الأقلّ تكرارًا خلف قائمة واحدة: العنوان يعود كاملًا
+                            // ولا يصغر هدف لمس (ADR-07 لا يمنع القائمة، وقاعدة الـ48dp باقية).
+                            MaxCommandMenu(
+                                commands = listOf(
+                                    // المشاركة واحدة، وما يُشارَك هو ما يختار: نفس الفعل يخدّم ملف
+                                    // السجل الخام والتقرير التشخيصي — لا فعلان يفعلان شيئًا واحدًا.
+                                    MaxCommand(
+                                        label = stringResource(R.string.logsviewer_save_cd),
+                                        onSelect = {
+                                            when (viewModel.viewerMode) {
+                                                LogsViewerViewModel.ViewerMode.UNIFIED -> shareVisible = true
+                                                LogsViewerViewModel.ViewerMode.LOGCAT -> viewModel.saveLogs(context) { file ->
+                                                    announceExport(file)
+                                                    file?.let { shareFileNow(it, "text/plain") }
+                                                }
+                                            }
+                                        },
+                                        icon = Icons.Outlined.IosShare,
                                     ),
-                                    confirm = resources.getString(R.string.yes),
-                                    dismiss = resources.getString(R.string.no)
-                                )
-                            }) {
-                                Icon(Icons.Outlined.DeleteSweep, contentDescription = stringResource(R.string.logsviewer_clear_cd))
-                            }
-                            // المشاركة واحدة، وما يُشارَك هو ما يختار: نفس الزرّ يخدّم ملف السجل
-                            // الخام والتقرير التشخيصي. ولو صار لكل واحد زرّه لصار عندنا زرّان يفعلان
-                            // شيئًا واحدًا بصيغتين — وهذا ما يُنسى أحدهما.
-                            IconButton(onClick = {
-                                when (viewModel.viewerMode) {
-                                    LogsViewerViewModel.ViewerMode.UNIFIED -> shareVisible = true
-                                    LogsViewerViewModel.ViewerMode.LOGCAT -> viewModel.saveLogs(context) { file ->
-                                        announceExport(file)
-                                        file?.let { shareFileNow(it, "text/plain") }
-                                    }
-                                }
-                            }) {
-                                Icon(Icons.Outlined.IosShare, contentDescription = stringResource(R.string.logsviewer_save_cd))
-                            }
+                                    MaxCommand(
+                                        label = stringResource(R.string.logsviewer_clear_cd),
+                                        onSelect = {
+                                            val isUnified = viewModel.viewerMode == LogsViewerViewModel.ViewerMode.UNIFIED
+                                            clearConfirmDialog.showConfirm(
+                                                title = resources.getString(R.string.logsviewer_clear_confirm_title),
+                                                content = resources.getString(
+                                                    if (isUnified) R.string.logsviewer_clear_confirm_desc_unified else R.string.logsviewer_clear_confirm_desc
+                                                ),
+                                                confirm = resources.getString(R.string.yes),
+                                                dismiss = resources.getString(R.string.no)
+                                            )
+                                        },
+                                        icon = Icons.Outlined.DeleteSweep,
+                                        destructive = true,
+                                    ),
+                                ),
+                                contentDescription = stringResource(R.string.logsviewer_actions_cd),
+                            )
                             if (viewModel.viewerMode == LogsViewerViewModel.ViewerMode.LOGCAT) {
                                 IconButton(onClick = { settingsVisible = true }) {
                                     Icon(Icons.Outlined.Tune, contentDescription = stringResource(R.string.logsviewer_settings_cd))

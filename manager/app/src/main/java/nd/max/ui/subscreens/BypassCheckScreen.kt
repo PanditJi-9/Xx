@@ -320,7 +320,13 @@ fun BypassChargeCheckScreen(navController: NavController) {
                                 headlineContent = { 
                                     AnimatedContent(targetState = activePath, label = "activePathAnim") { path ->
                                         Text(
-                                            text = if (path == "UNSUPPORTED" || path.isEmpty()) stringResource(R.string.str_no_active_nodes) else path,
+                                            // `NEED_SETUP` علامة داخلية لا مسار نواة، فتُعرض بتسميتها
+                                            // العربية نفسها التي تعرضها شاشة «الشحن الجانبي» — لا رمزًا خامًّا.
+                                            text = when {
+                                                path == "UNSUPPORTED" || path.isEmpty() -> stringResource(R.string.str_no_active_nodes)
+                                                path == "NEED_SETUP" -> stringResource(R.string.bypass_charge_state_needs_setup)
+                                                else -> path
+                                            },
                                             fontWeight = FontWeight.Bold
                                         ) 
                                     }

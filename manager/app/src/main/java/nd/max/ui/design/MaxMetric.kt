@@ -375,7 +375,10 @@ fun MaxMetricLine(
             )
             Text(
                 text = if (showsValue && !metric.unit.isNullOrBlank()) {
-                    "$valueText ${metric.unit}"
+                    // الفاصل بين رقم ووحدة لاتينية محايد، وفي فقرة عربية يُحلّ «R» فيُقلب الترتيب
+                    // إلى «dpi 520» و«% 100» — قِيس على `resolutionscreen`. عزل LRI/PDI يثبّت
+                    // الكتلة كما كُتبت، ويصلح كلّ قارئ للمقاييس لا موضعًا واحدًا.
+                    "\u2066$valueText ${metric.unit}\u2069"
                 } else {
                     valueText
                 },

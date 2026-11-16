@@ -88,6 +88,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import nd.max.ui.design.MaxRadius
 import nd.max.ui.design.MaxSectionSpec
 import nd.max.ui.design.MaxSize
@@ -424,13 +425,25 @@ private object TranslucentBarSpec {
 /** عنوان الشريط في الأنماط الثابتة: سطر واحد بخطّ الكلاسيكيّ نفسه، ومعلَّم عنوانًا لقارئ الشاشة. */
 @Composable
 private fun BarTitle(title: String) {
+    // العنوان كان `titleLarge` ثابتًا فيُقتطع حين يزدحم الشريط بالأفعال: «تنظيف التطبيـ…»
+    // (`debloatfreeze`) و«وحدة ال…» (`logsviewer`) — مقيسًا على الجهاز. والتصغير عند الفائض
+    // هو نمط المستودع نفسه (`CubeParts.kt:187` و`CockpitDeck.kt:571`) فلا يُخترع ثالث.
+    val style = MaterialTheme.typography.titleLarge
+    val minSize = MaterialTheme.typography.titleSmall.fontSize
+    var fontSize by remember(title) { mutableStateOf(style.fontSize) }
     Text(
         text = title,
         modifier = Modifier.semantics { heading() },
-        style = MaterialTheme.typography.titleLarge,
+        style = style.copy(fontSize = fontSize),
         fontWeight = FontWeight.Bold,
         maxLines = 1,
-        overflow = TextOverflow.Ellipsis
+        overflow = TextOverflow.Ellipsis,
+        onTextLayout = { layout ->
+            if (layout.hasVisualOverflow && fontSize > minSize) {
+                val next = fontSize.value - 1f
+                fontSize = if (next <= minSize.value) minSize else next.sp
+            }
+        }
     )
 }
 

@@ -1070,6 +1070,7 @@
     <string name="logsviewer_search_hint">Search tag or message</string>
     <string name="logsviewer_tab_logcat">Logcat</string>
     <string name="logsviewer_tab_unified">MaxManager Log</string>
+    <string name="logsviewer_actions_cd">Log actions</string>
     <string name="logsviewer_tab_kernel">Kernel</string>
     <string name="logsviewer_kernel_note">A snapshot of the kernel ring buffer. It needs root; a refused read is shown as a refusal.</string>
     <string name="logsviewer_kernel_refresh">Refresh</string>
