@@ -29,7 +29,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Memory
@@ -673,7 +675,16 @@ private fun DetailSheet(
 ) {
     val colors = MaterialTheme.colorScheme
     Column(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = MaxSpace.gutter, vertical = MaxSpace.sm),
+        modifier = Modifier
+            .fillMaxWidth()
+            // **والورقة تُمرَّر ولا تُقتطع:** قشرة [CustomBottomSheet] تُرسي محتواها على القاع
+            // ولا تُمرّر من نفسها، فما زاد على الشاشة يُقتطع من **أعلاها**. وهذا المحتوى طويل
+            // (أيقونة واسم وحزمة وثلاث بطاقات، ثم حتى عشرة أسطر تفاصيل، ثم قسم الخيوط، ثم
+            // إجراءان) فيتجاوز ارتفاع الهاتف في الوضع الأفقي — فيختفي أوّلًا **اسم العملية**
+            // التي تُنفَّذ عليها، ويبقى الزرّ. والارتفاع لا يُقاد برقم سحريّ: الأب `fillMaxSize`
+            // يقصّه، فتُمرَّر الزيادة بدل أن تُفقد.
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = MaxSpace.gutter, vertical = MaxSpace.sm),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         AppIcon(reading)
