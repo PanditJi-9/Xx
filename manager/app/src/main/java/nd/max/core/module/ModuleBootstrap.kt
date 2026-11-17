@@ -53,6 +53,12 @@ object ModuleBootstrap {
     }.getOrDefault(false)
 
     /**
+     * اقتباس POSIX آمن: `'` تصبح `'\''`. وكل مسار يُمرَّر إلى الصدفة يُقتبس بها —
+     * باسم مجلّد فيه مسافة أو `;` يصبح الأمر أمرًا آخر يُنفَّذ بصلاحية جذر.
+     */
+    private fun quote(value: String): String = "'" + value.replace("'", "'\\''") + "'"
+
+    /**
      * يستخرج الحِمل ثم يكتبه بصلاحية جذر إلى [MaxManagerPaths.MODULE_DIR].
      *
      * **يجب أن يُنادى خارج الخيط الرئيسي** (`RootCommands.exec()` تنتظر صفّ `su`).
