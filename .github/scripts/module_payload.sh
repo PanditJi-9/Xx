@@ -32,15 +32,28 @@ PAYLOAD="$WORK/payload"
 fail() { echo "❌ $*" >&2; exit 1; }
 
 # ── ١) السكربتات وملفّات الوحدة (بلا APK وبلا META-INF) ─────────────────────
+#
+# **ومصدر كل ملفّ يُقال صراحةً (عطب مقيس في CI، ٢٠٢٦-١١-١٧):** طُلبت هنا
+# `mainfiles/maxmanagerApplist.json` و`mainfiles/LICENSE` و`mainfiles/THIRD_PARTY_NOTICES.md`،
+# وليست في الشجرة — لأن `compile_zip.sh` **ينسخها من جذر المستودع إلى `mainfiles/`** قبل
+# التغليف. فسقط التشغيل بـ«مفقود أو فارغ» بعد تصليب DEX كامل. والقاعدة الآن مطابقة
+# لمصدر الحقيقة: السكربتات من `mainfiles/`، والملفّات الثلاثة من جذر المستودع.
 FILES=(
 	module.prop post-fs-data.sh service.sh props.sh preferenced-tweaks.sh
-	action.sh verify.sh uninstall.sh maxmanagerApplist.json
-	LICENSE THIRD_PARTY_NOTICES.md
+	action.sh verify.sh uninstall.sh
 )
 mkdir -p "$PAYLOAD"
 for name in "${FILES[@]}"; do
 	[ -s "mainfiles/$name" ] || fail "mainfiles/$name مفقود أو فارغ — الحِمل لا يُبنى ناقصًا"
 	cp "mainfiles/$name" "$PAYLOAD/$name"
+done
+
+# `maxmanagerApplist.json` **إلزاميّ** (يقرأه التطبيق ليعرف ما يفعّله)، والاثنان الآخران
+# اختياريّان كما في `compile_zip.sh` (`2>/dev/null` هناك) — فلا يُسقط غيابُهما بناءً.
+[ -s maxmanagerApplist.json ] || fail "maxmanagerApplist.json مفقود أو فارغ في جذر المستودع"
+cp maxmanagerApplist.json "$PAYLOAD/maxmanagerApplist.json"
+for name in LICENSE THIRD_PARTY_NOTICES.md; do
+	[ -s "$name" ] && cp "$name" "$PAYLOAD/$name"
 done
 
 # ── ٢) system/ ثم المكتبات: نفس مصادر compile_zip.sh وأسماؤها ──────────────
