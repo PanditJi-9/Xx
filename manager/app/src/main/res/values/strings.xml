@@ -848,6 +848,13 @@
     <string name="game_sessions_report_band_steady">Steady</string>
     <string name="game_sessions_report_band_uneven">Uneven</string>
     <string name="game_sessions_report_band_rough">Rough</string>
+    <string name="game_sessions_report_stability">Stability</string>
+    <string name="game_sessions_report_stability_note">Typical %1$s FPS</string>
+    <string name="game_sessions_report_share_smooth">Smooth share</string>
+    <string name="game_sessions_report_variation">Variation</string>
+    <string name="game_sessions_report_overlay_title">Metric layer</string>
+    <string name="game_sessions_report_overlay_avg">%1$s avg</string>
+    <string name="game_sessions_report_worst">Worst moments</string>
     <string name="game_sessions_report_meta_duration">duration %1$s</string>
     <string name="game_sessions_report_meta_refresh">display %1$d Hz</string>
     <string name="game_sessions_report_meta_profile">profile %1$s</string>

@@ -1789,6 +1789,13 @@
     <string name="game_sessions_report_band_steady">مستقرّة</string>
     <string name="game_sessions_report_band_uneven">متفاوتة</string>
     <string name="game_sessions_report_band_rough">مضطربة</string>
+    <string name="game_sessions_report_stability">الاستقرار</string>
+    <string name="game_sessions_report_stability_note">المعتاد %1$s إطار/ث</string>
+    <string name="game_sessions_report_share_smooth">نسبة السلاسة</string>
+    <string name="game_sessions_report_variation">التفاوت</string>
+    <string name="game_sessions_report_overlay_title">طبقة القياس</string>
+    <string name="game_sessions_report_overlay_avg">متوسّط %1$s</string>
+    <string name="game_sessions_report_worst">أسوأ اللحظات</string>
     <string name="game_sessions_report_meta_duration">المدة %1$s</string>
     <string name="game_sessions_report_meta_refresh">العرض %1$d Hz</string>
     <string name="game_sessions_report_meta_profile">الوضع %1$s</string>
