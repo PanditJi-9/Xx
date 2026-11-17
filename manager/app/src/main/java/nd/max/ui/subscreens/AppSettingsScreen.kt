@@ -286,28 +286,6 @@ fun AppSettingsScreen(
                         )
                     }
                 }
-                IconButton(onClick = {
-                    packageName?.let { pkg ->
-                        navController.navigate(MaxDestination.MaxBackup.route.replace("{pkg}", pkg))
-                    }
-                }) {
-                    Icon(
-                        imageVector = Icons.Rounded.Backup,
-                        contentDescription = stringResource(R.string.max_backup_title),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-                IconButton(onClick = {
-                    packageName?.let { pkg ->
-                        navController.navigate(MaxDestination.Permissions.route.replace("{pkg}", pkg))
-                    }
-                }) {
-                    Icon(
-                        imageVector = Icons.Rounded.Shield,
-                        contentDescription = stringResource(R.string.max_perms_title),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
                 IconButton(onClick = { showGuide = true }) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Rounded.HelpOutline,
@@ -315,10 +293,29 @@ fun AppSettingsScreen(
                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
-                // Launch and App Info open another app's screen, so they sit behind one menu
-                // instead of taking two of the four slots in the top bar.
+                // النسخ الاحتياطي والصلاحيات انتقلا من الشريط إلى هذه القائمة بأمر المالك
+                // (٢٠٢٦-١١-١٧)، وLaunch وApp Info يفتحان شاشة تطبيق آخر — فالأربعة خلف قائمة
+                // واحدة بدل أن تحجز أربعًا من خانات الشريط العلوي.
                 MaxCommandMenu(
                     commands = listOf(
+                        MaxCommand(
+                            label = stringResource(R.string.max_backup_title),
+                            onSelect = {
+                                packageName?.let { pkg ->
+                                    navController.navigate(MaxDestination.MaxBackup.route.replace("{pkg}", pkg))
+                                }
+                            },
+                            icon = Icons.Rounded.Backup
+                        ),
+                        MaxCommand(
+                            label = stringResource(R.string.max_perms_title),
+                            onSelect = {
+                                packageName?.let { pkg ->
+                                    navController.navigate(MaxDestination.Permissions.route.replace("{pkg}", pkg))
+                                }
+                            },
+                            icon = Icons.Rounded.Shield
+                        ),
                         MaxCommand(
                             label = stringResource(R.string.str_launch_app),
                             onSelect = {

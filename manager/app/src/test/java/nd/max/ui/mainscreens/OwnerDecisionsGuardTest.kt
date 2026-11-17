@@ -92,10 +92,10 @@ class OwnerDecisionsGuardTest {
             "DeviceLab" to ", Control)",
             "UsageStats" to ", Control)",
             "Logs" to ", Control)",
-            "ColorPalette" to ", Control)",
-            // **والسمة استُثنيت بأمر مالك أحدث (٢٠٢٦-١١-١٦):** «واجعل السمة في الاعدادات أسفل
-            // الغة» — فصار لها صفّ في الإعدادات، وهو الاستثناء الوحيد على قاعدة الباب الواحد،
-            // ويُقاس وجوده صراحةً أسفل هذا الحارس (لا يُترك مفتوحًا بلا قياس).
+            "ColorScheme" to ", Control)",
+            // **والسمة (`ColorPalette`) خرجت إلى الإعدادات وحدها بأمر المالك (٢٠٢٦-١١-١٧):**
+            // «نقل السمة إلى الإعدادات فقط وإزالة نظام الألوان في الإعدادات وتركه في شاشة التحكم» —
+            // فصار «نظام الألوان» بابه الوحيد التحكّم، وللسمة صفّ في الإعدادات يُقاس أسفل هذا الحارس.
             // والاثنان يحملان `MaxRisk.Advanced` بعدهما، فالسطر ينتهي بالتصنيف لا بالأب — وهو
             // سبب سقوط هذا الحارس في `f693ef18`: كان الشرط يقارن `", Settings,"` بنهاية السطر.
             "MaxBackup" to ", Control, MaxRisk.Advanced)",
@@ -131,11 +131,24 @@ class OwnerDecisionsGuardTest {
         expected.keys.forEach { name ->
             assertFalse("SettingsScreen يفتح $name بصفٍّ خاص — بابها الوحيد في التحكّم", settings.contains("MaxDestination.$name"))
         }
-        // وقياس الاستثناء الوحيد: السمة تُفتح من الإعدادات بأمر المالك ٢٠٢٦-١١-١٦،
-        // فلو حُذف الصفّ عاد الأمر مُخالفًا بلا أن يسقط شيء.
+        // وقياس الاستثناء الوحيد: السمة تُفتح من الإعدادات وحدها (أمر المالك ٢٠٢٦-١١-١٧)،
+        // فلو حُذف الصفّ، أو عادت إلى التحكّم، أو عاد «نظام الألوان» إلى الإعدادات، سقط الحارس.
         assertTrue(
-            "SettingsScreen صار لا يفتح السمة — أمر المالك ٢٠٢٦-١١-١٦ نصّ على صفٍّ في الإعدادات",
+            "ColorPalette ليست تحت الإعدادات",
+            registry.lines().first { it.contains("data object ColorPalette :") }
+                .trimEnd().endsWith(", Settings)"),
+        )
+        assertTrue(
+            "SettingsScreen صار لا يفتح السمة — أمر المالك ٢٠٢٦-١١-١٧ نصّ على صفٍّ في الإعدادات",
+            settings.contains("MaxDestination.ColorPalette"),
+        )
+        assertFalse(
+            "عاد «نظام الألوان» إلى الإعدادات — بابه الوحيد صفحة التحكّم",
             settings.contains("MaxDestination.ColorScheme"),
+        )
+        assertFalse(
+            "عادت السمة إلى صفحة التحكّم — مكانها الإعدادات وحدها",
+            control.contains("MaxDestination.ColorPalette"),
         )
     }
 }

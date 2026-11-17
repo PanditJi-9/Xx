@@ -14,24 +14,30 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.unit.Dp
 
 /**
- * سماكة الخط **نسبة من ضلع الرمز** لا dp ثابت — قياس مقيس ٢٠٢٦-١١-١٧: كانت
- * `emphasisBorder` = 1.5dp على رمز 40dp ⇒ وزن بصري 3.75% مقابل 8.33% لشبكة
- * Material (2dp على 24dp) أي أنحف ~2.2×، وعند hero 112dp تصير 1.3% (شعرة).
- * فبصير الخط 5.5% من الضلع في كل الأحجام، والوصلات دائرية (كانت Miter افتراضيًّا
- * فتشقّ الزوايا الحادة رأسًا) — نفس سماكة ورقة المعاينة `icon_preview.cjs`.
+ * سماكة الخط **نسبة من ضلع الرمز** لا dp ثابت: ٦٪ من الضلع في كل الأحجام (أثقل من ٥٫٥٪ السابقة
+ * فيبقى الرمز مقروءًا عند ٤٠dp)، والوصلات والنهايات دائرية. كل جزء يضرب هذه السماكة بـ`weight`.
  */
-private const val IllustrationStrokeFraction = 0.055f
+private const val IllustrationStrokeFraction = 0.06f
 
-/** Static, theme-aware domain identity. Text beside it remains the accessible label. */
+/**
+ * Static, theme-aware domain identity. Text beside it remains the accessible label.
+ *
+ * العائلة «زجاج ثنائي اللون»: الجسم تعبئة شفّافة بتدرّج رأسي مع حدّ، والقلب (Accent) تدرّج صلب
+ * من لون أفتح إلى لون التمييز، والتفاصيل المثقوبة (Cutout) بلون سطح البطاقة، والثانوية (Soft)
+ * بنصف شفافية. ألفا [color] يُحترم في كل الأحبار (صفوف معطّلة تبهت كلها معًا).
+ */
 @Composable
 fun MaxIllustration(
     kind: MaxIllustrationKind,
@@ -40,22 +46,50 @@ fun MaxIllustration(
     size: Dp = MaxVisualSpec.mark,
 ) {
     val parts = remember(kind) { maxIllustrationParts(kind) }
-    val outline = MaterialTheme.colorScheme.onSurfaceVariant
-    val accent = color
+    val scheme = MaterialTheme.colorScheme
+    val neutral = scheme.onSurfaceVariant
+    val knockout = scheme.surfaceContainerLow
     Canvas(modifier = modifier.size(size)) {
         val side = this.size.minDimension
         if (!side.isFinite() || side <= 0f) return@Canvas
         val origin = Offset((this.size.width - side) / 2f, (this.size.height - side) / 2f)
-        val stroke = Stroke(
-            width = side * IllustrationStrokeFraction,
+        val baseStroke = side * IllustrationStrokeFraction
+        val top = origin.y
+        val bottom = origin.y + side
+
+        fun scaled(value: Color, factor: Float): Color = value.copy(alpha = value.alpha * factor)
+
+        val accentBrush = Brush.verticalGradient(
+            colors = listOf(lerp(color, Color.White, 0.24f).copy(alpha = color.alpha), color),
+            startY = top,
+            endY = bottom,
+        )
+        val washBrush = Brush.verticalGradient(
+            colors = listOf(scaled(color, 0.34f), scaled(color, 0.12f)),
+            startY = top,
+            endY = bottom,
+        )
+        val washStroke = SolidColor(scaled(color, MaxAlpha.toneContainerStrong))
+        val softBrush = SolidColor(scaled(color, 0.5f))
+        val outlineBrush = SolidColor(
+            scaled(lerp(color, neutral, 0.45f).copy(alpha = color.alpha), 0.92f),
+        )
+        val cutoutBrush = SolidColor(knockout.copy(alpha = 0.96f))
+
+        fun brush(ink: MaxIllustrationInk, filled: Boolean): Brush = when (ink) {
+            MaxIllustrationInk.Accent -> accentBrush
+            MaxIllustrationInk.Outline -> outlineBrush
+            MaxIllustrationInk.Wash -> if (filled) washBrush else washStroke
+            MaxIllustrationInk.Soft -> softBrush
+            MaxIllustrationInk.Cutout -> cutoutBrush
+        }
+
+        fun strokeOf(weight: Float) = Stroke(
+            width = baseStroke * weight,
             cap = StrokeCap.Round,
             join = StrokeJoin.Round,
         )
-        fun ink(value: MaxIllustrationInk): Color = when (value) {
-            MaxIllustrationInk.Accent -> color
-            MaxIllustrationInk.Outline -> outline.copy(alpha = MaxAlpha.supportingText)
-            MaxIllustrationInk.Wash -> accent.copy(alpha = MaxAlpha.toneContainer)
-        }
+
         for (part in parts) {
             when (part) {
                 is MaxIllustrationPart.Line -> {
@@ -66,41 +100,27 @@ fun MaxIllustration(
                         if (index == 0) path.moveTo(x, y) else path.lineTo(x, y)
                     }
                     if (part.closed) path.close()
-                    // A filled silhouette is the domain's body; wash at 0.10 disappeared at row
-                    // size, so filled wash uses the stronger container tone and outline strokes
-                    // stay above it. This is what separates the new family from the old wireframe.
-                    val fillColor = if (part.filled && part.ink == MaxIllustrationInk.Wash) {
-                        accent.copy(alpha = MaxAlpha.toneContainerStrong)
-                    } else {
-                        ink(part.ink)
-                    }
-                    drawPath(path, color = fillColor, style = if (part.filled) Fill else stroke)
+                    drawPath(
+                        path = path,
+                        brush = brush(part.ink, part.filled),
+                        style = if (part.filled) Fill else strokeOf(part.weight),
+                    )
                 }
                 is MaxIllustrationPart.Box -> {
-                    val fillColor = if (part.filled && part.ink == MaxIllustrationInk.Wash) {
-                        accent.copy(alpha = MaxAlpha.toneContainerStrong)
-                    } else {
-                        ink(part.ink)
-                    }
                     drawRoundRect(
-                        color = fillColor,
+                        brush = brush(part.ink, part.filled),
                         topLeft = origin + Offset(part.x * side, part.y * side),
                         size = Size(part.width * side, part.height * side),
                         cornerRadius = CornerRadius(part.radius * side),
-                        style = if (part.filled) Fill else stroke,
+                        style = if (part.filled) Fill else strokeOf(1f),
                     )
                 }
                 is MaxIllustrationPart.Ring -> {
-                    val fillColor = if (part.filled && part.ink == MaxIllustrationInk.Wash) {
-                        accent.copy(alpha = MaxAlpha.toneContainerStrong)
-                    } else {
-                        ink(part.ink)
-                    }
                     drawCircle(
-                        color = fillColor,
-                        center = origin + Offset(part.x * side, part.y * side),
+                        brush = brush(part.ink, part.filled),
                         radius = part.radius * side,
-                        style = if (part.filled) Fill else stroke,
+                        center = origin + Offset(part.x * side, part.y * side),
+                        style = if (part.filled) Fill else strokeOf(1f),
                     )
                 }
             }

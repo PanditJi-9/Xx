@@ -365,10 +365,12 @@ fun SettingsScreen(
                             {
                                 // السمة أسفل اللغة مباشرةً بأمر المالك (٢٠٢٦-١١-١٦): اللسان ثم
                                 // المظهر — أقرب قرارَين يغيّرهما المستخدم في أول دقيقة.
+                                // ومنذ ٢٠٢٦-١١-١٧ الصفّ يفتح «السمة» (`ColorPalette`)؛ أما «نظام الألوان»
+                                // فلا صفّ له هنا — بابه الوحيد صفحة التحكّم.
                                 ExpressiveListItem(
-                                    onClick = { MaxNavActions(navController).navigateTo(MaxDestination.ColorScheme) },
-                                    headlineContent = { Text(stringResource(R.string.color_scheme)) },
-                                    leadingContent = { LeadingIcon(icon = Icons.Rounded.ColorLens) },
+                                    onClick = { MaxNavActions(navController).navigateTo(MaxDestination.ColorPalette) },
+                                    headlineContent = { Text(stringResource(R.string.theme)) },
+                                    leadingContent = { LeadingIcon(icon = Icons.Rounded.Palette) },
                                     trailingContent = {
                                         Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null)
                                     }

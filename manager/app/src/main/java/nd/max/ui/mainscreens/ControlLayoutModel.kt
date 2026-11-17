@@ -91,7 +91,7 @@ val ControlToolDestinations: List<MaxDestination> = listOf(
     MaxDestination.MaxBackup,
     MaxDestination.Permissions,
     MaxDestination.DebloatFreeze,
-    MaxDestination.ColorPalette,
+    // السمة (`ColorPalette`) خرجت إلى الإعدادات وحدها بأمر المالك (٢٠٢٦-١١-١٧)؛ و«نظام الألوان» يبقى هنا.
     MaxDestination.ColorScheme,
     // الأخطف آخرًا: لا يُفتح بلمسة عابرة.
 )
@@ -198,7 +198,6 @@ private val ControlToolBands: List<Pair<Int, List<MaxDestination>>> = listOf(
         MaxDestination.DebloatFreeze,
     ),
     R.string.control_tools_appearance to listOf(
-        MaxDestination.ColorPalette,
         MaxDestination.ColorScheme,
     ),
 )

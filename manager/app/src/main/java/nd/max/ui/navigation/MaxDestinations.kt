@@ -399,6 +399,10 @@ sealed class MaxDestination(
     data object License : MaxDestination("license", R.string.max_license_title, Icons.Rounded.Key, Settings)
 
     /**
+     * **السمة (`ColorPalette`) في الإعدادات وحدها بأمر المالك (٢٠٢٦-١١-١٧)،
+     * و«نظام الألوان» (`ColorScheme`) في التحكّم وحده:** صفّ السمة في الإعدادات يفتح
+     * `ColorPalette`، وصفّ «نظام الألوان» الذي كان في الإعدادات حُذف وبقي في أدوات المظهر.
+     *
      * **السمة عادت إلى الإعدادات بأمر المالك.** كانت نُقلت إلى `Control → Tools` بحجّة أن
      * الألوان أداة لا تفضيل؛ والقياس الذي نقضها: من يريد تغيير السمة يذهب إلى الإعدادات
      * فعلًا، فيجد لغتها وبصمتها هناك ولا يجد **مظهرها** — أي أن الحجّة كانت عن التصنيف لا
@@ -412,7 +416,7 @@ sealed class MaxDestination(
      */
     // والمخاطرة تبقى `Normal`: التصنيف يخصّ ما قد يُربك الجهاز، وهذه الثلاثة تقرأ وتُظهر
     // ولا تكتب عتادًا. رفعها إلى `Advanced` كان سيصنّفها في بوّابة المخاطرة بلا سبب.
-    data object ColorPalette : MaxDestination("color_palette", R.string.theme, Icons.Rounded.Palette, Control)
+    data object ColorPalette : MaxDestination("color_palette", R.string.theme, Icons.Rounded.Palette, Settings)
     data object ColorScheme : MaxDestination("colorscheme", R.string.color_scheme, Icons.Rounded.ColorLens, Control)
     data object Logs : MaxDestination("logsviewer", R.string.logsviewer_title, Icons.AutoMirrored.Rounded.ListAlt, Control)
     data object ConfigBackup : MaxDestination("config_backup", R.string.max_nav_config_backup, Icons.Rounded.Backup, Settings)

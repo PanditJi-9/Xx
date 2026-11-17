@@ -55,10 +55,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import nd.max.R
 import nd.max.core.privilege.PrivilegeLevel
+import nd.max.ui.component.AccessEntryButton
 import nd.max.ui.component.MaxAiEntryButton
 import nd.max.ui.component.NeuralIconChip
 import nd.max.ui.component.NeuralPanel
-import nd.max.ui.component.NeuralPill
 import nd.max.ui.component.NeuralTile
 import nd.max.ui.component.NeuralValue
 import nd.max.ui.component.neuralClickable
@@ -135,13 +135,10 @@ internal fun HomeHeroCard(
         ) {
             // الشارة تحمل درعًا حين يكون الجذر فعلًا؛ فلا يُقرأ «جذر» بلا علامة سلطة،
             // ولا يُرسم الدرع على «أساسي» فيوهم بسلطة ليست هناك.
-            NeuralPill(
+            AccessEntryButton(
                 text = stringResource(accessLabelRes(accessLevel)),
                 accent = access,
-                filled = true,
-                dot = true,
                 icon = if (accessLevel == PrivilegeLevel.ROOT) Icons.Rounded.Shield else null,
-                navigates = true,
                 onClick = onAccess,
             )
             if (accessLevel == PrivilegeLevel.NONE) {

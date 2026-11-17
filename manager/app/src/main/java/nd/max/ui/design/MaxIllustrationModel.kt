@@ -8,16 +8,14 @@ package nd.max.ui.design
 /**
  * Navigation artwork, not telemetry: its topology never changes with a reading.
  *
- * العائلة الحالية (إعادة تصميم مقيسة ٢٠٢٦-١١-١٧ بعد ورقة معاينة `tools/design/icon_preview.cjs`
- * وأمر المالك «اعد تمصيم الايقونات…»): **صورة مملوءة لا سلكيّة** — جسم رمز واحد بحدود
- * بصرية ثابتة (0.08..0.92 في المربع الواحد)، وتفصيل Accent واحد صلب يسمّي المجال،
- * وخط ~5.5% من ضلع الرمز (كان 1.5dp ثابتًا ⇒ 3.75% عند 40dp أي أنحف ~2.2× من
- * شبكة Material 2/24). كل الأشكال متساوية الوزن البصري: هاتف بشاشة مضاءة،
- * شريحة بأرجل، بطاقة رسوميات بمروحة، ذاكرة بشرائح، قرص بطبق، شاشة بقاعدة،
- * بطارية برق، ميزان حرارة، واي فاي، سماعة، يد تحكّم، شبكة تطبيقات، ترس، درع
- * بمفتاح، منزلقات، مفكّ، كاميرا، رادار، ماسة الذكاء (لا نجمة — بوّابة
- * `VisualIdentityTest`)، جزيرة، تلوين فوق، مشهد فيلم، ساعة، مستند بطية،
- * راديو-مسح، أعمدة، بطارية نبض.
+ * العائلة الحالية «زجاج ثنائي اللون» (إعادة تصميم ٢٠٢٦-١١-١٧ بأمر المالك — الرموز السابقة
+ * كانت سيّئة جدًّا، وأولها الهاتف): جسم زجاجي بحدّ، قلب صلب بلون التمييز، تفاصيل مثقوبة
+ * فوق الصلب، وتفاصيل ثانوية خافتة. حدود بصرية ثابتة (0.06..0.94 في المربع الواحد)،
+ * وخط ~6% من ضلع الرمز. أشكالها: هاتف حديث، معالج بأرجل، بطاقة رسوميات بمروحتين، رام،
+ * قرص، شاشة، بطارية برق، ميزان حرارة، واي فاي، سماعة، يد تحكّم، شبكة تطبيقات، ترس،
+ * درع بعلامة صح، منزلقات، مفتاح ربط، كاميرا، حسّاسات، ماسة الذكاء (لا نجمة — بوّابة
+ * `VisualIdentityTest`)، جزيرة، نافذة فوق نافذة، شريط فيلم، ساعة، مستند بطية، رادار، أعمدة،
+ * بطارية نبض.
  */
 enum class MaxIllustrationKind {
     Device, Cpu, Gpu, Memory, Storage, Display, Power, Thermal, Network, Audio,
@@ -25,7 +23,14 @@ enum class MaxIllustrationKind {
     Island, Overlay, Clips, Sessions, Manifest, Scan, Usage, BatteryHistory,
 }
 
-enum class MaxIllustrationInk { Accent, Outline, Wash }
+/**
+ * Accent  — تدرّج اللون الأساسي (جسم الرمز الصلب).
+ * Outline — حدّ الجسم (مائل قليلًا إلى لون الأساس).
+ * Wash    — تعبئة زجاجية شفّافة بتدرّج.
+ * Soft    — لون أساسي بنصف شفافية للتفاصيل الثانوية (أرجل، علامات).
+ * Cutout  — «ثقب» بلون سطح البطاقة يُرسم فوق الأجسام الصلبة (نوافذ، مراوح، علامات).
+ */
+enum class MaxIllustrationInk { Accent, Outline, Wash, Soft, Cutout }
 
 data class MaxIllustrationPoint(val x: Float, val y: Float)
 
@@ -39,6 +44,8 @@ sealed interface MaxIllustrationPart {
         val closed: Boolean = false,
         /** Filled silhouettes carry the domain; [closed] must be true for them to read cleanly. */
         val filled: Boolean = false,
+        /** Multiplier on the family stroke width — thick round-capped strokes draw teeth, blades, handles. */
+        val weight: Float = 1f,
     ) : MaxIllustrationPart
 
     data class Box(
@@ -93,13 +100,21 @@ fun maxIllustrationKind(iconName: String?): MaxIllustrationKind? = when (iconNam
     else -> null
 }
 
-/** No platform calls, randomness, clocks or unbounded detail in the artwork. */
+/**
+ * No platform calls, randomness, clocks or unbounded detail in the artwork.
+ *
+ * عائلة «زجاج ثنائي اللون» (إعادة تصميم ٢٠٢٦-١١-١٧ بأمر المالك: الرموز السابقة سيّئة جدًّا):
+ * جسم زجاجي شفّاف بحدّ واضح + قلب صلب بلون التمييز + تفاصيل «مثقوبة» (Cutout) فوق الصلب
+ * + تفاصيل ثانوية خافتة (Soft). الخط أثقل، والنهايات دائرية، والأشكال أكبر وأكثر وضوحًا.
+ * لا تَراكُب بين تعبئتين شفّافتين (يظهر كدرز)، ولا نجمة (بوّابة `VisualIdentityTest`).
+ */
 fun maxIllustrationParts(kind: MaxIllustrationKind): List<MaxIllustrationPart> = buildList {
     fun line(
         vararg xy: Float,
         ink: MaxIllustrationInk = MaxIllustrationInk.Accent,
         closed: Boolean = false,
         filled: Boolean = false,
+        weight: Float = 1f,
     ) {
         add(
             MaxIllustrationPart.Line(
@@ -107,6 +122,7 @@ fun maxIllustrationParts(kind: MaxIllustrationKind): List<MaxIllustrationPart> =
                 ink = ink,
                 closed = closed,
                 filled = filled,
+                weight = weight,
             ),
         )
     }
@@ -125,221 +141,269 @@ fun maxIllustrationParts(kind: MaxIllustrationKind): List<MaxIllustrationPart> =
     }
     val outline = MaxIllustrationInk.Outline
     val wash = MaxIllustrationInk.Wash
+    val soft = MaxIllustrationInk.Soft
+    val cut = MaxIllustrationInk.Cutout
 
     when (kind) {
+        // هاتف حديث: جسم زجاجي، شاشة مضاءة، كاميرا ثقب، ودجتات، شريط إيماءات، أزرار جانبية.
         MaxIllustrationKind.Device -> {
-            box(0.22f, 0.08f, 0.56f, 0.84f, wash, filled = true, radius = 0.12f)
-            box(0.22f, 0.08f, 0.56f, 0.84f, outline, radius = 0.12f)
-            box(0.31f, 0.19f, 0.38f, 0.52f, filled = true, radius = 0.06f)
-            line(0.43f, 0.8f, 0.57f, 0.8f, ink = outline)
+            box(0.25f, 0.06f, 0.5f, 0.88f, wash, filled = true, radius = 0.13f)
+            box(0.25f, 0.06f, 0.5f, 0.88f, outline, radius = 0.13f)
+            box(0.31f, 0.12f, 0.38f, 0.76f, filled = true, radius = 0.08f)
+            ring(0.5f, 0.19f, 0.02f, cut, filled = true)
+            box(0.36f, 0.27f, 0.28f, 0.17f, cut, filled = true, radius = 0.04f)
+            box(0.36f, 0.48f, 0.13f, 0.13f, cut, filled = true, radius = 0.035f)
+            box(0.51f, 0.48f, 0.13f, 0.13f, cut, filled = true, radius = 0.035f)
+            line(0.42f, 0.79f, 0.58f, 0.79f, ink = cut, weight = 0.9f)
+            line(0.795f, 0.26f, 0.795f, 0.38f, ink = outline, weight = 1.5f)
+            line(0.795f, 0.44f, 0.795f, 0.52f, ink = outline, weight = 1.5f)
         }
+        // معالج: جسم بـ١٢ رجلًا، نواة صلبة، وبصمة مثقوبة في المنتصف.
         MaxIllustrationKind.Cpu -> {
+            for (p in floatArrayOf(0.32f, 0.5f, 0.68f)) {
+                line(p, 0.09f, p, 0.2f, ink = soft, weight = 1.3f)
+                line(p, 0.8f, p, 0.91f, ink = soft, weight = 1.3f)
+                line(0.09f, p, 0.2f, p, ink = soft, weight = 1.3f)
+                line(0.8f, p, 0.91f, p, ink = soft, weight = 1.3f)
+            }
             box(0.2f, 0.2f, 0.6f, 0.6f, wash, filled = true, radius = 0.12f)
             box(0.2f, 0.2f, 0.6f, 0.6f, outline, radius = 0.12f)
-            box(0.33f, 0.33f, 0.34f, 0.34f, filled = true, radius = 0.08f)
-            line(0.3f, 0.09f, 0.3f, 0.19f, ink = outline)
-            line(0.3f, 0.81f, 0.3f, 0.91f, ink = outline)
-            line(0.09f, 0.3f, 0.19f, 0.3f, ink = outline)
-            line(0.81f, 0.3f, 0.91f, 0.3f, ink = outline)
-            line(0.5f, 0.09f, 0.5f, 0.19f, ink = outline)
-            line(0.5f, 0.81f, 0.5f, 0.91f, ink = outline)
-            line(0.09f, 0.5f, 0.19f, 0.5f, ink = outline)
-            line(0.81f, 0.5f, 0.91f, 0.5f, ink = outline)
-            line(0.7f, 0.09f, 0.7f, 0.19f, ink = outline)
-            line(0.7f, 0.81f, 0.7f, 0.91f, ink = outline)
-            line(0.09f, 0.7f, 0.19f, 0.7f, ink = outline)
-            line(0.81f, 0.7f, 0.91f, 0.7f, ink = outline)
+            box(0.32f, 0.32f, 0.36f, 0.36f, filled = true, radius = 0.08f)
+            box(0.43f, 0.43f, 0.14f, 0.14f, cut, filled = true, radius = 0.04f)
         }
+        // بطاقة رسوميات: مروحتان بريشات مثقوبة وموصل سفلي.
         MaxIllustrationKind.Gpu -> {
-            box(0.08f, 0.26f, 0.84f, 0.48f, wash, filled = true, radius = 0.1f)
-            box(0.08f, 0.26f, 0.84f, 0.48f, outline, radius = 0.1f)
-            ring(0.38f, 0.5f, 0.19f)
-            ring(0.38f, 0.5f, 0.06f, filled = true)
-            line(0.38f, 0.575f, 0.38f, 0.665f)
-            line(0.315f, 0.463f, 0.237f, 0.417f)
-            line(0.445f, 0.462f, 0.523f, 0.417f)
-            line(0.64f, 0.76f, 0.64f, 0.9f, ink = outline)
-            line(0.74f, 0.76f, 0.74f, 0.9f, ink = outline)
-            line(0.84f, 0.76f, 0.84f, 0.9f, ink = outline)
+            box(0.06f, 0.22f, 0.88f, 0.52f, wash, filled = true, radius = 0.1f)
+            box(0.06f, 0.22f, 0.88f, 0.52f, outline, radius = 0.1f)
+            for (cx in floatArrayOf(0.32f, 0.68f)) {
+                ring(cx, 0.48f, 0.15f, filled = true)
+                line(cx, 0.48f, cx, 0.375f, ink = cut, weight = 0.9f)
+                line(cx, 0.48f, cx + 0.0909f, 0.5325f, ink = cut, weight = 0.9f)
+                line(cx, 0.48f, cx - 0.0909f, 0.5325f, ink = cut, weight = 0.9f)
+                ring(cx, 0.48f, 0.04f, cut, filled = true)
+            }
+            box(0.14f, 0.78f, 0.56f, 0.06f, soft, filled = true, radius = 0.02f)
         }
+        // شريحة رام: أربع رقائق صلبة وثمانية أرجل.
         MaxIllustrationKind.Memory -> {
-            box(0.1f, 0.28f, 0.8f, 0.42f, wash, filled = true, radius = 0.08f)
-            box(0.1f, 0.28f, 0.8f, 0.42f, outline, radius = 0.08f)
-            box(0.17f, 0.35f, 0.18f, 0.2f, filled = true, radius = 0.03f)
-            box(0.41f, 0.35f, 0.18f, 0.2f, filled = true, radius = 0.03f)
-            box(0.65f, 0.35f, 0.18f, 0.2f, filled = true, radius = 0.03f)
-            line(0.15f, 0.72f, 0.15f, 0.86f, ink = outline)
-            line(0.275f, 0.72f, 0.275f, 0.86f, ink = outline)
-            line(0.4f, 0.72f, 0.4f, 0.86f, ink = outline)
-            line(0.525f, 0.72f, 0.525f, 0.86f, ink = outline)
-            line(0.65f, 0.72f, 0.65f, 0.86f, ink = outline)
-            line(0.775f, 0.72f, 0.775f, 0.86f, ink = outline)
+            box(0.06f, 0.26f, 0.88f, 0.44f, wash, filled = true, radius = 0.07f)
+            box(0.06f, 0.26f, 0.88f, 0.44f, outline, radius = 0.07f)
+            for (i in 0..3) box(0.13f + i * 0.2f, 0.34f, 0.16f, 0.24f, filled = true, radius = 0.03f)
+            for (i in 0..7) line(0.16f + i * 0.1f, 0.74f, 0.16f + i * 0.1f, 0.88f, ink = soft, weight = 1.2f)
         }
+        // قرص: طبق بحلقة مثقوبة، ذراع قراءة، ومؤشر.
         MaxIllustrationKind.Storage -> {
-            box(0.1f, 0.2f, 0.8f, 0.6f, wash, filled = true, radius = 0.1f)
-            box(0.1f, 0.2f, 0.8f, 0.6f, outline, radius = 0.1f)
-            ring(0.42f, 0.5f, 0.2f)
-            ring(0.42f, 0.5f, 0.06f, filled = true)
+            box(0.08f, 0.16f, 0.84f, 0.68f, wash, filled = true, radius = 0.12f)
+            box(0.08f, 0.16f, 0.84f, 0.68f, outline, radius = 0.12f)
+            ring(0.4f, 0.5f, 0.22f, filled = true)
+            ring(0.4f, 0.5f, 0.12f, cut)
+            ring(0.4f, 0.5f, 0.04f, cut, filled = true)
+            line(0.8f, 0.28f, 0.6f, 0.48f, ink = outline, weight = 1.5f)
+            ring(0.8f, 0.28f, 0.04f, filled = true)
+            ring(0.82f, 0.72f, 0.025f, soft, filled = true)
         }
+        // شاشة: لوح مضاء بشمس وجبال مثقوبة وحامل.
         MaxIllustrationKind.Display -> {
-            box(0.1f, 0.14f, 0.8f, 0.58f, wash, filled = true, radius = 0.08f)
-            box(0.1f, 0.14f, 0.8f, 0.58f, outline, radius = 0.08f)
-            box(0.2f, 0.24f, 0.6f, 0.38f, filled = true, radius = 0.05f)
-            line(0.5f, 0.72f, 0.5f, 0.82f, ink = outline)
-            box(0.34f, 0.84f, 0.32f, 0.06f, outline, filled = true, radius = 0.03f)
+            box(0.06f, 0.14f, 0.88f, 0.58f, wash, filled = true, radius = 0.08f)
+            box(0.06f, 0.14f, 0.88f, 0.58f, outline, radius = 0.08f)
+            box(0.12f, 0.2f, 0.76f, 0.46f, filled = true, radius = 0.04f)
+            ring(0.3f, 0.36f, 0.05f, cut, filled = true)
+            line(0.16f, 0.6f, 0.36f, 0.44f, 0.52f, 0.54f, 0.7f, 0.38f, 0.84f, 0.52f, ink = cut, weight = 0.9f)
+            line(0.5f, 0.72f, 0.5f, 0.84f, ink = outline, weight = 1.4f)
+            box(0.32f, 0.84f, 0.36f, 0.07f, outline, filled = true, radius = 0.03f)
         }
+        // بطارية: مستوى شحن صلب وبرق مثقوب.
         MaxIllustrationKind.Power -> {
-            box(0.08f, 0.36f, 0.74f, 0.36f, wash, filled = true, radius = 0.08f)
-            box(0.08f, 0.36f, 0.74f, 0.36f, outline, radius = 0.08f)
-            box(0.84f, 0.46f, 0.06f, 0.16f, outline, radius = 0.02f)
-            line(0.56f, 0.1f, 0.3f, 0.52f, 0.46f, 0.52f, 0.34f, 0.9f, 0.62f, 0.44f, 0.48f, 0.44f, closed = true, filled = true)
+            box(0.06f, 0.26f, 0.78f, 0.48f, wash, filled = true, radius = 0.11f)
+            box(0.06f, 0.26f, 0.78f, 0.48f, outline, radius = 0.11f)
+            box(0.87f, 0.42f, 0.07f, 0.16f, outline, filled = true, radius = 0.03f)
+            box(0.12f, 0.32f, 0.5f, 0.36f, filled = true, radius = 0.06f)
+            line(0.43f, 0.34f, 0.28f, 0.53f, 0.37f, 0.53f, 0.32f, 0.66f, 0.48f, 0.46f, 0.39f, 0.46f, ink = cut, closed = true, filled = true)
         }
+        // ميزان حرارة: قشرة صلبة، تجويف مثقوب، زئبق صلب، وعلامات.
         MaxIllustrationKind.Thermal -> {
-            box(0.42f, 0.1f, 0.16f, 0.54f, outline, radius = 0.08f)
-            box(0.46f, 0.26f, 0.08f, 0.4f, filled = true, radius = 0.04f)
-            ring(0.5f, 0.72f, 0.15f, wash, filled = true)
-            ring(0.5f, 0.72f, 0.15f)
-            ring(0.5f, 0.72f, 0.055f, filled = true)
-            line(0.68f, 0.18f, 0.8f, 0.18f, ink = outline)
-            line(0.68f, 0.32f, 0.8f, 0.32f, ink = outline)
-            line(0.68f, 0.46f, 0.8f, 0.46f, ink = outline)
+            box(0.36f, 0.08f, 0.28f, 0.6f, filled = true, radius = 0.14f)
+            ring(0.5f, 0.71f, 0.21f, filled = true)
+            box(0.44f, 0.16f, 0.12f, 0.5f, cut, filled = true, radius = 0.06f)
+            ring(0.5f, 0.71f, 0.13f, cut, filled = true)
+            box(0.47f, 0.36f, 0.06f, 0.34f, filled = true, radius = 0.03f)
+            ring(0.5f, 0.71f, 0.075f, filled = true)
+            line(0.74f, 0.2f, 0.86f, 0.2f, ink = soft, weight = 1.2f)
+            line(0.74f, 0.32f, 0.86f, 0.32f, ink = soft, weight = 1.2f)
+            line(0.74f, 0.44f, 0.86f, 0.44f, ink = soft, weight = 1.2f)
         }
+        // واي فاي: ثلاث أقواس متدرّجة ونقطة.
         MaxIllustrationKind.Network -> {
-            line(0.373f, 0.613f, 0.404f, 0.588f, 0.441f, 0.57f, 0.48f, 0.561f, 0.52f, 0.561f, 0.559f, 0.57f, 0.596f, 0.588f, 0.627f, 0.613f)
-            line(0.274f, 0.514f, 0.33f, 0.469f, 0.394f, 0.438f, 0.464f, 0.422f, 0.536f, 0.422f, 0.606f, 0.438f, 0.67f, 0.469f, 0.726f, 0.514f, ink = outline)
-            line(0.175f, 0.415f, 0.255f, 0.351f, 0.348f, 0.306f, 0.448f, 0.283f, 0.552f, 0.283f, 0.652f, 0.306f, 0.745f, 0.351f, 0.825f, 0.415f, ink = outline)
-            ring(0.5f, 0.74f, 0.05f, filled = true)
+            line(0.373f, 0.613f, 0.404f, 0.588f, 0.441f, 0.57f, 0.48f, 0.561f, 0.52f, 0.561f, 0.559f, 0.57f, 0.596f, 0.588f, 0.627f, 0.613f, weight = 1.4f)
+            line(0.274f, 0.514f, 0.33f, 0.469f, 0.394f, 0.438f, 0.464f, 0.422f, 0.536f, 0.422f, 0.606f, 0.438f, 0.67f, 0.469f, 0.726f, 0.514f, weight = 1.4f)
+            line(0.175f, 0.415f, 0.255f, 0.351f, 0.348f, 0.306f, 0.448f, 0.283f, 0.552f, 0.283f, 0.652f, 0.306f, 0.745f, 0.351f, 0.825f, 0.415f, ink = soft, weight = 1.4f)
+            ring(0.5f, 0.74f, 0.065f, filled = true)
         }
+        // سماعة: مغناطيس ومخروط صلبان وموجتان.
         MaxIllustrationKind.Audio -> {
-            line(0.14f, 0.4f, 0.3f, 0.4f, 0.5f, 0.2f, 0.5f, 0.8f, 0.3f, 0.6f, 0.14f, 0.6f, closed = true, filled = true)
-            line(0.647f, 0.346f, 0.682f, 0.382f, 0.706f, 0.426f, 0.718f, 0.475f, 0.718f, 0.525f, 0.706f, 0.574f, 0.682f, 0.618f, 0.647f, 0.654f, ink = outline)
-            line(0.737f, 0.238f, 0.795f, 0.3f, 0.836f, 0.375f, 0.857f, 0.457f, 0.857f, 0.543f, 0.836f, 0.625f, 0.795f, 0.7f, 0.737f, 0.762f, ink = outline)
+            box(0.1f, 0.38f, 0.16f, 0.24f, filled = true, radius = 0.04f)
+            line(0.24f, 0.4f, 0.48f, 0.18f, 0.48f, 0.82f, 0.24f, 0.6f, closed = true, filled = true)
+            line(0.647f, 0.346f, 0.682f, 0.382f, 0.706f, 0.426f, 0.718f, 0.475f, 0.718f, 0.525f, 0.706f, 0.574f, 0.682f, 0.618f, 0.647f, 0.654f, weight = 1.4f)
+            line(0.737f, 0.238f, 0.795f, 0.3f, 0.836f, 0.375f, 0.857f, 0.457f, 0.857f, 0.543f, 0.836f, 0.625f, 0.795f, 0.7f, 0.737f, 0.762f, ink = soft, weight = 1.4f)
         }
+        // يد تحكّم: عصا اتجاه، أزرار، وكتفان.
         MaxIllustrationKind.Games -> {
-            box(0.08f, 0.3f, 0.84f, 0.44f, wash, filled = true, radius = 0.22f)
-            box(0.08f, 0.3f, 0.84f, 0.44f, outline, radius = 0.22f)
-            box(0.21f, 0.4f, 0.07f, 0.24f, filled = true, radius = 0.03f)
-            box(0.125f, 0.485f, 0.24f, 0.07f, filled = true, radius = 0.03f)
-            ring(0.66f, 0.45f, 0.05f, filled = true)
-            ring(0.79f, 0.58f, 0.05f)
+            line(0.2f, 0.2f, 0.36f, 0.2f, ink = outline, weight = 1.5f)
+            line(0.64f, 0.2f, 0.8f, 0.2f, ink = outline, weight = 1.5f)
+            box(0.06f, 0.3f, 0.88f, 0.46f, wash, filled = true, radius = 0.23f)
+            box(0.06f, 0.3f, 0.88f, 0.46f, outline, radius = 0.23f)
+            box(0.245f, 0.42f, 0.07f, 0.22f, filled = true, radius = 0.02f)
+            box(0.17f, 0.495f, 0.22f, 0.07f, filled = true, radius = 0.02f)
+            ring(0.72f, 0.44f, 0.045f, filled = true)
+            ring(0.72f, 0.62f, 0.045f, soft, filled = true)
+            ring(0.63f, 0.53f, 0.045f, soft, filled = true)
+            ring(0.81f, 0.53f, 0.045f, soft, filled = true)
         }
+        // شبكة تطبيقات: رقعة شطرنج صلب/زجاج.
         MaxIllustrationKind.Apps -> {
             box(0.12f, 0.12f, 0.34f, 0.34f, filled = true, radius = 0.1f)
+            box(0.54f, 0.12f, 0.34f, 0.34f, wash, filled = true, radius = 0.1f)
             box(0.54f, 0.12f, 0.34f, 0.34f, outline, radius = 0.1f)
+            box(0.12f, 0.54f, 0.34f, 0.34f, wash, filled = true, radius = 0.1f)
             box(0.12f, 0.54f, 0.34f, 0.34f, outline, radius = 0.1f)
-            box(0.54f, 0.54f, 0.34f, 0.34f, outline, radius = 0.1f)
+            box(0.54f, 0.54f, 0.34f, 0.34f, filled = true, radius = 0.1f)
         }
+        // ترس: جسم صلب بثماني أسنان سميكة وثقب مركزي.
         MaxIllustrationKind.System -> {
-            ring(0.5f, 0.5f, 0.31f, outline)
-            line(0.81f, 0.5f, 0.93f, 0.5f, ink = outline)
-            line(0.719f, 0.719f, 0.804f, 0.804f, ink = outline)
-            line(0.5f, 0.81f, 0.5f, 0.93f, ink = outline)
-            line(0.281f, 0.719f, 0.196f, 0.804f, ink = outline)
-            line(0.19f, 0.5f, 0.07f, 0.5f, ink = outline)
-            line(0.281f, 0.281f, 0.196f, 0.196f, ink = outline)
-            line(0.5f, 0.19f, 0.5f, 0.07f, ink = outline)
-            line(0.719f, 0.281f, 0.804f, 0.196f, ink = outline)
-            ring(0.5f, 0.5f, 0.12f, filled = true)
+            line(0.78f, 0.5f, 0.87f, 0.5f, weight = 2.4f)
+            line(0.698f, 0.698f, 0.7616f, 0.7616f, weight = 2.4f)
+            line(0.5f, 0.78f, 0.5f, 0.87f, weight = 2.4f)
+            line(0.302f, 0.698f, 0.2384f, 0.7616f, weight = 2.4f)
+            line(0.22f, 0.5f, 0.13f, 0.5f, weight = 2.4f)
+            line(0.302f, 0.302f, 0.2384f, 0.2384f, weight = 2.4f)
+            line(0.5f, 0.22f, 0.5f, 0.13f, weight = 2.4f)
+            line(0.698f, 0.302f, 0.7616f, 0.2384f, weight = 2.4f)
+            ring(0.5f, 0.5f, 0.3f, filled = true)
+            ring(0.5f, 0.5f, 0.13f, cut, filled = true)
+            ring(0.5f, 0.5f, 0.06f, filled = true)
         }
+        // درع: جسم زجاجي، درع داخلي صلب، وعلامة صح مثقوبة.
         MaxIllustrationKind.Security -> {
-            line(0.5f, 0.08f, 0.84f, 0.2f, 0.8f, 0.56f, 0.5f, 0.9f, 0.2f, 0.56f, 0.16f, 0.2f, ink = wash, closed = true, filled = true)
-            line(0.5f, 0.08f, 0.84f, 0.2f, 0.8f, 0.56f, 0.5f, 0.9f, 0.2f, 0.56f, 0.16f, 0.2f, ink = outline, closed = true)
-            ring(0.5f, 0.4f, 0.09f)
-            line(0.5f, 0.49f, 0.5f, 0.64f)
+            line(0.5f, 0.07f, 0.84f, 0.19f, 0.84f, 0.5f, 0.74f, 0.72f, 0.5f, 0.93f, 0.26f, 0.72f, 0.16f, 0.5f, 0.16f, 0.19f, ink = wash, closed = true, filled = true)
+            line(0.5f, 0.07f, 0.84f, 0.19f, 0.84f, 0.5f, 0.74f, 0.72f, 0.5f, 0.93f, 0.26f, 0.72f, 0.16f, 0.5f, 0.16f, 0.19f, ink = outline, closed = true)
+            line(0.5f, 0.208f, 0.731f, 0.289f, 0.731f, 0.5f, 0.663f, 0.65f, 0.5f, 0.792f, 0.337f, 0.65f, 0.269f, 0.5f, 0.269f, 0.289f, closed = true, filled = true)
+            line(0.4f, 0.5f, 0.47f, 0.58f, 0.61f, 0.4f, ink = cut, weight = 1.5f)
         }
+        // منزلقات: مسارات خافتة، جزء نشط، ومقابض بنقطة مثقوبة.
         MaxIllustrationKind.Controls -> {
-            line(0.12f, 0.22f, 0.88f, 0.22f, ink = outline)
-            ring(0.32f, 0.22f, 0.085f, filled = true)
-            line(0.12f, 0.5f, 0.88f, 0.5f, ink = outline)
-            ring(0.68f, 0.5f, 0.085f, filled = true)
-            line(0.12f, 0.78f, 0.88f, 0.78f, ink = outline)
-            ring(0.42f, 0.78f, 0.085f, filled = true)
+            val rows = floatArrayOf(0.22f, 0.5f, 0.78f)
+            val knobs = floatArrayOf(0.32f, 0.68f, 0.45f)
+            for (i in 0..2) {
+                line(0.12f, rows[i], 0.88f, rows[i], ink = soft)
+                line(0.12f, rows[i], knobs[i], rows[i], weight = 1.4f)
+                ring(knobs[i], rows[i], 0.1f, filled = true)
+                ring(knobs[i], rows[i], 0.035f, cut, filled = true)
+            }
         }
+        // مفتاح ربط: رأس بفكّ مثقوب ومقبض سميك.
         MaxIllustrationKind.Tools -> {
-            box(0.38f, 0.08f, 0.24f, 0.32f, filled = true, radius = 0.08f)
-            box(0.38f, 0.08f, 0.24f, 0.32f, outline, radius = 0.08f)
-            line(0.5f, 0.42f, 0.5f, 0.76f)
-            line(0.42f, 0.76f, 0.58f, 0.76f)
+            line(0.54f, 0.46f, 0.22f, 0.78f, weight = 2.6f)
+            ring(0.2f, 0.8f, 0.09f, filled = true)
+            ring(0.66f, 0.34f, 0.22f, filled = true)
+            line(0.66f, 0.34f, 0.84f, 0.16f, ink = cut, weight = 2f)
         }
+        // كاميرا: نتوء علوي، عدسة بحلقة مثقوبة، وفلاش.
         MaxIllustrationKind.Camera -> {
-            line(0.3f, 0.3f, 0.36f, 0.2f, 0.64f, 0.2f, 0.7f, 0.3f, ink = outline)
-            box(0.08f, 0.3f, 0.84f, 0.52f, wash, filled = true, radius = 0.1f)
-            box(0.08f, 0.3f, 0.84f, 0.52f, outline, radius = 0.1f)
-            ring(0.5f, 0.56f, 0.16f)
-            ring(0.5f, 0.56f, 0.07f, filled = true)
+            box(0.34f, 0.17f, 0.32f, 0.11f, soft, filled = true, radius = 0.04f)
+            box(0.06f, 0.28f, 0.88f, 0.56f, wash, filled = true, radius = 0.12f)
+            box(0.06f, 0.28f, 0.88f, 0.56f, outline, radius = 0.12f)
+            ring(0.5f, 0.56f, 0.2f, filled = true)
+            ring(0.5f, 0.56f, 0.12f, cut)
+            ring(0.5f, 0.56f, 0.045f, cut, filled = true)
+            ring(0.82f, 0.4f, 0.03f, filled = true)
         }
+        // حسّاسات: نقطة مصدر وموجات من الجانبين.
         MaxIllustrationKind.Sensors -> {
-            ring(0.5f, 0.5f, 0.09f, filled = true)
-            line(0.344f, 0.656f, 0.314f, 0.617f, 0.292f, 0.573f, 0.281f, 0.525f, 0.281f, 0.475f, 0.292f, 0.427f, 0.314f, 0.383f, 0.344f, 0.344f, ink = outline)
-            line(0.245f, 0.755f, 0.195f, 0.692f, 0.16f, 0.619f, 0.142f, 0.54f, 0.142f, 0.46f, 0.16f, 0.381f, 0.195f, 0.308f, 0.245f, 0.245f, ink = outline)
-            line(0.656f, 0.344f, 0.686f, 0.383f, 0.708f, 0.427f, 0.719f, 0.475f, 0.719f, 0.525f, 0.708f, 0.573f, 0.686f, 0.617f, 0.656f, 0.656f, ink = outline)
-            line(0.755f, 0.245f, 0.805f, 0.308f, 0.84f, 0.381f, 0.858f, 0.46f, 0.858f, 0.54f, 0.84f, 0.619f, 0.805f, 0.692f, 0.755f, 0.755f, ink = outline)
+            ring(0.5f, 0.5f, 0.1f, filled = true)
+            line(0.344f, 0.656f, 0.314f, 0.617f, 0.292f, 0.573f, 0.281f, 0.525f, 0.281f, 0.475f, 0.292f, 0.427f, 0.314f, 0.383f, 0.344f, 0.344f, weight = 1.4f)
+            line(0.245f, 0.755f, 0.195f, 0.692f, 0.16f, 0.619f, 0.142f, 0.54f, 0.142f, 0.46f, 0.16f, 0.381f, 0.195f, 0.308f, 0.245f, 0.245f, ink = soft, weight = 1.4f)
+            line(0.656f, 0.344f, 0.686f, 0.383f, 0.708f, 0.427f, 0.719f, 0.475f, 0.719f, 0.525f, 0.708f, 0.573f, 0.686f, 0.617f, 0.656f, 0.656f, weight = 1.4f)
+            line(0.755f, 0.245f, 0.805f, 0.308f, 0.84f, 0.381f, 0.858f, 0.46f, 0.858f, 0.54f, 0.84f, 0.619f, 0.805f, 0.692f, 0.755f, 0.755f, ink = soft, weight = 1.4f)
         }
+        // ذكاء: ماسة زجاجية، ماسة داخلية صلبة، ونقطة مثقوبة (لا نجمة).
         MaxIllustrationKind.Intelligence -> {
-            line(0.5f, 0.1f, 0.9f, 0.5f, 0.5f, 0.9f, 0.1f, 0.5f, ink = wash, closed = true, filled = true)
-            line(0.5f, 0.1f, 0.9f, 0.5f, 0.5f, 0.9f, 0.1f, 0.5f, ink = outline, closed = true)
-            ring(0.5f, 0.5f, 0.14f)
-            ring(0.5f, 0.5f, 0.05f, filled = true)
+            line(0.5f, 0.07f, 0.93f, 0.5f, 0.5f, 0.93f, 0.07f, 0.5f, ink = wash, closed = true, filled = true)
+            line(0.5f, 0.07f, 0.93f, 0.5f, 0.5f, 0.93f, 0.07f, 0.5f, ink = outline, closed = true)
+            line(0.5f, 0.27f, 0.73f, 0.5f, 0.5f, 0.73f, 0.27f, 0.5f, closed = true, filled = true)
+            ring(0.5f, 0.5f, 0.06f, cut, filled = true)
         }
+        // جزيرة ديناميكية: حبّة زجاجية بكاميرا ومؤشر نشاط.
         MaxIllustrationKind.Island -> {
-            box(0.1f, 0.38f, 0.8f, 0.24f, wash, filled = true, radius = 0.12f)
-            box(0.1f, 0.38f, 0.8f, 0.24f, outline, radius = 0.12f)
-            ring(0.24f, 0.5f, 0.06f, filled = true)
-            line(0.42f, 0.5f, 0.66f, 0.5f, ink = outline)
+            box(0.06f, 0.34f, 0.88f, 0.32f, wash, filled = true, radius = 0.16f)
+            box(0.06f, 0.34f, 0.88f, 0.32f, outline, radius = 0.16f)
+            ring(0.25f, 0.5f, 0.075f, filled = true)
+            box(0.5f, 0.45f, 0.3f, 0.1f, filled = true, radius = 0.05f)
         }
+        // نافذة فوق نافذة: خلفية بسطور ونافذة أمامية صلبة.
         MaxIllustrationKind.Overlay -> {
-            box(0.1f, 0.12f, 0.8f, 0.62f, wash, filled = true, radius = 0.08f)
-            box(0.1f, 0.12f, 0.8f, 0.62f, outline, radius = 0.08f)
-            box(0.46f, 0.48f, 0.38f, 0.3f, filled = true, radius = 0.06f)
-            box(0.46f, 0.48f, 0.38f, 0.3f, outline, radius = 0.06f)
+            box(0.06f, 0.14f, 0.88f, 0.64f, wash, filled = true, radius = 0.08f)
+            box(0.06f, 0.14f, 0.88f, 0.64f, outline, radius = 0.08f)
+            line(0.14f, 0.28f, 0.5f, 0.28f, ink = soft, weight = 1.2f)
+            line(0.14f, 0.4f, 0.36f, 0.4f, ink = soft, weight = 1.2f)
+            box(0.46f, 0.46f, 0.4f, 0.3f, filled = true, radius = 0.06f)
+            line(0.54f, 0.56f, 0.78f, 0.56f, ink = cut, weight = 0.9f)
+            line(0.54f, 0.66f, 0.7f, 0.66f, ink = cut, weight = 0.9f)
         }
+        // شريط فيلم: ثقوب جانبية ومثلث تشغيل.
         MaxIllustrationKind.Clips -> {
-            box(0.1f, 0.18f, 0.8f, 0.64f, wash, filled = true, radius = 0.08f)
-            box(0.1f, 0.18f, 0.8f, 0.64f, outline, radius = 0.08f)
-            box(0.15f, 0.26f, 0.07f, 0.09f, outline, radius = 0.02f)
-            box(0.78f, 0.26f, 0.07f, 0.09f, outline, radius = 0.02f)
-            box(0.15f, 0.45f, 0.07f, 0.09f, outline, radius = 0.02f)
-            box(0.78f, 0.45f, 0.07f, 0.09f, outline, radius = 0.02f)
-            box(0.15f, 0.64f, 0.07f, 0.09f, outline, radius = 0.02f)
-            box(0.78f, 0.64f, 0.07f, 0.09f, outline, radius = 0.02f)
-            line(0.42f, 0.36f, 0.42f, 0.64f, 0.68f, 0.5f, closed = true, filled = true)
+            box(0.06f, 0.18f, 0.88f, 0.64f, wash, filled = true, radius = 0.08f)
+            box(0.06f, 0.18f, 0.88f, 0.64f, outline, radius = 0.08f)
+            for (y in floatArrayOf(0.26f, 0.45f, 0.64f)) {
+                box(0.12f, y, 0.08f, 0.1f, soft, filled = true, radius = 0.02f)
+                box(0.8f, y, 0.08f, 0.1f, soft, filled = true, radius = 0.02f)
+            }
+            line(0.42f, 0.34f, 0.42f, 0.66f, 0.68f, 0.5f, closed = true, filled = true)
         }
+        // ساعة: وجه زجاجي، علامات، وعقربان.
         MaxIllustrationKind.Sessions -> {
-            ring(0.5f, 0.52f, 0.3f, wash, filled = true)
-            ring(0.5f, 0.52f, 0.3f, outline)
-            line(0.5f, 0.52f, 0.5f, 0.34f)
-            line(0.5f, 0.52f, 0.66f, 0.6f)
-            line(0.124f, 0.385f, 0.166f, 0.3f, 0.226f, 0.228f, 0.302f, 0.173f, 0.388f, 0.136f, 0.481f, 0.12f, 0.575f, 0.127f, ink = outline)
-            line(0.13f, 0.39f, 0.13f, 0.53f, ink = outline)
-            line(0.13f, 0.39f, 0.26f, 0.35f, ink = outline)
-        }
-        MaxIllustrationKind.Manifest -> {
-            line(0.26f, 0.1f, 0.62f, 0.1f, 0.76f, 0.24f, 0.76f, 0.9f, 0.26f, 0.9f, ink = wash, closed = true, filled = true)
-            line(0.26f, 0.1f, 0.62f, 0.1f, 0.76f, 0.24f, 0.76f, 0.9f, 0.26f, 0.9f, ink = outline, closed = true)
-            line(0.62f, 0.1f, 0.62f, 0.24f, 0.76f, 0.24f, ink = outline)
-            line(0.34f, 0.42f, 0.68f, 0.42f)
-            line(0.34f, 0.54f, 0.68f, 0.54f)
-            line(0.34f, 0.66f, 0.56f, 0.66f)
-        }
-        MaxIllustrationKind.Scan -> {
-            ring(0.5f, 0.5f, 0.36f, outline)
-            line(0.5f, 0.14f, 0.563f, 0.145f, 0.623f, 0.162f, 0.68f, 0.188f, 0.731f, 0.224f, 0.776f, 0.269f, 0.812f, 0.32f)
-            line(0.5f, 0.28f, 0.546f, 0.285f, 0.589f, 0.299f, 0.629f, 0.322f, 0.663f, 0.353f, 0.691f, 0.39f)
+            ring(0.5f, 0.5f, 0.38f, wash, filled = true)
+            ring(0.5f, 0.5f, 0.38f, outline)
+            line(0.5f, 0.2f, 0.5f, 0.25f, ink = soft, weight = 1.1f)
+            line(0.8f, 0.5f, 0.75f, 0.5f, ink = soft, weight = 1.1f)
+            line(0.5f, 0.8f, 0.5f, 0.75f, ink = soft, weight = 1.1f)
+            line(0.2f, 0.5f, 0.25f, 0.5f, ink = soft, weight = 1.1f)
+            line(0.5f, 0.5f, 0.5f, 0.3f, weight = 1.4f)
+            line(0.5f, 0.5f, 0.66f, 0.58f, weight = 1.4f)
             ring(0.5f, 0.5f, 0.05f, filled = true)
-            ring(0.64f, 0.32f, 0.035f, filled = true)
-            ring(0.34f, 0.66f, 0.035f, outline)
         }
+        // مستند بطية: سطور بأوّل سطر صلب.
+        MaxIllustrationKind.Manifest -> {
+            line(0.22f, 0.08f, 0.6f, 0.08f, 0.78f, 0.26f, 0.78f, 0.92f, 0.22f, 0.92f, ink = wash, closed = true, filled = true)
+            line(0.22f, 0.08f, 0.6f, 0.08f, 0.78f, 0.26f, 0.78f, 0.92f, 0.22f, 0.92f, ink = outline, closed = true)
+            line(0.6f, 0.08f, 0.6f, 0.26f, 0.78f, 0.26f, ink = outline)
+            line(0.32f, 0.46f, 0.68f, 0.46f, weight = 1.3f)
+            line(0.32f, 0.58f, 0.68f, 0.58f, ink = soft, weight = 1.3f)
+            line(0.32f, 0.7f, 0.56f, 0.7f, ink = soft, weight = 1.3f)
+        }
+        // رادار: قرص زجاجي، قطاع مسح، حافة قائدة، ونقاط.
+        MaxIllustrationKind.Scan -> {
+            ring(0.5f, 0.5f, 0.38f, wash, filled = true)
+            ring(0.5f, 0.5f, 0.38f, outline)
+            ring(0.5f, 0.5f, 0.2f, soft)
+            line(0.5f, 0.5f, 0.5932f, 0.1523f, 0.7065f, 0.2051f, 0.7949f, 0.2935f, 0.8477f, 0.4068f, ink = soft, closed = true, filled = true)
+            line(0.5f, 0.5f, 0.8477f, 0.4068f, weight = 1.3f)
+            ring(0.5f, 0.5f, 0.045f, filled = true)
+            ring(0.7f, 0.3f, 0.035f, filled = true)
+            ring(0.34f, 0.64f, 0.035f, soft, filled = true)
+        }
+        // أعمدة: ثلاثة أعمدة تصاعدية والأعلى صلب.
         MaxIllustrationKind.Usage -> {
-            line(0.12f, 0.84f, 0.88f, 0.84f, ink = outline)
-            box(0.2f, 0.56f, 0.14f, 0.28f, filled = true, radius = 0.02f)
-            box(0.43f, 0.4f, 0.14f, 0.44f, filled = true, radius = 0.02f)
-            box(0.66f, 0.22f, 0.14f, 0.62f, filled = true, radius = 0.02f)
+            line(0.1f, 0.86f, 0.9f, 0.86f, ink = outline)
+            box(0.16f, 0.52f, 0.17f, 0.34f, soft, filled = true, radius = 0.04f)
+            box(0.415f, 0.34f, 0.17f, 0.52f, soft, filled = true, radius = 0.04f)
+            box(0.67f, 0.14f, 0.17f, 0.72f, filled = true, radius = 0.04f)
         }
+        // بطارية بنبض: جسم زجاجي وخط نبض سميك.
         MaxIllustrationKind.BatteryHistory -> {
-            box(0.08f, 0.36f, 0.74f, 0.36f, wash, filled = true, radius = 0.08f)
-            box(0.08f, 0.36f, 0.74f, 0.36f, outline, radius = 0.08f)
-            box(0.84f, 0.46f, 0.06f, 0.16f, outline, radius = 0.02f)
-            line(0.16f, 0.54f, 0.32f, 0.54f, 0.4f, 0.42f, 0.5f, 0.64f, 0.58f, 0.54f, 0.74f, 0.54f)
+            box(0.06f, 0.26f, 0.78f, 0.48f, wash, filled = true, radius = 0.11f)
+            box(0.06f, 0.26f, 0.78f, 0.48f, outline, radius = 0.11f)
+            box(0.87f, 0.42f, 0.07f, 0.16f, outline, filled = true, radius = 0.03f)
+            line(0.14f, 0.52f, 0.3f, 0.52f, 0.4f, 0.38f, 0.5f, 0.64f, 0.6f, 0.52f, 0.76f, 0.52f, weight = 1.4f)
         }
     }
 }
