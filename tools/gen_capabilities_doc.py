@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """مستند القدرات المولّد من كتالوج التحكّم — نقل فكرة «المخطط يُولّد التوثيق» لا كودها.
 
-**المصدر الوحيد:** `manager/app/src/main/assets/control_catalog.json`.
+**المصدر الوحيد:** `manager/app/src/main/assets-internal/control_catalog.json`.
 **المخرج:** `docs/CAPABILITIES.md` — مرآةٌ لما يعلنه الكتالوج، لا وصفًا يدويًّا يتقادم.
 
 لماذا مولّد لا كاتب يدوي: الكتالوج هو العقد المقيس (٤١ مدخلًا · ٦٩ مرشّحًا · ١ غير مُخطَّط)،
@@ -21,7 +21,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-CATALOG = ROOT / "manager/app/src/main/assets/control_catalog.json"
+CATALOG = ROOT / "manager/app/src/main/assets-internal/control_catalog.json"
 DOC = ROOT / "docs/CAPABILITIES.md"
 
 
@@ -51,7 +51,7 @@ def render(data: dict) -> str:
     lines: list[str] = [
         "# فهرس القدرات — مولّد من الكتالوج",
         "",
-        "> **لا تُعدّل هذا الملفّ يدويًّا.** المصدر `manager/app/src/main/assets/control_catalog.json`،",
+        "> **لا تُعدّل هذا الملفّ يدويًّا.** المصدر `manager/app/src/main/assets-internal/control_catalog.json`،",
         "> والتوليد `python3 tools/gen_capabilities_doc.py --write`، والتحقّق في البوابات",
         "> `python3 tools/gen_capabilities_doc.py --assert`.",
         "",

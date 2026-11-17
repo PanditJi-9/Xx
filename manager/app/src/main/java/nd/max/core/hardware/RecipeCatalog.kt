@@ -6,6 +6,7 @@
 package nd.max.core.hardware
 
 import android.content.Context
+import nd.max.core.security.AssetVault
 
 /**
  * من كتالوج التحكّم إلى مدخلات محرّك الوصفات — تحويلٌ لا اجتهاد.
@@ -46,8 +47,8 @@ object RecipeCatalog {
 
     /** من أصلّ التطبيق. فشل القراءة يعود فارغًا لا يرمي — نفس عقد [fromJson]. */
     fun load(context: Context): List<RecipePlan.Entry> = runCatching {
-        context.applicationContext.assets.open(CatalogControlIndex.ASSET)
-            .bufferedReader()
-            .use { it.readText() }
+        // عبر `AssetVault`: مختومًا في نسخة الإصدار، صريحًا في debug — قراءة واحدة للحالتين.
+        AssetVault.readText(context.applicationContext, CatalogControlIndex.ASSET)
+            ?: error("${CatalogControlIndex.ASSET} غير مقروء من الأصول")
     }.map(::fromJson).getOrDefault(emptyList())
 }

@@ -29165,3 +29165,21 @@ design_tokens 0 · hardening_guard ✓ · provenance_guard (٤٨٧٢ ملفًّ�
 
 **التالي:** `control_catalog.json` (٥٦ ك.ب) له قارئان (`HardwareCapabilityResolver` ·
 `RecipeCatalog`) — تحويلهما إلى `AssetVault.readText` ثم نقله؛ ثم مراجعة `assets/spoof/`.
+
+## تكملة ٢٩٦ — `control_catalog.json` إلى المختوم + عطب ترجمة غير مقصود في GamePanelTurbo (2026-11-17)
+
+**أُنجز:**
+1. `control_catalog.json` (٥٦٬٢٨١ بايت) → `assets-internal/`، والقارئان
+   (`HardwareCapabilityResolver` · `RecipeCatalog`) عبر `AssetVault.readText`.
+   ومولّداته الثلاثة تكتب إلى المسار الجديد — وإلا لأعادته إلى `assets/`.
+   `SealedAssetsTest` = ٦ أصول · `file_paths.tsv` يعلن المسار · `ControlCatalogParityTest`
+   يبحث في `assets-internal` **أولًا** (وإلا لكان `assumeTrue` يتخطّاه بصمت = فقد تغطية).
+2. **عطب ترجمة مقيس في Actions (663d928e)** لم يكن من التعديل: `GamePanelTurbo.kt` كان
+   `Icons.Rounded.VolumeUp` (أسقط بوّابة RTL) و`Modifier.weight` خارج `RowScope` وثابتان
+   مُعلنان بعد مستعملهما. أُصلحت الثلاثة بأقلّ أثر: استيراد `automirrored` (نمط `IslandUi.kt`)،
+   و`RowScope.TurboToolTile` (وكل الاستدعاءات الثمانية عشر داخل `Row` — مُتحقَّق)، وترتيب الإعلان.
+   **ولا تغيير في التصميم ولا في القيم.**
+
+**غير مُتحقَّق في هذه البيئة:** الترجمة نفسها (لا مُصرّف محليًّا) وفكّ الختم على جهاز. المقيس محليًّا:
+`kt_balance` ٠ · `rtl_guard` لا مخالفات · `design_tokens` ٠ · `code_health` نظيف · `gen_control_catalog
+--assert` ✓ · `apk_leak_scan --self-test` ١٣/١٣. والحكم النهائي من Actions.

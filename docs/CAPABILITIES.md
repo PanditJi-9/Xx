@@ -1,6 +1,6 @@
 # فهرس القدرات — مولّد من الكتالوج
 
-> **لا تُعدّل هذا الملفّ يدويًّا.** المصدر `manager/app/src/main/assets/control_catalog.json`،
+> **لا تُعدّل هذا الملفّ يدويًّا.** المصدر `manager/app/src/main/assets-internal/control_catalog.json`،
 > والتوليد `python3 tools/gen_capabilities_doc.py --write`، والتحقّق في البوابات
 > `python3 tools/gen_capabilities_doc.py --assert`.
 

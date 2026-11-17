@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """كاتالوج مفاتيح التحكّم (M1) — مدقّق البيانات المعلنة، لا مولّد كود بلا قارئ.
 
-**المصدر الملتزم:** `manager/app/src/main/assets/control_catalog.json`.
+**المصدر الملتزم:** `manager/app/src/main/assets-internal/control_catalog.json`.
 **الحكم:** كل مفتاح يجب أن يبدأ ببادئة من `HardwareControlKey` (١٥ `const val`)، وكل مدخل
 `PROTECTED` لا يقبل الكتابة، وكل قبضة `NODE` لها مرشّح واحد على الأقل.
 
@@ -22,7 +22,7 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-CATALOG = ROOT / "manager/app/src/main/assets/control_catalog.json"
+CATALOG = ROOT / "manager/app/src/main/assets-internal/control_catalog.json"
 CONTROL_KEY = ROOT / "manager/app/src/main/java/nd/max/core/hardware/HardwareControlKey.kt"
 
 TRANSPORTS = {"NODE", "PROC", "PROP", "AUDIO", "SETTINGS"}

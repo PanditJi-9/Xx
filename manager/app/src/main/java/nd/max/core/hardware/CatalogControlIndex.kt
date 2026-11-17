@@ -67,7 +67,10 @@ internal class CatalogControlIndex private constructor(val entries: List<Catalog
         key == token || ((token.endsWith(":") || token.endsWith(".")) && key.startsWith(token))
 
     companion object {
-        /** اسم الأصل في `assets/` — موضع واحد، فلا يقرأه اثنان بمسارين. */
+        /**
+         * اسم الأصل — موضع واحد، فلا يقرأه اثنان بمسارين. وهو في `assets-internal/`
+         * (يُختم في نسخة الإصدار) ويُقرأ عبر `AssetVault`، وفي debug يُشحن صريحًا كما هو.
+         */
         const val ASSET = "control_catalog.json"
 
         private const val VERSION = 1

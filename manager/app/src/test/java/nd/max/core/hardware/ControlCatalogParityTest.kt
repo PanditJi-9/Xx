@@ -67,7 +67,10 @@ class ControlCatalogParityTest {
 
     @Before
     fun load() {
-        val assets = firstDirectory("src/main/assets", "app/src/main/assets", "../app/src/main/assets")
+        val assets = firstDirectory(
+            "src/main/assets-internal", "app/src/main/assets-internal", "../app/src/main/assets-internal",
+            "src/main/assets", "app/src/main/assets", "../app/src/main/assets",
+        )
         val catalogFile = File(assets, "control_catalog.json")
         assumeTrue("الكتالوج غير موجود؛ لم يُقَس", catalogFile.isFile)
 

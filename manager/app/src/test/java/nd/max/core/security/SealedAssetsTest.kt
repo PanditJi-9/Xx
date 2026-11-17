@@ -56,6 +56,8 @@ class SealedAssetsTest {
         // كتالوج الأجهزة (٤٬١٦٩٬٧٢٨ بايت) خرج من `assets/` الصريحة إلى هنا (2026-11-17):
         // كان **أرخص ما يُنسخ** في المشروع — `unzip -p app.apk assets/devices.db` يكفي.
         "devices.db",
+        // كتالوج مفاتيح التحكّم (٥٦٬٢٨١ بايت) — كان آخر ما بقي صريحًا في `assets/`.
+        "control_catalog.json",
         "spoof/device_catalog.json",
         "spoof/cpu_catalog.json",
         // سكربت التشخيص خرج من DEX إلى أصل مختوم (2026-11-17) — ويُقاس هنا بالطريق نفسه:

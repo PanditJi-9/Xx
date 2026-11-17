@@ -11,6 +11,7 @@ import nd.max.core.platform.HeadroomSample
 import nd.max.core.platform.HeadroomStatus
 import nd.max.core.platform.PropertyUtils
 import nd.max.core.platform.ThermalHeadroom
+import nd.max.core.security.AssetVault
 import nd.max.core.platform.ThermalReadout
 import nd.max.core.platform.ThermalStatus
 import nd.max.core.platform.ThermalStatusSample
@@ -142,7 +143,11 @@ object HardwareCapabilityResolver {
         cachedCatalog?.let { return it }
         val ctx = context ?: return CatalogControlIndex.empty()
         val loaded = runCatching {
-            ctx.assets.open(CatalogControlIndex.ASSET).bufferedReader().use { CatalogControlIndex.parse(it.readText()) }
+            // عبر `AssetVault` لا `assets` مباشرةً: الكتالوج انتقل إلى `assets-internal` فيُختم في
+            // نسخة الإصدار، و`readText` تفكّ الختم وتعيد النصّ كما هو في debug ⇒ مسار واحد.
+            val text = AssetVault.readText(ctx, CatalogControlIndex.ASSET)
+                ?: error("${CatalogControlIndex.ASSET} غير مقروء من الأصول")
+            CatalogControlIndex.parse(text)
         }.getOrDefault(CatalogControlIndex.empty())
         if (loaded.entries.isNotEmpty()) cachedCatalog = loaded
         return loaded

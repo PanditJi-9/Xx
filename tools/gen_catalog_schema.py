@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """مخطط JSON لكتالوج التحكّم — العقد نفسه، مكتوبًا بلغة تقرؤها الأدوات.
 
-**المصدر الوحيد:** `manager/app/src/main/assets/control_catalog.json`.
+**المصدر الوحيد:** `manager/app/src/main/assets-internal/control_catalog.json`.
 **المخرج:** `docs/control-catalog.schema.json` (JSON Schema draft 2020-12).
 
 لماذا مولّد لا ملفّ يدوي: الكتالوج يُتحقَّق منه دلاليًّا في `gen_control_catalog.py`
