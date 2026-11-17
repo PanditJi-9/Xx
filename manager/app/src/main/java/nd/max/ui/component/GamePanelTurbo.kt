@@ -100,7 +100,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import nd.max.core.platform.HudReading
 import kotlin.math.abs
 import kotlin.math.roundToInt
 import kotlinx.coroutines.Dispatchers
@@ -110,9 +109,9 @@ import kotlinx.coroutines.withContext
 import nd.max.R
 import nd.max.core.gamespace.CockpitModel
 import nd.max.core.gamespace.DisplayVeilTone
-import nd.max.core.gamespace.HudField
-import nd.max.core.gamespace.HudReading
-import nd.max.core.gamespace.HudTally
+import nd.max.core.platform.HudField
+import nd.max.core.platform.HudReading
+import nd.max.core.platform.HudTally
 import nd.max.core.gamespace.PanelClockMath
 import nd.max.core.gamespace.PanelClocks
 import nd.max.core.gamespace.PanelControlState
@@ -387,7 +386,7 @@ internal fun GamePanelTurbo(
                         touchedAt = SystemClock.uptimeMillis()
                         total = 0f
                     },
-                    onDrag = { _, amount ->
+                    onVerticalDrag = { _, amount ->
                         total += abs(amount)
                         if (total > TurboCollapseDragPx) {
                             total = -1f
@@ -1263,7 +1262,7 @@ private fun TurboBottomBar(
 }
 
 /** لوحة الألوان: قريبة من المرجع بأمر المالك، وبلا اعتماد على ألوان منتج آخر. */
-private object TurboPalette {
+internal object TurboPalette {
     val Back = Color(0xFF05070D)
     val Plate = Color(0xFF0C1118)
     val Rail = Color(0xFF080A10)
@@ -1287,13 +1286,13 @@ private val TurboGaugeSize = 92.dp
 private val TurboGaugeStroke = 7.dp
 
 /** زاوية مشطوفة: القطع الأربع كما في المرجع. */
-private val TurboChamfer = TurboChamferShape(TurboChamferCut)
-private val TurboChamferSmall = TurboChamferShape(TurboChamferCutSmall)
+internal val TurboChamfer = TurboChamferShape(TurboChamferCut)
+internal val TurboChamferSmall = TurboChamferShape(TurboChamferCutSmall)
 private val TurboModeTileHeight = 56.dp
 private val TurboToolTileHeight = 62.dp
 private val TurboPadXs = 2.dp
-private val TurboPadSm = 6.dp
-private val TurboPadMd = 10.dp
+internal val TurboPadSm = 6.dp
+internal val TurboPadMd = 10.dp
 private const val TurboLeaveMs = 240
 private const val TurboNoteMs = 4200L
 private const val TurboHoldMs = 1600L
@@ -1312,7 +1311,7 @@ private const val LtrMark = "\u200E"
 private val MaxValueUnavailable get() = "—"
 
 /** شكل الزوايا المشطوفة (قطع مستقيم في كل زاوية) — يُصنع مرة ويُعاد استخدامه. */
-private fun TurboChamferShape(cut: Dp) = object : Shape {
+internal fun TurboChamferShape(cut: Dp): Shape = object : Shape {
     override fun createOutline(
         size: Size,
         layoutDirection: LayoutDirection,
