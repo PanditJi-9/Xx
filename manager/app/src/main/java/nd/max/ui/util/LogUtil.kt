@@ -110,7 +110,7 @@ suspend fun dumpDiagnosticLogs(context: Context, saveToDownloads: Boolean): File
         append("SERVICE_BIN=").append(shellQuote(serviceBin)).append('\n')
         append("DEVICE_NAME=").append(shellQuote(realDeviceName)).append('\n')
         append("CHIPSET_NAME=").append(shellQuote(chipsetName)).append('\n')
-        append("APP_VERSION=").append(shellQuote(appVersion)).append('\n')
+        append("APP_VERSION=").append(shellQuote(appVersion ?: "Unknown")).append('\n')
         append(template)
     }
 
