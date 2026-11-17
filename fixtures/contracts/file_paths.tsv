@@ -31,7 +31,10 @@
 # ⚠️ ولا تُعدّل صفًّا هنا لتُمرّر اختبارًا: إن سقط فالسؤال **أيّ الطرفين تباعد عن الآخر**، لا أن يُحرَّك المرجع.
 path	kind	declarations
 .launcher_enabled	file	mainfiles/service.sh
-<base>	dir	archdaemon/jni/src/InotifyHandler/InotifyWatcher.c;binprofiles/src/utils/mod.rs;mainfiles/customize.sh;mainfiles/post-fs-data.sh;mainfiles/preferenced-tweaks.sh;mainfiles/service.sh;mainfiles/uninstall.sh;manager/app/src/main/java/nd/max/MaxManagerPaths.kt;manager/app/src/main/assets-internal/scripts/diagnostics.sh;manager/app/src/main/assets-internal/devices.db;manager/app/src/main/assets-internal/control_catalog.json
+# حُذف إعلانان من صفّ الجذر (2026-11-17): `assets-internal/devices.db` و`assets-internal/control_catalog.json`
+# لا يحملان نصّ `/data/adb/.config/MaxManager` أصلًا (قِيسا بايتًا بايتًا: 0 مطابقة)، وهما ملفّا بيانات
+# لا يذكران جذر الوحدة؛ فإعلانهما كان يجعل الحارس يطلب من ملفٍّ ما ليس فيه. الصفّ نفسه باقٍ بـ٩ ملفات.
+<base>	dir	archdaemon/jni/src/InotifyHandler/InotifyWatcher.c;binprofiles/src/utils/mod.rs;mainfiles/customize.sh;mainfiles/post-fs-data.sh;mainfiles/preferenced-tweaks.sh;mainfiles/service.sh;mainfiles/uninstall.sh;manager/app/src/main/java/nd/max/MaxManagerPaths.kt;manager/app/src/main/assets-internal/scripts/diagnostics.sh
 API	dir	archdaemon/jni/src/InotifyHandler/InotifyWatcher.c;mainfiles/customize.sh
 API/.lock	lock	archdaemon/jni/include/MaxManager.h;mainfiles/post-fs-data.sh
 API/current_modes	file	archdaemon/jni/include/MaxManager.h;mainfiles/customize.sh;manager/app/src/main/java/nd/max/core/maxai/MaxAiEngine.kt

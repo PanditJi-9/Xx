@@ -16,12 +16,7 @@
 
 package nd.max.ui.component
 
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -141,18 +136,15 @@ private fun SmoothTrendCurve(
     gridLines: Int,
     modifier: Modifier = Modifier
 ) {
-    // A gentle traveling shimmer on the fill, so the graph reads as "alive"
-    // even when values are momentarily flat.
-    val infiniteTransition = rememberInfiniteTransition(label = "graphShimmer")
-    val shimmer by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable<Float>(
-            animation = tween<Float>(2600, easing = LinearEasing),
-            repeatMode = RepeatMode.Restart
-        ),
-        label = "graphShimmerValue"
-    )
+    // **حُذف شيمر التعبئة اللانهائي (٢٠٢٦-١١-١٧):** كان
+    // `rememberInfiniteTransition().animateFloat(0f, 1f, infiniteRepeatable(tween(2600)))`
+    // يغيّر شفافية التعبئة كل إطار، والـCanvas يُعاد رسمه معه إلى ما لا نهاية.
+    // والمقيس على الجهاز: `dumpsys gfxinfo nd.max` أعطى **١٠٦ إطار/ث عند السكون**
+    // (3281 ← 4555 في ١٢ ثانية) على شاشة ١٢٠ هرتز، وSurfaceFlinger عند ٢٩–٤٠ ٪،
+    // وRenderThread ٣٤ ٪ من زمن عملية التطبيق — أي حرارة واستهلاك بطارية مقابل زخرفة.
+    // وقاعدة الحركة عندنا: الحركة تشرح تغيّر حالة، وما طال `MaxDuration.deliberate`
+    // يحتاج سببًا وسكونًا؛ فلا حلقة دائمة على سطح ثابت.
+    val fillTone = 0.34f
 
     val leadAlpha by animateFloatAsState(
         targetValue = 1f,
@@ -211,7 +203,7 @@ private fun SmoothTrendCurve(
             close()
         }
 
-        val shimmerAlpha: Float = 0.32f + 0.06f * kotlin.math.sin(shimmer * 6.283f)
+        val shimmerAlpha: Float = fillTone
 
         drawPath(
             path = fillPath,
