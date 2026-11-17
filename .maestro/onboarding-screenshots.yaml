@@ -1,0 +1,17 @@
+appId: nd.max
+name: Onboarding screenshots (five pages)
+env:
+  NEXT: "التالي"
+---
+# Run on an emulator or a dedicated device only: clearState wipes app data.
+- launchApp:
+    clearState: true
+- takeScreenshot: onboarding-01-welcome
+- tapOn: ${NEXT}
+- takeScreenshot: onboarding-02-access
+- tapOn: ${NEXT}
+- takeScreenshot: onboarding-03-community
+- tapOn: ${NEXT}
+- takeScreenshot: onboarding-04-permissions
+- tapOn: ${NEXT}
+- takeScreenshot: onboarding-05-finish

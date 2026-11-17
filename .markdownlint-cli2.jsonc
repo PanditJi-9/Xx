@@ -1,0 +1,16 @@
+{
+  // Front-facing docs only. The engineering record under docs/ai is a working log,
+  // not a style surface, and its line length is deliberately not enforced.
+  "globs": [
+    "README.md",
+    "docs/README.md",
+    "docs/screenshots/README.md",
+    "docs/store/README.md"
+  ],
+  "config": {
+    "MD013": false,
+    "MD033": false,
+    "MD041": false,
+    "MD024": { "siblings_only": true }
+  }
+}

@@ -1539,6 +1539,7 @@
     <string name="onboarding_access_soft_note">Standard works without root; root and Shizuku add the controls that need system access. You can change this later from the access sheet.</string>
     <string name="onboarding_community_title">Follow Max Manager</string>
     <string name="onboarding_community_desc">The repository and the release channel, one tap away.</string>
+    <string name="onboarding_page_progress">Page %1$d of %2$d</string>
     <string name="onboarding_github_mark">N</string>
     <string name="onboarding_github_platform">GitHub</string>
     <string name="onboarding_github_repo">nader295 / MaxManager</string>

@@ -59,6 +59,8 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
@@ -114,8 +116,8 @@ import nd.max.ui.design.MaxSpace
 import nd.max.ui.util.AppStorageReader
 
 /**
- * Background dinamis yang posisinya pindah dengan mulus antar halaman.
- * Berada di layer terbawah agar tidak terpotong saat transisi AnimatedContent.
+ * خلفية متحرّكة بين الصفحات — أبقاها المالك صراحةً لجمالها، فلا تُحذف.
+ * تبقى في الطبقة السفلى كي لا تقطعها حركة `AnimatedContent` بين الصفحات.
  */
 @Composable
 private fun ExpressiveSystemBackground(
@@ -277,6 +279,7 @@ fun GetStartedScreen(navController: NavController) {
 
     val coroutineScope = rememberCoroutineScope()
     val totalPages = 5
+    val pageProgress = stringResource(R.string.onboarding_page_progress, currentPage + 1, totalPages)
 
     // صفحة الامتياز الموحّدة (الجذر + Shizuku): تُقرأ هنا لتحديد إمكانية التقدّم.
     val privilegeSnapshot by PrivilegeManager.snapshot.collectAsState()
@@ -328,7 +331,11 @@ fun GetStartedScreen(navController: NavController) {
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Row(
-                            modifier = Modifier.padding(bottom = 24.dp),
+                            modifier = Modifier
+                                .padding(bottom = 24.dp)
+                                .semantics(mergeDescendants = true) {
+                                    contentDescription = pageProgress
+                                },
                             horizontalArrangement = Arrangement.Center,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
@@ -374,8 +381,6 @@ fun GetStartedScreen(navController: NavController) {
                                 ) {
                                     Text(stringResource(R.string.cd_back), fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
                                 }
-                            } else {
-                                Spacer(modifier = Modifier.weight(1f))
                             }
 
                             nd.max.ui.component.StudioButton(

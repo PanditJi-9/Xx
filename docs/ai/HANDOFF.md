@@ -28771,6 +28771,14 @@ CSS = ٣٣٨٨ سطرًا · ٤٥ خاصية · ٠ متغيّر غير معرّ�
 - **أصلح عائق بناء مقيس:** `resource_compile --assert` أسقطه aapt2 في `resolution_downscale_custom_desc` و`ify_hint_battery` عبر ٧٨ ملف لغة (`multiple substitutions` بسبب `%` غير المهرَّب/غير الموضعي)؛ أُضيف `formatted="false"` لهما، فصار الحكم «كل مجلدات الموارد تُترجم».
 - **التحقق (محليًا):** `kt_balance` ٣٧٩٨ ملفًا/٠ عوائق · `code_health` خروج ٠ · `i18n_coverage --assert` عوائق ٠ · `i18n_coverage --prune all --assert` يتامى ٠ · `design_tokens` خروج ٠ · `resource_compile --assert` خروج ٠ · `git diff --check` نظيف. **BUILD:** لا بناء محلي (§0.10)؛ لم تُقرأ CI لهذه الدفعة بعد. **RESIDUAL RISK:** الرسم البصري للمجتمع وRTL واللمس **غير مُتحقَّقة** على جهاز. ولوحظ أثناء الجولة commit خارجي `6cc9bf53` (مزامنة ٨٤ لغة) حمل نصوص العربية وإصلاحات `formatted`؛ لم أصدره ولا أعدت كتابة التاريخ. **NEXT:** قراءة حكم CI بعد دفع المالك، ثم فتح الشاشة على جهاز للتأكد من ترتيب البطاقات.
 
+## تكملة — طبقة جودة للمستندات واللقطات (2026-11-17)
+
+- **الأمر:** استخدام موارد `.opencode` وأدوات الهندسة المقترحة: Vale · Diátaxis · MkDocs · markdownlint · Maestro · Fastlane · GitHub CLI · Conventional Commits · git-cliff · pre-commit · actionlint · zizmor · Scorecard، مع الحفاظ على المصدر المغلق وعدم حذف ميزة.
+- **المقيس:** `markdownlint-cli2` كشف **٤ عيوب** في `docs/screenshots/README.md` وأُصلحت ⇒ **٠**. `actionlint` كشف تحذيرين مقصودين بـ`save-always` في `build.yml`/`verify-quick.yml` (سياسة حفظ الحالة عند الفشل موثقة) فلم يُحذف. `zizmor` أبلغ عن Actions غير مثبّتة بالـSHA؛ لم تُغيَّر لأن التثبيت مسح أمني منفصل.
+- **أُضيف:** `.markdownlint-cli2.jsonc` (أربع واجهات فقط، لا `docs/ai/**`) · خطوة `markdownlint` في `docs-gates.yml` بإصدار مثبّت · `.maestro/onboarding-screenshots.yaml` للصفحات الخمس · قسم Diátaxis في `docs/README.md` · تنبيه أن `01-start.png` من نسخة أربع صفحات. وأُعلن ملف الإعداد في `ROOT_ALLOWED` داخل `tools/code_health.py` ليمرّ `code_health` بقرار لا باستثناء صامت.
+- **لم يُضف في هذه الدفعة:** Vale (لا حزمة أسلوب متحقّقة بعد) · MkDocs (موقع `docs/site` موجود ولا أُنشئ ثانٍ) · Fastlane (يحتاج بناءً وآلة) · git-cliff (السجل الحالي مُنسَّق يدويًّا) · actionlint/zizmor في CI (تثبيت Actions يحتاج قرارًا أمنيًّا).
+- **BUILD:** لا بناء محلي (§0.10). **RESIDUAL RISK:** Maestro **لم يُشغّل** — لا جهاز ولا محاكي، فالصور الخمس غير ملتقطة، و`01-start.png` تبقى قديمة ومعلَنة. `npx` في CI يحتاج Node على الـrunner؛ إن غاب تفشل الخطوة باسمها ولا تمرّ صامتة. لا commit/push.
+
 ## تكملة — ستّة تعديلات واجهة بأمر المالك، والإصدار v5.0 (2026-11-16)
 
 **الأمر (حرفيًّا):** «قم باضفة في شاشة البداية ايضا تحت قناة تيجرام رابط الموقع
@@ -29206,3 +29214,17 @@ design_tokens 0 · hardening_guard ✓ · provenance_guard (٤٨٧٢ ملفًّ�
 
 **غير مُتحقَّق في هذه البيئة:** سلوك `DeviceNameUtil` على جهاز حقيقي بعد تغيير ملفّ البيانات —
 لكن الصفّ لا يطابق `Build.DEVICE`/`Build.MODEL` لأيّ جهاز، فمساره لا يُقرأ. والترجمة/الاختبارات من Actions.
+
+## تكملة — إبقاء أنيميشن شاشة البداية (2026-11-17)
+
+- **الأمر:** «لا تقم بازالة الانيمشن من شاشة البداية اذا كان يجعله جميل». كان قد أُزيل الوهج المتجول بحجّة `DESIGN.md`، فأُعيد `ExpressiveSystemBackground` كما كان، وكُتب تعليق صريح يمنع حذفه.
+- **بقي من الجولة:** الإجراء الأول في الصفحة الأولى كامل العرض بدل نصفه، ووصف TalkBack لتقدّم الصفحات (`onboarding_page_progress` في `values` و`values-ar` فقط).
+- **التحقق الخفيف:** `kt_balance` 3810/0 · `code_health` 0 · `i18n_coverage` 0 عوائق · `prune all` 0 · `design_tokens` 246/300 · `resource_compile` 0 · `git diff --check` 0.
+- **الحدود:** لا بناء ولا جهاز (§0.10)، فالشكل والأنيميشن وTalkBack وRTL على شاشة حقيقية **غير مُتحقَّقة**. ولا commit/push.
+
+## تكملة — إزالة وهج التهيئة وتثبيت الإجراء الأول (2026-11-17)
+
+- **المصدر:** `impeccable context --target GetStartedScreen.kt` عمل، لكن المحرّك أعاد `platform: null` ولا يعرف `audit`/`critique` كأوامر؛ فاستُخدم `audit.native` كمرجع مع `DESIGN.md` المحلي، لا محرّك ويب. و`ui-ux-pro-max` أعاد نمطًا تسويقيًّا («Biophilic») لا يخصّ التطبيق، فلم يُنسخ.
+- **الأعطاب المثبتة:** (١) خلفية التهيئة كانت قرصَي radial متحرّكين، وهي وهج زخرفي يخالف قاعدة `DESIGN.md`؛ أُبدلا بتدرّج رأسي ساكن من ألوان السطح. (٢) زرّ «التالي» في الصفحة الأولى كان نصف عرض لأن `Spacer(weight=1f)` يشاركه؛ صار كامل العرض. (٣) صفّ نقاط التقدّم بلا تسمية لقارئ الشاشة؛ أُضيف `semantics` بوصف `onboarding_page_progress` (EN+AR فقط).
+- **المقيس:** `kt_balance` ٣٨١٠/٠ · `code_health` exit 0 · `i18n_coverage --assert` ٠ عوائق (٨٤+en) · `design_tokens` ٢٤٦/٣٠٠ · `resource_compile` كل مجلدات res · `git diff --check` نظيف.
+- **BUILD:** لا بناء محلي (§0.10)؛ لا تصريف ولا جهاز ⇒ الخلفية والـCTA الجديدان وTalkBack/RTL **غير مُتحقَّقة بصريًّا**، وMaestro لم يُشغّل. لا commit/push.

@@ -38,6 +38,7 @@ on:
       # (وهو نفس صنف العطب المُوثَّق في أعلى هذا الملفّ: بوابةٌ لا يُشغّلها شيء).
       - "supabase/**"
       - ".github/workflows/docs-gates.yml"
+      - ".markdownlint-cli2.jsonc"
 
   workflow_dispatch:
 
@@ -62,6 +63,12 @@ jobs:
       # ورقم البناء المشتقّ من عدد الالتزامات ليس سؤال هذه المهمّة (ذاك في `build.yml`).
       - name: Checkout
         uses: actions/checkout@v6.0.2
+
+      # ── بنية المستندات المقدَّمة، لا سجلّ الهندسة ──
+      # القائمة في `.markdownlint-cli2.jsonc`، ولا تُفحص `docs/ai/**` لأنها سجلّ عمل
+      # لا سطح أسلوب. الإصدار مثبَّت كي لا يتغيّر الحكم بين تشغيلين بلا تغيير في المستودع.
+      - name: Markdown structure of the front pages
+        run: npx --yes markdownlint-cli2@0.24.1
 
       # ── الأوامر **لا تُنسخ هنا** — تُقرأ من `build.yml` في وقت التشغيل ──
       #

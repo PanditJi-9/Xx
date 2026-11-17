@@ -459,6 +459,7 @@
     <string name="onboarding_access_soft_note">«أساسي» يعمل بلا جذر، والجذر وShizuku يضيفان التحكّم الذي يحتاج وصول النظام. يمكنك تغيير هذا لاحقًا من نافذة الوصول.</string>
     <string name="onboarding_community_title">تابع Max Manager</string>
     <string name="onboarding_community_desc">المستودع وقناة الإصدارات على بُعد لمسة.</string>
+    <string name="onboarding_page_progress">الصفحة %1$d من %2$d</string>
     <string name="onboarding_github_mark">N</string>
     <string name="onboarding_github_platform">GitHub</string>
     <string name="onboarding_github_repo">nader295 / MaxManager</string>

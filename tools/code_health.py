@@ -60,6 +60,9 @@ OVERSIZE_LINES = 1000
 # شخصي ولا حطام. والقائمة نفسها هي القرار: ما عداها = يُسأل عنه لا يُسمح به صامتًا.
 ROOT_ALLOWED = {
     ".gitattributes", ".gitignore", "AGENTS.md", "LICENSE", "THIRD_PARTY_NOTICES.md", "README.md",
+    # إعداد markdownlint للواجهات الأربع. مكانه الجذر لأن `markdownlint-cli2` يقرؤه منه،
+    # وهو إعداد مشروع لا حطام شخصي، فيُعلَن هنا بقرار لا يُستثنى صامتًا.
+    ".markdownlint-cli2.jsonc",
     # النسخة العربية من الـREADME: ملفّ جذر مشروع لا حطام. أُضيف بعد أن أسقطته البوابة فعلًا
     # (`stray_root_file: 1`) وهو ملفّ جديد غير متعقّب بعد — فالاسم يُعلن هنا لا يُستثنى مؤقّتًا.
     "README.ar.md",

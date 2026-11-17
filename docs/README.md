@@ -3,6 +3,20 @@
 This folder is the written half of MaxManager. The [README](../README.md) is the tour; these pages are
 the answers you reach for when the tour raised a question.
 
+## Documentation types (Diátaxis)
+
+The pages are grouped by the question they answer, not by the order they were written. A page that
+tries to be a tutorial, a reference and an explanation at once is split rather than expanded.
+
+| Type | Question it answers | Pages here |
+| --- | --- | --- |
+| **How-to** | "How do I do this?" | [building](building.md) · [rom-integration](rom-integration.md) · [FAQ](faq.md) |
+| **Reference** | "What are the exact facts?" | [features](features.md) · [compatibility](compatibility.md) · [PROVENANCE](PROVENANCE.md) · [AUTHENTICITY](AUTHENTICITY.md) · [screenshots](screenshots/README.md) |
+| **Explanation** | "Why is it built this way?" | [architecture](architecture.md) · [max-atlas](max-atlas.md) · [max-ai](max-ai.md) · [thermal](thermal.md) · [profiles](profiles.md) · [verification](verification.md) |
+
+No separate tutorial is claimed: the first-run onboarding in the app is the guided path, and this
+folder does not duplicate it as a written lesson.
+
 ## Where to start, by who you are
 
 | You are | Read this first |
@@ -34,6 +48,21 @@ the answers you reach for when the tour raised a question.
 | [../DESIGN.md](../DESIGN.md) | The design language: tokens, roles, components, motion, and the gaps we know about |
 | [../changelog.md](../changelog.md) | Release history (one file, at the repository root) |
 | [screenshots/README.md](screenshots/README.md) | The screenshot contract: names, sizes, and what each shows |
+
+## Checks
+
+The four front pages and the two asset contracts are linted with a pinned markdownlint:
+
+```sh
+npx --yes markdownlint-cli2@0.24.1
+```
+
+The globs live in `.markdownlint-cli2.jsonc`; `docs/ai/` is outside them on purpose because it is a
+working log, not a style surface. Screenshot capture is separate and needs a device:
+
+```sh
+maestro test .maestro/onboarding-screenshots.yaml
+```
 
 ## What this repository contains, and what it deliberately keeps
 
