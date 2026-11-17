@@ -926,7 +926,7 @@ jobs:
       # و… السقف: تشارك هذه المخازن سقف GitHub (10 جيجابايت للمستودع) مع `rust-cache`
       # و`ccache`؛ وهذه الخطوة الآن لا تُكلّف على الالتزام الجديد إلا نداء بحث واحد (تُخطئ
       # المفتاح فلا تُنزّل شيئًا).
-      - name: Restore Gradle project state (same commit only)
+      - name: Restore Gradle project state (branch-scoped, guarded below)
         id: gradle_state
         continue-on-error: true
         uses: actions/cache@v4
@@ -935,7 +935,16 @@ jobs:
             manager/.gradle
             manager/build
             manager/app/build
-          key: gradle-state-${{ runner.os }}-${{ github.sha }}
+          # ── ٢٠٢٦-١١-١٧: التصريف التزايدي عبر الالتزامات، بحرسٍ لا بثقة ──
+          # كان المفتاح `github.sha` وحده ⇒ لا يُسترجَع إلا لالتزامه نفسه، فكل دفعة تدفع
+          # تصريف Kotlin كاملًا (~١٨٢ ث على ٨ أنوية، مقيس في 44069651497). والحادثة التي
+          # فرضت ذلك (١٣٤ خطأ «Unresolved reference» من حالة شجرة أخرى) لا تُعالَج بحرمان
+          # الجميع، بل بشرطٍ يُقاس: الحالة تُقبل فقط إن كانت **من الالتزام الأب** لهذا الالتزام.
+          # والدليل يُكتب في `manager/build/incremental-provenance.txt` بعد تصريف ناجح، ويقرؤه
+          # حرسٌ أسفله قبل أول نداء Gradle: مطابقة ⇒ تزايدي، وإلا ⇒ إسقاط `build/kotlin` وحده.
+          key: gradle-state-${{ runner.os }}-${{ github.ref_name }}-${{ github.sha }}
+          restore-keys: |
+            gradle-state-${{ runner.os }}-${{ github.ref_name }}-
           # القتل الوسَطي (بصمة exit 143) يقتل خطوات post قبل أن تُحفَظ الحالة، فبقيت الجولة
           # التالية باردة — والحلقة ما كانت لتُقطع. والصواب (صحّحه سجل المالك نفسه — تشغيل
           # 2026-09-25 09:37Z، خطوة «Restore Gradle project state»): **`save-always`** من
@@ -951,15 +960,27 @@ jobs:
 
       # ── الحرس: لا تصريف تزايديًّا على تاريخ شجرة أخرى ──
       #
-      # هذا الشرط هو ما يجعل العطب أعلاه **مستحيلًا** لا «غير مرجَّح»: إن وُجدت حالة مشروع
-      # ليست من هذا الالتزام (أُعيدت `restore-keys` يومًا، أو استرجعت أداة أخرى حالةً ما)،
-      # أُسقِط تاريخ Kotlin التزايدي وحده (`**/build/kotlin`) فيصير أول تصريف **كاملًا** —
-      # والتصريف الكامل لا يقرأ تاريخًا سالفًا أصلًا، فلا يبقى للعطب موضع. ولا تُحذف مخرجات
-      # مهام أخرى (موارد · مانيفست · KSP · اختبارات)، فيبقى ما لم يتغيّر مدخله صالحًا.
-      - name: Guard — no incremental Kotlin state from another tree
+      # هذا الشرط هو ما يجعل عطب الحالة القديمة **مستحيلًا** لا «غير مرجَّح»: التاريخ التزايدي
+      # يُقبل فقط إذا أثبت أنه **من الالتزام الأب** مباشرةً (الحالة التي كتبها بناءٌ سابق للشجرة
+      # التي نتفرّع عنها الآن). وأي دليل آخر — غياب الدليل، أو دليل التزام أقدم/أحدث — يُسقِط
+      # `**/build/kotlin` وحده، فيصير أول تصريف كاملًا، والتصريف الكامل لا يقرأ تاريخًا سالفًا
+      # أصلًا. ولا تُحذف مخرجات مهام أخرى (موارد · مانيفست · KSP · اختبارات)، فيبقى ما لم
+      # يتغيّر مدخله صالحًا.
+      #
+      # والدليل المقيس على وجوبه: الالتزام الأب يعطي المحرّك كل ملفات الشجرة التي رآها، فحالةٌ
+      # كُتبت منه سليمةٌ **بحكم بناءٍ نجح عليها**؛ وما عدا ذلك حالةٌ لا نعرف شجرتها.
+      - name: Guard — incremental Kotlin state must come from our parent commit
         run: |
-          if [ "${{ steps.gradle_state.outputs.cache-hit }}" = "true" ]; then
-            echo "✅ حالة المشروع من هذا الالتزام بعينه ⇒ التصريف التزايدي مسموح."
+          stamp=manager/build/incremental-provenance.txt
+          expected="${{ github.event.before }}"
+          case "$expected" in
+            ""|"null"|"0000000000000000000000000000000000000000")
+              expected="$(git rev-parse HEAD^ 2>/dev/null || echo none)" ;;
+          esac
+          restored="$(cat "$stamp" 2>/dev/null || echo none)"
+          echo "· دليل الحالة المسترجعة: $restored — والالتزام الأب المتوقَّع: $expected"
+          if [ -f "$stamp" ] && [ "$restored" = "$expected" ]; then
+            echo "✅ حالة المشروع من الالتزام الأب بعينه ⇒ التصريف التزايدي مسموح."
             exit 0
           fi
           dirs=$(find manager -maxdepth 3 -type d -path '*/build/kotlin' || true)
@@ -969,45 +990,16 @@ jobs:
           fi
           printf '%s\n' "$dirs"
           printf '%s\n' "$dirs" | xargs rm -rf
-          echo "ℹ️ أُسقِط تاريخ Kotlin التزايدي ($(printf '%s\n' "$dirs" | wc -l) مجلدًا) ⇒ أول تصريف كامل."
+          echo "ℹ️ أُسقِط تاريخ Kotlin التزايدي ($(printf '%s\n' "$dirs" | wc -l) مجلدًا) لأن دليله ليس الالتزام الأب ⇒ أول تصريف كامل."
           # (مُكمَّل بخطوة أسفله: الإسقاط نفسه صار يُنفَّذ **قبل** أول نداء Gradle —
           # فهنا لم يكن ثمة ما يُسقَط أصلًا لأن Gradle لم يعمل بعد، وأُبقيت الخطوة حارسًا
           # يُحمرّ التشغيل لو وُجدت حالة غريبة دخلت بأي سبب.)
 
-      # ── إسقاط التاريخ التزايدي قبل Gradle: علاج حلقة القتل المقيسة ──
+      # ── دليل الحالة التزايدية: يُكتب بعد تصريف ناجح، لا قبل Gradle ──
       #
-      # بصمة العطب في سجل المالك (تشغيل 2026-09-25 · الالتزام 2ff6994): كل البوابات نجحت
-      # (Rust 59/0 · بوابة الرموز ✓ · testRelease 1582/0 · minifyReleaseWithR8 ✓)
-      # ثم مات التشغيل بـ`exit code 143` في الدقيقة ١٨٫٥ أثناء `mergeReleaseComposeMapping` —
-      # وهو نفس بصمة القتل السابق (١٦:٠٦ في `optimizeReleaseResources`): إيقافٌ خارجي
-      # (SIGTERM لخدمة الـrunner) لا فشل ترجمة ولا اختبار.
-      #
-      # والسبب الذي يجعل القتل **يتعذر** — مقيس في السجل نفسه لا مُقدَّر:
-      #   • «Basic caching did not find an entry to restore» (setup-gradle) و
-      #     «Cache not found for input keys: gradle-state-Linux-2ff6994…» (خطوة الحالة أعلاه)
-      #     ⇒ الجولة بدأت باردة كاملة.
-      #   • حفظ الكاش كله في خطوات *post* (setup-gradle وactions/cache) لا تُنفَّذ حين يُقتل
-      #     الـrunner ⇒ قتل = لا كاش = الجولة التالية باردة أيضًا. حلقة مفرغة: ~١٨٫٥ دقيقة
-      #     كل جولة، والقتل يقع قبل اكتمالها، فلا يكفّ البناء عن «أن لا ينتهي».
-      #   • وأثقل ما يُدفع في كل جولة باردة مُقاس بالطوابع الزمنية للسجل:
-      #     `mergeReleaseComposeMapping` وحدها **٦:٢٠** (06:50:03 ← 06:56:24) — جرد موارد
-      #     Compose لكل الفئات، وهي تكلفة بداية باردة تذوب UP-TO-DATE/FROM-CACHE بحالة سليمة.
-      #
-      # والعلاج المُختار: إسقاط تاريخ Kotlin التزايدي **قبل** أول نداء Gradle لا بعده.
-      # فيكون أول تصريف كاملًا من مخزن البناء السليم (`~/.gradle/caches`، مفاتيحه من محتوى
-      # المدخلات)، وتُكتب حالة المشروع من أول جولة ناجحة، فيصير التعديل التالي تزايديًّا
-      # حقيقيًّا ينتهي قبل نافذة القتل. (وكانت تكلفة الإسقاط هنا صفرًا في هذا التشغيل:
-      # خطوة الحرس وجدت لا مجلدات — لأن Gradle لم يعمل بعد.)
-      - name: Drop stale incremental Kotlin state before Gradle (kill-loop fix)
-        run: |
-          dirs=$(find manager -maxdepth 3 -type d -path '*/build/kotlin' || true)
-          if [ -z "$dirs" ]; then
-            echo "ℹ️ لا تاريخ تزايدي قبل Gradle (بداية باردة) ⇒ لا شيء يُسقَط."
-          else
-            printf '%s\n' "$dirs"
-            printf '%s\n' "$dirs" | xargs rm -rf
-            echo "ℹ️ أُسقِط تاريخ Kotlin التزايدي ($(printf '%s\n' "$dirs" | wc -l) مجلدًا) قبل Gradle ⇒ أول تصريف كامل."
-          fi
+      # كان هنا إسقاطٌ أعمى لتاريخ Kotlin قبل كل بناء («kill-loop fix»). صار الإسقاط قرارًا
+      # مقيسًا في الحرس أعلاه، والدليل يُكتب في خطوة «Record incremental Kotlin provenance»
+      # بعد نجاح التصريف: فيُصبح الوحيد الذي يُصرّح بشجرة الحالة.
 
       - name: Verify Gradle Wrapper Jar
         working-directory: ./manager
@@ -1213,6 +1205,17 @@ jobs:
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
           CONFIG_PUBLIC_KEY: ${{ secrets.CONFIG_PUBLIC_KEY }}
 
+      # ── دليل الحالة: يُكتب **بعد** تصريف ناجح، وقبل نقطة الحفظ ──
+      #
+      # هذا الملف هو ما يقرؤه الحرس في الجولة التالية: إمّا أن الحالة التي استُرجعت كُتبت
+      # من الالتزام الأب لهذا الالتزام، وإمّا تُسقَط. كتابته هنا (لا في خطوة منفصلة قبل Gradle)
+      # مقصودة: لا يُصرّح بالحالة إلا بناءٌ نجح فعلًا عليها.
+      - name: Record incremental Kotlin provenance
+        run: |
+          mkdir -p manager/build
+          printf '%s\n' "${{ github.sha }}" > manager/build/incremental-provenance.txt
+          echo "✅ دليل الحالة التزايدية: ${{ github.sha }}"
+
       # ── نقطة الحفظ (الشرح أعلاه): خطوة حقيقية، فتعمل والجولة ما زالت حيّة ──
       #
       # مفتاحها **نفس** مفتاح خطوة الاستعادة أعلاه، فالالتزام التالي (أو إعادة تشغيله)
@@ -1227,7 +1230,7 @@ jobs:
             manager/.gradle
             manager/build
             manager/app/build
-          key: gradle-state-${{ runner.os }}-${{ github.sha }}
+          key: gradle-state-${{ runner.os }}-${{ github.ref_name }}-${{ github.sha }}
 
       # ── قياس DEX الإصدار **قبل** التوقيع: يسدّ ثغرة القياس لا ثغرة الحماية ──
       #
@@ -1242,35 +1245,17 @@ jobs:
       # و`--semantic-only` يُسقط عوائق آثار البناء هنا فقط لأنها تُزال في خطوة لاحقة
       # (`dex_strip_source_names.py`) وتُقاس على الحزمة الموقّعة — فلا تُدّعى نظافة ولا
       # يُفشل القياس بسبب عائق يُعالَج في موضع آخر.
-      - name: Measure release DEX semantics (unsigned, R8 output)
-        working-directory: ./manager
-        run: |
-          set -euo pipefail
-          ./gradlew :app:minifyReleaseWithR8 \
-            -Dorg.gradle.jvmargs="-Xmx6g -XX:MaxMetaspaceSize=1g -Dfile.encoding=UTF-8" \
-            -Pmaxmanager.supabaseUrl="$SUPABASE_URL" \
-            -Pmaxmanager.supabaseAnonKey="$SUPABASE_ANON_KEY" \
-            -Pmaxmanager.configPublicKey="$CONFIG_PUBLIC_KEY" \
-            --build-cache \
-            --parallel 2>&1 | tee -a /tmp/gradle-build.log
-
-          # الدليل يُبحث عنه في مخرَج R8 نفسه، لا في مسار مُفترَض: مسار AGP يتغيّر بين
-          # الإصدارات، ومسارٌ مخمَّن يجعل القياس «لم يُجرَ» في صمت.
-          dex_dir="$(find app/build/intermediates -type f -name '*.dex' -path '*minifyReleaseWithR8*' -printf '%h\n' 2>/dev/null | sort -u | head -1)"
-          if [ -z "$dex_dir" ]; then
-            echo "::warning::لم يُوجد مخرَج DEX لـR8 ⇒ القياس الدلاليّ **غير مُتحقَّق** في هذا التشغيل (لا يُدَّعى مرور)"
-            exit 0
-          fi
-          echo "· مخرَج R8 المقيس: $dex_dir"
-          python3 ../tools/apk_leak_scan.py \
-            --assert --semantic-only \
-            --path "$dex_dir" \
-            --budget ../tools/idea_leak_budget.json
-        env:
-          KS_PWD: ${{ secrets.KEYSTORE_PASSWORD }}
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
-          CONFIG_PUBLIC_KEY: ${{ secrets.CONFIG_PUBLIC_KEY }}
+      # ── قياس DEX الإصدار: صار يقرأ مخرَج التجميع نفسه، بعد خطوة الاختبارات والتجميع ──
+      #
+      # كان هنا نداء مستقلّ لـ`:app:minifyReleaseWithR8` **قبل** التجميع، والتجميع بعده
+      # يُنتج DEX الإصدار نفسه من جديد ⇒ مرور R8 مزدوج. والثمن مقيس في التشغيل 44069651497:
+      # **٧٦ ثانية** (11:03:23 → 11:04:39) لتشغيل البوابة وحدها. فانتقلت الخطوة بعد التجميع
+      # لتقرأ `…/minifyReleaseWithR8` التي أنتجها، بلا نداء Gradle ثانٍ.
+      #
+      # والسبب الأصلي لوجودها باقٍ ولا يُنسى: خطوة «Scan the release APK» مشروطة بـ`SIGNED_BUILD=1`،
+      # وهذا المستودع بلا سرّ مفتاح ⇒ لا تُقاس الأرقام إلا هنا. و`--semantic-only` يُسقط عوائق
+      # آثار البناء لأن `dex_strip_source_names.py` يزيلها لاحقًا وتُقاس على الحزمة الموقّعة —
+      # فلا تُدّعى نظافة ولا يُفشل القياس بسبب عائق يُعالَج في موضع آخر.
 
       - name: Tests + assemble + package (contract gate)
         working-directory: ./manager
@@ -1310,6 +1295,27 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
           CONFIG_PUBLIC_KEY: ${{ secrets.CONFIG_PUBLIC_KEY }}
+
+      # ── قياس DEX الإصدار على مخرَج التجميع نفسه (لا مرور R8 ثانٍ) ──
+      #
+      # موضعه بعد التجميع مقصود: `assembleRelease` يشغّل `minifyReleaseWithR8` أصلًا، فالقياس
+      # هنا يقرأ DEX الإصدار الذي أنتجه ولا يدفع ٧٦ ثانية لمخرَج مطابق (مقيس في 44069651497).
+      # وإن كان المتغيّر Debug (بناء غير إصدار) فلا مخرَج R8 ⇒ الخطوة تعلن «غير مُتحقَّق»
+      # ولا تدّعي مرورًا — وهي نفس دلالة الخطوة السابقة عند غياب الدليل.
+      - name: Measure release DEX semantics (reuse the assembled R8 output)
+        working-directory: ./manager
+        run: |
+          set -euo pipefail
+          dex_dir="$(find app/build/intermediates -type f -name '*.dex' -path '*minifyReleaseWithR8*' -printf '%h\n' 2>/dev/null | sort -u | head -1)"
+          if [ -z "$dex_dir" ]; then
+            echo "::warning::لم يُوجد مخرَج DEX لـR8 ⇒ القياس الدلاليّ **غير مُتحقَّق** في هذا التشغيل (لا يُدَّعى مرور)"
+            exit 0
+          fi
+          echo "· مخرَج R8 المقيس: $dex_dir"
+          python3 ../tools/apk_leak_scan.py \
+            --assert --semantic-only \
+            --path "$dex_dir" \
+            --budget ../tools/idea_leak_budget.json
 
       # ── تشخيص مكتوب: أسطر المترجم مضغوطة + بصمة الشجرة ──
       #
