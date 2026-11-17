@@ -792,6 +792,12 @@ private fun ObjectiveSection(state: MaxAiState, viewModel: MaxAiViewModel) {
     val modeDescription = stringResource(R.string.max_ai_mode_desc)
     val activeText = activeLabel?.let { stringResource(R.string.max_ai_objective_active, it) }
     val sectionDescription = listOfNotNull(modeDescription, activeText, source).joinToString(" · ")
+    val selectedModeHint = when (preference) {
+        "performance" -> stringResource(R.string.max_ai_mode_desc_performance)
+        "battery" -> stringResource(R.string.max_ai_mode_desc_battery)
+        "balanced" -> stringResource(R.string.max_ai_mode_desc_balanced)
+        else -> null
+    }
 
     MaxSection(
         title = stringResource(R.string.max_ai_section_objective),
@@ -814,11 +820,29 @@ private fun ObjectiveSection(state: MaxAiState, viewModel: MaxAiViewModel) {
             },
             enabled = preference != null,
             onSelect = { index ->
-                // إشارة لمسية فورية عند الضغط، قبل أن يصل الأثر إلى الإشعار.
-                haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
-                viewModel.setObjectivePreference(ObjectivePreferenceKeys[index])
+                val next = ObjectivePreferenceKeys[index]
+                // إعادة اختيار الوضع نفسه لا تعيد تطبيق ملف ثقيل ولا دورة قرار.
+                if (preference != next) {
+                    // إشارة لمسية فورية عند الضغط، قبل أن يصل الأثر إلى الإشعار.
+                    haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                    viewModel.setObjectivePreference(next)
+                }
             },
         )
+        if (selectedModeHint != null) {
+            Text(
+                text = selectedModeHint,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(horizontal = MaxSpace.md),
+            )
+            Text(
+                text = stringResource(R.string.max_ai_mode_contract),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(start = MaxSpace.md, end = MaxSpace.md, top = MaxSpace.xs),
+            )
+        }
 
         // السلوك بعد الوضع مباشرةً لأنه يجيبه عن السؤال التالي: «ومتى تتدخل؟».
         // وهو لا يغيّر الملفّ ولا الأوزان — فقط عتبة الرضا وسقف الاستكشاف.

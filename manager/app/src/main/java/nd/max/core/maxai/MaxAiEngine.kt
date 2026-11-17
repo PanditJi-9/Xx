@@ -217,6 +217,13 @@ class MaxAiEngine @Inject constructor(
     private val _profileRequest = MutableStateFlow(ProfileRequestState())
     val profileRequest: StateFlow<ProfileRequestState> = _profileRequest.asStateFlow()
 
+    /**
+     * أحدث طلب وضع. كل طلب يزيد الرقم، والطلب القديم يسقط قبل أن يطبّق ملفًا
+     * أو يشغّل دورة. هذا ما يمنع نقرتين سريعتين (بطارية ثم متوازن) من
+     * تطبيق ملفين متعاكسين وترك الجهاز في وضع لا يطابق ما تراه الشاشة.
+     */
+    private val objectiveGeneration = java.util.concurrent.atomic.AtomicInteger()
+
     private val cycleRunner = CoalescingCycleRunner()
 
     /**
@@ -2030,23 +2037,32 @@ class MaxAiEngine @Inject constructor(
         val normalized = Objective.labelFor(Objective.fromPreference(preference))
         val profileId = MaxAiMode.profileIdForPreference(normalized)
         val aiOn = readAiEnabled()
-        // نيّة واحدة: الملفّ والهدف معًا. تُكتب النيّة أولًا كي يراها الخادم عند
-        // حدث `max_ai_mode` حتى لو تأخّر تطبيق الملفّ أو فشل.
-        val modeWritten = MaxAiMode.write(profileId)
-        PropertyUtils.set(MaxManagerProps.Conf.AI_OBJECTIVE, normalized)
+        val generation = objectiveGeneration.incrementAndGet()
+        // الواجهة تسبق العتاد: الاختيار يظهر فورًا، والكتابة والتطبيق يجريان
+        // خارج خيط النداء. كان التطبيق الثقيل يسبق عودة الدالة، فتبدو النقرة
+        // معلّقة عند وضع البطارية على وجه الخصوص.
         _state.update { it.copy(objectivePreference = normalized, baseProfile = profileId) }
-        val applied = runCatching {
-            if (aiOn) ProfileApplier.applyFromAi(profileId) else ProfileApplier.apply(profileId)
-        }.getOrDefault(false)
-        if (!modeWritten || !applied) {
-            DiagnosticCenter.record(
-                "maxai",
-                "mode not persisted mode=$profileId written=$modeWritten applied=$applied ai=${if (aiOn) "on" else "off"}",
-                level = DiagnosticCenter.Level.WARN,
-            )
+        scope.launch(Dispatchers.IO) {
+            if (generation != objectiveGeneration.get()) return@launch
+            // نيّة واحدة: الملفّ والهدف معًا. تُكتب النيّة أولًا كي يراها الخادم عند
+            // حدث `max_ai_mode` حتى لو تأخّر تطبيق الملفّ أو فشل.
+            val modeWritten = MaxAiMode.write(profileId)
+            if (generation != objectiveGeneration.get()) return@launch
+            PropertyUtils.set(MaxManagerProps.Conf.AI_OBJECTIVE, normalized)
+            announceUserObjectiveNow(normalized)
+            val applied = runCatching {
+                if (aiOn) ProfileApplier.applyFromAi(profileId) else ProfileApplier.apply(profileId)
+            }.getOrDefault(false)
+            if (generation != objectiveGeneration.get()) return@launch
+            if (!modeWritten || !applied) {
+                DiagnosticCenter.record(
+                    "maxai",
+                    "mode not persisted mode=$profileId written=$modeWritten applied=$applied ai=${if (aiOn) "on" else "off"}",
+                    level = DiagnosticCenter.Level.WARN,
+                )
+            }
+            runCycleSingleFlight()
         }
-        announceUserObjectiveNow(normalized)
-        scope.launch(Dispatchers.IO) { runCycleSingleFlight() }
     }
 
     /**

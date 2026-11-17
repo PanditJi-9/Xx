@@ -182,7 +182,7 @@ class MinimalPlanner @Inject constructor(
             // (`MaxAiThermalCurve.overshootFloorCap`) لأن حرارة خطرٍ تبرّر البطء؛ أما Max AI
             // فلا يملك هذا التبرير — لا يملك قياسَ حرارةٍ يستوجبها، ومهمّته «أصغر تدخّل كافٍ».
             if (direction == ControlRegistry.Direction.SAVE_ENERGY &&
-                belowResponsiveFloor(control, next)
+                belowResponsiveFloor(control, next, state.cpuLoad)
             ) {
                 traces += CandidateTrace(
                     key = control.key, label = control.label, from = current, to = next,
@@ -527,14 +527,24 @@ class MinimalPlanner @Inject constructor(
         /**
          * أدنى موضع يُسمح لـMax AI أن ينزل به سقف CPU إليه، كسرًا من سلّم العتاد.
          *
-         * ٥٠٪: نصف مدى العنقود يبقى قادرًا على العمل اليومي (واجهة، تمرير، تطبيقات)،
-         * والوقوف عند حدّ أفضل من بلوغ أرضية العتاد. والأمان يتجاوزه إلى ٢٥٪ عند الخطر
-         * (`MaxAiThermalCurve`)، فالحدّ يخصّ طبقة الترشيد وحدها.
+         * ٥٥٪ بدل ٥٠٪: النصف يمرّر الواجهة لكنه يترك التمرير والكتابة على حافة الثقل
+         * في أجهزة كثيرة؛ والوضع «بطارية» كان يهبط إلى هذا الحد فيُقرأ لاغًا. والرفع
+         * إلى ٥٥٪ يشتري سلاسة ملموسة بفارق توفير صغير، وهو الفارق نفسه الذي يطلبه
+         * المستخدم حين يختار البطارية لا أن يختار جهازًا بطيئًا. والأمان يتجاوز الأرضية
+         * إلى ٢٥٪ عند الخطر (`MaxAiThermalCurve`)، فالحدّ يخصّ طبقة الترشيد وحدها.
          */
-        const val MIN_RESPONSIVE_CPU_FRACTION = 0.5f
+        const val MIN_RESPONSIVE_CPU_FRACTION = 0.55f
 
-        /** نظيره لGPU: ٣٥٪ — ترشيدُ تردد الرسوم لا يُوقف الواجهة عند حدّ أعلى. */
-        const val MIN_RESPONSIVE_GPU_FRACTION = 0.35f
+        /** نظيره لGPU: ٤٠٪ — ترشيد تردد الرسوم لا يُوقف الواجهة عند حدّ أعلى. */
+        const val MIN_RESPONSIVE_GPU_FRACTION = 0.40f
+
+        /**
+         * هامش إضافي تحت الحمل المرتفع: عندما يكون المعالج مشغولًا فعلًا، خفضه إلى
+         * الأرضية نفسها يجعل المستخدم يرى بطئًا قبل أن يرى توفيرًا. نرفع الأرضية ٥٪
+         * فقط، ونبقى تحت سقف الأمان، فلا تُلغى فائدة الوضع البطيء.
+         */
+        const val HIGH_LOAD_FLOOR_THRESHOLD = 0.8f
+        const val HIGH_LOAD_FLOOR_STEP = 0.05f
 
         /**
          * هل تقع هذه القيمة، على سلّم المقبض، تحت أرضية الاستجابة؟
@@ -546,12 +556,14 @@ class MinimalPlanner @Inject constructor(
         internal fun belowResponsiveFloor(
             control: ControlRegistry.Control,
             to: String,
+            load: Float = 0f,
         ): Boolean {
-            val floor = when (control.feature) {
+            val base = when (control.feature) {
                 HardwareFeature.CPU_FREQUENCY -> MIN_RESPONSIVE_CPU_FRACTION
                 HardwareFeature.GPU_FREQUENCY -> MIN_RESPONSIVE_GPU_FRACTION
                 else -> return false
             }
+            val floor = base + if (load >= HIGH_LOAD_FLOOR_THRESHOLD) HIGH_LOAD_FLOOR_STEP else 0f
             val span = control.ladder.size - 1
             if (span <= 0) return false
             val index = control.indexOf(to) ?: return false

@@ -29,6 +29,10 @@
 
     <string name="max_ai_section_objective">وضع Max AI</string>
     <string name="max_ai_mode_desc">وضع واحد يحدد ملف النظام وما يوازنه الذكاء الاصطناعي. لا يوجد ملف عام منفصل.</string>
+    <string name="max_ai_mode_desc_performance">أعلى سقوف مستقرة. لا يرفع إلا والجهاز بارد، والحمل حقيقي، والشحن فوق ٥٠٪.</string>
+    <string name="max_ai_mode_desc_balanced">حراري أولًا. يحتوي الحرارة ويحمي التمرير واللمس، فيتجنّب خفض السقوف بلا داعٍ بدل مطاردة واط أقل.</string>
+    <string name="max_ai_mode_desc_battery">توفير لطيف مع أرضية استجابة. يبقي الواجهة صالحة بدل مقايضة السلاسة بنسبة صغيرة.</string>
+    <string name="max_ai_mode_contract">الملف يتغيّر، وأرضية الاستجابة لا تتغيّر: لا يهبط أي وضع بالمعالج تحت ٥٥٪ ولا بالرسوميات تحت ٤٠٪ من المدى المقيس.</string>
     <string name="max_ai_mode_active_preset">ملف النظام الآن: %1$s</string>
     <string name="max_ai_objective_source_user">وضعك يحدد ملف النظام والأوزان.</string>
     <string name="max_ai_objective_source_learned">أوزان مستنتجة من استخدامك المقيس.</string>
@@ -355,4 +359,9 @@
     <string name="maxai_tree_verify">تحقّق بالقراءة</string>
     <string name="maxai_tree_perf">الأداء</string>
     <string name="maxai_tree_battery">توفير البطارية</string>
+    <string name="maxai_tree_forecast">توقّع حراري</string>
+    <string name="maxai_tree_budget">ميزانية حرارة</string>
+    <string name="maxai_tree_smooth">أرضية السلاسة</string>
+    <string name="maxai_tree_app">سياسة لكل تطبيق</string>
+    <string name="maxai_tree_locks">أقفالك</string>
 </resources>

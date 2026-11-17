@@ -111,6 +111,25 @@ class ObjectiveTest {
     }
 
     @Test
+    fun `balanced raises when cool under load but saves as heat approaches`() {
+        val cool = Objective.BALANCED.preferredDirection(
+            snapshot(cpuLoad = 0.85f, thermal = 0.25f, battery = 0.6f)
+        )
+        assertEquals(ControlRegistry.Direction.RAISE_PERFORMANCE, cool)
+
+        val warm = Objective.BALANCED.preferredDirection(
+            snapshot(cpuLoad = 0.85f, thermal = 0.40f, battery = 0.6f)
+        )
+        assertEquals(ControlRegistry.Direction.SAVE_ENERGY, warm)
+    }
+
+    @Test
+    fun `balanced puts thermal headroom ahead of battery and performance`() {
+        assertTrue(Objective.BALANCED.thermalHeadroom > Objective.BALANCED.battery)
+        assertTrue(Objective.BALANCED.thermalHeadroom > Objective.BALANCED.performance)
+    }
+
+    @Test
     fun `preference round-trips through labels`() {
         listOf(
             "performance" to Objective.PERFORMANCE,

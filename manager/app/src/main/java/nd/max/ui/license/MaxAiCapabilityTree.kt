@@ -50,6 +50,9 @@ import nd.max.R
  * - التعلّم: نموذج الاستجابة (`ResponseModel`) يتعلّم أثر كل مقبض على الجهاز نفسه.
  * - القرار: المخطّط (`MinimalPlanner`) داخل الحدود الآمنة، والتحقّق بقراءة القيمة بعد الكتابة.
  * - النتيجتان هما هدفا الوضع (الأداء · توفير البطارية)، ومنهما تعود الحلقة إلى التعلّم.
+ * - وحاجز سفليّ يعرض ما يُغلق الحلقة ولا يُدّعى بلا مستدعٍ: التوقع الحراري، ميزانية
+ *   الحرارة، أرضية السلاسة، سياسة كل تطبيق، وأقفال المستخدم. كلها حقول حقيقية في
+ *   `MaxAiState`/`MinimalPlanner`/`ManualControlLocks`، وليست وعودًا للواجهة.
  *
  * الرسم LTR دائمًا (الأسهم والحلقة لا تنعكس)، والنصّ العربي داخل العقد يُشكَّل كالمعتاد.
  */
@@ -74,8 +77,15 @@ internal fun MaxAiCapabilityTree(modifier: Modifier = Modifier) {
     val verify = stringResource(R.string.maxai_tree_verify)
     val perf = stringResource(R.string.maxai_tree_perf)
     val battery = stringResource(R.string.maxai_tree_battery)
-    val description = listOf(root, mode, readings, gpu, thermal, cpu, learning, safety, decide, verify, perf, battery)
-        .joinToString(separator = " · ")
+    val forecast = stringResource(R.string.maxai_tree_forecast)
+    val budget = stringResource(R.string.maxai_tree_budget)
+    val smooth = stringResource(R.string.maxai_tree_smooth)
+    val appPolicy = stringResource(R.string.maxai_tree_app)
+    val locks = stringResource(R.string.maxai_tree_locks)
+    val description = listOf(
+        root, mode, readings, gpu, thermal, cpu, learning, safety, decide, verify, perf, battery,
+        forecast, budget, smooth, appPolicy, locks,
+    ).joinToString(separator = " · ")
 
     val line = cs.onSurfaceVariant
     val rootFill = cs.primary
@@ -106,6 +116,7 @@ internal fun MaxAiCapabilityTree(modifier: Modifier = Modifier) {
             val u = size.width / TREE_W // بكسل لكل وحدة منطقية
             val unitDp = size.width / density / TREE_W
             val textStyle = baseStyle.copy(fontSize = (11.5f * unitDp.coerceIn(0.85f, 1.25f)).sp)
+            val guardStyle = textStyle.copy(fontSize = (10.0f * unitDp.coerceIn(0.85f, 1.25f)).sp)
             val stroke = 1.6.dp.toPx()
             val head = 6.5f * u
 
@@ -147,6 +158,16 @@ internal fun MaxAiCapabilityTree(modifier: Modifier = Modifier) {
             seg(p(324f, 440f), p(354f, 440f), line, stroke)
             seg(p(354f, 440f), p(354f, 264f), line, stroke)
             link(p(354f, 264f), p(242f, 264f), line, stroke, head, both = false)
+            // حاجز القدرات المقيسة أسفل الشجرة: لا يعيد الحلقة، بل يسمّي ما يمنعها
+            // من أن تصبح كتابة عمياء — توقع، ميزانية، أرضية، سياسة، وقفل المستخدم.
+            seg(p(93f, 462f), p(93f, 478f), line, stroke)
+            seg(p(267f, 462f), p(267f, 478f), line, stroke)
+            seg(p(20f, 478f), p(340f, 478f), line, stroke)
+            link(p(52f, 478f), p(52f, 492f), line, stroke, head, both = false)
+            link(p(117f, 478f), p(117f, 492f), line, stroke, head, both = false)
+            link(p(182f, 478f), p(182f, 492f), line, stroke, head, both = false)
+            link(p(247f, 478f), p(247f, 492f), line, stroke, head, both = false)
+            link(p(312f, 478f), p(312f, 492f), line, stroke, head, both = false)
 
             // ── العقد ────────────────────────────────────────────────────────────────
             pill(p(14f, 106f), Size(86f * u, 44f * u), gpuFill)
@@ -184,12 +205,31 @@ internal fun MaxAiCapabilityTree(modifier: Modifier = Modifier) {
 
             pill(p(210f, 418f), Size(114f * u, 44f * u), cpuFill)
             nodeText(measurer, battery, textStyle, cpuInk, p(267f, 440f), 98f * u)
+
+            // خمس عقد محاطة بحدود مقيسة: توقّع حراري، ميزانية حرارة، أرضية سلاسة،
+            // سياسة لكل تطبيق، وأقفال المستخدم. الارتفاع ٥٤٠ يعطيها صفًّا كاملًا
+            // بدل حشرها داخل الحلقة الأصلية.
+            val guardTop = 492f
+            pill(p(20f, guardTop), Size(64f * u, 44f * u), thermalFill)
+            nodeText(measurer, forecast, guardStyle, thermalInk, p(52f, guardTop + 22f), 58f * u)
+
+            pill(p(85f, guardTop), Size(64f * u, 44f * u), cpuFill)
+            nodeText(measurer, budget, guardStyle, cpuInk, p(117f, guardTop + 22f), 58f * u)
+
+            pill(p(150f, guardTop), Size(64f * u, 44f * u), sideFill)
+            nodeText(measurer, smooth, guardStyle, sideInk, p(182f, guardTop + 22f), 58f * u)
+
+            pill(p(215f, guardTop), Size(64f * u, 44f * u), gpuFill)
+            nodeText(measurer, appPolicy, guardStyle, gpuInk, p(247f, guardTop + 22f), 58f * u)
+
+            pill(p(280f, guardTop), Size(64f * u, 44f * u), sideFill)
+            nodeText(measurer, locks, guardStyle, sideInk, p(312f, guardTop + 22f), 58f * u)
         }
     }
 }
 
 private const val TREE_W = 360f
-private const val TREE_H = 470f
+private const val TREE_H = 540f
 
 // ── أدوات الرسم ──────────────────────────────────────────────────────────────────────────
 

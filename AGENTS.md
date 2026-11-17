@@ -42,7 +42,7 @@
    python3 tools/code_health.py --assert    # صحّة = 0 والدَّين عند السقف
    python3 tools/i18n_coverage.py --assert  # النصوص والوسائط
    python3 tools/design_tokens.py --assert  # سقوف حرفيّات التصميم — البوابة التي أسقطت الدفعات الثلاث (تكملة ٢٩١)
-   python3 tools/resource_compile.py --assert  # مورد يرفضه aapt2 الحقيقي = سقوط بناء حتميّ (تكملة ١٤٢)
+   python3 tools/resource_compile.py --assert  # في Actions فقط (§0.10): مورد يرفضه aapt2 الحقيقي = سقوط بناء حتميّ (تكملة ١٤٢)
    ```
 
    **وبوابة اللقطة (`pack_source.py`) حُذفت في تكملة ٨٥ بأمر المالك:** `MaxManager-source.zip` كان
@@ -234,11 +234,22 @@ md أو الذاكرة التي تقرأها دائمًا قبل البدء في
    الكود — يشغّل تصريف release واختبارات release؛ والخطّ الكامل (id `390059584`) للإصدار.
 3. **ولا يُدَّعى ما لم يُقرأ:** نجاح أو فشل البناء/الاختبار لا يُقال إلا بعد `gh run view <id>` وقراءة
    `conclusion` والسجل. والتشغيل خلفيًّا كما في §0.6، ولا انتظار أمامه.
-4. **البوابات الخفيفة تبقى محليّة** (ثوانٍ، وبلا مُصرّف): `kt_balance` · `code_health` · `i18n_coverage`
-   · `design_tokens` · `jni_symbols` · `license_audit` · `resource_compile` · `readme_assets` ·
-   `store_thumbnails` · `git diff --check` — هذه لا تُستهلك بها الجلسة ولا تُؤجَّل إلى CI.
+4. **البوابات البنيوية الخفيفة تبقى محليّة** (ثوانٍ، وبلا مُصرّف ولا اختبار): `kt_balance` ·
+   `code_health` · `i18n_coverage` · `design_tokens` · `jni_symbols` · `license_audit` ·
+   `readme_assets` · `store_thumbnails` · `git diff --check` — هذه لا تُستهلك بها الجلسة ولا
+   تُؤجَّل إلى CI. **`resource_compile` ليست منها بعد أمر المالك التالي:** تُشغّل `aapt2` الحقيقي،
+   فتُترك لـActions.
 5. **وما لا يُثبته Actions يبقى غير مُتحقَّق:** العتاد وSELinux والإقلاع واللمس/RTL على شاشة حقيقية —
    نجاح CI يعني «يترجم وتمرّ الاختبارات»، ولا يعني «يعمل على هاتفك» (§5).
+6. **أمر المالك الساري (٢٠٢٦-١١-١٧، مُلزم):** «اي بناء او اختبار يكون في github action لا تستخدم
+   هاتفي». ومعناه العملي:
+   - **صفر بناء وصفر اختبار على هذا الجهاز** — لا `gradlew`، ولا `assembleDebug`، ولا
+     `compileReleaseKotlin`، ولا `testReleaseUnitTest`، ولا أي `tools/test_*_jvm.py`.
+   - **ولا `resource_compile` محليًّا** لأنه يُصرّف الموارد بـ`aapt2`؛ حكمه من خطوة CI.
+   - **الفحوص البنيوية وحدها** (القائمة في البند ٤) تُشغَّل هنا لأنها تقرأ النصّ ولا تُصرّف ولا تُنفّذ
+     اختبارًا. وما يحتاج مُصرّفًا يُكتب بجانبه «غير مُتحقَّق في هذه البيئة» حتى يقرأ حكم Actions.
+   - **كل حكم بناء/اختبار يُقرأ من Actions** عبر Quick Verify (`390059589`) أو الخطّ الكامل
+     (`390059584`)؛ لا يُدّعى نجاح من التوقّع، ولا يُستخدم الهاتف بديلًا.
 
 ## 1. المبادئ
 
@@ -424,7 +435,7 @@ python3 tools/i18n_coverage.py --assert           # نصوص ووسائط
 python3 tools/i18n_coverage.py --prune all --assert  # مفاتيح يتيمة = 0 (بوابة قراءة فقط · I18N-01)
 python3 tools/design_tokens.py --assert           # سقوف حرفيّات التصميم (داخل «Contract gates» في CI — تكملة ٢٩١)
 python3 tools/jni_symbols.py --assert             # عقود JNI: Kotlin/Java ↔ Rust، وما وُجد من ثنائيات (ADR-48)
-python3 tools/resource_compile.py --assert        # aapt2 على كل مجلّدات res — الحكم الذي يُسقط البناء
+python3 tools/resource_compile.py --assert        # في Actions فقط (§0.10): aapt2 على كل مجلّدات res — الحكم الذي يُسقط البناء
 python3 tools/provenance_guard.py --assert        # الأصل: لا مسار مرجعي ولا بصمة صنف من مرجع في مصدرنا
 python3 tools/hardening_guard.py --assert         # تصليب الإصدار: R8 والتقليص وقواعد الإبقاء والبيان (تكملة ٢٠٢٦-١١-١٦)
 ```

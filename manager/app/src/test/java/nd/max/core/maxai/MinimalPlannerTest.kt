@@ -104,6 +104,16 @@ class MinimalPlannerTest {
     }
 
     @Test
+    fun `high load keeps a stricter responsive floor`() {
+        // تحت الحمل المرتفع لا يكفي أن يبقى السقف فوق الأرضية العادية: المستخدم
+        // يرى البطء قبل أن يرى التوفير. الموضع ٥ من ٩ (٥٥٪) مسموح في الهدوء،
+        // ومرفوض حين يكون الحمل ٩٠٪ لأن الأرضية ترتفع ٥ نقاط.
+        val control = cpuControl()
+        assertFalse(MinimalPlanner.belowResponsiveFloor(control, control.ladder[5]))
+        assertTrue(MinimalPlanner.belowResponsiveFloor(control, control.ladder[5], load = 0.9f))
+    }
+
+    @Test
     fun `the responsive floor does not apply to boosting or to non-frequency knobs`() {
         val control = cpuControl()
         // الرفع يذهب إلى أعلى السّلّم أبدًا — والأرضية لا تعني شيئًا في اتجاه الرفع

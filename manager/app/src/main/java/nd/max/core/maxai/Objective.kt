@@ -43,8 +43,19 @@ data class Objective(
         //
         // وشرط الشحن مضاف لأنه كان ناقصًا: «أداء» عند ٨٪ شحن كان يستطيع رفع السقف، وهو
         // نقيض ما يطلبه المستخدم في تلك اللحظة — والرفع مصدر حرارة لا يبرّره وضع الأداء.
-        val wantsPerformance = performance >= battery + thermalHeadroom &&
-            s.cpuLoad > 0.7f && s.thermal < 0.45f && s.battery >= BATTERY_COMFORT_FRACTION
+        //
+        // **المتوازن لا يساوي البطارية:** قبل هذا الشرط كان `0.4 >= 0.3 + 0.3` كاذبًا دائمًا،
+        // فكان «المتوازن» لا يرفع أبدًا ويهبط بالسقوف حتى تصير الواجهة ثقيلة. والآن يرفع
+        // فقط حين يكون الحمل حقيقيًا والجهاز باردًا فعلًا، ويبقى خافضًا حالما يقترب الحرّ.
+        val thermalFirst = thermalHeadroom >= performance
+        val raiseCeiling = if (thermalFirst) THERMAL_RAISE_CEILING_THERMAL_LED else THERMAL_RAISE_CEILING
+        val weightsAllowRaise = performance + battery >= thermalHeadroom
+        val performanceLeadsBattery = performance >= battery
+        val wantsPerformance = performanceLeadsBattery &&
+            weightsAllowRaise &&
+            s.cpuLoad > RAISE_LOAD_FLOOR &&
+            s.thermal < raiseCeiling &&
+            s.battery >= BATTERY_COMFORT_FRACTION
         return if (wantsPerformance) ControlRegistry.Direction.RAISE_PERFORMANCE
         else ControlRegistry.Direction.SAVE_ENERGY
     }
@@ -66,13 +77,32 @@ data class Objective(
          */
         const val BATTERY_COMFORT_FRACTION = 0.5f
 
+        /** حمل أدنى حتى يُسمح بالرفع؛ تحته يكون الرفع حرارة بلا فائدة. */
+        const val RAISE_LOAD_FLOOR = 0.7f
+
+        /** سقف الحرارة المسموح للرفع في وضع الأداء (٠..1). */
+        const val THERMAL_RAISE_CEILING = 0.45f
+
+        /**
+         * سقف الرفع حين يكون الهدف حراريًا أولًا (المتوازن): أضيق من وضع الأداء.
+         * الفرق مقصود: المتوازن يشتري السلاسة من دون أن يسمح للجهاز بالاقتراب من الحرّ.
+         */
+        const val THERMAL_RAISE_CEILING_THERMAL_LED = 0.35f
+
         /** جزء الشحن الذي يُعدّ رضا كاملًا من جهة البطارية (٠..1). */
         fun batteryHeadroom(fraction: Float): Float =
             (fraction / BATTERY_COMFORT_FRACTION).coerceIn(0f, 1f)
 
-        /** أوزان مسبقة تُترجم عنها أزرار الأداء/التوازن/التوفير في الواجهة. */
+        /**
+         * أوزان مسبقة تُترجم عنها أزرار الأداء/التوازن/التوفير في الواجهة.
+         *
+         * المتوازن **حراري أولًا** لا بطارية ثانية: الوزن الأكبر للهامش الحراري،
+         * والبطارية أصغر وزن. فالمستخدم يطلب جهازًا باردًا وسلسًا، لا جهازًا يوفّر
+         * بضعة ملّي واط ثم يصبح بطيئًا. والبطارية تبقى قيدًا في `preferredDirection`
+         * وعتبة الرضا، فلا يُرفع السقف عند شحن منخفض.
+         */
         val PERFORMANCE = Objective(performance = 0.7f, battery = 0.1f, thermalHeadroom = 0.2f)
-        val BALANCED = Objective(performance = 0.4f, battery = 0.3f, thermalHeadroom = 0.3f)
+        val BALANCED = Objective(performance = 0.42f, battery = 0.13f, thermalHeadroom = 0.45f)
         val ECO = Objective(performance = 0.15f, battery = 0.7f, thermalHeadroom = 0.15f)
 
         /** هدف الشاشة المطفأة: طاقة وحرارة فقط، بلا أداء (قرار #11). */
