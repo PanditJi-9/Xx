@@ -29,7 +29,7 @@
     return value === "dark" ? "dark" : "light";
   }
 
-  function paint(theme, persist) {
+  function paint(theme) {
     var dark = theme === "dark";
 
     root.setAttribute("data-theme", theme);
@@ -44,27 +44,16 @@
       toggle.setAttribute("title", dark ? labels.lightTitle : labels.darkTitle);
     }
 
-    if (persist) {
-      try {
-        localStorage.setItem("mm-theme", theme);
-      } catch (error) {
-        /* Private mode: the choice lasts for this page. */
-      }
-    }
   }
 
-  var stored = null;
-  try {
-    stored = localStorage.getItem("mm-theme");
-  } catch (error) {
-    stored = null;
-  }
-
-  paint(stored === "dark" ? "dark" : "light", false);
+  /* الوضع الافتراضي هو الافتراضي (أمر المالك، ٢٠٢٦-١١-١٧): لا استرجاع من
+     `localStorage` ولا حفظ، فكل تحميل يبدأ على لوحة الموقع نفسها (الفاتحة)،
+     ويبقى زرّ التبديل صالحًا لهذه الجلسة. */
+  paint("light");
 
   if (toggle) {
     toggle.addEventListener("click", function () {
-      paint(currentTheme() === "dark" ? "light" : "dark", true);
+      paint(currentTheme() === "dark" ? "light" : "dark");
     });
   }
 
@@ -109,9 +98,24 @@
     });
   }
 
+  /* The bar stops looking welded to the page once content slides under it. */
+  var masthead = document.querySelector(".masthead");
+  var barIsLifted = null;
+
+  function updateMasthead() {
+    if (!masthead) return;
+
+    var lifted = window.scrollY > 8;
+    if (lifted === barIsLifted) return;
+
+    barIsLifted = lifted;
+    masthead.classList.toggle("is-scrolled", lifted);
+  }
+
   function updateScrollState() {
     updateProgress();
     updateActiveSection();
+    updateMasthead();
     ticking = false;
   }
 
@@ -124,6 +128,50 @@
   window.addEventListener("scroll", requestScrollState, { passive: true });
   window.addEventListener("resize", requestScrollState);
   updateScrollState();
+
+  /* Scroll reveal: sections and their main moving parts arrive once, with a
+     small stagger. Above-the-fold content is shown immediately, and a browser
+     without IntersectionObserver (or a reader who asked for less motion)
+     never receives a hidden element. */
+  var revealNodes = Array.prototype.slice.call(
+    document.querySelectorAll(
+      "main > section:not(.hero), .rules .rule, .domains .domain, .gallery .shot, .docs-grid .doc-link, .faq details"
+    )
+  );
+  var reduceMotion = false;
+
+  try {
+    reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  } catch (error) {
+    reduceMotion = false;
+  }
+
+  if (revealNodes.length) {
+    var revealObserver =
+      !reduceMotion && "IntersectionObserver" in window
+        ? new IntersectionObserver(
+            function (entries) {
+              entries.forEach(function (entry) {
+                if (!entry.isIntersecting) return;
+                entry.target.classList.add("is-in");
+                revealObserver.unobserve(entry.target);
+              });
+            },
+            { rootMargin: "0px 0px -8% 0px", threshold: 0.08 }
+          )
+        : null;
+
+    revealNodes.forEach(function (node, index) {
+      node.classList.add("reveal");
+      node.style.setProperty("--reveal-delay", (index % 4) * 55 + "ms");
+
+      if (revealObserver && node.getBoundingClientRect().top > window.innerHeight * 0.92) {
+        revealObserver.observe(node);
+      } else {
+        node.classList.add("is-in");
+      }
+    });
+  }
 
   /* Menu closes after a choice and when the reader clicks outside it. */
   var menu = document.querySelector(".menu");

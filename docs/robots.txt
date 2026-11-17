@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://panditji-9.github.io/Xx/sitemap.xml
