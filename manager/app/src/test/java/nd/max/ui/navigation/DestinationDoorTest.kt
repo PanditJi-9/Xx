@@ -205,16 +205,20 @@ class DestinationDoorTest {
         // المقاطع، ثم فاحص البيان وفاحص الشبكة: أسطح أضافها المالك، ولها أبواب في التحكّم
         // وكلمات قصد — فدخولها اللقطة مقصود لا انزلاق.
         assertEquals("عدد وجهات M1 لا ينقص عند إعادة ترتيبها", 69, all.size)
-        // ٢٦ = المحاور العشرة + ستة عشر أداة بلا محور (كانت ١٦ قبل أن يستقبل التحكّم
+        // ٢٧ = المحاور العشرة + سبعة عشر أداة بلا محور (كانت ١٦ قبل أن يستقبل التحكّم
         // أدوات التشخيص والألوان والنسخ والصلاحيات والتنظيف، ثم ألبوم المقاطع، ثم الفاحصان).
+        // و+١ بأمر المالك (٢٠٢٦-١١-١٧): «انقل مراقب المهام الي شاشة التحكم وضعها في قسم
+        // الادوات» — فصار `ProcessManager` ابنًا لـ`Control` بعد أن كان في `MemoryHub`.
         assertEquals(
             "Control يحتفظ بالمحاور والأسطح والأدوات المقبولة",
-            26,
+            27,
             all.count { !it.hidden && it.parent == "Control" },
         )
 
         val families = mapOf(
-            "MemoryHub" to listOf("ProcessManager", "ZramManager", "MemoryUfs"),
+            // مراقب المهام غادر إلى شاشة التحكّم بأمر المالك (٢٠٢٦-١١-١٧)، فلم يبقَ للذاكرة
+            // إلا أدوات الكتابة: zram وUFS.
+            "MemoryHub" to listOf("ZramManager", "MemoryUfs"),
             "PowerHub" to listOf(
                 "Charging",
                 "BypassCharging",
@@ -228,6 +232,8 @@ class DestinationDoorTest {
                 "UsageStats",
                 "DeviceLab",
                 "ManifestInspector",
+                // مراقب المهام: أداة نظام في قسم الأدوات بشاشة التحكّم (أمر المالك ٢٠٢٦-١١-١٧).
+                "ProcessManager",
                 "NetworkScanner",
                 "MaxBackup",
                 "Permissions",

@@ -49,6 +49,6 @@ object RecipeCatalog {
     fun load(context: Context): List<RecipePlan.Entry> = runCatching {
         // عبر `AssetVault`: مختومًا في نسخة الإصدار، صريحًا في debug — قراءة واحدة للحالتين.
         AssetVault.readText(context.applicationContext, CatalogControlIndex.ASSET)
-            ?: error("${CatalogControlIndex.ASSET} غير مقروء من الأصول")
+            ?: error("${CatalogControlIndex.ASSET} unreadable from assets")
     }.map(::fromJson).getOrDefault(emptyList())
 }

@@ -146,7 +146,7 @@ object HardwareCapabilityResolver {
             // عبر `AssetVault` لا `assets` مباشرةً: الكتالوج انتقل إلى `assets-internal` فيُختم في
             // نسخة الإصدار، و`readText` تفكّ الختم وتعيد النصّ كما هو في debug ⇒ مسار واحد.
             val text = AssetVault.readText(ctx, CatalogControlIndex.ASSET)
-                ?: error("${CatalogControlIndex.ASSET} غير مقروء من الأصول")
+                ?: error("${CatalogControlIndex.ASSET} unreadable from assets")
             CatalogControlIndex.parse(text)
         }.getOrDefault(CatalogControlIndex.empty())
         if (loaded.entries.isNotEmpty()) cachedCatalog = loaded

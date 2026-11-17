@@ -326,7 +326,12 @@ sealed class MaxDestination(
     //
     // مراقب المهام انتقل إلى `Control → Tools` بقرار المالك: هو **أداة** تُفتح على الجهاز لا
     // شاشة تخصّ تطبيقًا بعينه، ومكان الأدوات في شاشة التحكّم لا في مسار التشخيص داخل الإعدادات.
-    data object ProcessManager : MaxDestination("processmanager", R.string.processmgr_title, Icons.Rounded.Timeline, MemoryHub)
+    //
+    // **والأبوّة هي ما يُنفّذ النقل لا التعليقُ وحده (٢٠٢٦-١١-١٧):** كانت `MemoryHub`، فكان
+    // الصفّ يُشتقّ في شاشة الذاكرة ولا يظهر في شاشة التحكّم أبدًا — `controlToolGroups` تصفي
+    // `ControlToolDestinations`، و`ProcessManager` لم يكن فيها. فصار الأب `Control`، وأُضيف
+    // إلى صندوق الأدوات، وخرج من الذاكرة — نقلٌ واحد لا نسختان.
+    data object ProcessManager : MaxDestination("processmanager", R.string.processmgr_title, Icons.Rounded.Timeline, Control)
     data object DebloatFreeze : MaxDestination("debloatfreeze", R.string.debloat_freeze_title, Icons.Rounded.CleaningServices, Control)
     data object AppSettings : MaxDestination("app_settings/{pkg}", R.string.max_title_app_settings, Icons.Rounded.AppSettingsAlt, Apps)
 

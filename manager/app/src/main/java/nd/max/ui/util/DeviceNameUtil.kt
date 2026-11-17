@@ -112,7 +112,7 @@ private fun resolveRealDeviceName(context: Context): String {
             // يكفي `unzip -p app.apk assets/devices.db` لنسخ كتالوج الأجهزة كاملًا، بلا JADX
             // ولا rea. أي أن أكبر أصل يملكه المشروع كان أرخص ما يُنسخ.
             val stream = nd.max.core.security.AssetVault.openStream(context, dbName)
-                ?: throw IllegalStateException("$dbName غير مقروء من الأصول")
+                ?: throw IllegalStateException("$dbName unreadable from assets")
             stream.use { input ->
                 FileOutputStream(tmp).use { output ->
                     input.copyTo(output)

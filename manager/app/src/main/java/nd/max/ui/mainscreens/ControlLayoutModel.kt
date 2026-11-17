@@ -60,8 +60,10 @@ data class ControlGroupSpec(
  * كانت ستجعل المختبر صندوق أدوات وهو **اختبارُ عتاد**، وM1c ردّت وحدة السجل والنسخ والصلاحيات
  * والألوان إلى التشخيص والإعدادات) — **ثم نسخها أمر المالك في تكملة ٨٥:** «انقل … إلى شاشة
  * التحكم»، فعادت هذه الأدوات إلى هنا، وصار الباب واحدًا بعد أن حُذفت شاشة التشخيص نفسها.
- * وما بقي خارج الصفحة أداةٌ لها محورها: مدير الملفات في `StorageHub`، ومراقب المهام في
- * `MemoryHub`، وسجلّ البطارية وشحن البايباس في `PowerHub`.
+ * وما بقي خارج الصفحة أداةٌ لها محورها: مدير الملفات في `StorageHub`، وسجلّ البطارية وشحن
+ * البايباس في `PowerHub`. و**مراقب المهام خرج من الاستثناء بأمر المالك (٢٠٢٦-١١-١٧):**
+ * «انقل مراقب المهام الي شاشة التحكم وضعها في قسم الادوات» — فصار أبوه `Control` وصفّه في
+ * نطاق أدوات النظام أدناه، ولم يبقَ له صفّ في `MemoryHub`.
  *
  * وأما محرّر الإعدادات ومشغّل الأنشطة فبقيا هنا بعد أن جُرِّبت إحالتهما إلى **مختبر الجهاز**
  * ورُفضت: فمن يفتح المختبر ليجرب اللمس والسماعة لا يُعرض عليه محرّر إعدادات.
@@ -85,6 +87,9 @@ val ControlToolDestinations: List<MaxDestination> = listOf(
     // أدوات التشخيص بقيّة: شاشة التشخيص حُذفت بأمر المالك، فبقيت أدواتها هنا.
     MaxDestination.DeviceLab,
     MaxDestination.ManifestInspector,
+    // مراقب المهام بأمر المالك (٢٠٢٦-١١-١٧): كان ابنًا لـ`MemoryHub` فلا يظهر هنا أبدًا —
+    // فالقائمة هي ما يُصفّى في `controlToolGroups`، وغيابه منها كان يجعل «النقل» تعليقًا لا صفًّا.
+    MaxDestination.ProcessManager,
     MaxDestination.NetworkScanner,
     MaxDestination.UsageStats,
     MaxDestination.Logs,
@@ -182,14 +187,14 @@ private val ControlToolBands: List<Pair<Int, List<MaxDestination>>> = listOf(
     R.string.control_tools_advanced to listOf(
         MaxDestination.SetEdit,
         MaxDestination.ActivityLauncher,
-        // مراقب المهام بأمر المالك (٢٠٢٦-١١-١٦): أداة متقدّمة، لا أداة حيّة تُراقَب دائمًا.
-        // ونُقل بين المجموعات لا إلى صفحة ثانية — هو نفس `ProcessManager` ونفس وجهته.
-        MaxDestination.ProcessManager,
     ),
     // أدوات النظام: ما يقرأ الجهاز ويُدير تطبيقاته وشحنه — لا يُخفى خلف «متقدّم».
     R.string.control_tools_system to listOf(
         MaxDestination.DeviceLab,
         MaxDestination.ManifestInspector,
+        // مراقب المهام بأمر المالك (٢٠٢٦-١١-١٧): «انقل مراقب المهام الي شاشة التحكم وضعها في
+        // قسم الادوات» — فهو أداة نظام تقرأ العمليات وتقتلها، لا سطحًا حيًّا ولا شاشة ذاكرة.
+        MaxDestination.ProcessManager,
     MaxDestination.NetworkScanner,
         MaxDestination.UsageStats,
         MaxDestination.Logs,
