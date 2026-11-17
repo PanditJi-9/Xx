@@ -420,7 +420,6 @@ internal val maxDestinationKeywords: Map<MaxDestination, List<String>> = mapOf(
     MaxDestination.GameLobby to listOf("الالعاب", "لوبي", "games", "game lobby"),
     MaxDestination.EmulatorHub to listOf("المحاكي", "محاكيات", "emulator", "emulators"),
     MaxDestination.SetEdit to listOf("تعديل القيم", "setedit", "properties", "props"),
-    MaxDestination.ActivityLauncher to listOf("الانشطه", "activity", "launcher", "shortcut"),
     MaxDestination.FileManager to listOf("الملفات", "مدير الملفات", "files", "file manager"),
 )
 

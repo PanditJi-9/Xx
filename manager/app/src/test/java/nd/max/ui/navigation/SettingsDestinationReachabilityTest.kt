@@ -111,8 +111,12 @@ class SettingsDestinationReachabilityTest {
         )
     }
 
-    /** ما أخفاه المالك — **اسمٌ صريح لكل سطح** (أمر ٢٠٢٦-١٠-٢١: الإحصاءات والإضافات · وبطاقة "Touch Precision" في مجال الاستجابة). */
-    private val hiddenByOwner = setOf("CommunityStats", "Plugins", "TouchBoost")
+    /**
+     * ما أخفاه المالك — **اسمٌ صريح لكل سطح** (أمر ٢٠٢٦-١٠-٢١: الإحصاءات والإضافات · وبطاقة
+     * "Touch Precision" في مجال الاستجابة). وأُضيف `ActivityLauncher` بأمر ٢٠٢٦-١١-١٧:
+     * «اخفاء active launcher من شاشة اعدادات التطبيقات».
+     */
+    private val hiddenByOwner = setOf("ActivityLauncher", "CommunityStats", "Plugins", "TouchBoost")
 
     @Test
     fun `المخفيّ عمدًا مُعلَن لا صامت`() {
