@@ -195,8 +195,8 @@ jobs:
       - name: Verify the checkout is complete
         run: |
           test -f manager/app/build.gradle.kts || { echo "::error::checkout is incomplete"; exit 1; }
-          test -s manager/app/src/main/assets/devices.db \
-            || { echo "::error::checkout dropped a file the build needs (assets/devices.db)"; exit 1; }
+          test -s manager/app/src/main/assets-internal/devices.db \
+            || { echo "::error::checkout dropped a file the build needs (assets-internal/devices.db)"; exit 1; }
           echo "✅ working tree complete"
 
       - name: Verify Module
