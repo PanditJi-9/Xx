@@ -156,7 +156,11 @@ fun controlLayoutModel(access: nd.max.ui.navigation.DestinationAccess? = null): 
 
 /** Rows of the advanced-tools band, from the same role table as everything else. */
 fun controlToolEntries(access: nd.max.ui.navigation.DestinationAccess? = null): List<ControlEntry> =
-    ControlToolDestinations.filter { access == null || access.visible(it) }
+    // والعلم `hidden` يُصفّى هنا أيضًا لا في `visible()` وحدها: النموذج يُقرأ بلا `access`
+    // في المعاينات والاختبارات، فلو اعتمد الإخفاء على غياب الـaccess لعاد الصفّ في كل قراءة
+    // لا تمرّ ببوّابة الوصول — وهو عكس معنى «أخفاه المالك».
+    ControlToolDestinations
+        .filter { !it.hidden && (access == null || access.visible(it)) }
         .map { destination -> ControlEntry(destination, maxDestinationRole(destination)) }
 
 /**

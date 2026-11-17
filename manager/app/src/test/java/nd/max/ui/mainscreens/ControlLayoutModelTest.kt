@@ -106,4 +106,19 @@ class ControlLayoutModelTest {
         }
         controlToolEntries().forEach { tool -> assertTrue(tool.subtitleRes != 0) }
     }
+
+    @Test
+    fun `the owner-hidden activity launcher leaves every visible surface`() {
+        // أمر المالك (٢٠٢٦-١١-١٧): «اخفاء active launcher من شاشة اعدادات التطبيقات».
+        // والحراسة على الحقيقة المرئية لا على النيّة: يخرج من صفوف الأدوات ونطاقاتها ومن
+        // السجلّ المرئيّ، ويبقى في السجلّ الكامل — فلا ينكسر مسارٌ ولا ينقص عدّ الوجهات.
+        assertTrue(MaxDestination.ActivityLauncher.hidden)
+        assertTrue(MaxDestination.All.contains(MaxDestination.ActivityLauncher))
+        assertTrue(MaxDestination.Visible.none { it == MaxDestination.ActivityLauncher })
+        assertTrue(controlToolEntries().none { it.destination == MaxDestination.ActivityLauncher })
+        assertTrue(
+            controlToolGroups().flatMap { it.entries }
+                .none { it.destination == MaxDestination.ActivityLauncher },
+        )
+    }
 }

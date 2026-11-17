@@ -463,7 +463,14 @@ sealed class MaxDestination(
 
     // Control - Advanced tools (gated, not preferences)
     data object SetEdit : MaxDestination("setedit", R.string.max_title_setedit, Icons.Rounded.Edit, Control, MaxRisk.Advanced)
-    data object ActivityLauncher : MaxDestination("activitylauncher", R.string.max_title_activity_launcher, Icons.AutoMirrored.Rounded.Launch, Control, MaxRisk.Advanced)
+
+    /**
+     * **مُخفى بأمر المالك (٢٠٢٦-١١-١٧):** «اخفاء active launcher من شاشة اعدادات التطبيقات».
+     * والآليّة القائمة هي هذا العلم، لا حذفُ صفٍّ من قائمة: [MaxDestination.hidden] تُصفّي
+     * الدخول ([DestinationAccess.visible]) والقوائم والفهارس ([MaxDestination.Visible]) وفهرس
+     * البحث، فيخرج من كل سطح دفعةً واحدة ويبقى مساره صالحًا لمن يملكه.
+     */
+    data object ActivityLauncher : MaxDestination("activitylauncher", R.string.max_title_activity_launcher, Icons.AutoMirrored.Rounded.Launch, Control, MaxRisk.Advanced, hidden = true)
 
     /**
      * `GAP-09` — مدير الملفات بالجذر. أداة متقدّمة لا تفضيل: كل عملية تكتب على القرص
