@@ -1257,6 +1257,63 @@ jobs:
       # آثار البناء لأن `dex_strip_source_names.py` يزيلها لاحقًا وتُقاس على الحزمة الموقّعة —
       # فلا تُدّعى نظافة ولا يُفشل القياس بسبب عائق يُعالَج في موضع آخر.
 
+      # ── حاجز سباق مقيس: لا يبدأ التجميع قبل أن تكتمل مكتبة MaxFx ──
+      #
+      # **العطب الذي فرض هذه الخطوة (تشغيل 44077917240، الالتزام 0a157824):**
+      # سقط `Validate Manager APK` بـ`##[error]APK is missing lib/armeabi-v7a/libmaxfx.so`،
+      # والمحتوى المقيس كان يكذب الشكّ في المكتبة نفسها: `arm64-v8a/libmaxfx.so` موجود
+      # (669936 بايتًا) في الحزمة، والناقص **ذراع ٣٢-بت وحدها**. والتسلسل الزمني من السجل
+      # يحسم السبب: MaxFx أُطلقت 11:54:36.5 في الخلفية، و`assembleRelease` بدأ 11:56:26.5
+      # فدمج المكتبات الأصلية 11:56:33–34 (`mergeReleaseJniLibFolders` ثم
+      # `mergeReleaseNativeLibs`) — أي **١١٨ ثانية** من الإطلاق، وكان العمود ٣٢-بت لم يُكتب
+      # بعد. وخطوة «Wait for the background native builds» لم تُنفَّذ إلا 11:58:15، أي
+      # **بعد** أن صار الـAPK جاهزًا، فلا تنفع حارسًا على الحزم.
+      # ولا شيء في Gradle ينتظر: `jniLibs.srcDir(mm ../maxfx/libs)` مصدر ملفّات ساكن،
+      # والحزم يأخذ ما يراه لحظتها.
+      #
+      # **ولماذا ظهر الآن ولم يظهر قبلًا:** لم يكن بريئًا مستورًا فقط، بل كان مسكوتًا عنه
+      # ببطء التجميع. كانت خطوة التصريف ١٨٢ ثانية، فتبدأ الحزم بعد أن تكون MaxFx (أطول من
+      # ١١٨ ثانية بقليل) قد انتهت. وحين صار التصريف ٩٧ ثانية بالحالة التزايدية، سبقت الحزمُ
+      # MaxFx فظهر السباق. ⇒ العلاج لا رجعة فيه إلى البطء: **يُنتظر المنتِج قبل مستهلكه.**
+      #
+      # **والتكلفة المقيسة المعلنة:** ~٤٠–٧٠ ثانية انتظار في ذيل MaxFx، تُستردّ كلها من
+      # الـ٧٦ ثانية المُلغاة ومن الحالة التزايدية. والبديل (بناء متسلسل بلا توازٍ) يخسر
+      # أكثر، والبديل الثاني (إسقاط الحالة) يعيد ٩٧ ثانية لكل دفعة.
+      # **وحدّه:** لا يُشترى بهذه الخطوة سلامةُ أجهزة — هي حاجز حزم لا اختبار سلوك.
+      - name: Wait for MaxFx before packaging (measured race guard)
+        run: |
+          mpid="$(cat maxfx-build.pid 2>/dev/null || true)"
+          for _ in $(seq 1 200); do
+            [ -f maxfx-build.exit ] && break
+            if [ -n "$mpid" ] && ! kill -0 "$mpid" 2>/dev/null; then
+              echo "::error::MaxFx died without recording its exit code (packaging would ship a half-filled jniLibs)"
+              tail -200 maxfx-build.log || true
+              exit 1
+            fi
+            sleep 5
+          done
+          if [ ! -f maxfx-build.exit ]; then
+            echo "::error::MaxFx did not finish within 16 minutes — packaging must not start"
+            tail -200 maxfx-build.log || true
+            exit 1
+          fi
+          mcode="$(tr -d '[:space:]' < maxfx-build.exit)"
+          if [ "$mcode" != "0" ]; then
+            echo "::error::MaxFx build failed (exit $mcode) — لا يُحزم شيء"
+            cat maxfx-build.log
+            exit 1
+          fi
+          # الحضور يُثبت في العمودين معًا، لا عمود واحد: هذا بعينه ما سقط في 44077917240.
+          for abi in arm64-v8a armeabi-v7a; do
+            if [ ! -s "maxfx/libs/$abi/libmaxfx.so" ]; then
+              echo "::error::maxfx/libs/$abi/libmaxfx.so غائب أو فارغ بعد نجاح MaxFx ⇒ لا يبدأ الحزم"
+              ls -l "maxfx/libs/$abi" 2>/dev/null || true
+              exit 1
+            fi
+          done
+          echo "✅ MaxFx اكتمل في العمودين قبل الحزم:"
+          ls -l maxfx/libs/arm64-v8a/libmaxfx.so maxfx/libs/armeabi-v7a/libmaxfx.so
+
       - name: Tests + assemble + package (contract gate)
         working-directory: ./manager
         run: |

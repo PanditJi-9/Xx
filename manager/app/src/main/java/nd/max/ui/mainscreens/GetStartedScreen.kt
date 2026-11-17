@@ -1176,6 +1176,10 @@ private fun openExternal(context: Context, url: String) {
 private const val MAXMANAGER_GITHUB_URL = "https://github.com/nader295/MaxManager"
 private const val MAXMANAGER_TELEGRAM_URL = "https://t.me/GetMaxManager"
 
-// الموقع كما كتبه المالك حرفيًّا (٢٠٢٦-١١-١٦). ويُنبَّه أن صيغة GitHub Pages القياسية
-// هي `https://nader295.github.io/MaxManager` — ولا تُستبدل هنا إلا بأمره.
-private const val MAXMANAGER_SITE_URL = "https://github.io/nader295/MaxManager"
+// **الرابط الساري للموقع (٢٠٢٦-١١-١٧):** الصورة الحرفية التي كتبها المالك
+// (`https://github.io/nader295/MaxManager`) **ليست مضيفًا قابلًا للحلّ** — `github.io`
+// مجرّد نطاق لا يخدم صفحات المستخدمين؛ صيغة GitHub Pages القياسية هي
+// `<user>.github.io/<repo>`، وهي ما نُشر فعلًا وأكّده `gh api …/pages`:
+// `https://nader295.github.io/MaxManager/`. وطلبُ المالك «اجعله بنفس هذا الرابط»
+// مقصوده **الموقع نفسه** لا حرفًا يفتح صفحة خطأ — فالرابط العامل هو ما يُشحن.
+private const val MAXMANAGER_SITE_URL = "https://nader295.github.io/MaxManager"

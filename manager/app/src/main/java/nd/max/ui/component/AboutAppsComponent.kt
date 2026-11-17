@@ -111,10 +111,13 @@ private fun AboutCardContent() {
 
                 Spacer(modifier = Modifier.height(8.dp))
 
+                // الجروب الجديد بأمر المالك (٢٠٢٦-١١-١٧): `https://t.me/MaxManagerChat`،
+                // والنصّ حوله يقول «Join our … group» فالتوجيه إلى الجروب لا للقناة:
+                // القناة (`https://t.me/GetMaxManager`) تعيش في صفّها المستقلّ في «حول».
                 val annotatedString = AnnotatedString.fromHtml(
                     htmlString = stringResource(
                         id = R.string.about_source_code,
-                        "<b><a href=\"https://t.me/ROBINHOOD_GROUP_RODIN\">Telegram</a></b>"
+                        "<b><a href=\"https://t.me/MaxManagerChat\">Telegram</a></b>"
                     ),
                     linkStyles = TextLinkStyles(
                         style = SpanStyle(
