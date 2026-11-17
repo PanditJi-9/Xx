@@ -51,7 +51,9 @@ import androidx.compose.material.icons.rounded.Timer
 import androidx.compose.material.icons.rounded.TouchApp
 import androidx.compose.material.icons.rounded.Tune
 import androidx.compose.material.icons.rounded.Videocam
-import androidx.compose.material.icons.rounded.VolumeUp
+// `VolumeUp` من أيقونات Material الاتجاهية (السمّاعة تنعكس في RTL) ⇒ تُستورد من `automirrored`،
+// وهو النمط القائم في المستودع نفسه (`IslandUi.kt`). بوّابة RTL أسقطت التشغيل على الصيغة القديمة.
+import androidx.compose.material.icons.automirrored.rounded.VolumeUp
 import androidx.compose.material.icons.rounded.WbSunny
 import androidx.compose.material.icons.rounded.Wifi
 import androidx.compose.material3.Icon
@@ -957,7 +959,7 @@ private fun TurboServicesSection(
                 .padding(horizontal = TurboPadSm),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(Icons.Rounded.VolumeUp, contentDescription = null, tint = TurboPalette.Cyan, modifier = Modifier.size(18.dp))
+            Icon(Icons.AutoMirrored.Rounded.VolumeUp, contentDescription = null, tint = TurboPalette.Cyan, modifier = Modifier.size(18.dp))
             Slider(
                 value = volume.coerceIn(0f, 1f),
                 onValueChange = onVolume,
