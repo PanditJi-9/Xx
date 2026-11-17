@@ -25,6 +25,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import struct
 import sys
 import tempfile
@@ -132,6 +133,52 @@ def referenced_source_names(data: bytes) -> set[str] | None:
     return names
 
 
+#: حروف عربية — الحجم لا العدد: الكتلة الواحدة قد تحمل صفحات شرح في نصّ واحد.
+ARABIC_CHAR = re.compile(r"[\u0600-\u06FF]")
+
+#: علامات سكربت صدفة حقيقيّ — تكرارها في نصّ واحد يعني سكربتًا مُضمَّنًا لا رسالة خطأ.
+SHELL_MARKERS = ("2>/dev/null", ">/dev/null", "getprop ", "dmesg ", "logcat ", "#!/system/bin/sh", "set -e")
+
+#: مسارات الجهاز نفسها — تكشف أهداف الضبط لا مجرّد أسماء.
+DEVICE_PATH = re.compile(r"^/(sys|proc|dev|data/adb)/")
+
+#: سكربت مُضمَّن: طويل *و* فيه علامات أوامر. الطول وحده ليس دليلًا (نصوص مفاتيح طويلة).
+SCRIPT_MIN_CHARS = 800
+SCRIPT_MIN_MARKERS = 3
+
+
+def semantic_metrics(strings: list[str]) -> dict:
+    """يقيس ما يقرأه المحلّل **معنى**: شروح عربية، سكربتات مُضمَّنة، مسارات جهاز.
+
+    وحدّه المُعلَن: قياس على جدول نصوص DEX فقط. لا يرى نصًّا وُلد وقت التشغيل ولا
+    نصًّا داخل أصل مختوم — وهذا هو المقصود: يثبت أن الأصل المختوم **لم يعد** في DEX.
+    """
+    metrics = {
+        "arabic_chars": 0,
+        "script_strings": 0,
+        "shell_marker_strings": 0,
+        "device_path_strings": 0,
+    }
+    for text in strings:
+        metrics["arabic_chars"] += len(ARABIC_CHAR.findall(text))
+        markers = sum(1 for marker in SHELL_MARKERS if marker in text)
+        if markers:
+            metrics["shell_marker_strings"] += 1
+        if len(text) >= SCRIPT_MIN_CHARS and markers >= SCRIPT_MIN_MARKERS:
+            metrics["script_strings"] += 1
+        if DEVICE_PATH.match(text):
+            metrics["device_path_strings"] += 1
+    return metrics
+
+
+def merge_semantic(stats: dict, strings: list[str]) -> None:
+    current = stats.setdefault(
+        "semantic", {"arabic_chars": 0, "script_strings": 0, "shell_marker_strings": 0, "device_path_strings": 0}
+    )
+    for key, value in semantic_metrics(strings).items():
+        current[key] = current.get(key, 0) + value
+
+
 def classify_string(text: str) -> str | None:
     """يُصنّف نصًّا واحدًا؛ `None` يعني «لا أثر»."""
     lowered = text.lower()
@@ -209,6 +256,7 @@ def scan_apk(path: str) -> tuple[list[dict], dict]:
                 findings.append({"rule": "dex_unreadable", "where": name, "detail": str(exc)[:100]})
                 continue
             stats["strings"] += len(strings)
+            merge_semantic(stats, strings)
             findings.extend(scan_strings(strings, name, referenced))
     return findings, stats
 
@@ -243,6 +291,7 @@ def scan_dir(path: str) -> tuple[list[dict], dict]:
                 findings.append({"rule": "dex_unreadable", "where": os.path.basename(dex), "detail": str(exc)[:100]})
                 continue
             stats["strings"] += len(strings)
+            merge_semantic(stats, strings)
             findings.extend(scan_strings(strings, os.path.basename(dex), referenced))
         return findings, stats
     findings: list[dict] = []
@@ -252,6 +301,9 @@ def scan_dir(path: str) -> tuple[list[dict], dict]:
         findings.extend(part)
         stats["dex_files"] += part_stats.get("dex_files", 0)
         stats["strings"] += part_stats.get("strings", 0)
+        for key, value in part_stats.get("semantic", {}).items():
+            stats.setdefault("semantic", {}).setdefault(key, 0)
+            stats["semantic"][key] += value
     return findings, stats
 
 
@@ -372,6 +424,10 @@ def main(argv: list[str]) -> int:
     parser.add_argument("--path", help="مجلّد يحوي حزمًا")
     parser.add_argument("--assert", dest="assert_mode", action="store_true")
     parser.add_argument("--json", action="store_true")
+    parser.add_argument(
+        "--budget",
+        help="ملفّ ميزانية القياس الدلاليّ (JSON): يُفشل --assert إن تجاوزه قياس الحزمة",
+    )
     parser.add_argument("--self-test", action="store_true")
     args = parser.parse_args(argv)
 
@@ -385,6 +441,27 @@ def main(argv: list[str]) -> int:
     else:
         findings, stats = scan_dir(args.path)
 
+    semantic = stats.get("semantic") or {}
+    if args.budget and semantic:
+        try:
+            with open(args.budget, "r", encoding="utf-8") as handle:
+                budget = json.load(handle)
+        except (OSError, json.JSONDecodeError) as exc:
+            print(f"✗ budget_unreadable: {args.budget} — {exc}")
+            return 2
+        for key, limit in budget.items():
+            value = semantic.get(key)
+            if not isinstance(value, int):
+                continue
+            if value > limit:
+                findings.append(
+                    {
+                        "rule": f"semantic_budget:{key}",
+                        "where": os.path.basename(args.apk or args.path or ""),
+                        "detail": f"{value} > الميزانية {limit}",
+                    }
+                )
+
     if args.json:
         print(json.dumps({"findings": findings, "stats": stats}, ensure_ascii=False, indent=2))
     else:
@@ -396,6 +473,11 @@ def main(argv: list[str]) -> int:
             print(
                 "✓ لا أثر لمسار بناء ولا اسم ملفّ مصدر ولا خريطة R8 في "
                 f"{stats.get('dex_files', 0)} ملفّ DEX"
+            )
+        if semantic:
+            print(
+                "· الدلالة: عربيّ {arabic_chars} حرفًا · سكربتات مُضمَّنة {script_strings} · "
+                "نصوص أوامر {shell_marker_strings} · مسارات جهاز {device_path_strings}".format(**semantic)
             )
     return 1 if (args.assert_mode and findings) else 0
 

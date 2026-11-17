@@ -29,9 +29,17 @@ import java.util.Locale
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import nd.max.core.diagnostics.DeviceBlueprint
+import nd.max.core.security.AssetVault
 import nd.max.core.diagnostics.DiagnosticCenter
 import nd.max.core.jni.PredictorBridge
 
+
+/** أصل السكربت المختوم: صريح في التنقيح، مختوم في الإصدار — يقرأه [AssetVault]. */
+private const val DIAGNOSTIC_SCRIPT_ASSET = "scripts/diagnostics.sh"
+
+/** اقتباس shell آمن: بين اقتباسين مفردين، وكل اقتباس داخليّ يُهرَّب. */
+private fun shellQuote(value: String): String =
+    "'" + value.replace("'", "'\\''") + "'"
 
 suspend fun dumpDiagnosticLogs(context: Context, saveToDownloads: Boolean): File? = withContext(Dispatchers.IO) {
     // كتلة مركز التشخيص: تُكتب أولًا لأن السكربت أدناه يستهلكها كملف.
@@ -85,178 +93,26 @@ suspend fun dumpDiagnosticLogs(context: Context, saveToDownloads: Boolean): File
         "Unknown"
     }
     
-    val d = "$" 
     val serviceBin = nd.max.MaxManagerPaths.serviceBin()
-    
-    val script = """
-        TMP_DIR="/data/local/tmp/az_logs_tmp"
-        rm -rf ${d}TMP_DIR
-        
-        # PERBAIKAN: Bikin sub-folder nya sekalian
-        mkdir -p ${d}TMP_DIR/MaxManagerConfig
-        mkdir -p ${d}TMP_DIR/log
-        
-        cp -r /data/adb/.config/MaxManager/* ${d}TMP_DIR/MaxManagerConfig/ 2>/dev/null
-        # سجلّ الرفيق يُضاف إليه بلا سقف: قِيس ١٥٦ م.ب منه في حزمة ٣٫٤ م.ب (٩٦٪ من الحجم)،
-        # فلا يُنسخ كاملًا — ما يفيد التشخيص آخره، وما يضخّم الحزمة يبقى على الجهاز.
-        if [ -f ${d}TMP_DIR/MaxManagerConfig/sysmon.log ]; then
-            tail -c 524288 ${d}TMP_DIR/MaxManagerConfig/sysmon.log > ${d}TMP_DIR/MaxManagerConfig/sysmon.log.tail 2>/dev/null \
-                && mv -f ${d}TMP_DIR/MaxManagerConfig/sysmon.log.tail ${d}TMP_DIR/MaxManagerConfig/sysmon.log
-        fi
-        cp ${blueprintFile} ${d}TMP_DIR/log/device_blueprint.txt 2>/dev/null
-        
-        INFO_FILE="${d}TMP_DIR/log/MaxManager.log"
-        
-        MODULE_VER=${d}(grep '^version=' /data/adb/modules/MaxManager/module.prop 2>/dev/null | cut -d= -f2)
-        [ -z "${d}MODULE_VER" ] && MODULE_VER="Unknown"
-        
-        KERNEL_INFO=${d}(uname -r -m)
-        ANDROID_VER=${d}(getprop ro.build.version.release)
-        API_LEVEL=${d}(getprop ro.build.version.sdk)
-        FINGERPRINT=${d}(getprop ro.build.fingerprint)
-        SELINUX_STATUS=${d}(getenforce 2>/dev/null)
-        
-        echo "################################################################" > "${d}INFO_FILE"
-        echo "                       MaxManager Diagnostics                      " >> "${d}INFO_FILE"
-        echo "################################################################" >> "${d}INFO_FILE"
-        echo "" >> "${d}INFO_FILE"
-        echo "  [Device Information]" >> "${d}INFO_FILE"
-        echo "    Device Name   : $realDeviceName" >> "${d}INFO_FILE"
-        echo "    Chipset       : $chipsetName" >> "${d}INFO_FILE"
-        echo "    Android Ver   : ${d}ANDROID_VER (API ${d}API_LEVEL)" >> "${d}INFO_FILE"
-        echo "    Kernel        : ${d}KERNEL_INFO" >> "${d}INFO_FILE"
-        echo "    SELinux Status: ${d}SELINUX_STATUS" >> "${d}INFO_FILE"
-        echo "    Fingerprint   : ${d}FINGERPRINT" >> "${d}INFO_FILE"
-        echo "" >> "${d}INFO_FILE"
-        echo "  [MaxManager]" >> "${d}INFO_FILE"
-        echo "    App Version   : $appVersion" >> "${d}INFO_FILE"
-        echo "    Module Version: ${d}MODULE_VER" >> "${d}INFO_FILE"
-        echo "" >> "${d}INFO_FILE"
-        echo "################################################################" >> "${d}INFO_FILE"
-        echo "" >> "${d}INFO_FILE"
-        
-        # Every generation of both streams, oldest first: MaxManager.log.2 -> .1 -> current, then
-        # the verbose stream. Rotation keeps history; a dump that omits .1/.2 would lose it.
-        for live in /data/adb/.config/MaxManager/debug/MaxManager.log /data/adb/.config/MaxManager/debug/MaxManagerVerbose.log; do
-            for gen_file in "${d}{live}.2" "${d}{live}.1" "${d}live"; do
-                if [ -f "${d}gen_file" ]; then
-                    echo "--- START OF ${d}{gen_file##*/} ---" >> "${d}INFO_FILE"
-                    cat "${d}gen_file" >> "${d}INFO_FILE"
-                    echo "" >> "${d}INFO_FILE"
-                fi
-            done
-        done
 
-        # DiagnosticCenter: مشاكل هذه الجلسة — تُدمج دائمًا بلا أي مفتاح،
-        # فيصل الأثر حتى لو لم يفعّل المستخدم أي سجل تفصيلي قبل المشكلة.
-        echo "" >> "${d}INFO_FILE"
-        echo "--- DIAGNOSTIC CENTER ---" >> "${d}INFO_FILE"
-        cat ${diagFile} >> "${d}INFO_FILE" 2>/dev/null
-
-        #
-        # إثبات الوحدة: الأربعة التي كانت **غائبة** من الحزمة التي وصلت في 2026-10-01، فبقي
-        # «لماذا مات الرفيق» بلا جواب في أيّ ملفّ يرسله المستخدم:
-        #
-        # 1. `sysmon.log` — صفر بايت في تلك الحزمة (مات الرفيق قبل أن يكتب حرفًا)، وهو اليوم
-        #    يُكتب من الرفيق نفسه أوّل شيء ([`AppMonitorLogger.persist`]) — فيُقرأ في مكانه.
-        # 2. عمليّاتنا **بسياقها** (`ps -Z`): «من كان يعمل» و«بأيّ هويّة SELinux» — وهو ما يفرّق
-        #    بين رفضٍ سببه الهوية وبين غيابٍ سببه الموت.
-        # 3. رفض SELinux الذي يخصّنا وحدنا — لا ٢ ميغابايت من ضجيج النواة.
-        # 4. الوحدات الأخرى المثبّتة: التعايش سؤال مشروع في كل عطب عتاد (قِيس في تلك الحزمة
-        #    أربع وحدات أخرى بينها محرّك صوت يكتب في العقد نفسها).
-        #
-        echo "" >> "${d}INFO_FILE"
-        echo "--- MAXMANAGER EVIDENCE ---" >> "${d}INFO_FILE"
-        echo "[sysmon.log tail]" >> "${d}INFO_FILE"
-        tail -n 40 /data/adb/.config/MaxManager/sysmon.log >> "${d}INFO_FILE" 2>/dev/null
-        echo "[our processes with contexts]" >> "${d}INFO_FILE"
-        ps -AZ 2>/dev/null | grep -E 'maxmanager|nd[.]max' >> "${d}INFO_FILE"
-        ps -A 2>/dev/null | grep -E 'maxmanager|nd[.]max' >> "${d}INFO_FILE"
-        echo "[selinux denials for nd.max / maxmanager]" >> "${d}INFO_FILE"
-        dmesg 2>/dev/null | grep -E 'avc:.*(nd[.]max|maxmanager)' | tail -n 40 >> "${d}INFO_FILE"
-        echo "[module properties]" >> "${d}INFO_FILE"
-        getprop 2>/dev/null | grep -E 'persist[.]sys[.]maxmanager' | sort >> "${d}INFO_FILE"
-        # ── الوضع المستقلّ / التثبيت في الروم (بلا موديول): ما يحتاجه من يضبط sepolicy من جهاز حقيقي ──
-        # كل سطر هنا يجيب عن سؤال واحد: هل وُجد الثنائيّ؟ هل بدأته init؟ بأيّ نطاق/مجموعات/قدرات؟ هل القناة مفتوحة؟
-        # هل كتب المراقب `app_status`؟ هل ملفّات cgroup المقروءة موجودة؟ وأيّ رفض SELinux يخصّ الخادم؟
-        echo "[rom install: flag, init state, binary]" >> "${d}INFO_FILE"
-        echo "ro.maxmanager.sepolicy=${d}(getprop ro.maxmanager.sepolicy 2>/dev/null)" >> "${d}INFO_FILE"
-        echo "init.svc.sys.maxmanager-service=${d}(getprop init.svc.sys.maxmanager-service 2>/dev/null)" >> "${d}INFO_FILE"
-        ls -lZ /system/bin/sys.maxmanager-service /system_ext/bin/sys.maxmanager-service /product/bin/sys.maxmanager-service /vendor/bin/sys.maxmanager-service 2>&1 | grep -v 'No such' >> "${d}INFO_FILE"
-        ls -lZ /product/priv-app/MaxManager /system/priv-app/MaxManager /system_ext/priv-app/MaxManager 2>&1 | grep -v 'No such' >> "${d}INFO_FILE"
-        echo "[ipc socket @maxmanager.sock]" >> "${d}INFO_FILE"
-        grep -a maxmanager /proc/net/unix 2>/dev/null >> "${d}INFO_FILE"
-        echo "[daemon identity: uid/gid/groups/caps/domain]" >> "${d}INFO_FILE"
-        DPID=${d}(pidof sys.maxmanager-service 2>/dev/null | cut -d' ' -f1)
-        if [ -n "${d}DPID" ]; then
-            grep -E '^(Uid|Gid|Groups|CapEff|CapBnd):' /proc/${d}DPID/status >> "${d}INFO_FILE" 2>/dev/null
-            cat /proc/${d}DPID/attr/current >> "${d}INFO_FILE" 2>/dev/null
-            echo "" >> "${d}INFO_FILE"
-        else
-            echo "daemon not running" >> "${d}INFO_FILE"
-        fi
-        echo "[app_status written by the daemon or the companion]" >> "${d}INFO_FILE"
-        ls -l /data/adb/.config/MaxManager/app_status >> "${d}INFO_FILE" 2>&1
-        cat /data/adb/.config/MaxManager/app_status >> "${d}INFO_FILE" 2>/dev/null
-        echo "[top-app cgroup files used by the native foreground observer]" >> "${d}INFO_FILE"
-        for cg in /dev/cpuset/top-app/cgroup.procs /dev/cpuset/top-app/tasks /dev/cpuctl/top-app/cgroup.procs /dev/cpuctl/top-app/tasks; do
-            if [ -e "${d}cg" ]; then
-                echo "${d}cg: ${d}(head -n 8 "${d}cg" 2>/dev/null | tr '\n' ' ')" >> "${d}INFO_FILE"
-            fi
-        done
-        echo "[selinux denials involving the maxmanager domain: dmesg + logcat, ready for make_sepolicy.py]" >> "${d}INFO_FILE"
-        { dmesg 2>/dev/null; logcat -d -b all 2>/dev/null; } | grep -aE 'avc:.*denied.*maxmanager' | sort -u > ${d}TMP_DIR/log/avc_maxmanager.txt
-        tail -n 60 ${d}TMP_DIR/log/avc_maxmanager.txt >> "${d}INFO_FILE"
-        # القواعد جاهزة من الهاتف نفسه (بلا بايثون): تُنسخ إلى مجلّد sepolicy في الروم. فشلها (خادم قديم) لا يضرّ.
-        $serviceBin --gen-sepolicy ${d}TMP_DIR/log/avc_maxmanager.txt -o ${d}TMP_DIR/log/maxmanager_generated.te >/dev/null 2>&1
-        echo "[other installed modules]" >> "${d}INFO_FILE"
-        ls -1 /data/adb/modules 2>/dev/null >> "${d}INFO_FILE"
-        # سبب الإقلاع وحداثة pstore: حزمة ٢٠٢٦-١٠-١٥ أقلعت مرتين `kernel_panic/AP_WDT`
-        # و`console-ramoops` فيها قديم (٢٠ سبتمبر) فلا مكدّس للانهيار — فبهذين السطرين
-        # تُقرأ في الحزمة القادمة مباشرة: هل كان الإقلاع watchdog؟ وهل pstore طازج أم معاد؟
-        echo "[boot reason]" >> "${d}INFO_FILE"
-        echo "ro.boot.bootreason=${d}(getprop ro.boot.bootreason 2>/dev/null)" >> "${d}INFO_FILE"
-        echo "sys.boot.reason=${d}(getprop sys.boot.reason 2>/dev/null)" >> "${d}INFO_FILE"
-        echo "boot.history=${d}(getprop persist.sys.boot.reason.history 2>/dev/null)" >> "${d}INFO_FILE"
-        echo "[pstore freshness]" >> "${d}INFO_FILE"
-        ls -l /sys/fs/pstore 2>/dev/null >> "${d}INFO_FILE"
-
-        cp -r /sys/fs/pstore ${d}TMP_DIR/ 2>/dev/null
-        
-        # PERBAIKAN: Gunakan >> (append) untuk log APatch/Magisk agar tidak menimpa log KSU jika foldernya beririsan
-        cat /data/adb/ksu/log/logcat.log > ${d}TMP_DIR/log/logcat.log 2>/dev/null
-        cat /data/adb/ap/log/logcat.log >> ${d}TMP_DIR/log/logcat.log 2>/dev/null
-        
-        cat /data/adb/ksu/log/logcat.old.log > ${d}TMP_DIR/log/logcat.old.log 2>/dev/null
-        cat /data/adb/ap/log/logcat.old.log >> ${d}TMP_DIR/log/logcat.old.log 2>/dev/null
-        
-        cat /data/adb/ksu/log/dmesg.log > ${d}TMP_DIR/log/dmesg.log 2>/dev/null
-        cat /data/adb/ap/log/dmesg.log >> ${d}TMP_DIR/log/dmesg.log 2>/dev/null
-        
-        cat /data/adb/ksu/log/dmesg.old.log > ${d}TMP_DIR/log/dmesg.old.log 2>/dev/null
-        cat /data/adb/ap/log/dmesg.old.log >> ${d}TMP_DIR/log/dmesg.old.log 2>/dev/null
-        
-        cat /cache/magisk.log > ${d}TMP_DIR/log/magisk.log 2>/dev/null
-        cat /data/adb/magisk.log >> ${d}TMP_DIR/log/magisk.log 2>/dev/null
-        cat /data/adb/apatch/log/* >> ${d}TMP_DIR/log/apatch.log 2>/dev/null
-        
-        cd /data/local/tmp
-        tar -czf "$fileName" -C az_logs_tmp .
-        
-        mkdir -p "${d}(dirname "$targetPath")"
-        cp "$fileName" "$targetPath"
-        
-        if [ "$saveToDownloads" = "true" ]; then
-            chmod 666 "$targetPath"
-        else
-            chown $appUid:$appUid "$targetPath"
-            chmod 600 "$targetPath"
-            restorecon "$targetPath" 2>/dev/null
-        fi
-        
-        rm -rf az_logs_tmp
-        rm -f "$fileName"
-    """.trimIndent()
+    // السكربت الحرفيّ يعيش في أصل مختوم (`assets-internal/scripts/diagnostics.sh`) لا في DEX:
+    // كان **أكبر كتلة شرح مقروءة** في الحزمة (قِيس ٤٬١٧٥ حرفًا منها ٨١٥ حرفًا عربيًّا)، فيقرأ
+    // من يفكّ الحزمة سبب كل سطر وقراره. والقيم تُمرَّر متغيّراتِ shell في مقدّمة صغيرة،
+    // والسكربت نفسه لا يتغيّر حرفًا.
+    val template = AssetVault.readText(context, DIAGNOSTIC_SCRIPT_ASSET) ?: return@withContext null
+    val script = buildString {
+        append("BLUEPRINT_FILE=").append(shellQuote(blueprintFile.absolutePath)).append('\n')
+        append("DIAG_FILE=").append(shellQuote(diagFile.absolutePath)).append('\n')
+        append("OUT_NAME=").append(shellQuote(fileName)).append('\n')
+        append("TARGET_PATH=").append(shellQuote(targetPath)).append('\n')
+        append("SAVE_TO_DOWNLOADS=").append(shellQuote(saveToDownloads.toString())).append('\n')
+        append("APP_UID=").append(appUid).append('\n')
+        append("SERVICE_BIN=").append(shellQuote(serviceBin)).append('\n')
+        append("DEVICE_NAME=").append(shellQuote(realDeviceName)).append('\n')
+        append("CHIPSET_NAME=").append(shellQuote(chipsetName)).append('\n')
+        append("APP_VERSION=").append(shellQuote(appVersion)).append('\n')
+        append(template)
+    }
 
 
     val result = nd.max.core.privilege.RootCommands.cmd(script).exec()
