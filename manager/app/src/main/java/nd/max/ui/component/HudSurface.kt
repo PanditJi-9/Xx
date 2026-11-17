@@ -146,7 +146,12 @@ fun hudFieldText(reading: HudReading?, field: HudField): String = when (field) {
     HudField.Renderer -> reading?.renderer ?: MAX_VALUE_UNAVAILABLE
     HudField.Stability -> reading?.stability?.let { "$it%" } ?: MAX_VALUE_UNAVAILABLE
     HudField.Jank -> reading?.jankPercent?.let { percent ->
-        reading.frameP99Ms?.let { p99 -> "$percent% · p99 %.0f ms".format(p99) } ?: "$percent%"
+        // **ولا يُترَك `%` حرفيًّا في نصّ يُنسَّق (قِيس على جهاز، ٢٠٢٦-١١-١٧):** كان السطر
+        // `"$percent% · p99 %.0f ms".format(p99)`، فقرأ `Formatter` المقطع `% ·` مواصفةَ تحويل
+        // ورمى `UnknownFormatConversionException: Conversion = '·'` ⇒ كراش `FpsOverlayService`
+        // عند فتح HUD (السجل: `String.format ← o.ey2.n ← FpsOverlayService.c`). فالنسبة تُركَّب
+        // نصًّا، ويبقى القالب للرقم وحده.
+        reading.frameP99Ms?.let { p99 -> "$percent% · p99 ${"%.0f".format(p99)} ms" } ?: "$percent%"
     } ?: MAX_VALUE_UNAVAILABLE
     HudField.CpuFreq -> reading?.cpuFreqMhz?.let { "$it MHz" } ?: MAX_VALUE_UNAVAILABLE
     HudField.SocTemp -> reading?.socTempC?.let { "%.0f°C".format(it) } ?: MAX_VALUE_UNAVAILABLE
