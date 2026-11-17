@@ -111,15 +111,15 @@ const KINDS = {
     ...[0, 1, 2].map(i => ({ t: 'line', pts: [0.68, 0.18 + i * 0.14, 0.80, 0.18 + i * 0.14], ink: 'Outline' })),
   ],
   Network: [
-    { t: 'line', pts: arcPts(0.50, 0.74, 0.18, -Math.PI * 3 / 4, -Math.PI / 4, 8), ink: 'Accent' },
-    { t: 'line', pts: arcPts(0.50, 0.74, 0.32, -Math.PI * 3 / 4, -Math.PI / 4, 9), ink: 'Outline' },
-    { t: 'line', pts: arcPts(0.50, 0.74, 0.46, -Math.PI * 3 / 4, -Math.PI / 4, 10), ink: 'Outline' },
+    { t: 'line', pts: arcPts(0.50, 0.74, 0.18, -Math.PI * 3 / 4, -Math.PI / 4, 7), ink: 'Accent' },
+    { t: 'line', pts: arcPts(0.50, 0.74, 0.32, -Math.PI * 3 / 4, -Math.PI / 4, 7), ink: 'Outline' },
+    { t: 'line', pts: arcPts(0.50, 0.74, 0.46, -Math.PI * 3 / 4, -Math.PI / 4, 7), ink: 'Outline' },
     { t: 'ring', x: 0.50, y: 0.74, r: 0.05, ink: 'Accent', filled: true },
   ],
   Audio: [
     { t: 'line', pts: [0.14, 0.40, 0.30, 0.40, 0.50, 0.20, 0.50, 0.80, 0.30, 0.60, 0.14, 0.60], closed: true, ink: 'Accent', filled: true },
     { t: 'line', pts: arcPts(0.52, 0.50, 0.20, -Math.PI * 0.28, Math.PI * 0.28, 7), ink: 'Outline' },
-    { t: 'line', pts: arcPts(0.52, 0.50, 0.34, -Math.PI * 0.28, Math.PI * 0.28, 8), ink: 'Outline' },
+    { t: 'line', pts: arcPts(0.52, 0.50, 0.34, -Math.PI * 0.28, Math.PI * 0.28, 7), ink: 'Outline' },
   ],
   Games: [
     { t: 'box', x: 0.08, y: 0.30, w: 0.84, h: 0.44, r: 0.22, ink: 'Wash', filled: true },
@@ -175,9 +175,9 @@ const KINDS = {
   Sensors: [
     { t: 'ring', x: 0.50, y: 0.50, r: 0.09, ink: 'Accent', filled: true },
     { t: 'line', pts: arcPts(0.50, 0.50, 0.22, Math.PI * 0.75, Math.PI * 1.25, 7), ink: 'Outline' },
-    { t: 'line', pts: arcPts(0.50, 0.50, 0.36, Math.PI * 0.75, Math.PI * 1.25, 8), ink: 'Outline' },
+    { t: 'line', pts: arcPts(0.50, 0.50, 0.36, Math.PI * 0.75, Math.PI * 1.25, 7), ink: 'Outline' },
     { t: 'line', pts: arcPts(0.50, 0.50, 0.22, -Math.PI * 0.25, Math.PI * 0.25, 7), ink: 'Outline' },
-    { t: 'line', pts: arcPts(0.50, 0.50, 0.36, -Math.PI * 0.25, Math.PI * 0.25, 8), ink: 'Outline' },
+    { t: 'line', pts: arcPts(0.50, 0.50, 0.36, -Math.PI * 0.25, Math.PI * 0.25, 7), ink: 'Outline' },
   ],
   Intelligence: [
     { t: 'line', pts: [0.50, 0.10, 0.90, 0.50, 0.50, 0.90, 0.10, 0.50], closed: true, ink: 'Wash', filled: true },

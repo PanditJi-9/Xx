@@ -205,15 +205,15 @@ fun maxIllustrationParts(kind: MaxIllustrationKind): List<MaxIllustrationPart> =
             line(0.68f, 0.46f, 0.8f, 0.46f, ink = outline)
         }
         MaxIllustrationKind.Network -> {
-            line(0.373f, 0.613f, 0.4f, 0.59f, 0.431f, 0.574f, 0.465f, 0.563f, 0.5f, 0.56f, 0.535f, 0.563f, 0.569f, 0.574f, 0.6f, 0.59f, 0.627f, 0.613f)
-            line(0.274f, 0.514f, 0.316f, 0.478f, 0.365f, 0.45f, 0.417f, 0.431f, 0.472f, 0.421f, 0.528f, 0.421f, 0.583f, 0.431f, 0.635f, 0.45f, 0.684f, 0.478f, 0.726f, 0.514f, ink = outline)
-            line(0.175f, 0.415f, 0.23f, 0.368f, 0.291f, 0.33f, 0.358f, 0.303f, 0.428f, 0.286f, 0.5f, 0.28f, 0.572f, 0.286f, 0.642f, 0.303f, 0.709f, 0.33f, 0.77f, 0.368f, 0.825f, 0.415f, ink = outline)
+            line(0.373f, 0.613f, 0.404f, 0.588f, 0.441f, 0.57f, 0.48f, 0.561f, 0.52f, 0.561f, 0.559f, 0.57f, 0.596f, 0.588f, 0.627f, 0.613f)
+            line(0.274f, 0.514f, 0.33f, 0.469f, 0.394f, 0.438f, 0.464f, 0.422f, 0.536f, 0.422f, 0.606f, 0.438f, 0.67f, 0.469f, 0.726f, 0.514f, ink = outline)
+            line(0.175f, 0.415f, 0.255f, 0.351f, 0.348f, 0.306f, 0.448f, 0.283f, 0.552f, 0.283f, 0.652f, 0.306f, 0.745f, 0.351f, 0.825f, 0.415f, ink = outline)
             ring(0.5f, 0.74f, 0.05f, filled = true)
         }
         MaxIllustrationKind.Audio -> {
             line(0.14f, 0.4f, 0.3f, 0.4f, 0.5f, 0.2f, 0.5f, 0.8f, 0.3f, 0.6f, 0.14f, 0.6f, closed = true, filled = true)
             line(0.647f, 0.346f, 0.682f, 0.382f, 0.706f, 0.426f, 0.718f, 0.475f, 0.718f, 0.525f, 0.706f, 0.574f, 0.682f, 0.618f, 0.647f, 0.654f, ink = outline)
-            line(0.737f, 0.238f, 0.789f, 0.292f, 0.828f, 0.355f, 0.852f, 0.426f, 0.86f, 0.5f, 0.852f, 0.574f, 0.828f, 0.645f, 0.789f, 0.708f, 0.737f, 0.762f, ink = outline)
+            line(0.737f, 0.238f, 0.795f, 0.3f, 0.836f, 0.375f, 0.857f, 0.457f, 0.857f, 0.543f, 0.836f, 0.625f, 0.795f, 0.7f, 0.737f, 0.762f, ink = outline)
         }
         MaxIllustrationKind.Games -> {
             box(0.08f, 0.3f, 0.84f, 0.44f, wash, filled = true, radius = 0.22f)
@@ -271,9 +271,9 @@ fun maxIllustrationParts(kind: MaxIllustrationKind): List<MaxIllustrationPart> =
         MaxIllustrationKind.Sensors -> {
             ring(0.5f, 0.5f, 0.09f, filled = true)
             line(0.344f, 0.656f, 0.314f, 0.617f, 0.292f, 0.573f, 0.281f, 0.525f, 0.281f, 0.475f, 0.292f, 0.427f, 0.314f, 0.383f, 0.344f, 0.344f, ink = outline)
-            line(0.245f, 0.755f, 0.201f, 0.7f, 0.167f, 0.638f, 0.147f, 0.57f, 0.14f, 0.5f, 0.147f, 0.43f, 0.167f, 0.362f, 0.201f, 0.3f, 0.245f, 0.245f, ink = outline)
+            line(0.245f, 0.755f, 0.195f, 0.692f, 0.16f, 0.619f, 0.142f, 0.54f, 0.142f, 0.46f, 0.16f, 0.381f, 0.195f, 0.308f, 0.245f, 0.245f, ink = outline)
             line(0.656f, 0.344f, 0.686f, 0.383f, 0.708f, 0.427f, 0.719f, 0.475f, 0.719f, 0.525f, 0.708f, 0.573f, 0.686f, 0.617f, 0.656f, 0.656f, ink = outline)
-            line(0.755f, 0.245f, 0.799f, 0.3f, 0.833f, 0.362f, 0.853f, 0.43f, 0.86f, 0.5f, 0.853f, 0.57f, 0.833f, 0.638f, 0.799f, 0.7f, 0.755f, 0.755f, ink = outline)
+            line(0.755f, 0.245f, 0.805f, 0.308f, 0.84f, 0.381f, 0.858f, 0.46f, 0.858f, 0.54f, 0.84f, 0.619f, 0.805f, 0.692f, 0.755f, 0.755f, ink = outline)
         }
         MaxIllustrationKind.Intelligence -> {
             line(0.5f, 0.1f, 0.9f, 0.5f, 0.5f, 0.9f, 0.1f, 0.5f, ink = wash, closed = true, filled = true)
