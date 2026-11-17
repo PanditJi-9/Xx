@@ -17,9 +17,19 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.Dp
+
+/**
+ * سماكة الخط **نسبة من ضلع الرمز** لا dp ثابت — قياس مقيس ٢٠٢٦-١١-١٧: كانت
+ * `emphasisBorder` = 1.5dp على رمز 40dp ⇒ وزن بصري 3.75% مقابل 8.33% لشبكة
+ * Material (2dp على 24dp) أي أنحف ~2.2×، وعند hero 112dp تصير 1.3% (شعرة).
+ * فبصير الخط 5.5% من الضلع في كل الأحجام، والوصلات دائرية (كانت Miter افتراضيًّا
+ * فتشقّ الزوايا الحادة رأسًا) — نفس سماكة ورقة المعاينة `icon_preview.cjs`.
+ */
+private const val IllustrationStrokeFraction = 0.055f
 
 /** Static, theme-aware domain identity. Text beside it remains the accessible label. */
 @Composable
@@ -36,7 +46,11 @@ fun MaxIllustration(
         val side = this.size.minDimension
         if (!side.isFinite() || side <= 0f) return@Canvas
         val origin = Offset((this.size.width - side) / 2f, (this.size.height - side) / 2f)
-        val stroke = Stroke(width = MaxSize.emphasisBorder.toPx(), cap = StrokeCap.Round)
+        val stroke = Stroke(
+            width = side * IllustrationStrokeFraction,
+            cap = StrokeCap.Round,
+            join = StrokeJoin.Round,
+        )
         fun ink(value: MaxIllustrationInk): Color = when (value) {
             MaxIllustrationInk.Accent -> color
             MaxIllustrationInk.Outline -> outline.copy(alpha = MaxAlpha.supportingText)
