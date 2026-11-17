@@ -46,10 +46,15 @@ object GamePanelPrefs {
     private const val KEY_SENSITIVITY = "game_panel_sensitivity"
     private const val KEY_LOCKED = "game_panel_locked"
     private const val KEY_HAPTICS = "game_panel_haptics"
+    private const val KEY_SKIN = "game_panel_skin"
+    private const val KEY_SKIN_CHOSEN = "game_panel_skin_chosen"
     private const val USE_PREFIX = "game_panel_use_"
 
     /** الحافة الافتراضية: يمين الشاشة — وهي الموضع الذي تعتاده ألواح الألعاب. */
     val DEFAULT_SIDE: PanelSide = PanelSide.End
+
+    /** التصميم الافتراضي: الجديد [PanelSkin.Turbo] بأمر المالك — والقديم يبقى متاحًا بالاختيار. */
+    val DEFAULT_SKIN: PanelSkin = PanelSkin.Turbo
 
     data class State(
         val enabledPackages: Set<String> = emptySet(),
@@ -64,8 +69,15 @@ object GamePanelPrefs {
         /** مقفل: لا يُسحب المقبض (لا عموديًّا ولا بالضغط المطوّل)؛ النقر والسحب للداخل يفتحان اللوحة كالمعتاد. */
         val locked: Boolean = false,
         /** اهتزاز اللمس والتسليح على المقبض. */
-        val haptics: Boolean = true
+        val haptics: Boolean = true,
+        /** تصميم اللوحة المفتوحة: الجديد افتراضيًّا، والاختيار يُحفظ اسمًا. */
+        val skin: PanelSkin = DEFAULT_SKIN,
+        /** هل اختار المستخدم تصميمه فعلًا؟ حتى يُعرض مُنتقي التصميم مرة واحدة أول فتح. */
+        val skinChosen: Boolean = false
     )
+
+    /** تصميم اللوحة المفتوحة. الاسم يُخزَّن كما هو — قراءة اسم لا يُعرف تُسقط إلى الافتراضي. */
+    enum class PanelSkin { Turbo, Classic }
 
     fun load(context: Context): State {
         val p = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -80,7 +92,9 @@ object GamePanelPrefs {
             handleSize = enumOr(p.getString(KEY_HANDLE_SIZE, null), HandleSize.entries, HandleSize.Medium),
             sensitivity = enumOr(p.getString(KEY_SENSITIVITY, null), PanelSensitivity.entries, PanelSensitivity.Balanced),
             locked = p.getBoolean(KEY_LOCKED, false),
-            haptics = p.getBoolean(KEY_HAPTICS, true)
+            haptics = p.getBoolean(KEY_HAPTICS, true),
+            skin = enumOr(p.getString(KEY_SKIN, null), PanelSkin.entries, DEFAULT_SKIN),
+            skinChosen = p.getBoolean(KEY_SKIN_CHOSEN, false)
         )
     }
 
@@ -116,6 +130,14 @@ object GamePanelPrefs {
     fun saveHaptics(context: Context, enabled: Boolean) {
         context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit()
             .putBoolean(KEY_HAPTICS, enabled).apply()
+    }
+
+    /** يحفظ التصميم ويومئ الاختيار — فلا يعود المُنتقي يظهر أول فتح. */
+    fun saveSkin(context: Context, skin: PanelSkin) {
+        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit()
+            .putString(KEY_SKIN, skin.name)
+            .putBoolean(KEY_SKIN_CHOSEN, true)
+            .apply()
     }
 
     /**

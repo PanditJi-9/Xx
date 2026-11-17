@@ -651,4 +651,29 @@
     <string name="gs_recording_channel">تسجيل الشاشة</string>
     <string name="gs_recording_title">جارٍ التسجيل</string>
     <string name="gs_recording_stop">إيقاف</string>
+
+    <!-- تصميمات لوحة الألعاب: مُنتقي أول فتح وصفّ الإعدادات. -->
+    <string name="game_panel_skin_title">تصميم Game Turbo</string>
+    <string name="game_panel_skin_choose">اختر تصميم Game Turbo</string>
+    <string name="game_panel_skin_choose_desc">تظهر هذه النافذة مرة واحدة، ويمكنك تغييرها في أي وقت من إعدادات لوحة الألعاب.</string>
+    <string name="game_panel_skin_turbo">Game Turbo</string>
+    <string name="game_panel_skin_turbo_desc">اللوحة الجديدة: عدّادات وأوضاع سريعة وأدوات لعب.</string>
+    <string name="game_panel_skin_classic">الكلاسيكي</string>
+    <string name="game_panel_skin_classic_desc">اللوحة الأصلية النحيفة.</string>
+
+    <!-- سطح Game Turbo الجديد: الترويسة والشريط الجانبي والعدّادات والتحسين. -->
+    <string name="game_panel_turbo_boost">تسريع</string>
+    <string name="game_panel_turbo_boosting">جارٍ تحسين أداء النظام…</string>
+    <string name="game_panel_turbo_boost_done">تم تحسين الأداء بنجاح</string>
+    <string name="game_panel_turbo_perf_info">معلومات الأداء</string>
+    <string name="game_panel_turbo_tools_title">أدوات اللعب</string>
+    <string name="game_panel_turbo_rail_perf">الأداء</string>
+    <string name="game_panel_turbo_rail_tools">الأدوات</string>
+    <string name="game_panel_turbo_rail_services">الخدمات</string>
+    <string name="game_panel_turbo_rail_record">التسجيل</string>
+    <string name="game_panel_turbo_rail_settings">الإعدادات</string>
+    <string name="game_panel_turbo_gauge_cpu">المعالج</string>
+    <string name="game_panel_turbo_gauge_gpu">الرسوميات</string>
+    <string name="game_panel_turbo_gauge_fps">الإطارات</string>
+    <string name="game_panel_turbo_gauge_cd">عدّاد دائري يُظهر القيمة الحالية</string>
 </resources>

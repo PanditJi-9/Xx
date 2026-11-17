@@ -916,6 +916,20 @@ private fun PanelBody(
                 Text(text = stringResource(R.string.panel_handle_reset), color = GameSpacePalette.Ink)
             }
         }
+        LobbySectionCard(stringResource(R.string.game_panel_skin_title)) {
+            LobbyChoiceRow(
+                title = stringResource(R.string.game_panel_skin_title),
+                options = listOf(
+                    GamePanelPrefs.PanelSkin.Turbo to stringResource(R.string.game_panel_skin_turbo),
+                    GamePanelPrefs.PanelSkin.Classic to stringResource(R.string.game_panel_skin_classic)
+                ),
+                selected = handle.skin,
+                onSelect = {
+                    GamePanelPrefs.saveSkin(context, it)
+                    reload()
+                }
+            )
+        }
         CrosshairSettingsCard()
     }
 }

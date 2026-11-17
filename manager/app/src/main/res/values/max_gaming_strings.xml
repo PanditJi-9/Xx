@@ -652,4 +652,29 @@
     <string name="gs_recording_channel">Screen recording</string>
     <string name="gs_recording_title">Recording in progress</string>
     <string name="gs_recording_stop">Stop</string>
+
+    <!-- Game panel skins: the first-open chooser and the Settings row. -->
+    <string name="game_panel_skin_title">Game Turbo design</string>
+    <string name="game_panel_skin_choose">Choose your Game Turbo design</string>
+    <string name="game_panel_skin_choose_desc">This appears once. You can change it any time from the game panel settings.</string>
+    <string name="game_panel_skin_turbo">Game Turbo</string>
+    <string name="game_panel_skin_turbo_desc">The new dashboard: gauges, quick modes and play tools.</string>
+    <string name="game_panel_skin_classic">Classic</string>
+    <string name="game_panel_skin_classic_desc">The original slim panel.</string>
+
+    <!-- Game Turbo replica surface: header, rail sections, gauges, boost. -->
+    <string name="game_panel_turbo_boost">BOOST</string>
+    <string name="game_panel_turbo_boosting">Optimizing system performance…</string>
+    <string name="game_panel_turbo_boost_done">Performance optimized</string>
+    <string name="game_panel_turbo_perf_info">Performance info</string>
+    <string name="game_panel_turbo_tools_title">Play tools</string>
+    <string name="game_panel_turbo_rail_perf">Performance</string>
+    <string name="game_panel_turbo_rail_tools">Tools</string>
+    <string name="game_panel_turbo_rail_services">Services</string>
+    <string name="game_panel_turbo_rail_record">Record</string>
+    <string name="game_panel_turbo_rail_settings">Settings</string>
+    <string name="game_panel_turbo_gauge_cpu">CPU</string>
+    <string name="game_panel_turbo_gauge_gpu">GPU</string>
+    <string name="game_panel_turbo_gauge_fps">FPS</string>
+    <string name="game_panel_turbo_gauge_cd">Circular gauge showing the current value</string>
 </resources>
