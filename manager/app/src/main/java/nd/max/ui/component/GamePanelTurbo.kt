@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -1152,7 +1153,7 @@ private fun TurboModeTile(
 
 /** بلاطة أداة: أيقونة وعنوان؛ الفعّالة تُضيء بلونها، والمتعطّلة تخفت. */
 @Composable
-private fun TurboToolTile(
+private fun RowScope.TurboToolTile(
     icon: ImageVector,
     label: String,
     active: Boolean,
@@ -1274,22 +1275,24 @@ private object TurboPalette {
     val Track = Color(0x26FFFFFF)
 }
 
-/** زاوية مشطوفة: القطع الأربع كما في المرجع. */
-private val TurboChamfer = TurboChamferShape(TurboChamferCut)
-private val TurboChamferSmall = TurboChamferShape(TurboChamferCutSmall)
+
+// القطعان يُعلنان قبل مستعملهما: ترتيب تهيئة الخصائص العليا في Kotlin يرفض المرجع الأماميّ.
+private val TurboChamferCut = 12.dp
+private val TurboChamferCutSmall = 9.dp
 
 private val TurboRailWidth = 58.dp
 private val TurboRailItemHeight = 44.dp
 private val TurboGaugeSize = 92.dp
 private val TurboGaugeStroke = 7.dp
+
+/** زاوية مشطوفة: القطع الأربع كما في المرجع. */
+private val TurboChamfer = TurboChamferShape(TurboChamferCut)
+private val TurboChamferSmall = TurboChamferShape(TurboChamferCutSmall)
 private val TurboModeTileHeight = 56.dp
 private val TurboToolTileHeight = 62.dp
 private val TurboPadXs = 2.dp
 private val TurboPadSm = 6.dp
 private val TurboPadMd = 10.dp
-
-private val TurboChamferCut = 12.dp
-private val TurboChamferCutSmall = 9.dp
 private const val TurboLeaveMs = 240
 private const val TurboNoteMs = 4200L
 private const val TurboHoldMs = 1600L
