@@ -1212,6 +1212,49 @@ jobs:
             manager/app/build
           key: gradle-state-${{ runner.os }}-${{ github.sha }}
 
+      # ── قياس DEX الإصدار **قبل** التوقيع: يسدّ ثغرة القياس لا ثغرة الحماية ──
+      #
+      # لماذا هذه الخطوة: خطوة «Scan the release APK» أدناه مشروطة بـ`SIGNED_BUILD=1`،
+      # وهذا المستودع بلا سرّ مفتاح ⇒ `signed=0` في كل تشغيل ⇒ **لا تُقاس الأرقام أبدًا**،
+      # ويبقى كل ادّعاء تخفيف نصّ «متوقَّعًا» لا «مُقاسًا». وهذا ما وقع فعلًا: نقل سكربت
+      # التشخيص لم يُقَس أثره على DEX لأن الحزمة الموقّعة لا تُبنى هنا.
+      #
+      # والحلّ لا يتجاوز حارس `KS_PWD`: الحارس على `assembleRelease`/`packageRelease`/
+      # `bundleRelease` وحدها (مقروء في `build.gradle.kts` §signingConfigs)، و
+      # `minifyReleaseWithR8` يُنتج **DEX الإصدار نفسه** بلا حزمة قابلة للتثبيت.
+      # و`--semantic-only` يُسقط عوائق آثار البناء هنا فقط لأنها تُزال في خطوة لاحقة
+      # (`dex_strip_source_names.py`) وتُقاس على الحزمة الموقّعة — فلا تُدّعى نظافة ولا
+      # يُفشل القياس بسبب عائق يُعالَج في موضع آخر.
+      - name: Measure release DEX semantics (unsigned, R8 output)
+        working-directory: ./manager
+        run: |
+          set -euo pipefail
+          ./gradlew :app:minifyReleaseWithR8 \
+            -Dorg.gradle.jvmargs="-Xmx6g -XX:MaxMetaspaceSize=1g -Dfile.encoding=UTF-8" \
+            -Pmaxmanager.supabaseUrl="$SUPABASE_URL" \
+            -Pmaxmanager.supabaseAnonKey="$SUPABASE_ANON_KEY" \
+            -Pmaxmanager.configPublicKey="$CONFIG_PUBLIC_KEY" \
+            --build-cache \
+            --parallel 2>&1 | tee -a /tmp/gradle-build.log
+
+          # الدليل يُبحث عنه في مخرَج R8 نفسه، لا في مسار مُفترَض: مسار AGP يتغيّر بين
+          # الإصدارات، ومسارٌ مخمَّن يجعل القياس «لم يُجرَ» في صمت.
+          dex_dir="$(find app/build/intermediates -type f -name '*.dex' -path '*minifyReleaseWithR8*' -printf '%h\n' 2>/dev/null | sort -u | head -1)"
+          if [ -z "$dex_dir" ]; then
+            echo "::warning::لم يُوجد مخرَج DEX لـR8 ⇒ القياس الدلاليّ **غير مُتحقَّق** في هذا التشغيل (لا يُدَّعى مرور)"
+            exit 0
+          fi
+          echo "· مخرَج R8 المقيس: $dex_dir"
+          python3 ../tools/apk_leak_scan.py \
+            --assert --semantic-only \
+            --path "$dex_dir" \
+            --budget ../tools/idea_leak_budget.json
+        env:
+          KS_PWD: ${{ secrets.KEYSTORE_PASSWORD }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          CONFIG_PUBLIC_KEY: ${{ secrets.CONFIG_PUBLIC_KEY }}
+
       - name: Tests + assemble + package (contract gate)
         working-directory: ./manager
         run: |

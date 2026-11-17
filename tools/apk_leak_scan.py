@@ -428,6 +428,17 @@ def main(argv: list[str]) -> int:
         "--budget",
         help="ملفّ ميزانية القياس الدلاليّ (JSON): يُفشل --assert إن تجاوزه قياس الحزمة",
     )
+    parser.add_argument(
+        "--semantic-only",
+        dest="semantic_only",
+        action="store_true",
+        help=(
+            "يقيس الميزانية الدلالية وحدها ويُسقط كل عائق آخر. "
+            "الغرض: قياس DEX الإصدار من مخرَج R8 قبل التوقيع، حيث آثار البناء تُزال "
+            "لاحقًا بـdex_strip_source_names.py — فلا تُدّعى نظافة لم تُقَس ولا تُفشل "
+            "خطوة القياس بسبب عائق يُعالَج في خطوة أخرى."
+        ),
+    )
     parser.add_argument("--self-test", action="store_true")
     args = parser.parse_args(argv)
 
@@ -462,6 +473,11 @@ def main(argv: list[str]) -> int:
                     }
                 )
 
+    if args.semantic_only:
+        # العوائق غير الدلالية تُعلَن في خطوتها (الحزمة الموقّعة بعد التصليب)، وهنا تُسقط
+        # صراحةً لا صمتًا: الرسالة أدناه تقول إن فحص آثار البناء مُعطَّل بهذا الوضع.
+        findings = [item for item in findings if item["rule"].startswith("semantic_budget:")]
+
     if args.json:
         print(json.dumps({"findings": findings, "stats": stats}, ensure_ascii=False, indent=2))
     else:
@@ -469,6 +485,11 @@ def main(argv: list[str]) -> int:
             print(f"✗ {item['rule']}: {item['where']} — {item['detail']}")
         if findings:
             print(f"عوائق: {len(findings)}")
+        elif args.semantic_only:
+            print(
+                f"✓ الميزانية الدلالية لم تُتجاوز في {stats.get('dex_files', 0)} ملفّ DEX "
+                "(وفحص آثار البناء مُعطَّل بهذا الوضع)"
+            )
         else:
             print(
                 "✓ لا أثر لمسار بناء ولا اسم ملفّ مصدر ولا خريطة R8 في "
