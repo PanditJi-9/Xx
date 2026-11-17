@@ -39,7 +39,7 @@ class DiagnosticScriptAssetTest {
     /** المتغيّرات التي تُبنى في `dumpDiagnosticLogs` قبل نصّ السكربت — عقد الاثنين. */
     private val supplied = listOf(
         "BLUEPRINT_FILE", "DIAG_FILE", "OUT_NAME", "TARGET_PATH", "SAVE_TO_DOWNLOADS",
-        "APP_UID", "SERVICE_BIN", "DEVICE_NAME", "CHIPSET_NAME", "APP_VERSION",
+        "APP_UID", "SERVICE_BIN", "DEVICE_NAME", "CHIPSET_NAME", "APP_VERSION", "BUILD_MARK",
     )
 
     @Test

@@ -131,6 +131,26 @@ val buildTimeEpochMs: Long = providers.of(GitCommitTimeValueSource::class) {
 }.get()
 
 /**
+ * بصمة الأصل — `MMPROV-<١٦ خانة hex>` تُشتقّ من اسم الإصدار ورمزه وزمن التزام `git`.
+ *
+ * **لماذا تُشتقّ ولا تُكتب بيد:** المكتوبة بيد تُنسى. والمشتقّة من ثلاثة مدخلات موجودة أصلًا
+ * **تتغيّر وحدها مع كل إصدار**، وتثبت عند إعادة بناء الالتزام نفسه (فالبصمة تعرّف **إصدارًا**
+ * لا بناءً عابرًا) — وهذا هو المطلوب للإثبات: حزمة منشورة ⇒ بصمة واحدة معروفة.
+ *
+ * **وما تفعله وما لا تفعله:** تُثبت أن حزمةً أخرى **تحمل تعبيرنا** (نُقلت أو حُزمت منّا)، ولا
+ * تمنع من حذفها. فهي **دليل** لا قفل — وموضعها المقصود السجلّ `docs/ai/PROVENANCE-LEDGER.md`
+ * والأداة `tools/build_watermark.py`، لا الاعتماد على بقائها.
+ *
+ * **ولا تُعدّ سرًّا:** لا مفتاح هنا ولا يُشتقّ منه شيء؛ الأمان ليس هدفها.
+ */
+fun provenanceMark(versionName: String?, versionCode: Int?, epochMs: Long): String {
+    val digest = java.security.MessageDigest.getInstance("SHA-256")
+        .digest("${versionName ?: "unnamed"}|${versionCode ?: 0}|$epochMs".toByteArray(Charsets.UTF_8))
+    val hex = digest.take(8).joinToString("") { "%02x".format(it.toInt() and 0xFF) }
+    return "MMPROV-$hex"
+}
+
+/**
  * بصمة شهادة التوقيع، مُشتقّة **من مخزن المفاتيح نفسه** لا مكتوبة بيد.
  *
  * **ولماذا `ValueSource` لا قراءة مباشرة:** القيمة تُصبح حقلًا في `BuildConfig`، فتُخزَّن
@@ -261,6 +281,14 @@ android {
         versionName = "V5.0"
         vectorDrawables.useSupportLibrary = true
         buildConfigField("long", "BUILD_TIME", "${buildTimeEpochMs}L")
+        // بصمة الأصل (ADR-95/ج): تُشتقّ من الإصدار لا من ساعة البناء، فتكون واحدة لكل إصدار
+        // منشور — وهو ما يجعل المطابقة في السجلّ ممكنة. وتُستهلك في مقدّمة التشخيص أدناه
+        // حتى لا يزيلها R8 بوصفها غير مستعملة، وتُكتب في كل سجلّ يُصدَّر.
+        buildConfigField(
+            "String",
+            "BUILD_MARK",
+            "\"${provenanceMark(versionName, versionCode, buildTimeEpochMs)}\"",
+        )
         // قناة المانيفست بقيت متاحة لكنها **اختيارية صريحة** الآن: قناة التحديث الفعّالة هي
         // إعداد اللوحة الموقّع (الإصدار + رابط التنزيل يكتبهما المالك من Max Control، والنافذة
         // تفتح الرابط في المتصفّح). والرابط الافتراضي القديم (nader295/Max-Manger) قِيس حيًّا:

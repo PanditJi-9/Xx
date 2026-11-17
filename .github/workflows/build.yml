@@ -267,6 +267,9 @@ jobs:
           python3 tools/dex_integrity.py --self-test
           python3 tools/apk_repack.py --self-test
           python3 tools/apk_leak_scan.py --self-test
+          # وبصمة الأصل (ADR-95/ج): الأداة تقرأ UTF-8 وUTF-16LE وتسمّي الموضع، وتخفق إن قَبِلت
+          # ما ليس بصمة — فيُقاس القبول والرفض معًا، لا القبول وحده.
+          python3 tools/build_watermark.py --self-test
           python3 tools/dex_strip_source_names.py --self-test
           # ← الوحدات الميتة: ملفّ Rust **خارج شجرة الوحدات** (لا يُصرَّف إطلاقًا، فيتعفّن بلا
           # خطأ ولا تحذير — مقيس: `thermalcore/src/prediction.rs` يقرأ سبعة حقول لا وجود لها

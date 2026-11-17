@@ -111,6 +111,10 @@ suspend fun dumpDiagnosticLogs(context: Context, saveToDownloads: Boolean): File
         append("DEVICE_NAME=").append(shellQuote(realDeviceName)).append('\n')
         append("CHIPSET_NAME=").append(shellQuote(chipsetName)).append('\n')
         append("APP_VERSION=").append(shellQuote(appVersion ?: "Unknown")).append('\n')
+        // بصمة الأصل (ADR-95/ج): تُكتب في كل سجلّ تشخيص يُصدَّر، فتُعرَّف النسخة التي جاء
+        // منها السجلّ، ويُقابَل ما يُشتبه بنسخه بالسجلّ `PROVENANCE-LEDGER`. ومرجعها المباشر
+        // هنا **مقصود**: حقل `BuildConfig` غير المستعمل يزيله R8، فالاستهلاك هو الإبقاء.
+        append("BUILD_MARK=").append(shellQuote(nd.max.BuildConfig.BUILD_MARK)).append('\n')
         append(template)
     }
 
