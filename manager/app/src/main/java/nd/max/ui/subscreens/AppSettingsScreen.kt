@@ -131,15 +131,11 @@ fun AppSettingsScreen(
     // تغيّر التكوين (لغة/كثافة/اتجاه)، والثانية تُبقي النصّ بلغته القديمة حتى يُعاد إنشاء الشاشة.
     val resources = LocalResources.current
     val appDetails = remember(packageName) { getAppDetails(context, packageName) }
-    val activityChoices = remember(packageName) {
-        val pkg = packageName ?: return@remember emptyList<String>()
-        runCatching {
-            context.packageManager.queryIntentActivities(
-                Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_LAUNCHER).setPackage(pkg), 0
-            ).mapNotNull { it.activityInfo?.name }.distinct()
-        }.getOrDefault(emptyList())
-    }
-    var activityName by remember(packageName) { mutableStateOf<String?>(null) }
+    // **لا اختيار لكل نشاط (أمر المالك، ٢٠٢٦-١١-١٧):** كان `activityName` يُضبط من صفّ
+    // «Activity profile» المخفيّ الآن، وهو مُستعمل في `settingsKey` وحده. فبقي ثابتًا `null`
+    // ⇒ مفتاح الإعدادات هو الحزمة، وهو سلوك «All activities» نفسه الذي كان افتراضًا محسوبًا.
+    // و`activityChoices` أُسقطت لأنها كانت تُغذّي ذلك الصفّ وحده (استعلام مدير الحزم لكل نشاط).
+    val activityName: String? = null
     val settingsKey = packageName?.let { pkg -> activityName?.let { "$pkg/$it" } ?: pkg }
     val isGameApp = remember(packageName) { isGameCategory(context, packageName) }
     // **مكتبة الألعاب: مفتاح في شريط العنوان لا بطاقة داخل الصفحة** (أمر المالك: البطاقة الضخمة
@@ -371,33 +367,12 @@ fun AppSettingsScreen(
                 if (viewModel.configFailed) item {
                     Text(stringResource(R.string.gaming_config_failed), color = MaterialTheme.colorScheme.error)
                 }
-                if (packageName != null) item {
-                    ExpressiveList(
-                        modifier = Modifier,
-                        content = buildList {
-                            add {
-                                ExpressiveDropdownItem(
-                                    icon = Icons.Rounded.Apps,
-                                    title = stringResource(R.string.app_activity_profile_title),
-                                    summary = activityName?.let {
-                                        stringResource(R.string.app_activity_profile_selected, it.substringAfterLast('.'))
-                                    } ?: stringResource(R.string.app_activity_profile_summary),
-                                    items = listOf(stringResource(R.string.app_activity_profile_all)) +
-                                        activityChoices.map { it.substringAfterLast('.') },
-                                    selectedIndex = activityName?.let { activityChoices.indexOf(it) + 1 } ?: 0,
-                                    enabled = activityChoices.isNotEmpty(),
-                                    onItemSelected = { index ->
-                                        val chosen = if (index == 0) null else activityChoices.getOrNull(index - 1)
-                                        activityName = chosen
-                                        if (chosen != null) packageName?.let { pkg ->
-                                            viewModel.ensureActivityProfile(pkg, "$pkg/$chosen")
-                                        }
-                                    }
-                                )
-                            }
-                        }
-                    )
-                }
+                // **صفّ «Activity profile» مخفيٌّ بأمر المالك** (٢٠٢٦-١١-١٧): «قم باخفاء Activity profile
+                // من per app». فالمستخدم يضبط التطبيق كلّه، لا نشاطًا بعينه — وهذا يُطابق ما تعرضه
+                // الشاشة فعلًا: كل صفوفها تُقرأ وتُكتب بمفتاح الحزمة وحده (`settingsKey`).
+                // **ولا تُمحى التفضيلات المكتوبة سابقًا بمفتاح `pkg/activity`**، ولا تُحذف نصوص
+                // `app_activity_profile_*`: حذفها من `values/` يُيتّم نسخها في ٨٠+ لغة ويفشل `--prune`.
+                // فالرجوع عن الإخفاء = إعادة هذا الكتلة كما كانت، بلا أثر على بيانات المستخدم.
                 if (inAppProfile) item {
                     Text(
                         text = stringResource(R.string.profile_mode_banner),
