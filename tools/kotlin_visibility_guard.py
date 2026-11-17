@@ -27,6 +27,31 @@ SOURCE_ROOT = ROOT / "manager/app/src/main/java"
 
 PACKAGE = re.compile(r"^\s*package\s+([\w.]+)\s*$", re.M)
 IMPORT = re.compile(r"^\s*import\s+([\w.]+)(?:\s+as\s+(\w+))?\s*$", re.M)
+STAR_IMPORT = re.compile(r"^\s*import\s+[\w.]+\.[*]\s*$", re.M)
+STRING_LITERAL = re.compile(r'"(?:\\.|[^"\\])*"|\'(?:\\.|[^\'\\])*\'')
+
+
+def code_only(line: str) -> str:
+    """السطر بلا نصوص ولا تعليق — للبحث عن استعمال حقيقيّ لا ذِكر.
+
+    **والسبب مقيس (٢٠٢٦-١١-١٧):** ثلاثة من ست نتائج كاذبة جاءت من مجرّد الذِكر:
+    `label = "AppIcon"` (نصّ Crossfade) و`ConfigBackupInventory.Section` و
+    `CubeLayoutMath.RAIL_APEX` (استعمال مؤهَّل). والنصّ المؤهَّل أو داخل نصّ ليس
+    استعمالًا للرمز الخاصّ، فالفحص النصّيّ يجب أن يرى الشيفرة وحدها.
+    """
+    without_strings = STRING_LITERAL.sub('""', line)
+    return without_strings.split("//", 1)[0]
+
+
+def bare_use(pattern: re.Pattern[str], code: str) -> bool:
+    """استعمال غير مؤهَّل: لا يسبقه `.` ولا `::` (فالمؤهَّل رمز آخر)."""
+    for match in pattern.finditer(code):
+        before = code[: match.start()].rstrip()
+        if before.endswith((".", ":", "$")):
+            continue
+        return True
+    return False
+
 VISIBILITY = ("private", "internal", "public", "protected")
 KINDS = ("object", "class", "interface", "typealias", "val", "var", "fun")
 MODIFIERS = {
@@ -132,6 +157,10 @@ def analyse(tree: Path) -> list[str]:
         if package is None:
             continue
         lines = texts[path].splitlines()
+        # **نجم الاستيراد يجعل الحكم النصّيّ كذبًا محتملًا:** `import androidx.compose.material3.*`
+        # يجلب `FilterChip` العامّ، ولا سبيل نصيًّا إلى معرفة ما يجلبه. فتُترك هذه الملفّات
+        # بلا بلاغ بدل بلاغ كاذب — والحدّ معلن في الترويسة: إشارة لا مُصرّف.
+        star = bool(STAR_IMPORT.search(texts[path]))
         for (owner_package, name), owner in private.items():
             if owner_package != package or path == owner:
                 continue
@@ -144,7 +173,11 @@ def analyse(tree: Path) -> list[str]:
                 stripped = line.lstrip()
                 if stripped.startswith(("//", "*", "/*", "@")):
                     continue
-                if pattern.search(line):
+                if not bare_use(pattern, code_only(line)):
+                    continue
+                if star:
+                    continue  # نجم استيراد: لا يُحكم نصيًّا (انظر التعليق أعلاه)
+                if True:
                     try:
                         owner_label = owner.relative_to(ROOT)
                     except ValueError:
@@ -245,6 +278,26 @@ def self_test() -> int:
             {
                 "a/A.kt": "package p\nprivate fun FilterChip(x: Int) = x\n",
                 "a/B.kt": "package p\nimport androidx.compose.material3.FilterChip\nobject Use { val c = 1 }\n",
+            },
+            False,
+        ),
+        (
+            "استعمال مؤهَّل أو داخل نصّ لا يُحتسب",
+            {
+                "a/A.kt": "package p\nprivate const val RAIL_APEX = 1\nprivate fun AppIcon() = 1\n",
+                "a/B.kt": (
+                    "package p\nobject Use {\n"
+                    "    val a = CubeMath.RAIL_APEX\n"
+                    "    val b = \"AppIcon\"\n}\n"
+                ),
+            },
+            False,
+        ),
+        (
+            "نجم استيراد مكتبة يُبقي الحكم غير محسوم ⇒ لا بلاغ",
+            {
+                "a/A.kt": "package p\nprivate fun FilterChip(x: Int) = x\n",
+                "a/B.kt": "package p\nimport androidx.compose.material3.*\nobject Use { val c = FilterChip(1) }\n",
             },
             False,
         ),
