@@ -838,6 +838,16 @@
     <string name="game_sessions_report_legend_min">Min</string>
     <string name="game_sessions_report_legend_refresh">Refresh rate</string>
     <string name="game_sessions_report_scrub">%1$s FPS · %2$s</string>
+    <!-- بوّابة الصحة أمسكت مراجع بلا تعريف (هذا الجلد): تقرير الجلسة يطلب هذه الثمانية
+         فلا يترجم بلاها. اللفظ قصير لأنه تسمية محور/شريحة، لا جملة. -->
+    <string name="game_sessions_overlay_soc">SOC temp</string>
+    <string name="game_sessions_overlay_gpu">GPU load</string>
+    <string name="game_sessions_overlay_cpu">CPU load</string>
+    <string name="game_sessions_overlay_power">Power</string>
+    <string name="game_sessions_overlay_frame_time">Frame time</string>
+    <string name="game_sessions_report_band_steady">Steady</string>
+    <string name="game_sessions_report_band_uneven">Uneven</string>
+    <string name="game_sessions_report_band_rough">Rough</string>
     <string name="game_sessions_report_meta_duration">duration %1$s</string>
     <string name="game_sessions_report_meta_refresh">display %1$d Hz</string>
     <string name="game_sessions_report_meta_profile">profile %1$s</string>

@@ -1781,6 +1781,14 @@
     <string name="game_sessions_report_legend_min">الأدنى</string>
     <string name="game_sessions_report_legend_refresh">دقّة العرض</string>
     <string name="game_sessions_report_scrub">%1$s إطار/ث · %2$s</string>
+    <string name="game_sessions_overlay_soc">حرارة الشريحة</string>
+    <string name="game_sessions_overlay_gpu">حِمل الرسوميات</string>
+    <string name="game_sessions_overlay_cpu">حِمل المعالج</string>
+    <string name="game_sessions_overlay_power">الطاقة</string>
+    <string name="game_sessions_overlay_frame_time">زمن الإطار</string>
+    <string name="game_sessions_report_band_steady">مستقرّة</string>
+    <string name="game_sessions_report_band_uneven">متفاوتة</string>
+    <string name="game_sessions_report_band_rough">مضطربة</string>
     <string name="game_sessions_report_meta_duration">المدة %1$s</string>
     <string name="game_sessions_report_meta_refresh">العرض %1$d Hz</string>
     <string name="game_sessions_report_meta_profile">الوضع %1$s</string>
