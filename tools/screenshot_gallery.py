@@ -255,6 +255,20 @@ def validate_contract(root: str, data: dict) -> list[str]:
                         f"{spot}: تسمية {lang} بطول {len(caption)} فوق `caption_max` "
                         f"({caption_max}) — الطول هو ما يمنع التسمية من إفساد تراصف الصفّ"
                     )
+            animated = frame.get("animated")
+            if animated is not None:
+                if not isinstance(animated, str) or not animated.strip():
+                    problems.append(f"{spot}: `animated` إن ذُكر يجب أن يكون اسم ملفّ غير فارغ")
+                elif not animated.endswith(".webp"):
+                    problems.append(
+                        f"{spot}: `animated` يجب أن ينتهي بـ`.webp` — فهو ما يُشغّل الحركة في "
+                        f"المتصفّح، وتسميته `.png` تجعل الخادم يخدمه بنوع لا يُفكّ"
+                    )
+                elif isinstance(stem, str) and animated != f"{stem}.webp":
+                    problems.append(
+                        f"{spot}: `animated` يجب أن يكون '{stem}.webp' — اسمٌ واحد لجذر واحد، "
+                        f"فلا يتوه القارئ بين ملفّين لا يربطهما شيء"
+                    )
 
     return problems
 
@@ -286,10 +300,28 @@ def existing_names(root: str) -> set[str]:
     return {name for name in os.listdir(directory) if name.lower().endswith(".png")}
 
 
-def found_files(root: str, stem: str, variants: list[str]) -> dict[str, str]:
+def animation_name(root: str, name: object) -> str | None:
+    """الصورة المتحركة المُعلَنة — تُستعمل فقط إن كانت على القرص فعلًا.
+
+    وحدّها المقيس: `existing_names` تُعدّ PNG وحدها، فالـ`.webp` لا تراه؛ ولذلك يُقاس
+    وجوده بـ`isfile` هنا صراحةً، ولا يُبنى عليه رابط قبل أن يُقاس وجوده.
+    """
+    if not isinstance(name, str) or not name:
+        return None
+    return name if os.path.isfile(os.path.join(shots_dir(root), name)) else None
+
+
+def found_files(
+    root: str, stem: str, variants: list[str], animated: object = None
+) -> dict[str, str]:
     names = existing_names(root)
     found = {key: name for key, name in frame_names(stem, variants).items() if name in names}
-    return found if "base" in found else {}
+    if "base" not in found:
+        return {}
+    live = animation_name(root, animated)
+    if live:
+        found["animated"] = live
+    return found
 
 
 def frame_names(stem: str, variants: list[str]) -> dict[str, str]:
@@ -297,7 +329,9 @@ def frame_names(stem: str, variants: list[str]) -> dict[str, str]:
 
 
 def cell_html(frame: dict, found: dict, lang: str, thumb: int, width: int, contract_order: list[str]) -> str:
-    base = f"{SHOTS_REL}/{found['base']}"
+    # الصورة المتحركة تحلّ محلّ اللقطة الساكنة في الرابط والمصدر معًا: الحركة تُعرض،
+    # والساكنة تبقى على القرص مفتاحًا للعقد وبديلًا لا يُبنى عليه رابط مكسور.
+    base = f"{SHOTS_REL}/{found.get('animated') or found['base']}"
     # والنصّ البديل يحمل اسم التطبيق: صورةٌ يتيمةٌ بنصّ «Home» لا تقول شيئًا لقارئ الشاشة
     alt = f"MaxManager — {frame[lang]}"
     caption = f"<b>{frame[lang]}</b>"
@@ -410,7 +444,7 @@ def render_region(root: str, data: dict, lang: str) -> str:
         cells = [
             cell_html(frame, found, lang, g_thumb, g_width, variants)
             for frame in (group.get("frames") or [])
-            if (found := found_files(root, frame["stem"], variants))
+            if (found := found_files(root, frame["stem"], variants, frame.get("animated")))
         ]
         if not cells:
             continue
@@ -541,6 +575,18 @@ def check_files(root: str, data: dict) -> list[str]:
                         f"{SHOTS_REL}/{names_for[variant]}: لقطة النسخة '{variant}' موجودة والأصل "
                         f"{names_for['base']} غائب — الخليّة لا تُرسم بلا الأصل"
                     )
+
+    # صورة متحركة مُعلَنة: وعدُ العقد يجب أن يقابله ملفّ، وإلّا رُبط القارئ بما لا وجود له
+    for group in data.get("groups") or []:
+        for frame in group.get("frames") or []:
+            animated = frame.get("animated")
+            if not isinstance(animated, str) or not animated:
+                continue
+            if animation_name(root, animated) is None:
+                problems.append(
+                    f"{SHOTS_REL}/{animated}: العقد يعلن صورة متحركة للإطار '{frame['stem']}' وهي "
+                    f"غير موجودة — والـREADME كان سيحيل إلى ما لا وجود له"
+                )
     return problems
 
 
@@ -803,6 +849,31 @@ def self_test() -> int:
         expect("01-one-ar.png" in body, "لقطة RTL موجودة ولم تُربط")
         expect("01-one-light.png" not in body, "لقطة نسخة غير موجودة رُبطت")
         expect(body.count("<img") == 1, "رابط النسخة رُسم صورةً مستقلّة بدل علامة")
+    finally:
+        shutil.rmtree(fixture, ignore_errors=True)
+
+    # (٣ب) صورة متحركة: تحلّ محلّ الساكنة في الرابط والمصدر، ولا تُربط إن غابت
+    fixture = build_fixture()
+    try:
+        contract = json.loads(json.dumps(FIXTURE_CONTRACT))
+        contract["groups"][0]["frames"][0]["animated"] = "01-one.webp"
+        with open(os.path.join(fixture, CONTRACT_REL), "w", encoding="utf-8") as handle:
+            json.dump(contract, handle, ensure_ascii=False, indent=2)
+        _plant(fixture, "01-one.png", 1080, 2400)
+        body = render_region(fixture, contract, "en")
+        expect("01-one.webp" not in body, "صورة متحركة غير موجودة رُبطت — وهذا رابط مكسور")
+        data, _ = load_contract(fixture)
+        expect(any("غير موجودة" in problem for problem in check_files(fixture, data)),
+               "العقد أعلن حركة غائبة ولم تُبلَّغ — والوعد بلا ملفّ عطب")
+        with open(os.path.join(shots_dir(fixture), "01-one.webp"), "wb") as handle:
+            handle.write(b"RIFF\x00\x00\x00\x00WEBP")
+        body = render_region(fixture, contract, "en")
+        expect('src="docs/screenshots/01-one.webp"' in body, "الحركة لم تُربط في المصدر")
+        expect('href="docs/screenshots/01-one.webp"' in body, "الحركة لم تُربط في الرابط")
+        expect("01-one.png" not in body, "الساكنة بقيت مربوطة مع وجود الحركة")
+        data, _ = load_contract(fixture)
+        expect(not any("غير موجودة" in problem for problem in check_files(fixture, data)),
+               "حركة موجودة أُبلغ عنها غائبة")
     finally:
         shutil.rmtree(fixture, ignore_errors=True)
 
