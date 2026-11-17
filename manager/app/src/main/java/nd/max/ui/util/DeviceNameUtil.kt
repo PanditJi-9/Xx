@@ -103,7 +103,17 @@ private fun resolveRealDeviceName(context: Context): String {
             dbFile.parentFile?.mkdirs()
             // نسخ على مسار مؤقّت ثم نقل: المسار النهائي لا يوجد إلا وملفّه تامّ (انظر ٢ أعلاه).
             val tmp = File(dbFile.absolutePath + ".tmp")
-            context.assets.open(dbName).use { input ->
+            // **يُقرأ عبر `AssetVault` لا عبر `assets` مباشرةً** (2026-11-17، ADR-95/7): الملفّ
+            // انتقل إلى `assets-internal` فيُختم في نسخة الإصدار (AES-GCM بمفتاح البصمة)،
+            // و`AssetVault.openStream` يفكّه. وفي debug — أو في بناء بلا بصمة — يعيد البايتات
+            // كما هي (`openBytes` تعرف الحالتين)، فلا يتغيّر سلوك.
+            //
+            // والسبب مقيس: `devices.db` كان **٤٬١٦٩٬٧٢٨ بايت من المعرفة في `assets/` صريحة** —
+            // يكفي `unzip -p app.apk assets/devices.db` لنسخ كتالوج الأجهزة كاملًا، بلا JADX
+            // ولا rea. أي أن أكبر أصل يملكه المشروع كان أرخص ما يُنسخ.
+            val stream = nd.max.core.security.AssetVault.openStream(context, dbName)
+                ?: throw IllegalStateException("$dbName غير مقروء من الأصول")
+            stream.use { input ->
                 FileOutputStream(tmp).use { output ->
                     input.copyTo(output)
                 }

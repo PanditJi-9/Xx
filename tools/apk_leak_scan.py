@@ -54,6 +54,14 @@ SECRET_PATH_MARKERS = (".jks", ".keystore")
 #: مدخلات حزمة لا تُشحن: خرائط R8 ونصوص مصدر ولقطات نسخ.
 FORBIDDEN_ENTRY_SUFFIXES = (".kt", ".java", "mapping.txt")
 
+# ── «المعرفة الصريحة»: أصول تُنسخ بنسخ ملفّ واحد، بلا JADX ولا rea ──────────────────
+# قِيس على V4 (2026-11-17): `assets/devices.db` = **٤٬١٦٩٬٧٢٨ بايت** من كتالوج الأجهزة
+# **بصيغة SQLite صريحة** داخل الحزمة — `unzip -p app.apk assets/devices.db` يكفي لنسخه
+# كاملًا. وهذا أخطر من قراءة الكود: الكود يُعاد بناؤه، والكتالوج المتراكم لا.
+# فالمقياس هنا **حجم ما بقي صريحًا** من هذه الأصول، لا عدد فحوص التشفير.
+SEALED_MAGIC = b"MMVAULT1"
+KNOWLEDGE_SUFFIXES = (".db", ".sqlite", ".sqlite3", ".json")
+
 
 def read_uleb128(data: bytes, offset: int) -> tuple[int, int]:
     """يقرأ عددًا متغيّر الطول في DEX ويُعيد (القيمة، الموضع التالي)."""
@@ -245,6 +253,17 @@ def scan_apk(path: str) -> tuple[list[dict], dict]:
                             "detail": f"مدخل لا يُشحن ({suffix})",
                         }
                     )
+            if lowered.startswith("assets/") and lowered.endswith(KNOWLEDGE_SUFFIXES):
+                try:
+                    with archive.open(name) as handle:
+                        head = handle.read(len(SEALED_MAGIC))
+                    size = archive.getinfo(name).file_size
+                except (OSError, zipfile.BadZipFile, RuntimeError):
+                    size, head = 0, SEALED_MAGIC
+                if not head.startswith(SEALED_MAGIC):
+                    knowledge = stats.setdefault("knowledge_plain", {"bytes": 0, "files": []})
+                    knowledge["bytes"] += size
+                    knowledge["files"].append(name)
             if not (lowered.startswith("classes") and lowered.endswith(".dex")):
                 continue
             stats["dex_files"] += 1
@@ -499,6 +518,14 @@ def main(argv: list[str]) -> int:
             print(
                 "· الدلالة: عربيّ {arabic_chars} حرفًا · سكربتات مُضمَّنة {script_strings} · "
                 "نصوص أوامر {shell_marker_strings} · مسارات جهاز {device_path_strings}".format(**semantic)
+            )
+        knowledge = stats.get("knowledge_plain")
+        if knowledge and knowledge.get("bytes"):
+            worst = sorted(knowledge["files"])[:3]
+            print(
+                "· معرفة صريحة (تُنسخ بنسخ ملفّ): {:,} بايت في {} ملفًّا — {}".format(
+                    knowledge["bytes"], len(knowledge["files"]), ", ".join(worst)
+                )
             )
     return 1 if (args.assert_mode and findings) else 0
 

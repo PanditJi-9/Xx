@@ -53,6 +53,9 @@ class SealedAssetsTest {
     /** الأصول المشحونة — والأسماء هي المفاتيح التي تقرأ بها الشاشات، فلا تُغيَّر هنا. */
     private val sealedEntries = listOf(
         "socs.json",
+        // كتالوج الأجهزة (٤٬١٦٩٬٧٢٨ بايت) خرج من `assets/` الصريحة إلى هنا (2026-11-17):
+        // كان **أرخص ما يُنسخ** في المشروع — `unzip -p app.apk assets/devices.db` يكفي.
+        "devices.db",
         "spoof/device_catalog.json",
         "spoof/cpu_catalog.json",
         // سكربت التشخيص خرج من DEX إلى أصل مختوم (2026-11-17) — ويُقاس هنا بالطريق نفسه:
