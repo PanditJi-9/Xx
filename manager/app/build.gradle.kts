@@ -144,7 +144,7 @@ val buildTimeEpochMs: Long = providers.of(GitCommitTimeValueSource::class) {
  * **ولا تُعدّ سرًّا:** لا مفتاح هنا ولا يُشتقّ منه شيء؛ الأمان ليس هدفها.
  */
 fun provenanceMark(versionName: String?, versionCode: Int?, epochMs: Long): String {
-    val digest = java.security.MessageDigest.getInstance("SHA-256")
+    val digest = MessageDigest.getInstance("SHA-256")
         .digest("${versionName ?: "unnamed"}|${versionCode ?: 0}|$epochMs".toByteArray(Charsets.UTF_8))
     val hex = digest.take(8).joinToString("") { "%02x".format(it.toInt() and 0xFF) }
     return "MMPROV-$hex"
