@@ -52,6 +52,7 @@ import glob
 import os
 import re
 import sys
+import unicodedata
 import xml.etree.ElementTree as ET
 
 # ── ⑬ رماز الـREADME: عقدها المقيس ─────────────────────────────────────────
@@ -359,7 +360,14 @@ def slug(heading: str) -> str:
     (`\\s+`) كان يُنتج `top-two` — أي أن الأداة كانت **تُسقط رابطًا سليمًا** قبل هذا التصحيح.
     """
     s = re.sub(r"`([^`]*?)`", r"\1", heading.strip().lower()).replace("&amp;", "&")
-    s = re.sub(r"[^\w\s-]", "", s, flags=re.U)
+    # **والعلامات المُدمَجة (Mn/Mc/Me) تبقى كما يبقيها GitHub** — وهذا عطبٌ مقيس أُصلح هنا:
+    # `[^\w\s-]` في `re.U` يُسقط التشكيل العربيّ لأنّ `\w` لا يشمل فئة `Mn`، فصار
+    # `## … آليًا (Maestro)` يُشتقّ `…-آليا-maestro` بلا الفتحة، بينما GitHub نفسه يُصدر
+    # `user-content-…-آليًا-maestro` **بالفتحة** — أي أنّ البوّابة كانت تُسقط رابطًا سليمًا
+    # (١٫٩٠٣ عنوانًا في `docs/` يحمل علامة مُدمَجة، فالعطب صنفٌ لا حالة). والمقابلة الحقيقيّة:
+    # https://github.com/<repo>/blob/main/docs/screenshots/README.md ← يُقرأ الـ`id` منها.
+    s = "".join(c for c in s
+                if c.isalnum() or c.isspace() or c in "-_" or unicodedata.category(c).startswith("M"))
     return re.sub(r"\s", "-", s)
 
 
@@ -623,10 +631,11 @@ def self_test() -> int:
                      "[anchor](docs/page.md#absent) ![img](docs/nope.png)\n"
                      "[self](#top--two) [bad](#nowhere) [md](#explicit-md)\n"
                      "[query](docs/page.md?v=2)\n"
+                     "[ar](docs/page.md#التقاط-آليًا-maestro)\n"
                      '<a id="explicit-md"></a>\n## Top — Two\n'
                      "```\n[ignored](never.md)\n```\n")
         with open(os.path.join(tmp, "docs", "page.md"), "w", encoding="utf-8") as fh:
-            fh.write("## Hello there\n")
+            fh.write("## Hello there\n### التقاط آليًا (Maestro)\n")
         ROOT = tmp
         got = check_pages(["README.md"])
         joined = " | ".join(got)
@@ -642,7 +651,7 @@ def self_test() -> int:
             )
         cases += 1
         if any(k in joined for k in ("hello-there", "#top--two", "#explicit-md", "never.md",
-                                     "page.md?v=2")):
+                                     "page.md?v=2", "آليًا")):
             failures.append(f"⑫ إيجاب زائف: {joined}")
     finally:
         ROOT = saved
