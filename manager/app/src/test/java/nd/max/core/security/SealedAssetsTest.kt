@@ -51,7 +51,14 @@ class SealedAssetsTest {
     ).map(::File).firstOrNull { it.isDirectory } ?: File("src/main/assets-internal")
 
     /** الأصول المشحونة — والأسماء هي المفاتيح التي تقرأ بها الشاشات، فلا تُغيَّر هنا. */
-    private val sealedEntries = listOf("socs.json", "spoof/device_catalog.json", "spoof/cpu_catalog.json")
+    private val sealedEntries = listOf(
+        "socs.json",
+        "spoof/device_catalog.json",
+        "spoof/cpu_catalog.json",
+        // سكربت التشخيص خرج من DEX إلى أصل مختوم (2026-11-17) — ويُقاس هنا بالطريق نفسه:
+        // يُفكّ ويُقابل بالأصل بايتًا ببايت. وغيابه من هذه القائمة كان يُسقط العدّ لا الختم.
+        "scripts/diagnostics.sh",
+    )
 
     /** مخرَج [SealAssetsTask]: يكتبه AGP في مجلّد مُشتقّ من اسم المهمّة. */
     private fun sealerOutput(): File? = listOf(

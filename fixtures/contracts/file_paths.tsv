@@ -31,7 +31,7 @@
 # ⚠️ ولا تُعدّل صفًّا هنا لتُمرّر اختبارًا: إن سقط فالسؤال **أيّ الطرفين تباعد عن الآخر**، لا أن يُحرَّك المرجع.
 path	kind	declarations
 .launcher_enabled	file	mainfiles/service.sh
-<base>	dir	archdaemon/jni/src/InotifyHandler/InotifyWatcher.c;binprofiles/src/utils/mod.rs;mainfiles/customize.sh;mainfiles/post-fs-data.sh;mainfiles/preferenced-tweaks.sh;mainfiles/service.sh;mainfiles/uninstall.sh;manager/app/src/main/java/nd/max/MaxManagerPaths.kt;manager/app/src/main/java/nd/max/ui/util/LogUtil.kt
+<base>	dir	archdaemon/jni/src/InotifyHandler/InotifyWatcher.c;binprofiles/src/utils/mod.rs;mainfiles/customize.sh;mainfiles/post-fs-data.sh;mainfiles/preferenced-tweaks.sh;mainfiles/service.sh;mainfiles/uninstall.sh;manager/app/src/main/java/nd/max/MaxManagerPaths.kt;manager/app/src/main/assets-internal/scripts/diagnostics.sh
 API	dir	archdaemon/jni/src/InotifyHandler/InotifyWatcher.c;mainfiles/customize.sh
 API/.lock	lock	archdaemon/jni/include/MaxManager.h;mainfiles/post-fs-data.sh
 API/current_modes	file	archdaemon/jni/include/MaxManager.h;mainfiles/customize.sh;manager/app/src/main/java/nd/max/core/maxai/MaxAiEngine.kt
@@ -49,7 +49,7 @@ bypasschgconfig/bypasspath	file	archdaemon/jni/src/InotifyHandler/InotifyWatcher
 daemon_state	state	archdaemon/jni/include/MaxManager.h;archdaemon/jni/src/ConfigHandler/StateHandler.c;archdaemon/jni/src/SystemProfile/SystemProfiles.c
 debug	dir	archdaemon/jni/src/MaxManagerUtility/DaemonUtility.c;binutils/src/utils/logger.rs;mainfiles/customize.sh
 debug/FullMode	file	manager/app/src/main/java/nd/max/ui/util/SettingsVisibilityUtil.kt
-debug/MaxManager.log	log	archdaemon/jni/include/MaxManager.h;archdaemon/jni/src/BinaryCLI/CLIUtility.c;binutils/src/utils/logger.rs;manager/app/src/main/java/nd/max/MaxManagerPaths.kt;manager/app/src/main/java/nd/max/ui/util/LogUtil.kt
+debug/MaxManager.log	log	archdaemon/jni/include/MaxManager.h;archdaemon/jni/src/BinaryCLI/CLIUtility.c;binutils/src/utils/logger.rs;manager/app/src/main/java/nd/max/MaxManagerPaths.kt;manager/app/src/main/assets-internal/scripts/diagnostics.sh
 debug/MaxManager.log.1	log	archdaemon/jni/src/BinaryCLI/CLIUtility.c
 debug/MaxManagerVerbose.log	log	archdaemon/jni/include/MaxManager.h;archdaemon/jni/src/BinaryCLI/CLIUtility.c;binutils/src/utils/logger.rs
 debug/MaxManagerVerbose.log.1	log	archdaemon/jni/src/BinaryCLI/CLIUtility.c

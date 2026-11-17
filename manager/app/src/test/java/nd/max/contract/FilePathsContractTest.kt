@@ -51,6 +51,7 @@ class FilePathsContractTest {
         "binutils/src",
         "thermalcore/src",
         "manager/app/src/main/java",
+        "manager/app/src/main/assets-internal",
         "manager/src/main/rust/src",
         "mainfiles",
     )
