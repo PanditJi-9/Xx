@@ -366,6 +366,16 @@ jobs:
           # الجهتي والأيقونات غير المنعكسة لا سلوك التخطيط الفعليّ (وذاك يحتاج جهازًا).
           python3 tools/rtl_guard.py --assert
           python3 tools/rtl_guard.py --self-test
+          # ── رؤية Kotlin: `private` يُستعمل من ملفّ آخر ──
+          #
+          # والسبب مقيس: ثلاث دورات رسبت في `compileReleaseKotlin` والبوابات المحلية خضراء،
+          # أوّلها `GamePanelSkinChooser.kt` يستعمل `TurboPalette`/`TurboPadMd` وهي `private`
+          # في `GamePanelTurbo.kt` — خطأ لا يرى التوازن ولا النصوص. وهذه الأداة فحص نصّيّ
+          # لا مُصرّف، إشارةً محلية قبل الدفع لا بديلًا عن Actions. وكانت تسجّل `--self-test`
+          # ولا يشغّلها أيّ تشغيل، فأمسكها عقد `selftests_wired` في `bundle_contract` (جمود
+          # البوابة) — فصارت هنا بقياسها.
+          python3 tools/kotlin_visibility_guard.py --assert
+          python3 tools/kotlin_visibility_guard.py --self-test
           # ← أداة قياس استقلال النصّ عن أصول GPL (PHASE 11): `--self-test` يسقط ما لا
           # يحتاج نسخة من الأصل المرجعي (٨ حالات معلومة النتيجة). و`--assert` نفسه
           # **يحتاج** مجلّدي الأصل (ZKM · vtools) وهما ليسا في الشجرة — فمكانه جلسة
