@@ -104,18 +104,22 @@ def scan(path: str) -> dict[str, list[str]]:
 
 
 def ledger_rows(path: str = LEDGER) -> list[dict[str, str]]:
-    """صفوف السجلّ: `| التاريخ | الإصدار | البصمة | بصمة الحزمة | الالتزام |`."""
+    """صفوف السجلّ: `| التاريخ | الإصدار | البصمة | بصمة الحزمة | الالتزام | [السجلّ الموقّع] |`.
+
+    والعمود السادس اختياريّ عن قصد: صفوف ما قبل التوقيع تبقى صحيحة ولا تُعاد كتابتها.
+    """
     if not os.path.isfile(path):
         return []
     rows: list[dict[str, str]] = []
     with open(path, "r", encoding="utf-8") as handle:
         for line in handle:
             cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
-            if len(cells) != 5 or not cells[2].startswith("MMPROV-"):
+            if len(cells) not in (5, 6) or not cells[2].startswith("MMPROV-"):
                 continue
             rows.append({
                 "date": cells[0], "version": cells[1], "mark": cells[2],
                 "apk": cells[3], "commit": cells[4],
+                "record": cells[5] if len(cells) == 6 else "",
             })
     return rows
 

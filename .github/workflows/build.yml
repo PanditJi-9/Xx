@@ -270,6 +270,10 @@ jobs:
           # وبصمة الأصل (ADR-95/ج): الأداة تقرأ UTF-8 وUTF-16LE وتسمّي الموضع، وتخفق إن قَبِلت
           # ما ليس بصمة — فيُقاس القبول والرفض معًا، لا القبول وحده.
           python3 tools/build_watermark.py --self-test
+          # وإثبات الإصدار الموقّع: يقيس التوقيع الحقيقيّ (openssl) على زوج مفاتيح مؤقّت —
+          # قبول الصحيح، ورفض السجلّ المعدَّل والحزمة الأخرى والمفتاح الآخر، وإعلان غياب
+          # المفتاح «غير مُتحقَّق». ومعه تُقاس الخمس حالات التي يُخطئ فيها التوقيع صامتًا.
+          python3 tools/provenance_sign.py --self-test
           python3 tools/dex_strip_source_names.py --self-test
           # ← الوحدات الميتة: ملفّ Rust **خارج شجرة الوحدات** (لا يُصرَّف إطلاقًا، فيتعفّن بلا
           # خطأ ولا تحذير — مقيس: `thermalcore/src/prediction.rs` يقرأ سبعة حقول لا وجود لها
@@ -1570,6 +1574,45 @@ jobs:
           # الميزانية في الالتزام نفسه، فلا يعود نصٌّ نُقل بلا قرارٍ مكتوب.
           python3 tools/apk_leak_scan.py --assert --apk "$apk" \
             --budget tools/idea_leak_budget.json
+
+      # ── إثبات الإصدار الموقّع (ADR-95/5) ────────────────────────────────────────────────
+      # التوقيع يغطّي: البصمة + تجزئة الحزمة + الالتزام. فمن يزعم أننا أصدرنا نسخةً معدَّلة
+      # لا يستطيع، لأن تجزئة حزمته لا تطابق الموقَّع. **ولا مفتاح خاصّ في الحزمة ولا في
+      # المستودع** (شرط المالك): يُقرأ من سرّ CI، ويُكتب في ملفّ مؤقّت بصلاحية ٦٠٠ ويُحذف
+      # مع الـrunner. وغياب السرّ أو المفتاح العامّ **يُعلن «غير مُتحقَّق»** ولا يُقرأ نجاحًا.
+      - name: Sign the release provenance record (Ed25519)
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "${SIGNED_BUILD:-0}" != "1" ]; then
+            echo "::warning::بناء غير موقّع ⇒ لا حزمة إصدار تُوقَّع، وسجلّ النسب **غير مُتحقَّق** في هذا التشغيل"
+            exit 0
+          fi
+          if [ -z "${PROVENANCE_ED25519_KEY:-}" ]; then
+            echo "::warning::لا سرّ PROVENANCE_ED25519_KEY ⇒ التوقيع **غير مُتحقَّق** (لا يُدَّعى إصدار موقّع)"
+            exit 0
+          fi
+          if [ ! -f tools/provenance_pubkey.pem ]; then
+            echo "::warning::المفتاح العامّ tools/provenance_pubkey.pem غائب ⇒ لا تحقّق ممكن، فلا يُدَّعى توقيع"
+            exit 0
+          fi
+          version="$(sed -n 's/^ *versionName *= *"\(.*\)"/\1/p' manager/app/build.gradle.kts | head -1)"
+          test -n "$version" || { echo "::error::تعذّر قراءة versionName"; exit 1; }
+          apk="manager/app/build/outputs/apk/release/app-release.apk"
+          test -f "$apk" || { echo "::error::APK مفقود: $apk"; exit 1; }
+          python3 tools/provenance_sign.py --sign "$apk" --version "$version" --commit "$GITHUB_SHA"
+          python3 tools/provenance_sign.py --verify "$apk"
+        env:
+          PROVENANCE_ED25519_KEY: ${{ secrets.PROVENANCE_ED25519_KEY }}
+
+      - name: Upload signed provenance record
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: provenance-record
+          path: provenance/*.json
+          if-no-files-found: warn
+          retention-days: 90
 
       - name: Validate Manager APK
         env:
