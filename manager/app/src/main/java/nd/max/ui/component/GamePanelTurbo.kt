@@ -100,6 +100,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import nd.max.core.platform.HudReading
 import kotlin.math.abs
 import kotlin.math.roundToInt
 import kotlinx.coroutines.Dispatchers
@@ -1048,7 +1049,7 @@ private fun TurboSectionHeader(text: String, tint: Color) {
 
 /** العدّاد الدائري: قوس القيمة فوق مسار خافت، والقيمة في المنتصف، والوصف تحته. */
 @Composable
-private fun TurboGauge(
+private fun RowScope.TurboGauge(
     label: String,
     value: String,
     caption: String?,
@@ -1121,7 +1122,7 @@ private fun TurboGauge(
 
 /** بلاطة وضع: بطاقة أصغر كما طلب المالك — أيقونة وعنوان، والاختيار يمرّ للخدمة. */
 @Composable
-private fun TurboModeTile(
+private fun RowScope.TurboModeTile(
     title: String,
     tint: Color,
     icon: ImageVector,
