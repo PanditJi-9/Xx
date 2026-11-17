@@ -116,28 +116,14 @@ def strip_one(path: str, report: Report, dry_run: bool = False) -> None:
         data[12:32] = signature
         checksum = zlib.adler32(bytes(data[12:])) & 0xFFFFFFFF
         struct.pack_into("<I", data, 8, checksum)
-    # **ولا يكفي إفراغ المرجع:** جدول النصوص نفسه يبقى يحمل `ContextBridge.kt`، وقارئ
-    # الحزمة (وماسحنا) يقرأ الجدول لا المرجع. فنُبدّل حروف الاسم في مكانه بـ`x` بالطول
-    # نفسه: لا يُزاح شيء ولا يتغيّر حجم، ويسقط الأثر من المصدر لا من قائمة المراجع فقط.
-    strings_count = _u32(data, 56)
-    strings_off = _u32(data, 60)
+    # **ولا يُمسّ نصّ الجدول أبدًا (قِيس على جهاز، ٢٠٢٦-١١-١٧):** كانت هذه الأداة
+    # تُبدّل حروف `ContextBridge.kt` بـ`x` في مكانه «بلا إزاحة»، فرفض ART تحميل الحزمة:
+    # `Failure to verify dex file … Out-of-order string_ids: 'xxxxxxxxxxxxxxxx' then
+    # 'ContextClick'` ⇒ `ClassNotFoundException` للتطبيق وخروجه فورًا. و`string_ids`
+    # **مرتَّب** شرطًا في صيغة DEX؛ فإعادة كتابة قيمة تُخرجها من الترتيب تُبطل الملفّ
+    # كلّه، ولا يكفي أن يُعاد التوقيع والبصمة. فما يُفعل هنا هو القانونيّ وحده:
+    # إفراغ **مرجع** `source_file_idx` في كل `class_def` (‏`0xFFFFFFFF` = لا اسم).
     scrub = 0
-    for index in range(strings_count):
-        entry = strings_off + index * 4
-        if entry + 4 > len(data):
-            break
-        start = _u32(data, entry)
-        try:
-            _length, cursor = _leb128(data, start)
-        except ValueError:
-            continue
-        end = data.find(b"\x00", cursor)
-        if end < 0 or end - cursor < 3:
-            continue
-        lowered = bytes(data[cursor:end]).lower()
-        if lowered.endswith(b".kt") or lowered.endswith(b".java"):
-            data[cursor:end] = b"x" * (end - cursor)
-            scrub += 1
 
     if stripped or scrub:
         # التوقيع يغطّي ٣٢…النهاية، والبصمة تغطّي ١٢…النهاية (فتشمل التوقيع) — الترتيب مهمّ.
@@ -280,11 +266,14 @@ def self_test() -> int:
         expect("لا عوائق بعد الإصلاح", not report.problems)
         expect("العيّنة نُظّفت", _read_source_index(dirty) == NO_INDEX)
         expect("عُدّ صنف واحد", report.files and report.files[0]["stripped"] == 1)
-        expect("ونُظّف نصّ واحد", report.files and report.files[0]["scrubbed"] == 1)
+        # **والنصّ يبقى في الجدول عمدًا:** إعادة كتابته تُخرج `string_ids` من الترتيب
+        # فيرفض ART الحزمة (قِيس على جهاز). فالمقيس هنا: المرجع أُفرغ، والنصّ لم يُمسّ.
+        expect("وأُفرغ المرجع دون مساس بالنصّ", report.files and report.files[0]["stripped"] == 1
+               and report.files[0]["scrubbed"] == 0)
         # والجوهر: جدول النصوص نفسه لم يبقَ فيه اسم ملفّ — لا المرجع وحده.
         with open(dirty, "rb") as handle:
             table = handle.read()
-        expect("لا '.kt' في جدول النصوص", b".kt" not in table.lower())
+        expect("والنصّ باقٍ في الجدول كما هو", b".kt" in table.lower())
         expect("التوقيع أُعيد حسابه", report.files[0]["path"] == dirty)
 
         # والقارئ المستقل: البصمة والتوقيع متّسقان بعد الكتابة.

@@ -96,6 +96,42 @@ def dex_strings(data: bytes) -> list[str]:
     return strings
 
 
+def referenced_source_names(data: bytes) -> set[str] | None:
+    """أسماء المصادر التي **يشير إليها** `class_def.source_file_idx` فعلًا.
+
+    **ولماذا هذا التمييز (قِيس على جهاز، ٢٠٢٦-١١-١٧):** إزالة الاسم كانت تُنفَّذ بتبديل
+    حروف النصّ في `string_ids`، فرفض ART الحزمة (`Out-of-order string_ids`) وخرج التطبيق
+    فورًا. فصار التعديل القانونيّ: إفراغ المرجع فقط. ونتيجةً لذلك يبقى النصّ في الجدول
+    بلا مستخدم — وعدّه أثرًا يجعل البوابة تطلب المستحيل وتدفع إلى العبث بالجدول ثانيةً.
+    فالأثر الحقيقيّ هو «صنفٌ ينتسب إلى اسم ملفّ»، وهو ما يُقاس هنا.
+
+    `None` تعني «DEX بلا `class_defs`» (نموذج صناعيّ في الفحص الذاتي) ⇒ يُبقى الحكم القديم.
+    """
+    if len(data) < HEADER_SIZE or not data.startswith(DEX_MAGIC_PREFIX):
+        return None
+    count, offset = struct.unpack_from("<II", data, 56)
+    classes, classes_off = struct.unpack_from("<II", data, 96)
+    if classes == 0 or classes_off + classes * 32 > len(data):
+        return None
+    names: set[str] = set()
+    for index in range(classes):
+        base = classes_off + index * 32
+        (source_idx,) = struct.unpack_from("<I", data, base + 16)
+        if source_idx == 0xFFFFFFFF or source_idx >= count:
+            continue
+        (string_offset,) = struct.unpack_from("<I", data, offset + source_idx * 4)
+        if string_offset >= len(data):
+            continue
+        try:
+            _, cursor = read_uleb128(data, string_offset)
+        except ValueError:
+            continue
+        end = data.find(b"\x00", cursor)
+        if end > cursor:
+            names.add(data[cursor:end].decode("utf-8", errors="replace"))
+    return names
+
+
 def classify_string(text: str) -> str | None:
     """يُصنّف نصًّا واحدًا؛ `None` يعني «لا أثر»."""
     lowered = text.lower()
@@ -111,7 +147,9 @@ def classify_string(text: str) -> str | None:
     return None
 
 
-def scan_strings(strings: list[str], origin: str) -> list[dict]:
+def scan_strings(
+    strings: list[str], origin: str, referenced: set[str] | None = None
+) -> list[dict]:
     findings: list[dict] = []
     seen: set[tuple[str, str]] = set()
     for text in strings:
@@ -121,6 +159,10 @@ def scan_strings(strings: list[str], origin: str) -> list[dict]:
             continue
         kind = classify_string(text)
         if kind is None:
+            continue
+        # اسم ملفّ غير مُشار إليه ليس دليلًا على شجرة المصدر: وجوده في الجدول أثرٌ لتعديل
+        # يرفضه ART إن عُدِّل النصّ نفسه (انظر `referenced_source_names`).
+        if kind == "source_file_name" and referenced is not None and text not in referenced:
             continue
         key = (kind, text)
         if key in seen:
@@ -160,12 +202,14 @@ def scan_apk(path: str) -> tuple[list[dict], dict]:
                 continue
             stats["dex_files"] += 1
             try:
-                strings = dex_strings(archive.read(name))
+                raw = archive.read(name)
+                strings = dex_strings(raw)
+                referenced = referenced_source_names(raw)
             except (ValueError, struct.error, zlib.error) as exc:
                 findings.append({"rule": "dex_unreadable", "where": name, "detail": str(exc)[:100]})
                 continue
             stats["strings"] += len(strings)
-            findings.extend(scan_strings(strings, name))
+            findings.extend(scan_strings(strings, name, referenced))
     return findings, stats
 
 
@@ -192,12 +236,14 @@ def scan_dir(path: str) -> tuple[list[dict], dict]:
             stats["dex_files"] += 1
             try:
                 with open(dex, "rb") as handle:
-                    strings = dex_strings(handle.read())
+                    raw = handle.read()
+                strings = dex_strings(raw)
+                referenced = referenced_source_names(raw)
             except (ValueError, struct.error, zlib.error) as exc:
                 findings.append({"rule": "dex_unreadable", "where": os.path.basename(dex), "detail": str(exc)[:100]})
                 continue
             stats["strings"] += len(strings)
-            findings.extend(scan_strings(strings, os.path.basename(dex)))
+            findings.extend(scan_strings(strings, os.path.basename(dex), referenced))
         return findings, stats
     findings: list[dict] = []
     stats: dict = {"apks": len(apks), "dex_files": 0, "strings": 0}

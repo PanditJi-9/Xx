@@ -66,18 +66,18 @@ object ModuleBootstrap {
         val staged = extracted.absolutePath
         val commands = arrayOf(
             // ١) الوحدة القديمة تُزال كاملة: بقايا `system/bin` من نسخة أقدم تُشغَّل قبل الجديدة.
-            "rm -rf ${RootCommands.quote(target)}",
-            "mkdir -p ${RootCommands.quote("$target/system/bin")}",
+            "rm -rf ${quote(target)}",
+            "mkdir -p ${quote("$target/system/bin")}",
             // ٢) النسخ من مجلّد التطبيق (قرأه التطبيق بنفسه) إلى مسار الوحدة.
-            "cp -rf ${RootCommands.quote("$staged/.")} ${RootCommands.quote("$target/")}",
+            "cp -rf ${quote("$staged/.")} ${quote("$target/")}",
             // ٣) الملكية والصلاحيات كما يفرضها مثبّت الوحدة: جذر/جذر، سكربتات 0755، والبقية 0644.
-            "chown -R 0:0 ${RootCommands.quote(target)}",
-            "find ${RootCommands.quote(target)} -type f -name '*.sh' -exec chmod 0755 {} +",
-            "find ${RootCommands.quote("$target/system/bin")} -type f -exec chmod 0755 {} +",
+            "chown -R 0:0 ${quote(target)}",
+            "find ${quote(target)} -type f -name '*.sh' -exec chmod 0755 {} +",
+            "find ${quote("$target/system/bin")} -type f -exec chmod 0755 {} +",
             // ٤) سياق SELinux للملفّات التنفيذية — بلا هذا يرفض `init` تشغيل الخدمة.
-            "chcon -R u:object_r:system_file:s0 ${RootCommands.quote("$target/system/bin")}",
+            "chcon -R u:object_r:system_file:s0 ${quote("$target/system/bin")}",
             // ٥) قراءة مرتجعة: لا «نجح» بلا دليل من الملفّ نفسه.
-            "test -s ${RootCommands.quote("$target/module.prop")}",
+            "test -s ${quote("$target/module.prop")}",
         )
 
         val result = runCatching { RootCommands.cmd(*commands).exec() }

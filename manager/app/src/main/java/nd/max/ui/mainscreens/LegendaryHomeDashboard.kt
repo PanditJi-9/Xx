@@ -54,6 +54,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
@@ -61,7 +62,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import nd.max.core.module.ModuleBootstrap
-import nd.max.ui.util.RootUtil
+import nd.max.ui.util.RootUtils
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -629,7 +630,7 @@ private fun HomeStatusReasonDialog(
     // الزر لا يُعرض إلا لمن يستطيع الاستفادة: جذر ممنوح، ولا وحدة، وحِمل موجود في الحزمة.
     // ومن لا جذر عنده لا يرى زرًّا يفشل — وهذا نصّ أمر المالك «مراعاة لعدم إزعاج الحالات الأخرى».
     val canBootstrap = remember {
-        RootUtil.isRootGranted() && !moduleInstalled && ModuleBootstrap.hasPayload(context)
+        RootUtils.isRootGranted() && !moduleInstalled && ModuleBootstrap.hasPayload(context)
     }
     var busy by remember { mutableStateOf(false) }
     var outcome by remember { mutableStateOf<String?>(null) }
