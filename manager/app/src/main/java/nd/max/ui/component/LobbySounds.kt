@@ -74,7 +74,14 @@ class LobbySounds internal constructor(
                 }
             }
             for (cue in LobbyCue.entries) {
-                sampleIds[cue] = p.load(context, cue.rawRes(), 1)
+                // عطب مُقاس (٢٠٢٦-١١-١٧، `logcat -b crash`): جدول الموارد يحمل المعرّف لكن
+                // مُقصّر الموارد يسقط ملفّ الصوت من الحزمة ⇒ `Resources$NotFoundException`
+                // داخل `SoundPool.load` يموت التطبيق كله عند أول فتح للوبي. فالتحميل هنا
+                // متسامح: عيّنة غائبة = صمت لهذه النغمة لا خروج (عقد هذا الملفّ لا انتظار
+                // ولا استثناء)، و`res/raw/keep.xml` يمنع القصّ أصلًا على مسار الإصدار.
+                runCatching { p.load(context, cue.rawRes(), 1) }
+                    .getOrNull()
+                    ?.let { sampleIds[cue] = it }
             }
         }
     }

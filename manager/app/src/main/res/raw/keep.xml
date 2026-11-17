@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    عطب مُقاس (٢٠٢٦-١١-١٧): مُقصّر الموارد في الإصدار كان يسقط ملفّات نغمات اللوبي
+    (`res/tV.ogg` معرف 0x7f0f0006 بلا ملفّ) ⇒ `Resources$NotFoundException` داخل
+    `SoundPool.load` عند فتح Game Space يموت التطبيق كله. `tools:keep` يُبقي
+    نغمات اللوبي كلّها في الحزمة؛ وحمأ `runCatching` في `LobbySounds` يمنع أي
+    عيّنة غائبة مستقبلًا من قتل العملية (صمت لا انهيار).
+-->
+<resources xmlns:tools="http://schemas.android.com/tools"
+    tools:keep="@raw/lobby_intro,@raw/lobby_off,@raw/lobby_on,@raw/lobby_start,@raw/lobby_swish,@raw/lobby_tap,@raw/lobby_tick" />
