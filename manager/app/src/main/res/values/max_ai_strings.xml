@@ -35,10 +35,10 @@
     <!-- Objective weights -->
     <string name="max_ai_section_objective">Max AI mode</string>
     <string name="max_ai_mode_desc">One mode sets the system preset and what the AI optimises for. There is no separate global profile.</string>
-    <string name="max_ai_mode_desc_performance">Highest stable ceilings. It raises only while the device is cool, under real load and above 50% battery.</string>
+    <string name="max_ai_mode_desc_performance" formatted="false">Highest stable ceilings. It raises only while the device is cool, under real load and above 50% battery.</string>
     <string name="max_ai_mode_desc_balanced">Thermal-first. It contains heat and protects scrolling and touch, so it avoids needless cap drops instead of chasing a lower wattage.</string>
     <string name="max_ai_mode_desc_battery">Gentle savings with a responsiveness floor. It keeps the interface usable instead of trading smoothness for a small percentage.</string>
-    <string name="max_ai_mode_contract">The preset changes; the responsive floor does not. No mode drops CPU below 55% or GPU below 40% of the measured range.</string>
+    <string name="max_ai_mode_contract" formatted="false">The preset changes; the responsive floor does not. No mode drops CPU below 55% or GPU below 40% of the measured range.</string>
     <string name="max_ai_mode_active_preset">System preset now: %1$s</string>
     <string name="max_ai_objective_source_user">Your mode sets the system preset and the weights.</string>
     <string name="max_ai_objective_source_learned">Weights inferred from your measured usage.</string>
