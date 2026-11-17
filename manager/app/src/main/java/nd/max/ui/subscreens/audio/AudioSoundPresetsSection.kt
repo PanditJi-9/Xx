@@ -182,7 +182,9 @@ fun AudioSoundPresetsSection(
 private fun presetAvailable(state: AudioStudioUiState, preset: AudioSoundPreset): Boolean =
     audioPresetRequiredFeatures(preset).all { feature ->
         val kind = AudioEffectKind.entries.firstOrNull { it.feature == feature } ?: return@all false
-        if (!state.enabled.containsKey(kind)) return@all false
+        // `enabled == null` = المنصّة لم تُبلّغ حالة المؤثّر؛ والمتحكّم يعدّه غير صالح فيرفض بـ«لا مؤثّر مفتوح».
+        // فالزرّ كان يُفعَّل ثمّ يفشل — والآن لا يُفعَّل إلا ما سيجرّبه المتحكّم فعلًا.
+        if (state.enabled[kind] == null) return@all false
         if (state.presetDiagnostics?.firstOrNull { it.kind == kind }?.controlled == false) return@all false
         if (kind == AudioEffectKind.EQUALIZER) state.eq?.let {
             audioPresetEqTargets(audioPresetValues(preset), it.bands) != null
@@ -265,8 +267,8 @@ private fun SoundRecipePreview(state: AudioStudioUiState, preset: AudioSoundPres
             AudioEffectKind.entries.filter { it.feature in required || it.feature in optional }.forEach { kind ->
                 val available = if (kind == AudioEffectKind.EQUALIZER) state.eq?.let {
                     audioPresetEqTargets(audioPresetValues(preset), it.bands) != null
-                } == true && state.enabled.containsKey(kind)
-                else state.strengths[kind]?.isWritable == true && state.enabled.containsKey(kind)
+                } == true && state.enabled[kind] != null
+                else state.strengths[kind]?.isWritable == true && state.enabled[kind] != null
                 val owned = state.presetDiagnostics?.firstOrNull { it.kind == kind }?.controlled != false
                 Text(stringResource(R.string.audio_presets_preview_row, effectName(kind.token),
                     stringResource(when {

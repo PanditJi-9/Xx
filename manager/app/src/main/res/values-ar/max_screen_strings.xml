@@ -625,7 +625,7 @@
 
     <!-- AppSettingsScreen -->
     <string name="app_settings_section_thermal_gpu">حاكم الحرارة ومعالج الرسوم</string>
-    <string name="app_settings_thermal_gpu_note">«الافتراضي» يترك الجهاز كما هو ويُسند إدارة التطبيق إلى HyperOS / Game Turbo.</string>
+    <string name="app_settings_thermal_gpu_note">«الافتراضي» يترك الجهاز كما هو دون أي تعديل، ويظل النظام يدير التطبيق كالمعتاد.</string>
     <string name="app_settings_cpu_governor">حاكم المعالج</string>
     <string name="app_settings_gpu_governor">حاكم معالج الرسوم</string>
     <string name="app_settings_cpu_governors_none">لم يُكتشَف أيّ حاكم معالج مشترك</string>

@@ -132,6 +132,13 @@ internal fun engineReasonText(reason: String?): String = when (reason) {
     "no-audio-manager" -> stringResource(R.string.max_audio_engine_reason_no_manager)
     "below-platform-version" -> stringResource(R.string.max_audio_engine_reason_below_api)
     "unknown-route" -> stringResource(R.string.max_audio_engine_reason_unknown_route)
+    // ── أسباب المحكِّم وسلّم الأنماط التي كانت تسقط إلى «سببٌ بلا صياغة مترجمة بعد» على الجهاز ──
+    "manual-lock" -> stringResource(R.string.max_audio_engine_reason_manual_lock)
+    "baseline-unreadable" -> stringResource(R.string.max_audio_engine_reason_baseline_unreadable)
+    "handoff-awaiting-owner-process" -> stringResource(R.string.max_audio_engine_reason_handoff_pending)
+    "preset-write-failed" -> stringResource(R.string.max_audio_engine_reason_write_failed)
+    "apply-not-verified-baseline-restored" -> stringResource(R.string.max_audio_engine_reason_not_verified_restored)
+    "apply-and-rollback-failed" -> stringResource(R.string.max_audio_engine_reason_rollback_failed)
     "profile-saved" -> stringResource(R.string.max_audio_engine_reason_profile_saved)
     "profile-deleted" -> stringResource(R.string.max_audio_engine_reason_profile_deleted)
     "profile-save-failed" -> stringResource(R.string.max_audio_engine_reason_profile_save_failed)

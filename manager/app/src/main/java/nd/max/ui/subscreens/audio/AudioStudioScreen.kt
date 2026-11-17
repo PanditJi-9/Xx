@@ -97,6 +97,7 @@ import nd.max.core.audio.AudioWriteOutcome
 import nd.max.core.audio.audioBackendRoleOf
 import nd.max.core.audio.audioDbFormat
 import nd.max.core.audio.AudioSessionTracker
+import nd.max.core.audio.AudioStrengthBounds
 import nd.max.core.audio.AudioSoundPreset
 import nd.max.service.AudioEffectService
 import nd.max.ui.component.CyberAudioVortex
@@ -262,6 +263,11 @@ fun AudioStudioScreen(
     }
 }
 
+/** قوّة المنصّة `0..1000` ← نسبة المقبض `0..100` (عكس [strengthFromPercent]، مقيَّدة فلا تخرج عن المدى). */
+private fun strengthToPercent(strength: Int): Int =
+    (strength.coerceIn(AudioStrengthBounds.PLATFORM_STRENGTH_MIN, AudioStrengthBounds.PLATFORM_STRENGTH_MAX) * 100 /
+        AudioStrengthBounds.PLATFORM_STRENGTH_MAX)
+
 /**
  * هل المحرّك يعمل الآن؟ — **سؤالٌ له جوابٌ مقروء لا تقدير**.
  *
@@ -369,8 +375,11 @@ private fun AudioEngineTab(
         }
     }
     LaunchedEffect(state.strengths) {
-        state.strengths[AudioEffectKind.BASS_BOOST]?.value?.let { bassBoost = it }
-        state.strengths[AudioEffectKind.VIRTUALIZER]?.value?.let { virtualizer = it }
+        // **الوحدة هنا عطبٌ مرئيّ صوّره المالك («990%»):** قوّة المنصّة لـ`BassBoost`/`Virtualizer` سلّمٌ
+        // مجرّد `0..1000` ([AudioStrengthBounds.PLATFORM_STRENGTH_MAX])، والمقبض **نسبة `0..100`**. وكان
+        // الرقم الخام يُسند إلى المقبض فيُعرض «990%» وتمتلئ الحلقة. التحويل هنا — العكس الدقيق لـ`strengthFromPercent`.
+        state.strengths[AudioEffectKind.BASS_BOOST]?.value?.let { bassBoost = strengthToPercent(it) }
+        state.strengths[AudioEffectKind.VIRTUALIZER]?.value?.let { virtualizer = strengthToPercent(it) }
         state.strengths[AudioEffectKind.LOUDNESS]?.value?.let { loudnessMb = it }
     }
     LaunchedEffect(state.soundPreset) { activePreset = state.soundPreset }

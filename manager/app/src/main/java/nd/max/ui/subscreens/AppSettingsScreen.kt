@@ -532,14 +532,8 @@ fun AppSettingsScreen(
                                             onItemSelected = { i -> settingsKey?.let { viewModel.updateSetting(it, "kill_bg_apps", listOf("default","true","false")[i]) } }
                                         )
                                     }
-                                }
-                            )
-
-                            // ══ تعديلات COPG (وسوم لكل تطبيق، تُكتب من تبويب التزييف) ══
-                            SettingsSectionTitle(Icons.Filled.Speed, stringResource(R.string.copg_tweaks_section), colorScheme.secondary)
-                            ExpressiveList(
-                                modifier = Modifier,
-                                content = buildList {
+                                    // تعطيل التسجيل (وسم COPG لكل تطبيق، يُكتب من تبويب التزييف): بطاقة عادية
+                                    // ضمن قائمة الأداء نفسها، بلا عنوان قسم مستقل.
                                     add {
                                         ExpressiveSwitchItem(
                                             icon = Icons.Filled.Speed,
@@ -729,6 +723,28 @@ fun AppSettingsScreen(
                                             onItemSelected = { i -> settingsKey?.let { viewModel.updateSetting(it, "force_hw_ui", listOf("default","true","false")[i]) } }
                                         )
                                     }
+                                    // السطوع التلقائي وإبقاء الشاشة مضاءة (وسوم COPG لكل تطبيق): بطاقات عادية
+                                    // ضمن قائمة العرض نفسها، بلا عنوان قسم مستقل. تُكتب من تبويب التزييف.
+                                    add {
+                                        ExpressiveSwitchItem(
+                                            icon = Icons.Filled.Monitor,
+                                            title = stringResource(R.string.copg_tweak_dab_title),
+                                            summary = if (copgHasDevice) stringResource(R.string.copg_tweak_dab_desc) else stringResource(R.string.copg_tweak_needs_device),
+                                            checked = CopgTag.DisableAutoBrightness.render() in copgTags,
+                                            enabled = localMasterOn && (copgHasDevice),
+                                            onCheckedChange = { value -> packageName?.let { spoofVm.setTag(it, CopgTag.DisableAutoBrightness, value) } }
+                                        )
+                                    }
+                                    add {
+                                        ExpressiveSwitchItem(
+                                            icon = Icons.Filled.Monitor,
+                                            title = stringResource(R.string.copg_tweak_kso_title),
+                                            summary = if (copgHasDevice) stringResource(R.string.copg_tweak_kso_desc) else stringResource(R.string.copg_tweak_needs_device),
+                                            checked = CopgTag.KeepScreenOn.render() in copgTags,
+                                            enabled = localMasterOn && (copgHasDevice),
+                                            onCheckedChange = { value -> packageName?.let { spoofVm.setTag(it, CopgTag.KeepScreenOn, value) } }
+                                        )
+                                    }
                                 }
                             )
 
@@ -823,34 +839,6 @@ fun AppSettingsScreen(
                                     }
                                 )
                             }
-
-                            // ══ تعديلات COPG (وسوم لكل تطبيق، تُكتب من تبويب التزييف) ══
-                            SettingsSectionTitle(Icons.Filled.Monitor, stringResource(R.string.copg_tweaks_section), colorScheme.secondary)
-                            ExpressiveList(
-                                modifier = Modifier,
-                                content = buildList {
-                                    add {
-                                        ExpressiveSwitchItem(
-                                            icon = Icons.Filled.Monitor,
-                                            title = stringResource(R.string.copg_tweak_dab_title),
-                                            summary = if (copgHasDevice) stringResource(R.string.copg_tweak_dab_desc) else stringResource(R.string.copg_tweak_needs_device),
-                                            checked = CopgTag.DisableAutoBrightness.render() in copgTags,
-                                            enabled = localMasterOn && (copgHasDevice),
-                                            onCheckedChange = { value -> packageName?.let { spoofVm.setTag(it, CopgTag.DisableAutoBrightness, value) } }
-                                        )
-                                    }
-                                    add {
-                                        ExpressiveSwitchItem(
-                                            icon = Icons.Filled.Monitor,
-                                            title = stringResource(R.string.copg_tweak_kso_title),
-                                            summary = if (copgHasDevice) stringResource(R.string.copg_tweak_kso_desc) else stringResource(R.string.copg_tweak_needs_device),
-                                            checked = CopgTag.KeepScreenOn.render() in copgTags,
-                                            enabled = localMasterOn && (copgHasDevice),
-                                            onCheckedChange = { value -> packageName?.let { spoofVm.setTag(it, CopgTag.KeepScreenOn, value) } }
-                                        )
-                                    }
-                                }
-                            )
 
                             } // end tab 1: Display
                             2 -> {

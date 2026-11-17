@@ -73,14 +73,16 @@ fun CyberRotaryKnob(
     val (accent, accentDeep) = cyberPalette()
     val trackColor = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f)
 
-    val fraction = (value - range.first).toFloat() / (range.last - range.first).coerceAtLeast(1)
+    // العرض مقيَّد بمدى المقبض: قيمةٌ خارجه (وحدةٌ مختلفة من مصدرها) لا تُظهر «990%» ولا تملأ الحلقة فوق أقصاها.
+    val shown = value.coerceIn(range.first, range.last)
+    val fraction = (shown - range.first).toFloat() / (range.last - range.first).coerceAtLeast(1)
 
     Surface(
         modifier = modifier
             .clip(RoundedCornerShape(maxRadius(MaxCardSpec.radius)))
             .border(
                 MaxSize.hairlineBorder,
-                if (enabled && value > 0) accent.copy(alpha = 0.35f) else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.18f),
+                if (enabled && shown > 0) accent.copy(alpha = 0.35f) else MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.18f),
                 RoundedCornerShape(maxRadius(MaxCardSpec.radius)),
             ),
         color = MaterialTheme.colorScheme.surfaceContainerLowest,
@@ -170,16 +172,16 @@ fun CyberRotaryKnob(
                             imageVector = icon,
                             contentDescription = null,
                             modifier = Modifier.size(MaxSize.iconGlyph),
-                            tint = if (enabled && value > 0) accent else MaterialTheme.colorScheme.onSurfaceVariant,
+                            tint = if (enabled && shown > 0) accent else MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                         Spacer(Modifier.height(2.dp))
                         Text(
-                            text = if (value > 0) "$value$unit" else "OFF",
+                            text = if (shown > 0) "$shown$unit" else "OFF",
                             style = MaterialTheme.typography.labelSmall,
                             fontFamily = FontFamily.Monospace,
                             fontWeight = FontWeight.Bold,
                             fontSize = 11.sp,
-                            color = if (enabled && value > 0) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
+                            color = if (enabled && shown > 0) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 }

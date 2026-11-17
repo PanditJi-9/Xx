@@ -7,8 +7,10 @@ package nd.max.ui.subscreens
 import nd.max.core.platform.HudTally
 import nd.max.core.platform.SessionPoint
 import nd.max.core.platform.StoredGameSession
+import kotlin.math.abs
 import kotlin.math.floor
 import kotlin.math.roundToInt
+import kotlin.math.sqrt
 
 /**
  * **الأرقام التي يطبعها تقرير الجلسة — حيّة أو محفوظة، بشكل واحد.**
@@ -158,4 +160,171 @@ fun fpsAxisRange(
     val safeHigh = maxOf(high, safeLow + 1f)
     val pad = (safeHigh - safeLow) * 0.08f + 0.5f
     return (safeLow - pad).coerceAtLeast(0f)..(safeHigh + pad)
+}
+
+// ───────────────────────────────────────────────────────────────────────────────────────────
+// ما يضيفه التقرير على الأرقام الثمانية: الثبات، توزيع زمن الإطارات، أسوأ اللحظات، والتراكب.
+//
+// كلها حسابات صافية على نقاط المنحنى المصغّرة (١٨٠ نقطة كحدّ أقصى)، فهي **نِسَب من العيّنات
+// المحفوظة** لا من كل إطار رُسم — وهذا الحدّ نفسه معلن في ترويسة الملفّ، ولا يُقدَّم الرقم على
+// أنه مقياس أداة أخرى. وما لم يُقَس يبقى `null` فلا يُطبع صفرًا (ADR-07).
+// ───────────────────────────────────────────────────────────────────────────────────────────
+
+/** عتبة «ثابت»: إطار لا ينزل عن ٩٠٪ من معدّل الجلسة المعتاد. */
+const val BAND_STEADY_FRACTION = 0.9f
+
+/** عتبة «متذبذب»: بين ٧٠٪ و٩٠٪ من المعدّل المعتاد؛ ما دونها «متقطّع». */
+const val BAND_UNEVEN_FRACTION = 0.7f
+
+/** حدّ «السلاسة» الذي تقيسه أدوات التقارير الأخرى (٤٥ إطارًا فأكثر) — يُعرض ليسهل المقارنة. */
+const val SMOOTH_FPS_THRESHOLD = 45f
+
+/** قيم الإطارات الموجبة المحدودة فقط، بالترتيب الزمني. */
+fun positiveFrames(points: List<SessionPoint>): List<Float> =
+    points.mapNotNull { it.frames?.takeIf { v -> v.isFinite() && v > 0f } }
+
+/**
+ * وسيط الإطارات: ما **تسعى إليه اللعبة** في هذه الجلسة، لا دقّة الشاشة.
+ *
+ * ولماذا لا دقّة الشاشة: لعبة مقفولة على ٦٠ إطارًا فوق شاشة ٩٠ هرتز ليست «متعثّرة»، فمقارنتها
+ * بالـ٩٠ تُظهر ثباتًا منخفضًا كاذبًا. الوسيط يقيس **الانتظام مع نفسها**.
+ */
+fun typicalFps(frames: List<Float>): Float? {
+    val values = frames.filter { it.isFinite() && it > 0f }.sorted()
+    if (values.isEmpty()) return null
+    val mid = values.size / 2
+    return if (values.size % 2 == 1) values[mid] else (values[mid - 1] + values[mid]) / 2f
+}
+
+/** حصص زمن الجلسة في ثلاث فئات؛ مجموعها واحد (حتى خطأ التقريب). */
+data class FpsBands(val steady: Float, val uneven: Float, val rough: Float)
+
+/**
+ * توزيع العيّنات على «ثابت / متذبذب / متقطّع» نسبةً إلى [typicalFps].
+ * أقلّ من عيّنتين لا تُسمّى توزيعًا فتُعيد `null`.
+ */
+fun fpsBands(frames: List<Float>): FpsBands? {
+    val values = frames.filter { it.isFinite() && it > 0f }
+    if (values.size < 2) return null
+    val target = typicalFps(values) ?: return null
+    var steady = 0
+    var uneven = 0
+    var rough = 0
+    values.forEach { fps ->
+        when {
+            fps >= target * BAND_STEADY_FRACTION -> steady++
+            fps >= target * BAND_UNEVEN_FRACTION -> uneven++
+            else -> rough++
+        }
+    }
+    val total = values.size.toFloat()
+    return FpsBands(steady / total, uneven / total, rough / total)
+}
+
+/** نسبة العيّنات عند [threshold] إطار فأكثر (٠..١)، أو `null` بلا عيّنات. */
+fun shareAtOrAbove(frames: List<Float>, threshold: Float): Float? {
+    val values = frames.filter { it.isFinite() && it > 0f }
+    if (values.isEmpty()) return null
+    return values.count { it >= threshold }.toFloat() / values.size
+}
+
+/** الانحراف المعياري للإطارات (تذبذب المعدّل) — أصغر = أنظم. أقلّ من عيّنتين: `null`. */
+fun fpsSpread(frames: List<Float>): Float? {
+    val values = frames.filter { it.isFinite() && it > 0f }
+    if (values.size < 2) return null
+    val mean = values.sum() / values.size
+    val variance = values.sumOf { ((it - mean) * (it - mean)).toDouble() } / values.size
+    return sqrt(variance).toFloat()
+}
+
+/** لحظة هبوط في الجلسة: موضعها في قائمة النقاط، وزمنها، وقيمتها. */
+data class WorstMoment(val index: Int, val atMs: Long, val fps: Float)
+
+/**
+ * أدنى [count] لحظات في الجلسة، **مفصولة**: هبوط واحد طويل يمرّ بعدّة عيّنات سيئة لا يُعدّ
+ * ثلاث لحظات. الفاصل أقلّه ثلاث نقاط (٥٪ من الجلسة في الجلسة الكاملة).
+ *
+ * @param below لا تُعدّ لحظةً إلا ما نزل تحت هذا الحدّ — فجلسة مسطّحة لا تُعرض فيها «أسوأ
+ * لحظات» وهي لحظات عادية.
+ */
+fun worstMoments(
+    points: List<SessionPoint>,
+    count: Int = 3,
+    below: Float = Float.MAX_VALUE,
+): List<WorstMoment> {
+    if (count <= 0) return emptyList()
+    val candidates = points.mapIndexedNotNull { index, point ->
+        point.frames?.takeIf { it.isFinite() && it > 0f && it < below }
+            ?.let { WorstMoment(index, point.atMs, it) }
+    }
+    if (candidates.isEmpty()) return emptyList()
+    val gap = maxOf(3, points.size / 20)
+    val picked = ArrayList<WorstMoment>(count)
+    for (moment in candidates.sortedBy { it.fps }) {
+        if (picked.size >= count) break
+        if (picked.none { abs(it.index - moment.index) < gap }) picked += moment
+    }
+    return picked
+}
+
+/**
+ * مقياس يُرسم **فوق** منحنى الإطارات على محور ثانٍ، فيُرى سبب الهبوط (حرارة؟ حِمل؟) في اللحظة
+ * نفسها بدل رقمين متباعدين.
+ *
+ * @param zeroIsReading الصفر قراءة حقيقية (حِمل ٠٪ = خامل)، لا غياب كما في الحرارة والطاقة.
+ * @param fixedRange نطاق ثابت لا يتبع البيانات (الحِمل ٠..١٠٠)، فيُقارَن بين الجلسات.
+ */
+enum class ReportOverlay(
+    val unit: String,
+    val decimals: Int,
+    val zeroIsReading: Boolean = false,
+    val fixedRange: ClosedFloatingPointRange<Float>? = null,
+) {
+    SocTemp("°C", 0),
+    BatteryTemp("°C", 0),
+    GpuLoad("%", 0, zeroIsReading = true, fixedRange = 0f..100f),
+    CpuLoad("%", 0, zeroIsReading = true, fixedRange = 0f..100f),
+    Power("W", 1),
+    FrameTime("ms", 1);
+
+    /** قراءة هذه النقطة لهذا المقياس، أو `null` إن لم تُقَس. */
+    fun read(point: SessionPoint): Float? {
+        val raw = when (this) {
+            SocTemp -> point.socTempC
+            BatteryTemp -> point.heat
+            GpuLoad -> point.gpuLoadPercent?.toFloat()
+            CpuLoad -> point.cpu?.toFloat()
+            Power -> point.watt
+            FrameTime -> point.frameP99Ms
+        } ?: return null
+        if (!raw.isFinite()) return null
+        return if (zeroIsReading) raw.takeIf { it >= 0f } else raw.takeIf { it > 0f }
+    }
+
+    /** القيمة كما تُطبع: بخانات هذا المقياس ثم وحدته (النسبة ملاصقة، والباقي بمسافة). */
+    fun format(value: Float): String {
+        val number = "%.${decimals}f".format(value)
+        return if (unit == "%") "$number%" else "$number $unit"
+    }
+}
+
+/** هل في الجلسة قراءتان على الأقل لهذا المقياس؟ أقلّ من ذلك لا يُرسم خطًّا. */
+fun overlayAvailable(points: List<SessionPoint>, overlay: ReportOverlay): Boolean =
+    points.count { overlay.read(it) != null } >= 2
+
+/** نطاق محور التراكب: الثابت إن وُجد، وإلا من أدنى قراءة إلى أعلاها بهامش، ولا ينهار عند التساوي. */
+fun overlayRange(points: List<SessionPoint>, overlay: ReportOverlay): ClosedFloatingPointRange<Float>? {
+    overlay.fixedRange?.let { return it }
+    val values = points.mapNotNull { overlay.read(it) }
+    if (values.size < 2) return null
+    val low = values.minOrNull() ?: return null
+    val high = values.maxOrNull() ?: return null
+    val pad = ((high - low) * 0.08f).coerceAtLeast(0.5f)
+    return (low - pad).coerceAtLeast(0f)..(high + pad)
+}
+
+/** متوسّط قراءات المقياس عبر الجلسة، أو `null` بلا قراءات. */
+fun overlayAverage(points: List<SessionPoint>, overlay: ReportOverlay): Float? {
+    val values = points.mapNotNull { overlay.read(it) }
+    return if (values.isEmpty()) null else values.sum() / values.size
 }

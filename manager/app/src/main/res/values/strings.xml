@@ -2850,6 +2850,12 @@
     <string name="max_audio_engine_reason_below_api">This Android version predates the feature</string>
     <string name="max_audio_engine_reason_unknown_route">The target route is unknown</string>
     <string name="max_audio_engine_reason_unknown">A reason with no translated wording yet</string>
+    <string name="max_audio_engine_reason_manual_lock">Pinned manually — unpin it to allow writes</string>
+    <string name="max_audio_engine_reason_baseline_unreadable">The current value couldn\'t be read before writing</string>
+    <string name="max_audio_engine_reason_handoff_pending">Waiting for another owner to hand control over</string>
+    <string name="max_audio_engine_reason_write_failed">The device rejected the write</string>
+    <string name="max_audio_engine_reason_not_verified_restored">The value didn\'t hold after writing, so the previous one was restored</string>
+    <string name="max_audio_engine_reason_rollback_failed">The write failed and the previous value couldn\'t be restored</string>
     <string name="max_audio_engine_reason_profile_saved">Profile saved</string>
     <string name="max_audio_engine_reason_profile_deleted">Profile deleted</string>
     <string name="max_audio_engine_reason_profile_save_failed">The profile file could not be written</string>

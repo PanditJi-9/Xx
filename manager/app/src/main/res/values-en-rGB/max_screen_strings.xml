@@ -478,7 +478,7 @@
     <string name="bypass_charge_daemon_controlled">Daemon controlled</string>
     <string name="bypass_charge_note">Bypass is applied by the privileged daemon to a detected charging node. Max Manager does not claim support until a compatible node has been detected.</string>
     <string name="app_settings_section_thermal_gpu">Thermal &amp; GPU Governor</string>
-    <string name="app_settings_thermal_gpu_note">Default leaves the device untouched and lets HyperOS / Game Turbo manage the app.</string>
+    <string name="app_settings_thermal_gpu_note">Default leaves the device unchanged and the system keeps managing the app as usual.</string>
     <string name="app_settings_cpu_governor">CPU Governor</string>
     <string name="app_settings_gpu_governor">GPU Governor</string>
     <string name="app_settings_cpu_governors_none">No common CPU governors detected</string>

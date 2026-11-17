@@ -2811,6 +2811,12 @@
     <string name="max_audio_engine_reason_below_api">إصدار أندرويد هذا أقدم من الميزة</string>
     <string name="max_audio_engine_reason_unknown_route">مسار التوجيه مجهول</string>
     <string name="max_audio_engine_reason_unknown">سببٌ بلا صياغة مترجمة بعد</string>
+    <string name="max_audio_engine_reason_manual_lock">مثبَّت يدويًّا — ألغِ التثبيت ليُسمح بالكتابة</string>
+    <string name="max_audio_engine_reason_baseline_unreadable">تعذّرت قراءة القيمة الحالية قبل الكتابة</string>
+    <string name="max_audio_engine_reason_handoff_pending">بانتظار تسليم التحكّم من مالكٍ آخر</string>
+    <string name="max_audio_engine_reason_write_failed">رفض الجهاز الكتابة</string>
+    <string name="max_audio_engine_reason_not_verified_restored">لم تثبت القيمة بعد الكتابة فأُعيدت إلى ما كانت عليه</string>
+    <string name="max_audio_engine_reason_rollback_failed">فشلت الكتابة وتعذّرت استعادة القيمة السابقة</string>
     <string name="max_audio_engine_reason_profile_saved">حُفظت البصمة</string>
     <string name="max_audio_engine_reason_profile_deleted">حُذفت البصمة</string>
     <string name="max_audio_engine_reason_profile_save_failed">لم يُكتب ملفّ البصمات</string>
