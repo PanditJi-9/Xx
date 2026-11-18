@@ -163,6 +163,16 @@ jobs:
           fi
           ls -l "$work/unsigned.apk"
 
+          # A dex-only patch must leave the resource table and the manifest
+          # untouched. Prove it on the unsigned build, before the manifest is
+          # deliberately scrubbed further down.
+          for part in resources.arsc AndroidManifest.xml; do
+            before=$(unzip -p "$work/input/$ASSET" "$part" | sha256sum | cut -d' ' -f1)
+            after=$(unzip -p "$work/unsigned.apk" "$part" | sha256sum | cut -d' ' -f1)
+            echo "$part original=$before built=$after"
+            test "$before" = "$after"
+          done
+
       - name: Sign for installation (v1+v2+v3)
         run: |
           set -euo pipefail
@@ -172,6 +182,21 @@ jobs:
             | head -1)
           test -n "$url"
           curl -fsSL --retry 3 -o "$work/uber-apk-signer.jar" "$url"
+          # The system logs the reason the panel is refused at all:
+          #   ScnModule: [GameDetection] requestedPermissions …:
+          #     android.permission.INTERNAL_SYSTEM_WINDOW, SYSTEM_OVERLAY_WINDOW …
+          # The declaration survives in the compiled manifest as a string, and
+          # the window type was already forced to 2038 without moving the
+          # refusal. Remove the name with an equal-length swap (pool offsets
+          # stay valid) and let the device say whether the policy reads the
+          # declaration. Proven by hash above, so the change is provably the
+          # only manifest difference.
+          python3 tools/re_scrub_manifest_permission.py --self-test
+          python3 tools/re_scrub_manifest_permission.py --apk "$work/unsigned.apk" \
+            --permission android.permission.INTERNAL_SYSTEM_WINDOW
+          test "$(unzip -p "$work/unsigned.apk" AndroidManifest.xml | sha256sum | cut -d' ' -f1)" \
+            != "$(unzip -p "$work/input/$ASSET" AndroidManifest.xml | sha256sum | cut -d' ' -f1)"
+
           java -jar "$work/uber-apk-signer.jar" \
             --apks "$work/unsigned.apk" --out "$work/signed" --allowResign
           cp "$work/signed/"*.apk "$work/GameFloat-panel.apk"
@@ -197,9 +222,10 @@ jobs:
           grep -q 'const/4 v0, 0x1' "$work/isAppEnable.smali"
           grep -q 'return v0' "$work/isAppEnable.smali"
 
-          # A dex-only patch must leave the resource table and the manifest
-          # untouched. Prove it instead of assuming --copy-original worked.
-          for part in resources.arsc AndroidManifest.xml; do
+          # resources.arsc must still be byte-identical; the manifest is not,
+          # by design: its privileged permission name was scrubbed above, and
+          # the build step proved it was identical before that scrub.
+          for part in resources.arsc; do
             before=$(unzip -p "$work/input/$ASSET" "$part" | sha256sum | cut -d' ' -f1)
             after=$(unzip -p "$work/GameFloat-panel.apk" "$part" | sha256sum | cut -d' ' -f1)
             echo "$part original=$before built=$after"
