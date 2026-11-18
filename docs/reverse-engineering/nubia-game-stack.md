@@ -181,3 +181,15 @@ SYSTEM_ALERT_WINDOW` يعيد `allow` (وجُرِّب `appops set --uid …` أ�
 `SecurityException: Permission Denial: … not exported from uid 10762`. المدخل المُصدَّر العامل هو
 `cn.nubia.gamelauncher/.activity.GameSpaceActivity` (مقيس: النافذة صارت `mCurrentFocus` بلا انهيار).
 وانهيار `recycled bitmap` السابق لم يتكرّر في هذه الجولة (لم يظهر في `-b crash` بعد التشغيل).
+
+### فرضيتان سقطتا بالقياس (2026-11-19)
+
+بعد أن رُفضت النافذة، جرّبت فرضيتين مقيستان لا مُفترضتين، وكلتاهما **سقطت**:
+
+| # | الفرضية | كيف نُفّذت | النتيجة |
+| --- | --- | --- | --- |
+| 1 | الرفض سببه **نوع النافذة** | كتابة `lp.type = 2038` بعد بناء الكائن مباشرة (`tools/re_force_window_type.py`)؛ التأكد من وجود الكتابة في dex البناء: `LayoutParams;.type:I` عددها **24** | الرفض **لم يتحرك**: نفس `INTERNAL_SYSTEM_WINDOW` |
+| 2 | الرفض سببه **إعلان الصلاحية** في البيان | استبدال اسم `android.permission.INTERNAL_SYSTEM_WINDOW` بنفس الطول داخل string pool (`tools/re_scrub_manifest_permission.py`)، مع إثبات أن البيان كان مطابقًا بايتًا قبل الاستبدال | الرفض **لم يتحرك** كذلك |
+
+⇒ الحكم: `DisplayPolicy` في هذا الـROM يطلب `INTERNAL_SYSTEM_WINDOW` بغضّ النظر عن نوع النافذة وعن الإعلان.
+فهي صلاحية `signature|privileged` تُحسم عند التثبيت لا عند التشغيل، ولا يبلغها ترقيع dex.
