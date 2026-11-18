@@ -39,7 +39,16 @@ on:
       - main
     paths:
       - ".github/**"
+      # Reverse-engineering work must not pay for the app build. Its workflows
+      # and tools are excluded below: they are exercised by their own dispatch
+      # and produce their own artifacts (AGENTS.md §0.7: no push without a
+      # measured reason, and no 28-minute build for an unrelated APK patch).
+      - "!.github/workflows/reverse-engineer.yml"
+      - "!.github/workflows/gamespace-launch.yml"
+      - "!.github/workflows/apk_smali_probe.yml"
+      - "!.github/workflows/gameassist-patch.yml"
       - "tools/**"
+      - "!tools/re_*"
       - "manager/**"
       - "android/**"
       - "app/**"

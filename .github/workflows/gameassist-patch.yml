@@ -1,0 +1,175 @@
+name: GameAssist stub patch
+
+# Gives cn.nubia.gameassist the one class its firmware supplies and this device
+# never had, so the package can start at all.
+#
+# Measured on the device (adb logcat -b crash, 2026-11-18):
+#
+#   NoClassDefFoundError: Failed resolution of:
+#       Lcom/zte/gameassist/GameAssistWrapper$Callback;
+#     at cn.nubia.gameassist.utils.Utils.<clinit>
+#     at cn.nubia.gameassist.GameAssistApplication.onCreate
+#
+# Utils holds a field of type GameAssistControllerWrapper$Callback, whose own
+# field is typed GameAssistWrapper$Callback. Resolving that missing type kills
+# Application.onCreate, so none of the package's services can run — including
+# ProjectionPanelService, the overlay the game session is supposed to show.
+#
+# The stub is `return null / false / empty`, i.e. the same answer the callers
+# already handle, so remote-controller features stay off instead of crashing.
+# Nothing else in the manifest is touched.
+
+on:
+  workflow_dispatch:
+    inputs:
+      asset:
+        description: Draft-release asset to patch
+        required: false
+        default: GameAssist.apk
+      release_tag:
+        description: Draft release holding the APK
+        required: false
+        default: re-targets
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    name: patch and sign
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      RELEASE_TAG: ${{ inputs.release_tag }}
+      ASSET: ${{ inputs.asset }}
+    steps:
+      - uses: actions/checkout@v6.0.2
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Install the current apktool
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends binutils >/dev/null
+          url=$(gh api repos/iBotPeaches/Apktool/releases/latest \
+            --jq '.assets[] | select(.name | test("^apktool_[0-9.]+[.]jar$")) | .browser_download_url' \
+            | head -1)
+          test -n "$url"
+          curl -fsSL --retry 3 -o "$RUNNER_TEMP/apktool.jar" "$url"
+          java -jar "$RUNNER_TEMP/apktool.jar" --version
+
+      - name: Fetch the APK from the draft release
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/work/input"
+          gh api "repos/${GITHUB_REPOSITORY}/releases?per_page=100" > "$RUNNER_TEMP/releases.json"
+          cat > "$RUNNER_TEMP/find_asset.py" <<'PY'
+          import json, sys
+
+          releases = json.load(open(sys.argv[1], encoding="utf-8"))
+          tag, name = sys.argv[2], sys.argv[3]
+          for release in releases:
+              if release.get("tag_name") != tag:
+                  continue
+              for asset in release.get("assets", []):
+                  if asset.get("name") == name:
+                      print(asset["id"])
+                      raise SystemExit(0)
+          raise SystemExit(f"asset {name!r} not found in draft release {tag!r}")
+          PY
+          asset_id=$(python3 "$RUNNER_TEMP/find_asset.py" "$RUNNER_TEMP/releases.json" "$RELEASE_TAG" "$ASSET")
+          gh api -H "Accept: application/octet-stream" \
+            "repos/${GITHUB_REPOSITORY}/releases/assets/${asset_id}" \
+            > "$RUNNER_TEMP/work/input/$ASSET"
+          ls -l "$RUNNER_TEMP/work/input/$ASSET"
+
+      - name: Decode, add the stub, rebuild
+        run: |
+          set -euo pipefail
+          work="$RUNNER_TEMP/work"
+          if ! java -jar "$RUNNER_TEMP/apktool.jar" d --force \
+              --output "$work/decoded" "$work/input/$ASSET" > "$work/apktool-d.log" 2>&1; then
+            echo "::error::apktool decode failed"
+            tail -40 "$work/apktool-d.log"
+            exit 1
+          fi
+
+          # classes2.dex is where cn.nubia.gameassist keeps com.zte.* code.
+          test -d "$work/decoded/smali_classes2"
+          cp -r tools/re_stubs/gameassist/com "$work/decoded/smali_classes2/"
+          find "$work/decoded/smali_classes2/com/zte/gameassist" -name '*.smali' -print
+
+          # The same WRITE_SECURE_SETTINGS class of crash that killed GameSpace
+          # applies here; contain it now rather than one build per crash.
+          python3 tools/re_patch_smali.py --decoded "$work/decoded" --sweep
+
+          if ! java -jar "$RUNNER_TEMP/apktool.jar" b \
+              --output "$work/unsigned.apk" "$work/decoded" > "$work/apktool-b.log" 2>&1; then
+            echo "::error::apktool build failed"
+            tail -60 "$work/apktool-b.log"
+            exit 1
+          fi
+          ls -l "$work/unsigned.apk"
+
+      - name: Sign for installation (v1+v2+v3)
+        run: |
+          set -euo pipefail
+          work="$RUNNER_TEMP/work"
+          url=$(gh api repos/patrickfav/uber-apk-signer/releases/latest \
+            --jq '.assets[] | select(.name | test("^uber-apk-signer-[0-9.]+[.]jar$")) | .browser_download_url' \
+            | head -1)
+          test -n "$url"
+          curl -fsSL --retry 3 -o "$work/uber-apk-signer.jar" "$url"
+          java -jar "$work/uber-apk-signer.jar" \
+            --apks "$work/unsigned.apk" --out "$work/signed" --allowResign
+          cp "$work/signed/"*.apk "$work/GameAssist-stub.apk"
+          ls -l "$work/GameAssist-stub.apk"
+
+      - name: Verify the stub is defined and the APK is signed
+        run: |
+          set -euo pipefail
+          work="$RUNNER_TEMP/work"
+          # A descriptor string in the dex is not a class definition — that is
+          # precisely the state that crashed the app. Require class_defs.
+          python3 tools/re_dex_classes.py "$work/GameAssist-stub.apk" \
+            --require 'Lcom/zte/gameassist/GameAssistWrapper;' \
+            --require 'Lcom/zte/gameassist/GameAssistWrapper$Callback;' \
+            --require 'Lcom/zte/gameassist/GameAssistWrapper$MutexCallback;'
+          python3 tools/re_apk_signature.py "$work/GameAssist-stub.apk" \
+            --text "$work/signature.txt" | tee "$work/signature.txt" | head -12
+          sha256sum "$work/GameAssist-stub.apk" | tee "$work/patch-sha256.txt"
+
+      - name: Pack the result for transfer
+        run: |
+          set -euo pipefail
+          work="$RUNNER_TEMP/work"
+          cd "$work"
+          apk_bytes=$(stat -c %s GameAssist-stub.apk)
+          7z a -t7z -mx=9 -m0=lzma2 -ms=on -mmt="$(nproc)" \
+            GameAssist-stub.7z GameAssist-stub.apk > 7z.log 2>&1 || { tail -20 7z.log; exit 1; }
+          pkg_bytes=$(stat -c %s GameAssist-stub.7z)
+          python3 -c "
+          apk = $apk_bytes
+          pkg = $pkg_bytes
+          print(f'apk   {apk:,} bytes')
+          print(f'7z    {pkg:,} bytes  ({100 * pkg / apk:.1f}% of the apk)')
+          "
+          sha256sum GameAssist-stub.7z | tee patch-7z-sha256.txt
+
+      - uses: actions/upload-artifact@v6
+        with:
+          name: gameassist-stub
+          path: |
+            ${{ runner.temp }}/work/GameAssist-stub.7z
+            ${{ runner.temp }}/work/patch-7z-sha256.txt
+            ${{ runner.temp }}/work/patch-sha256.txt
+            ${{ runner.temp }}/work/signature.txt
+            ${{ runner.temp }}/work/apktool-b.log
+          if-no-files-found: error
