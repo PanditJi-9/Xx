@@ -140,3 +140,19 @@ APK في المستودع ولا تُنشر. التشغيل يدويّ (`workflo
 - `inspect-android-jni-bindings` غير موجود في REA 6.7.0 المثبَّت، و`inspect-signature`
   يرد `capability_unavailable` لهذه الأهداف؛ لذلك يُقرأ التوقيع بأداة المستودع.
 - ما يخصّ العتاد والسلوك على جهاز بعينه يبقى **يحتاج جهازًا**.
+
+## GameAssist — سلسلة الانهيار المقيسة (حتى 2026-11-18)
+
+كل سطر ظهر في `adb logcat -b crash` بعد تثبيت البناء السابق؛ ولا سطر منها استنتاج.
+
+| # | الانهيار | الإصلاح | النتيجة |
+| --- | --- | --- | --- |
+| 1 | `NoClassDefFoundError: GameAssistWrapper$Callback` في `Utils.<clinit>` | بدائل أصناف في `tools/re_stubs/gameassist/` (ترجع `null`/`false`/قائمة فارغة) | زال |
+| 2 | `NullPointerException` على `GameCheck$GameLauncherObserver.c` لأن `GameCheck.c` الساكن فارغ | `--mode stub --return empty-list` على محدِّد الوصول | زال |
+| 3 | `NoSuchMethodError: NotificationManager.setNotificationListenerAccessGranted` | `--mode wrap --catch nosuchmethod` على `NotificationManagerWrapper` | زال |
+| 4 | NPE على `cn.nubia.componentcenter.service.GameAssistComService.a(Class)` | `--mode wrap --catch throwable` على `GameAssistApplication.onCreate` | `onCreate` **صار يكتمل** |
+| 5 | نفس NPE من `VolumeSeekbarViewController.<init>` عبر `ThemeController` | — | **حدّ**: لوحة المساعد تُبنى من مركز مكوّنات Nubia |
+
+**الحدّ:** `cn.nubia.componentcenter` (و`permissioncapsule` و`launcher`) حزم نظام من صورة Nubia؛ لا
+تُثبَّت كتطبيق مستخدم ولا يُوفّرها repack. فما يمكن إصلاحه في كود التطبيق أُصلح، وما يعتمد على تلك
+الخدمات لا يُصلَح — ويُعلن لا يُخفى.
