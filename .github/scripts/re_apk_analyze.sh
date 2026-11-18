@@ -92,6 +92,24 @@ jadx_step() {
   return 0
 }
 
+# ── Signing identity: v1 PKCS#7 and the v2/v3 APK Signing Block ─────────────
+# REA's pinned release answers capability_unavailable for this analysis, so the
+# formats are read directly. Nothing here verifies a signature against a trust
+# anchor; it reports what the archive carries.
+signature_step() {
+  echo "::group::signing identity"
+  local started=$SECONDS
+  python3 tools/re_apk_signature.py "$APK" \
+    --text "${EVIDENCE}/signature.txt" \
+    --json "${EVIDENCE}/signature.json" \
+    > "${EVIDENCE}/signature.stdout" 2> "${EVIDENCE}/signature.stderr"
+  local status=$?
+  record signature "$status"
+  explain signature "$status" "$started"
+  echo "::endgroup::"
+  return 0
+}
+
 # ── Native inventory: ELF header and program-header facts per library ────────
 native_inventory() {
   echo "::group::native library inventory"
@@ -272,6 +290,7 @@ rea_step rea_signature inspect-signature "$APK"
 # mistaken for an APK with no native code.
 rea_step rea_jni inspect-android-jni-bindings "$APK"
 
+signature_step
 apktool_step
 jadx_step
 native_inventory

@@ -289,13 +289,26 @@ def build_report(evidence: str, title: str | None) -> str:
     # ── 4. signature ─────────────────────────────────────────────────────────
     add("## 4. APK signature")
     add("")
+    # The signing block itself is read by tools/re_apk_signature.py because the
+    # pinned REA release answers capability_unavailable for this analysis.
+    local_signature = read_text(os.path.join(evidence, "signature.txt")).strip()
+    if local_signature:
+        add("Read directly from the archive (v1 PKCS#7 and the v2/v3 APK Signing Block):")
+        add("")
+        add("```")
+        for line in local_signature.splitlines()[:40]:
+            add(line)
+        add("```")
+        add("")
+
     sig_doc, sig_err = load_json(os.path.join(evidence, EVIDENCE_FILES["rea_signature"]))
     sig_norm = find_normalized(sig_doc) if sig_doc is not None else None
     sig_command_error = rea_command_error(sig_doc)
 
     if sig_norm is None:
-        add(f"Signature evidence unavailable: {sig_command_error or sig_err or 'no normalized_result'}.")
-        add("")
+        if not local_signature:
+            add(f"Signature evidence unavailable: {sig_command_error or sig_err or 'no normalized_result'}.")
+            add("")
     else:
         schemes = first_of(sig_norm, ("schemes",), ("signature_schemes",))
         signers = first_of(sig_norm, ("signers",), ("certificates",))
