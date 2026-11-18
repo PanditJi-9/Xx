@@ -29316,3 +29316,54 @@ design_tokens 0 · hardening_guard ✓ · provenance_guard (٤٨٧٢ ملفًّ�
 **الحدود:** لا بناء ولا اختبار على الجهاز (§0.10). QV تثبت التصريف والاختبارات لا السلوك الحراري
 أو اللاغ أو RTL أو الشكل على جهاز حقيقي. و`HANDOFF` هذا سجل محلي، ولم يُدفع وحده لتفادي بناء كامل
 إضافي؛ الكود المتحقَّق هو `e15fc45d` على `main`.
+
+## تكملة ٣٠٠ — هندسة عكسية لحزمة ألعاب Nubia في Actions، وترقيع نقطة دخول GameSpace (2026-11-18)
+
+**الأوامر:** «استخدم rea … واستخدم github action للفك والتحليل وليس الهاتف» · «اريد هندسة عكسية مثالية» ·
+«اجعل game space يعمل … لاني احاول تثبيته يقول لي تم بدل من ان يفتح» · «قم بتحسينها لكي تعمل علي اي هاتف
+بدون مشاكل وبكفائة قدر الامكان».
+
+**السبب المقيس لعطب «تم ولا يفتح»:** لا يوجد في بيان `cn.nubia.gamelauncher` أي
+`android.intent.category.LAUNCHER`؛ الفئتان المعلنتان `DEFAULT` و`HOME` فقط، والأنشطة تحمل `MAIN` وحدها.
+فالتثبيت ينجح ولا تُنشأ أيقونة ولا نقطة دخول من المشغّل.
+
+**ما بُني:**
+
+| الملف | الدور |
+| --- | --- |
+| `.github/workflows/reverse-engineer.yml` | مصفوفة ثلاث وظائف: REA + apktool + jadx + التوقيع + الأدلة |
+| `.github/scripts/re_apk_analyze.sh` | خط الأنابيب لكل هدف |
+| `tools/re_apk_report.py` | تقرير من القياس فقط، stdlib فقط |
+| `tools/re_apk_signature.py` | v1 PKCS#7 + كتلة توقيع v2/v3 (REA 6.7.0 يرد `capability_unavailable`) |
+| `tools/re_patch_launcher.py` | إضافة `intent-filter` واحد، ويرفض نشاطًا غير مُصدَّر |
+| `.github/workflows/gamespace-launch.yml` | فك ← ترقيع ← بناء ← توقيع v1+v2+v3 ← تحقّق بإعادة فك |
+| `docs/reverse-engineering/nubia-game-stack.md` | النتائج المقيسة للأهداف الثلاثة |
+
+المدخلات في release **مسوّدة** `re-targets` (غير منشورة) — لا APK في المستودع ولا نشر عام.
+
+**الالتزامات وحكم كل واحد — كلها من `gh run view`، لا من التوقّع:**
+
+| الالتزام | الحكم |
+| --- | --- |
+| `56cf3a4e` | فشل: الجلب كتب في `RUNNER_TEMP/in` والسكربت قرأ `WORK/input` |
+| `0039d7bc` | فشل: `curl` غير مصادق على api.github.com ⇒ 403 في تثبيت jadx |
+| `36b38abd` | `gh api` مصادق + retry، وjadx غير قاتل (exit 3 ⇒ partial) |
+| `52327646` | تصحيح أسماء أدلة REA (`rea_package.json`) و`inspect-signature` |
+| `0a2fbd38` | **نجاح كامل** — التشغيل `44217891207` للأهداف الثلاثة، وفيه التوقيع مقروءًا بـv1/v2/v3 |
+| `b949f996` | فشل: apktool 2.7.0 من أرشيف Ubuntu لا يبني موارد targetSdk 36 |
+| `0b0ad8cb` | فشل: apktool 3.0.3 أزال `--use-aapt2` فطبع نصّ الاستخدام |
+| `acdfb7a2` | البناء والتوقيع **نجحا**، والفشل في التحقّق: `apktool` لم يبقَ في `PATH` (exit 127) |
+| `628dcf22` | **نجاح** — التشغيل `44291679450`: APK موقّع 165,922,816 بايت، SHA-256 `ce61603d…613123e6` |
+
+**بوابات الجهاز قيست فلم تُرقَّع:** `DeviceUtils.isRedMagic()` = `Feature.getBoolean("ZTE_FEATURE_RED_MAGIC", false)`،
+و`FunctionAllocationHelper.isRedMagicDevice()`، و`Util.isRedMagicRunOnMyOs()`. مواضع استعمالها الثلاثة
+**تختار نصًّا أو قيمة قائمة** (`if-eqz` بين مورّدين)، ولا فرع `finish()` ولا رفض إقلاع ⇒ جعلها `true` على
+جهاز Xiaomi يوعد بميزات RedMagic غير موجودة (ADR-07).
+
+**عوائق التثبيت فُحصت:** لا `android:sharedUserId`، والثلاث `uses-library` كلها `required="false"`،
+و`minSdk 33` / `targetSdk 36` ⇒ يُثبَّت على أي هاتف Android 13+. والتوقيع الآن بمفتاح تصحيح، فلا يعلو
+نسخة ZTE (تعارض توقيع) — تُزال القديمة أولًا.
+
+**الحدود:** التطبيق يعلن 67 صلاحية نظام (`INJECT_EVENTS` · `READ_FRAME_BUFFER` · `INTERNAL_SYSTEM_WINDOW` ·
+`MANAGE_USERS` …) لا تُمنح لغير تطبيق موقّع بمفتاح المنصّة. فـ«يفتح» مُتحقَّق في الملف، و«تعمل كل ميزاته»
+**غير مُتحقَّق ولا يمكن ادّعاؤه**؛ وأي انهيار لاحق يُقرأ من `logcat` ويُرقَّع بالدليل لا بالتخمين.

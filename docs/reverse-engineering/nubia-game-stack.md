@@ -46,6 +46,18 @@ APK في المستودع ولا تُنشر. التشغيل يدويّ (`workflo
 التطبيق يُوقَّع من جديد بمفتاح تصحيح، فلا يُثبَّت فوق النسخة الأصلية (تعارض توقيع):
 يلزم إزالة القديم أولًا.
 
+البناء المُنتَج: 165,922,816 بايت، SHA-256 `ce61603d…613123e6`، موقّع بـv1+v2+v3،
+وقُرئت `android.intent.category.LAUNCHER` في البيان بعد إعادة الفك — أي أن الترقيع نجح في الملف المبني نفسه.
+
+**عوائق التثبيت فُحصت في البيان:** لا `android:sharedUserId`، والثلاث `uses-library` كلها
+`required="false"`، و`minSdk 33` / `targetSdk 36` ⇒ يُثبَّت على أي هاتف Android 13 أو أحدث.
+توقيعه الآن مفتاح تصحيح، فلا يعلو نسخة ZTE — تُزال القديمة أولًا.
+
+**وبوابات الجهاز قرئت في `smali` ولا تُرقَّع:** `DeviceUtils.isRedMagic()` هو
+`Feature.getBoolean("ZTE_FEATURE_RED_MAGIC", false)`، و`FunctionAllocationHelper.isRedMagicDevice()`،
+و`Util.isRedMagicRunOnMyOs()`. مواضع استعمالها الثلاثة **تختار نصًّا أو قيمة قائمة** (`if-eqz` بين
+مورّدين)، ولا فرع `finish()` ولا رفض إقلاع — فجعلها `true` على جهاز آخر يوعد بميزات RedMagic غير موجودة.
+
 **حدّ صريح:** «يفتح» مُتحقَّق في الـAPK (وجود LAUNCHER في البيان بعد إعادة البناء)،
 أمّا «يعمل بكل ميزاته» فغير مُتحقَّق ولا يمكن ادّعاؤه: التطبيق يعلن 67 صلاحية نظام
 (`INJECT_EVENTS` · `READ_FRAME_BUFFER` · `INTERNAL_SYSTEM_WINDOW` · `MANAGE_USERS` …)
