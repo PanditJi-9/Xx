@@ -141,6 +141,20 @@ jobs:
           # runs (see the SuperNotCalledException note in the tool).
           python3 tools/re_patch_smali.py --decoded "$work/decoded" --sweep
 
+          # The last wall, measured on the device after the gate opened:
+          #   SecurityException: DisplayPolicy: uid … does not have
+          #     android.permission.INTERNAL_SYSTEM_WINDOW
+          # raised from PowerPanelDetailsView.initLayoutParams -> addView.
+          # INTERNAL_SYSTEM_WINDOW is signature|privileged, so no appop can
+          # grant it, and a static read of LayoutParams.<init>(III)V could not
+          # settle which integer is the type. So do not guess: force the field
+          # itself right after the object is stored, and let the device say
+          # whether the refusal was about the type at all.
+          python3 tools/re_force_window_type.py --self-test
+          python3 tools/re_force_window_type.py --decoded "$work/decoded" \
+            --class cn.zte.gamefloat.powerpanel.PowerPanelDetailsView \
+            --method initLayoutParams --field lp --value 2038
+
           if ! java -jar "$RUNNER_TEMP/apktool.jar" b --copy-original \
               --output "$work/unsigned.apk" "$work/decoded" > "$work/apktool-b.log" 2>&1; then
             echo "::error::apktool build failed"
