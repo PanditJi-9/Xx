@@ -156,3 +156,28 @@ APK في المستودع ولا تُنشر. التشغيل يدويّ (`workflo
 **الحدّ:** `cn.nubia.componentcenter` (و`permissioncapsule` و`launcher`) حزم نظام من صورة Nubia؛ لا
 تُثبَّت كتطبيق مستخدم ولا يُوفّرها repack. فما يمكن إصلاحه في كود التطبيق أُصلح، وما يعتمد على تلك
 الخدمات لا يُصلَح — ويُعلن لا يُخفى.
+
+## GameFloat — طريق اللوحة العائمة، مقيسًا حتى السقف (2026-11-19)
+
+كل سطر أدناه من `adb logcat` على الجهاز نفسه بعد تثبيت البناء المرقّع، لا استنتاج.
+
+| # | القياس | النتيجة |
+| --- | --- | --- |
+| 1 | بثّ `cn.zte.gamefloat.powerpanel.action.FOREGROUND_GAME_CHANGE` مع extra نصّي `packageName` إلى `cn.zte.gamefloat/.receiver.GameForegroundChangeReceiver` | **استُقبل** — المفتاح الصحيح للطافية |
+| 2 | البوابة `ConfigUtil.isAppEnable` تقرأ `Settings.Global.redmagic_ce_switch` (فارغ عندنا، و`shell` لا يكتبه) | رُقّعت لترجع `true` ⇒ `Panel_Service : MSG msg.what = 0` |
+| 3 | `PowerPanelService$2.handleMessage:105` ← `PowerPanelWindowManager.createPowerPanelView:33` ← `PowerPanelDetailsView.<init>:118` | `onCreate PowerPanelDetailsView` — **اللوحة أُنشئت فعلًا** |
+| 4 | `InputChannelCompat.initInputMonitor` → `NoSuchMethodError: myInput(String,Context)InputChannel` | `InputChannelWrapper.register` يحمل `.catch` أصلًا؛ إضافة نطاق try فوقه **تقاطع غير صالح** في dex (المُفكِّك يرفض: `refusing to wrap … it already declares a .catch`) ⇒ حُيِّد الجسم كاملًا (`--mode noop`) |
+| 5 | `PowerPanelDetailsView.initLayoutParams:206` → `RuntimeException: Adding window failed` / `SecurityException: DisplayPolicy: uid 10767 does not have android.permission.INTERNAL_SYSTEM_WINDOW` | **السقف** |
+
+**تفصيل السقف:** نوع النافذة مقيس من `dexdump`: `const/16 v3, #int 2038` عند `+0x13` من
+`initLayoutParams` (أي `TYPE_APPLICATION_OVERLAY`، لا نوع نظامي)، و`appops get cn.zte.gamefloat
+SYSTEM_ALERT_WINDOW` يعيد `allow` (وجُرِّب `appops set --uid …` أيضًا). ومع ذلك يرفض `DisplayPolicy`
+بطلب `INTERNAL_SYSTEM_WINDOW` — وهي صلاحية `signature|privileged` لا تُمنح لتطبيق مستخدم على MIUI.
+⇒ **لا يُحلّ بترقيع smali**؛ يحتاج تثبيتًا كنظام/بصلاحيات platform. وهذا يُعلن لا يُخفى.
+
+### GameSpace 16.5 — المدخل
+
+`ExperienceHostMode` في 16.5 **غير مُصدَّر**: `am start` يرد
+`SecurityException: Permission Denial: … not exported from uid 10762`. المدخل المُصدَّر العامل هو
+`cn.nubia.gamelauncher/.activity.GameSpaceActivity` (مقيس: النافذة صارت `mCurrentFocus` بلا انهيار).
+وانهيار `recycled bitmap` السابق لم يتكرّر في هذه الجولة (لم يظهر في `-b crash` بعد التشغيل).
