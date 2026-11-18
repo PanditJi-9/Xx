@@ -127,10 +127,14 @@ jobs:
           #     at InputChannelWrapper.register(...)
           #     at PowerPanelDetailsView.initView
           # register is void and only starts touch monitoring, so the panel can
-          # be built without it: contain the Error and let initView continue.
+          # be built without it. It cannot be wrapped: it already declares its
+          # own .catch, and a second try range over the same instructions would
+          # overlap it, which is invalid dex. So the whole method is neutralized
+          # instead — measured consequence to check afterwards: the panel is
+          # meant to still receive touches through its window, not this monitor.
           python3 tools/re_patch_smali.py --decoded "$work/decoded" \
             --class cn.zte.gamefloat.common.input.InputChannelWrapper \
-            --method register --mode wrap --catch nosuchmethod
+            --method register --mode noop
 
           # Every privileged settings write in this package would otherwise
           # abort the caller. Guard each invoke so the rest of the method still
