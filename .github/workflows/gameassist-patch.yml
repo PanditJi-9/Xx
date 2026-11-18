@@ -148,6 +148,16 @@ jobs:
             --class cn.nubia.gameassist.GameAssistApplication \
             --method onCreate --mode wrap --catch throwable
 
+          # onCreate now completes, and the same vendor-service NPE comes back
+          # from a posted runnable instead:
+          #   ThemeController.a.run -> ThemeController.d -> GameAssistWindowManager
+          #     -> VolumeSeekbarViewController.<init> -> GameAssistComService.a
+          # Containing it keeps the process alive long enough to observe whether
+          # any window is ever created; if none is, that is the measurement.
+          python3 tools/re_patch_smali.py --decoded "$work/decoded" \
+            --class cn.nubia.gameassist.theme.a \
+            --method run --mode wrap --catch throwable
+
           # The same WRITE_SECURE_SETTINGS class of crash that killed GameSpace
           # applies here; contain it now rather than one build per crash.
           python3 tools/re_patch_smali.py --decoded "$work/decoded" --sweep
