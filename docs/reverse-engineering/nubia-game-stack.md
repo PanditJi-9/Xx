@@ -193,3 +193,19 @@ SYSTEM_ALERT_WINDOW` يعيد `allow` (وجُرِّب `appops set --uid …` أ�
 
 ⇒ الحكم: `DisplayPolicy` في هذا الـROM يطلب `INTERNAL_SYSTEM_WINDOW` بغضّ النظر عن نوع النافذة وعن الإعلان.
 فهي صلاحية `signature|privileged` تُحسم عند التثبيت لا عند التشغيل، ولا يبلغها ترقيع dex.
+
+### المسار البديل القائم داخل تطبيقنا (مقيس، لا مُقترح)
+
+لوحة GameFloat نفسها لا يمكن نافذتها على MIUI، لكن **النظير موجود عندنا أصلًا**:
+
+| الملف | ما يفعله | النوع |
+| --- | --- | --- |
+| `manager/app/src/main/java/nd/max/service/GameTurboStrip.kt` | شريط تراكب فوق لعبة متتبَّعة | `TYPE_APPLICATION_OVERLAY` |
+| `manager/app/src/main/java/nd/max/ui/component/GamePanelCockpit.kt` | لوحة تعيش في نافذة خدمة بلا `AlertDialog` | `TYPE_APPLICATION_OVERLAY` |
+| `manager/app/src/main/java/nd/max/ui/overlay/OverlayWindow.kt` | نافذة التراكب المشتركة | `TYPE_APPLICATION_OVERLAY` |
+
+والقياس على هذا الجهاز نفسه: `appops get nd.max SYSTEM_ALERT_WINDOW` = **allow**، و`nd.max` مثبّت.
+أي أن نوع النافذة الذي رفضه MIUI لـ`cn.zte.gamefloat` **مسموح لتطبيقنا** — الفرق في الهوية لا في النوع.
+
+**وحدّ هذا القياس:** `allow` شرط لازب لا كافٍ؛ لم يُرصد بعد رسم فعلي لنافذة `nd.max` في هذه الجولة،
+فلا يُكتب «يعمل» بل «مسموح، والرسم يحتاج رصدًا».
