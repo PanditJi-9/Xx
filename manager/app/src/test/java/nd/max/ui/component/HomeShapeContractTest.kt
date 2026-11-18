@@ -40,9 +40,12 @@ class HomeShapeContractTest {
     @Test
     fun `the dashboard order puts identity banners vitals and actions first`() {
         val body = read("LegendaryHomeDashboard.kt").substringAfter("internal fun LegendaryHomeDashboard(")
-        val order = listOf("HomeHeader(", "HomeHeroCard(", "HardwarePulseCards(", "UnifiedActivityCard(", "HomeActionRow(", "HomeVitalsGrid(", "MemoryMatrixCard(", "CommandDeck(")
+        val order = listOf("HomeHeader(", "HomeHeroCard(", "HomeActionRow(", "HardwarePulseCards(", "UnifiedActivityCard(", "HomeVitalsGrid(", "MemoryMatrixCard(", "CommandDeck(")
             .map { body.indexOf(it) }
         assertTrue("كتلة مفقودة من الرئيسية", order.all { it >= 0 })
+        // **تغيّر الترتيب عن قصد ٢٠٢٦-١١-١٨** (تدقيق فيديو المالك): صفّ الفعل صعد فوق النبض،
+        // لأن الفعل الأوّلي كان يقع خلف ١.٥ شاشة تمرير. الحرّاس هنا يحرسون **ثبات** الترتيب لا
+        // صيغته القديمة؛ و`HomeTourModel` يحكي الخطوات بترتيب الشاشة نفسه فيُقرأ الاثنان معًا.
         assertTrue("ترتيب الكتل الأولى تغيّر", order == order.sorted())
         assertFalse("البطل الضخم القديم عاد", body.contains("PulsePanel("))
     }

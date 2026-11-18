@@ -90,29 +90,63 @@ internal fun HomeActionRow(
         boost.outcome != null && freedMb == null -> stringResource(R.string.home_memory_boost_none)
         else -> stringResource(R.string.home_memory_boost_desc)
     }
-    Row(
-        Modifier.fillMaxWidth().height(IntrinsicSize.Min),
-        horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm),
-    ) {
-        QuickActionTile(
-            title = stringResource(R.string.home_memory_boost),
-            icon = Icons.Rounded.Memory,
-            accent = boostAccent,
-            value = freedMb?.let { stringResource(R.string.home_memory_boost_freed, "$it MB") },
-            support = boostSupport,
-            onClick = onBoost,
-            modifier = Modifier.weight(1f).fillMaxHeight(),
-        )
-        QuickActionTile(
-            title = stringResource(MaxDestination.Control.titleRes),
-            icon = MaxDestination.Control.icon,
-            accent = p.accentAlt,
-            value = null,
-            support = stringResource(R.string.max_home_control_desc),
-            onClick = onControl,
-            modifier = Modifier.weight(1f).fillMaxHeight(),
-        )
+    // الفعلان عمودًا واحدًا في العرض الضيّق (النافذة العائمة): بلاطتان بعرض ~٨٥dp كانتا تقصّان
+    // العنوان ويركب سطر الشرح على نفسه. التكديس يُبقي الفعلين مرئيَّين معًا بلا تمرير.
+    BoxWithConstraints(Modifier.fillMaxWidth()) {
+        val stacked = maxWidth < 300.dp
+        if (stacked) {
+            Column(
+                Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(MaxSpace.sm),
+            ) {
+                BoostActionTile(boostAccent, boostSupport, freedMb, onBoost, Modifier.fillMaxWidth())
+                ControlActionTile(onControl, Modifier.fillMaxWidth())
+            }
+        } else {
+            Row(
+                Modifier.fillMaxWidth().height(IntrinsicSize.Min),
+                horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm),
+            ) {
+                BoostActionTile(boostAccent, boostSupport, freedMb, onBoost, Modifier.weight(1f).fillMaxHeight())
+                ControlActionTile(onControl, Modifier.weight(1f).fillMaxHeight())
+            }
+        }
     }
+}
+
+@Composable
+private fun BoostActionTile(
+    boostAccent: Color,
+    boostSupport: String,
+    freedMb: Int?,
+    onBoost: () -> Unit,
+    modifier: Modifier,
+) {
+    QuickActionTile(
+        title = stringResource(R.string.home_memory_boost),
+        icon = Icons.Rounded.Memory,
+        accent = boostAccent,
+        value = freedMb?.let { stringResource(R.string.home_memory_boost_freed, "$it MB") },
+        support = boostSupport,
+        onClick = onBoost,
+        modifier = modifier,
+    )
+}
+
+@Composable
+private fun ControlActionTile(
+    onControl: () -> Unit,
+    modifier: Modifier,
+) {
+    QuickActionTile(
+        title = stringResource(MaxDestination.Control.titleRes),
+        icon = MaxDestination.Control.icon,
+        accent = neuralPalette().accentAlt,
+        value = null,
+        support = stringResource(R.string.max_home_control_desc),
+        onClick = onControl,
+        modifier = modifier,
+    )
 }
 
 /**

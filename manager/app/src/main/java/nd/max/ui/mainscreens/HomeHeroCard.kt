@@ -57,6 +57,7 @@ import nd.max.R
 import nd.max.core.privilege.PrivilegeLevel
 import nd.max.ui.component.AccessEntryButton
 import nd.max.ui.component.MaxAiEntryButton
+import nd.max.ui.component.MaxValueWithUnit
 import nd.max.ui.component.NeuralIconChip
 import nd.max.ui.component.NeuralPanel
 import nd.max.ui.component.NeuralTile
@@ -159,7 +160,7 @@ internal fun HomeHeroCard(
             Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(MaxSpace.xs)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        stringResource(R.string.home_temperature_short).uppercase(),
+                        stringResource(R.string.home_temperature_short),
                         color = p.muted,
                         style = MaterialTheme.typography.labelSmall,
                         maxLines = 1,
@@ -174,25 +175,18 @@ internal fun HomeHeroCard(
                         )
                     }
                 }
-                Row(verticalAlignment = Alignment.Bottom) {
-                    NeuralValue(
-                        heat?.toString() ?: "\u2014",
-                        style = MaterialTheme.typography.displayMedium.copy(
-                            fontFamily = MonoFontFamily,
-                            fontWeight = FontWeight.SemiBold,
-                        ),
-                        color = p.text,
-                    )
-                    if (heat != null) {
-                        Spacer(Modifier.width(MaxSpace.xs))
-                        Text(
-                            stringResource(R.string.home_unit_celsius),
-                            color = p.muted,
-                            style = MaterialTheme.typography.labelLarge,
-                            maxLines = 1,
-                        )
-                    }
-                }
+                // الرقم ووحدته نصّ واحد (لا Row يحاذي الأسفل): الوحدة كانت تهبط تحت خطّ الأساس،
+                // والرقم المتحرّك لا يملك خطّ أساس يُحاذى إليه من الأصل. التفصيل في [MaxValueWithUnit].
+                MaxValueWithUnit(
+                    value = heat?.toString() ?: "\u2014",
+                    unit = if (heat != null) stringResource(R.string.home_unit_celsius) else null,
+                    style = MaterialTheme.typography.displayMedium.copy(
+                        fontFamily = MonoFontFamily,
+                        fontWeight = FontWeight.SemiBold,
+                    ),
+                    color = p.text,
+                    unitColor = p.muted,
+                )
             }
             MaxAiEntryButton(
                 text = stringResource(R.string.max_nav_max_ai),

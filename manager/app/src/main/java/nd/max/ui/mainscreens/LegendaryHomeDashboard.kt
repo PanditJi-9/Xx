@@ -29,6 +29,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -177,6 +178,20 @@ internal fun LegendaryHomeDashboard(
                 onAccess = onAccess,
             )
         }
+        // صفّ الفعل فوق النبض (تدقيق الفيديو ٢٠٢٦-١١-١٨): كان الفعل الأوّلي «تعزيز» يقع بعد
+        // البطل والتخزين والمقياسين والنشاط — أي على مسافة ١.٥ شاشة تمرير من أول نظرة. الرئيسية
+        // تجيب ثلاثة أسئلة بهذا الترتيب: من أنا (البطل) ← ماذا أفعل الآن (هذا الصفّ) ← كيف حالي
+        // (النبض وما بعده). و`HomeShapeContractTest` و`HomeTourModel` يقرآن هذا الترتيب فيُحدَّثان معه.
+        Column(verticalArrangement = Arrangement.spacedBy(MaxSpace.md)) {
+            NeuralSectionHeader(title = stringResource(R.string.home_section_actions))
+            HomeTourAnchor(HomeTourTarget.Actions) {
+                HomeActionRow(
+                    boost = boost,
+                    onBoost = onBoost,
+                    onControl = { onNavigate(MaxDestination.Control.route) },
+                )
+            }
+        }
         // «مدار الطاقة» (أنيميشن البطّارية أثناء الشحن) — **مُخفٰى بأمر المالك ٢٠٢٦-١٠-٢١**
         // («أخفِ انيميشن البطاريه في الشاشة الرئيسية»): صار غير مستدعًى هنا، والملفّ
         // [HomeOrbitPowerCard] بقي كما هو فلا يُحذف عملٌ مُنجز (إرجاعه بسطر واحد)، وشرطُه
@@ -192,16 +207,6 @@ internal fun LegendaryHomeDashboard(
             )
         }
         UnifiedActivityCard(maxAi = maxAi, onNavigate = onNavigate)
-        Column(verticalArrangement = Arrangement.spacedBy(MaxSpace.md)) {
-            NeuralSectionHeader(title = stringResource(R.string.home_section_actions))
-            HomeTourAnchor(HomeTourTarget.Actions) {
-                HomeActionRow(
-                    boost = boost,
-                    onBoost = onBoost,
-                    onControl = { onNavigate(MaxDestination.Control.route) },
-                )
-            }
-        }
         Column(verticalArrangement = Arrangement.spacedBy(MaxSpace.md)) {
             NeuralSectionHeader(
                 title = stringResource(R.string.home_section_live),
@@ -340,41 +345,78 @@ private fun HardwarePulseCards(
     onCpu: () -> Unit,
     onGpu: () -> Unit
 ) {
-    Row(
-        Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(10.dp)
-    ) {
-        FrequencyMetricCard(
-            title = stringResource(R.string.detail_zone_gpu),
-            percent = dashboard.gpuLoadPercent,
-            frequencyMhz = dashboard.gpuFreqMhz,
-            ceilingMhz = dashboard.gpuCeilingMhz,
-            floorMhz = dashboard.gpuMinMhz,
-            samples = dashboard.loadSamples,
-            isGpu = true,
-            // الثلاثة بعد تحسم الفرق الذي طلبه المالك: صدر «Max freq» الحيّ (مثل 754)،
-            // يمين الأسفل «أقصى مدعوم» من كتالوج الدرجات (مثل 1300)، وأرضية اليسار كما
-            // كانت. والتردد الجاري (مثل 260) صار في الموجة وحدها — لا يُخلط بسقفٍ ولا مدعوم.
-            topMhz = dashboard.gpuCeilingMhz,
-            topLabel = stringResource(R.string.home_gpu_max_freq),
-            rangeMaxMhz = dashboard.gpuMaxSupportedMhz,
-            accent = neuralPalette().accentAlt,
-            onClick = onGpu,
-            modifier = Modifier.weight(1f)
-        )
-        FrequencyMetricCard(
-            title = stringResource(R.string.detail_zone_cpu),
-            percent = dashboard.cpuLoadPercent,
-            frequencyMhz = dashboard.cpuTopCoreMhz.takeIf { it > 0 },
-            ceilingMhz = dashboard.cpuCeilingMhz.takeIf { it > 0 },
-            floorMhz = dashboard.cpuMinMhz?.takeIf { it > 0 },
-            samples = dashboard.loadSamples,
-            isGpu = false,
-            accent = neuralPalette().accent,
-            onClick = onCpu,
-            modifier = Modifier.weight(1f)
-        )
+    // العرض الضيّق (النافذة العائمة ١٧٨dp مثلًا) كان يترك المقياسين جنبًا إلى جنب بعرض ~٨٩dp
+    // لكل بطاقة: العنوان يُقصّ والأرقام تخرج من إطارها. أقلّ من 340dp ⇒ تكديس عموديّ كامل العرض.
+    // القراءة أهمّ من توفير ارتفاع، والبطاقة نفسها لا تعرف عرضها فلا تتفرّع في الداخل.
+    BoxWithConstraints(Modifier.fillMaxWidth()) {
+        val stacked = maxWidth < 340.dp
+        if (stacked) {
+            Column(
+                Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(MaxSpace.sm),
+            ) {
+                GpuPulseCard(dashboard, onGpu, Modifier.fillMaxWidth())
+                CpuPulseCard(dashboard, onCpu, Modifier.fillMaxWidth())
+            }
+        } else {
+            Row(
+                Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm),
+            ) {
+                GpuPulseCard(dashboard, onGpu, Modifier.weight(1f))
+                CpuPulseCard(dashboard, onCpu, Modifier.weight(1f))
+            }
+        }
     }
+}
+
+@Composable
+private fun GpuPulseCard(
+    dashboard: DashboardState,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    FrequencyMetricCard(
+        title = stringResource(R.string.detail_zone_gpu),
+        percent = dashboard.gpuLoadPercent,
+        frequencyMhz = dashboard.gpuFreqMhz,
+        ceilingMhz = dashboard.gpuCeilingMhz,
+        floorMhz = dashboard.gpuMinMhz,
+        samples = dashboard.loadSamples,
+        isGpu = true,
+        // الثلاثة التي طلبها المالك محفوظة كلها، وكلٌّ منها صار **موسومًا**: «السقف» أعلى البطاقة
+        // (الحدّ الحيّ مثل 754)، و«الأقصى» أسفلها من كتالوج الدرجات (مثل 1300)، و«الأدنى» في
+        // الطرف المقابل. والتردد الجاري (مثل 260) في الموجة وحدها — لا يُخلط بسقفٍ ولا مدعوم.
+        topMhz = dashboard.gpuCeilingMhz,
+        topLabel = stringResource(R.string.home_gpu_max_freq),
+        rangeMaxMhz = dashboard.gpuMaxSupportedMhz,
+        accent = neuralPalette().accentAlt,
+        onClick = onClick,
+        modifier = modifier,
+    )
+}
+
+@Composable
+private fun CpuPulseCard(
+    dashboard: DashboardState,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    FrequencyMetricCard(
+        title = stringResource(R.string.detail_zone_cpu),
+        percent = dashboard.cpuLoadPercent,
+        frequencyMhz = dashboard.cpuTopCoreMhz.takeIf { it > 0 },
+        ceilingMhz = dashboard.cpuCeilingMhz.takeIf { it > 0 },
+        floorMhz = dashboard.cpuMinMhz?.takeIf { it > 0 },
+        samples = dashboard.loadSamples,
+        isGpu = false,
+        // «الآن» تسمية التردد الجاري لأنويتها العليا — كان رقمًا عاريًا يُقرأ كأنه سقف.
+        topMhz = dashboard.cpuTopCoreMhz.takeIf { it > 0 },
+        topLabel = stringResource(R.string.home_freq_now),
+        accent = neuralPalette().accent,
+        onClick = onClick,
+        modifier = modifier,
+    )
 }
 
 @Composable
@@ -449,11 +491,12 @@ private fun FrequencyMetricCard(
                 color = p.text,
             )
         }
-        // سطر التردد: الصدر (السقف الحيّ للـGPU بتسميته، أو الجاري للـCPU) — تسمية صغيرة ثم رقم أحادي.
+        // سطر التردد: الصدر موسوم دائمًا — «السقف» للـGPU (الحدّ الحيّ) و«الآن» للـCPU (التردد
+        // الجاري لأنويتها العليا). بلا التسمية كان الرقم المجرّد يُقرأ كأنه حالة البطاقة نفسها.
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.Bottom) {
             if (topLabel != null) {
                 Text(
-                    topLabel.uppercase(),
+                    topLabel,
                     color = p.muted,
                     style = MaterialTheme.typography.labelSmall,
                     maxLines = 1,
@@ -475,22 +518,38 @@ private fun FrequencyMetricCard(
             floorFraction = floorFraction,
             modifier = Modifier.fillMaxWidth().height(40.dp),
         )
-        // المدى: الأرضية يسارًا والسقف يمينًا بالخط الأحادي. السطر يُحجز دائمًا، فالمجهول شرطة (ADR-07)،
-        // فتبقى البطاقة بهيئتها نفسها قبل وصول القراءة وبعده، وكل بطاقة تحجز أسطرها (DESIGN.md).
+        // المدى: طرفان **موسومان** بدل رقمين عاريين (تدقيق الفيديو ٢٠٢٦-١١-١٨). الرقمان كانا
+        // يعنيان شيئًا مختلفًا على البطاقتين بلا اسم: CPU = أرضية + سقف معلن، GPU = أرضية + أقصى
+        // مدعوم في الكتالوج؛ وبينهما «السقف» الحيّ أعلى البطاقة — فثلاثة «أقصى» في صفٍّ واحد.
+        // التسمية تفصل الثلاثة، ولا يُحذف رقم طلبه المالك. السطر يُحجز دائمًا والمجهول شرطة (ADR-07).
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            NeuralValue(
-                formatHardwareFrequency(floor),
-                style = MonoValueStyleSmall,
-                color = p.muted,
-                maxLines = 1,
+            // الأقصى في جهة البداية (يمين في العربية) والأدنى في الطرف المقابل — الأرقام تُقرأ
+            // تصاعديًّا من اليسار، فيبقى الأدنى يسارًا في الاتجاهين كما في الرسم نفسه.
+            RangeEnd(
+                label = stringResource(R.string.home_freq_max_label),
+                value = formatHardwareFrequency(rangeMax),
+                horizontalAlignment = Alignment.Start,
             )
-            NeuralValue(
-                formatHardwareFrequency(rangeMax),
-                style = MonoValueStyleSmall,
-                color = p.muted,
-                maxLines = 1,
+            RangeEnd(
+                label = stringResource(R.string.home_freq_min_label),
+                value = formatHardwareFrequency(floor),
+                horizontalAlignment = Alignment.End,
             )
         }
+    }
+}
+
+/** طرف مدى موسوم: تسمية صغيرة فوق رقم أحادي — تُقرأ كوحدة واحدة لا كرقم عائم. */
+@Composable
+private fun RangeEnd(
+    label: String,
+    value: String,
+    horizontalAlignment: Alignment.Horizontal,
+) {
+    val p = neuralPalette()
+    Column(horizontalAlignment = horizontalAlignment) {
+        Text(label, color = p.muted, style = MaterialTheme.typography.labelSmall, maxLines = 1)
+        NeuralValue(value, style = MonoValueStyleSmall, color = p.text, maxLines = 1)
     }
 }
 
