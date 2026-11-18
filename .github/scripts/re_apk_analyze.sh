@@ -264,7 +264,12 @@ echo "target: ${TARGET}"
 echo "sha256 will be computed after analysis; size $(stat -c %s "$APK") bytes"
 
 rea_step rea_package inspect-android-package "$APK"
-rea_step rea_signature inspect-apk-signature "$APK"
+# `inspect-signature` is the command name this REA release exposes; the docs
+# call the MCP tool inspect_apk_signature, and the CLI name differs.
+rea_step rea_signature inspect-signature "$APK"
+# Kept even though the pinned release answers COMMAND_NOT_FOUND: the recorded
+# refusal is the evidence for why the JNI section is empty, and it must not be
+# mistaken for an APK with no native code.
 rea_step rea_jni inspect-android-jni-bindings "$APK"
 
 apktool_step
