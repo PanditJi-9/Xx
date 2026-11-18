@@ -73,25 +73,46 @@ jobs:
 
       - name: Install apktool, jadx and analysis utilities
         shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
           sudo apt-get update -qq
           sudo apt-get install -y --no-install-recommends \
             apktool binutils file jq procps python3 unzip zip >/dev/null
+          apktool --version
+
+          # jadx is not in the Ubuntu 24.04 archive: the first run fell through
+          # to this branch. Resolve the release through the *authenticated* API —
+          # the anonymous endpoint rate-limits per runner IP and answered HTTP
+          # 403 when three matrix jobs asked at once, which killed a whole job
+          # before any analysis started.
           if command -v jadx >/dev/null 2>&1; then
             echo "jadx: distribution package"
           else
             echo "jadx: not in the image; installing the upstream release"
-            url=$(curl -fsSL https://api.github.com/repos/skylot/jadx/releases/latest \
-              | jq -r '.assets[] | select(.name | test("^jadx-[0-9.]+[.]zip$")) | .browser_download_url' \
-              | head -1)
-            test -n "$url"
-            curl -fsSL -o /tmp/jadx.zip "$url"
-            sudo unzip -q -o /tmp/jadx.zip -d /opt/jadx
-            sudo ln -sf /opt/jadx/bin/jadx /usr/local/bin/jadx
+            attempt=1
+            while [ "$attempt" -le 5 ]; do
+              url=$(gh api repos/skylot/jadx/releases/latest \
+                --jq '.assets[] | select(.name | test("^jadx-[0-9.]+[.]zip$")) | .browser_download_url' \
+                | head -1 || true)
+              if [ -n "$url" ] && curl -fsSL --retry 3 -o /tmp/jadx.zip "$url"; then
+                break
+              fi
+              echo "::warning::jadx release fetch failed (attempt ${attempt})"
+              attempt=$((attempt + 1))
+              sleep $((attempt * 5))
+            done
+            if [ -s /tmp/jadx.zip ]; then
+              sudo unzip -q -o /tmp/jadx.zip -d /opt/jadx
+              sudo ln -sf /opt/jadx/bin/jadx /usr/local/bin/jadx
+            else
+              # Not fatal: REA carries its own JADX engine, so package evidence
+              # still lands. The report records the full decompile as not run.
+              echo "::warning::jadx CLI unavailable; the full decompile step will record that"
+            fi
           fi
-          apktool --version
-          jadx --version
+          jadx --version || echo "jadx CLI absent"
 
       - name: Install pinned REA and the pinned JADX engine
         shell: bash
