@@ -209,3 +209,32 @@ SYSTEM_ALERT_WINDOW` يعيد `allow` (وجُرِّب `appops set --uid …` أ�
 
 **وحدّ هذا القياس:** `allow` شرط لازب لا كافٍ؛ لم يُرصد بعد رسم فعلي لنافذة `nd.max` في هذه الجولة،
 فلا يُكتب «يعمل» بل «مسموح، والرسم يحتاج رصدًا».
+
+## ما ثُبِّت من `/red/apps` وقياسه (2026-11-19)
+
+ثُبِّتت الحزم المتصلة بالحزمة كلها بأمر المالك، وكلٌّ منها قيس بـ`adb install` ثم `pm list packages`
+(الفرق قبل/بعد يكشف اسم الحزمة، لأن البيان المُصرَّف لا يُقرأ نصيًّا).
+
+| المجلد | الحزمة | النتيجة |
+| --- | --- | --- |
+| `GameAIAsst` | `cn.zte.gameaiasst` | جديد |
+| `GameCardAssist` | `com.zte.gamecardassist` | جديد |
+| `GameHelperLine` | `cn.nubia.gamehelperline` | جديد |
+| `GamePi` | `cn.nubia.gamepi` | جديد |
+| `GamePluginTrigger` | `com.zte.game.plugintrigger` | جديد |
+| `NBGameCenter_Abroad` | `com.nubia.gamecenter` | جديد |
+| `NubiaGameHelperModule` | `cn.nubia.gamehelpmodule` | جديد |
+| `NubiaGameNotes` | `cn.nubia.gamenotes` | جديد |
+| `VirtualGameHandle` | `cn.nubia.virtualgamehandle` | جديد |
+| `NubiaGameWidget` | `cn.nubia.gamewidget` | تحديث (كان مثبّتًا) |
+| `NubiaGamepad_160` | `cn.nubia.gamepad` | تحديث (كان مثبّتًا) |
+
+**وقياس ما بعد التثبيت:**
+
+- `GameSpace` ما زال يعمل: `mCurrentFocus` صار `cn.nubia.gamelauncher/.activity.GameSpaceActivity`،
+  و`-b crash` **فارغ**.
+- `cn.nubia.componentcenter` **ما زال غير موجود**: صفر حزمة بهذا الاسم، وصفر إشارة إليه في
+  `com.nubia.gamecenter` و`cn.nubia.gamehelpmodule`. فحاجز GameAssist لم يتحرك بالتثبيت.
+- `cn.nubia.gameassist` **لا يملك Activity بـLAUNCHER**: `monkey -p … LAUNCHER` يرد
+  «No activities found to run». خدماته الأربعة كلها محميّة بـ`cn.nubia.gameassist.permission.ACCESS`،
+  وواحد فقط (`GameSubAgentService`) غير محميّ.
