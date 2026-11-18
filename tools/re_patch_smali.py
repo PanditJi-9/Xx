@@ -57,8 +57,11 @@ METHOD_HEADER = re.compile(
 )
 
 # Settings.Global/System/Secure put*, which is what needs WRITE_SECURE_SETTINGS.
+# Any Settings$*.put* call: the four typed putters plus the *ForUser variants,
+# which throw the same SecurityException and which the measured GameFloat crash
+# reaches from PowerPanelService.onStartCommand (a non-void method, see sweep).
 PRIVILEGED_WRITE = re.compile(
-    r"Landroid/provider/Settings\$(?:Global|System|Secure);->put(?:String|Int|Long|Float)\("
+    r"Landroid/provider/Settings\$(?:Global|System|Secure|NameValueTable);->put[A-Za-z]*\("
 )
 
 # Never swept. Measured regression: wrapping GameManualActivity.onStart made the
@@ -336,7 +339,6 @@ def sweep_putstring(decoded: Path, quiet: bool) -> int:
     touched_files = 0
     touched_methods = 0
     skipped_catch = 0
-    skipped_non_void = 0
 
     for path in sorted(decoded.glob("smali*/**/*.smali")):
         try:
@@ -354,9 +356,10 @@ def sweep_putstring(decoded: Path, quiet: bool) -> int:
             if ".catch " in body:
                 skipped_catch += 1
                 continue
-            if not method.returns_void:
-                skipped_non_void += 1
-                continue
+            # Any return type: the per-invoke guard leaves the method signature
+            # and its returns alone, so a non-void method keeps its own default
+            # value instead of being refused (measured: PowerPanelService
+            # .onStartCommand returns int and skipped the whole sweep before).
             targets.append(method)
             method_index[id(method)] = mi
 
@@ -369,11 +372,14 @@ def sweep_putstring(decoded: Path, quiet: bool) -> int:
         def builder(m: Method, _tag: str) -> str:
             return _transform_method_invoke(m, file_counter, method_index[id(m)])
 
-        touched_methods += apply(path, targets, builder, f"{file_counter}_", quiet)
+        # allow_non_void: the guard changes no signature and no return, so a
+        # non-void method is as safe as a void one.
+        touched_methods += apply(path, targets, builder, f"{file_counter}_", quiet,
+                                  allow_non_void=True)
 
     print(
         f"--- sweep: wrapped {touched_methods} methods in {touched_files} files "
-        f"(skipped {skipped_catch} with an existing .catch, {skipped_non_void} non-void)"
+        f"(skipped {skipped_catch} with an existing .catch)"
     )
     return touched_methods
 
