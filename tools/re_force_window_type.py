@@ -77,7 +77,8 @@ def force_field(lines: list[str], method: str, field: str, value: int) -> list[s
     at, m = hits[0]
 
     # Idempotent: a repeat run must not stack a second write.
-    if any(f"->{field}:{m.group('desc')}->type:I" in line for line in lines[at:at + 4]):
+    marker = f"{m.group('desc')}->type:I"
+    if any(marker in line for line in lines[at:at + 4]):
         return lines
 
     locals_at = [(i, LOCALS.match(lines[i])) for i in range(start, end) if LOCALS.match(lines[i])]
@@ -90,10 +91,11 @@ def force_field(lines: list[str], method: str, field: str, value: int) -> list[s
 
     out = list(lines)
     out[locals_index] = f"{locals_match.group(1)}.locals {count + 1}"
+    # The field is declared by the *stored object's* class, not by the class
+    # that holds the reference: LayoutParams declares `type`, the view does not.
     out[at + 1:at + 1] = [
         f"    const/16 {scratch}, 0x{value:x}",
-        f"    iput {scratch}, {m.group('obj')}, "
-        f"{m.group('owner_cls')}->{field}:{m.group('desc')}->type:I",
+        f"    iput {scratch}, {m.group('obj')}, {m.group('desc')}->type:I",
     ]
     return out
 
@@ -175,9 +177,7 @@ def self_test() -> int:
             "Lcn/zte/gamefloat/powerpanel/PowerPanelDetailsView;->"
             "lp:Landroid/view/WindowManager$LayoutParams;\n"
             "    const/16 v3, 0x7f6\n"
-            "    iput v3, v0, "
-            "Lcn/zte/gamefloat/powerpanel/PowerPanelDetailsView;->"
-            "lp:Landroid/view/WindowManager$LayoutParams;->type:I\n"
+            "    iput v3, v0, Landroid/view/WindowManager$LayoutParams;->type:I\n"
         )
         if expected not in text:
             print("SELF-TEST FAILED\n--- got ---\n" + text, file=sys.stderr)
