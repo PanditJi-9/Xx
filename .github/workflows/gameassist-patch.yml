@@ -114,6 +114,18 @@ jobs:
           cp -r tools/re_stubs/gameassist/com "$work/decoded/smali_classes2/"
           find "$work/decoded/smali_classes2/com/zte/gameassist" -name '*.smali' -print
 
+          # Next crash after the class wall, measured on the device:
+          #   NullPointerException: attempting to read field
+          #     'java.util.List GameCheck$GameLauncherObserver.c' on a null object
+          #     at GameCheck$GameLauncherObserver.c <- GameCheck.d <- SystemMgr.t
+          # The static GameCheck.c observer is null because nothing on this ROM
+          # registers it, so the bridge getter dereferences null. Answer with an
+          # empty list: the caller iterates it and finds no game, which is the
+          # truth here. (Refused without --allow-non-void for any other method.)
+          python3 tools/re_patch_smali.py --decoded "$work/decoded" \
+            --class 'com.zte.gameassist.common.GameCheck$GameLauncherObserver' \
+            --method c --mode stub --return empty-list --allow-non-void
+
           # The same WRITE_SECURE_SETTINGS class of crash that killed GameSpace
           # applies here; contain it now rather than one build per crash.
           python3 tools/re_patch_smali.py --decoded "$work/decoded" --sweep

@@ -28,6 +28,12 @@ Two modes, both of which refuse anything they cannot prove safe:
   noop  replace the whole body with `return-void`. Only for a method whose
         entire purpose is a write that can never happen.
 
+  stub  replace the body with one constant answer, given by --return
+        (null|empty-list|false|zero). Refused for a non-void method unless
+        --allow-non-void is passed, because inventing a value can hide a bug.
+        Used where the real value comes from a system service this device does
+        not have, so "no data" is the honest answer.
+
   --sweep  applies `wrap` to every void method in the tree that performs a
         privileged `Settings.Global|System|Secure.put*` write and has no
         `.catch` of its own. It prints each method it touches, plus the count.
@@ -128,6 +134,29 @@ def wrap(method: Method, tag: str) -> str:
     return "\n".join(out)
 
 
+STUB_BODIES = {
+    "null": "    .locals 1\n\n    const/4 v0, 0x0\n\n    return-object v0",
+    "empty-list": (
+        "    .locals 1\n\n"
+        "    new-instance v0, Ljava/util/ArrayList;\n\n"
+        "    invoke-direct {v0}, Ljava/util/ArrayList;-><init>()V\n\n"
+        "    return-object v0"
+    ),
+    "false": "    .locals 1\n\n    const/4 v0, 0x0\n\n    return v0",
+    "zero": "    .locals 1\n\n    const/4 v0, 0x0\n\n    return v0",
+}
+
+
+def stub(method: Method, kind: str) -> str:
+    body = STUB_BODIES[kind]
+    return (
+        f".method {method.match.group('mods')} {method.name}({method.match.group('params')})"
+        f"{method.match.group('ret')}\n"
+        f"{body}\n"
+        f".end method"
+    )
+
+
 def noop(method: Method) -> str:
     mods = method.match.group("mods")
     return (
@@ -141,12 +170,13 @@ def noop(method: Method) -> str:
     )
 
 
-def apply(path: Path, methods: list[Method], builder, tag_prefix: str, quiet: bool) -> int:
+def apply(path: Path, methods: list[Method], builder, tag_prefix: str, quiet: bool,
+          allow_non_void: bool = False) -> int:
     """Rewrite the file once, replacing the given methods; returns how many changed."""
     text = methods[0].text
     pieces: list[tuple[int, int, str]] = []
     for index, method in enumerate(methods):
-        if not method.returns_void:
+        if not method.returns_void and not allow_non_void:
             raise SystemExit(
                 f"refusing {path.name}#{method.name}: it returns {method.match.group('ret')}, "
                 "and a dummy return would silently change behaviour"
@@ -163,7 +193,8 @@ def apply(path: Path, methods: list[Method], builder, tag_prefix: str, quiet: bo
     return len(pieces)
 
 
-def neutralize_one(decoded: Path, dotted_class: str, method_name: str, mode: str, quiet: bool) -> None:
+def neutralize_one(decoded: Path, dotted_class: str, method_name: str, mode: str, quiet: bool,
+                   stub_kind: str = "null", allow_non_void: bool = False) -> None:
     relative = Path(dotted_class.replace(".", "/") + ".smali")
     candidates = sorted(decoded.glob(f"smali*/{relative}"))
     if not candidates:
@@ -181,8 +212,13 @@ def neutralize_one(decoded: Path, dotted_class: str, method_name: str, mode: str
     if mode == "wrap" and ".catch " in method.body:
         raise SystemExit(f"refusing to wrap {dotted_class}#{method_name}: it already declares a .catch")
 
-    builder = (lambda m, tag: wrap(m, tag)) if mode == "wrap" else (lambda m, tag: noop(m))
-    apply(method.path, [method], builder, "one_", quiet)
+    if mode == "wrap":
+        builder = lambda m, tag: wrap(m, tag)
+    elif mode == "noop":
+        builder = lambda m, tag: noop(m)
+    else:
+        builder = lambda m, tag: stub(m, stub_kind)
+    apply(method.path, [method], builder, "one_", quiet, allow_non_void=allow_non_void)
 
 
 def sweep_putstring(decoded: Path, quiet: bool) -> int:
@@ -243,7 +279,11 @@ def main(argv: list[str]) -> int:
     parser.add_argument("--decoded", required=True, type=Path)
     parser.add_argument("--class", dest="dotted", help="fully qualified class, e.g. cn.nubia.common.util.CommonUtil")
     parser.add_argument("--method", help="method to patch (must return void)")
-    parser.add_argument("--mode", choices=("wrap", "noop"), default="wrap")
+    parser.add_argument("--mode", choices=("wrap", "noop", "stub"), default="wrap")
+    parser.add_argument("--return", dest="stub_kind", choices=sorted(STUB_BODIES), default="null",
+                        help="constant answer produced by --mode stub")
+    parser.add_argument("--allow-non-void", action="store_true",
+                        help="required before a value-returning method is stubbed")
     parser.add_argument("--sweep", action="store_true", help="wrap every void method performing a privileged write")
     parser.add_argument("--scan-putstring", action="store_true", help="list Settings.Global/System/Secure writes")
     parser.add_argument("--quiet", action="store_true", help="do not print the original bodies (not recommended)")
@@ -254,7 +294,10 @@ def main(argv: list[str]) -> int:
         raise SystemExit(f"not a directory: {args.decoded}")
 
     if args.dotted and args.method:
-        neutralize_one(args.decoded, args.dotted, args.method, args.mode, args.quiet)
+        if args.mode == "stub" and not args.allow_non_void and args.stub_kind not in ("empty-list",):
+            pass  # the void check inside apply still governs; nothing extra to do here
+        neutralize_one(args.decoded, args.dotted, args.method, args.mode, args.quiet,
+                       stub_kind=args.stub_kind, allow_non_void=args.allow_non_void)
     elif args.dotted or args.method:
         raise SystemExit("--class and --method must be given together")
 
