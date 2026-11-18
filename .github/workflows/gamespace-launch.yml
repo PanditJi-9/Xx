@@ -160,8 +160,15 @@ jobs:
         run: |
           set -euo pipefail
           work="$RUNNER_TEMP/work"
-          apktool d --force --no-src --output "$work/verify" "$work/GameSpace-launcher.apk" \
-            > "$work/apktool-verify.log" 2>&1
+          # apktool is a jar now, not a PATH binary: the shell function defined
+          # in the build step does not survive into this one (exit 127).
+          if ! java -jar "$RUNNER_TEMP/apktool.jar" d --force --no-src \
+              --output "$work/verify" "$work/GameSpace-launcher.apk" \
+              > "$work/apktool-verify.log" 2>&1; then
+            echo "::error::could not re-decode the built APK"
+            tail -30 "$work/apktool-verify.log"
+            exit 1
+          fi
           echo "--- LAUNCHER entries in the rebuilt manifest ---"
           count=$(grep -c "android.intent.category.LAUNCHER" "$work/verify/AndroidManifest.xml" || true)
           grep -n -B4 -A2 "android.intent.category.LAUNCHER" "$work/verify/AndroidManifest.xml" || true
