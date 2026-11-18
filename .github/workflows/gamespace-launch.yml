@@ -55,13 +55,21 @@ jobs:
           distribution: temurin
           java-version: "21"
 
-      - name: Install apktool and zip utilities
+      - name: Install the current apktool (the archive one cannot build this APK)
         run: |
           set -euo pipefail
           sudo apt-get update -qq
           sudo apt-get install -y --no-install-recommends \
-            apktool binutils jq python3 unzip zip >/dev/null
-          apktool --version
+            binutils jq python3 unzip zip >/dev/null
+          # Measured: apktool 2.7.0 from the Ubuntu archive decoded fine and
+          # then failed to *build* the targetSdk 36 resources. Use the current
+          # release jar, which carries its own aapt2.
+          url=$(gh api repos/iBotPeaches/Apktool/releases/latest \
+            --jq '.assets[] | select(.name | test("^apktool_[0-9.]+[.]jar$")) | .browser_download_url' \
+            | head -1)
+          test -n "$url"
+          curl -fsSL --retry 3 -o "$RUNNER_TEMP/apktool.jar" "$url"
+          java -jar "$RUNNER_TEMP/apktool.jar" --version
 
       - name: Fetch the APK from the draft release
         run: |
@@ -92,12 +100,45 @@ jobs:
         run: |
           set -euo pipefail
           work="$RUNNER_TEMP/work"
-          apktool d --force --output "$work/decoded" "$work/input/$ASSET" > "$work/apktool-d.log" 2>&1
+          apktool() { java -jar "$RUNNER_TEMP/apktool.jar" "$@"; }
+
+          if ! apktool d --force --output "$work/decoded" "$work/input/$ASSET" \
+              > "$work/apktool-d.log" 2>&1; then
+            echo "::error::apktool decode failed"
+            tail -40 "$work/apktool-d.log"
+            exit 1
+          fi
+
           python3 tools/re_patch_launcher.py \
             --manifest "$work/decoded/AndroidManifest.xml" \
             --activity "$ENTRY"
-          apktool b "$work/decoded" --output "$work/unsigned.apk" > "$work/apktool-b.log" 2>&1
+
+          if ! apktool b --use-aapt2 --output "$work/unsigned.apk" "$work/decoded" \
+              > "$work/apktool-b.log" 2>&1; then
+            echo "::error::apktool build failed"
+            tail -60 "$work/apktool-b.log"
+            exit 1
+          fi
           ls -l "$work/unsigned.apk"
+
+      - name: Record the device gates the app checks
+        run: |
+          set -euo pipefail
+          work="$RUNNER_TEMP/work"
+          # Evidence for the next iteration instead of a guess: show where the
+          # decompiled tree consults RedMagic identity, so a gate can be read
+          # before anything is patched.
+          : > "$work/gating.txt"
+          for token in isRedMagicDevice isRedMagic ZTE_FEATURE_RED_MAGIC; do
+            echo "### $token" >> "$work/gating.txt"
+            files=$(grep -rl --include='*.smali' -F "$token" "$work/decoded" 2>/dev/null | head -3 || true)
+            echo "$files" >> "$work/gating.txt"
+            for file in $files; do
+              echo "--- $file" >> "$work/gating.txt"
+              grep -n -A14 -B2 -F "$token" "$file" | head -40 >> "$work/gating.txt" || true
+            done
+          done
+          wc -l "$work/gating.txt"
 
       - name: Sign for installation (v1+v2+v3)
         run: |
@@ -137,5 +178,6 @@ jobs:
             ${{ runner.temp }}/work/patch-sha256.txt
             ${{ runner.temp }}/work/signature.txt
             ${{ runner.temp }}/work/apktool-b.log
+            ${{ runner.temp }}/work/gating.txt
           if-no-files-found: error
           retention-days: 30
