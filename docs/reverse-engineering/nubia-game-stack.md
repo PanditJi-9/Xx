@@ -238,3 +238,8 @@ SYSTEM_ALERT_WINDOW` يعيد `allow` (وجُرِّب `appops set --uid …` أ�
 - `cn.nubia.gameassist` **لا يملك Activity بـLAUNCHER**: `monkey -p … LAUNCHER` يرد
   «No activities found to run». خدماته الأربعة كلها محميّة بـ`cn.nubia.gameassist.permission.ACCESS`،
   وواحد فقط (`GameSubAgentService`) غير محميّ.
+
+**وأيها يُفتح بالضغط عليه؟** قيس بـ`cmd package resolve-activity --brief -a MAIN -c LAUNCHER -p <pkg>`:
+واحد فقط من الأحد عشر يملك مدخلًا — `com.nubia.gamecenter` ← `zte.com.market.LoginActivity`.
+الباقي (بما فيه GameAssist وGameFloat) **خدمات ومكوّنات تُستدعى من غيرها**، فلا مدخل لها ولا معنى
+للابحث عن أيقونة لها في الدرج.
