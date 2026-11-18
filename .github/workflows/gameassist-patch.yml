@@ -94,7 +94,15 @@ jobs:
         run: |
           set -euo pipefail
           work="$RUNNER_TEMP/work"
-          if ! java -jar "$RUNNER_TEMP/apktool.jar" d --force \
+          # This patch touches no resource and no manifest entry: only three
+          # classes are added. Decoding resources is therefore not just
+          # unnecessary, it is actively harmful here — measured:
+          #   res/layout/input_method_switch_item.xml:8:
+          #     error: resource android:id/progress_percent is private.
+          #     error: failed linking file resources.
+          # so the build never reaches the dex. --no-res plus --copy-original
+          # keeps the original resources.arsc and manifest byte for byte.
+          if ! java -jar "$RUNNER_TEMP/apktool.jar" d --force --no-res \
               --output "$work/decoded" "$work/input/$ASSET" > "$work/apktool-d.log" 2>&1; then
             echo "::error::apktool decode failed"
             tail -40 "$work/apktool-d.log"
@@ -110,7 +118,7 @@ jobs:
           # applies here; contain it now rather than one build per crash.
           python3 tools/re_patch_smali.py --decoded "$work/decoded" --sweep
 
-          if ! java -jar "$RUNNER_TEMP/apktool.jar" b \
+          if ! java -jar "$RUNNER_TEMP/apktool.jar" b --copy-original \
               --output "$work/unsigned.apk" "$work/decoded" > "$work/apktool-b.log" 2>&1; then
             echo "::error::apktool build failed"
             tail -60 "$work/apktool-b.log"
@@ -142,6 +150,15 @@ jobs:
             --require 'Lcom/zte/gameassist/GameAssistWrapper;' \
             --require 'Lcom/zte/gameassist/GameAssistWrapper$Callback;' \
             --require 'Lcom/zte/gameassist/GameAssistWrapper$MutexCallback;'
+
+          # A dex-only patch must leave the resource table and the manifest
+          # untouched. Prove it instead of assuming --copy-original worked.
+          for part in resources.arsc AndroidManifest.xml; do
+            before=$(unzip -p "$work/input/$ASSET" "$part" | sha256sum | cut -d' ' -f1)
+            after=$(unzip -p "$work/GameAssist-stub.apk" "$part" | sha256sum | cut -d' ' -f1)
+            echo "$part original=$before built=$after"
+            test "$before" = "$after"
+          done
           python3 tools/re_apk_signature.py "$work/GameAssist-stub.apk" \
             --text "$work/signature.txt" | tee "$work/signature.txt" | head -12
           sha256sum "$work/GameAssist-stub.apk" | tee "$work/patch-sha256.txt"
