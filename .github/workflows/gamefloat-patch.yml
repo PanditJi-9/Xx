@@ -96,14 +96,20 @@ jobs:
         run: |
           set -euo pipefail
           work="$RUNNER_TEMP/work"
-          # Resources are decoded here: the panel is a layout-driven window, so
-          # unlike the GameAssist stub patch this one needs the real res tree.
-          if ! java -jar "$RUNNER_TEMP/apktool.jar" d --force \
+          # Decoding resources is not needed for a dex-only patch and is
+          # actively harmful here — measured on this APK:
+          #   res/layout/input_method_switch_item.xml:8:
+          #     error: resource android:id/progress_percent is private.
+          #     error: failed linking file resources.
+          # --no-res plus --copy-original keeps resources.arsc and the manifest
+          # byte for byte, which the verify step then proves.
+          if ! java -jar "$RUNNER_TEMP/apktool.jar" d --force --no-res \
               --output "$work/decoded" "$work/input/$ASSET" > "$work/apktool-d.log" 2>&1; then
             echo "::error::apktool decode failed"
             tail -40 "$work/apktool-d.log"
             exit 1
           fi
+          echo "smali dirs: $(ls -d "$work"/decoded/smali* 2>/dev/null | wc -l)"
 
           # The gate: ConfigUtil.isAppEnable(String, String, String)Z reads the
           # comma list from Settings.Global.redmagic_ce_switch. Answer true so
@@ -117,7 +123,7 @@ jobs:
           # runs (see the SuperNotCalledException note in the tool).
           python3 tools/re_patch_smali.py --decoded "$work/decoded" --sweep
 
-          if ! java -jar "$RUNNER_TEMP/apktool.jar" b \
+          if ! java -jar "$RUNNER_TEMP/apktool.jar" b --copy-original \
               --output "$work/unsigned.apk" "$work/decoded" > "$work/apktool-b.log" 2>&1; then
             echo "::error::apktool build failed"
             tail -60 "$work/apktool-b.log"
@@ -158,6 +164,15 @@ jobs:
           sed -n '/method public static isAppEnable/,/end method/p' "$file" | tee "$work/isAppEnable.smali"
           grep -q 'const/4 v0, 0x1' "$work/isAppEnable.smali"
           grep -q 'return v0' "$work/isAppEnable.smali"
+
+          # A dex-only patch must leave the resource table and the manifest
+          # untouched. Prove it instead of assuming --copy-original worked.
+          for part in resources.arsc AndroidManifest.xml; do
+            before=$(unzip -p "$work/input/$ASSET" "$part" | sha256sum | cut -d' ' -f1)
+            after=$(unzip -p "$work/GameFloat-panel.apk" "$part" | sha256sum | cut -d' ' -f1)
+            echo "$part original=$before built=$after"
+            test "$before" = "$after"
+          done
 
           python3 tools/re_apk_signature.py "$work/GameFloat-panel.apk" \
             --text "$work/signature.txt" | tee "$work/signature.txt" | head -12
