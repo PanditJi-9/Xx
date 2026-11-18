@@ -61,6 +61,24 @@ PRIVILEGED_WRITE = re.compile(
     r"Landroid/provider/Settings\$(?:Global|System|Secure);->put(?:String|Int|Long|Float)\("
 )
 
+# Never swept. Measured regression: wrapping GameManualActivity.onStart made the
+# write throw first, the handler return early, and the framework kill the
+# activity with
+#   android.util.SuperNotCalledException: Activity {...GameManualActivity} did
+#   not call through to super.onStart()
+# A method that owes the framework a super call must not be turned into one that
+# can skip it. Deliberate, per-method wrapping is still allowed and says so.
+LIFECYCLE = {
+    "onCreate", "onStart", "onStartCommand", "onResume", "onPause", "onStop",
+    "onDestroy", "onRestart", "onBind", "onUnbind", "onRebind",
+    "onConfigurationChanged", "onNewIntent", "onSaveInstanceState",
+    "onRestoreInstanceState", "onActivityResult", "onAttach", "onDetach",
+    "onCreateView", "onViewCreated", "onDestroyView", "onTrimMemory",
+    "onLowMemory", "attachBaseContext", "onReceive", "onServiceConnected",
+    "onServiceDisconnected", "onBindViewHolder", "dispatchTouchEvent",
+    "onTouchEvent", "onBackPressed",
+}
+
 
 @dataclass
 class Method:
@@ -238,6 +256,7 @@ def sweep_putstring(decoded: Path, quiet: bool) -> int:
     touched_methods = 0
     skipped_catch = 0
     skipped_non_void = 0
+    skipped_lifecycle = 0
 
     for path in sorted(decoded.glob("smali*/**/*.smali")):
         try:
@@ -254,6 +273,9 @@ def sweep_putstring(decoded: Path, quiet: bool) -> int:
             if ".catch " in body:
                 skipped_catch += 1
                 continue
+            if method.name in LIFECYCLE:
+                skipped_lifecycle += 1
+                continue
             if not method.returns_void:
                 skipped_non_void += 1
                 continue
@@ -267,7 +289,8 @@ def sweep_putstring(decoded: Path, quiet: bool) -> int:
 
     print(
         f"--- sweep: wrapped {touched_methods} methods in {touched_files} files "
-        f"(skipped {skipped_catch} with an existing .catch, {skipped_non_void} non-void)"
+        f"(skipped {skipped_catch} with an existing .catch, {skipped_non_void} non-void, "
+        f"{skipped_lifecycle} lifecycle)"
     )
     return touched_methods
 
