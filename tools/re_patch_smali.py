@@ -29,7 +29,7 @@ Two modes, both of which refuse anything they cannot prove safe:
         entire purpose is a write that can never happen.
 
   stub  replace the body with one constant answer, given by --return
-        (null|empty-list|false|zero). Refused for a non-void method unless
+        (null|empty-list|false|zero|true). Refused for a non-void method unless
         --allow-non-void is passed, because inventing a value can hide a bug.
         Used where the real value comes from a system service this device does
         not have, so "no data" is the honest answer.
@@ -172,6 +172,10 @@ STUB_BODIES = {
         "    return-object v0"
     ),
     "false": "    .locals 1\n\n    const/4 v0, 0x0\n\n    return v0",
+    # Measured use: cn.zte.gamefloat.util.ConfigUtil.isAppEnable gates the game
+    # panel on a Settings.Global switch this ROM never writes. Answering true is
+    # the one change that lets the panel path run at all.
+    "true": "    .locals 1\n\n    const/4 v0, 0x1\n\n    return v0",
     "zero": "    .locals 1\n\n    const/4 v0, 0x0\n\n    return v0",
 }
 

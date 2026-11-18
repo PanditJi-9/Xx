@@ -146,10 +146,8 @@ jobs:
           # The patched method must now be the constant-true stub, not the old
           # settings read. A rebuild that silently skipped the patch would sign
           # and install fine and still remove the panel, so prove the body.
-          java -jar "$RUNNER_TEMP/apktool.jar" d --force --no-src \
-            --output "$work/check" "$work/GameFloat-panel.apk" > "$work/apktool-check.log" 2>&1
           if ! java -jar "$RUNNER_TEMP/apktool.jar" d --force --no-res \
-            --output "$work/check_smali" "$work/GameFloat-panel.apk" >> "$work/apktool-check.log" 2>&1; then
+            --output "$work/check_smali" "$work/GameFloat-panel.apk" > "$work/apktool-check.log" 2>&1; then
             echo "::error::decode of the built APK failed"
             tail -40 "$work/apktool-check.log"
             exit 1
