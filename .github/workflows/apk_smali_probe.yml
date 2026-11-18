@@ -1,0 +1,148 @@
+name: APK smali probe
+
+# Answers one question about a target APK without shipping the whole decoded
+# tree: which smali files mention a given symbol, and what do those places look
+# like?
+#
+# Measured reason this exists: cn.nubia.gameassist dies before it can draw
+# anything, with
+#
+#   NoClassDefFoundError: Failed resolution of:
+#       Lcom/zte/gameassist/GameAssistWrapper$Callback;
+#     at cn.nubia.gameassist.utils.Utils.<clinit>
+#     at cn.nubia.gameassist.GameAssistApplication.onCreate
+#
+# GameAssist is what owns the game overlay (ProjectionPanelService /
+# GameAssistService). Its dex defines AbsGameAssistToken and
+# AbsGameAssistToken$GameAssistControllerWrapper but never GameAssistWrapper, so
+# one stale reference is enough to kill the whole app. Reading the exact places
+# is the next step; downloading a 180 MB decoded tree to the owner's phone is
+# not, so only the matching files leave CI.
+
+on:
+  workflow_dispatch:
+    inputs:
+      asset:
+        description: Draft-release asset to probe
+        required: false
+        default: GameAssist.apk
+      symbol:
+        description: Symbol to locate
+        required: false
+        default: GameAssistWrapper
+      release_tag:
+        description: Draft release holding the APK
+        required: false
+        default: re-targets
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    name: probe
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      RELEASE_TAG: ${{ inputs.release_tag }}
+      ASSET: ${{ inputs.asset }}
+      SYMBOL: ${{ inputs.symbol }}
+    steps:
+      - uses: actions/checkout@v6.0.2
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Install the current apktool
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends binutils >/dev/null
+          url=$(gh api repos/iBotPeaches/Apktool/releases/latest \
+            --jq '.assets[] | select(.name | test("^apktool_[0-9.]+[.]jar$")) | .browser_download_url' \
+            | head -1)
+          test -n "$url"
+          curl -fsSL --retry 3 -o "$RUNNER_TEMP/apktool.jar" "$url"
+          java -jar "$RUNNER_TEMP/apktool.jar" --version
+
+      - name: Fetch the APK from the draft release
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/work/input"
+          gh api "repos/${GITHUB_REPOSITORY}/releases?per_page=100" > "$RUNNER_TEMP/releases.json"
+          cat > "$RUNNER_TEMP/find_asset.py" <<'PY'
+          import json, sys
+
+          releases = json.load(open(sys.argv[1], encoding="utf-8"))
+          tag, name = sys.argv[2], sys.argv[3]
+          for release in releases:
+              if release.get("tag_name") != tag:
+                  continue
+              for asset in release.get("assets", []):
+                  if asset.get("name") == name:
+                      print(asset["id"])
+                      raise SystemExit(0)
+          raise SystemExit(f"asset {name!r} not found in draft release {tag!r}")
+          PY
+          asset_id=$(python3 "$RUNNER_TEMP/find_asset.py" "$RUNNER_TEMP/releases.json" "$RELEASE_TAG" "$ASSET")
+          gh api -H "Accept: application/octet-stream" \
+            "repos/${GITHUB_REPOSITORY}/releases/assets/${asset_id}" \
+            > "$RUNNER_TEMP/work/input/$ASSET"
+          ls -l "$RUNNER_TEMP/work/input/$ASSET"
+
+      - name: Decode without resources (smali only)
+        run: |
+          set -euo pipefail
+          work="$RUNNER_TEMP/work"
+          if ! java -jar "$RUNNER_TEMP/apktool.jar" d --force --no-res \
+              --output "$work/decoded" "$work/input/$ASSET" > "$work/decode.log" 2>&1; then
+            echo "::error::decode failed"
+            tail -40 "$work/decode.log"
+            exit 1
+          fi
+          echo "smali dirs: $(ls -d "$work"/decoded/smali* 2>/dev/null | wc -l)"
+
+      - name: Collect every file that mentions the symbol
+        run: |
+          set -euo pipefail
+          work="$RUNNER_TEMP/work"
+          out="$work/out"
+          mkdir -p "$out/files"
+          : > "$out/report.txt"
+
+          matches=$(grep -rl --include='*.smali' -F "$SYMBOL" "$work/decoded" 2>/dev/null || true)
+          count=$(printf '%s\n' "$matches" | grep -c . || true)
+          echo "files mentioning $SYMBOL: $count" | tee -a "$out/report.txt"
+
+          first=0
+          while IFS= read -r file; do
+            [ -n "$file" ] || continue
+            [ "$first" -lt 40 ] || break
+            first=$((first + 1))
+            echo "" >> "$out/report.txt"
+            echo "=== $file" >> "$out/report.txt"
+            grep -n -B6 -A10 -F "$SYMBOL" "$file" >> "$out/report.txt" || true
+            cp "$file" "$out/files/$(echo "$file" | sed "s|$work/decoded/||; s|/|__|g")" || true
+          done <<< "$matches"
+
+          # The two frames the crash names, whatever they mention.
+          for wanted in "cn/nubia/gameassist/utils/Utils.smali" \
+                        "cn/nubia/gameassist/GameAssistApplication.smali"; do
+            found=$(find "$work/decoded" -path "*/$wanted" -print -quit 2>/dev/null || true)
+            [ -n "$found" ] || continue
+            cp "$found" "$out/files/$(echo "$wanted" | tr '/' '_')" || true
+          done
+
+          ls -l "$out/files" | tail -5
+          du -sh "$out"
+
+      - uses: actions/upload-artifact@v6
+        with:
+          name: smali-probe
+          path: ${{ runner.temp }}/work/out
+          if-no-files-found: error
