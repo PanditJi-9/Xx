@@ -133,9 +133,11 @@ jobs:
             cp "$file" "$out/files/$(echo "$file" | sed "s|$work/decoded/||; s|/|__|g")" || true
           done <<< "$matches"
 
-          # The two frames the crash names, whatever they mention.
+          # The frames the crashes name, whatever they mention.
           for wanted in "cn/nubia/gameassist/utils/Utils.smali" \
-                        "cn/nubia/gameassist/GameAssistApplication.smali"; do
+                        "cn/nubia/gameassist/GameAssistApplication.smali" \
+                        "cn/nubia/gameassist/panel/GameAssistWindowManager.smali" \
+                        "com/zte/gameassist/common/SystemMgr.smali"; do
             found=$(find "$work/decoded" -path "*/$wanted" -print -quit 2>/dev/null || true)
             [ -n "$found" ] || continue
             cp "$found" "$out/files/$(echo "$wanted" | tr '/' '_')" || true
