@@ -32,6 +32,29 @@ class PanelDevice(context: Context) {
         ((v - minB).toFloat() / (maxB - minB)).coerceIn(0f, 1f)
     }.getOrDefault(0.5f)
 
+    /** `true` = السطوع التلقائي مفعّل؛ `null` حين لا قراءة، فلا يُدّعى شيء. */
+    fun autoBrightness(): Boolean? = runCatching {
+        Settings.System.getInt(app.contentResolver, Settings.System.SCREEN_BRIGHTNESS_MODE) ==
+            Settings.System.SCREEN_BRIGHTNESS_MODE_AUTOMATIC
+    }.getOrNull()
+
+    /**
+     * يضبط وضع السطوع: تلقائي أو ثابت، بمسارَي الكتابة نفسيهما في [setBrightness] (إذن الإعدادات ثم المسار
+     * الموحَّد). والتحقّق بقراءة مرتجعة ([autoBrightness]) على المستدعي، لا هنا.
+     */
+    fun setAutoBrightness(auto: Boolean) {
+        val mode = if (auto) 1 else 0
+        val written = runCatching {
+            Settings.System.canWrite(app) &&
+                Settings.System.putInt(app.contentResolver, Settings.System.SCREEN_BRIGHTNESS_MODE, mode)
+        }.getOrDefault(false)
+        if (!written) {
+            PanelToggles.async {
+                PrivilegedShell.exec("settings put system screen_brightness_mode $mode")
+            }
+        }
+    }
+
     fun setBrightness(fraction: Float) {
         val value = (minB + fraction.coerceIn(0f, 1f) * (maxB - minB)).toInt().coerceIn(minB, maxB)
         val written = runCatching {

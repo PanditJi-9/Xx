@@ -436,6 +436,16 @@ fun SettingsScreen(
                                     trailingContent = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null) }
                                 )
                             },
+                            {
+                                // مظهر لوحة Game Turbo: يفتح نافذة الاختيار نفسها (بالصورتين) ثانيةً.
+                                ExpressiveListItem(
+                                    onClick = { nd.max.ui.util.GameTurboStylePrefs.requestChooser() },
+                                    headlineContent = { Text(stringResource(R.string.game_turbo_style_title)) },
+                                    supportingContent = { Text(stringResource(R.string.game_turbo_style_row_desc)) },
+                                    leadingContent = { LeadingIcon(icon = Icons.Rounded.SportsEsports) },
+                                    trailingContent = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null) }
+                                )
+                            },
                             // **إحصاءات المجتمع وإضافات الطرف الثالث: مخفيّان بأمر المالك
                             // (2026-10-21).** كانا صفّين هنا؛ والآن يحمل السجل نفسه علامة
                             // `hidden = true` على الوجهتين، فيُخفيهما فهرس الشاشات أيضًا —

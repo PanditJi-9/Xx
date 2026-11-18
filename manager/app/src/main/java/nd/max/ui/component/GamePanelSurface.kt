@@ -38,7 +38,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -86,7 +85,6 @@ import nd.max.ui.design.MAX_VALUE_UNAVAILABLE
 import nd.max.ui.design.MaxRadius
 import nd.max.ui.design.MaxSpace
 import nd.max.ui.design.maxRadius
-import nd.max.ui.util.GamePanelPrefs
 
 /**
  * علامة اتجاه قوية حول القراءة ووحدتها: بلاها يقلب سياقُ العربية ترتيبَ «°C» و«W»
@@ -162,7 +160,9 @@ fun GamePanelSurface(
     onTyping: (Boolean) -> Unit = {},
     origin: Offset = Offset(1f, 0.5f),
     /** إيصال الإطلاق كما يُعرض: جملة واحدة، أو `null` حين لا خبر. */
-    launchReceipt: String? = null
+    launchReceipt: String? = null,
+    /** تصميم اللوحة المفتوحة: النيوني هو الافتراضي، والكلاسيكي يبقى خيارًا من الإعدادات. */
+    turboStyle: nd.max.ui.util.GameTurboStyle = nd.max.ui.util.GameTurboStyle.DEFAULT
 ) {
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
         when (mode) {
@@ -179,88 +179,58 @@ fun GamePanelSurface(
                     onOpen = onOpen
                 )
             }
-            GamePanelMode.Open -> {
-                // جدارة الجلد: أول فتح يُظهر النافذة المنبثقة بالخيارين (بصورتين مصغّرتين)؛
-                // ثم لا تعود إلا من الإعدادات (صف «تصميم Game Turbo»). والافتراضي الجديد.
-                val context = LocalContext.current
-                var skinState by remember { mutableStateOf(GamePanelPrefs.load(context)) }
-                if (!skinState.skinChosen) {
-                    GamePanelSkinChooser(
-                        onPick = { skin ->
-                            GamePanelPrefs.saveSkin(context, skin)
-                            skinState = GamePanelPrefs.load(context)
-                        }
-                    )
-                } else if (skinState.skin == GamePanelPrefs.PanelSkin.Turbo) {
-                    GamePanelTurbo(
-                        gameLabel = gameLabel,
-                        reading = reading,
-                        tally = tally,
-                        fields = fields,
-                        accent = accent,
-                        side = side,
-                        recording = recording,
-                        refreshRateHz = refreshRateHz,
-                        clocks = clocks,
-                        controls = controls,
-                        frames = frames,
-                        onCollapse = onCollapse,
-                        onClose = onClose,
-                        onCycleRefresh = onCycleRefresh,
-                        onToggleRecording = onToggleRecording,
-                        onOpenControls = onOpenControls,
-                        onSelectProfile = onSelectProfile,
-                        onToggleBypass = onToggleBypass,
-                        crosshairEnabled = crosshairEnabled,
-                        onToggleCrosshair = onToggleCrosshair,
-                        veilEnabled = veilEnabled,
-                        veilTone = veilTone,
-                        onCycleVeil = onCycleVeil,
-                        onTyping = onTyping,
-                        trackedPackage = trackedPackage,
-                        thermal = thermal,
-                        onSelectThermal = onSelectThermal,
-                        refreshChoices = refreshChoices,
-                        onSelectRefresh = onSelectRefresh,
-                        origin = origin,
-                        launchReceipt = launchReceipt
-                    )
-                } else {
-                    GamePanelCockpit(
-                        gameLabel = gameLabel,
-                        reading = reading,
-                        tally = tally,
-                        fields = fields,
-                        accent = accent,
-                        side = side,
-                        recording = recording,
-                        refreshRateHz = refreshRateHz,
-                        clocks = clocks,
-                        controls = controls,
-                        frames = frames,
-                        onCollapse = onCollapse,
-                        onClose = onClose,
-                        onCycleRefresh = onCycleRefresh,
-                        onToggleRecording = onToggleRecording,
-                        onOpenControls = onOpenControls,
-                        onSelectProfile = onSelectProfile,
-                        onToggleBypass = onToggleBypass,
-                        crosshairEnabled = crosshairEnabled,
-                        onToggleCrosshair = onToggleCrosshair,
-                        veilEnabled = veilEnabled,
-                        veilTone = veilTone,
-                        onCycleVeil = onCycleVeil,
-                        onTyping = onTyping,
-                        trackedPackage = trackedPackage,
-                        thermal = thermal,
-                        onSelectThermal = onSelectThermal,
-                        refreshChoices = refreshChoices,
-                        onSelectRefresh = onSelectRefresh,
-                        origin = origin,
-                        launchReceipt = launchReceipt
-                    )
-                }
-            }
+            GamePanelMode.Open -> if (turboStyle == nd.max.ui.util.GameTurboStyle.Neon) GamePanelTurboNeon(
+                reading = reading,
+                side = side,
+                recording = recording,
+                refreshRateHz = refreshRateHz,
+                clocks = clocks,
+                controls = controls,
+                frames = frames,
+                onCollapse = onCollapse,
+                onToggleRecording = onToggleRecording,
+                onOpenControls = onOpenControls,
+                onSelectProfile = onSelectProfile,
+                veilEnabled = veilEnabled,
+                veilTone = veilTone,
+                onCycleVeil = onCycleVeil,
+                thermal = thermal,
+                onSelectThermal = onSelectThermal,
+                origin = origin,
+                launchReceipt = launchReceipt
+            ) else GamePanelCockpit(
+                gameLabel = gameLabel,
+                reading = reading,
+                tally = tally,
+                fields = fields,
+                accent = accent,
+                side = side,
+                recording = recording,
+                refreshRateHz = refreshRateHz,
+                clocks = clocks,
+                controls = controls,
+                frames = frames,
+                onCollapse = onCollapse,
+                onClose = onClose,
+                onCycleRefresh = onCycleRefresh,
+                onToggleRecording = onToggleRecording,
+                onOpenControls = onOpenControls,
+                onSelectProfile = onSelectProfile,
+                onToggleBypass = onToggleBypass,
+                crosshairEnabled = crosshairEnabled,
+                onToggleCrosshair = onToggleCrosshair,
+                veilEnabled = veilEnabled,
+                veilTone = veilTone,
+                onCycleVeil = onCycleVeil,
+                onTyping = onTyping,
+                trackedPackage = trackedPackage,
+                thermal = thermal,
+                onSelectThermal = onSelectThermal,
+                refreshChoices = refreshChoices,
+                onSelectRefresh = onSelectRefresh,
+                origin = origin,
+                launchReceipt = launchReceipt
+            )
         }
     }
 }

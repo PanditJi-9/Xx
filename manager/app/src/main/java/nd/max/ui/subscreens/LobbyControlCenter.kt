@@ -836,6 +836,19 @@ private fun PanelBody(
                 LobbySwitchRow(stringResource(R.string.lobby_row_panel), panelEnabled, onPanelEnabled)
             }
         }
+        var turboStyle by remember { mutableStateOf(nd.max.ui.util.GameTurboStylePrefs.style(context)) }
+        LobbySectionCard(stringResource(R.string.game_turbo_style_title)) {
+            LobbyChoiceRow(
+                title = stringResource(R.string.game_turbo_style_choose),
+                options = listOf(
+                    nd.max.ui.util.GameTurboStyle.Neon to stringResource(R.string.game_turbo_style_neon),
+                    nd.max.ui.util.GameTurboStyle.Classic to stringResource(R.string.game_turbo_style_classic)
+                ),
+                selected = turboStyle,
+                // الحفظ يعلّم «تم الاختيار» أيضًا، فلا تظهر النافذة الأولى بعد أن غُيّر المظهر من هنا.
+                onSelect = { if (nd.max.ui.util.GameTurboStylePrefs.save(context, it)) turboStyle = it }
+            )
+        }
         LobbySectionCard(stringResource(R.string.panel_handle_title)) {
             // يمين/يسار **فيزيائيّان**: الصفّ مثبَّت LTR كي لا ينعكس ترتيبه في RTL فيخالف الحافة المرسومة.
             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
@@ -915,20 +928,6 @@ private fun PanelBody(
             ) {
                 Text(text = stringResource(R.string.panel_handle_reset), color = GameSpacePalette.Ink)
             }
-        }
-        LobbySectionCard(stringResource(R.string.game_panel_skin_title)) {
-            LobbyChoiceRow(
-                title = stringResource(R.string.game_panel_skin_title),
-                options = listOf(
-                    GamePanelPrefs.PanelSkin.Turbo to stringResource(R.string.game_panel_skin_turbo),
-                    GamePanelPrefs.PanelSkin.Classic to stringResource(R.string.game_panel_skin_classic)
-                ),
-                selected = handle.skin,
-                onSelect = {
-                    GamePanelPrefs.saveSkin(context, it)
-                    reload()
-                }
-            )
         }
         CrosshairSettingsCard()
     }

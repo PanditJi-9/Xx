@@ -1543,7 +1543,9 @@ class GamePanelService : LifecycleService() {
             handleFx = silk.fx,
             handleScale = handleScale,
             origin = openOrigin,
-            launchReceipt = launchReceipt
+            launchReceipt = launchReceipt,
+            // يُقرأ عند كل فتح للّوحة فيسري تغيير الإعدادات من فتحتها التالية بلا إعادة تشغيل الخدمة.
+            turboStyle = remember(state.mode) { nd.max.ui.util.GameTurboStylePrefs.style(applicationContext) }
         )
     }
 }

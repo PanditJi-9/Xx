@@ -107,9 +107,15 @@ object PanelToggles {
      * «عدم الإزعاج» عبر [DndControl] لا عبر `settings put global zen_mode`: تلك الكتابة يردّها
      * `ZenModeHelper` كما تُكتب، وقد ثبت ذلك في سجل جهاز المالك (`zen-mode-write-not-honoured`).
      */
-    fun setDnd(ctx: Context, on: Boolean) = async {
+    fun setDnd(ctx: Context, on: Boolean) = setDndZen(ctx, if (on) 1 else 0)
+
+    /**
+     * نفس المسار لكن بمستوى صريح: ٠ إيقاف · ١ المقاطعات ذات الأولوية فقط · ٢ صمت تام · ٣ المنبّهات فقط.
+     * لوحة النيون تفصل «منع الإشعارات» (١) عن «منع المكالمات» (٢ — يكتم الرنين أيضًا)، ولا مسار ثانٍ للكتابة.
+     */
+    fun setDndZen(ctx: Context, zen: Int) = async {
         val verdict = DndControl.apply(
-            zen = if (on) 1 else 0,
+            zen = zen.coerceIn(0, 3),
             policy = DndControl.notificationManager(ctx),
             shell = { command ->
                 when (val outcome = PrivilegedShell.exec(command)) {
@@ -137,7 +143,7 @@ object PanelToggles {
             }
 
             DndControl.Verdict.NOT_HONOURED -> {
-                AppMonitorLogger.w("EVENT=PANEL_WRITE_NOT_HONOURED key=dnd desired=${if (on) 1 else 0}")
+                AppMonitorLogger.w("EVENT=PANEL_WRITE_NOT_HONOURED key=dnd desired=$zen")
                 _failures.tryEmit(PanelWriteFailure("dnd", refused = false))
             }
         }
