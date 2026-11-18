@@ -120,7 +120,13 @@ jobs:
           # needs it is neutralized instead of crashing the whole process.
           python3 tools/re_patch_smali.py --decoded "$work/decoded" \
             --class cn.nubia.common.util.CommonUtil \
-            --method notifyHandheldModeChanged
+            --method notifyHandheldModeChanged --mode noop
+
+          # The same exception then came from GameLauncherApplication.doConfig.
+          # Rather than chase one method per build, contain every void method in
+          # the tree that performs such a write: behaviour is identical wherever
+          # the write is permitted, and contained where it is not.
+          python3 tools/re_patch_smali.py --decoded "$work/decoded" --sweep
 
           # apktool 3.x dropped --use-aapt2: aapt2 is the only engine there, so
           # passing the flag printed the usage text and exited 1.
@@ -189,12 +195,30 @@ jobs:
             --text "$work/signature.txt" | tee "$work/signature.txt" | head -20
           sha256sum "$work/GameSpace-launcher.apk" | tee "$work/patch-sha256.txt"
 
+      - name: Pack the result for transfer (the APK itself stays out of the artifact)
+        run: |
+          set -euo pipefail
+          work="$RUNNER_TEMP/work"
+          cd "$work"
+          apk_bytes=$(stat -c %s GameSpace-launcher.apk)
+          7z a -t7z -mx=9 -m0=lzma2 -ms=on -mmt="$(nproc)" \
+            GameSpace-launcher.7z GameSpace-launcher.apk > 7z.log 2>&1 || { tail -20 7z.log; exit 1; }
+          pkg_bytes=$(stat -c %s GameSpace-launcher.7z)
+          python3 -c "
+          apk = $apk_bytes
+          pkg = $pkg_bytes
+          print(f'apk   {apk:,} bytes')
+          print(f'7z    {pkg:,} bytes  ({100 * pkg / apk:.1f}% of the apk)')
+          "
+          sha256sum GameSpace-launcher.7z | tee patch-7z-sha256.txt
+
       - name: Upload the patched APK
         uses: actions/upload-artifact@v7
         with:
           name: GameSpace-launcher-patched
           path: |
-            ${{ runner.temp }}/work/GameSpace-launcher.apk
+            ${{ runner.temp }}/work/GameSpace-launcher.7z
+            ${{ runner.temp }}/work/patch-7z-sha256.txt
             ${{ runner.temp }}/work/patch-sha256.txt
             ${{ runner.temp }}/work/signature.txt
             ${{ runner.temp }}/work/apktool-b.log
