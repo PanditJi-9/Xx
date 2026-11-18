@@ -106,6 +106,31 @@ APK في المستودع ولا تُنشر. التشغيل يدويّ (`workflo
   أي أنه لا يملك واجهة تُفتح أصلًا، بل مستقبلات تُنبَّه بها من النظام.
 - لا مكتبات أصلية مضمَّنة.
 
+## تشغيله على هاتف فعلي — قياس لا ادّعاء
+
+التطبيق ثُبّت على `24129RT7CC` (Xiaomi, Android 16) عبر `adb 192.168.1.4:33995`، وأُخذ
+تاريخ الانهيار من `logcat -b crash` ثم أُصلح:
+
+| المحاولة | ما ظهر |
+| --- | --- |
+| 1 — بعد إضافة LAUNCHER فقط | `SecurityException: must have one of [WRITE_SECURE_SETTINGS]` من `CommonUtil.notifyHandheldModeChanged` داخل `CommonApplication.onCreate` |
+| 2 — بعد إبطال تلك الدالة | نفس الاستثناء من `GameLauncherApplication.doConfig` |
+| 3 — بعد لفّ الدوال | **لا انهيار**، و`topResumedActivity` = `cn.nubia.gamelauncher/.activity.ExperienceHostMode` |
+
+الفكرة: الكتابة في `Settings.Global/System` تحتاج `WRITE_SECURE_SETTINGS`، وهي صلاحية لا تُمنح
+لتطبيق موقّع بغير مفتاح المنصّة، و`pm grant` تردّها هذه النواة على الـshell. فبدل إسقاط العملية،
+تُلفّ كل دالة `void` تكتب في الإعدادات بـ`catch SecurityException`.
+العدد المقيس: **93 دالة في 50 ملفًا** لفّتها `tools/re_patch_smali.py --sweep`، وتُخطّي 14 فيها
+`.catch` أصلًا و4 تُعيد قيمة (تغييرها يُغيّر السلوك بصمت).
+
+والأخطاء المتبقية غير قاتلة ومتوقّعة: `WRITE_SETTINGS` مرفوضة (تُسجَّل تحذيرًا فقط)،
+و`TurboSchedMonitor` لا يجد دالة sched على نظام ليس Nubia.
+
+## الحجم
+
+166 MB → **121.6 MB** بصيغة 7z (73%)، وSHA-256 للحزمة `fa250639…d7193c90`.
+والغالب وسائط لا تُضغط: 52 MB PNG · 29 MB MP4 · 24 MB WAV — ولهذا لا يتجاوز التوفير الربع.
+
 ## حدود لا تُتجاوز
 
 - تحليل ساكن فقط: لا تثبيت ولا تشغيل ولا رصد سلوك.

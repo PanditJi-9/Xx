@@ -29367,3 +29367,37 @@ design_tokens 0 · hardening_guard ✓ · provenance_guard (٤٨٧٢ ملفًّ�
 **الحدود:** التطبيق يعلن 67 صلاحية نظام (`INJECT_EVENTS` · `READ_FRAME_BUFFER` · `INTERNAL_SYSTEM_WINDOW` ·
 `MANAGE_USERS` …) لا تُمنح لغير تطبيق موقّع بمفتاح المنصّة. فـ«يفتح» مُتحقَّق في الملف، و«تعمل كل ميزاته»
 **غير مُتحقَّق ولا يمكن ادّعاؤه**؛ وأي انهيار لاحق يُقرأ من `logcat` ويُرقَّع بالدليل لا بالتخمين.
+
+## تكملة ٣٠١ — GameSpace يفتح على هاتف غير Nubia: الانهيار المسمّى ثم إصلاحه (2026-11-18)
+
+**الأمر:** «لقد قمت بتحميله الان وفتحته ويكراش اذا تريد اصلاح المشكلة استخدم adb 192.168.1.4:33995»
+ثم «اضغط بعد الانتهاء بصيغة 7z وحاول تقليل حجم النتيجة النهائية».
+
+**Œالمنهج:** لا تخمين — `adb logcat -b crash` بعد كل بناء، والاسم من الـstacktrace حرفيًّا.
+
+| المحاولة | الدليل |
+| --- | --- |
+| LAUNCHER فقط (`628dcf22`) | `SecurityException: must have one of [WRITE_SECURE_SETTINGS]` ← `CommonUtil.notifyHandheldModeChanged` ← `CommonApplication.onCreate` |
+| + إبطال تلك الدالة (`4c0626b1`) | الانهيار الأول زال، وظهر نفس الاستثناء من `GameLauncherApplication.doConfig` |
+| + لفّ كل دوال الكتابة (`779f18ad`) | **لا انهيار**، `topResumedActivity=cn.nubia.gamelauncher/.activity.ExperienceHostMode` |
+
+**لماذا لا `pm grant`:** جرّبت الصلاحية على الجهاز نفسه: `id` = `uid=2000(shell)` وتُردّ بـ
+`SecurityException: … Neither user 2000 nor current process has GRANT_RUNTIME_PERMISSIONS`،
+و`su` غير موجود (`/system/bin/sh: su: inaccessible or not found`). فأُغلق مسار المنح وبقي الترقيع.
+
+**الأداة:** `tools/re_patch_smali.py` — نمطان: `--mode noop` (جسد كامل ← `return-void`، لدالة غرضها
+كتابة مستحيلة) و`wrap` (الافتراضي: إبقاء الجسد وإضافة `.catch Ljava/lang/SecurityException;`)،
+و`--sweep` يطبّق اللفّ على كل دالة `void` تكتب في `Settings.Global/System/Secure`.
+**حدوده المعلنة:** يرفض دالة تُعيد قيمة (return وهمي يُخفي سلوكًا)، ويرفض اللفّ إن وُجد `.catch`
+أصلًا، ويطبع الجسد الأصلي في السجل قبل كل تعديل. والقيد الذي كشفه اختباره المحلي: البداية تُوضع
+**بعد** `.locals` لا قبله، و`body` كان يمتصّ `.end method` فولّد ملفًا تالفًا — أُصلح قبل البناء.
+
+**العدد المقيس:** `sweep: wrapped 93 methods in 50 files (skipped 14 with an existing .catch, 4 non-void)`.
+
+**الحجم:** 165,922,816 بايت ← 121,647,592 بايت بصيغة 7z (73%)، SHA-256
+`fa25063982230bbda5e158b20e6e8ffabcc12f3e77040a589c3d59f5d7193c90`. والأثرات في التقرير.
+الوسائط هي الغالب (52 MB PNG · 29 MB MP4 · 24 MB WAV) فلا يُنتظر توفير أكبر بضغط بلا حذف محتوى.
+
+**الحدود:** «يفتح ويُعرض واجهته» **مُتحقَّق بالدليل**؛ «كل ميزاته تعمل» **لا** — التطبيق يعلن 67 صلاحية
+نظام لا تُمنح له، وأي مسار يعتمد عليها يُسجّل رفضًا أو يُتخطّى، و`TurboSchedMonitor` لا يجد دالته
+على نظام غير Nubia. وما يخصّ العتاد يبقى يحتاج جهازًا.
