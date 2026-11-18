@@ -1,0 +1,141 @@
+name: GameSpace launch patch
+
+# Makes the imported Nubia GameSpace launchable on a non-Nubia device.
+#
+# Measured cause: no component in cn.nubia.gamelauncher declares
+# android.intent.category.LAUNCHER — the activities carry intent.action.MAIN
+# only (the categories present are DEFAULT and HOME). Installing the APK
+# therefore succeeds and produces no icon, which reads as "installed but does
+# not open".
+#
+# The patch is deliberately minimal: one intent-filter on the existing entry
+# activity. Nothing else is touched, because anything else would be a guess
+# about a device this workflow cannot observe.
+#
+# The build runs here, never on the owner's phone (AGENTS.md §0.10), and the
+# output is a re-signed APK: it cannot be installed over the original, which
+# carries the ZTE platform signature.
+
+on:
+  workflow_dispatch:
+    inputs:
+      asset:
+        description: Draft-release asset to patch
+        required: false
+        default: GameSpace_16.0.000.000.2609231620.apk
+      activity:
+        description: Fully qualified entry activity
+        required: false
+        default: cn.nubia.gamelauncher.activity.GameSpaceActivity
+      release_tag:
+        description: Draft release holding the APK
+        required: false
+        default: re-targets
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    name: patch and sign
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      RELEASE_TAG: ${{ inputs.release_tag }}
+      ASSET: ${{ inputs.asset }}
+      ENTRY: ${{ inputs.activity }}
+    steps:
+      - uses: actions/checkout@v6.0.2
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Install apktool and zip utilities
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends \
+            apktool binutils jq python3 unzip zip >/dev/null
+          apktool --version
+
+      - name: Fetch the APK from the draft release
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/work/input"
+          gh api "repos/${GITHUB_REPOSITORY}/releases?per_page=100" > "$RUNNER_TEMP/releases.json"
+          cat > "$RUNNER_TEMP/find_asset.py" <<'PY'
+          import json, sys
+
+          releases = json.load(open(sys.argv[1], encoding="utf-8"))
+          tag, name = sys.argv[2], sys.argv[3]
+          for release in releases:
+              if release.get("tag_name") != tag:
+                  continue
+              for asset in release.get("assets", []):
+                  if asset.get("name") == name:
+                      print(asset["id"])
+                      raise SystemExit(0)
+          raise SystemExit(f"asset {name!r} not found in draft release {tag!r}")
+          PY
+          asset_id=$(python3 "$RUNNER_TEMP/find_asset.py" "$RUNNER_TEMP/releases.json" "$RELEASE_TAG" "$ASSET")
+          gh api -H "Accept: application/octet-stream" \
+            "repos/${GITHUB_REPOSITORY}/releases/assets/${asset_id}" \
+            > "$RUNNER_TEMP/work/input/$ASSET"
+          ls -l "$RUNNER_TEMP/work/input/$ASSET"
+
+      - name: Decode, patch the entry activity, rebuild
+        run: |
+          set -euo pipefail
+          work="$RUNNER_TEMP/work"
+          apktool d --force --output "$work/decoded" "$work/input/$ASSET" > "$work/apktool-d.log" 2>&1
+          python3 tools/re_patch_launcher.py \
+            --manifest "$work/decoded/AndroidManifest.xml" \
+            --activity "$ENTRY"
+          apktool b "$work/decoded" --output "$work/unsigned.apk" > "$work/apktool-b.log" 2>&1
+          ls -l "$work/unsigned.apk"
+
+      - name: Sign for installation (v1+v2+v3)
+        run: |
+          set -euo pipefail
+          work="$RUNNER_TEMP/work"
+          url=$(gh api repos/patrickfav/uber-apk-signer/releases/latest \
+            --jq '.assets[] | select(.name | test("^uber-apk-signer-[0-9.]+[.]jar$")) | .browser_download_url' \
+            | head -1)
+          test -n "$url"
+          curl -fsSL --retry 3 -o "$work/uber-apk-signer.jar" "$url"
+          java -jar "$work/uber-apk-signer.jar" \
+            --apks "$work/unsigned.apk" --out "$work/signed" --allowResign
+          ls -l "$work/signed"
+          cp "$work/signed/"*.apk "$work/GameSpace-launcher.apk"
+
+      - name: Verify the patched manifest and signature in the built APK
+        run: |
+          set -euo pipefail
+          work="$RUNNER_TEMP/work"
+          apktool d --force --no-src --output "$work/verify" "$work/GameSpace-launcher.apk" \
+            > "$work/apktool-verify.log" 2>&1
+          echo "--- LAUNCHER entries in the rebuilt manifest ---"
+          count=$(grep -c "android.intent.category.LAUNCHER" "$work/verify/AndroidManifest.xml" || true)
+          grep -n -B4 -A2 "android.intent.category.LAUNCHER" "$work/verify/AndroidManifest.xml" || true
+          test "$count" -ge 1
+          echo "--- signature ---"
+          python3 tools/re_apk_signature.py "$work/GameSpace-launcher.apk" \
+            --text "$work/signature.txt" | tee "$work/signature.txt" | head -20
+          sha256sum "$work/GameSpace-launcher.apk" | tee "$work/patch-sha256.txt"
+
+      - name: Upload the patched APK
+        uses: actions/upload-artifact@v7
+        with:
+          name: GameSpace-launcher-patched
+          path: |
+            ${{ runner.temp }}/work/GameSpace-launcher.apk
+            ${{ runner.temp }}/work/patch-sha256.txt
+            ${{ runner.temp }}/work/signature.txt
+            ${{ runner.temp }}/work/apktool-b.log
+          if-no-files-found: error
+          retention-days: 30
