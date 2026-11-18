@@ -118,6 +118,20 @@ jobs:
             --class cn.zte.gamefloat.util.ConfigUtil \
             --method isAppEnable --mode stub --return true --allow-non-void
 
+          # With the gate open the panel is actually built, and the next wall is
+          # a removed hidden framework method, measured on the device:
+          #   NoSuchMethodError: No virtual method
+          #     myInput(Ljava/lang/String;Landroid/content/Context;)Landroid/view/InputChannel;
+          #     in class Landroid/hardware/input/InputManager;
+          #     at InputChannelCompat.initInputMonitor
+          #     at InputChannelWrapper.register(...)
+          #     at PowerPanelDetailsView.initView
+          # register is void and only starts touch monitoring, so the panel can
+          # be built without it: contain the Error and let initView continue.
+          python3 tools/re_patch_smali.py --decoded "$work/decoded" \
+            --class cn.zte.gamefloat.common.input.InputChannelWrapper \
+            --method register --mode wrap --catch nosuchmethod
+
           # Every privileged settings write in this package would otherwise
           # abort the caller. Guard each invoke so the rest of the method still
           # runs (see the SuperNotCalledException note in the tool).
