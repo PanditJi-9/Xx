@@ -22,7 +22,7 @@ on:
       asset:
         description: Draft-release asset to patch
         required: false
-        default: GameSpace_16.0.000.000.2609231620.apk
+        default: GameSpace_16.5.000.000.2605251213.apk
       activity:
         description: Fully qualified entry activity
         required: false

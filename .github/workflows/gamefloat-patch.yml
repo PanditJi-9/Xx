@@ -1,0 +1,195 @@
+name: GameFloat panel patch
+
+# Makes cn.zte.gamefloat draw its GameTurbo-style panel on a ROM that never had
+# the vendor switch it reads.
+#
+# Measured on the device (adb logcat, 2026-11-18), after installing the package
+# and broadcasting its own trigger:
+#
+#   GameFloat: Common_ForegroundChange : onReceive action=...FOREGROUND_GAME_CHANGE
+#   GameFloat: Panel_WindowManager : removePowerPanelView
+#   GameFloat: Panel_Service : uploadPowerPanelData: ... gamePkg =
+#
+# The receiver reads Intent extra "packageName", then calls
+#   PowerPanelService.foregroundPkgChange(Context, String pkg, int, int)
+# but only when its own gate passes:
+#   ConfigUtil.isAppEnable(Settings.Global.getString(cr, "redmagic_ce_switch"),
+#                          pkg, ",")
+# On this device that setting is null and shell cannot write it
+# (SecurityException: must have WRITE_SECURE_SETTINGS), so the panel is removed
+# instead of shown. The gate is patched to answer true; everything else — the
+# settings writes that would throw, the window, the binding — is left as it is
+# and measured afterwards.
+
+on:
+  workflow_dispatch:
+    inputs:
+      asset:
+        description: Draft-release asset to patch
+        required: false
+        default: GameFloatWindow.apk
+      release_tag:
+        description: Draft release holding the APK
+        required: false
+        default: re-targets
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    name: patch and sign
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      RELEASE_TAG: ${{ inputs.release_tag }}
+      ASSET: ${{ inputs.asset }}
+    steps:
+      - uses: actions/checkout@v6.0.2
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Install the current apktool
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends binutils >/dev/null
+          url=$(gh api repos/iBotPeaches/Apktool/releases/latest \
+            --jq '.assets[] | select(.name | test("^apktool_[0-9.]+[.]jar$")) | .browser_download_url' \
+            | head -1)
+          test -n "$url"
+          curl -fsSL --retry 3 -o "$RUNNER_TEMP/apktool.jar" "$url"
+          java -jar "$RUNNER_TEMP/apktool.jar" --version
+
+      - name: Fetch the APK from the draft release
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/work/input"
+          gh api "repos/${GITHUB_REPOSITORY}/releases?per_page=100" > "$RUNNER_TEMP/releases.json"
+          cat > "$RUNNER_TEMP/find_asset.py" <<'PY'
+          import json, sys
+
+          releases = json.load(open(sys.argv[1], encoding="utf-8"))
+          tag, name = sys.argv[2], sys.argv[3]
+          for release in releases:
+              if release.get("tag_name") != tag:
+                  continue
+              for asset in release.get("assets", []):
+                  if asset.get("name") == name:
+                      print(asset["id"])
+                      raise SystemExit(0)
+          raise SystemExit(f"asset {name!r} not found in draft release {tag!r}")
+          PY
+          asset_id=$(python3 "$RUNNER_TEMP/find_asset.py" "$RUNNER_TEMP/releases.json" "$RELEASE_TAG" "$ASSET")
+          gh api -H "Accept: application/octet-stream" \
+            "repos/${GITHUB_REPOSITORY}/releases/assets/${asset_id}" \
+            > "$RUNNER_TEMP/work/input/$ASSET"
+          ls -l "$RUNNER_TEMP/work/input/$ASSET"
+
+      - name: Decode, open the gate, rebuild
+        run: |
+          set -euo pipefail
+          work="$RUNNER_TEMP/work"
+          # Resources are decoded here: the panel is a layout-driven window, so
+          # unlike the GameAssist stub patch this one needs the real res tree.
+          if ! java -jar "$RUNNER_TEMP/apktool.jar" d --force \
+              --output "$work/decoded" "$work/input/$ASSET" > "$work/apktool-d.log" 2>&1; then
+            echo "::error::apktool decode failed"
+            tail -40 "$work/apktool-d.log"
+            exit 1
+          fi
+
+          # The gate: ConfigUtil.isAppEnable(String, String, String)Z reads the
+          # comma list from Settings.Global.redmagic_ce_switch. Answer true so
+          # the panel path runs; the switch itself is never written.
+          python3 tools/re_patch_smali.py --decoded "$work/decoded" \
+            --class cn.zte.gamefloat.util.ConfigUtil \
+            --method isAppEnable --mode stub --return true --allow-non-void
+
+          # Every privileged settings write in this package would otherwise
+          # abort the caller. Guard each invoke so the rest of the method still
+          # runs (see the SuperNotCalledException note in the tool).
+          python3 tools/re_patch_smali.py --decoded "$work/decoded" --sweep
+
+          if ! java -jar "$RUNNER_TEMP/apktool.jar" b \
+              --output "$work/unsigned.apk" "$work/decoded" > "$work/apktool-b.log" 2>&1; then
+            echo "::error::apktool build failed"
+            tail -60 "$work/apktool-b.log"
+            exit 1
+          fi
+          ls -l "$work/unsigned.apk"
+
+      - name: Sign for installation (v1+v2+v3)
+        run: |
+          set -euo pipefail
+          work="$RUNNER_TEMP/work"
+          url=$(gh api repos/patrickfav/uber-apk-signer/releases/latest \
+            --jq '.assets[] | select(.name | test("^uber-apk-signer-[0-9.]+[.]jar$")) | .browser_download_url' \
+            | head -1)
+          test -n "$url"
+          curl -fsSL --retry 3 -o "$work/uber-apk-signer.jar" "$url"
+          java -jar "$work/uber-apk-signer.jar" \
+            --apks "$work/unsigned.apk" --out "$work/signed" --allowResign
+          cp "$work/signed/"*.apk "$work/GameFloat-panel.apk"
+          ls -l "$work/GameFloat-panel.apk"
+
+      - name: Verify the patch landed and the APK is signed
+        run: |
+          set -euo pipefail
+          work="$RUNNER_TEMP/work"
+          # The patched method must now be the constant-true stub, not the old
+          # settings read. A rebuild that silently skipped the patch would sign
+          # and install fine and still remove the panel, so prove the body.
+          java -jar "$RUNNER_TEMP/apktool.jar" d --force --no-src \
+            --output "$work/check" "$work/GameFloat-panel.apk" > "$work/apktool-check.log" 2>&1
+          if ! java -jar "$RUNNER_TEMP/apktool.jar" d --force --no-res \
+            --output "$work/check_smali" "$work/GameFloat-panel.apk" >> "$work/apktool-check.log" 2>&1; then
+            echo "::error::decode of the built APK failed"
+            tail -40 "$work/apktool-check.log"
+            exit 1
+          fi
+          file="$work/check_smali/smali/cn/zte/gamefloat/util/ConfigUtil.smali"
+          test -f "$file" || file=$(find "$work/check_smali" -name ConfigUtil.smali -print -quit)
+          test -n "$file"
+          sed -n '/method public static isAppEnable/,/end method/p' "$file" | tee "$work/isAppEnable.smali"
+          grep -q 'const/4 v0, 0x1' "$work/isAppEnable.smali"
+          grep -q 'return v0' "$work/isAppEnable.smali"
+
+          python3 tools/re_apk_signature.py "$work/GameFloat-panel.apk" \
+            --text "$work/signature.txt" | tee "$work/signature.txt" | head -12
+          sha256sum "$work/GameFloat-panel.apk" | tee "$work/patch-sha256.txt"
+
+      - name: Pack the result for transfer
+        run: |
+          set -euo pipefail
+          work="$RUNNER_TEMP/work"
+          cd "$work"
+          apk_bytes=$(stat -c %s GameFloat-panel.apk)
+          7z a -t7z -mx=9 -m0=lzma2 -ms=on -mmt="$(nproc)" \
+            GameFloat-panel.7z GameFloat-panel.apk > 7z.log 2>&1 || { tail -20 7z.log; exit 1; }
+          pkg_bytes=$(stat -c %s GameFloat-panel.7z)
+          python3 -c "
+          apk = $apk_bytes
+          pkg = $pkg_bytes
+          print(f'apk   {apk:,} bytes')
+          print(f'7z    {pkg:,} bytes  ({100 * pkg / apk:.1f}% of the apk)')
+          "
+          sha256sum GameFloat-panel.7z | tee patch-7z-sha256.txt
+
+      - uses: actions/upload-artifact@v6
+        with:
+          name: gamefloat-panel
+          path: |
+            ${{ runner.temp }}/work/GameFloat-panel.7z
+            ${{ runner.temp }}/work/patch-7z-sha256.txt
+            ${{ runner.temp }}/work/patch-sha256.txt
+            ${{ runner.temp }}/work/signature.txt
+            ${{ runner.temp }}/work/isAppEnable.smali
+            ${{ runner.temp }}/work/apktool-b.log
+          if-no-files-found: error

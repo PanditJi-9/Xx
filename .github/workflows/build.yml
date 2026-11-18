@@ -47,6 +47,7 @@ on:
       - "!.github/workflows/gamespace-launch.yml"
       - "!.github/workflows/apk_smali_probe.yml"
       - "!.github/workflows/gameassist-patch.yml"
+      - "!.github/workflows/gamefloat-patch.yml"
       - "tools/**"
       - "!tools/re_*"
       - "manager/**"

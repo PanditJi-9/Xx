@@ -25,7 +25,7 @@ on:
       asset:
         description: Draft-release asset to patch
         required: false
-        default: GameAssist.apk
+        default: GameAssist_16.5.002.2605252104.apk
       release_tag:
         description: Draft release holding the APK
         required: false
