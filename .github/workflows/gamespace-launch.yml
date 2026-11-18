@@ -113,7 +113,9 @@ jobs:
             --manifest "$work/decoded/AndroidManifest.xml" \
             --activity "$ENTRY"
 
-          if ! apktool b --use-aapt2 --output "$work/unsigned.apk" "$work/decoded" \
+          # apktool 3.x dropped --use-aapt2: aapt2 is the only engine there, so
+          # passing the flag printed the usage text and exited 1.
+          if ! apktool b --output "$work/unsigned.apk" "$work/decoded" \
               > "$work/apktool-b.log" 2>&1; then
             echo "::error::apktool build failed"
             tail -60 "$work/apktool-b.log"
