@@ -1,0 +1,199 @@
+name: REA reverse engineering
+
+# Static, offline reverse engineering of the Nubia game-stack APKs.
+#
+# It runs on a GitHub runner and never on the owner's phone (AGENTS.md §0.10).
+# The inputs are APK assets of the *unpublished draft* release `re-targets`:
+# the proprietary binaries are never committed to this repository and never
+# published as a public release. The run reads them through the API using the
+# job's GITHUB_TOKEN.
+#
+# Tooling is pinned: REA 6.7.0, Node 24.22.1, Temurin 21, and the JADX engine
+# JAR at the SHA-256 REA publishes for it. Nothing here executes an APK: every
+# step reads bytes only.
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Draft release that holds the target APKs
+        required: false
+        default: re-targets
+
+permissions:
+  contents: write
+
+concurrency:
+  group: rea-${{ github.ref }}-${{ inputs.release_tag }}
+  cancel-in-progress: false
+
+jobs:
+  analyze:
+    name: ${{ matrix.target }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 150
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - GameAssist.apk
+          - GameSpace_16.0.000.000.2609231620.apk
+          - NubiaGameWidget.apk
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      RELEASE_TAG: ${{ inputs.release_tag }}
+      TARGET: ${{ matrix.target }}
+      # Large multidex APKs need a longer deadline than the 120 s default, and
+      # the JADX worker needs a heap larger than runner ergonomics would pick.
+      REA_JADX_OPERATION_TIMEOUT_MS: "600000"
+      REA_JADX_HEAP_MIB: "8192"
+    steps:
+      - name: Prepare isolated evidence and work directories
+        id: dirs
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence=$(mktemp -d "${RUNNER_TEMP:?}/re-evidence.XXXXXX")
+          work=$(mktemp -d "${RUNNER_TEMP:?}/re-work.XXXXXX")
+          printf 'evidence=%s\nwork=%s\n' "$evidence" "$work" >> "$GITHUB_OUTPUT"
+          df -h "$RUNNER_TEMP" | tail -1
+
+      - uses: actions/checkout@v6.0.2
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24.22.1"
+
+      - name: Install apktool, jadx and analysis utilities
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends \
+            apktool binutils file jq procps python3 unzip zip >/dev/null
+          if command -v jadx >/dev/null 2>&1; then
+            echo "jadx: distribution package"
+          else
+            echo "jadx: not in the image; installing the upstream release"
+            url=$(curl -fsSL https://api.github.com/repos/skylot/jadx/releases/latest \
+              | jq -r '.assets[] | select(.name | test("^jadx-[0-9.]+[.]zip$")) | .browser_download_url' \
+              | head -1)
+            test -n "$url"
+            curl -fsSL -o /tmp/jadx.zip "$url"
+            sudo unzip -q -o /tmp/jadx.zip -d /opt/jadx
+            sudo ln -sf /opt/jadx/bin/jadx /usr/local/bin/jadx
+          fi
+          apktool --version
+          jadx --version
+
+      - name: Install pinned REA and the pinned JADX engine
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --prefix "${RUNNER_TEMP}/rea-tool" \
+            --no-audit --no-fund --save-exact rea-agents@6.7.0
+          echo "${RUNNER_TEMP}/rea-tool/node_modules/.bin" >> "$GITHUB_PATH"
+
+          dest="${RUNNER_TEMP}/jadx-engine"
+          mkdir -p "$dest"
+          curl -fL -o "$dest/jadx-headless-mcp-0.7.1-all.jar" \
+            "https://github.com/1013503897/jadx-headless-mcp/releases/download/v0.7.1/jadx-headless-mcp-0.7.1-all.jar"
+          printf '%s  %s\n' \
+            '6e5eacf500b64292bfb73c49797c1958f6ee44646e43e868039ae7feb573ff75' \
+            'jadx-headless-mcp-0.7.1-all.jar' > "$dest/verify.sha256"
+          ( cd "$dest" && sha256sum -c verify.sha256 )
+          echo "REA_JADX_MCP_JAR=$dest/jadx-headless-mcp-0.7.1-all.jar" >> "$GITHUB_ENV"
+
+      - name: Fetch the target APK from the draft release
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/in"
+          gh api "repos/${GITHUB_REPOSITORY}/releases?per_page=100" > "$RUNNER_TEMP/releases.json"
+
+          cat > "$RUNNER_TEMP/find_asset.py" <<'PY'
+          import json, sys
+
+          releases = json.load(open(sys.argv[1], encoding="utf-8"))
+          tag, name = sys.argv[2], sys.argv[3]
+          for release in releases:
+              if release.get("tag_name") != tag:
+                  continue
+              for asset in release.get("assets", []):
+                  if asset.get("name") == name:
+                      print(asset["id"])
+                      raise SystemExit(0)
+          raise SystemExit(f"asset {name!r} not found in draft release {tag!r}")
+          PY
+
+          asset_id=$(python3 "$RUNNER_TEMP/find_asset.py" \
+            "$RUNNER_TEMP/releases.json" "$RELEASE_TAG" "$TARGET")
+          echo "asset id: $asset_id"
+          gh api -H "Accept: application/octet-stream" \
+            "repos/${GITHUB_REPOSITORY}/releases/assets/${asset_id}" \
+            > "$RUNNER_TEMP/in/$TARGET"
+          ls -l "$RUNNER_TEMP/in/$TARGET"
+
+      - name: Run the static analysis pipeline
+        shell: bash
+        env:
+          EVIDENCE: ${{ steps.dirs.outputs.evidence }}
+          WORK: ${{ steps.dirs.outputs.work }}
+        run: |
+          bash .github/scripts/re_apk_analyze.sh \
+            "$EVIDENCE" "$WORK" "$TARGET" "$RELEASE_TAG"
+
+      - name: Compose the report
+        if: ${{ always() }}
+        shell: bash
+        env:
+          EVIDENCE: ${{ steps.dirs.outputs.evidence }}
+        run: |
+          if [ -n "${EVIDENCE:-}" ] && [ -d "$EVIDENCE" ]; then
+            python3 tools/re_apk_report.py \
+              --evidence-dir "$EVIDENCE" \
+              --title "Reverse engineering: ${TARGET}" \
+              --summary-out "$EVIDENCE/REPORT.md" > /dev/null
+            cat "$EVIDENCE/REPORT.md" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "::warning::No evidence directory; nothing to report."
+          fi
+
+      - name: Fail when the core package inspection failed
+        if: ${{ always() && steps.dirs.outputs.evidence != '' }}
+        shell: bash
+        env:
+          EVIDENCE: ${{ steps.dirs.outputs.evidence }}
+        run: |
+          code=$(cat "$EVIDENCE/rea_package.exit" 2>/dev/null || echo missing)
+          if [ "$code" != "0" ]; then
+            echo "::error::REA package inspection did not succeed (exit ${code}); see rea_package.stderr"
+            exit 1
+          fi
+          echo "REA package inspection succeeded."
+
+      - name: Upload evidence (small, retained)
+        if: ${{ always() && steps.dirs.outputs.evidence != '' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: re-evidence-${{ matrix.target }}
+          path: ${{ steps.dirs.outputs.evidence }}
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Upload decompiled output
+        if: ${{ always() && steps.dirs.outputs.work != '' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: re-decompiled-${{ matrix.target }}
+          path: ${{ steps.dirs.outputs.work }}
+          if-no-files-found: warn
+          retention-days: 7
+          compression-level: 1
