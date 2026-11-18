@@ -136,6 +136,18 @@ jobs:
             --class com.zte.shared.wrapper.NotificationManagerWrapper \
             --method setNotificationListenerAccessGranted --mode wrap --catch nosuchmethod
 
+          # Last measured wall: the window-manager init reaches
+          #   NullPointerException: invoke interface IModuleProxy
+          #     cn.nubia.componentcenter.service.GameAssistComService.a(Class)
+          #     on a null object reference
+          # i.e. a vendor ComponentCenter service this ROM does not have. No
+          # repack provides that service, so onCreate is contained: the process
+          # lives, and whatever still does not work is then measured in logcat
+          # instead of being assumed either way.
+          python3 tools/re_patch_smali.py --decoded "$work/decoded" \
+            --class cn.nubia.gameassist.GameAssistApplication \
+            --method onCreate --mode wrap --catch throwable
+
           # The same WRITE_SECURE_SETTINGS class of crash that killed GameSpace
           # applies here; contain it now rather than one build per crash.
           python3 tools/re_patch_smali.py --decoded "$work/decoded" --sweep
