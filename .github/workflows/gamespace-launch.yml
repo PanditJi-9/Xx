@@ -113,6 +113,15 @@ jobs:
             --manifest "$work/decoded/AndroidManifest.xml" \
             --activity "$ENTRY"
 
+          # Measured on the device: the app dies before any window appears with
+          #   SecurityException: must have one of: [WRITE_SECURE_SETTINGS]
+          #   at CommonUtil.notifyHandheldModeChanged <- CommonApplication.onCreate
+          # A repacked app can never hold that permission, so the method that
+          # needs it is neutralized instead of crashing the whole process.
+          python3 tools/re_patch_smali.py --decoded "$work/decoded" \
+            --class cn.nubia.common.util.CommonUtil \
+            --method notifyHandheldModeChanged
+
           # apktool 3.x dropped --use-aapt2: aapt2 is the only engine there, so
           # passing the flag printed the usage text and exited 1.
           if ! apktool b --output "$work/unsigned.apk" "$work/decoded" \
@@ -140,6 +149,8 @@ jobs:
               grep -n -A14 -B2 -F "$token" "$file" | head -40 >> "$work/gating.txt" || true
             done
           done
+          python3 tools/re_patch_smali.py --decoded "$work/decoded" --scan-putstring --limit 30 \
+            >> "$work/gating.txt" 2>&1 || true
           wc -l "$work/gating.txt"
 
       - name: Sign for installation (v1+v2+v3)
