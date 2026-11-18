@@ -147,6 +147,11 @@ jobs:
           EVIDENCE: ${{ steps.dirs.outputs.evidence }}
           WORK: ${{ steps.dirs.outputs.work }}
         run: |
+          # The fetch step lands the APK in RUNNER_TEMP/in; the pipeline owns
+          # WORK/input. Copy it across so the work tree is self-contained and
+          # the uploaded artifact can be traced back to one file.
+          mkdir -p "${WORK}/input"
+          cp "${RUNNER_TEMP}/in/${TARGET}" "${WORK}/input/${TARGET}"
           bash .github/scripts/re_apk_analyze.sh \
             "$EVIDENCE" "$WORK" "$TARGET" "$RELEASE_TAG"
 

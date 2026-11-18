@@ -164,7 +164,8 @@ def build_report(evidence: str, title: str | None) -> str:
     add("| Field | Value |")
     add("| --- | --- |")
     add(f"| File | `{target}` |")
-    add(f"| Size | {human_bytes(facts.get('size_bytes'))} ({facts.get('size_bytes')} bytes) |")
+    size = facts.get("size_bytes")
+    add(f"| Size | {human_bytes(size)}" + (f" ({size} bytes) |" if isinstance(size, int) else " |"))
     add(f"| SHA-256 | `{facts.get('sha256') or 'unknown'}` |")
     zip_facts = facts.get("zip") if isinstance(facts.get("zip"), dict) else {}
     if zip_facts.get("entries") is not None:
