@@ -251,12 +251,88 @@ def neutralize_one(decoded: Path, dotted_class: str, method_name: str, mode: str
     apply(method.path, [method], builder, "one_", quiet, allow_non_void=allow_non_void)
 
 
+def _transform_method_invoke(method: Method, file_counter: int, mi: int) -> str:
+    """Guard each privileged Settings write individually instead of the whole method.
+
+    Whole-method wrapping (see `wrap`) returns early on the first denied write,
+    which skips every statement after it — including `super.onStart()` owed to
+    the framework (measured: SuperNotCalledException). Guarding the invoke alone
+    leaves the rest of the method running with a default result, so lifecycle
+    contracts survive.
+    """
+    lines = method.lines
+    insert_at = 0
+    for idx, line in enumerate(lines):
+        s = line.strip()
+        if s.startswith(".locals") or s.startswith(".registers"):
+            insert_at = idx + 1
+            break
+
+    invoke_indices = [i for i in range(insert_at, len(lines)) if PRIVILEGED_WRITE.search(lines[i])]
+    if not invoke_indices:
+        return method.text
+
+    infos = []
+    for idx in invoke_indices:
+        reg = None
+        end_idx = idx
+        j = idx + 1
+        while j < len(lines) and not lines[j].strip():
+            j += 1
+        if j < len(lines) and lines[j].strip().startswith("move-result"):
+            m = re.search(r"move-result(?:-wide|-object)?\s+(\S+)", lines[j].strip())
+            if m:
+                reg = m.group(1)
+                end_idx = j
+        infos.append((idx, end_idx, reg))
+
+    before: dict[int, list[str]] = {i: [] for i in range(len(lines) + 1)}
+    for k, (idx, end_idx, _reg) in enumerate(infos):
+        tag = f"f{file_counter}_m{mi}_i{k}"
+        before[idx].append(f"    :rps_try_{tag}")
+        before[end_idx + 1].append(f"    :rps_end_{tag}")
+        before[end_idx + 1].append(f"    :rps_after_{tag}")
+
+    new_lines: list[str] = []
+    for i, line in enumerate(lines):
+        for s in before.get(i, []):
+            new_lines.append(s)
+        new_lines.append(line)
+    for s in before.get(len(lines), []):
+        new_lines.append(s)
+
+    catch_lines = []
+    for k, (_idx, _end, _reg) in enumerate(infos):
+        tag = f"f{file_counter}_m{mi}_i{k}"
+        catch_lines.append(
+            f"    .catch Ljava/lang/SecurityException; {{:rps_try_{tag} .. :rps_end_{tag}}} :rps_catch_{tag}"
+        )
+    new_insert_at = 0
+    for idx, line in enumerate(new_lines):
+        s = line.strip()
+        if s.startswith(".locals") or s.startswith(".registers"):
+            new_insert_at = idx + 1
+            break
+    for cl in reversed(catch_lines):
+        new_lines.insert(new_insert_at, cl)
+
+    for k, (_idx, _end, reg) in enumerate(infos):
+        tag = f"f{file_counter}_m{mi}_i{k}"
+        new_lines.append(f"    :rps_catch_{tag}")
+        if reg:
+            new_lines.append(f"    const/4 {reg}, 0")
+        new_lines.append(f"    goto/16 :rps_after_{tag}")
+
+    header_end = method.text.find("\n", method.match.start())
+    header = method.text[method.match.start():header_end]
+    return header + "\n" + "\n".join(new_lines) + "\n.end method"
+
+
 def sweep_putstring(decoded: Path, quiet: bool) -> int:
     touched_files = 0
     touched_methods = 0
     skipped_catch = 0
     skipped_non_void = 0
-    skipped_lifecycle = 0
 
     for path in sorted(decoded.glob("smali*/**/*.smali")):
         try:
@@ -266,31 +342,34 @@ def sweep_putstring(decoded: Path, quiet: bool) -> int:
             continue
 
         targets: list[Method] = []
-        for method in methods:
+        method_index: dict[int, int] = {}
+        for mi, method in enumerate(methods):
             body = method.body
             if not PRIVILEGED_WRITE.search(body):
                 continue
             if ".catch " in body:
                 skipped_catch += 1
                 continue
-            if method.name in LIFECYCLE:
-                skipped_lifecycle += 1
-                continue
             if not method.returns_void:
                 skipped_non_void += 1
                 continue
             targets.append(method)
+            method_index[id(method)] = mi
 
         if not targets:
             continue
 
         touched_files += 1
-        touched_methods += apply(path, targets, wrap, f"{touched_files}_", quiet)
+        file_counter = touched_files
+
+        def builder(m: Method, _tag: str) -> str:
+            return _transform_method_invoke(m, file_counter, method_index[id(m)])
+
+        touched_methods += apply(path, targets, builder, f"{file_counter}_", quiet)
 
     print(
         f"--- sweep: wrapped {touched_methods} methods in {touched_files} files "
-        f"(skipped {skipped_catch} with an existing .catch, {skipped_non_void} non-void, "
-        f"{skipped_lifecycle} lifecycle)"
+        f"(skipped {skipped_catch} with an existing .catch, {skipped_non_void} non-void)"
     )
     return touched_methods
 
