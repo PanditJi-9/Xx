@@ -126,6 +126,16 @@ jobs:
             --class 'com.zte.gameassist.common.GameCheck$GameLauncherObserver' \
             --method c --mode stub --return empty-list --allow-non-void
 
+          # Next measured crash: the wrapper calls a hidden framework method
+          #   NoSuchMethodError: No virtual method
+          #     setNotificationListenerAccessGranted(ComponentName,Z)V
+          #     in class Landroid/app/NotificationManager;
+          # It exists on the vendor image and was removed/hidden here, so the
+          # call must degrade rather than abort: keep the body, contain the Error.
+          python3 tools/re_patch_smali.py --decoded "$work/decoded" \
+            --class com.zte.shared.wrapper.NotificationManagerWrapper \
+            --method setNotificationListenerAccessGranted --mode wrap --catch nosuchmethod
+
           # The same WRITE_SECURE_SETTINGS class of crash that killed GameSpace
           # applies here; contain it now rather than one build per crash.
           python3 tools/re_patch_smali.py --decoded "$work/decoded" --sweep

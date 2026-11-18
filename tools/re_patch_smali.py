@@ -100,8 +100,19 @@ def split_methods(path: Path) -> list[Method]:
     return methods
 
 
-def wrap(method: Method, tag: str) -> str:
-    """Return the method text with its body guarded against SecurityException."""
+CATCH_TYPES = {
+    "security": "Ljava/lang/SecurityException;",
+    "nosuchmethod": "Ljava/lang/NoSuchMethodError;",
+    "error": "Ljava/lang/Error;",
+    "runtime": "Ljava/lang/RuntimeException;",
+    "throwable": "Ljava/lang/Throwable;",
+}
+
+
+# Chosen by --catch; kept in one place so `wrap` stays a pure function of its
+# arguments apart from this.
+def wrap(method: Method, tag: str, exc: str = "Ljava/lang/SecurityException;") -> str:
+    """Return the method text with its body guarded against `exc`."""
     head_end = method.text.find("\n", method.match.start())
     header = method.text[method.match.start() : head_end]
     lines = method.lines
@@ -126,7 +137,7 @@ def wrap(method: Method, tag: str) -> str:
     handler = f":rps_catch_{tag}"
 
     out = [header, *lines[:insert_at], f"    {try_start}", *guarded, f"    {try_end}"]
-    out.append(f"    .catch Ljava/lang/SecurityException; {{{try_start} .. {try_end}}} {handler}")
+    out.append(f"    .catch {exc} {{{try_start} .. {try_end}}} {handler}")
     out.append("    return-void")
     out.append(f"    {handler}")
     out.append("    return-void")
@@ -194,7 +205,8 @@ def apply(path: Path, methods: list[Method], builder, tag_prefix: str, quiet: bo
 
 
 def neutralize_one(decoded: Path, dotted_class: str, method_name: str, mode: str, quiet: bool,
-                   stub_kind: str = "null", allow_non_void: bool = False) -> None:
+                   stub_kind: str = "null", allow_non_void: bool = False,
+                   exc: str = "Ljava/lang/SecurityException;") -> None:
     relative = Path(dotted_class.replace(".", "/") + ".smali")
     candidates = sorted(decoded.glob(f"smali*/{relative}"))
     if not candidates:
@@ -213,7 +225,7 @@ def neutralize_one(decoded: Path, dotted_class: str, method_name: str, mode: str
         raise SystemExit(f"refusing to wrap {dotted_class}#{method_name}: it already declares a .catch")
 
     if mode == "wrap":
-        builder = lambda m, tag: wrap(m, tag)
+        builder = lambda m, tag: wrap(m, tag, exc)
     elif mode == "noop":
         builder = lambda m, tag: noop(m)
     else:
@@ -284,6 +296,8 @@ def main(argv: list[str]) -> int:
                         help="constant answer produced by --mode stub")
     parser.add_argument("--allow-non-void", action="store_true",
                         help="required before a value-returning method is stubbed")
+    parser.add_argument("--catch", dest="catch_kind", choices=sorted(CATCH_TYPES), default="security",
+                        help="which exception --mode wrap contains (default: SecurityException)")
     parser.add_argument("--sweep", action="store_true", help="wrap every void method performing a privileged write")
     parser.add_argument("--scan-putstring", action="store_true", help="list Settings.Global/System/Secure writes")
     parser.add_argument("--quiet", action="store_true", help="do not print the original bodies (not recommended)")
@@ -297,7 +311,8 @@ def main(argv: list[str]) -> int:
         if args.mode == "stub" and not args.allow_non_void and args.stub_kind not in ("empty-list",):
             pass  # the void check inside apply still governs; nothing extra to do here
         neutralize_one(args.decoded, args.dotted, args.method, args.mode, args.quiet,
-                       stub_kind=args.stub_kind, allow_non_void=args.allow_non_void)
+                       stub_kind=args.stub_kind, allow_non_void=args.allow_non_void,
+                       exc=CATCH_TYPES[args.catch_kind])
     elif args.dotted or args.method:
         raise SystemExit("--class and --method must be given together")
 
