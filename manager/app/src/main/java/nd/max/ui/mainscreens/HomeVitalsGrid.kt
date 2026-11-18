@@ -65,7 +65,7 @@ import nd.max.R
 import nd.max.core.maxai.MemoryStall
 import nd.max.ui.component.NeuralPalette
 import nd.max.ui.component.NeuralTrack
-import nd.max.ui.component.NeuralValue
+import nd.max.ui.component.MaxValueWithUnit
 import nd.max.ui.component.neuralClickable
 import nd.max.ui.component.neuralPalette
 import nd.max.ui.design.MaxRadius
@@ -336,7 +336,7 @@ private fun VitalCell(
             Box(Modifier.size(MaxSpace.sm).clip(CircleShape).background(accent))
             Spacer(Modifier.width(MaxSpace.xs))
             Text(
-                label.uppercase(),
+                label,
                 color = p.muted,
                 style = MaterialTheme.typography.labelSmall,
                 maxLines = 1,
@@ -351,17 +351,17 @@ private fun VitalCell(
                 tint = accent,
             )
         }
-        Row(verticalAlignment = Alignment.Bottom) {
-            NeuralValue(value, style = MonoValueStyleLarge, color = p.text)
-            if (unit != null) {
-                Spacer(Modifier.width(MaxSpace.xs))
-                Text(
-                    unit,
-                    color = p.muted,
-                    style = MaterialTheme.typography.labelMedium,
-                    maxLines = 1,
-                )
-            }
+        // الرقم والوحدة نصٌّ واحد: كانا `Row(Alignment.Bottom)` فوقع `°C` على حدّ الصندوق
+        // ودارت الوحدة إلى الجهة الأخرى في RTL (العطب ظاهر في تسجيل المالك: `° 49`).
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            MaxValueWithUnit(
+                value = value,
+                unit = unit,
+                style = MonoValueStyleLarge,
+                color = p.text,
+                unitColor = p.muted,
+                unitStyle = MaterialTheme.typography.labelMedium,
+            )
             if (arrow != null && trend != null) {
                 Spacer(Modifier.width(MaxSpace.sm))
                 Icon(arrow, null, Modifier.size(MaxSize.iconGlyphSmall), tint = trendTone(trend, p))
