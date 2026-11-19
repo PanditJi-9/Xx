@@ -54,65 +54,25 @@
     const-string v3, "componentcenter stub registered"
     invoke-static {v2, v3}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
 
-    # شريط السحب: نافذة صغيرة على الحافة اليمنى تُبقي العملية حيّة، ولمسُها
-    # يعيد إرسال البثّ نفسه. طلب المالك الحرفيّ: «لا توجد شريط سحب لكي اعيد
-    # اظهارها كما اريد» — فالإظهار بلا شريط يعني إعادة كل مرة من adb.
+    # شريط السحب: نافذة رفيعة على الحافة اليمنى تُبقي العملية حيّة، ولمسُها
+    # يُظهر اللوحة. طلب المالك الحرفيّ: «لا توجد شريط سحب لكي اعيد اظهارها
+    # كما اريد» — فالإظهار بلا شريط يعني إعادة كل مرة من adb.
     invoke-static {v0}, Lcn/nubia/gameassist/GameAssistHandle;->start(Landroid/content/Context;)V
 
-    # الترتيب مقيس من الشجرة: p0() يبني LayoutParams ثم ينشر w → g0() الذي
-    # يبني GameAssistRootView (ويشغّل c0() فيصير حقل السماح D=true)، وc() ينشر
-    # l0() → w0("onTouchSlideIn") الذي يُظهر النافذة. الحاجزان المتبقيان في
-    # نوع النافذة 2027 ووسم PRIVATE_FLAG_TRUSTED_OVERLAY يُصلحان في الـworkflow.
+    # ولا نُظهر اللوحة هنا — والسبب مقيس:
+    #   input_interaction: Interaction with: [3e1888b GameAssist,
+    #     {touchableRegion=[0,0][1220,2712], inputConfig=NOT_FOCUSABLE|…}]
+    # أي أن نافذة اللوحة fillxfill تبتلع كل لمسة على الشاشة، فلا تُلعب اللعبة
+    # تحتها. وفي مرجع المالك (Screenrecorder-…-18-12-45-128.mp4) تبقى اللوحة
+    # مغلقة حتى يُسحب الشريط من الحافة. فالإظهار صار في GameAssistHandle.show
+    # وحدها (p0 → c → w0 = نفس مسار showWindow المقيس)، وonGameStart هنا
+    # إشارة حالة فقط (PluginUtils) لا نافذة.
     invoke-static {v0}, Lcn/nubia/gameassist/panel/GameAssistWindowManager;->O(Landroid/content/Context;)Lcn/nubia/gameassist/panel/GameAssistWindowManager;
     move-result-object v1
 
     if-eqz v1, :cond_end
 
-    const-string v2, "GameAssistTrigger"
-    const-string v3, "calling p0() then c()"
-    invoke-static {v2, v3}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
-
-    invoke-virtual {v1}, Lcn/nubia/gameassist/panel/GameAssistWindowManager;->p0()V
-
-    invoke-virtual {v1}, Lcn/nubia/gameassist/panel/GameAssistWindowManager;->c()V
-
     invoke-virtual {v1}, Lcn/nubia/gameassist/panel/GameAssistWindowManager;->onGameStart()V
-
-    const-string v2, "GameAssistTrigger"
-    const-string v3, "show sequence posted"
-    invoke-static {v2, v3}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
-
-    # محاولة إظهار ثانية بعد أن يفرغ W() من البناء ويضع D=true. السبب مقيس:
-    # p0() ينشر على Handler الحقل n، وc() على Handler الحقل o — وهما خيطان
-    # مختلفان، فرُصد في 12:11 أن showWindow() سبقت انتهاء W() فعملت على D=false.
-    # فالنشر المتأخر هو الطريق الحتمي بعد أن يفرغ البناء.
-    new-instance v2, Landroid/os/Handler;
-    invoke-static {}, Landroid/os/Looper;->getMainLooper()Landroid/os/Looper;
-    move-result-object v3
-    invoke-direct {v2, v3}, Landroid/os/Handler;-><init>(Landroid/os/Looper;)V
-
-    new-instance v3, Lcn/nubia/gameassist/TriggerPanel$2;
-    invoke-direct {v3}, Lcn/nubia/gameassist/TriggerPanel$2;-><init>()V
-
-    # أربع محاولات متقاربة: النظام يقتل العملية بضغط الذاكرة (adj 905) بعد
-    # قرابة 3 ثوانٍ من انتهاء البثّ — قِيس 2026-11-19 13:14:10 normal_mem_pressure
-    # قبل أن يعمل المؤقت القديم (4 ثوانٍ). فأول محاولة تسبق القتل، وما ينجح
-    # منها يضيف النافذة فتخرج العملية من قائمة الضحية.
-    const-wide/16 v4, 0x1f4
-    invoke-virtual {v2, v3, v4, v5}, Landroid/os/Handler;->postDelayed(Ljava/lang/Runnable;J)Z
-    move-result v5
-
-    const-wide/16 v4, 0x3e8
-    invoke-virtual {v2, v3, v4, v5}, Landroid/os/Handler;->postDelayed(Ljava/lang/Runnable;J)Z
-    move-result v5
-
-    const-wide/16 v4, 0x7d0
-    invoke-virtual {v2, v3, v4, v5}, Landroid/os/Handler;->postDelayed(Ljava/lang/Runnable;J)Z
-    move-result v5
-
-    const-wide/16 v4, 0xfa0
-    invoke-virtual {v2, v3, v4, v5}, Landroid/os/Handler;->postDelayed(Ljava/lang/Runnable;J)Z
-    move-result v5
 
     :cond_end
     :try_end_0
