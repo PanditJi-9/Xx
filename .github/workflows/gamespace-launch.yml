@@ -135,6 +135,15 @@ jobs:
           # game — a foreground sender, which is what Android requires before it
           # will start another app's process from a broadcast.
           python3 tools/re_inject_broadcast.py --self-test
+          # The click path uses the two-argument overload; the three-argument
+          # one (patched before) never fired on the device, so target both.
+          python3 tools/re_inject_broadcast.py --decoded "$work/decoded" \
+            --class cn.nubia.gamelauncher.helper.CardHelper \
+            --method startApp \
+            --signature '(Lcn/nubia/gamelauncher/bean/AppListItemBean;Z)V' \
+            --context-field mContext --bean-getter getPackageName \
+            --action cn.zte.gamefloat.powerpanel.action.FOREGROUND_GAME_CHANGE \
+            --extra packageName
           python3 tools/re_inject_broadcast.py --decoded "$work/decoded" \
             --class cn.nubia.gamelauncher.helper.CardHelper \
             --method startApp \
@@ -167,7 +176,7 @@ jobs:
             unzip -p "$work/unsigned.apk" "$dex" | grep -a -c 'powerpanel.action.FOREGROUND_GAME_CHANGE' || true
           done | paste -sd+ - | bc)
           echo "trigger mentions in the built dex files: $mentions"
-          test "$mentions" -eq 2
+          test "$mentions" -eq 3
 
       - name: Record the device gates the app checks
         run: |
