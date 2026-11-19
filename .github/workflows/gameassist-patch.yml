@@ -264,6 +264,22 @@ jobs:
           python3 tools/re_patch_smali.py --decoded "$work/decoded" \
             --class com.zte.shared.wrapper.InputManagerWrapper \
             --method initGestureInputMonitor --mode stub --return null --allow-non-void
+          # Measured on the device 2026-11-19 13:04 (build 44510841360): the retry
+          # reached showWindow(reason=retryTrigger) with D=true, then a0() died in
+          #   BrightSeekbarViewController.p -> IAppBrightnessProxy.getMax()
+          # because componentcenter exposes no brightness proxy on this ROM.
+          # BaseViewController.o(View) is the single funnel that calls every
+          # controller's p(View); containing it (and P(), its teardown twin) keeps
+          # one missing proxy from aborting the whole panel build. Both are void
+          # and declare no .catch, so wrap is allowed.
+          python3 tools/re_patch_smali.py --decoded "$work/decoded" \
+            --class cn.nubia.gameassist.common.BaseViewController \
+            --method o --mode wrap --catch throwable
+
+          python3 tools/re_patch_smali.py --decoded "$work/decoded" \
+            --class cn.nubia.gameassist.common.BaseViewController \
+            --method P --mode wrap --catch throwable
+
           python3 tools/re_inject_call.py --self-test
 
           mkdir -p "$work/decoded/smali_classes2/cn/nubia/gameassist"
