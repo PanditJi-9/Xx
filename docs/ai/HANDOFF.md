@@ -29467,3 +29467,32 @@ design_tokens 0 · hardening_guard ✓ · provenance_guard (٤٨٧٢ ملفًّ�
 **الحدود:** «يفتح ويُعرض واجهته» **مُتحقَّق بالدليل**؛ «كل ميزاته تعمل» **لا** — التطبيق يعلن 67 صلاحية
 نظام لا تُمنح له، وأي مسار يعتمد عليها يُسجّل رفضًا أو يُتخطّى، و`TurboSchedMonitor` لا يجد دالته
 على نظام غير Nubia. وما يخصّ العتاد يبقى يحتاج جهازًا.
+
+## تكملة ٣٠٢ — إصلاح تجمد ترددات المعالج عند إغلاق تطبيق ونافذة عائمة مفتوحة مع تفعيل MAX AI (2026-11-20)
+
+**الأمر:** «It has the same bug as the previous version: when you have a floating window open and close an app, the CPU frequencies, when AI is enabled, remain stuck and never change.»
+
+**السبب الجذري المقيس:**
+1. عند تفعيل MAX AI وتحسين الترددات لتطبيق نشط، يستحوذ المحرك على عقود سقف التردد (cpu_limits) في HardwareControlArbiter برمز max-ai.
+2. عند إغلاق التطبيق في وجود نافذة عائمة، كان AppMonitor يكتب focused_app <pkg> 0 0 لانتهاء العملية، لكن currentAppContextKey() في MaxAiEngine كان يقرأ الحزمة متجاهلًا التحقق من pid == "0" أو unknown/none.
+3. إشارة الوتيرة MaxAiCadence.Signal لم تكن تتبع سياق التطبيق appContextKey، فلم يكن المحرك يتلقى استيقاظًا لإعادة التقييم عند تبديل أو إغلاق التطبيق وينتظر الدورة البطيئة (30 ثانية).
+4. عند انتهاء دورة القرار في وضع الخمول بعد إغلاق التطبيق، كان المخطط MinimalPlanner يجد الرضا متحققًا لقلة الحمل والحرارة فيعيد step = null, satisfied = true، وكان المحرك يكتفي بطباعة "مراقبة — لا فجوة مقيسة" ويخرج دون تحرير عقود التردد التي استحوذ عليها للتطبيق المغلق.
+5. حارس التدخل InterventionGuard كان يفرض تجميد اتجاه لـ 5 دقائق (DIRECTION_HOLD_MS = 300_000L) فيمنع خفض الترددات.
+
+**الإصلاح المطبق:**
+- MaxAiEngine.kt:
+  - currentAppContextKey(): التحقق الصريح من pid == "0" أو حزم unknown/none وتحويلها إلى system.
+  - cycle(): استشعار تغيّر سياق التطبيق السابق (prevAppContextKey != appContextKey)، وتصفير interventionGuard فورًا، وتحرير كافة عقود AI السابقة عبر ceilingKnobs.leaveAll(TOKEN) لاسترجاع خط أساس ترددات النواة الحرة فور مغادرة التطبيق.
+  - decisionCycle(): إضافة حماية مؤكدة لتحرير أي عقود باقية تحت TOKEN وتصفير الحارس عند تحقق الرضا (plan.satisfied) في سياق النظام أو المشغّل.
+  - noteCadence(): تمرير appContextKey إلى إشارة الوتيرة.
+- MaxAiCadence.kt:
+  - إضافة appContextKey إلى Signal وتفعيله في reasonFor() لإطلاق Reason.USAGE فور إغلاق أو تبديل التطبيق دون أي تأخير.
+- MaxAiCadenceTest.kt:
+  - تحديث معلمات الاختبار وإضافة اختبار وحدة صريح: switching or closing foreground app context re-plans.
+
+**البوابات:**
+- tools/kt_balance.py --assert: 3817 ملفًا · 0 عوائق.
+- tools/code_health.py --assert: 0 مشاكل صحية.
+- tools/i18n_coverage.py --assert: 0 عوائق.
+- tools/design_tokens.py --assert: 0 عوائق.
+- git diff --check: خروج 0 ونظيف تمامًا.

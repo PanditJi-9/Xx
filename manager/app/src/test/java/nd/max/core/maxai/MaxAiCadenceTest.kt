@@ -28,7 +28,8 @@ class MaxAiCadenceTest {
         screenOn: Boolean = true,
         appIntent: Float = 0.5f,
         level: SafetyLevel = SafetyLevel.NORMAL,
-    ) = MaxAiCadence.Signal(screenOn = screenOn, appIntent = appIntent, safetyLevel = level)
+        appContextKey: String = "system",
+    ) = MaxAiCadence.Signal(screenOn = screenOn, appIntent = appIntent, safetyLevel = level, appContextKey = appContextKey)
 
     @Test
     fun `nothing wakes the engine before the first signal is known`() {
@@ -154,5 +155,18 @@ class MaxAiCadenceTest {
         // نافذة استجابة النظام في المحرك عشر ثوان؛ وإعادة التخطيط لا تُسبقها
         // كي لا يُبنى القرار التالي على أثر لم يظهر بعد.
         assertEquals(10_000L, MaxAiCadence.MIN_ADAPTIVE_INTERVAL_MS)
+    }
+
+    @Test
+    fun `switching or closing foreground app context re-plans`() {
+        val decision = MaxAiCadence.decide(
+            previous = signal(appIntent = 0.5f, appContextKey = "com.game"),
+            current = signal(appIntent = 0.5f, appContextKey = "system"),
+            nowMs = 60_000L,
+            lastCycleAtMs = 30_000L,
+        )
+
+        assertTrue(decision.wake)
+        assertEquals(MaxAiCadence.Reason.USAGE, decision.reason)
     }
 }

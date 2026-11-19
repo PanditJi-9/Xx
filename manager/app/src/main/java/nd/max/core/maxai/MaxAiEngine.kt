@@ -6,6 +6,7 @@
 package nd.max.core.maxai
 
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.util.Log
 import com.topjohnwu.superuser.Shell
@@ -250,6 +251,29 @@ class MaxAiEngine @Inject constructor(
     )
 
     @Volatile private var lastCycleContext: CycleContext? = null
+    @Volatile private var lastKnownAppContextKey: String? = null
+    @Volatile private var cachedLauncherPackage: String? = null
+    @Volatile private var cachedLauncherAtMs = 0L
+
+    /** يتحقق إن كانت الحزمة تابعة للنظام أو مشغّل الشاشة الرئيسية. */
+    private fun isSystemOrLauncher(pkg: String): Boolean {
+        if (pkg.isBlank() || pkg == "system" || pkg == "unknown" || pkg == "none") return true
+        if (pkg == appContext.packageName) return true
+        val lower = pkg.lowercase()
+        if (lower.contains("launcher") || lower.contains("home")) return true
+        val now = System.currentTimeMillis()
+        val cached = cachedLauncherPackage
+        if (cached != null && now - cachedLauncherAtMs < 60_000L) {
+            return pkg == cached
+        }
+        val resolved = runCatching {
+            val intent = Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME)
+            appContext.packageManager.resolveActivity(intent, 0)?.activityInfo?.packageName
+        }.getOrNull()
+        cachedLauncherPackage = resolved
+        cachedLauncherAtMs = now
+        return pkg == resolved
+    }
 
     /** آخر قيمة نُشرت للإشعارات — لا يُعاد النشر إلا عند تغيّرها (الكتابة جذرية وبطيئة). */
     @Volatile private var announcedObjective: String? = null
@@ -508,6 +532,22 @@ class MaxAiEngine @Inject constructor(
         val aiEnabled = readAiEnabled()
         // السياق قبل السلوك: التطبيق الأمامي قد يحمل تجاوزًا في بروفايله.
         val appContextKey = currentAppContextKey()
+        val prevAppContextKey = lastKnownAppContextKey
+        if (prevAppContextKey != null && prevAppContextKey != appContextKey) {
+            // انقضاء سياق التطبيق السابق: تصفير حارس التدخل حتى لا يحجب القرارات ٥ دقائق
+            interventionGuard.reset()
+            // مغادرة تطبيق إلى النظام/المشغّل أو تطبيق آخر: تحرير عقود AI السابقة وإعادة الترددات إلى خط الأساس
+            val wasInApp = prevAppContextKey != "system" && !isSystemOrLauncher(prevAppContextKey)
+            if (wasInApp) {
+                ceilingKnobs.leaveAll(TOKEN)
+                DiagnosticCenter.record(
+                    "maxai",
+                    "app context switched: $prevAppContextKey -> $appContextKey :: released leases and reset guard",
+                    level = DiagnosticCenter.Level.INFO,
+                )
+            }
+        }
+        lastKnownAppContextKey = appContextKey
         // التجاوز يُقرأ من مستودع البروفايلات نفسه؛ يُحمَّل مرة عند الحاجة لا في كل دورة.
         if (nd.max.core.gamespace.GameProfileRepository.state.value.loading) {
             runCatching { nd.max.core.gamespace.GameProfileRepository.load() }
@@ -781,6 +821,12 @@ class MaxAiEngine @Inject constructor(
                 )
             ) {
                 return@withContext
+            }
+            if (plan.satisfied && (appContextKey == "system" || isSystemOrLauncher(appContextKey))) {
+                if (arbiter.snapshot().any { it.token == TOKEN }) {
+                    ceilingKnobs.leaveAll(TOKEN)
+                    interventionGuard.reset()
+                }
             }
             publish(aiEnabled = true, snapshot = before) {
                 copy(
@@ -1489,6 +1535,7 @@ class MaxAiEngine @Inject constructor(
             screenOn = snapshot.screenOn >= 0.5f,
             appIntent = snapshot.appIntent,
             safetyLevel = level,
+            appContextKey = currentAppContextKey(),
         )
         val decision = MaxAiCadence.decide(
             previous = cadenceSignal,
@@ -1522,8 +1569,15 @@ class MaxAiEngine @Inject constructor(
             ?.lineSequence()
             ?.firstOrNull { it.startsWith("focused_app") }
             ?.split(" ")
-            ?.getOrNull(1)
-            ?.takeIf { it.isNotBlank() }
+            ?.let { parts ->
+                val pkg = parts.getOrNull(1)?.takeIf { it.isNotBlank() }
+                val pid = parts.getOrNull(2)
+                if (pkg == null || pkg == "unknown" || pkg == "none" || pid == "0") {
+                    "system"
+                } else {
+                    pkg
+                }
+            }
             ?: "system"
     }.getOrDefault("system")
 

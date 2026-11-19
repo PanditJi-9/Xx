@@ -38,6 +38,7 @@ object MaxAiCadence {
         /** نوع الاستخدام كما يقيسه المجمّع: 1 لعبة، 0.5 عادي، 0 شاشة مطفأة. */
         val appIntent: Float,
         val safetyLevel: SafetyLevel,
+        val appContextKey: String = "system",
     )
 
     /** أسباب إعادة التقييم — ثوابت تترجمها الواجهة بلا تخمين. */
@@ -89,13 +90,14 @@ object MaxAiCadence {
      * ما الحقيقة التي تغيّرت — أو null حين لم يتغيّر شيء مؤهِّل.
      *
      * الترتيب مقصود: السلامة أولًا لأنها تسحب سلطة القرار، ثم الشاشة لأنها
-     * تبدّل الهدف، ثم نوع الاستخدام.
+     * تبدّل الهدف، ثم نوع الاستخدام وسياق التطبيق.
      */
     fun reasonFor(previous: Signal?, current: Signal): String? = when {
         previous == null -> null
         previous.safetyLevel != current.safetyLevel -> Reason.SAFETY
         previous.screenOn != current.screenOn -> Reason.SCREEN
         previous.appIntent != current.appIntent -> Reason.USAGE
+        previous.appContextKey != current.appContextKey -> Reason.USAGE
         else -> null
     }
 

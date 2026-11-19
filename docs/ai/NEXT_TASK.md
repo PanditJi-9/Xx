@@ -1,3 +1,14 @@
+## MAX-AI-CPU-FREEZE-01 مُغلق — إصلاح تجمد ترددات CPU عند إغلاق تطبيق ونافذة عائمة مفتوحة — 2026-11-20
+
+**أمر المالك:** «It has the same bug as the previous version: when you have a floating window open and close an app, the CPU frequencies, when AI is enabled, remain stuck and never change.»
+
+**الحالة:** مُنجز ومُغلق في تكملة ٣٠٢.
+1. تحرير عقود الترددات (TOKEN = max-ai) عبر HardwareControlArbiter عند إغلاق التطبيق ومغادرة سياقه إلى النظام أو المشغّل.
+2. تصفير InterventionGuard عند تبديل السياق حتى لا يحجب خفض الترددات ٥ دقائق.
+3. معالجة focused_app pkg 0 0 في currentAppContextKey() لإدراك موت العملية فورًا وتحويلها إلى system.
+4. إدخال appContextKey في إشارة الوتيرة MaxAiCadence.Signal لإطلاق إعادة التقييم الفورية دون انتظار الدورة البطيئة.
+5. التحقق البنيوي: 3817 ملفًا · 0 أخطاء · 0 مشاكل صحية · 0 عوائق.
+
 ## UI-RECORDING-02 — إتمام GPU ثم قياس CPU — 2026-11-19
 
 **أمر المالك:** «اكمل» — شاشةً شاشة، والحركة ضمن كل مراجعة. تحسّنت نصوص شاشة GPU القائمة:
