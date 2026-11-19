@@ -122,9 +122,22 @@
 
     invoke-direct {v0, p0}, Landroid/view/View;-><init>(Landroid/content/Context;)V
 
-    const v2, 0x66ffffff    # 40% أبيض — مرئي فوق الألعاب الداكنة وغير مزعج
+    # حبّة مستديرة بنصف قطر 12px = نصف العرض، لا مستطيل حادّ:
+    # قِيس 11-19 18:40 أن المستطيل 24×1200 «طويل جدًا تقريبًا بطول إصبع يد»
+    # (نصّ المالك)، فصار 24×400 بنصف قطر 12 ليُقرأ مقبضًا لا شريطًا.
+    new-instance v2, Landroid/graphics/drawable/GradientDrawable;
 
-    invoke-virtual {v0, v2}, Landroid/view/View;->setBackgroundColor(I)V
+    invoke-direct {v2}, Landroid/graphics/drawable/GradientDrawable;-><init>()V
+
+    const v3, 0x66ffffff    # 40% أبيض — مرئي فوق الألعاب الداكنة وغير مزعج
+
+    invoke-virtual {v2, v3}, Landroid/graphics/drawable/GradientDrawable;->setColor(I)V
+
+    const v3, 0x41400000    # 12.0f
+
+    invoke-virtual {v2, v3}, Landroid/graphics/drawable/GradientDrawable;->setCornerRadius(F)V
+
+    invoke-virtual {v0, v2}, Landroid/view/View;->setBackground(Landroid/graphics/drawable/Drawable;)V
 
     new-instance v2, Lcn/nubia/gameassist/GameAssistHandle$Touch;
 
@@ -136,7 +149,7 @@
 
     const/16 v2, 0x18      # 24 px عرضًا — رفيع كالمرجع
 
-    const/16 v3, 0x4b0     # 1200 px ارتفاعًا (وسط الشاشة)
+    const/16 v3, 0x190     # 400 px ارتفاعًا ≈ طول الإبهام لا الإصبع كلّه
 
     const/16 v4, 0x7f6     # TYPE_APPLICATION_OVERLAY
 
