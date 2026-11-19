@@ -31,6 +31,11 @@ on:
         description: Draft release holding the APK
         required: false
         default: re-targets
+      disable_bitmap_recycle:
+        description: Diagnostic — no-op every Bitmap.recycle call (see LEDGER)
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -147,6 +152,17 @@ jobs:
             --context-field mContext --bean-getter getPackageName \
             --action cn.zte.gamefloat.powerpanel.action.FOREGROUND_GAME_CHANGE \
             --extra packageName
+
+          # Diagnostic switch, off by default. Recycling a bitmap that a live
+          # ImageView still draws is the measured cause of the start-button
+          # crash (logcat -b crash, 2026-11-19 03:31: Canvas: trying to use a
+          # recycled bitmap <- BitmapDrawable.draw <- ImageView.onDraw). One
+          # build with every recycle skipped answers whether that is the crash
+          # we meet, instead of guessing; it trades a leak for a crash.
+          if [ "${{ inputs.disable_bitmap_recycle }}" = "true" ]; then
+            python3 tools/re_disable_bitmap_recycle.py --self-test
+            python3 tools/re_disable_bitmap_recycle.py --decoded "$work/decoded"
+          fi
 
           # apktool 3.x dropped --use-aapt2: aapt2 is the only engine there, so
           # passing the flag printed the usage text and exited 1.
