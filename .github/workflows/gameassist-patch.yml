@@ -166,6 +166,24 @@ jobs:
           # onGameStart() — the signal RedMagic's system sends and this ROM never
           # does. A stub re-raises the same call shortly after startup instead of
           # waiting for a sender that does not exist here.
+          # Measured on the device 2026-11-19 11:47: the trigger runs, the
+          # window manager is constructed, and the constructor dies in V()
+          # because VolumeSeekbarViewController resolves a componentcenter
+          # service that does not exist on a non-RedMagic ROM. Contain that one
+          # method so construction finishes; the controllers that need the
+          # absent service stay inert instead of taking the whole panel down.
+          python3 tools/re_patch_smali.py --decoded "$work/decoded" \
+            --class cn.nubia.gameassist.panel.GameAssistWindowManager \
+            --method V --mode wrap --catch throwable
+
+          # The panel's own show path is gated on SystemMgr.isGameScene(), which
+          # reads a flag only the RedMagic framework sets. Our trigger *is* the
+          # game-start signal on this ROM, so the scene it emulates is declared
+          # here (70 call sites; measured body: sget-boolean G, return).
+          python3 tools/re_patch_smali.py --decoded "$work/decoded" \
+            --class com.zte.gameassist.common.SystemMgr \
+            --method isGameScene --mode stub --return true --allow-non-void
+
           python3 tools/re_inject_call.py --self-test
 
           mkdir -p "$work/decoded/smali_classes2/cn/nubia/gameassist"
