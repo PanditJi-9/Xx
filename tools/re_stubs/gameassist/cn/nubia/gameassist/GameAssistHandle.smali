@@ -38,7 +38,7 @@
     invoke-static {}, Landroid/app/ActivityThread;->currentApplication()Landroid/app/Application;
     move-result-object v0
 
-    if-eqz v0, :have_ctx
+    if-nez v0, :have_ctx
 
     invoke-static {}, Lcn/nubia/gameassist/GameAssistApplication;->k()Lcn/nubia/gameassist/GameAssistApplication;
     move-result-object v0
@@ -110,7 +110,14 @@
 
     sget-object v0, Lcn/nubia/gameassist/GameAssistHandle;->sView:Landroid/view/View;
 
-    if-nez v0, :go
+    # دلالة الدالڤيك — وهي التي أوقعتنا خمس مرات:
+    #   if-eqz  يقفز عندما تكون القيمة **صفرًا** (== 0)
+    #   if-nez  يقفز عندما تكون القيمة **غير صفر** (!= 0)
+    # فالتسمية مضلّلة: ne = not equal zero. الكود السابق `if-nez v0, :go`
+    # كان يقفز إلى الإنشاء عندما تكون sView **موجودة** — والعكس في التخطّي.
+    # قِيس 17:11:45 على الجهاز: «make entered» ثم «already added» في أول نداء
+    # وأبدًا لا «before addView» — أي أنه أخذ فرع التخطّي وsView=null بعد.
+    if-eqz v0, :go
 
     const-string v2, "GameAssistHandle"
     const-string v3, "already added"
@@ -119,7 +126,7 @@
     return-void
 
     :go
-    if-nez p0, :end
+    if-eqz p0, :end
 
     new-instance v0, Landroid/widget/TextView;
 
