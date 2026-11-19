@@ -24,7 +24,10 @@
 .method public invoke(Ljava/lang/Object;Ljava/lang/reflect/Method;[Ljava/lang/Object;)Ljava/lang/Object;
     .locals 3
 
-    invoke-virtual {p1}, Ljava/lang/reflect/Method;->getReturnType()Ljava/lang/Class;
+    # p0 = this (Handler)، p1 = الوكيل (Object)، p2 = الـMethod، p3 = الوسائط.
+    # استُخدم p1 خطأً فأعاد المحقّق: "'this' argument Object not instance of Method"
+    # (VerifyError قيس على الجهاز 2026-11-19 13:30 في GameAssistComStub$Handler.invoke).
+    invoke-virtual {p2}, Ljava/lang/reflect/Method;->getReturnType()Ljava/lang/Class;
 
     move-result-object v0
 
