@@ -310,6 +310,15 @@ jobs:
             --method onCreate --signature '()V' \
             --target 'Lcn/nubia/gameassist/TriggerPanel;->arm()V'
 
+          # الشريط يُبنى من المستقبل نفسه لا من TriggerPanel$1: قِيس مرتين
+          # (15:26 و15:54) أن السطر المحقون في TriggerPanel$1 لا يُنتج أي سجل
+          # من GameAssistHandle، والمستقبل يعمل في كل بثّ بلا استثناء.
+          python3 tools/re_inject_call.py --decoded "$work/decoded" \
+            --class cn.nubia.gameassist.plugin.config.UpdatePluginConfigReceiver \
+            --method onReceive \
+            --signature '(Landroid/content/Context;Landroid/content/Intent;)V' \
+            --target 'Lcn/nubia/gameassist/GameAssistHandle;->boot()V'
+
           if ! java -jar "$RUNNER_TEMP/apktool.jar" b --copy-original \
               --output "$work/unsigned.apk" "$work/decoded" > "$work/apktool-b.log" 2>&1; then
             echo "::error::apktool build failed"

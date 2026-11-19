@@ -22,10 +22,54 @@
     return-void
 .end method
 
+# مدخل بلا وسائط، لأن re_inject_call.py لا يمرّر Context إلى الدالة المحقونة.
+# يُستدعى أول سطر في UpdatePluginConfigReceiver.onReceive — وهو المستقبل الوحيد
+# المقيس أنه يعمل في كل بثّ (Broadcast completed: result=0)، فلا يعتمد على
+# TriggerPanel$1 الذي قِيس مرتين أن سطر start فيه لا يُنتج أثرًا (15:26 و15:54).
+.method public static boot()V
+    .locals 3
+
+    :try_start_0
+    invoke-static {}, Landroid/app/ActivityThread;->currentApplication()Landroid/app/Application;
+    move-result-object v0
+
+    if-eqz v0, :have
+
+    invoke-static {}, Lcn/nubia/gameassist/GameAssistApplication;->k()Lcn/nubia/gameassist/GameAssistApplication;
+    move-result-object v0
+
+    :have
+    if-eqz v0, :done
+
+    const-string v1, "GameAssistHandle"
+    const-string v2, "boot: context acquired"
+    invoke-static {v1, v2}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
+
+    invoke-static {v0}, Lcn/nubia/gameassist/GameAssistHandle;->start(Landroid/content/Context;)V
+    :try_end_0
+    .catch Ljava/lang/Throwable; {:try_start_0 .. :try_end_0} :catch_0
+
+    :done
+    return-void
+
+    :catch_0
+    move-exception v0
+
+    const-string v1, "GameAssistHandle"
+    const-string v2, "boot failed"
+    invoke-static {v1, v2, v0}, Landroid/util/Log;->w(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
+
+    return-void
+.end method
+
 .method public static start(Landroid/content/Context;)V
     .locals 7
 
     :try_start_0
+    const-string v0, "GameAssistHandle"
+    const-string v1, "start entered"
+    invoke-static {v0, v1}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
+
     sget-object v0, Lcn/nubia/gameassist/GameAssistHandle;->sView:Landroid/view/View;
 
     # لا تُضِف الشريط مرتين، لكن **لا تعُد قبل الإضافة**.
