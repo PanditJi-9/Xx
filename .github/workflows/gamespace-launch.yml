@@ -159,23 +159,24 @@ jobs:
             --extra packageName \
             --component cn.zte.gamefloat/cn.zte.gamefloat.receiver.GameForegroundChangeReceiver
 
-          # نفس نقطة التحوّل، بثّ ثانٍ صريح إلى GameAssist: زرّ «بدء اللعبة» هو
-          # اللحظة التي طلبها المالك — «اريد نافذة gameturbo وان يعمل شريط
-          # السحب خاصته عند ضغط بدء اللعبة في مساحة اللعب». والبيانات
-          # (setData) ليست تفصيلًا: مستقبل GameAssist يفلتر على
-          # Scheme: dispatcher + Ssp LITERAL (قِيس من dumpsys package)، وبلا
-          # setData لا يطابق الفلتر ولا يصل البثّ. و--label مختلف لأن الحقن
-          # الثاني في نفس الدالة يُعدّ تكرارًا ويُتجاهل.
+          # نفس نقطة التحوّل، لكن بالنشاط لا بالبثّ: زرّ «بدء اللعبة» هو اللحظة
+          # التي طلبها المالك — «اريد نافذة gameturbo وان يعمل شريط السحب خاصته
+          # عند ضغط بدء اللعبة في مساحة اللعب». والبثّ ميت على هذا البناء:
+          # قِيس (11-19 19:39) في dumpsys activity broadcasts
+          #   SKIPPED terminal-enq +2ms (-1) #0: (manifest) … exported=true enabled=true
+          #     reason: Security_WakePath Restrict
+          # وفي logcat: WakePathChecker … Service/Provider/Broadcast Reject
+          #   callee=cn.nubia.gameassist wakeType=2
+          # وstartActivity من تطبيق في المقدمة لا يمرّ بهذا الفلتر. النشاط
+          # المصدَّر الذي نستعمله يفتح ثم ينهي نفسه (MultiSubScreenHijack)،
+          # و--activity-extra يميّز إطلاقنا عن الاستعمال الحقيقي للميزة.
           python3 tools/re_inject_broadcast.py --decoded "$work/decoded" \
             --class cn.nubia.gamelauncher.helper.CardHelper \
             --method startApp \
             --signature '(Lcn/nubia/gamelauncher/bean/AppListItemBean;ZLjava/lang/Runnable;)V' \
-            --context-field mContext --bean-getter getPackageName \
-            --action cn.nubia.gameassist.CONFIG_UPDATE_ACTION \
-            --extra packageName \
-            --data 'dispatcher:cn.nubia.gameassist.config.UPDATE_PLUGIN_CONFIG' \
-            --component cn.nubia.gameassist/cn.nubia.gameassist.plugin.config.UpdatePluginConfigReceiver \
-            --label nfw_skip_ga
+            --context-field mContext \
+            --activity cn.nubia.gameassist/cn.nubia.multisubscreen.ui.MultiSubScreenSourceActivity \
+            --activity-extra nfw_handle --label nfw_skip_ga
 
           # بطاقة cps/mpm التي تزعج المالك: «تخلص من هذا … لقد ازعجني».
           # موضعها مقيس: نافذة PowerPanelWindow (type=2038) مضافة من
@@ -233,8 +234,13 @@ jobs:
           senders=$(grep -c 'sendBroadcast' \
             "$work/decoded/smali/cn/nubia/gamelauncher/helper/CardHelper.smali" || true)
           echo "injected sendBroadcast calls in CardHelper: $senders"
-          # 2 = GameFloat + GameAssist: كلاهما يُرسل من نفس نقطة التحوّل.
-          test "$senders" -eq 2
+          # 1 = GameFloat وحده بعد تحويل مسار GameAssist إلى startActivity
+          # (البثّ كان يُهمَل بـSecurity_WakePath Restrict).
+          test "$senders" -eq 1
+          starters=$(grep -c 'Landroid/content/Context;->startActivity(Landroid/content/Intent;)V' \
+            "$work/decoded/smali/cn/nubia/gamelauncher/helper/CardHelper.smali" || true)
+          echo "injected startActivity calls in CardHelper: $starters"
+          test "$starters" -eq 1
           carriers=$(for dex in $(unzip -Z1 "$work/unsigned.apk" 'classes*.dex'); do
             unzip -p "$work/unsigned.apk" "$dex" | grep -a -q 'powerpanel.action.FOREGROUND_GAME_CHANGE' && echo "$dex"
           done | wc -l)

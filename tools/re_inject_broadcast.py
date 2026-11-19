@@ -110,12 +110,47 @@ def params_width(descriptor: str) -> int:
 
 def block(context_field: str, bean_getter: str, bean_type: str, cls: str,
           action: str, extra: str, component: str | None,
-          data: str | None = None, label: str = "nfw_skip") -> list[str]:
+          data: str | None = None, label: str = "nfw_skip",
+          activity: str | None = None,
+          activity_extra: str | None = None) -> list[str]:
     # The guards must jump past the block when a value is MISSING (if-eqz), not
     # when it is present: an inverted guard still assembles and still leaves the
     # method running, so the only symptom is a broadcast that never happens.
     # Measured on the device 2026-11-19: an earlier build shipped `if-nez p1`,
     # every tap ran startApp and no sendBroadcast ever appeared in logcat.
+    if activity:
+        # Start an ACTIVITY instead of sending a broadcast.
+        # Measured 2026-11-19 19:4x: MIUI refused every injected broadcast with
+        #   WakePathChecker: MIUILOG-AutoStart, Service/Provider/Broadcast Reject
+        #   BroadcastQueueInjector: process is not permitted to wake path
+        # so GameAssist's process never started. A startActivity issued by an app
+        # that is in the foreground (GameSpace, at the tap) is allowed, and it is
+        # the only wake path MIUI does not police here.
+        package_name, activity_name = activity.split("/", 1)
+        return [
+            f"    iget-object v1, p0, {cls}->{context_field}:Landroid/content/Context;",
+            f"    if-eqz v1, :{label}",
+            "    new-instance v2, Landroid/content/Intent;",
+            "    invoke-direct {v2}, Landroid/content/Intent;-><init>()V",
+            "    new-instance v3, Landroid/content/ComponentName;",
+            f'    const-string v4, "{package_name}"',
+            f'    const-string v5, "{activity_name}"',
+            "    invoke-direct {v3, v4, v5}, Landroid/content/ComponentName;-><init>(Ljava/lang/String;Ljava/lang/String;)V",
+            "    invoke-virtual {v2, v3}, Landroid/content/Intent;->setComponent(Landroid/content/ComponentName;)Landroid/content/Intent;",
+        ] + ([
+            # A boolean marker the activity checks before doing anything else:
+            # a real MultiSubScreen launch carries no such extra and is untouched.
+            f'    const-string v4, "{activity_extra}"',
+            "    const/4 v5, 0x1",
+            "    invoke-virtual {v2, v4, v5}, Landroid/content/Intent;->putExtra(Ljava/lang/String;Z)Landroid/content/Intent;",
+        ] if activity_extra else []) + [
+            # FLAG_ACTIVITY_NEW_TASK: the Context is the launcher helper, not an Activity.
+            "    const/16 v3, 0x10000000",
+            "    invoke-virtual {v2, v3}, Landroid/content/Intent;->addFlags(I)Landroid/content/Intent;",
+            "    invoke-virtual {v1, v2}, Landroid/content/Context;->startActivity(Landroid/content/Intent;)V",
+            f"    :{label}",
+        ]
+
     lines = [
         f"    if-eqz p1, :{label}",
         f"    invoke-virtual {{p1}}, {bean_type}->{bean_getter}()Ljava/lang/String;",
@@ -166,7 +201,8 @@ def block(context_field: str, bean_getter: str, bean_type: str, cls: str,
 def inject(lines: list[str], descriptor: str, context_field: str, bean_getter: str,
            bean_type: str, cls: str, action: str, extra: str,
            component: str | None = None, data: str | None = None,
-           label: str = "nfw_skip") -> list[str]:
+           label: str = "nfw_skip", activity: str | None = None,
+           activity_extra: str | None = None) -> list[str]:
     starts = [i for i, line in enumerate(lines)
               if line.startswith(".method") and descriptor in line]
     if len(starts) != 1:
@@ -200,7 +236,10 @@ def inject(lines: list[str], descriptor: str, context_field: str, bean_getter: s
         raise PatchError("method has no .locals/.registers directive")
     # Widen the local frame to fit the block's registers instead of refusing:
     # widening is always safe and lets us patch methods that declared fewer.
-    needed = 6 if component else 4
+    # The activity shape uses v0..v5 (ComponentName needs two strings), exactly
+    # like the explicit-component shape; a 5-register frame would put v5 out of
+    # range and the reassembly would fail.
+    needed = 6 if (component or activity) else 4
     if locals_count < needed:
         indent = lines[directive_idx][:len(lines[directive_idx]) - len(lines[directive_idx].lstrip())]
         if directive_kind == "locals":
@@ -234,14 +273,15 @@ def inject(lines: list[str], descriptor: str, context_field: str, bean_getter: s
 
     out = list(lines)
     out[target:target] = block(context_field, bean_getter, bean_type, cls, action, extra,
-                               component, data, label)
+                               component, data, label, activity, activity_extra)
     return out
 
 
 def apply(decoded: str, cls: str, method: str, signature: str, context_field: str,
           bean_getter: str, bean_type: str, action: str, extra: str,
           component: str | None = None, data: str | None = None,
-          label: str = "nfw_skip") -> str:
+          label: str = "nfw_skip", activity: str | None = None,
+          activity_extra: str | None = None) -> str:
     rel = cls.replace(".", "/") + ".smali"
     paths = glob.glob(os.path.join(decoded, "smali*", rel))
     if len(paths) != 1:
@@ -251,7 +291,7 @@ def apply(decoded: str, cls: str, method: str, signature: str, context_field: st
         lines = handle.read().splitlines()
     patched = inject(lines, f"{method}{signature}", context_field, bean_getter,
                      bean_type, f"L{cls.replace('.', '/')};", action, extra, component, data,
-                     label)
+                     label, activity, activity_extra)
     with open(path, "w", encoding="utf-8") as handle:
         handle.write("\n".join(patched) + "\n")
     return path
@@ -378,6 +418,32 @@ def self_test() -> int:
             print("SELF-TEST FAILED: locals not widened to >= 4", file=sys.stderr)
             return 1
 
+    # activity mode: MIUI refuses to wake GameAssist through a broadcast
+    # (WakePathChecker, measured 2026-11-19), so the injected wake path is a
+    # startActivity issued by the foreground GameSpace instead. Its own temp
+    # tree, because the block above already left the shared one.
+    with tempfile.TemporaryDirectory() as tmp_act:
+        tree_act = os.path.join(tmp_act, "decoded", "smali", "cn", "nubia", "gamelauncher", "helper")
+        os.makedirs(tree_act)
+        path_act = os.path.join(tree_act, "CardHelper.smali")
+        open(path_act, "w", encoding="utf-8").write(SAMPLE)
+        apply(os.path.join(tmp_act, "decoded"), "cn.nubia.gamelauncher.helper.CardHelper",
+              "startApp", "(Lcn/nubia/gamelauncher/bean/AppListItemBean;ZLjava/lang/Runnable;)V",
+              "mContext", "getPackageName", "Lcn/nubia/gamelauncher/bean/AppListItemBean;",
+              "", "", label="nfw_act",
+              activity="cn.nubia.gameassist/cn.nubia.multisubscreen.ui.MultiSubScreenSourceActivity",
+              activity_extra="nfw_handle")
+        text_act = open(path_act, encoding="utf-8").read()
+        if ("Landroid/content/Context;->startActivity(Landroid/content/Intent;)V" not in text_act
+                or "sendBroadcast" in text_act
+                or 'const-string v5, "cn.nubia.multisubscreen.ui.MultiSubScreenSourceActivity"' not in text_act
+                or 'const-string v4, "nfw_handle"' not in text_act
+                or "Landroid/content/Intent;->putExtra(Ljava/lang/String;Z)Landroid/content/Intent;" not in text_act
+                or "const/16 v3, 0x10000000" not in text_act
+                or ".locals 6" not in text_act):
+            print("SELF-TEST FAILED: activity start not emitted\n" + text_act, file=sys.stderr)
+            return 1
+
     print("self-test OK: guards skip on missing values, explicit component, survives a rerun, widens tight locals")
     return 0
 
@@ -396,23 +462,34 @@ def main(argv: list[str]) -> int:
     parser.add_argument("--component", help="pkg/cls; makes the send explicit (required on Android 8+)")
     parser.add_argument("--data", help="setData URI, e.g. dispatcher:… (needed when the receiver filters on a scheme)")
     parser.add_argument("--label", default="nfw_skip", help="skip-label suffix, so a second injection in the same method is possible")
+    parser.add_argument("--activity-extra",
+                        help="boolean extra put on the started activity; the hijacked "
+                             "GameAssist activity uses it to tell our launch apart")
+    parser.add_argument("--activity", help="pkg/cls; start an ACTIVITY instead of a broadcast "
+                                          "(the only wake path MIUI allows on this build)")
     parser.add_argument("--self-test", action="store_true")
     args = parser.parse_args(argv)
 
     if args.self_test:
         return self_test()
-    missing = [name for name in ("decoded", "cls", "method", "signature", "context_field",
-                                 "bean_getter", "action", "extra") if getattr(args, name) is None]
+    required = ["decoded", "cls", "method", "signature", "context_field"]
+    if not args.activity:
+        # action/extra/bean only matter for the broadcast shape; the activity
+        # shape needs nothing but a context field.
+        required += ["action", "extra", "bean_getter"]
+    missing = [name for name in required if getattr(args, name) is None]
     if missing:
         parser.error("missing: " + ", ".join(missing))
     try:
         path = apply(args.decoded, args.cls, args.method, args.signature, args.context_field,
-                     args.bean_getter, args.bean_type, args.action, args.extra, args.component,
-                     args.data, args.label)
+                     args.bean_getter, args.bean_type,
+                     args.action or "", args.extra or "", args.component,
+                     args.data, args.label, args.activity, args.activity_extra)
     except PatchError as error:
         print(f"error: {error}", file=sys.stderr)
         return 1
-    print(f"injected the broadcast into {args.cls}.{args.method} ({path})")
+    kind = "activity start" if args.activity else "broadcast"
+    print(f"injected the {kind} into {args.cls}.{args.method} ({path})")
     return 0
 
 

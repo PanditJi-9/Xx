@@ -351,10 +351,33 @@ jobs:
 
           python3 tools/re_inject_call.py --self-test
 
+          # الإيقاظ بالنشاط بدل البثّ: قِيس (11-19 19:39) أن MIUI تُهمل كل بثّ
+          # يُقيم cn.nubia.gameassist:
+          #   reason: Security_WakePath Restrict
+          #   W WakePathChecker: MIUILog-AutoStart, Service/Provider/Broadcast Reject
+          #   wakeType=2 … callee=cn.nubia.gameassist
+          # وأرقام MIUIOP (10001/10002/10021/10053) التي جُرّبت لم ترفع الحجب.
+          # وstartActivity من تطبيق في المقدمة (GameSpace لحظة اللمس) لا يمرّ
+          # بـWakePathChecker. ولا يمكن إضافة نشاط إلى المانيفست: الخطّ يقيس أن
+          # resources.arsc وAndroidManifest.xml مطابقان للأصل بايتًا ببايت.
+          # فالمسار: نشاط GameAssist المصدَّر الوحيد القابل للاستعمال يفتح، وحقن
+          # في نهاية MultiSubScreenBaseActivity.onCreate (لا بدايتها: onPause/
+          # onResume يقرآن الحقل h بلا فحص null) يستدعي الهجّاك ثم finish().
+          python3 tools/re_inject_call_end.py --self-test
+          python3 tools/re_inject_call_end.py --decoded "$work/decoded" \
+            --class cn.nubia.multisubscreen.ui.MultiSubScreenBaseActivity \
+            --method onCreate --signature '(Landroid/os/Bundle;)V' \
+            --target 'Lcn/nubia/gameassist/MultiSubScreenHijack;->maybeFinish(Landroid/app/Activity;)V'
+          hijack=$(grep -c 'MultiSubScreenHijack;->maybeFinish' \
+            "$work/decoded/smali/cn/nubia/multisubscreen/ui/MultiSubScreenBaseActivity.smali" || true)
+          echo "injected hijack call in MultiSubScreenBaseActivity.onCreate: $hijack"
+          test "$hijack" -eq 1
+
           mkdir -p "$work/decoded/smali_classes2/cn/nubia/gameassist"
           cp tools/re_stubs/gameassist/cn/nubia/gameassist/TriggerPanel*.smali \
              tools/re_stubs/gameassist/cn/nubia/gameassist/GameAssistComStub*.smali \
              tools/re_stubs/gameassist/cn/nubia/gameassist/GameAssistHandle*.smali \
+             tools/re_stubs/gameassist/cn/nubia/gameassist/MultiSubScreenHijack*.smali \
              "$work/decoded/smali_classes2/cn/nubia/gameassist/"
 
           # الصنف الغائب com.zte.feature.Feature: قِيس (11-19 16:37:02.445) أن
