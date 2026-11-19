@@ -272,3 +272,34 @@ if ((attrs.privateFlags & PRIVATE_FLAG_TRUSTED_OVERLAY) != 0) {
 
 **ولغير الجذريين:** ما يبقى مطلوبًا هو منح `cn.zte.gamefloat` صلاحية التراكب
 (`SYSTEM_ALERT_WINDOW`) من إعدادات النظام — إجراء مستخدم عادي، لا جذر فيه.
+
+## ما صار يعمل بعد حذف نداء trusted-overlay (2026-11-19)
+
+بعد ترقيع `addHidePrivateTrustedOverlayFlags` (التزام `590e2b6d`، تشغيل Actions
+`44428041667`، ثم تثبيت الأرتيفاكت والقياس على الجهاز):
+
+- **`INTERNAL_SYSTEM_WINDOW` لم يُرفع مرّة واحدة** بعد الترقيع — لا في `logcat` ولا في
+  `-b crash`. الجدار الأول سقط بالقياس.
+- **النافذة تُبنى وتُرسم وتُعرض فعلًا** على جهاز Xiaomi بلا جذر وبلا صلاحية توقيع:
+  `wms.showSurfaceRobustly mWin:Window{eb8c233 u0 PowerPanelWindow}`،
+  `vri.reportDrawFinished … Rect(402, 150 - 792, 241)`، ومحتواها 390×91.
+- ثم تُغلق بعد ~١٢ ملّي ثانية بـ`MSG msg.what = 1` → `removePowerPanelView`؛ وهذا
+  **مسار الإخفاء في تطبيق ZTE نفسه**، لا رفض من النظام.
+
+### ما يبقى، مسمّى لا مُجمَّل
+
+1. **حفظ اللعبة:** الخدمة تكتب `Settings.Global.game_pack_name` بـ`putString`، وتحتاج
+   `WRITE_SECURE_SETTINGS` التي لا تُمنح لتطبيق عادي (مقيس: `SecurityException` متكرّر من
+   `DatabaseUtils`). فتبقى `gamePkg` فارغة و`uploadPowerPanelData` يطبعها فارغة.
+2. **بدء الخدمة من الخلفية:** أندرويد 12+ يرفض `startservice` لتطبيق حديث التثبيت
+   (`BackgroundServiceStartNotAllowedException`)؛ والتغلب المؤقّت كان بجلب عملية التطبيق
+   إلى المقدمة أولًا. الحل الدائم يحتاج `FOREGROUND_SERVICE` صريحًا أو إشعارًا دائمًا.
+3. **شرط الأمامية:** اللوحة تُعرض ثم تُخفى إن لم تكن اللعبة هي الأمامية فعلًا — وهذا سلوك
+   التطبيق لا عطب ترقيع.
+
+### التوقيع
+
+كل نسخ الترقيع (GameFloat · GameAssist · GameSpace) تُوقَّع الآن بمفتاح واحد يُستعاد من
+كاش Actions (`nubia-patch-signing-v1`)، فبصمتها `C=EG, O=MaxManager, CN=Nubia Patch`
+ثابتة وتُثبَّت النسخة الجديدة فوق القديمة بلا حذف. والتوقيع الأصلي لـZTE غير قابل للإنتاج:
+مفتاحه الخاصّ ليس عندنا.
