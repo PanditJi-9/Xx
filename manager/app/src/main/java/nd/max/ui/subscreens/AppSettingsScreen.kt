@@ -212,28 +212,28 @@ fun AppSettingsScreen(
     val appTabs = listOf(
         MaxTab(
             label = stringResource(R.string.app_tab_performance),
-            icon = Icons.Filled.Speed,
+            icon = Icons.Rounded.Speed,
             badgeCount = cfgForTabs.performanceCustomizedCount() + listOf(CopgTag.NoLog).count { it.render() in copgTags }
         ),
         MaxTab(
             label = stringResource(R.string.app_tab_display),
-            icon = Icons.Filled.Monitor,
+            icon = Icons.Rounded.Monitor,
             badgeCount = cfgForTabs.displayCustomizedCount(isGameApp) +
                 listOf(CopgTag.DisableAutoBrightness, CopgTag.KeepScreenOn).count { it.render() in copgTags }
         ),
         MaxTab(
             label = stringResource(R.string.app_tab_gaming),
-            icon = Icons.Filled.Gamepad,
+            icon = Icons.Rounded.Gamepad,
             badgeCount = cfgForTabs.gamingCustomizedCount()
         ),
         MaxTab(
             label = stringResource(R.string.app_tab_power),
-            icon = Icons.Filled.BatteryChargingFull,
+            icon = Icons.Rounded.BatteryChargingFull,
             badgeCount = cfgForTabs.powerCustomizedCount()
         ),
         MaxTab(
             label = stringResource(R.string.app_tab_spoof),
-            icon = Icons.Filled.Fingerprint
+            icon = Icons.Rounded.Fingerprint
         )
     )
 
@@ -511,7 +511,7 @@ fun AppSettingsScreen(
                                     // ضمن قائمة الأداء نفسها، بلا عنوان قسم مستقل.
                                     add {
                                         ExpressiveSwitchItem(
-                                            icon = Icons.Filled.Speed,
+                                            icon = Icons.Rounded.Speed,
                                             title = stringResource(R.string.copg_tweak_nolog_title),
                                             summary = if (copgHasDevice) stringResource(R.string.copg_tweak_nolog_desc) else stringResource(R.string.copg_tweak_needs_device),
                                             checked = CopgTag.NoLog.render() in copgTags,
@@ -523,7 +523,7 @@ fun AppSettingsScreen(
                             )
 
                             // ══ GPU / GOVERNOR CONTROL ══════════════════════════
-                            SettingsSectionTitle(Icons.Filled.Thermostat, stringResource(R.string.app_settings_section_thermal_gpu), colorScheme.error)
+                            SettingsSectionTitle(Icons.Rounded.Thermostat, stringResource(R.string.app_settings_section_thermal_gpu), colorScheme.error)
                             Text(
                                 text = stringResource(R.string.app_settings_thermal_gpu_note),
                                 style = MaterialTheme.typography.bodySmall,
@@ -702,7 +702,7 @@ fun AppSettingsScreen(
                                     // ضمن قائمة العرض نفسها، بلا عنوان قسم مستقل. تُكتب من تبويب التزييف.
                                     add {
                                         ExpressiveSwitchItem(
-                                            icon = Icons.Filled.Monitor,
+                                            icon = Icons.Rounded.Monitor,
                                             title = stringResource(R.string.copg_tweak_dab_title),
                                             summary = if (copgHasDevice) stringResource(R.string.copg_tweak_dab_desc) else stringResource(R.string.copg_tweak_needs_device),
                                             checked = CopgTag.DisableAutoBrightness.render() in copgTags,
@@ -712,7 +712,7 @@ fun AppSettingsScreen(
                                     }
                                     add {
                                         ExpressiveSwitchItem(
-                                            icon = Icons.Filled.Monitor,
+                                            icon = Icons.Rounded.Monitor,
                                             title = stringResource(R.string.copg_tweak_kso_title),
                                             summary = if (copgHasDevice) stringResource(R.string.copg_tweak_kso_desc) else stringResource(R.string.copg_tweak_needs_device),
                                             checked = CopgTag.KeepScreenOn.render() in copgTags,
@@ -725,7 +725,7 @@ fun AppSettingsScreen(
 
                             // ══ RESOLUTION (game apps only) ════════════════════
                             if (isGameApp) {
-                                SettingsSectionTitle(Icons.Filled.AspectRatio, stringResource(R.string.section_resolution_settings), colorScheme.secondary)
+                                SettingsSectionTitle(Icons.Rounded.AspectRatio, stringResource(R.string.section_resolution_settings), colorScheme.secondary)
                                 // §9.5 — دقة مفهومة بدل المعامل الخام:
                                 //
                                 // القيمة المخزونة تبقى معاملًا (`resolution_downscale` عقد قائم مع مُبدّل
@@ -864,7 +864,7 @@ fun AppSettingsScreen(
                                     add {
                                         ExpressiveDropdownItem(
                                             enabled = localMasterOn && rootKnobs,
-                                            icon = Icons.Filled.NotificationsOff,
+                                            icon = Icons.Rounded.NotificationsOff,
                                             title = stringResource(R.string.appfeature_notif_title),
                                             summary = stringResource(R.string.appfeature_notif_summary),
                                             items = listOf(defaultLabel, stringResource(R.string.on_label), stringResource(R.string.off_label)),
@@ -988,7 +988,7 @@ private fun PerAppHardwareDiagnosticsCard(
             Column(Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
-                        imageVector = if (failures.isEmpty()) Icons.Rounded.CheckCircle else Icons.Outlined.ErrorOutline,
+                        imageVector = if (failures.isEmpty()) Icons.Rounded.CheckCircle else Icons.Rounded.ErrorOutline,
                         contentDescription = null,
                         tint = accent
                     )
@@ -1198,7 +1198,7 @@ private fun PerAppCpuControlSection(
                     val color = if (runtimeStatus.isFailure) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.secondary
                     Surface(shape = RoundedCornerShape(maxRadius(MaxRadius.row)), color = color.copy(alpha = .10f), border = androidx.compose.foundation.BorderStroke(1.dp, color.copy(alpha = .24f))) {
                         Row(Modifier.padding(MaxSpace.md), verticalAlignment = Alignment.CenterVertically) {
-                            Icon(if (runtimeStatus.isFailure) Icons.Outlined.ErrorOutline else Icons.Rounded.CheckCircle, null, tint = color)
+                            Icon(if (runtimeStatus.isFailure) Icons.Rounded.ErrorOutline else Icons.Rounded.CheckCircle, null, tint = color)
                             Spacer(Modifier.width(9.dp))
                             val statusMessage = runtimeStatus.message.ifBlank {
                                 if (runtimeStatus.isFailure) stringResource(R.string.appsettings_cpu_not_applied)
@@ -1469,12 +1469,12 @@ private fun ThermalProfilePicker(
 ) {
     val colorScheme = MaterialTheme.colorScheme
     val icons = listOf(
-        Icons.Filled.DeviceUnknown,
-        Icons.Filled.BatteryFull,
-        Icons.Filled.Balance,
-        Icons.Filled.SportsEsports,
-        Icons.Filled.Speed,
-        Icons.Filled.Tune
+        Icons.Rounded.DeviceUnknown,
+        Icons.Rounded.BatteryFull,
+        Icons.Rounded.Balance,
+        Icons.Rounded.SportsEsports,
+        Icons.Rounded.Speed,
+        Icons.Rounded.Tune
     )
     // Intensity ramp: neutral (auto) -> green (power save) -> blue (balanced)
     // -> amber (gaming) -> red (performance/max heat). Matches the same
@@ -1490,7 +1490,7 @@ private fun ThermalProfilePicker(
         colorScheme.primary
     )
     val profiles = values.indices.map { i ->
-        Triple(values[i], icons.getOrElse(i) { Icons.Filled.Memory }, labels[i]) to accents.getOrElse(i) { colorScheme.primary }
+        Triple(values[i], icons.getOrElse(i) { Icons.Rounded.Memory }, labels[i]) to accents.getOrElse(i) { colorScheme.primary }
     }
     Column(modifier = Modifier.padding(vertical = MaxSpace.xs)) {
         profiles.chunked(3).forEach { rowProfiles ->
@@ -1647,7 +1647,7 @@ fun AppHeroHeader(
                     )
                 } else {
                     Icon(
-                        imageVector = Icons.Filled.Apps,
+                        imageVector = Icons.Rounded.Apps,
                         contentDescription = null,
                         tint = colors.onSurfaceVariant,
                         modifier = Modifier.size(28.dp)
@@ -1718,7 +1718,7 @@ fun FeatureGuideDialog(visible: Boolean, onDismiss: () -> Unit) {
                 GuideItem(Icons.Rounded.FlashOn, stringResource(R.string.appfeature_cpu_boost_title), stringResource(R.string.appguide_cpu_boost_desc), colorScheme.primary)
             }
             item {
-                GuideItem(Icons.Filled.Thermostat, stringResource(R.string.appguide_thermal_title), stringResource(R.string.appguide_thermal_desc), colorScheme.error)
+                GuideItem(Icons.Rounded.Thermostat, stringResource(R.string.appguide_thermal_title), stringResource(R.string.appguide_thermal_desc), colorScheme.error)
             }
             item {
                 GuideItem(Icons.Rounded.Memory, stringResource(R.string.appguide_gpu_gov_title), stringResource(R.string.appguide_gpu_gov_desc), colorScheme.tertiary)
@@ -1771,7 +1771,7 @@ fun AppSettingsTopAppBar(
         scrollBehavior = scrollBehavior,
         title = stringResource(R.string.app_settings_title),
         onBack = onBack,
-        accentIcon = Icons.Filled.Apps,
+        accentIcon = Icons.Rounded.Apps,
         accent = MaterialTheme.colorScheme.secondary,
         actions = {
             // مدخلا `Max Backup` و`AppOps` بنفس **شكل** زر `Control map` في شاشة التحكم:

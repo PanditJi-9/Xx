@@ -48,9 +48,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.automirrored.rounded.List
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material.icons.rounded.*
@@ -208,7 +205,7 @@ fun ColorSchemeSettings(navController: NavController) {
                                     supportingContent = { 
                                         Text(text = stringResource(R.string.str_adjust_and_calibrate_your_scre)) 
                                     },
-                                    leadingContent = { LeadingIcon(icon = Icons.Filled.Info) },
+                                    leadingContent = { LeadingIcon(icon = Icons.Rounded.Info) },
                                     containerColor = colorScheme.surfaceContainerLow,
                                     onClick = {}
                                 )
@@ -509,7 +506,7 @@ fun ColorSchemeTopAppBar(scrollBehavior: TopAppBarScrollBehavior, onBack: () -> 
         scrollBehavior = scrollBehavior,
         title = stringResource(R.string.color_scheme),
         onBack = onBack,
-        accentIcon = Icons.Filled.Palette,
+        accentIcon = Icons.Rounded.Palette,
         accent = MaterialTheme.colorScheme.primary
     )
 }

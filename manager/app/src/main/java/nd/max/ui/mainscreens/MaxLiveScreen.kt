@@ -15,12 +15,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Insights
+import androidx.compose.material.icons.rounded.Balance
+import androidx.compose.material.icons.rounded.HourglassTop
 import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.Psychology
-import androidx.compose.material.icons.rounded.Refresh
-import androidx.compose.material.icons.rounded.Science
-import androidx.compose.material.icons.rounded.Timeline
+import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material.icons.rounded.ShowChart
+import androidx.compose.material.icons.rounded.SkipNext
+import androidx.compose.material.icons.rounded.TrackChanges
 import androidx.compose.material.icons.rounded.Tune
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -263,7 +265,7 @@ private fun LiveForecastSection(state: MaxAiState, freshness: SampleFreshness) {
             MaxGroup {
                 MaxRow(
                     title = stringResource(R.string.max_live_forecast_empty),
-                    icon = Icons.Rounded.Timeline,
+                    icon = Icons.Rounded.ShowChart,
                     iconTone = MaxTone.Inactive,
                 )
             }
@@ -331,7 +333,7 @@ private fun PredictionErrorSection(episodes: List<MaxAiEpisode>) {
             MaxGroup {
                 MaxRow(
                     title = stringResource(R.string.max_live_error_empty),
-                    icon = Icons.Rounded.Insights,
+                    icon = Icons.Rounded.Balance,
                     iconTone = MaxTone.Inactive,
                 )
             }
@@ -398,7 +400,7 @@ private fun KnowledgeSection(state: MaxAiState) {
             MaxGroup {
                 MaxRow(
                     title = stringResource(R.string.max_live_knowledge_empty),
-                    icon = Icons.Rounded.Science,
+                    icon = Icons.Rounded.Tune,
                     iconTone = MaxTone.Inactive,
                 )
             }
@@ -459,7 +461,7 @@ private fun ExplorationSection(state: MaxAiState, freshness: SampleFreshness, no
             MaxGroup {
                 MaxRow(
                     title = stringResource(R.string.max_live_empty),
-                    icon = Icons.Rounded.Science,
+                    icon = Icons.Rounded.HourglassTop,
                     iconTone = MaxTone.Inactive,
                 )
             }
@@ -480,7 +482,7 @@ private fun ExplorationSection(state: MaxAiState, freshness: SampleFreshness, no
                     exploration.probesThisSession,
                     exploration.budget,
                 ),
-                icon = Icons.Rounded.Science,
+                icon = Icons.Rounded.Search,
                 iconTone = if (canExplore) MaxTone.Accent else MaxTone.Inactive,
             )
             // المرشح يُعرض فقط حين وُجد فعلًا مقبض مجهول الأثر.
@@ -535,7 +537,7 @@ private fun AutomationPlanSection(state: MaxAiState, freshness: SampleFreshness)
             MaxGroup {
                 MaxRow(
                     title = stringResource(R.string.max_live_empty),
-                    icon = Icons.Rounded.Tune,
+                    icon = Icons.Rounded.TrackChanges,
                     iconTone = MaxTone.Inactive,
                 )
             }
@@ -552,7 +554,7 @@ private fun AutomationPlanSection(state: MaxAiState, freshness: SampleFreshness)
             MaxRow(
                 title = plan.mode,
                 subtitle = plan.reason,
-                icon = Icons.Rounded.Tune,
+                icon = Icons.Rounded.TrackChanges,
                 iconTone = tone,
                 trailing = {
                     if (plan.mode != "Safety guard") {
@@ -574,7 +576,7 @@ private fun AutomationPlanSection(state: MaxAiState, freshness: SampleFreshness)
             MaxRow(
                 title = stringResource(R.string.max_live_next_action),
                 subtitle = plan.nextAction,
-                icon = Icons.Rounded.Refresh,
+                icon = Icons.Rounded.SkipNext,
                 iconTone = MaxTone.Positive,
                 trailing = {
                     MaxCapsule(

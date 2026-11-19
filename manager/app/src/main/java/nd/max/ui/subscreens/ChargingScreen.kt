@@ -42,6 +42,11 @@ package nd.max.ui.subscreens
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
+import androidx.compose.material.icons.rounded.BatteryChargingFull
+import androidx.compose.material.icons.rounded.BatterySaver
+import androidx.compose.material.icons.rounded.Bolt
+import androidx.compose.material.icons.rounded.PowerSettingsNew
+import androidx.compose.material.icons.rounded.Usb
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -135,7 +140,7 @@ fun ChargingScreen(
         MaxListScreen(
             title = stringResource(R.string.charging_title),
             onBack = { navController.popBackStack() },
-            accentIcon = Icons.Filled.BatteryChargingFull,
+            accentIcon = Icons.Rounded.BatteryChargingFull,
             accent = accent,
             actions = {
                 MaxHelpAction(
@@ -265,7 +270,7 @@ fun ChargingScreen(
                                 } else {
                                     stringResource(R.string.charging_sic_boost_desc)
                                 },
-                                icon = Icons.Outlined.Bolt,
+                                icon = Icons.Rounded.Bolt,
                                 iconTone = MaxTone.Accent
                             )
                             MaxGroupDivider()
@@ -276,7 +281,7 @@ fun ChargingScreen(
                                 checked = viewModel.stepChargingEnabled,
                                 onCheckedChange = { viewModel.setStepCharging(it) },
                                 subtitle = stringResource(R.string.charging_step_charging_desc),
-                                icon = Icons.Outlined.BatteryChargingFull,
+                                icon = Icons.Rounded.BatteryChargingFull,
                                 iconTone = MaxTone.Accent
                             )
                             MaxGroupDivider()
@@ -287,7 +292,7 @@ fun ChargingScreen(
                                 checked = viewModel.inputSuspendEnabled,
                                 onCheckedChange = { viewModel.setInputSuspend(it) },
                                 subtitle = stringResource(R.string.charging_input_suspend_desc),
-                                icon = Icons.Outlined.PowerSettingsNew,
+                                icon = Icons.Rounded.PowerSettingsNew,
                                 iconTone = MaxTone.Caution
                             )
                             MaxGroupDivider()
@@ -310,7 +315,7 @@ fun ChargingScreen(
                             checked = viewModel.batterySaverEnabled,
                             onCheckedChange = { viewModel.setBatterySaver(it) },
                             subtitle = stringResource(R.string.charging_battery_saver_desc),
-                            icon = Icons.Outlined.BatterySaver,
+                            icon = Icons.Rounded.BatterySaver,
                             iconTone = MaxTone.Accent
                         )
                         MaxGroupDivider()
@@ -318,7 +323,7 @@ fun ChargingScreen(
                             title = stringResource(R.string.charging_bypass_title),
                             onClick = { navActions.navigateTo(MaxDestination.BypassCharging) },
                             subtitle = stringResource(R.string.charging_bypass_desc),
-                            icon = Icons.Outlined.Usb
+                            icon = Icons.Rounded.Usb
                         )
                     }
                     if (!viewModel.fastChargeAvailable && viewModel.sicModeNodePath == null) {

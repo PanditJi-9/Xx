@@ -25,8 +25,17 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.ListAlt
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.DeleteSweep
+import androidx.compose.material.icons.rounded.IosShare
+import androidx.compose.material.icons.rounded.Pause
+import androidx.compose.material.icons.rounded.PauseCircle
+import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material.icons.rounded.Tune
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -139,13 +148,13 @@ fun LogsViewerScreen(
             title = stringResource(R.string.logsviewer_title),
             reserveBottom = false,
             onBack = { navController.popBackStack() },
-            accentIcon = Icons.Filled.Terminal,
+            accentIcon = Icons.AutoMirrored.Rounded.ListAlt,
             accent = colorScheme.secondary,
             snackbarHostState = snackbarHostState,
             actions = {
                             IconButton(onClick = { viewModel.togglePause() }) {
                                 Icon(
-                                    imageVector = if (viewModel.isPaused) Icons.Filled.PlayArrow else Icons.Filled.Pause,
+                                    imageVector = if (viewModel.isPaused) Icons.Rounded.PlayArrow else Icons.Rounded.Pause,
                                     contentDescription = stringResource(
                                         if (viewModel.isPaused) R.string.logsviewer_resume_cd else R.string.logsviewer_pause_cd
                                     )
@@ -170,7 +179,7 @@ fun LogsViewerScreen(
                                                 }
                                             }
                                         },
-                                        icon = Icons.Outlined.IosShare,
+                                        icon = Icons.Rounded.IosShare,
                                     ),
                                     MaxCommand(
                                         label = stringResource(R.string.logsviewer_clear_cd),
@@ -185,7 +194,7 @@ fun LogsViewerScreen(
                                                 dismiss = resources.getString(R.string.no)
                                             )
                                         },
-                                        icon = Icons.Outlined.DeleteSweep,
+                                        icon = Icons.Rounded.DeleteSweep,
                                         destructive = true,
                                     ),
                                 ),
@@ -193,7 +202,7 @@ fun LogsViewerScreen(
                             )
                             if (viewModel.viewerMode == LogsViewerViewModel.ViewerMode.LOGCAT) {
                                 IconButton(onClick = { settingsVisible = true }) {
-                                    Icon(Icons.Outlined.Tune, contentDescription = stringResource(R.string.logsviewer_settings_cd))
+                                    Icon(Icons.Rounded.Tune, contentDescription = stringResource(R.string.logsviewer_settings_cd))
                                 }
                             }
             }
@@ -266,11 +275,11 @@ fun LogsViewerScreen(
                             value = viewModel.searchQuery,
                             onValueChange = { viewModel.onSearchQueryChange(it) },
                             placeholder = { Text(stringResource(R.string.logsviewer_search_hint)) },
-                            leadingIcon = { Icon(Icons.Outlined.Search, contentDescription = null) },
+                            leadingIcon = { Icon(Icons.Rounded.Search, contentDescription = null) },
                             trailingIcon = {
                                 if (viewModel.searchQuery.isNotEmpty()) {
                                     IconButton(onClick = { viewModel.onSearchQueryChange("") }) {
-                                        Icon(Icons.Filled.Close, contentDescription = stringResource(android.R.string.cancel))
+                                        Icon(Icons.Rounded.Close, contentDescription = stringResource(android.R.string.cancel))
                                     }
                                 }
                             },
@@ -323,7 +332,7 @@ fun LogsViewerScreen(
                                     .padding(horizontal = MaxSpace.md, vertical = MaxSpace.sm)
                             ) {
                                 Icon(
-                                    Icons.Filled.PauseCircle,
+                                    Icons.Rounded.PauseCircle,
                                     contentDescription = null,
                                     tint = colorScheme.onSecondaryContainer,
                                     modifier = Modifier.size(18.dp)
@@ -365,11 +374,11 @@ fun LogsViewerScreen(
                             value = viewModel.unifiedSearchQuery,
                             onValueChange = { viewModel.onUnifiedSearchQueryChange(it) },
                             placeholder = { Text(stringResource(R.string.logsviewer_unified_search_hint)) },
-                            leadingIcon = { Icon(Icons.Outlined.Search, contentDescription = null) },
+                            leadingIcon = { Icon(Icons.Rounded.Search, contentDescription = null) },
                             trailingIcon = {
                                 if (viewModel.unifiedSearchQuery.isNotEmpty()) {
                                     IconButton(onClick = { viewModel.onUnifiedSearchQueryChange("") }) {
-                                        Icon(Icons.Filled.Close, contentDescription = stringResource(android.R.string.cancel))
+                                        Icon(Icons.Rounded.Close, contentDescription = stringResource(android.R.string.cancel))
                                     }
                                 }
                             },
@@ -499,7 +508,7 @@ fun LogsViewerScreen(
                                     .padding(horizontal = MaxSpace.md, vertical = MaxSpace.sm)
                             ) {
                                 Icon(
-                                    Icons.Filled.PauseCircle,
+                                    Icons.Rounded.PauseCircle,
                                     contentDescription = null,
                                     tint = colorScheme.onSecondaryContainer,
                                     modifier = Modifier.size(18.dp)

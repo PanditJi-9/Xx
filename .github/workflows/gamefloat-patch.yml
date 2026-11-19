@@ -185,6 +185,21 @@ jobs:
             --class 'cn.zte.gamefloat.powerpanel.PowerPanelService$1' \
             --method run --mode noop
 
+          # Third gate, measured in GameForegroundChangeReceiver.onReceive:
+          #   if (isAppEnable(pkg) && getGameLauncherPkgFromDB().contains(pkg))
+          #       foregroundPkgChange(ctx, pkg, 0, 1);   // show
+          #   else
+          #       foregroundPkgChange(ctx, pkg, 1, 1);   // hide
+          # The database is the launcher's own history, so any game it has not
+          # recorded lands in the hide branch — measured as
+          #   packageName=com.tencent.ig, isAppEnable: true, false  →  msg.what = 1
+          # Only the first `contains` (the panel gate) is answered true; the
+          # second one belongs to the counter path and keeps its real answer.
+          python3 tools/re_force_true.py --self-test
+          python3 tools/re_force_true.py --decoded "$work/decoded" \
+            --class cn.zte.gamefloat.receiver.GameForegroundChangeReceiver \
+            --method onReceive --invoke 'List;->contains' --value 1
+
           if ! java -jar "$RUNNER_TEMP/apktool.jar" b --copy-original \
               --output "$work/unsigned.apk" "$work/decoded" > "$work/apktool-b.log" 2>&1; then
             echo "::error::apktool build failed"

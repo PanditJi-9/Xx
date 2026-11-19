@@ -22,6 +22,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
+import androidx.compose.material.icons.rounded.AcUnit
+import androidx.compose.material.icons.rounded.DeleteForever
+import androidx.compose.material.icons.rounded.DeleteSweep
+import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -97,7 +101,7 @@ fun DebloatFreezeScreen(
         MaxSplitScreen(
             title = stringResource(R.string.debloat_freeze_title),
             onBack = { navController.popBackStack() },
-            accentIcon = Icons.Outlined.DeleteSweep,
+            accentIcon = Icons.Rounded.DeleteSweep,
             accent = colorScheme.tertiary,
             topBar = { scrollBehavior ->
                 DebloatFreezeTopAppBar(
@@ -284,17 +288,17 @@ private fun DebloatAppRow(
                 DropdownMenu(expanded = menuExpanded, onDismissRequest = { menuExpanded = false }) {
                     DropdownMenuItem(
                         text = { Text(if (app.isEnabled) stringResource(R.string.debloat_action_freeze) else stringResource(R.string.debloat_action_unfreeze)) },
-                        leadingIcon = { Icon(Icons.Outlined.AcUnit, null) },
+                        leadingIcon = { Icon(Icons.Rounded.AcUnit, null) },
                         onClick = { onToggleFreeze(); menuExpanded = false }
                     )
                     DropdownMenuItem(
                         text = { Text(stringResource(R.string.debloat_action_uninstall)) },
-                        leadingIcon = { Icon(Icons.Outlined.DeleteForever, null, tint = colorScheme.error) },
+                        leadingIcon = { Icon(Icons.Rounded.DeleteForever, null, tint = colorScheme.error) },
                         onClick = { onUninstall(); menuExpanded = false }
                     )
                     DropdownMenuItem(
                         text = { Text(stringResource(R.string.debloat_action_app_info)) },
-                        leadingIcon = { Icon(Icons.Outlined.Info, null) },
+                        leadingIcon = { Icon(Icons.Rounded.Info, null) },
                         onClick = { onOpenSettings(); menuExpanded = false }
                     )
                 }
@@ -350,7 +354,7 @@ private fun DebloatFreezeTopAppBar(
             scrollBehavior = scrollBehavior,
             title = stringResource(R.string.debloat_freeze_title),
             onBack = onBack,
-            accentIcon = Icons.Outlined.DeleteSweep,
+            accentIcon = Icons.Rounded.DeleteSweep,
             accent = MaterialTheme.colorScheme.tertiary,
             actions = {
                 IconButton(onClick = { onSearchModeChange(true) }) {

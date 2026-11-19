@@ -38,10 +38,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.rounded.*
-import androidx.compose.material.icons.automirrored.rounded.List
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material.icons.rounded.*
@@ -131,7 +128,7 @@ fun PreferenceTweakScreen(navController: NavController) {
             title = stringResource(R.string.prefs),
             subtitle = stringResource(R.string.str_apply_add_on_configurations_ta),
             onBack = { navController.popBackStack() },
-            accentIcon = Icons.Filled.Tune,
+            accentIcon = Icons.Rounded.Tune,
             accent = MaterialTheme.colorScheme.tertiary
         ) {
             
@@ -369,7 +366,7 @@ fun PreferenceTweakTopAppBar(scrollBehavior: TopAppBarScrollBehavior, onBack: ()
         scrollBehavior = scrollBehavior,
         title = stringResource(R.string.prefs),
         onBack = onBack,
-        accentIcon = Icons.Filled.Tune,
+        accentIcon = Icons.Rounded.Tune,
         accent = MaterialTheme.colorScheme.tertiary
     )
 }

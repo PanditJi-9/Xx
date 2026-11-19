@@ -33,12 +33,11 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Memory
-import androidx.compose.material.icons.filled.Remove
-import androidx.compose.material.icons.outlined.PictureInPictureAlt
-import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Memory
+import androidx.compose.material.icons.rounded.PictureInPictureAlt
+import androidx.compose.material.icons.rounded.QueryStats
+import androidx.compose.material.icons.rounded.Remove
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -215,13 +214,13 @@ fun ProcessManagerScreen(
         MaxListScreen(
             title = stringResource(R.string.processmgr_title),
             onBack = { navController.popBackStack() },
-            accentIcon = Icons.Filled.Memory,
+            accentIcon = Icons.Rounded.QueryStats,
             accent = colorScheme.primary,
             snackbarHostState = snackbarHostState,
             actions = {
                 IconButton(onClick = { overlayOptions = true }) {
                     Icon(
-                        imageVector = Icons.Outlined.PictureInPictureAlt,
+                        imageVector = Icons.Rounded.PictureInPictureAlt,
                         contentDescription = stringResource(R.string.processmgr_overlay_title)
                     )
                 }
@@ -454,7 +453,7 @@ private fun ReadingHeader(
                 title = stringResource(R.string.processmgr_overlay_title),
                 checked = overlayRunning,
                 onCheckedChange = { onToggleOverlay() },
-                icon = Icons.Outlined.PictureInPictureAlt
+                icon = Icons.Rounded.PictureInPictureAlt
             )
         }
     }
@@ -524,7 +523,7 @@ private fun ControlStrip(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     IconButton(onClick = onLess) {
                         Icon(
-                            imageVector = Icons.Filled.Remove,
+                            imageVector = Icons.Rounded.Remove,
                             contentDescription = stringResource(R.string.processmgr_limit_less)
                         )
                     }
@@ -535,7 +534,7 @@ private fun ControlStrip(
                     )
                     IconButton(onClick = onMore) {
                         Icon(
-                            imageVector = Icons.Filled.Add,
+                            imageVector = Icons.Rounded.Add,
                             contentDescription = stringResource(R.string.processmgr_limit_more)
                         )
                     }
@@ -858,7 +857,7 @@ private fun OverlaySheet(
                 title = stringResource(R.string.processmgr_overlay_title),
                 checked = running,
                 onCheckedChange = { onToggle() },
-                icon = Icons.Outlined.PictureInPictureAlt
+                icon = Icons.Rounded.PictureInPictureAlt
             )
         }
         item {

@@ -73,6 +73,7 @@ fun maxIllustrationKind(iconName: String?): MaxIllustrationKind? = when (iconNam
     "Memory", "DeveloperBoard" -> MaxIllustrationKind.Cpu
     "Speed", "VideogameAsset" -> MaxIllustrationKind.Gpu
     "Storage", "Save", "Backup", "DataUsage", "Folder", "FolderOpen" -> MaxIllustrationKind.Storage
+    "SdStorage" -> MaxIllustrationKind.Memory
     "DisplaySettings", "AspectRatio", "Monitor", "ScreenRotation" -> MaxIllustrationKind.Display
     "BatteryChargingFull", "BatteryFull", "BatteryStd", "Power", "Cable", "Bedtime" -> MaxIllustrationKind.Power
     "Thermostat", "DeviceThermostat", "Whatshot" -> MaxIllustrationKind.Thermal
@@ -325,12 +326,23 @@ fun maxIllustrationParts(kind: MaxIllustrationKind): List<MaxIllustrationPart> =
             line(0.656f, 0.344f, 0.686f, 0.383f, 0.708f, 0.427f, 0.719f, 0.475f, 0.719f, 0.525f, 0.708f, 0.573f, 0.686f, 0.617f, 0.656f, 0.656f, weight = 1.4f)
             line(0.755f, 0.245f, 0.805f, 0.308f, 0.84f, 0.381f, 0.858f, 0.46f, 0.858f, 0.54f, 0.84f, 0.619f, 0.805f, 0.692f, 0.755f, 0.755f, ink = soft, weight = 1.4f)
         }
-        // ذكاء: ماسة زجاجية، ماسة داخلية صلبة، ونقطة مثقوبة (لا نجمة).
+        // ذكاء: شبكة عصبية — جسم زجاجي، عقدة مركزية صلبة بنواة مثقوبة، خمس عقد طرفية وخيوط وصل (لا نجمة).
         MaxIllustrationKind.Intelligence -> {
-            line(0.5f, 0.07f, 0.93f, 0.5f, 0.5f, 0.93f, 0.07f, 0.5f, ink = wash, closed = true, filled = true)
-            line(0.5f, 0.07f, 0.93f, 0.5f, 0.5f, 0.93f, 0.07f, 0.5f, ink = outline, closed = true)
-            line(0.5f, 0.27f, 0.73f, 0.5f, 0.5f, 0.73f, 0.27f, 0.5f, closed = true, filled = true)
-            ring(0.5f, 0.5f, 0.06f, cut, filled = true)
+            ring(0.5f, 0.5f, 0.43f, wash, filled = true)
+            ring(0.5f, 0.5f, 0.43f, outline)
+            line(0.5f, 0.5f, 0.5f, 0.215f, ink = soft, weight = 1.2f)
+            line(0.5f, 0.5f, 0.771f, 0.412f, ink = soft, weight = 1.2f)
+            line(0.5f, 0.5f, 0.668f, 0.731f, ink = soft, weight = 1.2f)
+            line(0.5f, 0.5f, 0.332f, 0.731f, ink = soft, weight = 1.2f)
+            line(0.5f, 0.5f, 0.229f, 0.412f, ink = soft, weight = 1.2f)
+            line(0.5f, 0.215f, 0.771f, 0.412f, 0.668f, 0.731f, 0.332f, 0.731f, 0.229f, 0.412f, ink = soft, closed = true, weight = 0.9f)
+            ring(0.5f, 0.215f, 0.065f, filled = true)
+            ring(0.771f, 0.412f, 0.065f, filled = true)
+            ring(0.668f, 0.731f, 0.065f, filled = true)
+            ring(0.332f, 0.731f, 0.065f, filled = true)
+            ring(0.229f, 0.412f, 0.065f, filled = true)
+            ring(0.5f, 0.5f, 0.13f, filled = true)
+            ring(0.5f, 0.5f, 0.05f, cut, filled = true)
         }
         // جزيرة ديناميكية: حبّة زجاجية بكاميرا ومؤشر نشاط.
         MaxIllustrationKind.Island -> {

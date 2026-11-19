@@ -108,7 +108,7 @@ fun NetworkSchedulerScreen(
         MaxScreen(
             title = screenTitle,
             onBack = { navController.popBackStack() },
-            accentIcon = Icons.Outlined.SettingsEthernet,
+            accentIcon = Icons.Rounded.NetworkCheck,
             accent = accent,
             condition = condition,
             actions = {
@@ -149,7 +149,7 @@ private fun NetworkSection(
             MaxRow(
                 title = stringResource(R.string.net_congestion_title),
                 subtitle = stringResource(R.string.net_congestion_desc),
-                icon = Icons.Outlined.NetworkCheck,
+                icon = Icons.Rounded.NetworkCheck,
                 onClick = onToggleCongestion,
                 trailing = {
                     ValueChevron(
@@ -174,7 +174,7 @@ private fun NetworkSection(
             MaxSwitchRow(
                 title = stringResource(R.string.net_syncookies_title),
                 subtitle = stringResource(R.string.net_syncookies_desc),
-                icon = Icons.Outlined.Security,
+                icon = Icons.Rounded.Security,
                 checked = vm.syncookiesEnabled,
                 onCheckedChange = vm::setSyncookies
             )
@@ -183,7 +183,7 @@ private fun NetworkSection(
             MaxSwitchRow(
                 title = stringResource(R.string.net_tcp_reuse_title),
                 subtitle = stringResource(R.string.net_tcp_reuse_desc),
-                icon = Icons.Outlined.Sync,
+                icon = Icons.Rounded.Sync,
                 checked = vm.tcpReuseEnabled,
                 onCheckedChange = vm::setTcpReuse
             )
@@ -192,7 +192,7 @@ private fun NetworkSection(
             MaxSwitchRow(
                 title = stringResource(R.string.net_tcp_fastopen_title),
                 subtitle = stringResource(R.string.net_tcp_fastopen_desc),
-                icon = Icons.Outlined.Bolt,
+                icon = Icons.Rounded.Bolt,
                 checked = vm.tcpFastopenEnabled,
                 onCheckedChange = vm::setTcpFastopen
             )
@@ -201,7 +201,7 @@ private fun NetworkSection(
             MaxSwitchRow(
                 title = stringResource(R.string.net_tcp_sack_title),
                 subtitle = stringResource(R.string.net_tcp_sack_desc),
-                icon = Icons.Outlined.CheckCircle,
+                icon = Icons.Rounded.CheckCircle,
                 checked = vm.tcpSackEnabled,
                 onCheckedChange = vm::setTcpSack
             )
@@ -210,7 +210,7 @@ private fun NetworkSection(
             MaxSwitchRow(
                 title = stringResource(R.string.net_tcp_ecn_title),
                 subtitle = stringResource(R.string.net_tcp_ecn_desc),
-                icon = Icons.Outlined.Warning,
+                icon = Icons.Rounded.Warning,
                 checked = vm.tcpEcnEnabled,
                 onCheckedChange = vm::setTcpEcn
             )
@@ -239,7 +239,7 @@ private fun SchedulerSection(
             MaxSwitchRow(
                 title = stringResource(R.string.sched_bore_title),
                 subtitle = stringResource(R.string.sched_bore_desc),
-                icon = Icons.Outlined.Speed,
+                icon = Icons.Rounded.Speed,
                 checked = vm.boreEnabled,
                 onCheckedChange = vm::setBore
             )
@@ -248,7 +248,7 @@ private fun SchedulerSection(
             MaxSwitchRow(
                 title = stringResource(R.string.sched_autogroup_title),
                 subtitle = stringResource(R.string.sched_autogroup_desc),
-                icon = Icons.Outlined.Sync,
+                icon = Icons.Rounded.Sync,
                 checked = vm.autogroupEnabled,
                 onCheckedChange = vm::setAutogroup
             )
@@ -257,7 +257,7 @@ private fun SchedulerSection(
             MaxSwitchRow(
                 title = stringResource(R.string.sched_child_runs_first_title),
                 subtitle = stringResource(R.string.sched_child_runs_first_desc),
-                icon = Icons.Outlined.Bolt,
+                icon = Icons.Rounded.Bolt,
                 checked = vm.childRunsFirstEnabled,
                 onCheckedChange = vm::setChildRunsFirst
             )
@@ -266,7 +266,7 @@ private fun SchedulerSection(
             MaxSwitchRow(
                 title = stringResource(R.string.sched_stats_title),
                 subtitle = stringResource(R.string.sched_stats_desc),
-                icon = Icons.Outlined.QueryStats,
+                icon = Icons.Rounded.QueryStats,
                 checked = vm.schedstatsEnabled,
                 onCheckedChange = vm::setSchedstats
             )
@@ -275,7 +275,7 @@ private fun SchedulerSection(
             MaxSwitchRow(
                 title = stringResource(R.string.sched_cstate_aware_title),
                 subtitle = stringResource(R.string.sched_cstate_aware_desc),
-                icon = Icons.Outlined.BatteryChargingFull,
+                icon = Icons.Rounded.BatteryChargingFull,
                 checked = vm.cstateAwareEnabled,
                 onCheckedChange = vm::setCstateAware
             )
@@ -289,7 +289,7 @@ private fun SchedulerSection(
             MaxRow(
                 title = stringResource(R.string.sched_tunable_scaling_title),
                 subtitle = stringResource(R.string.sched_tunable_scaling_desc),
-                icon = Icons.Outlined.Tune,
+                icon = Icons.Rounded.Tune,
                 onClick = onToggleScaling,
                 trailing = {
                     ValueChevron(
@@ -364,7 +364,7 @@ private fun AdvancedSection(
     MaxGroup {
         MaxRow(
             title = stringResource(R.string.sched_advanced_section_title),
-            icon = Icons.Outlined.Tune,
+            icon = Icons.Rounded.Tune,
             onClick = onToggle,
             trailing = {
                 ValueChevron(value = count.toString(), expanded = expanded)

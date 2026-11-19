@@ -14,12 +14,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Balance
-import androidx.compose.material.icons.filled.BatteryFull
-import androidx.compose.material.icons.filled.DeviceUnknown
-import androidx.compose.material.icons.filled.SportsEsports
-import androidx.compose.material.icons.filled.Speed
-import androidx.compose.material.icons.filled.Tune
+import androidx.compose.material.icons.rounded.Balance
+import androidx.compose.material.icons.rounded.BatteryFull
+import androidx.compose.material.icons.rounded.DeviceUnknown
+import androidx.compose.material.icons.rounded.Speed
+import androidx.compose.material.icons.rounded.SportsEsports
+import androidx.compose.material.icons.rounded.Tune
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -41,12 +41,12 @@ import nd.max.ui.design.maxRadius
 
 /** أيقونة بروفايل الحرارة: هي أيقونات بطاقات «Thermal & GPU Governor» في الإعدادات نفسها. */
 internal fun thermalIcon(id: String): ImageVector = when (id) {
-    "power" -> Icons.Filled.BatteryFull
-    "balanced" -> Icons.Filled.Balance
-    "gaming" -> Icons.Filled.SportsEsports
-    "performance" -> Icons.Filled.Speed
-    "custom" -> Icons.Filled.Tune
-    else -> Icons.Filled.DeviceUnknown
+    "power" -> Icons.Rounded.BatteryFull
+    "balanced" -> Icons.Rounded.Balance
+    "gaming" -> Icons.Rounded.SportsEsports
+    "performance" -> Icons.Rounded.Speed
+    "custom" -> Icons.Rounded.Tune
+    else -> Icons.Rounded.DeviceUnknown
 }
 
 /**

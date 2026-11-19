@@ -16,8 +16,21 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.*
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.*
+import androidx.compose.material.icons.rounded.Animation
+import androidx.compose.material.icons.rounded.AspectRatio
+import androidx.compose.material.icons.rounded.BlurOn
+import androidx.compose.material.icons.rounded.ChevronRight
+import androidx.compose.material.icons.rounded.DisplaySettings
+import androidx.compose.material.icons.rounded.FormatSize
+import androidx.compose.material.icons.rounded.InvertColors
+import androidx.compose.material.icons.rounded.Nightlight
+import androidx.compose.material.icons.rounded.NightlightRound
+import androidx.compose.material.icons.rounded.Refresh
+import androidx.compose.material.icons.rounded.Schedule
+import androidx.compose.material.icons.rounded.Timer
+import androidx.compose.material.icons.rounded.WbSunny
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -100,7 +113,7 @@ fun DisplayStudioScreen(
         MaxListScreen(
             title = stringResource(R.string.display_studio_title),
             onBack = { navController.popBackStack() },
-            accentIcon = Icons.Filled.DisplaySettings,
+            accentIcon = Icons.Rounded.DisplaySettings,
             accent = colorScheme.secondary,
             actions = {
                 MaxHelpAction(
@@ -150,7 +163,7 @@ fun DisplayStudioScreen(
                             content = listOf(
                                 {
                                     ExpressiveDropdownItem(
-                                        icon = Icons.Outlined.Animation,
+                                        icon = Icons.Rounded.Animation,
                                         title = stringResource(R.string.display_animation_scale_title),
                                         items = DisplayStudioViewModel.ANIMATION_SCALE_PRESETS.map(::formatAnimationScale),
                                         selectedIndex = animIndex,
@@ -159,7 +172,7 @@ fun DisplayStudioScreen(
                                 },
                                 {
                                     ExpressiveDropdownItem(
-                                        icon = Icons.Outlined.FormatSize,
+                                        icon = Icons.Rounded.FormatSize,
                                         title = stringResource(R.string.display_font_scale_title),
                                         items = DisplayStudioViewModel.FONT_SCALE_PRESETS.map(::formatFontScale),
                                         selectedIndex = fontIndex,
@@ -168,7 +181,7 @@ fun DisplayStudioScreen(
                                 },
                                 {
                                     ExpressiveDropdownItem(
-                                        icon = Icons.Outlined.Timer,
+                                        icon = Icons.Rounded.Timer,
                                         title = stringResource(R.string.display_screen_timeout_title),
                                         items = DisplayStudioViewModel.SCREEN_TIMEOUT_PRESETS.map(::formatTimeout),
                                         selectedIndex = timeoutIndex,
@@ -177,7 +190,7 @@ fun DisplayStudioScreen(
                                 },
                                 {
                                     ExpressiveSwitchItem(
-                                        icon = Icons.Outlined.NightlightRound,
+                                        icon = Icons.Rounded.NightlightRound,
                                         title = stringResource(R.string.display_night_light_title),
                                         summary = stringResource(R.string.display_night_light_desc),
                                         checked = viewModel.nightLightEnabled,
@@ -186,7 +199,7 @@ fun DisplayStudioScreen(
                                 },
                                 {
                                     ExpressiveSwitchItem(
-                                        icon = Icons.Outlined.Schedule,
+                                        icon = Icons.Rounded.Schedule,
                                         title = stringResource(R.string.display_night_schedule_title),
                                         summary = stringResource(R.string.display_night_schedule_desc),
                                         checked = viewModel.nightScheduleEnabled,
@@ -195,7 +208,7 @@ fun DisplayStudioScreen(
                                 },
                                 {
                                     ExpressiveDropdownItem(
-                                        icon = Icons.Outlined.NightlightRound,
+                                        icon = Icons.Rounded.Nightlight,
                                         title = stringResource(R.string.display_night_start_title),
                                         items = HOUR_LABELS,
                                         enabled = viewModel.nightScheduleEnabled,
@@ -205,7 +218,7 @@ fun DisplayStudioScreen(
                                 },
                                 {
                                     ExpressiveDropdownItem(
-                                        icon = Icons.Outlined.NightlightRound,
+                                        icon = Icons.Rounded.WbSunny,
                                         title = stringResource(R.string.display_night_end_title),
                                         items = HOUR_LABELS,
                                         enabled = viewModel.nightScheduleEnabled,
@@ -215,7 +228,7 @@ fun DisplayStudioScreen(
                                 },
                                 {
                                     ExpressiveSwitchItem(
-                                        icon = Icons.Outlined.InvertColors,
+                                        icon = Icons.Rounded.InvertColors,
                                         title = stringResource(R.string.display_color_inversion_title),
                                         summary = stringResource(R.string.display_color_inversion_desc),
                                         checked = viewModel.colorInversionEnabled,
@@ -224,7 +237,7 @@ fun DisplayStudioScreen(
                                 },
                                 {
                                     ExpressiveSwitchItem(
-                                        icon = Icons.Outlined.BlurOn,
+                                        icon = Icons.Rounded.BlurOn,
                                         title = stringResource(R.string.display_blur_title),
                                         summary = stringResource(R.string.display_blur_desc),
                                         checked = viewModel.windowBlurDisabled,
@@ -268,19 +281,19 @@ fun DisplayStudioScreen(
                             content = listOf(
                                 {
                                     ExpressiveListItem(
-                                        leadingContent = { LeadingIcon(icon = Icons.Outlined.AspectRatio) },
+                                        leadingContent = { LeadingIcon(icon = Icons.Rounded.AspectRatio) },
                                         headlineContent = { Text(stringResource(R.string.display_resolution_control_title)) },
                                         supportingContent = { Text("${activeW}×${activeH} · ${resolutionViewModel.activeDpi} DPI") },
-                                        trailingContent = { Icon(Icons.Outlined.ChevronRight, null) },
+                                        trailingContent = { Icon(Icons.Rounded.ChevronRight, null) },
                                         onClick = { MaxNavActions(navController).navigateTo(MaxDestination.Resolution) }
                                     )
                                 },
                                 {
                                     ExpressiveListItem(
-                                        leadingContent = { LeadingIcon(icon = Icons.Outlined.Refresh) },
+                                        leadingContent = { LeadingIcon(icon = Icons.Rounded.Refresh) },
                                         headlineContent = { Text(stringResource(R.string.display_refresh_control_title)) },
                                         supportingContent = { Text(if (currentRateReason.equals("default", true)) "${currentHz} Hz · Auto" else "${currentHz} Hz · Fixed") },
-                                        trailingContent = { Icon(Icons.Outlined.ChevronRight, null) },
+                                        trailingContent = { Icon(Icons.Rounded.ChevronRight, null) },
                                         onClick = { showRefreshDialog = true }
                                     )
                                 }
@@ -320,7 +333,7 @@ private fun DisplayHeroCard(
             .padding(20.dp)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            ScreenAccentGlyph(Icons.Filled.DisplaySettings, cs.secondary, 42.dp)
+            ScreenAccentGlyph(Icons.Rounded.DisplaySettings, cs.secondary, 42.dp)
             Spacer(Modifier.width(12.dp))
             Column(Modifier.weight(1f)) {
                 Text(stringResource(R.string.display_studio_badge_display), style = MaterialTheme.typography.labelLarge, color = cs.secondary, fontWeight = FontWeight.Bold)

@@ -41,9 +41,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.automirrored.rounded.List
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material.icons.rounded.*
@@ -194,7 +191,7 @@ fun FpsGoTopAppBar(scrollBehavior: TopAppBarScrollBehavior, onBack: () -> Unit) 
         scrollBehavior = scrollBehavior,
         title = stringResource(R.string.str_fpsgo_settings),
         onBack = onBack,
-        accentIcon = Icons.Filled.SportsEsports,
+        accentIcon = Icons.Rounded.SportsEsports,
         accent = MaterialTheme.colorScheme.secondary,
         actions = {
             MaxHelpAction(

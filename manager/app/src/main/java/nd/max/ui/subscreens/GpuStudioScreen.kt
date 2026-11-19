@@ -48,12 +48,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Balance
-import androidx.compose.material.icons.outlined.Memory
+import androidx.compose.material.icons.rounded.Balance
 import androidx.compose.material.icons.rounded.Bolt
 import androidx.compose.material.icons.rounded.ExpandLess
 import androidx.compose.material.icons.rounded.ExpandMore
 import androidx.compose.material.icons.rounded.Restore
+import androidx.compose.material.icons.rounded.Speed
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -190,7 +190,7 @@ fun GpuStudioScreen(
     MaxListScreen(
         title = title,
         onBack = navController::popBackStack,
-        accentIcon = Icons.Outlined.Memory,
+        accentIcon = Icons.Rounded.Speed,
         condition = condition,
         banner = banner,
         actions = {
@@ -264,7 +264,7 @@ private fun GpuHero(
                     if (writable) R.string.max_gpu_state_ready else R.string.max_gpu_state_read_only
                 ),
             ),
-            icon = Icons.Outlined.Memory,
+            icon = Icons.Rounded.Speed,
             iconTone = MaxTone.Accent,
         )
 
@@ -724,7 +724,7 @@ private fun GpuAdvancedLab(
         if (!device.exactLockWritable) {
             MaxRow(
                 title = stringResource(R.string.max_gpu_no_writable_range),
-                icon = Icons.Outlined.Memory,
+                icon = Icons.Rounded.Speed,
                 iconTone = MaxTone.Inactive,
             )
         } else {
@@ -736,7 +736,7 @@ private fun GpuAdvancedLab(
                 MaxRow(
                     title = stringResource(R.string.max_gpu_governor_label),
                     subtitle = device.governor ?: stringResource(R.string.max_gpu_value_absent),
-                    icon = Icons.Outlined.Balance,
+                    icon = Icons.Rounded.Balance,
                     iconTone = MaxTone.Neutral,
                 )
                 MaxGroupDivider()
@@ -753,7 +753,7 @@ private fun GpuAdvancedLab(
         } else {
             MaxRow(
                 title = stringResource(R.string.max_gpu_no_governors),
-                icon = Icons.Outlined.Balance,
+                icon = Icons.Rounded.Balance,
                 iconTone = MaxTone.Inactive,
             )
         }
@@ -848,7 +848,7 @@ private fun GpuDiagnostics(state: GpuStudioUiState, device: GpuHardwareBackend.D
                 device.frequencies.size,
                 device.governors.size,
             ),
-            icon = Icons.Outlined.Memory,
+            icon = Icons.Rounded.Speed,
             iconTone = MaxTone.Neutral,
             // سهم الطيّ في طرف السطر: السطر كان **قابلًا للضغط بلا إشارة تدلّ عليه**
             // (``MaxRow`` يُمرّر `role = Role.Button` فقط)، فيقرأه المستخدم بيانًا لا بابًا

@@ -26,6 +26,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
+import androidx.compose.material.icons.rounded.Bolt
+import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material.icons.rounded.EnergySavingsLeaf
+import androidx.compose.material.icons.rounded.Hub
+import androidx.compose.material.icons.rounded.Memory
+import androidx.compose.material.icons.rounded.PowerSettingsNew
+import androidx.compose.material.icons.rounded.RestartAlt
+import androidx.compose.material.icons.rounded.Restore
 import androidx.compose.material.icons.rounded.Speed
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -148,7 +156,7 @@ fun CpuCoreControlScreen(
         MaxListScreen(
             title = screenTitle,
             onBack = { navController.popBackStack() },
-            accentIcon = Icons.Outlined.Memory,
+            accentIcon = Icons.Rounded.Memory,
             accent = accent,
             condition = condition,
             floatingNotice = floatingNotice,
@@ -648,7 +656,7 @@ private fun CpuHeroCard(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(MaxSpace.md)
         ) {
-            IconBadge(icon = Icons.Outlined.Memory, tint = scheme.secondary, size = 40)
+            IconBadge(icon = Icons.Rounded.Memory, tint = scheme.secondary, size = 40)
             Text(
                 text = chipsetName.ifBlank { stringResource(R.string.cpu_core_chipset_unknown) },
                 modifier = Modifier.weight(1f),
@@ -702,7 +710,7 @@ private fun CpuFrequencyControlSection(
                 MaxRow(
                     title = stringResource(R.string.cpu_freq_session_title),
                     subtitle = stringResource(R.string.cpu_freq_session_desc),
-                    icon = Icons.Outlined.History,
+                    icon = Icons.Rounded.Restore,
                     iconTone = MaxTone.Caution,
                     onClick = onRestoreSession
                 )
@@ -874,7 +882,7 @@ private fun CpuFrequencyControlGroup(
                 enabled = lower < upper
             ) {
                 Icon(
-                    imageVector = Icons.Outlined.RestartAlt,
+                    imageVector = Icons.Rounded.RestartAlt,
                     contentDescription = null,
                     modifier = Modifier.size(MaxSize.iconGlyphSmall)
                 )
@@ -887,7 +895,7 @@ private fun CpuFrequencyControlGroup(
                 enabled = editable && (if (pinned) pinModified else isModified)
             ) {
                 Icon(
-                    imageVector = Icons.Outlined.CheckCircle,
+                    imageVector = Icons.Rounded.CheckCircle,
                     contentDescription = null,
                     modifier = Modifier.size(MaxSize.iconGlyphSmall)
                 )
@@ -1187,7 +1195,7 @@ private fun CpuManualControlCard(
                 subtitle = stringResource(R.string.cpu_core_manual_control_desc),
                 checked = enabled,
                 onCheckedChange = onEnabledChange,
-                icon = Icons.Outlined.Tune,
+                icon = Icons.Rounded.PowerSettingsNew,
                 iconTone = MaxTone.Accent
             )
         }
@@ -1252,10 +1260,10 @@ private fun clusterAccent(cluster: CpuTopologyUtil.CpuCluster): Color = when (cl
 }
 
 private fun clusterIcon(cluster: CpuTopologyUtil.CpuCluster): ImageVector = when (cluster.shortTag) {
-    "PRIME" -> Icons.Filled.Bolt
+    "PRIME" -> Icons.Rounded.Bolt
     "GOLD" -> Icons.Rounded.Speed
-    "SILVER" -> Icons.Outlined.EnergySavingsLeaf
-    else -> Icons.Outlined.Memory
+    "SILVER" -> Icons.Rounded.EnergySavingsLeaf
+    else -> Icons.Rounded.Memory
 }
 
 @Composable
@@ -1290,7 +1298,7 @@ fun CpuCoreControlTopAppBar(scrollBehavior: TopAppBarScrollBehavior, onBack: () 
         scrollBehavior = scrollBehavior,
         title = stringResource(R.string.cpu_core_control_title),
         onBack = onBack,
-        accentIcon = Icons.Filled.Memory,
+        accentIcon = Icons.Rounded.Memory,
         accent = MaterialTheme.colorScheme.tertiary
     )
 }
@@ -1318,7 +1326,7 @@ private fun CpusetGroupRow(
             pendingSelection = group.cores.toSet()
             dialogVisible = true
         },
-        leadingContent = { LeadingIcon(icon = Icons.Outlined.Hub) },
+        leadingContent = { LeadingIcon(icon = Icons.Rounded.Hub) },
         headlineContent = { Text(cpusetGroupName(group)) },
         supportingContent = { Text(stringResource(R.string.cpu_affinity_cores_summary, rangeText)) }
     )

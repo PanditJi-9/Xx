@@ -37,5 +37,12 @@ val MaxDestination.illustrationKind: MaxIllustrationKind
         MaxDestination.NetworkScanner -> MaxIllustrationKind.Scan
         MaxDestination.UsageStats -> MaxIllustrationKind.Usage
         MaxDestination.BatteryHistory -> MaxIllustrationKind.BatteryHistory
+        MaxDestination.GovernorSettings -> MaxIllustrationKind.Controls
+        MaxDestination.PreferenceTweaks, MaxDestination.SetEdit, MaxDestination.StorageCare -> MaxIllustrationKind.Tools
+        MaxDestination.MemoryUfs -> MaxIllustrationKind.Storage
+        MaxDestination.FpsGo -> MaxIllustrationKind.Games
+        MaxDestination.Dex2oat, MaxDestination.DebloatFreeze -> MaxIllustrationKind.Apps
+        MaxDestination.ProcessManager -> MaxIllustrationKind.Usage
+        MaxDestination.Logs -> MaxIllustrationKind.Manifest
         else -> parent?.illustrationKind ?: maxIllustrationKind(icon.name) ?: MaxIllustrationKind.Tools
     }

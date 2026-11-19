@@ -55,10 +55,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.VolumeUp
 import androidx.compose.material.icons.rounded.BatteryChargingFull
 import androidx.compose.material.icons.rounded.Check
-import androidx.compose.material.icons.outlined.IosShare
-import androidx.compose.material.icons.rounded.History
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.FlashOn
+import androidx.compose.material.icons.rounded.History
+import androidx.compose.material.icons.rounded.IosShare
 import androidx.compose.material.icons.rounded.Keyboard
 import androidx.compose.material.icons.rounded.Mic
 import androidx.compose.material.icons.rounded.RestartAlt
@@ -248,7 +248,7 @@ fun DeviceLabScreen(navController: NavHostController) {
             if (labRecords.isNotEmpty()) {
                 MaxNavigationRow(
                     title = stringResource(R.string.device_lab_share),
-                    icon = Icons.Outlined.IosShare,
+                    icon = Icons.Rounded.IosShare,
                     onClick = {
                         // **ويُبنى عند الضغط لا عند كل إعادة رسم:** التقرير يُقرأ مرّة واحدة
                         // حين يُطلب، لا في كل حرف يكتبه المستخدم في حقل آخر من الصفحة.

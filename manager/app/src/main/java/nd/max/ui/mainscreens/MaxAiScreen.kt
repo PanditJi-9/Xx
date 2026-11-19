@@ -19,16 +19,36 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Bolt
+import androidx.compose.material.icons.automirrored.rounded.Undo
+import androidx.compose.material.icons.rounded.AccountTree
+import androidx.compose.material.icons.rounded.Balance
+import androidx.compose.material.icons.rounded.Checklist
 import androidx.compose.material.icons.rounded.DeleteSweep
+import androidx.compose.material.icons.rounded.Description
+import androidx.compose.material.icons.rounded.ExpandLess
+import androidx.compose.material.icons.rounded.ExpandMore
 import androidx.compose.material.icons.rounded.FilterList
-import androidx.compose.material.icons.rounded.Insights
+import androidx.compose.material.icons.rounded.Gavel
+import androidx.compose.material.icons.rounded.GpsFixed
+import androidx.compose.material.icons.rounded.HealthAndSafety
+import androidx.compose.material.icons.rounded.History
+import androidx.compose.material.icons.rounded.HistoryToggleOff
+import androidx.compose.material.icons.rounded.HourglassTop
+import androidx.compose.material.icons.rounded.Hub
 import androidx.compose.material.icons.rounded.Lock
+import androidx.compose.material.icons.rounded.LockOpen
 import androidx.compose.material.icons.rounded.Psychology
-import androidx.compose.material.icons.rounded.Science
-import androidx.compose.material.icons.rounded.Timeline
+import androidx.compose.material.icons.rounded.PushPin
+import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material.icons.rounded.SearchOff
+import androidx.compose.material.icons.rounded.ShowChart
+import androidx.compose.material.icons.rounded.Straighten
+import androidx.compose.material.icons.rounded.SwapHoriz
+import androidx.compose.material.icons.rounded.Thermostat
+import androidx.compose.material.icons.rounded.TrackChanges
 import androidx.compose.material.icons.rounded.Tune
 import androidx.compose.material.icons.rounded.Update
+import androidx.compose.material.icons.rounded.WarningAmber
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -239,7 +259,7 @@ fun MaxAiScreen(
                 MaxNavigationRow(
                     title = stringResource(R.string.maxai_intro_title),
                     subtitle = stringResource(R.string.maxai_tree_teaser),
-                    icon = Icons.Rounded.Insights,
+                    icon = Icons.Rounded.AccountTree,
                     iconTone = MaxTone.Accent,
                     onClick = { navController.navigate(MaxDestination.MaxAiIntro.launchRoute) },
                 )
@@ -279,7 +299,7 @@ fun MaxAiScreen(
                     MaxRow(
                         title = stringResource(R.string.max_live_open),
                         subtitle = stringResource(R.string.max_live_open_desc),
-                        icon = Icons.Rounded.Insights,
+                        icon = Icons.Rounded.ShowChart,
                         onClick = { MaxNavActions(navController).navigateTo(MaxDestination.MaxLive) },
                     )
                 }
@@ -327,7 +347,7 @@ fun MaxAiScreen(
                         MaxRow(
                             title = timelineEmptyTitle,
                             subtitle = timelineEmptySubtitle,
-                            icon = Icons.Rounded.Insights,
+                            icon = Icons.Rounded.HistoryToggleOff,
                             iconTone = MaxTone.Inactive,
                         )
                     }
@@ -420,7 +440,7 @@ private fun ControlDeck(
             MaxRow(
                 title = if (state.lastSampleAtMs > 0L) plan.mode else stringResource(R.string.status_unknown),
                 subtitle = if (state.lastSampleAtMs > 0L) plan.reason else stringResource(R.string.max_live_empty),
-                icon = Icons.Rounded.Tune,
+                icon = Icons.Rounded.TrackChanges,
                 iconTone = planTone,
                 trailing = if (state.lastSampleAtMs > 0L && plan.mode != "Safety guard") ({
                     MaxCapsule(
@@ -446,7 +466,7 @@ private fun ControlDeck(
                     exploration.probesThisSession,
                     exploration.budget,
                 ),
-                icon = Icons.Rounded.Science,
+                icon = Icons.Rounded.Search,
                 iconTone = if (blocked == null) MaxTone.Accent else MaxTone.Inactive,
             )
             MaxGroupDivider()
@@ -464,7 +484,7 @@ private fun ControlDeck(
                     state.learnedKnobs,
                     state.learningSamples,
                 ),
-                icon = Icons.Rounded.Insights,
+                icon = Icons.Rounded.Checklist,
                 iconTone = if (state.learningSamples > 0L) MaxTone.Positive else MaxTone.Inactive,
             )
             MaxGroupDivider()
@@ -477,7 +497,7 @@ private fun ControlDeck(
                     state.adjustedDecisions,
                     state.blockedForSafety,
                 ),
-                icon = Icons.Rounded.Timeline,
+                icon = Icons.Rounded.Description,
                 iconTone = MaxTone.Neutral,
             )
         }
@@ -490,7 +510,7 @@ private fun ControlDeck(
                     state.trust.size,
                     state.ownership.size,
                 ),
-                icon = Icons.Rounded.Insights,
+                icon = Icons.Rounded.ShowChart,
                 iconTone = MaxTone.Accent,
                 onClick = { MaxNavActions(navController).navigateTo(MaxDestination.MaxLive) },
             )
@@ -597,7 +617,7 @@ private fun NowHeader(state: MaxAiState, nowMs: Long) {
                 MaxRow(
                     title = stringResource(R.string.status_unknown),
                     subtitle = stringResource(R.string.max_live_empty),
-                    icon = Icons.Rounded.Insights,
+                    icon = Icons.Rounded.HourglassTop,
                     iconTone = MaxTone.Inactive,
                 )
             }
@@ -618,8 +638,6 @@ private fun NowHeader(state: MaxAiState, nowMs: Long) {
             MaxRow(
                 title = stringResource(R.string.max_ai_metric_cpu),
                 subtitle = formatPercent(state.cpuLoadPercent),
-                icon = Icons.Rounded.Bolt,
-                iconTone = MaxTone.Accent,
             )
             MaxGroupDivider()
             MaxRow(
@@ -731,14 +749,14 @@ private fun ThermalBudgetSection(status: MaxAiThermalBudget.Status) {
             MaxRow(
                 title = stringResource(R.string.max_ai_budget_state_title),
                 subtitle = detail,
-                icon = Icons.Rounded.Insights,
+                icon = Icons.Rounded.Thermostat,
                 iconTone = if (status.sessionOpen) MaxTone.Accent else MaxTone.Positive,
             )
             if (status.sessionsMeasured > 0) {
                 MaxGroupDivider()
                 MaxRow(
                     title = stringResource(R.string.max_ai_budget_sessions, status.sessionsMeasured),
-                    icon = Icons.Rounded.Tune,
+                    icon = Icons.Rounded.History,
                     iconTone = MaxTone.Inactive,
                 )
             }
@@ -893,7 +911,7 @@ private fun ObjectiveSection(state: MaxAiState, viewModel: MaxAiViewModel) {
             MaxGroup {
                 MaxRow(
                     title = stringResource(R.string.max_ai_mode_active_preset, activeProfileLabel),
-                    icon = Icons.Rounded.Tune,
+                    icon = Icons.Rounded.PushPin,
                     iconTone = MaxTone.Caution,
                 )
             }
@@ -905,7 +923,7 @@ private fun ObjectiveSection(state: MaxAiState, viewModel: MaxAiViewModel) {
             MaxGroup {
                 MaxRow(
                     title = stringResource(R.string.max_ai_objective_override, activeLabel),
-                    icon = Icons.Rounded.Tune,
+                    icon = Icons.Rounded.SwapHoriz,
                     iconTone = MaxTone.Caution,
                 )
             }
@@ -917,7 +935,7 @@ private fun ObjectiveSection(state: MaxAiState, viewModel: MaxAiViewModel) {
             MaxGroup {
                 MaxRow(
                     title = stringResource(R.string.max_ai_objective_pending),
-                    icon = Icons.Rounded.Tune,
+                    icon = Icons.Rounded.HourglassTop,
                     iconTone = MaxTone.Inactive,
                 )
             }
@@ -1269,7 +1287,7 @@ private fun InsightsSection(
             MaxGroup {
                 MaxRow(
                     title = stringResource(R.string.max_ai_insight_empty),
-                    icon = Icons.Rounded.Insights,
+                    icon = Icons.Rounded.HistoryToggleOff,
                     iconTone = MaxTone.Inactive,
                 )
             }
@@ -1282,7 +1300,7 @@ private fun InsightsSection(
                         title = stringResource(R.string.max_ai_insight_scope),
                         subtitle = selectedContext?.let { contextLabel(it) }
                             ?: stringResource(R.string.max_ai_insight_scope_global),
-                        icon = Icons.Rounded.Insights,
+                        icon = Icons.Rounded.FilterList,
                         iconTone = MaxTone.Accent,
                         onClick = { scopeMenuExpanded = true },
                     )
@@ -1313,7 +1331,7 @@ private fun InsightsSection(
                 MaxGroup {
                     MaxRow(
                         title = stringResource(R.string.max_ai_insight_context_empty),
-                        icon = Icons.Rounded.Insights,
+                        icon = Icons.Rounded.SearchOff,
                         iconTone = MaxTone.Inactive,
                     )
                 }
@@ -1430,7 +1448,7 @@ private fun AuditGroup(snapshot: MaxAiInsights.Snapshot) {
             MaxRow(
                 title = stringResource(R.string.max_ai_calibration_title),
                 subtitle = calibrationDetail,
-                icon = Icons.Rounded.Science,
+                icon = Icons.Rounded.Balance,
                 iconTone = calibrationTone,
                 trailing = {
                     MaxCapsule(text = calibrationText, tone = calibrationTone)
@@ -1447,7 +1465,7 @@ private fun AuditGroup(snapshot: MaxAiInsights.Snapshot) {
                         snapshot.explorations,
                     )
                 } ?: unknown,
-                icon = Icons.Rounded.Science,
+                icon = Icons.Rounded.GpsFixed,
                 iconTone = if (snapshot.probeYield == null) MaxTone.Inactive else MaxTone.Neutral,
             )
             MaxGroupDivider()
@@ -1461,7 +1479,7 @@ private fun AuditGroup(snapshot: MaxAiInsights.Snapshot) {
                         snapshot.actedEpisodes,
                     )
                 } ?: unknown,
-                icon = Icons.Rounded.Lock,
+                icon = Icons.AutoMirrored.Rounded.Undo,
                 iconTone = when (val rate = snapshot.overrideRate) {
                     null -> MaxTone.Inactive
                     else -> if (rate >= 0.5f) MaxTone.Caution else MaxTone.Neutral
@@ -1478,7 +1496,7 @@ private fun AuditGroup(snapshot: MaxAiInsights.Snapshot) {
                         snapshot.actedEpisodes,
                     )
                 } ?: unknown,
-                icon = Icons.Rounded.Timeline,
+                icon = Icons.Rounded.Straighten,
                 iconTone = if (snapshot.measurementRate == null) MaxTone.Inactive else MaxTone.Neutral,
             )
         }
@@ -1531,7 +1549,7 @@ private fun SafetySection(safety: SafetyStatus, hasSample: Boolean) {
                     formatThermal(safety.thermalC),
                     safety.interventions,
                 ),
-                icon = Icons.Rounded.Bolt,
+                icon = Icons.Rounded.HealthAndSafety,
                 iconTone = levelTone,
                 trailing = { MaxCapsule(text = levelLabel, tone = levelTone) },
             )
@@ -1542,7 +1560,7 @@ private fun SafetySection(safety: SafetyStatus, hasSample: Boolean) {
                     enforcementLabel(safety.enforcement),
                     safety.enforcementDetail.takeIf { it.isNotBlank() },
                 ).joinToString(" · "),
-                icon = Icons.Rounded.Lock,
+                icon = Icons.Rounded.Gavel,
                 iconTone = if (safety.enforcement == SafetyEnforcement.FAILED) {
                     MaxTone.Critical
                 } else {
@@ -1555,7 +1573,7 @@ private fun SafetySection(safety: SafetyStatus, hasSample: Boolean) {
                 MaxRow(
                     title = stringResource(R.string.max_ai_safety_reason),
                     subtitle = safety.lastReason,
-                    icon = Icons.Rounded.Timeline,
+                    icon = Icons.Rounded.WarningAmber,
                     iconTone = MaxTone.Caution,
                 )
             }
@@ -1664,7 +1682,7 @@ private fun TimelineToggleRow(expanded: Boolean, matched: Int, onToggle: () -> U
             } else {
                 stringResource(R.string.max_ai_timeline_show_all, matched)
             },
-            icon = Icons.Rounded.Timeline,
+            icon = if (expanded) Icons.Rounded.ExpandLess else Icons.Rounded.ExpandMore,
             iconTone = MaxTone.Accent,
             onClick = onToggle,
         )
@@ -1733,7 +1751,7 @@ private fun OwnershipSection(state: MaxAiState) {
             if (owned.isEmpty()) {
                 MaxRow(
                     title = stringResource(R.string.max_ai_owner_none),
-                    icon = Icons.Rounded.Tune,
+                    icon = Icons.Rounded.LockOpen,
                     iconTone = MaxTone.Inactive,
                 )
             } else {
@@ -1744,7 +1762,7 @@ private fun OwnershipSection(state: MaxAiState) {
                         owned.size,
                         verified,
                     ),
-                    icon = Icons.Rounded.Tune,
+                    icon = Icons.Rounded.Hub,
                     iconTone = MaxTone.Accent,
                     trailing = {
                         MaxCapsule(

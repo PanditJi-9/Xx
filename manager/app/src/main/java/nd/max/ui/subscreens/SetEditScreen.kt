@@ -22,13 +22,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Dns
-import androidx.compose.material.icons.outlined.Add
-import androidx.compose.material.icons.outlined.ContentCopy
-import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.outlined.History
-import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material.icons.outlined.WarningAmber
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.ContentCopy
+import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.Edit
+import androidx.compose.material.icons.rounded.History
+import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.WarningAmber
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -161,15 +161,15 @@ fun SetEditScreen(
         MaxListScreen(
             title = stringResource(R.string.setedit_title),
             onBack = { navController.popBackStack() },
-            accentIcon = Icons.Filled.Dns,
+            accentIcon = Icons.Rounded.Edit,
             accent = colorScheme.primary,
             snackbarHostState = snackbarHostState,
             actions = {
                 IconButton(onClick = { showJournal = true }) {
-                    Icon(Icons.Outlined.History, contentDescription = stringResource(R.string.setedit_history_cd))
+                    Icon(Icons.Rounded.History, contentDescription = stringResource(R.string.setedit_history_cd))
                 }
                 IconButton(onClick = { showAdd = true }) {
-                    Icon(Icons.Outlined.Add, contentDescription = stringResource(R.string.setedit_add_cd))
+                    Icon(Icons.Rounded.Add, contentDescription = stringResource(R.string.setedit_add_cd))
                 }
             }
         ) {
@@ -349,7 +349,7 @@ private fun StateHeader(
                 title = stringResource(R.string.setedit_only_edited),
                 checked = onlyEdited,
                 onCheckedChange = onOnlyEdited,
-                icon = Icons.Outlined.History
+                icon = Icons.Rounded.History
             )
         }
     }
@@ -418,7 +418,7 @@ private fun SetEditRow(item: SetEditItem, edited: Boolean, onClick: () -> Unit) 
                 if (isSensitive) {
                     Spacer(Modifier.width(MaxSpace.xs))
                     Icon(
-                        imageVector = Icons.Outlined.WarningAmber,
+                        imageVector = Icons.Rounded.WarningAmber,
                         contentDescription = stringResource(R.string.setedit_sensitive_cd),
                         tint = MaterialTheme.colorScheme.error,
                         modifier = Modifier.size(MaxSpace.lg)
@@ -480,21 +480,21 @@ private fun DetailSheet(
 
         when (persistence) {
             SetEditPersistence.READ_ONLY -> PersistenceNote(
-                icon = Icons.Outlined.WarningAmber,
+                icon = Icons.Rounded.WarningAmber,
                 text = stringResource(R.string.setedit_persist_read_only_desc),
                 container = MaterialTheme.colorScheme.errorContainer,
                 content = MaterialTheme.colorScheme.onErrorContainer,
             )
 
             SetEditPersistence.UNTIL_REBOOT -> PersistenceNote(
-                icon = Icons.Outlined.Info,
+                icon = Icons.Rounded.Info,
                 text = stringResource(R.string.setedit_persist_until_reboot),
                 container = MaterialTheme.colorScheme.surfaceContainerHigh,
                 content = MaterialTheme.colorScheme.onSurfaceVariant,
             )
 
             SetEditPersistence.CONTROL -> PersistenceNote(
-                icon = Icons.Outlined.Info,
+                icon = Icons.Rounded.Info,
                 text = stringResource(R.string.setedit_persist_control),
                 container = MaterialTheme.colorScheme.surfaceContainerHigh,
                 content = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -515,7 +515,7 @@ private fun DetailSheet(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        imageVector = Icons.Outlined.WarningAmber,
+                        imageVector = Icons.Rounded.WarningAmber,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.onErrorContainer
                     )
@@ -577,7 +577,7 @@ private fun DetailSheet(
                 modifier = Modifier.weight(1f),
                 shape = RoundedCornerShape(maxRadius(MaxRadius.control))
             ) {
-                Icon(Icons.Outlined.Delete, contentDescription = null, modifier = Modifier.size(MaxSpace.lg))
+                Icon(Icons.Rounded.Delete, contentDescription = null, modifier = Modifier.size(MaxSpace.lg))
                 Text(stringResource(R.string.setedit_action_delete))
             }
             StudioButton(
@@ -608,7 +608,7 @@ private fun CopyRow(label: String, value: String, onCopy: () -> Unit, copyDescri
             shape = RoundedCornerShape(maxRadius(MaxRadius.control))
         ) {
             Icon(
-                imageVector = Icons.Outlined.ContentCopy,
+                imageVector = Icons.Rounded.ContentCopy,
                 contentDescription = copyDescription,
                 modifier = Modifier.size(MaxSpace.lg)
             )
@@ -652,7 +652,7 @@ private fun JournalSheet(entries: List<SetEditHistoryEntry>, onRestore: (SetEdit
                     verticalArrangement = Arrangement.spacedBy(MaxSpace.sm)
                 ) {
                     Icon(
-                        imageVector = Icons.Outlined.History,
+                        imageVector = Icons.Rounded.History,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -768,7 +768,7 @@ private fun AddSheet(onCreate: (SetEditCategory, String, String) -> Unit) {
 
         if (readOnly) {
             PersistenceNote(
-                icon = Icons.Outlined.WarningAmber,
+                icon = Icons.Rounded.WarningAmber,
                 text = stringResource(R.string.setedit_persist_read_only_desc),
                 container = MaterialTheme.colorScheme.errorContainer,
                 content = MaterialTheme.colorScheme.onErrorContainer,

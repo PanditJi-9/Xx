@@ -34,14 +34,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.BatteryChargingFull
-import androidx.compose.material.icons.filled.Bolt
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Security
-import androidx.compose.material.icons.filled.SettingsInputComponent
+import androidx.compose.material.icons.rounded.BatteryChargingFull
+import androidx.compose.material.icons.rounded.Bolt
+import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material.icons.rounded.SettingsInputComponent
+import androidx.compose.material.icons.rounded.Tune
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -144,7 +144,7 @@ fun BypassChargeScreen(navController: NavHostController) {
         MaxListScreen(
             title = stringResource(R.string.bcharging),
             onBack = { navController.popBackStack() },
-            accentIcon = Icons.Filled.BatteryChargingFull,
+            accentIcon = Icons.Rounded.BatteryChargingFull,
             accent = colors.tertiary
         ) {
                 item {
@@ -178,7 +178,7 @@ fun BypassChargeScreen(navController: NavHostController) {
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Icon(
-                                Icons.Filled.Bolt,
+                                Icons.Rounded.Bolt,
                                 contentDescription = null,
                                 tint = if (bypassEnabled == true) colors.primary else colors.onSurfaceVariant,
                                 modifier = Modifier.size(25.dp)
@@ -220,7 +220,7 @@ fun BypassChargeScreen(navController: NavHostController) {
                         ) {
                             Column(Modifier.padding(MaxUiMetrics.cardPadding)) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(Icons.Filled.BatteryChargingFull, null, tint = colors.primary)
+                                    Icon(Icons.Rounded.BatteryChargingFull, null, tint = colors.primary)
                                     Spacer(Modifier.size(12.dp))
                                     Column(Modifier.weight(1f)) {
                                         Text(
@@ -285,7 +285,7 @@ fun BypassChargeScreen(navController: NavHostController) {
                     ) {
                         Column {
                             ConfigRow(
-                                icon = Icons.Filled.SettingsInputComponent,
+                                icon = Icons.Rounded.SettingsInputComponent,
                                 title = stringResource(R.string.bypass_charge_row_path),
                                 value = when {
                                     unsupported -> stringResource(R.string.bypass_charge_state_unsupported)
@@ -294,12 +294,12 @@ fun BypassChargeScreen(navController: NavHostController) {
                                 }
                             )
                             ConfigRow(
-                                icon = Icons.Filled.Security,
+                                icon = Icons.Rounded.Settings,
                                 title = stringResource(R.string.bypass_charge_row_policy),
                                 value = stringResource(R.string.bypass_charge_row_profile)
                             )
                             ConfigRow(
-                                icon = Icons.Filled.Info,
+                                icon = Icons.Rounded.Tune,
                                 title = stringResource(R.string.bypass_charge_row_behavior),
                                 value = stringResource(R.string.bypass_charge_row_stop_at)
                             )
@@ -317,7 +317,7 @@ fun BypassChargeScreen(navController: NavHostController) {
                             modifier = Modifier.fillMaxWidth().padding(horizontal = MaxUiMetrics.cardPadding, vertical = 16.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Icon(Icons.Filled.CheckCircle, null, tint = colors.onPrimaryContainer)
+                            Icon(Icons.Rounded.CheckCircle, null, tint = colors.onPrimaryContainer)
                             Spacer(Modifier.size(13.dp))
                             Column(Modifier.weight(1f)) {
                                 Text(
@@ -344,7 +344,7 @@ fun BypassChargeScreen(navController: NavHostController) {
                         shape = RoundedCornerShape(maxRadius(MaxRadius.tile))
                     ) {
                         Row(Modifier.fillMaxWidth().padding(14.dp), verticalAlignment = Alignment.Top) {
-                            Icon(Icons.Filled.Info, null, tint = colors.onSurfaceVariant, modifier = Modifier.size(20.dp))
+                            Icon(Icons.Rounded.Info, null, tint = colors.onSurfaceVariant, modifier = Modifier.size(20.dp))
                             Spacer(Modifier.size(10.dp))
                             Text(
                                 stringResource(R.string.bypass_charge_note),

@@ -39,9 +39,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.automirrored.rounded.List
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material.icons.rounded.*
@@ -144,7 +141,7 @@ fun GovSettings(
                                 // ولا يقول أيّها مطبَّق الآن. والكتابة تذهب للملامح الثلاثة
                                 // معًا ثم تُطبَّق فورًا (`TweakViewModel.updateCpuGovernor`).
                                 ExpressiveDropdownItem(
-                                    icon = Icons.Outlined.Memory,
+                                    icon = Icons.Rounded.Memory,
                                     title = stringResource(R.string.cpu_governor),
                                     summary = stringResource(R.string.cpu_governor_desc),
                                     items = viewModel.availableGovernors ?: emptyList(),
@@ -154,7 +151,7 @@ fun GovSettings(
                             },
                             {
                                 FreqLimitSliderItem(
-                                    icon = Icons.Outlined.Tune,
+                                    icon = Icons.Rounded.Tune,
                                     initialValue = viewModel.freqOffsetIndex!!,
                                     labels = viewModel.offsetLabels,
                                     onSaved = { viewModel.saveFreqOffset(it) }
@@ -181,7 +178,7 @@ fun GovSettings(
                                 content = listOf(
                                     {
                                         ExpressiveDropdownItem(
-                                            icon = Icons.Outlined.Tune,
+                                            icon = Icons.Rounded.Tune,
                                             title = stringResource(R.string.mali_gpu_governor),
                                             summary = stringResource(R.string.mali_gpu_governor_desc),
                                             items = viewModel.availableMaliGovernors ?: emptyList(),
@@ -209,7 +206,7 @@ fun GovSettingsTopAppBar(scrollBehavior: TopAppBarScrollBehavior, onBack: () -> 
         scrollBehavior = scrollBehavior,
         title = stringResource(R.string.gov_settings),
         onBack = onBack,
-        accentIcon = Icons.Filled.Speed,
+        accentIcon = Icons.Rounded.Tune,
         accent = MaterialTheme.colorScheme.tertiary,
         actions = {
             MaxHelpAction(

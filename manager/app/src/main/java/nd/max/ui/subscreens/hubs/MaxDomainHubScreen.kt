@@ -6,14 +6,14 @@
 package nd.max.ui.subscreens.hubs
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ThermostatAuto
-import androidx.compose.material.icons.outlined.ContentCut
-import androidx.compose.material.icons.rounded.CleaningServices
-import androidx.compose.material.icons.rounded.DoNotDisturbOn
 import androidx.compose.material.icons.rounded.Cached
+import androidx.compose.material.icons.rounded.ContentCut
+import androidx.compose.material.icons.rounded.DeleteSweep
+import androidx.compose.material.icons.rounded.DoNotDisturbOn
+import androidx.compose.material.icons.rounded.EnergySavingsLeaf
 import androidx.compose.material.icons.rounded.SettingsSuggest
-import androidx.compose.material.icons.rounded.Speed
 import androidx.compose.material.icons.rounded.SwapVerticalCircle
+import androidx.compose.material.icons.rounded.ThermostatAuto
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -201,7 +201,7 @@ private fun hubToggles(hub: MaxDestination, vm: TweakViewModel): List<HubToggle>
         HubToggle(
             R.string.perf_lite_mode,
             R.string.perf_lite_mode_desc,
-            Icons.Rounded.Speed,
+            Icons.Rounded.EnergySavingsLeaf,
             vm.liteState,
             vm::updateLiteMode,
         ),
@@ -225,7 +225,7 @@ private fun hubToggles(hub: MaxDestination, vm: TweakViewModel): List<HubToggle>
         HubToggle(
             R.string.memory_killer,
             R.string.memory_killer_desc,
-            Icons.Rounded.CleaningServices,
+            Icons.Rounded.DeleteSweep,
             vm.memKillerState,
             vm::updateMemoryKiller,
         ),
@@ -244,7 +244,7 @@ private fun hubToggles(hub: MaxDestination, vm: TweakViewModel): List<HubToggle>
         HubToggle(
             R.string.trim_filesystem,
             R.string.trim_filesystem_desc,
-            Icons.Outlined.ContentCut,
+            Icons.Rounded.ContentCut,
             vm.fstrimState,
             vm::updateFstrim,
         ),
@@ -254,7 +254,7 @@ private fun hubToggles(hub: MaxDestination, vm: TweakViewModel): List<HubToggle>
         HubToggle(
             R.string.thermalcore_service,
             R.string.thermalcore_service_desc,
-            Icons.Filled.ThermostatAuto,
+            Icons.Rounded.ThermostatAuto,
             vm.thermalState,
             vm::updateThermalCore,
         ),

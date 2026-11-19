@@ -7,6 +7,10 @@ package nd.max.ui.navigation
 
 import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.Launch
+import androidx.compose.material.icons.automirrored.rounded.ListAlt
+import androidx.compose.material.icons.automirrored.rounded.VolumeUp
+import androidx.compose.material.icons.rounded.AccountTree
 import androidx.compose.material.icons.rounded.AppSettingsAlt
 import androidx.compose.material.icons.rounded.Apps
 import androidx.compose.material.icons.rounded.AspectRatio
@@ -15,43 +19,39 @@ import androidx.compose.material.icons.rounded.Backup
 import androidx.compose.material.icons.rounded.BatteryChargingFull
 import androidx.compose.material.icons.rounded.BatteryFull
 import androidx.compose.material.icons.rounded.Bedtime
-import androidx.compose.material.icons.rounded.BugReport
-import androidx.compose.material.icons.rounded.Build
 import androidx.compose.material.icons.rounded.Cable
 import androidx.compose.material.icons.rounded.CleaningServices
 import androidx.compose.material.icons.rounded.ColorLens
 import androidx.compose.material.icons.rounded.DataUsage
-import androidx.compose.material.icons.rounded.Policy
-import androidx.compose.material.icons.rounded.QueryStats
 import androidx.compose.material.icons.rounded.DeveloperBoard
 import androidx.compose.material.icons.rounded.DisplaySettings
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.Extension
 import androidx.compose.material.icons.rounded.Folder
 import androidx.compose.material.icons.rounded.Gamepad
-import androidx.compose.material.icons.rounded.Home
-import androidx.compose.material.icons.rounded.Info
-import androidx.compose.material.icons.rounded.Insights
-import androidx.compose.material.icons.rounded.Key
-import androidx.compose.material.icons.automirrored.rounded.Launch
-import androidx.compose.material.icons.automirrored.rounded.ListAlt
 import androidx.compose.material.icons.rounded.GraphicEq
 import androidx.compose.material.icons.rounded.History
-import androidx.compose.material.icons.automirrored.rounded.VolumeUp
+import androidx.compose.material.icons.rounded.Home
+import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.Key
 import androidx.compose.material.icons.rounded.Memory
 import androidx.compose.material.icons.rounded.NetworkCheck
 import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.material.icons.rounded.PictureInPicture
+import androidx.compose.material.icons.rounded.Policy
 import androidx.compose.material.icons.rounded.Power
+import androidx.compose.material.icons.rounded.QueryStats
 import androidx.compose.material.icons.rounded.Schedule
 import androidx.compose.material.icons.rounded.Science
+import androidx.compose.material.icons.rounded.SdStorage
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.Shield
+import androidx.compose.material.icons.rounded.ShowChart
 import androidx.compose.material.icons.rounded.SmartButton
 import androidx.compose.material.icons.rounded.Speed
+import androidx.compose.material.icons.rounded.SportsEsports
 import androidx.compose.material.icons.rounded.Storage
 import androidx.compose.material.icons.rounded.Thermostat
-import androidx.compose.material.icons.rounded.Timeline
 import androidx.compose.material.icons.rounded.TouchApp
 import androidx.compose.material.icons.rounded.Tune
 import androidx.compose.material.icons.rounded.VideoLibrary
@@ -123,7 +123,7 @@ sealed class MaxDestination(
      * exploration gate, loop counters, knob ownership). Replaces the static
      * "engine state" section that used to sit inside [MaxAi].
      */
-    data object MaxLive : MaxDestination("max_live", R.string.max_live_title, Icons.Rounded.Timeline, MaxAi)
+    data object MaxLive : MaxDestination("max_live", R.string.max_live_title, Icons.Rounded.ShowChart, MaxAi)
 
     /**
      * شاشة «ما يفعله Max AI» (§٥): تعريفُ المحرّك بحلقته وجدولُ **المتاح الآن** من إعداد اللوحة
@@ -131,7 +131,7 @@ sealed class MaxDestination(
      * فلا يُطلب منه الشراء على العميان. ومدخلها من شاشة المحرّك نفسها، ومن لوح القفل حين يُقفل
      * سطح `maxai` — يبقى `LOCKED` ظاهرًا (وهو نصّ [FeatureGate]) ومعه بابٌ يشرح ما وراءه.
      */
-    data object MaxAiIntro : MaxDestination("max_ai_intro", R.string.maxai_intro_title, Icons.Rounded.Insights, MaxAi)
+    data object MaxAiIntro : MaxDestination("max_ai_intro", R.string.maxai_intro_title, Icons.Rounded.AccountTree, MaxAi)
 
     /**
      * `Device Info` — مقعد **قراءة** لعتاد الجهاز: المعالج والذاكرة والبطارية والشاشة
@@ -159,7 +159,7 @@ sealed class MaxDestination(
     // Control domain hubs (ADR-04)
     data object CpuHub : MaxDestination("hub_cpu", R.string.max_hub_cpu, Icons.Rounded.Memory, Control)
     data object GpuHub : MaxDestination("hub_gpu", R.string.max_hub_gpu, Icons.Rounded.Speed, Control)
-    data object MemoryHub : MaxDestination("hub_memory", R.string.max_hub_memory, Icons.Rounded.Storage, Control)
+    data object MemoryHub : MaxDestination("hub_memory", R.string.max_hub_memory, Icons.Rounded.SdStorage, Control)
     data object DisplayHub : MaxDestination("hub_display", R.string.max_hub_display, Icons.Rounded.DisplaySettings, Control)
     data object ResponsivenessHub : MaxDestination("hub_responsiveness", R.string.max_hub_responsiveness, Icons.Rounded.TouchApp, Control)
     data object ThermalHub : MaxDestination("hub_thermal", R.string.max_hub_thermal, Icons.Rounded.Thermostat, Control)
@@ -190,13 +190,13 @@ sealed class MaxDestination(
     // Feature screens: CPU domain
     data object CpuCoreControl : MaxDestination("cpucorecontrol", R.string.cpu_core_control_title, Icons.Rounded.DeveloperBoard, CpuHub)
     data object GovernorSettings : MaxDestination("governorsettings", R.string.gov_settings, Icons.Rounded.Tune, CpuHub)
-    data object PreferenceTweaks : MaxDestination("preferenced", R.string.prefs, Icons.Rounded.Tune, CpuHub)
+    data object PreferenceTweaks : MaxDestination("preferenced", R.string.prefs, Icons.Rounded.Edit, CpuHub)
 
     // Feature screens: GPU domain
     data object GpuStudio : MaxDestination("gpustudio", R.string.max_title_gpu_studio, Icons.Rounded.Speed, GpuHub)
 
     // Feature screens: Memory domain
-    data object ZramManager : MaxDestination("zrammanager", R.string.zram_title, Icons.Rounded.Storage, MemoryHub)
+    data object ZramManager : MaxDestination("zrammanager", R.string.zram_title, Icons.Rounded.SdStorage, MemoryHub)
 
     /**
      * **استوديو الذاكرة وUFS** — تردّدات `devfreq` للذاكرة والتخزين (ميزة جديدة، لا مدخل ثانٍ
@@ -215,7 +215,7 @@ sealed class MaxDestination(
     data object MemoryUfs : MaxDestination(
         "memory_ufs",
         R.string.memufs_title,
-        Icons.Rounded.DeveloperBoard,
+        Icons.Rounded.Storage,
         MemoryHub,
         MaxRisk.Advanced,
     )
@@ -232,7 +232,7 @@ sealed class MaxDestination(
      * بطبقة واحدة. والتعديل لا يمسّ عتاد اللمس: [TouchControlBackend] وأعطاله كما هي.
      */
     data object TouchBoost : MaxDestination("touchboost", R.string.touch_boost_title, Icons.Rounded.TouchApp, ResponsivenessHub, hidden = true)
-    data object FpsGo : MaxDestination("fpsgoscreen", R.string.str_fpsgo_settings, Icons.Rounded.Speed, ResponsivenessHub)
+    data object FpsGo : MaxDestination("fpsgoscreen", R.string.str_fpsgo_settings, Icons.Rounded.SportsEsports, ResponsivenessHub)
     data object Fas : MaxDestination("FasScreen", R.string.str_frame_aware_scheduling, Icons.Rounded.Schedule, ResponsivenessHub)
 
     /**
@@ -292,7 +292,7 @@ sealed class MaxDestination(
     data object DozeMode : MaxDestination("dozemode", R.string.dozemode_title, Icons.Rounded.Bedtime, PowerHub)
 
     // Feature screens: Storage & compiler domain
-    data object Dex2oat : MaxDestination("dex2oat", R.string.dex2oat_title, Icons.Rounded.Science, StorageHub)
+    data object Dex2oat : MaxDestination("dex2oat", R.string.dex2oat_title, Icons.Rounded.AppSettingsAlt, StorageHub)
     data object StorageDetail : MaxDestination("storage_detail", R.string.detail_storage, Icons.Rounded.DataUsage, StorageHub)
 
     /**
@@ -331,7 +331,7 @@ sealed class MaxDestination(
     // الصفّ يُشتقّ في شاشة الذاكرة ولا يظهر في شاشة التحكّم أبدًا — `controlToolGroups` تصفي
     // `ControlToolDestinations`، و`ProcessManager` لم يكن فيها. فصار الأب `Control`، وأُضيف
     // إلى صندوق الأدوات، وخرج من الذاكرة — نقلٌ واحد لا نسختان.
-    data object ProcessManager : MaxDestination("processmanager", R.string.processmgr_title, Icons.Rounded.Timeline, Control)
+    data object ProcessManager : MaxDestination("processmanager", R.string.processmgr_title, Icons.Rounded.QueryStats, Control)
     data object DebloatFreeze : MaxDestination("debloatfreeze", R.string.debloat_freeze_title, Icons.Rounded.CleaningServices, Control)
     data object AppSettings : MaxDestination("app_settings/{pkg}", R.string.max_title_app_settings, Icons.Rounded.AppSettingsAlt, Apps)
 

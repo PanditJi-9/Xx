@@ -30,9 +30,9 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.CheckCircle
-import androidx.compose.material.icons.outlined.RestartAlt
-import androidx.compose.material.icons.outlined.WebStories
+import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material.icons.rounded.RestartAlt
+import androidx.compose.material.icons.rounded.WebStories
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -67,13 +67,13 @@ private fun getRefreshRatePickerOptions(context: Context): List<RefreshRatePicke
             RefreshRatePickerOption(
                 titleString = context.getString(R.string.default_label),
                 reason = "default",
-                icon = Icons.Outlined.RestartAlt
+                icon = Icons.Rounded.RestartAlt
             )
         } else {
             RefreshRatePickerOption(
                 titleString = context.getString(R.string.refresh_rate_format, rate),
                 reason = rate,
-                icon = Icons.Outlined.WebStories
+                icon = Icons.Rounded.WebStories
             )
         }
     }
@@ -168,7 +168,7 @@ fun RefreshRatePickerDialog(
                                 trailingContent = if (isSelected) {
                                     {
                                         Icon(
-                                            imageVector = Icons.Outlined.CheckCircle,
+                                            imageVector = Icons.Rounded.CheckCircle,
                                             contentDescription = null,
                                             tint = MaterialTheme.colorScheme.primary
                                         )
