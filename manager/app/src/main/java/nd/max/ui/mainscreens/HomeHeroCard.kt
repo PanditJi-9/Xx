@@ -24,13 +24,8 @@ package nd.max.ui.mainscreens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -76,7 +71,6 @@ import nd.max.ui.component.neuralClickable
 import nd.max.ui.component.neuralPalette
 import nd.max.ui.design.MaxRadius
 import nd.max.ui.design.MaxSize
-import nd.max.ui.design.MaxDuration
 import nd.max.ui.design.MaxSpace
 import nd.max.ui.navigation.MaxDestination
 import nd.max.ui.theme.HeroTitleStyle
@@ -186,15 +180,12 @@ internal fun HomeHeroCard(
                         // هندسة الصفّ. وتقليل الحركة يُعرض الحالة النهائية ساكنةً لا يخفيها.
                         val verdict = stringResource(heatWordRes(heat))
                         if (swapMotion) {
-                            AnimatedContent(
+                            // تلاشٍ متبادَل لا انزلاق: `AnimatedContent` احتاج `tween<IntOffset>`
+                            // صريحًا فسقط التصريف عليه، والنفع البصري واحد — الكلمة تتبدّل بحركة
+                            // قصيرة والرقم لا يتحرّك معها ولا يقفز خطّ الأساس حين تطول الكلمة.
+                            Crossfade(
                                 targetState = verdict,
-                                transitionSpec = {
-                                    (slideInVertically(tween(MaxMotion.fast, easing = MaxEase.EmphasizedDecelerate)) { height -> height / 3 } +
-                                        fadeIn(tween(MaxMotion.fast))) togetherWith
-                                        (slideOutVertically(tween(MaxMotion.fast, easing = MaxEase.EmphasizedAccelerate)) { height -> -height / 3 } +
-                                            fadeOut(tween(MaxDuration.instant)))
-                                },
-                                sizeTransform = null,
+                                animationSpec = tween(MaxMotion.fast, easing = MaxEase.Emphasized),
                                 label = "heatVerdict",
                             ) { word ->
                                 Text(
