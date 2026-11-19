@@ -240,7 +240,14 @@ jobs:
           starters=$(grep -c 'Landroid/content/Context;->startActivity(Landroid/content/Intent;)V' \
             "$work/decoded/smali/cn/nubia/gamelauncher/helper/CardHelper.smali" || true)
           echo "injected startActivity calls in CardHelper: $starters"
-          test "$starters" -eq 1
+          # The launcher itself already calls startActivity to launch the game, so
+          # the count is original + our injected one (measured: 2 on the real
+          # decoded tree). The injection's own label is the exact gate.
+          test "$starters" -ge 2
+          labels=$(grep -c 'nfw_skip_ga' \
+            "$work/decoded/smali/cn/nubia/gamelauncher/helper/CardHelper.smali" || true)
+          echo "wake injection labels in CardHelper: $labels"
+          test "$labels" -eq 1
           carriers=$(for dex in $(unzip -Z1 "$work/unsigned.apk" 'classes*.dex'); do
             unzip -p "$work/unsigned.apk" "$dex" | grep -a -q 'powerpanel.action.FOREGROUND_GAME_CHANGE' && echo "$dex"
           done | wc -l)
