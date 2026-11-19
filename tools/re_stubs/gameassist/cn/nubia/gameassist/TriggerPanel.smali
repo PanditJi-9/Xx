@@ -5,6 +5,9 @@
 # GameAssist يبني لوحته الجانبية فقط عندما يستقبل onGameStart() من نظام RedMagic،
 # وهذه الإشارة لا تأتي على أجهزة أخرى. فبدل انتظار نظامٍ غائب، نطلق نفس الدالة
 # التي كان النظام سيستدعيها — بعد الإقلاع بقليل، مرة واحدة.
+#
+# ويُسجّل كل خطوة باسم ثابت (GameAssistTrigger) لأن الصمت لا يميّز
+# «لم يُستدعَ» من «استُدعي وعاد بلا نافذة» — وقد قياس ذلك مرة (2026-11-19).
 
 .method public constructor <init>()V
     .locals 0
@@ -18,6 +21,10 @@
     .locals 4
 
     :try_start_0
+    const-string v0, "GameAssistTrigger"
+    const-string v1, "arm()"
+    invoke-static {v0, v1}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
+
     new-instance v0, Landroid/os/Handler;
 
     invoke-static {}, Landroid/os/Looper;->getMainLooper()Landroid/os/Looper;
@@ -38,6 +45,10 @@
 
     :catch_0
     move-exception v0
+
+    const-string v1, "GameAssistTrigger"
+    const-string v2, "arm() threw"
+    invoke-static {v1, v2, v0}, Landroid/util/Log;->w(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
 
     return-void
 .end method

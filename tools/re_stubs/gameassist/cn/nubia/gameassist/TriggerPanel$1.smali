@@ -3,7 +3,12 @@
 .implements Ljava/lang/Runnable;
 
 # ينفّذ الإشارة التي كان نظام RedMagic سيُرسلها: onGameStart().
-# لا يفترض أن مدير النافذة جاهز: إن لم يكن، يبنيه من مطيعه العام O(Context).
+#
+# ولا يعتمد على GameAssistApplication.k(): قِيس على الجهاز (2026-11-19) أن
+# onCreate ملفوف بـcatch-all يشمل invoke-super، فإن رمى super (عطب componentcenter)
+# لم يصل التنفيذ إلى sget-object الذي يعيّن المطيح، فعاد k() فارغًا ووقف كل شيء بصمت.
+# فالسياق يُؤخذ من ActivityThread.currentApplication() — غير فارغ بعد ثلاث ثوانٍ — وk()
+# مجرّد تفضيل إن كان موجودًا.
 
 .method constructor <init>()V
     .locals 0
@@ -17,20 +22,24 @@
     .locals 4
 
     :try_start_0
+    invoke-static {}, Landroid/app/ActivityThread;->currentApplication()Landroid/app/Application;
+    move-result-object v0
+
+    if-eqz v0, :have_ctx
+
     invoke-static {}, Lcn/nubia/gameassist/GameAssistApplication;->k()Lcn/nubia/gameassist/GameAssistApplication;
     move-result-object v0
 
+    :have_ctx
     if-eqz v0, :cond_end
 
-    invoke-static {}, Lcn/nubia/gameassist/GameAssistApplication;->j()Lcn/nubia/gameassist/panel/GameAssistWindowManager;
-    move-result-object v1
-
-    if-eqz v1, :cond_call
+    const-string v2, "GameAssistTrigger"
+    const-string v3, "run: context acquired"
+    invoke-static {v2, v3}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
 
     invoke-static {v0}, Lcn/nubia/gameassist/panel/GameAssistWindowManager;->O(Landroid/content/Context;)Lcn/nubia/gameassist/panel/GameAssistWindowManager;
     move-result-object v1
 
-    :cond_call
     if-eqz v1, :cond_end
 
     const-string v2, "GameAssistTrigger"
@@ -49,8 +58,8 @@
     move-exception v0
 
     const-string v1, "GameAssistTrigger"
-    const-string v2, "onGameStart() threw, contained"
-    invoke-static {v1, v2}, Landroid/util/Log;->w(Ljava/lang/String;Ljava/lang/String;)I
+    const-string v2, "run() threw, contained"
+    invoke-static {v1, v2, v0}, Landroid/util/Log;->w(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
 
     return-void
 .end method
