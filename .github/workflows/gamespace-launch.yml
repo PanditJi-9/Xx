@@ -36,6 +36,11 @@ on:
         required: false
         type: boolean
         default: false
+      bitmap_recycle_only:
+        description: Diagnostic — comma-separated path filters (com/bumptech/glide)
+        required: false
+        type: string
+        default: ""
 
 permissions:
   contents: write
@@ -161,7 +166,14 @@ jobs:
           # we meet, instead of guessing; it trades a leak for a crash.
           if [ "${{ inputs.disable_bitmap_recycle }}" = "true" ]; then
             python3 tools/re_disable_bitmap_recycle.py --self-test
-            python3 tools/re_disable_bitmap_recycle.py --decoded "$work/decoded"
+            # One prefix per build narrows the cause once the broad build has
+            # proven that skipping recycles removes the crash.
+            only=()
+            IFS=',' read -ra filters <<< "${{ inputs.bitmap_recycle_only }}"
+            for token in "${filters[@]}"; do
+              [ -n "$token" ] && only+=(--only "$token")
+            done
+            python3 tools/re_disable_bitmap_recycle.py --decoded "$work/decoded" "${only[@]+"${only[@]}"}"
           fi
 
           # apktool 3.x dropped --use-aapt2: aapt2 is the only engine there, so

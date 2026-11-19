@@ -69,7 +69,7 @@ def rewrite(text: str) -> tuple[str, int]:
     return CALL.sub(swap, text), count
 
 
-def apply(decoded: str, dry_run: bool) -> tuple[int, int]:
+def apply(decoded: str, dry_run: bool, only: tuple[str, ...] = ()) -> tuple[int, int]:
     files = 0
     calls = 0
     for root, dirs, names in os.walk(decoded):
@@ -88,6 +88,12 @@ def apply(decoded: str, dry_run: bool) -> tuple[int, int]:
             with open(path, encoding="utf-8") as handle:
                 text = handle.read()
             if "Landroid/graphics/Bitmap;->recycle()V" not in text:
+                continue
+            # --only narrows a diagnostic build to one suspect package: with all
+            # recycles skipped the crash disappears, and the next question is
+            # *whose* call caused it, answered by a build per prefix.
+            rel = os.path.relpath(path, decoded)
+            if only and not any(token in rel for token in only):
                 continue
             patched, changed = rewrite(text)
             if not changed:
@@ -177,6 +183,12 @@ def main(argv: list[str]) -> int:
     parser.add_argument("--decoded", help="directory apktool decoded the APK into")
     parser.add_argument("--dry-run", action="store_true", help="report without writing")
     parser.add_argument("--self-test", action="store_true")
+    parser.add_argument(
+        "--only",
+        action="append",
+        default=[],
+        help="patch only files whose path contains this substring (repeatable)",
+    )
     args = parser.parse_args(argv)
 
     if args.self_test:
@@ -187,7 +199,7 @@ def main(argv: list[str]) -> int:
         parser.error(f"not a directory: {args.decoded}")
 
     try:
-        files, calls = apply(args.decoded, dry_run=args.dry_run)
+        files, calls = apply(args.decoded, dry_run=args.dry_run, only=tuple(args.only))
     except PatchError as error:
         print(f"error: {error}", file=sys.stderr)
         return 1
