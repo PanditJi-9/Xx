@@ -46,7 +46,7 @@ import androidx.compose.material.icons.rounded.Science
 import androidx.compose.material.icons.rounded.SdStorage
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.Shield
-import androidx.compose.material.icons.rounded.ShowChart
+import androidx.compose.material.icons.automirrored.rounded.ShowChart
 import androidx.compose.material.icons.rounded.SmartButton
 import androidx.compose.material.icons.rounded.Speed
 import androidx.compose.material.icons.rounded.SportsEsports
@@ -123,7 +123,7 @@ sealed class MaxDestination(
      * exploration gate, loop counters, knob ownership). Replaces the static
      * "engine state" section that used to sit inside [MaxAi].
      */
-    data object MaxLive : MaxDestination("max_live", R.string.max_live_title, Icons.Rounded.ShowChart, MaxAi)
+    data object MaxLive : MaxDestination("max_live", R.string.max_live_title, Icons.AutoMirrored.Rounded.ShowChart, MaxAi)
 
     /**
      * شاشة «ما يفعله Max AI» (§٥): تعريفُ المحرّك بحلقته وجدولُ **المتاح الآن** من إعداد اللوحة

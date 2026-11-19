@@ -20,7 +20,7 @@ import androidx.compose.material.icons.rounded.HourglassTop
 import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.Psychology
 import androidx.compose.material.icons.rounded.Search
-import androidx.compose.material.icons.rounded.ShowChart
+import androidx.compose.material.icons.automirrored.rounded.ShowChart
 import androidx.compose.material.icons.rounded.SkipNext
 import androidx.compose.material.icons.rounded.TrackChanges
 import androidx.compose.material.icons.rounded.Tune
@@ -265,7 +265,7 @@ private fun LiveForecastSection(state: MaxAiState, freshness: SampleFreshness) {
             MaxGroup {
                 MaxRow(
                     title = stringResource(R.string.max_live_forecast_empty),
-                    icon = Icons.Rounded.ShowChart,
+                    icon = Icons.AutoMirrored.Rounded.ShowChart,
                     iconTone = MaxTone.Inactive,
                 )
             }

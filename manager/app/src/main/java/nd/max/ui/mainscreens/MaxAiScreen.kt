@@ -41,7 +41,7 @@ import androidx.compose.material.icons.rounded.Psychology
 import androidx.compose.material.icons.rounded.PushPin
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.SearchOff
-import androidx.compose.material.icons.rounded.ShowChart
+import androidx.compose.material.icons.automirrored.rounded.ShowChart
 import androidx.compose.material.icons.rounded.Straighten
 import androidx.compose.material.icons.rounded.SwapHoriz
 import androidx.compose.material.icons.rounded.Thermostat
@@ -299,7 +299,7 @@ fun MaxAiScreen(
                     MaxRow(
                         title = stringResource(R.string.max_live_open),
                         subtitle = stringResource(R.string.max_live_open_desc),
-                        icon = Icons.Rounded.ShowChart,
+                        icon = Icons.AutoMirrored.Rounded.ShowChart,
                         onClick = { MaxNavActions(navController).navigateTo(MaxDestination.MaxLive) },
                     )
                 }
@@ -510,7 +510,7 @@ private fun ControlDeck(
                     state.trust.size,
                     state.ownership.size,
                 ),
-                icon = Icons.Rounded.ShowChart,
+                icon = Icons.AutoMirrored.Rounded.ShowChart,
                 iconTone = MaxTone.Accent,
                 onClick = { MaxNavActions(navController).navigateTo(MaxDestination.MaxLive) },
             )
