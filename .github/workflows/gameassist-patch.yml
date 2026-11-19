@@ -221,6 +221,19 @@ jobs:
             --class com.zte.gameassist.ext.common.GAControllerProxy \
             --method b --mode stub --return null --allow-non-void
 
+          # Measured on the device 2026-11-19 12:27 (build 44505341579): with b()
+          # stubbed, W() got past GameAssistMutex.<init>'s RemoteList and died one
+          # frame later —
+          #   NullPointerException: Collection.toArray() on a null object reference
+          #     at ArrayList.addAll(there is no remote list on this ROM)
+          #     at GameAssistMutex.f <- cn.nubia.gameassist.utils.a.a
+          #     <- MutableData.d <- GameAssistMutex.<init> <- W
+          # The observer is where a missing remote value must be ignored; f() keeps
+          # its monitor and catchall untouched.
+          python3 tools/re_patch_smali.py --decoded "$work/decoded" \
+            --class cn.nubia.gameassist.utils.a \
+            --method a --mode wrap --catch runtime
+
           python3 tools/re_inject_call.py --self-test
 
           mkdir -p "$work/decoded/smali_classes2/cn/nubia/gameassist"

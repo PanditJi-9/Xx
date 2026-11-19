@@ -19,7 +19,7 @@
 .end method
 
 .method public run()V
-    .locals 5
+    .locals 7
 
     :try_start_0
     invoke-static {}, Landroid/app/ActivityThread;->currentApplication()Landroid/app/Application;
@@ -76,6 +76,22 @@
     const-string v2, "GameAssistTrigger"
     const-string v3, "show sequence posted"
     invoke-static {v2, v3}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
+
+    # محاولة إظهار ثانية بعد أن يفرغ W() من البناء ويضع D=true. السبب مقيس:
+    # p0() ينشر على Handler الحقل n، وc() على Handler الحقل o — وهما خيطان
+    # مختلفان، فرُصد في 12:11 أن showWindow() سبقت انتهاء W() فعملت على D=false.
+    # فالنشر المتأخر هو الطريق الحتمي بعد أن يفرغ البناء.
+    new-instance v2, Landroid/os/Handler;
+    invoke-static {}, Landroid/os/Looper;->getMainLooper()Landroid/os/Looper;
+    move-result-object v3
+    invoke-direct {v2, v3}, Landroid/os/Handler;-><init>(Landroid/os/Looper;)V
+
+    new-instance v3, Lcn/nubia/gameassist/TriggerPanel$2;
+    invoke-direct {v3}, Lcn/nubia/gameassist/TriggerPanel$2;-><init>()V
+
+    const-wide/16 v4, 0xfa0
+    invoke-virtual {v2, v3, v4, v5}, Landroid/os/Handler;->postDelayed(Ljava/lang/Runnable;J)Z
+    move-result v5
 
     :cond_end
     :try_end_0
