@@ -319,3 +319,34 @@ if ((attrs.privateFlags & PRIVATE_FLAG_TRUSTED_OVERLAY) != 0) {
 شرط الأمامية» — وهذا الفرق بين ترقيع ناجح وادّعاء. ولاحظ أن اللعبة المستهدفة
 (`com.ddup.zombiewaves.zw`) مثبّتة لكن `resolve-activity` يرد `No activity found`، فلا
 مدخل لها من ADB لإبقائها أمامية في هذه البيئة.
+
+## الحسم: اللوحة تعمل بلا جذر (2026-11-19 · 02:45)
+
+السلسلة كاملةً، وكل حلقة منها مقيسة على الجهاز:
+
+1. **حذف `addHidePrivateTrustedOverlayFlags`** (التشغيل `44428041667`) ⇒ سقط رفض
+   `INTERNAL_SYSTEM_WINDOW` نهائيًا.
+2. **تعطيل `PowerPanelService$1.run`** (التشغيل `44430349402`) ⇒ سقط «send stop service»
+   الفوريّ الذي كان يقتل اللوحة بعد ~٨٠ ملّي.
+3. **منح صلاحية التراكب** ⇒ `Settings.canDrawOverlays` صار `true`، فيسلك `onStartCommand`
+   فرع العرض (`type == 0`) ويُنادي `sendMessageDelayed(0, 20)` ثم `MSG msg.what = 0`.
+
+قياس البقاء بعد ذلك (`am startservice … --ei type 0 --es currentPkg <pkg>`):
+`dumpsys window | grep -c PowerPanel` = **6** عند ١ث و٣ث و٦ث و**١١ث** — والنوافذ تُرسم
+باستمرار (`BufferQueue … queueBuffer fps=1.0–2.0`). ولا `INTERNAL_SYSTEM_WINDOW` ولا
+`SecurityException` واحدة.
+
+وتصحيح لما سبق: فشل العرض في القياسات الوسيطة كان لأن **إعادة التثبيت تُعيد الـappop إلى
+`ignore`**؛ و`canDrawOverlays=false` يجعل التطبيق نفسه يرسل الإخفاء (الفرع `:cond_1`)، لا
+لأن الترقيع ناقص.
+
+### وما يلزم أي مستخدم — بلا جذر
+
+1. تثبيت `GameFloat-panel.apk` من الأرتيفاكت (موقّع بالمفتاح الثابت `CN=Nubia Patch`،
+   فتُحدَّث النسخ فوق بعضها بلا حذف).
+2. منح `cn.zte.gamefloat` صلاحية **«العرض فوق التطبيقات الأخرى»** من إعدادات النظام —
+   مفتاح عادي للمستخدم، لا `su` ولا Shizuku ولا `WRITE_SECURE_SETTINGS`.
+
+بعد ذلك يُستدعى العرض بالأمر القياسي:
+`am startservice -n cn.zte.gamefloat/.powerpanel.PowerPanelService -a ACTION_FOREGROUND_PKG_CHANGE --es currentPkg <game> --ei type 0 --ei powerPanelDialogShow 1`
+(`type = 0` عرض · `type = 1` إخفاء مسموح به · أي قيمة أخرى: لا شيء).
