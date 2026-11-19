@@ -253,6 +253,17 @@ jobs:
             --class com.zte.shared.wrapper.ContextWrapper \
             --method updateDisplay --signature '(Landroid/content/Context;I)V' --mode noop
 
+          # Measured on the device 2026-11-19 12:57 (build 44510017758): W() now
+          # completes and GameAssistRootView inflates res/A4S.xml, then the main
+          # thread dies in EventDispatcher.g -> InputManagerWrapper.initGestureInputMonitor
+          # on Context.getDisplayId(), another ZTE framework method Android 16 removed:
+          #   NoSuchMethodError: No virtual method getDisplayId()I in class Landroid/content/Context;
+          # The gesture monitor also needs the signature MONITOR_INPUT permission this app
+          # does not hold, so it could never work here; the panel does not need it.
+          # g() only stores the result in field d and logs, so null is safe.
+          python3 tools/re_patch_smali.py --decoded "$work/decoded" \
+            --class com.zte.shared.wrapper.InputManagerWrapper \
+            --method initGestureInputMonitor --mode stub --return null --allow-non-void
           python3 tools/re_inject_call.py --self-test
 
           mkdir -p "$work/decoded/smali_classes2/cn/nubia/gameassist"
