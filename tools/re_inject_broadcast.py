@@ -14,9 +14,10 @@ is the launcher's own launch path: it reads `this.mContext` and
 which is the only sender Android lets start another app's process from a
 broadcast.
 
-The block uses parameter registers (`p0` = this, `p1` = bean) and locals v0…v3,
-which exists only when the method declares at least four locals; the tool refuses
-otherwise instead of producing smali that cannot assemble.
+The block uses parameter registers (`p0` = this, `p1` = bean) and locals v0…v3.
+If the method declares fewer than four locals, the declaration is widened to four
+instead of refusing: widening a local frame is always safe and lets us patch
+methods that originally declared fewer locals.
 
 Usage:
     python3 tools/re_inject_broadcast.py --decoded build/decoded \\
@@ -61,6 +62,52 @@ class PatchError(RuntimeError):
     pass
 
 
+def params_width(descriptor: str) -> int:
+    """Total register width of the parameters in a method descriptor."""
+    i = descriptor.find("(")
+    if i < 0:
+        return 0
+    depth = 0
+    j = i
+    while j < len(descriptor):
+        if descriptor[j] == "(":
+            depth += 1
+        elif descriptor[j] == ")":
+            depth -= 1
+            if depth == 0:
+                break
+        j += 1
+    params_str = descriptor[i + 1:j]
+    width = 0
+    k = 0
+    n = len(params_str)
+    while k < n:
+        c = params_str[k]
+        if c in "ZBCSFIJD":
+            width += 2 if c in "JD" else 1
+            k += 1
+        elif c == "L":
+            semi = params_str.find(";", k)
+            if semi < 0:
+                break
+            width += 1
+            k = semi + 1
+        elif c == "[":
+            while k < n and params_str[k] == "[":
+                k += 1
+            if k < n and params_str[k] == "L":
+                semi = params_str.find(";", k)
+                if semi < 0:
+                    break
+                k = semi + 1
+            elif k < n:
+                k += 1
+            width += 1
+        else:
+            k += 1
+    return width
+
+
 def block(context_field: str, bean_getter: str, bean_type: str, cls: str,
           action: str, extra: str) -> list[str]:
     return [
@@ -93,17 +140,38 @@ def inject(lines: list[str], descriptor: str, context_field: str, bean_getter: s
     end = ends[0]
 
     locals_count = 0
+    directive_idx = None
+    directive_kind = None  # "locals" or "registers"
+    is_static = "static" in lines[start].split()
+    params_w = params_width(descriptor)
     for i in range(start, end):
         found = LOCALS.match(lines[i])
         if found:
             locals_count = int(found.group("count"))
+            directive_idx = i
+            directive_kind = "locals"
             break
         found = REGISTERS.match(lines[i])
         if found:
-            locals_count = int(found.group("count")) - 4  # instance method: this + 3 params
+            this_w = 0 if is_static else 1
+            locals_count = int(found.group("count")) - this_w - params_w
+            directive_idx = i
+            directive_kind = "registers"
             break
+    if directive_idx is None:
+        raise PatchError("method has no .locals/.registers directive")
+    # Widen the local frame to fit v0…v3 instead of refusing: widening is always
+    # safe and lets us patch methods that originally declared fewer locals.
     if locals_count < 4:
-        raise PatchError(f"method declares {locals_count} locals; the block needs 4 (v0…v3)")
+        indent = lines[directive_idx][:len(lines[directive_idx]) - len(lines[directive_idx].lstrip())]
+        if directive_kind == "locals":
+            lines[directive_idx] = f"{indent}.locals 4"
+        else:
+            this_w = 0 if is_static else 1
+            existing = int(REGISTERS.match(lines[directive_idx]).group("count"))
+            new_total = max(existing, 4 + this_w + params_w)
+            lines[directive_idx] = f"{indent}.registers {new_total}"
+        locals_count = 4
 
     target = None
     in_annotation = False
@@ -212,19 +280,21 @@ def self_test() -> int:
             return 1
 
         open(path, "w", encoding="utf-8").write(SAMPLE.replace(".locals 5", ".locals 2"))
-        try:
-            apply(os.path.join(tmp, "decoded"), "cn.nubia.gamelauncher.helper.CardHelper",
-                  "startApp", "(Lcn/nubia/gamelauncher/bean/AppListItemBean;ZLjava/lang/Runnable;)V",
-                  "mContext", "getPackageName", "Lcn/nubia/gamelauncher/bean/AppListItemBean;",
-                  "A.B", "packageName")
-        except PatchError:
-            pass
-        else:
-            print("SELF-TEST FAILED: a method without room for the block was patched",
-                  file=sys.stderr)
+        apply(os.path.join(tmp, "decoded"), "cn.nubia.gamelauncher.helper.CardHelper",
+              "startApp", "(Lcn/nubia/gamelauncher/bean/AppListItemBean;ZLjava/lang/Runnable;)V",
+              "mContext", "getPackageName", "Lcn/nubia.gamelauncher/bean/AppListItemBean;",
+              "A.B", "packageName")
+        text = open(path, encoding="utf-8").read()
+        if "sendBroadcast" not in text:
+            print("SELF-TEST FAILED: tight locals were not patched", file=sys.stderr)
+            return 1
+        import re as _re
+        m = _re.search(r"\.locals\s+(\d+)", text)
+        if not m or int(m.group(1)) < 4:
+            print("SELF-TEST FAILED: locals not widened to >= 4", file=sys.stderr)
             return 1
 
-    print("self-test OK: block lands before the first instruction, survives a rerun, refuses tight locals")
+    print("self-test OK: block lands before the first instruction, survives a rerun, widens tight locals")
     return 0
 
 
