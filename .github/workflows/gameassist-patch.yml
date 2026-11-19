@@ -305,6 +305,14 @@ jobs:
              tools/re_stubs/gameassist/cn/nubia/gameassist/GameAssistHandle*.smali \
              "$work/decoded/smali_classes2/cn/nubia/gameassist/"
 
+          # الصنف الغائب com.zte.feature.Feature: قِيس (11-19 16:37:02.445) أن
+          # NoClassDefFoundError عليه داخل DisplayManagerWrapper.<clinit> يقتل
+          # العملية كاملة على مسار RecordTile ← DessertTilesAdapter ← RecyclerView.
+          # فيُحقن بديل واحد في الجذر بدل لفّ كل مُستدعٍ.
+          mkdir -p "$work/decoded/smali_classes2/com/zte/feature"
+          cp tools/re_stubs/gameassist/com/zte/feature/Feature.smali \
+             "$work/decoded/smali_classes2/com/zte/feature/"
+
           python3 tools/re_inject_call.py --decoded "$work/decoded" \
             --class cn.nubia.gameassist.GameAssistApplication \
             --method onCreate --signature '()V' \
