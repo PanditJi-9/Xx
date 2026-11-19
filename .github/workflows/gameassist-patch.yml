@@ -162,6 +162,21 @@ jobs:
           # applies here; contain it now rather than one build per crash.
           python3 tools/re_patch_smali.py --decoded "$work/decoded" --sweep
 
+          # The panel is built by GameAssist itself, but only after its own
+          # onGameStart() — the signal RedMagic's system sends and this ROM never
+          # does. A stub re-raises the same call shortly after startup instead of
+          # waiting for a sender that does not exist here.
+          python3 tools/re_inject_call.py --self-test
+
+          mkdir -p "$work/decoded/smali_classes2/cn/nubia/gameassist"
+          cp tools/re_stubs/gameassist/cn/nubia/gameassist/TriggerPanel*.smali \
+             "$work/decoded/smali_classes2/cn/nubia/gameassist/"
+
+          python3 tools/re_inject_call.py --decoded "$work/decoded" \
+            --class cn.nubia.gameassist.GameAssistApplication \
+            --method onCreate --signature '()V' \
+            --target 'Lcn/nubia/gameassist/TriggerPanel;->arm()V'
+
           if ! java -jar "$RUNNER_TEMP/apktool.jar" b --copy-original \
               --output "$work/unsigned.apk" "$work/decoded" > "$work/apktool-b.log" 2>&1; then
             echo "::error::apktool build failed"
