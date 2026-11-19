@@ -155,6 +155,14 @@ jobs:
 
           # One receiver mention plus the injected sender. A build that silently
           # skipped the injection would carry exactly one, so prove the count.
+          # Diagnose which methods actually launch a game on this build's tree,
+          # so the next iteration can target the real chokepoint instead of
+          # guessing. Result is uploaded as launch-paths.txt.
+          python3 tools/re_diagnose_launch.py --decoded "$work/decoded" \
+            > "$work/launch-paths.txt" 2>&1 || true
+          echo "--- launch paths (head) ---"
+          head -60 "$work/launch-paths.txt"
+
           mentions=$(for dex in $(unzip -Z1 "$work/unsigned.apk" 'classes*.dex'); do
             unzip -p "$work/unsigned.apk" "$dex" | grep -a -c 'powerpanel.action.FOREGROUND_GAME_CHANGE' || true
           done | paste -sd+ - | bc)
@@ -261,5 +269,6 @@ jobs:
             ${{ runner.temp }}/work/signature.txt
             ${{ runner.temp }}/work/apktool-b.log
             ${{ runner.temp }}/work/gating.txt
+            ${{ runner.temp }}/work/launch-paths.txt
           if-no-files-found: error
           retention-days: 30
