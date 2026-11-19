@@ -504,6 +504,7 @@ jobs:
           # تعديلًا، لكنّه يشغّل أدواتها هنا دائمًا، فلا يفترق الحكم عن الأداة.)
           python3 tools/re_force_window_type.py --self-test
           python3 tools/re_force_true.py --self-test
+          python3 tools/re_inject_broadcast.py --self-test
           python3 tools/re_scrub_manifest_permission.py --self-test
           python3 tools/re_strip_invoke.py --self-test
           echo "✅ Contract gates passed in $((SECONDS - start))s"
