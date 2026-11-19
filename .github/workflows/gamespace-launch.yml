@@ -135,15 +135,11 @@ jobs:
           # game — a foreground sender, which is what Android requires before it
           # will start another app's process from a broadcast.
           python3 tools/re_inject_broadcast.py --self-test
-          # The click path uses the two-argument overload; the three-argument
-          # one (patched before) never fired on the device, so target both.
-          python3 tools/re_inject_broadcast.py --decoded "$work/decoded" \
-            --class cn.nubia.gamelauncher.helper.CardHelper \
-            --method startApp \
-            --signature '(Lcn/nubia/gamelauncher/bean/AppListItemBean;Z)V' \
-            --context-field mContext --bean-getter getPackageName \
-            --action cn.zte.gamefloat.powerpanel.action.FOREGROUND_GAME_CHANGE \
-            --extra packageName
+          # One injection, on the chokepoint: the two-argument overload is a
+          # four-instruction delegate to the three-argument one (measured in
+          # smali/cn/nubia/gamelauncher/helper/CardHelper.smali:966-975), so
+          # patching both sent the broadcast twice for the same click. Patching
+          # the delegate target covers every caller with one send.
           python3 tools/re_inject_broadcast.py --decoded "$work/decoded" \
             --class cn.nubia.gamelauncher.helper.CardHelper \
             --method startApp \
@@ -162,8 +158,6 @@ jobs:
           fi
           ls -l "$work/unsigned.apk"
 
-          # One receiver mention plus the injected sender. A build that silently
-          # skipped the injection would carry exactly one, so prove the count.
           # Diagnose which methods actually launch a game on this build's tree,
           # so the next iteration can target the real chokepoint instead of
           # guessing. Result is uploaded as launch-paths.txt.
@@ -172,11 +166,20 @@ jobs:
           echo "--- launch paths (head) ---"
           head -60 "$work/launch-paths.txt"
 
-          mentions=$(for dex in $(unzip -Z1 "$work/unsigned.apk" 'classes*.dex'); do
-            unzip -p "$work/unsigned.apk" "$dex" | grep -a -c 'powerpanel.action.FOREGROUND_GAME_CHANGE' || true
-          done | paste -sd+ - | bc)
-          echo "trigger mentions in the built dex files: $mentions"
-          test "$mentions" -eq 3
+          # Prove the sender where it is written. Counting the trigger string in
+          # the dex cannot do it: a dex string table keeps each literal once per
+          # file, so a correct patch still printed "2" and a gate of 3 could
+          # never pass (measured on run 44452353311, which was green in the
+          # source and red only at this assertion).
+          senders=$(grep -c 'sendBroadcast' \
+            "$work/decoded/smali/cn/nubia/gamelauncher/helper/CardHelper.smali" || true)
+          echo "injected sendBroadcast calls in CardHelper: $senders"
+          test "$senders" -eq 1
+          carriers=$(for dex in $(unzip -Z1 "$work/unsigned.apk" 'classes*.dex'); do
+            unzip -p "$work/unsigned.apk" "$dex" | grep -a -q 'powerpanel.action.FOREGROUND_GAME_CHANGE' && echo "$dex"
+          done | wc -l)
+          echo "dex files carrying the trigger string: $carriers"
+          test "$carriers" -eq 2
 
       - name: Record the device gates the app checks
         run: |
