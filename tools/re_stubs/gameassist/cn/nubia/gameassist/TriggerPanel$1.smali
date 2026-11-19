@@ -89,6 +89,22 @@
     new-instance v3, Lcn/nubia/gameassist/TriggerPanel$2;
     invoke-direct {v3}, Lcn/nubia/gameassist/TriggerPanel$2;-><init>()V
 
+    # أربع محاولات متقاربة: النظام يقتل العملية بضغط الذاكرة (adj 905) بعد
+    # قرابة 3 ثوانٍ من انتهاء البثّ — قِيس 2026-11-19 13:14:10 normal_mem_pressure
+    # قبل أن يعمل المؤقت القديم (4 ثوانٍ). فأول محاولة تسبق القتل، وما ينجح
+    # منها يضيف النافذة فتخرج العملية من قائمة الضحية.
+    const-wide/16 v4, 0x1f4
+    invoke-virtual {v2, v3, v4, v5}, Landroid/os/Handler;->postDelayed(Ljava/lang/Runnable;J)Z
+    move-result v5
+
+    const-wide/16 v4, 0x3e8
+    invoke-virtual {v2, v3, v4, v5}, Landroid/os/Handler;->postDelayed(Ljava/lang/Runnable;J)Z
+    move-result v5
+
+    const-wide/16 v4, 0x7d0
+    invoke-virtual {v2, v3, v4, v5}, Landroid/os/Handler;->postDelayed(Ljava/lang/Runnable;J)Z
+    move-result v5
+
     const-wide/16 v4, 0xfa0
     invoke-virtual {v2, v3, v4, v5}, Landroid/os/Handler;->postDelayed(Ljava/lang/Runnable;J)Z
     move-result v5

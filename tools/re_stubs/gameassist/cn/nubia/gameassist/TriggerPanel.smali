@@ -35,7 +35,8 @@
     new-instance v1, Lcn/nubia/gameassist/TriggerPanel$1;
     invoke-direct {v1}, Lcn/nubia/gameassist/TriggerPanel$1;-><init>()V
 
-    const-wide/16 v2, 0xbb8
+    # 100ms لا 3000ms: قِيس أن العملية تُقتل بضغط الذاكرة قبل المؤقت القديم.
+    const-wide/16 v2, 0x64
 
     invoke-virtual {v0, v1, v2, v3}, Landroid/os/Handler;->postDelayed(Ljava/lang/Runnable;J)Z
     :try_end_0
