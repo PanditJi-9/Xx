@@ -498,13 +498,21 @@ jobs:
           python3 tools/test_report_summary.py --self-test
           # ── أدوات الهجرة الجذرية (re_*): تقيس الـsmali/المانيفست بالنصّ، فتُقاس هي أولًا ──
           #
-          # الثلاث تسجّل `--self-test` وتعمل على ملفّات حقيقية بلا مُصرّف ولا NDK، فحكمها هنا
+          # كلها تسجّل `--self-test` وتعمل على ملفّات حقيقية بلا مُصرّف ولا NDK، فحكمها هنا
           # كحكم أيّ بوّابة بنيوية: ثوانٍ. و`selftests_wired` في `bundle_contract.py` هو ما
           # أمسك غيابها — أداة تُقاس بيدٍ ثم تصدأ. (`build.yml` لا يُشغَّل على `tools/re_*`
           # تعديلًا، لكنّه يشغّل أدواتها هنا دائمًا، فلا يفترق الحكم عن الأداة.)
+          #
+          # والأربع الأخيرة (bitmap_recycle · force_type_literal · inject_call · inject_call_end)
+          # أُضيفت في ٢٠٢٦-١١-١٩ بلا تسجيل، فأسقط `selftests_wired` التشغيل `44599729185` في
+          # ثوانٍ — وهو عمله بالضبط: أداة تسجّل فحصًا ذاتيًّا ولا يشغّله تشغيل تصدأ بصمت.
           python3 tools/re_force_window_type.py --self-test
           python3 tools/re_force_true.py --self-test
+          python3 tools/re_force_type_literal.py --self-test
           python3 tools/re_inject_broadcast.py --self-test
+          python3 tools/re_inject_call.py --self-test
+          python3 tools/re_inject_call_end.py --self-test
+          python3 tools/re_disable_bitmap_recycle.py --self-test
           python3 tools/re_scrub_manifest_permission.py --self-test
           python3 tools/re_strip_invoke.py --self-test
           echo "✅ Contract gates passed in $((SECONDS - start))s"
