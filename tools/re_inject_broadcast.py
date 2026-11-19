@@ -109,19 +109,20 @@ def params_width(descriptor: str) -> int:
 
 
 def block(context_field: str, bean_getter: str, bean_type: str, cls: str,
-          action: str, extra: str, component: str | None) -> list[str]:
+          action: str, extra: str, component: str | None,
+          data: str | None = None, label: str = "nfw_skip") -> list[str]:
     # The guards must jump past the block when a value is MISSING (if-eqz), not
     # when it is present: an inverted guard still assembles and still leaves the
     # method running, so the only symptom is a broadcast that never happens.
     # Measured on the device 2026-11-19: an earlier build shipped `if-nez p1`,
     # every tap ran startApp and no sendBroadcast ever appeared in logcat.
     lines = [
-        "    if-eqz p1, :nfw_skip",
+        f"    if-eqz p1, :{label}",
         f"    invoke-virtual {{p1}}, {bean_type}->{bean_getter}()Ljava/lang/String;",
         "    move-result-object v0",
-        "    if-eqz v0, :nfw_skip",
+        f"    if-eqz v0, :{label}",
         f"    iget-object v1, p0, {cls}->{context_field}:Landroid/content/Context;",
-        "    if-eqz v1, :nfw_skip",
+        f"    if-eqz v1, :{label}",
         "    new-instance v2, Landroid/content/Intent;",
         f'    const-string v3, "{action}"',
         "    invoke-direct {v2, v3}, Landroid/content/Intent;-><init>(Ljava/lang/String;)V",
@@ -133,6 +134,16 @@ def block(context_field: str, bean_getter: str, bean_type: str, cls: str,
         "    const/16 v3, 0x20",
         "    invoke-virtual {v2, v3}, Landroid/content/Intent;->addFlags(I)Landroid/content/Intent;",
     ]
+    if data:
+        # البيانات ليست تفصيلًا: مستقبل GameAssist يفلتر على Scheme: "dispatcher"
+        # و Ssp: LITERAL …UPDATE_PLUGIN_CONFIG، فبلا setData لا يطابق الفلتر
+        # أصلًا ولا يصل البثّ — وقياسه من dumpsys package (2026-11-19).
+        lines += [
+            f'    const-string v3, "{data}"',
+            "    invoke-static {v3}, Landroid/net/Uri;->parse(Ljava/lang/String;)Landroid/net/Uri;",
+            "    move-result-object v3",
+            "    invoke-virtual {v2, v3}, Landroid/content/Intent;->setData(Landroid/net/Uri;)Landroid/content/Intent;",
+        ]
     if component:
         # An implicit broadcast is never delivered to a manifest receiver on
         # Android 8+ (measured 2026-11-19: enqueued, then dropped). Naming the
@@ -147,14 +158,15 @@ def block(context_field: str, bean_getter: str, bean_type: str, cls: str,
         ]
     lines += [
         "    invoke-virtual {v1, v2}, Landroid/content/Context;->sendBroadcast(Landroid/content/Intent;)V",
-        "    :nfw_skip",
+        f"    :{label}",
     ]
     return lines
 
 
 def inject(lines: list[str], descriptor: str, context_field: str, bean_getter: str,
            bean_type: str, cls: str, action: str, extra: str,
-           component: str | None = None) -> list[str]:
+           component: str | None = None, data: str | None = None,
+           label: str = "nfw_skip") -> list[str]:
     starts = [i for i, line in enumerate(lines)
               if line.startswith(".method") and descriptor in line]
     if len(starts) != 1:
@@ -217,17 +229,19 @@ def inject(lines: list[str], descriptor: str, context_field: str, bean_getter: s
     if target is None:
         raise PatchError("could not find the first instruction")
 
-    if any(":nfw_skip" in line for line in lines[start:end]):
+    if any(f":{label}" in line for line in lines[start:end]):
         return lines
 
     out = list(lines)
-    out[target:target] = block(context_field, bean_getter, bean_type, cls, action, extra, component)
+    out[target:target] = block(context_field, bean_getter, bean_type, cls, action, extra,
+                               component, data, label)
     return out
 
 
 def apply(decoded: str, cls: str, method: str, signature: str, context_field: str,
           bean_getter: str, bean_type: str, action: str, extra: str,
-          component: str | None = None) -> str:
+          component: str | None = None, data: str | None = None,
+          label: str = "nfw_skip") -> str:
     rel = cls.replace(".", "/") + ".smali"
     paths = glob.glob(os.path.join(decoded, "smali*", rel))
     if len(paths) != 1:
@@ -236,7 +250,8 @@ def apply(decoded: str, cls: str, method: str, signature: str, context_field: st
     with open(path, encoding="utf-8") as handle:
         lines = handle.read().splitlines()
     patched = inject(lines, f"{method}{signature}", context_field, bean_getter,
-                     bean_type, f"L{cls.replace('.', '/')};", action, extra, component)
+                     bean_type, f"L{cls.replace('.', '/')};", action, extra, component, data,
+                     label)
     with open(path, "w", encoding="utf-8") as handle:
         handle.write("\n".join(patched) + "\n")
     return path
@@ -320,6 +335,26 @@ def self_test() -> int:
             print("SELF-TEST FAILED: explicit component not emitted\n" + text, file=sys.stderr)
             return 1
 
+        # data URI: the GameAssist dispatcher receiver filters on
+        # Scheme: "dispatcher" + Ssp LITERAL, so an intent without setData is
+        # never matched. Measured from dumpsys package (2026-11-19).
+        open(path, "w", encoding="utf-8").write(SAMPLE)
+        apply(os.path.join(tmp, "decoded"), "cn.nubia.gamelauncher.helper.CardHelper",
+              "startApp", "(Lcn/nubia/gamelauncher/bean/AppListItemBean;ZLjava/lang/Runnable;)V",
+              "mContext", "getPackageName", "Lcn/nubia/gamelauncher/bean/AppListItemBean;",
+              "A.B", "packageName",
+              "cn.nubia.gameassist/cn.nubia.gameassist.plugin.config.UpdatePluginConfigReceiver",
+              "dispatcher:cn.nubia.gameassist.config.UPDATE_PLUGIN_CONFIG")
+        text = open(path, encoding="utf-8").read()
+        if ("Landroid/net/Uri;->parse(Ljava/lang/String;)Landroid/net/Uri;" not in text
+                or "Landroid/content/Intent;->setData(Landroid/net/Uri;)Landroid/content/Intent;" not in text
+                or '"dispatcher:cn.nubia.gameassist.config.UPDATE_PLUGIN_CONFIG"' not in text
+                or text.index("setData") > text.index("setComponent")
+                or text.count("sendBroadcast") != 1):
+            print("SELF-TEST FAILED: data URI not emitted before the component\n" + text,
+                  file=sys.stderr)
+            return 1
+
         apply(os.path.join(tmp, "decoded"), "cn.nubia.gamelauncher.helper.CardHelper",
               "startApp", "(Lcn/nubia/gamelauncher/bean/AppListItemBean;ZLjava/lang/Runnable;)V",
               "mContext", "getPackageName", "Lcn/nubia/gamelauncher/bean/AppListItemBean;",
@@ -359,6 +394,8 @@ def main(argv: list[str]) -> int:
     parser.add_argument("--action")
     parser.add_argument("--extra")
     parser.add_argument("--component", help="pkg/cls; makes the send explicit (required on Android 8+)")
+    parser.add_argument("--data", help="setData URI, e.g. dispatcher:… (needed when the receiver filters on a scheme)")
+    parser.add_argument("--label", default="nfw_skip", help="skip-label suffix, so a second injection in the same method is possible")
     parser.add_argument("--self-test", action="store_true")
     args = parser.parse_args(argv)
 
@@ -370,7 +407,8 @@ def main(argv: list[str]) -> int:
         parser.error("missing: " + ", ".join(missing))
     try:
         path = apply(args.decoded, args.cls, args.method, args.signature, args.context_field,
-                     args.bean_getter, args.bean_type, args.action, args.extra, args.component)
+                     args.bean_getter, args.bean_type, args.action, args.extra, args.component,
+                     args.data, args.label)
     except PatchError as error:
         print(f"error: {error}", file=sys.stderr)
         return 1
