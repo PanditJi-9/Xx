@@ -297,6 +297,29 @@ jobs:
             --class cn.nubia.gameassist.panel.GameAssistWindowManager \
             --method n0 --mode wrap --catch throwable
 
+          # NPE مسمّى يقتل العملية (قِيس 11-19 17:29:25 على PID 14712):
+          #   am_crash java.lang.NullPointerException: Attempt to invoke virtual
+          #   method 'int[] …GameAssistWindowManager.U()' on a null object reference
+          #   ← am_proc_died بعد 0.1s (adj 200).
+          # U() نفسها سليمة (sget Q/P + filled-new-array + return-object)؛ الفشل على
+          # المستقبِل: GameAssistApplication.j() يعيد null ثم يُنادى U() بلا فحص.
+          # والمستدعون الثلاثة فقط هم أدناه، فتُلفّ حاوياتهم لا U() (ADR-18: نقطة واحدة
+          # لكل مسار، ولا صنف بديل قبل قياس الحاجة إليه).
+          python3 tools/re_patch_smali.py --decoded "$work/decoded" \
+            --class cn.nubia.gameassist.plugin.tiles.FloatButtonQSTile \
+            --method T1 --signature '()V' --mode wrap --catch throwable
+
+          python3 tools/re_patch_smali.py --decoded "$work/decoded" \
+            --class cn.nubia.gameassist.meditationmode.danmu.BarrageTouchHelper \
+            --method b --signature '(Landroid/view/MotionEvent;)V' \
+            --mode wrap --catch throwable
+
+          python3 tools/re_patch_smali.py --decoded "$work/decoded" \
+            --class cn.nubia.gameassist.tips.learn.UserGuideController \
+            --method q \
+            --signature '(Ljava/lang/String;Lcn/nubia/gameassist/tips/learn/UserGuideView$UserGuideResource;)V' \
+            --mode wrap --catch throwable
+
           python3 tools/re_inject_call.py --self-test
 
           mkdir -p "$work/decoded/smali_classes2/cn/nubia/gameassist"
