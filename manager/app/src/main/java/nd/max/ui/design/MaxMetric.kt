@@ -358,10 +358,15 @@ fun MaxMetricLine(
             .clearAndSetSemantics { contentDescription = spoken },
         verticalArrangement = Arrangement.spacedBy(MaxSpace.xs)
     ) {
+        // **الوزن على الطرفين لا على التسمية وحدها (عطب مقيس ٢٠٢٦-١١-١٩):** كانت التسمية
+        // `weight(1f)` والقيمة بلا وزن، فتُقاس القيمة **أوّلًا** بالعرض المتاح كلّه. وقيمة طويلة
+        // غير قابلة للكسر (إصدار مشغّل الرسوم: `v1.r49p1-03bet0…`) تستهلكه كاملًا فتنكمش التسمية
+        // إلى صفر — قُرئت في تسجيل المالك صفًّا بقيمة يتيمة بلا اسم. والآن لكلٍّ سهمه، و`fill = false`
+        // يترك القصير بحجمه فلا يتغيّر أي صفّ عاديّ، و`SpaceBetween` يبقي القيمة ملتصقة بالطرف.
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(MaxSpace.md)
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
                 text = metric.label,
@@ -369,7 +374,7 @@ fun MaxMetricLine(
                 // حرفًا حرفًا في عرض ضيّق.
                 style = MaterialTheme.typography.bodyMedium.copy(lineBreak = LineBreak.Heading),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.weight(1f, fill = false),
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
@@ -385,6 +390,10 @@ fun MaxMetricLine(
                 style = MonoValueStyleSmall,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
+                // والحشو من جهة البداية يضمن فاصلًا ولو بلغ الطرفان سهمهما كاملًا.
+                modifier = Modifier
+                    .weight(1f, fill = false)
+                    .padding(start = MaxSpace.md),
                 color = if (showsValue) {
                     MaterialTheme.colorScheme.onSurface
                 } else {
