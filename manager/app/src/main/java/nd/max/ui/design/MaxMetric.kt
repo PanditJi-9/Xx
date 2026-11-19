@@ -383,7 +383,7 @@ fun MaxMetricLine(
                     // الفاصل بين رقم ووحدة لاتينية محايد، وفي فقرة عربية يُحلّ «R» فيُقلب الترتيب
                     // إلى «dpi 520» و«% 100» — قِيس على `resolutionscreen`. عزل LRI/PDI يثبّت
                     // الكتلة كما كُتبت، ويصلح كلّ قارئ للمقاييس لا موضعًا واحدًا.
-                    "\u2066$valueText ${metric.unit}\u2069"
+                    maxIsolatedValueUnit(valueText, metric.unit)
                 } else {
                     valueText
                 },

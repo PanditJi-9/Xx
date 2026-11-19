@@ -320,7 +320,10 @@ private fun displayFacts(s: DeviceInfoSnapshot) = listOf(
     // والشقّ: **وصفره قراءة** (لا شقّ) — والغياب وحده عدم قراءة، فتُقال الحالتان بلفظين.
     DeviceInfoFact(
         R.string.devinfo_cutout_top,
-        value = s.displayCutoutTopPx?.takeIf { it >= 0 }?.let { "$it px" },
+        // الوحدة في خانتها لا ملتصقةً بالرقم: النصّ «130 px» داخل فقرة عربية كان يُرسم
+        // `px 130` (تسجيل المالك، تبويب الشاشة)، والعزل في `MaxMetricLine` لا يشمل ما كُتب يدويًّا.
+        value = s.displayCutoutTopPx?.takeIf { it >= 0 }?.toString(),
+        unit = "px",
         trust = if (s.displayCutoutTopPx == null) DeviceInfoTrust.Unreadable else DeviceInfoTrust.Snapshot,
         source = WINDOW_MANAGER,
     ),

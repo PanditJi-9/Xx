@@ -22,6 +22,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import nd.max.R
+import nd.max.ui.component.maxIsolatedValueUnit
 import nd.max.ui.design.MAX_VALUE_UNAVAILABLE
 import nd.max.ui.design.MaxBatteryLevel
 import nd.max.ui.design.MaxCapsule
@@ -281,7 +282,14 @@ private fun HeroStat(tile: DeviceInfoTile, pending: Boolean, large: Boolean = fa
 
 @Composable
 private fun HeroValue(value: String, unit: String?, large: Boolean) {
-    val text = listOfNotNull(value, unit?.takeIf { it.isNotBlank() }).joinToString(" ")
+    // البطاقة كانت ترسم `in 5.72` و`dpi 520` (تسجيل المالك، تبويب الشاشة): رقم لاتينيّ
+    // ثم فاصلة محايدة ثم لاتينيّ داخل فقرة RTL — فتُحلّ الفاصلة إلى اتجاه الفقرة وينتقل الرقم
+    // إلى يمين الوحدة. العزل في `maxIsolatedValueUnit` يثبّت الكتلة، وهو نفسه المستخدم في
+    // الصفوف التفصيلية فاختفى التناقض بين البطاقة والصفّ.
+    val text = maxIsolatedValueUnit(
+        value,
+        unit?.takeIf { it.isNotBlank() },
+    )
     val typography = MaterialTheme.typography
     val style = when {
         value.length > 20 -> typography.bodyMedium
