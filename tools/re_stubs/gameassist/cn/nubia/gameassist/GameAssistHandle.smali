@@ -68,45 +68,23 @@
     return-void
 .end method
 
+# بعد ثلاث محاولات مبنية على Handler (44536890428 · 44540694596 · 44542840058)
+# ظهر «start entered» مرتين في كل مرة ولم يظهر «create posted» ولا «start failed»
+# — أي أن التنفيذ يتوقف بين السجل وإنشاء Handler، والاحتمالات كلها استُبعدت
+# بالباكسمالي (الحارس صحيح، الصنف في classes2، لا تكرار في classes.dex).
+# فالحل: لا جدولة ولا Runnable — نداء مباشر إلى make()، وهي التي تُسجّل
+# «make entered» كأول تعليمة قبل أي حارس. مصادر النداء اثنان مقيسان:
+# TriggerPanel$1 (بعد addService) وTriggerPanel$2 (retry، وهو الذي يسجّل
+# «retry showWindow()» على الجهاز فعلًا) — فالمسار يُقاس لا يُفترض.
 .method public static start(Landroid/content/Context;)V
-    .locals 6
+    .locals 3
 
     :try_start_0
     const-string v0, "GameAssistHandle"
     const-string v1, "start entered"
     invoke-static {v0, v1}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
 
-    sget-object v2, Lcn/nubia/gameassist/GameAssistHandle;->sView:Landroid/view/View;
-
-    if-nez v2, :create
-
-    return-void
-
-    :create
-    if-nez p0, :done
-
-    # لا نبني هنا: البناء على الخيط الرئيسي قبل لوحة GameTurbo يحجبها (قِيس
-    # 16:15). نُجدوِل بعد 3 ثوانٍ — اللوحة تكون قد أضافت نافذتها فتبقى العملية.
-    new-instance v2, Landroid/os/Handler;
-
-    invoke-static {}, Landroid/os/Looper;->getMainLooper()Landroid/os/Looper;
-    move-result-object v3
-
-    invoke-direct {v2, v3}, Landroid/os/Handler;-><init>(Landroid/os/Looper;)V
-
-    new-instance v3, Lcn/nubia/gameassist/GameAssistHandle$Create;
-
-    invoke-direct {v3, p0}, Lcn/nubia/gameassist/GameAssistHandle$Create;-><init>(Landroid/content/Context;)V
-
-    const-wide/16 v4, 0xbb8    # 3000 ms
-
-    invoke-virtual {v2, v3, v4, v5}, Landroid/os/Handler;->postDelayed(Ljava/lang/Runnable;J)Z
-
-    const-string v2, "GameAssistHandle"
-    const-string v3, "create posted"
-    invoke-static {v2, v3}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
-
-    :done
+    invoke-static {p0}, Lcn/nubia/gameassist/GameAssistHandle;->make(Landroid/content/Context;)V
     :try_end_0
     .catch Ljava/lang/Throwable; {:try_start_0 .. :try_end_0} :catch_0
 
@@ -126,18 +104,22 @@
     .locals 8
 
     :try_start_0
+    const-string v2, "GameAssistHandle"
+    const-string v3, "make entered"
+    invoke-static {v2, v3}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
+
     sget-object v0, Lcn/nubia/gameassist/GameAssistHandle;->sView:Landroid/view/View;
 
     if-nez v0, :go
+
+    const-string v2, "GameAssistHandle"
+    const-string v3, "already added"
+    invoke-static {v2, v3}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
 
     return-void
 
     :go
     if-nez p0, :end
-
-    const-string v2, "GameAssistHandle"
-    const-string v3, "make begin"
-    invoke-static {v2, v3}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
 
     new-instance v0, Landroid/widget/TextView;
 

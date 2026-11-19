@@ -41,6 +41,11 @@
     const-string v2, "retryTrigger"
     invoke-virtual {v1, v2}, Lcn/nubia/gameassist/panel/GameAssistWindowManager;->w0(Ljava/lang/String;)V
 
+    # الشريط يُبنى هنا لا في TriggerPanel$1: هذا الـRunnable هو الذي قِيس أنه
+    # يعمل فعلًا («retry showWindow()» في كل تشغيل)، ويعمل على الخيط الرئيسي بعد
+    # أن تكون اللوحة قد أضافت نافذتها. ونداء متكرر آمن: make تسجّل «already added».
+    invoke-static {v0}, Lcn/nubia/gameassist/GameAssistHandle;->make(Landroid/content/Context;)V
+
     :cond_end
     :try_end_0
     .catch Ljava/lang/Throwable; {:try_start_0 .. :try_end_0} :catch_0
