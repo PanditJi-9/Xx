@@ -231,7 +231,8 @@ def apply(path: Path, methods: list[Method], builder, tag_prefix: str, quiet: bo
 
 def neutralize_one(decoded: Path, dotted_class: str, method_name: str, mode: str, quiet: bool,
                    stub_kind: str = "null", allow_non_void: bool = False,
-                   exc: str = "Ljava/lang/SecurityException;") -> None:
+                   exc: str = "Ljava/lang/SecurityException;",
+                   signature: str | None = None) -> None:
     relative = Path(dotted_class.replace(".", "/") + ".smali")
     candidates = sorted(decoded.glob(f"smali*/{relative}"))
     if not candidates:
@@ -242,6 +243,19 @@ def neutralize_one(decoded: Path, dotted_class: str, method_name: str, mode: str
         hits.extend(m for m in split_methods(path) if m.name == method_name)
     if not hits:
         raise SystemExit(f"{dotted_class}#{method_name} not declared in {[str(c) for c in candidates]}")
+    if signature:
+        # دوال مُحمَّلة (overloaded) تحتاج تمييزًا لا يعتمد على الاسم وحده: كِلا
+        # ContextWrapper.updateDisplay إحداهما (Context)V والأخرى (Context;I)V،
+        # وتمرير الاسم وحده يفشل بـ"ambiguous". التوقيع يقارَن بوصف dex كاملًا.
+        hits = [m for m in hits if f"({m.match.group('params')}){m.match.group('ret')}" == signature]
+        if not hits:
+            available = [
+                f"({m.match.group('params')}){m.match.group('ret')}"
+                for p in candidates for m in split_methods(p) if m.name == method_name
+            ]
+            raise SystemExit(
+                f"{dotted_class}#{method_name}{signature} not declared — available: {available}"
+            )
     if len(hits) > 1:
         raise SystemExit(f"{method_name} is ambiguous — declared {len(hits)} times")
 
@@ -403,6 +417,7 @@ def main(argv: list[str]) -> int:
     parser.add_argument("--decoded", required=True, type=Path)
     parser.add_argument("--class", dest="dotted", help="fully qualified class, e.g. cn.nubia.common.util.CommonUtil")
     parser.add_argument("--method", help="method to patch (must return void)")
+    parser.add_argument("--signature", help="dex descriptor of the overload, e.g. '(Landroid/content/Context;)V' — required when the name is declared more than once")
     parser.add_argument("--mode", choices=("wrap", "noop", "stub"), default="wrap")
     parser.add_argument("--return", dest="stub_kind", choices=sorted(STUB_BODIES), default="null",
                         help="constant answer produced by --mode stub")
@@ -424,7 +439,7 @@ def main(argv: list[str]) -> int:
             pass  # the void check inside apply still governs; nothing extra to do here
         neutralize_one(args.decoded, args.dotted, args.method, args.mode, args.quiet,
                        stub_kind=args.stub_kind, allow_non_void=args.allow_non_void,
-                       exc=CATCH_TYPES[args.catch_kind])
+                       exc=CATCH_TYPES[args.catch_kind], signature=args.signature)
     elif args.dotted or args.method:
         raise SystemExit("--class and --method must be given together")
 

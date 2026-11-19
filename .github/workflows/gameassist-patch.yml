@@ -234,6 +234,25 @@ jobs:
             --class cn.nubia.gameassist.utils.a \
             --method a --mode wrap --catch runtime
 
+          # Measured on the device 2026-11-19 12:46 (build 44506598906): W()
+          # completed and the root view inflated (res/A4S.xml), then the process
+          # died on the main thread in the first touch dispatch:
+          #   NoSuchMethodError: No virtual method updateDisplay(I)V in class
+          #     Landroid/content/Context;
+          #     at com.zte.shared.wrapper.ContextWrapper.updateDisplay
+          #     at com.zte.gameassist.input.EventDispatcher.g
+          #     at GameAssistWindowManager$4.run
+          # Context.updateDisplay(int) is a ZTE framework extension Android 16 does
+          # not have. Both wrappers only forward to it, so their bodies become
+          # return-void — no caller can reach the missing method any more.
+          python3 tools/re_patch_smali.py --decoded "$work/decoded" \
+            --class com.zte.shared.wrapper.ContextWrapper \
+            --method updateDisplay --signature '(Landroid/content/Context;)V' --mode noop
+
+          python3 tools/re_patch_smali.py --decoded "$work/decoded" \
+            --class com.zte.shared.wrapper.ContextWrapper \
+            --method updateDisplay --signature '(Landroid/content/Context;I)V' --mode noop
+
           python3 tools/re_inject_call.py --self-test
 
           mkdir -p "$work/decoded/smali_classes2/cn/nubia/gameassist"
