@@ -8,9 +8,17 @@
 # الذاكرة (قِيس 2026-11-19: adj 905 normal_mem_pressure). والشريط نافذة دائمة
 # صغيرة، فتُبقي العملية في com.android.server.am الحيّة، ويُلمس متى شاء المالك.
 #
-# وليس فيه اختراع لمسار إظهار جديد: اللمس يُرسل نفس البثّ الذي قِيس أنه يُظهر
-# اللوحة (UpdatePluginConfigReceiver + dispatcher:…UPDATE_PLUGIN_CONFIG)،
-# فالمسار واحد لا اثنان (ADR-18).
+# تاريخ القياس (لا يُعاد اختباره من الصفر):
+#   15:26  لا سطر GameAssistHandle إطلاقًا — الحارس كان if-eqz على sView، وهو نفس
+#          اختبار if-nez على مرجع، فكان أول نداء (sView=null) يعود فورًا.
+#   15:54  نفس النتيجة بعد تصحيح الحارس بعلامة صريحة.
+#   16:15  صار السطر «start entered» يظهر مرتين (من TriggerPanel$1 ومن
+#          UpdatePluginConfigReceiver.boot)، لكن لا «handle added» ولا
+#          «handle start failed» — و`Killing …(adj 905): normal_mem_pressure`
+#          بعد 1.6 ثانية. أي أن إنشاء النافذة يحجب الخيط الرئيسي قبل أن تبني
+#          لوحة GameTurbo نافذتها، فيموت التطبيق بلا نافذة.
+#   ⇒ الفصل التالي: start() تُجدوِل على الخيط الرئيسي بعد 3 ثوانٍ (تبني اللوحة
+#     أولًا)، وmake() تبني الشريط بسجلات تقسيم قبل/بعد addView.
 
 .field private static sView:Landroid/view/View;
 
@@ -22,10 +30,7 @@
     return-void
 .end method
 
-# مدخل بلا وسائط، لأن re_inject_call.py لا يمرّر Context إلى الدالة المحقونة.
-# يُستدعى أول سطر في UpdatePluginConfigReceiver.onReceive — وهو المستقبل الوحيد
-# المقيس أنه يعمل في كل بثّ (Broadcast completed: result=0)، فلا يعتمد على
-# TriggerPanel$1 الذي قِيس مرتين أن سطر start فيه لا يُنتج أثرًا (15:26 و15:54).
+# نقطة دخول بلا وسائط لـre_inject_call (لا يقبل إلا توقيعًا بلا بارامترات).
 .method public static boot()V
     .locals 3
 
@@ -33,12 +38,12 @@
     invoke-static {}, Landroid/app/ActivityThread;->currentApplication()Landroid/app/Application;
     move-result-object v0
 
-    if-eqz v0, :have
+    if-eqz v0, :have_ctx
 
     invoke-static {}, Lcn/nubia/gameassist/GameAssistApplication;->k()Lcn/nubia/gameassist/GameAssistApplication;
     move-result-object v0
 
-    :have
+    :have_ctx
     if-eqz v0, :done
 
     const-string v1, "GameAssistHandle"
@@ -46,10 +51,11 @@
     invoke-static {v1, v2}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
 
     invoke-static {v0}, Lcn/nubia/gameassist/GameAssistHandle;->start(Landroid/content/Context;)V
+
+    :done
     :try_end_0
     .catch Ljava/lang/Throwable; {:try_start_0 .. :try_end_0} :catch_0
 
-    :done
     return-void
 
     :catch_0
@@ -63,62 +69,111 @@
 .end method
 
 .method public static start(Landroid/content/Context;)V
-    .locals 7
+    .locals 6
 
     :try_start_0
     const-string v0, "GameAssistHandle"
     const-string v1, "start entered"
     invoke-static {v0, v1}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
 
-    sget-object v0, Lcn/nubia/gameassist/GameAssistHandle;->sView:Landroid/view/View;
+    sget-object v2, Lcn/nubia/gameassist/GameAssistHandle;->sView:Landroid/view/View;
 
-    # لا تُضِف الشريط مرتين، لكن **لا تعُد قبل الإضافة**.
-    # قِيس مرتين (15:26 و15:44) أن الشريط لم يُضَف ولا سجل start إطلاقًا،
-    # والسبب أن if-eqz و if-nez **نفس الاختبار** على مرجع: كلاهما يقفز عند
-    # القيمة صفر. فكان أول نداء (sView=null) يقفز إلى نهاية الدالة.
-    if-nez v0, :create
+    if-nez v2, :create
 
     return-void
 
     :create
-    if-nez p0, :try_end_0
+    if-nez p0, :done
+
+    # لا نبني هنا: البناء على الخيط الرئيسي قبل لوحة GameTurbo يحجبها (قِيس
+    # 16:15). نُجدوِل بعد 3 ثوانٍ — اللوحة تكون قد أضافت نافذتها فتبقى العملية.
+    new-instance v2, Landroid/os/Handler;
+
+    invoke-static {}, Landroid/os/Looper;->getMainLooper()Landroid/os/Looper;
+    move-result-object v3
+
+    invoke-direct {v2, v3}, Landroid/os/Handler;-><init>(Landroid/os/Looper;)V
+
+    new-instance v3, Lcn/nubia/gameassist/GameAssistHandle$Create;
+
+    invoke-direct {v3, p0}, Lcn/nubia/gameassist/GameAssistHandle$Create;-><init>(Landroid/content/Context;)V
+
+    const-wide/16 v4, 0xbb8    # 3000 ms
+
+    invoke-virtual {v2, v3, v4, v5}, Landroid/os/Handler;->postDelayed(Ljava/lang/Runnable;J)Z
+
+    const-string v2, "GameAssistHandle"
+    const-string v3, "create posted"
+    invoke-static {v2, v3}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
+
+    :done
+    :try_end_0
+    .catch Ljava/lang/Throwable; {:try_start_0 .. :try_end_0} :catch_0
+
+    return-void
+
+    :catch_0
+    move-exception v0
+
+    const-string v1, "GameAssistHandle"
+    const-string v2, "start failed"
+    invoke-static {v1, v2, v0}, Landroid/util/Log;->w(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
+
+    return-void
+.end method
+
+.method public static make(Landroid/content/Context;)V
+    .locals 8
+
+    :try_start_0
+    sget-object v0, Lcn/nubia/gameassist/GameAssistHandle;->sView:Landroid/view/View;
+
+    if-nez v0, :go
+
+    return-void
+
+    :go
+    if-nez p0, :end
+
+    const-string v2, "GameAssistHandle"
+    const-string v3, "make begin"
+    invoke-static {v2, v3}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
 
     new-instance v0, Landroid/widget/TextView;
 
     invoke-direct {v0, p0}, Landroid/widget/TextView;-><init>(Landroid/content/Context;)V
 
-    const-string v1, "G"
+    const-string v2, "G"
 
-    invoke-virtual {v0, v1}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
+    invoke-virtual {v0, v2}, Landroid/widget/TextView;->setText(Ljava/lang/CharSequence;)V
 
-    const/4 v1, -0x1
+    const/4 v2, -0x1
 
-    invoke-virtual {v0, v1}, Landroid/widget/TextView;->setTextColor(I)V
+    invoke-virtual {v0, v2}, Landroid/widget/TextView;->setTextColor(I)V
 
-    const/high16 v1, 0x41800000    # 16.0f
+    const/high16 v2, 0x41800000    # 16.0f
 
-    invoke-virtual {v0, v1}, Landroid/widget/TextView;->setTextSize(F)V
+    invoke-virtual {v0, v2}, Landroid/widget/TextView;->setTextSize(F)V
 
-    const/16 v1, 0x11
+    const/16 v2, 0x11
 
-    invoke-virtual {v0, v1}, Landroid/widget/TextView;->setGravity(I)V
+    invoke-virtual {v0, v2}, Landroid/widget/TextView;->setGravity(I)V
 
-    const v1, -0x1000000
+    const v2, -0x1000000
 
-    invoke-virtual {v0, v1}, Landroid/widget/TextView;->setBackgroundColor(I)V
+    invoke-virtual {v0, v2}, Landroid/widget/TextView;->setBackgroundColor(I)V
 
-    new-instance v1, Lcn/nubia/gameassist/GameAssistHandle$Touch;
+    new-instance v2, Lcn/nubia/gameassist/GameAssistHandle$Touch;
 
-    invoke-direct {v1}, Lcn/nubia/gameassist/GameAssistHandle$Touch;-><init>()V
+    invoke-direct {v2}, Lcn/nubia/gameassist/GameAssistHandle$Touch;-><init>()V
 
-    invoke-virtual {v0, v1}, Landroid/widget/TextView;->setOnTouchListener(Landroid/view/View$OnTouchListener;)V
+    invoke-virtual {v0, v2}, Landroid/widget/TextView;->setOnTouchListener(Landroid/view/View$OnTouchListener;)V
 
-    # العرض 60px والارتفاع 700px على شاشة 1220x2712 — شريط رقيق على الحافة.
     new-instance v1, Landroid/view/WindowManager$LayoutParams;
 
-    const/16 v2, 0x3c
+    const/16 v2, 0x3c      # 60 px
 
-    const/16 v3, 0x2bc
+    const/16 v3, 0x2bc     # 700 px
 
     const/16 v4, 0x7f6     # TYPE_APPLICATION_OVERLAY
 
@@ -132,10 +187,13 @@
 
     iput v2, v1, Landroid/view/WindowManager$LayoutParams;->gravity:I
 
+    const-string v2, "GameAssistHandle"
+    const-string v3, "before addView"
+    invoke-static {v2, v3}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
+
     const-string v2, "window"
 
     invoke-virtual {p0, v2}, Landroid/content/Context;->getSystemService(Ljava/lang/String;)Ljava/lang/Object;
-
     move-result-object v2
 
     check-cast v2, Landroid/view/WindowManager;
@@ -145,10 +203,10 @@
     sput-object v0, Lcn/nubia/gameassist/GameAssistHandle;->sView:Landroid/view/View;
 
     const-string v2, "GameAssistHandle"
-
-    const-string v3, "handle added at right edge"
-
+    const-string v3, "view added"
     invoke-static {v2, v3}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
+
+    :end
     :try_end_0
     .catch Ljava/lang/Throwable; {:try_start_0 .. :try_end_0} :catch_0
 
@@ -158,9 +216,7 @@
     move-exception v0
 
     const-string v1, "GameAssistHandle"
-
-    const-string v2, "handle start failed"
-
+    const-string v2, "make failed"
     invoke-static {v1, v2, v0}, Landroid/util/Log;->w(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
 
     return-void
@@ -193,9 +249,7 @@
     invoke-virtual {p0, v0}, Landroid/content/Context;->sendBroadcast(Landroid/content/Intent;)V
 
     const-string v1, "GameAssistHandle"
-
     const-string v2, "handle tapped: show requested"
-
     invoke-static {v1, v2}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
     :try_end_0
     .catch Ljava/lang/Throwable; {:try_start_0 .. :try_end_0} :catch_0
@@ -206,9 +260,7 @@
     move-exception v0
 
     const-string v1, "GameAssistHandle"
-
     const-string v2, "handle show failed"
-
     invoke-static {v1, v2, v0}, Landroid/util/Log;->w(Ljava/lang/String;Ljava/lang/String;Ljava/lang/Throwable;)I
 
     return-void
