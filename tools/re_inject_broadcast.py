@@ -40,7 +40,21 @@ import tempfile
 
 LOCALS = re.compile(r"^\s*\.locals\s+(?P<count>\d+)\s*$")
 REGISTERS = re.compile(r"^\s*\.registers\s+(?P<count>\d+)\s*$")
-OPCODE = re.compile(r"^\s*(?:[a-z][\w/$-]*)(?:\s|$)")
+# A method body opens with directives — `.line`, `.local`, `.annotation … .end
+# annotation` — and an annotation contains bare identifiers such as `names = {`.
+# Treating those as instructions (the first build did) put the block inside the
+# annotation and apktool refused the file, so only real mnemonics count.
+MNEMONIC = re.compile(
+    r"^\s*(?:nop|move[a-z-]*|return[a-z-]*|const[a-z/0-9-]*|monitor-[a-z]+|"
+    r"check-cast|instance-of|array-length|new-instance|new-array|filled-new-array[a-z/]*|"
+    r"throw|goto[a-z/0-9-]*|packed-switch|sparse-switch|cmpl?[a-z-]*|cmpg[a-z-]*|"
+    r"if-[a-z]+|aget[a-z-]*|aput[a-z-]*|iget[a-z-]*|iput[a-z-]*|sget[a-z-]*|sput[a-z-]*|"
+    r"invoke-[a-z/]+|unop|binop|int-to-[a-z]+|neg-[a-z]+|not-[a-z]+|rsub-[a-z]+|"
+    r"add-[a-z/]+|sub-[a-z/]+|mul-[a-z/]+|div-[a-z/]+|rem-[a-z/]+|and-[a-z/]+|"
+    r"or-[a-z/]+|xor-[a-z/]+|shl-[a-z/]+|shr-[a-z/]+|ushr-[a-z/]+)(?:\s|$)"
+)
+ANNOTATION_OPEN = re.compile(r"^\s*\.annotation\b")
+ANNOTATION_CLOSE = re.compile(r"^\s*\.end\s+annotation\b")
 
 
 class PatchError(RuntimeError):
@@ -92,11 +106,17 @@ def inject(lines: list[str], descriptor: str, context_field: str, bean_getter: s
         raise PatchError(f"method declares {locals_count} locals; the block needs 4 (v0…v3)")
 
     target = None
+    in_annotation = False
     for i in range(start, end):
-        stripped = lines[i].strip()
-        if not stripped or stripped.startswith(".") or stripped.startswith(":"):
+        if ANNOTATION_OPEN.match(lines[i]):
+            in_annotation = True
             continue
-        if OPCODE.match(lines[i]):
+        if ANNOTATION_CLOSE.match(lines[i]):
+            in_annotation = False
+            continue
+        if in_annotation:
+            continue
+        if MNEMONIC.match(lines[i]):
             target = i
             break
     if target is None:
@@ -120,7 +140,7 @@ def apply(decoded: str, cls: str, method: str, signature: str, context_field: st
     with open(path, encoding="utf-8") as handle:
         lines = handle.read().splitlines()
     patched = inject(lines, f"{method}{signature}", context_field, bean_getter,
-                     bean_type, cls.replace(".", "/"), action, extra)
+                     bean_type, f"L{cls.replace('.', '/')};", action, extra)
     with open(path, "w", encoding="utf-8") as handle:
         handle.write("\n".join(patched) + "\n")
     return path
@@ -134,6 +154,15 @@ SAMPLE = """\
 
 .method public startApp(Lcn/nubia/gamelauncher/bean/AppListItemBean;ZLjava/lang/Runnable;)V
     .locals 5
+    .annotation system Ldalvik/annotation/MethodParameters;
+        names = {
+            "bean",
+            "isCloneApp",
+            "runnable"
+        }
+    .end annotation
+
+    .line 84
 
     if-eqz p1, :cond_0
 
@@ -164,6 +193,11 @@ def self_test() -> int:
             text.index("sendBroadcast") < text.index("if-eqz p1"),
             text.count("sendBroadcast") == 1,
             ".locals 5" in text,
+            # the block must sit after the annotation, never inside it
+            text.index(".end annotation") < text.index("sendBroadcast"),
+            text.index("names = {") < text.index("if-nez p1, :nfw_skip"),
+            # a field reference must be a full type descriptor
+            "Lcn/nubia/gamelauncher/helper/CardHelper;->mContext:Landroid/content/Context;" in text,
         ]
         if not all(checks):
             print("SELF-TEST FAILED\n" + text, file=sys.stderr)
