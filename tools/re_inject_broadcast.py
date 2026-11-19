@@ -202,7 +202,7 @@ def inject(lines: list[str], descriptor: str, context_field: str, bean_getter: s
            bean_type: str, cls: str, action: str, extra: str,
            component: str | None = None, data: str | None = None,
            label: str = "nfw_skip", activity: str | None = None,
-           activity_extra: str | None = None) -> list[str]:
+           activity_extra: str | None = None, guard: bool = False) -> list[str]:
     starts = [i for i, line in enumerate(lines)
               if line.startswith(".method") and descriptor in line]
     if len(starts) != 1:
@@ -271,9 +271,33 @@ def inject(lines: list[str], descriptor: str, context_field: str, bean_getter: s
     if any(f":{label}" in line for line in lines[start:end]):
         return lines
 
+    body = block(context_field, bean_getter, bean_type, cls, action, extra,
+                 component, data, label, activity, activity_extra)
     out = list(lines)
-    out[target:target] = block(context_field, bean_getter, bean_type, cls, action, extra,
-                               component, data, label, activity, activity_extra)
+    if guard:
+        # The block runs at the very top of the launcher's own launch path, so a
+        # throw here would abort the launch itself: measured shape of this method
+        # (startApp) is void with no .catch of its own (smali decoded, 2026-11-19).
+        # `startActivity` can throw ActivityNotFoundException/SecurityException
+        # when the target package is missing or refuses the start, so the block is
+        # fenced with its own try range whose handler returns immediately and the
+        # original body continues to launch the game.
+        ret = descriptor[descriptor.rfind(")") + 1:]
+        if ret != "V":
+            raise PatchError(f"--guard needs a void method, {descriptor!r} returns {ret}")
+        body = [f"    :try_start_{label}"] + body + [f"    :try_end_{label}"]
+        # Insert the handler right before `.end method` *first*; the block is
+        # inserted afterwards at an earlier index, so both shift together and
+        # the handler stays the last thing in the method body.
+        end = next(i for i in range(start + 1, len(out))
+                   if out[i].startswith(".end method"))
+        out = out[:end] + [
+            f"    .catch Ljava/lang/Throwable; {{:try_start_{label} .. :try_end_{label}}} :catch_{label}",
+            f"    :catch_{label}",
+            "    move-exception v0",
+            "    return-void",
+        ] + out[end:]
+    out[target:target] = body
     return out
 
 
@@ -281,7 +305,7 @@ def apply(decoded: str, cls: str, method: str, signature: str, context_field: st
           bean_getter: str, bean_type: str, action: str, extra: str,
           component: str | None = None, data: str | None = None,
           label: str = "nfw_skip", activity: str | None = None,
-          activity_extra: str | None = None) -> str:
+          activity_extra: str | None = None, guard: bool = False) -> str:
     rel = cls.replace(".", "/") + ".smali"
     paths = glob.glob(os.path.join(decoded, "smali*", rel))
     if len(paths) != 1:
@@ -291,7 +315,7 @@ def apply(decoded: str, cls: str, method: str, signature: str, context_field: st
         lines = handle.read().splitlines()
     patched = inject(lines, f"{method}{signature}", context_field, bean_getter,
                      bean_type, f"L{cls.replace('.', '/')};", action, extra, component, data,
-                     label, activity, activity_extra)
+                     label, activity, activity_extra, guard)
     with open(path, "w", encoding="utf-8") as handle:
         handle.write("\n".join(patched) + "\n")
     return path
@@ -444,7 +468,54 @@ def self_test() -> int:
             print("SELF-TEST FAILED: activity start not emitted\n" + text_act, file=sys.stderr)
             return 1
 
-    print("self-test OK: guards skip on missing values, explicit component, survives a rerun, widens tight locals")
+    # guarded mode: the wake block runs at the top of the launcher's launch path
+    # and must never abort it, so it gets its own try range whose handler returns
+    # while the original body (the game launch) stays intact.
+    with tempfile.TemporaryDirectory() as tmp_g:
+        tree_g = os.path.join(tmp_g, "decoded", "smali", "cn", "nubia", "gamelauncher", "helper")
+        os.makedirs(tree_g)
+        path_g = os.path.join(tree_g, "CardHelper.smali")
+        open(path_g, "w", encoding="utf-8").write(SAMPLE)
+        apply(os.path.join(tmp_g, "decoded"), "cn.nubia.gamelauncher.helper.CardHelper",
+              "startApp", "(Lcn/nubia/gamelauncher/bean/AppListItemBean;ZLjava/lang/Runnable;)V",
+              "mContext", "getPackageName", "Lcn/nubia/gamelauncher/bean/AppListItemBean;",
+              "", "", label="nfw_g",
+              activity="cn.nubia.gameassist/cn.nubia.multisubscreen.ui.MultiSubScreenSourceActivity",
+              activity_extra="nfw_handle", guard=True)
+        text_g = open(path_g, encoding="utf-8").read()
+        checks_g = [
+            ":try_start_nfw_g" in text_g and ":try_end_nfw_g" in text_g,
+            ".catch Ljava/lang/Throwable; {:try_start_nfw_g .. :try_end_nfw_g} :catch_nfw_g" in text_g,
+            ":catch_nfw_g" in text_g,
+            text_g.index(":try_end_nfw_g") < text_g.index(".catch Ljava/lang/Throwable"),
+            text_g.index(".catch Ljava/lang/Throwable") < text_g.index(".end method"),
+            # the original launch stays after the fenced block
+            text_g.index(":try_end_nfw_g") < text_g.index("if-eqz p1, :cond_0"),
+            text_g.count("startActivity(Landroid/content/Intent;)V") == 1,
+        ]
+        if not all(checks_g):
+            print("SELF-TEST FAILED: guard mode\n" + text_g, file=sys.stderr)
+            return 1
+
+        # A non-void method cannot use a `return-void` handler: refuse loudly.
+        try:
+            inject(SAMPLE.replace("startApp(Lcn/nubia/gamelauncher/bean/AppListItemBean;ZLjava/lang/Runnable;)V",
+                                  "startApp(Lcn/nubia/gamelauncher/bean/AppListItemBean;ZLjava/lang/Runnable;)Z")
+                          .replace("return-void", "const/4 v0, 0x0\n    return v0")
+                          .splitlines(),
+                   "startApp(Lcn/nubia/gamelauncher/bean/AppListItemBean;ZLjava/lang/Runnable;)Z",
+                   "mContext", "getPackageName", "Lcn/nubia/gamelauncher/bean/AppListItemBean;",
+                   "Lcn/nubia/gamelauncher/helper/CardHelper;", "", "", label="nfw_z",
+                   activity="cn.nubia.gameassist/cn.nubia.multisubscreen.ui.MultiSubScreenSourceActivity",
+                   guard=True)
+        except PatchError:
+            pass
+        else:
+            print("SELF-TEST FAILED: guard accepted a non-void method", file=sys.stderr)
+            return 1
+
+    print("self-test OK: guards skip on missing values, explicit component, survives a rerun, "
+          "widens tight locals, fences the wake in its own try")
     return 0
 
 
@@ -467,6 +538,9 @@ def main(argv: list[str]) -> int:
                              "GameAssist activity uses it to tell our launch apart")
     parser.add_argument("--activity", help="pkg/cls; start an ACTIVITY instead of a broadcast "
                                           "(the only wake path MIUI allows on this build)")
+    parser.add_argument("--guard", action="store_true",
+                        help="fence the block in its own try/catch Throwable (void methods "
+                             "only), so a refused start never aborts the caller's own work")
     parser.add_argument("--self-test", action="store_true")
     args = parser.parse_args(argv)
 
@@ -484,7 +558,7 @@ def main(argv: list[str]) -> int:
         path = apply(args.decoded, args.cls, args.method, args.signature, args.context_field,
                      args.bean_getter, args.bean_type,
                      args.action or "", args.extra or "", args.component,
-                     args.data, args.label, args.activity, args.activity_extra)
+                     args.data, args.label, args.activity, args.activity_extra, args.guard)
     except PatchError as error:
         print(f"error: {error}", file=sys.stderr)
         return 1

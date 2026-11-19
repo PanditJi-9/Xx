@@ -175,8 +175,26 @@ jobs:
             --method startApp \
             --signature '(Lcn/nubia/gamelauncher/bean/AppListItemBean;ZLjava/lang/Runnable;)V' \
             --context-field mContext \
-            --activity cn.nubia.gameassist/cn.nubia.multisubscreen.ui.MultiSubScreenSourceActivity \
-            --activity-extra nfw_handle --label nfw_skip_ga
+            --activity cn.nubia.gameassist/cn.nubia.multisubscreen.ui.MultiSubScreenSinkActivity \
+            --activity-extra nfw_handle --label nfw_skip_ga --guard
+          # و--guard ليس ترفًا: البلوك يقع في **أول** تعليمة في مسار الإطلاق،
+          # وstartApp هنا دالة void بلا .catch خاص بها (تفكيك 2026-11-19). فلو رمى
+          # startActivity (نشاط غائب أو رفض BAL) لسقطت اللعبة نفسها ولم تُطلق أبدًا.
+          # اللفّ يجعل الفشل صامتًا ويُكمل المسار الأصلي.
+          #
+          # ولماذا Sink لا Source — مقيس على الجهاز (2026-11-20 00:50):
+          #   am start …/MultiSubScreenSourceActivity --ez nfw_handle true
+          #   I GameAssistHandle: view added            ← العملية استُيقظت والشريط أُضيف
+          #   E AndroidRuntime: FATAL EXCEPTION: main
+          #     SuperNotCalledException: Activity {…SourceActivity} did not call
+          #     through to super.onDestroy()
+          # والسبب في التطبيق نفسه: SourceActivity.onDestroy تبدأ بـ
+          #   if (!ZteFeature.isSupportMultiSubScreen()) return-void;   ← بلا super
+          # وهذه القيمة false على غير RedMagic، فالانهيار حتميّ بعد الإيقاظ فيموت
+          # الشريط مع العملية. أما SinkActivity.onDestroy فتنادي super **أولًا**،
+          # وonCreate فيها تنهي نفسها أصلًا عندما تكون الميزة غير مدعومة — فهي
+          # نشاط إيقاظ نظيف. قِيس بعد التحويل: العملية حيّة والشريط 24×400 ظاهر
+          # (dumpsys window windows: mOwnerUid=10806 ty=APPLICATION_OVERLAY 24x400).
 
           # بطاقة cps/mpm التي تزعج المالك: «تخلص من هذا … لقد ازعجني».
           # موضعها مقيس: نافذة PowerPanelWindow (type=2038) مضافة من
@@ -248,6 +266,12 @@ jobs:
             "$work/decoded/smali/cn/nubia/gamelauncher/helper/CardHelper.smali" || true)
           echo "wake injection labels in CardHelper: $labels"
           test "$labels" -eq 1
+          # The wake block must be fenced: a refused start has to leave the
+          # launch path intact instead of aborting it.
+          fenced=$(grep -c 'catch Ljava/lang/Throwable; {:try_start_nfw_skip_ga' \
+            "$work/decoded/smali/cn/nubia/gamelauncher/helper/CardHelper.smali" || true)
+          echo "wake injection fenced by its own try: $fenced"
+          test "$fenced" -eq 1
           carriers=$(for dex in $(unzip -Z1 "$work/unsigned.apk" 'classes*.dex'); do
             unzip -p "$work/unsigned.apk" "$dex" | grep -a -q 'powerpanel.action.FOREGROUND_GAME_CHANGE' && echo "$dex"
           done | wc -l)

@@ -185,23 +185,25 @@ jobs:
             --class 'cn.zte.gamefloat.powerpanel.PowerPanelService$1' \
             --method run --mode noop
 
-          # بطاقة cps/mpm التي تظهر كل مرة يدخل مساحة الألعاب — طلب المالك الحرفيّ:
+          # بطاقة cps/mpm التي تظهر كل مرة — طلب المالك الحرفيّ:
           #   «وقم بازالة cps 0 و mpm 0 التي تظهر كل مرة ادخل مساحة الالعاب»
           #   «تخلص من هذا العين … لقد ازعجني»
-          # وقِيس على الجهاز (2026-11-19 17:0x) أن صاحبها **GameFloat لا GameSpace**:
-          #   Window #12 Window{e008732 u0 PowerPanelWindow}:
-          #     mOwnerUid=10777 package=cn.zte.gamefloat appop=SYSTEM_ALERT_WINDOW
-          #     mAttrs={(817,3)(390x91) gr=TOP START CENTER … ty=APPLICATION_OVERLAY
-          #     isOnScreen=true
-          # وهو الصنف نفسه المكرّر في GameSpace (cn.nubia.gamepanel) — فالنقل هنا
-          # لأن هذه هي النسخة التي تُعرض فعلًا. والقطع من الجذر: createPowerPanelView
-          # هو المنشئ الوحيد لـPowerPanelDetailsView، و`:710` داخلها هو الـaddView
-          # الوحيد في الحزمة، فلا يبقى مسار ثانٍ (ADR-18).
+          # و`createPowerPanelView` هي المنشئ الوحيد لـ`PowerPanelDetailsView` في
+          # الحزمة (ثلاثة مستدعين: PowerPanelService$2/$4/$5)، فتعطيلها هو القطع من
+          # الجذر لا إخفاء سطحي.
+          #
+          # وحدّها المعلن: هذه ليست لوحة GameTurbo الكاملة (تلك في cn.nubia.gameassist
+          # وتُفتح من الشريط)، بل شريط الإحصاءات الصغير الذي يظهر عند تبديل التطبيقات
+          # وهذا هو موضع البطاقة التي طلب المالك إزالتها.
           python3 tools/re_patch_smali.py --decoded "$work/decoded" \
             --class cn.zte.gamefloat.powerpanel.PowerPanelWindowManager \
             --method createPowerPanelView \
             --signature '(Landroid/content/Context;)V' \
             --mode noop
+          panel_creator=$(grep -c 'new-instance v0, Lcn/zte/gamefloat/powerpanel/PowerPanelDetailsView;' \
+            "$work/decoded/smali/cn/zte/gamefloat/powerpanel/PowerPanelWindowManager.smali" || true)
+          echo "cps/mpm panel creators left: $panel_creator"
+          test "$panel_creator" -eq 0
 
           # Third gate, measured in GameForegroundChangeReceiver.onReceive:
           #   if (isAppEnable(pkg) && getGameLauncherPkgFromDB().contains(pkg))
@@ -217,6 +219,28 @@ jobs:
           python3 tools/re_force_true.py --decoded "$work/decoded" \
             --class cn.zte.gamefloat.receiver.GameForegroundChangeReceiver \
             --method onReceive --invoke 'List;->contains' --value 1
+
+          # سقوط قائم مقيس على الجهاز (2026-11-20 00:41، ثم أُعيد بعد منح appop
+          # التراكب 00:42 — الرفض نفسه، فليست الصلاحية):
+          #   W ActivityManager: Background start not allowed: service Intent
+          #       { act=ACTION_FOREGROUND_PKG_CHANGE cmp=…PowerPanelService }
+          #   E AndroidRuntime: Unable to start receiver GameForegroundChangeReceiver:
+          #       android.app.BackgroundServiceStartNotAllowedException
+          #     at PowerPanelService.foregroundPkgChange(PowerPanelService.java:270)
+          # أي أن مستقبِل البثّ **يموت** كلما استُقبل البثّ على Android 12+، لأن
+          # startService من الخلفية ممنوع. ولا لوحة هنا تُبنى أصلًا بعد تعطيل
+          # منشئها أعلاه. والدالة كلها تخدم إطلاق تلك الخدمة، فيُجرَّد جسدها بدلًا
+          # من ترك استثناء قاتل في مستقبِل.
+          python3 tools/re_patch_smali.py --decoded "$work/decoded" \
+            --class cn.zte.gamefloat.powerpanel.PowerPanelService \
+            --method foregroundPkgChange \
+            --signature '(Landroid/content/Context;Ljava/lang/String;II)V' \
+            --mode noop
+          service_start=$(awk '/^\.method.*foregroundPkgChange/,/^\.end method/' \
+            "$work/decoded/smali/cn/zte/gamefloat/powerpanel/PowerPanelService.smali" \
+            | grep -c 'startService' || true)
+          echo "startService calls left in foregroundPkgChange: $service_start"
+          test "$service_start" -eq 0
 
           if ! java -jar "$RUNNER_TEMP/apktool.jar" b --copy-original \
               --output "$work/unsigned.apk" "$work/decoded" > "$work/apktool-b.log" 2>&1; then
