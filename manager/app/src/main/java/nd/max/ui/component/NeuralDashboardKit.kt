@@ -266,11 +266,20 @@ fun NeuralValue(
     color: Color? = null,
     maxLines: Int = 1,
     align: TextAlign? = null,
+    /**
+     * تدوير الأرقام عند التغيّر (`MaxRollingTicker`) — **يُطفأ للقراءة الضجيجية**.
+     *
+     * كل حرف في الرقم المتدحرج يفتح `AnimatedContent` خاصًّا به؛ فقراءة تتغيّر كل استطلاع (حمل المعالج،
+     * الترددات، حدود المدى، القدرة اللحظية) تُنتج مع كل دورة عشرة انتقالات متزامنة إلى الأبد، وتوهم
+     * بدقّة لا يملكها المستشعر. القاعدة: **رقم واحد متحرّك في البطاقة على الأكثر** — فإمّا ينبض
+     * رأس البطاقة وإمّا يتحرّك خطّها، لا الاثنان.
+     */
+    ticker: Boolean = true,
 ) {
     val p = neuralPalette()
     val animationsEnabled = rememberAnimationsEnabled()
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
-        if (animationsEnabled && text.any { it.isDigit() }) {
+        if (ticker && animationsEnabled && text.any { it.isDigit() }) {
             MaxRollingTicker(
                 value = text,
                 modifier = modifier,

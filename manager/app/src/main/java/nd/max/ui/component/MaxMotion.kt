@@ -67,7 +67,12 @@ import nd.max.ui.theme.ThemeStudio
 object MaxMotion {
     const val fast = 160
     const val standard = 260
-    const val emphasis = 420
+
+    /**
+     * الفاصل الذي يستحقّ بعده العمل مؤشّرًا دوّارًا (٤٠٠ms) — **تأخير لا مدّة**، فلا يخالف سقف
+     * `MaxDuration.deliberate`. وُضع في الطبقة المشتركة لأن شاشة كتبت ٤٠٠ وأخرى كانت ستكتب ٣٠٠.
+     */
+    const val activityDelayMs = 400
 
     /** Snappier spring for small controls (switches, pills, chevrons). */
     val controlSpring = spring<Float>(
