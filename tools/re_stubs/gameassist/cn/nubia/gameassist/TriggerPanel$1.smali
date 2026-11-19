@@ -54,16 +54,28 @@
     const-string v3, "componentcenter stub registered"
     invoke-static {v2, v3}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
 
+    # الترتيب مقيس من الشجرة: p0() يبني LayoutParams ثم ينشر w → g0() الذي
+    # يبني GameAssistRootView (ويشغّل c0() فيصير حقل السماح D=true)، وc() ينشر
+    # l0() → w0("onTouchSlideIn") الذي يُظهر النافذة. الحاجزان المتبقيان في
+    # نوع النافذة 2027 ووسم PRIVATE_FLAG_TRUSTED_OVERLAY يُصلحان في الـworkflow.
     invoke-static {v0}, Lcn/nubia/gameassist/panel/GameAssistWindowManager;->O(Landroid/content/Context;)Lcn/nubia/gameassist/panel/GameAssistWindowManager;
     move-result-object v1
 
     if-eqz v1, :cond_end
 
     const-string v2, "GameAssistTrigger"
-    const-string v3, "calling onGameStart()"
+    const-string v3, "calling p0() then c()"
     invoke-static {v2, v3}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
 
+    invoke-virtual {v1}, Lcn/nubia/gameassist/panel/GameAssistWindowManager;->p0()V
+
+    invoke-virtual {v1}, Lcn/nubia/gameassist/panel/GameAssistWindowManager;->c()V
+
     invoke-virtual {v1}, Lcn/nubia/gameassist/panel/GameAssistWindowManager;->onGameStart()V
+
+    const-string v2, "GameAssistTrigger"
+    const-string v3, "show sequence posted"
+    invoke-static {v2, v3}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
 
     :cond_end
     :try_end_0

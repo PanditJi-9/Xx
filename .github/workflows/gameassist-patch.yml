@@ -181,6 +181,19 @@ jobs:
             --class com.zte.gameassist.common.SystemMgr \
             --method isGameScene --mode stub --return true --allow-non-void
 
+          # The panel window is created with type 2027 (a system window) and
+          # with the ZTE PRIVATE_FLAG_TRUSTED_OVERLAY helper — the same pair that
+          # made GameFloat's addView fail with a false INTERNAL_SYSTEM_WINDOW
+          # denial. Both are replaced by the public overlay route: type 2038
+          # (TYPE_APPLICATION_OVERLAY, allowed with SYSTEM_ALERT_WINDOW) and no
+          # trusted-overlay flag.
+          python3 tools/re_force_window_type.py --decoded "$work/decoded" \
+            --class cn.nubia.gameassist.panel.GameAssistWindowManager \
+            --method Z --field s --value 2038
+
+          python3 tools/re_strip_invoke.py --decoded "$work/decoded" \
+            --needle addHidePrivateTrustedOverlayFlags
+
           python3 tools/re_inject_call.py --self-test
 
           mkdir -p "$work/decoded/smali_classes2/cn/nubia/gameassist"
