@@ -243,5 +243,17 @@ endif
 	   else echo "✅ the mutant failed the suite, as it must"; fi; \
 	 else echo "❌ the mutant did not build"; exit 1; fi
 
+	@echo "── mutation self-check: truncating package discovery at 16 KiB must deny the legitimate app ──"
+	@sed 's|while ((length = getline(\&line, \&capacity, file)) >= 0)|while (ftell(file) < 16384 \&\& (length = getline(\&line, \&capacity, file)) >= 0)|' \
+	   $(ROOT)/jni/src/Ipc/IpcServer.c > $(BUILD_DIR)/IpcServer_limit_mutant.c
+	@if cmp -s $(ROOT)/jni/src/Ipc/IpcServer.c $(BUILD_DIR)/IpcServer_limit_mutant.c; then \
+	   echo "❌ the mutation did not change the reader"; exit 1; fi
+	@if $(CC) $(CFLAGS) $(filter-out $(ROOT)/jni/src/Ipc/IpcServer.c,$(UNITS)) \
+	        $(BUILD_DIR)/IpcServer_limit_mutant.c $(HARNESS) -o $(BUILD_DIR)/mutant_ipc_limit $(LDFLAGS) >/dev/null 2>&1; then \
+	   if $(BUILD_DIR)/mutant_ipc_limit >/dev/null 2>&1; then \
+	     echo "❌ the mutant passed — the large package fixture does not catch truncation"; exit 1; \
+	   else echo "✅ the 16 KiB reader mutant failed the suite, as it must"; fi; \
+	 else echo "❌ the reader mutant did not build"; exit 1; fi
+
 clean:
 	rm -rf $(BUILD_DIR)

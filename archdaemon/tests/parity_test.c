@@ -1029,6 +1029,59 @@ static void suite_foreground_observer(void) {
                  "the status text matches the format the daemon parses");
 }
 
+static void ipc_large_package_list(void) {
+    char path[] = BUILD_DIR "/ipc_packages_XXXXXX";
+    const int fd = mkstemp(path);
+    CHECK(fd >= 0, "the large packages.list fixture is created");
+    if (fd < 0) return;
+    FILE* file = fdopen(fd, "w");
+    CHECK(file != NULL, "the packages.list fixture has a writable stream");
+    if (!file) {
+        close(fd);
+        unlink(path);
+        return;
+    }
+    for (int i = 0; i < 542; i++) {
+        fprintf(file, "com.fixture.package%03d %d 0 /data/user/0/com.fixture.package%03d default:targetSdk=37\n",
+                i, 11000 + i, i);
+    }
+    /* A long unrelated record must not become separate fake package records. */
+    fputs("com.fixture.long 12000 0 /data/user/0/com.fixture.long ", file);
+    for (int i = 0; i < 20000; i++) fputc('x', file);
+    fputs(" nd.max 10225 0 /data/user/0/nd.max\nnd.max.other 10224 0 /data/user/0/nd.max.other\n", file);
+    const char corrupt[] = "nd.max 10226\0 0 /data/user/0/nd.max\n";
+    CHECK(fwrite(corrupt, 1, sizeof(corrupt) - 1, file) == sizeof(corrupt) - 1,
+          "the malformed NUL-containing record is written in full");
+    CHECK(ftell(file) > 16384, "the real app record is beyond the old 16 KiB read limit");
+    /* No final newline: EOF still terminates a complete package record. */
+    fputs("nd.max 10223 0 /data/user/0/nd.max default:targetSdk=37", file);
+    CHECK(fclose(file) == 0, "the large packages.list fixture is complete");
+
+    host_route_open(IPC_PACKAGES_LIST, path);
+    char reply[IPC_REPLY_MAX];
+    ipc_roundtrip(10223, "PING\n", reply, sizeof(reply));
+    CHECK_STR_EQ(reply, "OK 1\n", "the real app uid after 16 KiB can reach the running daemon");
+    ipc_roundtrip(10223, "STATUS\n", reply, sizeof(reply));
+    CHECK(strncmp(reply, "OK state=", 9) == 0, "the authorized app can read daemon status");
+    ipc_roundtrip(10224, "PING\n", reply, sizeof(reply));
+    CHECK_STR_EQ(reply, "ERR denied\n", "a longer package name does not authorize its uid");
+    ipc_roundtrip(10225, "PING\n", reply, sizeof(reply));
+    CHECK_STR_EQ(reply, "ERR denied\n", "an embedded package name in a long record is not an identity");
+    ipc_roundtrip(10226, "PING\n", reply, sizeof(reply));
+    CHECK_STR_EQ(reply, "ERR denied\n", "a NUL-containing record cannot authorize a truncated identity");
+    const int calls_before = g_ipc_calls;
+    ipc_roundtrip(2000, "PROFILE 1\n", reply, sizeof(reply));
+    CHECK_STR_EQ(reply, "ERR denied\n", "reading the full package list never grants adb shell access");
+    CHECK(g_ipc_calls == calls_before, "the unauthorized uid cannot execute a profile");
+
+    unlink(path);
+    ipc_roundtrip(10227, "PING\n", reply, sizeof(reply));
+    CHECK_STR_EQ(reply, "ERR denied\n", "an unreadable package list never authorizes an unknown peer");
+    ipc_roundtrip(0, "PING\n", reply, sizeof(reply));
+    CHECK_STR_EQ(reply, "OK 1\n", "root remains authorized when the package list is unreadable");
+    host_clear_routes();
+}
+
 void suite_ipc(void) {
     suite_foreground_observer();
     suite_sepolicy_scan();
@@ -1062,12 +1115,18 @@ void suite_ipc(void) {
     CHECK(ipc_app_uid_from_text(list, "nd.max", &uid) && uid == 10234, "the app uid is read from packages.list");
     CHECK(!ipc_app_uid_from_text("nd.max.other 10999 0 /x\n", "nd.max", &uid), "a longer package name is not a prefix match");
     CHECK(!ipc_app_uid_from_text("", "nd.max", &uid), "an empty list has no app");
+    CHECK(!ipc_app_uid_from_text("nd.max -1 0 /x\n", "nd.max", &uid), "a negative uid is not an app identity");
+    CHECK(!ipc_app_uid_from_text("nd.max +10223 0 /x\n", "nd.max", &uid), "a signed uid is not a canonical identity");
+    CHECK(!ipc_app_uid_from_text("nd.max 4294967296 0 /x\n", "nd.max", &uid), "uid overflow cannot wrap into another identity");
+    CHECK(!ipc_app_uid_from_text("nd.max \n10223 0 /x\n", "nd.max", &uid), "uid parsing never crosses a record boundary");
 
     CHECK(ipc_uid_allowed(10234, true, 10234), "the installed app uid is allowed");
     CHECK(ipc_uid_allowed(0, false, 0), "root is allowed for local tools");
     CHECK(!ipc_uid_allowed(10235, true, 10234), "another app is refused");
     CHECK(!ipc_uid_allowed(2000, true, 10234), "the adb shell is refused in production");
     CHECK(!ipc_uid_allowed(10234, false, 0), "unknown app uid means refuse, never allow");
+
+    ipc_large_package_list();
 
     char reply[IPC_REPLY_MAX];
     g_ipc_calls = 0;

@@ -397,8 +397,17 @@ bool ipc_app_uid_from_text(const char* text, const char* package, uid_t* uid) {
             cursor[package_length] == ' ') {
             char* parse_end = NULL;
             const char* number = cursor + package_length + 1;
+            /* The uid is an unsigned decimal field on this line, not whitespace/signs
+             * that strtoul could skip into another package's record. */
+            if (*number < '0' || *number > '9') {
+                cursor = end ? end + 1 : cursor + line_length;
+                continue;
+            }
+            errno = 0;
             const unsigned long value = strtoul(number, &parse_end, 10);
-            if (parse_end != number && (*parse_end == ' ' || *parse_end == '\n' || *parse_end == '\0')) {
+            if (errno != ERANGE && value <= (unsigned long)((uid_t)-1) &&
+                parse_end <= cursor + line_length &&
+                (*parse_end == ' ' || *parse_end == '\n' || *parse_end == '\0')) {
                 *uid = (uid_t)value;
                 return true;
             }
@@ -428,15 +437,30 @@ static bool read_app_uid(uid_t* uid) {
     if (!file) {
         return false;
     }
-    char buffer[16384];
-    const size_t got = fread(buffer, 1, sizeof(buffer) - 1, file);
+    /* Read complete records, not the first 16 KiB of packages.list. On the owner's
+     * 542-package device IPC denied nd.max's real uid 10223 while the daemon was
+     * alive. A late record must remain discoverable without accepting other uids.
+     * getline reuses its buffer; no whole-file allocation or package-order limit. */
+    char* line = NULL;
+    size_t capacity = 0;
+    ssize_t length;
+    bool known = false;
+    while ((length = getline(&line, &capacity, file)) >= 0) {
+        if (memchr(line, '\0', (size_t)length) != NULL) {
+            continue;
+        }
+        if (ipc_app_uid_from_text(line, IPC_PACKAGE_NAME, uid)) {
+            known = true;
+            break;
+        }
+    }
+    free(line);
     fclose(file);
-    buffer[got] = '\0';
-    return ipc_app_uid_from_text(buffer, IPC_PACKAGE_NAME, uid);
+    return known;
 }
 
 /*
- * uid التطبيق مخبّأ: القراءة كانت تُعاد (١٦ كيلوبايت) عند **كل** اتصال، والقراءات تأتي بالعشرات في الثانية.
+ * uid التطبيق مخبّأ: مسح سجلّ الحزم لا يُعاد عند **كل** اتصال، والقراءات تأتي بالعشرات في الثانية.
  * والتخبئة لا تُضعف الفحص: uid التطبيق لا يتغيّر ما دام مثبّتًا، ومن لا يطابق المخبَّأ يُعاد قياسه من
  * الملفّ مرّةً قبل أن يُرفض (فمن أُعيد تثبيته بـuid جديد لا يُحرم).
  */
