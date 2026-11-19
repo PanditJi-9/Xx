@@ -48,6 +48,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.tween
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import androidx.compose.ui.graphics.graphicsLayer
+import nd.max.ui.component.MaxEase
+import nd.max.ui.component.MaxMotion
+import nd.max.ui.component.rememberScrollEffectsEnabled
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -166,25 +174,58 @@ private fun QuickActionTile(
     modifier: Modifier,
 ) {
     val p = neuralPalette()
+    // الرقم المحرَّر هو **اللحظة الواحدة** في الشاشة: يظهر بانزياح قصير ولا يحرّك أيّ شيء آخر.
+    // ولذلك انتقل إلى صفّ العنوان (يمينه) بـ`weight` على العنوان: لو بقي سطرًا مستقلًّا لقفز
+    // ارتفاع البلاطة عند ظهوره، فيتحرّك الصفّ كلّه من `IntrinsicSize.Min` — وهذا عطب لا حركة.
+    // والقراءة داخل `graphicsLayer` تبقى في طور الرسم، فلا recomposition لكل إطار.
+    val motion = rememberScrollEffectsEnabled()
+    val reveal = remember { Animatable(0f) }
+    LaunchedEffect(value) {
+        if (!motion) {
+            reveal.snapTo(if (value == null) 0f else 1f)
+            return@LaunchedEffect
+        }
+        if (value == null) {
+            reveal.snapTo(0f)
+        } else {
+            reveal.snapTo(0f)
+            reveal.animateTo(1f, tween(MaxMotion.fast, easing = MaxEase.EmphasizedDecelerate))
+        }
+    }
     NeuralTile(modifier = modifier, accent = accent, onClick = onClick, verticalSpacing = MaxSpace.sm) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             NeuralIconChip(icon, accent, size = MaxSize.rowIconContainer)
             Spacer(Modifier.width(MaxSpace.sm))
             Text(
                 title,
+                modifier = Modifier.weight(1f),
                 color = p.text,
                 style = MaterialTheme.typography.titleSmall,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
+            if (value != null) {
+                // الحالة بلا حركة تُعرض كاملة: الشفافية تُقرأ من `reveal` التي تُثبَّت على ١
+                // حين يكون تقليل الحركة مطلوبًا، فلا يختفي شيء لأن الحركة مُنعت.
+                NeuralValue(
+                    value,
+                    modifier = Modifier.graphicsLayer {
+                        alpha = reveal.value
+                        translationY = (1f - reveal.value) * 12.dp.toPx()
+                    },
+                    style = MonoValueStyleMedium,
+                    color = accent,
+                    maxLines = 1,
+                )
+            }
         }
-        if (value != null) {
-            NeuralValue(value, style = MonoValueStyleMedium, color = accent, maxLines = 1)
-        }
+        // السطر محجوز بسطرين دائمًا: انتقال الحالة (يتوقّف/يحرّر…) يستبدل كلماته ولا يغيّر
+        // ارتفاع البلاطة. بلاطتان بارتفاع واحد شرطٌ بصريّ، وحركة تغيير المقاس تنقضه.
         Text(
             support,
             color = p.muted,
             style = MaterialTheme.typography.bodySmall,
+            minLines = 2,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
         )

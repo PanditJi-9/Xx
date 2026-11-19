@@ -489,6 +489,9 @@ private fun FrequencyMetricCard(
                 percent?.coerceIn(0, 100)?.let { "$it%" } ?: unknown,
                 style = MonoValueStyleLarge,
                 color = p.text,
+                // الحركة في هذه البطاقة للخطّ وحده: نبضة الرسم عند كل قراءة. تدحرج الرقم فوقها
+                // يفتح عشرة `AnimatedContent` كل دقيقتَي استطلاع ويوهم بدقّة لا يملكها المستشعر.
+                ticker = false,
             )
         }
         // سطر التردد: الصدر موسوم دائمًا — «السقف» للـGPU (الحدّ الحيّ) و«الآن» للـCPU (التردد
@@ -508,6 +511,7 @@ private fun FrequencyMetricCard(
                 style = MonoValueStyleFrequency,
                 color = p.text,
                 maxLines = 1,
+                ticker = false,
             )
         }
         // فاصل شعريّ يفصل القراءة عن الرسم.
@@ -549,7 +553,7 @@ private fun RangeEnd(
     val p = neuralPalette()
     Column(horizontalAlignment = horizontalAlignment) {
         Text(label, color = p.muted, style = MaterialTheme.typography.labelSmall, maxLines = 1)
-        NeuralValue(value, style = MonoValueStyleSmall, color = p.text, maxLines = 1)
+        NeuralValue(value, style = MonoValueStyleSmall, color = p.text, maxLines = 1, ticker = false)
     }
 }
 

@@ -24,6 +24,13 @@ package nd.max.ui.mainscreens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -58,6 +65,9 @@ import nd.max.core.privilege.PrivilegeLevel
 import nd.max.ui.component.AccessEntryButton
 import nd.max.ui.component.MaxAiEntryButton
 import nd.max.ui.component.MaxValueWithUnit
+import nd.max.ui.component.MaxEase
+import nd.max.ui.component.MaxMotion
+import nd.max.ui.component.rememberScrollEffectsEnabled
 import nd.max.ui.component.NeuralIconChip
 import nd.max.ui.component.NeuralPanel
 import nd.max.ui.component.NeuralTile
@@ -66,6 +76,7 @@ import nd.max.ui.component.neuralClickable
 import nd.max.ui.component.neuralPalette
 import nd.max.ui.design.MaxRadius
 import nd.max.ui.design.MaxSize
+import nd.max.ui.design.MaxDuration
 import nd.max.ui.design.MaxSpace
 import nd.max.ui.navigation.MaxDestination
 import nd.max.ui.theme.HeroTitleStyle
@@ -105,6 +116,8 @@ internal fun HomeHeroCard(
     val power = dashboard.powerWatt.takeIf { it > 0.05f }
 
     NeuralPanel(accent = access, verticalSpacing = MaxSpace.md) {
+        // تقليل الحركة يُقرأ مرة واحدة هنا (قرار المستخدم/النظام)، ويُمرَّر للحركة الوحيدة في البطاقة.
+        val swapMotion = rememberScrollEffectsEnabled()
         // 1 — الجهاز: الأيقونة ثم الاسم بنمط `HeroTitleStyle`، ثم الشريحة.
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             NeuralIconChip(Icons.Rounded.PhoneAndroid, p.accent, size = MaxSize.iconContainer)
@@ -167,12 +180,38 @@ internal fun HomeHeroCard(
                     )
                     if (heat != null) {
                         Spacer(Modifier.width(MaxSpace.sm))
-                        Text(
-                            stringResource(heatWordRes(heat)),
-                            color = heatAccent,
-                            style = MaterialTheme.typography.labelSmall,
-                            maxLines = 1,
-                        )
+                        // كلمة الحكم وحدها تتبدّل بحركة رأسية قصيرة — **لا** الرقم ولا لونه: الأرقام
+                        // تتدحرج من `NeuralValue` أصلًا، واللون يفصل دلالة ويجب أن يقطع فورًا كي
+                        // يبقى صادقًا مع اللحظة. و`sizeTransform = null` فلا يغيّر تبدّلُ كلمةٍ
+                        // هندسة الصفّ. وتقليل الحركة يُعرض الحالة النهائية ساكنةً لا يخفيها.
+                        val verdict = stringResource(heatWordRes(heat))
+                        if (swapMotion) {
+                            AnimatedContent(
+                                targetState = verdict,
+                                transitionSpec = {
+                                    (slideInVertically(tween(MaxMotion.fast, easing = MaxEase.EmphasizedDecelerate)) { height -> height / 3 } +
+                                        fadeIn(tween(MaxMotion.fast))) togetherWith
+                                        (slideOutVertically(tween(MaxMotion.fast, easing = MaxEase.EmphasizedAccelerate)) { height -> -height / 3 } +
+                                            fadeOut(tween(MaxDuration.instant)))
+                                },
+                                sizeTransform = null,
+                                label = "heatVerdict",
+                            ) { word ->
+                                Text(
+                                    word,
+                                    color = heatAccent,
+                                    style = MaterialTheme.typography.labelSmall,
+                                    maxLines = 1,
+                                )
+                            }
+                        } else {
+                            Text(
+                                verdict,
+                                color = heatAccent,
+                                style = MaterialTheme.typography.labelSmall,
+                                maxLines = 1,
+                            )
+                        }
                     }
                 }
                 // الرقم ووحدته نصّ واحد (لا Row يحاذي الأسفل): الوحدة كانت تهبط تحت خطّ الأساس،
