@@ -284,7 +284,7 @@ jobs:
 
           mkdir -p "$work/decoded/smali_classes2/cn/nubia/gameassist"
           cp tools/re_stubs/gameassist/cn/nubia/gameassist/TriggerPanel*.smali \
-             tools/re_stubs/gameassist/cn/nubia/gameassist/GameAssistComStub.smali \
+             tools/re_stubs/gameassist/cn/nubia/gameassist/GameAssistComStub*.smali \
              "$work/decoded/smali_classes2/cn/nubia/gameassist/"
 
           python3 tools/re_inject_call.py --decoded "$work/decoded" \
