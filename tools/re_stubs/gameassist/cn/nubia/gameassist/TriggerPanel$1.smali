@@ -19,7 +19,7 @@
 .end method
 
 .method public run()V
-    .locals 4
+    .locals 5
 
     :try_start_0
     invoke-static {}, Landroid/app/ActivityThread;->currentApplication()Landroid/app/Application;
@@ -35,6 +35,23 @@
 
     const-string v2, "GameAssistTrigger"
     const-string v3, "run: context acquired"
+    invoke-static {v2, v3}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
+
+    # سجّل بديل componentcenter قبل بناء المدير: كل وحدة تحكّم تطلبه بـ
+    # getService("GameAssistComService")، وبلا بديل يرمي أول استدعاء NPE
+    # ويسقط البناء كله. addService يضع في HashMap فقط، والتسجيل المسبق آمن.
+    invoke-static {}, Lcn/nubia/componentcenter/router/Router;->getInstance()Lcn/nubia/componentcenter/router/Router;
+    move-result-object v2
+
+    const-string v3, "GameAssistComService"
+
+    new-instance v4, Lcn/nubia/gameassist/GameAssistComStub;
+    invoke-direct {v4}, Lcn/nubia/gameassist/GameAssistComStub;-><init>()V
+
+    invoke-virtual {v2, v3, v4}, Lcn/nubia/componentcenter/router/Router;->addService(Ljava/lang/String;Ljava/lang/Object;)V
+
+    const-string v2, "GameAssistTrigger"
+    const-string v3, "componentcenter stub registered"
     invoke-static {v2, v3}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
 
     invoke-static {v0}, Lcn/nubia/gameassist/panel/GameAssistWindowManager;->O(Landroid/content/Context;)Lcn/nubia/gameassist/panel/GameAssistWindowManager;
