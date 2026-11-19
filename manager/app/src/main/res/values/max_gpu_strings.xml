@@ -12,13 +12,13 @@
     <string name="max_gpu_title">GPU Reality Studio</string>
     <string name="max_gpu_subtitle">Live reading, one verified change at a time.</string>
 
-    <string name="max_gpu_probe_detail">Looking for a devfreq provider the kernel actually exposes.</string>
+    <string name="max_gpu_probe_detail">Reading the GPU interface exposed by the kernel.</string>
     <string name="max_gpu_unavailable_title">No safe GPU provider was proven</string>
     <string name="max_gpu_unavailable_detail">The current kernel does not expose a devfreq interface that MaxManager can read and write with confidence.</string>
     <string name="max_gpu_ambiguous_detail">More than one GPU interface matched with equal confidence. Control is off so nothing is written to the wrong node.</string>
     <string name="max_gpu_monitor_only_detail">The only graphics nodes this kernel exposes are bandwidth and QoS monitors: they carry no GPU clock, so there is no frequency to set. Control stays off instead of writing a memory governor as if it were the GPU.</string>
     <string name="max_gpu_help_title">GPU control</string>
-    <string name="max_gpu_help_body">Reads come from the kernel devfreq node, not from a vendor API. Every write is re-read and compared; if the hardware refuses, the previous value is restored and you are told so — nothing is reported as applied without a matching read-back.</string>
+    <string name="max_gpu_help_body">Reads come from the kernel devfreq interface. After a write, the app compares the reading with the request. If they do not match, it attempts to restore the previous state and reports whether that restore was verified. Governor names are the driver\'s exact identifiers.</string>
 
     <string name="max_gpu_family_and_state">%1$s • %2$s</string>
     <string name="max_gpu_state_ready">Verified control</string>
@@ -37,28 +37,28 @@
     <string name="max_gpu_age_seconds">%1$d s</string>
     <string name="max_gpu_value_absent">Unavailable</string>
 
-    <string name="max_gpu_intents_title">Smart intents</string>
-    <string name="max_gpu_intents_desc">Each one is translated into this device\'s real OPP list, then verified after the write. Every description names what it costs, not only what it gives.</string>
+    <string name="max_gpu_intents_title">Performance goals</string>
+    <string name="max_gpu_intents_desc">Performance goals prepare a change for review using this device\'s declared frequencies. Apply and verify sends the request; the kernel may refuse it. Default restores the session-start values instead.</string>
     <string name="max_gpu_intent_default_title">Default (start state)</string>
-    <string name="max_gpu_intent_default_desc">Returns the range and the governor to the values this device had when the screen opened. Nothing is written while they already match — this is the way back for anyone who changed something.</string>
+    <string name="max_gpu_intent_default_desc">Restores the range, governor and frequency lock to their values when this screen opened, without a staged review. This does not remove settings saved for boot.</string>
     <string name="max_gpu_intent_efficiency_title">Efficiency</string>
-    <string name="max_gpu_intent_efficiency_desc">A lower ceiling: less heat and less power, and a lower peak — the governor still scales dynamically inside the smaller range.</string>
+    <string name="max_gpu_intent_efficiency_desc">Requests a lower frequency ceiling, or the lowest fixed frequency when only locking is supported. This can reduce heat and power use, but also peak performance.</string>
     <string name="max_gpu_intent_adaptive_title">Adaptive balanced</string>
-    <string name="max_gpu_intent_adaptive_desc">The full safe range, with the dynamic governor alone deciding the climb — no lock and no forced floor.</string>
+    <string name="max_gpu_intent_adaptive_desc">Requests the full declared range, or releases a fixed-frequency lock. The current governor stays unchanged; the driver still decides the actual frequency.</string>
     <string name="max_gpu_intent_sustained_title">Sustained performance</string>
-    <string name="max_gpu_intent_sustained_desc">A higher floor that holds under load; thermal protection stays active — the price is more heat and a faster drain.</string>
+    <string name="max_gpu_intent_sustained_desc">Requests a higher minimum, or a fixed frequency on lock-only devices. Heat and power use may rise; thermal throttling can still reduce performance.</string>
     <string name="max_gpu_intents_locked">No writable OPP list was proven on this device, so intents stay disabled.</string>
     <string name="max_gpu_saved_title">A saved state is re-applied at every boot</string>
     <string name="max_gpu_saved_desc">Kept from an earlier save and applied on each boot: %1$s. Default above ends this session only, never the saved state.</string>
 
     <string name="max_gpu_review_title">Staged change</string>
-    <string name="max_gpu_review_intent">Intent: %1$s</string>
+    <string name="max_gpu_review_intent">Goal: %1$s</string>
     <string name="max_gpu_review_current">Current: %1$s</string>
     <string name="max_gpu_review_requested">Requested: %1$s</string>
     <string name="max_gpu_review_release">Requested: release the lock and return to dynamic scaling</string>
     <string name="max_gpu_apply">Apply and verify</string>
     <string name="max_gpu_danger_title">Write GPU limits?</string>
-    <string name="max_gpu_danger_body">This writes the graphics frequency window and governor into the GPU nodes. A window the driver rejects, or a governor that cannot keep up, can stutter the whole interface or freeze the panel. The app records that you accepted this once — the responsibility for the values you apply is yours.</string>
+    <string name="max_gpu_danger_body">Changing frequency limits or the governor can cause stuttering, overheating or a frozen screen. Review the requested values before applying. The app checks the result and attempts to restore the previous state if verification fails; recovery is not guaranteed.</string>
     <string name="max_gpu_danger_action">I understand — apply</string>
     <string name="max_gpu_applying">Applying and verifying</string>
     <string name="max_gpu_cancel">Cancel</string>
@@ -74,7 +74,7 @@
     <string name="max_gpu_range_min">Minimum</string>
     <string name="max_gpu_range_max">Maximum</string>
     <string name="max_gpu_no_writable_range">No writable OPP list was proven, so the range and lock controls are hidden.</string>
-    <string name="max_gpu_no_governors">The driver declares no governor list on this device.</string>
+    <string name="max_gpu_no_governors">Governor selection is unavailable on this device.</string>
 
     <string name="max_gpu_diagnostics_title">Hardware truth</string>
     <string name="max_gpu_diagnostics_count">%1$d OPP · %2$d governors</string>

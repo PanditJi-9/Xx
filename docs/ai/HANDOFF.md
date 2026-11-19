@@ -60,6 +60,67 @@ MaxManager has a strong engine and a fragmented surface. `core/maxai` + `core/ha
 
 ## Executor log
 
+### UI-RECORDING-GPU-COPY-01 — 2026-11-19 · DONE_WITH_CONCERNS
+
+**TASK:** «اكمل» — متابعة مراجعة تسجيل التطبيق شاشةً شاشة، مع الحركة ضمن النطاق الكلي.
+هذه الدفعة تحسين نصوص GPU فقط؛ ليست إعادة تصميم للشاشة أو تنفيذًا جديدًا للحركة.
+
+**FILES:** `manager/app/src/main/res/values/max_gpu_strings.xml` و
+`manager/app/src/main/res/values-ar/max_gpu_strings.xml`؛ ١١ مفتاحًا قائمًا في كل ملف، بلا مفاتيح
+جديدة أو تغيير Kotlin أو لغة ثالثة. حُسّنت شاشة GPU القائمة، ولم يُبنَ مسار تحكم موازٍ.
+
+**WHAT CHANGED:** «أهداف الأداء» بدل «نوايا ذكية»؛ شرح الترددات المطلوبة فعلًا في أوضاع الكفاءة
+والتوازن والأداء المستدام، بما يشمل الأجهزة التي تدعم التثبيت فقط. أُزيل وعد خفض الحرارة أو ضمان
+الاستعادة؛ صار التحذير يذكر محاولة الاستعادة وعدم ضمانها، بلا تحميل المستخدم اللوم. «افتراضي»
+يستعيد قيم بداية الشاشة مباشرة، لا يجهّز طلب مراجعة ولا يمحو إعدادات الإقلاع المحفوظة. تعذّر اختيار
+الحاكم لا يعني بالضرورة غياب قائمته. تبقى معرّفات الحكّام الأصلية كما يعلنها المشغّل.
+
+**EVIDENCE:** `GpuStudioViewModel.kt:269–349` يميّز نجاح التحقق والاستعادة المؤكدة وفشل الاستعادة،
+ويستدعي `restoreSession` مباشرة. `GpuHardwareBackend.kt:763–801` يحدد طلبات الأوضاع، و`:943–980`
+يبين أن استعادة البداية قد تكتب حتى لو تطابق الحاكم. `GpuStudioScreen.kt:734–759` يتطلب صلاحية
+الكتابة مع القائمة لاختيار الحاكم. هذه المواضع قُرئت ولم تُعدّل؛ ليس هذا حكم سلامة مستقلًا للعتاد.
+
+**GATES:** الأوامر التالية شُغّلت بنيويًّا؛ جميع مخارجها **0**:
+
+```sh
+python3 tools/kt_balance.py --assert
+python3 tools/code_health.py --assert
+python3 tools/i18n_coverage.py --assert
+python3 tools/design_tokens.py --assert
+python3 tools/jni_symbols.py --assert
+python3 tools/license_audit.py --assert
+python3 tools/readme_assets.py --assert
+python3 tools/store_thumbnails.py --assert
+python3 tools/i18n_coverage.py --prune all --assert
+python3 tools/rtl_guard.py --assert
+python3 tools/provenance_guard.py --assert
+python3 tools/hardening_guard.py --assert
+git diff --check
+```
+
+القياس: بنية 3817 ملفًا/0 عوائق؛ صحة 0؛ i18n بلا عيوب وسجل اللغات 85 رمزًا؛ مفاتيح يتيمة 0؛
+حرفيّات التصميم 245/300؛ JNI: 23 تصريحًا/0 عوائق، **الثنائيات لم تُقَس محليًّا**. السجل التفصيلي
+خارج الشجرة في `/tmp/opencode/gpu-copy-gates.log`. لم تُشغّل اختبارات أو بناء أو `resource_compile`
+على الهاتف؛ تصريف الموارد والاختبارات من Actions فقط.
+
+**BUILD:** الحكم السابق مقروء: `44605060739` على `b75dad39` **success**، ومن سجله تصريف release
+واختبارات release وJNI والحزمة ناجحة. هذا يغطي إصلاح `unreadable` في `e2133a0f` وتسجيل الفحوص
+الذاتية في `b75dad39`، **لا نصوص هذه الدفعة**؛ ترجمتها غير مُتحقّقة حتى قراءة تشغيل الدفع التالي.
+عدد اختبارات JUnit لم يُقرأ، فلا يُدّعى. لا Quick Verify مكرر بجوار بناء `main` الكامل.
+
+**MEASUREMENT CORRECTIONS:** لقطة GPU عند نحو 113 ثانية حالة قراءة واجهة النواة، لا «تحت البناء».
+`dummy` معرّف حاكم حقيقي، لا نصّ وهمي؛ والاسم الآخر `apuconstrain` لا `apustrain`. ادعاءات مربع
+RLM وتكرار التخزين وتداخل Max AI سُحبت بعد إعادة قراءة اللقطات؛ تداخل Max AI كان أثر لمس.
+لقطة Home من APK سابق أثبتت ترتيب الرقم والوحدة وتسميات المدى، لا تحققًا بصريًّا لهذه النصوص.
+
+**CONTRIBUTORS:** API مستودع `nader295/MaxManager` أعاد `nader295` وحده، 36 مساهمة؛ لم تُفحص ذاكرة
+صفحة الرسم البياني. لم تُعد كتابة التاريخ في هذه الجولة. لا تُكرر بيانات الوصول المكشوفة سابقًا.
+
+**RESIDUAL RISK / NEXT:** التفويض قِيس مرة وفشل بحد الاستخدام المجاني؛ لم يُنفّذ تصميم أو حركة
+بديلًا عن المتخصص. يبقى قياس النصوص الطويلة واللمس وRTL على النسخة الجديدة، ثم شاشة CPU: تسجيلها
+القديم أظهر انعكاس وحدات، لكن `MaxMetricLine` و`CpuClusterRow` تغيّرا بالفعل؛ لا إصلاح آخر قبل لقطة
+حديثة. تعديل العتاد خارج هذه الدفعة ويتطلب مراجعة السلامة المستقلة.
+
 ### MAX-AI-LOOKAHEAD-01 + ATLAS-DEMOTION-DIAGNOSTICS-01 — 2026-11-16 · DONE_WITH_CONCERNS
 
 **TASK (المالك):** «اكمل» — تنفيذ الفكرة التالية من `MAX-AI-DEPTH-02`: نظرة استباقية قبل الكتابة،

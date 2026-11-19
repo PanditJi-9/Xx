@@ -4,13 +4,13 @@
     <string name="max_gpu_title">استوديو المعالج الرسومي</string>
     <string name="max_gpu_subtitle">قراءة حيّة، وتغيير واحد موثّق في كل مرة.</string>
 
-    <string name="max_gpu_probe_detail">نبحث عن مزوّد devfreq يعلنه النواة فعلًا.</string>
+    <string name="max_gpu_probe_detail">نقرأ واجهة المعالج الرسومي التي تتيحها النواة.</string>
     <string name="max_gpu_unavailable_title">لم يُثبت مزوّد GPU آمن</string>
     <string name="max_gpu_unavailable_detail">النواة الحالية لا تعلن واجهة devfreq يمكن لـ MaxManager قراءتها والكتابة فيها بثقة.</string>
     <string name="max_gpu_ambiguous_detail">أكثر من واجهة GPU تطابقت بثقة متساوية. أوقفنا التحكم حتى لا نكتب في العقدة الخطأ.</string>
     <string name="max_gpu_monitor_only_detail">عُقَد الرسوميات الوحيدة التي تعلنها هذه النواة هي مراقبات عرض النطاق وجودة الخدمة: لا تحمل ساعة GPU، فلا يوجد تردد يُضبط. يبقى التحكم موقوفًا بدل أن نكتب حاكم ذاكرة كأنه تردد الرسوميات.</string>
     <string name="max_gpu_help_title">التحكم في المعالج الرسومي</string>
-    <string name="max_gpu_help_body">القراءات من عقدة devfreq في النواة، لا من واجهة مصنّع. وكل كتابة تُقرأ بعدها وتُقارن؛ وإن رفض العتاد تُستعاد القيمة السابقة ويُقال لك ذلك — ولا يُعلن شيء مُطبَّقًا بلا قراءة مطابقة.</string>
+    <string name="max_gpu_help_body">القراءات من واجهة devfreq في النواة. بعد الكتابة، يقارن التطبيق القراءة بالقيم المطلوبة. إذا لم تتطابق، يحاول استعادة الحالة السابقة ويعرض إن كانت الاستعادة مؤكدة. أسماء الحكّام هي المعرّفات الأصلية التي يعلنها مشغّل الجهاز.</string>
 
     <string name="max_gpu_family_and_state">%1$s • %2$s</string>
     <string name="max_gpu_state_ready">تحكم موثّق</string>
@@ -29,28 +29,28 @@
     <string name="max_gpu_age_seconds">%1$d ثانية</string>
     <string name="max_gpu_value_absent">غير متاح</string>
 
-    <string name="max_gpu_intents_title">نوايا ذكية</string>
-    <string name="max_gpu_intents_desc">كل نية تُترجم إلى قائمة OPP الحقيقية لهذا الجهاز، ثم تُتحقَّق بعد الكتابة. وكل وصف يقول ثمنه لا عطاءه وحده.</string>
+    <string name="max_gpu_intents_title">أهداف الأداء</string>
+    <string name="max_gpu_intents_desc">أهداف الأداء تجهّز تغييرًا للمراجعة باستخدام الترددات التي يعلنها جهازك. «تطبيق والتحقق» يرسل الطلب، وقد ترفضه النواة. أما «افتراضي» فيستعيد قيم بداية الجلسة.</string>
     <string name="max_gpu_intent_default_title">افتراضي (حالة البداية)</string>
-    <string name="max_gpu_intent_default_desc">يُرجع النطاق والحاكم إلى ما كانا عليه عند فتح هذه الشاشة، ولا يكتب شيئًا ما داما مطابقين — وهذا هو طريق العودة لمن غيّر شيئًا.</string>
+    <string name="max_gpu_intent_default_desc">يستعيد النطاق والحاكم وقفل التردد كما كانت عند فتح الشاشة، دون تجهيز طلب للمراجعة. لا يحذف الإعدادات المحفوظة للإقلاع.</string>
     <string name="max_gpu_intent_efficiency_title">كفاءة</string>
-    <string name="max_gpu_intent_efficiency_desc">سقف أخفض: حرارة أقلّ وطاقة أقلّ وذروة أدنى — والحاكم يبقى يحجّم ديناميكيًّا داخل النطاق المصغَّر.</string>
+    <string name="max_gpu_intent_efficiency_desc">يطلب سقف تردد أقل، أو أدنى تردد ثابت إذا كان الجهاز يدعم التثبيت فقط. قد يقلّل الحرارة واستهلاك الطاقة، لكنه يقلّل الأداء الأقصى أيضًا.</string>
     <string name="max_gpu_intent_adaptive_title">متوازن تكيفي</string>
-    <string name="max_gpu_intent_adaptive_desc">النطاق الآمن الكامل، والحاكم الديناميكي وحده يقرّر الصعود — لا قفل ولا أرضية مفروضة.</string>
+    <string name="max_gpu_intent_adaptive_desc">يطلب النطاق المعلن كاملًا، أو يحرّر قفل التردد الثابت. لا يغيّر الحاكم الحالي؛ ويظل مشغّل الجهاز مسؤولًا عن التردد الفعلي.</string>
     <string name="max_gpu_intent_sustained_title">أداء مستدام</string>
-    <string name="max_gpu_intent_sustained_desc">أرضية أعلى تصمد تحت الحِمل، والحماية الحرارية تبقى فعّالة — والثمن حرارة أعلى وتفريغ أسرع.</string>
+    <string name="max_gpu_intent_sustained_desc">يطلب حدًا أدنى أعلى، أو ترددًا ثابتًا إذا كان الجهاز يدعم التثبيت فقط. قد تزيد الحرارة واستهلاك الطاقة؛ وقد تظل الحماية الحرارية تخفّض الأداء.</string>
     <string name="max_gpu_intents_locked">لم تُثبت قائمة OPP قابلة للكتابة على هذا الجهاز، فتبقى النوايا معطّلة.</string>
     <string name="max_gpu_saved_title">حالة محفوظة تُعاد عند كل إقلاع</string>
     <string name="max_gpu_saved_desc">محفوظة من جلسة سابقة وتُطبَّق عند كل إقلاع: %1$s. واختيار الافتراضي أعلاه يُنهي هذه الجلسة وحدها، ولا يمحو الحالة المحفوظة.</string>
 
     <string name="max_gpu_review_title">تغيير قيد المراجعة</string>
-    <string name="max_gpu_review_intent">النية: %1$s</string>
+    <string name="max_gpu_review_intent">الهدف: %1$s</string>
     <string name="max_gpu_review_current">الحالي: %1$s</string>
     <string name="max_gpu_review_requested">المطلوب: %1$s</string>
     <string name="max_gpu_review_release">المطلوب: تحرير القفل والعودة إلى التحجيم الديناميكي</string>
     <string name="max_gpu_apply">تطبيق والتحقق</string>
     <string name="max_gpu_danger_title">كتابة حدود الرسوميات؟</string>
-    <string name="max_gpu_danger_body">هذا يكتب نافذة ترددات الرسوميات والحاكم على عقد GPU. نافذة يرفضها المشغّل، أو حاكم لا يلحق بالحمل، قد تُحدث تقطيعًا في الواجهة كلها أو تُجمّد الشاشة. يسجّل التطبيق أنك أقررت بذلك مرة واحدة — والمسؤولية عن القيم التي تطبّقها عليك.</string>
+    <string name="max_gpu_danger_body">تغيير حدود التردد أو الحاكم قد يسبب تقطيعًا أو ارتفاع الحرارة أو تجمّد الشاشة. راجع القيم المطلوبة قبل التطبيق. يتحقق التطبيق من النتيجة ويحاول استعادة الحالة السابقة إذا فشل التحقق؛ لكن الاستعادة ليست مضمونة.</string>
     <string name="max_gpu_danger_action">أفهم ذلك — طبّق</string>
     <string name="max_gpu_applying">جارٍ التطبيق والتحقق</string>
     <string name="max_gpu_cancel">إلغاء</string>
@@ -66,7 +66,7 @@
     <string name="max_gpu_range_min">الحد الأدنى</string>
     <string name="max_gpu_range_max">الحد الأقصى</string>
     <string name="max_gpu_no_writable_range">لم تُثبت قائمة OPP قابلة للكتابة، فأُخفي النطاق والقفل.</string>
-    <string name="max_gpu_no_governors">الدرافر لا يعلن أي قائمة حاكمات على هذا الجهاز.</string>
+    <string name="max_gpu_no_governors">اختيار الحاكم غير متاح على هذا الجهاز.</string>
 
     <string name="max_gpu_diagnostics_title">حقيقة العتاد</string>
     <string name="max_gpu_diagnostics_count">%1$d OPP · %2$d حاكم</string>
