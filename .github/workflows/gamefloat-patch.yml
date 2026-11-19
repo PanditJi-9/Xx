@@ -171,21 +171,19 @@ jobs:
           python3 tools/re_strip_invoke.py --decoded "$work/decoded" \
             --needle addHidePrivateTrustedOverlayFlags --min-hits 1
 
-          # Second gate, measured on the device in PowerPanelService$1.run:
-          #   if (Settings.Global.getInt(cr, "nubia_game_scene", 0) == 0
-          #           && powerPanelWindowManager != null)
-          #       sendMessageDelayed(1, 0);   // removePowerPanelView + stopSelf
-          # `nubia_game_scene` is written by RedMagic's Game Space and reads 0 on
-          # every other ROM, so the panel was torn down ~80 ms after it was shown
-          # (`MSG msg.what = 0` then `MSG msg.what = 1`). Reading needs no
-          # permission; writing does, and an ordinary app has neither
-          # WRITE_SECURE_SETTINGS nor root. So the read's result is answered as a
-          # game-scene device would — the auto-close timer and every other branch
-          # stay exactly as shipped.
-          python3 tools/re_force_settings_read.py --self-test
-          python3 tools/re_force_settings_read.py --decoded "$work/decoded" \
+          # Second gate, measured on the device: PowerPanelService$1.run reads
+          #   Settings.Global.getInt(cr, "nubia_game_scene", 0)
+          # and, when it is 0 AND a panel manager exists, logs "send stop service"
+          # and calls sendMessageDelayed(1, 0) — removePowerPanelView + stopSelf.
+          # `nubia_game_scene` is written by RedMagic's Game Space, so on any other
+          # ROM it reads 0 and the window was torn down ~80 ms after being shown
+          # (`MSG msg.what = 0` then `MSG msg.what = 1`, measured).
+          # That runnable does exactly one thing — decide to stop — so it is
+          # neutralized. The explicit hide path (message 1 from a real foreground
+          # change, or the panel's own close) still runs untouched.
+          python3 tools/re_patch_smali.py --decoded "$work/decoded" \
             --class 'cn.zte.gamefloat.powerpanel.PowerPanelService$1' \
-            --method run --string nubia_game_scene --value 1
+            --method run --mode noop
 
           if ! java -jar "$RUNNER_TEMP/apktool.jar" b --copy-original \
               --output "$work/unsigned.apk" "$work/decoded" > "$work/apktool-b.log" 2>&1; then
