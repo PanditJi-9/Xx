@@ -207,6 +207,20 @@ jobs:
             --class com.zte.gameassist.ext.system.TopActivityMonitor \
             --method a --mode wrap --catch throwable
 
+          # Measured on the device 2026-11-19 12:19 (build 44503810514): the same
+          # removed hidden API is reached from a second branch —
+          #   GameAssistMutex.<init> -> RemoteList.<init> -> getBaseValue
+          #     -> GAControllerProxy.d -> b() -> IActivityManager$Stub.asInterface
+          # so containing each caller is an endless chase. b() exists only to find
+          # ZTE's extended ActivityManager (getGameAssist*), which this ROM does
+          # not have; it now returns null. getBaseValue already catches
+          # Ljava/lang/Exception and answers an empty list — the earlier death was
+          # an Error (NoSuchMethodError), which that catch cannot hold, but the
+          # NullPointerException from a null controller is caught as intended.
+          python3 tools/re_patch_smali.py --decoded "$work/decoded" \
+            --class com.zte.gameassist.ext.common.GAControllerProxy \
+            --method b --mode stub --return null --allow-non-void
+
           python3 tools/re_inject_call.py --self-test
 
           mkdir -p "$work/decoded/smali_classes2/cn/nubia/gameassist"
