@@ -1856,6 +1856,13 @@
     <string name="detail_zone_flash">Flash</string>
     <string name="detail_zone_pa">Amplifier</string>
     <string name="detail_zone_system">System</string>
+    <!-- معاني مناطق الحرارة: تُقاس من `type` في sysfs، لا من اسم الشريحة (ADR-07). -->
+    <string name="detail_zone_pmic">Power management</string>
+    <string name="detail_zone_mitigation">Thermal mitigation</string>
+    <string name="detail_zone_display">Display</string>
+    <string name="detail_zone_usb">USB port</string>
+    <!-- وسمٌ لسطر المعرّف حين لا معنى مُثبتًا للنوع: المعرّف يُعرض كما هو لا يُسمّى باسم مُختلق. -->
+    <string name="detail_thermal_zone_raw_id">Vendor identifier</string>
     <string name="detail_cooling_fan">Fan</string>
     <string name="detail_cooling_display">Display</string>
     <string name="detail_cooling_thermal">Thermal</string>

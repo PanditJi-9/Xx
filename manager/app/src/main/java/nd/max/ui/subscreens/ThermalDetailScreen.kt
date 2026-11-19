@@ -92,6 +92,7 @@ import nd.max.core.thermal.ThermalSessionSample
 import nd.max.ui.component.MaxAiShortcut
 import nd.max.ui.component.MaxDeviceInfoShortcut
 import nd.max.ui.component.MaxSurface
+import nd.max.ui.component.MaxValueWithUnit
 import nd.max.ui.design.MAX_VALUE_UNAVAILABLE
 import nd.max.ui.design.MaxCondition
 import nd.max.ui.design.MaxConditionKind
@@ -170,6 +171,10 @@ fun ThermalDetailScreen(navController: NavHostController) {
     var batteryHeat by remember { mutableStateOf(0f) }
     var serviceTemps by remember { mutableStateOf<IntArray?>(null) }
     var trips by remember { mutableStateOf<Map<String, List<TripReading>>>(emptyMap()) }
+    // نوع النواة الخامّ لكل منطقة (`type` في sysfs). يُقرأ مرة عند الفتح لا مع كل عيّنة،
+    // لأن الاسم والتصنيف خاصية إقلاع لا قياس لحظيّ (نفس عرف `ThermalUtil.zoneMetas`).
+    // ومنه يأتي الاسم المعروض؛ والمعرّف نفسه يبقى سطرًا ثانويًّا تحت الاسم.
+    var rawZoneTypes by remember { mutableStateOf<Map<String, String>>(emptyMap()) }
     var isLoading by remember { mutableStateOf(true) }
 
     // تاريخ الجلسة: أعلى درجة في كل عيّنة، مع زمنها ومنطقتها. في الذاكرة فقط، ولا يُحفظ.
@@ -185,13 +190,17 @@ fun ThermalDetailScreen(navController: NavHostController) {
     // نقاط التخفيف تُقرأ **مرة واحدة**: ثابتة في النواة، وقراءتها لكل منطقة مع كل عيّنة
     // (كل ٣ ثوان) كانت مئات قراءات sysfs لعرض رقم لا يتغيّر.
     LaunchedEffect(Unit) {
-        val loaded = withContext(Dispatchers.IO) {
-            ThermalUtil.readThermalZones().associate { zone ->
+        val (types, loaded) = withContext(Dispatchers.IO) {
+            val declared = ThermalUtil.readThermalZones()
+            // النوع الخامّ في الدفعة نفسها: قراءة واحدة لا تُكلّف رحلة إضافية عند الفتح،
+            // ولا تُقرأ بعده أبدًا — النواة لا تغيّر `type` إلا بإعادة الإقلاع.
+            readThermalZoneTypes(declared) to declared.associate { zone ->
                 zone.sysfsPath to ThermalUtil.readTripPoints(zone.sysfsPath).map { trip ->
                     TripReading(temperatureC = trip.temperatureC, kind = trip.kind)
                 }
             }
         }
+        rawZoneTypes = types
         trips = loaded
         while (true) {
             val sample = withContext(Dispatchers.IO) {
@@ -330,6 +339,7 @@ fun ThermalDetailScreen(navController: NavHostController) {
             if (hottest != null) {
                 ThermalHeadline(
                     zone = hottest,
+                    rawType = rawZoneTypes[hottest.sysfsPath],
                     level = hottestLevel ?: ThermalLevel.Nominal,
                     state = throttleState,
                     trips = hottestTrips
@@ -542,19 +552,40 @@ fun ThermalDetailScreen(navController: NavHostController) {
                     } else {
                         readable.forEachIndexed { index, (zone, start, shutdown) ->
                             if (index > 0) MaxGroupDivider()
+                            val rawType = rawZoneTypes[zone.sysfsPath]
+                            val name = zoneDisplayName(zone, rawType)
+                            val identifier = zoneIdentifier(zone, rawType)
+                            val tripText = when {
+                                start != null && shutdown != null ->
+                                    stringResource(R.string.detail_thermal_trip_row, start, shutdown)
+                                start != null -> stringResource(R.string.detail_thermal_trip_start, start)
+                                else -> stringResource(R.string.detail_thermal_trip_shutdown, shutdown ?: 0)
+                            }
                             MaxRow(
-                                title = zone.label,
-                                subtitle = when {
-                                    start != null && shutdown != null ->
-                                        stringResource(R.string.detail_thermal_trip_row, start, shutdown)
-                                    start != null -> stringResource(R.string.detail_thermal_trip_start, start)
-                                    else -> stringResource(R.string.detail_thermal_trip_shutdown, shutdown ?: 0)
+                                title = name ?: identifier,
+                                // المعرّف الخامّ ثانويًّا لا محذوفًا: الدرجة تبقى أوّلًا، ويتبعها
+                                // المعرّف الذي يبحث عنه الخبير في sysfs. وحين لا اسم للمنطقة
+                                // يقول الوسم إن العنوان معرّف مُصنّع لا كلمة عربية مُختلقة (ADR-07).
+                                subtitle = if (name != null) {
+                                    stringResource(
+                                        R.string.detail_thermal_device_meta,
+                                        tripText,
+                                        "$LTR$identifier$LTR"
+                                    )
+                                } else {
+                                    stringResource(
+                                        R.string.detail_thermal_device_meta,
+                                        stringResource(R.string.detail_thermal_zone_raw_id),
+                                        tripText
+                                    )
                                 },
                                 trailing = {
-                                    Text(
-                                        text = "${zone.temperatureC}°C",
+                                    MaxValueWithUnit(
+                                        value = zone.temperatureC.toString(),
+                                        unit = "°C",
                                         style = MonoValueStyleSmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        unitColor = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 }
                             )
@@ -594,7 +625,11 @@ fun ThermalDetailScreen(navController: NavHostController) {
                     MaxGroup {
                         zoneList.forEachIndexed { index, zone ->
                             if (index > 0) MaxGroupDivider()
-                            ZoneBlock(zone = zone, trips = trips[zone.sysfsPath].orEmpty())
+                            ZoneBlock(
+                                zone = zone,
+                                rawType = rawZoneTypes[zone.sysfsPath],
+                                trips = trips[zone.sysfsPath].orEmpty()
+                            )
                         }
                     }
                 }
@@ -616,12 +651,15 @@ fun ThermalDetailScreen(navController: NavHostController) {
 @Composable
 private fun ThermalHeadline(
     zone: ThermalZoneInfo,
+    rawType: String?,
     level: ThermalLevel,
     state: ThrottleState?,
     trips: List<TripReading>
 ) {
     val tone = level.tone()
     val start = ThermalModel.throttleStart(trips)
+    val name = zoneDisplayName(zone, rawType)
+    val identifier = zoneIdentifier(zone, rawType)
     MaxSurface(accent = tone.content()) {
         MaxMetricReadout(
             metric = MaxMetric(
@@ -629,7 +667,18 @@ private fun ThermalHeadline(
                 value = zone.temperatureC.toString(),
                 unit = "°C",
                 trust = MaxDataTrust.Live,
-                source = zone.label
+                // الاسم أوّلًا (لأنه ما يقرؤه المستخدم)، والمعرّف الخامّ بجانبه على السطر نفسه:
+                // سطر المنشأ سطر واحد في `MaxMetricProvenance`، وفصله إلى سطرين يغيّر ارتفاع
+                // البطاقة بلا فائدة.
+                source = if (name != null) {
+                    stringResource(
+                        R.string.detail_thermal_device_meta,
+                        name,
+                        "$LTR$identifier$LTR"
+                    )
+                } else {
+                    identifier
+                }
             ),
             size = MaxMetricSize.Large
         )
@@ -664,11 +713,13 @@ private fun ThermalHeadline(
 }
 
 @Composable
-private fun ZoneBlock(zone: ThermalZoneInfo, trips: List<TripReading>) {
+private fun ZoneBlock(zone: ThermalZoneInfo, rawType: String?, trips: List<TripReading>) {
     // «مفكوك» و«صفر» ليسا قراءة: يُقال غيابها بدل عرض ٠°C كأنها قياس.
     val live = zone.isEnabled && zone.temperatureC > 0
     val tone = if (live) ThermalModel.levelOf(zone.temperatureC).tone() else MaxTone.Neutral
     val start = ThermalModel.throttleStart(trips)
+    val name = zoneDisplayName(zone, rawType)
+    val identifier = zoneIdentifier(zone, rawType)
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -683,17 +734,27 @@ private fun ZoneBlock(zone: ThermalZoneInfo, trips: List<TripReading>) {
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(MaxSpace.hairline)
             ) {
-                Text(zone.label, style = MaterialTheme.typography.bodyLarge)
+                Text(name ?: identifier, style = MaterialTheme.typography.bodyLarge)
+                // المعرّف الخامّ ثانويًّا لا محذوفًا: الخبير يقارنه بما في sysfs، والمستخدم
+                // العاديّ لا يراه إلّا خطًّا خفيفًا. وحين لا اسم للمنطقة يحمل السطر الوسم
+                // نفسه بدل تكرار المعرّف سطرين (ADR-07: لا تسمية مُختلقة).
+                Text(
+                    text = if (name != null) "$LTR$identifier$LTR" else stringResource(R.string.detail_thermal_zone_raw_id),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
                 Text(
                     text = "$LTR${zone.sysfsPath}$LTR",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
-            Text(
-                text = if (live) "${zone.temperatureC}°C" else MAX_VALUE_UNAVAILABLE,
+            MaxValueWithUnit(
+                value = if (live) zone.temperatureC.toString() else MAX_VALUE_UNAVAILABLE,
+                unit = if (live) "°C" else null,
                 style = MonoValueStyleSmall,
-                color = tone.content()
+                color = tone.content(),
+                unitColor = tone.content()
             )
         }
         MaxUsageBar(
@@ -795,6 +856,30 @@ private fun ThermalLevel.tone(): MaxTone = when (this) {
     ThermalLevel.Warm -> MaxTone.Caution
     ThermalLevel.Hot -> MaxTone.Critical
 }
+
+/**
+ * تصنيف `ThermalUtil.classifyZone` الأخير: كل نوع لم يُطابق عائلة معروفة يقع فيه، فهو
+ * **ليس تصنيفًا** يُبنى عليه اسم — بل «لم يُعرف»، ويُعرض بمعرّفه كما هو (ADR-07).
+ */
+private const val UNCLASSIFIED_ZONE_CATEGORY = "System"
+
+/**
+ * الاسم المعروض للمنطقة: المعنى من النوع الخامّ (`type` في sysfs)، ثم تصنيف النواة القائم
+ * (فلا يُكتب تصنيف ثانٍ هنا)، وإلا `null` — فيُعرض المعرّف ولا يُخترع اسم.
+ */
+@Composable
+private fun zoneDisplayName(zone: ThermalZoneInfo, rawType: String?): String? {
+    val named = thermalZoneDisplayName(rawType)
+    if (named != null) return named
+    if (zone.category == UNCLASSIFIED_ZONE_CATEGORY) return null
+    return zoneCategoryLabel(zone.category)
+}
+
+/**
+ * المعرّف كما تُسمّيه النواة: النوع الخامّ إن قُرئ، وإلا التسمية المُهذّبة القائمة
+ * (`ThermalZoneInfo.label`) — فلا يختفي معرّف من الشاشة إن فشلت قراءة `type` وحدها.
+ */
+private fun zoneIdentifier(zone: ThermalZoneInfo, rawType: String?): String = rawType ?: zone.label
 
 /** أسماء تصنيفات النواة بلغة المستخدم؛ وما لا اسم له يظهر بمعرّفه كما هو. */
 @Composable

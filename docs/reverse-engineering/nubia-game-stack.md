@@ -402,6 +402,27 @@ mAttrs={… pkg = cn.zte.gamefloat … ty=APPLICATION_OVERLAY …}
 يجب أن يأتي المُرسِل من تطبيق نملكه (كاشف مقدمة يرسل البثّ نفسه)، أو تُحقن `sendBroadcast` في مسار
 إطلاق GameSpace. هذا قرار مالك، مسجَّل هنا ولم يُنفَّذ بلا إذن.
 
+### (ج) وGameSpace تُسقط نفسها عند البدء — قياس 2026-11-19 03:31
+
+طلب المالك في القياس: «افتح مساحة الألعاب واضغط بدء على أي لعبة». السجل أعطى ثلاث عمليات
+`cn.nubia.gamelauncher` في ١٢ ثانية بلا إطلاق لعبة ولا بثّ واحد، وفي مخزن السقوط:
+
+```
+11-19 03:31:35.034 E AndroidRuntime: FATAL EXCEPTION: main
+11-19 03:31:35.034 E AndroidRuntime: java.lang.RuntimeException:
+    Canvas: trying to use a recycled bitmap android.graphics.Bitmap@1b714fd
+    at android.graphics.BaseCanvas.throwIfCannotDraw(BaseCanvas.java:156)
+    at android.graphics.drawable.BitmapDrawable.draw(BitmapDrawable.java:556)
+    at android.widget.ImageView.onDraw(ImageView.java:1466)
+… (سقوط ثانٍ مطابق عند 03:31:40، Bitmap@68ae09c)
+```
+
+⇒ أي أن «الضغط على بدء لا يُظهر شيئًا» ليس عيب بثّ في المقام الأول: التطبيق يموت أثناء رسم الصورة.
+
+**وقياس المصدر:** `grep` على dex‑ي GameSpace (`classes.dex` و`classes2.dex`) يعطي **صفر** نداء
+لـ`Landroid/graphics/Bitmap;->recycle` — فالتدوير يحدث داخل مكتبة مضمَّنة أو مسار Native، لا في
+كودهم المباشر. وهذه الخطوة التالية المسمّاة: تتبّع مصدر `BitmapDrawable` في `ImageView.onDraw`.
+
 بعد ذلك يُستدعى العرض بالأمر القياسي:
 `am startservice -n cn.zte.gamefloat/.powerpanel.PowerPanelService -a ACTION_FOREGROUND_PKG_CHANGE --es currentPkg <game> --ei type 0 --ei powerPanelDialogShow 1`
 (`type = 0` عرض · `type = 1` إخفاء مسموح به · أي قيمة أخرى: لا شيء).
