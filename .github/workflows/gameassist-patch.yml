@@ -320,6 +320,35 @@ jobs:
             --signature '(Ljava/lang/String;Lcn/nubia/gameassist/tips/learn/UserGuideView$UserGuideResource;)V' \
             --mode wrap --catch throwable
 
+          # نوع النافذة 2003 (TYPE_SYSTEM_ALERT) يقتل العملية حتمًا:
+          # قِيس (11-19 17:42:52 على PID 25889، بعد أن كانت اللوحة والشريط حيّين):
+          #   am_crash android.view.WindowManager$BadTokenException:
+          #     Unable to add window … permission denied for window type 2003
+          #   ← am_proc_died [0,25889,cn.nubia.gameassist,905,19]
+          # و2003 يتطلّب INTERNAL_SYSTEM_WINDOW الذي لا يُمنح لتطبيق مُعاد التوقيع على
+          # Android 16؛ فالمكافئ العام هو 2038 الذي تستعمله اللوحة والشريط بالفعل.
+          # المواضع المقيسة أربعة فقط في الشجرة كلها (grep 0x7d3 ⇒ 4)، ثلاثة منها
+          # تبني LayoutParams عبر <init>(III) والرابع بـiput type:I — ولهذا لا تراها
+          # re_force_window_type.py (تطلب iput-object لحقل LayoutParams).
+          python3 tools/re_force_type_literal.py --self-test
+          python3 tools/re_force_type_literal.py --decoded "$work/decoded" \
+            --path smali/cn/nubia/plugin/gameshader/ShaderSettingWindow.smali \
+            --needle 0x7d3 --value 0x7f6 --expect 1
+          python3 tools/re_force_type_literal.py --decoded "$work/decoded" \
+            --path smali/cn/nubia/plugin/superresolution/SuperResolutionSettingWindowManager.smali \
+            --needle 0x7d3 --value 0x7f6 --expect 1
+          python3 tools/re_force_type_literal.py --decoded "$work/decoded" \
+            --path smali/cn/nubia/plugin/timer/TimerWindow.smali \
+            --needle 0x7d3 --value 0x7f6 --expect 1
+          python3 tools/re_force_type_literal.py --decoded "$work/decoded" \
+            --path smali_classes2/com/zte/gameassist/common/ActivityWindow.smali \
+            --needle 0x7d3 --value 0x7f6 --expect 1
+          # بوابة: لا يبقى حرفيٌّ 0x7d3 في أي ملف — بناءٌ يمرّ هنا يضمن أن النوع
+          # الخطير لم يُعَد بأي مسار آخر.
+          leftover=$(grep -rn '0x7d3' "$work/decoded/smali" "$work/decoded/smali_classes2" | wc -l)
+          echo "leftover 0x7d3 windows: $leftover"
+          test "$leftover" -eq 0
+
           python3 tools/re_inject_call.py --self-test
 
           mkdir -p "$work/decoded/smali_classes2/cn/nubia/gameassist"
