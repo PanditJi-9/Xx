@@ -103,10 +103,15 @@ git diff --check
 خارج الشجرة في `/tmp/opencode/gpu-copy-gates.log`. لم تُشغّل اختبارات أو بناء أو `resource_compile`
 على الهاتف؛ تصريف الموارد والاختبارات من Actions فقط.
 
-**BUILD:** الحكم السابق مقروء: `44605060739` على `b75dad39` **success**، ومن سجله تصريف release
-واختبارات release وJNI والحزمة ناجحة. هذا يغطي إصلاح `unreadable` في `e2133a0f` وتسجيل الفحوص
-الذاتية في `b75dad39`، **لا نصوص هذه الدفعة**؛ ترجمتها غير مُتحقّقة حتى قراءة تشغيل الدفع التالي.
-عدد اختبارات JUnit لم يُقرأ، فلا يُدّعى. لا Quick Verify مكرر بجوار بناء `main` الكامل.
+**BUILD:** حكم هذه الدفعة مقروء: `44614106492` على `d0794fa7` **success**. نجحت قراءة
+`gh run view 44614106492 --repo PanditJi-9/Xx --json headSha,status,conclusion,jobs,url`
+وقراءة `--log`؛ كلاهما بمخرج **0**. السجل يثبت تصريف الموارد، و`:app:compileReleaseKotlin`
+مع `BUILD SUCCESSFUL in 1m 39s`، و`:app:testReleaseUnitTest` مع نجاح مرحلة الاختبارات والحزمة
+في `1m 42s`. الحكم السابق `44605060739` على `b75dad39` ناجح أيضًا؛ لم يُستخدم بديلًا عن قياس
+النصوص الجديدة. الملفات خارج الشجرة: `/tmp/opencode/gpu-copy-ci-verdict.json` و
+`/tmp/opencode/gpu-copy-ci.log`. عدد اختبارات JUnit لم يُقرأ، فلا يُدّعى. لا Quick Verify مكرر
+بجوار بناء `main` الكامل. انقطعت القراءة الأولى بسبب الشبكة، ثم نجحت إعادة المحاولة؛ لم يكن
+ذلك فشلًا للبناء. نجاح Actions لا يثبت RTL أو اللمس أو سلوك العتاد على الجهاز.
 
 **MEASUREMENT CORRECTIONS:** لقطة GPU عند نحو 113 ثانية حالة قراءة واجهة النواة، لا «تحت البناء».
 `dummy` معرّف حاكم حقيقي، لا نصّ وهمي؛ والاسم الآخر `apuconstrain` لا `apustrain`. ادعاءات مربع
