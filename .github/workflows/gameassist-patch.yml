@@ -280,6 +280,23 @@ jobs:
             --class cn.nubia.gameassist.common.BaseViewController \
             --method P --mode wrap --catch throwable
 
+          # Measured 2026-11-19 13:36 (build 44514544934): the panel window was
+          # already added (windows=2, screenshot saved) and then the process died
+          # on the DatabaseThread from a tile callback:
+          #   NoClassDefFoundError Lcom/zte/feature/Feature; (DisplayManagerWrapper
+          #   <clinit>) ← ActivityManagerWrapper.e ← RecordTile.w ← ObserverManager.b
+          #   ← RecordTile.c ← TileHost.w ← GameAssistWindowManager.n0 ← v ← t.run
+          # TileHost.w is the single funnel; it already declares one .catch, so the
+          # wrap goes on its two thin callers instead (j0 and n0) — every tile
+          # failure on that thread is then contained and the panel keeps running.
+          python3 tools/re_patch_smali.py --decoded "$work/decoded" \
+            --class cn.nubia.gameassist.panel.GameAssistWindowManager \
+            --method j0 --mode wrap --catch throwable
+
+          python3 tools/re_patch_smali.py --decoded "$work/decoded" \
+            --class cn.nubia.gameassist.panel.GameAssistWindowManager \
+            --method n0 --mode wrap --catch throwable
+
           python3 tools/re_inject_call.py --self-test
 
           mkdir -p "$work/decoded/smali_classes2/cn/nubia/gameassist"
