@@ -54,6 +54,11 @@
     const-string v3, "componentcenter stub registered"
     invoke-static {v2, v3}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
 
+    # شريط السحب: نافذة صغيرة على الحافة اليمنى تُبقي العملية حيّة، ولمسُها
+    # يعيد إرسال البثّ نفسه. طلب المالك الحرفيّ: «لا توجد شريط سحب لكي اعيد
+    # اظهارها كما اريد» — فالإظهار بلا شريط يعني إعادة كل مرة من adb.
+    invoke-static {v0}, Lcn/nubia/gameassist/GameAssistHandle;->start(Landroid/content/Context;)V
+
     # الترتيب مقيس من الشجرة: p0() يبني LayoutParams ثم ينشر w → g0() الذي
     # يبني GameAssistRootView (ويشغّل c0() فيصير حقل السماح D=true)، وc() ينشر
     # l0() → w0("onTouchSlideIn") الذي يُظهر النافذة. الحاجزان المتبقيان في
