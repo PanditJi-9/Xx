@@ -3381,6 +3381,8 @@
     <string name="activity_profile_default">افتراضي</string>
     <string name="activity_value_on">يعمل</string>
     <string name="activity_value_off">متوقف</string>
+    <string name="activity_value_unreadable">غير مقروء</string>
+    <string name="activity_value_unknown">غير معروف</string>
     <string name="activity_value_held">محجوز</string>
     <string name="activity_value_failed">تعذّر</string>
     <string name="activity_reason_unverified">لم نتحقق من القيمة بعد</string>

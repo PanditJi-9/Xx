@@ -3426,6 +3426,8 @@
     <string name="activity_profile_default">Default</string>
     <string name="activity_value_on">Active</string>
     <string name="activity_value_off">Off</string>
+    <string name="activity_value_unreadable">Unreadable</string>
+    <string name="activity_value_unknown">Unknown</string>
     <string name="activity_value_held">Held</string>
     <string name="activity_value_failed">Failed</string>
     <string name="activity_reason_unverified">Value not verified yet</string>

@@ -567,6 +567,11 @@ private fun valueFor(knob: String, raw: String): String {
     return when (raw.trim().lowercase()) {
         "on", "true" -> stringResource(R.string.activity_value_on)
         "off", "false" -> stringResource(R.string.activity_value_off)
+        // رموز العتاد الداخلية تُترجم ولا تُعرض كما هي: `unreadable` ظهرت كلمةً إنجليزية خامة
+        // في بلاطة «حارس الحرارة» على جهاز المالك (لقطة ٢٠٢٦-١١-١٩). ولا يُختلق رقم بدلها:
+        // «غير مقروء» تقول الحقيقة نفسها التي يقولها الرمز (تعذّرت القراءة المرتجعة).
+        "unreadable" -> stringResource(R.string.activity_value_unreadable)
+        "unknown" -> stringResource(R.string.activity_value_unknown)
         else -> raw
     }
 }
