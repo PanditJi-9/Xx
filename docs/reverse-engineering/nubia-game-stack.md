@@ -243,3 +243,32 @@ SYSTEM_ALERT_WINDOW` يعيد `allow` (وجُرِّب `appops set --uid …` أ�
 واحد فقط من الأحد عشر يملك مدخلًا — `com.nubia.gamecenter` ← `zte.com.market.LoginActivity`.
 الباقي (بما فيه GameAssist وGameFloat) **خدمات ومكوّنات تُستدعى من غيرها**، فلا مدخل لها ولا معنى
 للابحث عن أيقونة لها في الدرج.
+
+## السبب الجذريّ المقيس لرفض لوحة GameFloat (2026-11-19)
+
+`dexdump` على الـAPK **المثبَّت** أظهر أن `PowerPanelDetailsView.initLayoutParams` يبني
+النافذة بـ`type = 2038` أصلًا (`const/16 v3, #int 2038` ثم `LayoutParams.<init>(III)V`)، وأن
+كتابتنا المفروضة للنوع موجودة بعده (`const/16 v4, #int 2038; iput v4, v0, …->type:I`).
+أي أن النوع لم يكن المشكلة في أي لحظة — ولا في المحاولة الأولى ولا الثانية.
+
+والسبب في AOSP `DisplayPolicy.validateAddingWindowLw`:
+
+```java
+if ((attrs.privateFlags & PRIVATE_FLAG_TRUSTED_OVERLAY) != 0) {
+    mContext.enforcePermission(INTERNAL_SYSTEM_WINDOW, callingPid, callingUid, "DisplayPolicy");
+}
+```
+
+وهو **نصّ الرفض نفسه** الذي قرأناه في السجل. والبتّ يضعه مُغلِّف ZTE:
+`WindowManagerWrapper$LayoutParams.addHidePrivateTrustedOverlayFlags(lp)`، ويُستدعى في
+`initLayoutParams` **بعد** ضبط النوع ومباشرةً قبل `addView`. فالمحكوم عليه لم يكن النوع
+ولا إعلان الصلاحية في البيان، بل `privateFlags` — ولهذا لم يتحرّك الرفض بأيٍّ من الترقيعين.
+
+**الإصلاح:** حذف نداء `addHidePrivateTrustedOverlayFlags` من الـsmali
+(`python3 tools/re_strip_invoke.py --needle addHidePrivateTrustedOverlayFlags`). الدالة
+تُعيد `void` ولا تفعل شيئًا غير إضافة أعلام خاصّة مميَّزة، فحذف النداء يُبقي اللوحة نافذة
+تراكب عادية `2038` بلا البتّة المحجوزة للتطبيقات الموقّعة بالمنصّة — وبلا حاجة إلى
+صلاحية توقيع ولا إلى جذر.
+
+**ولغير الجذريين:** ما يبقى مطلوبًا هو منح `cn.zte.gamefloat` صلاحية التراكب
+(`SYSTEM_ALERT_WINDOW`) من إعدادات النظام — إجراء مستخدم عادي، لا جذر فيه.

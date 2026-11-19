@@ -170,6 +170,12 @@ jobs:
           fi
           ls -l "$work/unsigned.apk"
 
+      - name: Restore the stable patch signing key
+        uses: actions/cache@v4
+        with:
+          path: .patch-signing
+          key: nubia-patch-signing-v1
+
       - name: Sign for installation (v1+v2+v3)
         run: |
           set -euo pipefail
@@ -179,8 +185,17 @@ jobs:
             | head -1)
           test -n "$url"
           curl -fsSL --retry 3 -o "$work/uber-apk-signer.jar" "$url"
+          keydir="$GITHUB_WORKSPACE/.patch-signing"
+          mkdir -p "$keydir"
+          ks="$keydir/patch.jks"
+          if [ ! -f "$ks" ]; then
+            keytool -genkeypair -keystore "$ks" -storepass patchsigning -keypass patchsigning \
+              -alias patch -keyalg RSA -keysize 2048 -validity 10950 \
+              -dname "CN=Nubia Patch, O=MaxManager, C=EG" >/dev/null
+          fi
           java -jar "$work/uber-apk-signer.jar" \
-            --apks "$work/unsigned.apk" --out "$work/signed" --allowResign
+            --apks "$work/unsigned.apk" --out "$work/signed" --allowResign \
+            --ks "$ks" --ksAlias patch --ksPass patchsigning --ksKeyPass patchsigning
           cp "$work/signed/"*.apk "$work/GameAssist-stub.apk"
           ls -l "$work/GameAssist-stub.apk"
 

@@ -155,6 +155,22 @@ jobs:
             --class cn.zte.gamefloat.powerpanel.PowerPanelDetailsView \
             --method initLayoutParams --field lp --value 2038
 
+          # The real cause of that refusal, measured afterwards on the installed APK:
+          #   the type was already 2038 before any patch (`const/16 v3, #int 2038`),
+          #   our forced write was present, and the refusal did not move. AOSP
+          #   DisplayPolicy.validateAddingWindowLw refuses on the private flag, not
+          #   the type:
+          #     if ((attrs.privateFlags & PRIVATE_FLAG_TRUSTED_OVERLAY) != 0)
+          #         enforcePermission(INTERNAL_SYSTEM_WINDOW, …, "DisplayPolicy");
+          #   RedMagic is platform-signed, so its own helper may set that bit:
+          #     WindowManagerWrapper$LayoutParams.addHidePrivateTrustedOverlayFlags(lp)
+          #   called right before addView. The helper returns void and only ORs
+          #   privileged private flags, so the call is removed and the panel stays a
+          #   plain 2038 overlay — no signature permission needed.
+          python3 tools/re_strip_invoke.py --self-test
+          python3 tools/re_strip_invoke.py --decoded "$work/decoded" \
+            --needle addHidePrivateTrustedOverlayFlags --min-hits 1
+
           if ! java -jar "$RUNNER_TEMP/apktool.jar" b --copy-original \
               --output "$work/unsigned.apk" "$work/decoded" > "$work/apktool-b.log" 2>&1; then
             echo "::error::apktool build failed"
@@ -172,6 +188,12 @@ jobs:
             echo "$part original=$before built=$after"
             test "$before" = "$after"
           done
+
+      - name: Restore the stable patch signing key
+        uses: actions/cache@v4
+        with:
+          path: .patch-signing
+          key: nubia-patch-signing-v1
 
       - name: Sign for installation (v1+v2+v3)
         run: |
@@ -197,8 +219,20 @@ jobs:
           test "$(unzip -p "$work/unsigned.apk" AndroidManifest.xml | sha256sum | cut -d' ' -f1)" \
             != "$(unzip -p "$work/input/$ASSET" AndroidManifest.xml | sha256sum | cut -d' ' -f1)"
 
+          # **مفتاح ثابت للنسخ المعدَّلة** — التوقيع الأصليّ لـZTE لا يُنتج: مفتاحه الخاصّ ليس
+          # عندنا. فيُولَّد مفتاح واحد مرّة ويُستعاد من كاش Actions في كل بناء، فتبقى البصمة
+          # واحدة وتُثبّت النسخة الجديدة فوق القديمة بلا حذف.
+          keydir="$GITHUB_WORKSPACE/.patch-signing"
+          mkdir -p "$keydir"
+          ks="$keydir/patch.jks"
+          if [ ! -f "$ks" ]; then
+            keytool -genkeypair -keystore "$ks" -storepass patchsigning -keypass patchsigning \
+              -alias patch -keyalg RSA -keysize 2048 -validity 10950 \
+              -dname "CN=Nubia Patch, O=MaxManager, C=EG" >/dev/null
+          fi
           java -jar "$work/uber-apk-signer.jar" \
-            --apks "$work/unsigned.apk" --out "$work/signed" --allowResign
+            --apks "$work/unsigned.apk" --out "$work/signed" --allowResign \
+            --ks "$ks" --ksAlias patch --ksPass patchsigning --ksKeyPass patchsigning
           cp "$work/signed/"*.apk "$work/GameFloat-panel.apk"
           ls -l "$work/GameFloat-panel.apk"
 
