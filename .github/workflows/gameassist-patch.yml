@@ -345,7 +345,7 @@ jobs:
             --needle 0x7d3 --value 0x7f6 --expect 1
           # بوابة: لا يبقى حرفيٌّ 0x7d3 في أي ملف — بناءٌ يمرّ هنا يضمن أن النوع
           # الخطير لم يُعَد بأي مسار آخر.
-          leftover=$(grep -rn '0x7d3' "$work/decoded/smali" "$work/decoded/smali_classes2" | wc -l)
+          leftover=$( { grep -rn '0x7d3' "$work/decoded/smali" "$work/decoded/smali_classes2" || true; } | wc -l )
           echo "leftover 0x7d3 windows: $leftover"
           test "$leftover" -eq 0
 
