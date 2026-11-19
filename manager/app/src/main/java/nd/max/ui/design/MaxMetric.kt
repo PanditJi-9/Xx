@@ -46,6 +46,7 @@ import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import nd.max.R
+import nd.max.ui.component.maxIsolatedValueUnit
 import nd.max.ui.settings.rememberAdvancedMode
 import nd.max.ui.theme.MonoValueStyleLarge
 import nd.max.ui.theme.MonoValueStyleMedium
