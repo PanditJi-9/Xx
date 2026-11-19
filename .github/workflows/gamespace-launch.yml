@@ -244,7 +244,7 @@ jobs:
           # the count is original + our injected one (measured: 2 on the real
           # decoded tree). The injection's own label is the exact gate.
           test "$starters" -ge 2
-          labels=$(grep -c 'nfw_skip_ga' \
+          labels=$(grep -cE '^[[:space:]]*:nfw_skip_ga[[:space:]]*$' \
             "$work/decoded/smali/cn/nubia/gamelauncher/helper/CardHelper.smali" || true)
           echo "wake injection labels in CardHelper: $labels"
           test "$labels" -eq 1
