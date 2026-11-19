@@ -145,7 +145,7 @@ def block(context_field: str, bean_getter: str, bean_type: str, cls: str,
             "    invoke-virtual {v2, v4, v5}, Landroid/content/Intent;->putExtra(Ljava/lang/String;Z)Landroid/content/Intent;",
         ] if activity_extra else []) + [
             # FLAG_ACTIVITY_NEW_TASK: the Context is the launcher helper, not an Activity.
-            "    const/16 v3, 0x10000000",
+            "    const v3, 0x10000000",
             "    invoke-virtual {v2, v3}, Landroid/content/Intent;->addFlags(I)Landroid/content/Intent;",
             "    invoke-virtual {v1, v2}, Landroid/content/Context;->startActivity(Landroid/content/Intent;)V",
             f"    :{label}",
@@ -439,7 +439,7 @@ def self_test() -> int:
                 or 'const-string v5, "cn.nubia.multisubscreen.ui.MultiSubScreenSourceActivity"' not in text_act
                 or 'const-string v4, "nfw_handle"' not in text_act
                 or "Landroid/content/Intent;->putExtra(Ljava/lang/String;Z)Landroid/content/Intent;" not in text_act
-                or "const/16 v3, 0x10000000" not in text_act
+                or "const v3, 0x10000000" not in text_act
                 or ".locals 6" not in text_act):
             print("SELF-TEST FAILED: activity start not emitted\n" + text_act, file=sys.stderr)
             return 1
