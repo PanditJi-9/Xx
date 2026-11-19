@@ -104,7 +104,7 @@ private fun thermalZoneKind(raw: String?): ThermalZoneKind? {
         "gpu", "gpuss" -> ThermalZoneKind.Graphics
         "battery" -> ThermalZoneKind.Battery
         "charger" -> ThermalZoneKind.Charger
-        // pmic*nn يشمل `pmic` و`pmic6363-vio18` معًا.
+        // pmic + رقم/لاحقة يشمل `pmic` و`pmic6363-vio18` معًا.
         "pmic" -> ThermalZoneKind.PowerManagement
         // quiet_therm / quiet-therm: المستشعر الذي يقرؤه محرّك التخفيف ليقرّر الخنق.
         "quiet" -> ThermalZoneKind.Mitigation

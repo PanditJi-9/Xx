@@ -128,6 +128,21 @@ jobs:
           # the write is permitted, and contained where it is not.
           python3 tools/re_patch_smali.py --decoded "$work/decoded" --sweep
 
+          # The panel's trigger has no sender on this ROM: counting the action
+          # string across every dex gives GameFloat=1 and GameSpace=1, both as
+          # receivers, and zero elsewhere. RedMagic's system framework sends it.
+          # So the launcher sends it itself on the one path it uses to start a
+          # game — a foreground sender, which is what Android requires before it
+          # will start another app's process from a broadcast.
+          python3 tools/re_inject_broadcast.py --self-test
+          python3 tools/re_inject_broadcast.py --decoded "$work/decoded" \
+            --class cn.nubia.gamelauncher.helper.CardHelper \
+            --method startApp \
+            --signature '(Lcn/nubia/gamelauncher/bean/AppListItemBean;ZLjava/lang/Runnable;)V' \
+            --context-field mContext --bean-getter getPackageName \
+            --action cn.zte.gamefloat.powerpanel.action.FOREGROUND_GAME_CHANGE \
+            --extra packageName
+
           # apktool 3.x dropped --use-aapt2: aapt2 is the only engine there, so
           # passing the flag printed the usage text and exited 1.
           if ! apktool b --output "$work/unsigned.apk" "$work/decoded" \
@@ -137,6 +152,14 @@ jobs:
             exit 1
           fi
           ls -l "$work/unsigned.apk"
+
+          # One receiver mention plus the injected sender. A build that silently
+          # skipped the injection would carry exactly one, so prove the count.
+          mentions=$(for dex in $(unzip -Z1 "$work/unsigned.apk" 'classes*.dex'); do
+            unzip -p "$work/unsigned.apk" "$dex" | grep -a -c 'powerpanel.action.FOREGROUND_GAME_CHANGE' || true
+          done | paste -sd+ - | bc)
+          echo "trigger mentions in the built dex files: $mentions"
+          test "$mentions" -eq 2
 
       - name: Record the device gates the app checks
         run: |
