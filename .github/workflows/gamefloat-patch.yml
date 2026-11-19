@@ -185,6 +185,24 @@ jobs:
             --class 'cn.zte.gamefloat.powerpanel.PowerPanelService$1' \
             --method run --mode noop
 
+          # بطاقة cps/mpm التي تظهر كل مرة يدخل مساحة الألعاب — طلب المالك الحرفيّ:
+          #   «وقم بازالة cps 0 و mpm 0 التي تظهر كل مرة ادخل مساحة الالعاب»
+          #   «تخلص من هذا العين … لقد ازعجني»
+          # وقِيس على الجهاز (2026-11-19 17:0x) أن صاحبها **GameFloat لا GameSpace**:
+          #   Window #12 Window{e008732 u0 PowerPanelWindow}:
+          #     mOwnerUid=10777 package=cn.zte.gamefloat appop=SYSTEM_ALERT_WINDOW
+          #     mAttrs={(817,3)(390x91) gr=TOP START CENTER … ty=APPLICATION_OVERLAY
+          #     isOnScreen=true
+          # وهو الصنف نفسه المكرّر في GameSpace (cn.nubia.gamepanel) — فالنقل هنا
+          # لأن هذه هي النسخة التي تُعرض فعلًا. والقطع من الجذر: createPowerPanelView
+          # هو المنشئ الوحيد لـPowerPanelDetailsView، و`:710` داخلها هو الـaddView
+          # الوحيد في الحزمة، فلا يبقى مسار ثانٍ (ADR-18).
+          python3 tools/re_patch_smali.py --decoded "$work/decoded" \
+            --class cn.zte.gamefloat.powerpanel.PowerPanelWindowManager \
+            --method createPowerPanelView \
+            --signature '(Landroid/content/Context;)V' \
+            --mode noop
+
           # Third gate, measured in GameForegroundChangeReceiver.onReceive:
           #   if (isAppEnable(pkg) && getGameLauncherPkgFromDB().contains(pkg))
           #       foregroundPkgChange(ctx, pkg, 0, 1);   // show
