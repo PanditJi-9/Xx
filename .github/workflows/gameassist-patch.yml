@@ -194,6 +194,19 @@ jobs:
           python3 tools/re_strip_invoke.py --decoded "$work/decoded" \
             --needle addHidePrivateTrustedOverlayFlags
 
+          # Measured on the device 2026-11-19 12:11 (build 44502479730): the
+          # trigger now runs the whole show sequence, and the process dies inside
+          # W() -> SettingsListener.<init> -> GameDurationManager -> TopActivityMonitor.a
+          # -> GAControllerProxy.b, which calls IActivityManager$Stub.asInterface —
+          # a hidden API Android 16 removed:
+          #   NoSuchMethodError: No static method asInterface(Landroid/os/IBinder;)
+          #     Landroid/app/IActivityManager; in class ...IActivityManager$Stub
+          # Containing that single static registration call lets W() finish, so
+          # Z() builds the params and c0() sets the D gate the show path reads.
+          python3 tools/re_patch_smali.py --decoded "$work/decoded" \
+            --class com.zte.gameassist.ext.system.TopActivityMonitor \
+            --method a --mode wrap --catch throwable
+
           python3 tools/re_inject_call.py --self-test
 
           mkdir -p "$work/decoded/smali_classes2/cn/nubia/gameassist"
