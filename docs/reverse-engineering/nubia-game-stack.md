@@ -347,6 +347,61 @@ if ((attrs.privateFlags & PRIVATE_FLAG_TRUSTED_OVERLAY) != 0) {
 2. منح `cn.zte.gamefloat` صلاحية **«العرض فوق التطبيقات الأخرى»** من إعدادات النظام —
    مفتاح عادي للمستخدم، لا `su` ولا Shizuku ولا `WRITE_SECURE_SETTINGS`.
 
+## الحلقة الرابعة: لماذا لا تظهر اللوحة عند بدء اللعبة من GameSpace (2026-11-19 · 03:12)
+
+سؤال المالك: «ضغطت على بدء اللعبة داخل مساحة الألعاب ولم تظهر نافذة ريدماجك». القياس فكّك
+السلسلة إلى حلقتين مستقلّتين، وكلٌّ منهما موثّقة بدليل:
+
+### (أ) بوابة قاعدة بيانات المشغّل — كانت تُخفي كل لعبة
+
+`cn.zte.gamefloat.receiver.GameForegroundChangeReceiver.onReceive` مقروءة كاملة من الـsmali:
+
+```java
+if (isAppEnable(ctx, pkg) && getGameLauncherPkgFromDB().contains(pkg))
+    PowerPanelService.foregroundPkgChange(ctx, pkg, 0, 1);   // عرض
+else
+    PowerPanelService.foregroundPkgChange(ctx, pkg, 1, 1);   // إخفاء
+```
+
+وقاعدة البيانات هذه هي سجلّ مشغّل **ZTE** نفسه، فارغة عندنا. فكان كل بثّ ينتهي بالإخفاء —
+والدليل المقيس: `packageName=com.tencent.ig, isAppEnable: true, false` ثم `MSG msg.what = 1`.
+
+**الإصلاح** (`tools/re_force_true.py`، تشغيل `44434725540`): تُجبَر نتيجة أول `contains` على `1`،
+فتُفتح بوابة العرض. النتيجة المقيسة بعد التثبيت:
+
+```
+Common_ForegroundChange : packageName=com.tencent.ig, isAppEnable: true, false
+Panel_Service : MSG msg.what = 0
+windows=6   (١ث · ٣ث · ٩ث)
+mAttrs={… pkg = cn.zte.gamefloat … ty=APPLICATION_OVERLAY …}
+```
+
+ثابتة لا تختفي، والفرع الثاني (`contains` الخاصّ بالعدّاد) لم يُمسّ لأن الأداة توقف عند أول مطابقة.
+**حدّ مُعلن:** بهذا الجبر صار فرع الإخفاء غير قابل للوصول من البثّ، فاللوحة لا تُخفى ببثّ لعبة أخرى.
+
+### (ب) المُرسِل غير موجود أصلًا — وهذه هي الحلقة الناقصة الحقيقية
+
+عدّ النصوص في كل حزم الحزمة (`grep` على dex مباشرةً) يعطي:
+
+| الحزمة | `powerpanel.action.FOREGROUND_GAME_CHANGE` | الدور |
+| --- | --- | --- |
+| `GameFloat` | ١ | مستقبِل (`GameForegroundChangeReceiver`) |
+| `GameSpace` | ١ | مستقبِل فقط (`cn.nubia.gamepanel.GameForegroundChangeReceiver`) |
+| `GameAssist` · `gamehelperline` · `plugintrigger` · `gamehelpmodule` · `gameaiasst` | ٠ | لا شيء |
+
+أي **لا مُرسِل في الحزمة كلها**. المُرسِل في ريدماجك هو إطار النظام (`ScnModule`)، وهو غائب هنا.
+وبثّ `precisionctl` الذي تُصدره GameSpace (`GameAdjustOperationView.sendBroadcastToPrecision`) لا
+يُغذّي اللوحة: بثّه اليدوي أعطى `windows=0` وسجلّ MIUI قال صراحةً
+`Unable to launch app cn.zte.gamefloat … process is not permitted to auto start`، وإشارة العدّاد
+لا تحتويها GameSpace إطلاقًا (٠ مطابقة).
+
+**والكاشف الذاتي في GameFloat ميت أيضًا:** `cn.zte.gamefloat.wrp.core.ActivityEvent` ينادي بالانعكاس
+`com.zte.activityevent.ActivityEventsManager` — صنف إطار ZTE، وليس على جهاز Xiaomi.
+
+⇒ الخلاصة المقيسة: **عرض اللوحة يعمل، ولا شيء على هذا الـROM يُطلق العرض عند بدء اللعبة.**
+يجب أن يأتي المُرسِل من تطبيق نملكه (كاشف مقدمة يرسل البثّ نفسه)، أو تُحقن `sendBroadcast` في مسار
+إطلاق GameSpace. هذا قرار مالك، مسجَّل هنا ولم يُنفَّذ بلا إذن.
+
 بعد ذلك يُستدعى العرض بالأمر القياسي:
 `am startservice -n cn.zte.gamefloat/.powerpanel.PowerPanelService -a ACTION_FOREGROUND_PKG_CHANGE --es currentPkg <game> --ei type 0 --ei powerPanelDialogShow 1`
 (`type = 0` عرض · `type = 1` إخفاء مسموح به · أي قيمة أخرى: لا شيء).
