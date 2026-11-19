@@ -288,9 +288,10 @@ if ((attrs.privateFlags & PRIVATE_FLAG_TRUSTED_OVERLAY) != 0) {
 
 ### ما يبقى، مسمّى لا مُجمَّل
 
-1. **حفظ اللعبة:** الخدمة تكتب `Settings.Global.game_pack_name` بـ`putString`، وتحتاج
-   `WRITE_SECURE_SETTINGS` التي لا تُمنح لتطبيق عادي (مقيس: `SecurityException` متكرّر من
-   `DatabaseUtils`). فتبقى `gamePkg` فارغة و`uploadPowerPanelData` يطبعها فارغة.
+1. **حفظ اللعبة في `Settings.Global`:** الكتابة تحتاج `WRITE_SECURE_SETTINGS` (مقيس:
+   `SecurityException` متكرّر من `DatabaseUtils`). **ولا يمنع ذلك وصول الاسم:** القياس
+   الأخير طبع `uploadPowerPanelData: gamePkg = com.ddup.zombiewaves.zw` — فالـextra يصل
+   والخدمة تحفظه في حقلها، والفشل محصور في مرآة الإعدادات وحدها.
 2. **بدء الخدمة من الخلفية:** أندرويد 12+ يرفض `startservice` لتطبيق حديث التثبيت
    (`BackgroundServiceStartNotAllowedException`)؛ والتغلب المؤقّت كان بجلب عملية التطبيق
    إلى المقدمة أولًا. الحل الدائم يحتاج `FOREGROUND_SERVICE` صريحًا أو إشعارًا دائمًا.
@@ -303,3 +304,18 @@ if ((attrs.privateFlags & PRIVATE_FLAG_TRUSTED_OVERLAY) != 0) {
 كاش Actions (`nubia-patch-signing-v1`)، فبصمتها `C=EG, O=MaxManager, CN=Nubia Patch`
 ثابتة وتُثبَّت النسخة الجديدة فوق القديمة بلا حذف. والتوقيع الأصلي لـZTE غير قابل للإنتاج:
 مفتاحه الخاصّ ليس عندنا.
+
+### آخر قياس (2026-11-19 · 02:27)
+
+`MSG msg.what = 0` → النافذة تُبنى وتُرسم وتُعرض (`wms.showSurfaceRobustly`)، ثم
+`MSG msg.what = 1` بعد ٨٠ ملّي ثانية → `removePowerPanelView`. وفي الوقت نفسه يعلن
+`uploadPowerPanelData: gamePkg = com.ddup.zombiewaves.zw` — أي أن اسم الحزمة وصل صحيحًا.
+
+فكل جدران الترقيع سقطت: لا رفض صلاحية، ولا رفض نوع، ولا فقدان للـextra. والذي يقرّر بقاء
+اللوحة هو **شرط التطبيق نفسه**: التطبيق الأمامي حينها كان `app.komikku` (قارئ كتب) لا
+اللعبة، وهو يُخفي لوحته حين لا تكون اللعبة أمامية — سلوكه المقصود لا عطب.
+
+ولذلك لا تُكتب النتيجة «اللوحة تبقى معروضة»: تُكتب «اللوحة تُبنى وتُرسم وتُعرض، ويُبقيها
+شرط الأمامية» — وهذا الفرق بين ترقيع ناجح وادّعاء. ولاحظ أن اللعبة المستهدفة
+(`com.ddup.zombiewaves.zw`) مثبّتة لكن `resolve-activity` يرد `No activity found`، فلا
+مدخل لها من ADB لإبقائها أمامية في هذه البيئة.
