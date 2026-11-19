@@ -109,26 +109,52 @@ def params_width(descriptor: str) -> int:
 
 
 def block(context_field: str, bean_getter: str, bean_type: str, cls: str,
-          action: str, extra: str) -> list[str]:
-    return [
-        "    if-nez p1, :nfw_skip",
+          action: str, extra: str, component: str | None) -> list[str]:
+    # The guards must jump past the block when a value is MISSING (if-eqz), not
+    # when it is present: an inverted guard still assembles and still leaves the
+    # method running, so the only symptom is a broadcast that never happens.
+    # Measured on the device 2026-11-19: an earlier build shipped `if-nez p1`,
+    # every tap ran startApp and no sendBroadcast ever appeared in logcat.
+    lines = [
+        "    if-eqz p1, :nfw_skip",
         f"    invoke-virtual {{p1}}, {bean_type}->{bean_getter}()Ljava/lang/String;",
         "    move-result-object v0",
-        "    if-nez v0, :nfw_skip",
+        "    if-eqz v0, :nfw_skip",
         f"    iget-object v1, p0, {cls}->{context_field}:Landroid/content/Context;",
-        "    if-nez v1, :nfw_skip",
+        "    if-eqz v1, :nfw_skip",
         "    new-instance v2, Landroid/content/Intent;",
         f'    const-string v3, "{action}"',
         "    invoke-direct {v2, v3}, Landroid/content/Intent;-><init>(Ljava/lang/String;)V",
         f'    const-string v3, "{extra}"',
         "    invoke-virtual {v2, v3, v0}, Landroid/content/Intent;->putExtra(Ljava/lang/String;Ljava/lang/String;)Landroid/content/Intent;",
+        # FLAG_RECEIVER_INCLUDE_STOPPED_PACKAGES: the panel package may be in the
+        # stopped state after a reinstall or force-stop, and a stopped package is
+        # skipped silently by the broadcast queue.
+        "    const/16 v3, 0x20",
+        "    invoke-virtual {v2, v3}, Landroid/content/Intent;->addFlags(I)Landroid/content/Intent;",
+    ]
+    if component:
+        # An implicit broadcast is never delivered to a manifest receiver on
+        # Android 8+ (measured 2026-11-19: enqueued, then dropped). Naming the
+        # component makes the send explicit, which is delivered.
+        package, receiver = component.split("/", 1)
+        lines += [
+            "    new-instance v3, Landroid/content/ComponentName;",
+            f'    const-string v4, "{package}"',
+            f'    const-string v5, "{receiver}"',
+            "    invoke-direct {v3, v4, v5}, Landroid/content/ComponentName;-><init>(Ljava/lang/String;Ljava/lang/String;)V",
+            "    invoke-virtual {v2, v3}, Landroid/content/Intent;->setComponent(Landroid/content/ComponentName;)Landroid/content/Intent;",
+        ]
+    lines += [
         "    invoke-virtual {v1, v2}, Landroid/content/Context;->sendBroadcast(Landroid/content/Intent;)V",
         "    :nfw_skip",
     ]
+    return lines
 
 
 def inject(lines: list[str], descriptor: str, context_field: str, bean_getter: str,
-           bean_type: str, cls: str, action: str, extra: str) -> list[str]:
+           bean_type: str, cls: str, action: str, extra: str,
+           component: str | None = None) -> list[str]:
     starts = [i for i, line in enumerate(lines)
               if line.startswith(".method") and descriptor in line]
     if len(starts) != 1:
@@ -160,18 +186,19 @@ def inject(lines: list[str], descriptor: str, context_field: str, bean_getter: s
             break
     if directive_idx is None:
         raise PatchError("method has no .locals/.registers directive")
-    # Widen the local frame to fit v0…v3 instead of refusing: widening is always
-    # safe and lets us patch methods that originally declared fewer locals.
-    if locals_count < 4:
+    # Widen the local frame to fit the block's registers instead of refusing:
+    # widening is always safe and lets us patch methods that declared fewer.
+    needed = 6 if component else 4
+    if locals_count < needed:
         indent = lines[directive_idx][:len(lines[directive_idx]) - len(lines[directive_idx].lstrip())]
         if directive_kind == "locals":
-            lines[directive_idx] = f"{indent}.locals 4"
+            lines[directive_idx] = f"{indent}.locals {needed}"
         else:
             this_w = 0 if is_static else 1
             existing = int(REGISTERS.match(lines[directive_idx]).group("count"))
-            new_total = max(existing, 4 + this_w + params_w)
+            new_total = max(existing, needed + this_w + params_w)
             lines[directive_idx] = f"{indent}.registers {new_total}"
-        locals_count = 4
+        locals_count = needed
 
     target = None
     in_annotation = False
@@ -194,12 +221,13 @@ def inject(lines: list[str], descriptor: str, context_field: str, bean_getter: s
         return lines
 
     out = list(lines)
-    out[target:target] = block(context_field, bean_getter, bean_type, cls, action, extra)
+    out[target:target] = block(context_field, bean_getter, bean_type, cls, action, extra, component)
     return out
 
 
 def apply(decoded: str, cls: str, method: str, signature: str, context_field: str,
-          bean_getter: str, bean_type: str, action: str, extra: str) -> str:
+          bean_getter: str, bean_type: str, action: str, extra: str,
+          component: str | None = None) -> str:
     rel = cls.replace(".", "/") + ".smali"
     paths = glob.glob(os.path.join(decoded, "smali*", rel))
     if len(paths) != 1:
@@ -208,7 +236,7 @@ def apply(decoded: str, cls: str, method: str, signature: str, context_field: st
     with open(path, encoding="utf-8") as handle:
         lines = handle.read().splitlines()
     patched = inject(lines, f"{method}{signature}", context_field, bean_getter,
-                     bean_type, f"L{cls.replace('.', '/')};", action, extra)
+                     bean_type, f"L{cls.replace('.', '/')};", action, extra, component)
     with open(path, "w", encoding="utf-8") as handle:
         handle.write("\n".join(patched) + "\n")
     return path
@@ -258,17 +286,38 @@ def self_test() -> int:
         text = open(path, encoding="utf-8").read()
         checks = [
             ":nfw_skip" in text,
-            text.index("sendBroadcast") < text.index("if-eqz p1"),
+            # the guards must skip when a value is missing, and must precede the send
+            "if-eqz p1, :nfw_skip" in text,
+            "if-eqz v0, :nfw_skip" in text,
+            "if-eqz v1, :nfw_skip" in text,
+            "if-nez" not in text.split(":nfw_skip")[0],
+            text.index("if-eqz p1, :nfw_skip") < text.index("sendBroadcast"),
             text.count("sendBroadcast") == 1,
+            # a stopped receiver package must still receive it
+            "const/16 v3, 0x20" in text,
             ".locals 5" in text,
             # the block must sit after the annotation, never inside it
             text.index(".end annotation") < text.index("sendBroadcast"),
-            text.index("names = {") < text.index("if-nez p1, :nfw_skip"),
+            text.index("names = {") < text.index("if-eqz p1, :nfw_skip"),
             # a field reference must be a full type descriptor
             "Lcn/nubia/gamelauncher/helper/CardHelper;->mContext:Landroid/content/Context;" in text,
         ]
         if not all(checks):
             print("SELF-TEST FAILED\n" + text, file=sys.stderr)
+            return 1
+
+        # explicit component: the send must name the receiver, or Android 8+
+        # drops it on the floor for being implicit
+        open(path, "w", encoding="utf-8").write(SAMPLE)
+        apply(os.path.join(tmp, "decoded"), "cn.nubia.gamelauncher.helper.CardHelper",
+              "startApp", "(Lcn/nubia/gamelauncher/bean/AppListItemBean;ZLjava/lang/Runnable;)V",
+              "mContext", "getPackageName", "Lcn/nubia/gamelauncher/bean/AppListItemBean;",
+              "A.B", "packageName", "cn.zte.gamefloat/cn.zte.gamefloat.receiver.GameForegroundChangeReceiver")
+        text = open(path, encoding="utf-8").read()
+        if ("Landroid/content/ComponentName;-><init>(Ljava/lang/String;Ljava/lang/String;)V" not in text
+                or 'const-string v5, "cn.zte.gamefloat.receiver.GameForegroundChangeReceiver"' not in text
+                or ".locals 6" not in text):
+            print("SELF-TEST FAILED: explicit component not emitted\n" + text, file=sys.stderr)
             return 1
 
         apply(os.path.join(tmp, "decoded"), "cn.nubia.gamelauncher.helper.CardHelper",
@@ -294,7 +343,7 @@ def self_test() -> int:
             print("SELF-TEST FAILED: locals not widened to >= 4", file=sys.stderr)
             return 1
 
-    print("self-test OK: block lands before the first instruction, survives a rerun, widens tight locals")
+    print("self-test OK: guards skip on missing values, explicit component, survives a rerun, widens tight locals")
     return 0
 
 
@@ -309,6 +358,7 @@ def main(argv: list[str]) -> int:
     parser.add_argument("--bean-type", default="Lcn/nubia/gamelauncher/bean/AppListItemBean;")
     parser.add_argument("--action")
     parser.add_argument("--extra")
+    parser.add_argument("--component", help="pkg/cls; makes the send explicit (required on Android 8+)")
     parser.add_argument("--self-test", action="store_true")
     args = parser.parse_args(argv)
 
@@ -320,7 +370,7 @@ def main(argv: list[str]) -> int:
         parser.error("missing: " + ", ".join(missing))
     try:
         path = apply(args.decoded, args.cls, args.method, args.signature, args.context_field,
-                     args.bean_getter, args.bean_type, args.action, args.extra)
+                     args.bean_getter, args.bean_type, args.action, args.extra, args.component)
     except PatchError as error:
         print(f"error: {error}", file=sys.stderr)
         return 1

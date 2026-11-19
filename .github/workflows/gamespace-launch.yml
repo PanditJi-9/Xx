@@ -156,7 +156,8 @@ jobs:
             --signature '(Lcn/nubia/gamelauncher/bean/AppListItemBean;ZLjava/lang/Runnable;)V' \
             --context-field mContext --bean-getter getPackageName \
             --action cn.zte.gamefloat.powerpanel.action.FOREGROUND_GAME_CHANGE \
-            --extra packageName
+            --extra packageName \
+            --component cn.zte.gamefloat/cn.zte.gamefloat.receiver.GameForegroundChangeReceiver
 
           # Diagnostic switch, off by default. Recycling a bitmap that a live
           # ImageView still draws is the measured cause of the start-button
