@@ -496,6 +496,15 @@ jobs:
           # ولا يشغّله أيّ تشغيل تصدأ بصمت — وهو العطب الذي وقع فعلًا في أول دفع لهذه
           # الأداة وأسقط بوّابة العقد في CI. فالسطر هنا ليس تزيّدًا: هو شرط العقد نفسه.
           python3 tools/test_report_summary.py --self-test
+          # ── أدوات الهجرة الجذرية (re_*): تقيس الـsmali/المانيفست بالنصّ، فتُقاس هي أولًا ──
+          #
+          # الثلاث تسجّل `--self-test` وتعمل على ملفّات حقيقية بلا مُصرّف ولا NDK، فحكمها هنا
+          # كحكم أيّ بوّابة بنيوية: ثوانٍ. و`selftests_wired` في `bundle_contract.py` هو ما
+          # أمسك غيابها — أداة تُقاس بيدٍ ثم تصدأ. (`build.yml` لا يُشغَّل على `tools/re_*`
+          # تعديلًا، لكنّه يشغّل أدواتها هنا دائمًا، فلا يفترق الحكم عن الأداة.)
+          python3 tools/re_force_window_type.py --self-test
+          python3 tools/re_scrub_manifest_permission.py --self-test
+          python3 tools/re_strip_invoke.py --self-test
           echo "✅ Contract gates passed in $((SECONDS - start))s"
 
       # ── تكافؤ منطق الخادم الأصلي — بلا NDK وبلا جهاز ──
