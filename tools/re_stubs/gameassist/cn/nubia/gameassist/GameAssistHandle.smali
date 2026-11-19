@@ -28,13 +28,15 @@
     :try_start_0
     sget-object v0, Lcn/nubia/gameassist/GameAssistHandle;->sView:Landroid/view/View;
 
-    # القفز يجب أن يقع حين تكون النافذة مضافة أصلًا (v0 != null).
-    # كان مقلوبًا (if-nez) فكان أول استدعاء — وsView ما زال null — يقفز
-    # إلى نهاية الدالة ولا يضيف شيئًا: قِيس 2026-11-19 15:26 أن البثّ يعمل
-    # واللوحة تُبنى، ولا يظهر سطر GameAssistHandle إطلاقًا، مع أن استدعاء
-    # start في classes2.dex موجود (باكسمالي: TriggerPanel$1 سطر 60).
-    if-eqz v0, :try_end_0
+    # لا تُضِف الشريط مرتين، لكن **لا تعُد قبل الإضافة**.
+    # قِيس مرتين (15:26 و15:44) أن الشريط لم يُضَف ولا سجل start إطلاقًا،
+    # والسبب أن if-eqz و if-nez **نفس الاختبار** على مرجع: كلاهما يقفز عند
+    # القيمة صفر. فكان أول نداء (sView=null) يقفز إلى نهاية الدالة.
+    if-nez v0, :create
 
+    return-void
+
+    :create
     if-nez p0, :try_end_0
 
     new-instance v0, Landroid/widget/TextView;
