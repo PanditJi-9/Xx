@@ -31,12 +31,14 @@ class SeatTest {
         }
     }
 
-    private fun root(uid: String = "0", failOn: String? = null): ControlSeat =
-        ShellSeat(Tier.ROOT, FakeShell(uid, failOn))
+    private fun seat(tier: Tier, uid: String = "0", failOn: String? = null): ControlSeat =
+        ShellSeat(tier, FakeShell(uid, failOn))
+
+    private fun root(uid: String = "0", failOn: String? = null): ControlSeat = seat(Tier.ROOT, uid, failOn)
 
     @Test
     fun `the strongest working seat wins and refusals keep their reason`() {
-        val negotiation = SeatNegotiator(root = { root() }, adb = { root("2000") }).negotiate()
+        val negotiation = SeatNegotiator(root = { root() }, adb = { seat(Tier.ADB, "2000") }).negotiate()
         assertEquals(Tier.ROOT, negotiation.tier)
         assertTrue(negotiation.rejected.isEmpty())
     }
@@ -45,7 +47,7 @@ class SeatTest {
     fun `a root bridge that cannot answer id is rejected, not trusted`() {
         val negotiation = SeatNegotiator(
             root = { root(uid = "", failOn = null) },
-            adb = { root("2000") },
+            adb = { seat(Tier.ADB, "2000") },
         ).negotiate()
         assertEquals(Tier.ADB, negotiation.tier)
         assertTrue(negotiation.rejected[Tier.ROOT]!!.contains("id -u"))
@@ -61,7 +63,7 @@ class SeatTest {
 
     @Test
     fun `a preferred weaker tier is honoured`() {
-        val negotiation = SeatNegotiator(root = { root() }, adb = { root("2000") }).negotiate(Tier.LOCAL)
+        val negotiation = SeatNegotiator(root = { root() }, adb = { seat(Tier.ADB, "2000") }).negotiate(Tier.LOCAL)
         assertEquals(Tier.LOCAL, negotiation.tier)
     }
 
@@ -103,7 +105,7 @@ class SeatTest {
         assertEquals(CapabilityState.DEGRADED, graded.state)
         assertEquals(Access.READ_ONLY, graded.access)
         assertEquals("needs ROOT access, running at LOCAL", graded.reason)
-        assertEquals(5, graded.measuredAtMillis)
+        assertEquals(5L, graded.measuredAtMillis)
     }
 
     @Test
