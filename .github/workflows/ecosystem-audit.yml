@@ -99,6 +99,9 @@ jobs:
           # service fails, so every command's output is written into the tree: a red run
           # then leaves its own diagnosis in git instead of a blank page.
           out=$(cat .ci-out)
+          # exported: each command runs through `bash -c`, and a non-exported variable
+          # is invisible there — that produced writes to "/apk-inventory.json.tmp".
+          export out
           mkdir -p "$out"
           log=docs/audit/ci-last-run.txt
           : > "$log"
