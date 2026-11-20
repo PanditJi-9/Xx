@@ -396,7 +396,9 @@ mod tests {
         let mut zip = zip::ZipArchive::new(BufReader::new(file)).unwrap();
         let mut out = Vec::new();
         for index in 0..zip.len() {
-            out.push(zip.by_index(index).unwrap().name().to_string());
+            // zip 9 يعيد `Result<Cow<str>, ZipError>` من `name()` (كان `&str` في 8.x)،
+            // فيُفكّ الناتج صراحةً بدل `.to_string()` على `Result`.
+            out.push(zip.by_index(index).unwrap().name().unwrap().to_string());
         }
         out
     }
