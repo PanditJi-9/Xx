@@ -30,15 +30,38 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Fetch APK assets from the release
+      - name: Fetch APK assets from the release (verified, retried)
         env:
           GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.release_tag }}
         run: |
           mkdir -p apps-ci
-          gh release download "${{ inputs.release_tag }}" \
-            --repo "${{ github.repository }}" --pattern '*.apk' --dir apps-ci --clobber || true
-          echo "downloaded: $(ls -1 apps-ci/*.apk 2>/dev/null | wc -l)"
-          ls -1 apps-ci || true
+          # One asset at a time with retries: a single aborted transfer used to leave a
+          # partial .apk behind and the run reported success. Each file is now verified
+          # as a readable zip before it is counted.
+          gh api "repos/${{ github.repository }}/releases/tags/$TAG" \
+            --jq '.assets[].name' | grep '\.apk$' > /tmp/assets.txt || true
+          echo "assets listed: $(wc -l < /tmp/assets.txt)"
+          while read -r name; do
+            [ -z "$name" ] && continue
+            for attempt in 1 2 3; do
+              rm -f "apps-ci/$name"
+              if gh release download "$TAG" --repo "${{ github.repository }}" \
+                   --pattern "$name" --dir apps-ci --clobber; then
+                if python3 -c "import sys,zipfile; zipfile.ZipFile(sys.argv[1]).testzip() is None" "apps-ci/$name" 2>/dev/null; then
+                  echo "ok: $name"
+                  break
+                fi
+                echo "corrupt zip (attempt $attempt): $name"
+              else
+                echo "download failed (attempt $attempt): $name"
+              fi
+              rm -f "apps-ci/$name"
+              sleep $((attempt * 5))
+            done
+          done < /tmp/assets.txt
+          echo "verified: $(ls -1 apps-ci/*.apk 2>/dev/null | wc -l)"
+          ls -l apps-ci || true
 
       - name: Coverage against the expected 24
         run: |

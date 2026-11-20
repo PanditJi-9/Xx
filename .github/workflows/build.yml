@@ -515,6 +515,14 @@ jobs:
           python3 tools/re_disable_bitmap_recycle.py --self-test
           python3 tools/re_scrub_manifest_permission.py --self-test
           python3 tools/re_strip_invoke.py --self-test
+          # ── أدوات جرد المنظومة (apk_*): تقرأ الـAPK مباشرة (manifest ثنائي + تجمّع نصوص DEX) ──
+          #
+          # صفر مُصرّف وصفر جهاز: القراءة من الـzip نفسه، فأحكامها ثوانٍ كأيّ بوابة بنيوية.
+          # وتُشغَّل أيضًا في `ecosystem-audit.yml` على الأصول نفسها؛ و`selftests_wired` يشترط
+          # أن يُشغّلها تشغيل فعليّ، فالسطر هنا هو شرط العقد لا تزيّد.
+          python3 tools/apk_inventory.py --self-test
+          python3 tools/apk_xref.py --self-test
+          python3 tools/apk_ipc.py --self-test
           echo "✅ Contract gates passed in $((SECONDS - start))s"
 
       # ── تكافؤ منطق الخادم الأصلي — بلا NDK وبلا جهاز ──
