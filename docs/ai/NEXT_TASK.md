@@ -1,3 +1,23 @@
+## DAEMON-IPC-SELINUX-01 مفتوح — الخادم يعمل والتطبيق لا يصل إليه: منع SELinux على `@maxmanager.sock` — 2026-11-20
+
+**أمر المالك:** «192.168.1.5:43379 اكتشف لماذا demon لا يعمل من سجل النظام».
+
+**مقيس من الجهاز (لا استنتاج):** الخادم **حيّ** — `sys.maxmanager-service` pid 9821 (root)،
+والمرافق `sys.maxmanager-appmonitoring` pid 6728، والمقبس المجرّد `@maxmanager.sock` موجود في
+`/proc/net/unix`. والمنع في السجل:
+`avc: denied { connectto } … path=006D61786D616E616765722E736F636B scontext=u:r:untrusted_app:s0:…
+tcontext=u:r:su:s0 tclass=unix_stream_socket permissive=0 app=nd.max`
+أي أن التطبيق (`untrusted_app`) ممنوع من الاتصال بمقبس يملكه نطاق `su` — والخادم على تثبيت
+الوحدة يُشغّله `mainfiles/service.sh` داخل نطاق مدير الجذر (`su`)، لا في نطاق `maxmanager`.
+والسياسة المرفقة (`android/aosp/sepolicy/maxmanager.te` و`maxmanager_app.te`) تُبنى في **ROM**
+فقط: تفترض نطاق `maxmanager` و`priv_app`، والوحدة لا تحمل `sepolicy.rule` وقت التشغيل.
+
+**المطلوب قراره:** إعطاء الخادم نطاقًا خاصًّا وقت التشغيل (type/transition + `connectto` ضيّق
+لـ`untrusted_app`) مع نقل قواعد الملفات/sysfs من `maxmanager.te`. **مرفوض** الحلّ السطحي
+`allow untrusted_app su:unix_stream_socket connectto` لأنه يفتح كل مقابس الجذر لكل التطبيقات.
+
+**حتى يُحلّ:** تبقى صفوف الصحة صادقة (تُعلن «الخادم لا يجيب») والمسار المباشر يعمل.
+
 ## MAX-AI-CPU-FREEZE-01 مُغلق — إصلاح تجمد ترددات CPU عند إغلاق تطبيق ونافذة عائمة مفتوحة — 2026-11-20
 
 **أمر المالك:** «It has the same bug as the previous version: when you have a floating window open and close an app, the CPU frequencies, when AI is enabled, remain stuck and never change.»

@@ -29496,3 +29496,35 @@ design_tokens 0 · hardening_guard ✓ · provenance_guard (٤٨٧٢ ملفًّ�
 - tools/i18n_coverage.py --assert: 0 عوائق.
 - tools/design_tokens.py --assert: 0 عوائق.
 - git diff --check: خروج 0 ونظيف تمامًا.
+
+## تكملة ٣٠٣ — الأيقونات الجديدة ونيون Game Turbo داخل مساحة الألعاب (2026-11-20)
+
+**أمر المالك:** «انقل تصميم الايقونات الجديدة من هنا /storage/emulated/0/Download/Xx-icons-fix-2.zip ومن هنا انقل gameturbo الجدبد /storage/emulated/0/Download/game-turbo-neon (3).zip واجعل /storage/emulated/0/DCIM/Screenshots/Screenshot_٢٠٢٦-١١-٢٠-٠٣-٤٣-١٧-٦١٤_nd.max.jpg تظهر في داخل gamespace وليس الشاشة الرئيسية وقم بنقل مظهر Game Turbo من الاعدادات الي اعدادات gamespace»
+
+**ما نُقل، وكيف:** ٥٣ ملفًا نُقلت كاملةً لأن كل سطر مختلف فيها أيقونة أو استيراد فقط
+(`Icons.Filled.*`←`Rounded`، و`automirrored.filled`←`automirrored.rounded`)، ومعهما
+`ui/design/MaxIllustrationModel.kt` (أنواع Touch/Sleep/Backup/Key، وترسٌ بثمانية أسنان) و
+`ui/navigation/MaxDestinationIllustrations.kt` (جدول إسناد الرسم). وأربعة ملفات محليّة أحدث
+لم تُستبدل: أُخذ منها تبديل الأيقونة وحده (`KeyboardArrowRight` صار `Rounded`، و`Speed`←`Memory`
+في لوحة الرئيسية) مع الحفاظ على إصلاحَي `daemonHealth`/`moduleUpdatePending`.
+ونُقل تصميم النيون (`ui/component/GameTurboNeonDraw.kt`, `GameTurboNeonPanel.kt`,
+`GameTurboNeonParts.kt`) مع اختباريه، ومعه مفتاحا `neon_mode_selected`/`neon_mode_upto`
+في `values/` و`values-ar/` فقط (ADR-14).
+
+**الموضع (أمر المالك):** أُزيل `GameTurboStyleHost` من `MainActivity.kt` ومُنع من الظهور على
+الرئيسية، ومُنت داخل `GameLobbyScreen.kt` (السطر ٢٣٠) فيظهر حوار الاختيار فوق مساحة الألعاب
+وحدها، وصفّ المظهر أُزيل من `SettingsScreen`، ونصّ `game_turbo_style_hint` صار «يمكن تغييره
+لاحقًا من إعدادات مساحة الألعاب». ومنفذ الاختيار القائم داخل المساحة (لوحة Tools ← Neon/Classic)
+محفوظ كما هو.
+
+**ثلاث جولات بناء، وعطب لكلٍّ منها:** (١) `44668420985` سقط على استيراد `Memory` ناقص بعد
+تبديل `Speed` — أُصلح في `2fde9843`. (٢) `44669479829` سقط على اختبارين: جدول الرسم يُذكر فيه
+`TouchBoost` (وجهة مخفيّة) فحُسب بابًا، واختبار القَصّ يشترط السهم بنمط `Filled` — أُصلحا في
+`91d5521c` (الانعكاس مع RTL محفوظ، والنمط صار `Rounded`). (٣) الحكم الأخير
+`44670505364` على `91d5521c` **نجاح**: البوابات السريعة، تكافؤ ٥٤٠/٥٤٠، NDK، تصريف release،
+اختبارات release، R8، والتغليف.
+
+**الحدود:** الواجهة الجديدة **لم تُرَ على جهاز** — لا لقطة، ولا RTL، ولا لمس؛ ومتخصصو
+التصميم (`@designer`) محجوبون في هذه البيئة بحدّ الاستخدام المجاني، فالتنفيذ في الجلسة الأم.
+
+
