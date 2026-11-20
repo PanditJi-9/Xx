@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -43,6 +44,7 @@ import androidx.compose.material.icons.rounded.Insights
 import androidx.compose.material.icons.rounded.Layers
 import androidx.compose.material.icons.rounded.RadioButtonUnchecked
 import androidx.compose.material.icons.rounded.RestartAlt
+import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.Tune
 import androidx.compose.material.icons.rounded.VideogameAsset
 import androidx.compose.material.icons.rounded.ViewSidebar
@@ -849,6 +851,59 @@ private fun PanelBody(
                 onSelect = { if (nd.max.ui.util.GameTurboStylePrefs.save(context, it)) turboStyle = it }
             )
         }
+        // **أمر المالك (2026-11-20):** إعداد بطاقات «الإجراءات السريعة» انتقل من رأسها في
+        // الرئيسية إلى هنا — مساحة الألعاب صارت المدخل الوحيد له، فلا يُضبط سطحٌ من سطحٍ آخر.
+        var deckMode by remember { mutableStateOf(nd.max.ui.util.HomeDeckStore.of(context).mode) }
+        var deckManual by remember { mutableStateOf(nd.max.ui.util.HomeDeckStore.of(context).manualKeys) }
+        var deckSheet by remember { mutableStateOf(false) }
+        LobbySectionCard(stringResource(R.string.home_deck_settings_title)) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = MaxSize.minTouchTarget)
+                    .clickable { deckSheet = true },
+                verticalArrangement = Arrangement.spacedBy(MaxSpace.sm)
+            ) {
+                Text(
+                    text = stringResource(R.string.home_deck_settings_desc),
+                    color = GameSpacePalette.Ink,
+                    fontSize = 13.sp,
+                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm)
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Settings,
+                        contentDescription = stringResource(R.string.home_deck_settings_cd),
+                        tint = LuxGold,
+                    )
+                    Text(
+                        text = stringResource(R.string.home_deck_settings_title),
+                        color = LuxGold,
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.SemiBold,
+                    )
+                }
+            }
+        }
+        nd.max.ui.mainscreens.HomeDeckSettingsSheet(
+            visible = deckSheet,
+            mode = deckMode,
+            manualKeys = deckManual,
+            usage = nd.max.ui.mainscreens.homeDeckUsage(
+                nd.max.ui.util.ScreenUsageStore.of(context).counts()
+            ),
+            onModeChange = { next ->
+                deckMode = next
+                nd.max.ui.util.HomeDeckStore.of(context).mode = next
+            },
+            onManualChange = { next ->
+                deckManual = next
+                nd.max.ui.util.HomeDeckStore.of(context).manualKeys = next
+            },
+            onDismiss = { deckSheet = false },
+        )
         LobbySectionCard(stringResource(R.string.panel_handle_title)) {
             // يمين/يسار **فيزيائيّان**: الصفّ مثبَّت LTR كي لا ينعكس ترتيبه في RTL فيخالف الحافة المرسومة.
             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {

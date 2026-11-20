@@ -57,26 +57,18 @@ import nd.max.ui.design.maxRadius
 internal fun CommandDeck(
     entries: List<HomeDeckEntry>,
     onOpen: (HomeDeckEntry) -> Unit,
-    onConfigure: () -> Unit,
 ) {
     val palette = neuralPalette()
     NeuralPanel {
+        // **ترس الضبط غادر هذا الرأس بأمر المالك (2026-11-20):** إعداد بطاقات الإجراءات السريعة
+        // صار في إعدادات مساحة الألعاب، فلا يُفتح من الرئيسية مسارُ ضبط لا يخصّها.
         NeuralSectionHeader(
             title = stringResource(R.string.home_quick_actions),
             caption = stringResource(R.string.home_quick_actions_desc),
             accent = palette.accentAlt,
-            trailing = {
-                IconButton(onClick = onConfigure) {
-                    Icon(
-                        imageVector = Icons.Rounded.Settings,
-                        contentDescription = stringResource(R.string.home_deck_settings_cd),
-                        tint = palette.muted,
-                    )
-                }
-            },
         )
         // الحالة الفارغة تُقال: منصة بلا بطاقة (كل الوجهات محجوبة بالوصول أو لم تُختر) كانت
-        // تُرسم رأسًا ثم فراغًا، فيُقرأ عطلًا. والسطر يسمّي المسار — الترس في الرأس نفسه.
+        // تُرسم رأسًا ثم فراغًا، فيُقرأ عطلًا. والسطر يسمّي المسار (إعداداته في مساحة الألعاب).
         if (entries.isEmpty()) {
             Text(
                 text = stringResource(R.string.home_deck_empty),

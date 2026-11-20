@@ -158,8 +158,7 @@ fun HomeScreen(
     val usageStore = remember(context) { ScreenUsageStore.of(context) }
     var deckMode by remember { mutableStateOf(deckStore.mode) }
     var deckManual by remember { mutableStateOf(deckStore.manualKeys) }
-    var showDeckSettings by remember { mutableStateOf(false) }
-    val deckUsage = remember(isVisible, deckMode, deckManual, showDeckSettings) {
+    val deckUsage = remember(isVisible, deckMode, deckManual) {
         homeDeckUsage(usageStore.counts())
     }
     val deckEntries = homeDeckSelection(deckMode, deckManual, deckUsage, HomeDeckPool.filter { access.visible(it.destination) })
@@ -186,7 +185,6 @@ fun HomeScreen(
             deviceName = deviceName,
             deckEntries = deckEntries,
             onOpenDeck = { entry -> navActions.navigateRoute(entry.destination.route) },
-            onConfigureDeck = { showDeckSettings = true },
             accessLevel = access.level,
             timeLeftMinutes = timeLeftMinutes,
             storageCardVisible = storageVisible,
@@ -212,26 +210,6 @@ fun HomeScreen(
             onDismiss = { showReboot = false },
             onReboot = homeViewModel::rebootDevice
         )
-        HomeDeckSettingsSheet(
-            visible = showDeckSettings,
-            mode = deckMode,
-            manualKeys = deckManual,
-            usage = deckUsage,
-            onModeChange = { next ->
-                deckMode = next
-                deckStore.mode = next
-            },
-            onManualChange = { next ->
-                deckManual = next
-                deckStore.manualKeys = next
-            },
-            storageHidden = storageHidden,
-            onShowStorage = {
-                storageHidden = false
-                focusStore.storageHidden = false
-            },
-            onDismiss = { showDeckSettings = false },
-        )
     }
     // وحوار «ملف الأداء» أُزيل بأمر المالك مع بطاقته، وبطاقة «قصة الأداء» (`VerdictPanel`)
     // أُزيلت من هذه الشاشة بأمر المالك أيضًا (`HOME-STORY-TRIM-01`): تبديل الملف يمرّ بالمحرك
@@ -250,7 +228,6 @@ fun HomeDashboardContent(
     deviceName: String,
     deckEntries: List<HomeDeckEntry>,
     onOpenDeck: (HomeDeckEntry) -> Unit,
-    onConfigureDeck: () -> Unit,
     topPadding: androidx.compose.ui.unit.Dp = 0.dp,
     onNavigate: (String) -> Unit,
     onReboot: () -> Unit,
@@ -305,7 +282,6 @@ fun HomeDashboardContent(
                     onSettings = onSettings,
                     deckEntries = deckEntries,
                     onOpenDeck = onOpenDeck,
-                    onConfigureDeck = onConfigureDeck,
                     accessLevel = accessLevel,
                     onAccess = { showAccessDialog = true },
                     timeLeftMinutes = timeLeftMinutes,

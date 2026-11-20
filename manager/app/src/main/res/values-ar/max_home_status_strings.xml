@@ -12,10 +12,7 @@
     <!-- سطر الخادم الخلفيّ: «يعمل» و«يرفض هويّة التطبيق» و«لا يجيب» ثلاث حالات لا واحدة -->
     <string name="home_status_row_daemon_running">الخادم يعمل ويردّ</string>
     <string name="home_status_row_daemon_denied">الخادم يعمل لكنه يرفض هويّة هذا التطبيق</string>
-    <string name="home_status_row_daemon_unreachable">الخادم لا يجيب؛ والتطبيق يعمل عبر مساره المباشر</string>
     <string name="home_status_row_daemon_stopped">الخادم يردّ لكنه لا يعلن نفسه عاملًا</string>
-    <!-- سببٌ مقيس: تحديث وحدة معلّق يوقف الخادم حتى الإقلاع (قياس جهاز المالك ٢٠٢٦-١١-٢٠) -->
-    <string name="home_status_row_daemon_update_pending">تحديث الوحدة معلّق، ولذلك يبقى الخادم متوقفًا حتى تعيد التشغيل. أعِد التشغيل ليعمل؛ وإلى ذلك الحين يعمل التطبيق عبر مساره المباشر.</string>
     <string name="home_status_close">إغلاق</string>
     <!-- تفعيل الوحدة بلا إنترنت من حِمل مضمَّن (أمر المالك ٢٠٢٦-١١-١٦) -->
     <string name="home_status_enable_module">تفعيل الوحدة (بلا إنترنت)</string>

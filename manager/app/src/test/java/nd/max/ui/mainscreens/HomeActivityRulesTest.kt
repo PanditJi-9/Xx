@@ -128,14 +128,14 @@ class HomeActivityRulesTest {
     }
 
     @Test
-    fun `a daemon that answers stopped is not reported as silent`() {
-        assertEquals(
-            DaemonHealth.STOPPED,
-            DaemonHealth.of(DaemonIpcProtocol.parseReply("OK state=stopped ai=0\n")),
-        )
-        assertNotEquals(
-            "الخادم الذي ردّ لا يُعرض «لا يجيب»",
+    fun `a closed channel is not shown as a daemon failure`() {
+        assertNull(
+            "قناة مغلقة بسياسة النظام لا تُعرض عطبًا — التطبيق يعمل بمساره المباشر (أمر المالك)",
             HomeStatusCopy.daemonRowRes(DaemonHealth.UNREACHABLE),
+        )
+        assertEquals(
+            "والخادم الذي ردّ «متوقف» يبقى بسطره",
+            R.string.home_status_row_daemon_stopped,
             HomeStatusCopy.daemonRowRes(DaemonHealth.STOPPED),
         )
     }
@@ -150,14 +150,13 @@ class HomeActivityRulesTest {
     }
 
     @Test
-    fun `each daemon state has its own line`() {
+    fun `each shown daemon state has its own line`() {
         val rows = listOf(
             DaemonHealth.RUNNING,
             DaemonHealth.DENIED,
-            DaemonHealth.UNREACHABLE,
             DaemonHealth.STOPPED,
         ).map { HomeStatusCopy.daemonRowRes(it) }
-        assertEquals("لكلّ حالة سطرها لا سطرٌ مشترك", rows.size, rows.toSet().size)
+        assertEquals("لكلّ حالة معروضة سطرها لا سطرٌ مشترك", rows.size, rows.toSet().size)
         assertTrue("الأسطر كلها موجودة", rows.all { it != null })
     }
 
@@ -180,39 +179,9 @@ class HomeActivityRulesTest {
             "وسطر الخادم من الحالة المقيسة",
             source.contains("HomeStatusCopy.daemonRowRes(daemonHealth)"),
         )
-        assertTrue(
-            "وسبب التوقف يُعرض من نفس القاعدة لا من نصّ في الشاشة",
-            source.contains("HomeStatusCopy.daemonUpdateNoticeRes(moduleUpdatePending, daemonHealth)"),
-        )
         assertFalse(
             "ولا يبقى العنوان الثابت في النافذة",
             source.contains("stringResource(R.string.home_status_reason_title)"),
-        )
-    }
-
-    @Test
-    fun `a pending module update explains an unreachable daemon`() {
-        assertEquals(
-            "علامة التحديث المعلّق + خادم لا يجيب ⇒ سببٌ يُعرض",
-            R.string.home_status_row_daemon_update_pending,
-            HomeStatusCopy.daemonUpdateNoticeRes(
-                updatePending = true,
-                health = DaemonHealth.UNREACHABLE,
-            ),
-        )
-        assertNull(
-            "بلا تحديث معلّق لا تُنسب حقيقة غير مقيسة",
-            HomeStatusCopy.daemonUpdateNoticeRes(
-                updatePending = false,
-                health = DaemonHealth.UNREACHABLE,
-            ),
-        )
-        assertNull(
-            "خادم يعمل لا يُفسَّر بتحديث معلّق",
-            HomeStatusCopy.daemonUpdateNoticeRes(
-                updatePending = true,
-                health = DaemonHealth.RUNNING,
-            ),
         )
     }
 

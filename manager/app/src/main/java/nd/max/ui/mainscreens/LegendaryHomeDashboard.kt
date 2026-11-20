@@ -129,7 +129,6 @@ internal fun LegendaryHomeDashboard(
     // بطاقات المنصة تُمرَّر ولا تُكتب هنا (أمر المالك): القاعدة في `homeDeckSelection` وحدها.
     deckEntries: List<HomeDeckEntry>,
     onOpenDeck: (HomeDeckEntry) -> Unit,
-    onConfigureDeck: () -> Unit,
     modifier: Modifier = Modifier,
     onNavigate: (String) -> Unit,
     onReboot: () -> Unit,
@@ -209,7 +208,9 @@ internal fun LegendaryHomeDashboard(
                 onGpu = { onNavigate(MaxDestination.GpuStudio.route) },
             )
         }
-        UnifiedActivityCard(maxAi = maxAi, onNavigate = onNavigate)
+        // **ترتيب المالك (2026-11-20):** المعالج والرسوم جنبًا إلى جنب ← الضغط الحراري
+        // (هامش الخنق في لوح القراءات) ← امتلاء المساحة (مصفوفة الذاكرة) ← النشاط الحالي ← الباقي.
+        // كان النشاط يسبق القراءات والمصفوفة، فيُقرأ سطرُ «ماذا يفعل» قبل الأرقام التي يفسّرها.
         Column(verticalArrangement = Arrangement.spacedBy(MaxSpace.md)) {
             NeuralSectionHeader(
                 title = stringResource(R.string.home_section_live),
@@ -230,14 +231,15 @@ internal fun LegendaryHomeDashboard(
                 )
             }
         }
-        if (!focusFirst) {
-            FocusCard(dashboard, onNavigate, storageCardVisible, onHideStorage)
-        }
         HomeTourAnchor(HomeTourTarget.Memory) {
             MemoryMatrixCard(dashboard = dashboard, onNavigate = onNavigate)
         }
+        UnifiedActivityCard(maxAi = maxAi, onNavigate = onNavigate)
+        if (!focusFirst) {
+            FocusCard(dashboard, onNavigate, storageCardVisible, onHideStorage)
+        }
         HomeTourAnchor(HomeTourTarget.Deck) {
-            CommandDeck(entries = deckEntries, onOpen = onOpenDeck, onConfigure = onConfigureDeck)
+            CommandDeck(entries = deckEntries, onOpen = onOpenDeck)
         }
     }
 }
@@ -733,14 +735,6 @@ private fun HomeStatusReasonDialog(
                 // سطر الخادم: لا يظهر قبل أوّل قياس (`UNKNOWN`)، ولا يقول «لا يجيب» عن خادم لم يُسأل.
                 HomeStatusCopy.daemonRowRes(daemonHealth)?.let { labelRes ->
                     HomeStatusReasonRow(labelRes, HomeStatusCopy.daemonSatisfied(daemonHealth))
-                }
-                // سببٌ يُقرأ: تحديث وحدة معلّق يُوقف الخادم حتى الإقلاع، فلا يُترك «لا يجيب» بلا تفسير.
-                HomeStatusCopy.daemonUpdateNoticeRes(moduleUpdatePending, daemonHealth)?.let { noticeRes ->
-                    Text(
-                        stringResource(noticeRes),
-                        color = p.text,
-                        style = MaterialTheme.typography.bodySmall,
-                    )
                 }
                 outcome?.let { line ->
                     Text(line, color = p.text, style = MaterialTheme.typography.bodySmall)

@@ -40,7 +40,7 @@ class HomeShapeContractTest {
     @Test
     fun `the dashboard order puts identity banners vitals and actions first`() {
         val body = read("LegendaryHomeDashboard.kt").substringAfter("internal fun LegendaryHomeDashboard(")
-        val order = listOf("HomeHeader(", "HomeHeroCard(", "HomeActionRow(", "HardwarePulseCards(", "UnifiedActivityCard(", "HomeVitalsGrid(", "MemoryMatrixCard(", "CommandDeck(")
+        val order = listOf("HomeHeader(", "HomeHeroCard(", "HomeActionRow(", "HardwarePulseCards(", "HomeVitalsGrid(", "MemoryMatrixCard(", "UnifiedActivityCard(", "CommandDeck(")
             .map { body.indexOf(it) }
         assertTrue("كتلة مفقودة من الرئيسية", order.all { it >= 0 })
         // **تغيّر الترتيب عن قصد ٢٠٢٦-١١-١٨** (تدقيق فيديو المالك): صفّ الفعل صعد فوق النبض،
