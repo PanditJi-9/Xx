@@ -1,0 +1,132 @@
+{
+ "packages": {
+  "GameAssist.apk": "cn.nubia.gameassist",
+  "GameFloatWindow.apk": "cn.zte.gamefloat",
+  "GameSpace.apk": "cn.nubia.gamelauncher",
+  "GameSpace_16.0.000.000.2609231620.apk": "com/google",
+  "NubiaGameWidget.apk": "cn.nubia.gamewidget",
+  "GameAIAsst.apk": "cn.zte.gameaiasst",
+  "GameCardAssist.apk": "com.zte.gamecardassist",
+  "GameHelperLine.apk": "cn.nubia.gamehelperline",
+  "GamePi.apk": "cn.nubia.gamepi",
+  "GamePluginTrigger.apk": "com.zte.game.plugintrigger",
+  "LauncherAdapter_MFV.apk": "com.zte.mifavor.launcher.adapter",
+  "LauncherBeautifyAdapter.apk": "com.zte.beautifyadapter",
+  "LauncherBeautify_MFV_abroad.apk": "com.zte.beautify",
+  "LauncherResource_MyOSAbroad.apk": "com.zte.mifavor.launcher.resource",
+  "Launcher_MFV_abroad.apk": "com.zte.mifavor.launcher",
+  "NBGameCenter_Abroad.apk": "com.nubia.gamecenter",
+  "NBHighLights_RedMagic.apk": "cn.nubia.gamehighlights",
+  "NubiaGameHelperModule.apk": "cn.nubia.gamehelpmodule",
+  "NubiaGameLab_MFV.apk": "cn.nubia.gamelab",
+  "NubiaGameNotes.apk": "cn.nubia.gamenotes",
+  "NubiaGamepad_160.apk": "cn.nubia.gamepad",
+  "RedMagicWallPaper_Abroad.apk": "com.zte.gallerylockscreen",
+  "VirtualGameHandle.apk": "cn.nubia.virtualgamehandle",
+  "XRLauncher.apk": "com.zte.xr.gamelauncher"
+ },
+ "namespaces": {
+  "GameAssist.apk": [
+   "cn/nubia/gameassist",
+   "com/zte/gameassist"
+  ],
+  "GameFloatWindow.apk": [
+   "cn/zte/gamefloat",
+   "com/dts/dtssdk"
+  ],
+  "GameSpace.apk": [],
+  "GameSpace_16.0.000.000.2609231620.apk": [],
+  "NubiaGameWidget.apk": [
+   "cn/nubia/gamewidget",
+   "com/zte/commonkit"
+  ]
+ },
+ "matrix": {
+  "GameAssist.apk": {
+   "GameAssist.apk": 20,
+   "GameFloatWindow.apk": 0,
+   "GameSpace.apk": 0,
+   "GameSpace_16.0.000.000.2609231620.apk": 102,
+   "NubiaGameWidget.apk": 0
+  },
+  "GameFloatWindow.apk": {
+   "GameAssist.apk": 6,
+   "GameFloatWindow.apk": 14,
+   "GameSpace.apk": 0,
+   "GameSpace_16.0.000.000.2609231620.apk": 56,
+   "NubiaGameWidget.apk": 5
+  },
+  "GameSpace.apk": {
+   "GameAssist.apk": 8,
+   "GameFloatWindow.apk": 0,
+   "GameSpace.apk": 0,
+   "GameSpace_16.0.000.000.2609231620.apk": 488,
+   "NubiaGameWidget.apk": 0
+  },
+  "GameSpace_16.0.000.000.2609231620.apk": {
+   "GameAssist.apk": 8,
+   "GameFloatWindow.apk": 0,
+   "GameSpace.apk": 0,
+   "GameSpace_16.0.000.000.2609231620.apk": 488,
+   "NubiaGameWidget.apk": 1
+  },
+  "NubiaGameWidget.apk": {
+   "GameAssist.apk": 0,
+   "GameFloatWindow.apk": 0,
+   "GameSpace.apk": 0,
+   "GameSpace_16.0.000.000.2609231620.apk": 39,
+   "NubiaGameWidget.apk": 18
+  }
+ },
+ "definedCounts": {
+  "GameAssist.apk": 15879,
+  "GameFloatWindow.apk": 11180,
+  "GameSpace.apk": 15227,
+  "GameSpace_16.0.000.000.2609231620.apk": 14567,
+  "NubiaGameWidget.apk": 7120
+ },
+ "vendor": {
+  "GameAssist.apk": {
+   "com/zte/": 2390,
+   "cn/zte/": 12,
+   "com/nubia/": 0,
+   "cn/nubia/": 2023,
+   "com/redmagic/": 1
+  },
+  "GameFloatWindow.apk": {
+   "com/zte/": 1040,
+   "cn/zte/": 890,
+   "com/nubia/": 0,
+   "cn/nubia/": 68,
+   "com/redmagic/": 0
+  },
+  "GameSpace.apk": {
+   "com/zte/": 450,
+   "cn/zte/": 0,
+   "com/nubia/": 0,
+   "cn/nubia/": 2385,
+   "com/redmagic/": 1
+  },
+  "GameSpace_16.0.000.000.2609231620.apk": {
+   "com/zte/": 312,
+   "cn/zte/": 0,
+   "com/nubia/": 0,
+   "cn/nubia/": 1994,
+   "com/redmagic/": 1
+  },
+  "NubiaGameWidget.apk": {
+   "com/zte/": 403,
+   "cn/zte/": 0,
+   "com/nubia/": 0,
+   "cn/nubia/": 316,
+   "com/redmagic/": 0
+  }
+ },
+ "sizes": {
+  "GameAssist.apk": 91422,
+  "GameFloatWindow.apk": 132590,
+  "GameSpace.apk": 144948,
+  "GameSpace_16.0.000.000.2609231620.apk": 139324,
+  "NubiaGameWidget.apk": 71552
+ }
+}

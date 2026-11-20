@@ -1,41 +1,12 @@
 == python3 tools/apk_inventory.py apps-ci/ --json "$out/apk-inventory.json" --markdown "$out/APK_INVENTORY.md"
-Traceback (most recent call last):
-  File "/home/runner/work/Xx/Xx/tools/apk_inventory.py", line 490, in <module>
-    sys.exit(main(sys.argv[1:]))
-             ^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/Xx/Xx/tools/apk_inventory.py", line 473, in main
-    with open(tmp, "w", encoding="utf-8") as fh:
-         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-PermissionError: [Errno 13] Permission denied: '/apk-inventory.json.tmp'
-EXIT=1 for: python3 tools/apk_inventory.py apps-ci/ --json "$out/apk-inventory.json" --markdown "$out/APK_INVENTORY.md"
+json: docs/audit/ci-partial/apk-inventory.json (5 APKs, 0 errors)
+markdown: docs/audit/ci-partial/APK_INVENTORY.md
 == python3 tools/apk_xref.py apps-ci/ --json "$out/apk-xref.json" --markdown "$out/APP_DEPENDENCY_GRAPH.md"
-Traceback (most recent call last):
-  File "/home/runner/work/Xx/Xx/tools/apk_xref.py", line 305, in <module>
-    sys.exit(main(sys.argv[1:]))
-             ^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/Xx/Xx/tools/apk_xref.py", line 249, in main
-    with open(tmp, "w", encoding="utf-8") as fh:
-         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-PermissionError: [Errno 13] Permission denied: '/apk-xref.json.tmp'
-EXIT=1 for: python3 tools/apk_xref.py apps-ci/ --json "$out/apk-xref.json" --markdown "$out/APP_DEPENDENCY_GRAPH.md"
+json: docs/audit/ci-partial/apk-xref.json
+markdown: docs/audit/ci-partial/APP_DEPENDENCY_GRAPH.md
 == python3 tools/apk_ipc.py apps-ci/ --json "$out/apk-ipc.json" --markdown "$out/IPC_AND_INTEGRATION.md"
-Traceback (most recent call last):
-  File "/home/runner/work/Xx/Xx/tools/apk_ipc.py", line 199, in <module>
-    sys.exit(main(sys.argv[1:]))
-             ^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/Xx/Xx/tools/apk_ipc.py", line 151, in main
-    with open(tmp, "w", encoding="utf-8") as fh:
-         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-PermissionError: [Errno 13] Permission denied: '/apk-ipc.json.tmp'
-EXIT=1 for: python3 tools/apk_ipc.py apps-ci/ --json "$out/apk-ipc.json" --markdown "$out/IPC_AND_INTEGRATION.md"
+json: docs/audit/ci-partial/apk-ipc.json
+markdown: docs/audit/ci-partial/IPC_AND_INTEGRATION.md
 == python3 tools/make_component_catalog.py "$out/apk-inventory.json" "$out/COMPONENT_CATALOG.md"
-Traceback (most recent call last):
-  File "/home/runner/work/Xx/Xx/tools/make_component_catalog.py", line 73, in <module>
-    sys.exit(main(sys.argv[1:]))
-             ^^^^^^^^^^^^^^^^^^
-  File "/home/runner/work/Xx/Xx/tools/make_component_catalog.py", line 26, in main
-    with open(argv[0], encoding="utf-8") as fh:
-         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-FileNotFoundError: [Errno 2] No such file or directory: '/apk-inventory.json'
-EXIT=1 for: python3 tools/make_component_catalog.py "$out/apk-inventory.json" "$out/COMPONENT_CATALOG.md"
-failed=1
+wrote docs/audit/ci-partial/COMPONENT_CATALOG.md
+failed=0

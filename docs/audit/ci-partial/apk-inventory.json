@@ -1,0 +1,2809 @@
+{
+ "apks": [
+  {
+   "file": "GameAssist.apk",
+   "bytes": 134609280,
+   "dex": 2,
+   "abis": [
+    "arm64-v8a",
+    "armeabi-v7a"
+   ],
+   "resDirs": 4,
+   "assets": 512,
+   "hasSplitConfig": false,
+   "package": "cn.nubia.gameassist",
+   "versionName": "16.5.002.2605252104",
+   "versionCode": "17260414",
+   "minSdk": "33",
+   "targetSdk": "37",
+   "label": "",
+   "permissions": [
+    "android.permission.MANAGE_USERS",
+    "android.permission.DELETE_PACKAGES",
+    "android.permission.MANAGE_PROFILE_AND_DEVICE_OWNERS",
+    "android.permission.WRITE_SECURE_SETTINGS",
+    "android.permission._SECURE_SETTINGS",
+    "android.permission.MODIFY_AUDIO_SETTINGS",
+    "cn.nubia.permission.PROCESS_MANAGER",
+    "android.permission.BLUETOOTH",
+    "android.permission.BLUETOOTH_ADMIN",
+    "android.permission.BLUETOOTH_CONNECT",
+    "cn.nubia.neostore.downloadService",
+    "cn.nubia.permission.BIND_DATA_COLLECTION",
+    "zte.permission.BIND_DATA_COLLECTION",
+    "com.android.launcher.permission.READ_SETTINGS",
+    "com.android.launcher2.permission.READ_SETTINGS",
+    "com.android.launcher3.permission.READ_SETTINGS",
+    "com.android.launcher.permission.INSTALL_SHORTCUT",
+    "com.android.launcher.permission.UNINSTALL_SHORTCUT",
+    "android.permission.SYSTEM_ALERT_WINDOW",
+    "android.permission.FOREGROUND_SERVICE",
+    "android.permission.INTERACT_ACROSS_USERS_FULL",
+    "android.permission.MANAGE_ACTIVITY_STACKS",
+    "android.permission.STATUS_BAR_SERVICE",
+    "android.permission.STATUS_BAR",
+    "android.permission.INTERNAL_SYSTEM_WINDOW",
+    "android.permission.WAKE_LOCK",
+    "android.permission.INJECT_EVENTS",
+    "android.permission.WRITE_SETTINGS",
+    "android.permission.READ_DEVICE_CONFIG",
+    "android.permission.CONTROL_DISPLAY_BRIGHTNESS",
+    "android.permission.MONITOR_INPUT",
+    "android.permission.ACCESS_WIFI_STATE",
+    "android.permission.ACCESS_NETWORK_STATE",
+    "android.permission.READ_PHONE_STATE",
+    "android.permission.EXPAND_STATUS_BAR",
+    "android.permission.MANAGE_EXTERNAL_STORAGE",
+    "android.permission.CHANGE_WIFI_STATE",
+    "android.permission.SYSTEM_OVERLAY_WINDOW",
+    "android.permission.RECORD_AUDIO",
+    "com.tencent.inlab.tcsystem.permission.SOLARCORE",
+    "com.tencent.inlab.tcsystem.permission.SOLARCORE_RECEIVER",
+    "com.android.ztescreenshot.permission.SCREENSHOT",
+    "android.permission.REAL_GET_TASKS",
+    "android.permission.READ_FRAME_BUFFER",
+    "cn.nubia.game.event.permission.GAME_EVENT_RECEIVER",
+    "android.permission.USE_FULL_SCREEN_INTENT",
+    "android.permission.RECEIVE_BOOT_COMPLETED",
+    "org.codeaurora.permission.POWER_OFF_ALARM",
+    "android.permission.SCHEDULE_EXACT_ALARM",
+    "android.permission.USE_EXACT_ALARM",
+    "android.permission.SUBSTITUTE_NOTIFICATION_APP_NAME",
+    "android.permission.MANAGE_NOTIFICATION_LISTENERS",
+    "android.permission.VIBRATE",
+    "android.permission.QUERY_ALL_PACKAGES",
+    "android.permission.BROADCAST_CLOSE_SYSTEM_DIALOGS",
+    "android.permission.READ_PRIVILEGED_PHONE_STATE",
+    "android.permission.SET_POINTER_SPEED",
+    "mfvsettings.permission.SEARCH",
+    "android.permission.POST_NOTIFICATIONS",
+    "cn.nubia.bluetooth.check_handle",
+    "zte.permission.LAUNCH_POWER_SAVER_ACTIVITY",
+    "android.permission.SET_TIME",
+    "android.permission.DEVICE_POWER",
+    "cn.nubia.gameassist.permission.ACCESS",
+    "com.zte.onemorething.permission.ACCESS",
+    "cn.nubia.gamelab.permission.gameocr",
+    "launchermfv.permission.DYNAMIC_SHOW_HIDDEN_APPS",
+    "android.permission.ACCESS_SHORTCUTS",
+    "com.zte.gameassist.permission.GAMEREMINDER",
+    "android.permission.INTERNET",
+    "android.permission.READ_EXTERNAL_STORAGE",
+    "com.zte.aigc.billing",
+    "android.permission.CALL_AUDIO_INTERCEPTION",
+    "android.permission.MODIFY_AUDIO_ROUTING",
+    "cn.nubia.gameassist.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION",
+    "android.permission.ZTE_HS_INTERFACE"
+   ],
+   "features": [],
+   "components": {
+    "activities": [
+     {
+      "name": "cn.nubia.gameassist.test.GameAssistTestActivity",
+      "exported": "false",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "cn.nubia.gameassist.test.ScreenSaverTestActivity",
+      "exported": "false",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "cn.nubia.gameassist.test.Game3DTestActivity",
+      "exported": "false",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "android.intent.action.MAIN"
+      ]
+     },
+     {
+      "name": "cn.nubia.multisubscreen.ui.MultiSubScreenSourceActivity",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "cn.nubia.gameassist.action.START_MULTI_SUB_SCREEN_SOURCE_ACTIVITY"
+      ]
+     },
+     {
+      "name": "cn.nubia.multisubscreen.ui.MultiSubScreenSinkActivity",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "cn.nubia.gameassist.action.START_MULTI_SUB_SCREEN_SINK_ACTIVITY"
+      ]
+     },
+     {
+      "name": "cn.nubia.multisubscreen.ui.BaseAlertActivity",
+      "exported": "",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "cn.nubia.multisubscreen.ui.CombinedAlertAty",
+      "exported": "",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "cn.nubia.multisubscreen.ui.ChooseDeviceAlertAty",
+      "exported": "",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "com.zte.plugin.reminder.permission.RequestPermissionActivity",
+      "exported": "false",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "com.zte.plugin.reminder.permission.RequestPermissionActivityBase",
+      "exported": "false",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "com.zte.gameassist.permission.PermissionApplyActivity",
+      "exported": "false",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "com.google.android.gms.common.api.GoogleApiActivity",
+      "exported": "false",
+      "permission": "",
+      "process": "",
+      "actions": []
+     }
+    ],
+    "services": [
+     {
+      "name": "cn.nubia.gameassist.service.GameAssistService",
+      "exported": "true",
+      "permission": "cn.nubia.gameassist.permission.ACCESS",
+      "process": "",
+      "actions": [
+       "cn.nubia.gameassist.action.ACTION_GAME_ASSIST_SERVICE"
+      ]
+     },
+     {
+      "name": "cn.nubia.gameassist.service.GameScreenSaverService",
+      "exported": "true",
+      "permission": "cn.nubia.gameassist.permission.ACCESS",
+      "process": "",
+      "actions": [
+       "cn.nubia.gameassist.action.ACTION_GAME_SCREEN_SAVER_SERVICE"
+      ]
+     },
+     {
+      "name": "cn.nubia.plugin.investigation.InvestigationModeService",
+      "exported": "true",
+      "permission": "cn.nubia.gameassist.permission.ACCESS",
+      "process": "",
+      "actions": [
+       "cn.nubia.gameassist.action.START_INVESTIGATIONMODE_BROADCAST"
+      ]
+     },
+     {
+      "name": "cn.nubia.gameassist.plugin.config.UpdatePluginConfigService",
+      "exported": "false",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "cn.nubia.gameassist.meditationmode.CustomNotificationListener",
+      "exported": "true",
+      "permission": "android.permission.BIND_NOTIFICATION_LISTENER_SERVICE",
+      "process": "",
+      "actions": [
+       "android.service.notification.NotificationListenerService"
+      ]
+     },
+     {
+      "name": "com.zte.gameassist.aiagent.GameAgentService",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "com.zte.aiassistant.subagent.GameSubAgentService",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "com.zte.aiassistant.SUB_AGENT"
+      ]
+     },
+     {
+      "name": "com.zte.plugin.reminder.AlarmService",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "com.zte.plugin.reminder.widget.GameReminderWidgetService",
+      "exported": "false",
+      "permission": "android.permission.BIND_REMOTEVIEWS",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "cn.nubia.projection.ProjectionPanelService",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "cn.nubia.gameassist.action.PROJECTION_PANEL"
+      ]
+     },
+     {
+      "name": "com.google.mlkit.common.internal.MlKitComponentDiscoveryService",
+      "exported": "false",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "com.google.android.datatransport.runtime.backends.TransportBackendDiscovery",
+      "exported": "false",
+      "permission": "",
+      "process": "",
+      "actions": []
+     }
+    ],
+    "receivers": [
+     {
+      "name": "cn.nubia.gameassist.plugin.config.UpdatePluginConfigReceiver",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "cn.nubia.jobdispatcher.broadcast",
+       "cn.nubia.gameassist.CONFIG_UPDATE_ACTION"
+      ]
+     },
+     {
+      "name": "cn.nubia.multisubscreen.receiver.MultiSubScreenBroadcastReceiver",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "distributebus.action.onstartdistmanagerservice",
+       "cn.nubia.multisubscreen.disconnect",
+       "cn.nubia.multisubscreen.show"
+      ]
+     },
+     {
+      "name": "com.zte.plugin.reminder.AlarmReceiver",
+      "exported": "true",
+      "permission": "com.zte.gameassist.permission.GAMEREMINDER",
+      "process": "",
+      "actions": [
+       "cn.nubia.gamereminder.OPERATION",
+       "android.intent.action.BOOT_COMPLETED",
+       "android.intent.action.LOCKED_BOOT_COMPLETED",
+       "cn.nubia.gamereminder.ALARMALERT",
+       "android.intent.action.PACKAGE_REMOVED",
+       "android.intent.action.TIME_SET"
+      ]
+     },
+     {
+      "name": "com.zte.plugin.reminder.widget.GameReminderWidget",
+      "exported": "true",
+      "permission": "com.zte.gameassist.permission.GAMEREMINDER",
+      "process": "",
+      "actions": [
+       "android.appwidget.action.APPWIDGET_UPDATE",
+       "com.zte.plugin.reminder.action.ACTION_NOTIFY_DATASET_CHANGED",
+       "com.zte.plugin.reminder.action.ACTION_ITEM_CLICK"
+      ]
+     },
+     {
+      "name": "com.zte.performanceindicator.widget.PerformanceIndicatorWidget",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "android.appwidget.action.APPWIDGET_UPDATE",
+       "android.intent.action.LOCALE_CHANGED"
+      ]
+     },
+     {
+      "name": "com.zte.distbus.receiver.DistBusReceiver",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "com.zte.toolsdk.producer.ToolsReceiver",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "com.zte.toolsdk.producer.RemoteViewsReceiver",
+      "exported": "",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "com.google.android.datatransport.runtime.scheduling.jobscheduling.AlarmManagerSchedulerBroadcastReceiver",
+      "exported": "false",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "androidx.profileinstaller.ProfileInstallReceiver",
+      "exported": "true",
+      "permission": "android.permission.DUMP",
+      "process": "",
+      "actions": [
+       "androidx.profileinstaller.action.INSTALL_PROFILE",
+       "androidx.profileinstaller.action.SKIP_FILE",
+       "androidx.profileinstaller.action.SAVE_PROFILE",
+       "androidx.profileinstaller.action.BENCHMARK_OPERATION"
+      ]
+     }
+    ],
+    "providers": [
+     {
+      "name": "cn.nubia.gameassist.provider.FunctionCallProvider",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "cn.nubia.gameassist.search.GlobalSearchProvider",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "com.zte.gameassist.lowsugar.provider.LowSugarProvider",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "com.zte.gameassist.lowsugar.provider.LowSugarOcrProvider",
+      "exported": "true",
+      "permission": "cn.nubia.gameassist.permission.gameocr",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "com.zte.gameassist.subagent.GameSubAgentProvider",
+      "exported": "true",
+      "permission": "cn.nubia.gameassist.permission.ACCESS",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "com.zte.plugin.reminder.GameReminderProvider",
+      "exported": "true",
+      "permission": "com.zte.gameassist.permission.GAMEREMINDER",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "com.zte.performanceindicator.provider.PerformanceIndicatorProvider",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "com.google.mlkit.common.internal.MlKitInitProvider",
+      "exported": "false",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "androidx.startup.InitializationProvider",
+      "exported": "false",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "com.zte.toolsdk.consumer.SharedPrefsContentProvider",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "com.zte.toolsdk.consumer.CardContentProvider",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "com.zte.toolsdk.producer.AnimationEndContentProvider",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": []
+     }
+    ]
+   },
+   "declaredPermissions": [
+    {
+     "name": "cn.nubia.gameassist.permission.ACCESS",
+     "protectionLevel": "0x3"
+    },
+    {
+     "name": "cn.nubia.gameassist.permission.gameocr",
+     "protectionLevel": "0x2"
+    },
+    {
+     "name": "com.zte.gameassist.permission.GAMEREMINDER",
+     "protectionLevel": "0x1"
+    },
+    {
+     "name": "cn.nubia.gameassist.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION",
+     "protectionLevel": "0x2"
+    }
+   ],
+   "actions": {
+    "cn.nubia.gameassist.action.ACTION_GAME_ASSIST_SERVICE": [
+     "cn.nubia.gameassist.service.GameAssistService"
+    ],
+    "cn.nubia.gameassist.action.ACTION_GAME_SCREEN_SAVER_SERVICE": [
+     "cn.nubia.gameassist.service.GameScreenSaverService"
+    ],
+    "android.intent.action.MAIN": [
+     "cn.nubia.gameassist.test.Game3DTestActivity"
+    ],
+    "cn.nubia.gameassist.action.START_INVESTIGATIONMODE_BROADCAST": [
+     "cn.nubia.plugin.investigation.InvestigationModeService"
+    ],
+    "cn.nubia.jobdispatcher.broadcast": [
+     "cn.nubia.gameassist.plugin.config.UpdatePluginConfigReceiver"
+    ],
+    "cn.nubia.gameassist.CONFIG_UPDATE_ACTION": [
+     "cn.nubia.gameassist.plugin.config.UpdatePluginConfigReceiver"
+    ],
+    "android.service.notification.NotificationListenerService": [
+     "cn.nubia.gameassist.meditationmode.CustomNotificationListener"
+    ],
+    "distributebus.action.onstartdistmanagerservice": [
+     "cn.nubia.multisubscreen.receiver.MultiSubScreenBroadcastReceiver"
+    ],
+    "cn.nubia.multisubscreen.disconnect": [
+     "cn.nubia.multisubscreen.receiver.MultiSubScreenBroadcastReceiver"
+    ],
+    "cn.nubia.multisubscreen.show": [
+     "cn.nubia.multisubscreen.receiver.MultiSubScreenBroadcastReceiver"
+    ],
+    "cn.nubia.gameassist.action.START_MULTI_SUB_SCREEN_SOURCE_ACTIVITY": [
+     "cn.nubia.multisubscreen.ui.MultiSubScreenSourceActivity"
+    ],
+    "cn.nubia.gameassist.action.START_MULTI_SUB_SCREEN_SINK_ACTIVITY": [
+     "cn.nubia.multisubscreen.ui.MultiSubScreenSinkActivity"
+    ],
+    "com.zte.aiassistant.SUB_AGENT": [
+     "com.zte.aiassistant.subagent.GameSubAgentService"
+    ],
+    "cn.nubia.gamereminder.OPERATION": [
+     "com.zte.plugin.reminder.AlarmReceiver"
+    ],
+    "android.intent.action.BOOT_COMPLETED": [
+     "com.zte.plugin.reminder.AlarmReceiver"
+    ],
+    "android.intent.action.LOCKED_BOOT_COMPLETED": [
+     "com.zte.plugin.reminder.AlarmReceiver"
+    ],
+    "cn.nubia.gamereminder.ALARMALERT": [
+     "com.zte.plugin.reminder.AlarmReceiver"
+    ],
+    "android.intent.action.PACKAGE_REMOVED": [
+     "com.zte.plugin.reminder.AlarmReceiver"
+    ],
+    "android.intent.action.TIME_SET": [
+     "com.zte.plugin.reminder.AlarmReceiver"
+    ],
+    "android.appwidget.action.APPWIDGET_UPDATE": [
+     "com.zte.plugin.reminder.widget.GameReminderWidget",
+     "com.zte.performanceindicator.widget.PerformanceIndicatorWidget"
+    ],
+    "com.zte.plugin.reminder.action.ACTION_NOTIFY_DATASET_CHANGED": [
+     "com.zte.plugin.reminder.widget.GameReminderWidget"
+    ],
+    "com.zte.plugin.reminder.action.ACTION_ITEM_CLICK": [
+     "com.zte.plugin.reminder.widget.GameReminderWidget"
+    ],
+    "cn.nubia.gameassist.action.PROJECTION_PANEL": [
+     "cn.nubia.projection.ProjectionPanelService"
+    ],
+    "android.intent.action.LOCALE_CHANGED": [
+     "com.zte.performanceindicator.widget.PerformanceIndicatorWidget"
+    ],
+    "androidx.profileinstaller.action.INSTALL_PROFILE": [
+     "androidx.profileinstaller.ProfileInstallReceiver"
+    ],
+    "androidx.profileinstaller.action.SKIP_FILE": [
+     "androidx.profileinstaller.ProfileInstallReceiver"
+    ],
+    "androidx.profileinstaller.action.SAVE_PROFILE": [
+     "androidx.profileinstaller.ProfileInstallReceiver"
+    ],
+    "androidx.profileinstaller.action.BENCHMARK_OPERATION": [
+     "androidx.profileinstaller.ProfileInstallReceiver"
+    ]
+   }
+  },
+  {
+   "file": "GameFloatWindow.apk",
+   "bytes": 81204411,
+   "dex": 2,
+   "abis": [
+    "arm64-v8a"
+   ],
+   "resDirs": 4,
+   "assets": 63,
+   "hasSplitConfig": false,
+   "package": "cn.zte.gamefloat",
+   "versionName": "2.5.0001.2605230533",
+   "versionCode": "250001",
+   "minSdk": "33",
+   "targetSdk": "36",
+   "label": "",
+   "permissions": [
+    "android.permission.SYSTEM_ALERT_WINDOW",
+    "android.permission.FOREGROUND_SERVICE",
+    "android.permission.FOREGROUND_SERVICE_SPECIAL_USE",
+    "android.permission.VIBRATE",
+    "android.permission.WRITE_SETTINGS",
+    "android.permission.WRITE_SECURE_SETTINGS",
+    "cn.nubia.permission.BIND_DATA_COLLECTION",
+    "android.permission.MANAGE_ACTIVITY_STACKS",
+    "android.permission.INTERNAL_SYSTEM_WINDOW",
+    "android.permission.SYSTEM_OVERLAY_WINDOW",
+    "android.permission.MODIFY_AUDIO_SETTINGS",
+    "android.permission.RECORD_AUDIO",
+    "android.permission.READ_EXTERNAL_STORAGE",
+    "android.permission.WRITE_EXTERNAL_STORAGE",
+    "nubia.permission.arkbase.DATA_COLLECTION",
+    "nubia.permission.arkbase.USAGE_TIME",
+    "cn.nubia.permission.BIND_DATA_COLLECTION",
+    "zte.permission.BIND_DATA_COLLECTION",
+    "android.permission.INTERNET",
+    "cn.nubia.soundeffect.READ_EQULIZER_SETTINGS",
+    "android.permission.CAPTURE_BLACKOUT_CONTENT",
+    "android.permission.READ_FRAME_BUFFER",
+    "android.permission.REAL_GET_TASKS",
+    "android.permission.ACCESS_NETWORK_STATE",
+    "android.permission.ACCESS_WIFI_STATE",
+    "android.permission.MONITOR_INPUT",
+    "cn.zte.gamefloat.permission.READ_EQUALIZER",
+    "android.permission.RECEIVE_BOOT_COMPLETED",
+    "android.permission.BLUETOOTH",
+    "android.permission.BLUETOOTH_CONNECT",
+    "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK",
+    "android.permission.READ_PHONE_STATE",
+    "com.dts.permission.DTS_EFFECT",
+    "cn.zte.gamefloat.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION",
+    "cn.nubia.gameassist.permission.ACCESS",
+    "android.permission.ZTE_HS_INTERFACE",
+    "android.permission.QUERY_ALL_PACKAGES"
+   ],
+   "features": [
+    {
+     "name": "android.hardware.usb.host",
+     "required": "true"
+    }
+   ],
+   "components": {
+    "activities": [
+     {
+      "name": "cn.zte.gamefloat.chatassistant.ui.ChatAssistantSettingsActivity",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "cn.zte.gamefloat.chatassistant.ui.ChatAssistantSettingsActivity"
+      ]
+     },
+     {
+      "name": "cn.zte.gamefloat.chatassistant.ui.DeleteDialog",
+      "exported": "",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "cn.zte.gamefloat.chatassistant.ui.AddRecorderActivityDialog",
+      "exported": "",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "cn.zte.gamefloat.chatassistant.ui.AddVoicePackActivityDialog",
+      "exported": "",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "cn.zte.gamefloat.chatassistant.ui.UploadTextActivity",
+      "exported": "",
+      "permission": "",
+      "process": "",
+      "actions": []
+     }
+    ],
+    "services": [
+     {
+      "name": "cn.zte.gamefloat.precisionctl.PrecisionCtlService",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "cn.zte.gamefloat.precision.control"
+      ]
+     },
+     {
+      "name": "cn.zte.gamefloat.report.GameReportService",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "cn.zte.gamefloat.game.report"
+      ]
+     },
+     {
+      "name": "cn.zte.gamefloat.aitip.AiTipService",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "cn.zte.gamefloat.ai.tip"
+      ]
+     },
+     {
+      "name": "cn.zte.gamefloat.imgsearch.ImageSearchService",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "cn.zte.gamefloat.image.search"
+      ]
+     },
+     {
+      "name": "cn.zte.gamefloat.chatassistant.ChatAssistantService",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "cn.zte.chatassistant.VOICEASSISTANTSERVICE"
+      ]
+     },
+     {
+      "name": "cn.zte.gamefloat.powerpanel.PowerPanelService",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "cn.zte.powerpanel.POWERPANELSERVICE"
+      ]
+     },
+     {
+      "name": "cn.zte.gamefloat.gamekeys.GameKeysService",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "cn.zte.gamekeys.GAMEKEYSERVICE"
+      ]
+     },
+     {
+      "name": "cn.zte.gamefloat.equalizer.EqualizerService",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "cn.zte.intent.action.EQUALIZERSERVICE"
+      ]
+     },
+     {
+      "name": "cn.zte.gamefloat.gamecounter.GameCounterService",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "cn.zte.gamefloat.gamecounter.SHOW_PANEL",
+       "cn.zte.gamefloat.gamecounter.HIDE_PANEL"
+      ]
+     },
+     {
+      "name": "cn.zte.gamefloat.wrp.WinRatePredictionService",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "com.dts.dtssdk.util.NotificationService",
+      "exported": "false",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "androidx.room.MultiInstanceInvalidationService",
+      "exported": "false",
+      "permission": "",
+      "process": "",
+      "actions": []
+     }
+    ],
+    "receivers": [
+     {
+      "name": "cn.zte.gamefloat.equalizer.DtsStateReceiver",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "dts.dtssdk.intent.action.SET_DTS_ENABLED",
+       "dts.dtssdk.intent.action.SET_DTS_DISABLED"
+      ]
+     },
+     {
+      "name": "cn.zte.gamefloat.receiver.GameForegroundChangeReceiver",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "cn.zte.gamefloat.powerpanel.action.FOREGROUND_GAME_CHANGE",
+       "cn.zte.gamefloat.gamecounter.ACTION_FOREGROUND_GAME_CHANGE",
+       "cn.zte.gamefloat.aitips.ACTION_FOREGROUND_GAME_CHANGE",
+       "cn.zte.gamefloat.precisionctl.ACTION_FOREGROUND_GAME_CHANGE",
+       "cn.zte.gamefloat.report.ACTION_FOREGROUND_GAME_CHANGE"
+      ]
+     },
+     {
+      "name": "cn.zte.gamefloat.receiver.GameModeReceiver",
+      "exported": "false",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "cn.nubia.action.GAME_MODE"
+      ]
+     },
+     {
+      "name": "com.dts.dtssdk.DtsBroadcastManager",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "dts.dtssdk.intent.action.SET_DTS_ENABLED",
+       "dts.dtssdk.intent.action.SET_DTS_DISABLED",
+       "dts.dtssdk.intent.action.GET_DTS_STATE",
+       "dts.dtssdk.intent.action.GET_INFO"
+      ]
+     },
+     {
+      "name": "com.dts.dtssdk.util.BluetoothConnectionManager$BluetoothConnectionReceiver",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "android.bluetooth.device.action.ACL_CONNECTED",
+       "android.bluetooth.device.action.ACL_DISCONNECTED",
+       "android.bluetooth.a2dp.profile.action.CONNECTION_STATE_CHANGED"
+      ]
+     },
+     {
+      "name": "com.dts.dtssdk.util.UsbConnectionManager$RouteChangeReceiver",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "dts.dtssdk.intent.action.AUDIO_ROUTE_CHANGED"
+      ]
+     },
+     {
+      "name": "com.dts.dtssdk.DtsCore$ServiceBroadcastReceiver",
+      "exported": "false",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "dts.dtssdk.intent.action.AUDIO_ROUTE_CHANGED"
+      ]
+     },
+     {
+      "name": "androidx.profileinstaller.ProfileInstallReceiver",
+      "exported": "true",
+      "permission": "android.permission.DUMP",
+      "process": "",
+      "actions": [
+       "androidx.profileinstaller.action.INSTALL_PROFILE",
+       "androidx.profileinstaller.action.SKIP_FILE",
+       "androidx.profileinstaller.action.SAVE_PROFILE",
+       "androidx.profileinstaller.action.BENCHMARK_OPERATION"
+      ]
+     },
+     {
+      "name": "com.zte.toolsdk.producer.ToolsReceiver",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "com.zte.toolsdk.producer.RemoteViewsReceiver",
+      "exported": "",
+      "permission": "",
+      "process": "",
+      "actions": []
+     }
+    ],
+    "providers": [
+     {
+      "name": "androidx.core.content.FileProvider",
+      "exported": "false",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "cn.zte.gamefloat.chatassistant.db.ChatAssistantContentProvider",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "cn.zte.gamefloat.equalizer.data.EqualizerProvider",
+      "exported": "true",
+      "permission": "cn.zte.gamefloat.permission.READ_EQUALIZER",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "cn.zte.gamefloat.equalizer.data.PriviewFileProvider",
+      "exported": "true",
+      "permission": "cn.zte.gamefloat.permission.READ_EQUALIZER",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "cn.zte.gamefloat.wrp.db.WinRateContentProvider",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "androidx.startup.InitializationProvider",
+      "exported": "false",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "com.zte.toolsdk.consumer.SharedPrefsContentProvider",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "com.zte.toolsdk.consumer.CardContentProvider",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "com.zte.toolsdk.producer.AnimationEndContentProvider",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": []
+     }
+    ]
+   },
+   "declaredPermissions": [
+    {
+     "name": "cn.zte.gamefloat.permission.READ_EQUALIZER",
+     "protectionLevel": "0x3"
+    },
+    {
+     "name": "com.dts.permission.DTS_EFFECT",
+     "protectionLevel": "0x0"
+    },
+    {
+     "name": "cn.zte.gamefloat.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION",
+     "protectionLevel": "0x2"
+    }
+   ],
+   "actions": {
+    "cn.zte.gamefloat.precision.control": [
+     "cn.zte.gamefloat.precisionctl.PrecisionCtlService"
+    ],
+    "cn.zte.gamefloat.game.report": [
+     "cn.zte.gamefloat.report.GameReportService"
+    ],
+    "cn.zte.gamefloat.ai.tip": [
+     "cn.zte.gamefloat.aitip.AiTipService"
+    ],
+    "cn.zte.gamefloat.image.search": [
+     "cn.zte.gamefloat.imgsearch.ImageSearchService"
+    ],
+    "cn.zte.gamefloat.chatassistant.ui.ChatAssistantSettingsActivity": [
+     "cn.zte.gamefloat.chatassistant.ui.ChatAssistantSettingsActivity"
+    ],
+    "cn.zte.chatassistant.VOICEASSISTANTSERVICE": [
+     "cn.zte.gamefloat.chatassistant.ChatAssistantService"
+    ],
+    "cn.zte.powerpanel.POWERPANELSERVICE": [
+     "cn.zte.gamefloat.powerpanel.PowerPanelService"
+    ],
+    "cn.zte.gamekeys.GAMEKEYSERVICE": [
+     "cn.zte.gamefloat.gamekeys.GameKeysService"
+    ],
+    "cn.zte.intent.action.EQUALIZERSERVICE": [
+     "cn.zte.gamefloat.equalizer.EqualizerService"
+    ],
+    "cn.zte.gamefloat.gamecounter.SHOW_PANEL": [
+     "cn.zte.gamefloat.gamecounter.GameCounterService"
+    ],
+    "cn.zte.gamefloat.gamecounter.HIDE_PANEL": [
+     "cn.zte.gamefloat.gamecounter.GameCounterService"
+    ],
+    "dts.dtssdk.intent.action.SET_DTS_ENABLED": [
+     "cn.zte.gamefloat.equalizer.DtsStateReceiver",
+     "com.dts.dtssdk.DtsBroadcastManager"
+    ],
+    "dts.dtssdk.intent.action.SET_DTS_DISABLED": [
+     "cn.zte.gamefloat.equalizer.DtsStateReceiver",
+     "com.dts.dtssdk.DtsBroadcastManager"
+    ],
+    "cn.zte.gamefloat.powerpanel.action.FOREGROUND_GAME_CHANGE": [
+     "cn.zte.gamefloat.receiver.GameForegroundChangeReceiver"
+    ],
+    "cn.zte.gamefloat.gamecounter.ACTION_FOREGROUND_GAME_CHANGE": [
+     "cn.zte.gamefloat.receiver.GameForegroundChangeReceiver"
+    ],
+    "cn.zte.gamefloat.aitips.ACTION_FOREGROUND_GAME_CHANGE": [
+     "cn.zte.gamefloat.receiver.GameForegroundChangeReceiver"
+    ],
+    "cn.zte.gamefloat.precisionctl.ACTION_FOREGROUND_GAME_CHANGE": [
+     "cn.zte.gamefloat.receiver.GameForegroundChangeReceiver"
+    ],
+    "cn.zte.gamefloat.report.ACTION_FOREGROUND_GAME_CHANGE": [
+     "cn.zte.gamefloat.receiver.GameForegroundChangeReceiver"
+    ],
+    "cn.nubia.action.GAME_MODE": [
+     "cn.zte.gamefloat.receiver.GameModeReceiver"
+    ],
+    "dts.dtssdk.intent.action.GET_DTS_STATE": [
+     "com.dts.dtssdk.DtsBroadcastManager"
+    ],
+    "dts.dtssdk.intent.action.GET_INFO": [
+     "com.dts.dtssdk.DtsBroadcastManager"
+    ],
+    "android.bluetooth.device.action.ACL_CONNECTED": [
+     "com.dts.dtssdk.util.BluetoothConnectionManager$BluetoothConnectionReceiver"
+    ],
+    "android.bluetooth.device.action.ACL_DISCONNECTED": [
+     "com.dts.dtssdk.util.BluetoothConnectionManager$BluetoothConnectionReceiver"
+    ],
+    "android.bluetooth.a2dp.profile.action.CONNECTION_STATE_CHANGED": [
+     "com.dts.dtssdk.util.BluetoothConnectionManager$BluetoothConnectionReceiver"
+    ],
+    "dts.dtssdk.intent.action.AUDIO_ROUTE_CHANGED": [
+     "com.dts.dtssdk.util.UsbConnectionManager$RouteChangeReceiver",
+     "com.dts.dtssdk.DtsCore$ServiceBroadcastReceiver"
+    ],
+    "androidx.profileinstaller.action.INSTALL_PROFILE": [
+     "androidx.profileinstaller.ProfileInstallReceiver"
+    ],
+    "androidx.profileinstaller.action.SKIP_FILE": [
+     "androidx.profileinstaller.ProfileInstallReceiver"
+    ],
+    "androidx.profileinstaller.action.SAVE_PROFILE": [
+     "androidx.profileinstaller.ProfileInstallReceiver"
+    ],
+    "androidx.profileinstaller.action.BENCHMARK_OPERATION": [
+     "androidx.profileinstaller.ProfileInstallReceiver"
+    ]
+   }
+  },
+  {
+   "file": "GameSpace.apk",
+   "bytes": 166235736,
+   "dex": 2,
+   "abis": [
+    "arm64-v8a",
+    "armeabi-v7a",
+    "x86_64"
+   ],
+   "resDirs": 4,
+   "assets": 54,
+   "hasSplitConfig": false,
+   "package": "cn.nubia.gamelauncher",
+   "versionName": "16.5.000.000.2605251213",
+   "versionCode": "261",
+   "minSdk": "33",
+   "targetSdk": "36",
+   "label": "",
+   "permissions": [
+    "android.permission.MANAGE_USERS",
+    "android.permission.VIBRATE",
+    "cn.nubia.launcher.permission.WRITE_SETTINGS",
+    "cn.nubia.launcher.permission.READ_SETTINGS",
+    "android.permission.DELETE_PACKAGES",
+    "android.permission.MANAGE_PROFILE_AND_DEVICE_OWNERS",
+    "android.permission.INTERNET",
+    "android.permission.WRITE_SECURE_SETTINGS",
+    "android.permission._SECURE_SETTINGS",
+    "android.permission.MODIFY_AUDIO_SETTINGS",
+    "cn.nubia.permission.PROCESS_MANAGER",
+    "android.permission.BLUETOOTH",
+    "android.permission.BLUETOOTH_ADMIN",
+    "cn.nubia.neostore.downloadService",
+    "cn.nubia.permission.BIND_DATA_COLLECTION",
+    "zte.permission.BIND_DATA_COLLECTION",
+    "cn.nubia.launcher.permission.READ_SETTINGS",
+    "cn.nubia.launcher.permission.WRITE_SETTINGS",
+    "com.android.launcher.permission.READ_SETTINGS",
+    "com.android.launcher2.permission.READ_SETTINGS",
+    "com.android.launcher3.permission.READ_SETTINGS",
+    "com.android.launcher.permission.INSTALL_SHORTCUT",
+    "com.android.launcher.permission.UNINSTALL_SHORTCUT",
+    "android.permission.SYSTEM_ALERT_WINDOW",
+    "android.permission.FOREGROUND_SERVICE",
+    "android.permission.INTERACT_ACROSS_USERS_FULL",
+    "android.permission.MANAGE_ACTIVITY_STACKS",
+    "android.permission.STATUS_BAR_SERVICE",
+    "android.permission.STATUS_BAR",
+    "android.permission.INTERNAL_SYSTEM_WINDOW",
+    "android.permission.WAKE_LOCK",
+    "android.permission.INJECT_EVENTS",
+    "android.permission.WRITE_SETTINGS",
+    "android.permission.READ_DEVICE_CONFIG",
+    "android.permission.CONTROL_DISPLAY_BRIGHTNESS",
+    "android.permission.ACCESS_WIFI_STATE",
+    "android.permission.ACCESS_NETWORK_STATE",
+    "android.permission.READ_PHONE_STATE",
+    "android.permission.EXPAND_STATUS_BAR",
+    "android.permission.MANAGE_EXTERNAL_STORAGE",
+    "android.permission.CHANGE_WIFI_STATE",
+    "android.permission.SYSTEM_ALERT_WINDOW",
+    "android.permission.SYSTEM_OVERLAY_WINDOW",
+    "android.permission.MODIFY_AUDIO_SETTINGS",
+    "android.permission.RECORD_AUDIO",
+    "com.tencent.inlab.tcsystem.permission.SOLARCORE",
+    "com.tencent.inlab.tcsystem.permission.SOLARCORE_RECEIVER",
+    "android.permission.FOREGROUND_SERVICE",
+    "com.android.ztescreenshot.permission.SCREENSHOT",
+    "android.permission.REAL_GET_TASKS",
+    "android.permission.MONITOR_INPUT",
+    "cn.nubia.permissioncapsule.BIND_USAGE_STATS",
+    "android.permission.READ_FRAME_BUFFER",
+    "mfvsettings.permission.SEARCH",
+    "nubia.permission.arkbase.DATA_COLLECTION",
+    "nubia.permission.arkbase.USAGE_TIME",
+    "cn.nubia.permission.SET_NUBIA_JOB",
+    "android.permission.FORCE_STOP_PACKAGES",
+    "android.permission.ZTE_HS_INTERFACE",
+    "android.permission.ACCESS_SHORTCUTS",
+    "cn.nubia.tgk.permission.FILE_PROVIDER",
+    "android.permission.QUERY_ALL_PACKAGES",
+    "android.permission.READ_EXTERNAL_STORAGE",
+    "android.permission.WRITE_EXTERNAL_STORAGE",
+    "launchermfv.permission.DYNAMIC_SHOW_HIDDEN_APPS",
+    "android.permission.POST_NOTIFICATIONS",
+    "cn.nubia.gamelauncher.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+   ],
+   "features": [],
+   "components": {
+    "activities": [
+     {
+      "name": "cn.nubia.gamelauncher.activity.GameSpaceActivity",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "android.intent.action.MAIN"
+      ]
+     },
+     {
+      "name": "cn.nubia.gamelauncher.activity.HostModeGameSpace",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "android.intent.action.MAIN"
+      ]
+     },
+     {
+      "name": "cn.nubia.gamelauncher.activity.ExperienceHostMode",
+      "exported": "",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "cn.nubia.gamelauncher.activity.AppAddActivity",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "cn.nubia.gamelauncher.action.GAME_MANAGER"
+      ]
+     },
+     {
+      "name": "cn.nubia.gamelauncher.activity.LargeGameActivity",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "android.intent.action.MAIN"
+      ]
+     },
+     {
+      "name": "cn.nubia.gamelauncher.fragment.SplashScreen",
+      "exported": "",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "cn.nubia.gamelauncher.activity.UninstallActivity",
+      "exported": "",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "cn.nubia.gamelauncher.activity.AtmosphereActivity",
+      "exported": "",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "cn.nubia.gamelauncher.activity.UpgradeDialogActivity",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "cn.nubia.gamelauncher.upgrade"
+      ]
+     },
+     {
+      "name": "cn.nubia.gamelauncher.aimhelper.AimHelperPermissionDialogActivity",
+      "exported": "false",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "cn.nubia.gamelauncher.action.START_HELPER"
+      ]
+     },
+     {
+      "name": "cn.nubia.plug.PlugUnitActivity",
+      "exported": "false",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "nubia.intent.action.PLUG_UNIT"
+      ]
+     },
+     {
+      "name": "cn.nubia.studio.TouPingActivity",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "cn.nubia.resourcelibrary.ResourceLibraryActivity",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "cn.nubia.resourcelibrary.action.startResourceLib"
+      ]
+     },
+     {
+      "name": "cn.nubia.tgk.TgkFilePickActivity",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "cn.nubia.tgk.PICK_TGK_FILE"
+      ]
+     },
+     {
+      "name": "cn.nubia.studio.TouPingGravitationActivity",
+      "exported": "",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "cn.nubia.gamelauncher.xgravitation.XGravitationActivity",
+      "exported": "",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "cn.nubia.gamelauncher.redmagicplanet.ui.BehaviorLearnedActivity",
+      "exported": "",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "cn.nubia.gamelauncher.redmagicplanet.ui.GameAgentActivity",
+      "exported": "",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "cn.nubia.gamecenter.settings.GameCenterActivity",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "cn.nubia.gamecenter.settings.action.GAME_CENTER"
+      ]
+     },
+     {
+      "name": "cn.nubia.gamecenter.settings.GameCarrerActivity",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "cn.nubia.gamecenter.settings.action.GAME_CARRER"
+      ]
+     },
+     {
+      "name": "cn.nubia.gamecenter.settings.recordSettings.GameRecordActivity",
+      "exported": "false",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "cn.nubia.gamecenter.settings.action.GAME_CENTER_RECORD_DETAIL"
+      ]
+     },
+     {
+      "name": "cn.nubia.gamecenter.settings.records.activity.RecordsActivity",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "cn.nubia.gamecenter.settings.action.GAME_CENTER_RADMAGICTIME_DETAIL"
+      ]
+     },
+     {
+      "name": "cn.nubia.gamecenter.settings.recordSettings.GameManualActivity",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "cn.nubia.gamecenter.settings.action.GAME_CENTER_MANUAL_DETAIL"
+      ]
+     },
+     {
+      "name": "cn.nubia.gamecenter.settings.net.ManagerAcceleratedAppActivity",
+      "exported": "",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "cn.nubia.gamecenter.settings.barrageMessage.BarrageMessageSourceActivity",
+      "exported": "",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "cn.nubia.gamecenter.settings.basic.GameChickenModeActivity",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "cn.nubia.gamecenter.settings.action.GAME_CHICKEN_MODE"
+      ]
+     },
+     {
+      "name": "cn.nubia.gamecenter.settings.wallpaper.WallpaperCropActivity",
+      "exported": "",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "cn.nubia.gamecenter.settings.basic.GameRefreshRateActivity",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "cn.nubia.gamecenter.settings.action.GAME_REFRESH_RATE"
+      ]
+     }
+    ],
+    "services": [
+     {
+      "name": "cn.nubia.gamelauncher.aimhelper.AimService",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "cn.nubia.gamelauncher.action.START_HELPER",
+       "cn.nubia.gamelauncher.action.delay_close_aim_helper_for_package"
+      ]
+     },
+     {
+      "name": "cn.nubia.upgrade.service.UpgradeService",
+      "exported": "false",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "cn.nubia.upgrade.service.UpgradeJobService",
+      "exported": "true",
+      "permission": "android.permission.BIND_JOB_SERVICE",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "cn.nubia.gamelauncher.broadcast.GameEventService$GameBroadcastService",
+      "exported": "true",
+      "permission": "",
+      "process": ":remote",
+      "actions": [
+       "cn.nubia.game.GameBroadcastService"
+      ]
+     },
+     {
+      "name": "cn.nubia.gamelauncher.broadcast.GameEventService",
+      "exported": "true",
+      "permission": "",
+      "process": ":remote",
+      "actions": [
+       "cn.nubia.startGameEventService"
+      ]
+     },
+     {
+      "name": "cn.nubia.gamepanel.PowerPanelService",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "cn.nubia.gamepanel.POWERPANELSERVICE"
+      ]
+     },
+     {
+      "name": "cn.nubia.tgk.TgkService",
+      "exported": "true",
+      "permission": "",
+      "process": "com.nubia.tgkservice",
+      "actions": [
+       "cn.nubia.tgk.TGKSERVICE"
+      ]
+     },
+     {
+      "name": "cn.nubia.gamepad.GamepadService",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "cn.nubia.gamepad.startGamepadService"
+      ]
+     },
+     {
+      "name": "cn.nubia.gamelauncher.service.GameFeatureService",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "cn.nubia.settings.owlsysaciton.OwlSysCvInitService",
+      "exported": "",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "cn.nubia.gamecenter.settings.applearning.AppTimeLockService",
+      "exported": "",
+      "permission": "",
+      "process": "",
+      "actions": []
+     }
+    ],
+    "receivers": [
+     {
+      "name": "cn.nubia.gamelauncher.receiver.BuryReceiver",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "cn.nubia.owlsystem.firstbootdayaction",
+       "com.zte.analytics.action.FIRST_BOOT"
+      ]
+     },
+     {
+      "name": "cn.nubia.gamelauncher.aimhelper.StartSightAssistReceiver",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "cn.nubia.gamelauncher.action.START_SIGHTASSIST"
+      ]
+     },
+     {
+      "name": "cn.nubia.gamelauncher.receiver.TopGameReceiver",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "cn.nubia.gamelauncher.action.TOP_STACK_GAME_CHANGE"
+      ]
+     },
+     {
+      "name": "cn.nubia.gamelauncher.receiver.TopGameReceiver",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "cn.nubia.gamelauncher.action.TOP_STACK_GAME_CHANGE"
+      ]
+     },
+     {
+      "name": "cn.nubia.gamelauncher.broadcast.GameEventReceiver",
+      "exported": "true",
+      "permission": "com.tencent.inlab.tcsystem.permission.SOLARCORE_RECEIVER",
+      "process": "",
+      "actions": [
+       "com.tencent.inlab.tcsystem.solarcore",
+       "com.tencent.inlab.tcsystem.solarcoretest"
+      ]
+     },
+     {
+      "name": "cn.nubia.gamelauncher.broadcast.GameLifeCycleChangeReceiver",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "cn.nubia.gamelauncher.action.GAME_LIFE_CYCLE_CHANGED"
+      ]
+     },
+     {
+      "name": "cn.nubia.gamepanel.GameForegroundChangeReceiver",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "cn.zte.gamefloat.powerpanel.action.FOREGROUND_GAME_CHANGE"
+      ]
+     },
+     {
+      "name": "com.zte.toolsdk.producer.ToolsReceiver",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "com.zte.toolsdk.producer.RemoteViewsReceiver",
+      "exported": "",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "cn.nubia.settings.owlsysaciton.OwlSysCvReceiver",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "cn.nubia.owlsystem.firstbootdayaction"
+      ]
+     },
+     {
+      "name": "cn.nubia.gamecenter.settings.net.WifiStateChangedReceiver",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "android.net.wifi.STATE_CHANGED",
+       "android.net.wifi.WIFI_STATE_CHANGED"
+      ]
+     },
+     {
+      "name": "cn.nubia.gamecenter.settings.applearning.AppLearningReceiver",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "android.intent.action.BOOT_COMPLETED",
+       "cn.nubia.action.GAME_MODE"
+      ]
+     },
+     {
+      "name": "cn.nubia.gamecenter.settings.barrageMessage.PackageChangeReceiver",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "android.intent.action.PACKAGE_ADDED",
+       "android.intent.action.PACKAGE_FULLY_REMOVED"
+      ]
+     },
+     {
+      "name": "androidx.profileinstaller.ProfileInstallReceiver",
+      "exported": "true",
+      "permission": "android.permission.DUMP",
+      "process": "",
+      "actions": [
+       "androidx.profileinstaller.action.INSTALL_PROFILE",
+       "androidx.profileinstaller.action.SKIP_FILE",
+       "androidx.profileinstaller.action.SAVE_PROFILE",
+       "androidx.profileinstaller.action.BENCHMARK_OPERATION"
+      ]
+     }
+    ],
+    "providers": [
+     {
+      "name": "cn.nubia.gamelauncher.db.AppAddProvider",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "cn.nubia.gamelauncher.upgrade.UpgradeFileProvider",
+      "exported": "false",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "cn.nubia.globalsearch.GlobalSearchProvider",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "cn.nubia.tgk.data.FileProvider",
+      "exported": "true",
+      "permission": "cn.nubia.tgk.permission.FILE_PROVIDER",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "cn.nubia.tgk.data.TgkDataProvider",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "cn.nubia.resourcelibrary.ResourceLibProvider",
+      "exported": "false",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "com.zte.toolsdk.consumer.SharedPrefsContentProvider",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "com.zte.toolsdk.consumer.CardContentProvider",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "com.zte.toolsdk.producer.AnimationEndContentProvider",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "cn.nubia.gamecenter.settings.OwlSettingsProvider",
+      "exported": "true",
+      "permission": "",
+      "process": ":Reporter",
+      "actions": [
+       "cn.nubia.owlsystem.ACTION_SETTINGS_PROVIDER"
+      ]
+     },
+     {
+      "name": "cn.nubia.gamecenter.settings.GameCenterFileProvider",
+      "exported": "false",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "cn.nubia.gamecenter.settings.recordsdb.RedMagicTimeProvider",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "androidx.startup.InitializationProvider",
+      "exported": "false",
+      "permission": "",
+      "process": "",
+      "actions": []
+     }
+    ]
+   },
+   "declaredPermissions": [
+    {
+     "name": "cn.nubia.tgk.permission.FILE_PROVIDER",
+     "protectionLevel": "0x3"
+    },
+    {
+     "name": "cn.nubia.gamelauncher.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION",
+     "protectionLevel": "0x2"
+    }
+   ],
+   "actions": {
+    "android.intent.action.MAIN": [
+     "cn.nubia.gamelauncher.activity.GameSpaceActivity",
+     "cn.nubia.gamelauncher.activity.HostModeGameSpace",
+     "cn.nubia.gamelauncher.activity.LargeGameActivity"
+    ],
+    "cn.nubia.gamelauncher.action.GAME_MANAGER": [
+     "cn.nubia.gamelauncher.activity.AppAddActivity"
+    ],
+    "cn.nubia.gamelauncher.upgrade": [
+     "cn.nubia.gamelauncher.activity.UpgradeDialogActivity"
+    ],
+    "cn.nubia.owlsystem.firstbootdayaction": [
+     "cn.nubia.gamelauncher.receiver.BuryReceiver",
+     "cn.nubia.settings.owlsysaciton.OwlSysCvReceiver"
+    ],
+    "com.zte.analytics.action.FIRST_BOOT": [
+     "cn.nubia.gamelauncher.receiver.BuryReceiver"
+    ],
+    "cn.nubia.gamelauncher.action.START_HELPER": [
+     "cn.nubia.gamelauncher.aimhelper.AimService",
+     "cn.nubia.gamelauncher.aimhelper.AimHelperPermissionDialogActivity"
+    ],
+    "cn.nubia.gamelauncher.action.delay_close_aim_helper_for_package": [
+     "cn.nubia.gamelauncher.aimhelper.AimService"
+    ],
+    "cn.nubia.gamelauncher.action.START_SIGHTASSIST": [
+     "cn.nubia.gamelauncher.aimhelper.StartSightAssistReceiver"
+    ],
+    "cn.nubia.gamelauncher.action.TOP_STACK_GAME_CHANGE": [
+     "cn.nubia.gamelauncher.receiver.TopGameReceiver",
+     "cn.nubia.gamelauncher.receiver.TopGameReceiver"
+    ],
+    "com.tencent.inlab.tcsystem.solarcore": [
+     "cn.nubia.gamelauncher.broadcast.GameEventReceiver"
+    ],
+    "com.tencent.inlab.tcsystem.solarcoretest": [
+     "cn.nubia.gamelauncher.broadcast.GameEventReceiver"
+    ],
+    "cn.nubia.gamelauncher.action.GAME_LIFE_CYCLE_CHANGED": [
+     "cn.nubia.gamelauncher.broadcast.GameLifeCycleChangeReceiver"
+    ],
+    "cn.nubia.game.GameBroadcastService": [
+     "cn.nubia.gamelauncher.broadcast.GameEventService$GameBroadcastService"
+    ],
+    "cn.nubia.startGameEventService": [
+     "cn.nubia.gamelauncher.broadcast.GameEventService"
+    ],
+    "nubia.intent.action.PLUG_UNIT": [
+     "cn.nubia.plug.PlugUnitActivity"
+    ],
+    "cn.nubia.gamepanel.POWERPANELSERVICE": [
+     "cn.nubia.gamepanel.PowerPanelService"
+    ],
+    "cn.zte.gamefloat.powerpanel.action.FOREGROUND_GAME_CHANGE": [
+     "cn.nubia.gamepanel.GameForegroundChangeReceiver"
+    ],
+    "cn.nubia.resourcelibrary.action.startResourceLib": [
+     "cn.nubia.resourcelibrary.ResourceLibraryActivity"
+    ],
+    "cn.nubia.tgk.TGKSERVICE": [
+     "cn.nubia.tgk.TgkService"
+    ],
+    "cn.nubia.gamepad.startGamepadService": [
+     "cn.nubia.gamepad.GamepadService"
+    ],
+    "cn.nubia.tgk.PICK_TGK_FILE": [
+     "cn.nubia.tgk.TgkFilePickActivity"
+    ],
+    "cn.nubia.gamecenter.settings.action.GAME_CENTER": [
+     "cn.nubia.gamecenter.settings.GameCenterActivity"
+    ],
+    "cn.nubia.gamecenter.settings.action.GAME_CARRER": [
+     "cn.nubia.gamecenter.settings.GameCarrerActivity"
+    ],
+    "cn.nubia.gamecenter.settings.action.GAME_CENTER_RECORD_DETAIL": [
+     "cn.nubia.gamecenter.settings.recordSettings.GameRecordActivity"
+    ],
+    "cn.nubia.gamecenter.settings.action.GAME_CENTER_RADMAGICTIME_DETAIL": [
+     "cn.nubia.gamecenter.settings.records.activity.RecordsActivity"
+    ],
+    "cn.nubia.gamecenter.settings.action.GAME_CENTER_MANUAL_DETAIL": [
+     "cn.nubia.gamecenter.settings.recordSettings.GameManualActivity"
+    ],
+    "cn.nubia.gamecenter.settings.action.GAME_CHICKEN_MODE": [
+     "cn.nubia.gamecenter.settings.basic.GameChickenModeActivity"
+    ],
+    "cn.nubia.owlsystem.ACTION_SETTINGS_PROVIDER": [
+     "cn.nubia.gamecenter.settings.OwlSettingsProvider"
+    ],
+    "android.net.wifi.STATE_CHANGED": [
+     "cn.nubia.gamecenter.settings.net.WifiStateChangedReceiver"
+    ],
+    "android.net.wifi.WIFI_STATE_CHANGED": [
+     "cn.nubia.gamecenter.settings.net.WifiStateChangedReceiver"
+    ],
+    "cn.nubia.gamecenter.settings.action.GAME_REFRESH_RATE": [
+     "cn.nubia.gamecenter.settings.basic.GameRefreshRateActivity"
+    ],
+    "android.intent.action.BOOT_COMPLETED": [
+     "cn.nubia.gamecenter.settings.applearning.AppLearningReceiver"
+    ],
+    "cn.nubia.action.GAME_MODE": [
+     "cn.nubia.gamecenter.settings.applearning.AppLearningReceiver"
+    ],
+    "android.intent.action.PACKAGE_ADDED": [
+     "cn.nubia.gamecenter.settings.barrageMessage.PackageChangeReceiver"
+    ],
+    "android.intent.action.PACKAGE_FULLY_REMOVED": [
+     "cn.nubia.gamecenter.settings.barrageMessage.PackageChangeReceiver"
+    ],
+    "androidx.profileinstaller.action.INSTALL_PROFILE": [
+     "androidx.profileinstaller.ProfileInstallReceiver"
+    ],
+    "androidx.profileinstaller.action.SKIP_FILE": [
+     "androidx.profileinstaller.ProfileInstallReceiver"
+    ],
+    "androidx.profileinstaller.action.SAVE_PROFILE": [
+     "androidx.profileinstaller.ProfileInstallReceiver"
+    ],
+    "androidx.profileinstaller.action.BENCHMARK_OPERATION": [
+     "androidx.profileinstaller.ProfileInstallReceiver"
+    ]
+   }
+  },
+  {
+   "file": "GameSpace_16.0.000.000.2609231620.apk",
+   "bytes": 165494785,
+   "dex": 2,
+   "abis": [
+    "arm64-v8a",
+    "armeabi-v7a",
+    "x86_64"
+   ],
+   "resDirs": 4,
+   "assets": 53,
+   "hasSplitConfig": false,
+   "package": "cn.nubia.gamelauncher",
+   "versionName": "16.0.000.000.2609231620",
+   "versionCode": "261",
+   "minSdk": "33",
+   "targetSdk": "36",
+   "label": "",
+   "permissions": [
+    "android.permission.MANAGE_USERS",
+    "android.permission.VIBRATE",
+    "cn.nubia.launcher.permission.WRITE_SETTINGS",
+    "cn.nubia.launcher.permission.READ_SETTINGS",
+    "android.permission.DELETE_PACKAGES",
+    "android.permission.MANAGE_PROFILE_AND_DEVICE_OWNERS",
+    "android.permission.INTERNET",
+    "android.permission.WRITE_SECURE_SETTINGS",
+    "android.permission._SECURE_SETTINGS",
+    "android.permission.MODIFY_AUDIO_SETTINGS",
+    "cn.nubia.permission.PROCESS_MANAGER",
+    "android.permission.BLUETOOTH",
+    "android.permission.BLUETOOTH_ADMIN",
+    "cn.nubia.neostore.downloadService",
+    "cn.nubia.permission.BIND_DATA_COLLECTION",
+    "zte.permission.BIND_DATA_COLLECTION",
+    "cn.nubia.launcher.permission.READ_SETTINGS",
+    "cn.nubia.launcher.permission.WRITE_SETTINGS",
+    "com.android.launcher.permission.READ_SETTINGS",
+    "com.android.launcher2.permission.READ_SETTINGS",
+    "com.android.launcher3.permission.READ_SETTINGS",
+    "com.android.launcher.permission.INSTALL_SHORTCUT",
+    "com.android.launcher.permission.UNINSTALL_SHORTCUT",
+    "android.permission.SYSTEM_ALERT_WINDOW",
+    "android.permission.FOREGROUND_SERVICE",
+    "android.permission.INTERACT_ACROSS_USERS_FULL",
+    "android.permission.MANAGE_ACTIVITY_STACKS",
+    "android.permission.STATUS_BAR_SERVICE",
+    "android.permission.STATUS_BAR",
+    "android.permission.INTERNAL_SYSTEM_WINDOW",
+    "android.permission.WAKE_LOCK",
+    "android.permission.INJECT_EVENTS",
+    "android.permission.WRITE_SETTINGS",
+    "android.permission.READ_DEVICE_CONFIG",
+    "android.permission.CONTROL_DISPLAY_BRIGHTNESS",
+    "android.permission.ACCESS_WIFI_STATE",
+    "android.permission.ACCESS_NETWORK_STATE",
+    "android.permission.READ_PHONE_STATE",
+    "android.permission.EXPAND_STATUS_BAR",
+    "android.permission.MANAGE_EXTERNAL_STORAGE",
+    "android.permission.CHANGE_WIFI_STATE",
+    "android.permission.SYSTEM_ALERT_WINDOW",
+    "android.permission.SYSTEM_OVERLAY_WINDOW",
+    "android.permission.MODIFY_AUDIO_SETTINGS",
+    "android.permission.RECORD_AUDIO",
+    "com.tencent.inlab.tcsystem.permission.SOLARCORE",
+    "com.tencent.inlab.tcsystem.permission.SOLARCORE_RECEIVER",
+    "android.permission.FOREGROUND_SERVICE",
+    "com.android.ztescreenshot.permission.SCREENSHOT",
+    "android.permission.REAL_GET_TASKS",
+    "android.permission.MONITOR_INPUT",
+    "cn.nubia.permissioncapsule.BIND_USAGE_STATS",
+    "android.permission.READ_FRAME_BUFFER",
+    "mfvsettings.permission.SEARCH",
+    "nubia.permission.arkbase.DATA_COLLECTION",
+    "nubia.permission.arkbase.USAGE_TIME",
+    "cn.nubia.permission.SET_NUBIA_JOB",
+    "android.permission.FORCE_STOP_PACKAGES",
+    "android.permission.ZTE_HS_INTERFACE",
+    "android.permission.ACCESS_SHORTCUTS",
+    "cn.nubia.tgk.permission.FILE_PROVIDER",
+    "android.permission.READ_EXTERNAL_STORAGE",
+    "android.permission.WRITE_EXTERNAL_STORAGE",
+    "launchermfv.permission.DYNAMIC_SHOW_HIDDEN_APPS",
+    "android.permission.QUERY_ALL_PACKAGES",
+    "android.permission.POST_NOTIFICATIONS",
+    "cn.nubia.gamelauncher.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+   ],
+   "features": [],
+   "components": {
+    "activities": [
+     {
+      "name": "cn.nubia.gamelauncher.activity.GameSpaceActivity",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "android.intent.action.MAIN"
+      ]
+     },
+     {
+      "name": "cn.nubia.gamelauncher.activity.HostModeGameSpace",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "android.intent.action.MAIN"
+      ]
+     },
+     {
+      "name": "cn.nubia.gamelauncher.activity.ExperienceHostMode",
+      "exported": "",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "cn.nubia.gamelauncher.activity.AppAddActivity",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "cn.nubia.gamelauncher.action.GAME_MANAGER"
+      ]
+     },
+     {
+      "name": "cn.nubia.gamelauncher.activity.LargeGameActivity",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "android.intent.action.MAIN"
+      ]
+     },
+     {
+      "name": "cn.nubia.gamelauncher.fragment.SplashScreen",
+      "exported": "",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "cn.nubia.gamelauncher.activity.UninstallActivity",
+      "exported": "",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "cn.nubia.gamelauncher.activity.AtmosphereActivity",
+      "exported": "",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "cn.nubia.gamelauncher.activity.UpgradeDialogActivity",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "cn.nubia.gamelauncher.upgrade"
+      ]
+     },
+     {
+      "name": "cn.nubia.gamelauncher.aimhelper.AimHelperPermissionDialogActivity",
+      "exported": "false",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "cn.nubia.gamelauncher.action.START_HELPER"
+      ]
+     },
+     {
+      "name": "cn.nubia.plug.PlugUnitActivity",
+      "exported": "false",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "nubia.intent.action.PLUG_UNIT"
+      ]
+     },
+     {
+      "name": "cn.nubia.studio.TouPingActivity",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "cn.nubia.resourcelibrary.ResourceLibraryActivity",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "cn.nubia.resourcelibrary.action.startResourceLib"
+      ]
+     },
+     {
+      "name": "cn.nubia.tgk.TgkFilePickActivity",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "cn.nubia.tgk.PICK_TGK_FILE"
+      ]
+     },
+     {
+      "name": "cn.nubia.studio.TouPingGravitationActivity",
+      "exported": "",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "cn.nubia.gamelauncher.xgravitation.XGravitationActivity",
+      "exported": "",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "cn.nubia.gamelauncher.redmagicplanet.ui.BehaviorLearnedActivity",
+      "exported": "",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "cn.nubia.gamelauncher.redmagicplanet.ui.GameAgentActivity",
+      "exported": "",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "cn.nubia.gamecenter.settings.GameCenterActivity",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "cn.nubia.gamecenter.settings.action.GAME_CENTER"
+      ]
+     },
+     {
+      "name": "cn.nubia.gamecenter.settings.GameCarrerActivity",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "cn.nubia.gamecenter.settings.action.GAME_CARRER"
+      ]
+     },
+     {
+      "name": "cn.nubia.gamecenter.settings.recordSettings.GameRecordActivity",
+      "exported": "false",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "cn.nubia.gamecenter.settings.action.GAME_CENTER_RECORD_DETAIL"
+      ]
+     },
+     {
+      "name": "cn.nubia.gamecenter.settings.records.activity.RecordsActivity",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "cn.nubia.gamecenter.settings.action.GAME_CENTER_RADMAGICTIME_DETAIL"
+      ]
+     },
+     {
+      "name": "cn.nubia.gamecenter.settings.recordSettings.GameManualActivity",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "cn.nubia.gamecenter.settings.action.GAME_CENTER_MANUAL_DETAIL"
+      ]
+     },
+     {
+      "name": "cn.nubia.gamecenter.settings.net.ManagerAcceleratedAppActivity",
+      "exported": "",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "cn.nubia.gamecenter.settings.barrageMessage.BarrageMessageSourceActivity",
+      "exported": "",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "cn.nubia.gamecenter.settings.basic.GameChickenModeActivity",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "cn.nubia.gamecenter.settings.action.GAME_CHICKEN_MODE"
+      ]
+     },
+     {
+      "name": "cn.nubia.gamecenter.settings.wallpaper.WallpaperCropActivity",
+      "exported": "",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "cn.nubia.gamecenter.settings.basic.GameRefreshRateActivity",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "cn.nubia.gamecenter.settings.action.GAME_REFRESH_RATE"
+      ]
+     }
+    ],
+    "services": [
+     {
+      "name": "cn.nubia.gamelauncher.aimhelper.AimService",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "cn.nubia.gamelauncher.action.START_HELPER",
+       "cn.nubia.gamelauncher.action.delay_close_aim_helper_for_package"
+      ]
+     },
+     {
+      "name": "cn.nubia.upgrade.service.UpgradeService",
+      "exported": "false",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "cn.nubia.upgrade.service.UpgradeJobService",
+      "exported": "true",
+      "permission": "android.permission.BIND_JOB_SERVICE",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "cn.nubia.gamelauncher.broadcast.GameEventService$GameBroadcastService",
+      "exported": "true",
+      "permission": "",
+      "process": ":remote",
+      "actions": [
+       "cn.nubia.game.GameBroadcastService"
+      ]
+     },
+     {
+      "name": "cn.nubia.gamelauncher.broadcast.GameEventService",
+      "exported": "true",
+      "permission": "",
+      "process": ":remote",
+      "actions": [
+       "cn.nubia.startGameEventService"
+      ]
+     },
+     {
+      "name": "cn.nubia.gamepanel.PowerPanelService",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "cn.nubia.gamepanel.POWERPANELSERVICE"
+      ]
+     },
+     {
+      "name": "cn.nubia.tgk.TgkService",
+      "exported": "true",
+      "permission": "",
+      "process": "com.nubia.tgkservice",
+      "actions": [
+       "cn.nubia.tgk.TGKSERVICE"
+      ]
+     },
+     {
+      "name": "cn.nubia.gamepad.GamepadService",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "cn.nubia.gamepad.startGamepadService"
+      ]
+     },
+     {
+      "name": "cn.nubia.gamelauncher.service.GameFeatureService",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "cn.nubia.settings.owlsysaciton.OwlSysCvInitService",
+      "exported": "",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "cn.nubia.gamecenter.settings.applearning.AppTimeLockService",
+      "exported": "",
+      "permission": "",
+      "process": "",
+      "actions": []
+     }
+    ],
+    "receivers": [
+     {
+      "name": "cn.nubia.gamelauncher.receiver.BuryReceiver",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "cn.nubia.owlsystem.firstbootdayaction",
+       "com.zte.analytics.action.FIRST_BOOT"
+      ]
+     },
+     {
+      "name": "cn.nubia.gamelauncher.aimhelper.StartSightAssistReceiver",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "cn.nubia.gamelauncher.action.START_SIGHTASSIST"
+      ]
+     },
+     {
+      "name": "cn.nubia.gamelauncher.receiver.TopGameReceiver",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "cn.nubia.gamelauncher.action.TOP_STACK_GAME_CHANGE"
+      ]
+     },
+     {
+      "name": "cn.nubia.gamelauncher.receiver.TopGameReceiver",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "cn.nubia.gamelauncher.action.TOP_STACK_GAME_CHANGE"
+      ]
+     },
+     {
+      "name": "cn.nubia.gamelauncher.broadcast.GameEventReceiver",
+      "exported": "true",
+      "permission": "com.tencent.inlab.tcsystem.permission.SOLARCORE_RECEIVER",
+      "process": "",
+      "actions": [
+       "com.tencent.inlab.tcsystem.solarcore",
+       "com.tencent.inlab.tcsystem.solarcoretest"
+      ]
+     },
+     {
+      "name": "cn.nubia.gamelauncher.broadcast.GameLifeCycleChangeReceiver",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "cn.nubia.gamelauncher.action.GAME_LIFE_CYCLE_CHANGED"
+      ]
+     },
+     {
+      "name": "cn.nubia.gamepanel.GameForegroundChangeReceiver",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "cn.zte.gamefloat.powerpanel.action.FOREGROUND_GAME_CHANGE"
+      ]
+     },
+     {
+      "name": "cn.nubia.settings.owlsysaciton.OwlSysCvReceiver",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "cn.nubia.owlsystem.firstbootdayaction"
+      ]
+     },
+     {
+      "name": "cn.nubia.gamecenter.settings.net.WifiStateChangedReceiver",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "android.net.wifi.STATE_CHANGED",
+       "android.net.wifi.WIFI_STATE_CHANGED"
+      ]
+     },
+     {
+      "name": "cn.nubia.gamecenter.settings.applearning.AppLearningReceiver",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "android.intent.action.BOOT_COMPLETED",
+       "cn.nubia.action.GAME_MODE"
+      ]
+     },
+     {
+      "name": "cn.nubia.gamecenter.settings.barrageMessage.PackageChangeReceiver",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "android.intent.action.PACKAGE_ADDED",
+       "android.intent.action.PACKAGE_FULLY_REMOVED"
+      ]
+     }
+    ],
+    "providers": [
+     {
+      "name": "cn.nubia.gamelauncher.db.AppAddProvider",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "cn.nubia.gamelauncher.upgrade.UpgradeFileProvider",
+      "exported": "false",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "cn.nubia.globalsearch.GlobalSearchProvider",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "cn.nubia.tgk.data.FileProvider",
+      "exported": "true",
+      "permission": "cn.nubia.tgk.permission.FILE_PROVIDER",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "cn.nubia.tgk.data.TgkDataProvider",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "cn.nubia.resourcelibrary.ResourceLibProvider",
+      "exported": "false",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "cn.nubia.gamelauncher.gamecontrolpanel.EnergyCubeProvider",
+      "exported": "true",
+      "permission": "",
+      "process": ":energycube",
+      "actions": []
+     },
+     {
+      "name": "cn.nubia.gamecenter.settings.OwlSettingsProvider",
+      "exported": "true",
+      "permission": "",
+      "process": ":Reporter",
+      "actions": [
+       "cn.nubia.owlsystem.ACTION_SETTINGS_PROVIDER"
+      ]
+     },
+     {
+      "name": "cn.nubia.gamecenter.settings.GameCenterFileProvider",
+      "exported": "false",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "cn.nubia.gamecenter.settings.recordsdb.RedMagicTimeProvider",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "androidx.startup.InitializationProvider",
+      "exported": "false",
+      "permission": "",
+      "process": "",
+      "actions": []
+     }
+    ]
+   },
+   "declaredPermissions": [
+    {
+     "name": "cn.nubia.tgk.permission.FILE_PROVIDER",
+     "protectionLevel": "0x3"
+    },
+    {
+     "name": "cn.nubia.gamelauncher.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION",
+     "protectionLevel": "0x2"
+    }
+   ],
+   "actions": {
+    "android.intent.action.MAIN": [
+     "cn.nubia.gamelauncher.activity.GameSpaceActivity",
+     "cn.nubia.gamelauncher.activity.HostModeGameSpace",
+     "cn.nubia.gamelauncher.activity.LargeGameActivity"
+    ],
+    "cn.nubia.gamelauncher.action.GAME_MANAGER": [
+     "cn.nubia.gamelauncher.activity.AppAddActivity"
+    ],
+    "cn.nubia.gamelauncher.upgrade": [
+     "cn.nubia.gamelauncher.activity.UpgradeDialogActivity"
+    ],
+    "cn.nubia.owlsystem.firstbootdayaction": [
+     "cn.nubia.gamelauncher.receiver.BuryReceiver",
+     "cn.nubia.settings.owlsysaciton.OwlSysCvReceiver"
+    ],
+    "com.zte.analytics.action.FIRST_BOOT": [
+     "cn.nubia.gamelauncher.receiver.BuryReceiver"
+    ],
+    "cn.nubia.gamelauncher.action.START_HELPER": [
+     "cn.nubia.gamelauncher.aimhelper.AimService",
+     "cn.nubia.gamelauncher.aimhelper.AimHelperPermissionDialogActivity"
+    ],
+    "cn.nubia.gamelauncher.action.delay_close_aim_helper_for_package": [
+     "cn.nubia.gamelauncher.aimhelper.AimService"
+    ],
+    "cn.nubia.gamelauncher.action.START_SIGHTASSIST": [
+     "cn.nubia.gamelauncher.aimhelper.StartSightAssistReceiver"
+    ],
+    "cn.nubia.gamelauncher.action.TOP_STACK_GAME_CHANGE": [
+     "cn.nubia.gamelauncher.receiver.TopGameReceiver",
+     "cn.nubia.gamelauncher.receiver.TopGameReceiver"
+    ],
+    "com.tencent.inlab.tcsystem.solarcore": [
+     "cn.nubia.gamelauncher.broadcast.GameEventReceiver"
+    ],
+    "com.tencent.inlab.tcsystem.solarcoretest": [
+     "cn.nubia.gamelauncher.broadcast.GameEventReceiver"
+    ],
+    "cn.nubia.gamelauncher.action.GAME_LIFE_CYCLE_CHANGED": [
+     "cn.nubia.gamelauncher.broadcast.GameLifeCycleChangeReceiver"
+    ],
+    "cn.nubia.game.GameBroadcastService": [
+     "cn.nubia.gamelauncher.broadcast.GameEventService$GameBroadcastService"
+    ],
+    "cn.nubia.startGameEventService": [
+     "cn.nubia.gamelauncher.broadcast.GameEventService"
+    ],
+    "nubia.intent.action.PLUG_UNIT": [
+     "cn.nubia.plug.PlugUnitActivity"
+    ],
+    "cn.nubia.gamepanel.POWERPANELSERVICE": [
+     "cn.nubia.gamepanel.PowerPanelService"
+    ],
+    "cn.zte.gamefloat.powerpanel.action.FOREGROUND_GAME_CHANGE": [
+     "cn.nubia.gamepanel.GameForegroundChangeReceiver"
+    ],
+    "cn.nubia.resourcelibrary.action.startResourceLib": [
+     "cn.nubia.resourcelibrary.ResourceLibraryActivity"
+    ],
+    "cn.nubia.tgk.TGKSERVICE": [
+     "cn.nubia.tgk.TgkService"
+    ],
+    "cn.nubia.gamepad.startGamepadService": [
+     "cn.nubia.gamepad.GamepadService"
+    ],
+    "cn.nubia.tgk.PICK_TGK_FILE": [
+     "cn.nubia.tgk.TgkFilePickActivity"
+    ],
+    "cn.nubia.gamecenter.settings.action.GAME_CENTER": [
+     "cn.nubia.gamecenter.settings.GameCenterActivity"
+    ],
+    "cn.nubia.gamecenter.settings.action.GAME_CARRER": [
+     "cn.nubia.gamecenter.settings.GameCarrerActivity"
+    ],
+    "cn.nubia.gamecenter.settings.action.GAME_CENTER_RECORD_DETAIL": [
+     "cn.nubia.gamecenter.settings.recordSettings.GameRecordActivity"
+    ],
+    "cn.nubia.gamecenter.settings.action.GAME_CENTER_RADMAGICTIME_DETAIL": [
+     "cn.nubia.gamecenter.settings.records.activity.RecordsActivity"
+    ],
+    "cn.nubia.gamecenter.settings.action.GAME_CENTER_MANUAL_DETAIL": [
+     "cn.nubia.gamecenter.settings.recordSettings.GameManualActivity"
+    ],
+    "cn.nubia.gamecenter.settings.action.GAME_CHICKEN_MODE": [
+     "cn.nubia.gamecenter.settings.basic.GameChickenModeActivity"
+    ],
+    "cn.nubia.owlsystem.ACTION_SETTINGS_PROVIDER": [
+     "cn.nubia.gamecenter.settings.OwlSettingsProvider"
+    ],
+    "android.net.wifi.STATE_CHANGED": [
+     "cn.nubia.gamecenter.settings.net.WifiStateChangedReceiver"
+    ],
+    "android.net.wifi.WIFI_STATE_CHANGED": [
+     "cn.nubia.gamecenter.settings.net.WifiStateChangedReceiver"
+    ],
+    "cn.nubia.gamecenter.settings.action.GAME_REFRESH_RATE": [
+     "cn.nubia.gamecenter.settings.basic.GameRefreshRateActivity"
+    ],
+    "android.intent.action.BOOT_COMPLETED": [
+     "cn.nubia.gamecenter.settings.applearning.AppLearningReceiver"
+    ],
+    "cn.nubia.action.GAME_MODE": [
+     "cn.nubia.gamecenter.settings.applearning.AppLearningReceiver"
+    ],
+    "android.intent.action.PACKAGE_ADDED": [
+     "cn.nubia.gamecenter.settings.barrageMessage.PackageChangeReceiver"
+    ],
+    "android.intent.action.PACKAGE_FULLY_REMOVED": [
+     "cn.nubia.gamecenter.settings.barrageMessage.PackageChangeReceiver"
+    ]
+   }
+  },
+  {
+   "file": "NubiaGameWidget.apk",
+   "bytes": 21736418,
+   "dex": 2,
+   "abis": [],
+   "resDirs": 4,
+   "assets": 2,
+   "hasSplitConfig": false,
+   "package": "cn.nubia.gamewidget",
+   "versionName": "16.0.000.2609111451",
+   "versionCode": "418",
+   "minSdk": "30",
+   "targetSdk": "35",
+   "label": "",
+   "permissions": [
+    "android.permission.REQUEST_INSTALL_PACKAGES",
+    "android.permission.QUERY_ALL_PACKAGES",
+    "android.permission.WRITE_SETTINGS",
+    "android.permission.CHANGE_CONFIGURATION",
+    "android.permission.WRITE_SECURE_SETTINGS",
+    "android.permission.INTERACT_ACROSS_USERS",
+    "nubia.permission.POWERSAVING_MODE",
+    "android.permission.FOREGROUND_SERVICE",
+    "cn.nubia.permission.BIND_DATA_COLLECTION",
+    "android.permission.RECEIVE_BOOT_COMPLETED",
+    "cn.nubia.permissioncapsule.BIND_USAGE_STATS",
+    "android.permission.INTERACT_ACROSS_USERS_FULL",
+    "android.permission.MANAGE_USERS",
+    "android.permission.STOP_APP_SWITCHES",
+    "android.permission.VIBRATE",
+    "android.permission.SYSTEM_ALERT_WINDOW",
+    "android.permission.WRITE_EXTERNAL_STORAGE",
+    "cn.nubia.gamewidget.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+   ],
+   "features": [],
+   "components": {
+    "activities": [],
+    "services": [
+     {
+      "name": "cn.nubia.gamewidget.projection.ProjectionWidgetIntentService",
+      "exported": "false",
+      "permission": "",
+      "process": "",
+      "actions": []
+     }
+    ],
+    "receivers": [
+     {
+      "name": "cn.nubia.gamewidget.gameusetime.ui.GameUseTimeWidget",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "android.appwidget.action.APPWIDGET_UPDATE",
+       "cn.nubia.gamewidget.action.usetime.TRIGGER",
+       "cn.nubia.gamewidget.action.show.weekdata",
+       "android.intent.action.DATE_CHANGED",
+       "android.intent.action.TIME_SET",
+       "android.intent.action.TIMEZONE_CHANGED"
+      ]
+     },
+     {
+      "name": "cn.nubia.gamewidget.fan.FanWidget",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "android.appwidget.action.APPWIDGET_UPDATE",
+       "cn.nubia.gamewidget.action.CLICK_ACTION_FAN",
+       "cn.nubia.gamewidget.fan_status_change"
+      ]
+     },
+     {
+      "name": "cn.nubia.gamewidget.fan.FanSmallWidget",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "android.appwidget.action.APPWIDGET_UPDATE",
+       "cn.nubia.gamewidget.action.CLICK_ACTION_FAN_SMALL",
+       "cn.nubia.gamewidget.fan_status_change"
+      ]
+     },
+     {
+      "name": "cn.nubia.gamewidget.fps.BigFpsWidget",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "android.appwidget.action.APPWIDGET_UPDATE",
+       "cn.nubia.gamewidget.big.changefps",
+       "cn.nubia.gamewidget.fps_changed"
+      ]
+     },
+     {
+      "name": "cn.nubia.gamewidget.fps.SmallFpswidget",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "android.appwidget.action.APPWIDGET_UPDATE",
+       "cn.nubia.gamewidget.changefps",
+       "cn.nubia.gamewidget.fps_changed"
+      ]
+     },
+     {
+      "name": "cn.nubia.gamewidget.projection.ui.ProjectionAppWidget",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "android.appwidget.action.APPWIDGET_UPDATE",
+       "android.intent.action.BOOT_COMPLETED",
+       "android.intent.action.LOCALE_CHANGED"
+      ]
+     },
+     {
+      "name": "cn.nubia.gamewidget.health.GameHealthTimeWidget",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": [
+       "android.appwidget.action.APPWIDGET_UPDATE",
+       "cn.nubia.delete.PACKAGE_REMOVED",
+       "cn.nubia.action.GAME_MODE",
+       "android.intent.action.DATE_CHANGED",
+       "android.intent.action.TIME_SET",
+       "android.intent.action.TIMEZONE_CHANGED",
+       "cn.nubia.gamewidget.action.usetime.TRIGGER",
+       "cn.nubia.gamewidget.action.show.weekdata",
+       "cn.nubia.gamewidget.health.click",
+       "android.intent.action.LOCALE_CHANGED"
+      ]
+     },
+     {
+      "name": "androidx.profileinstaller.ProfileInstallReceiver",
+      "exported": "true",
+      "permission": "android.permission.DUMP",
+      "process": "",
+      "actions": [
+       "androidx.profileinstaller.action.INSTALL_PROFILE",
+       "androidx.profileinstaller.action.SKIP_FILE",
+       "androidx.profileinstaller.action.SAVE_PROFILE",
+       "androidx.profileinstaller.action.BENCHMARK_OPERATION"
+      ]
+     }
+    ],
+    "providers": [
+     {
+      "name": "cn.nubia.gamewidget.fan.FanProvider",
+      "exported": "true",
+      "permission": "",
+      "process": "",
+      "actions": []
+     },
+     {
+      "name": "androidx.startup.InitializationProvider",
+      "exported": "false",
+      "permission": "",
+      "process": "",
+      "actions": []
+     }
+    ]
+   },
+   "declaredPermissions": [
+    {
+     "name": "cn.nubia.gamewidget.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION",
+     "protectionLevel": "0x2"
+    }
+   ],
+   "actions": {
+    "android.appwidget.action.APPWIDGET_UPDATE": [
+     "cn.nubia.gamewidget.gameusetime.ui.GameUseTimeWidget",
+     "cn.nubia.gamewidget.fan.FanWidget",
+     "cn.nubia.gamewidget.fan.FanSmallWidget",
+     "cn.nubia.gamewidget.fps.BigFpsWidget",
+     "cn.nubia.gamewidget.fps.SmallFpswidget",
+     "cn.nubia.gamewidget.projection.ui.ProjectionAppWidget",
+     "cn.nubia.gamewidget.health.GameHealthTimeWidget"
+    ],
+    "cn.nubia.gamewidget.action.usetime.TRIGGER": [
+     "cn.nubia.gamewidget.gameusetime.ui.GameUseTimeWidget",
+     "cn.nubia.gamewidget.health.GameHealthTimeWidget"
+    ],
+    "cn.nubia.gamewidget.action.show.weekdata": [
+     "cn.nubia.gamewidget.gameusetime.ui.GameUseTimeWidget",
+     "cn.nubia.gamewidget.health.GameHealthTimeWidget"
+    ],
+    "android.intent.action.DATE_CHANGED": [
+     "cn.nubia.gamewidget.gameusetime.ui.GameUseTimeWidget",
+     "cn.nubia.gamewidget.health.GameHealthTimeWidget"
+    ],
+    "android.intent.action.TIME_SET": [
+     "cn.nubia.gamewidget.gameusetime.ui.GameUseTimeWidget",
+     "cn.nubia.gamewidget.health.GameHealthTimeWidget"
+    ],
+    "android.intent.action.TIMEZONE_CHANGED": [
+     "cn.nubia.gamewidget.gameusetime.ui.GameUseTimeWidget",
+     "cn.nubia.gamewidget.health.GameHealthTimeWidget"
+    ],
+    "cn.nubia.gamewidget.action.CLICK_ACTION_FAN": [
+     "cn.nubia.gamewidget.fan.FanWidget"
+    ],
+    "cn.nubia.gamewidget.fan_status_change": [
+     "cn.nubia.gamewidget.fan.FanWidget",
+     "cn.nubia.gamewidget.fan.FanSmallWidget"
+    ],
+    "cn.nubia.gamewidget.action.CLICK_ACTION_FAN_SMALL": [
+     "cn.nubia.gamewidget.fan.FanSmallWidget"
+    ],
+    "cn.nubia.gamewidget.big.changefps": [
+     "cn.nubia.gamewidget.fps.BigFpsWidget"
+    ],
+    "cn.nubia.gamewidget.fps_changed": [
+     "cn.nubia.gamewidget.fps.BigFpsWidget",
+     "cn.nubia.gamewidget.fps.SmallFpswidget"
+    ],
+    "cn.nubia.gamewidget.changefps": [
+     "cn.nubia.gamewidget.fps.SmallFpswidget"
+    ],
+    "android.intent.action.BOOT_COMPLETED": [
+     "cn.nubia.gamewidget.projection.ui.ProjectionAppWidget"
+    ],
+    "android.intent.action.LOCALE_CHANGED": [
+     "cn.nubia.gamewidget.projection.ui.ProjectionAppWidget",
+     "cn.nubia.gamewidget.health.GameHealthTimeWidget"
+    ],
+    "cn.nubia.delete.PACKAGE_REMOVED": [
+     "cn.nubia.gamewidget.health.GameHealthTimeWidget"
+    ],
+    "cn.nubia.action.GAME_MODE": [
+     "cn.nubia.gamewidget.health.GameHealthTimeWidget"
+    ],
+    "cn.nubia.gamewidget.health.click": [
+     "cn.nubia.gamewidget.health.GameHealthTimeWidget"
+    ],
+    "androidx.profileinstaller.action.INSTALL_PROFILE": [
+     "androidx.profileinstaller.ProfileInstallReceiver"
+    ],
+    "androidx.profileinstaller.action.SKIP_FILE": [
+     "androidx.profileinstaller.ProfileInstallReceiver"
+    ],
+    "androidx.profileinstaller.action.SAVE_PROFILE": [
+     "androidx.profileinstaller.ProfileInstallReceiver"
+    ],
+    "androidx.profileinstaller.action.BENCHMARK_OPERATION": [
+     "androidx.profileinstaller.ProfileInstallReceiver"
+    ]
+   }
+  }
+ ],
+ "excluded": "NubiaRedmagickyi_RedMagic"
+}
