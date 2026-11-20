@@ -11,6 +11,7 @@ import android.system.OsConstants
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
+import java.io.FileNotFoundException
 import java.io.RandomAccessFile
 import java.nio.channels.OverlappingFileLockException
 import java.util.concurrent.locks.ReentrantLock
@@ -100,7 +101,7 @@ object SharedHardwareOwnershipStore {
     fun <T> withExclusive(block: (Journal) -> T): T = processLock.withLock {
         val root = directory ?: error("shared-control-store-not-configured")
         val lockFile = File(root, LOCK_NAME)
-        RandomAccessFile(lockFile, "rw").channel.use { channel ->
+        openLock(lockFile).channel.use { channel ->
             normalizeAccess(lockFile)
             fun transact(): T {
                 val intents = readState(root)
@@ -122,6 +123,30 @@ object SharedHardwareOwnershipStore {
             } catch (_: OverlappingFileLockException) {
                 transact()
             }
+        }
+    }
+
+    /**
+     * فتح قفل المستودع **لا يُسقط التطبيق**.
+     *
+     * الرفيق الجذريّ يكتب `owners.lock` في المجلد نفسه؛ فإن وُلد بمالكٍ أو تصنيفٍ لا يسمح للتطبيق
+     * العاديّ بفتحه صار `RandomAccessFile` يرمي `FileNotFoundException: EACCES` — وقد وقع فعلًا على
+     * جهاز المالك وظهر في `dropbox`: ثمانية سقوطات و`nd.max` في المقدّمة، آخرها ٢٠٢٦-١١-١٩.
+     *
+     * والمجلد ملك التطبيق، فحذف الملفّ غير القابل للفتح وإعادة إنشائه يستعيد القفل بملكيّة صحيحة
+     * بدل إسقاط العملية. وإن فشل الحذف أيضًا يُعلَن العطب باسمه (`shared-control-lock-unavailable`)
+     * ليظهر في التشخيص، ولا يبقى `EACCES` عاريًا في سجلّ السقوط.
+     */
+    private fun openLock(lockFile: File): RandomAccessFile = try {
+        RandomAccessFile(lockFile, "rw")
+    } catch (failure: FileNotFoundException) {
+        if (lockFile.exists() && lockFile.delete()) {
+            RandomAccessFile(lockFile, "rw")
+        } else {
+            throw IllegalStateException(
+                "shared-control-lock-unavailable: ${failure.message}",
+                failure,
+            )
         }
     }
 
@@ -236,6 +261,9 @@ object SharedHardwareOwnershipStore {
     private fun normalizeAccess(file: File, directoryMode: Boolean = false) {
         val uid = applicationUid ?: return
         runCatching { Os.chown(file.absolutePath, uid, uid) }
-        runCatching { Os.chmod(file.absolutePath, if (directoryMode) 0b111_101_000 else 0b110_110_000) }
+        // الملفّات ٠٦٦٦ لا ٠٦٦٠: المجلد نفسه ٠٧٥٠ وملك التطبيق، فلا يصل إليه تطبيق آخر، لكن **الرفيق
+        // الجذريّ** قد ينشئ القفل بمالكٍ لا يُعاد ضبطه (chown صامت الفشل) — وبلا بتّ الكتابة للغير
+        // يبقى التطبيق عاجزًا عن فتح القفل ويسقط. (القياس: dropbox، ثمانية سقوطات `owners.lock`.)
+        runCatching { Os.chmod(file.absolutePath, if (directoryMode) 0b111_101_000 else 0b110_110_110) }
     }
 }
