@@ -284,7 +284,7 @@ jobs:
               xrefs = len(list(d.glob('xref-*.json')))
               if not m.get('package'):
                   skipped.append(d.name); continue
-              rows.append('| {} | `{}` | {} / {} | {} | {} | {} ({}) | {} ok / {} failed |'.format(
+              rows.append('| {} | `{}` | {} / {} | {} | {} | {} | {} ok / {} failed |'.format(
                   d.name, m.get('package'), m.get('min_sdk'), m.get('target_sdk'),
                   m.get('classes'), m.get('components'), xrefs, ok, bad))
           out = ['# REA evidence index', '',
@@ -320,6 +320,6 @@ jobs:
           git config user.email 'actions@users.noreply.github.com'
           git add docs/audit/rea || true
           git diff --cached --quiet && echo "no drift" && exit 0
-          git commit -m "docs(rea): record the installed CLI surface (node 24)"
+          git commit -m "docs(rea): record the CLI surface and per-app evidence"
           git pull --rebase --autostash -q origin "${GITHUB_REF_NAME}" || true
           git push
