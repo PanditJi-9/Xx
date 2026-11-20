@@ -50,6 +50,19 @@ jobs:
           echo "----- help (first 120 lines) -----"
           head -120 rea-help.txt
 
+      - name: Record the Android command surface (flags, not guesses)
+        run: |
+          : > android-commands.txt
+          for cmd in inspect-android-package search-android-classes trace-android-references \
+                     inspect-android-class inspect-android-method inspect-apk-signature \
+                     decode-android-resources project-android-application-graph \
+                     inspect-android-jni-bindings capture-adb-screen; do
+            echo "===== rea $cmd --help =====" >> android-commands.txt
+            rea "$cmd" --help >> android-commands.txt 2>&1 || echo "(help unavailable)" >> android-commands.txt
+            echo >> android-commands.txt
+          done
+          wc -l android-commands.txt
+
       - name: Stage the target APK (verified, retried)
         env:
           GH_TOKEN: ${{ github.token }}
@@ -84,7 +97,7 @@ jobs:
       - name: Commit the CLI surface
         run: |
           mkdir -p docs/audit/rea
-          cp rea-help.txt rea-version.txt docs/audit/rea/ 2>/dev/null || true
+          cp rea-help.txt rea-version.txt android-commands.txt docs/audit/rea/ 2>/dev/null || true
           git config user.name 'rea-analysis'
           git config user.email 'actions@users.noreply.github.com'
           git add docs/audit/rea || true
