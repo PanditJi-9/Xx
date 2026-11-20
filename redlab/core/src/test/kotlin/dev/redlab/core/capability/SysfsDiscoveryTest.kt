@@ -37,8 +37,8 @@ class SysfsDiscoveryTest {
         val result = discovery.probe(declared, gpuCandidates)
         assertEquals(CapabilityState.UNSUPPORTED, result.state)
         assertEquals(Access.NONE, result.access)
-        assertTrue(result.reason!!.contains("kgsl"))
-        assertTrue(result.reason!!.contains("devfreq"))
+        assertTrue(result.reason.orEmpty().contains("kgsl"))
+        assertTrue(result.reason.orEmpty().contains("devfreq"))
     }
 
     @Test

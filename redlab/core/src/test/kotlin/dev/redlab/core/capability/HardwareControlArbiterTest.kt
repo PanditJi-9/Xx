@@ -88,13 +88,20 @@ class HardwareControlArbiterTest {
     }
 
     @Test
-    fun `a manual user lock blocks automated owners but never SAFETY`() {
+    fun `a manual user lock blocks automated owners`() {
         arbiter.lockByUser(capabilityId)
-        assertTrue(arbiter.claim(HardwareRequest(capabilityId, "gamespace", Priority.GAME)) is ClaimResult.BlockedByManualLock)
-        assertTrue(arbiter.claim(HardwareRequest(capabilityId, "thermal", Priority.SAFETY)) is ClaimResult.Granted)
+        val blocked = arbiter.claim(HardwareRequest(capabilityId, "gamespace", Priority.GAME))
+        assertTrue(blocked is ClaimResult.BlockedByManualLock)
+        assertEquals("user", (blocked as ClaimResult.BlockedByManualLock).lockedBy)
 
         arbiter.unlock(capabilityId)
         assertTrue(arbiter.claim(HardwareRequest(capabilityId, "gamespace", Priority.GAME)) is ClaimResult.Granted)
+    }
+
+    @Test
+    fun `SAFETY is never blocked by a manual lock`() {
+        arbiter.lockByUser(capabilityId)
+        assertTrue(arbiter.claim(HardwareRequest(capabilityId, "thermal", Priority.SAFETY)) is ClaimResult.Granted)
     }
 
     @Test

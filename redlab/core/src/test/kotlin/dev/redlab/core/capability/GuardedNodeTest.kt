@@ -48,13 +48,13 @@ class GuardedNodeTest {
     }
 
     @Test
-    fun `writing the current value is recorded but not performed`() {
+    fun `writing the current value is not performed and earns no credit`() {
         val io = FakeIo(mutableMapOf(path to "1800000"))
         val node = GuardedNode(io, path)
         val outcome = node.apply("1800000", allowed = setOf("1800000"))
-        assertEquals(WriteOutcome.Applied("1800000"), outcome)
+        assertEquals(WriteOutcome.AlreadySatisfied("1800000"), outcome)
         assertTrue(io.writes.isEmpty())
-        assertTrue(node.isHolding)
+        assertFalse(node.isHolding)
     }
 
     @Test
@@ -92,16 +92,28 @@ class GuardedNodeTest {
 
     @Test
     fun `a write the kernel clamps is rolled back and reported as not realized`() {
+        // An enum-like knob: only exact equality counts, so a clamped value must be undone.
+        val io = FakeIo(mutableMapOf(path to "powersave"), clampsTo = "schedutil")
+        val node = GuardedNode(io, path)
+        val outcome = node.apply("performance")
+        assertTrue(outcome is WriteOutcome.NotRealized)
+        val notRealized = outcome as WriteOutcome.NotRealized
+        assertEquals("performance", notRealized.requested)
+        assertEquals("schedutil", notRealized.actual)
+        assertTrue(notRealized.restored)
+        assertEquals("powersave", io.read(path))
+        assertFalse(node.isHolding)
+    }
+
+    @Test
+    fun `a ceiling request below the live value is pre-satisfied and never written`() {
         val io = FakeIo(mutableMapOf(path to "1200000"), clampsTo = "1200000")
         val node = GuardedNode(io, path)
         val outcome = node.apply("2400000", policy = ValuePolicy.MaxCeiling)
-        assertTrue(outcome is WriteOutcome.NotRealized)
-        val notRealized = outcome as WriteOutcome.NotRealized
-        assertEquals("2400000", notRealized.requested)
-        assertEquals("1200000", notRealized.actual)
-        assertTrue(notRealized.restored)
+        assertEquals(WriteOutcome.AlreadySatisfied("1200000"), outcome)
+        assertTrue(io.writes.isEmpty())
+        // The platform cap keeps the lower value; that is not our failure and nothing is rolled back.
         assertEquals("1200000", io.read(path))
-        assertFalse(node.isHolding)
     }
 
     @Test
