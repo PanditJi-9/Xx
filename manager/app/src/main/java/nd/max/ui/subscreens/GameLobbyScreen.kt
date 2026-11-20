@@ -814,6 +814,10 @@ fun GameLobbyScreen(
                                                 closeControl()
                                                 selectGame(pkg)
                                             },
+                                            // مدخل «التحكم» انتقل من الرئيسية إلى هنا (أمر المالك ٢٠٢٦-١١-٢٠).
+                                            onOpenControl = {
+                                                navController.navigate(MaxDestination.Control.route)
+                                            },
                                             prefs = lobbyPrefs,
                                             onPrefs = updatePrefs,
                                             apps = manageApps,

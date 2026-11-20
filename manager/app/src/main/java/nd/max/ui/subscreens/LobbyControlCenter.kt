@@ -96,6 +96,7 @@ import nd.max.core.gamespace.GamePlayStats
 import nd.max.core.gamespace.PlaySession
 import nd.max.core.gamespace.HandleSize
 import nd.max.core.gamespace.LobbyCue
+import nd.max.ui.navigation.MaxDestination
 import nd.max.core.gamespace.LobbyDepth
 import nd.max.core.gamespace.LobbyPrefsState
 import nd.max.core.gamespace.LobbySort
@@ -198,6 +199,7 @@ internal fun LobbyControlCenter(
     onOpenHistory: () -> Unit,
     onOpenClips: () -> Unit,
     onOpenGame: (String) -> Unit,
+    onOpenControl: () -> Unit,
     prefs: LobbyPrefsState,
     onPrefs: ((LobbyPrefsState) -> LobbyPrefsState) -> Unit,
     apps: List<GameApp>,
@@ -250,6 +252,7 @@ internal fun LobbyControlCenter(
                     onOpenHistory = onOpenHistory,
                     onOpenClips = onOpenClips,
                     onOpenGame = onOpenGame,
+                    onOpenControl = onOpenControl,
                     prefs = prefs,
                     onPrefs = onPrefs,
                     apps = apps,
@@ -287,6 +290,7 @@ internal fun LobbySectionContent(
     onOpenHistory: () -> Unit,
     onOpenClips: () -> Unit,
     onOpenGame: (String) -> Unit,
+    onOpenControl: () -> Unit,
     prefs: LobbyPrefsState,
     onPrefs: ((LobbyPrefsState) -> LobbyPrefsState) -> Unit,
     apps: List<GameApp>,
@@ -322,7 +326,7 @@ internal fun LobbySectionContent(
             onOpenGame = onOpenGame
         )
         LobbySection.Game -> GameBody(app, config, onUpdate, onOpenFull)
-        LobbySection.Panel -> PanelBody(app, panelEnabled, onPanelEnabled)
+        LobbySection.Panel -> PanelBody(app, panelEnabled, onPanelEnabled, onOpenControl)
         LobbySection.Lobby -> LobbyOptionsBody(prefs, onPrefs)
         LobbySection.Library -> LibraryBody(apps, stats, manual, excluded, onToggleGame, accent)
     }
@@ -821,7 +825,8 @@ private fun GameProfileColumn(
 private fun PanelBody(
     app: GameApp?,
     panelEnabled: Boolean,
-    onPanelEnabled: (Boolean) -> Unit
+    onPanelEnabled: (Boolean) -> Unit,
+    onOpenControl: () -> Unit
 ) {
     val context = LocalContext.current
     var handle by remember { mutableStateOf(GamePanelPrefs.load(context)) }
@@ -850,6 +855,37 @@ private fun PanelBody(
                 // الحفظ يعلّم «تم الاختيار» أيضًا، فلا تظهر النافذة الأولى بعد أن غُيّر المظهر من هنا.
                 onSelect = { if (nd.max.ui.util.GameTurboStylePrefs.save(context, it)) turboStyle = it }
             )
+        }
+        // **أمر المالك (2026-11-20):** بلاطة «التحكم» التي كانت بجانب «تعزيز» في الرئيسية انتقلت
+        // إلى هنا — مساحة الألعاب صارت مدخلها الوحيد، فلا يقفز سطحٌ إلى شاشة التحكّم من الرئيسية.
+        LobbySectionCard(stringResource(MaxDestination.Control.titleRes)) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = MaxSize.minTouchTarget)
+                    .clickable(onClick = onOpenControl),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm)
+            ) {
+                Icon(
+                    imageVector = MaxDestination.Control.icon,
+                    contentDescription = null,
+                    tint = LuxGold,
+                )
+                Column(verticalArrangement = Arrangement.spacedBy(MaxSpace.xs)) {
+                    Text(
+                        text = stringResource(MaxDestination.Control.titleRes),
+                        color = LuxGold,
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.SemiBold,
+                    )
+                    Text(
+                        text = stringResource(R.string.max_home_control_desc),
+                        color = GameSpacePalette.Ink,
+                        fontSize = 13.sp,
+                    )
+                }
+            }
         }
         // **أمر المالك (2026-11-20):** إعداد بطاقات «الإجراءات السريعة» انتقل من رأسها في
         // الرئيسية إلى هنا — مساحة الألعاب صارت المدخل الوحيد له، فلا يُضبط سطحٌ من سطحٍ آخر.

@@ -190,7 +190,6 @@ internal fun LegendaryHomeDashboard(
                 HomeActionRow(
                     boost = boost,
                     onBoost = onBoost,
-                    onControl = { onNavigate(MaxDestination.Control.route) },
                 )
             }
         }

@@ -50,8 +50,9 @@ fun MaxValueWithUnit(
             text = buildAnnotatedString {
                 append(value)
                 if (!unit.isNullOrBlank()) {
-                    // مسافة غير كاسرة ورفيعة: لا ينفصل الرمز عن رقمه عند أي قياس.
-                    append('\u00A0')
+                    // **المسافة داخل نمط الوحدة لا خارجه** (قياس ٢٠٢٦-١١-٢٠): كانت تُرسم بنمط الرقم
+                    // (displayMedium ٤٥sp) فتظهر فجوة بعرض ~١١dp بين «35» و«°C». هنا تأخذ حجم الوحدة
+                    // فتلتصق بمعناها كما في الطباعة، وتبقى غير كاسرة فلا ينفصل الرمز عن رقمه.
                     withStyle(
                         SpanStyle(
                             fontSize = unitStyle.fontSize,
@@ -60,7 +61,10 @@ fun MaxValueWithUnit(
                             fontFamily = unitStyle.fontFamily,
                             color = unitColor,
                         )
-                    ) { append(unit) }
+                    ) {
+                        append('\u00A0')
+                        append(unit)
+                    }
                 }
             },
             modifier = modifier,
