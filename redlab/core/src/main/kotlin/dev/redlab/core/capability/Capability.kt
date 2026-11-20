@@ -8,6 +8,9 @@ package dev.redlab.core.capability
  * - [NEEDS_PERMISSION] possible, but its permission has not been granted yet.
  * - [UNKNOWN] never measured. This is the default on purpose: an unmeasured capability
  *   must not be shown as working, and must not be shown as broken either.
+ * - [DEGRADED] the hardware is there but this run has a weaker seat than the capability needs
+ *   (`docs/CONTROL_TIERS.md` §3.2). Distinct from [UNSUPPORTED] because the fix is different:
+ *   grant Shizuku or root, do not replace the phone.
  *
  * See `docs/CAPABILITY_REGISTRY.md` §1 and §5.
  */
@@ -15,6 +18,7 @@ enum class CapabilityState {
     AVAILABLE,
     UNSUPPORTED,
     NEEDS_PERMISSION,
+    DEGRADED,
     UNKNOWN,
 }
 
@@ -43,6 +47,11 @@ data class Capability(
     val reason: String? = null,
     val evidence: String? = null,
     val measuredAtMillis: Long? = null,
+    /**
+     * Weakest seat that can *write* this capability. Null means "we have not measured that yet",
+     * which is not the same as `LOCAL`: assuming LOCAL would promise a write no phone allows.
+     */
+    val requiredTier: dev.redlab.core.seat.Tier? = null,
 ) {
     init {
         require(id.isNotBlank() && id.none { it.isWhitespace() }) { "capability id must be non-blank, no spaces: '$id'" }
@@ -52,6 +61,9 @@ data class Capability(
         }
         require(state != CapabilityState.UNSUPPORTED || !reason.isNullOrBlank()) {
             "capability '$id' cannot be UNSUPPORTED without a literal reason"
+        }
+        require(state != CapabilityState.DEGRADED || !reason.isNullOrBlank()) {
+            "capability '$id' cannot be DEGRADED without saying which seat it needs"
         }
     }
 
