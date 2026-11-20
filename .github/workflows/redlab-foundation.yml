@@ -1,0 +1,60 @@
+name: RedLab Foundation
+
+# Phase 5 gate (`docs/MASTER_PLAN.md` §4): the contract that every module depends on must
+# compile and its safety rules must pass their unit tests. No device is involved, and none
+# of this proves behaviour on hardware — it proves the rules are written and checkable.
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "redlab/**"
+      - ".github/workflows/redlab-foundation.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: redlab-foundation-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  core:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Test the capability contract
+        working-directory: redlab
+        run: ./gradlew :core:test --no-daemon --stacktrace
+
+      - name: Publish the test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: redlab-core-test-report
+          path: redlab/core/build/reports/tests/test
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Summarise what was checked
+        if: always()
+        run: |
+          {
+            echo "### RedLab foundation"
+            echo ""
+            echo "Command: \`./gradlew :core:test\` in \`redlab/\`"
+            echo ""
+            echo "This proves the capability/arbiter/sysfs rules compile and their unit tests"
+            echo "pass. It does **not** prove any capability is available on a real device."
+          } >> "$GITHUB_STEP_SUMMARY"
