@@ -180,9 +180,14 @@ jobs:
               nr = inv.get('normalized_result') or {}
               names = nr.get('matches') or []
               (ev / 'classes.txt').write_text('\n'.join(names) + ('\n' if names else ''), encoding='utf-8')
-              cov = nr.get('coverage') or {}
               note = [f"# {len(names)} classes (engine reports total_classes={nr.get('total_classes')})"]
-              for k, v in cov.items(): note.append(f"- coverage.{k}: {v}")
+              cov = nr.get('coverage')
+              # coverage is a free-form provider note: a string today. Read both shapes,
+              # never assume one — the assumption is what failed run 44660115361.
+              if isinstance(cov, dict):
+                  note += [f"- coverage.{k}: {v}" for k, v in cov.items()]
+              elif cov:
+                  note.append(f"- coverage: {cov}")
               (ev / 'classes.txt').write_text('\n'.join(note) + '\n\n' + '\n'.join(names) + '\n', encoding='utf-8')
 
           sig = load('signature.json')
