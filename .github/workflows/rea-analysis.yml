@@ -28,6 +28,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
       - uses: actions/setup-node@v4
         with:
           node-version: '24'
@@ -84,6 +89,25 @@ jobs:
           ls -l targets
           sha256sum targets/*.apk | tee targets.sha256
 
+      # The Android provider needs a caller-supplied JADX bridge; REA pins one exact
+      # artifact in src/android/JadxRelease.ts (0.7.1, sha256 6e5eacf5…ff75) and refuses
+      # a look-alike project's JAR. Fetch it here and verify that digest before use.
+      - name: Provide the pinned JADX bridge (digest verified)
+        run: |
+          jar="$RUNNER_TEMP/jadx-headless-mcp-0.7.1-all.jar"
+          url="https://github.com/1013503897/jadx-headless-mcp/releases/download/v0.7.1/jadx-headless-mcp-0.7.1-all.jar"
+          want="6e5eacf500b64292bfb73c49797c1958f6ee44646e43e868039ae7feb573ff75"
+          for i in 1 2 3; do
+            curl -fsSL --retry 3 -o "$jar" "$url" && break || sleep 5
+          done
+          got=$(sha256sum "$jar" | cut -d' ' -f1)
+          echo "jadx bridge sha256: $got"
+          if [ "$got" != "$want" ]; then
+            echo "REFUSING: digest does not match REA's pin"; exit 1
+          fi
+          echo "REA_JADX_MCP_JAR=$jar" >> "$GITHUB_ENV"
+          java -version 2>&1 | head -1
+
       # Phase 2 evidence: declarations, signature and one reference trace. Every command
       # is recorded even when it fails, so a missing apktool/jadx on the runner shows up
       # as a named limitation instead of an empty file.
@@ -101,7 +125,7 @@ jobs:
           }
           collect "package (complete json)" rea inspect-android-package "$apk" --format json
           collect "signature" rea inspect-apk-signature "$apk" --format json
-          collect "class inventory (first screens)" rea search-android-classes "$apk" --format json
+          collect "class inventory (all)" rea search-android-classes "$apk" "" --format json
           for cls in cn.nubia.gameassist.GameAssistHandle cn.nubia.gameassist.MultiSubScreenSinkActivity; do
             collect "references: $cls" rea trace-android-references "$apk" "$cls" --format json
           done
