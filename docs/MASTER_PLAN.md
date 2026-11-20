@@ -65,7 +65,7 @@
 | 2 | Reverse engineering ✅ | `REVERSE_ENGINEERING.md` + `FEATURE_CATALOG.md` + `RESOURCE_INVENTORY.md` | لكل ميزة: دليل (مكوّن/فعل/مورد) + حدّ ما تعذّر تحليله — **مُحقَّق على المستويين**: 579 عقدًا مكوّنًا/فعلًا، و23 تطبيقًا موردًا. المرئي (لقطة/مقطع) للمرحلة 3 |
 | 3 | UX reconstruction | `SCREEN_INVENTORY` · `VISUAL_DESIGN_SPEC` · `DESIGN_SYSTEM` · `ANIMATION_CATALOG` | لكل شاشة لقطة مرجعية + قيم مقيسة (مقاس، لون، مدة) |
 | 4 | Architecture ✅ | `SYSTEM_ARCHITECTURE.md` · `ECOSYSTEM_MODULES.md` · `CAPABILITY_REGISTRY.md` · `GAME_SESSION_SPEC.md` · `OVERLAY_SPEC.md` · `HARDWARE_CONTROL_SAFETY.md` | كل عقد IPC موثّق باسمه المقيس من المرحلة 1 — **مُحقَّق**: 23 أصلًا → 14 وحدة، ولكل قدرة مالك واحد ونقل صريح |
-| 5 | Foundation | مشروع Gradle + `CapabilityState` + arbiter | اختبارات وحدة خضراء في CI + تقرير قدرات على جهازين |
+| 5 | Foundation 🟡 | مشروع Gradle `redlab/` + `:core` (`CapabilityState` · `CapabilityRegistry` · `HardwareControlArbiter` · `GuardedNode`) | اختبارات وحدة خضراء في CI ✅ (**22 اختبارًا**، تشغيل `44808369077` نجح في 1د20ث) + تقرير قدرات على جهازين ⏳ (يحتاج جهازًا) |
 | 6 | GameSpace | تطبيق المكتبة/الجلسات | فتح لعبة من الواجهة يُنتج `SessionManager=ACTIVE` على الجهاز |
 | 7 | GameAssist + Overlay | لوحة عائمة + إيقاظ | ضغطة واحدة: نافذة تظهر وتختفي وتستعيد موضعها، بلا `startService` خلفي |
 | 8 | GameTurbo | لوحة الأداء | كل عنصر تحكم له `CapabilityState` مقيس، ولا تحكم وهمي |
