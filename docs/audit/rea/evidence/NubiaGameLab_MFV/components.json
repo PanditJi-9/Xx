@@ -1,0 +1,16 @@
+[
+ {
+  "kind": "service",
+  "name": "cn.nubia.gamelab.services.GameLabService",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "provider",
+  "name": "cn.nubia.gamelab.provider.OcrProvider",
+  "exported": true,
+  "permission": "cn.nubia.gamelab.permission.gameocr",
+  "filters": 0
+ }
+]

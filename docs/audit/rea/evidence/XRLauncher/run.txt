@@ -1,0 +1,21 @@
+===== package declaration -> package.json
+status: ok (29252 bytes)
+
+===== signature -> signature.json
+status: ok (5922 bytes)
+
+===== class inventory -> class-inventory.json
+status: ok (326682 bytes)
+
+===== xrefs: com.unity3d.player.UnityPlayerActivity -> xref-com.unity3d.player.UnityPlayerActivity.json
+status: ok (10403 bytes)
+
+===== xrefs: com.zte.xr.gamelauncher.XRActivity -> xref-com.zte.xr.gamelauncher.XRActivity.json
+status: ok (5441 bytes)
+
+===== xrefs: com.zte.xr.virtualhandle.RemoteControlActivity -> xref-com.zte.xr.virtualhandle.RemoteControlActivity.json
+status: ok (23219 bytes)
+
+===== xrefs: com.zte.xr.virtualhandle.RemoteControlService -> xref-com.zte.xr.virtualhandle.RemoteControlService.json
+status: ok (7714 bytes)
+

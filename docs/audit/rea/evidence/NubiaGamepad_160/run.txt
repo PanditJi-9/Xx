@@ -1,0 +1,21 @@
+===== package declaration -> package.json
+status: ok (34423 bytes)
+
+===== signature -> signature.json
+status: ok (5957 bytes)
+
+===== class inventory -> class-inventory.json
+status: ok (108700 bytes)
+
+===== xrefs: cn.nubia.camerakeytouch.CameraKeyVirtualTouchService -> xref-cn.nubia.camerakeytouch.CameraKeyVirtualTouchService.json
+status: ok (41258 bytes)
+
+===== xrefs: cn.nubia.gamepad.GamepadCaseInsertService -> xref-cn.nubia.gamepad.GamepadCaseInsertService.json
+status: ok (10291 bytes)
+
+===== xrefs: cn.nubia.gamepad.GamepadSchemeListActivity -> xref-cn.nubia.gamepad.GamepadSchemeListActivity.json
+status: ok (27562 bytes)
+
+===== xrefs: cn.nubia.gamepad.GamepadService -> xref-cn.nubia.gamepad.GamepadService.json
+status: ok (24278 bytes)
+

@@ -1,0 +1,4 @@
+com.unity3d.player.UnityPlayerActivity
+com.zte.xr.gamelauncher.XRActivity
+com.zte.xr.virtualhandle.RemoteControlActivity
+com.zte.xr.virtualhandle.RemoteControlService

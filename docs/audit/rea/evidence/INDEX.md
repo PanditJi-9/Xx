@@ -22,9 +22,13 @@ declaration REA returned, not from this document.
 | NBGameCenter_Abroad | `com.nubia.gamecenter` | 21 / 35 | 8304 | 149 | 4 | 5 ok / 2 failed |
 | NBHighLights_RedMagic | `cn.nubia.gamehighlights` | 33 / 36 | 737 | 18 | 4 | 7 ok / 0 failed |
 | NubiaGameHelperModule | `cn.nubia.gamehelpmodule` | 30 / 36 | 643 | 8 | 3 | 6 ok / 0 failed |
+| NubiaGameLab_MFV | `cn.nubia.gamelab` | 30 / 35 | 1797 | 2 | 1 | 4 ok / 0 failed |
 | NubiaGameNotes | `cn.nubia.gamenotes` | 30 / 35 | 3112 | 11 | 4 | 7 ok / 0 failed |
 | NubiaGameWidget | `cn.nubia.gamewidget` | 30 / 35 | 3091 | 11 | 1 | 4 ok / 0 failed |
+| NubiaGamepad_160 | `cn.nubia.gamepad` | 28 / 35 | 1134 | 15 | 4 | 7 ok / 0 failed |
 | RedMagicWallPaper_Abroad | `com.zte.gallerylockscreen` | 32 / 35 | 4986 | 22 | 4 | 7 ok / 0 failed |
+| VirtualGameHandle | `cn.nubia.virtualgamehandle` | 34 / 37 | 3660 | 9 | 4 | 7 ok / 0 failed |
+| XRLauncher | `com.zte.xr.gamelauncher` | 33 / 36 | 3506 | 9 | 4 | 7 ok / 0 failed |
 
 Signature reads are structural only; no signature is cryptographically verified.
 Trace targets are exported activities/services taken from the declaration.

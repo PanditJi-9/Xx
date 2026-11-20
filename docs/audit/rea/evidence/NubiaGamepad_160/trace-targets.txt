@@ -1,0 +1,4 @@
+cn.nubia.camerakeytouch.CameraKeyVirtualTouchService
+cn.nubia.gamepad.GamepadCaseInsertService
+cn.nubia.gamepad.GamepadSchemeListActivity
+cn.nubia.gamepad.GamepadService

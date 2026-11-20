@@ -1,0 +1,107 @@
+[
+ {
+  "kind": "service",
+  "name": "cn.nubia.gamepad.GamepadService",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "service",
+  "name": "cn.nubia.gamepad.GamepadCaseInsertService",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "service",
+  "name": "cn.nubia.gamepad.HandStankService",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "service",
+  "name": "cn.nubia.gamepad.motioncollection.MotionCollectionService",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "provider",
+  "name": "cn.nubia.gamepad.provider.GamepadDataProvider",
+  "exported": true,
+  "permission": "cn.nubia.gamepad.permission.READ_PERMISSION",
+  "filters": 0
+ },
+ {
+  "kind": "provider",
+  "name": "cn.nubia.gamepad.provider.FileProvider",
+  "exported": true,
+  "permission": "cn.nubia.gamepad.permission.READ_PERMISSION",
+  "filters": 0
+ },
+ {
+  "kind": "activity",
+  "name": "cn.nubia.gamepad.GamepadSchemeListActivity",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "service",
+  "name": "cn.nubia.gamepad.controlcenter.ControlCenterService",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "service",
+  "name": "cn.nubia.camerakeytouch.CameraKeyVirtualTouchService",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "provider",
+  "name": "cn.nubia.camerakeytouch.data.FileProvider",
+  "exported": true,
+  "permission": "cn.nubia.gamepad.permission.READ_PERMISSION",
+  "filters": 0
+ },
+ {
+  "kind": "provider",
+  "name": "cn.nubia.camerakeytouch.data.CvtDataProvider",
+  "exported": true,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "service",
+  "name": "cn.nubia.tgk.allscene.TgkToastService",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "provider",
+  "name": "cn.nubia.sensoroperation.provider.SensorDataProvider",
+  "exported": false,
+  "permission": null,
+  "filters": 0
+ },
+ {
+  "kind": "service",
+  "name": "cn.nubia.sensoroperation.SensorOperationService",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ },
+ {
+  "kind": "service",
+  "name": "cn.nubia.tpgamepartition.TGPMotionCollectionService",
+  "exported": true,
+  "permission": null,
+  "filters": 1
+ }
+]

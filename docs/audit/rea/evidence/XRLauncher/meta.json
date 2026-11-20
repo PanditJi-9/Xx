@@ -1,0 +1,9 @@
+{
+ "package": "com.zte.xr.gamelauncher",
+ "min_sdk": "33",
+ "target_sdk": "36",
+ "classes": 3506,
+ "components": 9,
+ "scheme": "v3",
+ "cert": "b8d7a192798225d729378c636622eb7e25257437bde51c0787d2a1319672bb8e"
+}
