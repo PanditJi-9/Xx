@@ -11,8 +11,8 @@ class GuardedNodeTest {
     private class FakeIo(
         private val nodes: MutableMap<String, String> = mutableMapOf(),
         var refuseWrites: Boolean = false,
-        /** Simulates a kernel/firmware cap: the write "succeeds" but stores this value instead. */
-        var clampsTo: String? = null,
+        /** Simulates a kernel/firmware cap: the write "succeeds" but stores another value. */
+        var clamp: ((String) -> String)? = null,
     ) : NodeIo {
         val writes = mutableListOf<Pair<String, String>>()
 
@@ -20,7 +20,7 @@ class GuardedNodeTest {
 
         override fun write(path: String, value: String): Boolean {
             if (refuseWrites) return false
-            nodes[path] = clampsTo ?: value
+            nodes[path] = clamp?.invoke(value) ?: value
             writes += path to value
             return true
         }
@@ -93,7 +93,7 @@ class GuardedNodeTest {
     @Test
     fun `a write the kernel clamps is rolled back and reported as not realized`() {
         // An enum-like knob: only exact equality counts, so a clamped value must be undone.
-        val io = FakeIo(mutableMapOf(path to "powersave"), clampsTo = "schedutil")
+        val io = FakeIo(mutableMapOf(path to "powersave"), clamp = { if (it == "performance") "schedutil" else it })
         val node = GuardedNode(io, path)
         val outcome = node.apply("performance")
         assertTrue(outcome is WriteOutcome.NotRealized)
@@ -107,7 +107,7 @@ class GuardedNodeTest {
 
     @Test
     fun `a ceiling request below the live value is pre-satisfied and never written`() {
-        val io = FakeIo(mutableMapOf(path to "1200000"), clampsTo = "1200000")
+        val io = FakeIo(mutableMapOf(path to "1200000"))
         val node = GuardedNode(io, path)
         val outcome = node.apply("2400000", policy = ValuePolicy.MaxCeiling)
         assertEquals(WriteOutcome.AlreadySatisfied("1200000"), outcome)
