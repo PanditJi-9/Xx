@@ -26,7 +26,12 @@ serde_json = "1.0"
 # الأصلية عند JDK. والقياس على شجرتين حقيقيتين (٥.٣ميجا نصّة و٣٧.١ميجا موارد):
 #   المستوى ٦: JDK 211ms · miniz_oxide 217ms (=0.97×، أي أبطأ) · zlib-rs 107ms (1.97×).
 # فبغير هذا السطر لا معنى للنقل: نقلٌ يُبطئ. وثمن الحجم مقيس ومعلن: +367KB في المكتبة الأصلية.
-zip = { version = "8", default-features = false, features = ["deflate-flate2-zlib-rs"] }
+#
+# والحدّ الأدنى ٩.٠.٥ بأمر Dependabot المقيس (٢٠٢٦-١١-٢٠): خمس تنبيهات مفتوحة على `zip` 8.6.0
+# — واحدة حرجة (`GHSA-m665-v7pm-7grj`، تُصلح في ٩.٠.٥) وأربع عالية/متوسطة تُصلح في ٩.٠.٠.
+# وواجهة الاستخدام عندنا (`SimpleFileOptions` · `add_directory` · `start_file` · `finish`)
+# لم تتغيّر في ٩.٨.١ — قِيست في مصدر الحزمة قبل الترقية.
+zip = { version = "9", default-features = false, features = ["deflate-flate2-zlib-rs"] }
 
 [features]
 default = []
