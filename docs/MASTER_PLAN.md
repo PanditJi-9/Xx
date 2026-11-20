@@ -64,7 +64,7 @@
 | 1 | Inventory | `APK_INVENTORY` · `COMPONENT_CATALOG` · `APP_DEPENDENCY_GRAPH` · `IPC_AND_INTEGRATION` | 23/23 APK مقروءة، 0 خطأ، الأدوات تُعيد التوليد في CI |
 | 2 | Reverse engineering ✅ | `REVERSE_ENGINEERING.md` + `FEATURE_CATALOG.md` + `RESOURCE_INVENTORY.md` | لكل ميزة: دليل (مكوّن/فعل/مورد) + حدّ ما تعذّر تحليله — **مُحقَّق على المستويين**: 579 عقدًا مكوّنًا/فعلًا، و23 تطبيقًا موردًا. المرئي (لقطة/مقطع) للمرحلة 3 |
 | 3 | UX reconstruction | `SCREEN_INVENTORY` · `VISUAL_DESIGN_SPEC` · `DESIGN_SYSTEM` · `ANIMATION_CATALOG` | لكل شاشة لقطة مرجعية + قيم مقيسة (مقاس، لون، مدة) |
-| 4 | Architecture | `ARCHITECTURE.md` · `MODULES.md` · `CAPABILITIES.md` · `GAME_SESSION_SPEC` · `OVERLAY_SPEC` | كل عقد IPC موثّق باسمه المقيس من المرحلة 1 |
+| 4 | Architecture ✅ | `SYSTEM_ARCHITECTURE.md` · `ECOSYSTEM_MODULES.md` · `CAPABILITY_REGISTRY.md` · `GAME_SESSION_SPEC.md` · `OVERLAY_SPEC.md` · `HARDWARE_CONTROL_SAFETY.md` | كل عقد IPC موثّق باسمه المقيس من المرحلة 1 — **مُحقَّق**: 23 أصلًا → 14 وحدة، ولكل قدرة مالك واحد ونقل صريح |
 | 5 | Foundation | مشروع Gradle + `CapabilityState` + arbiter | اختبارات وحدة خضراء في CI + تقرير قدرات على جهازين |
 | 6 | GameSpace | تطبيق المكتبة/الجلسات | فتح لعبة من الواجهة يُنتج `SessionManager=ACTIVE` على الجهاز |
 | 7 | GameAssist + Overlay | لوحة عائمة + إيقاظ | ضغطة واحدة: نافذة تظهر وتختفي وتستعيد موضعها، بلا `startService` خلفي |
@@ -104,7 +104,7 @@
 | `FEATURE_CATALOG.md` | ✅ مولّد من دليل REA المخزّن (`tools/feature_catalog.py`) — 24 تطبيقًا، 579 مكوّنًا: 270 `DECLARED` · 56 `TRACED` · 253 `UNVERIFIED`. السلوك نفسه لم يُقس: `UNVERIFIED` تعني «البيان يذكره فقط» |
 | `docs/audit/RESOURCE_INVENTORY.md` | ✅ مولّد (`tools/apk_resources.py`, `--self-test` يمرّ): أسماء `layout`، وألوان `color` الحرفية، ومقاسات الأيقونة، وأعداد كل نوع. ما لا يقيسه: شكل الرسم والحركة ومحتوى `xml` |
 | `SCREEN_INVENTORY` · `ICON_CATALOG` · `ANIMATION_CATALOG` · `INTERACTION_SPEC` · `VISUAL_DESIGN_SPEC` · `DESIGN_SYSTEM` | ⏳ المرحلة 3 (تحتاج لقطات ومقاطع من الجهاز) — والمدخل المقيس لها جاهز في `RESOURCE_INVENTORY.md` |
-| `ARCHITECTURE` · `MODULES` · `CAPABILITIES` · `GAME_SESSION_SPEC` · `OVERLAY_SPEC` · `HARDWARE_CONTROL_SAFETY` | ⏳ المرحلة 4 |
+| `SYSTEM_ARCHITECTURE.md` · `ECOSYSTEM_MODULES.md` · `CAPABILITY_REGISTRY.md` · `GAME_SESSION_SPEC.md` · `OVERLAY_SPEC.md` · `HARDWARE_CONTROL_SAFETY.md` | ✅ المرحلة 4 — مبنية على الأرقام المقيسة: 14 وحدة من 23 أصلًا، ملكية قدرة واحدة لكل عائلة (ومنع تضارب `PowerPanelService` بين `GameSpace` و`GameFloatWindow`)، وآلة جلسة بخمس حالات، وتراكب بنوع `TYPE_APPLICATION_OVERLAY`. لا شهادة سلوك: كل بنود القبول تحتاج جهازًا |
 | `DEVICE_MATRIX` · `TEST_STRATEGY` · `PERFORMANCE_PLAN` · `LICENSES` · `MIGRATION_PLAN` · `IMPLEMENTATION_ROADMAP` | ⏳ قبل المرحلة 5 |
 
 ---
