@@ -1,0 +1,70 @@
+name: REA analysis
+
+# REA (github.com/morluto/rea) is the designated engine for "how does this behaviour
+# work" questions. It cannot run on the local Node (22.22.1 < required 22.23.4), so it
+# runs here on Node 24. This job establishes the channel and records the real CLI
+# surface; wiring a concrete APK command happens only after that output is read,
+# not from a guessed flag.
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Release tag holding the APK assets'
+        required: true
+        default: 're-targets'
+      target_apk:
+        description: 'APK file name to stage for analysis'
+        required: true
+        default: 'GameAssist.apk'
+
+permissions:
+  contents: read
+
+jobs:
+  rea:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Record the runtime REA will see
+        run: |
+          node -v
+          npm -v
+          java -version 2>&1 | head -2
+          which jadx || echo "jadx: absent on runner"
+
+      - name: Install REA
+        run: |
+          npm install --global rea-agents@latest
+          rea --version | tee rea-version.txt
+
+      - name: Capture the real CLI surface
+        run: |
+          rea --help > rea-help.txt 2>&1 || true
+          echo "----- help (first 120 lines) -----"
+          head -120 rea-help.txt
+
+      - name: Stage the target APK
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p targets
+          gh release download "${{ inputs.release_tag }}" \
+            --repo "${{ github.repository }}" \
+            --pattern "${{ inputs.target_apk }}" --dir targets --clobber
+          ls -l targets
+          sha256sum targets/*.apk | tee targets.sha256
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rea-cli-surface
+          path: |
+            rea-help.txt
+            rea-version.txt
+            targets.sha256

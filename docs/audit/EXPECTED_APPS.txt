@@ -1,0 +1,25 @@
+# 24 أسماء متوقّعة: 23 محلَّلة + 1 مستثنى بأمر المالك (لا يُفكّ، لا يُحلَّل).
+GameAIAsst.apk
+GameAssist.apk
+GameCardAssist.apk
+GameFloatWindow.apk
+GameHelperLine.apk
+GamePi.apk
+GamePluginTrigger.apk
+GameSpace.apk
+LauncherAdapter_MFV.apk
+LauncherBeautifyAdapter.apk
+LauncherBeautify_MFV_abroad.apk
+LauncherResource_MyOSAbroad.apk
+Launcher_MFV_abroad.apk
+NBGameCenter_Abroad.apk
+NBHighLights_RedMagic.apk
+NubiaGameHelperModule.apk
+NubiaGameLab_MFV.apk
+NubiaGameNotes.apk
+NubiaGameWidget.apk
+NubiaGamepad_160.apk
+RedMagicWallPaper_Abroad.apk
+VirtualGameHandle.apk
+XRLauncher.apk
+NubiaRedmagickyi_RedMagic.apk
