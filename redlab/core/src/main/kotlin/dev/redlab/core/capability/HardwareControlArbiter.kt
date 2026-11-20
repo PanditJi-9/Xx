@@ -31,6 +31,9 @@ sealed interface ClaimResult {
 
     /** The capability itself is not usable here — never retried in the same session. */
     data class Unsupported(val id: String, val reason: String) : ClaimResult
+
+    /** The user pinned this control by hand; automated owners may not override it. */
+    data class BlockedByManualLock(val id: String, val lockedBy: String) : ClaimResult
 }
 
 /**
@@ -53,7 +56,18 @@ class HardwareControlArbiter(
     private val lock = Any()
     private val active = HashMap<String, Active>()
     private val sequence = AtomicLong(0)
+    private val manualLocks = HashMap<String, String>()
     private var safetyTripped: String? = null
+
+    /**
+     * Pin a control to the user's choice. A manual lock outranks every automated owner
+     * (`USER`/`GAME`/`SYSTEM`); only `SAFETY` may still act, because safety is not a preference.
+     */
+    fun lockByUser(id: String, by: String = "user") = synchronized(lock) { manualLocks[id] = by }
+
+    fun unlock(id: String) = synchronized(lock) { manualLocks.remove(id) }
+
+    fun lockedBy(id: String): String? = synchronized(lock) { manualLocks[id] }
 
     /** Called when a claim is accepted; the owner performs the write here. */
     var onGranted: ((ClaimToken) -> Unit)? = null
@@ -79,6 +93,11 @@ class HardwareControlArbiter(
             safetyTripped?.let { why ->
                 if (request.priority != Priority.SAFETY) {
                     return ClaimResult.Unsupported(request.id, "safety ceiling: $why")
+                }
+            }
+            manualLocks[request.id]?.let { who ->
+                if (request.priority != Priority.SAFETY && request.priority != Priority.USER) {
+                    return ClaimResult.BlockedByManualLock(request.id, who)
                 }
             }
             current = active[request.id]

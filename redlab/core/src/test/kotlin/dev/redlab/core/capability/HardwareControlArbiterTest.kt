@@ -88,6 +88,16 @@ class HardwareControlArbiterTest {
     }
 
     @Test
+    fun `a manual user lock blocks automated owners but never SAFETY`() {
+        arbiter.lockByUser(capabilityId)
+        assertTrue(arbiter.claim(HardwareRequest(capabilityId, "gamespace", Priority.GAME)) is ClaimResult.BlockedByManualLock)
+        assertTrue(arbiter.claim(HardwareRequest(capabilityId, "thermal", Priority.SAFETY)) is ClaimResult.Granted)
+
+        arbiter.unlock(capabilityId)
+        assertTrue(arbiter.claim(HardwareRequest(capabilityId, "gamespace", Priority.GAME)) is ClaimResult.Granted)
+    }
+
+    @Test
     fun `a stale token cannot release a newer claim`() {
         val old = (arbiter.claim(HardwareRequest(capabilityId, "gamespace", Priority.GAME)) as ClaimResult.Granted).token
         arbiter.release(old)

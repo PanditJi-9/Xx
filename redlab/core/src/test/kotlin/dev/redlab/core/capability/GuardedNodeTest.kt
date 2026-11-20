@@ -11,6 +11,8 @@ class GuardedNodeTest {
     private class FakeIo(
         private val nodes: MutableMap<String, String> = mutableMapOf(),
         var refuseWrites: Boolean = false,
+        /** Simulates a kernel/firmware cap: the write "succeeds" but stores this value instead. */
+        var clampsTo: String? = null,
     ) : NodeIo {
         val writes = mutableListOf<Pair<String, String>>()
 
@@ -18,7 +20,7 @@ class GuardedNodeTest {
 
         override fun write(path: String, value: String): Boolean {
             if (refuseWrites) return false
-            nodes[path] = value
+            nodes[path] = clampsTo ?: value
             writes += path to value
             return true
         }
@@ -65,6 +67,39 @@ class GuardedNodeTest {
 
         val restored = node.restore()
         assertEquals(GuardedNode.RestoreOutcome.Restored("1200000"), restored)
+        assertEquals("1200000", io.read(path))
+        assertFalse(node.isHolding)
+    }
+
+    @Test
+    fun `a value already in place is reported as already satisfied, not as our success`() {
+        val io = FakeIo(mutableMapOf(path to "1800000"))
+        val node = GuardedNode(io, path)
+        val outcome = node.apply("1800000", allowed = setOf("1800000"))
+        assertEquals(WriteOutcome.AlreadySatisfied("1800000"), outcome)
+        assertTrue(io.writes.isEmpty())
+        assertFalse(node.isHolding)
+    }
+
+    @Test
+    fun `a ceiling is satisfied by a value below it - no write, no false failure`() {
+        val io = FakeIo(mutableMapOf(path to "1500000"))
+        val node = GuardedNode(io, path)
+        val outcome = node.apply("1800000", policy = ValuePolicy.MaxCeiling)
+        assertEquals(WriteOutcome.AlreadySatisfied("1500000"), outcome)
+        assertTrue(io.writes.isEmpty())
+    }
+
+    @Test
+    fun `a write the kernel clamps is rolled back and reported as not realized`() {
+        val io = FakeIo(mutableMapOf(path to "1200000"), clampsTo = "1200000")
+        val node = GuardedNode(io, path)
+        val outcome = node.apply("2400000", policy = ValuePolicy.MaxCeiling)
+        assertTrue(outcome is WriteOutcome.NotRealized)
+        val notRealized = outcome as WriteOutcome.NotRealized
+        assertEquals("2400000", notRealized.requested)
+        assertEquals("1200000", notRealized.actual)
+        assertTrue(notRealized.restored)
         assertEquals("1200000", io.read(path))
         assertFalse(node.isHolding)
     }

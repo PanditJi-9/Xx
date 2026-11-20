@@ -19,6 +19,16 @@ enum class CapabilityState {
 }
 
 /**
+ * What can be done with a capability that exists. Kept separate from [CapabilityState] because
+ * "readable" is a real result: a diagnostic row that can be read is not "unavailable", and a
+ * control that can only be read must never look like a control that can be moved.
+ *
+ * Mirrors the access ladder MaxManager ships (`AccessLevel`), which came from measuring that a
+ * single "supported / not supported" flag hid read-only controls.
+ */
+enum class Access { NONE, READ_ONLY, READ_WRITE }
+
+/**
  * One capability, owned by exactly one module.
  *
  * The constructor rejects the two lies this model exists to prevent:
@@ -29,6 +39,7 @@ data class Capability(
     val id: String,
     val owner: String,
     val state: CapabilityState = CapabilityState.UNKNOWN,
+    val access: Access = Access.NONE,
     val reason: String? = null,
     val evidence: String? = null,
     val measuredAtMillis: Long? = null,
@@ -47,11 +58,13 @@ data class Capability(
     /** A copy with a newer measurement, keeping id and owner fixed. */
     fun remeasured(
         state: CapabilityState,
+        access: Access = this.access,
         reason: String? = null,
         evidence: String? = null,
         atMillis: Long,
     ): Capability = copy(
         state = state,
+        access = access,
         reason = reason,
         evidence = evidence,
         measuredAtMillis = atMillis,
