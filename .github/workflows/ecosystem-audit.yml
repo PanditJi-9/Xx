@@ -84,20 +84,27 @@ jobs:
           python3 tools/apk_xref.py --self-test
           python3 tools/apk_ipc.py --self-test
 
-      - name: Regenerate measured documents
+      - name: Regenerate measured documents (output captured to the repo)
         run: |
-          set -e
-          python3 tools/apk_inventory.py apps-ci/ \
-            --json docs/audit/apk-inventory.json \
-            --markdown docs/audit/APK_INVENTORY.md
-          python3 tools/apk_xref.py apps-ci/ \
-            --json docs/audit/apk-xref.json \
-            --markdown docs/audit/APP_DEPENDENCY_GRAPH.md
-          python3 tools/apk_ipc.py apps-ci/ \
-            --json docs/audit/apk-ipc.json \
-            --markdown docs/IPC_AND_INTEGRATION.md
-          python3 tools/make_component_catalog.py \
-            docs/audit/apk-inventory.json docs/audit/COMPONENT_CATALOG.md
+          # The run log itself is unreachable from outside while the Actions results
+          # service fails, so every command's output is written into the tree: a red run
+          # then leaves its own diagnosis in git instead of a blank page.
+          log=docs/audit/ci-last-run.log
+          : > "$log"
+          fail=0
+          while IFS= read -r cmd; do
+            [ -z "$cmd" ] && continue
+            echo "== $cmd" >> "$log"
+            bash -c "set -o pipefail; $cmd" >> "$log" 2>&1 || { echo "EXIT=$? for: $cmd" >> "$log"; fail=1; }
+          done <<'CMDS'
+          python3 tools/apk_inventory.py apps-ci/ --json docs/audit/apk-inventory.json --markdown docs/audit/APK_INVENTORY.md
+          python3 tools/apk_xref.py apps-ci/ --json docs/audit/apk-xref.json --markdown docs/audit/APP_DEPENDENCY_GRAPH.md
+          python3 tools/apk_ipc.py apps-ci/ --json docs/audit/apk-ipc.json --markdown docs/IPC_AND_INTEGRATION.md
+          python3 tools/make_component_catalog.py docs/audit/apk-inventory.json docs/audit/COMPONENT_CATALOG.md
+          CMDS
+          echo "failed=$fail" >> "$log"
+          tail -40 "$log"
+          exit "$fail"
 
       - name: Guard — nothing may be silently empty
         run: |
@@ -140,12 +147,13 @@ jobs:
             docs/audit/apk-ipc.json
             apps-ci/MISSING.txt
 
-      - name: Commit regenerated docs
-        if: ${{ inputs.commit_docs }}
+      - name: Commit regenerated docs (and the run log, even on failure)
+        if: ${{ always() && inputs.commit_docs }}
         run: |
           git config user.name 'ecosystem-audit'
           git config user.email 'actions@users.noreply.github.com'
-          git add docs/audit docs/IPC_AND_INTEGRATION.md
+          git add docs/audit docs/IPC_AND_INTEGRATION.md || true
           git diff --cached --quiet && echo "no drift" && exit 0
-          git commit -m "docs(audit): regenerate measured inventory in CI"
+          git commit -m "docs(audit): regenerate measured inventory in CI (${{ job.status }})"
+          git pull --rebase --autostash -q origin "${GITHUB_REF_NAME}" || true
           git push
