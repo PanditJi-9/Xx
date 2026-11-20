@@ -242,8 +242,17 @@ class HomeDeckModelTest {
             deck.contains("R.string.home_action_thermal"),
         )
         assertTrue(
-            "وزرّ الإعداد داخل رأس القسم نفسه لا في شريط الشاشة",
-            deck.contains("R.string.home_deck_settings_cd"),
+            "وزرّ الإعداد لم يبقَ في رأس القسم: أمر المالك ٢٠٢٦-١١-٢٠ نقله إلى مساحة الألعاب",
+            !deck.contains("R.string.home_deck_settings_cd"),
+        )
+        val lobby = read("ui/subscreens/LobbyControlCenter.kt")
+        assertTrue(
+            "ومدخله الوحيد في إعدادات مساحة الألعاب",
+            lobby.contains("R.string.home_deck_settings_cd"),
+        )
+        assertTrue(
+            "وورقة الضبط تُركَّب هناك لا في الرئيسية",
+            lobby.contains("HomeDeckSettingsSheet("),
         )
     }
 
