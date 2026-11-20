@@ -469,13 +469,17 @@ def main(argv: list[str]) -> int:
             print(f"WARN {r['file']}: {r['error']}", file=sys.stderr)
     if args.json:
         os.makedirs(os.path.dirname(os.path.abspath(args.json)), exist_ok=True)
-        with open(args.json, "w", encoding="utf-8") as fh:
+        tmp = args.json + ".tmp"
+        with open(tmp, "w", encoding="utf-8") as fh:
             json.dump({"apks": rows, "excluded": args.exclude}, fh, ensure_ascii=False, indent=1)
+        os.replace(tmp, args.json)
         print(f"json: {args.json} ({len(rows)} APKs, {len(errors)} errors)")
     if args.markdown:
         os.makedirs(os.path.dirname(os.path.abspath(args.markdown)), exist_ok=True)
-        with open(args.markdown, "w", encoding="utf-8") as fh:
+        tmp = args.markdown + ".tmp"
+        with open(tmp, "w", encoding="utf-8") as fh:
             fh.write(markdown(rows, excluded=f"{args.exclude} (المستثنى)"))
+        os.replace(tmp, args.markdown)
         print(f"markdown: {args.markdown}")
     if not args.json and not args.markdown:
         print(json.dumps(rows, ensure_ascii=False, indent=1))

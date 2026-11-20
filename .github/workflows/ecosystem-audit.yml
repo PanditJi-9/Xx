@@ -89,7 +89,7 @@ jobs:
           # The run log itself is unreachable from outside while the Actions results
           # service fails, so every command's output is written into the tree: a red run
           # then leaves its own diagnosis in git instead of a blank page.
-          log=docs/audit/ci-last-run.log
+          log=docs/audit/ci-last-run.txt
           : > "$log"
           fail=0
           while IFS= read -r cmd; do

@@ -245,8 +245,10 @@ def main(argv: list[str]) -> int:
               "vendor": vendor, "sizes": {n: len(s) for n, s in strings_by_apk.items()}}
     if args.json:
         os.makedirs(os.path.dirname(os.path.abspath(args.json)), exist_ok=True)
-        with open(args.json, "w", encoding="utf-8") as fh:
+        tmp = args.json + ".tmp"
+        with open(tmp, "w", encoding="utf-8") as fh:
             json.dump(report, fh, ensure_ascii=False, indent=1)
+        os.replace(tmp, args.json)
         print(f"json: {args.json}")
 
     if args.markdown:
@@ -291,8 +293,10 @@ def main(argv: list[str]) -> int:
                   "| --- | " + " | ".join("---" for _ in VENDOR_PREFIXES) + " |"]
         for name in sorted(vendor):
             lines.append(f"| {name.replace('.apk', '')} | " + " | ".join(str(vendor[name][p]) for p in VENDOR_PREFIXES) + " |")
-        with open(args.markdown, "w", encoding="utf-8") as fh:
+        tmp = args.markdown + ".tmp"
+        with open(tmp, "w", encoding="utf-8") as fh:
             fh.write("\n".join(lines) + "\n")
+        os.replace(tmp, args.markdown)
         print(f"markdown: {args.markdown}")
     return 0
 

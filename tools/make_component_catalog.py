@@ -60,8 +60,11 @@ def main(argv: list[str]) -> int:
                     f"| `{c.get('name','?')}` | {c.get('exported') or '—'} | `{c.get('permission') or '—'}` | {acts} |"
                 )
             out.append("")
-    with open(argv[1], "w", encoding="utf-8") as fh:
+    import os
+    tmp = argv[1] + ".tmp"
+    with open(tmp, "w", encoding="utf-8") as fh:
         fh.write("\n".join(out) + "\n")
+    os.replace(tmp, argv[1])
     print(f"wrote {argv[1]}")
     return 0
 

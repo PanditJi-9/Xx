@@ -144,8 +144,10 @@ def main(argv: list[str]) -> int:
 
     if args.json:
         os.makedirs(os.path.dirname(os.path.abspath(args.json)), exist_ok=True)
-        with open(args.json, "w", encoding="utf-8") as fh:
+        tmp = args.json + ".tmp"
+        with open(tmp, "w", encoding="utf-8") as fh:
             json.dump(report, fh, ensure_ascii=False, indent=1)
+        os.replace(tmp, args.json)
         print(f"json: {args.json}")
 
     if args.markdown:
@@ -181,8 +183,10 @@ def main(argv: list[str]) -> int:
                 if len(comps) > 40:
                     out.append(f"- … {len(comps) - 40} more")
                 out.append("")
-        with open(args.markdown, "w", encoding="utf-8") as fh:
+        tmp = args.markdown + ".tmp"
+        with open(tmp, "w", encoding="utf-8") as fh:
             fh.write("\n".join(out) + "\n")
+        os.replace(tmp, args.markdown)
         print(f"markdown: {args.markdown}")
     return 0
 
