@@ -84,13 +84,38 @@ jobs:
           ls -l targets
           sha256sum targets/*.apk | tee targets.sha256
 
+      # Phase 2 evidence: declarations, signature and one reference trace. Every command
+      # is recorded even when it fails, so a missing apktool/jadx on the runner shows up
+      # as a named limitation instead of an empty file.
+      - name: Collect package evidence (tolerant, recorded)
+        run: |
+          mkdir -p docs/audit/rea/evidence
+          log=docs/audit/rea/evidence/run.txt
+          : > "$log"
+          apk="targets/${{ inputs.target_apk }}"
+          collect() {
+            label="$1"; shift
+            echo "===== $label" >> "$log"
+            if "$@" >> "$log" 2>&1; then echo "status: ok" >> "$log"; else echo "status: FAILED" >> "$log"; fi
+            echo >> "$log"
+          }
+          collect "package (complete json)" rea inspect-android-package "$apk" --format json
+          collect "signature" rea inspect-apk-signature "$apk" --format json
+          collect "class inventory (first screens)" rea search-android-classes "$apk" --format json
+          for cls in cn.nubia.gameassist.GameAssistHandle cn.nubia.gameassist.MultiSubScreenSinkActivity; do
+            collect "references: $cls" rea trace-android-references "$apk" "$cls" --format json
+          done
+          tail -40 "$log"
+
       - uses: actions/upload-artifact@v4
         with:
           name: rea-cli-surface
           path: |
             rea-help.txt
             rea-version.txt
+            android-commands.txt
             targets.sha256
+            docs/audit/rea/evidence
 
       # The Actions results service is unreachable from the owner's side, so the CLI
       # surface is committed: Phase 2 needs the real command names, not a guess.
