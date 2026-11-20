@@ -58,6 +58,9 @@ class SettingsDestinationReachabilityTest {
         "MaxNavGraph.kt",
         "MaxDestinationCatalog.kt",
         "DestinationAccess.kt",
+        // جدول الرسم: يُسند لكل وجهة نوع رسمتها، ولا يحوي زرًّا ولا انتقالًا. فذكر
+        // `TouchBoost` فيه تصنيفٌ للرسم لا بابٌ إليها (وهي مخفيّة بأمر المالك).
+        "MaxDestinationIllustrations.kt",
     )
 
     private fun sourceRoot(): File? {

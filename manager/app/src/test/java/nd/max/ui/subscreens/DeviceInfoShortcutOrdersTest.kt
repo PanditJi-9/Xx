@@ -215,7 +215,7 @@ class DeviceInfoShortcutOrdersTest {
         )
         assertTrue(
             "والسهم باقٍ AutoMirrored كما كان (ينعكس مع اتجاه اللغة)",
-            component.contains("Icons.AutoMirrored.Filled.KeyboardArrowRight"),
+            component.contains("Icons.AutoMirrored.Rounded.KeyboardArrowRight"),
         )
     }
 
