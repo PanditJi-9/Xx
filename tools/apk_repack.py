@@ -18,6 +18,16 @@
 4. **توقيعات `META-INF/*.SF|*.RSA|*.DSA` القديمة تُحذف**: بعد تعديل DEX صارت باطلة،
    وإبقاؤها يجعل `apksigner verify` يرفض الحزمة أو — أسوأ — يُثبِّت المنصّة نسخةً بتوقيع
    v1 قديم لا يطابق المحتوى.
+5. **كل مدخل ينتهي بـ`.bc` يُحذف**: مُثبِّت أندرويد يقرأ أي اسم ينتهي بـ`.bc` على أنه
+   **RenderScript bitcode**، ثم يبحث عن `lib/<abi>/libclcore.bc`؛ ولا نُشحن RenderScript،
+   فيرجع `NativeLibraryHelper` بالرمز `-113` ويُسقط التثبيت رسالةً مضلِّلة:
+   `INSTALL_FAILED_NO_MATCHING_ABIS … Failed to extract native libraries`.
+   **وهو ما حدث فعلًا (٢٠٢٦-١١-٢٠):** `-repackageclasses 'o'` في `proguard-rules.pro` يسمّي
+   الأصناف باسمين قصيرين، فصار وصف `META-INF/services/<واجهة>` اسمه `o.bc` في بناءٍ واحد،
+   فرُفضت حزمة الإصدار `V5.1 (746-66137649-stable)` على جهاز المالك. والقِياس على الجهاز:
+   إضافة `assets/foo.bc` إلى حزمةٍ تعمل ⇒ فشل · تغيير الاسم إلى `o.bd` ⇒ نجاح · حذف
+   `META-INF/services/` ⇒ نجاح · إعادة نفس المحتوى باسم `.bc` ⇒ فشل. فالحذف هنا هو ما
+   يجعل التثبيت مستقلًّا عن حظّ R8 في تسمية الأصناف.
 
 **وحدّها:** تُعيد الحزم ولا تُوقّع (التوقيع يحتاج keystore وسرًّا، ولا يُكتب سرّ في أداة).
 والخطوة التالية في CI هي `zipalign` ثم `apksigner sign`.
@@ -53,7 +63,12 @@ STALE_SIGNATURE_SUFFIXES = (".SF", ".RSA", ".DSA", ".EC")
 
 def should_skip(rel: str) -> bool:
     upper = rel.upper()
-    return upper.startswith(STALE_SIGNATURE_PREFIX) and upper.endswith(STALE_SIGNATURE_SUFFIXES)
+    if upper.startswith(STALE_SIGNATURE_PREFIX) and upper.endswith(STALE_SIGNATURE_SUFFIXES):
+        return True
+    # RenderScript bitcode: مجرّد **اسم** ينتهي بـ`.bc` يجعل المُثبِّت يتوقّع
+    # `lib/<abi>/libclcore.bc`، ولا نُشحنه، فيفشل بـ-113. و`verify_obstacles` ترفض
+    # أي حزمة يبقى فيها هذا الاسم، فلا يمرّ حذفٌ صامت إلى الشحن.
+    return rel.lower().endswith(".bc")
 
 
 def repack(source_dir: str, out_path: str) -> int:
@@ -113,6 +128,10 @@ def self_test() -> int:
             handle.write(b"Signature-Version: 1.0\n")
         with open(os.path.join(source, "META-INF", "CERT.RSA"), "wb") as handle:
             handle.write(b"\x30\x82")
+        # اسم ينتهي بـ`.bc`: يجعل المُثبِّت يظنّ الحزمة حاملة RenderScript فيرفضها بـ-113.
+        os.makedirs(os.path.join(source, "META-INF", "services"))
+        with open(os.path.join(source, "META-INF", "services", "o.bc"), "wb") as handle:
+            handle.write(b"o.bc\n")
 
         out = os.path.join(work, "out.apk")
         count = repack(source, out)
@@ -125,6 +144,7 @@ def self_test() -> int:
             expect("dex مضغوط", infos["classes.dex"].compress_type == zipfile.ZIP_DEFLATED)
             expect("المكتبة مُخزَّنة (‏extractNativeLibs=false)", infos["lib/arm64-v8a/libx.so"].compress_type == zipfile.ZIP_STORED)
             expect("التوقيع القديم محذوف", "META-INF/CERT.SF" not in names and "META-INF/CERT.RSA" not in names)
+            expect("مدخل `.bc` محذوف", "META-INF/services/o.bc" not in names)
             expect("البيان أولًا", names[0] == "AndroidManifest.xml")
             expect("العضوية كاملة", set(names) == {
                 "AndroidManifest.xml", "resources.arsc", "classes.dex", "lib/arm64-v8a/libx.so",
@@ -147,6 +167,11 @@ def self_test() -> int:
             archive.writestr(info, b"\x7fELF" + b"E" * 500)
         expect("مكتبة مضغوطة تُرفَض", any(p.startswith("lib_compressed:") for p in verify_obstacles(bad)))
         expect("حزمة غائبة تُرفَض", verify_obstacles(os.path.join(work, "none.apk")) != [])
+
+        # واسم `.bc` إن نجا إلى حزمة جاهزة، فلا بدّ أن يُرفَض صراحةً لا أن يمرّ صامتًا.
+        with zipfile.ZipFile(os.path.join(work, "bc.apk"), "w", zipfile.ZIP_DEFLATED) as archive:
+            archive.writestr(zipfile.ZipInfo("META-INF/services/o.bc"), b"o.bc\n")
+        expect("مدخل `.bc` ناجٍ يُرفَض", any(p.startswith("bc_entry:") for p in verify_obstacles(os.path.join(work, "bc.apk"))))
 
     if failures:
         print("✗ الأداة نفسها معطوبة:")
@@ -171,6 +196,9 @@ def verify_obstacles(apk_path: str) -> list[str]:
                     problems.append(f"lib_compressed: {name}")
                 if name == "resources.arsc" and info.compress_type != zipfile.ZIP_STORED:
                     problems.append("arsc_compressed: resources.arsc")
+                # اسم ينتهي بـ`.bc` يقلب التثبيت إلى `NO_MATCHING_ABIS` بلا علاقة بالمكتبات.
+                if name.lower().endswith(".bc"):
+                    problems.append(f"bc_entry: {name}")
     except zipfile.BadZipFile:
         problems.append(f"apk_bad_zip: {apk_path}")
     return problems
