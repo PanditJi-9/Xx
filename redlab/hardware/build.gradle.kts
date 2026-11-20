@@ -14,4 +14,9 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
 }
 
-tasks.test { useJUnit() }
+tasks.test {
+    useJUnit()
+    // Print each result: a task that passes because it discovered no tests is a silent lie,
+    // and this project has already been bitten by gates that measured nothing.
+    testLogging { events("passed", "failed", "skipped") }
+}
