@@ -46,8 +46,18 @@
 | `ThermalGuard` · `ThermalCeilingRouter` | `PowerManager` | يُستبدل بمصدر ضغط محقون |
 | `AtlasRouteMemory` · `AtlasRouteMemoryFactory` · `AtlasAdaptiveExecutor` | `core.atlas.*` (6 أنواع) | حزمة كاملة لم تُنقل |
 
-**لهذا لا تُضاف `:hardware` إلى `settings.gradle.kts` بعد:** وحدة لا تُترجم لا تُشحن كتقدّم، والأسوأ أن
-تكسر CI. تبقى الملفات في الشجرة مع هذه الوثيقة، وتُفعَّل الوحدة عند اكتمال إغلاقها.
+**الترتيب الحالي:** الوحدة `:hardware` **مُفعّلة في البناء** بالملفات الأربعة المغلقة فعلًا
+(`ControlOwnership` · `DriftGuard` · `ManualControlLocks` · `VerifiedControl`) واختبار `DriftGuardTest`
+المنقول. والباقي **مُرحَّل في `redlab/hardware/staging/`**: موجود في الشجرة بترويسة مصدره، خارج البناء،
+فلا يُدَّعى أنه يعمل.
+
+**خريطة الفتح:** `docs/audit/MAXMANAGER_PORT_MAP.md` (مولَّدة) تسرد لكل ملف مُرحَّل الرموز الناقصة،
+وأكبر الفاتحين بالقياس: `RootFileAccess` (يفتح 7) ثم `GpuHardwareBackend` (6) ثم `HardwareControlArbiter`
+(6) ثم `HardwareVerification` (5).
+
+**لماذا `RootFileAccess` أولًا:** هو طبقة النقل (daemon/binder/native عند MaxManager)، وكل المسار
+العميق يمرّ به. نقله عندنا = **استبدال ثلاث قنوات بمقعد واحد** (`ControlSeat`/`ShellSeat`)، وهذا يطابق
+`docs/CONTROL_TIERS.md` بدل أن يكرّر ثلاث قنوات لا معنى لها في منتج جديد.
 
 ## 3. الخطوة التالية المحدَّدة (بالترتيب)
 
