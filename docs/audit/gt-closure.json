@@ -1,0 +1,188 @@
+{
+  "apps": [
+    {
+      "app": "cn.nubia.gameassist",
+      "file": "GameAssist.apk",
+      "verdict": "SEED",
+      "depth": 0,
+      "weak_refs": 2,
+      "why": "Game Turbo seed (library + in-game assist)"
+    },
+    {
+      "app": "cn.nubia.gamelauncher",
+      "file": "GameSpace.apk",
+      "verdict": "SEED",
+      "depth": 0,
+      "weak_refs": 2,
+      "why": "Game Turbo seed (library + in-game assist)"
+    },
+    {
+      "app": "cn.nubia.gamehelperline",
+      "file": "GameHelperLine.apk",
+      "verdict": "REQUIRED",
+      "depth": 1,
+      "weak_refs": 0,
+      "why": "shared action(s): cn.nubia.action.GAME_MODE, cn.nubia.gamelauncher.action.START_HELPER, cn.nubia.gamelauncher.action.START_SIGHTASSIST"
+    },
+    {
+      "app": "cn.nubia.gamehelpmodule",
+      "file": "NubiaGameHelperModule.apk",
+      "verdict": "REQUIRED",
+      "depth": 1,
+      "weak_refs": 0,
+      "why": "shared action(s): cn.nubia.action.GAME_MODE"
+    },
+    {
+      "app": "cn.nubia.gamelab",
+      "file": "NubiaGameLab_MFV.apk",
+      "verdict": "REQUIRED",
+      "depth": 1,
+      "weak_refs": 1,
+      "why": "uses permission(s) declared here: cn.nubia.gamelab.permission.gameocr"
+    },
+    {
+      "app": "cn.nubia.gamenotes",
+      "file": "NubiaGameNotes.apk",
+      "verdict": "REQUIRED",
+      "depth": 1,
+      "weak_refs": 2,
+      "why": "this app uses their permission(s): cn.nubia.tgk.permission.FILE_PROVIDER"
+    },
+    {
+      "app": "cn.nubia.gamepad",
+      "file": "NubiaGamepad_160.apk",
+      "verdict": "REQUIRED",
+      "depth": 1,
+      "weak_refs": 0,
+      "why": "shared action(s): cn.nubia.gamepad.startGamepadService"
+    },
+    {
+      "app": "cn.nubia.gamewidget",
+      "file": "NubiaGameWidget.apk",
+      "verdict": "REQUIRED",
+      "depth": 1,
+      "weak_refs": 1,
+      "why": "shared action(s): cn.nubia.action.GAME_MODE"
+    },
+    {
+      "app": "cn.zte.gamefloat",
+      "file": "GameFloatWindow.apk",
+      "verdict": "REQUIRED",
+      "depth": 1,
+      "weak_refs": 3,
+      "why": "shared action(s): cn.nubia.action.GAME_MODE, cn.zte.gamefloat.powerpanel.action.FOREGROUND_GAME_CHANGE"
+    },
+    {
+      "app": "com.nubia.gamecenter",
+      "file": "NBGameCenter_Abroad.apk",
+      "verdict": "REQUIRED",
+      "depth": 1,
+      "weak_refs": 1,
+      "why": "uses permission(s) declared here: cn.nubia.neostore.downloadService"
+    },
+    {
+      "app": "com.zte.game.plugintrigger",
+      "file": "GamePluginTrigger.apk",
+      "verdict": "REQUIRED",
+      "depth": 2,
+      "weak_refs": 1,
+      "why": "uses permission(s) declared here: com.zte.game.plugintrigger.permission.FILE_PROVIDER"
+    },
+    {
+      "app": "cn.nubia.gamehighlights",
+      "file": "NBHighLights_RedMagic.apk",
+      "verdict": "NEEDS_REVIEW",
+      "depth": null,
+      "weak_refs": 1,
+      "why": "no measured edge to any app in the closure"
+    },
+    {
+      "app": "cn.nubia.virtualgamehandle",
+      "file": "VirtualGameHandle.apk",
+      "verdict": "NEEDS_REVIEW",
+      "depth": null,
+      "weak_refs": 2,
+      "why": "no measured edge to any app in the closure"
+    },
+    {
+      "app": "cn.zte.gameaiasst",
+      "file": "GameAIAsst.apk",
+      "verdict": "NEEDS_REVIEW",
+      "depth": null,
+      "weak_refs": 2,
+      "why": "no measured edge to any app in the closure"
+    },
+    {
+      "app": "com.zte.beautify",
+      "file": "LauncherBeautify_MFV_abroad.apk",
+      "verdict": "NEEDS_REVIEW",
+      "depth": null,
+      "weak_refs": 4,
+      "why": "no measured edge to any app in the closure"
+    },
+    {
+      "app": "com.zte.mifavor.launcher",
+      "file": "Launcher_MFV_abroad.apk",
+      "verdict": "NEEDS_REVIEW",
+      "depth": null,
+      "weak_refs": 1,
+      "why": "no measured edge to any app in the closure"
+    },
+    {
+      "app": "com.zte.xr.gamelauncher",
+      "file": "XRLauncher.apk",
+      "verdict": "NEEDS_REVIEW",
+      "depth": null,
+      "weak_refs": 1,
+      "why": "no measured edge to any app in the closure"
+    },
+    {
+      "app": "cn.nubia.gamepi",
+      "file": "GamePi.apk",
+      "verdict": "NOT_NEEDED",
+      "depth": null,
+      "weak_refs": 0,
+      "why": "no measured edge to any app in the closure"
+    },
+    {
+      "app": "com.zte.beautifyadapter",
+      "file": "LauncherBeautifyAdapter.apk",
+      "verdict": "NOT_NEEDED",
+      "depth": null,
+      "weak_refs": 0,
+      "why": "no measured edge to any app in the closure"
+    },
+    {
+      "app": "com.zte.gallerylockscreen",
+      "file": "RedMagicWallPaper_Abroad.apk",
+      "verdict": "NOT_NEEDED",
+      "depth": null,
+      "weak_refs": 0,
+      "why": "no measured edge to any app in the closure"
+    },
+    {
+      "app": "com.zte.gamecardassist",
+      "file": "GameCardAssist.apk",
+      "verdict": "NOT_NEEDED",
+      "depth": null,
+      "weak_refs": 0,
+      "why": "no measured edge to any app in the closure"
+    },
+    {
+      "app": "com.zte.mifavor.launcher.adapter",
+      "file": "LauncherAdapter_MFV.apk",
+      "verdict": "NOT_NEEDED",
+      "depth": null,
+      "weak_refs": 0,
+      "why": "no measured edge to any app in the closure"
+    },
+    {
+      "app": "com.zte.mifavor.launcher.resource",
+      "file": "LauncherResource_MyOSAbroad.apk",
+      "verdict": "NOT_NEEDED",
+      "depth": null,
+      "weak_refs": 0,
+      "why": "no measured edge to any app in the closure"
+    }
+  ]
+}
