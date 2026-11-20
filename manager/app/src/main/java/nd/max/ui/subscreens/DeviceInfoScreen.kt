@@ -36,7 +36,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.PhoneAndroid
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
@@ -258,7 +258,7 @@ fun DeviceInfoScreen(
     MaxListScreen(
         title = stringResource(R.string.device_info),
         onBack = actions::back,
-        accentIcon = Icons.Rounded.Info,
+        accentIcon = Icons.Rounded.PhoneAndroid,
         reserveBottom = false,
         actions = {
             MaxHelpAction(

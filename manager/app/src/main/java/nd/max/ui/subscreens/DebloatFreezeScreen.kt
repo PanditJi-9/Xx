@@ -19,13 +19,16 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material.icons.rounded.AcUnit
 import androidx.compose.material.icons.rounded.DeleteForever
 import androidx.compose.material.icons.rounded.DeleteSweep
 import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.MoreVert
+import androidx.compose.material.icons.rounded.Refresh
+import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -282,7 +285,7 @@ private fun DebloatAppRow(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     MaxSwitch(checked = app.isEnabled, onCheckedChange = { onToggleFreeze() })
                     IconButton(onClick = { menuExpanded = true }) {
-                        Icon(Icons.Default.MoreVert, contentDescription = stringResource(R.string.cd_menu))
+                        Icon(Icons.Rounded.MoreVert, contentDescription = stringResource(R.string.cd_menu))
                     }
                 }
                 DropdownMenu(expanded = menuExpanded, onDismissRequest = { menuExpanded = false }) {
@@ -339,7 +342,7 @@ private fun DebloatFreezeTopAppBar(
                 },
                 navigationIcon = {
                     IconButton(onClick = { onSearchModeChange(false); onSearchChange(TextFieldValue("")) }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.cd_back))
+                        Icon(Icons.AutoMirrored.Rounded.ArrowBack, stringResource(R.string.cd_back))
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -358,10 +361,10 @@ private fun DebloatFreezeTopAppBar(
             accent = MaterialTheme.colorScheme.tertiary,
             actions = {
                 IconButton(onClick = { onSearchModeChange(true) }) {
-                    Icon(Icons.Default.Search, stringResource(R.string.cd_search))
+                    Icon(Icons.Rounded.Search, stringResource(R.string.cd_search))
                 }
                 IconButton(onClick = onRefresh) {
-                    Icon(Icons.Default.Refresh, stringResource(R.string.menu_refresh))
+                    Icon(Icons.Rounded.Refresh, stringResource(R.string.menu_refresh))
                 }
                 MaxHelpAction(
                     title = stringResource(R.string.debloat_freeze_title),

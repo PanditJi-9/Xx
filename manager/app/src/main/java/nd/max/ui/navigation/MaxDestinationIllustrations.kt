@@ -20,14 +20,17 @@ val MaxDestination.illustrationKind: MaxIllustrationKind
         MaxDestination.GpuHub -> MaxIllustrationKind.Gpu
         MaxDestination.MemoryHub -> MaxIllustrationKind.Memory
         MaxDestination.DisplayHub -> MaxIllustrationKind.Display
-        MaxDestination.ResponsivenessHub -> MaxIllustrationKind.Controls
+        MaxDestination.ResponsivenessHub, MaxDestination.TouchBoost -> MaxIllustrationKind.Touch
         MaxDestination.ThermalHub -> MaxIllustrationKind.Thermal
         MaxDestination.PowerHub -> MaxIllustrationKind.Power
-        MaxDestination.StorageHub, MaxDestination.MaxBackup, MaxDestination.ConfigBackup -> MaxIllustrationKind.Storage
+        MaxDestination.StorageHub -> MaxIllustrationKind.Storage
+        MaxDestination.MaxBackup, MaxDestination.ConfigBackup -> MaxIllustrationKind.Backup
         MaxDestination.NetworkHub -> MaxIllustrationKind.Network
         MaxDestination.AudioHub -> MaxIllustrationKind.Audio
         MaxDestination.GameLobby, MaxDestination.EmulatorHub -> MaxIllustrationKind.Games
-        MaxDestination.Permissions, MaxDestination.Privilege, MaxDestination.License -> MaxIllustrationKind.Security
+        MaxDestination.Permissions, MaxDestination.Privilege -> MaxIllustrationKind.Security
+        MaxDestination.License -> MaxIllustrationKind.Key
+        MaxDestination.DozeMode -> MaxIllustrationKind.Sleep
         MaxDestination.DeviceLab -> MaxIllustrationKind.Sensors
         MaxDestination.DynamicIsland -> MaxIllustrationKind.Island
         MaxDestination.FpsOverlay -> MaxIllustrationKind.Overlay

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
@@ -30,6 +31,7 @@ import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.drawscope.translate
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.unit.IntOffset
@@ -73,6 +75,19 @@ internal object NeonColors {
 /** يضع عنصرًا بإحداثي ومقاس مطلقين في فضاء التصميم. */
 internal fun Modifier.at(x: Float, y: Float, w: Float, h: Float): Modifier =
     offset { IntOffset(x.roundToInt(), y.roundToInt()) }.size(w.dp, h.dp)
+
+/**
+ * هل اللوحة منعكسة أفقيًّا؟ تنعكس حين تلتصق بالحافة **اليمنى**، فتبقى قائمة التبويبات ملاصقةً لحافة الهاتف
+ * في الجهتين (الأصل: القائمة على اليسار = الحافة اليسرى).
+ *
+ * الانعكاس يقع على فضاء التصميم كلّه دفعةً واحدة؛ وما لا يجوز أن ينعكس (نصّ، أيقونة، عدّاد) يقلب نفسه
+ * ثانيةً حول مركزه بـ[upright] فيبقى كما في الأصل في موضعٍ منعكس.
+ */
+internal val LocalNeonMirror = compositionLocalOf { false }
+
+/** يقلب العنصر حول مركزه عند [mirror] ليُلغي انعكاس اللوحة عنه: موضعه يبقى منعكسًا ومحتواه يبقى سويًّا. */
+internal fun Modifier.upright(mirror: Boolean): Modifier =
+    if (mirror) graphicsLayer { scaleX = -1f } else this
 
 /** مضلّع من أزواج x,y متتالية. */
 internal fun poly(vararg p: Float): Path = Path().apply {
@@ -170,6 +185,7 @@ internal fun GlowIcon(
     Box(
         Modifier
             .at(cx - box / 2f, cy - box / 2f, box, box)
+            .upright(LocalNeonMirror.current)
             .drawBehind {
                 halo(center, size * 1.0f, glow, haloAlpha * dim)
                 val iconRect = Rect(center.x - size / 2f, center.y - size / 2f, center.x + size / 2f, center.y + size / 2f)
@@ -229,6 +245,7 @@ internal fun GlowShape(
     Box(
         Modifier
             .at(cx - box / 2f, cy - box / 2f, box, box)
+            .upright(LocalNeonMirror.current)
             .drawBehind {
                 halo(center, size * 1.0f, glow, haloAlpha * dim)
                 translate(center.x - size / 2f, center.y - size / 2f) {

@@ -55,8 +55,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.*
-import androidx.compose.material.icons.filled.Assistant
-import androidx.compose.material.icons.filled.PowerSettingsNew
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
@@ -286,7 +284,7 @@ fun HomeTopAppBar(scrollBehavior: TopAppBarScrollBehavior, onRebootClick: () -> 
             ),
             actions = {
                 IconButton(onClick = onRebootClick) {
-                    Icon(imageVector = Icons.Filled.PowerSettingsNew, contentDescription = stringResource(R.string.reboot))
+                    Icon(imageVector = Icons.Rounded.PowerSettingsNew, contentDescription = stringResource(R.string.reboot))
                 }
             },
             scrollBehavior = scrollBehavior,
@@ -431,7 +429,7 @@ fun BannerCard(
                     label = "BannerIconAnim"
                 ) { alive ->
                     Icon(
-                        imageVector = if (alive) Icons.Outlined.CheckCircle else Icons.Rounded.ErrorOutline,
+                        imageVector = if (alive) Icons.Rounded.CheckCircle else Icons.Rounded.ErrorOutline,
                         contentDescription = null, 
                         tint = colorScheme.onSecondaryContainer, 
                         modifier = Modifier.size(42.dp)
@@ -494,7 +492,7 @@ private fun ProfileAutoToggle(
         modifier = modifier.scale(0.72f),
         thumbContent = {
             Icon(
-                imageVector = if (autoEnabled) Icons.Filled.Assistant else Icons.Rounded.ChevronRight,
+                imageVector = if (autoEnabled) Icons.Rounded.Autorenew else Icons.Rounded.Tune,
                 contentDescription = stringResource(
                     if (autoEnabled) R.string.str_auto_mode else R.string.current_profile
                 ),
@@ -708,13 +706,13 @@ fun RebootBottomSheet(
     val isUserspaceSupported = Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && pm?.isRebootingUserspaceSupported == true
 
     val options = buildList<Triple<String, String, ImageVector>> {
-        add(Triple(stringResource(R.string.reboot), "", Icons.Outlined.Refresh))
-        if (isUserspaceSupported) add(Triple(stringResource(R.string.reboot_userspace), "userspace", Icons.Outlined.RestartAlt))
-        // add(Triple(stringResource(R.string.reboot_soft), "soft_reboot", Icons.Outlined.Refresh))
-        add(Triple(stringResource(R.string.reboot_recovery), "recovery", Icons.Outlined.SystemUpdate))
-        add(Triple(stringResource(R.string.reboot_bootloader), "bootloader", Icons.Outlined.Memory))
-        add(Triple(stringResource(R.string.reboot_download), "download", Icons.Outlined.Download))
-        add(Triple(stringResource(R.string.reboot_edl), "edl", Icons.Outlined.DeveloperMode))
+        add(Triple(stringResource(R.string.reboot), "", Icons.Rounded.RestartAlt))
+        if (isUserspaceSupported) add(Triple(stringResource(R.string.reboot_userspace), "userspace", Icons.Rounded.Refresh))
+        // add(Triple(stringResource(R.string.reboot_soft), "soft_reboot", Icons.Rounded.Refresh))
+        add(Triple(stringResource(R.string.reboot_recovery), "recovery", Icons.Rounded.SystemUpdate))
+        add(Triple(stringResource(R.string.reboot_bootloader), "bootloader", Icons.Rounded.Usb))
+        add(Triple(stringResource(R.string.reboot_download), "download", Icons.Rounded.Download))
+        add(Triple(stringResource(R.string.reboot_edl), "edl", Icons.Rounded.DeveloperMode))
     }
 
 

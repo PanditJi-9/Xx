@@ -31,7 +31,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -211,7 +211,7 @@ private fun MemoryFactRow(
             // السهم في نهاية الصفّ: هذا الصفّ بابٌ إلى شاشته، لا بيان.
             Spacer(Modifier.width(MaxSpace.xs))
             Icon(
-                Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                Icons.AutoMirrored.Rounded.KeyboardArrowRight,
                 null,
                 Modifier.size(MaxSize.iconGlyphSmall),
                 tint = accent,

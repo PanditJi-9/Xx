@@ -13,7 +13,7 @@ import androidx.annotation.StringRes
 
 import androidx.compose.ui.graphics.Color
 
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 
 import androidx.compose.ui.semantics.Role
 
@@ -486,7 +486,7 @@ private fun SceneLine(line: StoryLine, scheme: ColorScheme, showReason: Boolean 
         if (route != null) {
             Spacer(Modifier.width(MaxSpace.xs))
             Icon(
-                Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                Icons.AutoMirrored.Rounded.KeyboardArrowRight,
                 contentDescription = null,
                 tint = scheme.onSurfaceVariant,
                 modifier = Modifier.size(MaxSize.iconGlyphSmall),

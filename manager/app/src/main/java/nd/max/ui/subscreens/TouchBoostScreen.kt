@@ -28,7 +28,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Bolt
-import androidx.compose.material.icons.rounded.Nightlight
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.Shield
 import androidx.compose.material.icons.rounded.TouchApp
@@ -259,7 +258,7 @@ fun TouchBoostScreen(
                     subtitle = stringResource(R.string.touch_dt2w_desc),
                     checked = viewModel.doubleTapEnabled,
                     onCheckedChange = viewModel::setDoubleTapToWake,
-                    icon = Icons.Rounded.Nightlight,
+                    icon = Icons.Rounded.TouchApp,
                     iconTone = MaxTone.Neutral,
                     enabled = dt2wNode != null,
                     lockedReason = stringResource(R.string.max_touch_dt2w_locked),

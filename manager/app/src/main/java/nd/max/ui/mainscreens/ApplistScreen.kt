@@ -54,14 +54,13 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.rounded.Apps
-import androidx.compose.material.icons.rounded.Gamepad
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.rounded.Sort
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.Clear
+import androidx.compose.material.icons.rounded.Gamepad
+import androidx.compose.material.icons.rounded.Refresh
+import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
@@ -179,7 +178,7 @@ fun ApplistScreen(navController: NavHostController) {
                             onClick = { viewModel.loadApps(context, forceRefresh = true) },
                             enabled = !viewModel.isRefreshing
                         ) {
-                            Icon(Icons.Filled.Refresh, contentDescription = stringResource(R.string.cd_refresh))
+                            Icon(Icons.Rounded.Refresh, contentDescription = stringResource(R.string.cd_refresh))
                         }
                     },
                     colors = TopAppBarDefaults.topAppBarColors(
@@ -332,12 +331,12 @@ private fun AppSearchField(
         onValueChange = onQueryChange,
         modifier = Modifier.fillMaxWidth(),
         placeholder = { Text(stringResource(R.string.search_apps)) },
-        leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
+        leadingIcon = { Icon(Icons.Rounded.Search, contentDescription = null) },
         trailingIcon = if (query.text.isNotEmpty()) {
             {
                 IconButton(onClick = onClear) {
                     Icon(
-                        Icons.Filled.Clear,
+                        Icons.Rounded.Clear,
                         contentDescription = stringResource(R.string.cd_clear)
                     )
                 }
@@ -394,7 +393,7 @@ private fun AppFilterRow(
                 leadingIcon = if (selected == filter) {
                     {
                         Icon(
-                            Icons.Filled.Check,
+                            Icons.Rounded.Check,
                             contentDescription = null,
                             modifier = Modifier.size(16.dp)
                         )
@@ -444,7 +443,7 @@ private fun AppResultsBar(
                     DropdownMenuItem(
                         text = { Text(stringResource(option.labelRes)) },
                         leadingIcon = if (sort == option) {
-                            { Icon(Icons.Filled.Check, contentDescription = null) }
+                            { Icon(Icons.Rounded.Check, contentDescription = null) }
                         } else {
                             null
                         },

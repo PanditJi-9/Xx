@@ -67,8 +67,8 @@ import nd.max.ui.design.MaxSize
 import nd.max.ui.design.MaxSpace
 import nd.max.ui.design.MAX_VALUE_UNAVAILABLE
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.FiberManualRecord
 import androidx.compose.material.icons.rounded.Stop
 import androidx.compose.material.icons.rounded.Visibility
@@ -472,7 +472,7 @@ private fun HudActions(
         }
         if (onClose != null) {
             HudAction(
-                icon = Icons.Filled.Close,
+                icon = Icons.Rounded.Close,
                 tint = RecordDot,
                 description = stringResource(R.string.hud_action_close_cd),
                 onClick = onClose

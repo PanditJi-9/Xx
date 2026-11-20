@@ -10,8 +10,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material.icons.automirrored.outlined.HelpOutline
+import androidx.compose.material.icons.automirrored.rounded.HelpOutline
+import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -36,7 +36,7 @@ fun MaxDecisionCard(
     guidance: String,
     modifier: Modifier = Modifier,
     title: String = "CURRENT STATE",
-    icon: ImageVector = Icons.Outlined.Info,
+    icon: ImageVector = Icons.Rounded.Info,
     accent: Color = MaterialTheme.colorScheme.primary
 ) {
     val scheme = MaterialTheme.colorScheme
@@ -82,7 +82,7 @@ fun MaxScreenHelpDialog(
     if (!visible) return
     AlertDialog(
         onDismissRequest = onDismiss,
-        icon = { Icon(Icons.AutoMirrored.Outlined.HelpOutline, contentDescription = null) },
+        icon = { Icon(Icons.AutoMirrored.Rounded.HelpOutline, contentDescription = null) },
         title = { Text(title, fontWeight = FontWeight.Bold) },
         text = { Text(description, color = MaterialTheme.colorScheme.onSurfaceVariant) },
         confirmButton = {

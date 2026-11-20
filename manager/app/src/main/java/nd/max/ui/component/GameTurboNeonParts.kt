@@ -7,6 +7,7 @@
 
 package nd.max.ui.component
 
+import androidx.annotation.StringRes
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -20,16 +21,20 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Balance
+import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.CleaningServices
 import androidx.compose.material.icons.rounded.GraphicEq
 import androidx.compose.material.icons.rounded.LightMode
 import androidx.compose.material.icons.rounded.Lock
 import androidx.compose.material.icons.rounded.NotificationsOff
 import androidx.compose.material.icons.rounded.Palette
+import androidx.compose.material.icons.rounded.PhoneAndroid
 import androidx.compose.material.icons.rounded.PhoneDisabled
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.rounded.Speed
@@ -63,6 +68,8 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -85,6 +92,16 @@ internal const val NEON_H = 1135f
 /** حالة شريط الحالة السفلي: ما يُقال فيه حقيقيّ دائمًا، و`Idle` لا يدّعي إنجازًا. */
 internal enum class NeonBarKind { Idle, Working, Done, Failed }
 
+/**
+ * جهة محاذاة النصّ الفعلية: في اللوحة المنعكسة ([mirror]) تتبدّل الجهتان فالنصّ الذي كان يلاصق يسار صندوقه
+ * يلاصق يمينه، أمّا الوسط فلا يتغيّر. دالّة نقيّة ليُقاس تبديلها في JVM عادي.
+ */
+internal fun neonEdge(align: TextAlign, mirror: Boolean): TextAlign = when {
+    !mirror || align == TextAlign.Center -> align
+    align == TextAlign.End -> TextAlign.Start
+    else -> TextAlign.End
+}
+
 /** نصّ بإحداثي مطلق يصغّر نفسه تلقائيًا إن ضاق عليه عرضه (ترجمة أطول من الأصل). */
 @Composable
 internal fun NeonText(
@@ -101,10 +118,32 @@ internal fun NeonText(
     glow: Color? = null,
     alpha: Float = 1f
 ) {
-    var shrink by remember(text, w, size) { mutableStateOf(1f) }
+    val measurer = rememberTextMeasurer()
+    // العرض الطبيعيّ يُقاس مرّة لكل نصّ: ما زاد على صندوقه يُصغَّر بنسبة الضيق (حتى ٥٥٪) فلا يُقصّ بـ«…».
+    // وليس بـ`didOverflowWidth`: القصّ بالإبهام يُخفي الفيضان عنه فيبقى الخطّ كبيرًا.
+    val fit = remember(text, w, size, weight, italic) {
+        val natural = measurer.measure(
+            text = text,
+            style = TextStyle(
+                fontSize = size.sp,
+                fontWeight = weight,
+                fontStyle = if (italic) FontStyle.Italic else FontStyle.Normal,
+                letterSpacing = 0.sp
+            ),
+            overflow = TextOverflow.Clip,
+            softWrap = false,
+            maxLines = 1,
+            constraints = Constraints()
+        ).size.width
+        if (natural > w && natural > 0) max(0.55f, w / natural) else 1f
+    }
+    // في اللوحة المنعكسة (ملتصقة باليمين) يقلب النصّ نفسه حول مركز صندوقه فيبقى مقروءًا، وتتبدّل جهتا
+    // المحاذاة: النصّ الذي كان يلاصق يسار صندوقه (بجانب أيقونة على يساره) يلاصق الآن يمينه بجانب أيقونته.
+    val mirror = LocalNeonMirror.current
+    val edge = neonEdge(align, mirror)
     Box(
-        Modifier.at(x, y, w, h),
-        contentAlignment = when (align) {
+        Modifier.at(x, y, w, h).upright(mirror),
+        contentAlignment = when (edge) {
             TextAlign.Center -> Alignment.Center
             TextAlign.End -> Alignment.CenterEnd
             else -> Alignment.CenterStart
@@ -113,21 +152,23 @@ internal fun NeonText(
         Text(
             text = text,
             color = color.copy(alpha = alpha),
-            fontSize = (size * shrink).sp,
+            fontSize = (size * fit).sp,
             fontWeight = weight,
             fontStyle = if (italic) FontStyle.Italic else FontStyle.Normal,
             // محاذاة **فيزيائية**: لوحة التصميم إحداثياتها بكسلات الصورة، فالنص العربي يبدأ من يسار صندوقه
             // كما في الأصل. `Start` كان سيقلبه إلى اليمين لأن فقرة عربية تبدأ من يمينها.
-            textAlign = when (align) {
+            textAlign = when (edge) {
                 TextAlign.Center -> TextAlign.Center
                 TextAlign.End -> TextAlign.Right
                 else -> TextAlign.Left
             },
+            // بلا تباعد حروف ولا ارتفاع سطر موروثَين من الثيم: كانا يرفعان الأرقام الكبيرة عن موضعها.
+            letterSpacing = 0.sp,
+            lineHeight = (size * fit * 1.25f).sp,
             maxLines = 1,
             softWrap = false,
             overflow = TextOverflow.Ellipsis,
             style = TextStyle(shadow = glow?.let { Shadow(it, Offset.Zero, size * 0.5f) }),
-            onTextLayout = { if (it.didOverflowWidth && shrink > 0.5f) shrink *= 0.92f },
             modifier = Modifier.fillMaxWidth()
         )
     }
@@ -160,12 +201,13 @@ internal fun Modifier.neonClick(
     label: String? = null,
     selected: Boolean? = null,
     enabled: Boolean = true,
+    interactionSource: MutableInteractionSource? = null,
     onClick: () -> Unit
 ): Modifier = semantics(mergeDescendants = true) {
     if (label != null) contentDescription = label
     if (selected != null) this.selected = selected
 }.clickable(
-    interactionSource = remember { MutableInteractionSource() },
+    interactionSource = interactionSource ?: remember { MutableInteractionSource() },
     indication = null,
     enabled = enabled,
     role = if (selected != null) Role.RadioButton else Role.Button,
@@ -286,7 +328,7 @@ internal fun NeonFrame() {
 // ───────────────────────────── الرأس ─────────────────────────────
 
 @Composable
-internal fun NeonHeader(boostOn: Boolean, tempText: String, subtitle: String) {
+internal fun NeonHeader(boostOn: Boolean, tempText: String, tempC: Float?, subtitle: String) {
     GlowShape(127f, 84f, 96f, C.Red, haloAlpha = 0.7f) {
         iconRocket(
             body = Brush.linearGradient(listOf(Color.White, Color(0xFFFFB3BC)), Offset.Zero, Offset(100f, 100f)),
@@ -315,8 +357,16 @@ internal fun NeonHeader(boostOn: Boolean, tempText: String, subtitle: String) {
         glow = if (boostOn) C.RedHot else null
     )
 
-    GlowShape(1184f, 76f, 50f, C.Red, haloAlpha = 0.5f) { iconThermometer(C.Red) }
-    NeonText(tempText, 1214f, 40f, 112f, 72f, 34f, weight = FontWeight.Medium)
+    // لون الحرارة يقول الحالة: سماويّ بارد ← كهرمانيّ دافئ ← أحمر ساخن (عتبات عرض لا حدود عتاد)
+    val tempTone = when {
+        tempC == null -> C.InkDim
+        tempC >= 45f -> C.Red
+        tempC >= 40f -> C.Amber
+        else -> C.Cyan
+    }
+    val hot = tempC != null && tempC >= 45f
+    GlowShape(1184f, 76f, 50f, tempTone, haloAlpha = if (hot) 0.5f else 0.12f) { iconThermometer(tempTone) }
+    NeonText(tempText, 1214f, 40f, 112f, 72f, 34f, color = tempTone, weight = FontWeight.Medium)
 }
 
 // ───────────────────────────── الشريط الجانبي ─────────────────────────────
@@ -350,7 +400,7 @@ internal fun NeonSidebar(
         val top = Color.White
         val bottom = if (on) Color(0xFFFFB3BC) else Color(0xFF6FAEFF)
         val glow = if (on) C.Red else C.Blue
-        val haloA = if (on) 0.55f else 0.32f
+        val haloA = if (on) 0.55f else 0.1f
         val cx = 114f
         val cy = TabIconY[i]
         when (i) {
@@ -370,7 +420,7 @@ internal fun NeonSidebar(
             else -> GlowIcon(Icons.Rounded.Settings, cx, cy, 58f, top, bottom, glow, haloA)
         }
         NeonText(
-            labels[i], 28f, TabLabelY[i] - 21f, 176f, 42f, 27f,
+            labels[i], 28f, TabLabelY[i] - 21f, 176f, 42f, 23f,
             weight = if (on) FontWeight.Bold else FontWeight.Medium,
             align = TextAlign.Center, alpha = dim
         )
@@ -401,84 +451,101 @@ private fun NeonGauge(
     val f by animateFloatAsState(fraction.coerceIn(0f, 1f), tween(600), label = "neonGauge")
     val main = if (red) C.Red else C.Blue
     val light = if (red) C.RedSoft else C.BlueHi
-    val deep = if (red) Color(0xFF7A0010) else Color(0xFF0A3FBF)
-    val trackColor = if (red) Color(0xFF240810) else Color(0xFF0C1630)
+    val track = if (red) Color(0xFF2A0A12) else Color(0xFF0E2144)
+    val seam = Color(0xFF02040A)
     Box(
         Modifier
             .at(cx - 125f, cy - 125f, 250f, 250f)
+            // العدّاد أداة قياس لا تخطيط: اتّجاه ملئه (مع عقارب الساعة) ومحور زمن منحنى الإطارات لا ينعكسان.
+            .upright(LocalNeonMirror.current)
             .drawBehind {
                 val c = center
-                drawCircle(main.copy(alpha = 0.35f), radius = 114f, center = c, style = Stroke(2f))
-                drawCircle(main.copy(alpha = 0.07f), radius = 114f, center = c, style = Stroke(10f))
-                drawCircle(trackColor, radius = 101f, center = c, style = Stroke(18f))
+                // الحلقة الخارجية الرقيقة وعلاماتها الأربع
+                drawCircle(main.copy(alpha = 0.07f), radius = 114f, center = c, style = Stroke(9f))
+                drawCircle(main.copy(alpha = 0.55f), radius = 114f, center = c, style = Stroke(1.6f))
+                for (k in 0 until 4) {
+                    rotate(k * 90f, pivot = c) {
+                        drawLine(main.copy(alpha = 0.7f), Offset(c.x + 106f, c.y), Offset(c.x + 122f, c.y), 2f)
+                    }
+                }
+                // المسار: نصف قطر ٩٠ وسُمك ٢٤ ⇒ الشريط من ٧٨ إلى ١٠٢ كما في الأصل
+                drawCircle(track, radius = 90f, center = c, style = Stroke(24f))
                 if (f > 0.004f) {
                     val a = f.coerceIn(0.02f, 0.99f)
-                    val sweep = Brush.sweepGradient(
-                        0f to deep, a * 0.5f to light, a to main, 1f to main, center = c
-                    )
+                    val sweep = Brush.sweepGradient(0f to main, a to light, 1f to light, center = c)
                     rotate(120f, pivot = c) {
                         for (k in 3 downTo 1) {
                             drawArc(
                                 brush = sweep, startAngle = 0f, sweepAngle = 360f * f, useCenter = false,
-                                topLeft = Offset(c.x - 101f, c.y - 101f), size = Size(202f, 202f),
-                                alpha = 0.07f * (4 - k), style = Stroke(18f + k * 9f)
+                                topLeft = Offset(c.x - 90f, c.y - 90f), size = Size(180f, 180f),
+                                alpha = 0.06f * (4 - k), style = Stroke(24f + k * 10f)
                             )
                         }
                         drawArc(
                             brush = sweep, startAngle = 0f, sweepAngle = 360f * f, useCenter = false,
+                            topLeft = Offset(c.x - 90f, c.y - 90f), size = Size(180f, 180f),
+                            style = Stroke(24f)
+                        )
+                        // خطّ لامع على حافّة القوس الخارجية
+                        drawArc(
+                            brush = sweep, startAngle = 0f, sweepAngle = 360f * f, useCenter = false,
                             topLeft = Offset(c.x - 101f, c.y - 101f), size = Size(202f, 202f),
-                            style = Stroke(16f)
+                            alpha = 0.85f, style = Stroke(1.8f)
                         )
                     }
                 }
-                for (i in 0 until 90) {
-                    rotate(i * 4f, pivot = c) {
-                        drawLine(Color(0xFF02040C), Offset(c.x + 90f, c.y), Offset(c.x + 112f, c.y), 2.4f)
+                // فواصل الكتل: خطّ كل ١٠° عبر الشريط، من نقطة البدء (الساعة ٧)
+                for (i in 0 until 36) {
+                    rotate(120f + i * 10f, pivot = c) {
+                        drawLine(seam.copy(alpha = 0.5f), Offset(c.x + 78f, c.y), Offset(c.x + 102f, c.y), 1.5f)
                     }
                 }
-                drawCircle(main.copy(alpha = 0.14f), radius = 86f, center = c, style = Stroke(9f))
-                drawCircle(light.copy(alpha = 0.6f), radius = 86f, center = c, style = Stroke(2f))
+                // فجوة سوداء ثم القرص الداخلي المتوهّج عند حافّته وحلقته الرقيقة
+                drawCircle(seam, radius = 78f, center = c)
                 drawCircle(
                     Brush.radialGradient(
-                        0f to (if (red) Color(0xFF1A0610) else Color(0xFF0B1330)),
-                        1f to Color(0xFF02040A), center = c, radius = 84f
+                        0f to Color(0xFF02040A), 0.7f to Color(0xFF03060F), 1f to main.copy(alpha = 0.32f),
+                        center = c, radius = 69f
                     ),
-                    radius = 84f, center = c
+                    radius = 69f, center = c
                 )
+                drawCircle(light.copy(alpha = 0.6f), radius = 70.5f, center = c, style = Stroke(1.6f))
                 if (series.size >= 2) {
                     val disc = Path().apply {
-                        addOval(Rect(c.x - 108f, c.y - 108f, c.x + 108f, c.y + 108f))
+                        addOval(Rect(c.x - 100f, c.y - 100f, c.x + 100f, c.y + 100f))
                     }
                     clipPath(disc) {
                         val n = series.size
-                        val x0 = c.x - 80f
-                        val span = 160f
-                        val base = c.y + 92f
+                        val x0 = c.x - 92f
+                        val span = 184f
+                        val base = c.y + 74f
                         val line = Path()
                         val fill = Path().apply { moveTo(x0, base) }
                         for (i in 0 until n) {
                             val px = x0 + span * i / (n - 1)
-                            val py = base - 34f * ratio(series[i], seriesCeiling)
+                            val py = base - 30f * ratio(series[i], seriesCeiling)
                             if (i == 0) line.moveTo(px, py) else line.lineTo(px, py)
                             fill.lineTo(px, py)
                         }
                         fill.lineTo(x0 + span, base)
                         fill.close()
-                        drawPath(fill, Brush.verticalGradient(0f to C.Red.copy(alpha = 0.75f), 1f to C.Red.copy(alpha = 0.04f), startY = base - 34f, endY = base))
+                        drawPath(fill, Brush.verticalGradient(0f to C.Red.copy(alpha = 0.75f), 1f to C.Red.copy(alpha = 0.04f), startY = base - 30f, endY = base))
                         glowStroke(line, C.RedHot, 2.2f, glow = 1f, spread = 8f)
                     }
                 }
             }
     )
-    NeonText(label, cx - 60f, cy - 64f, 120f, 34f, 24f, align = TextAlign.Center, alpha = 0.92f)
+    // مراكز النصوص نسبةً إلى مركز الحلقة كما في الأصل: العنوان −٤٠، الرقم +١٢، الوسم +٦٨
+    NeonText(label, cx - 60f, cy - 57f, 120f, 34f, 24f, align = TextAlign.Center, alpha = 0.92f)
     NeonText(
         buildAnnotatedString {
             withStyle(SpanStyle(fontSize = 58.sp, fontWeight = FontWeight.Bold)) { append(value) }
             if (unit != null) withStyle(SpanStyle(fontSize = 32.sp, fontWeight = FontWeight.Normal)) { append(unit) }
         },
-        cx - 100f, cy - 34f, 200f, 76f, 58f, align = TextAlign.Center, glow = main.copy(alpha = 0.35f)
+        cx - 100f, cy - 26f, 200f, 76f, 58f, align = TextAlign.Center, glow = main.copy(alpha = 0.35f)
     )
-    if (sub != null) NeonText(sub, cx - 80f, cy + 58f, 160f, 34f, 23f, align = TextAlign.Center, alpha = 0.95f)
+    // ظلّ أسود حول الوسم: قد يمرّ فوق القوس المضاء عند الحِمل العالي فيبقى مقروءًا
+    if (sub != null) NeonText(sub, cx - 80f, cy + 51f, 160f, 34f, 23f, align = TextAlign.Center, alpha = 0.95f, glow = Color.Black.copy(alpha = 0.9f))
 }
 
 @Composable
@@ -494,12 +561,12 @@ internal fun NeonGauges(
 ) {
     val none = nd.max.ui.design.MAX_VALUE_UNAVAILABLE
     GlowShape(279f, 210f, 44f, C.Red, haloAlpha = 0.4f) { iconPulse(C.Red) }
-    NeonText(title, 323f, 192f, 300f, 40f, 27f, weight = FontWeight.Medium)
-    NeonGauge(397f, 347f, "CPU", cpuPct?.toString() ?: none, if (cpuPct != null) "%" else null, cpuTag, ratio(cpuPct?.toFloat(), 100f), red = false)
-    NeonGauge(668f, 347f, "GPU", gpuPct?.toString() ?: none, if (gpuPct != null) "%" else null, gpuTag, ratio(gpuPct?.toFloat(), 100f), red = true)
+    NeonText(title, 323f, 192f, 300f, 40f, 23f, weight = FontWeight.Medium)
+    NeonGauge(397f, 355f, "CPU", cpuPct?.toString() ?: none, if (cpuPct != null) "%" else null, cpuTag, ratio(cpuPct?.toFloat(), 100f), red = false)
+    NeonGauge(668f, 355f, "GPU", gpuPct?.toString() ?: none, if (gpuPct != null) "%" else null, gpuTag, ratio(gpuPct?.toFloat(), 100f), red = true)
     val ceiling = max(refreshHz?.toFloat() ?: 0f, max(frames.maxOrNull() ?: 0f, 60f))
     NeonGauge(
-        928f, 347f, "FPS", fps?.toString() ?: none, null, null,
+        928f, 355f, "FPS", fps?.toString() ?: none, null, null,
         ratio(fps?.toFloat(), ceiling), red = false,
         series = frames.takeLast(48), seriesCeiling = ceiling
     )
@@ -507,79 +574,145 @@ internal fun NeonGauges(
 
 // ───────────────────────────── أوضاع الأداء ─────────────────────────────
 
-/** الأوضاع الخمسة ↔ ملفّات الحرارة/المعالج الرسومي الخمسة الحقيقية (`GameThermalProfiles`). */
-internal enum class NeonMode(val id: String, val color: Color, val subColor: Color) {
-    Performance("performance", C.Red, Color(0xFFD9C2C6)),
-    Balanced("balanced", C.Green, Color(0xFF37D46B)),
-    Saver("power", C.Amber, Color(0xFFF5C518)),
-    Default(GameThermalProfiles.DEFAULT, Color(0xFF2D8CFF), Color(0xFF3EA0FF)),
-    Gaming("gaming", C.Cyan, Color(0xFF35D6FF))
+/**
+ * الأوضاع الخمسة ↔ ملفّات سقف الـGPU الخمسة الحقيقية (`GameThermalProfiles`).
+ *
+ * الترتيب تدرّج من الأقوى إلى الأوفر ثم «افتراضي» (بلا سقف): أحمر ساخن ← عنبريّ ← سماويّ ← أخضر بارد،
+ * فيقول اللون رتبة الوضع قبل أن تُقرأ كلمته. ولأن خمسة ألوان معًا ضجيج، **لا يُرى لون الوضع إلا حين يُختار**؛
+ * وما عداه رماديّ هادئ بلا توهّج، فيُعرف المختار من نظرة واحدة.
+ */
+internal enum class NeonMode(
+    val id: String,
+    val color: Color,
+    @StringRes val title: Int,
+    @StringRes val sub: Int
+) {
+    Performance("performance", C.Red, R.string.neon_mode_performance, R.string.neon_mode_performance_sub),
+    Gaming("gaming", C.Amber, R.string.neon_mode_gaming, R.string.neon_mode_gaming_sub),
+    Balanced("balanced", C.Cyan, R.string.neon_mode_balanced, R.string.neon_mode_balanced_sub),
+    Saver("power", C.Green, R.string.neon_mode_saver, R.string.neon_mode_saver_sub),
+    Default(GameThermalProfiles.DEFAULT, Color(0xFF9DB2D8), R.string.neon_mode_default, R.string.neon_mode_default_sub)
 }
 
+private val IdleIconTop = Color(0xFFD2DAEA)
+private val IdleIconBottom = Color(0xFF7F8AA6)
+
+/**
+ * [targets] سقف كل وضع بالميغاهرتز على هذا الجهاز (حقيقيّ من `ThermalPanelState.targetsMhz`) فيُرى قبل اللمس؛
+ * وما لا قياس له يعرض وصفه النصّيّ. والمختار يعرض حالته الفعلية (جارٍ التطبيق · طُبِّق · لم يُطبَّق) في حبّة ملوّنة.
+ */
 @Composable
 internal fun NeonModes(
     selected: String?,
+    targets: Map<String, Int>,
+    applying: Boolean,
     statusFor: (String) -> Pair<String, Boolean>?,
     onPick: (String) -> Unit
 ) {
-    val titles = listOf(
-        stringResource(R.string.neon_mode_performance),
-        stringResource(R.string.neon_mode_balanced),
-        stringResource(R.string.neon_mode_saver),
-        stringResource(R.string.neon_mode_default),
-        stringResource(R.string.neon_mode_gaming)
-    )
-    val subs = listOf(
-        stringResource(R.string.neon_mode_performance_sub),
-        stringResource(R.string.neon_mode_balanced_sub),
-        stringResource(R.string.neon_mode_saver_sub),
-        stringResource(R.string.neon_mode_default_sub),
-        stringResource(R.string.neon_mode_gaming_sub)
-    )
+    // أعلى سقف بين الأوضاع الأربعة المقيسة: أساس طول شريط كل بطاقة
+    val maxCap = NeonMode.entries.mapNotNull { targets[it.id] }.maxOrNull()?.takeIf { it > 0 }
+    // نبض الحبّة أثناء التطبيق فقط: لا حركة دائمة بلا سبب
+    val pulse = if (applying) {
+        rememberInfiniteTransition(label = "neonModePulse").animateFloat(
+            initialValue = 0.4f,
+            targetValue = 1f,
+            animationSpec = infiniteRepeatable(tween(650), RepeatMode.Reverse),
+            label = "neonModePulseA"
+        )
+    } else null
     NeonMode.entries.forEachIndexed { i, mode ->
+        val title = stringResource(mode.title)
         val x = 245f + 164f * i
         val y = 483f
         val on = mode.id == selected
+        val t by animateFloatAsState(if (on) 1f else 0f, tween(180), label = "neonModeSel")
         val status = if (on) statusFor(mode.id) else null
+        val failed = status?.second == true
+        val cap = targets[mode.id]
+        val line = when {
+            status != null -> status.first
+            on -> stringResource(R.string.neon_mode_selected)
+            cap != null -> stringResource(R.string.neon_mode_upto, cap)
+            else -> stringResource(mode.sub)
+        }
+        val accent = if (failed) C.RedHot else mode.color
+        val frac = if (cap != null && maxCap != null) (cap.toFloat() / maxCap).coerceIn(0f, 1f) else null
+        val src = remember { MutableInteractionSource() }
+        val pressed by src.collectIsPressedAsState()
         Box(
             Modifier
                 .at(x, y, 152f, 179f)
                 .drawBehind {
                     val shape = chamfer(0f, 0f, 152f, 179f, 10f)
-                    drawPath(shape, Color(0xFF04060C))
-                    drawPath(
-                        shape,
-                        Brush.verticalGradient(
-                            0f to mode.color.copy(alpha = if (on) 0.5f else 0.17f),
-                            1f to Color(0xFF05070F).copy(alpha = 0.0f)
+                    drawPath(shape, Color(0xFF070A14))
+                    // الخامل: إطار رفيع رماديّ، بلا لون ولا توهّج
+                    drawPath(shape, Color(0xFF2B3550), alpha = 1f - t, style = Stroke(1.6f))
+                    if (t > 0.01f) {
+                        drawPath(
+                            shape,
+                            Brush.verticalGradient(
+                                0f to accent.copy(alpha = 0.55f * t),
+                                1f to accent.copy(alpha = 0.12f * t)
+                            )
                         )
-                    )
-                    if (on) halo(Offset(76f, 40f), 120f, mode.color, 0.28f)
-                    glowStroke(shape, mode.color, if (on) 3.2f else 2f, glow = if (on) 1.7f else 0.7f, alpha = if (on) 1f else 0.85f)
+                        halo(Offset(76f, 40f), 120f, accent, 0.28f * t)
+                        glowStroke(shape, accent, 3.4f, glow = 1.8f, alpha = t)
+                        // حبّة الحالة السفلى (تنبض أثناء التطبيق)
+                        val k = if (on) pulse?.value ?: 1f else 1f
+                        val pill = chamfer(10f, 130f, 132f, 36f, 8f)
+                        drawPath(pill, accent.copy(alpha = 0.32f * t * k))
+                        drawPath(pill, accent.copy(alpha = t * k), style = Stroke(1.5f))
+                    }
+                    // مقياس السقف: طول الشريط = سقف الوضع ÷ أعلى سقف، فتُقرأ الأوضاع الأربعة تدرّجًا بصريًّا
+                    if (frac != null) {
+                        drawRect(Color(0xFF141B2E), Offset(16f, 170f), Size(120f, 4f))
+                        drawRect(if (on) accent else Color(0xFF55627F), Offset(16f, 170f), Size(120f * frac, 4f))
+                    }
+                    // وميض لحظة الضغط: يُعرف الزرّ الملموس قبل أن يستجيب النظام
+                    if (pressed) drawPath(shape, Color.White, alpha = 0.14f)
                 }
-                .neonClick(label = titles[i], selected = on) { onPick(mode.id) }
+                .neonClick(label = "$title, $line", selected = on, interactionSource = src) { onPick(mode.id) }
         )
         val cx = x + 76f
         val cy = y + 52f
-        val lit = if (on) 1f else 0.9f
+        val iconHalo = if (on) 0.5f else 0f
+        val top = if (on) Color.White else IdleIconTop
+        val bottom = if (on) lerp(mode.color, Color.White, 0.45f) else IdleIconBottom
         when (mode) {
-            NeonMode.Performance -> GlowShape(cx, cy, 62f, mode.color, if (on) 0.6f else 0.4f, lit) {
-                iconRocket(Brush.linearGradient(listOf(Color.White, Color(0xFFFFB3BC)), Offset.Zero, Offset(100f, 100f)), Color(0xFFB0001A), C.Red)
+            NeonMode.Performance -> GlowShape(cx, cy, 62f, mode.color, iconHalo) {
+                if (on) iconRocket(Brush.linearGradient(listOf(Color.White, Color(0xFFFFB3BC)), Offset.Zero, Offset(100f, 100f)), Color(0xFFB0001A), C.Red)
+                else iconRocket(Brush.linearGradient(listOf(IdleIconTop, IdleIconBottom), Offset.Zero, Offset(100f, 100f)), Color(0xFF2A3042), IdleIconBottom)
             }
-            NeonMode.Saver -> GlowShape(cx, cy, 66f, mode.color, if (on) 0.55f else 0.35f, lit) {
-                iconBattery(C.Amber, Brush.verticalGradient(listOf(Color(0xFF9CFF45), Color(0xFF2EC20F)), startY = 34f, endY = 66f), Color(0xFF0A1228))
+            NeonMode.Saver -> GlowShape(cx, cy, 66f, mode.color, iconHalo) {
+                if (on) iconBattery(C.Green, Brush.verticalGradient(listOf(Color(0xFFB6FF70), Color(0xFF2EC20F)), startY = 34f, endY = 66f), Color(0xFF0A1228))
+                else iconBattery(IdleIconBottom, Brush.verticalGradient(listOf(IdleIconTop, IdleIconBottom), startY = 34f, endY = 66f), Color(0xFF0A1228))
             }
-            NeonMode.Balanced -> GlowIcon(Icons.Rounded.SportsEsports, cx, cy, 62f, Color(0xFFE6FFF0), Color(0xFF63E68F), mode.color, if (on) 0.55f else 0.35f)
-            NeonMode.Default -> GlowIcon(Icons.Rounded.SportsEsports, cx, cy, 62f, Color(0xFFF0F6FF), Color(0xFF8DBBFF), mode.color, if (on) 0.55f else 0.35f)
-            NeonMode.Gaming -> GlowIcon(Icons.Rounded.SportsEsports, cx, cy, 62f, Color(0xFFEAFBFF), Color(0xFF6FE6FF), mode.color, if (on) 0.55f else 0.35f)
+            NeonMode.Gaming -> GlowIcon(Icons.Rounded.SportsEsports, cx, cy, 72f, top, bottom, mode.color, iconHalo)
+            NeonMode.Balanced -> GlowIcon(Icons.Rounded.Balance, cx, cy, 64f, top, bottom, mode.color, iconHalo)
+            NeonMode.Default -> GlowIcon(Icons.Rounded.PhoneAndroid, cx, cy, 66f, top, bottom, mode.color, iconHalo)
         }
-        NeonText(titles[i], x, y + 80f, 152f, 44f, 27f, weight = FontWeight.Bold, align = TextAlign.Center)
-        val statusText = status?.first
-        val failed = status?.second == true
         NeonText(
-            statusText ?: subs[i], x + 4f, y + 130f, 144f, 34f, 21f,
-            color = if (failed) C.RedSoft else mode.subColor, align = TextAlign.Center
+            title, x + 4f, y + 80f, 144f, 44f, 23f,
+            color = if (on) Color.White else C.InkDim,
+            weight = if (on) FontWeight.Bold else FontWeight.Medium,
+            align = TextAlign.Center
         )
+        NeonText(
+            line, x + 12f, y + 130f, 128f, 36f, 17f,
+            color = if (on) Color.White else C.InkDim,
+            weight = if (on) FontWeight.Medium else FontWeight.Normal,
+            align = TextAlign.Center, alpha = if (on) 1f else 0.85f
+        )
+        if (on) {
+            // علامة الاختيار: ✓ على لون الوضع، أو «!» حمراء إن لم يُطبَّق
+            val onAccent = if (failed || mode == NeonMode.Performance) Color.White else Color(0xFF05060E)
+            GlowShape(x + 128f, y + 24f, 30f, accent, 0.5f) { drawCircle(accent, radius = 50f, center = Offset(50f, 50f)) }
+            if (failed) {
+                NeonText("!", x + 112f, y + 8f, 32f, 32f, 24f, color = onAccent, weight = FontWeight.Black, align = TextAlign.Center)
+            } else {
+                GlowIcon(Icons.Rounded.Check, x + 128f, y + 24f, 22f, onAccent, onAccent, accent, 0f)
+            }
+        }
     }
 }
 
@@ -611,7 +744,7 @@ internal fun NeonTools(
     onTool: (NeonTool) -> Unit
 ) {
     GlowIcon(Icons.Rounded.SportsEsports, 283f, 720f, 36f, Color(0xFFFFB3BC), C.Red, C.Red, 0.45f)
-    NeonText(title, 322f, 700f, 400f, 40f, 27f, weight = FontWeight.Medium)
+    NeonText(title, 322f, 700f, 400f, 40f, 23f, weight = FontWeight.Medium)
 
     val labels = listOf(
         stringResource(R.string.neon_tool_notifications),
@@ -634,51 +767,64 @@ internal fun NeonTools(
         val st = state(tool)
         val red = tool.family == NeonFamily.Red
         val line = if (red) C.Red else C.BlueHi
-        val alpha = if (st.enabled) 1f else 0.42f
+        val alpha = if (st.enabled) 1f else 0.58f
+        val src = remember { MutableInteractionSource() }
+        val pressed by src.collectIsPressedAsState()
         Box(
             Modifier
                 .at(x, y, 151f, h)
                 .drawBehind {
                     val shape = chamfer(0f, 0f, 151f, h, 9f)
-                    drawPath(
-                        shape,
-                        Brush.verticalGradient(
-                            0f to (if (st.active) line.copy(alpha = 0.40f) else (if (red) Color(0xFF1C060F) else Color(0xFF09122E))),
-                            1f to (if (red) Color(0xFF0D0409) else Color(0xFF050A1C))
-                        ),
-                        alpha = alpha
-                    )
-                    glowStroke(
-                        shape,
-                        if (st.active) line else (if (red) Color(0xFF86101C) else Color(0xFF173F86)),
-                        if (st.active) 2.8f else 1.8f,
-                        glow = if (st.active) 1.5f else 0.35f,
-                        alpha = alpha
-                    )
+                    if (st.active) {
+                        drawPath(
+                            shape,
+                            Brush.verticalGradient(
+                                0f to line.copy(alpha = 0.40f),
+                                1f to (if (red) Color(0xFF0D0409) else Color(0xFF050A1C))
+                            ),
+                            alpha = alpha
+                        )
+                        glowStroke(shape, line, 2.8f, glow = 1.5f, alpha = alpha)
+                    } else {
+                        // الخامل مسطّح بلا توهّج: الإضاءة تعني «يعمل» فقط
+                        drawPath(shape, Color(0xFF080C18), alpha = alpha)
+                        drawPath(shape, if (red) Color(0xFF6A2230) else Color(0xFF2B3F6E), alpha = alpha, style = Stroke(1.5f))
+                    }
+                    if (pressed) drawPath(shape, Color.White, alpha = 0.14f)
+                    // مؤشّر الحالة: مضيء = يعمل · كهرمانيّ = قيد التنفيذ · معتم = متوقّف
+                    val led = Offset(151f - 19f, 19f)
+                    when {
+                        st.busy -> drawCircle(C.Amber, radius = 6f, center = led, alpha = alpha)
+                        st.active -> {
+                            halo(led, 16f, line, 0.7f * alpha)
+                            drawCircle(line, radius = 6f, center = led, alpha = alpha)
+                        }
+                        else -> drawCircle(Color(0xFF39425A), radius = 5f, center = led, alpha = alpha)
+                    }
                 }
-                .neonClick(label = labels[i], selected = st.active) { onTool(tool) }
+                .neonClick(label = labels[i], selected = st.active, interactionSource = src) { onTool(tool) }
         )
         val cx = x + 75.5f
-        val cy = y + (if (row == 0) 38f else 40f)
+        val cy = y + (if (row == 0) 35f else 39f)
         val g = if (red) C.Red else C.Blue
-        val top = if (red) Color(0xFFFFC2C8) else Color.White
-        val bottom = if (red) C.Red else Color(0xFF58A6FF)
-        val a = if (st.active) 0.55f else 0.32f
+        val top = if (!st.active) IdleIconTop else if (red) Color(0xFFFFC2C8) else Color.White
+        val bottom = if (!st.active) IdleIconBottom else if (red) C.Red else Color(0xFF58A6FF)
+        val a = if (st.active) 0.5f else 0f
         when (tool) {
-            NeonTool.Notifications -> GlowIcon(Icons.Rounded.NotificationsOff, cx, cy, 46f, top, bottom, g, a, alpha)
-            NeonTool.Calls -> GlowIcon(Icons.Rounded.PhoneDisabled, cx, cy, 46f, top, bottom, g, a, alpha)
-            NeonTool.ScreenRecord -> GlowIcon(Icons.Rounded.Videocam, cx, cy, 50f, top, bottom, g, a, alpha, framed = true)
-            NeonTool.GameMode -> GlowIcon(Icons.Rounded.SportsEsports, cx, cy, 48f, top, bottom, g, a, alpha)
-            NeonTool.Brightness -> GlowIcon(Icons.Rounded.LightMode, cx, cy, 48f, top, bottom, g, a, alpha)
-            NeonTool.Colors -> GlowIcon(Icons.Rounded.Palette, cx, cy, 46f, top, bottom, g, a, alpha)
-            NeonTool.Sound -> GlowIcon(Icons.Rounded.GraphicEq, cx, cy, 48f, top, bottom, g, a, alpha)
-            NeonTool.TouchLock -> GlowIcon(Icons.Rounded.Lock, cx, cy, 44f, top, bottom, g, a, alpha)
-            NeonTool.Clean -> GlowIcon(Icons.Rounded.CleaningServices, cx, cy, 46f, top, bottom, g, a, alpha)
-            NeonTool.Network -> GlowIcon(Icons.Rounded.Wifi, cx, cy, 46f, top, bottom, g, a, alpha)
+            NeonTool.Notifications -> GlowIcon(Icons.Rounded.NotificationsOff, cx, cy, 54f, top, bottom, g, a, alpha)
+            NeonTool.Calls -> GlowIcon(Icons.Rounded.PhoneDisabled, cx, cy, 54f, top, bottom, g, a, alpha)
+            NeonTool.ScreenRecord -> GlowIcon(Icons.Rounded.Videocam, cx, cy, 58f, top, bottom, g, a, alpha, framed = true)
+            NeonTool.GameMode -> GlowIcon(Icons.Rounded.SportsEsports, cx, cy, 56f, top, bottom, g, a, alpha)
+            NeonTool.Brightness -> GlowIcon(Icons.Rounded.LightMode, cx, cy, 56f, top, bottom, g, a, alpha)
+            NeonTool.Colors -> GlowIcon(Icons.Rounded.Palette, cx, cy, 54f, top, bottom, g, a, alpha)
+            NeonTool.Sound -> GlowIcon(Icons.Rounded.GraphicEq, cx, cy, 56f, top, bottom, g, a, alpha)
+            NeonTool.TouchLock -> GlowIcon(Icons.Rounded.Lock, cx, cy, 52f, top, bottom, g, a, alpha)
+            NeonTool.Clean -> GlowIcon(Icons.Rounded.CleaningServices, cx, cy, 54f, top, bottom, g, a, alpha)
+            NeonTool.Network -> GlowIcon(Icons.Rounded.Wifi, cx, cy, 54f, top, bottom, g, a, alpha)
         }
         NeonText(
-            labels[i], x + 2f, y + h - 38f, 147f, 32f, 22f, align = TextAlign.Center,
-            color = if (st.active) Color.White else C.Ink, alpha = alpha
+            labels[i], x + 2f, y + h - 40f, 147f, 32f, 18f, align = TextAlign.Center,
+            color = if (st.active) Color.White else C.InkDim, alpha = alpha
         )
     }
 }
@@ -732,10 +878,10 @@ internal fun NeonStatusBar(kind: NeonBarKind, title: String, sub: String, percen
     GlowShape(292f, 1068f, 40f, C.Red, haloAlpha = 0.5f, dim = if (failed) 0.5f else 1f) {
         iconBolt(Brush.linearGradient(listOf(Color(0xFFFFC0C6), C.Red), Offset.Zero, Offset(100f, 100f)))
     }
-    NeonText(title, 365f, 1030f, 285f, 38f, 28f, weight = FontWeight.Medium)
-    NeonText(sub, 365f, 1068f, 285f, 32f, 21f, color = C.InkDim)
+    NeonText(title, 365f, 1030f, 285f, 38f, 24f, weight = FontWeight.Medium)
+    NeonText(sub, 365f, 1068f, 285f, 32f, 18f, color = C.InkDim)
     NeonText(
         if (percent != null) "$percent%" else nd.max.ui.design.MAX_VALUE_UNAVAILABLE,
-        880f, 1028f, 110f, 44f, 32f, weight = FontWeight.Medium, align = TextAlign.End
+        880f, 1028f, 110f, 44f, 30f, weight = FontWeight.Medium, align = TextAlign.End
     )
 }

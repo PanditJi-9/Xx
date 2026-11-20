@@ -10,11 +10,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
+import androidx.compose.material.icons.rounded.History
 import androidx.compose.material.icons.rounded.PowerSettingsNew
-import androidx.compose.material.icons.rounded.Shield
+import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.Warning
+import androidx.compose.material.icons.rounded.WarningAmber
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -30,7 +31,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import android.text.format.DateUtils
-import androidx.compose.material.icons.rounded.History
 import kotlinx.coroutines.launch
 import nd.max.R
 import nd.max.core.persist.PersistRestorer
@@ -74,7 +74,7 @@ fun PersistRestoreItem() {
                 },
                 {
                     ExpressiveSwitchItem(
-                        icon = Icons.Rounded.Shield,
+                        icon = Icons.Rounded.WarningAmber,
                         title = stringResource(R.string.persist_dangerous_title),
                         summary = stringResource(R.string.persist_dangerous_desc),
                         checked = dangerousAuto,
@@ -111,7 +111,7 @@ fun PersistRestoreItem() {
                                 )
                             )
                         },
-                        leadingContent = { LeadingIcon(icon = Icons.Filled.Refresh, contentDescription = null) },
+                        leadingContent = { LeadingIcon(icon = Icons.Rounded.Refresh, contentDescription = null) },
                         trailingContent = {
                             if (busy) {
                                 CircularProgressIndicator(
@@ -119,7 +119,7 @@ fun PersistRestoreItem() {
                                     strokeWidth = 2.dp
                                 )
                             } else {
-                                Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null)
+                                Icon(Icons.AutoMirrored.Rounded.KeyboardArrowRight, null)
                             }
                         }
                     )

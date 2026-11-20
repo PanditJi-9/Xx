@@ -43,12 +43,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.FactCheck
 import androidx.compose.material.icons.automirrored.rounded.*
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.rounded.*
-import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -306,7 +303,7 @@ fun BypassChargeCheckScreen(navController: NavController) {
         MaxListScreen(
             title = stringResource(R.string.CompatibilityCheck),
             onBack = { navController.popBackStack() },
-            accentIcon = Icons.AutoMirrored.Filled.FactCheck,
+            accentIcon = Icons.AutoMirrored.Rounded.FactCheck,
             accent = MaterialTheme.colorScheme.tertiary
         ) {
 
@@ -367,7 +364,7 @@ fun BypassChargeCheckScreen(navController: NavController) {
                                                 label = "scanIconAnim"
                                             ) { running ->
                                                 LeadingIcon(
-                                                    icon = if (running) Icons.Rounded.Memory else Icons.AutoMirrored.Rounded.ManageSearch,
+                                                    icon = if (running) Icons.Rounded.Autorenew else Icons.AutoMirrored.Rounded.ManageSearch,
                                                     contentDescription = stringResource(R.string.cd_scan_icon)
                                                 )
                                             }

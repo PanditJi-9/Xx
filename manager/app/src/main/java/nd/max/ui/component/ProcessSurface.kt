@@ -17,7 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -123,7 +123,7 @@ fun ProcessSurface(
                 if (onClose != null) {
                     IconButton(onClick = onClose, modifier = Modifier.size(MaxSize.iconGlyph)) {
                         Icon(
-                            imageVector = Icons.Filled.Close,
+                            imageVector = Icons.Rounded.Close,
                             contentDescription = stringResource(R.string.processmgr_overlay_close_cd),
                             tint = colors.error
                         )

@@ -13,14 +13,15 @@ package nd.max.ui.design
  * فوق الصلب، وتفاصيل ثانوية خافتة. حدود بصرية ثابتة (0.06..0.94 في المربع الواحد)،
  * وخط ~6% من ضلع الرمز. أشكالها: هاتف حديث، معالج بأرجل، بطاقة رسوميات بمروحتين، رام،
  * قرص، شاشة، بطارية برق، ميزان حرارة، واي فاي، سماعة، يد تحكّم، شبكة تطبيقات، ترس،
- * درع بعلامة صح، منزلقات، مفتاح ربط، كاميرا، حسّاسات، ماسة الذكاء (لا نجمة — بوّابة
+ * درع بعلامة صح، منزلقات، مفتاح ربط، كاميرا، حسّاسات، شبكة الذكاء العصبية (لا نجمة — بوّابة
  * `VisualIdentityTest`)، جزيرة، نافذة فوق نافذة، شريط فيلم، ساعة، مستند بطية، رادار، أعمدة،
- * بطارية نبض.
+ * بطارية نبض، لمس بحلقات موجة، هلال نوم، سحابة نسخ احتياطي، مفتاح.
  */
 enum class MaxIllustrationKind {
     Device, Cpu, Gpu, Memory, Storage, Display, Power, Thermal, Network, Audio,
     Games, Apps, System, Security, Controls, Tools, Camera, Sensors, Intelligence,
     Island, Overlay, Clips, Sessions, Manifest, Scan, Usage, BatteryHistory,
+    Touch, Sleep, Backup, Key,
 }
 
 /**
@@ -69,30 +70,34 @@ sealed interface MaxIllustrationPart {
 
 /** Unknown icons keep their existing ImageVector; names are never derived from translated titles. */
 fun maxIllustrationKind(iconName: String?): MaxIllustrationKind? = when (iconName?.substringAfterLast('.')) {
-    "PhoneAndroid", "PhoneIphone", "Smartphone", "Info", "Home" -> MaxIllustrationKind.Device
+    "PhoneAndroid", "PhoneIphone", "Smartphone", "Home" -> MaxIllustrationKind.Device
     "Memory", "DeveloperBoard" -> MaxIllustrationKind.Cpu
     "Speed", "VideogameAsset" -> MaxIllustrationKind.Gpu
-    "Storage", "Save", "Backup", "DataUsage", "Folder", "FolderOpen" -> MaxIllustrationKind.Storage
+    "Storage", "Save", "DataUsage", "Folder", "FolderOpen" -> MaxIllustrationKind.Storage
+    "Backup", "SettingsBackupRestore" -> MaxIllustrationKind.Backup
     "SdStorage" -> MaxIllustrationKind.Memory
     "DisplaySettings", "AspectRatio", "Monitor", "ScreenRotation" -> MaxIllustrationKind.Display
-    "BatteryChargingFull", "BatteryFull", "BatteryStd", "Power", "Cable", "Bedtime" -> MaxIllustrationKind.Power
+    "BatteryChargingFull", "BatteryFull", "BatteryStd", "Power", "Cable" -> MaxIllustrationKind.Power
+    "Bedtime" -> MaxIllustrationKind.Sleep
     "Thermostat", "DeviceThermostat", "Whatshot" -> MaxIllustrationKind.Thermal
-    "NetworkCheck", "Wifi", "Language", "Router" -> MaxIllustrationKind.Network
+    "NetworkCheck", "Wifi", "Router" -> MaxIllustrationKind.Network
     "GraphicEq", "VolumeUp", "Headphones", "Audiotrack", "MusicNote" -> MaxIllustrationKind.Audio
     "Gamepad", "SportsEsports", "Games" -> MaxIllustrationKind.Games
     "Apps", "AppSettingsAlt", "Android" -> MaxIllustrationKind.Apps
     "Settings", "SettingsApplications", "Code", "Terminal" -> MaxIllustrationKind.System
-    "Shield", "Security", "Key", "Lock", "VerifiedUser" -> MaxIllustrationKind.Security
-    "Tune", "TouchApp" -> MaxIllustrationKind.Controls
+    "Shield", "Security", "Lock", "VerifiedUser" -> MaxIllustrationKind.Security
+    "Key" -> MaxIllustrationKind.Key
+    "Tune" -> MaxIllustrationKind.Controls
+    "TouchApp" -> MaxIllustrationKind.Touch
     "SmartButton" -> MaxIllustrationKind.Island
     "PictureInPicture" -> MaxIllustrationKind.Overlay
     "VideoLibrary" -> MaxIllustrationKind.Clips
     "History" -> MaxIllustrationKind.Sessions
     "Policy", "FactCheck" -> MaxIllustrationKind.Manifest
     "Radar", "TravelExplore", "NetworkPing" -> MaxIllustrationKind.Scan
-    "QueryStats", "BarChart", "InsertChart", "HourglassEmpty" -> MaxIllustrationKind.Usage
+    "QueryStats", "BarChart", "InsertChart" -> MaxIllustrationKind.Usage
     "BatterySaver", "BatteryAlert", "BatteryCharging90" -> MaxIllustrationKind.BatteryHistory
-    "Build", "Science", "CleaningServices", "BugReport", "Edit" -> MaxIllustrationKind.Tools
+    "Build", "Science", "CleaningServices", "BugReport" -> MaxIllustrationKind.Tools
     "Camera", "CameraAlt", "PhotoCamera" -> MaxIllustrationKind.Camera
     "Sensors", "SensorsOff", "Explore" -> MaxIllustrationKind.Sensors
     // ولا تُسجَّل هنا أسماء رموز الذكاء: بوّابة `VisualIdentityTest` تمنع «النجمة» خارج أسطح
@@ -269,18 +274,18 @@ fun maxIllustrationParts(kind: MaxIllustrationKind): List<MaxIllustrationPart> =
             box(0.12f, 0.54f, 0.34f, 0.34f, outline, radius = 0.1f)
             box(0.54f, 0.54f, 0.34f, 0.34f, filled = true, radius = 0.1f)
         }
-        // ترس: جسم صلب بثماني أسنان سميكة وثقب مركزي.
+        // ترس: ثماني أسنان شبه منحرفة مصمتة حول جسم دائري بثقب مركزي — ترس حقيقي لا «شمس».
         MaxIllustrationKind.System -> {
-            line(0.78f, 0.5f, 0.87f, 0.5f, weight = 2.4f)
-            line(0.698f, 0.698f, 0.7616f, 0.7616f, weight = 2.4f)
-            line(0.5f, 0.78f, 0.5f, 0.87f, weight = 2.4f)
-            line(0.302f, 0.698f, 0.2384f, 0.7616f, weight = 2.4f)
-            line(0.22f, 0.5f, 0.13f, 0.5f, weight = 2.4f)
-            line(0.302f, 0.302f, 0.2384f, 0.2384f, weight = 2.4f)
-            line(0.5f, 0.22f, 0.5f, 0.13f, weight = 2.4f)
-            line(0.698f, 0.302f, 0.7616f, 0.2384f, weight = 2.4f)
+            line(0.740f, 0.600f, 0.920f, 0.570f, 0.920f, 0.430f, 0.740f, 0.400f, closed = true, filled = true)
+            line(0.599f, 0.740f, 0.747f, 0.846f, 0.846f, 0.747f, 0.740f, 0.599f, closed = true, filled = true)
+            line(0.400f, 0.740f, 0.430f, 0.920f, 0.570f, 0.920f, 0.600f, 0.740f, closed = true, filled = true)
+            line(0.260f, 0.599f, 0.154f, 0.747f, 0.253f, 0.846f, 0.401f, 0.740f, closed = true, filled = true)
+            line(0.260f, 0.400f, 0.080f, 0.430f, 0.080f, 0.570f, 0.260f, 0.600f, closed = true, filled = true)
+            line(0.401f, 0.260f, 0.253f, 0.154f, 0.154f, 0.253f, 0.260f, 0.401f, closed = true, filled = true)
+            line(0.600f, 0.260f, 0.570f, 0.080f, 0.430f, 0.080f, 0.400f, 0.260f, closed = true, filled = true)
+            line(0.740f, 0.401f, 0.846f, 0.253f, 0.747f, 0.154f, 0.599f, 0.260f, closed = true, filled = true)
             ring(0.5f, 0.5f, 0.3f, filled = true)
-            ring(0.5f, 0.5f, 0.13f, cut, filled = true)
+            ring(0.5f, 0.5f, 0.135f, cut, filled = true)
             ring(0.5f, 0.5f, 0.06f, filled = true)
         }
         // درع: جسم زجاجي، درع داخلي صلب، وعلامة صح مثقوبة.
@@ -416,6 +421,39 @@ fun maxIllustrationParts(kind: MaxIllustrationKind): List<MaxIllustrationPart> =
             box(0.06f, 0.26f, 0.78f, 0.48f, outline, radius = 0.11f)
             box(0.87f, 0.42f, 0.07f, 0.16f, outline, filled = true, radius = 0.03f)
             line(0.14f, 0.52f, 0.3f, 0.52f, 0.4f, 0.38f, 0.5f, 0.64f, 0.6f, 0.52f, 0.76f, 0.52f, weight = 1.4f)
+        }
+        // لمس: شاشة زجاجية عليها نقطة لمس صلبة بحلقتَي موجة — «أين لمستَ» لا «كم انزلق».
+        MaxIllustrationKind.Touch -> {
+            box(0.2f, 0.1f, 0.6f, 0.8f, wash, filled = true, radius = 0.12f)
+            box(0.2f, 0.1f, 0.6f, 0.8f, outline, radius = 0.12f)
+            ring(0.5f, 0.46f, 0.25f, soft)
+            ring(0.5f, 0.46f, 0.15f, soft)
+            ring(0.5f, 0.46f, 0.075f, filled = true)
+            line(0.4f, 0.8f, 0.6f, 0.8f, ink = soft, weight = 1.0f)
+        }
+        // نوم: هلال صلب (قصّ بدائرة مثقوبة) مع حرفَي z — وضع السكون العميق.
+        MaxIllustrationKind.Sleep -> {
+            ring(0.46f, 0.54f, 0.34f, filled = true)
+            ring(0.62f, 0.4f, 0.29f, cut, filled = true)
+            line(0.62f, 0.14f, 0.78f, 0.14f, 0.62f, 0.3f, 0.78f, 0.3f, weight = 1.2f)
+            line(0.78f, 0.46f, 0.88f, 0.46f, 0.78f, 0.56f, 0.88f, 0.56f, ink = soft, weight = 1.0f)
+        }
+        // نسخ احتياطي: سحابة مصمتة بسهم صاعد مثقوب.
+        MaxIllustrationKind.Backup -> {
+            ring(0.33f, 0.59f, 0.17f, filled = true)
+            ring(0.52f, 0.45f, 0.23f, filled = true)
+            ring(0.71f, 0.6f, 0.16f, filled = true)
+            box(0.33f, 0.52f, 0.38f, 0.24f, filled = true, radius = 0.0f)
+            line(0.52f, 0.7f, 0.52f, 0.42f, ink = cut, weight = 1.3f)
+            line(0.41f, 0.52f, 0.52f, 0.41f, 0.63f, 0.52f, ink = cut, weight = 1.3f)
+        }
+        // مفتاح: رأس دائري بثقب وساق بسنّين — الترخيص والمفاتيح.
+        MaxIllustrationKind.Key -> {
+            ring(0.29f, 0.5f, 0.19f, filled = true)
+            ring(0.29f, 0.5f, 0.075f, cut, filled = true)
+            line(0.45f, 0.5f, 0.88f, 0.5f, weight = 1.7f)
+            line(0.72f, 0.5f, 0.72f, 0.68f, weight = 1.5f)
+            line(0.84f, 0.5f, 0.84f, 0.63f, weight = 1.5f)
         }
     }
 }

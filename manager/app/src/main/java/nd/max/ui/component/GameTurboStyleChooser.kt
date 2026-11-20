@@ -47,12 +47,15 @@ import nd.max.ui.util.GameTurboStyle
 import nd.max.ui.util.GameTurboStylePrefs
 
 /**
- * مُستضيف نافذة اختيار مظهر Game Turbo، في جذر التطبيق عبر [LocalRootDialogs] (نفس نمط `ConfigUpdateHost`).
+ * مُستضيف نافذة اختيار مظهر Game Turbo، **مُثبَّت داخل مساحة الألعاب** ([nd.max.ui.subscreens.GameLobbyScreen])
+ * فيُسجّل نافذته في [LocalRootDialogs] ما دامت الشاشة حيّة (نفس نمط `ConfigUpdateHost`) — فلا تظهر على
+ * الشاشة الرئيسية بأمر المالك.
  *
  * ### متى تظهر — قاعدتان لا ثالثة
  *
  * ① **أول مرة**: لم يختر المستخدم بعد ([GameTurboStylePrefs.chosen] = `false`) ⇒ تظهر مرة واحدة، ثم لا تعود.
- * ② **بالطلب**: «الإعدادات ← Game Turbo» يستدعي [GameTurboStylePrefs.requestChooser] فتُعرض ثانيةً.
+ * ② **بالطلب**: [GameTurboStylePrefs.requestChooser] يعيد عرضها؛ ولا مستدعي له في الواجهة اليوم لأن صفّ
+ *    «مظهر Game Turbo» في أدوات المساحة يحفظ الاختيار مباشرةً.
  *
  * [enabled] = `false` يُسكتها (أثناء الترحيب أو جولة التعريف) فلا تُزاحم شاشةً لم تنتهِ، وتظهر بعدها.
  */

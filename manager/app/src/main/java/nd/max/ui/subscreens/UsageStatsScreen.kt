@@ -30,7 +30,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Android
 import androidx.compose.material.icons.rounded.Apps
-import androidx.compose.material.icons.rounded.DataUsage
+import androidx.compose.material.icons.rounded.QueryStats
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.Timer
 import androidx.compose.material3.Icon
@@ -271,7 +271,7 @@ fun UsageStatsScreen(navController: NavHostController) {
         title = stringResource(R.string.usage_stats_title),
         onBack = { navController.popBackStack() },
         subtitle = stringResource(R.string.usage_stats_subtitle),
-        accentIcon = Icons.Rounded.DataUsage,
+        accentIcon = Icons.Rounded.QueryStats,
         condition = condition,
         banner = banner,
         actions = {

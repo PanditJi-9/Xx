@@ -14,7 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.rounded.Timeline
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.FilterChip
@@ -82,7 +82,7 @@ internal fun ActivityCardSettingsItem() {
                 leadingContent = { LeadingIcon(icon = Icons.Rounded.Timeline) },
                 trailingContent = {
                     Icon(
-                        Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                        Icons.AutoMirrored.Rounded.KeyboardArrowRight,
                         contentDescription = null
                     )
                 },

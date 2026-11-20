@@ -34,7 +34,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.rounded.BatteryChargingFull
 import androidx.compose.material.icons.rounded.Bolt
 import androidx.compose.material.icons.rounded.CheckCircle
@@ -333,7 +333,7 @@ fun BypassChargeScreen(navController: NavHostController) {
                                     color = colors.onPrimaryContainer.copy(alpha = .78f)
                                 )
                             }
-                            Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null, tint = colors.onPrimaryContainer)
+                            Icon(Icons.AutoMirrored.Rounded.KeyboardArrowRight, null, tint = colors.onPrimaryContainer)
                         }
                     }
                 }

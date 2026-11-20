@@ -44,12 +44,14 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -487,6 +489,11 @@ fun GamePanelTurboNeon(
     val subtitle = stringResource(R.string.neon_subtitle)
     val infoTitle = stringResource(R.string.neon_section_info)
     val toolsTitle = stringResource(R.string.neon_section_tools)
+    // اللوحة تلتصق بحافة الهاتف وقائمة تبويباتها تلاصق تلك الحافة: على اليسار كما في الأصل، وعلى اليمين
+    // يُعكس التخطيط كلّه (والنصوص والأيقونات والعدّادات تبقى سويّة — انظر [LocalNeonMirror]).
+    val mirror = side == PanelSide.End
+    // اهتزاز خفيف عند اللمس: تأكيد ملموس لأيّ زرّ ضُغط، ولا يعتمد على رؤية الشاشة أثناء اللعب
+    val haptic = LocalHapticFeedback.current
 
     BoxWithConstraints(
         Modifier
@@ -513,10 +520,19 @@ fun GamePanelTurboNeon(
         Layout(
             content = {
                 // داخل فضاء التصميم: Density = 1 فتتّحد وحدات dp وsp والرسم مع إحداثيات الصورة.
-                CompositionLocalProvider(LocalDensity provides Density(1f, 1f)) {
-                    Box(Modifier.size(NEON_W.dp, NEON_H.dp)) {
+                CompositionLocalProvider(
+                    LocalDensity provides Density(1f, 1f),
+                    LocalNeonMirror provides mirror
+                ) {
+                    // قلب أفقيّ واحد لفضاء التصميم كلّه عند الالتصاق باليمين (يشمل اللمس: الإحداثيات تُقلب معه).
+                    Box(Modifier.size(NEON_W.dp, NEON_H.dp).upright(mirror)) {
                         NeonFrame()
-                        NeonHeader(boostOn = boostOn, tempText = tempC?.let { "${it.roundToInt()}°C" } ?: nd.max.ui.design.MAX_VALUE_UNAVAILABLE, subtitle = subtitle)
+                        NeonHeader(
+                            boostOn = boostOn,
+                            tempText = tempC?.let { "${it.roundToInt()}°C" } ?: nd.max.ui.design.MAX_VALUE_UNAVAILABLE,
+                            tempC = tempC,
+                            subtitle = subtitle
+                        )
                         NeonSidebar(labels = labels, available = tabAvailable, recordingLive = recording, onTab = ::onTab)
                         NeonGauges(
                             title = infoTitle,
@@ -530,6 +546,8 @@ fun GamePanelTurboNeon(
                         )
                         NeonModes(
                             selected = thermal.selected,
+                            targets = thermal.targetsMhz,
+                            applying = thermal.phase == ThermalPhase.Applying || thermal.phase == ThermalPhase.Pending,
                             statusFor = { id ->
                                 if (id != thermal.selected) null else when {
                                     thermal.phase == ThermalPhase.Applying -> sApplying to false
@@ -539,7 +557,10 @@ fun GamePanelTurboNeon(
                                     else -> null
                                 }
                             },
-                            onPick = ::pickThermal
+                            onPick = { id ->
+                                haptic.performHapticFeedback(HapticFeedbackType.SegmentTick)
+                                pickThermal(id)
+                            }
                         )
                         NeonTools(
                             title = toolsTitle,
@@ -556,7 +577,10 @@ fun GamePanelTurboNeon(
                                     NeonTool.TouchLock, NeonTool.Network -> NeonToolState(false, false)
                                 }
                             },
-                            onTool = ::onTool
+                            onTool = { tool ->
+                                haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                onTool(tool)
+                            }
                         )
                         NeonStatusBar(bar.kind, bar.title, bar.sub, bar.percent)
                         if (consentOpen) {
@@ -577,7 +601,7 @@ fun GamePanelTurboNeon(
                 }
             },
             modifier = Modifier
-                .align(if (side == PanelSide.End) Alignment.CenterEnd else Alignment.CenterStart)
+                .align(if (mirror) Alignment.CenterEnd else Alignment.CenterStart)
                 .graphicsLayer {
                     val p = enter.value
                     alpha = p.coerceIn(0f, 1f)
@@ -640,7 +664,7 @@ private fun NeonConfirm(
         fontSize = 24.sp,
         maxLines = 6,
         overflow = TextOverflow.Ellipsis,
-        modifier = Modifier.at(267f, 524f, 576f, 190f)
+        modifier = Modifier.at(267f, 524f, 576f, 190f).upright(LocalNeonMirror.current)
     )
     for (i in 0..1) {
         val x = if (i == 0) 267f else 575f

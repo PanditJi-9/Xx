@@ -13,7 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Memory
+import androidx.compose.material.icons.rounded.Memory
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -80,7 +80,7 @@ fun CapabilityMatrixCard(
     val showUnavailable = rememberUnavailableVisible()
     MaxSurface(modifier = Modifier.padding(top = 22.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-            IconBadge(Icons.Outlined.Memory, MaterialTheme.colorScheme.primary, 36)
+            IconBadge(Icons.Rounded.Memory, MaterialTheme.colorScheme.primary, 36)
             Column(Modifier.weight(1f)) {
                 Text(
                     stringResource(R.string.diagnostics_capability_matrix),

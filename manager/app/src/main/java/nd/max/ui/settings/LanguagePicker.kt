@@ -70,8 +70,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -195,12 +195,12 @@ fun LanguagePickerSheet(
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
                 placeholder = { Text(stringResource(R.string.max_language_search_hint)) },
-                leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
+                leadingIcon = { Icon(Icons.Rounded.Search, contentDescription = null) },
                 trailingIcon = {
                     if (query.isNotEmpty()) {
                         IconButton(onClick = { query = "" }) {
                             Icon(
-                                Icons.Filled.Close,
+                                Icons.Rounded.Close,
                                 contentDescription = stringResource(R.string.max_language_clear_search),
                             )
                         }

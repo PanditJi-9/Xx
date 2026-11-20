@@ -43,10 +43,21 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
+import androidx.compose.material.icons.rounded.BlurOn
+import androidx.compose.material.icons.rounded.Brightness1
+import androidx.compose.material.icons.rounded.Brightness3
+import androidx.compose.material.icons.rounded.Brightness4
+import androidx.compose.material.icons.rounded.Brightness7
 import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.Colorize
+import androidx.compose.material.icons.rounded.DarkMode
+import androidx.compose.material.icons.rounded.Gradient
+import androidx.compose.material.icons.rounded.Image
+import androidx.compose.material.icons.rounded.Palette
+import androidx.compose.material.icons.rounded.Restore
+import androidx.compose.material.icons.rounded.Tune
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -364,7 +375,7 @@ fun ColorPaletteScreen(navController: NavController) {
         MaxSplitScreen(
             title = stringResource(R.string.theme),
             onBack = { navController.popBackStack() },
-            accentIcon = Icons.Filled.Colorize,
+            accentIcon = Icons.Rounded.Colorize,
             accent = MaterialTheme.colorScheme.primary,
             snackbarHostState = snackbarHostState
         ) {
@@ -563,7 +574,7 @@ fun ColorPaletteScreen(navController: NavController) {
                 showResetDialog = false
             },
             onDismiss = { showResetDialog = false },
-            icon = Icons.Filled.Restore,
+            icon = Icons.Rounded.Restore,
         )
     }
 }
@@ -620,7 +631,7 @@ private fun androidx.compose.foundation.lazy.LazyListScope.themeSettingsItems(
         ThemeSectionHeader(
             // «الطبعات» لوحةُ ألوان تامة تُطبَّق بضغطة — فالرمز لوحةٌ (`Palette`)، لا نجمةَ
             // الذكاء: النجمة صارت في التطبيق **رمز Max AI وحده** (ملاحظة §٩: «AI مفرط»).
-            icon = Icons.Outlined.Palette,
+            icon = Icons.Rounded.Palette,
             title = stringResource(R.string.theme_presets_title),
             modifier = Modifier.padding(bottom = MaxSectionSpec.spaceAfter)
         )
@@ -642,7 +653,7 @@ private fun androidx.compose.foundation.lazy.LazyListScope.themeSettingsItems(
     // ── Section: Accent Color ──────────────────────────────────────────────
     item {
         ThemeSectionHeader(
-            icon = Icons.Outlined.Palette,
+            icon = Icons.Rounded.Palette,
             title = stringResource(R.string.accent_color),
             // `MaxSplitScreen` يملك هامش الصفحة (`MaxSpace.gutter` 20dp)، وكان هذا السطر يضيف
             // `start = 20.dp, end = 16.dp` فوقه ⇒ 40dp يسارًا و36dp يمينًا: لا متماثلَين ولا
@@ -671,7 +682,7 @@ private fun androidx.compose.foundation.lazy.LazyListScope.themeSettingsItems(
 
     item {
         ThemeSectionHeader(
-            icon = Icons.Outlined.DarkMode,
+            icon = Icons.Rounded.DarkMode,
             title = stringResource(R.string.appearance),
             modifier = Modifier.padding(bottom = MaxSectionSpec.spaceAfter)
         )
@@ -682,10 +693,10 @@ private fun androidx.compose.foundation.lazy.LazyListScope.themeSettingsItems(
         // في واجهة عربية (عيب لغوي وبصري معًا)، وكانت الوسوم فارغة (`label = {}`) فلا
         // يقرأ المستخدم إلا أربع أيقونات بلا كلمة — وهو ما يجعل الصفّ يبدو بلا خيارات.
         val options = listOf(
-            ColorMode.SYSTEM to (Icons.Filled.Brightness4 to stringResource(R.string.theme_mode_system)),
-            ColorMode.LIGHT to (Icons.Filled.Brightness7 to stringResource(R.string.theme_mode_light)),
-            ColorMode.DARK to (Icons.Filled.Brightness3 to stringResource(R.string.theme_mode_dark)),
-            ColorMode.DARKAMOLED to (Icons.Filled.Brightness1 to stringResource(R.string.theme_mode_amoled)),
+            ColorMode.SYSTEM to (Icons.Rounded.Brightness4 to stringResource(R.string.theme_mode_system)),
+            ColorMode.LIGHT to (Icons.Rounded.Brightness7 to stringResource(R.string.theme_mode_light)),
+            ColorMode.DARK to (Icons.Rounded.Brightness3 to stringResource(R.string.theme_mode_dark)),
+            ColorMode.DARKAMOLED to (Icons.Rounded.Brightness1 to stringResource(R.string.theme_mode_amoled)),
         )
         SingleChoiceSegmentedButtonRow(
             // `MaxSplitScreen` يملك هامش الصفحة (`MaxSpace.gutter`)؛ وكان 16dp هنا يُضاف فوقه
@@ -755,7 +766,7 @@ private fun androidx.compose.foundation.lazy.LazyListScope.themeSettingsItems(
 
     item {
         ThemeSectionHeader(
-            icon = Icons.Outlined.Image,
+            icon = Icons.Rounded.Image,
             title = stringResource(R.string.banner),
             modifier = Modifier.padding(bottom = MaxSectionSpec.spaceAfter)
         )
@@ -768,7 +779,7 @@ private fun androidx.compose.foundation.lazy.LazyListScope.themeSettingsItems(
                 add {
                     Column {
                         ExpressiveSwitchItem(
-                            icon = Icons.Outlined.Image,
+                            icon = Icons.Rounded.Image,
                             title = stringResource(R.string.str_enable_banner),
                             checked = isBannerEnabled,
                             onCheckedChange = onBannerEnabledChange
@@ -813,7 +824,7 @@ private fun androidx.compose.foundation.lazy.LazyListScope.themeSettingsItems(
                                         )
                                     ) {
                                         Icon(
-                                            Icons.Filled.Image,
+                                            Icons.Rounded.Image,
                                             contentDescription = null,
                                             modifier = Modifier.size(18.dp)
                                         )
@@ -847,7 +858,7 @@ private fun androidx.compose.foundation.lazy.LazyListScope.themeSettingsItems(
                                         )
                                     ) {
                                         Icon(
-                                            Icons.Filled.Restore,
+                                            Icons.Rounded.Restore,
                                             contentDescription = null,
                                             modifier = Modifier.size(18.dp)
                                         )
@@ -894,7 +905,7 @@ private fun androidx.compose.foundation.lazy.LazyListScope.themeSettingsItems(
 
                                 // Gradient opacity row
                                 Row(verticalAlignment = Alignment.CenterVertically) {
-                                    LeadingIcon(icon = Icons.Outlined.Gradient)
+                                    LeadingIcon(icon = Icons.Rounded.Gradient)
                                     Spacer(Modifier.width(12.dp))
                                     Text(
                                         text = stringResource(R.string.str_adjust_gradient),
@@ -932,7 +943,7 @@ private fun androidx.compose.foundation.lazy.LazyListScope.themeSettingsItems(
                                                 modifier = Modifier.size(28.dp)
                                             ) {
                                                 Icon(
-                                                    Icons.Filled.Restore,
+                                                    Icons.Rounded.Restore,
                                                     contentDescription = stringResource(R.string.reset),
                                                     modifier = Modifier.size(18.dp),
                                                     tint = MaterialTheme.colorScheme.primary
@@ -966,7 +977,7 @@ private fun androidx.compose.foundation.lazy.LazyListScope.themeSettingsItems(
 
     item {
         ThemeSectionHeader(
-            icon = Icons.Outlined.Tune,
+            icon = Icons.Rounded.Tune,
             title = stringResource(R.string.str_interface),
             modifier = Modifier.padding(bottom = MaxSectionSpec.spaceAfter)
         )
@@ -992,7 +1003,7 @@ private fun androidx.compose.foundation.lazy.LazyListScope.themeSettingsItems(
             content = buildList {
                 add {
                     ExpressiveSwitchItem(
-                        icon = Icons.Filled.BlurOn,
+                        icon = Icons.Rounded.BlurOn,
                         title = stringResource(R.string.str_expressive_blur),
                         summary = stringResource(R.string.str_expressive_blur_summary),
                         checked = isBlurEnabled,

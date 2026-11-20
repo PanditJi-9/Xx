@@ -28,7 +28,7 @@ package nd.max.ui.design
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -125,7 +125,7 @@ fun MaxCommandMenu(
                     trailingIcon = if (command.active) {
                         {
                             Icon(
-                                imageVector = Icons.Filled.Check,
+                                imageVector = Icons.Rounded.Check,
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.primary,
                             )

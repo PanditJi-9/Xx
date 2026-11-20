@@ -39,7 +39,7 @@ import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.RestartAlt
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.SkipNext
-import androidx.compose.material.icons.rounded.Speed
+import androidx.compose.material.icons.rounded.Timer
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -230,7 +230,7 @@ fun DozeModeScreen(
                             subtitle = stringResource(R.string.dozemode_aggressive_desc),
                             checked = viewModel.settings.isAggressive,
                             onCheckedChange = viewModel::setAggressiveDoze,
-                            icon = Icons.Rounded.Speed,
+                            icon = Icons.Rounded.Timer,
                             enabled = viewModel.settings.isEnabled,
                             lockedReason = stringResource(R.string.max_doze_aggressive_locked),
                             onStateDescription = stringResource(R.string.max_doze_policy_on),

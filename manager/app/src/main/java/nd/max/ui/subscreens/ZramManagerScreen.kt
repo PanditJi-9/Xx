@@ -19,10 +19,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.CleaningServices
 import androidx.compose.material.icons.rounded.ExpandLess
 import androidx.compose.material.icons.rounded.ExpandMore
-import androidx.compose.material.icons.rounded.Memory
 import androidx.compose.material.icons.rounded.PowerSettingsNew
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.RestartAlt
+import androidx.compose.material.icons.rounded.SdStorage
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -232,7 +232,7 @@ fun ZramManagerScreen(
     MaxScreen(
         title = stringResource(R.string.zram_title),
         onBack = { navController.popBackStack() },
-        accentIcon = Icons.Rounded.Memory,
+        accentIcon = Icons.Rounded.SdStorage,
         condition = condition,
         banner = banner,
         actions = {

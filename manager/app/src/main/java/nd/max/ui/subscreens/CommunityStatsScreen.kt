@@ -8,7 +8,8 @@ package nd.max.ui.subscreens
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.DataUsage
+import androidx.compose.material.icons.rounded.Schedule
+import androidx.compose.material.icons.rounded.Share
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -60,7 +61,7 @@ fun CommunityStatsScreen(navController: NavHostController) {
         title = stringResource(R.string.max_stats_title),
         subtitle = stringResource(R.string.max_stats_subtitle),
         onBack = { navController.popBackStack() },
-        accentIcon = Icons.Rounded.DataUsage,
+        accentIcon = Icons.Rounded.Share,
         accent = MaterialTheme.colorScheme.secondary,
     ) {
         MaxSection(
@@ -114,7 +115,7 @@ fun CommunityStatsScreen(navController: NavHostController) {
 
         MaxGroup {
             ExpressiveSwitchItem(
-                icon = Icons.Rounded.DataUsage,
+                icon = Icons.Rounded.Schedule,
                 title = stringResource(R.string.max_stats_switch_title),
                 summary = stringResource(R.string.max_stats_switch_summary),
                 checked = consent,

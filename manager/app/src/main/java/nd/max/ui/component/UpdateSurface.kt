@@ -32,7 +32,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.rounded.SystemUpdate
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -394,7 +394,7 @@ fun UpdateCheckRow(viewModel: UpdateViewModel = hiltViewModel()) {
             if (checking) {
                 CircularProgressIndicator(modifier = Modifier.size(MaxSpace.xl), strokeWidth = MaxSpace.hairline)
             } else {
-                Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null)
+                Icon(Icons.AutoMirrored.Rounded.KeyboardArrowRight, contentDescription = null)
             }
         },
     )

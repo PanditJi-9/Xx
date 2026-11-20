@@ -45,8 +45,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Delete
+import androidx.compose.material.icons.rounded.Layers
 import androidx.compose.material.icons.rounded.PictureInPicture
-import androidx.compose.material.icons.rounded.Speed
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -249,7 +249,7 @@ fun FpsOverlayScreen(navController: NavController) {
         MaxScreen(
             title = stringResource(R.string.fps_overlay_title),
             onBack = { navController.popBackStack() },
-            accentIcon = Icons.Rounded.Speed,
+            accentIcon = Icons.Rounded.PictureInPicture,
             accent = scheme.tertiary,
             banner = if (hasOverlayPermission) {
                 null
@@ -898,7 +898,7 @@ private fun HudMonitorsSection(onChanged: () -> Unit) {
             MaxRow(
                 title = stringResource(R.string.hud_monitor_title, index + 2),
                 subtitle = stringResource(R.string.hud_monitor_own_settings),
-                icon = Icons.Rounded.Speed,
+                icon = Icons.Rounded.Layers,
                 iconTone = MaxTone.Accent
             )
             MaxGroupDivider()

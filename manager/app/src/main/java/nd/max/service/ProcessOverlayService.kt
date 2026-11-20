@@ -22,8 +22,8 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -210,7 +210,7 @@ class ProcessOverlayService : LifecycleService() {
                         modifier = Modifier.size(MaxSize.iconGlyph)
                     ) {
                         Icon(
-                            imageVector = Icons.Filled.Search,
+                            imageVector = Icons.Rounded.Search,
                             contentDescription = stringResource(R.string.processmgr_search_cd),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -272,7 +272,7 @@ class ProcessOverlayService : LifecycleService() {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
-                    imageVector = Icons.Filled.Search,
+                    imageVector = Icons.Rounded.Search,
                     contentDescription = null,
                     tint = colors.onSurfaceVariant,
                     modifier = Modifier.size(MaxSize.iconGlyph)
@@ -307,7 +307,7 @@ class ProcessOverlayService : LifecycleService() {
                     modifier = Modifier.size(MaxSize.iconGlyph)
                 ) {
                     Icon(
-                        imageVector = Icons.Filled.Close,
+                        imageVector = Icons.Rounded.Close,
                         contentDescription = stringResource(R.string.processmgr_search_close_cd),
                         tint = colors.onSurfaceVariant
                     )

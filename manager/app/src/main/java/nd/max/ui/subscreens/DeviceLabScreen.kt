@@ -56,6 +56,7 @@ import androidx.compose.material.icons.automirrored.rounded.VolumeUp
 import androidx.compose.material.icons.rounded.BatteryChargingFull
 import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.DisplaySettings
 import androidx.compose.material.icons.rounded.FlashOn
 import androidx.compose.material.icons.rounded.History
 import androidx.compose.material.icons.rounded.IosShare
@@ -335,7 +336,7 @@ fun DeviceLabScreen(navController: NavHostController) {
                 MaxNavigationRow(
                     title = stringResource(R.string.device_lab_screen_title),
                     subtitle = stringResource(R.string.device_lab_screen_desc),
-                    icon = Icons.Rounded.TouchApp,
+                    icon = Icons.Rounded.DisplaySettings,
                     iconTone = MaxTone.Accent,
                     onClick = { openTest = LabTest.SCREEN },
                 )

@@ -11,9 +11,11 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.Undo
 import androidx.compose.material.icons.rounded.DeveloperBoard
 import androidx.compose.material.icons.rounded.Memory
 import androidx.compose.material.icons.rounded.MoreHoriz
+import androidx.compose.material.icons.rounded.SdStorage
 import androidx.compose.material.icons.rounded.Storage
 import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.material3.MaterialTheme
@@ -138,7 +140,7 @@ fun MemoryUfsScreen(
     MaxScreen(
         title = stringResource(R.string.memufs_title),
         onBack = { navController.popBackStack() },
-        accentIcon = Icons.Rounded.Memory,
+        accentIcon = Icons.Rounded.SdStorage,
         subtitle = stringResource(R.string.memufs_subtitle),
         condition = condition,
         banner = banner,
@@ -149,7 +151,7 @@ fun MemoryUfsScreen(
                     MaxGroup {
                         MaxRow(
                             title = stringResource(R.string.memufs_drifted_detail),
-                            icon = Icons.Rounded.DeveloperBoard,
+                            icon = Icons.AutoMirrored.Rounded.Undo,
                             iconTone = MaxTone.Caution,
                         )
                     }

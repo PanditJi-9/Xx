@@ -49,10 +49,10 @@ import androidx.compose.material.icons.rounded.DataUsage
 import androidx.compose.material.icons.rounded.DeveloperBoard
 import androidx.compose.material.icons.rounded.DisplaySettings
 import androidx.compose.material.icons.rounded.History
-import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.PhoneAndroid
 import androidx.compose.material.icons.rounded.PictureInPicture
+import androidx.compose.material.icons.rounded.SdStorage
 import androidx.compose.material.icons.rounded.Speed
-import androidx.compose.material.icons.rounded.Storage
 import androidx.compose.material.icons.rounded.Thermostat
 import androidx.compose.material.icons.rounded.Timeline
 import androidx.compose.material.icons.rounded.Tune
@@ -154,7 +154,7 @@ val HomeDeckPool: List<HomeDeckEntry> = listOf(
         destination = MaxDestination.ZramManager,
         titleRes = R.string.zram_title,
         descriptionRes = R.string.max_role_zram,
-        icon = Icons.Rounded.Storage,
+        icon = Icons.Rounded.SdStorage,
         tone = MaxTone.Accent,
     ),
     HomeDeckEntry(
@@ -194,7 +194,7 @@ val HomeDeckPool: List<HomeDeckEntry> = listOf(
         destination = MaxDestination.DeviceInfo,
         titleRes = R.string.device_info,
         descriptionRes = R.string.max_role_device_info,
-        icon = Icons.Rounded.Info,
+        icon = Icons.Rounded.PhoneAndroid,
         tone = MaxTone.Neutral,
     ),
     /**

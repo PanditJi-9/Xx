@@ -696,6 +696,8 @@
     <string name="neon_mode_default_sub">Balanced performance</string>
     <string name="neon_mode_gaming">Gaming</string>
     <string name="neon_mode_gaming_sub">Ideal play</string>
+    <string name="neon_mode_selected">Selected</string>
+    <string name="neon_mode_upto">Up to %1$d MHz</string>
     <string name="neon_tool_notifications">Block notifications</string>
     <string name="neon_tool_calls">Block calls</string>
     <string name="neon_tool_record">Screen recording</string>
@@ -725,7 +727,7 @@
     <string name="game_turbo_style_classic">Classic</string>
     <string name="game_turbo_style_default">Default</string>
     <string name="game_turbo_style_confirm">Use this style</string>
-    <string name="game_turbo_style_hint">You can change this later from Settings.</string>
+    <string name="game_turbo_style_hint">You can change this later from Game Space settings.</string>
     <string name="game_turbo_style_row_desc">Choose between the neon and classic panels</string>
     <string name="game_turbo_style_choose">Panel style</string>
 </resources>

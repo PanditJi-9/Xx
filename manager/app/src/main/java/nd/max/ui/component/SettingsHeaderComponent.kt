@@ -26,12 +26,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Schedule
-import androidx.compose.material.icons.filled.Tag
-import androidx.compose.material.icons.outlined.Apps
-import androidx.compose.material.icons.outlined.CalendarMonth
-import androidx.compose.material.icons.outlined.Numbers
+import androidx.compose.material.icons.rounded.CalendarMonth
+import androidx.compose.material.icons.rounded.Numbers
+import androidx.compose.material.icons.rounded.Schedule
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -195,19 +192,19 @@ fun AppInfoHeaderContent(modifier: Modifier = Modifier) {
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 AppInfoTextItem(
-                    Icons.Outlined.CalendarMonth,
+                    Icons.Rounded.CalendarMonth,
                     stringResource(R.string.str_build_date),
                     buildDateString,
                     Modifier.weight(1f)
                 )
                 AppInfoTextItem(
-                    Icons.Outlined.Numbers,
+                    Icons.Rounded.Numbers,
                     stringResource(R.string.str_version_code),
                     BuildConfig.VERSION_CODE.toString(),
                     Modifier.weight(0.75f)
                 )
                 AppInfoTextItem(
-                    Icons.Filled.Schedule,
+                    Icons.Rounded.Schedule,
                     stringResource(R.string.str_device_uptime),
                     uptimeString,
                     Modifier.weight(0.9f)

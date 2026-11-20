@@ -17,7 +17,7 @@
 package nd.max.ui.subscreens
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Speed
+import androidx.compose.material.icons.rounded.DisplaySettings
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -128,7 +128,7 @@ fun FasScreen(navController: NavController) {
                             customCount == 0 -> stringResource(R.string.fas_custom_rates_none)
                             else -> stringResource(R.string.fas_custom_rates_count, customCount)
                         },
-                        icon = Icons.Rounded.Speed,
+                        icon = Icons.Rounded.DisplaySettings,
                         iconTone = if ((customCount ?: 0) > 0) MaxTone.Accent else MaxTone.Neutral,
                     )
                     MaxGroupDivider()

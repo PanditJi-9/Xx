@@ -26,8 +26,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Save
-import androidx.compose.material.icons.outlined.SettingsBackupRestore
+import androidx.compose.material.icons.rounded.Save
+import androidx.compose.material.icons.rounded.SettingsBackupRestore
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -72,7 +72,7 @@ fun BackupRestoreBottomSheet(
                         ExpressiveListItem(
                             headlineContent = { Text(stringResource(R.string.str_backup_configuration), color = MaterialTheme.colorScheme.onSurface) },
                             supportingContent = { Text(stringResource(R.string.str_save_your_current_tweak_settin), color = MaterialTheme.colorScheme.onSurfaceVariant) },
-                            leadingContent = { SmallLeadingIcon(Icons.Outlined.Save) },
+                            leadingContent = { SmallLeadingIcon(Icons.Rounded.Save) },
                             onClick = {
                                 onDismiss()
                                 onBackup()
@@ -83,7 +83,7 @@ fun BackupRestoreBottomSheet(
                         ExpressiveListItem(
                             headlineContent = { Text(stringResource(R.string.str_restore_configuration), color = MaterialTheme.colorScheme.onSurface) },
                             supportingContent = { Text(stringResource(R.string.str_load_a_previously_saved_backup), color = MaterialTheme.colorScheme.onSurfaceVariant) },
-                            leadingContent = { SmallLeadingIcon(Icons.Outlined.SettingsBackupRestore) },
+                            leadingContent = { SmallLeadingIcon(Icons.Rounded.SettingsBackupRestore) },
                             onClick = {
                                 onDismiss()
                                 onRestore()

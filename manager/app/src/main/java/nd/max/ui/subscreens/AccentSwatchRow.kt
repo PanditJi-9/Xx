@@ -41,7 +41,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Colorize
+import androidx.compose.material.icons.rounded.Colorize
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
@@ -220,7 +220,7 @@ private fun CustomAccentSwatch(isSelected: Boolean, onClick: () -> Unit) {
                     drawCircle(brush = Brush.sweepGradient(AccentHueSpectrum))
                 }
                 Icon(
-                    imageVector = Icons.Outlined.Colorize,
+                    imageVector = Icons.Rounded.Colorize,
                     contentDescription = null,
                     tint = Color.White,
                     modifier = Modifier.size(MaxSize.iconGlyph)

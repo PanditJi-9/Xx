@@ -44,18 +44,18 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.ExpandMore
-import androidx.compose.material.icons.filled.Restore
-import androidx.compose.material.icons.outlined.Animation
-import androidx.compose.material.icons.outlined.Colorize
-import androidx.compose.material.icons.outlined.Contrast
-import androidx.compose.material.icons.outlined.FormatSize
-import androidx.compose.material.icons.outlined.RoundedCorner
-import androidx.compose.material.icons.outlined.Science
-import androidx.compose.material.icons.outlined.SpaceDashboard
-import androidx.compose.material.icons.outlined.Tune
-import androidx.compose.material.icons.outlined.ViewAgenda
+import androidx.compose.material.icons.rounded.Animation
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.Colorize
+import androidx.compose.material.icons.rounded.Contrast
+import androidx.compose.material.icons.rounded.ExpandMore
+import androidx.compose.material.icons.rounded.FormatSize
+import androidx.compose.material.icons.rounded.Restore
+import androidx.compose.material.icons.rounded.RoundedCorner
+import androidx.compose.material.icons.rounded.Science
+import androidx.compose.material.icons.rounded.SpaceDashboard
+import androidx.compose.material.icons.rounded.Tune
+import androidx.compose.material.icons.rounded.ViewAgenda
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -272,7 +272,7 @@ private fun ThemePresetCard(
                 }
                 if (isSelected) {
                     Icon(
-                        imageVector = Icons.Filled.Check,
+                        imageVector = Icons.Rounded.Check,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier
@@ -404,7 +404,7 @@ fun ThemeAdvancedSection(
                 horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm)
             ) {
                 Icon(
-                    imageVector = Icons.Outlined.Tune,
+                    imageVector = Icons.Rounded.Tune,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(MaxSize.iconGlyphSmall)
@@ -417,7 +417,7 @@ fun ThemeAdvancedSection(
                     modifier = Modifier.weight(1f)
                 )
                 Icon(
-                    imageVector = Icons.Filled.ExpandMore,
+                    imageVector = Icons.Rounded.ExpandMore,
                     contentDescription = stringResource(
                         if (expanded) R.string.theme_advanced_hide else R.string.theme_advanced_show
                     ),
@@ -449,7 +449,7 @@ fun ThemeAdvancedSection(
                 )
 
                 ThemeChoiceRow(
-                    icon = Icons.Outlined.Contrast,
+                    icon = Icons.Rounded.Contrast,
                     title = stringResource(R.string.theme_contrast_title),
                     options = listOf(
                         stringResource(R.string.theme_opt_standard),
@@ -465,7 +465,7 @@ fun ThemeAdvancedSection(
                 )
 
                 ThemeChoiceRow(
-                    icon = Icons.Outlined.RoundedCorner,
+                    icon = Icons.Rounded.RoundedCorner,
                     title = stringResource(R.string.theme_roundness_title),
                     options = listOf(
                         stringResource(R.string.theme_roundness_sharp),
@@ -481,7 +481,7 @@ fun ThemeAdvancedSection(
                 )
 
                 ThemeChoiceRow(
-                    icon = Icons.Outlined.FormatSize,
+                    icon = Icons.Rounded.FormatSize,
                     title = stringResource(R.string.theme_font_title),
                     options = listOf(
                         stringResource(R.string.theme_font_small),
@@ -499,7 +499,7 @@ fun ThemeAdvancedSection(
                 // كثافة المعلومات (§٦-ج): تضغط الحشو الرأسي أو توسّعه — ولا تمسّ حجم النصّ ولا
                 // أرض اللمس. والافتراضيّ «قياسيّ» = سلوك اليوم بالضبط.
                 ThemeChoiceRow(
-                    icon = Icons.Outlined.ViewAgenda,
+                    icon = Icons.Rounded.ViewAgenda,
                     title = stringResource(R.string.theme_density_title),
                     options = listOf(
                         stringResource(R.string.theme_density_compact),
@@ -516,7 +516,7 @@ fun ThemeAdvancedSection(
 
                 // شكل البطاقات (§٦-ج): القشرة وحدها (حدّ/خلفية) — والمحتوى لا يتغيّر في أيّ وضع.
                 ThemeChoiceRow(
-                    icon = Icons.Outlined.SpaceDashboard,
+                    icon = Icons.Rounded.SpaceDashboard,
                     title = stringResource(R.string.theme_card_style_title),
                     options = listOf(
                         stringResource(R.string.theme_card_outlined),
@@ -550,7 +550,7 @@ private fun ThemeSpecChoice(
             horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm)
         ) {
             Icon(
-                imageVector = Icons.Outlined.Colorize,
+                imageVector = Icons.Rounded.Colorize,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(MaxSize.iconGlyphSmall)
@@ -580,9 +580,9 @@ private fun ThemeSpecChoice(
                     icon = {
                         Icon(
                             imageVector = when (index) {
-                                0 -> Icons.Outlined.Science
-                                1 -> Icons.Outlined.Colorize
-                                else -> Icons.Outlined.Tune
+                                0 -> Icons.Rounded.Science
+                                1 -> Icons.Rounded.Colorize
+                                else -> Icons.Rounded.Tune
                             },
                             contentDescription = null
                         )
@@ -648,7 +648,7 @@ fun ThemeInterfaceControls(
         // عنوان (اسم الشاشة وحده) · شفّاف (تدرّج فوق المحتوى) — والكلاسيكيّ هو القائم. والمفتاح هنا
         // يكتب النمط، والشريط في `ScreenChrome` يقرؤه، والمعاينة أعلاه ترسم به.
         ThemeChoiceRow(
-            icon = Icons.Outlined.ViewAgenda,
+            icon = Icons.Rounded.ViewAgenda,
             title = stringResource(R.string.theme_topbar_title),
             options = listOf(
                 stringResource(R.string.theme_topbar_classic),
@@ -675,7 +675,7 @@ fun ThemeInterfaceControls(
                 horizontalArrangement = Arrangement.spacedBy(MaxSpace.sm)
             ) {
                 Icon(
-                    imageVector = Icons.Outlined.SpaceDashboard,
+                    imageVector = Icons.Rounded.SpaceDashboard,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(MaxSize.iconGlyphSmall)
@@ -703,7 +703,7 @@ fun ThemeInterfaceControls(
         }
 
         ThemeChoiceRow(
-            icon = Icons.Outlined.Animation,
+            icon = Icons.Rounded.Animation,
             title = stringResource(R.string.theme_motion_title),
             options = listOf(
                 stringResource(R.string.theme_motion_full),
@@ -727,7 +727,7 @@ fun ThemeInterfaceControls(
         // وإيقاف الحركة في النظام (`ANIMATOR_DURATION_SCALE = 0`) يسبق هذا المفتاح ويُلغيه.
         var scrollEffects by remember { mutableStateOf(ThemeStudio.scrollEffects(prefs)) }
         ExpressiveSwitchItem(
-            icon = Icons.Outlined.Animation,
+            icon = Icons.Rounded.Animation,
             title = stringResource(R.string.str_scroll_effects),
             checked = scrollEffects,
             onCheckedChange = { next ->
@@ -750,7 +750,7 @@ fun ThemeResetRow(onClick: () -> Unit) {
     ) {
         StudioOutlinedButton(onClick = onClick) {
             Icon(
-                imageVector = Icons.Filled.Restore,
+                imageVector = Icons.Rounded.Restore,
                 contentDescription = null,
                 modifier = Modifier.size(MaxSize.iconGlyphSmall)
             )

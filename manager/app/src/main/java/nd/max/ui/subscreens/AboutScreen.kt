@@ -42,9 +42,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.automirrored.rounded.List
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material.icons.rounded.*
@@ -110,7 +107,7 @@ fun AboutScreen(navController: NavController) {
         MaxListScreen(
             title = stringResource(R.string.section_about),
             onBack = { navController.popBackStack() },
-            accentIcon = Icons.Filled.Info
+            accentIcon = Icons.Rounded.Info
         ) {
 
             item {

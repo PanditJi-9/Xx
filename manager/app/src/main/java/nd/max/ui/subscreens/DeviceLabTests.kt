@@ -9,11 +9,12 @@ import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.VolumeUp
 import androidx.compose.material.icons.rounded.BatteryChargingFull
+import androidx.compose.material.icons.rounded.Bluetooth
 import androidx.compose.material.icons.rounded.CameraAlt
+import androidx.compose.material.icons.rounded.DisplaySettings
 import androidx.compose.material.icons.rounded.FlashOn
 import androidx.compose.material.icons.rounded.Keyboard
 import androidx.compose.material.icons.rounded.Mic
-import androidx.compose.material.icons.rounded.Science
 import androidx.compose.material.icons.rounded.Sensors
 import androidx.compose.material.icons.rounded.TouchApp
 import androidx.compose.material.icons.rounded.Vibration
@@ -38,7 +39,7 @@ enum class LabTestId(
     @StringRes val titleRes: Int,
     val icon: ImageVector,
 ) {
-    SCREEN(R.string.device_lab_screen_title, Icons.Rounded.Science),
+    SCREEN(R.string.device_lab_screen_title, Icons.Rounded.DisplaySettings),
     TOUCH(R.string.device_lab_touch_title, Icons.Rounded.TouchApp),
     BUTTONS(R.string.device_lab_buttons_title, Icons.Rounded.Keyboard),
     VIBRATION(R.string.device_lab_vibration_title, Icons.Rounded.Vibration),
@@ -49,7 +50,7 @@ enum class LabTestId(
     BATTERY(R.string.device_lab_battery_title, Icons.Rounded.BatteryChargingFull),
     CHARGING(R.string.device_lab_section_charge, Icons.Rounded.BatteryChargingFull),
     CAMERAS(R.string.device_lab_section_cameras, Icons.Rounded.CameraAlt),
-    RADIOS(R.string.device_lab_section_radios, Icons.Rounded.Wifi),
+    RADIOS(R.string.device_lab_section_radios, Icons.Rounded.Bluetooth),
     WIFI(R.string.device_lab_section_wifi, Icons.Rounded.Wifi),
 }
 

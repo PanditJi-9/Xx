@@ -67,6 +67,8 @@ import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.ArrowForward
 import androidx.compose.material.icons.rounded.Apps
 import androidx.compose.material.icons.rounded.Bolt
+import androidx.compose.material.icons.rounded.Category
+import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Insights
 import androidx.compose.material.icons.rounded.Memory
 import androidx.compose.material.icons.rounded.Palette
@@ -74,7 +76,6 @@ import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Shield
 import androidx.compose.material.icons.rounded.Speed
 import androidx.compose.material.icons.rounded.Tune
-import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -468,7 +469,7 @@ private fun HomeTourStep.glyph(): ImageVector = when (this) {
     HomeTourStep.Pulse -> Icons.Rounded.Insights
     HomeTourStep.Memory -> Icons.Rounded.Memory
     HomeTourStep.Deck -> Icons.Rounded.Tune
-    HomeTourStep.ControlDomains -> Icons.Rounded.Tune
+    HomeTourStep.ControlDomains -> Icons.Rounded.Category
     HomeTourStep.AppsSearch -> Icons.Rounded.Search
     HomeTourStep.AppsFilters -> Icons.Rounded.Apps
     HomeTourStep.SettingsTop -> Icons.Rounded.Palette

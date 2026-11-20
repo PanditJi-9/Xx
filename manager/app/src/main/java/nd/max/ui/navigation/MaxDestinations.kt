@@ -37,6 +37,7 @@ import androidx.compose.material.icons.rounded.Key
 import androidx.compose.material.icons.rounded.Memory
 import androidx.compose.material.icons.rounded.NetworkCheck
 import androidx.compose.material.icons.rounded.Palette
+import androidx.compose.material.icons.rounded.PhoneAndroid
 import androidx.compose.material.icons.rounded.PictureInPicture
 import androidx.compose.material.icons.rounded.Policy
 import androidx.compose.material.icons.rounded.Power
@@ -148,7 +149,7 @@ sealed class MaxDestination(
      * «نظرة عامة»، والدخول من قسم بعينه (زرّ الشاشة التي تملكه) يفتحه مباشرةً. ووجهةٌ
      * واحدة بمعامل لا إحدى عشرة وجهة: التبويبات أقسامٌ داخلها لا مقاعد في الشجرة (ADR-02).
      */
-    data object DeviceInfo : MaxDestination("device_info?section={section}", R.string.device_info, Icons.Rounded.Info)
+    data object DeviceInfo : MaxDestination("device_info?section={section}", R.string.device_info, Icons.Rounded.PhoneAndroid)
 
     // Settings root: مقعد دائم في الشريط السفلي (طلب المالك)، وكان يُفتح من الشريط العلوي فقط.
     data object Settings : MaxDestination("settings", R.string.max_nav_settings, Icons.Rounded.Settings, isPrimary = true)

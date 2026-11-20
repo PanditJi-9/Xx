@@ -2,13 +2,13 @@
 package nd.max.ui.subscreens
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Person
-import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material.icons.outlined.Speed
-import androidx.compose.material.icons.outlined.SportsEsports
-import androidx.compose.material.icons.outlined.StarBorder
-import androidx.compose.material.icons.outlined.ViewSidebar
+import androidx.compose.material.icons.rounded.Home
+import androidx.compose.material.icons.rounded.Person
+import androidx.compose.material.icons.rounded.Settings
+import androidx.compose.material.icons.rounded.Speed
+import androidx.compose.material.icons.rounded.SportsEsports
+import androidx.compose.material.icons.rounded.StarBorder
+import androidx.compose.material.icons.rounded.ViewSidebar
 import androidx.compose.ui.graphics.vector.ImageVector
 import nd.max.R
 
@@ -22,13 +22,13 @@ internal enum class LobbyPage(
     val labelRes: Int,
     val icon: ImageVector,
 ) {
-    Home(null, R.string.gs_nav_home, Icons.Outlined.Home),
-    Library(LobbySection.Library, R.string.gs_nav_games, Icons.Outlined.SportsEsports),
-    Performance(LobbySection.Insights, R.string.gs_nav_perf, Icons.Outlined.Speed),
-    Tools(LobbySection.Panel, R.string.gs_nav_tools, Icons.Outlined.ViewSidebar),
-    Features(LobbySection.Loadout, R.string.gs_nav_features, Icons.Outlined.StarBorder),
-    Profile(LobbySection.Game, R.string.lobby_tile_profile, Icons.Outlined.Person),
-    Settings(LobbySection.Lobby, R.string.gs_nav_settings, Icons.Outlined.Settings);
+    Home(null, R.string.gs_nav_home, Icons.Rounded.Home),
+    Library(LobbySection.Library, R.string.gs_nav_games, Icons.Rounded.SportsEsports),
+    Performance(LobbySection.Insights, R.string.gs_nav_perf, Icons.Rounded.Speed),
+    Tools(LobbySection.Panel, R.string.gs_nav_tools, Icons.Rounded.ViewSidebar),
+    Features(LobbySection.Loadout, R.string.gs_nav_features, Icons.Rounded.StarBorder),
+    Profile(LobbySection.Game, R.string.lobby_tile_profile, Icons.Rounded.Person),
+    Settings(LobbySection.Lobby, R.string.gs_nav_settings, Icons.Rounded.Settings);
 
     companion object {
         /** صفحة القسم؛ كل قسم له صفحة واحدة بالضبط. */

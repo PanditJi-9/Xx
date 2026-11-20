@@ -913,8 +913,6 @@ fun MainScreen(fromTileType: String? = null, widgetRoute: String? = null, widget
             // نافذة «التحديث المنشور من اللوحة»: الإصدار ورابط التنزيل كما كتبهما المالك في
             // Max Control، والزرّ يفتح الرابط في المتصفّح. قناة ثانية مستقلة عن قناة المانيفست.
             ConfigUpdateHost()
-            // اختيار مظهر Game Turbo: مرة واحدة بعد الترحيب والجولة، ثم من الإعدادات فقط.
-            nd.max.ui.component.GameTurboStyleHost(enabled = hasCompletedGetStarted && !tourVisible)
         }
     }
 }

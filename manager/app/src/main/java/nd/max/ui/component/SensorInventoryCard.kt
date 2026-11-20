@@ -24,7 +24,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Sensors
+import androidx.compose.material.icons.rounded.Sensors
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -82,7 +82,7 @@ fun SensorInventoryCard() {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            IconBadge(Icons.Outlined.Sensors, MaterialTheme.colorScheme.primary, 36)
+            IconBadge(Icons.Rounded.Sensors, MaterialTheme.colorScheme.primary, 36)
             Text(
                 text = stringResource(R.string.max_sensor_title),
                 style = MaterialTheme.typography.titleMedium,

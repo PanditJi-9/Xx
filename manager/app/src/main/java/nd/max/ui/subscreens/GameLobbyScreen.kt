@@ -225,6 +225,10 @@ fun GameLobbyScreen(
     val haptic = LocalHapticFeedback.current
     val scope = rememberCoroutineScope()
 
+    // اختيار مظهر Game Turbo داخل مساحة الألعاب وحدها (أمر المالك ٢٠٢٦-١١-٢٠): لا يظهر على
+    // الشاشة الرئيسية. أول فتح بعد التثبيت يعرضه هنا، ويُعاد فتحه من «أدوات ← اللوحة» في اللوبي.
+    nd.max.ui.component.GameTurboStyleHost(enabled = true)
+
     // صلاحية التراكب تُقرأ عند كل عودة إلى الشاشة لا مرة واحدة: المنح يقع في إعدادات النظام
     // خارج التطبيق، وقراءة واحدة كانت تُبقي البند ظاهرًا بعد المنح أو تُخفيه قبل تحقّقه.
     var overlayGranted by remember { mutableStateOf(OverlayPermission.granted(context)) }

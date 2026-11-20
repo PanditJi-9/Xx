@@ -40,12 +40,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.rounded.Cancel
 import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.HelpOutline
 import androidx.compose.material.icons.rounded.PowerSettingsNew
-import androidx.compose.material.icons.rounded.Speed
 import androidx.compose.material.icons.rounded.Storage
 import androidx.compose.material.icons.rounded.Thermostat
 import androidx.compose.material3.Icon
@@ -487,7 +486,7 @@ private fun FrequencyMetricCard(
                 Text(title, color = p.muted, style = MaterialTheme.typography.labelMedium)
                 Spacer(Modifier.width(MaxSpace.xs))
                 Icon(
-                    Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                    Icons.AutoMirrored.Rounded.KeyboardArrowRight,
                     null,
                     Modifier.size(MaxSize.iconGlyphSmall),
                     tint = accent,
@@ -620,7 +619,7 @@ private fun FocusCard(
             title = stringResource(R.string.home_focus_memory)
             body = stringResource(R.string.home_focus_memory_desc)
             accent = p.accentAlt
-            icon = Icons.Rounded.Speed
+            icon = Icons.Rounded.Memory
             route = MaxDestination.ZramManager.route
             hideAction = null
         }

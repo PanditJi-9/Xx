@@ -51,7 +51,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.rounded.*
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.rounded.*
@@ -204,7 +203,7 @@ fun SettingsScreen(
                 Toast.makeText(context, R.string.toast_settings_reset, Toast.LENGTH_SHORT).show()
             },
             onDismiss = { resetConfirm = false },
-            icon = Icons.Filled.Restore,
+            icon = Icons.Rounded.Restore,
             destructive = true
         )
     }
@@ -342,7 +341,7 @@ fun SettingsScreen(
                                     // وتُطَبَّق فورًا» سطرٌ يقول ما يُفهم من العنوان، ويُدفع في
                                     // كل فتحة — والمفتاح `max_language_desc` يبقى في الموارد
                                     // لأن إعادته سطرُ نداء واحد، لا حذف عمل (ADR-18).
-                                    leadingContent = { LeadingIcon(icon = Icons.Filled.Language) },
+                                    leadingContent = { LeadingIcon(icon = Icons.Rounded.Language) },
                                     trailingContent = {
                                         Row(verticalAlignment = Alignment.CenterVertically) {
                                             // سطر القيمة يحمل حدًّا فضيّقًا أحيانًا (اسم لغة طويل
@@ -357,7 +356,7 @@ fun SettingsScreen(
                                                 overflow = TextOverflow.Ellipsis
                                             )
                                             Spacer(Modifier.width(8.dp))
-                                            Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null)
+                                            Icon(Icons.AutoMirrored.Rounded.KeyboardArrowRight, null)
                                         }
                                     }
                                 )
@@ -372,7 +371,7 @@ fun SettingsScreen(
                                     headlineContent = { Text(stringResource(R.string.theme)) },
                                     leadingContent = { LeadingIcon(icon = Icons.Rounded.Palette) },
                                     trailingContent = {
-                                        Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null)
+                                        Icon(Icons.AutoMirrored.Rounded.KeyboardArrowRight, null)
                                     }
                                 )
                             }
@@ -393,8 +392,8 @@ fun SettingsScreen(
                                     supportingContent = {
                                         Text(stringResource(R.string.version_format, BuildConfig.VERSION_NAME))
                                     },
-                                    leadingContent = { LeadingIcon(icon = Icons.Filled.ContactPage) },
-                                    trailingContent = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null) }
+                                    leadingContent = { LeadingIcon(icon = Icons.Rounded.Info) },
+                                    trailingContent = { Icon(Icons.AutoMirrored.Rounded.KeyboardArrowRight, null) }
                                 )
                             },
                             // فحص التحديث بطلب المستخدم — يستدعي الفحص نفسه ولا يكرّر منطقًا،
@@ -417,7 +416,7 @@ fun SettingsScreen(
                                 headlineContent = { Text(stringResource(R.string.max_license_title)) },
                                 supportingContent = { Text(stringResource(R.string.max_license_subtitle)) },
                                 leadingContent = { LeadingIcon(icon = Icons.Rounded.Key) },
-                                trailingContent = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null) }
+                                trailingContent = { Icon(Icons.AutoMirrored.Rounded.KeyboardArrowRight, null) }
                             )
                         }
                     } else null
@@ -433,17 +432,7 @@ fun SettingsScreen(
                                     headlineContent = { Text(stringResource(R.string.max_nav_config_backup)) },
                                     supportingContent = { Text(stringResource(R.string.max_config_backup_desc)) },
                                     leadingContent = { LeadingIcon(icon = Icons.Rounded.Backup) },
-                                    trailingContent = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null) }
-                                )
-                            },
-                            {
-                                // مظهر لوحة Game Turbo: يفتح نافذة الاختيار نفسها (بالصورتين) ثانيةً.
-                                ExpressiveListItem(
-                                    onClick = { nd.max.ui.util.GameTurboStylePrefs.requestChooser() },
-                                    headlineContent = { Text(stringResource(R.string.game_turbo_style_title)) },
-                                    supportingContent = { Text(stringResource(R.string.game_turbo_style_row_desc)) },
-                                    leadingContent = { LeadingIcon(icon = Icons.Rounded.SportsEsports) },
-                                    trailingContent = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null) }
+                                    trailingContent = { Icon(Icons.AutoMirrored.Rounded.KeyboardArrowRight, null) }
                                 )
                             },
                             // **إحصاءات المجتمع وإضافات الطرف الثالث: مخفيّان بأمر المالك
@@ -473,7 +462,7 @@ fun SettingsScreen(
                                                 overflow = TextOverflow.Ellipsis
                                             )
                                             Spacer(Modifier.width(8.dp))
-                                            Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null)
+                                            Icon(Icons.AutoMirrored.Rounded.KeyboardArrowRight, null)
                                         }
                                     }
                                 )
@@ -495,7 +484,7 @@ fun SettingsScreen(
                             content = listOf(
                                 {
                                     ExpressiveSwitchItem(
-                                        icon = Icons.Filled.Tune,
+                                        icon = Icons.Rounded.Tune,
                                         title = stringResource(R.string.advanced_mode_title),
                                         summary = stringResource(R.string.advanced_mode_desc),
                                         checked = isAdvancedMode,
@@ -504,7 +493,7 @@ fun SettingsScreen(
                                 },
                                 {
                                     ExpressiveSwitchItem(
-                                        icon = Icons.Filled.Notifications,
+                                        icon = Icons.AutoMirrored.Rounded.Chat,
                                         title = stringResource(R.string.show_toast),
                                         checked = uiState.stateToast,
                                         onCheckedChange = settingsViewModel::setShowToast
@@ -512,7 +501,7 @@ fun SettingsScreen(
                                 },
                                 {
                                     ExpressiveSwitchItem(
-                                        icon = Icons.Filled.NotificationsActive,
+                                        icon = Icons.Rounded.NotificationsActive,
                                         title = stringResource(R.string.show_notifications),
                                         checked = uiState.profileNotifications,
                                         onCheckedChange = settingsViewModel::setProfileNotifications
@@ -527,7 +516,7 @@ fun SettingsScreen(
                                         supportingContent = { Text(stringResource(R.string.settings_reset_desc)) },
                                         leadingContent = {
                                             LeadingIcon(
-                                                icon = Icons.Filled.Restore,
+                                                icon = Icons.Rounded.Restore,
                                                 contentDescription = null
                                             )
                                         }
@@ -650,8 +639,8 @@ fun SettingsScreen(
                                         },
                                         headlineContent = { Text(stringResource(R.string.restart_service)) },
                                         supportingContent = { Text(stringResource(R.string.restart_service_desc)) },
-                                        leadingContent = { LeadingIcon(icon = Icons.Filled.RestartAlt) },
-                                        trailingContent = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null) }
+                                        leadingContent = { LeadingIcon(icon = Icons.Rounded.RestartAlt) },
+                                        trailingContent = { Icon(Icons.AutoMirrored.Rounded.KeyboardArrowRight, null) }
                                     )
                                 },
                                 {
@@ -659,13 +648,13 @@ fun SettingsScreen(
                                         onClick = { showLogBottomSheet = true },
                                         headlineContent = { Text(stringResource(R.string.save_log)) },
                                         supportingContent = { Text(stringResource(R.string.save_log_desc)) },
-                                        leadingContent = { LeadingIcon(icon = Icons.Filled.Save) },
-                                        trailingContent = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null) }
+                                        leadingContent = { LeadingIcon(icon = Icons.Rounded.Save) },
+                                        trailingContent = { Icon(Icons.AutoMirrored.Rounded.KeyboardArrowRight, null) }
                                     )
                                 },
                                 {
                                     ExpressiveSwitchItem(
-                                        icon = Icons.Filled.BugReport,
+                                        icon = Icons.Rounded.BugReport,
                                         title = stringResource(R.string.allow_verbose_log),
                                         summary = stringResource(R.string.allow_verbose_log_desc),
                                         checked = uiState.debugMode,
@@ -674,7 +663,7 @@ fun SettingsScreen(
                                 },
                                 {
                                     ExpressiveSwitchItem(
-                                        icon = Icons.Filled.History,
+                                        icon = Icons.Rounded.History,
                                         title = stringResource(R.string.detailed_activity_log),
                                         summary = stringResource(R.string.detailed_activity_log_desc),
                                         checked = uiState.detailedLog,
@@ -694,12 +683,12 @@ fun SettingsScreen(
                                         headlineContent = { Text(stringResource(R.string.uninstall), color = MaterialTheme.colorScheme.error) },
                                         leadingContent = {
                                             LeadingIcon(
-                                                icon = Icons.Filled.Delete,
+                                                icon = Icons.Rounded.Delete,
                                                 containerColor = MaterialTheme.colorScheme.error.copy(alpha = 0.12f),
                                                 contentColor = MaterialTheme.colorScheme.error
                                             )
                                         },
-                                        trailingContent = { Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, null) }
+                                        trailingContent = { Icon(Icons.AutoMirrored.Rounded.KeyboardArrowRight, null) }
                                     )
                                 }
                             )

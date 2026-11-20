@@ -39,10 +39,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.AppSettingsAlt
 import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material.icons.rounded.CleaningServices
+import androidx.compose.material.icons.rounded.DeleteSweep
 import androidx.compose.material.icons.rounded.Folder
-import androidx.compose.material.icons.rounded.Science
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -634,14 +635,14 @@ private fun ToolsSection(navActions: MaxNavActions) {
             MaxNavigationRow(
                 title = stringResource(R.string.dex2oat_title),
                 subtitle = stringResource(maxDestinationRole(MaxDestination.Dex2oat)),
-                icon = Icons.Rounded.Science,
+                icon = Icons.Rounded.AppSettingsAlt,
                 onClick = { navActions.navigateTo(MaxDestination.Dex2oat) },
             )
             MaxGroupDivider()
             MaxNavigationRow(
                 title = stringResource(R.string.debloat_freeze_title),
                 subtitle = stringResource(maxDestinationRole(MaxDestination.DebloatFreeze)),
-                icon = Icons.Rounded.CleaningServices,
+                icon = Icons.Rounded.DeleteSweep,
                 onClick = { navActions.navigateTo(MaxDestination.DebloatFreeze) },
             )
         }

@@ -17,7 +17,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -134,7 +134,7 @@ fun MaxSwitch(
             if (thumbContent != null) {
                 thumbContent()
             } else if (checked) {
-                Icon(Icons.Filled.Check, null, Modifier.size(16.dp))
+                Icon(Icons.Rounded.Check, null, Modifier.size(16.dp))
             } else {
                 Box(Modifier.size(6.dp).clip(RoundedCornerShape(50)).background(if (enabled) scheme.surface else scheme.onSurface.copy(alpha = .38f)))
             }
