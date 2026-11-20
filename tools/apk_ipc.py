@@ -128,6 +128,9 @@ def main(argv: list[str]) -> int:
         for n in sorted(files):
             if n.endswith(".apk") and "NubiaRedmagickyi_RedMagic" not in n:
                 apks.append(os.path.join(dirpath, n))
+    if not apks:
+        print("no APKs found — refusing to write an empty contract document", file=sys.stderr)
+        return 2
     report: dict[str, dict] = {}
     for path in sorted(apks):
         facts = apk_facts(path)

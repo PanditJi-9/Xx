@@ -39,8 +39,12 @@ jobs:
           # One asset at a time with retries: a single aborted transfer used to leave a
           # partial .apk behind and the run reported success. Each file is now verified
           # as a readable zip before it is counted.
-          gh api "repos/${{ github.repository }}/releases/tags/$TAG" \
-            --jq '.assets[].name' | grep '\.apk$' > /tmp/assets.txt || true
+          # A draft release has no /releases/tags/<tag> lookup (404), so the list
+          # endpoint is used and the tag is matched client-side: this was the reason a
+          # run "succeeded" while apps-ci stayed empty.
+          gh api "repos/${{ github.repository }}/releases?per_page=100" \
+            --jq ".[] | select(.tag_name == \"$TAG\") | .assets[].name" \
+            | grep '\.apk$' > /tmp/assets.txt || true
           echo "assets listed: $(wc -l < /tmp/assets.txt)"
           while read -r name; do
             [ -z "$name" ] && continue
@@ -75,6 +79,11 @@ jobs:
           for m in missing:
               print(f"  missing: {m}")
           pathlib.Path('apps-ci/MISSING.txt').write_text("\n".join(missing) + ("\n" if missing else ""))
+          # Partial coverage must not overwrite the canonical documents measured on the
+          # full corpus. It goes to a separate directory and says so in its own header.
+          out = 'docs/audit' if not missing else 'docs/audit/ci-partial'
+          print(f"output directory: {out}")
+          pathlib.Path('.ci-out').write_text(out + "\n")
           PY
 
       - name: Self-tests (a tool that passes everything proves nothing)
@@ -89,6 +98,8 @@ jobs:
           # The run log itself is unreachable from outside while the Actions results
           # service fails, so every command's output is written into the tree: a red run
           # then leaves its own diagnosis in git instead of a blank page.
+          out=$(cat .ci-out)
+          mkdir -p "$out"
           log=docs/audit/ci-last-run.txt
           : > "$log"
           fail=0
@@ -97,10 +108,10 @@ jobs:
             echo "== $cmd" >> "$log"
             bash -c "set -o pipefail; $cmd" >> "$log" 2>&1 || { echo "EXIT=$? for: $cmd" >> "$log"; fail=1; }
           done <<'CMDS'
-          python3 tools/apk_inventory.py apps-ci/ --json docs/audit/apk-inventory.json --markdown docs/audit/APK_INVENTORY.md
-          python3 tools/apk_xref.py apps-ci/ --json docs/audit/apk-xref.json --markdown docs/audit/APP_DEPENDENCY_GRAPH.md
-          python3 tools/apk_ipc.py apps-ci/ --json docs/audit/apk-ipc.json --markdown docs/IPC_AND_INTEGRATION.md
-          python3 tools/make_component_catalog.py docs/audit/apk-inventory.json docs/audit/COMPONENT_CATALOG.md
+          python3 tools/apk_inventory.py apps-ci/ --json "$out/apk-inventory.json" --markdown "$out/APK_INVENTORY.md"
+          python3 tools/apk_xref.py apps-ci/ --json "$out/apk-xref.json" --markdown "$out/APP_DEPENDENCY_GRAPH.md"
+          python3 tools/apk_ipc.py apps-ci/ --json "$out/apk-ipc.json" --markdown "$out/IPC_AND_INTEGRATION.md"
+          python3 tools/make_component_catalog.py "$out/apk-inventory.json" "$out/COMPONENT_CATALOG.md"
           CMDS
           echo "failed=$fail" >> "$log"
           tail -40 "$log"
@@ -108,9 +119,10 @@ jobs:
 
       - name: Guard — nothing may be silently empty
         run: |
-          python3 - <<'PY'
+          out=$(cat .ci-out)
+          python3 - "$out" <<'PY'
           import json, sys
-          inv = json.load(open('docs/audit/apk-inventory.json', encoding='utf-8'))
+          inv = json.load(open(f"{sys.argv[1]}/apk-inventory.json", encoding='utf-8'))
           rows = inv['apks']
           errors = [r for r in rows if 'error' in r]
           no_pkg = [r['file'] for r in rows if not r.get('package')]
@@ -129,8 +141,10 @@ jobs:
         run: |
           {
             echo "### Ecosystem audit"
-            echo "- APKs analysed: $(grep -c '^| ' docs/audit/APK_INVENTORY.md || true) table rows"
-            echo "- components catalogued: $(grep -c '^| \`' docs/audit/COMPONENT_CATALOG.md || true)"
+            out=$(cat .ci-out)
+            echo "- output: $out"
+            echo "- APKs analysed: $(grep -c '^| ' "$out/APK_INVENTORY.md" || true) table rows"
+            echo "- components catalogued: $(grep -c '^| \`' "$out/COMPONENT_CATALOG.md" || true)"
             echo "- missing assets: $(wc -l < apps-ci/MISSING.txt 2>/dev/null || echo 0)"
           } >> "$GITHUB_STEP_SUMMARY"
 
@@ -142,9 +156,9 @@ jobs:
             docs/audit/COMPONENT_CATALOG.md
             docs/audit/APP_DEPENDENCY_GRAPH.md
             docs/IPC_AND_INTEGRATION.md
-            docs/audit/apk-inventory.json
-            docs/audit/apk-xref.json
-            docs/audit/apk-ipc.json
+            docs/audit/**/*.md
+            docs/audit/**/*.json
+            docs/audit/ci-last-run.txt
             apps-ci/MISSING.txt
 
       - name: Commit regenerated docs (and the run log, even on failure)
