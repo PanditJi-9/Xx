@@ -28,6 +28,8 @@
 | ترابط على مستوى الأصناف بين التطبيقات | **≈صفر** (أعلى قيمة 5 أصناف) | `apk_xref.py` | `docs/audit/APP_DEPENDENCY_GRAPH.md` |
 | أنواع معرَّفة داخل كل تطبيق | 7,094 – 15,879 لكل تطبيق | `apk_xref.py` | نفسه |
 | targetSdk | 35/36، و**37** في `GameAssist` و`VirtualGameHandle` | `apk_inventory.py` | `APK_INVENTORY.md` |
+| جدول الموارد لكل تطبيق | **23 تطبيقًا** بأعداد لكل نوع: 10,827 `string` · 19,410 `color` · 23,400 `dimen` · 6,031 `layout` · 51,699 `drawable` · 1,119 `mipmap` · 1,105 `anim` · 506 `animator` · 21,937 `style` · 1,082 `xml` · 182 `raw` | `apk_resources.py` | `docs/audit/RESOURCE_INVENTORY.md` |
+| تسوية `resources N` مع دليل REA | مطابقة في **22/23** حرفًا بحرف (رقم jadx = عدد مدخلات ZIP)؛ الشاذّ الوحيد `NubiaGameWidget` 5111 مقابل 5109 في الملف | نفسه | نفسه §Reconciliation |
 
 **الاستنتاج المعماري الحاكم:** المنظومة **مترابطة بالعقود (أسماء أفعال/مكوّنات/صلاحيات) لا بالكود**.
 لذلك إعادة البناء المستقلة تحافظ على **سطح IPC** (أفعال، مكوّنات، authorities) وعلى **أسماء المنتجات**،
@@ -60,7 +62,7 @@
 | --- | --- | --- | --- |
 | 0 | Preservation | `docs/REA_AUDIT.md` + وسم حالة المستودع | كل ملف أصلي موجود قبل/بعد بنفس البصمة (SHA-256) |
 | 1 | Inventory | `APK_INVENTORY` · `COMPONENT_CATALOG` · `APP_DEPENDENCY_GRAPH` · `IPC_AND_INTEGRATION` | 23/23 APK مقروءة، 0 خطأ، الأدوات تُعيد التوليد في CI |
-| 2 | Reverse engineering | `REVERSE_ENGINEERING.md` + `FEATURE_CATALOG.md` لكل تطبيق | لكل ميزة: دليل (مكوّن/فعل/مورد) + حدّ ما تعذّر تحليله |
+| 2 | Reverse engineering ✅ | `REVERSE_ENGINEERING.md` + `FEATURE_CATALOG.md` + `RESOURCE_INVENTORY.md` | لكل ميزة: دليل (مكوّن/فعل/مورد) + حدّ ما تعذّر تحليله — **مُحقَّق على المستويين**: 579 عقدًا مكوّنًا/فعلًا، و23 تطبيقًا موردًا. المرئي (لقطة/مقطع) للمرحلة 3 |
 | 3 | UX reconstruction | `SCREEN_INVENTORY` · `VISUAL_DESIGN_SPEC` · `DESIGN_SYSTEM` · `ANIMATION_CATALOG` | لكل شاشة لقطة مرجعية + قيم مقيسة (مقاس، لون، مدة) |
 | 4 | Architecture | `ARCHITECTURE.md` · `MODULES.md` · `CAPABILITIES.md` · `GAME_SESSION_SPEC` · `OVERLAY_SPEC` | كل عقد IPC موثّق باسمه المقيس من المرحلة 1 |
 | 5 | Foundation | مشروع Gradle + `CapabilityState` + arbiter | اختبارات وحدة خضراء في CI + تقرير قدرات على جهازين |
@@ -100,7 +102,8 @@
 | `REA_AUDIT.md` | ✅ مقيس (بما فيه: لا توجد نسخة REA محلية لمنظومة RedMagic) |
 | `APK_INVENTORY.md` · `COMPONENT_CATALOG.md` · `APP_DEPENDENCY_GRAPH.md` · `IPC_AND_INTEGRATION.md` | ✅ مولّدة من APK |
 | `FEATURE_CATALOG.md` | ✅ مولّد من دليل REA المخزّن (`tools/feature_catalog.py`) — 24 تطبيقًا، 579 مكوّنًا: 270 `DECLARED` · 56 `TRACED` · 253 `UNVERIFIED`. السلوك نفسه لم يُقس: `UNVERIFIED` تعني «البيان يذكره فقط» |
-| `SCREEN_INVENTORY` · `ICON_CATALOG` · `ANIMATION_CATALOG` · `INTERACTION_SPEC` · `VISUAL_DESIGN_SPEC` · `DESIGN_SYSTEM` | ⏳ المرحلة 3 (تحتاج لقطات ومقاطع من الجهاز) |
+| `docs/audit/RESOURCE_INVENTORY.md` | ✅ مولّد (`tools/apk_resources.py`, `--self-test` يمرّ): أسماء `layout`، وألوان `color` الحرفية، ومقاسات الأيقونة، وأعداد كل نوع. ما لا يقيسه: شكل الرسم والحركة ومحتوى `xml` |
+| `SCREEN_INVENTORY` · `ICON_CATALOG` · `ANIMATION_CATALOG` · `INTERACTION_SPEC` · `VISUAL_DESIGN_SPEC` · `DESIGN_SYSTEM` | ⏳ المرحلة 3 (تحتاج لقطات ومقاطع من الجهاز) — والمدخل المقيس لها جاهز في `RESOURCE_INVENTORY.md` |
 | `ARCHITECTURE` · `MODULES` · `CAPABILITIES` · `GAME_SESSION_SPEC` · `OVERLAY_SPEC` · `HARDWARE_CONTROL_SAFETY` | ⏳ المرحلة 4 |
 | `DEVICE_MATRIX` · `TEST_STRATEGY` · `PERFORMANCE_PLAN` · `LICENSES` · `MIGRATION_PLAN` · `IMPLEMENTATION_ROADMAP` | ⏳ قبل المرحلة 5 |
 
