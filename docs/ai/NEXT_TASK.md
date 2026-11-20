@@ -68,10 +68,8 @@ tcontext=u:r:su:s0 tclass=unix_stream_socket permissive=0 app=nd.max`
 القديم يفشل الفحص الذاتي، وبالإصلاح ينجح. الحكمان: `44140626147` Build **success** و`44142096948`
 docs **success**. والتفصيل في `HANDOFF` تكملة ٢٩٨.
 
-**١. Dependabot — ٥ ثغرات على `PanditJi-9/Xx` (١ حرجة · ٣ عالية · ١ متوسطة) لم تُعالَج بعد.**
-**الأولوية القصوى.** القبول: `gh api repos/PanditJi-9/Xx/dependabot/alerts` يخرج بقائمة فارغة أو
-بمبرَّرات مكتوبة لكل ثغرة باقية، مع حكم Actions للالتزام المُصلح مقروءًا. لا يُدفع ترقية أمنية بلا
-قراءة أثرها على `manager/app/build.gradle.kts` وبوّابة `hardening_guard`.
+**١. Dependabot — ٥ ثغرات على `PanditJi-9/Xx` — مُغلقة قياسًا (٢٠٢٦-١١-٢٠).**
+كانت كلها على `manager/src/main/rust/Cargo.lock` للحزمة `zip` 8.6.0 (حرجة `GHSA-m665-v7pm-7grj` + ثلاثة عالية + واحدة متوسطة). رُقِّيت إلى `zip 9.8.1` في `Cargo.toml`، مع بقاء محرّك zlib-rs (ADR-49) مقيسًا بـ`cargo tree`. الحكمان: `44707886388` failure (`E0599` على `name()` في مسار الاختبار) ← أُصلح في `66137649` ← `44708581950` **success**. والقبول: `gh api repos/PanditJi-9/Xx/dependabot/alerts` ← `open: 0`. التفصيل في `HANDOFF` تكملة ٣٠٥.
 
 **٢. نسخة `docs/` في مستودع التطبيق تقادمت — قرار مطلوب من المالك.** المداخل الستّة غير الملتزمة
 في شجرة التطبيق أقدم من المستودع المسقَط (رابط مجموعة خطأ، بلا إصلاح الوضع الداكن، `localStorage`،

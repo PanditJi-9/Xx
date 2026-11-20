@@ -29546,3 +29546,29 @@ design_tokens 0 · hardening_guard ✓ · provenance_guard (٤٨٧٢ ملفًّ�
 - `44678536051` على `fe8100ab` → **success** (كل الخطوات ناجحة، وسجلّ الفشل فارغ).
 
 **الحدود الصادقة:** الواجهة الجديدة (الأيقونات، نيون Game Turbo، ترتيب الرئيسية، ورقة ضبط الإجراءات) **لم تُختبر على جهاز**؛ الحكم أنها تُصرَّف وتمرّ الاختبارات لا أنها تعمل على هاتفك. ولا مُصرّف محليًّا في هذه البيئة. والوكلاء المتخصّصون (designer/explorer/gatekeeper/ci-runner) ما زالوا محجوبين بـ«Free usage limit reached»، فالتنفيذ والمراجعة في الجلسة الأمّ. و`DAEMON-IPC-SELINUX-01` يبقى مفتوحًا: إظهار السطر أُسكت، لكن فتح القناة على تثبيت الوحدة يحتاج نطاقًا خاصًّا وقت التشغيل (`sepolicy.rule`) — ولم يُعتمد قراره بعد.
+
+---
+
+## تكملة ٣٠٥ — ترقية `zip` 8.6.0 ← 9.8.1 وإغلاق تنبيهات Dependabot الخمس (2026-11-20)
+
+**الطلب:** كان البند الأول في `NEXT_TASK.md` («Dependabot — ٥ ثغرات … الأولوية القصوى») مفتوحًا، وقبولُه نصًّا: قائمة تنبيهات فارغة **مع** حكم Actions للالتزام المُصلح مقروءًا.
+
+**القياس الابتدائي — أين تعيش الثغرات فعلًا (لا تخمينًا):**
+`gh api repos/PanditJi-9/Xx/dependabot/alerts` أعطى خمسة تنبيهات مفتوحة، كلها على **`manager/src/main/rust/Cargo.lock`** للحزمة `zip` (لا Dart ولا npm — لا `pubspec.*` في الشجرة أصلًا):
+`GHSA-m665-v7pm-7grj` حرجة (تُصلح في ٩.٠.٥) · `GHSA-9hj8-73fh-9963` و`GHSA-hjqx-j4rw-g7xv` و`GHSA-q7v9-x93c-xqv3` عالية (٩.٠.٠) · `GHSA-8hxf-qr8p-62x4` متوسطة (٩.٠.٠). والقفل كان `zip 8.6.0`، والمانيفست `version = "8"`.
+
+**فحص الواجهة قبل الترقية (بلا مُصرّف):** نُزِّل مصدر `zip 9.8.1` من crates.io وقِيست فيه كل دالة نستخدمها — `zip::write::SimpleFileOptions` · `compression_method` · `compression_level` · `add_directory` · `start_file` · `finish` · `ZipArchive::{new,len,by_index,by_name}` — **كلها باقية**. وميزة `deflate-flate2-zlib-rs` ما زالت معرَّفة، و`rust-version = "1.89"` (CI يستعمل `dtolnay/rust-toolchain@stable`).
+
+**التعديل:** `Cargo.toml` ← `zip = { version = "9", default-features = false, features = ["deflate-flate2-zlib-rs"] }` بتعليق يوثّق سبب الحدّ (التنبيهات المقيسة)، ثم `cargo update -p zip` ← القفل `9.8.1` (+152 سطرًا: `nix`, `wasm-bindgen` family, `zeroize`, `typed-path 0.13`).
+
+**والمحرّك لم يتغيّر (ADR-49) — مقيس:** `cargo tree -i flate2` ← `flate2 v1.1.10 → zlib-rs v0.6.8` تحت `zip v9.8.1`. أي أن نقل الضغط إلى zlib-rs الذي بُني عليه قرار ADR-49 باقٍ حرفيًّا.
+
+**حكم Actions (المُصرّف الوحيد — §0.10):**
+- `44707886388` على `c9bd9597` → **failure**، وسببٌ واحد فقط: `error[E0599]` — في zip 9 صار `ZipFile::name()` يعيد `ZipResult<Cow<'_, str>>` بدل `&str`، فسقط `.to_string()` في `archive.rs:399` (مساعد **اختبار** لا مسار إنتاج). أُصلح بفكّ الناتج صراحةً: `.name().unwrap().to_string()` مع تعليق يوثّق الفرق (التزام `66137649`).
+- `44708581950` على `66137649` → **success** (المهمة `Build MaxManager => success`، وسجلّ الفشل فارغ).
+
+**قبول البند قياسًا:** بعد الدفع أعاد `gh api …/dependabot/alerts` ← **`open: 0`** (لا ثغرة مفتوحة). ولا ادّعاء بغير ذلك.
+
+**البوابات المحلية:** `license_audit --assert` لا GPL في مسار الإصدار · `provenance_guard --assert` 4995 ملفًا/0 · `code_health --assert` خروج 0 · `git diff --check` نظيف. و`kt_balance`/`i18n`/`design_tokens`/`rtl_guard` لا تمسّها هذه الدفعة (Rust+Cargo فقط).
+
+**الحدود الصادقة:** لا `cargo build`/`cargo test` محليًّا (§0.10)؛ الحكم الوحيد هو تشغيل Actions أعلاه. و`cargo update`/`cargo tree` جرَوا محليًّا لأنهما **حلُّ اعتماديات وقراءة شجرة** لا تصريف. والثغرات المغلقة تخصّ **قراءة** أرشيفات غير موثوقة، ومسارنا الإنتاجي يكتب فقط (`ZipWriter`)، لكن الترقية أُجريت لأن بقاء حزمة معروفة العطب في شجرة الإصدار خطرٌ لا يُبرَّر.
