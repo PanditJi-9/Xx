@@ -5,7 +5,9 @@
  */
 package nd.max.ui.mainscreens
 
+import nd.max.R
 import nd.max.core.privilege.PrivilegeLevel
+import nd.max.ui.viewmodel.DaemonHealth
 
 /**
  * متى تكون شارة الرئيسية **مفعّلة** — قرار واحد يقرأه الشاشة والاختبار معًا.
@@ -37,4 +39,48 @@ internal object HomeActivityRules {
         PrivilegeLevel.SHIZUKU -> true
         PrivilegeLevel.NONE -> false
     }
+}
+
+/**
+ * نصّ نافذة الحالة — **الحالة تحدّد العنوان والجسم**، لا اللون وحده.
+ *
+ * ## العطب الذي تمنعه هذه القاعدة (أمر المالك ٢٠٢٦-١١-٢٠)
+ *
+ * «الناس يفهمون هذه الشاشة بشكل خاطئ … يجب أن تظهر Why not active? عندما يكون مكتوبًا غير مفعّل،
+ * ولكن عندما يكون مكتوبًا مفعّل تختلف الرسالة». وكانت النافذة **واحدة** تُفتح من الشارة في الحالتين،
+ * فمن تطبيقه يعمل تمامًا قرأ «لماذا غير مفعّل؟» و«مسار واحد يعمل يكفي…» — أي أنّ الشاشة كانت
+ * تنقض شارتها. فالشارة `ACTIVE` تفتح نافذة تقول «كل شيء يعمل»، و`غير مفعّل` تفتح نافذة السبب.
+ *
+ * ## ولماذا في دالّة نقيّة هنا
+ *
+ * لأن المتوقَّع من الاختبار أن يثبت **اختلاف المعرّفين** لا شكل النافذة؛ فيُقاس بلا Compose وبلا جهاز.
+ * ولو غُيّر أحد المعرّفين غدًا إلى نصّ «لماذا غير مفعّل» سقط الاختبار بالاسم.
+ */
+internal object HomeStatusCopy {
+
+    fun titleRes(active: Boolean): Int =
+        if (active) R.string.home_status_active_title else R.string.home_status_reason_title
+
+    fun bodyRes(active: Boolean): Int =
+        if (active) R.string.home_status_active_body else R.string.home_status_reason_body
+
+    /**
+     * سطر الخادم في النافذة — أو `null` حين لم تُقَس حالته بعد.
+     *
+     * ولِمَ `null` لا «لا يجيب»؟ لأن `UNKNOWN` تعني **لم تُسأل بعد**؛ وكتابة «لا يجيب» قبل السؤال
+     * هي نفس الكذب الذي جاء الأمر لإزالته، بمقياس أدقّ.
+     */
+    fun daemonRowRes(health: DaemonHealth): Int? = when (health) {
+        DaemonHealth.UNKNOWN -> null
+        DaemonHealth.RUNNING -> R.string.home_status_row_daemon_running
+        DaemonHealth.DENIED -> R.string.home_status_row_daemon_denied
+        DaemonHealth.UNREACHABLE -> R.string.home_status_row_daemon_unreachable
+        DaemonHealth.STOPPED -> R.string.home_status_row_daemon_stopped
+    }
+
+    /**
+     * علامة الصحّ للخادم شرطٌ واحد: **يردّ ويعمل**.
+     * و«يردّ رافضًا هويّة التطبيق» عطبُ هويّة لا فشلُ خادم، ولا «لا يجيب» — ولكلٍّ سطره.
+     */
+    fun daemonSatisfied(health: DaemonHealth): Boolean = health == DaemonHealth.RUNNING
 }

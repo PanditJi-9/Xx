@@ -89,6 +89,7 @@ import nd.max.ui.component.NeuralPanel
 import nd.max.ui.component.NeuralPill
 import nd.max.ui.component.neuralPalette
 import nd.max.ui.navigation.MaxDestination
+import nd.max.ui.viewmodel.DaemonHealth
 import nd.max.ui.viewmodel.DashboardState
 import nd.max.ui.viewmodel.HomeUiState
 import nd.max.ui.viewmodel.MemoryBoostState
@@ -160,6 +161,7 @@ internal fun LegendaryHomeDashboard(
             active = active,
             accessLevel = accessLevel,
             moduleInstalled = ui.moduleInstalled,
+            daemonHealth = ui.daemonHealth,
             onReboot = onReboot,
             onShowGuide = onShowGuide,
         )
@@ -253,6 +255,7 @@ private fun HomeHeader(
     active: Boolean,
     accessLevel: PrivilegeLevel,
     moduleInstalled: Boolean,
+    daemonHealth: DaemonHealth,
     onReboot: () -> Unit,
     onShowGuide: () -> Unit,
 ) {
@@ -299,8 +302,10 @@ private fun HomeHeader(
     }
     if (reasonOpen) {
         HomeStatusReasonDialog(
+            active = active,
             accessLevel = accessLevel,
             moduleInstalled = moduleInstalled,
+            daemonHealth = daemonHealth,
             onClose = { reasonOpen = false },
         )
     }
@@ -676,15 +681,26 @@ private fun HomeStatusChip(text: String, accent: Color, modifier: Modifier = Mod
 }
 
 /**
- * «لماذا غير مفعّل؟» — نافذة **سبب** لا إجراء (أمر المالك: «وعند الضغط عليه نافذة منبثقة بالسبب»).
+ * نافذة **سبب** لا إجراء (أمر المالك: «وعند الضغط عليه نافذة منبثقة بالسبب»).
  *
- * وتعرض الثلاثة دائمًا، والمحقَّق منها بعلامة صح والمعطّل بعلامة رفض: إخفاء غير المحقَّق كان سيترك
- * المستخدم يظنّ الشرط غير مطلوب، وهو عكس ما طُلب.
+ * ## حالتان لا نافذة واحدة (أمر المالك ٢٠٢٦-١١-٢٠)
+ *
+ * «يجب أن تظهر Why not active? عندما يكون الذر مكتوب فيه غير مفعل ولكن عندما يكون مكتوب مفعل تختلف
+ * الرسالة مثل كل شيء يعمل». فالنافذة التي تُفتح من شارة **مفعّلة** تقول «كل شيء يعمل»؛ ونصّ
+ * «لماذا غير مفعّل؟» لا يظهر إلا في حالة عدم التفعيل. والنصّان يخرجان من [HomeStatusCopy] المقيسة
+ * في `HomeActivityRulesTest`، فلا يعودان يتّحدان بتعديل عابر.
+ *
+ * وتعرض الشروط الثلاثة دائمًا، والمحقَّق منها بعلامة صح والمعطّل بعلامة رفض: إخفاء غير المحقَّق كان سيترك
+ * المستخدم يظنّ الشرط غير مطلوب، وهو عكس ما طُلب. ويُضاف إليها سطر الخادم الخلفيّ بحالاته الثلاث
+ * — «يعمل ويردّ» / «يعمل لكنه يرفض هويّة التطبيق» / «لا يجيب» — لأن «الخادم فشل» كانت رسالة كاذبة
+ * كلّفت المالك اعتذارًا للمستخدمين.
  */
 @Composable
 private fun HomeStatusReasonDialog(
+    active: Boolean,
     accessLevel: PrivilegeLevel,
     moduleInstalled: Boolean,
+    daemonHealth: DaemonHealth,
     onClose: () -> Unit,
 ) {
     val p = neuralPalette()
@@ -699,17 +715,21 @@ private fun HomeStatusReasonDialog(
     var outcome by remember { mutableStateOf<String?>(null) }
     AlertDialog(
         onDismissRequest = onClose,
-        title = { Text(stringResource(R.string.home_status_reason_title)) },
+        title = { Text(stringResource(HomeStatusCopy.titleRes(active))) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(MaxSpace.sm)) {
                 Text(
-                    stringResource(R.string.home_status_reason_body),
+                    stringResource(HomeStatusCopy.bodyRes(active)),
                     color = p.text,
                     style = MaterialTheme.typography.bodySmall,
                 )
                 HomeStatusReasonRow(R.string.home_status_row_root, accessLevel == PrivilegeLevel.ROOT)
                 HomeStatusReasonRow(R.string.home_status_row_module, moduleInstalled)
                 HomeStatusReasonRow(R.string.home_status_row_shizuku, accessLevel == PrivilegeLevel.SHIZUKU)
+                // سطر الخادم: لا يظهر قبل أوّل قياس (`UNKNOWN`)، ولا يقول «لا يجيب» عن خادم لم يُسأل.
+                HomeStatusCopy.daemonRowRes(daemonHealth)?.let { labelRes ->
+                    HomeStatusReasonRow(labelRes, HomeStatusCopy.daemonSatisfied(daemonHealth))
+                }
                 outcome?.let { line ->
                     Text(line, color = p.text, style = MaterialTheme.typography.bodySmall)
                 }

@@ -45,13 +45,62 @@ import javax.inject.Inject
 private const val ROOT_REFRESH_MIN_GAP_MS = 15_000L
 
 
+/**
+ * حالة الخادم الخلفيّ كما **تُقاس** من `STATUS`، لا كما تُفترض.
+ *
+ * ## لماذا ليست `Boolean`
+ *
+ * أمر المالك ٢٠٢٦-١١-٢٠: «اعرض حالة demon بأنه ليس فقط موجود بل ويعمل بكفاءة … لأني نشرت وبعدها
+ * اعتذرت للمستخدمين أن التطبيق لا يعمل بسبب رسالة فشل demon». والقياس أثبت أنّ الخادم **حيّ** بينما
+ * هويّته ترفض التطبيق (`ERR denied` من `peer_allowed`، سُجّلت على جهاز ٥٤٢): فحالةٌ ثنائيّة
+ * (`true/false`) تُسقط هذا الفارق وتُنتج رسالة «الخادم فشل» وهي غير صحيحة.
+ *
+ * * [RUNNING] — `OK` وجسمه `state=running`: يعمل ويردّ.
+ * * [DENIED] — `Refused`: حيّ، لكنه يرفض هويّة هذا التطبيق (عطب هويّة لا فشل خادم).
+ * * [UNREACHABLE] — `Unreachable`: لا قناة/لا ردّ؛ والتطبيق يعمل على مساره المباشر.
+ * * [STOPPED] — `OK` وجسمه ليس `state=running`: يردّ لكنه يعلن أنه غير عامل. وله سطرٌ مستقلّ
+ *   لأن قول «لا يجيب» عنه كذبٌ ثانٍ من العائلة نفسها التي جاء الأمر لإزالتها.
+ * * [UNKNOWN] — لم تُسأل بعد (القياس الأوّل لم يقع)، ولا يُعرض لها سطر إطلاقًا.
+ */
+enum class DaemonHealth {
+    UNKNOWN,
+    RUNNING,
+    DENIED,
+    UNREACHABLE,
+    STOPPED
+    ;
+
+    companion object {
+
+        private const val STATE_KEY = "state="
+
+        /** يقرأ الحالة من جسم `STATUS` (`state=running ai=1`). */
+        private fun stateOf(payload: String): String =
+            payload.substringAfter(STATE_KEY, "").substringBefore(' ').trim()
+
+        /** تصنيف ردّ القناة — دالّة نقيّة تُقاس على JVM بلا سوكيت. */
+        fun of(result: nd.max.core.daemon.DaemonIpc.Result?): DaemonHealth = when (result) {
+            null -> UNKNOWN
+            is nd.max.core.daemon.DaemonIpc.Result.Ok ->
+                if (stateOf(result.payload) == "running") RUNNING else STOPPED
+
+            is nd.max.core.daemon.DaemonIpc.Result.Refused -> DENIED
+            nd.max.core.daemon.DaemonIpc.Result.Unreachable -> UNREACHABLE
+        }
+    }
+}
+
+
 data class HomeUiState(
     val isBannerEnabled: Boolean = false,
     val moduleInstalled: Boolean = false,
     val autoMode: String? = null,
     val rootStatus: Boolean = false,
-    /** الخادم يردّ على القناة — يكفي (مع التثبيت) لشارة «نشط» بلا جذر. */
-    val daemonOnline: Boolean = false,
+    /**
+     * الخادم الخلفيّ: يعمل ويردّ، أم يردّ رافضًا هويّة التطبيق، أم لا يجيب.
+     * و`UNKNOWN` قبل أوّل قياس، فلا تُدَّعى حالة لم تُقَس.
+     */
+    val daemonHealth: DaemonHealth = DaemonHealth.UNKNOWN,
     val serviceStatusRes: Int = R.string.status_suspended,
     val servicePid: String = "",
     val currentProfileRes: Int = R.string.status_initializing,
@@ -143,6 +192,19 @@ class HomeViewModel @Inject constructor(
      */
     fun setVisible(value: Boolean) {
         visible.value = value
+        if (value) probeDaemonHealth()
+    }
+
+    /**
+     * قياس حالة الخادم عند كل عودة إلى الأمام — السؤال يُسأل حين تُعرض الشاشة، فلا تُقرأ حالة قديمة
+     * عن خادم مات بعد آخر فحص. وقياس واحد لكل عودة، و[nd.max.core.daemon.DaemonIpc] يمنع رحلة
+     * فاشلة جديدة خمس ثوانٍ، ولا شيء يُقاس في الخلفيّة (FOOTPRINT-01).
+     */
+    private fun probeDaemonHealth() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val health = DaemonHealth.of(nd.max.core.daemon.DaemonIpc.default.status())
+            _uiState.update { it.copy(daemonHealth = health) }
+        }
     }
 
     /**
@@ -165,12 +227,13 @@ class HomeViewModel @Inject constructor(
                 // في وضع الروم بلا init rc ولا سياسة SELinux.
                 val isRooted = RootUtils.requestRootAccess()
                 val isModuleInstalled = RootUtils.isModuleInstalled()
-                val daemonOnline = nd.max.core.daemon.DaemonIpc.default.ping()
+                val daemonHealth =
+                    DaemonHealth.of(nd.max.core.daemon.DaemonIpc.default.status())
                 nd.max.core.privilege.PrivilegeManager.refresh()
                 _uiState.update {
                     it.copy(
                         rootStatus = isRooted,
-                        daemonOnline = daemonOnline,
+                        daemonHealth = daemonHealth,
                         moduleInstalled = isModuleInstalled,
                     )
                 }
@@ -190,14 +253,15 @@ class HomeViewModel @Inject constructor(
             try {
                 val isRooted = RootUtils.requestRootAccess()
                 val isModuleInstalled = RootUtils.isModuleInstalled()
-                val daemonOnline = nd.max.core.daemon.DaemonIpc.default.ping()
+                val daemonHealth =
+                    DaemonHealth.of(nd.max.core.daemon.DaemonIpc.default.status())
                 // قراءة داخل العملية (bionic) بدل صدفة `getprop`: مقيس ٢٣٦٦ ميكرو ⇒ ١٢٫٦.
                 // وهذه الدالة تُنادى عند الإقلاع وعند كل تحديث لحالة المفتاح — فالتوفير متكرّر.
                 val mode = PropertyUtils.get(MaxManagerProps.Conf.AI_ENABLED)
 
                 _uiState.update { it.copy(
                     rootStatus = isRooted,
-                    daemonOnline = daemonOnline,
+                    daemonHealth = daemonHealth,
                     moduleInstalled = isModuleInstalled,
                     autoMode = mode
                 ) }
