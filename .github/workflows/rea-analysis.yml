@@ -19,7 +19,7 @@ on:
         default: 'GameAssist.apk'
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   rea:
@@ -78,3 +78,17 @@ jobs:
             rea-help.txt
             rea-version.txt
             targets.sha256
+
+      # The Actions results service is unreachable from the owner's side, so the CLI
+      # surface is committed: Phase 2 needs the real command names, not a guess.
+      - name: Commit the CLI surface
+        run: |
+          mkdir -p docs/audit/rea
+          cp rea-help.txt rea-version.txt docs/audit/rea/ 2>/dev/null || true
+          git config user.name 'rea-analysis'
+          git config user.email 'actions@users.noreply.github.com'
+          git add docs/audit/rea || true
+          git diff --cached --quiet && echo "no drift" && exit 0
+          git commit -m "docs(rea): record the installed CLI surface (node 24)"
+          git pull --rebase --autostash -q origin "${GITHUB_REF_NAME}" || true
+          git push
