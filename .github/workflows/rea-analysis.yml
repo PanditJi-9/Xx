@@ -204,6 +204,12 @@ jobs:
                   if len(targets) >= 4: break
               (ev / 'PACKAGE.md').write_text('\n'.join(lines) + '\n', encoding='utf-8')
               (ev / 'trace-targets.txt').write_text('\n'.join(targets) + '\n', encoding='utf-8')
+              # Keep the declared components as data too: Phase 2 builds the feature
+              # catalog from these rows instead of re-parsing the rendered table.
+              (ev / 'components.json').write_text(json.dumps([
+                  {'kind': i.get('kind'), 'name': i.get('name'), 'exported': i.get('exported'),
+                   'permission': i.get('permission'), 'filters': i.get('intent_filter_count')}
+                  for i in items], ensure_ascii=False, indent=1) + '\n', encoding='utf-8')
 
           inv = load('class-inventory.json')
           if inv:
