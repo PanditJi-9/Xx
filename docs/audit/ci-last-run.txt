@@ -1,0 +1,12 @@
+== python3 tools/apk_inventory.py apps-ci/ --json docs/audit/apk-inventory.json --markdown docs/audit/APK_INVENTORY.md
+no APKs found
+EXIT=2 for: python3 tools/apk_inventory.py apps-ci/ --json docs/audit/apk-inventory.json --markdown docs/audit/APK_INVENTORY.md
+== python3 tools/apk_xref.py apps-ci/ --json docs/audit/apk-xref.json --markdown docs/audit/APP_DEPENDENCY_GRAPH.md
+no APKs
+EXIT=2 for: python3 tools/apk_xref.py apps-ci/ --json docs/audit/apk-xref.json --markdown docs/audit/APP_DEPENDENCY_GRAPH.md
+== python3 tools/apk_ipc.py apps-ci/ --json docs/audit/apk-ipc.json --markdown docs/IPC_AND_INTEGRATION.md
+json: docs/audit/apk-ipc.json
+markdown: docs/IPC_AND_INTEGRATION.md
+== python3 tools/make_component_catalog.py docs/audit/apk-inventory.json docs/audit/COMPONENT_CATALOG.md
+wrote docs/audit/COMPONENT_CATALOG.md
+failed=1
